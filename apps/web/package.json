@@ -19,8 +19,8 @@
     "@nb/search": "*",
     "@nb/shared": "*",
     "@nb/ui": "*",
-    "@sentry/nextjs": "^8.42.0",
-    "next": "15.0.7",
+    "@sentry/nextjs": "^10.43.0",
+    "next": "15.5.12",
     "posthog-js": "^1.194.6",
     "react": "18.3.1",
     "react-dom": "18.3.1"
@@ -30,9 +30,9 @@
     "@types/react-dom": "^18.3.1",
     "autoprefixer": "^10.4.20",
     "eslint": "^9.15.0",
-    "eslint-config-next": "15.0.7",
+    "eslint-config-next": "15.5.12",
     "postcss": "^8.4.49",
     "tailwindcss": "^3.4.15",
-    "vitest": "^2.1.8"
+    "vitest": "^4.0.18"
   }
 }
