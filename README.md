@@ -21,18 +21,18 @@ MVP bootstrap for a modular-monolith homebrewing platform.
 2. `npm install`
 3. `docker compose up -d`
 4. `npm db:migrate`
-5. `npm dev`
+5. `npm run dev`
 
 ## Commands
-- `npm dev`
-- `npm build`
-- `npm lint`
-- `npm typecheck`
-- `npm test`
-- `npm db:generate`
-- `npm db:migrate`
-- `npm db:seed`
-- `npm db:reset`
+- `npm run dev`
+- `npm run build`
+- `npm run lint`
+- `npm run typecheck`
+- `npm run test`
+- `npm run db:generate`
+- `npm run db:migrate`
+- `npm run db:seed`
+- `npm run db:reset`
 
 ## Notes
 - UI demo: `http://localhost:3000/ui-playground`

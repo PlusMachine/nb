@@ -1,6 +1,11 @@
-import { parseClientEnv, parseServerEnv } from "@nb/shared";
+import { parseClientEnv, parseServerEnv, type ServerEnv } from "@nb/shared";
 
-export const serverEnv = parseServerEnv(process.env);
+let cachedServerEnv: ServerEnv | undefined;
+
+export const getServerEnv = (): ServerEnv => {
+  cachedServerEnv ??= parseServerEnv(process.env);
+  return cachedServerEnv;
+};
 
 export const clientEnv = parseClientEnv({
   NEXT_PUBLIC_POSTHOG_KEY: process.env.NEXT_PUBLIC_POSTHOG_KEY,
