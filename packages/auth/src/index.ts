@@ -1,4 +1,9 @@
 export const authModule = {
   name: "@nb/auth",
-  status: "scaffold"
+  status: "custom-auth-foundation",
+  betterAuthCompatible: true
 } as const;
+
+export * from "./service";
+export * from "./types";
+export * from "./providers";
