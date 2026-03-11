@@ -2,7 +2,7 @@ import { describe, expect, it, vi } from "vitest";
 
 vi.mock("../lib/auth", () => ({ requireUser: vi.fn(async () => ({ id: "u1" })) }));
 vi.mock("../features/ingredients/service", () => ({
-  searchIngredientSuggestions: vi.fn(async () => ([{ id: "1", type: "hop", displayName: "Citra", source: "catalog" }]))
+  searchIngredientSuggestions: vi.fn(async () => ([{ id: "1", type: "hop", displayName: "Citra", defaultUnit: "g", source: "catalog" }]))
 }));
 
 import { GET } from "../app/api/ingredients/search/route";

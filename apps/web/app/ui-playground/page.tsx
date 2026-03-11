@@ -9,10 +9,10 @@ import { captureTestError } from "../../lib/sentry";
 import { trackEvent } from "../../lib/analytics";
 
 const demoItems: IngredientSuggestionItem[] = [
-  { id: "1", type: "hop", displayName: "Citra", subtitle: "hop · Yakima Chief", manufacturer: "Yakima Chief", source: "catalog" },
-  { id: "2", type: "hop", displayName: "Mosaic", subtitle: "hop · Yakima Chief", manufacturer: "Yakima Chief", source: "catalog" },
-  { id: "3", type: "yeast", displayName: "SafAle US-05", subtitle: "yeast · Fermentis", manufacturer: "Fermentis", source: "catalog" },
-  { id: "4", type: "fermentable", displayName: "Pilsner Malt", subtitle: "fermentable · Weyermann", manufacturer: "Weyermann", source: "catalog" }
+  { id: "1", type: "hop", displayName: "Citra", subtitle: "hop · Yakima Chief", manufacturer: "Yakima Chief", defaultUnit: "g", source: "catalog" },
+  { id: "2", type: "hop", displayName: "Mosaic", subtitle: "hop · Yakima Chief", manufacturer: "Yakima Chief", defaultUnit: "g", source: "catalog" },
+  { id: "3", type: "yeast", displayName: "SafAle US-05", subtitle: "yeast · Fermentis", manufacturer: "Fermentis", defaultUnit: "pack", source: "catalog" },
+  { id: "4", type: "fermentable", displayName: "Pilsner Malt", subtitle: "fermentable · Weyermann", manufacturer: "Weyermann", defaultUnit: "g", source: "catalog" }
 ];
 
 export default function UiPlaygroundPage() {

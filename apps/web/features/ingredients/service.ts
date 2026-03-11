@@ -7,45 +7,85 @@ import { canModerateTransition, validateMergeInput } from "./workflows";
 
 type SearchParams = { q: string; type?: string; limit?: number };
 
-export const searchIngredientSuggestions = async (params: SearchParams): Promise<IngredientSuggestionItem[]> => {
-  const query = ingredientSearchQuerySchema.parse(params);
-  const normalized = normalizeIngredientName(query.q);
-  const likeQ = `%${query.q.trim()}%`;
+const isPgTrgmUnavailableError = (error: unknown) => (
+  typeof error === "object"
+  && error !== null
+  && "code" in error
+  && (error as { code?: string }).code === "42883"
+);
 
-  const rows = await db
+const loadIngredientSearchRows = async (
+  query: ReturnType<typeof ingredientSearchQuerySchema.parse>,
+  normalized: string,
+  likeQ: string,
+  useSimilarity: boolean
+) => {
+  const scoreExpression = useSimilarity
+    ? sql<number>`greatest(
+        similarity(${ingredientCatalogItems.displayName}, ${query.q}),
+        similarity(${ingredientCatalogItems.normalizedName}, ${normalized}),
+        similarity(coalesce(${ingredientCatalogItems.manufacturer}, ''), ${query.q})
+      )`
+    : sql<number>`0`;
+
+  const aliasSimilarityClause = useSimilarity
+    ? sql`or similarity(alias, ${normalized}) > 0.35`
+    : sql``;
+
+  const searchPredicates = [
+    ilike(ingredientCatalogItems.displayName, likeQ),
+    ilike(ingredientCatalogItems.normalizedName, `%${normalized}%`),
+    ilike(sql<string>`coalesce(${ingredientCatalogItems.manufacturer}, '')`, likeQ),
+    sql<boolean>`exists (
+      select 1
+      from jsonb_array_elements_text(${ingredientCatalogItems.aliases}) as alias
+      where alias ilike ${`%${normalized}%`}
+      ${aliasSimilarityClause}
+    )`
+  ];
+
+  if (useSimilarity) {
+    searchPredicates.push(
+      sql<boolean>`similarity(${ingredientCatalogItems.displayName}, ${query.q}) > 0.25`,
+      sql<boolean>`similarity(${ingredientCatalogItems.normalizedName}, ${normalized}) > 0.25`
+    );
+  }
+
+  const baseQuery = db
     .select({
       id: ingredientCatalogItems.id,
       type: ingredientCatalogItems.type,
       displayName: ingredientCatalogItems.displayName,
       manufacturer: ingredientCatalogItems.manufacturer,
+      defaultUnit: ingredientCatalogItems.defaultUnit,
       normalizedName: ingredientCatalogItems.normalizedName,
       aliases: ingredientCatalogItems.aliases,
-      score: sql<number>`greatest(
-        similarity(${ingredientCatalogItems.displayName}, ${query.q}),
-        similarity(${ingredientCatalogItems.normalizedName}, ${normalized}),
-        similarity(coalesce(${ingredientCatalogItems.manufacturer}, ''), ${query.q})
-      )`
+      score: scoreExpression
     })
     .from(ingredientCatalogItems)
     .where(and(
       eq(ingredientCatalogItems.status, "active"),
       query.type ? eq(ingredientCatalogItems.type, query.type as never) : undefined,
-      or(
-        ilike(ingredientCatalogItems.displayName, likeQ),
-        ilike(ingredientCatalogItems.normalizedName, `%${normalized}%`),
-        ilike(sql<string>`coalesce(${ingredientCatalogItems.manufacturer}, '')`, likeQ),
-        sql<boolean>`exists (
-          select 1
-          from jsonb_array_elements_text(${ingredientCatalogItems.aliases}) as alias
-          where alias ilike ${`%${normalized}%`}
-             or similarity(alias, ${normalized}) > 0.35
-        )`,
-        sql<boolean>`similarity(${ingredientCatalogItems.displayName}, ${query.q}) > 0.25`,
-        sql<boolean>`similarity(${ingredientCatalogItems.normalizedName}, ${normalized}) > 0.25`
-      )
-    ))
-    .orderBy(desc(sql`score`), asc(ingredientCatalogItems.displayName))
-    .limit(query.limit);
+      or(...searchPredicates)
+    ));
+
+  return useSimilarity
+    ? baseQuery.orderBy(desc(scoreExpression), asc(ingredientCatalogItems.displayName)).limit(query.limit)
+    : baseQuery.orderBy(asc(ingredientCatalogItems.displayName)).limit(query.limit);
+};
+
+export const searchIngredientSuggestions = async (params: SearchParams): Promise<IngredientSuggestionItem[]> => {
+  const query = ingredientSearchQuerySchema.parse(params);
+  const normalized = normalizeIngredientName(query.q);
+  const likeQ = `%${query.q.trim()}%`;
+
+  const rows = await loadIngredientSearchRows(query, normalized, likeQ, true).catch(async (error) => {
+    if (!isPgTrgmUnavailableError(error)) {
+      throw error;
+    }
+
+    return loadIngredientSearchRows(query, normalized, likeQ, false);
+  });
 
   return rows
     .map((row) => ({
@@ -54,6 +94,7 @@ export const searchIngredientSuggestions = async (params: SearchParams): Promise
       displayName: row.displayName,
       subtitle: row.manufacturer ? `${row.type} · ${row.manufacturer}` : row.type,
       manufacturer: row.manufacturer ?? undefined,
+      defaultUnit: row.defaultUnit,
       source: "catalog" as const,
       rankScore: scoreIngredientCandidate(query.q, {
         displayName: row.displayName,

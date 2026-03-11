@@ -34,5 +34,6 @@ export type IngredientSuggestionItem = {
   displayName: string;
   subtitle?: string;
   manufacturer?: string;
+  defaultUnit: string;
   source: "catalog";
 };

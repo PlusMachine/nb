@@ -1,10 +1,11 @@
 import { z } from "zod";
 
 import { ingredientTypes, type IngredientType } from "../ingredients/contracts";
+import { inventoryUnits, type InventoryUnit, type InventoryUnitDimension } from "./units";
 
 const baseInventoryFieldsSchema = z.object({
-  quantity: z.coerce.number().int().positive(),
-  unit: z.string().trim().min(1).max(32),
+  enteredQuantity: z.coerce.number().positive(),
+  enteredUnit: z.string().trim().toLowerCase().pipe(z.enum(inventoryUnits)),
   purchasedAt: z.coerce.date().optional().nullable(),
   freshnessDate: z.coerce.date().optional().nullable(),
   notes: z.string().trim().max(2000).optional().nullable()
@@ -34,8 +35,8 @@ export const inventorySourceLinkageSchema = z.object({
 });
 
 export const updateInventoryQuantitySchema = z.object({
-  quantity: z.coerce.number().int().positive(),
-  unit: z.string().trim().min(1).max(32)
+  enteredQuantity: z.coerce.number().positive(),
+  enteredUnit: z.string().trim().toLowerCase().pipe(z.enum(inventoryUnits))
 });
 
 export const inventoryListQuerySchema = z.object({
@@ -53,8 +54,11 @@ export type InventorySourceDto = {
 
 export type InventoryListItemDto = {
   id: string;
-  quantity: number;
-  unit: string;
+  enteredQuantity: number;
+  enteredUnit: InventoryUnit;
+  normalizedQuantity: number;
+  normalizedUnit: InventoryUnit;
+  unitDimension: InventoryUnitDimension;
   purchasedAt: Date | null;
   freshnessDate: Date | null;
   notes: string | null;

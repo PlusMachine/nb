@@ -4,7 +4,24 @@ const { tableRefs, mockState } = vi.hoisted(() => ({
   tableRefs: {
     ingredientCatalogItems: { name: "ingredientCatalogItems", id: "id", status: "status", type: "type", displayName: "displayName", normalizedName: "normalizedName" },
     userCustomIngredients: { name: "userCustomIngredients", id: "id", userId: "userId", type: "type", displayName: "displayName", normalizedName: "normalizedName" },
-    userIngredients: { name: "userIngredients", id: "id", userId: "userId", ingredientCatalogItemId: "ingredientCatalogItemId", userCustomIngredientId: "userCustomIngredientId", quantity: "quantity", unit: "unit", purchasedAt: "purchasedAt", freshnessDate: "freshnessDate", notes: "notes", archivedAt: "archivedAt", createdAt: "createdAt", updatedAt: "updatedAt" }
+    userIngredients: {
+      name: "userIngredients",
+      id: "id",
+      userId: "userId",
+      ingredientCatalogItemId: "ingredientCatalogItemId",
+      userCustomIngredientId: "userCustomIngredientId",
+      enteredQuantity: "enteredQuantity",
+      enteredUnit: "enteredUnit",
+      normalizedQuantity: "normalizedQuantity",
+      normalizedUnit: "normalizedUnit",
+      unitDimension: "unitDimension",
+      purchasedAt: "purchasedAt",
+      freshnessDate: "freshnessDate",
+      notes: "notes",
+      archivedAt: "archivedAt",
+      createdAt: "createdAt",
+      updatedAt: "updatedAt"
+    }
   },
   mockState: {
   idCounter: 0,
@@ -106,20 +123,42 @@ describe("inventory service", () => {
   });
 
   it("adds catalog ingredient to inventory", async () => {
-    mockState.catalogFindFirst.mockResolvedValueOnce({ id: "cat-1", status: "active" });
+    mockState.catalogFindFirst.mockResolvedValueOnce({ id: "cat-1", status: "active", type: "fermentable" });
 
-    const created = await addCatalogIngredientToInventory("u1", { ingredientCatalogItemId: "3d6eb945-8e2e-4af9-8d24-ef6c883b5dd0", quantity: 2, unit: "kg" });
+    const created = await addCatalogIngredientToInventory("u1", {
+      ingredientCatalogItemId: "3d6eb945-8e2e-4af9-8d24-ef6c883b5dd0",
+      enteredQuantity: 2,
+      enteredUnit: "kg"
+    });
 
     expect(created.ingredientCatalogItemId).toBe("3d6eb945-8e2e-4af9-8d24-ef6c883b5dd0");
-    expect(mockState.inserted[0]?.values.userId).toBe("u1");
+    expect(mockState.inserted[0]?.values).toMatchObject({
+      userId: "u1",
+      enteredQuantity: 2,
+      enteredUnit: "kg",
+      normalizedQuantity: 2000,
+      normalizedUnit: "g",
+      unitDimension: "weight"
+    });
   });
 
   it("adds custom ingredient to inventory with ownership check", async () => {
-    mockState.customFindFirst.mockResolvedValueOnce({ id: "custom-1", userId: "u1" });
+    mockState.customFindFirst.mockResolvedValueOnce({ id: "custom-1", userId: "u1", type: "yeast" });
 
-    await addCustomIngredientToInventory("u1", { userCustomIngredientId: "3d6eb945-8e2e-4af9-8d24-ef6c883b5dd0", quantity: 500, unit: "g" });
+    await addCustomIngredientToInventory("u1", {
+      userCustomIngredientId: "3d6eb945-8e2e-4af9-8d24-ef6c883b5dd0",
+      enteredQuantity: 1,
+      enteredUnit: "pack"
+    });
 
     expect(mockState.inserted[0]?.table).toBe("userIngredients");
+    expect(mockState.inserted[0]?.values).toMatchObject({
+      enteredQuantity: 1,
+      enteredUnit: "pack",
+      normalizedQuantity: 1,
+      normalizedUnit: "pack",
+      unitDimension: "count"
+    });
   });
 
   it("rejects invalid source linkage (both or none)", () => {
@@ -128,12 +167,41 @@ describe("inventory service", () => {
   });
 
   it("updates inventory quantity", async () => {
-    mockState.inventoryFindFirst.mockResolvedValueOnce({ id: "inv-1", userId: "u1" });
+    mockState.inventoryFindFirst.mockResolvedValueOnce({
+      id: "inv-1",
+      userId: "u1",
+      ingredientCatalogItemId: "cat-1",
+      userCustomIngredientId: null
+    });
+    mockState.catalogFindFirst.mockResolvedValueOnce({ id: "cat-1", status: "active", type: "hop" });
 
-    await updateInventoryQuantity("u1", "inv-1", { quantity: 3, unit: "kg" });
+    await updateInventoryQuantity("u1", "inv-1", { enteredQuantity: 3, enteredUnit: "oz" });
 
-    expect(mockState.updates[0]?.set.quantity).toBe(3);
-    expect(mockState.updates[0]?.set.unit).toBe("kg");
+    expect(mockState.updates[0]?.set).toMatchObject({
+      enteredQuantity: 3,
+      enteredUnit: "oz",
+      normalizedQuantity: 85.049,
+      normalizedUnit: "g",
+      unitDimension: "weight"
+    });
+  });
+
+  it("rejects unsupported units", async () => {
+    await expect(addCatalogIngredientToInventory("u1", {
+      ingredientCatalogItemId: "3d6eb945-8e2e-4af9-8d24-ef6c883b5dd0",
+      enteredQuantity: 1,
+      enteredUnit: "stone"
+    })).rejects.toThrow();
+  });
+
+  it("rejects units incompatible with ingredient type", async () => {
+    mockState.catalogFindFirst.mockResolvedValueOnce({ id: "cat-1", status: "active", type: "hop" });
+
+    await expect(addCatalogIngredientToInventory("u1", {
+      ingredientCatalogItemId: "3d6eb945-8e2e-4af9-8d24-ef6c883b5dd0",
+      enteredQuantity: 1,
+      enteredUnit: "pack"
+    })).rejects.toThrowError("INCOMPATIBLE_UNIT");
   });
 
   it("archives inventory item", async () => {
@@ -147,19 +215,36 @@ describe("inventory service", () => {
   it("enforces ownership checks for inventory updates", async () => {
     mockState.inventoryFindFirst.mockResolvedValueOnce(null);
 
-    await expect(updateInventoryQuantity("u1", "inv-foreign", { quantity: 1, unit: "kg" })).rejects.toThrowError("NOT_FOUND");
+    await expect(updateInventoryQuantity("u1", "inv-foreign", { enteredQuantity: 1, enteredUnit: "kg" })).rejects.toThrowError("NOT_FOUND");
   });
 
   it("enforces ownership checks for custom ingredient usage", async () => {
     mockState.customFindFirst.mockResolvedValueOnce(null);
 
-    await expect(addCustomIngredientToInventory("u1", { userCustomIngredientId: "3d6eb945-8e2e-4af9-8d24-ef6c883b5dd0", quantity: 1, unit: "kg" })).rejects.toThrowError("CUSTOM_INGREDIENT_NOT_FOUND");
+    await expect(addCustomIngredientToInventory("u1", {
+      userCustomIngredientId: "3d6eb945-8e2e-4af9-8d24-ef6c883b5dd0",
+      enteredQuantity: 1,
+      enteredUnit: "kg"
+    })).rejects.toThrowError("CUSTOM_INGREDIENT_NOT_FOUND");
   });
 
   it("lists inventory for user", async () => {
     mockState.selectRows = [
       {
-        inventory: { id: "inv-1", quantity: 2, unit: "kg", purchasedAt: null, freshnessDate: null, notes: null, archivedAt: null, createdAt: new Date("2025-01-01"), updatedAt: new Date("2025-01-01") },
+        inventory: {
+          id: "inv-1",
+          enteredQuantity: 2,
+          enteredUnit: "kg",
+          normalizedQuantity: 2000,
+          normalizedUnit: "g",
+          unitDimension: "weight",
+          purchasedAt: null,
+          freshnessDate: null,
+          notes: null,
+          archivedAt: null,
+          createdAt: new Date("2025-01-01"),
+          updatedAt: new Date("2025-01-01")
+        },
         catalog: { id: "cat-1", type: "fermentable", displayName: "Pilsner Malt", normalizedName: "pilsner malt" },
         custom: null
       }
@@ -169,6 +254,13 @@ describe("inventory service", () => {
 
     expect(items).toHaveLength(1);
     expect(items[0]?.source.sourceKind).toBe("catalog");
+    expect(items[0]).toMatchObject({
+      enteredQuantity: 2,
+      enteredUnit: "kg",
+      normalizedQuantity: 2000,
+      normalizedUnit: "g",
+      unitDimension: "weight"
+    });
   });
 
   it("builds summaries", async () => {

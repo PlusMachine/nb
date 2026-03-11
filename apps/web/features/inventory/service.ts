@@ -22,6 +22,8 @@ import {
   updateInventoryQuantitySchema
 } from "./contracts";
 import { normalizeIngredientName } from "../ingredients/normalization";
+import { normalizeInventoryMeasurement, parseInventoryUnit } from "./units";
+import type { IngredientType } from "../ingredients/contracts";
 
 const ensureSourceLinkage = (ingredientCatalogItemId?: string | null, userCustomIngredientId?: string | null) => {
   const result = inventorySourceLinkageSchema.safeParse({ ingredientCatalogItemId, userCustomIngredientId });
@@ -62,10 +64,19 @@ const mapInventoryRow = (row: {
     throw new Error("INVALID_SOURCE_LINKAGE");
   }
 
+  const enteredUnit = parseInventoryUnit(row.inventory.enteredUnit);
+  const normalizedUnit = parseInventoryUnit(row.inventory.normalizedUnit);
+  if (!enteredUnit || !normalizedUnit) {
+    throw new Error("INVALID_INVENTORY_UNIT");
+  }
+
   return {
     id: row.inventory.id,
-    quantity: row.inventory.quantity,
-    unit: row.inventory.unit,
+    enteredQuantity: row.inventory.enteredQuantity,
+    enteredUnit,
+    normalizedQuantity: row.inventory.normalizedQuantity,
+    normalizedUnit,
+    unitDimension: row.inventory.unitDimension,
     purchasedAt: row.inventory.purchasedAt,
     freshnessDate: row.inventory.freshnessDate,
     notes: row.inventory.notes,
@@ -121,6 +132,27 @@ const ensureOwnedInventoryItem = async (userId: string, inventoryItemId: string)
   return item;
 };
 
+const buildStoredMeasurement = (ingredientType: IngredientType, payload: { enteredQuantity: number; enteredUnit: string }) => {
+  return normalizeInventoryMeasurement(ingredientType, payload.enteredQuantity, payload.enteredUnit);
+};
+
+const resolveInventoryIngredientType = async (
+  userId: string,
+  item: typeof userIngredients.$inferSelect
+): Promise<IngredientType> => {
+  if (item.ingredientCatalogItemId) {
+    const catalogItem = await ensureCatalogIngredientExists(item.ingredientCatalogItemId);
+    return catalogItem.type;
+  }
+
+  if (item.userCustomIngredientId) {
+    const customIngredient = await ensureOwnedCustomIngredient(userId, item.userCustomIngredientId);
+    return customIngredient.type;
+  }
+
+  throw new Error("INVALID_SOURCE_LINKAGE");
+};
+
 export const createUserCustomIngredient = async (userId: string, payload: unknown) => {
   const parsed = createUserCustomIngredientSchema.parse(payload);
   const normalizedName = normalizeIngredientName(parsed.displayName);
@@ -140,14 +172,18 @@ export const createUserCustomIngredient = async (userId: string, payload: unknow
 export const addCatalogIngredientToInventory = async (userId: string, payload: unknown) => {
   const parsed = addCatalogInventoryItemSchema.parse(payload);
   ensureSourceLinkage(parsed.ingredientCatalogItemId, null);
-  await ensureCatalogIngredientExists(parsed.ingredientCatalogItemId);
+  const catalogItem = await ensureCatalogIngredientExists(parsed.ingredientCatalogItemId);
+  const measurement = buildStoredMeasurement(catalogItem.type, parsed);
 
   const [created] = await db.insert(userIngredients).values({
     userId,
     ingredientCatalogItemId: parsed.ingredientCatalogItemId,
     userCustomIngredientId: null,
-    quantity: parsed.quantity,
-    unit: parsed.unit,
+    enteredQuantity: measurement.enteredQuantity,
+    enteredUnit: measurement.enteredUnit,
+    normalizedQuantity: measurement.normalizedQuantity,
+    normalizedUnit: measurement.normalizedUnit,
+    unitDimension: measurement.unitDimension,
     purchasedAt: parsed.purchasedAt ?? null,
     freshnessDate: parsed.freshnessDate ?? null,
     notes: parsed.notes ?? null
@@ -159,14 +195,18 @@ export const addCatalogIngredientToInventory = async (userId: string, payload: u
 export const addCustomIngredientToInventory = async (userId: string, payload: unknown) => {
   const parsed = addCustomInventoryItemSchema.parse(payload);
   ensureSourceLinkage(null, parsed.userCustomIngredientId);
-  await ensureOwnedCustomIngredient(userId, parsed.userCustomIngredientId);
+  const customIngredient = await ensureOwnedCustomIngredient(userId, parsed.userCustomIngredientId);
+  const measurement = buildStoredMeasurement(customIngredient.type, parsed);
 
   const [created] = await db.insert(userIngredients).values({
     userId,
     ingredientCatalogItemId: null,
     userCustomIngredientId: parsed.userCustomIngredientId,
-    quantity: parsed.quantity,
-    unit: parsed.unit,
+    enteredQuantity: measurement.enteredQuantity,
+    enteredUnit: measurement.enteredUnit,
+    normalizedQuantity: measurement.normalizedQuantity,
+    normalizedUnit: measurement.normalizedUnit,
+    unitDimension: measurement.unitDimension,
     purchasedAt: parsed.purchasedAt ?? null,
     freshnessDate: parsed.freshnessDate ?? null,
     notes: parsed.notes ?? null
@@ -177,11 +217,16 @@ export const addCustomIngredientToInventory = async (userId: string, payload: un
 
 export const updateInventoryQuantity = async (userId: string, inventoryItemId: string, payload: unknown) => {
   const parsed = updateInventoryQuantitySchema.parse(payload);
-  await ensureOwnedInventoryItem(userId, inventoryItemId);
+  const inventoryItem = await ensureOwnedInventoryItem(userId, inventoryItemId);
+  const ingredientType = await resolveInventoryIngredientType(userId, inventoryItem);
+  const measurement = buildStoredMeasurement(ingredientType, parsed);
 
   const [updated] = await db.update(userIngredients).set({
-    quantity: parsed.quantity,
-    unit: parsed.unit,
+    enteredQuantity: measurement.enteredQuantity,
+    enteredUnit: measurement.enteredUnit,
+    normalizedQuantity: measurement.normalizedQuantity,
+    normalizedUnit: measurement.normalizedUnit,
+    unitDimension: measurement.unitDimension,
     updatedAt: new Date()
   }).where(eq(userIngredients.id, inventoryItemId)).returning();
 

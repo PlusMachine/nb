@@ -3,7 +3,11 @@ import { sql } from "drizzle-orm";
 import { db, pool } from "../src/client";
 
 const run = async () => {
-  await db.execute(sql`DROP SCHEMA public CASCADE; CREATE SCHEMA public;`);
+  await db.execute(sql`
+    DROP SCHEMA IF EXISTS drizzle CASCADE;
+    DROP SCHEMA public CASCADE;
+    CREATE SCHEMA public;
+  `);
   console.log("Database reset complete. Run db:migrate next.");
   await pool.end();
 };

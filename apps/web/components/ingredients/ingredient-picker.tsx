@@ -9,6 +9,7 @@ type Props = {
   value?: string;
   type?: IngredientType;
   onSelect: (item: IngredientSuggestionItem) => void;
+  onValueChange?: (value: string) => void;
   placeholder?: string;
   emptyCta?: React.ReactNode;
   searchIngredients?: (params: { q: string; type?: IngredientType; limit: number; signal: AbortSignal }) => Promise<IngredientSuggestionItem[]>;
@@ -16,11 +17,17 @@ type Props = {
 
 const isAbortError = (error: unknown) => error instanceof DOMException && error.name === "AbortError";
 
-const defaultSearchIngredients = async ({ q, type, limit, signal }: { q: string; type?: IngredientType; limit: number; signal: AbortSignal }) => {
-  const params = new URLSearchParams({ q, limit: String(limit) });
+export const buildIngredientSearchParams = ({ q, type, limit }: { q: string; type?: IngredientType; limit: number }) => {
+  const params = new URLSearchParams({ q: q.trim(), limit: String(limit) });
   if (type) {
     params.set("type", type);
   }
+
+  return params;
+};
+
+const defaultSearchIngredients = async ({ q, type, limit, signal }: { q: string; type?: IngredientType; limit: number; signal: AbortSignal }) => {
+  const params = buildIngredientSearchParams({ q, type, limit });
   const response = await fetch(`/api/ingredients/search?${params.toString()}`, { signal });
   if (!response.ok) {
     return [];
@@ -33,6 +40,7 @@ export const IngredientPicker = ({
   value,
   type,
   onSelect,
+  onValueChange,
   placeholder = "Search ingredient",
   emptyCta,
   searchIngredients = defaultSearchIngredients
@@ -40,6 +48,10 @@ export const IngredientPicker = ({
   const [query, setQuery] = useState(value ?? "");
   const [items, setItems] = useState<IngredientSuggestionItem[]>([]);
   const [activeIndex, setActiveIndex] = useState(0);
+
+  useEffect(() => {
+    setQuery(value ?? "");
+  }, [value]);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -86,7 +98,10 @@ export const IngredientPicker = ({
     <div className="space-y-2">
       <input
         value={query}
-        onChange={(event) => setQuery(event.target.value)}
+        onChange={(event) => {
+          setQuery(event.target.value);
+          onValueChange?.(event.target.value);
+        }}
         placeholder={placeholder}
         className="h-10 w-full rounded-md border border-zinc-200 px-3 text-sm"
         onKeyDown={(event) => {

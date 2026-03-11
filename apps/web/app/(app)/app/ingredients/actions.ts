@@ -54,6 +54,12 @@ const mapError = (error: unknown): AddIngredientResult => {
     if (error.message === "CUSTOM_INGREDIENT_NOT_FOUND") {
       return { ok: false, message: "Собственный ингредиент не найден или недоступен." };
     }
+    if (error.message === "INVALID_UNIT") {
+      return { ok: false, message: "Единица измерения не поддерживается." };
+    }
+    if (error.message === "INCOMPATIBLE_UNIT") {
+      return { ok: false, message: "Эта единица измерения не подходит для выбранного типа ингредиента." };
+    }
     return { ok: false, message: "Не удалось сохранить ингредиент. Попробуйте еще раз." };
   }
 
@@ -65,8 +71,8 @@ export const addCatalogIngredientAction = async (_prevState: AddIngredientResult
     const user = await requireUser();
     const payload = addCatalogInventoryItemSchema.parse({
       ingredientCatalogItemId: String(formData.get("ingredientCatalogItemId") ?? ""),
-      quantity: String(formData.get("quantity") ?? ""),
-      unit: String(formData.get("unit") ?? ""),
+      enteredQuantity: String(formData.get("enteredQuantity") ?? ""),
+      enteredUnit: String(formData.get("enteredUnit") ?? ""),
       purchasedAt: parseOptionalDate(formData.get("purchasedAt") as string | null),
       freshnessDate: parseOptionalDate(formData.get("freshnessDate") as string | null),
       notes: String(formData.get("notes") ?? "").trim() || null
@@ -95,8 +101,8 @@ export const addCustomIngredientAction = async (_prevState: AddIngredientResult 
 
     const inventoryPayload = addCustomInventoryItemSchema.parse({
       userCustomIngredientId: customIngredient.id,
-      quantity: String(formData.get("quantity") ?? ""),
-      unit: String(formData.get("unit") ?? ""),
+      enteredQuantity: String(formData.get("enteredQuantity") ?? ""),
+      enteredUnit: String(formData.get("enteredUnit") ?? ""),
       purchasedAt: parseOptionalDate(formData.get("purchasedAt") as string | null),
       freshnessDate: parseOptionalDate(formData.get("freshnessDate") as string | null),
       notes: String(formData.get("notes") ?? "").trim() || null

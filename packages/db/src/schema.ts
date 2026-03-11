@@ -1,5 +1,5 @@
 import { relations } from "drizzle-orm";
-import { type AnyPgColumn, boolean, index, integer, jsonb, pgEnum, pgTable, text, timestamp, uniqueIndex, uuid, varchar } from "drizzle-orm/pg-core";
+import { type AnyPgColumn, boolean, doublePrecision, index, integer, jsonb, pgEnum, pgTable, text, timestamp, uniqueIndex, uuid, varchar } from "drizzle-orm/pg-core";
 
 export const userRoleEnum = pgEnum("user_role", ["user", "editor", "moderator", "admin"]);
 export const verificationTypeEnum = pgEnum("verification_type", ["otp", "magic_link", "password_reset"]);
@@ -8,6 +8,7 @@ export const ingredientStatusEnum = pgEnum("ingredient_status", ["draft", "activ
 export const ingredientVisibilityEnum = pgEnum("ingredient_visibility", ["public", "internal"]);
 export const proposedIngredientStatusEnum = pgEnum("proposed_ingredient_status", ["pending", "approved", "rejected", "merged"]);
 export const userCustomIngredientVisibilityEnum = pgEnum("user_custom_ingredient_visibility", ["private", "shared"]);
+export const inventoryUnitDimensionEnum = pgEnum("inventory_unit_dimension", ["weight", "volume", "count"]);
 
 export const users = pgTable("users", {
   id: uuid("id").defaultRandom().primaryKey(),
@@ -148,8 +149,11 @@ export const userIngredients = pgTable("user_ingredients", {
   userId: uuid("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
   ingredientCatalogItemId: uuid("ingredient_catalog_item_id").references(() => ingredientCatalogItems.id, { onDelete: "set null" }),
   userCustomIngredientId: uuid("user_custom_ingredient_id").references(() => userCustomIngredients.id, { onDelete: "set null" }),
-  quantity: integer("quantity").notNull(),
-  unit: varchar("unit", { length: 32 }).notNull(),
+  enteredQuantity: doublePrecision("entered_quantity").notNull(),
+  enteredUnit: varchar("entered_unit", { length: 32 }).notNull(),
+  normalizedQuantity: doublePrecision("normalized_quantity").notNull(),
+  normalizedUnit: varchar("normalized_unit", { length: 32 }).notNull(),
+  unitDimension: inventoryUnitDimensionEnum("unit_dimension").notNull(),
   purchasedAt: timestamp("purchased_at", { withTimezone: true }),
   freshnessDate: timestamp("freshness_date", { withTimezone: true }),
   notes: text("notes"),

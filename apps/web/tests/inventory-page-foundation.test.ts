@@ -1,6 +1,10 @@
 import React from "react";
 import { renderToStaticMarkup } from "react-dom/server";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
+
+vi.mock("../components/inventory/add-ingredient-trigger", () => ({
+  AddIngredientTrigger: () => React.createElement("button", { type: "button" }, "Добавить ингредиент")
+}));
 
 import { GroupedInventoryList } from "../components/inventory/grouped-inventory-list";
 import { InventoryEmptyState } from "../components/inventory/inventory-empty-state";
@@ -26,8 +30,11 @@ const baseSummary: InventorySummaryDto = {
 const items: InventoryListItemDto[] = [
   {
     id: "inv-1",
-    quantity: 2,
-    unit: "kg",
+    enteredQuantity: 2,
+    enteredUnit: "kg",
+    normalizedQuantity: 2000,
+    normalizedUnit: "g",
+    unitDimension: "weight",
     purchasedAt: null,
     freshnessDate: null,
     notes: null,
@@ -44,8 +51,11 @@ const items: InventoryListItemDto[] = [
   },
   {
     id: "inv-2",
-    quantity: 150,
-    unit: "g",
+    enteredQuantity: 150,
+    enteredUnit: "g",
+    normalizedQuantity: 150,
+    normalizedUnit: "g",
+    unitDimension: "weight",
     purchasedAt: null,
     freshnessDate: null,
     notes: "Для IPA",

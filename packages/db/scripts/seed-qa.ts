@@ -231,12 +231,65 @@ const run = async () => {
 
   await db.delete(userIngredients).where(inArray(userIngredients.userId, [qaUser.id, qaAdmin.id]));
   await db.insert(userIngredients).values([
-    { userId: qaUser.id, ingredientCatalogItemId: pilsnerMalt.id, quantity: 6000, unit: "g", notes: "Base malt for lagers and Belgian styles" },
-    { userId: qaUser.id, ingredientCatalogItemId: paleAleMalt.id, quantity: 5000, unit: "g", notes: "Base malt for pale ale" },
-    { userId: qaUser.id, ingredientCatalogItemId: citra.id, quantity: 150, unit: "g", notes: "Aroma additions" },
-    { userId: qaUser.id, ingredientCatalogItemId: us05.id, quantity: 2, unit: "pack" },
-    { userId: qaAdmin.id, ingredientCatalogItemId: m21.id, quantity: 1, unit: "pack", notes: "Belgian wit QA sample" },
-    { userId: qaAdmin.id, ingredientCatalogItemId: saaz.id, quantity: 80, unit: "g", notes: "Admin QA account stock" }
+    {
+      userId: qaUser.id,
+      ingredientCatalogItemId: pilsnerMalt.id,
+      enteredQuantity: 6000,
+      enteredUnit: "g",
+      normalizedQuantity: 6000,
+      normalizedUnit: "g",
+      unitDimension: "weight",
+      notes: "Base malt for lagers and Belgian styles"
+    },
+    {
+      userId: qaUser.id,
+      ingredientCatalogItemId: paleAleMalt.id,
+      enteredQuantity: 5000,
+      enteredUnit: "g",
+      normalizedQuantity: 5000,
+      normalizedUnit: "g",
+      unitDimension: "weight",
+      notes: "Base malt for pale ale"
+    },
+    {
+      userId: qaUser.id,
+      ingredientCatalogItemId: citra.id,
+      enteredQuantity: 150,
+      enteredUnit: "g",
+      normalizedQuantity: 150,
+      normalizedUnit: "g",
+      unitDimension: "weight",
+      notes: "Aroma additions"
+    },
+    {
+      userId: qaUser.id,
+      ingredientCatalogItemId: us05.id,
+      enteredQuantity: 2,
+      enteredUnit: "pack",
+      normalizedQuantity: 2,
+      normalizedUnit: "pack",
+      unitDimension: "count"
+    },
+    {
+      userId: qaAdmin.id,
+      ingredientCatalogItemId: m21.id,
+      enteredQuantity: 1,
+      enteredUnit: "pack",
+      normalizedQuantity: 1,
+      normalizedUnit: "pack",
+      unitDimension: "count",
+      notes: "Belgian wit QA sample"
+    },
+    {
+      userId: qaAdmin.id,
+      ingredientCatalogItemId: saaz.id,
+      enteredQuantity: 80,
+      enteredUnit: "g",
+      normalizedQuantity: 80,
+      normalizedUnit: "g",
+      unitDimension: "weight",
+      notes: "Admin QA account stock"
+    }
   ]);
 
   console.log(`QA seed complete: ${dbUsers.length} users, ${dbCatalogItems.length} catalog items, inventory reset for qa.user/qa.admin.`);

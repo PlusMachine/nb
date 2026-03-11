@@ -1,9 +1,10 @@
 "use client";
 
 import React from "react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import type { IngredientType } from "@/features/ingredients/contracts";
+import { getDefaultInventoryUnit, getInventoryUnitOptions, inventoryUnitLabels, type InventoryUnit } from "@/features/inventory/units";
 
 type Props = {
   type: IngredientType;
@@ -12,8 +13,8 @@ type Props = {
   onSubmit: (payload: {
     type: IngredientType;
     displayName: string;
-    quantity: string;
-    unit: string;
+    enteredQuantity: string;
+    enteredUnit: InventoryUnit;
     purchasedAt: string;
     freshnessDate: string;
     notes: string;
@@ -22,18 +23,23 @@ type Props = {
 
 export function CustomIngredientForm({ type, pending, fieldErrors, onSubmit }: Props) {
   const [displayName, setDisplayName] = useState("");
-  const [quantity, setQuantity] = useState("");
-  const [unit, setUnit] = useState("g");
+  const [enteredQuantity, setEnteredQuantity] = useState("");
+  const [enteredUnit, setEnteredUnit] = useState<InventoryUnit>(getDefaultInventoryUnit(type));
   const [purchasedAt, setPurchasedAt] = useState("");
   const [freshnessDate, setFreshnessDate] = useState("");
   const [notes, setNotes] = useState("");
+  const unitOptions = getInventoryUnitOptions(type);
+
+  useEffect(() => {
+    setEnteredUnit(getDefaultInventoryUnit(type));
+  }, [type]);
 
   return (
     <form
       className="space-y-3"
       onSubmit={async (event) => {
         event.preventDefault();
-        await onSubmit({ type, displayName, quantity, unit, purchasedAt, freshnessDate, notes });
+        await onSubmit({ type, displayName, enteredQuantity, enteredUnit, purchasedAt, freshnessDate, notes });
       }}
     >
       <label className="block text-sm">Название ингредиента
@@ -43,12 +49,22 @@ export function CustomIngredientForm({ type, pending, fieldErrors, onSubmit }: P
 
       <div className="grid grid-cols-2 gap-3">
         <label className="text-sm">Количество
-          <input className="mt-1 w-full rounded-md border px-2 py-2" value={quantity} onChange={(e) => setQuantity(e.target.value)} inputMode="numeric" />
-          {fieldErrors?.quantity && <span className="text-xs text-red-600">{fieldErrors.quantity}</span>}
+          <input
+            type="number"
+            min="0"
+            step="0.001"
+            className="mt-1 w-full rounded-md border px-2 py-2"
+            value={enteredQuantity}
+            onChange={(e) => setEnteredQuantity(e.target.value)}
+            inputMode="decimal"
+          />
+          {fieldErrors?.enteredQuantity && <span className="text-xs text-red-600">{fieldErrors.enteredQuantity}</span>}
         </label>
         <label className="text-sm">Ед. изм.
-          <input className="mt-1 w-full rounded-md border px-2 py-2" value={unit} onChange={(e) => setUnit(e.target.value)} />
-          {fieldErrors?.unit && <span className="text-xs text-red-600">{fieldErrors.unit}</span>}
+          <select className="mt-1 w-full rounded-md border px-2 py-2" value={enteredUnit} onChange={(e) => setEnteredUnit(e.target.value as InventoryUnit)}>
+            {unitOptions.map((unit) => <option key={unit} value={unit}>{inventoryUnitLabels[unit]}</option>)}
+          </select>
+          {fieldErrors?.enteredUnit && <span className="text-xs text-red-600">{fieldErrors.enteredUnit}</span>}
         </label>
         <label className="text-sm">Дата покупки
           <input type="date" className="mt-1 w-full rounded-md border px-2 py-2" value={purchasedAt} onChange={(e) => setPurchasedAt(e.target.value)} />
