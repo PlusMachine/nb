@@ -5,6 +5,7 @@ export default function AppZonePage() {
     <div className="space-y-2 rounded-lg border p-4">
       <p>Feature modules will be mounted here.</p>
       <div className="flex gap-3 text-sm underline">
+        <Link href="/app/ingredients">Мои ингредиенты</Link>
         <Link href="/profile">Профиль</Link>
         <Link href="/settings">Настройки</Link>
       </div>

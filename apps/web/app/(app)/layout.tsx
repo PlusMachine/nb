@@ -11,6 +11,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
         <span>App zone · {user.email}</span>
         <nav className="flex gap-3">
           <Link href="/app">Home</Link>
+          <Link href="/app/ingredients">Мои ингредиенты</Link>
           <Link href="/profile">Profile</Link>
           <Link href="/settings">Settings</Link>
         </nav>
