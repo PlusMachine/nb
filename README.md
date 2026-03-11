@@ -21,7 +21,8 @@ MVP bootstrap for a modular-monolith homebrewing platform.
 2. `npm install`
 3. `docker compose up -d`
 4. `npm run db:migrate`
-5. `npm run dev`
+5. `npm run db:seed`
+6. `npm run dev`
 
 ## Commands
 - `npm run dev`
@@ -57,7 +58,7 @@ npm run seed:qa
 ```
 Seeds/updates:
 - QA users: admin, moderator, editor, user
-- ingredient catalog examples (fermentables/hops/yeast/sugar)
+- ingredient catalog examples (fermentables/hops/yeast/sugar/adjuncts/finings/misc), including Pilsner Malt, Pale Ale Malt, SafAle US-05, Mangrove Jack's M21 and more
 - inventory items for `qa.user@localhost` and `qa.admin@localhost`
 
 > `npm run db:seed` now runs the same QA seed utility.
