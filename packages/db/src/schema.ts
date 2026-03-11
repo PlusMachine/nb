@@ -1,8 +1,12 @@
 import { relations } from "drizzle-orm";
-import { boolean, index, integer, pgEnum, pgTable, text, timestamp, uniqueIndex, uuid, varchar } from "drizzle-orm/pg-core";
+import { type AnyPgColumn, boolean, index, integer, jsonb, pgEnum, pgTable, text, timestamp, uniqueIndex, uuid, varchar } from "drizzle-orm/pg-core";
 
 export const userRoleEnum = pgEnum("user_role", ["user", "editor", "moderator", "admin"]);
 export const verificationTypeEnum = pgEnum("verification_type", ["otp", "magic_link", "password_reset"]);
+export const ingredientTypeEnum = pgEnum("ingredient_type", ["fermentable", "hop", "yeast", "sugar", "adjunct", "fining", "misc"]);
+export const ingredientStatusEnum = pgEnum("ingredient_status", ["draft", "active", "archived", "merged"]);
+export const ingredientVisibilityEnum = pgEnum("ingredient_visibility", ["public", "internal"]);
+export const proposedIngredientStatusEnum = pgEnum("proposed_ingredient_status", ["pending", "approved", "rejected", "merged"]);
 
 export const users = pgTable("users", {
   id: uuid("id").defaultRandom().primaryKey(),
@@ -77,6 +81,51 @@ export const systemEvents = pgTable("system_events", {
   kind: varchar("kind", { length: 80 }).notNull(),
   createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull()
 });
+
+export const ingredientCatalogItems = pgTable("ingredient_catalog_items", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  type: ingredientTypeEnum("type").notNull(),
+  subtype: varchar("subtype", { length: 80 }),
+  displayName: varchar("display_name", { length: 180 }).notNull(),
+  normalizedName: varchar("normalized_name", { length: 220 }).notNull(),
+  aliases: jsonb("aliases").$type<string[]>().default([]).notNull(),
+  manufacturer: varchar("manufacturer", { length: 140 }),
+  country: varchar("country", { length: 80 }),
+  description: text("description"),
+  defaultUnit: varchar("default_unit", { length: 32 }).notNull(),
+  properties: jsonb("properties").$type<Record<string, unknown>>().default({}).notNull(),
+  status: ingredientStatusEnum("status").default("active").notNull(),
+  visibility: ingredientVisibilityEnum("visibility").default("public").notNull(),
+  mergedIntoId: uuid("merged_into_id").references((): AnyPgColumn => ingredientCatalogItems.id, { onDelete: "set null" }),
+  createdBy: uuid("created_by").references(() => users.id, { onDelete: "set null" }),
+  updatedBy: uuid("updated_by").references(() => users.id, { onDelete: "set null" }),
+  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull()
+}, (table) => ({
+  normalizedNameIdx: index("ingredient_catalog_items_normalized_name_idx").on(table.normalizedName),
+  typeStatusIdx: index("ingredient_catalog_items_type_status_idx").on(table.type, table.status),
+  statusIdx: index("ingredient_catalog_items_status_idx").on(table.status),
+  mergedIntoIdx: index("ingredient_catalog_items_merged_into_idx").on(table.mergedIntoId),
+  uniqueNamePerTypeIdx: uniqueIndex("ingredient_catalog_items_type_name_uidx").on(table.type, table.normalizedName)
+}));
+
+export const proposedIngredients = pgTable("proposed_ingredients", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  submittedByUserId: uuid("submitted_by_user_id").references(() => users.id, { onDelete: "set null" }),
+  sourcePayload: jsonb("source_payload").$type<Record<string, unknown>>().default({}).notNull(),
+  sourceType: varchar("source_type", { length: 48 }).notNull(),
+  sourceDisplayName: varchar("source_display_name", { length: 180 }).notNull(),
+  normalizedName: varchar("normalized_name", { length: 220 }).notNull(),
+  status: proposedIngredientStatusEnum("status").default("pending").notNull(),
+  targetIngredientId: uuid("target_ingredient_id").references(() => ingredientCatalogItems.id, { onDelete: "set null" }),
+  moderatorId: uuid("moderator_id").references(() => users.id, { onDelete: "set null" }),
+  resolutionNote: text("resolution_note"),
+  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull()
+}, (table) => ({
+  statusCreatedIdx: index("proposed_ingredients_status_created_idx").on(table.status, table.createdAt),
+  normalizedNameIdx: index("proposed_ingredients_normalized_name_idx").on(table.normalizedName)
+}));
 
 export const usersRelations = relations(users, ({ many }) => ({
   sessions: many(sessions),

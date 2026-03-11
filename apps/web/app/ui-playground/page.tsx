@@ -1,13 +1,64 @@
 "use client";
 
+import { useMemo, useState } from "react";
+
+import { IngredientPicker } from "@/components/ingredients/ingredient-picker";
+import type { IngredientSuggestionItem, IngredientType } from "@/features/ingredients/contracts";
 import { Button, Card, DialogScaffold, Input, SelectScaffold, Table, TBody, TD, TH, THead, TR, Textarea, ToastScaffold } from "@nb/ui";
 import { captureTestError } from "../../lib/sentry";
 import { trackEvent } from "../../lib/analytics";
 
+const demoItems: IngredientSuggestionItem[] = [
+  { id: "1", type: "hop", displayName: "Citra", subtitle: "hop · Yakima Chief", manufacturer: "Yakima Chief", source: "catalog" },
+  { id: "2", type: "hop", displayName: "Mosaic", subtitle: "hop · Yakima Chief", manufacturer: "Yakima Chief", source: "catalog" },
+  { id: "3", type: "yeast", displayName: "SafAle US-05", subtitle: "yeast · Fermentis", manufacturer: "Fermentis", source: "catalog" },
+  { id: "4", type: "fermentable", displayName: "Pilsner Malt", subtitle: "fermentable · Weyermann", manufacturer: "Weyermann", source: "catalog" }
+];
+
 export default function UiPlaygroundPage() {
+  const [selected, setSelected] = useState<IngredientSuggestionItem | null>(null);
+  const [pickerType, setPickerType] = useState<IngredientType | undefined>(undefined);
+
+  const mockSearch = useMemo(() => {
+    return async ({ q, type, limit }: { q: string; type?: IngredientType; limit: number; signal: AbortSignal }) => {
+      const query = q.trim().toLowerCase();
+      const filtered = demoItems
+        .filter((item) => (type ? item.type === type : true))
+        .filter((item) => item.displayName.toLowerCase().includes(query) || item.subtitle?.toLowerCase().includes(query))
+        .slice(0, limit);
+      return filtered;
+    };
+  }, []);
+
   return (
     <main className="mx-auto flex max-w-5xl flex-col gap-4 p-6">
       <h1 className="text-2xl font-semibold">UI Foundation Playground</h1>
+      <Card className="space-y-3">
+        <h2 className="text-lg font-semibold">IngredientPicker demo (QA tool)</h2>
+        <p className="text-sm text-zinc-600">Use this internal playground to verify search-as-you-type, keyboard navigation, type filtering and selection callback.</p>
+        <label className="text-sm">
+          Type filter
+          <select className="mt-1 w-full rounded border p-2" value={pickerType ?? "all"} onChange={(event) => setPickerType(event.target.value === "all" ? undefined : event.target.value as IngredientType)}>
+            <option value="all">all</option>
+            <option value="fermentable">fermentable</option>
+            <option value="hop">hop</option>
+            <option value="yeast">yeast</option>
+            <option value="sugar">sugar</option>
+            <option value="adjunct">adjunct</option>
+            <option value="fining">fining</option>
+            <option value="misc">misc</option>
+          </select>
+        </label>
+        <IngredientPicker
+          type={pickerType}
+          searchIngredients={mockSearch}
+          onSelect={(item) => setSelected(item)}
+          emptyCta={<p className="text-xs text-zinc-500">Не нашли? Предложить / создать свой ингредиент</p>}
+        />
+        <div className="rounded bg-zinc-50 p-2 text-sm">
+          Selection callback: {selected ? `${selected.displayName} (${selected.type})` : "nothing selected"}
+        </div>
+      </Card>
       <Card className="space-y-3">
         <div className="flex gap-2">
           <Button onClick={() => trackEvent("foundation_test_event", { source: "ui_playground" })}>Send PostHog event</Button>

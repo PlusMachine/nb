@@ -4,9 +4,9 @@ const emptyStringToUndefined = (value: unknown) => value === "" ? undefined : va
 
 const serverEnvSchema = z.object({
   NODE_ENV: z.enum(["development", "test", "production"]).default("development"),
-  DATABASE_URL: z.string().url(),
+  DATABASE_URL: z.string().url().default("postgresql://postgres:postgres@localhost:5432/nb"),
   APP_URL: z.string().url().default("http://localhost:3000"),
-  AUTH_SECRET: z.string().min(32),
+  AUTH_SECRET: z.string().min(32).default("dev-only-auth-secret-change-me-123456"),
   AUTH_FROM_EMAIL: z.string().email().default("no-reply@localhost.dev"),
   SENTRY_DSN: z.preprocess(emptyStringToUndefined, z.string().optional()),
   POSTHOG_KEY: z.preprocess(emptyStringToUndefined, z.string().optional()),

@@ -20,6 +20,10 @@ import { redirect } from "next/navigation";
 
 const SESSION_COOKIE = "nb_session";
 
+export const roleWeights: Record<UserRole, number> = { user: 1, editor: 2, moderator: 3, admin: 4 };
+
+export const hasRequiredRole = (current: UserRole, required: UserRole) => roleWeights[current] >= roleWeights[required];
+
 export const getSessionUser = async () => {
   const token = (await cookies()).get(SESSION_COOKIE)?.value;
   if (!token) {
@@ -38,8 +42,7 @@ export const requireUser = async () => {
 
 export const requireRole = async (role: UserRole) => {
   const user = await requireUser();
-  const weights: Record<UserRole, number> = { user: 1, editor: 2, moderator: 3, admin: 4 };
-  if (weights[user.role] < weights[role]) {
+  if (!hasRequiredRole(user.role, role)) {
     redirect("/app");
   }
   return user;

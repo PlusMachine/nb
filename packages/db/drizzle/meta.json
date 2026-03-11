@@ -7,6 +7,12 @@
       "tag": "0000_init",
       "when": 1733529600000,
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "tag": "0001_ingredient_catalog",
+      "when": 1760000000000,
+      "breakpoints": true
     }
   ]
 }

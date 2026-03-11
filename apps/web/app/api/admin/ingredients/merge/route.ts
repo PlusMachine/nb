@@ -1,0 +1,23 @@
+import { NextResponse } from "next/server";
+import { z } from "zod";
+
+import { requireCatalogRole } from "@/features/ingredients/permissions";
+import { mergeDuplicateIngredients } from "@/features/ingredients/service";
+
+const mergeSchema = z.object({
+  sourceIngredientId: z.string().uuid(),
+  targetIngredientId: z.string().uuid(),
+  note: z.string().trim().max(1000).optional()
+});
+
+export async function POST(request: Request) {
+  try {
+    const actor = await requireCatalogRole("moderator");
+    const body = mergeSchema.parse(await request.json());
+    const result = await mergeDuplicateIngredients(body.sourceIngredientId, body.targetIngredientId, actor.id, body.note);
+    return NextResponse.json(result);
+  } catch (error) {
+    const status = (error as Error).message === "FORBIDDEN" ? 403 : 400;
+    return NextResponse.json({ error: (error as Error).message }, { status });
+  }
+}
