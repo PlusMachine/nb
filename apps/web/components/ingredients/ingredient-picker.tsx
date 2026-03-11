@@ -14,6 +14,8 @@ type Props = {
   searchIngredients?: (params: { q: string; type?: IngredientType; limit: number; signal: AbortSignal }) => Promise<IngredientSuggestionItem[]>;
 };
 
+const isAbortError = (error: unknown) => error instanceof DOMException && error.name === "AbortError";
+
 const defaultSearchIngredients = async ({ q, type, limit, signal }: { q: string; type?: IngredientType; limit: number; signal: AbortSignal }) => {
   const params = new URLSearchParams({ q, limit: String(limit) });
   if (type) {
@@ -47,9 +49,19 @@ export const IngredientPicker = ({
         return;
       }
 
-      const nextItems = await searchIngredients({ q: query, type, limit: 8, signal: controller.signal });
-      setItems(nextItems);
-      setActiveIndex(0);
+      try {
+        const nextItems = await searchIngredients({ q: query, type, limit: 8, signal: controller.signal });
+        if (controller.signal.aborted) {
+          return;
+        }
+        setItems(nextItems);
+        setActiveIndex(0);
+      } catch (error) {
+        if (isAbortError(error) || controller.signal.aborted) {
+          return;
+        }
+        throw error;
+      }
     };
 
     const timer = setTimeout(() => {
