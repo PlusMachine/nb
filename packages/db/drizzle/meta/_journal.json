@@ -13,6 +13,12 @@
       "tag": "0001_ingredient_catalog",
       "when": 1760000000000,
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "tag": "0002_user_inventory",
+      "when": 1761000000000,
+      "breakpoints": true
     }
   ]
 }

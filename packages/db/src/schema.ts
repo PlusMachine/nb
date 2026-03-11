@@ -7,6 +7,7 @@ export const ingredientTypeEnum = pgEnum("ingredient_type", ["fermentable", "hop
 export const ingredientStatusEnum = pgEnum("ingredient_status", ["draft", "active", "archived", "merged"]);
 export const ingredientVisibilityEnum = pgEnum("ingredient_visibility", ["public", "internal"]);
 export const proposedIngredientStatusEnum = pgEnum("proposed_ingredient_status", ["pending", "approved", "rejected", "merged"]);
+export const userCustomIngredientVisibilityEnum = pgEnum("user_custom_ingredient_visibility", ["private", "shared"]);
 
 export const users = pgTable("users", {
   id: uuid("id").defaultRandom().primaryKey(),
@@ -125,6 +126,41 @@ export const proposedIngredients = pgTable("proposed_ingredients", {
 }, (table) => ({
   statusCreatedIdx: index("proposed_ingredients_status_created_idx").on(table.status, table.createdAt),
   normalizedNameIdx: index("proposed_ingredients_normalized_name_idx").on(table.normalizedName)
+}));
+
+export const userCustomIngredients = pgTable("user_custom_ingredients", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  userId: uuid("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  type: ingredientTypeEnum("type").notNull(),
+  displayName: varchar("display_name", { length: 180 }).notNull(),
+  normalizedName: varchar("normalized_name", { length: 220 }).notNull(),
+  properties: jsonb("properties").$type<Record<string, unknown>>().default({}).notNull(),
+  visibility: userCustomIngredientVisibilityEnum("visibility").default("private").notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull()
+}, (table) => ({
+  userIdIdx: index("user_custom_ingredients_user_id_idx").on(table.userId),
+  userTypeNameIdx: uniqueIndex("user_custom_ingredients_user_type_name_uidx").on(table.userId, table.type, table.normalizedName)
+}));
+
+export const userIngredients = pgTable("user_ingredients", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  userId: uuid("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  ingredientCatalogItemId: uuid("ingredient_catalog_item_id").references(() => ingredientCatalogItems.id, { onDelete: "set null" }),
+  userCustomIngredientId: uuid("user_custom_ingredient_id").references(() => userCustomIngredients.id, { onDelete: "set null" }),
+  quantity: integer("quantity").notNull(),
+  unit: varchar("unit", { length: 32 }).notNull(),
+  purchasedAt: timestamp("purchased_at", { withTimezone: true }),
+  freshnessDate: timestamp("freshness_date", { withTimezone: true }),
+  notes: text("notes"),
+  archivedAt: timestamp("archived_at", { withTimezone: true }),
+  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull()
+}, (table) => ({
+  userIdIdx: index("user_ingredients_user_id_idx").on(table.userId),
+  userArchivedIdx: index("user_ingredients_user_archived_at_idx").on(table.userId, table.archivedAt),
+  catalogItemIdx: index("user_ingredients_catalog_item_idx").on(table.ingredientCatalogItemId),
+  customItemIdx: index("user_ingredients_custom_item_idx").on(table.userCustomIngredientId)
 }));
 
 export const usersRelations = relations(users, ({ many }) => ({
