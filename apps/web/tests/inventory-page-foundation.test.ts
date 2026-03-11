@@ -67,7 +67,7 @@ describe("inventory page foundation", () => {
     const html = renderToStaticMarkup(React.createElement(InventoryEmptyState));
 
     expect(html).toContain("Пока нет ингредиентов");
-    expect(html).toContain("Добавить ингредиент (скоро)");
+    expect(html).toContain("Добавить ингредиент");
   });
 
   it("renders grouped data", () => {
