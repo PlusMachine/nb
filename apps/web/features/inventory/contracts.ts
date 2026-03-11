@@ -41,7 +41,8 @@ export const updateInventoryQuantitySchema = z.object({
 
 export const inventoryListQuerySchema = z.object({
   includeArchived: z.coerce.boolean().default(false),
-  type: z.enum(ingredientTypes).optional()
+  type: z.enum(ingredientTypes).optional(),
+  search: z.string().trim().max(180).optional().default("")
 });
 
 export type InventorySourceDto = {

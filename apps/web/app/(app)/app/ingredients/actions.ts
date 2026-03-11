@@ -6,12 +6,14 @@ import { ZodError } from "zod";
 import {
   addCatalogInventoryItemSchema,
   addCustomInventoryItemSchema,
-  createUserCustomIngredientSchema
+  createUserCustomIngredientSchema,
+  updateInventoryQuantitySchema
 } from "@/features/inventory/contracts";
 import {
   addCatalogIngredientToInventory,
   addCustomIngredientToInventory,
-  createUserCustomIngredient
+  createUserCustomIngredient,
+  updateInventoryQuantity
 } from "@/features/inventory/service";
 import type { IngredientType } from "@/features/ingredients/contracts";
 import { requireUser } from "@/lib/auth";
@@ -113,6 +115,32 @@ export const addCustomIngredientAction = async (_prevState: AddIngredientResult 
     revalidatePath("/app/ingredients");
     return { ok: true, message: "Собственный ингредиент создан и добавлен в запасы." };
   } catch (error) {
+    return mapError(error);
+  }
+};
+
+
+export const updateInventoryInlineAction = async (payload: {
+  inventoryItemId: string;
+  enteredQuantity: string;
+  enteredUnit: string;
+}): Promise<AddIngredientResult> => {
+  try {
+    const user = await requireUser();
+    const parsed = updateInventoryQuantitySchema.parse({
+      enteredQuantity: payload.enteredQuantity,
+      enteredUnit: payload.enteredUnit
+    });
+
+    await updateInventoryQuantity(user.id, payload.inventoryItemId, parsed);
+    revalidatePath("/app/ingredients");
+
+    return { ok: true, message: "Остаток обновлен." };
+  } catch (error) {
+    if (error instanceof Error && error.message === "NOT_FOUND") {
+      return { ok: false, message: "Позиция не найдена или недоступна." };
+    }
+
     return mapError(error);
   }
 };

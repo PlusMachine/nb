@@ -3,16 +3,37 @@ import { GroupedInventoryList } from "@/components/inventory/grouped-inventory-l
 import { InventoryEmptyState } from "@/components/inventory/inventory-empty-state";
 import { AddIngredientTrigger } from "@/components/inventory/add-ingredient-trigger";
 import { InventorySummary } from "@/components/inventory/inventory-summary";
+import { InventoryToolbar } from "@/components/inventory/inventory-toolbar";
 import { getInventorySummaries, listInventoryForUser } from "@/features/inventory/service";
+import { ingredientTypes, type IngredientType } from "@/features/ingredients/contracts";
 import { requireUser } from "@/lib/auth";
 
-export default async function MyIngredientsPage() {
+type Props = {
+  searchParams?: Promise<Record<string, string | string[] | undefined>>;
+};
+
+const parseType = (value: string | undefined): IngredientType | undefined => {
+  if (!value || value === "all") {
+    return undefined;
+  }
+
+  return ingredientTypes.includes(value as IngredientType) ? value as IngredientType : undefined;
+};
+
+export default async function MyIngredientsPage({ searchParams }: Props) {
   const user = await requireUser();
+  const resolvedParams = searchParams ? await searchParams : {};
+  const rawSearch = String(resolvedParams.search ?? "").trim();
+  const parsedType = parseType(typeof resolvedParams.type === "string" ? resolvedParams.type : undefined);
+  const includeArchived = resolvedParams.archived === "true";
 
   const [items, summary] = await Promise.all([
-    listInventoryForUser(user.id),
+    listInventoryForUser(user.id, { includeArchived, type: parsedType, search: rawSearch }),
     getInventorySummaries(user.id)
   ]);
+
+  const hasAnyItems = summary.totalItems > 0;
+  const hasFilters = Boolean(rawSearch || parsedType || includeArchived);
 
   return (
     <main className="space-y-4">
@@ -25,7 +46,14 @@ export default async function MyIngredientsPage() {
       </section>
 
       <InventorySummary summary={summary} />
-      {items.length === 0 ? <InventoryEmptyState /> : <GroupedInventoryList items={items} />}
+      <InventoryToolbar
+        search={rawSearch}
+        type={parsedType ?? "all"}
+        archived={includeArchived}
+      />
+      {items.length === 0
+        ? <InventoryEmptyState hasAnyItems={hasAnyItems} hasFilters={hasFilters} search={rawSearch} type={parsedType} archived={includeArchived} />
+        : <GroupedInventoryList items={items} />}
     </main>
   );
 }

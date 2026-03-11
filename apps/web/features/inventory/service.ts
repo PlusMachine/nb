@@ -37,6 +37,15 @@ const buildInventoryWhere = (userId: string, includeArchived: boolean) => and(
   includeArchived ? undefined : isNull(userIngredients.archivedAt)
 );
 
+const buildInventorySearchWhere = (search: string) => {
+  if (!search) {
+    return undefined;
+  }
+
+  const term = `%${search}%`;
+  return sql<boolean>`coalesce(${ingredientCatalogItems.displayName}, ${userCustomIngredients.displayName}) ilike ${term}`;
+};
+
 const mapInventoryRow = (row: {
   inventory: typeof userIngredients.$inferSelect;
   catalog: typeof ingredientCatalogItems.$inferSelect | null;
@@ -258,7 +267,8 @@ export const listInventoryForUser = async (userId: string, query: unknown = {}) 
     .leftJoin(userCustomIngredients, eq(userIngredients.userCustomIngredientId, userCustomIngredients.id))
     .where(and(
       buildInventoryWhere(userId, parsed.includeArchived),
-      parsed.type ? sql<boolean>`coalesce(${ingredientCatalogItems.type}, ${userCustomIngredients.type}) = ${parsed.type}` : undefined
+      parsed.type ? sql<boolean>`coalesce(${ingredientCatalogItems.type}, ${userCustomIngredients.type}) = ${parsed.type}` : undefined,
+      buildInventorySearchWhere(parsed.search)
     ))
     .orderBy(asc(userIngredients.createdAt));
 
