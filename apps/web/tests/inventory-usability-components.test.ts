@@ -3,7 +3,8 @@ import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it, vi } from "vitest";
 
 vi.mock("../app/(app)/app/ingredients/actions", () => ({
-  updateInventoryInlineAction: vi.fn(async () => ({ ok: true, message: "ok" }))
+  updateInventoryInlineAction: vi.fn(async () => ({ ok: true, message: "ok" })),
+  updateInventoryItemAction: vi.fn(async () => ({ ok: true, message: "ok" }))
 }));
 
 import { InventoryArchivedToggle } from "../components/inventory/inventory-archived-toggle";
@@ -29,8 +30,8 @@ describe("inventory usability components", () => {
 
   it("renders standalone toolbar subcomponents", () => {
     const html = renderToStaticMarkup(
-      React.createElement("div", null,
-        React.createElement(InventorySearchInput, { defaultValue: "malt" }),
+        React.createElement("div", null,
+        React.createElement(InventorySearchInput, { defaultValue: "malt", type: "all", archived: false }),
         React.createElement(InventoryTypeFilter, { value: "all" }),
         React.createElement(InventoryArchivedToggle, { checked: false })
       )
@@ -66,7 +67,8 @@ describe("inventory usability components", () => {
 
     const html = renderToStaticMarkup(React.createElement(InventoryListItem, { item }));
 
-    expect(html).toContain("Изменить");
+    expect(html).toContain("Быстро изменить");
+    expect(html).toContain("Редактировать карточку");
     expect(html).toContain("Pilsner Malt");
     expect(html).toContain("2 kg");
   });

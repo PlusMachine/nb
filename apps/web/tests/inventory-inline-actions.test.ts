@@ -3,7 +3,8 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 const mocks = vi.hoisted(() => ({
   revalidatePath: vi.fn(),
   requireUser: vi.fn(async () => ({ id: "u-1" })),
-  updateInventoryQuantity: vi.fn(async () => ({}))
+  updateInventoryQuantity: vi.fn(async () => ({})),
+  updateInventoryItem: vi.fn(async () => ({}))
 }));
 
 vi.mock("next/cache", () => ({
@@ -18,11 +19,12 @@ vi.mock("../features/inventory/service", async () => {
   const actual = await vi.importActual<typeof import("../features/inventory/service")>("../features/inventory/service");
   return {
     ...actual,
-    updateInventoryQuantity: mocks.updateInventoryQuantity
+    updateInventoryQuantity: mocks.updateInventoryQuantity,
+    updateInventoryItem: mocks.updateInventoryItem
   };
 });
 
-import { updateInventoryInlineAction } from "../app/(app)/app/ingredients/actions";
+import { updateInventoryInlineAction, updateInventoryItemAction } from "../app/(app)/app/ingredients/actions";
 
 describe("inventory inline actions", () => {
   beforeEach(() => {
@@ -30,6 +32,8 @@ describe("inventory inline actions", () => {
     mocks.requireUser.mockClear();
     mocks.updateInventoryQuantity.mockReset();
     mocks.updateInventoryQuantity.mockResolvedValue({ id: "inv-1" });
+    mocks.updateInventoryItem.mockReset();
+    mocks.updateInventoryItem.mockResolvedValue({ id: "inv-1" });
   });
 
   it("updates quantity and revalidates page", async () => {
@@ -69,5 +73,44 @@ describe("inventory inline actions", () => {
     expect(result.ok).toBe(false);
     expect(result.fieldErrors?.enteredUnit).toBeDefined();
     expect(mocks.updateInventoryQuantity).not.toHaveBeenCalled();
+  });
+
+  it("updates full inventory item and revalidates page", async () => {
+    const result = await updateInventoryItemAction({
+      inventoryItemId: "inv-1",
+      ingredientCatalogItemId: "3d6eb945-8e2e-4af9-8d24-ef6c883b5dd0",
+      userCustomIngredientId: null,
+      enteredQuantity: "4.5",
+      enteredUnit: "kg",
+      purchasedAt: "2026-03-01",
+      freshnessDate: "2026-09-01",
+      notes: "Свежая партия"
+    });
+
+    expect(result.ok).toBe(true);
+    expect(mocks.updateInventoryItem).toHaveBeenCalledWith("u-1", "inv-1", {
+      ingredientCatalogItemId: "3d6eb945-8e2e-4af9-8d24-ef6c883b5dd0",
+      userCustomIngredientId: null,
+      enteredQuantity: 4.5,
+      enteredUnit: "kg",
+      purchasedAt: new Date("2026-03-01T00:00:00.000Z"),
+      freshnessDate: new Date("2026-09-01T00:00:00.000Z"),
+      notes: "Свежая партия"
+    });
+    expect(mocks.revalidatePath).toHaveBeenCalledWith("/app/ingredients");
+  });
+
+  it("rejects full edit without selected ingredient", async () => {
+    const result = await updateInventoryItemAction({
+      inventoryItemId: "inv-1",
+      ingredientCatalogItemId: null,
+      userCustomIngredientId: null,
+      enteredQuantity: "1",
+      enteredUnit: "kg"
+    });
+
+    expect(result.ok).toBe(false);
+    expect(result.fieldErrors?.ingredientCatalogItemId).toBeDefined();
+    expect(mocks.updateInventoryItem).not.toHaveBeenCalled();
   });
 });

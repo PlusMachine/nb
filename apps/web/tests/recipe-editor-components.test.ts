@@ -5,7 +5,8 @@ import { describe, expect, it } from "vitest";
 import NewRecipePage from "../app/(app)/app/recipes/new/page";
 import EditRecipePage from "../app/(app)/app/recipes/[id]/edit/page";
 import { RecipeEditorErrorState } from "../components/recipes/recipe-editor-error-state";
-import { RecipeIngredientRow } from "../components/recipes/recipe-ingredient-row";
+import { RecipeIngredientsEditor } from "../components/recipes/recipe-ingredients-editor";
+import { getRecipeIngredientValidationError, RecipeIngredientRow } from "../components/recipes/recipe-ingredient-row";
 import { RecipeStatsPreview } from "../components/recipes/recipe-stats-preview";
 
 describe("recipe editor components", () => {
@@ -24,12 +25,50 @@ describe("recipe editor components", () => {
           timeOffset: "60"
         },
         onChange: () => undefined,
-        onRemove: () => undefined
+        title: "Новый ингредиент"
       })
     );
 
     expect(html).toContain("Ингредиент");
-    expect(html).toContain("Удалить");
+    expect(html).toContain("Новый ингредиент");
+  });
+
+  it("ingredients editor renders draft and saved sections", () => {
+    const html = renderToStaticMarkup(
+      React.createElement(RecipeIngredientsEditor, {
+        rows: [],
+        onChange: () => undefined
+      })
+    );
+
+    expect(html).toContain("Добавить в рецепт");
+    expect(html).toContain("Уже в рецепте");
+  });
+
+  it("ingredient validation requires selected ingredient and quantity", () => {
+    expect(getRecipeIngredientValidationError({
+      localId: "1",
+      ingredientCatalogItemId: null,
+      userCustomIngredientId: null,
+      selectedName: "",
+      type: "hop",
+      amountEnteredQuantity: "",
+      amountEnteredUnit: "g",
+      stage: "boil",
+      timeOffset: ""
+    })).toContain("Выберите ингредиент");
+
+    expect(getRecipeIngredientValidationError({
+      localId: "2",
+      ingredientCatalogItemId: "00000000-0000-4000-8000-000000000001",
+      userCustomIngredientId: null,
+      selectedName: "Cascade",
+      type: "hop",
+      amountEnteredQuantity: "",
+      amountEnteredUnit: "g",
+      stage: "boil",
+      timeOffset: ""
+    })).toContain("Укажите количество");
   });
 
   it("stats preview renders", () => {

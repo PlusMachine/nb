@@ -7,9 +7,10 @@ import { inventoryTypeLabels, inventoryTypeOrder } from "@/features/inventory/pa
 type Props = {
   value: IngredientType;
   onChange: (type: IngredientType) => void;
+  name?: string;
 };
 
-export function IngredientTypeSelector({ value, onChange }: Props) {
+export function IngredientTypeSelector({ value, onChange, name = "ingredientType" }: Props) {
   return (
     <fieldset className="space-y-2">
       <legend className="text-sm font-medium">Тип ингредиента</legend>
@@ -18,7 +19,7 @@ export function IngredientTypeSelector({ value, onChange }: Props) {
           <label key={type} className="cursor-pointer">
             <input
               type="radio"
-              name="ingredientType"
+              name={name}
               value={type}
               checked={value === type}
               onChange={() => onChange(type)}

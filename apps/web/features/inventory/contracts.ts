@@ -39,6 +39,24 @@ export const updateInventoryQuantitySchema = z.object({
   enteredUnit: z.string().trim().toLowerCase().pipe(z.enum(inventoryUnits))
 });
 
+export const updateInventoryItemSchema = baseInventoryFieldsSchema.extend({
+  ingredientCatalogItemId: z.string().uuid().optional().nullable(),
+  userCustomIngredientId: z.string().uuid().optional().nullable()
+}).superRefine((value, ctx) => {
+  const linkage = inventorySourceLinkageSchema.safeParse({
+    ingredientCatalogItemId: value.ingredientCatalogItemId,
+    userCustomIngredientId: value.userCustomIngredientId
+  });
+
+  if (!linkage.success) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: "Выберите ингредиент.",
+      path: ["ingredientCatalogItemId"]
+    });
+  }
+});
+
 export const inventoryListQuerySchema = z.object({
   includeArchived: z.coerce.boolean().default(false),
   type: z.enum(ingredientTypes).optional(),

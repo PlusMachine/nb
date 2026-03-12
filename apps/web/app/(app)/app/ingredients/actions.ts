@@ -7,12 +7,14 @@ import {
   addCatalogInventoryItemSchema,
   addCustomInventoryItemSchema,
   createUserCustomIngredientSchema,
+  updateInventoryItemSchema,
   updateInventoryQuantitySchema
 } from "@/features/inventory/contracts";
 import {
   addCatalogIngredientToInventory,
   addCustomIngredientToInventory,
   createUserCustomIngredient,
+  updateInventoryItem,
   updateInventoryQuantity
 } from "@/features/inventory/service";
 import type { IngredientType } from "@/features/ingredients/contracts";
@@ -50,6 +52,9 @@ const mapError = (error: unknown): AddIngredientResult => {
   }
 
   if (error instanceof Error) {
+    if (error.message === "INVALID_SOURCE_LINKAGE") {
+      return { ok: false, message: "Выберите корректный ингредиент для сохранения." };
+    }
     if (error.message === "CATALOG_INGREDIENT_NOT_FOUND") {
       return { ok: false, message: "Ингредиент из каталога не найден или недоступен." };
     }
@@ -115,6 +120,41 @@ export const addCustomIngredientAction = async (_prevState: AddIngredientResult 
     revalidatePath("/app/ingredients");
     return { ok: true, message: "Собственный ингредиент создан и добавлен в запасы." };
   } catch (error) {
+    return mapError(error);
+  }
+};
+
+export const updateInventoryItemAction = async (payload: {
+  inventoryItemId: string;
+  ingredientCatalogItemId?: string | null;
+  userCustomIngredientId?: string | null;
+  enteredQuantity: string;
+  enteredUnit: string;
+  purchasedAt?: string | null;
+  freshnessDate?: string | null;
+  notes?: string | null;
+}): Promise<AddIngredientResult> => {
+  try {
+    const user = await requireUser();
+    const parsed = updateInventoryItemSchema.parse({
+      ingredientCatalogItemId: payload.ingredientCatalogItemId ?? null,
+      userCustomIngredientId: payload.userCustomIngredientId ?? null,
+      enteredQuantity: payload.enteredQuantity,
+      enteredUnit: payload.enteredUnit,
+      purchasedAt: parseOptionalDate(payload.purchasedAt ?? null),
+      freshnessDate: parseOptionalDate(payload.freshnessDate ?? null),
+      notes: String(payload.notes ?? "").trim() || null
+    });
+
+    await updateInventoryItem(user.id, payload.inventoryItemId, parsed);
+    revalidatePath("/app/ingredients");
+
+    return { ok: true, message: "Карточка ингредиента обновлена." };
+  } catch (error) {
+    if (error instanceof Error && error.message === "NOT_FOUND") {
+      return { ok: false, message: "Позиция не найдена или недоступна." };
+    }
+
     return mapError(error);
   }
 };

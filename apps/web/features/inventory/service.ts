@@ -19,9 +19,12 @@ import {
   type InventoryListItemDto,
   type InventorySummaryDto,
   type InventorySourceDto,
+  updateInventoryItemSchema,
   updateInventoryQuantitySchema
 } from "./contracts";
+import { ingredientSearchQuerySchema, type IngredientSuggestionItem } from "../ingredients/contracts";
 import { normalizeIngredientName } from "../ingredients/normalization";
+import { scoreIngredientCandidate } from "../ingredients/ranking";
 import { normalizeInventoryMeasurement, parseInventoryUnit } from "./units";
 import type { IngredientType } from "../ingredients/contracts";
 
@@ -242,6 +245,41 @@ export const updateInventoryQuantity = async (userId: string, inventoryItemId: s
   return updated ?? null;
 };
 
+export const updateInventoryItem = async (userId: string, inventoryItemId: string, payload: unknown) => {
+  const parsed = updateInventoryItemSchema.parse(payload);
+  await ensureOwnedInventoryItem(userId, inventoryItemId);
+
+  let ingredientType: IngredientType;
+
+  if (parsed.ingredientCatalogItemId) {
+    const catalogItem = await ensureCatalogIngredientExists(parsed.ingredientCatalogItemId);
+    ingredientType = catalogItem.type;
+  } else if (parsed.userCustomIngredientId) {
+    const customIngredient = await ensureOwnedCustomIngredient(userId, parsed.userCustomIngredientId);
+    ingredientType = customIngredient.type;
+  } else {
+    throw new Error("INVALID_SOURCE_LINKAGE");
+  }
+
+  const measurement = buildStoredMeasurement(ingredientType, parsed);
+
+  const [updated] = await db.update(userIngredients).set({
+    ingredientCatalogItemId: parsed.ingredientCatalogItemId ?? null,
+    userCustomIngredientId: parsed.userCustomIngredientId ?? null,
+    enteredQuantity: measurement.enteredQuantity,
+    enteredUnit: measurement.enteredUnit,
+    normalizedQuantity: measurement.normalizedQuantity,
+    normalizedUnit: measurement.normalizedUnit,
+    unitDimension: measurement.unitDimension,
+    purchasedAt: parsed.purchasedAt ?? null,
+    freshnessDate: parsed.freshnessDate ?? null,
+    notes: parsed.notes ?? null,
+    updatedAt: new Date()
+  }).where(eq(userIngredients.id, inventoryItemId)).returning();
+
+  return updated ?? null;
+};
+
 export const archiveInventoryItem = async (userId: string, inventoryItemId: string) => {
   await ensureOwnedInventoryItem(userId, inventoryItemId);
 
@@ -273,6 +311,48 @@ export const listInventoryForUser = async (userId: string, query: unknown = {}) 
     .orderBy(asc(userIngredients.createdAt));
 
   return rows.map(mapInventoryRow);
+};
+
+export const searchInventorySuggestions = async (
+  userId: string,
+  params: { q: string; type?: string; limit?: number; includeArchived?: boolean }
+): Promise<IngredientSuggestionItem[]> => {
+  const query = ingredientSearchQuerySchema.parse(params);
+  const items = await listInventoryForUser(userId, {
+    includeArchived: params.includeArchived ?? false,
+    type: query.type,
+    search: query.q
+  });
+
+  const grouped = new Map<string, { item: InventoryListItemDto; positionsCount: number }>();
+
+  for (const item of items) {
+    const key = `${item.source.sourceKind}:${item.source.sourceId}`;
+    const existing = grouped.get(key);
+    if (existing) {
+      existing.positionsCount += 1;
+    } else {
+      grouped.set(key, { item, positionsCount: 1 });
+    }
+  }
+
+  return [...grouped.values()]
+    .map(({ item, positionsCount }) => ({
+      id: item.source.sourceId,
+      type: item.source.type,
+      displayName: item.source.displayName,
+      subtitle: `${item.source.sourceKind === "catalog" ? "каталог" : "свой"} · ${positionsCount} поз. в запасах`,
+      defaultUnit: item.enteredUnit,
+      source: item.source.sourceKind === "catalog" ? "catalog" as const : "custom" as const,
+      rankScore: scoreIngredientCandidate(query.q, {
+        displayName: item.source.displayName,
+        normalizedName: item.source.normalizedName,
+        aliases: []
+      }) + positionsCount
+    }))
+    .sort((a, b) => b.rankScore - a.rankScore || a.displayName.localeCompare(b.displayName))
+    .slice(0, query.limit)
+    .map(({ rankScore, ...item }) => item);
 };
 
 export const getInventorySummaries = async (userId: string): Promise<InventorySummaryDto> => {

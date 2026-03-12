@@ -29,7 +29,7 @@ export function InventoryQuantityEditor({ item }: Props) {
     return (
       <div className="flex flex-wrap items-center gap-2">
         <p className="text-sm font-medium">{item.enteredQuantity} {item.enteredUnit}</p>
-        <button type="button" onClick={() => setEditing(true)} className="rounded border px-2 py-1 text-xs">Изменить</button>
+        <button type="button" onClick={() => setEditing(true)} className="rounded border px-2 py-1 text-xs">Быстро изменить</button>
         {feedback ? <p className={`text-xs ${feedback.ok ? "text-emerald-700" : "text-red-600"}`}>{feedback.message}</p> : null}
       </div>
     );

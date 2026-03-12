@@ -100,6 +100,8 @@ import {
   createUserCustomIngredient,
   getInventorySummaries,
   listInventoryForUser,
+  searchInventorySuggestions,
+  updateInventoryItem,
   updateInventoryQuantity
 } from "../features/inventory/service";
 
@@ -186,6 +188,37 @@ describe("inventory service", () => {
     });
   });
 
+  it("updates full inventory item including source linkage", async () => {
+    mockState.inventoryFindFirst.mockResolvedValueOnce({
+      id: "inv-1",
+      userId: "u1",
+      ingredientCatalogItemId: "cat-1",
+      userCustomIngredientId: null
+    });
+    mockState.catalogFindFirst.mockResolvedValueOnce({ id: "cat-2", status: "active", type: "fermentable" });
+
+    await updateInventoryItem("u1", "inv-1", {
+      ingredientCatalogItemId: "3d6eb945-8e2e-4af9-8d24-ef6c883b5dd0",
+      userCustomIngredientId: null,
+      enteredQuantity: 5,
+      enteredUnit: "kg",
+      purchasedAt: new Date("2026-03-01T00:00:00.000Z"),
+      freshnessDate: new Date("2026-08-01T00:00:00.000Z"),
+      notes: "Обновили источник"
+    });
+
+    expect(mockState.updates[0]?.set).toMatchObject({
+      ingredientCatalogItemId: "3d6eb945-8e2e-4af9-8d24-ef6c883b5dd0",
+      userCustomIngredientId: null,
+      enteredQuantity: 5,
+      enteredUnit: "kg",
+      normalizedQuantity: 5000,
+      normalizedUnit: "g",
+      unitDimension: "weight",
+      notes: "Обновили источник"
+    });
+  });
+
   it("rejects unsupported units", async () => {
     await expect(addCatalogIngredientToInventory("u1", {
       ingredientCatalogItemId: "3d6eb945-8e2e-4af9-8d24-ef6c883b5dd0",
@@ -261,6 +294,57 @@ describe("inventory service", () => {
       normalizedUnit: "g",
       unitDimension: "weight"
     });
+  });
+
+  it("returns deduplicated inventory suggestions for autocomplete", async () => {
+    mockState.selectRows = [
+      {
+        inventory: {
+          id: "inv-1",
+          enteredQuantity: 2,
+          enteredUnit: "kg",
+          normalizedQuantity: 2000,
+          normalizedUnit: "g",
+          unitDimension: "weight",
+          purchasedAt: null,
+          freshnessDate: null,
+          notes: null,
+          archivedAt: null,
+          createdAt: new Date("2025-01-01"),
+          updatedAt: new Date("2025-01-01")
+        },
+        catalog: { id: "cat-1", type: "fermentable", displayName: "Pilsner Malt", normalizedName: "pilsner malt" },
+        custom: null
+      },
+      {
+        inventory: {
+          id: "inv-2",
+          enteredQuantity: 1,
+          enteredUnit: "kg",
+          normalizedQuantity: 1000,
+          normalizedUnit: "g",
+          unitDimension: "weight",
+          purchasedAt: null,
+          freshnessDate: null,
+          notes: null,
+          archivedAt: null,
+          createdAt: new Date("2025-01-02"),
+          updatedAt: new Date("2025-01-02")
+        },
+        catalog: { id: "cat-1", type: "fermentable", displayName: "Pilsner Malt", normalizedName: "pilsner malt" },
+        custom: null
+      }
+    ];
+
+    const items = await searchInventorySuggestions("u1", { q: "Pils", limit: 8 });
+
+    expect(items).toHaveLength(1);
+    expect(items[0]).toMatchObject({
+      id: "cat-1",
+      displayName: "Pilsner Malt",
+      source: "catalog"
+    });
+    expect(items[0]?.subtitle).toContain("2 поз.");
   });
 
   it("builds summaries", async () => {
