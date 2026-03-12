@@ -4,7 +4,10 @@ import { describe, expect, it } from "vitest";
 
 import RecipesError from "../app/(app)/app/recipes/error";
 import RecipeDetailError from "../app/(app)/app/recipes/[id]/error";
+import PublicRecipeError from "../app/(public)/recipes/[id]/error";
+import PublicRecipeNotFound from "../app/(public)/recipes/[id]/not-found";
 import { RecipeEmptyState } from "../components/recipes/recipe-empty-state";
+import { PublicRecipePage } from "../components/recipes/public-recipe-page";
 import { RecipeIngredientsSection } from "../components/recipes/recipe-ingredients-section";
 import { RecipeMetaSection } from "../components/recipes/recipe-meta-section";
 import { RecipeStatsSummary } from "../components/recipes/recipe-stats-summary";
@@ -84,12 +87,25 @@ describe("recipes read components", () => {
     expect(html).toContain("Заметки автора");
   });
 
+  it("renders public recipe page composition", () => {
+    const html = renderToStaticMarkup(React.createElement(PublicRecipePage, { recipe: recipeDetail }));
+
+    expect(html).toContain("Опубликован");
+    expect(html).toContain("Ключевые показатели");
+    expect(html).toContain("Ингредиенты");
+    expect(html).toContain("Изображение");
+  });
+
   it("renders route-level error states", () => {
     const listErrorHtml = renderToStaticMarkup(React.createElement(RecipesError, { error: new Error("boom"), reset: () => undefined }));
     const detailErrorHtml = renderToStaticMarkup(React.createElement(RecipeDetailError, { error: new Error("boom"), reset: () => undefined }));
+    const publicErrorHtml = renderToStaticMarkup(React.createElement(PublicRecipeError, { error: new Error("boom"), reset: () => undefined }));
+    const publicNotFoundHtml = renderToStaticMarkup(React.createElement(PublicRecipeNotFound));
 
     expect(listErrorHtml).toContain("Не удалось загрузить");
     expect(detailErrorHtml).toContain("Не удалось загрузить рецепт");
     expect(detailErrorHtml).toContain("Повторить");
+    expect(publicErrorHtml).toContain("Не удалось загрузить публичный рецепт");
+    expect(publicNotFoundHtml).toContain("Рецепт не найден");
   });
 });

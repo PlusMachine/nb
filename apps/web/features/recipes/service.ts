@@ -68,6 +68,25 @@ const ensureAccessibleRecipe = async (viewerId: string | null, recipeId: string)
   return recipe;
 };
 
+const ensurePublicRecipe = async (recipeId: string) => {
+  const recipe = await db.query.recipes.findFirst({
+    where: eq(recipes.id, recipeId),
+    with: {
+      ingredients: true
+    }
+  });
+
+  if (!recipe) {
+    throw new Error("NOT_FOUND");
+  }
+
+  if (recipe.status !== "published" || recipe.visibility !== "public") {
+    throw new Error("FORBIDDEN");
+  }
+
+  return recipe;
+};
+
 const ensureCatalogIngredientExists = async (ingredientCatalogItemId: string) => {
   const catalogItem = await db.query.ingredientCatalogItems.findFirst({
     where: and(
@@ -449,5 +468,10 @@ export const getOwnedRecipeById = async (authorId: string, recipeId: string): Pr
     throw new Error("NOT_FOUND");
   }
 
+  return mapRecipeDetailDto(recipe, recipe.ingredients);
+};
+
+export const getPublicRecipeById = async (recipeId: string): Promise<RecipeDetailDto> => {
+  const recipe = await ensurePublicRecipe(recipeId);
   return mapRecipeDetailDto(recipe, recipe.ingredients);
 };

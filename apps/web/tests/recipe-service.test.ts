@@ -126,7 +126,14 @@ vi.mock("@nb/db", () => {
   };
 });
 
-import { createRecipe, getRecipeById, listRecipesForAuthor, recomputeRecipeStats, updateRecipe } from "../features/recipes/service";
+import {
+  createRecipe,
+  getPublicRecipeById,
+  getRecipeById,
+  listRecipesForAuthor,
+  recomputeRecipeStats,
+  updateRecipe
+} from "../features/recipes/service";
 
 describe("recipe service", () => {
   beforeEach(() => {
@@ -220,6 +227,40 @@ describe("recipe service", () => {
   it("private ownership rule denies non-owner read", async () => {
     const recipe = await createRecipe("u1", { title: "Private", status: "private", visibility: "private", batchSizeEnteredQuantity: 12, batchSizeEnteredUnit: "l" });
     await expect(getRecipeById("u2", recipe.id)).rejects.toThrowError("FORBIDDEN");
+  });
+
+  it("public accessor allows only published public recipes", async () => {
+    const recipe = await createRecipe("u1", {
+      title: "Public recipe",
+      status: "published",
+      visibility: "public",
+      batchSizeEnteredQuantity: 20,
+      batchSizeEnteredUnit: "l"
+    });
+
+    const publicRead = await getPublicRecipeById(recipe.id);
+    expect(publicRead.id).toBe(recipe.id);
+  });
+
+  it("public accessor blocks private or draft recipes", async () => {
+    const privateRecipe = await createRecipe("u1", {
+      title: "Not public",
+      status: "published",
+      visibility: "private",
+      batchSizeEnteredQuantity: 20,
+      batchSizeEnteredUnit: "l"
+    });
+
+    const draftRecipe = await createRecipe("u1", {
+      title: "Draft",
+      status: "draft",
+      visibility: "public",
+      batchSizeEnteredQuantity: 20,
+      batchSizeEnteredUnit: "l"
+    });
+
+    await expect(getPublicRecipeById(privateRecipe.id)).rejects.toThrowError("FORBIDDEN");
+    await expect(getPublicRecipeById(draftRecipe.id)).rejects.toThrowError("FORBIDDEN");
   });
 
   it("batch size normalization works", async () => {
