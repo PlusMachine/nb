@@ -300,10 +300,10 @@ Use this local setup flow:
 cp .env.example .env
 npm install
 docker compose up -d
-npm run db:migrate
-npm run db:seed
 npm run dev
 npm run seed:qa 
+
+`npm run dev` is expected to auto-run `db:migrate` and `db:seed` before starting the app.
 
 After that:
 

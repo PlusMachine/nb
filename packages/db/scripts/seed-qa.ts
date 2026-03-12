@@ -1,165 +1,6 @@
 import { db, inArray, ingredientCatalogItems, pool, userIngredients, users } from "../src";
 import { assertDevOnlyExecution } from "./_dev-utils";
-
-type SeedUser = {
-  email: string;
-  displayName: string;
-  role: "user" | "editor" | "moderator" | "admin";
-};
-
-type SeedCatalogItem = {
-  type: "fermentable" | "hop" | "yeast" | "sugar" | "adjunct" | "fining" | "misc";
-  subtype?: string;
-  displayName: string;
-  normalizedName: string;
-  aliases?: string[];
-  manufacturer?: string;
-  country?: string;
-  defaultUnit: string;
-  description?: string;
-  properties?: Record<string, unknown>;
-};
-
-const seedUsers: SeedUser[] = [
-  { email: "qa.admin@localhost", displayName: "QA Admin", role: "admin" },
-  { email: "qa.moderator@localhost", displayName: "QA Moderator", role: "moderator" },
-  { email: "qa.editor@localhost", displayName: "QA Editor", role: "editor" },
-  { email: "qa.user@localhost", displayName: "QA Brewer", role: "user" }
-];
-
-const seedCatalogItems: SeedCatalogItem[] = [
-  {
-    type: "fermentable",
-    subtype: "base-malt",
-    displayName: "Pilsner Malt",
-    normalizedName: "pilsner malt",
-    aliases: ["pilsner", "pils", "lager malt"],
-    manufacturer: "BESTMALZ",
-    country: "DE",
-    defaultUnit: "g",
-    properties: { colorEbc: 3.5, extractFgdbPct: 80 }
-  },
-  {
-    type: "fermentable",
-    subtype: "base-malt",
-    displayName: "Pale Ale Malt",
-    normalizedName: "pale ale malt",
-    aliases: ["pale malt", "pale ale", "2 row"],
-    manufacturer: "Crisp",
-    country: "GB",
-    defaultUnit: "g",
-    properties: { colorEbc: 6, extractFgdbPct: 79 }
-  },
-  {
-    type: "fermentable",
-    subtype: "base-malt",
-    displayName: "Wheat Malt",
-    normalizedName: "wheat malt",
-    aliases: ["wheat", "malted wheat"],
-    manufacturer: "Weyermann",
-    country: "DE",
-    defaultUnit: "g",
-    properties: { colorEbc: 4, extractFgdbPct: 84 }
-  },
-  {
-    type: "fermentable",
-    subtype: "specialty-malt",
-    displayName: "Munich Malt",
-    normalizedName: "munich malt",
-    aliases: ["munich"],
-    manufacturer: "Weyermann",
-    country: "DE",
-    defaultUnit: "g",
-    properties: { colorEbc: 18, extractFgdbPct: 78 }
-  },
-  {
-    type: "hop",
-    displayName: "Citra",
-    normalizedName: "citra",
-    manufacturer: "Yakima Chief",
-    country: "US",
-    defaultUnit: "g",
-    properties: { alphaAcid: 12 }
-  },
-  {
-    type: "hop",
-    displayName: "Mosaic",
-    normalizedName: "mosaic",
-    manufacturer: "Yakima Chief",
-    country: "US",
-    defaultUnit: "g",
-    properties: { alphaAcid: 11.5 }
-  },
-  {
-    type: "hop",
-    displayName: "Saaz",
-    normalizedName: "saaz",
-    manufacturer: "Bohemia Hop",
-    country: "CZ",
-    defaultUnit: "g",
-    properties: { alphaAcid: 4 }
-  },
-  {
-    type: "yeast",
-    displayName: "SafAle US-05",
-    normalizedName: "safale us-05",
-    aliases: ["us-05", "us05", "safale 05"],
-    manufacturer: "Fermentis",
-    country: "FR",
-    defaultUnit: "pack",
-    properties: { form: "dry", styles: ["american ale", "pale ale", "ipa"] }
-  },
-  {
-    type: "yeast",
-    displayName: "Mangrove Jack's M21 Belgian Wit",
-    normalizedName: "mangrove jacks m21 belgian wit",
-    aliases: ["m21", "m21 belgian wit", "mangrove jacks m21"],
-    manufacturer: "Mangrove Jack's",
-    country: "NZ",
-    defaultUnit: "pack",
-    properties: { form: "dry", styles: ["witbier", "belgian ale"] }
-  },
-  {
-    type: "yeast",
-    displayName: "LalBrew Voss Kveik",
-    normalizedName: "lalbrew voss kveik",
-    aliases: ["voss kveik", "lalbrew voss"],
-    manufacturer: "Lallemand",
-    country: "CA",
-    defaultUnit: "pack",
-    properties: { form: "dry", styles: ["kveik", "farmhouse"] }
-  },
-  {
-    type: "sugar",
-    displayName: "Dextrose",
-    normalizedName: "dextrose",
-    aliases: ["corn sugar", "glucose"],
-    defaultUnit: "g"
-  },
-  {
-    type: "adjunct",
-    displayName: "Flaked Oats",
-    normalizedName: "flaked oats",
-    aliases: ["oats", "rolled oats"],
-    defaultUnit: "g",
-    properties: { usage: "body and haze" }
-  },
-  {
-    type: "fining",
-    displayName: "Irish Moss",
-    normalizedName: "irish moss",
-    defaultUnit: "g",
-    properties: { stage: "boil" }
-  },
-  {
-    type: "misc",
-    displayName: "Yeast Nutrient",
-    normalizedName: "yeast nutrient",
-    aliases: ["nutrient"],
-    defaultUnit: "g",
-    properties: { stage: "boil" }
-  }
-];
+import { seedCatalogItems, seedUsers } from "./qa-seed-data";
 
 const run = async () => {
   assertDevOnlyExecution();
@@ -220,12 +61,37 @@ const run = async () => {
   const catalogByName = new Map(dbCatalogItems.map((item) => [item.normalizedName, item]));
   const pilsnerMalt = catalogByName.get("pilsner malt");
   const paleAleMalt = catalogByName.get("pale ale malt");
+  const mosaic = catalogByName.get("mosaic");
   const citra = catalogByName.get("citra");
   const us05 = catalogByName.get("safale us-05");
   const m21 = catalogByName.get("mangrove jacks m21 belgian wit");
   const saaz = catalogByName.get("saaz");
+  const dextrose = catalogByName.get("dextrose");
+  const honey = catalogByName.get("honey");
+  const flakedOats = catalogByName.get("flaked oats");
+  const riceHulls = catalogByName.get("rice hulls");
+  const irishMoss = catalogByName.get("irish moss");
+  const gelatin = catalogByName.get("gelatin");
+  const yeastNutrient = catalogByName.get("yeast nutrient");
+  const calciumChloride = catalogByName.get("calcium chloride");
 
-  if (!pilsnerMalt || !paleAleMalt || !citra || !us05 || !m21 || !saaz) {
+  if (
+    !pilsnerMalt
+    || !paleAleMalt
+    || !mosaic
+    || !citra
+    || !us05
+    || !m21
+    || !saaz
+    || !dextrose
+    || !honey
+    || !flakedOats
+    || !riceHulls
+    || !irishMoss
+    || !gelatin
+    || !yeastNutrient
+    || !calciumChloride
+  ) {
     throw new Error("Failed to load seeded ingredient catalog items.");
   }
 
@@ -263,12 +129,72 @@ const run = async () => {
     },
     {
       userId: qaUser.id,
+      ingredientCatalogItemId: mosaic.id,
+      enteredQuantity: 100,
+      enteredUnit: "g",
+      normalizedQuantity: 100,
+      normalizedUnit: "g",
+      unitDimension: "weight",
+      notes: "Dry hop sample stock"
+    },
+    {
+      userId: qaUser.id,
       ingredientCatalogItemId: us05.id,
       enteredQuantity: 2,
       enteredUnit: "pack",
       normalizedQuantity: 2,
       normalizedUnit: "pack",
       unitDimension: "count"
+    },
+    {
+      userId: qaUser.id,
+      ingredientCatalogItemId: dextrose.id,
+      enteredQuantity: 1000,
+      enteredUnit: "g",
+      normalizedQuantity: 1000,
+      normalizedUnit: "g",
+      unitDimension: "weight",
+      notes: "Priming sugar"
+    },
+    {
+      userId: qaUser.id,
+      ingredientCatalogItemId: flakedOats.id,
+      enteredQuantity: 750,
+      enteredUnit: "g",
+      normalizedQuantity: 750,
+      normalizedUnit: "g",
+      unitDimension: "weight",
+      notes: "Adjunct for haze and body"
+    },
+    {
+      userId: qaUser.id,
+      ingredientCatalogItemId: irishMoss.id,
+      enteredQuantity: 50,
+      enteredUnit: "g",
+      normalizedQuantity: 50,
+      normalizedUnit: "g",
+      unitDimension: "weight",
+      notes: "Kettle finings"
+    },
+    {
+      userId: qaUser.id,
+      ingredientCatalogItemId: yeastNutrient.id,
+      enteredQuantity: 100,
+      enteredUnit: "g",
+      normalizedQuantity: 100,
+      normalizedUnit: "g",
+      unitDimension: "weight",
+      notes: "Fermentation support"
+    },
+    {
+      userId: qaUser.id,
+      ingredientCatalogItemId: calciumChloride.id,
+      enteredQuantity: 250,
+      enteredUnit: "g",
+      normalizedQuantity: 250,
+      normalizedUnit: "g",
+      unitDimension: "weight",
+      notes: "Water profile adjustment"
     },
     {
       userId: qaAdmin.id,
@@ -289,6 +215,36 @@ const run = async () => {
       normalizedUnit: "g",
       unitDimension: "weight",
       notes: "Admin QA account stock"
+    },
+    {
+      userId: qaAdmin.id,
+      ingredientCatalogItemId: honey.id,
+      enteredQuantity: 1500,
+      enteredUnit: "g",
+      normalizedQuantity: 1500,
+      normalizedUnit: "g",
+      unitDimension: "weight",
+      notes: "Special fermentables sample"
+    },
+    {
+      userId: qaAdmin.id,
+      ingredientCatalogItemId: riceHulls.id,
+      enteredQuantity: 500,
+      enteredUnit: "g",
+      normalizedQuantity: 500,
+      normalizedUnit: "g",
+      unitDimension: "weight",
+      notes: "Lautering adjunct"
+    },
+    {
+      userId: qaAdmin.id,
+      ingredientCatalogItemId: gelatin.id,
+      enteredQuantity: 100,
+      enteredUnit: "g",
+      normalizedQuantity: 100,
+      normalizedUnit: "g",
+      unitDimension: "weight",
+      notes: "Cold crash finings"
     }
   ]);
 

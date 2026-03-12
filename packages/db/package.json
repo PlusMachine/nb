@@ -11,12 +11,12 @@
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "test": "vitest run --passWithNoTests",
     "db:generate": "[ -e ../../node_modules/drizzle-orm ] || ln -s ../packages/db/node_modules/drizzle-orm ../../node_modules/drizzle-orm; drizzle-kit generate",
-    "db:migrate": "tsx scripts/migrate.ts",
-    "db:seed": "tsx scripts/seed.ts",
-    "db:reset": "tsx scripts/reset.ts",
-    "seed:dev-user": "tsx scripts/seed-dev-user.ts",
-    "set-role": "tsx scripts/set-role.ts",
-    "seed:qa": "tsx scripts/seed-qa.ts"
+    "db:migrate": "TMPDIR=/tmp TEMP=/tmp TMP=/tmp tsx scripts/migrate.ts",
+    "db:seed": "TMPDIR=/tmp TEMP=/tmp TMP=/tmp tsx scripts/seed.ts",
+    "db:reset": "TMPDIR=/tmp TEMP=/tmp TMP=/tmp tsx scripts/reset.ts",
+    "seed:dev-user": "TMPDIR=/tmp TEMP=/tmp TMP=/tmp tsx scripts/seed-dev-user.ts",
+    "set-role": "TMPDIR=/tmp TEMP=/tmp TMP=/tmp tsx scripts/set-role.ts",
+    "seed:qa": "TMPDIR=/tmp TEMP=/tmp TMP=/tmp tsx scripts/seed-qa.ts"
   },
   "dependencies": {
     "@nb/shared": "*",
