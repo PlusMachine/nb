@@ -40,6 +40,10 @@ export function RecipeList({ recipes }: { recipes: RecipeListItemDto[] }) {
               <Link href={`/app/recipes/${recipe.id}`} className="text-sm font-medium text-blue-700 hover:text-blue-900">
                 Открыть рецепт
               </Link>
+              <span className="mx-2 text-zinc-400">·</span>
+              <Link href={`/app/recipes/${recipe.id}/edit`} className="text-sm font-medium text-zinc-700 hover:text-zinc-900">
+                Редактировать
+              </Link>
             </div>
           </article>
         </li>

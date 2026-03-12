@@ -58,7 +58,7 @@ describe("recipes read components", () => {
     const html = renderToStaticMarkup(React.createElement(RecipeEmptyState));
 
     expect(html).toContain("Пока нет рецептов");
-    expect(html).toContain("Создать рецепт (скоро)");
+    expect(html).toContain("Создать рецепт");
   });
 
   it("renders stats summary", () => {

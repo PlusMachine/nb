@@ -1,4 +1,5 @@
 import React from "react";
+import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { RecipeIngredientsSection } from "@/components/recipes/recipe-ingredients-section";
@@ -34,6 +35,11 @@ export default async function RecipeDetailPage({ params }: { params: Promise<{ i
           </div>
           <h1 className="text-2xl font-semibold text-zinc-950">{recipe.title}</h1>
           <p className="text-sm text-zinc-600">Объём партии: {recipe.batchSizeEnteredQuantity} {recipe.batchSizeEnteredUnit}</p>
+          {recipe.authorId === user.id && (
+            <div>
+              <Link href={`/app/recipes/${recipe.id}/edit`} className="text-sm font-medium text-blue-700 hover:text-blue-900">Редактировать рецепт</Link>
+            </div>
+          )}
         </section>
 
         <RecipeStatsSummary recipe={recipe} />

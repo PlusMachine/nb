@@ -436,3 +436,18 @@ export const getRecipeById = async (viewerId: string | null, recipeId: string): 
   const recipe = await ensureAccessibleRecipe(viewerId, recipeId);
   return mapRecipeDetailDto(recipe, recipe.ingredients);
 };
+
+export const getOwnedRecipeById = async (authorId: string, recipeId: string): Promise<RecipeDetailDto> => {
+  const recipe = await db.query.recipes.findFirst({
+    where: and(eq(recipes.id, recipeId), eq(recipes.authorId, authorId)),
+    with: {
+      ingredients: true
+    }
+  });
+
+  if (!recipe) {
+    throw new Error("NOT_FOUND");
+  }
+
+  return mapRecipeDetailDto(recipe, recipe.ingredients);
+};
