@@ -1,13 +1,12 @@
 import React from "react";
 
-import type { RecipeDetailDto } from "@/features/recipes/contracts";
+import { recipePublicationStateLabels, type RecipeDetailDto } from "@/features/recipes/contracts";
 
 export function PublicRecipeHeader({ recipe }: { recipe: RecipeDetailDto }) {
   return (
     <section className="space-y-3 rounded-xl border border-zinc-200 bg-white p-4">
       <div className="flex flex-wrap items-center gap-2 text-xs text-zinc-600">
-        <span className="rounded-full bg-emerald-100 px-2 py-1 font-medium text-emerald-800">Опубликован</span>
-        <span className="rounded-full bg-blue-100 px-2 py-1 font-medium text-blue-800">Публичный</span>
+        <span className="rounded-full bg-emerald-100 px-2 py-1 font-medium text-emerald-800">{recipePublicationStateLabels[recipe.publicationState]}</span>
       </div>
 
       <h1 className="text-2xl font-semibold text-zinc-950 sm:text-3xl">{recipe.title}</h1>

@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useState } from "react";
 
 import { createRecipeAction, updateRecipeAction, type RecipeEditorResult } from "@/app/(app)/app/recipes/actions";
-import type { RecipeDetailDto } from "@/features/recipes/contracts";
+import type { RecipeDetailDto, RecipePublicationState } from "@/features/recipes/contracts";
 
 import { RecipeBatchSizeFields } from "./recipe-batch-size-fields";
 import { RecipeEditorErrorState } from "./recipe-editor-error-state";
@@ -32,12 +32,17 @@ const toIngredientRow = (ingredient: RecipeDetailDto["ingredients"][number]): Re
 });
 
 export function RecipeForm({ mode, initialRecipe }: Props) {
-  const [meta, setMeta] = useState({
+  const [meta, setMeta] = useState<{
+    title: string;
+    description: string;
+    authorNotes: string;
+    publicationState: RecipePublicationState;
+    efficiency: string;
+  }>({
     title: initialRecipe?.title ?? "",
     description: initialRecipe?.description ?? "",
     authorNotes: initialRecipe?.authorNotes ?? "",
-    status: initialRecipe?.status ?? "draft",
-    visibility: initialRecipe?.visibility ?? "private",
+    publicationState: initialRecipe?.publicationState ?? "draft",
     efficiency: initialRecipe?.efficiency ? String(initialRecipe.efficiency) : ""
   });
   const [batchSize, setBatchSize] = useState<{ quantity: string; unit: string }>({
@@ -58,8 +63,7 @@ export function RecipeForm({ mode, initialRecipe }: Props) {
       title: meta.title,
       description: meta.description.trim() || null,
       authorNotes: meta.authorNotes.trim() || null,
-      status: meta.status,
-      visibility: meta.visibility,
+      publicationState: meta.publicationState,
       batchSizeEnteredQuantity: Number(batchSize.quantity),
       batchSizeEnteredUnit: batchSize.unit,
       efficiency: meta.efficiency.trim() ? Number(meta.efficiency) : null,

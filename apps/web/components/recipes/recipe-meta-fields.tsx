@@ -2,15 +2,18 @@
 
 import React from "react";
 
-import { recipeStatuses, recipeVisibilities, type RecipeStatus, type RecipeVisibility } from "@/features/recipes/contracts";
+import {
+  recipePublicationStateLabels,
+  recipePublicationStates,
+  type RecipePublicationState
+} from "@/features/recipes/contracts";
 
 type Props = {
   value: {
     title: string;
     description: string;
     authorNotes: string;
-    status: RecipeStatus;
-    visibility: RecipeVisibility;
+    publicationState: RecipePublicationState;
     efficiency: string;
   };
   onChange: (patch: Partial<Props["value"]>) => void;
@@ -32,28 +35,19 @@ export function RecipeMetaFields({ value, onChange, fieldErrors }: Props) {
         />
       </div>
 
-      <div className="grid gap-3 sm:grid-cols-2">
-        <div className="space-y-1">
-          <label className="text-sm font-medium">Статус</label>
-          <select
-            value={value.status}
-            onChange={(event) => onChange({ status: event.target.value as RecipeStatus })}
-            className="h-10 w-full rounded-md border border-zinc-200 px-3 text-sm"
-          >
-            {recipeStatuses.map((status) => <option key={status} value={status}>{status}</option>)}
-          </select>
-        </div>
-
-        <div className="space-y-1">
-          <label className="text-sm font-medium">Видимость</label>
-          <select
-            value={value.visibility}
-            onChange={(event) => onChange({ visibility: event.target.value as RecipeVisibility })}
-            className="h-10 w-full rounded-md border border-zinc-200 px-3 text-sm"
-          >
-            {recipeVisibilities.map((visibility) => <option key={visibility} value={visibility}>{visibility}</option>)}
-          </select>
-        </div>
+      <div className="space-y-1">
+        <label className="text-sm font-medium">Публикация</label>
+        <select
+          value={value.publicationState}
+          onChange={(event) => onChange({ publicationState: event.target.value as RecipePublicationState })}
+          className="h-10 w-full rounded-md border border-zinc-200 px-3 text-sm"
+        >
+          {recipePublicationStates.map((publicationState) => (
+            <option key={publicationState} value={publicationState}>
+              {recipePublicationStateLabels[publicationState]}
+            </option>
+          ))}
+        </select>
       </div>
 
       <div className="space-y-1">

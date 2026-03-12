@@ -6,8 +6,7 @@ import type { RecipeDetailDto, RecipeListItemDto } from "../features/recipes/con
 const publicRecipe: RecipeDetailDto = {
   id: "r-public",
   authorId: "u-1",
-  status: "published",
-  visibility: "public",
+  publicationState: "published",
   title: "Public IPA",
   slug: "public-ipa",
   styleId: null,
@@ -50,8 +49,7 @@ const publicList: RecipeListItemDto[] = [
   {
     id: "r-public",
     authorId: "u-1",
-    status: "published",
-    visibility: "public",
+    publicationState: "published",
     title: "Public IPA",
     slug: "public-ipa",
     styleId: null,

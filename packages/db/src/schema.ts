@@ -12,8 +12,7 @@ export const hopFormEnum = pgEnum("hop_form", ["pellet", "whole_cone", "lupulin"
 export const yeastTypeEnum = pgEnum("yeast_type", ["ale", "lager", "wine"]);
 export const yeastFormEnum = pgEnum("yeast_form", ["dry", "liquid"]);
 export const inventoryUnitDimensionEnum = pgEnum("inventory_unit_dimension", ["weight", "volume", "count"]);
-export const recipeStatusEnum = pgEnum("recipe_status", ["draft", "private", "published"]);
-export const recipeVisibilityEnum = pgEnum("recipe_visibility", ["private", "public"]);
+export const recipePublicationStateEnum = pgEnum("recipe_publication_state", ["draft", "private", "published"]);
 export const recipeIngredientStageEnum = pgEnum("recipe_ingredient_stage", ["mash", "boil", "whirlpool", "fermentation", "packaging", "other"]);
 
 export const users = pgTable("users", {
@@ -198,8 +197,7 @@ export const userIngredients = pgTable("user_ingredients", {
 export const recipes = pgTable("recipes", {
   id: uuid("id").defaultRandom().primaryKey(),
   authorId: uuid("author_id").notNull().references(() => users.id, { onDelete: "cascade" }),
-  status: recipeStatusEnum("status").default("draft").notNull(),
-  visibility: recipeVisibilityEnum("visibility").default("private").notNull(),
+  publicationState: recipePublicationStateEnum("publication_state").default("draft").notNull(),
   title: varchar("title", { length: 180 }).notNull(),
   slug: varchar("slug", { length: 220 }).notNull(),
   styleId: varchar("style_id", { length: 64 }),
@@ -220,8 +218,7 @@ export const recipes = pgTable("recipes", {
   updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull()
 }, (table) => ({
   authorIdIdx: index("recipes_author_id_idx").on(table.authorId),
-  statusIdx: index("recipes_status_idx").on(table.status),
-  visibilityIdx: index("recipes_visibility_idx").on(table.visibility),
+  publicationStateIdx: index("recipes_publication_state_idx").on(table.publicationState),
   slugIdx: uniqueIndex("recipes_slug_uidx").on(table.slug)
 }));
 

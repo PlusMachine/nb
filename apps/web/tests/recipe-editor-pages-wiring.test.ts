@@ -5,8 +5,7 @@ import { describe, expect, it, vi } from "vitest";
 const recipe = {
   id: "r-1",
   authorId: "u-1",
-  status: "draft",
-  visibility: "private",
+  publicationState: "draft",
   title: "Edit me",
   slug: "public-ipa",
   styleId: null,

@@ -21,8 +21,7 @@ describe("recipe editor actions", () => {
 
     const result = await createRecipeAction({
       title: "IPA",
-      status: "draft",
-      visibility: "private",
+      publicationState: "draft",
       batchSizeEnteredQuantity: 20,
       batchSizeEnteredUnit: "l",
       ingredients: []
@@ -39,8 +38,7 @@ describe("recipe editor actions", () => {
 
     const result = await updateRecipeAction("r-2", {
       title: "IPA2",
-      status: "private",
-      visibility: "private",
+      publicationState: "private",
       batchSizeEnteredQuantity: 22,
       batchSizeEnteredUnit: "l",
       ingredients: []
@@ -56,8 +54,7 @@ describe("recipe editor actions", () => {
 
     const result = await createRecipeAction({
       title: "Bad",
-      status: "draft",
-      visibility: "private",
+      publicationState: "draft",
       batchSizeEnteredQuantity: 20,
       batchSizeEnteredUnit: "l",
       ingredients: []

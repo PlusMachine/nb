@@ -3,13 +3,17 @@ import { z } from "zod";
 import { ingredientTypes, type IngredientType } from "../ingredients/contracts";
 import { inventoryUnits, type InventoryUnit } from "../inventory/units";
 
-export const recipeStatuses = ["draft", "private", "published"] as const;
-export const recipeVisibilities = ["private", "public"] as const;
+export const recipePublicationStates = ["draft", "private", "published"] as const;
 export const recipeIngredientStages = ["mash", "boil", "whirlpool", "fermentation", "packaging", "other"] as const;
 
-export type RecipeStatus = (typeof recipeStatuses)[number];
-export type RecipeVisibility = (typeof recipeVisibilities)[number];
+export type RecipePublicationState = (typeof recipePublicationStates)[number];
 export type RecipeIngredientStage = (typeof recipeIngredientStages)[number];
+
+export const recipePublicationStateLabels: Record<RecipePublicationState, string> = {
+  draft: "Черновик",
+  private: "Личный",
+  published: "Опубликован"
+};
 
 export const recipeSourceLinkageSchema = z.object({
   ingredientCatalogItemId: z.string().uuid().optional().nullable(),
@@ -44,8 +48,7 @@ export const recipeIngredientPayloadSchema = z.object({
 });
 
 const baseRecipePayloadSchema = z.object({
-  status: z.enum(recipeStatuses).default("draft"),
-  visibility: z.enum(recipeVisibilities).default("private"),
+  publicationState: z.enum(recipePublicationStates).default("draft"),
   title: z.string().trim().min(2).max(180),
   styleId: z.string().trim().max(64).optional().nullable(),
   batchSizeEnteredQuantity: z.coerce.number().positive(),
@@ -66,8 +69,7 @@ export const updateRecipePayloadSchema = baseRecipePayloadSchema.partial().exten
 });
 
 export const listAuthorRecipesQuerySchema = z.object({
-  status: z.enum(recipeStatuses).optional(),
-  visibility: z.enum(recipeVisibilities).optional(),
+  publicationState: z.enum(recipePublicationStates).optional(),
   limit: z.coerce.number().int().min(1).max(100).default(50)
 });
 
@@ -91,8 +93,7 @@ export type RecipeIngredientDto = {
 export type RecipeListItemDto = {
   id: string;
   authorId: string;
-  status: RecipeStatus;
-  visibility: RecipeVisibility;
+  publicationState: RecipePublicationState;
   title: string;
   slug: string;
   styleId: string | null;

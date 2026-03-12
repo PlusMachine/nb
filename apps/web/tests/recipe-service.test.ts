@@ -6,7 +6,7 @@ const uuid = (n: number) => `00000000-0000-4000-8000-${String(n).padStart(12, "0
 
 const { tableRefs, mockState } = vi.hoisted(() => ({
   tableRefs: {
-    recipes: { name: "recipes", id: "id", authorId: "authorId", status: "status", visibility: "visibility", slug: "slug", createdAt: "createdAt", updatedAt: "updatedAt" },
+    recipes: { name: "recipes", id: "id", authorId: "authorId", publicationState: "publicationState", slug: "slug", createdAt: "createdAt", updatedAt: "updatedAt" },
     recipeIngredients: { name: "recipe_ingredients", id: "id", recipeId: "recipeId", ingredientCatalogItemId: "ingredientCatalogItemId", userCustomIngredientId: "userCustomIngredientId", type: "type", stage: "stage" },
     ingredientCatalogItems: { name: "ingredientCatalogItems", id: "id", status: "status", type: "type" },
     userCustomIngredients: { name: "userCustomIngredients", id: "id", userId: "userId", type: "type" }
@@ -52,13 +52,11 @@ vi.mock("@nb/db", () => {
         },
         findMany: async (arg: any) => {
           const authorId = getEqValue(arg?.where, "authorId");
-          const status = getEqValue(arg?.where, "status");
-          const visibility = getEqValue(arg?.where, "visibility");
+          const publicationState = getEqValue(arg?.where, "publicationState");
 
           return [...mockState.recipesById.values()]
             .filter((recipe) => (authorId ? recipe.authorId === authorId : true))
-            .filter((recipe) => (status ? recipe.status === status : true))
-            .filter((recipe) => (visibility ? recipe.visibility === visibility : true));
+            .filter((recipe) => (publicationState ? recipe.publicationState === publicationState : true));
         }
       },
       recipeIngredients: {
@@ -204,8 +202,7 @@ describe("recipe service", () => {
   it("public accessor by slug allows only published public recipes", async () => {
     const recipe = await createRecipe("u1", {
       title: "Public recipe",
-      status: "published",
-      visibility: "public",
+      publicationState: "published",
       batchSizeEnteredQuantity: 20,
       batchSizeEnteredUnit: "l"
     });
@@ -217,16 +214,14 @@ describe("recipe service", () => {
   it("public accessor by slug blocks private or draft recipes", async () => {
     const privateRecipe = await createRecipe("u1", {
       title: "Not public",
-      status: "published",
-      visibility: "private",
+      publicationState: "private",
       batchSizeEnteredQuantity: 20,
       batchSizeEnteredUnit: "l"
     });
 
     const draftRecipe = await createRecipe("u1", {
       title: "Draft",
-      status: "draft",
-      visibility: "public",
+      publicationState: "draft",
       batchSizeEnteredQuantity: 20,
       batchSizeEnteredUnit: "l"
     });
@@ -236,9 +231,9 @@ describe("recipe service", () => {
   });
 
   it("listPublicRecipes returns only published public recipes", async () => {
-    await createRecipe("u1", { title: "Public 1", status: "published", visibility: "public", batchSizeEnteredQuantity: 20, batchSizeEnteredUnit: "l" });
-    await createRecipe("u1", { title: "Private", status: "published", visibility: "private", batchSizeEnteredQuantity: 20, batchSizeEnteredUnit: "l" });
-    await createRecipe("u1", { title: "Draft", status: "draft", visibility: "public", batchSizeEnteredQuantity: 20, batchSizeEnteredUnit: "l" });
+    await createRecipe("u1", { title: "Public 1", publicationState: "published", batchSizeEnteredQuantity: 20, batchSizeEnteredUnit: "l" });
+    await createRecipe("u1", { title: "Private", publicationState: "private", batchSizeEnteredQuantity: 20, batchSizeEnteredUnit: "l" });
+    await createRecipe("u1", { title: "Draft", publicationState: "draft", batchSizeEnteredQuantity: 20, batchSizeEnteredUnit: "l" });
 
     const list = await listPublicRecipes();
     expect(list).toHaveLength(1);
@@ -246,7 +241,7 @@ describe("recipe service", () => {
   });
 
   it("private ownership rule denies non-owner read", async () => {
-    const recipe = await createRecipe("u1", { title: "Private", status: "private", visibility: "private", batchSizeEnteredQuantity: 12, batchSizeEnteredUnit: "l" });
+    const recipe = await createRecipe("u1", { title: "Private", publicationState: "private", batchSizeEnteredQuantity: 12, batchSizeEnteredUnit: "l" });
     await expect(getRecipeById("u2", recipe.id)).rejects.toThrowError("FORBIDDEN");
   });
 });

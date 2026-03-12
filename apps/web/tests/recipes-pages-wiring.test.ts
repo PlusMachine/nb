@@ -7,8 +7,7 @@ import type { RecipeDetailDto, RecipeListItemDto } from "../features/recipes/con
 const recipeListItem: RecipeListItemDto = {
   id: "r-1",
   authorId: "u-1",
-  status: "draft",
-  visibility: "private",
+  publicationState: "draft",
   title: "My Pils",
   slug: "public-ipa",
   styleId: null,

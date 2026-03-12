@@ -18,8 +18,7 @@ import type { RecipeDetailDto } from "../features/recipes/contracts";
 const recipeDetail: RecipeDetailDto = {
   id: "r-1",
   authorId: "u-1",
-  status: "draft",
-  visibility: "private",
+  publicationState: "published",
   title: "Hazy IPA",
   slug: "public-ipa",
   styleId: null,

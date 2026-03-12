@@ -11,8 +11,7 @@ export type RecipeEditorPayload = {
   title: string;
   description?: string | null;
   authorNotes?: string | null;
-  status: "draft" | "private" | "published";
-  visibility: "private" | "public";
+  publicationState: "draft" | "private" | "published";
   batchSizeEnteredQuantity: number;
   batchSizeEnteredUnit: string;
   efficiency?: number | null;

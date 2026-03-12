@@ -24,7 +24,7 @@ import {
   type RecipeDetailDto,
   type RecipeIngredientDto,
   type RecipeListItemDto,
-  type RecipeStatus,
+  type RecipePublicationState,
   updateRecipePayloadSchema
 } from "./contracts";
 import {
@@ -68,7 +68,7 @@ const ensureAccessibleRecipe = async (viewerId: string | null, recipeId: string)
   }
 
   const isOwner = viewerId === recipe.authorId;
-  if (!isOwner && recipe.status !== "published") {
+  if (!isOwner && recipe.publicationState !== "published") {
     throw new Error("FORBIDDEN");
   }
 
@@ -87,7 +87,7 @@ const ensurePublicRecipe = async (recipeId: string) => {
     throw new Error("NOT_FOUND");
   }
 
-  if (recipe.status !== "published" || recipe.visibility !== "public") {
+  if (recipe.publicationState !== "published") {
     throw new Error("FORBIDDEN");
   }
 
@@ -106,7 +106,7 @@ const ensurePublicRecipeBySlug = async (slug: string) => {
     throw new Error("NOT_FOUND");
   }
 
-  if (recipe.status !== "published" || recipe.visibility !== "public") {
+  if (recipe.publicationState !== "published") {
     throw new Error("FORBIDDEN");
   }
 
@@ -195,8 +195,7 @@ const mapIngredientDto = (ingredient: typeof recipeIngredients.$inferSelect): Re
 const mapRecipeListDto = (recipe: typeof recipes.$inferSelect): RecipeListItemDto => ({
   id: recipe.id,
   authorId: recipe.authorId,
-  status: recipe.status,
-  visibility: recipe.visibility,
+  publicationState: recipe.publicationState,
   title: recipe.title,
   slug: recipe.slug,
   styleId: recipe.styleId,
@@ -401,8 +400,7 @@ export const createRecipe = async (authorId: string, payload: unknown) => {
     try {
       [created] = await db.insert(recipes).values({
         authorId,
-        status: parsed.status,
-        visibility: parsed.visibility,
+        publicationState: parsed.publicationState,
         title: parsed.title,
         slug,
         styleId: parsed.styleId ?? null,
@@ -454,8 +452,7 @@ export const updateRecipe = async (authorId: string, recipeId: string, payload: 
 
     try {
       [updated] = await db.update(recipes).set({
-        status: parsed.status ?? current.status,
-        visibility: parsed.visibility ?? current.visibility,
+        publicationState: parsed.publicationState ?? current.publicationState,
         title: nextTitle,
         slug,
         styleId: parsed.styleId !== undefined ? parsed.styleId : current.styleId,
@@ -507,8 +504,7 @@ export const listRecipesForAuthor = async (authorId: string, query: unknown = {}
   const rows = await db.query.recipes.findMany({
     where: and(
       eq(recipes.authorId, authorId),
-      parsed.status ? eq(recipes.status, parsed.status as RecipeStatus) : undefined,
-      parsed.visibility ? eq(recipes.visibility, parsed.visibility) : undefined
+      parsed.publicationState ? eq(recipes.publicationState, parsed.publicationState as RecipePublicationState) : undefined
     ),
     orderBy: [asc(recipes.createdAt)],
     limit: parsed.limit
@@ -549,7 +545,7 @@ export const getPublicRecipeBySlug = async (slug: string): Promise<RecipeDetailD
 
 export const listPublicRecipes = async (limit = 50): Promise<RecipeListItemDto[]> => {
   const rows = await db.query.recipes.findMany({
-    where: and(eq(recipes.status, "published"), eq(recipes.visibility, "public")),
+    where: eq(recipes.publicationState, "published"),
     orderBy: [desc(recipes.updatedAt)],
     limit
   });
