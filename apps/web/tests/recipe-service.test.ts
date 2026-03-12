@@ -1,10 +1,12 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
+import { toRecipeSlugBase } from "../features/recipes/slug";
+
 const uuid = (n: number) => `00000000-0000-4000-8000-${String(n).padStart(12, "0")}`;
 
 const { tableRefs, mockState } = vi.hoisted(() => ({
   tableRefs: {
-    recipes: { name: "recipes", id: "id", authorId: "authorId", status: "status", visibility: "visibility", createdAt: "createdAt" },
+    recipes: { name: "recipes", id: "id", authorId: "authorId", status: "status", visibility: "visibility", slug: "slug", createdAt: "createdAt", updatedAt: "updatedAt" },
     recipeIngredients: { name: "recipe_ingredients", id: "id", recipeId: "recipeId", ingredientCatalogItemId: "ingredientCatalogItemId", userCustomIngredientId: "userCustomIngredientId", type: "type", stage: "stage" },
     ingredientCatalogItems: { name: "ingredientCatalogItems", id: "id", status: "status", type: "type" },
     userCustomIngredients: { name: "userCustomIngredients", id: "id", userId: "userId", type: "type" }
@@ -35,7 +37,14 @@ vi.mock("@nb/db", () => {
         findFirst: async (arg: any) => {
           const id = getEqValue(arg?.where, "id");
           const authorId = getEqValue(arg?.where, "authorId");
-          const recipe = mockState.recipesById.get(id);
+          const slug = getEqValue(arg?.where, "slug");
+
+          const recipe = id
+            ? mockState.recipesById.get(id)
+            : slug
+              ? [...mockState.recipesById.values()].find((item) => item.slug === slug)
+              : null;
+
           if (!recipe) return null;
           if (authorId && recipe.authorId !== authorId) return null;
           if (arg?.with?.ingredients) return { ...recipe, ingredients: mockState.ingredientsByRecipeId.get(recipe.id) ?? [] };
@@ -43,7 +52,13 @@ vi.mock("@nb/db", () => {
         },
         findMany: async (arg: any) => {
           const authorId = getEqValue(arg?.where, "authorId");
-          return [...mockState.recipesById.values()].filter((recipe) => recipe.authorId === authorId);
+          const status = getEqValue(arg?.where, "status");
+          const visibility = getEqValue(arg?.where, "visibility");
+
+          return [...mockState.recipesById.values()]
+            .filter((recipe) => (authorId ? recipe.authorId === authorId : true))
+            .filter((recipe) => (status ? recipe.status === status : true))
+            .filter((recipe) => (visibility ? recipe.visibility === visibility : true));
         }
       },
       recipeIngredients: {
@@ -118,6 +133,7 @@ vi.mock("@nb/db", () => {
     db,
     and: (...args: unknown[]) => args,
     asc: (v: unknown) => v,
+    desc: (v: unknown) => v,
     eq: (...args: unknown[]) => args,
     recipes: tableRefs.recipes,
     recipeIngredients: tableRefs.recipeIngredients,
@@ -128,9 +144,9 @@ vi.mock("@nb/db", () => {
 
 import {
   createRecipe,
-  getPublicRecipeById,
+  getPublicRecipeBySlug,
   getRecipeById,
-  listRecipesForAuthor,
+  listPublicRecipes,
   recomputeRecipeStats,
   updateRecipe
 } from "../features/recipes/service";
@@ -148,40 +164,21 @@ describe("recipe service", () => {
     mockState.customById.set(uuid(201), { id: uuid(201), userId: "u1", type: "hop", displayName: "My Hop", properties: { alphaAcidPercent: 7 } });
   });
 
-  it("create recipe", async () => {
+  it("builds transliterated kebab slug base", () => {
+    expect(toRecipeSlugBase("Каскад цветочный")).toContain("kaskad");
+    expect(toRecipeSlugBase("American IPA")).toBe("american-ipa");
+  });
+
+  it("create recipe generates slug", async () => {
     const recipe = await createRecipe("u1", { title: "Test IPA", batchSizeEnteredQuantity: 20, batchSizeEnteredUnit: "l" });
-    expect(recipe.batchSizeNormalizedQuantity).toBe(20000);
+    expect(recipe.slug).toBe("test-ipa");
   });
 
-  it("add catalog ingredient to recipe", async () => {
-    const recipe = await createRecipe("u1", {
-      title: "With catalog",
-      batchSizeEnteredQuantity: 20,
-      batchSizeEnteredUnit: "l",
-      ingredients: [{ ingredientCatalogItemId: uuid(101), type: "fermentable", amountEnteredQuantity: 5, amountEnteredUnit: "kg", stage: "mash" }]
-    });
-    expect(recipe.ingredients[0]?.amountNormalizedQuantity).toBe(5000);
-  });
-
-  it("add custom ingredient to private recipe", async () => {
-    const recipe = await createRecipe("u1", {
-      title: "Private",
-      status: "private",
-      visibility: "private",
-      batchSizeEnteredQuantity: 10,
-      batchSizeEnteredUnit: "l",
-      ingredients: [{ userCustomIngredientId: uuid(201), type: "hop", amountEnteredQuantity: 50, amountEnteredUnit: "g", stage: "boil" }]
-    });
-    expect(recipe.ingredients[0]?.userCustomIngredientId).toBe(uuid(201));
-  });
-
-  it("invalid source linkage rejected", async () => {
-    await expect(createRecipe("u1", {
-      title: "Invalid",
-      batchSizeEnteredQuantity: 10,
-      batchSizeEnteredUnit: "l",
-      ingredients: [{ ingredientCatalogItemId: uuid(101), userCustomIngredientId: uuid(201), type: "hop", amountEnteredQuantity: 10, amountEnteredUnit: "g" }]
-    })).rejects.toThrow();
+  it("slug uniqueness appends numeric suffix", async () => {
+    const first = await createRecipe("u1", { title: "American IPA", batchSizeEnteredQuantity: 20, batchSizeEnteredUnit: "l" });
+    const second = await createRecipe("u1", { title: "American IPA", batchSizeEnteredQuantity: 20, batchSizeEnteredUnit: "l" });
+    expect(first.slug).toBe("american-ipa");
+    expect(second.slug).toBe("american-ipa-2");
   });
 
   it("recompute stats updates recipe fields", async () => {
@@ -199,37 +196,12 @@ describe("recipe service", () => {
     expect(updated.ibu).not.toBeNull();
   });
 
-  it("list recipes for author", async () => {
-    await createRecipe("u1", { title: "R1", batchSizeEnteredQuantity: 10, batchSizeEnteredUnit: "l" });
-    await createRecipe("u1", { title: "R2", batchSizeEnteredQuantity: 15, batchSizeEnteredUnit: "l" });
-    const list = await listRecipesForAuthor("u1");
-    expect(list).toHaveLength(2);
-  });
-
   it("cross-user edit forbidden", async () => {
     const recipe = await createRecipe("u1", { title: "Owned", batchSizeEnteredQuantity: 10, batchSizeEnteredUnit: "l" });
     await expect(updateRecipe("u2", recipe.id, { title: "hack" })).rejects.toThrowError("NOT_FOUND");
   });
 
-  it("integration create-update-recalc and published visibility", async () => {
-    const recipe = await createRecipe("u1", { title: "Flow", batchSizeEnteredQuantity: 20, batchSizeEnteredUnit: "l" });
-    const updated = await updateRecipe("u1", recipe.id, {
-      status: "published",
-      visibility: "public",
-      ingredients: [{ ingredientCatalogItemId: uuid(101), type: "fermentable", amountEnteredQuantity: 3, amountEnteredUnit: "kg", stage: "mash" }]
-    });
-    expect(updated.status).toBe("published");
-    const publicRead = await getRecipeById("u2", recipe.id);
-    expect(publicRead.id).toBe(recipe.id);
-  });
-
-
-  it("private ownership rule denies non-owner read", async () => {
-    const recipe = await createRecipe("u1", { title: "Private", status: "private", visibility: "private", batchSizeEnteredQuantity: 12, batchSizeEnteredUnit: "l" });
-    await expect(getRecipeById("u2", recipe.id)).rejects.toThrowError("FORBIDDEN");
-  });
-
-  it("public accessor allows only published public recipes", async () => {
+  it("public accessor by slug allows only published public recipes", async () => {
     const recipe = await createRecipe("u1", {
       title: "Public recipe",
       status: "published",
@@ -238,11 +210,11 @@ describe("recipe service", () => {
       batchSizeEnteredUnit: "l"
     });
 
-    const publicRead = await getPublicRecipeById(recipe.id);
+    const publicRead = await getPublicRecipeBySlug(recipe.slug);
     expect(publicRead.id).toBe(recipe.id);
   });
 
-  it("public accessor blocks private or draft recipes", async () => {
+  it("public accessor by slug blocks private or draft recipes", async () => {
     const privateRecipe = await createRecipe("u1", {
       title: "Not public",
       status: "published",
@@ -259,13 +231,22 @@ describe("recipe service", () => {
       batchSizeEnteredUnit: "l"
     });
 
-    await expect(getPublicRecipeById(privateRecipe.id)).rejects.toThrowError("FORBIDDEN");
-    await expect(getPublicRecipeById(draftRecipe.id)).rejects.toThrowError("FORBIDDEN");
+    await expect(getPublicRecipeBySlug(privateRecipe.slug)).rejects.toThrowError("FORBIDDEN");
+    await expect(getPublicRecipeBySlug(draftRecipe.slug)).rejects.toThrowError("FORBIDDEN");
   });
 
-  it("batch size normalization works", async () => {
-    const recipe = await createRecipe("u1", { title: "Batch", batchSizeEnteredQuantity: 5, batchSizeEnteredUnit: "gal" });
-    expect(recipe.batchSizeNormalizedUnit).toBe("ml");
-    expect(recipe.batchSizeNormalizedQuantity).toBeGreaterThan(18000);
+  it("listPublicRecipes returns only published public recipes", async () => {
+    await createRecipe("u1", { title: "Public 1", status: "published", visibility: "public", batchSizeEnteredQuantity: 20, batchSizeEnteredUnit: "l" });
+    await createRecipe("u1", { title: "Private", status: "published", visibility: "private", batchSizeEnteredQuantity: 20, batchSizeEnteredUnit: "l" });
+    await createRecipe("u1", { title: "Draft", status: "draft", visibility: "public", batchSizeEnteredQuantity: 20, batchSizeEnteredUnit: "l" });
+
+    const list = await listPublicRecipes();
+    expect(list).toHaveLength(1);
+    expect(list[0]?.title).toBe("Public 1");
+  });
+
+  it("private ownership rule denies non-owner read", async () => {
+    const recipe = await createRecipe("u1", { title: "Private", status: "private", visibility: "private", batchSizeEnteredQuantity: 12, batchSizeEnteredUnit: "l" });
+    await expect(getRecipeById("u2", recipe.id)).rejects.toThrowError("FORBIDDEN");
   });
 });

@@ -8,7 +8,7 @@ const recipe = {
   status: "draft",
   visibility: "private",
   title: "Edit me",
-  slug: null,
+  slug: "public-ipa",
   styleId: null,
   batchSizeEnteredQuantity: 20,
   batchSizeEnteredUnit: "l",

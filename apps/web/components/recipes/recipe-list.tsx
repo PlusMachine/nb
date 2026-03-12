@@ -44,6 +44,16 @@ export function RecipeList({ recipes }: { recipes: RecipeListItemDto[] }) {
               <Link href={`/app/recipes/${recipe.id}/edit`} className="text-sm font-medium text-zinc-700 hover:text-zinc-900">
                 Редактировать
               </Link>
+              {recipe.status === "published" && recipe.visibility === "public" && recipe.slug
+                ? (
+                  <>
+                    <span className="mx-2 text-zinc-400">·</span>
+                    <Link href={`/recipes/${recipe.slug}`} className="text-sm font-medium text-emerald-700 hover:text-emerald-900">
+                      Публичная страница
+                    </Link>
+                  </>
+                )
+                : null}
             </div>
           </article>
         </li>

@@ -36,8 +36,11 @@ export default async function RecipeDetailPage({ params }: { params: Promise<{ i
           <h1 className="text-2xl font-semibold text-zinc-950">{recipe.title}</h1>
           <p className="text-sm text-zinc-600">Объём партии: {recipe.batchSizeEnteredQuantity} {recipe.batchSizeEnteredUnit}</p>
           {recipe.authorId === user.id && (
-            <div>
+            <div className="flex flex-wrap gap-x-3 gap-y-1">
               <Link href={`/app/recipes/${recipe.id}/edit`} className="text-sm font-medium text-blue-700 hover:text-blue-900">Редактировать рецепт</Link>
+              {recipe.status === "published" && recipe.visibility === "public" && recipe.slug
+                ? <Link href={`/recipes/${recipe.slug}`} className="text-sm font-medium text-emerald-700 hover:text-emerald-900">Открыть публичную страницу</Link>
+                : null}
             </div>
           )}
         </section>

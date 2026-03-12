@@ -4,10 +4,12 @@ import { describe, expect, it } from "vitest";
 
 import RecipesError from "../app/(app)/app/recipes/error";
 import RecipeDetailError from "../app/(app)/app/recipes/[id]/error";
-import PublicRecipeError from "../app/(public)/recipes/[id]/error";
-import PublicRecipeNotFound from "../app/(public)/recipes/[id]/not-found";
+import PublicRecipeError from "../app/(public)/recipes/[slug]/error";
+import PublicRecipeNotFound from "../app/(public)/recipes/[slug]/not-found";
+import PublicRecipesError from "../app/(public)/recipes/error";
 import { RecipeEmptyState } from "../components/recipes/recipe-empty-state";
 import { PublicRecipePage } from "../components/recipes/public-recipe-page";
+import { PublicRecipeList } from "../components/recipes/public-recipe-list";
 import { RecipeIngredientsSection } from "../components/recipes/recipe-ingredients-section";
 import { RecipeMetaSection } from "../components/recipes/recipe-meta-section";
 import { RecipeStatsSummary } from "../components/recipes/recipe-stats-summary";
@@ -19,7 +21,7 @@ const recipeDetail: RecipeDetailDto = {
   status: "draft",
   visibility: "private",
   title: "Hazy IPA",
-  slug: null,
+  slug: "public-ipa",
   styleId: null,
   batchSizeEnteredQuantity: 20,
   batchSizeEnteredUnit: "l",
@@ -87,6 +89,13 @@ describe("recipes read components", () => {
     expect(html).toContain("Заметки автора");
   });
 
+  it("renders public listing item with slug link", () => {
+    const html = renderToStaticMarkup(React.createElement(PublicRecipeList, { recipes: [recipeDetail] }));
+
+    expect(html).toContain("/recipes/");
+    expect(html).toContain("Ключевые показатели");
+  });
+
   it("renders public recipe page composition", () => {
     const html = renderToStaticMarkup(React.createElement(PublicRecipePage, { recipe: recipeDetail }));
 
@@ -101,11 +110,13 @@ describe("recipes read components", () => {
     const detailErrorHtml = renderToStaticMarkup(React.createElement(RecipeDetailError, { error: new Error("boom"), reset: () => undefined }));
     const publicErrorHtml = renderToStaticMarkup(React.createElement(PublicRecipeError, { error: new Error("boom"), reset: () => undefined }));
     const publicNotFoundHtml = renderToStaticMarkup(React.createElement(PublicRecipeNotFound));
+    const publicListErrorHtml = renderToStaticMarkup(React.createElement(PublicRecipesError, { error: new Error("boom"), reset: () => undefined }));
 
     expect(listErrorHtml).toContain("Не удалось загрузить");
     expect(detailErrorHtml).toContain("Не удалось загрузить рецепт");
     expect(detailErrorHtml).toContain("Повторить");
     expect(publicErrorHtml).toContain("Не удалось загрузить публичный рецепт");
+    expect(publicListErrorHtml).toContain("Не удалось загрузить публичные рецепты");
     expect(publicNotFoundHtml).toContain("Рецепт не найден");
   });
 });

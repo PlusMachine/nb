@@ -10,7 +10,7 @@ const recipeListItem: RecipeListItemDto = {
   status: "draft",
   visibility: "private",
   title: "My Pils",
-  slug: null,
+  slug: "public-ipa",
   styleId: null,
   batchSizeEnteredQuantity: 20,
   batchSizeEnteredUnit: "l",

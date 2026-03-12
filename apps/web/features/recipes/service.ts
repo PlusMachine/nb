@@ -2,6 +2,7 @@ import {
   and,
   asc,
   db,
+  desc,
   eq,
   ingredientCatalogItems,
   recipeIngredients,
@@ -32,6 +33,7 @@ import {
   parseRecipeUnit,
   toBatchVolumeLiters
 } from "./units";
+import { appendSlugSuffix, toRecipeSlugBase } from "./slug";
 
 const DEFAULT_EFFICIENCY = 75;
 const DEFAULT_ATTENUATION = 75;
@@ -86,6 +88,48 @@ const ensurePublicRecipe = async (recipeId: string) => {
 
   return recipe;
 };
+
+const ensurePublicRecipeBySlug = async (slug: string) => {
+  const recipe = await db.query.recipes.findFirst({
+    where: eq(recipes.slug, slug),
+    with: {
+      ingredients: true
+    }
+  });
+
+  if (!recipe) {
+    throw new Error("NOT_FOUND");
+  }
+
+  if (recipe.status !== "published" || recipe.visibility !== "public") {
+    throw new Error("FORBIDDEN");
+  }
+
+  return recipe;
+};
+
+const resolveUniqueRecipeSlug = async (title: string, recipeId?: string) => {
+  const base = toRecipeSlugBase(title);
+  let index = 1;
+
+  while (index <= 1000) {
+    const candidate = appendSlugSuffix(base, index);
+    const existing = await db.query.recipes.findFirst({
+      where: eq(recipes.slug, candidate)
+    });
+
+    if (!existing || existing.id === recipeId) {
+      return candidate;
+    }
+
+    index += 1;
+  }
+
+  throw new Error("SLUG_COLLISION");
+};
+
+const isSlugUniqueConstraintError = (error: unknown) => error instanceof Error
+  && (error.message.includes("recipes_slug_uidx") || (error as { code?: string }).code === "23505");
 
 const ensureCatalogIngredientExists = async (ingredientCatalogItemId: string) => {
   const catalogItem = await db.query.ingredientCatalogItems.findFirst({
@@ -355,23 +399,35 @@ export const recomputeRecipeStats = async (authorId: string, recipeId: string) =
 export const createRecipe = async (authorId: string, payload: unknown) => {
   const parsed = createRecipePayloadSchema.parse(payload);
   const batchSize = normalizeRecipeBatchSize(parsed.batchSizeEnteredQuantity, parsed.batchSizeEnteredUnit);
+  let [created] = [] as Array<typeof recipes.$inferSelect>;
 
-  const [created] = await db.insert(recipes).values({
-    authorId,
-    status: parsed.status,
-    visibility: parsed.visibility,
-    title: parsed.title,
-    slug: parsed.slug ?? null,
-    styleId: parsed.styleId ?? null,
-    batchSizeEnteredQuantity: batchSize.enteredQuantity,
-    batchSizeEnteredUnit: batchSize.enteredUnit,
-    batchSizeNormalizedQuantity: batchSize.normalizedQuantity,
-    batchSizeNormalizedUnit: batchSize.normalizedUnit,
-    efficiency: parsed.efficiency ?? null,
-    description: parsed.description ?? null,
-    authorNotes: parsed.authorNotes ?? null,
-    heroImageId: parsed.heroImageId ?? null
-  }).returning();
+  for (let attempt = 0; attempt < 5; attempt += 1) {
+    const slug = await resolveUniqueRecipeSlug(parsed.title);
+
+    try {
+      [created] = await db.insert(recipes).values({
+        authorId,
+        status: parsed.status,
+        visibility: parsed.visibility,
+        title: parsed.title,
+        slug,
+        styleId: parsed.styleId ?? null,
+        batchSizeEnteredQuantity: batchSize.enteredQuantity,
+        batchSizeEnteredUnit: batchSize.enteredUnit,
+        batchSizeNormalizedQuantity: batchSize.normalizedQuantity,
+        batchSizeNormalizedUnit: batchSize.normalizedUnit,
+        efficiency: parsed.efficiency ?? null,
+        description: parsed.description ?? null,
+        authorNotes: parsed.authorNotes ?? null,
+        heroImageId: parsed.heroImageId ?? null
+      }).returning();
+      break;
+    } catch (error) {
+      if (!isSlugUniqueConstraintError(error) || attempt === 4) {
+        throw error;
+      }
+    }
+  }
 
   if (!created) {
     throw new Error("CREATE_FAILED");
@@ -394,22 +450,38 @@ export const updateRecipe = async (authorId: string, recipeId: string, payload: 
     )
     : null;
 
-  const [updated] = await db.update(recipes).set({
-    status: parsed.status ?? current.status,
-    visibility: parsed.visibility ?? current.visibility,
-    title: parsed.title ?? current.title,
-    slug: parsed.slug !== undefined ? parsed.slug : current.slug,
-    styleId: parsed.styleId !== undefined ? parsed.styleId : current.styleId,
-    batchSizeEnteredQuantity: batchSize?.enteredQuantity ?? current.batchSizeEnteredQuantity,
-    batchSizeEnteredUnit: batchSize?.enteredUnit ?? current.batchSizeEnteredUnit,
-    batchSizeNormalizedQuantity: batchSize?.normalizedQuantity ?? current.batchSizeNormalizedQuantity,
-    batchSizeNormalizedUnit: batchSize?.normalizedUnit ?? current.batchSizeNormalizedUnit,
-    efficiency: parsed.efficiency !== undefined ? parsed.efficiency : current.efficiency,
-    description: parsed.description !== undefined ? parsed.description : current.description,
-    authorNotes: parsed.authorNotes !== undefined ? parsed.authorNotes : current.authorNotes,
-    heroImageId: parsed.heroImageId !== undefined ? parsed.heroImageId : current.heroImageId,
-    updatedAt: new Date()
-  }).where(eq(recipes.id, recipeId)).returning();
+  const nextTitle = parsed.title ?? current.title;
+  const shouldRecomputeSlug = parsed.title !== undefined;
+
+  let [updated] = [] as Array<typeof recipes.$inferSelect>;
+
+  for (let attempt = 0; attempt < 5; attempt += 1) {
+    const slug = shouldRecomputeSlug ? await resolveUniqueRecipeSlug(nextTitle, recipeId) : current.slug;
+
+    try {
+      [updated] = await db.update(recipes).set({
+        status: parsed.status ?? current.status,
+        visibility: parsed.visibility ?? current.visibility,
+        title: nextTitle,
+        slug,
+        styleId: parsed.styleId !== undefined ? parsed.styleId : current.styleId,
+        batchSizeEnteredQuantity: batchSize?.enteredQuantity ?? current.batchSizeEnteredQuantity,
+        batchSizeEnteredUnit: batchSize?.enteredUnit ?? current.batchSizeEnteredUnit,
+        batchSizeNormalizedQuantity: batchSize?.normalizedQuantity ?? current.batchSizeNormalizedQuantity,
+        batchSizeNormalizedUnit: batchSize?.normalizedUnit ?? current.batchSizeNormalizedUnit,
+        efficiency: parsed.efficiency !== undefined ? parsed.efficiency : current.efficiency,
+        description: parsed.description !== undefined ? parsed.description : current.description,
+        authorNotes: parsed.authorNotes !== undefined ? parsed.authorNotes : current.authorNotes,
+        heroImageId: parsed.heroImageId !== undefined ? parsed.heroImageId : current.heroImageId,
+        updatedAt: new Date()
+      }).where(eq(recipes.id, recipeId)).returning();
+      break;
+    } catch (error) {
+      if (!isSlugUniqueConstraintError(error) || attempt === 4) {
+        throw error;
+      }
+    }
+  }
 
   if (!updated) {
     throw new Error("NOT_FOUND");
@@ -474,4 +546,19 @@ export const getOwnedRecipeById = async (authorId: string, recipeId: string): Pr
 export const getPublicRecipeById = async (recipeId: string): Promise<RecipeDetailDto> => {
   const recipe = await ensurePublicRecipe(recipeId);
   return mapRecipeDetailDto(recipe, recipe.ingredients);
+};
+
+export const getPublicRecipeBySlug = async (slug: string): Promise<RecipeDetailDto> => {
+  const recipe = await ensurePublicRecipeBySlug(slug);
+  return mapRecipeDetailDto(recipe, recipe.ingredients);
+};
+
+export const listPublicRecipes = async (limit = 50): Promise<RecipeListItemDto[]> => {
+  const rows = await db.query.recipes.findMany({
+    where: and(eq(recipes.status, "published"), eq(recipes.visibility, "public")),
+    orderBy: [desc(recipes.updatedAt)],
+    limit
+  });
+
+  return rows.map(mapRecipeListDto);
 };

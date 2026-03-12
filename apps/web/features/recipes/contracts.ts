@@ -47,7 +47,6 @@ const baseRecipePayloadSchema = z.object({
   status: z.enum(recipeStatuses).default("draft"),
   visibility: z.enum(recipeVisibilities).default("private"),
   title: z.string().trim().min(2).max(180),
-  slug: z.string().trim().min(2).max(220).optional().nullable(),
   styleId: z.string().trim().max(64).optional().nullable(),
   batchSizeEnteredQuantity: z.coerce.number().positive(),
   batchSizeEnteredUnit: z.string().trim().toLowerCase().pipe(z.enum(inventoryUnits)),
@@ -95,7 +94,7 @@ export type RecipeListItemDto = {
   status: RecipeStatus;
   visibility: RecipeVisibility;
   title: string;
-  slug: string | null;
+  slug: string;
   styleId: string | null;
   batchSizeEnteredQuantity: number;
   batchSizeEnteredUnit: InventoryUnit;

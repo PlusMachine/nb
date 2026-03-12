@@ -1,7 +1,7 @@
 import React from "react";
-import { describe, expect, it, vi, beforeEach } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import type { RecipeDetailDto } from "../features/recipes/contracts";
+import type { RecipeDetailDto, RecipeListItemDto } from "../features/recipes/contracts";
 
 const publicRecipe: RecipeDetailDto = {
   id: "r-public",
@@ -9,7 +9,7 @@ const publicRecipe: RecipeDetailDto = {
   status: "published",
   visibility: "public",
   title: "Public IPA",
-  slug: null,
+  slug: "public-ipa",
   styleId: null,
   batchSizeEnteredQuantity: 20,
   batchSizeEnteredUnit: "l",
@@ -46,49 +46,92 @@ const publicRecipe: RecipeDetailDto = {
   ]
 };
 
+const publicList: RecipeListItemDto[] = [
+  {
+    id: "r-public",
+    authorId: "u-1",
+    status: "published",
+    visibility: "public",
+    title: "Public IPA",
+    slug: "public-ipa",
+    styleId: null,
+    batchSizeEnteredQuantity: 20,
+    batchSizeEnteredUnit: "l",
+    batchSizeNormalizedQuantity: 20000,
+    batchSizeNormalizedUnit: "ml",
+    efficiency: 75,
+    og: 1.06,
+    fg: 1.012,
+    abv: 6.2,
+    ibu: 45,
+    color: 9.5,
+    createdAt: new Date("2026-01-01T00:00:00.000Z"),
+    updatedAt: new Date("2026-01-02T00:00:00.000Z")
+  }
+];
+
 const mocks = vi.hoisted(() => ({
-  getPublicRecipeById: vi.fn(async () => publicRecipe),
+  getPublicRecipeBySlug: vi.fn(async () => publicRecipe),
+  listPublicRecipes: vi.fn(async () => publicList),
   notFound: vi.fn(() => {
     throw new Error("NEXT_NOT_FOUND");
+  }),
+  redirect: vi.fn((to: string) => {
+    throw new Error(`NEXT_REDIRECT:${to}`);
   })
 }));
 
 vi.mock("../features/recipes/service", () => ({
-  getPublicRecipeById: mocks.getPublicRecipeById
+  getPublicRecipeBySlug: mocks.getPublicRecipeBySlug,
+  listPublicRecipes: mocks.listPublicRecipes
 }));
-vi.mock("next/navigation", () => ({ notFound: mocks.notFound }));
+vi.mock("next/navigation", () => ({ notFound: mocks.notFound, redirect: mocks.redirect }));
 
-describe("public recipe page wiring", () => {
+describe("public recipe pages wiring", () => {
   beforeEach(() => {
-    mocks.getPublicRecipeById.mockReset();
-    mocks.getPublicRecipeById.mockResolvedValue(publicRecipe);
+    mocks.getPublicRecipeBySlug.mockReset();
+    mocks.listPublicRecipes.mockReset();
+
+    mocks.getPublicRecipeBySlug.mockResolvedValue(publicRecipe);
+    mocks.listPublicRecipes.mockResolvedValue(publicList);
+
     mocks.notFound.mockClear();
+    mocks.redirect.mockClear();
   });
 
-  it("uses getPublicRecipeById and renders read-only recipe", async () => {
-    const { default: PublicRecipeRoute } = await import("../app/(public)/recipes/[id]/page");
-    const view = await PublicRecipeRoute({ params: Promise.resolve({ id: "r-public" }) });
+  it("uses getPublicRecipeBySlug and renders read-only recipe", async () => {
+    const { default: PublicRecipeRoute } = await import("../app/(public)/recipes/[slug]/page");
+    const view = await PublicRecipeRoute({ params: Promise.resolve({ slug: "public-ipa" }) });
 
-    expect(mocks.getPublicRecipeById).toHaveBeenCalledWith("r-public");
+    expect(mocks.getPublicRecipeBySlug).toHaveBeenCalledWith("public-ipa");
     expect(view).toBeTruthy();
   }, 60000);
 
-  it("returns notFound behavior for inaccessible recipe", async () => {
-    mocks.getPublicRecipeById.mockImplementationOnce(async () => {
+  it("returns notFound behavior for inaccessible slug recipe", async () => {
+    mocks.getPublicRecipeBySlug.mockImplementationOnce(async () => {
       throw new Error("FORBIDDEN");
     });
-    const { default: PublicRecipeRoute } = await import("../app/(public)/recipes/[id]/page");
+    const { default: PublicRecipeRoute } = await import("../app/(public)/recipes/[slug]/page");
 
-    await expect(PublicRecipeRoute({ params: Promise.resolve({ id: "secret" }) })).rejects.toThrow("NEXT_NOT_FOUND");
+    await expect(PublicRecipeRoute({ params: Promise.resolve({ slug: "secret" }) })).rejects.toThrow("NEXT_NOT_FOUND");
     expect(mocks.notFound).toHaveBeenCalled();
   }, 60000);
 
-  it("builds metadata from public recipe", async () => {
-    const { generateMetadata } = await import("../app/(public)/recipes/[id]/page");
-    const metadata = await generateMetadata({ params: Promise.resolve({ id: "r-public" }) });
+  it("builds metadata from slug-based public recipe", async () => {
+    const { generateMetadata } = await import("../app/(public)/recipes/[slug]/page");
+    const metadata = await generateMetadata({ params: Promise.resolve({ slug: "public-ipa" }) });
 
-    expect(mocks.getPublicRecipeById).toHaveBeenCalledWith("r-public");
+    expect(mocks.getPublicRecipeBySlug).toHaveBeenCalledWith("public-ipa");
     expect(metadata.title).toContain("Public IPA");
     expect(metadata.description).toContain("Public desc");
+  });
+
+
+  it("public listing page uses listPublicRecipes accessor", async () => {
+    const { default: PublicRecipesPage } = await import("../app/(public)/recipes/page");
+    const view = await PublicRecipesPage();
+
+    expect(mocks.listPublicRecipes).toHaveBeenCalledWith();
+    expect(view).toBeTruthy();
   });
 });

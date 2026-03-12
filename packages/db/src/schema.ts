@@ -176,7 +176,7 @@ export const recipes = pgTable("recipes", {
   status: recipeStatusEnum("status").default("draft").notNull(),
   visibility: recipeVisibilityEnum("visibility").default("private").notNull(),
   title: varchar("title", { length: 180 }).notNull(),
-  slug: varchar("slug", { length: 220 }),
+  slug: varchar("slug", { length: 220 }).notNull(),
   styleId: varchar("style_id", { length: 64 }),
   batchSizeEnteredQuantity: doublePrecision("batch_size_entered_quantity").notNull(),
   batchSizeEnteredUnit: varchar("batch_size_entered_unit", { length: 32 }).notNull(),
