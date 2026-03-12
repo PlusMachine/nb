@@ -8,6 +8,9 @@ export const ingredientStatusEnum = pgEnum("ingredient_status", ["draft", "activ
 export const ingredientVisibilityEnum = pgEnum("ingredient_visibility", ["public", "internal"]);
 export const proposedIngredientStatusEnum = pgEnum("proposed_ingredient_status", ["pending", "approved", "rejected", "merged"]);
 export const userCustomIngredientVisibilityEnum = pgEnum("user_custom_ingredient_visibility", ["private", "shared"]);
+export const hopFormEnum = pgEnum("hop_form", ["pellet", "whole_cone", "lupulin", "cryo"]);
+export const yeastTypeEnum = pgEnum("yeast_type", ["ale", "lager", "wine"]);
+export const yeastFormEnum = pgEnum("yeast_form", ["dry", "liquid"]);
 export const inventoryUnitDimensionEnum = pgEnum("inventory_unit_dimension", ["weight", "volume", "count"]);
 export const recipeStatusEnum = pgEnum("recipe_status", ["draft", "private", "published"]);
 export const recipeVisibilityEnum = pgEnum("recipe_visibility", ["private", "public"]);
@@ -98,6 +101,16 @@ export const ingredientCatalogItems = pgTable("ingredient_catalog_items", {
   country: varchar("country", { length: 80 }),
   description: text("description"),
   defaultUnit: varchar("default_unit", { length: 32 }).notNull(),
+  fermentableColorEbc: doublePrecision("fermentable_color_ebc"),
+  fermentableExtractYieldPct: doublePrecision("fermentable_extract_yield_pct"),
+  hopAlphaAcidPct: doublePrecision("hop_alpha_acid_pct"),
+  hopForm: hopFormEnum("hop_form"),
+  hopSeason: varchar("hop_season", { length: 32 }),
+  yeastAttenuationPct: doublePrecision("yeast_attenuation_pct"),
+  yeastType: yeastTypeEnum("yeast_type"),
+  yeastForm: yeastFormEnum("yeast_form"),
+  yeastMinFermentationTempC: doublePrecision("yeast_min_fermentation_temp_c"),
+  yeastMaxFermentationTempC: doublePrecision("yeast_max_fermentation_temp_c"),
   properties: jsonb("properties").$type<Record<string, unknown>>().default({}).notNull(),
   status: ingredientStatusEnum("status").default("active").notNull(),
   visibility: ingredientVisibilityEnum("visibility").default("public").notNull(),
@@ -138,6 +151,18 @@ export const userCustomIngredients = pgTable("user_custom_ingredients", {
   type: ingredientTypeEnum("type").notNull(),
   displayName: varchar("display_name", { length: 180 }).notNull(),
   normalizedName: varchar("normalized_name", { length: 220 }).notNull(),
+  manufacturer: varchar("manufacturer", { length: 140 }),
+  country: varchar("country", { length: 80 }),
+  fermentableColorEbc: doublePrecision("fermentable_color_ebc"),
+  fermentableExtractYieldPct: doublePrecision("fermentable_extract_yield_pct"),
+  hopAlphaAcidPct: doublePrecision("hop_alpha_acid_pct"),
+  hopForm: hopFormEnum("hop_form"),
+  hopSeason: varchar("hop_season", { length: 32 }),
+  yeastAttenuationPct: doublePrecision("yeast_attenuation_pct"),
+  yeastType: yeastTypeEnum("yeast_type"),
+  yeastForm: yeastFormEnum("yeast_form"),
+  yeastMinFermentationTempC: doublePrecision("yeast_min_fermentation_temp_c"),
+  yeastMaxFermentationTempC: doublePrecision("yeast_max_fermentation_temp_c"),
   properties: jsonb("properties").$type<Record<string, unknown>>().default({}).notNull(),
   visibility: userCustomIngredientVisibilityEnum("visibility").default("private").notNull(),
   createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),

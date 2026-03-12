@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-import { ingredientTypes, type IngredientType } from "../ingredients/contracts";
+import { ingredientTypes, type IngredientTechnicalFields, type IngredientType } from "../ingredients/contracts";
 import { inventoryUnits, type InventoryUnit, type InventoryUnitDimension } from "./units";
 
 const baseInventoryFieldsSchema = z.object({
@@ -69,7 +69,7 @@ export type InventorySourceDto = {
   type: IngredientType;
   displayName: string;
   normalizedName: string;
-};
+} & IngredientTechnicalFields;
 
 export type InventoryListItemDto = {
   id: string;

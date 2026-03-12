@@ -25,6 +25,7 @@ import {
 import { ingredientSearchQuerySchema, type IngredientSuggestionItem } from "../ingredients/contracts";
 import { normalizeIngredientName } from "../ingredients/normalization";
 import { scoreIngredientCandidate } from "../ingredients/ranking";
+import { extractIngredientTechnicalFields } from "../ingredients/technical-fields";
 import { normalizeInventoryMeasurement, parseInventoryUnit } from "./units";
 import type { IngredientType } from "../ingredients/contracts";
 
@@ -60,7 +61,8 @@ const mapInventoryRow = (row: {
       sourceId: row.catalog.id,
       type: row.catalog.type,
       displayName: row.catalog.displayName,
-      normalizedName: row.catalog.normalizedName
+      normalizedName: row.catalog.normalizedName,
+      ...extractIngredientTechnicalFields(row.catalog)
     }
     : row.custom
       ? {
@@ -68,7 +70,8 @@ const mapInventoryRow = (row: {
         sourceId: row.custom.id,
         type: row.custom.type,
         displayName: row.custom.displayName,
-        normalizedName: row.custom.normalizedName
+        normalizedName: row.custom.normalizedName,
+        ...extractIngredientTechnicalFields(row.custom)
       }
       : null;
 

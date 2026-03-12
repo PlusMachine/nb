@@ -14,6 +14,16 @@ export type SeedCatalogItem = {
   country?: string;
   defaultUnit: "g" | "ml" | "item" | "pack";
   description?: string;
+  fermentableColorEbc?: number;
+  fermentableExtractYieldPct?: number;
+  hopAlphaAcidPct?: number;
+  hopForm?: "pellet" | "whole_cone" | "lupulin" | "cryo";
+  hopSeason?: string;
+  yeastAttenuationPct?: number;
+  yeastType?: "ale" | "lager" | "wine";
+  yeastForm?: "dry" | "liquid";
+  yeastMinFermentationTempC?: number;
+  yeastMaxFermentationTempC?: number;
   properties?: Record<string, unknown>;
 };
 
@@ -34,6 +44,8 @@ export const seedCatalogItems: SeedCatalogItem[] = [
     manufacturer: "BESTMALZ",
     country: "DE",
     defaultUnit: "g",
+    fermentableColorEbc: 3.5,
+    fermentableExtractYieldPct: 80,
     properties: { colorEbc: 3.5, extractFgdbPct: 80 }
   },
   {
@@ -45,6 +57,8 @@ export const seedCatalogItems: SeedCatalogItem[] = [
     manufacturer: "Crisp",
     country: "GB",
     defaultUnit: "g",
+    fermentableColorEbc: 6,
+    fermentableExtractYieldPct: 79,
     properties: { colorEbc: 6, extractFgdbPct: 79 }
   },
   {
@@ -56,6 +70,8 @@ export const seedCatalogItems: SeedCatalogItem[] = [
     manufacturer: "Weyermann",
     country: "DE",
     defaultUnit: "g",
+    fermentableColorEbc: 4,
+    fermentableExtractYieldPct: 84,
     properties: { colorEbc: 4, extractFgdbPct: 84 }
   },
   {
@@ -67,6 +83,8 @@ export const seedCatalogItems: SeedCatalogItem[] = [
     manufacturer: "Weyermann",
     country: "DE",
     defaultUnit: "g",
+    fermentableColorEbc: 18,
+    fermentableExtractYieldPct: 78,
     properties: { colorEbc: 18, extractFgdbPct: 78 }
   },
   {
@@ -78,6 +96,8 @@ export const seedCatalogItems: SeedCatalogItem[] = [
     manufacturer: "BESTMALZ",
     country: "DE",
     defaultUnit: "g",
+    fermentableColorEbc: 8,
+    fermentableExtractYieldPct: 80,
     properties: { colorEbc: 8, extractFgdbPct: 80 }
   },
   {
@@ -89,6 +109,8 @@ export const seedCatalogItems: SeedCatalogItem[] = [
     manufacturer: "Simpsons",
     country: "GB",
     defaultUnit: "g",
+    fermentableColorEbc: 6.5,
+    fermentableExtractYieldPct: 82,
     properties: { colorEbc: 6.5, extractFgdbPct: 82 }
   },
   {
@@ -100,6 +122,8 @@ export const seedCatalogItems: SeedCatalogItem[] = [
     manufacturer: "Weyermann",
     country: "DE",
     defaultUnit: "g",
+    fermentableColorEbc: 90,
+    fermentableExtractYieldPct: 75,
     properties: { colorEbc: 90, extractFgdbPct: 75 }
   },
   {
@@ -111,6 +135,8 @@ export const seedCatalogItems: SeedCatalogItem[] = [
     manufacturer: "Briess",
     country: "US",
     defaultUnit: "g",
+    fermentableColorEbc: 118,
+    fermentableExtractYieldPct: 74,
     properties: { colorEbc: 118, extractFgdbPct: 74 }
   },
   {
@@ -122,6 +148,8 @@ export const seedCatalogItems: SeedCatalogItem[] = [
     manufacturer: "Crisp",
     country: "GB",
     defaultUnit: "g",
+    fermentableColorEbc: 800,
+    fermentableExtractYieldPct: 70,
     properties: { colorEbc: 800, extractFgdbPct: 70 }
   },
   {
@@ -133,6 +161,8 @@ export const seedCatalogItems: SeedCatalogItem[] = [
     manufacturer: "Simpsons",
     country: "IE",
     defaultUnit: "g",
+    fermentableColorEbc: 1300,
+    fermentableExtractYieldPct: 65,
     properties: { colorEbc: 1300, extractFgdbPct: 65 }
   },
 
@@ -143,6 +173,9 @@ export const seedCatalogItems: SeedCatalogItem[] = [
     manufacturer: "Yakima Chief",
     country: "US",
     defaultUnit: "g",
+    hopAlphaAcidPct: 12,
+    hopForm: "pellet",
+    hopSeason: "2024",
     properties: { alphaAcid: 12 }
   },
   {
@@ -152,6 +185,9 @@ export const seedCatalogItems: SeedCatalogItem[] = [
     manufacturer: "Yakima Chief",
     country: "US",
     defaultUnit: "g",
+    hopAlphaAcidPct: 11.5,
+    hopForm: "pellet",
+    hopSeason: "2024",
     properties: { alphaAcid: 11.5 }
   },
   {
@@ -161,6 +197,9 @@ export const seedCatalogItems: SeedCatalogItem[] = [
     manufacturer: "Bohemia Hop",
     country: "CZ",
     defaultUnit: "g",
+    hopAlphaAcidPct: 4,
+    hopForm: "whole_cone",
+    hopSeason: "2024",
     properties: { alphaAcid: 4 }
   },
   {
@@ -170,6 +209,9 @@ export const seedCatalogItems: SeedCatalogItem[] = [
     manufacturer: "Yakima Chief",
     country: "US",
     defaultUnit: "g",
+    hopAlphaAcidPct: 5.5,
+    hopForm: "pellet",
+    hopSeason: "2024",
     properties: { alphaAcid: 5.5 }
   },
   {
@@ -179,6 +221,9 @@ export const seedCatalogItems: SeedCatalogItem[] = [
     manufacturer: "Yakima Chief",
     country: "US",
     defaultUnit: "g",
+    hopAlphaAcidPct: 10,
+    hopForm: "pellet",
+    hopSeason: "2024",
     properties: { alphaAcid: 10 }
   },
   {
@@ -188,6 +233,9 @@ export const seedCatalogItems: SeedCatalogItem[] = [
     manufacturer: "Yakima Chief",
     country: "US",
     defaultUnit: "g",
+    hopAlphaAcidPct: 13,
+    hopForm: "pellet",
+    hopSeason: "2024",
     properties: { alphaAcid: 13 }
   },
   {
@@ -197,6 +245,9 @@ export const seedCatalogItems: SeedCatalogItem[] = [
     manufacturer: "Virgil Gamache Farms",
     country: "US",
     defaultUnit: "g",
+    hopAlphaAcidPct: 9.5,
+    hopForm: "pellet",
+    hopSeason: "2024",
     properties: { alphaAcid: 9.5 }
   },
   {
@@ -206,6 +257,9 @@ export const seedCatalogItems: SeedCatalogItem[] = [
     manufacturer: "Hopsteiner",
     country: "DE",
     defaultUnit: "g",
+    hopAlphaAcidPct: 13.5,
+    hopForm: "pellet",
+    hopSeason: "2024",
     properties: { alphaAcid: 13.5 }
   },
   {
@@ -216,6 +270,9 @@ export const seedCatalogItems: SeedCatalogItem[] = [
     manufacturer: "BarthHaas",
     country: "DE",
     defaultUnit: "g",
+    hopAlphaAcidPct: 4.5,
+    hopForm: "whole_cone",
+    hopSeason: "2024",
     properties: { alphaAcid: 4.5 }
   },
   {
@@ -225,6 +282,9 @@ export const seedCatalogItems: SeedCatalogItem[] = [
     manufacturer: "NZ Hops",
     country: "NZ",
     defaultUnit: "g",
+    hopAlphaAcidPct: 12,
+    hopForm: "pellet",
+    hopSeason: "2024",
     properties: { alphaAcid: 12 }
   },
 
@@ -236,6 +296,11 @@ export const seedCatalogItems: SeedCatalogItem[] = [
     manufacturer: "Fermentis",
     country: "FR",
     defaultUnit: "pack",
+    yeastAttenuationPct: 78,
+    yeastType: "ale",
+    yeastForm: "dry",
+    yeastMinFermentationTempC: 18,
+    yeastMaxFermentationTempC: 28,
     properties: { form: "dry", styles: ["american ale", "pale ale", "ipa"] }
   },
   {
@@ -246,6 +311,11 @@ export const seedCatalogItems: SeedCatalogItem[] = [
     manufacturer: "Mangrove Jack's",
     country: "NZ",
     defaultUnit: "pack",
+    yeastAttenuationPct: 72,
+    yeastType: "ale",
+    yeastForm: "dry",
+    yeastMinFermentationTempC: 18,
+    yeastMaxFermentationTempC: 25,
     properties: { form: "dry", styles: ["witbier", "belgian ale"] }
   },
   {
@@ -256,6 +326,11 @@ export const seedCatalogItems: SeedCatalogItem[] = [
     manufacturer: "Lallemand",
     country: "CA",
     defaultUnit: "pack",
+    yeastAttenuationPct: 77,
+    yeastType: "ale",
+    yeastForm: "dry",
+    yeastMinFermentationTempC: 25,
+    yeastMaxFermentationTempC: 40,
     properties: { form: "dry", styles: ["kveik", "farmhouse"] }
   },
   {
@@ -266,6 +341,11 @@ export const seedCatalogItems: SeedCatalogItem[] = [
     manufacturer: "Fermentis",
     country: "DE",
     defaultUnit: "pack",
+    yeastAttenuationPct: 83,
+    yeastType: "lager",
+    yeastForm: "dry",
+    yeastMinFermentationTempC: 12,
+    yeastMaxFermentationTempC: 15,
     properties: { form: "dry", styles: ["lager", "pilsner"] }
   },
   {
@@ -276,6 +356,11 @@ export const seedCatalogItems: SeedCatalogItem[] = [
     manufacturer: "Lallemand",
     country: "CA",
     defaultUnit: "pack",
+    yeastAttenuationPct: 78,
+    yeastType: "ale",
+    yeastForm: "dry",
+    yeastMinFermentationTempC: 18,
+    yeastMaxFermentationTempC: 23,
     properties: { form: "dry", styles: ["ipa", "hazy ipa", "pale ale"] }
   },
   {
@@ -286,6 +371,11 @@ export const seedCatalogItems: SeedCatalogItem[] = [
     manufacturer: "Lallemand",
     country: "CA",
     defaultUnit: "pack",
+    yeastAttenuationPct: 78,
+    yeastType: "ale",
+    yeastForm: "dry",
+    yeastMinFermentationTempC: 14,
+    yeastMaxFermentationTempC: 22,
     properties: { form: "dry", styles: ["english ale", "porter", "stout"] }
   },
   {
@@ -296,6 +386,11 @@ export const seedCatalogItems: SeedCatalogItem[] = [
     manufacturer: "Lallemand",
     country: "CA",
     defaultUnit: "pack",
+    yeastAttenuationPct: 86,
+    yeastType: "ale",
+    yeastForm: "dry",
+    yeastMinFermentationTempC: 17,
+    yeastMaxFermentationTempC: 28,
     properties: { form: "dry", styles: ["saison", "farmhouse"] }
   },
   {
@@ -306,6 +401,11 @@ export const seedCatalogItems: SeedCatalogItem[] = [
     manufacturer: "Wyeast",
     country: "US",
     defaultUnit: "pack",
+    yeastAttenuationPct: 75,
+    yeastType: "ale",
+    yeastForm: "liquid",
+    yeastMinFermentationTempC: 18,
+    yeastMaxFermentationTempC: 22,
     properties: { form: "liquid", styles: ["american ale", "ipa", "amber ale"] }
   },
   {
@@ -316,6 +416,11 @@ export const seedCatalogItems: SeedCatalogItem[] = [
     manufacturer: "White Labs",
     country: "US",
     defaultUnit: "pack",
+    yeastAttenuationPct: 76,
+    yeastType: "ale",
+    yeastForm: "liquid",
+    yeastMinFermentationTempC: 19,
+    yeastMaxFermentationTempC: 21,
     properties: { form: "liquid", styles: ["american ale", "ipa", "blonde ale"] }
   },
   {
@@ -326,6 +431,11 @@ export const seedCatalogItems: SeedCatalogItem[] = [
     manufacturer: "Fermentis",
     country: "FR",
     defaultUnit: "pack",
+    yeastAttenuationPct: 80,
+    yeastType: "ale",
+    yeastForm: "dry",
+    yeastMinFermentationTempC: 15,
+    yeastMaxFermentationTempC: 25,
     properties: { form: "dry", styles: ["kolsch", "wheat beer", "ale"] }
   },
 

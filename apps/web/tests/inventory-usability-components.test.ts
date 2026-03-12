@@ -61,7 +61,11 @@ describe("inventory usability components", () => {
         sourceId: "cat-1",
         type: "fermentable",
         displayName: "Pilsner Malt",
-        normalizedName: "pilsner-malt"
+        normalizedName: "pilsner-malt",
+        manufacturer: "BESTMALZ",
+        country: "DE",
+        fermentableColorEbc: 3.5,
+        fermentableExtractYieldPct: 80
       }
     };
 
@@ -71,5 +75,8 @@ describe("inventory usability components", () => {
     expect(html).toContain("Редактировать карточку");
     expect(html).toContain("Pilsner Malt");
     expect(html).toContain("2 kg");
+    expect(html).toContain("Цветность: 3,5 EBC");
+    expect(html).toContain("Экстрактивность: 80%");
+    expect(html).toContain("Производитель: BESTMALZ");
   });
 });

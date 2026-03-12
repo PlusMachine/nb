@@ -278,7 +278,15 @@ describe("inventory service", () => {
           createdAt: new Date("2025-01-01"),
           updatedAt: new Date("2025-01-01")
         },
-        catalog: { id: "cat-1", type: "fermentable", displayName: "Pilsner Malt", normalizedName: "pilsner malt" },
+        catalog: {
+          id: "cat-1",
+          type: "fermentable",
+          displayName: "Pilsner Malt",
+          normalizedName: "pilsner malt",
+          manufacturer: "BESTMALZ",
+          country: "DE",
+          properties: { colorEbc: 3.5, extractFgdbPct: 80 }
+        },
         custom: null
       }
     ];
@@ -293,6 +301,12 @@ describe("inventory service", () => {
       normalizedQuantity: 2000,
       normalizedUnit: "g",
       unitDimension: "weight"
+    });
+    expect(items[0]?.source).toMatchObject({
+      manufacturer: "BESTMALZ",
+      country: "DE",
+      fermentableColorEbc: 3.5,
+      fermentableExtractYieldPct: 80
     });
   });
 

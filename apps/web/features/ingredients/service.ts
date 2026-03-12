@@ -1,8 +1,13 @@
 import { and, asc, db, desc, eq, ilike, inArray, ingredientCatalogItems, or, proposedIngredients, sql } from "@nb/db";
 
-import { ingredientSearchQuerySchema, ingredientUpsertSchema, type IngredientSuggestionItem, moderationActionSchema } from "./contracts";
+import { ingredientSearchQuerySchema, ingredientUpsertSchema, type IngredientSuggestionItem, type IngredientType, moderationActionSchema } from "./contracts";
 import { normalizeAliasList, normalizeIngredientName } from "./normalization";
 import { scoreIngredientCandidate } from "./ranking";
+import {
+  extractIngredientTechnicalFields,
+  normalizeIngredientTechnicalFields,
+  syncIngredientPropertiesWithTechnicalFields
+} from "./technical-fields";
 import { canModerateTransition, validateMergeInput } from "./workflows";
 
 type SearchParams = { q: string; type?: string; limit?: number };
@@ -152,13 +157,21 @@ export const createIngredient = async (payload: unknown, actorId?: string) => {
   const parsed = ingredientUpsertSchema.parse(payload);
   const normalizedName = normalizeIngredientName(parsed.displayName);
   const normalizedAliases = normalizeAliasList(parsed.aliases);
+  const technicalFields = normalizeIngredientTechnicalFields(parsed);
+  const properties = syncIngredientPropertiesWithTechnicalFields(parsed);
 
   const [created] = await db.insert(ingredientCatalogItems).values({
-    ...parsed,
     subtype: parsed.subtype ?? null,
-    manufacturer: parsed.manufacturer ?? null,
-    country: parsed.country ?? null,
-    description: parsed.description ?? null,
+    type: parsed.type,
+    displayName: parsed.displayName,
+    manufacturer: parsed.manufacturer || null,
+    country: parsed.country || null,
+    description: parsed.description || null,
+    defaultUnit: parsed.defaultUnit,
+    ...technicalFields,
+    properties,
+    status: parsed.status,
+    visibility: parsed.visibility,
     normalizedName,
     aliases: normalizedAliases,
     createdBy: actorId,
@@ -172,13 +185,21 @@ export const updateIngredient = async (id: string, payload: unknown, actorId?: s
   const parsed = ingredientUpsertSchema.parse(payload);
   const normalizedName = normalizeIngredientName(parsed.displayName);
   const normalizedAliases = normalizeAliasList(parsed.aliases);
+  const technicalFields = normalizeIngredientTechnicalFields(parsed);
+  const properties = syncIngredientPropertiesWithTechnicalFields(parsed);
 
   const [updated] = await db.update(ingredientCatalogItems).set({
-    ...parsed,
     subtype: parsed.subtype ?? null,
-    manufacturer: parsed.manufacturer ?? null,
-    country: parsed.country ?? null,
-    description: parsed.description ?? null,
+    type: parsed.type,
+    displayName: parsed.displayName,
+    manufacturer: parsed.manufacturer || null,
+    country: parsed.country || null,
+    description: parsed.description || null,
+    defaultUnit: parsed.defaultUnit,
+    ...technicalFields,
+    properties,
+    status: parsed.status,
+    visibility: parsed.visibility,
     normalizedName,
     aliases: normalizedAliases,
     updatedBy: actorId,
@@ -222,8 +243,27 @@ export const applyModerationAction = async (id: string, payload: unknown, modera
   }
 
   if (action.action === "approve") {
+    const proposedType = ((current.sourcePayload.type as string | undefined) ?? "misc") as IngredientType;
+    const proposedProperties = (current.sourcePayload.properties as Record<string, unknown> | undefined) ?? {};
+    const proposedTechnicalFields = extractIngredientTechnicalFields({
+      type: proposedType,
+      manufacturer: (current.sourcePayload.manufacturer as string | undefined) ?? null,
+      country: (current.sourcePayload.country as string | undefined) ?? null,
+      fermentableColorEbc: current.sourcePayload.fermentableColorEbc as number | undefined,
+      fermentableExtractYieldPct: current.sourcePayload.fermentableExtractYieldPct as number | undefined,
+      hopAlphaAcidPct: current.sourcePayload.hopAlphaAcidPct as number | undefined,
+      hopForm: current.sourcePayload.hopForm as "pellet" | "whole_cone" | "lupulin" | "cryo" | undefined,
+      hopSeason: current.sourcePayload.hopSeason as string | undefined,
+      yeastAttenuationPct: current.sourcePayload.yeastAttenuationPct as number | undefined,
+      yeastType: current.sourcePayload.yeastType as "ale" | "lager" | "wine" | undefined,
+      yeastForm: current.sourcePayload.yeastForm as "dry" | "liquid" | undefined,
+      yeastMinFermentationTempC: current.sourcePayload.yeastMinFermentationTempC as number | undefined,
+      yeastMaxFermentationTempC: current.sourcePayload.yeastMaxFermentationTempC as number | undefined,
+      properties: proposedProperties
+    });
+
     const created = await createIngredient({
-      type: (current.sourcePayload.type as string) ?? "misc",
+      type: proposedType,
       subtype: (current.sourcePayload.subtype as string | undefined) ?? null,
       displayName: current.sourceDisplayName,
       aliases: (current.sourcePayload.aliases as string[] | undefined) ?? [],
@@ -231,7 +271,8 @@ export const applyModerationAction = async (id: string, payload: unknown, modera
       country: (current.sourcePayload.country as string | undefined) ?? null,
       description: (current.sourcePayload.description as string | undefined) ?? null,
       defaultUnit: (current.sourcePayload.defaultUnit as string | undefined) ?? "g",
-      properties: (current.sourcePayload.properties as Record<string, unknown> | undefined) ?? {},
+      ...proposedTechnicalFields,
+      properties: proposedProperties,
       status: "active",
       visibility: "public"
     }, moderatorId);

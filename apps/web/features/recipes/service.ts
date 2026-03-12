@@ -34,6 +34,11 @@ import {
   toBatchVolumeLiters
 } from "./units";
 import { appendSlugSuffix, toRecipeSlugBase } from "./slug";
+import {
+  getIngredientAlphaAcidPercent,
+  getIngredientColorLovibond,
+  getIngredientPotentialPpg
+} from "../ingredients/technical-fields";
 
 const DEFAULT_EFFICIENCY = 75;
 const DEFAULT_ATTENUATION = 75;
@@ -281,14 +286,6 @@ const replaceRecipeIngredients = async (
   await db.insert(recipeIngredients).values(preparedValues);
 };
 
-const asNumber = (value: unknown, fallback: number) => {
-  if (typeof value !== "number" || Number.isNaN(value)) {
-    return fallback;
-  }
-
-  return value;
-};
-
 export const recomputeRecipeStats = async (authorId: string, recipeId: string) => {
   const recipe = await ensureOwnedRecipe(authorId, recipeId);
   const ingredients = await db.query.recipeIngredients.findMany({
@@ -311,9 +308,6 @@ export const recomputeRecipeStats = async (authorId: string, recipeId: string) =
     if (!source) {
       continue;
     }
-
-    const props = source.properties as Record<string, unknown>;
-
     if (ingredient.type === "fermentable" || ingredient.type === "sugar") {
       const weightKg = ingredient.amountNormalizedUnit === "g"
         ? roundTo(ingredient.amountNormalizedQuantity / 1000, 3)
@@ -326,8 +320,8 @@ export const recomputeRecipeStats = async (authorId: string, recipeId: string) =
         id: ingredient.id,
         name: source.displayName,
         weightKg,
-        potentialPpg: asNumber(props.potentialPpg, 36),
-        colorLovibond: asNumber(props.colorLovibond, 2)
+        potentialPpg: getIngredientPotentialPpg(source, 36),
+        colorLovibond: getIngredientColorLovibond(source, 2)
       });
     }
 
@@ -346,7 +340,7 @@ export const recomputeRecipeStats = async (authorId: string, recipeId: string) =
       hops.push({
         id: ingredient.id,
         name: source.displayName,
-        alphaAcidPercent: asNumber(props.alphaAcidPercent, 5),
+        alphaAcidPercent: getIngredientAlphaAcidPercent(source, 5),
         weightG,
         boilTimeMinutes: ingredient.timeOffset ?? 60,
         use: stageUse
