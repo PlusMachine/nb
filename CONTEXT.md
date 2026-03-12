@@ -248,7 +248,7 @@ Calculations, normalization, access rules и доменные проверки �
 ---
 
 ## Stage 5 — Recipes
-### Статус: в активной реализации
+
 
 ### 5A — Recipe Core Foundation
 #### Статус: завершено
@@ -284,7 +284,7 @@ Calculations, normalization, access rules и доменные проверки �
 - ownership-safe editing
 
 ### 5C — Public Recipes foundation
-#### Статус: частично завершено
+#### Статус: завершено
 
 Уже есть:
 - public recipe page foundation
@@ -301,7 +301,7 @@ Calculations, normalization, access rules и доменные проверки �
 ---
 
 ## Stage 6 — Match Engine
-### Статус: не начато
+### Статус: В разработке
 
 Планируется:
 - recipe vs inventory matching
