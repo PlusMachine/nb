@@ -1,5 +1,5 @@
-import { relations } from "drizzle-orm";
-import { type AnyPgColumn, boolean, doublePrecision, index, integer, jsonb, pgEnum, pgTable, text, timestamp, uniqueIndex, uuid, varchar } from "drizzle-orm/pg-core";
+import { relations, sql } from "drizzle-orm";
+import { type AnyPgColumn, boolean, check, doublePrecision, index, integer, jsonb, pgEnum, pgTable, text, timestamp, uniqueIndex, uuid, varchar } from "drizzle-orm/pg-core";
 
 export const userRoleEnum = pgEnum("user_role", ["user", "editor", "moderator", "admin"]);
 export const verificationTypeEnum = pgEnum("verification_type", ["otp", "magic_link", "password_reset"]);
@@ -9,6 +9,9 @@ export const ingredientVisibilityEnum = pgEnum("ingredient_visibility", ["public
 export const proposedIngredientStatusEnum = pgEnum("proposed_ingredient_status", ["pending", "approved", "rejected", "merged"]);
 export const userCustomIngredientVisibilityEnum = pgEnum("user_custom_ingredient_visibility", ["private", "shared"]);
 export const inventoryUnitDimensionEnum = pgEnum("inventory_unit_dimension", ["weight", "volume", "count"]);
+export const recipeStatusEnum = pgEnum("recipe_status", ["draft", "private", "published"]);
+export const recipeVisibilityEnum = pgEnum("recipe_visibility", ["private", "public"]);
+export const recipeIngredientStageEnum = pgEnum("recipe_ingredient_stage", ["mash", "boil", "whirlpool", "fermentation", "packaging", "other"]);
 
 export const users = pgTable("users", {
   id: uuid("id").defaultRandom().primaryKey(),
@@ -167,7 +170,86 @@ export const userIngredients = pgTable("user_ingredients", {
   customItemIdx: index("user_ingredients_custom_item_idx").on(table.userCustomIngredientId)
 }));
 
+export const recipes = pgTable("recipes", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  authorId: uuid("author_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  status: recipeStatusEnum("status").default("draft").notNull(),
+  visibility: recipeVisibilityEnum("visibility").default("private").notNull(),
+  title: varchar("title", { length: 180 }).notNull(),
+  slug: varchar("slug", { length: 220 }),
+  styleId: varchar("style_id", { length: 64 }),
+  batchSizeEnteredQuantity: doublePrecision("batch_size_entered_quantity").notNull(),
+  batchSizeEnteredUnit: varchar("batch_size_entered_unit", { length: 32 }).notNull(),
+  batchSizeNormalizedQuantity: doublePrecision("batch_size_normalized_quantity").notNull(),
+  batchSizeNormalizedUnit: varchar("batch_size_normalized_unit", { length: 32 }).notNull(),
+  efficiency: doublePrecision("efficiency"),
+  og: doublePrecision("og"),
+  fg: doublePrecision("fg"),
+  abv: doublePrecision("abv"),
+  ibu: doublePrecision("ibu"),
+  color: doublePrecision("color"),
+  description: text("description"),
+  authorNotes: text("author_notes"),
+  heroImageId: uuid("hero_image_id"),
+  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull()
+}, (table) => ({
+  authorIdIdx: index("recipes_author_id_idx").on(table.authorId),
+  statusIdx: index("recipes_status_idx").on(table.status),
+  visibilityIdx: index("recipes_visibility_idx").on(table.visibility),
+  slugIdx: uniqueIndex("recipes_slug_uidx").on(table.slug)
+}));
+
+export const recipeIngredients = pgTable("recipe_ingredients", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  recipeId: uuid("recipe_id").notNull().references(() => recipes.id, { onDelete: "cascade" }),
+  ingredientCatalogItemId: uuid("ingredient_catalog_item_id").references(() => ingredientCatalogItems.id, { onDelete: "set null" }),
+  userCustomIngredientId: uuid("user_custom_ingredient_id").references(() => userCustomIngredients.id, { onDelete: "set null" }),
+  type: ingredientTypeEnum("type").notNull(),
+  amountEnteredQuantity: doublePrecision("amount_entered_quantity").notNull(),
+  amountEnteredUnit: varchar("amount_entered_unit", { length: 32 }).notNull(),
+  amountNormalizedQuantity: doublePrecision("amount_normalized_quantity").notNull(),
+  amountNormalizedUnit: varchar("amount_normalized_unit", { length: 32 }).notNull(),
+  stage: recipeIngredientStageEnum("stage").default("other").notNull(),
+  timeOffset: integer("time_offset"),
+  stepMeta: jsonb("step_meta").$type<Record<string, unknown>>(),
+  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull()
+}, (table) => ({
+  recipeIdIdx: index("recipe_ingredients_recipe_id_idx").on(table.recipeId),
+  catalogItemIdx: index("recipe_ingredients_catalog_item_idx").on(table.ingredientCatalogItemId),
+  customItemIdx: index("recipe_ingredients_custom_item_idx").on(table.userCustomIngredientId),
+  sourceCheck: check(
+    "recipe_ingredients_source_linkage_chk",
+    sql`((ingredient_catalog_item_id is not null and user_custom_ingredient_id is null) or (ingredient_catalog_item_id is null and user_custom_ingredient_id is not null))`
+  )
+}));
+
 export const usersRelations = relations(users, ({ many }) => ({
   sessions: many(sessions),
-  accounts: many(accounts)
+  accounts: many(accounts),
+  recipes: many(recipes)
+}));
+
+export const recipesRelations = relations(recipes, ({ one, many }) => ({
+  author: one(users, {
+    fields: [recipes.authorId],
+    references: [users.id]
+  }),
+  ingredients: many(recipeIngredients)
+}));
+
+export const recipeIngredientsRelations = relations(recipeIngredients, ({ one }) => ({
+  recipe: one(recipes, {
+    fields: [recipeIngredients.recipeId],
+    references: [recipes.id]
+  }),
+  catalogItem: one(ingredientCatalogItems, {
+    fields: [recipeIngredients.ingredientCatalogItemId],
+    references: [ingredientCatalogItems.id]
+  }),
+  customItem: one(userCustomIngredients, {
+    fields: [recipeIngredients.userCustomIngredientId],
+    references: [userCustomIngredients.id]
+  })
 }));
