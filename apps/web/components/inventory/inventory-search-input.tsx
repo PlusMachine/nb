@@ -1,78 +1,70 @@
 "use client";
 
 import React from "react";
-import { useEffect, useRef, useState } from "react";
 
 import { IngredientPicker } from "@/components/ingredients/ingredient-picker";
-import type { IngredientSuggestionItem, IngredientType } from "@/features/ingredients/contracts";
+import type { IngredientCategory, IngredientSuggestionItem } from "@/features/ingredients/contracts";
 
 type Props = {
-  defaultValue: string;
-  type: IngredientType | "all";
-  archived: boolean;
+  value: string;
+  category: IngredientCategory | "all";
+  showFinished: boolean;
+  onValueChange: (value: string) => void;
+  onSuggestionSelect: (value: string, item: IngredientSuggestionItem) => void;
 };
 
-const buildInventorySuggestionParams = ({
-  archived,
+export const buildInventorySuggestionParams = ({
   q,
-  type,
+  category,
+  showFinished,
   limit
 }: {
-  archived: boolean;
   q: string;
-  type?: IngredientType;
+  category?: IngredientCategory;
+  showFinished: boolean;
   limit: number;
 }) => {
   const params = new URLSearchParams({ q: q.trim(), limit: String(limit) });
-  if (type) {
-    params.set("type", type);
+  if (category) {
+    params.set("category", category);
   }
-  if (archived) {
-    params.set("archived", "true");
+  if (showFinished) {
+    params.set("finished", "true");
   }
 
   return params;
 };
 
-export function InventorySearchInput({ defaultValue, type, archived }: Props) {
-  const [value, setValue] = useState(defaultValue);
-  const hiddenInputRef = useRef<HTMLInputElement | null>(null);
-
-  useEffect(() => {
-    setValue(defaultValue);
-  }, [defaultValue]);
-
-  const effectiveType = type === "all" ? undefined : type;
-
-  const submitSelectedSuggestion = (item: IngredientSuggestionItem) => {
-    const nextValue = item.displayName;
-    setValue(nextValue);
-
-    const hiddenInput = hiddenInputRef.current;
-    if (!hiddenInput) {
-      return;
-    }
-
-    hiddenInput.value = nextValue;
-    requestAnimationFrame(() => {
-      hiddenInput.form?.requestSubmit();
-    });
-  };
+export function InventorySearchInput({
+  value,
+  category,
+  showFinished,
+  onValueChange,
+  onSuggestionSelect
+}: Props) {
+  const effectiveCategory = category === "all" ? undefined : category;
 
   return (
     <label className="flex-1 text-sm font-medium">
       <span>Поиск</span>
-      <input ref={hiddenInputRef} id="inventory-search" name="search" type="hidden" value={value} readOnly />
       <div className="mt-1">
         <IngredientPicker
           value={value}
-          type={effectiveType}
-          onValueChange={setValue}
-          onSelect={submitSelectedSuggestion}
-          placeholder="Например, Citra или Пилснер"
-          emptyCta={<p className="text-xs text-zinc-500">В ваших запасах ничего не найдено. Можно ввести произвольный текст и нажать «Применить».</p>}
-          searchIngredients={async ({ q, type: nextType, limit, signal }) => {
-            const params = buildInventorySuggestionParams({ archived, q, type: nextType, limit });
+          category={effectiveCategory}
+          onValueChange={onValueChange}
+          onSelect={(item) => {
+            onValueChange(item.displayName);
+            onSuggestionSelect(item.displayName, item);
+          }}
+          placeholder="Например, Citra или Pilsner Malt"
+          emptyCta={<p className="text-xs text-zinc-500">В текущем списке ничего не найдено. Попробуйте другой запрос или поменяйте фильтры.</p>}
+          searchIngredients={async ({ q, category: nextCategory, limit, signal }) => {
+            const params = buildInventorySuggestionParams({
+              q,
+              category: nextCategory,
+              showFinished,
+              limit
+            });
             const response = await fetch(`/api/inventory/suggestions?${params.toString()}`, { signal });
             if (!response.ok) {
               return [];

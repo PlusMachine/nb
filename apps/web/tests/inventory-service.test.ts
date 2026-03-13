@@ -21,6 +21,9 @@ const { tableRefs, mockState } = vi.hoisted(() => ({
       normalizedQuantity: "normalizedQuantity",
       normalizedUnit: "normalizedUnit",
       unitDimension: "unitDimension",
+      priceInputMode: "priceInputMode",
+      priceInputAmountMinor: "priceInputAmountMinor",
+      priceInputCurrency: "priceInputCurrency",
       purchasePriceMinor: "purchasePriceMinor",
       purchaseCurrency: "purchaseCurrency",
       purchaseQuantity: "purchaseQuantity",
@@ -91,15 +94,7 @@ vi.mock("@nb/db", () => {
       from: (_table: unknown) => ({
         leftJoin: (_a: unknown, _b: unknown) => ({
           leftJoin: (_c: unknown, _d: unknown) => ({
-            where: (_w: unknown) => {
-              if ("archivedAt" in shape) {
-                return Promise.resolve(mockState.selectRows);
-              }
-
-              return {
-                orderBy: async (_o: unknown) => mockState.selectRows
-              };
-            }
+            where: async (_w: unknown) => mockState.selectRows
           })
         })
       })
@@ -356,7 +351,7 @@ describe("inventory service", () => {
     })).rejects.toThrowError("INCOMPATIBLE_UNIT");
   });
 
-  it("stores purchase context and normalized rub unit cost", async () => {
+  it("stores purchase context and derives it from the entered amount when only price is provided", async () => {
     mockState.catalogFindFirst.mockResolvedValueOnce({
       id: "cat-1",
       status: "active",
@@ -374,20 +369,57 @@ describe("inventory service", () => {
       ingredientCatalogItemId: "3d6eb945-8e2e-4af9-8d24-ef6c883b5dd0",
       enteredQuantity: 5,
       enteredUnit: "kg",
-      purchasePriceMinor: 125000,
-      purchaseCurrency: "RUB",
-      purchaseQuantity: 5,
-      purchaseQuantityUnit: "kg"
-    });
+      priceInputMode: "total",
+      priceInputAmountMinor: 125000
+    }, { preferredCurrency: "USD" });
 
     expect(mockState.inserted[0]?.values).toMatchObject({
+      priceInputMode: "total",
+      priceInputAmountMinor: 125000,
+      priceInputCurrency: "USD",
       purchasePriceMinor: 125000,
-      purchaseCurrency: "RUB",
+      purchaseCurrency: "USD",
       purchaseQuantity: 5,
       purchaseQuantityUnit: "kg",
       purchaseQuantityNormalized: 5000,
       purchaseQuantityNormalizedUnit: "g",
-      normalizedUnitCostMinorRub: 25
+      normalizedUnitCostMinorRub: 1975
+    });
+  });
+
+  it("derives total purchase price from per-display-unit input", async () => {
+    mockState.catalogFindFirst.mockResolvedValueOnce({
+      id: "cat-1",
+      status: "active",
+      type: "fermentable",
+      category: "fermentable",
+      subtype: "base_malt",
+      familyId: "fam-1",
+      displayName: "Pilsner Malt",
+      defaultDisplayUnit: "g",
+      allowedUnits: ["g", "kg"],
+      measurementDimension: "weight"
+    });
+
+    await addCatalogIngredientToInventory("u1", {
+      ingredientCatalogItemId: "3d6eb945-8e2e-4af9-8d24-ef6c883b5dd0",
+      enteredQuantity: 250,
+      enteredUnit: "g",
+      priceInputMode: "per_display_unit",
+      priceInputAmountMinor: 12000
+    }, { preferredCurrency: "RUB" });
+
+    expect(mockState.inserted[0]?.values).toMatchObject({
+      priceInputMode: "per_display_unit",
+      priceInputAmountMinor: 12000,
+      priceInputCurrency: "RUB",
+      purchasePriceMinor: 3000,
+      purchaseCurrency: "RUB",
+      purchaseQuantity: 250,
+      purchaseQuantityUnit: "g",
+      purchaseQuantityNormalized: 250,
+      purchaseQuantityNormalizedUnit: "g",
+      normalizedUnitCostMinorRub: 12
     });
   });
 
@@ -397,6 +429,40 @@ describe("inventory service", () => {
     await archiveInventoryItem("u1", "inv-1");
 
     expect(mockState.updates[0]?.set.archivedAt).toBeInstanceOf(Date);
+  });
+
+  it("allows zero quantity through the standard quantity update path", async () => {
+    mockState.inventoryFindFirst.mockResolvedValueOnce({
+      id: "inv-1",
+      userId: "u1",
+      ingredientCatalogItemId: "cat-1",
+      userCustomIngredientId: null,
+      ingredientCategory: "fermentable",
+      ingredientSubtype: "base_malt",
+      ingredientDefaultDisplayUnitSnapshot: "kg",
+      ingredientMeasurementDimension: "weight"
+    });
+    mockState.catalogFindFirst.mockResolvedValueOnce({
+      id: "cat-1",
+      status: "active",
+      type: "fermentable",
+      category: "fermentable",
+      subtype: "base_malt",
+      familyId: "fam-1",
+      displayName: "Pilsner Malt",
+      defaultDisplayUnit: "kg",
+      allowedUnits: ["g", "kg"],
+      measurementDimension: "weight"
+    });
+
+    await updateInventoryQuantity("u1", "inv-1", { enteredQuantity: 0, enteredUnit: "kg" });
+
+    expect(mockState.updates[0]?.set).toMatchObject({
+      enteredQuantity: 0,
+      enteredUnit: "kg",
+      normalizedQuantity: 0,
+      normalizedUnit: "g"
+    });
   });
 
   it("deletes inventory item", async () => {
@@ -441,6 +507,9 @@ describe("inventory service", () => {
           normalizedQuantity: 2000,
           normalizedUnit: "g",
           unitDimension: "weight",
+          priceInputMode: "total",
+          priceInputAmountMinor: 45000,
+          priceInputCurrency: "RUB",
           purchasedAt: null,
           freshnessDate: null,
           notes: null,
@@ -478,6 +547,9 @@ describe("inventory service", () => {
       ingredientDisplayNameSnapshot: "Pilsner Malt",
       ingredientDefaultDisplayUnitSnapshot: "kg",
       ingredientMeasurementDimension: "weight",
+      priceInputMode: "total",
+      priceInputAmountMinor: 45000,
+      priceInputCurrency: "RUB",
       enteredQuantity: 2,
       enteredUnit: "kg",
       normalizedQuantity: 2000,
@@ -490,6 +562,99 @@ describe("inventory service", () => {
       fermentableColorEbc: 3.5,
       fermentableExtractYieldPct: 80
     });
+  });
+
+  it("filters inventory by final category and include-empty toggle", async () => {
+    mockState.selectRows = [
+      {
+        inventory: {
+          id: "inv-1",
+          ingredientCatalogItemId: "cat-1",
+          userCustomIngredientId: null,
+          ingredientFamilyId: "fam-1",
+          ingredientCategory: "fermentable",
+          ingredientSubtype: "base_malt",
+          ingredientDisplayNameSnapshot: "Pilsner Malt",
+          ingredientDefaultDisplayUnitSnapshot: "kg",
+          ingredientMeasurementDimension: "weight",
+          enteredQuantity: 2,
+          enteredUnit: "kg",
+          normalizedQuantity: 2000,
+          normalizedUnit: "g",
+          unitDimension: "weight",
+          purchasedAt: null,
+          freshnessDate: null,
+          notes: null,
+          archivedAt: null,
+          createdAt: new Date("2025-01-01"),
+          updatedAt: new Date("2025-01-02")
+        },
+        catalog: {
+          id: "cat-1",
+          type: "fermentable",
+          category: "fermentable",
+          subtype: "base_malt",
+          familyId: "fam-1",
+          displayName: "Pilsner Malt",
+          normalizedName: "pilsner malt",
+          defaultDisplayUnit: "kg",
+          allowedUnits: ["g", "kg"],
+          measurementDimension: "weight"
+        },
+        custom: null
+      },
+      {
+        inventory: {
+          id: "inv-2",
+          ingredientCatalogItemId: null,
+          userCustomIngredientId: "custom-1",
+          ingredientFamilyId: null,
+          ingredientCategory: "misc",
+          ingredientSubtype: "fining",
+          ingredientDisplayNameSnapshot: "Whirlfloc Tablet",
+          ingredientDefaultDisplayUnitSnapshot: "item",
+          ingredientMeasurementDimension: "count",
+          enteredQuantity: 0,
+          enteredUnit: "item",
+          normalizedQuantity: 0,
+          normalizedUnit: "item",
+          unitDimension: "count",
+          purchasedAt: null,
+          freshnessDate: null,
+          notes: null,
+          archivedAt: null,
+          createdAt: new Date("2025-01-03"),
+          updatedAt: new Date("2025-01-04")
+        },
+        catalog: null,
+        custom: {
+          id: "custom-1",
+          type: "misc",
+          displayName: "Whirlfloc Tablet",
+          normalizedName: "whirlfloc tablet",
+          properties: {
+            taxonomyCategory: "misc",
+            taxonomySubtype: "fining",
+            defaultDisplayUnit: "item",
+            allowedUnits: ["item"],
+            measurementDimension: "count"
+          }
+        }
+      }
+    ];
+
+    const inStockFermentables = await listInventoryForUser("u1", {
+      category: "fermentable",
+      includeEmpty: false
+    });
+    const emptyItems = await listInventoryForUser("u1", {
+      includeEmpty: true
+    });
+
+    expect(inStockFermentables).toHaveLength(1);
+    expect(inStockFermentables[0]?.ingredientCategory).toBe("fermentable");
+    expect(emptyItems).toHaveLength(2);
+    expect(emptyItems.some((item) => item.ingredientDisplayNameSnapshot === "Whirlfloc Tablet")).toBe(true);
   });
 
   it("reads persisted taxonomy snapshot even without live source row", async () => {
@@ -619,7 +784,7 @@ describe("inventory service", () => {
       }
     ];
 
-    const items = await searchInventorySuggestions("u1", { q: "Pils", limit: 8 });
+    const items = await searchInventorySuggestions("u1", { q: "Pils", category: "fermentable", limit: 8 });
 
     expect(items).toHaveLength(1);
     expect(items[0]).toMatchObject({
@@ -632,16 +797,16 @@ describe("inventory service", () => {
 
   it("builds summaries", async () => {
     mockState.selectRows = [
-      { archivedAt: null, catalogType: "hop", customType: null, ingredientCategory: "hop", ingredientSubtype: "pellet" },
-      { archivedAt: new Date("2025-01-01"), catalogType: null, customType: "misc", ingredientCategory: "misc", ingredientSubtype: "fining" }
+      { archivedAt: null, normalizedQuantity: 120, catalogType: "hop", customType: null, ingredientCategory: "hop", ingredientSubtype: "pellet" },
+      { archivedAt: null, normalizedQuantity: 0, catalogType: null, customType: "misc", ingredientCategory: "misc", ingredientSubtype: "fining" }
     ];
 
     const summary = await getInventorySummaries("u1");
 
     expect(summary.totalItems).toBe(2);
-    expect(summary.activeItems).toBe(1);
-    expect(summary.archivedItems).toBe(1);
-    expect(summary.byType.hop).toBe(1);
-    expect(summary.byType.misc).toBe(1);
+    expect(summary.inStockItems).toBe(1);
+    expect(summary.emptyItems).toBe(1);
+    expect(summary.byCategory.hop).toBe(1);
+    expect(summary.byCategory.misc).toBe(1);
   });
 });

@@ -3,10 +3,17 @@
 import React from "react";
 import { useEffect, useState } from "react";
 
+import { InventoryPriceInput } from "@/components/inventory/inventory-price-input";
 import type { IngredientCategory, IngredientSubtype } from "@/features/ingredients/contracts";
 import { formatIngredientSubtypeLabel } from "@/features/ingredients/presentation";
 import { ingredientCategorySubtypes } from "@/features/ingredients/taxonomy";
-import { inventoryUnitLabels, resolveInventoryUnitProfile, type InventoryUnit } from "@/features/inventory/units";
+import type { InventoryPriceInputMode } from "@/features/inventory/purchase-cost";
+import {
+  inventoryUnitLabels,
+  resolveHumanFacingInventoryUnitProfile,
+  resolveInventoryUnitProfile,
+  type InventoryUnit
+} from "@/features/inventory/units";
 import type { SystemCurrency } from "@/features/system/currency";
 
 type Props = {
@@ -21,10 +28,8 @@ type Props = {
     defaultDisplayUnit: InventoryUnit;
     enteredQuantity: string;
     enteredUnit: InventoryUnit;
-    purchasePrice: string;
-    purchaseCurrency: SystemCurrency;
-    purchaseQuantity: string;
-    purchaseQuantityUnit: InventoryUnit;
+    priceInputMode: InventoryPriceInputMode;
+    priceInputAmount: string;
     purchasedAt: string;
     freshnessDate: string;
     notes: string;
@@ -37,14 +42,12 @@ export function CustomIngredientForm({ category, preferredCurrency, pending, fie
   const [displayName, setDisplayName] = useState("");
   const [subtype, setSubtype] = useState<string>("");
   const [defaultDisplayUnit, setDefaultDisplayUnit] = useState<InventoryUnit>(
-    resolveInventoryUnitProfile({ category }).defaultUnit
+    resolveHumanFacingInventoryUnitProfile({ category }).defaultUnit
   );
   const [enteredQuantity, setEnteredQuantity] = useState("");
-  const [enteredUnit, setEnteredUnit] = useState<InventoryUnit>(resolveInventoryUnitProfile({ category }).defaultUnit);
-  const [purchasePrice, setPurchasePrice] = useState("");
-  const [purchaseCurrency, setPurchaseCurrency] = useState<SystemCurrency>(preferredCurrency);
-  const [purchaseQuantity, setPurchaseQuantity] = useState("");
-  const [purchaseQuantityUnit, setPurchaseQuantityUnit] = useState<InventoryUnit>(resolveInventoryUnitProfile({ category }).defaultUnit);
+  const [enteredUnit, setEnteredUnit] = useState<InventoryUnit>(resolveHumanFacingInventoryUnitProfile({ category }).defaultUnit);
+  const [priceInputMode, setPriceInputMode] = useState<InventoryPriceInputMode>("total");
+  const [priceInputAmount, setPriceInputAmount] = useState("");
   const [purchasedAt, setPurchasedAt] = useState("");
   const [freshnessDate, setFreshnessDate] = useState("");
   const [notes, setNotes] = useState("");
@@ -56,13 +59,12 @@ export function CustomIngredientForm({ category, preferredCurrency, pending, fie
   });
 
   useEffect(() => {
-    const nextDefaultUnit = resolveInventoryUnitProfile({ category }).defaultUnit;
+    const nextDefaultUnit = resolveHumanFacingInventoryUnitProfile({ category }).defaultUnit;
     setSubtype("");
     setDefaultDisplayUnit(nextDefaultUnit);
     setEnteredUnit(nextDefaultUnit);
-    setPurchaseCurrency(preferredCurrency);
-    setPurchaseQuantityUnit(nextDefaultUnit);
-  }, [category, preferredCurrency]);
+    setPriceInputMode("total");
+  }, [category]);
 
   useEffect(() => {
     if (!unitProfile.allowedUnits.includes(defaultDisplayUnit)) {
@@ -72,13 +74,9 @@ export function CustomIngredientForm({ category, preferredCurrency, pending, fie
     if (!unitProfile.allowedUnits.includes(enteredUnit)) {
       setEnteredUnit(unitProfile.defaultUnit);
     }
+  }, [defaultDisplayUnit, enteredUnit, unitProfile]);
 
-    if (!unitProfile.allowedUnits.includes(purchaseQuantityUnit)) {
-      setPurchaseQuantityUnit(unitProfile.defaultUnit);
-    }
-  }, [defaultDisplayUnit, enteredUnit, purchaseQuantityUnit, unitProfile]);
-
-  const purchasePriceError = fieldErrors?.purchasePriceMinor ?? fieldErrors?.purchasePrice;
+  const purchasePriceError = fieldErrors?.priceInputAmountMinor ?? fieldErrors?.purchasePriceMinor ?? fieldErrors?.purchasePrice;
 
   return (
     <form
@@ -92,10 +90,8 @@ export function CustomIngredientForm({ category, preferredCurrency, pending, fie
           defaultDisplayUnit,
           enteredQuantity,
           enteredUnit,
-          purchasePrice,
-          purchaseCurrency,
-          purchaseQuantity,
-          purchaseQuantityUnit,
+          priceInputMode,
+          priceInputAmount,
           purchasedAt,
           freshnessDate,
           notes
@@ -150,47 +146,19 @@ export function CustomIngredientForm({ category, preferredCurrency, pending, fie
         </label>
       </div>
 
-      <details className="rounded-md border p-3" open={Boolean(purchasePrice || purchaseQuantity)}>
-        <summary className="cursor-pointer text-sm font-medium">Стоимость покупки (опционально)</summary>
-        <div className="mt-3 grid grid-cols-2 gap-3">
-          <label className="text-sm">Цена
-            <input
-              type="number"
-              min="0"
-              step="0.01"
-              className="mt-1 w-full rounded-md border px-2 py-2"
-              value={purchasePrice}
-              onChange={(e) => setPurchasePrice(e.target.value)}
-              inputMode="decimal"
-            />
-            {purchasePriceError && <span className="text-xs text-red-600">{purchasePriceError}</span>}
-          </label>
-          <label className="text-sm">Валюта
-            <select className="mt-1 w-full rounded-md border px-2 py-2" value={purchaseCurrency} onChange={(e) => setPurchaseCurrency(e.target.value as SystemCurrency)}>
-              <option value="RUB">RUB</option>
-              <option value="USD">USD</option>
-              <option value="EUR">EUR</option>
-            </select>
-          </label>
-          <label className="text-sm">Куплено
-            <input
-              type="number"
-              min="0"
-              step="0.001"
-              className="mt-1 w-full rounded-md border px-2 py-2"
-              value={purchaseQuantity}
-              onChange={(e) => setPurchaseQuantity(e.target.value)}
-              inputMode="decimal"
-            />
-            {fieldErrors?.purchaseQuantity && <span className="text-xs text-red-600">{fieldErrors.purchaseQuantity}</span>}
-          </label>
-          <label className="text-sm">Ед. закупки
-            <select className="mt-1 w-full rounded-md border px-2 py-2" value={purchaseQuantityUnit} onChange={(e) => setPurchaseQuantityUnit(e.target.value as InventoryUnit)}>
-              {unitProfile.allowedUnits.map((unit) => <option key={unit} value={unit}>{inventoryUnitLabels[unit]}</option>)}
-            </select>
-          </label>
-        </div>
-      </details>
+      <InventoryPriceInput
+        preferredCurrency={preferredCurrency}
+        priceInputMode={priceInputMode}
+        priceInputAmount={priceInputAmount}
+        enteredQuantity={enteredQuantity}
+        enteredUnit={enteredUnit}
+        fieldError={purchasePriceError}
+        onPriceInputModeChange={setPriceInputMode}
+        onPriceInputAmountChange={setPriceInputAmount}
+        category={category}
+        subtype={(subtype || null) as IngredientSubtype | null}
+        defaultDisplayUnit={defaultDisplayUnit}
+      />
 
       <label className="block text-sm">Заметки
         <textarea className="mt-1 h-20 w-full rounded-md border px-2 py-2" value={notes} onChange={(e) => setNotes(e.target.value)} />

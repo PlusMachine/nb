@@ -15,6 +15,7 @@ import {
   addCustomIngredientToInventory,
   createUserCustomIngredient,
   deleteInventoryItem,
+  setInventoryItemQuantityToZero,
   updateInventoryItem,
   updateInventoryQuantity
 } from "@/features/inventory/service";
@@ -32,15 +33,6 @@ const parseOptionalDate = (value: string | null) => {
   if (!normalized) {
     return null;
   }
-  return normalized;
-};
-
-const parseOptionalNumber = (value: FormDataEntryValue | null) => {
-  const normalized = String(value ?? "").trim();
-  if (!normalized) {
-    return null;
-  }
-
   return normalized;
 };
 
@@ -91,22 +83,27 @@ const mapError = (error: unknown): AddIngredientResult => {
 export const addCatalogIngredientAction = async (_prevState: AddIngredientResult | null, formData: FormData): Promise<AddIngredientResult> => {
   try {
     const user = await requireUser();
-    const purchasePriceMinor = parseOptionalMoney(formData.get("purchasePrice") ?? formData.get("purchasePriceMinor"));
-    const purchaseQuantity = parseOptionalNumber(formData.get("purchaseQuantity"));
+    const preferredCurrency = user.preferredCurrency ?? "RUB";
+    const priceInputAmountMinor = parseOptionalMoney(
+      formData.get("priceInputAmount")
+      ?? formData.get("purchasePrice")
+      ?? formData.get("purchasePriceMinor")
+    );
     const payload = addCatalogInventoryItemSchema.parse({
       ingredientCatalogItemId: String(formData.get("ingredientCatalogItemId") ?? ""),
       enteredQuantity: String(formData.get("enteredQuantity") ?? ""),
       enteredUnit: String(formData.get("enteredUnit") ?? ""),
-      purchasePriceMinor,
-      purchaseCurrency: purchasePriceMinor == null ? null : String(formData.get("purchaseCurrency") ?? "").trim() || null,
-      purchaseQuantity,
-      purchaseQuantityUnit: purchaseQuantity == null ? null : String(formData.get("purchaseQuantityUnit") ?? "").trim() || null,
+      priceInputMode: String(formData.get("priceInputMode") ?? "").trim() || null,
+      priceInputAmountMinor,
+      priceInputCurrency: priceInputAmountMinor == null
+        ? null
+        : String(formData.get("priceInputCurrency") ?? formData.get("purchaseCurrency") ?? "").trim() || preferredCurrency,
       purchasedAt: parseOptionalDate(formData.get("purchasedAt") as string | null),
       freshnessDate: parseOptionalDate(formData.get("freshnessDate") as string | null),
       notes: String(formData.get("notes") ?? "").trim() || null
     });
 
-    await addCatalogIngredientToInventory(user.id, payload);
+    await addCatalogIngredientToInventory(user.id, payload, { preferredCurrency });
 
     revalidatePath("/app/ingredients");
     return { ok: true, message: "Ингредиент добавлен в запасы." };
@@ -118,8 +115,12 @@ export const addCatalogIngredientAction = async (_prevState: AddIngredientResult
 export const addCustomIngredientAction = async (_prevState: AddIngredientResult | null, formData: FormData): Promise<AddIngredientResult> => {
   try {
     const user = await requireUser();
-    const purchasePriceMinor = parseOptionalMoney(formData.get("purchasePrice") ?? formData.get("purchasePriceMinor"));
-    const purchaseQuantity = parseOptionalNumber(formData.get("purchaseQuantity"));
+    const preferredCurrency = user.preferredCurrency ?? "RUB";
+    const priceInputAmountMinor = parseOptionalMoney(
+      formData.get("priceInputAmount")
+      ?? formData.get("purchasePrice")
+      ?? formData.get("purchasePriceMinor")
+    );
 
     const customPayload = createUserCustomIngredientSchema.parse({
       type: String(formData.get("type") ?? "") || undefined,
@@ -135,16 +136,17 @@ export const addCustomIngredientAction = async (_prevState: AddIngredientResult 
       userCustomIngredientId: customIngredient.id,
       enteredQuantity: String(formData.get("enteredQuantity") ?? ""),
       enteredUnit: String(formData.get("enteredUnit") ?? ""),
-      purchasePriceMinor,
-      purchaseCurrency: purchasePriceMinor == null ? null : String(formData.get("purchaseCurrency") ?? "").trim() || null,
-      purchaseQuantity,
-      purchaseQuantityUnit: purchaseQuantity == null ? null : String(formData.get("purchaseQuantityUnit") ?? "").trim() || null,
+      priceInputMode: String(formData.get("priceInputMode") ?? "").trim() || null,
+      priceInputAmountMinor,
+      priceInputCurrency: priceInputAmountMinor == null
+        ? null
+        : String(formData.get("priceInputCurrency") ?? formData.get("purchaseCurrency") ?? "").trim() || preferredCurrency,
       purchasedAt: parseOptionalDate(formData.get("purchasedAt") as string | null),
       freshnessDate: parseOptionalDate(formData.get("freshnessDate") as string | null),
       notes: String(formData.get("notes") ?? "").trim() || null
     });
 
-    await addCustomIngredientToInventory(user.id, inventoryPayload);
+    await addCustomIngredientToInventory(user.id, inventoryPayload, { preferredCurrency });
 
     revalidatePath("/app/ingredients");
     return { ok: true, message: "Собственный ингредиент создан и добавлен в запасы." };
@@ -159,34 +161,34 @@ export const updateInventoryItemAction = async (payload: {
   userCustomIngredientId?: string | null;
   enteredQuantity: string;
   enteredUnit: string;
+  priceInputMode?: string | null;
+  priceInputAmount?: string | null;
   purchasePrice?: string | null;
   purchasePriceMinor?: string | null;
+  priceInputCurrency?: string | null;
   purchaseCurrency?: string | null;
-  purchaseQuantity?: string | null;
-  purchaseQuantityUnit?: string | null;
   purchasedAt?: string | null;
   freshnessDate?: string | null;
   notes?: string | null;
 }): Promise<AddIngredientResult> => {
   try {
     const user = await requireUser();
-    const purchasePriceMinor = parseOptionalMoney(payload.purchasePrice ?? payload.purchasePriceMinor ?? null);
-    const purchaseQuantity = parseOptionalNumber(payload.purchaseQuantity ?? null);
+    const preferredCurrency = user.preferredCurrency ?? "RUB";
+    const priceInputAmountMinor = parseOptionalMoney(payload.priceInputAmount ?? payload.purchasePrice ?? payload.purchasePriceMinor ?? null);
     const parsed = updateInventoryItemSchema.parse({
       ingredientCatalogItemId: payload.ingredientCatalogItemId ?? null,
       userCustomIngredientId: payload.userCustomIngredientId ?? null,
       enteredQuantity: payload.enteredQuantity,
       enteredUnit: payload.enteredUnit,
-      purchasePriceMinor,
-      purchaseCurrency: purchasePriceMinor == null ? null : payload.purchaseCurrency ?? null,
-      purchaseQuantity,
-      purchaseQuantityUnit: purchaseQuantity == null ? null : payload.purchaseQuantityUnit ?? null,
+      priceInputMode: payload.priceInputMode ?? null,
+      priceInputAmountMinor,
+      priceInputCurrency: priceInputAmountMinor == null ? null : payload.priceInputCurrency ?? payload.purchaseCurrency ?? preferredCurrency,
       purchasedAt: parseOptionalDate(payload.purchasedAt ?? null),
       freshnessDate: parseOptionalDate(payload.freshnessDate ?? null),
       notes: String(payload.notes ?? "").trim() || null
     });
 
-    await updateInventoryItem(user.id, payload.inventoryItemId, parsed);
+    await updateInventoryItem(user.id, payload.inventoryItemId, parsed, { preferredCurrency });
     revalidatePath("/app/ingredients");
 
     return { ok: true, message: "Карточка ингредиента обновлена." };
@@ -222,6 +224,22 @@ export const updateInventoryInlineAction = async (payload: {
     }
 
     return mapError(error);
+  }
+};
+
+export const setInventoryItemEmptyAction = async (inventoryItemId: string): Promise<AddIngredientResult> => {
+  try {
+    const user = await requireUser();
+    await setInventoryItemQuantityToZero(user.id, inventoryItemId);
+    revalidatePath("/app/ingredients");
+
+    return { ok: true, message: "Остаток обнулен. Позиция останется в разделе «Пустые»." };
+  } catch (error) {
+    if (error instanceof Error && error.message === "NOT_FOUND") {
+      return { ok: false, message: "Позиция не найдена или недоступна." };
+    }
+
+    return { ok: false, message: "Не удалось обнулить остаток. Попробуйте еще раз." };
   }
 };
 

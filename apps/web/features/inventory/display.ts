@@ -7,7 +7,7 @@ import {
   getInventoryUnitDimension,
   inventoryUnitShortLabels,
   normalizeInventoryMeasurementForProfile,
-  resolveInventoryUnitProfile,
+  resolveHumanFacingInventoryUnitProfile,
   type InventoryUnit
 } from "./units";
 
@@ -89,8 +89,10 @@ const convertNormalizedQuantityToDisplayUnit = (
   return null;
 };
 
-const resolveHumanDisplayUnit = (input: Omit<InventoryDisplayInput, "enteredQuantity" | "enteredUnit" | "normalizedQuantity" | "normalizedUnit">) => (
-  resolveInventoryUnitProfile({
+export const resolveInventoryHumanDisplayUnit = (
+  input: Omit<InventoryDisplayInput, "enteredQuantity" | "enteredUnit" | "normalizedQuantity" | "normalizedUnit">
+) => (
+  resolveHumanFacingInventoryUnitProfile({
     type: input.type,
     category: input.category,
     subtype: input.subtype,
@@ -100,6 +102,33 @@ const resolveHumanDisplayUnit = (input: Omit<InventoryDisplayInput, "enteredQuan
     technicalData: input.technicalData ?? null
   }).defaultUnit
 );
+
+export const resolveInventoryMeasurementForDisplay = (input: InventoryDisplayInput) => {
+  const displayUnit = resolveInventoryHumanDisplayUnit(input);
+  const displayQuantity = convertNormalizedQuantityToDisplayUnit(
+    input.normalizedQuantity,
+    input.normalizedUnit,
+    displayUnit,
+    input.technicalData ?? null
+  );
+
+  if (displayQuantity == null) {
+    return {
+      quantity: roundTo(input.enteredQuantity, 3),
+      unit: input.enteredUnit,
+      converted: false
+    };
+  }
+
+  return {
+    quantity: roundTo(displayQuantity, 3),
+    unit: displayUnit,
+    converted: displayUnit !== input.enteredUnit
+      || roundTo(displayQuantity, 3) !== roundTo(input.enteredQuantity, 3)
+  };
+};
+
+export const formatInventoryQuantityInputValue = (value: number) => formatDisplayNumber(value);
 
 const resolveDisplayUnitCostMinor = (
   normalizedUnitCostMinorRub: number,
@@ -132,19 +161,8 @@ const resolveDisplayUnitCostMinor = (
 };
 
 export const formatInventoryQuantityForDisplay = (input: InventoryDisplayInput) => {
-  const displayUnit = resolveHumanDisplayUnit(input);
-  const displayQuantity = convertNormalizedQuantityToDisplayUnit(
-    input.normalizedQuantity,
-    input.normalizedUnit,
-    displayUnit,
-    input.technicalData ?? null
-  );
-
-  if (displayQuantity == null) {
-    return `${formatDisplayNumber(input.enteredQuantity)} ${inventoryUnitShortLabels[input.enteredUnit]}`;
-  }
-
-  return `${formatDisplayNumber(displayQuantity)} ${inventoryUnitShortLabels[displayUnit]}`;
+  const displayMeasurement = resolveInventoryMeasurementForDisplay(input);
+  return `${formatDisplayNumber(displayMeasurement.quantity)} ${inventoryUnitShortLabels[displayMeasurement.unit]}`;
 };
 
 export const buildInventoryCostDisplay = (
@@ -159,7 +177,7 @@ export const buildInventoryCostDisplay = (
       preferredCurrency
     )
     : null;
-  const displayUnit = resolveHumanDisplayUnit(input);
+  const displayUnit = resolveInventoryHumanDisplayUnit(input);
   const normalizedCostUnit = input.purchaseQuantityNormalizedUnit ?? input.normalizedUnit;
   const displayUnitCostMinorRub = input.normalizedUnitCostMinorRub != null
     ? resolveDisplayUnitCostMinor(

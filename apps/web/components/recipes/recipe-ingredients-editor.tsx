@@ -5,7 +5,7 @@ import { useState } from "react";
 
 import { ingredientCategoryLabels } from "@/features/ingredients/presentation";
 import { resolveLegacyIngredientType } from "@/features/ingredients/taxonomy";
-import { resolveInventoryUnitProfile } from "@/features/inventory/units";
+import { resolveHumanFacingInventoryUnitProfile } from "@/features/inventory/units";
 
 import {
   getRecipeIngredientValidationError,
@@ -21,7 +21,7 @@ type Props = {
 
 const createEmptyRow = (): RecipeIngredientEditorRowValue => ({
   ...(() => {
-    const defaultUnitProfile = resolveInventoryUnitProfile({ category: "fermentable" });
+    const defaultUnitProfile = resolveHumanFacingInventoryUnitProfile({ category: "fermentable" });
 
     return {
   localId: crypto.randomUUID(),

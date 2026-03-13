@@ -7,6 +7,7 @@ vi.mock("../components/inventory/add-ingredient-trigger", () => ({
 }));
 vi.mock("../app/(app)/app/ingredients/actions", () => ({
   updateInventoryInlineAction: vi.fn(async () => ({ ok: true, message: "ok" })),
+  setInventoryItemEmptyAction: vi.fn(async () => ({ ok: true, message: "ok" })),
   updateInventoryItemAction: vi.fn(async () => ({ ok: true, message: "ok" })),
   deleteInventoryItemAction: vi.fn(async () => ({ ok: true, message: "ok" }))
 }));
@@ -19,15 +20,13 @@ import { groupInventoryItems } from "../features/inventory/page-model";
 
 const baseSummary: InventorySummaryDto = {
   totalItems: 3,
-  activeItems: 2,
-  archivedItems: 1,
-  byType: {
+  inStockItems: 2,
+  emptyItems: 1,
+  byCategory: {
     fermentable: 1,
     hop: 1,
     yeast: 0,
-    sugar: 1,
-    adjunct: 0,
-    fining: 0,
+    water_prep: 0,
     misc: 0
   }
 };
@@ -46,13 +45,14 @@ const items: InventoryListItemDto[] = [
     archivedAt: null,
     createdAt: new Date("2025-01-01"),
     updatedAt: new Date("2025-01-01"),
-    source: {
-      sourceKind: "catalog",
-      sourceId: "cat-1",
-      type: "fermentable",
-      displayName: "Pilsner Malt",
-      normalizedName: "pilsner-malt"
-    }
+      source: {
+        sourceKind: "catalog",
+        sourceId: "cat-1",
+        type: "fermentable",
+        category: "fermentable",
+        displayName: "Pilsner Malt",
+        normalizedName: "pilsner-malt"
+      }
   },
   {
     id: "inv-2",
@@ -67,13 +67,14 @@ const items: InventoryListItemDto[] = [
     archivedAt: null,
     createdAt: new Date("2025-01-02"),
     updatedAt: new Date("2025-01-02"),
-    source: {
-      sourceKind: "custom",
-      sourceId: "cus-1",
-      type: "hop",
-      displayName: "Citra",
-      normalizedName: "citra"
-    }
+      source: {
+        sourceKind: "custom",
+        sourceId: "cus-1",
+        type: "hop",
+        category: "hop",
+        displayName: "Citra",
+        normalizedName: "citra"
+      }
   }
 ];
 
@@ -93,7 +94,7 @@ describe("inventory page foundation", () => {
       currencyRates: { RUB: 100, USD: 7900, EUR: 9170 }
     }));
 
-    expect(grouped.map((group) => group.type)).toEqual(["fermentable", "hop"]);
+    expect(grouped.map((group) => group.category)).toEqual(["fermentable", "hop"]);
     expect(html).toContain("Ферментируемые");
     expect(html).toContain("Хмель");
     expect(html).toContain("Pilsner Malt");
@@ -105,8 +106,8 @@ describe("inventory page foundation", () => {
     const html = renderToStaticMarkup(React.createElement(InventorySummary, { summary: baseSummary }));
 
     expect(html).toContain("Всего позиций");
-    expect(html).toContain("Активные");
-    expect(html).toContain("Архивные");
+    expect(html).toContain("В наличии");
+    expect(html).toContain("Пустые");
     expect(html).toContain("Ферментируемые");
     expect(html).toContain("Хмель");
   });

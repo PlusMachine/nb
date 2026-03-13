@@ -4,6 +4,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const mockState = vi.hoisted(() => ({
   userId: "u1",
+  preferredCurrency: "USD",
   revalidated: [] as string[],
   createdCustomId: "3d6eb945-8e2e-4af9-8d24-ef6c883b5dd0",
   addCatalogCalls: [] as any[],
@@ -16,7 +17,7 @@ vi.mock("next/cache", () => ({
 }));
 
 vi.mock("@/lib/auth", () => ({
-  requireUser: async () => ({ id: mockState.userId })
+  requireUser: async () => ({ id: mockState.userId, preferredCurrency: mockState.preferredCurrency })
 }));
 
 vi.mock("@/features/inventory/service", () => ({
@@ -41,7 +42,7 @@ import { buildIngredientSearchParams } from "../components/ingredients/ingredien
 import { AddIngredientModal } from "../components/inventory/add-ingredient-modal";
 import { AddIngredientTrigger } from "../components/inventory/add-ingredient-trigger";
 import { buildCatalogIngredientPayload } from "../components/inventory/catalog-ingredient-form";
-import { getCustomIngredientSubtypeOptions } from "../components/inventory/custom-ingredient-form";
+import { CustomIngredientForm, getCustomIngredientSubtypeOptions } from "../components/inventory/custom-ingredient-form";
 
 describe("inventory add-flow", () => {
   beforeEach(() => {
@@ -62,6 +63,27 @@ describe("inventory add-flow", () => {
     expect(html).toContain("Из каталога");
     expect(html).toContain("Категория ингредиента");
     expect(html).toContain("Начните вводить название ингредиента");
+    expect(html).toContain("За всё");
+    expect(html).toContain("За единицу");
+    expect(html).not.toContain("Куплено");
+    expect(html).not.toContain("Ед. закупки");
+    expect(html).not.toContain(">Валюта<");
+  });
+
+  it("renders custom ingredient form without repeated purchase fields", () => {
+    const html = renderToStaticMarkup(React.createElement(CustomIngredientForm, {
+      category: "fermentable",
+      preferredCurrency: "USD",
+      pending: false,
+      onSubmit: async () => undefined
+    }));
+
+    expect(html).toContain("За всё");
+    expect(html).toContain("За единицу");
+    expect(html).toContain("USD");
+    expect(html).not.toContain("Куплено");
+    expect(html).not.toContain("Ед. закупки");
+    expect(html).not.toContain(">Валюта<");
   });
 
   it("renders category selector options", () => {
@@ -76,10 +98,8 @@ describe("inventory add-flow", () => {
     formData.set("ingredientCatalogItemId", "3d6eb945-8e2e-4af9-8d24-ef6c883b5dd0");
     formData.set("enteredQuantity", "120");
     formData.set("enteredUnit", "g");
-    formData.set("purchasePrice", "1250");
-    formData.set("purchaseCurrency", "RUB");
-    formData.set("purchaseQuantity", "5");
-    formData.set("purchaseQuantityUnit", "kg");
+    formData.set("priceInputAmount", "1250");
+    formData.set("priceInputMode", "total");
 
     const result = await addCatalogIngredientAction(null, formData);
 
@@ -89,12 +109,31 @@ describe("inventory add-flow", () => {
       ingredientCatalogItemId: "3d6eb945-8e2e-4af9-8d24-ef6c883b5dd0",
       enteredQuantity: 120,
       enteredUnit: "g",
-      purchasePriceMinor: 125000,
-      purchaseCurrency: "RUB",
-      purchaseQuantity: 5,
-      purchaseQuantityUnit: "kg"
+      priceInputMode: "total",
+      priceInputAmountMinor: 125000,
+      priceInputCurrency: "USD"
     });
     expect(mockState.revalidated).toContain("/app/ingredients");
+  });
+
+  it("passes per-unit price mode through the add flow", async () => {
+    const formData = new FormData();
+    formData.set("ingredientCatalogItemId", "3d6eb945-8e2e-4af9-8d24-ef6c883b5dd0");
+    formData.set("enteredQuantity", "5");
+    formData.set("enteredUnit", "kg");
+    formData.set("priceInputAmount", "120");
+    formData.set("priceInputMode", "per_display_unit");
+
+    const result = await addCatalogIngredientAction(null, formData);
+
+    expect(result.ok).toBe(true);
+    expect(mockState.addCatalogCalls[0]).toMatchObject({
+      enteredQuantity: 5,
+      enteredUnit: "kg",
+      priceInputMode: "per_display_unit",
+      priceInputAmountMinor: 12000,
+      priceInputCurrency: "USD"
+    });
   });
 
   it("adds custom ingredient and then adds it to inventory", async () => {
@@ -160,10 +199,8 @@ describe("inventory add-flow", () => {
       {
         enteredQuantity: "100",
         enteredUnit: "g",
-        purchasePrice: "",
-        purchaseCurrency: "RUB",
-        purchaseQuantity: "",
-        purchaseQuantityUnit: "g",
+        priceInputMode: "total",
+        priceInputAmount: "",
         purchasedAt: "",
         freshnessDate: "",
         notes: ""
@@ -174,10 +211,8 @@ describe("inventory add-flow", () => {
     expect(() => buildCatalogIngredientPayload(null, {
       enteredQuantity: "100",
       enteredUnit: "g",
-      purchasePrice: "",
-      purchaseCurrency: "RUB",
-      purchaseQuantity: "",
-      purchaseQuantityUnit: "g",
+      priceInputMode: "total",
+      priceInputAmount: "",
       purchasedAt: "",
       freshnessDate: "",
       notes: ""

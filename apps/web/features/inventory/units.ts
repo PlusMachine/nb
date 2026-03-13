@@ -219,6 +219,45 @@ export const resolveInventoryUnitProfile = ({
   };
 };
 
+export const resolveHumanFacingInventoryUnitProfile = (
+  input: InventoryUnitProfileInput
+): InventoryUnitProfile => {
+  const profile = resolveInventoryUnitProfile(input);
+  const resolvedCategory = input.category ?? (input.type ? resolveIngredientCategory({ type: input.type }) : null);
+
+  if (resolvedCategory === "fermentable" && profile.allowedUnits.includes("kg")) {
+    return {
+      ...profile,
+      defaultUnit: "kg"
+    };
+  }
+
+  if (resolvedCategory === "hop" && profile.allowedUnits.includes("g")) {
+    return {
+      ...profile,
+      defaultUnit: "g"
+    };
+  }
+
+  if (resolvedCategory === "water_prep") {
+    if (input.subtype === "acid" && profile.allowedUnits.includes("ml")) {
+      return {
+        ...profile,
+        defaultUnit: "ml"
+      };
+    }
+
+    if (profile.allowedUnits.includes("g")) {
+      return {
+        ...profile,
+        defaultUnit: "g"
+      };
+    }
+  }
+
+  return profile;
+};
+
 export const isUnitAllowedForInventoryProfile = (unit: InventoryUnit, profile: InventoryUnitProfile) => (
   profile.allowedUnits.includes(unit)
 );

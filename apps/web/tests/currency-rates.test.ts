@@ -4,7 +4,7 @@ import {
   convertCurrencyMinorToRubMinor,
   defaultSystemCurrencyRates,
   mergeSystemCurrencyRates
-} from "../features/system/currency-rates";
+} from "../features/system/currency";
 
 describe("currency rates foundation", () => {
   it("uses safe defaults for rub/usd/eur", () => {

@@ -6,6 +6,11 @@ import { useState } from "react";
 
 import { createRecipeAction, updateRecipeAction, type RecipeEditorResult } from "@/app/(app)/app/recipes/actions";
 import { resolveIngredientCategory } from "@/features/ingredients/taxonomy";
+import {
+  formatInventoryQuantityInputValue,
+  resolveInventoryMeasurementForDisplay
+} from "@/features/inventory/display";
+import { resolveHumanFacingInventoryUnitProfile } from "@/features/inventory/units";
 import type { RecipeDetailDto, RecipePublicationState } from "@/features/recipes/contracts";
 
 import { RecipeBatchSizeFields } from "./recipe-batch-size-fields";
@@ -20,25 +25,49 @@ type Props = {
   initialRecipe?: RecipeDetailDto;
 };
 
-const toIngredientRow = (ingredient: RecipeDetailDto["ingredients"][number]): RecipeIngredientEditorRowValue => ({
-  localId: ingredient.id,
-  ingredientCatalogItemId: ingredient.ingredientCatalogItemId,
-  userCustomIngredientId: ingredient.userCustomIngredientId,
-  selectedName: ingredient.ingredientDisplayName ?? "",
-  selectedSummary: ingredient.ingredientSummary ?? "",
-  familyDisplayName: ingredient.ingredientFamilyDisplayName ?? "",
-  category: ingredient.ingredientCategory ?? resolveIngredientCategory({ type: ingredient.type }),
-  subtype: ingredient.ingredientSubtype ?? null,
-  familyId: ingredient.ingredientFamilyId ?? null,
-  type: ingredient.type,
-  defaultDisplayUnit: ingredient.ingredientDefaultDisplayUnit ?? ingredient.amountEnteredUnit,
-  allowedUnits: ingredient.ingredientAllowedUnits ?? [ingredient.amountEnteredUnit],
-  measurementDimension: ingredient.ingredientMeasurementDimension ?? null,
-  amountEnteredQuantity: String(ingredient.amountEnteredQuantity),
-  amountEnteredUnit: ingredient.amountEnteredUnit,
-  stage: ingredient.stage,
-  timeOffset: ingredient.timeOffset === null ? "" : String(ingredient.timeOffset)
-});
+const toIngredientRow = (ingredient: RecipeDetailDto["ingredients"][number]): RecipeIngredientEditorRowValue => {
+  const category = ingredient.ingredientCategory ?? resolveIngredientCategory({ type: ingredient.type });
+  const unitProfile = resolveHumanFacingInventoryUnitProfile({
+    type: ingredient.type,
+    category,
+    subtype: ingredient.ingredientSubtype ?? null,
+    defaultDisplayUnit: ingredient.ingredientDefaultDisplayUnit ?? ingredient.ingredientDefaultDisplayUnitSnapshot ?? ingredient.amountEnteredUnit,
+    allowedUnits: ingredient.ingredientAllowedUnits ?? [ingredient.amountEnteredUnit],
+    measurementDimension: ingredient.ingredientMeasurementDimension ?? ingredient.ingredientMeasurementDimensionSnapshot ?? null
+  });
+  const displayMeasurement = resolveInventoryMeasurementForDisplay({
+    enteredQuantity: ingredient.amountEnteredQuantity,
+    enteredUnit: ingredient.amountEnteredUnit,
+    normalizedQuantity: ingredient.amountNormalizedQuantity,
+    normalizedUnit: ingredient.amountNormalizedUnit,
+    type: ingredient.type,
+    category,
+    subtype: ingredient.ingredientSubtype ?? null,
+    defaultDisplayUnit: unitProfile.defaultUnit,
+    allowedUnits: ingredient.ingredientAllowedUnits ?? unitProfile.allowedUnits,
+    measurementDimension: ingredient.ingredientMeasurementDimension ?? ingredient.ingredientMeasurementDimensionSnapshot ?? unitProfile.measurementDimension
+  });
+
+  return {
+    localId: ingredient.id,
+    ingredientCatalogItemId: ingredient.ingredientCatalogItemId,
+    userCustomIngredientId: ingredient.userCustomIngredientId,
+    selectedName: ingredient.ingredientDisplayName ?? ingredient.ingredientDisplayNameSnapshot ?? "",
+    selectedSummary: ingredient.ingredientSummary ?? "",
+    familyDisplayName: ingredient.ingredientFamilyDisplayName ?? "",
+    category,
+    subtype: ingredient.ingredientSubtype ?? null,
+    familyId: ingredient.ingredientFamilyId ?? null,
+    type: ingredient.type,
+    defaultDisplayUnit: unitProfile.defaultUnit,
+    allowedUnits: ingredient.ingredientAllowedUnits ?? unitProfile.allowedUnits,
+    measurementDimension: ingredient.ingredientMeasurementDimension ?? ingredient.ingredientMeasurementDimensionSnapshot ?? unitProfile.measurementDimension,
+    amountEnteredQuantity: formatInventoryQuantityInputValue(displayMeasurement.quantity),
+    amountEnteredUnit: displayMeasurement.unit,
+    stage: ingredient.stage,
+    timeOffset: ingredient.timeOffset === null ? "" : String(ingredient.timeOffset)
+  };
+};
 
 export function RecipeForm({ mode, initialRecipe }: Props) {
   const [meta, setMeta] = useState<{

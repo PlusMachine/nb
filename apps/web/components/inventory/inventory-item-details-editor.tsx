@@ -6,6 +6,7 @@ import { useEffect, useMemo, useState, useTransition } from "react";
 import { updateInventoryItemAction, type AddIngredientResult } from "@/app/(app)/app/ingredients/actions";
 import { IngredientCategorySelector } from "@/components/ingredients/ingredient-category-selector";
 import { IngredientPicker } from "@/components/ingredients/ingredient-picker";
+import { InventoryPriceInput } from "@/components/inventory/inventory-price-input";
 import type {
   IngredientCategory,
   IngredientSubtype,
@@ -13,18 +14,24 @@ import type {
   IngredientType
 } from "@/features/ingredients/contracts";
 import { resolveIngredientCategory, resolveLegacyIngredientType } from "@/features/ingredients/taxonomy";
-import { formatMoneyInputValueFromMinor } from "@/features/system/money";
-import type { SystemCurrency } from "@/features/system/currency";
 import type { InventoryListItemDto } from "@/features/inventory/contracts";
 import {
+  formatInventoryQuantityInputValue,
+  resolveInventoryMeasurementForDisplay
+} from "@/features/inventory/display";
+import type { InventoryPriceInputMode } from "@/features/inventory/purchase-cost";
+import {
   inventoryUnitLabels,
-  resolveInventoryUnitProfile,
+  resolveHumanFacingInventoryUnitProfile,
   type InventoryUnit
 } from "@/features/inventory/units";
+import { convertCurrencyMinor, formatMoneyInputValueFromMinor } from "@/features/system/money";
+import type { SystemCurrency, SystemCurrencyRateMap } from "@/features/system/currency";
 
 type Props = {
   item: InventoryListItemDto;
   preferredCurrency: SystemCurrency;
+  currencyRates: SystemCurrencyRateMap;
 };
 
 type FormState = {
@@ -38,10 +45,8 @@ type FormState = {
   userCustomIngredientId: string | null;
   enteredQuantity: string;
   enteredUnit: InventoryUnit;
-  purchasePrice: string;
-  purchaseCurrency: SystemCurrency;
-  purchaseQuantity: string;
-  purchaseQuantityUnit: InventoryUnit;
+  priceInputMode: InventoryPriceInputMode;
+  priceInputAmount: string;
   purchasedAt: string;
   freshnessDate: string;
   notes: string;
@@ -62,7 +67,7 @@ export const resolveInventoryEditorUnitProfile = (
   form: Pick<FormState, "type" | "category" | "subtype" | "enteredUnit">,
   source?: Pick<InventoryListItemDto["source"], "defaultDisplayUnit" | "allowedUnits" | "measurementDimension" | "technicalData"> | null,
   selected?: Pick<IngredientSuggestionItem, "type" | "category" | "subtype" | "defaultDisplayUnit" | "defaultUnit" | "allowedUnits" | "measurementDimension" | "technicalData"> | null
-) => resolveInventoryUnitProfile({
+) => resolveHumanFacingInventoryUnitProfile({
   type: selected?.type ?? form.type,
   category: selected?.category ?? form.category,
   subtype: selected?.subtype ?? form.subtype,
@@ -72,8 +77,29 @@ export const resolveInventoryEditorUnitProfile = (
   technicalData: selected?.technicalData ?? source?.technicalData ?? null
 });
 
-const createFormState = (item: InventoryListItemDto, preferredCurrency: SystemCurrency): FormState => {
-  const fallbackUnit = item.purchaseQuantityUnit ?? item.source.defaultDisplayUnit ?? item.enteredUnit;
+const createFormState = (
+  item: InventoryListItemDto,
+  preferredCurrency: SystemCurrency,
+  currencyRates: SystemCurrencyRateMap
+): FormState => {
+  const displayMeasurement = resolveInventoryMeasurementForDisplay({
+    enteredQuantity: item.enteredQuantity,
+    enteredUnit: item.enteredUnit,
+    normalizedQuantity: item.normalizedQuantity,
+    normalizedUnit: item.normalizedUnit,
+    type: item.source.type,
+    category: item.source.category,
+    subtype: item.source.subtype,
+    defaultDisplayUnit: item.source.defaultDisplayUnit,
+    allowedUnits: item.source.allowedUnits,
+    measurementDimension: item.source.measurementDimension,
+    technicalData: item.source.technicalData
+  });
+  const storedPriceInputCurrency = item.priceInputCurrency ?? item.purchaseCurrency;
+  const storedPriceInputAmountMinor = item.priceInputAmountMinor ?? item.purchasePriceMinor;
+  const displayPriceMinor = storedPriceInputAmountMinor != null && storedPriceInputCurrency
+    ? convertCurrencyMinor(storedPriceInputAmountMinor, storedPriceInputCurrency, preferredCurrency, currencyRates)
+    : storedPriceInputAmountMinor;
 
   return {
     type: item.source.type,
@@ -84,12 +110,10 @@ const createFormState = (item: InventoryListItemDto, preferredCurrency: SystemCu
     selectedDisplayName: item.source.displayName,
     ingredientCatalogItemId: item.source.sourceKind === "catalog" ? item.source.sourceId : null,
     userCustomIngredientId: item.source.sourceKind === "custom" ? item.source.sourceId : null,
-    enteredQuantity: String(item.enteredQuantity),
-    enteredUnit: item.enteredUnit,
-    purchasePrice: formatMoneyInputValueFromMinor(item.purchasePriceMinor),
-    purchaseCurrency: item.purchaseCurrency ?? preferredCurrency,
-    purchaseQuantity: item.purchaseQuantity == null ? "" : String(item.purchaseQuantity),
-    purchaseQuantityUnit: fallbackUnit,
+    enteredQuantity: formatInventoryQuantityInputValue(displayMeasurement.quantity),
+    enteredUnit: displayMeasurement.unit,
+    priceInputMode: item.priceInputMode ?? (displayPriceMinor != null ? "total" : "total"),
+    priceInputAmount: formatMoneyInputValueFromMinor(displayPriceMinor),
     purchasedAt: formatDateInput(item.purchasedAt),
     freshnessDate: formatDateInput(item.freshnessDate),
     notes: item.notes ?? ""
@@ -105,28 +129,31 @@ const canSubmitInventoryForm = (form: FormState) => {
   return Number.isFinite(quantity) && quantity > 0;
 };
 
-export function InventoryItemDetailsEditor({ item, preferredCurrency }: Props) {
+export function InventoryItemDetailsEditor({ item, preferredCurrency, currencyRates }: Props) {
   const [editing, setEditing] = useState(false);
-  const [form, setForm] = useState<FormState>(() => createFormState(item, preferredCurrency));
+  const [form, setForm] = useState<FormState>(() => createFormState(item, preferredCurrency, currencyRates));
+  const [selectedSuggestion, setSelectedSuggestion] = useState<IngredientSuggestionItem | null>(null);
   const [result, setResult] = useState<AddIngredientResult | null>(null);
   const [isPending, startTransition] = useTransition();
   const unitProfile = useMemo(
-    () => resolveInventoryEditorUnitProfile(form, item.source),
-    [form, item.source]
+    () => resolveInventoryEditorUnitProfile(form, item.source, selectedSuggestion),
+    [form, item.source, selectedSuggestion]
   );
 
   useEffect(() => {
-    setForm(createFormState(item, preferredCurrency));
+    setForm(createFormState(item, preferredCurrency, currencyRates));
+    setSelectedSuggestion(null);
     setEditing(false);
-  }, [item, preferredCurrency]);
+  }, [item, preferredCurrency, currencyRates]);
 
   const resetForm = () => {
-    setForm(createFormState(item, preferredCurrency));
+    setForm(createFormState(item, preferredCurrency, currencyRates));
+    setSelectedSuggestion(null);
     setResult(null);
     setEditing(false);
   };
 
-  const purchasePriceError = result?.fieldErrors?.purchasePriceMinor ?? result?.fieldErrors?.purchasePrice;
+  const purchasePriceError = result?.fieldErrors?.priceInputAmountMinor ?? result?.fieldErrors?.purchasePriceMinor ?? result?.fieldErrors?.purchasePrice;
 
   return (
     <div className="space-y-2">
@@ -135,7 +162,8 @@ export function InventoryItemDetailsEditor({ item, preferredCurrency }: Props) {
           <button
             type="button"
             onClick={() => {
-              setForm(createFormState(item, preferredCurrency));
+              setForm(createFormState(item, preferredCurrency, currencyRates));
+              setSelectedSuggestion(null);
               setResult(null);
               setEditing(true);
             }}
@@ -157,10 +185,8 @@ export function InventoryItemDetailsEditor({ item, preferredCurrency }: Props) {
                 userCustomIngredientId: form.userCustomIngredientId,
                 enteredQuantity: form.enteredQuantity,
                 enteredUnit: form.enteredUnit,
-                purchasePrice: form.purchasePrice,
-                purchaseCurrency: form.purchaseCurrency,
-                purchaseQuantity: form.purchaseQuantity,
-                purchaseQuantityUnit: form.purchaseQuantityUnit,
+                priceInputMode: form.priceInputMode,
+                priceInputAmount: form.priceInputAmount,
                 purchasedAt: form.purchasedAt,
                 freshnessDate: form.freshnessDate,
                 notes: form.notes
@@ -182,7 +208,8 @@ export function InventoryItemDetailsEditor({ item, preferredCurrency }: Props) {
             value={form.category}
             name={`inventory-category-${item.id}`}
             onChange={(nextCategory) => {
-              const nextUnitProfile = resolveInventoryUnitProfile({ category: nextCategory });
+              const nextUnitProfile = resolveHumanFacingInventoryUnitProfile({ category: nextCategory });
+              setSelectedSuggestion(null);
               setForm({
                 ...form,
                 type: resolveLegacyIngredientType({ category: nextCategory }),
@@ -193,8 +220,7 @@ export function InventoryItemDetailsEditor({ item, preferredCurrency }: Props) {
                 selectedDisplayName: "",
                 ingredientCatalogItemId: null,
                 userCustomIngredientId: null,
-                enteredUnit: nextUnitProfile.defaultUnit,
-                purchaseQuantityUnit: nextUnitProfile.defaultUnit
+                enteredUnit: nextUnitProfile.defaultUnit
               });
               setResult(null);
             }}
@@ -206,7 +232,8 @@ export function InventoryItemDetailsEditor({ item, preferredCurrency }: Props) {
               category={form.category}
               value={form.pickerValue}
               onValueChange={(nextValue) => {
-                const resetUnitProfile = resolveInventoryUnitProfile({ category: form.category });
+                const clearsSelectedSuggestion = nextValue.trim() !== (selectedSuggestion?.displayName ?? form.selectedDisplayName).trim();
+                const resetUnitProfile = resolveHumanFacingInventoryUnitProfile({ category: form.category });
                 setForm((current) => ({
                   ...current,
                   pickerValue: nextValue,
@@ -220,19 +247,16 @@ export function InventoryItemDetailsEditor({ item, preferredCurrency }: Props) {
                           ? current.enteredUnit
                           : resetUnitProfile.defaultUnit
                       )
-                    : current.enteredUnit,
-                  purchaseQuantityUnit: nextValue.trim() !== current.selectedDisplayName.trim()
-                    ? (
-                        resetUnitProfile.allowedUnits.includes(current.purchaseQuantityUnit)
-                          ? current.purchaseQuantityUnit
-                          : resetUnitProfile.defaultUnit
-                      )
-                    : current.purchaseQuantityUnit
+                    : current.enteredUnit
                 }));
+                if (clearsSelectedSuggestion) {
+                  setSelectedSuggestion(null);
+                }
                 setResult(null);
               }}
               onSelect={(selected) => {
                 const nextUnitProfile = resolveInventoryEditorUnitProfile(form, item.source, selected);
+                setSelectedSuggestion(selected);
                 setForm((current) => {
                   return {
                     ...current,
@@ -244,10 +268,7 @@ export function InventoryItemDetailsEditor({ item, preferredCurrency }: Props) {
                     selectedDisplayName: selected.displayName,
                     ingredientCatalogItemId: selected.id,
                     userCustomIngredientId: null,
-                    enteredUnit: nextUnitProfile.defaultUnit,
-                    purchaseQuantityUnit: nextUnitProfile.allowedUnits.includes(current.purchaseQuantityUnit)
-                      ? current.purchaseQuantityUnit
-                      : nextUnitProfile.defaultUnit
+                    enteredUnit: nextUnitProfile.defaultUnit
                   };
                 });
                 setResult(null);
@@ -319,70 +340,29 @@ export function InventoryItemDetailsEditor({ item, preferredCurrency }: Props) {
             </label>
           </div>
 
-          <details className="rounded-md border border-zinc-200 bg-white p-3" open={Boolean(form.purchasePrice || form.purchaseQuantity)}>
-            <summary className="cursor-pointer text-sm font-medium text-zinc-900">Стоимость покупки</summary>
-            <div className="mt-3 grid gap-3 sm:grid-cols-2">
-              <label className="text-sm">Цена
-                <input
-                  type="number"
-                  min="0"
-                  step="0.01"
-                  className="mt-1 w-full rounded-md border px-2 py-2"
-                  value={form.purchasePrice}
-                  onChange={(event) => {
-                    setForm((current) => ({ ...current, purchasePrice: event.target.value }));
-                    setResult(null);
-                  }}
-                  inputMode="decimal"
-                />
-                {purchasePriceError ? <span className="text-xs text-red-600">{purchasePriceError}</span> : null}
-              </label>
-
-              <label className="text-sm">Валюта
-                <select
-                  className="mt-1 w-full rounded-md border px-2 py-2"
-                  value={form.purchaseCurrency}
-                  onChange={(event) => {
-                    setForm((current) => ({ ...current, purchaseCurrency: event.target.value as SystemCurrency }));
-                    setResult(null);
-                  }}
-                >
-                  <option value="RUB">RUB</option>
-                  <option value="USD">USD</option>
-                  <option value="EUR">EUR</option>
-                </select>
-              </label>
-
-              <label className="text-sm">Куплено
-                <input
-                  type="number"
-                  min="0"
-                  step="0.001"
-                  className="mt-1 w-full rounded-md border px-2 py-2"
-                  value={form.purchaseQuantity}
-                  onChange={(event) => {
-                    setForm((current) => ({ ...current, purchaseQuantity: event.target.value }));
-                    setResult(null);
-                  }}
-                  inputMode="decimal"
-                />
-                {result?.fieldErrors?.purchaseQuantity ? <span className="text-xs text-red-600">{result.fieldErrors.purchaseQuantity}</span> : null}
-              </label>
-
-              <label className="text-sm">Ед. закупки
-                <select
-                  className="mt-1 w-full rounded-md border px-2 py-2"
-                  value={form.purchaseQuantityUnit}
-                  onChange={(event) => {
-                    setForm((current) => ({ ...current, purchaseQuantityUnit: event.target.value as InventoryUnit }));
-                    setResult(null);
-                  }}
-                >
-                  {unitProfile.allowedUnits.map((unit) => <option key={unit} value={unit}>{inventoryUnitLabels[unit]}</option>)}
-                </select>
-              </label>
-            </div>
-          </details>
+          <InventoryPriceInput
+            preferredCurrency={preferredCurrency}
+            priceInputMode={form.priceInputMode}
+            priceInputAmount={form.priceInputAmount}
+            enteredQuantity={form.enteredQuantity}
+            enteredUnit={form.enteredUnit}
+            fieldError={purchasePriceError}
+            onPriceInputModeChange={(mode) => {
+              setForm((current) => ({ ...current, priceInputMode: mode }));
+              setResult(null);
+            }}
+            onPriceInputAmountChange={(value) => {
+              setForm((current) => ({ ...current, priceInputAmount: value }));
+              setResult(null);
+            }}
+            type={form.type}
+            category={form.category}
+            subtype={form.subtype}
+            defaultDisplayUnit={selectedSuggestion?.defaultDisplayUnit ?? selectedSuggestion?.defaultUnit ?? item.source.defaultDisplayUnit}
+            allowedUnits={selectedSuggestion?.allowedUnits ?? item.source.allowedUnits}
+            measurementDimension={selectedSuggestion?.measurementDimension ?? item.source.measurementDimension}
+            technicalData={selectedSuggestion?.technicalData ?? item.source.technicalData}
+          />
 
           <label className="block text-sm">Заметки
             <textarea

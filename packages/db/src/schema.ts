@@ -15,6 +15,7 @@ export const hopFormEnum = pgEnum("hop_form", ["pellet", "whole_cone", "lupulin"
 export const yeastTypeEnum = pgEnum("yeast_type", ["ale", "lager", "wine"]);
 export const yeastFormEnum = pgEnum("yeast_form", ["dry", "liquid"]);
 export const inventoryUnitDimensionEnum = pgEnum("inventory_unit_dimension", ["weight", "volume", "count"]);
+export const inventoryPriceInputModeEnum = pgEnum("inventory_price_input_mode", ["total", "per_display_unit"]);
 export const systemCurrencyEnum = pgEnum("system_currency", ["RUB", "USD", "EUR"]);
 export const recipePublicationStateEnum = pgEnum("recipe_publication_state", ["draft", "private", "published"]);
 export const recipeIngredientStageEnum = pgEnum("recipe_ingredient_stage", ["mash", "boil", "whirlpool", "fermentation", "packaging", "other"]);
@@ -232,6 +233,9 @@ export const userIngredients = pgTable("user_ingredients", {
   normalizedQuantity: doublePrecision("normalized_quantity").notNull(),
   normalizedUnit: varchar("normalized_unit", { length: 32 }).notNull(),
   unitDimension: inventoryUnitDimensionEnum("unit_dimension").notNull(),
+  priceInputMode: inventoryPriceInputModeEnum("price_input_mode"),
+  priceInputAmountMinor: integer("price_input_amount_minor"),
+  priceInputCurrency: systemCurrencyEnum("price_input_currency"),
   purchasePriceMinor: integer("purchase_price_minor"),
   purchaseCurrency: systemCurrencyEnum("purchase_currency"),
   purchaseQuantity: doublePrecision("purchase_quantity"),

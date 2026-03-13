@@ -8,7 +8,7 @@ import {
   formatUnitPriceMinor,
   resolvePreferredCurrency
 } from "../features/system/money";
-import { defaultSystemCurrencyRates } from "../features/system/currency-rates";
+import { defaultSystemCurrencyRates } from "../features/system/currency";
 
 describe("money display helpers", () => {
   it("defaults preferred currency to RUB", () => {

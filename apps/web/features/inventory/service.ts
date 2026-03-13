@@ -1,6 +1,5 @@
 import {
   and,
-  asc,
   db,
   eq,
   ingredientCatalogItems,
@@ -41,14 +40,22 @@ import {
 } from "../ingredients/taxonomy";
 import { type SystemCurrency, listSystemCurrencyRates } from "../system/currency-rates";
 import { normalizeInventoryPurchaseContext } from "./purchase-cost";
+import { resolveInventoryMeasurementForDisplay } from "./display";
 import {
   normalizeInventoryMeasurementForProfile,
   parseInventoryUnit,
+  resolveHumanFacingInventoryUnitProfile,
   resolveInventoryUnitProfile,
   type InventoryUnit,
   type InventoryUnitDimension,
   type InventoryUnitProfile
 } from "./units";
+
+type InventoryWriteContext = {
+  preferredCurrency?: SystemCurrency | null;
+};
+
+type InventorySortDirection = "asc" | "desc";
 
 const ensureSourceLinkage = (ingredientCatalogItemId?: string | null, userCustomIngredientId?: string | null) => {
   const result = inventorySourceLinkageSchema.safeParse({ ingredientCatalogItemId, userCustomIngredientId });
@@ -71,23 +78,6 @@ const buildInventorySearchWhere = (search: string) => {
   return sql<boolean>`coalesce(${userIngredients.ingredientDisplayNameSnapshot}, ${ingredientCatalogItems.displayName}, ${userCustomIngredients.displayName}) ilike ${term}`;
 };
 
-const buildInventoryTypeWhere = (type?: string) => {
-  if (!type) {
-    return undefined;
-  }
-
-  return sql<boolean>`coalesce(
-    ${ingredientCatalogItems.type},
-    ${userCustomIngredients.type},
-    case
-      when ${userIngredients.ingredientCategory} = 'fermentable' then 'fermentable'
-      when ${userIngredients.ingredientCategory} = 'hop' then 'hop'
-      when ${userIngredients.ingredientCategory} = 'yeast' then 'yeast'
-      else 'misc'
-    end
-  ) = ${type}`;
-};
-
 const buildInventorySnapshotUnitProfile = (input: {
   type?: InventorySourceDto["type"] | null;
   category?: InventorySourceDto["category"] | null;
@@ -95,7 +85,7 @@ const buildInventorySnapshotUnitProfile = (input: {
   defaultDisplayUnit?: string | null;
   measurementDimension?: string | null;
   technicalData?: InventorySourceDto["technicalData"];
-}) => resolveInventoryUnitProfile({
+}) => resolveHumanFacingInventoryUnitProfile({
   type: input.type,
   category: input.category,
   subtype: input.subtype,
@@ -240,6 +230,10 @@ const mapInventoryRow = (row: {
     normalizedQuantity: row.inventory.normalizedQuantity,
     normalizedUnit,
     unitDimension: row.inventory.unitDimension,
+    priceInputMode: row.inventory.priceInputMode ?? (row.inventory.purchasePriceMinor != null ? "total" : null),
+    priceInputAmountMinor: row.inventory.priceInputAmountMinor ?? row.inventory.purchasePriceMinor,
+    priceInputCurrency: (row.inventory.priceInputCurrency as SystemCurrency | null)
+      ?? (row.inventory.purchaseCurrency as SystemCurrency | null),
     purchasePriceMinor: row.inventory.purchasePriceMinor,
     purchaseCurrency: row.inventory.purchaseCurrency as SystemCurrency | null,
     purchaseQuantity: row.inventory.purchaseQuantity,
@@ -331,6 +325,117 @@ const buildPersistedInventoryUnitProfile = (
   technicalData: liveLinkage?.technicalData ?? null
 });
 
+const resolveInventoryQueryCategory = (
+  query: Pick<
+    ReturnType<typeof inventoryListQuerySchema.parse>,
+    "category" | "type"
+  >
+) => (
+  query.category
+  ?? (query.type ? resolveIngredientCategory({ type: query.type }) : undefined)
+);
+
+const isInventoryItemEmpty = (item: InventoryListItemDto) => item.normalizedQuantity <= 0;
+
+const applyInventoryStockState = (
+  items: InventoryListItemDto[],
+  stockState: ReturnType<typeof inventoryListQuerySchema.parse>["stockState"]
+) => {
+  if (stockState === "all") {
+    return items;
+  }
+
+  return items.filter((item) => (
+    stockState === "empty"
+      ? isInventoryItemEmpty(item)
+      : !isInventoryItemEmpty(item)
+  ));
+};
+
+const resolveInventoryStockState = (
+  query: Pick<
+    ReturnType<typeof inventoryListQuerySchema.parse>,
+    "includeEmpty" | "stockState"
+  >
+) => {
+  if (query.stockState === "all" || query.stockState === "empty") {
+    return query.stockState;
+  }
+
+  return query.includeEmpty ? "all" : "in_stock";
+};
+
+const compareNullableNumber = (
+  left: number | null | undefined,
+  right: number | null | undefined,
+  direction: InventorySortDirection = "asc"
+) => {
+  if (left == null && right == null) {
+    return 0;
+  }
+
+  if (left == null) {
+    return 1;
+  }
+
+  if (right == null) {
+    return -1;
+  }
+
+  return direction === "asc" ? left - right : right - left;
+};
+
+const compareNullableDate = (
+  left: Date | null | undefined,
+  right: Date | null | undefined,
+  direction: InventorySortDirection = "asc"
+) => compareNullableNumber(left?.getTime(), right?.getTime(), direction);
+
+const compareInventoryItems = (
+  left: InventoryListItemDto,
+  right: InventoryListItemDto,
+  sort: ReturnType<typeof inventoryListQuerySchema.parse>["sort"]
+) => {
+  if (sort === "name") {
+    return left.source.displayName.localeCompare(right.source.displayName, "ru");
+  }
+
+  if (sort === "quantity") {
+    const quantityComparison = compareNullableNumber(left.normalizedQuantity, right.normalizedQuantity, "desc");
+    if (quantityComparison !== 0) {
+      return quantityComparison;
+    }
+  }
+
+  if (sort === "updated") {
+    const updatedComparison = compareNullableDate(left.updatedAt, right.updatedAt, "desc");
+    if (updatedComparison !== 0) {
+      return updatedComparison;
+    }
+  }
+
+  if (sort === "best_before") {
+    const freshnessComparison = compareNullableDate(left.freshnessDate, right.freshnessDate, "asc");
+    if (freshnessComparison !== 0) {
+      return freshnessComparison;
+    }
+  }
+
+  if (sort === "price") {
+    const priceComparison = compareNullableNumber(left.normalizedUnitCostMinorRub, right.normalizedUnitCostMinorRub, "asc");
+    if (priceComparison !== 0) {
+      return priceComparison;
+    }
+  }
+
+  const updatedFallback = compareNullableDate(left.updatedAt, right.updatedAt, "desc");
+  if (updatedFallback !== 0) {
+    return updatedFallback;
+  }
+
+  return left.source.displayName.localeCompare(right.source.displayName, "ru");
+};
+
 const resolveInventoryIngredientProfile = async (
   userId: string,
   item: typeof userIngredients.$inferSelect
@@ -381,21 +486,46 @@ export const createUserCustomIngredient = async (userId: string, payload: unknow
   return created;
 };
 
-export const addCatalogIngredientToInventory = async (userId: string, payload: unknown) => {
+export const addCatalogIngredientToInventory = async (
+  userId: string,
+  payload: unknown,
+  context: InventoryWriteContext = {}
+) => {
   const parsed = addCatalogInventoryItemSchema.parse(payload);
   ensureSourceLinkage(parsed.ingredientCatalogItemId, null);
   const catalogItem = await ensureCatalogIngredientExists(parsed.ingredientCatalogItemId);
   const linkage = buildCatalogIngredientLinkage(catalogItem);
+  const unitProfile = buildPersistedInventoryUnitProfile(buildInventorySnapshotValues(linkage), linkage);
   const measurement = normalizeInventoryMeasurementForProfile(
-    buildPersistedInventoryUnitProfile(buildInventorySnapshotValues(linkage), linkage),
+    unitProfile,
     parsed.enteredQuantity,
     parsed.enteredUnit
   );
   const rates = await listSystemCurrencyRates();
   const purchase = normalizeInventoryPurchaseContext(
-    buildPersistedInventoryUnitProfile(buildInventorySnapshotValues(linkage), linkage),
+    unitProfile,
     parsed,
-    rates
+    rates,
+    {
+      defaultCurrency: context.preferredCurrency ?? "RUB",
+      fallbackMeasurement: {
+        quantity: measurement.enteredQuantity,
+        unit: measurement.enteredUnit
+      },
+      displayMeasurement: resolveInventoryMeasurementForDisplay({
+        enteredQuantity: measurement.enteredQuantity,
+        enteredUnit: measurement.enteredUnit,
+        normalizedQuantity: measurement.normalizedQuantity,
+        normalizedUnit: measurement.normalizedUnit,
+        type: linkage.type,
+        category: linkage.category,
+        subtype: linkage.subtype,
+        defaultDisplayUnit: linkage.defaultDisplayUnit,
+        allowedUnits: linkage.allowedUnits,
+        measurementDimension: linkage.measurementDimension,
+        technicalData: linkage.technicalData
+      })
+    }
   );
 
   const [created] = await db.insert(userIngredients).values({
@@ -408,6 +538,9 @@ export const addCatalogIngredientToInventory = async (userId: string, payload: u
     normalizedQuantity: measurement.normalizedQuantity,
     normalizedUnit: measurement.normalizedUnit,
     unitDimension: measurement.unitDimension,
+    priceInputMode: purchase.priceInputMode,
+    priceInputAmountMinor: purchase.priceInputAmountMinor,
+    priceInputCurrency: purchase.priceInputCurrency,
     purchasePriceMinor: purchase.purchasePriceMinor,
     purchaseCurrency: purchase.purchaseCurrency,
     purchaseQuantity: purchase.purchaseQuantity,
@@ -423,7 +556,11 @@ export const addCatalogIngredientToInventory = async (userId: string, payload: u
   return created;
 };
 
-export const addCustomIngredientToInventory = async (userId: string, payload: unknown) => {
+export const addCustomIngredientToInventory = async (
+  userId: string,
+  payload: unknown,
+  context: InventoryWriteContext = {}
+) => {
   const parsed = addCustomInventoryItemSchema.parse(payload);
   ensureSourceLinkage(null, parsed.userCustomIngredientId);
   const customIngredient = await ensureOwnedCustomIngredient(userId, parsed.userCustomIngredientId);
@@ -435,7 +572,26 @@ export const addCustomIngredientToInventory = async (userId: string, payload: un
     parsed.enteredUnit
   );
   const rates = await listSystemCurrencyRates();
-  const purchase = normalizeInventoryPurchaseContext(unitProfile, parsed, rates);
+  const purchase = normalizeInventoryPurchaseContext(unitProfile, parsed, rates, {
+    defaultCurrency: context.preferredCurrency ?? "RUB",
+    fallbackMeasurement: {
+      quantity: measurement.enteredQuantity,
+      unit: measurement.enteredUnit
+    },
+    displayMeasurement: resolveInventoryMeasurementForDisplay({
+      enteredQuantity: measurement.enteredQuantity,
+      enteredUnit: measurement.enteredUnit,
+      normalizedQuantity: measurement.normalizedQuantity,
+      normalizedUnit: measurement.normalizedUnit,
+      type: linkage.type,
+      category: linkage.category,
+      subtype: linkage.subtype,
+      defaultDisplayUnit: linkage.defaultDisplayUnit,
+      allowedUnits: linkage.allowedUnits,
+      measurementDimension: linkage.measurementDimension,
+      technicalData: linkage.technicalData
+    })
+  });
 
   const [created] = await db.insert(userIngredients).values({
     userId,
@@ -447,6 +603,9 @@ export const addCustomIngredientToInventory = async (userId: string, payload: un
     normalizedQuantity: measurement.normalizedQuantity,
     normalizedUnit: measurement.normalizedUnit,
     unitDimension: measurement.unitDimension,
+    priceInputMode: purchase.priceInputMode,
+    priceInputAmountMinor: purchase.priceInputAmountMinor,
+    priceInputCurrency: purchase.priceInputCurrency,
     purchasePriceMinor: purchase.purchasePriceMinor,
     purchaseCurrency: purchase.purchaseCurrency,
     purchaseQuantity: purchase.purchaseQuantity,
@@ -480,7 +639,22 @@ export const updateInventoryQuantity = async (userId: string, inventoryItemId: s
   return updated ?? null;
 };
 
-export const updateInventoryItem = async (userId: string, inventoryItemId: string, payload: unknown) => {
+export const setInventoryItemQuantityToZero = async (userId: string, inventoryItemId: string) => {
+  const inventoryItem = await ensureOwnedInventoryItem(userId, inventoryItemId);
+  const updated = await updateInventoryQuantity(userId, inventoryItemId, {
+    enteredQuantity: 0,
+    enteredUnit: inventoryItem.enteredUnit
+  });
+
+  return updated ?? inventoryItem;
+};
+
+export const updateInventoryItem = async (
+  userId: string,
+  inventoryItemId: string,
+  payload: unknown,
+  context: InventoryWriteContext = {}
+) => {
   const parsed = updateInventoryItemSchema.parse(payload);
   await ensureOwnedInventoryItem(userId, inventoryItemId);
 
@@ -499,7 +673,26 @@ export const updateInventoryItem = async (userId: string, inventoryItemId: strin
   const unitProfile = buildPersistedInventoryUnitProfile(buildInventorySnapshotValues(linkage), linkage);
   const measurement = normalizeInventoryMeasurementForProfile(unitProfile, parsed.enteredQuantity, parsed.enteredUnit);
   const rates = await listSystemCurrencyRates();
-  const purchase = normalizeInventoryPurchaseContext(unitProfile, parsed, rates);
+  const purchase = normalizeInventoryPurchaseContext(unitProfile, parsed, rates, {
+    defaultCurrency: context.preferredCurrency ?? "RUB",
+    fallbackMeasurement: {
+      quantity: measurement.enteredQuantity,
+      unit: measurement.enteredUnit
+    },
+    displayMeasurement: resolveInventoryMeasurementForDisplay({
+      enteredQuantity: measurement.enteredQuantity,
+      enteredUnit: measurement.enteredUnit,
+      normalizedQuantity: measurement.normalizedQuantity,
+      normalizedUnit: measurement.normalizedUnit,
+      type: linkage.type,
+      category: linkage.category,
+      subtype: linkage.subtype,
+      defaultDisplayUnit: linkage.defaultDisplayUnit,
+      allowedUnits: linkage.allowedUnits,
+      measurementDimension: linkage.measurementDimension,
+      technicalData: linkage.technicalData
+    })
+  });
 
   const [updated] = await db.update(userIngredients).set({
     ingredientCatalogItemId: parsed.ingredientCatalogItemId ?? null,
@@ -510,6 +703,9 @@ export const updateInventoryItem = async (userId: string, inventoryItemId: strin
     normalizedQuantity: measurement.normalizedQuantity,
     normalizedUnit: measurement.normalizedUnit,
     unitDimension: measurement.unitDimension,
+    priceInputMode: purchase.priceInputMode,
+    priceInputAmountMinor: purchase.priceInputAmountMinor,
+    priceInputCurrency: purchase.priceInputCurrency,
     purchasePriceMinor: purchase.purchasePriceMinor,
     purchaseCurrency: purchase.purchaseCurrency,
     purchaseQuantity: purchase.purchaseQuantity,
@@ -544,6 +740,8 @@ export const deleteInventoryItem = async (userId: string, inventoryItemId: strin
 
 export const listInventoryForUser = async (userId: string, query: unknown = {}) => {
   const parsed = inventoryListQuerySchema.parse(query);
+  const category = resolveInventoryQueryCategory(parsed);
+  const stockState = resolveInventoryStockState(parsed);
 
   const rows = await db
     .select({
@@ -556,23 +754,45 @@ export const listInventoryForUser = async (userId: string, query: unknown = {}) 
     .leftJoin(userCustomIngredients, eq(userIngredients.userCustomIngredientId, userCustomIngredients.id))
     .where(and(
       buildInventoryWhere(userId, parsed.includeArchived),
-      buildInventoryTypeWhere(parsed.type),
       buildInventorySearchWhere(parsed.search)
-    ))
-    .orderBy(asc(userIngredients.createdAt));
+    ));
 
-  return rows.map(mapInventoryRow);
+  const items = rows
+    .map(mapInventoryRow)
+    .filter((item) => (category ? item.ingredientCategory === category : true));
+
+  return applyInventoryStockState(items, stockState)
+    .sort((left, right) => compareInventoryItems(left, right, parsed.sort));
 };
 
 export const searchInventorySuggestions = async (
   userId: string,
-  params: { q: string; type?: string; limit?: number; includeArchived?: boolean }
+  params: {
+    q: string;
+    type?: string;
+    category?: string;
+    includeEmpty?: boolean;
+    stockState?: "in_stock" | "empty" | "all";
+    limit?: number;
+    includeArchived?: boolean;
+  }
 ): Promise<IngredientSuggestionItem[]> => {
   const query = ingredientSearchQuerySchema.parse(params);
-  const items = await listInventoryForUser(userId, {
+  const listQuery = inventoryListQuerySchema.parse({
     includeArchived: params.includeArchived ?? false,
+    includeEmpty: params.includeEmpty ?? false,
+    category: params.category ?? query.category,
     type: query.type,
+    stockState: params.stockState ?? "in_stock",
     search: query.q
+  });
+  const items = await listInventoryForUser(userId, {
+    includeArchived: listQuery.includeArchived,
+    includeEmpty: listQuery.includeEmpty,
+    category: listQuery.category,
+    type: listQuery.type,
+    stockState: listQuery.stockState,
+    search: listQuery.search
   });
 
   const grouped = new Map<string, { item: InventoryListItemDto; positionsCount: number }>();
@@ -619,6 +839,7 @@ export const getInventorySummaries = async (userId: string): Promise<InventorySu
   const rows = await db
     .select({
       archivedAt: userIngredients.archivedAt,
+      normalizedQuantity: userIngredients.normalizedQuantity,
       catalogType: ingredientCatalogItems.type,
       customType: userCustomIngredients.type,
       ingredientCategory: userIngredients.ingredientCategory,
@@ -627,39 +848,39 @@ export const getInventorySummaries = async (userId: string): Promise<InventorySu
     .from(userIngredients)
     .leftJoin(ingredientCatalogItems, eq(userIngredients.ingredientCatalogItemId, ingredientCatalogItems.id))
     .leftJoin(userCustomIngredients, eq(userIngredients.userCustomIngredientId, userCustomIngredients.id))
-    .where(eq(userIngredients.userId, userId));
+    .where(and(
+      eq(userIngredients.userId, userId),
+      isNull(userIngredients.archivedAt)
+    ));
 
   const summary: InventorySummaryDto = {
     totalItems: rows.length,
-    activeItems: 0,
-    archivedItems: 0,
-    byType: {
+    inStockItems: 0,
+    emptyItems: 0,
+    byCategory: {
       fermentable: 0,
       hop: 0,
       yeast: 0,
-      sugar: 0,
-      adjunct: 0,
-      fining: 0,
+      water_prep: 0,
       misc: 0
     }
   };
 
   for (const row of rows) {
-    const type = row.catalogType
-      ?? row.customType
-      ?? resolveLegacyIngredientType({
-        category: row.ingredientCategory,
+    const category = row.ingredientCategory
+      ?? resolveIngredientCategory({
+        type: row.catalogType ?? row.customType ?? undefined,
         subtype: row.ingredientSubtype
       });
-    if (!type) {
+    if (!category) {
       throw new Error("INVALID_SOURCE_LINKAGE");
     }
 
-    summary.byType[type] += 1;
-    if (row.archivedAt) {
-      summary.archivedItems += 1;
+    summary.byCategory[category] += 1;
+    if ((row.normalizedQuantity ?? 0) > 0) {
+      summary.inStockItems += 1;
     } else {
-      summary.activeItems += 1;
+      summary.emptyItems += 1;
     }
   }
 

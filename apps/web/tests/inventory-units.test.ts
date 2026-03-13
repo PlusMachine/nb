@@ -3,9 +3,11 @@ import { describe, expect, it } from "vitest";
 import {
   normalizeInventoryMeasurement,
   normalizeInventoryMeasurementForProfile,
+  resolveHumanFacingInventoryUnitProfile,
   resolveInventoryUnitProfile
 } from "../features/inventory/units";
-import { formatInventoryQuantityForDisplay } from "../features/inventory/display";
+import { buildInventoryCostDisplay, formatInventoryQuantityForDisplay } from "../features/inventory/display";
+import { defaultSystemCurrencyRates } from "../features/system/currency";
 
 describe("inventory unit normalization", () => {
   it("keeps grams canonical for weight inventory", () => {
@@ -135,5 +137,34 @@ describe("inventory unit normalization", () => {
       category: "fermentable",
       defaultDisplayUnit: "kg"
     })).toBe("0.5 kg");
+  });
+
+  it("forces human-facing fermentable defaults to kilograms even when legacy source default is grams", () => {
+    expect(resolveHumanFacingInventoryUnitProfile({
+      category: "fermentable",
+      defaultDisplayUnit: "g",
+      allowedUnits: ["g", "kg", "oz", "lb"],
+      measurementDimension: "weight"
+    }).defaultUnit).toBe("kg");
+  });
+
+  it("formats fermentable unit cost per kilogram instead of per gram", () => {
+    const unitPrice = buildInventoryCostDisplay({
+      enteredQuantity: 500,
+      enteredUnit: "g",
+      normalizedQuantity: 500,
+      normalizedUnit: "g",
+      category: "fermentable",
+      defaultDisplayUnit: "g",
+      allowedUnits: ["g", "kg", "oz", "lb"],
+      measurementDimension: "weight",
+      normalizedUnitCostMinorRub: 25,
+      purchasePriceMinor: 12500,
+      purchaseCurrency: "RUB",
+      purchaseQuantityNormalizedUnit: "g"
+    }, "RUB", defaultSystemCurrencyRates).unitPrice;
+
+    expect(unitPrice).toContain("250");
+    expect(unitPrice).toContain("/ kg");
   });
 });

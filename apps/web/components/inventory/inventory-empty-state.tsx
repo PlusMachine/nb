@@ -1,7 +1,7 @@
 import React from "react";
 
-import type { IngredientType } from "@/features/ingredients/contracts";
-import { inventoryTypeLabels } from "@/features/inventory/page-model";
+import type { IngredientCategory } from "@/features/ingredients/contracts";
+import { inventoryCategoryLabels } from "@/features/inventory/page-model";
 
 import { AddIngredientTrigger } from "./add-ingredient-trigger";
 
@@ -9,11 +9,17 @@ type Props = {
   hasAnyItems?: boolean;
   hasFilters?: boolean;
   search?: string;
-  type?: IngredientType;
-  archived?: boolean;
+  category?: IngredientCategory;
+  showFinished?: boolean;
 };
 
-export function InventoryEmptyState({ hasAnyItems = false, hasFilters = false, search = "", type, archived = false }: Props) {
+export function InventoryEmptyState({
+  hasAnyItems = false,
+  hasFilters = false,
+  search = "",
+  category,
+  showFinished = false
+}: Props) {
   if (!hasAnyItems) {
     return (
       <section className="space-y-3 rounded-lg border border-dashed p-6 text-center">
@@ -34,12 +40,15 @@ export function InventoryEmptyState({ hasAnyItems = false, hasFilters = false, s
   if (search) {
     title = "По вашему запросу ничего не найдено";
     description = `Не нашли "${search}" среди текущих запасов.`;
-  } else if (type) {
-    title = "Для выбранного типа нет позиций";
-    description = `В фильтре «${inventoryTypeLabels[type]}» пока нет подходящих ингредиентов.`;
-  } else if (archived && hasFilters) {
-    title = "Нет архивных позиций";
-    description = "В ваших запасах пока нет архивных ингредиентов.";
+  } else if (category) {
+    title = "Для выбранной категории нет позиций";
+    description = `В категории «${inventoryCategoryLabels[category]}» пока нет подходящих ингредиентов.`;
+  } else if (!showFinished && !hasFilters) {
+    title = "Сейчас в наличии ничего нет";
+    description = "Включите «Показывать закончившиеся», чтобы увидеть позиции с нулевым остатком и быстро пополнить их.";
+  } else if (showFinished) {
+    title = "Даже закончившихся позиций не найдено";
+    description = "Попробуйте изменить запрос или снять часть фильтров.";
   }
 
   return (

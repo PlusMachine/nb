@@ -1,6 +1,6 @@
 import React from "react";
 
-import { inventoryTypeLabels } from "@/features/inventory/page-model";
+import { inventoryTypeLabels, inventoryTypeOrder } from "@/features/inventory/page-model";
 import type { IngredientType } from "@/features/ingredients/contracts";
 
 type Props = {
@@ -28,8 +28,8 @@ export function InventoryTypeFilter({ value, onChange }: Props) {
         className="mt-1 min-w-40 rounded-md border px-3 py-2"
       >
         <option value="all">Все типы</option>
-        {Object.entries(inventoryTypeLabels).map(([type, label]) => (
-          <option key={type} value={type}>{label}</option>
+        {inventoryTypeOrder.map((type) => (
+          <option key={type} value={type}>{inventoryTypeLabels[type]}</option>
         ))}
       </select>
     </label>

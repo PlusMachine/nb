@@ -4,8 +4,23 @@ import { InventoryEmptyState } from "@/components/inventory/inventory-empty-stat
 import { AddIngredientTrigger } from "@/components/inventory/add-ingredient-trigger";
 import { InventorySummary } from "@/components/inventory/inventory-summary";
 import { InventoryToolbar } from "@/components/inventory/inventory-toolbar";
+import {
+  defaultInventorySortOption,
+  defaultInventoryShowFinished,
+  hasActiveInventoryFilters
+} from "@/features/inventory/page-model";
 import { getInventorySummaries, listInventoryForUser } from "@/features/inventory/service";
-import { ingredientTypes, type IngredientType } from "@/features/ingredients/contracts";
+import {
+  ingredientCategories,
+  ingredientTypes,
+  type IngredientCategory,
+  type IngredientType
+} from "@/features/ingredients/contracts";
+import {
+  inventorySortOptions,
+  type InventorySortOption
+} from "@/features/inventory/contracts";
+import { resolveIngredientCategory } from "@/features/ingredients/taxonomy";
 import { listSystemCurrencyRates } from "@/features/system/currency-rates";
 import { requireUser } from "@/lib/auth";
 
@@ -21,21 +36,62 @@ const parseType = (value: string | undefined): IngredientType | undefined => {
   return ingredientTypes.includes(value as IngredientType) ? value as IngredientType : undefined;
 };
 
+const parseCategory = (
+  categoryValue: string | undefined,
+  legacyTypeValue: string | undefined
+): IngredientCategory | undefined => {
+  if (categoryValue && ingredientCategories.includes(categoryValue as IngredientCategory)) {
+    return categoryValue as IngredientCategory;
+  }
+
+  const legacyType = parseType(legacyTypeValue);
+  return legacyType ? resolveIngredientCategory({ type: legacyType }) ?? undefined : undefined;
+};
+
+const parseShowFinished = (
+  finishedValue: string | undefined,
+  legacyStockValue: string | undefined
+) => {
+  if (finishedValue != null) {
+    return finishedValue === "true";
+  }
+
+  return legacyStockValue === "all" || legacyStockValue === "empty";
+};
+
+const parseSort = (value: string | undefined): InventorySortOption => (
+  inventorySortOptions.includes(value as InventorySortOption)
+    ? value as InventorySortOption
+    : defaultInventorySortOption
+);
+
 export default async function MyIngredientsPage({ searchParams }: Props) {
   const user = await requireUser();
   const resolvedParams = searchParams ? await searchParams : {};
   const rawSearch = String(resolvedParams.search ?? "").trim();
-  const parsedType = parseType(typeof resolvedParams.type === "string" ? resolvedParams.type : undefined);
-  const includeArchived = resolvedParams.archived === "true";
+  const category = parseCategory(
+    typeof resolvedParams.category === "string" ? resolvedParams.category : undefined,
+    typeof resolvedParams.type === "string" ? resolvedParams.type : undefined
+  );
+  const showFinished = parseShowFinished(
+    typeof resolvedParams.finished === "string" ? resolvedParams.finished : undefined,
+    typeof resolvedParams.stock === "string" ? resolvedParams.stock : undefined
+  );
+  const sort = parseSort(typeof resolvedParams.sort === "string" ? resolvedParams.sort : undefined);
 
   const [items, summary, currencyRates] = await Promise.all([
-    listInventoryForUser(user.id, { includeArchived, type: parsedType, search: rawSearch }),
+    listInventoryForUser(user.id, { category, includeEmpty: showFinished, sort, search: rawSearch }),
     getInventorySummaries(user.id),
     listSystemCurrencyRates()
   ]);
 
   const hasAnyItems = summary.totalItems > 0;
-  const hasFilters = Boolean(rawSearch || parsedType || includeArchived);
+  const hasFilters = hasActiveInventoryFilters({
+    search: rawSearch,
+    category: category ?? "all",
+    showFinished,
+    sort
+  });
 
   return (
     <main className="space-y-4">
@@ -50,11 +106,20 @@ export default async function MyIngredientsPage({ searchParams }: Props) {
       <InventorySummary summary={summary} />
       <InventoryToolbar
         search={rawSearch}
-        type={parsedType ?? "all"}
-        archived={includeArchived}
+        category={category ?? "all"}
+        showFinished={showFinished}
+        sort={sort}
       />
       {items.length === 0
-        ? <InventoryEmptyState hasAnyItems={hasAnyItems} hasFilters={hasFilters} search={rawSearch} type={parsedType} archived={includeArchived} />
+        ? (
+          <InventoryEmptyState
+            hasAnyItems={hasAnyItems}
+            hasFilters={hasFilters}
+            search={rawSearch}
+            category={category}
+            showFinished={showFinished}
+          />
+        )
         : <GroupedInventoryList items={items} preferredCurrency={user.preferredCurrency} currencyRates={currencyRates} />}
     </main>
   );

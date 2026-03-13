@@ -100,6 +100,32 @@ describe("recipe editor components", () => {
     expect(selected.amountEnteredUnit).toBe("g");
   });
 
+  it("fermentable selection prefers kilograms for human-facing recipe entry", () => {
+    const selected = applyRecipeIngredientSelection(buildRow({
+      category: "fermentable",
+      type: "fermentable",
+      defaultDisplayUnit: "kg",
+      selectedName: ""
+    }), {
+      id: "cat-fermentable",
+      type: "fermentable",
+      category: "fermentable",
+      subtype: "base_malt",
+      familyId: "fam-fermentable",
+      familyDisplayName: "Pilsner Malt",
+      displayName: "Legacy Pilsner Malt",
+      subtitle: "3.5 EBC • 80%",
+      defaultUnit: "g",
+      defaultDisplayUnit: "g",
+      allowedUnits: ["g", "kg", "oz", "lb"],
+      measurementDimension: "weight",
+      source: "catalog"
+    });
+
+    expect(selected.amountEnteredUnit).toBe("kg");
+    expect(selected.defaultDisplayUnit).toBe("kg");
+  });
+
   it("changing text after selection clears stale linkage", () => {
     const selected = buildRow({
       ingredientCatalogItemId: "cat-1",

@@ -67,6 +67,24 @@
       "tag": "0010_match_ready_inventory_cost",
       "when": 1769000000000,
       "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "tag": "0011_display_currency_preferences",
+      "when": 1770000000000,
+      "breakpoints": true
+    },
+    {
+      "idx": 12,
+      "tag": "0012_inventory_price_input_mode",
+      "when": 1771000000000,
+      "breakpoints": true
+    },
+    {
+      "idx": 13,
+      "tag": "0013_inventory_zero_stock_constraints",
+      "when": 1772000000000,
+      "breakpoints": true
     }
   ]
 }

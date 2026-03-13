@@ -1,8 +1,10 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
+vi.mock("server-only", () => ({}));
+
 const mocks = vi.hoisted(() => ({
   revalidatePath: vi.fn(),
-  requireUser: vi.fn(async () => ({ id: "u-1" })),
+  requireUser: vi.fn(async () => ({ id: "u-1", preferredCurrency: "EUR" })),
   updateInventoryQuantity: vi.fn(async () => ({})),
   updateInventoryItem: vi.fn(async () => ({})),
   deleteInventoryItem: vi.fn(async () => undefined)
@@ -26,7 +28,11 @@ vi.mock("../features/inventory/service", async () => {
   };
 });
 
-import { deleteInventoryItemAction, updateInventoryInlineAction, updateInventoryItemAction } from "../app/(app)/app/ingredients/actions";
+import {
+  deleteInventoryItemAction,
+  updateInventoryInlineAction,
+  updateInventoryItemAction
+} from "../app/(app)/app/ingredients/actions";
 
 describe("inventory inline actions", () => {
   beforeEach(() => {
@@ -55,16 +61,19 @@ describe("inventory inline actions", () => {
     expect(mocks.revalidatePath).toHaveBeenCalledWith("/app/ingredients");
   });
 
-  it("rejects invalid quantity", async () => {
+  it("allows setting quantity to zero through the standard inline update path", async () => {
     const result = await updateInventoryInlineAction({
       inventoryItemId: "inv-1",
       enteredQuantity: "0",
       enteredUnit: "kg"
     });
 
-    expect(result.ok).toBe(false);
-    expect(result.fieldErrors?.enteredQuantity).toBeDefined();
-    expect(mocks.updateInventoryQuantity).not.toHaveBeenCalled();
+    expect(result.ok).toBe(true);
+    expect(mocks.updateInventoryQuantity).toHaveBeenCalledWith("u-1", "inv-1", {
+      enteredQuantity: 0,
+      enteredUnit: "kg"
+    });
+    expect(mocks.revalidatePath).toHaveBeenCalledWith("/app/ingredients");
   });
 
   it("rejects invalid unit", async () => {
@@ -97,15 +106,51 @@ describe("inventory inline actions", () => {
       userCustomIngredientId: null,
       enteredQuantity: 4.5,
       enteredUnit: "kg",
-      purchasePriceMinor: null,
-      purchaseCurrency: null,
-      purchaseQuantity: null,
-      purchaseQuantityUnit: null,
+      priceInputMode: null,
+      priceInputAmountMinor: null,
+      priceInputCurrency: null,
       purchasedAt: new Date("2026-03-01T00:00:00.000Z"),
       freshnessDate: new Date("2026-09-01T00:00:00.000Z"),
       notes: "Свежая партия"
-    });
+    }, { preferredCurrency: "EUR" });
     expect(mocks.revalidatePath).toHaveBeenCalledWith("/app/ingredients");
+  });
+
+  it("defaults edited price currency from preferred user currency", async () => {
+    const result = await updateInventoryItemAction({
+      inventoryItemId: "inv-1",
+      ingredientCatalogItemId: "3d6eb945-8e2e-4af9-8d24-ef6c883b5dd0",
+      userCustomIngredientId: null,
+      enteredQuantity: "5",
+      enteredUnit: "kg",
+      priceInputAmount: "12.5"
+    });
+
+    expect(result.ok).toBe(true);
+    expect(mocks.updateInventoryItem).toHaveBeenCalledWith("u-1", "inv-1", expect.objectContaining({
+      priceInputMode: null,
+      priceInputAmountMinor: 1250,
+      priceInputCurrency: "EUR"
+    }), { preferredCurrency: "EUR" });
+  });
+
+  it("passes per-unit edit mode through to the service", async () => {
+    const result = await updateInventoryItemAction({
+      inventoryItemId: "inv-1",
+      ingredientCatalogItemId: "3d6eb945-8e2e-4af9-8d24-ef6c883b5dd0",
+      userCustomIngredientId: null,
+      enteredQuantity: "5",
+      enteredUnit: "kg",
+      priceInputMode: "per_display_unit",
+      priceInputAmount: "12.5"
+    });
+
+    expect(result.ok).toBe(true);
+    expect(mocks.updateInventoryItem).toHaveBeenCalledWith("u-1", "inv-1", expect.objectContaining({
+      priceInputMode: "per_display_unit",
+      priceInputAmountMinor: 1250,
+      priceInputCurrency: "EUR"
+    }), { preferredCurrency: "EUR" });
   });
 
   it("rejects full edit without selected ingredient", async () => {

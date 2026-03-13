@@ -39,6 +39,25 @@ const recipeDetail: RecipeDetailDto = {
   updatedAt: new Date("2026-01-02T00:00:00.000Z"),
   ingredients: [
     {
+      id: "ri-0",
+      recipeId: "r-1",
+      ingredientCatalogItemId: "cat-0",
+      userCustomIngredientId: null,
+      type: "fermentable",
+      ingredientCategory: "fermentable",
+      ingredientDisplayName: "Pilsner Malt",
+      ingredientDefaultDisplayUnitSnapshot: "g",
+      amountEnteredQuantity: 500,
+      amountEnteredUnit: "g",
+      amountNormalizedQuantity: 500,
+      amountNormalizedUnit: "g",
+      stage: "mash",
+      timeOffset: null,
+      stepMeta: null,
+      createdAt: new Date("2026-01-01T00:00:00.000Z"),
+      updatedAt: new Date("2026-01-01T00:00:00.000Z")
+    },
+    {
       id: "ri-1",
       recipeId: "r-1",
       ingredientCatalogItemId: "cat-1",
@@ -83,6 +102,8 @@ describe("recipes read components", () => {
     );
 
     expect(html).toContain("Ингредиенты");
+    expect(html).toContain("Pilsner Malt");
+    expect(html).toContain("0.5 kg");
     expect(html).toContain("Этап: Кипячение");
     expect(html).toContain("Описание");
     expect(html).toContain("Заметки автора");

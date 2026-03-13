@@ -16,24 +16,17 @@ import {
   resolveLegacyIngredientType
 } from "../ingredients/taxonomy";
 import { systemCurrencies, type SystemCurrency } from "../system/currency";
+import {
+  inventoryPriceInputModes,
+  type InventoryPriceInputMode
+} from "./purchase-cost";
 import { inventoryUnits, type InventoryUnit, type InventoryUnitDimension } from "./units";
 
-const nullablePositiveNumber = z.preprocess((value) => {
-  if (value == null) {
-    return null;
-  }
+export const inventoryStockStates = ["in_stock", "empty", "all"] as const;
+export type InventoryStockState = (typeof inventoryStockStates)[number];
 
-  if (typeof value === "string") {
-    const trimmed = value.trim();
-    if (!trimmed) {
-      return null;
-    }
-
-    return Number(trimmed);
-  }
-
-  return value;
-}, z.number().positive().nullable().optional());
+export const inventorySortOptions = ["default", "name", "quantity", "updated", "best_before", "price"] as const;
+export type InventorySortOption = (typeof inventorySortOptions)[number];
 
 const nullablePositiveInteger = z.preprocess((value) => {
   if (value == null) {
@@ -52,11 +45,21 @@ const nullablePositiveInteger = z.preprocess((value) => {
   return value;
 }, z.number().int().positive().nullable().optional());
 
+const nullablePriceInputMode = z.preprocess((value) => {
+  if (value == null) {
+    return null;
+  }
+
+  const normalized = String(value).trim().toLowerCase();
+  return normalized || null;
+}, z.enum(inventoryPriceInputModes).nullable().optional());
+
 const baseInventoryFieldsObject = z.object({
   enteredQuantity: z.coerce.number().positive(),
   enteredUnit: z.string().trim().toLowerCase().pipe(z.enum(inventoryUnits)),
-  purchasePriceMinor: nullablePositiveInteger,
-  purchaseCurrency: z.preprocess((value) => {
+  priceInputMode: nullablePriceInputMode,
+  priceInputAmountMinor: nullablePositiveInteger,
+  priceInputCurrency: z.preprocess((value) => {
     if (value == null) {
       return null;
     }
@@ -64,15 +67,6 @@ const baseInventoryFieldsObject = z.object({
     const normalized = String(value).trim().toUpperCase();
     return normalized || null;
   }, z.enum(systemCurrencies).nullable().optional()),
-  purchaseQuantity: nullablePositiveNumber,
-  purchaseQuantityUnit: z.preprocess((value) => {
-    if (value == null) {
-      return null;
-    }
-
-    const normalized = String(value).trim().toLowerCase();
-    return normalized || null;
-  }, z.enum(inventoryUnits).nullable().optional()),
   purchasedAt: z.coerce.date().optional().nullable(),
   freshnessDate: z.coerce.date().optional().nullable(),
   notes: z.string().trim().max(2000).optional().nullable()
@@ -80,25 +74,15 @@ const baseInventoryFieldsObject = z.object({
 
 const withPurchaseValidation = <T extends z.ZodTypeAny>(schema: T) => schema.superRefine((value, ctx) => {
   const payload = value as {
-    purchasePriceMinor?: number | null;
-    purchaseCurrency?: string | null;
-    purchaseQuantity?: number | null;
-    purchaseQuantityUnit?: string | null;
+    priceInputAmountMinor?: number | null;
+    priceInputCurrency?: string | null;
   };
 
-  if ((payload.purchasePriceMinor != null) !== (payload.purchaseCurrency != null)) {
+  if (payload.priceInputAmountMinor == null && payload.priceInputCurrency != null) {
     ctx.addIssue({
       code: z.ZodIssueCode.custom,
-      message: "Цена покупки и валюта должны быть указаны вместе.",
-      path: ["purchasePriceMinor"]
-    });
-  }
-
-  if ((payload.purchaseQuantity != null) !== (payload.purchaseQuantityUnit != null)) {
-    ctx.addIssue({
-      code: z.ZodIssueCode.custom,
-      message: "Количество покупки и единица измерения должны быть указаны вместе.",
-      path: ["purchaseQuantity"]
+      message: "Нельзя указать валюту без цены покупки.",
+      path: ["priceInputAmountMinor"]
     });
   }
 });
@@ -179,7 +163,7 @@ export const inventorySourceLinkageSchema = z.object({
 });
 
 export const updateInventoryQuantitySchema = z.object({
-  enteredQuantity: z.coerce.number().positive(),
+  enteredQuantity: z.coerce.number().nonnegative(),
   enteredUnit: z.string().trim().toLowerCase().pipe(z.enum(inventoryUnits))
 });
 
@@ -203,7 +187,11 @@ export const updateInventoryItemSchema = withPurchaseValidation(baseInventoryFie
 
 export const inventoryListQuerySchema = z.object({
   includeArchived: z.coerce.boolean().default(false),
+  includeEmpty: z.coerce.boolean().default(false),
+  category: z.enum(ingredientCategories).optional(),
   type: z.enum(ingredientTypes).optional(),
+  stockState: z.enum(inventoryStockStates).default("in_stock"),
+  sort: z.enum(inventorySortOptions).default("default"),
   search: z.string().trim().max(180).optional().default("")
 });
 
@@ -241,6 +229,9 @@ export type InventoryListItemDto = {
   normalizedQuantity: number;
   normalizedUnit: InventoryUnit;
   unitDimension: InventoryUnitDimension;
+  priceInputMode?: InventoryPriceInputMode | null;
+  priceInputAmountMinor?: number | null;
+  priceInputCurrency?: SystemCurrency | null;
   purchasePriceMinor?: number | null;
   purchaseCurrency?: SystemCurrency | null;
   purchaseQuantity?: number | null;
@@ -259,7 +250,7 @@ export type InventoryListItemDto = {
 
 export type InventorySummaryDto = {
   totalItems: number;
-  activeItems: number;
-  archivedItems: number;
-  byType: Record<IngredientType, number>;
+  inStockItems: number;
+  emptyItems: number;
+  byCategory: Record<IngredientCategory, number>;
 };

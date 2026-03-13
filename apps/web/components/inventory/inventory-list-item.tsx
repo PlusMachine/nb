@@ -72,7 +72,7 @@ export function InventoryListItem({ item, preferredCurrency, currencyRates }: Pr
         </div>
         <div className="space-y-2">
           <InventoryQuantityEditor item={item} />
-          <InventoryItemDetailsEditor item={item} preferredCurrency={preferredCurrency} />
+          <InventoryItemDetailsEditor item={item} preferredCurrency={preferredCurrency} currencyRates={currencyRates} />
           <DeleteInventoryItemButton inventoryItemId={item.id} displayName={item.source.displayName} />
         </div>
       </div>

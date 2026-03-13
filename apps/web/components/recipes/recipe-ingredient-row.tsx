@@ -12,7 +12,7 @@ import {
 } from "@/features/ingredients/contracts";
 import { ingredientCategoryLabels } from "@/features/ingredients/presentation";
 import { resolveLegacyIngredientType } from "@/features/ingredients/taxonomy";
-import { resolveInventoryUnitProfile } from "@/features/inventory/units";
+import { resolveHumanFacingInventoryUnitProfile } from "@/features/inventory/units";
 import { recipeIngredientStages, type RecipeIngredientStage } from "@/features/recipes/contracts";
 
 export type RecipeIngredientEditorRowValue = {
@@ -51,7 +51,7 @@ export const hasRecipeIngredientSelection = (value: RecipeIngredientEditorRowVal
 export const resolveRecipeIngredientUnitProfile = (value: Pick<
   RecipeIngredientEditorRowValue,
   "type" | "category" | "subtype" | "defaultDisplayUnit" | "allowedUnits" | "measurementDimension"
->) => resolveInventoryUnitProfile({
+>) => resolveHumanFacingInventoryUnitProfile({
   type: value.type,
   category: value.category,
   subtype: value.subtype,
@@ -64,7 +64,7 @@ export const applyRecipeIngredientCategoryChange = (
   value: RecipeIngredientEditorRowValue,
   category: IngredientCategory
 ): RecipeIngredientEditorRowValue => {
-  const unitProfile = resolveInventoryUnitProfile({ category });
+  const unitProfile = resolveHumanFacingInventoryUnitProfile({ category });
 
   return {
     ...value,
@@ -95,7 +95,7 @@ export const applyRecipeIngredientTextChange = (
     };
   }
 
-  const unitProfile = resolveInventoryUnitProfile({ category: value.category });
+  const unitProfile = resolveHumanFacingInventoryUnitProfile({ category: value.category });
 
   return {
     ...value,
@@ -119,7 +119,7 @@ export const applyRecipeIngredientSelection = (
   value: RecipeIngredientEditorRowValue,
   item: IngredientSuggestionItem
 ): RecipeIngredientEditorRowValue => {
-  const unitProfile = resolveInventoryUnitProfile({
+  const unitProfile = resolveHumanFacingInventoryUnitProfile({
     type: item.type,
     category: item.category ?? value.category,
     subtype: item.subtype ?? null,
