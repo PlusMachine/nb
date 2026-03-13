@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import { ZodError } from "zod";
 
 import type { RecipeDetailDto } from "@/features/recipes/contracts";
-import { createRecipe, updateRecipe } from "@/features/recipes/service";
+import { createRecipe, deleteRecipe, updateRecipe } from "@/features/recipes/service";
 import { requireUser } from "@/lib/auth";
 
 export type RecipeEditorPayload = {
@@ -109,5 +109,28 @@ export const updateRecipeAction = async (recipeId: string, payload: RecipeEditor
     };
   } catch (error) {
     return mapRecipeEditorError(error);
+  }
+};
+
+export const deleteRecipeAction = async (recipeId: string): Promise<{ ok: boolean; message: string }> => {
+  try {
+    const user = await requireUser();
+    const recipe = await deleteRecipe(user.id, recipeId);
+
+    revalidatePath("/app/recipes");
+    revalidatePath(`/app/recipes/${recipe.id}`);
+    revalidatePath(`/app/recipes/${recipe.id}/edit`);
+    revalidatePath("/recipes");
+    if (recipe.slug) {
+      revalidatePath(`/recipes/${recipe.slug}`);
+    }
+
+    return { ok: true, message: "Рецепт удален." };
+  } catch (error) {
+    if (error instanceof Error && error.message === "NOT_FOUND") {
+      return { ok: false, message: "Рецепт не найден или уже недоступен." };
+    }
+
+    return { ok: false, message: "Не удалось удалить рецепт. Попробуйте еще раз." };
   }
 };

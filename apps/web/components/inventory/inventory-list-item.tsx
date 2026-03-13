@@ -2,6 +2,7 @@ import React from "react";
 import type { InventoryListItemDto } from "@/features/inventory/contracts";
 import { hopFormLabels, yeastFormLabels, yeastTypeLabels } from "@/features/ingredients/technical-fields";
 
+import { DeleteInventoryItemButton } from "./delete-inventory-item-button";
 import { InventoryItemDetailsEditor } from "./inventory-item-details-editor";
 import { InventoryQuantityEditor } from "./inventory-quantity-editor";
 
@@ -90,6 +91,7 @@ export function InventoryListItem({ item }: Props) {
         <div className="space-y-2">
           <InventoryQuantityEditor item={item} />
           <InventoryItemDetailsEditor item={item} />
+          <DeleteInventoryItemButton inventoryItemId={item.id} displayName={item.source.displayName} />
         </div>
       </div>
       {item.notes ? <p className="mt-2 text-sm text-zinc-600">{item.notes}</p> : null}

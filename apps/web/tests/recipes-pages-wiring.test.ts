@@ -47,6 +47,9 @@ vi.mock("../features/recipes/service", () => ({
   listRecipesForAuthor: mocks.listRecipesForAuthor,
   getRecipeById: mocks.getRecipeById
 }));
+vi.mock("../app/(app)/app/recipes/actions", () => ({
+  deleteRecipeAction: vi.fn(async () => ({ ok: true, message: "ok" }))
+}));
 vi.mock("next/navigation", () => ({ notFound: mocks.notFound }));
 
 describe("recipes pages wiring", () => {
@@ -58,6 +61,7 @@ describe("recipes pages wiring", () => {
     expect(mocks.listRecipesForAuthor).toHaveBeenCalledWith("u-1");
     expect(html).toContain("Мои рецепты");
     expect(html).toContain("My Pils");
+    expect(html).toContain("Удалить");
   });
 
   it("list page empty state scenario works", async () => {

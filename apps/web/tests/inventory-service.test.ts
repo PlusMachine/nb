@@ -30,6 +30,7 @@ const { tableRefs, mockState } = vi.hoisted(() => ({
   inventoryFindFirst: vi.fn(async (_arg?: unknown) => null as any),
   inserted: [] as Array<{ table: string; values: Record<string, unknown> }>,
   updates: [] as Array<{ table: string; set: Record<string, unknown> }>,
+  deleted: [] as Array<{ table: string; where: unknown }>,
   selectRows: [] as any[]
   }
 }));
@@ -59,6 +60,11 @@ vi.mock("@nb/db", () => {
           }
         })
       })
+    }),
+    delete: (table: { name: string }) => ({
+      where: async (where: unknown) => {
+        mockState.deleted.push({ table: table.name, where });
+      }
     }),
     select: (shape: Record<string, unknown>) => ({
       from: (_table: unknown) => ({
@@ -98,6 +104,7 @@ import {
   addCustomIngredientToInventory,
   archiveInventoryItem,
   createUserCustomIngredient,
+  deleteInventoryItem,
   getInventorySummaries,
   listInventoryForUser,
   searchInventorySuggestions,
@@ -110,6 +117,7 @@ describe("inventory service", () => {
     mockState.idCounter = 0;
     mockState.inserted = [];
     mockState.updates = [];
+    mockState.deleted = [];
     mockState.selectRows = [];
     mockState.catalogFindFirst.mockReset();
     mockState.customFindFirst.mockReset();
@@ -243,6 +251,14 @@ describe("inventory service", () => {
     await archiveInventoryItem("u1", "inv-1");
 
     expect(mockState.updates[0]?.set.archivedAt).toBeInstanceOf(Date);
+  });
+
+  it("deletes inventory item", async () => {
+    mockState.inventoryFindFirst.mockResolvedValueOnce({ id: "inv-1", userId: "u1" });
+
+    await deleteInventoryItem("u1", "inv-1");
+
+    expect(mockState.deleted[0]?.table).toBe("userIngredients");
   });
 
   it("enforces ownership checks for inventory updates", async () => {

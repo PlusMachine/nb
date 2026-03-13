@@ -3,6 +3,7 @@ import Link from "next/link";
 
 import { recipePublicationStateLabels, type RecipeListItemDto } from "@/features/recipes/contracts";
 
+import { DeleteRecipeButton } from "./delete-recipe-button";
 import { RecipeStatsSummary } from "./recipe-stats-summary";
 
 const formatDate = (value: Date) => new Intl.DateTimeFormat("ru-RU", { dateStyle: "medium" }).format(value);
@@ -24,24 +25,28 @@ export function RecipeList({ recipes }: { recipes: RecipeListItemDto[] }) {
               </p>
             </div>
             <RecipeStatsSummary recipe={recipe} />
-            <div>
-              <Link href={`/app/recipes/${recipe.id}`} className="text-sm font-medium text-blue-700 hover:text-blue-900">
-                Открыть рецепт
-              </Link>
-              <span className="mx-2 text-zinc-400">·</span>
-              <Link href={`/app/recipes/${recipe.id}/edit`} className="text-sm font-medium text-zinc-700 hover:text-zinc-900">
-                Редактировать
-              </Link>
-              {recipe.publicationState === "published" && recipe.slug
-                ? (
-                  <>
-                    <span className="mx-2 text-zinc-400">·</span>
-                    <Link href={`/recipes/${recipe.slug}`} className="text-sm font-medium text-emerald-700 hover:text-emerald-900">
-                      Публичная страница
-                    </Link>
-                  </>
-                )
-                : null}
+            <div className="space-y-2">
+              <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
+                <Link href={`/app/recipes/${recipe.id}`} className="text-sm font-medium text-blue-700 hover:text-blue-900">
+                  Открыть рецепт
+                </Link>
+                <span className="text-zinc-400">·</span>
+                <Link href={`/app/recipes/${recipe.id}/edit`} className="text-sm font-medium text-zinc-700 hover:text-zinc-900">
+                  Редактировать
+                </Link>
+                {recipe.publicationState === "published" && recipe.slug
+                  ? (
+                    <>
+                      <span className="text-zinc-400">·</span>
+                      <Link href={`/recipes/${recipe.slug}`} className="text-sm font-medium text-emerald-700 hover:text-emerald-900">
+                        Публичная страница
+                      </Link>
+                    </>
+                  )
+                  : null}
+                <span className="text-zinc-400">·</span>
+                <DeleteRecipeButton recipeId={recipe.id} title={recipe.title} />
+              </div>
             </div>
           </article>
         </li>

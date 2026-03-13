@@ -5,6 +5,11 @@ import { describe, expect, it, vi } from "vitest";
 vi.mock("../components/inventory/add-ingredient-trigger", () => ({
   AddIngredientTrigger: () => React.createElement("button", { type: "button" }, "Добавить ингредиент")
 }));
+vi.mock("../app/(app)/app/ingredients/actions", () => ({
+  updateInventoryInlineAction: vi.fn(async () => ({ ok: true, message: "ok" })),
+  updateInventoryItemAction: vi.fn(async () => ({ ok: true, message: "ok" })),
+  deleteInventoryItemAction: vi.fn(async () => ({ ok: true, message: "ok" }))
+}));
 
 import { GroupedInventoryList } from "../components/inventory/grouped-inventory-list";
 import { InventoryEmptyState } from "../components/inventory/inventory-empty-state";
@@ -89,6 +94,7 @@ describe("inventory page foundation", () => {
     expect(html).toContain("Хмель");
     expect(html).toContain("Pilsner Malt");
     expect(html).toContain("Citra");
+    expect(html).toContain("Удалить ингредиент");
   });
 
   it("renders summary block", () => {

@@ -119,10 +119,21 @@ vi.mock("@nb/db", () => {
         })
       })
     }),
-    delete: (_table: { name: string }) => ({
+    delete: (table: { name: string }) => ({
       where: async (where: any) => {
-        const recipeId = getEqValue(where, "recipeId");
-        mockState.ingredientsByRecipeId.set(recipeId, []);
+        if (table.name === "recipe_ingredients") {
+          const recipeId = getEqValue(where, "recipeId");
+          mockState.ingredientsByRecipeId.set(recipeId, []);
+          return;
+        }
+
+        if (table.name === "recipes") {
+          const id = getEqValue(where, "id");
+          if (id) {
+            mockState.recipesById.delete(id);
+            mockState.ingredientsByRecipeId.delete(id);
+          }
+        }
       }
     })
   };
@@ -142,6 +153,7 @@ vi.mock("@nb/db", () => {
 
 import {
   createRecipe,
+  deleteRecipe,
   getPublicRecipeBySlug,
   getRecipeById,
   listPublicRecipes,
@@ -197,6 +209,14 @@ describe("recipe service", () => {
   it("cross-user edit forbidden", async () => {
     const recipe = await createRecipe("u1", { title: "Owned", batchSizeEnteredQuantity: 10, batchSizeEnteredUnit: "l" });
     await expect(updateRecipe("u2", recipe.id, { title: "hack" })).rejects.toThrowError("NOT_FOUND");
+  });
+
+  it("delete removes owned recipe", async () => {
+    const recipe = await createRecipe("u1", { title: "To delete", batchSizeEnteredQuantity: 10, batchSizeEnteredUnit: "l" });
+
+    await deleteRecipe("u1", recipe.id);
+
+    await expect(getRecipeById("u1", recipe.id)).rejects.toThrowError("NOT_FOUND");
   });
 
   it("public accessor by slug allows only published public recipes", async () => {

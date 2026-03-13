@@ -4,6 +4,7 @@ const mocks = vi.hoisted(() => ({
   requireUser: vi.fn(async () => ({ id: "u-1" })),
   createRecipe: vi.fn(),
   updateRecipe: vi.fn(),
+  deleteRecipe: vi.fn(),
   revalidatePath: vi.fn()
 }));
 
@@ -11,7 +12,8 @@ vi.mock("next/cache", () => ({ revalidatePath: mocks.revalidatePath }));
 vi.mock("../lib/auth", () => ({ requireUser: mocks.requireUser }));
 vi.mock("../features/recipes/service", () => ({
   createRecipe: mocks.createRecipe,
-  updateRecipe: mocks.updateRecipe
+  updateRecipe: mocks.updateRecipe,
+  deleteRecipe: mocks.deleteRecipe
 }));
 
 describe("recipe editor actions", () => {
@@ -62,5 +64,20 @@ describe("recipe editor actions", () => {
 
     expect(result.ok).toBe(false);
     expect(result.message).toContain("единицы измерения");
+  });
+
+  it("delete action removes recipe and revalidates related pages", async () => {
+    mocks.deleteRecipe.mockResolvedValueOnce({ id: "r-3", slug: "ipa-to-delete" });
+    const { deleteRecipeAction } = await import("../app/(app)/app/recipes/actions");
+
+    const result = await deleteRecipeAction("r-3");
+
+    expect(result.ok).toBe(true);
+    expect(mocks.deleteRecipe).toHaveBeenCalledWith("u-1", "r-3");
+    expect(mocks.revalidatePath).toHaveBeenCalledWith("/app/recipes");
+    expect(mocks.revalidatePath).toHaveBeenCalledWith("/app/recipes/r-3");
+    expect(mocks.revalidatePath).toHaveBeenCalledWith("/app/recipes/r-3/edit");
+    expect(mocks.revalidatePath).toHaveBeenCalledWith("/recipes");
+    expect(mocks.revalidatePath).toHaveBeenCalledWith("/recipes/ipa-to-delete");
   });
 });

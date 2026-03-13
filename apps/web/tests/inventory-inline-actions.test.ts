@@ -4,7 +4,8 @@ const mocks = vi.hoisted(() => ({
   revalidatePath: vi.fn(),
   requireUser: vi.fn(async () => ({ id: "u-1" })),
   updateInventoryQuantity: vi.fn(async () => ({})),
-  updateInventoryItem: vi.fn(async () => ({}))
+  updateInventoryItem: vi.fn(async () => ({})),
+  deleteInventoryItem: vi.fn(async () => undefined)
 }));
 
 vi.mock("next/cache", () => ({
@@ -20,11 +21,12 @@ vi.mock("../features/inventory/service", async () => {
   return {
     ...actual,
     updateInventoryQuantity: mocks.updateInventoryQuantity,
-    updateInventoryItem: mocks.updateInventoryItem
+    updateInventoryItem: mocks.updateInventoryItem,
+    deleteInventoryItem: mocks.deleteInventoryItem
   };
 });
 
-import { updateInventoryInlineAction, updateInventoryItemAction } from "../app/(app)/app/ingredients/actions";
+import { deleteInventoryItemAction, updateInventoryInlineAction, updateInventoryItemAction } from "../app/(app)/app/ingredients/actions";
 
 describe("inventory inline actions", () => {
   beforeEach(() => {
@@ -34,6 +36,8 @@ describe("inventory inline actions", () => {
     mocks.updateInventoryQuantity.mockResolvedValue({ id: "inv-1" });
     mocks.updateInventoryItem.mockReset();
     mocks.updateInventoryItem.mockResolvedValue({ id: "inv-1" });
+    mocks.deleteInventoryItem.mockReset();
+    mocks.deleteInventoryItem.mockResolvedValue(undefined);
   });
 
   it("updates quantity and revalidates page", async () => {
@@ -112,5 +116,13 @@ describe("inventory inline actions", () => {
     expect(result.ok).toBe(false);
     expect(result.fieldErrors?.ingredientCatalogItemId).toBeDefined();
     expect(mocks.updateInventoryItem).not.toHaveBeenCalled();
+  });
+
+  it("deletes inventory item and revalidates page", async () => {
+    const result = await deleteInventoryItemAction("inv-1");
+
+    expect(result.ok).toBe(true);
+    expect(mocks.deleteInventoryItem).toHaveBeenCalledWith("u-1", "inv-1");
+    expect(mocks.revalidatePath).toHaveBeenCalledWith("/app/ingredients");
   });
 });

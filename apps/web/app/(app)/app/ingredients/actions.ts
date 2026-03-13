@@ -14,6 +14,7 @@ import {
   addCatalogIngredientToInventory,
   addCustomIngredientToInventory,
   createUserCustomIngredient,
+  deleteInventoryItem,
   updateInventoryItem,
   updateInventoryQuantity
 } from "@/features/inventory/service";
@@ -182,6 +183,22 @@ export const updateInventoryInlineAction = async (payload: {
     }
 
     return mapError(error);
+  }
+};
+
+export const deleteInventoryItemAction = async (inventoryItemId: string): Promise<AddIngredientResult> => {
+  try {
+    const user = await requireUser();
+    await deleteInventoryItem(user.id, inventoryItemId);
+    revalidatePath("/app/ingredients");
+
+    return { ok: true, message: "Ингредиент удален из запасов." };
+  } catch (error) {
+    if (error instanceof Error && error.message === "NOT_FOUND") {
+      return { ok: false, message: "Позиция не найдена или уже недоступна." };
+    }
+
+    return { ok: false, message: "Не удалось удалить ингредиент. Попробуйте еще раз." };
   }
 };
 

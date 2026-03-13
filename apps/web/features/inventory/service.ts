@@ -294,6 +294,11 @@ export const archiveInventoryItem = async (userId: string, inventoryItemId: stri
   return updated ?? null;
 };
 
+export const deleteInventoryItem = async (userId: string, inventoryItemId: string) => {
+  await ensureOwnedInventoryItem(userId, inventoryItemId);
+  await db.delete(userIngredients).where(eq(userIngredients.id, inventoryItemId));
+};
+
 export const listInventoryForUser = async (userId: string, query: unknown = {}) => {
   const parsed = inventoryListQuerySchema.parse(query);
 

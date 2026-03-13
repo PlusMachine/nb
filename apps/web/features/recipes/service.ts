@@ -489,6 +489,12 @@ export const updateRecipe = async (authorId: string, recipeId: string, payload: 
   return getRecipeById(authorId, recipeId);
 };
 
+export const deleteRecipe = async (authorId: string, recipeId: string) => {
+  const recipe = await ensureOwnedRecipe(authorId, recipeId);
+  await db.delete(recipes).where(eq(recipes.id, recipeId));
+  return recipe;
+};
+
 export const setRecipeIngredients = async (authorId: string, recipeId: string, ingredientsPayload: unknown) => {
   const parsed = createRecipePayloadSchema.shape.ingredients.parse(ingredientsPayload);
   await ensureOwnedRecipe(authorId, recipeId);
