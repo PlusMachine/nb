@@ -3,14 +3,17 @@
 import React from "react";
 import { useState } from "react";
 
+import type { SystemCurrency } from "@/features/system/currency";
+
 import { AddIngredientModal } from "./add-ingredient-modal";
 
 type Props = {
   className?: string;
   fullWidth?: boolean;
+  preferredCurrency?: SystemCurrency;
 };
 
-export function AddIngredientTrigger({ className, fullWidth = false }: Props) {
+export function AddIngredientTrigger({ className, fullWidth = false, preferredCurrency = "RUB" }: Props) {
   const [open, setOpen] = useState(false);
 
   return (
@@ -22,7 +25,7 @@ export function AddIngredientTrigger({ className, fullWidth = false }: Props) {
       >
         Добавить ингредиент
       </button>
-      <AddIngredientModal open={open} onClose={() => setOpen(false)} />
+      <AddIngredientModal open={open} onClose={() => setOpen(false)} preferredCurrency={preferredCurrency} />
     </>
   );
 }

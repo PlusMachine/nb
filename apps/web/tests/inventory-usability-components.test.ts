@@ -51,6 +51,13 @@ describe("inventory usability components", () => {
       normalizedQuantity: 2000,
       normalizedUnit: "g",
       unitDimension: "weight",
+      purchasePriceMinor: 125000,
+      purchaseCurrency: "RUB",
+      purchaseQuantity: 5,
+      purchaseQuantityUnit: "kg",
+      purchaseQuantityNormalized: 5000,
+      purchaseQuantityNormalizedUnit: "g",
+      normalizedUnitCostMinorRub: 25,
       purchasedAt: null,
       freshnessDate: null,
       notes: null,
@@ -61,24 +68,31 @@ describe("inventory usability components", () => {
         sourceKind: "catalog",
         sourceId: "cat-1",
         type: "fermentable",
+        category: "fermentable",
         displayName: "Pilsner Malt",
         normalizedName: "pilsner-malt",
         manufacturer: "BESTMALZ",
         country: "DE",
         fermentableColorEbc: 3.5,
-        fermentableExtractYieldPct: 80
+        fermentableExtractYieldPct: 80,
+        summary: "3.5 EBC • 80%"
       }
     };
 
-    const html = renderToStaticMarkup(React.createElement(InventoryListItem, { item }));
+    const html = renderToStaticMarkup(React.createElement(InventoryListItem, {
+      item,
+      preferredCurrency: "RUB",
+      currencyRates: { RUB: 100, USD: 7900, EUR: 9170 }
+    }));
 
     expect(html).toContain("Быстро изменить");
     expect(html).toContain("Редактировать карточку");
     expect(html).toContain("Удалить ингредиент");
     expect(html).toContain("Pilsner Malt");
     expect(html).toContain("2 kg");
-    expect(html).toContain("Цветность: 3,5 EBC");
-    expect(html).toContain("Экстрактивность: 80%");
+    expect(html).toContain("3.5 EBC • 80%");
     expect(html).toContain("Производитель: BESTMALZ");
+    expect(html).toContain("Цена покупки");
+    expect(html).toContain("Цена за единицу");
   });
 });

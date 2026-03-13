@@ -97,6 +97,10 @@ describe("inventory inline actions", () => {
       userCustomIngredientId: null,
       enteredQuantity: 4.5,
       enteredUnit: "kg",
+      purchasePriceMinor: null,
+      purchaseCurrency: null,
+      purchaseQuantity: null,
+      purchaseQuantityUnit: null,
       purchasedAt: new Date("2026-03-01T00:00:00.000Z"),
       freshnessDate: new Date("2026-09-01T00:00:00.000Z"),
       notes: "Свежая партия"

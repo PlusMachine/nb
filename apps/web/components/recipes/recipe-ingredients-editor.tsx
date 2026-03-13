@@ -3,14 +3,15 @@
 import React from "react";
 import { useState } from "react";
 
-import { getDefaultInventoryUnit } from "@/features/inventory/units";
+import { ingredientCategoryLabels } from "@/features/ingredients/presentation";
+import { resolveLegacyIngredientType } from "@/features/ingredients/taxonomy";
+import { resolveInventoryUnitProfile } from "@/features/inventory/units";
 
 import {
   getRecipeIngredientValidationError,
   RecipeIngredientRow,
   recipeIngredientStageLabels,
-  type RecipeIngredientEditorRowValue,
-  recipeIngredientTypeLabels
+  type RecipeIngredientEditorRowValue
 } from "./recipe-ingredient-row";
 
 type Props = {
@@ -19,19 +20,33 @@ type Props = {
 };
 
 const createEmptyRow = (): RecipeIngredientEditorRowValue => ({
+  ...(() => {
+    const defaultUnitProfile = resolveInventoryUnitProfile({ category: "fermentable" });
+
+    return {
   localId: crypto.randomUUID(),
   ingredientCatalogItemId: null,
   userCustomIngredientId: null,
   selectedName: "",
-  type: "fermentable",
+  selectedSummary: "",
+  familyDisplayName: "",
+  category: "fermentable",
+  subtype: null,
+  familyId: null,
+  type: resolveLegacyIngredientType({ category: "fermentable" }),
+  defaultDisplayUnit: defaultUnitProfile.defaultUnit,
+  allowedUnits: defaultUnitProfile.allowedUnits,
+  measurementDimension: defaultUnitProfile.measurementDimension,
   amountEnteredQuantity: "",
-  amountEnteredUnit: getDefaultInventoryUnit("fermentable"),
+  amountEnteredUnit: defaultUnitProfile.defaultUnit,
   stage: "other",
   timeOffset: ""
+    };
+  })()
 });
 
 const getRecipeIngredientSummaryTitle = (row: RecipeIngredientEditorRowValue) => (
-  row.selectedName.trim() || recipeIngredientTypeLabels[row.type]
+  row.selectedName.trim() || ingredientCategoryLabels[row.category]
 );
 
 export function RecipeIngredientsEditor({ rows, onChange }: Props) {
@@ -104,7 +119,7 @@ export function RecipeIngredientsEditor({ rows, onChange }: Props) {
           setDraftError(null);
         }}
         title="Новый ингредиент"
-        description="1. Выберите тип и нужную позицию из каталога. 2. Укажите количество. 3. Подтвердите добавление."
+        description="1. Выберите категорию и нужную позицию из каталога. 2. Укажите количество. 3. Подтвердите добавление."
         disableAmountUntilSelected
         footer={(
           <div className="flex flex-wrap items-start justify-between gap-2 border-t border-zinc-200 pt-3">
@@ -191,7 +206,8 @@ export function RecipeIngredientsEditor({ rows, onChange }: Props) {
               <div className="flex flex-wrap items-start justify-between gap-3">
                 <div className="space-y-1">
                   <h4 className="text-sm font-semibold text-zinc-900">{getRecipeIngredientSummaryTitle(row)}</h4>
-                  <p className="text-xs text-zinc-500">{recipeIngredientTypeLabels[row.type]} · {recipeIngredientStageLabels[row.stage]}</p>
+                  <p className="text-xs text-zinc-500">{ingredientCategoryLabels[row.category]} · {recipeIngredientStageLabels[row.stage]}</p>
+                  {row.selectedSummary ? <p className="text-xs text-zinc-500">{row.selectedSummary}</p> : null}
                 </div>
                 <div className="flex flex-wrap gap-2">
                   <button

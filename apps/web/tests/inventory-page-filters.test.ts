@@ -3,7 +3,7 @@ import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it, vi } from "vitest";
 
 const mocks = vi.hoisted(() => ({
-  requireUser: vi.fn(async () => ({ id: "u-1" })),
+  requireUser: vi.fn(async () => ({ id: "u-1", preferredCurrency: "RUB" })),
   listInventoryForUser: vi.fn(async () => []),
   getInventorySummaries: vi.fn(async () => ({
     totalItems: 3,
@@ -17,6 +17,9 @@ vi.mock("../lib/auth", () => ({ requireUser: mocks.requireUser }));
 vi.mock("../features/inventory/service", () => ({
   listInventoryForUser: mocks.listInventoryForUser,
   getInventorySummaries: mocks.getInventorySummaries
+}));
+vi.mock("../features/system/currency-rates", () => ({
+  listSystemCurrencyRates: vi.fn(async () => ({ RUB: 100, USD: 7900, EUR: 9170 }))
 }));
 vi.mock("../components/inventory/add-ingredient-trigger", () => ({
   AddIngredientTrigger: () => React.createElement("button", { type: "button" }, "Добавить")

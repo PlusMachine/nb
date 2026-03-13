@@ -1,14 +1,21 @@
 import { convertVolume, convertWeight, roundTo } from "@nb/brewing-core";
 
-import type { IngredientType } from "../ingredients/contracts";
+import type {
+  IngredientCategory,
+  IngredientTechnicalData,
+  IngredientType,
+  IngredientSubtype
+} from "../ingredients/contracts";
 import {
   getInventoryUnitDimension,
   inventoryCountUnits,
   inventoryUnits,
+  normalizeInventoryMeasurementForProfile,
   inventoryVolumeUnits,
   inventoryWeightUnits,
-  isUnitAllowedForIngredientType,
   parseInventoryUnit,
+  resolveInventoryUnitProfile,
+  type InventoryUnitProfile,
   type InventoryCountUnit,
   type InventoryUnit,
   type InventoryUnitDimension,
@@ -56,24 +63,49 @@ export const normalizeRecipeIngredientAmount = (
   ingredientType: IngredientType,
   enteredQuantity: number,
   enteredUnitInput: string
+): NormalizedRecipeIngredientAmount => normalizeRecipeIngredientAmountWithProfile(
+  resolveInventoryUnitProfile({ type: ingredientType }),
+  enteredQuantity,
+  enteredUnitInput
+);
+
+export const normalizeRecipeIngredientAmountWithSource = (
+  input: {
+    type?: IngredientType | null;
+    category?: IngredientCategory | null;
+    subtype?: IngredientSubtype | null;
+    defaultDisplayUnit?: string | null;
+    allowedUnits?: readonly string[] | null;
+    measurementDimension?: string | null;
+    technicalData?: IngredientTechnicalData | null;
+  },
+  enteredQuantity: number,
+  enteredUnitInput: string
+): NormalizedRecipeIngredientAmount => normalizeRecipeIngredientAmountWithProfile(
+  resolveInventoryUnitProfile(input),
+  enteredQuantity,
+  enteredUnitInput
+);
+
+export const normalizeRecipeIngredientAmountWithProfile = (
+  profile: InventoryUnitProfile,
+  enteredQuantity: number,
+  enteredUnitInput: string
 ): NormalizedRecipeIngredientAmount => {
   const enteredUnit = parseRecipeUnit(enteredUnitInput);
   if (!enteredUnit || !(inventoryUnits as readonly string[]).includes(enteredUnit)) {
     throw new Error("INVALID_UNIT");
   }
 
-  if (!isUnitAllowedForIngredientType(enteredUnit, ingredientType)) {
-    throw new Error("INCOMPATIBLE_UNIT");
-  }
-
-  const roundedEnteredQuantity = roundRecipeQuantity(enteredQuantity);
-  const unitDimension = getInventoryUnitDimension(enteredUnit);
+  const normalizedMeasurement = normalizeInventoryMeasurementForProfile(profile, enteredQuantity, enteredUnit);
+  const roundedEnteredQuantity = roundRecipeQuantity(normalizedMeasurement.enteredQuantity);
+  const unitDimension = getInventoryUnitDimension(normalizedMeasurement.enteredUnit);
 
   if ((inventoryWeightUnits as readonly string[]).includes(enteredUnit)) {
-    const weightUnit = enteredUnit as InventoryWeightUnit;
+    const weightUnit = normalizedMeasurement.enteredUnit as InventoryWeightUnit;
     return {
       enteredQuantity: roundedEnteredQuantity,
-      enteredUnit,
+      enteredUnit: normalizedMeasurement.enteredUnit,
       normalizedQuantity: convertWeight({ value: roundedEnteredQuantity, unit: weightUnit }, "g").value,
       normalizedUnit: "g",
       unitDimension
@@ -81,26 +113,26 @@ export const normalizeRecipeIngredientAmount = (
   }
 
   if ((inventoryVolumeUnits as readonly string[]).includes(enteredUnit)) {
-    const volumeUnit = enteredUnit as InventoryVolumeUnit;
+    const volumeUnit = normalizedMeasurement.enteredUnit as InventoryVolumeUnit;
     return {
       enteredQuantity: roundedEnteredQuantity,
-      enteredUnit,
+      enteredUnit: normalizedMeasurement.enteredUnit,
       normalizedQuantity: convertVolume({ value: roundedEnteredQuantity, unit: volumeUnit }, "ml").value,
       normalizedUnit: "ml",
       unitDimension
     };
   }
 
-  const countUnit = enteredUnit as InventoryCountUnit;
+  const countUnit = normalizedMeasurement.enteredUnit as InventoryCountUnit;
   if (!(inventoryCountUnits as readonly string[]).includes(countUnit)) {
     throw new Error("INVALID_UNIT");
   }
 
   return {
     enteredQuantity: roundedEnteredQuantity,
-    enteredUnit,
+    enteredUnit: normalizedMeasurement.enteredUnit,
     normalizedQuantity: roundedEnteredQuantity,
-    normalizedUnit: enteredUnit,
+    normalizedUnit: normalizedMeasurement.enteredUnit,
     unitDimension
   };
 };

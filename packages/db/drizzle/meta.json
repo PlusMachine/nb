@@ -49,6 +49,24 @@
       "tag": "0007_recipe_publication_state",
       "when": 1766000000000,
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "tag": "0008_ingredient_taxonomy_families",
+      "when": 1767000000000,
+      "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "tag": "0009_ingredient_technical_data",
+      "when": 1768000000000,
+      "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "tag": "0010_match_ready_inventory_cost",
+      "when": 1769000000000,
+      "breakpoints": true
     }
   ]
 }

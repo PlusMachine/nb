@@ -1,7 +1,14 @@
 import { z } from "zod";
 
-import { ingredientTypes, type IngredientType } from "../ingredients/contracts";
-import { inventoryUnits, type InventoryUnit } from "../inventory/units";
+import {
+  ingredientCategories,
+  ingredientTypes,
+  type IngredientCategory,
+  type IngredientSubtype,
+  type IngredientType
+} from "../ingredients/contracts";
+import { resolveIngredientCategory, resolveLegacyIngredientType, resolveIngredientSubtype } from "../ingredients/taxonomy";
+import { inventoryUnits, type InventoryUnit, type InventoryUnitDimension } from "../inventory/units";
 
 export const recipePublicationStates = ["draft", "private", "published"] as const;
 export const recipeIngredientStages = ["mash", "boil", "whirlpool", "fermentation", "packaging", "other"] as const;
@@ -26,7 +33,10 @@ export const recipeSourceLinkageSchema = z.object({
 export const recipeIngredientPayloadSchema = z.object({
   ingredientCatalogItemId: z.string().uuid().optional().nullable(),
   userCustomIngredientId: z.string().uuid().optional().nullable(),
-  type: z.enum(ingredientTypes),
+  type: z.enum(ingredientTypes).optional(),
+  category: z.enum(ingredientCategories).optional(),
+  subtype: z.string().trim().max(80).optional().nullable(),
+  familyId: z.string().uuid().optional().nullable(),
   amountEnteredQuantity: z.coerce.number().positive(),
   amountEnteredUnit: z.string().trim().toLowerCase().pipe(z.enum(inventoryUnits)),
   stage: z.enum(recipeIngredientStages).default("other"),
@@ -44,6 +54,48 @@ export const recipeIngredientPayloadSchema = z.object({
       message: "Exactly one source is required",
       path: ["ingredientCatalogItemId"]
     });
+  }
+
+  if (!value.type && !value.category) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: "Category is required",
+      path: ["category"]
+    });
+    return;
+  }
+
+  if (value.category) {
+    const resolvedCategory = resolveIngredientCategory(value);
+    if (resolvedCategory !== value.category) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "Category conflicts with subtype/type mapping",
+        path: ["category"]
+      });
+    }
+  }
+
+  if (value.subtype) {
+    const resolvedSubtype = resolveIngredientSubtype(value);
+    if (!resolvedSubtype) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "Subtype conflicts with category",
+        path: ["subtype"]
+      });
+    }
+  }
+
+  if (value.type && value.category == null) {
+    const resolvedType = resolveLegacyIngredientType(value);
+    if (resolvedType !== value.type) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "Type conflicts with category/subtype mapping",
+        path: ["type"]
+      });
+    }
   }
 });
 
@@ -79,6 +131,18 @@ export type RecipeIngredientDto = {
   ingredientCatalogItemId: string | null;
   userCustomIngredientId: string | null;
   type: IngredientType;
+  ingredientCategory?: IngredientCategory | null;
+  ingredientSubtype?: IngredientSubtype | null;
+  ingredientFamilyId?: string | null;
+  ingredientDisplayName?: string | null;
+  ingredientDisplayNameSnapshot?: string | null;
+  ingredientFamilyDisplayName?: string | null;
+  ingredientSummary?: string | null;
+  ingredientDefaultDisplayUnit?: InventoryUnit | null;
+  ingredientDefaultDisplayUnitSnapshot?: InventoryUnit | null;
+  ingredientAllowedUnits?: InventoryUnit[] | null;
+  ingredientMeasurementDimension?: InventoryUnitDimension | null;
+  ingredientMeasurementDimensionSnapshot?: InventoryUnitDimension | null;
   amountEnteredQuantity: number;
   amountEnteredUnit: InventoryUnit;
   amountNormalizedQuantity: number;

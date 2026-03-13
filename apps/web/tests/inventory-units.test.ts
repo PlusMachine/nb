@@ -1,6 +1,11 @@
 import { describe, expect, it } from "vitest";
 
-import { normalizeInventoryMeasurement } from "../features/inventory/units";
+import {
+  normalizeInventoryMeasurement,
+  normalizeInventoryMeasurementForProfile,
+  resolveInventoryUnitProfile
+} from "../features/inventory/units";
+import { formatInventoryQuantityForDisplay } from "../features/inventory/display";
 
 describe("inventory unit normalization", () => {
   it("keeps grams canonical for weight inventory", () => {
@@ -37,7 +42,11 @@ describe("inventory unit normalization", () => {
   });
 
   it("normalizes liters to milliliters", () => {
-    expect(normalizeInventoryMeasurement("misc", 1.5, "l")).toMatchObject({
+    expect(normalizeInventoryMeasurementForProfile(
+      resolveInventoryUnitProfile({ category: "water_prep", subtype: "acid" }),
+      1.5,
+      "l"
+    )).toMatchObject({
       normalizedQuantity: 1500,
       normalizedUnit: "ml",
       unitDimension: "volume"
@@ -46,5 +55,85 @@ describe("inventory unit normalization", () => {
 
   it("rejects incompatible units for ingredient type", () => {
     expect(() => normalizeInventoryMeasurement("hop", 1, "pack")).toThrowError("INCOMPATIBLE_UNIT");
+  });
+
+  it("uses practical default display units by category", () => {
+    expect(resolveInventoryUnitProfile({ category: "fermentable" }).defaultUnit).toBe("kg");
+    expect(resolveInventoryUnitProfile({ category: "hop" }).defaultUnit).toBe("g");
+    expect(resolveInventoryUnitProfile({ category: "water_prep", subtype: "acid" }).defaultUnit).toBe("ml");
+    expect(resolveInventoryUnitProfile({ category: "misc", defaultDisplayUnit: "item" }).defaultUnit).toBe("item");
+  });
+
+  it("uses pack for yeast only when package context is known", () => {
+    expect(resolveInventoryUnitProfile({
+      category: "yeast",
+      defaultDisplayUnit: "pack",
+      allowedUnits: ["pack", "g"],
+      technicalData: {
+        category: "yeast",
+        subtype: "ale",
+        form: "dry",
+        attenuationPct: 78,
+        tempMinC: null,
+        tempMaxC: null,
+        flocculation: null,
+        alcoholTolerancePct: null,
+        packageSize: 11.5,
+        packageUnit: "g",
+        phenolic: null,
+        diastaticus: null
+      }
+    }).defaultUnit).toBe("pack");
+
+    expect(resolveInventoryUnitProfile({
+      category: "yeast",
+      defaultDisplayUnit: "pack",
+      allowedUnits: ["pack", "g"],
+      technicalData: {
+        category: "yeast",
+        subtype: "ale",
+        form: "dry",
+        attenuationPct: 78,
+        tempMinC: null,
+        tempMaxC: null,
+        flocculation: null,
+        alcoholTolerancePct: null,
+        packageSize: null,
+        packageUnit: null,
+        phenolic: null,
+        diastaticus: null
+      }
+    }).defaultUnit).toBe("g");
+
+    expect(resolveInventoryUnitProfile({
+      category: "yeast",
+      defaultDisplayUnit: "pack",
+      allowedUnits: ["pack", "ml"],
+      technicalData: {
+        category: "yeast",
+        subtype: "ale",
+        form: "liquid",
+        attenuationPct: 78,
+        tempMinC: null,
+        tempMaxC: null,
+        flocculation: null,
+        alcoholTolerancePct: null,
+        packageSize: null,
+        packageUnit: null,
+        phenolic: null,
+        diastaticus: null
+      }
+    }).defaultUnit).toBe("ml");
+  });
+
+  it("formats fermentable quantities in kilograms for human display", () => {
+    expect(formatInventoryQuantityForDisplay({
+      enteredQuantity: 500,
+      enteredUnit: "g",
+      normalizedQuantity: 500,
+      normalizedUnit: "g",
+      category: "fermentable",
+      defaultDisplayUnit: "kg"
+    })).toBe("0.5 kg");
   });
 });

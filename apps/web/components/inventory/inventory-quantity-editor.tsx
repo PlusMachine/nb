@@ -4,7 +4,8 @@ import React, { useMemo, useState, useTransition } from "react";
 
 import { updateInventoryInlineAction } from "@/app/(app)/app/ingredients/actions";
 import type { InventoryListItemDto } from "@/features/inventory/contracts";
-import { inventoryUnitLabels, getInventoryUnitOptions } from "@/features/inventory/units";
+import { formatInventoryQuantityForDisplay } from "@/features/inventory/display";
+import { inventoryUnitLabels, resolveInventoryUnitProfile } from "@/features/inventory/units";
 
 type Props = {
   item: InventoryListItemDto;
@@ -16,7 +17,29 @@ export function InventoryQuantityEditor({ item }: Props) {
   const [unit, setUnit] = useState(item.enteredUnit);
   const [feedback, setFeedback] = useState<{ ok: boolean; message: string } | null>(null);
   const [isPending, startTransition] = useTransition();
-  const unitOptions = useMemo(() => getInventoryUnitOptions(item.source.type), [item.source.type]);
+  const unitOptions = useMemo(() => resolveInventoryUnitProfile({
+    type: item.source.type,
+    category: item.source.category,
+    subtype: item.source.subtype,
+    defaultDisplayUnit: item.source.defaultDisplayUnit,
+    allowedUnits: item.source.allowedUnits,
+    measurementDimension: item.source.measurementDimension,
+    technicalData: item.source.technicalData
+  }).allowedUnits, [item.source]);
+  const displayQuantity = useMemo(() => formatInventoryQuantityForDisplay({
+    enteredQuantity: item.enteredQuantity,
+    enteredUnit: item.enteredUnit,
+    normalizedQuantity: item.normalizedQuantity,
+    normalizedUnit: item.normalizedUnit,
+    type: item.source.type,
+    category: item.source.category,
+    subtype: item.source.subtype,
+    defaultDisplayUnit: item.source.defaultDisplayUnit,
+    allowedUnits: item.source.allowedUnits,
+    measurementDimension: item.source.measurementDimension,
+    technicalData: item.source.technicalData
+  }), [item]);
+  const rawQuantity = `${item.enteredQuantity} ${item.enteredUnit}`;
 
   const reset = () => {
     setQuantity(String(item.enteredQuantity));
@@ -28,7 +51,10 @@ export function InventoryQuantityEditor({ item }: Props) {
   if (!editing) {
     return (
       <div className="flex flex-wrap items-center gap-2">
-        <p className="text-sm font-medium">{item.enteredQuantity} {item.enteredUnit}</p>
+        <div>
+          <p className="text-sm font-medium">{displayQuantity}</p>
+          {displayQuantity !== rawQuantity ? <p className="text-xs text-zinc-500">Ввод: {rawQuantity}</p> : null}
+        </div>
         <button type="button" onClick={() => setEditing(true)} className="rounded border px-2 py-1 text-xs">Быстро изменить</button>
         {feedback ? <p className={`text-xs ${feedback.ok ? "text-emerald-700" : "text-red-600"}`}>{feedback.message}</p> : null}
       </div>

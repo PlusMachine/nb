@@ -2,6 +2,7 @@
 
 import { redirect } from "next/navigation";
 
+import { resolvePreferredCurrency } from "@/features/system/money";
 import { updateCurrentProfile } from "@/lib/auth";
 
 export const updateSettingsAction = async (formData: FormData) => {
@@ -9,6 +10,9 @@ export const updateSettingsAction = async (formData: FormData) => {
   if (displayName.length < 2) {
     throw new Error("Display name too short");
   }
-  await updateCurrentProfile(displayName);
+  await updateCurrentProfile({
+    displayName,
+    preferredCurrency: resolvePreferredCurrency(formData.get("preferredCurrency"))
+  });
   redirect("/settings");
 };

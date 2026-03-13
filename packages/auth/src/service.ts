@@ -2,7 +2,7 @@ import { accounts, authRateLimits, db, sessions, users, verifications } from "@n
 import { and, eq, gt, sql } from "@nb/db";
 
 import { createOtpCode, createRandomToken, hashPassword, hashToken, verifyPassword } from "./crypto";
-import type { AuthUser, UserRole } from "./types";
+import type { AuthUser, SupportedCurrency, UserRole } from "./types";
 
 type VerificationType = "otp" | "magic_link" | "password_reset";
 
@@ -20,6 +20,7 @@ const mapUser = (user: typeof users.$inferSelect): AuthUser => ({
   email: user.email,
   emailVerified: user.emailVerified,
   displayName: user.displayName,
+  preferredCurrency: (user.preferredCurrency ?? "RUB") as SupportedCurrency,
   image: user.image,
   role: user.role,
   createdAt: user.createdAt,
@@ -157,8 +158,20 @@ export const completeEmailSignIn = async ({ email }: { email: string }): Promise
   return mapUser(updated ?? user);
 };
 
-export const updateProfile = async ({ userId, displayName }: { userId: string; displayName: string }): Promise<AuthUser> => {
-  const [updated] = await db.update(users).set({ displayName, updatedAt: new Date() }).where(eq(users.id, userId)).returning();
+export const updateProfile = async ({
+  userId,
+  displayName,
+  preferredCurrency
+}: {
+  userId: string;
+  displayName: string;
+  preferredCurrency: SupportedCurrency;
+}): Promise<AuthUser> => {
+  const [updated] = await db.update(users).set({
+    displayName,
+    preferredCurrency,
+    updatedAt: new Date()
+  }).where(eq(users.id, userId)).returning();
   if (!updated) {
     throw new Error("USER_NOT_FOUND");
   }

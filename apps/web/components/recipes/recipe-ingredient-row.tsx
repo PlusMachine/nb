@@ -2,9 +2,17 @@
 
 import React from "react";
 
+import { IngredientCategorySelector } from "@/components/ingredients/ingredient-category-selector";
 import { IngredientPicker } from "@/components/ingredients/ingredient-picker";
-import { ingredientTypes, type IngredientType } from "@/features/ingredients/contracts";
-import { getDefaultInventoryUnit, getInventoryUnitOptions } from "@/features/inventory/units";
+import {
+  type IngredientCategory,
+  type IngredientSubtype,
+  type IngredientSuggestionItem,
+  type IngredientType
+} from "@/features/ingredients/contracts";
+import { ingredientCategoryLabels } from "@/features/ingredients/presentation";
+import { resolveLegacyIngredientType } from "@/features/ingredients/taxonomy";
+import { resolveInventoryUnitProfile } from "@/features/inventory/units";
 import { recipeIngredientStages, type RecipeIngredientStage } from "@/features/recipes/contracts";
 
 export type RecipeIngredientEditorRowValue = {
@@ -12,21 +20,19 @@ export type RecipeIngredientEditorRowValue = {
   ingredientCatalogItemId: string | null;
   userCustomIngredientId: string | null;
   selectedName: string;
+  selectedSummary: string;
+  familyDisplayName: string;
+  category: IngredientCategory;
+  subtype: IngredientSubtype | null;
+  familyId: string | null;
   type: IngredientType;
+  defaultDisplayUnit: string;
+  allowedUnits: string[];
+  measurementDimension: string | null;
   amountEnteredQuantity: string;
   amountEnteredUnit: string;
   stage: RecipeIngredientStage;
   timeOffset: string;
-};
-
-export const recipeIngredientTypeLabels: Record<IngredientType, string> = {
-  fermentable: "Ферментируемый ингредиент",
-  hop: "Хмель",
-  yeast: "Дрожжи",
-  sugar: "Сахар",
-  adjunct: "Добавка",
-  fining: "Осветлитель",
-  misc: "Прочее"
 };
 
 export const recipeIngredientStageLabels: Record<RecipeIngredientStage, string> = {
@@ -41,6 +47,104 @@ export const recipeIngredientStageLabels: Record<RecipeIngredientStage, string> 
 export const hasRecipeIngredientSelection = (value: RecipeIngredientEditorRowValue) => (
   Boolean(value.ingredientCatalogItemId || value.userCustomIngredientId)
 );
+
+export const resolveRecipeIngredientUnitProfile = (value: Pick<
+  RecipeIngredientEditorRowValue,
+  "type" | "category" | "subtype" | "defaultDisplayUnit" | "allowedUnits" | "measurementDimension"
+>) => resolveInventoryUnitProfile({
+  type: value.type,
+  category: value.category,
+  subtype: value.subtype,
+  defaultDisplayUnit: value.defaultDisplayUnit,
+  allowedUnits: value.allowedUnits,
+  measurementDimension: value.measurementDimension
+});
+
+export const applyRecipeIngredientCategoryChange = (
+  value: RecipeIngredientEditorRowValue,
+  category: IngredientCategory
+): RecipeIngredientEditorRowValue => {
+  const unitProfile = resolveInventoryUnitProfile({ category });
+
+  return {
+    ...value,
+    ingredientCatalogItemId: null,
+    userCustomIngredientId: null,
+    selectedName: "",
+    selectedSummary: "",
+    familyDisplayName: "",
+    category,
+    subtype: null,
+    familyId: null,
+    type: resolveLegacyIngredientType({ category }),
+    defaultDisplayUnit: unitProfile.defaultUnit,
+    allowedUnits: unitProfile.allowedUnits,
+    measurementDimension: unitProfile.measurementDimension,
+    amountEnteredUnit: unitProfile.defaultUnit
+  };
+};
+
+export const applyRecipeIngredientTextChange = (
+  value: RecipeIngredientEditorRowValue,
+  nextValue: string
+): RecipeIngredientEditorRowValue => {
+  if (!hasRecipeIngredientSelection(value) || nextValue.trim() === value.selectedName.trim()) {
+    return {
+      ...value,
+      selectedName: nextValue
+    };
+  }
+
+  const unitProfile = resolveInventoryUnitProfile({ category: value.category });
+
+  return {
+    ...value,
+    selectedName: nextValue,
+    selectedSummary: "",
+    familyDisplayName: "",
+    subtype: null,
+    familyId: null,
+    ingredientCatalogItemId: null,
+    userCustomIngredientId: null,
+    defaultDisplayUnit: unitProfile.defaultUnit,
+    allowedUnits: unitProfile.allowedUnits,
+    measurementDimension: unitProfile.measurementDimension,
+    amountEnteredUnit: unitProfile.allowedUnits.includes(value.amountEnteredUnit as typeof unitProfile.allowedUnits[number])
+      ? value.amountEnteredUnit
+      : unitProfile.defaultUnit
+  };
+};
+
+export const applyRecipeIngredientSelection = (
+  value: RecipeIngredientEditorRowValue,
+  item: IngredientSuggestionItem
+): RecipeIngredientEditorRowValue => {
+  const unitProfile = resolveInventoryUnitProfile({
+    type: item.type,
+    category: item.category ?? value.category,
+    subtype: item.subtype ?? null,
+    defaultDisplayUnit: item.defaultDisplayUnit ?? item.defaultUnit,
+    allowedUnits: item.allowedUnits,
+    measurementDimension: item.measurementDimension
+  });
+
+  return {
+    ...value,
+    ingredientCatalogItemId: item.id,
+    userCustomIngredientId: null,
+    selectedName: item.displayName,
+    selectedSummary: item.subtitle ?? "",
+    familyDisplayName: item.familyDisplayName ?? item.familyCanonicalName ?? "",
+    category: item.category ?? value.category,
+    subtype: item.subtype ?? null,
+    familyId: item.familyId ?? null,
+    type: item.type,
+    defaultDisplayUnit: unitProfile.defaultUnit,
+    allowedUnits: unitProfile.allowedUnits,
+    measurementDimension: unitProfile.measurementDimension,
+    amountEnteredUnit: unitProfile.defaultUnit
+  };
+};
 
 export const getRecipeIngredientValidationError = (value: RecipeIngredientEditorRowValue) => {
   if (!hasRecipeIngredientSelection(value)) {
@@ -76,7 +180,7 @@ export function RecipeIngredientRow({
   footer,
   disableAmountUntilSelected = false
 }: Props) {
-  const allowedUnits = getInventoryUnitOptions(value.type);
+  const allowedUnits = resolveRecipeIngredientUnitProfile(value).allowedUnits;
   const hasSelectedIngredient = hasRecipeIngredientSelection(value);
   const amountFieldsDisabled = disableAmountUntilSelected && !hasSelectedIngredient;
 
@@ -90,26 +194,7 @@ export function RecipeIngredientRow({
       ) : null}
 
       <div className="grid gap-2 sm:grid-cols-2">
-        <div className="space-y-1">
-          <label className="text-xs font-medium text-zinc-700">Тип</label>
-          <select
-            value={value.type}
-            onChange={(event) => {
-              const nextType = event.target.value as IngredientType;
-              onChange({
-                ...value,
-                type: nextType,
-                amountEnteredUnit: getDefaultInventoryUnit(nextType),
-                ingredientCatalogItemId: null,
-                userCustomIngredientId: null,
-                selectedName: ""
-              });
-            }}
-            className="h-10 w-full rounded-md border border-zinc-200 bg-white px-3 text-sm"
-          >
-            {ingredientTypes.map((type) => <option key={type} value={type}>{recipeIngredientTypeLabels[type]}</option>)}
-          </select>
-        </div>
+        <IngredientCategorySelector value={value.category} onChange={(nextCategory) => onChange(applyRecipeIngredientCategoryChange(value, nextCategory))} />
         <div className="space-y-1">
           <label className="text-xs font-medium text-zinc-700">Этап</label>
           <select
@@ -125,27 +210,21 @@ export function RecipeIngredientRow({
       <div className="space-y-1">
         <label className="text-xs font-medium text-zinc-700">Ингредиент</label>
         <IngredientPicker
-          type={value.type}
+          category={value.category}
           value={value.selectedName}
-          onValueChange={(next) => onChange({
-            ...value,
-            selectedName: next,
-            ingredientCatalogItemId: hasSelectedIngredient && next.trim() !== value.selectedName.trim() ? null : value.ingredientCatalogItemId,
-            userCustomIngredientId: hasSelectedIngredient && next.trim() !== value.selectedName.trim() ? null : value.userCustomIngredientId
-          })}
-          onSelect={(item) => onChange({
-            ...value,
-            ingredientCatalogItemId: item.id,
-            userCustomIngredientId: null,
-            selectedName: item.displayName
-          })}
+          onValueChange={(next) => onChange(applyRecipeIngredientTextChange(value, next))}
+          onSelect={(item) => onChange(applyRecipeIngredientSelection(value, item))}
           placeholder="Найти ингредиент"
           emptyCta={<p className="text-xs text-zinc-500">Ничего не найдено. Уточните запрос.</p>}
         />
         {hasSelectedIngredient ? (
-          <p className="text-xs text-zinc-600">Ингредиент выбран. Теперь укажите количество и сохраните действие.</p>
+          <p className="text-xs text-zinc-600">
+            Ингредиент выбран.
+            {value.familyDisplayName ? ` ${value.familyDisplayName}.` : ""}
+            {value.selectedSummary ? ` ${value.selectedSummary}.` : ""}
+          </p>
         ) : (
-          <p className="text-xs text-zinc-500">Сначала выберите позицию из подсказок, затем вводите количество.</p>
+          <p className="text-xs text-zinc-500">Сначала выберите категорию и позицию из подсказок, затем вводите количество.</p>
         )}
       </div>
 

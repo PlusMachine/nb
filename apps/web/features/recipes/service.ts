@@ -29,7 +29,7 @@ import {
 } from "./contracts";
 import {
   normalizeRecipeBatchSize,
-  normalizeRecipeIngredientAmount,
+  normalizeRecipeIngredientAmountWithSource,
   parseRecipeUnit,
   toBatchVolumeLiters
 } from "./units";
@@ -39,6 +39,17 @@ import {
   getIngredientColorLovibond,
   getIngredientPotentialPpg
 } from "../ingredients/technical-fields";
+import {
+  resolveIngredientCategory,
+  resolveIngredientSubtype,
+  resolveLegacyIngredientType
+} from "../ingredients/taxonomy";
+import {
+  buildCatalogIngredientLinkage,
+  buildCustomIngredientLinkage,
+  type IngredientSourceLinkage
+} from "../ingredients/source-linkage";
+import { resolveInventoryUnitProfile } from "../inventory/units";
 
 const DEFAULT_EFFICIENCY = 75;
 const DEFAULT_ATTENUATION = 75;
@@ -166,6 +177,30 @@ const ensureOwnedCustomIngredient = async (authorId: string, userCustomIngredien
   return customIngredient;
 };
 
+const findCatalogIngredientIfAvailable = async (ingredientCatalogItemId: string) => {
+  try {
+    return await ensureCatalogIngredientExists(ingredientCatalogItemId);
+  } catch (error) {
+    if (error instanceof Error && error.message === "CATALOG_INGREDIENT_NOT_FOUND") {
+      return null;
+    }
+
+    throw error;
+  }
+};
+
+const findOwnedCustomIngredientIfAvailable = async (authorId: string, userCustomIngredientId: string) => {
+  try {
+    return await ensureOwnedCustomIngredient(authorId, userCustomIngredientId);
+  } catch (error) {
+    if (error instanceof Error && error.message === "CUSTOM_INGREDIENT_NOT_FOUND") {
+      return null;
+    }
+
+    throw error;
+  }
+};
+
 const parseRecipeIngredientUnit = (value: string) => {
   const unit = parseRecipeUnit(value);
   if (!unit) {
@@ -175,7 +210,126 @@ const parseRecipeIngredientUnit = (value: string) => {
   return unit;
 };
 
-const mapIngredientDto = (ingredient: typeof recipeIngredients.$inferSelect): RecipeIngredientDto => ({
+const isRecord = (value: unknown): value is Record<string, unknown> => (
+  typeof value === "object"
+  && value !== null
+  && !Array.isArray(value)
+);
+
+type RecipeIngredientResolvedSource = {
+  type: RecipeIngredientDto["type"];
+  category: RecipeIngredientDto["ingredientCategory"];
+  subtype: RecipeIngredientDto["ingredientSubtype"];
+  familyId: RecipeIngredientDto["ingredientFamilyId"];
+  displayName: RecipeIngredientDto["ingredientDisplayName"];
+  familyDisplayName: RecipeIngredientDto["ingredientFamilyDisplayName"];
+  summary: RecipeIngredientDto["ingredientSummary"];
+  defaultDisplayUnit: RecipeIngredientDto["ingredientDefaultDisplayUnit"];
+  allowedUnits: RecipeIngredientDto["ingredientAllowedUnits"];
+  measurementDimension: RecipeIngredientDto["ingredientMeasurementDimension"];
+  technicalData: IngredientSourceLinkage["technicalData"];
+};
+
+const readRecipeIngredientLinkageMeta = (
+  stepMeta: Record<string, unknown> | null | undefined
+): RecipeIngredientResolvedSource | null => {
+  if (!isRecord(stepMeta) || !isRecord(stepMeta.ingredientLinkage)) {
+    return null;
+  }
+
+  const linkage = stepMeta.ingredientLinkage;
+  const allowedUnits = Array.isArray(linkage.allowedUnits)
+    ? linkage.allowedUnits.filter((value): value is string => typeof value === "string").map(parseRecipeIngredientUnit)
+    : null;
+  const defaultDisplayUnit = typeof linkage.defaultDisplayUnit === "string"
+    ? parseRecipeIngredientUnit(linkage.defaultDisplayUnit)
+    : null;
+  const measurementDimension = linkage.measurementDimension === "weight"
+    || linkage.measurementDimension === "volume"
+    || linkage.measurementDimension === "count"
+    ? linkage.measurementDimension
+    : null;
+
+  return {
+    type: typeof linkage.type === "string" ? linkage.type as RecipeIngredientDto["type"] : "misc",
+    category: typeof linkage.category === "string" ? linkage.category as RecipeIngredientDto["ingredientCategory"] : null,
+    subtype: typeof linkage.subtype === "string" ? linkage.subtype as RecipeIngredientDto["ingredientSubtype"] : null,
+    familyId: typeof linkage.familyId === "string" ? linkage.familyId : null,
+    displayName: typeof linkage.displayName === "string" ? linkage.displayName : null,
+    familyDisplayName: typeof linkage.familyDisplayName === "string" ? linkage.familyDisplayName : null,
+    summary: typeof linkage.summary === "string" ? linkage.summary : null,
+    defaultDisplayUnit,
+    allowedUnits,
+    measurementDimension,
+    technicalData: null
+  };
+};
+
+const sanitizeRecipeStepMeta = (
+  stepMeta: Record<string, unknown> | null | undefined
+) => {
+  if (!isRecord(stepMeta)) {
+    return stepMeta ?? null;
+  }
+
+  if (!Object.prototype.hasOwnProperty.call(stepMeta, "ingredientLinkage")) {
+    return stepMeta;
+  }
+
+  const next = { ...stepMeta };
+  delete next.ingredientLinkage;
+
+  return Object.keys(next).length ? next : null;
+};
+
+const buildPersistedRecipeResolvedSource = (
+  ingredient: typeof recipeIngredients.$inferSelect,
+  stepMetaLinkage: RecipeIngredientResolvedSource | null,
+  liveLinkage?: IngredientSourceLinkage | null
+): RecipeIngredientResolvedSource => {
+  const category = ingredient.ingredientCategory
+    ?? stepMetaLinkage?.category
+    ?? resolveIngredientCategory({ type: ingredient.type });
+  const subtype = (ingredient.ingredientSubtype as RecipeIngredientDto["ingredientSubtype"])
+    ?? stepMetaLinkage?.subtype
+    ?? null;
+  const type = resolveLegacyIngredientType({
+    category,
+    subtype
+  }) ?? liveLinkage?.type ?? ingredient.type;
+  const unitProfile = resolveInventoryUnitProfile({
+    type,
+    category,
+    subtype,
+    defaultDisplayUnit: ingredient.ingredientDefaultDisplayUnitSnapshot
+      ?? stepMetaLinkage?.defaultDisplayUnit
+      ?? liveLinkage?.defaultDisplayUnit
+      ?? null,
+    measurementDimension: ingredient.ingredientMeasurementDimension
+      ?? stepMetaLinkage?.measurementDimension
+      ?? liveLinkage?.measurementDimension
+      ?? null,
+    technicalData: liveLinkage?.technicalData ?? null
+  });
+
+  return {
+    type,
+    category,
+    subtype,
+    familyId: ingredient.ingredientFamilyId ?? stepMetaLinkage?.familyId ?? liveLinkage?.familyId ?? null,
+    displayName: ingredient.ingredientDisplayNameSnapshot ?? stepMetaLinkage?.displayName ?? liveLinkage?.displayName ?? null,
+    familyDisplayName: liveLinkage?.familyDisplayName ?? stepMetaLinkage?.familyDisplayName ?? null,
+    summary: liveLinkage?.summary ?? stepMetaLinkage?.summary ?? null,
+    defaultDisplayUnit: ingredient.ingredientDefaultDisplayUnitSnapshot
+      ? parseRecipeIngredientUnit(ingredient.ingredientDefaultDisplayUnitSnapshot)
+      : unitProfile.defaultUnit,
+    allowedUnits: unitProfile.allowedUnits,
+    measurementDimension: ingredient.ingredientMeasurementDimension ?? unitProfile.measurementDimension,
+    technicalData: liveLinkage?.technicalData ?? null
+  };
+};
+
+const mapRecipeIngredientBase = (ingredient: typeof recipeIngredients.$inferSelect) => ({
   id: ingredient.id,
   recipeId: ingredient.recipeId,
   ingredientCatalogItemId: ingredient.ingredientCatalogItemId,
@@ -191,6 +345,41 @@ const mapIngredientDto = (ingredient: typeof recipeIngredients.$inferSelect): Re
   createdAt: ingredient.createdAt,
   updatedAt: ingredient.updatedAt
 });
+
+const hydrateRecipeIngredientDto = async (
+  authorId: string,
+  ingredient: typeof recipeIngredients.$inferSelect
+): Promise<RecipeIngredientDto> => {
+  const stepMeta = ingredient.stepMeta as Record<string, unknown> | null;
+  const stepMetaLinkage = readRecipeIngredientLinkageMeta(stepMeta);
+  let liveLinkage: IngredientSourceLinkage | null = null;
+
+  if (ingredient.ingredientCatalogItemId) {
+    const catalog = await findCatalogIngredientIfAvailable(ingredient.ingredientCatalogItemId);
+    liveLinkage = catalog ? buildCatalogIngredientLinkage(catalog) : null;
+  } else if (ingredient.userCustomIngredientId) {
+    const custom = await findOwnedCustomIngredientIfAvailable(authorId, ingredient.userCustomIngredientId);
+    liveLinkage = custom ? buildCustomIngredientLinkage(custom) : null;
+  }
+
+  const resolvedSource = buildPersistedRecipeResolvedSource(ingredient, stepMetaLinkage, liveLinkage);
+
+  return {
+    ...mapRecipeIngredientBase(ingredient),
+    ingredientCategory: resolvedSource?.category ?? null,
+    ingredientSubtype: resolvedSource?.subtype ?? null,
+    ingredientFamilyId: resolvedSource?.familyId ?? null,
+    ingredientDisplayName: resolvedSource?.displayName ?? null,
+    ingredientDisplayNameSnapshot: resolvedSource?.displayName ?? null,
+    ingredientFamilyDisplayName: resolvedSource?.familyDisplayName ?? null,
+    ingredientSummary: resolvedSource?.summary ?? null,
+    ingredientDefaultDisplayUnit: resolvedSource?.defaultDisplayUnit ?? null,
+    ingredientDefaultDisplayUnitSnapshot: resolvedSource?.defaultDisplayUnit ?? null,
+    ingredientAllowedUnits: resolvedSource?.allowedUnits ?? null,
+    ingredientMeasurementDimension: resolvedSource?.measurementDimension ?? null,
+    ingredientMeasurementDimensionSnapshot: resolvedSource?.measurementDimension ?? null
+  };
+};
 
 const mapRecipeListDto = (recipe: typeof recipes.$inferSelect): RecipeListItemDto => ({
   id: recipe.id,
@@ -213,15 +402,15 @@ const mapRecipeListDto = (recipe: typeof recipes.$inferSelect): RecipeListItemDt
   updatedAt: recipe.updatedAt
 });
 
-const mapRecipeDetailDto = (
+const mapRecipeDetailDto = async (
   recipe: typeof recipes.$inferSelect,
   ingredients: Array<typeof recipeIngredients.$inferSelect>
-): RecipeDetailDto => ({
+): Promise<RecipeDetailDto> => ({
   ...mapRecipeListDto(recipe),
   description: recipe.description,
   authorNotes: recipe.authorNotes,
   heroImageId: recipe.heroImageId,
-  ingredients: ingredients.map(mapIngredientDto)
+  ingredients: await Promise.all(ingredients.map((ingredient) => hydrateRecipeIngredientDto(recipe.authorId, ingredient)))
 });
 
 const replaceRecipeIngredients = async (
@@ -230,7 +419,10 @@ const replaceRecipeIngredients = async (
   payloadIngredients: Array<{
     ingredientCatalogItemId?: string | null;
     userCustomIngredientId?: string | null;
-    type: typeof recipeIngredients.$inferInsert.type;
+    type?: typeof recipeIngredients.$inferInsert.type;
+    category?: RecipeIngredientDto["ingredientCategory"];
+    subtype?: string | null;
+    familyId?: string | null;
     amountEnteredQuantity: number;
     amountEnteredUnit: string;
     stage: typeof recipeIngredients.$inferInsert.stage;
@@ -247,22 +439,53 @@ const replaceRecipeIngredients = async (
   const preparedValues: Array<typeof recipeIngredients.$inferInsert> = [];
 
   for (const ingredient of payloadIngredients) {
+    let resolvedSource: IngredientSourceLinkage;
+
     if (ingredient.ingredientCatalogItemId) {
       const catalog = await ensureCatalogIngredientExists(ingredient.ingredientCatalogItemId);
-      if (catalog.type !== ingredient.type) {
-        throw new Error("INGREDIENT_TYPE_MISMATCH");
+      resolvedSource = buildCatalogIngredientLinkage(catalog);
+      if (ingredient.familyId != null && ingredient.familyId !== resolvedSource.familyId) {
+        throw new Error("INGREDIENT_LINKAGE_MISMATCH");
       }
-    }
-
-    if (ingredient.userCustomIngredientId) {
+    } else if (ingredient.userCustomIngredientId) {
       const custom = await ensureOwnedCustomIngredient(authorId, ingredient.userCustomIngredientId);
-      if (custom.type !== ingredient.type) {
-        throw new Error("INGREDIENT_TYPE_MISMATCH");
+      resolvedSource = buildCustomIngredientLinkage(custom);
+      if (ingredient.familyId != null) {
+        throw new Error("INGREDIENT_LINKAGE_MISMATCH");
+      }
+    } else {
+      throw new Error("INVALID_SOURCE_LINKAGE");
+    }
+
+    if (ingredient.type && resolvedSource.type !== ingredient.type) {
+      throw new Error("INGREDIENT_TYPE_MISMATCH");
+    }
+
+    if (ingredient.category && resolvedSource.category !== ingredient.category) {
+      throw new Error("INGREDIENT_LINKAGE_MISMATCH");
+    }
+
+    if (ingredient.subtype) {
+      const normalizedPayloadSubtype = resolveIngredientSubtype({
+        category: resolvedSource.category ?? undefined,
+        subtype: ingredient.subtype
+      });
+
+      if (normalizedPayloadSubtype !== (resolvedSource.subtype ?? null)) {
+        throw new Error("INGREDIENT_LINKAGE_MISMATCH");
       }
     }
 
-    const amount = normalizeRecipeIngredientAmount(
-      ingredient.type,
+    const amount = normalizeRecipeIngredientAmountWithSource(
+      {
+        type: resolvedSource.type,
+        category: resolvedSource.category,
+        subtype: resolvedSource.subtype,
+        defaultDisplayUnit: resolvedSource.defaultDisplayUnit,
+        allowedUnits: resolvedSource.allowedUnits,
+        measurementDimension: resolvedSource.measurementDimension,
+        technicalData: resolvedSource.technicalData
+      },
       ingredient.amountEnteredQuantity,
       ingredient.amountEnteredUnit
     );
@@ -271,14 +494,20 @@ const replaceRecipeIngredients = async (
       recipeId,
       ingredientCatalogItemId: ingredient.ingredientCatalogItemId ?? null,
       userCustomIngredientId: ingredient.userCustomIngredientId ?? null,
-      type: ingredient.type,
+      ingredientFamilyId: resolvedSource.familyId,
+      ingredientCategory: resolvedSource.category,
+      ingredientSubtype: resolvedSource.subtype,
+      ingredientDisplayNameSnapshot: resolvedSource.displayName,
+      ingredientDefaultDisplayUnitSnapshot: resolvedSource.defaultDisplayUnit,
+      ingredientMeasurementDimension: resolvedSource.measurementDimension,
+      type: resolvedSource.type,
       amountEnteredQuantity: amount.enteredQuantity,
       amountEnteredUnit: amount.enteredUnit,
       amountNormalizedQuantity: amount.normalizedQuantity,
       amountNormalizedUnit: amount.normalizedUnit,
       stage: ingredient.stage,
       timeOffset: ingredient.timeOffset ?? null,
-      stepMeta: ingredient.stepMeta ?? null
+      stepMeta: sanitizeRecipeStepMeta(ingredient.stepMeta ?? null)
     });
   }
 
@@ -521,7 +750,7 @@ export const listRecipesForAuthor = async (authorId: string, query: unknown = {}
 
 export const getRecipeById = async (viewerId: string | null, recipeId: string): Promise<RecipeDetailDto> => {
   const recipe = await ensureAccessibleRecipe(viewerId, recipeId);
-  return mapRecipeDetailDto(recipe, recipe.ingredients);
+  return await mapRecipeDetailDto(recipe, recipe.ingredients);
 };
 
 export const getOwnedRecipeById = async (authorId: string, recipeId: string): Promise<RecipeDetailDto> => {
@@ -536,17 +765,17 @@ export const getOwnedRecipeById = async (authorId: string, recipeId: string): Pr
     throw new Error("NOT_FOUND");
   }
 
-  return mapRecipeDetailDto(recipe, recipe.ingredients);
+  return await mapRecipeDetailDto(recipe, recipe.ingredients);
 };
 
 export const getPublicRecipeById = async (recipeId: string): Promise<RecipeDetailDto> => {
   const recipe = await ensurePublicRecipe(recipeId);
-  return mapRecipeDetailDto(recipe, recipe.ingredients);
+  return await mapRecipeDetailDto(recipe, recipe.ingredients);
 };
 
 export const getPublicRecipeBySlug = async (slug: string): Promise<RecipeDetailDto> => {
   const recipe = await ensurePublicRecipeBySlug(slug);
-  return mapRecipeDetailDto(recipe, recipe.ingredients);
+  return await mapRecipeDetailDto(recipe, recipe.ingredients);
 };
 
 export const listPublicRecipes = async (limit = 50): Promise<RecipeListItemDto[]> => {

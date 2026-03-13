@@ -18,7 +18,7 @@ import {
   updateInventoryItem,
   updateInventoryQuantity
 } from "@/features/inventory/service";
-import type { IngredientType } from "@/features/ingredients/contracts";
+import { parseMoneyInputToMinor } from "@/features/system/money";
 import { requireUser } from "@/lib/auth";
 
 type AddIngredientResult = {
@@ -34,6 +34,17 @@ const parseOptionalDate = (value: string | null) => {
   }
   return normalized;
 };
+
+const parseOptionalNumber = (value: FormDataEntryValue | null) => {
+  const normalized = String(value ?? "").trim();
+  if (!normalized) {
+    return null;
+  }
+
+  return normalized;
+};
+
+const parseOptionalMoney = (value: FormDataEntryValue | null) => parseMoneyInputToMinor(value);
 
 const mapError = (error: unknown): AddIngredientResult => {
   if (error instanceof ZodError) {
@@ -66,7 +77,10 @@ const mapError = (error: unknown): AddIngredientResult => {
       return { ok: false, message: "Единица измерения не поддерживается." };
     }
     if (error.message === "INCOMPATIBLE_UNIT") {
-      return { ok: false, message: "Эта единица измерения не подходит для выбранного типа ингредиента." };
+      return { ok: false, message: "Эта единица измерения не подходит для выбранного ингредиента." };
+    }
+    if (error.message === "INVALID_PURCHASE_UNIT") {
+      return { ok: false, message: "Единица измерения покупки не поддерживается." };
     }
     return { ok: false, message: "Не удалось сохранить ингредиент. Попробуйте еще раз." };
   }
@@ -77,10 +91,16 @@ const mapError = (error: unknown): AddIngredientResult => {
 export const addCatalogIngredientAction = async (_prevState: AddIngredientResult | null, formData: FormData): Promise<AddIngredientResult> => {
   try {
     const user = await requireUser();
+    const purchasePriceMinor = parseOptionalMoney(formData.get("purchasePrice") ?? formData.get("purchasePriceMinor"));
+    const purchaseQuantity = parseOptionalNumber(formData.get("purchaseQuantity"));
     const payload = addCatalogInventoryItemSchema.parse({
       ingredientCatalogItemId: String(formData.get("ingredientCatalogItemId") ?? ""),
       enteredQuantity: String(formData.get("enteredQuantity") ?? ""),
       enteredUnit: String(formData.get("enteredUnit") ?? ""),
+      purchasePriceMinor,
+      purchaseCurrency: purchasePriceMinor == null ? null : String(formData.get("purchaseCurrency") ?? "").trim() || null,
+      purchaseQuantity,
+      purchaseQuantityUnit: purchaseQuantity == null ? null : String(formData.get("purchaseQuantityUnit") ?? "").trim() || null,
       purchasedAt: parseOptionalDate(formData.get("purchasedAt") as string | null),
       freshnessDate: parseOptionalDate(formData.get("freshnessDate") as string | null),
       notes: String(formData.get("notes") ?? "").trim() || null
@@ -98,11 +118,15 @@ export const addCatalogIngredientAction = async (_prevState: AddIngredientResult
 export const addCustomIngredientAction = async (_prevState: AddIngredientResult | null, formData: FormData): Promise<AddIngredientResult> => {
   try {
     const user = await requireUser();
-    const type = String(formData.get("type") ?? "") as IngredientType;
+    const purchasePriceMinor = parseOptionalMoney(formData.get("purchasePrice") ?? formData.get("purchasePriceMinor"));
+    const purchaseQuantity = parseOptionalNumber(formData.get("purchaseQuantity"));
 
     const customPayload = createUserCustomIngredientSchema.parse({
-      type,
-      displayName: String(formData.get("displayName") ?? "").trim()
+      type: String(formData.get("type") ?? "") || undefined,
+      category: String(formData.get("category") ?? "") || undefined,
+      subtype: String(formData.get("subtype") ?? "").trim() || null,
+      displayName: String(formData.get("displayName") ?? "").trim(),
+      defaultDisplayUnit: String(formData.get("defaultDisplayUnit") ?? "").trim() || null
     });
 
     const customIngredient = await createUserCustomIngredient(user.id, customPayload);
@@ -111,6 +135,10 @@ export const addCustomIngredientAction = async (_prevState: AddIngredientResult 
       userCustomIngredientId: customIngredient.id,
       enteredQuantity: String(formData.get("enteredQuantity") ?? ""),
       enteredUnit: String(formData.get("enteredUnit") ?? ""),
+      purchasePriceMinor,
+      purchaseCurrency: purchasePriceMinor == null ? null : String(formData.get("purchaseCurrency") ?? "").trim() || null,
+      purchaseQuantity,
+      purchaseQuantityUnit: purchaseQuantity == null ? null : String(formData.get("purchaseQuantityUnit") ?? "").trim() || null,
       purchasedAt: parseOptionalDate(formData.get("purchasedAt") as string | null),
       freshnessDate: parseOptionalDate(formData.get("freshnessDate") as string | null),
       notes: String(formData.get("notes") ?? "").trim() || null
@@ -131,17 +159,28 @@ export const updateInventoryItemAction = async (payload: {
   userCustomIngredientId?: string | null;
   enteredQuantity: string;
   enteredUnit: string;
+  purchasePrice?: string | null;
+  purchasePriceMinor?: string | null;
+  purchaseCurrency?: string | null;
+  purchaseQuantity?: string | null;
+  purchaseQuantityUnit?: string | null;
   purchasedAt?: string | null;
   freshnessDate?: string | null;
   notes?: string | null;
 }): Promise<AddIngredientResult> => {
   try {
     const user = await requireUser();
+    const purchasePriceMinor = parseOptionalMoney(payload.purchasePrice ?? payload.purchasePriceMinor ?? null);
+    const purchaseQuantity = parseOptionalNumber(payload.purchaseQuantity ?? null);
     const parsed = updateInventoryItemSchema.parse({
       ingredientCatalogItemId: payload.ingredientCatalogItemId ?? null,
       userCustomIngredientId: payload.userCustomIngredientId ?? null,
       enteredQuantity: payload.enteredQuantity,
       enteredUnit: payload.enteredUnit,
+      purchasePriceMinor,
+      purchaseCurrency: purchasePriceMinor == null ? null : payload.purchaseCurrency ?? null,
+      purchaseQuantity,
+      purchaseQuantityUnit: purchaseQuantity == null ? null : payload.purchaseQuantityUnit ?? null,
       purchasedAt: parseOptionalDate(payload.purchasedAt ?? null),
       freshnessDate: parseOptionalDate(payload.freshnessDate ?? null),
       notes: String(payload.notes ?? "").trim() || null

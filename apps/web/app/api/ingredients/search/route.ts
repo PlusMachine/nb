@@ -11,6 +11,7 @@ export async function GET(request: Request) {
     const items = await searchIngredientSuggestions({
       q: searchParams.get("q") ?? "",
       type: searchParams.get("type") ?? undefined,
+      category: searchParams.get("category") ?? undefined,
       limit: Number(searchParams.get("limit") ?? "10")
     });
 

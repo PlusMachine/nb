@@ -169,9 +169,46 @@ describe("recipe service", () => {
     mockState.catalogById.clear();
     mockState.customById.clear();
 
-    mockState.catalogById.set(uuid(101), { id: uuid(101), status: "active", type: "fermentable", displayName: "Pale Malt", properties: { potentialPpg: 37, colorLovibond: 2 } });
-    mockState.catalogById.set(uuid(102), { id: uuid(102), status: "active", type: "hop", displayName: "Cascade", properties: { alphaAcidPercent: 6 } });
-    mockState.customById.set(uuid(201), { id: uuid(201), userId: "u1", type: "hop", displayName: "My Hop", properties: { alphaAcidPercent: 7 } });
+    mockState.catalogById.set(uuid(101), {
+      id: uuid(101),
+      status: "active",
+      type: "fermentable",
+      category: "fermentable",
+      subtype: "base_malt",
+      familyId: uuid(301),
+      displayName: "Pale Malt",
+      defaultDisplayUnit: "kg",
+      allowedUnits: ["g", "kg"],
+      measurementDimension: "weight",
+      properties: { potentialPpg: 37, colorLovibond: 2 }
+    });
+    mockState.catalogById.set(uuid(102), {
+      id: uuid(102),
+      status: "active",
+      type: "hop",
+      category: "hop",
+      subtype: "pellet",
+      familyId: uuid(302),
+      displayName: "Cascade",
+      defaultDisplayUnit: "g",
+      allowedUnits: ["g", "oz"],
+      measurementDimension: "weight",
+      properties: { alphaAcidPercent: 6 }
+    });
+    mockState.customById.set(uuid(201), {
+      id: uuid(201),
+      userId: "u1",
+      type: "hop",
+      displayName: "My Hop",
+      properties: {
+        taxonomyCategory: "hop",
+        taxonomySubtype: "pellet",
+        defaultDisplayUnit: "g",
+        allowedUnits: ["g", "oz"],
+        measurementDimension: "weight",
+        alphaAcidPercent: 7
+      }
+    });
   });
 
   it("builds transliterated kebab slug base", () => {
@@ -204,6 +241,87 @@ describe("recipe service", () => {
     const updated = await recomputeRecipeStats("u1", recipe.id);
     expect(updated.og).not.toBeNull();
     expect(updated.ibu).not.toBeNull();
+  });
+
+  it("persists taxonomy snapshot columns on recipe ingredients", async () => {
+    const recipe = await createRecipe("u1", {
+      title: "Snapshot recipe",
+      batchSizeEnteredQuantity: 20,
+      batchSizeEnteredUnit: "l",
+      ingredients: [
+        {
+          ingredientCatalogItemId: uuid(101),
+          type: "fermentable",
+          category: "fermentable",
+          subtype: "base_malt",
+          familyId: uuid(301),
+          amountEnteredQuantity: 4,
+          amountEnteredUnit: "kg",
+          stage: "mash"
+        }
+      ]
+    });
+
+    const persisted = mockState.ingredientsByRecipeId.get(recipe.id) ?? [];
+
+    expect(persisted[0]).toMatchObject({
+      ingredientCatalogItemId: uuid(101),
+      ingredientFamilyId: uuid(301),
+      ingredientCategory: "fermentable",
+      ingredientSubtype: "base_malt",
+      ingredientDisplayNameSnapshot: "Pale Malt",
+      ingredientDefaultDisplayUnitSnapshot: "kg",
+      ingredientMeasurementDimension: "weight"
+    });
+    expect(persisted[0]?.stepMeta ?? null).toBeNull();
+  });
+
+  it("hydrates recipe dto from persisted snapshot when source row is unavailable", async () => {
+    const recipe = await createRecipe("u1", {
+      title: "Persisted only",
+      batchSizeEnteredQuantity: 20,
+      batchSizeEnteredUnit: "l"
+    });
+
+    mockState.ingredientsByRecipeId.set(recipe.id, [
+      {
+        id: uuid(777),
+        recipeId: recipe.id,
+        ingredientCatalogItemId: uuid(999),
+        userCustomIngredientId: null,
+        ingredientFamilyId: uuid(302),
+        ingredientCategory: "hop",
+        ingredientSubtype: "pellet",
+        ingredientDisplayNameSnapshot: "Old Cascade",
+        ingredientDefaultDisplayUnitSnapshot: "g",
+        ingredientMeasurementDimension: "weight",
+        type: "hop",
+        amountEnteredQuantity: 50,
+        amountEnteredUnit: "g",
+        amountNormalizedQuantity: 50,
+        amountNormalizedUnit: "g",
+        stage: "boil",
+        timeOffset: 60,
+        stepMeta: null,
+        createdAt: new Date("2026-01-01T00:00:00.000Z"),
+        updatedAt: new Date("2026-01-01T00:00:00.000Z")
+      }
+    ]);
+    mockState.catalogById.delete(uuid(999));
+
+    const hydrated = await getRecipeById("u1", recipe.id);
+
+    expect(hydrated.ingredients[0]).toMatchObject({
+      ingredientFamilyId: uuid(302),
+      ingredientCategory: "hop",
+      ingredientSubtype: "pellet",
+      ingredientDisplayName: "Old Cascade",
+      ingredientDisplayNameSnapshot: "Old Cascade",
+      ingredientDefaultDisplayUnit: "g",
+      ingredientDefaultDisplayUnitSnapshot: "g",
+      ingredientMeasurementDimension: "weight",
+      ingredientMeasurementDimensionSnapshot: "weight"
+    });
   });
 
   it("cross-user edit forbidden", async () => {

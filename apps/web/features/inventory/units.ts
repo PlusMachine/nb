@@ -1,6 +1,17 @@
 import { convertVolume, convertWeight, roundTo } from "@nb/brewing-core";
 
-import type { IngredientType } from "../ingredients/contracts";
+import type { IngredientTechnicalData, IngredientType } from "../ingredients/contracts";
+import type {
+  IngredientCategory,
+  IngredientDisplayUnit,
+  IngredientMeasurementDimension,
+  IngredientSubtype
+} from "../ingredients/taxonomy";
+import {
+  isIngredientDisplayUnit,
+  resolveIngredientCategory,
+  resolveIngredientUnits
+} from "../ingredients/taxonomy";
 
 export const inventoryUnitDimensions = ["weight", "volume", "count"] as const;
 export type InventoryUnitDimension = (typeof inventoryUnitDimensions)[number];
@@ -23,6 +34,22 @@ export type NormalizedInventoryMeasurement = {
   unitDimension: InventoryUnitDimension;
 };
 
+export type InventoryUnitProfile = {
+  defaultUnit: InventoryUnit;
+  allowedUnits: InventoryUnit[];
+  measurementDimension: InventoryUnitDimension;
+};
+
+type InventoryUnitProfileInput = {
+  type?: IngredientType | null;
+  category?: IngredientCategory | null;
+  subtype?: IngredientSubtype | null;
+  defaultDisplayUnit?: string | null;
+  allowedUnits?: readonly string[] | null;
+  measurementDimension?: string | null;
+  technicalData?: IngredientTechnicalData | null;
+};
+
 export const inventoryUnitLabels: Record<InventoryUnit, string> = {
   g: "g",
   kg: "kg",
@@ -33,6 +60,18 @@ export const inventoryUnitLabels: Record<InventoryUnit, string> = {
   gal: "gal",
   item: "item (шт.)",
   pack: "pack (пачка)"
+};
+
+export const inventoryUnitShortLabels: Record<InventoryUnit, string> = {
+  g: "g",
+  kg: "kg",
+  oz: "oz",
+  lb: "lb",
+  ml: "ml",
+  l: "l",
+  gal: "gal",
+  item: "item",
+  pack: "pack"
 };
 
 const unitDimensionByUnit: Record<InventoryUnit, InventoryUnitDimension> = {
@@ -53,26 +92,6 @@ const unitsByDimension: Record<InventoryUnitDimension, readonly InventoryUnit[]>
   count: inventoryCountUnits
 };
 
-const allowedDimensionsByIngredientType: Record<IngredientType, readonly InventoryUnitDimension[]> = {
-  fermentable: ["weight"],
-  hop: ["weight"],
-  yeast: ["count", "weight", "volume"],
-  sugar: ["weight"],
-  adjunct: ["weight", "volume", "count"],
-  fining: ["weight", "volume", "count"],
-  misc: ["weight", "volume", "count"]
-};
-
-const defaultUnitByIngredientType: Record<IngredientType, InventoryUnit> = {
-  fermentable: "g",
-  hop: "g",
-  yeast: "pack",
-  sugar: "g",
-  adjunct: "g",
-  fining: "g",
-  misc: "item"
-};
-
 const roundInventoryQuantity = (value: number) => roundTo(value, 3);
 
 export const normalizeInventoryUnitInput = (value: string) => value.trim().toLowerCase();
@@ -88,20 +107,136 @@ export const parseInventoryUnit = (value: string): InventoryUnit | null => {
 
 export const getInventoryUnitDimension = (unit: InventoryUnit): InventoryUnitDimension => unitDimensionByUnit[unit];
 
+const normalizeUnitList = (units?: readonly string[] | null): InventoryUnit[] => {
+  const normalized = (units ?? [])
+    .map((unit) => parseInventoryUnit(unit))
+    .filter((unit): unit is InventoryUnit => unit !== null);
+
+  return [...new Set(normalized)];
+};
+
+const normalizeMeasurementDimension = (value?: string | null): InventoryUnitDimension | null => (
+  value === "weight" || value === "volume" || value === "count" ? value : null
+);
+
+const normalizeInventoryAllowedUnits = (units: readonly InventoryUnit[]) => [...new Set(units)];
+
+const resolvePracticalYeastProfile = (
+  resolvedCategory: IngredientCategory | null,
+  explicitDefaultUnit: InventoryUnit | null,
+  technicalData?: IngredientTechnicalData | null
+): InventoryUnitProfile | null => {
+  if (resolvedCategory !== "yeast" || technicalData?.category !== "yeast") {
+    return null;
+  }
+
+  if (explicitDefaultUnit && explicitDefaultUnit !== "pack") {
+    return null;
+  }
+
+  const hasPackageData = technicalData.packageSize != null && technicalData.packageUnit != null;
+
+  if (hasPackageData) {
+    const isLiquid = technicalData.form === "liquid";
+    return {
+      defaultUnit: "pack",
+      allowedUnits: normalizeInventoryAllowedUnits(isLiquid ? ["pack", "ml"] : ["pack", "g"]),
+      measurementDimension: "count"
+    };
+  }
+
+  const defaultUnit = technicalData.form === "liquid" ? "ml" : "g";
+  const measurementDimension = getInventoryUnitDimension(defaultUnit);
+
+  return {
+    defaultUnit,
+    allowedUnits: [...unitsByDimension[measurementDimension]],
+    measurementDimension
+  };
+};
+
+const toInventoryUnit = (unit: IngredientDisplayUnit): InventoryUnit => unit;
+
+const toInventoryMeasurementDimension = (
+  dimension: IngredientMeasurementDimension
+): InventoryUnitDimension => dimension;
+
+export const resolveInventoryUnitProfile = ({
+  type,
+  category,
+  subtype,
+  defaultDisplayUnit,
+  allowedUnits,
+  measurementDimension,
+  technicalData
+}: InventoryUnitProfileInput): InventoryUnitProfile => {
+  const explicitDefaultUnit = parseInventoryUnit(defaultDisplayUnit ?? "");
+  const explicitAllowedUnits = normalizeUnitList(allowedUnits);
+  const explicitMeasurementDimension = normalizeMeasurementDimension(measurementDimension);
+  const resolvedCategory = category ?? (type ? resolveIngredientCategory({ type }) : null);
+  const practicalYeastProfile = resolvePracticalYeastProfile(resolvedCategory, explicitDefaultUnit, technicalData);
+
+  if (practicalYeastProfile) {
+    return practicalYeastProfile;
+  }
+
+  if (explicitDefaultUnit && explicitAllowedUnits.length && explicitAllowedUnits.includes(explicitDefaultUnit)) {
+    return {
+      defaultUnit: explicitDefaultUnit,
+      allowedUnits: explicitAllowedUnits,
+      measurementDimension: explicitMeasurementDimension ?? getInventoryUnitDimension(explicitDefaultUnit)
+    };
+  }
+
+  if (category || type) {
+    const resolvedUnits = resolveIngredientUnits({
+      category: category ?? undefined,
+      type: type ?? undefined,
+      subtype: subtype ?? undefined,
+      defaultDisplayUnit: defaultDisplayUnit && isIngredientDisplayUnit(defaultDisplayUnit) ? defaultDisplayUnit : undefined,
+      yeastForm: technicalData?.category === "yeast" ? technicalData.form : undefined
+    });
+
+    return {
+      defaultUnit: toInventoryUnit(resolvedUnits.defaultDisplayUnit),
+      allowedUnits: resolvedUnits.allowedUnits.map(toInventoryUnit),
+      measurementDimension: toInventoryMeasurementDimension(resolvedUnits.measurementDimension)
+    };
+  }
+
+  if (explicitDefaultUnit) {
+    return {
+      defaultUnit: explicitDefaultUnit,
+      allowedUnits: [...unitsByDimension[getInventoryUnitDimension(explicitDefaultUnit)]],
+      measurementDimension: explicitMeasurementDimension ?? getInventoryUnitDimension(explicitDefaultUnit)
+    };
+  }
+
+  return {
+    defaultUnit: "g",
+    allowedUnits: [...unitsByDimension.weight],
+    measurementDimension: "weight"
+  };
+};
+
+export const isUnitAllowedForInventoryProfile = (unit: InventoryUnit, profile: InventoryUnitProfile) => (
+  profile.allowedUnits.includes(unit)
+);
+
 export const isUnitAllowedForIngredientType = (unit: InventoryUnit, ingredientType: IngredientType) => (
-  allowedDimensionsByIngredientType[ingredientType].includes(getInventoryUnitDimension(unit))
+  isUnitAllowedForInventoryProfile(unit, resolveInventoryUnitProfile({ type: ingredientType }))
 );
 
 export const getInventoryUnitOptions = (ingredientType: IngredientType): InventoryUnit[] => (
-  allowedDimensionsByIngredientType[ingredientType].flatMap((dimension) => [...unitsByDimension[dimension]])
+  resolveInventoryUnitProfile({ type: ingredientType }).allowedUnits
 );
 
 export const getDefaultInventoryUnit = (ingredientType: IngredientType): InventoryUnit => (
-  defaultUnitByIngredientType[ingredientType]
+  resolveInventoryUnitProfile({ type: ingredientType }).defaultUnit
 );
 
-export const normalizeInventoryMeasurement = (
-  ingredientType: IngredientType,
+export const normalizeInventoryMeasurementForProfile = (
+  profile: InventoryUnitProfile,
   enteredQuantity: number,
   enteredUnitInput: string
 ): NormalizedInventoryMeasurement => {
@@ -110,7 +245,7 @@ export const normalizeInventoryMeasurement = (
     throw new Error("INVALID_UNIT");
   }
 
-  if (!isUnitAllowedForIngredientType(normalizedEnteredUnit, ingredientType)) {
+  if (!isUnitAllowedForInventoryProfile(normalizedEnteredUnit, profile)) {
     throw new Error("INCOMPATIBLE_UNIT");
   }
 
@@ -148,3 +283,13 @@ export const normalizeInventoryMeasurement = (
     unitDimension
   };
 };
+
+export const normalizeInventoryMeasurement = (
+  ingredientType: IngredientType,
+  enteredQuantity: number,
+  enteredUnitInput: string
+): NormalizedInventoryMeasurement => normalizeInventoryMeasurementForProfile(
+  resolveInventoryUnitProfile({ type: ingredientType }),
+  enteredQuantity,
+  enteredUnitInput
+);

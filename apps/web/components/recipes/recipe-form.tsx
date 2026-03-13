@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useState } from "react";
 
 import { createRecipeAction, updateRecipeAction, type RecipeEditorResult } from "@/app/(app)/app/recipes/actions";
+import { resolveIngredientCategory } from "@/features/ingredients/taxonomy";
 import type { RecipeDetailDto, RecipePublicationState } from "@/features/recipes/contracts";
 
 import { RecipeBatchSizeFields } from "./recipe-batch-size-fields";
@@ -23,8 +24,16 @@ const toIngredientRow = (ingredient: RecipeDetailDto["ingredients"][number]): Re
   localId: ingredient.id,
   ingredientCatalogItemId: ingredient.ingredientCatalogItemId,
   userCustomIngredientId: ingredient.userCustomIngredientId,
-  selectedName: "",
+  selectedName: ingredient.ingredientDisplayName ?? "",
+  selectedSummary: ingredient.ingredientSummary ?? "",
+  familyDisplayName: ingredient.ingredientFamilyDisplayName ?? "",
+  category: ingredient.ingredientCategory ?? resolveIngredientCategory({ type: ingredient.type }),
+  subtype: ingredient.ingredientSubtype ?? null,
+  familyId: ingredient.ingredientFamilyId ?? null,
   type: ingredient.type,
+  defaultDisplayUnit: ingredient.ingredientDefaultDisplayUnit ?? ingredient.amountEnteredUnit,
+  allowedUnits: ingredient.ingredientAllowedUnits ?? [ingredient.amountEnteredUnit],
+  measurementDimension: ingredient.ingredientMeasurementDimension ?? null,
   amountEnteredQuantity: String(ingredient.amountEnteredQuantity),
   amountEnteredUnit: ingredient.amountEnteredUnit,
   stage: ingredient.stage,
@@ -71,6 +80,9 @@ export function RecipeForm({ mode, initialRecipe }: Props) {
         ingredientCatalogItemId: row.ingredientCatalogItemId,
         userCustomIngredientId: row.userCustomIngredientId,
         type: row.type,
+        category: row.category,
+        subtype: row.subtype,
+        familyId: row.familyId,
         amountEnteredQuantity: Number(row.amountEnteredQuantity),
         amountEnteredUnit: row.amountEnteredUnit,
         stage: row.stage,

@@ -6,9 +6,30 @@ const mockState = vi.hoisted(() => ({
     {
       id: "1",
       type: "hop",
+      category: "hop",
+      subtype: "pellet",
+      familyId: "fam-1",
+      familyCanonicalName: "Saaz",
+      familyDisplayNameEn: "Saaz",
+      familyDisplayNameRu: null,
       displayName: "Saaz",
+      brandName: null,
       manufacturer: "Bohemia Hop",
+      harvestYear: 2024,
       defaultUnit: "g",
+      defaultDisplayUnit: "g",
+      allowedUnits: ["g", "kg", "oz", "lb"],
+      measurementDimension: "weight",
+      completenessLevel: "recommended",
+      technicalData: {
+        category: "hop",
+        subtype: "pellet",
+        alphaAcidPct: 3.5,
+        betaAcidPct: null,
+        totalOilMlPer100g: null,
+        notes: null,
+        harvestYear: 2024
+      },
       normalizedName: "saaz",
       aliases: ["saaz"],
       score: 0
@@ -19,18 +40,20 @@ const mockState = vi.hoisted(() => ({
 vi.mock("@nb/db", () => {
   const queryChain = {
     from: () => ({
-      where: () => ({
-        orderBy: () => ({
-          limit: async () => {
-            mockState.limitCalls += 1;
-            if (mockState.limitCalls === 1) {
-              const error = new Error("function similarity(text, text) does not exist") as Error & { code?: string };
-              error.code = "42883";
-              throw error;
-            }
+      leftJoin: () => ({
+        where: () => ({
+          orderBy: () => ({
+            limit: async () => {
+              mockState.limitCalls += 1;
+              if (mockState.limitCalls === 1) {
+                const error = new Error("function similarity(text, text) does not exist") as Error & { code?: string };
+                error.code = "42883";
+                throw error;
+              }
 
-            return mockState.rows;
-          }
+              return mockState.rows;
+            }
+          })
         })
       })
     })
@@ -51,14 +74,28 @@ vi.mock("@nb/db", () => {
     ingredientCatalogItems: {
       id: "id",
       type: "type",
+      category: "category",
+      subtype: "subtype",
+      familyId: "familyId",
       displayName: "displayName",
+      brandName: "brandName",
       manufacturer: "manufacturer",
       defaultUnit: "defaultUnit",
+      defaultDisplayUnit: "defaultDisplayUnit",
+      allowedUnits: "allowedUnits",
+      measurementDimension: "measurementDimension",
+      completenessLevel: "completenessLevel",
       normalizedName: "normalizedName",
       aliases: "aliases",
       status: "status",
       updatedAt: "updatedAt",
       mergedIntoId: "mergedIntoId"
+    },
+    ingredientFamilies: {
+      id: "id",
+      canonicalName: "canonicalName",
+      displayNameEn: "displayNameEn",
+      displayNameRu: "displayNameRu"
     },
     proposedIngredients: {
       id: "id",
@@ -86,6 +123,9 @@ describe("ingredient search service", () => {
     expect(items[0]).toMatchObject({
       displayName: "Saaz",
       defaultUnit: "g",
+      category: "hop",
+      familyDisplayName: "Saaz",
+      subtitle: "3.5% AA • pellet • 2024",
       source: "catalog"
     });
     expect(mockState.limitCalls).toBe(2);

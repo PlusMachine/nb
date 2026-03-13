@@ -24,10 +24,31 @@ import {
 } from "./contracts";
 import { ingredientSearchQuerySchema, type IngredientSuggestionItem } from "../ingredients/contracts";
 import { normalizeIngredientName } from "../ingredients/normalization";
+import { buildIngredientTypedSummary } from "../ingredients/presentation";
 import { scoreIngredientCandidate } from "../ingredients/ranking";
-import { extractIngredientTechnicalFields } from "../ingredients/technical-fields";
-import { normalizeInventoryMeasurement, parseInventoryUnit } from "./units";
-import type { IngredientType } from "../ingredients/contracts";
+import {
+  extractIngredientTechnicalFields
+} from "../ingredients/technical-fields";
+import {
+  buildCatalogIngredientLinkage,
+  buildCustomIngredientLinkage,
+  type IngredientSourceLinkage
+} from "../ingredients/source-linkage";
+import {
+  resolveIngredientCategory,
+  resolveIngredientSubtype,
+  resolveLegacyIngredientType
+} from "../ingredients/taxonomy";
+import { type SystemCurrency, listSystemCurrencyRates } from "../system/currency-rates";
+import { normalizeInventoryPurchaseContext } from "./purchase-cost";
+import {
+  normalizeInventoryMeasurementForProfile,
+  parseInventoryUnit,
+  resolveInventoryUnitProfile,
+  type InventoryUnit,
+  type InventoryUnitDimension,
+  type InventoryUnitProfile
+} from "./units";
 
 const ensureSourceLinkage = (ingredientCatalogItemId?: string | null, userCustomIngredientId?: string | null) => {
   const result = inventorySourceLinkageSchema.safeParse({ ingredientCatalogItemId, userCustomIngredientId });
@@ -47,7 +68,148 @@ const buildInventorySearchWhere = (search: string) => {
   }
 
   const term = `%${search}%`;
-  return sql<boolean>`coalesce(${ingredientCatalogItems.displayName}, ${userCustomIngredients.displayName}) ilike ${term}`;
+  return sql<boolean>`coalesce(${userIngredients.ingredientDisplayNameSnapshot}, ${ingredientCatalogItems.displayName}, ${userCustomIngredients.displayName}) ilike ${term}`;
+};
+
+const buildInventoryTypeWhere = (type?: string) => {
+  if (!type) {
+    return undefined;
+  }
+
+  return sql<boolean>`coalesce(
+    ${ingredientCatalogItems.type},
+    ${userCustomIngredients.type},
+    case
+      when ${userIngredients.ingredientCategory} = 'fermentable' then 'fermentable'
+      when ${userIngredients.ingredientCategory} = 'hop' then 'hop'
+      when ${userIngredients.ingredientCategory} = 'yeast' then 'yeast'
+      else 'misc'
+    end
+  ) = ${type}`;
+};
+
+const buildInventorySnapshotUnitProfile = (input: {
+  type?: InventorySourceDto["type"] | null;
+  category?: InventorySourceDto["category"] | null;
+  subtype?: InventorySourceDto["subtype"] | null;
+  defaultDisplayUnit?: string | null;
+  measurementDimension?: string | null;
+  technicalData?: InventorySourceDto["technicalData"];
+}) => resolveInventoryUnitProfile({
+  type: input.type,
+  category: input.category,
+  subtype: input.subtype,
+  defaultDisplayUnit: input.defaultDisplayUnit,
+  measurementDimension: input.measurementDimension,
+  technicalData: input.technicalData ?? null
+});
+
+const buildLiveInventoryLinkage = (
+  catalog: typeof ingredientCatalogItems.$inferSelect | null,
+  custom: typeof userCustomIngredients.$inferSelect | null
+): IngredientSourceLinkage | null => {
+  if (catalog) {
+    return buildCatalogIngredientLinkage(catalog);
+  }
+
+  if (custom) {
+    return buildCustomIngredientLinkage(custom);
+  }
+
+  return null;
+};
+
+const resolveSnapshotType = (
+  inventory: typeof userIngredients.$inferSelect,
+  liveLinkage: IngredientSourceLinkage | null
+) => (
+  resolveLegacyIngredientType({
+    category: inventory.ingredientCategory,
+    subtype: inventory.ingredientSubtype
+  })
+  ?? liveLinkage?.type
+  ?? "misc"
+);
+
+const resolveSnapshotDisplayName = (
+  inventory: typeof userIngredients.$inferSelect,
+  liveLinkage: IngredientSourceLinkage | null
+) => inventory.ingredientDisplayNameSnapshot
+  ?? liveLinkage?.displayName
+  ?? null;
+
+const resolvePersistedInventorySource = (row: {
+  inventory: typeof userIngredients.$inferSelect;
+  catalog: typeof ingredientCatalogItems.$inferSelect | null;
+  custom: typeof userCustomIngredients.$inferSelect | null;
+}) => {
+  const liveLinkage = buildLiveInventoryLinkage(row.catalog, row.custom);
+  const type = resolveSnapshotType(row.inventory, liveLinkage);
+  const category = row.inventory.ingredientCategory ?? liveLinkage?.category ?? resolveIngredientCategory({ type });
+  const subtype = row.inventory.ingredientSubtype as InventorySourceDto["subtype"] ?? liveLinkage?.subtype ?? null;
+  const displayName = resolveSnapshotDisplayName(row.inventory, liveLinkage);
+
+  if (!displayName) {
+    throw new Error("INVALID_SOURCE_LINKAGE");
+  }
+
+  const unitProfile = buildInventorySnapshotUnitProfile({
+    type,
+    category,
+    subtype,
+    defaultDisplayUnit: row.inventory.ingredientDefaultDisplayUnitSnapshot ?? liveLinkage?.defaultDisplayUnit ?? null,
+    measurementDimension: row.inventory.ingredientMeasurementDimension ?? liveLinkage?.measurementDimension ?? null,
+    technicalData: liveLinkage?.technicalData ?? null
+  });
+
+  const sourceKind = row.inventory.userCustomIngredientId != null
+    ? "custom"
+    : "catalog";
+  const sourceId = row.inventory.userCustomIngredientId
+    ?? row.inventory.ingredientCatalogItemId
+    ?? row.custom?.id
+    ?? row.catalog?.id
+    ?? row.inventory.id;
+
+  const summary = buildIngredientTypedSummary({
+    category,
+    subtype,
+    displayName,
+    defaultDisplayUnit: unitProfile.defaultUnit,
+    technicalData: liveLinkage?.technicalData ?? null
+  }) ?? liveLinkage?.summary ?? null;
+
+  return {
+    source: {
+      sourceKind,
+      sourceId,
+      type,
+      category,
+      subtype,
+      familyId: row.inventory.ingredientFamilyId ?? liveLinkage?.familyId ?? null,
+      familyDisplayName: liveLinkage?.familyDisplayName ?? null,
+      displayName,
+      normalizedName: row.catalog?.normalizedName ?? row.custom?.normalizedName ?? normalizeIngredientName(displayName),
+      brandName: row.catalog?.brandName ?? row.custom?.manufacturer ?? null,
+      completenessLevel: row.catalog?.completenessLevel ?? null,
+      technicalData: liveLinkage?.technicalData ?? null,
+      defaultDisplayUnit: unitProfile.defaultUnit,
+      allowedUnits: unitProfile.allowedUnits,
+      measurementDimension: row.inventory.ingredientMeasurementDimension ?? unitProfile.measurementDimension,
+      summary,
+      ...(row.catalog || row.custom ? extractIngredientTechnicalFields(row.catalog ?? row.custom!) : {})
+    } satisfies InventorySourceDto,
+    snapshot: {
+      ingredientCatalogItemId: row.inventory.ingredientCatalogItemId ?? null,
+      userCustomIngredientId: row.inventory.userCustomIngredientId ?? null,
+      ingredientFamilyId: row.inventory.ingredientFamilyId ?? liveLinkage?.familyId ?? null,
+      ingredientCategory: category,
+      ingredientSubtype: subtype,
+      ingredientDisplayNameSnapshot: displayName,
+      ingredientDefaultDisplayUnitSnapshot: unitProfile.defaultUnit,
+      ingredientMeasurementDimension: row.inventory.ingredientMeasurementDimension ?? unitProfile.measurementDimension
+    }
+  };
 };
 
 const mapInventoryRow = (row: {
@@ -55,29 +217,7 @@ const mapInventoryRow = (row: {
   catalog: typeof ingredientCatalogItems.$inferSelect | null;
   custom: typeof userCustomIngredients.$inferSelect | null;
 }): InventoryListItemDto => {
-  const source = row.catalog
-    ? {
-      sourceKind: "catalog" as const,
-      sourceId: row.catalog.id,
-      type: row.catalog.type,
-      displayName: row.catalog.displayName,
-      normalizedName: row.catalog.normalizedName,
-      ...extractIngredientTechnicalFields(row.catalog)
-    }
-    : row.custom
-      ? {
-        sourceKind: "custom" as const,
-        sourceId: row.custom.id,
-        type: row.custom.type,
-        displayName: row.custom.displayName,
-        normalizedName: row.custom.normalizedName,
-        ...extractIngredientTechnicalFields(row.custom)
-      }
-      : null;
-
-  if (!source) {
-    throw new Error("INVALID_SOURCE_LINKAGE");
-  }
+  const { source, snapshot } = resolvePersistedInventorySource(row);
 
   const enteredUnit = parseInventoryUnit(row.inventory.enteredUnit);
   const normalizedUnit = parseInventoryUnit(row.inventory.normalizedUnit);
@@ -87,11 +227,28 @@ const mapInventoryRow = (row: {
 
   return {
     id: row.inventory.id,
+    ingredientCatalogItemId: snapshot.ingredientCatalogItemId,
+    userCustomIngredientId: snapshot.userCustomIngredientId,
+    ingredientFamilyId: snapshot.ingredientFamilyId,
+    ingredientCategory: snapshot.ingredientCategory,
+    ingredientSubtype: snapshot.ingredientSubtype,
+    ingredientDisplayNameSnapshot: snapshot.ingredientDisplayNameSnapshot,
+    ingredientDefaultDisplayUnitSnapshot: snapshot.ingredientDefaultDisplayUnitSnapshot,
+    ingredientMeasurementDimension: snapshot.ingredientMeasurementDimension,
     enteredQuantity: row.inventory.enteredQuantity,
     enteredUnit,
     normalizedQuantity: row.inventory.normalizedQuantity,
     normalizedUnit,
     unitDimension: row.inventory.unitDimension,
+    purchasePriceMinor: row.inventory.purchasePriceMinor,
+    purchaseCurrency: row.inventory.purchaseCurrency as SystemCurrency | null,
+    purchaseQuantity: row.inventory.purchaseQuantity,
+    purchaseQuantityUnit: row.inventory.purchaseQuantityUnit ? parseInventoryUnit(row.inventory.purchaseQuantityUnit) : null,
+    purchaseQuantityNormalized: row.inventory.purchaseQuantityNormalized,
+    purchaseQuantityNormalizedUnit: row.inventory.purchaseQuantityNormalizedUnit
+      ? parseInventoryUnit(row.inventory.purchaseQuantityNormalizedUnit)
+      : null,
+    normalizedUnitCostMinorRub: row.inventory.normalizedUnitCostMinorRub,
     purchasedAt: row.inventory.purchasedAt,
     freshnessDate: row.inventory.freshnessDate,
     notes: row.inventory.notes,
@@ -147,37 +304,77 @@ const ensureOwnedInventoryItem = async (userId: string, inventoryItemId: string)
   return item;
 };
 
-const buildStoredMeasurement = (ingredientType: IngredientType, payload: { enteredQuantity: number; enteredUnit: string }) => {
-  return normalizeInventoryMeasurement(ingredientType, payload.enteredQuantity, payload.enteredUnit);
-};
+const buildInventorySnapshotValues = (linkage: IngredientSourceLinkage) => ({
+  ingredientFamilyId: linkage.familyId,
+  ingredientCategory: linkage.category,
+  ingredientSubtype: linkage.subtype,
+  ingredientDisplayNameSnapshot: linkage.displayName,
+  ingredientDefaultDisplayUnitSnapshot: linkage.defaultDisplayUnit,
+  ingredientMeasurementDimension: linkage.measurementDimension
+});
 
-const resolveInventoryIngredientType = async (
+const buildPersistedInventoryUnitProfile = (
+  item: Pick<
+    typeof userIngredients.$inferSelect,
+    "ingredientCategory" | "ingredientSubtype" | "ingredientDisplayNameSnapshot" | "ingredientDefaultDisplayUnitSnapshot" | "ingredientMeasurementDimension"
+  >,
+  liveLinkage?: IngredientSourceLinkage | null
+): InventoryUnitProfile => buildInventorySnapshotUnitProfile({
+  type: resolveLegacyIngredientType({
+    category: item.ingredientCategory,
+    subtype: item.ingredientSubtype
+  }),
+  category: item.ingredientCategory,
+  subtype: item.ingredientSubtype as InventorySourceDto["subtype"],
+  defaultDisplayUnit: item.ingredientDefaultDisplayUnitSnapshot ?? liveLinkage?.defaultDisplayUnit ?? null,
+  measurementDimension: item.ingredientMeasurementDimension ?? liveLinkage?.measurementDimension ?? null,
+  technicalData: liveLinkage?.technicalData ?? null
+});
+
+const resolveInventoryIngredientProfile = async (
   userId: string,
   item: typeof userIngredients.$inferSelect
-): Promise<IngredientType> => {
+) => {
   if (item.ingredientCatalogItemId) {
     const catalogItem = await ensureCatalogIngredientExists(item.ingredientCatalogItemId);
-    return catalogItem.type;
+    return buildPersistedInventoryUnitProfile(item, buildCatalogIngredientLinkage(catalogItem));
   }
 
   if (item.userCustomIngredientId) {
     const customIngredient = await ensureOwnedCustomIngredient(userId, item.userCustomIngredientId);
-    return customIngredient.type;
+    return buildPersistedInventoryUnitProfile(item, buildCustomIngredientLinkage(customIngredient));
   }
 
-  throw new Error("INVALID_SOURCE_LINKAGE");
+  return buildPersistedInventoryUnitProfile(item, null);
 };
 
 export const createUserCustomIngredient = async (userId: string, payload: unknown) => {
   const parsed = createUserCustomIngredientSchema.parse(payload);
   const normalizedName = normalizeIngredientName(parsed.displayName);
+  const category = resolveIngredientCategory(parsed);
+  const subtype = resolveIngredientSubtype(parsed);
+  const type = resolveLegacyIngredientType(parsed);
+  const unitProfile = resolveInventoryUnitProfile({
+    type,
+    category,
+    subtype,
+    defaultDisplayUnit: parsed.defaultDisplayUnit ?? undefined
+  });
+  const properties = {
+    ...parsed.properties,
+    taxonomyCategory: category,
+    taxonomySubtype: subtype,
+    defaultDisplayUnit: unitProfile.defaultUnit,
+    allowedUnits: unitProfile.allowedUnits,
+    measurementDimension: unitProfile.measurementDimension
+  };
 
   const [created] = await db.insert(userCustomIngredients).values({
     userId,
-    type: parsed.type,
+    type,
     displayName: parsed.displayName,
     normalizedName,
-    properties: parsed.properties,
+    properties,
     visibility: parsed.visibility
   }).returning();
 
@@ -188,17 +385,36 @@ export const addCatalogIngredientToInventory = async (userId: string, payload: u
   const parsed = addCatalogInventoryItemSchema.parse(payload);
   ensureSourceLinkage(parsed.ingredientCatalogItemId, null);
   const catalogItem = await ensureCatalogIngredientExists(parsed.ingredientCatalogItemId);
-  const measurement = buildStoredMeasurement(catalogItem.type, parsed);
+  const linkage = buildCatalogIngredientLinkage(catalogItem);
+  const measurement = normalizeInventoryMeasurementForProfile(
+    buildPersistedInventoryUnitProfile(buildInventorySnapshotValues(linkage), linkage),
+    parsed.enteredQuantity,
+    parsed.enteredUnit
+  );
+  const rates = await listSystemCurrencyRates();
+  const purchase = normalizeInventoryPurchaseContext(
+    buildPersistedInventoryUnitProfile(buildInventorySnapshotValues(linkage), linkage),
+    parsed,
+    rates
+  );
 
   const [created] = await db.insert(userIngredients).values({
     userId,
     ingredientCatalogItemId: parsed.ingredientCatalogItemId,
     userCustomIngredientId: null,
+    ...buildInventorySnapshotValues(linkage),
     enteredQuantity: measurement.enteredQuantity,
     enteredUnit: measurement.enteredUnit,
     normalizedQuantity: measurement.normalizedQuantity,
     normalizedUnit: measurement.normalizedUnit,
     unitDimension: measurement.unitDimension,
+    purchasePriceMinor: purchase.purchasePriceMinor,
+    purchaseCurrency: purchase.purchaseCurrency,
+    purchaseQuantity: purchase.purchaseQuantity,
+    purchaseQuantityUnit: purchase.purchaseQuantityUnit,
+    purchaseQuantityNormalized: purchase.purchaseQuantityNormalized,
+    purchaseQuantityNormalizedUnit: purchase.purchaseQuantityNormalizedUnit,
+    normalizedUnitCostMinorRub: purchase.normalizedUnitCostMinorRub,
     purchasedAt: parsed.purchasedAt ?? null,
     freshnessDate: parsed.freshnessDate ?? null,
     notes: parsed.notes ?? null
@@ -211,17 +427,33 @@ export const addCustomIngredientToInventory = async (userId: string, payload: un
   const parsed = addCustomInventoryItemSchema.parse(payload);
   ensureSourceLinkage(null, parsed.userCustomIngredientId);
   const customIngredient = await ensureOwnedCustomIngredient(userId, parsed.userCustomIngredientId);
-  const measurement = buildStoredMeasurement(customIngredient.type, parsed);
+  const linkage = buildCustomIngredientLinkage(customIngredient);
+  const unitProfile = buildPersistedInventoryUnitProfile(buildInventorySnapshotValues(linkage), linkage);
+  const measurement = normalizeInventoryMeasurementForProfile(
+    unitProfile,
+    parsed.enteredQuantity,
+    parsed.enteredUnit
+  );
+  const rates = await listSystemCurrencyRates();
+  const purchase = normalizeInventoryPurchaseContext(unitProfile, parsed, rates);
 
   const [created] = await db.insert(userIngredients).values({
     userId,
     ingredientCatalogItemId: null,
     userCustomIngredientId: parsed.userCustomIngredientId,
+    ...buildInventorySnapshotValues(linkage),
     enteredQuantity: measurement.enteredQuantity,
     enteredUnit: measurement.enteredUnit,
     normalizedQuantity: measurement.normalizedQuantity,
     normalizedUnit: measurement.normalizedUnit,
     unitDimension: measurement.unitDimension,
+    purchasePriceMinor: purchase.purchasePriceMinor,
+    purchaseCurrency: purchase.purchaseCurrency,
+    purchaseQuantity: purchase.purchaseQuantity,
+    purchaseQuantityUnit: purchase.purchaseQuantityUnit,
+    purchaseQuantityNormalized: purchase.purchaseQuantityNormalized,
+    purchaseQuantityNormalizedUnit: purchase.purchaseQuantityNormalizedUnit,
+    normalizedUnitCostMinorRub: purchase.normalizedUnitCostMinorRub,
     purchasedAt: parsed.purchasedAt ?? null,
     freshnessDate: parsed.freshnessDate ?? null,
     notes: parsed.notes ?? null
@@ -233,8 +465,8 @@ export const addCustomIngredientToInventory = async (userId: string, payload: un
 export const updateInventoryQuantity = async (userId: string, inventoryItemId: string, payload: unknown) => {
   const parsed = updateInventoryQuantitySchema.parse(payload);
   const inventoryItem = await ensureOwnedInventoryItem(userId, inventoryItemId);
-  const ingredientType = await resolveInventoryIngredientType(userId, inventoryItem);
-  const measurement = buildStoredMeasurement(ingredientType, parsed);
+  const unitProfile = await resolveInventoryIngredientProfile(userId, inventoryItem);
+  const measurement = normalizeInventoryMeasurementForProfile(unitProfile, parsed.enteredQuantity, parsed.enteredUnit);
 
   const [updated] = await db.update(userIngredients).set({
     enteredQuantity: measurement.enteredQuantity,
@@ -252,28 +484,39 @@ export const updateInventoryItem = async (userId: string, inventoryItemId: strin
   const parsed = updateInventoryItemSchema.parse(payload);
   await ensureOwnedInventoryItem(userId, inventoryItemId);
 
-  let ingredientType: IngredientType;
+  let linkage: IngredientSourceLinkage;
 
   if (parsed.ingredientCatalogItemId) {
     const catalogItem = await ensureCatalogIngredientExists(parsed.ingredientCatalogItemId);
-    ingredientType = catalogItem.type;
+    linkage = buildCatalogIngredientLinkage(catalogItem);
   } else if (parsed.userCustomIngredientId) {
     const customIngredient = await ensureOwnedCustomIngredient(userId, parsed.userCustomIngredientId);
-    ingredientType = customIngredient.type;
+    linkage = buildCustomIngredientLinkage(customIngredient);
   } else {
     throw new Error("INVALID_SOURCE_LINKAGE");
   }
 
-  const measurement = buildStoredMeasurement(ingredientType, parsed);
+  const unitProfile = buildPersistedInventoryUnitProfile(buildInventorySnapshotValues(linkage), linkage);
+  const measurement = normalizeInventoryMeasurementForProfile(unitProfile, parsed.enteredQuantity, parsed.enteredUnit);
+  const rates = await listSystemCurrencyRates();
+  const purchase = normalizeInventoryPurchaseContext(unitProfile, parsed, rates);
 
   const [updated] = await db.update(userIngredients).set({
     ingredientCatalogItemId: parsed.ingredientCatalogItemId ?? null,
     userCustomIngredientId: parsed.userCustomIngredientId ?? null,
+    ...buildInventorySnapshotValues(linkage),
     enteredQuantity: measurement.enteredQuantity,
     enteredUnit: measurement.enteredUnit,
     normalizedQuantity: measurement.normalizedQuantity,
     normalizedUnit: measurement.normalizedUnit,
     unitDimension: measurement.unitDimension,
+    purchasePriceMinor: purchase.purchasePriceMinor,
+    purchaseCurrency: purchase.purchaseCurrency,
+    purchaseQuantity: purchase.purchaseQuantity,
+    purchaseQuantityUnit: purchase.purchaseQuantityUnit,
+    purchaseQuantityNormalized: purchase.purchaseQuantityNormalized,
+    purchaseQuantityNormalizedUnit: purchase.purchaseQuantityNormalizedUnit,
+    normalizedUnitCostMinorRub: purchase.normalizedUnitCostMinorRub,
     purchasedAt: parsed.purchasedAt ?? null,
     freshnessDate: parsed.freshnessDate ?? null,
     notes: parsed.notes ?? null,
@@ -313,7 +556,7 @@ export const listInventoryForUser = async (userId: string, query: unknown = {}) 
     .leftJoin(userCustomIngredients, eq(userIngredients.userCustomIngredientId, userCustomIngredients.id))
     .where(and(
       buildInventoryWhere(userId, parsed.includeArchived),
-      parsed.type ? sql<boolean>`coalesce(${ingredientCatalogItems.type}, ${userCustomIngredients.type}) = ${parsed.type}` : undefined,
+      buildInventoryTypeWhere(parsed.type),
       buildInventorySearchWhere(parsed.search)
     ))
     .orderBy(asc(userIngredients.createdAt));
@@ -348,9 +591,18 @@ export const searchInventorySuggestions = async (
     .map(({ item, positionsCount }) => ({
       id: item.source.sourceId,
       type: item.source.type,
+      category: item.source.category,
+      subtype: item.source.subtype,
+      familyId: item.source.familyId,
+      familyDisplayName: item.source.familyDisplayName ?? undefined,
       displayName: item.source.displayName,
-      subtitle: `${item.source.sourceKind === "catalog" ? "каталог" : "свой"} · ${positionsCount} поз. в запасах`,
-      defaultUnit: item.enteredUnit,
+      subtitle: [item.source.summary, `${positionsCount} поз. в запасах`].filter(Boolean).join(" • "),
+      brandName: item.source.brandName ?? undefined,
+      defaultUnit: item.source.defaultDisplayUnit ?? item.enteredUnit,
+      defaultDisplayUnit: item.source.defaultDisplayUnit ?? item.enteredUnit,
+      allowedUnits: item.source.allowedUnits,
+      measurementDimension: item.source.measurementDimension ?? item.unitDimension,
+      completenessLevel: item.source.completenessLevel ?? undefined,
       source: item.source.sourceKind === "catalog" ? "catalog" as const : "custom" as const,
       rankScore: scoreIngredientCandidate(query.q, {
         displayName: item.source.displayName,
@@ -368,7 +620,9 @@ export const getInventorySummaries = async (userId: string): Promise<InventorySu
     .select({
       archivedAt: userIngredients.archivedAt,
       catalogType: ingredientCatalogItems.type,
-      customType: userCustomIngredients.type
+      customType: userCustomIngredients.type,
+      ingredientCategory: userIngredients.ingredientCategory,
+      ingredientSubtype: userIngredients.ingredientSubtype
     })
     .from(userIngredients)
     .leftJoin(ingredientCatalogItems, eq(userIngredients.ingredientCatalogItemId, ingredientCatalogItems.id))
@@ -391,7 +645,12 @@ export const getInventorySummaries = async (userId: string): Promise<InventorySu
   };
 
   for (const row of rows) {
-    const type = row.catalogType ?? row.customType;
+    const type = row.catalogType
+      ?? row.customType
+      ?? resolveLegacyIngredientType({
+        category: row.ingredientCategory,
+        subtype: row.ingredientSubtype
+      });
     if (!type) {
       throw new Error("INVALID_SOURCE_LINKAGE");
     }

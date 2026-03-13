@@ -18,7 +18,10 @@ export type RecipeEditorPayload = {
   ingredients: Array<{
     ingredientCatalogItemId?: string | null;
     userCustomIngredientId?: string | null;
-    type: "fermentable" | "hop" | "yeast" | "sugar" | "adjunct" | "fining" | "misc";
+    type?: "fermentable" | "hop" | "yeast" | "sugar" | "adjunct" | "fining" | "misc";
+    category?: "fermentable" | "hop" | "yeast" | "water_prep" | "misc";
+    subtype?: string | null;
+    familyId?: string | null;
     amountEnteredQuantity: number;
     amountEnteredUnit: string;
     stage: "mash" | "boil" | "whirlpool" | "fermentation" | "packaging" | "other";
@@ -65,6 +68,9 @@ const mapRecipeEditorError = (error: unknown): RecipeEditorResult => {
 
     if (error.message === "INGREDIENT_TYPE_MISMATCH") {
       return { ok: false, message: "Тип ингредиента не совпадает с выбранным источником." };
+    }
+    if (error.message === "INGREDIENT_LINKAGE_MISMATCH") {
+      return { ok: false, message: "Выбранный ингредиент больше не совпадает с текущей taxonomy-связкой." };
     }
   }
 

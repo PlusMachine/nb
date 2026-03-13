@@ -4,21 +4,23 @@ import React from "react";
 import { useState } from "react";
 
 import { addCatalogIngredientAction, addCustomIngredientAction, type AddIngredientResult } from "@/app/(app)/app/ingredients/actions";
-import type { IngredientType } from "@/features/ingredients/contracts";
+import type { IngredientCategory } from "@/features/ingredients/contracts";
+import { IngredientCategorySelector } from "@/components/ingredients/ingredient-category-selector";
+import type { SystemCurrency } from "@/features/system/currency";
 
 import { CatalogIngredientForm } from "./catalog-ingredient-form";
 import { CustomIngredientForm } from "./custom-ingredient-form";
-import { IngredientTypeSelector } from "./ingredient-type-selector";
 
 type Props = {
   open: boolean;
   onClose: () => void;
+  preferredCurrency?: SystemCurrency;
 };
 
 type Mode = "catalog" | "custom";
 
-export function AddIngredientModal({ open, onClose }: Props) {
-  const [type, setType] = useState<IngredientType>("hop");
+export function AddIngredientModal({ open, onClose, preferredCurrency = "RUB" }: Props) {
+  const [category, setCategory] = useState<IngredientCategory>("hop");
   const [mode, setMode] = useState<Mode>("catalog");
   const [result, setResult] = useState<AddIngredientResult | null>(null);
   const [pending, setPending] = useState(false);
@@ -46,7 +48,7 @@ export function AddIngredientModal({ open, onClose }: Props) {
         </div>
 
         <div className="space-y-4">
-          <IngredientTypeSelector value={type} onChange={setType} />
+          <IngredientCategorySelector value={category} onChange={setCategory} />
 
           <div className="grid grid-cols-2 gap-2 rounded-md bg-zinc-100 p-1 text-sm">
             <button type="button" onClick={() => setMode("catalog")} className={`rounded px-3 py-2 ${mode === "catalog" ? "bg-white shadow" : ""}`}>Из каталога</button>
@@ -57,7 +59,8 @@ export function AddIngredientModal({ open, onClose }: Props) {
 
           {mode === "catalog" ? (
             <CatalogIngredientForm
-              type={type}
+              category={category}
+              preferredCurrency={preferredCurrency}
               pending={pending}
               fieldErrors={result?.fieldErrors}
               onRequestCustom={() => setMode("custom")}
@@ -72,7 +75,8 @@ export function AddIngredientModal({ open, onClose }: Props) {
             />
           ) : (
             <CustomIngredientForm
-              type={type}
+              category={category}
+              preferredCurrency={preferredCurrency}
               pending={pending}
               fieldErrors={result?.fieldErrors}
               onSubmit={async (payload) => {

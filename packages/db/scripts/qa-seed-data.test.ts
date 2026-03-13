@@ -24,4 +24,28 @@ describe("QA seed catalog coverage", () => {
     const keys = seedCatalogItems.map((item) => `${item.type}:${item.normalizedName}`);
     expect(new Set(keys).size).toBe(keys.length);
   });
+
+  it("contains minimum QA examples for the typed taxonomy-aligned catalog", () => {
+    expect(seedCatalogItems.some((item) => (
+      item.type === "fermentable"
+      && item.fermentableColorEbc != null
+      && item.fermentableExtractYieldPct != null
+    ))).toBe(true);
+
+    expect(seedCatalogItems.some((item) => (
+      item.type === "hop"
+      && item.hopAlphaAcidPct != null
+      && item.hopForm != null
+    ))).toBe(true);
+
+    expect(seedCatalogItems.some((item) => (
+      item.type === "yeast"
+      && item.yeastAttenuationPct != null
+      && item.yeastForm != null
+    ))).toBe(true);
+
+    expect(seedCatalogItems.some((item) => item.displayName === "Calcium Chloride")).toBe(true);
+    expect(seedCatalogItems.some((item) => item.displayName === "Lactic Acid 88%")).toBe(true);
+    expect(seedCatalogItems.some((item) => item.displayName === "Irish Moss")).toBe(true);
+  });
 });

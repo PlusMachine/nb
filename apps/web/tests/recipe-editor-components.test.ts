@@ -6,24 +6,41 @@ import NewRecipePage from "../app/(app)/app/recipes/new/page";
 import EditRecipePage from "../app/(app)/app/recipes/[id]/edit/page";
 import { RecipeEditorErrorState } from "../components/recipes/recipe-editor-error-state";
 import { RecipeIngredientsEditor } from "../components/recipes/recipe-ingredients-editor";
-import { getRecipeIngredientValidationError, RecipeIngredientRow } from "../components/recipes/recipe-ingredient-row";
+import {
+  applyRecipeIngredientCategoryChange,
+  applyRecipeIngredientSelection,
+  applyRecipeIngredientTextChange,
+  getRecipeIngredientValidationError,
+  RecipeIngredientRow
+} from "../components/recipes/recipe-ingredient-row";
 import { RecipeStatsPreview } from "../components/recipes/recipe-stats-preview";
+
+const buildRow = (overrides: Partial<Parameters<typeof getRecipeIngredientValidationError>[0]> = {}) => ({
+  localId: "1",
+  ingredientCatalogItemId: null,
+  userCustomIngredientId: null,
+  selectedName: "",
+  selectedSummary: "",
+  familyDisplayName: "",
+  category: "hop" as const,
+  subtype: null,
+  familyId: null,
+  type: "hop" as const,
+  defaultDisplayUnit: "g",
+  allowedUnits: ["g", "kg", "oz", "lb"],
+  measurementDimension: "weight",
+  amountEnteredQuantity: "50",
+  amountEnteredUnit: "g",
+  stage: "boil" as const,
+  timeOffset: "60",
+  ...overrides
+});
 
 describe("recipe editor components", () => {
   it("ingredient row renders", () => {
     const html = renderToStaticMarkup(
       React.createElement(RecipeIngredientRow, {
-        value: {
-          localId: "1",
-          ingredientCatalogItemId: null,
-          userCustomIngredientId: null,
-          selectedName: "",
-          type: "hop",
-          amountEnteredQuantity: "50",
-          amountEnteredUnit: "g",
-          stage: "boil",
-          timeOffset: "60"
-        },
+        value: buildRow(),
         onChange: () => undefined,
         title: "Новый ингредиент"
       })
@@ -46,29 +63,69 @@ describe("recipe editor components", () => {
   });
 
   it("ingredient validation requires selected ingredient and quantity", () => {
-    expect(getRecipeIngredientValidationError({
-      localId: "1",
-      ingredientCatalogItemId: null,
-      userCustomIngredientId: null,
-      selectedName: "",
-      type: "hop",
+    expect(getRecipeIngredientValidationError(buildRow({
       amountEnteredQuantity: "",
-      amountEnteredUnit: "g",
-      stage: "boil",
       timeOffset: ""
-    })).toContain("Выберите ингредиент");
+    }))).toContain("Выберите ингредиент");
 
-    expect(getRecipeIngredientValidationError({
+    expect(getRecipeIngredientValidationError(buildRow({
       localId: "2",
       ingredientCatalogItemId: "00000000-0000-4000-8000-000000000001",
-      userCustomIngredientId: null,
       selectedName: "Cascade",
-      type: "hop",
       amountEnteredQuantity: "",
-      amountEnteredUnit: "g",
-      stage: "boil",
       timeOffset: ""
-    })).toContain("Укажите количество");
+    }))).toContain("Укажите количество");
+  });
+
+  it("selection wiring stores category, subtype and family linkage", () => {
+    const selected = applyRecipeIngredientSelection(buildRow(), {
+      id: "cat-1",
+      type: "hop",
+      category: "hop",
+      subtype: "pellet",
+      familyId: "fam-1",
+      familyDisplayName: "Cascade",
+      displayName: "Yakima Chief Cascade",
+      subtitle: "6.8% AA • pellet • 2024",
+      defaultUnit: "g",
+      defaultDisplayUnit: "g",
+      allowedUnits: ["g", "kg", "oz", "lb"],
+      measurementDimension: "weight",
+      source: "catalog"
+    });
+
+    expect(selected.ingredientCatalogItemId).toBe("cat-1");
+    expect(selected.familyId).toBe("fam-1");
+    expect(selected.subtype).toBe("pellet");
+    expect(selected.amountEnteredUnit).toBe("g");
+  });
+
+  it("changing text after selection clears stale linkage", () => {
+    const selected = buildRow({
+      ingredientCatalogItemId: "cat-1",
+      selectedName: "Cascade",
+      selectedSummary: "6.8% AA • pellet • 2024",
+      familyDisplayName: "Cascade",
+      familyId: "fam-1",
+      subtype: "pellet"
+    });
+    const cleared = applyRecipeIngredientTextChange(selected, "Cascade local");
+
+    expect(cleared.ingredientCatalogItemId).toBeNull();
+    expect(cleared.familyId).toBeNull();
+    expect(cleared.selectedSummary).toBe("");
+  });
+
+  it("changing category resets incompatible selection state", () => {
+    const next = applyRecipeIngredientCategoryChange(buildRow({
+      ingredientCatalogItemId: "cat-1",
+      selectedName: "Cascade",
+      familyId: "fam-1"
+    }), "yeast");
+
+    expect(next.category).toBe("yeast");
+    expect(next.ingredientCatalogItemId).toBeNull();
+    expect(next.selectedName).toBe("");
   });
 
   it("stats preview renders", () => {

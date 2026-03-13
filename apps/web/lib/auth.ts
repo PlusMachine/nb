@@ -12,6 +12,7 @@ import {
   setPassword,
   signInWithPassword,
   updateProfile,
+  type SupportedCurrency,
   type UserRole
 } from "@nb/auth";
 import { cookies, headers } from "next/headers";
@@ -125,9 +126,15 @@ export const resetPassword = async (email: string, token: string, password: stri
   await passwordLogin(email, password);
 };
 
-export const updateCurrentProfile = async (displayName: string) => {
+export const updateCurrentProfile = async ({
+  displayName,
+  preferredCurrency
+}: {
+  displayName: string;
+  preferredCurrency: SupportedCurrency;
+}) => {
   const user = await requireUser();
-  return updateProfile({ userId: user.id, displayName });
+  return updateProfile({ userId: user.id, displayName, preferredCurrency });
 };
 
 export const oauthFinalize = async (payload: {

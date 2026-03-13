@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import {
+  buildIngredientSearchParams,
   shouldSearchIngredients,
   shouldShowIngredientEmptyState,
   shouldShowIngredientSuggestions
@@ -43,5 +44,13 @@ describe("ingredient picker state helpers", () => {
       itemsCount: 0,
       query: "Maris Otter Pale Malt"
     })).toBe(false);
+  });
+
+  it("passes category filter to search params", () => {
+    const params = buildIngredientSearchParams({ q: "cascade", category: "hop", limit: 8 });
+
+    expect(params.get("q")).toBe("cascade");
+    expect(params.get("category")).toBe("hop");
+    expect(params.get("limit")).toBe("8");
   });
 });

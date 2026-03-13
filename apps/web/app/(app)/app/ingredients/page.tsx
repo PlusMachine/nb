@@ -6,6 +6,7 @@ import { InventorySummary } from "@/components/inventory/inventory-summary";
 import { InventoryToolbar } from "@/components/inventory/inventory-toolbar";
 import { getInventorySummaries, listInventoryForUser } from "@/features/inventory/service";
 import { ingredientTypes, type IngredientType } from "@/features/ingredients/contracts";
+import { listSystemCurrencyRates } from "@/features/system/currency-rates";
 import { requireUser } from "@/lib/auth";
 
 type Props = {
@@ -27,9 +28,10 @@ export default async function MyIngredientsPage({ searchParams }: Props) {
   const parsedType = parseType(typeof resolvedParams.type === "string" ? resolvedParams.type : undefined);
   const includeArchived = resolvedParams.archived === "true";
 
-  const [items, summary] = await Promise.all([
+  const [items, summary, currencyRates] = await Promise.all([
     listInventoryForUser(user.id, { includeArchived, type: parsedType, search: rawSearch }),
-    getInventorySummaries(user.id)
+    getInventorySummaries(user.id),
+    listSystemCurrencyRates()
   ]);
 
   const hasAnyItems = summary.totalItems > 0;
@@ -42,7 +44,7 @@ export default async function MyIngredientsPage({ searchParams }: Props) {
           <h1 className="text-2xl font-semibold">Мои ингредиенты</h1>
           <p className="text-sm text-zinc-600">Следите за запасами и структурой ингредиентов перед следующей варкой.</p>
         </div>
-        <AddIngredientTrigger />
+        <AddIngredientTrigger preferredCurrency={user.preferredCurrency} />
       </section>
 
       <InventorySummary summary={summary} />
@@ -53,7 +55,7 @@ export default async function MyIngredientsPage({ searchParams }: Props) {
       />
       {items.length === 0
         ? <InventoryEmptyState hasAnyItems={hasAnyItems} hasFilters={hasFilters} search={rawSearch} type={parsedType} archived={includeArchived} />
-        : <GroupedInventoryList items={items} />}
+        : <GroupedInventoryList items={items} preferredCurrency={user.preferredCurrency} currencyRates={currencyRates} />}
     </main>
   );
 }

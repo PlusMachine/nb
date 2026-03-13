@@ -87,7 +87,11 @@ describe("inventory page foundation", () => {
 
   it("renders grouped data", () => {
     const grouped = groupInventoryItems(items);
-    const html = renderToStaticMarkup(React.createElement(GroupedInventoryList, { items }));
+    const html = renderToStaticMarkup(React.createElement(GroupedInventoryList, {
+      items,
+      preferredCurrency: "RUB",
+      currencyRates: { RUB: 100, USD: 7900, EUR: 9170 }
+    }));
 
     expect(grouped.map((group) => group.type)).toEqual(["fermentable", "hop"]);
     expect(html).toContain("Ферментируемые");

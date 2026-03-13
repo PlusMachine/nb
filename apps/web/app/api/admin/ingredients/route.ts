@@ -12,6 +12,7 @@ export async function GET(request: Request) {
       pageSize: Number(searchParams.get("pageSize") ?? "20"),
       q: searchParams.get("q") ?? undefined,
       type: searchParams.get("type") ?? undefined,
+      category: searchParams.get("category") ?? undefined,
       status: (searchParams.get("status") as never) ?? undefined
     });
     return NextResponse.json(result);

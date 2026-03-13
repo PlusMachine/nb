@@ -6,12 +6,16 @@ export const verificationTypeEnum = pgEnum("verification_type", ["otp", "magic_l
 export const ingredientTypeEnum = pgEnum("ingredient_type", ["fermentable", "hop", "yeast", "sugar", "adjunct", "fining", "misc"]);
 export const ingredientStatusEnum = pgEnum("ingredient_status", ["draft", "active", "archived", "merged"]);
 export const ingredientVisibilityEnum = pgEnum("ingredient_visibility", ["public", "internal"]);
+export const ingredientCategoryEnum = pgEnum("ingredient_category", ["fermentable", "hop", "yeast", "water_prep", "misc"]);
+export const ingredientMatchPolicyEnum = pgEnum("ingredient_match_policy", ["exact_only", "family_compatible"]);
+export const ingredientCompletenessLevelEnum = pgEnum("ingredient_completeness_level", ["minimum", "recommended", "full"]);
 export const proposedIngredientStatusEnum = pgEnum("proposed_ingredient_status", ["pending", "approved", "rejected", "merged"]);
 export const userCustomIngredientVisibilityEnum = pgEnum("user_custom_ingredient_visibility", ["private", "shared"]);
 export const hopFormEnum = pgEnum("hop_form", ["pellet", "whole_cone", "lupulin", "cryo"]);
 export const yeastTypeEnum = pgEnum("yeast_type", ["ale", "lager", "wine"]);
 export const yeastFormEnum = pgEnum("yeast_form", ["dry", "liquid"]);
 export const inventoryUnitDimensionEnum = pgEnum("inventory_unit_dimension", ["weight", "volume", "count"]);
+export const systemCurrencyEnum = pgEnum("system_currency", ["RUB", "USD", "EUR"]);
 export const recipePublicationStateEnum = pgEnum("recipe_publication_state", ["draft", "private", "published"]);
 export const recipeIngredientStageEnum = pgEnum("recipe_ingredient_stage", ["mash", "boil", "whirlpool", "fermentation", "packaging", "other"]);
 
@@ -20,6 +24,7 @@ export const users = pgTable("users", {
   email: varchar("email", { length: 320 }).notNull(),
   emailVerified: boolean("email_verified").default(false).notNull(),
   displayName: varchar("display_name", { length: 120 }).notNull(),
+  preferredCurrency: systemCurrencyEnum("preferred_currency").default("RUB").notNull(),
   image: text("image"),
   role: userRoleEnum("role").default("user").notNull(),
   passwordHash: text("password_hash"),
@@ -83,23 +88,60 @@ export const authRateLimits = pgTable("auth_rate_limits", {
   keyActionIdx: uniqueIndex("auth_rate_limits_key_action_uidx").on(table.key, table.action)
 }));
 
+export const systemCurrencyRates = pgTable("system_currency_rates", {
+  currency: systemCurrencyEnum("currency").primaryKey(),
+  rubMinorPerUnit: integer("rub_minor_per_unit").notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull()
+});
+
 export const systemEvents = pgTable("system_events", {
   id: uuid("id").defaultRandom().primaryKey(),
   kind: varchar("kind", { length: 80 }).notNull(),
   createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull()
 });
 
+export const ingredientFamilies = pgTable("ingredient_families", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  category: ingredientCategoryEnum("category").notNull(),
+  subtype: varchar("subtype", { length: 80 }),
+  canonicalName: varchar("canonical_name", { length: 180 }).notNull(),
+  normalizedCanonicalName: varchar("normalized_canonical_name", { length: 220 }).notNull(),
+  displayNameRu: varchar("display_name_ru", { length: 180 }),
+  displayNameEn: varchar("display_name_en", { length: 180 }),
+  matchPolicy: ingredientMatchPolicyEnum("match_policy").notNull(),
+  isActive: boolean("is_active").default(true).notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull()
+}, (table) => ({
+  categoryIdx: index("ingredient_families_category_idx").on(table.category),
+  subtypeIdx: index("ingredient_families_subtype_idx").on(table.subtype),
+  uniqueCanonicalNamePerCategoryIdx: uniqueIndex("ingredient_families_category_name_uidx").on(
+    table.category,
+    table.normalizedCanonicalName
+  )
+}));
+
 export const ingredientCatalogItems = pgTable("ingredient_catalog_items", {
   id: uuid("id").defaultRandom().primaryKey(),
   type: ingredientTypeEnum("type").notNull(),
+  category: ingredientCategoryEnum("category").notNull(),
   subtype: varchar("subtype", { length: 80 }),
+  familyId: uuid("family_id").notNull().references(() => ingredientFamilies.id, { onDelete: "restrict" }),
   displayName: varchar("display_name", { length: 180 }).notNull(),
   normalizedName: varchar("normalized_name", { length: 220 }).notNull(),
   aliases: jsonb("aliases").$type<string[]>().default([]).notNull(),
+  brandName: varchar("brand_name", { length: 140 }),
   manufacturer: varchar("manufacturer", { length: 140 }),
   country: varchar("country", { length: 80 }),
+  harvestYear: integer("harvest_year"),
   description: text("description"),
   defaultUnit: varchar("default_unit", { length: 32 }).notNull(),
+  defaultDisplayUnit: varchar("default_display_unit", { length: 32 }).notNull(),
+  allowedUnits: jsonb("allowed_units").$type<string[]>().default([]).notNull(),
+  measurementDimension: inventoryUnitDimensionEnum("measurement_dimension").notNull(),
+  completenessLevel: ingredientCompletenessLevelEnum("completeness_level").default("minimum").notNull(),
+  technicalData: jsonb("technical_data").$type<Record<string, unknown>>().default({}).notNull(),
   fermentableColorEbc: doublePrecision("fermentable_color_ebc"),
   fermentableExtractYieldPct: doublePrecision("fermentable_extract_yield_pct"),
   hopAlphaAcidPct: doublePrecision("hop_alpha_acid_pct"),
@@ -120,6 +162,9 @@ export const ingredientCatalogItems = pgTable("ingredient_catalog_items", {
   updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull()
 }, (table) => ({
   normalizedNameIdx: index("ingredient_catalog_items_normalized_name_idx").on(table.normalizedName),
+  familyIdIdx: index("ingredient_catalog_items_family_id_idx").on(table.familyId),
+  categoryIdx: index("ingredient_catalog_items_category_idx").on(table.category),
+  subtypeIdx: index("ingredient_catalog_items_subtype_idx").on(table.subtype),
   typeStatusIdx: index("ingredient_catalog_items_type_status_idx").on(table.type, table.status),
   statusIdx: index("ingredient_catalog_items_status_idx").on(table.status),
   mergedIntoIdx: index("ingredient_catalog_items_merged_into_idx").on(table.mergedIntoId),
@@ -176,11 +221,24 @@ export const userIngredients = pgTable("user_ingredients", {
   userId: uuid("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
   ingredientCatalogItemId: uuid("ingredient_catalog_item_id").references(() => ingredientCatalogItems.id, { onDelete: "set null" }),
   userCustomIngredientId: uuid("user_custom_ingredient_id").references(() => userCustomIngredients.id, { onDelete: "set null" }),
+  ingredientFamilyId: uuid("ingredient_family_id").references(() => ingredientFamilies.id, { onDelete: "set null" }),
+  ingredientCategory: ingredientCategoryEnum("ingredient_category").notNull(),
+  ingredientSubtype: varchar("ingredient_subtype", { length: 80 }),
+  ingredientDisplayNameSnapshot: varchar("ingredient_display_name_snapshot", { length: 180 }),
+  ingredientDefaultDisplayUnitSnapshot: varchar("ingredient_default_display_unit_snapshot", { length: 32 }),
+  ingredientMeasurementDimension: inventoryUnitDimensionEnum("ingredient_measurement_dimension"),
   enteredQuantity: doublePrecision("entered_quantity").notNull(),
   enteredUnit: varchar("entered_unit", { length: 32 }).notNull(),
   normalizedQuantity: doublePrecision("normalized_quantity").notNull(),
   normalizedUnit: varchar("normalized_unit", { length: 32 }).notNull(),
   unitDimension: inventoryUnitDimensionEnum("unit_dimension").notNull(),
+  purchasePriceMinor: integer("purchase_price_minor"),
+  purchaseCurrency: systemCurrencyEnum("purchase_currency"),
+  purchaseQuantity: doublePrecision("purchase_quantity"),
+  purchaseQuantityUnit: varchar("purchase_quantity_unit", { length: 32 }),
+  purchaseQuantityNormalized: doublePrecision("purchase_quantity_normalized"),
+  purchaseQuantityNormalizedUnit: varchar("purchase_quantity_normalized_unit", { length: 32 }),
+  normalizedUnitCostMinorRub: integer("normalized_unit_cost_minor_rub"),
   purchasedAt: timestamp("purchased_at", { withTimezone: true }),
   freshnessDate: timestamp("freshness_date", { withTimezone: true }),
   notes: text("notes"),
@@ -191,7 +249,9 @@ export const userIngredients = pgTable("user_ingredients", {
   userIdIdx: index("user_ingredients_user_id_idx").on(table.userId),
   userArchivedIdx: index("user_ingredients_user_archived_at_idx").on(table.userId, table.archivedAt),
   catalogItemIdx: index("user_ingredients_catalog_item_idx").on(table.ingredientCatalogItemId),
-  customItemIdx: index("user_ingredients_custom_item_idx").on(table.userCustomIngredientId)
+  customItemIdx: index("user_ingredients_custom_item_idx").on(table.userCustomIngredientId),
+  familyIdx: index("user_ingredients_family_idx").on(table.ingredientFamilyId),
+  categoryIdx: index("user_ingredients_category_idx").on(table.ingredientCategory)
 }));
 
 export const recipes = pgTable("recipes", {
@@ -227,6 +287,12 @@ export const recipeIngredients = pgTable("recipe_ingredients", {
   recipeId: uuid("recipe_id").notNull().references(() => recipes.id, { onDelete: "cascade" }),
   ingredientCatalogItemId: uuid("ingredient_catalog_item_id").references(() => ingredientCatalogItems.id, { onDelete: "set null" }),
   userCustomIngredientId: uuid("user_custom_ingredient_id").references(() => userCustomIngredients.id, { onDelete: "set null" }),
+  ingredientFamilyId: uuid("ingredient_family_id").references(() => ingredientFamilies.id, { onDelete: "set null" }),
+  ingredientCategory: ingredientCategoryEnum("ingredient_category").notNull(),
+  ingredientSubtype: varchar("ingredient_subtype", { length: 80 }),
+  ingredientDisplayNameSnapshot: varchar("ingredient_display_name_snapshot", { length: 180 }),
+  ingredientDefaultDisplayUnitSnapshot: varchar("ingredient_default_display_unit_snapshot", { length: 32 }),
+  ingredientMeasurementDimension: inventoryUnitDimensionEnum("ingredient_measurement_dimension"),
   type: ingredientTypeEnum("type").notNull(),
   amountEnteredQuantity: doublePrecision("amount_entered_quantity").notNull(),
   amountEnteredUnit: varchar("amount_entered_unit", { length: 32 }).notNull(),
@@ -241,6 +307,8 @@ export const recipeIngredients = pgTable("recipe_ingredients", {
   recipeIdIdx: index("recipe_ingredients_recipe_id_idx").on(table.recipeId),
   catalogItemIdx: index("recipe_ingredients_catalog_item_idx").on(table.ingredientCatalogItemId),
   customItemIdx: index("recipe_ingredients_custom_item_idx").on(table.userCustomIngredientId),
+  familyIdx: index("recipe_ingredients_family_idx").on(table.ingredientFamilyId),
+  categoryIdx: index("recipe_ingredients_category_idx").on(table.ingredientCategory),
   sourceCheck: check(
     "recipe_ingredients_source_linkage_chk",
     sql`((ingredient_catalog_item_id is not null and user_custom_ingredient_id is null) or (ingredient_catalog_item_id is null and user_custom_ingredient_id is not null))`
@@ -251,6 +319,17 @@ export const usersRelations = relations(users, ({ many }) => ({
   sessions: many(sessions),
   accounts: many(accounts),
   recipes: many(recipes)
+}));
+
+export const ingredientFamiliesRelations = relations(ingredientFamilies, ({ many }) => ({
+  catalogItems: many(ingredientCatalogItems)
+}));
+
+export const ingredientCatalogItemsRelations = relations(ingredientCatalogItems, ({ one }) => ({
+  family: one(ingredientFamilies, {
+    fields: [ingredientCatalogItems.familyId],
+    references: [ingredientFamilies.id]
+  })
 }));
 
 export const recipesRelations = relations(recipes, ({ one, many }) => ({

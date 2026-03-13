@@ -3,16 +3,28 @@
 import React from "react";
 import { useEffect, useId, useMemo, useState } from "react";
 
-import type { IngredientSuggestionItem, IngredientType } from "@/features/ingredients/contracts";
+import type {
+  IngredientCategory,
+  IngredientSuggestionItem,
+  IngredientType
+} from "@/features/ingredients/contracts";
+import { ingredientCategoryLabels } from "@/features/ingredients/presentation";
 
 type Props = {
   value?: string;
   type?: IngredientType;
+  category?: IngredientCategory;
   onSelect: (item: IngredientSuggestionItem) => void;
   onValueChange?: (value: string) => void;
   placeholder?: string;
   emptyCta?: React.ReactNode;
-  searchIngredients?: (params: { q: string; type?: IngredientType; limit: number; signal: AbortSignal }) => Promise<IngredientSuggestionItem[]>;
+  searchIngredients?: (params: {
+    q: string;
+    type?: IngredientType;
+    category?: IngredientCategory;
+    limit: number;
+    signal: AbortSignal;
+  }) => Promise<IngredientSuggestionItem[]>;
 };
 
 const isAbortError = (error: unknown) => error instanceof DOMException && error.name === "AbortError";
@@ -45,17 +57,42 @@ export const shouldShowIngredientEmptyState = ({
   && itemsCount === 0
 );
 
-export const buildIngredientSearchParams = ({ q, type, limit }: { q: string; type?: IngredientType; limit: number }) => {
+export const buildIngredientSearchParams = ({
+  q,
+  type,
+  category,
+  limit
+}: {
+  q: string;
+  type?: IngredientType;
+  category?: IngredientCategory;
+  limit: number;
+}) => {
   const params = new URLSearchParams({ q: q.trim(), limit: String(limit) });
   if (type) {
     params.set("type", type);
+  }
+  if (category) {
+    params.set("category", category);
   }
 
   return params;
 };
 
-const defaultSearchIngredients = async ({ q, type, limit, signal }: { q: string; type?: IngredientType; limit: number; signal: AbortSignal }) => {
-  const params = buildIngredientSearchParams({ q, type, limit });
+const defaultSearchIngredients = async ({
+  q,
+  type,
+  category,
+  limit,
+  signal
+}: {
+  q: string;
+  type?: IngredientType;
+  category?: IngredientCategory;
+  limit: number;
+  signal: AbortSignal;
+}) => {
+  const params = buildIngredientSearchParams({ q, type, category, limit });
   const response = await fetch(`/api/ingredients/search?${params.toString()}`, { signal });
   if (!response.ok) {
     return [];
@@ -67,6 +104,7 @@ const defaultSearchIngredients = async ({ q, type, limit, signal }: { q: string;
 export const IngredientPicker = ({
   value,
   type,
+  category,
   onSelect,
   onValueChange,
   placeholder = "Search ingredient",
@@ -100,7 +138,7 @@ export const IngredientPicker = ({
       try {
         setIsLoading(true);
         setHasResolvedQuery(false);
-        const nextItems = await searchIngredients({ q: query, type, limit: 8, signal: controller.signal });
+        const nextItems = await searchIngredients({ q: query, type, category, limit: 8, signal: controller.signal });
         if (controller.signal.aborted) {
           return;
         }
@@ -124,15 +162,18 @@ export const IngredientPicker = ({
       clearTimeout(timer);
       controller.abort();
     };
-  }, [isOpen, query, searchIngredients, type]);
+  }, [category, isOpen, query, searchIngredients, type]);
 
   const grouped = useMemo(() => {
     return items.reduce<Record<string, IngredientSuggestionItem[]>>((acc, item) => {
-      acc[item.type] ??= [];
-      acc[item.type].push(item);
+      const groupKey = item.category ?? item.type;
+      acc[groupKey] ??= [];
+      acc[groupKey].push(item);
       return acc;
     }, {});
   }, [items]);
+
+  const showGroupHeaders = !category && Object.keys(grouped).length > 1;
 
   const commitSelection = (item: IngredientSuggestionItem) => {
     setIsOpen(false);
@@ -200,9 +241,17 @@ export const IngredientPicker = ({
         <div id={listboxId} role="listbox" className="rounded-md border bg-white">
           {Object.entries(grouped).map(([group, groupItems]) => (
             <div key={group} className="border-b last:border-b-0">
-              <div className="bg-zinc-50 px-3 py-1 text-xs uppercase text-zinc-500">{group}</div>
+              {showGroupHeaders ? (
+                <div className="bg-zinc-50 px-3 py-1 text-xs uppercase text-zinc-500">
+                  {ingredientCategoryLabels[group as IngredientCategory] ?? group}
+                </div>
+              ) : null}
               {groupItems.map((item) => {
                 const idx = items.findIndex((candidate) => candidate.id === item.id);
+                const metaLine = [item.familyDisplayName, item.subtitle]
+                  .filter((part) => Boolean(part) && part !== item.displayName)
+                  .join(" • ");
+
                 return (
                   <button
                     key={item.id}
@@ -213,8 +262,17 @@ export const IngredientPicker = ({
                     onClick={() => commitSelection(item)}
                     type="button"
                   >
-                    <div className="font-medium">{item.displayName}</div>
-                    {item.subtitle && <div className="text-xs text-zinc-500">{item.subtitle}</div>}
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="min-w-0">
+                        <div className="font-medium">{item.displayName}</div>
+                        {metaLine ? <div className="text-xs text-zinc-500">{metaLine}</div> : null}
+                      </div>
+                      {item.brandName ?? item.manufacturer ? (
+                        <span className="shrink-0 rounded-full bg-zinc-100 px-2 py-0.5 text-[11px] text-zinc-600">
+                          {item.brandName ?? item.manufacturer}
+                        </span>
+                      ) : null}
+                    </div>
                   </button>
                 );
               })}

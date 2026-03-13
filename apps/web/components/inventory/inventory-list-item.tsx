@@ -1,6 +1,7 @@
 import React from "react";
 import type { InventoryListItemDto } from "@/features/inventory/contracts";
-import { hopFormLabels, yeastFormLabels, yeastTypeLabels } from "@/features/ingredients/technical-fields";
+import { buildInventoryCostDisplay } from "@/features/inventory/display";
+import type { SystemCurrency, SystemCurrencyRateMap } from "@/features/system/currency";
 
 import { DeleteInventoryItemButton } from "./delete-inventory-item-button";
 import { InventoryItemDetailsEditor } from "./inventory-item-details-editor";
@@ -8,11 +9,9 @@ import { InventoryQuantityEditor } from "./inventory-quantity-editor";
 
 type Props = {
   item: InventoryListItemDto;
+  preferredCurrency: SystemCurrency;
+  currencyRates: SystemCurrencyRateMap;
 };
-
-const formatNumber = (value: number) => value.toLocaleString("ru-RU", {
-  maximumFractionDigits: value % 1 === 0 ? 0 : 1
-});
 
 const buildTechnicalSummary = (item: InventoryListItemDto) => {
   const summary: string[] = [];
@@ -25,49 +24,32 @@ const buildTechnicalSummary = (item: InventoryListItemDto) => {
     summary.push(`Страна: ${item.source.country}`);
   }
 
-  if (item.source.type === "fermentable") {
-    if (item.source.fermentableColorEbc != null) {
-      summary.push(`Цветность: ${formatNumber(item.source.fermentableColorEbc)} EBC`);
-    }
-    if (item.source.fermentableExtractYieldPct != null) {
-      summary.push(`Экстрактивность: ${formatNumber(item.source.fermentableExtractYieldPct)}%`);
-    }
-  }
-
-  if (item.source.type === "hop") {
-    if (item.source.hopAlphaAcidPct != null) {
-      summary.push(`Альфа-кислота: ${formatNumber(item.source.hopAlphaAcidPct)}%`);
-    }
-    if (item.source.hopForm) {
-      summary.push(`Форма: ${hopFormLabels[item.source.hopForm]}`);
-    }
-    if (item.source.hopSeason) {
-      summary.push(`Сезон: ${item.source.hopSeason}`);
-    }
-  }
-
-  if (item.source.type === "yeast") {
-    if (item.source.yeastAttenuationPct != null) {
-      summary.push(`Сбраживание: ${formatNumber(item.source.yeastAttenuationPct)}%`);
-    }
-    if (item.source.yeastType) {
-      summary.push(`Тип: ${yeastTypeLabels[item.source.yeastType]}`);
-    }
-    if (item.source.yeastForm) {
-      summary.push(`Форма: ${yeastFormLabels[item.source.yeastForm]}`);
-    }
-    if (item.source.yeastMinFermentationTempC != null || item.source.yeastMaxFermentationTempC != null) {
-      const min = item.source.yeastMinFermentationTempC != null ? formatNumber(item.source.yeastMinFermentationTempC) : "?";
-      const max = item.source.yeastMaxFermentationTempC != null ? formatNumber(item.source.yeastMaxFermentationTempC) : "?";
-      summary.push(`Температура брожения: ${min}-${max} °C`);
-    }
+  if (item.source.summary) {
+    summary.push(item.source.summary);
   }
 
   return summary;
 };
 
-export function InventoryListItem({ item }: Props) {
+export function InventoryListItem({ item, preferredCurrency, currencyRates }: Props) {
   const technicalSummary = buildTechnicalSummary(item);
+  const costSummary = buildInventoryCostDisplay({
+    enteredQuantity: item.enteredQuantity,
+    enteredUnit: item.enteredUnit,
+    normalizedQuantity: item.normalizedQuantity,
+    normalizedUnit: item.normalizedUnit,
+    type: item.source.type,
+    category: item.source.category,
+    subtype: item.source.subtype,
+    defaultDisplayUnit: item.source.defaultDisplayUnit,
+    allowedUnits: item.source.allowedUnits,
+    measurementDimension: item.source.measurementDimension,
+    technicalData: item.source.technicalData,
+    purchasePriceMinor: item.purchasePriceMinor,
+    purchaseCurrency: item.purchaseCurrency,
+    purchaseQuantityNormalizedUnit: item.purchaseQuantityNormalizedUnit,
+    normalizedUnitCostMinorRub: item.normalizedUnitCostMinorRub
+  }, preferredCurrency, currencyRates);
 
   return (
     <li className="space-y-3 rounded-md border p-3">
@@ -90,10 +72,12 @@ export function InventoryListItem({ item }: Props) {
         </div>
         <div className="space-y-2">
           <InventoryQuantityEditor item={item} />
-          <InventoryItemDetailsEditor item={item} />
+          <InventoryItemDetailsEditor item={item} preferredCurrency={preferredCurrency} />
           <DeleteInventoryItemButton inventoryItemId={item.id} displayName={item.source.displayName} />
         </div>
       </div>
+      {costSummary.totalPrice ? <p className="text-sm text-zinc-700">Цена покупки: {costSummary.totalPrice}</p> : null}
+      {costSummary.unitPrice ? <p className="text-sm text-zinc-700">Цена за единицу: {costSummary.unitPrice}</p> : null}
       {item.notes ? <p className="mt-2 text-sm text-zinc-600">{item.notes}</p> : null}
     </li>
   );
