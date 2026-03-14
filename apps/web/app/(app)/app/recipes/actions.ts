@@ -3,18 +3,23 @@
 import { revalidatePath } from "next/cache";
 import { ZodError } from "zod";
 
+import type { IngredientCategory, IngredientSuggestionItem } from "@/features/ingredients/contracts";
 import type { RecipeDetailDto } from "@/features/recipes/contracts";
-import { createRecipe, deleteRecipe, updateRecipe } from "@/features/recipes/service";
+import type { RecipeDraftPreviewDto } from "@/features/recipes/contracts";
+import { cloneRecipe, createRecipe, deleteRecipe, previewRecipeDraft, updateRecipe } from "@/features/recipes/service";
 import { requireUser } from "@/lib/auth";
 
 export type RecipeEditorPayload = {
   title: string;
+  styleId?: string | null;
   description?: string | null;
   authorNotes?: string | null;
   publicationState: "draft" | "private" | "published";
   batchSizeEnteredQuantity: number;
   batchSizeEnteredUnit: string;
   efficiency?: number | null;
+  boilTimeMinutes: number;
+  processMeta?: Record<string, unknown> | null;
   ingredients: Array<{
     ingredientCatalogItemId?: string | null;
     userCustomIngredientId?: string | null;
@@ -26,6 +31,7 @@ export type RecipeEditorPayload = {
     amountEnteredUnit: string;
     stage: "mash" | "boil" | "whirlpool" | "fermentation" | "packaging" | "other";
     timeOffset?: number | null;
+    stepMeta?: Record<string, unknown> | null;
   }>;
 };
 
@@ -54,6 +60,14 @@ const mapRecipeEditorError = (error: unknown): RecipeEditorResult => {
   }
 
   if (error instanceof Error) {
+    if (error.name === "RecipeValidationError" && "fieldErrors" in error) {
+      return {
+        ok: false,
+        message: error.message,
+        fieldErrors: (error as Error & { fieldErrors?: Record<string, string> }).fieldErrors
+      };
+    }
+
     if (error.message === "NOT_FOUND") {
       return { ok: false, message: "Рецепт не найден или недоступен для редактирования." };
     }
@@ -75,6 +89,13 @@ const mapRecipeEditorError = (error: unknown): RecipeEditorResult => {
   }
 
   return { ok: false, message: "Не удалось сохранить рецепт. Попробуйте еще раз." };
+};
+
+export type RecipePreviewResult = {
+  ok: boolean;
+  message?: string;
+  preview?: RecipeDraftPreviewDto;
+  fieldErrors?: Record<string, string>;
 };
 
 export const createRecipeAction = async (payload: RecipeEditorPayload): Promise<RecipeEditorResult> => {
@@ -138,5 +159,130 @@ export const deleteRecipeAction = async (recipeId: string): Promise<{ ok: boolea
     }
 
     return { ok: false, message: "Не удалось удалить рецепт. Попробуйте еще раз." };
+  }
+};
+
+export const cloneRecipeAction = async (recipeId: string): Promise<RecipeEditorResult> => {
+  try {
+    const user = await requireUser();
+    const recipe = await cloneRecipe(user.id, recipeId);
+
+    revalidatePath("/app/recipes");
+    revalidatePath(`/app/recipes/${recipe.id}`);
+    revalidatePath(`/app/recipes/${recipe.id}/edit`);
+
+    return {
+      ok: true,
+      message: "Рецепт клонирован.",
+      recipe
+    };
+  } catch (error) {
+    return mapRecipeEditorError(error);
+  }
+};
+
+export const previewRecipeDraftAction = async (payload: Partial<RecipeEditorPayload>): Promise<RecipePreviewResult> => {
+  try {
+    const user = await requireUser();
+    const preview = await previewRecipeDraft(user.id, payload);
+    return { ok: true, preview };
+  } catch (error) {
+    const mapped = mapRecipeEditorError(error);
+    return {
+      ok: false,
+      message: mapped.message,
+      fieldErrors: mapped.fieldErrors
+    };
+  }
+};
+
+export type RecipeCustomIngredientResult = {
+  ok: boolean;
+  message: string;
+  item?: IngredientSuggestionItem;
+  fieldErrors?: Record<string, string>;
+};
+
+export const createRecipeCustomIngredientAction = async (payload: {
+  category: IngredientCategory;
+  subtype?: string | null;
+  displayName: string;
+  defaultDisplayUnit: string;
+}): Promise<RecipeCustomIngredientResult> => {
+  try {
+    const user = await requireUser();
+    const [{ buildCustomIngredientLinkage }, { resolveLegacyIngredientType }, { createUserCustomIngredient }] = await Promise.all([
+      import("@/features/ingredients/source-linkage"),
+      import("@/features/ingredients/taxonomy"),
+      import("@/features/inventory/service")
+    ]);
+    const customIngredient = await createUserCustomIngredient(user.id, {
+      category: payload.category,
+      type: resolveLegacyIngredientType({
+        category: payload.category,
+        subtype: payload.subtype ?? undefined
+      }) ?? undefined,
+      subtype: payload.subtype ?? null,
+      displayName: payload.displayName,
+      defaultDisplayUnit: payload.defaultDisplayUnit,
+      visibility: "private"
+    });
+    const linkage = buildCustomIngredientLinkage(customIngredient);
+
+    return {
+      ok: true,
+      message: "Собственный ингредиент создан.",
+      item: {
+        id: customIngredient.id,
+        type: customIngredient.type,
+        category: linkage.category,
+        subtype: linkage.subtype,
+        displayName: customIngredient.displayName,
+        subtitle: linkage.summary ?? "Собственный ингредиент",
+        defaultUnit: linkage.defaultDisplayUnit,
+        defaultDisplayUnit: linkage.defaultDisplayUnit,
+        allowedUnits: linkage.allowedUnits,
+        measurementDimension: linkage.measurementDimension,
+        technicalData: linkage.technicalData,
+        source: "custom"
+      }
+    };
+  } catch (error) {
+    const mapped = mapRecipeEditorError(error);
+    return {
+      ok: false,
+      message: mapped.message,
+      fieldErrors: mapped.fieldErrors
+    };
+  }
+};
+
+export const proposeRecipeIngredientAction = async (payload: {
+  displayName: string;
+  category: IngredientCategory;
+  subtype?: string | null;
+}): Promise<{ ok: boolean; message: string }> => {
+  try {
+    const user = await requireUser();
+    const { createProposedIngredient } = await import("@/features/ingredients/service");
+    await createProposedIngredient({
+      submittedByUserId: user.id,
+      sourceType: "recipe_designer",
+      sourceDisplayName: payload.displayName,
+      sourcePayload: {
+        category: payload.category,
+        subtype: payload.subtype ?? null
+      }
+    });
+
+    return {
+      ok: true,
+      message: "Ингредиент отправлен в каталог на рассмотрение."
+    };
+  } catch {
+    return {
+      ok: false,
+      message: "Не удалось отправить ингредиент в каталог. Попробуйте ещё раз."
+    };
   }
 };

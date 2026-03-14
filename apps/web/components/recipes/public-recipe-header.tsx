@@ -1,6 +1,7 @@
 import React from "react";
 
 import { recipePublicationStateLabels, type RecipeDetailDto } from "@/features/recipes/contracts";
+import { formatUpdatedLabel } from "@/features/recipes/format";
 
 export function PublicRecipeHeader({ recipe }: { recipe: RecipeDetailDto }) {
   return (
@@ -13,7 +14,7 @@ export function PublicRecipeHeader({ recipe }: { recipe: RecipeDetailDto }) {
 
       <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-zinc-600">
         <p>Объём партии: {recipe.batchSizeEnteredQuantity} {recipe.batchSizeEnteredUnit}</p>
-        <p>Обновлён: {recipe.updatedAt.toLocaleDateString("ru-RU")}</p>
+        <p>{formatUpdatedLabel(recipe.updatedAt)}</p>
       </div>
     </section>
   );

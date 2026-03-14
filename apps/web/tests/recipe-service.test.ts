@@ -157,9 +157,74 @@ import {
   getPublicRecipeBySlug,
   getRecipeById,
   listPublicRecipes,
+  previewRecipeDraft,
   recomputeRecipeStats,
   updateRecipe
 } from "../features/recipes/service";
+
+const buildReadyPrivatePayload = (overrides: Record<string, unknown> = {}) => ({
+  title: "Ready private recipe",
+  publicationState: "private",
+  batchSizeEnteredQuantity: 20,
+  batchSizeEnteredUnit: "l",
+  boilTimeMinutes: 60,
+  ingredients: [
+    {
+      ingredientCatalogItemId: uuid(101),
+      type: "fermentable",
+      category: "fermentable",
+      amountEnteredQuantity: 4,
+      amountEnteredUnit: "kg",
+      stage: "mash"
+    },
+    {
+      ingredientCatalogItemId: uuid(103),
+      type: "yeast",
+      category: "yeast",
+      amountEnteredQuantity: 1,
+      amountEnteredUnit: "pack",
+      stage: "fermentation"
+    }
+  ],
+  ...overrides
+});
+
+const buildReadyPublicPayload = (overrides: Record<string, unknown> = {}) => ({
+  ...buildReadyPrivatePayload({
+    title: "Ready public recipe",
+    publicationState: "published",
+    styleId: "21A",
+    description: "Публичное описание рецепта.",
+    ingredients: [
+      {
+        ingredientCatalogItemId: uuid(101),
+        type: "fermentable",
+        category: "fermentable",
+        amountEnteredQuantity: 4,
+        amountEnteredUnit: "kg",
+        stage: "mash"
+      },
+      {
+        ingredientCatalogItemId: uuid(102),
+        type: "hop",
+        category: "hop",
+        amountEnteredQuantity: 40,
+        amountEnteredUnit: "g",
+        stage: "boil",
+        timeOffset: 60
+      },
+      {
+        ingredientCatalogItemId: uuid(103),
+        type: "yeast",
+        category: "yeast",
+        amountEnteredQuantity: 1,
+        amountEnteredUnit: "pack",
+        stage: "fermentation"
+      }
+    ]
+  }),
+  ...overrides
+});
 
 describe("recipe service", () => {
   beforeEach(() => {
@@ -194,6 +259,23 @@ describe("recipe service", () => {
       allowedUnits: ["g", "oz"],
       measurementDimension: "weight",
       properties: { alphaAcidPercent: 6 }
+    });
+    mockState.catalogById.set(uuid(103), {
+      id: uuid(103),
+      status: "active",
+      type: "yeast",
+      category: "yeast",
+      subtype: "ale",
+      familyId: uuid(303),
+      displayName: "US-05",
+      defaultDisplayUnit: "pack",
+      allowedUnits: ["pack", "g"],
+      measurementDimension: "count",
+      yeastForm: "dry",
+      yeastAttenuationPct: 78,
+      yeastPackageSize: 11,
+      yeastPackageUnit: "g",
+      properties: {}
     });
     mockState.customById.set(uuid(201), {
       id: uuid(201),
@@ -241,6 +323,22 @@ describe("recipe service", () => {
     const updated = await recomputeRecipeStats("u1", recipe.id);
     expect(updated.og).not.toBeNull();
     expect(updated.ibu).not.toBeNull();
+  });
+
+  it("preview draft recalculates stats even without title", async () => {
+    const preview = await previewRecipeDraft("u1", {
+      title: "",
+      batchSizeEnteredQuantity: 20,
+      batchSizeEnteredUnit: "l",
+      boilTimeMinutes: 60,
+      ingredients: [
+        { ingredientCatalogItemId: uuid(101), type: "fermentable", amountEnteredQuantity: 4, amountEnteredUnit: "kg", stage: "mash" },
+        { ingredientCatalogItemId: uuid(102), type: "hop", amountEnteredQuantity: 40, amountEnteredUnit: "g", stage: "boil", timeOffset: 60 }
+      ]
+    });
+
+    expect(preview.og).not.toBeNull();
+    expect(preview.ibu).not.toBeNull();
   });
 
   it("persists taxonomy snapshot columns on recipe ingredients", async () => {
@@ -338,24 +436,18 @@ describe("recipe service", () => {
   });
 
   it("public accessor by slug allows only published public recipes", async () => {
-    const recipe = await createRecipe("u1", {
-      title: "Public recipe",
-      publicationState: "published",
-      batchSizeEnteredQuantity: 20,
-      batchSizeEnteredUnit: "l"
-    });
+    const recipe = await createRecipe("u1", buildReadyPublicPayload({
+      title: "Public recipe"
+    }));
 
     const publicRead = await getPublicRecipeBySlug(recipe.slug);
     expect(publicRead.id).toBe(recipe.id);
   });
 
   it("public accessor by slug blocks private or draft recipes", async () => {
-    const privateRecipe = await createRecipe("u1", {
-      title: "Not public",
-      publicationState: "private",
-      batchSizeEnteredQuantity: 20,
-      batchSizeEnteredUnit: "l"
-    });
+    const privateRecipe = await createRecipe("u1", buildReadyPrivatePayload({
+      title: "Not public"
+    }));
 
     const draftRecipe = await createRecipe("u1", {
       title: "Draft",
@@ -369,8 +461,8 @@ describe("recipe service", () => {
   });
 
   it("listPublicRecipes returns only published public recipes", async () => {
-    await createRecipe("u1", { title: "Public 1", publicationState: "published", batchSizeEnteredQuantity: 20, batchSizeEnteredUnit: "l" });
-    await createRecipe("u1", { title: "Private", publicationState: "private", batchSizeEnteredQuantity: 20, batchSizeEnteredUnit: "l" });
+    await createRecipe("u1", buildReadyPublicPayload({ title: "Public 1" }));
+    await createRecipe("u1", buildReadyPrivatePayload({ title: "Private" }));
     await createRecipe("u1", { title: "Draft", publicationState: "draft", batchSizeEnteredQuantity: 20, batchSizeEnteredUnit: "l" });
 
     const list = await listPublicRecipes();
@@ -379,7 +471,10 @@ describe("recipe service", () => {
   });
 
   it("private ownership rule denies non-owner read", async () => {
-    const recipe = await createRecipe("u1", { title: "Private", publicationState: "private", batchSizeEnteredQuantity: 12, batchSizeEnteredUnit: "l" });
+    const recipe = await createRecipe("u1", buildReadyPrivatePayload({
+      title: "Private",
+      batchSizeEnteredQuantity: 12
+    }));
     await expect(getRecipeById("u2", recipe.id)).rejects.toThrowError("FORBIDDEN");
   });
 });

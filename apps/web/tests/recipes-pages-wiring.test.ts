@@ -2,7 +2,7 @@ import React from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it, vi } from "vitest";
 
-import type { RecipeDetailDto, RecipeListItemDto } from "../features/recipes/contracts";
+import { defaultRecipeProcessMeta, type RecipeDetailDto, type RecipeListItemDto } from "../features/recipes/contracts";
 
 const recipeListItem: RecipeListItemDto = {
   id: "r-1",
@@ -16,6 +16,7 @@ const recipeListItem: RecipeListItemDto = {
   batchSizeNormalizedQuantity: 20000,
   batchSizeNormalizedUnit: "ml",
   efficiency: 75,
+  boilTimeMinutes: 60,
   og: 1.048,
   fg: 1.01,
   abv: 5,
@@ -29,6 +30,7 @@ const recipeDetail: RecipeDetailDto = {
   ...recipeListItem,
   description: "desc",
   authorNotes: "notes",
+  processMeta: defaultRecipeProcessMeta,
   heroImageId: null,
   ingredients: []
 };
@@ -37,6 +39,8 @@ const mocks = vi.hoisted(() => ({
   requireUser: vi.fn(async () => ({ id: "u-1", email: "u1@example.com" })),
   listRecipesForAuthor: vi.fn(async () => [recipeListItem]),
   getRecipeById: vi.fn(async () => recipeDetail),
+  cloneRecipeAction: vi.fn(async () => ({ ok: true, message: "ok", recipe: { id: "r-2" } })),
+  push: vi.fn(),
   notFound: vi.fn(() => {
     throw new Error("NEXT_NOT_FOUND");
   })
@@ -48,9 +52,13 @@ vi.mock("../features/recipes/service", () => ({
   getRecipeById: mocks.getRecipeById
 }));
 vi.mock("../app/(app)/app/recipes/actions", () => ({
-  deleteRecipeAction: vi.fn(async () => ({ ok: true, message: "ok" }))
+  deleteRecipeAction: vi.fn(async () => ({ ok: true, message: "ok" })),
+  cloneRecipeAction: mocks.cloneRecipeAction
 }));
-vi.mock("next/navigation", () => ({ notFound: mocks.notFound }));
+vi.mock("next/navigation", () => ({
+  notFound: mocks.notFound,
+  useRouter: vi.fn(() => ({ push: mocks.push }))
+}));
 
 describe("recipes pages wiring", () => {
   it("list page uses listRecipesForAuthor", async () => {

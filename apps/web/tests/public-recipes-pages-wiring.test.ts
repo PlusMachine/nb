@@ -1,7 +1,7 @@
 import React from "react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import type { RecipeDetailDto, RecipeListItemDto } from "../features/recipes/contracts";
+import { defaultRecipeProcessMeta, type RecipeDetailDto, type RecipeListItemDto } from "../features/recipes/contracts";
 
 const publicRecipe: RecipeDetailDto = {
   id: "r-public",
@@ -15,6 +15,7 @@ const publicRecipe: RecipeDetailDto = {
   batchSizeNormalizedQuantity: 20000,
   batchSizeNormalizedUnit: "ml",
   efficiency: 75,
+  boilTimeMinutes: 60,
   og: 1.06,
   fg: 1.012,
   abv: 6.2,
@@ -22,6 +23,7 @@ const publicRecipe: RecipeDetailDto = {
   color: 9.5,
   description: "Public desc",
   authorNotes: "Public notes",
+  processMeta: defaultRecipeProcessMeta,
   heroImageId: null,
   createdAt: new Date("2026-01-01T00:00:00.000Z"),
   updatedAt: new Date("2026-01-02T00:00:00.000Z"),
@@ -58,6 +60,7 @@ const publicList: RecipeListItemDto[] = [
     batchSizeNormalizedQuantity: 20000,
     batchSizeNormalizedUnit: "ml",
     efficiency: 75,
+    boilTimeMinutes: 60,
     og: 1.06,
     fg: 1.012,
     abv: 6.2,

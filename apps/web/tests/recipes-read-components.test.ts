@@ -13,7 +13,7 @@ import { PublicRecipeList } from "../components/recipes/public-recipe-list";
 import { RecipeIngredientsSection } from "../components/recipes/recipe-ingredients-section";
 import { RecipeMetaSection } from "../components/recipes/recipe-meta-section";
 import { RecipeStatsSummary } from "../components/recipes/recipe-stats-summary";
-import type { RecipeDetailDto } from "../features/recipes/contracts";
+import { defaultRecipeProcessMeta, type RecipeDetailDto } from "../features/recipes/contracts";
 
 const recipeDetail: RecipeDetailDto = {
   id: "r-1",
@@ -27,6 +27,7 @@ const recipeDetail: RecipeDetailDto = {
   batchSizeNormalizedQuantity: 20000,
   batchSizeNormalizedUnit: "ml",
   efficiency: 75,
+  boilTimeMinutes: 60,
   og: 1.061,
   fg: 1.012,
   abv: 6.4,
@@ -34,6 +35,7 @@ const recipeDetail: RecipeDetailDto = {
   color: 9.7,
   description: "Мутный IPA",
   authorNotes: "Добавить сухое охмеление",
+  processMeta: defaultRecipeProcessMeta,
   heroImageId: null,
   createdAt: new Date("2026-01-01T00:00:00.000Z"),
   updatedAt: new Date("2026-01-02T00:00:00.000Z"),
@@ -104,9 +106,9 @@ describe("recipes read components", () => {
     expect(html).toContain("Ингредиенты");
     expect(html).toContain("Pilsner Malt");
     expect(html).toContain("0.5 kg");
-    expect(html).toContain("Этап: Кипячение");
-    expect(html).toContain("Описание");
-    expect(html).toContain("Заметки автора");
+    expect(html).toContain("Кипячение");
+    expect(html).toContain("Описание рецепта");
+    expect(html).toContain("Личные заметки");
   });
 
   it("renders public listing item with slug link", () => {
@@ -119,7 +121,7 @@ describe("recipes read components", () => {
   it("renders public recipe page composition", () => {
     const html = renderToStaticMarkup(React.createElement(PublicRecipePage, { recipe: recipeDetail }));
 
-    expect(html).toContain("Опубликован");
+    expect(html).toContain("Публичный");
     expect(html).toContain("Ключевые показатели");
     expect(html).toContain("Ингредиенты");
     expect(html).toContain("Изображение");

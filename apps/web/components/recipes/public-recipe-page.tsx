@@ -24,7 +24,7 @@ export function PublicRecipePage({ recipe }: { recipe: RecipeDetailDto }) {
       <PublicRecipeHero heroImageId={recipe.heroImageId} title={recipe.title} />
       <RecipeStatsSummary recipe={recipe} />
       <RecipeIngredientsSection ingredients={recipe.ingredients} />
-      <RecipeMetaSection recipe={recipe} />
+      <RecipeMetaSection recipe={recipe} showPrivateNotes={false} />
     </main>
   );
 }

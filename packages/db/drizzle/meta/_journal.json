@@ -85,6 +85,18 @@
       "tag": "0013_inventory_zero_stock_constraints",
       "when": 1772000000000,
       "breakpoints": true
+    },
+    {
+      "idx": 14,
+      "tag": "0014_recipe_designer_meta",
+      "when": 1773000000000,
+      "breakpoints": true
+    },
+    {
+      "idx": 15,
+      "tag": "0015_recipe_designer_meta_compat",
+      "when": 1774000000000,
+      "breakpoints": true
     }
   ]
 }

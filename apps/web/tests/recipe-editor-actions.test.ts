@@ -4,6 +4,8 @@ const mocks = vi.hoisted(() => ({
   requireUser: vi.fn(async () => ({ id: "u-1" })),
   createRecipe: vi.fn(),
   updateRecipe: vi.fn(),
+  cloneRecipe: vi.fn(),
+  previewRecipeDraft: vi.fn(),
   deleteRecipe: vi.fn(),
   revalidatePath: vi.fn()
 }));
@@ -13,6 +15,8 @@ vi.mock("../lib/auth", () => ({ requireUser: mocks.requireUser }));
 vi.mock("../features/recipes/service", () => ({
   createRecipe: mocks.createRecipe,
   updateRecipe: mocks.updateRecipe,
+  cloneRecipe: mocks.cloneRecipe,
+  previewRecipeDraft: mocks.previewRecipeDraft,
   deleteRecipe: mocks.deleteRecipe
 }));
 
@@ -26,6 +30,7 @@ describe("recipe editor actions", () => {
       publicationState: "draft",
       batchSizeEnteredQuantity: 20,
       batchSizeEnteredUnit: "l",
+      boilTimeMinutes: 60,
       ingredients: []
     });
 
@@ -43,6 +48,7 @@ describe("recipe editor actions", () => {
       publicationState: "private",
       batchSizeEnteredQuantity: 22,
       batchSizeEnteredUnit: "l",
+      boilTimeMinutes: 60,
       ingredients: []
     });
 
@@ -59,6 +65,7 @@ describe("recipe editor actions", () => {
       publicationState: "draft",
       batchSizeEnteredQuantity: 20,
       batchSizeEnteredUnit: "l",
+      boilTimeMinutes: 60,
       ingredients: []
     });
 

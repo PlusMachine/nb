@@ -270,6 +270,7 @@ export const recipes = pgTable("recipes", {
   batchSizeNormalizedQuantity: doublePrecision("batch_size_normalized_quantity").notNull(),
   batchSizeNormalizedUnit: varchar("batch_size_normalized_unit", { length: 32 }).notNull(),
   efficiency: doublePrecision("efficiency"),
+  boilTimeMinutes: integer("boil_time_minutes").default(60).notNull(),
   og: doublePrecision("og"),
   fg: doublePrecision("fg"),
   abv: doublePrecision("abv"),
@@ -277,6 +278,7 @@ export const recipes = pgTable("recipes", {
   color: doublePrecision("color"),
   description: text("description"),
   authorNotes: text("author_notes"),
+  processMeta: jsonb("process_meta").$type<Record<string, unknown>>(),
   heroImageId: uuid("hero_image_id"),
   createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull()
