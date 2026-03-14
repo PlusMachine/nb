@@ -8,7 +8,9 @@ type Props = {
   title: string;
   description: string;
   confirmLabel: string;
+  pendingLabel?: string;
   cancelLabel?: string;
+  tone?: "primary" | "danger";
   pending?: boolean;
   onConfirm: () => void;
   onClose: () => void;
@@ -19,7 +21,9 @@ export function ConfirmActionDialog({
   title,
   description,
   confirmLabel,
+  pendingLabel,
   cancelLabel = "Отмена",
+  tone = "danger",
   pending = false,
   onConfirm,
   onClose
@@ -43,6 +47,13 @@ export function ConfirmActionDialog({
     return null;
   }
 
+  const iconClassName = tone === "primary"
+    ? "bg-emerald-50 text-emerald-700"
+    : "bg-red-50 text-red-700";
+  const confirmButtonClassName = tone === "primary"
+    ? "bg-emerald-600 hover:bg-emerald-700"
+    : "bg-red-600 hover:bg-red-700";
+
   return (
     <div
       className="fixed inset-0 z-50 flex items-end justify-center bg-zinc-950/45 p-3 sm:items-center"
@@ -60,7 +71,7 @@ export function ConfirmActionDialog({
         onClick={(event) => event.stopPropagation()}
       >
         <div className="mb-4 flex items-start gap-3">
-          <div className="mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-red-50 text-red-700">
+          <div className={`mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-full ${iconClassName}`}>
             <span className="text-lg font-semibold">!</span>
           </div>
           <div className="space-y-1">
@@ -82,9 +93,9 @@ export function ConfirmActionDialog({
             type="button"
             onClick={onConfirm}
             disabled={pending}
-            className="rounded-xl bg-red-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-red-700 disabled:opacity-60"
+            className={`rounded-xl px-4 py-2 text-sm font-medium text-white transition-colors disabled:opacity-60 ${confirmButtonClassName}`}
           >
-            {pending ? "Удаляем..." : confirmLabel}
+            {pending ? (pendingLabel ?? `${confirmLabel}...`) : confirmLabel}
           </button>
         </div>
       </div>

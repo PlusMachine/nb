@@ -95,6 +95,19 @@ describe("recipes read components", () => {
     expect(html).toContain("IBU");
   });
 
+  it("renders style-linked stats as numeric summary without range graph", () => {
+    const html = renderToStaticMarkup(React.createElement(RecipeStatsSummary, {
+      recipe: {
+        ...recipeDetail,
+        styleId: "american-pale-ale"
+      }
+    }));
+
+    expect(html).toContain("BJCP:");
+    expect(html).toContain("Ключевые показатели");
+    expect(html).not.toContain("Соответствие стилю");
+  });
+
   it("renders ingredients and meta sections", () => {
     const html = renderToStaticMarkup(
       React.createElement("div", null,
@@ -107,7 +120,7 @@ describe("recipes read components", () => {
     expect(html).toContain("Pilsner Malt");
     expect(html).toContain("0.5 kg");
     expect(html).toContain("Кипячение");
-    expect(html).toContain("Описание рецепта");
+    expect(html).toContain("Описание");
     expect(html).toContain("Личные заметки");
   });
 

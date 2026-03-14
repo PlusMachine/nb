@@ -1,0 +1,69 @@
+import { describe, expect, it } from "vitest";
+
+import {
+  buildRecipePublicationChecklist,
+  getRecipePublicationFieldErrors
+} from "../features/recipes/publication-validation";
+
+describe("recipe publication validation", () => {
+  it("allows draft with only a title", () => {
+    expect(getRecipePublicationFieldErrors({
+      publicationState: "draft",
+      title: "Новый рецепт 1",
+      styleId: null,
+      description: null,
+      boilTimeMinutes: 60,
+      ingredientCategories: []
+    })).toEqual({});
+  });
+
+  it("allows private recipe with only a title", () => {
+    expect(getRecipePublicationFieldErrors({
+      publicationState: "private",
+      title: "Private IPA",
+      styleId: null,
+      description: null,
+      boilTimeMinutes: 60,
+      ingredientCategories: []
+    })).toEqual({});
+  });
+
+  it("requires style, description and core ingredients for published recipe", () => {
+    expect(getRecipePublicationFieldErrors({
+      publicationState: "published",
+      title: "Public IPA",
+      styleId: null,
+      description: "",
+      boilTimeMinutes: 60,
+      ingredientCategories: ["fermentable", "hop"]
+    })).toEqual({
+      styleId: "Выберите стиль BJCP.",
+      description: "Добавьте описание рецепта.",
+      "ingredients.yeast": "Для публичного рецепта добавьте дрожжи.",
+    });
+  });
+
+  it("builds readiness checklist with satisfied and missing publication requirements", () => {
+    const checklist = buildRecipePublicationChecklist({
+      publicationState: "published",
+      title: "APA",
+      styleId: "18B",
+      description: "",
+      boilTimeMinutes: 60,
+      ingredientCategories: ["fermentable", "hop"]
+    });
+
+    expect(checklist.find((item) => item.key === "title")).toMatchObject({
+      isSatisfied: true,
+      statusLabel: "Готово"
+    });
+    expect(checklist.find((item) => item.key === "description")).toMatchObject({
+      isSatisfied: false,
+      statusLabel: "Не заполнено"
+    });
+    expect(checklist.find((item) => item.key === "ingredients.yeast")).toMatchObject({
+      isSatisfied: false,
+      statusLabel: "Не добавлено"
+    });
+  });
+});

@@ -154,6 +154,7 @@ vi.mock("@nb/db", () => {
 import {
   createRecipe,
   deleteRecipe,
+  getNextDefaultRecipeTitle,
   getPublicRecipeBySlug,
   getRecipeById,
   listPublicRecipes,
@@ -178,12 +179,13 @@ const buildReadyPrivatePayload = (overrides: Record<string, unknown> = {}) => ({
       stage: "mash"
     },
     {
-      ingredientCatalogItemId: uuid(103),
-      type: "yeast",
-      category: "yeast",
-      amountEnteredQuantity: 1,
-      amountEnteredUnit: "pack",
-      stage: "fermentation"
+      ingredientCatalogItemId: uuid(102),
+      type: "hop",
+      category: "hop",
+      amountEnteredQuantity: 40,
+      amountEnteredUnit: "g",
+      stage: "boil",
+      timeOffset: 60
     }
   ],
   ...overrides
@@ -303,11 +305,28 @@ describe("recipe service", () => {
     expect(recipe.slug).toBe("test-ipa");
   });
 
+  it("create falls back to default batch parameters and private visibility", async () => {
+    const recipe = await createRecipe("u1", { title: "Loose draft" });
+
+    expect(recipe.publicationState).toBe("private");
+    expect(recipe.batchSizeEnteredQuantity).toBe(20);
+    expect(recipe.batchSizeEnteredUnit).toBe("l");
+    expect(recipe.boilTimeMinutes).toBe(60);
+  });
+
   it("slug uniqueness appends numeric suffix", async () => {
     const first = await createRecipe("u1", { title: "American IPA", batchSizeEnteredQuantity: 20, batchSizeEnteredUnit: "l" });
     const second = await createRecipe("u1", { title: "American IPA", batchSizeEnteredQuantity: 20, batchSizeEnteredUnit: "l" });
     expect(first.slug).toBe("american-ipa");
     expect(second.slug).toBe("american-ipa-2");
+  });
+
+  it("suggests next default title from existing numbered drafts", async () => {
+    await createRecipe("u1", { title: "Новый рецепт 1" });
+    await createRecipe("u1", { title: "Новый рецепт 2" });
+    await createRecipe("u1", { title: "Dry Stout" });
+
+    await expect(getNextDefaultRecipeTitle("u1")).resolves.toBe("Новый рецепт 3");
   });
 
   it("recompute stats updates recipe fields", async () => {
@@ -476,5 +495,50 @@ describe("recipe service", () => {
       batchSizeEnteredQuantity: 12
     }));
     await expect(getRecipeById("u2", recipe.id)).rejects.toThrowError("FORBIDDEN");
+  });
+
+  it("private recipe can be created with only a title", async () => {
+    const recipe = await createRecipe("u1", {
+      title: "Bare private",
+      publicationState: "private"
+    });
+
+    expect(recipe.publicationState).toBe("private");
+    expect(recipe.ingredients).toEqual([]);
+  });
+
+  it("published recipe requires style, description and yeast", async () => {
+    await expect(createRecipe("u1", {
+      title: "Broken public",
+      publicationState: "published",
+      batchSizeEnteredQuantity: 20,
+      batchSizeEnteredUnit: "l",
+      ingredients: [
+        {
+          ingredientCatalogItemId: uuid(101),
+          type: "fermentable",
+          category: "fermentable",
+          amountEnteredQuantity: 4,
+          amountEnteredUnit: "kg",
+          stage: "mash"
+        },
+        {
+          ingredientCatalogItemId: uuid(102),
+          type: "hop",
+          category: "hop",
+          amountEnteredQuantity: 40,
+          amountEnteredUnit: "g",
+          stage: "boil",
+          timeOffset: 60
+        }
+      ]
+    })).rejects.toMatchObject({
+      name: "RecipeValidationError",
+      fieldErrors: {
+        styleId: "Выберите стиль BJCP.",
+        description: "Добавьте описание рецепта.",
+        "ingredients.yeast": "Для публичного рецепта добавьте дрожжи."
+      }
+    });
   });
 });

@@ -22,8 +22,8 @@ export type RecipeHopUseType = (typeof recipeHopUseTypes)[number];
 export type RecipeFermentableUseType = (typeof recipeFermentableUseTypes)[number];
 
 export const recipePublicationStateLabels: Record<RecipePublicationState, string> = {
-  draft: "Черновик",
-  private: "Личный",
+  draft: "Приватный",
+  private: "Приватный",
   published: "Публичный"
 };
 
@@ -173,8 +173,8 @@ export const recipeIngredientPayloadSchema = z.object({
 });
 
 const baseRecipePayloadSchema = z.object({
-  publicationState: z.enum(recipePublicationStates).default("draft"),
-  title: z.string().trim().min(2).max(180),
+  publicationState: z.enum(recipePublicationStates).default("private"),
+  title: z.string().trim().min(1).max(180),
   styleId: z.string().trim().max(64).optional().nullable(),
   batchSizeEnteredQuantity: z.coerce.number().positive(),
   batchSizeEnteredUnit: z.string().trim().toLowerCase().pipe(z.enum(inventoryUnits)),

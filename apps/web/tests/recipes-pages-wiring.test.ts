@@ -2,7 +2,7 @@ import React from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it, vi } from "vitest";
 
-import { defaultRecipeProcessMeta, type RecipeDetailDto, type RecipeListItemDto } from "../features/recipes/contracts";
+import type { RecipeListItemDto } from "../features/recipes/contracts";
 
 const recipeListItem: RecipeListItemDto = {
   id: "r-1",
@@ -26,36 +26,27 @@ const recipeListItem: RecipeListItemDto = {
   updatedAt: new Date("2026-01-02T00:00:00.000Z")
 };
 
-const recipeDetail: RecipeDetailDto = {
-  ...recipeListItem,
-  description: "desc",
-  authorNotes: "notes",
-  processMeta: defaultRecipeProcessMeta,
-  heroImageId: null,
-  ingredients: []
-};
-
 const mocks = vi.hoisted(() => ({
   requireUser: vi.fn(async () => ({ id: "u-1", email: "u1@example.com" })),
   listRecipesForAuthor: vi.fn(async () => [recipeListItem]),
-  getRecipeById: vi.fn(async () => recipeDetail),
   cloneRecipeAction: vi.fn(async () => ({ ok: true, message: "ok", recipe: { id: "r-2" } })),
   push: vi.fn(),
+  redirect: vi.fn((to: string) => {
+    throw new Error(`NEXT_REDIRECT:${to}`);
+  }),
   notFound: vi.fn(() => {
     throw new Error("NEXT_NOT_FOUND");
   })
 }));
 
 vi.mock("../lib/auth", () => ({ requireUser: mocks.requireUser }));
-vi.mock("../features/recipes/service", () => ({
-  listRecipesForAuthor: mocks.listRecipesForAuthor,
-  getRecipeById: mocks.getRecipeById
-}));
+vi.mock("../features/recipes/service", () => ({ listRecipesForAuthor: mocks.listRecipesForAuthor }));
 vi.mock("../app/(app)/app/recipes/actions", () => ({
   deleteRecipeAction: vi.fn(async () => ({ ok: true, message: "ok" })),
   cloneRecipeAction: mocks.cloneRecipeAction
 }));
 vi.mock("next/navigation", () => ({
+  redirect: mocks.redirect,
   notFound: mocks.notFound,
   useRouter: vi.fn(() => ({ push: mocks.push }))
 }));
@@ -69,6 +60,9 @@ describe("recipes pages wiring", () => {
     expect(mocks.listRecipesForAuthor).toHaveBeenCalledWith("u-1");
     expect(html).toContain("Мои рецепты");
     expect(html).toContain("My Pils");
+    expect(html).toContain("Приватный");
+    expect(html).toContain('href="/app/recipes/r-1/edit"');
+    expect(html).not.toContain('href="/app/recipes/r-1"');
     expect(html).toContain("Удалить");
   });
 
@@ -81,21 +75,10 @@ describe("recipes pages wiring", () => {
     expect(html).toContain("Пока нет рецептов");
   });
 
-  it("detail page uses getRecipeById", async () => {
-    const { default: RecipePage } = await import("../app/(app)/app/recipes/[id]/page");
-    const view = await RecipePage({ params: Promise.resolve({ id: "r-1" }) });
-    const html = renderToStaticMarkup(view);
-
-    expect(mocks.getRecipeById).toHaveBeenCalledWith("u-1", "r-1");
-    expect(html).toContain("My Pils");
-    expect(html).toContain("Ингредиенты");
-  });
-
-  it("foreign recipe is blocked through service wiring", async () => {
-    mocks.getRecipeById.mockRejectedValueOnce(new Error("FORBIDDEN"));
+  it("compat route redirects legacy owner detail url to edit", async () => {
     const { default: RecipePage } = await import("../app/(app)/app/recipes/[id]/page");
 
-    await expect(RecipePage({ params: Promise.resolve({ id: "foreign" }) })).rejects.toThrow("NEXT_NOT_FOUND");
-    expect(mocks.notFound).toHaveBeenCalled();
+    await expect(RecipePage({ params: Promise.resolve({ id: "r-1" }) })).rejects.toThrow("NEXT_REDIRECT:/app/recipes/r-1/edit");
+    expect(mocks.redirect).toHaveBeenCalledWith("/app/recipes/r-1/edit");
   });
 });

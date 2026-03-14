@@ -1,10 +1,11 @@
 import React from "react";
 import { renderToStaticMarkup } from "react-dom/server";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 
 import NewRecipePage from "../app/(app)/app/recipes/new/page";
 import EditRecipePage from "../app/(app)/app/recipes/[id]/edit/page";
 import { RecipeEditorErrorState } from "../components/recipes/recipe-editor-error-state";
+import { RecipeDesigner } from "../components/recipes/recipe-designer";
 import { RecipeIngredientsEditor } from "../components/recipes/recipe-ingredients-editor";
 import {
   applyRecipeIngredientCategoryChange,
@@ -14,6 +15,19 @@ import {
   RecipeIngredientRow
 } from "../components/recipes/recipe-ingredient-row";
 import { RecipeStatsPreview } from "../components/recipes/recipe-stats-preview";
+import { buildRecipePublicationChecklist } from "../features/recipes/publication-validation";
+
+vi.mock("next/navigation", () => ({
+  useRouter: () => ({ replace: vi.fn(), push: vi.fn() })
+}));
+
+vi.mock("../app/(app)/app/recipes/actions", () => ({
+  createRecipeAction: vi.fn(),
+  updateRecipeAction: vi.fn(),
+  previewRecipeDraftAction: vi.fn(),
+  createRecipeCustomIngredientAction: vi.fn(),
+  proposeRecipeIngredientAction: vi.fn()
+}));
 
 const buildRow = (overrides: Partial<Parameters<typeof getRecipeIngredientValidationError>[0]> = {}) => ({
   localId: "1",
@@ -178,6 +192,40 @@ describe("recipe editor components", () => {
   it("editor error state renders", () => {
     const html = renderToStaticMarkup(React.createElement(RecipeEditorErrorState, { message: "Ошибка валидации" }));
     expect(html).toContain("Ошибка валидации");
+  });
+
+  it("designer header renders aligned field labels", () => {
+    const html = renderToStaticMarkup(React.createElement(RecipeDesigner, { mode: "create" }));
+
+    expect(html).toContain("Название рецепта");
+    expect(html).toContain("Стиль BJCP");
+    expect(html).not.toContain("Сохранить");
+    expect(html).not.toContain("Публикация");
+  });
+
+  it("builds publication readiness checklist for publish action", () => {
+    const checklist = buildRecipePublicationChecklist({
+      publicationState: "published",
+      title: "Новый рецепт 1",
+      styleId: null,
+      description: "",
+      boilTimeMinutes: 60,
+      ingredientCategories: ["fermentable", "hop"]
+    });
+
+    expect(checklist.find((item) => item.key === "title")?.isSatisfied).toBe(true);
+    expect(checklist.find((item) => item.key === "styleId")).toMatchObject({
+      isSatisfied: false,
+      statusLabel: "Не заполнено"
+    });
+    expect(checklist.find((item) => item.key === "description")).toMatchObject({
+      isSatisfied: false,
+      statusLabel: "Не заполнено"
+    });
+    expect(checklist.find((item) => item.key === "ingredients.yeast")).toMatchObject({
+      isSatisfied: false,
+      statusLabel: "Не добавлено"
+    });
   });
 
   it("create and edit pages are importable", () => {

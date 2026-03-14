@@ -31,6 +31,7 @@ import {
   type RecipePublicationState,
   updateRecipePayloadSchema
 } from "./contracts";
+import { getRecipePublicationFieldErrors } from "./publication-validation";
 import {
   normalizeRecipeBatchSize,
   normalizeRecipeIngredientAmountWithSource,
@@ -57,7 +58,10 @@ import { resolveInventoryUnitProfile } from "../inventory/units";
 
 const DEFAULT_EFFICIENCY = 75;
 const DEFAULT_ATTENUATION = 75;
+const DEFAULT_BATCH_SIZE_ENTERED_QUANTITY = 20;
+const DEFAULT_BATCH_SIZE_ENTERED_UNIT = "l";
 const DEFAULT_BOIL_TIME_MINUTES = 60;
+const DEFAULT_NEW_RECIPE_TITLE_PREFIX = "Новый рецепт";
 
 class RecipeValidationError extends Error {
   readonly fieldErrors: Record<string, string>;
@@ -243,6 +247,70 @@ const sanitizeRecipeProcessMeta = (processMeta: Record<string, unknown> | null |
   parseRecipeProcessMeta(processMeta) as Record<string, unknown>
 );
 
+const hasOwn = (value: Record<string, unknown>, key: string) => Object.prototype.hasOwnProperty.call(value, key);
+
+const coerceFiniteNumber = (value: unknown) => {
+  if (typeof value === "number" && Number.isFinite(value)) {
+    return value;
+  }
+
+  if (typeof value === "string" && value.trim()) {
+    const parsed = Number(value);
+    return Number.isFinite(parsed) ? parsed : null;
+  }
+
+  return null;
+};
+
+const coercePositiveNumber = (value: unknown) => {
+  const parsed = coerceFiniteNumber(value);
+  return parsed != null && parsed > 0 ? parsed : null;
+};
+
+const coercePositiveInteger = (value: unknown) => {
+  const parsed = coerceFiniteNumber(value);
+  return parsed != null && Number.isInteger(parsed) && parsed > 0 ? parsed : null;
+};
+
+const normalizeCreateRecipePayloadDefaults = (payload: unknown) => {
+  if (!isRecord(payload)) {
+    return payload;
+  }
+
+  return {
+    ...payload,
+    batchSizeEnteredQuantity: coercePositiveNumber(payload.batchSizeEnteredQuantity) ?? DEFAULT_BATCH_SIZE_ENTERED_QUANTITY,
+    batchSizeEnteredUnit: typeof payload.batchSizeEnteredUnit === "string" && payload.batchSizeEnteredUnit.trim()
+      ? payload.batchSizeEnteredUnit
+      : DEFAULT_BATCH_SIZE_ENTERED_UNIT,
+    boilTimeMinutes: coercePositiveInteger(payload.boilTimeMinutes) ?? DEFAULT_BOIL_TIME_MINUTES
+  };
+};
+
+const normalizeUpdateRecipePayloadDefaults = (payload: unknown) => {
+  if (!isRecord(payload)) {
+    return payload;
+  }
+
+  const normalized: Record<string, unknown> = { ...payload };
+
+  if (hasOwn(payload, "batchSizeEnteredQuantity")) {
+    normalized.batchSizeEnteredQuantity = coercePositiveNumber(payload.batchSizeEnteredQuantity) ?? DEFAULT_BATCH_SIZE_ENTERED_QUANTITY;
+  }
+
+  if (hasOwn(payload, "batchSizeEnteredUnit")) {
+    normalized.batchSizeEnteredUnit = typeof payload.batchSizeEnteredUnit === "string" && payload.batchSizeEnteredUnit.trim()
+      ? payload.batchSizeEnteredUnit
+      : DEFAULT_BATCH_SIZE_ENTERED_UNIT;
+  }
+
+  if (hasOwn(payload, "boilTimeMinutes")) {
+    normalized.boilTimeMinutes = coercePositiveInteger(payload.boilTimeMinutes) ?? DEFAULT_BOIL_TIME_MINUTES;
+  }
+
+  return normalized;
+};
+
 const readStringMeta = (stepMeta: Record<string, unknown> | null | undefined, key: string) => (
   isRecord(stepMeta) && typeof stepMeta[key] === "string" ? stepMeta[key] as string : null
 );
@@ -397,49 +465,21 @@ const prepareRecipeIngredientEntries = async (
 const validateRecipeForPublicationState = (input: {
   publicationState: RecipePublicationState;
   title: string;
-  description: string | null | undefined;
-  styleId: string | null | undefined;
-  boilTimeMinutes: number;
+  styleId?: string | null;
+  description?: string | null;
+  boilTimeMinutes?: number | null;
+  processMeta: Record<string, unknown> | null | undefined;
   ingredients: PreparedRecipeIngredientEntry[];
 }) => {
-  const fieldErrors: Record<string, string> = {};
-  const hasFermentable = input.ingredients.some((ingredient) => ingredient.source.category === "fermentable");
-  const hasYeast = input.ingredients.some((ingredient) => ingredient.source.category === "yeast");
-  const hasHop = input.ingredients.some((ingredient) => ingredient.source.category === "hop");
-
-  if (input.publicationState === "draft") {
-    return;
-  }
-
-  if (!input.title.trim()) {
-    fieldErrors.title = "Укажите название рецепта.";
-  }
-
-  if (input.boilTimeMinutes <= 0) {
-    fieldErrors.boilTimeMinutes = "Укажите время кипячения.";
-  }
-
-  if (!hasFermentable) {
-    fieldErrors["ingredients.fermentable"] = "Добавьте хотя бы одно сбраживаемое.";
-  }
-
-  if (!hasYeast) {
-    fieldErrors["ingredients.yeast"] = "Добавьте дрожжи.";
-  }
-
-  if (input.publicationState === "published") {
-    if (!hasHop) {
-      fieldErrors["ingredients.hop"] = "Для публичного рецепта добавьте хмель или явно завершите охмеление.";
-    }
-
-    if (!input.styleId) {
-      fieldErrors.styleId = "Выберите стиль для публичного рецепта.";
-    }
-
-    if (!input.description?.trim()) {
-      fieldErrors.description = "Добавьте публичное описание рецепта.";
-    }
-  }
+  parseRecipeProcessMeta(input.processMeta);
+  const fieldErrors = getRecipePublicationFieldErrors({
+    publicationState: input.publicationState,
+    title: input.title,
+    styleId: input.styleId,
+    description: input.description,
+    boilTimeMinutes: input.boilTimeMinutes,
+    ingredientCategories: input.ingredients.map((ingredient) => ingredient.source.category)
+  });
 
   if (Object.keys(fieldErrors).length) {
     throw new RecipeValidationError(fieldErrors);
@@ -847,14 +887,16 @@ export const recomputeRecipeStats = async (authorId: string, recipeId: string) =
 };
 
 export const createRecipe = async (authorId: string, payload: unknown) => {
-  const parsed = createRecipePayloadSchema.parse(payload);
+  const parsed = createRecipePayloadSchema.parse(normalizeCreateRecipePayloadDefaults(payload));
   const preparedIngredients = await prepareRecipeIngredientEntries(authorId, parsed.ingredients);
+  const nextProcessMeta = parseRecipeProcessMeta(parsed.processMeta ?? null);
   validateRecipeForPublicationState({
     publicationState: parsed.publicationState,
     title: parsed.title,
-    description: parsed.description,
-    styleId: parsed.styleId,
+    styleId: parsed.styleId ?? null,
+    description: parsed.description ?? null,
     boilTimeMinutes: parsed.boilTimeMinutes,
+    processMeta: nextProcessMeta as Record<string, unknown>,
     ingredients: preparedIngredients
   });
   const batchSize = normalizeRecipeBatchSize(parsed.batchSizeEnteredQuantity, parsed.batchSizeEnteredUnit);
@@ -878,7 +920,7 @@ export const createRecipe = async (authorId: string, payload: unknown) => {
         boilTimeMinutes: parsed.boilTimeMinutes,
         description: parsed.description ?? null,
         authorNotes: parsed.authorNotes ?? null,
-        processMeta: sanitizeRecipeProcessMeta(parsed.processMeta ?? null),
+        processMeta: sanitizeRecipeProcessMeta(nextProcessMeta as Record<string, unknown>),
         heroImageId: parsed.heroImageId ?? null
       }).returning();
       break;
@@ -900,7 +942,7 @@ export const createRecipe = async (authorId: string, payload: unknown) => {
 };
 
 export const updateRecipe = async (authorId: string, recipeId: string, payload: unknown) => {
-  const parsed = updateRecipePayloadSchema.parse(payload);
+  const parsed = updateRecipePayloadSchema.parse(normalizeUpdateRecipePayloadDefaults(payload));
   const current = await ensureOwnedRecipe(authorId, recipeId);
   const nextIngredientsPayload = parsed.ingredients ?? (await getOwnedRecipeById(authorId, recipeId)).ingredients.map((ingredient) => ({
     ingredientCatalogItemId: ingredient.ingredientCatalogItemId,
@@ -925,12 +967,16 @@ export const updateRecipe = async (authorId: string, recipeId: string, payload: 
     : null;
 
   const nextTitle = parsed.title ?? current.title;
+  const nextProcessMeta = parsed.processMeta !== undefined
+    ? parseRecipeProcessMeta(parsed.processMeta ?? null)
+    : parseRecipeProcessMeta(current.processMeta as Record<string, unknown> | null | undefined);
   validateRecipeForPublicationState({
     publicationState: parsed.publicationState ?? current.publicationState,
     title: nextTitle,
-    description: parsed.description !== undefined ? parsed.description : current.description,
     styleId: parsed.styleId !== undefined ? parsed.styleId : current.styleId,
-    boilTimeMinutes: parsed.boilTimeMinutes ?? current.boilTimeMinutes ?? DEFAULT_BOIL_TIME_MINUTES,
+    description: parsed.description !== undefined ? parsed.description : current.description,
+    boilTimeMinutes: parsed.boilTimeMinutes ?? current.boilTimeMinutes,
+    processMeta: nextProcessMeta as Record<string, unknown>,
     ingredients: preparedIngredients
   });
   const shouldRecomputeSlug = parsed.title !== undefined;
@@ -955,7 +1001,7 @@ export const updateRecipe = async (authorId: string, recipeId: string, payload: 
         description: parsed.description !== undefined ? parsed.description : current.description,
         authorNotes: parsed.authorNotes !== undefined ? parsed.authorNotes : current.authorNotes,
         processMeta: parsed.processMeta !== undefined
-          ? sanitizeRecipeProcessMeta(parsed.processMeta ?? null)
+          ? sanitizeRecipeProcessMeta(nextProcessMeta as Record<string, unknown>)
           : current.processMeta,
         heroImageId: parsed.heroImageId !== undefined ? parsed.heroImageId : current.heroImageId,
         updatedAt: new Date()
@@ -994,7 +1040,7 @@ export const cloneRecipe = async (authorId: string, recipeId: string) => {
 
   return createRecipe(authorId, {
     title: `${recipe.title} (копия)`,
-    publicationState: "draft",
+    publicationState: "private",
     styleId: recipe.styleId,
     batchSizeEnteredQuantity: recipe.batchSizeEnteredQuantity,
     batchSizeEnteredUnit: recipe.batchSizeEnteredUnit,
@@ -1043,6 +1089,24 @@ export const listRecipesForAuthor = async (authorId: string, query: unknown = {}
   return rows.map(mapRecipeListDto);
 };
 
+export const getNextDefaultRecipeTitle = async (authorId: string) => {
+  const rows = await db.query.recipes.findMany({
+    where: eq(recipes.authorId, authorId)
+  });
+  const pattern = new RegExp(`^${DEFAULT_NEW_RECIPE_TITLE_PREFIX} (\\d+)$`);
+  const maxSuffix = rows.reduce((max, recipe) => {
+    const match = recipe.title.trim().match(pattern);
+    if (!match) {
+      return max;
+    }
+
+    const suffix = Number(match[1]);
+    return Number.isInteger(suffix) && suffix > max ? suffix : max;
+  }, 0);
+
+  return `${DEFAULT_NEW_RECIPE_TITLE_PREFIX} ${maxSuffix + 1}`;
+};
+
 export const getRecipeById = async (viewerId: string | null, recipeId: string): Promise<RecipeDetailDto> => {
   const recipe = await ensureAccessibleRecipe(viewerId, recipeId);
   return await mapRecipeDetailDto(recipe, recipe.ingredients);
@@ -1086,12 +1150,9 @@ export const listPublicRecipes = async (limit = 50): Promise<RecipeListItemDto[]
 export const previewRecipeDraft = async (authorId: string, payload: unknown): Promise<RecipeDraftPreviewDto> => {
   const normalizedPayload = isRecord(payload)
     ? {
-      ...payload,
-      title: typeof payload.title === "string" && payload.title.trim() ? payload.title : "Черновик",
+      ...(normalizeCreateRecipePayloadDefaults(payload) as Record<string, unknown>),
+      title: typeof payload.title === "string" && payload.title.trim() ? payload.title : DEFAULT_NEW_RECIPE_TITLE_PREFIX,
       publicationState: "draft",
-      batchSizeEnteredQuantity: payload.batchSizeEnteredQuantity ?? 20,
-      batchSizeEnteredUnit: payload.batchSizeEnteredUnit ?? "l",
-      boilTimeMinutes: payload.boilTimeMinutes ?? DEFAULT_BOIL_TIME_MINUTES
     }
     : payload;
   const parsed = createRecipePayloadSchema.parse(normalizedPayload);

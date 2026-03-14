@@ -30,14 +30,19 @@ const recipe = {
 const mocks = vi.hoisted(() => ({
   requireUser: vi.fn(async () => ({ id: "u-1" })),
   getOwnedRecipeById: vi.fn(async () => recipe),
+  getNextDefaultRecipeTitle: vi.fn(async () => "Новый рецепт 7"),
+  useRouter: vi.fn(() => ({ replace: vi.fn(), push: vi.fn() })),
   notFound: vi.fn(() => {
     throw new Error("NEXT_NOT_FOUND");
   })
 }));
 
 vi.mock("../lib/auth", () => ({ requireUser: mocks.requireUser }));
-vi.mock("../features/recipes/service", () => ({ getOwnedRecipeById: mocks.getOwnedRecipeById }));
-vi.mock("next/navigation", () => ({ notFound: mocks.notFound }));
+vi.mock("../features/recipes/service", () => ({
+  getOwnedRecipeById: mocks.getOwnedRecipeById,
+  getNextDefaultRecipeTitle: mocks.getNextDefaultRecipeTitle
+}));
+vi.mock("next/navigation", () => ({ notFound: mocks.notFound, useRouter: mocks.useRouter }));
 
 describe("recipe editor pages wiring", () => {
   it("edit form renders from owner-safe service", async () => {
@@ -47,6 +52,7 @@ describe("recipe editor pages wiring", () => {
 
     expect(mocks.getOwnedRecipeById).toHaveBeenCalledWith("u-1", "r-1");
     expect(html).toContain("Редактирование рецепта");
+    expect(html).toContain("Автосохранение");
   });
 
   it("ownership-safe deny on edit route", async () => {
@@ -61,6 +67,9 @@ describe("recipe editor pages wiring", () => {
     const { default: NewRecipePage } = await import("../app/(app)/app/recipes/new/page");
     const html = renderToStaticMarkup(await NewRecipePage());
 
-    expect(html).toContain("Новый рецепт");
+    expect(html).toContain("Recipe Designer");
+    expect(html).toContain("Автосохранение");
+    expect(mocks.getNextDefaultRecipeTitle).toHaveBeenCalledWith("u-1");
+    expect(html).toContain("Новый рецепт 7");
   });
 });
