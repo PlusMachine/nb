@@ -56,6 +56,7 @@ import {
   type RecipeProcessMeta,
   type RecipePublicationState
 } from "@/features/recipes/contracts";
+import { beerColorFromSrm } from "@/features/recipes/beer-color";
 import { formatColorWithEbc, formatGravityWithPlato } from "@/features/recipes/format";
 import {
   buildRecipePublicationChecklist,
@@ -1064,9 +1065,9 @@ function RecipeBatchParametersBlock({
   const summaryItems = [
     { label: "OG", value: formatGravityWithPlato(preview?.og ?? null) },
     { label: "FG", value: formatGravityWithPlato(preview?.fg ?? null) },
-    { label: "ABV", value: preview?.abv != null ? `${preview.abv.toFixed(1)}%` : "—" },
-    { label: "IBU", value: preview?.ibu != null ? `${preview.ibu.toFixed(0)}` : "—" },
     { label: "Цвет", value: preview?.color != null ? formatColorWithEbc(preview.color) : "—" },
+    { label: "IBU", value: preview?.ibu != null ? `${preview.ibu.toFixed(0)}` : "—" },
+    { label: "ABV", value: preview?.abv != null ? `${preview.abv.toFixed(1)}%` : "—" },
     {
       label: "Стиль",
       value: preview?.styleRange?.name ?? "Без BJCP"
@@ -1080,12 +1081,30 @@ function RecipeBatchParametersBlock({
       </div>
 
       <dl className="mb-4 grid grid-cols-2 gap-2 xl:grid-cols-3">
-        {summaryItems.map((item) => (
-          <div key={item.label} className="rounded-xl border border-zinc-100 bg-zinc-50/80 px-3 py-2.5">
-            <dt className="text-[11px] font-medium uppercase tracking-[0.08em] text-zinc-400">{item.label}</dt>
-            <dd className="mt-1 text-base font-semibold tabular-nums text-zinc-950">{item.value}</dd>
-          </div>
-        ))}
+        {summaryItems.map((item) => {
+          const colorInfo = item.label === "Цвет" && preview?.color != null ? beerColorFromSrm(preview.color) : null;
+
+          return (
+            <div
+              key={item.label}
+              className={`rounded-xl px-3 py-2.5 ${colorInfo ? "" : "border border-zinc-100 bg-zinc-50/80"}`}
+              style={colorInfo ? { backgroundColor: colorInfo.hex } : undefined}
+            >
+              <dt
+                className={`text-[11px] font-medium uppercase tracking-[0.08em] ${colorInfo ? "" : "text-zinc-400"}`}
+                style={colorInfo ? { color: colorInfo.textColor, opacity: 0.7 } : undefined}
+              >
+                {item.label}
+              </dt>
+              <dd
+                className={`mt-1 whitespace-nowrap font-semibold tabular-nums ${colorInfo ? "text-sm" : "text-base text-zinc-950"}`}
+                style={colorInfo ? { color: colorInfo.textColor } : undefined}
+              >
+                {item.value}
+              </dd>
+            </div>
+          );
+        })}
       </dl>
 
       <div className="mt-auto">
@@ -2206,47 +2225,47 @@ export function RecipeDesigner({ mode, initialRecipe, initialTitle, onSaveStatus
         subtitle: hops.length ? `${hopTotalG.toFixed(0)} г` : undefined,
         items: hops,
         empty: "Пока нет хмеля. Добавьте кипячение, whirlpool, dry hop или dip hop.",
-      renderItems: (items) => (
-        <div className="space-y-4">
-          {recipeHopUseTypes.map((useType) => {
-            const rows = items
-              .filter((item) => getHopUseType(item) === useType)
-              .sort((left, right) => getHopTimeMinutesValue(right) - getHopTimeMinutesValue(left));
-            return (
-              <div key={useType} className="space-y-1.5">
-                <div className="flex items-center justify-between gap-2 border-b border-zinc-100 px-1 pb-1.5">
-                  <h4 className="text-xs font-bold uppercase tracking-wider text-zinc-600">{hopUseTypeLabels[useType]}</h4>
-                  <button type="button" onClick={() => openAddEditor("hop", useType)} className="rounded-md px-2 py-1 text-xs text-zinc-500 transition-colors hover:bg-zinc-100 hover:text-zinc-700">
-                    + Добавить
-                  </button>
+        renderItems: (items) => (
+          <div className="space-y-4">
+            {recipeHopUseTypes.map((useType) => {
+              const rows = items
+                .filter((item) => getHopUseType(item) === useType)
+                .sort((left, right) => getHopTimeMinutesValue(right) - getHopTimeMinutesValue(left));
+              return (
+                <div key={useType} className="space-y-1.5">
+                  <div className="flex items-center justify-between gap-2 border-b border-zinc-100 px-1 pb-1.5">
+                    <h4 className="text-xs font-bold uppercase tracking-wider text-zinc-600">{hopUseTypeLabels[useType]}</h4>
+                    <button type="button" onClick={() => openAddEditor("hop", useType)} className="rounded-md px-2 py-1 text-xs text-zinc-500 transition-colors hover:bg-zinc-100 hover:text-zinc-700">
+                      + Добавить
+                    </button>
+                  </div>
+                  {rows.length ? (
+                    <ul className="space-y-1.5">
+                      {rows.map((ingredient) => (
+                        <SectionRow
+                          key={ingredient.localId}
+                          ingredient={ingredient}
+                          onEdit={(value) => maybeOpenEditor({
+                            localId: value.localId,
+                            category: value.category,
+                            draft: { ...value },
+                            initialSignature: serializeIngredient(value),
+                            isExisting: true
+                          })}
+                          onDelete={deleteIngredient}
+                          onQuantityChange={updateIngredientQuantity}
+                          onTimeChange={updateHopTimeMinutes}
+                        />
+                      ))}
+                    </ul>
+                  ) : (
+                    <p className="rounded-lg border border-dashed border-zinc-200 px-3 py-2.5 text-sm text-zinc-400">Пусто</p>
+                  )}
                 </div>
-                {rows.length ? (
-                  <ul className="space-y-1.5">
-                    {rows.map((ingredient) => (
-                      <SectionRow
-                        key={ingredient.localId}
-                        ingredient={ingredient}
-                        onEdit={(value) => maybeOpenEditor({
-                          localId: value.localId,
-                          category: value.category,
-                          draft: { ...value },
-                          initialSignature: serializeIngredient(value),
-                          isExisting: true
-                        })}
-                        onDelete={deleteIngredient}
-                        onQuantityChange={updateIngredientQuantity}
-                        onTimeChange={updateHopTimeMinutes}
-                      />
-                    ))}
-                  </ul>
-                ) : (
-                  <p className="rounded-lg border border-dashed border-zinc-200 px-3 py-2.5 text-sm text-zinc-400">Пусто</p>
-                )}
-              </div>
-            );
-          })}
-        </div>
-      )
+              );
+            })}
+          </div>
+        )
       },
       {
         category: "yeast",
