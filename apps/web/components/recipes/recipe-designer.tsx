@@ -23,6 +23,7 @@ import { useRouter } from "next/navigation";
 import {
   createRecipeCustomIngredientAction,
   createRecipeAction,
+  createRecipeVersionAction,
   previewRecipeDraftAction,
   proposeRecipeIngredientAction,
   updateRecipeAction,
@@ -1894,6 +1895,8 @@ export function RecipeDesigner({ mode, initialRecipe, initialTitle, onSaveStatus
   const initialPublicationState = normalizeEditorPublicationState(initialRecipe?.publicationState);
   const [activeRecipeId, setActiveRecipeId] = useState(initialRecipe?.id ?? null);
   const [activeRecipeSlug, setActiveRecipeSlug] = useState(initialRecipe?.slug ?? null);
+  const [activeVersionNumber, setActiveVersionNumber] = useState(initialRecipe?.versionNumber ?? 1);
+  const [recipeVersions, setRecipeVersions] = useState(initialRecipe?.versions ?? []);
   const [title, setTitle] = useState(initialRecipe?.title ?? initialTitle ?? "");
   const [styleId, setStyleId] = useState(initialRecipe?.styleId ?? "");
   const [description, setDescription] = useState(initialRecipe?.description ?? "");
@@ -2034,7 +2037,8 @@ export function RecipeDesigner({ mode, initialRecipe, initialTitle, onSaveStatus
     }
 
     if (result.ok && result.recipe) {
-      const normalizedState = normalizeEditorPublicationState(result.recipe.publicationState);
+      const savedRecipe = result.recipe;
+      const normalizedState = normalizeEditorPublicationState(savedRecipe.publicationState);
       const completedSignature = JSON.stringify({
         ...payload,
         publicationState: normalizedState
@@ -2045,13 +2049,15 @@ export function RecipeDesigner({ mode, initialRecipe, initialTitle, onSaveStatus
       setSavedSignature(completedSignature);
       setSaveResult(result);
       setSaveResultSignature(completedSignature);
-      setActiveRecipeSlug(result.recipe.slug);
+      setActiveRecipeSlug(savedRecipe.slug);
+      setActiveVersionNumber(savedRecipe.versionNumber);
+      setRecipeVersions(savedRecipe.versions);
 
       if (!activeRecipeId) {
-        setActiveRecipeId(result.recipe.id);
-        onRecipeCreated?.(result.recipe);
+        setActiveRecipeId(savedRecipe.id);
+        onRecipeCreated?.(savedRecipe);
         startTransition(() => {
-          router.replace(`/app/recipes/${result.recipe.id}/edit`);
+          router.replace(`/app/recipes/${savedRecipe.id}/edit`);
         });
       }
 
@@ -2317,20 +2323,58 @@ export function RecipeDesigner({ mode, initialRecipe, initialTitle, onSaveStatus
     setMakePrivateConfirmOpen(false);
   };
 
+  const handleVersionChange = (nextRecipeId: string) => {
+    if (!nextRecipeId || nextRecipeId === activeRecipeId) {
+      return;
+    }
+
+    startTransition(() => {
+      router.push(`/app/recipes/${nextRecipeId}/edit`);
+    });
+  };
+
+  const handleCreateVersion = async () => {
+    if (!activeRecipeId || pendingSave) {
+      return;
+    }
+
+    const saveBeforeVersionResult = await persistRecipe({ surfaceInlineResult: true });
+    if (saveBeforeVersionResult && !saveBeforeVersionResult.ok) {
+      return;
+    }
+
+    setPendingSave(true);
+    const result = await createRecipeVersionAction(activeRecipeId);
+    setPendingSave(false);
+
+    if (!result.ok || !result.recipe) {
+      setSaveResult(result);
+      setSaveResultSignature(currentSignature);
+      return;
+    }
+
+    const nextRecipe = result.recipe;
+    startTransition(() => {
+      router.push(`/app/recipes/${nextRecipe.id}/edit`);
+    });
+  };
+
   return (
     <div className="space-y-5">
       <section className="-mx-4 bg-white/90 px-4 py-3 shadow-[0_1px_3px_0_rgb(0_0_0_/_0.04)] backdrop-blur-md">
         <div className="grid gap-3 xl:grid-cols-[minmax(0,1.4fr)_minmax(220px,1fr)_auto] xl:items-end">
-          <label className="block min-w-0">
-            <span className="mb-1 block text-[11px] font-medium text-zinc-600">Название рецепта</span>
-            <input
-              id="recipe-title"
-              value={title}
-              onChange={(event) => setTitle(event.target.value)}
-              className="h-10 w-full min-w-0 rounded-lg border border-zinc-200 bg-white px-3 text-sm font-semibold text-zinc-900 shadow-sm placeholder:font-normal placeholder:text-zinc-400 focus:border-zinc-400 focus:outline-none focus:ring-1 focus:ring-zinc-200"
-              placeholder="Название рецепта"
-            />
-          </label>
+          <div className="min-w-0">
+            <label className="block min-w-0">
+              <span className="mb-1 block text-[11px] font-medium text-zinc-600">Название рецепта</span>
+              <input
+                id="recipe-title"
+                value={title}
+                onChange={(event) => setTitle(event.target.value)}
+                className="h-10 w-full min-w-0 rounded-lg border border-zinc-200 bg-white px-3 text-sm font-semibold text-zinc-900 shadow-sm placeholder:font-normal placeholder:text-zinc-400 focus:border-zinc-400 focus:outline-none focus:ring-1 focus:ring-zinc-200"
+                placeholder="Название рецепта"
+              />
+            </label>
+          </div>
           <div className="space-y-1">
             <StylePicker id="recipe-style" value={styleId} onChange={setStyleId} className="min-w-0" />
             {sectionErrors.styleId ? <p className="text-xs text-rose-600">{sectionErrors.styleId}</p> : null}
@@ -2370,6 +2414,33 @@ export function RecipeDesigner({ mode, initialRecipe, initialTitle, onSaveStatus
             ) : null}
           </div>
         </div>
+        {activeRecipeId ? (
+          <div className="mt-2 flex flex-wrap items-end gap-2">
+            <label className="block">
+              <span className="mb-1 block text-[11px] font-medium text-zinc-600">Версия</span>
+              <select
+                value={activeRecipeId}
+                onChange={(event) => handleVersionChange(event.target.value)}
+                className="h-8 min-w-[92px] rounded-md border border-zinc-200 bg-white px-2 text-xs text-zinc-700"
+              >
+                {recipeVersions.map((version) => (
+                  <option key={version.id} value={version.id}>
+                    {`v${version.versionNumber}${version.id === activeRecipeId ? " • current" : ""}`}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <button
+              type="button"
+              onClick={() => void handleCreateVersion()}
+              disabled={pendingSave}
+              className="inline-flex h-8 items-center justify-center rounded-md border border-zinc-200 bg-white px-2.5 text-xs font-medium text-zinc-700 transition-colors hover:bg-zinc-100 disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              Новая версия
+            </button>
+            <span className="mb-1 text-xs text-zinc-500">Текущая: v{activeVersionNumber}</span>
+          </div>
+        ) : null}
         {sectionErrors.title ? <p className="mt-1.5 text-xs text-rose-600">{sectionErrors.title}</p> : null}
         {visibleSaveResult && !visibleSaveResult.ok ? (
           <div className="mt-1.5 flex flex-wrap items-center gap-3 text-xs">

@@ -29,6 +29,7 @@ import {
   type RecipeListItemDto,
   type RecipeHopUseType,
   type RecipePublicationState,
+  type RecipeVersionOptionDto,
   updateRecipePayloadSchema
 } from "./contracts";
 import { getRecipePublicationFieldErrors } from "./publication-validation";
@@ -83,6 +84,19 @@ const ensureOwnedRecipe = async (authorId: string, recipeId: string) => {
   }
 
   return recipe;
+};
+
+const listRecipeVersions = async (authorId: string, recipeFamilyId: string): Promise<RecipeVersionOptionDto[]> => {
+  const rows = await db.query.recipes.findMany({
+    where: and(eq(recipes.authorId, authorId), eq(recipes.recipeFamilyId, recipeFamilyId)),
+    orderBy: [desc(recipes.versionNumber)]
+  });
+
+  return rows.map((row) => ({
+    id: row.id,
+    versionNumber: row.versionNumber,
+    updatedAt: row.updatedAt
+  }));
 };
 
 const ensureAccessibleRecipe = async (viewerId: string | null, recipeId: string) => {
@@ -654,6 +668,8 @@ const hydrateRecipeIngredientDto = async (
 const mapRecipeListDto = (recipe: typeof recipes.$inferSelect): RecipeListItemDto => ({
   id: recipe.id,
   authorId: recipe.authorId,
+  recipeFamilyId: recipe.recipeFamilyId,
+  versionNumber: recipe.versionNumber,
   publicationState: recipe.publicationState,
   title: recipe.title,
   slug: recipe.slug,
@@ -682,6 +698,7 @@ const mapRecipeDetailDto = async (
   authorNotes: recipe.authorNotes,
   processMeta: parseRecipeProcessMeta(recipe.processMeta as Record<string, unknown> | null | undefined),
   heroImageId: recipe.heroImageId,
+  versions: await listRecipeVersions(recipe.authorId, recipe.recipeFamilyId),
   ingredients: await Promise.all(ingredients.map((ingredient) => hydrateRecipeIngredientDto(recipe.authorId, ingredient)))
 });
 
@@ -886,7 +903,11 @@ export const recomputeRecipeStats = async (authorId: string, recipeId: string) =
   return mapRecipeListDto(updated);
 };
 
-export const createRecipe = async (authorId: string, payload: unknown) => {
+export const createRecipe = async (
+  authorId: string,
+  payload: unknown,
+  options?: { recipeFamilyId?: string; versionNumber?: number }
+) => {
   const parsed = createRecipePayloadSchema.parse(normalizeCreateRecipePayloadDefaults(payload));
   const preparedIngredients = await prepareRecipeIngredientEntries(authorId, parsed.ingredients);
   const nextProcessMeta = parseRecipeProcessMeta(parsed.processMeta ?? null);
@@ -908,6 +929,8 @@ export const createRecipe = async (authorId: string, payload: unknown) => {
     try {
       [created] = await db.insert(recipes).values({
         authorId,
+        recipeFamilyId: options?.recipeFamilyId ?? crypto.randomUUID(),
+        versionNumber: options?.versionNumber ?? 1,
         publicationState: parsed.publicationState,
         title: parsed.title,
         slug,
@@ -1062,6 +1085,46 @@ export const cloneRecipe = async (authorId: string, recipeId: string) => {
       timeOffset: ingredient.timeOffset,
       stepMeta: ingredient.stepMeta
     }))
+  });
+};
+
+export const createRecipeVersion = async (authorId: string, recipeId: string) => {
+  const currentRecipe = await ensureOwnedRecipe(authorId, recipeId);
+  const recipe = await getOwnedRecipeById(authorId, recipeId);
+  const familyVersions = await db.query.recipes.findMany({
+    where: and(eq(recipes.authorId, authorId), eq(recipes.recipeFamilyId, currentRecipe.recipeFamilyId))
+  });
+  const nextVersionNumber = familyVersions.reduce((maxVersion, item) => (
+    item.versionNumber > maxVersion ? item.versionNumber : maxVersion
+  ), 0) + 1;
+
+  return createRecipe(authorId, {
+    title: recipe.title,
+    publicationState: "private",
+    styleId: recipe.styleId,
+    batchSizeEnteredQuantity: recipe.batchSizeEnteredQuantity,
+    batchSizeEnteredUnit: recipe.batchSizeEnteredUnit,
+    efficiency: recipe.efficiency,
+    boilTimeMinutes: recipe.boilTimeMinutes,
+    description: recipe.description,
+    authorNotes: recipe.authorNotes,
+    processMeta: recipe.processMeta,
+    ingredients: recipe.ingredients.map((ingredient) => ({
+      ingredientCatalogItemId: ingredient.ingredientCatalogItemId,
+      userCustomIngredientId: ingredient.userCustomIngredientId,
+      type: ingredient.type,
+      category: ingredient.ingredientCategory ?? undefined,
+      subtype: ingredient.ingredientSubtype ?? null,
+      familyId: ingredient.ingredientFamilyId ?? null,
+      amountEnteredQuantity: ingredient.amountEnteredQuantity,
+      amountEnteredUnit: ingredient.amountEnteredUnit,
+      stage: ingredient.stage,
+      timeOffset: ingredient.timeOffset,
+      stepMeta: ingredient.stepMeta
+    }))
+  }, {
+    recipeFamilyId: currentRecipe.recipeFamilyId,
+    versionNumber: nextVersionNumber
   });
 };
 

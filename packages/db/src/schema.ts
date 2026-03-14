@@ -261,6 +261,8 @@ export const userIngredients = pgTable("user_ingredients", {
 export const recipes = pgTable("recipes", {
   id: uuid("id").defaultRandom().primaryKey(),
   authorId: uuid("author_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  recipeFamilyId: uuid("recipe_family_id").notNull(),
+  versionNumber: integer("version_number").default(1).notNull(),
   publicationState: recipePublicationStateEnum("publication_state").default("draft").notNull(),
   title: varchar("title", { length: 180 }).notNull(),
   slug: varchar("slug", { length: 220 }).notNull(),
@@ -284,6 +286,8 @@ export const recipes = pgTable("recipes", {
   updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull()
 }, (table) => ({
   authorIdIdx: index("recipes_author_id_idx").on(table.authorId),
+  familyIdIdx: index("recipes_family_id_idx").on(table.recipeFamilyId),
+  familyVersionIdx: uniqueIndex("recipes_family_version_uidx").on(table.recipeFamilyId, table.versionNumber),
   publicationStateIdx: index("recipes_publication_state_idx").on(table.publicationState),
   slugIdx: uniqueIndex("recipes_slug_uidx").on(table.slug)
 }));

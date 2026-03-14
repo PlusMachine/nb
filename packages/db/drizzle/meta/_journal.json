@@ -97,6 +97,12 @@
       "tag": "0015_recipe_designer_meta_compat",
       "when": 1774000000000,
       "breakpoints": true
+    },
+    {
+      "idx": 16,
+      "tag": "0016_recipe_versioning",
+      "when": 1775000000000,
+      "breakpoints": true
     }
   ]
 }

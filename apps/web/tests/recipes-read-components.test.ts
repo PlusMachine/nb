@@ -18,6 +18,8 @@ import { defaultRecipeProcessMeta, type RecipeDetailDto } from "../features/reci
 const recipeDetail: RecipeDetailDto = {
   id: "r-1",
   authorId: "u-1",
+  recipeFamilyId: "rf-1",
+  versionNumber: 1,
   publicationState: "published",
   title: "Hazy IPA",
   slug: "public-ipa",
@@ -37,6 +39,7 @@ const recipeDetail: RecipeDetailDto = {
   authorNotes: "Добавить сухое охмеление",
   processMeta: defaultRecipeProcessMeta,
   heroImageId: null,
+  versions: [{ id: "r-1", versionNumber: 1, updatedAt: new Date("2026-01-02T00:00:00.000Z") }],
   createdAt: new Date("2026-01-01T00:00:00.000Z"),
   updatedAt: new Date("2026-01-02T00:00:00.000Z"),
   ingredients: [

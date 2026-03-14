@@ -6,6 +6,8 @@ import { defaultRecipeProcessMeta, type RecipeDetailDto, type RecipeListItemDto 
 const publicRecipe: RecipeDetailDto = {
   id: "r-public",
   authorId: "u-1",
+  recipeFamilyId: "rf-1",
+  versionNumber: 1,
   publicationState: "published",
   title: "Public IPA",
   slug: "public-ipa",
@@ -25,6 +27,7 @@ const publicRecipe: RecipeDetailDto = {
   authorNotes: "Public notes",
   processMeta: defaultRecipeProcessMeta,
   heroImageId: null,
+  versions: [{ id: "r-1", versionNumber: 1, updatedAt: new Date("2026-01-02T00:00:00.000Z") }],
   createdAt: new Date("2026-01-01T00:00:00.000Z"),
   updatedAt: new Date("2026-01-02T00:00:00.000Z"),
   ingredients: [
@@ -51,6 +54,8 @@ const publicList: RecipeListItemDto[] = [
   {
     id: "r-public",
     authorId: "u-1",
+    recipeFamilyId: "rf-1",
+    versionNumber: 1,
     publicationState: "published",
     title: "Public IPA",
     slug: "public-ipa",

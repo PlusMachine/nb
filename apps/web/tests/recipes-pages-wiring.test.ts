@@ -7,6 +7,8 @@ import type { RecipeListItemDto } from "../features/recipes/contracts";
 const recipeListItem: RecipeListItemDto = {
   id: "r-1",
   authorId: "u-1",
+  recipeFamilyId: "rf-1",
+  versionNumber: 1,
   publicationState: "draft",
   title: "My Pils",
   slug: "public-ipa",

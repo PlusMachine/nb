@@ -6,7 +6,7 @@ import { ZodError } from "zod";
 import type { IngredientCategory, IngredientSuggestionItem } from "@/features/ingredients/contracts";
 import type { RecipeDetailDto } from "@/features/recipes/contracts";
 import type { RecipeDraftPreviewDto } from "@/features/recipes/contracts";
-import { cloneRecipe, createRecipe, deleteRecipe, previewRecipeDraft, updateRecipe } from "@/features/recipes/service";
+import { cloneRecipe, createRecipe, createRecipeVersion, deleteRecipe, previewRecipeDraft, updateRecipe } from "@/features/recipes/service";
 import { requireUser } from "@/lib/auth";
 
 export type RecipeEditorPayload = {
@@ -174,6 +174,25 @@ export const cloneRecipeAction = async (recipeId: string): Promise<RecipeEditorR
     return {
       ok: true,
       message: "Рецепт клонирован.",
+      recipe
+    };
+  } catch (error) {
+    return mapRecipeEditorError(error);
+  }
+};
+
+export const createRecipeVersionAction = async (recipeId: string): Promise<RecipeEditorResult> => {
+  try {
+    const user = await requireUser();
+    const recipe = await createRecipeVersion(user.id, recipeId);
+
+    revalidatePath("/app/recipes");
+    revalidatePath(`/app/recipes/${recipe.id}`);
+    revalidatePath(`/app/recipes/${recipe.id}/edit`);
+
+    return {
+      ok: true,
+      message: "Новая версия рецепта создана.",
       recipe
     };
   } catch (error) {

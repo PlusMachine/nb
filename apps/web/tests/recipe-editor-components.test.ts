@@ -24,6 +24,7 @@ vi.mock("next/navigation", () => ({
 vi.mock("../app/(app)/app/recipes/actions", () => ({
   createRecipeAction: vi.fn(),
   updateRecipeAction: vi.fn(),
+  createRecipeVersionAction: vi.fn(),
   previewRecipeDraftAction: vi.fn(),
   createRecipeCustomIngredientAction: vi.fn(),
   proposeRecipeIngredientAction: vi.fn()

@@ -232,6 +232,8 @@ export type RecipeIngredientDto = {
 export type RecipeListItemDto = {
   id: string;
   authorId: string;
+  recipeFamilyId: string;
+  versionNumber: number;
   publicationState: RecipePublicationState;
   title: string;
   slug: string;
@@ -251,12 +253,19 @@ export type RecipeListItemDto = {
   updatedAt: Date;
 };
 
+export type RecipeVersionOptionDto = {
+  id: string;
+  versionNumber: number;
+  updatedAt: Date;
+};
+
 export type RecipeDetailDto = RecipeListItemDto & {
   description: string | null;
   authorNotes: string | null;
   processMeta: RecipeProcessMeta;
   heroImageId: string | null;
   ingredients: RecipeIngredientDto[];
+  versions: RecipeVersionOptionDto[];
 };
 
 export type RecipeDraftPreviewDto = {
