@@ -1,8 +1,24 @@
 "use client";
 
-import { convertWeight, evaluateStyleFit, styleRangeFixtures } from "@nb/brewing-core";
+import { convertWeight, evaluateStyleFit, sgToPlato, styleRangeFixtures } from "@nb/brewing-core";
+import {
+  CircleCheck,
+  CircleAlert,
+  ChevronRight,
+  Droplets,
+  FileText,
+  FlaskConical,
+  Hop,
+  Package,
+  Pencil,
+  StickyNote,
+  Target,
+  Thermometer,
+  Timer,
+  Wheat
+} from "lucide-react";
 import React, { startTransition, useEffect, useMemo, useRef, useState } from "react";
-import Link from "next/link";
+
 import { useRouter } from "next/navigation";
 
 import {
@@ -511,6 +527,30 @@ const getSectionTitle = (category: IngredientCategory) => {
   return "Прочее";
 };
 
+const categoryIcons: Record<IngredientCategory, React.ComponentType<{ className?: string }>> = {
+  fermentable: Wheat,
+  hop: Hop,
+  yeast: FlaskConical,
+  water_prep: Droplets,
+  misc: Package
+};
+
+const categoryAccentBorder: Record<IngredientCategory, string> = {
+  fermentable: "border-l-amber-400",
+  hop: "border-l-emerald-500",
+  yeast: "border-l-violet-400",
+  water_prep: "border-l-sky-400",
+  misc: "border-l-zinc-300"
+};
+
+const categoryIconBg: Record<IngredientCategory, string> = {
+  fermentable: "bg-amber-50 text-amber-600",
+  hop: "bg-emerald-50 text-emerald-600",
+  yeast: "bg-violet-50 text-violet-600",
+  water_prep: "bg-sky-50 text-sky-600",
+  misc: "bg-zinc-100 text-zinc-500"
+};
+
 const getCategoryRows = (ingredients: DesignerIngredient[], category: IngredientCategory) => ingredients.filter((ingredient) => ingredient.category === category);
 
 const getFermentableWeightTotalKg = (ingredients: DesignerIngredient[]) => {
@@ -525,6 +565,29 @@ const getFermentableWeightTotalKg = (ingredients: DesignerIngredient[]) => {
     }
 
     return sum + convertWeight({ value: quantity, unit: ingredient.amountEnteredUnit as "g" | "kg" | "oz" | "lb" }, "kg").value;
+  }, 0);
+};
+
+const getIngredientWeightKg = (ingredient: DesignerIngredient): number => {
+  const quantity = Number(ingredient.amountEnteredQuantity);
+  if (!Number.isFinite(quantity) || quantity <= 0) return 0;
+  if (!["g", "kg", "oz", "lb"].includes(ingredient.amountEnteredUnit)) return 0;
+  return convertWeight({ value: quantity, unit: ingredient.amountEnteredUnit as "g" | "kg" | "oz" | "lb" }, "kg").value;
+};
+
+const getFermentablePercentage = (ingredient: DesignerIngredient, totalKg: number): number | null => {
+  if (totalKg <= 0) return null;
+  const kg = getIngredientWeightKg(ingredient);
+  if (kg <= 0) return null;
+  return (kg / totalKg) * 100;
+};
+
+const getHopWeightTotalG = (ingredients: DesignerIngredient[]) => {
+  return ingredients.reduce((sum, ingredient) => {
+    const quantity = Number(ingredient.amountEnteredQuantity);
+    if (!Number.isFinite(quantity) || quantity <= 0) return sum;
+    if (!["g", "kg", "oz", "lb"].includes(ingredient.amountEnteredUnit)) return sum;
+    return sum + convertWeight({ value: quantity, unit: ingredient.amountEnteredUnit as "g" | "kg" | "oz" | "lb" }, "g").value;
   }, 0);
 };
 
@@ -550,32 +613,36 @@ const getMetricPositionPercent = (value: number | null, min: number, max: number
 const getMetricStatusAppearance = (status: "in_range" | "below" | "above" | null) => {
   if (status === "in_range") {
     return {
-      label: "В диапазоне",
-      badgeClassName: "bg-emerald-100 text-emerald-800",
-      markerClassName: "bg-emerald-500"
+      label: "В стиле",
+      badgeClassName: "bg-emerald-50 text-emerald-700 ring-1 ring-emerald-200",
+      needleClassName: "bg-emerald-500",
+      needleDotClassName: "bg-emerald-500 ring-2 ring-white shadow"
     };
   }
 
   if (status === "below") {
     return {
       label: "Ниже",
-      badgeClassName: "bg-amber-100 text-amber-800",
-      markerClassName: "bg-amber-500"
+      badgeClassName: "bg-amber-50 text-amber-700 ring-1 ring-amber-200",
+      needleClassName: "bg-amber-500",
+      needleDotClassName: "bg-amber-500 ring-2 ring-white shadow"
     };
   }
 
   if (status === "above") {
     return {
       label: "Выше",
-      badgeClassName: "bg-rose-100 text-rose-800",
-      markerClassName: "bg-rose-500"
+      badgeClassName: "bg-rose-50 text-rose-700 ring-1 ring-rose-200",
+      needleClassName: "bg-rose-500",
+      needleDotClassName: "bg-rose-500 ring-2 ring-white shadow"
     };
   }
 
   return {
-    label: "Практич. диапазон",
-    badgeClassName: "bg-zinc-100 text-zinc-600",
-    markerClassName: "bg-zinc-500"
+    label: "—",
+    badgeClassName: "bg-zinc-50 text-zinc-500 ring-1 ring-zinc-200",
+    needleClassName: "bg-zinc-400",
+    needleDotClassName: "bg-zinc-400 ring-2 ring-white shadow"
   };
 };
 
@@ -690,6 +757,58 @@ function StylePicker({
   );
 }
 
+function StyleRangeTrack({
+  actualValue,
+  globalRange,
+  styleRange,
+  status,
+  valueLabel
+}: {
+  actualValue: number | null;
+  globalRange: { min: number; max: number };
+  styleRange: { min: number; max: number } | null;
+  status: "in_range" | "below" | "above" | null;
+  valueLabel: string;
+}) {
+  const appearance = getMetricStatusAppearance(status);
+  const valuePercent = getMetricPositionPercent(actualValue, globalRange.min, globalRange.max);
+
+  if (valuePercent == null) {
+    return <div className="flex h-5 items-center text-[11px] text-zinc-400">Нет данных</div>;
+  }
+
+  const bandLeft = styleRange ? clampPercent(((styleRange.min - globalRange.min) / (globalRange.max - globalRange.min)) * 100) : null;
+  const bandRight = styleRange ? clampPercent(((styleRange.max - globalRange.min) / (globalRange.max - globalRange.min)) * 100) : null;
+  const bandWidth = bandLeft != null && bandRight != null ? bandRight - bandLeft : null;
+
+  return (
+    <div className="relative h-6 w-full rounded-md bg-zinc-100">
+      {bandLeft != null && bandWidth != null && (
+        <div
+          className="absolute inset-y-0 rounded-md bg-emerald-500/[.12] ring-1 ring-inset ring-emerald-500/20"
+          style={{ left: `${bandLeft}%`, width: `${bandWidth}%` }}
+        />
+      )}
+      <div
+        className={`absolute top-0 h-full w-[2px] -translate-x-[1px] ${appearance.needleClassName}`}
+        style={{ left: `${valuePercent}%` }}
+      />
+      <div
+        className={`absolute top-1/2 h-3 w-3 -translate-x-1/2 -translate-y-1/2 rounded-full ${appearance.needleDotClassName}`}
+        style={{ left: `${valuePercent}%` }}
+      />
+      <span className="pointer-events-none absolute inset-0 flex items-center justify-center text-[11px] font-semibold tabular-nums text-zinc-700">
+        {valueLabel}
+      </span>
+    </div>
+  );
+}
+
+const formatGravityPlato = (sg: number | null) => {
+  if (sg == null) return "—";
+  return `${sgToPlato(sg, 1).toFixed(1)} °P`;
+};
+
 function RecipeStyleStatsBlock({
   preview,
   recalculating,
@@ -701,95 +820,111 @@ function RecipeStyleStatsBlock({
 }) {
   const hasStyleRange = Boolean(preview?.styleRange);
   const hasCalculatedMetrics = [preview?.og, preview?.fg, preview?.abv, preview?.ibu, preview?.color].some((value) => value != null);
-  const range = preview?.styleRange ?? {
-    og: globalBrewingRanges.og,
-    fg: globalBrewingRanges.fg,
-    abv: globalBrewingRanges.abv,
-    ibu: globalBrewingRanges.ibu,
-    colorSrm: globalBrewingRanges.colorSrm
-  };
+  const styleRange = preview?.styleRange ?? null;
   const fit = preview?.styleFit;
+  const overallFit = fit?.overallFit ?? false;
+  const styleName = styleRange?.name ?? null;
+
   const items = [
     {
       label: "OG",
-      value: formatGravityWithPlato(preview?.og ?? null),
-      range: `${range.og.min.toFixed(3)} - ${range.og.max.toFixed(3)}`,
-      status: hasStyleRange ? fit?.og.status ?? null : null,
-      positionPercent: getMetricPositionPercent(preview?.og ?? null, range.og.min, range.og.max)
+      valueLabel: preview?.og != null ? `${preview.og.toFixed(3)} · ${formatGravityPlato(preview.og)}` : "—",
+      actualValue: preview?.og ?? null,
+      globalRange: globalBrewingRanges.og,
+      styleRange: styleRange?.og ?? null,
+      globalMinLabel: globalBrewingRanges.og.min.toFixed(3),
+      globalMaxLabel: globalBrewingRanges.og.max.toFixed(3),
+      status: hasStyleRange ? fit?.og.status ?? null : null
     },
     {
       label: "FG",
-      value: formatGravityWithPlato(preview?.fg ?? null),
-      range: `${range.fg.min.toFixed(3)} - ${range.fg.max.toFixed(3)}`,
-      status: hasStyleRange ? fit?.fg.status ?? null : null,
-      positionPercent: getMetricPositionPercent(preview?.fg ?? null, range.fg.min, range.fg.max)
+      valueLabel: preview?.fg != null ? `${preview.fg.toFixed(3)} · ${formatGravityPlato(preview.fg)}` : "—",
+      actualValue: preview?.fg ?? null,
+      globalRange: globalBrewingRanges.fg,
+      styleRange: styleRange?.fg ?? null,
+      globalMinLabel: globalBrewingRanges.fg.min.toFixed(3),
+      globalMaxLabel: globalBrewingRanges.fg.max.toFixed(3),
+      status: hasStyleRange ? fit?.fg.status ?? null : null
     },
     {
       label: "ABV",
-      value: preview?.abv == null ? "—" : `${preview.abv.toFixed(1)}%`,
-      range: `${range.abv.min.toFixed(1)} - ${range.abv.max.toFixed(1)}%`,
-      status: hasStyleRange ? fit?.abv.status ?? null : null,
-      positionPercent: getMetricPositionPercent(preview?.abv ?? null, range.abv.min, range.abv.max)
+      valueLabel: preview?.abv != null ? `${preview.abv.toFixed(1)}%` : "—",
+      actualValue: preview?.abv ?? null,
+      globalRange: globalBrewingRanges.abv,
+      styleRange: styleRange?.abv ?? null,
+      globalMinLabel: `${globalBrewingRanges.abv.min.toFixed(0)}%`,
+      globalMaxLabel: `${globalBrewingRanges.abv.max.toFixed(0)}%`,
+      status: hasStyleRange ? fit?.abv.status ?? null : null
     },
     {
       label: "IBU",
-      value: preview?.ibu == null ? "—" : `${preview.ibu.toFixed(0)} IBU`,
-      range: `${range.ibu.min.toFixed(0)} - ${range.ibu.max.toFixed(0)} IBU`,
-      status: hasStyleRange ? fit?.ibu.status ?? null : null,
-      positionPercent: getMetricPositionPercent(preview?.ibu ?? null, range.ibu.min, range.ibu.max)
+      valueLabel: preview?.ibu != null ? `${preview.ibu.toFixed(0)}` : "—",
+      actualValue: preview?.ibu ?? null,
+      globalRange: globalBrewingRanges.ibu,
+      styleRange: styleRange?.ibu ?? null,
+      globalMinLabel: `${globalBrewingRanges.ibu.min.toFixed(0)}`,
+      globalMaxLabel: `${globalBrewingRanges.ibu.max.toFixed(0)}`,
+      status: hasStyleRange ? fit?.ibu.status ?? null : null
     },
     {
       label: "Color",
-      value: formatColorWithEbc(preview?.color ?? null),
-      range: `${range.colorSrm.min.toFixed(0)} - ${range.colorSrm.max.toFixed(0)} SRM`,
-      status: hasStyleRange ? fit?.colorSrm.status ?? null : null,
-      positionPercent: getMetricPositionPercent(preview?.color ?? null, range.colorSrm.min, range.colorSrm.max)
+      valueLabel: preview?.color != null ? formatColorWithEbc(preview.color) : "—",
+      actualValue: preview?.color ?? null,
+      globalRange: globalBrewingRanges.colorSrm,
+      styleRange: styleRange?.colorSrm ?? null,
+      globalMinLabel: `${globalBrewingRanges.colorSrm.min.toFixed(0)}`,
+      globalMaxLabel: `${globalBrewingRanges.colorSrm.max.toFixed(0)}`,
+      status: hasStyleRange ? fit?.colorSrm.status ?? null : null
     }
   ];
 
   return (
-    <section className="rounded-2xl border border-zinc-200 bg-white p-4">
-      <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
-        <div>
-          <h2 className="text-sm font-semibold text-zinc-950">Стиль и расчёт</h2>
-          <p className="text-xs text-zinc-500">
-            {previewError
-              ? previewError
-              : hasCalculatedMetrics
-                ? preview?.styleRange
-                  ? `Текущие показатели draft против диапазона ${preview.styleRange.name}.`
-                  : "Текущие показатели draft против практических диапазонов для пивных рецептов."
-                : "Добавьте хотя бы одно сбраживаемое; для IBU понадобится ещё и хмель."}
-          </p>
+    <section className="rounded-2xl border border-zinc-100 bg-white p-4 shadow-sm">
+      <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
+        <div className="flex items-center gap-2">
+          <Target className="h-4 w-4 text-zinc-400" />
+          <h2 className="text-sm font-semibold text-zinc-900">
+            {styleName ? `Ваш рецепт и BJCP ${styleName}` : "Расчёт показателей"}
+          </h2>
+          {hasStyleRange && hasCalculatedMetrics ? (
+            <span className={`flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-medium ${overallFit ? "bg-emerald-50 text-emerald-700 ring-1 ring-emerald-200" : "bg-amber-50 text-amber-700 ring-1 ring-amber-200"}`}>
+              {overallFit ? <CircleCheck className="h-3 w-3" /> : <CircleAlert className="h-3 w-3" />}
+              {overallFit ? "В стиле" : "Отклонения"}
+            </span>
+          ) : null}
+          {recalculating ? (
+            <span className="rounded-full bg-zinc-100 px-2 py-0.5 text-[10px] font-medium text-zinc-500">
+              Пересчёт...
+            </span>
+          ) : null}
         </div>
-        <span className={`rounded-full px-2 py-1 text-xs font-medium ${recalculating ? "bg-amber-100 text-amber-800" : "bg-zinc-100 text-zinc-700"}`}>
-          {recalculating ? "Пересчитываем..." : "Актуально по draft"}
-        </span>
+        {previewError ? <p className="text-xs text-rose-500">{previewError}</p> : null}
       </div>
 
-      <div className="space-y-2">
+      <div className="-mx-1">
         {items.map((item) => {
           const appearance = getMetricStatusAppearance(item.status);
 
           return (
-            <div key={item.label} className="grid gap-3 rounded-xl border border-zinc-100 px-3 py-3 sm:grid-cols-[72px_minmax(0,1fr)_190px_220px] sm:items-center">
-              <div className="text-xs font-semibold uppercase tracking-[0.12em] text-zinc-500">{item.label}</div>
-              <div className="text-sm font-medium text-zinc-950">{item.value}</div>
-              <div className="text-xs text-zinc-500">{item.range}</div>
-              <div className="flex items-center gap-3">
-                <span className={`shrink-0 rounded-full px-2 py-1 text-[11px] font-medium ${appearance.badgeClassName}`}>
+            <div key={item.label} className="group grid items-center gap-x-2 rounded-lg px-1 py-1 transition-colors hover:bg-zinc-50 sm:grid-cols-[36px_minmax(0,1fr)_60px]">
+              <div className="text-[11px] font-bold uppercase tracking-wider text-zinc-400">{item.label}</div>
+              <div>
+                <StyleRangeTrack
+                  actualValue={item.actualValue}
+                  globalRange={item.globalRange}
+                  styleRange={item.styleRange}
+                  status={item.status}
+                  valueLabel={item.valueLabel}
+                />
+                <div className="flex justify-between text-[9px] tabular-nums text-zinc-400">
+                  <span>{item.globalMinLabel}</span>
+                  <span>{item.globalMaxLabel}</span>
+                </div>
+              </div>
+              <div className="flex justify-end">
+                <span className={`inline-flex w-[60px] justify-center rounded-full px-1.5 py-0.5 text-[10px] font-medium ${appearance.badgeClassName}`}>
                   {appearance.label}
                 </span>
-                {item.positionPercent == null ? (
-                  <span className="text-[11px] text-zinc-400">Нет расчёта</span>
-                ) : (
-                  <div className="relative h-2 w-full rounded-full bg-zinc-200">
-                    <span
-                      className={`absolute top-1/2 h-3 w-3 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-white shadow-sm ${appearance.markerClassName}`}
-                      style={{ left: `${item.positionPercent}%` }}
-                    />
-                  </div>
-                )}
               </div>
             </div>
           );
@@ -802,25 +937,48 @@ function RecipeStyleStatsBlock({
 function SectionRow({
   ingredient,
   onEdit,
-  onDelete
+  onDelete,
+  onQuantityChange,
+  percentage
 }: {
   ingredient: DesignerIngredient;
   onEdit: (ingredient: DesignerIngredient) => void;
   onDelete: (localId: string) => void;
+  onQuantityChange: (localId: string, quantity: string) => void;
+  percentage?: number | null;
 }) {
+  const accent = categoryAccentBorder[ingredient.category];
+  const unitLabel = inventoryUnitLabels[ingredient.amountEnteredUnit] ?? ingredient.amountEnteredUnit;
   return (
-    <li className="rounded-xl border border-zinc-100 bg-zinc-50 px-3 py-3">
-      <div className="flex items-start justify-between gap-3">
-        <div className="min-w-0">
-          <div className="truncate text-sm font-semibold text-zinc-950">{ingredient.selectedName}</div>
-          <div className="mt-1 text-xs text-zinc-500">{buildSummaryDetails(ingredient) || ingredient.selectedSummary || ingredient.familyDisplayName || "Без доп. деталей"}</div>
-        </div>
-        <div className="shrink-0 text-right">
-          <div className="text-sm font-medium text-zinc-900">{getQuantityText(ingredient)}</div>
-          <div className="mt-2 flex justify-end gap-2 text-xs">
-            <button type="button" onClick={() => onEdit(ingredient)} className="rounded-md border border-zinc-300 bg-white px-2.5 py-1.5">Редактировать</button>
-            <button type="button" onClick={() => onDelete(ingredient.localId)} className="rounded-md border border-rose-300 bg-white px-2.5 py-1.5 text-rose-700">Удалить</button>
+    <li className={`rounded-lg border-l-[3px] bg-white px-3 py-2.5 shadow-sm ring-1 ring-zinc-100 transition-shadow hover:shadow-md ${accent}`}>
+      <div className="flex items-center gap-3">
+        <div className="min-w-0 flex-1">
+          <div className="flex items-center gap-2">
+            <span className="truncate text-sm font-semibold text-zinc-950">{ingredient.selectedName || "Не выбран"}</span>
+            {percentage != null && percentage > 0 ? (
+              <span className="shrink-0 rounded bg-amber-50 px-1.5 py-0.5 text-[11px] font-medium tabular-nums text-amber-700">{percentage.toFixed(1)}%</span>
+            ) : null}
           </div>
+          <div className="mt-0.5 text-xs text-zinc-500">{buildSummaryDetails(ingredient) || ingredient.selectedSummary || ingredient.familyDisplayName || "—"}</div>
+        </div>
+        <div className="flex shrink-0 items-center gap-1">
+          <input
+            type="number"
+            value={ingredient.amountEnteredQuantity}
+            onChange={(event) => onQuantityChange(ingredient.localId, event.target.value)}
+            className="h-7 w-[72px] rounded-md border border-zinc-200 bg-zinc-50 px-2 text-right text-sm tabular-nums text-zinc-900 focus:border-zinc-400 focus:bg-white focus:outline-none focus:ring-1 focus:ring-zinc-200"
+            min={0}
+            step="any"
+          />
+          <span className="text-xs text-zinc-500">{unitLabel}</span>
+        </div>
+        <div className="flex shrink-0 gap-1">
+          <button type="button" onClick={() => onEdit(ingredient)} className="rounded-md p-1.5 text-zinc-400 transition-colors hover:bg-zinc-100 hover:text-zinc-700">
+            <Pencil className="h-3.5 w-3.5" />
+          </button>
+          <button type="button" onClick={() => onDelete(ingredient.localId)} className="rounded-md p-1.5 text-zinc-400 transition-colors hover:bg-rose-50 hover:text-rose-600">
+            <span className="text-xs font-medium">✕</span>
+          </button>
         </div>
       </div>
     </li>
@@ -835,47 +993,50 @@ function RecipeProfiles({
   onChange: (next: RecipeProcessMeta) => void;
 }) {
   return (
-    <div className="grid gap-4 lg:grid-cols-2">
-      <details className="rounded-2xl border border-zinc-200 bg-white p-4">
-        <summary className="cursor-pointer list-none text-sm font-semibold text-zinc-950">Mash Profile</summary>
-        <div className="mt-4 space-y-3">
+    <div className="space-y-4">
+      <section className="rounded-2xl border border-zinc-100 bg-white p-5 shadow-sm">
+        <div className="mb-4 flex items-center gap-2 text-sm font-semibold text-zinc-700">
+          <div className="flex h-7 w-7 items-center justify-center rounded-md bg-orange-50">
+            <Thermometer className="h-3.5 w-3.5 text-orange-500" />
+          </div>
+          Mash Profile
+          <span className="ml-1 text-xs font-normal text-zinc-400">({processMeta.mashProfile.steps.length})</span>
+        </div>
+        <div className="space-y-2">
           {processMeta.mashProfile.steps.map((step, index) => (
-            <div key={step.id} className="grid gap-2 rounded-xl border border-zinc-100 bg-zinc-50 p-3 sm:grid-cols-[minmax(0,1fr)_120px_120px_auto]">
-              <input
-                value={step.name}
-                onChange={(event) => onChange({
-                  ...processMeta,
-                  mashProfile: {
-                    steps: processMeta.mashProfile.steps.map((candidate) => candidate.id === step.id ? { ...candidate, name: event.target.value } : candidate)
-                  }
-                })}
-                className="h-10 rounded-md border border-zinc-200 bg-white px-3 text-sm"
-                placeholder="Название шага"
-              />
-              <input
-                type="number"
-                value={step.temperatureC}
-                onChange={(event) => onChange({
-                  ...processMeta,
-                  mashProfile: {
-                    steps: processMeta.mashProfile.steps.map((candidate) => candidate.id === step.id ? { ...candidate, temperatureC: Number(event.target.value) } : candidate)
-                  }
-                })}
-                className="h-10 rounded-md border border-zinc-200 bg-white px-3 text-sm"
-                placeholder="°C"
-              />
-              <input
-                type="number"
-                value={step.durationMinutes}
-                onChange={(event) => onChange({
-                  ...processMeta,
-                  mashProfile: {
-                    steps: processMeta.mashProfile.steps.map((candidate) => candidate.id === step.id ? { ...candidate, durationMinutes: Number(event.target.value) } : candidate)
-                  }
-                })}
-                className="h-10 rounded-md border border-zinc-200 bg-white px-3 text-sm"
-                placeholder="мин"
-              />
+            <div key={step.id} className="grid gap-2 rounded-lg border-l-[3px] border-l-orange-300 bg-zinc-50 p-3 ring-1 ring-zinc-100 sm:grid-cols-[auto_100px_100px_auto]">
+              <div className="flex h-9 items-center gap-2">
+                <div className="flex h-9 w-7 items-center justify-center rounded-md bg-orange-100 text-xs font-bold text-orange-600">{index + 1}</div>
+                <span className="text-sm font-medium text-zinc-700">Шаг {index + 1}</span>
+              </div>
+              <div className="space-y-0.5">
+                <span className="text-[10px] text-zinc-400">°C</span>
+                <input
+                  type="number"
+                  value={step.temperatureC}
+                  onChange={(event) => onChange({
+                    ...processMeta,
+                    mashProfile: {
+                      steps: processMeta.mashProfile.steps.map((candidate) => candidate.id === step.id ? { ...candidate, temperatureC: Number(event.target.value) } : candidate)
+                    }
+                  })}
+                  className="h-9 w-full rounded-lg border border-zinc-200 bg-white px-2.5 text-sm tabular-nums"
+                />
+              </div>
+              <div className="space-y-0.5">
+                <span className="text-[10px] text-zinc-400">мин</span>
+                <input
+                  type="number"
+                  value={step.durationMinutes}
+                  onChange={(event) => onChange({
+                    ...processMeta,
+                    mashProfile: {
+                      steps: processMeta.mashProfile.steps.map((candidate) => candidate.id === step.id ? { ...candidate, durationMinutes: Number(event.target.value) } : candidate)
+                    }
+                  })}
+                  className="h-9 w-full rounded-lg border border-zinc-200 bg-white px-2.5 text-sm tabular-nums"
+                />
+              </div>
               <button
                 type="button"
                 disabled={processMeta.mashProfile.steps.length === 1}
@@ -885,9 +1046,9 @@ function RecipeProfiles({
                     steps: processMeta.mashProfile.steps.filter((candidate) => candidate.id !== step.id)
                   }
                 })}
-                className="rounded-md border border-zinc-300 bg-white px-3 py-2 text-sm disabled:opacity-50"
+                className="self-end rounded-md p-1.5 text-zinc-400 transition-colors hover:bg-rose-50 hover:text-rose-600 disabled:opacity-30"
               >
-                Удалить
+                <span className="text-xs">✕</span>
               </button>
             </div>
           ))}
@@ -904,19 +1065,25 @@ function RecipeProfiles({
                 }]
               }
             })}
-            className="rounded-md border border-zinc-300 bg-white px-3 py-2 text-sm"
+            className="rounded-lg px-3 py-1.5 text-sm text-zinc-500 transition-colors hover:bg-zinc-100 hover:text-zinc-700"
           >
-            Добавить шаг
+            + Добавить шаг
           </button>
         </div>
-      </details>
+      </section>
 
-      <details className="rounded-2xl border border-zinc-200 bg-white p-4">
-        <summary className="cursor-pointer list-none text-sm font-semibold text-zinc-950">Fermentation Profile</summary>
+      <details className="group rounded-2xl border border-zinc-100 bg-white p-5 shadow-sm">
+        <summary className="flex cursor-pointer list-none items-center gap-2 text-sm font-semibold text-zinc-700">
+          <div className="flex h-7 w-7 items-center justify-center rounded-md bg-sky-50">
+            <Timer className="h-3.5 w-3.5 text-sky-500" />
+          </div>
+          Fermentation Profile
+          <ChevronRight className="ml-auto h-4 w-4 text-zinc-400 transition-transform group-open:rotate-90" />
+        </summary>
         <div className="mt-4 space-y-4">
           <div className="grid gap-3 sm:grid-cols-2">
-            <label className="space-y-1 text-xs font-medium text-zinc-600">
-              Primary temp, °C
+            <label className="space-y-1 text-[11px] font-medium text-zinc-500">
+              Осн. температура, °C
               <input
                 type="number"
                 value={processMeta.fermentationProfile.primaryTemperatureC ?? ""}
@@ -927,11 +1094,11 @@ function RecipeProfiles({
                     primaryTemperatureC: event.target.value ? Number(event.target.value) : null
                   }
                 })}
-                className="h-10 w-full rounded-md border border-zinc-200 bg-white px-3 text-sm text-zinc-900"
+                className="h-9 w-full rounded-lg border border-zinc-200 bg-white px-2.5 text-sm tabular-nums text-zinc-900"
               />
             </label>
-            <label className="space-y-1 text-xs font-medium text-zinc-600">
-              Primary duration, days
+            <label className="space-y-1 text-[11px] font-medium text-zinc-500">
+              Осн. длительность, дн
               <input
                 type="number"
                 value={processMeta.fermentationProfile.primaryDurationDays ?? ""}
@@ -942,51 +1109,48 @@ function RecipeProfiles({
                     primaryDurationDays: event.target.value ? Number(event.target.value) : null
                   }
                 })}
-                className="h-10 w-full rounded-md border border-zinc-200 bg-white px-3 text-sm text-zinc-900"
+                className="h-9 w-full rounded-lg border border-zinc-200 bg-white px-2.5 text-sm tabular-nums text-zinc-900"
               />
             </label>
           </div>
 
           <div className="space-y-2">
-            {processMeta.fermentationProfile.extraSteps.map((step) => (
-              <div key={step.id} className="grid gap-2 rounded-xl border border-zinc-100 bg-zinc-50 p-3 sm:grid-cols-[minmax(0,1fr)_120px_120px_auto]">
-                <input
-                  value={step.name}
-                  onChange={(event) => onChange({
-                    ...processMeta,
-                    fermentationProfile: {
-                      ...processMeta.fermentationProfile,
-                      extraSteps: processMeta.fermentationProfile.extraSteps.map((candidate) => candidate.id === step.id ? { ...candidate, name: event.target.value } : candidate)
-                    }
-                  })}
-                  className="h-10 rounded-md border border-zinc-200 bg-white px-3 text-sm"
-                />
-                <input
-                  type="number"
-                  value={step.temperatureC ?? ""}
-                  onChange={(event) => onChange({
-                    ...processMeta,
-                    fermentationProfile: {
-                      ...processMeta.fermentationProfile,
-                      extraSteps: processMeta.fermentationProfile.extraSteps.map((candidate) => candidate.id === step.id ? { ...candidate, temperatureC: event.target.value ? Number(event.target.value) : null } : candidate)
-                    }
-                  })}
-                  className="h-10 rounded-md border border-zinc-200 bg-white px-3 text-sm"
-                  placeholder="°C"
-                />
-                <input
-                  type="number"
-                  value={step.durationDays ?? ""}
-                  onChange={(event) => onChange({
-                    ...processMeta,
-                    fermentationProfile: {
-                      ...processMeta.fermentationProfile,
-                      extraSteps: processMeta.fermentationProfile.extraSteps.map((candidate) => candidate.id === step.id ? { ...candidate, durationDays: event.target.value ? Number(event.target.value) : null } : candidate)
-                    }
-                  })}
-                  className="h-10 rounded-md border border-zinc-200 bg-white px-3 text-sm"
-                  placeholder="дни"
-                />
+            {processMeta.fermentationProfile.extraSteps.map((step, index) => (
+              <div key={step.id} className="grid gap-2 rounded-lg border-l-[3px] border-l-sky-300 bg-zinc-50 p-3 ring-1 ring-zinc-100 sm:grid-cols-[auto_100px_100px_auto]">
+                <div className="flex h-9 items-center gap-2">
+                  <div className="flex h-9 w-7 items-center justify-center rounded-md bg-sky-100 text-xs font-bold text-sky-600">{index + 1}</div>
+                  <span className="text-sm font-medium text-zinc-700">Шаг {index + 1}</span>
+                </div>
+                <div className="space-y-0.5">
+                  <span className="text-[10px] text-zinc-400">°C</span>
+                  <input
+                    type="number"
+                    value={step.temperatureC ?? ""}
+                    onChange={(event) => onChange({
+                      ...processMeta,
+                      fermentationProfile: {
+                        ...processMeta.fermentationProfile,
+                        extraSteps: processMeta.fermentationProfile.extraSteps.map((candidate) => candidate.id === step.id ? { ...candidate, temperatureC: event.target.value ? Number(event.target.value) : null } : candidate)
+                      }
+                    })}
+                    className="h-9 w-full rounded-lg border border-zinc-200 bg-white px-2.5 text-sm tabular-nums"
+                  />
+                </div>
+                <div className="space-y-0.5">
+                  <span className="text-[10px] text-zinc-400">дни</span>
+                  <input
+                    type="number"
+                    value={step.durationDays ?? ""}
+                    onChange={(event) => onChange({
+                      ...processMeta,
+                      fermentationProfile: {
+                        ...processMeta.fermentationProfile,
+                        extraSteps: processMeta.fermentationProfile.extraSteps.map((candidate) => candidate.id === step.id ? { ...candidate, durationDays: event.target.value ? Number(event.target.value) : null } : candidate)
+                      }
+                    })}
+                    className="h-9 w-full rounded-lg border border-zinc-200 bg-white px-2.5 text-sm tabular-nums"
+                  />
+                </div>
                 <button
                   type="button"
                   onClick={() => onChange({
@@ -996,9 +1160,9 @@ function RecipeProfiles({
                       extraSteps: processMeta.fermentationProfile.extraSteps.filter((candidate) => candidate.id !== step.id)
                     }
                   })}
-                  className="rounded-md border border-zinc-300 bg-white px-3 py-2 text-sm"
+                  className="self-end rounded-md p-1.5 text-zinc-400 transition-colors hover:bg-rose-50 hover:text-rose-600"
                 >
-                  Удалить
+                  <span className="text-xs">✕</span>
                 </button>
               </div>
             ))}
@@ -1016,16 +1180,16 @@ function RecipeProfiles({
                   }]
                 }
               })}
-              className="rounded-md border border-zinc-300 bg-white px-3 py-2 text-sm"
+              className="rounded-lg px-3 py-1.5 text-sm text-zinc-500 transition-colors hover:bg-zinc-100 hover:text-zinc-700"
             >
-              Добавить шаг
+              + Добавить шаг
             </button>
           </div>
 
           <div className="grid gap-3 sm:grid-cols-2">
             {(["coldCrash", "conditioning"] as const).map((key) => (
-              <div key={key} className="rounded-xl border border-zinc-100 bg-zinc-50 p-3">
-                <label className="flex items-center gap-2 text-sm font-medium text-zinc-900">
+              <div key={key} className="rounded-lg bg-zinc-50 p-3 ring-1 ring-zinc-100">
+                <label className="flex items-center gap-2 text-sm font-medium text-zinc-700">
                   <input
                     type="checkbox"
                     checked={processMeta.fermentationProfile[key].enabled}
@@ -1039,42 +1203,47 @@ function RecipeProfiles({
                         }
                       }
                     })}
+                    className="rounded"
                   />
                   {key === "coldCrash" ? "Cold crash" : "Conditioning"}
                 </label>
-                <div className="mt-3 grid gap-2 sm:grid-cols-2">
-                  <input
-                    type="number"
-                    value={processMeta.fermentationProfile[key].temperatureC ?? ""}
-                    onChange={(event) => onChange({
-                      ...processMeta,
-                      fermentationProfile: {
-                        ...processMeta.fermentationProfile,
-                        [key]: {
-                          ...processMeta.fermentationProfile[key],
-                          temperatureC: event.target.value ? Number(event.target.value) : null
+                <div className="mt-2.5 grid gap-2 sm:grid-cols-2">
+                  <div className="space-y-0.5">
+                    <span className="text-[10px] text-zinc-400">°C</span>
+                    <input
+                      type="number"
+                      value={processMeta.fermentationProfile[key].temperatureC ?? ""}
+                      onChange={(event) => onChange({
+                        ...processMeta,
+                        fermentationProfile: {
+                          ...processMeta.fermentationProfile,
+                          [key]: {
+                            ...processMeta.fermentationProfile[key],
+                            temperatureC: event.target.value ? Number(event.target.value) : null
+                          }
                         }
-                      }
-                    })}
-                    className="h-10 rounded-md border border-zinc-200 bg-white px-3 text-sm"
-                    placeholder="°C"
-                  />
-                  <input
-                    type="number"
-                    value={processMeta.fermentationProfile[key].durationDays ?? ""}
-                    onChange={(event) => onChange({
-                      ...processMeta,
-                      fermentationProfile: {
-                        ...processMeta.fermentationProfile,
-                        [key]: {
-                          ...processMeta.fermentationProfile[key],
-                          durationDays: event.target.value ? Number(event.target.value) : null
+                      })}
+                      className="h-9 w-full rounded-lg border border-zinc-200 bg-white px-2.5 text-sm tabular-nums"
+                    />
+                  </div>
+                  <div className="space-y-0.5">
+                    <span className="text-[10px] text-zinc-400">дни</span>
+                    <input
+                      type="number"
+                      value={processMeta.fermentationProfile[key].durationDays ?? ""}
+                      onChange={(event) => onChange({
+                        ...processMeta,
+                        fermentationProfile: {
+                          ...processMeta.fermentationProfile,
+                          [key]: {
+                            ...processMeta.fermentationProfile[key],
+                            durationDays: event.target.value ? Number(event.target.value) : null
+                          }
                         }
-                      }
-                    })}
-                    className="h-10 rounded-md border border-zinc-200 bg-white px-3 text-sm"
-                    placeholder="дни"
-                  />
+                      })}
+                      className="h-9 w-full rounded-lg border border-zinc-200 bg-white px-2.5 text-sm tabular-nums"
+                    />
+                  </div>
                 </div>
               </div>
             ))}
@@ -1165,7 +1334,7 @@ function IngredientEditor({
   const hopUseType = getHopUseType(draft);
 
   return (
-    <div className="space-y-4 rounded-2xl border border-zinc-200 bg-white p-4 shadow-sm">
+    <div className="space-y-4 rounded-2xl border border-zinc-100 bg-white p-5 shadow-lg">
       <div className="flex items-start justify-between gap-3">
         <div>
           <h3 className="text-sm font-semibold text-zinc-950">
@@ -1501,17 +1670,26 @@ export function RecipeDesigner({ mode, initialRecipe }: Props) {
   }, [payload]);
 
   useEffect(() => {
-    const handleBeforeUnload = (event: BeforeUnloadEvent) => {
-      if (!isDirty) {
-        return;
+    if (!isDirty) return;
+    let cancelled = false;
+    const autoSaveTimer = window.setTimeout(async () => {
+      if (cancelled || pendingSave) return;
+      setPendingSave(true);
+      const result = mode === "create"
+        ? await createRecipeAction(payload)
+        : await updateRecipeAction(initialRecipe!.id, payload);
+      if (cancelled) return;
+      setPendingSave(false);
+      setSaveResult(result);
+      if (result.ok && result.recipe) {
+        setSavedSignature(JSON.stringify(payload));
+        if (mode === "create" && result.recipe.publicationState === "draft") {
+          router.replace(`/app/recipes/${result.recipe.id}/edit`);
+        }
       }
-      event.preventDefault();
-      event.returnValue = "";
-    };
-
-    window.addEventListener("beforeunload", handleBeforeUnload);
-    return () => window.removeEventListener("beforeunload", handleBeforeUnload);
-  }, [isDirty]);
+    }, 1500);
+    return () => { cancelled = true; window.clearTimeout(autoSaveTimer); };
+  }, [isDirty, payload, mode, initialRecipe, pendingSave, router]);
 
   const maybeOpenEditor = (next: OpenEditorState) => {
     if (editorDirty && !window.confirm("Текущий редактор ингредиента содержит несохранённые изменения. Закрыть его?")) {
@@ -1563,29 +1741,10 @@ export function RecipeDesigner({ mode, initialRecipe }: Props) {
     }
   };
 
-  const handleSave = async () => {
-    setPendingSave(true);
-    const result = mode === "create"
-      ? await createRecipeAction(payload)
-      : await updateRecipeAction(initialRecipe!.id, payload);
-
-    setPendingSave(false);
-    setSaveResult(result);
-
-    if (!result.ok || !result.recipe) {
-      return;
-    }
-
-    setSavedSignature(JSON.stringify(payload));
-
-    if (result.recipe.publicationState === "draft") {
-      if (mode === "create") {
-        router.replace(`/app/recipes/${result.recipe.id}/edit`);
-      }
-      return;
-    }
-
-    router.push(`/app/recipes/${result.recipe.id}`);
+  const updateIngredientQuantity = (localId: string, quantity: string) => {
+    setIngredients((current) =>
+      current.map((ingredient) => ingredient.localId === localId ? { ...ingredient, amountEnteredQuantity: quantity } : ingredient)
+    );
   };
 
   const sectionErrors = saveResult?.fieldErrors ?? {};
@@ -1595,40 +1754,44 @@ export function RecipeDesigner({ mode, initialRecipe }: Props) {
   const waterPrep = getCategoryRows(ingredients, "water_prep");
   const misc = getCategoryRows(ingredients, "misc");
 
+  const fermentableTotalKg = getFermentableWeightTotalKg(fermentables);
+  const hopTotalG = getHopWeightTotalG(hops);
+
   const sectionDefinitions: Array<{
     category: IngredientCategory;
     title: string;
+    subtitle?: string;
     items: DesignerIngredient[];
     empty: string;
-    extraHeader?: React.ReactNode;
     renderItems?: (items: DesignerIngredient[]) => React.ReactNode;
   }> = [
-    {
-      category: "fermentable",
-      title: "Сбраживаемое",
-      items: fermentables,
-      empty: "Соберите grain bill или добавьте сахар/экстракт.",
-      extraHeader: fermentables.length ? <span className="text-xs text-zinc-500">Итого: {getFermentableWeightTotalKg(fermentables).toFixed(2)} кг</span> : null
-    },
-    {
-      category: "hop",
-      title: "Хмель",
-      items: hops,
-      empty: "Пока нет хмеля. Добавьте кипячение, whirlpool, dry hop или dip hop.",
+      {
+        category: "fermentable",
+        title: "Сбраживаемое",
+        subtitle: fermentables.length ? `${fermentableTotalKg.toFixed(2)} кг` : undefined,
+        items: fermentables,
+        empty: "Соберите grain bill или добавьте сахар/экстракт."
+      },
+      {
+        category: "hop",
+        title: "Хмель",
+        subtitle: hops.length ? `${hopTotalG.toFixed(0)} г` : undefined,
+        items: hops,
+        empty: "Пока нет хмеля. Добавьте кипячение, whirlpool, dry hop или dip hop.",
       renderItems: (items) => (
         <div className="space-y-4">
           {recipeHopUseTypes.map((useType) => {
             const rows = items.filter((item) => getHopUseType(item) === useType);
             return (
-              <div key={useType} className="space-y-2">
-                <div className="flex items-center justify-between gap-2">
-                  <h4 className="text-xs font-semibold uppercase tracking-[0.12em] text-zinc-500">{hopUseTypeLabels[useType]}</h4>
-                  <button type="button" onClick={() => openAddEditor("hop", useType)} className="rounded-md border border-zinc-300 bg-white px-2.5 py-1.5 text-xs">
-                    Добавить
+              <div key={useType} className="space-y-1.5">
+                <div className="flex items-center justify-between gap-2 border-b border-zinc-100 px-1 pb-1.5">
+                  <h4 className="text-xs font-bold uppercase tracking-wider text-zinc-600">{hopUseTypeLabels[useType]}</h4>
+                  <button type="button" onClick={() => openAddEditor("hop", useType)} className="rounded-md px-2 py-1 text-xs text-zinc-500 transition-colors hover:bg-zinc-100 hover:text-zinc-700">
+                    + Добавить
                   </button>
                 </div>
                 {rows.length ? (
-                  <ul className="space-y-2">
+                  <ul className="space-y-1.5">
                     {rows.map((ingredient) => (
                       <SectionRow
                         key={ingredient.localId}
@@ -1641,37 +1804,38 @@ export function RecipeDesigner({ mode, initialRecipe }: Props) {
                           isExisting: true
                         })}
                         onDelete={deleteIngredient}
+                        onQuantityChange={updateIngredientQuantity}
                       />
                     ))}
                   </ul>
                 ) : (
-                  <p className="rounded-xl border border-dashed border-zinc-200 bg-zinc-50 px-3 py-3 text-sm text-zinc-500">Подсписок пока пуст.</p>
+                  <p className="rounded-lg border border-dashed border-zinc-200 px-3 py-2.5 text-sm text-zinc-400">Пусто</p>
                 )}
               </div>
             );
           })}
         </div>
       )
-    },
-    {
-      category: "yeast",
-      title: "Дрожжи",
-      items: yeasts,
-      empty: "Добавьте дрожжи для recipe-ready статуса."
-    },
-    {
-      category: "water_prep",
-      title: "Водоподготовка",
-      items: waterPrep,
-      empty: "Добавки для воды можно оставить пустыми, если вы их не используете."
-    },
-    {
-      category: "misc",
-      title: "Прочее",
-      items: misc,
-      empty: "Фининг, специи и остальные добавки появятся здесь."
-    }
-  ];
+      },
+      {
+        category: "yeast",
+        title: "Дрожжи",
+        items: yeasts,
+        empty: "Добавьте дрожжи для recipe-ready статуса."
+      },
+      {
+        category: "water_prep",
+        title: "Водоподготовка",
+        items: waterPrep,
+        empty: "Добавки для воды можно оставить пустыми."
+      },
+      {
+        category: "misc",
+        title: "Прочее",
+        items: misc,
+        empty: "Фининг, специи и другие добавки."
+      }
+    ];
 
   const editorPanel = openEditor ? (
     <IngredientEditor
@@ -1693,135 +1857,135 @@ export function RecipeDesigner({ mode, initialRecipe }: Props) {
   ) : null;
 
   return (
-    <div className="space-y-6">
-      <section className="sticky top-0 z-20 -mx-4 border-b border-zinc-200 bg-white/95 px-4 py-4 backdrop-blur">
-        <div className="rounded-2xl border border-zinc-200 bg-white/90 p-4 shadow-sm">
-          <div className="flex flex-wrap items-end gap-3">
-            <label className="min-w-[280px] flex-[1_1_320px] space-y-1 text-[11px] font-medium text-zinc-600">
-              Название рецепта
-              <input value={title} onChange={(event) => setTitle(event.target.value)} className="h-10 w-full rounded-xl border border-zinc-200 px-3 text-sm text-zinc-900 shadow-sm" placeholder="Например, Czech Pils" />
-            </label>
+    <div className="space-y-5">
+      <section className="sticky top-0 z-20 -mx-4 bg-white/90 px-4 py-3 shadow-[0_1px_3px_0_rgb(0_0_0_/_0.04)] backdrop-blur-md">
+        <div className="flex flex-wrap items-center gap-3">
+          <input
+            value={title}
+            onChange={(event) => setTitle(event.target.value)}
+            className="h-10 min-w-[240px] flex-1 rounded-lg border border-zinc-200 bg-white px-3 text-sm font-semibold text-zinc-900 shadow-sm placeholder:font-normal placeholder:text-zinc-400 focus:border-zinc-400 focus:outline-none focus:ring-1 focus:ring-zinc-200"
+            placeholder="Название рецепта"
+          />
+          <StylePicker value={styleId} onChange={setStyleId} className="min-w-[220px] flex-[0_1_260px]" />
+          <div className="flex items-center gap-2">
+            <span className={`rounded-full px-2.5 py-0.5 text-[11px] font-medium transition-colors ${pendingSave ? "bg-amber-50 text-amber-700 ring-1 ring-amber-200" : isDirty ? "bg-zinc-100 text-zinc-500 ring-1 ring-zinc-200" : "bg-emerald-50 text-emerald-700 ring-1 ring-emerald-200"}`}>
+              {pendingSave ? "Сохраняем..." : isDirty ? "Изменено" : "Сохранено"}
+            </span>
+            <select value={publicationState} onChange={(event) => setPublicationState(event.target.value as RecipePublicationState)} className="h-9 rounded-lg border border-zinc-200 bg-white px-2.5 text-sm text-zinc-900 shadow-sm">
+              {recipePublicationStates.map((state) => <option key={state} value={state}>{recipePublicationStateLabels[state]}</option>)}
+            </select>
+          </div>
+        </div>
+        {saveResult && !saveResult.ok ? <p className="mt-1.5 text-xs text-rose-600">{saveResult.message}</p> : null}
+      </section>
 
-            <StylePicker value={styleId} onChange={setStyleId} className="min-w-[280px] flex-[1_1_300px]" />
-
-            <label className="min-w-[164px] shrink-0 space-y-1 text-[11px] font-medium text-zinc-600">
+      <section className="grid items-start gap-4 lg:grid-cols-[minmax(0,1fr)_280px]">
+        <RecipeStyleStatsBlock preview={preview} recalculating={recalculating} previewError={previewError} />
+        <div className="rounded-2xl border border-zinc-100 bg-white p-4 shadow-sm">
+          <h3 className="mb-3 text-sm font-semibold text-zinc-700">Параметры партии</h3>
+          <div className="space-y-3">
+            <label className="block space-y-1 text-[11px] font-medium text-zinc-500">
               Объём партии
-              <div className="grid grid-cols-[88px_64px] gap-2">
-                <input type="number" min={0.1} step={0.1} value={batchSize.quantity} onChange={(event) => setBatchSize((current) => ({ ...current, quantity: event.target.value }))} className="h-10 rounded-xl border border-zinc-200 px-3 text-sm text-zinc-900 shadow-sm" />
-                <select value={batchSize.unit} onChange={(event) => setBatchSize((current) => ({ ...current, unit: event.target.value as typeof current.unit }))} className="h-10 rounded-xl border border-zinc-200 px-3 text-sm text-zinc-900 shadow-sm">
+              <div className="grid grid-cols-[1fr_72px] gap-1.5">
+                <input type="number" min={0.1} step={0.1} value={batchSize.quantity} onChange={(event) => setBatchSize((current) => ({ ...current, quantity: event.target.value }))} className="h-9 rounded-lg border border-zinc-200 bg-white px-2.5 text-sm tabular-nums text-zinc-900 shadow-sm" />
+                <select value={batchSize.unit} onChange={(event) => setBatchSize((current) => ({ ...current, unit: event.target.value as typeof current.unit }))} className="h-9 rounded-lg border border-zinc-200 bg-white px-2 text-sm text-zinc-900 shadow-sm">
                   {inventoryVolumeUnits.map((unit) => <option key={unit} value={unit}>{inventoryUnitLabels[unit] ?? unit}</option>)}
                 </select>
               </div>
             </label>
-
-            <label className="w-[116px] shrink-0 space-y-1 text-[11px] font-medium text-zinc-600">
-              Эффект., %
-              <input type="number" min={1} max={100} value={efficiency} onChange={(event) => setEfficiency(event.target.value)} className="h-10 w-full rounded-xl border border-zinc-200 px-3 text-sm text-zinc-900 shadow-sm" />
-            </label>
-
-            <label className="w-[120px] shrink-0 space-y-1 text-[11px] font-medium text-zinc-600">
-              Кипяч., мин
-              <input type="number" min={1} value={boilTimeMinutes} onChange={(event) => setBoilTimeMinutes(event.target.value)} className="h-10 w-full rounded-xl border border-zinc-200 px-3 text-sm text-zinc-900 shadow-sm" />
-            </label>
-
-            <label className="w-[160px] shrink-0 space-y-1 text-[11px] font-medium text-zinc-600">
-              Состояние
-              <select value={publicationState} onChange={(event) => setPublicationState(event.target.value as RecipePublicationState)} className="h-10 w-full rounded-xl border border-zinc-200 px-3 text-sm text-zinc-900 shadow-sm">
-                {recipePublicationStates.map((state) => <option key={state} value={state}>{recipePublicationStateLabels[state]}</option>)}
-              </select>
-            </label>
-
-            <div className="flex shrink-0 items-end gap-2">
-              <button type="button" onClick={() => void handleSave()} disabled={pendingSave} className="h-10 rounded-xl bg-zinc-900 px-4 text-sm font-medium text-white disabled:opacity-60">
-                {pendingSave ? "Сохраняем..." : "Сохранить"}
-              </button>
-              <Link
-                href="/app/recipes"
-                onClick={(event) => {
-                  if (isDirty && !window.confirm("У вас есть несохранённые изменения. Выйти из designer?")) {
-                    event.preventDefault();
-                  }
-                }}
-                className="flex h-10 items-center justify-center rounded-xl border border-zinc-300 bg-white px-4 text-sm text-zinc-700"
-              >
-                К списку
-              </Link>
+            <div className="grid grid-cols-2 gap-3">
+              <label className="space-y-1 text-[11px] font-medium text-zinc-500">
+                Эффективность, %
+                <input type="number" min={1} max={100} value={efficiency} onChange={(event) => setEfficiency(event.target.value)} className="h-9 w-full rounded-lg border border-zinc-200 bg-white px-2.5 text-sm tabular-nums text-zinc-900 shadow-sm" />
+              </label>
+              <label className="space-y-1 text-[11px] font-medium text-zinc-500">
+                Кипячение, мин
+                <input type="number" min={1} value={boilTimeMinutes} onChange={(event) => setBoilTimeMinutes(event.target.value)} className="h-9 w-full rounded-lg border border-zinc-200 bg-white px-2.5 text-sm tabular-nums text-zinc-900 shadow-sm" />
+              </label>
             </div>
-          </div>
-
-          <div className="mt-2 flex flex-wrap items-center gap-3 text-xs text-zinc-500">
-            <span className={`rounded-full px-2 py-1 ${isDirty ? "bg-amber-100 text-amber-800" : "bg-emerald-100 text-emerald-800"}`}>
-              {isDirty ? "Есть несохранённые изменения" : "Все изменения сохранены"}
-            </span>
-            {saveResult?.message ? <span>{saveResult.message}</span> : null}
           </div>
         </div>
       </section>
 
-      {saveResult && !saveResult.ok ? (
-        <section className="rounded-2xl border border-rose-200 bg-rose-50 p-4 text-sm text-rose-800">
-          {saveResult.message}
-        </section>
-      ) : null}
-
-      <RecipeStyleStatsBlock preview={preview} recalculating={recalculating} previewError={previewError} />
-
-      <section className="grid gap-4 lg:grid-cols-2">
-        <label className="space-y-1 rounded-2xl border border-zinc-200 bg-white p-4 text-sm font-medium text-zinc-700">
-          Описание рецепта
-          <textarea value={description} onChange={(event) => setDescription(event.target.value)} className="min-h-32 w-full rounded-md border border-zinc-200 px-3 py-2 text-sm text-zinc-900" placeholder="Это публичное описание попадёт на detail/public page." />
-        </label>
-        <label className="space-y-1 rounded-2xl border border-zinc-200 bg-white p-4 text-sm font-medium text-zinc-700">
-          Личные заметки
-          <textarea value={authorNotes} onChange={(event) => setAuthorNotes(event.target.value)} className="min-h-32 w-full rounded-md border border-zinc-200 px-3 py-2 text-sm text-zinc-900" placeholder="Эти заметки видны только автору." />
-        </label>
-      </section>
-
       <div className="space-y-4">
-        {sectionDefinitions.map((section) => (
-          <section key={section.category} className="rounded-2xl border border-zinc-200 bg-white p-4">
-            <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
-              <div>
-                <h2 className="text-base font-semibold text-zinc-950">{section.title}</h2>
-                {sectionErrors[`ingredients.${section.category}`] ? <p className="text-xs text-rose-700">{sectionErrors[`ingredients.${section.category}`]}</p> : null}
-              </div>
-              <div className="flex items-center gap-2">
-                {section.extraHeader}
+        {sectionDefinitions.map((section) => {
+          const IconComponent = categoryIcons[section.category];
+          const iconBg = categoryIconBg[section.category];
+          return (
+            <section key={section.category} className="rounded-2xl border border-zinc-100 bg-white p-5 shadow-sm">
+              <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+                <div className="flex items-center gap-2.5">
+                  <div className={`flex h-8 w-8 items-center justify-center rounded-lg ${iconBg}`}>
+                    <IconComponent className="h-4 w-4" />
+                  </div>
+                  <div>
+                    <div className="flex items-baseline gap-2">
+                      <h2 className="text-base font-semibold text-zinc-950">{section.title}</h2>
+                      {section.subtitle ? <span className="text-sm tabular-nums text-zinc-400">({section.subtitle})</span> : null}
+                    </div>
+                    {sectionErrors[`ingredients.${section.category}`] ? <p className="text-xs text-rose-700">{sectionErrors[`ingredients.${section.category}`]}</p> : null}
+                  </div>
+                </div>
                 {section.category !== "hop" ? (
-                  <button type="button" onClick={() => openAddEditor(section.category)} className="rounded-md border border-zinc-300 bg-white px-3 py-2 text-sm">
-                    Добавить
+                  <button type="button" onClick={() => openAddEditor(section.category)} className="rounded-lg px-3 py-1.5 text-sm text-zinc-500 transition-colors hover:bg-zinc-100 hover:text-zinc-700">
+                    + Добавить
                   </button>
                 ) : null}
               </div>
-            </div>
 
-            {section.renderItems ? (
-              section.renderItems(section.items)
-            ) : section.items.length ? (
-              <ul className="space-y-2">
-                {section.items.map((ingredient) => (
-                  <SectionRow
-                    key={ingredient.localId}
-                    ingredient={ingredient}
-                    onEdit={(value) => maybeOpenEditor({
-                      localId: value.localId,
-                      category: value.category,
-                      draft: { ...value },
-                      initialSignature: serializeIngredient(value),
-                      isExisting: true
-                    })}
-                    onDelete={deleteIngredient}
-                  />
-                ))}
-              </ul>
-            ) : (
-              <div className="rounded-xl border border-dashed border-zinc-200 bg-zinc-50 px-3 py-4 text-sm text-zinc-500">{section.empty}</div>
-            )}
-          </section>
-        ))}
+              {section.renderItems ? (
+                section.renderItems(section.items)
+              ) : section.items.length ? (
+                <ul className="space-y-1.5">
+                  {section.items.map((ingredient) => (
+                    <SectionRow
+                      key={ingredient.localId}
+                      ingredient={ingredient}
+                      percentage={section.category === "fermentable" ? getFermentablePercentage(ingredient, fermentableTotalKg) : null}
+                      onEdit={(value) => maybeOpenEditor({
+                        localId: value.localId,
+                        category: value.category,
+                        draft: { ...value },
+                        initialSignature: serializeIngredient(value),
+                        isExisting: true
+                      })}
+                      onDelete={deleteIngredient}
+                      onQuantityChange={updateIngredientQuantity}
+                    />
+                  ))}
+                </ul>
+              ) : (
+                <div className="rounded-lg border border-dashed border-zinc-200 px-3 py-3 text-sm text-zinc-400">{section.empty}</div>
+              )}
+            </section>
+          );
+        })}
       </div>
 
       <RecipeProfiles processMeta={processMeta} onChange={setProcessMeta} />
+
+      <section className="grid gap-4 lg:grid-cols-2">
+        <details className="group rounded-2xl border border-zinc-100 bg-white p-5 shadow-sm" open>
+          <summary className="flex cursor-pointer list-none items-center gap-2 text-sm font-semibold text-zinc-700">
+            <div className="flex h-7 w-7 items-center justify-center rounded-md bg-zinc-100">
+              <FileText className="h-3.5 w-3.5 text-zinc-500" />
+            </div>
+            Описание рецепта
+            <ChevronRight className="ml-auto h-4 w-4 text-zinc-400 transition-transform group-open:rotate-90" />
+          </summary>
+          <textarea value={description} onChange={(event) => setDescription(event.target.value)} className="mt-3 min-h-28 w-full rounded-lg border border-zinc-200 bg-zinc-50 px-3 py-2 text-sm text-zinc-900 focus:border-zinc-300 focus:bg-white focus:outline-none" placeholder="Публичное описание рецепта" />
+        </details>
+        <details className="group rounded-2xl border border-zinc-100 bg-white p-5 shadow-sm" open>
+          <summary className="flex cursor-pointer list-none items-center gap-2 text-sm font-semibold text-zinc-700">
+            <div className="flex h-7 w-7 items-center justify-center rounded-md bg-zinc-100">
+              <StickyNote className="h-3.5 w-3.5 text-zinc-500" />
+            </div>
+            Личные заметки
+            <ChevronRight className="ml-auto h-4 w-4 text-zinc-400 transition-transform group-open:rotate-90" />
+          </summary>
+          <textarea value={authorNotes} onChange={(event) => setAuthorNotes(event.target.value)} className="mt-3 min-h-28 w-full rounded-lg border border-zinc-200 bg-zinc-50 px-3 py-2 text-sm text-zinc-900 focus:border-zinc-300 focus:bg-white focus:outline-none" placeholder="Видны только вам" />
+        </details>
+      </section>
 
       {openEditor ? (
         <div className="fixed inset-0 z-30 bg-black/45 p-3 sm:p-6" onClick={() => closeEditor()}>

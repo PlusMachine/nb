@@ -9,10 +9,10 @@ import { RecipeStatsSummary } from "./recipe-stats-summary";
 
 function PublicRecipeHero({ heroImageId, title }: { heroImageId: string | null; title: string }) {
   return (
-    <section className="overflow-hidden rounded-xl border border-zinc-200 bg-zinc-50">
+    <section className="overflow-hidden rounded-2xl border border-zinc-100 bg-zinc-50 shadow-sm">
       {heroImageId
         ? <div className="p-4 text-sm text-zinc-600">Hero image: {heroImageId}</div>
-        : <div className="flex h-32 items-center justify-center px-4 text-sm text-zinc-500">Изображение для «{title}» пока не добавлено.</div>}
+        : <div className="flex h-32 items-center justify-center px-4 text-sm text-zinc-400">Изображение для «{title}» пока не добавлено.</div>}
     </section>
   );
 }

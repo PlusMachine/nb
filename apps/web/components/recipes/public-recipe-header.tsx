@@ -1,20 +1,35 @@
 import React from "react";
+import { styleRangeFixtures } from "@nb/brewing-core";
 
 import { recipePublicationStateLabels, type RecipeDetailDto } from "@/features/recipes/contracts";
 import { formatUpdatedLabel } from "@/features/recipes/format";
 
 export function PublicRecipeHeader({ recipe }: { recipe: RecipeDetailDto }) {
+  const styleName = recipe.styleId ? styleRangeFixtures.find((s) => s.id === recipe.styleId)?.name ?? null : null;
+
   return (
-    <section className="space-y-3 rounded-xl border border-zinc-200 bg-white p-4">
-      <div className="flex flex-wrap items-center gap-2 text-xs text-zinc-600">
-        <span className="rounded-full bg-emerald-100 px-2 py-1 font-medium text-emerald-800">{recipePublicationStateLabels[recipe.publicationState]}</span>
-      </div>
+    <section className="rounded-2xl border border-zinc-100 bg-white p-5 shadow-sm">
+      <div className="space-y-2">
+        <div className="flex flex-wrap items-center gap-2">
+          <span className="rounded-full bg-emerald-50 px-2.5 py-0.5 text-xs font-medium text-emerald-700 ring-1 ring-emerald-200">{recipePublicationStateLabels[recipe.publicationState]}</span>
+          {styleName ? (
+            <span className="rounded-full bg-violet-50 px-2.5 py-0.5 text-xs font-medium text-violet-700 ring-1 ring-violet-200">
+              {styleName}
+            </span>
+          ) : null}
+          <span className="text-xs text-zinc-400">{formatUpdatedLabel(recipe.updatedAt)}</span>
+        </div>
 
-      <h1 className="text-2xl font-semibold text-zinc-950 sm:text-3xl">{recipe.title}</h1>
+        <h1 className="text-2xl font-bold tracking-tight text-zinc-950 sm:text-3xl">{recipe.title}</h1>
 
-      <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-zinc-600">
-        <p>Объём партии: {recipe.batchSizeEnteredQuantity} {recipe.batchSizeEnteredUnit}</p>
-        <p>{formatUpdatedLabel(recipe.updatedAt)}</p>
+        <div className="flex flex-wrap gap-2">
+          <span className="rounded-lg bg-zinc-50 px-2.5 py-1 text-xs font-medium tabular-nums text-zinc-600 ring-1 ring-zinc-100">
+            {recipe.batchSizeEnteredQuantity} {recipe.batchSizeEnteredUnit}
+          </span>
+          <span className="rounded-lg bg-zinc-50 px-2.5 py-1 text-xs font-medium tabular-nums text-zinc-600 ring-1 ring-zinc-100">
+            {recipe.boilTimeMinutes} мин кипячения
+          </span>
+        </div>
       </div>
     </section>
   );

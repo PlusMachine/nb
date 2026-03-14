@@ -164,7 +164,8 @@ describe("recipe editor components", () => {
           ibu: 28,
           color: 8,
           batchSizeEnteredQuantity: 20,
-          batchSizeEnteredUnit: "l"
+          batchSizeEnteredUnit: "l",
+          styleId: null
         }
       })
     );
