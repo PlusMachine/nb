@@ -45,36 +45,31 @@ export function InventorySearchInput({
   const effectiveCategory = category === "all" ? undefined : category;
 
   return (
-    <label className="flex-1 text-sm font-medium">
-      <span>Поиск</span>
-      <div className="mt-1">
-        <IngredientPicker
-          value={value}
-          category={effectiveCategory}
-          onValueChange={onValueChange}
-          onSelect={(item) => {
-            onValueChange(item.displayName);
-            onSuggestionSelect(item.displayName, item);
-          }}
-          placeholder="Например, Citra или Pilsner Malt"
-          emptyCta={<p className="text-xs text-zinc-500">В текущем списке ничего не найдено. Попробуйте другой запрос или поменяйте фильтры.</p>}
-          searchIngredients={async ({ q, category: nextCategory, limit, signal }) => {
-            const params = buildInventorySuggestionParams({
-              q,
-              category: nextCategory,
-              showFinished,
-              limit
-            });
-            const response = await fetch(`/api/inventory/suggestions?${params.toString()}`, { signal });
-            if (!response.ok) {
-              return [];
-            }
+    <IngredientPicker
+      value={value}
+      category={effectiveCategory}
+      onValueChange={onValueChange}
+      onSelect={(item) => {
+        onValueChange(item.displayName);
+        onSuggestionSelect(item.displayName, item);
+      }}
+      placeholder="Поиск ингредиентов..."
+      emptyCta={<p className="text-xs text-zinc-500">В текущем списке ничего не найдено. Попробуйте другой запрос или поменяйте фильтры.</p>}
+      searchIngredients={async ({ q, category: nextCategory, limit, signal }) => {
+        const params = buildInventorySuggestionParams({
+          q,
+          category: nextCategory,
+          showFinished,
+          limit
+        });
+        const response = await fetch(`/api/inventory/suggestions?${params.toString()}`, { signal });
+        if (!response.ok) {
+          return [];
+        }
 
-            const data = await response.json() as { items: IngredientSuggestionItem[] };
-            return data.items;
-          }}
-        />
-      </div>
-    </label>
+        const data = await response.json() as { items: IngredientSuggestionItem[] };
+        return data.items;
+      }}
+    />
   );
 }

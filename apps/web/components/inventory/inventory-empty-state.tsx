@@ -1,4 +1,5 @@
 import React from "react";
+import { PackageOpen, Search, SlidersHorizontal } from "lucide-react";
 
 import type { IngredientCategory } from "@/features/ingredients/contracts";
 import { inventoryCategoryLabels } from "@/features/inventory/page-model";
@@ -22,39 +23,49 @@ export function InventoryEmptyState({
 }: Props) {
   if (!hasAnyItems) {
     return (
-      <section className="space-y-3 rounded-lg border border-dashed p-6 text-center">
-        <h2 className="text-lg font-semibold">Пока нет ингредиентов</h2>
-        <p className="text-sm text-zinc-600">
-          Здесь будут ваши запасы солода, хмеля, дрожжей и других ингредиентов. Это база для подбора рецептов и планирования варок.
-        </p>
-        <div>
-          <AddIngredientTrigger fullWidth className="sm:w-auto" />
+      <section className="flex flex-col items-center gap-4 rounded-2xl border border-dashed border-zinc-300 bg-zinc-50/50 px-6 py-12 text-center">
+        <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-zinc-100">
+          <PackageOpen className="h-7 w-7 text-zinc-400" />
         </div>
+        <div className="space-y-1">
+          <h2 className="text-lg font-semibold text-zinc-900">Пока нет ингредиентов</h2>
+          <p className="mx-auto max-w-sm text-sm text-zinc-500">
+            Здесь будут ваши запасы солода, хмеля, дрожжей и других ингредиентов. Это база для подбора рецептов и планирования варок.
+          </p>
+        </div>
+        <AddIngredientTrigger />
       </section>
     );
   }
 
   let title = "Нет результатов";
   let description = "Попробуйте изменить параметры поиска или фильтры.";
+  let Icon = SlidersHorizontal;
 
   if (search) {
     title = "По вашему запросу ничего не найдено";
-    description = `Не нашли "${search}" среди текущих запасов.`;
+    description = `Не нашли «${search}» среди текущих запасов.`;
+    Icon = Search;
   } else if (category) {
     title = "Для выбранной категории нет позиций";
     description = `В категории «${inventoryCategoryLabels[category]}» пока нет подходящих ингредиентов.`;
   } else if (!showFinished && !hasFilters) {
     title = "Сейчас в наличии ничего нет";
-    description = "Включите «Показывать закончившиеся», чтобы увидеть позиции с нулевым остатком и быстро пополнить их.";
+    description = "Включите «Закончившиеся», чтобы увидеть позиции с нулевым остатком и быстро пополнить их.";
   } else if (showFinished) {
     title = "Даже закончившихся позиций не найдено";
     description = "Попробуйте изменить запрос или снять часть фильтров.";
   }
 
   return (
-    <section className="space-y-2 rounded-lg border border-dashed p-6 text-center">
-      <h2 className="text-lg font-semibold">{title}</h2>
-      <p className="text-sm text-zinc-600">{description}</p>
+    <section className="flex flex-col items-center gap-3 rounded-2xl border border-dashed border-zinc-200 bg-zinc-50/30 px-6 py-10 text-center">
+      <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-zinc-100">
+        <Icon className="h-5 w-5 text-zinc-400" />
+      </div>
+      <div className="space-y-1">
+        <h2 className="text-base font-semibold text-zinc-900">{title}</h2>
+        <p className="text-sm text-zinc-500">{description}</p>
+      </div>
     </section>
   );
 }

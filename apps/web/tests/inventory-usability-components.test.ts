@@ -34,14 +34,16 @@ describe("inventory usability components", () => {
       search: "citra",
       category: "hop",
       showFinished: true,
-      sort: "name"
+      sort: "name",
+      summary: { totalItems: 10, inStockItems: 8, emptyItems: 2, byCategory: { fermentable: 3, hop: 4, yeast: 2, water_prep: 0, misc: 1 } }
     }));
 
     expect(html).toContain("Фильтры по запасам");
-    expect(html).toContain("Категория");
-    expect(html).toContain("Показывать закончившиеся");
-    expect(html).toContain("Сортировка");
-    expect(html).toContain("Сбросить фильтры");
+    expect(html).toContain("Ферментируемые");
+    expect(html).toContain("Хмель");
+    expect(html).toContain("Дрожжи");
+    expect(html).toContain("Закончившиеся");
+    expect(html).toContain("Сбросить");
     expect(html).not.toContain("Применить");
     expect(html).not.toContain("Остаток");
   });
@@ -78,7 +80,7 @@ describe("inventory usability components", () => {
       onSuggestionSelect: () => undefined
     }));
 
-    expect(html).toContain("Например, Citra или Pilsner Malt");
+    expect(html).toContain("Поиск ингредиентов...");
     expect(html).not.toContain("Показывать архивные");
   });
 
@@ -124,20 +126,11 @@ describe("inventory usability components", () => {
       currencyRates: { RUB: 100, USD: 7900, EUR: 9170 }
     }));
 
-    expect(html).toContain("aria-label=\"Количество\"");
-    expect(html).toContain("aria-label=\"Единица измерения\"");
-    expect(html).not.toContain("Быстро изменить");
-    expect(html).toContain("Закончился");
-    expect(html).not.toContain("Сохранить количество");
-    expect(html).not.toContain("Отменить изменения количества");
-    expect(html).toContain("Редактировать карточку");
-    expect(html).toContain("Удалить ингредиент");
     expect(html).toContain("Pilsner Malt");
     expect(html).toContain("2 kg");
+    expect(html).toContain("BESTMALZ");
     expect(html).toContain("3.5 EBC • 80%");
-    expect(html).toContain("Производитель: BESTMALZ");
-    expect(html).toContain("Цена покупки");
-    expect(html).toContain("Цена за единицу");
+    expect(html).toContain("Действия");
   });
 
   it("tracks dirty state and zero-stock validity for inline editor logic", () => {

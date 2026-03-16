@@ -58,6 +58,7 @@ import {
 } from "@/features/recipes/contracts";
 import { beerColorFromSrm } from "@/features/recipes/beer-color";
 import { formatColorWithEbc, formatGravityWithPlato } from "@/features/recipes/format";
+import { BeerGlassIcon } from "@/components/recipes/beer-glass-icon";
 import {
   buildRecipePublicationChecklist,
   getRecipePublicationFieldErrors
@@ -1065,9 +1066,9 @@ function RecipeBatchParametersBlock({
   preview: RecipeDraftPreviewDto | null;
 }) {
   const summaryItems = [
+    { label: "Цвет", value: preview?.color != null ? formatColorWithEbc(preview.color) : "—" },
     { label: "OG", value: formatGravityWithPlato(preview?.og ?? null) },
     { label: "FG", value: formatGravityWithPlato(preview?.fg ?? null) },
-    { label: "Цвет", value: preview?.color != null ? formatColorWithEbc(preview.color) : "—" },
     { label: "IBU", value: preview?.ibu != null ? `${preview.ibu.toFixed(0)}` : "—" },
     { label: "ABV", value: preview?.abv != null ? `${preview.abv.toFixed(1)}%` : "—" },
     {
@@ -1089,21 +1090,24 @@ function RecipeBatchParametersBlock({
           return (
             <div
               key={item.label}
-              className={`rounded-xl px-3 py-2.5 ${colorInfo ? "" : "border border-zinc-100 bg-zinc-50/80"}`}
-              style={colorInfo ? { backgroundColor: colorInfo.hex } : undefined}
+              className="rounded-xl border border-zinc-100 bg-zinc-50/80 px-3 py-2.5"
             >
-              <dt
-                className={`text-[11px] font-medium uppercase tracking-[0.08em] ${colorInfo ? "" : "text-zinc-400"}`}
-                style={colorInfo ? { color: colorInfo.textColor, opacity: 0.7 } : undefined}
-              >
+              <dt className="text-[11px] font-medium uppercase tracking-[0.08em] text-zinc-400">
                 {item.label}
               </dt>
-              <dd
-                className={`mt-1 whitespace-nowrap font-semibold tabular-nums ${colorInfo ? "text-sm" : "text-base text-zinc-950"}`}
-                style={colorInfo ? { color: colorInfo.textColor } : undefined}
-              >
-                {item.value}
-              </dd>
+              {colorInfo ? (
+                <dd className="mt-1 flex items-center gap-2">
+                  <BeerGlassIcon color={colorInfo.hex} size={26} className="shrink-0 text-zinc-300" />
+                  <div>
+                    <div className="whitespace-nowrap text-base font-semibold tabular-nums text-zinc-950">{item.value}</div>
+                    <div className="text-[10px] font-medium text-zinc-400">{colorInfo.label}</div>
+                  </div>
+                </dd>
+              ) : (
+                <dd className="mt-1 whitespace-nowrap text-base font-semibold tabular-nums text-zinc-950">
+                  {item.value}
+                </dd>
+              )}
             </div>
           );
         })}

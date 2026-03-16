@@ -1,7 +1,19 @@
 "use client";
 
-import React, { useEffect, useMemo, useState, useTransition } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState, useTransition } from "react";
 import { usePathname, useRouter } from "next/navigation";
+import {
+  ArrowUpDown,
+  Check,
+  Droplets,
+  Eye,
+  FlaskConical,
+  Leaf,
+  Package,
+  RotateCcw,
+  Wheat,
+  X
+} from "lucide-react";
 
 import type { IngredientCategory } from "@/features/ingredients/contracts";
 import {
@@ -14,6 +26,7 @@ import {
   inventorySortLabels
 } from "@/features/inventory/page-model";
 import type { InventorySortOption } from "@/features/inventory/contracts";
+import type { InventorySummaryDto } from "@/features/inventory/contracts";
 
 import { InventorySearchInput } from "./inventory-search-input";
 
@@ -22,15 +35,62 @@ type Props = {
   category: IngredientCategory | "all";
   showFinished: boolean;
   sort: InventorySortOption;
+  summary: InventorySummaryDto;
 };
 
 const searchDebounceMs = 250;
 
-export function InventoryToolbar({ search, category, showFinished, sort }: Props) {
+const categoryMeta: Record<IngredientCategory, {
+  icon: React.ComponentType<{ className?: string }>;
+  color: string;
+  activeColor: string;
+  activeBg: string;
+  activeRing: string;
+}> = {
+  fermentable: {
+    icon: Wheat,
+    color: "text-amber-600",
+    activeColor: "text-amber-800",
+    activeBg: "bg-amber-50",
+    activeRing: "ring-amber-300"
+  },
+  hop: {
+    icon: Leaf,
+    color: "text-emerald-600",
+    activeColor: "text-emerald-800",
+    activeBg: "bg-emerald-50",
+    activeRing: "ring-emerald-300"
+  },
+  yeast: {
+    icon: FlaskConical,
+    color: "text-violet-600",
+    activeColor: "text-violet-800",
+    activeBg: "bg-violet-50",
+    activeRing: "ring-violet-300"
+  },
+  water_prep: {
+    icon: Droplets,
+    color: "text-sky-600",
+    activeColor: "text-sky-800",
+    activeBg: "bg-sky-50",
+    activeRing: "ring-sky-300"
+  },
+  misc: {
+    icon: Package,
+    color: "text-zinc-500",
+    activeColor: "text-zinc-800",
+    activeBg: "bg-zinc-100",
+    activeRing: "ring-zinc-300"
+  }
+};
+
+export function InventoryToolbar({ search, category, showFinished, sort, summary }: Props) {
   const pathname = usePathname();
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [searchValue, setSearchValue] = useState(search);
+  const [sortOpen, setSortOpen] = useState(false);
+  const sortRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     setSearchValue(search);
@@ -43,7 +103,7 @@ export function InventoryToolbar({ search, category, showFinished, sort }: Props
     sort
   }), [category, pathname, search, showFinished, sort]);
 
-  const replaceHref = (href: string) => {
+  const replaceHref = useCallback((href: string) => {
     if (href === currentHref) {
       return;
     }
@@ -51,7 +111,7 @@ export function InventoryToolbar({ search, category, showFinished, sort }: Props
     startTransition(() => {
       router.replace(href, { scroll: false });
     });
-  };
+  }, [currentHref, router]);
 
   useEffect(() => {
     const trimmedLocalSearch = searchValue.trim();
@@ -72,7 +132,18 @@ export function InventoryToolbar({ search, category, showFinished, sort }: Props
     return () => {
       window.clearTimeout(timer);
     };
-  }, [category, currentHref, pathname, search, searchValue, showFinished, sort]);
+  }, [category, pathname, replaceHref, search, searchValue, showFinished, sort]);
+
+  useEffect(() => {
+    if (!sortOpen) return;
+    const handleClickOutside = (event: MouseEvent) => {
+      if (sortRef.current && !sortRef.current.contains(event.target as Node)) {
+        setSortOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [sortOpen]);
 
   const hasFilters = hasActiveInventoryFilters({
     search: searchValue,
@@ -81,88 +152,132 @@ export function InventoryToolbar({ search, category, showFinished, sort }: Props
     sort
   });
 
+  const handleCategoryClick = (nextCategory: IngredientCategory | "all") => {
+    replaceHref(buildInventoryToolbarHref(pathname, {
+      search: searchValue,
+      category: nextCategory === category ? "all" : nextCategory,
+      showFinished,
+      sort
+    }));
+  };
+
   return (
-    <section className="rounded-lg border p-3" aria-label="Фильтры по запасам">
-      <div className="flex flex-col gap-3 xl:flex-row xl:items-end">
-        <InventorySearchInput
-          value={searchValue}
-          category={category}
-          showFinished={showFinished}
-          onValueChange={setSearchValue}
-          onSuggestionSelect={(value) => {
-            setSearchValue(value);
-            replaceHref(buildInventoryToolbarHref(pathname, {
-              search: value,
-              category,
-              showFinished,
-              sort
-            }));
-          }}
-        />
+    <section className="space-y-4" aria-label="Фильтры по запасам">
+      <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-5">
+        {inventoryCategoryOrder.map((cat) => {
+          const meta = categoryMeta[cat];
+          const Icon = meta.icon;
+          const isActive = category === cat;
+          const count = summary.byCategory[cat] ?? 0;
 
-        <label className="text-sm font-medium" htmlFor="inventory-category-filter">
-          Категория
-          <select
-            id="inventory-category-filter"
-            value={category}
-            onChange={(event) => {
-              const nextCategory = event.target.value as IngredientCategory | "all";
+          return (
+            <button
+              key={cat}
+              type="button"
+              onClick={() => handleCategoryClick(cat)}
+              className={`group relative flex flex-col items-center gap-1.5 rounded-xl border px-3 py-3 text-center transition-all ${
+                isActive
+                  ? `${meta.activeBg} ${meta.activeRing} ring-2 border-transparent shadow-sm`
+                  : "border-zinc-200 bg-white hover:border-zinc-300 hover:shadow-sm"
+              }`}
+            >
+              <Icon className={`h-6 w-6 ${isActive ? meta.activeColor : meta.color} transition-colors`} />
+              <span className={`text-xs font-semibold leading-tight ${isActive ? meta.activeColor : "text-zinc-700"}`}>
+                {inventoryCategoryLabels[cat]}
+              </span>
+              {count > 0 ? (
+                <span className={`text-[11px] font-medium tabular-nums ${isActive ? meta.activeColor : "text-zinc-400"}`}>
+                  {count}
+                </span>
+              ) : null}
+            </button>
+          );
+        })}
+      </div>
+
+      <div className="flex items-center gap-2">
+        <div className="flex-1">
+          <InventorySearchInput
+            value={searchValue}
+            category={category}
+            showFinished={showFinished}
+            onValueChange={setSearchValue}
+            onSuggestionSelect={(value) => {
+              setSearchValue(value);
               replaceHref(buildInventoryToolbarHref(pathname, {
-                search: searchValue,
-                category: nextCategory,
+                search: value,
+                category,
                 showFinished,
                 sort
               }));
             }}
-            className="mt-1 min-w-40 rounded-md border px-3 py-2"
-          >
-            <option value="all">Все категории</option>
-            {inventoryCategoryOrder.map((itemCategory) => (
-              <option key={itemCategory} value={itemCategory}>{inventoryCategoryLabels[itemCategory]}</option>
-            ))}
-          </select>
-        </label>
-
-        <label className="inline-flex items-center gap-2 rounded-md border px-3 py-2 text-sm">
-          <input
-            type="checkbox"
-            checked={showFinished}
-            onChange={(event) => {
-              replaceHref(buildInventoryToolbarHref(pathname, {
-                search: searchValue,
-                category,
-                showFinished: event.target.checked,
-                sort
-              }));
-            }}
-            className="size-4"
           />
-          Показывать закончившиеся
-        </label>
+        </div>
 
-        <label className="text-sm font-medium" htmlFor="inventory-sort-filter">
-          Сортировка
-          <select
-            id="inventory-sort-filter"
-            value={sort}
-            onChange={(event) => {
-              const nextSort = event.target.value as InventorySortOption;
+        <div className="flex shrink-0 items-center gap-1.5">
+          <button
+            type="button"
+            onClick={() => {
               replaceHref(buildInventoryToolbarHref(pathname, {
                 search: searchValue,
                 category,
-                showFinished,
-                sort: nextSort
+                showFinished: !showFinished,
+                sort
               }));
             }}
-            className="mt-1 min-w-40 rounded-md border px-3 py-2"
+            title={showFinished ? "Скрыть закончившиеся" : "Показать закончившиеся"}
+            className={`flex items-center gap-1.5 rounded-lg border px-3 py-2 text-xs font-medium transition-colors ${
+              showFinished
+                ? "border-amber-200 bg-amber-50 text-amber-800"
+                : "border-zinc-200 bg-white text-zinc-600 hover:border-zinc-300 hover:bg-zinc-50"
+            }`}
           >
-            {Object.entries(inventorySortLabels).map(([value, label]) => (
-              <option key={value} value={value}>{label}</option>
-            ))}
-          </select>
-        </label>
+            <Eye className="h-3.5 w-3.5" />
+            <span className="hidden sm:inline">Закончившиеся</span>
+          </button>
 
-        <div className="flex items-center gap-2 xl:ml-auto">
+          <div ref={sortRef} className="relative">
+            <button
+              type="button"
+              onClick={() => setSortOpen(!sortOpen)}
+              title="Сортировка"
+              className={`flex items-center gap-1.5 rounded-lg border px-3 py-2 text-xs font-medium transition-colors ${
+                sort !== defaultInventorySortOption
+                  ? "border-blue-200 bg-blue-50 text-blue-800"
+                  : "border-zinc-200 bg-white text-zinc-600 hover:border-zinc-300 hover:bg-zinc-50"
+              }`}
+            >
+              <ArrowUpDown className="h-3.5 w-3.5" />
+              <span className="hidden sm:inline">{inventorySortLabels[sort]}</span>
+            </button>
+
+            {sortOpen ? (
+              <div className="absolute right-0 z-20 mt-1 w-48 rounded-xl border border-zinc-200 bg-white py-1 shadow-lg">
+                {Object.entries(inventorySortLabels).map(([value, label]) => (
+                  <button
+                    key={value}
+                    type="button"
+                    onClick={() => {
+                      replaceHref(buildInventoryToolbarHref(pathname, {
+                        search: searchValue,
+                        category,
+                        showFinished,
+                        sort: value as InventorySortOption
+                      }));
+                      setSortOpen(false);
+                    }}
+                    className={`flex w-full items-center justify-between px-3 py-2 text-left text-sm transition-colors hover:bg-zinc-50 ${
+                      value === sort ? "font-medium text-zinc-950" : "text-zinc-600"
+                    }`}
+                  >
+                    {label}
+                    {value === sort ? <Check className="h-3.5 w-3.5 text-blue-600" /> : null}
+                  </button>
+                ))}
+              </div>
+            ) : null}
+          </div>
+
           {hasFilters ? (
             <button
               type="button"
@@ -175,14 +290,22 @@ export function InventoryToolbar({ search, category, showFinished, sort }: Props
                   sort: defaultInventorySortOption
                 }));
               }}
-              className="rounded-md border px-3 py-2 text-sm"
+              title="Сбросить фильтры"
+              className="flex items-center gap-1 rounded-lg border border-zinc-200 bg-white px-3 py-2 text-xs font-medium text-zinc-600 transition-colors hover:border-zinc-300 hover:bg-zinc-50"
             >
-              Сбросить фильтры
+              <RotateCcw className="h-3.5 w-3.5" />
+              <span className="hidden sm:inline">Сбросить</span>
             </button>
           ) : null}
-          {isPending ? <p className="text-xs text-zinc-500">Обновляем список…</p> : null}
         </div>
       </div>
+
+      {isPending ? (
+        <div className="flex items-center gap-2 text-xs text-zinc-400">
+          <div className="h-3 w-3 animate-spin rounded-full border-2 border-zinc-300 border-t-zinc-600" />
+          Обновляем список…
+        </div>
+      ) : null}
     </section>
   );
 }

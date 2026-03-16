@@ -9,25 +9,30 @@ import { ConfirmActionDialog } from "@/components/shared/confirm-action-dialog";
 type Props = {
   inventoryItemId: string;
   displayName: string;
+  renderTrigger?: (onClick: () => void, isPending: boolean) => React.ReactNode;
 };
 
-export function DeleteInventoryItemButton({ inventoryItemId, displayName }: Props) {
+export function DeleteInventoryItemButton({ inventoryItemId, displayName, renderTrigger }: Props) {
   const [open, setOpen] = useState(false);
   const [feedback, setFeedback] = useState<{ ok: boolean; message: string } | null>(null);
   const [isPending, startTransition] = useTransition();
 
+  const handleOpen = () => setOpen(true);
+
   return (
     <div className="space-y-1">
-      <button
-        type="button"
-        disabled={isPending}
-        onClick={() => {
-          setOpen(true);
-        }}
-        className="rounded border border-red-200 px-2 py-1 text-xs text-red-700 hover:bg-red-50 disabled:opacity-60"
-      >
-        {isPending ? "Удаляем..." : "Удалить ингредиент"}
-      </button>
+      {renderTrigger
+        ? renderTrigger(handleOpen, isPending)
+        : (
+          <button
+            type="button"
+            disabled={isPending}
+            onClick={handleOpen}
+            className="rounded border border-red-200 px-2 py-1 text-xs text-red-700 hover:bg-red-50 disabled:opacity-60"
+          >
+            {isPending ? "Удаляем..." : "Удалить ингредиент"}
+          </button>
+        )}
       {feedback ? <p className={`text-xs ${feedback.ok ? "text-emerald-700" : "text-red-600"}`}>{feedback.message}</p> : null}
       <ConfirmActionDialog
         open={open}

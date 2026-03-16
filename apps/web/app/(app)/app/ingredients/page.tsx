@@ -2,7 +2,6 @@ import React from "react";
 import { GroupedInventoryList } from "@/components/inventory/grouped-inventory-list";
 import { InventoryEmptyState } from "@/components/inventory/inventory-empty-state";
 import { AddIngredientTrigger } from "@/components/inventory/add-ingredient-trigger";
-import { InventorySummary } from "@/components/inventory/inventory-summary";
 import { InventoryToolbar } from "@/components/inventory/inventory-toolbar";
 import {
   defaultInventorySortOption,
@@ -94,22 +93,27 @@ export default async function MyIngredientsPage({ searchParams }: Props) {
   });
 
   return (
-    <main className="space-y-4">
-      <section className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+    <main className="space-y-6">
+      <section className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div className="space-y-1">
-          <h1 className="text-2xl font-semibold">Мои ингредиенты</h1>
-          <p className="text-sm text-zinc-600">Следите за запасами и структурой ингредиентов перед следующей варкой.</p>
+          <h1 className="text-2xl font-bold tracking-tight text-zinc-950">Мои ингредиенты</h1>
+          {hasAnyItems ? (
+            <p className="text-sm text-zinc-500">
+              {summary.inStockItems} в наличии{summary.emptyItems > 0 ? ` · ${summary.emptyItems} закончились` : ""}
+            </p>
+          ) : null}
         </div>
         <AddIngredientTrigger preferredCurrency={user.preferredCurrency} />
       </section>
 
-      <InventorySummary summary={summary} />
       <InventoryToolbar
         search={rawSearch}
         category={category ?? "all"}
         showFinished={showFinished}
         sort={sort}
+        summary={summary}
       />
+
       {items.length === 0
         ? (
           <InventoryEmptyState

@@ -5,6 +5,7 @@ import { CircleAlert, CircleCheck, Gauge, Palette, Percent, Zap } from "lucide-r
 import type { RecipeDetailDto, RecipeListItemDto } from "@/features/recipes/contracts";
 import { beerColorFromSrm } from "@/features/recipes/beer-color";
 import { formatColorWithEbc, formatGravityWithPlato } from "@/features/recipes/format";
+import { BeerGlassIcon } from "@/components/recipes/beer-glass-icon";
 
 type RecipeStatsSource = Pick<RecipeListItemDto | RecipeDetailDto, "og" | "fg" | "abv" | "ibu" | "color" | "styleId">;
 
@@ -68,23 +69,26 @@ export function RecipeStatsSummary({ recipe }: { recipe: RecipeStatsSource }) {
           return (
             <div
               key={stat.key}
-              className="rounded-xl p-3"
-              style={{ backgroundColor: colorInfo ? colorInfo.hex : "rgb(250 250 249)" }}
+              className="rounded-xl bg-stone-50 p-3"
             >
-              <dt
-                className={`flex items-center gap-1.5 text-xs uppercase tracking-wider ${colorInfo ? "" : "text-zinc-400"}`}
-                style={colorInfo ? { color: colorInfo.textColor, opacity: 0.7 } : undefined}
-              >
+              <dt className="flex items-center gap-1.5 text-xs uppercase tracking-wider text-zinc-400">
                 <Icon className="h-3.5 w-3.5" />
                 {stat.label}
               </dt>
-              <dd
-                className={`mt-1.5 whitespace-nowrap font-semibold tabular-nums ${colorInfo ? "text-sm" : "text-lg text-zinc-950"}`}
-                style={colorInfo ? { color: colorInfo.textColor } : undefined}
-              >
-                {stat.value}
-              </dd>
-              {stat.status && !colorInfo ? (
+              {colorInfo ? (
+                <dd className="mt-1.5 flex items-center gap-2">
+                  <BeerGlassIcon color={colorInfo.hex} size={28} className="shrink-0 text-zinc-300" />
+                  <div>
+                    <div className="whitespace-nowrap text-lg font-semibold tabular-nums text-zinc-950">{stat.value}</div>
+                    <div className="text-[10px] font-medium text-zinc-400">{colorInfo.label}</div>
+                  </div>
+                </dd>
+              ) : (
+                <dd className="mt-1.5 whitespace-nowrap text-lg font-semibold tabular-nums text-zinc-950">
+                  {stat.value}
+                </dd>
+              )}
+              {stat.status ? (
                 <div className="mt-1.5 text-[11px] font-medium text-zinc-500">
                   {metricStatusLabels[stat.status]}
                 </div>

@@ -13,6 +13,8 @@ import { inventoryUnitLabels, resolveInventoryUnitProfile } from "@/features/inv
 
 type Props = {
   item: InventoryListItemDto;
+  compact?: boolean;
+  onAction?: () => void;
 };
 
 const formatDirtyQuantityValue = (value: string) => {
@@ -37,7 +39,7 @@ export const canMarkInventoryItemFinished = (quantity: string) => {
   return Number.isFinite(parsed) && parsed > 0;
 };
 
-export function InventoryQuantityEditor({ item }: Props) {
+export function InventoryQuantityEditor({ item, compact = false, onAction }: Props) {
   const displayMeasurement = useMemo(() => resolveInventoryMeasurementForDisplay({
     enteredQuantity: item.enteredQuantity,
     enteredUnit: item.enteredUnit,
@@ -115,6 +117,7 @@ export function InventoryQuantityEditor({ item }: Props) {
         setSavedQuantity(formattedQuantity);
         setUnit(nextUnit);
         setSavedUnit(nextUnit);
+        onAction?.();
       }
     });
   };
@@ -134,7 +137,7 @@ export function InventoryQuantityEditor({ item }: Props) {
 
   return (
     <form
-      className="space-y-2"
+      className="space-y-1.5"
       onSubmit={(event) => {
         event.preventDefault();
         if (!isDirty || !isQuantityValid) {
@@ -144,7 +147,7 @@ export function InventoryQuantityEditor({ item }: Props) {
         submitChange(quantity, unit);
       }}
     >
-      <div className="flex flex-wrap items-center gap-2">
+      <div className="flex items-center gap-1.5">
         <input
           type="number"
           min="0"
@@ -155,7 +158,7 @@ export function InventoryQuantityEditor({ item }: Props) {
             setFeedback(null);
           }}
           onKeyDown={handleKeyDown}
-          className="w-24 rounded border px-2 py-1 text-sm"
+          className="w-[4.5rem] rounded-lg border border-zinc-200 px-2 py-1.5 text-right text-sm tabular-nums transition-colors focus:border-zinc-400 focus:outline-none"
           inputMode="decimal"
           aria-label="Количество"
         />
@@ -166,51 +169,47 @@ export function InventoryQuantityEditor({ item }: Props) {
             setFeedback(null);
           }}
           onKeyDown={handleKeyDown}
-          className="rounded border px-2 py-1 text-sm"
+          className="rounded-lg border border-zinc-200 py-1.5 pl-1.5 pr-6 text-sm transition-colors focus:border-zinc-400 focus:outline-none"
           aria-label="Единица измерения"
         >
           {unitOptions.map((option) => <option key={option} value={option}>{inventoryUnitLabels[option]}</option>)}
         </select>
-        {isDirty ? (
-          <>
-            <button
-              type="submit"
-              disabled={isPending || !isQuantityValid}
-              className="rounded bg-black px-2 py-1 text-xs text-white disabled:opacity-60"
-              aria-label="Сохранить количество"
-            >
-              ✓
-            </button>
-            <button
-              type="button"
-              onClick={reset}
-              disabled={isPending}
-              className="rounded border px-2 py-1 text-xs disabled:opacity-60"
-              aria-label="Отменить изменения количества"
-            >
-              ✕
-            </button>
-          </>
-        ) : null}
-        {canMarkFinished ? (
+      </div>
+      {isDirty ? (
+        <div className="flex items-center gap-1.5">
+          <button
+            type="submit"
+            disabled={isPending || !isQuantityValid}
+            className="flex-1 rounded-lg bg-zinc-900 py-1.5 text-xs font-medium text-white transition-colors hover:bg-zinc-800 disabled:opacity-60"
+            aria-label="Сохранить количество"
+          >
+            OK
+          </button>
           <button
             type="button"
+            onClick={reset}
             disabled={isPending}
-            onClick={() => {
-              setFeedback(null);
-              submitChange("0", unit);
-            }}
-            className="rounded border border-amber-300 px-2 py-1 text-xs text-amber-800 disabled:opacity-60"
+            className="rounded-lg border border-zinc-200 px-2.5 py-1.5 text-xs text-zinc-500 transition-colors hover:bg-zinc-50 disabled:opacity-60"
+            aria-label="Отменить изменения количества"
           >
-            {isPending ? "..." : "Закончился"}
+            ✕
           </button>
-        ) : null}
-      </div>
-      <div className="flex flex-wrap items-center gap-2 text-xs text-zinc-500">
-        <span>Сейчас: {displayQuantity}</span>
-        {displayQuantity !== rawQuantity ? <span>Ввод: {rawQuantity}</span> : null}
-      </div>
-      {!isQuantityValid ? <p className="text-xs text-red-600">Количество не может быть отрицательным.</p> : null}
+        </div>
+      ) : null}
+      {canMarkFinished && !isDirty ? (
+        <button
+          type="button"
+          disabled={isPending}
+          onClick={() => {
+            setFeedback(null);
+            submitChange("0", unit);
+          }}
+          className="w-full rounded-lg bg-amber-50 py-1.5 text-center text-[11px] font-medium text-amber-700 ring-1 ring-amber-200 transition-colors hover:bg-amber-100 disabled:opacity-60"
+        >
+          {isPending ? "..." : "Закончился"}
+        </button>
+      ) : null}
+      {!isQuantityValid ? <p className="text-xs text-red-600">Ошибка</p> : null}
       {feedback ? <p className={`text-xs ${feedback.ok ? "text-emerald-700" : "text-red-600"}`}>{feedback.message}</p> : null}
     </form>
   );

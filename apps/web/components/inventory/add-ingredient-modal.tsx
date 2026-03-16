@@ -40,11 +40,21 @@ export function AddIngredientModal({ open, onClose, preferredCurrency = "RUB" }:
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/40 sm:items-center" role="dialog" aria-modal="true" aria-label="Добавить ингредиент">
-      <div className="max-h-[92vh] w-full overflow-y-auto rounded-t-xl bg-white p-4 sm:max-w-2xl sm:rounded-xl" data-testid="add-ingredient-modal">
-        <div className="mb-3 flex items-center justify-between">
-          <h2 className="text-lg font-semibold">Добавить ингредиент</h2>
-          <button type="button" className="text-sm text-zinc-500" onClick={onClose}>Закрыть</button>
+    <div
+      className="fixed inset-0 z-50 flex items-end justify-center bg-black/40 sm:items-center"
+      role="dialog"
+      aria-modal="true"
+      aria-label="Добавить ингредиент"
+      onClick={(event) => {
+        if (event.target === event.currentTarget) {
+          onClose();
+        }
+      }}
+    >
+      <div className="max-h-[92vh] w-full overflow-y-auto rounded-t-xl bg-white p-5 sm:max-w-2xl sm:rounded-xl" data-testid="add-ingredient-modal">
+        <div className="mb-4 flex items-center justify-between">
+          <h2 className="text-lg font-semibold text-zinc-950">Добавить ингредиент</h2>
+          <button type="button" className="text-sm text-zinc-500 transition-colors hover:text-zinc-700" onClick={onClose}>Закрыть</button>
         </div>
 
         <div className="space-y-4">

@@ -2,6 +2,7 @@
 
 import React from "react";
 import { useState } from "react";
+import { Plus } from "lucide-react";
 
 import type { SystemCurrency } from "@/features/system/currency";
 
@@ -21,8 +22,9 @@ export function AddIngredientTrigger({ className, fullWidth = false, preferredCu
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className={`${fullWidth ? "w-full" : ""} rounded-md bg-black px-4 py-2 text-sm text-white ${className ?? ""}`.trim()}
+        className={`${fullWidth ? "w-full" : ""} inline-flex items-center gap-2 rounded-xl bg-zinc-900 px-5 py-2.5 text-sm font-medium text-white shadow-sm transition-colors hover:bg-zinc-800 ${className ?? ""}`.trim()}
       >
+        <Plus className="h-4 w-4" />
         Добавить ингредиент
       </button>
       <AddIngredientModal open={open} onClose={() => setOpen(false)} preferredCurrency={preferredCurrency} />
