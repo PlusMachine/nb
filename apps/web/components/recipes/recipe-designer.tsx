@@ -1,6 +1,6 @@
 "use client";
 
-import { beerStyleFixtures, convertWeight, evaluateStyleFit, getBeerStyleById, getStyleRangeById, sgToPlato } from "@nb/brewing-core";
+import { beerStyleFixtures, convertWeight, evaluateStyleFit, getBeerStyleById, getStyleRangeById, sgToPlato, srmToEbc } from "@nb/brewing-core";
 import {
   CircleCheck,
   CircleAlert,
@@ -715,7 +715,7 @@ const getMetricPositionPercent = (value: number | null, min: number, max: number
   return clampPercent(((value - min) / (max - min)) * 100);
 };
 
-const getMetricStatusAppearance = (status: "in_range" | "below" | "above" | null) => {
+const getMetricStatusAppearance = (status: "in_range" | "below" | "above" | "no_style" | null) => {
   if (status === "in_range") {
     return {
       label: "В стиле",
@@ -743,6 +743,15 @@ const getMetricStatusAppearance = (status: "in_range" | "below" | "above" | null
     };
   }
 
+  if (status === "no_style") {
+    return {
+      label: "—",
+      badgeClassName: "bg-sky-50 text-sky-500 ring-1 ring-sky-200",
+      needleClassName: "bg-sky-400",
+      needleDotClassName: "bg-sky-400 ring-2 ring-white shadow"
+    };
+  }
+
   return {
     label: "—",
     badgeClassName: "bg-zinc-50 text-zinc-500 ring-1 ring-zinc-200",
@@ -764,6 +773,7 @@ function StylePicker({
 }) {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const buttonRef = useRef<HTMLButtonElement | null>(null);
+  const searchInputRef = useRef<HTMLInputElement | null>(null);
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
   const [dropdownStyle, setDropdownStyle] = useState<React.CSSProperties>({});
@@ -800,6 +810,7 @@ function StylePicker({
     if (!open) return;
 
     updateDropdownPosition();
+    searchInputRef.current?.focus({ preventScroll: true });
 
     const handlePointerDown = (event: MouseEvent) => {
       if (
@@ -829,7 +840,7 @@ function StylePicker({
       className="rounded-2xl border border-zinc-200 bg-white p-2 shadow-2xl"
     >
       <input
-        autoFocus
+        ref={searchInputRef}
         value={query}
         onChange={(event) => setQuery(event.target.value)}
         placeholder="Найти стиль по коду, семейству или названию"
@@ -845,7 +856,7 @@ function StylePicker({
           }}
           className={`flex w-full items-center justify-between rounded-xl px-3 py-2 text-left text-sm hover:bg-zinc-50 ${!selectedStyle ? "bg-zinc-50 text-zinc-900" : "text-zinc-700"}`}
         >
-          <span>Без выбранного стиля</span>
+          <span>Пиво вне BJCP стиля</span>
           {!selectedStyle ? <span className="text-[11px] text-zinc-500">активно</span> : null}
         </button>
 
@@ -908,15 +919,17 @@ function StyleRangeTrack({
   globalRange,
   styleRange,
   status,
-  valueLabel
+  valueLabel,
+  hasStyle
 }: {
   actualValue: number | null;
   globalRange: { min: number; max: number };
   styleRange: { min: number; max: number } | null;
   status: "in_range" | "below" | "above" | null;
   valueLabel: string;
+  hasStyle: boolean;
 }) {
-  const appearance = getMetricStatusAppearance(status);
+  const appearance = hasStyle ? getMetricStatusAppearance(status) : getMetricStatusAppearance("no_style");
   const valuePercent = getMetricPositionPercent(actualValue, globalRange.min, globalRange.max);
 
   const bandLeft = styleRange ? clampPercent(((styleRange.min - globalRange.min) / (globalRange.max - globalRange.min)) * 100) : null;
@@ -1055,7 +1068,7 @@ function RecipeStyleStatsBlock({
 
       <div className="-mx-1 flex-1">
         {items.map((item) => {
-          const appearance = getMetricStatusAppearance(item.status);
+          const appearance = hasStyleRange ? getMetricStatusAppearance(item.status) : getMetricStatusAppearance("no_style");
 
           return (
             <div key={item.label} className="group grid items-center gap-x-2 rounded-lg px-1 py-1 transition-colors hover:bg-zinc-50 sm:grid-cols-[36px_minmax(0,1fr)_60px]">
@@ -1067,6 +1080,7 @@ function RecipeStyleStatsBlock({
                   styleRange={item.styleRange}
                   status={item.status}
                   valueLabel={item.valueLabel}
+                  hasStyle={hasStyleRange}
                 />
                 <div className="flex justify-between text-[9px] tabular-nums text-zinc-400">
                   <span>{item.globalMinLabel}</span>
@@ -1105,16 +1119,23 @@ function RecipeBatchParametersBlock({
   sectionErrors: Record<string, string>;
   preview: RecipeDraftPreviewDto | null;
 }) {
+  const colorSrmValue = preview?.color != null ? preview.color.toFixed(1) : null;
+  const colorEbcValue = preview?.color != null ? srmToEbc(preview.color).toFixed(0) : null;
+  const colorInfo = preview?.color != null ? beerColorFromSrm(preview.color) : null;
+
   const summaryItems = [
-    { label: "Цвет", value: preview?.color != null ? formatColorWithEbc(preview.color) : "—" },
-    { label: "OG", value: formatGravityWithPlato(preview?.og ?? null) },
-    { label: "FG", value: formatGravityWithPlato(preview?.fg ?? null) },
-    { label: "IBU", value: preview?.ibu != null ? `${preview.ibu.toFixed(0)}` : "—" },
-    { label: "ABV", value: preview?.abv != null ? `${preview.abv.toFixed(1)}%` : "—" },
     {
-      label: "Стиль",
-      value: preview?.styleRange?.name ?? "Без BJCP"
-    }
+      key: "color",
+      label: "Цвет",
+      value: colorSrmValue != null && colorEbcValue != null
+        ? { srm: colorSrmValue, ebc: colorEbcValue }
+        : null
+    },
+    { key: "og", label: "OG", value: formatGravityWithPlato(preview?.og ?? null) },
+    { key: "fg", label: "FG", value: formatGravityWithPlato(preview?.fg ?? null) },
+    { key: "ibu", label: "IBU", value: preview?.ibu != null ? `${preview.ibu.toFixed(0)}` : "—" },
+    { key: "abv", label: "ABV", value: preview?.abv != null ? `${preview.abv.toFixed(1)}%` : "—" },
+    { key: "style", label: "Стиль", value: preview?.styleRange?.name ?? "Вне BJCP" }
   ];
 
   return (
@@ -1125,27 +1146,56 @@ function RecipeBatchParametersBlock({
 
       <dl className="mb-4 grid grid-cols-2 gap-2 xl:grid-cols-3">
         {summaryItems.map((item) => {
-          const colorInfo = item.label === "Цвет" && preview?.color != null ? beerColorFromSrm(preview.color) : null;
+          const isColor = item.key === "color";
+          const isStyle = item.key === "style";
+          const isGravity = item.key === "og" || item.key === "fg";
 
           return (
             <div
-              key={item.label}
-              className="rounded-xl border border-zinc-100 bg-zinc-50/80 px-3 py-2.5"
+              key={item.key}
+              className="min-w-0 rounded-xl border border-zinc-100 bg-zinc-50/80 px-3 py-2.5"
             >
-              <dt className="text-[11px] font-medium uppercase tracking-[0.08em] text-zinc-400">
+              <dt className="truncate text-[11px] font-medium uppercase tracking-[0.08em] text-zinc-400">
                 {item.label}
               </dt>
-              {colorInfo ? (
-                <dd className="mt-1 flex items-center gap-2">
-                  <BeerGlassIcon color={colorInfo.hex} size={26} className="shrink-0 text-zinc-300" />
-                  <div>
-                    <div className="whitespace-nowrap text-base font-semibold tabular-nums text-zinc-950">{item.value}</div>
-                    <div className="text-[10px] font-medium text-zinc-400">{colorInfo.label}</div>
+              {isColor && item.value && typeof item.value === "object" ? (
+                <dd className="mt-1 flex min-w-0 items-center gap-1.5">
+                  {colorInfo ? (
+                    <BeerGlassIcon color={colorInfo.hex} size={22} className="shrink-0 text-zinc-300" />
+                  ) : null}
+                  <div className="min-w-0">
+                    <div className="text-sm font-semibold tabular-nums text-zinc-950">
+                      <span>{item.value.srm} <span className="text-xs font-medium text-zinc-500">SRM</span></span>
+                      {" / "}
+                      <span>{item.value.ebc} <span className="text-xs font-medium text-zinc-500">EBC</span></span>
+                    </div>
+                    {colorInfo ? (
+                      <div className="truncate text-xs text-zinc-500">{colorInfo.label}</div>
+                    ) : null}
                   </div>
                 </dd>
-              ) : (
-                <dd className="mt-1 whitespace-nowrap text-base font-semibold tabular-nums text-zinc-950">
-                  {item.value}
+              ) : isStyle ? (
+                <dd className="mt-1 min-w-0" title={typeof item.value === "string" ? item.value : undefined}>
+                  <div className="truncate text-sm font-semibold text-zinc-950">{typeof item.value === "string" ? item.value : "—"}</div>
+                </dd>
+              ) : isGravity ? (() => {
+                const strVal = typeof item.value === "string" ? item.value : "—";
+                const parts = strVal !== "—" ? strVal.match(/^([\d.]+)\s*\((.+)\)$/) : null;
+                return (
+                  <dd className="mt-1 min-w-0">
+                    {parts ? (
+                      <div>
+                        <div className="text-sm font-semibold tabular-nums text-zinc-950">{parts[1]}</div>
+                        <div className="text-xs font-medium tabular-nums text-zinc-500">{parts[2]}</div>
+                      </div>
+                    ) : (
+                      <div className="text-sm font-semibold tabular-nums text-zinc-950">{strVal}</div>
+                    )}
+                  </dd>
+                );
+              })() : (
+                <dd className="mt-1 text-base font-semibold tabular-nums text-zinc-950">
+                  {typeof item.value === "string" ? item.value : "—"}
                 </dd>
               )}
             </div>

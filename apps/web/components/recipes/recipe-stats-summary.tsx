@@ -4,7 +4,7 @@ import { CircleAlert, CircleCheck, Gauge, Palette, Percent, Zap } from "lucide-r
 
 import type { RecipeDetailDto, RecipeListItemDto } from "@/features/recipes/contracts";
 import { beerColorFromSrm } from "@/features/recipes/beer-color";
-import { formatColorWithEbc, formatGravityWithPlato } from "@/features/recipes/format";
+import { formatGravityWithPlato } from "@/features/recipes/format";
 import { BeerGlassIcon } from "@/components/recipes/beer-glass-icon";
 
 type RecipeStatsSource = Pick<RecipeListItemDto | RecipeDetailDto, "og" | "fg" | "abv" | "ibu" | "color" | "styleId">;
@@ -43,7 +43,12 @@ export function RecipeStatsSummary({ recipe }: { recipe: RecipeStatsSource }) {
     { key: "FG", label: "FG", value: formatGravityWithPlato(recipe.fg), status: fit?.fg.status ?? null },
     { key: "ABV", label: "ABV", value: recipe.abv == null ? "—" : `${recipe.abv.toFixed(1)}%`, status: fit?.abv.status ?? null },
     { key: "IBU", label: "IBU", value: recipe.ibu == null ? "—" : `${recipe.ibu.toFixed(0)}`, status: fit?.ibu.status ?? null },
-    { key: "Color", label: "Color", value: formatColorWithEbc(recipe.color), status: fit?.colorSrm.status ?? null }
+    {
+      key: "Color",
+      label: "Color",
+      value: recipe.color == null ? "—" : { srm: recipe.color.toFixed(1), ebc: (recipe.color * 1.97).toFixed(0) },
+      status: fit?.colorSrm.status ?? null
+    }
   ];
 
   return (
@@ -65,27 +70,44 @@ export function RecipeStatsSummary({ recipe }: { recipe: RecipeStatsSource }) {
         {items.map((stat) => {
           const Icon = metricIcons[stat.key];
           const colorInfo = stat.key === "Color" && recipe.color != null ? beerColorFromSrm(recipe.color) : null;
+          const isColor = stat.key === "Color";
+          const isGravity = stat.key === "OG" || stat.key === "FG";
+          const strValue = typeof stat.value === "string" ? stat.value : null;
+          const gravityParts = isGravity && strValue && strValue !== "—"
+            ? strValue.match(/^([\d.]+)\s*\((.+)\)$/)
+            : null;
 
           return (
             <div
               key={stat.key}
-              className="rounded-xl bg-stone-50 p-3"
+              className="min-w-0 rounded-xl bg-stone-50 p-3"
             >
               <dt className="flex items-center gap-1.5 text-xs uppercase tracking-wider text-zinc-400">
-                <Icon className="h-3.5 w-3.5" />
-                {stat.label}
+                <Icon className="h-3.5 w-3.5 shrink-0" />
+                <span className="truncate">{stat.label}</span>
               </dt>
-              {colorInfo ? (
-                <dd className="mt-1.5 flex items-center gap-2">
-                  <BeerGlassIcon color={colorInfo.hex} size={28} className="shrink-0 text-zinc-300" />
-                  <div>
-                    <div className="whitespace-nowrap text-lg font-semibold tabular-nums text-zinc-950">{stat.value}</div>
-                    <div className="text-[10px] font-medium text-zinc-400">{colorInfo.label}</div>
+              {isColor && colorInfo && typeof stat.value === "object" && stat.value !== null ? (
+                <dd className="mt-1.5 flex min-w-0 items-center gap-1.5">
+                  <BeerGlassIcon color={colorInfo.hex} size={24} className="shrink-0 text-zinc-300" />
+                  <div className="min-w-0">
+                    <div className="text-sm font-semibold tabular-nums text-zinc-950">
+                      {(stat.value as { srm: string; ebc: string }).srm}{" "}
+                      <span className="text-xs font-medium text-zinc-500">SRM</span>
+                      {" / "}
+                      {(stat.value as { srm: string; ebc: string }).ebc}{" "}
+                      <span className="text-xs font-medium text-zinc-500">EBC</span>
+                    </div>
+                    <div className="truncate text-xs text-zinc-500">{colorInfo.label}</div>
                   </div>
                 </dd>
+              ) : gravityParts ? (
+                <dd className="mt-1.5 min-w-0">
+                  <div className="text-lg font-semibold tabular-nums text-zinc-950">{gravityParts[1]}</div>
+                  <div className="text-xs font-medium tabular-nums text-zinc-500">{gravityParts[2]}</div>
+                </dd>
               ) : (
-                <dd className="mt-1.5 whitespace-nowrap text-lg font-semibold tabular-nums text-zinc-950">
-                  {stat.value}
+                <dd className="mt-1.5 text-lg font-semibold tabular-nums text-zinc-950">
+                  {strValue ?? "—"}
                 </dd>
               )}
               {stat.status ? (
