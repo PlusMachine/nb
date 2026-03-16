@@ -18,6 +18,7 @@ import {
   Wheat
 } from "lucide-react";
 import React, { startTransition, useEffect, useMemo, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { useRouter } from "next/navigation";
 
 import {
@@ -761,8 +762,10 @@ function StylePicker({
   id?: string;
 }) {
   const containerRef = useRef<HTMLDivElement | null>(null);
+  const buttonRef = useRef<HTMLButtonElement | null>(null);
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
+  const [dropdownStyle, setDropdownStyle] = useState<React.CSSProperties>({});
   const labelId = `${id}-label`;
   const selectedStyle = useMemo(
     () => getBeerStyleById(value),
@@ -780,20 +783,98 @@ function StylePicker({
     });
   }, [query]);
 
+  const updateDropdownPosition = () => {
+    if (!buttonRef.current) return;
+    const rect = buttonRef.current.getBoundingClientRect();
+    setDropdownStyle({
+      position: "fixed",
+      top: rect.bottom + 8,
+      left: rect.left,
+      width: Math.min(420, window.innerWidth - 32),
+      zIndex: 9999,
+    });
+  };
+
   useEffect(() => {
-    if (!open) {
-      return;
-    }
+    if (!open) return;
+
+    updateDropdownPosition();
 
     const handlePointerDown = (event: MouseEvent) => {
-      if (!containerRef.current?.contains(event.target as Node)) {
+      if (
+        !containerRef.current?.contains(event.target as Node) &&
+        !(event.target as Element)?.closest(`[data-style-picker-dropdown="${id}"]`)
+      ) {
         setOpen(false);
       }
     };
 
+    const handleScroll = () => updateDropdownPosition();
+
     document.addEventListener("mousedown", handlePointerDown);
-    return () => document.removeEventListener("mousedown", handlePointerDown);
-  }, [open]);
+    window.addEventListener("scroll", handleScroll, true);
+    window.addEventListener("resize", handleScroll);
+    return () => {
+      document.removeEventListener("mousedown", handlePointerDown);
+      window.removeEventListener("scroll", handleScroll, true);
+      window.removeEventListener("resize", handleScroll);
+    };
+  }, [open, id]);
+
+  const dropdown = open ? (
+    <div
+      data-style-picker-dropdown={id}
+      style={dropdownStyle}
+      className="rounded-2xl border border-zinc-200 bg-white p-2 shadow-2xl"
+    >
+      <input
+        autoFocus
+        value={query}
+        onChange={(event) => setQuery(event.target.value)}
+        placeholder="Найти стиль по коду, семейству или названию"
+        className="h-10 w-full rounded-xl border border-zinc-200 px-3 text-sm text-zinc-900"
+      />
+      <div className="mt-2 max-h-80 overflow-y-auto">
+        <button
+          type="button"
+          onClick={() => {
+            onChange("");
+            setQuery("");
+            setOpen(false);
+          }}
+          className={`flex w-full items-center justify-between rounded-xl px-3 py-2 text-left text-sm hover:bg-zinc-50 ${!selectedStyle ? "bg-zinc-50 text-zinc-900" : "text-zinc-700"}`}
+        >
+          <span>Без выбранного стиля</span>
+          {!selectedStyle ? <span className="text-[11px] text-zinc-500">активно</span> : null}
+        </button>
+
+        {filteredStyles.length ? (
+          filteredStyles.map((style) => (
+            <button
+              key={style.id}
+              type="button"
+              onClick={() => {
+                onChange(style.id);
+                setQuery("");
+                setOpen(false);
+              }}
+              className={`mt-1 flex w-full items-start justify-between gap-3 rounded-xl px-3 py-2 text-left hover:bg-zinc-50 ${value === style.id ? "bg-zinc-50" : ""}`}
+            >
+              <div className="min-w-0">
+                <div className="truncate text-sm font-medium text-zinc-900">{style.name}</div>
+                <div className="text-xs text-zinc-500">
+                  {style.family ? `${style.bjcpId} • ${style.family}` : style.bjcpId}
+                </div>
+              </div>
+              {value === style.id ? <span className="text-[11px] text-zinc-500">выбран</span> : null}
+            </button>
+          ))
+        ) : (
+          <div className="px-3 py-4 text-sm text-zinc-500">Ничего не найдено.</div>
+        )}
+      </div>
+    </div>
+  ) : null;
 
   return (
     <div ref={containerRef} className={`relative ${className ?? "min-w-[280px] shrink-0"}`}>
@@ -801,6 +882,7 @@ function StylePicker({
         Стиль BJCP
       </label>
       <button
+        ref={buttonRef}
         id={id}
         type="button"
         onClick={() => setOpen((current) => !current)}
@@ -815,56 +897,7 @@ function StylePicker({
         </span>
       </button>
 
-      {open ? (
-        <div className="absolute left-0 top-[calc(100%+8px)] z-40 w-[min(420px,calc(100vw-32px))] rounded-2xl border border-zinc-200 bg-white p-2 shadow-2xl">
-          <input
-            autoFocus
-            value={query}
-            onChange={(event) => setQuery(event.target.value)}
-            placeholder="Найти стиль по коду, семейству или названию"
-            className="h-10 w-full rounded-xl border border-zinc-200 px-3 text-sm text-zinc-900"
-          />
-          <div className="mt-2 max-h-80 overflow-y-auto">
-            <button
-              type="button"
-              onClick={() => {
-                onChange("");
-                setQuery("");
-                setOpen(false);
-              }}
-              className={`flex w-full items-center justify-between rounded-xl px-3 py-2 text-left text-sm hover:bg-zinc-50 ${!selectedStyle ? "bg-zinc-50 text-zinc-900" : "text-zinc-700"}`}
-            >
-              <span>Без выбранного стиля</span>
-              {!selectedStyle ? <span className="text-[11px] text-zinc-500">активно</span> : null}
-            </button>
-
-            {filteredStyles.length ? (
-              filteredStyles.map((style) => (
-                <button
-                  key={style.id}
-                  type="button"
-                  onClick={() => {
-                    onChange(style.id);
-                    setQuery("");
-                    setOpen(false);
-                  }}
-                  className={`mt-1 flex w-full items-start justify-between gap-3 rounded-xl px-3 py-2 text-left hover:bg-zinc-50 ${value === style.id ? "bg-zinc-50" : ""}`}
-                >
-                  <div className="min-w-0">
-                    <div className="truncate text-sm font-medium text-zinc-900">{style.name}</div>
-                    <div className="text-xs text-zinc-500">
-                      {style.family ? `${style.bjcpId} • ${style.family}` : style.bjcpId}
-                    </div>
-                  </div>
-                  {value === style.id ? <span className="text-[11px] text-zinc-500">выбран</span> : null}
-                </button>
-              ))
-            ) : (
-              <div className="px-3 py-4 text-sm text-zinc-500">Ничего не найдено.</div>
-            )}
-          </div>
-        </div>
-      ) : null}
+      {typeof window !== "undefined" ? createPortal(dropdown, document.body) : null}
     </div>
   );
 }
