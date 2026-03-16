@@ -918,13 +918,13 @@ function StyleRangeTrack({
   const appearance = getMetricStatusAppearance(status);
   const valuePercent = getMetricPositionPercent(actualValue, globalRange.min, globalRange.max);
 
-  if (valuePercent == null) {
-    return <div className="flex h-5 items-center text-[11px] text-zinc-400">Нет данных</div>;
-  }
-
   const bandLeft = styleRange ? clampPercent(((styleRange.min - globalRange.min) / (globalRange.max - globalRange.min)) * 100) : null;
   const bandRight = styleRange ? clampPercent(((styleRange.max - globalRange.min) / (globalRange.max - globalRange.min)) * 100) : null;
   const bandWidth = bandLeft != null && bandRight != null ? bandRight - bandLeft : null;
+
+  if (valuePercent == null && bandLeft == null) {
+    return <div className="flex h-5 items-center text-[11px] text-zinc-400">Нет данных</div>;
+  }
 
   return (
     <div className="relative h-6 w-full rounded-md bg-zinc-100">
@@ -934,14 +934,18 @@ function StyleRangeTrack({
           style={{ left: `${bandLeft}%`, width: `${bandWidth}%` }}
         />
       )}
-      <div
-        className={`absolute top-0 h-full w-[2px] -translate-x-[1px] ${appearance.needleClassName}`}
-        style={{ left: `${valuePercent}%` }}
-      />
-      <div
-        className={`absolute top-1/2 h-3 w-3 -translate-x-1/2 -translate-y-1/2 rounded-full ${appearance.needleDotClassName}`}
-        style={{ left: `${valuePercent}%` }}
-      />
+      {valuePercent != null && (
+        <>
+          <div
+            className={`absolute top-0 h-full w-[2px] -translate-x-[1px] ${appearance.needleClassName}`}
+            style={{ left: `${valuePercent}%` }}
+          />
+          <div
+            className={`absolute top-1/2 h-3 w-3 -translate-x-1/2 -translate-y-1/2 rounded-full ${appearance.needleDotClassName}`}
+            style={{ left: `${valuePercent}%` }}
+          />
+        </>
+      )}
       <span className="pointer-events-none absolute inset-0 flex items-center justify-center text-[11px] font-semibold tabular-nums text-zinc-700">
         {valueLabel}
       </span>
