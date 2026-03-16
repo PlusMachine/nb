@@ -546,13 +546,14 @@ const buildInitialPreview = (recipe?: RecipeDetailDto): RecipeDraftPreviewDto | 
   }
 
   const styleRange = getStyleRangeById(recipe.styleId);
-  const styleFit = styleRange && recipe.og != null && recipe.fg != null && recipe.abv != null && recipe.ibu != null && recipe.color != null
+  const hasAnyMetric = recipe.og != null || recipe.fg != null || recipe.abv != null || recipe.ibu != null || recipe.color != null;
+  const styleFit = styleRange && hasAnyMetric
     ? evaluateStyleFit(styleRange, {
-      og: recipe.og,
-      fg: recipe.fg,
-      abv: recipe.abv,
-      ibu: recipe.ibu,
-      srm: recipe.color
+      og: recipe.og ?? 0,
+      fg: recipe.fg ?? 0,
+      abv: recipe.abv ?? 0,
+      ibu: recipe.ibu ?? 0,
+      srm: recipe.color ?? 0
     })
     : null;
 
@@ -971,7 +972,6 @@ function RecipeStyleStatsBlock({
   const hasCalculatedMetrics = [preview?.og, preview?.fg, preview?.abv, preview?.ibu, preview?.color].some((value) => value != null);
   const styleRange = preview?.styleRange ?? null;
   const fit = preview?.styleFit;
-  const overallFit = fit?.overallFit ?? false;
   const styleName = styleRange?.name ?? null;
 
   const items = [
@@ -983,7 +983,7 @@ function RecipeStyleStatsBlock({
       styleRange: styleRange?.og ?? null,
       globalMinLabel: globalBrewingRanges.og.min.toFixed(3),
       globalMaxLabel: globalBrewingRanges.og.max.toFixed(3),
-      status: hasStyleRange ? fit?.og.status ?? null : null
+      status: hasStyleRange && preview?.og != null ? fit?.og.status ?? null : null
     },
     {
       label: "FG",
@@ -993,7 +993,7 @@ function RecipeStyleStatsBlock({
       styleRange: styleRange?.fg ?? null,
       globalMinLabel: globalBrewingRanges.fg.min.toFixed(3),
       globalMaxLabel: globalBrewingRanges.fg.max.toFixed(3),
-      status: hasStyleRange ? fit?.fg.status ?? null : null
+      status: hasStyleRange && preview?.fg != null ? fit?.fg.status ?? null : null
     },
     {
       label: "ABV",
@@ -1003,7 +1003,7 @@ function RecipeStyleStatsBlock({
       styleRange: styleRange?.abv ?? null,
       globalMinLabel: `${globalBrewingRanges.abv.min.toFixed(0)}%`,
       globalMaxLabel: `${globalBrewingRanges.abv.max.toFixed(0)}%`,
-      status: hasStyleRange ? fit?.abv.status ?? null : null
+      status: hasStyleRange && preview?.abv != null ? fit?.abv.status ?? null : null
     },
     {
       label: "IBU",
@@ -1013,7 +1013,7 @@ function RecipeStyleStatsBlock({
       styleRange: styleRange?.ibu ?? null,
       globalMinLabel: `${globalBrewingRanges.ibu.min.toFixed(0)}`,
       globalMaxLabel: `${globalBrewingRanges.ibu.max.toFixed(0)}`,
-      status: hasStyleRange ? fit?.ibu.status ?? null : null
+      status: hasStyleRange && preview?.ibu != null ? fit?.ibu.status ?? null : null
     },
     {
       label: "Color",
@@ -1023,9 +1023,12 @@ function RecipeStyleStatsBlock({
       styleRange: styleRange?.colorSrm ?? null,
       globalMinLabel: `${globalBrewingRanges.colorSrm.min.toFixed(0)}`,
       globalMaxLabel: `${globalBrewingRanges.colorSrm.max.toFixed(0)}`,
-      status: hasStyleRange ? fit?.colorSrm.status ?? null : null
+      status: hasStyleRange && preview?.color != null ? fit?.colorSrm.status ?? null : null
     }
   ];
+
+  const overallFit = items.some((item) => item.actualValue != null) &&
+    items.every((item) => item.actualValue == null || item.status === "in_range");
 
   return (
     <section className="flex h-full flex-col rounded-2xl border border-zinc-100 bg-white p-4 shadow-sm">

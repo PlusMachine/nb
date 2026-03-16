@@ -1257,13 +1257,14 @@ export const previewRecipeDraft = async (authorId: string, payload: unknown): Pr
     }))
   });
   const styleRange = resolveRecipeStyleRange(parsed.styleId ?? null);
-  const styleFit = styleRange && stats.og != null && stats.fg != null && stats.abv != null && stats.ibu != null && stats.color != null
+  const hasAnyMetric = stats.og != null || stats.fg != null || stats.abv != null || stats.ibu != null || stats.color != null;
+  const styleFit = styleRange && hasAnyMetric
     ? evaluateStyleFit(styleRange, {
-      og: stats.og,
-      fg: stats.fg,
-      abv: stats.abv,
-      ibu: stats.ibu,
-      srm: stats.color
+      og: stats.og ?? 0,
+      fg: stats.fg ?? 0,
+      abv: stats.abv ?? 0,
+      ibu: stats.ibu ?? 0,
+      srm: stats.color ?? 0
     })
     : null;
 
