@@ -1,11 +1,11 @@
 import React from "react";
-import { styleRangeFixtures } from "@nb/brewing-core";
+import { getBeerStyleById } from "@nb/brewing-core";
 
 import { recipePublicationStateLabels, type RecipeDetailDto } from "@/features/recipes/contracts";
 import { formatUpdatedLabel } from "@/features/recipes/format";
 
 export function PublicRecipeHeader({ recipe }: { recipe: RecipeDetailDto }) {
-  const styleName = recipe.styleId ? styleRangeFixtures.find((s) => s.id === recipe.styleId)?.name ?? null : null;
+  const styleName = getBeerStyleById(recipe.styleId)?.name ?? null;
 
   return (
     <section className="rounded-2xl border border-zinc-100 bg-white p-5 shadow-sm">

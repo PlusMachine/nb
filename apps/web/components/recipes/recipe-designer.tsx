@@ -1,6 +1,6 @@
 "use client";
 
-import { convertWeight, evaluateStyleFit, sgToPlato, styleRangeFixtures } from "@nb/brewing-core";
+import { beerStyleFixtures, convertWeight, evaluateStyleFit, getBeerStyleById, getStyleRangeById, sgToPlato } from "@nb/brewing-core";
 import {
   CircleCheck,
   CircleAlert,
@@ -543,7 +543,7 @@ const buildInitialPreview = (recipe?: RecipeDetailDto): RecipeDraftPreviewDto | 
     return null;
   }
 
-  const styleRange = recipe.styleId ? styleRangeFixtures.find((style) => style.id === recipe.styleId) ?? null : null;
+  const styleRange = getStyleRangeById(recipe.styleId);
   const styleFit = styleRange && recipe.og != null && recipe.fg != null && recipe.abv != null && recipe.ibu != null && recipe.color != null
     ? evaluateStyleFit(styleRange, {
       og: recipe.og,
@@ -764,17 +764,17 @@ function StylePicker({
   const [query, setQuery] = useState("");
   const labelId = `${id}-label`;
   const selectedStyle = useMemo(
-    () => styleRangeFixtures.find((style) => style.id === value) ?? null,
+    () => getBeerStyleById(value),
     [value]
   );
   const filteredStyles = useMemo(() => {
     const normalized = query.trim().toLowerCase();
     if (!normalized) {
-      return styleRangeFixtures;
+      return beerStyleFixtures;
     }
 
-    return styleRangeFixtures.filter((style) => {
-      const haystack = `${style.id} ${style.name}`.toLowerCase();
+    return beerStyleFixtures.filter((style) => {
+      const haystack = `${style.id} ${style.bjcpId} ${style.name} ${style.family ?? ""}`.toLowerCase();
       return haystack.includes(normalized);
     });
   }, [query]);
@@ -810,7 +810,7 @@ function StylePicker({
           {selectedStyle ? selectedStyle.name : "Выбрать стиль"}
         </span>
         <span className="shrink-0 text-[11px] uppercase tracking-[0.12em] text-zinc-400">
-          {selectedStyle?.id ?? "BJCP"}
+          {selectedStyle?.bjcpId ?? "BJCP"}
         </span>
       </button>
 
@@ -820,7 +820,7 @@ function StylePicker({
             autoFocus
             value={query}
             onChange={(event) => setQuery(event.target.value)}
-            placeholder="Найти стиль по id или названию"
+            placeholder="Найти стиль по коду, семейству или названию"
             className="h-10 w-full rounded-xl border border-zinc-200 px-3 text-sm text-zinc-900"
           />
           <div className="mt-2 max-h-80 overflow-y-auto">
@@ -851,7 +851,9 @@ function StylePicker({
                 >
                   <div className="min-w-0">
                     <div className="truncate text-sm font-medium text-zinc-900">{style.name}</div>
-                    <div className="text-xs text-zinc-500">{style.id}</div>
+                    <div className="text-xs text-zinc-500">
+                      {style.family ? `${style.bjcpId} • ${style.family}` : style.bjcpId}
+                    </div>
                   </div>
                   {value === style.id ? <span className="text-[11px] text-zinc-500">выбран</span> : null}
                 </button>

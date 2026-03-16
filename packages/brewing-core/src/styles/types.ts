@@ -3,9 +3,19 @@ export interface NumericRange {
   max: number;
 }
 
-export interface StyleRange {
+export interface BeerStyle {
   id: string;
+  bjcpId: string;
   name: string;
+  family: string | null;
+  og: NumericRange | null;
+  fg: NumericRange | null;
+  abv: NumericRange | null;
+  ibu: NumericRange | null;
+  colorSrm: NumericRange | null;
+}
+
+export interface StyleRange extends BeerStyle {
   og: NumericRange;
   fg: NumericRange;
   abv: NumericRange;

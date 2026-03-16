@@ -15,9 +15,9 @@ import {
   calculateIbuTinseth,
   calculateOg,
   evaluateStyleFit,
+  getStyleRangeById,
   roundTo
 } from "@nb/brewing-core";
-import { styleRangeFixtures } from "@nb/brewing-core";
 import {
   createRecipePayloadSchema,
   defaultRecipeProcessMeta,
@@ -249,9 +249,7 @@ const isRecord = (value: unknown): value is Record<string, unknown> => (
   && !Array.isArray(value)
 );
 
-const resolveRecipeStyleRange = (styleId: string | null | undefined) => (
-  styleId ? styleRangeFixtures.find((style) => style.id === styleId) ?? null : null
-);
+const resolveRecipeStyleRange = (styleId: string | null | undefined) => getStyleRangeById(styleId);
 
 const parseRecipeProcessMeta = (processMeta: Record<string, unknown> | null | undefined) => (
   recipeProcessMetaSchema.parse(processMeta ?? defaultRecipeProcessMeta)

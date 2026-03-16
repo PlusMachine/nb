@@ -1,5 +1,5 @@
 import React from "react";
-import { evaluateStyleFit, styleRangeFixtures } from "@nb/brewing-core";
+import { evaluateStyleFit, getBeerStyleById, getStyleRangeById } from "@nb/brewing-core";
 import { CircleAlert, CircleCheck, Gauge, Palette, Percent, Zap } from "lucide-react";
 
 import type { RecipeDetailDto, RecipeListItemDto } from "@/features/recipes/contracts";
@@ -23,7 +23,8 @@ const metricStatusLabels: Record<"in_range" | "below" | "above", string> = {
 };
 
 export function RecipeStatsSummary({ recipe }: { recipe: RecipeStatsSource }) {
-  const styleRange = recipe.styleId ? styleRangeFixtures.find((style) => style.id === recipe.styleId) ?? null : null;
+  const selectedStyle = getBeerStyleById(recipe.styleId);
+  const styleRange = getStyleRangeById(recipe.styleId);
   const fit = styleRange && recipe.og != null && recipe.fg != null && recipe.abv != null && recipe.ibu != null && recipe.color != null
     ? evaluateStyleFit(styleRange, {
       og: recipe.og,
@@ -49,7 +50,7 @@ export function RecipeStatsSummary({ recipe }: { recipe: RecipeStatsSource }) {
       <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
         <div>
           <h2 className="text-base font-semibold text-zinc-950">Ключевые показатели</h2>
-          {styleRange ? <p className="text-xs text-zinc-500">BJCP: {styleRange.name}</p> : null}
+          {selectedStyle ? <p className="text-xs text-zinc-500">BJCP: {selectedStyle.name}</p> : null}
         </div>
         {styleRange && hasValues ? (
           <span className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium ${overallFit ? "bg-emerald-50 text-emerald-700 ring-1 ring-emerald-200" : "bg-amber-50 text-amber-700 ring-1 ring-amber-200"}`}>

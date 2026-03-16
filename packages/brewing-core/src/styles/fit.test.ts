@@ -1,18 +1,18 @@
 import { describe, expect, it } from "vitest";
-import { styleRangeFixtures } from "./fixtures";
+import { getStyleRangeById } from "./fixtures";
 import { evaluateStyleFit } from "./fit";
 
 describe("style fit helper", () => {
   it("returns in-range fit", () => {
-    const apa = styleRangeFixtures[0];
-    if (!apa) throw new Error("fixture missing");
+    const ipa = getStyleRangeById("21A");
+    if (!ipa) throw new Error("fixture missing");
 
-    const result = evaluateStyleFit(apa, {
-      og: 1.052,
+    const result = evaluateStyleFit(ipa, {
+      og: 1.062,
       fg: 1.012,
-      abv: 5.2,
-      ibu: 38,
-      srm: 7
+      abv: 6.3,
+      ibu: 55,
+      srm: 8
     });
 
     expect(result.overallFit).toBe(true);
@@ -20,7 +20,7 @@ describe("style fit helper", () => {
   });
 
   it("returns out-of-range details", () => {
-    const stout = styleRangeFixtures[1];
+    const stout = getStyleRangeById("15B");
     if (!stout) throw new Error("fixture missing");
 
     const result = evaluateStyleFit(stout, {

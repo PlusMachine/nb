@@ -1,0 +1,1546 @@
+[
+  {
+    "style_key": "1A. American Light Lager",
+    "bjcp_id": "1A",
+    "name": "American Light Lager",
+    "family": null,
+    "vital_statistics_raw": "OG: 1.028 - 1.040 IBUs: 8 - 12 FG: 0.998 - 1.008 SRM: 2 - 3 ABV: 2.8 - 4.2%",
+    "vital_statistics": {
+      "OG": "1.028 - 1.040",
+      "IBUs": "8 - 12",
+      "FG": "0.998 - 1.008",
+      "SRM": "2 - 3",
+      "ABV": "2.8 - 4.2%"
+    }
+  },
+  {
+    "style_key": "1B. American Lager",
+    "bjcp_id": "1B",
+    "name": "American Lager",
+    "family": null,
+    "vital_statistics_raw": "OG: 1.040 - 1.050 IBUs: 8 - 18 FG: 1.004 - 1.010 SRM: 2 - 3.5 ABV: 4.2 - 5.3%",
+    "vital_statistics": {
+      "OG": "1.040 - 1.050",
+      "IBUs": "8 - 18",
+      "FG": "1.004 - 1.010",
+      "SRM": "2 - 3.5",
+      "ABV": "4.2 - 5.3%"
+    }
+  },
+  {
+    "style_key": "1C. Cream Ale",
+    "bjcp_id": "1C",
+    "name": "Cream Ale",
+    "family": null,
+    "vital_statistics_raw": "OG: 1.042 - 1.055 IBUs: 8 - 20 FG: 1.006 - 1.012 SRM: 2 - 5 ABV: 4.2 - 5.6%",
+    "vital_statistics": {
+      "OG": "1.042 - 1.055",
+      "IBUs": "8 - 20",
+      "FG": "1.006 - 1.012",
+      "SRM": "2 - 5",
+      "ABV": "4.2 - 5.6%"
+    }
+  },
+  {
+    "style_key": "1D. American Wheat Beer",
+    "bjcp_id": "1D",
+    "name": "American Wheat Beer",
+    "family": null,
+    "vital_statistics_raw": "OG: 1.040 - 1.055 IBUs: 15 - 30 FG: 1.008 - 1.013 SRM: 3 - 6 ABV: 4.0 - 5.5%",
+    "vital_statistics": {
+      "OG": "1.040 - 1.055",
+      "IBUs": "15 - 30",
+      "FG": "1.008 - 1.013",
+      "SRM": "3 - 6",
+      "ABV": "4.0 - 5.5%"
+    }
+  },
+  {
+    "style_key": "2A. International Pale Lager",
+    "bjcp_id": "2A",
+    "name": "International Pale Lager",
+    "family": null,
+    "vital_statistics_raw": "OG: 1.042 - 1.050 IBUs: 18 - 25 FG: 1.008 - 1.012 SRM: 2 - 6 ABV: 4.5 - 6.0%",
+    "vital_statistics": {
+      "OG": "1.042 - 1.050",
+      "IBUs": "18 - 25",
+      "FG": "1.008 - 1.012",
+      "SRM": "2 - 6",
+      "ABV": "4.5 - 6.0%"
+    }
+  },
+  {
+    "style_key": "2B. International Amber Lager",
+    "bjcp_id": "2B",
+    "name": "International Amber Lager",
+    "family": null,
+    "vital_statistics_raw": "OG: 1.042 - 1.055 IBUs: 8 - 25 FG: 1.008 - 1.014 SRM: 6 - 14 ABV: 4.5 - 6.0%",
+    "vital_statistics": {
+      "OG": "1.042 - 1.055",
+      "IBUs": "8 - 25",
+      "FG": "1.008 - 1.014",
+      "SRM": "6 - 14",
+      "ABV": "4.5 - 6.0%"
+    }
+  },
+  {
+    "style_key": "3A. Czech Pale Lager",
+    "bjcp_id": "3A",
+    "name": "Czech Pale Lager",
+    "family": null,
+    "vital_statistics_raw": "OG: 1.044 - 1.056 IBUs: 8 - 20 FG: 1.008 - 1.012 SRM: 14 - 30 ABV: 4.2 - 6.0%",
+    "vital_statistics": {
+      "OG": "1.044 - 1.056",
+      "IBUs": "8 - 20",
+      "FG": "1.008 - 1.012",
+      "SRM": "14 - 30",
+      "ABV": "4.2 - 6.0%"
+    }
+  },
+  {
+    "style_key": "3B. Czech Premium Pale Lager",
+    "bjcp_id": "3B",
+    "name": "Czech Premium Pale Lager",
+    "family": null,
+    "vital_statistics_raw": "OG: 1.044 - 1.060 IBUs: 30 - 45 FG: 1.013 - 1.017 SRM: 3.5 - 6 ABV: 4.2 - 5.8%",
+    "vital_statistics": {
+      "OG": "1.044 - 1.060",
+      "IBUs": "30 - 45",
+      "FG": "1.013 - 1.017",
+      "SRM": "3.5 - 6",
+      "ABV": "4.2 - 5.8%"
+    }
+  },
+  {
+    "style_key": "3C. Czech Amber Lager",
+    "bjcp_id": "3C",
+    "name": "Czech Amber Lager",
+    "family": null,
+    "vital_statistics_raw": "OG: 1.044 - 1.060 IBUs: 20 - 35 FG: 1.013 - 1.017 SRM: 10 - 16 ABV: 4.4 - 5.8% Guidelines - 2021 Edition 5",
+    "vital_statistics": {
+      "OG": "1.044 - 1.060",
+      "IBUs": "20 - 35",
+      "FG": "1.013 - 1.017",
+      "SRM": "10 - 16",
+      "ABV": "4.4 - 5.8%"
+    }
+  },
+  {
+    "style_key": "3D. Czech Dark Lager",
+    "bjcp_id": "3D",
+    "name": "Czech Dark Lager",
+    "family": null,
+    "vital_statistics_raw": "OG: 1.044 - 1.060 IBUs: 18 - 34 FG: 1.013 - 1.017 SRM: 17 - 35 ABV: 4.4 - 5.8%",
+    "vital_statistics": {
+      "OG": "1.044 - 1.060",
+      "IBUs": "18 - 34",
+      "FG": "1.013 - 1.017",
+      "SRM": "17 - 35",
+      "ABV": "4.4 - 5.8%"
+    }
+  },
+  {
+    "style_key": "4A. Munich Helles",
+    "bjcp_id": "4A",
+    "name": "Munich Helles",
+    "family": null,
+    "vital_statistics_raw": "OG: 1.044 - 1.048 IBUs: 16 - 22 FG: 1.006 - 1.012 SRM: 3 - 5 ABV: 4.7 - 5.4%",
+    "vital_statistics": {
+      "OG": "1.044 - 1.048",
+      "IBUs": "16 - 22",
+      "FG": "1.006 - 1.012",
+      "SRM": "3 - 5",
+      "ABV": "4.7 - 5.4%"
+    }
+  },
+  {
+    "style_key": "4B. Festbier",
+    "bjcp_id": "4B",
+    "name": "Festbier",
+    "family": null,
+    "vital_statistics_raw": "OG: 1.054 - 1.057 IBUs: 18 - 25 FG: 1.010 - 1.012 SRM: 4 - 6 ABV: 5.8 - 6.3%",
+    "vital_statistics": {
+      "OG": "1.054 - 1.057",
+      "IBUs": "18 - 25",
+      "FG": "1.010 - 1.012",
+      "SRM": "4 - 6",
+      "ABV": "5.8 - 6.3%"
+    }
+  },
+  {
+    "style_key": "4C. Helles Bock",
+    "bjcp_id": "4C",
+    "name": "Helles Bock",
+    "family": null,
+    "vital_statistics_raw": "OG: 1.064 - 1.072 IBUs: 23 - 35 FG: 1.011 - 1.018 SRM: 6 - 9 ABV: 6.3 - 7.4%",
+    "vital_statistics": {
+      "OG": "1.064 - 1.072",
+      "IBUs": "23 - 35",
+      "FG": "1.011 - 1.018",
+      "SRM": "6 - 9",
+      "ABV": "6.3 - 7.4%"
+    }
+  },
+  {
+    "style_key": "5A. German Leichtbier",
+    "bjcp_id": "5A",
+    "name": "German Leichtbier",
+    "family": null,
+    "vital_statistics_raw": "OG: 1.026 - 1.034 IBUs: 15 - 28 FG: 1.006 - 1.010 SRM: 1.5 - 4 ABV: 2.4 - 3.6%",
+    "vital_statistics": {
+      "OG": "1.026 - 1.034",
+      "IBUs": "15 - 28",
+      "FG": "1.006 - 1.010",
+      "SRM": "1.5 - 4",
+      "ABV": "2.4 - 3.6%"
+    }
+  },
+  {
+    "style_key": "5B. Kölsch",
+    "bjcp_id": "5B",
+    "name": "Kölsch",
+    "family": null,
+    "vital_statistics_raw": "OG: 1.044 - 1.050 IBUs: 18 - 30 FG: 1.007 - 1.011 SRM: 3.5 - 5 ABV: 4.4 - 5.2%",
+    "vital_statistics": {
+      "OG": "1.044 - 1.050",
+      "IBUs": "18 - 30",
+      "FG": "1.007 - 1.011",
+      "SRM": "3.5 - 5",
+      "ABV": "4.4 - 5.2%"
+    }
+  },
+  {
+    "style_key": "5C. German Helles Exportbier",
+    "bjcp_id": "5C",
+    "name": "German Helles Exportbier",
+    "family": null,
+    "vital_statistics_raw": "OG: 1.050 - 1.058 IBUs: 20 - 30 FG: 1.008 - 1.015 SRM: 4 - 6 ABV: 5.0 - 6.0%",
+    "vital_statistics": {
+      "OG": "1.050 - 1.058",
+      "IBUs": "20 - 30",
+      "FG": "1.008 - 1.015",
+      "SRM": "4 - 6",
+      "ABV": "5.0 - 6.0%"
+    }
+  },
+  {
+    "style_key": "5D. German Pils",
+    "bjcp_id": "5D",
+    "name": "German Pils",
+    "family": null,
+    "vital_statistics_raw": "OG: 1.044 - 1.050 IBUs: 22 - 40 FG: 1.008 - 1.013 SRM: 2 - 4 ABV: 4.4 - 5.2%",
+    "vital_statistics": {
+      "OG": "1.044 - 1.050",
+      "IBUs": "22 - 40",
+      "FG": "1.008 - 1.013",
+      "SRM": "2 - 4",
+      "ABV": "4.4 - 5.2%"
+    }
+  },
+  {
+    "style_key": "6A. Märzen",
+    "bjcp_id": "6A",
+    "name": "Märzen",
+    "family": null,
+    "vital_statistics_raw": "OG: 1.054 - 1.060 IBUs: 18 - 24 FG: 1.010 - 1.014 SRM: 8 - 17 ABV: 5.6 - 6.3%",
+    "vital_statistics": {
+      "OG": "1.054 - 1.060",
+      "IBUs": "18 - 24",
+      "FG": "1.010 - 1.014",
+      "SRM": "8 - 17",
+      "ABV": "5.6 - 6.3%"
+    }
+  },
+  {
+    "style_key": "6B. Rauchbier",
+    "bjcp_id": "6B",
+    "name": "Rauchbier",
+    "family": null,
+    "vital_statistics_raw": "OG: 1.050 - 1.057 IBUs: 20 - 30 FG: 1.012 - 1.016 SRM: 12 - 22 ABV: 4.8 - 6%",
+    "vital_statistics": {
+      "OG": "1.050 - 1.057",
+      "IBUs": "20 - 30",
+      "FG": "1.012 - 1.016",
+      "SRM": "12 - 22",
+      "ABV": "4.8 - 6%"
+    }
+  },
+  {
+    "style_key": "6C. Dunkles Bock",
+    "bjcp_id": "6C",
+    "name": "Dunkles Bock",
+    "family": null,
+    "vital_statistics_raw": "OG: 1.064 - 1.072 IBUs: 20 - 27 FG: 1.013 - 1.019 SRM: 14 - 22 ABV: 6.3 - 7.2%",
+    "vital_statistics": {
+      "OG": "1.064 - 1.072",
+      "IBUs": "20 - 27",
+      "FG": "1.013 - 1.019",
+      "SRM": "14 - 22",
+      "ABV": "6.3 - 7.2%"
+    }
+  },
+  {
+    "style_key": "7A. Vienna Lager",
+    "bjcp_id": "7A",
+    "name": "Vienna Lager",
+    "family": null,
+    "vital_statistics_raw": "OG: 1.048 - 1.055 IBUs: 18 - 30 FG: 1.010 - 1.014 SRM: 9 - 15 ABV: 4.7 - 5.5%",
+    "vital_statistics": {
+      "OG": "1.048 - 1.055",
+      "IBUs": "18 - 30",
+      "FG": "1.010 - 1.014",
+      "SRM": "9 - 15",
+      "ABV": "4.7 - 5.5%"
+    }
+  },
+  {
+    "style_key": "7B. Altbier",
+    "bjcp_id": "7B",
+    "name": "Altbier",
+    "family": null,
+    "vital_statistics_raw": "OG: 1.044 - 1.052 IBUs: 25 - 50 FG: 1.008 - 1.014 SRM: 9 - 17 ABV: 4.3 - 5.5%",
+    "vital_statistics": {
+      "OG": "1.044 - 1.052",
+      "IBUs": "25 - 50",
+      "FG": "1.008 - 1.014",
+      "SRM": "9 - 17",
+      "ABV": "4.3 - 5.5%"
+    }
+  },
+  {
+    "style_key": "8A. Munich Dunkel",
+    "bjcp_id": "8A",
+    "name": "Munich Dunkel",
+    "family": null,
+    "vital_statistics_raw": "OG: 1.048 - 1.056 IBUs: 18 - 28 FG: 1.010 - 1.016 SRM: 17 - 28 ABV: 4.5 - 5.6%",
+    "vital_statistics": {
+      "OG": "1.048 - 1.056",
+      "IBUs": "18 - 28",
+      "FG": "1.010 - 1.016",
+      "SRM": "17 - 28",
+      "ABV": "4.5 - 5.6%"
+    }
+  },
+  {
+    "style_key": "8B. Schwarzbier",
+    "bjcp_id": "8B",
+    "name": "Schwarzbier",
+    "family": null,
+    "vital_statistics_raw": "OG: 1.046 - 1.052 IBUs: 20 - 35 FG: 1.010 - 1.016 SRM: 19 - 30 ABV: 4.4 - 5.4%",
+    "vital_statistics": {
+      "OG": "1.046 - 1.052",
+      "IBUs": "20 - 35",
+      "FG": "1.010 - 1.016",
+      "SRM": "19 - 30",
+      "ABV": "4.4 - 5.4%"
+    }
+  },
+  {
+    "style_key": "9A. Doppelbock",
+    "bjcp_id": "9A",
+    "name": "Doppelbock",
+    "family": null,
+    "vital_statistics_raw": "OG: 1.072 - 1.112 IBUs: 16 - 26 FG: 1.016 - 1.024 SRM: 6 - 25 ABV: 7.0 - 10.0%",
+    "vital_statistics": {
+      "OG": "1.072 - 1.112",
+      "IBUs": "16 - 26",
+      "FG": "1.016 - 1.024",
+      "SRM": "6 - 25",
+      "ABV": "7.0 - 10.0%"
+    }
+  },
+  {
+    "style_key": "9B. Eisbock",
+    "bjcp_id": "9B",
+    "name": "Eisbock",
+    "family": null,
+    "vital_statistics_raw": "OG: 1.078 - 1.120 IBUs: 25 - 35 FG: 1.020 - 1.035 SRM: 17 - 30 ABV: 9.0 - 14.0%",
+    "vital_statistics": {
+      "OG": "1.078 - 1.120",
+      "IBUs": "25 - 35",
+      "FG": "1.020 - 1.035",
+      "SRM": "17 - 30",
+      "ABV": "9.0 - 14.0%"
+    }
+  },
+  {
+    "style_key": "9C. Baltic Porter",
+    "bjcp_id": "9C",
+    "name": "Baltic Porter",
+    "family": null,
+    "vital_statistics_raw": "OG: 1.060 - 1.090 IBUs: 20 - 40 FG: 1.016 - 1.024 SRM: 17 - 30 ABV: 6.5 - 9.5%",
+    "vital_statistics": {
+      "OG": "1.060 - 1.090",
+      "IBUs": "20 - 40",
+      "FG": "1.016 - 1.024",
+      "SRM": "17 - 30",
+      "ABV": "6.5 - 9.5%"
+    }
+  },
+  {
+    "style_key": "10A. Weissbier",
+    "bjcp_id": "10A",
+    "name": "Weissbier",
+    "family": null,
+    "vital_statistics_raw": "OG: 1.044 - 1.053 IBUs: 8 - 15 FG: 1.008 - 1.014 SRM: 2 - 6 ABV: 4.3 - 5.6%",
+    "vital_statistics": {
+      "OG": "1.044 - 1.053",
+      "IBUs": "8 - 15",
+      "FG": "1.008 - 1.014",
+      "SRM": "2 - 6",
+      "ABV": "4.3 - 5.6%"
+    }
+  },
+  {
+    "style_key": "10B. Dunkles Weissbier",
+    "bjcp_id": "10B",
+    "name": "Dunkles Weissbier",
+    "family": null,
+    "vital_statistics_raw": "OG: 1.044 - 1.057 IBUs: 10 - 18 FG: 1.008 - 1.014 SRM: 14 - 23 ABV: 4.3 - 5.6% Guidelines - 2021 Edition 17",
+    "vital_statistics": {
+      "OG": "1.044 - 1.057",
+      "IBUs": "10 - 18",
+      "FG": "1.008 - 1.014",
+      "SRM": "14 - 23",
+      "ABV": "4.3 - 5.6%"
+    }
+  },
+  {
+    "style_key": "10C. Weizenbock",
+    "bjcp_id": "10C",
+    "name": "Weizenbock",
+    "family": null,
+    "vital_statistics_raw": "OG: 1.064 - 1.090 IBUs: 15 - 30 FG: 1.015 - 1.022 SRM: 6 - 25 ABV: 6.5 - 9.0%",
+    "vital_statistics": {
+      "OG": "1.064 - 1.090",
+      "IBUs": "15 - 30",
+      "FG": "1.015 - 1.022",
+      "SRM": "6 - 25",
+      "ABV": "6.5 - 9.0%"
+    }
+  },
+  {
+    "style_key": "11A. Ordinary Bitter",
+    "bjcp_id": "11A",
+    "name": "Ordinary Bitter",
+    "family": null,
+    "vital_statistics_raw": "OG: 1.030 - 1.039 IBUs: 25 - 35 FG: 1.007 - 1.011 SRM: 8 - 14 ABV: 3.2 - 3.8%",
+    "vital_statistics": {
+      "OG": "1.030 - 1.039",
+      "IBUs": "25 - 35",
+      "FG": "1.007 - 1.011",
+      "SRM": "8 - 14",
+      "ABV": "3.2 - 3.8%"
+    }
+  },
+  {
+    "style_key": "11B. Best Bitter",
+    "bjcp_id": "11B",
+    "name": "Best Bitter",
+    "family": null,
+    "vital_statistics_raw": "OG: 1.040 - 1.048 IBUs: 25 - 40 FG: 1.008 - 1.012 SRM: 8 - 16 ABV: 3.8 - 4.6%",
+    "vital_statistics": {
+      "OG": "1.040 - 1.048",
+      "IBUs": "25 - 40",
+      "FG": "1.008 - 1.012",
+      "SRM": "8 - 16",
+      "ABV": "3.8 - 4.6%"
+    }
+  },
+  {
+    "style_key": "11C. Strong Bitter",
+    "bjcp_id": "11C",
+    "name": "Strong Bitter",
+    "family": null,
+    "vital_statistics_raw": "OG: 1.048 - 1.060 IBUs: 30 - 50 FG: 1.010 - 1.016 SRM: 8 - 18 ABV: 4.6 - 6.2%",
+    "vital_statistics": {
+      "OG": "1.048 - 1.060",
+      "IBUs": "30 - 50",
+      "FG": "1.010 - 1.016",
+      "SRM": "8 - 18",
+      "ABV": "4.6 - 6.2%"
+    }
+  },
+  {
+    "style_key": "12A. British Golden Ale",
+    "bjcp_id": "12A",
+    "name": "British Golden Ale",
+    "family": null,
+    "vital_statistics_raw": "OG: 1.038 - 1.053 IBUs: 20 - 45 FG: 1.006 - 1.012 SRM: 2 - 5 ABV: 3.8 - 5.0%",
+    "vital_statistics": {
+      "OG": "1.038 - 1.053",
+      "IBUs": "20 - 45",
+      "FG": "1.006 - 1.012",
+      "SRM": "2 - 5",
+      "ABV": "3.8 - 5.0%"
+    }
+  },
+  {
+    "style_key": "12B. Australian Sparkling Ale",
+    "bjcp_id": "12B",
+    "name": "Australian Sparkling Ale",
+    "family": null,
+    "vital_statistics_raw": "OG: 1.038 - 1.050 IBUs: 20 - 35 FG: 1.004 - 1.006 SRM: 4 - 7 ABV: 4.5 - 6.0%",
+    "vital_statistics": {
+      "OG": "1.038 - 1.050",
+      "IBUs": "20 - 35",
+      "FG": "1.004 - 1.006",
+      "SRM": "4 - 7",
+      "ABV": "4.5 - 6.0%"
+    }
+  },
+  {
+    "style_key": "12C. English IPA",
+    "bjcp_id": "12C",
+    "name": "English IPA",
+    "family": null,
+    "vital_statistics_raw": "OG: 1.050 - 1.070 IBUs: 40 - 60 FG: 1.010 - 1.015 SRM: 6 - 14 ABV: 5.0 - 7.5%",
+    "vital_statistics": {
+      "OG": "1.050 - 1.070",
+      "IBUs": "40 - 60",
+      "FG": "1.010 - 1.015",
+      "SRM": "6 - 14",
+      "ABV": "5.0 - 7.5%"
+    }
+  },
+  {
+    "style_key": "13A. Dark Mild",
+    "bjcp_id": "13A",
+    "name": "Dark Mild",
+    "family": null,
+    "vital_statistics_raw": "OG: 1.030 - 1.038 IBUs: 10 - 25 FG: 1.008 - 1.013 SRM: 14 - 25 ABV: 3.0 - 3.8%",
+    "vital_statistics": {
+      "OG": "1.030 - 1.038",
+      "IBUs": "10 - 25",
+      "FG": "1.008 - 1.013",
+      "SRM": "14 - 25",
+      "ABV": "3.0 - 3.8%"
+    }
+  },
+  {
+    "style_key": "13B. British Brown Ale",
+    "bjcp_id": "13B",
+    "name": "British Brown Ale",
+    "family": null,
+    "vital_statistics_raw": "OG: 1.040 - 1.052 IBUs: 20 - 30 FG: 1.008 - 1.013 SRM: 12 - 22 ABV: 4.2 - 5.9%",
+    "vital_statistics": {
+      "OG": "1.040 - 1.052",
+      "IBUs": "20 - 30",
+      "FG": "1.008 - 1.013",
+      "SRM": "12 - 22",
+      "ABV": "4.2 - 5.9%"
+    }
+  },
+  {
+    "style_key": "13C. English Porter",
+    "bjcp_id": "13C",
+    "name": "English Porter",
+    "family": null,
+    "vital_statistics_raw": "OG: 1.040 - 1.052 IBUs: 18 - 35 FG: 1.008 - 1.014 SRM: 20 - 30 ABV: 4.0 - 5.4%",
+    "vital_statistics": {
+      "OG": "1.040 - 1.052",
+      "IBUs": "18 - 35",
+      "FG": "1.008 - 1.014",
+      "SRM": "20 - 30",
+      "ABV": "4.0 - 5.4%"
+    }
+  },
+  {
+    "style_key": "14A. Scottish Light",
+    "bjcp_id": "14A",
+    "name": "Scottish Light",
+    "family": null,
+    "vital_statistics_raw": "OG: 1.030 - 1.035 IBUs: 10 - 20 FG: 1.010 - 1.013 SRM: 17 - 25 ABV: 2.5 - 3.3%",
+    "vital_statistics": {
+      "OG": "1.030 - 1.035",
+      "IBUs": "10 - 20",
+      "FG": "1.010 - 1.013",
+      "SRM": "17 - 25",
+      "ABV": "2.5 - 3.3%"
+    }
+  },
+  {
+    "style_key": "14B. Scottish Heavy",
+    "bjcp_id": "14B",
+    "name": "Scottish Heavy",
+    "family": null,
+    "vital_statistics_raw": "OG: 1.035 - 1.040 IBUs: 10 - 20 FG: 1.010 - 1.015 SRM: 12 - 20 ABV: 3.3 - 3.9%",
+    "vital_statistics": {
+      "OG": "1.035 - 1.040",
+      "IBUs": "10 - 20",
+      "FG": "1.010 - 1.015",
+      "SRM": "12 - 20",
+      "ABV": "3.3 - 3.9%"
+    }
+  },
+  {
+    "style_key": "14C. Scottish Export",
+    "bjcp_id": "14C",
+    "name": "Scottish Export",
+    "family": null,
+    "vital_statistics_raw": "OG: 1.040 - 1.060 IBUs: 15 - 30 FG: 1.010 - 1.016 SRM: 12 - 20 ABV: 3.9 - 6.0%",
+    "vital_statistics": {
+      "OG": "1.040 - 1.060",
+      "IBUs": "15 - 30",
+      "FG": "1.010 - 1.016",
+      "SRM": "12 - 20",
+      "ABV": "3.9 - 6.0%"
+    }
+  },
+  {
+    "style_key": "15A. Irish Red Ale",
+    "bjcp_id": "15A",
+    "name": "Irish Red Ale",
+    "family": null,
+    "vital_statistics_raw": "OG: 1.036 - 1.046 IBUs: 18 - 28 FG: 1.010 - 1.014 SRM: 9 - 14 ABV: 3.8 - 5.0%",
+    "vital_statistics": {
+      "OG": "1.036 - 1.046",
+      "IBUs": "18 - 28",
+      "FG": "1.010 - 1.014",
+      "SRM": "9 - 14",
+      "ABV": "3.8 - 5.0%"
+    }
+  },
+  {
+    "style_key": "15B. Irish Stout",
+    "bjcp_id": "15B",
+    "name": "Irish Stout",
+    "family": null,
+    "vital_statistics_raw": "OG: 1.036 - 1.044 IBUs: 25 - 45 FG: 1.007 - 1.011 SRM: 25 - 40 ABV: 3.8 - 5.0%",
+    "vital_statistics": {
+      "OG": "1.036 - 1.044",
+      "IBUs": "25 - 45",
+      "FG": "1.007 - 1.011",
+      "SRM": "25 - 40",
+      "ABV": "3.8 - 5.0%"
+    }
+  },
+  {
+    "style_key": "15C. Irish Extra Stout",
+    "bjcp_id": "15C",
+    "name": "Irish Extra Stout",
+    "family": null,
+    "vital_statistics_raw": "OG: 1.052 - 1.062 IBUs: 35 - 50 FG: 1.010 - 1.014 SRM: 30 - 40 ABV: 5.0 - 6.5%",
+    "vital_statistics": {
+      "OG": "1.052 - 1.062",
+      "IBUs": "35 - 50",
+      "FG": "1.010 - 1.014",
+      "SRM": "30 - 40",
+      "ABV": "5.0 - 6.5%"
+    }
+  },
+  {
+    "style_key": "16A. Sweet Stout",
+    "bjcp_id": "16A",
+    "name": "Sweet Stout",
+    "family": null,
+    "vital_statistics_raw": "OG: 1.044 - 1.060 IBUs: 20 - 40 FG: 1.012 - 1.024 SRM: 30 - 40 ABV: 4.0 - 6.0%",
+    "vital_statistics": {
+      "OG": "1.044 - 1.060",
+      "IBUs": "20 - 40",
+      "FG": "1.012 - 1.024",
+      "SRM": "30 - 40",
+      "ABV": "4.0 - 6.0%"
+    }
+  },
+  {
+    "style_key": "16B. Oatmeal Stout",
+    "bjcp_id": "16B",
+    "name": "Oatmeal Stout",
+    "family": null,
+    "vital_statistics_raw": "OG: 1.045 - 1.065 IBUs: 25 - 40 FG: 1.010 - 1.018 SRM: 22 - 40 ABV: 4.2 - 5.9%",
+    "vital_statistics": {
+      "OG": "1.045 - 1.065",
+      "IBUs": "25 - 40",
+      "FG": "1.010 - 1.018",
+      "SRM": "22 - 40",
+      "ABV": "4.2 - 5.9%"
+    }
+  },
+  {
+    "style_key": "16C. Tropical Stout",
+    "bjcp_id": "16C",
+    "name": "Tropical Stout",
+    "family": null,
+    "vital_statistics_raw": "OG: 1.056 - 1.075 IBUs: 30 - 50 FG: 1.010 - 1.018 SRM: 30 - 40 ABV: 5.5 - 8.0%",
+    "vital_statistics": {
+      "OG": "1.056 - 1.075",
+      "IBUs": "30 - 50",
+      "FG": "1.010 - 1.018",
+      "SRM": "30 - 40",
+      "ABV": "5.5 - 8.0%"
+    }
+  },
+  {
+    "style_key": "16D. Foreign Extra Stout",
+    "bjcp_id": "16D",
+    "name": "Foreign Extra Stout",
+    "family": null,
+    "vital_statistics_raw": "OG: 1.056 - 1.075 IBUs: 50 - 70 FG: 1.010 - 1.018 SRM: 30 - 40 ABV: 6.3 - 8.0%",
+    "vital_statistics": {
+      "OG": "1.056 - 1.075",
+      "IBUs": "50 - 70",
+      "FG": "1.010 - 1.018",
+      "SRM": "30 - 40",
+      "ABV": "6.3 - 8.0%"
+    }
+  },
+  {
+    "style_key": "17A. British Strong Ale",
+    "bjcp_id": "17A",
+    "name": "British Strong Ale",
+    "family": null,
+    "vital_statistics_raw": "OG: 1.055 - 1.080 IBUs: 30 - 60 FG: 1.015 - 1.022 SRM: 8 - 22 ABV: 5.5 - 8.0%",
+    "vital_statistics": {
+      "OG": "1.055 - 1.080",
+      "IBUs": "30 - 60",
+      "FG": "1.015 - 1.022",
+      "SRM": "8 - 22",
+      "ABV": "5.5 - 8.0%"
+    }
+  },
+  {
+    "style_key": "17B. Old Ale",
+    "bjcp_id": "17B",
+    "name": "Old Ale",
+    "family": null,
+    "vital_statistics_raw": "OG: 1.055 - 1.088 IBUs: 30 - 60 FG: 1.015 - 1.022 SRM: 10 - 22 ABV: 5.5 - 9.0%",
+    "vital_statistics": {
+      "OG": "1.055 - 1.088",
+      "IBUs": "30 - 60",
+      "FG": "1.015 - 1.022",
+      "SRM": "10 - 22",
+      "ABV": "5.5 - 9.0%"
+    }
+  },
+  {
+    "style_key": "17C. Wee Heavy",
+    "bjcp_id": "17C",
+    "name": "Wee Heavy",
+    "family": null,
+    "vital_statistics_raw": "OG: 1.070 - 1.130 IBUs: 17 - 35 FG: 1.018 - 1.040 SRM: 14 - 25 ABV: 6.5 - 10.0%",
+    "vital_statistics": {
+      "OG": "1.070 - 1.130",
+      "IBUs": "17 - 35",
+      "FG": "1.018 - 1.040",
+      "SRM": "14 - 25",
+      "ABV": "6.5 - 10.0%"
+    }
+  },
+  {
+    "style_key": "18A. Blonde Ale",
+    "bjcp_id": "18A",
+    "name": "Blonde Ale",
+    "family": null,
+    "vital_statistics_raw": "OG: 1.038 - 1.054 IBUs: 15 - 28 FG: 1.008 - 1.013 SRM: 3 - 6 ABV: 3.8 - 5.5%",
+    "vital_statistics": {
+      "OG": "1.038 - 1.054",
+      "IBUs": "15 - 28",
+      "FG": "1.008 - 1.013",
+      "SRM": "3 - 6",
+      "ABV": "3.8 - 5.5%"
+    }
+  },
+  {
+    "style_key": "19A. American Amber Ale",
+    "bjcp_id": "19A",
+    "name": "American Amber Ale",
+    "family": null,
+    "vital_statistics_raw": "OG: 1.045 - 1.060 IBUs: 30 - 50 FG: 1.010 - 1.015 SRM: 5 - 10 ABV: 4.5 - 6.2%",
+    "vital_statistics": {
+      "OG": "1.045 - 1.060",
+      "IBUs": "30 - 50",
+      "FG": "1.010 - 1.015",
+      "SRM": "5 - 10",
+      "ABV": "4.5 - 6.2%"
+    }
+  },
+  {
+    "style_key": "19B. California Common",
+    "bjcp_id": "19B",
+    "name": "California Common",
+    "family": null,
+    "vital_statistics_raw": "OG: 1.048 - 1.054 IBUs: 30 - 45 FG: 1.011 - 1.014 SRM: 9 - 14 ABV: 4.5 - 5.5%",
+    "vital_statistics": {
+      "OG": "1.048 - 1.054",
+      "IBUs": "30 - 45",
+      "FG": "1.011 - 1.014",
+      "SRM": "9 - 14",
+      "ABV": "4.5 - 5.5%"
+    }
+  },
+  {
+    "style_key": "19C. American Brown Ale",
+    "bjcp_id": "19C",
+    "name": "American Brown Ale",
+    "family": null,
+    "vital_statistics_raw": "OG: 1.045 - 1.060 IBUs: 20 - 30 FG: 1.010 - 1.016 SRM: 18 - 35 ABV: 4.3 - 6.2%",
+    "vital_statistics": {
+      "OG": "1.045 - 1.060",
+      "IBUs": "20 - 30",
+      "FG": "1.010 - 1.016",
+      "SRM": "18 - 35",
+      "ABV": "4.3 - 6.2%"
+    }
+  },
+  {
+    "style_key": "20A. American Porter",
+    "bjcp_id": "20A",
+    "name": "American Porter",
+    "family": null,
+    "vital_statistics_raw": "OG: 1.050 - 1.070 IBUs: 25 - 50 FG: 1.012 - 1.018 SRM: 22 - 40 ABV: 4.8 - 6.5%",
+    "vital_statistics": {
+      "OG": "1.050 - 1.070",
+      "IBUs": "25 - 50",
+      "FG": "1.012 - 1.018",
+      "SRM": "22 - 40",
+      "ABV": "4.8 - 6.5%"
+    }
+  },
+  {
+    "style_key": "20B. American Stout",
+    "bjcp_id": "20B",
+    "name": "American Stout",
+    "family": null,
+    "vital_statistics_raw": "OG: 1.050 - 1.075 IBUs: 35 - 75 FG: 1.010 - 1.022 SRM: 30 - 40 ABV: 5.0 - 7.0%",
+    "vital_statistics": {
+      "OG": "1.050 - 1.075",
+      "IBUs": "35 - 75",
+      "FG": "1.010 - 1.022",
+      "SRM": "30 - 40",
+      "ABV": "5.0 - 7.0%"
+    }
+  },
+  {
+    "style_key": "20C. Imperial Stout",
+    "bjcp_id": "20C",
+    "name": "Imperial Stout",
+    "family": null,
+    "vital_statistics_raw": "OG: 1.075 - 1.115 IBUs: 50 - 90 FG: 1.018 - 1.030 SRM: 30 - 40 ABV: 8.0 - 12.0%",
+    "vital_statistics": {
+      "OG": "1.075 - 1.115",
+      "IBUs": "50 - 90",
+      "FG": "1.018 - 1.030",
+      "SRM": "30 - 40",
+      "ABV": "8.0 - 12.0%"
+    }
+  },
+  {
+    "style_key": "21A. American IPA",
+    "bjcp_id": "21A",
+    "name": "American IPA",
+    "family": null,
+    "vital_statistics_raw": "OG: 1.056 - 1.070 IBUs: 40 - 70 FG: 1.008 - 1.014 SRM: 6 - 14 ABV: 5.5 - 7.5%",
+    "vital_statistics": {
+      "OG": "1.056 - 1.070",
+      "IBUs": "40 - 70",
+      "FG": "1.008 - 1.014",
+      "SRM": "6 - 14",
+      "ABV": "5.5 - 7.5%"
+    }
+  },
+  {
+    "style_key": "Specialty IPA: Belgian IPA",
+    "bjcp_id": "21B",
+    "name": "Belgian IPA",
+    "family": "Specialty IPA",
+    "vital_statistics_raw": "OG: 1.058 - 1.080 IBUs: 50 - 100 FG: 1.008 - 1.016 SRM: 5 - 8 ABV: 6.2 - 9.5%",
+    "vital_statistics": {
+      "OG": "1.058 - 1.080",
+      "IBUs": "50 - 100",
+      "FG": "1.008 - 1.016",
+      "SRM": "5 - 8",
+      "ABV": "6.2 - 9.5%"
+    }
+  },
+  {
+    "style_key": "Specialty IPA: Black IPA",
+    "bjcp_id": "21B",
+    "name": "Black IPA",
+    "family": "Specialty IPA",
+    "vital_statistics_raw": "OG: 1.050 - 1.085 IBUs: 50 - 90 FG: 1.010 - 1.018 SRM: 25 - 40 ABV: 5.5 - 9.0%",
+    "vital_statistics": {
+      "OG": "1.050 - 1.085",
+      "IBUs": "50 - 90",
+      "FG": "1.010 - 1.018",
+      "SRM": "25 - 40",
+      "ABV": "5.5 - 9.0%"
+    }
+  },
+  {
+    "style_key": "Specialty IPA: Brown IPA",
+    "bjcp_id": "21B",
+    "name": "Brown IPA",
+    "family": "Specialty IPA",
+    "vital_statistics_raw": "OG: 1.056 - 1.070 IBUs: 40 - 70 FG: 1.008 - 1.016 SRM: 18 - 35 ABV: 5.5 - 7.5%",
+    "vital_statistics": {
+      "OG": "1.056 - 1.070",
+      "IBUs": "40 - 70",
+      "FG": "1.008 - 1.016",
+      "SRM": "18 - 35",
+      "ABV": "5.5 - 7.5%"
+    }
+  },
+  {
+    "style_key": "Specialty IPA: Red IPA",
+    "bjcp_id": "21B",
+    "name": "Red IPA",
+    "family": "Specialty IPA",
+    "vital_statistics_raw": "OG: 1.056 - 1.070 IBUs: 40 - 70 FG: 1.008 - 1.016 SRM: 11 - 17 ABV: 5.5 - 7.5%",
+    "vital_statistics": {
+      "OG": "1.056 - 1.070",
+      "IBUs": "40 - 70",
+      "FG": "1.008 - 1.016",
+      "SRM": "11 - 17",
+      "ABV": "5.5 - 7.5%"
+    }
+  },
+  {
+    "style_key": "Specialty IPA: Rye IPA",
+    "bjcp_id": "21B",
+    "name": "Rye IPA",
+    "family": "Specialty IPA",
+    "vital_statistics_raw": "OG: 1.056 - 1.075 IBUs: 50 - 75 FG: 1.008 - 1.014 SRM: 6 - 14 ABV: 5.5 - 8.0%",
+    "vital_statistics": {
+      "OG": "1.056 - 1.075",
+      "IBUs": "50 - 75",
+      "FG": "1.008 - 1.014",
+      "SRM": "6 - 14",
+      "ABV": "5.5 - 8.0%"
+    }
+  },
+  {
+    "style_key": "Specialty IPA: White IPA",
+    "bjcp_id": "21B",
+    "name": "White IPA",
+    "family": "Specialty IPA",
+    "vital_statistics_raw": "OG: 1.056 - 1.065 IBUs: 40 - 70 FG: 1.010 - 1.016 SRM: 5 - 6 ABV: 5.5 - 7.0%",
+    "vital_statistics": {
+      "OG": "1.056 - 1.065",
+      "IBUs": "40 - 70",
+      "FG": "1.010 - 1.016",
+      "SRM": "5 - 6",
+      "ABV": "5.5 - 7.0%"
+    }
+  },
+  {
+    "style_key": "Specialty IPA: Brut IPA",
+    "bjcp_id": "21B",
+    "name": "Brut IPA",
+    "family": "Specialty IPA",
+    "vital_statistics_raw": "OG: 1.046 - 1.057 IBUs: 20 - 30 FG: 0.990 - 1.004 SRM: 2 - 4 ABV: 6.0 - 7.5%",
+    "vital_statistics": {
+      "OG": "1.046 - 1.057",
+      "IBUs": "20 - 30",
+      "FG": "0.990 - 1.004",
+      "SRM": "2 - 4",
+      "ABV": "6.0 - 7.5%"
+    }
+  },
+  {
+    "style_key": "21C. Hazy IPA",
+    "bjcp_id": "21C",
+    "name": "Hazy IPA",
+    "family": null,
+    "vital_statistics_raw": "OG: 1.060 - 1.085 IBUs: 25 - 60 FG: 1.010 - 1.015 SRM: 3 - 7 ABV: 6.0 - 9.0%",
+    "vital_statistics": {
+      "OG": "1.060 - 1.085",
+      "IBUs": "25 - 60",
+      "FG": "1.010 - 1.015",
+      "SRM": "3 - 7",
+      "ABV": "6.0 - 9.0%"
+    }
+  },
+  {
+    "style_key": "22A. Double IPA",
+    "bjcp_id": "22A",
+    "name": "Double IPA",
+    "family": null,
+    "vital_statistics_raw": "OG: 1.065 - 1.085 IBUs: 60 - 100 FG: 1.008 - 1.018 SRM: 6 - 14 ABV: 7.5 - 10.0%",
+    "vital_statistics": {
+      "OG": "1.065 - 1.085",
+      "IBUs": "60 - 100",
+      "FG": "1.008 - 1.018",
+      "SRM": "6 - 14",
+      "ABV": "7.5 - 10.0%"
+    }
+  },
+  {
+    "style_key": "22B. American Strong Ale",
+    "bjcp_id": "22B",
+    "name": "American Strong Ale",
+    "family": null,
+    "vital_statistics_raw": "OG: 1.062 - 1.090 IBUs: 50 - 100 FG: 1.014 - 1.024 SRM: 7 - 18 ABV: 6.3 - 10.0%",
+    "vital_statistics": {
+      "OG": "1.062 - 1.090",
+      "IBUs": "50 - 100",
+      "FG": "1.014 - 1.024",
+      "SRM": "7 - 18",
+      "ABV": "6.3 - 10.0%"
+    }
+  },
+  {
+    "style_key": "22C. American Barleywine",
+    "bjcp_id": "22C",
+    "name": "American Barleywine",
+    "family": null,
+    "vital_statistics_raw": "OG: 1.080 - 1.120 IBUs: 50 - 100 FG: 1.016 - 1.030 SRM: 9 - 18 ABV: 8.0 - 12.0%",
+    "vital_statistics": {
+      "OG": "1.080 - 1.120",
+      "IBUs": "50 - 100",
+      "FG": "1.016 - 1.030",
+      "SRM": "9 - 18",
+      "ABV": "8.0 - 12.0%"
+    }
+  },
+  {
+    "style_key": "22D. Wheatwine",
+    "bjcp_id": "22D",
+    "name": "Wheatwine",
+    "family": null,
+    "vital_statistics_raw": "OG: 1.080 - 1.120 IBUs: 30 - 60 FG: 1.016 - 1.030 SRM: 6 - 14 ABV: 8.0 - 12.0%",
+    "vital_statistics": {
+      "OG": "1.080 - 1.120",
+      "IBUs": "30 - 60",
+      "FG": "1.016 - 1.030",
+      "SRM": "6 - 14",
+      "ABV": "8.0 - 12.0%"
+    }
+  },
+  {
+    "style_key": "23A. Berliner Weisse",
+    "bjcp_id": "23A",
+    "name": "Berliner Weisse",
+    "family": null,
+    "vital_statistics_raw": "OG: 1.028 - 1.032 IBUs: 3 - 8 FG: 1.003 - 1.006 SRM: 2 - 3 ABV: 2.8 - 3.8%",
+    "vital_statistics": {
+      "OG": "1.028 - 1.032",
+      "IBUs": "3 - 8",
+      "FG": "1.003 - 1.006",
+      "SRM": "2 - 3",
+      "ABV": "2.8 - 3.8%"
+    }
+  },
+  {
+    "style_key": "23B. Flanders Red Ale",
+    "bjcp_id": "23B",
+    "name": "Flanders Red Ale",
+    "family": null,
+    "vital_statistics_raw": "OG: 1.048 - 1.057 IBUs: 10 - 25 FG: 1.002 - 1.012 SRM: 10 - 17 ABV: 4.6 - 6.5%",
+    "vital_statistics": {
+      "OG": "1.048 - 1.057",
+      "IBUs": "10 - 25",
+      "FG": "1.002 - 1.012",
+      "SRM": "10 - 17",
+      "ABV": "4.6 - 6.5%"
+    }
+  },
+  {
+    "style_key": "23C. Oud Bruin",
+    "bjcp_id": "23C",
+    "name": "Oud Bruin",
+    "family": null,
+    "vital_statistics_raw": "OG: 1.040 - 1.074 IBUs: 20 - 25 FG: 1.008 - 1.012 SRM: 17 - 22 ABV: 4.0 - 8.0%",
+    "vital_statistics": {
+      "OG": "1.040 - 1.074",
+      "IBUs": "20 - 25",
+      "FG": "1.008 - 1.012",
+      "SRM": "17 - 22",
+      "ABV": "4.0 - 8.0%"
+    }
+  },
+  {
+    "style_key": "23D. Lambic",
+    "bjcp_id": "23D",
+    "name": "Lambic",
+    "family": null,
+    "vital_statistics_raw": "OG: 1.040 - 1.054 IBUs: 0 - 10 FG: 1.001 - 1.010 SRM: 3 - 6 ABV: 5.0 - 6.5%",
+    "vital_statistics": {
+      "OG": "1.040 - 1.054",
+      "IBUs": "0 - 10",
+      "FG": "1.001 - 1.010",
+      "SRM": "3 - 6",
+      "ABV": "5.0 - 6.5%"
+    }
+  },
+  {
+    "style_key": "23E. Gueuze",
+    "bjcp_id": "23E",
+    "name": "Gueuze",
+    "family": null,
+    "vital_statistics_raw": "OG: 1.040 - 1.054 IBUs: 0 - 10 FG: 1.000 - 1.006 SRM: 5 - 6 ABV: 5.0 - 8.0%",
+    "vital_statistics": {
+      "OG": "1.040 - 1.054",
+      "IBUs": "0 - 10",
+      "FG": "1.000 - 1.006",
+      "SRM": "5 - 6",
+      "ABV": "5.0 - 8.0%"
+    }
+  },
+  {
+    "style_key": "23F. Fruit Lambic",
+    "bjcp_id": "23F",
+    "name": "Fruit Lambic",
+    "family": null,
+    "vital_statistics_raw": "OG: 1.040 - 1.060 IBUs: 0 - 10 FG: 1.000 - 1.010 SRM: 3 - 7 (varies w/ fruit) ABV: 5.0 - 7.0%",
+    "vital_statistics": {
+      "OG": "1.040 - 1.060",
+      "IBUs": "0 - 10",
+      "FG": "1.000 - 1.010",
+      "SRM": "3 - 7 (varies w/ fruit)",
+      "ABV": "5.0 - 7.0%"
+    }
+  },
+  {
+    "style_key": "23G. Gose",
+    "bjcp_id": "23G",
+    "name": "Gose",
+    "family": null,
+    "vital_statistics_raw": "OG: 1.036 - 1.056 IBUs: 5 - 12 FG: 1.006 - 1.010 SRM: 3 - 4 ABV: 4.2 - 4.8%",
+    "vital_statistics": {
+      "OG": "1.036 - 1.056",
+      "IBUs": "5 - 12",
+      "FG": "1.006 - 1.010",
+      "SRM": "3 - 4",
+      "ABV": "4.2 - 4.8%"
+    }
+  },
+  {
+    "style_key": "24A. Witbier",
+    "bjcp_id": "24A",
+    "name": "Witbier",
+    "family": null,
+    "vital_statistics_raw": "OG: 1.044 - 1.052 IBUs: 8 - 20 FG: 1.008 - 1.012 SRM: 2 - 4 ABV: 4.5 - 5.5% ed Belgian and French ales.",
+    "vital_statistics": {
+      "OG": "1.044 - 1.052",
+      "IBUs": "8 - 20",
+      "FG": "1.008 - 1.012",
+      "SRM": "2 - 4",
+      "ABV": "4.5 - 5.5%"
+    }
+  },
+  {
+    "style_key": "24B. Belgian Pale Ale",
+    "bjcp_id": "24B",
+    "name": "Belgian Pale Ale",
+    "family": null,
+    "vital_statistics_raw": "OG: 1.048 - 1.054 IBUs: 20 - 30 FG: 1.010 - 1.014 SRM: 8 - 14 ABV: 4.8 - 5.5%",
+    "vital_statistics": {
+      "OG": "1.048 - 1.054",
+      "IBUs": "20 - 30",
+      "FG": "1.010 - 1.014",
+      "SRM": "8 - 14",
+      "ABV": "4.8 - 5.5%"
+    }
+  },
+  {
+    "style_key": "24C. Bière de Garde",
+    "bjcp_id": "24C",
+    "name": "Bière de Garde",
+    "family": null,
+    "vital_statistics_raw": "OG: 1.060 - 1.080 IBUs: 18 - 28 FG: 1.008 - 1.016 SRM: 6 - 19 ABV: 6.0 - 8.5%",
+    "vital_statistics": {
+      "OG": "1.060 - 1.080",
+      "IBUs": "18 - 28",
+      "FG": "1.008 - 1.016",
+      "SRM": "6 - 19",
+      "ABV": "6.0 - 8.5%"
+    }
+  },
+  {
+    "style_key": "25A. Belgian Blond Ale",
+    "bjcp_id": "25A",
+    "name": "Belgian Blond Ale",
+    "family": null,
+    "vital_statistics_raw": "OG: 1.062 - 1.075 IBUs: 15 - 30 FG: 1.008 - 1.018 SRM: 4 - 6 ABV: 6.0 - 7.5%",
+    "vital_statistics": {
+      "OG": "1.062 - 1.075",
+      "IBUs": "15 - 30",
+      "FG": "1.008 - 1.018",
+      "SRM": "4 - 6",
+      "ABV": "6.0 - 7.5%"
+    }
+  },
+  {
+    "style_key": "25B. Saison",
+    "bjcp_id": "25B",
+    "name": "Saison",
+    "family": null,
+    "vital_statistics_raw": "OG: 1.048 - 1.065 (standard) IBUs: 20 - 35 FG: 1.002 - 1.008 (standard) SRM: 5 - 14 (pale) ABV: 3.5 - 5.0% (table) 15 - 22 (dark) 5.0 - 7.0% (standard) 7.0 - 9.5% (super)",
+    "vital_statistics": {
+      "OG": "1.048 - 1.065 (standard)",
+      "IBUs": "20 - 35",
+      "FG": "1.002 - 1.008 (standard)",
+      "SRM": "5 - 14 (pale)",
+      "ABV": "3.5 - 5.0%"
+    }
+  },
+  {
+    "style_key": "25C. Belgian Golden Strong Ale",
+    "bjcp_id": "25C",
+    "name": "Belgian Golden Strong Ale",
+    "family": null,
+    "vital_statistics_raw": "OG: 1.070 - 1.095 IBUs: 22 - 35 FG: 1.005 - 1.016 SRM: 3 - 6 ABV: 7.5 - 10.5%",
+    "vital_statistics": {
+      "OG": "1.070 - 1.095",
+      "IBUs": "22 - 35",
+      "FG": "1.005 - 1.016",
+      "SRM": "3 - 6",
+      "ABV": "7.5 - 10.5%"
+    }
+  },
+  {
+    "style_key": "26A. Belgian Single",
+    "bjcp_id": "26A",
+    "name": "Belgian Single",
+    "family": null,
+    "vital_statistics_raw": "OG: 1.044 - 1.054 IBUs: 25 - 45 FG: 1.004 - 1.010 SRM: 3 - 5 ABV: 4.8 - 6.0%",
+    "vital_statistics": {
+      "OG": "1.044 - 1.054",
+      "IBUs": "25 - 45",
+      "FG": "1.004 - 1.010",
+      "SRM": "3 - 5",
+      "ABV": "4.8 - 6.0%"
+    }
+  },
+  {
+    "style_key": "26B. Belgian Dubbel",
+    "bjcp_id": "26B",
+    "name": "Belgian Dubbel",
+    "family": null,
+    "vital_statistics_raw": "OG: 1.062 - 1.075 IBUs: 15 - 25 FG: 1.008 - 1.018 SRM: 10 - 17 ABV: 6.0 - 7.6%",
+    "vital_statistics": {
+      "OG": "1.062 - 1.075",
+      "IBUs": "15 - 25",
+      "FG": "1.008 - 1.018",
+      "SRM": "10 - 17",
+      "ABV": "6.0 - 7.6%"
+    }
+  },
+  {
+    "style_key": "26C. Belgian Tripel",
+    "bjcp_id": "26C",
+    "name": "Belgian Tripel",
+    "family": null,
+    "vital_statistics_raw": "OG: 1.075 - 1.085 IBUs: 20 - 40 FG: 1.008 - 1.014 SRM: 4.5 - 7 ABV: 7.5 - 9.5%",
+    "vital_statistics": {
+      "OG": "1.075 - 1.085",
+      "IBUs": "20 - 40",
+      "FG": "1.008 - 1.014",
+      "SRM": "4.5 - 7",
+      "ABV": "7.5 - 9.5%"
+    }
+  },
+  {
+    "style_key": "26D. Belgian Dark Strong Ale",
+    "bjcp_id": "26D",
+    "name": "Belgian Dark Strong Ale",
+    "family": null,
+    "vital_statistics_raw": "OG: 1.075 - 1.110 IBUs: 20 - 35 FG: 1.010 - 1.024 SRM: 12 - 22 ABV: 8.0 - 12.0%",
+    "vital_statistics": {
+      "OG": "1.075 - 1.110",
+      "IBUs": "20 - 35",
+      "FG": "1.010 - 1.024",
+      "SRM": "12 - 22",
+      "ABV": "8.0 - 12.0%"
+    }
+  },
+  {
+    "style_key": "Historical Beer: Kellerbier",
+    "bjcp_id": "27",
+    "name": "Kellerbier",
+    "family": "Historical Beer",
+    "vital_statistics_raw": "Same as base style.",
+    "vital_statistics": null
+  },
+  {
+    "style_key": "Historical Beer: Kentucky Common",
+    "bjcp_id": "27",
+    "name": "Kentucky Common",
+    "family": "Historical Beer",
+    "vital_statistics_raw": "OG: 1.044 - 1.055 IBUs: 15 - 30 FG: 1.010 - 1.018 SRM: 11 - 20 ABV: 4.0 - 5.5%",
+    "vital_statistics": {
+      "OG": "1.044 - 1.055",
+      "IBUs": "15 - 30",
+      "FG": "1.010 - 1.018",
+      "SRM": "11 - 20",
+      "ABV": "4.0 - 5.5%"
+    }
+  },
+  {
+    "style_key": "Historical Beer: Lichtenhainer",
+    "bjcp_id": "27",
+    "name": "Lichtenhainer",
+    "family": "Historical Beer",
+    "vital_statistics_raw": "OG: 1.032 - 1.040 IBUs: 5 - 12 FG: 1.004 - 1.008 SRM: 3 - 6 ABV: 3.5 - 4.7%",
+    "vital_statistics": {
+      "OG": "1.032 - 1.040",
+      "IBUs": "5 - 12",
+      "FG": "1.004 - 1.008",
+      "SRM": "3 - 6",
+      "ABV": "3.5 - 4.7%"
+    }
+  },
+  {
+    "style_key": "Historical Beer: London Brown Ale",
+    "bjcp_id": "27",
+    "name": "London Brown Ale",
+    "family": "Historical Beer",
+    "vital_statistics_raw": "OG: 1.033 - 1.038 IBUs: 15 - 20 FG: 1.012 - 1.015 SRM: 22 - 35 ABV: 2.8 - 3.6%",
+    "vital_statistics": {
+      "OG": "1.033 - 1.038",
+      "IBUs": "15 - 20",
+      "FG": "1.012 - 1.015",
+      "SRM": "22 - 35",
+      "ABV": "2.8 - 3.6%"
+    }
+  },
+  {
+    "style_key": "Historical Beer: Piwo Grodziskie",
+    "bjcp_id": "27",
+    "name": "Piwo Grodziskie",
+    "family": "Historical Beer",
+    "vital_statistics_raw": "OG: 1.028 - 1.032 IBUs: 20 - 35 FG: 1.006 - 1.012 SRM: 3 - 6 ABV: 2.5 - 3.3%",
+    "vital_statistics": {
+      "OG": "1.028 - 1.032",
+      "IBUs": "20 - 35",
+      "FG": "1.006 - 1.012",
+      "SRM": "3 - 6",
+      "ABV": "2.5 - 3.3%"
+    }
+  },
+  {
+    "style_key": "Historical Beer: Pre-Prohibition Lager",
+    "bjcp_id": "27",
+    "name": "Pre-Prohibition Lager",
+    "family": "Historical Beer",
+    "vital_statistics_raw": "OG: 1.044 - 1.060 IBUs: 25 - 40 FG: 1.010 - 1.015 SRM: 3 - 6 ABV: 4.5 - 6.0%",
+    "vital_statistics": {
+      "OG": "1.044 - 1.060",
+      "IBUs": "25 - 40",
+      "FG": "1.010 - 1.015",
+      "SRM": "3 - 6",
+      "ABV": "4.5 - 6.0%"
+    }
+  },
+  {
+    "style_key": "Historical Beer: Pre-Prohibition Porter",
+    "bjcp_id": "27",
+    "name": "Pre-Prohibition Porter",
+    "family": "Historical Beer",
+    "vital_statistics_raw": "OG: 1.046 - 1.060 IBUs: 20 - 30 FG: 1.010 - 1.016 SRM: 20 - 30 ABV: 4.5 - 6.0%",
+    "vital_statistics": {
+      "OG": "1.046 - 1.060",
+      "IBUs": "20 - 30",
+      "FG": "1.010 - 1.016",
+      "SRM": "20 - 30",
+      "ABV": "4.5 - 6.0%"
+    }
+  },
+  {
+    "style_key": "Historical Beer: Roggenbier",
+    "bjcp_id": "27",
+    "name": "Roggenbier",
+    "family": "Historical Beer",
+    "vital_statistics_raw": "OG: 1.046 - 1.056 IBUs: 10 - 20 FG: 1.010 - 1.014 SRM: 14 - 19 ABV: 4.5 - 6.0%",
+    "vital_statistics": {
+      "OG": "1.046 - 1.056",
+      "IBUs": "10 - 20",
+      "FG": "1.010 - 1.014",
+      "SRM": "14 - 19",
+      "ABV": "4.5 - 6.0%"
+    }
+  },
+  {
+    "style_key": "Historical Beer: Sahti",
+    "bjcp_id": "27",
+    "name": "Sahti",
+    "family": "Historical Beer",
+    "vital_statistics_raw": "OG: 1.076 - 1.120 IBUs: 0 - 15 FG: 1.016 - 1.038 SRM: 4 - 22 ABV: 7.0 - 11.0% Commercial examples: Now made year-round by several breweries in Finland.",
+    "vital_statistics": {
+      "OG": "1.076 - 1.120",
+      "IBUs": "0 - 15",
+      "FG": "1.016 - 1.038",
+      "SRM": "4 - 22",
+      "ABV": "7.0 - 11.0%"
+    }
+  },
+  {
+    "style_key": "28A. Brett Beer",
+    "bjcp_id": "28A",
+    "name": "Brett Beer",
+    "family": null,
+    "vital_statistics_raw": "Variable by base style.",
+    "vital_statistics": null
+  },
+  {
+    "style_key": "28B. Mixed-Fermentation Sour Beer",
+    "bjcp_id": "28B",
+    "name": "Mixed-Fermentation Sour Beer",
+    "family": null,
+    "vital_statistics_raw": "Variable by base style.",
+    "vital_statistics": null
+  },
+  {
+    "style_key": "28C. Wild Specialty Beer",
+    "bjcp_id": "28C",
+    "name": "Wild Specialty Beer",
+    "family": null,
+    "vital_statistics_raw": "Variable by base style.",
+    "vital_statistics": null
+  },
+  {
+    "style_key": "28D. Straight Sour Beer",
+    "bjcp_id": "28D",
+    "name": "Straight Sour Beer",
+    "family": null,
+    "vital_statistics_raw": "OG: 1.048 - 1.065 IBUs: 3 - 8 FG: 1.006 - 1.013 SRM: 2 - 3 ABV: 4.5 - 7.0%",
+    "vital_statistics": {
+      "OG": "1.048 - 1.065",
+      "IBUs": "3 - 8",
+      "FG": "1.006 - 1.013",
+      "SRM": "2 - 3",
+      "ABV": "4.5 - 7.0%"
+    }
+  },
+  {
+    "style_key": "29A. Fruit Beer",
+    "bjcp_id": "29A",
+    "name": "Fruit Beer",
+    "family": null,
+    "vital_statistics_raw": "OG, FG, IBUs, SRM, and ABV will vary depending on the underlying base beer, but the fruit will often be reflected in the color.",
+    "vital_statistics": null
+  },
+  {
+    "style_key": "29B. Fruit and Spice Beer",
+    "bjcp_id": "29B",
+    "name": "Fruit and Spice Beer",
+    "family": null,
+    "vital_statistics_raw": "OG, FG, IBUs, SRM, and ABV will vary depending on the underlying base beer, but the fruit will often be reflected in the color.",
+    "vital_statistics": null
+  },
+  {
+    "style_key": "29C. Specialty Fruit Beer",
+    "bjcp_id": "29C",
+    "name": "Specialty Fruit Beer",
+    "family": null,
+    "vital_statistics_raw": "OG, FG, IBUs, SRM, and ABV will vary depending on the underlying base beer, but the fruit will often be reflected in the color.",
+    "vital_statistics": null
+  },
+  {
+    "style_key": "29D. Grape Ale",
+    "bjcp_id": "29D",
+    "name": "Grape Ale",
+    "family": null,
+    "vital_statistics_raw": "OG: 1.059 - 1.075 IBUs: 10 - 30 FG: 1.004 - 1.013 SRM: 4 - 8 ABV: 6.0 - 8.5%",
+    "vital_statistics": {
+      "OG": "1.059 - 1.075",
+      "IBUs": "10 - 30",
+      "FG": "1.004 - 1.013",
+      "SRM": "4 - 8",
+      "ABV": "6.0 - 8.5%"
+    }
+  },
+  {
+    "style_key": "30A. Spice, Herb, or Vegetable Beer",
+    "bjcp_id": "30A",
+    "name": "Spice, Herb, or Vegetable Beer",
+    "family": null,
+    "vital_statistics_raw": "OG, FG, IBUs, SRM, and ABV will vary depending on the underlying base beer.",
+    "vital_statistics": null
+  },
+  {
+    "style_key": "30B. Autumn Seasonal Beer",
+    "bjcp_id": "30B",
+    "name": "Autumn Seasonal Beer",
+    "family": null,
+    "vital_statistics_raw": "OG, FG, IBUs, SRM, and ABV will vary depending on the underlying base beer. ABV is generally above 5%, and most examples are somewhat amber-copper in color.",
+    "vital_statistics": null
+  },
+  {
+    "style_key": "30C. Winter Seasonal Beer",
+    "bjcp_id": "30C",
+    "name": "Winter Seasonal Beer",
+    "family": null,
+    "vital_statistics_raw": "OG, FG, IBUs, SRM, and ABV will vary depending on the underlying base beer. ABV is generally above 6%, and most examples are somewhat dark in color.",
+    "vital_statistics": null
+  },
+  {
+    "style_key": "30D. Specialty Spice Beer",
+    "bjcp_id": "30D",
+    "name": "Specialty Spice Beer",
+    "family": null,
+    "vital_statistics_raw": "OG, FG, IBUs, SRM, and ABV will vary depending on the underlying base beer.",
+    "vital_statistics": null
+  },
+  {
+    "style_key": "X1. Dorada Pampeana",
+    "bjcp_id": "X1",
+    "name": "Dorada Pampeana",
+    "family": "Local Style",
+    "vital_statistics_raw": "OG: 1.042 - 1.054 IBU: 15 - 22 FG: 1.009 - 1.013 SRM: 3 - 5 ABV: 4.3% - 5.5%",
+    "vital_statistics": {
+      "OG": "1.042 - 1.054",
+      "IBUs": "15 - 22",
+      "FG": "1.009 - 1.013",
+      "SRM": "3 - 5",
+      "ABV": "4.3% - 5.5%"
+    }
+  },
+  {
+    "style_key": "X2. IPA Argenta",
+    "bjcp_id": "X2",
+    "name": "IPA Argenta",
+    "family": "Local Style",
+    "vital_statistics_raw": "OG: 1.055 - 1.065 IBU: 35 - 60 FG: 1.008 - 1.015 SRM: 6 - 15 ABV: 5.0 - 6.5%.",
+    "vital_statistics": {
+      "OG": "1.055 - 1.065",
+      "IBUs": "35 - 60",
+      "FG": "1.008 - 1.015",
+      "SRM": "6 - 15",
+      "ABV": "5.0 - 6.5%"
+    }
+  },
+  {
+    "style_key": "X3. Italian Grape Ale",
+    "bjcp_id": "X3",
+    "name": "Italian Grape Ale",
+    "family": "Local Style",
+    "vital_statistics_raw": "IBUs: 6 - 30 SRM: 4 - 25 OG: 1.045 - 1.100 FG: 1.005 - 1.015 ABV: 4.5 - 12%",
+    "vital_statistics": {
+      "IBUs": "6 - 30",
+      "SRM": "4 - 25",
+      "OG": "1.045 - 1.100",
+      "FG": "1.005 - 1.015",
+      "ABV": "4.5 - 12%"
+    }
+  },
+  {
+    "style_key": "X4. Catharina Sour",
+    "bjcp_id": "X4",
+    "name": "Catharina Sour",
+    "family": "Local Style",
+    "vital_statistics_raw": "OG: 1.039 - 1.048 IBU: 2 - 8 FG: 1.004 - 1.012 SRM: 2 - 6 ABV: 4.0 - 5.5%.",
+    "vital_statistics": {
+      "OG": "1.039 - 1.048",
+      "IBUs": "2 - 8",
+      "FG": "1.004 - 1.012",
+      "SRM": "2 - 6",
+      "ABV": "4.0 - 5.5%"
+    }
+  },
+  {
+    "style_key": "X5. New Zealand Pilsner",
+    "bjcp_id": "X5",
+    "name": "New Zealand Pilsner",
+    "family": "Local Style",
+    "vital_statistics_raw": "OG: 1.044 - 1.056 IBU: 25 - 45 FG: 1.009 - 1.014 SRM: 2 - 6 ABV: 4.5 - 5.8%.",
+    "vital_statistics": {
+      "OG": "1.044 - 1.056",
+      "IBUs": "25 - 45",
+      "FG": "1.009 - 1.014",
+      "SRM": "2 - 6",
+      "ABV": "4.5 - 5.8%"
+    }
+  }
+]
