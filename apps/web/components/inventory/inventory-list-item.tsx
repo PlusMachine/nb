@@ -79,24 +79,40 @@ export function InventoryListItem({ item, preferredCurrency, currencyRates }: Pr
   const freshnessCritical = !expired && isFreshnessCritical(item.freshnessDate);
 
   return (
-    <li className={`relative rounded-xl border bg-white p-4 shadow-sm transition-shadow hover:shadow-md ${
-      isEmpty ? "border-zinc-200/60 opacity-60" : expired ? "border-red-200" : freshnessCritical ? "border-amber-200" : "border-zinc-200"
-    }`}>
-      <DeleteInventoryItemButton
-        inventoryItemId={item.id}
-        displayName={item.source.displayName}
-        renderTrigger={(onClick, isPending) => (
-          <button
-            type="button"
-            onClick={onClick}
-            disabled={isPending}
-            className="absolute right-2.5 top-2.5 rounded-md p-1 text-zinc-400 transition-colors hover:bg-red-50 hover:text-red-600 disabled:opacity-60"
-            aria-label="Удалить"
-          >
-            <X className="h-4 w-4" />
-          </button>
-        )}
-      />
+    <li className={`relative rounded-xl border bg-white p-4 shadow-sm transition-shadow hover:shadow-md ${isEmpty ? "border-zinc-200/60 opacity-60" : expired ? "border-red-200" : freshnessCritical ? "border-amber-200" : "border-zinc-200"
+      }`}>
+      <div className="absolute right-2.5 top-2.5 z-10 flex items-center gap-1">
+        <InventoryItemDetailsEditor
+          item={item}
+          preferredCurrency={preferredCurrency}
+          currencyRates={currencyRates}
+          renderTrigger={(onClick) => (
+            <button
+              type="button"
+              onClick={onClick}
+              className="rounded-md p-1 text-zinc-400 transition-colors hover:bg-zinc-100 hover:text-zinc-700"
+              aria-label="Редактировать"
+            >
+              <Pencil className="h-4 w-4" />
+            </button>
+          )}
+        />
+        <DeleteInventoryItemButton
+          inventoryItemId={item.id}
+          displayName={item.source.displayName}
+          renderTrigger={(onClick, isPending) => (
+            <button
+              type="button"
+              onClick={onClick}
+              disabled={isPending}
+              className="rounded-md p-1 text-zinc-400 transition-colors hover:bg-red-50 hover:text-red-600 disabled:opacity-60"
+              aria-label="Удалить"
+            >
+              <X className="h-4 w-4" />
+            </button>
+          )}
+        />
+      </div>
 
       <div className="flex items-start gap-4 pr-6">
         <div className="min-w-0 flex-1 space-y-1.5">
@@ -143,9 +159,8 @@ export function InventoryListItem({ item, preferredCurrency, currencyRates }: Pr
               </span>
             ) : null}
             {item.freshnessDate ? (
-              <span className={`inline-flex items-center gap-1 ${
-                expired ? "font-medium text-red-600" : freshnessCritical ? "font-medium text-amber-600" : ""
-              }`}>
+              <span className={`inline-flex items-center gap-1 ${expired ? "font-medium text-red-600" : freshnessCritical ? "font-medium text-amber-600" : ""
+                }`}>
                 {expired || freshnessCritical ? <AlertTriangle className="h-3 w-3" /> : <Clock className="h-3 w-3" />}
                 {expired ? "Просрочен" : "Годен до"} {item.freshnessDate.toLocaleDateString("ru-RU")}
               </span>
@@ -155,25 +170,9 @@ export function InventoryListItem({ item, preferredCurrency, currencyRates }: Pr
           {item.notes ? (
             <p className="text-sm leading-relaxed text-zinc-500">{item.notes}</p>
           ) : null}
-
-          <InventoryItemDetailsEditor
-            item={item}
-            preferredCurrency={preferredCurrency}
-            currencyRates={currencyRates}
-            renderTrigger={(onClick) => (
-              <button
-                type="button"
-                onClick={onClick}
-                className="mt-1 inline-flex items-center gap-1.5 rounded-lg px-2 py-1 text-xs font-medium text-zinc-400 transition-colors hover:bg-zinc-100 hover:text-zinc-700"
-              >
-                <Pencil className="h-3 w-3" />
-                Редактировать
-              </button>
-            )}
-          />
         </div>
 
-        <div className="flex shrink-0 flex-col items-end gap-2">
+        <div className="flex shrink-0 flex-col items-end gap-2 pt-8">
           <InventoryQuantityEditor item={item} />
         </div>
       </div>

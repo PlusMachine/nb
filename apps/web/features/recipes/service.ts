@@ -1,5 +1,6 @@
 import {
   and,
+  count,
   db,
   desc,
   eq,
@@ -1147,7 +1148,22 @@ export const listRecipesForAuthor = async (authorId: string, query: unknown = {}
     limit: parsed.limit
   });
 
-  return rows.map(mapRecipeListDto);
+  // Получаем количество версий для каждого рецепта
+  const recipeFamilyIds = [...new Set(rows.map(row => row.recipeFamilyId))];
+  const versionCounts = new Map<string, number>();
+
+  for (const familyId of recipeFamilyIds) {
+    const countResult = await db.select({ count: count() })
+      .from(recipes)
+      .where(and(eq(recipes.authorId, authorId), eq(recipes.recipeFamilyId, familyId)));
+    
+    versionCounts.set(familyId, countResult[0]?.count ?? 1);
+  }
+
+  return rows.map(row => ({
+    ...mapRecipeListDto(row),
+    versionCount: versionCounts.get(row.recipeFamilyId) ?? 1
+  }));
 };
 
 export const getNextDefaultRecipeTitle = async (authorId: string) => {

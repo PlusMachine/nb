@@ -234,6 +234,7 @@ export type RecipeListItemDto = {
   authorId: string;
   recipeFamilyId: string;
   versionNumber: number;
+  versionCount: number;
   publicationState: RecipePublicationState;
   title: string;
   slug: string;
