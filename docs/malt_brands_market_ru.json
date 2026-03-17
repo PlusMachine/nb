@@ -1,0 +1,175 @@
+{
+  "generated_on": "2026-03-16",
+  "scope": "Бренды солода и близких солодовых брендов/солодовен, найденные в Бир.РФ (shop + ingredients + article) и дополнительно сверенные по официальным сайтам для ключевых российских/белорусских игроков.",
+  "count": 28,
+  "brands": [
+    {
+      "brand": "Soufflet",
+      "country": "Россия",
+      "source_group": "Бир.РФ ingredients + официальный сайт",
+      "notes": "важный бренд для рынка РФ"
+    },
+    {
+      "brand": "Курский солод",
+      "country": "Россия",
+      "source_group": "Бир.РФ shop/ingredients + официальный сайт",
+      "notes": "важный бренд для рынка РФ"
+    },
+    {
+      "brand": "Староминский солод",
+      "country": "Россия",
+      "source_group": "Бир.РФ shop/ingredients",
+      "notes": "важный бренд для рынка РФ"
+    },
+    {
+      "brand": "Белсолод",
+      "country": "Беларусь",
+      "source_group": "Бир.РФ ingredients + официальный сайт",
+      "notes": "важный бренд для рынка РФ/СНГ"
+    },
+    {
+      "brand": "Castle Malting",
+      "country": "Бельгия",
+      "source_group": "Бир.РФ shop/ingredients",
+      "notes": "часто встречается в РФ"
+    },
+    {
+      "brand": "IREKS",
+      "country": "Германия",
+      "source_group": "Бир.РФ shop/article",
+      "notes": "часто встречается в РФ"
+    },
+    {
+      "brand": "Weyermann",
+      "country": "Германия",
+      "source_group": "Бир.РФ shop/ingredients",
+      "notes": "часто встречается в РФ"
+    },
+    {
+      "brand": "KolSold",
+      "country": "Россия",
+      "source_group": "Бир.РФ shop",
+      "notes": "бренд солодовых/зерновых продуктов"
+    },
+    {
+      "brand": "BestMalz",
+      "country": "Германия",
+      "source_group": "Бир.РФ article + Prosolod",
+      "notes": "встречается в РФ"
+    },
+    {
+      "brand": "Viking Malt",
+      "country": "Финляндия",
+      "source_group": "Бир.РФ ingredients",
+      "notes": "встречается в РФ"
+    },
+    {
+      "brand": "Crisp Malt",
+      "country": "Великобритания",
+      "source_group": "Бир.РФ ingredients",
+      "notes": "встречается в РФ"
+    },
+    {
+      "brand": "Pauls Malt",
+      "country": "Великобритания",
+      "source_group": "Бир.РФ ingredients",
+      "notes": "найден в ingredients"
+    },
+    {
+      "brand": "Fromaly Gleneagles",
+      "country": "Великобритания",
+      "source_group": "Бир.РФ ingredients",
+      "notes": "найден в ingredients"
+    },
+    {
+      "brand": "OPTIMA",
+      "country": "Польша",
+      "source_group": "Бир.РФ ingredients",
+      "notes": "найден в ingredients"
+    },
+    {
+      "brand": "Dingemans",
+      "country": "Бельгия",
+      "source_group": "Бир.РФ article/ingredients",
+      "notes": "встречается в РФ"
+    },
+    {
+      "brand": "Simpson Malt",
+      "country": "Великобритания",
+      "source_group": "Бир.РФ article",
+      "notes": "встречается в РФ"
+    },
+    {
+      "brand": "Sessler",
+      "country": "Словакия",
+      "source_group": "Бир.РФ article",
+      "notes": "встречается в РФ"
+    },
+    {
+      "brand": "Stamag",
+      "country": "Австрия",
+      "source_group": "Бир.РФ article/ingredients",
+      "notes": "встречается в РФ"
+    },
+    {
+      "brand": "Ефремов",
+      "country": "Россия",
+      "source_group": "Бир.РФ ingredients",
+      "notes": "в ingredients указан как Ефремов"
+    },
+    {
+      "brand": "Ефремовский солод",
+      "country": "Россия",
+      "source_group": "Бир.РФ article",
+      "notes": "название из статьи Бир.РФ"
+    },
+    {
+      "brand": "Приволжская мельница",
+      "country": "Россия",
+      "source_group": "Бир.РФ ingredients",
+      "notes": "найден в ingredients"
+    },
+    {
+      "brand": "SELECT MALT",
+      "country": "Россия",
+      "source_group": "Бир.РФ ingredients",
+      "notes": "найден в ingredients"
+    },
+    {
+      "brand": "НОСТЕРС",
+      "country": "Россия",
+      "source_group": "Бир.РФ ingredients",
+      "notes": "найден в ingredients"
+    },
+    {
+      "brand": "The Swaen",
+      "country": "Нидерланды",
+      "source_group": "Бир.РФ ingredients",
+      "notes": "найден в ingredients"
+    },
+    {
+      "brand": "Karl Bindewald",
+      "country": "Германия",
+      "source_group": "Бир.РФ ingredients",
+      "notes": "найден в ingredients"
+    },
+    {
+      "brand": "Malteurop",
+      "country": "не определено по найденному фрагменту",
+      "source_group": "Бир.РФ ingredients",
+      "notes": "найден в ingredients"
+    },
+    {
+      "brand": "Русхмельсолод",
+      "country": "Россия",
+      "source_group": "Бир.РФ ingredients",
+      "notes": "найден в ingredients"
+    },
+    {
+      "brand": "Lycos",
+      "country": "не определено по найденному фрагменту",
+      "source_group": "Бир.РФ ingredients",
+      "notes": "найден в ingredients"
+    }
+  ]
+}

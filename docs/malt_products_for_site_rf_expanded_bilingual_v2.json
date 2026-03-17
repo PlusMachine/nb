@@ -1,0 +1,5705 @@
+{
+  "generated_at_utc": "2026-03-16T22:54:10.077741+00:00",
+  "scope": "Expanded RF-market malt dataset with bilingual names and search aliases. Focus on brands popular in Russia and/or explicitly requested by user. Includes only items with extract and color populated.",
+  "totals": {
+    "items": 138,
+    "brands": 5
+  },
+  "brand_counts": {
+    "weyermann": 45,
+    "castle-malting": 39,
+    "soufflet": 32,
+    "kurskiy-solod": 14,
+    "ireks": 8
+  },
+  "notes": [
+    "Castle, Weyermann and Soufflet were expanded primarily from official catalogs.",
+    "Kursky Solod and IREKS were expanded using public Bir.rf ingredient pages and official product sheets where available.",
+    "This file is much wider than the previous one, but it is still not a complete world catalog.",
+    "For Kursky Solod, public market evidence indicates a broader lineup than is fully captured here; official/public pages with both extract and color were prioritized."
+  ],
+  "items": [
+    {
+      "id": "weyermann--extra-pale-premium-pilsner-malt",
+      "brand": "Weyermann",
+      "brand_en": "Weyermann",
+      "brand_ru": "Weyermann",
+      "brand_slug": "weyermann",
+      "brand_aliases_ru": [
+        "Вайерман",
+        "Вейерман",
+        "Вайерманн",
+        "Вейерманн",
+        "Weyermann"
+      ],
+      "country_code": "DE",
+      "country_name": "Germany",
+      "name_en": "Extra Pale Premium Pilsner Malt",
+      "name_ru": "Экстра пэйл премиум пильзнер",
+      "malt_type": "base",
+      "extract_pct_dry_basis": 80.5,
+      "color_ebc_min": 2.0,
+      "color_ebc_max": 3.5,
+      "aliases_ru": [
+        "пилснер",
+        "пильзен",
+        "пильзенер",
+        "пильзнер",
+        "экстра пэйл премиум пильзнер"
+      ],
+      "aliases_en": [
+        "extra pale premium pilsner malt",
+        "pilsen",
+        "pilsener",
+        "pilsner"
+      ],
+      "search_aliases": [
+        "extra pale premium pilsner malt",
+        "pilsen",
+        "pilsener",
+        "pilsner",
+        "пилснер",
+        "пильзен",
+        "пильзенер",
+        "пильзнер",
+        "экстра пэйл премиум пильзнер"
+      ],
+      "source_label": "Weyermann Brewery Product Catalog",
+      "source_url": "https://www.weyermann.de/wp-content/uploads/2023/05/WEYERMANN-PRODUCTS-Brewery-EN.pdf",
+      "source_page": 2
+    },
+    {
+      "id": "weyermann--pilsner-malt",
+      "brand": "Weyermann",
+      "brand_en": "Weyermann",
+      "brand_ru": "Weyermann",
+      "brand_slug": "weyermann",
+      "brand_aliases_ru": [
+        "Вайерман",
+        "Вейерман",
+        "Вайерманн",
+        "Вейерманн",
+        "Weyermann"
+      ],
+      "country_code": "DE",
+      "country_name": "Germany",
+      "name_en": "Pilsner Malt",
+      "name_ru": "Пильзнер",
+      "malt_type": "base",
+      "extract_pct_dry_basis": 80.5,
+      "color_ebc_min": 2.5,
+      "color_ebc_max": 4.5,
+      "aliases_ru": [
+        "пилснер",
+        "пильзен",
+        "пильзенер",
+        "пильзнер"
+      ],
+      "aliases_en": [
+        "pilsen",
+        "pilsener",
+        "pilsner",
+        "pilsner malt"
+      ],
+      "search_aliases": [
+        "pilsen",
+        "pilsener",
+        "pilsner",
+        "pilsner malt",
+        "пилснер",
+        "пильзен",
+        "пильзенер",
+        "пильзнер"
+      ],
+      "source_label": "Weyermann Brewery Product Catalog",
+      "source_url": "https://www.weyermann.de/wp-content/uploads/2023/05/WEYERMANN-PRODUCTS-Brewery-EN.pdf",
+      "source_page": 3
+    },
+    {
+      "id": "weyermann--pale-ale-malt",
+      "brand": "Weyermann",
+      "brand_en": "Weyermann",
+      "brand_ru": "Weyermann",
+      "brand_slug": "weyermann",
+      "brand_aliases_ru": [
+        "Вайерман",
+        "Вейерман",
+        "Вайерманн",
+        "Вейерманн",
+        "Weyermann"
+      ],
+      "country_code": "DE",
+      "country_name": "Germany",
+      "name_en": "Pale Ale Malt",
+      "name_ru": "Пэйл Эль",
+      "malt_type": "base",
+      "extract_pct_dry_basis": 79.0,
+      "color_ebc_min": 5.5,
+      "color_ebc_max": 7.5,
+      "aliases_ru": [
+        "пале эль",
+        "пейл эль",
+        "пэйл эль"
+      ],
+      "aliases_en": [
+        "pale ale",
+        "pale ale malt"
+      ],
+      "search_aliases": [
+        "pale ale",
+        "pale ale malt",
+        "пале эль",
+        "пейл эль",
+        "пэйл эль"
+      ],
+      "source_label": "Weyermann Brewery Product Catalog",
+      "source_url": "https://www.weyermann.de/wp-content/uploads/2023/05/WEYERMANN-PRODUCTS-Brewery-EN.pdf",
+      "source_page": 4
+    },
+    {
+      "id": "weyermann--vienna-malt",
+      "brand": "Weyermann",
+      "brand_en": "Weyermann",
+      "brand_ru": "Weyermann",
+      "brand_slug": "weyermann",
+      "brand_aliases_ru": [
+        "Вайерман",
+        "Вейерман",
+        "Вайерманн",
+        "Вейерманн",
+        "Weyermann"
+      ],
+      "country_code": "DE",
+      "country_name": "Germany",
+      "name_en": "Vienna Malt",
+      "name_ru": "Венский",
+      "malt_type": "base",
+      "extract_pct_dry_basis": 79.0,
+      "color_ebc_min": 6.0,
+      "color_ebc_max": 9.0,
+      "aliases_ru": [
+        "вена",
+        "венский"
+      ],
+      "aliases_en": [
+        "vienna",
+        "vienna malt"
+      ],
+      "search_aliases": [
+        "vienna",
+        "vienna malt",
+        "вена",
+        "венский"
+      ],
+      "source_label": "Weyermann Brewery Product Catalog",
+      "source_url": "https://www.weyermann.de/wp-content/uploads/2023/05/WEYERMANN-PRODUCTS-Brewery-EN.pdf",
+      "source_page": 5
+    },
+    {
+      "id": "weyermann--munich-malt-type-1",
+      "brand": "Weyermann",
+      "brand_en": "Weyermann",
+      "brand_ru": "Weyermann",
+      "brand_slug": "weyermann",
+      "brand_aliases_ru": [
+        "Вайерман",
+        "Вейерман",
+        "Вайерманн",
+        "Вейерманн",
+        "Weyermann"
+      ],
+      "country_code": "DE",
+      "country_name": "Germany",
+      "name_en": "Munich Malt Type 1",
+      "name_ru": "Мюнхенский тип 1",
+      "malt_type": "base",
+      "extract_pct_dry_basis": 78.0,
+      "color_ebc_min": 12.0,
+      "color_ebc_max": 18.0,
+      "aliases_ru": [
+        "мюних",
+        "мюнхенский",
+        "мюнхенский тип 1",
+        "мюнхнер"
+      ],
+      "aliases_en": [
+        "munich",
+        "munich malt",
+        "munich malt type 1"
+      ],
+      "search_aliases": [
+        "munich",
+        "munich malt",
+        "munich malt type 1",
+        "мюних",
+        "мюнхенский",
+        "мюнхенский тип 1",
+        "мюнхнер"
+      ],
+      "source_label": "Weyermann Brewery Product Catalog",
+      "source_url": "https://www.weyermann.de/wp-content/uploads/2023/05/WEYERMANN-PRODUCTS-Brewery-EN.pdf",
+      "source_page": 6
+    },
+    {
+      "id": "weyermann--munich-malt-type-2",
+      "brand": "Weyermann",
+      "brand_en": "Weyermann",
+      "brand_ru": "Weyermann",
+      "brand_slug": "weyermann",
+      "brand_aliases_ru": [
+        "Вайерман",
+        "Вейерман",
+        "Вайерманн",
+        "Вейерманн",
+        "Weyermann"
+      ],
+      "country_code": "DE",
+      "country_name": "Germany",
+      "name_en": "Munich Malt Type 2",
+      "name_ru": "Мюнхенский тип 2",
+      "malt_type": "base",
+      "extract_pct_dry_basis": 78.0,
+      "color_ebc_min": 20.0,
+      "color_ebc_max": 25.0,
+      "aliases_ru": [
+        "мюних",
+        "мюнхенский",
+        "мюнхенский тип 2",
+        "мюнхнер"
+      ],
+      "aliases_en": [
+        "munich",
+        "munich malt",
+        "munich malt type 2"
+      ],
+      "search_aliases": [
+        "munich",
+        "munich malt",
+        "munich malt type 2",
+        "мюних",
+        "мюнхенский",
+        "мюнхенский тип 2",
+        "мюнхнер"
+      ],
+      "source_label": "Weyermann Brewery Product Catalog",
+      "source_url": "https://www.weyermann.de/wp-content/uploads/2023/05/WEYERMANN-PRODUCTS-Brewery-EN.pdf",
+      "source_page": 7
+    },
+    {
+      "id": "weyermann--oak-smoked-wheat-malt",
+      "brand": "Weyermann",
+      "brand_en": "Weyermann",
+      "brand_ru": "Weyermann",
+      "brand_slug": "weyermann",
+      "brand_aliases_ru": [
+        "Вайерман",
+        "Вейерман",
+        "Вайерманн",
+        "Вейерманн",
+        "Weyermann"
+      ],
+      "country_code": "DE",
+      "country_name": "Germany",
+      "name_en": "Oak Smoked Wheat Malt",
+      "name_ru": "Пшеничный копченый на дубе",
+      "malt_type": "smoked",
+      "extract_pct_dry_basis": 81.0,
+      "color_ebc_min": 4.0,
+      "color_ebc_max": 6.0,
+      "aliases_ru": [
+        "дымный",
+        "копченый",
+        "пшеничный",
+        "пшеничный копченый на дубе",
+        "пшеничный солод"
+      ],
+      "aliases_en": [
+        "oak smoked wheat malt",
+        "rauch",
+        "smoked",
+        "wheat",
+        "wheat malt"
+      ],
+      "search_aliases": [
+        "oak smoked wheat malt",
+        "rauch",
+        "smoked",
+        "wheat",
+        "wheat malt",
+        "дымный",
+        "копченый",
+        "пшеничный",
+        "пшеничный копченый на дубе",
+        "пшеничный солод"
+      ],
+      "source_label": "Weyermann Brewery Product Catalog",
+      "source_url": "https://www.weyermann.de/wp-content/uploads/2023/05/WEYERMANN-PRODUCTS-Brewery-EN.pdf",
+      "source_page": 8
+    },
+    {
+      "id": "weyermann--beech-smoked-barley-malt",
+      "brand": "Weyermann",
+      "brand_en": "Weyermann",
+      "brand_ru": "Weyermann",
+      "brand_slug": "weyermann",
+      "brand_aliases_ru": [
+        "Вайерман",
+        "Вейерман",
+        "Вайерманн",
+        "Вейерманн",
+        "Weyermann"
+      ],
+      "country_code": "DE",
+      "country_name": "Germany",
+      "name_en": "Beech Smoked Barley Malt",
+      "name_ru": "Ячменный копченый на буке",
+      "malt_type": "smoked",
+      "extract_pct_dry_basis": 77.0,
+      "color_ebc_min": 4.0,
+      "color_ebc_max": 8.0,
+      "aliases_ru": [
+        "дымный",
+        "копченый",
+        "ячменный копченый на буке"
+      ],
+      "aliases_en": [
+        "beech smoked barley malt",
+        "rauch",
+        "smoked"
+      ],
+      "search_aliases": [
+        "beech smoked barley malt",
+        "rauch",
+        "smoked",
+        "дымный",
+        "копченый",
+        "ячменный копченый на буке"
+      ],
+      "source_label": "Weyermann Brewery Product Catalog",
+      "source_url": "https://www.weyermann.de/wp-content/uploads/2023/05/WEYERMANN-PRODUCTS-Brewery-EN.pdf",
+      "source_page": 9
+    },
+    {
+      "id": "weyermann--melanoidin-malt",
+      "brand": "Weyermann",
+      "brand_en": "Weyermann",
+      "brand_ru": "Weyermann",
+      "brand_slug": "weyermann",
+      "brand_aliases_ru": [
+        "Вайерман",
+        "Вейерман",
+        "Вайерманн",
+        "Вейерманн",
+        "Weyermann"
+      ],
+      "country_code": "DE",
+      "country_name": "Germany",
+      "name_en": "Melanoidin Malt",
+      "name_ru": "Меланоидиновый",
+      "malt_type": "specialty",
+      "extract_pct_dry_basis": 75.0,
+      "color_ebc_min": 60.0,
+      "color_ebc_max": 80.0,
+      "aliases_ru": [
+        "меланоидиновый"
+      ],
+      "aliases_en": [
+        "melanoidin malt"
+      ],
+      "search_aliases": [
+        "melanoidin malt",
+        "меланоидиновый"
+      ],
+      "source_label": "Weyermann Brewery Product Catalog",
+      "source_url": "https://www.weyermann.de/wp-content/uploads/2023/05/WEYERMANN-PRODUCTS-Brewery-EN.pdf",
+      "source_page": 11
+    },
+    {
+      "id": "weyermann--wheat-malt-pale",
+      "brand": "Weyermann",
+      "brand_en": "Weyermann",
+      "brand_ru": "Weyermann",
+      "brand_slug": "weyermann",
+      "brand_aliases_ru": [
+        "Вайерман",
+        "Вейерман",
+        "Вайерманн",
+        "Вейерманн",
+        "Weyermann"
+      ],
+      "country_code": "DE",
+      "country_name": "Germany",
+      "name_en": "Wheat Malt Pale",
+      "name_ru": "Пшеничный светлый",
+      "malt_type": "wheat",
+      "extract_pct_dry_basis": 82.0,
+      "color_ebc_min": 3.0,
+      "color_ebc_max": 5.0,
+      "aliases_ru": [
+        "пшеничный",
+        "пшеничный светлый",
+        "пшеничный солод"
+      ],
+      "aliases_en": [
+        "wheat",
+        "wheat malt",
+        "wheat malt pale"
+      ],
+      "search_aliases": [
+        "wheat",
+        "wheat malt",
+        "wheat malt pale",
+        "пшеничный",
+        "пшеничный светлый",
+        "пшеничный солод"
+      ],
+      "source_label": "Weyermann Brewery Product Catalog",
+      "source_url": "https://www.weyermann.de/wp-content/uploads/2023/05/WEYERMANN-PRODUCTS-Brewery-EN.pdf",
+      "source_page": 12
+    },
+    {
+      "id": "weyermann--wheat-malt-dark",
+      "brand": "Weyermann",
+      "brand_en": "Weyermann",
+      "brand_ru": "Weyermann",
+      "brand_slug": "weyermann",
+      "brand_aliases_ru": [
+        "Вайерман",
+        "Вейерман",
+        "Вайерманн",
+        "Вейерманн",
+        "Weyermann"
+      ],
+      "country_code": "DE",
+      "country_name": "Germany",
+      "name_en": "Wheat Malt Dark",
+      "name_ru": "Пшеничный темный",
+      "malt_type": "wheat",
+      "extract_pct_dry_basis": 81.0,
+      "color_ebc_min": 15.0,
+      "color_ebc_max": 20.0,
+      "aliases_ru": [
+        "пшеничный",
+        "пшеничный солод",
+        "пшеничный темный"
+      ],
+      "aliases_en": [
+        "wheat",
+        "wheat malt",
+        "wheat malt dark"
+      ],
+      "search_aliases": [
+        "wheat",
+        "wheat malt",
+        "wheat malt dark",
+        "пшеничный",
+        "пшеничный солод",
+        "пшеничный темный"
+      ],
+      "source_label": "Weyermann Brewery Product Catalog",
+      "source_url": "https://www.weyermann.de/wp-content/uploads/2023/05/WEYERMANN-PRODUCTS-Brewery-EN.pdf",
+      "source_page": 13
+    },
+    {
+      "id": "weyermann--carawheat",
+      "brand": "Weyermann",
+      "brand_en": "Weyermann",
+      "brand_ru": "Weyermann",
+      "brand_slug": "weyermann",
+      "brand_aliases_ru": [
+        "Вайерман",
+        "Вейерман",
+        "Вайерманн",
+        "Вейерманн",
+        "Weyermann"
+      ],
+      "country_code": "DE",
+      "country_name": "Germany",
+      "name_en": "CaraWheat",
+      "name_ru": "Каравит",
+      "malt_type": "wheat_caramel",
+      "extract_pct_dry_basis": 68.0,
+      "color_ebc_min": 110.0,
+      "color_ebc_max": 140.0,
+      "aliases_ru": [
+        "каравит",
+        "пшеничный",
+        "пшеничный солод"
+      ],
+      "aliases_en": [
+        "carawheat",
+        "wheat",
+        "wheat malt"
+      ],
+      "search_aliases": [
+        "carawheat",
+        "wheat",
+        "wheat malt",
+        "каравит",
+        "пшеничный",
+        "пшеничный солод"
+      ],
+      "source_label": "Weyermann Brewery Product Catalog",
+      "source_url": "https://www.weyermann.de/wp-content/uploads/2023/05/WEYERMANN-PRODUCTS-Brewery-EN.pdf",
+      "source_page": 14
+    },
+    {
+      "id": "weyermann--chocolate-wheat-malt",
+      "brand": "Weyermann",
+      "brand_en": "Weyermann",
+      "brand_ru": "Weyermann",
+      "brand_slug": "weyermann",
+      "brand_aliases_ru": [
+        "Вайерман",
+        "Вейерман",
+        "Вайерманн",
+        "Вейерманн",
+        "Weyermann"
+      ],
+      "country_code": "DE",
+      "country_name": "Germany",
+      "name_en": "Chocolate Wheat Malt",
+      "name_ru": "Шоколадный пшеничный",
+      "malt_type": "roasted",
+      "extract_pct_dry_basis": 65.0,
+      "color_ebc_min": 900.0,
+      "color_ebc_max": 1200.0,
+      "aliases_ru": [
+        "пшеничный",
+        "пшеничный солод",
+        "шоколадный",
+        "шоколадный пшеничный"
+      ],
+      "aliases_en": [
+        "chocolate",
+        "chocolate wheat malt",
+        "wheat",
+        "wheat malt"
+      ],
+      "search_aliases": [
+        "chocolate",
+        "chocolate wheat malt",
+        "wheat",
+        "wheat malt",
+        "пшеничный",
+        "пшеничный солод",
+        "шоколадный",
+        "шоколадный пшеничный"
+      ],
+      "source_label": "Weyermann Brewery Product Catalog",
+      "source_url": "https://www.weyermann.de/wp-content/uploads/2023/05/WEYERMANN-PRODUCTS-Brewery-EN.pdf",
+      "source_page": 15
+    },
+    {
+      "id": "weyermann--carapils",
+      "brand": "Weyermann",
+      "brand_en": "Weyermann",
+      "brand_ru": "Weyermann",
+      "brand_slug": "weyermann",
+      "brand_aliases_ru": [
+        "Вайерман",
+        "Вейерман",
+        "Вайерманн",
+        "Вейерманн",
+        "Weyermann"
+      ],
+      "country_code": "DE",
+      "country_name": "Germany",
+      "name_en": "CaraPils",
+      "name_ru": "Карапилс",
+      "malt_type": "caramel",
+      "extract_pct_dry_basis": 75.0,
+      "color_ebc_min": 2.5,
+      "color_ebc_max": 6.5,
+      "aliases_ru": [
+        "карапилс"
+      ],
+      "aliases_en": [
+        "carapils"
+      ],
+      "search_aliases": [
+        "carapils",
+        "карапилс"
+      ],
+      "source_label": "Weyermann Brewery Product Catalog",
+      "source_url": "https://www.weyermann.de/wp-content/uploads/2023/05/WEYERMANN-PRODUCTS-Brewery-EN.pdf",
+      "source_page": 16
+    },
+    {
+      "id": "weyermann--carahell",
+      "brand": "Weyermann",
+      "brand_en": "Weyermann",
+      "brand_ru": "Weyermann",
+      "brand_slug": "weyermann",
+      "brand_aliases_ru": [
+        "Вайерман",
+        "Вейерман",
+        "Вайерманн",
+        "Вейерманн",
+        "Weyermann"
+      ],
+      "country_code": "DE",
+      "country_name": "Germany",
+      "name_en": "CaraHell",
+      "name_ru": "Карахелл",
+      "malt_type": "caramel",
+      "extract_pct_dry_basis": 74.0,
+      "color_ebc_min": 20.0,
+      "color_ebc_max": 30.0,
+      "aliases_ru": [
+        "карахелл"
+      ],
+      "aliases_en": [
+        "carahell"
+      ],
+      "search_aliases": [
+        "carahell",
+        "карахелл"
+      ],
+      "source_label": "Weyermann Brewery Product Catalog",
+      "source_url": "https://www.weyermann.de/wp-content/uploads/2023/05/WEYERMANN-PRODUCTS-Brewery-EN.pdf",
+      "source_page": 17
+    },
+    {
+      "id": "weyermann--carabelge",
+      "brand": "Weyermann",
+      "brand_en": "Weyermann",
+      "brand_ru": "Weyermann",
+      "brand_slug": "weyermann",
+      "brand_aliases_ru": [
+        "Вайерман",
+        "Вейерман",
+        "Вайерманн",
+        "Вейерманн",
+        "Weyermann"
+      ],
+      "country_code": "DE",
+      "country_name": "Germany",
+      "name_en": "CaraBelge",
+      "name_ru": "Карабельж",
+      "malt_type": "caramel",
+      "extract_pct_dry_basis": 74.0,
+      "color_ebc_min": 30.0,
+      "color_ebc_max": 35.0,
+      "aliases_ru": [
+        "карабельж"
+      ],
+      "aliases_en": [
+        "carabelge"
+      ],
+      "search_aliases": [
+        "carabelge",
+        "карабельж"
+      ],
+      "source_label": "Weyermann Brewery Product Catalog",
+      "source_url": "https://www.weyermann.de/wp-content/uploads/2023/05/WEYERMANN-PRODUCTS-Brewery-EN.pdf",
+      "source_page": 18
+    },
+    {
+      "id": "weyermann--carared",
+      "brand": "Weyermann",
+      "brand_en": "Weyermann",
+      "brand_ru": "Weyermann",
+      "brand_slug": "weyermann",
+      "brand_aliases_ru": [
+        "Вайерман",
+        "Вейерман",
+        "Вайерманн",
+        "Вейерманн",
+        "Weyermann"
+      ],
+      "country_code": "DE",
+      "country_name": "Germany",
+      "name_en": "CaraRed",
+      "name_ru": "Караред",
+      "malt_type": "caramel",
+      "extract_pct_dry_basis": 74.0,
+      "color_ebc_min": 40.0,
+      "color_ebc_max": 60.0,
+      "aliases_ru": [
+        "караред"
+      ],
+      "aliases_en": [
+        "carared"
+      ],
+      "search_aliases": [
+        "carared",
+        "караред"
+      ],
+      "source_label": "Weyermann Brewery Product Catalog",
+      "source_url": "https://www.weyermann.de/wp-content/uploads/2023/05/WEYERMANN-PRODUCTS-Brewery-EN.pdf",
+      "source_page": 19
+    },
+    {
+      "id": "weyermann--caraamber",
+      "brand": "Weyermann",
+      "brand_en": "Weyermann",
+      "brand_ru": "Weyermann",
+      "brand_slug": "weyermann",
+      "brand_aliases_ru": [
+        "Вайерман",
+        "Вейерман",
+        "Вайерманн",
+        "Вейерманн",
+        "Weyermann"
+      ],
+      "country_code": "DE",
+      "country_name": "Germany",
+      "name_en": "CaraAmber",
+      "name_ru": "Караамбер",
+      "malt_type": "caramel",
+      "extract_pct_dry_basis": 75.0,
+      "color_ebc_min": 60.0,
+      "color_ebc_max": 80.0,
+      "aliases_ru": [
+        "караамбер"
+      ],
+      "aliases_en": [
+        "caraamber"
+      ],
+      "search_aliases": [
+        "caraamber",
+        "караамбер"
+      ],
+      "source_label": "Weyermann Brewery Product Catalog",
+      "source_url": "https://www.weyermann.de/wp-content/uploads/2023/05/WEYERMANN-PRODUCTS-Brewery-EN.pdf",
+      "source_page": 20
+    },
+    {
+      "id": "weyermann--caramunich-type-1",
+      "brand": "Weyermann",
+      "brand_en": "Weyermann",
+      "brand_ru": "Weyermann",
+      "brand_slug": "weyermann",
+      "brand_aliases_ru": [
+        "Вайерман",
+        "Вейерман",
+        "Вайерманн",
+        "Вейерманн",
+        "Weyermann"
+      ],
+      "country_code": "DE",
+      "country_name": "Germany",
+      "name_en": "CaraMunich Type 1",
+      "name_ru": "Карамюних тип 1",
+      "malt_type": "caramel",
+      "extract_pct_dry_basis": 73.0,
+      "color_ebc_min": 80.0,
+      "color_ebc_max": 100.0,
+      "aliases_ru": [
+        "карамюних тип 1",
+        "карамюнихтип1",
+        "мюних",
+        "мюнхенский",
+        "мюнхнер"
+      ],
+      "aliases_en": [
+        "caramunich type 1",
+        "caramunichtype1",
+        "munich",
+        "munich malt"
+      ],
+      "search_aliases": [
+        "caramunich type 1",
+        "caramunichtype1",
+        "munich",
+        "munich malt",
+        "карамюних тип 1",
+        "карамюнихтип1",
+        "мюних",
+        "мюнхенский",
+        "мюнхнер"
+      ],
+      "source_label": "Weyermann Brewery Product Catalog",
+      "source_url": "https://www.weyermann.de/wp-content/uploads/2023/05/WEYERMANN-PRODUCTS-Brewery-EN.pdf",
+      "source_page": 21
+    },
+    {
+      "id": "weyermann--caramunich-type-2",
+      "brand": "Weyermann",
+      "brand_en": "Weyermann",
+      "brand_ru": "Weyermann",
+      "brand_slug": "weyermann",
+      "brand_aliases_ru": [
+        "Вайерман",
+        "Вейерман",
+        "Вайерманн",
+        "Вейерманн",
+        "Weyermann"
+      ],
+      "country_code": "DE",
+      "country_name": "Germany",
+      "name_en": "CaraMunich Type 2",
+      "name_ru": "Карамюних тип 2",
+      "malt_type": "caramel",
+      "extract_pct_dry_basis": 73.0,
+      "color_ebc_min": 110.0,
+      "color_ebc_max": 130.0,
+      "aliases_ru": [
+        "карамюних тип 2",
+        "карамюнихтип2",
+        "мюних",
+        "мюнхенский",
+        "мюнхнер"
+      ],
+      "aliases_en": [
+        "caramunich type 2",
+        "caramunichtype2",
+        "munich",
+        "munich malt"
+      ],
+      "search_aliases": [
+        "caramunich type 2",
+        "caramunichtype2",
+        "munich",
+        "munich malt",
+        "карамюних тип 2",
+        "карамюнихтип2",
+        "мюних",
+        "мюнхенский",
+        "мюнхнер"
+      ],
+      "source_label": "Weyermann Brewery Product Catalog",
+      "source_url": "https://www.weyermann.de/wp-content/uploads/2023/05/WEYERMANN-PRODUCTS-Brewery-EN.pdf",
+      "source_page": 22
+    },
+    {
+      "id": "weyermann--caramunich-type-3",
+      "brand": "Weyermann",
+      "brand_en": "Weyermann",
+      "brand_ru": "Weyermann",
+      "brand_slug": "weyermann",
+      "brand_aliases_ru": [
+        "Вайерман",
+        "Вейерман",
+        "Вайерманн",
+        "Вейерманн",
+        "Weyermann"
+      ],
+      "country_code": "DE",
+      "country_name": "Germany",
+      "name_en": "CaraMunich Type 3",
+      "name_ru": "Карамюних тип 3",
+      "malt_type": "caramel",
+      "extract_pct_dry_basis": 73.0,
+      "color_ebc_min": 140.0,
+      "color_ebc_max": 160.0,
+      "aliases_ru": [
+        "карамюних тип 3",
+        "карамюнихтип3",
+        "мюних",
+        "мюнхенский",
+        "мюнхнер"
+      ],
+      "aliases_en": [
+        "caramunich type 3",
+        "caramunichtype3",
+        "munich",
+        "munich malt"
+      ],
+      "search_aliases": [
+        "caramunich type 3",
+        "caramunichtype3",
+        "munich",
+        "munich malt",
+        "карамюних тип 3",
+        "карамюнихтип3",
+        "мюних",
+        "мюнхенский",
+        "мюнхнер"
+      ],
+      "source_label": "Weyermann Brewery Product Catalog",
+      "source_url": "https://www.weyermann.de/wp-content/uploads/2023/05/WEYERMANN-PRODUCTS-Brewery-EN.pdf",
+      "source_page": 23
+    },
+    {
+      "id": "weyermann--cararye",
+      "brand": "Weyermann",
+      "brand_en": "Weyermann",
+      "brand_ru": "Weyermann",
+      "brand_slug": "weyermann",
+      "brand_aliases_ru": [
+        "Вайерман",
+        "Вейерман",
+        "Вайерманн",
+        "Вейерманн",
+        "Weyermann"
+      ],
+      "country_code": "DE",
+      "country_name": "Germany",
+      "name_en": "CaraRye",
+      "name_ru": "Карарожь",
+      "malt_type": "rye_caramel",
+      "extract_pct_dry_basis": 74.0,
+      "color_ebc_min": 150.0,
+      "color_ebc_max": 200.0,
+      "aliases_ru": [
+        "карарожь",
+        "ржаной",
+        "ржаной солод"
+      ],
+      "aliases_en": [
+        "cararye",
+        "rye",
+        "rye malt"
+      ],
+      "search_aliases": [
+        "cararye",
+        "rye",
+        "rye malt",
+        "карарожь",
+        "ржаной",
+        "ржаной солод"
+      ],
+      "source_label": "Weyermann Brewery Product Catalog",
+      "source_url": "https://www.weyermann.de/wp-content/uploads/2023/05/WEYERMANN-PRODUCTS-Brewery-EN.pdf",
+      "source_page": 25
+    },
+    {
+      "id": "weyermann--carabohemian",
+      "brand": "Weyermann",
+      "brand_en": "Weyermann",
+      "brand_ru": "Weyermann",
+      "brand_slug": "weyermann",
+      "brand_aliases_ru": [
+        "Вайерман",
+        "Вейерман",
+        "Вайерманн",
+        "Вейерманн",
+        "Weyermann"
+      ],
+      "country_code": "DE",
+      "country_name": "Germany",
+      "name_en": "CaraBohemian",
+      "name_ru": "Карабогемский",
+      "malt_type": "caramel",
+      "extract_pct_dry_basis": 73.0,
+      "color_ebc_min": 170.0,
+      "color_ebc_max": 220.0,
+      "aliases_ru": [
+        "карабогемский"
+      ],
+      "aliases_en": [
+        "carabohemian"
+      ],
+      "search_aliases": [
+        "carabohemian",
+        "карабогемский"
+      ],
+      "source_label": "Weyermann Brewery Product Catalog",
+      "source_url": "https://www.weyermann.de/wp-content/uploads/2023/05/WEYERMANN-PRODUCTS-Brewery-EN.pdf",
+      "source_page": 26
+    },
+    {
+      "id": "weyermann--caraaroma",
+      "brand": "Weyermann",
+      "brand_en": "Weyermann",
+      "brand_ru": "Weyermann",
+      "brand_slug": "weyermann",
+      "brand_aliases_ru": [
+        "Вайерман",
+        "Вейерман",
+        "Вайерманн",
+        "Вейерманн",
+        "Weyermann"
+      ],
+      "country_code": "DE",
+      "country_name": "Germany",
+      "name_en": "CaraAroma",
+      "name_ru": "Караарома",
+      "malt_type": "caramel",
+      "extract_pct_dry_basis": 74.0,
+      "color_ebc_min": 350.0,
+      "color_ebc_max": 450.0,
+      "aliases_ru": [
+        "караарома"
+      ],
+      "aliases_en": [
+        "caraaroma"
+      ],
+      "search_aliases": [
+        "caraaroma",
+        "караарома"
+      ],
+      "source_label": "Weyermann Brewery Product Catalog",
+      "source_url": "https://www.weyermann.de/wp-content/uploads/2023/05/WEYERMANN-PRODUCTS-Brewery-EN.pdf",
+      "source_page": 27
+    },
+    {
+      "id": "weyermann--eraclea-pilsner-malt",
+      "brand": "Weyermann",
+      "brand_en": "Weyermann",
+      "brand_ru": "Weyermann",
+      "brand_slug": "weyermann",
+      "brand_aliases_ru": [
+        "Вайерман",
+        "Вейерман",
+        "Вайерманн",
+        "Вейерманн",
+        "Weyermann"
+      ],
+      "country_code": "DE",
+      "country_name": "Germany",
+      "name_en": "Eraclea Pilsner Malt",
+      "name_ru": "Эраклея Пильзнер",
+      "malt_type": "base",
+      "extract_pct_dry_basis": 80.5,
+      "color_ebc_min": 2.5,
+      "color_ebc_max": 4.5,
+      "aliases_ru": [
+        "пилснер",
+        "пильзен",
+        "пильзенер",
+        "пильзнер",
+        "эраклея пильзнер"
+      ],
+      "aliases_en": [
+        "eraclea pilsner malt",
+        "pilsen",
+        "pilsener",
+        "pilsner"
+      ],
+      "search_aliases": [
+        "eraclea pilsner malt",
+        "pilsen",
+        "pilsener",
+        "pilsner",
+        "пилснер",
+        "пильзен",
+        "пильзенер",
+        "пильзнер",
+        "эраклея пильзнер"
+      ],
+      "source_label": "Weyermann Brewery Product Catalog",
+      "source_url": "https://www.weyermann.de/wp-content/uploads/2023/05/WEYERMANN-PRODUCTS-Brewery-EN.pdf",
+      "source_page": 28
+    },
+    {
+      "id": "weyermann--barke-pilsner-malt",
+      "brand": "Weyermann",
+      "brand_en": "Weyermann",
+      "brand_ru": "Weyermann",
+      "brand_slug": "weyermann",
+      "brand_aliases_ru": [
+        "Вайерман",
+        "Вейерман",
+        "Вайерманн",
+        "Вейерманн",
+        "Weyermann"
+      ],
+      "country_code": "DE",
+      "country_name": "Germany",
+      "name_en": "Barke Pilsner Malt",
+      "name_ru": "Барке Пильзнер",
+      "malt_type": "base",
+      "extract_pct_dry_basis": 80.5,
+      "color_ebc_min": 2.5,
+      "color_ebc_max": 4.5,
+      "aliases_ru": [
+        "барке пильзнер",
+        "пилснер",
+        "пильзен",
+        "пильзенер",
+        "пильзнер"
+      ],
+      "aliases_en": [
+        "barke pilsner malt",
+        "pilsen",
+        "pilsener",
+        "pilsner"
+      ],
+      "search_aliases": [
+        "barke pilsner malt",
+        "pilsen",
+        "pilsener",
+        "pilsner",
+        "барке пильзнер",
+        "пилснер",
+        "пильзен",
+        "пильзенер",
+        "пильзнер"
+      ],
+      "source_label": "Weyermann Brewery Product Catalog",
+      "source_url": "https://www.weyermann.de/wp-content/uploads/2023/05/WEYERMANN-PRODUCTS-Brewery-EN.pdf",
+      "source_page": 29
+    },
+    {
+      "id": "weyermann--barke-vienna-malt",
+      "brand": "Weyermann",
+      "brand_en": "Weyermann",
+      "brand_ru": "Weyermann",
+      "brand_slug": "weyermann",
+      "brand_aliases_ru": [
+        "Вайерман",
+        "Вейерман",
+        "Вайерманн",
+        "Вейерманн",
+        "Weyermann"
+      ],
+      "country_code": "DE",
+      "country_name": "Germany",
+      "name_en": "Barke Vienna Malt",
+      "name_ru": "Барке Венский",
+      "malt_type": "base",
+      "extract_pct_dry_basis": 79.0,
+      "color_ebc_min": 6.0,
+      "color_ebc_max": 9.0,
+      "aliases_ru": [
+        "барке венский",
+        "вена",
+        "венский"
+      ],
+      "aliases_en": [
+        "barke vienna malt",
+        "vienna",
+        "vienna malt"
+      ],
+      "search_aliases": [
+        "barke vienna malt",
+        "vienna",
+        "vienna malt",
+        "барке венский",
+        "вена",
+        "венский"
+      ],
+      "source_label": "Weyermann Brewery Product Catalog",
+      "source_url": "https://www.weyermann.de/wp-content/uploads/2023/05/WEYERMANN-PRODUCTS-Brewery-EN.pdf",
+      "source_page": 30
+    },
+    {
+      "id": "weyermann--barke-munich-malt",
+      "brand": "Weyermann",
+      "brand_en": "Weyermann",
+      "brand_ru": "Weyermann",
+      "brand_slug": "weyermann",
+      "brand_aliases_ru": [
+        "Вайерман",
+        "Вейерман",
+        "Вайерманн",
+        "Вейерманн",
+        "Weyermann"
+      ],
+      "country_code": "DE",
+      "country_name": "Germany",
+      "name_en": "Barke Munich Malt",
+      "name_ru": "Барке Мюнхенский",
+      "malt_type": "base",
+      "extract_pct_dry_basis": 78.0,
+      "color_ebc_min": 17.0,
+      "color_ebc_max": 22.0,
+      "aliases_ru": [
+        "барке мюнхенский",
+        "мюних",
+        "мюнхенский",
+        "мюнхнер"
+      ],
+      "aliases_en": [
+        "barke munich malt",
+        "munich",
+        "munich malt"
+      ],
+      "search_aliases": [
+        "barke munich malt",
+        "munich",
+        "munich malt",
+        "барке мюнхенский",
+        "мюних",
+        "мюнхенский",
+        "мюнхнер"
+      ],
+      "source_label": "Weyermann Brewery Product Catalog",
+      "source_url": "https://www.weyermann.de/wp-content/uploads/2023/05/WEYERMANN-PRODUCTS-Brewery-EN.pdf",
+      "source_page": 31
+    },
+    {
+      "id": "weyermann--isaria-1924",
+      "brand": "Weyermann",
+      "brand_en": "Weyermann",
+      "brand_ru": "Weyermann",
+      "brand_slug": "weyermann",
+      "brand_aliases_ru": [
+        "Вайерман",
+        "Вейерман",
+        "Вайерманн",
+        "Вейерманн",
+        "Weyermann"
+      ],
+      "country_code": "DE",
+      "country_name": "Germany",
+      "name_en": "Isaria 1924",
+      "name_ru": "Изария 1924",
+      "malt_type": "base",
+      "extract_pct_dry_basis": 78.0,
+      "color_ebc_min": 7.0,
+      "color_ebc_max": 9.0,
+      "aliases_ru": [
+        "изария 1924"
+      ],
+      "aliases_en": [
+        "isaria 1924"
+      ],
+      "search_aliases": [
+        "isaria 1924",
+        "изария 1924"
+      ],
+      "source_label": "Weyermann Brewery Product Catalog",
+      "source_url": "https://www.weyermann.de/wp-content/uploads/2023/05/WEYERMANN-PRODUCTS-Brewery-EN.pdf",
+      "source_page": 32
+    },
+    {
+      "id": "weyermann--bohemian-pilsner-malt",
+      "brand": "Weyermann",
+      "brand_en": "Weyermann",
+      "brand_ru": "Weyermann",
+      "brand_slug": "weyermann",
+      "brand_aliases_ru": [
+        "Вайерман",
+        "Вейерман",
+        "Вайерманн",
+        "Вейерманн",
+        "Weyermann"
+      ],
+      "country_code": "DE",
+      "country_name": "Germany",
+      "name_en": "Bohemian Pilsner Malt",
+      "name_ru": "Богемский Пильзнер",
+      "malt_type": "base",
+      "extract_pct_dry_basis": 80.0,
+      "color_ebc_min": 3.0,
+      "color_ebc_max": 5.0,
+      "aliases_ru": [
+        "богемский пильзнер",
+        "пилснер",
+        "пильзен",
+        "пильзенер",
+        "пильзнер"
+      ],
+      "aliases_en": [
+        "bohemian pilsner malt",
+        "pilsen",
+        "pilsener",
+        "pilsner"
+      ],
+      "search_aliases": [
+        "bohemian pilsner malt",
+        "pilsen",
+        "pilsener",
+        "pilsner",
+        "богемский пильзнер",
+        "пилснер",
+        "пильзен",
+        "пильзенер",
+        "пильзнер"
+      ],
+      "source_label": "Weyermann Brewery Product Catalog",
+      "source_url": "https://www.weyermann.de/wp-content/uploads/2023/05/WEYERMANN-PRODUCTS-Brewery-EN.pdf",
+      "source_page": 33
+    },
+    {
+      "id": "weyermann--floor-malted-bohemian-pilsner-malt",
+      "brand": "Weyermann",
+      "brand_en": "Weyermann",
+      "brand_ru": "Weyermann",
+      "brand_slug": "weyermann",
+      "brand_aliases_ru": [
+        "Вайерман",
+        "Вейерман",
+        "Вайерманн",
+        "Вейерманн",
+        "Weyermann"
+      ],
+      "country_code": "DE",
+      "country_name": "Germany",
+      "name_en": "Floor-Malted Bohemian Pilsner Malt",
+      "name_ru": "Богемский токовый Пильзнер",
+      "malt_type": "base",
+      "extract_pct_dry_basis": 79.0,
+      "color_ebc_min": 2.5,
+      "color_ebc_max": 5.0,
+      "aliases_ru": [
+        "богемский токовый пильзнер",
+        "пилснер",
+        "пильзен",
+        "пильзенер",
+        "пильзнер"
+      ],
+      "aliases_en": [
+        "floor-malted bohemian pilsner malt",
+        "pilsen",
+        "pilsener",
+        "pilsner"
+      ],
+      "search_aliases": [
+        "floor-malted bohemian pilsner malt",
+        "pilsen",
+        "pilsener",
+        "pilsner",
+        "богемский токовый пильзнер",
+        "пилснер",
+        "пильзен",
+        "пильзенер",
+        "пильзнер"
+      ],
+      "source_label": "Weyermann Brewery Product Catalog",
+      "source_url": "https://www.weyermann.de/wp-content/uploads/2023/05/WEYERMANN-PRODUCTS-Brewery-EN.pdf",
+      "source_page": 34
+    },
+    {
+      "id": "weyermann--floor-malted-bohemian-dark-malt",
+      "brand": "Weyermann",
+      "brand_en": "Weyermann",
+      "brand_ru": "Weyermann",
+      "brand_slug": "weyermann",
+      "brand_aliases_ru": [
+        "Вайерман",
+        "Вейерман",
+        "Вайерманн",
+        "Вейерманн",
+        "Weyermann"
+      ],
+      "country_code": "DE",
+      "country_name": "Germany",
+      "name_en": "Floor-Malted Bohemian Dark Malt",
+      "name_ru": "Богемский токовый темный",
+      "malt_type": "base",
+      "extract_pct_dry_basis": 78.0,
+      "color_ebc_min": 12.0,
+      "color_ebc_max": 20.0,
+      "aliases_ru": [
+        "богемский токовый темный"
+      ],
+      "aliases_en": [
+        "floor-malted bohemian dark malt"
+      ],
+      "search_aliases": [
+        "floor-malted bohemian dark malt",
+        "богемский токовый темный"
+      ],
+      "source_label": "Weyermann Brewery Product Catalog",
+      "source_url": "https://www.weyermann.de/wp-content/uploads/2023/05/WEYERMANN-PRODUCTS-Brewery-EN.pdf",
+      "source_page": 35
+    },
+    {
+      "id": "weyermann--abbey-malt-biscuit-malt",
+      "brand": "Weyermann",
+      "brand_en": "Weyermann",
+      "brand_ru": "Weyermann",
+      "brand_slug": "weyermann",
+      "brand_aliases_ru": [
+        "Вайерман",
+        "Вейерман",
+        "Вайерманн",
+        "Вейерманн",
+        "Weyermann"
+      ],
+      "country_code": "DE",
+      "country_name": "Germany",
+      "name_en": "Abbey Malt (Biscuit Malt)",
+      "name_ru": "Эбби / Бисквит",
+      "malt_type": "specialty",
+      "extract_pct_dry_basis": 75.0,
+      "color_ebc_min": 40.0,
+      "color_ebc_max": 50.0,
+      "aliases_ru": [
+        "эбби / бисквит"
+      ],
+      "aliases_en": [
+        "abbey malt (biscuit malt)"
+      ],
+      "search_aliases": [
+        "abbey malt (biscuit malt)",
+        "эбби / бисквит"
+      ],
+      "source_label": "Weyermann Brewery Product Catalog",
+      "source_url": "https://www.weyermann.de/wp-content/uploads/2023/05/WEYERMANN-PRODUCTS-Brewery-EN.pdf",
+      "source_page": 38
+    },
+    {
+      "id": "weyermann--special-w",
+      "brand": "Weyermann",
+      "brand_en": "Weyermann",
+      "brand_ru": "Weyermann",
+      "brand_slug": "weyermann",
+      "brand_aliases_ru": [
+        "Вайерман",
+        "Вейерман",
+        "Вайерманн",
+        "Вейерманн",
+        "Weyermann"
+      ],
+      "country_code": "DE",
+      "country_name": "Germany",
+      "name_en": "Special W",
+      "name_ru": "Спешл В",
+      "malt_type": "specialty",
+      "extract_pct_dry_basis": 73.0,
+      "color_ebc_min": 280.0,
+      "color_ebc_max": 320.0,
+      "aliases_ru": [
+        "спешл в"
+      ],
+      "aliases_en": [
+        "special w"
+      ],
+      "search_aliases": [
+        "special w",
+        "спешл в"
+      ],
+      "source_label": "Weyermann Brewery Product Catalog",
+      "source_url": "https://www.weyermann.de/wp-content/uploads/2023/05/WEYERMANN-PRODUCTS-Brewery-EN.pdf",
+      "source_page": 39
+    },
+    {
+      "id": "weyermann--carafa-type-1",
+      "brand": "Weyermann",
+      "brand_en": "Weyermann",
+      "brand_ru": "Weyermann",
+      "brand_slug": "weyermann",
+      "brand_aliases_ru": [
+        "Вайерман",
+        "Вейерман",
+        "Вайерманн",
+        "Вейерманн",
+        "Weyermann"
+      ],
+      "country_code": "DE",
+      "country_name": "Germany",
+      "name_en": "Carafa Type 1",
+      "name_ru": "Карафа тип 1",
+      "malt_type": "roasted",
+      "extract_pct_dry_basis": 65.0,
+      "color_ebc_min": 800.0,
+      "color_ebc_max": 1000.0,
+      "aliases_ru": [
+        "карафа тип 1",
+        "карафатип1"
+      ],
+      "aliases_en": [
+        "carafa type 1",
+        "carafatype1"
+      ],
+      "search_aliases": [
+        "carafa type 1",
+        "carafatype1",
+        "карафа тип 1",
+        "карафатип1"
+      ],
+      "source_label": "Weyermann Brewery Product Catalog",
+      "source_url": "https://www.weyermann.de/wp-content/uploads/2023/05/WEYERMANN-PRODUCTS-Brewery-EN.pdf",
+      "source_page": 40
+    },
+    {
+      "id": "weyermann--carafa-type-2",
+      "brand": "Weyermann",
+      "brand_en": "Weyermann",
+      "brand_ru": "Weyermann",
+      "brand_slug": "weyermann",
+      "brand_aliases_ru": [
+        "Вайерман",
+        "Вейерман",
+        "Вайерманн",
+        "Вейерманн",
+        "Weyermann"
+      ],
+      "country_code": "DE",
+      "country_name": "Germany",
+      "name_en": "Carafa Type 2",
+      "name_ru": "Карафа тип 2",
+      "malt_type": "roasted",
+      "extract_pct_dry_basis": 65.0,
+      "color_ebc_min": 1050.0,
+      "color_ebc_max": 1250.0,
+      "aliases_ru": [
+        "карафа тип 2",
+        "карафатип2"
+      ],
+      "aliases_en": [
+        "carafa type 2",
+        "carafatype2"
+      ],
+      "search_aliases": [
+        "carafa type 2",
+        "carafatype2",
+        "карафа тип 2",
+        "карафатип2"
+      ],
+      "source_label": "Weyermann Brewery Product Catalog",
+      "source_url": "https://www.weyermann.de/wp-content/uploads/2023/05/WEYERMANN-PRODUCTS-Brewery-EN.pdf",
+      "source_page": 41
+    },
+    {
+      "id": "weyermann--carafa-type-3",
+      "brand": "Weyermann",
+      "brand_en": "Weyermann",
+      "brand_ru": "Weyermann",
+      "brand_slug": "weyermann",
+      "brand_aliases_ru": [
+        "Вайерман",
+        "Вейерман",
+        "Вайерманн",
+        "Вейерманн",
+        "Weyermann"
+      ],
+      "country_code": "DE",
+      "country_name": "Germany",
+      "name_en": "Carafa Type 3",
+      "name_ru": "Карафа тип 3",
+      "malt_type": "roasted",
+      "extract_pct_dry_basis": 65.0,
+      "color_ebc_min": 1300.0,
+      "color_ebc_max": 1500.0,
+      "aliases_ru": [
+        "карафа тип 3",
+        "карафатип3"
+      ],
+      "aliases_en": [
+        "carafa type 3",
+        "carafatype3"
+      ],
+      "search_aliases": [
+        "carafa type 3",
+        "carafatype3",
+        "карафа тип 3",
+        "карафатип3"
+      ],
+      "source_label": "Weyermann Brewery Product Catalog",
+      "source_url": "https://www.weyermann.de/wp-content/uploads/2023/05/WEYERMANN-PRODUCTS-Brewery-EN.pdf",
+      "source_page": 42
+    },
+    {
+      "id": "weyermann--carafa-special-type-1",
+      "brand": "Weyermann",
+      "brand_en": "Weyermann",
+      "brand_ru": "Weyermann",
+      "brand_slug": "weyermann",
+      "brand_aliases_ru": [
+        "Вайерман",
+        "Вейерман",
+        "Вайерманн",
+        "Вейерманн",
+        "Weyermann"
+      ],
+      "country_code": "DE",
+      "country_name": "Germany",
+      "name_en": "Carafa Special Type 1",
+      "name_ru": "Карафа Спешл тип 1",
+      "malt_type": "roasted",
+      "extract_pct_dry_basis": 65.0,
+      "color_ebc_min": 800.0,
+      "color_ebc_max": 1000.0,
+      "aliases_ru": [
+        "карафа спешл тип 1",
+        "карафаспешлтип1"
+      ],
+      "aliases_en": [
+        "carafa special type 1",
+        "carafaspecialtype1"
+      ],
+      "search_aliases": [
+        "carafa special type 1",
+        "carafaspecialtype1",
+        "карафа спешл тип 1",
+        "карафаспешлтип1"
+      ],
+      "source_label": "Weyermann Brewery Product Catalog",
+      "source_url": "https://www.weyermann.de/wp-content/uploads/2023/05/WEYERMANN-PRODUCTS-Brewery-EN.pdf",
+      "source_page": 43
+    },
+    {
+      "id": "weyermann--carafa-special-type-2",
+      "brand": "Weyermann",
+      "brand_en": "Weyermann",
+      "brand_ru": "Weyermann",
+      "brand_slug": "weyermann",
+      "brand_aliases_ru": [
+        "Вайерман",
+        "Вейерман",
+        "Вайерманн",
+        "Вейерманн",
+        "Weyermann"
+      ],
+      "country_code": "DE",
+      "country_name": "Germany",
+      "name_en": "Carafa Special Type 2",
+      "name_ru": "Карафа Спешл тип 2",
+      "malt_type": "roasted",
+      "extract_pct_dry_basis": 65.0,
+      "color_ebc_min": 1050.0,
+      "color_ebc_max": 1250.0,
+      "aliases_ru": [
+        "карафа спешл тип 2",
+        "карафаспешлтип2"
+      ],
+      "aliases_en": [
+        "carafa special type 2",
+        "carafaspecialtype2"
+      ],
+      "search_aliases": [
+        "carafa special type 2",
+        "carafaspecialtype2",
+        "карафа спешл тип 2",
+        "карафаспешлтип2"
+      ],
+      "source_label": "Weyermann Brewery Product Catalog",
+      "source_url": "https://www.weyermann.de/wp-content/uploads/2023/05/WEYERMANN-PRODUCTS-Brewery-EN.pdf",
+      "source_page": 44
+    },
+    {
+      "id": "weyermann--carafa-special-type-3",
+      "brand": "Weyermann",
+      "brand_en": "Weyermann",
+      "brand_ru": "Weyermann",
+      "brand_slug": "weyermann",
+      "brand_aliases_ru": [
+        "Вайерман",
+        "Вейерман",
+        "Вайерманн",
+        "Вейерманн",
+        "Weyermann"
+      ],
+      "country_code": "DE",
+      "country_name": "Germany",
+      "name_en": "Carafa Special Type 3",
+      "name_ru": "Карафа Спешл тип 3",
+      "malt_type": "roasted",
+      "extract_pct_dry_basis": 65.0,
+      "color_ebc_min": 1300.0,
+      "color_ebc_max": 1500.0,
+      "aliases_ru": [
+        "карафа спешл тип 3",
+        "карафаспешлтип3"
+      ],
+      "aliases_en": [
+        "carafa special type 3",
+        "carafaspecialtype3"
+      ],
+      "search_aliases": [
+        "carafa special type 3",
+        "carafaspecialtype3",
+        "карафа спешл тип 3",
+        "карафаспешлтип3"
+      ],
+      "source_label": "Weyermann Brewery Product Catalog",
+      "source_url": "https://www.weyermann.de/wp-content/uploads/2023/05/WEYERMANN-PRODUCTS-Brewery-EN.pdf",
+      "source_page": 45
+    },
+    {
+      "id": "weyermann--chocolate-rye-malt",
+      "brand": "Weyermann",
+      "brand_en": "Weyermann",
+      "brand_ru": "Weyermann",
+      "brand_slug": "weyermann",
+      "brand_aliases_ru": [
+        "Вайерман",
+        "Вейерман",
+        "Вайерманн",
+        "Вейерманн",
+        "Weyermann"
+      ],
+      "country_code": "DE",
+      "country_name": "Germany",
+      "name_en": "Chocolate Rye Malt",
+      "name_ru": "Шоколадный ржаной",
+      "malt_type": "roasted",
+      "extract_pct_dry_basis": 65.0,
+      "color_ebc_min": 400.0,
+      "color_ebc_max": 700.0,
+      "aliases_ru": [
+        "ржаной",
+        "ржаной солод",
+        "шоколадный",
+        "шоколадный ржаной"
+      ],
+      "aliases_en": [
+        "chocolate",
+        "chocolate rye malt",
+        "rye",
+        "rye malt"
+      ],
+      "search_aliases": [
+        "chocolate",
+        "chocolate rye malt",
+        "rye",
+        "rye malt",
+        "ржаной",
+        "ржаной солод",
+        "шоколадный",
+        "шоколадный ржаной"
+      ],
+      "source_label": "Weyermann Brewery Product Catalog",
+      "source_url": "https://www.weyermann.de/wp-content/uploads/2023/05/WEYERMANN-PRODUCTS-Brewery-EN.pdf",
+      "source_page": 47
+    },
+    {
+      "id": "weyermann--roasted-barley",
+      "brand": "Weyermann",
+      "brand_en": "Weyermann",
+      "brand_ru": "Weyermann",
+      "brand_slug": "weyermann",
+      "brand_aliases_ru": [
+        "Вайерман",
+        "Вейерман",
+        "Вайерманн",
+        "Вейерманн",
+        "Weyermann"
+      ],
+      "country_code": "DE",
+      "country_name": "Germany",
+      "name_en": "Roasted Barley",
+      "name_ru": "Жженый ячмень",
+      "malt_type": "roasted",
+      "extract_pct_dry_basis": 65.0,
+      "color_ebc_min": 1000.0,
+      "color_ebc_max": 1300.0,
+      "aliases_ru": [
+        "жженый ячмень",
+        "жжёный ячмень"
+      ],
+      "aliases_en": [
+        "roasted barley"
+      ],
+      "search_aliases": [
+        "roasted barley",
+        "жженый ячмень",
+        "жжёный ячмень"
+      ],
+      "source_label": "Weyermann Brewery Product Catalog",
+      "source_url": "https://www.weyermann.de/wp-content/uploads/2023/05/WEYERMANN-PRODUCTS-Brewery-EN.pdf",
+      "source_page": 48
+    },
+    {
+      "id": "weyermann--diastatic-barley-malt",
+      "brand": "Weyermann",
+      "brand_en": "Weyermann",
+      "brand_ru": "Weyermann",
+      "brand_slug": "weyermann",
+      "brand_aliases_ru": [
+        "Вайерман",
+        "Вейерман",
+        "Вайерманн",
+        "Вейерманн",
+        "Weyermann"
+      ],
+      "country_code": "DE",
+      "country_name": "Germany",
+      "name_en": "Diastatic Barley Malt",
+      "name_ru": "Диастатический ячменный",
+      "malt_type": "functional",
+      "extract_pct_dry_basis": 78.0,
+      "color_ebc_min": 2.5,
+      "color_ebc_max": 4.0,
+      "aliases_ru": [
+        "диастатический ячменный"
+      ],
+      "aliases_en": [
+        "diastatic barley malt"
+      ],
+      "search_aliases": [
+        "diastatic barley malt",
+        "диастатический ячменный"
+      ],
+      "source_label": "Weyermann Brewery Product Catalog",
+      "source_url": "https://www.weyermann.de/wp-content/uploads/2023/05/WEYERMANN-PRODUCTS-Brewery-EN.pdf",
+      "source_page": 49
+    },
+    {
+      "id": "weyermann--rye-malt-pale",
+      "brand": "Weyermann",
+      "brand_en": "Weyermann",
+      "brand_ru": "Weyermann",
+      "brand_slug": "weyermann",
+      "brand_aliases_ru": [
+        "Вайерман",
+        "Вейерман",
+        "Вайерманн",
+        "Вейерманн",
+        "Weyermann"
+      ],
+      "country_code": "DE",
+      "country_name": "Germany",
+      "name_en": "Rye Malt Pale",
+      "name_ru": "Ржаной светлый",
+      "malt_type": "rye",
+      "extract_pct_dry_basis": 81.0,
+      "color_ebc_min": 4.0,
+      "color_ebc_max": 10.0,
+      "aliases_ru": [
+        "ржаной",
+        "ржаной светлый",
+        "ржаной солод"
+      ],
+      "aliases_en": [
+        "rye",
+        "rye malt",
+        "rye malt pale"
+      ],
+      "search_aliases": [
+        "rye",
+        "rye malt",
+        "rye malt pale",
+        "ржаной",
+        "ржаной светлый",
+        "ржаной солод"
+      ],
+      "source_label": "Weyermann Brewery Product Catalog",
+      "source_url": "https://www.weyermann.de/wp-content/uploads/2023/05/WEYERMANN-PRODUCTS-Brewery-EN.pdf",
+      "source_page": 50
+    },
+    {
+      "id": "weyermann--spelt-malt",
+      "brand": "Weyermann",
+      "brand_en": "Weyermann",
+      "brand_ru": "Weyermann",
+      "brand_slug": "weyermann",
+      "brand_aliases_ru": [
+        "Вайерман",
+        "Вейерман",
+        "Вайерманн",
+        "Вейерманн",
+        "Weyermann"
+      ],
+      "country_code": "DE",
+      "country_name": "Germany",
+      "name_en": "Spelt Malt",
+      "name_ru": "Полбяной",
+      "malt_type": "alternative_grain",
+      "extract_pct_dry_basis": 79.5,
+      "color_ebc_min": 3.0,
+      "color_ebc_max": 7.0,
+      "aliases_ru": [
+        "полбяной"
+      ],
+      "aliases_en": [
+        "spelt malt"
+      ],
+      "search_aliases": [
+        "spelt malt",
+        "полбяной"
+      ],
+      "source_label": "Weyermann Brewery Product Catalog",
+      "source_url": "https://www.weyermann.de/wp-content/uploads/2023/05/WEYERMANN-PRODUCTS-Brewery-EN.pdf",
+      "source_page": 53
+    },
+    {
+      "id": "castle-malting--pilsen-2rs-malt",
+      "brand": "Castle Malting",
+      "brand_en": "Castle Malting",
+      "brand_ru": "Castle Malting",
+      "brand_slug": "castle-malting",
+      "brand_aliases_ru": [
+        "Кастл",
+        "Кастл Малтинг",
+        "Шато",
+        "Шато Мальтинг",
+        "Castle",
+        "Castle Malting"
+      ],
+      "country_code": "BE",
+      "country_name": "Belgium",
+      "name_en": "Pilsen 2RS Malt",
+      "name_ru": "Пильсен 2RS",
+      "malt_type": "base",
+      "extract_pct_dry_basis": 82.0,
+      "color_ebc_min": 3.5,
+      "color_ebc_max": 3.5,
+      "aliases_ru": [
+        "пилснер",
+        "пильзен",
+        "пильзенер",
+        "пильзнер",
+        "пильсен 2rs"
+      ],
+      "aliases_en": [
+        "pilsen",
+        "pilsen 2rs malt",
+        "pilsener",
+        "pilsner",
+        "пильсен 2rs"
+      ],
+      "search_aliases": [
+        "pilsen",
+        "pilsen 2rs malt",
+        "pilsener",
+        "pilsner",
+        "пилснер",
+        "пильзен",
+        "пильзенер",
+        "пильзнер",
+        "пильсен 2rs"
+      ],
+      "source_label": "Castle Malting brochure",
+      "source_url": "https://castlemalting.com/castlemalting-brochures.asp",
+      "source_page": 10
+    },
+    {
+      "id": "castle-malting--vienna-malt",
+      "brand": "Castle Malting",
+      "brand_en": "Castle Malting",
+      "brand_ru": "Castle Malting",
+      "brand_slug": "castle-malting",
+      "brand_aliases_ru": [
+        "Кастл",
+        "Кастл Малтинг",
+        "Шато",
+        "Шато Мальтинг",
+        "Castle",
+        "Castle Malting"
+      ],
+      "country_code": "BE",
+      "country_name": "Belgium",
+      "name_en": "Vienna Malt",
+      "name_ru": "Венский",
+      "malt_type": "base",
+      "extract_pct_dry_basis": 80.0,
+      "color_ebc_min": 4.0,
+      "color_ebc_max": 7.0,
+      "aliases_ru": [
+        "вена",
+        "венский"
+      ],
+      "aliases_en": [
+        "vienna",
+        "vienna malt"
+      ],
+      "search_aliases": [
+        "vienna",
+        "vienna malt",
+        "вена",
+        "венский"
+      ],
+      "source_label": "Castle Malting brochure",
+      "source_url": "https://castlemalting.com/castlemalting-brochures.asp",
+      "source_page": 10
+    },
+    {
+      "id": "castle-malting--pale-ale-malt",
+      "brand": "Castle Malting",
+      "brand_en": "Castle Malting",
+      "brand_ru": "Castle Malting",
+      "brand_slug": "castle-malting",
+      "brand_aliases_ru": [
+        "Кастл",
+        "Кастл Малтинг",
+        "Шато",
+        "Шато Мальтинг",
+        "Castle",
+        "Castle Malting"
+      ],
+      "country_code": "BE",
+      "country_name": "Belgium",
+      "name_en": "Pale Ale Malt",
+      "name_ru": "Пэйл Эль",
+      "malt_type": "base",
+      "extract_pct_dry_basis": 80.0,
+      "color_ebc_min": 7.0,
+      "color_ebc_max": 10.0,
+      "aliases_ru": [
+        "пале эль",
+        "пейл эль",
+        "пэйл эль"
+      ],
+      "aliases_en": [
+        "pale ale",
+        "pale ale malt"
+      ],
+      "search_aliases": [
+        "pale ale",
+        "pale ale malt",
+        "пале эль",
+        "пейл эль",
+        "пэйл эль"
+      ],
+      "source_label": "Castle Malting brochure",
+      "source_url": "https://castlemalting.com/castlemalting-brochures.asp",
+      "source_page": 11
+    },
+    {
+      "id": "castle-malting--red-intense-malt",
+      "brand": "Castle Malting",
+      "brand_en": "Castle Malting",
+      "brand_ru": "Castle Malting",
+      "brand_slug": "castle-malting",
+      "brand_aliases_ru": [
+        "Кастл",
+        "Кастл Малтинг",
+        "Шато",
+        "Шато Мальтинг",
+        "Castle",
+        "Castle Malting"
+      ],
+      "country_code": "BE",
+      "country_name": "Belgium",
+      "name_en": "Red Intense Malt",
+      "name_ru": "Ред Интенс",
+      "malt_type": "specialty",
+      "extract_pct_dry_basis": 78.0,
+      "color_ebc_min": 34.0,
+      "color_ebc_max": 38.0,
+      "aliases_ru": [
+        "ред интенс"
+      ],
+      "aliases_en": [
+        "red intense malt"
+      ],
+      "search_aliases": [
+        "red intense malt",
+        "ред интенс"
+      ],
+      "source_label": "Castle Malting brochure",
+      "source_url": "https://castlemalting.com/castlemalting-brochures.asp",
+      "source_page": 12
+    },
+    {
+      "id": "castle-malting--munich-light-malt",
+      "brand": "Castle Malting",
+      "brand_en": "Castle Malting",
+      "brand_ru": "Castle Malting",
+      "brand_slug": "castle-malting",
+      "brand_aliases_ru": [
+        "Кастл",
+        "Кастл Малтинг",
+        "Шато",
+        "Шато Мальтинг",
+        "Castle",
+        "Castle Malting"
+      ],
+      "country_code": "BE",
+      "country_name": "Belgium",
+      "name_en": "Munich Light Malt",
+      "name_ru": "Мюнхенский светлый",
+      "malt_type": "base",
+      "extract_pct_dry_basis": 80.0,
+      "color_ebc_min": 13.0,
+      "color_ebc_max": 17.0,
+      "aliases_ru": [
+        "мюних",
+        "мюнхенский",
+        "мюнхенский светлый",
+        "мюнхнер"
+      ],
+      "aliases_en": [
+        "munich",
+        "munich light malt",
+        "munich malt"
+      ],
+      "search_aliases": [
+        "munich",
+        "munich light malt",
+        "munich malt",
+        "мюних",
+        "мюнхенский",
+        "мюнхенский светлый",
+        "мюнхнер"
+      ],
+      "source_label": "Castle Malting brochure",
+      "source_url": "https://castlemalting.com/castlemalting-brochures.asp",
+      "source_page": 12
+    },
+    {
+      "id": "castle-malting--munich-malt",
+      "brand": "Castle Malting",
+      "brand_en": "Castle Malting",
+      "brand_ru": "Castle Malting",
+      "brand_slug": "castle-malting",
+      "brand_aliases_ru": [
+        "Кастл",
+        "Кастл Малтинг",
+        "Шато",
+        "Шато Мальтинг",
+        "Castle",
+        "Castle Malting"
+      ],
+      "country_code": "BE",
+      "country_name": "Belgium",
+      "name_en": "Munich Malt",
+      "name_ru": "Мюнхенский",
+      "malt_type": "base",
+      "extract_pct_dry_basis": 80.0,
+      "color_ebc_min": 21.0,
+      "color_ebc_max": 28.0,
+      "aliases_ru": [
+        "мюних",
+        "мюнхенский",
+        "мюнхнер"
+      ],
+      "aliases_en": [
+        "munich",
+        "munich malt"
+      ],
+      "search_aliases": [
+        "munich",
+        "munich malt",
+        "мюних",
+        "мюнхенский",
+        "мюнхнер"
+      ],
+      "source_label": "Castle Malting brochure",
+      "source_url": "https://castlemalting.com/castlemalting-brochures.asp",
+      "source_page": 13
+    },
+    {
+      "id": "castle-malting--melano-light-malt",
+      "brand": "Castle Malting",
+      "brand_en": "Castle Malting",
+      "brand_ru": "Castle Malting",
+      "brand_slug": "castle-malting",
+      "brand_aliases_ru": [
+        "Кастл",
+        "Кастл Малтинг",
+        "Шато",
+        "Шато Мальтинг",
+        "Castle",
+        "Castle Malting"
+      ],
+      "country_code": "BE",
+      "country_name": "Belgium",
+      "name_en": "Melano Light Malt",
+      "name_ru": "Мелано светлый",
+      "malt_type": "specialty",
+      "extract_pct_dry_basis": 78.0,
+      "color_ebc_min": 36.0,
+      "color_ebc_max": 44.0,
+      "aliases_ru": [
+        "мелано светлый"
+      ],
+      "aliases_en": [
+        "melano light malt"
+      ],
+      "search_aliases": [
+        "melano light malt",
+        "мелано светлый"
+      ],
+      "source_label": "Castle Malting brochure",
+      "source_url": "https://castlemalting.com/castlemalting-brochures.asp",
+      "source_page": 13
+    },
+    {
+      "id": "castle-malting--abbey-malt",
+      "brand": "Castle Malting",
+      "brand_en": "Castle Malting",
+      "brand_ru": "Castle Malting",
+      "brand_slug": "castle-malting",
+      "brand_aliases_ru": [
+        "Кастл",
+        "Кастл Малтинг",
+        "Шато",
+        "Шато Мальтинг",
+        "Castle",
+        "Castle Malting"
+      ],
+      "country_code": "BE",
+      "country_name": "Belgium",
+      "name_en": "Abbey Malt",
+      "name_ru": "Эбби",
+      "malt_type": "specialty",
+      "extract_pct_dry_basis": 78.0,
+      "color_ebc_min": 41.0,
+      "color_ebc_max": 49.0,
+      "aliases_ru": [
+        "эбби"
+      ],
+      "aliases_en": [
+        "abbey malt"
+      ],
+      "search_aliases": [
+        "abbey malt",
+        "эбби"
+      ],
+      "source_label": "Castle Malting brochure",
+      "source_url": "https://castlemalting.com/castlemalting-brochures.asp",
+      "source_page": 14
+    },
+    {
+      "id": "castle-malting--melano-malt",
+      "brand": "Castle Malting",
+      "brand_en": "Castle Malting",
+      "brand_ru": "Castle Malting",
+      "brand_slug": "castle-malting",
+      "brand_aliases_ru": [
+        "Кастл",
+        "Кастл Малтинг",
+        "Шато",
+        "Шато Мальтинг",
+        "Castle",
+        "Castle Malting"
+      ],
+      "country_code": "BE",
+      "country_name": "Belgium",
+      "name_en": "Melano Malt",
+      "name_ru": "Melano Malt",
+      "malt_type": "specialty",
+      "extract_pct_dry_basis": 78.0,
+      "color_ebc_min": 75.0,
+      "color_ebc_max": 85.0,
+      "aliases_ru": [],
+      "aliases_en": [
+        "melano malt"
+      ],
+      "search_aliases": [
+        "melano malt"
+      ],
+      "source_label": "Castle Malting brochure",
+      "source_url": "https://castlemalting.com/castlemalting-brochures.asp",
+      "source_page": 14
+    },
+    {
+      "id": "castle-malting--arome-malt",
+      "brand": "Castle Malting",
+      "brand_en": "Castle Malting",
+      "brand_ru": "Castle Malting",
+      "brand_slug": "castle-malting",
+      "brand_aliases_ru": [
+        "Кастл",
+        "Кастл Малтинг",
+        "Шато",
+        "Шато Мальтинг",
+        "Castle",
+        "Castle Malting"
+      ],
+      "country_code": "BE",
+      "country_name": "Belgium",
+      "name_en": "Arôme Malt",
+      "name_ru": "Аром",
+      "malt_type": "specialty",
+      "extract_pct_dry_basis": 78.0,
+      "color_ebc_min": 95.0,
+      "color_ebc_max": 105.0,
+      "aliases_ru": [
+        "аром"
+      ],
+      "aliases_en": [
+        "arôme malt"
+      ],
+      "search_aliases": [
+        "arôme malt",
+        "аром"
+      ],
+      "source_label": "Castle Malting brochure",
+      "source_url": "https://castlemalting.com/castlemalting-brochures.asp",
+      "source_page": 15
+    },
+    {
+      "id": "castle-malting--crystal-malt",
+      "brand": "Castle Malting",
+      "brand_en": "Castle Malting",
+      "brand_ru": "Castle Malting",
+      "brand_slug": "castle-malting",
+      "brand_aliases_ru": [
+        "Кастл",
+        "Кастл Малтинг",
+        "Шато",
+        "Шато Мальтинг",
+        "Castle",
+        "Castle Malting"
+      ],
+      "country_code": "BE",
+      "country_name": "Belgium",
+      "name_en": "Crystal Malt",
+      "name_ru": "Кристалл",
+      "malt_type": "caramel",
+      "extract_pct_dry_basis": 74.0,
+      "color_ebc_min": 140.0,
+      "color_ebc_max": 160.0,
+      "aliases_ru": [
+        "кристалл"
+      ],
+      "aliases_en": [
+        "crystal malt"
+      ],
+      "search_aliases": [
+        "crystal malt",
+        "кристалл"
+      ],
+      "source_label": "Castle Malting brochure",
+      "source_url": "https://castlemalting.com/castlemalting-brochures.asp",
+      "source_page": 15
+    },
+    {
+      "id": "castle-malting--smoked-malt",
+      "brand": "Castle Malting",
+      "brand_en": "Castle Malting",
+      "brand_ru": "Castle Malting",
+      "brand_slug": "castle-malting",
+      "brand_aliases_ru": [
+        "Кастл",
+        "Кастл Малтинг",
+        "Шато",
+        "Шато Мальтинг",
+        "Castle",
+        "Castle Malting"
+      ],
+      "country_code": "BE",
+      "country_name": "Belgium",
+      "name_en": "Smoked Malt",
+      "name_ru": "Копченый",
+      "malt_type": "smoked",
+      "extract_pct_dry_basis": 77.0,
+      "color_ebc_min": 4.0,
+      "color_ebc_max": 12.0,
+      "aliases_ru": [
+        "дымный",
+        "копченый"
+      ],
+      "aliases_en": [
+        "rauch",
+        "smoked",
+        "smoked malt"
+      ],
+      "search_aliases": [
+        "rauch",
+        "smoked",
+        "smoked malt",
+        "дымный",
+        "копченый"
+      ],
+      "source_label": "Castle Malting brochure",
+      "source_url": "https://castlemalting.com/castlemalting-brochures.asp",
+      "source_page": 16
+    },
+    {
+      "id": "castle-malting--cara-clair-malt",
+      "brand": "Castle Malting",
+      "brand_en": "Castle Malting",
+      "brand_ru": "Castle Malting",
+      "brand_slug": "castle-malting",
+      "brand_aliases_ru": [
+        "Кастл",
+        "Кастл Малтинг",
+        "Шато",
+        "Шато Мальтинг",
+        "Castle",
+        "Castle Malting"
+      ],
+      "country_code": "BE",
+      "country_name": "Belgium",
+      "name_en": "Cara Clair Malt",
+      "name_ru": "Кара Клэр",
+      "malt_type": "caramel",
+      "extract_pct_dry_basis": 78.0,
+      "color_ebc_min": 9.0,
+      "color_ebc_max": 9.0,
+      "aliases_ru": [
+        "кара клэр",
+        "караклэр"
+      ],
+      "aliases_en": [
+        "cara clair malt",
+        "caraclairmalt"
+      ],
+      "search_aliases": [
+        "cara clair malt",
+        "caraclairmalt",
+        "кара клэр",
+        "караклэр"
+      ],
+      "source_label": "Castle Malting brochure",
+      "source_url": "https://castlemalting.com/castlemalting-brochures.asp",
+      "source_page": 17
+    },
+    {
+      "id": "castle-malting--cara-blond-malt",
+      "brand": "Castle Malting",
+      "brand_en": "Castle Malting",
+      "brand_ru": "Castle Malting",
+      "brand_slug": "castle-malting",
+      "brand_aliases_ru": [
+        "Кастл",
+        "Кастл Малтинг",
+        "Шато",
+        "Шато Мальтинг",
+        "Castle",
+        "Castle Malting"
+      ],
+      "country_code": "BE",
+      "country_name": "Belgium",
+      "name_en": "Cara Blond Malt",
+      "name_ru": "Кара Блонд",
+      "malt_type": "caramel",
+      "extract_pct_dry_basis": 78.0,
+      "color_ebc_min": 17.0,
+      "color_ebc_max": 24.0,
+      "aliases_ru": [
+        "кара блонд",
+        "караблонд"
+      ],
+      "aliases_en": [
+        "cara blond malt",
+        "carablondmalt"
+      ],
+      "search_aliases": [
+        "cara blond malt",
+        "carablondmalt",
+        "кара блонд",
+        "караблонд"
+      ],
+      "source_label": "Castle Malting brochure",
+      "source_url": "https://castlemalting.com/castlemalting-brochures.asp",
+      "source_page": 17
+    },
+    {
+      "id": "castle-malting--cara-belgium-malt",
+      "brand": "Castle Malting",
+      "brand_en": "Castle Malting",
+      "brand_ru": "Castle Malting",
+      "brand_slug": "castle-malting",
+      "brand_aliases_ru": [
+        "Кастл",
+        "Кастл Малтинг",
+        "Шато",
+        "Шато Мальтинг",
+        "Castle",
+        "Castle Malting"
+      ],
+      "country_code": "BE",
+      "country_name": "Belgium",
+      "name_en": "Cara Belgium Malt",
+      "name_ru": "Кара Бельгия",
+      "malt_type": "caramel",
+      "extract_pct_dry_basis": 76.0,
+      "color_ebc_min": 30.0,
+      "color_ebc_max": 35.0,
+      "aliases_ru": [
+        "кара бельгия",
+        "карабельгия"
+      ],
+      "aliases_en": [
+        "cara belgium malt",
+        "carabelgiummalt"
+      ],
+      "search_aliases": [
+        "cara belgium malt",
+        "carabelgiummalt",
+        "кара бельгия",
+        "карабельгия"
+      ],
+      "source_label": "Castle Malting brochure",
+      "source_url": "https://castlemalting.com/castlemalting-brochures.asp",
+      "source_page": 18
+    },
+    {
+      "id": "castle-malting--cara-ruby-malt",
+      "brand": "Castle Malting",
+      "brand_en": "Castle Malting",
+      "brand_ru": "Castle Malting",
+      "brand_slug": "castle-malting",
+      "brand_aliases_ru": [
+        "Кастл",
+        "Кастл Малтинг",
+        "Шато",
+        "Шато Мальтинг",
+        "Castle",
+        "Castle Malting"
+      ],
+      "country_code": "BE",
+      "country_name": "Belgium",
+      "name_en": "Cara Ruby Malt",
+      "name_ru": "Кара Руби",
+      "malt_type": "caramel",
+      "extract_pct_dry_basis": 78.0,
+      "color_ebc_min": 45.0,
+      "color_ebc_max": 55.0,
+      "aliases_ru": [
+        "кара руби",
+        "караруби"
+      ],
+      "aliases_en": [
+        "cara ruby malt",
+        "cararubymalt"
+      ],
+      "search_aliases": [
+        "cara ruby malt",
+        "cararubymalt",
+        "кара руби",
+        "караруби"
+      ],
+      "source_label": "Castle Malting brochure",
+      "source_url": "https://castlemalting.com/castlemalting-brochures.asp",
+      "source_page": 18
+    },
+    {
+      "id": "castle-malting--cara-honey-malt",
+      "brand": "Castle Malting",
+      "brand_en": "Castle Malting",
+      "brand_ru": "Castle Malting",
+      "brand_slug": "castle-malting",
+      "brand_aliases_ru": [
+        "Кастл",
+        "Кастл Малтинг",
+        "Шато",
+        "Шато Мальтинг",
+        "Castle",
+        "Castle Malting"
+      ],
+      "country_code": "BE",
+      "country_name": "Belgium",
+      "name_en": "Cara Honey Malt",
+      "name_ru": "Кара Хани",
+      "malt_type": "caramel",
+      "extract_pct_dry_basis": 75.0,
+      "color_ebc_min": 60.0,
+      "color_ebc_max": 80.0,
+      "aliases_ru": [
+        "кара хани",
+        "карахани"
+      ],
+      "aliases_en": [
+        "cara honey malt",
+        "carahoneymalt"
+      ],
+      "search_aliases": [
+        "cara honey malt",
+        "carahoneymalt",
+        "кара хани",
+        "карахани"
+      ],
+      "source_label": "Castle Malting brochure",
+      "source_url": "https://castlemalting.com/castlemalting-brochures.asp",
+      "source_page": 19
+    },
+    {
+      "id": "castle-malting--cara-arome-malt",
+      "brand": "Castle Malting",
+      "brand_en": "Castle Malting",
+      "brand_ru": "Castle Malting",
+      "brand_slug": "castle-malting",
+      "brand_aliases_ru": [
+        "Кастл",
+        "Кастл Малтинг",
+        "Шато",
+        "Шато Мальтинг",
+        "Castle",
+        "Castle Malting"
+      ],
+      "country_code": "BE",
+      "country_name": "Belgium",
+      "name_en": "Cara Arôme Malt",
+      "name_ru": "Кара Аром",
+      "malt_type": "caramel",
+      "extract_pct_dry_basis": 75.0,
+      "color_ebc_min": 80.0,
+      "color_ebc_max": 100.0,
+      "aliases_ru": [
+        "кара аром",
+        "карааром"
+      ],
+      "aliases_en": [
+        "cara arôme malt",
+        "caraarômemalt"
+      ],
+      "search_aliases": [
+        "cara arôme malt",
+        "caraarômemalt",
+        "кара аром",
+        "карааром"
+      ],
+      "source_label": "Castle Malting brochure",
+      "source_url": "https://castlemalting.com/castlemalting-brochures.asp",
+      "source_page": 19
+    },
+    {
+      "id": "castle-malting--cara-gold-malt",
+      "brand": "Castle Malting",
+      "brand_en": "Castle Malting",
+      "brand_ru": "Castle Malting",
+      "brand_slug": "castle-malting",
+      "brand_aliases_ru": [
+        "Кастл",
+        "Кастл Малтинг",
+        "Шато",
+        "Шато Мальтинг",
+        "Castle",
+        "Castle Malting"
+      ],
+      "country_code": "BE",
+      "country_name": "Belgium",
+      "name_en": "Cara Gold Malt",
+      "name_ru": "Кара Голд",
+      "malt_type": "caramel",
+      "extract_pct_dry_basis": 78.0,
+      "color_ebc_min": 110.0,
+      "color_ebc_max": 130.0,
+      "aliases_ru": [
+        "кара голд",
+        "караголд"
+      ],
+      "aliases_en": [
+        "cara gold malt",
+        "caragoldmalt"
+      ],
+      "search_aliases": [
+        "cara gold malt",
+        "caragoldmalt",
+        "кара голд",
+        "караголд"
+      ],
+      "source_label": "Castle Malting brochure",
+      "source_url": "https://castlemalting.com/castlemalting-brochures.asp",
+      "source_page": 20
+    },
+    {
+      "id": "castle-malting--cara-crystal-malt",
+      "brand": "Castle Malting",
+      "brand_en": "Castle Malting",
+      "brand_ru": "Castle Malting",
+      "brand_slug": "castle-malting",
+      "brand_aliases_ru": [
+        "Кастл",
+        "Кастл Малтинг",
+        "Шато",
+        "Шато Мальтинг",
+        "Castle",
+        "Castle Malting"
+      ],
+      "country_code": "BE",
+      "country_name": "Belgium",
+      "name_en": "Cara Crystal Malt",
+      "name_ru": "Кара Кристал",
+      "malt_type": "caramel",
+      "extract_pct_dry_basis": 74.0,
+      "color_ebc_min": 140.0,
+      "color_ebc_max": 160.0,
+      "aliases_ru": [
+        "кара кристал",
+        "каракристал"
+      ],
+      "aliases_en": [
+        "cara crystal malt",
+        "caracrystalmalt"
+      ],
+      "search_aliases": [
+        "cara crystal malt",
+        "caracrystalmalt",
+        "кара кристал",
+        "каракристал"
+      ],
+      "source_label": "Castle Malting brochure",
+      "source_url": "https://castlemalting.com/castlemalting-brochures.asp",
+      "source_page": 20
+    },
+    {
+      "id": "castle-malting--cara-terra-malt",
+      "brand": "Castle Malting",
+      "brand_en": "Castle Malting",
+      "brand_ru": "Castle Malting",
+      "brand_slug": "castle-malting",
+      "brand_aliases_ru": [
+        "Кастл",
+        "Кастл Малтинг",
+        "Шато",
+        "Шато Мальтинг",
+        "Castle",
+        "Castle Malting"
+      ],
+      "country_code": "BE",
+      "country_name": "Belgium",
+      "name_en": "Cara Terra Malt",
+      "name_ru": "Кара Терра",
+      "malt_type": "caramel",
+      "extract_pct_dry_basis": 74.0,
+      "color_ebc_min": 170.0,
+      "color_ebc_max": 220.0,
+      "aliases_ru": [
+        "кара терра",
+        "каратерра"
+      ],
+      "aliases_en": [
+        "cara terra malt",
+        "caraterramalt"
+      ],
+      "search_aliases": [
+        "cara terra malt",
+        "caraterramalt",
+        "кара терра",
+        "каратерра"
+      ],
+      "source_label": "Castle Malting brochure",
+      "source_url": "https://castlemalting.com/castlemalting-brochures.asp",
+      "source_page": 21
+    },
+    {
+      "id": "castle-malting--special-belgium-malt",
+      "brand": "Castle Malting",
+      "brand_en": "Castle Malting",
+      "brand_ru": "Castle Malting",
+      "brand_slug": "castle-malting",
+      "brand_aliases_ru": [
+        "Кастл",
+        "Кастл Малтинг",
+        "Шато",
+        "Шато Мальтинг",
+        "Castle",
+        "Castle Malting"
+      ],
+      "country_code": "BE",
+      "country_name": "Belgium",
+      "name_en": "Special Belgium Malt",
+      "name_ru": "Спешл Бельгия",
+      "malt_type": "specialty",
+      "extract_pct_dry_basis": 77.0,
+      "color_ebc_min": 260.0,
+      "color_ebc_max": 320.0,
+      "aliases_ru": [
+        "спешл бельгия"
+      ],
+      "aliases_en": [
+        "special belgium malt"
+      ],
+      "search_aliases": [
+        "special belgium malt",
+        "спешл бельгия"
+      ],
+      "source_label": "Castle Malting brochure",
+      "source_url": "https://castlemalting.com/castlemalting-brochures.asp",
+      "source_page": 21
+    },
+    {
+      "id": "castle-malting--cara-cafe-malt",
+      "brand": "Castle Malting",
+      "brand_en": "Castle Malting",
+      "brand_ru": "Castle Malting",
+      "brand_slug": "castle-malting",
+      "brand_aliases_ru": [
+        "Кастл",
+        "Кастл Малтинг",
+        "Шато",
+        "Шато Мальтинг",
+        "Castle",
+        "Castle Malting"
+      ],
+      "country_code": "BE",
+      "country_name": "Belgium",
+      "name_en": "Cara Café Malt",
+      "name_ru": "Кара Кафе",
+      "malt_type": "roasted",
+      "extract_pct_dry_basis": 70.0,
+      "color_ebc_min": 350.0,
+      "color_ebc_max": 450.0,
+      "aliases_ru": [
+        "кара кафе",
+        "каракафе"
+      ],
+      "aliases_en": [
+        "cara café malt",
+        "caracafémalt"
+      ],
+      "search_aliases": [
+        "cara café malt",
+        "caracafémalt",
+        "кара кафе",
+        "каракафе"
+      ],
+      "source_label": "Castle Malting brochure",
+      "source_url": "https://castlemalting.com/castlemalting-brochures.asp",
+      "source_page": 22
+    },
+    {
+      "id": "castle-malting--biscuit-malt",
+      "brand": "Castle Malting",
+      "brand_en": "Castle Malting",
+      "brand_ru": "Castle Malting",
+      "brand_slug": "castle-malting",
+      "brand_aliases_ru": [
+        "Кастл",
+        "Кастл Малтинг",
+        "Шато",
+        "Шато Мальтинг",
+        "Castle",
+        "Castle Malting"
+      ],
+      "country_code": "BE",
+      "country_name": "Belgium",
+      "name_en": "Biscuit Malt",
+      "name_ru": "Бисквит",
+      "malt_type": "specialty",
+      "extract_pct_dry_basis": 77.0,
+      "color_ebc_min": 45.0,
+      "color_ebc_max": 55.0,
+      "aliases_ru": [
+        "бисквит"
+      ],
+      "aliases_en": [
+        "biscuit malt"
+      ],
+      "search_aliases": [
+        "biscuit malt",
+        "бисквит"
+      ],
+      "source_label": "Castle Malting brochure",
+      "source_url": "https://castlemalting.com/castlemalting-brochures.asp",
+      "source_page": 23
+    },
+    {
+      "id": "castle-malting--cafe-light-malt",
+      "brand": "Castle Malting",
+      "brand_en": "Castle Malting",
+      "brand_ru": "Castle Malting",
+      "brand_slug": "castle-malting",
+      "brand_aliases_ru": [
+        "Кастл",
+        "Кастл Малтинг",
+        "Шато",
+        "Шато Мальтинг",
+        "Castle",
+        "Castle Malting"
+      ],
+      "country_code": "BE",
+      "country_name": "Belgium",
+      "name_en": "Café Light Malt",
+      "name_ru": "Кафе Лайт",
+      "malt_type": "roasted",
+      "extract_pct_dry_basis": 77.0,
+      "color_ebc_min": 220.0,
+      "color_ebc_max": 280.0,
+      "aliases_ru": [
+        "кафе лайт"
+      ],
+      "aliases_en": [
+        "café light malt"
+      ],
+      "search_aliases": [
+        "café light malt",
+        "кафе лайт"
+      ],
+      "source_label": "Castle Malting brochure",
+      "source_url": "https://castlemalting.com/castlemalting-brochures.asp",
+      "source_page": 23
+    },
+    {
+      "id": "castle-malting--cafe-malt",
+      "brand": "Castle Malting",
+      "brand_en": "Castle Malting",
+      "brand_ru": "Castle Malting",
+      "brand_slug": "castle-malting",
+      "brand_aliases_ru": [
+        "Кастл",
+        "Кастл Малтинг",
+        "Шато",
+        "Шато Мальтинг",
+        "Castle",
+        "Castle Malting"
+      ],
+      "country_code": "BE",
+      "country_name": "Belgium",
+      "name_en": "Café Malt",
+      "name_ru": "Кафе",
+      "malt_type": "roasted",
+      "extract_pct_dry_basis": 75.5,
+      "color_ebc_min": 420.0,
+      "color_ebc_max": 520.0,
+      "aliases_ru": [
+        "кафе"
+      ],
+      "aliases_en": [
+        "café malt"
+      ],
+      "search_aliases": [
+        "café malt",
+        "кафе"
+      ],
+      "source_label": "Castle Malting brochure",
+      "source_url": "https://castlemalting.com/castlemalting-brochures.asp",
+      "source_page": 24
+    },
+    {
+      "id": "castle-malting--chocolat-light-malt",
+      "brand": "Castle Malting",
+      "brand_en": "Castle Malting",
+      "brand_ru": "Castle Malting",
+      "brand_slug": "castle-malting",
+      "brand_aliases_ru": [
+        "Кастл",
+        "Кастл Малтинг",
+        "Шато",
+        "Шато Мальтинг",
+        "Castle",
+        "Castle Malting"
+      ],
+      "country_code": "BE",
+      "country_name": "Belgium",
+      "name_en": "Chocolat Light Malt",
+      "name_ru": "Шоколад светлый",
+      "malt_type": "base",
+      "extract_pct_dry_basis": 76.0,
+      "color_ebc_min": 550.0,
+      "color_ebc_max": 650.0,
+      "aliases_ru": [
+        "шоколад светлый"
+      ],
+      "aliases_en": [
+        "chocolat light malt"
+      ],
+      "search_aliases": [
+        "chocolat light malt",
+        "шоколад светлый"
+      ],
+      "source_label": "Castle Malting brochure",
+      "source_url": "https://castlemalting.com/castlemalting-brochures.asp",
+      "source_page": 24
+    },
+    {
+      "id": "castle-malting--chocolat-malt",
+      "brand": "Castle Malting",
+      "brand_en": "Castle Malting",
+      "brand_ru": "Castle Malting",
+      "brand_slug": "castle-malting",
+      "brand_aliases_ru": [
+        "Кастл",
+        "Кастл Малтинг",
+        "Шато",
+        "Шато Мальтинг",
+        "Castle",
+        "Castle Malting"
+      ],
+      "country_code": "BE",
+      "country_name": "Belgium",
+      "name_en": "Chocolat Malt",
+      "name_ru": "Шоколадный",
+      "malt_type": "base",
+      "extract_pct_dry_basis": 75.0,
+      "color_ebc_min": 900.0,
+      "color_ebc_max": 1100.0,
+      "aliases_ru": [
+        "шоколадный"
+      ],
+      "aliases_en": [
+        "chocolat malt"
+      ],
+      "search_aliases": [
+        "chocolat malt",
+        "шоколадный"
+      ],
+      "source_label": "Castle Malting brochure",
+      "source_url": "https://castlemalting.com/castlemalting-brochures.asp",
+      "source_page": 25
+    },
+    {
+      "id": "castle-malting--black-malt",
+      "brand": "Castle Malting",
+      "brand_en": "Castle Malting",
+      "brand_ru": "Castle Malting",
+      "brand_slug": "castle-malting",
+      "brand_aliases_ru": [
+        "Кастл",
+        "Кастл Малтинг",
+        "Шато",
+        "Шато Мальтинг",
+        "Castle",
+        "Castle Malting"
+      ],
+      "country_code": "BE",
+      "country_name": "Belgium",
+      "name_en": "Black Malt",
+      "name_ru": "Черный",
+      "malt_type": "roasted",
+      "extract_pct_dry_basis": 73.0,
+      "color_ebc_min": 1150.0,
+      "color_ebc_max": 1400.0,
+      "aliases_ru": [
+        "черный"
+      ],
+      "aliases_en": [
+        "black",
+        "black malt"
+      ],
+      "search_aliases": [
+        "black",
+        "black malt",
+        "черный"
+      ],
+      "source_label": "Castle Malting brochure",
+      "source_url": "https://castlemalting.com/castlemalting-brochures.asp",
+      "source_page": 25
+    },
+    {
+      "id": "castle-malting--roasted-barley",
+      "brand": "Castle Malting",
+      "brand_en": "Castle Malting",
+      "brand_ru": "Castle Malting",
+      "brand_slug": "castle-malting",
+      "brand_aliases_ru": [
+        "Кастл",
+        "Кастл Малтинг",
+        "Шато",
+        "Шато Мальтинг",
+        "Castle",
+        "Castle Malting"
+      ],
+      "country_code": "BE",
+      "country_name": "Belgium",
+      "name_en": "Roasted Barley",
+      "name_ru": "Жженый ячмень",
+      "malt_type": "roasted",
+      "extract_pct_dry_basis": 65.0,
+      "color_ebc_min": 1000.0,
+      "color_ebc_max": 1400.0,
+      "aliases_ru": [
+        "жженый ячмень",
+        "жжёный ячмень"
+      ],
+      "aliases_en": [
+        "roasted barley"
+      ],
+      "search_aliases": [
+        "roasted barley",
+        "жженый ячмень",
+        "жжёный ячмень"
+      ],
+      "source_label": "Castle Malting brochure",
+      "source_url": "https://castlemalting.com/castlemalting-brochures.asp",
+      "source_page": 26
+    },
+    {
+      "id": "castle-malting--wheat-blanc-malt",
+      "brand": "Castle Malting",
+      "brand_en": "Castle Malting",
+      "brand_ru": "Castle Malting",
+      "brand_slug": "castle-malting",
+      "brand_aliases_ru": [
+        "Кастл",
+        "Кастл Малтинг",
+        "Шато",
+        "Шато Мальтинг",
+        "Castle",
+        "Castle Malting"
+      ],
+      "country_code": "BE",
+      "country_name": "Belgium",
+      "name_en": "Wheat Blanc Malt",
+      "name_ru": "Пшеничный светлый",
+      "malt_type": "wheat",
+      "extract_pct_dry_basis": 84.0,
+      "color_ebc_min": 5.5,
+      "color_ebc_max": 5.5,
+      "aliases_ru": [
+        "пшеничный",
+        "пшеничный светлый",
+        "пшеничный солод"
+      ],
+      "aliases_en": [
+        "wheat",
+        "wheat blanc malt",
+        "wheat malt"
+      ],
+      "search_aliases": [
+        "wheat",
+        "wheat blanc malt",
+        "wheat malt",
+        "пшеничный",
+        "пшеничный светлый",
+        "пшеничный солод"
+      ],
+      "source_label": "Castle Malting brochure",
+      "source_url": "https://castlemalting.com/castlemalting-brochures.asp",
+      "source_page": 27
+    },
+    {
+      "id": "castle-malting--wheat-munich-light-malt",
+      "brand": "Castle Malting",
+      "brand_en": "Castle Malting",
+      "brand_ru": "Castle Malting",
+      "brand_slug": "castle-malting",
+      "brand_aliases_ru": [
+        "Кастл",
+        "Кастл Малтинг",
+        "Шато",
+        "Шато Мальтинг",
+        "Castle",
+        "Castle Malting"
+      ],
+      "country_code": "BE",
+      "country_name": "Belgium",
+      "name_en": "Wheat Munich Light Malt",
+      "name_ru": "Пшеничный мюнхенский светлый",
+      "malt_type": "wheat",
+      "extract_pct_dry_basis": 83.0,
+      "color_ebc_min": 14.0,
+      "color_ebc_max": 18.0,
+      "aliases_ru": [
+        "мюних",
+        "мюнхенский",
+        "мюнхнер",
+        "пшеничный",
+        "пшеничный мюнхенский светлый",
+        "пшеничный солод"
+      ],
+      "aliases_en": [
+        "munich",
+        "munich malt",
+        "wheat",
+        "wheat malt",
+        "wheat munich light malt"
+      ],
+      "search_aliases": [
+        "munich",
+        "munich malt",
+        "wheat",
+        "wheat malt",
+        "wheat munich light malt",
+        "мюних",
+        "мюнхенский",
+        "мюнхнер",
+        "пшеничный",
+        "пшеничный мюнхенский светлый",
+        "пшеничный солод"
+      ],
+      "source_label": "Castle Malting brochure",
+      "source_url": "https://castlemalting.com/castlemalting-brochures.asp",
+      "source_page": 27
+    },
+    {
+      "id": "castle-malting--wheat-munich-malt",
+      "brand": "Castle Malting",
+      "brand_en": "Castle Malting",
+      "brand_ru": "Castle Malting",
+      "brand_slug": "castle-malting",
+      "brand_aliases_ru": [
+        "Кастл",
+        "Кастл Малтинг",
+        "Шато",
+        "Шато Мальтинг",
+        "Castle",
+        "Castle Malting"
+      ],
+      "country_code": "BE",
+      "country_name": "Belgium",
+      "name_en": "Wheat Munich Malt",
+      "name_ru": "Пшеничный мюнхенский",
+      "malt_type": "wheat",
+      "extract_pct_dry_basis": 83.0,
+      "color_ebc_min": 21.0,
+      "color_ebc_max": 28.0,
+      "aliases_ru": [
+        "мюних",
+        "мюнхенский",
+        "мюнхнер",
+        "пшеничный",
+        "пшеничный мюнхенский",
+        "пшеничный солод"
+      ],
+      "aliases_en": [
+        "munich",
+        "munich malt",
+        "wheat",
+        "wheat malt",
+        "wheat munich malt"
+      ],
+      "search_aliases": [
+        "munich",
+        "munich malt",
+        "wheat",
+        "wheat malt",
+        "wheat munich malt",
+        "мюних",
+        "мюнхенский",
+        "мюнхнер",
+        "пшеничный",
+        "пшеничный мюнхенский",
+        "пшеничный солод"
+      ],
+      "source_label": "Castle Malting brochure",
+      "source_url": "https://castlemalting.com/castlemalting-brochures.asp",
+      "source_page": 28
+    },
+    {
+      "id": "castle-malting--wheat-arome-malt",
+      "brand": "Castle Malting",
+      "brand_en": "Castle Malting",
+      "brand_ru": "Castle Malting",
+      "brand_slug": "castle-malting",
+      "brand_aliases_ru": [
+        "Кастл",
+        "Кастл Малтинг",
+        "Шато",
+        "Шато Мальтинг",
+        "Castle",
+        "Castle Malting"
+      ],
+      "country_code": "BE",
+      "country_name": "Belgium",
+      "name_en": "Wheat Arôme Malt",
+      "name_ru": "Пшеничный аром",
+      "malt_type": "wheat",
+      "extract_pct_dry_basis": 78.0,
+      "color_ebc_min": 80.0,
+      "color_ebc_max": 100.0,
+      "aliases_ru": [
+        "пшеничный",
+        "пшеничный аром",
+        "пшеничный солод"
+      ],
+      "aliases_en": [
+        "wheat",
+        "wheat arôme malt",
+        "wheat malt"
+      ],
+      "search_aliases": [
+        "wheat",
+        "wheat arôme malt",
+        "wheat malt",
+        "пшеничный",
+        "пшеничный аром",
+        "пшеничный солод"
+      ],
+      "source_label": "Castle Malting brochure",
+      "source_url": "https://castlemalting.com/castlemalting-brochures.asp",
+      "source_page": 28
+    },
+    {
+      "id": "castle-malting--wheat-crystal-malt",
+      "brand": "Castle Malting",
+      "brand_en": "Castle Malting",
+      "brand_ru": "Castle Malting",
+      "brand_slug": "castle-malting",
+      "brand_aliases_ru": [
+        "Кастл",
+        "Кастл Малтинг",
+        "Шато",
+        "Шато Мальтинг",
+        "Castle",
+        "Castle Malting"
+      ],
+      "country_code": "BE",
+      "country_name": "Belgium",
+      "name_en": "Wheat Crystal Malt",
+      "name_ru": "Пшеничный кристалл",
+      "malt_type": "wheat",
+      "extract_pct_dry_basis": 78.0,
+      "color_ebc_min": 140.0,
+      "color_ebc_max": 160.0,
+      "aliases_ru": [
+        "пшеничный",
+        "пшеничный кристалл",
+        "пшеничный солод"
+      ],
+      "aliases_en": [
+        "wheat",
+        "wheat crystal malt",
+        "wheat malt"
+      ],
+      "search_aliases": [
+        "wheat",
+        "wheat crystal malt",
+        "wheat malt",
+        "пшеничный",
+        "пшеничный кристалл",
+        "пшеничный солод"
+      ],
+      "source_label": "Castle Malting brochure",
+      "source_url": "https://castlemalting.com/castlemalting-brochures.asp",
+      "source_page": 29
+    },
+    {
+      "id": "castle-malting--wheat-cafe-malt",
+      "brand": "Castle Malting",
+      "brand_en": "Castle Malting",
+      "brand_ru": "Castle Malting",
+      "brand_slug": "castle-malting",
+      "brand_aliases_ru": [
+        "Кастл",
+        "Кастл Малтинг",
+        "Шато",
+        "Шато Мальтинг",
+        "Castle",
+        "Castle Malting"
+      ],
+      "country_code": "BE",
+      "country_name": "Belgium",
+      "name_en": "Wheat Café Malt",
+      "name_ru": "Пшеничный кафе",
+      "malt_type": "roasted",
+      "extract_pct_dry_basis": 77.0,
+      "color_ebc_min": 350.0,
+      "color_ebc_max": 450.0,
+      "aliases_ru": [
+        "пшеничный",
+        "пшеничный кафе",
+        "пшеничный солод"
+      ],
+      "aliases_en": [
+        "wheat",
+        "wheat café malt",
+        "wheat malt"
+      ],
+      "search_aliases": [
+        "wheat",
+        "wheat café malt",
+        "wheat malt",
+        "пшеничный",
+        "пшеничный кафе",
+        "пшеничный солод"
+      ],
+      "source_label": "Castle Malting brochure",
+      "source_url": "https://castlemalting.com/castlemalting-brochures.asp",
+      "source_page": 29
+    },
+    {
+      "id": "castle-malting--wheat-chocolat-malt",
+      "brand": "Castle Malting",
+      "brand_en": "Castle Malting",
+      "brand_ru": "Castle Malting",
+      "brand_slug": "castle-malting",
+      "brand_aliases_ru": [
+        "Кастл",
+        "Кастл Малтинг",
+        "Шато",
+        "Шато Мальтинг",
+        "Castle",
+        "Castle Malting"
+      ],
+      "country_code": "BE",
+      "country_name": "Belgium",
+      "name_en": "Wheat Chocolat Malt",
+      "name_ru": "Пшеничный шоколадный",
+      "malt_type": "wheat",
+      "extract_pct_dry_basis": 77.0,
+      "color_ebc_min": 800.0,
+      "color_ebc_max": 1100.0,
+      "aliases_ru": [
+        "пшеничный",
+        "пшеничный солод",
+        "пшеничный шоколадный"
+      ],
+      "aliases_en": [
+        "wheat",
+        "wheat chocolat malt",
+        "wheat malt"
+      ],
+      "search_aliases": [
+        "wheat",
+        "wheat chocolat malt",
+        "wheat malt",
+        "пшеничный",
+        "пшеничный солод",
+        "пшеничный шоколадный"
+      ],
+      "source_label": "Castle Malting brochure",
+      "source_url": "https://castlemalting.com/castlemalting-brochures.asp",
+      "source_page": 30
+    },
+    {
+      "id": "castle-malting--wheat-black-malt",
+      "brand": "Castle Malting",
+      "brand_en": "Castle Malting",
+      "brand_ru": "Castle Malting",
+      "brand_slug": "castle-malting",
+      "brand_aliases_ru": [
+        "Кастл",
+        "Кастл Малтинг",
+        "Шато",
+        "Шато Мальтинг",
+        "Castle",
+        "Castle Malting"
+      ],
+      "country_code": "BE",
+      "country_name": "Belgium",
+      "name_en": "Wheat Black Malt",
+      "name_ru": "Пшеничный черный",
+      "malt_type": "roasted",
+      "extract_pct_dry_basis": 77.0,
+      "color_ebc_min": 1100.0,
+      "color_ebc_max": 1400.0,
+      "aliases_ru": [
+        "пшеничный",
+        "пшеничный солод",
+        "пшеничный черный",
+        "черный"
+      ],
+      "aliases_en": [
+        "black",
+        "wheat",
+        "wheat black malt",
+        "wheat malt"
+      ],
+      "search_aliases": [
+        "black",
+        "wheat",
+        "wheat black malt",
+        "wheat malt",
+        "пшеничный",
+        "пшеничный солод",
+        "пшеничный черный",
+        "черный"
+      ],
+      "source_label": "Castle Malting brochure",
+      "source_url": "https://castlemalting.com/castlemalting-brochures.asp",
+      "source_page": 30
+    },
+    {
+      "id": "castle-malting--wheat-smoked-malt",
+      "brand": "Castle Malting",
+      "brand_en": "Castle Malting",
+      "brand_ru": "Castle Malting",
+      "brand_slug": "castle-malting",
+      "brand_aliases_ru": [
+        "Кастл",
+        "Кастл Малтинг",
+        "Шато",
+        "Шато Мальтинг",
+        "Castle",
+        "Castle Malting"
+      ],
+      "country_code": "BE",
+      "country_name": "Belgium",
+      "name_en": "Wheat Smoked Malt",
+      "name_ru": "Пшеничный копченый",
+      "malt_type": "smoked",
+      "extract_pct_dry_basis": 80.0,
+      "color_ebc_min": 4.0,
+      "color_ebc_max": 12.0,
+      "aliases_ru": [
+        "дымный",
+        "копченый",
+        "пшеничный",
+        "пшеничный копченый",
+        "пшеничный солод"
+      ],
+      "aliases_en": [
+        "rauch",
+        "smoked",
+        "wheat",
+        "wheat malt",
+        "wheat smoked malt"
+      ],
+      "search_aliases": [
+        "rauch",
+        "smoked",
+        "wheat",
+        "wheat malt",
+        "wheat smoked malt",
+        "дымный",
+        "копченый",
+        "пшеничный",
+        "пшеничный копченый",
+        "пшеничный солод"
+      ],
+      "source_label": "Castle Malting brochure",
+      "source_url": "https://castlemalting.com/castlemalting-brochures.asp",
+      "source_page": 31
+    },
+    {
+      "id": "soufflet--pilsen-2rp",
+      "brand": "Soufflet",
+      "brand_en": "Soufflet",
+      "brand_ru": "Soufflet",
+      "brand_slug": "soufflet",
+      "brand_aliases_ru": [
+        "Суффле",
+        "Soufflet"
+      ],
+      "country_code": "FR",
+      "country_name": "France",
+      "name_en": "Pilsen 2RP",
+      "name_ru": "Пильзен 2RP",
+      "malt_type": "base",
+      "extract_pct_dry_basis": 81.0,
+      "color_ebc_min": 3.0,
+      "color_ebc_max": 4.0,
+      "aliases_ru": [
+        "пилснер",
+        "пильзен",
+        "пильзен 2rp",
+        "пильзенер",
+        "пильзнер"
+      ],
+      "aliases_en": [
+        "pilsen",
+        "pilsen 2rp",
+        "pilsener",
+        "pilsner",
+        "пильзен 2rp"
+      ],
+      "search_aliases": [
+        "pilsen",
+        "pilsen 2rp",
+        "pilsener",
+        "pilsner",
+        "пилснер",
+        "пильзен",
+        "пильзен 2rp",
+        "пильзенер",
+        "пильзнер"
+      ],
+      "source_label": "Malteries Soufflet artisan brewer catalog",
+      "source_url": null,
+      "source_page": 22
+    },
+    {
+      "id": "soufflet--pilsen-6rh",
+      "brand": "Soufflet",
+      "brand_en": "Soufflet",
+      "brand_ru": "Soufflet",
+      "brand_slug": "soufflet",
+      "brand_aliases_ru": [
+        "Суффле",
+        "Soufflet"
+      ],
+      "country_code": "FR",
+      "country_name": "France",
+      "name_en": "Pilsen 6RH",
+      "name_ru": "Пильзен 6RH",
+      "malt_type": "base",
+      "extract_pct_dry_basis": 79.0,
+      "color_ebc_min": 3.5,
+      "color_ebc_max": 4.0,
+      "aliases_ru": [
+        "пилснер",
+        "пильзен",
+        "пильзен 6rh",
+        "пильзенер",
+        "пильзнер"
+      ],
+      "aliases_en": [
+        "pilsen",
+        "pilsen 6rh",
+        "pilsener",
+        "pilsner",
+        "пильзен 6rh"
+      ],
+      "search_aliases": [
+        "pilsen",
+        "pilsen 6rh",
+        "pilsener",
+        "pilsner",
+        "пилснер",
+        "пильзен",
+        "пильзен 6rh",
+        "пильзенер",
+        "пильзнер"
+      ],
+      "source_label": "Malteries Soufflet artisan brewer catalog",
+      "source_url": null,
+      "source_page": 22
+    },
+    {
+      "id": "soufflet--pale-ale",
+      "brand": "Soufflet",
+      "brand_en": "Soufflet",
+      "brand_ru": "Soufflet",
+      "brand_slug": "soufflet",
+      "brand_aliases_ru": [
+        "Суффле",
+        "Soufflet"
+      ],
+      "country_code": "FR",
+      "country_name": "France",
+      "name_en": "Pale Ale",
+      "name_ru": "Пэйл Эль",
+      "malt_type": "base",
+      "extract_pct_dry_basis": 81.0,
+      "color_ebc_min": 4.5,
+      "color_ebc_max": 6.5,
+      "aliases_ru": [
+        "пале эль",
+        "пейл эль",
+        "пэйл эль"
+      ],
+      "aliases_en": [
+        "pale ale"
+      ],
+      "search_aliases": [
+        "pale ale",
+        "пале эль",
+        "пейл эль",
+        "пэйл эль"
+      ],
+      "source_label": "Malteries Soufflet artisan brewer catalog",
+      "source_url": null,
+      "source_page": 23
+    },
+    {
+      "id": "soufflet--malt-distilling",
+      "brand": "Soufflet",
+      "brand_en": "Soufflet",
+      "brand_ru": "Soufflet",
+      "brand_slug": "soufflet",
+      "brand_aliases_ru": [
+        "Суффле",
+        "Soufflet"
+      ],
+      "country_code": "FR",
+      "country_name": "France",
+      "name_en": "Malt Distilling",
+      "name_ru": "Дистиллинг",
+      "malt_type": "functional",
+      "extract_pct_dry_basis": 82.0,
+      "color_ebc_min": 4.5,
+      "color_ebc_max": 6.5,
+      "aliases_ru": [
+        "дистиллинг"
+      ],
+      "aliases_en": [
+        "malt distilling"
+      ],
+      "search_aliases": [
+        "malt distilling",
+        "дистиллинг"
+      ],
+      "source_label": "Malteries Soufflet artisan brewer catalog",
+      "source_url": null,
+      "source_page": 23
+    },
+    {
+      "id": "soufflet--pilsen-2rp-bio",
+      "brand": "Soufflet",
+      "brand_en": "Soufflet",
+      "brand_ru": "Soufflet",
+      "brand_slug": "soufflet",
+      "brand_aliases_ru": [
+        "Суффле",
+        "Soufflet"
+      ],
+      "country_code": "FR",
+      "country_name": "France",
+      "name_en": "Pilsen 2RP Bio",
+      "name_ru": "Пильзен 2RP Bio",
+      "malt_type": "base",
+      "extract_pct_dry_basis": 82.0,
+      "color_ebc_min": 3.0,
+      "color_ebc_max": 4.0,
+      "aliases_ru": [
+        "пилснер",
+        "пильзен",
+        "пильзен 2rp bio",
+        "пильзенер",
+        "пильзнер"
+      ],
+      "aliases_en": [
+        "pilsen",
+        "pilsen 2rp bio",
+        "pilsener",
+        "pilsner",
+        "пильзен 2rp bio"
+      ],
+      "search_aliases": [
+        "pilsen",
+        "pilsen 2rp bio",
+        "pilsener",
+        "pilsner",
+        "пилснер",
+        "пильзен",
+        "пильзен 2rp bio",
+        "пильзенер",
+        "пильзнер"
+      ],
+      "source_label": "Malteries Soufflet artisan brewer catalog",
+      "source_url": null,
+      "source_page": 25
+    },
+    {
+      "id": "soufflet--pale-ale-bio",
+      "brand": "Soufflet",
+      "brand_en": "Soufflet",
+      "brand_ru": "Soufflet",
+      "brand_slug": "soufflet",
+      "brand_aliases_ru": [
+        "Суффле",
+        "Soufflet"
+      ],
+      "country_code": "FR",
+      "country_name": "France",
+      "name_en": "Pale Ale Bio",
+      "name_ru": "Пэйл Эль Bio",
+      "malt_type": "base",
+      "extract_pct_dry_basis": 81.0,
+      "color_ebc_min": 4.5,
+      "color_ebc_max": 6.5,
+      "aliases_ru": [
+        "пале эль",
+        "пейл эль",
+        "пэйл эль",
+        "пэйл эль bio"
+      ],
+      "aliases_en": [
+        "pale ale",
+        "pale ale bio",
+        "пэйл эль bio"
+      ],
+      "search_aliases": [
+        "pale ale",
+        "pale ale bio",
+        "пале эль",
+        "пейл эль",
+        "пэйл эль",
+        "пэйл эль bio"
+      ],
+      "source_label": "Malteries Soufflet artisan brewer catalog",
+      "source_url": null,
+      "source_page": 25
+    },
+    {
+      "id": "soufflet--wheat-pilsen",
+      "brand": "Soufflet",
+      "brand_en": "Soufflet",
+      "brand_ru": "Soufflet",
+      "brand_slug": "soufflet",
+      "brand_aliases_ru": [
+        "Суффле",
+        "Soufflet"
+      ],
+      "country_code": "FR",
+      "country_name": "France",
+      "name_en": "Wheat Pilsen",
+      "name_ru": "Пшеничный Пильзен",
+      "malt_type": "wheat",
+      "extract_pct_dry_basis": 83.0,
+      "color_ebc_min": 3.5,
+      "color_ebc_max": 5.0,
+      "aliases_ru": [
+        "пилснер",
+        "пильзен",
+        "пильзенер",
+        "пильзнер",
+        "пшеничный",
+        "пшеничный пильзен",
+        "пшеничный солод"
+      ],
+      "aliases_en": [
+        "pilsen",
+        "pilsener",
+        "pilsner",
+        "wheat",
+        "wheat malt",
+        "wheat pilsen"
+      ],
+      "search_aliases": [
+        "pilsen",
+        "pilsener",
+        "pilsner",
+        "wheat",
+        "wheat malt",
+        "wheat pilsen",
+        "пилснер",
+        "пильзен",
+        "пильзенер",
+        "пильзнер",
+        "пшеничный",
+        "пшеничный пильзен",
+        "пшеничный солод"
+      ],
+      "source_label": "Malteries Soufflet artisan brewer catalog",
+      "source_url": null,
+      "source_page": 28
+    },
+    {
+      "id": "soufflet--vienna-10",
+      "brand": "Soufflet",
+      "brand_en": "Soufflet",
+      "brand_ru": "Soufflet",
+      "brand_slug": "soufflet",
+      "brand_aliases_ru": [
+        "Суффле",
+        "Soufflet"
+      ],
+      "country_code": "FR",
+      "country_name": "France",
+      "name_en": "Vienna 10",
+      "name_ru": "Венский 10",
+      "malt_type": "base",
+      "extract_pct_dry_basis": 78.5,
+      "color_ebc_min": 7.0,
+      "color_ebc_max": 10.0,
+      "aliases_ru": [
+        "вена",
+        "венский",
+        "венский 10"
+      ],
+      "aliases_en": [
+        "vienna",
+        "vienna 10",
+        "vienna malt"
+      ],
+      "search_aliases": [
+        "vienna",
+        "vienna 10",
+        "vienna malt",
+        "вена",
+        "венский",
+        "венский 10"
+      ],
+      "source_label": "Malteries Soufflet artisan brewer catalog",
+      "source_url": null,
+      "source_page": 28
+    },
+    {
+      "id": "soufflet--munich-15",
+      "brand": "Soufflet",
+      "brand_en": "Soufflet",
+      "brand_ru": "Soufflet",
+      "brand_slug": "soufflet",
+      "brand_aliases_ru": [
+        "Суффле",
+        "Soufflet"
+      ],
+      "country_code": "FR",
+      "country_name": "France",
+      "name_en": "Munich 15",
+      "name_ru": "Мюнхенский 15",
+      "malt_type": "base",
+      "extract_pct_dry_basis": 78.5,
+      "color_ebc_min": 12.0,
+      "color_ebc_max": 18.0,
+      "aliases_ru": [
+        "мюних",
+        "мюнхенский",
+        "мюнхенский 15",
+        "мюнхнер"
+      ],
+      "aliases_en": [
+        "munich",
+        "munich 15",
+        "munich malt"
+      ],
+      "search_aliases": [
+        "munich",
+        "munich 15",
+        "munich malt",
+        "мюних",
+        "мюнхенский",
+        "мюнхенский 15",
+        "мюнхнер"
+      ],
+      "source_label": "Malteries Soufflet artisan brewer catalog",
+      "source_url": null,
+      "source_page": 29
+    },
+    {
+      "id": "soufflet--munich-25",
+      "brand": "Soufflet",
+      "brand_en": "Soufflet",
+      "brand_ru": "Soufflet",
+      "brand_slug": "soufflet",
+      "brand_aliases_ru": [
+        "Суффле",
+        "Soufflet"
+      ],
+      "country_code": "FR",
+      "country_name": "France",
+      "name_en": "Munich 25",
+      "name_ru": "Мюнхенский 25",
+      "malt_type": "base",
+      "extract_pct_dry_basis": 78.5,
+      "color_ebc_min": 20.0,
+      "color_ebc_max": 30.0,
+      "aliases_ru": [
+        "мюних",
+        "мюнхенский",
+        "мюнхенский 25",
+        "мюнхнер"
+      ],
+      "aliases_en": [
+        "munich",
+        "munich 25",
+        "munich malt"
+      ],
+      "search_aliases": [
+        "munich",
+        "munich 25",
+        "munich malt",
+        "мюних",
+        "мюнхенский",
+        "мюнхенский 25",
+        "мюнхнер"
+      ],
+      "source_label": "Malteries Soufflet artisan brewer catalog",
+      "source_url": null,
+      "source_page": 29
+    },
+    {
+      "id": "soufflet--special-aromatique",
+      "brand": "Soufflet",
+      "brand_en": "Soufflet",
+      "brand_ru": "Soufflet",
+      "brand_slug": "soufflet",
+      "brand_aliases_ru": [
+        "Суффле",
+        "Soufflet"
+      ],
+      "country_code": "FR",
+      "country_name": "France",
+      "name_en": "Special Aromatique",
+      "name_ru": "Специальный ароматический",
+      "malt_type": "specialty",
+      "extract_pct_dry_basis": 78.5,
+      "color_ebc_min": 7.0,
+      "color_ebc_max": 12.0,
+      "aliases_ru": [
+        "специальный ароматический"
+      ],
+      "aliases_en": [
+        "special aromatique"
+      ],
+      "search_aliases": [
+        "special aromatique",
+        "специальный ароматический"
+      ],
+      "source_label": "Malteries Soufflet artisan brewer catalog",
+      "source_url": null,
+      "source_page": 30
+    },
+    {
+      "id": "soufflet--caramel-pilsen",
+      "brand": "Soufflet",
+      "brand_en": "Soufflet",
+      "brand_ru": "Soufflet",
+      "brand_slug": "soufflet",
+      "brand_aliases_ru": [
+        "Суффле",
+        "Soufflet"
+      ],
+      "country_code": "FR",
+      "country_name": "France",
+      "name_en": "Caramel Pilsen",
+      "name_ru": "Карамельный Пильзен",
+      "malt_type": "caramel",
+      "extract_pct_dry_basis": 75.0,
+      "color_ebc_min": 20.0,
+      "color_ebc_max": 30.0,
+      "aliases_ru": [
+        "карамельный",
+        "карамельный пильзен",
+        "карамельныйпильзен",
+        "пилснер",
+        "пильзен",
+        "пильзенер",
+        "пильзнер"
+      ],
+      "aliases_en": [
+        "caramel",
+        "caramel pilsen",
+        "caramelpilsen",
+        "pilsen",
+        "pilsener",
+        "pilsner"
+      ],
+      "search_aliases": [
+        "caramel",
+        "caramel pilsen",
+        "caramelpilsen",
+        "pilsen",
+        "pilsener",
+        "pilsner",
+        "карамельный",
+        "карамельный пильзен",
+        "карамельныйпильзен",
+        "пилснер",
+        "пильзен",
+        "пильзенер",
+        "пильзнер"
+      ],
+      "source_label": "Malteries Soufflet artisan brewer catalog",
+      "source_url": null,
+      "source_page": 36
+    },
+    {
+      "id": "soufflet--caramel-vienna",
+      "brand": "Soufflet",
+      "brand_en": "Soufflet",
+      "brand_ru": "Soufflet",
+      "brand_slug": "soufflet",
+      "brand_aliases_ru": [
+        "Суффле",
+        "Soufflet"
+      ],
+      "country_code": "FR",
+      "country_name": "France",
+      "name_en": "Caramel Vienna",
+      "name_ru": "Карамельный венский",
+      "malt_type": "caramel",
+      "extract_pct_dry_basis": 75.0,
+      "color_ebc_min": 50.0,
+      "color_ebc_max": 60.0,
+      "aliases_ru": [
+        "вена",
+        "венский",
+        "карамельный",
+        "карамельный венский",
+        "карамельныйвенский"
+      ],
+      "aliases_en": [
+        "caramel",
+        "caramel vienna",
+        "caramelvienna",
+        "vienna",
+        "vienna malt"
+      ],
+      "search_aliases": [
+        "caramel",
+        "caramel vienna",
+        "caramelvienna",
+        "vienna",
+        "vienna malt",
+        "вена",
+        "венский",
+        "карамельный",
+        "карамельный венский",
+        "карамельныйвенский"
+      ],
+      "source_label": "Malteries Soufflet artisan brewer catalog",
+      "source_url": null,
+      "source_page": 36
+    },
+    {
+      "id": "soufflet--dark-caramel-vienna",
+      "brand": "Soufflet",
+      "brand_en": "Soufflet",
+      "brand_ru": "Soufflet",
+      "brand_slug": "soufflet",
+      "brand_aliases_ru": [
+        "Суффле",
+        "Soufflet"
+      ],
+      "country_code": "FR",
+      "country_name": "France",
+      "name_en": "Dark Caramel Vienna",
+      "name_ru": "Карамельный венский темный",
+      "malt_type": "caramel",
+      "extract_pct_dry_basis": 75.0,
+      "color_ebc_min": 70.0,
+      "color_ebc_max": 90.0,
+      "aliases_ru": [
+        "вена",
+        "венский",
+        "карамельный",
+        "карамельный венский темный",
+        "карамельныйвенскийтемный"
+      ],
+      "aliases_en": [
+        "caramel",
+        "dark caramel vienna",
+        "darkcaramelvienna",
+        "vienna",
+        "vienna malt"
+      ],
+      "search_aliases": [
+        "caramel",
+        "dark caramel vienna",
+        "darkcaramelvienna",
+        "vienna",
+        "vienna malt",
+        "вена",
+        "венский",
+        "карамельный",
+        "карамельный венский темный",
+        "карамельныйвенскийтемный"
+      ],
+      "source_label": "Malteries Soufflet artisan brewer catalog",
+      "source_url": null,
+      "source_page": 37
+    },
+    {
+      "id": "soufflet--caramel-amber",
+      "brand": "Soufflet",
+      "brand_en": "Soufflet",
+      "brand_ru": "Soufflet",
+      "brand_slug": "soufflet",
+      "brand_aliases_ru": [
+        "Суффле",
+        "Soufflet"
+      ],
+      "country_code": "FR",
+      "country_name": "France",
+      "name_en": "Caramel Amber",
+      "name_ru": "Карамельный амбер",
+      "malt_type": "caramel",
+      "extract_pct_dry_basis": 75.0,
+      "color_ebc_min": 100.0,
+      "color_ebc_max": 120.0,
+      "aliases_ru": [
+        "карамельный",
+        "карамельный амбер",
+        "карамельныйамбер"
+      ],
+      "aliases_en": [
+        "caramel",
+        "caramel amber",
+        "caramelamber"
+      ],
+      "search_aliases": [
+        "caramel",
+        "caramel amber",
+        "caramelamber",
+        "карамельный",
+        "карамельный амбер",
+        "карамельныйамбер"
+      ],
+      "source_label": "Malteries Soufflet artisan brewer catalog",
+      "source_url": null,
+      "source_page": 37
+    },
+    {
+      "id": "soufflet--dark-caramel-amber",
+      "brand": "Soufflet",
+      "brand_en": "Soufflet",
+      "brand_ru": "Soufflet",
+      "brand_slug": "soufflet",
+      "brand_aliases_ru": [
+        "Суффле",
+        "Soufflet"
+      ],
+      "country_code": "FR",
+      "country_name": "France",
+      "name_en": "Dark Caramel Amber",
+      "name_ru": "Карамельный амбер темный",
+      "malt_type": "caramel",
+      "extract_pct_dry_basis": 75.0,
+      "color_ebc_min": 120.0,
+      "color_ebc_max": 140.0,
+      "aliases_ru": [
+        "карамельный",
+        "карамельный амбер темный",
+        "карамельныйамбертемный"
+      ],
+      "aliases_en": [
+        "caramel",
+        "dark caramel amber",
+        "darkcaramelamber"
+      ],
+      "search_aliases": [
+        "caramel",
+        "dark caramel amber",
+        "darkcaramelamber",
+        "карамельный",
+        "карамельный амбер темный",
+        "карамельныйамбертемный"
+      ],
+      "source_label": "Malteries Soufflet artisan brewer catalog",
+      "source_url": null,
+      "source_page": 38
+    },
+    {
+      "id": "soufflet--caramel-munich",
+      "brand": "Soufflet",
+      "brand_en": "Soufflet",
+      "brand_ru": "Soufflet",
+      "brand_slug": "soufflet",
+      "brand_aliases_ru": [
+        "Суффле",
+        "Soufflet"
+      ],
+      "country_code": "FR",
+      "country_name": "France",
+      "name_en": "Caramel Munich",
+      "name_ru": "Карамельный мюнхенский",
+      "malt_type": "caramel",
+      "extract_pct_dry_basis": 75.0,
+      "color_ebc_min": 140.0,
+      "color_ebc_max": 160.0,
+      "aliases_ru": [
+        "карамельный",
+        "карамельный мюнхенский",
+        "карамельныймюнхенский",
+        "мюних",
+        "мюнхенский",
+        "мюнхнер"
+      ],
+      "aliases_en": [
+        "caramel",
+        "caramel munich",
+        "caramelmunich",
+        "munich",
+        "munich malt"
+      ],
+      "search_aliases": [
+        "caramel",
+        "caramel munich",
+        "caramelmunich",
+        "munich",
+        "munich malt",
+        "карамельный",
+        "карамельный мюнхенский",
+        "карамельныймюнхенский",
+        "мюних",
+        "мюнхенский",
+        "мюнхнер"
+      ],
+      "source_label": "Malteries Soufflet artisan brewer catalog",
+      "source_url": null,
+      "source_page": 38
+    },
+    {
+      "id": "soufflet--dark-caramel-munich",
+      "brand": "Soufflet",
+      "brand_en": "Soufflet",
+      "brand_ru": "Soufflet",
+      "brand_slug": "soufflet",
+      "brand_aliases_ru": [
+        "Суффле",
+        "Soufflet"
+      ],
+      "country_code": "FR",
+      "country_name": "France",
+      "name_en": "Dark Caramel Munich",
+      "name_ru": "Карамельный мюнхенский темный",
+      "malt_type": "caramel",
+      "extract_pct_dry_basis": 75.0,
+      "color_ebc_min": 180.0,
+      "color_ebc_max": 210.0,
+      "aliases_ru": [
+        "карамельный",
+        "карамельный мюнхенский темный",
+        "карамельныймюнхенскийтемный",
+        "мюних",
+        "мюнхенский",
+        "мюнхнер"
+      ],
+      "aliases_en": [
+        "caramel",
+        "dark caramel munich",
+        "darkcaramelmunich",
+        "munich",
+        "munich malt"
+      ],
+      "search_aliases": [
+        "caramel",
+        "dark caramel munich",
+        "darkcaramelmunich",
+        "munich",
+        "munich malt",
+        "карамельный",
+        "карамельный мюнхенский темный",
+        "карамельныймюнхенскийтемный",
+        "мюних",
+        "мюнхенский",
+        "мюнхнер"
+      ],
+      "source_label": "Malteries Soufflet artisan brewer catalog",
+      "source_url": null,
+      "source_page": 39
+    },
+    {
+      "id": "soufflet--caramel-250",
+      "brand": "Soufflet",
+      "brand_en": "Soufflet",
+      "brand_ru": "Soufflet",
+      "brand_slug": "soufflet",
+      "brand_aliases_ru": [
+        "Суффле",
+        "Soufflet"
+      ],
+      "country_code": "FR",
+      "country_name": "France",
+      "name_en": "Caramel 250",
+      "name_ru": "Карамельный 250",
+      "malt_type": "caramel",
+      "extract_pct_dry_basis": 75.0,
+      "color_ebc_min": 230.0,
+      "color_ebc_max": 270.0,
+      "aliases_ru": [
+        "карамельный",
+        "карамельный 250",
+        "карамельный250"
+      ],
+      "aliases_en": [
+        "caramel",
+        "caramel 250",
+        "caramel250"
+      ],
+      "search_aliases": [
+        "caramel",
+        "caramel 250",
+        "caramel250",
+        "карамельный",
+        "карамельный 250",
+        "карамельный250"
+      ],
+      "source_label": "Malteries Soufflet artisan brewer catalog",
+      "source_url": null,
+      "source_page": 39
+    },
+    {
+      "id": "soufflet--caramel-wheat",
+      "brand": "Soufflet",
+      "brand_en": "Soufflet",
+      "brand_ru": "Soufflet",
+      "brand_slug": "soufflet",
+      "brand_aliases_ru": [
+        "Суффле",
+        "Soufflet"
+      ],
+      "country_code": "FR",
+      "country_name": "France",
+      "name_en": "Caramel Wheat",
+      "name_ru": "Пшеничный карамельный",
+      "malt_type": "wheat_caramel",
+      "extract_pct_dry_basis": 78.0,
+      "color_ebc_min": 90.0,
+      "color_ebc_max": 110.0,
+      "aliases_ru": [
+        "карамельный",
+        "пшеничный",
+        "пшеничный карамельный",
+        "пшеничный солод",
+        "пшеничныйкарамельный"
+      ],
+      "aliases_en": [
+        "caramel",
+        "caramel wheat",
+        "caramelwheat",
+        "wheat",
+        "wheat malt"
+      ],
+      "search_aliases": [
+        "caramel",
+        "caramel wheat",
+        "caramelwheat",
+        "wheat",
+        "wheat malt",
+        "карамельный",
+        "пшеничный",
+        "пшеничный карамельный",
+        "пшеничный солод",
+        "пшеничныйкарамельный"
+      ],
+      "source_label": "Malteries Soufflet artisan brewer catalog",
+      "source_url": null,
+      "source_page": 40
+    },
+    {
+      "id": "soufflet--caramel-pilsen-bio",
+      "brand": "Soufflet",
+      "brand_en": "Soufflet",
+      "brand_ru": "Soufflet",
+      "brand_slug": "soufflet",
+      "brand_aliases_ru": [
+        "Суффле",
+        "Soufflet"
+      ],
+      "country_code": "FR",
+      "country_name": "France",
+      "name_en": "Caramel Pilsen Bio",
+      "name_ru": "Карамельный Пильзен Bio",
+      "malt_type": "caramel",
+      "extract_pct_dry_basis": 75.0,
+      "color_ebc_min": 20.0,
+      "color_ebc_max": 30.0,
+      "aliases_ru": [
+        "карамельный",
+        "карамельный пильзен bio",
+        "карамельныйпильзенbio",
+        "пилснер",
+        "пильзен",
+        "пильзенер",
+        "пильзнер"
+      ],
+      "aliases_en": [
+        "caramel",
+        "caramel pilsen bio",
+        "caramelpilsenbio",
+        "pilsen",
+        "pilsener",
+        "pilsner",
+        "карамельный пильзен bio",
+        "карамельныйпильзенbio"
+      ],
+      "search_aliases": [
+        "caramel",
+        "caramel pilsen bio",
+        "caramelpilsenbio",
+        "pilsen",
+        "pilsener",
+        "pilsner",
+        "карамельный",
+        "карамельный пильзен bio",
+        "карамельныйпильзенbio",
+        "пилснер",
+        "пильзен",
+        "пильзенер",
+        "пильзнер"
+      ],
+      "source_label": "Malteries Soufflet artisan brewer catalog",
+      "source_url": null,
+      "source_page": 41
+    },
+    {
+      "id": "soufflet--caramel-vienna-bio",
+      "brand": "Soufflet",
+      "brand_en": "Soufflet",
+      "brand_ru": "Soufflet",
+      "brand_slug": "soufflet",
+      "brand_aliases_ru": [
+        "Суффле",
+        "Soufflet"
+      ],
+      "country_code": "FR",
+      "country_name": "France",
+      "name_en": "Caramel Vienna Bio",
+      "name_ru": "Карамельный венский Bio",
+      "malt_type": "caramel",
+      "extract_pct_dry_basis": 75.0,
+      "color_ebc_min": 50.0,
+      "color_ebc_max": 60.0,
+      "aliases_ru": [
+        "вена",
+        "венский",
+        "карамельный",
+        "карамельный венский bio",
+        "карамельныйвенскийbio"
+      ],
+      "aliases_en": [
+        "caramel",
+        "caramel vienna bio",
+        "caramelviennabio",
+        "vienna",
+        "vienna malt",
+        "карамельный венский bio",
+        "карамельныйвенскийbio"
+      ],
+      "search_aliases": [
+        "caramel",
+        "caramel vienna bio",
+        "caramelviennabio",
+        "vienna",
+        "vienna malt",
+        "вена",
+        "венский",
+        "карамельный",
+        "карамельный венский bio",
+        "карамельныйвенскийbio"
+      ],
+      "source_label": "Malteries Soufflet artisan brewer catalog",
+      "source_url": null,
+      "source_page": 41
+    },
+    {
+      "id": "soufflet--caramel-amber-bio",
+      "brand": "Soufflet",
+      "brand_en": "Soufflet",
+      "brand_ru": "Soufflet",
+      "brand_slug": "soufflet",
+      "brand_aliases_ru": [
+        "Суффле",
+        "Soufflet"
+      ],
+      "country_code": "FR",
+      "country_name": "France",
+      "name_en": "Caramel Amber Bio",
+      "name_ru": "Карамельный амбер Bio",
+      "malt_type": "caramel",
+      "extract_pct_dry_basis": 75.0,
+      "color_ebc_min": 100.0,
+      "color_ebc_max": 120.0,
+      "aliases_ru": [
+        "карамельный",
+        "карамельный амбер bio",
+        "карамельныйамберbio"
+      ],
+      "aliases_en": [
+        "caramel",
+        "caramel amber bio",
+        "caramelamberbio",
+        "карамельный амбер bio",
+        "карамельныйамберbio"
+      ],
+      "search_aliases": [
+        "caramel",
+        "caramel amber bio",
+        "caramelamberbio",
+        "карамельный",
+        "карамельный амбер bio",
+        "карамельныйамберbio"
+      ],
+      "source_label": "Malteries Soufflet artisan brewer catalog",
+      "source_url": null,
+      "source_page": 42
+    },
+    {
+      "id": "soufflet--caramel-munich-bio",
+      "brand": "Soufflet",
+      "brand_en": "Soufflet",
+      "brand_ru": "Soufflet",
+      "brand_slug": "soufflet",
+      "brand_aliases_ru": [
+        "Суффле",
+        "Soufflet"
+      ],
+      "country_code": "FR",
+      "country_name": "France",
+      "name_en": "Caramel Munich Bio",
+      "name_ru": "Карамельный мюнхенский Bio",
+      "malt_type": "caramel",
+      "extract_pct_dry_basis": 75.0,
+      "color_ebc_min": 140.0,
+      "color_ebc_max": 160.0,
+      "aliases_ru": [
+        "карамельный",
+        "карамельный мюнхенский bio",
+        "карамельныймюнхенскийbio",
+        "мюних",
+        "мюнхенский",
+        "мюнхнер"
+      ],
+      "aliases_en": [
+        "caramel",
+        "caramel munich bio",
+        "caramelmunichbio",
+        "munich",
+        "munich malt",
+        "карамельный мюнхенский bio",
+        "карамельныймюнхенскийbio"
+      ],
+      "search_aliases": [
+        "caramel",
+        "caramel munich bio",
+        "caramelmunichbio",
+        "munich",
+        "munich malt",
+        "карамельный",
+        "карамельный мюнхенский bio",
+        "карамельныймюнхенскийbio",
+        "мюних",
+        "мюнхенский",
+        "мюнхнер"
+      ],
+      "source_label": "Malteries Soufflet artisan brewer catalog",
+      "source_url": null,
+      "source_page": 42
+    },
+    {
+      "id": "soufflet--caramel-240-bio",
+      "brand": "Soufflet",
+      "brand_en": "Soufflet",
+      "brand_ru": "Soufflet",
+      "brand_slug": "soufflet",
+      "brand_aliases_ru": [
+        "Суффле",
+        "Soufflet"
+      ],
+      "country_code": "FR",
+      "country_name": "France",
+      "name_en": "Caramel 240 Bio",
+      "name_ru": "Карамельный 240 Bio",
+      "malt_type": "caramel",
+      "extract_pct_dry_basis": 75.0,
+      "color_ebc_min": 230.0,
+      "color_ebc_max": 270.0,
+      "aliases_ru": [
+        "карамельный",
+        "карамельный 240 bio",
+        "карамельный240bio"
+      ],
+      "aliases_en": [
+        "caramel",
+        "caramel 240 bio",
+        "caramel240bio",
+        "карамельный 240 bio",
+        "карамельный240bio"
+      ],
+      "search_aliases": [
+        "caramel",
+        "caramel 240 bio",
+        "caramel240bio",
+        "карамельный",
+        "карамельный 240 bio",
+        "карамельный240bio"
+      ],
+      "source_label": "Malteries Soufflet artisan brewer catalog",
+      "source_url": null,
+      "source_page": 43
+    },
+    {
+      "id": "soufflet--tourambre-type-biscuit",
+      "brand": "Soufflet",
+      "brand_en": "Soufflet",
+      "brand_ru": "Soufflet",
+      "brand_slug": "soufflet",
+      "brand_aliases_ru": [
+        "Суффле",
+        "Soufflet"
+      ],
+      "country_code": "FR",
+      "country_name": "France",
+      "name_en": "Tourambre Type Biscuit",
+      "name_ru": "Турамбре Бисквит",
+      "malt_type": "specialty",
+      "extract_pct_dry_basis": 75.0,
+      "color_ebc_min": 39.0,
+      "color_ebc_max": 52.0,
+      "aliases_ru": [
+        "турамбре бисквит"
+      ],
+      "aliases_en": [
+        "tourambre type biscuit"
+      ],
+      "search_aliases": [
+        "tourambre type biscuit",
+        "турамбре бисквит"
+      ],
+      "source_label": "Malteries Soufflet artisan brewer catalog",
+      "source_url": null,
+      "source_page": 46
+    },
+    {
+      "id": "soufflet--coffee",
+      "brand": "Soufflet",
+      "brand_en": "Soufflet",
+      "brand_ru": "Soufflet",
+      "brand_slug": "soufflet",
+      "brand_aliases_ru": [
+        "Суффле",
+        "Soufflet"
+      ],
+      "country_code": "FR",
+      "country_name": "France",
+      "name_en": "Coffee",
+      "name_ru": "Кофейный",
+      "malt_type": "roasted",
+      "extract_pct_dry_basis": 70.0,
+      "color_ebc_min": 400.0,
+      "color_ebc_max": 650.0,
+      "aliases_ru": [
+        "кофейный"
+      ],
+      "aliases_en": [
+        "coffee"
+      ],
+      "search_aliases": [
+        "coffee",
+        "кофейный"
+      ],
+      "source_label": "Malteries Soufflet artisan brewer catalog",
+      "source_url": null,
+      "source_page": 46
+    },
+    {
+      "id": "soufflet--chocolate",
+      "brand": "Soufflet",
+      "brand_en": "Soufflet",
+      "brand_ru": "Soufflet",
+      "brand_slug": "soufflet",
+      "brand_aliases_ru": [
+        "Суффле",
+        "Soufflet"
+      ],
+      "country_code": "FR",
+      "country_name": "France",
+      "name_en": "Chocolate",
+      "name_ru": "Шоколадный",
+      "malt_type": "roasted",
+      "extract_pct_dry_basis": 70.0,
+      "color_ebc_min": 800.0,
+      "color_ebc_max": 1000.0,
+      "aliases_ru": [
+        "шоколадный"
+      ],
+      "aliases_en": [
+        "chocolate"
+      ],
+      "search_aliases": [
+        "chocolate",
+        "шоколадный"
+      ],
+      "source_label": "Malteries Soufflet artisan brewer catalog",
+      "source_url": null,
+      "source_page": 47
+    },
+    {
+      "id": "soufflet--black-malt",
+      "brand": "Soufflet",
+      "brand_en": "Soufflet",
+      "brand_ru": "Soufflet",
+      "brand_slug": "soufflet",
+      "brand_aliases_ru": [
+        "Суффле",
+        "Soufflet"
+      ],
+      "country_code": "FR",
+      "country_name": "France",
+      "name_en": "Black Malt",
+      "name_ru": "Черный",
+      "malt_type": "roasted",
+      "extract_pct_dry_basis": 70.0,
+      "color_ebc_min": 1200.0,
+      "color_ebc_max": 1400.0,
+      "aliases_ru": [
+        "черный"
+      ],
+      "aliases_en": [
+        "black",
+        "black malt"
+      ],
+      "search_aliases": [
+        "black",
+        "black malt",
+        "черный"
+      ],
+      "source_label": "Malteries Soufflet artisan brewer catalog",
+      "source_url": null,
+      "source_page": 47
+    },
+    {
+      "id": "soufflet--tourambre-type-biscuit-bio",
+      "brand": "Soufflet",
+      "brand_en": "Soufflet",
+      "brand_ru": "Soufflet",
+      "brand_slug": "soufflet",
+      "brand_aliases_ru": [
+        "Суффле",
+        "Soufflet"
+      ],
+      "country_code": "FR",
+      "country_name": "France",
+      "name_en": "Tourambre Type Biscuit Bio",
+      "name_ru": "Турамбре Бисквит Bio",
+      "malt_type": "specialty",
+      "extract_pct_dry_basis": 75.0,
+      "color_ebc_min": 40.0,
+      "color_ebc_max": 60.0,
+      "aliases_ru": [
+        "турамбре бисквит bio"
+      ],
+      "aliases_en": [
+        "tourambre type biscuit bio",
+        "турамбре бисквит bio"
+      ],
+      "search_aliases": [
+        "tourambre type biscuit bio",
+        "турамбре бисквит bio"
+      ],
+      "source_label": "Malteries Soufflet artisan brewer catalog",
+      "source_url": null,
+      "source_page": 49
+    },
+    {
+      "id": "soufflet--chocolate-bio",
+      "brand": "Soufflet",
+      "brand_en": "Soufflet",
+      "brand_ru": "Soufflet",
+      "brand_slug": "soufflet",
+      "brand_aliases_ru": [
+        "Суффле",
+        "Soufflet"
+      ],
+      "country_code": "FR",
+      "country_name": "France",
+      "name_en": "Chocolate Bio",
+      "name_ru": "Шоколадный Bio",
+      "malt_type": "roasted",
+      "extract_pct_dry_basis": 70.0,
+      "color_ebc_min": 800.0,
+      "color_ebc_max": 1000.0,
+      "aliases_ru": [
+        "шоколадный",
+        "шоколадный bio"
+      ],
+      "aliases_en": [
+        "chocolate",
+        "chocolate bio",
+        "шоколадный bio"
+      ],
+      "search_aliases": [
+        "chocolate",
+        "chocolate bio",
+        "шоколадный",
+        "шоколадный bio"
+      ],
+      "source_label": "Malteries Soufflet artisan brewer catalog",
+      "source_url": null,
+      "source_page": 49
+    },
+    {
+      "id": "soufflet--black-malt-bio",
+      "brand": "Soufflet",
+      "brand_en": "Soufflet",
+      "brand_ru": "Soufflet",
+      "brand_slug": "soufflet",
+      "brand_aliases_ru": [
+        "Суффле",
+        "Soufflet"
+      ],
+      "country_code": "FR",
+      "country_name": "France",
+      "name_en": "Black Malt Bio",
+      "name_ru": "Черный Bio",
+      "malt_type": "roasted",
+      "extract_pct_dry_basis": 75.0,
+      "color_ebc_min": 1200.0,
+      "color_ebc_max": 1400.0,
+      "aliases_ru": [
+        "черный",
+        "черный bio"
+      ],
+      "aliases_en": [
+        "black",
+        "black malt bio",
+        "черный bio"
+      ],
+      "search_aliases": [
+        "black",
+        "black malt bio",
+        "черный",
+        "черный bio"
+      ],
+      "source_label": "Malteries Soufflet artisan brewer catalog",
+      "source_url": null,
+      "source_page": 50
+    },
+    {
+      "id": "kurskiy-solod--pilsner",
+      "brand": "Курский солод",
+      "brand_en": "Kursky Solod",
+      "brand_ru": "Курский солод",
+      "brand_slug": "kurskiy-solod",
+      "brand_aliases_ru": [
+        "Курский",
+        "Курский солод",
+        "Kursky Solod",
+        "Grainrus"
+      ],
+      "country_code": "RU",
+      "country_name": "Russia",
+      "name_en": "Pilsner",
+      "name_ru": "Пильзнер",
+      "malt_type": "base",
+      "extract_pct_dry_basis": 80.5,
+      "color_ebc_min": 4.107,
+      "color_ebc_max": 4.107,
+      "aliases_ru": [
+        "пилснер",
+        "пильзен",
+        "пильзенер",
+        "пильзнер"
+      ],
+      "aliases_en": [
+        "pilsen",
+        "pilsener",
+        "pilsner"
+      ],
+      "search_aliases": [
+        "pilsen",
+        "pilsener",
+        "pilsner",
+        "пилснер",
+        "пильзен",
+        "пильзенер",
+        "пильзнер"
+      ],
+      "source_label": "Бир.РФ ingredient page",
+      "source_url": "https://xn--90aoy.xn--p1ai/ingredients/grain/base_malt/svetlyj_jachmennyj_kurskij_solod/9-1-0-355",
+      "source_page": null
+    },
+    {
+      "id": "kurskiy-solod--vienna",
+      "brand": "Курский солод",
+      "brand_en": "Kursky Solod",
+      "brand_ru": "Курский солод",
+      "brand_slug": "kurskiy-solod",
+      "brand_aliases_ru": [
+        "Курский",
+        "Курский солод",
+        "Kursky Solod",
+        "Grainrus"
+      ],
+      "country_code": "RU",
+      "country_name": "Russia",
+      "name_en": "Vienna",
+      "name_ru": "Венский",
+      "malt_type": "base",
+      "extract_pct_dry_basis": 81.0,
+      "color_ebc_min": 7.0,
+      "color_ebc_max": 7.0,
+      "aliases_ru": [
+        "вена",
+        "венский"
+      ],
+      "aliases_en": [
+        "vienna",
+        "vienna malt"
+      ],
+      "search_aliases": [
+        "vienna",
+        "vienna malt",
+        "вена",
+        "венский"
+      ],
+      "source_label": "Бир.РФ base malt list",
+      "source_url": "https://xn--90aoy.xn--p1ai/ingredients/grain/base_malt/9",
+      "source_page": null
+    },
+    {
+      "id": "kurskiy-solod--pale-ale",
+      "brand": "Курский солод",
+      "brand_en": "Kursky Solod",
+      "brand_ru": "Курский солод",
+      "brand_slug": "kurskiy-solod",
+      "brand_aliases_ru": [
+        "Курский",
+        "Курский солод",
+        "Kursky Solod",
+        "Grainrus"
+      ],
+      "country_code": "RU",
+      "country_name": "Russia",
+      "name_en": "Pale Ale",
+      "name_ru": "Пэйл Эль",
+      "malt_type": "base",
+      "extract_pct_dry_basis": 79.0,
+      "color_ebc_min": 4.908,
+      "color_ebc_max": 4.908,
+      "aliases_ru": [
+        "пале эль",
+        "пейл эль",
+        "пэйл эль"
+      ],
+      "aliases_en": [
+        "pale ale"
+      ],
+      "search_aliases": [
+        "pale ale",
+        "пале эль",
+        "пейл эль",
+        "пэйл эль"
+      ],
+      "source_label": "Бир.РФ ingredient page",
+      "source_url": "https://xn--90aoy.xn--p1ai/ingredients/grain/base_malt/pehjl_ehl_kurskij/9-1-0-422",
+      "source_page": null
+    },
+    {
+      "id": "kurskiy-solod--wheat",
+      "brand": "Курский солод",
+      "brand_en": "Kursky Solod",
+      "brand_ru": "Курский солод",
+      "brand_slug": "kurskiy-solod",
+      "brand_aliases_ru": [
+        "Курский",
+        "Курский солод",
+        "Kursky Solod",
+        "Grainrus"
+      ],
+      "country_code": "RU",
+      "country_name": "Russia",
+      "name_en": "Wheat",
+      "name_ru": "Пшеничный",
+      "malt_type": "wheat",
+      "extract_pct_dry_basis": 83.0,
+      "color_ebc_min": 6.51,
+      "color_ebc_max": 6.51,
+      "aliases_ru": [
+        "пшеничный",
+        "пшеничный солод"
+      ],
+      "aliases_en": [
+        "wheat",
+        "wheat malt"
+      ],
+      "search_aliases": [
+        "wheat",
+        "wheat malt",
+        "пшеничный",
+        "пшеничный солод"
+      ],
+      "source_label": "Бир.РФ ingredient page",
+      "source_url": "https://xn--90aoy.xn--p1ai/ingredients/grain/base_malt/pshenichnyj_kurskij/9-1-0-376",
+      "source_page": null
+    },
+    {
+      "id": "kurskiy-solod--munich-type-2",
+      "brand": "Курский солод",
+      "brand_en": "Kursky Solod",
+      "brand_ru": "Курский солод",
+      "brand_slug": "kurskiy-solod",
+      "brand_aliases_ru": [
+        "Курский",
+        "Курский солод",
+        "Kursky Solod",
+        "Grainrus"
+      ],
+      "country_code": "RU",
+      "country_name": "Russia",
+      "name_en": "Munich Type 2",
+      "name_ru": "Мюнхенский тип 2",
+      "malt_type": "base",
+      "extract_pct_dry_basis": 78.0,
+      "color_ebc_min": 21.195,
+      "color_ebc_max": 21.195,
+      "aliases_ru": [
+        "мюних",
+        "мюнхенский",
+        "мюнхенский тип 2",
+        "мюнхнер"
+      ],
+      "aliases_en": [
+        "munich",
+        "munich malt",
+        "munich type 2"
+      ],
+      "search_aliases": [
+        "munich",
+        "munich malt",
+        "munich type 2",
+        "мюних",
+        "мюнхенский",
+        "мюнхенский тип 2",
+        "мюнхнер"
+      ],
+      "source_label": "Бир.РФ ingredient page",
+      "source_url": "https://xn--90aoy.xn--p1ai/ingredients/grain/base_malt/mjunkhenskij_tip_2_kurskij/9-1-0-460",
+      "source_page": null
+    },
+    {
+      "id": "kurskiy-solod--caramel-50",
+      "brand": "Курский солод",
+      "brand_en": "Kursky Solod",
+      "brand_ru": "Курский солод",
+      "brand_slug": "kurskiy-solod",
+      "brand_aliases_ru": [
+        "Курский",
+        "Курский солод",
+        "Kursky Solod",
+        "Grainrus"
+      ],
+      "country_code": "RU",
+      "country_name": "Russia",
+      "name_en": "Caramel 50",
+      "name_ru": "Карамельный 50",
+      "malt_type": "caramel",
+      "extract_pct_dry_basis": 75.0,
+      "color_ebc_min": 50.565,
+      "color_ebc_max": 50.565,
+      "aliases_ru": [
+        "карамельный",
+        "карамельный 50",
+        "карамельный50"
+      ],
+      "aliases_en": [
+        "caramel",
+        "caramel 50",
+        "caramel50"
+      ],
+      "search_aliases": [
+        "caramel",
+        "caramel 50",
+        "caramel50",
+        "карамельный",
+        "карамельный 50",
+        "карамельный50"
+      ],
+      "source_label": "Бир.РФ ingredient page",
+      "source_url": "https://xn--90aoy.xn--p1ai/ingredients/grain/special_malt/karamelnyj_50_kurskij/10-1-0-457",
+      "source_page": null
+    },
+    {
+      "id": "kurskiy-solod--caramel-100",
+      "brand": "Курский солод",
+      "brand_en": "Kursky Solod",
+      "brand_ru": "Курский солод",
+      "brand_slug": "kurskiy-solod",
+      "brand_aliases_ru": [
+        "Курский",
+        "Курский солод",
+        "Kursky Solod",
+        "Grainrus"
+      ],
+      "country_code": "RU",
+      "country_name": "Russia",
+      "name_en": "Caramel 100",
+      "name_ru": "Карамельный 100",
+      "malt_type": "caramel",
+      "extract_pct_dry_basis": 75.0,
+      "color_ebc_min": 100.494,
+      "color_ebc_max": 100.494,
+      "aliases_ru": [
+        "карамельный",
+        "карамельный 100",
+        "карамельный100"
+      ],
+      "aliases_en": [
+        "caramel",
+        "caramel 100",
+        "caramel100"
+      ],
+      "search_aliases": [
+        "caramel",
+        "caramel 100",
+        "caramel100",
+        "карамельный",
+        "карамельный 100",
+        "карамельный100"
+      ],
+      "source_label": "Бир.РФ ingredient page",
+      "source_url": "https://xn--90aoy.xn--p1ai/ingredients/grain/special_malt/karamelnyj_100_kurskij/10-1-0-872",
+      "source_page": null
+    },
+    {
+      "id": "kurskiy-solod--caramel-150",
+      "brand": "Курский солод",
+      "brand_en": "Kursky Solod",
+      "brand_ru": "Курский солод",
+      "brand_slug": "kurskiy-solod",
+      "brand_aliases_ru": [
+        "Курский",
+        "Курский солод",
+        "Kursky Solod",
+        "Grainrus"
+      ],
+      "country_code": "RU",
+      "country_name": "Russia",
+      "name_en": "Caramel 150",
+      "name_ru": "Карамельный 150",
+      "malt_type": "caramel",
+      "extract_pct_dry_basis": 75.0,
+      "color_ebc_min": 150.69,
+      "color_ebc_max": 150.69,
+      "aliases_ru": [
+        "карамельный",
+        "карамельный 150",
+        "карамельный150"
+      ],
+      "aliases_en": [
+        "caramel",
+        "caramel 150",
+        "caramel150"
+      ],
+      "search_aliases": [
+        "caramel",
+        "caramel 150",
+        "caramel150",
+        "карамельный",
+        "карамельный 150",
+        "карамельный150"
+      ],
+      "source_label": "Бир.РФ ingredient page",
+      "source_url": "https://xn--90aoy.xn--p1ai/ingredients/grain/special_malt/karamelnyj_150_kurskij/10-1-0-871",
+      "source_page": null
+    },
+    {
+      "id": "kurskiy-solod--caramel-200",
+      "brand": "Курский солод",
+      "brand_en": "Kursky Solod",
+      "brand_ru": "Курский солод",
+      "brand_slug": "kurskiy-solod",
+      "brand_aliases_ru": [
+        "Курский",
+        "Курский солод",
+        "Kursky Solod",
+        "Grainrus"
+      ],
+      "country_code": "RU",
+      "country_name": "Russia",
+      "name_en": "Caramel 200",
+      "name_ru": "Карамельный 200",
+      "malt_type": "caramel",
+      "extract_pct_dry_basis": 75.0,
+      "color_ebc_min": 200.085,
+      "color_ebc_max": 200.085,
+      "aliases_ru": [
+        "карамельный",
+        "карамельный 200",
+        "карамельный200"
+      ],
+      "aliases_en": [
+        "caramel",
+        "caramel 200",
+        "caramel200"
+      ],
+      "search_aliases": [
+        "caramel",
+        "caramel 200",
+        "caramel200",
+        "карамельный",
+        "карамельный 200",
+        "карамельный200"
+      ],
+      "source_label": "Бир.РФ ingredient page",
+      "source_url": "https://xn--90aoy.xn--p1ai/ingredients/grain/special_malt/karamelnyj_200_kurskij/10-1-0-1283",
+      "source_page": null
+    },
+    {
+      "id": "kurskiy-solod--wheat-caramel-150",
+      "brand": "Курский солод",
+      "brand_en": "Kursky Solod",
+      "brand_ru": "Курский солод",
+      "brand_slug": "kurskiy-solod",
+      "brand_aliases_ru": [
+        "Курский",
+        "Курский солод",
+        "Kursky Solod",
+        "Grainrus"
+      ],
+      "country_code": "RU",
+      "country_name": "Russia",
+      "name_en": "Wheat Caramel 150",
+      "name_ru": "Пшеничный карамельный 150",
+      "malt_type": "wheat_caramel",
+      "extract_pct_dry_basis": 75.0,
+      "color_ebc_min": 149.889,
+      "color_ebc_max": 149.889,
+      "aliases_ru": [
+        "карамельный",
+        "пшеничный",
+        "пшеничный карамельный 150",
+        "пшеничный солод",
+        "пшеничныйкарамельный150"
+      ],
+      "aliases_en": [
+        "caramel",
+        "wheat",
+        "wheat caramel 150",
+        "wheat malt",
+        "wheatcaramel150"
+      ],
+      "search_aliases": [
+        "caramel",
+        "wheat",
+        "wheat caramel 150",
+        "wheat malt",
+        "wheatcaramel150",
+        "карамельный",
+        "пшеничный",
+        "пшеничный карамельный 150",
+        "пшеничный солод",
+        "пшеничныйкарамельный150"
+      ],
+      "source_label": "Бир.РФ ingredient page",
+      "source_url": "https://xn--90aoy.xn--p1ai/ingredients/grain/special_malt/kurskij_solod_pshenichnyj_karamelnyj_150/10-1-0-2155",
+      "source_page": null
+    },
+    {
+      "id": "kurskiy-solod--wheat-malt-dark",
+      "brand": "Курский солод",
+      "brand_en": "Kursky Solod",
+      "brand_ru": "Курский солод",
+      "brand_slug": "kurskiy-solod",
+      "brand_aliases_ru": [
+        "Курский",
+        "Курский солод",
+        "Kursky Solod",
+        "Grainrus"
+      ],
+      "country_code": "RU",
+      "country_name": "Russia",
+      "name_en": "Wheat Malt Dark",
+      "name_ru": "Пшеничный темный",
+      "malt_type": "wheat",
+      "extract_pct_dry_basis": 70.0,
+      "color_ebc_min": 899.892,
+      "color_ebc_max": 899.892,
+      "aliases_ru": [
+        "пшеничный",
+        "пшеничный солод",
+        "пшеничный темный"
+      ],
+      "aliases_en": [
+        "wheat",
+        "wheat malt",
+        "wheat malt dark"
+      ],
+      "search_aliases": [
+        "wheat",
+        "wheat malt",
+        "wheat malt dark",
+        "пшеничный",
+        "пшеничный солод",
+        "пшеничный темный"
+      ],
+      "source_label": "Бир.РФ ingredient page",
+      "source_url": "https://xn--90aoy.xn--p1ai/ingredients/grain/special_malt/pshenichnyj_temnyj_zhzhenyj/10-1-0-2163",
+      "source_page": null
+    },
+    {
+      "id": "kurskiy-solod--double-roast",
+      "brand": "Курский солод",
+      "brand_en": "Kursky Solod",
+      "brand_ru": "Курский солод",
+      "brand_slug": "kurskiy-solod",
+      "brand_aliases_ru": [
+        "Курский",
+        "Курский солод",
+        "Kursky Solod",
+        "Grainrus"
+      ],
+      "country_code": "RU",
+      "country_name": "Russia",
+      "name_en": "Double Roast",
+      "name_ru": "Двойной обжарки",
+      "malt_type": "roasted",
+      "extract_pct_dry_basis": 75.0,
+      "color_ebc_min": 350.94,
+      "color_ebc_max": 350.94,
+      "aliases_ru": [
+        "двойной обжарки"
+      ],
+      "aliases_en": [
+        "double roast"
+      ],
+      "search_aliases": [
+        "double roast",
+        "двойной обжарки"
+      ],
+      "source_label": "Бир.РФ ingredient page",
+      "source_url": "https://xn--90aoy.xn--p1ai/ingredients/grain/special_malt/dvojnoj_obzharki_kurskij/10-1-0-485",
+      "source_page": null
+    },
+    {
+      "id": "kurskiy-solod--smoked-barley-malt",
+      "brand": "Курский солод",
+      "brand_en": "Kursky Solod",
+      "brand_ru": "Курский солод",
+      "brand_slug": "kurskiy-solod",
+      "brand_aliases_ru": [
+        "Курский",
+        "Курский солод",
+        "Kursky Solod",
+        "Grainrus"
+      ],
+      "country_code": "RU",
+      "country_name": "Russia",
+      "name_en": "Smoked Barley Malt",
+      "name_ru": "Копченый ячменный",
+      "malt_type": "smoked",
+      "extract_pct_dry_basis": 83.0,
+      "color_ebc_min": 4.107,
+      "color_ebc_max": 4.107,
+      "aliases_ru": [
+        "дымный",
+        "копченый",
+        "копченый ячменный"
+      ],
+      "aliases_en": [
+        "rauch",
+        "smoked",
+        "smoked barley malt"
+      ],
+      "search_aliases": [
+        "rauch",
+        "smoked",
+        "smoked barley malt",
+        "дымный",
+        "копченый",
+        "копченый ячменный"
+      ],
+      "source_label": "Бир.РФ ingredient page",
+      "source_url": "https://xn--90aoy.xn--p1ai/ingredients/grain/special_malt/kurskij_solod_kopchenyj_jachmennyj/10-1-0-2002",
+      "source_page": null
+    },
+    {
+      "id": "kurskiy-solod--fermented-rye-malt",
+      "brand": "Курский солод",
+      "brand_en": "Kursky Solod",
+      "brand_ru": "Курский солод",
+      "brand_slug": "kurskiy-solod",
+      "brand_aliases_ru": [
+        "Курский",
+        "Курский солод",
+        "Kursky Solod",
+        "Grainrus"
+      ],
+      "country_code": "RU",
+      "country_name": "Russia",
+      "name_en": "Fermented Rye Malt",
+      "name_ru": "Ржаной ферментированный",
+      "malt_type": "rye",
+      "extract_pct_dry_basis": 83.5,
+      "color_ebc_min": 17.457,
+      "color_ebc_max": 17.457,
+      "aliases_ru": [
+        "ржаной",
+        "ржаной солод",
+        "ржаной ферментированный"
+      ],
+      "aliases_en": [
+        "fermented rye malt",
+        "rye",
+        "rye malt"
+      ],
+      "search_aliases": [
+        "fermented rye malt",
+        "rye",
+        "rye malt",
+        "ржаной",
+        "ржаной солод",
+        "ржаной ферментированный"
+      ],
+      "source_label": "Бир.РФ ingredient page",
+      "source_url": "https://xn--90aoy.xn--p1ai/ingredients/grain/special_malt/rzhanoj_fermentatirovannyj_kurskij_solod/10-1-0-379",
+      "source_page": null
+    },
+    {
+      "id": "ireks--pilsner",
+      "brand": "IREKS",
+      "brand_en": "IREKS",
+      "brand_ru": "IREKS",
+      "brand_slug": "ireks",
+      "brand_aliases_ru": [
+        "Ирекс",
+        "Айрекс",
+        "IREKS"
+      ],
+      "country_code": "DE",
+      "country_name": "Germany",
+      "name_en": "Pilsner",
+      "name_ru": "Пильзнер",
+      "malt_type": "base",
+      "extract_pct_dry_basis": 81.0,
+      "color_ebc_min": 3.039,
+      "color_ebc_max": 3.039,
+      "aliases_ru": [
+        "пилснер",
+        "пильзен",
+        "пильзенер",
+        "пильзнер"
+      ],
+      "aliases_en": [
+        "pilsen",
+        "pilsener",
+        "pilsner"
+      ],
+      "search_aliases": [
+        "pilsen",
+        "pilsener",
+        "pilsner",
+        "пилснер",
+        "пильзен",
+        "пильзенер",
+        "пильзнер"
+      ],
+      "source_label": "Бир.РФ ingredient page",
+      "source_url": "https://xn--90aoy.xn--p1ai/ingredients/grain/base_malt/pilsner/9-1-0-635",
+      "source_page": null
+    },
+    {
+      "id": "ireks--pale-ale",
+      "brand": "IREKS",
+      "brand_en": "IREKS",
+      "brand_ru": "IREKS",
+      "brand_slug": "ireks",
+      "brand_aliases_ru": [
+        "Ирекс",
+        "Айрекс",
+        "IREKS"
+      ],
+      "country_code": "DE",
+      "country_name": "Germany",
+      "name_en": "Pale Ale",
+      "name_ru": "Пэйл Эль",
+      "malt_type": "base",
+      "extract_pct_dry_basis": 80.0,
+      "color_ebc_min": 5.0,
+      "color_ebc_max": 7.0,
+      "aliases_ru": [
+        "пале эль",
+        "пейл эль",
+        "пэйл эль"
+      ],
+      "aliases_en": [
+        "pale ale"
+      ],
+      "search_aliases": [
+        "pale ale",
+        "пале эль",
+        "пейл эль",
+        "пэйл эль"
+      ],
+      "source_label": "IREKS product sheet",
+      "source_url": "https://www.ireks.com/en/product-overview/details/pale-ale/",
+      "source_page": null
+    },
+    {
+      "id": "ireks--vienna",
+      "brand": "IREKS",
+      "brand_en": "IREKS",
+      "brand_ru": "IREKS",
+      "brand_slug": "ireks",
+      "brand_aliases_ru": [
+        "Ирекс",
+        "Айрекс",
+        "IREKS"
+      ],
+      "country_code": "DE",
+      "country_name": "Germany",
+      "name_en": "Vienna",
+      "name_ru": "Венский",
+      "malt_type": "base",
+      "extract_pct_dry_basis": 80.0,
+      "color_ebc_min": 8.0,
+      "color_ebc_max": 10.0,
+      "aliases_ru": [
+        "вена",
+        "венский"
+      ],
+      "aliases_en": [
+        "vienna",
+        "vienna malt"
+      ],
+      "search_aliases": [
+        "vienna",
+        "vienna malt",
+        "вена",
+        "венский"
+      ],
+      "source_label": "IREKS product sheet",
+      "source_url": "https://www.ireks.com/en/product-overview/details/vienna/",
+      "source_page": null
+    },
+    {
+      "id": "ireks--munich",
+      "brand": "IREKS",
+      "brand_en": "IREKS",
+      "brand_ru": "IREKS",
+      "brand_slug": "ireks",
+      "brand_aliases_ru": [
+        "Ирекс",
+        "Айрекс",
+        "IREKS"
+      ],
+      "country_code": "DE",
+      "country_name": "Germany",
+      "name_en": "Munich",
+      "name_ru": "Мюнхенский",
+      "malt_type": "base",
+      "extract_pct_dry_basis": 80.0,
+      "color_ebc_min": 18.0,
+      "color_ebc_max": 22.0,
+      "aliases_ru": [
+        "мюних",
+        "мюнхенский",
+        "мюнхнер"
+      ],
+      "aliases_en": [
+        "munich",
+        "munich malt"
+      ],
+      "search_aliases": [
+        "munich",
+        "munich malt",
+        "мюних",
+        "мюнхенский",
+        "мюнхнер"
+      ],
+      "source_label": "IREKS product sheet",
+      "source_url": "https://www.ireks.com/en/product-overview/details/munich/",
+      "source_page": null
+    },
+    {
+      "id": "ireks--crystal-birch",
+      "brand": "IREKS",
+      "brand_en": "IREKS",
+      "brand_ru": "IREKS",
+      "brand_slug": "ireks",
+      "brand_aliases_ru": [
+        "Ирекс",
+        "Айрекс",
+        "IREKS"
+      ],
+      "country_code": "DE",
+      "country_name": "Germany",
+      "name_en": "Crystal Birch",
+      "name_ru": "Карамельный Берёза",
+      "malt_type": "caramel",
+      "extract_pct_dry_basis": 78.0,
+      "color_ebc_min": 11.85,
+      "color_ebc_max": 11.85,
+      "aliases_ru": [
+        "карамельный берёза"
+      ],
+      "aliases_en": [
+        "crystal birch"
+      ],
+      "search_aliases": [
+        "crystal birch",
+        "карамельный берёза"
+      ],
+      "source_label": "Бир.РФ ingredient page",
+      "source_url": "https://xn--90aoy.xn--p1ai/ingredients/grain/special_malt/karamelnyj_berjoza_ireks/10-1-0-961",
+      "source_page": null
+    },
+    {
+      "id": "ireks--crystal-oak",
+      "brand": "IREKS",
+      "brand_en": "IREKS",
+      "brand_ru": "IREKS",
+      "brand_slug": "ireks",
+      "brand_aliases_ru": [
+        "Ирекс",
+        "Айрекс",
+        "IREKS"
+      ],
+      "country_code": "DE",
+      "country_name": "Germany",
+      "name_en": "Crystal Oak",
+      "name_ru": "Карамельный Дуб",
+      "malt_type": "caramel",
+      "extract_pct_dry_basis": 80.0,
+      "color_ebc_min": 30.006,
+      "color_ebc_max": 30.006,
+      "aliases_ru": [
+        "карамельный дуб"
+      ],
+      "aliases_en": [
+        "crystal oak"
+      ],
+      "search_aliases": [
+        "crystal oak",
+        "карамельный дуб"
+      ],
+      "source_label": "Бир.РФ ingredient page",
+      "source_url": "https://xn--90aoy.xn--p1ai/ingredients/grain/special_malt/karamelnyj_dub/10-1-0-1015",
+      "source_page": null
+    },
+    {
+      "id": "ireks--crystal-mahogany",
+      "brand": "IREKS",
+      "brand_en": "IREKS",
+      "brand_ru": "IREKS",
+      "brand_slug": "ireks",
+      "brand_aliases_ru": [
+        "Ирекс",
+        "Айрекс",
+        "IREKS"
+      ],
+      "country_code": "DE",
+      "country_name": "Germany",
+      "name_en": "Crystal Mahogany",
+      "name_ru": "Карамельный Красное дерево",
+      "malt_type": "caramel",
+      "extract_pct_dry_basis": 80.0,
+      "color_ebc_min": 60.177,
+      "color_ebc_max": 60.177,
+      "aliases_ru": [
+        "карамельный красное дерево"
+      ],
+      "aliases_en": [
+        "crystal mahogany"
+      ],
+      "search_aliases": [
+        "crystal mahogany",
+        "карамельный красное дерево"
+      ],
+      "source_label": "Бир.РФ ingredient page",
+      "source_url": "https://xn--90aoy.xn--p1ai/ingredients/grain/special_malt/karamelnyj_krasnoe_derevo/10-1-0-1010",
+      "source_page": null
+    },
+    {
+      "id": "ireks--crystal-teak",
+      "brand": "IREKS",
+      "brand_en": "IREKS",
+      "brand_ru": "IREKS",
+      "brand_slug": "ireks",
+      "brand_aliases_ru": [
+        "Ирекс",
+        "Айрекс",
+        "IREKS"
+      ],
+      "country_code": "DE",
+      "country_name": "Germany",
+      "name_en": "Crystal Teak",
+      "name_ru": "Карамельный Тиковое дерево",
+      "malt_type": "caramel",
+      "extract_pct_dry_basis": 80.0,
+      "color_ebc_min": 150.69,
+      "color_ebc_max": 150.69,
+      "aliases_ru": [
+        "карамельный тиковое дерево"
+      ],
+      "aliases_en": [
+        "crystal teak"
+      ],
+      "search_aliases": [
+        "crystal teak",
+        "карамельный тиковое дерево"
+      ],
+      "source_label": "Бир.РФ ingredient page",
+      "source_url": "https://xn--90aoy.xn--p1ai/ingredients/grain/special_malt/karamelnyj_tikovoe_derevo/10-1-0-1011",
+      "source_page": null
+    }
+  ]
+}

@@ -45,7 +45,7 @@ export function RecipeStatsSummary({ recipe }: { recipe: RecipeStatsSource }) {
     { key: "IBU", label: "IBU", value: recipe.ibu == null ? "—" : `${recipe.ibu.toFixed(0)}`, status: fit?.ibu.status ?? null },
     {
       key: "Color",
-      label: "Color",
+      label: "Цвет",
       value: recipe.color == null ? "—" : { srm: recipe.color.toFixed(1), ebc: (recipe.color * 1.97).toFixed(0) },
       status: fit?.colorSrm.status ?? null
     }
