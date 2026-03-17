@@ -96,7 +96,7 @@ export default async function MyIngredientsPage({ searchParams }: Props) {
     <main className="space-y-6">
       <section className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div className="space-y-1">
-          <h1 className="text-2xl font-bold tracking-tight text-zinc-950">Мои ингредиенты</h1>
+          <h1 className="text-2xl font-bold tracking-tight text-zinc-950">Склад моих ингредиентов</h1>
           {hasAnyItems ? (
             <p className="text-sm text-zinc-500">
               {summary.inStockItems} в наличии{summary.emptyItems > 0 ? ` · ${summary.emptyItems} закончились` : ""}
