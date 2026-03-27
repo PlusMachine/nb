@@ -35,7 +35,12 @@ describe("inventory usability components", () => {
       category: "hop",
       showFinished: true,
       sort: "name",
-      summary: { totalItems: 10, inStockItems: 8, emptyItems: 2, byCategory: { fermentable: 3, hop: 4, yeast: 2, water_prep: 0, misc: 1 } }
+      summary: {
+        totalItems: 10,
+        inStockItems: 8,
+        emptyItems: 2,
+        byCategory: { fermentable: 3, hop: 4, yeast: 2, consumable: 1, water_treatment: 0 }
+      }
     }));
 
     expect(html).toContain("Фильтры по запасам");
@@ -108,16 +113,27 @@ describe("inventory usability components", () => {
       source: {
         sourceKind: "catalog",
         sourceId: "cat-1",
-        type: "fermentable",
+        type: "malt",
         category: "fermentable",
-        displayName: "Pilsner Malt",
+        primaryLabelRu: "Пилснер солод",
+        secondaryLabelRu: "Pilsner Malt",
+        displayName: "Пилснер солод",
         displayNameRu: "Пилснер солод",
         normalizedName: "pilsner-malt",
         manufacturer: "BESTMALZ",
         country: "DE",
-        fermentableColorEbc: 3.5,
-        fermentableExtractYieldPct: 80,
-        summary: "3.5 EBC • 80%"
+        technicalData: {
+          type: "malt",
+          maltType: "base",
+          colorEbcMin: 6,
+          colorEbcMax: 7,
+          colorLovibond: 3.5,
+          extractPctDryBasis: 80,
+          proteinPct: null,
+          maxUsagePct: null,
+          colorEbcIsApprox: false
+        },
+        summary: "3.5 Lovibond • 80% extract"
       }
     };
 
@@ -127,14 +143,71 @@ describe("inventory usability components", () => {
       currencyRates: { RUB: 100, USD: 7900, EUR: 9170 }
     }));
 
-    expect(html).toContain("Pilsner Malt");
     expect(html).toContain("Пилснер солод");
+    expect(html).toContain("Pilsner Malt");
     expect(html).toContain('value="2"');
     expect(html).toContain('<option value="kg" selected="">kg</option>');
     expect(html).toContain("BESTMALZ");
-    expect(html).toContain("3.5 EBC • 80%");
+    expect(html).toContain("6-7 EBC");
+    expect(html).toContain("Экстракт 80%");
     expect(html).toContain('aria-label="Редактировать"');
     expect(html).toContain('aria-label="Удалить"');
+  });
+
+  it("shows dry yeast pack quantity with gram equivalent", () => {
+    const item: InventoryListItemDto = {
+      id: "inv-yeast-1",
+      enteredQuantity: 1,
+      enteredUnit: "pack",
+      normalizedQuantity: 11,
+      normalizedUnit: "g",
+      unitDimension: "weight",
+      purchasePriceMinor: null,
+      purchaseCurrency: null,
+      purchaseQuantity: null,
+      purchaseQuantityUnit: null,
+      purchaseQuantityNormalized: null,
+      purchaseQuantityNormalizedUnit: null,
+      normalizedUnitCostMinorRub: null,
+      purchasedAt: null,
+      freshnessDate: null,
+      notes: null,
+      archivedAt: null,
+      createdAt: new Date("2025-01-01"),
+      updatedAt: new Date("2025-01-01"),
+      source: {
+        sourceKind: "catalog",
+        sourceId: "yeast-1",
+        type: "yeast",
+        category: "yeast",
+        primaryLabelRu: "US-05",
+        secondaryLabelRu: null,
+        displayName: "US-05",
+        normalizedName: "us-05",
+        technicalData: {
+          type: "yeast",
+          form: "dry",
+          attenuationPctTypical: 78,
+          fermentationTempCMin: 18,
+          fermentationTempCMax: 24,
+          flocculation: null,
+          alcoholToleranceAbvTypical: null,
+          packageSize: null,
+          packageUnit: null
+        }
+      }
+    };
+
+    const html = renderToStaticMarkup(React.createElement(InventoryListItem, {
+      item,
+      preferredCurrency: "RUB",
+      currencyRates: { RUB: 100, USD: 7900, EUR: 9170 }
+    }));
+
+    expect(html).toContain('<option value="pack" selected="">pack (пачка)</option>');
+    expect(html).toContain("1 pack (11 g)");
+    expect(html).toContain("Атт. 78%");
+    expect(html).toContain("18-24°C");
   });
 
   it("tracks dirty state and zero-stock validity for inline editor logic", () => {

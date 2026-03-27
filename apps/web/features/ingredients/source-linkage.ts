@@ -1,11 +1,11 @@
-import { ingredientCatalogItems, userCustomIngredients } from "@nb/db";
+import { ingredients, userCustomIngredients } from "@nb/db";
 
+import type { IngredientTechnicalData } from "./contracts";
 import {
-  resolveIngredientPrimaryDisplayName,
-  resolveIngredientFamilyDisplayName,
-  buildIngredientTypedSummary
+  buildIngredientTypedSummary,
+  resolveIngredientDisplayNames
 } from "./presentation";
-import { extractIngredientTechnicalData, type IngredientTechnicalData } from "./technical-fields";
+import { extractIngredientTechnicalData } from "./technical-fields";
 import {
   resolveIngredientCategory,
   resolveIngredientSubtype,
@@ -41,50 +41,55 @@ const isRecord = (value: unknown): value is Record<string, unknown> => (
   && !Array.isArray(value)
 );
 
-const readStringProperty = (properties: Record<string, unknown>, key: string) => (
-  typeof properties[key] === "string" ? String(properties[key]).trim() : ""
-);
-
-const readStringArrayProperty = (properties: Record<string, unknown>, key: string) => (
-  Array.isArray(properties[key])
-    ? properties[key].filter((value): value is string => typeof value === "string")
-    : []
-);
-
 export const buildCatalogIngredientLinkage = (
-  catalog: typeof ingredientCatalogItems.$inferSelect
+  catalog: typeof ingredients.$inferSelect
 ): IngredientSourceLinkage => {
-  const technicalData = extractIngredientTechnicalData(catalog);
-  const displayName = resolveIngredientPrimaryDisplayName(catalog);
-  const unitProfile = resolveInventoryUnitProfile({
+  const technicalData = extractIngredientTechnicalData({
     type: catalog.type,
-    category: catalog.category,
-    subtype: catalog.subtype as IngredientSubtype | null,
-    defaultDisplayUnit: catalog.defaultDisplayUnit,
-    allowedUnits: catalog.allowedUnits,
-    measurementDimension: catalog.measurementDimension,
+    attributes: catalog.attributes
+  });
+  const { primaryName, secondaryName } = resolveIngredientDisplayNames({
+    type: catalog.type as IngredientType,
+    countryCode: catalog.countryCode,
+    nameRu: catalog.nameRu,
+    nameEn: catalog.nameEn,
+    displayModeRu: catalog.displayModeRu as "auto" | "localized_first" | "source_first",
+    displayNameOverrideRu: catalog.displayNameOverrideRu,
+    secondaryNameOverrideRu: catalog.secondaryNameOverrideRu,
+    hideSecondaryNameRu: catalog.hideSecondaryNameRu
+  });
+  const category = resolveIngredientCategory({ type: catalog.type });
+  const subtype = resolveIngredientSubtype({
+    type: catalog.type,
+    subtype: catalog.itemKind
+  });
+  const unitPreferred = technicalData?.type === "water_treatment" && typeof technicalData.unitPreferred === "string"
+    ? technicalData.unitPreferred
+    : null;
+  const unitProfile = resolveInventoryUnitProfile({
+    type: catalog.type as IngredientType,
+    category,
+    subtype,
+    quantityDefaults: isRecord(catalog.quantityDefaults) ? catalog.quantityDefaults : null,
+    unitPreferred,
     technicalData
   });
 
   return {
-    type: catalog.type,
-    category: catalog.category,
-    subtype: catalog.subtype as IngredientSubtype | null,
-    familyId: catalog.familyId,
-    displayName,
-    displayNameRu: catalog.displayNameRu,
-    displayNameEn: catalog.displayNameEn,
-    familyDisplayName: resolveIngredientFamilyDisplayName({
-      displayName,
-      familyCanonicalName: null
-    }) ?? null,
+    type: catalog.type as IngredientType,
+    category,
+    subtype,
+    familyId: null,
+    displayName: primaryName,
+    displayNameRu: catalog.nameRu,
+    displayNameEn: secondaryName ?? catalog.nameEn,
+    familyDisplayName: null,
     summary: buildIngredientTypedSummary({
-      category: catalog.category,
-      subtype: catalog.subtype as IngredientSubtype | null,
-      displayName,
-      harvestYear: catalog.harvestYear,
-      defaultDisplayUnit: unitProfile.defaultUnit,
-      technicalData
+      type: catalog.type as IngredientType,
+      category,
+      subtype,
+      technicalData,
+      unitPreferred
     }) ?? null,
     defaultDisplayUnit: unitProfile.defaultUnit,
     allowedUnits: unitProfile.allowedUnits,
@@ -97,48 +102,48 @@ export const buildCustomIngredientLinkage = (
   custom: typeof userCustomIngredients.$inferSelect
 ): IngredientSourceLinkage => {
   const properties = isRecord(custom.properties) ? custom.properties : {};
-  const technicalData = extractIngredientTechnicalData(custom);
-  const category = resolveIngredientCategory({
+  const technicalData = extractIngredientTechnicalData({
     type: custom.type,
-    displayName: custom.displayName,
     properties: custom.properties,
+    hopAlphaAcidPct: custom.hopAlphaAcidPct,
+    hopBetaAcidPct: null,
+    hopTotalOilMlPer100g: null,
     hopForm: custom.hopForm,
-    yeastType: custom.yeastType,
-    yeastForm: custom.yeastForm
+    fermentableExtractYieldPct: custom.fermentableExtractYieldPct,
+    fermentableColorEbc: custom.fermentableColorEbc,
+    yeastAttenuationPct: custom.yeastAttenuationPct,
+    yeastForm: custom.yeastForm,
+    yeastMinFermentationTempC: custom.yeastMinFermentationTempC,
+    yeastMaxFermentationTempC: custom.yeastMaxFermentationTempC
   });
-  const subtype = resolveIngredientSubtype({
-    category,
-    type: custom.type,
-    displayName: custom.displayName,
-    properties: custom.properties,
-    hopForm: custom.hopForm,
-    yeastType: custom.yeastType,
-    yeastForm: custom.yeastForm
-  });
+  const type = resolveIngredientCategory({ type: custom.type }) === "fermentable" && custom.type !== "fermentable"
+    ? (custom.type as IngredientType)
+    : (custom.type as IngredientType);
+  const category = resolveIngredientCategory({ type });
+  const subtype = resolveIngredientSubtype({ type });
   const unitProfile = resolveInventoryUnitProfile({
-    type: custom.type,
+    type,
     category,
     subtype,
-    defaultDisplayUnit: readStringProperty(properties, "defaultDisplayUnit") || undefined,
-    allowedUnits: readStringArrayProperty(properties, "allowedUnits"),
-    measurementDimension: readStringProperty(properties, "measurementDimension") || undefined,
+    defaultDisplayUnit: typeof properties.defaultDisplayUnit === "string" ? properties.defaultDisplayUnit : null,
+    allowedUnits: Array.isArray(properties.allowedUnits) ? properties.allowedUnits.map(String) : null,
+    measurementDimension: typeof properties.measurementDimension === "string" ? properties.measurementDimension : null,
     technicalData
   });
 
   return {
-    type: custom.type,
+    type,
     category,
-    subtype: subtype as IngredientSubtype | null,
+    subtype,
     familyId: null,
     displayName: custom.displayName,
     displayNameRu: null,
     displayNameEn: null,
     familyDisplayName: null,
     summary: buildIngredientTypedSummary({
+      type,
       category,
-      subtype: subtype as IngredientSubtype | null,
-      displayName: custom.displayName,
-      defaultDisplayUnit: unitProfile.defaultUnit,
+      subtype,
       technicalData
     }) ?? null,
     defaultDisplayUnit: unitProfile.defaultUnit,

@@ -1,383 +1,360 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-const now = new Date("2026-03-13T10:00:00.000Z");
+const now = new Date("2026-03-27T10:00:00.000Z");
 
-const { tableRefs, mockState } = vi.hoisted(() => ({
-  tableRefs: {
-    ingredientFamilies: {
-      name: "ingredientFamilies",
-      id: "id",
-      category: "category",
-      subtype: "subtype",
-      canonicalName: "canonicalName",
-      normalizedCanonicalName: "normalizedCanonicalName",
-      displayNameRu: "displayNameRu",
-      displayNameEn: "displayNameEn",
-      matchPolicy: "matchPolicy",
-      isActive: "isActive",
-      createdAt: "createdAt",
-      updatedAt: "updatedAt"
-    },
-    ingredientCatalogItems: {
-      name: "ingredientCatalogItems",
-      id: "id",
-      familyId: "familyId",
-      type: "type",
-      category: "category",
-      subtype: "subtype",
-      displayName: "displayName",
-      normalizedName: "normalizedName",
-      aliases: "aliases",
-      brandName: "brandName",
-      manufacturer: "manufacturer",
-      country: "country",
-      harvestYear: "harvestYear",
-      description: "description",
-      defaultUnit: "defaultUnit",
-      defaultDisplayUnit: "defaultDisplayUnit",
-      allowedUnits: "allowedUnits",
-      measurementDimension: "measurementDimension",
-      completenessLevel: "completenessLevel",
-      technicalData: "technicalData",
-      fermentableColorEbc: "fermentableColorEbc",
-      fermentableExtractYieldPct: "fermentableExtractYieldPct",
-      hopAlphaAcidPct: "hopAlphaAcidPct",
-      hopForm: "hopForm",
-      hopSeason: "hopSeason",
-      yeastAttenuationPct: "yeastAttenuationPct",
-      yeastType: "yeastType",
-      yeastForm: "yeastForm",
-      yeastMinFermentationTempC: "yeastMinFermentationTempC",
-      yeastMaxFermentationTempC: "yeastMaxFermentationTempC",
-      properties: "properties",
-      status: "status",
-      visibility: "visibility",
-      mergedIntoId: "mergedIntoId",
-      createdBy: "createdBy",
-      updatedBy: "updatedBy",
-      createdAt: "createdAt",
-      updatedAt: "updatedAt"
-    },
-    proposedIngredients: {
-      name: "proposedIngredients",
-      id: "id",
-      status: "status",
-      normalizedName: "normalizedName"
-    }
-  },
-  mockState: {
-    idCounter: 0,
-    families: new Map<string, any>(),
-    items: new Map<string, any>()
-  }
+const mockState = vi.hoisted(() => ({
+  rows: [] as any[]
 }));
 
-const getEqValue = (where: unknown, key: string): unknown => {
-  if (Array.isArray(where) && where.length === 2 && where[0] === key) {
-    return where[1];
-  }
-
-  if (!Array.isArray(where)) {
-    return undefined;
-  }
-
-  for (const entry of where) {
-    const value = getEqValue(entry, key);
-    if (value !== undefined) {
-      return value;
-    }
-  }
-
-  return undefined;
-};
-
-vi.mock("@nb/db", () => {
-  const db: any = {
-    query: {
-      ingredientFamilies: {
-        findFirst: async (arg: any) => {
-          const id = getEqValue(arg?.where, "id");
-          if (typeof id === "string") {
-            return mockState.families.get(id) ?? null;
-          }
-
-          const category = getEqValue(arg?.where, "category");
-          const normalizedCanonicalName = getEqValue(arg?.where, "normalizedCanonicalName");
-          return [...mockState.families.values()].find((family) => (
-            family.category === category
-            && family.normalizedCanonicalName === normalizedCanonicalName
-          )) ?? null;
-        }
-      },
-      proposedIngredients: {
-        findFirst: async () => null
-      }
-    },
-    insert: (table: { name: string }) => ({
-      values: (values: Record<string, unknown>) => ({
-        returning: async () => {
-          const id = table.name === "ingredientFamilies"
-            ? `fam-${++mockState.idCounter}`
-            : `item-${++mockState.idCounter}`;
-          const row = { id, createdAt: now, updatedAt: now, ...values };
-
-          if (table.name === "ingredientFamilies") {
-            mockState.families.set(id, row);
-          }
-
-          if (table.name === "ingredientCatalogItems") {
-            mockState.items.set(id, row);
-          }
-
-          return [row];
-        }
-      })
-    }),
-    update: (table: { name: string }) => ({
-      set: (set: Record<string, unknown>) => ({
-        where: (_where: unknown) => ({
-          returning: async () => {
-            const id = getEqValue(_where, "id");
-            if (typeof id !== "string") {
-              return [];
-            }
-
-            if (table.name === "ingredientFamilies") {
-              const current = mockState.families.get(id);
-              if (!current) {
-                return [];
-              }
-
-              const updated = { ...current, ...set };
-              mockState.families.set(id, updated);
-              return [updated];
-            }
-
-            if (table.name === "ingredientCatalogItems") {
-              const current = mockState.items.get(id);
-              if (!current) {
-                return [];
-              }
-
-              const updated = { ...current, ...set };
-              mockState.items.set(id, updated);
-              return [updated];
-            }
-
-            return [];
-          }
-        })
-      })
-    }),
-    select: (shape: Record<string, unknown>) => ({
-      from: (table: { name: string }) => ({
-        leftJoin: (_joinTable: unknown, _joinCondition: unknown) => ({
-          where: (_where: unknown) => ({
-            limit: async (_limit: number) => {
-              if (table.name !== "ingredientCatalogItems" || !("item" in shape) || !("family" in shape)) {
-                return [];
-              }
-
-              const id = getEqValue(_where, "id");
-              const rows = [...mockState.items.values()]
-                .filter((item) => (typeof id === "string" ? item.id === id : true))
-                .map((item) => ({
-                  item,
-                  family: mockState.families.get(item.familyId) ?? null
-                }));
-
-              return rows;
-            }
-          })
-        })
-      })
-    }),
-    transaction: async (fn: (tx: any) => Promise<unknown>) => fn(db)
-  };
-
-  return {
-    db,
-    and: (...args: unknown[]) => args,
-    asc: (value: unknown) => value,
-    desc: (value: unknown) => value,
-    eq: (field: string, value: unknown) => [field, value],
-    ilike: (...args: unknown[]) => args,
-    inArray: (...args: unknown[]) => args,
-    or: (...args: unknown[]) => args,
-    sql: (strings: TemplateStringsArray, ...values: unknown[]) => ({ strings, values }),
-    ingredientFamilies: tableRefs.ingredientFamilies,
-    ingredientCatalogItems: tableRefs.ingredientCatalogItems,
-    proposedIngredients: tableRefs.proposedIngredients
-  };
+const buildIngredientRow = (overrides: Record<string, unknown> = {}) => ({
+  id: "ingredient-1",
+  type: "hop",
+  nameRu: null,
+  nameEn: "Cascade",
+  displayModeRu: "source_first",
+  displayNameOverrideRu: null,
+  secondaryNameOverrideRu: null,
+  hideSecondaryNameRu: false,
+  isActive: true,
+  countryCode: "US",
+  countryName: "United States",
+  brand: null,
+  producer: null,
+  productCode: null,
+  groupName: null,
+  category: null,
+  subcategory: null,
+  itemKind: "hop",
+  presentOnBirrf: true,
+  inventoryEnabled: true,
+  attributes: {},
+  quantityDefaults: null,
+  createdAt: now,
+  updatedAt: now,
+  aliases: [] as Array<{
+    id: string;
+    ingredientId: string;
+    locale: "ru" | "en" | "neutral";
+    alias: string;
+    aliasNormalized: string;
+    source: string;
+    isEnabled: boolean;
+    createdAt: Date;
+    updatedAt: Date;
+  }>,
+  sources: [] as Array<{
+    id: string;
+    ingredientId: string;
+    kind: string | null;
+    label: string | null;
+    url: string | null;
+    sourceBasis: string | null;
+    position: number;
+    createdAt: Date;
+    updatedAt: Date;
+  }>,
+  packageVariants: [] as Array<{
+    id: string;
+    ingredientId: string;
+    brand: string | null;
+    productNameRu: string | null;
+    countryNameRu: string | null;
+    packageAmount: number | null;
+    packageUnit: string | null;
+    stockContentAmount: number | null;
+    stockContentUnit: string | null;
+    sourceGroup: string | null;
+    sourceUrl: string | null;
+    isDefaultForStock: boolean;
+    position: number;
+    createdAt: Date;
+    updatedAt: Date;
+  }>,
+  ...overrides
 });
 
-import { createIngredient, updateIngredient } from "../features/ingredients/service";
-
-describe("ingredient family foundation service", () => {
-  beforeEach(() => {
-    mockState.idCounter = 0;
-    mockState.families.clear();
-    mockState.items.clear();
-  });
-
-  it("creates a family and links the variant to it", async () => {
-    const created = await createIngredient({
-      type: "hop",
-      displayName: "Cascade",
-      aliases: [],
-      defaultUnit: "g",
-      hopAlphaAcidPct: 5.8,
-      hopForm: "pellet",
-      properties: {}
-    }, "admin-1");
-
-    expect(created?.family).toMatchObject({
-      canonicalName: "Cascade",
-      category: "hop",
-      matchPolicy: "family_compatible"
-    });
-    expect(created?.familyId).toBe(created?.family?.id);
-    expect(mockState.families.size).toBe(1);
-    expect(created?.technicalData).toMatchObject({
-      category: "hop",
-      subtype: "pellet",
-      alphaAcidPct: 5.8
-    });
-  });
-
-  it("reuses the same canonical family for identical category + normalized name", async () => {
-    const first = await createIngredient({
-      type: "hop",
-      displayName: "Cascade",
-      aliases: [],
-      defaultUnit: "g",
-      hopAlphaAcidPct: 5.8,
-      hopForm: "pellet",
-      properties: {}
-    }, "admin-1");
-
-    const second = await createIngredient({
-      type: "hop",
-      displayName: "Cascade",
-      aliases: ["Cascade T-90"],
-      defaultUnit: "g",
-      hopAlphaAcidPct: 6.1,
-      hopForm: "whole_cone",
-      manufacturer: "Other Farm",
-      properties: {}
-    }, "admin-2");
-
-    expect(mockState.families.size).toBe(1);
-    expect(second?.familyId).toBe(first?.familyId);
-  });
-
-  it("defaults yeast families to exact_only match policy", async () => {
-    const created = await createIngredient({
-      type: "yeast",
-      displayName: "SafAle US-05",
-      aliases: [],
-      defaultUnit: "pack",
-      yeastAttenuationPct: 78,
-      yeastForm: "dry",
-      properties: {}
-    }, "admin-1");
-
-    expect(created?.family?.matchPolicy).toBe("exact_only");
-  });
-
-  it("supports typed technicalData input and keeps legacy properties synchronized", async () => {
-    const created = await createIngredient({
-      category: "hop",
-      subtype: "pellet",
-      displayName: "Citra",
-      aliases: [],
-      defaultDisplayUnit: "g",
-      country: "US",
-      technicalData: {
-        category: "hop",
-        subtype: "pellet",
-        alphaAcidPct: 12.4,
-        betaAcidPct: 4.1,
-        totalOilMlPer100g: 2.2,
-        notes: "Citrus and tropical",
-        harvestYear: 2024
+vi.mock("@nb/db", () => ({
+  db: {
+    query: {
+      ingredients: {
+        findMany: async () => mockState.rows
       },
-      properties: {}
-    }, "admin-1");
+      proposedIngredients: {
+        findMany: async () => []
+      }
+    }
+  },
+  and: (...args: unknown[]) => args,
+  eq: (...args: unknown[]) => args,
+  inArray: (...args: unknown[]) => args,
+  sql: (strings: TemplateStringsArray, ...values: unknown[]) => ({ strings, values }),
+  ingredientAliases: { ingredientId: "ingredientId" },
+  ingredientPackageVariants: { ingredientId: "ingredientId" },
+  ingredients: { id: "id", isActive: "isActive", type: "type" },
+  ingredientSources: { ingredientId: "ingredientId" },
+  proposedIngredients: { status: "status" },
+  recipeIngredients: { ingredientCatalogItemId: "ingredientCatalogItemId" },
+  userIngredients: { ingredientCatalogItemId: "ingredientCatalogItemId" }
+}));
 
-    expect(created?.technicalData).toMatchObject({
-      category: "hop",
-      subtype: "pellet",
-      alphaAcidPct: 12.4,
-      harvestYear: 2024
-    });
-    expect(mockState.items.get(created!.id)?.properties).toMatchObject({
-      alphaAcid: 12.4,
-      alphaAcidPercent: 12.4,
-      betaAcid: 4.1,
-      totalOil: 2.2,
-      season: "2024"
+import { listCatalogIngredients, searchCatalogItems } from "../features/ingredients/service";
+
+describe("ingredient service search", () => {
+  beforeEach(() => {
+    mockState.rows = [];
+  });
+
+  it("ranks exact hop name matches above nearby noise for saaz", async () => {
+    mockState.rows = [
+      buildIngredientRow({
+        id: "hop-saaz",
+        type: "hop",
+        nameEn: "Saaz",
+        itemKind: "hop",
+        aliases: [{
+          id: "alias-saaz",
+          ingredientId: "hop-saaz",
+          locale: "ru",
+          alias: "Сааз",
+          aliasNormalized: "сааз",
+          source: "seed",
+          isEnabled: true,
+          createdAt: now,
+          updatedAt: now
+        }]
+      }),
+      buildIngredientRow({
+        id: "hop-motueka",
+        type: "hop",
+        nameEn: "Motueka",
+        itemKind: "hop",
+        aliases: [{
+          id: "alias-mot",
+          ingredientId: "hop-motueka",
+          locale: "en",
+          alias: "B Saaz",
+          aliasNormalized: "b saaz",
+          source: "seed",
+          isEnabled: true,
+          createdAt: now,
+          updatedAt: now
+        }]
+      })
+    ];
+
+    const items = await searchCatalogItems({ q: "saaz", type: "hop", limit: 8 });
+
+    expect(items[0]?.id).toBe("hop-saaz");
+    expect(items[0]?.displayName).toBe("Saaz");
+    expect(items[0]?.matchType).toBe("name");
+  });
+
+  it("finds cascade by russian alias without synthetic search fields", async () => {
+    mockState.rows = [
+      buildIngredientRow({
+        id: "hop-cascade",
+        type: "hop",
+        nameEn: "Cascade",
+        itemKind: "hop",
+        aliases: [{
+          id: "alias-cascade-ru",
+          ingredientId: "hop-cascade",
+          locale: "ru",
+          alias: "Каскад",
+          aliasNormalized: "каскад",
+          source: "seed",
+          isEnabled: true,
+          createdAt: now,
+          updatedAt: now
+        }]
+      })
+    ];
+
+    const items = await searchCatalogItems({ q: "каскад", type: "hop", limit: 8 });
+
+    expect(items[0]).toMatchObject({
+      id: "hop-cascade",
+      displayName: "Cascade",
+      matchType: "alias",
+      matchedAlias: "Каскад"
     });
   });
 
-  it("persists completeness level and keeps variant linked after update", async () => {
-    const created = await createIngredient({
-      type: "hop",
-      displayName: "Mosaic",
-      aliases: [],
-      defaultUnit: "g",
-      hopAlphaAcidPct: 12,
-      hopForm: "pellet",
-      completenessLevel: "full",
-      properties: {}
-    }, "admin-1");
+  it("finds nutrient items by localized canonical names", async () => {
+    mockState.rows = [
+      buildIngredientRow({
+        id: "consumable-yeast-nutrient",
+        type: "consumable",
+        nameRu: "Комплексная подкормка дрожжей",
+        nameEn: "Complex Yeast Nutrient",
+        displayModeRu: "localized_first",
+        itemKind: "nutrient",
+        category: "nutrient",
+        aliases: [{
+          id: "alias-nutrient-ru",
+          ingredientId: "consumable-yeast-nutrient",
+          locale: "ru",
+          alias: "Подкормка",
+          aliasNormalized: "подкормка",
+          source: "seed",
+          isEnabled: true,
+          createdAt: now,
+          updatedAt: now
+        }]
+      })
+    ];
 
-    const updated = await updateIngredient(created!.id, {
-      type: "hop",
-      displayName: "Mosaic T-90",
-      canonicalFamilyName: "Mosaic",
-      aliases: [],
-      defaultUnit: "g",
-      hopAlphaAcidPct: 12.5,
-      hopForm: "pellet",
-      completenessLevel: "full",
-      properties: {}
-    }, "admin-2");
+    const items = await searchCatalogItems({ q: "подкормка", category: "consumable", limit: 8 });
 
-    expect(updated?.family?.canonicalName).toBe("Mosaic");
-    expect(updated?.familyId).toBe(created?.familyId);
-    expect(updated?.completenessLevel).toBe("full");
-    expect(mockState.items.get(created!.id)?.completenessLevel).toBe("full");
+    expect(items[0]?.id).toBe("consumable-yeast-nutrient");
+    expect(items[0]?.displayName).toBe("Комплексная подкормка дрожжей");
+    expect(items[0]?.matchType).toBe("alias");
   });
 
-  it("computes recommended completeness from category-specific recommended fields", async () => {
-    const fermentable = await createIngredient({
-      category: "fermentable",
-      subtype: "base_malt",
-      displayName: "Vienna Malt",
-      aliases: [],
-      defaultDisplayUnit: "kg",
-      manufacturer: "BESTMALZ",
-      country: "DE",
-      fermentableColorEbc: 8,
-      fermentableExtractYieldPct: 80,
-      properties: {}
-    }, "admin-1");
+  it("returns canonical sanitizer with matched package variant for star san", async () => {
+    mockState.rows = [
+      buildIngredientRow({
+        id: "acid-sanitizer",
+        type: "consumable",
+        nameRu: "Кислотный санитайзер",
+        nameEn: "Acid Sanitizer",
+        displayModeRu: "localized_first",
+        itemKind: "sanitizer",
+        category: "sanitizer",
+        packageVariants: [{
+          id: "pv-star-san-946",
+          ingredientId: "acid-sanitizer",
+          brand: "Five Star",
+          productNameRu: "Star San",
+          countryNameRu: "USA",
+          packageAmount: 946,
+          packageUnit: "ml",
+          stockContentAmount: 946,
+          stockContentUnit: "ml",
+          sourceGroup: null,
+          sourceUrl: null,
+          isDefaultForStock: true,
+          position: 0,
+          createdAt: now,
+          updatedAt: now
+        }]
+      })
+    ];
 
-    const yeast = await createIngredient({
-      category: "yeast",
-      subtype: "ale",
-      displayName: "US-05",
-      aliases: [],
-      defaultDisplayUnit: "pack",
-      yeastForm: "dry",
-      yeastAttenuationPct: 78,
-      yeastMinFermentationTempC: 18,
-      yeastMaxFermentationTempC: 22,
-      properties: {}
-    }, "admin-2");
+    const items = await searchCatalogItems({ q: "star san", category: "consumable", limit: 8 });
 
-    expect(fermentable?.completenessLevel).toBe("recommended");
-    expect(yeast?.completenessLevel).toBe("recommended");
+    expect(items[0]).toMatchObject({
+      id: "acid-sanitizer",
+      displayName: "Кислотный санитайзер",
+      matchType: "package",
+      matchedPackageVariantId: "pv-star-san-946",
+      matchedPackageVariantName: "Five Star Star San"
+    });
+  });
+
+  it("finds lactic acid by localized name", async () => {
+    mockState.rows = [
+      buildIngredientRow({
+        id: "lactic-acid",
+        type: "water_treatment",
+        nameRu: "Молочная кислота",
+        nameEn: "Lactic Acid",
+        displayModeRu: "localized_first",
+        itemKind: "acid",
+        category: "acid",
+        attributes: { unit_preferred: "ml" }
+      })
+    ];
+
+    const items = await searchCatalogItems({ q: "молочная кислота", category: "water_treatment", limit: 8 });
+
+    expect(items[0]).toMatchObject({
+      id: "lactic-acid",
+      displayName: "Молочная кислота",
+      matchType: "name"
+    });
+  });
+
+  it("prefers exact product code matches for yeasts", async () => {
+    mockState.rows = [
+      buildIngredientRow({
+        id: "yeast-bf16",
+        type: "yeast",
+        nameRu: "BF16 Лагер",
+        nameEn: "BF16 Lager",
+        displayModeRu: "source_first",
+        itemKind: "yeast",
+        productCode: "BF16",
+        brand: "BrewFerm",
+        attributes: { form: "dry" }
+      })
+    ];
+
+    const items = await searchCatalogItems({ q: "bf16", type: "yeast", limit: 8 });
+
+    expect(items[0]).toMatchObject({
+      id: "yeast-bf16",
+      displayName: "BF16 Lager",
+      matchType: "code"
+    });
+  });
+
+  it("returns canonical fining with matched package variant for whirlfloc", async () => {
+    mockState.rows = [
+      buildIngredientRow({
+        id: "kettle-fining",
+        type: "consumable",
+        nameRu: "Котловой осветлитель",
+        nameEn: "Kettle Fining",
+        displayModeRu: "localized_first",
+        itemKind: "fining",
+        category: "fining",
+        packageVariants: [{
+          id: "pv-whirlfloc-20",
+          ingredientId: "kettle-fining",
+          brand: "BreakBrite",
+          productNameRu: "Whirlfloc Tablets",
+          countryNameRu: "RU",
+          packageAmount: 20,
+          packageUnit: "item",
+          stockContentAmount: 20,
+          stockContentUnit: "item",
+          sourceGroup: null,
+          sourceUrl: null,
+          isDefaultForStock: true,
+          position: 0,
+          createdAt: now,
+          updatedAt: now
+        }]
+      })
+    ];
+
+    const items = await searchCatalogItems({ q: "whirlfloc", category: "consumable", limit: 8 });
+
+    expect(items[0]).toMatchObject({
+      id: "kettle-fining",
+      matchType: "package",
+      matchedPackageVariantId: "pv-whirlfloc-20",
+      matchedPackageVariantName: "BreakBrite Whirlfloc Tablets"
+    });
+  });
+
+  it("allows admin catalog search to rank more than autocomplete limit", async () => {
+    mockState.rows = Array.from({ length: 30 }, (_, index) => buildIngredientRow({
+      id: `ingredient-${index}`,
+      type: "hop",
+      nameEn: index === 25 ? "Saaz" : `Hop ${index}`,
+      itemKind: "hop"
+    }));
+
+    const result = await listCatalogIngredients({
+      q: "saaz",
+      page: 1,
+      pageSize: 100,
+      sort: "brand"
+    });
+
+    expect(result.items).toHaveLength(1);
+    expect(result.items[0]?.id).toBe("ingredient-25");
   });
 });

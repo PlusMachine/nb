@@ -115,6 +115,12 @@
       "tag": "0018_catalog_search_fields",
       "when": 1777000000000,
       "breakpoints": true
+    },
+    {
+      "idx": 19,
+      "tag": "0019_catalog_v2_restructure",
+      "when": 1778000000000,
+      "breakpoints": true
     }
   ]
 }

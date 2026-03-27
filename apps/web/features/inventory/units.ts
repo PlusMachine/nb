@@ -48,6 +48,8 @@ type InventoryUnitProfileInput = {
   allowedUnits?: readonly string[] | null;
   measurementDimension?: string | null;
   technicalData?: IngredientTechnicalData | null;
+  quantityDefaults?: Record<string, unknown> | null;
+  unitPreferred?: string | null;
 };
 
 export const inventoryUnitLabels: Record<InventoryUnit, string> = {
@@ -121,23 +123,63 @@ const normalizeMeasurementDimension = (value?: string | null): InventoryUnitDime
 
 const normalizeInventoryAllowedUnits = (units: readonly InventoryUnit[]) => [...new Set(units)];
 
+const resolveQuantityDefaultsProfile = (
+  quantityDefaults?: Record<string, unknown> | null
+): InventoryUnitProfile | null => {
+  if (!quantityDefaults) {
+    return null;
+  }
+
+  const stockUnit = parseInventoryUnit(String(
+    quantityDefaults.stock_unit_default
+    ?? quantityDefaults.recipe_unit_default
+    ?? ""
+  ));
+
+  if (!stockUnit || stockUnit === "pack") {
+    return null;
+  }
+
+  const measurementDimension = getInventoryUnitDimension(stockUnit);
+  const stockModeDefault = String(quantityDefaults.stock_mode_default ?? "").trim().toLowerCase();
+  const supportedModes = Array.isArray(quantityDefaults.stock_modes_supported)
+    ? quantityDefaults.stock_modes_supported.map((value) => String(value).trim().toLowerCase())
+    : [];
+  const supportsPackages = stockModeDefault === "by_package_content"
+    || stockModeDefault === "package"
+    || supportedModes.includes("package")
+    || supportedModes.includes("by_package_content");
+
+  return {
+    defaultUnit: stockUnit,
+    allowedUnits: normalizeInventoryAllowedUnits([
+      ...(supportsPackages ? (["pack"] as const) : []),
+      ...unitsByDimension[measurementDimension]
+    ]),
+    measurementDimension
+  };
+};
+
 const resolvePracticalYeastProfile = (
   resolvedCategory: IngredientCategory | null,
   explicitDefaultUnit: InventoryUnit | null,
   technicalData?: IngredientTechnicalData | null
 ): InventoryUnitProfile | null => {
-  if (resolvedCategory !== "yeast" || technicalData?.category !== "yeast") {
+  if (resolvedCategory !== "yeast" || technicalData?.type !== "yeast") {
     return null;
   }
 
-  if (explicitDefaultUnit && explicitDefaultUnit !== "pack") {
-    return null;
+  const isLiquid = technicalData.form === "liquid";
+
+  if (technicalData.form === "dry") {
+    return {
+      defaultUnit: "pack",
+      allowedUnits: normalizeInventoryAllowedUnits(["pack", "g"]),
+      measurementDimension: "count"
+    };
   }
 
-  const hasPackageData = technicalData.packageSize != null && technicalData.packageUnit != null;
-
-  if (hasPackageData) {
-    const isLiquid = technicalData.form === "liquid";
+  if (explicitDefaultUnit === "pack") {
     return {
       defaultUnit: "pack",
       allowedUnits: normalizeInventoryAllowedUnits(isLiquid ? ["pack", "ml"] : ["pack", "g"]),
@@ -145,7 +187,11 @@ const resolvePracticalYeastProfile = (
     };
   }
 
-  const defaultUnit = technicalData.form === "liquid" ? "ml" : "g";
+  if (explicitDefaultUnit) {
+    return null;
+  }
+
+  const defaultUnit = isLiquid ? "ml" : "g";
   const measurementDimension = getInventoryUnitDimension(defaultUnit);
 
   return {
@@ -168,13 +214,20 @@ export const resolveInventoryUnitProfile = ({
   defaultDisplayUnit,
   allowedUnits,
   measurementDimension,
-  technicalData
+  technicalData,
+  quantityDefaults,
+  unitPreferred
 }: InventoryUnitProfileInput): InventoryUnitProfile => {
   const explicitDefaultUnit = parseInventoryUnit(defaultDisplayUnit ?? "");
   const explicitAllowedUnits = normalizeUnitList(allowedUnits);
   const explicitMeasurementDimension = normalizeMeasurementDimension(measurementDimension);
+  const quantityDefaultsProfile = resolveQuantityDefaultsProfile(quantityDefaults);
   const resolvedCategory = category ?? (type ? resolveIngredientCategory({ type }) : null);
   const practicalYeastProfile = resolvePracticalYeastProfile(resolvedCategory, explicitDefaultUnit, technicalData);
+
+  if (quantityDefaultsProfile) {
+    return quantityDefaultsProfile;
+  }
 
   if (practicalYeastProfile) {
     return practicalYeastProfile;
@@ -194,7 +247,8 @@ export const resolveInventoryUnitProfile = ({
       type: type ?? undefined,
       subtype: subtype ?? undefined,
       defaultDisplayUnit: defaultDisplayUnit && isIngredientDisplayUnit(defaultDisplayUnit) ? defaultDisplayUnit : undefined,
-      yeastForm: technicalData?.category === "yeast" ? technicalData.form : undefined
+      yeastForm: technicalData?.type === "yeast" && typeof technicalData.form === "string" ? technicalData.form : undefined,
+      unitPreferred: unitPreferred
     });
 
     return {
@@ -239,7 +293,7 @@ export const resolveHumanFacingInventoryUnitProfile = (
     };
   }
 
-  if (resolvedCategory === "water_prep") {
+  if (resolvedCategory === "water_treatment") {
     if (input.subtype === "acid" && profile.allowedUnits.includes("ml")) {
       return {
         ...profile,
@@ -253,6 +307,17 @@ export const resolveHumanFacingInventoryUnitProfile = (
         defaultUnit: "g"
       };
     }
+  }
+
+  if (resolvedCategory === "consumable" && profile.allowedUnits.includes(profile.defaultUnit)) {
+    return profile;
+  }
+
+  if (resolvedCategory === "yeast" && profile.allowedUnits.includes("pack")) {
+    return {
+      ...profile,
+      defaultUnit: "pack"
+    };
   }
 
   return profile;

@@ -3,10 +3,29 @@ import { type AnyPgColumn, boolean, check, doublePrecision, index, integer, json
 
 export const userRoleEnum = pgEnum("user_role", ["user", "editor", "moderator", "admin"]);
 export const verificationTypeEnum = pgEnum("verification_type", ["otp", "magic_link", "password_reset"]);
-export const ingredientTypeEnum = pgEnum("ingredient_type", ["fermentable", "hop", "yeast", "sugar", "adjunct", "fining", "misc"]);
+export const ingredientTypeEnum = pgEnum("ingredient_type", [
+  "fermentable",
+  "hop",
+  "yeast",
+  "sugar",
+  "adjunct",
+  "fining",
+  "misc",
+  "malt",
+  "consumable",
+  "water_treatment"
+]);
 export const ingredientStatusEnum = pgEnum("ingredient_status", ["draft", "active", "archived", "merged"]);
 export const ingredientVisibilityEnum = pgEnum("ingredient_visibility", ["public", "internal"]);
-export const ingredientCategoryEnum = pgEnum("ingredient_category", ["fermentable", "hop", "yeast", "water_prep", "misc"]);
+export const ingredientCategoryEnum = pgEnum("ingredient_category", [
+  "fermentable",
+  "hop",
+  "yeast",
+  "water_prep",
+  "misc",
+  "consumable",
+  "water_treatment"
+]);
 export const ingredientMatchPolicyEnum = pgEnum("ingredient_match_policy", ["exact_only", "family_compatible"]);
 export const ingredientCompletenessLevelEnum = pgEnum("ingredient_completeness_level", ["minimum", "recommended", "full"]);
 export const proposedIngredientStatusEnum = pgEnum("proposed_ingredient_status", ["pending", "approved", "rejected", "merged"]);
@@ -123,6 +142,94 @@ export const ingredientFamilies = pgTable("ingredient_families", {
   )
 }));
 
+export const ingredients = pgTable("ingredients", {
+  id: text("id").primaryKey(),
+  type: text("type").notNull(),
+  nameRu: text("name_ru"),
+  nameEn: text("name_en"),
+  displayModeRu: text("display_mode_ru").default("auto").notNull(),
+  displayNameOverrideRu: text("display_name_override_ru"),
+  secondaryNameOverrideRu: text("secondary_name_override_ru"),
+  hideSecondaryNameRu: boolean("hide_secondary_name_ru").default(false).notNull(),
+  isActive: boolean("is_active").default(true).notNull(),
+  countryCode: text("country_code"),
+  countryName: text("country_name"),
+  brand: text("brand"),
+  producer: text("producer"),
+  productCode: text("product_code"),
+  groupName: text("group_name"),
+  category: text("category"),
+  subcategory: text("subcategory"),
+  itemKind: text("item_kind"),
+  presentOnBirrf: boolean("present_on_birrf"),
+  inventoryEnabled: boolean("inventory_enabled").default(true).notNull(),
+  attributes: jsonb("attributes").$type<Record<string, unknown>>().default({}).notNull(),
+  quantityDefaults: jsonb("quantity_defaults").$type<Record<string, unknown> | null>(),
+  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull()
+}, (table) => ({
+  typeIdx: index("ingredients_type_idx").on(table.type),
+  activeIdx: index("ingredients_is_active_idx").on(table.isActive),
+  categoryIdx: index("ingredients_category_idx").on(table.category),
+  itemKindIdx: index("ingredients_item_kind_idx").on(table.itemKind),
+  brandIdx: index("ingredients_brand_idx").on(table.brand),
+  producerIdx: index("ingredients_producer_idx").on(table.producer),
+  productCodeIdx: index("ingredients_product_code_idx").on(table.productCode)
+}));
+
+export const ingredientAliases = pgTable("ingredient_aliases", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  ingredientId: text("ingredient_id").notNull().references(() => ingredients.id, { onDelete: "cascade" }),
+  locale: text("locale").notNull(),
+  alias: text("alias").notNull(),
+  aliasNormalized: text("alias_normalized").notNull(),
+  source: text("source").default("seed").notNull(),
+  isEnabled: boolean("is_enabled").default(true).notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull()
+}, (table) => ({
+  ingredientIdx: index("ingredient_aliases_ingredient_id_idx").on(table.ingredientId),
+  normalizedIdx: index("ingredient_aliases_alias_normalized_idx").on(table.aliasNormalized),
+  uniqueAliasIdx: uniqueIndex("ingredient_aliases_unique_uidx").on(table.ingredientId, table.locale, table.aliasNormalized)
+}));
+
+export const ingredientSources = pgTable("ingredient_sources", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  ingredientId: text("ingredient_id").notNull().references(() => ingredients.id, { onDelete: "cascade" }),
+  kind: text("kind"),
+  label: text("label"),
+  url: text("url"),
+  sourceBasis: text("source_basis"),
+  position: integer("position").default(0).notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull()
+}, (table) => ({
+  ingredientIdx: index("ingredient_sources_ingredient_id_idx").on(table.ingredientId),
+  positionIdx: index("ingredient_sources_ingredient_position_idx").on(table.ingredientId, table.position)
+}));
+
+export const ingredientPackageVariants = pgTable("ingredient_package_variants", {
+  id: text("id").primaryKey(),
+  ingredientId: text("ingredient_id").notNull().references(() => ingredients.id, { onDelete: "cascade" }),
+  brand: text("brand"),
+  productNameRu: text("product_name_ru"),
+  countryNameRu: text("country_name_ru"),
+  packageAmount: doublePrecision("package_amount"),
+  packageUnit: text("package_unit"),
+  stockContentAmount: doublePrecision("stock_content_amount"),
+  stockContentUnit: text("stock_content_unit"),
+  sourceGroup: text("source_group"),
+  sourceUrl: text("source_url"),
+  isDefaultForStock: boolean("is_default_for_stock").default(false).notNull(),
+  position: integer("position").default(0).notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull()
+}, (table) => ({
+  ingredientIdx: index("ingredient_package_variants_ingredient_id_idx").on(table.ingredientId),
+  defaultIdx: index("ingredient_package_variants_default_idx").on(table.ingredientId, table.isDefaultForStock),
+  positionIdx: index("ingredient_package_variants_position_idx").on(table.ingredientId, table.position)
+}));
+
 export const ingredientCatalogItems = pgTable("ingredient_catalog_items", {
   id: uuid("id").defaultRandom().primaryKey(),
   type: ingredientTypeEnum("type").notNull(),
@@ -187,7 +294,7 @@ export const proposedIngredients = pgTable("proposed_ingredients", {
   sourceDisplayName: varchar("source_display_name", { length: 180 }).notNull(),
   normalizedName: varchar("normalized_name", { length: 220 }).notNull(),
   status: proposedIngredientStatusEnum("status").default("pending").notNull(),
-  targetIngredientId: uuid("target_ingredient_id").references(() => ingredientCatalogItems.id, { onDelete: "set null" }),
+  targetIngredientId: text("target_ingredient_id").references(() => ingredients.id, { onDelete: "set null" }),
   moderatorId: uuid("moderator_id").references(() => users.id, { onDelete: "set null" }),
   resolutionNote: text("resolution_note"),
   createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
@@ -227,8 +334,9 @@ export const userCustomIngredients = pgTable("user_custom_ingredients", {
 export const userIngredients = pgTable("user_ingredients", {
   id: uuid("id").defaultRandom().primaryKey(),
   userId: uuid("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
-  ingredientCatalogItemId: uuid("ingredient_catalog_item_id").references(() => ingredientCatalogItems.id, { onDelete: "set null" }),
+  ingredientCatalogItemId: text("ingredient_catalog_item_id").references(() => ingredients.id, { onDelete: "set null" }),
   userCustomIngredientId: uuid("user_custom_ingredient_id").references(() => userCustomIngredients.id, { onDelete: "set null" }),
+  packageVariantId: text("package_variant_id").references(() => ingredientPackageVariants.id, { onDelete: "set null" }),
   ingredientFamilyId: uuid("ingredient_family_id").references(() => ingredientFamilies.id, { onDelete: "set null" }),
   ingredientCategory: ingredientCategoryEnum("ingredient_category").notNull(),
   ingredientSubtype: varchar("ingredient_subtype", { length: 80 }),
@@ -261,6 +369,7 @@ export const userIngredients = pgTable("user_ingredients", {
   userArchivedIdx: index("user_ingredients_user_archived_at_idx").on(table.userId, table.archivedAt),
   catalogItemIdx: index("user_ingredients_catalog_item_idx").on(table.ingredientCatalogItemId),
   customItemIdx: index("user_ingredients_custom_item_idx").on(table.userCustomIngredientId),
+  packageVariantIdx: index("user_ingredients_package_variant_idx").on(table.packageVariantId),
   familyIdx: index("user_ingredients_family_idx").on(table.ingredientFamilyId),
   categoryIdx: index("user_ingredients_category_idx").on(table.ingredientCategory)
 }));
@@ -302,7 +411,7 @@ export const recipes = pgTable("recipes", {
 export const recipeIngredients = pgTable("recipe_ingredients", {
   id: uuid("id").defaultRandom().primaryKey(),
   recipeId: uuid("recipe_id").notNull().references(() => recipes.id, { onDelete: "cascade" }),
-  ingredientCatalogItemId: uuid("ingredient_catalog_item_id").references(() => ingredientCatalogItems.id, { onDelete: "set null" }),
+  ingredientCatalogItemId: text("ingredient_catalog_item_id").references(() => ingredients.id, { onDelete: "set null" }),
   userCustomIngredientId: uuid("user_custom_ingredient_id").references(() => userCustomIngredients.id, { onDelete: "set null" }),
   ingredientFamilyId: uuid("ingredient_family_id").references(() => ingredientFamilies.id, { onDelete: "set null" }),
   ingredientCategory: ingredientCategoryEnum("ingredient_category").notNull(),
@@ -342,6 +451,33 @@ export const ingredientFamiliesRelations = relations(ingredientFamilies, ({ many
   catalogItems: many(ingredientCatalogItems)
 }));
 
+export const ingredientsRelations = relations(ingredients, ({ many }) => ({
+  aliases: many(ingredientAliases),
+  sources: many(ingredientSources),
+  packageVariants: many(ingredientPackageVariants)
+}));
+
+export const ingredientAliasesRelations = relations(ingredientAliases, ({ one }) => ({
+  ingredient: one(ingredients, {
+    fields: [ingredientAliases.ingredientId],
+    references: [ingredients.id]
+  })
+}));
+
+export const ingredientSourcesRelations = relations(ingredientSources, ({ one }) => ({
+  ingredient: one(ingredients, {
+    fields: [ingredientSources.ingredientId],
+    references: [ingredients.id]
+  })
+}));
+
+export const ingredientPackageVariantsRelations = relations(ingredientPackageVariants, ({ one }) => ({
+  ingredient: one(ingredients, {
+    fields: [ingredientPackageVariants.ingredientId],
+    references: [ingredients.id]
+  })
+}));
+
 export const ingredientCatalogItemsRelations = relations(ingredientCatalogItems, ({ one }) => ({
   family: one(ingredientFamilies, {
     fields: [ingredientCatalogItems.familyId],
@@ -362,9 +498,9 @@ export const recipeIngredientsRelations = relations(recipeIngredients, ({ one })
     fields: [recipeIngredients.recipeId],
     references: [recipes.id]
   }),
-  catalogItem: one(ingredientCatalogItems, {
+  catalogItem: one(ingredients, {
     fields: [recipeIngredients.ingredientCatalogItemId],
-    references: [ingredientCatalogItems.id]
+    references: [ingredients.id]
   }),
   customItem: one(userCustomIngredients, {
     fields: [recipeIngredients.userCustomIngredientId],

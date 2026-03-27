@@ -7,8 +7,8 @@ import {
   ingredientMatchPolicies as taxonomyIngredientMatchPolicies,
   ingredientMeasurementDimensions as taxonomyIngredientMeasurementDimensions,
   legacyIngredientTypes,
-  miscSubtypes,
   resolveIngredientCategory,
+  resolveIngredientCompletenessLevel,
   resolveIngredientSubtype,
   resolveLegacyIngredientType,
   type IngredientCategory,
@@ -19,23 +19,6 @@ import {
   type IngredientSubtype,
   type LegacyIngredientType
 } from "./taxonomy";
-import {
-  hopForms,
-  legacyYeastTypes,
-  miscUsagePhases,
-  normalizeIngredientTechnicalData,
-  waterPrepPhysicalForms,
-  yeastFlocculationLevels,
-  yeastForms,
-  type HopForm,
-  type IngredientTechnicalData,
-  type IngredientTechnicalFields,
-  type LegacyYeastType,
-  type MiscUsagePhase,
-  type WaterPrepPhysicalForm,
-  type YeastFlocculationLevel,
-  type YeastForm
-} from "./technical-fields";
 
 export const ingredientTypes = legacyIngredientTypes;
 export type IngredientType = LegacyIngredientType;
@@ -47,30 +30,130 @@ export type {
   IngredientMeasurementDimension,
   IngredientSubtype
 };
+
 export const ingredientCategories = taxonomyIngredientCategories;
 export const ingredientMatchPolicies = taxonomyIngredientMatchPolicies;
 export const ingredientCompletenessLevels = taxonomyIngredientCompletenessLevels;
 export const ingredientMeasurementDimensions = taxonomyIngredientMeasurementDimensions;
-export const yeastTypes = legacyYeastTypes;
-export type YeastType = LegacyYeastType;
-export {
-  hopForms,
-  miscUsagePhases,
-  waterPrepPhysicalForms,
-  yeastFlocculationLevels,
-  yeastForms
-};
-export type {
-  HopForm,
-  IngredientTechnicalData,
-  IngredientTechnicalFields,
-  MiscUsagePhase,
-  WaterPrepPhysicalForm,
-  YeastFlocculationLevel,
-  YeastForm
+
+export const ingredientDisplayModes = ["auto", "localized_first", "source_first"] as const;
+export type IngredientDisplayMode = (typeof ingredientDisplayModes)[number];
+
+export const ingredientAliasLocales = ["ru", "en", "neutral"] as const;
+export type IngredientAliasLocale = (typeof ingredientAliasLocales)[number];
+
+export type HopTechnicalData = {
+  type: "hop";
+  alphaAcidPctMin?: number | null;
+  alphaAcidPctMax?: number | null;
+  alphaAcidPctTypical?: number | null;
+  betaAcidPctMin?: number | null;
+  betaAcidPctMax?: number | null;
+  betaAcidPctTypical?: number | null;
+  oilMl100gMin?: number | null;
+  oilMl100gMax?: number | null;
+  oilMl100gTypical?: number | null;
+  cohumulonePctMin?: number | null;
+  cohumulonePctMax?: number | null;
+  cohumulonePctTypical?: number | null;
+  categoryBirrf?: string | null;
+  categoryBirrfRu?: string | null;
+  hopForm?: string | null;
+  isBlend?: boolean | null;
+  isPopularInRussia?: boolean | null;
+  aromaDescriptorsEn?: string[];
+  notes?: string | null;
 };
 
-const nullableNumberField = (min: number, max: number) => z.preprocess((value) => {
+export type MaltTechnicalData = {
+  type: "malt";
+  maltType?: string | null;
+  extractPctDryBasis?: number | null;
+  colorEbcMin?: number | null;
+  colorEbcMax?: number | null;
+  colorLovibond?: number | null;
+  proteinPct?: number | null;
+  maxUsagePct?: number | null;
+  colorEbcIsApprox?: boolean | null;
+};
+
+export type FermentableTechnicalData = {
+  type: "fermentable";
+  fermentabilityClass?: string | null;
+  extractPctDryBasis?: number | null;
+  colorLovibond?: number | null;
+  recommendedMaxPct?: number | null;
+  isUsableInBeerGravityCalculations?: boolean | null;
+  beerRelevance?: string | null;
+};
+
+export type YeastTechnicalData = {
+  type: "yeast";
+  form?: string | null;
+  yeastFamily?: string | null;
+  birrfCategory?: string | null;
+  attenuationPctTypical?: number | null;
+  flocculation?: string | null;
+  fermentationTempCMin?: number | null;
+  fermentationTempCMax?: number | null;
+  fermentationTempCOptimum?: number | null;
+  alcoholToleranceAbvTypical?: number | null;
+  sourceBasis?: string | null;
+  packageSize?: number | null;
+  packageUnit?: string | null;
+};
+
+export type ConsumableTechnicalData = {
+  type: "consumable";
+  commonForms?: string[];
+  usageStage?: string[];
+  dosageReference?: Record<string, unknown> | null;
+};
+
+export type WaterTreatmentTechnicalData = {
+  type: "water_treatment";
+  commonForms?: string[];
+  unitPreferred?: string | null;
+  typicalUseRu?: string | null;
+  recommendedFor?: string[];
+  waterCalcRole?: string[];
+  pHEffectDirection?: string | null;
+  effectOnIons?: Record<string, unknown> | null;
+  calculationSupport?: string | null;
+  commonInHomebrewing?: boolean | null;
+  commonInProBrewing?: boolean | null;
+  recommendationLevel?: string | null;
+  cautionsRu?: string | null;
+  sourceBasis?: string[] | string | null;
+};
+
+export type IngredientTechnicalData =
+  | HopTechnicalData
+  | MaltTechnicalData
+  | FermentableTechnicalData
+  | YeastTechnicalData
+  | ConsumableTechnicalData
+  | WaterTreatmentTechnicalData
+  | {
+    type: IngredientType;
+    [key: string]: unknown;
+  };
+
+export type IngredientTechnicalFields = {
+  hopAlphaAcidPct?: number | null;
+  hopBetaAcidPct?: number | null;
+  hopTotalOilMlPer100g?: number | null;
+  hopForm?: string | null;
+  fermentableExtractYieldPct?: number | null;
+  fermentableColorLovibond?: number | null;
+  yeastAttenuationPct?: number | null;
+  yeastForm?: string | null;
+  yeastMinFermentationTempC?: number | null;
+  yeastMaxFermentationTempC?: number | null;
+  unitPreferred?: string | null;
+};
+
+const nullableNumberField = () => z.preprocess((value) => {
   if (value == null) {
     return null;
   }
@@ -85,305 +168,181 @@ const nullableNumberField = (min: number, max: number) => z.preprocess((value) =
   }
 
   return value;
-}, z.number().min(min).max(max).nullable().optional());
+}, z.number().nullable().optional());
 
-const nullableIntegerField = (min: number, max: number) => z.preprocess((value) => {
-  if (value == null) {
-    return null;
-  }
+const optionalString = (max: number) => z.string().trim().max(max).optional().nullable();
 
-  if (typeof value === "string") {
-    const trimmed = value.trim();
-    if (!trimmed) {
-      return null;
-    }
+const ingredientAliasInputSchema = z.object({
+  id: z.string().optional(),
+  locale: z.enum(ingredientAliasLocales),
+  alias: z.string().trim().min(1).max(180),
+  source: z.string().trim().max(48).default("admin"),
+  isEnabled: z.boolean().default(true)
+});
 
-    return Number(trimmed);
-  }
+const ingredientSourceInputSchema = z.object({
+  id: z.string().optional(),
+  kind: optionalString(120),
+  label: optionalString(300),
+  url: optionalString(2000),
+  sourceBasis: optionalString(200),
+  position: z.coerce.number().int().min(0).default(0)
+});
 
-  return value;
-}, z.number().int().min(min).max(max).nullable().optional());
+const ingredientPackageVariantInputSchema = z.object({
+  id: z.string().trim().min(1).max(191),
+  brand: optionalString(180),
+  productNameRu: optionalString(300),
+  countryNameRu: optionalString(180),
+  packageAmount: nullableNumberField(),
+  packageUnit: optionalString(32),
+  stockContentAmount: nullableNumberField(),
+  stockContentUnit: optionalString(32),
+  sourceGroup: optionalString(240),
+  sourceUrl: optionalString(2000),
+  isDefaultForStock: z.boolean().default(false),
+  position: z.coerce.number().int().min(0).default(0)
+});
 
 export const ingredientSearchQuerySchema = z.object({
   q: z.string().trim().min(1).max(120),
   type: z.enum(ingredientTypes).optional(),
   category: z.enum(ingredientCategories).optional(),
   limit: z.coerce.number().min(1).max(20).default(10)
-}).superRefine((value, ctx) => {
-  if (value.type && value.category) {
-    const resolvedCategory = resolveIngredientCategory(value);
-    if (resolvedCategory !== value.category) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        message: "Type and category filters conflict",
-        path: ["category"]
-      });
-    }
-  }
 });
 
 export const ingredientUpsertSchema = z.object({
-  type: z.enum(ingredientTypes).optional(),
-  category: z.enum(ingredientCategories).optional(),
-  subtype: z.string().trim().max(80).optional().nullable(),
-  familyId: z.string().uuid().optional().nullable(),
-  canonicalFamilyName: z.string().trim().min(1).max(180).optional().nullable(),
-  familyDisplayNameRu: z.string().trim().max(180).optional().nullable(),
-  familyDisplayNameEn: z.string().trim().max(180).optional().nullable(),
-  matchPolicy: z.enum(ingredientMatchPolicies).optional().nullable(),
-  displayName: z.string().trim().min(2).max(180),
-  aliases: z.array(z.string().trim().min(1).max(180)).max(20).default([]),
-  brandName: z.string().trim().max(140).optional().nullable(),
-  manufacturer: z.string().trim().max(140).optional().nullable(),
-  country: z.string().trim().max(80).optional().nullable(),
-  harvestYear: nullableIntegerField(1900, 2200),
-  description: z.string().trim().max(3000).optional().nullable(),
-  defaultUnit: z.string().trim().min(1).max(32).optional(),
-  defaultDisplayUnit: z.enum(ingredientDisplayUnits).optional(),
-  allowedUnits: z.array(z.enum(ingredientDisplayUnits)).max(12).optional(),
-  measurementDimension: z.enum(ingredientMeasurementDimensions).optional().nullable(),
-  completenessLevel: z.enum(ingredientCompletenessLevels).optional().nullable(),
-  technicalData: z.record(z.string(), z.unknown()).optional().nullable(),
-  fermentableColorEbc: nullableNumberField(0, 2000),
-  fermentableExtractYieldPct: nullableNumberField(0, 100),
-  fermentableProteinPct: nullableNumberField(0, 100),
-  fermentableMoisturePct: nullableNumberField(0, 100),
-  fermentableMaxUsagePercent: nullableNumberField(0, 100),
-  fermentableDiastaticPowerLintner: nullableNumberField(0, 1000),
-  fermentableUsageFlags: z.preprocess((value) => {
-    if (Array.isArray(value)) {
-      return value;
-    }
-
-    if (typeof value === "string") {
-      return value
-        .split(/[\n,]/)
-        .map((item) => item.trim())
-        .filter(Boolean);
-    }
-
-    return [];
-  }, z.array(z.string().trim().min(1).max(40)).max(12)).optional(),
-  hopAlphaAcidPct: nullableNumberField(0, 100),
-  hopBetaAcidPct: nullableNumberField(0, 100),
-  hopTotalOilMlPer100g: nullableNumberField(0, 20),
-  hopForm: z.enum(hopForms).optional().nullable(),
-  hopSeason: z.string().trim().max(32).optional().nullable(),
-  hopNotes: z.string().trim().max(1000).optional().nullable(),
-  yeastAttenuationPct: nullableNumberField(0, 100),
-  yeastType: z.enum(yeastTypes).optional().nullable(),
-  yeastForm: z.enum(yeastForms).optional().nullable(),
-  yeastMinFermentationTempC: nullableNumberField(-10, 60),
-  yeastMaxFermentationTempC: nullableNumberField(-10, 60),
-  yeastFlocculation: z.enum(yeastFlocculationLevels).optional().nullable(),
-  yeastAlcoholTolerancePct: nullableNumberField(0, 100),
-  yeastPackageSize: nullableNumberField(0.0001, 100000),
-  yeastPackageUnit: z.enum(ingredientDisplayUnits).optional().nullable(),
-  yeastPhenolic: z.preprocess((value) => {
-    if (value == null || value === "") {
-      return null;
-    }
-
-    if (typeof value === "string") {
-      const normalized = value.trim().toLowerCase();
-      if (["true", "1", "yes", "on"].includes(normalized)) return true;
-      if (["false", "0", "no", "off"].includes(normalized)) return false;
-    }
-
-    return value;
-  }, z.boolean().nullable().optional()),
-  yeastDiastaticus: z.preprocess((value) => {
-    if (value == null || value === "") {
-      return null;
-    }
-
-    if (typeof value === "string") {
-      const normalized = value.trim().toLowerCase();
-      if (["true", "1", "yes", "on"].includes(normalized)) return true;
-      if (["false", "0", "no", "off"].includes(normalized)) return false;
-    }
-
-    return value;
-  }, z.boolean().nullable().optional()),
-  waterPrepCompound: z.string().trim().max(120).optional().nullable(),
-  waterPrepAcidType: z.string().trim().max(120).optional().nullable(),
-  waterPrepStrengthPct: nullableNumberField(0.0001, 100),
-  waterPrepPurityPct: nullableNumberField(0.0001, 100),
-  waterPrepPhysicalForm: z.enum(waterPrepPhysicalForms).optional().nullable(),
-  miscUsagePhase: z.enum(miscUsagePhases).optional().nullable(),
-  miscDoseHint: z.string().trim().max(240).optional().nullable(),
-  properties: z.record(z.string(), z.unknown()).default({}),
-  status: z.enum(["draft", "active", "archived", "merged"]).default("active"),
-  visibility: z.enum(["public", "internal"]).default("public")
+  id: z.string().trim().min(1).max(191).optional(),
+  type: z.enum(ingredientTypes),
+  category: z.enum(ingredientCategories).optional().nullable(),
+  itemKind: optionalString(120),
+  nameRu: optionalString(240),
+  nameEn: optionalString(240),
+  displayModeRu: z.enum(ingredientDisplayModes).default("auto"),
+  displayNameOverrideRu: optionalString(240),
+  secondaryNameOverrideRu: optionalString(240),
+  hideSecondaryNameRu: z.boolean().default(false),
+  isActive: z.boolean().default(true),
+  inventoryEnabled: z.boolean().default(true),
+  countryCode: optionalString(8),
+  countryName: optionalString(180),
+  brand: optionalString(180),
+  producer: optionalString(180),
+  productCode: optionalString(80),
+  groupName: optionalString(120),
+  sourceCategory: optionalString(120),
+  subcategory: optionalString(120),
+  presentOnBirrf: z.boolean().optional().nullable(),
+  attributes: z.record(z.string(), z.unknown()).default({}),
+  quantityDefaults: z.record(z.string(), z.unknown()).optional().nullable(),
+  aliases: z.array(ingredientAliasInputSchema).default([]),
+  sources: z.array(ingredientSourceInputSchema).default([]),
+  packageVariants: z.array(ingredientPackageVariantInputSchema).default([])
 }).superRefine((value, ctx) => {
-  if (!value.type && !value.category) {
+  const category = value.category ?? resolveIngredientCategory({
+    category: value.category,
+    type: value.type,
+    subtype: value.itemKind
+  });
+
+  if (category === "water_treatment" && value.packageVariants.length > 0) {
     ctx.addIssue({
       code: z.ZodIssueCode.custom,
-      message: "Either type or category is required",
-      path: ["category"]
+      message: "Package variants are only supported for consumables",
+      path: ["packageVariants"]
     });
-    return;
-  }
-
-  const resolvedCategory = resolveIngredientCategory(value);
-  const resolvedLegacyType = resolveLegacyIngredientType(value);
-  const resolvedSubtype = resolveIngredientSubtype(value);
-  if (value.category && resolvedCategory !== value.category) {
-    ctx.addIssue({
-      code: z.ZodIssueCode.custom,
-      message: "Provided category conflicts with type/subtype mapping",
-      path: ["category"]
-    });
-  }
-
-  if (value.type && resolvedLegacyType !== value.type && value.category == null) {
-    ctx.addIssue({
-      code: z.ZodIssueCode.custom,
-      message: "Provided type conflicts with subtype mapping",
-      path: ["type"]
-    });
-  }
-
-  if (!value.defaultUnit && !value.defaultDisplayUnit) {
-    ctx.addIssue({
-      code: z.ZodIssueCode.custom,
-      message: "Default display unit is required",
-      path: ["defaultDisplayUnit"]
-    });
-  }
-
-  if (resolvedCategory === "misc" && value.subtype && !miscSubtypes.includes(resolvedSubtype as never)) {
-    ctx.addIssue({
-      code: z.ZodIssueCode.custom,
-      message: "Unknown misc subtype",
-      path: ["subtype"]
-    });
-  }
-
-  if (!resolvedSubtype) {
-    ctx.addIssue({
-      code: z.ZodIssueCode.custom,
-      message: "Subtype is required",
-      path: ["subtype"]
-    });
-    return;
-  }
-
-  try {
-    normalizeIngredientTechnicalData({
-      ...value,
-      category: resolvedCategory,
-      subtype: resolvedSubtype,
-      type: resolvedLegacyType
-    });
-  } catch (error) {
-    if (!(error instanceof z.ZodError)) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        message: "Technical field validation failed",
-        path: ["subtype"]
-      });
-      return;
-    }
-
-    for (const issue of error.issues) {
-      const path = issue.path[0];
-      const fieldPath = (() => {
-        if (path === "colorEbc") return ["fermentableColorEbc"];
-        if (path === "extractYieldPct") return ["fermentableExtractYieldPct"];
-        if (path === "proteinPct") return ["fermentableProteinPct"];
-        if (path === "moisturePct") return ["fermentableMoisturePct"];
-        if (path === "maxUsagePercent") return ["fermentableMaxUsagePercent"];
-        if (path === "diastaticPowerLintner") return ["fermentableDiastaticPowerLintner"];
-        if (path === "usageFlags") return ["fermentableUsageFlags"];
-        if (path === "alphaAcidPct") return ["hopAlphaAcidPct"];
-        if (path === "betaAcidPct") return ["hopBetaAcidPct"];
-        if (path === "totalOilMlPer100g") return ["hopTotalOilMlPer100g"];
-        if (path === "notes") return ["hopNotes"];
-        if (path === "form") return ["yeastForm"];
-        if (path === "attenuationPct") return ["yeastAttenuationPct"];
-        if (path === "tempMinC") return ["yeastMinFermentationTempC"];
-        if (path === "tempMaxC") return ["yeastMaxFermentationTempC"];
-        if (path === "flocculation") return ["yeastFlocculation"];
-        if (path === "alcoholTolerancePct") return ["yeastAlcoholTolerancePct"];
-        if (path === "packageSize") return ["yeastPackageSize"];
-        if (path === "packageUnit") return ["yeastPackageUnit"];
-        if (path === "phenolic") return ["yeastPhenolic"];
-        if (path === "diastaticus") return ["yeastDiastaticus"];
-        if (path === "compound") return ["waterPrepCompound"];
-        if (path === "acidType") return ["waterPrepAcidType"];
-        if (path === "strengthPct") return ["waterPrepStrengthPct"];
-        if (path === "purityPct") return ["waterPrepPurityPct"];
-        if (path === "physicalForm") return ["waterPrepPhysicalForm"];
-        if (path === "usagePhase") return ["miscUsagePhase"];
-        if (path === "doseHint") return ["miscDoseHint"];
-        return issue.path.length ? issue.path.map((segment) => String(segment)) : ["category"];
-      })();
-
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        message: issue.message,
-        path: fieldPath
-      });
-    }
   }
 });
 
 export const moderationActionSchema = z.object({
   action: z.enum(["approve", "reject", "merge"]),
-  targetIngredientId: z.string().uuid().optional(),
+  targetIngredientId: z.string().trim().min(1).optional(),
   resolutionNote: z.string().trim().max(1000).optional()
 });
 
-export type IngredientFamilySummaryDto = {
+export type IngredientAliasDto = {
   id: string;
-  category: IngredientCategory;
-  subtype: IngredientSubtype | null;
-  canonicalName: string;
-  normalizedCanonicalName: string;
-  displayNameRu: string | null;
-  displayNameEn: string | null;
-  matchPolicy: IngredientMatchPolicy;
-  isActive: boolean;
+  locale: IngredientAliasLocale;
+  alias: string;
+  aliasNormalized: string;
+  source: string;
+  isEnabled: boolean;
 };
 
-export type IngredientFamilyDto = IngredientFamilySummaryDto & {
-  createdAt: Date;
-  updatedAt: Date;
+export type IngredientSourceDto = {
+  id: string;
+  kind: string | null;
+  label: string | null;
+  url: string | null;
+  sourceBasis: string | null;
+  position: number;
 };
+
+export type IngredientPackageVariantDto = {
+  id: string;
+  brand: string | null;
+  productNameRu: string | null;
+  countryNameRu: string | null;
+  packageAmount: number | null;
+  packageUnit: string | null;
+  stockContentAmount: number | null;
+  stockContentUnit: string | null;
+  sourceGroup: string | null;
+  sourceUrl: string | null;
+  isDefaultForStock: boolean;
+  position: number;
+};
+
+export type IngredientFamilySummaryDto = null;
 
 export type IngredientCatalogItemDto = IngredientTechnicalFields & {
   id: string;
   type: IngredientType;
   category: IngredientCategory;
   subtype: IngredientSubtype | null;
-  familyId: string;
-  family: IngredientFamilySummaryDto | null;
+  familyId: string | null;
+  family: null;
+  primaryLabelRu: string;
+  secondaryLabelRu: string | null;
   displayName: string;
-  displayNameRu: string;
+  displayNameRu: string | null;
   displayNameEn: string | null;
-  normalizedName: string;
-  aliases: string[];
-  searchAliasesNorm: string[];
+  nameRu: string | null;
+  nameEn: string | null;
+  displayModeRu: IngredientDisplayMode;
+  displayNameOverrideRu: string | null;
+  secondaryNameOverrideRu: string | null;
+  hideSecondaryNameRu: boolean;
+  brand: string | null;
+  producer: string | null;
   brandName: string | null;
   manufacturer: string | null;
   country: string | null;
-  harvestYear: number | null;
-  description: string | null;
+  countryCode: string | null;
+  countryName: string | null;
+  productCode: string | null;
+  groupName: string | null;
+  sourceCategory: string | null;
+  subcategory: string | null;
+  itemKind: string | null;
+  presentOnBirrf: boolean | null;
+  isActive: boolean;
+  inventoryEnabled: boolean;
+  attributes: Record<string, unknown>;
   technicalData: IngredientTechnicalData | null;
+  aliases: IngredientAliasDto[];
+  sources: IngredientSourceDto[];
+  packageVariants: IngredientPackageVariantDto[];
+  quantityDefaults: Record<string, unknown> | null;
+  unitPreferred: string | null;
   defaultUnit: IngredientDisplayUnit;
   defaultDisplayUnit: IngredientDisplayUnit;
   allowedUnits: IngredientDisplayUnit[];
   measurementDimension: IngredientMeasurementDimension;
   completenessLevel: IngredientCompletenessLevel;
-  properties: Record<string, unknown>;
-  catalogSourceDataset?: string | null;
-  catalogSourceKey?: string | null;
   status: "draft" | "active" | "archived" | "merged";
   visibility: "public" | "internal";
   mergedIntoId: string | null;
-  createdBy: string | null;
-  updatedBy: string | null;
   createdAt: Date;
   updatedAt: Date;
 };
@@ -393,88 +352,65 @@ export type IngredientSuggestionItem = {
   type: IngredientType;
   category?: IngredientCategory;
   subtype?: IngredientSubtype | null;
+  itemKind?: string | null;
   familyId?: string | null;
-  familyCanonicalName?: string;
-  familyDisplayName?: string;
-  familyDisplayNameRu?: string;
-  familyDisplayNameEn?: string;
+  primaryLabelRu?: string;
+  secondaryLabelRu?: string | null;
   displayName: string;
-  displayNameRu?: string;
-  displayNameEn?: string;
+  displayNameRu?: string | null;
+  displayNameEn?: string | null;
+  nameRu?: string | null;
+  nameEn?: string | null;
+  displayModeRu?: IngredientDisplayMode;
   subtitle?: string;
-  brandName?: string;
-  manufacturer?: string;
-  country?: string;
+  brand?: string | null;
+  producer?: string | null;
+  brandName?: string | null;
+  manufacturer?: string | null;
+  countryCode?: string | null;
+  countryName?: string | null;
+  country?: string | null;
+  productCode?: string | null;
   technicalData?: IngredientTechnicalData | null;
   defaultUnit: IngredientDisplayUnit;
   defaultDisplayUnit?: IngredientDisplayUnit;
   allowedUnits?: IngredientDisplayUnit[];
   measurementDimension?: IngredientMeasurementDimension;
   completenessLevel?: IngredientCompletenessLevel;
+  quantityDefaults?: Record<string, unknown> | null;
+  unitPreferred?: string | null;
+  packageVariants?: IngredientPackageVariantDto[];
+  familyDisplayName?: string | null;
+  familyCanonicalName?: string | null;
+  matchType?: "name" | "alias" | "code" | "package" | "brand" | "token";
+  matchedAlias?: string | null;
+  matchedPackageVariantId?: string | null;
+  matchedPackageVariantName?: string | null;
   score?: number;
   source: "catalog" | "custom";
 };
 
-export const resolveUpsertCompletenessLevel = (value: z.infer<typeof ingredientUpsertSchema>) => {
-  if (value.completenessLevel === "full") {
-    return "full";
-  }
-
-  const category = resolveIngredientCategory(value);
-  const subtype = resolveIngredientSubtype(value);
-  const technicalData = normalizeIngredientTechnicalData({
-    ...value,
-    category,
-    subtype,
-    type: resolveLegacyIngredientType(value)
-  });
-
-  if (value.completenessLevel === "minimum") {
-    return "minimum";
-  }
-
-  if (category === "fermentable") {
-    const hasRecommended = Boolean(
-      (value.manufacturer?.trim() || value.brandName?.trim())
-      && value.country?.trim()
-    );
-
-    return hasRecommended ? "recommended" : "minimum";
-  }
-
-  if (category === "hop") {
-    const hasRecommended = technicalData.category === "hop"
-      && technicalData.harvestYear != null
-      && Boolean(value.country?.trim());
-
-    return hasRecommended ? "recommended" : "minimum";
-  }
-
-  if (category === "yeast") {
-    const hasRecommended = technicalData.category === "yeast"
-      && technicalData.tempMinC != null
-      && technicalData.tempMaxC != null;
-
-    return hasRecommended ? "recommended" : "minimum";
-  }
-
-  if (category === "water_prep") {
-    const hasRecommended = technicalData.category === "water_prep"
-      && (
-        technicalData.physicalForm != null
-        || technicalData.purityPct != null
-        || Boolean(value.manufacturer?.trim() || value.brandName?.trim())
-      );
-
-    return hasRecommended ? "recommended" : "minimum";
-  }
-
-  const hasRecommended = technicalData.category === "misc"
-    && (
-      technicalData.usagePhase != null
-      || Boolean(technicalData.doseHint?.trim())
-      || Boolean(value.manufacturer?.trim() || value.brandName?.trim())
-    );
-
-  return hasRecommended ? "recommended" : "minimum";
+export type IngredientProposalDto = {
+  id: string;
+  sourcePayload: Record<string, unknown>;
+  sourceType: string;
+  sourceDisplayName: string;
+  normalizedName: string;
+  status: "pending" | "approved" | "rejected" | "merged";
+  targetIngredientId: string | null;
+  moderatorId: string | null;
+  resolutionNote: string | null;
+  createdAt: Date;
+  updatedAt: Date;
 };
+
+export const resolveUpsertCompletenessLevel = (value: z.infer<typeof ingredientUpsertSchema>) => resolveIngredientCompletenessLevel({
+  category: value.category ?? resolveIngredientCategory({ type: value.type, subtype: value.itemKind }),
+  type: value.type,
+  subtype: resolveIngredientSubtype({ type: value.type, subtype: value.itemKind }),
+  nameRu: value.nameRu,
+  nameEn: value.nameEn,
+  aliases: value.aliases.map((alias) => alias.alias),
+  brand: value.brand,
+  producer: value.producer
+});

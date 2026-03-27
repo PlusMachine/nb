@@ -17,16 +17,16 @@ const groupIcons: Record<IngredientCategory, React.ComponentType<{ className?: s
   fermentable: Wheat,
   hop: Leaf,
   yeast: FlaskConical,
-  water_prep: Droplets,
-  misc: Package
+  water_treatment: Droplets,
+  consumable: Package
 };
 
 const groupColors: Record<IngredientCategory, string> = {
   fermentable: "text-amber-600",
   hop: "text-emerald-600",
   yeast: "text-violet-600",
-  water_prep: "text-sky-600",
-  misc: "text-zinc-500"
+  water_treatment: "text-sky-600",
+  consumable: "text-zinc-500"
 };
 
 export function GroupedInventoryList({ items, preferredCurrency, currencyRates }: Props) {

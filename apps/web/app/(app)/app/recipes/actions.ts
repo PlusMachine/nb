@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { ZodError } from "zod";
 
-import type { IngredientCategory, IngredientSuggestionItem } from "@/features/ingredients/contracts";
+import type { IngredientCategory, IngredientSuggestionItem, IngredientType } from "@/features/ingredients/contracts";
 import type { RecipeDetailDto } from "@/features/recipes/contracts";
 import type { RecipeDraftPreviewDto } from "@/features/recipes/contracts";
 import { cloneRecipe, createRecipe, createRecipeVersion, deleteRecipe, previewRecipeDraft, updateRecipe } from "@/features/recipes/service";
@@ -23,8 +23,8 @@ export type RecipeEditorPayload = {
   ingredients: Array<{
     ingredientCatalogItemId?: string | null;
     userCustomIngredientId?: string | null;
-    type?: "fermentable" | "hop" | "yeast" | "sugar" | "adjunct" | "fining" | "misc";
-    category?: "fermentable" | "hop" | "yeast" | "water_prep" | "misc";
+    type?: IngredientType;
+    category?: IngredientCategory;
     subtype?: string | null;
     familyId?: string | null;
     amountEnteredQuantity: number;
@@ -253,7 +253,7 @@ export const createRecipeCustomIngredientAction = async (payload: {
       message: "Собственный ингредиент создан.",
       item: {
         id: customIngredient.id,
-        type: customIngredient.type,
+        type: linkage.type,
         category: linkage.category,
         subtype: linkage.subtype,
         displayName: customIngredient.displayName,

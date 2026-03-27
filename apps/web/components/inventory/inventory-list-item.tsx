@@ -26,8 +26,101 @@ type Props = {
   currencyRates: SystemCurrencyRateMap;
 };
 
+const formatValue = (value: number) => (
+  value % 1 === 0 ? String(value) : value.toFixed(1).replace(/\.0$/, "")
+);
+
+const formatColorBadge = (item: InventoryListItemDto) => {
+  const technicalData = item.source.technicalData;
+  if (!technicalData || (technicalData.type !== "malt" && technicalData.type !== "fermentable")) {
+    return null;
+  }
+
+  if (technicalData.type === "malt") {
+    const malt = technicalData as Extract<NonNullable<typeof technicalData>, { type: "malt" }>;
+    if (malt.colorEbcMin != null && malt.colorEbcMax != null) {
+      return malt.colorEbcMin === malt.colorEbcMax
+        ? `${formatValue(malt.colorEbcMin)} EBC`
+        : `${formatValue(malt.colorEbcMin)}-${formatValue(malt.colorEbcMax)} EBC`;
+    }
+
+    if (malt.colorEbcMin != null) {
+      return `${formatValue(malt.colorEbcMin)} EBC`;
+    }
+
+    if (malt.colorEbcMax != null) {
+      return `${formatValue(malt.colorEbcMax)} EBC`;
+    }
+  }
+
+  const fermentable = technicalData as Extract<NonNullable<typeof technicalData>, { type: "malt" | "fermentable" }>;
+  if (fermentable.colorLovibond != null) {
+    const ebc = fermentable.colorLovibond * 1.97;
+    return `~${formatValue(ebc)} EBC`;
+  }
+
+  return null;
+};
+
+const buildTypedBadges = (item: InventoryListItemDto) => {
+  const technicalData = item.source.technicalData;
+  if (!technicalData) {
+    return [];
+  }
+
+  if (technicalData.type === "hop") {
+    const hop = technicalData as Extract<NonNullable<typeof technicalData>, { type: "hop" }>;
+    return [
+      hop.alphaAcidPctTypical != null ? `Альфа ${formatValue(hop.alphaAcidPctTypical)}%` : null,
+      hop.hopForm ? hop.hopForm.replaceAll("_", " ") : null
+    ].filter((badge): badge is string => Boolean(badge));
+  }
+
+  if (technicalData.type === "malt" || technicalData.type === "fermentable") {
+    const fermentable = technicalData as Extract<NonNullable<typeof technicalData>, { type: "malt" | "fermentable" }>;
+    return [
+      formatColorBadge(item),
+      fermentable.extractPctDryBasis != null ? `Экстракт ${formatValue(fermentable.extractPctDryBasis)}%` : null,
+      fermentable.type === "malt" && fermentable.maxUsagePct != null
+        ? `До ${formatValue(fermentable.maxUsagePct)}%`
+        : fermentable.type === "fermentable" && fermentable.recommendedMaxPct != null
+          ? `До ${formatValue(fermentable.recommendedMaxPct)}%`
+          : null
+    ].filter((badge): badge is string => Boolean(badge));
+  }
+
+  if (technicalData.type === "yeast") {
+    const yeast = technicalData as Extract<NonNullable<typeof technicalData>, { type: "yeast" }>;
+    return [
+      yeast.form ? yeast.form.replaceAll("_", " ") : null,
+      yeast.attenuationPctTypical != null ? `Атт. ${formatValue(yeast.attenuationPctTypical)}%` : null,
+      yeast.fermentationTempCMin != null && yeast.fermentationTempCMax != null
+        ? `${formatValue(yeast.fermentationTempCMin)}-${formatValue(yeast.fermentationTempCMax)}°C`
+        : null
+    ].filter((badge): badge is string => Boolean(badge));
+  }
+
+  if (technicalData.type === "water_treatment") {
+    const waterTreatment = technicalData as Extract<NonNullable<typeof technicalData>, { type: "water_treatment" }>;
+    return [
+      waterTreatment.unitPreferred ?? null,
+      waterTreatment.waterCalcRole?.[0]?.replaceAll("_", " ") ?? null
+    ].filter((badge): badge is string => Boolean(badge));
+  }
+
+  if (technicalData.type === "consumable") {
+    const consumable = technicalData as Extract<NonNullable<typeof technicalData>, { type: "consumable" }>;
+    return [
+      consumable.commonForms?.[0]?.replaceAll("_", " ") ?? null,
+      consumable.usageStage?.[0]?.replaceAll("_", " ") ?? null
+    ].filter((badge): badge is string => Boolean(badge));
+  }
+
+  return [];
+};
+
 const buildTechnicalBadges = (item: InventoryListItemDto) => {
-  const badges: string[] = [];
+  const badges = [...buildTypedBadges(item)];
 
   if (item.source.manufacturer) {
     badges.push(item.source.manufacturer);
@@ -37,11 +130,11 @@ const buildTechnicalBadges = (item: InventoryListItemDto) => {
     badges.push(item.source.country);
   }
 
-  if (item.source.summary) {
+  if (item.source.summary && badges.length < 3) {
     badges.push(item.source.summary);
   }
 
-  return badges;
+  return [...new Set(badges.filter((badge) => badge.trim().length > 0))].slice(0, 5);
 };
 
 const isFreshnessCritical = (freshnessDate: Date | null) => {

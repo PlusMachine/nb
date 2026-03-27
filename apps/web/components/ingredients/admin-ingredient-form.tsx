@@ -1,33 +1,25 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 
-import {
-  ingredientCompletenessLevels,
-  ingredientMatchPolicies,
-  type IngredientCatalogItemDto
+import type {
+  IngredientAliasDto,
+  IngredientCatalogItemDto,
+  IngredientPackageVariantDto,
+  IngredientSourceDto
 } from "@/features/ingredients/contracts";
+import { ingredientDisplayModes } from "@/features/ingredients/contracts";
 import {
-  extractIngredientTechnicalFields,
-  miscUsagePhaseLabels,
-  miscUsagePhases,
-  waterPrepPhysicalFormLabels,
-  waterPrepPhysicalForms,
-  yeastFlocculationLabels,
-  yeastFlocculationLevels,
-  yeastFormLabels,
-  yeastForms
-} from "@/features/ingredients/technical-fields";
+  buildIngredientTypedSummary,
+  resolveIngredientDisplayNames
+} from "@/features/ingredients/presentation";
 import {
   ingredientCategories,
   ingredientCategorySubtypes,
-  ingredientDisplayUnits,
-  isIngredientSubtypeForCategory,
   resolveIngredientCategory,
   resolveIngredientSubtype,
-  resolveIngredientUnits,
+  resolveLegacyIngredientType,
   type IngredientCategory,
-  type IngredientDisplayUnit,
   type IngredientSubtype
 } from "@/features/ingredients/taxonomy";
 
@@ -38,50 +30,43 @@ type AdminIngredientFieldVisibility = {
   advanced: string[];
 };
 
-const inputClassName = "mt-1 w-full rounded border p-2";
-const sectionClassName = "space-y-3 rounded-lg border p-4";
+const inputClassName = "mt-1 w-full rounded border border-zinc-300 px-3 py-2";
+const sectionClassName = "space-y-4 rounded-xl border border-zinc-200 p-4";
+const textareaClassName = `${inputClassName} min-h-[120px] font-mono text-xs`;
 
 const formatEnumLabel = (value: string) => value
   .split("_")
   .map((chunk) => chunk.charAt(0).toUpperCase() + chunk.slice(1))
   .join(" ");
 
+const parseJson = <T,>(value: string, fallback: T, label: string) => {
+  const trimmed = value.trim();
+  if (!trimmed) {
+    return fallback;
+  }
+
+  try {
+    return JSON.parse(trimmed) as T;
+  } catch {
+    throw new Error(`${label}: invalid JSON`);
+  }
+};
+
+const stringifyJson = (value: unknown) => JSON.stringify(value, null, 2);
+
 const readOptionalText = (formData: FormData, key: string) => {
   const value = String(formData.get(key) ?? "").trim();
   return value || null;
 };
 
-const readOptionalNumber = (formData: FormData, key: string) => {
-  const raw = String(formData.get(key) ?? "").trim();
-  if (!raw) {
-    return null;
-  }
-
-  const value = Number(raw);
-  return Number.isFinite(value) ? value : null;
-};
-
 const readOptionalBoolean = (formData: FormData, key: string) => {
-  const raw = String(formData.get(key) ?? "").trim();
-  if (!raw) {
-    return null;
-  }
-
-  if (raw === "true") {
-    return true;
-  }
-
-  if (raw === "false") {
+  const raw = formData.get(key);
+  if (raw == null) {
     return false;
   }
 
-  return null;
+  return raw === "on" || raw === "true";
 };
-
-const readStringArray = (formData: FormData, key: string) => String(formData.get(key) ?? "")
-  .split(/[\n,]/)
-  .map((item) => item.trim())
-  .filter(Boolean);
 
 export const getAdminIngredientSubtypeOptions = (
   category: IngredientCategory
@@ -93,15 +78,25 @@ export const getNextAdminIngredientTaxonomyState = (
 ) => {
   if (next.category) {
     const category = next.category;
-    const subtype = current.subtype && isIngredientSubtypeForCategory(category, current.subtype)
+    const subtype = current.subtype && (ingredientCategorySubtypes[category] as readonly string[]).includes(current.subtype)
       ? current.subtype
       : ingredientCategorySubtypes[category][0] ?? null;
 
     return { category, subtype };
   }
 
-  if (next.subtype && isIngredientSubtypeForCategory(current.category, next.subtype)) {
-    return { category: current.category, subtype: next.subtype };
+  if (next.subtype) {
+    const subtype = resolveIngredientSubtype({
+      category: current.category,
+      subtype: next.subtype
+    });
+
+    if (subtype && (ingredientCategorySubtypes[current.category] as readonly string[]).includes(subtype)) {
+      return {
+        category: current.category,
+        subtype
+      };
+    }
   }
 
   return {
@@ -114,521 +109,273 @@ export const getAdminIngredientFieldVisibility = (
   category: IngredientCategory,
   subtype: IngredientSubtype | null
 ): AdminIngredientFieldVisibility => {
-  if (category === "fermentable") {
+  if (category === "hop") {
     return {
-      primary: ["fermentableColorEbc", "fermentableExtractYieldPct"],
-      advanced: [
-        "fermentableProteinPct",
-        "fermentableMoisturePct",
-        "fermentableMaxUsagePercent",
-        "fermentableDiastaticPowerLintner",
-        "fermentableUsageFlags"
-      ]
+      primary: ["names", "display", "aliases", "attributes"],
+      advanced: ["sources"]
     };
   }
 
-  if (category === "hop") {
+  if (category === "fermentable") {
     return {
-      primary: ["hopAlphaAcidPct", "harvestYear"],
-      advanced: ["hopBetaAcidPct", "hopTotalOilMlPer100g", "hopNotes"]
+      primary: ["names", "display", "aliases", "attributes"],
+      advanced: ["sources", "quantity_defaults"]
     };
   }
 
   if (category === "yeast") {
     return {
-      primary: [
-        "yeastForm",
-        "yeastAttenuationPct",
-        "yeastMinFermentationTempC",
-        "yeastMaxFermentationTempC",
-        "yeastPackageSize",
-        "yeastPackageUnit"
-      ],
-      advanced: [
-        "yeastFlocculation",
-        "yeastAlcoholTolerancePct",
-        "yeastPhenolic",
-        "yeastDiastaticus"
-      ]
+      primary: ["names", "display", "aliases", "attributes"],
+      advanced: ["sources"]
     };
   }
 
-  if (category === "water_prep") {
+  if (category === "water_treatment") {
     return {
-      primary: [
-        ...(subtype === "salt" || subtype === "base" ? ["waterPrepCompound"] : []),
-        ...(subtype === "acid" ? ["waterPrepAcidType"] : []),
-        "waterPrepPhysicalForm",
-        ...(subtype === "acid" || subtype === "base" ? ["waterPrepStrengthPct"] : []),
-        "waterPrepPurityPct"
-      ],
-      advanced: []
+      primary: ["names", "display", "aliases", "attributes"],
+      advanced: ["sources", "quantity_defaults", subtype === "acid" ? "unit_preview" : "unit_preview"]
     };
   }
 
   return {
-    primary: ["miscUsagePhase", "miscDoseHint"],
-    advanced: []
+    primary: ["names", "display", "aliases", "attributes"],
+    advanced: ["sources", "quantity_defaults", "package_variants"]
   };
 };
 
-const resolveInitialCategory = (initial?: IngredientFormValue): IngredientCategory => (
-  resolveIngredientCategory({
-    category: initial?.category,
-    type: initial?.type,
-    subtype: initial?.subtype,
-    displayName: initial?.displayName,
-    properties: initial?.properties ?? {},
-    hopForm: initial?.hopForm,
-    yeastType: initial?.yeastType,
-    yeastForm: initial?.yeastForm
-  })
-);
-
-const resolveInitialSubtype = (
-  initialCategory: IngredientCategory,
-  initial?: IngredientFormValue
-): IngredientSubtype => {
-  const resolvedSubtype = resolveIngredientSubtype({
-    category: initial?.category ?? initialCategory,
-    type: initial?.type,
-    subtype: initial?.subtype,
-    displayName: initial?.displayName,
-    properties: initial?.properties ?? {},
-    hopForm: initial?.hopForm,
-    yeastType: initial?.yeastType,
-    yeastForm: initial?.yeastForm
-  });
-
-  if (resolvedSubtype && isIngredientSubtypeForCategory(initialCategory, resolvedSubtype)) {
-    return resolvedSubtype;
-  }
-
-  return ingredientCategorySubtypes[initialCategory][0];
-};
-
-const isLiquidStrengthSubtype = (category: IngredientCategory, subtype: IngredientSubtype | null) => (
-  category === "water_prep" && (subtype === "acid" || subtype === "base")
-);
+const buildInitialAliasJson = (initial?: IngredientFormValue) => stringifyJson(initial?.aliases ?? []);
+const buildInitialSourcesJson = (initial?: IngredientFormValue) => stringifyJson(initial?.sources ?? []);
+const buildInitialPackageVariantsJson = (initial?: IngredientFormValue) => stringifyJson(initial?.packageVariants ?? []);
+const buildInitialAttributesJson = (initial?: IngredientFormValue) => stringifyJson(initial?.attributes ?? {});
+const buildInitialQuantityDefaultsJson = (initial?: IngredientFormValue) => stringifyJson(initial?.quantityDefaults ?? null);
 
 export const AdminIngredientForm = ({ initial }: { initial?: IngredientFormValue }) => {
-  const initialCategory = resolveInitialCategory(initial);
-  const initialSubtype = resolveInitialSubtype(initialCategory, initial);
-  const initialTechnicalFields = extractIngredientTechnicalFields({
-    category: initial?.category ?? initialCategory,
-    subtype: initial?.subtype ?? initialSubtype,
-    type: initial?.type ?? null,
-    technicalData: initial?.technicalData ?? null,
-    manufacturer: initial?.manufacturer ?? null,
-    country: initial?.country ?? null,
-    harvestYear: initial?.harvestYear ?? null,
-    fermentableColorEbc: initial?.fermentableColorEbc ?? null,
-    fermentableExtractYieldPct: initial?.fermentableExtractYieldPct ?? null,
-    fermentableProteinPct: initial?.fermentableProteinPct ?? null,
-    fermentableMoisturePct: initial?.fermentableMoisturePct ?? null,
-    fermentableMaxUsagePercent: initial?.fermentableMaxUsagePercent ?? null,
-    fermentableDiastaticPowerLintner: initial?.fermentableDiastaticPowerLintner ?? null,
-    fermentableUsageFlags: initial?.fermentableUsageFlags ?? null,
-    hopAlphaAcidPct: initial?.hopAlphaAcidPct ?? null,
-    hopBetaAcidPct: initial?.hopBetaAcidPct ?? null,
-    hopTotalOilMlPer100g: initial?.hopTotalOilMlPer100g ?? null,
-    hopForm: initial?.hopForm ?? null,
-    hopSeason: initial?.hopSeason ?? null,
-    hopNotes: initial?.hopNotes ?? null,
-    yeastAttenuationPct: initial?.yeastAttenuationPct ?? null,
-    yeastType: initial?.yeastType ?? null,
-    yeastForm: initial?.yeastForm ?? null,
-    yeastMinFermentationTempC: initial?.yeastMinFermentationTempC ?? null,
-    yeastMaxFermentationTempC: initial?.yeastMaxFermentationTempC ?? null,
-    yeastFlocculation: initial?.yeastFlocculation ?? null,
-    yeastAlcoholTolerancePct: initial?.yeastAlcoholTolerancePct ?? null,
-    yeastPackageSize: initial?.yeastPackageSize ?? null,
-    yeastPackageUnit: initial?.yeastPackageUnit ?? null,
-    yeastPhenolic: initial?.yeastPhenolic ?? null,
-    yeastDiastaticus: initial?.yeastDiastaticus ?? null,
-    waterPrepCompound: initial?.waterPrepCompound ?? null,
-    waterPrepAcidType: initial?.waterPrepAcidType ?? null,
-    waterPrepStrengthPct: initial?.waterPrepStrengthPct ?? null,
-    waterPrepPurityPct: initial?.waterPrepPurityPct ?? null,
-    waterPrepPhysicalForm: initial?.waterPrepPhysicalForm ?? null,
-    miscUsagePhase: initial?.miscUsagePhase ?? null,
-    miscDoseHint: initial?.miscDoseHint ?? null,
-    properties: initial?.properties ?? {}
+  const initialCategory = resolveIngredientCategory({
+    category: initial?.category,
+    type: initial?.type,
+    subtype: initial?.subtype ?? initial?.itemKind
   });
-  const initialYeastForm = initialTechnicalFields.yeastForm ?? "";
-  const initialWaterPrepPhysicalForm = initialTechnicalFields.waterPrepPhysicalForm ?? "";
-  const initialUnits = resolveIngredientUnits({
+  const initialSubtype = resolveIngredientSubtype({
     category: initialCategory,
-    subtype: initialSubtype,
-    yeastForm: initialYeastForm || undefined,
-    defaultDisplayUnit: initial?.defaultDisplayUnit ?? initial?.defaultUnit ?? undefined
-  });
+    type: initial?.type,
+    subtype: initial?.subtype ?? initial?.itemKind
+  }) ?? ingredientCategorySubtypes[initialCategory][0] ?? null;
 
-  const [error, setError] = useState<string | null>(null);
   const [selectedCategory, setSelectedCategory] = useState<IngredientCategory>(initialCategory);
-  const [selectedSubtype, setSelectedSubtype] = useState<IngredientSubtype>(initialSubtype);
-  const [selectedYeastForm, setSelectedYeastForm] = useState(initialYeastForm);
-  const [selectedWaterPrepPhysicalForm, setSelectedWaterPrepPhysicalForm] = useState(initialWaterPrepPhysicalForm);
-  const [selectedDefaultDisplayUnit, setSelectedDefaultDisplayUnit] = useState<IngredientDisplayUnit>(initialUnits.defaultDisplayUnit);
-  const [taxonomyRevision, setTaxonomyRevision] = useState(0);
-  const [propertiesJson, setPropertiesJson] = useState(JSON.stringify(initial?.properties ?? {}, null, 2));
+  const [selectedSubtype, setSelectedSubtype] = useState<IngredientSubtype | null>(initialSubtype);
+  const [attributesJson, setAttributesJson] = useState(buildInitialAttributesJson(initial));
+  const [aliasesJson, setAliasesJson] = useState(buildInitialAliasJson(initial));
+  const [sourcesJson, setSourcesJson] = useState(buildInitialSourcesJson(initial));
+  const [packageVariantsJson, setPackageVariantsJson] = useState(buildInitialPackageVariantsJson(initial));
+  const [quantityDefaultsJson, setQuantityDefaultsJson] = useState(buildInitialQuantityDefaultsJson(initial));
+  const [error, setError] = useState<string | null>(null);
 
   const subtypeOptions = getAdminIngredientSubtypeOptions(selectedCategory);
-  const unitOptions = resolveIngredientUnits({
-    category: selectedCategory,
-    subtype: selectedSubtype,
-    yeastForm: selectedCategory === "yeast" ? selectedYeastForm || undefined : undefined
-  });
   const fieldVisibility = getAdminIngredientFieldVisibility(selectedCategory, selectedSubtype);
-  const useInitialTaxonomyValues = selectedCategory === initialCategory && selectedSubtype === initialSubtype;
-  const strengthRequired = isLiquidStrengthSubtype(selectedCategory, selectedSubtype)
-    && (selectedWaterPrepPhysicalForm === "liquid" || selectedWaterPrepPhysicalForm === "solution");
+  const resolvedType = resolveLegacyIngredientType({
+    category: selectedCategory,
+    subtype: selectedSubtype
+  });
 
-  const setNextUnit = (nextCategory: IngredientCategory, nextSubtype: IngredientSubtype, nextYeastForm?: string | null) => {
-    const nextUnits = resolveIngredientUnits({
-      category: nextCategory,
-      subtype: nextSubtype,
-      yeastForm: nextCategory === "yeast" ? nextYeastForm || undefined : undefined
-    });
+  const preview = useMemo(() => {
+    let attributes: Record<string, unknown> = {};
 
-    setSelectedDefaultDisplayUnit((current) => (
-      nextUnits.allowedUnits.includes(current) ? current : nextUnits.defaultDisplayUnit
-    ));
-  };
-
-  const handleCategoryChange = (nextCategory: IngredientCategory) => {
-    const nextState = getNextAdminIngredientTaxonomyState({
-      category: selectedCategory,
-      subtype: selectedSubtype
-    }, {
-      category: nextCategory
-    });
-
-    const nextSubtype = nextState.subtype ?? ingredientCategorySubtypes[nextCategory][0];
-    const restoreInitialValues = nextCategory === initialCategory && nextSubtype === initialSubtype;
-
-    setSelectedCategory(nextCategory);
-    setSelectedSubtype(nextSubtype);
-    setSelectedYeastForm(nextCategory === "yeast" && restoreInitialValues ? initialYeastForm : "");
-    setSelectedWaterPrepPhysicalForm(
-      nextCategory === "water_prep" && restoreInitialValues ? initialWaterPrepPhysicalForm : ""
-    );
-    setNextUnit(nextCategory, nextSubtype, nextCategory === "yeast" && restoreInitialValues ? initialYeastForm : null);
-    setTaxonomyRevision((value) => value + 1);
-  };
-
-  const handleSubtypeChange = (nextSubtypeValue: string) => {
-    const nextState = getNextAdminIngredientTaxonomyState({
-      category: selectedCategory,
-      subtype: selectedSubtype
-    }, {
-      subtype: nextSubtypeValue
-    });
-
-    const nextSubtype = nextState.subtype ?? subtypeOptions[0];
-    const restoreInitialValues = selectedCategory === initialCategory && nextSubtype === initialSubtype;
-
-    setSelectedSubtype(nextSubtype);
-    setSelectedYeastForm(selectedCategory === "yeast" && restoreInitialValues ? initialYeastForm : selectedYeastForm);
-    setSelectedWaterPrepPhysicalForm(
-      selectedCategory === "water_prep" && restoreInitialValues ? initialWaterPrepPhysicalForm : ""
-    );
-    setNextUnit(
-      selectedCategory,
-      nextSubtype,
-      selectedCategory === "yeast" ? (restoreInitialValues ? initialYeastForm : selectedYeastForm) : null
-    );
-    setTaxonomyRevision((value) => value + 1);
-  };
-
-  const handleYeastFormChange = (nextValue: string) => {
-    setSelectedYeastForm(nextValue);
-
-    const nextUnits = resolveIngredientUnits({
-      category: selectedCategory,
-      subtype: selectedSubtype,
-      yeastForm: nextValue || undefined
-    });
-
-    setSelectedDefaultDisplayUnit((current) => (
-      nextUnits.allowedUnits.includes(current) ? current : nextUnits.defaultDisplayUnit
-    ));
-  };
-
-  const renderAdvancedFields = () => {
-    if (selectedCategory === "fermentable") {
-      return (
-        <div className="grid grid-cols-2 gap-3">
-          <label className="text-sm">
-            Protein (%)
-            <input
-              name="fermentableProteinPct"
-              type="number"
-              step="0.1"
-              min="0"
-              max="100"
-              defaultValue={useInitialTaxonomyValues ? initialTechnicalFields.fermentableProteinPct ?? "" : ""}
-              className={inputClassName}
-            />
-          </label>
-          <label className="text-sm">
-            Moisture (%)
-            <input
-              name="fermentableMoisturePct"
-              type="number"
-              step="0.1"
-              min="0"
-              max="100"
-              defaultValue={useInitialTaxonomyValues ? initialTechnicalFields.fermentableMoisturePct ?? "" : ""}
-              className={inputClassName}
-            />
-          </label>
-          <label className="text-sm">
-            Max usage (%)
-            <input
-              name="fermentableMaxUsagePercent"
-              type="number"
-              step="0.1"
-              min="0"
-              max="100"
-              defaultValue={useInitialTaxonomyValues ? initialTechnicalFields.fermentableMaxUsagePercent ?? "" : ""}
-              className={inputClassName}
-            />
-          </label>
-          <label className="text-sm">
-            Diastatic power (Lintner)
-            <input
-              name="fermentableDiastaticPowerLintner"
-              type="number"
-              step="0.1"
-              min="0"
-              defaultValue={useInitialTaxonomyValues ? initialTechnicalFields.fermentableDiastaticPowerLintner ?? "" : ""}
-              className={inputClassName}
-            />
-          </label>
-          <label className="col-span-2 text-sm">
-            Usage flags
-            <textarea
-              name="fermentableUsageFlags"
-              defaultValue={useInitialTaxonomyValues ? (initialTechnicalFields.fermentableUsageFlags ?? []).join("\n") : ""}
-              className="mt-1 h-24 w-full rounded border p-2"
-              placeholder="mash only&#10;late addition"
-            />
-          </label>
-        </div>
-      );
+    try {
+      attributes = parseJson<Record<string, unknown>>(attributesJson, {}, "attributes");
+    } catch {
+      attributes = {};
     }
 
-    if (selectedCategory === "hop") {
-      return (
-        <div className="grid grid-cols-2 gap-3">
-          <label className="text-sm">
-            Beta acid (%)
-            <input
-              name="hopBetaAcidPct"
-              type="number"
-              step="0.1"
-              min="0"
-              max="100"
-              defaultValue={useInitialTaxonomyValues ? initialTechnicalFields.hopBetaAcidPct ?? "" : ""}
-              className={inputClassName}
-            />
-          </label>
-          <label className="text-sm">
-            Total oil (ml/100g)
-            <input
-              name="hopTotalOilMlPer100g"
-              type="number"
-              step="0.01"
-              min="0"
-              max="20"
-              defaultValue={useInitialTaxonomyValues ? initialTechnicalFields.hopTotalOilMlPer100g ?? "" : ""}
-              className={inputClassName}
-            />
-          </label>
-          <label className="col-span-2 text-sm">
-            Notes
-            <textarea
-              name="hopNotes"
-              defaultValue={useInitialTaxonomyValues ? initialTechnicalFields.hopNotes ?? "" : ""}
-              className="mt-1 h-24 w-full rounded border p-2"
-            />
-          </label>
-        </div>
-      );
-    }
+    const primaryAndSecondary = resolveIngredientDisplayNames({
+      type: resolvedType,
+      countryCode: initial?.countryCode ?? null,
+      nameRu: initial?.nameRu ?? null,
+      nameEn: initial?.nameEn ?? null,
+      displayModeRu: initial?.displayModeRu ?? "auto",
+      displayNameOverrideRu: initial?.displayNameOverrideRu ?? null,
+      secondaryNameOverrideRu: initial?.secondaryNameOverrideRu ?? null,
+      hideSecondaryNameRu: initial?.hideSecondaryNameRu ?? false
+    });
 
-    if (selectedCategory === "yeast") {
-      return (
-        <div className="grid grid-cols-2 gap-3">
-          <label className="text-sm">
-            Flocculation
-            <select
-              name="yeastFlocculation"
-              defaultValue={useInitialTaxonomyValues ? initialTechnicalFields.yeastFlocculation ?? "" : ""}
-              className={inputClassName}
-            >
-              <option value="">Unknown</option>
-              {yeastFlocculationLevels.map((value) => (
-                <option key={value} value={value}>{yeastFlocculationLabels[value]}</option>
-              ))}
-            </select>
-          </label>
-          <label className="text-sm">
-            Alcohol tolerance (%)
-            <input
-              name="yeastAlcoholTolerancePct"
-              type="number"
-              step="0.1"
-              min="0"
-              max="100"
-              defaultValue={useInitialTaxonomyValues ? initialTechnicalFields.yeastAlcoholTolerancePct ?? "" : ""}
-              className={inputClassName}
-            />
-          </label>
-          <label className="text-sm">
-            Phenolic
-            <select
-              name="yeastPhenolic"
-              defaultValue={useInitialTaxonomyValues
-                ? initialTechnicalFields.yeastPhenolic == null
-                  ? ""
-                  : String(initialTechnicalFields.yeastPhenolic)
-                : ""}
-              className={inputClassName}
-            >
-              <option value="">Unknown</option>
-              <option value="true">Yes</option>
-              <option value="false">No</option>
-            </select>
-          </label>
-          <label className="text-sm">
-            Diastaticus
-            <select
-              name="yeastDiastaticus"
-              defaultValue={useInitialTaxonomyValues
-                ? initialTechnicalFields.yeastDiastaticus == null
-                  ? ""
-                  : String(initialTechnicalFields.yeastDiastaticus)
-                : ""}
-              className={inputClassName}
-            >
-              <option value="">Unknown</option>
-              <option value="true">Yes</option>
-              <option value="false">No</option>
-            </select>
-          </label>
-        </div>
-      );
-    }
-
-    return null;
-  };
+    return {
+      ...primaryAndSecondary,
+      summary: buildIngredientTypedSummary({
+        type: resolvedType,
+        category: selectedCategory,
+        subtype: selectedSubtype,
+        technicalData: {
+          type: resolvedType,
+          ...attributes
+        }
+      }) ?? null
+    };
+  }, [
+    attributesJson,
+    initial?.countryCode,
+    initial?.displayModeRu,
+    initial?.displayNameOverrideRu,
+    initial?.hideSecondaryNameRu,
+    initial?.nameEn,
+    initial?.nameRu,
+    initial?.secondaryNameOverrideRu,
+    resolvedType,
+    selectedCategory,
+    selectedSubtype
+  ]);
 
   return (
     <form
-      className="space-y-4 rounded-lg border p-4"
+      className="space-y-5 rounded-2xl border border-zinc-200 bg-white p-5"
       onSubmit={async (event) => {
         event.preventDefault();
         setError(null);
 
         const formData = new FormData(event.currentTarget);
-        let properties: Record<string, unknown> = {};
+
         try {
-          properties = JSON.parse(propertiesJson);
-        } catch {
-          setError("Properties must be valid JSON");
-          return;
+          const attributes = parseJson<Record<string, unknown>>(attributesJson, {}, "attributes");
+          const aliases = parseJson<Array<{
+            id?: string;
+            locale: IngredientAliasDto["locale"];
+            alias: string;
+            source?: string;
+            isEnabled?: boolean;
+          }>>(aliasesJson, [], "aliases");
+          const sources = parseJson<Array<{
+            id?: string;
+            kind?: string | null;
+            label?: string | null;
+            url?: string | null;
+            sourceBasis?: string | null;
+            position?: number;
+          }>>(sourcesJson, [], "sources");
+          const packageVariants = parseJson<Array<{
+            id: string;
+            brand?: string | null;
+            productNameRu?: string | null;
+            countryNameRu?: string | null;
+            packageAmount?: number | null;
+            packageUnit?: string | null;
+            stockContentAmount?: number | null;
+            stockContentUnit?: string | null;
+            sourceGroup?: string | null;
+            sourceUrl?: string | null;
+            isDefaultForStock?: boolean;
+            position?: number;
+          }>>(packageVariantsJson, [], "package variants");
+          const quantityDefaults = parseJson<Record<string, unknown> | null>(
+            quantityDefaultsJson,
+            null,
+            "quantity defaults"
+          );
+
+          const payload = {
+            id: initial?.id,
+            type: resolvedType,
+            category: selectedCategory,
+            itemKind: selectedSubtype,
+            nameRu: readOptionalText(formData, "nameRu"),
+            nameEn: readOptionalText(formData, "nameEn"),
+            displayModeRu: String(formData.get("displayModeRu") ?? "auto"),
+            displayNameOverrideRu: readOptionalText(formData, "displayNameOverrideRu"),
+            secondaryNameOverrideRu: readOptionalText(formData, "secondaryNameOverrideRu"),
+            hideSecondaryNameRu: readOptionalBoolean(formData, "hideSecondaryNameRu"),
+            isActive: readOptionalBoolean(formData, "isActive"),
+            inventoryEnabled: readOptionalBoolean(formData, "inventoryEnabled"),
+            countryCode: readOptionalText(formData, "countryCode"),
+            countryName: readOptionalText(formData, "countryName"),
+            brand: readOptionalText(formData, "brand"),
+            producer: readOptionalText(formData, "producer"),
+            productCode: readOptionalText(formData, "productCode"),
+            groupName: readOptionalText(formData, "groupName"),
+            sourceCategory: readOptionalText(formData, "sourceCategory"),
+            subcategory: readOptionalText(formData, "subcategory"),
+            presentOnBirrf: formData.get("presentOnBirrf") === ""
+              ? null
+              : formData.get("presentOnBirrf") === "true",
+            attributes,
+            quantityDefaults,
+            aliases: aliases.map((alias) => ({
+              id: alias.id,
+              locale: alias.locale,
+              alias: alias.alias,
+              source: alias.source ?? "admin",
+              isEnabled: alias.isEnabled ?? true
+            })),
+            sources: sources.map((source, index) => ({
+              id: source.id,
+              kind: source.kind ?? null,
+              label: source.label ?? null,
+              url: source.url ?? null,
+              sourceBasis: source.sourceBasis ?? null,
+              position: source.position ?? index
+            })),
+            packageVariants: selectedCategory === "consumable"
+              ? packageVariants.map((variant, index) => ({
+                id: variant.id,
+                brand: variant.brand ?? null,
+                productNameRu: variant.productNameRu ?? null,
+                countryNameRu: variant.countryNameRu ?? null,
+                packageAmount: variant.packageAmount ?? null,
+                packageUnit: variant.packageUnit ?? null,
+                stockContentAmount: variant.stockContentAmount ?? null,
+                stockContentUnit: variant.stockContentUnit ?? null,
+                sourceGroup: variant.sourceGroup ?? null,
+                sourceUrl: variant.sourceUrl ?? null,
+                isDefaultForStock: variant.isDefaultForStock ?? false,
+                position: variant.position ?? index
+              }))
+              : []
+          };
+
+          const method = initial?.id ? "PATCH" : "POST";
+          const endpoint = initial?.id ? `/api/admin/ingredients/${initial.id}` : "/api/admin/ingredients";
+          const response = await fetch(endpoint, {
+            method,
+            headers: { "content-type": "application/json" },
+            body: JSON.stringify(payload)
+          });
+
+          if (!response.ok) {
+            const data = await response.json() as { error?: string };
+            setError(data.error ?? "Request failed");
+            return;
+          }
+
+          window.location.href = `/admin/ingredients/${initial?.id ?? ""}`.replace(/\/$/, "") || "/admin/ingredients";
+        } catch (submissionError) {
+          setError(submissionError instanceof Error ? submissionError.message : "Request failed");
         }
-
-        const units = resolveIngredientUnits({
-          category: selectedCategory,
-          subtype: selectedSubtype,
-          yeastForm: selectedCategory === "yeast" ? selectedYeastForm || undefined : undefined,
-          defaultDisplayUnit: selectedDefaultDisplayUnit
-        });
-
-        const payload = {
-          category: selectedCategory,
-          subtype: selectedSubtype,
-          canonicalFamilyName: readOptionalText(formData, "canonicalFamilyName"),
-          familyDisplayNameRu: readOptionalText(formData, "familyDisplayNameRu"),
-          familyDisplayNameEn: readOptionalText(formData, "familyDisplayNameEn"),
-          matchPolicy: readOptionalText(formData, "matchPolicy"),
-          displayName: String(formData.get("displayName") ?? "").trim(),
-          aliases: readStringArray(formData, "aliases"),
-          brandName: readOptionalText(formData, "brandName"),
-          manufacturer: readOptionalText(formData, "manufacturer"),
-          country: readOptionalText(formData, "country"),
-          harvestYear: selectedCategory === "hop" ? readOptionalNumber(formData, "harvestYear") : null,
-          description: readOptionalText(formData, "description"),
-          defaultUnit: selectedDefaultDisplayUnit,
-          defaultDisplayUnit: selectedDefaultDisplayUnit,
-          allowedUnits: units.allowedUnits,
-          measurementDimension: units.measurementDimension,
-          completenessLevel: readOptionalText(formData, "completenessLevel"),
-          fermentableColorEbc: selectedCategory === "fermentable" ? readOptionalNumber(formData, "fermentableColorEbc") : null,
-          fermentableExtractYieldPct: selectedCategory === "fermentable" ? readOptionalNumber(formData, "fermentableExtractYieldPct") : null,
-          fermentableProteinPct: selectedCategory === "fermentable" ? readOptionalNumber(formData, "fermentableProteinPct") : null,
-          fermentableMoisturePct: selectedCategory === "fermentable" ? readOptionalNumber(formData, "fermentableMoisturePct") : null,
-          fermentableMaxUsagePercent: selectedCategory === "fermentable" ? readOptionalNumber(formData, "fermentableMaxUsagePercent") : null,
-          fermentableDiastaticPowerLintner: selectedCategory === "fermentable" ? readOptionalNumber(formData, "fermentableDiastaticPowerLintner") : null,
-          fermentableUsageFlags: selectedCategory === "fermentable" ? readStringArray(formData, "fermentableUsageFlags") : [],
-          hopAlphaAcidPct: selectedCategory === "hop" ? readOptionalNumber(formData, "hopAlphaAcidPct") : null,
-          hopBetaAcidPct: selectedCategory === "hop" ? readOptionalNumber(formData, "hopBetaAcidPct") : null,
-          hopTotalOilMlPer100g: selectedCategory === "hop" ? readOptionalNumber(formData, "hopTotalOilMlPer100g") : null,
-          hopNotes: selectedCategory === "hop" ? readOptionalText(formData, "hopNotes") : null,
-          yeastForm: selectedCategory === "yeast" ? readOptionalText(formData, "yeastForm") : null,
-          yeastAttenuationPct: selectedCategory === "yeast" ? readOptionalNumber(formData, "yeastAttenuationPct") : null,
-          yeastMinFermentationTempC: selectedCategory === "yeast" ? readOptionalNumber(formData, "yeastMinFermentationTempC") : null,
-          yeastMaxFermentationTempC: selectedCategory === "yeast" ? readOptionalNumber(formData, "yeastMaxFermentationTempC") : null,
-          yeastFlocculation: selectedCategory === "yeast" ? readOptionalText(formData, "yeastFlocculation") : null,
-          yeastAlcoholTolerancePct: selectedCategory === "yeast" ? readOptionalNumber(formData, "yeastAlcoholTolerancePct") : null,
-          yeastPackageSize: selectedCategory === "yeast" ? readOptionalNumber(formData, "yeastPackageSize") : null,
-          yeastPackageUnit: selectedCategory === "yeast" ? readOptionalText(formData, "yeastPackageUnit") : null,
-          yeastPhenolic: selectedCategory === "yeast" ? readOptionalBoolean(formData, "yeastPhenolic") : null,
-          yeastDiastaticus: selectedCategory === "yeast" ? readOptionalBoolean(formData, "yeastDiastaticus") : null,
-          waterPrepCompound: selectedCategory === "water_prep" ? readOptionalText(formData, "waterPrepCompound") : null,
-          waterPrepAcidType: selectedCategory === "water_prep" ? readOptionalText(formData, "waterPrepAcidType") : null,
-          waterPrepStrengthPct: selectedCategory === "water_prep" ? readOptionalNumber(formData, "waterPrepStrengthPct") : null,
-          waterPrepPurityPct: selectedCategory === "water_prep" ? readOptionalNumber(formData, "waterPrepPurityPct") : null,
-          waterPrepPhysicalForm: selectedCategory === "water_prep" ? readOptionalText(formData, "waterPrepPhysicalForm") : null,
-          miscUsagePhase: selectedCategory === "misc" ? readOptionalText(formData, "miscUsagePhase") : null,
-          miscDoseHint: selectedCategory === "misc" ? readOptionalText(formData, "miscDoseHint") : null,
-          properties,
-          status: String(formData.get("status") ?? "active"),
-          visibility: String(formData.get("visibility") ?? "public")
-        };
-
-        const method = initial?.id ? "PATCH" : "POST";
-        const endpoint = initial?.id ? `/api/admin/ingredients/${initial.id}` : "/api/admin/ingredients";
-        const response = await fetch(endpoint, {
-          method,
-          headers: { "content-type": "application/json" },
-          body: JSON.stringify(payload)
-        });
-
-        if (!response.ok) {
-          const data = await response.json() as { error?: string };
-          setError(data.error ?? "Request failed");
-          return;
-        }
-
-        window.location.href = "/admin/ingredients";
       }}
     >
-      <h1 className="text-xl font-semibold">{initial?.id ? "Edit ingredient" : "Create ingredient"}</h1>
-      {error && <p className="text-sm text-red-600">{error}</p>}
+      <header className="space-y-1">
+        <h1 className="text-xl font-semibold text-zinc-950">
+          {initial?.id ? "Edit ingredient" : "Create ingredient"}
+        </h1>
+        <p className="text-sm text-zinc-600">
+          Форма работает с новой моделью `ingredients`, а aliases/sources/package variants редактируются как source-of-truth.
+        </p>
+        {error ? <p className="text-sm text-red-600">{error}</p> : null}
+      </header>
 
       <section className={sectionClassName}>
-        <h2 className="text-sm font-semibold uppercase tracking-wide text-neutral-600">Taxonomy</h2>
-        <div className="grid grid-cols-2 gap-3">
+        <h2 className="text-sm font-semibold uppercase tracking-wide text-zinc-600">Taxonomy</h2>
+        <div className="grid gap-3 md:grid-cols-3">
           <label className="text-sm">
             Category
             <select
-              name="category"
               value={selectedCategory}
-              onChange={(event) => handleCategoryChange(event.target.value as IngredientCategory)}
+              onChange={(event) => {
+                const nextCategory = event.target.value as IngredientCategory;
+                const nextState = getNextAdminIngredientTaxonomyState({
+                  category: selectedCategory,
+                  subtype: selectedSubtype
+                }, {
+                  category: nextCategory
+                });
+                setSelectedCategory(nextState.category);
+                setSelectedSubtype(nextState.subtype);
+              }}
               className={inputClassName}
             >
               {ingredientCategories.map((category) => (
@@ -639,9 +386,11 @@ export const AdminIngredientForm = ({ initial }: { initial?: IngredientFormValue
           <label className="text-sm">
             Subtype
             <select
-              name="subtype"
-              value={selectedSubtype}
-              onChange={(event) => handleSubtypeChange(event.target.value)}
+              value={selectedSubtype ?? ""}
+              onChange={(event) => setSelectedSubtype(resolveIngredientSubtype({
+                category: selectedCategory,
+                subtype: event.target.value
+              }))}
               className={inputClassName}
             >
               {subtypeOptions.map((subtype) => (
@@ -649,392 +398,182 @@ export const AdminIngredientForm = ({ initial }: { initial?: IngredientFormValue
               ))}
             </select>
           </label>
-          <label className="col-span-2 text-sm">
-            Canonical family
-            <input
-              name="canonicalFamilyName"
-              defaultValue={initial?.family?.canonicalName ?? initial?.displayName ?? ""}
-              className={inputClassName}
-              placeholder="Cascade"
+          <label className="text-sm">
+            Type
+            <input value={resolvedType} readOnly className={`${inputClassName} bg-zinc-50`} />
+          </label>
+        </div>
+      </section>
+
+      <section className={sectionClassName}>
+        <h2 className="text-sm font-semibold uppercase tracking-wide text-zinc-600">Names & Display</h2>
+        <div className="grid gap-3 md:grid-cols-2">
+          <label className="text-sm">
+            Name RU
+            <input name="nameRu" defaultValue={initial?.nameRu ?? ""} className={inputClassName} />
+          </label>
+          <label className="text-sm">
+            Name EN
+            <input name="nameEn" defaultValue={initial?.nameEn ?? ""} className={inputClassName} />
+          </label>
+          <label className="text-sm">
+            Display mode RU
+            <select name="displayModeRu" defaultValue={initial?.displayModeRu ?? "auto"} className={inputClassName}>
+              {ingredientDisplayModes.map((mode) => (
+                <option key={mode} value={mode}>{mode}</option>
+              ))}
+            </select>
+          </label>
+          <label className="text-sm">
+            Primary override
+            <input name="displayNameOverrideRu" defaultValue={initial?.displayNameOverrideRu ?? ""} className={inputClassName} />
+          </label>
+          <label className="text-sm">
+            Secondary override
+            <input name="secondaryNameOverrideRu" defaultValue={initial?.secondaryNameOverrideRu ?? ""} className={inputClassName} />
+          </label>
+          <label className="flex items-center gap-2 pt-7 text-sm">
+            <input name="hideSecondaryNameRu" type="checkbox" defaultChecked={initial?.hideSecondaryNameRu ?? false} />
+            Hide secondary name
+          </label>
+        </div>
+      </section>
+
+      <section className={sectionClassName}>
+        <h2 className="text-sm font-semibold uppercase tracking-wide text-zinc-600">Meta</h2>
+        <div className="grid gap-3 md:grid-cols-3">
+          <label className="text-sm">
+            Brand
+            <input name="brand" defaultValue={initial?.brand ?? ""} className={inputClassName} />
+          </label>
+          <label className="text-sm">
+            Producer
+            <input name="producer" defaultValue={initial?.producer ?? ""} className={inputClassName} />
+          </label>
+          <label className="text-sm">
+            Product code
+            <input name="productCode" defaultValue={initial?.productCode ?? ""} className={inputClassName} />
+          </label>
+          <label className="text-sm">
+            Country code
+            <input name="countryCode" defaultValue={initial?.countryCode ?? ""} className={inputClassName} />
+          </label>
+          <label className="text-sm">
+            Country name
+            <input name="countryName" defaultValue={initial?.countryName ?? ""} className={inputClassName} />
+          </label>
+          <label className="text-sm">
+            Group
+            <input name="groupName" defaultValue={initial?.groupName ?? ""} className={inputClassName} />
+          </label>
+          <label className="text-sm">
+            Source category
+            <input name="sourceCategory" defaultValue={initial?.sourceCategory ?? ""} className={inputClassName} />
+          </label>
+          <label className="text-sm">
+            Subcategory
+            <input name="subcategory" defaultValue={initial?.subcategory ?? ""} className={inputClassName} />
+          </label>
+          <label className="text-sm">
+            Present on BIRRF
+            <select name="presentOnBirrf" defaultValue={initial?.presentOnBirrf == null ? "" : String(initial.presentOnBirrf)} className={inputClassName}>
+              <option value="">Unknown</option>
+              <option value="true">Yes</option>
+              <option value="false">No</option>
+            </select>
+          </label>
+          <label className="flex items-center gap-2 pt-7 text-sm">
+            <input name="isActive" type="checkbox" defaultChecked={initial?.isActive ?? true} />
+            Active
+          </label>
+          <label className="flex items-center gap-2 pt-7 text-sm">
+            <input name="inventoryEnabled" type="checkbox" defaultChecked={initial?.inventoryEnabled ?? true} />
+            Inventory enabled
+          </label>
+        </div>
+      </section>
+
+      <section className={sectionClassName}>
+        <h2 className="text-sm font-semibold uppercase tracking-wide text-zinc-600">JSON Editors</h2>
+        <div className="grid gap-4">
+          <label className="text-sm">
+            Attributes
+            <textarea
+              value={attributesJson}
+              onChange={(event) => setAttributesJson(event.target.value)}
+              className={textareaClassName}
             />
           </label>
           <label className="text-sm">
-            Match policy
-            <select name="matchPolicy" defaultValue={initial?.family?.matchPolicy ?? ""} className={inputClassName}>
-              <option value="">Auto</option>
-              {ingredientMatchPolicies.map((value) => (
-                <option key={value} value={value}>{formatEnumLabel(value)}</option>
-              ))}
-            </select>
+            Aliases
+            <textarea
+              value={aliasesJson}
+              onChange={(event) => setAliasesJson(event.target.value)}
+              className={textareaClassName}
+            />
           </label>
-          <details className="rounded border p-3">
-            <summary className="cursor-pointer text-sm font-medium">Family localization</summary>
-            <div className="mt-3 grid gap-3">
-              <label className="text-sm">
-                Family display name (RU)
-                <input
-                  name="familyDisplayNameRu"
-                  defaultValue={initial?.family?.displayNameRu ?? ""}
-                  className={inputClassName}
-                />
-              </label>
-              <label className="text-sm">
-                Family display name (EN)
-                <input
-                  name="familyDisplayNameEn"
-                  defaultValue={initial?.family?.displayNameEn ?? ""}
-                  className={inputClassName}
-                />
-              </label>
-            </div>
-          </details>
+          <label className="text-sm">
+            Sources
+            <textarea
+              value={sourcesJson}
+              onChange={(event) => setSourcesJson(event.target.value)}
+              className={textareaClassName}
+            />
+          </label>
+          {selectedCategory === "consumable" ? (
+            <label className="text-sm">
+              Package variants
+              <textarea
+                value={packageVariantsJson}
+                onChange={(event) => setPackageVariantsJson(event.target.value)}
+                className={textareaClassName}
+              />
+            </label>
+          ) : null}
+          {(selectedCategory === "consumable" || selectedCategory === "water_treatment") ? (
+            <label className="text-sm">
+              Quantity defaults
+              <textarea
+                value={quantityDefaultsJson}
+                onChange={(event) => setQuantityDefaultsJson(event.target.value)}
+                className={textareaClassName}
+              />
+            </label>
+          ) : null}
         </div>
       </section>
 
       <section className={sectionClassName}>
-        <h2 className="text-sm font-semibold uppercase tracking-wide text-neutral-600">Identity</h2>
-        <div className="grid grid-cols-2 gap-3">
-          <label className="col-span-2 text-sm">
-            Display name
-            <input name="displayName" required defaultValue={initial?.displayName ?? ""} className={inputClassName} />
-          </label>
-          <label className="text-sm">
-            Brand
-            <input name="brandName" defaultValue={initial?.brandName ?? ""} className={inputClassName} />
-          </label>
-          <label className="text-sm">
-            Manufacturer
-            <input name="manufacturer" defaultValue={initial?.manufacturer ?? ""} className={inputClassName} />
-          </label>
-          <label className="text-sm">
-            Country
-            <input name="country" defaultValue={initial?.country ?? ""} className={inputClassName} />
-          </label>
-          <label className="text-sm">
-            Completeness
-            <select name="completenessLevel" defaultValue={initial?.completenessLevel ?? ""} className={inputClassName}>
-              <option value="">Auto</option>
-              {ingredientCompletenessLevels.map((value) => (
-                <option key={value} value={value}>{formatEnumLabel(value)}</option>
-              ))}
-            </select>
-          </label>
-          <label className="col-span-2 text-sm">
-            Aliases (one per line)
-            <textarea name="aliases" defaultValue={(initial?.aliases ?? []).join("\n")} className="mt-1 h-24 w-full rounded border p-2" />
-          </label>
-          <label className="col-span-2 text-sm">
-            Description
-            <textarea name="description" defaultValue={initial?.description ?? ""} className="mt-1 h-24 w-full rounded border p-2" />
-          </label>
+        <h2 className="text-sm font-semibold uppercase tracking-wide text-zinc-600">Preview</h2>
+        <div className="grid gap-3 md:grid-cols-2">
+          <div className="rounded-lg border border-zinc-200 bg-zinc-50 p-3">
+            <p className="text-xs uppercase tracking-wide text-zinc-500">Catalog / Search</p>
+            <p className="mt-2 font-medium text-zinc-950">{preview.primaryName || "No primary label"}</p>
+            {preview.secondaryName ? <p className="text-sm text-zinc-500">{preview.secondaryName}</p> : null}
+            {preview.summary ? <p className="mt-2 text-sm text-zinc-600">{preview.summary}</p> : null}
+          </div>
+          <div className="rounded-lg border border-zinc-200 bg-zinc-50 p-3">
+            <p className="text-xs uppercase tracking-wide text-zinc-500">Recipe / Inventory</p>
+            <p className="mt-2 font-medium text-zinc-950">{preview.primaryName || "No primary label"}</p>
+            <p className="text-sm text-zinc-500">{resolvedType} / {selectedCategory} / {selectedSubtype ?? "none"}</p>
+            <p className="mt-2 text-sm text-zinc-600">
+              Primary fields: {fieldVisibility.primary.join(", ")}
+            </p>
+            {fieldVisibility.advanced.length ? (
+              <p className="text-sm text-zinc-600">Advanced fields: {fieldVisibility.advanced.join(", ")}</p>
+            ) : null}
+          </div>
         </div>
       </section>
 
-      <section className={sectionClassName}>
-        <h2 className="text-sm font-semibold uppercase tracking-wide text-neutral-600">Units</h2>
-        <div className="grid grid-cols-2 gap-3">
-          <label className="text-sm">
-            Default display unit
-            <select
-              name="defaultDisplayUnit"
-              value={selectedDefaultDisplayUnit}
-              onChange={(event) => setSelectedDefaultDisplayUnit(event.target.value as IngredientDisplayUnit)}
-              className={inputClassName}
-            >
-              {unitOptions.allowedUnits.map((unit) => (
-                <option key={unit} value={unit}>{unit}</option>
-              ))}
-            </select>
-          </label>
-          <label className="text-sm">
-            Measurement dimension
-            <input value={unitOptions.measurementDimension} readOnly className={`${inputClassName} bg-neutral-50`} />
-          </label>
-          <p className="col-span-2 text-xs text-neutral-600">
-            Allowed units: {unitOptions.allowedUnits.join(", ")}
-          </p>
-        </div>
-      </section>
-
-      <section key={`technical-${taxonomyRevision}-${selectedCategory}-${selectedSubtype}`} className={sectionClassName}>
-        <h2 className="text-sm font-semibold uppercase tracking-wide text-neutral-600">Technical fields</h2>
-        <div className="grid grid-cols-2 gap-3">
-          {selectedCategory === "fermentable" ? (
-            <>
-              <label className="text-sm">
-                Color (EBC)
-                <input
-                  name="fermentableColorEbc"
-                  required
-                  type="number"
-                  step="0.1"
-                  min="0.1"
-                  defaultValue={useInitialTaxonomyValues ? initialTechnicalFields.fermentableColorEbc ?? "" : ""}
-                  className={inputClassName}
-                />
-              </label>
-              <label className="text-sm">
-                Extract yield (%)
-                <input
-                  name="fermentableExtractYieldPct"
-                  required
-                  type="number"
-                  step="0.1"
-                  min="0.1"
-                  max="100"
-                  defaultValue={useInitialTaxonomyValues ? initialTechnicalFields.fermentableExtractYieldPct ?? "" : ""}
-                  className={inputClassName}
-                />
-              </label>
-            </>
-          ) : null}
-
-          {selectedCategory === "hop" ? (
-            <>
-              <label className="text-sm">
-                Alpha acid (%)
-                <input
-                  name="hopAlphaAcidPct"
-                  required
-                  type="number"
-                  step="0.1"
-                  min="0.1"
-                  max="100"
-                  defaultValue={useInitialTaxonomyValues ? initialTechnicalFields.hopAlphaAcidPct ?? "" : ""}
-                  className={inputClassName}
-                />
-              </label>
-              <label className="text-sm">
-                Harvest year
-                <input
-                  name="harvestYear"
-                  type="number"
-                  min="1900"
-                  max="2200"
-                  defaultValue={useInitialTaxonomyValues ? initial?.harvestYear ?? "" : ""}
-                  className={inputClassName}
-                />
-              </label>
-            </>
-          ) : null}
-
-          {selectedCategory === "yeast" ? (
-            <>
-              <label className="text-sm">
-                Form
-                <select
-                  name="yeastForm"
-                  required
-                  value={selectedYeastForm}
-                  onChange={(event) => handleYeastFormChange(event.target.value)}
-                  className={inputClassName}
-                >
-                  <option value="">Select form</option>
-                  {yeastForms.map((value) => (
-                    <option key={value} value={value}>{yeastFormLabels[value]}</option>
-                  ))}
-                </select>
-              </label>
-              <label className="text-sm">
-                Attenuation (%)
-                <input
-                  name="yeastAttenuationPct"
-                  required
-                  type="number"
-                  step="0.1"
-                  min="0.1"
-                  max="100"
-                  defaultValue={useInitialTaxonomyValues ? initialTechnicalFields.yeastAttenuationPct ?? "" : ""}
-                  className={inputClassName}
-                />
-              </label>
-              <label className="text-sm">
-                Temp min (°C)
-                <input
-                  name="yeastMinFermentationTempC"
-                  type="number"
-                  step="0.1"
-                  defaultValue={useInitialTaxonomyValues ? initialTechnicalFields.yeastMinFermentationTempC ?? "" : ""}
-                  className={inputClassName}
-                />
-              </label>
-              <label className="text-sm">
-                Temp max (°C)
-                <input
-                  name="yeastMaxFermentationTempC"
-                  type="number"
-                  step="0.1"
-                  defaultValue={useInitialTaxonomyValues ? initialTechnicalFields.yeastMaxFermentationTempC ?? "" : ""}
-                  className={inputClassName}
-                />
-              </label>
-              <label className="text-sm">
-                Package size
-                <input
-                  name="yeastPackageSize"
-                  type="number"
-                  step="0.01"
-                  min="0"
-                  defaultValue={useInitialTaxonomyValues ? initialTechnicalFields.yeastPackageSize ?? "" : ""}
-                  className={inputClassName}
-                />
-              </label>
-              <label className="text-sm">
-                Package unit
-                <select
-                  name="yeastPackageUnit"
-                  defaultValue={useInitialTaxonomyValues ? initialTechnicalFields.yeastPackageUnit ?? "" : ""}
-                  className={inputClassName}
-                >
-                  <option value="">Unknown</option>
-                  {ingredientDisplayUnits.map((unit) => (
-                    <option key={unit} value={unit}>{unit}</option>
-                  ))}
-                </select>
-              </label>
-            </>
-          ) : null}
-
-          {selectedCategory === "water_prep" ? (
-            <>
-              {selectedSubtype === "salt" || selectedSubtype === "base" ? (
-                <label className="text-sm">
-                  Compound
-                  <input
-                    name="waterPrepCompound"
-                    required
-                    defaultValue={useInitialTaxonomyValues ? initialTechnicalFields.waterPrepCompound ?? "" : ""}
-                    className={inputClassName}
-                  />
-                </label>
-              ) : null}
-              {selectedSubtype === "acid" ? (
-                <label className="text-sm">
-                  Acid type
-                  <input
-                    name="waterPrepAcidType"
-                    required
-                    defaultValue={useInitialTaxonomyValues ? initialTechnicalFields.waterPrepAcidType ?? "" : ""}
-                    className={inputClassName}
-                  />
-                </label>
-              ) : null}
-              <label className="text-sm">
-                Physical form
-                <select
-                  name="waterPrepPhysicalForm"
-                  value={selectedWaterPrepPhysicalForm}
-                  onChange={(event) => setSelectedWaterPrepPhysicalForm(event.target.value)}
-                  className={inputClassName}
-                >
-                  <option value="">Unknown</option>
-                  {waterPrepPhysicalForms.map((value) => (
-                    <option key={value} value={value}>{waterPrepPhysicalFormLabels[value]}</option>
-                  ))}
-                </select>
-              </label>
-              {selectedSubtype === "acid" || selectedSubtype === "base" ? (
-                <label className="text-sm">
-                  Strength (%)
-                  <input
-                    name="waterPrepStrengthPct"
-                    required={strengthRequired}
-                    type="number"
-                    step="0.1"
-                    min="0.1"
-                    max="100"
-                    defaultValue={useInitialTaxonomyValues ? initialTechnicalFields.waterPrepStrengthPct ?? "" : ""}
-                    className={inputClassName}
-                  />
-                </label>
-              ) : null}
-              <label className="text-sm">
-                Purity (%)
-                <input
-                  name="waterPrepPurityPct"
-                  type="number"
-                  step="0.1"
-                  min="0.1"
-                  max="100"
-                  defaultValue={useInitialTaxonomyValues ? initialTechnicalFields.waterPrepPurityPct ?? "" : ""}
-                  className={inputClassName}
-                />
-              </label>
-            </>
-          ) : null}
-
-          {selectedCategory === "misc" ? (
-            <>
-              <label className="text-sm">
-                Usage phase
-                <select
-                  name="miscUsagePhase"
-                  defaultValue={useInitialTaxonomyValues ? initialTechnicalFields.miscUsagePhase ?? "" : ""}
-                  className={inputClassName}
-                >
-                  <option value="">Unknown</option>
-                  {miscUsagePhases.map((value) => (
-                    <option key={value} value={value}>{miscUsagePhaseLabels[value]}</option>
-                  ))}
-                </select>
-              </label>
-              <label className="text-sm">
-                Dose hint
-                <input
-                  name="miscDoseHint"
-                  defaultValue={useInitialTaxonomyValues ? initialTechnicalFields.miscDoseHint ?? "" : ""}
-                  className={inputClassName}
-                />
-              </label>
-            </>
-          ) : null}
-        </div>
-
-        {fieldVisibility.advanced.length > 0 ? (
-          <details className="rounded border p-3">
-            <summary className="cursor-pointer text-sm font-medium">Advanced fields</summary>
-            <div className="mt-3">
-              {renderAdvancedFields()}
-            </div>
-          </details>
-        ) : null}
-      </section>
-
-      <section className={sectionClassName}>
-        <h2 className="text-sm font-semibold uppercase tracking-wide text-neutral-600">Publishing</h2>
-        <div className="grid grid-cols-2 gap-3">
-          <label className="text-sm">
-            Status
-            <select name="status" defaultValue={initial?.status ?? "active"} className={inputClassName}>
-              <option value="draft">draft</option>
-              <option value="active">active</option>
-              <option value="archived">archived</option>
-              <option value="merged">merged</option>
-            </select>
-          </label>
-          <label className="text-sm">
-            Visibility
-            <select name="visibility" defaultValue={initial?.visibility ?? "public"} className={inputClassName}>
-              <option value="public">public</option>
-              <option value="internal">internal</option>
-            </select>
-          </label>
-        </div>
-      </section>
-
-      <details className="rounded-lg border p-4">
-        <summary className="cursor-pointer text-sm font-medium">Legacy compatibility</summary>
-        <label className="mt-3 block text-sm">
-          Properties JSON
-          <textarea
-            value={propertiesJson}
-            onChange={(event) => setPropertiesJson(event.target.value)}
-            className="mt-1 h-40 w-full rounded border p-2 font-mono text-xs"
-          />
-        </label>
-      </details>
-
-      <button type="submit" className="rounded bg-black px-3 py-2 text-sm text-white">Save</button>
+      <div className="flex gap-3">
+        <button type="submit" className="rounded-lg bg-zinc-950 px-4 py-2 text-sm font-medium text-white">
+          {initial?.id ? "Save ingredient" : "Create ingredient"}
+        </button>
+        <a href="/admin/ingredients" className="rounded-lg border border-zinc-300 px-4 py-2 text-sm text-zinc-700">
+          Cancel
+        </a>
+      </div>
     </form>
   );
 };

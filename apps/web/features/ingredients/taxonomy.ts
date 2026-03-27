@@ -1,34 +1,41 @@
-const ingredientCategories = ["fermentable", "hop", "yeast", "water_prep", "misc"] as const;
-const legacyIngredientTypes = ["fermentable", "hop", "yeast", "sugar", "adjunct", "fining", "misc"] as const;
-const fermentableSubtypes = [
-  "base_malt",
-  "specialty_malt",
-  "roasted_malt",
-  "adjunct_grain",
-  "extract_dry",
-  "extract_liquid",
-  "sugar",
-  "syrup_honey",
-  "fruit_fermentable"
+const ingredientCategories = [
+  "fermentable",
+  "hop",
+  "yeast",
+  "consumable",
+  "water_treatment"
 ] as const;
-const hopSubtypes = ["pellet", "whole_cone", "cryo", "lupulin", "extract", "standard"] as const;
-const yeastSubtypes = ["ale", "lager", "wheat", "belgian", "kveik", "wild_bacteria", "other"] as const;
-const waterPrepSubtypes = ["salt", "acid", "base", "nutrient_other", "water_source", "dechlorination"] as const;
-const miscSubtypes = [
-  "fining",
-  "antioxidant",
-  "nutrient",
-  "spice_herb",
-  "wood",
-  "flavoring",
-  "enzyme",
-  "cleaner",
-  "sanitizer",
-  "gas",
-  "preservative",
+
+const legacyIngredientTypes = [
+  "malt",
+  "fermentable",
+  "hop",
+  "yeast",
+  "consumable",
+  "water_treatment"
+] as const;
+
+const fermentableSubtypes = ["malt", "fermentable"] as const;
+const hopSubtypes = ["hop"] as const;
+const yeastSubtypes = ["yeast"] as const;
+const consumableSubtypes = [
   "process_aid",
+  "nutrient",
+  "sanitizer",
+  "cleaner",
+  "antioxidant",
+  "fining",
   "other"
 ] as const;
+const waterTreatmentSubtypes = [
+  "water_source",
+  "salt",
+  "acid",
+  "base",
+  "dechlorination",
+  "other"
+] as const;
+
 const ingredientMatchPolicies = ["exact_only", "family_compatible"] as const;
 const ingredientCompletenessLevels = ["minimum", "recommended", "full"] as const;
 const ingredientMeasurementDimensions = ["weight", "volume", "count"] as const;
@@ -36,17 +43,12 @@ const ingredientDisplayUnits = ["g", "kg", "oz", "lb", "ml", "l", "gal", "item",
 
 type IngredientCategory = (typeof ingredientCategories)[number];
 type LegacyIngredientType = (typeof legacyIngredientTypes)[number];
-type FermentableSubtype = (typeof fermentableSubtypes)[number];
-type HopSubtype = (typeof hopSubtypes)[number];
-type YeastSubtype = (typeof yeastSubtypes)[number];
-type WaterPrepSubtype = (typeof waterPrepSubtypes)[number];
-type MiscSubtype = (typeof miscSubtypes)[number];
 type IngredientSubtype =
-  | FermentableSubtype
-  | HopSubtype
-  | YeastSubtype
-  | WaterPrepSubtype
-  | MiscSubtype;
+  | (typeof fermentableSubtypes)[number]
+  | (typeof hopSubtypes)[number]
+  | (typeof yeastSubtypes)[number]
+  | (typeof consumableSubtypes)[number]
+  | (typeof waterTreatmentSubtypes)[number];
 type IngredientMatchPolicy = (typeof ingredientMatchPolicies)[number];
 type IngredientCompletenessLevel = (typeof ingredientCompletenessLevels)[number];
 type IngredientMeasurementDimension = (typeof ingredientMeasurementDimensions)[number];
@@ -56,115 +58,40 @@ type ResolveIngredientTaxonomyInput = {
   category?: string | null;
   type?: string | null;
   subtype?: string | null;
-  displayName?: string | null;
-  properties?: Record<string, unknown> | null;
-  hopForm?: string | null;
-  yeastType?: string | null;
-  yeastForm?: string | null;
+  itemKind?: string | null;
   defaultDisplayUnit?: string | null;
   defaultUnit?: string | null;
-  brandName?: string | null;
-  manufacturer?: string | null;
-  country?: string | null;
-  harvestYear?: number | null;
-  description?: string | null;
-  aliases?: string[] | null;
-  fermentableColorEbc?: number | null;
-  fermentableExtractYieldPct?: number | null;
-  hopAlphaAcidPct?: number | null;
-  yeastAttenuationPct?: number | null;
-  completenessLevel?: string | null;
+  yeastForm?: string | null;
+  unitPreferred?: string | null;
 };
 
-type ResolveIngredientUnitsInput = Pick<
-  ResolveIngredientTaxonomyInput,
-  "category" | "type" | "subtype" | "hopForm" | "yeastForm" | "defaultDisplayUnit" | "defaultUnit"
->;
-
-type ResolveIngredientCompletenessInput = Pick<
-  ResolveIngredientTaxonomyInput,
-  | "category"
-  | "type"
-  | "subtype"
-  | "displayName"
-  | "aliases"
-  | "description"
-  | "brandName"
-  | "manufacturer"
-  | "country"
-  | "harvestYear"
-  | "properties"
-  | "fermentableColorEbc"
-  | "fermentableExtractYieldPct"
-  | "hopAlphaAcidPct"
-  | "yeastAttenuationPct"
-  | "yeastForm"
-  | "completenessLevel"
->;
+type ResolveIngredientUnitsInput = ResolveIngredientTaxonomyInput;
+type ResolveIngredientCompletenessInput = Pick<ResolveIngredientTaxonomyInput, "category" | "type" | "subtype"> & {
+  nameRu?: string | null;
+  nameEn?: string | null;
+  aliases?: string[] | null;
+  brand?: string | null;
+  producer?: string | null;
+};
 
 export const ingredientCategorySubtypes = {
   fermentable: fermentableSubtypes,
   hop: hopSubtypes,
   yeast: yeastSubtypes,
-  water_prep: waterPrepSubtypes,
-  misc: miscSubtypes
+  consumable: consumableSubtypes,
+  water_treatment: waterTreatmentSubtypes
 } as const satisfies Record<IngredientCategory, readonly IngredientSubtype[]>;
 
 const WEIGHT_UNITS: IngredientDisplayUnit[] = ["g", "kg", "oz", "lb"];
 const VOLUME_UNITS: IngredientDisplayUnit[] = ["ml", "l", "gal"];
 const COUNT_UNITS: IngredientDisplayUnit[] = ["item", "pack"];
-const UNITS_BY_DIMENSION: Record<IngredientMeasurementDimension, IngredientDisplayUnit[]> = {
-  weight: WEIGHT_UNITS,
-  volume: VOLUME_UNITS,
-  count: COUNT_UNITS
-};
-
-const FERMENTABLE_BASE_MALT_TERMS = ["pilsner", "pale malt", "vienna", "maris otter", "wheat malt", "2 row", "2-row"];
-const FERMENTABLE_SPECIALTY_TERMS = ["cara", "crystal", "munich", "caramel", "melanoidin", "biscuit", "amber malt"];
-const FERMENTABLE_ROASTED_TERMS = ["roasted", "chocolate", "black malt", "black patent", "roast barley"];
-const FERMENTABLE_ADJUNCT_TERMS = ["flaked", "torrified", "oats", "barley", "wheat", "rye", "maize", "corn"];
-const FERMENTABLE_SYRUP_TERMS = ["honey", "syrup", "molasses", "maple", "candi syrup"];
-const FERMENTABLE_SUGAR_TERMS = ["sugar", "dextrose", "sucrose", "lactose", "maltodextrin"];
-const FERMENTABLE_DRY_EXTRACT_TERMS = ["dme", "dry malt extract", "extract dry"];
-const FERMENTABLE_LIQUID_EXTRACT_TERMS = ["lme", "liquid malt extract", "extract liquid"];
-const FERMENTABLE_FRUIT_TERMS = ["fruit", "grape", "berry", "cherry", "apricot", "puree"];
-const PROCESS_AID_TERMS = ["rice hulls", "rice hull", "sanitizer", "star san"];
-const FLAVORING_TERMS = ["cocoa", "cacao", "peanut", "coconut", "nib", "nibs", "vanilla", "coffee"];
-const WATER_SALT_TERMS = ["gypsum", "calcium chloride", "calcium sulfate", "epsom", "chloride", "sulfate", "cacl2"];
-const WATER_ACID_TERMS = ["acid", "lactic", "phosphoric", "citric"];
-const WATER_BASE_TERMS = ["bicarbonate", "chalk", "carbonate", "slaked lime", "pickling lime", "sodium hydroxide"];
-const WATER_SOURCE_TERMS = ["reverse osmosis", "distilled water", "ro water", "osmosis water", "ro "];
-const WATER_DECHLORINATION_TERMS = ["campden", "metabisulfite", "chloramine", "dechlor", "ascorbic acid"];
-const WATER_PREP_STAGE_TERMS = ["water-treatment", "water treatment"];
-const ANTIOXIDANT_TERMS = ["metabisulfite", "campden", "antioxidant", "sulfite"];
-const NUTRIENT_TERMS = ["nutrient", "servomyces"];
-const WOOD_TERMS = ["oak", "wood", "chips", "spiral"];
-const SPICE_TERMS = ["spice", "pepper", "coriander", "orange peel", "cinnamon", "herb"];
-const CLEANER_TERMS = ["cleaner", "caustic", "pbw", "detergent"];
-const SANITIZER_TERMS = ["sanitizer", "star san", "saniclean", "iodophor"];
-const GAS_TERMS = ["co2", "carbon dioxide", "gas cartridge", "cylinder"];
-const PRESERVATIVE_TERMS = ["preservative", "sorbate"];
-
-const isRecord = (value: unknown): value is Record<string, unknown> => (
-  typeof value === "object"
-  && value !== null
-  && !Array.isArray(value)
-);
 
 const toNormalizedToken = (value: string) => value
   .trim()
   .toLowerCase()
-  .replace(/[^a-z0-9]+/g, "_")
+  .replace(/[\s/]+/g, "_")
+  .replace(/[^a-z0-9_]+/g, "")
   .replace(/^_+|_+$/g, "");
-
-const normalizeDisplayName = (value: string | null | undefined) => (value ?? "").trim().toLowerCase();
-
-const hasTerm = (value: string, terms: readonly string[]) => terms.some((term) => value.includes(term));
-
-const readStringProperty = (properties: Record<string, unknown>, key: string) => {
-  const value = properties[key];
-  return typeof value === "string" ? value.trim() : "";
-};
 
 const getKnownSubtypeSet = (category: IngredientCategory) => new Set<string>(ingredientCategorySubtypes[category]);
 
@@ -216,314 +143,122 @@ export const normalizeIngredientSubtype = (
   }
 
   const normalized = toNormalizedToken(value);
-  const knownSubtypes = getKnownSubtypeSet(category);
-
-  if (knownSubtypes.has(normalized)) {
-    return normalized as IngredientSubtype;
+  if (isIngredientSubtypeForCategory(category, normalized)) {
+    return normalized;
   }
 
   if (category === "fermentable") {
-    const aliases: Record<string, FermentableSubtype> = {
-      base: "base_malt",
-      base_malt: "base_malt",
-      base_malts: "base_malt",
-      specialty: "specialty_malt",
-      speciality_malt: "specialty_malt",
-      specialty_malt: "specialty_malt",
-      crystal_malt: "specialty_malt",
-      roasted_grain: "roasted_malt",
-      roasted_malt: "roasted_malt",
-      roast_malt: "roasted_malt",
-      adjunct: "adjunct_grain",
-      adjunct_grain: "adjunct_grain",
-      dry_extract: "extract_dry",
-      extract_dry: "extract_dry",
-      liquid_extract: "extract_liquid",
-      extract_liquid: "extract_liquid",
-      syrup: "syrup_honey",
-      honey: "syrup_honey",
-      syrup_honey: "syrup_honey",
-      fruit: "fruit_fermentable",
-      fruit_fermentable: "fruit_fermentable"
-    };
+    if (normalized.includes("malt")) {
+      return "malt";
+    }
 
-    return aliases[normalized] ?? null;
+    return "fermentable";
   }
 
   if (category === "hop") {
-    const aliases: Record<string, HopSubtype> = {
-      cone: "whole_cone",
-      whole: "whole_cone",
-      whole_cone: "whole_cone",
-      wholecone: "whole_cone",
-      leaf: "whole_cone",
-      pellets: "pellet",
-      pellet: "pellet",
-      standard: "standard",
-      generic: "standard"
-    };
-
-    return aliases[normalized] ?? null;
+    return "hop";
   }
 
   if (category === "yeast") {
-    const aliases: Record<string, YeastSubtype> = {
-      brett: "wild_bacteria",
-      bacteria: "wild_bacteria",
-      wild: "wild_bacteria",
-      belgian_ale: "belgian",
-      saison: "belgian"
-    };
-
-    return aliases[normalized] ?? null;
+    return "yeast";
   }
 
-  if (category === "water_prep") {
-    const aliases: Record<string, WaterPrepSubtype> = {
-      salts: "salt",
-      mineral: "salt",
-      source: "water_source",
-      water_source: "water_source",
-      dechlorination: "dechlorination",
-      dechlorinator: "dechlorination"
-    };
-
-    return aliases[normalized] ?? null;
+  if (category === "water_treatment") {
+    if (normalized.includes("water")) return "water_source";
+    if (normalized.includes("acid")) return "acid";
+    if (normalized.includes("salt")) return "salt";
+    if (normalized.includes("base")) return "base";
+    if (normalized.includes("chlor")) return "dechlorination";
+    return "other";
   }
 
-  const miscAliases: Record<string, MiscSubtype> = {
-    finings: "fining",
-    anti_oxidant: "antioxidant",
-    cleaner: "cleaner",
-    sanitizer: "sanitizer",
-    gas: "gas",
-    preservative: "preservative",
-    process: "process_aid",
-    process_aid: "process_aid"
-  };
-
-  return miscAliases[normalized] ?? null;
+  if (normalized.includes("process")) return "process_aid";
+  if (normalized.includes("nutrient")) return "nutrient";
+  if (normalized.includes("sanitize")) return "sanitizer";
+  if (normalized.includes("clean")) return "cleaner";
+  if (normalized.includes("antioxid")) return "antioxidant";
+  if (normalized.includes("fining")) return "fining";
+  return "other";
 };
 
 export const resolveIngredientCategory = (input: ResolveIngredientTaxonomyInput): IngredientCategory => {
-  const properties = isRecord(input.properties) ? input.properties : {};
-  const taxonomyCategoryProperty = readStringProperty(properties, "taxonomyCategory");
-
   if (input.category && isIngredientCategory(input.category)) {
     return input.category;
   }
 
-  if (taxonomyCategoryProperty && isIngredientCategory(taxonomyCategoryProperty)) {
-    return taxonomyCategoryProperty;
-  }
-
-  const legacyType = input.type && isLegacyIngredientType(input.type) ? input.type : null;
-  const displayName = normalizeDisplayName(input.displayName);
-  const stage = readStringProperty(properties, "stage").toLowerCase();
-  const subtypeToken = toNormalizedToken(input.subtype ?? "");
-
-  if (legacyType === "fermentable" || legacyType === "hop" || legacyType === "yeast") {
-    return legacyType;
-  }
-
-  if (legacyType === "sugar") {
-    return "fermentable";
-  }
-
-  if (legacyType === "fining") {
-    return "misc";
-  }
-
-  if (legacyType === "adjunct") {
-    if (hasTerm(displayName, PROCESS_AID_TERMS) || subtypeToken === "process_aid") {
-      return "misc";
+  if (input.type && isLegacyIngredientType(input.type)) {
+    if (input.type === "malt" || input.type === "fermentable") {
+      return "fermentable";
     }
 
-    if (hasTerm(displayName, FLAVORING_TERMS)) {
-      return "misc";
+    if (input.type === "hop") {
+      return "hop";
     }
 
-    return "fermentable";
+    if (input.type === "yeast") {
+      return "yeast";
+    }
+
+    if (input.type === "consumable") {
+      return "consumable";
+    }
+
+    return "water_treatment";
   }
 
-  if (stage && WATER_PREP_STAGE_TERMS.some((term) => stage.includes(term))) {
-    return "water_prep";
+  if (input.itemKind) {
+    if (normalizeIngredientSubtype("water_treatment", input.itemKind)) {
+      const normalized = normalizeIngredientSubtype("water_treatment", input.itemKind);
+      if (normalized && normalized !== "other") {
+        return "water_treatment";
+      }
+    }
+
+    if (normalizeIngredientSubtype("consumable", input.itemKind)) {
+      return "consumable";
+    }
   }
 
-  if (
-    hasTerm(displayName, WATER_SOURCE_TERMS)
-    || hasTerm(displayName, WATER_DECHLORINATION_TERMS)
-    || hasTerm(displayName, WATER_SALT_TERMS)
-    || hasTerm(displayName, WATER_ACID_TERMS)
-    || hasTerm(displayName, WATER_BASE_TERMS)
-  ) {
-    return "water_prep";
-  }
-
-  return "misc";
+  return "consumable";
 };
 
 export const resolveIngredientSubtype = (input: ResolveIngredientTaxonomyInput): IngredientSubtype | null => {
   const category = resolveIngredientCategory(input);
-  const normalizedSubtype = normalizeIngredientSubtype(category, input.subtype);
+
+  if (input.subtype && isIngredientSubtypeForCategory(category, input.subtype)) {
+    return input.subtype;
+  }
+
+  const normalizedSubtype = normalizeIngredientSubtype(category, input.subtype ?? input.itemKind ?? null);
   if (normalizedSubtype) {
     return normalizedSubtype;
   }
 
-  const displayName = normalizeDisplayName(input.displayName);
-  const properties = isRecord(input.properties) ? input.properties : {};
-  const taxonomySubtypeProperty = readStringProperty(properties, "taxonomySubtype");
-  const stage = readStringProperty(properties, "stage").toLowerCase();
-
-  if (taxonomySubtypeProperty) {
-    const subtypeFromProperties = normalizeIngredientSubtype(category, taxonomySubtypeProperty);
-    if (subtypeFromProperties) {
-      return subtypeFromProperties;
-    }
+  if (input.type === "malt") {
+    return "malt";
   }
 
-  if (category === "fermentable") {
-    if (input.type === "sugar" || hasTerm(displayName, FERMENTABLE_SUGAR_TERMS)) {
-      return hasTerm(displayName, FERMENTABLE_SYRUP_TERMS) ? "syrup_honey" : "sugar";
-    }
-
-    if (hasTerm(displayName, FERMENTABLE_DRY_EXTRACT_TERMS)) {
-      return "extract_dry";
-    }
-
-    if (hasTerm(displayName, FERMENTABLE_LIQUID_EXTRACT_TERMS)) {
-      return "extract_liquid";
-    }
-
-    if (hasTerm(displayName, FERMENTABLE_FRUIT_TERMS)) {
-      return "fruit_fermentable";
-    }
-
-    if (input.type === "adjunct" || hasTerm(displayName, FERMENTABLE_ADJUNCT_TERMS)) {
-      return "adjunct_grain";
-    }
-
-    if (hasTerm(displayName, FERMENTABLE_ROASTED_TERMS)) {
-      return "roasted_malt";
-    }
-
-    if (hasTerm(displayName, FERMENTABLE_SPECIALTY_TERMS)) {
-      return "specialty_malt";
-    }
-
-    if (hasTerm(displayName, FERMENTABLE_BASE_MALT_TERMS) || displayName.includes("malt")) {
-      return "base_malt";
-    }
-
-    return null;
+  if (input.type === "fermentable") {
+    return "fermentable";
   }
 
-  if (category === "hop") {
-    const fromHopForm = normalizeIngredientSubtype("hop", input.hopForm ?? null);
-    return fromHopForm ?? (!input.subtype ? "standard" : null);
+  if (input.type === "hop") {
+    return "hop";
   }
 
-  if (category === "yeast") {
-    if (displayName.includes("kveik")) {
-      return "kveik";
-    }
+  if (input.type === "yeast") {
+    return "yeast";
+  }
 
-    if (displayName.includes("brett") || displayName.includes("lacto") || displayName.includes("pedio") || displayName.includes("wild")) {
-      return "wild_bacteria";
-    }
-
-    if (displayName.includes("belg") || displayName.includes("saison") || displayName.includes("abbey") || displayName.includes("wit")) {
-      return displayName.includes("wit") ? "wheat" : "belgian";
-    }
-
-    if (displayName.includes("weizen") || displayName.includes("wheat")) {
-      return "wheat";
-    }
-
-    if (input.yeastType === "ale" || displayName.includes("ale")) {
-      return "ale";
-    }
-
-    if (input.yeastType === "lager" || displayName.includes("lager")) {
-      return "lager";
-    }
-
+  if (category === "water_treatment") {
     return "other";
   }
 
-  if (category === "water_prep") {
-    if (hasTerm(displayName, WATER_SOURCE_TERMS)) {
-      return "water_source";
-    }
-
-    if (hasTerm(displayName, WATER_DECHLORINATION_TERMS)) {
-      return "dechlorination";
-    }
-
-    if (hasTerm(displayName, WATER_ACID_TERMS)) {
-      return "acid";
-    }
-
-    if (hasTerm(displayName, WATER_BASE_TERMS)) {
-      return "base";
-    }
-
-    if (hasTerm(displayName, NUTRIENT_TERMS)) {
-      return "nutrient_other";
-    }
-
-    return "salt";
+  if (category === "consumable") {
+    return "other";
   }
 
-  if (input.type === "fining") {
-    return "fining";
-  }
-
-  if (hasTerm(displayName, ANTIOXIDANT_TERMS)) {
-    return "antioxidant";
-  }
-
-  if (hasTerm(displayName, NUTRIENT_TERMS)) {
-    return "nutrient";
-  }
-
-  if (hasTerm(displayName, SPICE_TERMS)) {
-    return "spice_herb";
-  }
-
-  if (hasTerm(displayName, WOOD_TERMS)) {
-    return "wood";
-  }
-
-  if (hasTerm(displayName, FLAVORING_TERMS)) {
-    return "flavoring";
-  }
-
-  if (displayName.includes("enzyme")) {
-    return "enzyme";
-  }
-
-  if (hasTerm(displayName, CLEANER_TERMS)) {
-    return "cleaner";
-  }
-
-  if (hasTerm(displayName, SANITIZER_TERMS)) {
-    return "sanitizer";
-  }
-
-  if (hasTerm(displayName, GAS_TERMS)) {
-    return "gas";
-  }
-
-  if (hasTerm(displayName, PRESERVATIVE_TERMS)) {
-    return "preservative";
-  }
-
-  if (hasTerm(displayName, PROCESS_AID_TERMS) || stage === "sanitation") {
-    return "process_aid";
-  }
-
-  return "other";
+  return null;
 };
 
 export const resolveLegacyIngredientType = (input: ResolveIngredientTaxonomyInput): LegacyIngredientType => {
@@ -535,55 +270,38 @@ export const resolveLegacyIngredientType = (input: ResolveIngredientTaxonomyInpu
   const subtype = resolveIngredientSubtype(input);
 
   if (category === "fermentable") {
-    if (subtype === "sugar" || subtype === "syrup_honey") {
-      return "sugar";
-    }
-
-    if (subtype === "adjunct_grain" || subtype === "fruit_fermentable") {
-      return "adjunct";
-    }
-
-    return "fermentable";
+    return subtype === "malt" ? "malt" : "fermentable";
   }
 
-  if (category === "hop" || category === "yeast") {
-    return category;
+  if (category === "hop") {
+    return "hop";
   }
 
-  if (category === "misc" && subtype === "fining") {
-    return "fining";
+  if (category === "yeast") {
+    return "yeast";
   }
 
-  return "misc";
+  if (category === "water_treatment") {
+    return "water_treatment";
+  }
+
+  return "consumable";
 };
 
 export const resolveIngredientMatchPolicy = (
-  input: Pick<ResolveIngredientTaxonomyInput, "category" | "type" | "subtype">
+  input: ResolveIngredientTaxonomyInput
 ): IngredientMatchPolicy => {
   const category = resolveIngredientCategory(input);
-
-  if (category === "yeast" || category === "misc") {
-    return "exact_only";
-  }
-
-  return "family_compatible";
+  return category === "hop" || category === "yeast" ? "exact_only" : "family_compatible";
 };
 
-const normalizeAllowedUnits = (units: string[]): IngredientDisplayUnit[] => {
-  const seen = new Set<IngredientDisplayUnit>();
-  const normalized: IngredientDisplayUnit[] = [];
+const normalizeRequestedUnit = (
+  requestedUnit?: string | null
+): IngredientDisplayUnit | null => (
+  requestedUnit && isIngredientDisplayUnit(requestedUnit) ? requestedUnit : null
+);
 
-  for (const unit of units) {
-    if (!isIngredientDisplayUnit(unit) || seen.has(unit)) {
-      continue;
-    }
-
-    seen.add(unit);
-    normalized.push(unit);
-  }
-
-  return normalized;
-};
+const uniqueUnits = (units: readonly IngredientDisplayUnit[]) => [...new Set(units)];
 
 export const resolveIngredientUnits = (
   input: ResolveIngredientUnitsInput
@@ -592,35 +310,29 @@ export const resolveIngredientUnits = (
   allowedUnits: IngredientDisplayUnit[];
   measurementDimension: IngredientMeasurementDimension;
 } => {
-  const category = resolveIngredientCategory(input);
-  const subtype = resolveIngredientSubtype(input);
-  const requestedUnit = input.defaultDisplayUnit ?? input.defaultUnit ?? null;
+  const requestedUnit = normalizeRequestedUnit(input.defaultDisplayUnit ?? input.defaultUnit ?? input.unitPreferred ?? null);
 
-  if (requestedUnit && isIngredientDisplayUnit(requestedUnit)) {
+  if (requestedUnit) {
     const measurementDimension = getIngredientMeasurementDimensionForUnit(requestedUnit);
-    const dimensionUnits = UNITS_BY_DIMENSION[measurementDimension];
-    const allowedUnits = normalizeAllowedUnits(
-      category === "yeast"
-        ? [
-          requestedUnit,
-          ...(input.yeastForm === "liquid" ? ["pack", "ml"] : ["pack", "g"])
-        ]
-        : category === "misc" && requestedUnit === "item"
-          ? ["item", "pack"]
-          : dimensionUnits
-    );
-
     return {
       defaultDisplayUnit: requestedUnit,
-      allowedUnits,
+      allowedUnits: uniqueUnits(
+        measurementDimension === "weight"
+          ? WEIGHT_UNITS
+          : measurementDimension === "volume"
+            ? VOLUME_UNITS
+            : COUNT_UNITS
+      ),
       measurementDimension
     };
   }
 
+  const category = resolveIngredientCategory(input);
+
   if (category === "fermentable") {
     return {
       defaultDisplayUnit: "kg",
-      allowedUnits: WEIGHT_UNITS,
+      allowedUnits: [...WEIGHT_UNITS],
       measurementDimension: "weight"
     };
   }
@@ -628,26 +340,33 @@ export const resolveIngredientUnits = (
   if (category === "hop") {
     return {
       defaultDisplayUnit: "g",
-      allowedUnits: WEIGHT_UNITS,
+      allowedUnits: [...WEIGHT_UNITS],
       measurementDimension: "weight"
     };
   }
 
   if (category === "yeast") {
-    const isLiquid = input.yeastForm === "liquid";
+    if (String(input.yeastForm ?? "").trim().toLowerCase() === "liquid") {
+      return {
+        defaultDisplayUnit: "ml",
+        allowedUnits: uniqueUnits(["pack", ...VOLUME_UNITS]),
+        measurementDimension: "volume"
+      };
+    }
 
     return {
-      defaultDisplayUnit: "pack",
-      allowedUnits: normalizeAllowedUnits(isLiquid ? ["pack", "ml"] : ["pack", "g"]),
-      measurementDimension: "count"
+      defaultDisplayUnit: "g",
+      allowedUnits: uniqueUnits(["pack", ...WEIGHT_UNITS]),
+      measurementDimension: "weight"
     };
   }
 
-  if (category === "water_prep") {
+  if (category === "water_treatment") {
+    const subtype = resolveIngredientSubtype(input);
     if (subtype === "water_source") {
       return {
         defaultDisplayUnit: "l",
-        allowedUnits: VOLUME_UNITS,
+        allowedUnits: [...VOLUME_UNITS],
         measurementDimension: "volume"
       };
     }
@@ -655,102 +374,60 @@ export const resolveIngredientUnits = (
     if (subtype === "acid") {
       return {
         defaultDisplayUnit: "ml",
-        allowedUnits: VOLUME_UNITS,
+        allowedUnits: [...VOLUME_UNITS],
         measurementDimension: "volume"
       };
     }
 
     return {
       defaultDisplayUnit: "g",
-      allowedUnits: WEIGHT_UNITS,
+      allowedUnits: [...WEIGHT_UNITS],
       measurementDimension: "weight"
     };
   }
 
   return {
-    defaultDisplayUnit: "item",
-    allowedUnits: COUNT_UNITS,
-    measurementDimension: "count"
+    defaultDisplayUnit: "g",
+    allowedUnits: [...WEIGHT_UNITS],
+    measurementDimension: "weight"
   };
 };
 
 export const resolveIngredientCompletenessLevel = (
   input: ResolveIngredientCompletenessInput
 ): IngredientCompletenessLevel => {
-  if (input.completenessLevel && isIngredientCompletenessLevel(input.completenessLevel)) {
-    return input.completenessLevel;
-  }
-
-  const category = resolveIngredientCategory(input);
-  const subtype = resolveIngredientSubtype(input);
-  const properties = isRecord(input.properties) ? input.properties : {};
-
-  let hasRecommendedFields = Boolean(input.displayName?.trim());
-
-  if (category === "fermentable") {
-    hasRecommendedFields = hasRecommendedFields
-      && input.fermentableColorEbc != null
-      && input.fermentableExtractYieldPct != null;
-  }
-
-  if (category === "hop") {
-    hasRecommendedFields = hasRecommendedFields
-      && input.hopAlphaAcidPct != null;
-  }
-
-  if (category === "yeast") {
-    hasRecommendedFields = hasRecommendedFields
-      && input.yeastAttenuationPct != null
-      && Boolean(input.yeastForm);
-  }
-
-  if (category === "water_prep") {
-    if (subtype === "acid") {
-      hasRecommendedFields = hasRecommendedFields && typeof properties.acidType === "string";
-    } else if (subtype === "salt" || subtype === "base") {
-      hasRecommendedFields = hasRecommendedFields && typeof properties.compound === "string";
-    }
-  }
-
-  if (!hasRecommendedFields) {
+  const hasCoreName = Boolean(input.nameRu?.trim() || input.nameEn?.trim());
+  if (!hasCoreName) {
     return "minimum";
   }
 
-  const metadataScore = [
-    Array.isArray(input.aliases) && input.aliases.length > 0,
-    Boolean(input.description?.trim()),
-    Boolean(input.brandName?.trim() || input.manufacturer?.trim()),
-    Boolean(input.country?.trim()),
-    input.harvestYear != null
-  ].filter(Boolean).length;
-
-  return metadataScore >= 2 ? "full" : "recommended";
+  const hasAliases = Boolean(input.aliases?.length);
+  const hasBranding = Boolean(input.brand?.trim() || input.producer?.trim());
+  return hasAliases || hasBranding ? "recommended" : "minimum";
 };
 
 export {
+  ingredientCategories,
+  legacyIngredientTypes,
+  ingredientMatchPolicies,
+  ingredientCompletenessLevels,
+  ingredientMeasurementDimensions,
+  ingredientDisplayUnits,
   fermentableSubtypes,
   hopSubtypes,
-  ingredientCategories,
-  ingredientCompletenessLevels,
-  ingredientDisplayUnits,
-  ingredientMatchPolicies,
-  ingredientMeasurementDimensions,
-  legacyIngredientTypes,
-  miscSubtypes,
-  waterPrepSubtypes,
-  yeastSubtypes
+  yeastSubtypes,
+  waterTreatmentSubtypes,
+  consumableSubtypes
 };
+
 export type {
-  FermentableSubtype,
-  HopSubtype,
   IngredientCategory,
-  IngredientCompletenessLevel,
-  IngredientDisplayUnit,
-  IngredientMatchPolicy,
-  IngredientMeasurementDimension,
-  IngredientSubtype,
   LegacyIngredientType,
-  MiscSubtype,
-  WaterPrepSubtype,
-  YeastSubtype
+  IngredientSubtype,
+  IngredientMatchPolicy,
+  IngredientCompletenessLevel,
+  IngredientMeasurementDimension,
+  IngredientDisplayUnit,
+  ResolveIngredientTaxonomyInput,
+  ResolveIngredientUnitsInput
 };

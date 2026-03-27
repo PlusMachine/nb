@@ -41,7 +41,10 @@ import { IngredientCategorySelector } from "../components/ingredients/ingredient
 import { buildIngredientSearchParams } from "../components/ingredients/ingredient-picker";
 import { AddIngredientModal } from "../components/inventory/add-ingredient-modal";
 import { AddIngredientTrigger } from "../components/inventory/add-ingredient-trigger";
-import { buildCatalogIngredientPayload } from "../components/inventory/catalog-ingredient-form";
+import {
+  buildCatalogIngredientPayload,
+  resolveCatalogIngredientUnitProfile
+} from "../components/inventory/catalog-ingredient-form";
 import { CustomIngredientForm, getCustomIngredientSubtypeOptions } from "../components/inventory/custom-ingredient-form";
 
 describe("inventory add-flow", () => {
@@ -164,14 +167,14 @@ describe("inventory add-flow", () => {
 
   it("rejects invalid payload", async () => {
     const formData = new FormData();
-    formData.set("ingredientCatalogItemId", "not-a-uuid");
+    formData.set("ingredientCatalogItemId", "catalog-item");
     formData.set("enteredQuantity", "0");
     formData.set("enteredUnit", "");
 
     const result = await addCatalogIngredientAction(null, formData);
 
     expect(result.ok).toBe(false);
-    expect(result.fieldErrors?.ingredientCatalogItemId).toBeDefined();
+    expect(result.fieldErrors?.enteredQuantity).toBeDefined();
   });
 
   it("builds picker search params with category filter", () => {
@@ -183,8 +186,8 @@ describe("inventory add-flow", () => {
   });
 
   it("exposes subtype options for custom category flow", () => {
-    expect(getCustomIngredientSubtypeOptions("water_prep")).toContain("acid");
-    expect(getCustomIngredientSubtypeOptions("misc")).toContain("fining");
+    expect(getCustomIngredientSubtypeOptions("water_treatment")).toContain("acid");
+    expect(getCustomIngredientSubtypeOptions("consumable")).toContain("fining");
   });
 
   it("submits selected catalog entity instead of free text", () => {
@@ -217,5 +220,30 @@ describe("inventory add-flow", () => {
       freshnessDate: "",
       notes: ""
     })).toThrowError("CATALOG_SELECTION_REQUIRED");
+  });
+
+  it("defaults dry yeast catalog additions to pack units", () => {
+    const profile = resolveCatalogIngredientUnitProfile("yeast", {
+      id: "yeast-1",
+      type: "yeast",
+      category: "yeast",
+      displayName: "US-05",
+      defaultUnit: "g",
+      technicalData: {
+        type: "yeast",
+        form: "dry",
+        attenuationPctTypical: 78,
+        fermentationTempCMin: null,
+        fermentationTempCMax: null,
+        flocculation: null,
+        alcoholToleranceAbvTypical: null,
+        packageSize: null,
+        packageUnit: null
+      },
+      source: "catalog"
+    });
+
+    expect(profile.defaultUnit).toBe("pack");
+    expect(profile.allowedUnits).toEqual(["pack", "g"]);
   });
 });

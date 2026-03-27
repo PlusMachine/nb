@@ -68,14 +68,14 @@ const categoryMeta: Record<IngredientCategory, {
     activeBg: "bg-violet-50",
     activeRing: "ring-violet-300"
   },
-  water_prep: {
+  water_treatment: {
     icon: Droplets,
     color: "text-sky-600",
     activeColor: "text-sky-800",
     activeBg: "bg-sky-50",
     activeRing: "ring-sky-300"
   },
-  misc: {
+  consumable: {
     icon: Package,
     color: "text-zinc-500",
     activeColor: "text-zinc-800",

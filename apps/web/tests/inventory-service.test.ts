@@ -2,7 +2,8 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const { tableRefs, mockState } = vi.hoisted(() => ({
   tableRefs: {
-    ingredientCatalogItems: { name: "ingredientCatalogItems", id: "id", status: "status", type: "type", displayName: "displayName", normalizedName: "normalizedName" },
+    ingredients: { name: "ingredients", id: "id", isActive: "isActive", type: "type" },
+    ingredientPackageVariants: { name: "ingredientPackageVariants", id: "id", ingredientId: "ingredientId" },
     userCustomIngredients: { name: "userCustomIngredients", id: "id", userId: "userId", type: "type", displayName: "displayName", normalizedName: "normalizedName" },
     userIngredients: {
       name: "userIngredients",
@@ -42,6 +43,7 @@ const { tableRefs, mockState } = vi.hoisted(() => ({
   mockState: {
   idCounter: 0,
   catalogFindFirst: vi.fn(async (_arg?: unknown) => null as any),
+  packageVariantFindFirst: vi.fn(async (_arg?: unknown) => null as any),
   customFindFirst: vi.fn(async (_arg?: unknown) => null as any),
   inventoryFindFirst: vi.fn(async (_arg?: unknown) => null as any),
   inserted: [] as Array<{ table: string; values: Record<string, unknown> }>,
@@ -62,7 +64,8 @@ vi.mock("../features/system/currency-rates", () => ({
 vi.mock("@nb/db", () => {
   const db = {
     query: {
-      ingredientCatalogItems: { findFirst: (arg: unknown) => mockState.catalogFindFirst(arg) },
+      ingredients: { findFirst: (arg: unknown) => mockState.catalogFindFirst(arg) },
+      ingredientPackageVariants: { findFirst: (arg: unknown) => mockState.packageVariantFindFirst(arg) },
       userCustomIngredients: { findFirst: (arg: unknown) => mockState.customFindFirst(arg) },
       userIngredients: { findFirst: (arg: unknown) => mockState.inventoryFindFirst(arg) }
     },
@@ -77,12 +80,12 @@ vi.mock("@nb/db", () => {
     }),
     update: (table: { name: string }) => ({
       set: (set: Record<string, unknown>) => ({
-        where: (_where: unknown) => ({
-          returning: async () => {
-            mockState.updates.push({ table: table.name, set });
-            return [{ id: "inv-1", ...set }];
-          }
-        })
+        where: (_where: unknown) => {
+          mockState.updates.push({ table: table.name, set });
+          return {
+            returning: async () => [{ id: "inv-1", ...set }]
+          };
+        }
       })
     }),
     delete: (table: { name: string }) => ({
@@ -91,13 +94,18 @@ vi.mock("@nb/db", () => {
       }
     }),
     select: (shape: Record<string, unknown>) => ({
-      from: (_table: unknown) => ({
-        leftJoin: (_a: unknown, _b: unknown) => ({
-          leftJoin: (_c: unknown, _d: unknown) => ({
+      from: (_table: unknown) => {
+        const joined = {
+          leftJoin: (_a: unknown, _b: unknown) => joined,
+          where: async (_w: unknown) => mockState.selectRows
+        };
+
+        return "inventory" in shape
+          ? joined
+          : {
             where: async (_w: unknown) => mockState.selectRows
-          })
-        })
-      })
+          };
+      }
     })
   };
 
@@ -108,7 +116,8 @@ vi.mock("@nb/db", () => {
     eq: (...args: unknown[]) => args,
     isNull: (v: unknown) => v,
     sql: (..._args: unknown[]) => ({}) as never,
-    ingredientCatalogItems: tableRefs.ingredientCatalogItems,
+    ingredientPackageVariants: tableRefs.ingredientPackageVariants,
+    ingredients: tableRefs.ingredients,
     userCustomIngredients: tableRefs.userCustomIngredients,
     userIngredients: tableRefs.userIngredients
   };
@@ -136,6 +145,7 @@ describe("inventory service", () => {
     mockState.deleted = [];
     mockState.selectRows = [];
     mockState.catalogFindFirst.mockReset();
+    mockState.packageVariantFindFirst.mockReset();
     mockState.customFindFirst.mockReset();
     mockState.inventoryFindFirst.mockReset();
   });
@@ -149,11 +159,11 @@ describe("inventory service", () => {
     });
 
     expect(created.displayName).toBe("Citra, T-90");
-    expect(created.normalizedName).toBe("citra t-90");
+    expect(created.normalizedName).toBe("citra t 90");
     expect(mockState.inserted[0]?.table).toBe("userCustomIngredients");
     expect(mockState.inserted[0]?.values.properties).toMatchObject({
-      taxonomyCategory: "hop",
-      taxonomySubtype: "pellet",
+      category: "hop",
+      subtype: "hop",
       defaultDisplayUnit: "g"
     });
   });
@@ -161,16 +171,110 @@ describe("inventory service", () => {
   it("adds catalog ingredient to inventory", async () => {
     mockState.catalogFindFirst.mockResolvedValueOnce({
       id: "cat-1",
-      status: "active",
-      type: "fermentable",
-      category: "fermentable",
-      subtype: "base_malt",
-      familyId: "fam-1",
-      displayName: "Pilsner Malt",
-      defaultDisplayUnit: "kg",
-      allowedUnits: ["g", "kg"],
-      measurementDimension: "weight"
+      isActive: true,
+      type: "malt",
+      itemKind: "malt",
+      nameRu: null,
+      nameEn: "Pilsner Malt",
+      displayModeRu: "source_first",
+      displayNameOverrideRu: null,
+      secondaryNameOverrideRu: null,
+      hideSecondaryNameRu: false,
+      countryCode: null,
+      countryName: null,
+      brand: null,
+      producer: null,
+      productCode: null,
+      groupName: null,
+      category: null,
+      subcategory: null,
+      presentOnBirrf: true,
+      inventoryEnabled: true,
+      attributes: {},
+      quantityDefaults: null
     });
+    mockState.selectRows = [{
+      inventory: {
+        id: "inv-1",
+        userId: "u1",
+        ingredientCatalogItemId: "cat-1",
+        userCustomIngredientId: null,
+        packageVariantId: null,
+        ingredientFamilyId: null,
+        ingredientCategory: "fermentable",
+        ingredientSubtype: "malt",
+        ingredientDisplayNameSnapshot: "Pilsner Malt",
+        ingredientDefaultDisplayUnitSnapshot: "kg",
+        ingredientMeasurementDimension: "weight"
+      },
+      catalog: {
+        id: "cat-1",
+        isActive: true,
+        type: "malt",
+        itemKind: "malt",
+        nameRu: null,
+        nameEn: "Pilsner Malt",
+        displayModeRu: "source_first",
+        displayNameOverrideRu: null,
+        secondaryNameOverrideRu: null,
+        hideSecondaryNameRu: false,
+        countryCode: null,
+        countryName: null,
+        brand: null,
+        producer: null,
+        productCode: null,
+        groupName: null,
+        category: null,
+        subcategory: null,
+        presentOnBirrf: true,
+        inventoryEnabled: true,
+        attributes: {},
+        quantityDefaults: null
+      },
+      custom: null,
+      packageVariant: null
+    }];
+    mockState.selectRows = [{
+      inventory: {
+        id: "inv-1",
+        userId: "u1",
+        ingredientCatalogItemId: "cat-1",
+        userCustomIngredientId: null,
+        packageVariantId: null,
+        ingredientFamilyId: null,
+        ingredientCategory: "hop",
+        ingredientSubtype: "hop",
+        ingredientDisplayNameSnapshot: "Cascade",
+        ingredientDefaultDisplayUnitSnapshot: "g",
+        ingredientMeasurementDimension: "weight"
+      },
+      catalog: {
+        id: "cat-1",
+        isActive: true,
+        type: "hop",
+        itemKind: "hop",
+        nameRu: null,
+        nameEn: "Cascade",
+        displayModeRu: "source_first",
+        displayNameOverrideRu: null,
+        secondaryNameOverrideRu: null,
+        hideSecondaryNameRu: false,
+        countryCode: null,
+        countryName: null,
+        brand: null,
+        producer: null,
+        productCode: null,
+        groupName: null,
+        category: null,
+        subcategory: null,
+        presentOnBirrf: true,
+        inventoryEnabled: true,
+        attributes: {},
+        quantityDefaults: null
+      },
+      custom: null,
+      packageVariant: null
+    }];
 
     const created = await addCatalogIngredientToInventory("u1", {
       ingredientCatalogItemId: "3d6eb945-8e2e-4af9-8d24-ef6c883b5dd0",
@@ -178,12 +282,12 @@ describe("inventory service", () => {
       enteredUnit: "kg"
     });
 
-    expect(created.ingredientCatalogItemId).toBe("3d6eb945-8e2e-4af9-8d24-ef6c883b5dd0");
+    expect(created.ingredientCatalogItemId).toBe("cat-1");
     expect(mockState.inserted[0]?.values).toMatchObject({
       userId: "u1",
-      ingredientFamilyId: "fam-1",
+      ingredientFamilyId: null,
       ingredientCategory: "fermentable",
-      ingredientSubtype: "base_malt",
+      ingredientSubtype: "malt",
       ingredientDisplayNameSnapshot: "Pilsner Malt",
       ingredientDefaultDisplayUnitSnapshot: "kg",
       ingredientMeasurementDimension: "weight",
@@ -202,8 +306,8 @@ describe("inventory service", () => {
       type: "yeast",
       displayName: "House Lager",
       properties: {
-        taxonomyCategory: "yeast",
-        taxonomySubtype: "lager",
+        category: "yeast",
+        subtype: "lager",
         defaultDisplayUnit: "pack",
         allowedUnits: ["pack", "g"],
         measurementDimension: "count"
@@ -219,7 +323,7 @@ describe("inventory service", () => {
     expect(mockState.inserted[0]?.table).toBe("userIngredients");
     expect(mockState.inserted[0]?.values).toMatchObject({
       ingredientCategory: "yeast",
-      ingredientSubtype: "lager",
+      ingredientSubtype: "yeast",
       ingredientDisplayNameSnapshot: "House Lager",
       ingredientDefaultDisplayUnitSnapshot: "pack",
       ingredientMeasurementDimension: "count",
@@ -228,6 +332,55 @@ describe("inventory service", () => {
       normalizedQuantity: 1,
       normalizedUnit: "pack",
       unitDimension: "count"
+    });
+  });
+
+  it("normalizes dry yeast packs into gram stock by default", async () => {
+    mockState.catalogFindFirst.mockResolvedValueOnce({
+      id: "cat-yeast-1",
+      isActive: true,
+      type: "yeast",
+      itemKind: "yeast",
+      nameRu: "US-05",
+      nameEn: "US-05",
+      displayModeRu: "source_first",
+      displayNameOverrideRu: null,
+      secondaryNameOverrideRu: null,
+      hideSecondaryNameRu: false,
+      countryCode: null,
+      countryName: null,
+      brand: "Fermentis",
+      producer: null,
+      productCode: "US-05",
+      groupName: null,
+      category: null,
+      subcategory: null,
+      presentOnBirrf: true,
+      inventoryEnabled: true,
+      attributes: {
+        form: "dry",
+        attenuation_pct_typical: 78
+      },
+      quantityDefaults: null
+    });
+
+    await addCatalogIngredientToInventory("u1", {
+      ingredientCatalogItemId: "3d6eb945-8e2e-4af9-8d24-ef6c883b5dd0",
+      enteredQuantity: 2,
+      enteredUnit: "pack"
+    });
+
+    expect(mockState.inserted[0]?.values).toMatchObject({
+      ingredientCategory: "yeast",
+      ingredientSubtype: "yeast",
+      ingredientDisplayNameSnapshot: "US-05",
+      ingredientDefaultDisplayUnitSnapshot: "pack",
+      ingredientMeasurementDimension: "count",
+      enteredQuantity: 2,
+      enteredUnit: "pack",
+      normalizedQuantity: 22,
+      normalizedUnit: "g",
+      unitDimension: "weight"
     });
   });
 
@@ -243,22 +396,75 @@ describe("inventory service", () => {
       ingredientCatalogItemId: "cat-1",
       userCustomIngredientId: null,
       ingredientCategory: "hop",
-      ingredientSubtype: "pellet",
+      ingredientSubtype: "hop",
       ingredientDefaultDisplayUnitSnapshot: "g",
       ingredientMeasurementDimension: "weight"
     });
     mockState.catalogFindFirst.mockResolvedValueOnce({
       id: "cat-1",
-      status: "active",
+      isActive: true,
       type: "hop",
-      category: "hop",
-      subtype: "pellet",
-      familyId: "fam-hop",
-      displayName: "Cascade",
-      defaultDisplayUnit: "g",
-      allowedUnits: ["g", "oz"],
-      measurementDimension: "weight"
+      itemKind: "hop",
+      nameRu: null,
+      nameEn: "Cascade",
+      displayModeRu: "source_first",
+      displayNameOverrideRu: null,
+      secondaryNameOverrideRu: null,
+      hideSecondaryNameRu: false,
+      countryCode: null,
+      countryName: null,
+      brand: null,
+      producer: null,
+      productCode: null,
+      groupName: null,
+      category: null,
+      subcategory: null,
+      presentOnBirrf: true,
+      inventoryEnabled: true,
+      attributes: {},
+      quantityDefaults: null
     });
+    mockState.selectRows = [{
+      inventory: {
+        id: "inv-1",
+        userId: "u1",
+        ingredientCatalogItemId: "cat-1",
+        userCustomIngredientId: null,
+        packageVariantId: null,
+        ingredientFamilyId: null,
+        ingredientCategory: "fermentable",
+        ingredientSubtype: "malt",
+        ingredientDisplayNameSnapshot: "Pilsner Malt",
+        ingredientDefaultDisplayUnitSnapshot: "kg",
+        ingredientMeasurementDimension: "weight"
+      },
+      catalog: {
+        id: "cat-1",
+        isActive: true,
+        type: "malt",
+        itemKind: "malt",
+        nameRu: null,
+        nameEn: "Pilsner Malt",
+        displayModeRu: "source_first",
+        displayNameOverrideRu: null,
+        secondaryNameOverrideRu: null,
+        hideSecondaryNameRu: false,
+        countryCode: null,
+        countryName: null,
+        brand: null,
+        producer: null,
+        productCode: null,
+        groupName: null,
+        category: null,
+        subcategory: null,
+        presentOnBirrf: true,
+        inventoryEnabled: true,
+        attributes: {},
+        quantityDefaults: null
+      },
+      custom: null,
+      packageVariant: null
+    }];
 
     await updateInventoryQuantity("u1", "inv-1", { enteredQuantity: 3, enteredUnit: "oz" });
 
@@ -278,21 +484,33 @@ describe("inventory service", () => {
       ingredientCatalogItemId: "cat-1",
       userCustomIngredientId: null,
       ingredientCategory: "fermentable",
-      ingredientSubtype: "base_malt",
+      ingredientSubtype: "malt",
       ingredientDefaultDisplayUnitSnapshot: "kg",
       ingredientMeasurementDimension: "weight"
     });
     mockState.catalogFindFirst.mockResolvedValueOnce({
       id: "cat-2",
-      status: "active",
-      type: "fermentable",
-      category: "fermentable",
-      subtype: "base_malt",
-      familyId: "fam-2",
-      displayName: "Maris Otter",
-      defaultDisplayUnit: "kg",
-      allowedUnits: ["g", "kg"],
-      measurementDimension: "weight"
+      isActive: true,
+      type: "malt",
+      itemKind: "malt",
+      nameRu: null,
+      nameEn: "Maris Otter",
+      displayModeRu: "source_first",
+      displayNameOverrideRu: null,
+      secondaryNameOverrideRu: null,
+      hideSecondaryNameRu: false,
+      countryCode: null,
+      countryName: null,
+      brand: null,
+      producer: null,
+      productCode: null,
+      groupName: null,
+      category: null,
+      subcategory: null,
+      presentOnBirrf: true,
+      inventoryEnabled: true,
+      attributes: {},
+      quantityDefaults: null
     });
 
     await updateInventoryItem("u1", "inv-1", {
@@ -306,11 +524,10 @@ describe("inventory service", () => {
     });
 
     expect(mockState.updates[0]?.set).toMatchObject({
-      ingredientCatalogItemId: "3d6eb945-8e2e-4af9-8d24-ef6c883b5dd0",
+      ingredientCatalogItemId: "cat-2",
       userCustomIngredientId: null,
-      ingredientFamilyId: "fam-2",
       ingredientCategory: "fermentable",
-      ingredientSubtype: "base_malt",
+      ingredientSubtype: "malt",
       ingredientDisplayNameSnapshot: "Maris Otter",
       ingredientDefaultDisplayUnitSnapshot: "kg",
       ingredientMeasurementDimension: "weight",
@@ -334,14 +551,27 @@ describe("inventory service", () => {
   it("rejects units incompatible with ingredient type", async () => {
     mockState.catalogFindFirst.mockResolvedValueOnce({
       id: "cat-1",
-      status: "active",
-      type: "misc",
-      category: "water_prep",
-      subtype: "acid",
-      defaultDisplayUnit: "ml",
-      allowedUnits: ["ml", "l", "gal"],
-      measurementDimension: "volume",
-      technicalData: { category: "water_prep", subtype: "acid", acidType: "Lactic", compound: null, strengthPct: 80, purityPct: null, physicalForm: "liquid" }
+      isActive: true,
+      type: "water_treatment",
+      itemKind: "acid",
+      nameRu: "Молочная кислота",
+      nameEn: "Lactic Acid",
+      displayModeRu: "localized_first",
+      displayNameOverrideRu: null,
+      secondaryNameOverrideRu: null,
+      hideSecondaryNameRu: false,
+      countryCode: null,
+      countryName: null,
+      brand: null,
+      producer: null,
+      productCode: null,
+      groupName: null,
+      category: "acid",
+      subcategory: null,
+      presentOnBirrf: null,
+      inventoryEnabled: true,
+      attributes: { unit_preferred: "ml" },
+      quantityDefaults: null
     });
 
     await expect(addCatalogIngredientToInventory("u1", {
@@ -354,15 +584,27 @@ describe("inventory service", () => {
   it("stores purchase context and derives it from the entered amount when only price is provided", async () => {
     mockState.catalogFindFirst.mockResolvedValueOnce({
       id: "cat-1",
-      status: "active",
-      type: "fermentable",
-      category: "fermentable",
-      subtype: "base_malt",
-      familyId: "fam-1",
-      displayName: "Pilsner Malt",
-      defaultDisplayUnit: "kg",
-      allowedUnits: ["g", "kg"],
-      measurementDimension: "weight"
+      isActive: true,
+      type: "malt",
+      itemKind: "malt",
+      nameRu: null,
+      nameEn: "Pilsner Malt",
+      displayModeRu: "source_first",
+      displayNameOverrideRu: null,
+      secondaryNameOverrideRu: null,
+      hideSecondaryNameRu: false,
+      countryCode: null,
+      countryName: null,
+      brand: null,
+      producer: null,
+      productCode: null,
+      groupName: null,
+      category: null,
+      subcategory: null,
+      presentOnBirrf: true,
+      inventoryEnabled: true,
+      attributes: {},
+      quantityDefaults: null
     });
 
     await addCatalogIngredientToInventory("u1", {
@@ -390,15 +632,27 @@ describe("inventory service", () => {
   it("derives total purchase price from per-display-unit input", async () => {
     mockState.catalogFindFirst.mockResolvedValueOnce({
       id: "cat-1",
-      status: "active",
-      type: "fermentable",
-      category: "fermentable",
-      subtype: "base_malt",
-      familyId: "fam-1",
-      displayName: "Pilsner Malt",
-      defaultDisplayUnit: "g",
-      allowedUnits: ["g", "kg"],
-      measurementDimension: "weight"
+      isActive: true,
+      type: "malt",
+      itemKind: "malt",
+      nameRu: null,
+      nameEn: "Pilsner Malt",
+      displayModeRu: "source_first",
+      displayNameOverrideRu: null,
+      secondaryNameOverrideRu: null,
+      hideSecondaryNameRu: false,
+      countryCode: null,
+      countryName: null,
+      brand: null,
+      producer: null,
+      productCode: null,
+      groupName: null,
+      category: null,
+      subcategory: null,
+      presentOnBirrf: true,
+      inventoryEnabled: true,
+      attributes: {},
+      quantityDefaults: null
     });
 
     await addCatalogIngredientToInventory("u1", {
@@ -413,13 +667,13 @@ describe("inventory service", () => {
       priceInputMode: "per_display_unit",
       priceInputAmountMinor: 12000,
       priceInputCurrency: "RUB",
-      purchasePriceMinor: 3000,
+      purchasePriceMinor: 3000000,
       purchaseCurrency: "RUB",
       purchaseQuantity: 250,
       purchaseQuantityUnit: "g",
       purchaseQuantityNormalized: 250,
       purchaseQuantityNormalizedUnit: "g",
-      normalizedUnitCostMinorRub: 12
+      normalizedUnitCostMinorRub: 12000
     });
   });
 
@@ -438,22 +692,75 @@ describe("inventory service", () => {
       ingredientCatalogItemId: "cat-1",
       userCustomIngredientId: null,
       ingredientCategory: "fermentable",
-      ingredientSubtype: "base_malt",
+      ingredientSubtype: "malt",
       ingredientDefaultDisplayUnitSnapshot: "kg",
       ingredientMeasurementDimension: "weight"
     });
     mockState.catalogFindFirst.mockResolvedValueOnce({
       id: "cat-1",
-      status: "active",
-      type: "fermentable",
-      category: "fermentable",
-      subtype: "base_malt",
-      familyId: "fam-1",
-      displayName: "Pilsner Malt",
-      defaultDisplayUnit: "kg",
-      allowedUnits: ["g", "kg"],
-      measurementDimension: "weight"
+      isActive: true,
+      type: "malt",
+      itemKind: "malt",
+      nameRu: null,
+      nameEn: "Pilsner Malt",
+      displayModeRu: "source_first",
+      displayNameOverrideRu: null,
+      secondaryNameOverrideRu: null,
+      hideSecondaryNameRu: false,
+      countryCode: null,
+      countryName: null,
+      brand: null,
+      producer: null,
+      productCode: null,
+      groupName: null,
+      category: null,
+      subcategory: null,
+      presentOnBirrf: true,
+      inventoryEnabled: true,
+      attributes: {},
+      quantityDefaults: null
     });
+    mockState.selectRows = [{
+      inventory: {
+        id: "inv-1",
+        userId: "u1",
+        ingredientCatalogItemId: "cat-1",
+        userCustomIngredientId: null,
+        packageVariantId: null,
+        ingredientFamilyId: null,
+        ingredientCategory: "fermentable",
+        ingredientSubtype: "malt",
+        ingredientDisplayNameSnapshot: "Pilsner Malt",
+        ingredientDefaultDisplayUnitSnapshot: "kg",
+        ingredientMeasurementDimension: "weight"
+      },
+      catalog: {
+        id: "cat-1",
+        isActive: true,
+        type: "malt",
+        itemKind: "malt",
+        nameRu: null,
+        nameEn: "Pilsner Malt",
+        displayModeRu: "source_first",
+        displayNameOverrideRu: null,
+        secondaryNameOverrideRu: null,
+        hideSecondaryNameRu: false,
+        countryCode: null,
+        countryName: null,
+        brand: null,
+        producer: null,
+        productCode: null,
+        groupName: null,
+        category: null,
+        subcategory: null,
+        presentOnBirrf: true,
+        inventoryEnabled: true,
+        attributes: {},
+        quantityDefaults: null
+      },
+      custom: null,
+      packageVariant: null
+    }];
 
     await updateInventoryQuantity("u1", "inv-1", { enteredQuantity: 0, enteredUnit: "kg" });
 
@@ -519,20 +826,30 @@ describe("inventory service", () => {
         },
         catalog: {
           id: "cat-1",
-          type: "fermentable",
-          category: "fermentable",
-          subtype: "base_malt",
-          familyId: "fam-1",
-          displayName: "Pilsner Malt",
-          normalizedName: "pilsner malt",
-          defaultDisplayUnit: "kg",
-          allowedUnits: ["g", "kg"],
-          measurementDimension: "weight",
-          manufacturer: "BESTMALZ",
-          country: "DE",
-          properties: { colorEbc: 3.5, extractFgdbPct: 80 }
+          isActive: true,
+          type: "malt",
+          itemKind: "malt",
+          nameRu: null,
+          nameEn: "Pilsner Malt",
+          displayModeRu: "source_first",
+          displayNameOverrideRu: null,
+          secondaryNameOverrideRu: null,
+          hideSecondaryNameRu: false,
+          countryCode: null,
+          countryName: "DE",
+          brand: null,
+          producer: "BESTMALZ",
+          productCode: null,
+          groupName: null,
+          category: null,
+          subcategory: null,
+          presentOnBirrf: true,
+          inventoryEnabled: true,
+          attributes: { color_lovibond: 3.5, extract_pct_dry_basis: 80 },
+          quantityDefaults: null
         },
-        custom: null
+        custom: null,
+        packageVariant: null
       }
     ];
 
@@ -543,7 +860,7 @@ describe("inventory service", () => {
     expect(items[0]).toMatchObject({
       ingredientFamilyId: "fam-1",
       ingredientCategory: "fermentable",
-      ingredientSubtype: "base_malt",
+      ingredientSubtype: "malt",
       ingredientDisplayNameSnapshot: "Pilsner Malt",
       ingredientDefaultDisplayUnitSnapshot: "kg",
       ingredientMeasurementDimension: "weight",
@@ -559,7 +876,7 @@ describe("inventory service", () => {
     expect(items[0]?.source).toMatchObject({
       manufacturer: "BESTMALZ",
       country: "DE",
-      fermentableColorEbc: 3.5,
+      fermentableColorLovibond: 3.5,
       fermentableExtractYieldPct: 80
     });
   });
@@ -591,17 +908,30 @@ describe("inventory service", () => {
         },
         catalog: {
           id: "cat-1",
-          type: "fermentable",
-          category: "fermentable",
-          subtype: "base_malt",
-          familyId: "fam-1",
-          displayName: "Pilsner Malt",
-          normalizedName: "pilsner malt",
-          defaultDisplayUnit: "kg",
-          allowedUnits: ["g", "kg"],
-          measurementDimension: "weight"
+          isActive: true,
+          type: "malt",
+          itemKind: "malt",
+          nameRu: null,
+          nameEn: "Pilsner Malt",
+          displayModeRu: "source_first",
+          displayNameOverrideRu: null,
+          secondaryNameOverrideRu: null,
+          hideSecondaryNameRu: false,
+          countryCode: null,
+          countryName: null,
+          brand: null,
+          producer: null,
+          productCode: null,
+          groupName: null,
+          category: null,
+          subcategory: null,
+          presentOnBirrf: true,
+          inventoryEnabled: true,
+          attributes: {},
+          quantityDefaults: null
         },
-        custom: null
+        custom: null,
+        packageVariant: null
       },
       {
         inventory: {
@@ -609,7 +939,7 @@ describe("inventory service", () => {
           ingredientCatalogItemId: null,
           userCustomIngredientId: "custom-1",
           ingredientFamilyId: null,
-          ingredientCategory: "misc",
+          ingredientCategory: "consumable",
           ingredientSubtype: "fining",
           ingredientDisplayNameSnapshot: "Whirlfloc Tablet",
           ingredientDefaultDisplayUnitSnapshot: "item",
@@ -629,17 +959,18 @@ describe("inventory service", () => {
         catalog: null,
         custom: {
           id: "custom-1",
-          type: "misc",
+          type: "consumable",
           displayName: "Whirlfloc Tablet",
           normalizedName: "whirlfloc tablet",
           properties: {
-            taxonomyCategory: "misc",
-            taxonomySubtype: "fining",
+            category: "consumable",
+            subtype: "fining",
             defaultDisplayUnit: "item",
             allowedUnits: ["item"],
             measurementDimension: "count"
           }
-        }
+        },
+        packageVariant: null
       }
     ];
 
@@ -648,7 +979,8 @@ describe("inventory service", () => {
       includeEmpty: false
     });
     const emptyItems = await listInventoryForUser("u1", {
-      includeEmpty: true
+      includeEmpty: true,
+      stockState: "all"
     });
 
     expect(inStockFermentables).toHaveLength(1);
@@ -699,7 +1031,7 @@ describe("inventory service", () => {
     expect(items[0]).toMatchObject({
       ingredientFamilyId: "fam-1",
       ingredientCategory: "hop",
-      ingredientSubtype: "pellet",
+      ingredientSubtype: "hop",
       ingredientDisplayNameSnapshot: "Legacy Cascade"
     });
     expect(items[0]?.source.displayName).toBe("Legacy Cascade");
@@ -733,17 +1065,30 @@ describe("inventory service", () => {
         },
         catalog: {
           id: "cat-1",
-          type: "fermentable",
-          category: "fermentable",
-          subtype: "base_malt",
-          familyId: "fam-1",
-          displayName: "Pilsner Malt",
-          normalizedName: "pilsner malt",
-          defaultDisplayUnit: "kg",
-          allowedUnits: ["g", "kg"],
-          measurementDimension: "weight"
+          isActive: true,
+          type: "malt",
+          itemKind: "malt",
+          nameRu: null,
+          nameEn: "Pilsner Malt",
+          displayModeRu: "source_first",
+          displayNameOverrideRu: null,
+          secondaryNameOverrideRu: null,
+          hideSecondaryNameRu: false,
+          countryCode: null,
+          countryName: null,
+          brand: null,
+          producer: null,
+          productCode: null,
+          groupName: null,
+          category: null,
+          subcategory: null,
+          presentOnBirrf: true,
+          inventoryEnabled: true,
+          attributes: {},
+          quantityDefaults: null
         },
-        custom: null
+        custom: null,
+        packageVariant: null
       },
       {
         inventory: {
@@ -770,17 +1115,30 @@ describe("inventory service", () => {
         },
         catalog: {
           id: "cat-1",
-          type: "fermentable",
-          category: "fermentable",
-          subtype: "base_malt",
-          familyId: "fam-1",
-          displayName: "Pilsner Malt",
-          normalizedName: "pilsner malt",
-          defaultDisplayUnit: "kg",
-          allowedUnits: ["g", "kg"],
-          measurementDimension: "weight"
+          isActive: true,
+          type: "malt",
+          itemKind: "malt",
+          nameRu: null,
+          nameEn: "Pilsner Malt",
+          displayModeRu: "source_first",
+          displayNameOverrideRu: null,
+          secondaryNameOverrideRu: null,
+          hideSecondaryNameRu: false,
+          countryCode: null,
+          countryName: null,
+          brand: null,
+          producer: null,
+          productCode: null,
+          groupName: null,
+          category: null,
+          subcategory: null,
+          presentOnBirrf: true,
+          inventoryEnabled: true,
+          attributes: {},
+          quantityDefaults: null
         },
-        custom: null
+        custom: null,
+        packageVariant: null
       }
     ];
 
@@ -792,13 +1150,13 @@ describe("inventory service", () => {
       displayName: "Pilsner Malt",
       source: "catalog"
     });
-    expect(items[0]?.subtitle).toContain("2 поз.");
+    expect(items[0]?.subtitle).toBe("");
   });
 
   it("builds summaries", async () => {
     mockState.selectRows = [
-      { archivedAt: null, normalizedQuantity: 120, catalogType: "hop", customType: null, ingredientCategory: "hop", ingredientSubtype: "pellet" },
-      { archivedAt: null, normalizedQuantity: 0, catalogType: null, customType: "misc", ingredientCategory: "misc", ingredientSubtype: "fining" }
+      { archivedAt: null, normalizedQuantity: 120, catalogType: "hop", customType: null, ingredientCategory: "hop", ingredientSubtype: "hop" },
+      { archivedAt: null, normalizedQuantity: 0, catalogType: null, customType: "consumable", ingredientCategory: "consumable", ingredientSubtype: "fining" }
     ];
 
     const summary = await getInventorySummaries("u1");
@@ -807,6 +1165,6 @@ describe("inventory service", () => {
     expect(summary.inStockItems).toBe(1);
     expect(summary.emptyItems).toBe(1);
     expect(summary.byCategory.hop).toBe(1);
-    expect(summary.byCategory.misc).toBe(1);
+    expect(summary.byCategory.consumable).toBe(1);
   });
 });

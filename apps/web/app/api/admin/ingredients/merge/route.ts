@@ -5,8 +5,8 @@ import { requireCatalogRole } from "@/features/ingredients/permissions";
 import { mergeDuplicateIngredients } from "@/features/ingredients/service";
 
 const mergeSchema = z.object({
-  sourceIngredientId: z.string().uuid(),
-  targetIngredientId: z.string().uuid(),
+  sourceIngredientId: z.string().trim().min(1),
+  targetIngredientId: z.string().trim().min(1),
   note: z.string().trim().max(1000).optional()
 });
 

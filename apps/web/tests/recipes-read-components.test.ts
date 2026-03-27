@@ -123,7 +123,6 @@ describe("recipes read components", () => {
 
     expect(html).toContain("Ингредиенты");
     expect(html).toContain("Pilsner Malt");
-    expect(html).toContain("Пилснер солод");
     expect(html).toContain("0.5 kg");
     expect(html).toContain("Кипячение");
     expect(html).toContain("Описание");

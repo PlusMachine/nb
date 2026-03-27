@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import {
   buildIngredientSearchParams,
+  resolveIngredientPickerRowContent,
   shouldSearchIngredients,
   shouldShowIngredientEmptyState,
   shouldShowIngredientSuggestions
@@ -52,5 +53,58 @@ describe("ingredient picker state helpers", () => {
     expect(params.get("q")).toBe("cascade");
     expect(params.get("category")).toBe("hop");
     expect(params.get("limit")).toBe("8");
+  });
+
+  it("promotes hop producer into the primary row and removes duplicate subtitle producer", () => {
+    const view = resolveIngredientPickerRowContent({
+      id: "hop-1",
+      type: "hop",
+      category: "hop",
+      displayName: "Каскад",
+      primaryLabelRu: "Каскад",
+      producer: "Yakima Chief",
+      countryName: "США",
+      subtitle: "Yakima Chief • США • 6% AA",
+      defaultUnit: "g",
+      source: "catalog"
+    });
+
+    expect(view.primaryName).toBe("Каскад");
+    expect(view.inlineBrand).toBe("Yakima Chief");
+    expect(view.subtitle).toBe("США • 6% AA");
+  });
+
+  it("promotes malt brand into the primary row only when it is not already in the title", () => {
+    const view = resolveIngredientPickerRowContent({
+      id: "malt-1",
+      type: "fermentable",
+      category: "fermentable",
+      subtype: "malt",
+      displayName: "Пилснер",
+      primaryLabelRu: "Пилснер",
+      brand: "Курский солод",
+      subtitle: "Курский солод • 3 Lovibond",
+      defaultUnit: "kg",
+      source: "catalog"
+    });
+
+    expect(view.inlineBrand).toBe("Курский солод");
+    expect(view.subtitle).toBe("3 Lovibond");
+
+    const alreadyIncluded = resolveIngredientPickerRowContent({
+      id: "malt-2",
+      type: "fermentable",
+      category: "fermentable",
+      subtype: "malt",
+      displayName: "Староминский солод Пилснер",
+      primaryLabelRu: "Староминский солод Пилснер",
+      brand: "Староминский солод",
+      subtitle: "Староминский солод • 3 Lovibond",
+      defaultUnit: "kg",
+      source: "catalog"
+    });
+
+    expect(alreadyIncluded.inlineBrand).toBeNull();
+    expect(alreadyIncluded.subtitle).toBe("Староминский солод • 3 Lovibond");
   });
 });

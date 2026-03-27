@@ -16,6 +16,7 @@ import {
   resolveHumanFacingInventoryUnitProfile,
   type InventoryUnit
 } from "@/features/inventory/units";
+import { resolveInventoryPackEquivalent } from "@/features/inventory/pack";
 import type { SystemCurrency } from "@/features/system/currency";
 
 type InventoryCommonFields = {
@@ -90,6 +91,7 @@ export function CatalogIngredientForm({ category, preferredCurrency, pending, fi
   const [localError, setLocalError] = useState<string | null>(null);
   const unitProfile = resolveCatalogIngredientUnitProfile(category, selected);
   const selectedNames = selected ? resolveIngredientDisplayNames(selected) : null;
+  const selectedPackEquivalent = selected ? resolveInventoryPackEquivalent(selected.technicalData ?? null) : null;
 
   useEffect(() => {
     setSelected(null);
@@ -159,6 +161,7 @@ export function CatalogIngredientForm({ category, preferredCurrency, pending, fi
             {selectedNames?.secondaryName ? ` · ${selectedNames.secondaryName}` : ""}
             {selected.familyDisplayName ? ` · ${selected.familyDisplayName}` : ""}
             {selected.subtitle ? ` · ${selected.subtitle}` : ""}
+            {selectedPackEquivalent ? ` · 1 pack = ${selectedPackEquivalent.normalizedQuantity} ${selectedPackEquivalent.normalizedUnit}` : ""}
           </p>
         ) : null}
         {(localError || fieldErrors?.ingredientCatalogItemId) && <p className="text-xs text-red-600">{localError ?? fieldErrors?.ingredientCatalogItemId}</p>}

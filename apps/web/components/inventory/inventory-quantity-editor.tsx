@@ -83,7 +83,7 @@ export function InventoryQuantityEditor({ item, compact = false, onAction }: Pro
     measurementDimension: item.source.measurementDimension,
     technicalData: item.source.technicalData
   }), [item]);
-  const rawQuantity = `${item.enteredQuantity} ${item.enteredUnit}`;
+  const showEquivalentHint = displayQuantity.includes("(");
   const isQuantityValid = isInventoryQuantityValueValid(quantity);
   const isDirty = isInventoryQuantityDraftDirty(quantity, unit, savedQuantity, savedUnit);
   const canMarkFinished = canMarkInventoryItemFinished(quantity);
@@ -175,6 +175,9 @@ export function InventoryQuantityEditor({ item, compact = false, onAction }: Pro
           {unitOptions.map((option) => <option key={option} value={option}>{inventoryUnitLabels[option]}</option>)}
         </select>
       </div>
+      {showEquivalentHint ? (
+        <p className="text-right text-[11px] text-zinc-500">{displayQuantity}</p>
+      ) : null}
       {isDirty ? (
         <div className="flex items-center gap-1.5">
           <button

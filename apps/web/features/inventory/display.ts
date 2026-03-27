@@ -4,12 +4,11 @@ import type { IngredientCategory, IngredientTechnicalData, IngredientType, Ingre
 import { resolvePreferredCurrency, convertCurrencyMinor, convertRubMinorToCurrencyMinor, formatCurrencyMinor, formatUnitPriceMinor } from "../system/money";
 import type { SystemCurrency, SystemCurrencyRateMap } from "../system/currency";
 import {
-  getInventoryUnitDimension,
   inventoryUnitShortLabels,
-  normalizeInventoryMeasurementForProfile,
   resolveHumanFacingInventoryUnitProfile,
   type InventoryUnit
 } from "./units";
+import { resolveInventoryPackEquivalent } from "./pack";
 
 type InventoryDisplayInput = {
   enteredQuantity: number;
@@ -37,29 +36,9 @@ const formatDisplayNumber = (value: number) => {
   return Number.isInteger(rounded) ? String(rounded) : rounded.toFixed(3).replace(/0+$/, "").replace(/\.$/, "");
 };
 
-const resolvePackNormalizedQuantity = (technicalData?: IngredientTechnicalData | null) => {
-  if (technicalData?.category !== "yeast" || technicalData.packageSize == null || technicalData.packageUnit == null) {
-    return null;
-  }
-
-  if (technicalData.packageUnit === "pack") {
-    return {
-      normalizedQuantity: technicalData.packageSize,
-      normalizedUnit: "pack" as const
-    };
-  }
-
-  const measurement = normalizeInventoryMeasurementForProfile({
-    defaultUnit: technicalData.packageUnit,
-    allowedUnits: [technicalData.packageUnit],
-    measurementDimension: getInventoryUnitDimension(technicalData.packageUnit)
-  }, technicalData.packageSize, technicalData.packageUnit);
-
-  return {
-    normalizedQuantity: measurement.normalizedQuantity,
-    normalizedUnit: measurement.normalizedUnit
-  };
-};
+const resolvePackNormalizedQuantity = (technicalData?: IngredientTechnicalData | null) => (
+  resolveInventoryPackEquivalent(technicalData)
+);
 
 const convertNormalizedQuantityToDisplayUnit = (
   normalizedQuantity: number,
@@ -162,7 +141,18 @@ const resolveDisplayUnitCostMinor = (
 
 export const formatInventoryQuantityForDisplay = (input: InventoryDisplayInput) => {
   const displayMeasurement = resolveInventoryMeasurementForDisplay(input);
-  return `${formatDisplayNumber(displayMeasurement.quantity)} ${inventoryUnitShortLabels[displayMeasurement.unit]}`;
+  const base = `${formatDisplayNumber(displayMeasurement.quantity)} ${inventoryUnitShortLabels[displayMeasurement.unit]}`;
+
+  if (displayMeasurement.unit !== "pack") {
+    return base;
+  }
+
+  const packQuantity = resolvePackNormalizedQuantity(input.technicalData ?? null);
+  if (!packQuantity || input.normalizedUnit !== packQuantity.normalizedUnit) {
+    return base;
+  }
+
+  return `${base} (${formatDisplayNumber(input.normalizedQuantity)} ${inventoryUnitShortLabels[input.normalizedUnit]})`;
 };
 
 export const buildInventoryCostDisplay = (

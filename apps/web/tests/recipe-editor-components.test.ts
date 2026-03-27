@@ -86,23 +86,23 @@ describe("recipe editor components", () => {
 
     expect(getRecipeIngredientValidationError(buildRow({
       localId: "2",
-      ingredientCatalogItemId: "00000000-0000-4000-8000-000000000001",
+      ingredientCatalogItemId: "hop-cascade",
       selectedName: "Cascade",
       amountEnteredQuantity: "",
       timeOffset: ""
     }))).toContain("Укажите количество");
   });
 
-  it("selection wiring stores category, subtype and family linkage", () => {
+  it("selection wiring stores category and taxonomy linkage", () => {
     const selected = applyRecipeIngredientSelection(buildRow(), {
       id: "cat-1",
       type: "hop",
       category: "hop",
-      subtype: "pellet",
-      familyId: "fam-1",
-      familyDisplayName: "Cascade",
-      displayName: "Yakima Chief Cascade",
-      subtitle: "6.8% AA • pellet • 2024",
+      subtype: "hop",
+      familyId: null,
+      familyDisplayName: null,
+      displayName: "Cascade",
+      subtitle: "Yakima Chief • 6.8% AA",
       defaultUnit: "g",
       defaultDisplayUnit: "g",
       allowedUnits: ["g", "kg", "oz", "lb"],
@@ -111,8 +111,8 @@ describe("recipe editor components", () => {
     });
 
     expect(selected.ingredientCatalogItemId).toBe("cat-1");
-    expect(selected.familyId).toBe("fam-1");
-    expect(selected.subtype).toBe("pellet");
+    expect(selected.familyId).toBeNull();
+    expect(selected.subtype).toBe("hop");
     expect(selected.amountEnteredUnit).toBe("g");
     expect(selected.selectedSecondaryName).toBe("");
   });
@@ -120,18 +120,18 @@ describe("recipe editor components", () => {
   it("fermentable selection prefers kilograms for human-facing recipe entry", () => {
     const selected = applyRecipeIngredientSelection(buildRow({
       category: "fermentable",
-      type: "fermentable",
+      type: "malt",
       defaultDisplayUnit: "kg",
       selectedName: ""
     }), {
       id: "cat-fermentable",
-      type: "fermentable",
+      type: "malt",
       category: "fermentable",
-      subtype: "base_malt",
-      familyId: "fam-fermentable",
-      familyDisplayName: "Pilsner Malt",
-      displayName: "Legacy Pilsner Malt",
-      subtitle: "3.5 EBC • 80%",
+      subtype: "malt",
+      familyId: null,
+      familyDisplayName: null,
+      displayName: "Pilsner Malt",
+      subtitle: "3.5 Lovibond • 80% extract",
       defaultUnit: "g",
       defaultDisplayUnit: "g",
       allowedUnits: ["g", "kg", "oz", "lb"],
@@ -148,10 +148,10 @@ describe("recipe editor components", () => {
       ingredientCatalogItemId: "cat-1",
       selectedName: "Cascade",
       selectedSecondaryName: "Каскад",
-      selectedSummary: "6.8% AA • pellet • 2024",
-      familyDisplayName: "Cascade",
-      familyId: "fam-1",
-      subtype: "pellet"
+      selectedSummary: "Yakima Chief • 6.8% AA",
+      familyDisplayName: "",
+      familyId: null,
+      subtype: "hop"
     });
     const cleared = applyRecipeIngredientTextChange(selected, "Cascade local");
 
@@ -165,7 +165,7 @@ describe("recipe editor components", () => {
     const next = applyRecipeIngredientCategoryChange(buildRow({
       ingredientCatalogItemId: "cat-1",
       selectedName: "Cascade",
-      familyId: "fam-1"
+      familyId: null
     }), "yeast");
 
     expect(next.category).toBe("yeast");

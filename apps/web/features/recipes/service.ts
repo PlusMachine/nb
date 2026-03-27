@@ -4,7 +4,7 @@ import {
   db,
   desc,
   eq,
-  ingredientCatalogItems,
+  ingredients,
   recipeIngredients,
   recipes,
   userCustomIngredients
@@ -46,6 +46,7 @@ import {
   getIngredientColorLovibond,
   getIngredientPotentialPpg
 } from "../ingredients/technical-fields";
+import { resolveIngredientDisplayNames } from "../ingredients/presentation";
 import {
   resolveIngredientCategory,
   resolveIngredientSubtype,
@@ -182,10 +183,10 @@ const isSlugUniqueConstraintError = (error: unknown) => error instanceof Error
   && (error.message.includes("recipes_slug_uidx") || (error as { code?: string }).code === "23505");
 
 const ensureCatalogIngredientExists = async (ingredientCatalogItemId: string) => {
-  const catalogItem = await db.query.ingredientCatalogItems.findFirst({
+  const catalogItem = await db.query.ingredients.findFirst({
     where: and(
-      eq(ingredientCatalogItems.id, ingredientCatalogItemId),
-      eq(ingredientCatalogItems.status, "active")
+      eq(ingredients.id, ingredientCatalogItemId),
+      eq(ingredients.isActive, true)
     )
   });
 
@@ -249,6 +250,34 @@ const isRecord = (value: unknown): value is Record<string, unknown> => (
   && value !== null
   && !Array.isArray(value)
 );
+
+const normalizeStoredRecipeCategory = (
+  category?: typeof recipeIngredients.$inferSelect.ingredientCategory | null
+): RecipeIngredientDto["ingredientCategory"] | null => {
+  if (category === "water_prep") {
+    return "water_treatment";
+  }
+
+  if (category === "misc") {
+    return "consumable";
+  }
+
+  return category as RecipeIngredientDto["ingredientCategory"] | null;
+};
+
+const normalizeStoredRecipeSubtype = (
+  category: RecipeIngredientDto["ingredientCategory"] | null,
+  subtype?: string | null
+): RecipeIngredientDto["ingredientSubtype"] => {
+  if (!subtype) {
+    return null;
+  }
+
+  return resolveIngredientSubtype({
+    category: category ?? undefined,
+    subtype
+  }) as RecipeIngredientDto["ingredientSubtype"];
+};
 
 const resolveRecipeStyleRange = (styleId: string | null | undefined) => getStyleRangeById(styleId);
 
@@ -382,7 +411,7 @@ type PreparedRecipeIngredientEntry = {
   ingredientCatalogItemId: string | null;
   userCustomIngredientId: string | null;
   source: IngredientSourceLinkage;
-  sourceRaw: typeof ingredientCatalogItems.$inferSelect | typeof userCustomIngredients.$inferSelect;
+  sourceRaw: typeof ingredients.$inferSelect | typeof userCustomIngredients.$inferSelect;
   amount: ReturnType<typeof normalizeRecipeIngredientAmountWithSource>;
   stage: typeof recipeIngredients.$inferInsert.stage;
   timeOffset: number | null;
@@ -409,7 +438,7 @@ const prepareRecipeIngredientEntries = async (
 
   for (const ingredient of payloadIngredients) {
     let resolvedSource: IngredientSourceLinkage;
-    let rawSource: typeof ingredientCatalogItems.$inferSelect | typeof userCustomIngredients.$inferSelect;
+    let rawSource: typeof ingredients.$inferSelect | typeof userCustomIngredients.$inferSelect;
 
     if (ingredient.ingredientCatalogItemId) {
       const catalog = await ensureCatalogIngredientExists(ingredient.ingredientCatalogItemId);
@@ -536,7 +565,7 @@ const readRecipeIngredientLinkageMeta = (
     : null;
 
   return {
-    type: typeof linkage.type === "string" ? linkage.type as RecipeIngredientDto["type"] : "misc",
+    type: typeof linkage.type === "string" ? linkage.type as RecipeIngredientDto["type"] : "consumable",
     category: typeof linkage.category === "string" ? linkage.category as RecipeIngredientDto["ingredientCategory"] : null,
     subtype: typeof linkage.subtype === "string" ? linkage.subtype as RecipeIngredientDto["ingredientSubtype"] : null,
     familyId: typeof linkage.familyId === "string" ? linkage.familyId : null,
@@ -574,16 +603,17 @@ const buildPersistedRecipeResolvedSource = (
   stepMetaLinkage: RecipeIngredientResolvedSource | null,
   liveLinkage?: IngredientSourceLinkage | null
 ): RecipeIngredientResolvedSource => {
-  const category = ingredient.ingredientCategory
+  const category = normalizeStoredRecipeCategory(ingredient.ingredientCategory)
     ?? stepMetaLinkage?.category
     ?? resolveIngredientCategory({ type: ingredient.type });
-  const subtype = (ingredient.ingredientSubtype as RecipeIngredientDto["ingredientSubtype"])
+  const subtype = normalizeStoredRecipeSubtype(category, ingredient.ingredientSubtype)
     ?? stepMetaLinkage?.subtype
     ?? null;
-  const type = resolveLegacyIngredientType({
-    category,
-    subtype
-  }) ?? liveLinkage?.type ?? ingredient.type;
+  const type = (
+    liveLinkage?.type
+    ?? resolveLegacyIngredientType({ category, subtype })
+    ?? (ingredient.type as RecipeIngredientDto["type"])
+  ) as RecipeIngredientDto["type"];
   const unitProfile = resolveInventoryUnitProfile({
     type,
     category,
@@ -623,7 +653,7 @@ const mapRecipeIngredientBase = (ingredient: typeof recipeIngredients.$inferSele
   recipeId: ingredient.recipeId,
   ingredientCatalogItemId: ingredient.ingredientCatalogItemId,
   userCustomIngredientId: ingredient.userCustomIngredientId,
-  type: ingredient.type,
+  type: ingredient.type as RecipeIngredientDto["type"],
   amountEnteredQuantity: ingredient.amountEnteredQuantity,
   amountEnteredUnit: parseRecipeIngredientUnit(ingredient.amountEnteredUnit),
   amountNormalizedQuantity: ingredient.amountNormalizedQuantity,
@@ -774,7 +804,7 @@ const computeRecipeStatsSnapshot = (input: {
       displayName: string;
       category: RecipeIngredientDto["ingredientCategory"];
       technicalData: IngredientSourceLinkage["technicalData"];
-      raw: typeof ingredientCatalogItems.$inferSelect | typeof userCustomIngredients.$inferSelect;
+      raw: typeof ingredients.$inferSelect | typeof userCustomIngredients.$inferSelect;
     };
   }>;
 }) => {
@@ -784,7 +814,7 @@ const computeRecipeStatsSnapshot = (input: {
   const hops: Array<{ id: string; name: string; alphaAcidPercent: number; weightG: number; boilTimeMinutes: number; use?: "boil" | "whirlpool" | "dry_hop" }> = [];
 
   for (const ingredient of input.ingredients) {
-    if (ingredient.type === "fermentable" || ingredient.type === "sugar") {
+    if (ingredient.type === "fermentable" || ingredient.type === "malt") {
       const weightKg = ingredient.amountNormalizedUnit === "g"
         ? roundTo(ingredient.amountNormalizedQuantity / 1000, 3)
         : 0;
@@ -869,17 +899,39 @@ export const recomputeRecipeStats = async (authorId: string, recipeId: string) =
       return null;
     }
 
+    const sourceDisplayName = "displayName" in source
+      ? source.displayName
+      : resolveIngredientDisplayNames({
+        type: source.type as RecipeIngredientDto["type"],
+        countryCode: "countryCode" in source ? source.countryCode : null,
+        nameRu: "nameRu" in source ? source.nameRu : null,
+        nameEn: "nameEn" in source ? source.nameEn : null,
+        displayModeRu: "displayModeRu" in source
+          ? source.displayModeRu as "auto" | "localized_first" | "source_first"
+          : "auto",
+        displayNameOverrideRu: "displayNameOverrideRu" in source ? source.displayNameOverrideRu : null,
+        secondaryNameOverrideRu: "secondaryNameOverrideRu" in source ? source.secondaryNameOverrideRu : null,
+        hideSecondaryNameRu: "hideSecondaryNameRu" in source ? source.hideSecondaryNameRu : false
+      }).primaryName;
+    const resolvedType = (
+      resolveLegacyIngredientType({
+        category: normalizeStoredRecipeCategory(ingredient.ingredientCategory),
+        subtype: ingredient.ingredientSubtype
+      })
+      ?? source.type
+    ) as RecipeIngredientDto["type"];
+
     return {
       id: ingredient.id,
-      type: ingredient.type,
+      type: resolvedType,
       amountNormalizedQuantity: ingredient.amountNormalizedQuantity,
       amountNormalizedUnit: ingredient.amountNormalizedUnit,
       stage: ingredient.stage,
       timeOffset: ingredient.timeOffset,
       stepMeta: ingredient.stepMeta as Record<string, unknown> | null,
       source: {
-        displayName: source.displayName,
-        category: ingredient.ingredientCategory ?? resolveIngredientCategory({ type: ingredient.type }),
+        displayName: sourceDisplayName,
+        category: normalizeStoredRecipeCategory(ingredient.ingredientCategory) ?? resolveIngredientCategory({ type: resolvedType }),
         technicalData: null,
         raw: source
       }

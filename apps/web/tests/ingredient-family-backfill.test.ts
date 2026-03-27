@@ -32,21 +32,21 @@ describe("ingredient family backfill", () => {
     expect(result.assignments).toEqual(expect.arrayContaining([
       expect.objectContaining({
         itemId: "sugar-1",
-        category: "fermentable",
-        subtype: "sugar",
-        familyKey: "fermentable:dextrose"
+        category: "consumable",
+        subtype: "other",
+        familyKey: "consumable:dextrose"
       }),
       expect.objectContaining({
         itemId: "water-1",
-        category: "water_prep",
-        subtype: "salt",
-        familyKey: "water_prep:calcium chloride"
+        category: "consumable",
+        subtype: "other",
+        familyKey: "consumable:calcium chloride"
       }),
       expect.objectContaining({
         itemId: "fining-1",
-        category: "misc",
-        subtype: "fining",
-        familyKey: "misc:irish moss"
+        category: "consumable",
+        subtype: "other",
+        familyKey: "consumable:irish moss"
       })
     ]));
   });

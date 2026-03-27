@@ -26,8 +26,8 @@ const baseSummary: InventorySummaryDto = {
     fermentable: 1,
     hop: 1,
     yeast: 0,
-    water_prep: 0,
-    misc: 0
+    consumable: 1,
+    water_treatment: 0
   }
 };
 
@@ -45,14 +45,16 @@ const items: InventoryListItemDto[] = [
     archivedAt: null,
     createdAt: new Date("2025-01-01"),
     updatedAt: new Date("2025-01-01"),
-      source: {
-        sourceKind: "catalog",
-        sourceId: "cat-1",
-        type: "fermentable",
-        category: "fermentable",
-        displayName: "Pilsner Malt",
-        normalizedName: "pilsner-malt"
-      }
+    source: {
+      sourceKind: "catalog",
+      sourceId: "cat-1",
+      type: "malt",
+      category: "fermentable",
+      primaryLabelRu: "Пилснер солод",
+      secondaryLabelRu: "Pilsner Malt",
+      displayName: "Пилснер солод",
+      normalizedName: "pilsner-malt"
+    }
   },
   {
     id: "inv-2",
@@ -67,14 +69,16 @@ const items: InventoryListItemDto[] = [
     archivedAt: null,
     createdAt: new Date("2025-01-02"),
     updatedAt: new Date("2025-01-02"),
-      source: {
-        sourceKind: "custom",
-        sourceId: "cus-1",
-        type: "hop",
-        category: "hop",
-        displayName: "Citra",
-        normalizedName: "citra"
-      }
+    source: {
+      sourceKind: "custom",
+      sourceId: "cus-1",
+      type: "hop",
+      category: "hop",
+      primaryLabelRu: "Citra",
+      secondaryLabelRu: "Цитра",
+      displayName: "Citra",
+      normalizedName: "citra"
+    }
   }
 ];
 
@@ -97,9 +101,9 @@ describe("inventory page foundation", () => {
     expect(grouped.map((group) => group.category)).toEqual(["fermentable", "hop"]);
     expect(html).toContain("Ферментируемые");
     expect(html).toContain("Хмель");
-    expect(html).toContain("Pilsner Malt");
+    expect(html).toContain("Пилснер солод");
     expect(html).toContain("Citra");
-    expect(html).toContain("Удалить ингредиент");
+    expect(html).toContain('aria-label="Удалить"');
   });
 
   it("renders summary block", () => {

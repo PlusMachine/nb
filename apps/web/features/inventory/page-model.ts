@@ -12,26 +12,25 @@ import type {
   InventorySummaryDto
 } from "./contracts";
 
-export const inventoryCategoryOrder: IngredientCategory[] = ["fermentable", "hop", "yeast", "water_prep", "misc"];
+export const inventoryCategoryOrder: IngredientCategory[] = ["fermentable", "hop", "yeast", "water_treatment", "consumable"];
 
 export const inventoryCategoryLabels: Record<IngredientCategory, string> = {
   fermentable: ingredientCategoryLabels.fermentable,
   hop: ingredientCategoryLabels.hop,
   yeast: ingredientCategoryLabels.yeast,
-  water_prep: ingredientCategoryLabels.water_prep,
-  misc: ingredientCategoryLabels.misc
+  water_treatment: ingredientCategoryLabels.water_treatment,
+  consumable: ingredientCategoryLabels.consumable
 };
 
 // Legacy compatibility for older admin/internal selectors that still use IngredientType.
 export const inventoryTypeOrder: IngredientType[] = [...ingredientTypes];
 export const inventoryTypeLabels: Record<IngredientType, string> = {
+  malt: "Солод",
   fermentable: "Ферментируемые",
   hop: "Хмель",
   yeast: "Дрожжи",
-  sugar: "Сахара",
-  adjunct: "Добавки",
-  fining: "Осветлители",
-  misc: "Прочее"
+  consumable: "Расходники",
+  water_treatment: "Водоподготовка"
 };
 
 export const inventorySortLabels: Record<InventorySortOption, string> = {
@@ -60,7 +59,7 @@ export const resolveInventoryItemCategory = (item: {
     type: item.source.type,
     subtype: item.source.subtype
   })
-  ?? "misc"
+  ?? "consumable"
 );
 
 export type InventoryGroup = {

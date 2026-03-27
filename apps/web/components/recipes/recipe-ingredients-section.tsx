@@ -14,39 +14,39 @@ const stageLabel: Record<RecipeDetailDto["ingredients"][number]["stage"], string
   other: "Другое"
 };
 
-const sectionOrder = ["fermentable", "hop", "yeast", "water_prep", "misc"] as const;
+const sectionOrder = ["fermentable", "hop", "yeast", "water_treatment", "consumable"] as const;
 type SectionCategory = (typeof sectionOrder)[number];
 
 const sectionLabels: Record<SectionCategory, string> = {
   fermentable: "Сбраживаемое",
   hop: "Хмель",
   yeast: "Дрожжи",
-  water_prep: "Водоподготовка",
-  misc: "Прочее"
+  water_treatment: "Водоподготовка",
+  consumable: "Расходники"
 };
 
 const sectionIcons: Record<SectionCategory, React.ComponentType<{ className?: string }>> = {
   fermentable: Wheat,
   hop: Hop,
   yeast: FlaskConical,
-  water_prep: Droplets,
-  misc: Package
+  water_treatment: Droplets,
+  consumable: Package
 };
 
 const sectionIconBg: Record<SectionCategory, string> = {
   fermentable: "bg-amber-50 text-amber-600",
   hop: "bg-emerald-50 text-emerald-600",
   yeast: "bg-violet-50 text-violet-600",
-  water_prep: "bg-sky-50 text-sky-600",
-  misc: "bg-zinc-100 text-zinc-500"
+  water_treatment: "bg-sky-50 text-sky-600",
+  consumable: "bg-zinc-100 text-zinc-500"
 };
 
 const sectionAccentBorder: Record<SectionCategory, string> = {
   fermentable: "border-l-amber-400",
   hop: "border-l-emerald-500",
   yeast: "border-l-violet-400",
-  water_prep: "border-l-sky-400",
-  misc: "border-l-zinc-300"
+  water_treatment: "border-l-sky-400",
+  consumable: "border-l-zinc-300"
 };
 
 const buildMetaLine = (ingredient: RecipeDetailDto["ingredients"][number]) => {

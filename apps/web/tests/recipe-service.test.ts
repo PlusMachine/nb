@@ -8,7 +8,7 @@ const { tableRefs, mockState } = vi.hoisted(() => ({
   tableRefs: {
     recipes: { name: "recipes", id: "id", authorId: "authorId", publicationState: "publicationState", slug: "slug", createdAt: "createdAt", updatedAt: "updatedAt" },
     recipeIngredients: { name: "recipe_ingredients", id: "id", recipeId: "recipeId", ingredientCatalogItemId: "ingredientCatalogItemId", userCustomIngredientId: "userCustomIngredientId", type: "type", stage: "stage" },
-    ingredientCatalogItems: { name: "ingredientCatalogItems", id: "id", status: "status", type: "type" },
+    ingredients: { name: "ingredients", id: "id", isActive: "isActive", type: "type" },
     userCustomIngredients: { name: "userCustomIngredients", id: "id", userId: "userId", type: "type" }
   },
   mockState: {
@@ -65,7 +65,7 @@ vi.mock("@nb/db", () => {
           return mockState.ingredientsByRecipeId.get(recipeId) ?? [];
         }
       },
-      ingredientCatalogItems: {
+      ingredients: {
         findFirst: async (arg: any) => {
           const id = getEqValue(arg?.where, "id");
           return mockState.catalogById.get(id) ?? null;
@@ -141,12 +141,13 @@ vi.mock("@nb/db", () => {
   return {
     db,
     and: (...args: unknown[]) => args,
+    count: (value: unknown) => value,
     asc: (v: unknown) => v,
     desc: (v: unknown) => v,
     eq: (...args: unknown[]) => args,
     recipes: tableRefs.recipes,
     recipeIngredients: tableRefs.recipeIngredients,
-    ingredientCatalogItems: tableRefs.ingredientCatalogItems,
+    ingredients: tableRefs.ingredients,
     userCustomIngredients: tableRefs.userCustomIngredients
   };
 });
@@ -172,7 +173,7 @@ const buildReadyPrivatePayload = (overrides: Record<string, unknown> = {}) => ({
   ingredients: [
     {
       ingredientCatalogItemId: uuid(101),
-      type: "fermentable",
+      type: "malt",
       category: "fermentable",
       amountEnteredQuantity: 4,
       amountEnteredUnit: "kg",
@@ -200,7 +201,7 @@ const buildReadyPublicPayload = (overrides: Record<string, unknown> = {}) => ({
     ingredients: [
       {
         ingredientCatalogItemId: uuid(101),
-        type: "fermentable",
+        type: "malt",
         category: "fermentable",
         amountEnteredQuantity: 4,
         amountEnteredUnit: "kg",
@@ -219,8 +220,8 @@ const buildReadyPublicPayload = (overrides: Record<string, unknown> = {}) => ({
         ingredientCatalogItemId: uuid(103),
         type: "yeast",
         category: "yeast",
-        amountEnteredQuantity: 1,
-        amountEnteredUnit: "pack",
+        amountEnteredQuantity: 11,
+        amountEnteredUnit: "g",
         stage: "fermentation"
       }
     ]
@@ -238,46 +239,80 @@ describe("recipe service", () => {
 
     mockState.catalogById.set(uuid(101), {
       id: uuid(101),
-      status: "active",
-      type: "fermentable",
-      category: "fermentable",
-      subtype: "base_malt",
-      familyId: uuid(301),
-      displayName: "Pale Malt",
-      defaultDisplayUnit: "kg",
-      allowedUnits: ["g", "kg"],
-      measurementDimension: "weight",
-      properties: { potentialPpg: 37, colorLovibond: 2 }
+      isActive: true,
+      type: "malt",
+      itemKind: "malt",
+      nameRu: null,
+      nameEn: "Pale Malt",
+      displayModeRu: "source_first",
+      displayNameOverrideRu: null,
+      secondaryNameOverrideRu: null,
+      hideSecondaryNameRu: false,
+      countryCode: null,
+      countryName: null,
+      brand: null,
+      producer: null,
+      productCode: null,
+      groupName: null,
+      category: null,
+      subcategory: null,
+      presentOnBirrf: true,
+      inventoryEnabled: true,
+      quantityDefaults: null,
+      attributes: { extract_pct_dry_basis: 80, color_lovibond: 2 }
     });
     mockState.catalogById.set(uuid(102), {
       id: uuid(102),
-      status: "active",
+      isActive: true,
       type: "hop",
-      category: "hop",
-      subtype: "pellet",
-      familyId: uuid(302),
-      displayName: "Cascade",
-      defaultDisplayUnit: "g",
-      allowedUnits: ["g", "oz"],
-      measurementDimension: "weight",
-      properties: { alphaAcidPercent: 6 }
+      itemKind: "hop",
+      nameRu: null,
+      nameEn: "Cascade",
+      displayModeRu: "source_first",
+      displayNameOverrideRu: null,
+      secondaryNameOverrideRu: null,
+      hideSecondaryNameRu: false,
+      countryCode: null,
+      countryName: null,
+      brand: null,
+      producer: null,
+      productCode: null,
+      groupName: null,
+      category: null,
+      subcategory: null,
+      presentOnBirrf: true,
+      inventoryEnabled: true,
+      quantityDefaults: null,
+      attributes: { alpha_acid_pct_typical: 6 }
     });
     mockState.catalogById.set(uuid(103), {
       id: uuid(103),
-      status: "active",
+      isActive: true,
       type: "yeast",
-      category: "yeast",
-      subtype: "ale",
-      familyId: uuid(303),
-      displayName: "US-05",
-      defaultDisplayUnit: "pack",
-      allowedUnits: ["pack", "g"],
-      measurementDimension: "count",
-      yeastForm: "dry",
-      yeastAttenuationPct: 78,
-      yeastPackageSize: 11,
-      yeastPackageUnit: "g",
-      properties: {}
+      itemKind: "yeast",
+      nameRu: "US-05",
+      nameEn: "US-05",
+      displayModeRu: "source_first",
+      displayNameOverrideRu: null,
+      secondaryNameOverrideRu: null,
+      hideSecondaryNameRu: false,
+      countryCode: null,
+      countryName: null,
+      brand: null,
+      producer: null,
+      productCode: "US-05",
+      groupName: null,
+      category: null,
+      subcategory: null,
+      presentOnBirrf: true,
+      inventoryEnabled: true,
+      quantityDefaults: null,
+      attributes: {
+        form: "dry",
+        attenuation_pct_typical: 78,
+        package_size: 11,
+        package_unit: "g"
+      }
     });
     mockState.customById.set(uuid(201), {
       id: uuid(201),
@@ -285,8 +320,8 @@ describe("recipe service", () => {
       type: "hop",
       displayName: "My Hop",
       properties: {
-        taxonomyCategory: "hop",
-        taxonomySubtype: "pellet",
+        category: "hop",
+        subtype: "hop",
         defaultDisplayUnit: "g",
         allowedUnits: ["g", "oz"],
         measurementDimension: "weight",
@@ -335,7 +370,7 @@ describe("recipe service", () => {
       batchSizeEnteredQuantity: 20,
       batchSizeEnteredUnit: "l",
       ingredients: [
-        { ingredientCatalogItemId: uuid(101), type: "fermentable", amountEnteredQuantity: 4, amountEnteredUnit: "kg", stage: "mash" },
+        { ingredientCatalogItemId: uuid(101), type: "malt", amountEnteredQuantity: 4, amountEnteredUnit: "kg", stage: "mash" },
         { ingredientCatalogItemId: uuid(102), type: "hop", amountEnteredQuantity: 40, amountEnteredUnit: "g", stage: "boil", timeOffset: 60 }
       ]
     });
@@ -351,7 +386,7 @@ describe("recipe service", () => {
       batchSizeEnteredUnit: "l",
       boilTimeMinutes: 60,
       ingredients: [
-        { ingredientCatalogItemId: uuid(101), type: "fermentable", amountEnteredQuantity: 4, amountEnteredUnit: "kg", stage: "mash" },
+        { ingredientCatalogItemId: uuid(101), type: "malt", amountEnteredQuantity: 4, amountEnteredUnit: "kg", stage: "mash" },
         { ingredientCatalogItemId: uuid(102), type: "hop", amountEnteredQuantity: 40, amountEnteredUnit: "g", stage: "boil", timeOffset: 60 }
       ]
     });
@@ -368,10 +403,10 @@ describe("recipe service", () => {
       ingredients: [
         {
           ingredientCatalogItemId: uuid(101),
-          type: "fermentable",
+          type: "malt",
           category: "fermentable",
-          subtype: "base_malt",
-          familyId: uuid(301),
+          subtype: "malt",
+          familyId: null,
           amountEnteredQuantity: 4,
           amountEnteredUnit: "kg",
           stage: "mash"
@@ -383,9 +418,9 @@ describe("recipe service", () => {
 
     expect(persisted[0]).toMatchObject({
       ingredientCatalogItemId: uuid(101),
-      ingredientFamilyId: uuid(301),
+      ingredientFamilyId: null,
       ingredientCategory: "fermentable",
-      ingredientSubtype: "base_malt",
+      ingredientSubtype: "malt",
       ingredientDisplayNameSnapshot: "Pale Malt",
       ingredientDefaultDisplayUnitSnapshot: "kg",
       ingredientMeasurementDimension: "weight"
@@ -408,7 +443,7 @@ describe("recipe service", () => {
         userCustomIngredientId: null,
         ingredientFamilyId: uuid(302),
         ingredientCategory: "hop",
-        ingredientSubtype: "pellet",
+          ingredientSubtype: "hop",
         ingredientDisplayNameSnapshot: "Old Cascade",
         ingredientDefaultDisplayUnitSnapshot: "g",
         ingredientMeasurementDimension: "weight",
@@ -431,7 +466,7 @@ describe("recipe service", () => {
     expect(hydrated.ingredients[0]).toMatchObject({
       ingredientFamilyId: uuid(302),
       ingredientCategory: "hop",
-      ingredientSubtype: "pellet",
+      ingredientSubtype: "hop",
       ingredientDisplayName: "Old Cascade",
       ingredientDisplayNameSnapshot: "Old Cascade",
       ingredientDefaultDisplayUnit: "g",
@@ -516,7 +551,7 @@ describe("recipe service", () => {
       ingredients: [
         {
           ingredientCatalogItemId: uuid(101),
-          type: "fermentable",
+          type: "malt",
           category: "fermentable",
           amountEnteredQuantity: 4,
           amountEnteredUnit: "kg",

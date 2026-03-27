@@ -8,7 +8,7 @@ const run = async () => {
     DROP SCHEMA public CASCADE;
     CREATE SCHEMA public;
   `);
-  console.log("Database reset complete. Run db:migrate next.");
+  console.log("Database reset complete. Run db:migrate or any seed command next.");
   await pool.end();
 };
 

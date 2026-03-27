@@ -1,0 +1,2925 @@
+{
+  "schema_version": "brewing_consumables_unified_v3",
+  "generated_at_utc": "2026-03-27T17:24:19Z",
+  "catalog_name": "Технологические расходники и добавки для пивоварения",
+  "catalog_name_en": "Brewing Process Aids and Consumables Superset Catalog",
+  "language_primary": "ru",
+  "scope": "Единая база расходников для рецептов и склада. Одна сущность ингредиента + вложенные варианты фасовки.",
+  "design_notes_ru": [
+    "Каталог не разделён на master/shop. Каждая запись — это один расходник, который может иметь варианты фасовки.",
+    "Для рецептов и списков используется сама запись ингредиента. Для склада можно опционально выбрать package_variant и вести остаток в stock_unit_default.",
+    "display_mode_ru хранится только как правило показа. primary/secondary label должны собираться на бэкенде.",
+    "quantity_defaults задаёт, как по умолчанию измерять остаток и расход: в граммах, миллилитрах, штуках или только упаковками.",
+    "Для фасовок не придумывается тип тары (бутылка/пакет), если его нет в источнике. Хранится только amount + unit."
+  ],
+  "items": [
+    {
+      "id": "antioxidant-finished-beer",
+      "type": "consumable",
+      "name_ru": "Антиоксидант для готового пива",
+      "name_en": "Finished Beer Antioxidant",
+      "display_mode_ru": "localized_first",
+      "aliases_ru": [
+        "vicant sb",
+        "антиоксидант для пива"
+      ],
+      "aliases_en": [
+        "Vicant SB"
+      ],
+      "item_kind": "process_aid",
+      "category": "antioxidant",
+      "subcategory": "finished_beer_stability",
+      "common_forms": [
+        "powder"
+      ],
+      "usage_stage": [
+        "packaging",
+        "finished_beer"
+      ],
+      "quantity_defaults": {
+        "quantity_model": "weight",
+        "recipe_unit_default": "g",
+        "stock_unit_default": "g",
+        "stock_mode_default": "by_package_content",
+        "stock_modes_supported": [
+          "package",
+          "bulk_by_weight"
+        ],
+        "allow_fractional_stock": true
+      },
+      "package_variants": [
+        {
+          "id": "vicant-sb-10g",
+          "brand": "Lallemand",
+          "product_name_ru": "Антиокислитель для пива Vicant SB",
+          "package": {
+            "amount": 10,
+            "unit": "g"
+          },
+          "country_name_ru": "Великобритания",
+          "source": {
+            "group": "Bir.RF store",
+            "url": "https://xn--90aoy.xn--p1ai/shop/1163/desc/antiokislitel-gotovogo-piva-prime-vicant-sb-prime-10-g"
+          },
+          "stock_content_per_package": {
+            "amount": 10.0,
+            "unit": "g"
+          }
+        },
+        {
+          "id": "vicant-sb-50g",
+          "brand": "Lallemand",
+          "product_name_ru": "Антиокислитель для пива Vicant SB",
+          "package": {
+            "amount": 50,
+            "unit": "g"
+          },
+          "country_name_ru": "Великобритания",
+          "source": {
+            "group": "Bir.RF store",
+            "url": "https://xn--90aoy.xn--p1ai/shop/1162/comm/antiokislitel-gotovogo-piva-vicant-sb-50-g"
+          },
+          "stock_content_per_package": {
+            "amount": 50.0,
+            "unit": "g"
+          }
+        }
+      ],
+      "dosage_reference": {
+        "common_ratio": "по инструкции производителя",
+        "example_reference": "антиоксидант для готового пива вносится ближе к упаковке/таре"
+      }
+    },
+    {
+      "id": "antioxidant-brewtan-b",
+      "type": "consumable",
+      "name_ru": "Brewtan B / галлотанин для стабилизации",
+      "name_en": "Brewtan B",
+      "display_mode_ru": "source_first",
+      "aliases_ru": [
+        "брютан б",
+        "brewtan b"
+      ],
+      "aliases_en": [
+        "Brewtan B"
+      ],
+      "item_kind": "process_aid",
+      "category": "antioxidant",
+      "subcategory": "mash_and_boil_stability",
+      "common_forms": [
+        "powder"
+      ],
+      "usage_stage": [
+        "mash",
+        "boil"
+      ],
+      "quantity_defaults": {
+        "quantity_model": "weight",
+        "recipe_unit_default": "g",
+        "stock_unit_default": "g",
+        "stock_mode_default": "by_package_content",
+        "stock_modes_supported": [
+          "package",
+          "bulk_by_weight"
+        ],
+        "allow_fractional_stock": true
+      },
+      "package_variants": [
+        {
+          "id": "brewtan-b-5g",
+          "brand": "Ajinomoto Omnichem N. V.",
+          "product_name_ru": "Стабилизатор Брютан Б / Brewtan B",
+          "package": {
+            "amount": 5,
+            "unit": "g"
+          },
+          "country_name_ru": "Бельгия",
+          "source": {
+            "group": "Bir.RF store"
+          },
+          "stock_content_per_package": {
+            "amount": 5.0,
+            "unit": "g"
+          }
+        },
+        {
+          "id": "brewtan-b-50g",
+          "brand": "Ajinomoto Omnichem N. V.",
+          "product_name_ru": "Стабилизатор Брютан Б / Brewtan B",
+          "package": {
+            "amount": 50,
+            "unit": "g"
+          },
+          "country_name_ru": "Бельгия",
+          "source": {
+            "group": "Bir.RF store",
+            "url": "https://xn--90aoy.xn--p1ai/shop/1449/desc/stabilizator-brjutan-b-brewtan-b-50-g"
+          },
+          "stock_content_per_package": {
+            "amount": 50.0,
+            "unit": "g"
+          }
+        }
+      ],
+      "typical_use_ru": "Коллоидная и вкусовая стабилизация, снижение окислительных реакций в заторе и кипячении.",
+      "dosage_reference": {
+        "common_ratio": "по инструкции производителя",
+        "example_reference": "Brewtan B: примерно 1–2.5 г/гл в заторе и 1–3 г/гл в конце кипячения"
+      }
+    },
+    {
+      "id": "antioxidant-ascorbic-acid",
+      "type": "consumable",
+      "name_ru": "Аскорбиновая кислота как антиоксидант",
+      "name_en": "Ascorbic Acid Antioxidant",
+      "display_mode_ru": "localized_first",
+      "aliases_ru": [
+        "аскорбиновая кислота",
+        "аскорбинка",
+        "витамин c"
+      ],
+      "aliases_en": [
+        "Ascorbic Acid",
+        "Vitamin C"
+      ],
+      "item_kind": "process_aid",
+      "category": "antioxidant",
+      "subcategory": "oxygen_scavenger",
+      "common_forms": [
+        "powder",
+        "crystals"
+      ],
+      "usage_stage": [
+        "mash",
+        "packaging",
+        "low_oxygen_process"
+      ],
+      "quantity_defaults": {
+        "quantity_model": "weight",
+        "recipe_unit_default": "g",
+        "stock_unit_default": "g",
+        "stock_mode_default": "by_package_content",
+        "stock_modes_supported": [
+          "package",
+          "bulk_by_weight"
+        ],
+        "allow_fractional_stock": true
+      },
+      "package_variants": [
+        {
+          "id": "ascorbic-acid-100g",
+          "brand": "Generic",
+          "product_name_ru": "Аскорбиновая кислота",
+          "package": {
+            "amount": 100,
+            "unit": "g"
+          },
+          "country_name_ru": "Китай",
+          "source": {
+            "group": "Bir.RF store",
+            "url": "https://xn--90aoy.xn--p1ai/shop/672/desc/askorbinovaja-kislota-100-gr"
+          },
+          "stock_content_per_package": {
+            "amount": 100.0,
+            "unit": "g"
+          }
+        },
+        {
+          "id": "ascorbic-acid-1kg",
+          "brand": "Generic",
+          "product_name_ru": "Аскорбиновая кислота",
+          "package": {
+            "amount": 1,
+            "unit": "kg"
+          },
+          "country_name_ru": "Китай",
+          "source": {
+            "group": "Bir.RF store",
+            "url": "https://xn--90aoy.xn--p1ai/shop/1393/desc/askorbinovaja-kislota-1-kg"
+          },
+          "stock_content_per_package": {
+            "amount": 1000.0,
+            "unit": "g"
+          }
+        }
+      ],
+      "typical_use_ru": "Антиоксидант для снижения окислительного потенциала в некоторых схемах пивоварения.",
+      "dosage_reference": {
+        "common_ratio": "использовать осознанно и в небольших дозах; по процессной схеме"
+      },
+      "storage_notes_ru": "Хранить сухо, герметично."
+    },
+    {
+      "id": "metabisulfite-potassium",
+      "type": "consumable",
+      "name_ru": "Метабисульфит калия",
+      "name_en": "Potassium Metabisulfite",
+      "display_mode_ru": "localized_first",
+      "aliases_ru": [
+        "метабисульфит калия",
+        "пиросульфит калия",
+        "кампден",
+        "k2s2o5"
+      ],
+      "aliases_en": [
+        "Potassium Metabisulfite",
+        "Campden",
+        "K2S2O5"
+      ],
+      "item_kind": "process_aid",
+      "category": "antioxidant",
+      "subcategory": "sulfite",
+      "common_forms": [
+        "powder",
+        "tablet",
+        "crystals"
+      ],
+      "usage_stage": [
+        "water_treatment",
+        "packaging",
+        "low_oxygen_process"
+      ],
+      "quantity_defaults": {
+        "quantity_model": "weight",
+        "recipe_unit_default": "g",
+        "stock_unit_default": "g",
+        "stock_mode_default": "by_package_content",
+        "stock_modes_supported": [
+          "package",
+          "bulk_by_weight"
+        ],
+        "allow_fractional_stock": true
+      },
+      "package_variants": [
+        {
+          "id": "potassium-metabisulfite-5g",
+          "brand": "Generic",
+          "product_name_ru": "Метабисульфит (пиросульфит) калия",
+          "package": {
+            "amount": 5,
+            "unit": "g"
+          },
+          "country_name_ru": "Китай",
+          "source": {
+            "group": "Bir.RF store family",
+            "url": "https://xn--90aoy.xn--p1ai/shop/1748/desc/metabisulfit-pirosulfit-kalija-5-g"
+          },
+          "stock_content_per_package": {
+            "amount": 5.0,
+            "unit": "g"
+          }
+        },
+        {
+          "id": "potassium-metabisulfite-100g",
+          "brand": "Generic",
+          "product_name_ru": "Метабисульфит (пиросульфит) калия",
+          "package": {
+            "amount": 100,
+            "unit": "g"
+          },
+          "country_name_ru": "Китай",
+          "source": {
+            "group": "Bir.RF store family",
+            "url": "https://xn--90aoy.xn--p1ai/shop/1748/desc/metabisulfit-pirosulfit-kalija-5-g"
+          },
+          "stock_content_per_package": {
+            "amount": 100.0,
+            "unit": "g"
+          }
+        },
+        {
+          "id": "potassium-metabisulfite-1kg",
+          "brand": "Generic",
+          "product_name_ru": "Метабисульфит (пиросульфит) калия",
+          "package": {
+            "amount": 1,
+            "unit": "kg"
+          },
+          "country_name_ru": "Китай",
+          "source": {
+            "group": "Bir.RF store",
+            "url": "https://xn--90aoy.xn--p1ai/shop/1746/desc/metabisulfit-pirosulfit-kalija-1-kg"
+          },
+          "stock_content_per_package": {
+            "amount": 1000.0,
+            "unit": "g"
+          }
+        }
+      ],
+      "typical_use_ru": "Сульфитный антиоксидант/антисептик; в пивоварении используется точечно и осознанно.",
+      "dosage_reference": {
+        "common_ratio": "зависит от задачи; использовать очень аккуратно"
+      },
+      "storage_notes_ru": "Хранить герметично и сухо."
+    },
+    {
+      "id": "metabisulfite-sodium",
+      "type": "consumable",
+      "name_ru": "Метабисульфит натрия",
+      "name_en": "Sodium Metabisulfite",
+      "display_mode_ru": "localized_first",
+      "aliases_ru": [
+        "метабисульфит натрия",
+        "пиросульфит натрия",
+        "na2s2o5"
+      ],
+      "aliases_en": [
+        "Sodium Metabisulfite",
+        "Na2S2O5"
+      ],
+      "item_kind": "process_aid",
+      "category": "antioxidant",
+      "subcategory": "sulfite",
+      "common_forms": [
+        "powder",
+        "crystals"
+      ],
+      "usage_stage": [
+        "packaging",
+        "low_oxygen_process"
+      ],
+      "quantity_defaults": {
+        "quantity_model": "weight",
+        "recipe_unit_default": "g",
+        "stock_unit_default": "g",
+        "stock_mode_default": "by_package_content",
+        "stock_modes_supported": [
+          "package",
+          "bulk_by_weight"
+        ],
+        "allow_fractional_stock": true
+      },
+      "package_variants": [
+        {
+          "id": "sodium-metabisulfite-100g",
+          "brand": "Generic",
+          "product_name_ru": "Метабисульфит (пиросульфит) натрия",
+          "package": {
+            "amount": 100,
+            "unit": "g"
+          },
+          "country_name_ru": "Китай",
+          "source": {
+            "group": "Bir.RF store family",
+            "url": "https://xn--90aoy.xn--p1ai/shop/1270/desc/metabisulfit-pirosulfit-natrija-1-kg"
+          },
+          "stock_content_per_package": {
+            "amount": 100.0,
+            "unit": "g"
+          }
+        },
+        {
+          "id": "sodium-metabisulfite-1kg",
+          "brand": "Generic",
+          "product_name_ru": "Метабисульфит (пиросульфит) натрия",
+          "package": {
+            "amount": 1,
+            "unit": "kg"
+          },
+          "country_name_ru": "Китай",
+          "source": {
+            "group": "Bir.RF store",
+            "url": "https://xn--90aoy.xn--p1ai/shop/1270/desc/metabisulfit-pirosulfit-natrija-1-kg"
+          },
+          "stock_content_per_package": {
+            "amount": 1000.0,
+            "unit": "g"
+          }
+        }
+      ],
+      "typical_use_ru": "Натриевая форма сульфитного антиоксиданта для специальных схем и смежных напитков.",
+      "dosage_reference": {
+        "common_ratio": "зависит от задачи; использовать аккуратно"
+      },
+      "storage_notes_ru": "Хранить герметично и сухо."
+    },
+    {
+      "id": "antioxidant-wort",
+      "type": "consumable",
+      "name_ru": "Антиоксидант для сусла",
+      "name_en": "Wort Antioxidant",
+      "display_mode_ru": "localized_first",
+      "aliases_ru": [
+        "antioxin sbt",
+        "антиоксин сбт"
+      ],
+      "aliases_en": [
+        "Antioxin SBT"
+      ],
+      "item_kind": "process_aid",
+      "category": "antioxidant",
+      "subcategory": "wort_stability",
+      "common_forms": [
+        "powder"
+      ],
+      "usage_stage": [
+        "mash",
+        "lautering",
+        "wort"
+      ],
+      "quantity_defaults": {
+        "quantity_model": "weight",
+        "recipe_unit_default": "g",
+        "stock_unit_default": "g",
+        "stock_mode_default": "by_package_content",
+        "stock_modes_supported": [
+          "package",
+          "bulk_by_weight"
+        ],
+        "allow_fractional_stock": true
+      },
+      "package_variants": [
+        {
+          "id": "antioxin-sbt-10g",
+          "brand": null,
+          "product_name_ru": "Антиокислитель пивного сусла Antioxin SBT",
+          "package": {
+            "amount": 10,
+            "unit": "g"
+          },
+          "source": {
+            "group": "Bir.RF store",
+            "url": "https://xn--90aoy.xn--p1ai/shop/1160/comm/antiokislitel-susla-antioxin-sbt-10-g"
+          },
+          "stock_content_per_package": {
+            "amount": 10.0,
+            "unit": "g"
+          }
+        },
+        {
+          "id": "antioxin-sbt-50g",
+          "brand": null,
+          "product_name_ru": "Антиокислитель пивного сусла Antioxin SBT",
+          "package": {
+            "amount": 50,
+            "unit": "g"
+          },
+          "source": {
+            "group": "Bir.RF store",
+            "url": "https://xn--90aoy.xn--p1ai/shop/1161/desc/antiokislitel-susla-antioxin-sbt-50-g"
+          },
+          "stock_content_per_package": {
+            "amount": 50.0,
+            "unit": "g"
+          }
+        }
+      ],
+      "dosage_reference": {
+        "common_ratio": "по инструкции производителя",
+        "example_reference": "антиоксидант для сусла обычно вносится в затор/горячую сторону"
+      }
+    },
+    {
+      "id": "acid-beerstone-remover",
+      "type": "consumable",
+      "name_ru": "Кислотный очиститель от beerstone и накипи",
+      "name_en": "Acid Beerstone Remover",
+      "display_mode_ru": "localized_first",
+      "aliases_ru": [
+        "acid #5",
+        "кислотная мойка",
+        "средство от beerstone",
+        "удалитель пивного камня"
+      ],
+      "aliases_en": [
+        "Acid #5",
+        "beerstone remover",
+        "acid cleaner"
+      ],
+      "item_kind": "process_aid",
+      "category": "cleaner",
+      "subcategory": "acid_descaler",
+      "common_forms": [
+        "liquid"
+      ],
+      "usage_stage": [
+        "cleaning",
+        "passivation",
+        "cip"
+      ],
+      "quantity_defaults": {
+        "quantity_model": "volume",
+        "recipe_unit_default": "ml",
+        "stock_unit_default": "ml",
+        "stock_mode_default": "by_package_content",
+        "stock_modes_supported": [
+          "package",
+          "bulk_by_volume"
+        ],
+        "allow_fractional_stock": true
+      },
+      "package_variants": [
+        {
+          "id": "fivestar-acid5-1gal",
+          "brand": "Five Star Chemicals",
+          "product_name_en": "Acid #5",
+          "package": {
+            "amount": 1,
+            "unit": "gal"
+          },
+          "country_name_en": "United States",
+          "source": {
+            "group": "Five Star official",
+            "url": "https://fivestarchemicals.com/acid-5"
+          },
+          "stock_content_per_package": {
+            "amount": 3785.412,
+            "unit": "ml"
+          }
+        },
+        {
+          "id": "fivestar-acid5-5gal",
+          "brand": "Five Star Chemicals",
+          "product_name_en": "Acid #5",
+          "package": {
+            "amount": 5,
+            "unit": "gal"
+          },
+          "country_name_en": "United States",
+          "source": {
+            "group": "market listing",
+            "url": "https://fhsteinbart.com/product/five-star-acid-5-nitricphosphoric-acid-blend/"
+          },
+          "stock_content_per_package": {
+            "amount": 18927.059,
+            "unit": "ml"
+          }
+        }
+      ],
+      "typical_use_ru": "Кислотная мойка для удаления минеральных отложений, beerstone и пассивации нержавейки.",
+      "dosage_reference": {
+        "common_ratio": "по инструкции производителя",
+        "example_reference": "типовые кислотные cleaners обычно разводятся перед циркуляцией"
+      },
+      "storage_notes_ru": "Только для химически стойких материалов; использовать СИЗ."
+    },
+    {
+      "id": "alkaline-low-foam-cip-cleaner",
+      "type": "consumable",
+      "name_ru": "Низкопенное щелочное CIP-моющее средство",
+      "name_en": "Low-Foam Alkaline CIP Cleaner",
+      "display_mode_ru": "localized_first",
+      "aliases_ru": [
+        "термит гало",
+        "щелочное низкопенное",
+        "cip щелочь"
+      ],
+      "aliases_en": [
+        "low-foam alkaline cleaner",
+        "CIP alkaline cleaner"
+      ],
+      "item_kind": "cleaner",
+      "category": "cleaner",
+      "subcategory": "alkaline_low_foam_cip",
+      "common_forms": [
+        "liquid"
+      ],
+      "usage_stage": [
+        "cip",
+        "equipment_cleaning"
+      ],
+      "quantity_defaults": {
+        "quantity_model": "volume",
+        "recipe_unit_default": "ml",
+        "stock_unit_default": "ml",
+        "stock_mode_default": "by_package_content",
+        "stock_modes_supported": [
+          "package",
+          "bulk_by_volume"
+        ],
+        "allow_fractional_stock": true
+      },
+      "package_variants": [
+        {
+          "id": "thermit-galo-antifoam-1l",
+          "brand": "Chemitex",
+          "product_name_ru": "Щелочное моющее средство «Термит Гало антипена»",
+          "package": {
+            "amount": 1,
+            "unit": "L"
+          },
+          "country_name_ru": "Россия",
+          "source": {
+            "group": "Bir.RF store"
+          },
+          "stock_content_per_package": {
+            "amount": 1000.0,
+            "unit": "ml"
+          }
+        },
+        {
+          "id": "thermit-galo-antifoam-5l",
+          "brand": "Chemitex",
+          "product_name_ru": "Щелочное моющее средство «Термит Гало антипена»",
+          "package": {
+            "amount": 5,
+            "unit": "L"
+          },
+          "country_name_ru": "Россия",
+          "source": {
+            "group": "Bir.RF store",
+            "url": "https://xn--90aoy.xn--p1ai/shop/1782/desc/shhelochnoe-mojushhee-sredstvo-termit-galo-antipena-5-l"
+          },
+          "stock_content_per_package": {
+            "amount": 5000.0,
+            "unit": "ml"
+          }
+        },
+        {
+          "id": "generic-cip-lowfoam-20l",
+          "brand": "Generic",
+          "product_name_ru": "Низкопенное щелочное CIP-моющее средство",
+          "package": {
+            "amount": 20,
+            "unit": "L"
+          },
+          "source": {
+            "group": "canonical_generic"
+          },
+          "stock_content_per_package": {
+            "amount": 20000.0,
+            "unit": "ml"
+          }
+        }
+      ],
+      "typical_use_ru": "Безразборная мойка оборудования, где критично низкое пенообразование.",
+      "dosage_reference": {
+        "common_ratio": "по инструкции производителя",
+        "example_reference": "обычно используется в циркуляционной мойке (CIP)"
+      }
+    },
+    {
+      "id": "alkaline-brewery-cleaner-powder",
+      "type": "consumable",
+      "name_ru": "Щелочное порошковое моющее средство для пивоварения",
+      "name_en": "Alkaline Brewery Cleaner Powder",
+      "display_mode_ru": "localized_first",
+      "aliases_ru": [
+        "pbw",
+        "powdered brewery wash",
+        "кислородный щелочной очиститель",
+        "щелочное моющее"
+      ],
+      "aliases_en": [
+        "PBW",
+        "PBW type cleaner",
+        "Powdered Brewery Wash"
+      ],
+      "item_kind": "cleaner",
+      "category": "cleaner",
+      "subcategory": "alkaline_powder",
+      "common_forms": [
+        "powder"
+      ],
+      "usage_stage": [
+        "pre-clean",
+        "cip",
+        "equipment_cleaning"
+      ],
+      "quantity_defaults": {
+        "quantity_model": "weight",
+        "recipe_unit_default": "g",
+        "stock_unit_default": "g",
+        "stock_mode_default": "by_package_content",
+        "stock_modes_supported": [
+          "package",
+          "bulk_by_weight"
+        ],
+        "allow_fractional_stock": true
+      },
+      "package_variants": [
+        {
+          "id": "fivestar-pbw-1lb",
+          "brand": "Five Star Chemicals",
+          "product_name_en": "PBW",
+          "package": {
+            "amount": 1,
+            "unit": "lb"
+          },
+          "country_name_en": "United States",
+          "source": {
+            "group": "Five Star official",
+            "url": "https://fivestarchemicals.com/pbw-cleaner-1bs"
+          },
+          "stock_content_per_package": {
+            "amount": 453.592,
+            "unit": "g"
+          }
+        },
+        {
+          "id": "pbw-1kg",
+          "brand": "Kegland",
+          "product_name_ru": "Моющее средство Powdered Brewery Wash (PBW)",
+          "package": {
+            "amount": 1,
+            "unit": "kg"
+          },
+          "country_name_ru": "Австралия",
+          "source": {
+            "group": "Bir.RF store",
+            "url": "https://xn--90aoy.xn--p1ai/shop/2007/comm/mojushhee-sredstvo-powdered-brewery-wash-pbw-1-kg"
+          },
+          "stock_content_per_package": {
+            "amount": 1000.0,
+            "unit": "g"
+          }
+        },
+        {
+          "id": "kegland-pbw-1kg",
+          "brand": "Kegland",
+          "product_name_ru": "Моющее средство Powdered Brewery Wash (PBW)",
+          "product_name_en": "PBW",
+          "package": {
+            "amount": 1,
+            "unit": "kg"
+          },
+          "country_name_ru": "Австралия",
+          "source": {
+            "group": "Bir.RF store",
+            "url": "https://xn--90aoy.xn--p1ai/shop/2007/desc/mojushhee-sredstvo-powdered-brewery-wash-pbw-1-kg"
+          },
+          "stock_content_per_package": {
+            "amount": 1000.0,
+            "unit": "g"
+          }
+        },
+        {
+          "id": "fivestar-pbw-4lb",
+          "brand": "Five Star Chemicals",
+          "product_name_en": "PBW",
+          "package": {
+            "amount": 4,
+            "unit": "lb"
+          },
+          "country_name_en": "United States",
+          "source": {
+            "group": "Five Star official family",
+            "url": "https://fivestarchemicals.com/pbw-cleaner-1bs"
+          },
+          "stock_content_per_package": {
+            "amount": 1814.369,
+            "unit": "g"
+          }
+        },
+        {
+          "id": "fivestar-pbw-8lb",
+          "brand": "Five Star Chemicals",
+          "product_name_en": "PBW",
+          "package": {
+            "amount": 8,
+            "unit": "lb"
+          },
+          "country_name_en": "United States",
+          "source": {
+            "group": "Five Star official family",
+            "url": "https://fivestarchemicals.com/pbw-cleaner-1bs"
+          },
+          "stock_content_per_package": {
+            "amount": 3628.739,
+            "unit": "g"
+          }
+        }
+      ],
+      "typical_use_ru": "Щелочная мойка бродильных емкостей, котлов, линий и тары перед санитацией.",
+      "dosage_reference": {
+        "common_ratio": "по инструкции производителя",
+        "example_reference": "PBW: 7–14 г/л для обычной мойки; ~21 г/л для тяжёлых загрязнений"
+      }
+    },
+    {
+      "id": "caustic-alkali-cleaner",
+      "type": "consumable",
+      "name_ru": "Каустический щелочной очиститель",
+      "name_en": "Caustic Alkali Cleaner",
+      "display_mode_ru": "localized_first",
+      "aliases_ru": [
+        "каустическая сода",
+        "едкий натр",
+        "naoh",
+        "каустик"
+      ],
+      "aliases_en": [
+        "Caustic Soda",
+        "Sodium Hydroxide",
+        "NaOH"
+      ],
+      "item_kind": "process_aid",
+      "category": "cleaner",
+      "subcategory": "caustic",
+      "common_forms": [
+        "flakes",
+        "pellets",
+        "powder"
+      ],
+      "usage_stage": [
+        "cleaning",
+        "cip"
+      ],
+      "quantity_defaults": {
+        "quantity_model": "weight",
+        "recipe_unit_default": "g",
+        "stock_unit_default": "g",
+        "stock_mode_default": "by_package_content",
+        "stock_modes_supported": [
+          "package",
+          "bulk_by_weight"
+        ],
+        "allow_fractional_stock": true
+      },
+      "package_variants": [
+        {
+          "id": "generic-caustic-cleaner-1kg",
+          "brand": "Generic",
+          "product_name_ru": "Каустический щелочной очиститель",
+          "package": {
+            "amount": 1,
+            "unit": "kg"
+          },
+          "source": {
+            "group": "canonical_generic"
+          },
+          "stock_content_per_package": {
+            "amount": 1000.0,
+            "unit": "g"
+          }
+        },
+        {
+          "id": "generic-caustic-cleaner-25kg",
+          "brand": "Generic",
+          "product_name_ru": "Каустический щелочной очиститель",
+          "package": {
+            "amount": 25,
+            "unit": "kg"
+          },
+          "source": {
+            "group": "canonical_generic"
+          },
+          "stock_content_per_package": {
+            "amount": 25000.0,
+            "unit": "g"
+          }
+        }
+      ],
+      "typical_use_ru": "Сильная щёлочная мойка для тяжёлых органических загрязнений и профессионального CIP.",
+      "dosage_reference": {
+        "common_ratio": "только по регламенту и инструкции"
+      },
+      "storage_notes_ru": "Опасный едкий реагент; хранить и использовать с повышенной осторожностью."
+    },
+    {
+      "id": "oxygen-based-cleaner",
+      "type": "consumable",
+      "name_ru": "Кислородный очиститель / Oxi-cleaner",
+      "name_en": "Oxygen-Based Cleaner",
+      "display_mode_ru": "localized_first",
+      "aliases_ru": [
+        "chemipro oxi",
+        "oxi",
+        "кислородный очиститель",
+        "перкарбонат"
+      ],
+      "aliases_en": [
+        "ChemiPro Oxi",
+        "oxygen cleaner",
+        "sodium percarbonate cleaner"
+      ],
+      "item_kind": "process_aid",
+      "category": "cleaner",
+      "subcategory": "oxygen_based",
+      "common_forms": [
+        "powder",
+        "crystals"
+      ],
+      "usage_stage": [
+        "cleaning",
+        "bottle_cleaning"
+      ],
+      "quantity_defaults": {
+        "quantity_model": "weight",
+        "recipe_unit_default": "g",
+        "stock_unit_default": "g",
+        "stock_mode_default": "by_package_content",
+        "stock_modes_supported": [
+          "package",
+          "bulk_by_weight"
+        ],
+        "allow_fractional_stock": true
+      },
+      "package_variants": [
+        {
+          "id": "chemipro-oxi-100g",
+          "brand": "ChemiPro",
+          "product_name_en": "ChemiPro Oxi",
+          "package": {
+            "amount": 100,
+            "unit": "g"
+          },
+          "country_name_en": "Belgium",
+          "source": {
+            "group": "retail listing",
+            "url": "https://brouwland.com/nl/reinigingsmiddelen/14864-chemipro-oxi-100-g.html"
+          },
+          "stock_content_per_package": {
+            "amount": 100.0,
+            "unit": "g"
+          }
+        },
+        {
+          "id": "generic-oxygen-cleaner-500g",
+          "brand": "Generic",
+          "product_name_ru": "Кислородный очиститель",
+          "package": {
+            "amount": 500,
+            "unit": "g"
+          },
+          "source": {
+            "group": "canonical_generic"
+          },
+          "stock_content_per_package": {
+            "amount": 500.0,
+            "unit": "g"
+          }
+        },
+        {
+          "id": "chemipro-oxi-1kg",
+          "brand": "ChemiPro",
+          "product_name_en": "ChemiPro Oxi",
+          "package": {
+            "amount": 1,
+            "unit": "kg"
+          },
+          "country_name_en": "Belgium",
+          "source": {
+            "group": "retail listing",
+            "url": "https://www.stookwinkel.nl/product/chemipro-oxi-multifunctionele-reiniger-1-kg/"
+          },
+          "stock_content_per_package": {
+            "amount": 1000.0,
+            "unit": "g"
+          }
+        }
+      ],
+      "typical_use_ru": "Быстрая мойка лёгких органических загрязнений и бутылок за счёт активного кислорода.",
+      "dosage_reference": {
+        "common_ratio": "по инструкции производителя"
+      },
+      "storage_notes_ru": "Хранить сухо и герметично."
+    },
+    {
+      "id": "silicone-antifoam",
+      "type": "consumable",
+      "name_ru": "Силиконовый пеногаситель",
+      "name_en": "Silicone Antifoam",
+      "display_mode_ru": "localized_first",
+      "aliases_ru": [
+        "фермкап",
+        "fermcap",
+        "пеногаситель",
+        "sofeksil",
+        "софэксил"
+      ],
+      "aliases_en": [
+        "FermCap",
+        "silicone antifoam",
+        "defoamer"
+      ],
+      "item_kind": "process_aid",
+      "category": "defoamer",
+      "subcategory": "silicone",
+      "common_forms": [
+        "liquid"
+      ],
+      "usage_stage": [
+        "boil",
+        "fermentation",
+        "distillation_related"
+      ],
+      "quantity_defaults": {
+        "quantity_model": "volume",
+        "recipe_unit_default": "ml",
+        "stock_unit_default": "ml",
+        "stock_mode_default": "by_package_content",
+        "stock_modes_supported": [
+          "package",
+          "bulk_by_volume"
+        ],
+        "allow_fractional_stock": true
+      },
+      "package_variants": [
+        {
+          "id": "sofeksil-100ml",
+          "brand": "Софэксил",
+          "product_name_ru": "Пеногаситель Софэксил",
+          "package": {
+            "amount": 100,
+            "unit": "ml"
+          },
+          "country_name_ru": "Россия",
+          "source": {
+            "group": "Bir.RF store",
+            "url": "https://xn--90aoy.xn--p1ai/shop/965/desc/penogasitel-sofehksil-100-ml"
+          },
+          "stock_content_per_package": {
+            "amount": 100.0,
+            "unit": "ml"
+          }
+        },
+        {
+          "id": "sofeksil-250ml",
+          "brand": "Софэксил",
+          "product_name_ru": "Пеногаситель Софэксил",
+          "package": {
+            "amount": 250,
+            "unit": "ml"
+          },
+          "country_name_ru": "Россия",
+          "source": {
+            "group": "Bir.RF store family",
+            "url": "https://xn--90aoy.xn--p1ai/shop/addition/prochie-dobavki"
+          },
+          "stock_content_per_package": {
+            "amount": 250.0,
+            "unit": "ml"
+          }
+        },
+        {
+          "id": "fermcap-s-1oz",
+          "brand": "Kerry",
+          "product_name_en": "FermCap S",
+          "package": {
+            "amount": 1,
+            "unit": "oz"
+          },
+          "country_name_en": "United States",
+          "source": {
+            "group": "retail listing",
+            "url": "https://www.northernbrewer.com/products/fermcap-s-1-oz"
+          }
+        }
+      ],
+      "typical_use_ru": "Контроль избыточной пены при кипячении и/или брожении.",
+      "dosage_reference": {
+        "common_ratio": "по инструкции производителя",
+        "example_reference": "FermCap S обычно дозируется каплями на галлон"
+      },
+      "storage_notes_ru": "Жидкий концентрат; некоторые версии требуют хранения в прохладе."
+    },
+    {
+      "id": "amyloglucosidase-enzyme",
+      "type": "consumable",
+      "name_ru": "Амилоглюкозидаза / фермент глубокого осахаривания",
+      "name_en": "Amyloglucosidase Enzyme",
+      "display_mode_ru": "localized_first",
+      "aliases_ru": [
+        "глюкаваморин",
+        "амилоглюкозидаза",
+        "глюкоамилаза"
+      ],
+      "aliases_en": [
+        "amyloglucosidase",
+        "glucoamylase",
+        "Glukavamorin"
+      ],
+      "item_kind": "process_aid",
+      "category": "enzyme",
+      "subcategory": "deep_saccharification",
+      "common_forms": [
+        "powder"
+      ],
+      "usage_stage": [
+        "mash",
+        "fermentation"
+      ],
+      "quantity_defaults": {
+        "quantity_model": "weight",
+        "recipe_unit_default": "g",
+        "stock_unit_default": "g",
+        "stock_mode_default": "by_package_content",
+        "stock_modes_supported": [
+          "package",
+          "bulk_by_weight"
+        ],
+        "allow_fractional_stock": true
+      },
+      "package_variants": [
+        {
+          "id": "glukavamorin-100g",
+          "brand": "СибБиоФарм",
+          "product_name_ru": "Фермент Глюкаваморин",
+          "package": {
+            "amount": 100,
+            "unit": "g"
+          },
+          "country_name_ru": "Россия",
+          "source": {
+            "group": "Bir.RF store",
+            "url": "https://xn--90aoy.xn--p1ai/shop/1060/desc/ferment-gljukavamorin-100g"
+          },
+          "stock_content_per_package": {
+            "amount": 100.0,
+            "unit": "g"
+          }
+        },
+        {
+          "id": "glukavamorin-1kg",
+          "brand": "СибБиоФарм",
+          "product_name_ru": "Фермент Глюкаваморин",
+          "package": {
+            "amount": 1,
+            "unit": "kg"
+          },
+          "country_name_ru": "Россия",
+          "source": {
+            "group": "Bir.RF store family",
+            "url": "https://xn--90aoy.xn--p1ai/shop/1060/desc/ferment-gljukavamorin-100g"
+          },
+          "stock_content_per_package": {
+            "amount": 1000.0,
+            "unit": "g"
+          }
+        }
+      ],
+      "typical_use_ru": "Фермент для максимально глубокого расщепления декстринов; полезен для brut IPA, low-carb и работы с крахмалистым сырьём.",
+      "dosage_reference": {
+        "common_ratio": "по инструкции производителя"
+      },
+      "storage_notes_ru": "Хранить сухо и в прохладе."
+    },
+    {
+      "id": "hop-aroma-enzyme",
+      "type": "consumable",
+      "name_ru": "Фермент для усиления аромата хмеля",
+      "name_en": "Hop Aroma Enzyme",
+      "display_mode_ru": "localized_first",
+      "aliases_ru": [
+        "aromazyme",
+        "аромазим",
+        "фермент для хмеля"
+      ],
+      "aliases_en": [
+        "Aromazyme",
+        "hop aroma enzyme"
+      ],
+      "item_kind": "process_aid",
+      "category": "enzyme",
+      "subcategory": "hop_aroma",
+      "common_forms": [
+        "powder"
+      ],
+      "usage_stage": [
+        "fermentation",
+        "dry_hop_biotransformation"
+      ],
+      "quantity_defaults": {
+        "quantity_model": "weight",
+        "recipe_unit_default": "g",
+        "stock_unit_default": "g",
+        "stock_mode_default": "by_package_content",
+        "stock_modes_supported": [
+          "package",
+          "bulk_by_weight"
+        ],
+        "allow_fractional_stock": true
+      },
+      "package_variants": [
+        {
+          "id": "aromazyme-5g",
+          "brand": "Lallemand / ABV",
+          "product_name_ru": "Фермент Аромазим / Aromazyme",
+          "package": {
+            "amount": 5,
+            "unit": "g"
+          },
+          "country_name_ru": "Австрия",
+          "source": {
+            "group": "Bir.RF store",
+            "url": "https://xn--90aoy.xn--p1ai/shop/1888/desc/ferment-aromazim-aromazyme-5-g"
+          },
+          "stock_content_per_package": {
+            "amount": 5.0,
+            "unit": "g"
+          }
+        }
+      ],
+      "typical_use_ru": "Ферментный препарат для раскрытия/усиления ароматического потенциала хмеля во время брожения.",
+      "dosage_reference": {
+        "common_ratio": "по инструкции производителя"
+      },
+      "storage_notes_ru": "Хранить по инструкции производителя; учитывать чувствительность ферментов к температуре."
+    },
+    {
+      "id": "alpha-amylase-enzyme",
+      "type": "consumable",
+      "name_ru": "Альфа-амилаза / фермент разжижения затора",
+      "name_en": "Alpha-Amylase Enzyme",
+      "display_mode_ru": "localized_first",
+      "aliases_ru": [
+        "амилосубтилин",
+        "альфа-амилаза",
+        "фермент разжижения"
+      ],
+      "aliases_en": [
+        "alpha-amylase",
+        "Amilosubtilin"
+      ],
+      "item_kind": "process_aid",
+      "category": "enzyme",
+      "subcategory": "mash_liquefaction",
+      "common_forms": [
+        "powder"
+      ],
+      "usage_stage": [
+        "mash"
+      ],
+      "quantity_defaults": {
+        "quantity_model": "weight",
+        "recipe_unit_default": "g",
+        "stock_unit_default": "g",
+        "stock_mode_default": "by_package_content",
+        "stock_modes_supported": [
+          "package",
+          "bulk_by_weight"
+        ],
+        "allow_fractional_stock": true
+      },
+      "package_variants": [
+        {
+          "id": "amilosubtilin-100g",
+          "brand": "СибБиоФарм",
+          "product_name_ru": "Фермент Амилосубтилин",
+          "package": {
+            "amount": 100,
+            "unit": "g"
+          },
+          "country_name_ru": "Россия",
+          "source": {
+            "group": "Bir.RF store family",
+            "url": "https://xn--90aoy.xn--p1ai/shop/addition/prochie-dobavki"
+          },
+          "stock_content_per_package": {
+            "amount": 100.0,
+            "unit": "g"
+          }
+        },
+        {
+          "id": "amilosubtilin-1kg",
+          "brand": "СибБиоФарм",
+          "product_name_ru": "Фермент Амилосубтилин",
+          "package": {
+            "amount": 1,
+            "unit": "kg"
+          },
+          "country_name_ru": "Россия",
+          "source": {
+            "group": "Bir.RF store family",
+            "url": "https://xn--90aoy.xn--p1ai/shop/addition/prochie-dobavki"
+          },
+          "stock_content_per_package": {
+            "amount": 1000.0,
+            "unit": "g"
+          }
+        }
+      ],
+      "typical_use_ru": "Фермент для разжижения крахмалсодержащих заторов и повышения доступности крахмала.",
+      "dosage_reference": {
+        "common_ratio": "по инструкции производителя"
+      },
+      "storage_notes_ru": "Хранить сухо и в прохладе."
+    },
+    {
+      "id": "cold-side-fining-agar",
+      "type": "consumable",
+      "name_ru": "Агар-агар для осветления",
+      "name_en": "Agar Fining",
+      "display_mode_ru": "localized_first",
+      "aliases_ru": [
+        "агар",
+        "агар-агар"
+      ],
+      "aliases_en": [
+        "agar",
+        "agar agar"
+      ],
+      "item_kind": "process_aid",
+      "category": "fining",
+      "subcategory": "cold_side_fining",
+      "common_forms": [
+        "powder"
+      ],
+      "usage_stage": [
+        "post_fermentation"
+      ],
+      "quantity_defaults": {
+        "quantity_model": "weight",
+        "recipe_unit_default": "g",
+        "stock_unit_default": "g",
+        "stock_mode_default": "by_package_content",
+        "stock_modes_supported": [
+          "package",
+          "bulk_by_weight"
+        ],
+        "allow_fractional_stock": true
+      },
+      "package_variants": [
+        {
+          "id": "agar-agar-10g",
+          "brand": "Generic",
+          "product_name_ru": "Агар-Агар",
+          "package": {
+            "amount": 10,
+            "unit": "g"
+          },
+          "country_name_ru": "Россия",
+          "source": {
+            "group": "Bir.RF store",
+            "url": "https://xn--90aoy.xn--p1ai/shop/674/desc/agar-agar-10-g"
+          },
+          "stock_content_per_package": {
+            "amount": 10.0,
+            "unit": "g"
+          }
+        },
+        {
+          "id": "generic-agar-50g",
+          "brand": "Generic",
+          "product_name_ru": "Агар-Агар",
+          "package": {
+            "amount": 50,
+            "unit": "g"
+          },
+          "source": {
+            "group": "canonical_generic"
+          },
+          "stock_content_per_package": {
+            "amount": 50.0,
+            "unit": "g"
+          }
+        }
+      ],
+      "typical_use_ru": "Растительный вариант осветлителя для напитков, в том числе пива.",
+      "dosage_reference": {
+        "common_ratio": "по инструкции производителя и тестам"
+      },
+      "storage_notes_ru": "Хранить сухо."
+    },
+    {
+      "id": "cold-side-fining-gelatin",
+      "type": "consumable",
+      "name_ru": "Желатин пищевой для осветления",
+      "name_en": "Gelatin Fining",
+      "display_mode_ru": "localized_first",
+      "aliases_ru": [
+        "желатин",
+        "желатин для осветления",
+        "осветление желатином"
+      ],
+      "aliases_en": [
+        "gelatin fining",
+        "gelatin"
+      ],
+      "item_kind": "process_aid",
+      "category": "fining",
+      "subcategory": "cold_side_fining",
+      "common_forms": [
+        "powder",
+        "granules"
+      ],
+      "usage_stage": [
+        "post_fermentation",
+        "cold_crash"
+      ],
+      "quantity_defaults": {
+        "quantity_model": "weight",
+        "recipe_unit_default": "g",
+        "stock_unit_default": "g",
+        "stock_mode_default": "by_package_content",
+        "stock_modes_supported": [
+          "package",
+          "bulk_by_weight"
+        ],
+        "allow_fractional_stock": true
+      },
+      "package_variants": [
+        {
+          "id": "generic-gelatin-10g",
+          "brand": "Generic",
+          "product_name_ru": "Желатин пищевой",
+          "package": {
+            "amount": 10,
+            "unit": "g"
+          },
+          "source": {
+            "group": "canonical_generic"
+          },
+          "stock_content_per_package": {
+            "amount": 10.0,
+            "unit": "g"
+          }
+        },
+        {
+          "id": "gelatin-50g",
+          "brand": null,
+          "product_name_ru": "Желатин пищевой",
+          "package": {
+            "amount": 50,
+            "unit": "g"
+          },
+          "source": {
+            "group": "Bir.RF store",
+            "url": "https://xn--90aoy.xn--p1ai/shop/673/desc/zhelatin-50-g"
+          },
+          "stock_content_per_package": {
+            "amount": 50.0,
+            "unit": "g"
+          }
+        },
+        {
+          "id": "generic-gelatin-100g",
+          "brand": "Generic",
+          "product_name_ru": "Желатин пищевой",
+          "package": {
+            "amount": 100,
+            "unit": "g"
+          },
+          "source": {
+            "group": "canonical_generic"
+          },
+          "stock_content_per_package": {
+            "amount": 100.0,
+            "unit": "g"
+          }
+        }
+      ],
+      "typical_use_ru": "Холодная оклейка после брожения для ускоренного осветления пива.",
+      "dosage_reference": {
+        "common_ratio": "по инструкции и тестам на малом объёме",
+        "example_reference": "обычно вносится после брожения в охлаждённое пиво"
+      }
+    },
+    {
+      "id": "liquid-fining-post-fermentation",
+      "type": "consumable",
+      "name_ru": "Жидкий осветлитель / стабилизатор после брожения",
+      "name_en": "Liquid Post-Fermentation Fining",
+      "display_mode_ru": "localized_first",
+      "aliases_ru": [
+        "biofine clear",
+        "винофлок",
+        "жидкий осветлитель",
+        "жидкий стабилизатор",
+        "ковелос",
+        "ковелос стаб нс",
+        "стаб нс"
+      ],
+      "aliases_en": [
+        "Biofine Clear",
+        "liquid fining",
+        "silica sol fining"
+      ],
+      "item_kind": "process_aid",
+      "category": "fining",
+      "subcategory": "cold_side_fining",
+      "common_forms": [
+        "liquid"
+      ],
+      "usage_stage": [
+        "post_fermentation",
+        "cold_crash"
+      ],
+      "quantity_defaults": {
+        "quantity_model": "volume",
+        "recipe_unit_default": "ml",
+        "stock_unit_default": "ml",
+        "stock_mode_default": "by_package_content",
+        "stock_modes_supported": [
+          "package",
+          "bulk_by_volume"
+        ],
+        "allow_fractional_stock": true
+      },
+      "package_variants": [
+        {
+          "id": "vinoflok-10ml",
+          "brand": "Винофлок",
+          "product_name_ru": "Осветлитель Винофлок",
+          "package": {
+            "amount": 10,
+            "unit": "ml"
+          },
+          "country_name_ru": "Россия",
+          "source": {
+            "group": "Bir.RF store",
+            "url": "https://xn--90aoy.xn--p1ai/shop/1887/desc/osvetlitel-vinoflok-10-ml"
+          },
+          "stock_content_per_package": {
+            "amount": 10.0,
+            "unit": "ml"
+          }
+        },
+        {
+          "id": "kovelos-stab-ns-100ml",
+          "brand": "Ковелос Пивовар",
+          "product_name_ru": "Ковелос Стаб НС",
+          "package": {
+            "amount": 100,
+            "unit": "ml"
+          },
+          "country_name_ru": "Россия",
+          "source": {
+            "group": "Bir.RF ingredient/article",
+            "url": "https://xn--90aoy.xn--p1ai/ingredients/differents/other/kovelos_stab_ns/23-1-0-1976"
+          },
+          "stock_content_per_package": {
+            "amount": 100.0,
+            "unit": "ml"
+          }
+        },
+        {
+          "id": "biofine-clear-1kg",
+          "brand": "Biofine",
+          "product_name_en": "Biofine Clear",
+          "package": {
+            "amount": 1,
+            "unit": "kg"
+          },
+          "country_name_en": "Canada",
+          "source": {
+            "group": "retail listing",
+            "url": "https://rahrbsg.ca/biofine-clear-1-kg/"
+          }
+        }
+      ],
+      "typical_use_ru": "Осветление и/или коллоидная стабилизация после брожения, чаще в охлаждённом пиве перед розливом или фильтрацией.",
+      "dosage_reference": {
+        "common_ratio": "по инструкции производителя и пробным тестам",
+        "example_reference": "Винофлок: порядка 0.1–0.3 мл/л; Ковелос Стаб НС — обычно десятки мл/гл"
+      }
+    },
+    {
+      "id": "cold-side-fining-isinglass",
+      "type": "consumable",
+      "name_ru": "Рыбный желатин / isinglass",
+      "name_en": "Isinglass",
+      "display_mode_ru": "localized_first",
+      "aliases_ru": [
+        "изингласс",
+        "isinglass",
+        "рыбный желатин"
+      ],
+      "aliases_en": [
+        "Isinglass",
+        "fish gelatin"
+      ],
+      "item_kind": "process_aid",
+      "category": "fining",
+      "subcategory": "cold_side_fining",
+      "common_forms": [
+        "powder",
+        "liquid",
+        "paste"
+      ],
+      "usage_stage": [
+        "post_fermentation",
+        "conditioning"
+      ],
+      "quantity_defaults": {
+        "quantity_model": "weight",
+        "recipe_unit_default": "g",
+        "stock_unit_default": "g",
+        "stock_mode_default": "by_package_content",
+        "stock_modes_supported": [
+          "package",
+          "bulk_by_weight"
+        ],
+        "allow_fractional_stock": true
+      },
+      "package_variants": [
+        {
+          "id": "generic-isinglass-25g",
+          "brand": "Generic",
+          "product_name_ru": "Изингласс / рыбный желатин",
+          "package": {
+            "amount": 25,
+            "unit": "g"
+          },
+          "source": {
+            "group": "canonical_generic"
+          },
+          "stock_content_per_package": {
+            "amount": 25.0,
+            "unit": "g"
+          }
+        },
+        {
+          "id": "generic-isinglass-100g",
+          "brand": "Generic",
+          "product_name_ru": "Изингласс / рыбный желатин",
+          "package": {
+            "amount": 100,
+            "unit": "g"
+          },
+          "source": {
+            "group": "canonical_generic"
+          },
+          "stock_content_per_package": {
+            "amount": 100.0,
+            "unit": "g"
+          }
+        }
+      ],
+      "typical_use_ru": "Классический осветлитель, особенно характерный для английских элей и conditioned beer.",
+      "dosage_reference": {
+        "common_ratio": "строго по инструкции конкретного продукта"
+      },
+      "storage_notes_ru": "Условия хранения зависят от формы выпуска; жидкие версии имеют короткий срок жизни после вскрытия."
+    },
+    {
+      "id": "kettle-fining-whirlfloc-tablets",
+      "type": "consumable",
+      "name_ru": "Whirlfloc / таблетированный экстракт ирландского мха",
+      "name_en": "Whirlfloc Tablets",
+      "display_mode_ru": "source_first",
+      "aliases_ru": [
+        "брейкбрайт",
+        "whirlfloc",
+        "таблетки для осветления сусла"
+      ],
+      "aliases_en": [
+        "Whirlfloc",
+        "Whirlfloc Tablets"
+      ],
+      "item_kind": "process_aid",
+      "category": "fining",
+      "subcategory": "kettle_fining",
+      "common_forms": [
+        "tablet"
+      ],
+      "usage_stage": [
+        "boil"
+      ],
+      "quantity_defaults": {
+        "quantity_model": "pieces",
+        "recipe_unit_default": "pcs",
+        "stock_unit_default": "pcs",
+        "stock_mode_default": "package_count",
+        "stock_modes_supported": [
+          "package",
+          "pieces"
+        ],
+        "allow_fractional_stock": false
+      },
+      "package_variants": [
+        {
+          "id": "whirlfloc-tablets-6",
+          "brand": "Morgan Thorpe SA",
+          "product_name_ru": "Осветлитель БрейкБрайт / Whirlfloc в таблетках",
+          "package": {
+            "amount": 6,
+            "unit": "pcs"
+          },
+          "source": {
+            "group": "Bir.RF store"
+          },
+          "stock_content_per_package": {
+            "amount": 6.0,
+            "unit": "pcs"
+          }
+        },
+        {
+          "id": "whirlfloc-tablets-20",
+          "brand": "Morgan Thorpe SA",
+          "product_name_ru": "Осветлитель БрейкБрайт / Whirlfloc в таблетках",
+          "package": {
+            "amount": 20,
+            "unit": "pcs"
+          },
+          "country_name_ru": "Бельгия",
+          "source": {
+            "group": "Bir.RF store",
+            "url": "https://xn--90aoy.xn--p1ai/shop/941/desc/osvetlitel-brejkbrajt-whirlfloc-v-tabletkakh-20-sht-50-g"
+          },
+          "stock_content_per_package": {
+            "amount": 20.0,
+            "unit": "pcs"
+          }
+        },
+        {
+          "id": "whirlfloc-tablets-100",
+          "brand": "Morgan Thorpe SA",
+          "product_name_ru": "Осветлитель БрейкБрайт / Whirlfloc в таблетках",
+          "package": {
+            "amount": 100,
+            "unit": "pcs"
+          },
+          "source": {
+            "group": "Bir.RF store"
+          },
+          "stock_content_per_package": {
+            "amount": 100.0,
+            "unit": "pcs"
+          }
+        }
+      ],
+      "typical_use_ru": "Таблетированный осветлитель на основе экстракта ирландского мха.",
+      "dosage_reference": {
+        "common_ratio": "по инструкции производителя",
+        "example_reference": "обычно 0.5–1 таблетка на ~20–25 л сусла, ближе к концу кипячения"
+      }
+    },
+    {
+      "id": "kettle-fining-whirlfloc-granules",
+      "type": "consumable",
+      "name_ru": "Whirlfloc измельчённый / гранулированный",
+      "name_en": "Whirlfloc Granules",
+      "display_mode_ru": "source_first",
+      "aliases_ru": [
+        "брейкбрайт измельченный",
+        "whirlfloc 100 г"
+      ],
+      "aliases_en": [
+        "Whirlfloc Granules"
+      ],
+      "item_kind": "process_aid",
+      "category": "fining",
+      "subcategory": "kettle_fining",
+      "common_forms": [
+        "granules",
+        "powder"
+      ],
+      "usage_stage": [
+        "boil"
+      ],
+      "quantity_defaults": {
+        "quantity_model": "weight",
+        "recipe_unit_default": "g",
+        "stock_unit_default": "g",
+        "stock_mode_default": "by_package_content",
+        "stock_modes_supported": [
+          "package",
+          "bulk_by_weight"
+        ],
+        "allow_fractional_stock": true
+      },
+      "package_variants": [
+        {
+          "id": "whirlfloc-granules-100g",
+          "brand": "Morgan Thorpe SA",
+          "product_name_ru": "Осветлитель БрейкБрайт / Whirlfloc измельченный",
+          "package": {
+            "amount": 100,
+            "unit": "g"
+          },
+          "country_name_ru": "Бельгия",
+          "source": {
+            "group": "Bir.RF store",
+            "url": "https://xn--90aoy.xn--p1ai/shop/1744/comm/osvetlitel-brejkbrajt-whirlfloc-izmelchennyj-100-g"
+          },
+          "stock_content_per_package": {
+            "amount": 100.0,
+            "unit": "g"
+          }
+        }
+      ]
+    },
+    {
+      "id": "kettle-fining-irish-moss",
+      "type": "consumable",
+      "name_ru": "Ирландский мох",
+      "name_en": "Irish Moss",
+      "display_mode_ru": "localized_first",
+      "aliases_ru": [
+        "irish moss"
+      ],
+      "aliases_en": [
+        "Irish Moss"
+      ],
+      "item_kind": "process_aid",
+      "category": "fining",
+      "subcategory": "kettle_fining",
+      "common_forms": [
+        "flakes",
+        "chopped"
+      ],
+      "usage_stage": [
+        "boil"
+      ],
+      "quantity_defaults": {
+        "quantity_model": "weight",
+        "recipe_unit_default": "g",
+        "stock_unit_default": "g",
+        "stock_mode_default": "by_package_content",
+        "stock_modes_supported": [
+          "package",
+          "bulk_by_weight"
+        ],
+        "allow_fractional_stock": true
+      },
+      "package_variants": [
+        {
+          "id": "irish-moss-5g",
+          "brand": "Generic",
+          "product_name_ru": "Ирландский мох натуральный",
+          "package": {
+            "amount": 5,
+            "unit": "g"
+          },
+          "country_name_ru": "Бельгия",
+          "source": {
+            "group": "Bir.RF store family",
+            "url": "https://xn--90aoy.xn--p1ai/shop/434/desc/irlandskij-mokh-30-g"
+          },
+          "stock_content_per_package": {
+            "amount": 5.0,
+            "unit": "g"
+          }
+        },
+        {
+          "id": "irish-moss-30g",
+          "brand": null,
+          "product_name_ru": "Ирландский мох натуральный",
+          "package": {
+            "amount": 30,
+            "unit": "g"
+          },
+          "country_name_ru": "Бельгия",
+          "source": {
+            "group": "Bir.RF store",
+            "url": "https://xn--90aoy.xn--p1ai/shop/434/desc/irlandskij-mokh-naturalnyj-30-g"
+          },
+          "stock_content_per_package": {
+            "amount": 30.0,
+            "unit": "g"
+          }
+        },
+        {
+          "id": "irish-moss-100g",
+          "brand": null,
+          "product_name_ru": "Ирландский мох натуральный",
+          "package": {
+            "amount": 100,
+            "unit": "g"
+          },
+          "country_name_ru": "Бельгия",
+          "source": {
+            "group": "Bir.RF store",
+            "url": "https://xn--90aoy.xn--p1ai/shop/432/desc/irlandskij-mokh-naturalnyj-100-g"
+          },
+          "stock_content_per_package": {
+            "amount": 100.0,
+            "unit": "g"
+          }
+        }
+      ],
+      "typical_use_ru": "Осветление сусла в конце кипячения, улучшение коагуляции белков.",
+      "dosage_reference": {
+        "common_ratio": "по инструкции производителя",
+        "example_reference": "часто 3–5 г на 25 л; вносится за 10–15 минут до конца кипячения"
+      }
+    },
+    {
+      "id": "pvpp-stabilizer",
+      "type": "consumable",
+      "name_ru": "PVPP / стабилизатор полифенолов",
+      "name_en": "PVPP Stabilizer",
+      "display_mode_ru": "source_first",
+      "aliases_ru": [
+        "pvpp",
+        "polyclar",
+        "поликлар"
+      ],
+      "aliases_en": [
+        "PVPP",
+        "Polyclar"
+      ],
+      "item_kind": "process_aid",
+      "category": "fining",
+      "subcategory": "stabilizer",
+      "common_forms": [
+        "powder"
+      ],
+      "usage_stage": [
+        "conditioning",
+        "pre_packaging",
+        "filtration"
+      ],
+      "quantity_defaults": {
+        "quantity_model": "weight",
+        "recipe_unit_default": "g",
+        "stock_unit_default": "g",
+        "stock_mode_default": "by_package_content",
+        "stock_modes_supported": [
+          "package",
+          "bulk_by_weight"
+        ],
+        "allow_fractional_stock": true
+      },
+      "package_variants": [
+        {
+          "id": "generic-pvpp-100g",
+          "brand": "Generic",
+          "product_name_ru": "PVPP / Поликлар",
+          "package": {
+            "amount": 100,
+            "unit": "g"
+          },
+          "source": {
+            "group": "canonical_generic"
+          },
+          "stock_content_per_package": {
+            "amount": 100.0,
+            "unit": "g"
+          }
+        },
+        {
+          "id": "generic-pvpp-1kg",
+          "brand": "Generic",
+          "product_name_ru": "PVPP / Поликлар",
+          "package": {
+            "amount": 1,
+            "unit": "kg"
+          },
+          "source": {
+            "group": "canonical_generic"
+          },
+          "stock_content_per_package": {
+            "amount": 1000.0,
+            "unit": "g"
+          }
+        }
+      ],
+      "typical_use_ru": "Стабилизация пива по полифенольной мутности и shelf-life перед фильтрацией/розливом.",
+      "dosage_reference": {
+        "common_ratio": "по инструкции производителя и пробным тестам"
+      },
+      "storage_notes_ru": "Хранить сухо."
+    },
+    {
+      "id": "co2-threaded-cartridge",
+      "type": "consumable",
+      "name_ru": "CO₂ баллончик резьбовой",
+      "name_en": "Threaded CO2 Cartridge",
+      "display_mode_ru": "localized_first",
+      "aliases_ru": [
+        "баллончик co2 16 г"
+      ],
+      "aliases_en": [
+        "16 g CO2 cartridge"
+      ],
+      "item_kind": "gas",
+      "category": "gas",
+      "subcategory": "cartridge",
+      "common_forms": [
+        "gas_cartridge"
+      ],
+      "usage_stage": [
+        "carbonation",
+        "dispense"
+      ],
+      "quantity_defaults": {
+        "quantity_model": "pieces",
+        "recipe_unit_default": "pcs",
+        "stock_unit_default": "pcs",
+        "stock_mode_default": "package_count",
+        "stock_modes_supported": [
+          "package",
+          "pieces"
+        ],
+        "allow_fractional_stock": false,
+        "secondary_measurements_supported": [
+          {
+            "unit": "g_co2",
+            "amount_per_piece": 16
+          }
+        ]
+      },
+      "package_variants": [
+        {
+          "id": "co2-cartridge-16g-single",
+          "brand": "Kegland",
+          "product_name_ru": "Баллончики CO2 с резьбой",
+          "package": {
+            "amount": 1,
+            "unit": "pcs"
+          },
+          "country_name_ru": "Китай",
+          "source": {
+            "group": "Bir.RF store",
+            "url": "https://xn--90aoy.xn--p1ai/shop/741/desc/ballonchiki-co2-s-rezboj-16-g"
+          },
+          "stock_content_per_package": {
+            "amount": 1.0,
+            "unit": "pcs"
+          },
+          "content_per_piece": {
+            "amount": 16,
+            "unit": "g"
+          },
+          "content_per_package": {
+            "amount": 16,
+            "unit": "g_co2"
+          }
+        },
+        {
+          "id": "co2-cartridge-16g-pack10",
+          "brand": "Kegland",
+          "product_name_ru": "Баллончики CO2 с резьбой",
+          "package": {
+            "amount": 10,
+            "unit": "pcs"
+          },
+          "country_name_ru": "Китай",
+          "source": {
+            "group": "Bir.RF store",
+            "url": "https://xn--90aoy.xn--p1ai/shop/741/desc/ballonchiki-co2-s-rezboj-16-g"
+          },
+          "stock_content_per_package": {
+            "amount": 10.0,
+            "unit": "pcs"
+          },
+          "content_per_piece": {
+            "amount": 16,
+            "unit": "g_each"
+          },
+          "content_per_package": {
+            "amount": 160,
+            "unit": "g_co2"
+          }
+        }
+      ],
+      "dosage_reference": {
+        "common_ratio": "не дозируется в рецепте; используется как сменная газовая ёмкость",
+        "example_reference": "16-граммовые картриджи подходят для портативного розлива и малых объёмов"
+      }
+    },
+    {
+      "id": "co2-cylinder-filled",
+      "type": "consumable",
+      "name_ru": "CO₂ баллон заправленный",
+      "name_en": "Filled CO2 Cylinder",
+      "display_mode_ru": "localized_first",
+      "aliases_ru": [
+        "углекислотный баллон",
+        "баллон co2"
+      ],
+      "aliases_en": [
+        "CO2 cylinder"
+      ],
+      "item_kind": "gas",
+      "category": "gas",
+      "subcategory": "cylinder",
+      "common_forms": [
+        "cylinder"
+      ],
+      "usage_stage": [
+        "carbonation",
+        "dispense"
+      ],
+      "quantity_defaults": {
+        "quantity_model": "package_only",
+        "recipe_unit_default": "pcs",
+        "stock_unit_default": "pcs",
+        "stock_mode_default": "package_count",
+        "stock_modes_supported": [
+          "package"
+        ],
+        "allow_fractional_stock": false
+      },
+      "package_variants": [
+        {
+          "id": "co2-cylinder-2l",
+          "brand": null,
+          "product_name_ru": "Баллон углекислотный (заправленный)",
+          "package": {
+            "amount": 2,
+            "unit": "L"
+          },
+          "country_name_ru": "Россия",
+          "source": {
+            "group": "Bir.RF store"
+          }
+        },
+        {
+          "id": "co2-cylinder-5l",
+          "brand": null,
+          "product_name_ru": "Баллон углекислотный (заправленный)",
+          "package": {
+            "amount": 5,
+            "unit": "L"
+          },
+          "country_name_ru": "Россия",
+          "source": {
+            "group": "Bir.RF store",
+            "url": "https://xn--90aoy.xn--p1ai/shop/779/comm/ballon-uglekislotnyj-zapravlennyj-5-l"
+          }
+        },
+        {
+          "id": "co2-cylinder-10l",
+          "brand": null,
+          "product_name_ru": "Баллон углекислотный (заправленный)",
+          "package": {
+            "amount": 10,
+            "unit": "L"
+          },
+          "country_name_ru": "Россия",
+          "source": {
+            "group": "Bir.RF store",
+            "url": "https://xn--90aoy.xn--p1ai/shop/636/desc/ballon-uglekislotnyj-zapravlennyj-10-l"
+          }
+        }
+      ],
+      "typical_use_ru": "Подача и поддержание давления при карбонизации и розливе.",
+      "dosage_reference": {
+        "common_ratio": "не дозируется в рецепте; выбирается по объёму баллона и расходу на карбонизацию/розлив",
+        "example_reference": "2 л, 5 л и 10 л — типовые домашние/полупрофильные размеры"
+      }
+    },
+    {
+      "id": "yeast-nutrient-complex",
+      "type": "consumable",
+      "name_ru": "Комплексная подкормка дрожжей",
+      "name_en": "Complex Yeast Nutrient",
+      "display_mode_ru": "localized_first",
+      "aliases_ru": [
+        "дрожжевая подкормка",
+        "питание для дрожжей",
+        "springferm",
+        "ист лайф экстра"
+      ],
+      "aliases_en": [
+        "yeast nutrient",
+        "complex yeast nutrient",
+        "SpringFerm"
+      ],
+      "item_kind": "process_aid",
+      "category": "nutrient",
+      "subcategory": "complex",
+      "common_forms": [
+        "powder"
+      ],
+      "usage_stage": [
+        "wort_preparation",
+        "fermentation_start"
+      ],
+      "quantity_defaults": {
+        "quantity_model": "weight",
+        "recipe_unit_default": "g",
+        "stock_unit_default": "g",
+        "stock_mode_default": "by_package_content",
+        "stock_modes_supported": [
+          "package",
+          "bulk_by_weight"
+        ],
+        "allow_fractional_stock": true
+      },
+      "package_variants": [
+        {
+          "id": "springferm-br2-5g",
+          "brand": "Fermentis",
+          "product_name_ru": "Дрожжевая подкормка SpringFerm BR-2",
+          "package": {
+            "amount": 5,
+            "unit": "g"
+          },
+          "country_name_ru": "Франция",
+          "source": {
+            "group": "Bir.RF store",
+            "url": "https://xn--90aoy.xn--p1ai/shop/1614/desc/drozhzhevaja-podkormka-springferm-br-2-fermentis-5-g"
+          },
+          "stock_content_per_package": {
+            "amount": 5.0,
+            "unit": "g"
+          }
+        },
+        {
+          "id": "springferm-br2-50g",
+          "brand": "Fermentis",
+          "product_name_ru": "Дрожжевая подкормка SpringFerm BR-2",
+          "package": {
+            "amount": 50,
+            "unit": "g"
+          },
+          "country_name_ru": "Франция",
+          "source": {
+            "group": "Bir.RF store",
+            "url": "https://xn--90aoy.xn--p1ai/shop/1615/desc/drozhzhevaja-podkormka-springferm-br-2-fermentis-50-g"
+          },
+          "stock_content_per_package": {
+            "amount": 50.0,
+            "unit": "g"
+          }
+        },
+        {
+          "id": "yeast-life-extra-50g",
+          "brand": "Prime",
+          "product_name_ru": "Дрожжевая подкормка Ист Лайф Экстра",
+          "package": {
+            "amount": 50,
+            "unit": "g"
+          },
+          "country_name_ru": "Россия",
+          "source": {
+            "group": "Bir.RF store family",
+            "url": "https://xn--90aoy.xn--p1ai/shop/all0/brands/lallemand"
+          },
+          "stock_content_per_package": {
+            "amount": 50.0,
+            "unit": "g"
+          }
+        }
+      ],
+      "typical_use_ru": "Комплексное питание для здорового старта брожения, особенно при дефицитном по питанию сусле.",
+      "dosage_reference": {
+        "common_ratio": "по инструкции производителя"
+      },
+      "storage_notes_ru": "Хранить сухо и герметично."
+    },
+    {
+      "id": "yeast-rehydration-nutrient",
+      "type": "consumable",
+      "name_ru": "Подкормка для регидратации дрожжей",
+      "name_en": "Yeast Rehydration Nutrient",
+      "display_mode_ru": "localized_first",
+      "aliases_ru": [
+        "go-ferm",
+        "питание для регидратации",
+        "подкормка для регидратации"
+      ],
+      "aliases_en": [
+        "Go-Ferm",
+        "rehydration nutrient"
+      ],
+      "item_kind": "process_aid",
+      "category": "nutrient",
+      "subcategory": "rehydration",
+      "common_forms": [
+        "powder"
+      ],
+      "usage_stage": [
+        "yeast_rehydration"
+      ],
+      "quantity_defaults": {
+        "quantity_model": "weight",
+        "recipe_unit_default": "g",
+        "stock_unit_default": "g",
+        "stock_mode_default": "by_package_content",
+        "stock_modes_supported": [
+          "package",
+          "bulk_by_weight"
+        ],
+        "allow_fractional_stock": true
+      },
+      "package_variants": [
+        {
+          "id": "generic-go-ferm-50g",
+          "brand": "Generic",
+          "product_name_en": "Rehydration Nutrient",
+          "package": {
+            "amount": 50,
+            "unit": "g"
+          },
+          "source": {
+            "group": "canonical_generic"
+          },
+          "stock_content_per_package": {
+            "amount": 50.0,
+            "unit": "g"
+          }
+        }
+      ],
+      "typical_use_ru": "Питание, добавляемое на этапе регидратации сухих дрожжей.",
+      "dosage_reference": {
+        "common_ratio": "по инструкции производителя"
+      },
+      "storage_notes_ru": "Хранить сухо."
+    },
+    {
+      "id": "yeast-hulls-inactivated",
+      "type": "consumable",
+      "name_ru": "Инактивированные дрожжи / дрожжевые оболочки",
+      "name_en": "Yeast Hulls / Inactivated Yeast",
+      "display_mode_ru": "localized_first",
+      "aliases_ru": [
+        "дрожжевые оболочки",
+        "yeast hulls",
+        "инактивированные дрожжи"
+      ],
+      "aliases_en": [
+        "yeast hulls",
+        "inactivated yeast"
+      ],
+      "item_kind": "process_aid",
+      "category": "nutrient",
+      "subcategory": "supportive",
+      "common_forms": [
+        "powder",
+        "flakes"
+      ],
+      "usage_stage": [
+        "fermentation_start",
+        "stuck_fermentation_support"
+      ],
+      "quantity_defaults": {
+        "quantity_model": "weight",
+        "recipe_unit_default": "g",
+        "stock_unit_default": "g",
+        "stock_mode_default": "by_package_content",
+        "stock_modes_supported": [
+          "package",
+          "bulk_by_weight"
+        ],
+        "allow_fractional_stock": true
+      },
+      "package_variants": [
+        {
+          "id": "generic-yeast-hulls-100g",
+          "brand": "Generic",
+          "product_name_ru": "Дрожжевые оболочки / инактивированные дрожжи",
+          "package": {
+            "amount": 100,
+            "unit": "g"
+          },
+          "source": {
+            "group": "canonical_generic"
+          },
+          "stock_content_per_package": {
+            "amount": 100.0,
+            "unit": "g"
+          }
+        },
+        {
+          "id": "generic-yeast-hulls-500g",
+          "brand": "Generic",
+          "product_name_ru": "Дрожжевые оболочки / инактивированные дрожжи",
+          "package": {
+            "amount": 500,
+            "unit": "g"
+          },
+          "source": {
+            "group": "canonical_generic"
+          },
+          "stock_content_per_package": {
+            "amount": 500.0,
+            "unit": "g"
+          }
+        }
+      ],
+      "typical_use_ru": "Поддержка дрожжей и адсорбция токсичных метаболитов в стрессовых ферментациях.",
+      "dosage_reference": {
+        "common_ratio": "по инструкции производителя"
+      },
+      "storage_notes_ru": "Хранить сухо."
+    },
+    {
+      "id": "potassium-sorbate-preservative",
+      "type": "consumable",
+      "name_ru": "Сорбат калия",
+      "name_en": "Potassium Sorbate",
+      "display_mode_ru": "localized_first",
+      "aliases_ru": [
+        "сорбат калия",
+        "e202"
+      ],
+      "aliases_en": [
+        "Potassium Sorbate",
+        "E202"
+      ],
+      "item_kind": "process_aid",
+      "category": "preservative",
+      "subcategory": "microbial_control",
+      "common_forms": [
+        "granules",
+        "powder"
+      ],
+      "usage_stage": [
+        "packaging"
+      ],
+      "quantity_defaults": {
+        "quantity_model": "weight",
+        "recipe_unit_default": "g",
+        "stock_unit_default": "g",
+        "stock_mode_default": "by_package_content",
+        "stock_modes_supported": [
+          "package",
+          "bulk_by_weight"
+        ],
+        "allow_fractional_stock": true
+      },
+      "package_variants": [
+        {
+          "id": "potassium-sorbate-100g",
+          "brand": "Generic",
+          "product_name_ru": "Сорбат калия (гранулы)",
+          "package": {
+            "amount": 100,
+            "unit": "g"
+          },
+          "country_name_ru": "Китай",
+          "source": {
+            "group": "Bir.RF store",
+            "url": "https://xn--90aoy.xn--p1ai/shop/675/desc/sorbat-kalija-granuly-100-gr"
+          },
+          "stock_content_per_package": {
+            "amount": 100.0,
+            "unit": "g"
+          }
+        },
+        {
+          "id": "potassium-sorbate-1kg",
+          "brand": "Generic",
+          "product_name_ru": "Сорбат калия (гранулы)",
+          "package": {
+            "amount": 1,
+            "unit": "kg"
+          },
+          "country_name_ru": "Китай",
+          "source": {
+            "group": "Bir.RF store",
+            "url": "https://xn--90aoy.xn--p1ai/shop/1271/desc/sorbat-kalija-granuly-1-kg"
+          },
+          "stock_content_per_package": {
+            "amount": 1000.0,
+            "unit": "g"
+          }
+        }
+      ],
+      "typical_use_ru": "Консервант для специальных задач и смежных напитков; в классическом пиве используется ограниченно и осознанно.",
+      "dosage_reference": {
+        "common_ratio": "только по технологической необходимости и совместимости со стилем/продуктом"
+      },
+      "storage_notes_ru": "Хранить сухо и герметично."
+    },
+    {
+      "id": "acid-no-rinse-sanitizer",
+      "type": "consumable",
+      "name_ru": "Кислотный санитайзер без смывания",
+      "name_en": "Acid No-Rinse Sanitizer",
+      "display_mode_ru": "localized_first",
+      "aliases_ru": [
+        "acid no-rinse sanitizer",
+        "acid sanitizer",
+        "bio san",
+        "brew san",
+        "star san",
+        "кислотный санитайзер",
+        "санитайзер без смывания",
+        "старсан"
+      ],
+      "aliases_en": [
+        "acid sanitizer",
+        "no-rinse acid sanitizer",
+        "Star San type sanitizer"
+      ],
+      "item_kind": "process_aid",
+      "category": "sanitizer",
+      "subcategory": "acid_no_rinse",
+      "common_forms": [
+        "liquid"
+      ],
+      "usage_stage": [
+        "sanitation"
+      ],
+      "quantity_defaults": {
+        "quantity_model": "volume",
+        "recipe_unit_default": "ml",
+        "stock_unit_default": "ml",
+        "stock_mode_default": "by_package_content",
+        "stock_modes_supported": [
+          "package",
+          "bulk_by_volume"
+        ],
+        "allow_fractional_stock": true
+      },
+      "package_variants": [
+        {
+          "id": "beergineer-brew-san-100ml",
+          "brand": "Beergineer",
+          "product_name_ru": "Дезинфектор Beergineer – Brew San (аналог Star San)",
+          "product_name_en": "Beergineer Brew San",
+          "package": {
+            "amount": 100,
+            "unit": "ml"
+          },
+          "country_name_ru": "Россия",
+          "source": {
+            "group": "Bir.RF store",
+            "url": "https://xn--90aoy.xn--p1ai/shop/1707/desc/dezinfektor-beergineer-brew-san-analog-star-san-100-ml"
+          },
+          "stock_content_per_package": {
+            "amount": 100.0,
+            "unit": "ml"
+          }
+        },
+        {
+          "id": "brew-clean-bio-san-100ml",
+          "brand": "Неохим",
+          "product_name_ru": "Brew Clean Bio San (аналог Star San)",
+          "package": {
+            "amount": 100,
+            "unit": "ml"
+          },
+          "country_name_ru": "Россия",
+          "source": {
+            "group": "Bir.RF store",
+            "url": "https://xn--90aoy.xn--p1ai/shop/1234/desc/dezinficirujushhee-sredstvo-brew-clean-bio-san-analog-star-san-100-ml"
+          },
+          "stock_content_per_package": {
+            "amount": 100.0,
+            "unit": "ml"
+          }
+        },
+        {
+          "id": "beergineer-brew-san-250ml",
+          "brand": "Beergineer",
+          "product_name_ru": "Дезинфектор Beergineer – Brew San (аналог Star San)",
+          "package": {
+            "amount": 250,
+            "unit": "ml"
+          },
+          "country_name_ru": "Россия",
+          "source": {
+            "group": "Bir.RF store",
+            "url": "https://xn--90aoy.xn--p1ai/shop/1708/desc/dezinfektor-beergineer-brew-san-analog-star-san-250-ml"
+          },
+          "stock_content_per_package": {
+            "amount": 250.0,
+            "unit": "ml"
+          }
+        },
+        {
+          "id": "brew-clean-bio-san-250ml",
+          "brand": "Неохим",
+          "product_name_ru": "Brew Clean Bio San (аналог Star San)",
+          "package": {
+            "amount": 250,
+            "unit": "ml"
+          },
+          "country_name_ru": "Россия",
+          "source": {
+            "group": "Bir.RF store",
+            "url": "https://xn--90aoy.xn--p1ai/shop/1235/desc/dezinficirujushhee-sredstvo-brew-clean-bio-san-analog-star-san-250-ml"
+          },
+          "stock_content_per_package": {
+            "amount": 250.0,
+            "unit": "ml"
+          }
+        },
+        {
+          "id": "beergineer-brew-san-1l",
+          "brand": "Beergineer",
+          "product_name_ru": "Дезинфектор Beergineer – Brew San (аналог Star San)",
+          "package": {
+            "amount": 1,
+            "unit": "L"
+          },
+          "country_name_ru": "Россия",
+          "source": {
+            "group": "Bir.RF store",
+            "url": "https://xn--90aoy.xn--p1ai/shop/1709/desc/dezinfektor-beergineer-brew-san-analog-star-san-1-l"
+          },
+          "stock_content_per_package": {
+            "amount": 1000.0,
+            "unit": "ml"
+          }
+        },
+        {
+          "id": "fivestar-star-san-craft-1gal",
+          "brand": "Five Star Chemicals",
+          "product_name_en": "Star San",
+          "package": {
+            "amount": 1,
+            "unit": "gal"
+          },
+          "country_name_en": "United States",
+          "source": {
+            "group": "Five Star official",
+            "url": "https://fivestarchemicals.com/star-san"
+          },
+          "stock_content_per_package": {
+            "amount": 3785.412,
+            "unit": "ml"
+          }
+        },
+        {
+          "id": "fivestar-star-san-craft-5gal",
+          "brand": "Five Star Chemicals",
+          "product_name_en": "Star San",
+          "package": {
+            "amount": 5,
+            "unit": "gal"
+          },
+          "country_name_en": "United States",
+          "source": {
+            "group": "Five Star official",
+            "url": "https://fivestarchemicals.com/star-san"
+          },
+          "stock_content_per_package": {
+            "amount": 18927.059,
+            "unit": "ml"
+          }
+        },
+        {
+          "id": "fivestar-star-san-craft-15gal",
+          "brand": "Five Star Chemicals",
+          "product_name_en": "Star San",
+          "package": {
+            "amount": 15,
+            "unit": "gal"
+          },
+          "country_name_en": "United States",
+          "source": {
+            "group": "Five Star official",
+            "url": "https://fivestarchemicals.com/star-san"
+          },
+          "stock_content_per_package": {
+            "amount": 56781.177,
+            "unit": "ml"
+          }
+        },
+        {
+          "id": "fivestar-star-san-craft-55gal",
+          "brand": "Five Star Chemicals",
+          "product_name_en": "Star San",
+          "package": {
+            "amount": 55,
+            "unit": "gal"
+          },
+          "country_name_en": "United States",
+          "source": {
+            "group": "Five Star official",
+            "url": "https://fivestarchemicals.com/star-san"
+          },
+          "stock_content_per_package": {
+            "amount": 208197.648,
+            "unit": "ml"
+          }
+        },
+        {
+          "id": "fivestar-star-san-homebrew-4oz",
+          "brand": "Five Star Chemicals",
+          "product_name_en": "Star San",
+          "package": {
+            "amount": 4,
+            "unit": "oz"
+          },
+          "country_name_en": "United States",
+          "source": {
+            "group": "Five Star official"
+          }
+        },
+        {
+          "id": "fivestar-star-san-homebrew-8oz",
+          "brand": "Five Star Chemicals",
+          "product_name_en": "Star San",
+          "package": {
+            "amount": 8,
+            "unit": "oz"
+          },
+          "country_name_en": "United States",
+          "source": {
+            "group": "Five Star official"
+          }
+        },
+        {
+          "id": "fivestar-star-san-homebrew-16oz",
+          "brand": "Five Star Chemicals",
+          "product_name_en": "Star San",
+          "package": {
+            "amount": 16,
+            "unit": "oz"
+          },
+          "country_name_en": "United States",
+          "source": {
+            "group": "Five Star official",
+            "url": "https://fivestarchemicals.com/star-san-sanitizer-16-oz"
+          }
+        },
+        {
+          "id": "fivestar-star-san-homebrew-32oz",
+          "brand": "Five Star Chemicals",
+          "product_name_en": "Star San",
+          "package": {
+            "amount": 32,
+            "unit": "oz"
+          },
+          "country_name_en": "United States",
+          "source": {
+            "group": "Five Star official family",
+            "url": "https://fivestarchemicals.com/star-san-sanitizer-16-oz"
+          }
+        }
+      ],
+      "typical_use_ru": "Финальная дезинфекция оборудования и тары без последующего смывания.",
+      "dosage_reference": {
+        "common_ratio": "рабочий раствор по инструкции производителя",
+        "example_reference": "Star San: 1 oz на 5 gal воды; рабочий контакт обычно короткий"
+      },
+      "storage_notes_ru": "Хранить плотно закрытым в оригинальной таре; не использовать на мягких металлах без проверки инструкции."
+    },
+    {
+      "id": "iodophor-sanitizer",
+      "type": "consumable",
+      "name_ru": "Йодофорный санитайзер без смывания",
+      "name_en": "Iodophor No-Rinse Sanitizer",
+      "display_mode_ru": "localized_first",
+      "aliases_ru": [
+        "йодофор",
+        "iodophor",
+        "io-star",
+        "btf iodophor"
+      ],
+      "aliases_en": [
+        "Iodophor",
+        "BTF Iodophor",
+        "Io-Star"
+      ],
+      "item_kind": "process_aid",
+      "category": "sanitizer",
+      "subcategory": "iodophor_no_rinse",
+      "common_forms": [
+        "liquid"
+      ],
+      "usage_stage": [
+        "sanitation"
+      ],
+      "quantity_defaults": {
+        "quantity_model": "volume",
+        "recipe_unit_default": "ml",
+        "stock_unit_default": "ml",
+        "stock_mode_default": "by_package_content",
+        "stock_modes_supported": [
+          "package",
+          "bulk_by_volume"
+        ],
+        "allow_fractional_stock": true
+      },
+      "package_variants": [
+        {
+          "id": "btf-iodophor-4oz",
+          "brand": "BTF",
+          "product_name_en": "BTF Iodophor Sanitizer",
+          "package": {
+            "amount": 4,
+            "unit": "oz"
+          },
+          "country_name_en": "United States",
+          "source": {
+            "group": "market listing",
+            "url": "https://www.brewinternational.com/sanitizer-btf-iodophor-4-oz/"
+          }
+        },
+        {
+          "id": "btf-iodophor-16oz",
+          "brand": "BTF",
+          "product_name_en": "BTF Iodophor Sanitizer",
+          "package": {
+            "amount": 16,
+            "unit": "oz"
+          },
+          "country_name_en": "United States",
+          "source": {
+            "group": "market listing",
+            "url": "https://www.amazon.com/Homebrewers-Outpost-Does-Not-Apply/dp/B008YHMGK8"
+          }
+        },
+        {
+          "id": "btf-iodophor-32oz",
+          "brand": "BTF",
+          "product_name_en": "BTF Iodophor Sanitizer",
+          "package": {
+            "amount": 32,
+            "unit": "oz"
+          },
+          "country_name_en": "United States",
+          "source": {
+            "group": "market listing",
+            "url": "https://www.kegoutlet.com/sni32-btf-iodophor-sanitizer-32-oz-bottle.html"
+          }
+        }
+      ],
+      "typical_use_ru": "Низкопенный йодофорный санитайзер для тары и оборудования.",
+      "dosage_reference": {
+        "common_ratio": "по инструкции производителя",
+        "example_reference": "часто указывается как no-rinse раствор с коротким временем контакта"
+      },
+      "storage_notes_ru": "Хранить плотно закрытым; возможна окраска некоторых материалов."
+    },
+    {
+      "id": "peracetic-acid-sanitizer",
+      "type": "consumable",
+      "name_ru": "Надуксусный санитайзер / дезинфектант",
+      "name_en": "Peracetic Acid Sanitizer",
+      "display_mode_ru": "localized_first",
+      "aliases_ru": [
+        "надуксусная кислота",
+        "переуксусная кислота",
+        "перуксусная кислота",
+        "PAA"
+      ],
+      "aliases_en": [
+        "Peracetic Acid",
+        "PAA",
+        "Peroxyacetic Acid"
+      ],
+      "item_kind": "process_aid",
+      "category": "sanitizer",
+      "subcategory": "paa",
+      "common_forms": [
+        "liquid"
+      ],
+      "usage_stage": [
+        "sanitation",
+        "cip"
+      ],
+      "quantity_defaults": {
+        "quantity_model": "volume",
+        "recipe_unit_default": "ml",
+        "stock_unit_default": "ml",
+        "stock_mode_default": "by_package_content",
+        "stock_modes_supported": [
+          "package",
+          "bulk_by_volume"
+        ],
+        "allow_fractional_stock": true
+      },
+      "package_variants": [
+        {
+          "id": "generic-paa-1l",
+          "brand": "Generic",
+          "product_name_ru": "Надуксусный санитайзер",
+          "package": {
+            "amount": 1,
+            "unit": "L"
+          },
+          "source": {
+            "group": "canonical_generic"
+          },
+          "stock_content_per_package": {
+            "amount": 1000.0,
+            "unit": "ml"
+          }
+        },
+        {
+          "id": "generic-paa-5l",
+          "brand": "Generic",
+          "product_name_ru": "Надуксусный санитайзер",
+          "package": {
+            "amount": 5,
+            "unit": "L"
+          },
+          "source": {
+            "group": "canonical_generic"
+          },
+          "stock_content_per_package": {
+            "amount": 5000.0,
+            "unit": "ml"
+          }
+        }
+      ],
+      "typical_use_ru": "Профессионально-ориентированный жидкий санитайзер для CIP и холодной стороны.",
+      "dosage_reference": {
+        "common_ratio": "только по инструкции производителя и нормам безопасности"
+      },
+      "storage_notes_ru": "Хранить как агрессивный химический реагент; работать в СИЗ."
+    }
+  ]
+}

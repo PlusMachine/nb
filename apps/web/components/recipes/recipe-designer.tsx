@@ -369,7 +369,7 @@ const createEmptyIngredient = (category: IngredientCategory, hopUseType: RecipeH
     category,
     subtype: null,
     familyId: null,
-    type: resolveLegacyIngredientType({ category }) ?? "misc",
+    type: resolveLegacyIngredientType({ category }) ?? "consumable",
     defaultDisplayUnit: unitProfile.defaultUnit,
     allowedUnits: unitProfile.allowedUnits,
     measurementDimension: unitProfile.measurementDimension,
@@ -622,11 +622,11 @@ const buildSummaryDetails = (ingredient: DesignerIngredient) => {
     details.push(`${ingredient.stepMeta.fermentationTempC} °C`);
   }
 
-  if ((ingredient.category === "water_prep" || ingredient.category === "misc") && ingredient.stage !== "other") {
+  if ((ingredient.category === "water_treatment" || ingredient.category === "consumable") && ingredient.stage !== "other") {
     details.push(stageLabels[ingredient.stage]);
   }
 
-  if (ingredient.category === "misc" && ingredient.stepMeta.timeMinutes) {
+  if (ingredient.category === "consumable" && ingredient.stepMeta.timeMinutes) {
     details.push(`${ingredient.stepMeta.timeMinutes} мин`);
   }
 
@@ -643,32 +643,32 @@ const getSectionTitle = (category: IngredientCategory) => {
   if (category === "fermentable") return "Сбраживаемое";
   if (category === "hop") return "Хмель";
   if (category === "yeast") return "Дрожжи";
-  if (category === "water_prep") return "Водоподготовка";
-  return "Прочее";
+  if (category === "water_treatment") return "Водоподготовка";
+  return "Расходники";
 };
 
 const categoryIcons: Record<IngredientCategory, React.ComponentType<{ className?: string }>> = {
   fermentable: Wheat,
   hop: Hop,
   yeast: FlaskConical,
-  water_prep: Droplets,
-  misc: Package
+  water_treatment: Droplets,
+  consumable: Package
 };
 
 const categoryAccentBorder: Record<IngredientCategory, string> = {
   fermentable: "border-l-amber-400",
   hop: "border-l-emerald-500",
   yeast: "border-l-violet-400",
-  water_prep: "border-l-sky-400",
-  misc: "border-l-zinc-300"
+  water_treatment: "border-l-sky-400",
+  consumable: "border-l-zinc-300"
 };
 
 const categoryIconBg: Record<IngredientCategory, string> = {
   fermentable: "bg-amber-50 text-amber-600",
   hop: "bg-emerald-50 text-emerald-600",
   yeast: "bg-violet-50 text-violet-600",
-  water_prep: "bg-sky-50 text-sky-600",
-  misc: "bg-zinc-100 text-zinc-500"
+  water_treatment: "bg-sky-50 text-sky-600",
+  consumable: "bg-zinc-100 text-zinc-500"
 };
 
 const getCategoryRows = (ingredients: DesignerIngredient[], category: IngredientCategory) => ingredients.filter((ingredient) => ingredient.category === category);
@@ -1701,8 +1701,8 @@ function IngredientEditor({
     fermentable: "Найти солод, сахар или другой ферментируемый ингредиент",
     hop: "Найти сорт или форму хмеля",
     yeast: "Найти дрожжи",
-    water_prep: "Найти соль, кислоту или добавку для воды",
-    misc: "Найти прочую добавку"
+    water_treatment: "Найти соль, кислоту или добавку для воды",
+    consumable: "Найти расходник или процессную добавку"
   }[draft.category];
 
   const emptyCta = (
@@ -1975,7 +1975,7 @@ function IngredientEditor({
         </div>
       ) : null}
 
-      {draft.category === "water_prep" || draft.category === "misc" ? (
+      {draft.category === "water_treatment" || draft.category === "consumable" ? (
         <div className="grid gap-3 sm:grid-cols-2">
           <label className="space-y-1 text-xs font-medium text-zinc-700">
             Стадия
@@ -2319,8 +2319,8 @@ export function RecipeDesigner({ mode, initialRecipe, initialTitle, onSaveStatus
   const fermentables = getCategoryRows(ingredients, "fermentable");
   const hops = getCategoryRows(ingredients, "hop");
   const yeasts = getCategoryRows(ingredients, "yeast");
-  const waterPrep = getCategoryRows(ingredients, "water_prep");
-  const misc = getCategoryRows(ingredients, "misc");
+  const waterTreatment = getCategoryRows(ingredients, "water_treatment");
+  const consumables = getCategoryRows(ingredients, "consumable");
 
   const fermentableTotalKg = getFermentableWeightTotalKg(fermentables);
   const hopTotalG = getHopWeightTotalG(hops);
@@ -2395,16 +2395,16 @@ export function RecipeDesigner({ mode, initialRecipe, initialTitle, onSaveStatus
         empty: "Добавьте дрожжи для публикации рецепта."
       },
       {
-        category: "water_prep",
+        category: "water_treatment",
         title: "Водоподготовка",
-        items: waterPrep,
+        items: waterTreatment,
         empty: "Добавки для воды можно оставить пустыми."
       },
       {
-        category: "misc",
-        title: "Прочее",
-        items: misc,
-        empty: "Фининг, специи и другие добавки."
+        category: "consumable",
+        title: "Расходники",
+        items: consumables,
+        empty: "Фининг, нутриенты и другие process aids."
       }
     ];
 

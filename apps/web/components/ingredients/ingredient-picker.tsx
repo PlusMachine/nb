@@ -104,6 +104,81 @@ export const buildIngredientCacheKey = ({
   limit: number;
 }) => `${normalizeSearchText(q)}::${type ?? ""}::${category ?? ""}::${limit}`;
 
+const shouldPromoteBrandToPrimaryRow = (item: IngredientSuggestionItem) => (
+  item.type === "hop" || item.subtype === "malt"
+);
+
+const isBrandAlreadyRepresentedInPrimaryName = (primaryName: string, brand?: string | null) => {
+  const normalizedPrimaryName = normalizeSearchText(primaryName);
+  const normalizedBrand = normalizeSearchText(brand ?? "");
+
+  if (!normalizedPrimaryName || !normalizedBrand) {
+    return false;
+  }
+
+  return normalizedPrimaryName.includes(normalizedBrand) || normalizedBrand.includes(normalizedPrimaryName);
+};
+
+const stripBrandFromSubtitle = (subtitle: string | undefined, brand: string | null) => {
+  if (!subtitle || !brand) {
+    return subtitle ?? null;
+  }
+
+  const normalizedBrand = normalizeSearchText(brand);
+  const parts = subtitle
+    .split("•")
+    .map((part) => part.trim())
+    .filter(Boolean)
+    .filter((part) => normalizeSearchText(part) !== normalizedBrand);
+
+  return parts.join(" • ") || null;
+};
+
+const buildDedupedSubtitle = (parts: Array<string | null | undefined>) => {
+  const seen = new Set<string>();
+
+  return parts
+    .flatMap((part) => (part ?? "")
+      .split("•")
+      .map((item) => item.trim())
+      .filter(Boolean))
+    .filter((part) => {
+      const normalized = normalizeSearchText(part);
+      if (!normalized || seen.has(normalized)) {
+        return false;
+      }
+      seen.add(normalized);
+      return true;
+    })
+    .join(" • ") || null;
+};
+
+export const resolveIngredientPickerRowContent = (item: IngredientSuggestionItem) => {
+  const { primaryName, secondaryName } = resolveIngredientDisplayNames(item);
+  const brandLabel = item.brand?.trim()
+    || item.producer?.trim()
+    || item.brandName?.trim()
+    || item.manufacturer?.trim()
+    || null;
+  const inlineBrand = shouldPromoteBrandToPrimaryRow(item) && !isBrandAlreadyRepresentedInPrimaryName(primaryName, brandLabel)
+    ? brandLabel
+    : null;
+  const normalizedSubtitle = stripBrandFromSubtitle(item.subtitle, inlineBrand ? brandLabel : null);
+
+  const subtitle = buildDedupedSubtitle([
+    inlineBrand ? null : brandLabel,
+    item.countryName ?? null,
+    normalizedSubtitle
+  ]);
+
+  return {
+    primaryName,
+    secondaryName,
+    inlineBrand,
+    subtitle
+  };
+};
+
 const defaultSearchIngredients = async ({
   q,
   type,
@@ -373,7 +448,7 @@ export const IngredientPicker = ({
               ) : null}
               {groupItems.map((item) => {
                 const index = items.findIndex((candidate) => candidate.id === item.id);
-                const { primaryName, secondaryName } = resolveIngredientDisplayNames(item);
+                const { primaryName, secondaryName, inlineBrand, subtitle } = resolveIngredientPickerRowContent(item);
 
                 return (
                   <button
@@ -386,9 +461,17 @@ export const IngredientPicker = ({
                     type="button"
                   >
                     <div className="min-w-0">
-                      <div className="font-medium">{primaryName}</div>
+                      <div className="flex min-w-0 items-baseline gap-2">
+                        <span className="truncate font-medium text-zinc-950">{primaryName}</span>
+                        {inlineBrand ? (
+                          <span className="inline-flex min-w-0 items-baseline gap-2 text-sm font-semibold text-zinc-700">
+                            <span aria-hidden="true" className="text-zinc-400">•</span>
+                            <span className="truncate">{inlineBrand}</span>
+                          </span>
+                        ) : null}
+                      </div>
                       {secondaryName ? <div className="text-xs text-zinc-500">{secondaryName}</div> : null}
-                      {item.subtitle ? <div className="text-xs text-zinc-500">{item.subtitle}</div> : null}
+                      {subtitle ? <div className="text-xs text-zinc-500">{subtitle}</div> : null}
                     </div>
                   </button>
                 );

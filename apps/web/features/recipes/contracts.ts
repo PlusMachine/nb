@@ -96,7 +96,7 @@ export const recipeProcessMetaSchema = z.object({
 export type RecipeProcessMeta = z.infer<typeof recipeProcessMetaSchema>;
 
 export const recipeSourceLinkageSchema = z.object({
-  ingredientCatalogItemId: z.string().uuid().optional().nullable(),
+  ingredientCatalogItemId: z.string().trim().min(1).optional().nullable(),
   userCustomIngredientId: z.string().uuid().optional().nullable()
 }).refine((value) => Boolean(value.ingredientCatalogItemId) !== Boolean(value.userCustomIngredientId), {
   message: "Exactly one source is required",
@@ -104,7 +104,7 @@ export const recipeSourceLinkageSchema = z.object({
 });
 
 export const recipeIngredientPayloadSchema = z.object({
-  ingredientCatalogItemId: z.string().uuid().optional().nullable(),
+  ingredientCatalogItemId: z.string().trim().min(1).optional().nullable(),
   userCustomIngredientId: z.string().uuid().optional().nullable(),
   type: z.enum(ingredientTypes).optional(),
   category: z.enum(ingredientCategories).optional(),

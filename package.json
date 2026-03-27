@@ -16,6 +16,7 @@
     "db:generate": "npm run db:generate -w @nb/db",
     "db:migrate": "npm run db:migrate -w @nb/db",
     "db:seed": "npm run db:seed -w @nb/db",
+    "catalog:seed": "npm run catalog:seed -w @nb/db",
     "db:reset": "npm run db:reset -w @nb/db",
     "seed:dev-user": "npm run seed:dev-user -w @nb/db --",
     "set-role": "npm run set-role -w @nb/db --",

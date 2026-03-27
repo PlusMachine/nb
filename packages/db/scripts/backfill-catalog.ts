@@ -1,9 +1,9 @@
 import { pool } from "../src";
-import { syncCatalogSnapshot } from "./sync-catalog";
+import { seedCatalogFromSources } from "./catalog-seed";
 
 const run = async () => {
-  const result = await syncCatalogSnapshot();
-  console.log(`Catalog sync complete: ${result.totalItems} items, ${result.totalFamilies} families, ${result.archivedMissingCount} archived stale source rows, ${result.archivedLegacyCount} archived legacy rows.`);
+  const result = await seedCatalogFromSources();
+  console.log(`Catalog sync complete: ${result.processed} processed, ${result.inserted} inserted, ${result.updated} updated.`);
 };
 
 void run()

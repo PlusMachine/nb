@@ -1,82 +1,53 @@
-import {
-  extractIngredientTechnicalData,
-  type IngredientTechnicalData
-} from "./technical-fields";
+import type { IngredientDisplayMode, IngredientTechnicalData } from "./contracts";
 import { normalizeSearchText } from "./normalization";
-import type {
-  IngredientCategory,
-  IngredientDisplayUnit,
-  IngredientSubtype,
-  LegacyIngredientType as IngredientType
-} from "./taxonomy";
+import type { IngredientCategory, IngredientSubtype, LegacyIngredientType as IngredientType } from "./taxonomy";
 
 type IngredientPresentationSource = {
   category?: IngredientCategory | null;
   subtype?: IngredientSubtype | null;
   type?: IngredientType | null;
-  displayName: string;
+  primaryLabelRu?: string | null;
+  secondaryLabelRu?: string | null;
+  displayName?: string | null;
   displayNameRu?: string | null;
   displayNameEn?: string | null;
-  familyCanonicalName?: string | null;
+  nameRu?: string | null;
+  nameEn?: string | null;
+  displayModeRu?: IngredientDisplayMode | null;
+  displayNameOverrideRu?: string | null;
+  secondaryNameOverrideRu?: string | null;
+  hideSecondaryNameRu?: boolean | null;
+  countryCode?: string | null;
   familyDisplayName?: string | null;
-  familyDisplayNameEn?: string | null;
-  familyDisplayNameRu?: string | null;
-  manufacturer?: string | null;
-  brandName?: string | null;
-  harvestYear?: number | null;
-  defaultDisplayUnit?: IngredientDisplayUnit | null;
+  familyCanonicalName?: string | null;
   technicalData?: IngredientTechnicalData | Record<string, unknown> | null;
-  properties?: Record<string, unknown> | null;
+  unitPreferred?: string | null;
 };
 
 export const ingredientCategoryLabels: Record<IngredientCategory, string> = {
   fermentable: "Ферментируемые",
   hop: "Хмель",
   yeast: "Дрожжи",
-  water_prep: "Подготовка воды",
-  misc: "Прочее"
+  consumable: "Расходники",
+  water_treatment: "Водоподготовка"
 };
 
 const subtypeLabels: Record<string, string> = {
-  base_malt: "base malt",
-  specialty_malt: "specialty malt",
-  roasted_malt: "roasted malt",
-  adjunct_grain: "adjunct grain",
-  extract_dry: "dry extract",
-  extract_liquid: "liquid extract",
-  sugar: "sugar",
-  syrup_honey: "syrup/honey",
-  fruit_fermentable: "fruit fermentable",
-  standard: "standard",
-  pellet: "pellet",
-  whole_cone: "whole cone",
-  cryo: "cryo",
-  lupulin: "lupulin",
-  extract: "extract",
-  ale: "ale yeast",
-  lager: "lager yeast",
-  wheat: "wheat yeast",
-  belgian: "belgian yeast",
-  kveik: "kveik",
-  wild_bacteria: "wild/bacteria",
+  malt: "солод",
+  fermentable: "ферментируемое",
+  hop: "хмель",
+  yeast: "дрожжи",
+  process_aid: "process aid",
+  nutrient: "nutrient",
+  sanitizer: "sanitizer",
+  cleaner: "cleaner",
+  antioxidant: "antioxidant",
+  fining: "fining",
+  water_source: "source water",
   salt: "salt",
   acid: "acid",
   base: "base",
-  nutrient_other: "nutrient",
-  water_source: "water source",
   dechlorination: "dechlorination",
-  fining: "fining",
-  antioxidant: "antioxidant",
-  nutrient: "nutrient",
-  spice_herb: "spice/herb",
-  wood: "wood",
-  flavoring: "flavoring",
-  enzyme: "enzyme",
-  cleaner: "cleaner",
-  sanitizer: "sanitizer",
-  gas: "gas",
-  preservative: "preservative",
-  process_aid: "process aid",
   other: "other"
 };
 
@@ -101,33 +72,117 @@ const areNameVariantsEqual = (left?: string, right?: string) => {
   return normalizeSearchText(left) === normalizeSearchText(right);
 };
 
+export const resolveEffectiveDisplayMode = (
+  source: Pick<IngredientPresentationSource, "type" | "countryCode" | "nameRu" | "displayModeRu">
+): Exclude<IngredientDisplayMode, "auto"> => {
+  if (source.displayModeRu === "localized_first" || source.displayModeRu === "source_first") {
+    return source.displayModeRu;
+  }
+
+  if (source.type === "hop") {
+    return source.countryCode && ["RU", "BY", "UA", "KZ"].includes(source.countryCode) && normalizeOptionalName(source.nameRu)
+      ? "localized_first"
+      : "source_first";
+  }
+
+  if (source.type === "yeast") {
+    return "source_first";
+  }
+
+  return "localized_first";
+};
+
 export const resolveIngredientPrimaryDisplayName = (source: Pick<
   IngredientPresentationSource,
-  "displayName" | "displayNameEn" | "displayNameRu"
->) => (
-  normalizeOptionalName(source.displayNameEn)
-  ?? normalizeOptionalName(source.displayName)
-  ?? normalizeOptionalName(source.displayNameRu)
-  ?? ""
-);
+  | "type"
+  | "countryCode"
+  | "primaryLabelRu"
+  | "displayName"
+  | "displayNameRu"
+  | "displayNameEn"
+  | "nameRu"
+  | "nameEn"
+  | "displayModeRu"
+  | "displayNameOverrideRu"
+>) => {
+  const directPrimary = normalizeOptionalName(source.primaryLabelRu)
+    ?? normalizeOptionalName(source.displayName);
+  if (directPrimary) {
+    return directPrimary;
+  }
+
+  const override = normalizeOptionalName(source.displayNameOverrideRu);
+  if (override) {
+    return override;
+  }
+
+  const nameRu = normalizeOptionalName(source.nameRu) ?? normalizeOptionalName(source.displayNameRu);
+  const nameEn = normalizeOptionalName(source.nameEn) ?? normalizeOptionalName(source.displayNameEn);
+  const mode = resolveEffectiveDisplayMode(source);
+
+  if (mode === "localized_first") {
+    return nameRu ?? nameEn ?? "";
+  }
+
+  return nameEn ?? nameRu ?? "";
+};
 
 export const resolveIngredientSecondaryDisplayName = (source: Pick<
   IngredientPresentationSource,
-  "displayName" | "displayNameEn" | "displayNameRu"
+  | "type"
+  | "countryCode"
+  | "secondaryLabelRu"
+  | "displayNameRu"
+  | "displayNameEn"
+  | "nameRu"
+  | "nameEn"
+  | "displayModeRu"
+  | "displayNameOverrideRu"
+  | "secondaryNameOverrideRu"
+  | "hideSecondaryNameRu"
 >) => {
-  const primaryName = resolveIngredientPrimaryDisplayName(source);
-  const russianName = normalizeOptionalName(source.displayNameRu);
-
-  if (!russianName || areNameVariantsEqual(primaryName, russianName)) {
+  if (source.hideSecondaryNameRu) {
     return undefined;
   }
 
-  return russianName;
+  const directSecondary = normalizeOptionalName(source.secondaryLabelRu);
+  if (directSecondary) {
+    return directSecondary;
+  }
+
+  const override = normalizeOptionalName(source.secondaryNameOverrideRu);
+  if (override) {
+    return override;
+  }
+
+  const primaryName = resolveIngredientPrimaryDisplayName(source);
+  const nameRu = normalizeOptionalName(source.nameRu) ?? normalizeOptionalName(source.displayNameRu);
+  const nameEn = normalizeOptionalName(source.nameEn) ?? normalizeOptionalName(source.displayNameEn);
+  const mode = resolveEffectiveDisplayMode(source);
+  const secondary = mode === "localized_first" ? nameEn : nameRu;
+
+  if (!secondary || areNameVariantsEqual(primaryName, secondary)) {
+    return undefined;
+  }
+
+  return secondary;
 };
 
 export const resolveIngredientDisplayNames = (source: Pick<
   IngredientPresentationSource,
-  "displayName" | "displayNameEn" | "displayNameRu"
+  | "type"
+  | "countryCode"
+  | "primaryLabelRu"
+  | "secondaryLabelRu"
+  | "displayName"
+  | "displayNameRu"
+  | "displayNameEn"
+  | "nameRu"
+  | "nameEn"
+  | "displayModeRu"
+  | "displayNameOverrideRu"
+  | "secondaryNameOverrideRu"
+  | "hideSecondaryNameRu"
 >) => ({
   primaryName: resolveIngredientPrimaryDisplayName(source),
   secondaryName: resolveIngredientSecondaryDisplayName(source)
@@ -141,109 +196,120 @@ export const formatIngredientSubtypeLabel = (
     return ingredientCategoryLabels[category];
   }
 
-  if (category === "yeast" && subtypeLabels[subtype]) {
-    return subtypeLabels[subtype];
-  }
-
   return subtypeLabels[subtype] ?? subtype.replaceAll("_", " ");
 };
 
-export const resolveIngredientFamilyDisplayName = (source: IngredientPresentationSource) => (
-  source.familyDisplayName
+export const resolveIngredientFamilyDisplayName = (
+  source: Pick<IngredientPresentationSource, "familyDisplayName" | "familyCanonicalName"> & {
+    displayName?: string | null;
+    familyDisplayNameRu?: string | null;
+    familyDisplayNameEn?: string | null;
+  }
+) => source.familyDisplayName
   ?? source.familyDisplayNameEn
   ?? source.familyDisplayNameRu
   ?? source.familyCanonicalName
-  ?? undefined
-);
+  ?? source.displayName
+  ?? undefined;
 
-const buildFermentableSummary = (technicalData: Extract<IngredientTechnicalData, { category: "fermentable" }>) => (
-  [`${formatNumber(technicalData.colorEbc)} EBC`, `${formatNumber(technicalData.extractYieldPct)}%`].join(" • ")
-);
-
-const buildHopSummary = (
-  technicalData: Extract<IngredientTechnicalData, { category: "hop" }>,
-  fallbackSubtype?: IngredientSubtype | null
-) => (
+const buildHopSummary = (technicalData: Extract<IngredientTechnicalData, { type: "hop" }>) => (
   [
-    `${formatNumber(technicalData.alphaAcidPct)}% AA`,
-    technicalData.subtype === "standard"
-      ? null
-      : formatIngredientSubtypeLabel("hop", technicalData.subtype ?? fallbackSubtype ?? null),
-    technicalData.harvestYear ?? null
+    technicalData.alphaAcidPctTypical != null
+      ? `${formatNumber(technicalData.alphaAcidPctTypical)}% AA`
+      : null,
+    technicalData.hopForm && technicalData.hopForm !== "standard" ? technicalData.hopForm : null
   ].filter(Boolean).join(" • ")
 );
 
-const buildYeastSummary = (technicalData: Extract<IngredientTechnicalData, { category: "yeast" }>) => (
+const buildMaltSummary = (technicalData: Extract<IngredientTechnicalData, { type: "malt" }>) => (
   [
-    formatIngredientSubtypeLabel("yeast", technicalData.subtype),
+    technicalData.colorLovibond != null ? `${formatNumber(technicalData.colorLovibond)} Lovibond` : null,
+    technicalData.extractPctDryBasis != null ? `${formatNumber(technicalData.extractPctDryBasis)}% extract` : null
+  ].filter(Boolean).join(" • ")
+);
+
+const buildFermentableSummary = (technicalData: Extract<IngredientTechnicalData, { type: "fermentable" }>) => (
+  [
+    technicalData.colorLovibond != null ? `${formatNumber(technicalData.colorLovibond)} Lovibond` : null,
+    technicalData.extractPctDryBasis != null ? `${formatNumber(technicalData.extractPctDryBasis)}% extract` : null
+  ].filter(Boolean).join(" • ")
+);
+
+const buildYeastSummary = (technicalData: Extract<IngredientTechnicalData, { type: "yeast" }>) => (
+  [
     technicalData.form,
-    `${formatNumber(technicalData.attenuationPct)}% attenuation`,
-    technicalData.packageSize != null && technicalData.packageUnit
-      ? `${formatNumber(technicalData.packageSize)} ${technicalData.packageUnit}`
+    technicalData.attenuationPctTypical != null
+      ? `${formatNumber(technicalData.attenuationPctTypical)}% attenuation`
+      : null,
+    technicalData.fermentationTempCMin != null && technicalData.fermentationTempCMax != null
+      ? `${formatNumber(technicalData.fermentationTempCMin)}-${formatNumber(technicalData.fermentationTempCMax)}C`
       : null
   ].filter(Boolean).join(" • ")
 );
 
-const buildWaterPrepSummary = (
-  technicalData: Extract<IngredientTechnicalData, { category: "water_prep" }>,
-  defaultDisplayUnit?: IngredientDisplayUnit | null
+const buildConsumableSummary = (
+  technicalData: Extract<IngredientTechnicalData, { type: "consumable" }>,
+  subtype?: IngredientSubtype | null
 ) => (
   [
-    formatIngredientSubtypeLabel("water_prep", technicalData.subtype),
-    technicalData.subtype === "acid" ? technicalData.acidType : technicalData.compound,
-    technicalData.strengthPct != null ? `${formatNumber(technicalData.strengthPct)}%` : null,
-    defaultDisplayUnit ?? null
+    subtype ? formatIngredientSubtypeLabel("consumable", subtype) : null,
+    technicalData.commonForms?.[0] ?? null
   ].filter(Boolean).join(" • ")
 );
 
-const buildMiscSummary = (
-  technicalData: Extract<IngredientTechnicalData, { category: "misc" }>,
-  defaultDisplayUnit?: IngredientDisplayUnit | null
+const buildWaterTreatmentSummary = (
+  technicalData: Extract<IngredientTechnicalData, { type: "water_treatment" }>,
+  unitPreferred?: string | null,
+  subtype?: IngredientSubtype | null
 ) => (
   [
-    formatIngredientSubtypeLabel("misc", technicalData.subtype),
-    technicalData.doseHint,
-    defaultDisplayUnit ?? null
+    subtype ? formatIngredientSubtypeLabel("water_treatment", subtype) : null,
+    technicalData.unitPreferred ?? unitPreferred ?? null
   ].filter(Boolean).join(" • ")
 );
 
 export const buildIngredientTypedSummary = (source: IngredientPresentationSource) => {
-  const technicalData = extractIngredientTechnicalData(source);
+  const technicalData = source.technicalData as IngredientTechnicalData | null | undefined;
+  if (!technicalData) {
+    if (source.category && source.subtype) {
+      return formatIngredientSubtypeLabel(source.category, source.subtype);
+    }
 
-  if (!technicalData || !source.category) {
-    const fallbackParts = [
-      source.subtype ? formatIngredientSubtypeLabel(source.category ?? "misc", source.subtype) : null,
-      source.harvestYear ?? null,
-      source.defaultDisplayUnit ?? null
-    ].filter(Boolean);
-
-    return fallbackParts.length ? fallbackParts.join(" • ") : undefined;
+    return undefined;
   }
 
-  if (technicalData.category === "fermentable") {
-    return buildFermentableSummary(technicalData);
+  if (technicalData.type === "hop") {
+    return buildHopSummary(technicalData as Extract<IngredientTechnicalData, { type: "hop" }>);
   }
 
-  if (technicalData.category === "hop") {
-    return buildHopSummary(technicalData, source.subtype);
+  if (technicalData.type === "malt") {
+    return buildMaltSummary(technicalData as Extract<IngredientTechnicalData, { type: "malt" }>);
   }
 
-  if (technicalData.category === "yeast") {
-    return buildYeastSummary(technicalData);
+  if (technicalData.type === "fermentable") {
+    return buildFermentableSummary(technicalData as Extract<IngredientTechnicalData, { type: "fermentable" }>);
   }
 
-  if (technicalData.category === "water_prep") {
-    return buildWaterPrepSummary(technicalData, source.defaultDisplayUnit);
+  if (technicalData.type === "yeast") {
+    return buildYeastSummary(technicalData as Extract<IngredientTechnicalData, { type: "yeast" }>);
   }
 
-  return buildMiscSummary(technicalData, source.defaultDisplayUnit);
+  if (technicalData.type === "consumable") {
+    return buildConsumableSummary(technicalData as Extract<IngredientTechnicalData, { type: "consumable" }>, source.subtype);
+  }
+
+  if (technicalData.type === "water_treatment") {
+    return buildWaterTreatmentSummary(
+      technicalData as Extract<IngredientTechnicalData, { type: "water_treatment" }>,
+      source.unitPreferred,
+      source.subtype
+    );
+  }
+
+  return undefined;
 };
 
 export const buildIngredientSuggestionMetaLine = (source: IngredientPresentationSource) => {
-  const familyDisplayName = resolveIngredientFamilyDisplayName(source);
   const typedSummary = buildIngredientTypedSummary(source);
-
-  return [familyDisplayName, typedSummary]
-    .filter((value) => Boolean(value) && value !== source.displayName)
-    .join(" • ") || undefined;
+  return typedSummary || undefined;
 };

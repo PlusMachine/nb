@@ -147,7 +147,8 @@ export const createUserCustomIngredientSchema = z.object({
 });
 
 export const addCatalogInventoryItemSchema = withPurchaseValidation(baseInventoryFieldsObject.extend({
-  ingredientCatalogItemId: z.string().uuid()
+  ingredientCatalogItemId: z.string().trim().min(1),
+  packageVariantId: z.string().trim().min(1).optional().nullable()
 }));
 
 export const addCustomInventoryItemSchema = withPurchaseValidation(baseInventoryFieldsObject.extend({
@@ -155,7 +156,7 @@ export const addCustomInventoryItemSchema = withPurchaseValidation(baseInventory
 }));
 
 export const inventorySourceLinkageSchema = z.object({
-  ingredientCatalogItemId: z.string().uuid().optional().nullable(),
+  ingredientCatalogItemId: z.string().trim().min(1).optional().nullable(),
   userCustomIngredientId: z.string().uuid().optional().nullable()
 }).refine((value) => Boolean(value.ingredientCatalogItemId) !== Boolean(value.userCustomIngredientId), {
   message: "Exactly one source is required",
@@ -168,8 +169,10 @@ export const updateInventoryQuantitySchema = z.object({
 });
 
 export const updateInventoryItemSchema = withPurchaseValidation(baseInventoryFieldsObject.extend({
-  ingredientCatalogItemId: z.string().uuid().optional().nullable(),
+  ingredientCatalogItemId: z.string().trim().min(1).optional().nullable(),
   userCustomIngredientId: z.string().uuid().optional().nullable()
+  ,
+  packageVariantId: z.string().trim().min(1).optional().nullable()
 })).superRefine((value, ctx) => {
   const linkage = inventorySourceLinkageSchema.safeParse({
     ingredientCatalogItemId: value.ingredientCatalogItemId,
@@ -203,16 +206,26 @@ export type InventorySourceDto = {
   subtype?: IngredientSubtype | null;
   familyId?: string | null;
   familyDisplayName?: string | null;
+  primaryLabelRu: string;
+  secondaryLabelRu?: string | null;
   displayName: string;
   displayNameRu?: string | null;
   displayNameEn?: string | null;
+  nameRu?: string | null;
+  nameEn?: string | null;
   normalizedName: string;
+  brand?: string | null;
+  producer?: string | null;
   brandName?: string | null;
+  manufacturer?: string | null;
+  country?: string | null;
   completenessLevel?: IngredientCompletenessLevel | null;
   technicalData?: IngredientTechnicalData | null;
   defaultDisplayUnit?: InventoryUnit;
   allowedUnits?: InventoryUnit[];
   measurementDimension?: InventoryUnitDimension;
+  packageVariantId?: string | null;
+  packageVariantName?: string | null;
   summary?: string | null;
 } & IngredientTechnicalFields;
 
@@ -220,6 +233,7 @@ export type InventoryListItemDto = {
   id: string;
   ingredientCatalogItemId?: string | null;
   userCustomIngredientId?: string | null;
+  packageVariantId?: string | null;
   ingredientFamilyId?: string | null;
   ingredientCategory?: IngredientCategory | null;
   ingredientSubtype?: IngredientSubtype | null;

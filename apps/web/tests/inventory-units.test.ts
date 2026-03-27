@@ -43,9 +43,9 @@ describe("inventory unit normalization", () => {
     });
   });
 
-  it("normalizes liters to milliliters", () => {
+  it("normalizes liters to milliliters for water treatment acids", () => {
     expect(normalizeInventoryMeasurementForProfile(
-      resolveInventoryUnitProfile({ category: "water_prep", subtype: "acid" }),
+      resolveInventoryUnitProfile({ category: "water_treatment", subtype: "acid" }),
       1.5,
       "l"
     )).toMatchObject({
@@ -62,70 +62,96 @@ describe("inventory unit normalization", () => {
   it("uses practical default display units by category", () => {
     expect(resolveInventoryUnitProfile({ category: "fermentable" }).defaultUnit).toBe("kg");
     expect(resolveInventoryUnitProfile({ category: "hop" }).defaultUnit).toBe("g");
-    expect(resolveInventoryUnitProfile({ category: "water_prep", subtype: "acid" }).defaultUnit).toBe("ml");
-    expect(resolveInventoryUnitProfile({ category: "misc", defaultDisplayUnit: "item" }).defaultUnit).toBe("item");
+    expect(resolveInventoryUnitProfile({ category: "water_treatment", subtype: "acid" }).defaultUnit).toBe("ml");
+    expect(resolveInventoryUnitProfile({ category: "consumable", defaultDisplayUnit: "item" }).defaultUnit).toBe("item");
   });
 
-  it("uses pack for yeast only when package context is known", () => {
+  it("uses pack as the default human-facing unit for dry yeast", () => {
+    expect(resolveInventoryUnitProfile({
+      category: "yeast",
+      technicalData: {
+        type: "yeast",
+        form: "dry",
+        attenuationPctTypical: 78,
+        fermentationTempCMin: null,
+        fermentationTempCMax: null,
+        flocculation: null,
+        alcoholToleranceAbvTypical: null,
+        packageSize: 11.5,
+        packageUnit: "g"
+      }
+    }).defaultUnit).toBe("pack");
+    expect(resolveInventoryUnitProfile({
+      category: "yeast",
+      technicalData: {
+        type: "yeast",
+        form: "dry",
+        attenuationPctTypical: 78,
+        fermentationTempCMin: null,
+        fermentationTempCMax: null,
+        flocculation: null,
+        alcoholToleranceAbvTypical: null,
+        packageSize: null,
+        packageUnit: null
+      }
+    }).allowedUnits).toEqual(["pack", "g"]);
+  });
+
+  it("preserves explicit pack support for yeast without package metadata", () => {
     expect(resolveInventoryUnitProfile({
       category: "yeast",
       defaultDisplayUnit: "pack",
       allowedUnits: ["pack", "g"],
       technicalData: {
-        category: "yeast",
-        subtype: "ale",
+        type: "yeast",
         form: "dry",
-        attenuationPct: 78,
-        tempMinC: null,
-        tempMaxC: null,
+        attenuationPctTypical: 78,
+        fermentationTempCMin: null,
+        fermentationTempCMax: null,
         flocculation: null,
-        alcoholTolerancePct: null,
-        packageSize: 11.5,
-        packageUnit: "g",
-        phenolic: null,
-        diastaticus: null
+        alcoholToleranceAbvTypical: null,
+        packageSize: null,
+        packageUnit: null
       }
     }).defaultUnit).toBe("pack");
 
     expect(resolveInventoryUnitProfile({
       category: "yeast",
       defaultDisplayUnit: "pack",
-      allowedUnits: ["pack", "g"],
-      technicalData: {
-        category: "yeast",
-        subtype: "ale",
-        form: "dry",
-        attenuationPct: 78,
-        tempMinC: null,
-        tempMaxC: null,
-        flocculation: null,
-        alcoholTolerancePct: null,
-        packageSize: null,
-        packageUnit: null,
-        phenolic: null,
-        diastaticus: null
-      }
-    }).defaultUnit).toBe("g");
-
-    expect(resolveInventoryUnitProfile({
-      category: "yeast",
-      defaultDisplayUnit: "pack",
       allowedUnits: ["pack", "ml"],
       technicalData: {
-        category: "yeast",
-        subtype: "ale",
+        type: "yeast",
         form: "liquid",
-        attenuationPct: 78,
-        tempMinC: null,
-        tempMaxC: null,
+        attenuationPctTypical: 78,
+        fermentationTempCMin: null,
+        fermentationTempCMax: null,
         flocculation: null,
-        alcoholTolerancePct: null,
+        alcoholToleranceAbvTypical: null,
         packageSize: null,
-        packageUnit: null,
-        phenolic: null,
-        diastaticus: null
+        packageUnit: null
       }
-    }).defaultUnit).toBe("ml");
+    }).defaultUnit).toBe("pack");
+  });
+
+  it("formats dry yeast stock as packs with gram equivalent", () => {
+    expect(formatInventoryQuantityForDisplay({
+      enteredQuantity: 2,
+      enteredUnit: "pack",
+      normalizedQuantity: 22,
+      normalizedUnit: "g",
+      category: "yeast",
+      technicalData: {
+        type: "yeast",
+        form: "dry",
+        attenuationPctTypical: 78,
+        fermentationTempCMin: null,
+        fermentationTempCMax: null,
+        flocculation: null,
+        alcoholToleranceAbvTypical: null,
+        packageSize: null,
+        packageUnit: null
+      }
+    })).toBe("2 pack (22 g)");
   });
 
   it("formats fermentable quantities in kilograms for human display", () => {
@@ -139,7 +165,7 @@ describe("inventory unit normalization", () => {
     })).toBe("0.5 kg");
   });
 
-  it("forces human-facing fermentable defaults to kilograms even when legacy source default is grams", () => {
+  it("forces human-facing fermentable defaults to kilograms even when source default is grams", () => {
     expect(resolveHumanFacingInventoryUnitProfile({
       category: "fermentable",
       defaultDisplayUnit: "g",

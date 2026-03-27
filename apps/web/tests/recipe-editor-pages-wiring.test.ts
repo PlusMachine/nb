@@ -51,7 +51,7 @@ describe("recipe editor pages wiring", () => {
     const html = renderToStaticMarkup(view);
 
     expect(mocks.getOwnedRecipeById).toHaveBeenCalledWith("u-1", "r-1");
-    expect(html).toContain("Редактирование рецепта");
+    expect(html).toContain("Название рецепта");
     expect(html).toContain("Автосохранение");
   });
 
@@ -67,7 +67,7 @@ describe("recipe editor pages wiring", () => {
     const { default: NewRecipePage } = await import("../app/(app)/app/recipes/new/page");
     const html = renderToStaticMarkup(await NewRecipePage());
 
-    expect(html).toContain("Recipe Designer");
+    expect(html).toContain("Название рецепта");
     expect(html).toContain("Автосохранение");
     expect(mocks.getNextDefaultRecipeTitle).toHaveBeenCalledWith("u-1");
     expect(html).toContain("Новый рецепт 7");

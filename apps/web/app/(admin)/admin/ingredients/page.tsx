@@ -89,12 +89,12 @@ const pillClassName = (isActive: boolean) => (
   }`
 );
 
-const buildAliasesPreview = (aliases: string[]) => {
+const buildAliasesPreview = (aliases: IngredientCatalogItemDto["aliases"]) => {
   if (aliases.length === 0) {
     return null;
   }
 
-  const preview = aliases.slice(0, 4).join(", ");
+  const preview = aliases.slice(0, 4).map((alias) => alias.alias).join(", ");
   const rest = aliases.length - 4;
   return rest > 0 ? `${preview} +${rest}` : preview;
 };
@@ -117,14 +117,9 @@ function CatalogIngredientsTable({ items, showBrandColumn }: CatalogTableProps) 
           {items.map((item) => {
             const aliasesPreview = buildAliasesPreview(item.aliases);
             const { primaryName, secondaryName } = resolveIngredientDisplayNames(item);
-            const familyName = item.family
-              ? resolveIngredientFamilyDisplayName({
-                displayName: primaryName,
-                familyCanonicalName: item.family.canonicalName,
-                familyDisplayNameEn: item.family.displayNameEn,
-                familyDisplayNameRu: item.family.displayNameRu
-              })
-              : null;
+            const familyName = resolveIngredientFamilyDisplayName({
+              displayName: primaryName
+            }) ?? null;
             const brandLabel = resolveCatalogBrandLabel(item);
 
             return (

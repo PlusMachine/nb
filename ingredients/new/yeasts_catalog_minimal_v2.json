@@ -1,0 +1,4786 @@
+{
+  "dataset": "beer_yeasts_all_minimal",
+  "schema_version": "v1_minimal_clean",
+  "scope": "Beer yeasts only; dry and liquid brewing yeast strains with emphasis on Russia-market relevance, searchable Russian names, and full current dry lineups for Lallemand, Fermentis, and Mangrove Jack’s.",
+  "stats": {
+    "total_items": 176,
+    "brands": 12,
+    "dry": 86,
+    "liquid": 90,
+    "present_on_birrf_true": 91,
+    "popular_in_russia_true": 176,
+    "by_brand": {
+      "ASP Lab": 56,
+      "Angel Yeast": 5,
+      "BeerGenomics": 11,
+      "BeerVingem": 6,
+      "Fermentis": 22,
+      "Gozdawa": 4,
+      "GrainLab": 3,
+      "Lallemand": 25,
+      "Mangrove Jack's": 17,
+      "Omega Yeast": 7,
+      "White Labs": 7,
+      "Wyeast": 13
+    }
+  },
+  "items": [
+    {
+      "id": "angel-yeast-bf16",
+      "brand": "Angel Yeast",
+      "producer_country": "China",
+      "product_code": "BF16",
+      "name_ru": "BF16 Lager",
+      "name_en": "BF16 Lager",
+      "form": "dry",
+      "yeast_family": "lager",
+      "birrf_category": "Лагерные",
+      "attenuation_pct_typical": 82.0,
+      "flocculation": "medium",
+      "fermentation_temp_c_min": 10,
+      "fermentation_temp_c_max": 20,
+      "fermentation_temp_c_optimum": 15,
+      "alcohol_tolerance_abv_typical": 10.0,
+      "present_on_birrf": true,
+      "source_basis": "birrf",
+      "aliases_ru": [
+        "Angel BF16",
+        "Ангел BF16"
+      ],
+      "aliases_en": [
+        "Angel BF16"
+      ]
+    },
+    {
+      "id": "angel-yeast-bf27",
+      "brand": "Angel Yeast",
+      "producer_country": "China",
+      "product_code": "BF27",
+      "name_ru": "BF27 Lager",
+      "name_en": "BF27 Lager",
+      "form": "dry",
+      "yeast_family": "lager",
+      "birrf_category": "Лагерные",
+      "attenuation_pct_min": 78,
+      "attenuation_pct_max": 84,
+      "attenuation_pct_typical": 82,
+      "flocculation": "medium",
+      "fermentation_temp_c_min": 9,
+      "fermentation_temp_c_max": 20,
+      "fermentation_temp_c_optimum": 15,
+      "alcohol_tolerance_abv_typical": 10.0,
+      "present_on_birrf": true,
+      "source_basis": "birrf",
+      "aliases_ru": [
+        "Angel BF27",
+        "Ангел BF27",
+        "аналог 34/70"
+      ],
+      "aliases_en": [
+        "Angel BF27"
+      ]
+    },
+    {
+      "id": "angel-yeast-cs31",
+      "brand": "Angel Yeast",
+      "producer_country": "China",
+      "product_code": "CS31",
+      "name_ru": "CS31",
+      "name_en": "CS31",
+      "form": "dry",
+      "yeast_family": "ale",
+      "birrf_category": "Элевые",
+      "attenuation_pct_typical": 80.0,
+      "flocculation": "high",
+      "fermentation_temp_c_min": 18,
+      "fermentation_temp_c_max": 24,
+      "fermentation_temp_c_optimum": 20,
+      "present_on_birrf": true,
+      "source_basis": "birrf",
+      "aliases_ru": [
+        "Angel CS31",
+        "Ангел CS31",
+        "бельгийский/пряный эль"
+      ],
+      "aliases_en": [
+        "Angel CS31"
+      ]
+    },
+    {
+      "id": "angel-yeast-w38",
+      "brand": "Angel Yeast",
+      "producer_country": "China",
+      "product_code": "W38",
+      "name_ru": "W38 Пшеничные",
+      "name_en": "W38 Wheat",
+      "form": "dry",
+      "yeast_family": "wheat",
+      "birrf_category": "Пшеничные",
+      "fermentation_temp_c_min": 17,
+      "fermentation_temp_c_max": 24,
+      "present_on_birrf": true,
+      "source_basis": "birrf",
+      "notes": "Пшеничный штамм; публично подтверждён на Бир.РФ, но без полной карточки параметров.",
+      "aliases_ru": [
+        "Angel W38",
+        "Ангел W38"
+      ],
+      "aliases_en": [
+        "Angel W38"
+      ]
+    },
+    {
+      "id": "angel-yeast-wa18",
+      "brand": "Angel Yeast",
+      "producer_country": "China",
+      "product_code": "WA18",
+      "name_ru": "WA18 Пшеничные",
+      "name_en": "WA18 Wheat Ale",
+      "form": "dry",
+      "yeast_family": "wheat",
+      "birrf_category": "Пшеничные",
+      "attenuation_pct_min": 73,
+      "attenuation_pct_max": 83,
+      "attenuation_pct_typical": 78,
+      "flocculation": "low",
+      "fermentation_temp_c_min": 18,
+      "fermentation_temp_c_max": 26,
+      "fermentation_temp_c_optimum": 20,
+      "alcohol_tolerance_abv_typical": 10.0,
+      "present_on_birrf": true,
+      "source_basis": "birrf",
+      "pof": "positive",
+      "aliases_ru": [
+        "Angel WA18",
+        "Ангел WA18",
+        "аналог WB-06"
+      ],
+      "aliases_en": [
+        "Angel WA18"
+      ]
+    },
+    {
+      "id": "asp-lab-al-101-kveik-i",
+      "brand": "ASP Lab",
+      "producer_country": "Russia",
+      "product_code": "AL 101",
+      "name_ru": "Квейк I",
+      "name_en": "Kveik I",
+      "form": "liquid",
+      "yeast_family": "kveik",
+      "birrf_category": "Прочие",
+      "attenuation_pct_min": 68,
+      "attenuation_pct_max": 80,
+      "attenuation_pct_typical": 74.0,
+      "flocculation": "medium-high",
+      "fermentation_temp_c_min": 20,
+      "fermentation_temp_c_max": 40,
+      "alcohol_tolerance_abv_min": 10,
+      "alcohol_tolerance_abv_max": 12,
+      "alcohol_tolerance_abv_typical": 11.0,
+      "species": "Saccharomyces cerevisiae",
+      "source_basis": "official",
+      "aliases_ru": [
+        "Норвежский квейк"
+      ],
+      "aliases_en": [
+        "Norwegian farmhouse ale"
+      ],
+      "source_urls": [
+        "https://asplab.ru/yeast"
+      ]
+    },
+    {
+      "id": "asp-lab-al-102-oslo",
+      "brand": "ASP Lab",
+      "producer_country": "Russia",
+      "product_code": "AL 102",
+      "name_ru": "Осло",
+      "name_en": "Oslo",
+      "form": "liquid",
+      "yeast_family": "kveik",
+      "birrf_category": "Элевые",
+      "attenuation_pct_min": 76,
+      "attenuation_pct_max": 86,
+      "attenuation_pct_typical": 81.0,
+      "flocculation": "medium",
+      "fermentation_temp_c_min": 24,
+      "fermentation_temp_c_max": 37,
+      "species": "Saccharomyces cerevisiae",
+      "present_on_birrf": true,
+      "source_basis": "official+birrf",
+      "aliases_ru": [
+        "Oslo Kveik",
+        "Квейк Осло"
+      ],
+      "aliases_en": [
+        "Oslo Kveik"
+      ],
+      "source_urls": [
+        "https://asplab.ru/yeast",
+        "https://xn--90aoy.xn--p1ai/ingredients/yeast/"
+      ]
+    },
+    {
+      "id": "asp-lab-al-103-lutra",
+      "brand": "ASP Lab",
+      "producer_country": "Russia",
+      "product_code": "AL 103",
+      "name_ru": "Лутра",
+      "name_en": "Lutra",
+      "form": "liquid",
+      "yeast_family": "kveik",
+      "birrf_category": "Прочие",
+      "attenuation_pct_min": 75,
+      "attenuation_pct_max": 82,
+      "attenuation_pct_typical": 78.5,
+      "flocculation": "medium-high",
+      "fermentation_temp_c_min": 20,
+      "fermentation_temp_c_max": 35,
+      "alcohol_tolerance_abv_typical": 15.0,
+      "species": "Saccharomyces cerevisiae",
+      "present_on_birrf": true,
+      "source_basis": "official+birrf",
+      "aliases_ru": [
+        "Lutra Kveik",
+        "Квейк Лутра"
+      ],
+      "aliases_en": [
+        "Lutra Kveik"
+      ],
+      "source_urls": [
+        "https://asplab.ru/yeast",
+        "https://xn--90aoy.xn--p1ai/ingredients/yeast/"
+      ]
+    },
+    {
+      "id": "asp-lab-al-104-hornindal",
+      "brand": "ASP Lab",
+      "producer_country": "Russia",
+      "product_code": "AL 104",
+      "name_ru": "Хорниндаль",
+      "name_en": "Hornindal",
+      "form": "liquid",
+      "yeast_family": "kveik",
+      "birrf_category": "Прочие",
+      "attenuation_pct_min": 75,
+      "attenuation_pct_max": 82,
+      "attenuation_pct_typical": 78.5,
+      "flocculation": "high",
+      "fermentation_temp_c_min": 20,
+      "fermentation_temp_c_max": 35,
+      "alcohol_tolerance_abv_typical": 16.0,
+      "species": "Saccharomyces cerevisiae",
+      "source_basis": "official",
+      "pof": "negative",
+      "aliases_ru": [
+        "Hornindal Kveik",
+        "Квейк Хорниндаль"
+      ],
+      "aliases_en": [
+        "Hornindal Kveik"
+      ],
+      "source_urls": [
+        "https://asplab.ru/yeast"
+      ]
+    },
+    {
+      "id": "asp-lab-al-105-asp-kveik",
+      "brand": "ASP Lab",
+      "producer_country": "Russia",
+      "product_code": "AL 105",
+      "name_ru": "ASP Квейк",
+      "name_en": "ASP Kveik",
+      "form": "liquid",
+      "yeast_family": "kveik",
+      "birrf_category": "Прочие",
+      "attenuation_pct_min": 72,
+      "attenuation_pct_max": 80,
+      "attenuation_pct_typical": 76.0,
+      "flocculation": "high",
+      "fermentation_temp_c_min": 25,
+      "fermentation_temp_c_max": 32,
+      "alcohol_tolerance_abv_typical": 13.0,
+      "species": "Saccharomyces cerevisiae",
+      "source_basis": "official",
+      "aliases_ru": [
+        "Смесь квейков"
+      ],
+      "aliases_en": [
+        "Kveik blend"
+      ],
+      "source_urls": [
+        "https://asplab.ru/yeast"
+      ]
+    },
+    {
+      "id": "asp-lab-al-106-stalljen",
+      "brand": "ASP Lab",
+      "producer_country": "Russia",
+      "product_code": "AL 106",
+      "name_ru": "Сталльен",
+      "name_en": "Stalljen",
+      "form": "liquid",
+      "yeast_family": "kveik",
+      "birrf_category": "Прочие",
+      "attenuation_pct_min": 70,
+      "attenuation_pct_max": 75,
+      "attenuation_pct_typical": 72.5,
+      "flocculation": "high",
+      "fermentation_temp_c_min": 12,
+      "fermentation_temp_c_max": 38,
+      "alcohol_tolerance_abv_typical": 15.0,
+      "species": "Saccharomyces cerevisiae",
+      "source_basis": "official",
+      "aliases_ru": [
+        "Stalljen Kveik"
+      ],
+      "source_urls": [
+        "https://asplab.ru/yeast"
+      ]
+    },
+    {
+      "id": "asp-lab-al-107-eitrheim",
+      "brand": "ASP Lab",
+      "producer_country": "Russia",
+      "product_code": "AL 107",
+      "name_ru": "Эйтрхейм",
+      "name_en": "Eitrheim",
+      "form": "liquid",
+      "yeast_family": "kveik",
+      "birrf_category": "Прочие",
+      "attenuation_pct_min": 70,
+      "attenuation_pct_max": 75,
+      "attenuation_pct_typical": 72.5,
+      "fermentation_temp_c_min": 15,
+      "fermentation_temp_c_max": 38,
+      "alcohol_tolerance_abv_typical": 12.0,
+      "species": "Saccharomyces cerevisiae",
+      "source_basis": "official",
+      "aliases_ru": [
+        "Eitrheim Kveik"
+      ],
+      "source_urls": [
+        "https://asplab.ru/yeast"
+      ]
+    },
+    {
+      "id": "asp-lab-al-108-ebbegarden",
+      "brand": "ASP Lab",
+      "producer_country": "Russia",
+      "product_code": "AL 108",
+      "name_ru": "Эббегарден",
+      "name_en": "Ebbegarden",
+      "form": "liquid",
+      "yeast_family": "kveik",
+      "birrf_category": "Прочие",
+      "attenuation_pct_min": 75,
+      "attenuation_pct_max": 80,
+      "attenuation_pct_typical": 77.5,
+      "fermentation_temp_c_min": 15,
+      "fermentation_temp_c_max": 38,
+      "alcohol_tolerance_abv_typical": 16.0,
+      "species": "Saccharomyces cerevisiae",
+      "source_basis": "official",
+      "aliases_ru": [
+        "Ebbegarden Kveik"
+      ],
+      "source_urls": [
+        "https://asplab.ru/yeast"
+      ]
+    },
+    {
+      "id": "asp-lab-al-201-bavarian-wheat",
+      "brand": "ASP Lab",
+      "producer_country": "Russia",
+      "product_code": "AL 201",
+      "name_ru": "Баварская пшеница",
+      "name_en": "Bavarian Wheat",
+      "form": "liquid",
+      "yeast_family": "wheat",
+      "birrf_category": "Пшеничные",
+      "attenuation_pct_min": 70,
+      "attenuation_pct_max": 76,
+      "attenuation_pct_typical": 73.0,
+      "flocculation": "low",
+      "fermentation_temp_c_min": 18,
+      "fermentation_temp_c_max": 24,
+      "species": "Saccharomyces cerevisiae",
+      "source_basis": "official",
+      "aliases_ru": [
+        "Пшеничные дрожжи"
+      ],
+      "aliases_en": [
+        "Weissbier"
+      ],
+      "source_urls": [
+        "https://asplab.ru/yeast"
+      ]
+    },
+    {
+      "id": "asp-lab-al-202-kansas-ears",
+      "brand": "ASP Lab",
+      "producer_country": "Russia",
+      "product_code": "AL 202",
+      "name_ru": "Канзас Эрс",
+      "name_en": "Kansas Ears",
+      "form": "liquid",
+      "yeast_family": "wheat",
+      "birrf_category": "Пшеничные",
+      "attenuation_pct_min": 74,
+      "attenuation_pct_max": 78,
+      "attenuation_pct_typical": 76.0,
+      "flocculation": "medium",
+      "fermentation_temp_c_min": 14,
+      "fermentation_temp_c_max": 22,
+      "alcohol_tolerance_abv_typical": 10.0,
+      "species": "Saccharomyces cerevisiae",
+      "source_basis": "official",
+      "analog_reference": "WYEAST 1010",
+      "aliases_ru": [
+        "Американская пшеница"
+      ],
+      "aliases_en": [
+        "American Wheat"
+      ],
+      "source_urls": [
+        "https://asplab.ru/yeast"
+      ]
+    },
+    {
+      "id": "asp-lab-al-203-weihenstephan",
+      "brand": "ASP Lab",
+      "producer_country": "Russia",
+      "product_code": "AL 203",
+      "name_ru": "Вайенштефан",
+      "name_en": "Weihenstephan",
+      "form": "liquid",
+      "yeast_family": "wheat",
+      "birrf_category": "Пшеничные",
+      "attenuation_pct_min": 78,
+      "attenuation_pct_max": 80,
+      "attenuation_pct_typical": 79.0,
+      "flocculation": "medium",
+      "fermentation_temp_c_min": 16,
+      "fermentation_temp_c_max": 23,
+      "species": "Saccharomyces cerevisiae",
+      "source_basis": "official",
+      "analog_reference": "W68",
+      "aliases_ru": [
+        "Вайенштефан вайцен"
+      ],
+      "source_urls": [
+        "https://asplab.ru/yeast"
+      ]
+    },
+    {
+      "id": "asp-lab-al-204-belgian-witbier",
+      "brand": "ASP Lab",
+      "producer_country": "Russia",
+      "product_code": "AL 204",
+      "name_ru": "Бельгийский витбир",
+      "name_en": "Belgian Witbier",
+      "form": "liquid",
+      "yeast_family": "wheat",
+      "birrf_category": "Пшеничные",
+      "attenuation_pct_min": 72,
+      "attenuation_pct_max": 76,
+      "attenuation_pct_typical": 74.0,
+      "flocculation": "medium",
+      "fermentation_temp_c_min": 17,
+      "fermentation_temp_c_max": 24,
+      "alcohol_tolerance_abv_min": 10,
+      "alcohol_tolerance_abv_max": 12,
+      "alcohol_tolerance_abv_typical": 11.0,
+      "species": "Saccharomyces cerevisiae",
+      "source_basis": "official",
+      "analog_reference": "Wyeast 3944",
+      "aliases_ru": [
+        "Витбир",
+        "Бельгийская пшеница"
+      ],
+      "aliases_en": [
+        "Witbier"
+      ],
+      "source_urls": [
+        "https://asplab.ru/yeast"
+      ]
+    },
+    {
+      "id": "asp-lab-al-205-hefeweizen-ale",
+      "brand": "ASP Lab",
+      "producer_country": "Russia",
+      "product_code": "AL 205",
+      "name_ru": "Хефевайцен Эль",
+      "name_en": "Hefeweizen Ale",
+      "form": "liquid",
+      "yeast_family": "wheat",
+      "birrf_category": "Пшеничные",
+      "attenuation_pct_min": 72,
+      "attenuation_pct_max": 76,
+      "attenuation_pct_typical": 74.0,
+      "flocculation": "low",
+      "fermentation_temp_c_min": 20,
+      "fermentation_temp_c_max": 22,
+      "species": "Saccharomyces cerevisiae",
+      "source_basis": "official",
+      "analog_reference": "WLP300",
+      "aliases_ru": [
+        "Хефевайцен",
+        "Пшеничный эль"
+      ],
+      "aliases_en": [
+        "Hefeweizen"
+      ],
+      "source_urls": [
+        "https://asplab.ru/yeast"
+      ]
+    },
+    {
+      "id": "asp-lab-al-301-belgian-saison-i",
+      "brand": "ASP Lab",
+      "producer_country": "Russia",
+      "product_code": "AL 301",
+      "name_ru": "Бельгийский сезон I",
+      "name_en": "Belgian Saison I",
+      "form": "liquid",
+      "yeast_family": "belgian",
+      "birrf_category": "Элевые",
+      "attenuation_pct_min": 78,
+      "attenuation_pct_max": 85,
+      "attenuation_pct_typical": 81.5,
+      "flocculation": "medium",
+      "fermentation_temp_c_min": 20,
+      "fermentation_temp_c_max": 30,
+      "species": "Saccharomyces cerevisiae",
+      "source_basis": "official",
+      "aliases_ru": [
+        "Бельгийский saison"
+      ],
+      "source_urls": [
+        "https://asplab.ru/yeast"
+      ]
+    },
+    {
+      "id": "asp-lab-al-302-belgian-strong-ale",
+      "brand": "ASP Lab",
+      "producer_country": "Russia",
+      "product_code": "AL 302",
+      "name_ru": "Бельгийский крепкий эль",
+      "name_en": "Belgian Strong Ale",
+      "form": "liquid",
+      "yeast_family": "belgian",
+      "birrf_category": "Элевые",
+      "attenuation_pct_min": 78,
+      "attenuation_pct_max": 85,
+      "attenuation_pct_typical": 81.5,
+      "flocculation": "medium",
+      "fermentation_temp_c_min": 19,
+      "fermentation_temp_c_max": 22,
+      "alcohol_tolerance_abv_min": 10,
+      "alcohol_tolerance_abv_max": 15,
+      "alcohol_tolerance_abv_typical": 12.5,
+      "species": "Saccharomyces cerevisiae",
+      "source_basis": "official",
+      "analog_reference": "White Labs 545",
+      "aliases_ru": [
+        "Ardennes",
+        "Бельгийский крепкий"
+      ],
+      "aliases_en": [
+        "Belgian Strong"
+      ],
+      "source_urls": [
+        "https://asplab.ru/yeast"
+      ]
+    },
+    {
+      "id": "asp-lab-al-303-farmhouse-ale",
+      "brand": "ASP Lab",
+      "producer_country": "Russia",
+      "product_code": "AL 303",
+      "name_ru": "Фармхаус эль",
+      "name_en": "Farmhouse Ale",
+      "form": "liquid",
+      "yeast_family": "belgian",
+      "birrf_category": "Элевые",
+      "attenuation_pct_min": 74,
+      "attenuation_pct_max": 79,
+      "attenuation_pct_typical": 76.5,
+      "flocculation": "medium",
+      "fermentation_temp_c_min": 21,
+      "fermentation_temp_c_max": 29,
+      "alcohol_tolerance_abv_typical": 12.0,
+      "species": "Saccharomyces cerevisiae var. diastaticus",
+      "source_basis": "official",
+      "analog_reference": "Wyeast 3726",
+      "aliases_en": [
+        "Farmhouse"
+      ],
+      "source_urls": [
+        "https://asplab.ru/yeast"
+      ]
+    },
+    {
+      "id": "asp-lab-al-304-bastogne-belgian-ale",
+      "brand": "ASP Lab",
+      "producer_country": "Russia",
+      "product_code": "AL 304",
+      "name_ru": "Бастонь",
+      "name_en": "Bastogne Belgian Ale",
+      "form": "liquid",
+      "yeast_family": "belgian",
+      "birrf_category": "Элевые",
+      "attenuation_pct_min": 74,
+      "attenuation_pct_max": 78,
+      "attenuation_pct_typical": 76.0,
+      "flocculation": "medium",
+      "fermentation_temp_c_min": 19,
+      "fermentation_temp_c_max": 22,
+      "alcohol_tolerance_abv_min": 10,
+      "alcohol_tolerance_abv_max": 15,
+      "alcohol_tolerance_abv_typical": 12.5,
+      "species": "Saccharomyces cerevisiae",
+      "source_basis": "official",
+      "analog_reference": "WLP510",
+      "aliases_ru": [
+        "Bastogne"
+      ],
+      "source_urls": [
+        "https://asplab.ru/yeast"
+      ]
+    },
+    {
+      "id": "asp-lab-al-305-belgian-saison-ii",
+      "brand": "ASP Lab",
+      "producer_country": "Russia",
+      "product_code": "AL 305",
+      "name_ru": "Бельгийский сезон II",
+      "name_en": "Belgian Saison II",
+      "form": "liquid",
+      "yeast_family": "belgian",
+      "birrf_category": "Элевые",
+      "attenuation_pct_min": 70.0,
+      "attenuation_pct_max": 70.0,
+      "attenuation_pct_typical": 70.0,
+      "fermentation_temp_c_min": 20,
+      "fermentation_temp_c_max": 24,
+      "species": "Saccharomyces cerevisiae",
+      "source_basis": "official",
+      "analog_reference": "WLP565",
+      "aliases_ru": [
+        "Saison II"
+      ],
+      "source_urls": [
+        "https://asplab.ru/yeast"
+      ]
+    },
+    {
+      "id": "asp-lab-al-306-french-saison",
+      "brand": "ASP Lab",
+      "producer_country": "Russia",
+      "product_code": "AL 306",
+      "name_ru": "Французский сезон",
+      "name_en": "French Saison",
+      "form": "liquid",
+      "yeast_family": "belgian",
+      "birrf_category": "Элевые",
+      "attenuation_pct_min": 77,
+      "attenuation_pct_max": 83,
+      "attenuation_pct_typical": 80.0,
+      "flocculation": "low",
+      "fermentation_temp_c_min": 18,
+      "fermentation_temp_c_max": 25,
+      "alcohol_tolerance_abv_typical": 12.0,
+      "species": "Saccharomyces cerevisiae",
+      "source_basis": "official",
+      "analog_reference": "Wyeast 3711",
+      "source_urls": [
+        "https://asplab.ru/yeast"
+      ]
+    },
+    {
+      "id": "asp-lab-al-307-belgian-golden-ale",
+      "brand": "ASP Lab",
+      "producer_country": "Russia",
+      "product_code": "AL 307",
+      "name_ru": "Бельгийский золотой эль",
+      "name_en": "Belgian Golden Ale",
+      "form": "liquid",
+      "yeast_family": "belgian",
+      "birrf_category": "Элевые",
+      "attenuation_pct_min": 78,
+      "attenuation_pct_max": 85,
+      "attenuation_pct_typical": 81.5,
+      "flocculation": "low",
+      "fermentation_temp_c_min": 20,
+      "fermentation_temp_c_max": 24,
+      "alcohol_tolerance_abv_typical": 15.0,
+      "species": "Saccharomyces cerevisiae",
+      "source_basis": "official",
+      "analog_reference": "WLP570",
+      "pof": "positive",
+      "aliases_ru": [
+        "Belgian Golden Strong"
+      ],
+      "source_urls": [
+        "https://asplab.ru/yeast"
+      ]
+    },
+    {
+      "id": "asp-lab-al-308-belgian-ale-yeast",
+      "brand": "ASP Lab",
+      "producer_country": "Russia",
+      "product_code": "AL 308",
+      "name_ru": "Бельгийский эль",
+      "name_en": "Belgian Ale Yeast",
+      "form": "liquid",
+      "yeast_family": "belgian",
+      "birrf_category": "Элевые",
+      "attenuation_pct_min": 78,
+      "attenuation_pct_max": 85,
+      "attenuation_pct_typical": 81.5,
+      "flocculation": "medium",
+      "fermentation_temp_c_min": 20,
+      "fermentation_temp_c_max": 26,
+      "alcohol_tolerance_abv_min": 10,
+      "alcohol_tolerance_abv_max": 15,
+      "alcohol_tolerance_abv_typical": 12.5,
+      "species": "Saccharomyces cerevisiae",
+      "source_basis": "official",
+      "analog_reference": "WLP550",
+      "aliases_ru": [
+        "Belgian Ale"
+      ],
+      "aliases_en": [
+        "Belgian Ale"
+      ],
+      "source_urls": [
+        "https://asplab.ru/yeast"
+      ]
+    },
+    {
+      "id": "asp-lab-al-309-trappist-high-gravity",
+      "brand": "ASP Lab",
+      "producer_country": "Russia",
+      "product_code": "AL 309",
+      "name_ru": "Траппист High Gravity",
+      "name_en": "Trappist High Gravity",
+      "form": "liquid",
+      "yeast_family": "belgian",
+      "birrf_category": "Элевые",
+      "attenuation_pct_min": 74,
+      "attenuation_pct_max": 78,
+      "attenuation_pct_typical": 76.0,
+      "flocculation": "medium",
+      "fermentation_temp_c_min": 18,
+      "fermentation_temp_c_max": 26,
+      "alcohol_tolerance_abv_min": 11,
+      "alcohol_tolerance_abv_max": 12,
+      "alcohol_tolerance_abv_typical": 11.5,
+      "species": "Saccharomyces cerevisiae",
+      "source_basis": "official",
+      "analog_reference": "3787",
+      "aliases_ru": [
+        "Траппист",
+        "Бельгийский дуббель"
+      ],
+      "source_urls": [
+        "https://asplab.ru/yeast"
+      ]
+    },
+    {
+      "id": "asp-lab-al-310-monastery-ale",
+      "brand": "ASP Lab",
+      "producer_country": "Russia",
+      "product_code": "AL 310",
+      "name_ru": "Монастырский эль",
+      "name_en": "Monastery Ale",
+      "form": "liquid",
+      "yeast_family": "belgian",
+      "birrf_category": "Элевые",
+      "attenuation_pct_min": 75,
+      "attenuation_pct_max": 80,
+      "attenuation_pct_typical": 77.5,
+      "flocculation": "low-medium",
+      "fermentation_temp_c_min": 18,
+      "fermentation_temp_c_max": 22,
+      "alcohol_tolerance_abv_min": 10,
+      "alcohol_tolerance_abv_max": 15,
+      "alcohol_tolerance_abv_typical": 12.5,
+      "species": "Saccharomyces cerevisiae",
+      "source_basis": "official",
+      "analog_reference": "WLP500",
+      "source_urls": [
+        "https://asplab.ru/yeast"
+      ]
+    },
+    {
+      "id": "asp-lab-al-402-bohemian-lager",
+      "brand": "ASP Lab",
+      "producer_country": "Russia",
+      "product_code": "AL 402",
+      "name_ru": "Богемский лагер",
+      "name_en": "Bohemian Lager",
+      "form": "liquid",
+      "yeast_family": "lager",
+      "birrf_category": "Лагерные",
+      "attenuation_pct_min": 73,
+      "attenuation_pct_max": 77,
+      "attenuation_pct_typical": 75.0,
+      "flocculation": "medium",
+      "fermentation_temp_c_min": 8,
+      "fermentation_temp_c_max": 22,
+      "alcohol_tolerance_abv_typical": 9.0,
+      "species": "Saccharomyces pastorianus",
+      "source_basis": "official",
+      "analog_reference": "Wyeast 2124",
+      "source_urls": [
+        "https://asplab.ru/yeast"
+      ]
+    },
+    {
+      "id": "asp-lab-al-403-czech-budejovice-lager",
+      "brand": "ASP Lab",
+      "producer_country": "Russia",
+      "product_code": "AL 403",
+      "name_ru": "Чешский Будейовицкий лагер",
+      "name_en": "Czech Budejovice Lager",
+      "form": "liquid",
+      "yeast_family": "lager",
+      "birrf_category": "Лагерные",
+      "attenuation_pct_min": 70,
+      "attenuation_pct_max": 75,
+      "attenuation_pct_typical": 72.5,
+      "flocculation": "medium",
+      "fermentation_temp_c_min": 10,
+      "fermentation_temp_c_max": 13,
+      "alcohol_tolerance_abv_min": 6,
+      "alcohol_tolerance_abv_max": 10,
+      "alcohol_tolerance_abv_typical": 8.0,
+      "species": "Saccharomyces pastorianus",
+      "present_on_birrf": true,
+      "source_basis": "official+birrf",
+      "analog_reference": "WLP802",
+      "aliases_en": [
+        "Czech Lager"
+      ],
+      "source_urls": [
+        "https://asplab.ru/yeast",
+        "https://xn--90aoy.xn--p1ai/ingredients/yeast/"
+      ]
+    },
+    {
+      "id": "asp-lab-al-404-munich-helles",
+      "brand": "ASP Lab",
+      "producer_country": "Russia",
+      "product_code": "AL 404",
+      "name_ru": "Munich Helles",
+      "name_en": "Munich Helles",
+      "form": "liquid",
+      "yeast_family": "lager",
+      "birrf_category": "Лагерные",
+      "attenuation_pct_min": 68,
+      "attenuation_pct_max": 72,
+      "attenuation_pct_typical": 70.0,
+      "flocculation": "medium",
+      "fermentation_temp_c_min": 9,
+      "fermentation_temp_c_max": 11,
+      "alcohol_tolerance_abv_min": 5,
+      "alcohol_tolerance_abv_max": 10,
+      "alcohol_tolerance_abv_typical": 7.5,
+      "species": "Saccharomyces pastorianus",
+      "present_on_birrf": true,
+      "source_basis": "official+birrf",
+      "analog_reference": "WLP860",
+      "aliases_ru": [
+        "Мюнхенский Helles"
+      ],
+      "source_urls": [
+        "https://asplab.ru/yeast",
+        "https://xn--90aoy.xn--p1ai/ingredients/yeast/"
+      ]
+    },
+    {
+      "id": "asp-lab-al-405-asp-fast-lager",
+      "brand": "ASP Lab",
+      "producer_country": "Russia",
+      "product_code": "AL 405",
+      "name_ru": "ASP Fast Lager",
+      "name_en": "ASP Fast Lager",
+      "form": "liquid",
+      "yeast_family": "lager",
+      "birrf_category": "Лагерные",
+      "attenuation_pct_min": 81,
+      "attenuation_pct_max": 85,
+      "attenuation_pct_typical": 83.0,
+      "flocculation": "high",
+      "fermentation_temp_c_min": 12,
+      "fermentation_temp_c_max": 21,
+      "species": "Saccharomyces pastorianus",
+      "source_basis": "official",
+      "aliases_en": [
+        "Fast Lager"
+      ],
+      "source_urls": [
+        "https://asplab.ru/yeast"
+      ]
+    },
+    {
+      "id": "asp-lab-al-406-california-common",
+      "brand": "ASP Lab",
+      "producer_country": "Russia",
+      "product_code": "AL 406",
+      "name_ru": "Калифорнийский коммон",
+      "name_en": "California Common",
+      "form": "liquid",
+      "yeast_family": "lager",
+      "birrf_category": "Лагерные",
+      "attenuation_pct_min": 77,
+      "attenuation_pct_max": 82,
+      "attenuation_pct_typical": 79.5,
+      "flocculation": "high",
+      "fermentation_temp_c_min": 15,
+      "fermentation_temp_c_max": 22,
+      "species": "Saccharomyces pastorianus",
+      "source_basis": "official",
+      "source_urls": [
+        "https://asplab.ru/yeast"
+      ]
+    },
+    {
+      "id": "asp-lab-al-407-pilsner-lager",
+      "brand": "ASP Lab",
+      "producer_country": "Russia",
+      "product_code": "AL 407",
+      "name_ru": "Пильзнер лагер",
+      "name_en": "Pilsner Lager",
+      "form": "liquid",
+      "yeast_family": "lager",
+      "birrf_category": "Лагерные",
+      "attenuation_pct_min": 72,
+      "attenuation_pct_max": 77,
+      "attenuation_pct_typical": 74.5,
+      "flocculation": "medium-high",
+      "fermentation_temp_c_min": 10,
+      "fermentation_temp_c_max": 13,
+      "alcohol_tolerance_abv_typical": 15.0,
+      "species": "Saccharomyces pastorianus",
+      "source_basis": "official",
+      "analog_reference": "WLP800",
+      "aliases_ru": [
+        "Пилснер лагер"
+      ],
+      "source_urls": [
+        "https://asplab.ru/yeast"
+      ]
+    },
+    {
+      "id": "asp-lab-al-409-german-bock-lager",
+      "brand": "ASP Lab",
+      "producer_country": "Russia",
+      "product_code": "AL 409",
+      "name_ru": "Немецкий бок-лагер",
+      "name_en": "German Bock Lager",
+      "form": "liquid",
+      "yeast_family": "lager",
+      "birrf_category": "Лагерные",
+      "attenuation_pct_min": 74,
+      "attenuation_pct_max": 76,
+      "attenuation_pct_typical": 75.0,
+      "flocculation": "low",
+      "fermentation_temp_c_min": 4,
+      "fermentation_temp_c_max": 8,
+      "alcohol_tolerance_abv_typical": 10.0,
+      "species": "Saccharomyces pastorianus",
+      "source_basis": "official",
+      "analog_reference": "WLP833",
+      "aliases_ru": [
+        "Бок лагер"
+      ],
+      "source_urls": [
+        "https://asplab.ru/yeast"
+      ]
+    },
+    {
+      "id": "asp-lab-al-410-lunar-crush",
+      "brand": "ASP Lab",
+      "producer_country": "Russia",
+      "product_code": "AL 410",
+      "name_ru": "Лунар Краш",
+      "name_en": "Lunar Crush",
+      "form": "liquid",
+      "yeast_family": "lager",
+      "birrf_category": "Лагерные",
+      "attenuation_pct_min": 70,
+      "attenuation_pct_max": 78,
+      "attenuation_pct_typical": 74.0,
+      "flocculation": "medium",
+      "fermentation_temp_c_min": 10,
+      "fermentation_temp_c_max": 17,
+      "alcohol_tolerance_abv_typical": 9.0,
+      "species": "Saccharomyces pastorianus",
+      "present_on_birrf": true,
+      "source_basis": "official+birrf",
+      "analog_reference": "OYL-403",
+      "source_urls": [
+        "https://asplab.ru/yeast",
+        "https://xn--90aoy.xn--p1ai/ingredients/yeast/"
+      ]
+    },
+    {
+      "id": "asp-lab-al-501-german-ale",
+      "brand": "ASP Lab",
+      "producer_country": "Russia",
+      "product_code": "AL 501",
+      "name_ru": "Немецкий эль",
+      "name_en": "German Ale",
+      "form": "liquid",
+      "yeast_family": "ale",
+      "birrf_category": "Элевые",
+      "attenuation_pct_min": 73,
+      "attenuation_pct_max": 77,
+      "attenuation_pct_typical": 75.0,
+      "flocculation": "low",
+      "fermentation_temp_c_min": 13,
+      "fermentation_temp_c_max": 20,
+      "alcohol_tolerance_abv_typical": 11.0,
+      "species": "Saccharomyces cerevisiae",
+      "source_basis": "official",
+      "analog_reference": "Wyeast 1007",
+      "aliases_ru": [
+        "Кёльш"
+      ],
+      "source_urls": [
+        "https://asplab.ru/yeast"
+      ]
+    },
+    {
+      "id": "asp-lab-al-502-california-ale",
+      "brand": "ASP Lab",
+      "producer_country": "Russia",
+      "product_code": "AL 502",
+      "name_ru": "Калифорнийский эль",
+      "name_en": "California Ale",
+      "form": "liquid",
+      "yeast_family": "ale",
+      "birrf_category": "Элевые",
+      "attenuation_pct_min": 73,
+      "attenuation_pct_max": 80,
+      "attenuation_pct_typical": 76.5,
+      "flocculation": "medium",
+      "fermentation_temp_c_min": 20,
+      "fermentation_temp_c_max": 23,
+      "species": "Saccharomyces cerevisiae",
+      "source_basis": "official",
+      "analog_reference": "WLP001",
+      "source_urls": [
+        "https://asplab.ru/yeast"
+      ]
+    },
+    {
+      "id": "asp-lab-al-503-juice-ipa",
+      "brand": "ASP Lab",
+      "producer_country": "Russia",
+      "product_code": "AL 503",
+      "name_ru": "Джус IPA",
+      "name_en": "Juice IPA",
+      "form": "liquid",
+      "yeast_family": "ale",
+      "birrf_category": "Элевые",
+      "attenuation_pct_min": 77,
+      "attenuation_pct_max": 78,
+      "attenuation_pct_typical": 77.5,
+      "flocculation": "medium",
+      "fermentation_temp_c_min": 20,
+      "fermentation_temp_c_max": 22,
+      "species": "Saccharomyces cerevisiae",
+      "source_basis": "official",
+      "source_urls": [
+        "https://asplab.ru/yeast"
+      ]
+    },
+    {
+      "id": "asp-lab-al-504-london-esb",
+      "brand": "ASP Lab",
+      "producer_country": "Russia",
+      "product_code": "AL 504",
+      "name_ru": "Лондон ESB",
+      "name_en": "London ESB",
+      "form": "liquid",
+      "yeast_family": "ale",
+      "birrf_category": "Элевые",
+      "attenuation_pct_min": 67,
+      "attenuation_pct_max": 71,
+      "attenuation_pct_typical": 69.0,
+      "flocculation": "high",
+      "fermentation_temp_c_min": 18,
+      "fermentation_temp_c_max": 22,
+      "alcohol_tolerance_abv_typical": 9.0,
+      "species": "Saccharomyces cerevisiae",
+      "source_basis": "official",
+      "analog_reference": "Wyeast 1968",
+      "source_urls": [
+        "https://asplab.ru/yeast"
+      ]
+    },
+    {
+      "id": "asp-lab-al-505-denny-s-favorite",
+      "brand": "ASP Lab",
+      "producer_country": "Russia",
+      "product_code": "AL 505",
+      "name_ru": "Деннис Фэйворит",
+      "name_en": "Denny's Favorite",
+      "form": "liquid",
+      "yeast_family": "ale",
+      "birrf_category": "Элевые",
+      "attenuation_pct_min": 74,
+      "attenuation_pct_max": 76,
+      "attenuation_pct_typical": 75.0,
+      "flocculation": "low",
+      "fermentation_temp_c_min": 16,
+      "fermentation_temp_c_max": 21,
+      "alcohol_tolerance_abv_typical": 10.0,
+      "species": "Saccharomyces cerevisiae",
+      "source_basis": "official",
+      "analog_reference": "Wyeast 1450",
+      "source_urls": [
+        "https://asplab.ru/yeast"
+      ]
+    },
+    {
+      "id": "asp-lab-al-506-barbarian",
+      "brand": "ASP Lab",
+      "producer_country": "Russia",
+      "product_code": "AL 506",
+      "name_ru": "Барбариан",
+      "name_en": "Barbarian",
+      "form": "liquid",
+      "yeast_family": "ale",
+      "birrf_category": "Элевые",
+      "attenuation_pct_min": 73,
+      "attenuation_pct_max": 74,
+      "attenuation_pct_typical": 73.5,
+      "flocculation": "medium",
+      "fermentation_temp_c_min": 17,
+      "fermentation_temp_c_max": 21,
+      "alcohol_tolerance_abv_typical": 10.0,
+      "species": "Saccharomyces cerevisiae",
+      "source_basis": "official",
+      "analog_reference": "IY A04",
+      "aliases_ru": [
+        "Barbarian IPA"
+      ],
+      "source_urls": [
+        "https://asplab.ru/yeast"
+      ]
+    },
+    {
+      "id": "asp-lab-al-508-midland",
+      "brand": "ASP Lab",
+      "producer_country": "Russia",
+      "product_code": "AL 508",
+      "name_ru": "Мидленд",
+      "name_en": "Midland",
+      "form": "liquid",
+      "yeast_family": "ale",
+      "birrf_category": "Элевые",
+      "attenuation_pct_min": 75.0,
+      "attenuation_pct_max": 75.0,
+      "attenuation_pct_typical": 75.0,
+      "flocculation": "high",
+      "fermentation_temp_c_min": 13,
+      "fermentation_temp_c_max": 22,
+      "species": "Saccharomyces cerevisiae",
+      "source_basis": "official",
+      "aliases_ru": [
+        "British strong ale"
+      ],
+      "source_urls": [
+        "https://asplab.ru/yeast"
+      ]
+    },
+    {
+      "id": "asp-lab-al-509-be-ir",
+      "brand": "ASP Lab",
+      "producer_country": "Russia",
+      "product_code": "AL 509",
+      "name_ru": "Беòir",
+      "name_en": "Beòir",
+      "form": "liquid",
+      "yeast_family": "ale",
+      "birrf_category": "Элевые",
+      "attenuation_pct_min": 73,
+      "attenuation_pct_max": 75,
+      "attenuation_pct_typical": 74.0,
+      "fermentation_temp_c_min": 15,
+      "fermentation_temp_c_max": 22,
+      "alcohol_tolerance_abv_typical": 9.0,
+      "species": "Saccharomyces cerevisiae",
+      "source_basis": "official",
+      "aliases_ru": [
+        "Шотландский/ирландский эль"
+      ],
+      "aliases_en": [
+        "Scottish Irish Ale"
+      ],
+      "source_urls": [
+        "https://asplab.ru/yeast"
+      ]
+    },
+    {
+      "id": "asp-lab-al-510-english-ale-yeast",
+      "brand": "ASP Lab",
+      "producer_country": "Russia",
+      "product_code": "AL 510",
+      "name_ru": "Английский эль",
+      "name_en": "English Ale Yeast",
+      "form": "liquid",
+      "yeast_family": "ale",
+      "birrf_category": "Элевые",
+      "flocculation": "very high",
+      "fermentation_temp_c_min": 18,
+      "fermentation_temp_c_max": 20,
+      "species": "Saccharomyces cerevisiae",
+      "source_basis": "official",
+      "analog_reference": "WLP002",
+      "aliases_en": [
+        "English Ale"
+      ],
+      "source_urls": [
+        "https://asplab.ru/yeast"
+      ]
+    },
+    {
+      "id": "asp-lab-al-512-kolsch-ii",
+      "brand": "ASP Lab",
+      "producer_country": "Russia",
+      "product_code": "AL 512",
+      "name_ru": "Kölsch II",
+      "name_en": "Kolsch II",
+      "form": "liquid",
+      "yeast_family": "ale",
+      "birrf_category": "Элевые",
+      "attenuation_pct_min": 75.0,
+      "attenuation_pct_max": 75.0,
+      "attenuation_pct_typical": 75.0,
+      "flocculation": "medium",
+      "fermentation_temp_c_optimum": 20.0,
+      "species": "Saccharomyces cerevisiae",
+      "source_basis": "official",
+      "analog_reference": "WLP029",
+      "aliases_ru": [
+        "Кёльш II"
+      ],
+      "source_urls": [
+        "https://asplab.ru/yeast"
+      ]
+    },
+    {
+      "id": "asp-lab-al-513-kolsch",
+      "brand": "ASP Lab",
+      "producer_country": "Russia",
+      "product_code": "AL 513",
+      "name_ru": "Kölsch",
+      "name_en": "Kolsch",
+      "form": "liquid",
+      "yeast_family": "ale",
+      "birrf_category": "Элевые",
+      "fermentation_temp_c_min": 15,
+      "fermentation_temp_c_max": 21,
+      "alcohol_tolerance_abv_typical": 10.0,
+      "species": "Saccharomyces cerevisiae",
+      "source_basis": "official",
+      "analog_reference": "W177",
+      "aliases_ru": [
+        "Кёльш"
+      ],
+      "source_urls": [
+        "https://asplab.ru/yeast"
+      ]
+    },
+    {
+      "id": "asp-lab-al-514-irish-ale",
+      "brand": "ASP Lab",
+      "producer_country": "Russia",
+      "product_code": "AL 514",
+      "name_ru": "Ирландский эль",
+      "name_en": "Irish Ale",
+      "form": "liquid",
+      "yeast_family": "ale",
+      "birrf_category": "Элевые",
+      "attenuation_pct_min": 69,
+      "attenuation_pct_max": 74,
+      "attenuation_pct_typical": 71.5,
+      "flocculation": "medium-high",
+      "fermentation_temp_c_min": 18,
+      "fermentation_temp_c_max": 20,
+      "species": "Saccharomyces cerevisiae",
+      "source_basis": "official",
+      "analog_reference": "WLP004",
+      "source_urls": [
+        "https://asplab.ru/yeast"
+      ]
+    },
+    {
+      "id": "asp-lab-al-515-cosmic-punch",
+      "brand": "ASP Lab",
+      "producer_country": "Russia",
+      "product_code": "AL 515",
+      "name_ru": "Космик Панч",
+      "name_en": "Cosmic Punch",
+      "form": "liquid",
+      "yeast_family": "ale",
+      "birrf_category": "Элевые",
+      "attenuation_pct_min": 71,
+      "attenuation_pct_max": 75,
+      "attenuation_pct_typical": 73.0,
+      "fermentation_temp_c_min": 18,
+      "fermentation_temp_c_max": 24,
+      "alcohol_tolerance_abv_typical": 10.0,
+      "species": "Saccharomyces cerevisiae",
+      "source_basis": "official",
+      "analog_reference": "OYL-402",
+      "aliases_ru": [
+        "Тиолизированные IPA"
+      ],
+      "source_urls": [
+        "https://asplab.ru/yeast"
+      ]
+    },
+    {
+      "id": "asp-lab-al-516-star-party-ale",
+      "brand": "ASP Lab",
+      "producer_country": "Russia",
+      "product_code": "AL 516",
+      "name_ru": "Стар Пати Эль",
+      "name_en": "Star Party Ale",
+      "form": "liquid",
+      "yeast_family": "ale",
+      "birrf_category": "Элевые",
+      "attenuation_pct_min": 73,
+      "attenuation_pct_max": 80,
+      "attenuation_pct_typical": 76.5,
+      "flocculation": "medium-low",
+      "fermentation_temp_c_min": 16,
+      "fermentation_temp_c_max": 23,
+      "alcohol_tolerance_abv_typical": 11.0,
+      "species": "Saccharomyces cerevisiae",
+      "source_basis": "official",
+      "analog_reference": "OYL-404",
+      "aliases_ru": [
+        "Тиолизированный эль"
+      ],
+      "source_urls": [
+        "https://asplab.ru/yeast"
+      ]
+    },
+    {
+      "id": "asp-lab-al-517-helio-gazer",
+      "brand": "ASP Lab",
+      "producer_country": "Russia",
+      "product_code": "AL 517",
+      "name_ru": "Хелио Гейзер",
+      "name_en": "Helio Gazer",
+      "form": "liquid",
+      "yeast_family": "ale",
+      "birrf_category": "Элевые",
+      "attenuation_pct_min": 71,
+      "attenuation_pct_max": 75,
+      "attenuation_pct_typical": 73.0,
+      "flocculation": "high",
+      "fermentation_temp_c_min": 18,
+      "fermentation_temp_c_max": 23,
+      "alcohol_tolerance_abv_typical": 10.0,
+      "species": "Saccharomyces cerevisiae",
+      "source_basis": "official",
+      "analog_reference": "OYL-405",
+      "aliases_ru": [
+        "Тиолизированный haze"
+      ],
+      "source_urls": [
+        "https://asplab.ru/yeast"
+      ]
+    },
+    {
+      "id": "asp-lab-al-518-brut-style",
+      "brand": "ASP Lab",
+      "producer_country": "Russia",
+      "product_code": "AL 518",
+      "name_ru": "Брют стайл",
+      "name_en": "Brut Style",
+      "form": "liquid",
+      "yeast_family": "ale",
+      "birrf_category": "Элевые",
+      "attenuation_pct_min": 98,
+      "attenuation_pct_max": 100,
+      "attenuation_pct_typical": 99.0,
+      "flocculation": "medium-high",
+      "fermentation_temp_c_min": 18,
+      "fermentation_temp_c_max": 28,
+      "alcohol_tolerance_abv_typical": 11.0,
+      "species": "Saccharomyces cerevisiae",
+      "source_basis": "official",
+      "aliases_ru": [
+        "Брют IPA"
+      ],
+      "source_urls": [
+        "https://asplab.ru/yeast"
+      ]
+    },
+    {
+      "id": "asp-lab-al-601-brettanomyces-bruxellensis",
+      "brand": "ASP Lab",
+      "producer_country": "Russia",
+      "product_code": "AL 601",
+      "name_ru": "Бреттаномицеты bruxellensis",
+      "name_en": "Brettanomyces bruxellensis",
+      "form": "liquid",
+      "yeast_family": "brett",
+      "birrf_category": "Прочие",
+      "flocculation": "low",
+      "fermentation_temp_c_min": 21,
+      "fermentation_temp_c_max": 30,
+      "alcohol_tolerance_abv_min": 8,
+      "alcohol_tolerance_abv_max": 12,
+      "alcohol_tolerance_abv_typical": 10.0,
+      "species": "Brettanomyces bruxellensis",
+      "source_basis": "official",
+      "analog_reference": "WLP648",
+      "aliases_en": [
+        "Brett Brux"
+      ],
+      "source_urls": [
+        "https://asplab.ru/yeast"
+      ]
+    },
+    {
+      "id": "asp-lab-al-602-hiiva",
+      "brand": "ASP Lab",
+      "producer_country": "Russia",
+      "product_code": "AL 602",
+      "name_ru": "Хива",
+      "name_en": "Hiiva",
+      "form": "liquid",
+      "yeast_family": "wheat",
+      "birrf_category": "Прочие",
+      "attenuation_pct_min": 85.0,
+      "attenuation_pct_max": 85.0,
+      "attenuation_pct_typical": 85.0,
+      "flocculation": "low",
+      "fermentation_temp_c_optimum": 18.0,
+      "species": "Saccharomyces cerevisiae",
+      "present_on_birrf": true,
+      "source_basis": "official+birrf",
+      "analog_reference": "WLP380",
+      "aliases_ru": [
+        "Сахти",
+        "Финские дрожжи"
+      ],
+      "source_urls": [
+        "https://asplab.ru/yeast",
+        "https://xn--90aoy.xn--p1ai/ingredients/yeast/"
+      ]
+    },
+    {
+      "id": "asp-lab-al-603-brettanomyces-ii",
+      "brand": "ASP Lab",
+      "producer_country": "Russia",
+      "product_code": "AL 603",
+      "name_ru": "Бреттаномицеты II",
+      "name_en": "Brettanomyces II",
+      "form": "liquid",
+      "yeast_family": "brett",
+      "birrf_category": "Прочие",
+      "species": "Brettanomyces sp.",
+      "source_basis": "official",
+      "aliases_ru": [
+        "Бретт II"
+      ],
+      "aliases_en": [
+        "Brett II"
+      ],
+      "source_urls": [
+        "https://asplab.ru/yeast"
+      ]
+    },
+    {
+      "id": "asp-lab-al-701-berliner-weisse-blend",
+      "brand": "ASP Lab",
+      "producer_country": "Russia",
+      "product_code": "AL 701",
+      "name_ru": "Берлинер Вайссе бленд",
+      "name_en": "Berliner Weisse Blend",
+      "form": "liquid",
+      "yeast_family": "blend",
+      "birrf_category": "Прочие",
+      "attenuation_pct_min": 73,
+      "attenuation_pct_max": 80,
+      "attenuation_pct_typical": 76.5,
+      "flocculation": "medium",
+      "fermentation_temp_c_min": 20,
+      "fermentation_temp_c_max": 22,
+      "source_basis": "official",
+      "aliases_ru": [
+        "Берлинер-вайссе бленд"
+      ],
+      "source_urls": [
+        "https://asplab.ru/yeast"
+      ]
+    },
+    {
+      "id": "asp-lab-al-702-tropicale-yeast-blend",
+      "brand": "ASP Lab",
+      "producer_country": "Russia",
+      "product_code": "AL 702",
+      "name_ru": "Тропикаль бленд",
+      "name_en": "Tropicale Yeast Blend",
+      "form": "liquid",
+      "yeast_family": "blend",
+      "birrf_category": "Прочие",
+      "attenuation_pct_min": 75,
+      "attenuation_pct_max": 86,
+      "attenuation_pct_typical": 80.5,
+      "flocculation": "low",
+      "fermentation_temp_c_min": 17,
+      "fermentation_temp_c_max": 23,
+      "source_basis": "official",
+      "aliases_en": [
+        "Tropicale Blend"
+      ],
+      "source_urls": [
+        "https://asplab.ru/yeast"
+      ]
+    },
+    {
+      "id": "asp-lab-dy-2001-wheat-yeast",
+      "brand": "ASP Lab",
+      "producer_country": "Russia",
+      "product_code": "DY 2001",
+      "name_ru": "Пшеничные дрожжи",
+      "name_en": "Wheat Yeast",
+      "form": "dry",
+      "yeast_family": "wheat",
+      "birrf_category": "Пшеничные",
+      "attenuation_pct_min": 77.0,
+      "attenuation_pct_max": 77.0,
+      "attenuation_pct_typical": 77.0,
+      "flocculation": "low",
+      "fermentation_temp_c_optimum": 21.0,
+      "species": "Saccharomyces cerevisiae",
+      "present_on_birrf": true,
+      "source_basis": "official+birrf",
+      "notes": "Высокоэффективный штамм для немецких пшеничных сортов.",
+      "analog_reference": "Wheat",
+      "aliases_ru": [
+        "Вит/вайцен"
+      ],
+      "source_urls": [
+        "https://asplab.ru/3011",
+        "https://xn--90aoy.xn--p1ai/ingredients/yeast/"
+      ]
+    },
+    {
+      "id": "asp-lab-dy-3011-ale-yeast",
+      "brand": "ASP Lab",
+      "producer_country": "Russia",
+      "product_code": "DY 3011",
+      "name_ru": "Элевые дрожжи",
+      "name_en": "Ale Yeast",
+      "form": "dry",
+      "yeast_family": "ale",
+      "birrf_category": "Элевые",
+      "attenuation_pct_min": 76,
+      "attenuation_pct_max": 78,
+      "attenuation_pct_typical": 77.0,
+      "flocculation": "high",
+      "fermentation_temp_c_min": 12,
+      "fermentation_temp_c_max": 25,
+      "alcohol_tolerance_abv_typical": 12.5,
+      "species": "Saccharomyces cerevisiae",
+      "present_on_birrf": true,
+      "source_basis": "official+birrf",
+      "notes": "Нейтральный универсальный профиль.",
+      "analog_reference": "US05",
+      "aliases_ru": [
+        "Нейтральный эль"
+      ],
+      "aliases_en": [
+        "US05-like"
+      ],
+      "source_urls": [
+        "https://asplab.ru/3011",
+        "https://xn--90aoy.xn--p1ai/ingredients/yeast/"
+      ]
+    },
+    {
+      "id": "asp-lab-dy-3022-saison",
+      "brand": "ASP Lab",
+      "producer_country": "Russia",
+      "product_code": "DY 3022",
+      "name_ru": "Сезон",
+      "name_en": "Saison",
+      "form": "dry",
+      "yeast_family": "belgian",
+      "birrf_category": "Элевые",
+      "attenuation_pct_min": 88.0,
+      "attenuation_pct_max": 88.0,
+      "attenuation_pct_typical": 88.0,
+      "flocculation": "low",
+      "fermentation_temp_c_optimum": 23.0,
+      "species": "Saccharomyces cerevisiae var. diastaticus",
+      "present_on_birrf": true,
+      "source_basis": "official+birrf",
+      "notes": "Высокая диастатическая активность.",
+      "analog_reference": "Saison",
+      "source_urls": [
+        "https://asplab.ru/3011",
+        "https://xn--90aoy.xn--p1ai/ingredients/yeast/"
+      ]
+    },
+    {
+      "id": "asp-lab-dy-4011-lager-yeast",
+      "brand": "ASP Lab",
+      "producer_country": "Russia",
+      "product_code": "DY 4011",
+      "name_ru": "Лагерные дрожжи",
+      "name_en": "Lager Yeast",
+      "form": "dry",
+      "yeast_family": "lager",
+      "birrf_category": "Лагерные",
+      "attenuation_pct_min": 81,
+      "attenuation_pct_max": 85,
+      "attenuation_pct_typical": 83.0,
+      "flocculation": "high",
+      "fermentation_temp_c_min": 12,
+      "fermentation_temp_c_max": 21,
+      "species": "Saccharomyces pastorianus",
+      "present_on_birrf": true,
+      "source_basis": "official+birrf",
+      "notes": "Низкий H2S и диацетил, широкий температурный диапазон.",
+      "analog_reference": "Fast Lager",
+      "aliases_ru": [
+        "Нейтральный лагер"
+      ],
+      "source_urls": [
+        "https://asplab.ru/3011",
+        "https://xn--90aoy.xn--p1ai/ingredients/yeast/"
+      ]
+    },
+    {
+      "id": "beergenomics-beergene-a023-beergene-a023",
+      "brand": "BeerGenomics",
+      "producer_country": "Russia",
+      "product_code": "BeerGene A023",
+      "name_ru": "Пивной ген A023",
+      "name_en": "BeerGene A023",
+      "form": "liquid",
+      "yeast_family": "ale",
+      "birrf_category": "Элевые",
+      "attenuation_pct_min": 75.0,
+      "attenuation_pct_max": 75.0,
+      "attenuation_pct_typical": 75.0,
+      "flocculation": "medium",
+      "fermentation_temp_c_optimum": 19.5,
+      "species": "Saccharomyces cerevisiae",
+      "present_on_birrf": true,
+      "source_basis": "official+birrf",
+      "notes": "Чистый штамм для светлых элей, Kölsch и Altbier.",
+      "aliases_ru": [
+        "Кёльш"
+      ],
+      "source_urls": [
+        "https://beergenomics.ru/company",
+        "https://beergenomics.ru/",
+        "https://xn--90aoy.xn--p1ai/ingredients/yeast/"
+      ]
+    },
+    {
+      "id": "beergenomics-beergene-ad003-beergene-ad003",
+      "brand": "BeerGenomics",
+      "producer_country": "Russia",
+      "product_code": "BeerGene AD003",
+      "name_ru": "Пивной ген AD003",
+      "name_en": "BeerGene AD003",
+      "form": "liquid",
+      "yeast_family": "ale",
+      "birrf_category": "Элевые",
+      "attenuation_pct_min": 90.0,
+      "attenuation_pct_max": 90.0,
+      "attenuation_pct_typical": 90.0,
+      "flocculation": "high",
+      "fermentation_temp_c_optimum": 16.0,
+      "species": "Saccharomyces cerevisiae",
+      "present_on_birrf": true,
+      "source_basis": "official+birrf",
+      "notes": "Универсальный английский штамм для IPA, porter, stout и high gravity.",
+      "aliases_ru": [
+        "Английский универсальный эль"
+      ],
+      "source_urls": [
+        "https://beergenomics.ru/company",
+        "https://beergenomics.ru/",
+        "https://xn--90aoy.xn--p1ai/ingredients/yeast/"
+      ]
+    },
+    {
+      "id": "beergenomics-beergene-l004-beergene-l004",
+      "brand": "BeerGenomics",
+      "producer_country": "Russia",
+      "product_code": "BeerGene L004",
+      "name_ru": "Пивной ген L004",
+      "name_en": "BeerGene L004",
+      "form": "liquid",
+      "yeast_family": "lager",
+      "birrf_category": "Лагерные",
+      "attenuation_pct_min": 76.0,
+      "attenuation_pct_max": 76.0,
+      "attenuation_pct_typical": 76.0,
+      "flocculation": "medium",
+      "fermentation_temp_c_optimum": 10.0,
+      "species": "Saccharomyces pastorianus",
+      "present_on_birrf": true,
+      "source_basis": "official+birrf",
+      "notes": "Saccharomyces pastorianus, хорошо сочетается с обжаренными солодами.",
+      "aliases_ru": [
+        "Тёмный лагер"
+      ],
+      "source_urls": [
+        "https://beergenomics.ru/company",
+        "https://beergenomics.ru/",
+        "https://xn--90aoy.xn--p1ai/ingredients/yeast/"
+      ]
+    },
+    {
+      "id": "beergenomics-beergene-lk002-beergene-lk002",
+      "brand": "BeerGenomics",
+      "producer_country": "Russia",
+      "product_code": "BeerGene LK002",
+      "name_ru": "Пивной ген LK002",
+      "name_en": "BeerGene LK002",
+      "form": "liquid",
+      "yeast_family": "lager",
+      "birrf_category": "Лагерные",
+      "attenuation_pct_min": 90.0,
+      "attenuation_pct_max": 90.0,
+      "attenuation_pct_typical": 90.0,
+      "flocculation": "high",
+      "fermentation_temp_c_optimum": 9.5,
+      "species": "Saccharomyces pastorianus",
+      "present_on_birrf": true,
+      "source_basis": "official+birrf",
+      "notes": "Классический штамм для Pilsner, чистый вкус, хорошая оседаемость.",
+      "aliases_ru": [
+        "Пильзнер"
+      ],
+      "source_urls": [
+        "https://beergenomics.ru/company",
+        "https://beergenomics.ru/",
+        "https://xn--90aoy.xn--p1ai/ingredients/yeast/"
+      ]
+    },
+    {
+      "id": "beergenomics-fertech-a003-fertech-a003",
+      "brand": "BeerGenomics",
+      "producer_country": "Russia",
+      "product_code": "Fertech A003",
+      "name_ru": "Фертеч A003",
+      "name_en": "Fertech A003",
+      "form": "liquid",
+      "yeast_family": "wheat",
+      "birrf_category": "Пшеничные",
+      "attenuation_pct_min": 74.0,
+      "attenuation_pct_max": 74.0,
+      "attenuation_pct_typical": 74.0,
+      "flocculation": "low",
+      "fermentation_temp_c_optimum": 21.0,
+      "species": "Saccharomyces cerevisiae",
+      "present_on_birrf": true,
+      "source_basis": "official+birrf",
+      "notes": "Банановый профиль, повышенный изоамилацетат.",
+      "aliases_ru": [
+        "Банановый профиль"
+      ],
+      "source_urls": [
+        "https://beergenomics.ru/company",
+        "https://beergenomics.ru/",
+        "https://xn--90aoy.xn--p1ai/ingredients/yeast/"
+      ]
+    },
+    {
+      "id": "beergenomics-fertech-a004-fertech-a004",
+      "brand": "BeerGenomics",
+      "producer_country": "Russia",
+      "product_code": "Fertech A004",
+      "name_ru": "Фертеч A004",
+      "name_en": "Fertech A004",
+      "form": "liquid",
+      "yeast_family": "ale",
+      "birrf_category": "Элевые",
+      "attenuation_pct_min": 72.0,
+      "attenuation_pct_max": 72.0,
+      "attenuation_pct_typical": 72.0,
+      "flocculation": "medium",
+      "fermentation_temp_c_optimum": 19.0,
+      "species": "Saccharomyces cerevisiae",
+      "present_on_birrf": true,
+      "source_basis": "official+birrf",
+      "notes": "Хорошо раскрывает современный хмель и сочный профиль.",
+      "source_urls": [
+        "https://beergenomics.ru/company",
+        "https://beergenomics.ru/",
+        "https://xn--90aoy.xn--p1ai/ingredients/yeast/"
+      ]
+    },
+    {
+      "id": "beergenomics-fertech-a006-fertech-a006",
+      "brand": "BeerGenomics",
+      "producer_country": "Russia",
+      "product_code": "Fertech A006",
+      "name_ru": "Фертеч A006",
+      "name_en": "Fertech A006",
+      "form": "liquid",
+      "yeast_family": "belgian",
+      "birrf_category": "Элевые",
+      "attenuation_pct_min": 82.0,
+      "attenuation_pct_max": 82.0,
+      "attenuation_pct_typical": 82.0,
+      "flocculation": "medium",
+      "fermentation_temp_c_optimum": 22.0,
+      "species": "Saccharomyces cerevisiae",
+      "present_on_birrf": true,
+      "source_basis": "official+birrf",
+      "notes": "Фермерский профиль: груша, яблоко, перец.",
+      "aliases_ru": [
+        "Фермерский эль"
+      ],
+      "source_urls": [
+        "https://beergenomics.ru/company",
+        "https://beergenomics.ru/",
+        "https://xn--90aoy.xn--p1ai/ingredients/yeast/"
+      ]
+    },
+    {
+      "id": "beergenomics-fertech-a007-fertech-a007",
+      "brand": "BeerGenomics",
+      "producer_country": "Russia",
+      "product_code": "Fertech A007",
+      "name_ru": "Фертеч A007",
+      "name_en": "Fertech A007",
+      "form": "liquid",
+      "yeast_family": "wheat",
+      "birrf_category": "Пшеничные",
+      "attenuation_pct_min": 73.0,
+      "attenuation_pct_max": 73.0,
+      "attenuation_pct_typical": 73.0,
+      "flocculation": "low",
+      "fermentation_temp_c_optimum": 21.0,
+      "species": "Saccharomyces cerevisiae",
+      "present_on_birrf": true,
+      "source_basis": "official+birrf",
+      "notes": "Яблоко, груша, слива и банановая нота с фенолами гвоздики.",
+      "aliases_ru": [
+        "Weizen"
+      ],
+      "source_urls": [
+        "https://beergenomics.ru/company",
+        "https://beergenomics.ru/",
+        "https://xn--90aoy.xn--p1ai/ingredients/yeast/"
+      ]
+    },
+    {
+      "id": "beergenomics-fertech-a014-fertech-a014",
+      "brand": "BeerGenomics",
+      "producer_country": "Russia",
+      "product_code": "Fertech A014",
+      "name_ru": "Фертеч A014",
+      "name_en": "Fertech A014",
+      "form": "liquid",
+      "yeast_family": "ale",
+      "birrf_category": "Элевые",
+      "attenuation_pct_min": 74.0,
+      "attenuation_pct_max": 74.0,
+      "attenuation_pct_typical": 74.0,
+      "flocculation": "medium",
+      "fermentation_temp_c_optimum": 20.5,
+      "species": "Saccharomyces cerevisiae",
+      "present_on_birrf": true,
+      "source_basis": "official+birrf",
+      "notes": "Сочный и фруктовый профиль для modern IPA.",
+      "aliases_ru": [
+        "Тропический IPA"
+      ],
+      "source_urls": [
+        "https://beergenomics.ru/company",
+        "https://beergenomics.ru/",
+        "https://xn--90aoy.xn--p1ai/ingredients/yeast/"
+      ]
+    },
+    {
+      "id": "beergenomics-fertech-a016-fertech-a016",
+      "brand": "BeerGenomics",
+      "producer_country": "Russia",
+      "product_code": "Fertech A016",
+      "name_ru": "Фертеч A016",
+      "name_en": "Fertech A016",
+      "form": "liquid",
+      "yeast_family": "ale",
+      "birrf_category": "Элевые",
+      "attenuation_pct_min": 73.0,
+      "attenuation_pct_max": 73.0,
+      "attenuation_pct_typical": 73.0,
+      "flocculation": "high",
+      "fermentation_temp_c_optimum": 20.0,
+      "species": "Saccharomyces cerevisiae",
+      "present_on_birrf": true,
+      "source_basis": "official+birrf",
+      "notes": "Универсальный английский штамм с солодовым уклоном.",
+      "source_urls": [
+        "https://beergenomics.ru/company",
+        "https://beergenomics.ru/",
+        "https://xn--90aoy.xn--p1ai/ingredients/yeast/"
+      ]
+    },
+    {
+      "id": "beergenomics-fertech-a022-fertech-a022",
+      "brand": "BeerGenomics",
+      "producer_country": "Russia",
+      "product_code": "Fertech A022",
+      "name_ru": "Фертеч A022",
+      "name_en": "Fertech A022",
+      "form": "liquid",
+      "yeast_family": "ale",
+      "birrf_category": "Элевые",
+      "attenuation_pct_min": 77.0,
+      "attenuation_pct_max": 77.0,
+      "attenuation_pct_typical": 77.0,
+      "flocculation": "medium",
+      "fermentation_temp_c_optimum": 18.0,
+      "species": "Saccharomyces cerevisiae",
+      "present_on_birrf": true,
+      "source_basis": "official+birrf",
+      "notes": "Новый активный штамм с фруктовым профилем.",
+      "aliases_ru": [
+        "Фруктовый эль"
+      ],
+      "source_urls": [
+        "https://beergenomics.ru/company",
+        "https://beergenomics.ru/",
+        "https://xn--90aoy.xn--p1ai/ingredients/yeast/"
+      ]
+    },
+    {
+      "id": "beervingem-bvg-01",
+      "brand": "BeerVingem",
+      "producer_country": "Russia",
+      "product_code": "BVG-01",
+      "name_ru": "BVG-01 Universal",
+      "name_en": "BVG-01 Universal",
+      "form": "dry",
+      "yeast_family": "ale",
+      "birrf_category": "Элевые",
+      "attenuation_pct_min": 75,
+      "attenuation_pct_max": 80,
+      "attenuation_pct_typical": 77,
+      "flocculation": "medium",
+      "fermentation_temp_c_min": 22,
+      "fermentation_temp_c_max": 28,
+      "fermentation_temp_c_optimum": 25,
+      "alcohol_tolerance_abv_typical": 9.0,
+      "present_on_birrf": true,
+      "source_basis": "birrf",
+      "aliases_ru": [
+        "универсальные"
+      ]
+    },
+    {
+      "id": "beervingem-bvg-02",
+      "brand": "BeerVingem",
+      "producer_country": "Russia",
+      "product_code": "BVG-02",
+      "name_ru": "BVG-02 Dark Ale",
+      "name_en": "BVG-02 Dark Ale",
+      "form": "dry",
+      "yeast_family": "ale",
+      "birrf_category": "Элевые",
+      "present_on_birrf": true,
+      "source_basis": "birrf",
+      "notes": "Подтверждён как рыночная позиция, но с неполными публичными техпараметрами.",
+      "aliases_ru": [
+        "тёмный эль"
+      ]
+    },
+    {
+      "id": "beervingem-bvg-03",
+      "brand": "BeerVingem",
+      "producer_country": "Russia",
+      "product_code": "BVG-03",
+      "name_ru": "BVG-03 Wheat",
+      "name_en": "BVG-03 Wheat",
+      "form": "dry",
+      "yeast_family": "wheat",
+      "birrf_category": "Пшеничные",
+      "attenuation_pct_min": 70,
+      "attenuation_pct_max": 75,
+      "attenuation_pct_typical": 73,
+      "flocculation": "medium",
+      "fermentation_temp_c_min": 20,
+      "fermentation_temp_c_max": 28,
+      "fermentation_temp_c_optimum": 24,
+      "alcohol_tolerance_abv_typical": 7.0,
+      "present_on_birrf": true,
+      "source_basis": "birrf"
+    },
+    {
+      "id": "beervingem-bvg-04",
+      "brand": "BeerVingem",
+      "producer_country": "Russia",
+      "product_code": "BVG-04",
+      "name_ru": "BVG-04 American Ale",
+      "name_en": "BVG-04 American Ale",
+      "form": "dry",
+      "yeast_family": "ale",
+      "birrf_category": "Элевые",
+      "attenuation_pct_min": 77,
+      "attenuation_pct_max": 82,
+      "attenuation_pct_typical": 80,
+      "flocculation": "high",
+      "fermentation_temp_c_min": 18,
+      "fermentation_temp_c_max": 20,
+      "fermentation_temp_c_optimum": 19,
+      "alcohol_tolerance_abv_typical": 9.0,
+      "present_on_birrf": true,
+      "source_basis": "birrf"
+    },
+    {
+      "id": "beervingem-bvg-05",
+      "brand": "BeerVingem",
+      "producer_country": "Russia",
+      "product_code": "BVG-05",
+      "name_ru": "BVG-05 Lager",
+      "name_en": "BVG-05 Lager",
+      "form": "dry",
+      "yeast_family": "lager",
+      "birrf_category": "Лагерные",
+      "attenuation_pct_typical": 74.0,
+      "flocculation": "high",
+      "fermentation_temp_c_min": 10,
+      "fermentation_temp_c_max": 15,
+      "fermentation_temp_c_optimum": 12,
+      "present_on_birrf": true,
+      "source_basis": "birrf"
+    },
+    {
+      "id": "beervingem-bvg-06",
+      "brand": "BeerVingem",
+      "producer_country": "Russia",
+      "product_code": "BVG-06",
+      "name_ru": "BVG-06 Belgian Ale",
+      "name_en": "BVG-06 Belgian Ale",
+      "form": "dry",
+      "yeast_family": "belgian",
+      "birrf_category": "Элевые",
+      "attenuation_pct_min": 75,
+      "attenuation_pct_max": 80,
+      "attenuation_pct_typical": 77,
+      "flocculation": "high",
+      "fermentation_temp_c_min": 20,
+      "fermentation_temp_c_max": 25,
+      "fermentation_temp_c_optimum": 22,
+      "alcohol_tolerance_abv_typical": 10.0,
+      "present_on_birrf": true,
+      "source_basis": "birrf"
+    },
+    {
+      "id": "fermentis-be-134",
+      "brand": "Fermentis",
+      "producer_country": "France",
+      "product_code": "BE-134",
+      "name_ru": "BE-134",
+      "name_en": "SafAle BE-134",
+      "form": "dry",
+      "yeast_family": "saison",
+      "birrf_category": "Элевые",
+      "attenuation_pct_min": 89,
+      "attenuation_pct_max": 93,
+      "attenuation_pct_typical": 91.0,
+      "flocculation": "low",
+      "sedimentation": "slow",
+      "fermentation_temp_c_min": 18,
+      "fermentation_temp_c_max": 26,
+      "alcohol_tolerance_abv_min": 9,
+      "alcohol_tolerance_abv_max": 11,
+      "species": "Saccharomyces cerevisiae",
+      "present_on_birrf": true,
+      "source_basis": "official+birrf",
+      "pof": "positive",
+      "aliases_ru": [
+        "Би-134"
+      ]
+    },
+    {
+      "id": "fermentis-be-256",
+      "brand": "Fermentis",
+      "producer_country": "France",
+      "product_code": "BE-256",
+      "name_ru": "BE-256",
+      "name_en": "SafAle BE-256",
+      "form": "dry",
+      "yeast_family": "belgian",
+      "birrf_category": "Элевые",
+      "attenuation_pct_typical": 82.0,
+      "flocculation": "high",
+      "fermentation_temp_c_min": 12,
+      "fermentation_temp_c_max": 25,
+      "species": "Saccharomyces cerevisiae",
+      "present_on_birrf": true,
+      "source_basis": "official+birrf",
+      "notes": "Часто используют для dubbel/tripel/strong Belgian ales.",
+      "aliases_ru": [
+        "Би-256",
+        "бельгийский аббатский"
+      ]
+    },
+    {
+      "id": "fermentis-br-8-safbrew-br-8",
+      "brand": "Fermentis",
+      "producer_country": "France",
+      "product_code": "BR-8",
+      "name_ru": "Бретт BR-8",
+      "name_en": "SafBrew BR-8",
+      "form": "dry",
+      "yeast_family": "brett",
+      "birrf_category": "Прочие",
+      "flocculation": "low",
+      "fermentation_temp_c_min": 15,
+      "fermentation_temp_c_max": 25,
+      "species": "Brettanomyces bruxellensis",
+      "present_on_birrf": false,
+      "source_basis": "official",
+      "notes": "Первый сухой Brett Fermentis; ориентирован на реферментацию и развитие funky-профиля.",
+      "aliases_ru": [
+        "СафБрю BR-8"
+      ],
+      "aliases_en": [
+        "dry Brett"
+      ],
+      "source_urls": [
+        "https://fermentis.com/en/product/safbrew-br%E2%80%918/"
+      ]
+    },
+    {
+      "id": "fermentis-bw-20",
+      "brand": "Fermentis",
+      "producer_country": "France",
+      "product_code": "BW-20",
+      "name_ru": "BW-20",
+      "name_en": "SafAle BW-20",
+      "form": "dry",
+      "yeast_family": "wheat",
+      "birrf_category": "Пшеничные",
+      "attenuation_pct_min": 77,
+      "attenuation_pct_max": 83,
+      "attenuation_pct_typical": 80.0,
+      "flocculation": "low",
+      "sedimentation": "medium",
+      "fermentation_temp_c_min": 18,
+      "fermentation_temp_c_max": 26,
+      "species": "Saccharomyces cerevisiae",
+      "present_on_birrf": true,
+      "source_basis": "official+birrf"
+    },
+    {
+      "id": "fermentis-da-16",
+      "brand": "Fermentis",
+      "producer_country": "France",
+      "product_code": "DA-16",
+      "name_ru": "DA-16",
+      "name_en": "SafAle DA-16",
+      "form": "dry",
+      "yeast_family": "brut",
+      "birrf_category": "Прочие",
+      "attenuation_pct_min": 98,
+      "attenuation_pct_max": 102,
+      "attenuation_pct_typical": 100.0,
+      "flocculation": "medium",
+      "sedimentation": "medium",
+      "fermentation_temp_c_min": 20,
+      "fermentation_temp_c_max": 32,
+      "alcohol_tolerance_abv_typical": 16.0,
+      "species": "Saccharomyces cerevisiae",
+      "present_on_birrf": true,
+      "source_basis": "official+birrf",
+      "notes": "All-in-1 yeast & enzymes mix для Brut IPA и очень сухого профиля.",
+      "pof": "negative",
+      "aliases_ru": [
+        "Brut IPA",
+        "очень сухое пиво"
+      ]
+    },
+    {
+      "id": "fermentis-dw-17-safbrew-dw-17",
+      "brand": "Fermentis",
+      "producer_country": "France",
+      "product_code": "DW-17",
+      "name_ru": "Сверхсухой эль DW-17",
+      "name_en": "SafBrew DW-17",
+      "form": "dry",
+      "yeast_family": "specialty_dry",
+      "birrf_category": "Прочие",
+      "fermentation_temp_c_min": 18,
+      "fermentation_temp_c_max": 25,
+      "alcohol_tolerance_abv_min": 17,
+      "alcohol_tolerance_abv_max": 17,
+      "alcohol_tolerance_abv_typical": 17.0,
+      "species": "Saccharomyces cerevisiae",
+      "present_on_birrf": false,
+      "source_basis": "official",
+      "notes": "Смесь дрожжей и ферментов All-In-1 для очень сухих и сложных сортов; подходит для very high gravity.",
+      "pof": "positive",
+      "aliases_ru": [
+        "СафБрю DW-17",
+        "экстра сухое пиво",
+        "брют/очень сухое"
+      ],
+      "aliases_en": [
+        "dry complex beers"
+      ],
+      "source_urls": [
+        "https://fermentis.com/en/product/safbrew-dw%E2%80%9117/"
+      ]
+    },
+    {
+      "id": "fermentis-e-30-saflager-e-30",
+      "brand": "Fermentis",
+      "producer_country": "France",
+      "product_code": "E-30",
+      "name_ru": "Фруктовый лагер E-30",
+      "name_en": "SafLager E-30",
+      "form": "dry",
+      "yeast_family": "lager",
+      "birrf_category": "Лагерные",
+      "flocculation": "medium",
+      "fermentation_temp_c_min": 12,
+      "fermentation_temp_c_max": 18,
+      "species": "Saccharomyces pastorianus",
+      "present_on_birrf": false,
+      "source_basis": "official",
+      "notes": "Новый лагерный штамм с повышенной эфирностью; акцент на фруктовые лагерные профили.",
+      "aliases_ru": [
+        "СафЛагер E-30",
+        "Е-30",
+        "фруктовый лагер"
+      ],
+      "aliases_en": [
+        "fruity lager yeast"
+      ],
+      "source_urls": [
+        "https://fermentis.com/en/product/saflager-e%E2%80%9130/"
+      ]
+    },
+    {
+      "id": "fermentis-f-2-safale-f-2",
+      "brand": "Fermentis",
+      "producer_country": "France",
+      "product_code": "F-2",
+      "name_ru": "Для дображивания F-2",
+      "name_en": "SafAle F-2",
+      "form": "dry",
+      "yeast_family": "conditioning",
+      "birrf_category": "Прочие",
+      "flocculation": "high",
+      "fermentation_temp_c_min": 15,
+      "fermentation_temp_c_max": 25,
+      "alcohol_tolerance_abv_min": 10,
+      "alcohol_tolerance_abv_max": 15,
+      "alcohol_tolerance_abv_typical": 12.5,
+      "species": "Saccharomyces cerevisiae",
+      "present_on_birrf": false,
+      "source_basis": "official",
+      "notes": "Штамм для вторичного брожения в бутылке/кеге; нейтральный профиль, почти не усваивает мальтотриозу.",
+      "aliases_ru": [
+        "СафЭль F-2",
+        "Ф-2",
+        "для дображивания в бутылке"
+      ],
+      "aliases_en": [
+        "bottle conditioning yeast",
+        "cask conditioning yeast"
+      ],
+      "source_urls": [
+        "https://fermentis.com/en/product/safale-f%E2%80%912/"
+      ]
+    },
+    {
+      "id": "fermentis-ha-18",
+      "brand": "Fermentis",
+      "producer_country": "France",
+      "product_code": "HA-18",
+      "name_ru": "HA-18",
+      "name_en": "SafAle HA-18",
+      "form": "dry",
+      "yeast_family": "high_gravity",
+      "birrf_category": "Прочие",
+      "attenuation_pct_min": 98,
+      "attenuation_pct_max": 102,
+      "attenuation_pct_typical": 100.0,
+      "flocculation": "medium",
+      "sedimentation": "medium",
+      "fermentation_temp_c_min": 25,
+      "fermentation_temp_c_max": 35,
+      "alcohol_tolerance_abv_typical": 18.0,
+      "species": "Saccharomyces cerevisiae",
+      "present_on_birrf": true,
+      "source_basis": "official+birrf",
+      "notes": "All-in-1 yeast & enzymes mix для very high gravity beer.",
+      "pof": "positive",
+      "aliases_ru": [
+        "для high gravity"
+      ]
+    },
+    {
+      "id": "fermentis-k-97",
+      "brand": "Fermentis",
+      "producer_country": "France",
+      "product_code": "K-97",
+      "name_ru": "K-97",
+      "name_en": "SafAle K-97",
+      "form": "dry",
+      "yeast_family": "ale",
+      "birrf_category": "Элевые",
+      "attenuation_pct_min": 80,
+      "attenuation_pct_max": 84,
+      "attenuation_pct_typical": 82.0,
+      "flocculation": "low-medium",
+      "sedimentation": "slow",
+      "fermentation_temp_c_min": 18,
+      "fermentation_temp_c_max": 26,
+      "alcohol_tolerance_abv_min": 9,
+      "alcohol_tolerance_abv_max": 11,
+      "species": "Saccharomyces cerevisiae",
+      "present_on_birrf": true,
+      "source_basis": "official+birrf",
+      "aliases_ru": [
+        "К-97",
+        "кёльш",
+        "германский эль"
+      ]
+    },
+    {
+      "id": "fermentis-la-01",
+      "brand": "Fermentis",
+      "producer_country": "France",
+      "product_code": "LA-01",
+      "name_ru": "LA-01",
+      "name_en": "SafBrew LA-01",
+      "form": "dry",
+      "yeast_family": "low_no_alcohol",
+      "birrf_category": "Прочие",
+      "attenuation_pct_typical": 15.0,
+      "flocculation": "medium",
+      "fermentation_temp_c_min": 15,
+      "fermentation_temp_c_max": 25,
+      "species": "Saccharomyces cerevisiae var. chevalieri",
+      "present_on_birrf": true,
+      "source_basis": "official+birrf",
+      "notes": "Для low/no alcohol beer.",
+      "pof": "positive"
+    },
+    {
+      "id": "fermentis-ld-20-safbrew-ld-20",
+      "brand": "Fermentis",
+      "producer_country": "France",
+      "product_code": "LD-20",
+      "name_ru": "Низкоуглеводный лагер LD-20",
+      "name_en": "SafBrew LD-20",
+      "form": "dry",
+      "yeast_family": "specialty_lager",
+      "birrf_category": "Лагерные",
+      "fermentation_temp_c_min": 12,
+      "fermentation_temp_c_max": 18,
+      "species": "Saccharomyces pastorianus",
+      "present_on_birrf": false,
+      "source_basis": "official",
+      "notes": "Смесь лагерных дрожжей и ферментов All-In-1 для сухих lager с пониженным остаточным сахаром и углеводами.",
+      "aliases_ru": [
+        "СафБрю LD-20",
+        "сухой лагер",
+        "низкоуглеводный лагер"
+      ],
+      "aliases_en": [
+        "lower carb dry lager"
+      ],
+      "source_urls": [
+        "https://fermentis.com/en/product/safbrew-ld%E2%80%9120/"
+      ]
+    },
+    {
+      "id": "fermentis-s-04",
+      "brand": "Fermentis",
+      "producer_country": "France",
+      "product_code": "S-04",
+      "name_ru": "S-04",
+      "name_en": "SafAle S-04",
+      "form": "dry",
+      "yeast_family": "ale",
+      "birrf_category": "Элевые",
+      "attenuation_pct_min": 74,
+      "attenuation_pct_max": 82,
+      "attenuation_pct_typical": 78.0,
+      "flocculation": "high",
+      "sedimentation": "fast",
+      "fermentation_temp_c_min": 18,
+      "fermentation_temp_c_max": 26,
+      "alcohol_tolerance_abv_min": 9,
+      "alcohol_tolerance_abv_max": 11,
+      "species": "Saccharomyces cerevisiae",
+      "present_on_birrf": true,
+      "source_basis": "official+birrf",
+      "pof": "negative",
+      "aliases_ru": [
+        "ЭС-04"
+      ]
+    },
+    {
+      "id": "fermentis-s-189",
+      "brand": "Fermentis",
+      "producer_country": "France",
+      "product_code": "S-189",
+      "name_ru": "S-189",
+      "name_en": "SafLager S-189",
+      "form": "dry",
+      "yeast_family": "lager",
+      "birrf_category": "Лагерные",
+      "attenuation_pct_min": 80,
+      "attenuation_pct_max": 84,
+      "attenuation_pct_typical": 82.0,
+      "flocculation": "high",
+      "sedimentation": "fast",
+      "fermentation_temp_c_min": 12,
+      "fermentation_temp_c_max": 18,
+      "alcohol_tolerance_abv_min": 9,
+      "alcohol_tolerance_abv_max": 11,
+      "species": "Saccharomyces pastorianus",
+      "present_on_birrf": true,
+      "source_basis": "official+birrf",
+      "pof": "negative",
+      "aliases_ru": [
+        "С-189"
+      ]
+    },
+    {
+      "id": "fermentis-s-23",
+      "brand": "Fermentis",
+      "producer_country": "France",
+      "product_code": "S-23",
+      "name_ru": "S-23",
+      "name_en": "SafLager S-23",
+      "form": "dry",
+      "yeast_family": "lager",
+      "birrf_category": "Лагерные",
+      "attenuation_pct_min": 80,
+      "attenuation_pct_max": 84,
+      "attenuation_pct_typical": 82.0,
+      "flocculation": "high",
+      "sedimentation": "fast",
+      "fermentation_temp_c_min": 12,
+      "fermentation_temp_c_max": 18,
+      "alcohol_tolerance_abv_min": 9,
+      "alcohol_tolerance_abv_max": 11,
+      "species": "Saccharomyces pastorianus",
+      "present_on_birrf": true,
+      "source_basis": "official+birrf",
+      "pof": "negative",
+      "aliases_ru": [
+        "С-23"
+      ]
+    },
+    {
+      "id": "fermentis-s-33",
+      "brand": "Fermentis",
+      "producer_country": "France",
+      "product_code": "S-33",
+      "name_ru": "S-33",
+      "name_en": "SafAle S-33",
+      "form": "dry",
+      "yeast_family": "ale",
+      "birrf_category": "Элевые",
+      "attenuation_pct_min": 68,
+      "attenuation_pct_max": 72,
+      "attenuation_pct_typical": 70.0,
+      "flocculation": "medium",
+      "sedimentation": "medium",
+      "fermentation_temp_c_min": 18,
+      "fermentation_temp_c_max": 26,
+      "alcohol_tolerance_abv_min": 9,
+      "alcohol_tolerance_abv_max": 11,
+      "species": "Saccharomyces cerevisiae",
+      "present_on_birrf": true,
+      "source_basis": "official+birrf",
+      "aliases_ru": [
+        "ЭС-33"
+      ]
+    },
+    {
+      "id": "fermentis-sh-45",
+      "brand": "Fermentis",
+      "producer_country": "France",
+      "product_code": "SH-45",
+      "name_ru": "SH-45",
+      "name_en": "SafLager SH-45",
+      "form": "dry",
+      "yeast_family": "lager",
+      "birrf_category": "Лагерные",
+      "attenuation_pct_min": 77,
+      "attenuation_pct_max": 82,
+      "attenuation_pct_typical": 79.5,
+      "flocculation": "medium",
+      "sedimentation": "medium",
+      "fermentation_temp_c_min": 12,
+      "fermentation_temp_c_max": 18,
+      "species": "Saccharomyces pastorianus",
+      "present_on_birrf": true,
+      "source_basis": "official+birrf",
+      "notes": "Штамм для усиления тиольного профиля хмеля.",
+      "aliases_ru": [
+        "thiol lager"
+      ]
+    },
+    {
+      "id": "fermentis-t-58",
+      "brand": "Fermentis",
+      "producer_country": "France",
+      "product_code": "T-58",
+      "name_ru": "T-58",
+      "name_en": "SafAle T-58",
+      "form": "dry",
+      "yeast_family": "belgian",
+      "birrf_category": "Элевые",
+      "attenuation_pct_min": 72,
+      "attenuation_pct_max": 78,
+      "attenuation_pct_typical": 75.0,
+      "flocculation": "medium",
+      "sedimentation": "medium",
+      "fermentation_temp_c_min": 18,
+      "fermentation_temp_c_max": 26,
+      "alcohol_tolerance_abv_min": 9,
+      "alcohol_tolerance_abv_max": 11,
+      "species": "Saccharomyces cerevisiae",
+      "present_on_birrf": true,
+      "source_basis": "official+birrf",
+      "pof": "positive",
+      "aliases_ru": [
+        "Т-58",
+        "бельгийский пряный эль"
+      ]
+    },
+    {
+      "id": "fermentis-us-05",
+      "brand": "Fermentis",
+      "producer_country": "France",
+      "product_code": "US-05",
+      "name_ru": "US-05",
+      "name_en": "SafAle US-05",
+      "form": "dry",
+      "yeast_family": "ale",
+      "birrf_category": "Элевые",
+      "attenuation_pct_min": 78,
+      "attenuation_pct_max": 82,
+      "attenuation_pct_typical": 80.0,
+      "flocculation": "medium",
+      "fermentation_temp_c_min": 18,
+      "fermentation_temp_c_max": 26,
+      "alcohol_tolerance_abv_min": 9,
+      "alcohol_tolerance_abv_max": 11,
+      "species": "Saccharomyces cerevisiae",
+      "present_on_birrf": true,
+      "source_basis": "official+birrf",
+      "pof": "negative",
+      "aliases_ru": [
+        "ЮС-05"
+      ]
+    },
+    {
+      "id": "fermentis-w-34-70",
+      "brand": "Fermentis",
+      "producer_country": "France",
+      "product_code": "W-34/70",
+      "name_ru": "W-34/70",
+      "name_en": "SafLager W-34/70",
+      "form": "dry",
+      "yeast_family": "lager",
+      "birrf_category": "Лагерные",
+      "attenuation_pct_typical": 83.0,
+      "flocculation": "high",
+      "fermentation_temp_c_min": 12,
+      "fermentation_temp_c_max": 18,
+      "fermentation_temp_c_optimum": 13,
+      "species": "Saccharomyces pastorianus",
+      "present_on_birrf": true,
+      "source_basis": "official+birrf",
+      "notes": "Один из самых популярных сухих лагерных штаммов.",
+      "aliases_ru": [
+        "34/70"
+      ]
+    },
+    {
+      "id": "fermentis-w-68",
+      "brand": "Fermentis",
+      "producer_country": "France",
+      "product_code": "W-68",
+      "name_ru": "W-68",
+      "name_en": "SafAle W-68",
+      "form": "dry",
+      "yeast_family": "wheat",
+      "birrf_category": "Пшеничные",
+      "attenuation_pct_min": 78,
+      "attenuation_pct_max": 84,
+      "attenuation_pct_typical": 81.0,
+      "flocculation": "medium",
+      "sedimentation": "medium",
+      "fermentation_temp_c_min": 20,
+      "fermentation_temp_c_max": 32,
+      "species": "Saccharomyces cerevisiae",
+      "present_on_birrf": true,
+      "source_basis": "official+birrf",
+      "aliases_ru": [
+        "немецкие пшеничные"
+      ]
+    },
+    {
+      "id": "fermentis-wb-06",
+      "brand": "Fermentis",
+      "producer_country": "France",
+      "product_code": "WB-06",
+      "name_ru": "WB-06",
+      "name_en": "SafAle WB-06",
+      "form": "dry",
+      "yeast_family": "wheat",
+      "birrf_category": "Пшеничные",
+      "attenuation_pct_min": 86,
+      "attenuation_pct_max": 90,
+      "attenuation_pct_typical": 88.0,
+      "flocculation": "low",
+      "sedimentation": "slow",
+      "fermentation_temp_c_min": 18,
+      "fermentation_temp_c_max": 26,
+      "alcohol_tolerance_abv_min": 9,
+      "alcohol_tolerance_abv_max": 11,
+      "species": "Saccharomyces cerevisiae",
+      "present_on_birrf": true,
+      "source_basis": "official+birrf",
+      "pof": "positive",
+      "aliases_ru": [
+        "ВБ-06"
+      ]
+    },
+    {
+      "id": "gozdawa-34-70",
+      "brand": "Gozdawa",
+      "producer_country": "Poland",
+      "product_code": "34/70",
+      "name_ru": "34/70 Gozdawa",
+      "name_en": "34/70",
+      "form": "dry",
+      "yeast_family": "lager",
+      "birrf_category": "Лагерные",
+      "attenuation_pct_typical": 80.0,
+      "flocculation": "high",
+      "fermentation_temp_c_min": 9,
+      "fermentation_temp_c_max": 15,
+      "fermentation_temp_c_optimum": 12,
+      "present_on_birrf": true,
+      "source_basis": "birrf",
+      "aliases_ru": [
+        "лагерные 34/70"
+      ]
+    },
+    {
+      "id": "gozdawa-belgian-fruit-spicy-ale",
+      "brand": "Gozdawa",
+      "producer_country": "Poland",
+      "product_code": "Belgian Fruit & Spicy Ale",
+      "name_ru": "Бельгийский Fruit & Spicy Ale",
+      "name_en": "Belgian Fruit & Spicy Ale",
+      "form": "dry",
+      "yeast_family": "belgian",
+      "birrf_category": "Элевые",
+      "attenuation_pct_typical": 80.0,
+      "flocculation": "medium",
+      "fermentation_temp_c_min": 18,
+      "fermentation_temp_c_max": 30,
+      "fermentation_temp_c_optimum": 24,
+      "alcohol_tolerance_abv_typical": 8.7,
+      "present_on_birrf": true,
+      "source_basis": "birrf",
+      "aliases_ru": [
+        "бельгийский фруктовый и пряный эль"
+      ]
+    },
+    {
+      "id": "gozdawa-classic-belgian-witbier",
+      "brand": "Gozdawa",
+      "producer_country": "Poland",
+      "product_code": "Classic Belgian Witbier",
+      "name_ru": "Классический Бельгийский Витбир",
+      "name_en": "Classic Belgian Witbier",
+      "form": "dry",
+      "yeast_family": "wheat",
+      "birrf_category": "Пшеничные",
+      "attenuation_pct_typical": 75.0,
+      "flocculation": "medium",
+      "fermentation_temp_c_min": 16,
+      "fermentation_temp_c_max": 25,
+      "fermentation_temp_c_optimum": 23,
+      "alcohol_tolerance_abv_typical": 6.8,
+      "present_on_birrf": true,
+      "source_basis": "birrf",
+      "aliases_ru": [
+        "Gozdawa Витбир"
+      ]
+    },
+    {
+      "id": "gozdawa-fruit-blanche-g1",
+      "brand": "Gozdawa",
+      "producer_country": "Poland",
+      "product_code": "Fruit Blanche G1",
+      "name_ru": "Фруктовый Бланш G1",
+      "name_en": "Fruit Blanche G1",
+      "form": "dry",
+      "yeast_family": "wheat",
+      "birrf_category": "Пшеничные",
+      "attenuation_pct_typical": 75.0,
+      "flocculation": "low",
+      "fermentation_temp_c_min": 20,
+      "fermentation_temp_c_max": 26,
+      "fermentation_temp_c_optimum": 23,
+      "present_on_birrf": true,
+      "source_basis": "birrf",
+      "aliases_ru": [
+        "Gozdawa Fruit Blanche",
+        "Бланш"
+      ]
+    },
+    {
+      "id": "grainlab-gl-05",
+      "brand": "GrainLab",
+      "producer_country": "Russia",
+      "product_code": "GL-05",
+      "name_ru": "GL-05 Ale Yeast",
+      "name_en": "GL-05 Ale Yeast",
+      "form": "dry",
+      "yeast_family": "ale",
+      "birrf_category": "Элевые",
+      "attenuation_pct_typical": 77.0,
+      "flocculation": "high",
+      "fermentation_temp_c_min": 16,
+      "fermentation_temp_c_max": 25,
+      "fermentation_temp_c_optimum": 20.5,
+      "present_on_birrf": true,
+      "source_basis": "birrf",
+      "aliases_ru": [
+        "российские эльовые"
+      ]
+    },
+    {
+      "id": "grainlab-gl-07",
+      "brand": "GrainLab",
+      "producer_country": "Russia",
+      "product_code": "GL-07",
+      "name_ru": "GL-07 Wheat Yeast",
+      "name_en": "GL-07 Wheat Yeast",
+      "form": "dry",
+      "yeast_family": "wheat",
+      "birrf_category": "Пшеничные",
+      "attenuation_pct_typical": 76.0,
+      "flocculation": "low",
+      "fermentation_temp_c_min": 18,
+      "fermentation_temp_c_max": 23,
+      "fermentation_temp_c_optimum": 20.5,
+      "present_on_birrf": true,
+      "source_basis": "birrf",
+      "aliases_ru": [
+        "пшеничные российские"
+      ]
+    },
+    {
+      "id": "grainlab-gl-11",
+      "brand": "GrainLab",
+      "producer_country": "Russia",
+      "product_code": "GL-11",
+      "name_ru": "GL-11 Lager",
+      "name_en": "GL-11 Lager",
+      "form": "dry",
+      "yeast_family": "lager",
+      "birrf_category": "Лагерные",
+      "attenuation_pct_typical": 83.0,
+      "flocculation": "high",
+      "fermentation_temp_c_min": 8,
+      "fermentation_temp_c_max": 16,
+      "fermentation_temp_c_optimum": 12,
+      "present_on_birrf": true,
+      "source_basis": "birrf",
+      "aliases_ru": [
+        "российские лагерные"
+      ]
+    },
+    {
+      "id": "lallemand-abbaye",
+      "brand": "Lallemand",
+      "producer_country": "Canada",
+      "product_code": "Abbaye",
+      "name_ru": "Аббай",
+      "name_en": "Abbaye",
+      "form": "dry",
+      "yeast_family": "belgian",
+      "birrf_category": "Элевые",
+      "attenuation_pct_min": 77,
+      "attenuation_pct_max": 83,
+      "attenuation_pct_typical": 80.0,
+      "flocculation": "medium",
+      "fermentation_temp_c_min": 17,
+      "fermentation_temp_c_max": 25,
+      "alcohol_tolerance_abv_typical": 14.0,
+      "species": "Saccharomyces cerevisiae",
+      "present_on_birrf": true,
+      "source_basis": "official+birrf",
+      "notes": "Бельгийский аббатский профиль.",
+      "aliases_ru": [
+        "LalBrew Abbaye",
+        "Аббатство",
+        "Бельгийский аббатский эль"
+      ],
+      "aliases_en": [
+        "LalBrew Abbaye"
+      ]
+    },
+    {
+      "id": "lallemand-aurora-lalbrew-aurora",
+      "brand": "Lallemand",
+      "producer_country": "Canada",
+      "product_code": "Aurora",
+      "name_ru": "Аурора",
+      "name_en": "LalBrew Aurora",
+      "form": "dry",
+      "yeast_family": "ipa",
+      "birrf_category": "Элевые",
+      "attenuation_pct_min": 74,
+      "attenuation_pct_max": 82,
+      "attenuation_pct_typical": 78.0,
+      "flocculation": "medium-high",
+      "fermentation_temp_c_min": 12,
+      "fermentation_temp_c_max": 30,
+      "alcohol_tolerance_abv_min": 13,
+      "alcohol_tolerance_abv_max": 13,
+      "alcohol_tolerance_abv_typical": 13.0,
+      "species": "Saccharomyces cerevisiae",
+      "present_on_birrf": false,
+      "source_basis": "official",
+      "notes": "Cold/Northern IPA-ориентированный штамм с холодным брожением и чисто-фруктовым профилем.",
+      "aliases_ru": [
+        "Северная IPA",
+        "колд IPA"
+      ],
+      "aliases_en": [
+        "Northern IPA",
+        "Cold IPA yeast"
+      ],
+      "source_urls": [
+        "https://www.lallemandbrewing.com/es/global/productos/lalbrew-aurora/"
+      ]
+    },
+    {
+      "id": "lallemand-belle-saison",
+      "brand": "Lallemand",
+      "producer_country": "Canada",
+      "product_code": "Belle Saison",
+      "name_ru": "Бель Сезон",
+      "name_en": "Belle Saison",
+      "form": "dry",
+      "yeast_family": "saison",
+      "birrf_category": "Элевые",
+      "attenuation_pct_min": 86,
+      "attenuation_pct_max": 94,
+      "attenuation_pct_typical": 90.0,
+      "flocculation": "low",
+      "fermentation_temp_c_min": 20,
+      "fermentation_temp_c_max": 35,
+      "alcohol_tolerance_abv_typical": 15.0,
+      "species": "Saccharomyces cerevisiae var. diastaticus",
+      "present_on_birrf": true,
+      "source_basis": "official+birrf",
+      "notes": "Диастатический сезонный штамм.",
+      "pof": "positive",
+      "aliases_ru": [
+        "LalBrew Belle Saison"
+      ],
+      "aliases_en": [
+        "LalBrew Belle Saison"
+      ]
+    },
+    {
+      "id": "lallemand-bry-97",
+      "brand": "Lallemand",
+      "producer_country": "Canada",
+      "product_code": "BRY-97",
+      "name_ru": "BRY-97",
+      "name_en": "BRY-97",
+      "form": "dry",
+      "yeast_family": "ale",
+      "birrf_category": "Элевые",
+      "attenuation_pct_min": 78,
+      "attenuation_pct_max": 84,
+      "attenuation_pct_typical": 81.0,
+      "flocculation": "high",
+      "fermentation_temp_c_min": 15,
+      "fermentation_temp_c_max": 22,
+      "alcohol_tolerance_abv_typical": 13.0,
+      "species": "Saccharomyces cerevisiae",
+      "present_on_birrf": true,
+      "source_basis": "official+birrf",
+      "aliases_ru": [
+        "LalBrew BRY-97"
+      ],
+      "aliases_en": [
+        "LalBrew BRY-97",
+        "West Coast Ale"
+      ]
+    },
+    {
+      "id": "lallemand-cbc-1",
+      "brand": "Lallemand",
+      "producer_country": "Canada",
+      "product_code": "CBC-1",
+      "name_ru": "CBC-1 (дображивание/карбонизация)",
+      "name_en": "CBC-1 Cask & Bottle Conditioning Yeast",
+      "form": "dry",
+      "yeast_family": "conditioning",
+      "birrf_category": "Прочие",
+      "flocculation": "high",
+      "fermentation_temp_c_min": 20,
+      "fermentation_temp_c_max": 30,
+      "alcohol_tolerance_abv_min": 12,
+      "alcohol_tolerance_abv_max": 14,
+      "species": "Saccharomyces cerevisiae",
+      "present_on_birrf": true,
+      "source_basis": "official+birrf",
+      "notes": "Штамм для cask/bottle conditioning; не для основной ферментации.",
+      "aliases_ru": [
+        "LalBrew CBC-1",
+        "для дображивания"
+      ],
+      "aliases_en": [
+        "LalBrew CBC-1"
+      ]
+    },
+    {
+      "id": "lallemand-diamond",
+      "brand": "Lallemand",
+      "producer_country": "Canada",
+      "product_code": "Diamond",
+      "name_ru": "Даймонд Лагер",
+      "name_en": "Diamond Lager",
+      "form": "dry",
+      "yeast_family": "lager",
+      "birrf_category": "Лагерные",
+      "attenuation_pct_min": 78,
+      "attenuation_pct_max": 84,
+      "attenuation_pct_typical": 81.0,
+      "flocculation": "medium",
+      "fermentation_temp_c_min": 10,
+      "fermentation_temp_c_max": 20,
+      "alcohol_tolerance_abv_typical": 13.0,
+      "species": "Saccharomyces pastorianus",
+      "present_on_birrf": true,
+      "source_basis": "official+birrf",
+      "aliases_ru": [
+        "LalBrew Diamond"
+      ],
+      "aliases_en": [
+        "LalBrew Diamond Lager"
+      ]
+    },
+    {
+      "id": "lallemand-essential-01-essential-01-ale-and-lager",
+      "brand": "Lallemand",
+      "producer_country": "Canada",
+      "product_code": "Essential 01",
+      "name_ru": "Essential 01 Эль и лагер",
+      "name_en": "Essential 01 Ale & Lager",
+      "form": "dry",
+      "yeast_family": "neutral",
+      "birrf_category": "Прочие",
+      "species": "Saccharomyces cerevisiae",
+      "present_on_birrf": false,
+      "source_basis": "official",
+      "notes": "Коммерческая серия Essential; чистое и стабильное брожение для traditional ales и lager-style beers.",
+      "aliases_ru": [
+        "Эссеншл 01"
+      ],
+      "aliases_en": [
+        "Ale & Lager"
+      ],
+      "source_urls": [
+        "https://connect.lallemandbrewing.com/en/canada/essential-series/"
+      ]
+    },
+    {
+      "id": "lallemand-essential-02-essential-02-lager",
+      "brand": "Lallemand",
+      "producer_country": "Canada",
+      "product_code": "Essential 02",
+      "name_ru": "Essential 02 Лагер",
+      "name_en": "Essential 02 Lager",
+      "form": "dry",
+      "yeast_family": "lager",
+      "birrf_category": "Лагерные",
+      "species": "Saccharomyces pastorianus",
+      "present_on_birrf": false,
+      "source_basis": "official",
+      "notes": "Коммерческая серия Essential для традиционных лагерных стилей.",
+      "aliases_ru": [
+        "Эссеншл 02"
+      ],
+      "aliases_en": [
+        "Lager"
+      ],
+      "source_urls": [
+        "https://connect.lallemandbrewing.com/en/canada/essential-series/"
+      ]
+    },
+    {
+      "id": "lallemand-essential-03-essential-03-ipa",
+      "brand": "Lallemand",
+      "producer_country": "Canada",
+      "product_code": "Essential 03",
+      "name_ru": "Essential 03 IPA",
+      "name_en": "Essential 03 IPA",
+      "form": "dry",
+      "yeast_family": "ipa",
+      "birrf_category": "Элевые",
+      "species": "Saccharomyces cerevisiae",
+      "present_on_birrf": false,
+      "source_basis": "official",
+      "notes": "Коммерческая серия Essential с высокой аттенюацией и чистым профилем для IPA.",
+      "aliases_ru": [
+        "Эссеншл 03"
+      ],
+      "aliases_en": [
+        "IPA"
+      ],
+      "source_urls": [
+        "https://connect.lallemandbrewing.com/en/canada/essential-series/"
+      ]
+    },
+    {
+      "id": "lallemand-essential-04-essential-04-fruity-ipa",
+      "brand": "Lallemand",
+      "producer_country": "Canada",
+      "product_code": "Essential 04",
+      "name_ru": "Essential 04 Фруктовая IPA",
+      "name_en": "Essential 04 Fruity IPA",
+      "form": "dry",
+      "yeast_family": "hazy",
+      "birrf_category": "Элевые",
+      "flocculation": "low-medium",
+      "fermentation_temp_c_min": 18,
+      "fermentation_temp_c_max": 24,
+      "alcohol_tolerance_abv_min": 10,
+      "alcohol_tolerance_abv_max": 10,
+      "alcohol_tolerance_abv_typical": 10.0,
+      "species": "Saccharomyces cerevisiae",
+      "present_on_birrf": false,
+      "source_basis": "official",
+      "notes": "Коммерческая серия Essential для фруктовых IPA с тропическими эфирами (ананас, персик).",
+      "aliases_ru": [
+        "Эссеншл 04",
+        "фруктовая IPA"
+      ],
+      "aliases_en": [
+        "Fruity IPA"
+      ],
+      "source_urls": [
+        "https://connect.lallemandbrewing.com/wp-content/uploads/2024/11/Essential-04-Fruity-IPA-TDS-ENG-.pdf"
+      ]
+    },
+    {
+      "id": "lallemand-essential-05-essential-05-wheat",
+      "brand": "Lallemand",
+      "producer_country": "Canada",
+      "product_code": "Essential 05",
+      "name_ru": "Essential 05 Пшеничное",
+      "name_en": "Essential 05 Wheat",
+      "form": "dry",
+      "yeast_family": "wheat",
+      "birrf_category": "Пшеничные",
+      "flocculation": "low",
+      "fermentation_temp_c_min": 15,
+      "fermentation_temp_c_max": 20,
+      "alcohol_tolerance_abv_min": 10,
+      "alcohol_tolerance_abv_max": 10,
+      "alcohol_tolerance_abv_typical": 10.0,
+      "species": "Saccharomyces cerevisiae",
+      "present_on_birrf": false,
+      "source_basis": "official",
+      "notes": "Коммерческая серия Essential для пшеничных сортов с бананово-гвоздичным профилем.",
+      "aliases_ru": [
+        "Эссеншл 05",
+        "пшеничное"
+      ],
+      "aliases_en": [
+        "Wheat"
+      ],
+      "source_urls": [
+        "https://connect.lallemandbrewing.com/wp-content/uploads/2024/11/Essential-05-Wheat-TDS-ENG.pdf"
+      ]
+    },
+    {
+      "id": "lallemand-farmhouse-lalbrew-farmhouse",
+      "brand": "Lallemand",
+      "producer_country": "Canada",
+      "product_code": "Farmhouse",
+      "name_ru": "Фармхаус",
+      "name_en": "LalBrew Farmhouse",
+      "form": "dry",
+      "yeast_family": "saison",
+      "birrf_category": "Элевые",
+      "attenuation_pct_min": 78,
+      "attenuation_pct_max": 84,
+      "attenuation_pct_typical": 81.0,
+      "flocculation": "low",
+      "fermentation_temp_c_min": 22,
+      "fermentation_temp_c_max": 30,
+      "alcohol_tolerance_abv_min": 13,
+      "alcohol_tolerance_abv_max": 13,
+      "alcohol_tolerance_abv_typical": 13.0,
+      "species": "Saccharomyces cerevisiae",
+      "present_on_birrf": false,
+      "source_basis": "official",
+      "notes": "Недиастатический farmhouse/saison-штамм; сделан для сухих saison без риска STA1-поведения типичных диастатических культур.",
+      "aliases_ru": [
+        "сезон фармхаус"
+      ],
+      "aliases_en": [
+        "non-diastatic saison"
+      ],
+      "source_urls": [
+        "https://www.lallemandbrewing.com/fr/canada/produits/lalbrew-farmhouse/"
+      ]
+    },
+    {
+      "id": "lallemand-house-ale",
+      "brand": "Lallemand",
+      "producer_country": "Canada",
+      "product_code": "House Ale",
+      "name_ru": "Хаус Эль",
+      "name_en": "House Ale",
+      "form": "dry",
+      "yeast_family": "ale",
+      "birrf_category": "Элевые",
+      "attenuation_pct_min": 78,
+      "attenuation_pct_max": 86,
+      "attenuation_pct_typical": 82.0,
+      "flocculation": "medium",
+      "fermentation_temp_c_min": 16,
+      "fermentation_temp_c_max": 22,
+      "species": "Saccharomyces cerevisiae",
+      "present_on_birrf": true,
+      "source_basis": "official+birrf",
+      "aliases_ru": [
+        "LalBrew House Ale"
+      ],
+      "aliases_en": [
+        "LalBrew House Ale"
+      ]
+    },
+    {
+      "id": "lallemand-lona",
+      "brand": "Lallemand",
+      "producer_country": "Canada",
+      "product_code": "LoNa",
+      "name_ru": "LoNa (низко-/безалкогольное пиво)",
+      "name_en": "LoNa",
+      "form": "dry",
+      "yeast_family": "low_no_alcohol",
+      "birrf_category": "Прочие",
+      "attenuation_pct_min": 16,
+      "attenuation_pct_max": 20,
+      "attenuation_pct_typical": 18.0,
+      "flocculation": "medium",
+      "fermentation_temp_c_min": 20,
+      "fermentation_temp_c_max": 25,
+      "species": "Saccharomyces cerevisiae",
+      "present_on_birrf": true,
+      "source_basis": "official+birrf",
+      "notes": "Для low/no beer.",
+      "aliases_ru": [
+        "LalBrew LoNa",
+        "для слабоалкогольного пива"
+      ],
+      "aliases_en": [
+        "LalBrew LoNa"
+      ]
+    },
+    {
+      "id": "lallemand-london",
+      "brand": "Lallemand",
+      "producer_country": "Canada",
+      "product_code": "London",
+      "name_ru": "Лондон ESB",
+      "name_en": "London ESB",
+      "form": "dry",
+      "yeast_family": "ale",
+      "birrf_category": "Элевые",
+      "attenuation_pct_min": 65,
+      "attenuation_pct_max": 72,
+      "attenuation_pct_typical": 68.5,
+      "flocculation": "low",
+      "fermentation_temp_c_min": 18,
+      "fermentation_temp_c_max": 22,
+      "alcohol_tolerance_abv_typical": 12.0,
+      "species": "Saccharomyces cerevisiae",
+      "present_on_birrf": true,
+      "source_basis": "official+birrf",
+      "aliases_ru": [
+        "LalBrew London",
+        "ESB"
+      ],
+      "aliases_en": [
+        "LalBrew London ESB"
+      ]
+    },
+    {
+      "id": "lallemand-munich-classic",
+      "brand": "Lallemand",
+      "producer_country": "Canada",
+      "product_code": "Munich Classic",
+      "name_ru": "Мюник Классик",
+      "name_en": "Munich Classic",
+      "form": "dry",
+      "yeast_family": "wheat",
+      "birrf_category": "Пшеничные",
+      "attenuation_pct_min": 76,
+      "attenuation_pct_max": 83,
+      "attenuation_pct_typical": 79.5,
+      "flocculation": "low",
+      "fermentation_temp_c_min": 17,
+      "fermentation_temp_c_max": 25,
+      "alcohol_tolerance_abv_typical": 12.0,
+      "species": "Saccharomyces cerevisiae",
+      "present_on_birrf": true,
+      "source_basis": "official+birrf",
+      "notes": "Классический штамм для немецкого пшеничного пива.",
+      "aliases_ru": [
+        "LalBrew Munich Classic"
+      ],
+      "aliases_en": [
+        "LalBrew Munich Classic"
+      ]
+    },
+    {
+      "id": "lallemand-new-england",
+      "brand": "Lallemand",
+      "producer_country": "Canada",
+      "product_code": "New England",
+      "name_ru": "Нью Ингланд",
+      "name_en": "New England",
+      "form": "dry",
+      "yeast_family": "ale",
+      "birrf_category": "Элевые",
+      "attenuation_pct_min": 78,
+      "attenuation_pct_max": 83,
+      "attenuation_pct_typical": 80.5,
+      "flocculation": "medium",
+      "fermentation_temp_c_min": 18,
+      "fermentation_temp_c_max": 25,
+      "alcohol_tolerance_abv_typical": 9.0,
+      "species": "Saccharomyces cerevisiae",
+      "present_on_birrf": true,
+      "source_basis": "official+birrf",
+      "aliases_ru": [
+        "LalBrew New England",
+        "Хейзи"
+      ],
+      "aliases_en": [
+        "LalBrew New England"
+      ]
+    },
+    {
+      "id": "lallemand-nottingham",
+      "brand": "Lallemand",
+      "producer_country": "Canada",
+      "product_code": "Nottingham",
+      "name_ru": "Ноттингем",
+      "name_en": "Nottingham Ale",
+      "form": "dry",
+      "yeast_family": "ale",
+      "birrf_category": "Элевые",
+      "attenuation_pct_min": 78,
+      "attenuation_pct_max": 84,
+      "attenuation_pct_typical": 81.0,
+      "flocculation": "high",
+      "fermentation_temp_c_min": 10,
+      "fermentation_temp_c_max": 25,
+      "alcohol_tolerance_abv_typical": 14.0,
+      "species": "Saccharomyces cerevisiae",
+      "present_on_birrf": true,
+      "source_basis": "official+birrf",
+      "notes": "Очень популярный универсальный сухой эльовый штамм.",
+      "aliases_ru": [
+        "LalBrew Nottingham",
+        "Ноттингем Эль"
+      ],
+      "aliases_en": [
+        "LalBrew Nottingham Ale"
+      ]
+    },
+    {
+      "id": "lallemand-novalager",
+      "brand": "Lallemand",
+      "producer_country": "Canada",
+      "product_code": "NovaLager",
+      "name_ru": "НоваЛагер",
+      "name_en": "NovaLager",
+      "form": "dry",
+      "yeast_family": "lager",
+      "birrf_category": "Лагерные",
+      "attenuation_pct_min": 78,
+      "attenuation_pct_max": 84,
+      "attenuation_pct_typical": 81.0,
+      "flocculation": "medium",
+      "fermentation_temp_c_min": 10,
+      "fermentation_temp_c_max": 20,
+      "alcohol_tolerance_abv_typical": 13.0,
+      "species": "Saccharomyces pastorianus",
+      "present_on_birrf": true,
+      "source_basis": "official+birrf",
+      "notes": "Чистый современный лагерный штамм.",
+      "pof": "negative",
+      "aliases_ru": [
+        "LalBrew NovaLager"
+      ],
+      "aliases_en": [
+        "LalBrew NovaLager"
+      ]
+    },
+    {
+      "id": "lallemand-philly-sour",
+      "brand": "Lallemand",
+      "producer_country": "Canada",
+      "product_code": "Philly Sour",
+      "name_ru": "Филли Сауэр",
+      "name_en": "WildBrew Philly Sour",
+      "form": "dry",
+      "yeast_family": "sour",
+      "birrf_category": "Прочие",
+      "attenuation_pct_min": 74,
+      "attenuation_pct_max": 82,
+      "attenuation_pct_typical": 78.0,
+      "flocculation": "high",
+      "fermentation_temp_c_min": 20,
+      "fermentation_temp_c_max": 30,
+      "alcohol_tolerance_abv_typical": 9.0,
+      "species": "Lachancea spp.",
+      "present_on_birrf": true,
+      "source_basis": "official+birrf",
+      "notes": "Кислящий штамм для sour beer.",
+      "aliases_ru": [
+        "Кислый эль",
+        "кислые дрожжи"
+      ]
+    },
+    {
+      "id": "lallemand-pomona",
+      "brand": "Lallemand",
+      "producer_country": "Canada",
+      "product_code": "Pomona",
+      "name_ru": "Помона",
+      "name_en": "Pomona",
+      "form": "dry",
+      "yeast_family": "ale",
+      "birrf_category": "Элевые",
+      "attenuation_pct_min": 75,
+      "attenuation_pct_max": 84,
+      "attenuation_pct_typical": 79.5,
+      "flocculation": "medium",
+      "fermentation_temp_c_min": 18,
+      "fermentation_temp_c_max": 22,
+      "alcohol_tolerance_abv_typical": 10.0,
+      "species": "Saccharomyces cerevisiae",
+      "present_on_birrf": true,
+      "source_basis": "official+birrf",
+      "notes": "Фруктовый современный эльовый штамм.",
+      "aliases_ru": [
+        "LalBrew Pomona"
+      ],
+      "aliases_en": [
+        "LalBrew Pomona"
+      ]
+    },
+    {
+      "id": "lallemand-verdant-ipa",
+      "brand": "Lallemand",
+      "producer_country": "Canada",
+      "product_code": "Verdant IPA",
+      "name_ru": "Вердант IPA",
+      "name_en": "Verdant IPA",
+      "form": "dry",
+      "yeast_family": "ale",
+      "birrf_category": "Элевые",
+      "attenuation_pct_min": 75,
+      "attenuation_pct_max": 82,
+      "attenuation_pct_typical": 78.5,
+      "flocculation": "medium",
+      "fermentation_temp_c_min": 18,
+      "fermentation_temp_c_max": 25,
+      "alcohol_tolerance_abv_typical": 12.0,
+      "species": "Saccharomyces cerevisiae",
+      "present_on_birrf": true,
+      "source_basis": "official+birrf",
+      "aliases_ru": [
+        "LalBrew Verdant IPA",
+        "Вердант ИПА"
+      ],
+      "aliases_en": [
+        "LalBrew Verdant IPA"
+      ]
+    },
+    {
+      "id": "lallemand-voss",
+      "brand": "Lallemand",
+      "producer_country": "Canada",
+      "product_code": "Voss",
+      "name_ru": "Восс Квейк",
+      "name_en": "Voss Kveik",
+      "form": "dry",
+      "yeast_family": "kveik",
+      "birrf_category": "Прочие",
+      "attenuation_pct_min": 76,
+      "attenuation_pct_max": 82,
+      "attenuation_pct_typical": 79.0,
+      "flocculation": "very high",
+      "fermentation_temp_c_min": 25,
+      "fermentation_temp_c_max": 40,
+      "alcohol_tolerance_abv_typical": 12.0,
+      "species": "Saccharomyces cerevisiae",
+      "present_on_birrf": true,
+      "source_basis": "official+birrf",
+      "aliases_ru": [
+        "LalBrew Voss"
+      ],
+      "aliases_en": [
+        "LalBrew Voss Kveik"
+      ]
+    },
+    {
+      "id": "lallemand-windsor",
+      "brand": "Lallemand",
+      "producer_country": "Canada",
+      "product_code": "Windsor",
+      "name_ru": "Виндзор",
+      "name_en": "Windsor Ale",
+      "form": "dry",
+      "yeast_family": "ale",
+      "birrf_category": "Элевые",
+      "attenuation_pct_min": 65,
+      "attenuation_pct_max": 72,
+      "attenuation_pct_typical": 68.5,
+      "flocculation": "low",
+      "fermentation_temp_c_min": 15,
+      "fermentation_temp_c_max": 25,
+      "alcohol_tolerance_abv_typical": 12.0,
+      "species": "Saccharomyces cerevisiae",
+      "present_on_birrf": true,
+      "source_basis": "official+birrf",
+      "aliases_ru": [
+        "LalBrew Windsor",
+        "Виндзор Эль"
+      ],
+      "aliases_en": [
+        "LalBrew Windsor Ale"
+      ]
+    },
+    {
+      "id": "lallemand-wit",
+      "brand": "Lallemand",
+      "producer_country": "Canada",
+      "product_code": "Wit",
+      "name_ru": "Вит",
+      "name_en": "Wit",
+      "form": "dry",
+      "yeast_family": "wheat",
+      "birrf_category": "Пшеничные",
+      "attenuation_pct_min": 75,
+      "attenuation_pct_max": 82,
+      "attenuation_pct_typical": 78.5,
+      "flocculation": "low",
+      "fermentation_temp_c_min": 17,
+      "fermentation_temp_c_max": 25,
+      "alcohol_tolerance_abv_typical": 12.0,
+      "species": "Saccharomyces cerevisiae",
+      "present_on_birrf": true,
+      "source_basis": "official+birrf",
+      "aliases_ru": [
+        "LalBrew Wit"
+      ],
+      "aliases_en": [
+        "LalBrew Wit"
+      ]
+    },
+    {
+      "id": "mangrove-jack-s-m10",
+      "brand": "Mangrove Jack's",
+      "producer_country": "New Zealand",
+      "product_code": "M10",
+      "name_ru": "M10 Workhorse",
+      "name_en": "M10 Workhorse",
+      "form": "dry",
+      "yeast_family": "ale",
+      "birrf_category": "Элевые",
+      "attenuation_pct_min": 75,
+      "attenuation_pct_max": 77,
+      "attenuation_pct_typical": 76,
+      "flocculation": "medium",
+      "fermentation_temp_c_min": 15,
+      "fermentation_temp_c_max": 32,
+      "fermentation_temp_c_optimum": 23.5,
+      "alcohol_tolerance_abv_typical": 9.0,
+      "present_on_birrf": true,
+      "source_basis": "official+birrf",
+      "notes": "Универсальный штамм; широкий температурный диапазон. Discontinued by manufacturer; kept for legacy recipe compatibility.",
+      "aliases_ru": [
+        "Workhorse"
+      ],
+      "aliases_en": [
+        "Workhorse"
+      ],
+      "source_urls": [
+        "https://help.mangrovejacks.com/hc/en-us/articles/360019110594-What-can-I-use-instead-of-the-M10-Workhorse-Yeast-now-it-s-discontinued"
+      ]
+    },
+    {
+      "id": "mangrove-jack-s-m12",
+      "brand": "Mangrove Jack's",
+      "producer_country": "New Zealand",
+      "product_code": "M12",
+      "name_ru": "M12 Квейк",
+      "name_en": "M12 Kveik",
+      "form": "dry",
+      "yeast_family": "kveik",
+      "birrf_category": "Прочие",
+      "attenuation_pct_min": 77,
+      "attenuation_pct_max": 82,
+      "attenuation_pct_typical": 80,
+      "flocculation": "very high",
+      "fermentation_temp_c_min": 20,
+      "fermentation_temp_c_max": 40,
+      "fermentation_temp_c_optimum": 35,
+      "alcohol_tolerance_abv_typical": 12.0,
+      "present_on_birrf": true,
+      "source_basis": "official+birrf",
+      "notes": "Быстрый теплолюбивый квейк-штамм."
+    },
+    {
+      "id": "mangrove-jack-s-m15",
+      "brand": "Mangrove Jack's",
+      "producer_country": "New Zealand",
+      "product_code": "M15",
+      "name_ru": "M15 Empire Ale",
+      "name_en": "M15 Empire Ale",
+      "form": "dry",
+      "yeast_family": "ale",
+      "birrf_category": "Элевые",
+      "attenuation_pct_typical": 72.5,
+      "flocculation": "high",
+      "fermentation_temp_c_min": 18,
+      "fermentation_temp_c_max": 22,
+      "fermentation_temp_c_optimum": 20,
+      "present_on_birrf": true,
+      "source_basis": "official+birrf",
+      "aliases_ru": [
+        "Empire Ale"
+      ]
+    },
+    {
+      "id": "mangrove-jack-s-m20",
+      "brand": "Mangrove Jack's",
+      "producer_country": "New Zealand",
+      "product_code": "M20",
+      "name_ru": "M20 Bavarian Wheat",
+      "name_en": "M20 Bavarian Wheat",
+      "form": "dry",
+      "yeast_family": "wheat",
+      "birrf_category": "Пшеничные",
+      "attenuation_pct_min": 70,
+      "attenuation_pct_max": 75,
+      "attenuation_pct_typical": 72.5,
+      "flocculation": "low",
+      "fermentation_temp_c_min": 18,
+      "fermentation_temp_c_max": 30,
+      "fermentation_temp_c_optimum": 24,
+      "present_on_birrf": true,
+      "source_basis": "official+birrf"
+    },
+    {
+      "id": "mangrove-jack-s-m21",
+      "brand": "Mangrove Jack's",
+      "producer_country": "New Zealand",
+      "product_code": "M21",
+      "name_ru": "M21 Belgian Wit",
+      "name_en": "M21 Belgian Wit",
+      "form": "dry",
+      "yeast_family": "wheat",
+      "birrf_category": "Пшеничные",
+      "attenuation_pct_min": 70,
+      "attenuation_pct_max": 75,
+      "attenuation_pct_typical": 72.5,
+      "flocculation": "low",
+      "fermentation_temp_c_min": 18,
+      "fermentation_temp_c_max": 25,
+      "fermentation_temp_c_optimum": 21.5,
+      "present_on_birrf": true,
+      "source_basis": "official+birrf"
+    },
+    {
+      "id": "mangrove-jack-s-m24",
+      "brand": "Mangrove Jack's",
+      "producer_country": "New Zealand",
+      "product_code": "M24",
+      "name_ru": "M24 Versa Lager",
+      "name_en": "M24 Versa Lager",
+      "form": "dry",
+      "yeast_family": "lager",
+      "birrf_category": "Лагерные",
+      "attenuation_pct_min": 78,
+      "attenuation_pct_max": 84,
+      "attenuation_pct_typical": 81.0,
+      "flocculation": "medium",
+      "fermentation_temp_c_min": 10,
+      "fermentation_temp_c_max": 25,
+      "present_on_birrf": true,
+      "source_basis": "official+birrf",
+      "notes": "Powered by LalBrew NovaLager according to Mangrove Jack's.",
+      "aliases_ru": [
+        "версалагер"
+      ]
+    },
+    {
+      "id": "mangrove-jack-s-m29",
+      "brand": "Mangrove Jack's",
+      "producer_country": "New Zealand",
+      "product_code": "M29",
+      "name_ru": "M29 French Saison",
+      "name_en": "M29 French Saison",
+      "form": "dry",
+      "yeast_family": "saison",
+      "birrf_category": "Элевые",
+      "attenuation_pct_typical": 88.0,
+      "flocculation": "medium",
+      "fermentation_temp_c_min": 26,
+      "fermentation_temp_c_max": 32,
+      "fermentation_temp_c_optimum": 29,
+      "present_on_birrf": true,
+      "source_basis": "official+birrf"
+    },
+    {
+      "id": "mangrove-jack-s-m31",
+      "brand": "Mangrove Jack's",
+      "producer_country": "New Zealand",
+      "product_code": "M31",
+      "name_ru": "M31 Belgian Tripel",
+      "name_en": "M31 Belgian Tripel",
+      "form": "dry",
+      "yeast_family": "belgian",
+      "birrf_category": "Элевые",
+      "attenuation_pct_typical": 85.0,
+      "flocculation": "medium",
+      "fermentation_temp_c_min": 18,
+      "fermentation_temp_c_max": 28,
+      "fermentation_temp_c_optimum": 23,
+      "present_on_birrf": true,
+      "source_basis": "official+birrf"
+    },
+    {
+      "id": "mangrove-jack-s-m36",
+      "brand": "Mangrove Jack's",
+      "producer_country": "New Zealand",
+      "product_code": "M36",
+      "name_ru": "M36 Liberty Bell Ale",
+      "name_en": "M36 Liberty Bell Ale",
+      "form": "dry",
+      "yeast_family": "ale",
+      "birrf_category": "Элевые",
+      "attenuation_pct_typical": 76.0,
+      "flocculation": "medium",
+      "fermentation_temp_c_min": 18,
+      "fermentation_temp_c_max": 23,
+      "fermentation_temp_c_optimum": 20,
+      "present_on_birrf": true,
+      "source_basis": "official+birrf",
+      "aliases_ru": [
+        "M36 Liberty Bell"
+      ]
+    },
+    {
+      "id": "mangrove-jack-s-m41",
+      "brand": "Mangrove Jack's",
+      "producer_country": "New Zealand",
+      "product_code": "M41",
+      "name_ru": "M41 Belgian Ale",
+      "name_en": "M41 Belgian Ale",
+      "form": "dry",
+      "yeast_family": "belgian",
+      "birrf_category": "Элевые",
+      "fermentation_temp_c_min": 18,
+      "fermentation_temp_c_max": 23,
+      "present_on_birrf": true,
+      "source_basis": "official+birrf"
+    },
+    {
+      "id": "mangrove-jack-s-m42",
+      "brand": "Mangrove Jack's",
+      "producer_country": "New Zealand",
+      "product_code": "M42",
+      "name_ru": "M42 New World Strong Ale",
+      "name_en": "M42 New World Strong Ale",
+      "form": "dry",
+      "yeast_family": "ale",
+      "birrf_category": "Элевые",
+      "fermentation_temp_c_min": 16,
+      "fermentation_temp_c_max": 22,
+      "present_on_birrf": true,
+      "source_basis": "official+birrf",
+      "aliases_ru": [
+        "сильный эль"
+      ]
+    },
+    {
+      "id": "mangrove-jack-s-m44",
+      "brand": "Mangrove Jack's",
+      "producer_country": "New Zealand",
+      "product_code": "M44",
+      "name_ru": "M44 US West Coast",
+      "name_en": "M44 US West Coast",
+      "form": "dry",
+      "yeast_family": "ale",
+      "birrf_category": "Элевые",
+      "attenuation_pct_typical": 78.0,
+      "flocculation": "high",
+      "fermentation_temp_c_min": 18,
+      "fermentation_temp_c_max": 23,
+      "fermentation_temp_c_optimum": 20.5,
+      "present_on_birrf": true,
+      "source_basis": "official+birrf"
+    },
+    {
+      "id": "mangrove-jack-s-m47",
+      "brand": "Mangrove Jack's",
+      "producer_country": "New Zealand",
+      "product_code": "M47",
+      "name_ru": "M47 Belgian Abbey",
+      "name_en": "M47 Belgian Abbey",
+      "form": "dry",
+      "yeast_family": "belgian",
+      "birrf_category": "Элевые",
+      "attenuation_pct_typical": 75.0,
+      "flocculation": "high",
+      "fermentation_temp_c_min": 18,
+      "fermentation_temp_c_max": 25,
+      "fermentation_temp_c_optimum": 21.5,
+      "present_on_birrf": true,
+      "source_basis": "official+birrf"
+    },
+    {
+      "id": "mangrove-jack-s-m54",
+      "brand": "Mangrove Jack's",
+      "producer_country": "New Zealand",
+      "product_code": "M54",
+      "name_ru": "M54 Californian Lager",
+      "name_en": "M54 Californian Lager",
+      "form": "dry",
+      "yeast_family": "hybrid",
+      "birrf_category": "Лагерные",
+      "attenuation_pct_typical": 82.0,
+      "flocculation": "high",
+      "fermentation_temp_c_min": 18,
+      "fermentation_temp_c_max": 20,
+      "fermentation_temp_c_optimum": 19,
+      "present_on_birrf": true,
+      "source_basis": "official+birrf",
+      "aliases_ru": [
+        "калифорнийский лагер",
+        "steam beer"
+      ]
+    },
+    {
+      "id": "mangrove-jack-s-m66",
+      "brand": "Mangrove Jack's",
+      "producer_country": "New Zealand",
+      "product_code": "M66",
+      "name_ru": "M66 Hophead Ale",
+      "name_en": "M66 Hophead Ale",
+      "form": "dry",
+      "yeast_family": "ale",
+      "birrf_category": "Элевые",
+      "attenuation_pct_typical": 78.0,
+      "flocculation": "high",
+      "fermentation_temp_c_min": 18,
+      "fermentation_temp_c_max": 22,
+      "fermentation_temp_c_optimum": 20,
+      "present_on_birrf": true,
+      "source_basis": "official+birrf",
+      "aliases_ru": [
+        "хмелевой эль"
+      ]
+    },
+    {
+      "id": "mangrove-jack-s-m76",
+      "brand": "Mangrove Jack's",
+      "producer_country": "New Zealand",
+      "product_code": "M76",
+      "name_ru": "M76 Bavarian Lager",
+      "name_en": "M76 Bavarian Lager",
+      "form": "dry",
+      "yeast_family": "lager",
+      "birrf_category": "Лагерные",
+      "attenuation_pct_typical": 77.5,
+      "flocculation": "high",
+      "fermentation_temp_c_min": 8,
+      "fermentation_temp_c_max": 14,
+      "fermentation_temp_c_optimum": 11,
+      "present_on_birrf": true,
+      "source_basis": "official+birrf",
+      "aliases_ru": [
+        "баварский лагер"
+      ]
+    },
+    {
+      "id": "mangrove-jack-s-m84",
+      "brand": "Mangrove Jack's",
+      "producer_country": "New Zealand",
+      "product_code": "M84",
+      "name_ru": "M84 Bohemian Lager",
+      "name_en": "M84 Bohemian Lager",
+      "form": "dry",
+      "yeast_family": "lager",
+      "birrf_category": "Лагерные",
+      "attenuation_pct_min": 72,
+      "attenuation_pct_max": 76,
+      "attenuation_pct_typical": 74,
+      "flocculation": "high",
+      "fermentation_temp_c_min": 10,
+      "fermentation_temp_c_max": 15,
+      "fermentation_temp_c_optimum": 12.5,
+      "present_on_birrf": true,
+      "source_basis": "official+birrf",
+      "aliases_ru": [
+        "богемский лагер"
+      ]
+    },
+    {
+      "id": "omega-yeast-grand-cru-grand-cru",
+      "brand": "Omega Yeast",
+      "producer_country": "USA",
+      "product_code": "Grand Cru",
+      "name_ru": "Гран Крю",
+      "name_en": "Grand Cru",
+      "form": "liquid",
+      "yeast_family": "belgian_wit",
+      "birrf_category": "Элевые",
+      "attenuation_pct_min": 72,
+      "attenuation_pct_max": 76,
+      "attenuation_pct_typical": 74.0,
+      "flocculation": "low",
+      "fermentation_temp_c_min": 17,
+      "fermentation_temp_c_max": 24,
+      "alcohol_tolerance_abv_min": 12,
+      "alcohol_tolerance_abv_max": 12,
+      "alcohol_tolerance_abv_typical": 12.0,
+      "species": "Saccharomyces cerevisiae",
+      "present_on_birrf": false,
+      "source_basis": "official",
+      "notes": "Бельгийский wit/grand cru strain, связанный с исторической Hoegaarden lineage.",
+      "pof": "positive",
+      "source_urls": [
+        "https://omegayeast.com/yeast/belgian-ales/grand-cru"
+      ]
+    },
+    {
+      "id": "omega-yeast-oyl-011-british-ale-v",
+      "brand": "Omega Yeast",
+      "producer_country": "USA",
+      "product_code": "OYL-011",
+      "name_ru": "Британский эль V",
+      "name_en": "British Ale V",
+      "form": "liquid",
+      "yeast_family": "hazy",
+      "birrf_category": "Элевые",
+      "attenuation_pct_min": 71,
+      "attenuation_pct_max": 75,
+      "attenuation_pct_typical": 73.0,
+      "flocculation": "high",
+      "fermentation_temp_c_min": 18,
+      "fermentation_temp_c_max": 23,
+      "alcohol_tolerance_abv_min": 10,
+      "alcohol_tolerance_abv_max": 10,
+      "alcohol_tolerance_abv_typical": 10.0,
+      "species": "Saccharomyces cerevisiae",
+      "present_on_birrf": false,
+      "source_basis": "official",
+      "notes": "Один из главных референсов для NEIPA: haze + residual sweetness + juicy hop expression.",
+      "pof": "negative",
+      "aliases_ru": [
+        "Британский эль 5"
+      ],
+      "source_urls": [
+        "https://omegayeast.com/yeast/ales/british-ale-v"
+      ]
+    },
+    {
+      "id": "omega-yeast-oyl-042-belgian-saison-ii",
+      "brand": "Omega Yeast",
+      "producer_country": "USA",
+      "product_code": "OYL-042",
+      "name_ru": "Бельгийский сезон II",
+      "name_en": "Belgian Saison II",
+      "form": "liquid",
+      "yeast_family": "saison",
+      "birrf_category": "Элевые",
+      "attenuation_pct_min": 74,
+      "attenuation_pct_max": 79,
+      "attenuation_pct_typical": 76.5,
+      "flocculation": "medium",
+      "fermentation_temp_c_min": 21,
+      "fermentation_temp_c_max": 29,
+      "alcohol_tolerance_abv_min": 12,
+      "alcohol_tolerance_abv_max": 12,
+      "alcohol_tolerance_abv_typical": 12.0,
+      "species": "Saccharomyces cerevisiae",
+      "present_on_birrf": false,
+      "source_basis": "official",
+      "notes": "Сухой spicy/peppery saison-штамм; диастатический.",
+      "pof": "positive",
+      "source_urls": [
+        "https://omegayeast.com/yeast/belgian-ales/belgian-saison-ii"
+      ]
+    },
+    {
+      "id": "omega-yeast-oyl-402-cosmic-punch",
+      "brand": "Omega Yeast",
+      "producer_country": "USA",
+      "product_code": "OYL-402",
+      "name_ru": "Космик Панч",
+      "name_en": "Cosmic Punch",
+      "form": "liquid",
+      "yeast_family": "hazy",
+      "birrf_category": "Элевые",
+      "attenuation_pct_min": 71,
+      "attenuation_pct_max": 75,
+      "attenuation_pct_typical": 73.0,
+      "flocculation": "high",
+      "fermentation_temp_c_min": 18,
+      "fermentation_temp_c_max": 24,
+      "alcohol_tolerance_abv_min": 10,
+      "alcohol_tolerance_abv_max": 10,
+      "alcohol_tolerance_abv_typical": 10.0,
+      "species": "Saccharomyces cerevisiae",
+      "present_on_birrf": false,
+      "source_basis": "official",
+      "notes": "Thiolized версия British Ale V для juicy/hazy IPA.",
+      "pof": "negative",
+      "aliases_ru": [
+        "тиолизированные дрожжи"
+      ],
+      "source_urls": [
+        "https://omegayeast.com/yeast/ales/cosmic-punch"
+      ]
+    },
+    {
+      "id": "omega-yeast-oyl-403-lunar-crush-lager",
+      "brand": "Omega Yeast",
+      "producer_country": "USA",
+      "product_code": "OYL-403",
+      "name_ru": "Лунар Краш лагер",
+      "name_en": "Lunar Crush Lager",
+      "form": "liquid",
+      "yeast_family": "lager",
+      "birrf_category": "Лагерные",
+      "attenuation_pct_min": 70,
+      "attenuation_pct_max": 78,
+      "attenuation_pct_typical": 74.0,
+      "flocculation": "medium",
+      "fermentation_temp_c_min": 10,
+      "fermentation_temp_c_max": 18,
+      "alcohol_tolerance_abv_min": 9,
+      "alcohol_tolerance_abv_max": 9,
+      "alcohol_tolerance_abv_typical": 9.0,
+      "species": "Saccharomyces pastorianus",
+      "present_on_birrf": false,
+      "source_basis": "official",
+      "notes": "Thiolized lager strain для tropical lager/Cold IPA и новых hop-forward lager направлений.",
+      "pof": "negative",
+      "aliases_ru": [
+        "Lunar Crush",
+        "Лунар Краш",
+        "тиоловый лагер"
+      ],
+      "source_urls": [
+        "https://omegayeast.com/yeast/lagers/lunar-crush-lager"
+      ]
+    },
+    {
+      "id": "omega-yeast-oyl-404-star-party",
+      "brand": "Omega Yeast",
+      "producer_country": "USA",
+      "product_code": "OYL-404",
+      "name_ru": "Стар Пати",
+      "name_en": "Star Party",
+      "form": "liquid",
+      "yeast_family": "american",
+      "birrf_category": "Элевые",
+      "attenuation_pct_min": 73,
+      "attenuation_pct_max": 80,
+      "attenuation_pct_typical": 76.5,
+      "flocculation": "medium-low",
+      "fermentation_temp_c_min": 16,
+      "fermentation_temp_c_max": 23,
+      "alcohol_tolerance_abv_min": 11,
+      "alcohol_tolerance_abv_max": 11,
+      "alcohol_tolerance_abv_typical": 11.0,
+      "species": "Saccharomyces cerevisiae",
+      "present_on_birrf": false,
+      "source_basis": "official",
+      "notes": "Thiolized версия Chico / West Coast Ale I для West Coast IPA и hop-forward ales.",
+      "pof": "negative",
+      "aliases_ru": [
+        "тиолизированный chico"
+      ],
+      "source_urls": [
+        "https://omegayeast.com/yeast/ales/star-party"
+      ]
+    },
+    {
+      "id": "omega-yeast-oyl-405-helio-gazer",
+      "brand": "Omega Yeast",
+      "producer_country": "USA",
+      "product_code": "OYL-405",
+      "name_ru": "Хелио Гейзер",
+      "name_en": "Helio Gazer",
+      "form": "liquid",
+      "yeast_family": "hazy",
+      "birrf_category": "Элевые",
+      "attenuation_pct_min": 71,
+      "attenuation_pct_max": 75,
+      "attenuation_pct_typical": 73.0,
+      "flocculation": "high",
+      "fermentation_temp_c_min": 18,
+      "fermentation_temp_c_max": 23,
+      "alcohol_tolerance_abv_min": 10,
+      "alcohol_tolerance_abv_max": 10,
+      "alcohol_tolerance_abv_typical": 10.0,
+      "species": "Saccharomyces cerevisiae",
+      "present_on_birrf": false,
+      "source_basis": "official",
+      "notes": "Усиленная Thiolized версия British Ale V, созданная именно для hazy/juicy IPA.",
+      "pof": "negative",
+      "aliases_ru": [
+        "тиоловый NEIPA"
+      ],
+      "source_urls": [
+        "https://omegayeast.com/yeast/ales/helio-gazer"
+      ]
+    },
+    {
+      "id": "white-labs-wlp001-wlp001-california-ale-yeast",
+      "brand": "White Labs",
+      "producer_country": "USA",
+      "product_code": "WLP001",
+      "name_ru": "Калифорнийский эль WLP001",
+      "name_en": "WLP001 California Ale Yeast",
+      "form": "liquid",
+      "yeast_family": "american",
+      "birrf_category": "Элевые",
+      "attenuation_pct_min": 73,
+      "attenuation_pct_max": 85,
+      "attenuation_pct_typical": 79.0,
+      "flocculation": "medium",
+      "fermentation_temp_c_min": 18,
+      "fermentation_temp_c_max": 23,
+      "alcohol_tolerance_abv_min": 5,
+      "alcohol_tolerance_abv_max": 10,
+      "alcohol_tolerance_abv_typical": 7.5,
+      "species": "Saccharomyces cerevisiae",
+      "present_on_birrf": false,
+      "source_basis": "official",
+      "notes": "Эталонный clean American/Chico strain; также доступен у White Labs в dry-форме.",
+      "pof": "negative",
+      "aliases_ru": [
+        "Чико",
+        "California Ale",
+        "WLP001 California Ale"
+      ],
+      "aliases_en": [
+        "California Ale Yeast",
+        "Chico"
+      ],
+      "source_urls": [
+        "https://www.whitelabs.com/yeast-single?id=101&type=YEAST"
+      ]
+    },
+    {
+      "id": "white-labs-wlp002-wlp002-english-ale-yeast",
+      "brand": "White Labs",
+      "producer_country": "USA",
+      "product_code": "WLP002",
+      "name_ru": "Английский эль WLP002",
+      "name_en": "WLP002 English Ale Yeast",
+      "form": "liquid",
+      "yeast_family": "english",
+      "birrf_category": "Элевые",
+      "attenuation_pct_min": 63,
+      "attenuation_pct_max": 70,
+      "attenuation_pct_typical": 66.5,
+      "flocculation": "very-high",
+      "fermentation_temp_c_min": 18,
+      "fermentation_temp_c_max": 20,
+      "alcohol_tolerance_abv_min": 5,
+      "alcohol_tolerance_abv_max": 10,
+      "alcohol_tolerance_abv_typical": 7.5,
+      "species": "Saccharomyces cerevisiae",
+      "present_on_birrf": false,
+      "source_basis": "official",
+      "notes": "Классический ESB-штамм с высокой флокуляцией и более сладким финишем.",
+      "pof": "negative",
+      "aliases_ru": [
+        "London ESB-like",
+        "WLP002 English Ale"
+      ],
+      "aliases_en": [
+        "English Ale Yeast"
+      ],
+      "source_urls": [
+        "https://www.whitelabs.com/yeast-single?id=102&style_type=13&type=YEAST"
+      ]
+    },
+    {
+      "id": "white-labs-wlp007-wlp007-crisp-english-ale-yeast",
+      "brand": "White Labs",
+      "producer_country": "USA",
+      "product_code": "WLP007",
+      "name_ru": "Крисп английский эль WLP007",
+      "name_en": "WLP007 Crisp English Ale Yeast",
+      "form": "liquid",
+      "yeast_family": "english",
+      "birrf_category": "Элевые",
+      "attenuation_pct_min": 70,
+      "attenuation_pct_max": 80,
+      "attenuation_pct_typical": 75.0,
+      "flocculation": "medium-high",
+      "fermentation_temp_c_min": 18,
+      "fermentation_temp_c_max": 21,
+      "alcohol_tolerance_abv_min": 8,
+      "alcohol_tolerance_abv_max": 12,
+      "alcohol_tolerance_abv_typical": 10.0,
+      "species": "Saccharomyces cerevisiae",
+      "present_on_birrf": false,
+      "source_basis": "official",
+      "notes": "Высокоаттенюирующий английский штамм; подходит и для clean English IPA, и для strong ales.",
+      "pof": "negative",
+      "aliases_ru": [
+        "Крисп английский эль",
+        "сухой английский эль"
+      ],
+      "aliases_en": [
+        "Crisp English Ale Yeast",
+        "Dry English Ale Yeast"
+      ],
+      "source_urls": [
+        "https://www.whitelabs.com/public/uploads/ckeditor/62969392300101654035346.pdf",
+        "https://blog.whitelabs.com/the-smart-brewers-guide-to-yeast-efficiency"
+      ]
+    },
+    {
+      "id": "white-labs-wlp066-wlp066-london-fog-ale-yeast",
+      "brand": "White Labs",
+      "producer_country": "USA",
+      "product_code": "WLP066",
+      "name_ru": "Лондон Фог WLP066",
+      "name_en": "WLP066 London Fog Ale Yeast",
+      "form": "liquid",
+      "yeast_family": "hazy",
+      "birrf_category": "Элевые",
+      "attenuation_pct_min": 75,
+      "attenuation_pct_max": 82,
+      "attenuation_pct_typical": 78.5,
+      "flocculation": "low-medium",
+      "fermentation_temp_c_min": 18,
+      "fermentation_temp_c_max": 22,
+      "alcohol_tolerance_abv_min": 5,
+      "alcohol_tolerance_abv_max": 10,
+      "alcohol_tolerance_abv_typical": 7.5,
+      "species": "Saccharomyces cerevisiae",
+      "present_on_birrf": false,
+      "source_basis": "official",
+      "notes": "Один из самых популярных референсов для hazy/juicy IPA; у White Labs доступен и в dry-форме.",
+      "pof": "negative",
+      "aliases_ru": [
+        "Лондон Фог",
+        "London Fog",
+        "WLP066 London Fog",
+        "hazy IPA"
+      ],
+      "aliases_en": [
+        "London Fog Ale Yeast",
+        "WLP066 London Fog"
+      ],
+      "source_urls": [
+        "https://www.whitelabs.com/yeast-single?id=134&style_type=13&type=YEAST"
+      ]
+    },
+    {
+      "id": "white-labs-wlp090-wlp090-san-diego-super-ale-yeast",
+      "brand": "White Labs",
+      "producer_country": "USA",
+      "product_code": "WLP090",
+      "name_ru": "Сан-Диего Супер WLP090",
+      "name_en": "WLP090 San Diego Super Ale Yeast",
+      "form": "liquid",
+      "yeast_family": "american",
+      "birrf_category": "Элевые",
+      "attenuation_pct_min": 76,
+      "attenuation_pct_max": 83,
+      "attenuation_pct_typical": 79.5,
+      "flocculation": "medium-high",
+      "fermentation_temp_c_min": 18,
+      "fermentation_temp_c_max": 20,
+      "alcohol_tolerance_abv_min": 5,
+      "alcohol_tolerance_abv_max": 10,
+      "alcohol_tolerance_abv_typical": 7.5,
+      "species": "Saccharomyces cerevisiae",
+      "present_on_birrf": false,
+      "source_basis": "official",
+      "notes": "Быстрый и очень чистый американский штамм для West Coast IPA и hop-forward ales.",
+      "pof": "negative",
+      "aliases_ru": [
+        "Сан-Диего Супер",
+        "WLP090 San Diego Super",
+        "West Coast IPA yeast"
+      ],
+      "aliases_en": [
+        "San Diego Super Ale Yeast"
+      ],
+      "source_urls": [
+        "https://www.whitelabs.com/yeast-single?id=144&style_type=1&type=YEAST"
+      ]
+    },
+    {
+      "id": "white-labs-wlp530-wlp530-abbey-ale-yeast",
+      "brand": "White Labs",
+      "producer_country": "USA",
+      "product_code": "WLP530",
+      "name_ru": "Аббатский эль WLP530",
+      "name_en": "WLP530 Abbey Ale Yeast",
+      "form": "liquid",
+      "yeast_family": "belgian",
+      "birrf_category": "Элевые",
+      "attenuation_pct_min": 75,
+      "attenuation_pct_max": 80,
+      "attenuation_pct_typical": 77.5,
+      "flocculation": "medium-high",
+      "fermentation_temp_c_min": 19,
+      "fermentation_temp_c_max": 22,
+      "alcohol_tolerance_abv_min": 8,
+      "alcohol_tolerance_abv_max": 12,
+      "alcohol_tolerance_abv_typical": 10.0,
+      "species": "Saccharomyces cerevisiae",
+      "present_on_birrf": false,
+      "source_basis": "official",
+      "notes": "Классический abbey strain для dubbel, tripel и Belgian strong ales.",
+      "pof": "negative",
+      "aliases_ru": [
+        "Abbey Ale"
+      ],
+      "aliases_en": [
+        "Abbey Ale Yeast"
+      ],
+      "source_urls": [
+        "https://www.whitelabs.com/yeast-single?id=161&style_type=5&type=YEAST"
+      ]
+    },
+    {
+      "id": "white-labs-wlp565-wlp565-belgian-saison-i-ale-yeast",
+      "brand": "White Labs",
+      "producer_country": "USA",
+      "product_code": "WLP565",
+      "name_ru": "Бельгийский сезон I WLP565",
+      "name_en": "WLP565 Belgian Saison I Ale Yeast",
+      "form": "liquid",
+      "yeast_family": "saison",
+      "birrf_category": "Элевые",
+      "attenuation_pct_min": 65,
+      "attenuation_pct_max": 75,
+      "attenuation_pct_typical": 70.0,
+      "flocculation": "medium",
+      "fermentation_temp_c_min": 20,
+      "fermentation_temp_c_max": 30,
+      "alcohol_tolerance_abv_min": 15,
+      "alcohol_tolerance_abv_max": 15,
+      "alcohol_tolerance_abv_typical": 15.0,
+      "species": "Saccharomyces cerevisiae",
+      "present_on_birrf": false,
+      "source_basis": "official",
+      "notes": "Классический saison-штамм из Валлонии; допускает свободный рост температуры для полной аттенюации.",
+      "pof": "positive",
+      "aliases_ru": [
+        "Бельгийский сезон I",
+        "Saison I"
+      ],
+      "aliases_en": [
+        "Belgian Saison I Ale Yeast"
+      ],
+      "source_urls": [
+        "https://www.whitelabs.com/yeast-single?id=168&style_type=0&type=YEAST"
+      ]
+    },
+    {
+      "id": "wyeast-1056-1056-american-ale",
+      "brand": "Wyeast",
+      "producer_country": "USA",
+      "product_code": "1056",
+      "name_ru": "Американский эль 1056",
+      "name_en": "1056 American Ale",
+      "form": "liquid",
+      "yeast_family": "american",
+      "birrf_category": "Элевые",
+      "attenuation_pct_min": 73,
+      "attenuation_pct_max": 77,
+      "attenuation_pct_typical": 75.0,
+      "flocculation": "low-medium",
+      "fermentation_temp_c_min": 16,
+      "fermentation_temp_c_max": 22,
+      "alcohol_tolerance_abv_min": 11,
+      "alcohol_tolerance_abv_max": 11,
+      "alcohol_tolerance_abv_typical": 11.0,
+      "species": "Saccharomyces cerevisiae",
+      "present_on_birrf": false,
+      "source_basis": "official",
+      "notes": "Классический clean American house strain.",
+      "aliases_ru": [
+        "American Ale"
+      ],
+      "aliases_en": [
+        "Wyeast 1056 American Ale",
+        "American Ale"
+      ],
+      "source_urls": [
+        "https://wyeastlab.com/product/american-ale/"
+      ]
+    },
+    {
+      "id": "wyeast-1098-1098-british-ale",
+      "brand": "Wyeast",
+      "producer_country": "USA",
+      "product_code": "1098",
+      "name_ru": "Британский эль 1098",
+      "name_en": "1098 British Ale",
+      "form": "liquid",
+      "yeast_family": "english",
+      "birrf_category": "Элевые",
+      "attenuation_pct_min": 73,
+      "attenuation_pct_max": 75,
+      "attenuation_pct_typical": 74.0,
+      "flocculation": "medium",
+      "fermentation_temp_c_min": 18,
+      "fermentation_temp_c_max": 22,
+      "alcohol_tolerance_abv_min": 10,
+      "alcohol_tolerance_abv_max": 10,
+      "alcohol_tolerance_abv_typical": 10.0,
+      "species": "Saccharomyces cerevisiae",
+      "present_on_birrf": false,
+      "source_basis": "official",
+      "notes": "Британский штамм с сухим, нейтральным финишем.",
+      "aliases_en": [
+        "British Ale"
+      ],
+      "source_urls": [
+        "https://wyeastlab.com/product/british-ale/"
+      ]
+    },
+    {
+      "id": "wyeast-1099-1099-whitbread-ale",
+      "brand": "Wyeast",
+      "producer_country": "USA",
+      "product_code": "1099",
+      "name_ru": "Уитбрэд 1099",
+      "name_en": "1099 Whitbread Ale",
+      "form": "liquid",
+      "yeast_family": "english",
+      "birrf_category": "Элевые",
+      "attenuation_pct_min": 68,
+      "attenuation_pct_max": 72,
+      "attenuation_pct_typical": 70.0,
+      "flocculation": "medium-high",
+      "fermentation_temp_c_min": 18,
+      "fermentation_temp_c_max": 24,
+      "alcohol_tolerance_abv_min": 10,
+      "alcohol_tolerance_abv_max": 10,
+      "alcohol_tolerance_abv_typical": 10.0,
+      "species": "Saccharomyces cerevisiae",
+      "present_on_birrf": false,
+      "source_basis": "official",
+      "notes": "Мягкий британский strain с хорошей флокуляцией.",
+      "aliases_ru": [
+        "Уитбрэд",
+        "Whitbread Ale"
+      ],
+      "aliases_en": [
+        "Whitbread Ale"
+      ],
+      "source_urls": [
+        "https://wyeastlab.com/product/whitbread-ale/"
+      ]
+    },
+    {
+      "id": "wyeast-1217-pc-1217-pc-west-coast-ipa",
+      "brand": "Wyeast",
+      "producer_country": "USA",
+      "product_code": "1217-PC",
+      "name_ru": "West Coast IPA 1217-PC",
+      "name_en": "1217-PC West Coast IPA",
+      "form": "liquid",
+      "yeast_family": "ipa",
+      "birrf_category": "Элевые",
+      "attenuation_pct_min": 73,
+      "attenuation_pct_max": 80,
+      "attenuation_pct_typical": 76.5,
+      "flocculation": "medium-high",
+      "fermentation_temp_c_min": 17,
+      "fermentation_temp_c_max": 23,
+      "alcohol_tolerance_abv_min": 10,
+      "alcohol_tolerance_abv_max": 10,
+      "alcohol_tolerance_abv_typical": 10.0,
+      "species": "Saccharomyces cerevisiae",
+      "present_on_birrf": false,
+      "source_basis": "official",
+      "notes": "Чистый West Coast IPA strain из Private Collection / Legacy Curation.",
+      "pof": "negative",
+      "aliases_ru": [
+        "West Coast IPA",
+        "Wyeast 1217",
+        "1217 West Coast IPA"
+      ],
+      "aliases_en": [
+        "West Coast IPA"
+      ],
+      "source_urls": [
+        "https://wyeastlab.com/product/west-coast-ipa/"
+      ]
+    },
+    {
+      "id": "wyeast-1272-1272-american-ale-ii",
+      "brand": "Wyeast",
+      "producer_country": "USA",
+      "product_code": "1272",
+      "name_ru": "Американский эль II 1272",
+      "name_en": "1272 American Ale II",
+      "form": "liquid",
+      "yeast_family": "american",
+      "birrf_category": "Элевые",
+      "attenuation_pct_min": 72,
+      "attenuation_pct_max": 76,
+      "attenuation_pct_typical": 74.0,
+      "flocculation": "medium-high",
+      "fermentation_temp_c_min": 16,
+      "fermentation_temp_c_max": 22,
+      "alcohol_tolerance_abv_min": 10,
+      "alcohol_tolerance_abv_max": 10,
+      "alcohol_tolerance_abv_typical": 10.0,
+      "species": "Saccharomyces cerevisiae",
+      "present_on_birrf": false,
+      "source_basis": "official",
+      "notes": "Чистый, мягкий американский штамм с лёгкой ореховой/цитрусовой нотой.",
+      "aliases_ru": [
+        "Американский эль II"
+      ],
+      "aliases_en": [
+        "American Ale II"
+      ],
+      "source_urls": [
+        "https://wyeastlab.com/product/american-ale-ii/"
+      ]
+    },
+    {
+      "id": "wyeast-1275-1275-thames-valley-ale",
+      "brand": "Wyeast",
+      "producer_country": "USA",
+      "product_code": "1275",
+      "name_ru": "Темз Вэлли 1275",
+      "name_en": "1275 Thames Valley Ale",
+      "form": "liquid",
+      "yeast_family": "english",
+      "birrf_category": "Элевые",
+      "attenuation_pct_min": 77,
+      "attenuation_pct_max": 77,
+      "attenuation_pct_typical": 77.0,
+      "flocculation": "low-medium",
+      "fermentation_temp_c_min": 17,
+      "fermentation_temp_c_max": 22,
+      "alcohol_tolerance_abv_min": 10,
+      "alcohol_tolerance_abv_max": 10,
+      "alcohol_tolerance_abv_typical": 10.0,
+      "species": "Saccharomyces cerevisiae",
+      "present_on_birrf": false,
+      "source_basis": "official",
+      "notes": "Классический британский bitter/ESB strain.",
+      "aliases_ru": [
+        "Темз Вэлли",
+        "Thames Valley"
+      ],
+      "aliases_en": [
+        "Thames Valley Ale"
+      ],
+      "source_urls": [
+        "https://wyeastlab.com/product/thames-valley-ale/"
+      ]
+    },
+    {
+      "id": "wyeast-1318-1318-london-ale-iii",
+      "brand": "Wyeast",
+      "producer_country": "USA",
+      "product_code": "1318",
+      "name_ru": "Лондон Эль III 1318",
+      "name_en": "1318 London Ale III",
+      "form": "liquid",
+      "yeast_family": "hazy",
+      "birrf_category": "Элевые",
+      "attenuation_pct_min": 71,
+      "attenuation_pct_max": 75,
+      "attenuation_pct_typical": 73.0,
+      "flocculation": "high",
+      "fermentation_temp_c_min": 18,
+      "fermentation_temp_c_max": 23,
+      "alcohol_tolerance_abv_min": 10,
+      "alcohol_tolerance_abv_max": 10,
+      "alcohol_tolerance_abv_typical": 10.0,
+      "species": "Saccharomyces cerevisiae",
+      "present_on_birrf": false,
+      "source_basis": "official",
+      "notes": "Один из главных мировых референсов для NEIPA/hazy IPA.",
+      "aliases_ru": [
+        "Лондон Эль III",
+        "London Ale III"
+      ],
+      "aliases_en": [
+        "London Ale III"
+      ],
+      "source_urls": [
+        "https://wyeastlab.com/product/london-ale-iii/"
+      ]
+    },
+    {
+      "id": "wyeast-1450-1450-denny-s-favorite-50",
+      "brand": "Wyeast",
+      "producer_country": "USA",
+      "product_code": "1450",
+      "name_ru": "Денни Фейворит 50 1450",
+      "name_en": "1450 Denny's Favorite 50",
+      "form": "liquid",
+      "yeast_family": "american",
+      "birrf_category": "Элевые",
+      "attenuation_pct_min": 74,
+      "attenuation_pct_max": 76,
+      "attenuation_pct_typical": 75.0,
+      "flocculation": "low",
+      "fermentation_temp_c_min": 16,
+      "fermentation_temp_c_max": 21,
+      "alcohol_tolerance_abv_min": 10,
+      "alcohol_tolerance_abv_max": 10,
+      "alcohol_tolerance_abv_typical": 10.0,
+      "species": "Saccharomyces cerevisiae",
+      "present_on_birrf": false,
+      "source_basis": "official",
+      "notes": "Универсальный strain с плотным mouthfeel; хорошо подчёркивает солод/фрукты.",
+      "aliases_ru": [
+        "Денни Фейворит 50",
+        "Denny's Favorite"
+      ],
+      "aliases_en": [
+        "Denny's Favorite 50"
+      ],
+      "source_urls": [
+        "https://wyeastlab.com/product/dennys-favorite-50/"
+      ]
+    },
+    {
+      "id": "wyeast-1469-1469-west-yorkshire-ale",
+      "brand": "Wyeast",
+      "producer_country": "USA",
+      "product_code": "1469",
+      "name_ru": "Вест Йоркшир 1469",
+      "name_en": "1469 West Yorkshire Ale",
+      "form": "liquid",
+      "yeast_family": "english",
+      "birrf_category": "Элевые",
+      "attenuation_pct_min": 67,
+      "attenuation_pct_max": 71,
+      "attenuation_pct_typical": 69.0,
+      "flocculation": "high",
+      "fermentation_temp_c_min": 18,
+      "fermentation_temp_c_max": 22,
+      "alcohol_tolerance_abv_min": 9,
+      "alcohol_tolerance_abv_max": 9,
+      "alcohol_tolerance_abv_typical": 9.0,
+      "species": "Saccharomyces cerevisiae",
+      "present_on_birrf": false,
+      "source_basis": "official",
+      "notes": "Классический британский bitter/ESB strain с полным солодовым профилем.",
+      "aliases_ru": [
+        "Вест Йоркшир",
+        "West Yorkshire"
+      ],
+      "aliases_en": [
+        "West Yorkshire Ale"
+      ],
+      "source_urls": [
+        "https://wyeastlab.com/product/west-yorkshire-ale/"
+      ]
+    },
+    {
+      "id": "wyeast-1968-1968-london-esb-ale",
+      "brand": "Wyeast",
+      "producer_country": "USA",
+      "product_code": "1968",
+      "name_ru": "Лондон ESB 1968",
+      "name_en": "1968 London ESB Ale",
+      "form": "liquid",
+      "yeast_family": "english",
+      "birrf_category": "Элевые",
+      "attenuation_pct_min": 67,
+      "attenuation_pct_max": 71,
+      "attenuation_pct_typical": 69.0,
+      "flocculation": "high",
+      "fermentation_temp_c_min": 18,
+      "fermentation_temp_c_max": 22,
+      "alcohol_tolerance_abv_min": 9,
+      "alcohol_tolerance_abv_max": 9,
+      "alcohol_tolerance_abv_typical": 9.0,
+      "species": "Saccharomyces cerevisiae",
+      "present_on_birrf": false,
+      "source_basis": "official",
+      "notes": "Эталонный ESB-штамм с очень высокой флокуляцией и слегка сладким финишем.",
+      "aliases_ru": [
+        "Лондон ESB"
+      ],
+      "aliases_en": [
+        "London ESB Ale"
+      ],
+      "source_urls": [
+        "https://wyeastlab.com/product/london-esb-ale"
+      ]
+    },
+    {
+      "id": "wyeast-3522-3522-belgian-ardennes",
+      "brand": "Wyeast",
+      "producer_country": "USA",
+      "product_code": "3522",
+      "name_ru": "Бельгийские Арденны 3522",
+      "name_en": "3522 Belgian Ardennes",
+      "form": "liquid",
+      "yeast_family": "belgian",
+      "birrf_category": "Элевые",
+      "attenuation_pct_min": 72,
+      "attenuation_pct_max": 76,
+      "attenuation_pct_typical": 74.0,
+      "flocculation": "high",
+      "fermentation_temp_c_min": 18,
+      "fermentation_temp_c_max": 24,
+      "alcohol_tolerance_abv_min": 12,
+      "alcohol_tolerance_abv_max": 12,
+      "alcohol_tolerance_abv_typical": 12.0,
+      "species": "Saccharomyces cerevisiae",
+      "present_on_birrf": false,
+      "source_basis": "official",
+      "notes": "Один из самых популярных универсальных бельгийских штаммов.",
+      "pof": "positive",
+      "aliases_ru": [
+        "Бельгийские Арденны",
+        "Belgian Ardennes"
+      ],
+      "aliases_en": [
+        "Belgian Ardennes"
+      ],
+      "source_urls": [
+        "https://wyeastlab.com/yeast-strain/belgian-ardennes"
+      ]
+    },
+    {
+      "id": "wyeast-3724-3724-belgian-saison",
+      "brand": "Wyeast",
+      "producer_country": "USA",
+      "product_code": "3724",
+      "name_ru": "Бельгийский сезон 3724",
+      "name_en": "3724 Belgian Saison",
+      "form": "liquid",
+      "yeast_family": "saison",
+      "birrf_category": "Элевые",
+      "attenuation_pct_min": 76,
+      "attenuation_pct_max": 80,
+      "attenuation_pct_typical": 78.0,
+      "flocculation": "low",
+      "fermentation_temp_c_min": 21,
+      "fermentation_temp_c_max": 35,
+      "alcohol_tolerance_abv_min": 12,
+      "alcohol_tolerance_abv_max": 12,
+      "alcohol_tolerance_abv_typical": 12.0,
+      "species": "Saccharomyces cerevisiae",
+      "present_on_birrf": false,
+      "source_basis": "official",
+      "notes": "Классический farmhouse/saison strain; известен долгим финишем при недостаточном прогреве.",
+      "pof": "positive",
+      "aliases_ru": [
+        "Бельгийский сезон"
+      ],
+      "aliases_en": [
+        "Belgian Saison"
+      ],
+      "source_urls": [
+        "https://wyeastlab.com/product/belgian-saison/"
+      ]
+    },
+    {
+      "id": "wyeast-3787-3787-belgian-high-gravity",
+      "brand": "Wyeast",
+      "producer_country": "USA",
+      "product_code": "3787",
+      "name_ru": "Бельгийский High Gravity 3787",
+      "name_en": "3787 Belgian High Gravity",
+      "form": "liquid",
+      "yeast_family": "belgian",
+      "birrf_category": "Элевые",
+      "attenuation_pct_min": 74,
+      "attenuation_pct_max": 78,
+      "attenuation_pct_typical": 76.0,
+      "flocculation": "medium",
+      "fermentation_temp_c_min": 18,
+      "fermentation_temp_c_max": 26,
+      "alcohol_tolerance_abv_min": 11,
+      "alcohol_tolerance_abv_max": 12,
+      "alcohol_tolerance_abv_typical": 11.5,
+      "species": "Saccharomyces cerevisiae",
+      "present_on_birrf": false,
+      "source_basis": "official",
+      "notes": "Классический abbey/high-gravity strain для dubbel, tripel и strong Belgian ales.",
+      "pof": "positive",
+      "aliases_ru": [
+        "Бельгийский high gravity",
+        "Belgian High Gravity"
+      ],
+      "aliases_en": [
+        "Belgian High Gravity"
+      ],
+      "source_urls": [
+        "https://wyeastlab.com/product/belgian-high-gravity/"
+      ]
+    }
+  ]
+}
