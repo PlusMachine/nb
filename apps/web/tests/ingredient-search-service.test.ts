@@ -149,4 +149,39 @@ describe("ingredient search service", () => {
     expect(items[0]?.id).toBe("soufflet-pilsen");
     expect(items[0]?.displayName).toBe("Soufflet Pilsen 2RP");
   });
+
+  it("matches mixed queries across brand and canonical ingredient name", async () => {
+    mockState.rows = [
+      buildIngredientRow({
+        id: "kursk-pilsner",
+        type: "malt",
+        nameRu: "Пилснер",
+        nameEn: "Pilsner Malt",
+        displayModeRu: "localized_first",
+        brand: "Курский солод",
+        countryName: "Россия",
+        itemKind: "malt",
+        attributes: { extract_pct_dry_basis: 80, color_lovibond: 1.8 }
+      }),
+      buildIngredientRow({
+        id: "kursk-vienna",
+        type: "malt",
+        nameRu: "Венский",
+        nameEn: "Vienna Malt",
+        displayModeRu: "localized_first",
+        brand: "Курский солод",
+        countryName: "Россия",
+        itemKind: "malt",
+        attributes: { extract_pct_dry_basis: 79, color_lovibond: 4 }
+      })
+    ];
+
+    const items = await searchIngredientSuggestions({ q: "КУРСКИЙ ПИЛСНЕР", category: "fermentable", limit: 8 });
+
+    expect(items[0]).toMatchObject({
+      id: "kursk-pilsner",
+      displayName: "Пилснер",
+      matchType: "token"
+    });
+  });
 });

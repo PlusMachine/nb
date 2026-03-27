@@ -368,6 +368,28 @@ const rankCatalogItems = (
   return typeof limit === "number" ? ranked.slice(0, limit) : ranked;
 };
 
+const fieldContainsToken = (fields: string[], token: string) => fields.some((field) => field.includes(token));
+
+const hasDistributedTokenMatch = ({
+  tokens,
+  primaryFields,
+  secondaryFields
+}: {
+  tokens: string[];
+  primaryFields: string[];
+  secondaryFields: string[];
+}) => {
+  if (tokens.length < 2 || primaryFields.length === 0 || secondaryFields.length === 0) {
+    return false;
+  }
+
+  const allFields = [...primaryFields, ...secondaryFields];
+
+  return tokens.every((token) => fieldContainsToken(allFields, token))
+    && tokens.some((token) => fieldContainsToken(primaryFields, token))
+    && tokens.some((token) => fieldContainsToken(secondaryFields, token));
+};
+
 const scoreCandidate = (item: IngredientCatalogItemDto, query: string): MatchResult | null => {
   const variants = buildQueryVariants(query);
   if (!variants.length) {
@@ -407,6 +429,17 @@ const scoreCandidate = (item: IngredientCatalogItemDto, query: string): MatchRes
   variants.forEach((variant, variantIndex) => {
     const penalty = variantIndex * 3;
     const tokens = variant.split(" ").filter(Boolean);
+    const primaryFields = [
+      ...names.map((name) => name.normalized),
+      ...aliases.map((alias) => alias.normalized),
+      productCode,
+      ...packageVariants.map((variantItem) => variantItem.productName).filter(Boolean)
+    ].filter(Boolean);
+    const secondaryFields = [
+      brand,
+      producer,
+      ...packageVariants.map((variantItem) => variantItem.brand).filter(Boolean)
+    ].filter(Boolean);
 
     names.forEach((name) => {
       if (name.kind === "name_ru" && name.normalized === variant) {
@@ -475,6 +508,10 @@ const scoreCandidate = (item: IngredientCatalogItemDto, query: string): MatchRes
       assign({ score: 910 - penalty, matchType: "brand" });
     } else if (tokens.length > 1 && tokens.every((token) => brand.includes(token) || producer.includes(token))) {
       assign({ score: 780 - penalty, matchType: "brand" });
+    }
+
+    if (hasDistributedTokenMatch({ tokens, primaryFields, secondaryFields })) {
+      assign({ score: 835 - penalty, matchType: "token" });
     }
   });
 
