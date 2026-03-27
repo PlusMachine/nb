@@ -169,27 +169,29 @@ export function InventoryToolbar({ search, category, showFinished, sort, summary
           const Icon = meta.icon;
           const isActive = category === cat;
           const count = summary.byCategory[cat] ?? 0;
+          const isDisabled = count === 0;
 
           return (
             <button
               key={cat}
               type="button"
+              disabled={isDisabled}
               onClick={() => handleCategoryClick(cat)}
               className={`group relative flex flex-col items-center gap-1.5 rounded-xl border px-3 py-3 text-center transition-all ${
-                isActive
+                isDisabled
+                  ? "cursor-not-allowed border-zinc-100 bg-zinc-50 text-zinc-300 opacity-60"
+                  : isActive
                   ? `${meta.activeBg} ${meta.activeRing} ring-2 border-transparent shadow-sm`
                   : "border-zinc-200 bg-white hover:border-zinc-300 hover:shadow-sm"
               }`}
             >
-              <Icon className={`h-6 w-6 ${isActive ? meta.activeColor : meta.color} transition-colors`} />
-              <span className={`text-xs font-semibold leading-tight ${isActive ? meta.activeColor : "text-zinc-700"}`}>
+              <Icon className={`h-6 w-6 ${isDisabled ? "text-zinc-300" : isActive ? meta.activeColor : meta.color} transition-colors`} />
+              <span className={`text-xs font-semibold leading-tight ${isDisabled ? "text-zinc-400" : isActive ? meta.activeColor : "text-zinc-700"}`}>
                 {inventoryCategoryLabels[cat]}
               </span>
-              {count > 0 ? (
-                <span className={`text-[11px] font-medium tabular-nums ${isActive ? meta.activeColor : "text-zinc-400"}`}>
-                  {count}
-                </span>
-              ) : null}
+              <span className={`text-[11px] font-medium ${isDisabled ? "text-zinc-400" : isActive ? meta.activeColor : "text-zinc-400"}${isDisabled ? "" : " tabular-nums"}`}>
+                {isDisabled ? "Пусто" : count}
+              </span>
             </button>
           );
         })}

@@ -53,6 +53,26 @@ describe("inventory usability components", () => {
     expect(html).not.toContain("Остаток");
   });
 
+  it("renders zero counts on category tiles", () => {
+    const html = renderToStaticMarkup(React.createElement(InventoryToolbar, {
+      search: "",
+      category: "all",
+      showFinished: false,
+      sort: "default",
+      summary: {
+        totalItems: 0,
+        inStockItems: 0,
+        emptyItems: 0,
+        byCategory: { fermentable: 0, hop: 0, yeast: 0, consumable: 0, water_treatment: 0 }
+      }
+    }));
+
+    expect(html).toContain("Ферментируемые");
+    expect(html).toContain("Хмель");
+    expect(html).toContain(">Пусто</span>");
+    expect(html).toContain("disabled");
+  });
+
   it("builds live URLs and inventory suggestion params", () => {
     expect(buildInventoryToolbarHref("/app/ingredients", {
       search: "citra",
