@@ -9,7 +9,10 @@ import type {
   IngredientType
 } from "@/features/ingredients/contracts";
 import { normalizeSearchText } from "@/features/ingredients/normalization";
-import { ingredientCategoryLabels } from "@/features/ingredients/presentation";
+import {
+  ingredientCategoryLabels,
+  resolveIngredientDisplayNames
+} from "@/features/ingredients/presentation";
 
 type Props = {
   value?: string;
@@ -370,6 +373,7 @@ export const IngredientPicker = ({
               ) : null}
               {groupItems.map((item) => {
                 const index = items.findIndex((candidate) => candidate.id === item.id);
+                const { primaryName, secondaryName } = resolveIngredientDisplayNames(item);
 
                 return (
                   <button
@@ -382,7 +386,8 @@ export const IngredientPicker = ({
                     type="button"
                   >
                     <div className="min-w-0">
-                      <div className="font-medium">{item.displayNameRu ?? item.displayName}</div>
+                      <div className="font-medium">{primaryName}</div>
+                      {secondaryName ? <div className="text-xs text-zinc-500">{secondaryName}</div> : null}
                       {item.subtitle ? <div className="text-xs text-zinc-500">{item.subtitle}</div> : null}
                     </div>
                   </button>

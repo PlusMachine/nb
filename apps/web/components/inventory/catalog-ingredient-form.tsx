@@ -9,6 +9,7 @@ import type {
   IngredientCategory,
   IngredientSuggestionItem
 } from "@/features/ingredients/contracts";
+import { resolveIngredientDisplayNames } from "@/features/ingredients/presentation";
 import type { InventoryPriceInputMode } from "@/features/inventory/purchase-cost";
 import {
   inventoryUnitLabels,
@@ -88,6 +89,7 @@ export function CatalogIngredientForm({ category, preferredCurrency, pending, fi
   const [fields, setFields] = useState<InventoryCommonFields>(() => createInitialCommonFields(category));
   const [localError, setLocalError] = useState<string | null>(null);
   const unitProfile = resolveCatalogIngredientUnitProfile(category, selected);
+  const selectedNames = selected ? resolveIngredientDisplayNames(selected) : null;
 
   useEffect(() => {
     setSelected(null);
@@ -153,7 +155,8 @@ export function CatalogIngredientForm({ category, preferredCurrency, pending, fi
         />
         {selected ? (
           <p className="text-xs text-zinc-600">
-            Выбрано: {selected.displayName}
+            Выбрано: {selectedNames?.primaryName}
+            {selectedNames?.secondaryName ? ` · ${selectedNames.secondaryName}` : ""}
             {selected.familyDisplayName ? ` · ${selected.familyDisplayName}` : ""}
             {selected.subtitle ? ` · ${selected.subtitle}` : ""}
           </p>

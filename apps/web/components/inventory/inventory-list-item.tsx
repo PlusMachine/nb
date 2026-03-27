@@ -12,6 +12,7 @@ import {
   X
 } from "lucide-react";
 import type { InventoryListItemDto } from "@/features/inventory/contracts";
+import { resolveIngredientDisplayNames } from "@/features/ingredients/presentation";
 import { buildInventoryCostDisplay } from "@/features/inventory/display";
 import type { SystemCurrency, SystemCurrencyRateMap } from "@/features/system/currency";
 
@@ -56,6 +57,7 @@ const isExpired = (freshnessDate: Date | null) => {
 
 export function InventoryListItem({ item, preferredCurrency, currencyRates }: Props) {
   const badges = buildTechnicalBadges(item);
+  const { primaryName, secondaryName } = resolveIngredientDisplayNames(item.source);
   const costSummary = buildInventoryCostDisplay({
     enteredQuantity: item.enteredQuantity,
     enteredUnit: item.enteredUnit,
@@ -99,7 +101,7 @@ export function InventoryListItem({ item, preferredCurrency, currencyRates }: Pr
         />
         <DeleteInventoryItemButton
           inventoryItemId={item.id}
-          displayName={item.source.displayName}
+          displayName={primaryName}
           renderTrigger={(onClick, isPending) => (
             <button
               type="button"
@@ -117,7 +119,10 @@ export function InventoryListItem({ item, preferredCurrency, currencyRates }: Pr
       <div className="flex items-start gap-4 pr-6">
         <div className="min-w-0 flex-1 space-y-1.5">
           <div className="flex flex-wrap items-center gap-2">
-            <h3 className="text-base font-semibold text-zinc-950">{item.source.displayName}</h3>
+            <div className="min-w-0">
+              <h3 className="text-base font-semibold text-zinc-950">{primaryName}</h3>
+              {secondaryName ? <p className="text-xs text-zinc-500">{secondaryName}</p> : null}
+            </div>
             {item.source.sourceKind === "custom" ? (
               <span className="rounded-full bg-zinc-100 px-2 py-0.5 text-[10px] font-medium uppercase tracking-wider text-zinc-500">Свой</span>
             ) : null}

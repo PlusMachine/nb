@@ -210,6 +210,8 @@ export type RecipeIngredientDto = {
   ingredientSubtype?: IngredientSubtype | null;
   ingredientFamilyId?: string | null;
   ingredientDisplayName?: string | null;
+  ingredientDisplayNameRu?: string | null;
+  ingredientDisplayNameEn?: string | null;
   ingredientDisplayNameSnapshot?: string | null;
   ingredientFamilyDisplayName?: string | null;
   ingredientSummary?: string | null;

@@ -28,6 +28,7 @@ const createEmptyRow = (): RecipeIngredientEditorRowValue => ({
   ingredientCatalogItemId: null,
   userCustomIngredientId: null,
   selectedName: "",
+  selectedSecondaryName: "",
   selectedSummary: "",
   familyDisplayName: "",
   category: "fermentable",
@@ -206,6 +207,7 @@ export function RecipeIngredientsEditor({ rows, onChange }: Props) {
               <div className="flex flex-wrap items-start justify-between gap-3">
                 <div className="space-y-1">
                   <h4 className="text-sm font-semibold text-zinc-900">{getRecipeIngredientSummaryTitle(row)}</h4>
+                  {row.selectedSecondaryName ? <p className="text-xs text-zinc-500">{row.selectedSecondaryName}</p> : null}
                   <p className="text-xs text-zinc-500">{ingredientCategoryLabels[row.category]} · {recipeIngredientStageLabels[row.stage]}</p>
                   {row.selectedSummary ? <p className="text-xs text-zinc-500">{row.selectedSummary}</p> : null}
                 </div>

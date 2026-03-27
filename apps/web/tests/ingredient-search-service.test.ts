@@ -179,7 +179,7 @@ describe("ingredient search service", () => {
       displayNameRu: "Saaz",
       defaultUnit: "g",
       category: "hop",
-      familyDisplayName: "Сааз",
+      familyDisplayName: "Saaz",
       subtitle: "Bohemia Hop • Чехия • 3.5% AA • pellet • 2024",
       source: "catalog"
     });
@@ -218,6 +218,7 @@ describe("ingredient search service", () => {
 
     const items = await searchIngredientSuggestions({ q: "пильзнер", category: "fermentable", limit: 8 });
 
+    expect(items[0]?.displayName).toBe("Kursk Pilsner");
     expect(items[0]?.displayNameRu).toBe("Курский солод Pilsner");
     expect(items[0]?.displayNameRu).not.toContain("Пильзнер");
   });

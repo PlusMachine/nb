@@ -2,17 +2,29 @@ import { describe, expect, it } from "vitest";
 
 import {
   buildIngredientTypedSummary,
+  resolveIngredientDisplayNames,
   resolveIngredientFamilyDisplayName
 } from "../features/ingredients/presentation";
 
 describe("ingredient presentation", () => {
-  it("prefers russian family display names when both locales are available", () => {
+  it("prefers english family display names when both locales are available", () => {
     expect(resolveIngredientFamilyDisplayName({
       displayName: "Цитра (Yakima Chief)",
       familyCanonicalName: "Citra",
       familyDisplayNameEn: "Citra",
       familyDisplayNameRu: "Цитра"
-    })).toBe("Цитра");
+    })).toBe("Citra");
+  });
+
+  it("returns english ingredient name as primary and russian as secondary", () => {
+    expect(resolveIngredientDisplayNames({
+      displayName: "Каскад",
+      displayNameEn: "Cascade",
+      displayNameRu: "Каскад"
+    })).toEqual({
+      primaryName: "Cascade",
+      secondaryName: "Каскад"
+    });
   });
 
   it("omits the synthetic standard hop form from summaries", () => {

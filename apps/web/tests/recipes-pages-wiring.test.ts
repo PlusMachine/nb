@@ -9,6 +9,7 @@ const recipeListItem: RecipeListItemDto = {
   authorId: "u-1",
   recipeFamilyId: "rf-1",
   versionNumber: 1,
+  versionCount: 1,
   publicationState: "draft",
   title: "My Pils",
   slug: "public-ipa",

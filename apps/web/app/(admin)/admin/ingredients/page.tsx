@@ -21,7 +21,9 @@ import {
   type IngredientCategory
 } from "@/features/ingredients/contracts";
 import {
-  ingredientCategoryLabels
+  ingredientCategoryLabels,
+  resolveIngredientDisplayNames,
+  resolveIngredientFamilyDisplayName
 } from "@/features/ingredients/presentation";
 import { listCatalogIngredients } from "@/features/ingredients/service";
 import { requireRole } from "@/lib/auth";
@@ -114,10 +116,15 @@ function CatalogIngredientsTable({ items, showBrandColumn }: CatalogTableProps) 
         <tbody>
           {items.map((item) => {
             const aliasesPreview = buildAliasesPreview(item.aliases);
-            const secondaryName = item.displayNameEn && item.displayNameEn !== item.displayNameRu
-              ? item.displayNameEn
+            const { primaryName, secondaryName } = resolveIngredientDisplayNames(item);
+            const familyName = item.family
+              ? resolveIngredientFamilyDisplayName({
+                displayName: primaryName,
+                familyCanonicalName: item.family.canonicalName,
+                familyDisplayNameEn: item.family.displayNameEn,
+                familyDisplayNameRu: item.family.displayNameRu
+              })
               : null;
-            const familyName = item.family?.displayNameRu ?? item.family?.canonicalName ?? null;
             const brandLabel = resolveCatalogBrandLabel(item);
 
             return (
@@ -128,7 +135,7 @@ function CatalogIngredientsTable({ items, showBrandColumn }: CatalogTableProps) 
                       className="font-medium text-zinc-950 underline-offset-4 hover:underline"
                       href={`/admin/ingredients/${item.id}`}
                     >
-                      {item.displayNameRu}
+                      {primaryName}
                     </Link>
                     {secondaryName ? <p className="text-xs text-zinc-500">{secondaryName}</p> : null}
                     {aliasesPreview ? <p className="text-xs text-zinc-500">Алиасы: {aliasesPreview}</p> : null}
@@ -184,7 +191,7 @@ function CatalogIngredientsTable({ items, showBrandColumn }: CatalogTableProps) 
                     >
                       Merge
                     </Link>
-                    <DeleteCatalogIngredientButton ingredientId={item.id} displayName={item.displayNameRu} />
+                    <DeleteCatalogIngredientButton ingredientId={item.id} displayName={primaryName} />
                     {item.mergedIntoId ? (
                       <Link
                         href={`/admin/ingredients/${item.mergedIntoId}`}

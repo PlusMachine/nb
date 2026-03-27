@@ -124,8 +124,8 @@ const resolveSnapshotType = (
 const resolveSnapshotDisplayName = (
   inventory: typeof userIngredients.$inferSelect,
   liveLinkage: IngredientSourceLinkage | null
-) => inventory.ingredientDisplayNameSnapshot
-  ?? liveLinkage?.displayName
+) => liveLinkage?.displayName
+  ?? inventory.ingredientDisplayNameSnapshot
   ?? null;
 
 const resolvePersistedInventorySource = (row: {
@@ -179,6 +179,8 @@ const resolvePersistedInventorySource = (row: {
       familyId: row.inventory.ingredientFamilyId ?? liveLinkage?.familyId ?? null,
       familyDisplayName: liveLinkage?.familyDisplayName ?? null,
       displayName,
+      displayNameRu: liveLinkage?.displayNameRu ?? null,
+      displayNameEn: liveLinkage?.displayNameEn ?? null,
       normalizedName: row.catalog?.normalizedName ?? row.custom?.normalizedName ?? normalizeIngredientName(displayName),
       brandName: row.catalog?.brandName ?? row.custom?.manufacturer ?? null,
       completenessLevel: row.catalog?.completenessLevel ?? null,
@@ -816,6 +818,8 @@ export const searchInventorySuggestions = async (
       familyId: item.source.familyId,
       familyDisplayName: item.source.familyDisplayName ?? undefined,
       displayName: item.source.displayName,
+      displayNameRu: item.source.displayNameRu ?? undefined,
+      displayNameEn: item.source.displayNameEn ?? undefined,
       subtitle: [item.source.summary, `${positionsCount} поз. в запасах`].filter(Boolean).join(" • "),
       brandName: item.source.brandName ?? undefined,
       defaultUnit: item.source.defaultDisplayUnit ?? item.enteredUnit,

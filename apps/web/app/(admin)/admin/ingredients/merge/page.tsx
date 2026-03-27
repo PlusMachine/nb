@@ -1,5 +1,6 @@
 import { requireRole } from "@/lib/auth";
 import { DuplicateMergeForm } from "@/components/ingredients/duplicate-merge-form";
+import { resolveIngredientPrimaryDisplayName } from "@/features/ingredients/presentation";
 import { getIngredientById } from "@/features/ingredients/service";
 
 type Props = {
@@ -19,8 +20,14 @@ export default async function IngredientMergePage({ searchParams }: Props) {
 
   return (
     <DuplicateMergeForm
-      initialSource={sourceIngredient ? { id: sourceIngredient.id, label: sourceIngredient.displayNameRu } : null}
-      initialTarget={targetIngredient ? { id: targetIngredient.id, label: targetIngredient.displayNameRu } : null}
+      initialSource={sourceIngredient ? {
+        id: sourceIngredient.id,
+        label: resolveIngredientPrimaryDisplayName(sourceIngredient)
+      } : null}
+      initialTarget={targetIngredient ? {
+        id: targetIngredient.id,
+        label: resolveIngredientPrimaryDisplayName(targetIngredient)
+      } : null}
     />
   );
 }

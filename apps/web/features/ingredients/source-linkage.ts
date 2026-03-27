@@ -1,6 +1,7 @@
 import { ingredientCatalogItems, userCustomIngredients } from "@nb/db";
 
 import {
+  resolveIngredientPrimaryDisplayName,
   resolveIngredientFamilyDisplayName,
   buildIngredientTypedSummary
 } from "./presentation";
@@ -24,6 +25,8 @@ export type IngredientSourceLinkage = {
   subtype: IngredientSubtype | null;
   familyId: string | null;
   displayName: string;
+  displayNameRu?: string | null;
+  displayNameEn?: string | null;
   familyDisplayName: string | null;
   summary: string | null;
   defaultDisplayUnit: InventoryUnit;
@@ -52,6 +55,7 @@ export const buildCatalogIngredientLinkage = (
   catalog: typeof ingredientCatalogItems.$inferSelect
 ): IngredientSourceLinkage => {
   const technicalData = extractIngredientTechnicalData(catalog);
+  const displayName = resolveIngredientPrimaryDisplayName(catalog);
   const unitProfile = resolveInventoryUnitProfile({
     type: catalog.type,
     category: catalog.category,
@@ -67,15 +71,17 @@ export const buildCatalogIngredientLinkage = (
     category: catalog.category,
     subtype: catalog.subtype as IngredientSubtype | null,
     familyId: catalog.familyId,
-    displayName: catalog.displayName,
+    displayName,
+    displayNameRu: catalog.displayNameRu,
+    displayNameEn: catalog.displayNameEn,
     familyDisplayName: resolveIngredientFamilyDisplayName({
-      displayName: catalog.displayName,
+      displayName,
       familyCanonicalName: null
     }) ?? null,
     summary: buildIngredientTypedSummary({
       category: catalog.category,
       subtype: catalog.subtype as IngredientSubtype | null,
-      displayName: catalog.displayName,
+      displayName,
       harvestYear: catalog.harvestYear,
       defaultDisplayUnit: unitProfile.defaultUnit,
       technicalData
@@ -125,6 +131,8 @@ export const buildCustomIngredientLinkage = (
     subtype: subtype as IngredientSubtype | null,
     familyId: null,
     displayName: custom.displayName,
+    displayNameRu: null,
+    displayNameEn: null,
     familyDisplayName: null,
     summary: buildIngredientTypedSummary({
       category,

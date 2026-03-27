@@ -1,5 +1,6 @@
 import React from "react";
 import { Droplets, FlaskConical, Hop, Package, Wheat } from "lucide-react";
+import { resolveIngredientDisplayNames } from "@/features/ingredients/presentation";
 import { resolveIngredientCategory } from "@/features/ingredients/taxonomy";
 import { formatInventoryQuantityForDisplay } from "@/features/inventory/display";
 import type { RecipeDetailDto } from "@/features/recipes/contracts";
@@ -105,28 +106,37 @@ export function RecipeIngredientsSection({ ingredients }: { ingredients: RecipeD
                 <span className="text-xs tabular-nums text-zinc-400">({group.items.length})</span>
               </div>
               <ul className="space-y-1.5">
-                {group.items.map((ingredient) => (
-                  <li key={ingredient.id} className={`rounded-lg border-l-[3px] bg-white px-3 py-2.5 ring-1 ring-zinc-100 ${accent}`}>
-                    <div className="flex items-center justify-between gap-3">
-                      <div className="min-w-0">
-                        <div className="truncate text-sm font-medium text-zinc-900">{ingredient.ingredientDisplayName ?? ingredient.ingredientDisplayNameSnapshot ?? ingredient.type}</div>
-                        <div className="mt-0.5 text-xs text-zinc-500">{buildMetaLine(ingredient)}</div>
+                {group.items.map((ingredient) => {
+                  const { primaryName, secondaryName } = resolveIngredientDisplayNames({
+                    displayName: ingredient.ingredientDisplayName ?? ingredient.ingredientDisplayNameSnapshot ?? ingredient.type,
+                    displayNameRu: ingredient.ingredientDisplayNameRu,
+                    displayNameEn: ingredient.ingredientDisplayNameEn
+                  });
+
+                  return (
+                    <li key={ingredient.id} className={`rounded-lg border-l-[3px] bg-white px-3 py-2.5 ring-1 ring-zinc-100 ${accent}`}>
+                      <div className="flex items-center justify-between gap-3">
+                        <div className="min-w-0">
+                          <div className="truncate text-sm font-medium text-zinc-900">{primaryName}</div>
+                          {secondaryName ? <div className="mt-0.5 text-xs text-zinc-500">{secondaryName}</div> : null}
+                          <div className="mt-0.5 text-xs text-zinc-500">{buildMetaLine(ingredient)}</div>
+                        </div>
+                        <div className="shrink-0 text-right text-sm font-medium tabular-nums text-zinc-700">{formatInventoryQuantityForDisplay({
+                          enteredQuantity: ingredient.amountEnteredQuantity,
+                          enteredUnit: ingredient.amountEnteredUnit,
+                          normalizedQuantity: ingredient.amountNormalizedQuantity,
+                          normalizedUnit: ingredient.amountNormalizedUnit,
+                          type: ingredient.type,
+                          category: ingredient.ingredientCategory ?? resolveIngredientCategory({ type: ingredient.type }),
+                          subtype: ingredient.ingredientSubtype ?? null,
+                          defaultDisplayUnit: ingredient.ingredientDefaultDisplayUnit ?? ingredient.ingredientDefaultDisplayUnitSnapshot,
+                          allowedUnits: ingredient.ingredientAllowedUnits ?? null,
+                          measurementDimension: ingredient.ingredientMeasurementDimension ?? ingredient.ingredientMeasurementDimensionSnapshot ?? null
+                        })}</div>
                       </div>
-                      <div className="shrink-0 text-right text-sm font-medium tabular-nums text-zinc-700">{formatInventoryQuantityForDisplay({
-                        enteredQuantity: ingredient.amountEnteredQuantity,
-                        enteredUnit: ingredient.amountEnteredUnit,
-                        normalizedQuantity: ingredient.amountNormalizedQuantity,
-                        normalizedUnit: ingredient.amountNormalizedUnit,
-                        type: ingredient.type,
-                        category: ingredient.ingredientCategory ?? resolveIngredientCategory({ type: ingredient.type }),
-                        subtype: ingredient.ingredientSubtype ?? null,
-                        defaultDisplayUnit: ingredient.ingredientDefaultDisplayUnit ?? ingredient.ingredientDefaultDisplayUnitSnapshot,
-                        allowedUnits: ingredient.ingredientAllowedUnits ?? null,
-                        measurementDimension: ingredient.ingredientMeasurementDimension ?? ingredient.ingredientMeasurementDimensionSnapshot ?? null
-                      })}</div>
-                    </div>
-                  </li>
-                ))}
+                    </li>
+                  );
+                })}
               </ul>
             </div>
           );

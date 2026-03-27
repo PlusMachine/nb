@@ -2,6 +2,7 @@ import {
   extractIngredientTechnicalData,
   type IngredientTechnicalData
 } from "./technical-fields";
+import { normalizeSearchText } from "./normalization";
 import type {
   IngredientCategory,
   IngredientDisplayUnit,
@@ -14,6 +15,8 @@ type IngredientPresentationSource = {
   subtype?: IngredientSubtype | null;
   type?: IngredientType | null;
   displayName: string;
+  displayNameRu?: string | null;
+  displayNameEn?: string | null;
   familyCanonicalName?: string | null;
   familyDisplayName?: string | null;
   familyDisplayNameEn?: string | null;
@@ -81,6 +84,55 @@ const formatNumber = (value: number) => value.toLocaleString("en-US", {
   maximumFractionDigits: value % 1 === 0 ? 0 : 1
 });
 
+const normalizeOptionalName = (value?: string | null) => {
+  if (typeof value !== "string") {
+    return undefined;
+  }
+
+  const trimmed = value.trim();
+  return trimmed.length ? trimmed : undefined;
+};
+
+const areNameVariantsEqual = (left?: string, right?: string) => {
+  if (!left || !right) {
+    return false;
+  }
+
+  return normalizeSearchText(left) === normalizeSearchText(right);
+};
+
+export const resolveIngredientPrimaryDisplayName = (source: Pick<
+  IngredientPresentationSource,
+  "displayName" | "displayNameEn" | "displayNameRu"
+>) => (
+  normalizeOptionalName(source.displayNameEn)
+  ?? normalizeOptionalName(source.displayName)
+  ?? normalizeOptionalName(source.displayNameRu)
+  ?? ""
+);
+
+export const resolveIngredientSecondaryDisplayName = (source: Pick<
+  IngredientPresentationSource,
+  "displayName" | "displayNameEn" | "displayNameRu"
+>) => {
+  const primaryName = resolveIngredientPrimaryDisplayName(source);
+  const russianName = normalizeOptionalName(source.displayNameRu);
+
+  if (!russianName || areNameVariantsEqual(primaryName, russianName)) {
+    return undefined;
+  }
+
+  return russianName;
+};
+
+export const resolveIngredientDisplayNames = (source: Pick<
+  IngredientPresentationSource,
+  "displayName" | "displayNameEn" | "displayNameRu"
+>) => ({
+  primaryName: resolveIngredientPrimaryDisplayName(source),
+  secondaryName: resolveIngredientSecondaryDisplayName(source)
+});
+
 export const formatIngredientSubtypeLabel = (
   category: IngredientCategory,
   subtype?: IngredientSubtype | null
@@ -98,8 +150,8 @@ export const formatIngredientSubtypeLabel = (
 
 export const resolveIngredientFamilyDisplayName = (source: IngredientPresentationSource) => (
   source.familyDisplayName
-  ?? source.familyDisplayNameRu
   ?? source.familyDisplayNameEn
+  ?? source.familyDisplayNameRu
   ?? source.familyCanonicalName
   ?? undefined
 );

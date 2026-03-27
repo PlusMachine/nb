@@ -10,7 +10,10 @@ import {
   type IngredientSuggestionItem,
   type IngredientType
 } from "@/features/ingredients/contracts";
-import { ingredientCategoryLabels } from "@/features/ingredients/presentation";
+import {
+  ingredientCategoryLabels,
+  resolveIngredientDisplayNames
+} from "@/features/ingredients/presentation";
 import { resolveLegacyIngredientType } from "@/features/ingredients/taxonomy";
 import { resolveHumanFacingInventoryUnitProfile } from "@/features/inventory/units";
 import { recipeIngredientStages, type RecipeIngredientStage } from "@/features/recipes/contracts";
@@ -20,6 +23,7 @@ export type RecipeIngredientEditorRowValue = {
   ingredientCatalogItemId: string | null;
   userCustomIngredientId: string | null;
   selectedName: string;
+  selectedSecondaryName: string;
   selectedSummary: string;
   familyDisplayName: string;
   category: IngredientCategory;
@@ -71,6 +75,7 @@ export const applyRecipeIngredientCategoryChange = (
     ingredientCatalogItemId: null,
     userCustomIngredientId: null,
     selectedName: "",
+    selectedSecondaryName: "",
     selectedSummary: "",
     familyDisplayName: "",
     category,
@@ -88,7 +93,15 @@ export const applyRecipeIngredientTextChange = (
   value: RecipeIngredientEditorRowValue,
   nextValue: string
 ): RecipeIngredientEditorRowValue => {
-  if (!hasRecipeIngredientSelection(value) || nextValue.trim() === value.selectedName.trim()) {
+  if (!hasRecipeIngredientSelection(value)) {
+    return {
+      ...value,
+      selectedName: nextValue,
+      selectedSecondaryName: ""
+    };
+  }
+
+  if (nextValue.trim() === value.selectedName.trim()) {
     return {
       ...value,
       selectedName: nextValue
@@ -100,6 +113,7 @@ export const applyRecipeIngredientTextChange = (
   return {
     ...value,
     selectedName: nextValue,
+    selectedSecondaryName: "",
     selectedSummary: "",
     familyDisplayName: "",
     subtype: null,
@@ -127,12 +141,14 @@ export const applyRecipeIngredientSelection = (
     allowedUnits: item.allowedUnits,
     measurementDimension: item.measurementDimension
   });
+  const { primaryName, secondaryName } = resolveIngredientDisplayNames(item);
 
   return {
     ...value,
     ingredientCatalogItemId: item.id,
     userCustomIngredientId: null,
-    selectedName: item.displayName,
+    selectedName: primaryName,
+    selectedSecondaryName: secondaryName ?? "",
     selectedSummary: item.subtitle ?? "",
     familyDisplayName: item.familyDisplayName ?? item.familyCanonicalName ?? "",
     category: item.category ?? value.category,
@@ -220,6 +236,7 @@ export function RecipeIngredientRow({
         {hasSelectedIngredient ? (
           <p className="text-xs text-zinc-600">
             Ингредиент выбран.
+            {value.selectedSecondaryName ? ` ${value.selectedSecondaryName}.` : ""}
             {value.familyDisplayName ? ` ${value.familyDisplayName}.` : ""}
             {value.selectedSummary ? ` ${value.selectedSummary}.` : ""}
           </p>

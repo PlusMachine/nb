@@ -505,6 +505,8 @@ type RecipeIngredientResolvedSource = {
   subtype: RecipeIngredientDto["ingredientSubtype"];
   familyId: RecipeIngredientDto["ingredientFamilyId"];
   displayName: RecipeIngredientDto["ingredientDisplayName"];
+  displayNameRu: RecipeIngredientDto["ingredientDisplayNameRu"];
+  displayNameEn: RecipeIngredientDto["ingredientDisplayNameEn"];
   familyDisplayName: RecipeIngredientDto["ingredientFamilyDisplayName"];
   summary: RecipeIngredientDto["ingredientSummary"];
   defaultDisplayUnit: RecipeIngredientDto["ingredientDefaultDisplayUnit"];
@@ -539,6 +541,8 @@ const readRecipeIngredientLinkageMeta = (
     subtype: typeof linkage.subtype === "string" ? linkage.subtype as RecipeIngredientDto["ingredientSubtype"] : null,
     familyId: typeof linkage.familyId === "string" ? linkage.familyId : null,
     displayName: typeof linkage.displayName === "string" ? linkage.displayName : null,
+    displayNameRu: typeof linkage.displayNameRu === "string" ? linkage.displayNameRu : null,
+    displayNameEn: typeof linkage.displayNameEn === "string" ? linkage.displayNameEn : null,
     familyDisplayName: typeof linkage.familyDisplayName === "string" ? linkage.familyDisplayName : null,
     summary: typeof linkage.summary === "string" ? linkage.summary : null,
     defaultDisplayUnit,
@@ -600,7 +604,9 @@ const buildPersistedRecipeResolvedSource = (
     category,
     subtype,
     familyId: ingredient.ingredientFamilyId ?? stepMetaLinkage?.familyId ?? liveLinkage?.familyId ?? null,
-    displayName: ingredient.ingredientDisplayNameSnapshot ?? stepMetaLinkage?.displayName ?? liveLinkage?.displayName ?? null,
+    displayName: liveLinkage?.displayName ?? ingredient.ingredientDisplayNameSnapshot ?? stepMetaLinkage?.displayName ?? null,
+    displayNameRu: liveLinkage?.displayNameRu ?? stepMetaLinkage?.displayNameRu ?? null,
+    displayNameEn: liveLinkage?.displayNameEn ?? stepMetaLinkage?.displayNameEn ?? null,
     familyDisplayName: liveLinkage?.familyDisplayName ?? stepMetaLinkage?.familyDisplayName ?? null,
     summary: liveLinkage?.summary ?? stepMetaLinkage?.summary ?? null,
     defaultDisplayUnit: ingredient.ingredientDefaultDisplayUnitSnapshot
@@ -653,6 +659,8 @@ const hydrateRecipeIngredientDto = async (
     ingredientSubtype: resolvedSource?.subtype ?? null,
     ingredientFamilyId: resolvedSource?.familyId ?? null,
     ingredientDisplayName: resolvedSource?.displayName ?? null,
+    ingredientDisplayNameRu: resolvedSource?.displayNameRu ?? null,
+    ingredientDisplayNameEn: resolvedSource?.displayNameEn ?? null,
     ingredientDisplayNameSnapshot: resolvedSource?.displayName ?? null,
     ingredientFamilyDisplayName: resolvedSource?.familyDisplayName ?? null,
     ingredientSummary: resolvedSource?.summary ?? null,
@@ -669,6 +677,7 @@ const mapRecipeListDto = (recipe: typeof recipes.$inferSelect): RecipeListItemDt
   authorId: recipe.authorId,
   recipeFamilyId: recipe.recipeFamilyId,
   versionNumber: recipe.versionNumber,
+  versionCount: 1,
   publicationState: recipe.publicationState,
   title: recipe.title,
   slug: recipe.slug,

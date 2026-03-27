@@ -41,6 +41,7 @@ import {
 } from "./normalization";
 import {
   buildIngredientTypedSummary,
+  resolveIngredientPrimaryDisplayName,
   resolveIngredientFamilyDisplayName
 } from "./presentation";
 import { scoreIngredientCandidate } from "./ranking";
@@ -225,12 +226,19 @@ const catalogCompletenessRankExpression = sql<number>`case
   else 99
 end`;
 
+const catalogNameSortExpression = sql<string>`coalesce(
+  nullif(${ingredientCatalogItems.displayNameEn}, ''),
+  nullif(${ingredientCatalogItems.displayName}, ''),
+  nullif(${ingredientCatalogItems.displayNameRu}, '')
+)`;
+
 const catalogFamilySortExpression = sql<string>`coalesce(
-  ${ingredientFamilies.displayNameRu},
   ${ingredientFamilies.displayNameEn},
+  ${ingredientFamilies.displayNameRu},
   ${ingredientFamilies.canonicalName},
-  ${ingredientCatalogItems.displayNameRu},
-  ${ingredientCatalogItems.displayName}
+  ${ingredientCatalogItems.displayNameEn},
+  ${ingredientCatalogItems.displayName},
+  ${ingredientCatalogItems.displayNameRu}
 )`;
 
 const catalogBrandSortExpression = sql<string>`coalesce(
@@ -269,7 +277,7 @@ const buildCatalogWhere = (params: {
 
 const buildCatalogOrderBy = (sort: AdminCatalogSortOption) => {
   const categoryOrder = asc(catalogCategoryRankExpression);
-  const nameOrder = [asc(ingredientCatalogItems.displayNameRu), asc(ingredientCatalogItems.displayName)];
+  const nameOrder = [asc(catalogNameSortExpression), asc(ingredientCatalogItems.displayNameRu)];
 
   if (sort === "brand") {
     return [
@@ -393,8 +401,8 @@ const loadIngredientSearchRows = async (
   const candidateLimit = Math.min(60, Math.max(query.limit * 6, 24));
 
   return useSimilarity
-    ? baseQuery.orderBy(desc(scoreExpression), asc(ingredientCatalogItems.displayNameRu)).limit(candidateLimit)
-    : baseQuery.orderBy(asc(ingredientCatalogItems.displayNameRu)).limit(candidateLimit);
+    ? baseQuery.orderBy(desc(scoreExpression), asc(catalogNameSortExpression), asc(ingredientCatalogItems.displayNameRu)).limit(candidateLimit)
+    : baseQuery.orderBy(asc(catalogNameSortExpression), asc(ingredientCatalogItems.displayNameRu)).limit(candidateLimit);
 };
 
 const findIngredientFamilyById = async (familyId: string) => {
@@ -621,13 +629,13 @@ export const searchCatalogItems = async (params: SearchParams): Promise<Ingredie
 
   return rows
     .map((row) => {
+      const displayName = resolveIngredientPrimaryDisplayName(row);
       const familyDisplayName = resolveIngredientFamilyDisplayName({
-        displayName: row.displayNameRu ?? row.displayName,
+        displayName,
         familyCanonicalName: row.familyCanonicalName,
         familyDisplayNameEn: row.familyDisplayNameEn,
         familyDisplayNameRu: row.familyDisplayNameRu
       });
-      const displayName = row.displayNameRu ?? row.displayName;
       const subtitle = buildSuggestionSubtitle({
         displayName,
         brandName: row.brandName,
@@ -661,7 +669,7 @@ export const searchCatalogItems = async (params: SearchParams): Promise<Ingredie
         familyDisplayNameRu: row.familyDisplayNameRu ?? undefined,
         familyDisplayNameEn: row.familyDisplayNameEn ?? undefined,
         displayName,
-        displayNameRu: row.displayNameRu ?? displayName,
+        displayNameRu: row.displayNameRu ?? undefined,
         displayNameEn: row.displayNameEn ?? undefined,
         subtitle,
         brandName: row.brandName ?? undefined,
@@ -821,7 +829,11 @@ export const deleteIngredient = async (id: string, actorId?: string) => {
     return {
       mode: "archived" as const,
       id,
-      displayName: updated?.displayNameRu ?? updated?.displayName ?? current.displayNameRu ?? current.displayName,
+      displayName: resolveIngredientPrimaryDisplayName({
+        displayName: updated?.displayName ?? current.displayName,
+        displayNameRu: updated?.displayNameRu ?? current.displayNameRu,
+        displayNameEn: updated?.displayNameEn ?? current.displayNameEn
+      }),
       references
     };
   }
@@ -830,13 +842,19 @@ export const deleteIngredient = async (id: string, actorId?: string) => {
     .where(eq(ingredientCatalogItems.id, id))
     .returning({
       id: ingredientCatalogItems.id,
-      displayName: ingredientCatalogItems.displayNameRu
+      displayName: ingredientCatalogItems.displayName,
+      displayNameRu: ingredientCatalogItems.displayNameRu,
+      displayNameEn: ingredientCatalogItems.displayNameEn
     });
 
   return {
     mode: "deleted" as const,
     id: deleted?.id ?? id,
-    displayName: deleted?.displayName ?? current.displayNameRu ?? current.displayName,
+    displayName: resolveIngredientPrimaryDisplayName({
+      displayName: deleted?.displayName ?? current.displayName,
+      displayNameRu: deleted?.displayNameRu ?? current.displayNameRu,
+      displayNameEn: deleted?.displayNameEn ?? current.displayNameEn
+    }),
     references
   };
 };

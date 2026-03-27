@@ -111,6 +111,7 @@ describe("inventory usability components", () => {
         type: "fermentable",
         category: "fermentable",
         displayName: "Pilsner Malt",
+        displayNameRu: "Пилснер солод",
         normalizedName: "pilsner-malt",
         manufacturer: "BESTMALZ",
         country: "DE",
@@ -127,10 +128,13 @@ describe("inventory usability components", () => {
     }));
 
     expect(html).toContain("Pilsner Malt");
-    expect(html).toContain("2 kg");
+    expect(html).toContain("Пилснер солод");
+    expect(html).toContain('value="2"');
+    expect(html).toContain('<option value="kg" selected="">kg</option>');
     expect(html).toContain("BESTMALZ");
     expect(html).toContain("3.5 EBC • 80%");
-    expect(html).toContain("Действия");
+    expect(html).toContain('aria-label="Редактировать"');
+    expect(html).toContain('aria-label="Удалить"');
   });
 
   it("tracks dirty state and zero-stock validity for inline editor logic", () => {

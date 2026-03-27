@@ -35,6 +35,7 @@ const buildRow = (overrides: Partial<Parameters<typeof getRecipeIngredientValida
   ingredientCatalogItemId: null,
   userCustomIngredientId: null,
   selectedName: "",
+  selectedSecondaryName: "",
   selectedSummary: "",
   familyDisplayName: "",
   category: "hop" as const,
@@ -113,6 +114,7 @@ describe("recipe editor components", () => {
     expect(selected.familyId).toBe("fam-1");
     expect(selected.subtype).toBe("pellet");
     expect(selected.amountEnteredUnit).toBe("g");
+    expect(selected.selectedSecondaryName).toBe("");
   });
 
   it("fermentable selection prefers kilograms for human-facing recipe entry", () => {
@@ -145,6 +147,7 @@ describe("recipe editor components", () => {
     const selected = buildRow({
       ingredientCatalogItemId: "cat-1",
       selectedName: "Cascade",
+      selectedSecondaryName: "Каскад",
       selectedSummary: "6.8% AA • pellet • 2024",
       familyDisplayName: "Cascade",
       familyId: "fam-1",
@@ -154,6 +157,7 @@ describe("recipe editor components", () => {
 
     expect(cleared.ingredientCatalogItemId).toBeNull();
     expect(cleared.familyId).toBeNull();
+    expect(cleared.selectedSecondaryName).toBe("");
     expect(cleared.selectedSummary).toBe("");
   });
 

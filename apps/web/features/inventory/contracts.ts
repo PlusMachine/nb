@@ -204,6 +204,8 @@ export type InventorySourceDto = {
   familyId?: string | null;
   familyDisplayName?: string | null;
   displayName: string;
+  displayNameRu?: string | null;
+  displayNameEn?: string | null;
   normalizedName: string;
   brandName?: string | null;
   completenessLevel?: IngredientCompletenessLevel | null;

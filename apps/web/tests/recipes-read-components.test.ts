@@ -20,6 +20,7 @@ const recipeDetail: RecipeDetailDto = {
   authorId: "u-1",
   recipeFamilyId: "rf-1",
   versionNumber: 1,
+  versionCount: 1,
   publicationState: "published",
   title: "Hazy IPA",
   slug: "public-ipa",
@@ -51,6 +52,7 @@ const recipeDetail: RecipeDetailDto = {
       type: "fermentable",
       ingredientCategory: "fermentable",
       ingredientDisplayName: "Pilsner Malt",
+      ingredientDisplayNameRu: "Пилснер солод",
       ingredientDefaultDisplayUnitSnapshot: "g",
       amountEnteredQuantity: 500,
       amountEnteredUnit: "g",
@@ -121,6 +123,7 @@ describe("recipes read components", () => {
 
     expect(html).toContain("Ингредиенты");
     expect(html).toContain("Pilsner Malt");
+    expect(html).toContain("Пилснер солод");
     expect(html).toContain("0.5 kg");
     expect(html).toContain("Кипячение");
     expect(html).toContain("Описание");

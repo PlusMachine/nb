@@ -3,6 +3,7 @@
 import { useState } from "react";
 
 import { IngredientPicker } from "@/components/ingredients/ingredient-picker";
+import { resolveIngredientPrimaryDisplayName } from "@/features/ingredients/presentation";
 
 type PrefilledIngredient = {
   id: string;
@@ -43,7 +44,7 @@ export const DuplicateMergeForm = ({ initialSource = null, initialTarget = null 
           onSelectionInvalidated={() => setSource("")}
           onSelect={(item) => {
             setSource(item.id);
-            setSourceLabel(item.displayNameRu ?? item.displayName);
+            setSourceLabel(resolveIngredientPrimaryDisplayName(item));
             setError(null);
           }}
           placeholder="Найдите исходный ингредиент"
@@ -58,7 +59,7 @@ export const DuplicateMergeForm = ({ initialSource = null, initialTarget = null 
           onSelectionInvalidated={() => setTarget("")}
           onSelect={(item) => {
             setTarget(item.id);
-            setTargetLabel(item.displayNameRu ?? item.displayName);
+            setTargetLabel(resolveIngredientPrimaryDisplayName(item));
             setError(null);
           }}
           placeholder="Найдите итоговый ингредиент"

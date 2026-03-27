@@ -34,7 +34,10 @@ import {
 import { IngredientPicker } from "@/components/ingredients/ingredient-picker";
 import { ConfirmActionDialog } from "@/components/shared/confirm-action-dialog";
 import type { IngredientCategory, IngredientSuggestionItem, IngredientSubtype, IngredientType } from "@/features/ingredients/contracts";
-import { ingredientCategoryLabels } from "@/features/ingredients/presentation";
+import {
+  ingredientCategoryLabels,
+  resolveIngredientDisplayNames
+} from "@/features/ingredients/presentation";
 import { resolveIngredientCategory, resolveLegacyIngredientType } from "@/features/ingredients/taxonomy";
 import {
   formatInventoryQuantityInputValue,
@@ -82,6 +85,7 @@ type DesignerIngredient = {
   ingredientCatalogItemId: string | null;
   userCustomIngredientId: string | null;
   selectedName: string;
+  selectedSecondaryName: string;
   selectedSummary: string;
   familyDisplayName: string;
   category: IngredientCategory;
@@ -305,6 +309,7 @@ const createEmptyIngredient = (category: IngredientCategory, hopUseType: RecipeH
       ingredientCatalogItemId: null,
       userCustomIngredientId: null,
       selectedName: "",
+      selectedSecondaryName: "",
       selectedSummary: "",
       familyDisplayName: "",
       category,
@@ -333,6 +338,7 @@ const createEmptyIngredient = (category: IngredientCategory, hopUseType: RecipeH
       ingredientCatalogItemId: null,
       userCustomIngredientId: null,
       selectedName: "",
+      selectedSecondaryName: "",
       selectedSummary: "",
       familyDisplayName: "",
       category,
@@ -357,6 +363,7 @@ const createEmptyIngredient = (category: IngredientCategory, hopUseType: RecipeH
     ingredientCatalogItemId: null,
     userCustomIngredientId: null,
     selectedName: "",
+    selectedSecondaryName: "",
     selectedSummary: "",
     familyDisplayName: "",
     category,
@@ -383,12 +390,14 @@ const applySelection = (current: DesignerIngredient, item: IngredientSuggestionI
     allowedUnits: item.allowedUnits,
     measurementDimension: item.measurementDimension
   });
+  const { primaryName, secondaryName } = resolveIngredientDisplayNames(item);
 
   return {
     ...current,
     ingredientCatalogItemId: item.source === "catalog" ? item.id : null,
     userCustomIngredientId: item.source === "custom" ? item.id : null,
-    selectedName: item.displayName,
+    selectedName: primaryName,
+    selectedSecondaryName: secondaryName ?? "",
     selectedSummary: item.subtitle ?? "",
     familyDisplayName: item.familyDisplayName ?? "",
     category: item.category ?? current.category,
@@ -404,7 +413,11 @@ const applySelection = (current: DesignerIngredient, item: IngredientSuggestionI
 
 const applyQueryChange = (current: DesignerIngredient, nextValue: string): DesignerIngredient => {
   if (!current.ingredientCatalogItemId && !current.userCustomIngredientId) {
-    return { ...current, selectedName: nextValue };
+    return {
+      ...current,
+      selectedName: nextValue,
+      selectedSecondaryName: ""
+    };
   }
 
   const unitProfile = resolveHumanFacingInventoryUnitProfile({ category: current.category });
@@ -413,6 +426,7 @@ const applyQueryChange = (current: DesignerIngredient, nextValue: string): Desig
     ingredientCatalogItemId: null,
     userCustomIngredientId: null,
     selectedName: nextValue,
+    selectedSecondaryName: "",
     selectedSummary: "",
     familyDisplayName: "",
     subtype: null,
@@ -509,12 +523,18 @@ const toDesignerIngredient = (ingredient: RecipeDetailDto["ingredients"][number]
     measurementDimension: ingredient.ingredientMeasurementDimension ?? ingredient.ingredientMeasurementDimensionSnapshot ?? unitProfile.measurementDimension
   });
   const stepMeta = (ingredient.stepMeta ?? {}) as Record<string, unknown>;
+  const ingredientNames = resolveIngredientDisplayNames({
+    displayName: ingredient.ingredientDisplayName ?? ingredient.ingredientDisplayNameSnapshot ?? "",
+    displayNameRu: ingredient.ingredientDisplayNameRu,
+    displayNameEn: ingredient.ingredientDisplayNameEn
+  });
 
   return {
     localId: ingredient.id,
     ingredientCatalogItemId: ingredient.ingredientCatalogItemId,
     userCustomIngredientId: ingredient.userCustomIngredientId,
-    selectedName: ingredient.ingredientDisplayName ?? ingredient.ingredientDisplayNameSnapshot ?? "",
+    selectedName: ingredientNames.primaryName,
+    selectedSecondaryName: ingredientNames.secondaryName ?? "",
     selectedSummary: ingredient.ingredientSummary ?? "",
     familyDisplayName: ingredient.ingredientFamilyDisplayName ?? "",
     category,
@@ -1259,6 +1279,7 @@ function SectionRow({
               <span className="shrink-0 rounded bg-amber-50 px-1.5 py-0.5 text-[11px] font-medium tabular-nums text-amber-700">{percentage.toFixed(1)}%</span>
             ) : null}
           </div>
+          {ingredient.selectedSecondaryName ? <div className="mt-0.5 text-xs text-zinc-500">{ingredient.selectedSecondaryName}</div> : null}
           <div className="mt-0.5 text-xs text-zinc-500">{buildSummaryDetails(ingredient) || ingredient.selectedSummary || ingredient.familyDisplayName || "—"}</div>
         </div>
         <div className="flex shrink-0 items-center gap-1">
@@ -1761,7 +1782,11 @@ function IngredientEditor({
         />
         <p className="text-xs text-zinc-500">
           {draft.ingredientCatalogItemId || draft.userCustomIngredientId
-            ? draft.selectedSummary || draft.familyDisplayName || "Ингредиент выбран."
+            ? [
+              draft.selectedSecondaryName || null,
+              draft.selectedSummary || null,
+              draft.familyDisplayName || null
+            ].filter(Boolean).join(" · ") || "Ингредиент выбран."
             : "Сначала выберите ингредиент из каталога или создайте свой."}
         </p>
       </div>
