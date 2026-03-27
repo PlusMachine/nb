@@ -44,6 +44,7 @@ const subtypeLabels: Record<string, string> = {
   sugar: "sugar",
   syrup_honey: "syrup/honey",
   fruit_fermentable: "fruit fermentable",
+  standard: "standard",
   pellet: "pellet",
   whole_cone: "whole cone",
   cryo: "cryo",
@@ -59,6 +60,8 @@ const subtypeLabels: Record<string, string> = {
   acid: "acid",
   base: "base",
   nutrient_other: "nutrient",
+  water_source: "water source",
+  dechlorination: "dechlorination",
   fining: "fining",
   antioxidant: "antioxidant",
   nutrient: "nutrient",
@@ -66,6 +69,10 @@ const subtypeLabels: Record<string, string> = {
   wood: "wood",
   flavoring: "flavoring",
   enzyme: "enzyme",
+  cleaner: "cleaner",
+  sanitizer: "sanitizer",
+  gas: "gas",
+  preservative: "preservative",
   process_aid: "process aid",
   other: "other"
 };
@@ -91,8 +98,8 @@ export const formatIngredientSubtypeLabel = (
 
 export const resolveIngredientFamilyDisplayName = (source: IngredientPresentationSource) => (
   source.familyDisplayName
-  ?? source.familyDisplayNameEn
   ?? source.familyDisplayNameRu
+  ?? source.familyDisplayNameEn
   ?? source.familyCanonicalName
   ?? undefined
 );
@@ -107,7 +114,9 @@ const buildHopSummary = (
 ) => (
   [
     `${formatNumber(technicalData.alphaAcidPct)}% AA`,
-    formatIngredientSubtypeLabel("hop", technicalData.subtype ?? fallbackSubtype ?? null),
+    technicalData.subtype === "standard"
+      ? null
+      : formatIngredientSubtypeLabel("hop", technicalData.subtype ?? fallbackSubtype ?? null),
     technicalData.harvestYear ?? null
   ].filter(Boolean).join(" • ")
 );

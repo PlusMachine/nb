@@ -1,0 +1,1534 @@
+{
+  "schema_version": "1.0",
+  "generated_at_utc": "2026-03-17T14:05:05Z",
+  "catalog_name": "Водоподготовка и коррекция pH для пивоварения",
+  "catalog_name_en": "Brewing Water Treatment and pH Adjustment Additives",
+  "language_primary": "ru",
+  "scope": "Безбрендовый каталог солей, кислот, щелочных реагентов, средств удаления хлора/хлораминов и связанных методов водоподготовки для пивоваренного приложения.",
+  "recommended_targets": {
+    "mash_pH_room_temp": "5.2-5.6",
+    "sparge_water_pH": "5.5-6.0",
+    "core_ions_ppm_typical": {
+      "Ca": "50-150",
+      "Mg": "10-30 (лучше умеренно; часто достаточно из солода)",
+      "Na": "0-150",
+      "Cl": "0-250",
+      "SO4": "0-350",
+      "HCO3": "0-250"
+    }
+  },
+  "app_notes_ru": [
+    "Для калькулятора профиля воды основными полями обычно являются Ca, Mg, Na, Cl, SO4 и HCO3 в ppm.",
+    "Для солей с известной химической формой даны расчётные ионные вклады на 1 г/л и 1 г/gal.",
+    "Для кислот вклад лучше считать через концентрацию раствора и алкалинность исходной воды, а не через фиксированную ppm-таблицу.",
+    "Русские названия и поисковые алиасы сделаны первичными; английские оставлены для совместимости с BeerSmith/Brewfather/Brewer's Friend."
+  ],
+  "items": [
+    {
+      "id": "reverse-osmosis-water",
+      "display_name": "Вода после обратного осмоса (RO)",
+      "name_ru": "Вода после обратного осмоса",
+      "name_en": "Reverse Osmosis Water",
+      "aliases_ru": [
+        "RO вода",
+        "осмос",
+        "обратный осмос",
+        "вода RO",
+        "обратноосмотическая вода"
+      ],
+      "aliases_en": [
+        "RO Water",
+        "Reverse Osmosis Water",
+        "RO"
+      ],
+      "search_aliases": [
+        "вода после обратного осмоса",
+        "ro вода",
+        "осмос",
+        "обратный осмос",
+        "reverse osmosis water",
+        "ro water"
+      ],
+      "item_kind": "water_source",
+      "category": "dilution_water",
+      "formula": null,
+      "common_forms": [
+        "liquid"
+      ],
+      "concentration_options": null,
+      "unit_preferred": "L",
+      "water_calc_role": [
+        "dilution",
+        "blank_canvas_water",
+        "base_water"
+      ],
+      "effect_on_ions": {
+        "dilutes_existing_ions": true
+      },
+      "ion_contributions_ppm_per_g_per_l": null,
+      "ion_contributions_ppm_per_g_per_gal": null,
+      "pH_effect_direction": "neutral_to_contextual",
+      "recommended_for": [
+        "dilution",
+        "full water rebuild",
+        "soft-water styles",
+        "high-alkalinity tap water correction"
+      ],
+      "typical_use_ru": "База для построения профиля воды с нуля или для разбавления минерализованной/щелочной воды.",
+      "cautions_ru": "Не путать с полностью гарантированно нулевой минерализацией. Качество зависит от мембраны и состояния системы; желательно контролировать TDS.",
+      "storage_notes_ru": null,
+      "calculation_support": "full",
+      "common_in_homebrewing": true,
+      "common_in_pro_brewing": true,
+      "recommendation_level": "default",
+      "source_basis": [
+        "Brewfather",
+        "Bru'n Water"
+      ]
+    },
+    {
+      "id": "distilled-water",
+      "display_name": "Дистиллированная вода",
+      "name_ru": "Дистиллированная вода",
+      "name_en": "Distilled Water",
+      "aliases_ru": [
+        "дистиллят",
+        "дистиллированная",
+        "дистиллированная вода"
+      ],
+      "aliases_en": [
+        "Distilled Water"
+      ],
+      "search_aliases": [
+        "дистиллированная вода",
+        "дистиллят",
+        "distilled water"
+      ],
+      "item_kind": "water_source",
+      "category": "dilution_water",
+      "formula": null,
+      "common_forms": [
+        "liquid"
+      ],
+      "concentration_options": null,
+      "unit_preferred": "L",
+      "water_calc_role": [
+        "dilution",
+        "blank_canvas_water",
+        "base_water"
+      ],
+      "effect_on_ions": {
+        "dilutes_existing_ions": true
+      },
+      "ion_contributions_ppm_per_g_per_l": null,
+      "ion_contributions_ppm_per_g_per_gal": null,
+      "pH_effect_direction": "neutral_to_contextual",
+      "recommended_for": [
+        "dilution",
+        "full water rebuild",
+        "soft-water styles"
+      ],
+      "typical_use_ru": "Стартовая вода с практически нулевой минерализацией для точной сборки целевого профиля.",
+      "cautions_ru": "Как и RO, сама по себе не даёт нужного профиля: обычно требует последующего внесения солей.",
+      "storage_notes_ru": null,
+      "calculation_support": "full",
+      "common_in_homebrewing": true,
+      "common_in_pro_brewing": true,
+      "recommendation_level": "default",
+      "source_basis": [
+        "Brewfather"
+      ]
+    },
+    {
+      "id": "ascorbic-acid",
+      "display_name": "Аскорбиновая кислота",
+      "name_ru": "Аскорбиновая кислота",
+      "name_en": "Ascorbic Acid",
+      "aliases_ru": [
+        "витамин C",
+        "аскорбинка",
+        "аскорбиновая кислота"
+      ],
+      "aliases_en": [
+        "Ascorbic Acid",
+        "Vitamin C"
+      ],
+      "search_aliases": [
+        "аскорбиновая кислота",
+        "витамин c",
+        "ascorbic acid",
+        "vitamin c"
+      ],
+      "item_kind": "chemical",
+      "category": "dechlorination_agent",
+      "formula": "C6H8O6",
+      "common_forms": [
+        "powder",
+        "crystals"
+      ],
+      "concentration_options": null,
+      "unit_preferred": "mg",
+      "water_calc_role": [
+        "chlorine_removal",
+        "chloramine_removal",
+        "acidification_minor"
+      ],
+      "effect_on_ions": {
+        "no_major_mineral_contribution": true
+      },
+      "ion_contributions_ppm_per_g_per_l": null,
+      "ion_contributions_ppm_per_g_per_gal": null,
+      "pH_effect_direction": "lowering",
+      "recommended_for": [
+        "chloramine removal",
+        "chlorine removal"
+      ],
+      "typical_use_ru": "Рабочая альтернатива метабисульфиту для удаления хлора/хлораминов.",
+      "cautions_ru": "Снижает pH; для большинства пивоваров метабисульфит обычно удобнее и дешевле.",
+      "storage_notes_ru": "Хранить сухо, в закрытой упаковке.",
+      "calculation_support": "partial",
+      "common_in_homebrewing": false,
+      "common_in_pro_brewing": false,
+      "recommendation_level": "situational",
+      "typical_dose_reference": {
+        "mg_per_l": 7.5
+      },
+      "source_basis": [
+        "Bru'n Water"
+      ]
+    },
+    {
+      "id": "potassium-metabisulfite",
+      "display_name": "Метабисульфит калия",
+      "name_ru": "Метабисульфит калия",
+      "name_en": "Potassium Metabisulfite",
+      "aliases_ru": [
+        "Campden",
+        "таблетка Кампден",
+        "кампден",
+        "метабисульфит калия",
+        "пиросульфит калия"
+      ],
+      "aliases_en": [
+        "Potassium Metabisulfite",
+        "Campden Tablet",
+        "Campden Tablets"
+      ],
+      "search_aliases": [
+        "метабисульфит калия",
+        "кампден",
+        "таблетка кампден",
+        "potassium metabisulfite",
+        "campden tablet"
+      ],
+      "item_kind": "chemical",
+      "category": "dechlorination_agent",
+      "formula": "K2S2O5",
+      "common_forms": [
+        "tablet",
+        "powder"
+      ],
+      "concentration_options": null,
+      "unit_preferred": "mg",
+      "water_calc_role": [
+        "chlorine_removal",
+        "chloramine_removal"
+      ],
+      "effect_on_ions": {
+        "adds_small_amounts_of": [
+          "K",
+          "SO4",
+          "Cl"
+        ],
+        "reduces_alkalinity_slightly": true
+      },
+      "ion_contributions_ppm_per_g_per_l": null,
+      "ion_contributions_ppm_per_g_per_gal": null,
+      "pH_effect_direction": "slight_lowering",
+      "recommended_for": [
+        "tap water dechlorination",
+        "chloramine removal"
+      ],
+      "typical_use_ru": "Самый практичный реагент для быстрого удаления хлора и хлораминов из водопроводной воды перед варкой.",
+      "cautions_ru": "Использовать малые дозировки; это не минеральная соль для настройки профиля, а реагент для удаления дезинфектантов.",
+      "storage_notes_ru": "Хранить сухо и герметично.",
+      "calculation_support": "partial",
+      "common_in_homebrewing": true,
+      "common_in_pro_brewing": true,
+      "recommendation_level": "default",
+      "typical_dose_reference": {
+        "mg_per_l": 9,
+        "approx_tablet_per_l": 0.013333333333333334
+      },
+      "source_basis": [
+        "Bru'n Water",
+        "BYO"
+      ]
+    },
+    {
+      "id": "sodium-metabisulfite",
+      "display_name": "Метабисульфит натрия",
+      "name_ru": "Метабисульфит натрия",
+      "name_en": "Sodium Metabisulfite",
+      "aliases_ru": [
+        "Campden",
+        "таблетка Кампден",
+        "кампден",
+        "метабисульфит натрия",
+        "пиросульфит натрия"
+      ],
+      "aliases_en": [
+        "Sodium Metabisulfite",
+        "Campden Tablet",
+        "Campden Tablets"
+      ],
+      "search_aliases": [
+        "метабисульфит натрия",
+        "кампден",
+        "sodium metabisulfite",
+        "campden tablet"
+      ],
+      "item_kind": "chemical",
+      "category": "dechlorination_agent",
+      "formula": "Na2S2O5",
+      "common_forms": [
+        "tablet",
+        "powder"
+      ],
+      "concentration_options": null,
+      "unit_preferred": "mg",
+      "water_calc_role": [
+        "chlorine_removal",
+        "chloramine_removal"
+      ],
+      "effect_on_ions": {
+        "adds_small_amounts_of": [
+          "Na",
+          "SO4",
+          "Cl"
+        ],
+        "reduces_alkalinity_slightly": true
+      },
+      "ion_contributions_ppm_per_g_per_l": null,
+      "ion_contributions_ppm_per_g_per_gal": null,
+      "pH_effect_direction": "slight_lowering",
+      "recommended_for": [
+        "tap water dechlorination",
+        "chloramine removal"
+      ],
+      "typical_use_ru": "Альтернатива калиевому метабисульфиту для удаления хлора и хлораминов.",
+      "cautions_ru": "Если контролируешь натрий очень строго, калиевая форма обычно удобнее.",
+      "storage_notes_ru": "Хранить сухо и герметично.",
+      "calculation_support": "partial",
+      "common_in_homebrewing": true,
+      "common_in_pro_brewing": true,
+      "recommendation_level": "situational",
+      "typical_dose_reference": {
+        "mg_per_l": 9,
+        "approx_tablet_per_l": 0.013333333333333334
+      },
+      "source_basis": [
+        "Bru'n Water",
+        "BYO"
+      ]
+    },
+    {
+      "id": "gypsum",
+      "display_name": "Гипс",
+      "name_ru": "Гипс",
+      "name_en": "Gypsum",
+      "aliases_ru": [
+        "сульфат кальция",
+        "кальций сульфат",
+        "гипс пищевой"
+      ],
+      "aliases_en": [
+        "Gypsum",
+        "Calcium Sulfate",
+        "Calcium Sulfate Dihydrate"
+      ],
+      "search_aliases": [
+        "гипс",
+        "сульфат кальция",
+        "gypsum",
+        "calcium sulfate",
+        "calcium sulfate dihydrate"
+      ],
+      "item_kind": "chemical",
+      "category": "mineral_salt",
+      "formula": "CaSO4·2H2O",
+      "common_forms": [
+        "powder"
+      ],
+      "concentration_options": null,
+      "unit_preferred": "g",
+      "water_calc_role": [
+        "raise_calcium",
+        "raise_sulfate",
+        "enhance_hop_crispness"
+      ],
+      "effect_on_ions": {
+        "raises": [
+          "Ca",
+          "SO4"
+        ],
+        "mash_pH": "slight_lowering"
+      },
+      "ion_contributions_ppm_per_g_per_l": {
+        "Ca": 232.8,
+        "SO4": 558.0
+      },
+      "ion_contributions_ppm_per_g_per_gal": {
+        "Ca": 61.5,
+        "SO4": 147.4
+      },
+      "pH_effect_direction": "slight_lowering",
+      "recommended_for": [
+        "IPA",
+        "American Pale Ale",
+        "West Coast styles",
+        "dry/crisp bitter beers"
+      ],
+      "typical_use_ru": "Главная соль для увеличения кальция и сульфатов; часто используется для хмелевых и более сухих профилей.",
+      "cautions_ru": "Слишком высокие сульфаты могут делать пиво жёстким, сернистым или слишком сухим.",
+      "storage_notes_ru": "Стабильный по хранению, обычно не тянет влагу так сильно, как хлорид кальция.",
+      "calculation_support": "full",
+      "common_in_homebrewing": true,
+      "common_in_pro_brewing": true,
+      "recommendation_level": "default",
+      "source_basis": [
+        "Brewfather",
+        "Brewer's Friend",
+        "Bru'n Water"
+      ]
+    },
+    {
+      "id": "sodium-chloride",
+      "display_name": "Соль поваренная (не йодированная)",
+      "name_ru": "Соль поваренная (не йодированная)",
+      "name_en": "Sodium Chloride",
+      "aliases_ru": [
+        "поваренная соль",
+        "хлорид натрия",
+        "нейодированная соль",
+        "засолочная соль"
+      ],
+      "aliases_en": [
+        "Sodium Chloride",
+        "Table Salt",
+        "Canning Salt",
+        "Non-Iodized Salt"
+      ],
+      "search_aliases": [
+        "поваренная соль",
+        "соль не йодированная",
+        "хлорид натрия",
+        "sodium chloride",
+        "table salt",
+        "canning salt"
+      ],
+      "item_kind": "chemical",
+      "category": "mineral_salt",
+      "formula": "NaCl",
+      "common_forms": [
+        "crystals",
+        "powder"
+      ],
+      "concentration_options": null,
+      "unit_preferred": "g",
+      "water_calc_role": [
+        "raise_sodium",
+        "raise_chloride",
+        "mouthfeel_adjustment"
+      ],
+      "effect_on_ions": {
+        "raises": [
+          "Na",
+          "Cl"
+        ]
+      },
+      "ion_contributions_ppm_per_g_per_l": {
+        "Na": 393.4,
+        "Cl": 606.6
+      },
+      "ion_contributions_ppm_per_g_per_gal": {
+        "Na": 103.9,
+        "Cl": 160.3
+      },
+      "pH_effect_direction": "minimal",
+      "recommended_for": [
+        "gose-like salinity",
+        "minor sodium/chloride tuning",
+        "some malt-forward beers"
+      ],
+      "typical_use_ru": "Используется в небольших дозах для подъёма натрия и хлоридов.",
+      "cautions_ru": "Избегать йодированной соли; избыток натрия быстро даёт солоноватый и жёсткий вкус.",
+      "storage_notes_ru": "Стабильна по хранению.",
+      "calculation_support": "full",
+      "common_in_homebrewing": true,
+      "common_in_pro_brewing": true,
+      "recommendation_level": "situational",
+      "source_basis": [
+        "Brewer's Friend",
+        "Bru'n Water"
+      ]
+    },
+    {
+      "id": "calcium-chloride-anhydrous",
+      "display_name": "Хлорид кальция (безводный)",
+      "name_ru": "Хлорид кальция (безводный)",
+      "name_en": "Calcium Chloride (Anhydrous)",
+      "aliases_ru": [
+        "безводный хлорид кальция",
+        "CaCl2",
+        "хлорид кальция безводный"
+      ],
+      "aliases_en": [
+        "Calcium Chloride (Anhydrous)",
+        "Anhydrous Calcium Chloride",
+        "CaCl2"
+      ],
+      "search_aliases": [
+        "безводный хлорид кальция",
+        "cacl2",
+        "anhydrous calcium chloride",
+        "calcium chloride anhydrous"
+      ],
+      "item_kind": "chemical",
+      "category": "mineral_salt",
+      "formula": "CaCl2",
+      "common_forms": [
+        "flakes",
+        "pellets",
+        "powder"
+      ],
+      "concentration_options": null,
+      "unit_preferred": "g",
+      "water_calc_role": [
+        "raise_calcium",
+        "raise_chloride",
+        "enhance_fullness",
+        "lower_mash_pH_slightly"
+      ],
+      "effect_on_ions": {
+        "raises": [
+          "Ca",
+          "Cl"
+        ],
+        "mash_pH": "slight_lowering"
+      },
+      "ion_contributions_ppm_per_g_per_l": {
+        "Ca": 361.1,
+        "Cl": 638.9
+      },
+      "ion_contributions_ppm_per_g_per_gal": {
+        "Ca": 95.4,
+        "Cl": 168.8
+      },
+      "pH_effect_direction": "slight_lowering",
+      "recommended_for": [
+        "same as calcium chloride",
+        "advanced calculators where hydration form is known"
+      ],
+      "typical_use_ru": "Используется там, где известна именно безводная форма; на грамм даёт больше Ca и Cl, чем дигидрат.",
+      "cautions_ru": "Если форма определена неверно, легко пересолить воду хлоридами.",
+      "storage_notes_ru": "Очень гигроскопичен; хранить только герметично.",
+      "calculation_support": "full",
+      "common_in_homebrewing": true,
+      "common_in_pro_brewing": true,
+      "recommendation_level": "situational",
+      "source_basis": [
+        "Brewfather",
+        "Brewer's Friend",
+        "Bru'n Water"
+      ]
+    },
+    {
+      "id": "calcium-chloride-dihydrate",
+      "display_name": "Хлорид кальция (дигидрат)",
+      "name_ru": "Хлорид кальция (дигидрат)",
+      "name_en": "Calcium Chloride (Dihydrate)",
+      "aliases_ru": [
+        "хлористый кальций",
+        "кальций хлористый",
+        "CaCl2·2H2O",
+        "хлорид кальция"
+      ],
+      "aliases_en": [
+        "Calcium Chloride (Dihydrate)",
+        "Calcium Chloride",
+        "CaCl2·2H2O"
+      ],
+      "search_aliases": [
+        "хлорид кальция дигидрат",
+        "хлористый кальций",
+        "кальций хлористый",
+        "cacl2",
+        "calcium chloride",
+        "calcium chloride dihydrate"
+      ],
+      "item_kind": "chemical",
+      "category": "mineral_salt",
+      "formula": "CaCl2·2H2O",
+      "common_forms": [
+        "flakes",
+        "powder",
+        "pellets"
+      ],
+      "concentration_options": null,
+      "unit_preferred": "g",
+      "water_calc_role": [
+        "raise_calcium",
+        "raise_chloride",
+        "enhance_fullness",
+        "lower_mash_pH_slightly"
+      ],
+      "effect_on_ions": {
+        "raises": [
+          "Ca",
+          "Cl"
+        ],
+        "mash_pH": "slight_lowering"
+      },
+      "ion_contributions_ppm_per_g_per_l": {
+        "Ca": 272.6,
+        "Cl": 482.3
+      },
+      "ion_contributions_ppm_per_g_per_gal": {
+        "Ca": 72.0,
+        "Cl": 127.4
+      },
+      "pH_effect_direction": "slight_lowering",
+      "recommended_for": [
+        "NEIPA",
+        "Hazy IPA",
+        "malty lagers",
+        "general-purpose calcium addition"
+      ],
+      "typical_use_ru": "Ключевая соль для повышения кальция и хлоридов; даёт более полный, мягкий, округлый профиль.",
+      "cautions_ru": "Сильно гигроскопичен; масса меняется из-за влаги, поэтому дозировки по весу со временем могут плыть.",
+      "storage_notes_ru": "Хранить герметично и сухо.",
+      "calculation_support": "full",
+      "common_in_homebrewing": true,
+      "common_in_pro_brewing": true,
+      "recommendation_level": "default",
+      "source_basis": [
+        "Brewfather",
+        "Brewer's Friend",
+        "Bru'n Water"
+      ]
+    },
+    {
+      "id": "calcium-chloride-liquid",
+      "display_name": "Хлорид кальция (жидкий раствор)",
+      "name_ru": "Хлорид кальция (жидкий раствор)",
+      "name_en": "Calcium Chloride (Liquid Solution)",
+      "aliases_ru": [
+        "жидкий хлорид кальция",
+        "раствор хлорида кальция"
+      ],
+      "aliases_en": [
+        "Liquid Calcium Chloride",
+        "Calcium Chloride Solution"
+      ],
+      "search_aliases": [
+        "жидкий хлорид кальция",
+        "раствор хлорида кальция",
+        "liquid calcium chloride",
+        "calcium chloride solution"
+      ],
+      "item_kind": "chemical",
+      "category": "mineral_salt",
+      "formula": "CaCl2 (solution)",
+      "common_forms": [
+        "liquid"
+      ],
+      "concentration_options": [
+        "user_defined"
+      ],
+      "unit_preferred": "ml",
+      "water_calc_role": [
+        "raise_calcium",
+        "raise_chloride",
+        "enhance_fullness"
+      ],
+      "effect_on_ions": {
+        "raises": [
+          "Ca",
+          "Cl"
+        ],
+        "depends_on_solution_strength": true
+      },
+      "ion_contributions_ppm_per_g_per_l": null,
+      "ion_contributions_ppm_per_g_per_gal": null,
+      "pH_effect_direction": "slight_lowering",
+      "recommended_for": [
+        "brewers using liquid calcium chloride and configurable calculators"
+      ],
+      "typical_use_ru": "Удобная форма для внесения, если известна точная концентрация раствора.",
+      "cautions_ru": "Без ввода фактической концентрации рассчитать вклад невозможно.",
+      "storage_notes_ru": "Держать плотно закрытым.",
+      "calculation_support": "user_defined_concentration",
+      "common_in_homebrewing": true,
+      "common_in_pro_brewing": true,
+      "recommendation_level": "situational",
+      "source_basis": [
+        "Brewfather"
+      ]
+    },
+    {
+      "id": "magnesium-chloride-hexahydrate",
+      "display_name": "Хлорид магния (гексагидрат)",
+      "name_ru": "Хлорид магния (гексагидрат)",
+      "name_en": "Magnesium Chloride (Hexahydrate)",
+      "aliases_ru": [
+        "хлористый магний",
+        "хлорид магния",
+        "MgCl2·6H2O"
+      ],
+      "aliases_en": [
+        "Magnesium Chloride",
+        "Magnesium Chloride Hexahydrate",
+        "MgCl2·6H2O"
+      ],
+      "search_aliases": [
+        "хлорид магния",
+        "хлористый магний",
+        "magnesium chloride",
+        "magnesium chloride hexahydrate"
+      ],
+      "item_kind": "chemical",
+      "category": "mineral_salt",
+      "formula": "MgCl2·6H2O",
+      "common_forms": [
+        "flakes",
+        "crystals"
+      ],
+      "concentration_options": null,
+      "unit_preferred": "g",
+      "water_calc_role": [
+        "raise_magnesium",
+        "raise_chloride",
+        "advanced_profile_tuning"
+      ],
+      "effect_on_ions": {
+        "raises": [
+          "Mg",
+          "Cl"
+        ]
+      },
+      "ion_contributions_ppm_per_g_per_l": {
+        "Mg": 119.5,
+        "Cl": 348.8
+      },
+      "ion_contributions_ppm_per_g_per_gal": {
+        "Mg": 31.6,
+        "Cl": 92.1
+      },
+      "pH_effect_direction": "minimal",
+      "recommended_for": [
+        "advanced tuning",
+        "specific chloride-heavy profiles without more calcium"
+      ],
+      "typical_use_ru": "Редкая, но полезная соль для особых случаев, когда нужен хлорид без добавления кальция.",
+      "cautions_ru": "Для большинства варок не обязательна; магний легко переборщить.",
+      "storage_notes_ru": "Гигроскопичен, хранить герметично.",
+      "calculation_support": "full",
+      "common_in_homebrewing": false,
+      "common_in_pro_brewing": false,
+      "recommendation_level": "advanced",
+      "source_basis": [
+        "Brewer's Friend",
+        "Bru'n Water"
+      ]
+    },
+    {
+      "id": "epsom-salt",
+      "display_name": "Эпсомская соль",
+      "name_ru": "Эпсомская соль",
+      "name_en": "Epsom Salt",
+      "aliases_ru": [
+        "сульфат магния",
+        "магний сернокислый",
+        "MgSO4·7H2O"
+      ],
+      "aliases_en": [
+        "Epsom Salt",
+        "Magnesium Sulfate",
+        "Magnesium Sulfate Heptahydrate"
+      ],
+      "search_aliases": [
+        "эпсомская соль",
+        "сульфат магния",
+        "epsom salt",
+        "magnesium sulfate",
+        "magnesium sulfate heptahydrate"
+      ],
+      "item_kind": "chemical",
+      "category": "mineral_salt",
+      "formula": "MgSO4·7H2O",
+      "common_forms": [
+        "crystals",
+        "powder"
+      ],
+      "concentration_options": null,
+      "unit_preferred": "g",
+      "water_calc_role": [
+        "raise_magnesium",
+        "raise_sulfate",
+        "fine_tune_hoppy_profiles"
+      ],
+      "effect_on_ions": {
+        "raises": [
+          "Mg",
+          "SO4"
+        ]
+      },
+      "ion_contributions_ppm_per_g_per_l": {
+        "Mg": 98.6,
+        "SO4": 389.8
+      },
+      "ion_contributions_ppm_per_g_per_gal": {
+        "Mg": 26.1,
+        "SO4": 103.0
+      },
+      "pH_effect_direction": "minimal",
+      "recommended_for": [
+        "hoppy beers when magnesium is low",
+        "fine tuning sulfate without more calcium"
+      ],
+      "typical_use_ru": "Точечная соль для поднятия магния и сульфатов, когда не хочется добавлять ещё кальций.",
+      "cautions_ru": "Магний в пивоваренной воде обычно нужен умеренно; высокие уровни могут делать вкус жёстким.",
+      "storage_notes_ru": "По хранению обычно стабилен.",
+      "calculation_support": "full",
+      "common_in_homebrewing": true,
+      "common_in_pro_brewing": true,
+      "recommendation_level": "situational",
+      "source_basis": [
+        "Brewfather",
+        "Brewer's Friend",
+        "Bru'n Water"
+      ]
+    },
+    {
+      "id": "calcium-hydroxide",
+      "display_name": "Гашёная известь",
+      "name_ru": "Гашёная известь",
+      "name_en": "Calcium Hydroxide",
+      "aliases_ru": [
+        "пиклинг лайм",
+        "pickling lime",
+        "slaked lime",
+        "гидроксид кальция",
+        "Ca(OH)2"
+      ],
+      "aliases_en": [
+        "Pickling Lime",
+        "Slaked Lime",
+        "Calcium Hydroxide",
+        "Ca(OH)2"
+      ],
+      "search_aliases": [
+        "гашёная известь",
+        "гидроксид кальция",
+        "pickling lime",
+        "slaked lime",
+        "calcium hydroxide"
+      ],
+      "item_kind": "chemical",
+      "category": "alkali",
+      "formula": "Ca(OH)2",
+      "common_forms": [
+        "powder"
+      ],
+      "concentration_options": null,
+      "unit_preferred": "g",
+      "water_calc_role": [
+        "raise_alkalinity",
+        "raise_effective_bicarbonate",
+        "raise_mash_pH",
+        "advanced_dark_beer_adjustment"
+      ],
+      "effect_on_ions": {
+        "raises": [
+          "Ca",
+          "HCO3_effective"
+        ],
+        "raises_mash_pH": true
+      },
+      "ion_contributions_ppm_per_g_per_l": {
+        "Ca": 540.9,
+        "HCO3_effective": 1647.0
+      },
+      "ion_contributions_ppm_per_g_per_gal": {
+        "Ca": 142.9,
+        "HCO3_effective": 435.1
+      },
+      "pH_effect_direction": "strong_raising",
+      "recommended_for": [
+        "advanced dark beer water adjustment",
+        "raising alkalinity without sodium"
+      ],
+      "typical_use_ru": "Сильный и эффективный способ поднять щёлочность и pH без добавления натрия.",
+      "cautions_ru": "Очень легко передозировать; реагент едкий и требует осторожного обращения.",
+      "storage_notes_ru": "Боится влажного воздуха и со временем деградирует в мел; хранить герметично.",
+      "calculation_support": "full",
+      "common_in_homebrewing": false,
+      "common_in_pro_brewing": true,
+      "recommendation_level": "advanced",
+      "source_basis": [
+        "Brewer's Friend",
+        "Bru'n Water"
+      ]
+    },
+    {
+      "id": "calcium-carbonate",
+      "display_name": "Мел (карбонат кальция)",
+      "name_ru": "Мел (карбонат кальция)",
+      "name_en": "Calcium Carbonate",
+      "aliases_ru": [
+        "мел",
+        "карбонат кальция",
+        "известняк",
+        "CaCO3",
+        "chalk"
+      ],
+      "aliases_en": [
+        "Chalk",
+        "Calcium Carbonate",
+        "Limestone",
+        "CaCO3"
+      ],
+      "search_aliases": [
+        "мел",
+        "карбонат кальция",
+        "chalk",
+        "calcium carbonate",
+        "limestone"
+      ],
+      "item_kind": "chemical",
+      "category": "alkali",
+      "formula": "CaCO3",
+      "common_forms": [
+        "powder"
+      ],
+      "concentration_options": null,
+      "unit_preferred": "g",
+      "water_calc_role": [
+        "raise_alkalinity",
+        "raise_bicarbonate",
+        "raise_mash_pH"
+      ],
+      "effect_on_ions": {
+        "raises": [
+          "Ca",
+          "HCO3_effective"
+        ],
+        "raises_mash_pH": true
+      },
+      "ion_contributions_ppm_per_g_per_l": {
+        "Ca": 400.4,
+        "HCO3_effective": 1219.3
+      },
+      "ion_contributions_ppm_per_g_per_gal": {
+        "Ca": 105.8,
+        "HCO3_effective": 322.1
+      },
+      "pH_effect_direction": "raising",
+      "recommended_for": [
+        "advanced users only",
+        "special cases where dissolved chalk is intentionally used"
+      ],
+      "typical_use_ru": "Традиционный, но капризный источник щёлочности и кальция.",
+      "cautions_ru": "Плохо растворяется и в обычной пивоваренной практике часто не рекомендуется как основной способ поднять щёлочность.",
+      "storage_notes_ru": "Сам по себе стабилен по хранению.",
+      "calculation_support": "full_with_dissolution_caveat",
+      "common_in_homebrewing": true,
+      "common_in_pro_brewing": true,
+      "recommendation_level": "caution",
+      "source_basis": [
+        "Brewer's Friend",
+        "Bru'n Water",
+        "BYO"
+      ]
+    },
+    {
+      "id": "sodium-bicarbonate",
+      "display_name": "Сода пищевая",
+      "name_ru": "Сода пищевая",
+      "name_en": "Sodium Bicarbonate",
+      "aliases_ru": [
+        "гидрокарбонат натрия",
+        "бикарбонат натрия",
+        "питьевая сода",
+        "NaHCO3"
+      ],
+      "aliases_en": [
+        "Sodium Bicarbonate",
+        "Baking Soda",
+        "NaHCO3"
+      ],
+      "search_aliases": [
+        "сода пищевая",
+        "гидрокарбонат натрия",
+        "бикарбонат натрия",
+        "baking soda",
+        "sodium bicarbonate"
+      ],
+      "item_kind": "chemical",
+      "category": "alkali",
+      "formula": "NaHCO3",
+      "common_forms": [
+        "powder"
+      ],
+      "concentration_options": null,
+      "unit_preferred": "g",
+      "water_calc_role": [
+        "raise_alkalinity",
+        "raise_bicarbonate",
+        "raise_mash_pH"
+      ],
+      "effect_on_ions": {
+        "raises": [
+          "Na",
+          "HCO3"
+        ],
+        "raises_mash_pH": true
+      },
+      "ion_contributions_ppm_per_g_per_l": {
+        "Na": 273.7,
+        "HCO3": 726.3
+      },
+      "ion_contributions_ppm_per_g_per_gal": {
+        "Na": 72.3,
+        "HCO3": 191.9
+      },
+      "pH_effect_direction": "raising",
+      "recommended_for": [
+        "dark beers",
+        "roasty grists",
+        "when alkalinity must be raised quickly"
+      ],
+      "typical_use_ru": "Самый практичный щелочной реагент для подъёма щёлочности и pH в тёмных заторах.",
+      "cautions_ru": "Вместе с щёлочностью сильно поднимает натрий; не лучший выбор для больших доз.",
+      "storage_notes_ru": "Стабильна по хранению.",
+      "calculation_support": "full",
+      "common_in_homebrewing": true,
+      "common_in_pro_brewing": true,
+      "recommendation_level": "default",
+      "source_basis": [
+        "Brewer's Friend",
+        "Bru'n Water",
+        "BYO"
+      ]
+    },
+    {
+      "id": "crs-ams-acid-blend",
+      "display_name": "Кислотная смесь CRS/AMS",
+      "name_ru": "Кислотная смесь CRS/AMS",
+      "name_en": "CRS/AMS Acid Blend",
+      "aliases_ru": [
+        "CRS",
+        "AMS",
+        "смесь соляной и серной кислот",
+        "редуктор щёлочности"
+      ],
+      "aliases_en": [
+        "CRS",
+        "AMS",
+        "Acid blend",
+        "Hydrochloric/Sulfuric Acid Blend"
+      ],
+      "search_aliases": [
+        "crs",
+        "ams",
+        "кислотная смесь crs ams",
+        "hydrochloric sulfuric acid blend"
+      ],
+      "item_kind": "chemical",
+      "category": "acid",
+      "formula": "Blend (commonly 6.3% HCl + 8.6% H2SO4)",
+      "common_forms": [
+        "liquid"
+      ],
+      "concentration_options": [
+        "6.3% HCl + 8.6% H2SO4"
+      ],
+      "unit_preferred": "ml",
+      "water_calc_role": [
+        "reduce_alkalinity",
+        "lower_mash_pH",
+        "lower_sparge_pH",
+        "advanced_liquor_treatment"
+      ],
+      "effect_on_ions": {
+        "adds": [
+          "Cl",
+          "SO4"
+        ]
+      },
+      "ion_contributions_ppm_per_g_per_l": null,
+      "ion_contributions_ppm_per_g_per_gal": null,
+      "pH_effect_direction": "lowering",
+      "recommended_for": [
+        "advanced liquor treatment",
+        "UK-style workflows",
+        "alkalinity reduction with simultaneous ion contribution"
+      ],
+      "typical_use_ru": "Профессионально-ориентированная кислотная смесь для снижения щёлочности воды.",
+      "cautions_ru": "Требует аккуратного расчёта и безопасной работы с кислотами; для большинства домашних варок молочная или фосфорная проще.",
+      "storage_notes_ru": "Хранить как кислотный реагент, с защитой от пролива и доступа детей.",
+      "calculation_support": "partial",
+      "common_in_homebrewing": false,
+      "common_in_pro_brewing": true,
+      "recommendation_level": "advanced",
+      "source_basis": [
+        "Brewer's Friend",
+        "The Malt Miller",
+        "Baltic Brewing"
+      ]
+    },
+    {
+      "id": "citric-acid",
+      "display_name": "Лимонная кислота",
+      "name_ru": "Лимонная кислота",
+      "name_en": "Citric Acid",
+      "aliases_ru": [
+        "цитратная кислота",
+        "лимонка"
+      ],
+      "aliases_en": [
+        "Citric Acid"
+      ],
+      "search_aliases": [
+        "лимонная кислота",
+        "цитратная кислота",
+        "citric acid"
+      ],
+      "item_kind": "chemical",
+      "category": "acid",
+      "formula": "C6H8O7",
+      "common_forms": [
+        "powder",
+        "crystals"
+      ],
+      "concentration_options": null,
+      "unit_preferred": "g",
+      "water_calc_role": [
+        "lower_mash_pH",
+        "lower_sparge_pH",
+        "reduce_alkalinity"
+      ],
+      "effect_on_ions": {
+        "no_major_flavor_ions": true
+      },
+      "ion_contributions_ppm_per_g_per_l": null,
+      "ion_contributions_ppm_per_g_per_gal": null,
+      "pH_effect_direction": "lowering",
+      "recommended_for": [
+        "situational acidification",
+        "specific recipe workflows"
+      ],
+      "typical_use_ru": "Рабочая кислота, но в пивоварении обычно менее базовая, чем молочная или фосфорная.",
+      "cautions_ru": "Может влиять на вкус сильнее, чем фосфорная; не самый универсальный выбор.",
+      "storage_notes_ru": "Хранить сухо.",
+      "calculation_support": "partial",
+      "common_in_homebrewing": true,
+      "common_in_pro_brewing": false,
+      "recommendation_level": "situational",
+      "source_basis": [
+        "Brewer's Friend"
+      ]
+    },
+    {
+      "id": "lactic-acid",
+      "display_name": "Молочная кислота",
+      "name_ru": "Молочная кислота",
+      "name_en": "Lactic Acid",
+      "aliases_ru": [
+        "лактик",
+        "молочная кислота 80%",
+        "молочная кислота 88%"
+      ],
+      "aliases_en": [
+        "Lactic Acid",
+        "Lactic Acid 88%"
+      ],
+      "search_aliases": [
+        "молочная кислота",
+        "лактик",
+        "lactic acid",
+        "lactic acid 88"
+      ],
+      "item_kind": "chemical",
+      "category": "acid",
+      "formula": "C3H6O3",
+      "common_forms": [
+        "liquid"
+      ],
+      "concentration_options": [
+        "80%",
+        "88%"
+      ],
+      "unit_preferred": "ml",
+      "water_calc_role": [
+        "lower_mash_pH",
+        "lower_sparge_pH",
+        "reduce_alkalinity"
+      ],
+      "effect_on_ions": {
+        "no_major_flavor_ions": true
+      },
+      "ion_contributions_ppm_per_g_per_l": null,
+      "ion_contributions_ppm_per_g_per_gal": null,
+      "pH_effect_direction": "lowering",
+      "recommended_for": [
+        "mash pH correction",
+        "sparge water acidification",
+        "simple homebrew acid adjustment"
+      ],
+      "typical_use_ru": "Самая распространённая кислота для подкисления заторной и промывной воды.",
+      "cautions_ru": "При больших дозах может дать заметную молочную ноту; концентрацию нужно учитывать в калькуляторе.",
+      "storage_notes_ru": "Хранить плотно закрытой.",
+      "calculation_support": "full_with_strength",
+      "common_in_homebrewing": true,
+      "common_in_pro_brewing": true,
+      "recommendation_level": "default",
+      "source_basis": [
+        "Brewfather",
+        "Bru'n Water",
+        "Brewer's Friend"
+      ]
+    },
+    {
+      "id": "phosphoric-acid-10",
+      "display_name": "Фосфорная кислота 10%",
+      "name_ru": "Фосфорная кислота 10%",
+      "name_en": "Phosphoric Acid 10%",
+      "aliases_ru": [
+        "ортофосфорная кислота 10%",
+        "фосфорная 10%"
+      ],
+      "aliases_en": [
+        "Phosphoric Acid 10%"
+      ],
+      "search_aliases": [
+        "фосфорная кислота 10",
+        "ортофосфорная кислота 10",
+        "phosphoric acid 10"
+      ],
+      "item_kind": "chemical",
+      "category": "acid",
+      "formula": "H3PO4 (solution)",
+      "common_forms": [
+        "liquid"
+      ],
+      "concentration_options": [
+        "10%"
+      ],
+      "unit_preferred": "ml",
+      "water_calc_role": [
+        "lower_mash_pH",
+        "lower_sparge_pH",
+        "reduce_alkalinity"
+      ],
+      "effect_on_ions": {
+        "adds_phosphate": true
+      },
+      "ion_contributions_ppm_per_g_per_l": null,
+      "ion_contributions_ppm_per_g_per_gal": null,
+      "pH_effect_direction": "lowering",
+      "recommended_for": [
+        "safer low-strength acid dosing",
+        "larger-volume acidification"
+      ],
+      "typical_use_ru": "Мягкая по концентрации форма фосфорной кислоты для более безопасной ручной дозировки.",
+      "cautions_ru": "Из-за низкой концентрации требуется больший объём по сравнению с 75–85% раствором.",
+      "storage_notes_ru": "Хранить закрытой.",
+      "calculation_support": "full_with_strength",
+      "common_in_homebrewing": true,
+      "common_in_pro_brewing": true,
+      "recommendation_level": "situational",
+      "source_basis": [
+        "Brewfather"
+      ]
+    },
+    {
+      "id": "phosphoric-acid-75-85",
+      "display_name": "Фосфорная кислота 75–85%",
+      "name_ru": "Фосфорная кислота 75–85%",
+      "name_en": "Phosphoric Acid 75–85%",
+      "aliases_ru": [
+        "ортофосфорная кислота",
+        "фосфорная кислота 75%",
+        "фосфорная кислота 85%"
+      ],
+      "aliases_en": [
+        "Phosphoric Acid",
+        "Phosphoric Acid 75%",
+        "Phosphoric Acid 85%"
+      ],
+      "search_aliases": [
+        "фосфорная кислота 75",
+        "фосфорная кислота 85",
+        "ортофосфорная кислота",
+        "phosphoric acid 75",
+        "phosphoric acid 85"
+      ],
+      "item_kind": "chemical",
+      "category": "acid",
+      "formula": "H3PO4 (solution)",
+      "common_forms": [
+        "liquid"
+      ],
+      "concentration_options": [
+        "75%",
+        "85%"
+      ],
+      "unit_preferred": "ml",
+      "water_calc_role": [
+        "lower_mash_pH",
+        "lower_sparge_pH",
+        "reduce_alkalinity"
+      ],
+      "effect_on_ions": {
+        "adds_phosphate": true
+      },
+      "ion_contributions_ppm_per_g_per_l": null,
+      "ion_contributions_ppm_per_g_per_gal": null,
+      "pH_effect_direction": "lowering",
+      "recommended_for": [
+        "flavor-neutral acidification",
+        "larger acid additions where lactic flavor is undesirable"
+      ],
+      "typical_use_ru": "Часто предпочтительна, когда нужно подкислить воду без риска молочного привкуса.",
+      "cautions_ru": "Более концентрированная и требует аккуратного обращения.",
+      "storage_notes_ru": "Хранить плотно закрытой; работать в перчатках и защите глаз.",
+      "calculation_support": "full_with_strength",
+      "common_in_homebrewing": true,
+      "common_in_pro_brewing": true,
+      "recommendation_level": "default",
+      "source_basis": [
+        "Brewfather",
+        "Brewer's Friend"
+      ]
+    },
+    {
+      "id": "acidulated-malt",
+      "display_name": "Кислый солод",
+      "name_ru": "Кислый солод",
+      "name_en": "Acidulated Malt",
+      "aliases_ru": [
+        "ацидулированный солод",
+        "сауэрмальц",
+        "sauermalz",
+        "acid malt"
+      ],
+      "aliases_en": [
+        "Acidulated Malt",
+        "Acid Malt",
+        "Sauermalz"
+      ],
+      "search_aliases": [
+        "кислый солод",
+        "ацидулированный солод",
+        "сауэрмальц",
+        "acidulated malt",
+        "acid malt",
+        "sauermalz"
+      ],
+      "item_kind": "fermentable",
+      "category": "pH_fermentable",
+      "formula": null,
+      "common_forms": [
+        "grist"
+      ],
+      "concentration_options": null,
+      "unit_preferred": "% grist",
+      "water_calc_role": [
+        "lower_mash_pH",
+        "grist_based_acidification"
+      ],
+      "effect_on_ions": {
+        "fermentable_and_acidifying": true
+      },
+      "ion_contributions_ppm_per_g_per_l": null,
+      "ion_contributions_ppm_per_g_per_gal": null,
+      "pH_effect_direction": "lowering",
+      "recommended_for": [
+        "German-style acidification",
+        "small mash pH corrections via grist"
+      ],
+      "typical_use_ru": "Ферментируемый способ слегка подкислить затор через состав засыпи.",
+      "cautions_ru": "Это уже не водная соль/кислота, а часть засыпи; обычно используется в умеренном проценте от grist.",
+      "storage_notes_ru": null,
+      "calculation_support": "grist_based",
+      "common_in_homebrewing": true,
+      "common_in_pro_brewing": true,
+      "recommendation_level": "situational",
+      "typical_usage_reference": {
+        "common_percent_of_grist": "1-5%",
+        "beersmith_max_percent": 10
+      },
+      "source_basis": [
+        "Brewer's Friend",
+        "BeerSmith"
+      ]
+    },
+    {
+      "id": "aeration-dechlorination",
+      "display_name": "Аэрация / отстаивание",
+      "name_ru": "Аэрация / отстаивание",
+      "name_en": "Aeration",
+      "aliases_ru": [
+        "отстаивание воды",
+        "проветривание воды",
+        "аэрация"
+      ],
+      "aliases_en": [
+        "Aeration",
+        "Open-Air Dechlorination"
+      ],
+      "search_aliases": [
+        "аэрация / отстаивание",
+        "aeration",
+        "отстаивание воды",
+        "проветривание воды",
+        "аэрация",
+        "open-air dechlorination"
+      ],
+      "item_kind": "method",
+      "category": "water_treatment_method",
+      "formula": null,
+      "common_forms": [
+        "process"
+      ],
+      "concentration_options": null,
+      "unit_preferred": null,
+      "water_calc_role": [
+        "hypochlorite_removal"
+      ],
+      "effect_on_ions": {
+        "no_direct_flavor_ion_addition": true
+      },
+      "ion_contributions_ppm_per_g_per_l": null,
+      "ion_contributions_ppm_per_g_per_gal": null,
+      "pH_effect_direction": "contextual",
+      "recommended_for": [],
+      "typical_use_ru": "Медленный бытовой способ снижения свободного хлора.",
+      "cautions_ru": "Для хлораминов может требовать дни и потому обычно не лучший путь.",
+      "storage_notes_ru": null,
+      "calculation_support": "not_an_additive",
+      "common_in_homebrewing": true,
+      "common_in_pro_brewing": true,
+      "recommendation_level": "situational",
+      "source_basis": [
+        "Bru'n Water"
+      ]
+    },
+    {
+      "id": "boiling-water-decarbonation",
+      "display_name": "Кипячение воды",
+      "name_ru": "Кипячение воды",
+      "name_en": "Boiling",
+      "aliases_ru": [
+        "кипячение",
+        "декарбонизация кипячением"
+      ],
+      "aliases_en": [
+        "Boiling",
+        "Pre-Boil Decarbonation"
+      ],
+      "search_aliases": [
+        "кипячение воды",
+        "boiling",
+        "кипячение",
+        "декарбонизация кипячением",
+        "pre-boil decarbonation"
+      ],
+      "item_kind": "method",
+      "category": "water_treatment_method",
+      "formula": null,
+      "common_forms": [
+        "process"
+      ],
+      "concentration_options": null,
+      "unit_preferred": null,
+      "water_calc_role": [
+        "hypochlorite_removal",
+        "temporary_hardness_reduction"
+      ],
+      "effect_on_ions": {
+        "no_direct_flavor_ion_addition": true
+      },
+      "ion_contributions_ppm_per_g_per_l": null,
+      "ion_contributions_ppm_per_g_per_gal": null,
+      "pH_effect_direction": "contextual",
+      "recommended_for": [],
+      "typical_use_ru": "Может помочь удалить свободный хлор и часть временной жёсткости.",
+      "cautions_ru": "Для хлораминов малоэффективно и энергозатратно.",
+      "storage_notes_ru": null,
+      "calculation_support": "not_an_additive",
+      "common_in_homebrewing": true,
+      "common_in_pro_brewing": true,
+      "recommendation_level": "situational",
+      "source_basis": [
+        "Bru'n Water"
+      ]
+    },
+    {
+      "id": "activated-carbon-filtration",
+      "display_name": "Фильтрация через активированный уголь",
+      "name_ru": "Фильтрация через активированный уголь",
+      "name_en": "Activated Carbon Filtration",
+      "aliases_ru": [
+        "угольный фильтр",
+        "карбон-блок",
+        "GAC"
+      ],
+      "aliases_en": [
+        "Activated Carbon Filtration",
+        "Carbon Block",
+        "GAC"
+      ],
+      "search_aliases": [
+        "фильтрация через активированный уголь",
+        "activated carbon filtration",
+        "угольный фильтр",
+        "карбон-блок",
+        "gac",
+        "carbon block"
+      ],
+      "item_kind": "method",
+      "category": "water_treatment_method",
+      "formula": null,
+      "common_forms": [
+        "process"
+      ],
+      "concentration_options": null,
+      "unit_preferred": null,
+      "water_calc_role": [
+        "chlorine_removal",
+        "chloramine_removal",
+        "organic_contaminant_reduction"
+      ],
+      "effect_on_ions": {
+        "no_direct_flavor_ion_addition": true
+      },
+      "ion_contributions_ppm_per_g_per_l": null,
+      "ion_contributions_ppm_per_g_per_gal": null,
+      "pH_effect_direction": "contextual",
+      "recommended_for": [],
+      "typical_use_ru": "Метод удаления хлора/хлораминов и части органики без внесения солей.",
+      "cautions_ru": "Для хлораминов работает медленно; эффективность зависит от картриджа, расхода и состояния фильтра.",
+      "storage_notes_ru": null,
+      "calculation_support": "not_an_additive",
+      "common_in_homebrewing": true,
+      "common_in_pro_brewing": true,
+      "recommendation_level": "situational",
+      "source_basis": [
+        "Bru'n Water"
+      ]
+    }
+  ]
+}

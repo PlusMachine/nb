@@ -11,7 +11,7 @@ export const ingredientMatchPolicyEnum = pgEnum("ingredient_match_policy", ["exa
 export const ingredientCompletenessLevelEnum = pgEnum("ingredient_completeness_level", ["minimum", "recommended", "full"]);
 export const proposedIngredientStatusEnum = pgEnum("proposed_ingredient_status", ["pending", "approved", "rejected", "merged"]);
 export const userCustomIngredientVisibilityEnum = pgEnum("user_custom_ingredient_visibility", ["private", "shared"]);
-export const hopFormEnum = pgEnum("hop_form", ["pellet", "whole_cone", "lupulin", "cryo"]);
+export const hopFormEnum = pgEnum("hop_form", ["pellet", "whole_cone", "lupulin", "cryo", "standard"]);
 export const yeastTypeEnum = pgEnum("yeast_type", ["ale", "lager", "wine"]);
 export const yeastFormEnum = pgEnum("yeast_form", ["dry", "liquid"]);
 export const inventoryUnitDimensionEnum = pgEnum("inventory_unit_dimension", ["weight", "volume", "count"]);
@@ -130,11 +130,17 @@ export const ingredientCatalogItems = pgTable("ingredient_catalog_items", {
   subtype: varchar("subtype", { length: 80 }),
   familyId: uuid("family_id").notNull().references(() => ingredientFamilies.id, { onDelete: "restrict" }),
   displayName: varchar("display_name", { length: 180 }).notNull(),
+  displayNameRu: varchar("display_name_ru", { length: 180 }).notNull(),
+  displayNameEn: varchar("display_name_en", { length: 180 }),
   normalizedName: varchar("normalized_name", { length: 220 }).notNull(),
   aliases: jsonb("aliases").$type<string[]>().default([]).notNull(),
+  searchAliasesNorm: jsonb("search_aliases_norm").$type<string[]>().default([]).notNull(),
+  searchTextNorm: text("search_text_norm").default("").notNull(),
   brandName: varchar("brand_name", { length: 140 }),
   manufacturer: varchar("manufacturer", { length: 140 }),
   country: varchar("country", { length: 80 }),
+  catalogSourceDataset: varchar("catalog_source_dataset", { length: 160 }),
+  catalogSourceKey: varchar("catalog_source_key", { length: 191 }),
   harvestYear: integer("harvest_year"),
   description: text("description"),
   defaultUnit: varchar("default_unit", { length: 32 }).notNull(),
@@ -169,7 +175,8 @@ export const ingredientCatalogItems = pgTable("ingredient_catalog_items", {
   typeStatusIdx: index("ingredient_catalog_items_type_status_idx").on(table.type, table.status),
   statusIdx: index("ingredient_catalog_items_status_idx").on(table.status),
   mergedIntoIdx: index("ingredient_catalog_items_merged_into_idx").on(table.mergedIntoId),
-  uniqueNamePerTypeIdx: uniqueIndex("ingredient_catalog_items_type_name_uidx").on(table.type, table.normalizedName)
+  uniqueNamePerTypeIdx: uniqueIndex("ingredient_catalog_items_type_name_uidx").on(table.type, table.normalizedName),
+  sourceIdentityIdx: uniqueIndex("ingredient_catalog_items_source_uidx").on(table.catalogSourceDataset, table.catalogSourceKey)
 }));
 
 export const proposedIngredients = pgTable("proposed_ingredients", {

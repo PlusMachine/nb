@@ -360,8 +360,11 @@ export type IngredientCatalogItemDto = IngredientTechnicalFields & {
   familyId: string;
   family: IngredientFamilySummaryDto | null;
   displayName: string;
+  displayNameRu: string;
+  displayNameEn: string | null;
   normalizedName: string;
   aliases: string[];
+  searchAliasesNorm: string[];
   brandName: string | null;
   manufacturer: string | null;
   country: string | null;
@@ -374,6 +377,8 @@ export type IngredientCatalogItemDto = IngredientTechnicalFields & {
   measurementDimension: IngredientMeasurementDimension;
   completenessLevel: IngredientCompletenessLevel;
   properties: Record<string, unknown>;
+  catalogSourceDataset?: string | null;
+  catalogSourceKey?: string | null;
   status: "draft" | "active" | "archived" | "merged";
   visibility: "public" | "internal";
   mergedIntoId: string | null;
@@ -391,16 +396,22 @@ export type IngredientSuggestionItem = {
   familyId?: string | null;
   familyCanonicalName?: string;
   familyDisplayName?: string;
+  familyDisplayNameRu?: string;
+  familyDisplayNameEn?: string;
   displayName: string;
+  displayNameRu?: string;
+  displayNameEn?: string;
   subtitle?: string;
   brandName?: string;
   manufacturer?: string;
+  country?: string;
   technicalData?: IngredientTechnicalData | null;
   defaultUnit: IngredientDisplayUnit;
   defaultDisplayUnit?: IngredientDisplayUnit;
   allowedUnits?: IngredientDisplayUnit[];
   measurementDimension?: IngredientMeasurementDimension;
   completenessLevel?: IngredientCompletenessLevel;
+  score?: number;
   source: "catalog" | "custom";
 };
 

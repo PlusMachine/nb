@@ -1,23 +1,33 @@
 "use client";
 
 import React from "react";
-import { useEffect, useId, useMemo, useState } from "react";
+import { useEffect, useId, useMemo, useRef, useState } from "react";
 
 import type {
   IngredientCategory,
   IngredientSuggestionItem,
   IngredientType
 } from "@/features/ingredients/contracts";
+import { normalizeSearchText } from "@/features/ingredients/normalization";
 import { ingredientCategoryLabels } from "@/features/ingredients/presentation";
 
 type Props = {
   value?: string;
   type?: IngredientType;
   category?: IngredientCategory;
+  limit?: number;
   onSelect: (item: IngredientSuggestionItem) => void;
   onValueChange?: (value: string) => void;
+  onSelectionInvalidated?: () => void;
+  onCreateIngredient?: (query: string) => void | Promise<void>;
   placeholder?: string;
   emptyCta?: React.ReactNode;
+  allowCatalogProposal?: boolean;
+  proposeIngredient?: (params: {
+    q: string;
+    type?: IngredientType;
+    category?: IngredientCategory;
+  }) => Promise<string>;
   searchIngredients?: (params: {
     q: string;
     type?: IngredientType;
@@ -30,7 +40,7 @@ type Props = {
 const isAbortError = (error: unknown) => error instanceof DOMException && error.name === "AbortError";
 
 export const shouldSearchIngredients = ({ isOpen, query }: { isOpen: boolean; query: string }) => (
-  isOpen && Boolean(query.trim())
+  isOpen && normalizeSearchText(query).length >= 2
 );
 
 export const shouldShowIngredientSuggestions = ({ isOpen, itemsCount }: { isOpen: boolean; itemsCount: number }) => (
@@ -51,7 +61,7 @@ export const shouldShowIngredientEmptyState = ({
   query: string;
 }) => (
   isOpen
-  && Boolean(query.trim())
+  && normalizeSearchText(query).length >= 2
   && !isLoading
   && hasResolvedQuery
   && itemsCount === 0
@@ -79,6 +89,18 @@ export const buildIngredientSearchParams = ({
   return params;
 };
 
+export const buildIngredientCacheKey = ({
+  q,
+  type,
+  category,
+  limit
+}: {
+  q: string;
+  type?: IngredientType;
+  category?: IngredientCategory;
+  limit: number;
+}) => `${normalizeSearchText(q)}::${type ?? ""}::${category ?? ""}::${limit}`;
+
 const defaultSearchIngredients = async ({
   q,
   type,
@@ -101,14 +123,51 @@ const defaultSearchIngredients = async ({
   return data.items;
 };
 
+const defaultProposeIngredient = async ({
+  q,
+  type,
+  category
+}: {
+  q: string;
+  type?: IngredientType;
+  category?: IngredientCategory;
+}) => {
+  const response = await fetch("/api/ingredients/proposals", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      sourceType: "ingredient_picker_gap",
+      sourceDisplayName: q.trim(),
+      sourcePayload: {
+        type: type ?? null,
+        category: category ?? null
+      }
+    })
+  });
+
+  const data = await response.json() as { message?: string; error?: string };
+  if (!response.ok) {
+    throw new Error(data.error ?? "Не удалось отправить предложение.");
+  }
+
+  return data.message ?? "Предложение отправлено в очередь модерации.";
+};
+
 export const IngredientPicker = ({
   value,
   type,
   category,
+  limit = 10,
   onSelect,
   onValueChange,
+  onSelectionInvalidated,
+  onCreateIngredient,
   placeholder = "Search ingredient",
   emptyCta,
+  allowCatalogProposal = true,
+  proposeIngredient = defaultProposeIngredient,
   searchIngredients = defaultSearchIngredients
 }: Props) => {
   const [query, setQuery] = useState(value ?? "");
@@ -117,10 +176,14 @@ export const IngredientPicker = ({
   const [isOpen, setIsOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [hasResolvedQuery, setHasResolvedQuery] = useState(false);
+  const [emptyStateMessage, setEmptyStateMessage] = useState<string | null>(null);
+  const cacheRef = useRef(new Map<string, IngredientSuggestionItem[]>());
+  const committedLabelRef = useRef(value ?? "");
   const listboxId = useId();
 
   useEffect(() => {
     setQuery(value ?? "");
+    committedLabelRef.current = value ?? "";
     setIsOpen((current) => current && Boolean((value ?? "").trim()));
   }, [value]);
 
@@ -133,15 +196,27 @@ export const IngredientPicker = ({
       return;
     }
 
+    const cacheKey = buildIngredientCacheKey({ q: query, type, category, limit });
+    const cached = cacheRef.current.get(cacheKey);
+    if (cached) {
+      setItems(cached);
+      setActiveIndex(0);
+      setIsLoading(false);
+      setHasResolvedQuery(true);
+      return;
+    }
+
     const controller = new AbortController();
     const run = async () => {
       try {
         setIsLoading(true);
         setHasResolvedQuery(false);
-        const nextItems = await searchIngredients({ q: query, type, category, limit: 8, signal: controller.signal });
+        const nextItems = await searchIngredients({ q: query, type, category, limit, signal: controller.signal });
         if (controller.signal.aborted) {
           return;
         }
+
+        cacheRef.current.set(cacheKey, nextItems);
         setItems(nextItems);
         setActiveIndex(0);
         setIsLoading(false);
@@ -162,26 +237,42 @@ export const IngredientPicker = ({
       clearTimeout(timer);
       controller.abort();
     };
-  }, [category, isOpen, query, searchIngredients, type]);
+  }, [category, isOpen, limit, query, searchIngredients, type]);
 
-  const grouped = useMemo(() => {
-    return items.reduce<Record<string, IngredientSuggestionItem[]>>((acc, item) => {
-      const groupKey = item.category ?? item.type;
-      acc[groupKey] ??= [];
-      acc[groupKey].push(item);
-      return acc;
-    }, {});
-  }, [items]);
+  const grouped = useMemo(() => items.reduce<Record<string, IngredientSuggestionItem[]>>((acc, item) => {
+    const groupKey = item.category ?? item.type;
+    acc[groupKey] ??= [];
+    acc[groupKey].push(item);
+    return acc;
+  }, {}), [items]);
 
   const showGroupHeaders = !category && Object.keys(grouped).length > 1;
 
   const commitSelection = (item: IngredientSuggestionItem) => {
+    committedLabelRef.current = item.displayName;
+    setQuery(item.displayName);
     setIsOpen(false);
     setItems([]);
     setActiveIndex(0);
     setIsLoading(false);
     setHasResolvedQuery(false);
+    setEmptyStateMessage(null);
     onSelect(item);
+  };
+
+  const handleQueryChange = (nextValue: string) => {
+    setQuery(nextValue);
+    setIsOpen(Boolean(nextValue.trim()));
+    setHasResolvedQuery(false);
+    setEmptyStateMessage(null);
+    if (
+      committedLabelRef.current
+      && normalizeSearchText(nextValue) !== normalizeSearchText(committedLabelRef.current)
+    ) {
+      committedLabelRef.current = "";
+      onSelectionInvalidated?.();
+    }
+    onValueChange?.(nextValue);
   };
 
   const showSuggestions = shouldShowIngredientSuggestions({ isOpen, itemsCount: items.length });
@@ -193,17 +284,48 @@ export const IngredientPicker = ({
     query
   });
 
+  const builtInEmptyState = (
+    <div className="space-y-2 rounded-md border border-dashed border-zinc-200 bg-zinc-50 px-3 py-3 text-xs text-zinc-600">
+      <p>Ничего не найдено для «{query.trim()}».</p>
+      <div className="flex flex-wrap gap-2">
+        {onCreateIngredient ? (
+          <button
+            type="button"
+            onClick={() => void onCreateIngredient(query.trim())}
+            className="rounded-md bg-zinc-900 px-3 py-2 text-xs font-medium text-white"
+          >
+            Создать свой ингредиент
+          </button>
+        ) : null}
+        {allowCatalogProposal ? (
+          <button
+            type="button"
+            onClick={async () => {
+              try {
+                const message = await proposeIngredient({ q: query, type, category });
+                setEmptyStateMessage(message);
+              } catch (error) {
+                setEmptyStateMessage((error as Error).message);
+              }
+            }}
+            className="rounded-md border border-zinc-300 bg-white px-3 py-2 text-xs"
+          >
+            Предложить ингредиент в каталог
+          </button>
+        ) : null}
+      </div>
+      {emptyStateMessage ? <p className="text-xs text-zinc-500">{emptyStateMessage}</p> : null}
+    </div>
+  );
+
   return (
     <div className="space-y-2">
       <input
         value={query}
         onChange={(event) => {
-          setQuery(event.target.value);
-          setIsOpen(Boolean(event.target.value.trim()));
-          setHasResolvedQuery(false);
-          onValueChange?.(event.target.value);
+          handleQueryChange(event.target.value);
         }}
-        onFocus={() => setIsOpen(Boolean(query.trim()))}
+        onFocus={() => setIsOpen(Boolean(normalizeSearchText(query)))}
         onBlur={() => setIsOpen(false)}
         placeholder={placeholder}
         className="h-10 w-full rounded-md border border-zinc-200 px-3 text-sm"
@@ -219,11 +341,11 @@ export const IngredientPicker = ({
           if (!showSuggestions) return;
           if (event.key === "ArrowDown") {
             event.preventDefault();
-            setActiveIndex((i) => Math.min(i + 1, items.length - 1));
+            setActiveIndex((index) => Math.min(index + 1, items.length - 1));
           }
           if (event.key === "ArrowUp") {
             event.preventDefault();
-            setActiveIndex((i) => Math.max(i - 1, 0));
+            setActiveIndex((index) => Math.max(index - 1, 0));
           }
           if (event.key === "Enter") {
             event.preventDefault();
@@ -234,7 +356,7 @@ export const IngredientPicker = ({
           }
         }}
       />
-      {isLoading && isOpen && query.trim() ? (
+      {isLoading && isOpen && normalizeSearchText(query) ? (
         <p className="text-xs text-zinc-500">Ищем ингредиенты...</p>
       ) : null}
       {showSuggestions && (
@@ -247,31 +369,21 @@ export const IngredientPicker = ({
                 </div>
               ) : null}
               {groupItems.map((item) => {
-                const idx = items.findIndex((candidate) => candidate.id === item.id);
-                const metaLine = [item.familyDisplayName, item.subtitle]
-                  .filter((part) => Boolean(part) && part !== item.displayName)
-                  .join(" • ");
+                const index = items.findIndex((candidate) => candidate.id === item.id);
 
                 return (
                   <button
                     key={item.id}
                     role="option"
-                    aria-selected={idx === activeIndex}
-                    className={`block w-full px-3 py-2 text-left text-sm hover:bg-zinc-100 ${idx === activeIndex ? "bg-zinc-100" : ""}`}
+                    aria-selected={index === activeIndex}
+                    className={`block w-full px-3 py-2 text-left text-sm hover:bg-zinc-100 ${index === activeIndex ? "bg-zinc-100" : ""}`}
                     onPointerDown={(event) => event.preventDefault()}
                     onClick={() => commitSelection(item)}
                     type="button"
                   >
-                    <div className="flex items-start justify-between gap-3">
-                      <div className="min-w-0">
-                        <div className="font-medium">{item.displayName}</div>
-                        {metaLine ? <div className="text-xs text-zinc-500">{metaLine}</div> : null}
-                      </div>
-                      {item.brandName ?? item.manufacturer ? (
-                        <span className="shrink-0 rounded-full bg-zinc-100 px-2 py-0.5 text-[11px] text-zinc-600">
-                          {item.brandName ?? item.manufacturer}
-                        </span>
-                      ) : null}
+                    <div className="min-w-0">
+                      <div className="font-medium">{item.displayNameRu ?? item.displayName}</div>
+                      {item.subtitle ? <div className="text-xs text-zinc-500">{item.subtitle}</div> : null}
                     </div>
                   </button>
                 );
@@ -280,7 +392,7 @@ export const IngredientPicker = ({
           ))}
         </div>
       )}
-      {showEmptyState && emptyCta}
+      {showEmptyState ? (emptyCta ?? builtInEmptyState) : null}
     </div>
   );
 };

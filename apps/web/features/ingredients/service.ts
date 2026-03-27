@@ -23,7 +23,13 @@ import {
   type IngredientType,
   moderationActionSchema
 } from "./contracts";
-import { normalizeAliasList, normalizeIngredientName } from "./normalization";
+import {
+  buildQueryVariants,
+  dedupeSearchAliases,
+  normalizeAliasList,
+  normalizeIngredientName,
+  normalizeSearchText
+} from "./normalization";
 import {
   buildIngredientTypedSummary,
   resolveIngredientFamilyDisplayName
@@ -113,8 +119,11 @@ const mapIngredientCatalogRow = (row: CatalogRow): IngredientCatalogItemDto => (
   familyId: row.item.familyId,
   family: mapIngredientFamilySummary(row.family),
   displayName: row.item.displayName,
+  displayNameRu: row.item.displayNameRu,
+  displayNameEn: row.item.displayNameEn,
   normalizedName: row.item.normalizedName,
   aliases: row.item.aliases,
+  searchAliasesNorm: row.item.searchAliasesNorm,
   brandName: row.item.brandName,
   manufacturer: row.item.manufacturer,
   country: row.item.country,
@@ -128,6 +137,8 @@ const mapIngredientCatalogRow = (row: CatalogRow): IngredientCatalogItemDto => (
   completenessLevel: row.item.completenessLevel,
   ...extractIngredientTechnicalFields(row.item),
   properties: row.item.properties,
+  catalogSourceDataset: row.item.catalogSourceDataset,
+  catalogSourceKey: row.item.catalogSourceKey,
   status: row.item.status,
   visibility: row.item.visibility,
   mergedIntoId: row.item.mergedIntoId,
@@ -136,6 +147,41 @@ const mapIngredientCatalogRow = (row: CatalogRow): IngredientCatalogItemDto => (
   createdAt: row.item.createdAt,
   updatedAt: row.item.updatedAt
 });
+
+const buildSearchTextNorm = (values: Array<string | null | undefined>) => normalizeSearchText(
+  values
+    .filter((value): value is string => typeof value === "string" && value.trim().length > 0)
+    .join(" ")
+);
+
+const buildSuggestionSubtitle = (input: {
+  displayName: string;
+  brandName?: string | null;
+  manufacturer?: string | null;
+  country?: string | null;
+  category: IngredientSuggestionItem["category"];
+  subtype: IngredientSuggestionItem["subtype"];
+  harvestYear?: number | null;
+  defaultDisplayUnit?: IngredientSuggestionItem["defaultDisplayUnit"];
+  technicalData?: IngredientSuggestionItem["technicalData"];
+}) => {
+  const typedSummary = buildIngredientTypedSummary({
+    category: input.category,
+    subtype: input.subtype,
+    displayName: input.displayName,
+    harvestYear: input.harvestYear,
+    defaultDisplayUnit: input.defaultDisplayUnit,
+    technicalData: input.technicalData
+  });
+  const primaryBrand = input.brandName ?? input.manufacturer ?? null;
+  const displayNameNorm = normalizeSearchText(input.displayName);
+
+  return [
+    primaryBrand && !displayNameNorm.includes(normalizeSearchText(primaryBrand)) ? primaryBrand : null,
+    input.country ?? null,
+    typedSummary ?? null
+  ].filter(Boolean).join(" • ") || undefined;
+};
 
 const buildIngredientSearchFilter = (query: ReturnType<typeof ingredientSearchQuerySchema.parse>) => (
   query.category
@@ -147,40 +193,47 @@ const buildIngredientSearchFilter = (query: ReturnType<typeof ingredientSearchQu
 
 const loadIngredientSearchRows = async (
   query: ReturnType<typeof ingredientSearchQuerySchema.parse>,
-  normalized: string,
-  likeQ: string,
+  queryVariants: string[],
   useSimilarity: boolean
 ) => {
+  const primaryVariant = queryVariants[0] ?? normalizeSearchText(query.q);
+  const likeQ = `%${query.q.trim()}%`;
   const scoreExpression = useSimilarity
     ? sql<number>`greatest(
-        similarity(${ingredientCatalogItems.displayName}, ${query.q}),
-        similarity(${ingredientCatalogItems.normalizedName}, ${normalized}),
-        similarity(coalesce(${ingredientCatalogItems.manufacturer}, ''), ${query.q})
+        similarity(${ingredientCatalogItems.normalizedName}, ${primaryVariant}),
+        similarity(coalesce(${ingredientCatalogItems.searchTextNorm}, ''), ${primaryVariant}),
+        similarity(coalesce(${ingredientCatalogItems.displayNameRu}, ''), ${query.q}),
+        similarity(coalesce(${ingredientCatalogItems.displayNameEn}, ''), ${query.q})
       )`
     : sql<number>`0`;
 
-  const aliasSimilarityClause = useSimilarity
-    ? sql`or similarity(alias, ${normalized}) > 0.35`
-    : sql``;
-
   const searchPredicates = [
     ilike(ingredientCatalogItems.displayName, likeQ),
-    ilike(ingredientCatalogItems.normalizedName, `%${normalized}%`),
+    ilike(ingredientCatalogItems.displayNameRu, likeQ),
+    ilike(sql<string>`coalesce(${ingredientCatalogItems.displayNameEn}, '')`, likeQ),
     ilike(sql<string>`coalesce(${ingredientCatalogItems.manufacturer}, '')`, likeQ),
-    ilike(sql<string>`coalesce(${ingredientCatalogItems.brandName}, '')`, likeQ),
-    sql<boolean>`exists (
-      select 1
-      from jsonb_array_elements_text(${ingredientCatalogItems.aliases}) as alias
-      where alias ilike ${`%${normalized}%`}
-      ${aliasSimilarityClause}
-    )`
+    ilike(sql<string>`coalesce(${ingredientCatalogItems.brandName}, '')`, likeQ)
   ];
 
-  if (useSimilarity) {
+  for (const variant of queryVariants) {
     searchPredicates.push(
-      sql<boolean>`similarity(${ingredientCatalogItems.displayName}, ${query.q}) > 0.25`,
-      sql<boolean>`similarity(${ingredientCatalogItems.normalizedName}, ${normalized}) > 0.25`
+      sql<boolean>`${ingredientCatalogItems.normalizedName} like ${`${variant}%`}`,
+      sql<boolean>`coalesce(${ingredientCatalogItems.searchTextNorm}, '') like ${`%${variant}%`}`,
+      sql<boolean>`exists (
+        select 1
+        from jsonb_array_elements_text(${ingredientCatalogItems.searchAliasesNorm}) as alias
+        where alias = ${variant}
+          or alias like ${`${variant}%`}
+          or alias like ${`%${variant}%`}
+      )`
     );
+
+    if (useSimilarity) {
+      searchPredicates.push(
+        sql<boolean>`similarity(${ingredientCatalogItems.normalizedName}, ${variant}) > 0.28`,
+        sql<boolean>`similarity(coalesce(${ingredientCatalogItems.searchTextNorm}, ''), ${variant}) > 0.24`
+      );
+    }
   }
 
   const baseQuery = db
@@ -194,8 +247,11 @@ const loadIngredientSearchRows = async (
       familyDisplayNameEn: ingredientFamilies.displayNameEn,
       familyDisplayNameRu: ingredientFamilies.displayNameRu,
       displayName: ingredientCatalogItems.displayName,
+      displayNameRu: ingredientCatalogItems.displayNameRu,
+      displayNameEn: ingredientCatalogItems.displayNameEn,
       brandName: ingredientCatalogItems.brandName,
       manufacturer: ingredientCatalogItems.manufacturer,
+      country: ingredientCatalogItems.country,
       harvestYear: ingredientCatalogItems.harvestYear,
       defaultUnit: ingredientCatalogItems.defaultUnit,
       defaultDisplayUnit: ingredientCatalogItems.defaultDisplayUnit,
@@ -205,6 +261,8 @@ const loadIngredientSearchRows = async (
       technicalData: ingredientCatalogItems.technicalData,
       normalizedName: ingredientCatalogItems.normalizedName,
       aliases: ingredientCatalogItems.aliases,
+      searchAliasesNorm: ingredientCatalogItems.searchAliasesNorm,
+      searchTextNorm: ingredientCatalogItems.searchTextNorm,
       score: scoreExpression
     })
     .from(ingredientCatalogItems)
@@ -215,9 +273,11 @@ const loadIngredientSearchRows = async (
       or(...searchPredicates)
     ));
 
+  const candidateLimit = Math.min(60, Math.max(query.limit * 6, 24));
+
   return useSimilarity
-    ? baseQuery.orderBy(desc(scoreExpression), asc(ingredientCatalogItems.displayName)).limit(query.limit)
-    : baseQuery.orderBy(asc(ingredientCatalogItems.displayName)).limit(query.limit);
+    ? baseQuery.orderBy(desc(scoreExpression), asc(ingredientCatalogItems.displayNameRu)).limit(candidateLimit)
+    : baseQuery.orderBy(asc(ingredientCatalogItems.displayNameRu)).limit(candidateLimit);
 };
 
 const findIngredientFamilyById = async (familyId: string) => {
@@ -341,7 +401,15 @@ const buildCatalogVariantPayload = async (payload: ReturnType<typeof ingredientU
   const subtype = resolveIngredientSubtype(payload);
   const legacyType = resolveLegacyIngredientType(payload);
   const normalizedName = normalizeIngredientName(payload.displayName);
-  const normalizedAliases = normalizeAliasList(payload.aliases);
+  const aliases = dedupeSearchAliases(payload.aliases);
+  const searchAliasesNorm = normalizeAliasList([
+    ...aliases,
+    payload.displayName,
+    payload.familyDisplayNameRu ?? "",
+    payload.familyDisplayNameEn ?? "",
+    payload.brandName ?? "",
+    payload.manufacturer ?? ""
+  ]);
   const technicalData = normalizeIngredientTechnicalData({
     ...payload,
     category,
@@ -383,8 +451,21 @@ const buildCatalogVariantPayload = async (payload: ReturnType<typeof ingredientU
     category,
     subtype: subtype ?? null,
     displayName: payload.displayName,
+    displayNameRu: payload.displayName,
+    displayNameEn: payload.displayName,
     normalizedName,
-    aliases: normalizedAliases,
+    aliases,
+    searchAliasesNorm,
+    searchTextNorm: buildSearchTextNorm([
+      payload.displayName,
+      payload.familyDisplayNameRu ?? null,
+      payload.familyDisplayNameEn ?? null,
+      ...aliases,
+      ...searchAliasesNorm,
+      payload.brandName ?? null,
+      payload.manufacturer ?? null,
+      payload.country ?? null
+    ]),
     brandName: payload.brandName || payload.manufacturer || null,
     manufacturer: payload.manufacturer || null,
     country: payload.country || null,
@@ -405,36 +486,52 @@ const buildCatalogVariantPayload = async (payload: ReturnType<typeof ingredientU
   } satisfies typeof ingredientCatalogItems.$inferInsert;
 };
 
-export const searchIngredientSuggestions = async (params: SearchParams): Promise<IngredientSuggestionItem[]> => {
+export const searchCatalogItems = async (params: SearchParams): Promise<IngredientSuggestionItem[]> => {
   const query = ingredientSearchQuerySchema.parse(params);
-  const normalized = normalizeIngredientName(query.q);
-  const likeQ = `%${query.q.trim()}%`;
+  const queryVariants = buildQueryVariants(query.q);
 
-  const rows = await loadIngredientSearchRows(query, normalized, likeQ, true).catch(async (error) => {
+  if (!queryVariants.length || queryVariants[0].length < 2) {
+    return [];
+  }
+
+  const rows = await loadIngredientSearchRows(query, queryVariants, true).catch(async (error) => {
     if (!isPgTrgmUnavailableError(error)) {
       throw error;
     }
 
-    return loadIngredientSearchRows(query, normalized, likeQ, false);
+    return loadIngredientSearchRows(query, queryVariants, false);
   });
 
   return rows
     .map((row) => {
       const familyDisplayName = resolveIngredientFamilyDisplayName({
-        displayName: row.displayName,
+        displayName: row.displayNameRu ?? row.displayName,
         familyCanonicalName: row.familyCanonicalName,
         familyDisplayNameEn: row.familyDisplayNameEn,
         familyDisplayNameRu: row.familyDisplayNameRu
       });
-
-      const subtitle = buildIngredientTypedSummary({
+      const displayName = row.displayNameRu ?? row.displayName;
+      const subtitle = buildSuggestionSubtitle({
+        displayName,
+        brandName: row.brandName,
+        manufacturer: row.manufacturer,
+        country: row.country,
         category: row.category,
         subtype: row.subtype as IngredientSuggestionItem["subtype"],
-        displayName: row.displayName,
         harvestYear: row.harvestYear,
         defaultDisplayUnit: row.defaultDisplayUnit as IngredientSuggestionItem["defaultDisplayUnit"],
-        technicalData: row.technicalData
+        technicalData: row.technicalData as IngredientSuggestionItem["technicalData"]
       });
+      const rankScore = scoreIngredientCandidate(queryVariants, {
+        displayName: row.displayName,
+        displayNameRu: row.displayNameRu,
+        displayNameEn: row.displayNameEn,
+        displayNameNorm: row.normalizedName,
+        searchAliasesNorm: row.searchAliasesNorm,
+        searchTextNorm: row.searchTextNorm,
+        brandName: row.brandName,
+        manufacturer: row.manufacturer
+      }) + (row.score * 25);
 
       return {
         id: row.id,
@@ -444,10 +541,15 @@ export const searchIngredientSuggestions = async (params: SearchParams): Promise
         familyId: row.familyId,
         familyCanonicalName: row.familyCanonicalName ?? undefined,
         familyDisplayName,
-        displayName: row.displayName,
+        familyDisplayNameRu: row.familyDisplayNameRu ?? undefined,
+        familyDisplayNameEn: row.familyDisplayNameEn ?? undefined,
+        displayName,
+        displayNameRu: row.displayNameRu ?? displayName,
+        displayNameEn: row.displayNameEn ?? undefined,
         subtitle,
         brandName: row.brandName ?? undefined,
         manufacturer: row.manufacturer ?? undefined,
+        country: row.country ?? undefined,
         technicalData: row.technicalData as IngredientSuggestionItem["technicalData"],
         defaultUnit: row.defaultDisplayUnit as IngredientSuggestionItem["defaultUnit"],
         defaultDisplayUnit: row.defaultDisplayUnit as IngredientSuggestionItem["defaultDisplayUnit"],
@@ -455,16 +557,19 @@ export const searchIngredientSuggestions = async (params: SearchParams): Promise
         measurementDimension: row.measurementDimension,
         completenessLevel: row.completenessLevel,
         source: "catalog" as const,
-        rankScore: scoreIngredientCandidate(query.q, {
-          displayName: row.displayName,
-          normalizedName: row.normalizedName,
-          aliases: row.aliases
-        }) + (row.score * 10)
+        score: process.env.NODE_ENV === "development" ? rankScore : undefined,
+        rankScore
       };
     })
-    .sort((a, b) => b.rankScore - a.rankScore)
+    .sort((left, right) => (
+      right.rankScore - left.rankScore
+      || left.displayName.localeCompare(right.displayName, "ru")
+    ))
+    .slice(0, query.limit)
     .map(({ rankScore, ...item }) => item);
 };
+
+export const searchIngredientSuggestions = searchCatalogItems;
 
 export const listCatalogIngredients = async (params: CatalogListParams) => {
   const page = Math.max(1, params.page ?? 1);
@@ -477,12 +582,14 @@ export const listCatalogIngredients = async (params: CatalogListParams) => {
     params.status ? eq(ingredientCatalogItems.status, params.status) : undefined,
     params.q ? or(
       ilike(ingredientCatalogItems.displayName, `%${params.q}%`),
-      ilike(ingredientCatalogItems.normalizedName, `%${normalized}%`),
+      ilike(ingredientCatalogItems.displayNameRu, `%${params.q}%`),
+      ilike(sql<string>`coalesce(${ingredientCatalogItems.displayNameEn}, '')`, `%${params.q}%`),
+      sql<boolean>`coalesce(${ingredientCatalogItems.searchTextNorm}, '') like ${`%${normalized}%`}`,
       ilike(sql<string>`coalesce(${ingredientCatalogItems.manufacturer}, '')`, `%${params.q}%`),
       ilike(sql<string>`coalesce(${ingredientCatalogItems.brandName}, '')`, `%${params.q}%`),
       sql<boolean>`exists (
-        select 1 from jsonb_array_elements_text(${ingredientCatalogItems.aliases}) as alias
-        where alias ilike ${`%${normalized}%`}
+        select 1 from jsonb_array_elements_text(${ingredientCatalogItems.searchAliasesNorm}) as alias
+        where alias like ${`%${normalized}%`}
       )`
     ) : undefined
   );

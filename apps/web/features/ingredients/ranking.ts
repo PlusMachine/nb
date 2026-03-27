@@ -1,29 +1,144 @@
-import { normalizeIngredientName } from "./normalization";
+import { buildQueryVariants, normalizeSearchText } from "./normalization";
 
-const levenshtein = (a: string, b: string) => {
-  const dp = Array.from({ length: a.length + 1 }, (_, i) => Array(b.length + 1).fill(0).map((_, j) => (i === 0 ? j : j === 0 ? i : 0)));
-  for (let i = 1; i <= a.length; i += 1) {
-    for (let j = 1; j <= b.length; j += 1) {
-      dp[i][j] = Math.min(
-        dp[i - 1][j] + 1,
-        dp[i][j - 1] + 1,
-        dp[i - 1][j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1)
+const levenshtein = (left: string, right: string) => {
+  const rows = Array.from({ length: left.length + 1 }, (_, rowIndex) => (
+    Array.from({ length: right.length + 1 }, (_, columnIndex) => (
+      rowIndex === 0 ? columnIndex : columnIndex === 0 ? rowIndex : 0
+    ))
+  ));
+
+  for (let row = 1; row <= left.length; row += 1) {
+    for (let column = 1; column <= right.length; column += 1) {
+      rows[row][column] = Math.min(
+        rows[row - 1][column] + 1,
+        rows[row][column - 1] + 1,
+        rows[row - 1][column - 1] + (left[row - 1] === right[column - 1] ? 0 : 1)
       );
     }
   }
-  return dp[a.length][b.length];
+
+  return rows[left.length][right.length];
 };
 
-export const scoreIngredientCandidate = (query: string, candidate: { displayName: string; normalizedName: string; aliases: string[] }) => {
-  const q = normalizeIngredientName(query);
-  if (!q) return 0;
+const hasAllTokens = (variant: string, haystack: string) => {
+  const tokens = variant.split(" ").filter(Boolean);
+  return tokens.length > 0 && tokens.every((token) => haystack.includes(token));
+};
 
-  if (candidate.normalizedName === q) return 120;
-  if (candidate.aliases.includes(q)) return 110;
-  if (candidate.normalizedName.startsWith(q)) return 95;
-  if (candidate.displayName.toLowerCase().includes(q)) return 80;
+const calcFuzzyBonus = (variant: string, targets: string[]) => {
+  if (variant.length < 5) {
+    return 0;
+  }
 
-  const typoDistance = levenshtein(q, candidate.normalizedName);
-  const fuzzyBonus = Math.max(0, 40 - typoDistance * 10);
-  return fuzzyBonus;
+  const distance = Math.min(...targets.map((target) => levenshtein(variant, target)));
+  if (distance > 2) {
+    return 0;
+  }
+
+  return Math.max(0, 50 - distance * 18);
+};
+
+type RankedCandidate = {
+  displayName?: string;
+  displayNameRu?: string | null;
+  displayNameEn?: string | null;
+  normalizedName?: string;
+  aliases?: string[];
+  displayNameNorm?: string;
+  searchAliasesNorm?: string[];
+  searchTextNorm?: string;
+  brandName?: string | null;
+  manufacturer?: string | null;
+};
+
+const normalizeCandidate = (candidate: RankedCandidate) => {
+  const displayNameNorm = candidate.displayNameNorm
+    ?? normalizeSearchText(candidate.displayName ?? "");
+  const displayNameRuNorm = normalizeSearchText(candidate.displayNameRu ?? candidate.displayName ?? "");
+  const displayNameEnNorm = normalizeSearchText(candidate.displayNameEn ?? candidate.displayName ?? "");
+  const searchAliasesNorm = candidate.searchAliasesNorm
+    ?? (candidate.aliases?.map((alias) => normalizeSearchText(alias)).filter(Boolean) ?? []);
+  const searchTextNorm = candidate.searchTextNorm
+    ?? normalizeSearchText([
+      candidate.displayName ?? "",
+      candidate.normalizedName ?? "",
+      ...searchAliasesNorm,
+      candidate.brandName ?? "",
+      candidate.manufacturer ?? ""
+    ].join(" "));
+
+  return {
+    displayNameNorm,
+    displayNameRuNorm,
+    displayNameEnNorm,
+    searchAliasesNorm,
+    searchTextNorm,
+    brandName: candidate.brandName,
+    manufacturer: candidate.manufacturer
+  };
+};
+
+const scoreVariant = (variant: string, candidate: RankedCandidate) => {
+  const normalizedCandidate = normalizeCandidate(candidate);
+  let score = 0;
+  const queryHasLatin = /[a-z]/.test(variant);
+  const queryHasCyrillic = /[а-я]/.test(variant);
+
+  if (normalizedCandidate.displayNameNorm === variant) {
+    score += 110;
+  }
+
+  if (normalizedCandidate.searchAliasesNorm.includes(variant)) {
+    score += 100;
+  }
+
+  if (normalizedCandidate.displayNameNorm.startsWith(variant)) {
+    score += 80;
+  }
+
+  if (queryHasLatin && normalizedCandidate.displayNameEnNorm.startsWith(variant)) {
+    score += 24;
+  }
+
+  if (queryHasCyrillic && normalizedCandidate.displayNameRuNorm.startsWith(variant)) {
+    score += 18;
+  }
+
+  if (normalizedCandidate.searchAliasesNorm.some((alias) => alias.startsWith(variant))) {
+    score += 70;
+  }
+
+  if (hasAllTokens(variant, normalizedCandidate.searchTextNorm)) {
+    score += 60;
+  }
+
+  const brandTokens = [
+    normalizeSearchText(normalizedCandidate.brandName ?? ""),
+    normalizeSearchText(normalizedCandidate.manufacturer ?? "")
+  ].filter(Boolean);
+
+  if (brandTokens.some((brand) => variant.includes(brand) || brand.includes(variant))) {
+    score += 18;
+  } else if (brandTokens.some((brand) => hasAllTokens(brand, variant) || hasAllTokens(variant, brand))) {
+    score += 10;
+  }
+
+  score += calcFuzzyBonus(variant, [
+    normalizedCandidate.displayNameNorm,
+    ...normalizedCandidate.searchAliasesNorm
+  ]);
+
+  return score;
+};
+
+export const scoreIngredientCandidate = (
+  query: string | string[],
+  candidate: RankedCandidate
+) => {
+  const variants = Array.isArray(query) ? query : buildQueryVariants(query);
+  if (!variants.length) {
+    return 0;
+  }
+
+  return variants.reduce((bestScore, variant) => Math.max(bestScore, scoreVariant(variant, candidate)), 0);
 };

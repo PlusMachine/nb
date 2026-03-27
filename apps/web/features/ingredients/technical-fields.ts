@@ -22,7 +22,7 @@ import {
   type YeastSubtype
 } from "./taxonomy";
 
-export const hopForms = ["pellet", "whole_cone", "lupulin", "cryo"] as const;
+export const hopForms = ["pellet", "whole_cone", "lupulin", "cryo", "standard"] as const;
 export type HopForm = (typeof hopForms)[number];
 export const legacyYeastTypes = ["ale", "lager", "wine"] as const;
 export type LegacyYeastType = (typeof legacyYeastTypes)[number];
@@ -486,6 +486,10 @@ const parseHopForm = (value: unknown): HopForm | null => {
     return "whole_cone";
   }
 
+  if (value === "lupomax" || value === "lupulin_concentrate") {
+    return "lupulin";
+  }
+
   return null;
 };
 
@@ -668,7 +672,8 @@ export const hopFormLabels: Record<HopForm, string> = {
   pellet: "Гранулы",
   whole_cone: "Шишковой",
   lupulin: "Лупулин",
-  cryo: "Крио"
+  cryo: "Крио",
+  standard: "Стандарт"
 };
 
 export const yeastTypeLabels: Record<LegacyYeastType, string> = {

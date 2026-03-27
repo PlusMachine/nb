@@ -11,9 +11,9 @@ const fermentableSubtypes = [
   "syrup_honey",
   "fruit_fermentable"
 ] as const;
-const hopSubtypes = ["pellet", "whole_cone", "cryo", "lupulin", "extract"] as const;
+const hopSubtypes = ["pellet", "whole_cone", "cryo", "lupulin", "extract", "standard"] as const;
 const yeastSubtypes = ["ale", "lager", "wheat", "belgian", "kveik", "wild_bacteria", "other"] as const;
-const waterPrepSubtypes = ["salt", "acid", "base", "nutrient_other"] as const;
+const waterPrepSubtypes = ["salt", "acid", "base", "nutrient_other", "water_source", "dechlorination"] as const;
 const miscSubtypes = [
   "fining",
   "antioxidant",
@@ -22,6 +22,10 @@ const miscSubtypes = [
   "wood",
   "flavoring",
   "enzyme",
+  "cleaner",
+  "sanitizer",
+  "gas",
+  "preservative",
   "process_aid",
   "other"
 ] as const;
@@ -129,11 +133,17 @@ const FLAVORING_TERMS = ["cocoa", "cacao", "peanut", "coconut", "nib", "nibs", "
 const WATER_SALT_TERMS = ["gypsum", "calcium chloride", "calcium sulfate", "epsom", "chloride", "sulfate", "cacl2"];
 const WATER_ACID_TERMS = ["acid", "lactic", "phosphoric", "citric"];
 const WATER_BASE_TERMS = ["bicarbonate", "chalk", "carbonate", "slaked lime", "pickling lime", "sodium hydroxide"];
+const WATER_SOURCE_TERMS = ["reverse osmosis", "distilled water", "ro water", "osmosis water", "ro "];
+const WATER_DECHLORINATION_TERMS = ["campden", "metabisulfite", "chloramine", "dechlor", "ascorbic acid"];
 const WATER_PREP_STAGE_TERMS = ["water-treatment", "water treatment"];
 const ANTIOXIDANT_TERMS = ["metabisulfite", "campden", "antioxidant", "sulfite"];
 const NUTRIENT_TERMS = ["nutrient", "servomyces"];
 const WOOD_TERMS = ["oak", "wood", "chips", "spiral"];
 const SPICE_TERMS = ["spice", "pepper", "coriander", "orange peel", "cinnamon", "herb"];
+const CLEANER_TERMS = ["cleaner", "caustic", "pbw", "detergent"];
+const SANITIZER_TERMS = ["sanitizer", "star san", "saniclean", "iodophor"];
+const GAS_TERMS = ["co2", "carbon dioxide", "gas cartridge", "cylinder"];
+const PRESERVATIVE_TERMS = ["preservative", "sorbate"];
 
 const isRecord = (value: unknown): value is Record<string, unknown> => (
   typeof value === "object"
@@ -248,7 +258,9 @@ export const normalizeIngredientSubtype = (
       wholecone: "whole_cone",
       leaf: "whole_cone",
       pellets: "pellet",
-      pellet: "pellet"
+      pellet: "pellet",
+      standard: "standard",
+      generic: "standard"
     };
 
     return aliases[normalized] ?? null;
@@ -269,7 +281,11 @@ export const normalizeIngredientSubtype = (
   if (category === "water_prep") {
     const aliases: Record<string, WaterPrepSubtype> = {
       salts: "salt",
-      mineral: "salt"
+      mineral: "salt",
+      source: "water_source",
+      water_source: "water_source",
+      dechlorination: "dechlorination",
+      dechlorinator: "dechlorination"
     };
 
     return aliases[normalized] ?? null;
@@ -278,6 +294,10 @@ export const normalizeIngredientSubtype = (
   const miscAliases: Record<string, MiscSubtype> = {
     finings: "fining",
     anti_oxidant: "antioxidant",
+    cleaner: "cleaner",
+    sanitizer: "sanitizer",
+    gas: "gas",
+    preservative: "preservative",
     process: "process_aid",
     process_aid: "process_aid"
   };
@@ -330,7 +350,13 @@ export const resolveIngredientCategory = (input: ResolveIngredientTaxonomyInput)
     return "water_prep";
   }
 
-  if (hasTerm(displayName, WATER_SALT_TERMS) || hasTerm(displayName, WATER_ACID_TERMS) || hasTerm(displayName, WATER_BASE_TERMS)) {
+  if (
+    hasTerm(displayName, WATER_SOURCE_TERMS)
+    || hasTerm(displayName, WATER_DECHLORINATION_TERMS)
+    || hasTerm(displayName, WATER_SALT_TERMS)
+    || hasTerm(displayName, WATER_ACID_TERMS)
+    || hasTerm(displayName, WATER_BASE_TERMS)
+  ) {
     return "water_prep";
   }
 
@@ -394,7 +420,7 @@ export const resolveIngredientSubtype = (input: ResolveIngredientTaxonomyInput):
 
   if (category === "hop") {
     const fromHopForm = normalizeIngredientSubtype("hop", input.hopForm ?? null);
-    return fromHopForm;
+    return fromHopForm ?? (!input.subtype ? "standard" : null);
   }
 
   if (category === "yeast") {
@@ -426,6 +452,14 @@ export const resolveIngredientSubtype = (input: ResolveIngredientTaxonomyInput):
   }
 
   if (category === "water_prep") {
+    if (hasTerm(displayName, WATER_SOURCE_TERMS)) {
+      return "water_source";
+    }
+
+    if (hasTerm(displayName, WATER_DECHLORINATION_TERMS)) {
+      return "dechlorination";
+    }
+
     if (hasTerm(displayName, WATER_ACID_TERMS)) {
       return "acid";
     }
@@ -467,6 +501,22 @@ export const resolveIngredientSubtype = (input: ResolveIngredientTaxonomyInput):
 
   if (displayName.includes("enzyme")) {
     return "enzyme";
+  }
+
+  if (hasTerm(displayName, CLEANER_TERMS)) {
+    return "cleaner";
+  }
+
+  if (hasTerm(displayName, SANITIZER_TERMS)) {
+    return "sanitizer";
+  }
+
+  if (hasTerm(displayName, GAS_TERMS)) {
+    return "gas";
+  }
+
+  if (hasTerm(displayName, PRESERVATIVE_TERMS)) {
+    return "preservative";
   }
 
   if (hasTerm(displayName, PROCESS_AID_TERMS) || stage === "sanitation") {
@@ -594,6 +644,14 @@ export const resolveIngredientUnits = (
   }
 
   if (category === "water_prep") {
+    if (subtype === "water_source") {
+      return {
+        defaultDisplayUnit: "l",
+        allowedUnits: VOLUME_UNITS,
+        measurementDimension: "volume"
+      };
+    }
+
     if (subtype === "acid") {
       return {
         defaultDisplayUnit: "ml",
