@@ -18,7 +18,9 @@ import { RecipeStatsPreview } from "../components/recipes/recipe-stats-preview";
 import { buildRecipePublicationChecklist } from "../features/recipes/publication-validation";
 
 vi.mock("next/navigation", () => ({
-  useRouter: () => ({ replace: vi.fn(), push: vi.fn() })
+  usePathname: () => "/app/recipes/new",
+  useRouter: () => ({ replace: vi.fn(), push: vi.fn() }),
+  useSearchParams: () => new URLSearchParams()
 }));
 
 vi.mock("../app/(app)/app/recipes/actions", () => ({

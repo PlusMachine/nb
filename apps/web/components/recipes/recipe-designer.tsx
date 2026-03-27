@@ -19,7 +19,7 @@ import {
 } from "lucide-react";
 import React, { startTransition, useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
 import {
   createRecipeCustomIngredientAction,
@@ -2032,6 +2032,8 @@ function IngredientEditor({
 export function RecipeDesigner({ mode, initialRecipe, initialTitle, onSaveStatusChange, onRecipeCreated, onPublicationStateChange }: Props) {
   const isMobile = useIsMobile();
   const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
   const initialPublicationState = normalizeEditorPublicationState(initialRecipe?.publicationState);
   const [activeRecipeId, setActiveRecipeId] = useState(initialRecipe?.id ?? null);
   const [activeRecipeSlug, setActiveRecipeSlug] = useState(initialRecipe?.slug ?? null);
@@ -2095,6 +2097,25 @@ export function RecipeDesigner({ mode, initialRecipe, initialTitle, onSaveStatus
   useEffect(() => {
     pendingSaveRef.current = pendingSave;
   }, [pendingSave]);
+
+  const trackedRecipeId = searchParams.get("recipeId");
+
+  useEffect(() => {
+    if (!activeRecipeId) return;
+    if (pathname !== "/app/recipes/new") return;
+    if (trackedRecipeId === activeRecipeId) return;
+
+    const syncRecipeUrlTimer = window.setTimeout(() => {
+      const currentRecipeId = new URLSearchParams(window.location.search).get("recipeId");
+      if (window.location.pathname !== "/app/recipes/new" || currentRecipeId === activeRecipeId) {
+        return;
+      }
+
+      window.history.replaceState(window.history.state, "", `/app/recipes/new?recipeId=${activeRecipeId}`);
+    }, 250);
+
+    return () => window.clearTimeout(syncRecipeUrlTimer);
+  }, [activeRecipeId, pathname, trackedRecipeId]);
 
   useEffect(() => {
     if (typeof window === "undefined" || (!isDirty && !pendingSave)) {
@@ -2196,9 +2217,6 @@ export function RecipeDesigner({ mode, initialRecipe, initialTitle, onSaveStatus
       if (!activeRecipeId) {
         setActiveRecipeId(savedRecipe.id);
         onRecipeCreated?.(savedRecipe);
-        startTransition(() => {
-          router.replace(`/app/recipes/${savedRecipe.id}/edit`);
-        });
       }
 
       return result;

@@ -56,7 +56,7 @@ export function RecipeEditorPage({
         </div>
       </section>
       <RecipeForm
-        mode={mode}
+        mode={editorMode}
         initialRecipe={recipe}
         initialTitle={initialTitle}
         onSaveStatusChange={setSaveStatus}

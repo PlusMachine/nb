@@ -90,9 +90,9 @@ export function RecipeList({ recipes }: { recipes: RecipeListItemDto[] }) {
                       onClick();
                     }}
                     disabled={isPending}
-                    className="inline-flex items-center gap-1.5 rounded-md bg-zinc-100 px-3 py-1.5 text-sm font-medium text-zinc-700 transition-colors hover:bg-zinc-200 hover:text-zinc-900 disabled:opacity-60"
+                    className="inline-flex items-center gap-1 rounded-md bg-zinc-50 px-2 py-1 text-xs font-medium text-zinc-500 transition-colors hover:bg-zinc-100 hover:text-zinc-700 disabled:opacity-60"
                   >
-                    <Copy className="h-3.5 w-3.5" />
+                    <Copy className="h-3 w-3" />
                     {isPending ? "Клонируем..." : "Клонировать"}
                   </button>
                 )}

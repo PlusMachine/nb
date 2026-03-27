@@ -31,7 +31,12 @@ const mocks = vi.hoisted(() => ({
   requireUser: vi.fn(async () => ({ id: "u-1" })),
   getOwnedRecipeById: vi.fn(async () => recipe),
   getNextDefaultRecipeTitle: vi.fn(async () => "Новый рецепт 7"),
+  usePathname: vi.fn(() => "/app/recipes/new"),
   useRouter: vi.fn(() => ({ replace: vi.fn(), push: vi.fn() })),
+  useSearchParams: vi.fn(() => new URLSearchParams()),
+  redirect: vi.fn((url: string) => {
+    throw new Error(`NEXT_REDIRECT:${url}`);
+  }),
   notFound: vi.fn(() => {
     throw new Error("NEXT_NOT_FOUND");
   })
@@ -42,7 +47,13 @@ vi.mock("../features/recipes/service", () => ({
   getOwnedRecipeById: mocks.getOwnedRecipeById,
   getNextDefaultRecipeTitle: mocks.getNextDefaultRecipeTitle
 }));
-vi.mock("next/navigation", () => ({ notFound: mocks.notFound, useRouter: mocks.useRouter }));
+vi.mock("next/navigation", () => ({
+  notFound: mocks.notFound,
+  redirect: mocks.redirect,
+  usePathname: mocks.usePathname,
+  useRouter: mocks.useRouter,
+  useSearchParams: mocks.useSearchParams
+}));
 
 describe("recipe editor pages wiring", () => {
   it("edit form renders from owner-safe service", async () => {
@@ -65,11 +76,20 @@ describe("recipe editor pages wiring", () => {
 
   it("new form route renders", async () => {
     const { default: NewRecipePage } = await import("../app/(app)/app/recipes/new/page");
-    const html = renderToStaticMarkup(await NewRecipePage());
+    const html = renderToStaticMarkup(await NewRecipePage({ searchParams: Promise.resolve({}) }));
 
     expect(html).toContain("Название рецепта");
     expect(html).toContain("Автосохранение");
     expect(mocks.getNextDefaultRecipeTitle).toHaveBeenCalledWith("u-1");
     expect(html).toContain("Новый рецепт 7");
+  });
+
+  it("new route redirects to edit when recipeId query is present", async () => {
+    const { default: NewRecipePage } = await import("../app/(app)/app/recipes/new/page");
+
+    await expect(NewRecipePage({
+      searchParams: Promise.resolve({ recipeId: "r-1" })
+    })).rejects.toThrow("NEXT_REDIRECT:/app/recipes/r-1/edit");
+    expect(mocks.redirect).toHaveBeenCalledWith("/app/recipes/r-1/edit");
   });
 });
