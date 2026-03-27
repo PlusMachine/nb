@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 
-import { getIngredientById, updateIngredient } from "@/features/ingredients/service";
+import { deleteIngredient, getIngredientById, updateIngredient } from "@/features/ingredients/service";
 import { requireCatalogRole } from "@/features/ingredients/permissions";
 
 export async function GET(_request: Request, { params }: { params: Promise<{ id: string }> }) {
@@ -28,6 +28,21 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
       return NextResponse.json({ error: "NOT_FOUND" }, { status: 404 });
     }
     return NextResponse.json(item);
+  } catch (error) {
+    const status = (error as Error).message === "FORBIDDEN" ? 403 : 400;
+    return NextResponse.json({ error: (error as Error).message }, { status });
+  }
+}
+
+export async function DELETE(_request: Request, { params }: { params: Promise<{ id: string }> }) {
+  try {
+    const user = await requireCatalogRole("admin");
+    const { id } = await params;
+    const result = await deleteIngredient(id, user.id);
+    if (!result) {
+      return NextResponse.json({ error: "NOT_FOUND" }, { status: 404 });
+    }
+    return NextResponse.json(result);
   } catch (error) {
     const status = (error as Error).message === "FORBIDDEN" ? 403 : 400;
     return NextResponse.json({ error: (error as Error).message }, { status });

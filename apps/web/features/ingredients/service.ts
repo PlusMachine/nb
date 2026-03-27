@@ -10,7 +10,9 @@ import {
   ingredientFamilies,
   or,
   proposedIngredients,
-  sql
+  recipeIngredients,
+  sql,
+  userIngredients
 } from "@nb/db";
 
 import {
@@ -23,6 +25,13 @@ import {
   type IngredientType,
   moderationActionSchema
 } from "./contracts";
+import {
+  defaultAdminCatalogSortOption,
+  ingredientCatalogCategoryOrder,
+  ingredientCatalogStatuses,
+  type AdminCatalogSortOption,
+  type IngredientCatalogStatus
+} from "./admin-page-model";
 import {
   buildQueryVariants,
   dedupeSearchAliases,
@@ -59,6 +68,7 @@ type CatalogListParams = {
   type?: string;
   category?: string;
   status?: "draft" | "active" | "archived" | "merged";
+  sort?: AdminCatalogSortOption;
 };
 
 type CatalogRow = {
@@ -190,6 +200,113 @@ const buildIngredientSearchFilter = (query: ReturnType<typeof ingredientSearchQu
       ? eq(ingredientCatalogItems.type, query.type as never)
       : undefined
 );
+
+const catalogCategoryRankExpression = sql<number>`case
+  when ${ingredientCatalogItems.category} = 'fermentable' then 0
+  when ${ingredientCatalogItems.category} = 'hop' then 1
+  when ${ingredientCatalogItems.category} = 'yeast' then 2
+  when ${ingredientCatalogItems.category} = 'water_prep' then 3
+  when ${ingredientCatalogItems.category} = 'misc' then 4
+  else 99
+end`;
+
+const catalogStatusRankExpression = sql<number>`case
+  when ${ingredientCatalogItems.status} = 'active' then 0
+  when ${ingredientCatalogItems.status} = 'draft' then 1
+  when ${ingredientCatalogItems.status} = 'archived' then 2
+  when ${ingredientCatalogItems.status} = 'merged' then 3
+  else 99
+end`;
+
+const catalogCompletenessRankExpression = sql<number>`case
+  when ${ingredientCatalogItems.completenessLevel} = 'full' then 0
+  when ${ingredientCatalogItems.completenessLevel} = 'recommended' then 1
+  when ${ingredientCatalogItems.completenessLevel} = 'minimum' then 2
+  else 99
+end`;
+
+const catalogFamilySortExpression = sql<string>`coalesce(
+  ${ingredientFamilies.displayNameRu},
+  ${ingredientFamilies.displayNameEn},
+  ${ingredientFamilies.canonicalName},
+  ${ingredientCatalogItems.displayNameRu},
+  ${ingredientCatalogItems.displayName}
+)`;
+
+const catalogBrandSortExpression = sql<string>`coalesce(
+  nullif(${ingredientCatalogItems.brandName}, ''),
+  nullif(${ingredientCatalogItems.manufacturer}, ''),
+  'Без бренда'
+)`;
+
+const createCountRecord = <T extends readonly string[]>(values: T) => (
+  Object.fromEntries(values.map((value) => [value, 0])) as Record<T[number], number>
+);
+
+const buildCatalogWhere = (params: {
+  q?: string;
+  normalizedQ?: string;
+  type?: string;
+  category?: string;
+  status?: IngredientCatalogStatus;
+}) => and(
+  params.category ? eq(ingredientCatalogItems.category, params.category as never) : undefined,
+  params.type ? eq(ingredientCatalogItems.type, params.type as never) : undefined,
+  params.status ? eq(ingredientCatalogItems.status, params.status) : undefined,
+  params.q ? or(
+    ilike(ingredientCatalogItems.displayName, `%${params.q}%`),
+    ilike(ingredientCatalogItems.displayNameRu, `%${params.q}%`),
+    ilike(sql<string>`coalesce(${ingredientCatalogItems.displayNameEn}, '')`, `%${params.q}%`),
+    sql<boolean>`coalesce(${ingredientCatalogItems.searchTextNorm}, '') like ${`%${params.normalizedQ ?? normalizeIngredientName(params.q)}%`}`,
+    ilike(sql<string>`coalesce(${ingredientCatalogItems.manufacturer}, '')`, `%${params.q}%`),
+    ilike(sql<string>`coalesce(${ingredientCatalogItems.brandName}, '')`, `%${params.q}%`),
+    sql<boolean>`exists (
+      select 1 from jsonb_array_elements_text(${ingredientCatalogItems.searchAliasesNorm}) as alias
+      where alias like ${`%${params.normalizedQ ?? normalizeIngredientName(params.q)}%`}
+    )`
+  ) : undefined
+);
+
+const buildCatalogOrderBy = (sort: AdminCatalogSortOption) => {
+  const categoryOrder = asc(catalogCategoryRankExpression);
+  const nameOrder = [asc(ingredientCatalogItems.displayNameRu), asc(ingredientCatalogItems.displayName)];
+
+  if (sort === "brand") {
+    return [
+      asc(catalogBrandSortExpression),
+      categoryOrder,
+      asc(catalogFamilySortExpression),
+      ...nameOrder,
+      desc(ingredientCatalogItems.updatedAt)
+    ] as const;
+  }
+
+  if (sort === "updated") {
+    return [categoryOrder, desc(ingredientCatalogItems.updatedAt), ...nameOrder] as const;
+  }
+
+  if (sort === "completeness") {
+    return [
+      categoryOrder,
+      asc(catalogCompletenessRankExpression),
+      asc(catalogFamilySortExpression),
+      ...nameOrder,
+      desc(ingredientCatalogItems.updatedAt)
+    ] as const;
+  }
+
+  if (sort === "name") {
+    return [categoryOrder, ...nameOrder, desc(ingredientCatalogItems.updatedAt)] as const;
+  }
+
+  return [
+    categoryOrder,
+    asc(catalogStatusRankExpression),
+    asc(catalogFamilySortExpression),
+    ...nameOrder,
+    desc(ingredientCatalogItems.updatedAt)
+  ] as const;
+};
 
 const loadIngredientSearchRows = async (
   query: ReturnType<typeof ingredientSearchQuerySchema.parse>,
@@ -575,26 +692,29 @@ export const listCatalogIngredients = async (params: CatalogListParams) => {
   const page = Math.max(1, params.page ?? 1);
   const pageSize = Math.min(50, Math.max(1, params.pageSize ?? 20));
   const normalized = params.q ? normalizeIngredientName(params.q) : undefined;
+  const sort = params.sort ?? defaultAdminCatalogSortOption;
 
-  const where = and(
-    params.category ? eq(ingredientCatalogItems.category, params.category as never) : undefined,
-    params.type ? eq(ingredientCatalogItems.type, params.type as never) : undefined,
-    params.status ? eq(ingredientCatalogItems.status, params.status) : undefined,
-    params.q ? or(
-      ilike(ingredientCatalogItems.displayName, `%${params.q}%`),
-      ilike(ingredientCatalogItems.displayNameRu, `%${params.q}%`),
-      ilike(sql<string>`coalesce(${ingredientCatalogItems.displayNameEn}, '')`, `%${params.q}%`),
-      sql<boolean>`coalesce(${ingredientCatalogItems.searchTextNorm}, '') like ${`%${normalized}%`}`,
-      ilike(sql<string>`coalesce(${ingredientCatalogItems.manufacturer}, '')`, `%${params.q}%`),
-      ilike(sql<string>`coalesce(${ingredientCatalogItems.brandName}, '')`, `%${params.q}%`),
-      sql<boolean>`exists (
-        select 1 from jsonb_array_elements_text(${ingredientCatalogItems.searchAliasesNorm}) as alias
-        where alias like ${`%${normalized}%`}
-      )`
-    ) : undefined
-  );
+  const where = buildCatalogWhere({
+    q: params.q,
+    normalizedQ: normalized,
+    type: params.type,
+    category: params.category,
+    status: params.status
+  });
+  const categoryFacetWhere = buildCatalogWhere({
+    q: params.q,
+    normalizedQ: normalized,
+    type: params.type,
+    status: params.status
+  });
+  const statusFacetWhere = buildCatalogWhere({
+    q: params.q,
+    normalizedQ: normalized,
+    type: params.type,
+    category: params.category
+  });
 
-  const [rows, countRows] = await Promise.all([
+  const [rows, countRows, categoryFacetRows, statusFacetRows, pendingProposalCountRows] = await Promise.all([
     db
       .select({
         item: ingredientCatalogItems,
@@ -603,21 +723,123 @@ export const listCatalogIngredients = async (params: CatalogListParams) => {
       .from(ingredientCatalogItems)
       .leftJoin(ingredientFamilies, eq(ingredientCatalogItems.familyId, ingredientFamilies.id))
       .where(where)
-      .orderBy(desc(ingredientCatalogItems.updatedAt))
+      .orderBy(...buildCatalogOrderBy(sort))
       .limit(pageSize)
       .offset((page - 1) * pageSize),
-    db.select({ count: sql<number>`count(*)::int` }).from(ingredientCatalogItems).where(where)
+    db.select({ count: sql<number>`count(*)::int` }).from(ingredientCatalogItems).where(where),
+    db
+      .select({
+        category: ingredientCatalogItems.category,
+        count: sql<number>`count(*)::int`
+      })
+      .from(ingredientCatalogItems)
+      .where(categoryFacetWhere)
+      .groupBy(ingredientCatalogItems.category),
+    db
+      .select({
+        status: ingredientCatalogItems.status,
+        count: sql<number>`count(*)::int`
+      })
+      .from(ingredientCatalogItems)
+      .where(statusFacetWhere)
+      .groupBy(ingredientCatalogItems.status),
+    db
+      .select({ count: sql<number>`count(*)::int` })
+      .from(proposedIngredients)
+      .where(eq(proposedIngredients.status, "pending"))
   ]);
+
+  const countsByCategory = createCountRecord(ingredientCatalogCategoryOrder);
+  for (const row of categoryFacetRows) {
+    countsByCategory[row.category] = row.count;
+  }
+
+  const countsByStatus = createCountRecord(ingredientCatalogStatuses);
+  for (const row of statusFacetRows) {
+    countsByStatus[row.status] = row.count;
+  }
 
   return {
     items: rows.map(mapIngredientCatalogRow),
     page,
     pageSize,
-    total: countRows[0]?.count ?? 0
+    total: countRows[0]?.count ?? 0,
+    facets: {
+      byCategory: countsByCategory,
+      byStatus: countsByStatus
+    },
+    pendingProposals: pendingProposalCountRows[0]?.count ?? 0
   };
 };
 
 export const getIngredientById = async (id: string) => buildCatalogDtoById(id);
+
+export const deleteIngredient = async (id: string, actorId?: string) => {
+  const current = await db.query.ingredientCatalogItems.findFirst({
+    where: eq(ingredientCatalogItems.id, id)
+  });
+
+  if (!current) {
+    return null;
+  }
+
+  const [inventoryRefs, recipeRefs, mergeRefs, moderationRefs] = await Promise.all([
+    db
+      .select({ count: sql<number>`count(*)::int` })
+      .from(userIngredients)
+      .where(eq(userIngredients.ingredientCatalogItemId, id)),
+    db
+      .select({ count: sql<number>`count(*)::int` })
+      .from(recipeIngredients)
+      .where(eq(recipeIngredients.ingredientCatalogItemId, id)),
+    db
+      .select({ count: sql<number>`count(*)::int` })
+      .from(ingredientCatalogItems)
+      .where(eq(ingredientCatalogItems.mergedIntoId, id)),
+    db
+      .select({ count: sql<number>`count(*)::int` })
+      .from(proposedIngredients)
+      .where(eq(proposedIngredients.targetIngredientId, id))
+  ]);
+
+  const references = {
+    inventory: inventoryRefs[0]?.count ?? 0,
+    recipes: recipeRefs[0]?.count ?? 0,
+    mergedTargets: mergeRefs[0]?.count ?? 0,
+    moderationTargets: moderationRefs[0]?.count ?? 0
+  };
+
+  const hasBlockingLinks = Object.values(references).some((count) => count > 0);
+
+  if (hasBlockingLinks) {
+    const [updated] = await db.update(ingredientCatalogItems).set({
+      status: "archived",
+      updatedBy: actorId,
+      updatedAt: new Date()
+    }).where(eq(ingredientCatalogItems.id, id)).returning();
+
+    return {
+      mode: "archived" as const,
+      id,
+      displayName: updated?.displayNameRu ?? updated?.displayName ?? current.displayNameRu ?? current.displayName,
+      references
+    };
+  }
+
+  const [deleted] = await db.delete(ingredientCatalogItems)
+    .where(eq(ingredientCatalogItems.id, id))
+    .returning({
+      id: ingredientCatalogItems.id,
+      displayName: ingredientCatalogItems.displayNameRu
+    });
+
+  return {
+    mode: "deleted" as const,
+    id: deleted?.id ?? id,
+    displayName: deleted?.displayName ?? current.displayNameRu ?? current.displayName,
+    references
+  };
+};
 
 export const createIngredient = async (payload: unknown, actorId?: string) => {
   const parsed = ingredientUpsertSchema.parse(payload);

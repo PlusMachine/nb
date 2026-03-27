@@ -13,7 +13,8 @@ export async function GET(request: Request) {
       q: searchParams.get("q") ?? undefined,
       type: searchParams.get("type") ?? undefined,
       category: searchParams.get("category") ?? undefined,
-      status: (searchParams.get("status") as never) ?? undefined
+      status: (searchParams.get("status") as never) ?? undefined,
+      sort: (searchParams.get("sort") as never) ?? undefined
     });
     return NextResponse.json(result);
   } catch (error) {
