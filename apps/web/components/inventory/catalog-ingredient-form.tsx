@@ -30,9 +30,10 @@ type InventoryCommonFields = {
 };
 
 type Props = {
-  category: IngredientCategory;
+  category?: IngredientCategory;
   preferredCurrency: SystemCurrency;
   pending: boolean;
+  autoFocus?: boolean;
   fieldErrors?: Record<string, string>;
   onSubmit: (payload: {
     ingredientCatalogItemId: string;
@@ -47,7 +48,7 @@ type Props = {
   onRequestCustom: () => void;
 };
 
-const createInitialCommonFields = (category: IngredientCategory): InventoryCommonFields => {
+const createInitialCommonFields = (category?: IngredientCategory): InventoryCommonFields => {
   const unitProfile = resolveHumanFacingInventoryUnitProfile({ category });
   return {
     enteredQuantity: "",
@@ -61,7 +62,7 @@ const createInitialCommonFields = (category: IngredientCategory): InventoryCommo
 };
 
 export const resolveCatalogIngredientUnitProfile = (
-  category: IngredientCategory,
+  category?: IngredientCategory,
   selected?: IngredientSuggestionItem | null
 ) => resolveHumanFacingInventoryUnitProfile({
   type: selected?.type,
@@ -84,7 +85,15 @@ export const buildCatalogIngredientPayload = (selected: IngredientSuggestionItem
   };
 };
 
-export function CatalogIngredientForm({ category, preferredCurrency, pending, fieldErrors, onSubmit, onRequestCustom }: Props) {
+export function CatalogIngredientForm({
+  category,
+  preferredCurrency,
+  pending,
+  autoFocus = false,
+  fieldErrors,
+  onSubmit,
+  onRequestCustom
+}: Props) {
   const [selected, setSelected] = useState<IngredientSuggestionItem | null>(null);
   const [pickerValue, setPickerValue] = useState("");
   const [fields, setFields] = useState<InventoryCommonFields>(() => createInitialCommonFields(category));
@@ -126,6 +135,7 @@ export function CatalogIngredientForm({ category, preferredCurrency, pending, fi
         <IngredientPicker
           value={pickerValue}
           category={category}
+          autoFocus={autoFocus}
           onValueChange={(nextValue) => {
             setPickerValue(nextValue);
             setLocalError(null);

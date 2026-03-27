@@ -65,7 +65,10 @@ describe("inventory add-flow", () => {
     expect(html).toContain("Добавить ингредиент");
     expect(html).toContain("Из каталога");
     expect(html).toContain("Категория ингредиента");
+    expect(html).toContain(">Все<");
+    expect(html).toContain('value="all"');
     expect(html).toContain("Начните вводить название ингредиента");
+    expect(html).toContain("autofocus");
     expect(html).toContain("За всё");
     expect(html).toContain("За единицу");
     expect(html).not.toContain("Куплено");
@@ -94,6 +97,17 @@ describe("inventory add-flow", () => {
     expect(html).toContain("Хмель");
     expect(html).toContain("Дрожжи");
     expect(html).toContain('value="hop"');
+  });
+
+  it("renders all-category option when requested", () => {
+    const html = renderToStaticMarkup(React.createElement(IngredientCategorySelector, {
+      value: "all",
+      onChange: () => undefined,
+      includeAll: true
+    }));
+
+    expect(html).toContain(">Все<");
+    expect(html).toContain('value="all"');
   });
 
   it("adds catalog ingredient and revalidates inventory page", async () => {
@@ -182,6 +196,14 @@ describe("inventory add-flow", () => {
 
     expect(params.get("q")).toBe("citra");
     expect(params.get("category")).toBe("hop");
+    expect(params.get("limit")).toBe("8");
+  });
+
+  it("builds picker search params without category for cross-category search", () => {
+    const params = buildIngredientSearchParams({ q: "saaz", limit: 8 });
+
+    expect(params.get("q")).toBe("saaz");
+    expect(params.has("category")).toBe(false);
     expect(params.get("limit")).toBe("8");
   });
 

@@ -55,6 +55,14 @@ describe("ingredient picker state helpers", () => {
     expect(params.get("limit")).toBe("8");
   });
 
+  it("searches across all categories when category filter is omitted", () => {
+    const params = buildIngredientSearchParams({ q: "saaz", limit: 8 });
+
+    expect(params.get("q")).toBe("saaz");
+    expect(params.has("category")).toBe(false);
+    expect(params.get("limit")).toBe("8");
+  });
+
   it("promotes hop producer into the primary row and removes duplicate subtitle producer", () => {
     const view = resolveIngredientPickerRowContent({
       id: "hop-1",

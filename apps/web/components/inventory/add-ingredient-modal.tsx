@@ -1,11 +1,14 @@
 "use client";
 
 import React from "react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { addCatalogIngredientAction, addCustomIngredientAction, type AddIngredientResult } from "@/app/(app)/app/ingredients/actions";
 import type { IngredientCategory } from "@/features/ingredients/contracts";
-import { IngredientCategorySelector } from "@/components/ingredients/ingredient-category-selector";
+import {
+  IngredientCategorySelector,
+  type IngredientCategorySelectorValue
+} from "@/components/ingredients/ingredient-category-selector";
 import type { SystemCurrency } from "@/features/system/currency";
 
 import { CatalogIngredientForm } from "./catalog-ingredient-form";
@@ -20,14 +23,39 @@ type Props = {
 type Mode = "catalog" | "custom";
 
 export function AddIngredientModal({ open, onClose, preferredCurrency = "RUB" }: Props) {
-  const [category, setCategory] = useState<IngredientCategory>("hop");
+  const [catalogCategory, setCatalogCategory] = useState<IngredientCategorySelectorValue>("all");
+  const [customCategory, setCustomCategory] = useState<IngredientCategory>("hop");
   const [mode, setMode] = useState<Mode>("catalog");
   const [result, setResult] = useState<AddIngredientResult | null>(null);
   const [pending, setPending] = useState(false);
 
+  useEffect(() => {
+    if (!open) {
+      return;
+    }
+
+    setCatalogCategory("all");
+    setMode("catalog");
+    setResult(null);
+    setPending(false);
+  }, [open]);
+
   if (!open) {
     return null;
   }
+
+  const handleCategoryChange = (nextCategory: IngredientCategorySelectorValue) => {
+    if (mode === "catalog") {
+      setCatalogCategory(nextCategory);
+      if (nextCategory !== "all") {
+        setCustomCategory(nextCategory);
+      }
+      return;
+    }
+
+    setCustomCategory(nextCategory as IngredientCategory);
+    setCatalogCategory(nextCategory);
+  };
 
   const handleSuccess = async (nextResult: AddIngredientResult) => {
     setResult(nextResult);
@@ -58,7 +86,11 @@ export function AddIngredientModal({ open, onClose, preferredCurrency = "RUB" }:
         </div>
 
         <div className="space-y-4">
-          <IngredientCategorySelector value={category} onChange={setCategory} />
+          <IngredientCategorySelector
+            value={mode === "catalog" ? catalogCategory : customCategory}
+            onChange={handleCategoryChange}
+            includeAll={mode === "catalog"}
+          />
 
           <div className="grid grid-cols-2 gap-2 rounded-md bg-zinc-100 p-1 text-sm">
             <button type="button" onClick={() => setMode("catalog")} className={`rounded px-3 py-2 ${mode === "catalog" ? "bg-white shadow" : ""}`}>Из каталога</button>
@@ -69,9 +101,10 @@ export function AddIngredientModal({ open, onClose, preferredCurrency = "RUB" }:
 
           {mode === "catalog" ? (
             <CatalogIngredientForm
-              category={category}
+              category={catalogCategory === "all" ? undefined : catalogCategory}
               preferredCurrency={preferredCurrency}
               pending={pending}
+              autoFocus
               fieldErrors={result?.fieldErrors}
               onRequestCustom={() => setMode("custom")}
               onSubmit={async (payload) => {
@@ -85,7 +118,7 @@ export function AddIngredientModal({ open, onClose, preferredCurrency = "RUB" }:
             />
           ) : (
             <CustomIngredientForm
-              category={category}
+              category={customCategory}
               preferredCurrency={preferredCurrency}
               pending={pending}
               fieldErrors={result?.fieldErrors}

@@ -19,6 +19,7 @@ type Props = {
   type?: IngredientType;
   category?: IngredientCategory;
   limit?: number;
+  autoFocus?: boolean;
   onSelect: (item: IngredientSuggestionItem) => void;
   onValueChange?: (value: string) => void;
   onSelectionInvalidated?: () => void;
@@ -238,6 +239,7 @@ export const IngredientPicker = ({
   type,
   category,
   limit = 10,
+  autoFocus = false,
   onSelect,
   onValueChange,
   onSelectionInvalidated,
@@ -403,6 +405,7 @@ export const IngredientPicker = ({
         onChange={(event) => {
           handleQueryChange(event.target.value);
         }}
+        autoFocus={autoFocus}
         onFocus={() => setIsOpen(Boolean(normalizeSearchText(query)))}
         onBlur={() => setIsOpen(false)}
         placeholder={placeholder}
