@@ -15,6 +15,7 @@ import {
   type InventoryUnit
 } from "@/features/inventory/units";
 import type { SystemCurrency } from "@/features/system/currency";
+import { getTodayDateInputValue } from "./date-input";
 
 type Props = {
   category: IngredientCategory;
@@ -48,7 +49,7 @@ export function CustomIngredientForm({ category, preferredCurrency, pending, fie
   const [enteredUnit, setEnteredUnit] = useState<InventoryUnit>(resolveHumanFacingInventoryUnitProfile({ category }).defaultUnit);
   const [priceInputMode, setPriceInputMode] = useState<InventoryPriceInputMode>("total");
   const [priceInputAmount, setPriceInputAmount] = useState("");
-  const [purchasedAt, setPurchasedAt] = useState("");
+  const [purchasedAt, setPurchasedAt] = useState(() => getTodayDateInputValue());
   const [freshnessDate, setFreshnessDate] = useState("");
   const [notes, setNotes] = useState("");
   const subtypeOptions = getCustomIngredientSubtypeOptions(category);
@@ -139,7 +140,22 @@ export function CustomIngredientForm({ category, preferredCurrency, pending, fie
           {fieldErrors?.enteredUnit && <span className="text-xs text-red-600">{fieldErrors.enteredUnit}</span>}
         </label>
         <label className="text-sm">Дата покупки
-          <input type="date" className="mt-1 w-full rounded-md border px-2 py-2" value={purchasedAt} onChange={(e) => setPurchasedAt(e.target.value)} />
+          <div className="mt-1 flex items-center gap-2">
+            <input
+              type="date"
+              className="w-full rounded-md border px-2 py-2"
+              value={purchasedAt}
+              onChange={(e) => setPurchasedAt(e.target.value)}
+            />
+            <button
+              type="button"
+              className="rounded-md border border-zinc-200 px-2 py-2 text-xs text-zinc-600 transition-colors hover:border-zinc-300 hover:bg-zinc-50"
+              onClick={() => setPurchasedAt("")}
+              aria-label="Очистить дату покупки"
+            >
+              ×
+            </button>
+          </div>
         </label>
         <label className="text-sm">Годен до
           <input type="date" className="mt-1 w-full rounded-md border px-2 py-2" value={freshnessDate} onChange={(e) => setFreshnessDate(e.target.value)} />

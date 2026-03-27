@@ -18,6 +18,7 @@ import {
 } from "@/features/inventory/units";
 import { resolveInventoryPackEquivalent } from "@/features/inventory/pack";
 import type { SystemCurrency } from "@/features/system/currency";
+import { getTodayDateInputValue } from "./date-input";
 
 type InventoryCommonFields = {
   enteredQuantity: string;
@@ -55,7 +56,7 @@ const createInitialCommonFields = (category?: IngredientCategory): InventoryComm
     enteredUnit: unitProfile.defaultUnit,
     priceInputMode: "total",
     priceInputAmount: "",
-    purchasedAt: "",
+    purchasedAt: getTodayDateInputValue(),
     freshnessDate: "",
     notes: ""
   };
@@ -201,7 +202,22 @@ export function CatalogIngredientForm({
           {fieldErrors?.enteredUnit && <span className="text-xs text-red-600">{fieldErrors.enteredUnit}</span>}
         </label>
         <label className="text-sm">Дата покупки
-          <input type="date" className="mt-1 w-full rounded-md border px-2 py-2" value={fields.purchasedAt} onChange={(e) => setFields((s) => ({ ...s, purchasedAt: e.target.value }))} />
+          <div className="mt-1 flex items-center gap-2">
+            <input
+              type="date"
+              className="w-full rounded-md border px-2 py-2"
+              value={fields.purchasedAt}
+              onChange={(e) => setFields((s) => ({ ...s, purchasedAt: e.target.value }))}
+            />
+            <button
+              type="button"
+              className="rounded-md border border-zinc-200 px-2 py-2 text-xs text-zinc-600 transition-colors hover:border-zinc-300 hover:bg-zinc-50"
+              onClick={() => setFields((s) => ({ ...s, purchasedAt: "" }))}
+              aria-label="Очистить дату покупки"
+            >
+              ×
+            </button>
+          </div>
         </label>
         <label className="text-sm">Годен до
           <input type="date" className="mt-1 w-full rounded-md border px-2 py-2" value={fields.freshnessDate} onChange={(e) => setFields((s) => ({ ...s, freshnessDate: e.target.value }))} />

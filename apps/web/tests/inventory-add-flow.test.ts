@@ -46,6 +46,7 @@ import {
   resolveCatalogIngredientUnitProfile
 } from "../components/inventory/catalog-ingredient-form";
 import { CustomIngredientForm, getCustomIngredientSubtypeOptions } from "../components/inventory/custom-ingredient-form";
+import { getTodayDateInputValue } from "../components/inventory/date-input";
 
 describe("inventory add-flow", () => {
   beforeEach(() => {
@@ -90,6 +91,14 @@ describe("inventory add-flow", () => {
     expect(html).not.toContain("Куплено");
     expect(html).not.toContain("Ед. закупки");
     expect(html).not.toContain(">Валюта<");
+    expect(html).toContain(`value="${getTodayDateInputValue()}"`);
+    expect(html).toContain('aria-label="Очистить дату покупки"');
+  });
+
+  it("prefills purchase date in catalog add form with today's date", () => {
+    const html = renderToStaticMarkup(React.createElement(AddIngredientModal, { open: true, onClose: () => undefined }));
+    expect(html).toContain(`value="${getTodayDateInputValue()}"`);
+    expect(html).toContain('aria-label="Очистить дату покупки"');
   });
 
   it("renders category selector options", () => {
