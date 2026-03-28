@@ -2,6 +2,7 @@
 
 import React, { useCallback, useState } from "react";
 
+import type { IngredientSuggestionItem } from "@/features/ingredients/contracts";
 import type { RecipeDetailDto, RecipePublicationState } from "@/features/recipes/contracts";
 
 import type { RecipeSaveStatus } from "./recipe-designer";
@@ -10,11 +11,13 @@ import { RecipeForm } from "./recipe-form";
 export function RecipeEditorPage({
   mode,
   recipe,
-  initialTitle
+  initialTitle,
+  initialIngredientSelection
 }: {
   mode: "create" | "edit";
   recipe?: RecipeDetailDto;
   initialTitle?: string;
+  initialIngredientSelection?: IngredientSuggestionItem | null;
 }) {
   const [saveStatus, setSaveStatus] = useState<RecipeSaveStatus>("saved");
   const [editorMode, setEditorMode] = useState<"create" | "edit">(mode);
@@ -59,6 +62,7 @@ export function RecipeEditorPage({
         mode={editorMode}
         initialRecipe={recipe}
         initialTitle={initialTitle}
+        initialIngredientSelection={initialIngredientSelection}
         onSaveStatusChange={setSaveStatus}
         onRecipeCreated={handleRecipeCreated}
         onPublicationStateChange={setPublicationState}

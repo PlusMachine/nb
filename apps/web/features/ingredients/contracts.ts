@@ -208,6 +208,7 @@ export const ingredientSearchQuerySchema = z.object({
   q: z.string().trim().min(1).max(120),
   type: z.enum(ingredientTypes).optional(),
   category: z.enum(ingredientCategories).optional(),
+  subtype: z.enum(["malt", "fermentable"]).optional(),
   limit: z.coerce.number().min(1).max(20).default(10)
 });
 
@@ -388,6 +389,79 @@ export type IngredientSuggestionItem = {
   matchedPackageVariantName?: string | null;
   score?: number;
   source: "catalog" | "custom";
+};
+
+export const ingredientCatalogViews = ["all", "mine"] as const;
+export type IngredientCatalogView = (typeof ingredientCatalogViews)[number];
+
+export const ingredientCatalogSortOptions = ["name", "updated", "category", "brand"] as const;
+export type IngredientCatalogSortOption = (typeof ingredientCatalogSortOptions)[number];
+
+export type UserCatalogIngredientDto = IngredientTechnicalFields & {
+  id: string;
+  source: "catalog" | "custom";
+  type: IngredientType;
+  category: IngredientCategory;
+  subtype: IngredientSubtype | null;
+  familyId: string | null;
+  primaryLabelRu: string;
+  secondaryLabelRu: string | null;
+  displayName: string;
+  displayNameRu: string | null;
+  displayNameEn: string | null;
+  nameRu: string | null;
+  nameEn: string | null;
+  displayModeRu: IngredientDisplayMode;
+  displayNameOverrideRu: string | null;
+  secondaryNameOverrideRu: string | null;
+  hideSecondaryNameRu: boolean;
+  brand: string | null;
+  producer: string | null;
+  brandName: string | null;
+  manufacturer: string | null;
+  country: string | null;
+  countryCode: string | null;
+  countryName: string | null;
+  productCode: string | null;
+  aliases: IngredientAliasDto[];
+  sources: IngredientSourceDto[];
+  packageVariants: IngredientPackageVariantDto[];
+  notes: string | null;
+  technicalData: IngredientTechnicalData | null;
+  properties: Record<string, unknown> | null;
+  defaultUnit: IngredientDisplayUnit;
+  defaultDisplayUnit: IngredientDisplayUnit;
+  allowedUnits: IngredientDisplayUnit[];
+  measurementDimension: IngredientMeasurementDimension;
+  completenessLevel: IngredientCompletenessLevel | null;
+  quantityDefaults: Record<string, unknown> | null;
+  unitPreferred: string | null;
+  derivedFromIngredientId: string | null;
+  derivedFromDisplayName: string | null;
+  inventoryUsageCount: number;
+  recipeUsageCount: number;
+  inventoryInUse: boolean;
+  recipeInUse: boolean;
+  createdAt: Date;
+  updatedAt: Date;
+};
+
+export type UserCatalogListResult = {
+  items: UserCatalogIngredientDto[];
+  page: number;
+  pageSize: number;
+  total: number;
+  totalPages: number;
+  facets: {
+    byCategory: Record<IngredientCategory, number>;
+    filteredByCategory: Record<IngredientCategory, number>;
+    byFermentableSubtype: {
+      malt: number;
+      fermentable: number;
+    };
+    customCount: number;
+    catalogCount: number;
+  };
 };
 
 export type IngredientProposalDto = {

@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 
+import { sortRankedCatalogItems } from "../features/ingredients/catalog-ranking";
 import { scoreIngredientCandidate } from "../features/ingredients/ranking";
 
 describe("ingredient ranking", () => {
@@ -26,5 +27,33 @@ describe("ingredient ranking", () => {
 
   it("supports typo-tolerant score", () => {
     expect(scoreIngredientCandidate("пильзнер", candidate)).toBeGreaterThan(scoreIngredientCandidate("пильзнер", noiseCandidate));
+  });
+
+  it("always keeps custom ingredients above catalog ones in unified picker results", () => {
+    const ranked: Array<{
+      item: {
+        source: "catalog" | "custom";
+        primaryLabelRu: string;
+      };
+      score: number;
+    }> = [
+      {
+        item: {
+          source: "catalog" as const,
+          primaryLabelRu: "Cascade"
+        },
+        score: 120
+      },
+      {
+        item: {
+          source: "custom" as const,
+          primaryLabelRu: "Мой Cascade"
+        },
+        score: 10
+      }
+    ].sort(sortRankedCatalogItems);
+
+    expect(ranked[0]?.item.source).toBe("custom");
+    expect(ranked[1]?.item.source).toBe("catalog");
   });
 });

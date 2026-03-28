@@ -246,6 +246,7 @@ export const createRecipeCustomIngredientAction = async (payload: {
       defaultDisplayUnit: payload.defaultDisplayUnit,
       visibility: "private"
     });
+    revalidatePath("/app/catalog");
     const linkage = buildCustomIngredientLinkage(customIngredient);
 
     return {

@@ -7,6 +7,7 @@ import { IngredientPicker } from "@/components/ingredients/ingredient-picker";
 import { InventoryPriceInput } from "@/components/inventory/inventory-price-input";
 import type {
   IngredientCategory,
+  IngredientSubtype,
   IngredientSuggestionItem
 } from "@/features/ingredients/contracts";
 import { resolveIngredientDisplayNames } from "@/features/ingredients/presentation";
@@ -32,12 +33,15 @@ type InventoryCommonFields = {
 
 type Props = {
   category?: IngredientCategory;
+  subtype?: Extract<IngredientSubtype, "malt" | "fermentable"> | null;
   preferredCurrency: SystemCurrency;
   pending: boolean;
   autoFocus?: boolean;
+  initialSelection?: IngredientSuggestionItem | null;
   fieldErrors?: Record<string, string>;
   onSubmit: (payload: {
-    ingredientCatalogItemId: string;
+    ingredientCatalogItemId?: string;
+    userCustomIngredientId?: string;
     enteredQuantity: string;
     enteredUnit: InventoryUnit;
     priceInputMode: InventoryPriceInputMode;
@@ -81,22 +85,25 @@ export const buildCatalogIngredientPayload = (selected: IngredientSuggestionItem
   }
 
   return {
-    ingredientCatalogItemId: selected.id,
+    ingredientCatalogItemId: selected.source === "catalog" ? selected.id : undefined,
+    userCustomIngredientId: selected.source === "custom" ? selected.id : undefined,
     ...fields
   };
 };
 
 export function CatalogIngredientForm({
   category,
+  subtype,
   preferredCurrency,
   pending,
   autoFocus = false,
+  initialSelection = null,
   fieldErrors,
   onSubmit,
   onRequestCustom
 }: Props) {
-  const [selected, setSelected] = useState<IngredientSuggestionItem | null>(null);
-  const [pickerValue, setPickerValue] = useState("");
+  const [selected, setSelected] = useState<IngredientSuggestionItem | null>(initialSelection);
+  const [pickerValue, setPickerValue] = useState(() => initialSelection ? resolveIngredientDisplayNames(initialSelection).primaryName : "");
   const [fields, setFields] = useState<InventoryCommonFields>(() => createInitialCommonFields(category));
   const [localError, setLocalError] = useState<string | null>(null);
   const unitProfile = resolveCatalogIngredientUnitProfile(category, selected);
@@ -104,11 +111,23 @@ export function CatalogIngredientForm({
   const selectedPackEquivalent = selected ? resolveInventoryPackEquivalent(selected.technicalData ?? null) : null;
 
   useEffect(() => {
-    setSelected(null);
-    setPickerValue("");
+    setSelected(initialSelection);
+    setPickerValue(initialSelection ? resolveIngredientDisplayNames(initialSelection).primaryName : "");
     setFields(createInitialCommonFields(category));
     setLocalError(null);
-  }, [category]);
+  }, [category, initialSelection]);
+
+  useEffect(() => {
+    if (!initialSelection) {
+      return;
+    }
+
+    const nextUnitProfile = resolveCatalogIngredientUnitProfile(category, initialSelection);
+    setFields((current) => ({
+      ...current,
+      enteredUnit: nextUnitProfile.defaultUnit
+    }));
+  }, [category, initialSelection]);
 
   const purchasePriceError = fieldErrors?.priceInputAmountMinor ?? fieldErrors?.purchasePriceMinor ?? fieldErrors?.purchasePrice;
 
@@ -132,10 +151,11 @@ export function CatalogIngredientForm({
       }}
     >
       <div className="space-y-1">
-        <label className="text-sm font-medium">Ингредиент из каталога</label>
+        <label className="text-sm font-medium">Ингредиент</label>
         <IngredientPicker
           value={pickerValue}
           category={category}
+          subtype={subtype}
           autoFocus={autoFocus}
           onValueChange={(nextValue) => {
             setPickerValue(nextValue);
@@ -153,7 +173,7 @@ export function CatalogIngredientForm({
           }}
           onSelect={(item) => {
             setSelected(item);
-            setPickerValue(item.displayName);
+            setPickerValue(resolveIngredientDisplayNames(item).primaryName);
             setLocalError(null);
             const nextUnitProfile = resolveCatalogIngredientUnitProfile(category, item);
             setFields((current) => {
@@ -169,6 +189,7 @@ export function CatalogIngredientForm({
         {selected ? (
           <p className="text-xs text-zinc-600">
             Выбрано: {selectedNames?.primaryName}
+            {selected.source === "custom" ? " · СВОЙ" : ""}
             {selectedNames?.secondaryName ? ` · ${selectedNames.secondaryName}` : ""}
             {selected.familyDisplayName ? ` · ${selected.familyDisplayName}` : ""}
             {selected.subtitle ? ` · ${selected.subtitle}` : ""}

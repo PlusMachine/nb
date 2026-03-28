@@ -5,13 +5,13 @@ import { AddIngredientTrigger } from "@/components/inventory/add-ingredient-trig
 import { InventoryToolbar } from "@/components/inventory/inventory-toolbar";
 import {
   defaultInventorySortOption,
-  defaultInventoryShowFinished,
   hasActiveInventoryFilters
 } from "@/features/inventory/page-model";
 import { getInventorySummaries, listInventoryForUser } from "@/features/inventory/service";
 import {
   ingredientCategories,
   ingredientTypes,
+  type IngredientSubtype,
   type IngredientCategory,
   type IngredientType
 } from "@/features/ingredients/contracts";
@@ -20,6 +20,7 @@ import {
   type InventorySortOption
 } from "@/features/inventory/contracts";
 import { resolveIngredientCategory } from "@/features/ingredients/taxonomy";
+import { getIngredientSuggestionByRef } from "@/features/ingredients/catalog-service";
 import { listSystemCurrencyRates } from "@/features/system/currency-rates";
 import { requireUser } from "@/lib/auth";
 
@@ -58,6 +59,10 @@ const parseShowFinished = (
   return legacyStockValue === "all" || legacyStockValue === "empty";
 };
 
+const parseSubtype = (value: string | undefined): Extract<IngredientSubtype, "malt" | "fermentable"> | undefined => (
+  value === "malt" || value === "fermentable" ? value : undefined
+);
+
 const parseSort = (value: string | undefined): InventorySortOption => (
   inventorySortOptions.includes(value as InventorySortOption)
     ? value as InventorySortOption
@@ -72,22 +77,29 @@ export default async function MyIngredientsPage({ searchParams }: Props) {
     typeof resolvedParams.category === "string" ? resolvedParams.category : undefined,
     typeof resolvedParams.type === "string" ? resolvedParams.type : undefined
   );
+  const subtype = parseSubtype(typeof resolvedParams.subtype === "string" ? resolvedParams.subtype : undefined);
   const showFinished = parseShowFinished(
     typeof resolvedParams.finished === "string" ? resolvedParams.finished : undefined,
     typeof resolvedParams.stock === "string" ? resolvedParams.stock : undefined
   );
   const sort = parseSort(typeof resolvedParams.sort === "string" ? resolvedParams.sort : undefined);
+  const addSource = typeof resolvedParams.addSource === "string" ? resolvedParams.addSource : undefined;
+  const addId = typeof resolvedParams.addId === "string" ? resolvedParams.addId : undefined;
 
-  const [items, summary, currencyRates] = await Promise.all([
-    listInventoryForUser(user.id, { category, includeEmpty: showFinished, sort, search: rawSearch }),
+  const [items, summary, currencyRates, initialSelection] = await Promise.all([
+    listInventoryForUser(user.id, { category, subtype, includeEmpty: showFinished, sort, search: rawSearch }),
     getInventorySummaries(user.id),
-    listSystemCurrencyRates()
+    listSystemCurrencyRates(),
+    addSource === "catalog" || addSource === "custom"
+      ? getIngredientSuggestionByRef(user.id, addSource, addId ?? "")
+      : Promise.resolve(null)
   ]);
 
   const hasAnyItems = summary.totalItems > 0;
   const hasFilters = hasActiveInventoryFilters({
     search: rawSearch,
     category: category ?? "all",
+    subtype: subtype ?? null,
     showFinished,
     sort
   });
@@ -103,12 +115,17 @@ export default async function MyIngredientsPage({ searchParams }: Props) {
             </p>
           ) : null}
         </div>
-        <AddIngredientTrigger preferredCurrency={user.preferredCurrency} />
+        <AddIngredientTrigger
+          preferredCurrency={user.preferredCurrency}
+          initialSelection={initialSelection}
+          openOnMount={Boolean(initialSelection)}
+        />
       </section>
 
       <InventoryToolbar
         search={rawSearch}
         category={category ?? "all"}
+        subtype={subtype ?? null}
         showFinished={showFinished}
         sort={sort}
         summary={summary}

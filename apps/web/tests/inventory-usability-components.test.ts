@@ -33,13 +33,15 @@ describe("inventory usability components", () => {
     const html = renderToStaticMarkup(React.createElement(InventoryToolbar, {
       search: "citra",
       category: "hop",
+      subtype: null,
       showFinished: true,
       sort: "name",
       summary: {
         totalItems: 10,
         inStockItems: 8,
         emptyItems: 2,
-        byCategory: { fermentable: 3, hop: 4, yeast: 2, consumable: 1, water_treatment: 0 }
+        byCategory: { fermentable: 3, hop: 4, yeast: 2, consumable: 1, water_treatment: 0 },
+        byFermentableSubtype: { malt: 2, fermentable: 1 }
       }
     }));
 
@@ -57,13 +59,15 @@ describe("inventory usability components", () => {
     const html = renderToStaticMarkup(React.createElement(InventoryToolbar, {
       search: "",
       category: "all",
+      subtype: null,
       showFinished: false,
       sort: "default",
       summary: {
         totalItems: 0,
         inStockItems: 0,
         emptyItems: 0,
-        byCategory: { fermentable: 0, hop: 0, yeast: 0, consumable: 0, water_treatment: 0 }
+        byCategory: { fermentable: 0, hop: 0, yeast: 0, consumable: 0, water_treatment: 0 },
+        byFermentableSubtype: { malt: 0, fermentable: 0 }
       }
     }));
 

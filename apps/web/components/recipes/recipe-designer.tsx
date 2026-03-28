@@ -35,7 +35,6 @@ import { IngredientPicker } from "@/components/ingredients/ingredient-picker";
 import { ConfirmActionDialog } from "@/components/shared/confirm-action-dialog";
 import type { IngredientCategory, IngredientSuggestionItem, IngredientSubtype, IngredientType } from "@/features/ingredients/contracts";
 import {
-  ingredientCategoryLabels,
   resolveIngredientDisplayNames
 } from "@/features/ingredients/presentation";
 import { resolveIngredientCategory, resolveLegacyIngredientType } from "@/features/ingredients/taxonomy";
@@ -73,6 +72,7 @@ type Props = {
   mode: "create" | "edit";
   initialRecipe?: RecipeDetailDto;
   initialTitle?: string;
+  initialIngredientSelection?: IngredientSuggestionItem | null;
   onSaveStatusChange?: (status: RecipeSaveStatus) => void;
   onRecipeCreated?: (recipe: RecipeDetailDto) => void;
   onPublicationStateChange?: (state: RecipePublicationState) => void;
@@ -2029,7 +2029,15 @@ function IngredientEditor({
   );
 }
 
-export function RecipeDesigner({ mode, initialRecipe, initialTitle, onSaveStatusChange, onRecipeCreated, onPublicationStateChange }: Props) {
+export function RecipeDesigner({
+  mode,
+  initialRecipe,
+  initialTitle,
+  initialIngredientSelection = null,
+  onSaveStatusChange,
+  onRecipeCreated,
+  onPublicationStateChange
+}: Props) {
   const isMobile = useIsMobile();
   const router = useRouter();
   const pathname = usePathname();
@@ -2062,6 +2070,7 @@ export function RecipeDesigner({ mode, initialRecipe, initialTitle, onSaveStatus
   const [makePrivateConfirmOpen, setMakePrivateConfirmOpen] = useState(false);
   const [readinessDialogOpen, setReadinessDialogOpen] = useState(false);
   const pendingSaveRef = useRef(false);
+  const initialSelectionAppliedRef = useRef(false);
 
   const payload = useMemo<RecipeEditorPayload>(() => ({
     title,
@@ -2089,6 +2098,24 @@ export function RecipeDesigner({ mode, initialRecipe, initialTitle, onSaveStatus
   useEffect(() => {
     onSaveStatusChange?.(saveStatus);
   }, [onSaveStatusChange, saveStatus]);
+
+  useEffect(() => {
+    if (initialSelectionAppliedRef.current || !initialIngredientSelection || initialRecipe) {
+      return;
+    }
+
+    const selectionCategory = initialIngredientSelection.category
+      ?? resolveIngredientCategory({ type: initialIngredientSelection.type });
+    const draft = applySelection(createEmptyIngredient(selectionCategory), initialIngredientSelection);
+    initialSelectionAppliedRef.current = true;
+    setOpenEditor({
+      localId: null,
+      category: selectionCategory,
+      draft,
+      initialSignature: serializeIngredient(draft),
+      isExisting: false
+    });
+  }, [initialIngredientSelection, initialRecipe]);
 
   useEffect(() => {
     onPublicationStateChange?.(savedPublicationState);

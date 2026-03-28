@@ -5,10 +5,12 @@ import {
   ingredientPackageVariants,
   ingredients,
   isNull,
+  recipeIngredients,
   sql,
   userCustomIngredients,
   userIngredients
 } from "@nb/db";
+import { z } from "zod";
 
 import {
   addCatalogInventoryItemSchema,
@@ -24,7 +26,10 @@ import {
 } from "./contracts";
 import type { IngredientTechnicalData } from "../ingredients/contracts";
 import { normalizeIngredientName } from "../ingredients/normalization";
-import { buildIngredientTypedSummary } from "../ingredients/presentation";
+import {
+  buildIngredientTypedSummary,
+  resolveIngredientPrimaryDisplayName
+} from "../ingredients/presentation";
 import {
   extractIngredientTechnicalData,
   extractIngredientTechnicalFields
@@ -225,12 +230,14 @@ const buildCustomSourceDto = (
     familyId: linkage.familyId,
     familyDisplayName: linkage.familyDisplayName,
     primaryLabelRu: linkage.displayName,
-    secondaryLabelRu: null,
+    secondaryLabelRu: linkage.displayNameEn && linkage.displayNameEn !== linkage.displayName
+      ? linkage.displayNameEn
+      : null,
     displayName: linkage.displayName,
-    displayNameRu: null,
-    displayNameEn: null,
-    nameRu: null,
-    nameEn: null,
+    displayNameRu: linkage.displayNameRu ?? null,
+    displayNameEn: linkage.displayNameEn ?? null,
+    nameRu: linkage.displayNameRu ?? null,
+    nameEn: linkage.displayNameEn ?? null,
     normalizedName: normalizeIngredientName(linkage.displayName),
     brand,
     producer: brand,
@@ -543,8 +550,16 @@ const buildCatalogProfile = (catalogItem: typeof ingredients.$inferSelect) => {
   };
 };
 
-export const createUserCustomIngredient = async (userId: string, payload: unknown) => {
-  const parsed = createUserCustomIngredientSchema.parse(payload);
+const uniqueTrimmedStrings = (values: string[] | undefined) => Array.from(new Set(
+  (values ?? [])
+    .map((value) => value.trim())
+    .filter((value) => value.length > 0)
+));
+
+const buildPersistedCustomIngredientValues = (
+  parsed: z.infer<typeof createUserCustomIngredientSchema>,
+  userId: string
+) => {
   const type = resolveLegacyIngredientType({
     type: parsed.type,
     category: parsed.category,
@@ -553,13 +568,25 @@ export const createUserCustomIngredient = async (userId: string, payload: unknow
   const category = resolveIngredientCategory({ type, category: parsed.category });
   const subtype = resolveIngredientSubtype({ type, category, subtype: parsed.subtype });
   const brand = parsed.brand?.trim() ? parsed.brand.trim() : null;
+  const country = parsed.country?.trim() ? parsed.country.trim() : null;
+  const aliases = uniqueTrimmedStrings(parsed.aliases);
   const technicalData = buildCustomIngredientTechnicalData({
     type,
     fermentableColorEbc: parsed.fermentableColorEbc ?? null,
     fermentableExtractYieldPct: parsed.fermentableExtractYieldPct ?? null,
+    fermentableProteinPct: parsed.fermentableProteinPct ?? null,
     hopAlphaAcidPct: parsed.hopAlphaAcidPct ?? null,
+    hopBetaAcidPct: parsed.hopBetaAcidPct ?? null,
+    hopForm: parsed.hopForm ?? null,
     yeastAttenuationPct: parsed.yeastAttenuationPct ?? null,
-    yeastForm: parsed.yeastForm ?? null
+    yeastForm: parsed.yeastForm ?? null,
+    yeastFlocculation: parsed.yeastFlocculation ?? null,
+    yeastMinFermentationTempC: parsed.yeastMinFermentationTempC ?? null,
+    yeastMaxFermentationTempC: parsed.yeastMaxFermentationTempC ?? null,
+    alcoholToleranceAbvTypical: parsed.alcoholToleranceAbvTypical ?? null,
+    physicalForm: parsed.physicalForm ?? null,
+    concentration: parsed.concentration ?? null,
+    unitPreferred: parsed.defaultDisplayUnit ?? null
   });
   const unitProfile = resolveCustomIngredientUnitProfile({
     type,
@@ -568,34 +595,155 @@ export const createUserCustomIngredient = async (userId: string, payload: unknow
     technicalData
   });
   const defaultDisplayUnit = parsed.defaultDisplayUnit ?? unitProfile.defaultUnit;
+  const displayModeRu = parsed.displayModeRu ?? "auto";
+  const displayName = resolveIngredientPrimaryDisplayName({
+    displayName: parsed.displayName,
+    nameRu: parsed.nameRu,
+    nameEn: parsed.nameEn,
+    displayModeRu,
+    displayNameOverrideRu: parsed.displayNameOverrideRu
+  }) || parsed.displayName;
+
+  return {
+    type,
+    category,
+    subtype,
+    displayName,
+    defaultDisplayUnit,
+    brand,
+    country,
+    technicalData,
+    unitProfile,
+    values: {
+      userId,
+      type,
+      displayName,
+      normalizedName: normalizeIngredientName(displayName),
+      manufacturer: brand,
+      country,
+      fermentableColorEbc: parsed.fermentableColorEbc ?? null,
+      fermentableExtractYieldPct: parsed.fermentableExtractYieldPct ?? null,
+      hopAlphaAcidPct: parsed.hopAlphaAcidPct ?? null,
+      hopForm: parsed.hopForm ?? null,
+      hopSeason: parsed.harvestYear == null ? null : String(parsed.harvestYear),
+      yeastAttenuationPct: parsed.yeastAttenuationPct ?? null,
+      yeastForm: parsed.yeastForm === "dry" || parsed.yeastForm === "liquid" ? parsed.yeastForm : null,
+      yeastMinFermentationTempC: parsed.yeastMinFermentationTempC ?? null,
+      yeastMaxFermentationTempC: parsed.yeastMaxFermentationTempC ?? null,
+      properties: {
+        ...parsed.properties,
+        category,
+        subtype,
+        brand,
+        country,
+        nameRu: parsed.nameRu ?? null,
+        nameEn: parsed.nameEn ?? null,
+        aliases: aliases.map((alias) => ({
+          locale: "neutral",
+          alias,
+          source: "custom",
+          isEnabled: true
+        })),
+        notes: parsed.notes ?? null,
+        displayModeRu,
+        displayNameOverrideRu: parsed.displayNameOverrideRu ?? null,
+        secondaryNameOverrideRu: parsed.secondaryNameOverrideRu ?? null,
+        hideSecondaryNameRu: parsed.hideSecondaryNameRu ?? false,
+        harvestYear: parsed.harvestYear ?? null,
+        productCode: parsed.productCode ?? null,
+        derivedFromIngredientId: parsed.derivedFromIngredientId ?? null,
+        derivedFromDisplayName: parsed.derivedFromDisplayName ?? null,
+        hopForm: parsed.hopForm ?? null,
+        hopBetaAcidPct: parsed.hopBetaAcidPct ?? null,
+        fermentableProteinPct: parsed.fermentableProteinPct ?? null,
+        yeastForm: parsed.yeastForm ?? null,
+        yeastFlocculation: parsed.yeastFlocculation ?? null,
+        yeastMinFermentationTempC: parsed.yeastMinFermentationTempC ?? null,
+        yeastMaxFermentationTempC: parsed.yeastMaxFermentationTempC ?? null,
+        alcoholToleranceAbvTypical: parsed.alcoholToleranceAbvTypical ?? null,
+        technicalData,
+        defaultDisplayUnit,
+        allowedUnits: unitProfile.allowedUnits,
+        measurementDimension: unitProfile.measurementDimension,
+        concentration: parsed.concentration ?? null,
+        physicalForm: parsed.physicalForm ?? null,
+        updatedByUserId: userId
+      },
+      visibility: parsed.visibility
+    } satisfies typeof userCustomIngredients.$inferInsert
+  };
+};
+
+export const createUserCustomIngredient = async (userId: string, payload: unknown) => {
+  const parsed = createUserCustomIngredientSchema.parse(payload);
+  const prepared = buildPersistedCustomIngredientValues(parsed, userId);
 
   const [created] = await db.insert(userCustomIngredients).values({
-    userId,
-    type,
-    displayName: parsed.displayName,
-    normalizedName: normalizeIngredientName(parsed.displayName),
-    manufacturer: brand,
-    fermentableColorEbc: parsed.fermentableColorEbc ?? null,
-    fermentableExtractYieldPct: parsed.fermentableExtractYieldPct ?? null,
-    hopAlphaAcidPct: parsed.hopAlphaAcidPct ?? null,
-    hopSeason: parsed.harvestYear == null ? null : String(parsed.harvestYear),
-    yeastAttenuationPct: parsed.yeastAttenuationPct ?? null,
-    yeastForm: parsed.yeastForm === "dry" || parsed.yeastForm === "liquid" ? parsed.yeastForm : null,
-    properties: {
-      ...parsed.properties,
-      category,
-      subtype,
-      brand,
-      harvestYear: parsed.harvestYear ?? null,
-      technicalData,
-      defaultDisplayUnit,
-      allowedUnits: unitProfile.allowedUnits,
-      measurementDimension: unitProfile.measurementDimension
-    },
-    visibility: parsed.visibility
+    ...prepared.values
   }).returning();
 
   return created;
+};
+
+export const updateUserCustomIngredient = async (
+  userId: string,
+  userCustomIngredientId: string,
+  payload: unknown
+) => {
+  await ensureOwnedCustomIngredient(userId, userCustomIngredientId);
+  const parsed = createUserCustomIngredientSchema.parse(payload);
+  const prepared = buildPersistedCustomIngredientValues(parsed, userId);
+
+  const [updated] = await db.update(userCustomIngredients).set({
+    type: prepared.values.type,
+    displayName: prepared.values.displayName,
+    normalizedName: prepared.values.normalizedName,
+    manufacturer: prepared.values.manufacturer,
+    country: prepared.values.country,
+    fermentableColorEbc: prepared.values.fermentableColorEbc,
+    fermentableExtractYieldPct: prepared.values.fermentableExtractYieldPct,
+    hopAlphaAcidPct: prepared.values.hopAlphaAcidPct,
+    hopForm: prepared.values.hopForm,
+    hopSeason: prepared.values.hopSeason,
+    yeastAttenuationPct: prepared.values.yeastAttenuationPct,
+    yeastForm: prepared.values.yeastForm,
+    yeastMinFermentationTempC: prepared.values.yeastMinFermentationTempC,
+    yeastMaxFermentationTempC: prepared.values.yeastMaxFermentationTempC,
+    properties: prepared.values.properties,
+    visibility: prepared.values.visibility,
+    updatedAt: new Date()
+  }).where(and(
+    eq(userCustomIngredients.id, userCustomIngredientId),
+    eq(userCustomIngredients.userId, userId)
+  )).returning();
+
+  if (!updated) {
+    throw new Error("CUSTOM_INGREDIENT_NOT_FOUND");
+  }
+
+  return updated;
+};
+
+export const deleteUserCustomIngredient = async (userId: string, userCustomIngredientId: string) => {
+  const current = await ensureOwnedCustomIngredient(userId, userCustomIngredientId);
+  const [inventoryUsageRow] = await db.select({
+    count: sql<number>`count(*)::int`
+  }).from(userIngredients).where(eq(userIngredients.userCustomIngredientId, userCustomIngredientId));
+
+  const [recipeUsageRow] = await db.select({
+    count: sql<number>`count(*)::int`
+  }).from(recipeIngredients).where(eq(recipeIngredients.userCustomIngredientId, userCustomIngredientId));
+
+  if ((inventoryUsageRow?.count ?? 0) > 0 || (recipeUsageRow?.count ?? 0) > 0) {
+    throw new Error("CUSTOM_INGREDIENT_IN_USE");
+  }
+
+  await db.delete(userCustomIngredients).where(and(
+    eq(userCustomIngredients.id, userCustomIngredientId),
+    eq(userCustomIngredients.userId, userId)
+  ));
+
+  return current;
 };
 
 export const addCatalogIngredientToInventory = async (
@@ -953,6 +1101,10 @@ export const listInventoryForUser = async (userId: string, query: unknown = {}) 
     items = items.filter((item) => item.source.type === parsed.type);
   }
 
+  if (parsed.subtype) {
+    items = items.filter((item) => (item.source.subtype ?? item.ingredientSubtype ?? null) === parsed.subtype);
+  }
+
   if (!parsed.includeEmpty) {
     items = items.filter((item) => item.normalizedQuantity > 0);
   }
@@ -1032,7 +1184,8 @@ export const getInventorySummaries = async (userId: string): Promise<InventorySu
   const rows = await db.select({
     archivedAt: userIngredients.archivedAt,
     normalizedQuantity: userIngredients.normalizedQuantity,
-    ingredientCategory: userIngredients.ingredientCategory
+    ingredientCategory: userIngredients.ingredientCategory,
+    ingredientSubtype: userIngredients.ingredientSubtype
   }).from(userIngredients).where(eq(userIngredients.userId, userId));
 
   const summary: InventorySummaryDto = {
@@ -1045,6 +1198,10 @@ export const getInventorySummaries = async (userId: string): Promise<InventorySu
       yeast: 0,
       consumable: 0,
       water_treatment: 0
+    },
+    byFermentableSubtype: {
+      malt: 0,
+      fermentable: 0
     }
   };
 
@@ -1063,6 +1220,14 @@ export const getInventorySummaries = async (userId: string): Promise<InventorySu
     const category = row.ingredientCategory;
     if (category && category in summary.byCategory) {
       summary.byCategory[category as keyof typeof summary.byCategory] += 1;
+    }
+
+    if (category === "fermentable") {
+      if (row.ingredientSubtype === "malt") {
+        summary.byFermentableSubtype.malt += 1;
+      } else {
+        summary.byFermentableSubtype.fermentable += 1;
+      }
     }
   }
 

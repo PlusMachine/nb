@@ -3,12 +3,12 @@
 import React from "react";
 import { useEffect, useState } from "react";
 
-import { addCatalogIngredientAction, addCustomIngredientAction, type AddIngredientResult } from "@/app/(app)/app/ingredients/actions";
-import type { IngredientCategory } from "@/features/ingredients/contracts";
-import {
-  IngredientCategorySelector,
-  type IngredientCategorySelectorValue
-} from "@/components/ingredients/ingredient-category-selector";
+import { addCustomIngredientAction, addSelectedIngredientAction, type AddIngredientResult } from "@/app/(app)/app/ingredients/actions";
+import type {
+  IngredientCategory,
+  IngredientSuggestionItem,
+  IngredientSubtype
+} from "@/features/ingredients/contracts";
 import type { SystemCurrency } from "@/features/system/currency";
 
 import { CatalogIngredientForm } from "./catalog-ingredient-form";
@@ -18,13 +18,35 @@ type Props = {
   open: boolean;
   onClose: () => void;
   preferredCurrency?: SystemCurrency;
+  initialSelection?: IngredientSuggestionItem | null;
 };
 
 type Mode = "catalog" | "custom";
+type AddIngredientCategoryValue = IngredientCategory | "all" | "malt" | "fermentable";
 
-export function AddIngredientModal({ open, onClose, preferredCurrency = "RUB" }: Props) {
-  const [catalogCategory, setCatalogCategory] = useState<IngredientCategorySelectorValue>("all");
+const categoryOptions: Array<{
+  value: AddIngredientCategoryValue;
+  label: string;
+}> = [
+  { value: "all", label: "Все" },
+  { value: "malt", label: "Солода" },
+  { value: "fermentable", label: "Сбраживаемое сырье" },
+  { value: "hop", label: "Хмель" },
+  { value: "yeast", label: "Дрожжи" },
+  { value: "water_treatment", label: "Водоподготовка" },
+  { value: "consumable", label: "Расходники" }
+];
+
+export function AddIngredientModal({
+  open,
+  onClose,
+  preferredCurrency = "RUB",
+  initialSelection = null
+}: Props) {
+  const [catalogCategory, setCatalogCategory] = useState<IngredientCategory | "all">("all");
+  const [catalogSubtype, setCatalogSubtype] = useState<Extract<IngredientSubtype, "malt" | "fermentable"> | null>(null);
   const [customCategory, setCustomCategory] = useState<IngredientCategory>("hop");
+  const [customSubtype, setCustomSubtype] = useState<Extract<IngredientSubtype, "malt" | "fermentable"> | null>(null);
   const [mode, setMode] = useState<Mode>("catalog");
   const [result, setResult] = useState<AddIngredientResult | null>(null);
   const [pending, setPending] = useState(false);
@@ -34,27 +56,52 @@ export function AddIngredientModal({ open, onClose, preferredCurrency = "RUB" }:
       return;
     }
 
-    setCatalogCategory("all");
+    setCatalogCategory(initialSelection?.category ?? "all");
+    setCatalogSubtype(initialSelection?.subtype === "malt" || initialSelection?.subtype === "fermentable"
+      ? initialSelection.subtype
+      : null);
+    setCustomCategory(initialSelection?.category ?? "hop");
+    setCustomSubtype(initialSelection?.subtype === "malt" || initialSelection?.subtype === "fermentable"
+      ? initialSelection.subtype
+      : null);
     setMode("catalog");
     setResult(null);
     setPending(false);
-  }, [open]);
+  }, [initialSelection, open]);
 
   if (!open) {
     return null;
   }
 
-  const handleCategoryChange = (nextCategory: IngredientCategorySelectorValue) => {
+  const selectedCategoryValue: AddIngredientCategoryValue = mode === "catalog"
+    ? (catalogCategory === "fermentable" && catalogSubtype ? catalogSubtype : catalogCategory)
+    : (customCategory === "fermentable" && customSubtype ? customSubtype : customCategory);
+
+  const handleCategoryChange = (nextCategory: AddIngredientCategoryValue) => {
+    const nextIsSubtype = nextCategory === "malt" || nextCategory === "fermentable";
+    const nextResolvedCategory = nextIsSubtype ? "fermentable" : nextCategory;
+    const nextResolvedSubtype = nextIsSubtype ? nextCategory : null;
+
     if (mode === "catalog") {
-      setCatalogCategory(nextCategory);
-      if (nextCategory !== "all") {
-        setCustomCategory(nextCategory);
+      setCatalogCategory(nextResolvedCategory);
+      setCatalogSubtype(nextResolvedSubtype);
+      if (nextResolvedCategory !== "all") {
+        setCustomCategory(nextResolvedCategory);
+        setCustomSubtype(nextResolvedSubtype);
       }
       return;
     }
 
-    setCustomCategory(nextCategory as IngredientCategory);
-    setCatalogCategory(nextCategory);
+    if (nextResolvedCategory === "all") {
+      setCatalogCategory("all");
+      setCatalogSubtype(null);
+      return;
+    }
+
+    setCustomCategory(nextResolvedCategory as IngredientCategory);
+    setCustomSubtype(nextResolvedSubtype);
+    setCatalogCategory(nextResolvedCategory as IngredientCategory);
+    setCatalogSubtype(nextResolvedSubtype);
   };
 
   const handleSuccess = async (nextResult: AddIngredientResult) => {
@@ -86,11 +133,27 @@ export function AddIngredientModal({ open, onClose, preferredCurrency = "RUB" }:
         </div>
 
         <div className="space-y-4">
-          <IngredientCategorySelector
-            value={mode === "catalog" ? catalogCategory : customCategory}
-            onChange={handleCategoryChange}
-            includeAll={mode === "catalog"}
-          />
+          <fieldset className="space-y-2">
+            <legend className="text-sm font-medium">Категория ингредиента</legend>
+            <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+              {categoryOptions
+                .filter((option) => mode === "catalog" || option.value !== "all")
+                .map((option) => (
+                  <button
+                    key={option.value}
+                    type="button"
+                    onClick={() => handleCategoryChange(option.value)}
+                    className={`rounded-md border px-3 py-2 text-center text-xs transition ${
+                      selectedCategoryValue === option.value
+                        ? "border-black bg-zinc-100 text-zinc-950"
+                        : "border-zinc-200 bg-white text-zinc-600 hover:border-zinc-300 hover:bg-zinc-50"
+                    }`}
+                  >
+                    {option.label}
+                  </button>
+                ))}
+            </div>
+          </fieldset>
 
           <div className="grid grid-cols-2 gap-2 rounded-md bg-zinc-100 p-1 text-sm">
             <button type="button" onClick={() => setMode("catalog")} className={`rounded px-3 py-2 ${mode === "catalog" ? "bg-white shadow" : ""}`}>Из каталога</button>
@@ -102,16 +165,24 @@ export function AddIngredientModal({ open, onClose, preferredCurrency = "RUB" }:
           {mode === "catalog" ? (
             <CatalogIngredientForm
               category={catalogCategory === "all" ? undefined : catalogCategory}
+              subtype={catalogSubtype}
               preferredCurrency={preferredCurrency}
               pending={pending}
               autoFocus
+              initialSelection={initialSelection}
               fieldErrors={result?.fieldErrors}
               onRequestCustom={() => setMode("custom")}
               onSubmit={async (payload) => {
                 setPending(true);
                 const formData = new FormData();
-                Object.entries(payload).forEach(([key, value]) => formData.set(key, value));
-                const nextResult = await addCatalogIngredientAction(null, formData);
+                Object.entries(payload).forEach(([key, value]) => {
+                  if (value == null) {
+                    return;
+                  }
+
+                  formData.set(key, value);
+                });
+                const nextResult = await addSelectedIngredientAction(null, formData);
                 setPending(false);
                 await handleSuccess(nextResult);
               }}
@@ -119,13 +190,20 @@ export function AddIngredientModal({ open, onClose, preferredCurrency = "RUB" }:
           ) : (
             <CustomIngredientForm
               category={customCategory}
+              initialSubtype={customSubtype}
               preferredCurrency={preferredCurrency}
               pending={pending}
               fieldErrors={result?.fieldErrors}
               onSubmit={async (payload) => {
                 setPending(true);
                 const formData = new FormData();
-                Object.entries(payload).forEach(([key, value]) => formData.set(key, value));
+                Object.entries(payload).forEach(([key, value]) => {
+                  if (value == null) {
+                    return;
+                  }
+
+                  formData.set(key, value);
+                });
                 const nextResult = await addCustomIngredientAction(null, formData);
                 setPending(false);
                 await handleSuccess(nextResult);

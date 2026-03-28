@@ -40,6 +40,7 @@ export const DuplicateMergeForm = ({ initialSource = null, initialTarget = null 
         <p className="mb-1 text-sm font-medium text-zinc-700">Source ingredient</p>
         <p className="mb-2 text-xs text-zinc-500">Эта карточка будет помечена как merged.</p>
         <IngredientPicker
+          includeCustom={false}
           value={sourceLabel}
           onSelectionInvalidated={() => setSource("")}
           onSelect={(item) => {
@@ -55,6 +56,7 @@ export const DuplicateMergeForm = ({ initialSource = null, initialTarget = null 
         <p className="mb-1 text-sm font-medium text-zinc-700">Target ingredient</p>
         <p className="mb-2 text-xs text-zinc-500">Останется в каталоге как основная карточка.</p>
         <IngredientPicker
+          includeCustom={false}
           value={targetLabel}
           onSelectionInvalidated={() => setTarget("")}
           onSelect={(item) => {

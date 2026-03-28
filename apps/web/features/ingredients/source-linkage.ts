@@ -5,6 +5,7 @@ import {
   buildIngredientTypedSummary,
   resolveIngredientDisplayNames
 } from "./presentation";
+import { readCustomIngredientMetadata } from "./custom-metadata";
 import { extractIngredientTechnicalData } from "./technical-fields";
 import {
   resolveIngredientCategory,
@@ -101,10 +102,11 @@ export const buildCatalogIngredientLinkage = (
 export const buildCustomIngredientLinkage = (
   custom: typeof userCustomIngredients.$inferSelect
 ): IngredientSourceLinkage => {
-  const properties = isRecord(custom.properties) ? custom.properties : {};
+  const metadata = readCustomIngredientMetadata(custom);
+  const properties = metadata.properties;
   const technicalData = extractIngredientTechnicalData({
     type: custom.type,
-    technicalData: isRecord(properties.technicalData) ? properties.technicalData : undefined,
+    technicalData: metadata.technicalData ?? undefined,
     properties: custom.properties,
     hopAlphaAcidPct: custom.hopAlphaAcidPct,
     hopBetaAcidPct: null,
@@ -120,21 +122,30 @@ export const buildCustomIngredientLinkage = (
   const type = custom.type as IngredientType;
   const category = resolveIngredientCategory({
     type,
-    category: typeof properties.category === "string" ? properties.category : undefined
+    category: metadata.category
   });
   const subtype = resolveIngredientSubtype({
     type,
-    category: typeof properties.category === "string" ? properties.category : undefined,
-    subtype: typeof properties.subtype === "string" ? properties.subtype : undefined
+    category: metadata.category,
+    subtype: metadata.subtype
   });
   const unitProfile = resolveInventoryUnitProfile({
     type,
     category,
     subtype,
-    defaultDisplayUnit: typeof properties.defaultDisplayUnit === "string" ? properties.defaultDisplayUnit : null,
-    allowedUnits: Array.isArray(properties.allowedUnits) ? properties.allowedUnits.map(String) : null,
-    measurementDimension: typeof properties.measurementDimension === "string" ? properties.measurementDimension : null,
+    defaultDisplayUnit: metadata.defaultDisplayUnit,
+    allowedUnits: metadata.allowedUnits,
+    measurementDimension: metadata.measurementDimension,
     technicalData
+  });
+  const { primaryName, secondaryName } = resolveIngredientDisplayNames({
+    displayName: custom.displayName,
+    nameRu: metadata.nameRu,
+    nameEn: metadata.nameEn,
+    displayModeRu: metadata.displayModeRu,
+    displayNameOverrideRu: metadata.displayNameOverrideRu,
+    secondaryNameOverrideRu: metadata.secondaryNameOverrideRu,
+    hideSecondaryNameRu: metadata.hideSecondaryNameRu
   });
 
   return {
@@ -142,9 +153,9 @@ export const buildCustomIngredientLinkage = (
     category,
     subtype,
     familyId: null,
-    displayName: custom.displayName,
-    displayNameRu: null,
-    displayNameEn: null,
+    displayName: primaryName,
+    displayNameRu: metadata.nameRu,
+    displayNameEn: secondaryName ?? metadata.nameEn,
     familyDisplayName: null,
     summary: buildIngredientTypedSummary({
       type,

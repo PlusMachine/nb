@@ -11,7 +11,6 @@ import {
   type IngredientType
 } from "@/features/ingredients/contracts";
 import {
-  ingredientCategoryLabels,
   resolveIngredientDisplayNames
 } from "@/features/ingredients/presentation";
 import { resolveLegacyIngredientType } from "@/features/ingredients/taxonomy";
@@ -145,8 +144,8 @@ export const applyRecipeIngredientSelection = (
 
   return {
     ...value,
-    ingredientCatalogItemId: item.id,
-    userCustomIngredientId: null,
+    ingredientCatalogItemId: item.source === "catalog" ? item.id : null,
+    userCustomIngredientId: item.source === "custom" ? item.id : null,
     selectedName: primaryName,
     selectedSecondaryName: secondaryName ?? "",
     selectedSummary: item.subtitle ?? "",

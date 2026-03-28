@@ -2,6 +2,7 @@ import { z } from "zod";
 
 import {
   ingredientCategories,
+  ingredientDisplayModes,
   ingredientTypes,
   type IngredientCategory,
   type IngredientCompletenessLevel,
@@ -110,11 +111,33 @@ export const createUserCustomIngredientSchema = z.object({
   category: z.enum(ingredientCategories).optional(),
   subtype: z.string().trim().max(80).optional().nullable(),
   displayName: z.string().trim().min(2).max(180),
+  nameRu: z.string().trim().max(180).optional().nullable(),
+  nameEn: z.string().trim().max(180).optional().nullable(),
+  aliases: z.array(z.string().trim().min(1).max(180)).default([]).optional(),
   brand: z.string().trim().max(140).optional().nullable(),
+  country: z.string().trim().max(80).optional().nullable(),
+  notes: z.string().trim().max(2000).optional().nullable(),
+  productCode: z.string().trim().max(80).optional().nullable(),
+  displayModeRu: z.enum(ingredientDisplayModes).default("auto").optional(),
+  displayNameOverrideRu: z.string().trim().max(180).optional().nullable(),
+  secondaryNameOverrideRu: z.string().trim().max(180).optional().nullable(),
+  hideSecondaryNameRu: z.coerce.boolean().default(false).optional(),
+  derivedFromIngredientId: z.string().trim().max(191).optional().nullable(),
+  derivedFromDisplayName: z.string().trim().max(180).optional().nullable(),
   harvestYear: nullableNumber(z.number().int().min(1900).max(2100)),
   fermentableColorEbc: nullableNumber(z.number().min(0).max(9999)),
   fermentableExtractYieldPct: nullableNumber(z.number().min(0).max(100)),
+  fermentableProteinPct: nullableNumber(z.number().min(0).max(100)),
   hopAlphaAcidPct: nullableNumber(z.number().min(0).max(100)),
+  hopBetaAcidPct: nullableNumber(z.number().min(0).max(100)),
+  hopForm: z.preprocess((value) => {
+    if (value == null) {
+      return null;
+    }
+
+    const normalized = String(value).trim().toLowerCase();
+    return normalized || null;
+  }, z.enum(["pellet", "whole_cone", "lupulin", "cryo", "standard"]).nullable().optional()),
   yeastAttenuationPct: nullableNumber(z.number().min(0).max(100)),
   yeastForm: z.preprocess((value) => {
     if (value == null) {
@@ -124,6 +147,19 @@ export const createUserCustomIngredientSchema = z.object({
     const normalized = String(value).trim().toLowerCase();
     return normalized || null;
   }, z.enum(customYeastForms).nullable().optional()),
+  yeastFlocculation: z.string().trim().max(80).optional().nullable(),
+  yeastMinFermentationTempC: nullableNumber(z.number().min(-20).max(60)),
+  yeastMaxFermentationTempC: nullableNumber(z.number().min(-20).max(60)),
+  alcoholToleranceAbvTypical: nullableNumber(z.number().min(0).max(100)),
+  physicalForm: z.preprocess((value) => {
+    if (value == null) {
+      return null;
+    }
+
+    const normalized = String(value).trim().toLowerCase();
+    return normalized || null;
+  }, z.enum(["solid", "powder", "crystal", "liquid", "solution", "tablet"]).nullable().optional()),
+  concentration: z.string().trim().max(120).optional().nullable(),
   defaultDisplayUnit: z.string().trim().toLowerCase().pipe(z.enum(inventoryUnits)).optional().nullable(),
   properties: z.record(z.string(), z.unknown()).default({}),
   visibility: z.enum(["private", "shared"]).default("private")
@@ -268,6 +304,7 @@ export const inventoryListQuerySchema = z.object({
   includeArchived: z.coerce.boolean().default(false),
   includeEmpty: z.coerce.boolean().default(false),
   category: z.enum(ingredientCategories).optional(),
+  subtype: z.enum(["malt", "fermentable"]).optional(),
   type: z.enum(ingredientTypes).optional(),
   stockState: z.enum(inventoryStockStates).default("in_stock"),
   sort: z.enum(inventorySortOptions).default("default"),
@@ -346,4 +383,8 @@ export type InventorySummaryDto = {
   inStockItems: number;
   emptyItems: number;
   byCategory: Record<IngredientCategory, number>;
+  byFermentableSubtype: {
+    malt: number;
+    fermentable: number;
+  };
 };

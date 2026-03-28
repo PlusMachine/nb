@@ -27,6 +27,7 @@ import { getTodayDateInputValue } from "./date-input";
 
 type Props = {
   category: IngredientCategory;
+  initialSubtype?: Extract<IngredientSubtype, "malt" | "fermentable"> | null;
   preferredCurrency: SystemCurrency;
   pending: boolean;
   fieldErrors?: Record<string, string>;
@@ -69,10 +70,10 @@ const resolveSubtypeFieldLabel = (category: IngredientCategory) => (
 
 export const getCustomIngredientSubtypeOptions = (category: IngredientCategory) => ingredientCategorySubtypes[category];
 
-export function CustomIngredientForm({ category, preferredCurrency, pending, fieldErrors, onSubmit }: Props) {
+export function CustomIngredientForm({ category, initialSubtype = null, preferredCurrency, pending, fieldErrors, onSubmit }: Props) {
   const [displayName, setDisplayName] = useState("");
   const [brand, setBrand] = useState("");
-  const [subtype, setSubtype] = useState<string>(resolveDefaultCustomIngredientSubtype(category) ?? "");
+  const [subtype, setSubtype] = useState<string>(initialSubtype ?? resolveDefaultCustomIngredientSubtype(category) ?? "");
   const [fermentableColorEbc, setFermentableColorEbc] = useState("");
   const [fermentableExtractYieldPct, setFermentableExtractYieldPct] = useState("");
   const [hopAlphaAcidPct, setHopAlphaAcidPct] = useState("");
@@ -126,7 +127,7 @@ export function CustomIngredientForm({ category, preferredCurrency, pending, fie
     : [];
 
   useEffect(() => {
-    setSubtype(resolveDefaultCustomIngredientSubtype(category) ?? "");
+    setSubtype(initialSubtype ?? resolveDefaultCustomIngredientSubtype(category) ?? "");
     setEnteredUnit(unitProfile.defaultUnit);
     setPriceInputMode("total");
     setHopAlphaAcidPct("");
@@ -138,7 +139,7 @@ export function CustomIngredientForm({ category, preferredCurrency, pending, fie
     if (category !== "yeast") {
       setYeastForm("dry");
     }
-  }, [category]);
+  }, [category, initialSubtype]);
 
   useEffect(() => {
     if (!unitProfile.allowedUnits.includes(enteredUnit)) {

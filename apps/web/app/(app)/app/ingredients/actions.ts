@@ -106,10 +106,58 @@ export const addCatalogIngredientAction = async (_prevState: AddIngredientResult
     await addCatalogIngredientToInventory(user.id, payload, { preferredCurrency });
 
     revalidatePath("/app/ingredients");
+    revalidatePath("/app/catalog");
     return { ok: true, message: "Ингредиент добавлен в запасы." };
   } catch (error) {
     return mapError(error);
   }
+};
+
+export const addSelectedIngredientAction = async (_prevState: AddIngredientResult | null, formData: FormData): Promise<AddIngredientResult> => {
+  const ingredientCatalogItemId = String(formData.get("ingredientCatalogItemId") ?? "").trim();
+  const userCustomIngredientId = String(formData.get("userCustomIngredientId") ?? "").trim();
+
+  if (userCustomIngredientId) {
+    try {
+      const user = await requireUser();
+      const preferredCurrency = user.preferredCurrency ?? "RUB";
+      const priceInputAmountMinor = parseOptionalMoney(
+        formData.get("priceInputAmount")
+        ?? formData.get("purchasePrice")
+        ?? formData.get("purchasePriceMinor")
+      );
+
+      const payload = addCustomInventoryItemSchema.parse({
+        userCustomIngredientId,
+        enteredQuantity: String(formData.get("enteredQuantity") ?? ""),
+        enteredUnit: String(formData.get("enteredUnit") ?? ""),
+        priceInputMode: String(formData.get("priceInputMode") ?? "").trim() || null,
+        priceInputAmountMinor,
+        priceInputCurrency: priceInputAmountMinor == null
+          ? null
+          : String(formData.get("priceInputCurrency") ?? formData.get("purchaseCurrency") ?? "").trim() || preferredCurrency,
+        purchasedAt: parseOptionalDate(formData.get("purchasedAt") as string | null),
+        freshnessDate: parseOptionalDate(formData.get("freshnessDate") as string | null),
+        notes: String(formData.get("notes") ?? "").trim() || null
+      });
+
+      await addCustomIngredientToInventory(user.id, payload, { preferredCurrency });
+      revalidatePath("/app/ingredients");
+      revalidatePath("/app/catalog");
+      return { ok: true, message: "Ингредиент добавлен в запасы." };
+    } catch (error) {
+      return mapError(error);
+    }
+  }
+
+  if (ingredientCatalogItemId) {
+    return addCatalogIngredientAction(_prevState, formData);
+  }
+
+  return {
+    ok: false,
+    message: "Выберите ингредиент."
+  };
 };
 
 export const addCustomIngredientAction = async (_prevState: AddIngredientResult | null, formData: FormData): Promise<AddIngredientResult> => {
@@ -156,6 +204,7 @@ export const addCustomIngredientAction = async (_prevState: AddIngredientResult 
     await addCustomIngredientToInventory(user.id, inventoryPayload, { preferredCurrency });
 
     revalidatePath("/app/ingredients");
+    revalidatePath("/app/catalog");
     return { ok: true, message: "Собственный ингредиент создан и добавлен в запасы." };
   } catch (error) {
     return mapError(error);

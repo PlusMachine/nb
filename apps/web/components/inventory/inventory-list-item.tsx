@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import Link from "next/link";
 import {
   AlertTriangle,
   Archive,
@@ -173,11 +174,28 @@ export function InventoryListItem({ item, preferredCurrency, currencyRates }: Pr
   const isEmpty = item.normalizedQuantity <= 0;
   const expired = isExpired(item.freshnessDate);
   const freshnessCritical = !expired && isFreshnessCritical(item.freshnessDate);
+  const detailHref = item.source.sourceKind === "custom"
+    ? `/app/catalog/custom/${item.source.sourceId}`
+    : `/app/catalog/system/${item.source.sourceId}`;
 
   return (
     <li className={`relative rounded-xl border bg-white p-4 shadow-sm transition-shadow hover:shadow-md ${isEmpty ? "border-zinc-200/60 opacity-60" : expired ? "border-red-200" : freshnessCritical ? "border-amber-200" : "border-zinc-200"
       }`}>
       <div className="absolute right-2.5 top-2.5 z-10 flex items-center gap-1">
+        <InventoryQuantityEditor
+          item={item}
+          hideEditor
+          renderFinishedAction={({ onClick, isPending }) => (
+            <button
+              type="button"
+              onClick={onClick}
+              disabled={isPending}
+              className="rounded-md border border-zinc-200 bg-zinc-50 px-2 py-1 text-[11px] font-medium text-zinc-500 transition-colors hover:bg-zinc-100 hover:text-zinc-700 disabled:opacity-60"
+            >
+              {isPending ? "..." : "Закончился"}
+            </button>
+          )}
+        />
         <InventoryItemDetailsEditor
           item={item}
           preferredCurrency={preferredCurrency}
@@ -214,7 +232,11 @@ export function InventoryListItem({ item, preferredCurrency, currencyRates }: Pr
         <div className="min-w-0 flex-1 space-y-1.5">
           <div className="flex flex-wrap items-center gap-2">
             <div className="min-w-0">
-              <h3 className="text-base font-semibold text-zinc-950">{primaryName}</h3>
+              <h3 className="text-base font-semibold text-zinc-950">
+                <Link href={detailHref} className="underline-offset-4 hover:underline">
+                  {primaryName}
+                </Link>
+              </h3>
               {secondaryName ? <p className="text-xs text-zinc-500">{secondaryName}</p> : null}
             </div>
             {item.source.sourceKind === "custom" ? (
@@ -272,7 +294,7 @@ export function InventoryListItem({ item, preferredCurrency, currencyRates }: Pr
         </div>
 
         <div className="flex shrink-0 flex-col items-end gap-2 pt-8">
-          <InventoryQuantityEditor item={item} />
+          <InventoryQuantityEditor item={item} showFinishedAction={false} />
         </div>
       </div>
     </li>

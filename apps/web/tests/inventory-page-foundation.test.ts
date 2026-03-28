@@ -28,6 +28,10 @@ const baseSummary: InventorySummaryDto = {
     yeast: 0,
     consumable: 1,
     water_treatment: 0
+  },
+  byFermentableSubtype: {
+    malt: 1,
+    fermentable: 0
   }
 };
 

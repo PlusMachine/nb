@@ -103,6 +103,7 @@ export const inventorySummaryRows = (summary: InventorySummaryDto) => (
 type InventoryToolbarState = {
   search?: string;
   category?: IngredientCategory | "all";
+  subtype?: "malt" | "fermentable" | null;
   showFinished?: boolean;
   sort?: InventorySortOption;
 };
@@ -110,11 +111,13 @@ type InventoryToolbarState = {
 export const hasActiveInventoryFilters = ({
   search = "",
   category = "all",
+  subtype = null,
   showFinished = defaultInventoryShowFinished,
   sort = defaultInventorySortOption
 }: InventoryToolbarState) => (
   Boolean(search.trim())
   || category !== "all"
+  || subtype !== null
   || showFinished !== defaultInventoryShowFinished
   || sort !== defaultInventorySortOption
 );
@@ -124,6 +127,7 @@ export const buildInventoryToolbarHref = (
   {
     search = "",
     category = "all",
+    subtype = null,
     showFinished = defaultInventoryShowFinished,
     sort = defaultInventorySortOption
   }: InventoryToolbarState
@@ -137,6 +141,10 @@ export const buildInventoryToolbarHref = (
 
   if (category !== "all") {
     params.set("category", category);
+  }
+
+  if (subtype) {
+    params.set("subtype", subtype);
   }
 
   if (showFinished !== defaultInventoryShowFinished) {

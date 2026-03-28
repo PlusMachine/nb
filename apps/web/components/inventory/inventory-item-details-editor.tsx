@@ -13,6 +13,7 @@ import type {
   IngredientSuggestionItem,
   IngredientType
 } from "@/features/ingredients/contracts";
+import { resolveIngredientDisplayNames } from "@/features/ingredients/presentation";
 import { resolveIngredientCategory, resolveLegacyIngredientType } from "@/features/ingredients/taxonomy";
 import type { InventoryListItemDto } from "@/features/inventory/contracts";
 import {
@@ -269,6 +270,7 @@ export function InventoryItemDetailsEditor({ item, preferredCurrency, currencyRa
                   }}
                   onSelect={(selected) => {
                     const nextUnitProfile = resolveInventoryEditorUnitProfile(form, item.source, selected);
+                    const displayNames = resolveIngredientDisplayNames(selected);
                     setSelectedSuggestion(selected);
                     setForm((current) => {
                       return {
@@ -277,10 +279,10 @@ export function InventoryItemDetailsEditor({ item, preferredCurrency, currencyRa
                         category: selected.category ?? current.category,
                         subtype: selected.subtype ?? null,
                         familyId: selected.familyId ?? null,
-                        pickerValue: selected.displayName,
-                        selectedDisplayName: selected.displayName,
-                        ingredientCatalogItemId: selected.id,
-                        userCustomIngredientId: null,
+                        pickerValue: displayNames.primaryName,
+                        selectedDisplayName: displayNames.primaryName,
+                        ingredientCatalogItemId: selected.source === "catalog" ? selected.id : null,
+                        userCustomIngredientId: selected.source === "custom" ? selected.id : null,
                         enteredUnit: nextUnitProfile.defaultUnit
                       };
                     });

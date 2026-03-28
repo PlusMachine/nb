@@ -6,6 +6,7 @@ import { useEffect, useId, useMemo, useRef, useState } from "react";
 import type {
   IngredientCategory,
   IngredientSuggestionItem,
+  IngredientSubtype,
   IngredientType
 } from "@/features/ingredients/contracts";
 import { normalizeSearchText } from "@/features/ingredients/normalization";
@@ -18,6 +19,7 @@ type Props = {
   value?: string;
   type?: IngredientType;
   category?: IngredientCategory;
+  subtype?: Extract<IngredientSubtype, "malt" | "fermentable"> | null;
   limit?: number;
   autoFocus?: boolean;
   onSelect: (item: IngredientSuggestionItem) => void;
@@ -27,6 +29,7 @@ type Props = {
   placeholder?: string;
   emptyCta?: React.ReactNode;
   allowCatalogProposal?: boolean;
+  includeCustom?: boolean;
   proposeIngredient?: (params: {
     q: string;
     type?: IngredientType;
@@ -36,6 +39,8 @@ type Props = {
     q: string;
     type?: IngredientType;
     category?: IngredientCategory;
+    subtype?: Extract<IngredientSubtype, "malt" | "fermentable"> | null;
+    includeCustom?: boolean;
     limit: number;
     signal: AbortSignal;
   }) => Promise<IngredientSuggestionItem[]>;
@@ -75,11 +80,15 @@ export const buildIngredientSearchParams = ({
   q,
   type,
   category,
+  subtype,
+  includeCustom = true,
   limit
 }: {
   q: string;
   type?: IngredientType;
   category?: IngredientCategory;
+  subtype?: Extract<IngredientSubtype, "malt" | "fermentable"> | null;
+  includeCustom?: boolean;
   limit: number;
 }) => {
   const params = new URLSearchParams({ q: q.trim(), limit: String(limit) });
@@ -89,6 +98,12 @@ export const buildIngredientSearchParams = ({
   if (category) {
     params.set("category", category);
   }
+  if (subtype) {
+    params.set("subtype", subtype);
+  }
+  if (!includeCustom) {
+    params.set("includeCustom", "false");
+  }
 
   return params;
 };
@@ -97,13 +112,17 @@ export const buildIngredientCacheKey = ({
   q,
   type,
   category,
+  subtype,
+  includeCustom,
   limit
 }: {
   q: string;
   type?: IngredientType;
   category?: IngredientCategory;
+  subtype?: Extract<IngredientSubtype, "malt" | "fermentable"> | null;
+  includeCustom?: boolean;
   limit: number;
-}) => `${normalizeSearchText(q)}::${type ?? ""}::${category ?? ""}::${limit}`;
+}) => `${normalizeSearchText(q)}::${type ?? ""}::${category ?? ""}::${subtype ?? ""}::${includeCustom === false ? "catalog" : "all"}::${limit}`;
 
 const shouldPromoteBrandToPrimaryRow = (item: IngredientSuggestionItem) => (
   item.type === "hop" || item.subtype === "malt"
@@ -184,16 +203,20 @@ const defaultSearchIngredients = async ({
   q,
   type,
   category,
+  subtype,
+  includeCustom,
   limit,
   signal
 }: {
   q: string;
   type?: IngredientType;
   category?: IngredientCategory;
+  subtype?: Extract<IngredientSubtype, "malt" | "fermentable"> | null;
+  includeCustom?: boolean;
   limit: number;
   signal: AbortSignal;
 }) => {
-  const params = buildIngredientSearchParams({ q, type, category, limit });
+  const params = buildIngredientSearchParams({ q, type, category, subtype, includeCustom, limit });
   const response = await fetch(`/api/ingredients/search?${params.toString()}`, { signal });
   if (!response.ok) {
     return [];
@@ -238,6 +261,7 @@ export const IngredientPicker = ({
   value,
   type,
   category,
+  subtype,
   limit = 10,
   autoFocus = false,
   onSelect,
@@ -247,6 +271,7 @@ export const IngredientPicker = ({
   placeholder = "Search ingredient",
   emptyCta,
   allowCatalogProposal = true,
+  includeCustom = true,
   proposeIngredient = defaultProposeIngredient,
   searchIngredients = defaultSearchIngredients
 }: Props) => {
@@ -276,7 +301,7 @@ export const IngredientPicker = ({
       return;
     }
 
-    const cacheKey = buildIngredientCacheKey({ q: query, type, category, limit });
+    const cacheKey = buildIngredientCacheKey({ q: query, type, category, subtype, includeCustom, limit });
     const cached = cacheRef.current.get(cacheKey);
     if (cached) {
       setItems(cached);
@@ -291,7 +316,7 @@ export const IngredientPicker = ({
       try {
         setIsLoading(true);
         setHasResolvedQuery(false);
-        const nextItems = await searchIngredients({ q: query, type, category, limit, signal: controller.signal });
+        const nextItems = await searchIngredients({ q: query, type, category, subtype, includeCustom, limit, signal: controller.signal });
         if (controller.signal.aborted) {
           return;
         }
@@ -317,7 +342,7 @@ export const IngredientPicker = ({
       clearTimeout(timer);
       controller.abort();
     };
-  }, [category, isOpen, limit, query, searchIngredients, type]);
+  }, [category, includeCustom, isOpen, limit, query, searchIngredients, subtype, type]);
 
   const grouped = useMemo(() => items.reduce<Record<string, IngredientSuggestionItem[]>>((acc, item) => {
     const groupKey = item.category ?? item.type;
@@ -464,8 +489,13 @@ export const IngredientPicker = ({
                     type="button"
                   >
                     <div className="min-w-0">
-                      <div className="flex min-w-0 items-baseline gap-2">
+                      <div className="flex min-w-0 items-center gap-2">
                         <span className="truncate font-medium text-zinc-950">{primaryName}</span>
+                        {item.source === "custom" ? (
+                          <span className="shrink-0 rounded-full bg-amber-50 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.12em] text-amber-700 ring-1 ring-amber-200">
+                            СВОЙ
+                          </span>
+                        ) : null}
                         {inlineBrand ? (
                           <span className="inline-flex min-w-0 items-baseline gap-2 text-sm font-semibold text-zinc-700">
                             <span aria-hidden="true" className="text-zinc-400">•</span>

@@ -38,6 +38,7 @@ export const ModerationQueue = ({ initialItems }: { initialItems: QueueItem[] })
           <textarea placeholder="resolution note" className="mt-2 h-20 w-full rounded border p-2 text-sm" onChange={(e) => setNotes((s) => ({ ...s, [item.id]: e.target.value }))} />
           <div className="mt-2">
             <IngredientPicker
+              includeCustom={false}
               onSelect={(selected) => setTargets((s) => ({ ...s, [item.id]: selected.id }))}
               placeholder="Find merge target"
               emptyCta={<p className="text-xs text-zinc-500">Не нашли? Предложить / создать свой ингредиент</p>}

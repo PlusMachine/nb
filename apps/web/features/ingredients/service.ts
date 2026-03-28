@@ -305,7 +305,7 @@ const toSuggestionItem = (
   ...extras
 });
 
-const loadIngredients = async (params?: {
+export const loadIngredients = async (params?: {
   includeInactive?: boolean;
   type?: string;
   category?: string;

@@ -4,6 +4,7 @@ import React from "react";
 import { useState } from "react";
 import { Plus } from "lucide-react";
 
+import type { IngredientSuggestionItem } from "@/features/ingredients/contracts";
 import type { SystemCurrency } from "@/features/system/currency";
 
 import { AddIngredientModal } from "./add-ingredient-modal";
@@ -12,10 +13,18 @@ type Props = {
   className?: string;
   fullWidth?: boolean;
   preferredCurrency?: SystemCurrency;
+  initialSelection?: IngredientSuggestionItem | null;
+  openOnMount?: boolean;
 };
 
-export function AddIngredientTrigger({ className, fullWidth = false, preferredCurrency = "RUB" }: Props) {
-  const [open, setOpen] = useState(false);
+export function AddIngredientTrigger({
+  className,
+  fullWidth = false,
+  preferredCurrency = "RUB",
+  initialSelection = null,
+  openOnMount = false
+}: Props) {
+  const [open, setOpen] = useState(openOnMount);
 
   return (
     <>
@@ -27,7 +36,12 @@ export function AddIngredientTrigger({ className, fullWidth = false, preferredCu
         <Plus className="h-4 w-4" />
         Добавить ингредиент
       </button>
-      <AddIngredientModal open={open} onClose={() => setOpen(false)} preferredCurrency={preferredCurrency} />
+      <AddIngredientModal
+        open={open}
+        onClose={() => setOpen(false)}
+        preferredCurrency={preferredCurrency}
+        initialSelection={initialSelection}
+      />
     </>
   );
 }
