@@ -8,10 +8,12 @@ const mocks = vi.hoisted(() => ({
   listInventoryForUser: vi.fn(async () => []),
   getInventorySummaries: vi.fn(async () => ({
     totalItems: 3,
-    inStockItems: 3,
-    emptyItems: 0,
+    inStockItems: 2,
+    emptyItems: 1,
     byCategory: { fermentable: 1, hop: 2, yeast: 0, water_treatment: 0, consumable: 0 },
-    byFermentableSubtype: { malt: 1, fermentable: 0 }
+    inStockByCategory: { fermentable: 1, hop: 1, yeast: 0, water_treatment: 0, consumable: 0 },
+    byFermentableSubtype: { malt: 1, fermentable: 0 },
+    inStockByFermentableSubtype: { malt: 1, fermentable: 0 }
   }))
 }));
 
@@ -40,9 +42,9 @@ vi.mock("../components/inventory/inventory-summary", () => ({
 import MyIngredientsPage from "../app/(app)/app/ingredients/page";
 
 describe("inventory page filters", () => {
-  it("passes search/category/sort query into service layer and keeps empty items visible", async () => {
+  it("passes search/category/show-finished/sort query into service layer", async () => {
     const view = await MyIngredientsPage({
-      searchParams: Promise.resolve({ search: "citra", category: "hop", sort: "name" })
+      searchParams: Promise.resolve({ search: "citra", category: "hop", finished: "true", sort: "name" })
     });
     const html = renderToStaticMarkup(view);
 
@@ -54,6 +56,21 @@ describe("inventory page filters", () => {
       search: "citra"
     });
     expect(html).toContain("Фильтры по запасам");
+  });
+
+  it("hides empty items by default", async () => {
+    await MyIngredientsPage({
+      searchParams: Promise.resolve({ category: "hop" })
+    });
+
+    expect(mocks.listInventoryForUser).toHaveBeenLastCalledWith("u-1", {
+      category: "hop",
+      subtype: undefined,
+      includeEmpty: false,
+      stockState: "in_stock",
+      sort: "default",
+      search: ""
+    });
   });
 
   it("shows search-specific empty state", async () => {

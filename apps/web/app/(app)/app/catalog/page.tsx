@@ -3,6 +3,7 @@ import { Pencil } from "lucide-react";
 
 import { DeleteCustomCatalogIngredientButton } from "@/components/ingredients/delete-custom-catalog-ingredient-button";
 import { IngredientCatalogToolbar } from "@/components/ingredients/ingredient-catalog-toolbar";
+import { CountryFlagLabel } from "@/components/shared/country-flag";
 import {
   type IngredientTechnicalData,
   ingredientCatalogSortOptions,
@@ -16,7 +17,8 @@ import {
 } from "@/features/ingredients/contracts";
 import {
   formatIngredientSubtypeLabel,
-  ingredientCategoryLabels
+  ingredientCategoryLabels,
+  resolveIngredientCountry
 } from "@/features/ingredients/presentation";
 import { listUserCatalogIngredients } from "@/features/ingredients/catalog-service";
 import { requireUser } from "@/lib/auth";
@@ -84,6 +86,26 @@ const buildCatalogPageHref = (
 
   const query = searchParams.toString();
   return query ? `/app/catalog?${query}` : "/app/catalog";
+};
+
+const buildCreateCustomIngredientHref = (
+  params: {
+    category: IngredientCategory | "all";
+    subtype: "malt" | "fermentable" | null;
+  }
+) => {
+  const searchParams = new URLSearchParams();
+
+  if (params.category !== "all") {
+    searchParams.set("category", params.category);
+  }
+
+  if (params.category === "fermentable" && params.subtype) {
+    searchParams.set("subtype", params.subtype);
+  }
+
+  const query = searchParams.toString();
+  return query ? `/app/catalog/new?${query}` : "/app/catalog/new";
 };
 
 const buildDetailHref = (item: UserCatalogIngredientDto) => (
@@ -172,13 +194,59 @@ const buildKeyStats = (item: UserCatalogIngredientDto) => {
   return [];
 };
 
-const buildSecondaryMeta = (item: UserCatalogIngredientDto) => (
-  Array.from(new Set([
-    item.brand ?? item.producer ?? null,
-    item.countryName ?? item.country ?? null,
-    item.derivedFromDisplayName ? `На основе ${item.derivedFromDisplayName}` : null
-  ].filter(Boolean))).slice(0, 3)
-);
+type SecondaryMetaItem =
+  | { key: string; kind: "text"; label: string }
+  | { key: string; kind: "country"; countryCode: string | null; label: string };
+
+const buildSecondaryMeta = (item: UserCatalogIngredientDto): SecondaryMetaItem[] => {
+  const meta: SecondaryMetaItem[] = [];
+  const seen = new Set<string>();
+
+  const pushText = (label?: string | null) => {
+    const trimmed = label?.trim();
+    if (!trimmed) {
+      return;
+    }
+
+    const key = `text:${trimmed.toLowerCase()}`;
+    if (seen.has(key)) {
+      return;
+    }
+
+    seen.add(key);
+    meta.push({
+      key,
+      kind: "text",
+      label: trimmed
+    });
+  };
+
+  const pushCountry = () => {
+    const country = resolveIngredientCountry(item);
+    if (!country) {
+      return;
+    }
+
+    const key = `country:${country.code ?? country.label.toLowerCase()}`;
+    if (seen.has(key)) {
+      return;
+    }
+
+    seen.add(key);
+    meta.push({
+      key,
+      kind: "country",
+      countryCode: country.code,
+      label: country.label
+    });
+  };
+
+  pushText(item.brand ?? item.producer ?? null);
+  pushCountry();
+  pushText(item.derivedFromDisplayName ? `На основе ${item.derivedFromDisplayName}` : null);
+
+  return meta.slice(0, 3);
+};
 
 const resolveListTypeLabel = (item: UserCatalogIngredientDto) => (
   item.category === "fermentable"
@@ -248,7 +316,7 @@ export default async function IngredientCatalogPage({ searchParams }: Props) {
               : "Попробуйте изменить запрос, фильтр категории или сортировку."}
           </p>
           <div className="mt-5 flex justify-center">
-            <Link href="/app/catalog/new" className="rounded-xl bg-zinc-950 px-5 py-2.5 text-sm font-medium text-white">
+            <Link href={buildCreateCustomIngredientHref({ category: currentCategory, subtype: subtype ?? null })} className="rounded-xl bg-zinc-950 px-5 py-2.5 text-sm font-medium text-white">
               Создать свой ингредиент
             </Link>
           </div>
@@ -304,8 +372,17 @@ export default async function IngredientCatalogPage({ searchParams }: Props) {
                         </div>
                         <div className="flex flex-wrap gap-1.5">
                           {buildSecondaryMeta(item).map((badge) => (
-                            <span key={badge} className="rounded-full bg-zinc-100 px-2.5 py-1 text-[11px] text-zinc-600">
-                              {badge}
+                            <span key={badge.key} className="rounded-full bg-zinc-100 px-2.5 py-1 text-[11px] text-zinc-600">
+                              {badge.kind === "country" ? (
+                                <CountryFlagLabel
+                                  countryCode={badge.countryCode}
+                                  label={badge.label}
+                                  iconClassName="h-3 w-4"
+                                  className="gap-1"
+                                />
+                              ) : (
+                                badge.label
+                              )}
                             </span>
                           ))}
                         </div>
@@ -390,8 +467,17 @@ export default async function IngredientCatalogPage({ searchParams }: Props) {
 
                   <div className="mt-3 flex flex-wrap gap-1.5">
                     {buildSecondaryMeta(item).map((badge) => (
-                      <span key={badge} className="rounded-md bg-zinc-50 px-2 py-0.5 text-xs text-zinc-600 ring-1 ring-zinc-200/70">
-                        {badge}
+                      <span key={badge.key} className="rounded-md bg-zinc-50 px-2 py-0.5 text-xs text-zinc-600 ring-1 ring-zinc-200/70">
+                        {badge.kind === "country" ? (
+                          <CountryFlagLabel
+                            countryCode={badge.countryCode}
+                            label={badge.label}
+                            iconClassName="h-3 w-4"
+                            className="gap-1"
+                          />
+                        ) : (
+                          badge.label
+                        )}
                       </span>
                     ))}
                   </div>

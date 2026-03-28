@@ -11,13 +11,15 @@ type Props = {
   hasFilters?: boolean;
   search?: string;
   category?: IngredientCategory;
+  showFinished?: boolean;
 };
 
 export function InventoryEmptyState({
   hasAnyItems = false,
   hasFilters = false,
   search = "",
-  category
+  category,
+  showFinished = false
 }: Props) {
   if (!hasAnyItems) {
     return (
@@ -44,9 +46,18 @@ export function InventoryEmptyState({
     title = "По вашему запросу ничего не найдено";
     description = `Не нашли «${search}» среди текущих запасов.`;
     Icon = Search;
+  } else if (category && !showFinished) {
+    title = "Для выбранной категории нет позиций в наличии";
+    description = `Включите «Показать закончившиеся», чтобы увидеть позиции с нулевым остатком в категории «${inventoryCategoryLabels[category]}».`;
   } else if (category) {
     title = "Для выбранной категории нет позиций";
     description = `В категории «${inventoryCategoryLabels[category]}» пока нет подходящих ингредиентов.`;
+  } else if (!showFinished && !hasFilters) {
+    title = "Сейчас в наличии ничего нет";
+    description = "Включите «Показать закончившиеся», чтобы увидеть позиции с нулевым остатком и быстро пополнить их.";
+  } else if (showFinished) {
+    title = "Даже закончившихся позиций не найдено";
+    description = "Попробуйте изменить запрос или снять часть фильтров.";
   } else if (!hasFilters) {
     title = "Список пуст";
     description = "Добавьте ингредиенты на склад или снимите архивирование у существующих позиций.";

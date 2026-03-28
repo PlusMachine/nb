@@ -24,12 +24,23 @@ const baseSummary: InventorySummaryDto = {
   emptyItems: 1,
   byCategory: {
     fermentable: 1,
+    hop: 2,
+    yeast: 0,
+    consumable: 0,
+    water_treatment: 0
+  },
+  inStockByCategory: {
+    fermentable: 1,
     hop: 1,
     yeast: 0,
-    consumable: 1,
+    consumable: 0,
     water_treatment: 0
   },
   byFermentableSubtype: {
+    malt: 1,
+    fermentable: 0
+  },
+  inStockByFermentableSubtype: {
     malt: 1,
     fermentable: 0
   }
@@ -100,12 +111,12 @@ const items: InventoryListItemDto[] = [
     source: {
       sourceKind: "custom",
       sourceId: "cus-2",
-      type: "consumable",
-      category: "consumable",
-      primaryLabelRu: "Whirlfloc Tablet",
+      type: "hop",
+      category: "hop",
+      primaryLabelRu: "Mosaic",
       secondaryLabelRu: null,
-      displayName: "Whirlfloc Tablet",
-      normalizedName: "whirlfloc-tablet"
+      displayName: "Mosaic",
+      normalizedName: "mosaic"
     }
   }
 ];
@@ -126,13 +137,14 @@ describe("inventory page foundation", () => {
       currencyRates: { RUB: 100, USD: 7900, EUR: 9170 }
     }));
 
-    expect(grouped.map((group) => group.category)).toEqual(["fermentable", "hop", "empty"]);
+    expect(grouped.map((group) => group.category)).toEqual(["fermentable", "hop"]);
+    expect(grouped.find((group) => group.category === "hop")?.items.map((item) => item.id)).toEqual(["inv-2", "inv-3"]);
     expect(html).toContain("Ферментируемые");
     expect(html).toContain("Хмель");
-    expect(html).toContain("Закончившиеся");
+    expect(html).not.toContain("Закончившиеся");
     expect(html).toContain("Пилснер солод");
     expect(html).toContain("Citra");
-    expect(html).toContain("Whirlfloc Tablet");
+    expect(html).toContain("Mosaic");
     expect(html).toContain('aria-label="Удалить"');
   });
 

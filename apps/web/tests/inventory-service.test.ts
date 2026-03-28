@@ -1196,5 +1196,7 @@ describe("inventory service", () => {
     expect(summary.emptyItems).toBe(1);
     expect(summary.byCategory.hop).toBe(1);
     expect(summary.byCategory.consumable).toBe(1);
+    expect(summary.inStockByCategory.hop).toBe(1);
+    expect(summary.inStockByCategory.consumable).toBe(0);
   });
 });

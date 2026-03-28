@@ -128,6 +128,15 @@ export const createUserCustomIngredientSchema = z.object({
   fermentableColorEbc: nullableNumber(z.number().min(0).max(9999)),
   fermentableExtractYieldPct: nullableNumber(z.number().min(0).max(100)),
   fermentableProteinPct: nullableNumber(z.number().min(0).max(100)),
+  maltType: z.preprocess((value) => {
+    if (value == null) {
+      return null;
+    }
+
+    const normalized = String(value).trim().toLowerCase();
+    return normalized || null;
+  }, z.enum(["base", "specialty"]).nullable().optional()),
+  fermentableMaxUsagePct: nullableNumber(z.number().min(0).max(100)),
   hopAlphaAcidPct: nullableNumber(z.number().min(0).max(100)),
   hopBetaAcidPct: nullableNumber(z.number().min(0).max(100)),
   hopForm: z.preprocess((value) => {
@@ -383,7 +392,12 @@ export type InventorySummaryDto = {
   inStockItems: number;
   emptyItems: number;
   byCategory: Record<IngredientCategory, number>;
+  inStockByCategory: Record<IngredientCategory, number>;
   byFermentableSubtype: {
+    malt: number;
+    fermentable: number;
+  };
+  inStockByFermentableSubtype: {
     malt: number;
     fermentable: number;
   };

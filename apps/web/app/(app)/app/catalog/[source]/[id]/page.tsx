@@ -2,10 +2,13 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { DeleteCustomCatalogIngredientButton } from "@/components/ingredients/delete-custom-catalog-ingredient-button";
+import { CountryFlagLabel } from "@/components/shared/country-flag";
 import { getUserCatalogIngredientByRef } from "@/features/ingredients/catalog-service";
 import type { IngredientTechnicalData } from "@/features/ingredients/contracts";
 import {
   formatIngredientSubtypeLabel,
+  resolveIngredientCountry,
+  type ResolvedIngredientCountry
 } from "@/features/ingredients/presentation";
 import { requireUser } from "@/lib/auth";
 
@@ -93,52 +96,58 @@ const buildPrimaryFacts = (item: NonNullable<Awaited<ReturnType<typeof getUserCa
   return facts.slice(0, 4);
 };
 
+type TechnicalRow =
+  | { label: string; kind: "text"; value: string }
+  | { label: string; kind: "country"; country: ResolvedIngredientCountry };
+
 const renderTechnicalRows = (item: NonNullable<Awaited<ReturnType<typeof getUserCatalogIngredientByRef>>>) => {
-  const rows: Array<{ label: string; value: string }> = [];
+  const rows: TechnicalRow[] = [];
   const color = resolveFermentableColor(item);
   const technicalData = item.technicalData;
 
   if (item.hopAlphaAcidPct != null) {
-    rows.push({ label: "Альфа-кислота", value: `${formatValue(item.hopAlphaAcidPct)}%` });
+    rows.push({ label: "Альфа-кислота", kind: "text", value: `${formatValue(item.hopAlphaAcidPct)}%` });
   }
   if (item.hopBetaAcidPct != null) {
-    rows.push({ label: "Бета-кислота", value: `${formatValue(item.hopBetaAcidPct)}%` });
+    rows.push({ label: "Бета-кислота", kind: "text", value: `${formatValue(item.hopBetaAcidPct)}%` });
   }
   if (color) {
-    rows.push({ label: "Цвет", value: color });
+    rows.push({ label: "Цвет", kind: "text", value: color });
   }
   if (item.fermentableExtractYieldPct != null) {
-    rows.push({ label: "Экстрактивность", value: `${formatValue(item.fermentableExtractYieldPct)}%` });
+    rows.push({ label: "Экстрактивность", kind: "text", value: `${formatValue(item.fermentableExtractYieldPct)}%` });
   }
   if (item.yeastAttenuationPct != null) {
-    rows.push({ label: "Аттенюация", value: `${formatValue(item.yeastAttenuationPct)}%` });
+    rows.push({ label: "Аттенюация", kind: "text", value: `${formatValue(item.yeastAttenuationPct)}%` });
   }
   if (item.yeastMinFermentationTempC != null || item.yeastMaxFermentationTempC != null) {
     rows.push({
       label: "Температура",
+      kind: "text",
       value: `${item.yeastMinFermentationTempC ?? "?"}-${item.yeastMaxFermentationTempC ?? "?"} °C`
     });
   }
   if (item.brand) {
-    rows.push({ label: "Бренд", value: item.brand });
+    rows.push({ label: "Бренд", kind: "text", value: item.brand });
   }
-  if (item.countryName ?? item.country) {
-    rows.push({ label: "Страна", value: item.countryName ?? item.country ?? "" });
+  const country = resolveIngredientCountry(item);
+  if (country) {
+    rows.push({ label: "Страна", kind: "country", country });
   }
   if (item.productCode) {
-    rows.push({ label: "Код", value: item.productCode });
+    rows.push({ label: "Код", kind: "text", value: item.productCode });
   }
   if (technicalData && technicalData.type === "malt" && technicalData.proteinPct != null) {
     const malt = technicalData as Extract<IngredientTechnicalData, { type: "malt" }>;
-    rows.push({ label: "Белок", value: `${formatValue(malt.proteinPct ?? 0)}%` });
+    rows.push({ label: "Белок", kind: "text", value: `${formatValue(malt.proteinPct ?? 0)}%` });
   }
   if (technicalData && technicalData.type === "yeast" && technicalData.alcoholToleranceAbvTypical != null) {
     const yeast = technicalData as Extract<IngredientTechnicalData, { type: "yeast" }>;
-    rows.push({ label: "Алк. толерантность", value: `${formatValue(yeast.alcoholToleranceAbvTypical ?? 0)}% ABV` });
+    rows.push({ label: "Алк. толерантность", kind: "text", value: `${formatValue(yeast.alcoholToleranceAbvTypical ?? 0)}% ABV` });
   }
   if (technicalData && technicalData.type === "yeast" && technicalData.flocculation) {
     const yeast = technicalData as Extract<IngredientTechnicalData, { type: "yeast" }>;
-    rows.push({ label: "Флокуляция", value: yeast.flocculation ?? "" });
+    rows.push({ label: "Флокуляция", kind: "text", value: yeast.flocculation ?? "" });
   }
 
   return rows;
@@ -170,9 +179,9 @@ export default async function IngredientDetailPage({
   const subtleAliases = item.aliases.map((alias) => alias.alias).filter(Boolean);
   const metaBadges = Array.from(new Set([
     typeLabel,
-    item.brand ?? null,
-    item.countryName ?? item.country ?? null
+    item.brand ?? null
   ].filter(Boolean)));
+  const country = resolveIngredientCountry(item);
 
   return (
     <main className="space-y-6">
@@ -206,6 +215,16 @@ export default async function IngredientDetailPage({
                   {badge}
                 </span>
               ))}
+              {country ? (
+                <span className="rounded-full bg-zinc-100 px-3 py-1 text-sm text-zinc-700">
+                  <CountryFlagLabel
+                    countryCode={country.code}
+                    label={country.label}
+                    iconClassName="h-3.5 w-[1.1rem]"
+                    className="gap-1.5"
+                  />
+                </span>
+              ) : null}
             </div>
 
             {item.derivedFromDisplayName ? (
@@ -269,7 +288,16 @@ export default async function IngredientDetailPage({
               {technicalRows.length ? technicalRows.map((row) => (
                 <div key={row.label} className="flex items-center justify-between gap-3 rounded-2xl bg-zinc-50 px-4 py-3">
                   <span className="text-sm text-zinc-500">{row.label}</span>
-                  <span className="text-sm font-medium text-zinc-900">{row.value}</span>
+                  {row.kind === "country" ? (
+                    <CountryFlagLabel
+                      countryCode={row.country.code}
+                      label={row.country.label}
+                      iconClassName="h-3.5 w-[1.1rem]"
+                      className="gap-1.5 text-sm font-medium text-zinc-900"
+                    />
+                  ) : (
+                    <span className="text-sm font-medium text-zinc-900">{row.value}</span>
+                  )}
                 </div>
               )) : (
                 <p className="text-sm text-zinc-500">Для этого ингредиента пока не заполнены ключевые технические поля.</p>

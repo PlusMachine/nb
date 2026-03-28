@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import {
   buildIngredientTypedSummary,
+  resolveIngredientCountry,
   resolveIngredientDisplayNames,
   resolveIngredientFamilyDisplayName
 } from "../features/ingredients/presentation";
@@ -86,5 +87,24 @@ describe("ingredient presentation", () => {
         hopForm: "pellet"
       }
     })).toBe("12.5% AA • pellet");
+  });
+
+  it("resolves country labels and codes from country code", () => {
+    expect(resolveIngredientCountry({
+      countryCode: "US",
+      countryName: "USA"
+    })).toEqual({
+      code: "US",
+      label: "USA"
+    });
+  });
+
+  it("resolves country labels and codes from country names", () => {
+    expect(resolveIngredientCountry({
+      countryName: "Россия"
+    })).toEqual({
+      code: "RU",
+      label: "Россия"
+    });
   });
 });

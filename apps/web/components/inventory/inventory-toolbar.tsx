@@ -6,6 +6,7 @@ import {
   ArrowUpDown,
   Check,
   Droplets,
+  Eye,
   FlaskConical,
   Leaf,
   Package,
@@ -16,10 +17,12 @@ import {
 import type { IngredientCategory } from "@/features/ingredients/contracts";
 import {
   defaultInventorySortOption,
+  defaultInventoryShowFinished,
   buildInventoryToolbarHref,
   hasActiveInventoryFilters,
   inventoryCategoryLabels,
-  inventorySortLabels
+  inventorySortLabels,
+  resolveInventoryToolbarCounts
 } from "@/features/inventory/page-model";
 import type { InventorySortOption } from "@/features/inventory/contracts";
 import type { InventorySummaryDto } from "@/features/inventory/contracts";
@@ -30,6 +33,7 @@ type Props = {
   search: string;
   category: IngredientCategory | "all";
   subtype: "malt" | "fermentable" | null;
+  showFinished: boolean;
   sort: InventorySortOption;
   summary: InventorySummaryDto;
 };
@@ -80,7 +84,7 @@ const categoryMeta: Record<IngredientCategory, {
   }
 };
 
-export function InventoryToolbar({ search, category, subtype, sort, summary }: Props) {
+export function InventoryToolbar({ search, category, subtype, showFinished, sort, summary }: Props) {
   const pathname = usePathname();
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
@@ -96,8 +100,9 @@ export function InventoryToolbar({ search, category, subtype, sort, summary }: P
     search,
     category,
     subtype,
+    showFinished,
     sort
-  }), [category, pathname, search, sort, subtype]);
+  }), [category, pathname, search, showFinished, sort, subtype]);
 
   const replaceHref = useCallback((href: string) => {
     if (href === currentHref) {
@@ -121,6 +126,7 @@ export function InventoryToolbar({ search, category, subtype, sort, summary }: P
         search: trimmedLocalSearch,
         category,
         subtype,
+        showFinished,
         sort
       }));
     }, searchDebounceMs);
@@ -128,7 +134,7 @@ export function InventoryToolbar({ search, category, subtype, sort, summary }: P
     return () => {
       window.clearTimeout(timer);
     };
-  }, [category, pathname, replaceHref, search, searchValue, sort, subtype]);
+  }, [category, pathname, replaceHref, search, searchValue, showFinished, sort, subtype]);
 
   useEffect(() => {
     if (!sortOpen) return;
@@ -145,13 +151,15 @@ export function InventoryToolbar({ search, category, subtype, sort, summary }: P
     search: searchValue,
     category,
     subtype,
+    showFinished,
     sort
   });
+  const counts = resolveInventoryToolbarCounts(summary, showFinished);
   const primaryButtons = [
     {
       key: "malt",
       label: "Солода",
-      count: summary.byFermentableSubtype.malt,
+      count: counts.byFermentableSubtype.malt,
       active: category === "fermentable" && subtype === "malt",
       meta: categoryMeta.fermentable,
       onClick: () => handleSubtypeClick("malt")
@@ -159,7 +167,7 @@ export function InventoryToolbar({ search, category, subtype, sort, summary }: P
     {
       key: "fermentable",
       label: "Сбраживаемое сырье",
-      count: summary.byFermentableSubtype.fermentable,
+      count: counts.byFermentableSubtype.fermentable,
       active: category === "fermentable" && subtype === "fermentable",
       meta: categoryMeta.fermentable,
       onClick: () => handleSubtypeClick("fermentable")
@@ -167,7 +175,7 @@ export function InventoryToolbar({ search, category, subtype, sort, summary }: P
     {
       key: "hop",
       label: inventoryCategoryLabels.hop,
-      count: summary.byCategory.hop,
+      count: counts.byCategory.hop,
       active: category === "hop" && subtype === null,
       meta: categoryMeta.hop,
       onClick: () => handleCategoryClick("hop")
@@ -175,7 +183,7 @@ export function InventoryToolbar({ search, category, subtype, sort, summary }: P
     {
       key: "yeast",
       label: inventoryCategoryLabels.yeast,
-      count: summary.byCategory.yeast,
+      count: counts.byCategory.yeast,
       active: category === "yeast" && subtype === null,
       meta: categoryMeta.yeast,
       onClick: () => handleCategoryClick("yeast")
@@ -183,7 +191,7 @@ export function InventoryToolbar({ search, category, subtype, sort, summary }: P
     {
       key: "water_treatment",
       label: inventoryCategoryLabels.water_treatment,
-      count: summary.byCategory.water_treatment,
+      count: counts.byCategory.water_treatment,
       active: category === "water_treatment" && subtype === null,
       meta: categoryMeta.water_treatment,
       onClick: () => handleCategoryClick("water_treatment")
@@ -191,7 +199,7 @@ export function InventoryToolbar({ search, category, subtype, sort, summary }: P
     {
       key: "consumable",
       label: inventoryCategoryLabels.consumable,
-      count: summary.byCategory.consumable,
+      count: counts.byCategory.consumable,
       active: category === "consumable" && subtype === null,
       meta: categoryMeta.consumable,
       onClick: () => handleCategoryClick("consumable")
@@ -203,6 +211,7 @@ export function InventoryToolbar({ search, category, subtype, sort, summary }: P
       search: searchValue,
       category: nextCategory === category ? "all" : nextCategory,
       subtype: nextCategory === category || nextCategory !== "fermentable" ? null : subtype,
+      showFinished,
       sort
     }));
   };
@@ -212,6 +221,7 @@ export function InventoryToolbar({ search, category, subtype, sort, summary }: P
       search: searchValue,
       category: "fermentable",
       subtype: subtype === nextSubtype ? null : nextSubtype,
+      showFinished,
       sort
     }));
   };
@@ -254,6 +264,7 @@ export function InventoryToolbar({ search, category, subtype, sort, summary }: P
           <InventorySearchInput
             value={searchValue}
             category={category}
+            showFinished={showFinished}
             onValueChange={setSearchValue}
             onSuggestionSelect={(value) => {
               setSearchValue(value);
@@ -261,6 +272,7 @@ export function InventoryToolbar({ search, category, subtype, sort, summary }: P
                 search: value,
                 category,
                 subtype,
+                showFinished,
                 sort
               }));
             }}
@@ -268,6 +280,28 @@ export function InventoryToolbar({ search, category, subtype, sort, summary }: P
         </div>
 
         <div className="flex shrink-0 items-center gap-1.5">
+          <button
+            type="button"
+            onClick={() => {
+              replaceHref(buildInventoryToolbarHref(pathname, {
+                search: searchValue,
+                category,
+                subtype,
+                showFinished: !showFinished,
+                sort
+              }));
+            }}
+            title={showFinished ? "Скрыть закончившиеся" : "Показать закончившиеся"}
+            className={`flex items-center gap-1.5 rounded-lg border px-3 py-2 text-xs font-medium transition-colors ${
+              showFinished
+                ? "border-amber-200 bg-amber-50 text-amber-800"
+                : "border-zinc-200 bg-white text-zinc-600 hover:border-zinc-300 hover:bg-zinc-50"
+            }`}
+          >
+            <Eye className="h-3.5 w-3.5" />
+            <span className="hidden sm:inline">{showFinished ? "Скрыть закончившиеся" : "Показать закончившиеся"}</span>
+          </button>
+
           <div ref={sortRef} className="relative">
             <button
               type="button"
@@ -294,6 +328,7 @@ export function InventoryToolbar({ search, category, subtype, sort, summary }: P
                         search: searchValue,
                         category,
                         subtype,
+                        showFinished,
                         sort: value as InventorySortOption
                       }));
                       setSortOpen(false);
@@ -319,6 +354,7 @@ export function InventoryToolbar({ search, category, subtype, sort, summary }: P
                   search: "",
                   category: "all",
                   subtype: null,
+                  showFinished: defaultInventoryShowFinished,
                   sort: defaultInventorySortOption
                 }));
               }}

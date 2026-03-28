@@ -79,7 +79,11 @@ describe("ingredient picker state helpers", () => {
 
     expect(view.primaryName).toBe("Каскад");
     expect(view.inlineBrand).toBe("Yakima Chief");
-    expect(view.subtitle).toBe("США • 6% AA");
+    expect(view.country).toEqual({
+      code: "US",
+      label: "США"
+    });
+    expect(view.subtitle).toBe("6% AA");
   });
 
   it("promotes malt brand into the primary row only when it is not already in the title", () => {

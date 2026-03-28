@@ -23,7 +23,7 @@ export default async function EditCustomIngredientPage({
   }
 
   return (
-    <main className="space-y-6">
+    <main className="mx-auto max-w-5xl space-y-6">
       <CustomCatalogIngredientForm
         mode="edit"
         initial={buildCustomFormInitialValueFromCustomItem(item)}

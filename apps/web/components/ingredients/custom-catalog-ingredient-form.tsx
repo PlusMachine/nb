@@ -2,14 +2,20 @@
 
 import React, { useEffect, useMemo, useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
+import {
+  Droplets,
+  FlaskConical,
+  Leaf,
+  Package,
+  Wheat
+} from "lucide-react";
 
 import type { CatalogCustomIngredientActionResult } from "@/app/(app)/app/catalog/actions";
-import { IngredientCategorySelector } from "@/components/ingredients/ingredient-category-selector";
 import type {
   IngredientCategory,
   IngredientDisplayMode
 } from "@/features/ingredients/contracts";
-import { ingredientDisplayModes } from "@/features/ingredients/contracts";
+import { formatIngredientSubtypeLabel } from "@/features/ingredients/presentation";
 import { ingredientCategorySubtypes, resolveLegacyIngredientType } from "@/features/ingredients/taxonomy";
 import {
   buildCustomIngredientTechnicalData,
@@ -51,6 +57,8 @@ export type CustomCatalogIngredientFormInitialValue = {
   fermentableColorEbc?: number | null;
   fermentableExtractYieldPct?: number | null;
   fermentableProteinPct?: number | null;
+  maltType?: string | null;
+  fermentableMaxUsagePct?: number | null;
   hopAlphaAcidPct?: number | null;
   hopBetaAcidPct?: number | null;
   hopForm?: CustomHopForm | null;
@@ -73,18 +81,267 @@ type Props = {
   onDelete?: () => Promise<CatalogCustomIngredientActionResult>;
 };
 
+type UserFacingIngredientKind =
+  | "malt"
+  | "fermentable"
+  | "hop"
+  | "yeast"
+  | "consumable"
+  | "water_treatment";
+
+type ChoiceOption = {
+  value: string;
+  label: string;
+  description?: string;
+};
+
+type ToneClasses = {
+  border: string;
+  bg: string;
+  text: string;
+  iconBg: string;
+  iconText: string;
+};
+
 const numberToInput = (value?: number | null) => value == null ? "" : String(value);
 
-const parseAliasesInput = (value: string) => Array.from(new Set(
-  value
-    .split(/\n|,/)
-    .map((entry) => entry.trim())
-    .filter(Boolean)
-));
+const userFacingIngredientKindOptions = [
+  {
+    value: "malt",
+    label: "Солод",
+    description: "Базовый, карамельный, жженый",
+    category: "fermentable",
+    subtype: "malt",
+    icon: Wheat
+  },
+  {
+    value: "fermentable",
+    label: "Сбраживаемое",
+    description: "Сахар, сироп, мед",
+    category: "fermentable",
+    subtype: "fermentable",
+    icon: Wheat
+  },
+  {
+    value: "hop",
+    label: "Хмель",
+    description: "Сорт и форма",
+    category: "hop",
+    subtype: null,
+    icon: Leaf
+  },
+  {
+    value: "yeast",
+    label: "Дрожжи",
+    description: "Форма и аттенюация",
+    category: "yeast",
+    subtype: null,
+    icon: FlaskConical
+  },
+  {
+    value: "water_treatment",
+    label: "Водоподготовка",
+    description: "Кислоты, соли, вода",
+    category: "water_treatment",
+    subtype: "other",
+    icon: Droplets
+  },
+  {
+    value: "consumable",
+    label: "Расходник",
+    description: "Санитайзеры и осветлители",
+    category: "consumable",
+    subtype: "other",
+    icon: Package
+  }
+] as const satisfies ReadonlyArray<{
+  value: UserFacingIngredientKind;
+  label: string;
+  description: string;
+  category: IngredientCategory;
+  subtype: string | null;
+  icon: React.ComponentType<{ className?: string }>;
+}>;
 
-const resolveSubtypeLabel = (category: IngredientCategory) => (
-  category === "fermentable" ? "Тип ферментируемого" : "Подтип"
-);
+const capitalizeLabel = (value: string) => value.length
+  ? `${value.slice(0, 1).toUpperCase()}${value.slice(1)}`
+  : value;
+
+const resolveSubtypeFieldLabel = (category: IngredientCategory) => {
+  if (category === "consumable") {
+    return "Тип расходника";
+  }
+
+  if (category === "water_treatment") {
+    return "Тип средства";
+  }
+
+  return "Подтип";
+};
+
+const resolveUserFacingIngredientKind = (
+  category: IngredientCategory,
+  subtype?: string | null
+): UserFacingIngredientKind => {
+  if (category === "fermentable") {
+    return subtype === "malt" ? "malt" : "fermentable";
+  }
+
+  return category;
+};
+
+const resolveDisplayNamePlaceholder = (kind: UserFacingIngredientKind) => {
+  if (kind === "malt") {
+    return "Например, Pilsner Malt";
+  }
+
+  if (kind === "fermentable") {
+    return "Например, Декстроза";
+  }
+
+  if (kind === "hop") {
+    return "Например, Cascade 2025";
+  }
+
+  if (kind === "yeast") {
+    return "Например, US-05";
+  }
+
+  if (kind === "water_treatment") {
+    return "Например, Молочная кислота 80%";
+  }
+
+  return "Например, Irish Moss";
+};
+
+const resolveKindToneClasses = (category: IngredientCategory): ToneClasses => {
+  if (category === "fermentable") {
+    return {
+      border: "border-amber-300",
+      bg: "bg-amber-50",
+      text: "text-amber-950",
+      iconBg: "bg-amber-100",
+      iconText: "text-amber-700"
+    };
+  }
+
+  if (category === "hop") {
+    return {
+      border: "border-emerald-300",
+      bg: "bg-emerald-50",
+      text: "text-emerald-950",
+      iconBg: "bg-emerald-100",
+      iconText: "text-emerald-700"
+    };
+  }
+
+  if (category === "yeast") {
+    return {
+      border: "border-violet-300",
+      bg: "bg-violet-50",
+      text: "text-violet-950",
+      iconBg: "bg-violet-100",
+      iconText: "text-violet-700"
+    };
+  }
+
+  if (category === "water_treatment") {
+    return {
+      border: "border-sky-300",
+      bg: "bg-sky-50",
+      text: "text-sky-950",
+      iconBg: "bg-sky-100",
+      iconText: "text-sky-700"
+    };
+  }
+
+  return {
+    border: "border-zinc-300",
+    bg: "bg-zinc-100",
+    text: "text-zinc-950",
+    iconBg: "bg-zinc-200",
+    iconText: "text-zinc-700"
+  };
+};
+
+const recentHarvestYears = Array.from({ length: 8 }, (_, index) => String(new Date().getFullYear() - index));
+
+const maltTypeOptions: ChoiceOption[] = [
+  { value: "unspecified", label: "Не указано" },
+  { value: "base", label: "Базовый" },
+  { value: "specialty", label: "Специальный" }
+];
+
+function FieldBadge({ required }: { required: boolean }) {
+  return (
+    <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.08em] ${
+      required
+        ? "bg-zinc-950 text-white"
+        : "bg-zinc-100 text-zinc-500"
+    }`}>
+      {required ? "обязательно" : "необязательно"}
+    </span>
+  );
+}
+
+const hopFormChoiceOptions: ChoiceOption[] = customHopForms.map((value) => ({
+  value,
+  label: customHopFormLabels[value]
+}));
+
+const yeastFormChoiceOptions: ChoiceOption[] = customYeastForms.map((value) => ({
+  value,
+  label: customYeastFormLabels[value]
+}));
+
+const physicalFormChoiceOptions: ChoiceOption[] = customPhysicalForms.map((value) => ({
+  value,
+  label: customPhysicalFormLabels[value]
+}));
+
+function ChoicePills({
+  options,
+  value,
+  onChange,
+  columnsClassName = "sm:grid-cols-2 xl:grid-cols-4",
+  compact = false
+}: {
+  options: readonly ChoiceOption[];
+  value: string;
+  onChange: (nextValue: string) => void;
+  columnsClassName?: string;
+  compact?: boolean;
+}) {
+  return (
+    <div className={`grid gap-2 ${columnsClassName}`}>
+      {options.map((option) => {
+        const active = option.value === value;
+
+        return (
+          <button
+            key={option.value}
+            type="button"
+            onClick={() => onChange(option.value)}
+            className={`rounded-2xl border text-left transition ${
+              compact ? "px-3 py-2.5" : "px-4 py-3"
+            } ${
+              active
+                ? "border-zinc-950 bg-zinc-950 text-white shadow-sm"
+                : "border-zinc-200 bg-white text-zinc-700 hover:border-zinc-300 hover:bg-zinc-50"
+            }`}
+          >
+            <div className={`font-medium ${compact ? "text-sm" : "text-sm"}`}>{option.label}</div>
+            {option.description ? (
+              <div className={`mt-1 leading-5 ${compact ? "text-xs" : "text-xs"} ${active ? "text-white/75" : "text-zinc-500"}`}>
+                {option.description}
+              </div>
+            ) : null}
+          </button>
+        );
+      })}
+    </div>
+  );
+}
 
 export function CustomCatalogIngredientForm({
   mode,
@@ -99,21 +356,15 @@ export function CustomCatalogIngredientForm({
   const [category, setCategory] = useState<IngredientCategory>(initial.category);
   const [subtype, setSubtype] = useState(initial.subtype ?? resolveDefaultCustomIngredientSubtype(initial.category) ?? "");
   const [displayName, setDisplayName] = useState(initial.displayName);
-  const [nameRu, setNameRu] = useState(initial.nameRu ?? "");
-  const [nameEn, setNameEn] = useState(initial.nameEn ?? "");
-  const [aliasesText, setAliasesText] = useState((initial.aliases ?? []).join("\n"));
   const [brand, setBrand] = useState(initial.brand ?? "");
   const [country, setCountry] = useState(initial.country ?? "");
-  const [productCode, setProductCode] = useState(initial.productCode ?? "");
   const [notes, setNotes] = useState(initial.notes ?? "");
-  const [displayModeRu, setDisplayModeRu] = useState<IngredientDisplayMode>(initial.displayModeRu ?? "auto");
-  const [displayNameOverrideRu, setDisplayNameOverrideRu] = useState(initial.displayNameOverrideRu ?? "");
-  const [secondaryNameOverrideRu, setSecondaryNameOverrideRu] = useState(initial.secondaryNameOverrideRu ?? "");
-  const [hideSecondaryNameRu, setHideSecondaryNameRu] = useState(initial.hideSecondaryNameRu ?? false);
   const [harvestYear, setHarvestYear] = useState(numberToInput(initial.harvestYear));
   const [fermentableColorEbc, setFermentableColorEbc] = useState(numberToInput(initial.fermentableColorEbc));
   const [fermentableExtractYieldPct, setFermentableExtractYieldPct] = useState(numberToInput(initial.fermentableExtractYieldPct));
   const [fermentableProteinPct, setFermentableProteinPct] = useState(numberToInput(initial.fermentableProteinPct));
+  const [maltType, setMaltType] = useState(initial.maltType ?? "unspecified");
+  const [fermentableMaxUsagePct, setFermentableMaxUsagePct] = useState(numberToInput(initial.fermentableMaxUsagePct));
   const [hopAlphaAcidPct, setHopAlphaAcidPct] = useState(numberToInput(initial.hopAlphaAcidPct));
   const [hopBetaAcidPct, setHopBetaAcidPct] = useState(numberToInput(initial.hopBetaAcidPct));
   const [hopForm, setHopForm] = useState<CustomHopForm>(initial.hopForm ?? "pellet");
@@ -132,6 +383,10 @@ export function CustomCatalogIngredientForm({
     () => normalizeCustomIngredientSubtype(category, subtype),
     [category, subtype]
   );
+  const activeKind = useMemo(
+    () => resolveUserFacingIngredientKind(category, normalizedSubtype),
+    [category, normalizedSubtype]
+  );
   const type = useMemo(
     () => resolveLegacyIngredientType({ category, subtype: normalizedSubtype }),
     [category, normalizedSubtype]
@@ -141,6 +396,8 @@ export function CustomCatalogIngredientForm({
     fermentableColorEbc: fermentableColorEbc ? Number(fermentableColorEbc) : null,
     fermentableExtractYieldPct: fermentableExtractYieldPct ? Number(fermentableExtractYieldPct) : null,
     fermentableProteinPct: fermentableProteinPct ? Number(fermentableProteinPct) : null,
+    maltType: maltType === "unspecified" ? null : maltType,
+    fermentableMaxUsagePct: fermentableMaxUsagePct ? Number(fermentableMaxUsagePct) : null,
     hopAlphaAcidPct: hopAlphaAcidPct ? Number(hopAlphaAcidPct) : null,
     hopBetaAcidPct: hopBetaAcidPct ? Number(hopBetaAcidPct) : null,
     hopForm: category === "hop" ? hopForm : null,
@@ -160,10 +417,12 @@ export function CustomCatalogIngredientForm({
     defaultDisplayUnit,
     fermentableColorEbc,
     fermentableExtractYieldPct,
+    fermentableMaxUsagePct,
     fermentableProteinPct,
     hopAlphaAcidPct,
     hopBetaAcidPct,
     hopForm,
+    maltType,
     physicalForm,
     type,
     yeastAttenuationPct,
@@ -178,6 +437,36 @@ export function CustomCatalogIngredientForm({
     subtype: normalizedSubtype,
     technicalData
   }), [category, normalizedSubtype, technicalData, type]);
+  const subtypeOptions = useMemo(
+    () => category === "fermentable" || !shouldShowCustomIngredientSubtypeField(category)
+      ? []
+      : ingredientCategorySubtypes[category],
+    [category]
+  );
+  const subtypeChoiceOptions = useMemo(
+    () => subtypeOptions.map((option) => ({
+      value: option,
+      label: capitalizeLabel(formatIngredientSubtypeLabel(category, option))
+    })),
+    [category, subtypeOptions]
+  );
+  const unitChoiceOptions = useMemo(
+    () => unitProfile.allowedUnits.map((unit) => ({
+      value: unit,
+      label: inventoryUnitLabels[unit] ?? unit
+    })),
+    [unitProfile.allowedUnits]
+  );
+  const harvestYearOptions = useMemo(() => {
+    const options = [...recentHarvestYears];
+    const currentValue = harvestYear.trim();
+
+    if (currentValue && !options.includes(currentValue)) {
+      options.unshift(currentValue);
+    }
+
+    return options;
+  }, [harvestYear]);
 
   useEffect(() => {
     if (previousCategoryRef.current === category) {
@@ -197,6 +486,7 @@ export function CustomCatalogIngredientForm({
   }, [defaultDisplayUnit, unitProfile]);
 
   const fieldErrors = result?.fieldErrors ?? {};
+  const shouldPreserveSourceMetadata = mode === "edit" || Boolean(initial.derivedFromIngredientId);
 
   return (
     <div className="space-y-6 rounded-[28px] border border-zinc-200 bg-white p-6 shadow-sm">
@@ -208,7 +498,7 @@ export function CustomCatalogIngredientForm({
           {mode === "create" ? "Свой ингредиент" : "Редактирование"}
         </h1>
         <p className="max-w-3xl text-sm leading-6 text-zinc-600">
-          Каталожные характеристики редактируются здесь. Складские остатки, упаковка и цена остаются в разделе «Мой склад».
+          Только базовые поля и параметры, которые реально пригодятся потом в складе, рецептах и калькуляторах.
         </p>
       </div>
 
@@ -224,67 +514,92 @@ export function CustomCatalogIngredientForm({
         </div>
       ) : null}
 
-      <div className="grid gap-6 xl:grid-cols-[1.2fr_0.8fr]">
-        <section className="space-y-4 rounded-3xl border border-zinc-200 bg-zinc-50/80 p-5">
-          <h2 className="text-sm font-semibold uppercase tracking-[0.12em] text-zinc-500">Основное</h2>
+      <div className="space-y-4">
+        <section className="rounded-3xl border border-zinc-200 bg-zinc-50/80 p-5">
+          <div className="flex flex-wrap items-center gap-3">
+            <h2 className="text-lg font-semibold text-zinc-950">Тип ингредиента</h2>
+            <span className="text-xs text-zinc-500">Минимум для заполнения: название и поля с меткой «обязательно».</span>
+          </div>
 
-          <IngredientCategorySelector value={category} onChange={setCategory} />
+          <div className="mt-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+            {userFacingIngredientKindOptions.map((option) => {
+              const Icon = option.icon;
+              const isActive = activeKind === option.value;
+              const tone = resolveKindToneClasses(option.category);
 
-          {shouldShowCustomIngredientSubtypeField(category) ? (
-            <label className="block text-sm">
-              {resolveSubtypeLabel(category)}
-              <select
+              return (
+                <button
+                  key={option.value}
+                  type="button"
+                  onClick={() => {
+                    setCategory(option.category);
+                    setSubtype(option.subtype ?? "");
+                    setResult(null);
+                  }}
+                  className={`rounded-2xl border px-4 py-3 text-left transition ${
+                    isActive
+                      ? `${tone.border} ${tone.bg} ${tone.text} shadow-sm`
+                      : "border-zinc-200 bg-white text-zinc-700 hover:border-zinc-300 hover:bg-zinc-50"
+                  }`}
+                >
+                  <div className="flex items-start gap-3">
+                    <span className={`mt-0.5 inline-flex rounded-xl p-2 ${isActive ? `${tone.iconBg} ${tone.iconText}` : `${tone.iconBg} ${tone.iconText}`}`}>
+                      <Icon className="h-4 w-4" />
+                    </span>
+                    <div className="space-y-1">
+                      <div className="text-sm font-semibold">{option.label}</div>
+                      <div className={`text-xs leading-5 ${isActive ? "opacity-80" : "text-zinc-500"}`}>
+                        {option.description}
+                      </div>
+                    </div>
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+
+          {subtypeChoiceOptions.length ? (
+            <div className="mt-4 space-y-2">
+              <div className="flex items-center gap-2 text-sm font-medium text-zinc-900">
+                <span>{resolveSubtypeFieldLabel(category)}</span>
+                <FieldBadge required={false} />
+              </div>
+              <ChoicePills
+                options={subtypeChoiceOptions}
                 value={subtype}
-                onChange={(event) => setSubtype(event.target.value)}
-                className="mt-1 h-11 w-full rounded-xl border border-zinc-200 bg-white px-3 text-sm"
-              >
-                {ingredientCategorySubtypes[category].map((option) => (
-                  <option key={option} value={option}>{option.replaceAll("_", " ")}</option>
-                ))}
-              </select>
-            </label>
+                onChange={(nextValue) => setSubtype(nextValue)}
+                columnsClassName="sm:grid-cols-2 xl:grid-cols-3"
+                compact
+              />
+              {fieldErrors.subtype ? <span className="block text-xs text-rose-600">{fieldErrors.subtype}</span> : null}
+            </div>
           ) : null}
 
-          <div className="grid gap-4 md:grid-cols-2">
+          {fieldErrors.category ? <span className="mt-3 block text-xs text-rose-600">{fieldErrors.category}</span> : null}
+        </section>
+
+        <section className="rounded-3xl border border-zinc-200 bg-white p-5">
+          <h2 className="text-lg font-semibold text-zinc-950">Карточка ингредиента</h2>
+
+          <div className="mt-4 grid gap-4 lg:grid-cols-[minmax(0,1.5fr)_minmax(220px,1fr)_minmax(180px,0.8fr)]">
             <label className="block text-sm">
-              Основное название
+              <div className="flex items-center gap-2">
+                <span>Название ингредиента</span>
+                <FieldBadge required />
+              </div>
               <input
                 value={displayName}
                 onChange={(event) => setDisplayName(event.target.value)}
                 className="mt-1 h-11 w-full rounded-xl border border-zinc-200 bg-white px-3 text-sm"
-                placeholder="Например, Cascade 2025"
+                placeholder={resolveDisplayNamePlaceholder(activeKind)}
               />
               {fieldErrors.displayName ? <span className="mt-1 block text-xs text-rose-600">{fieldErrors.displayName}</span> : null}
             </label>
             <label className="block text-sm">
-              Код / артикул
-              <input
-                value={productCode}
-                onChange={(event) => setProductCode(event.target.value)}
-                className="mt-1 h-11 w-full rounded-xl border border-zinc-200 bg-white px-3 text-sm"
-                placeholder="Опционально"
-              />
-            </label>
-            <label className="block text-sm">
-              `name_ru`
-              <input
-                value={nameRu}
-                onChange={(event) => setNameRu(event.target.value)}
-                className="mt-1 h-11 w-full rounded-xl border border-zinc-200 bg-white px-3 text-sm"
-                placeholder="Русское имя"
-              />
-            </label>
-            <label className="block text-sm">
-              `name_en`
-              <input
-                value={nameEn}
-                onChange={(event) => setNameEn(event.target.value)}
-                className="mt-1 h-11 w-full rounded-xl border border-zinc-200 bg-white px-3 text-sm"
-                placeholder="Source/original name"
-              />
-            </label>
-            <label className="block text-sm">
-              Бренд / производитель
+              <div className="flex items-center gap-2">
+                <span>Бренд / производитель</span>
+                <FieldBadge required={false} />
+              </div>
               <input
                 value={brand}
                 onChange={(event) => setBrand(event.target.value)}
@@ -293,7 +608,10 @@ export function CustomCatalogIngredientForm({
               />
             </label>
             <label className="block text-sm">
-              Страна
+              <div className="flex items-center gap-2">
+                <span>Страна</span>
+                <FieldBadge required={false} />
+              </div>
               <input
                 value={country}
                 onChange={(event) => setCountry(event.target.value)}
@@ -303,180 +621,226 @@ export function CustomCatalogIngredientForm({
             </label>
           </div>
 
-          <label className="block text-sm">
-            Алиасы
-            <textarea
-              value={aliasesText}
-              onChange={(event) => setAliasesText(event.target.value)}
-              className="mt-1 min-h-28 w-full rounded-2xl border border-zinc-200 bg-white px-3 py-3 text-sm"
-              placeholder="По одному алиасу на строку или через запятую"
-            />
-          </label>
+          <div className="mt-5 border-t border-zinc-200 pt-5">
+            {category === "hop" ? (
+              <div className="space-y-4">
+                <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_220px]">
+                  <label className="text-sm">
+                    <div className="flex items-center gap-2">
+                      <span>Альфа-кислота, %</span>
+                      <FieldBadge required />
+                    </div>
+                    <input type="number" min="0" max="100" step="0.1" value={hopAlphaAcidPct} onChange={(event) => setHopAlphaAcidPct(event.target.value)} className="mt-1 h-11 w-full rounded-xl border border-zinc-200 bg-white px-3 text-sm" />
+                    {fieldErrors.hopAlphaAcidPct ? <span className="mt-1 block text-xs text-rose-600">{fieldErrors.hopAlphaAcidPct}</span> : null}
+                  </label>
+                  <label className="text-sm">
+                    <div className="flex items-center gap-2">
+                      <span>Бета-кислота, %</span>
+                      <FieldBadge required={false} />
+                    </div>
+                    <input type="number" min="0" max="100" step="0.1" value={hopBetaAcidPct} onChange={(event) => setHopBetaAcidPct(event.target.value)} className="mt-1 h-11 w-full rounded-xl border border-zinc-200 bg-white px-3 text-sm" />
+                  </label>
+                  <label className="text-sm">
+                    <div className="flex items-center gap-2">
+                      <span>Год урожая</span>
+                      <FieldBadge required={false} />
+                    </div>
+                    <select value={harvestYear} onChange={(event) => setHarvestYear(event.target.value)} className="mt-1 h-11 w-full rounded-xl border border-zinc-200 bg-white px-3 text-sm">
+                      <option value="">Не указан</option>
+                      {harvestYearOptions.map((year) => (
+                        <option key={year} value={year}>{year}</option>
+                      ))}
+                    </select>
+                  </label>
+                </div>
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2 text-sm font-medium text-zinc-900">
+                    <span>Форма хмеля</span>
+                    <FieldBadge required={false} />
+                  </div>
+                  <ChoicePills
+                    options={hopFormChoiceOptions}
+                    value={hopForm}
+                    onChange={(nextValue) => setHopForm(nextValue as CustomHopForm)}
+                    columnsClassName="sm:grid-cols-2 xl:grid-cols-5"
+                    compact
+                  />
+                </div>
+              </div>
+            ) : null}
 
-          <label className="block text-sm">
-            Заметки
-            <textarea
-              value={notes}
-              onChange={(event) => setNotes(event.target.value)}
-              className="mt-1 min-h-28 w-full rounded-2xl border border-zinc-200 bg-white px-3 py-3 text-sm"
-              placeholder="Комментарий, особенности, supplier note"
-            />
-          </label>
+            {category === "fermentable" ? (
+              <div className="space-y-4">
+                <div className={`grid gap-4 ${activeKind === "malt" ? "md:grid-cols-3" : "md:grid-cols-2"}`}>
+                  <label className="text-sm">
+                    <div className="flex items-center gap-2">
+                      <span>Цвет, EBC</span>
+                      <FieldBadge required />
+                    </div>
+                    <input type="number" min="0" step="0.1" value={fermentableColorEbc} onChange={(event) => setFermentableColorEbc(event.target.value)} className="mt-1 h-11 w-full rounded-xl border border-zinc-200 bg-white px-3 text-sm" />
+                    {fieldErrors.fermentableColorEbc ? <span className="mt-1 block text-xs text-rose-600">{fieldErrors.fermentableColorEbc}</span> : null}
+                  </label>
+                  <label className="text-sm">
+                    <div className="flex items-center gap-2">
+                      <span>Экстрактивность, %</span>
+                      <FieldBadge required />
+                    </div>
+                    <input type="number" min="0" max="100" step="0.1" value={fermentableExtractYieldPct} onChange={(event) => setFermentableExtractYieldPct(event.target.value)} className="mt-1 h-11 w-full rounded-xl border border-zinc-200 bg-white px-3 text-sm" />
+                    {fieldErrors.fermentableExtractYieldPct ? <span className="mt-1 block text-xs text-rose-600">{fieldErrors.fermentableExtractYieldPct}</span> : null}
+                  </label>
+                  {activeKind === "malt" ? (
+                    <label className="text-sm">
+                      <div className="flex items-center gap-2">
+                        <span>Белок, %</span>
+                        <FieldBadge required={false} />
+                      </div>
+                      <input type="number" min="0" max="100" step="0.1" value={fermentableProteinPct} onChange={(event) => setFermentableProteinPct(event.target.value)} className="mt-1 h-11 w-full rounded-xl border border-zinc-200 bg-white px-3 text-sm" />
+                    </label>
+                  ) : null}
+                </div>
+
+                {activeKind === "malt" ? (
+                  <div className="grid gap-4 xl:grid-cols-[minmax(0,420px)_minmax(0,220px)]">
+                    <div className="space-y-2">
+                      <div className="flex items-center gap-2 text-sm font-medium text-zinc-900">
+                        <span>Тип солода</span>
+                        <FieldBadge required={false} />
+                      </div>
+                      <ChoicePills
+                        options={maltTypeOptions}
+                        value={maltType}
+                        onChange={(nextValue) => setMaltType(nextValue)}
+                        columnsClassName="sm:grid-cols-3"
+                        compact
+                      />
+                    </div>
+                    <label className="text-sm">
+                      <div className="flex items-center gap-2">
+                        <span>Макс. засыпь, %</span>
+                        <FieldBadge required={false} />
+                      </div>
+                      <input type="number" min="0" max="100" step="0.1" value={fermentableMaxUsagePct} onChange={(event) => setFermentableMaxUsagePct(event.target.value)} className="mt-1 h-11 w-full rounded-xl border border-zinc-200 bg-white px-3 text-sm" placeholder="Не указано" />
+                    </label>
+                  </div>
+                ) : null}
+              </div>
+            ) : null}
+
+            {category === "yeast" ? (
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2 text-sm font-medium text-zinc-900">
+                    <span>Форма дрожжей</span>
+                    <FieldBadge required />
+                  </div>
+                  <ChoicePills
+                    options={yeastFormChoiceOptions}
+                    value={yeastForm}
+                    onChange={(nextValue) => setYeastForm(nextValue as CustomYeastForm)}
+                    columnsClassName="sm:grid-cols-2 xl:grid-cols-4"
+                    compact
+                  />
+                  {fieldErrors.yeastForm ? <span className="block text-xs text-rose-600">{fieldErrors.yeastForm}</span> : null}
+                </div>
+                <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+                  <label className="text-sm">
+                    <div className="flex items-center gap-2">
+                      <span>Аттенюация, %</span>
+                      <FieldBadge required />
+                    </div>
+                    <input type="number" min="0" max="100" step="0.1" value={yeastAttenuationPct} onChange={(event) => setYeastAttenuationPct(event.target.value)} className="mt-1 h-11 w-full rounded-xl border border-zinc-200 bg-white px-3 text-sm" />
+                    {fieldErrors.yeastAttenuationPct ? <span className="mt-1 block text-xs text-rose-600">{fieldErrors.yeastAttenuationPct}</span> : null}
+                  </label>
+                  <label className="text-sm">
+                    <div className="flex items-center gap-2">
+                      <span>Флокуляция</span>
+                      <FieldBadge required={false} />
+                    </div>
+                    <input value={yeastFlocculation} onChange={(event) => setYeastFlocculation(event.target.value)} className="mt-1 h-11 w-full rounded-xl border border-zinc-200 bg-white px-3 text-sm" />
+                  </label>
+                  <label className="text-sm">
+                    <div className="flex items-center gap-2">
+                      <span>Мин. температура, °C</span>
+                      <FieldBadge required={false} />
+                    </div>
+                    <input type="number" min="-20" max="60" step="0.1" value={yeastMinFermentationTempC} onChange={(event) => setYeastMinFermentationTempC(event.target.value)} className="mt-1 h-11 w-full rounded-xl border border-zinc-200 bg-white px-3 text-sm" />
+                  </label>
+                  <label className="text-sm">
+                    <div className="flex items-center gap-2">
+                      <span>Макс. температура, °C</span>
+                      <FieldBadge required={false} />
+                    </div>
+                    <input type="number" min="-20" max="60" step="0.1" value={yeastMaxFermentationTempC} onChange={(event) => setYeastMaxFermentationTempC(event.target.value)} className="mt-1 h-11 w-full rounded-xl border border-zinc-200 bg-white px-3 text-sm" />
+                  </label>
+                  <label className="text-sm">
+                    <div className="flex items-center gap-2">
+                      <span>Толерантность к алкоголю, % ABV</span>
+                      <FieldBadge required={false} />
+                    </div>
+                    <input type="number" min="0" max="100" step="0.1" value={alcoholToleranceAbvTypical} onChange={(event) => setAlcoholToleranceAbvTypical(event.target.value)} className="mt-1 h-11 w-full rounded-xl border border-zinc-200 bg-white px-3 text-sm" />
+                  </label>
+                </div>
+              </div>
+            ) : null}
+
+            {(category === "consumable" || category === "water_treatment") ? (
+              <div className="grid gap-4 xl:grid-cols-[minmax(0,420px)_minmax(0,1fr)]">
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2 text-sm font-medium text-zinc-900">
+                    <span>Форма</span>
+                    <FieldBadge required={false} />
+                  </div>
+                  <ChoicePills
+                    options={physicalFormChoiceOptions}
+                    value={physicalForm}
+                    onChange={(nextValue) => setPhysicalForm(nextValue as CustomPhysicalForm)}
+                    columnsClassName="sm:grid-cols-2 xl:grid-cols-3"
+                    compact
+                  />
+                </div>
+                <label className="text-sm">
+                  <div className="flex items-center gap-2">
+                    <span>Концентрация / дозировка</span>
+                    <FieldBadge required={false} />
+                  </div>
+                  <input value={concentration} onChange={(event) => setConcentration(event.target.value)} className="mt-1 h-11 w-full rounded-xl border border-zinc-200 bg-white px-3 text-sm" placeholder="Например, 80% / 1 мл на 10 л" />
+                </label>
+              </div>
+            ) : null}
+          </div>
         </section>
 
-        <section className="space-y-4 rounded-3xl border border-zinc-200 bg-zinc-50/80 p-5">
-          <h2 className="text-sm font-semibold uppercase tracking-[0.12em] text-zinc-500">Отображение</h2>
+        <section className="rounded-3xl border border-zinc-200 bg-zinc-50/80 p-5">
+          <div className="grid gap-5 xl:grid-cols-[minmax(0,360px)_minmax(0,1fr)]">
+            <div className="space-y-2">
+              <div className="flex items-center gap-2 text-sm font-medium text-zinc-900">
+                <span>Единица по умолчанию</span>
+                <FieldBadge required={false} />
+              </div>
+              <ChoicePills
+                options={unitChoiceOptions}
+                value={defaultDisplayUnit}
+                onChange={(nextValue) => setDefaultDisplayUnit(nextValue as InventoryUnit)}
+                columnsClassName="grid-cols-2 sm:grid-cols-4"
+                compact
+              />
+            </div>
 
-          <label className="block text-sm">
-            Display mode
-            <select
-              value={displayModeRu}
-              onChange={(event) => setDisplayModeRu(event.target.value as IngredientDisplayMode)}
-              className="mt-1 h-11 w-full rounded-xl border border-zinc-200 bg-white px-3 text-sm"
-            >
-              {ingredientDisplayModes.map((mode) => (
-                <option key={mode} value={mode}>{mode}</option>
-              ))}
-            </select>
-          </label>
-
-          <label className="block text-sm">
-            Display override
-            <input
-              value={displayNameOverrideRu}
-              onChange={(event) => setDisplayNameOverrideRu(event.target.value)}
-              className="mt-1 h-11 w-full rounded-xl border border-zinc-200 bg-white px-3 text-sm"
-              placeholder="Опционально"
-            />
-          </label>
-
-          <label className="block text-sm">
-            Secondary override
-            <input
-              value={secondaryNameOverrideRu}
-              onChange={(event) => setSecondaryNameOverrideRu(event.target.value)}
-              className="mt-1 h-11 w-full rounded-xl border border-zinc-200 bg-white px-3 text-sm"
-              placeholder="Опционально"
-            />
-          </label>
-
-          <label className="flex items-center gap-2 text-sm text-zinc-700">
-            <input
-              type="checkbox"
-              checked={hideSecondaryNameRu}
-              onChange={(event) => setHideSecondaryNameRu(event.target.checked)}
-              className="rounded border-zinc-300"
-            />
-            Скрывать вторичное название в RU UI
-          </label>
-
-          <label className="block text-sm">
-            Единица по умолчанию
-            <select
-              value={defaultDisplayUnit}
-              onChange={(event) => setDefaultDisplayUnit(event.target.value as InventoryUnit)}
-              className="mt-1 h-11 w-full rounded-xl border border-zinc-200 bg-white px-3 text-sm"
-            >
-              {unitProfile.allowedUnits.map((unit) => (
-                <option key={unit} value={unit}>{inventoryUnitLabels[unit] ?? unit}</option>
-              ))}
-            </select>
-          </label>
+            <label className="block text-sm">
+              <div className="flex items-center gap-2">
+                <span>Заметки</span>
+                <FieldBadge required={false} />
+              </div>
+              <textarea
+                value={notes}
+                onChange={(event) => setNotes(event.target.value)}
+                className="mt-1 min-h-28 w-full rounded-2xl border border-zinc-200 bg-white px-3 py-3 text-sm"
+                placeholder="Например, своя фасовка, партия, особенности использования"
+              />
+            </label>
+          </div>
         </section>
       </div>
-
-      <section className="space-y-4 rounded-3xl border border-zinc-200 bg-white p-5">
-        <h2 className="text-sm font-semibold uppercase tracking-[0.12em] text-zinc-500">Ключевые характеристики</h2>
-
-        {category === "hop" ? (
-          <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-            <label className="text-sm">Alpha acid, %
-              <input type="number" min="0" max="100" step="0.1" value={hopAlphaAcidPct} onChange={(event) => setHopAlphaAcidPct(event.target.value)} className="mt-1 h-11 w-full rounded-xl border border-zinc-200 bg-white px-3 text-sm" />
-              {fieldErrors.hopAlphaAcidPct ? <span className="mt-1 block text-xs text-rose-600">{fieldErrors.hopAlphaAcidPct}</span> : null}
-            </label>
-            <label className="text-sm">Beta acid, %
-              <input type="number" min="0" max="100" step="0.1" value={hopBetaAcidPct} onChange={(event) => setHopBetaAcidPct(event.target.value)} className="mt-1 h-11 w-full rounded-xl border border-zinc-200 bg-white px-3 text-sm" />
-            </label>
-            <label className="text-sm">Crop year
-              <input type="number" min="1900" max="2100" step="1" value={harvestYear} onChange={(event) => setHarvestYear(event.target.value)} className="mt-1 h-11 w-full rounded-xl border border-zinc-200 bg-white px-3 text-sm" />
-            </label>
-            <label className="text-sm">Form
-              <select value={hopForm} onChange={(event) => setHopForm(event.target.value as CustomHopForm)} className="mt-1 h-11 w-full rounded-xl border border-zinc-200 bg-white px-3 text-sm">
-                {customHopForms.map((option) => (
-                  <option key={option} value={option}>{customHopFormLabels[option]}</option>
-                ))}
-              </select>
-            </label>
-          </div>
-        ) : null}
-
-        {category === "fermentable" ? (
-          <div className="grid gap-4 md:grid-cols-3">
-            <label className="text-sm">Цвет, EBC
-              <input type="number" min="0" step="0.1" value={fermentableColorEbc} onChange={(event) => setFermentableColorEbc(event.target.value)} className="mt-1 h-11 w-full rounded-xl border border-zinc-200 bg-white px-3 text-sm" />
-              {fieldErrors.fermentableColorEbc ? <span className="mt-1 block text-xs text-rose-600">{fieldErrors.fermentableColorEbc}</span> : null}
-            </label>
-            <label className="text-sm">Экстракт, %
-              <input type="number" min="0" max="100" step="0.1" value={fermentableExtractYieldPct} onChange={(event) => setFermentableExtractYieldPct(event.target.value)} className="mt-1 h-11 w-full rounded-xl border border-zinc-200 bg-white px-3 text-sm" />
-              {fieldErrors.fermentableExtractYieldPct ? <span className="mt-1 block text-xs text-rose-600">{fieldErrors.fermentableExtractYieldPct}</span> : null}
-            </label>
-            <label className="text-sm">Protein, %
-              <input type="number" min="0" max="100" step="0.1" value={fermentableProteinPct} onChange={(event) => setFermentableProteinPct(event.target.value)} className="mt-1 h-11 w-full rounded-xl border border-zinc-200 bg-white px-3 text-sm" />
-            </label>
-          </div>
-        ) : null}
-
-        {category === "yeast" ? (
-          <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-            <label className="text-sm">Форма
-              <select value={yeastForm} onChange={(event) => setYeastForm(event.target.value as CustomYeastForm)} className="mt-1 h-11 w-full rounded-xl border border-zinc-200 bg-white px-3 text-sm">
-                {customYeastForms.map((option) => (
-                  <option key={option} value={option}>{customYeastFormLabels[option]}</option>
-                ))}
-              </select>
-              {fieldErrors.yeastForm ? <span className="mt-1 block text-xs text-rose-600">{fieldErrors.yeastForm}</span> : null}
-            </label>
-            <label className="text-sm">Attenuation, %
-              <input type="number" min="0" max="100" step="0.1" value={yeastAttenuationPct} onChange={(event) => setYeastAttenuationPct(event.target.value)} className="mt-1 h-11 w-full rounded-xl border border-zinc-200 bg-white px-3 text-sm" />
-              {fieldErrors.yeastAttenuationPct ? <span className="mt-1 block text-xs text-rose-600">{fieldErrors.yeastAttenuationPct}</span> : null}
-            </label>
-            <label className="text-sm">Flocculation
-              <input value={yeastFlocculation} onChange={(event) => setYeastFlocculation(event.target.value)} className="mt-1 h-11 w-full rounded-xl border border-zinc-200 bg-white px-3 text-sm" />
-            </label>
-            <label className="text-sm">Min temp, °C
-              <input type="number" min="-20" max="60" step="0.1" value={yeastMinFermentationTempC} onChange={(event) => setYeastMinFermentationTempC(event.target.value)} className="mt-1 h-11 w-full rounded-xl border border-zinc-200 bg-white px-3 text-sm" />
-            </label>
-            <label className="text-sm">Max temp, °C
-              <input type="number" min="-20" max="60" step="0.1" value={yeastMaxFermentationTempC} onChange={(event) => setYeastMaxFermentationTempC(event.target.value)} className="mt-1 h-11 w-full rounded-xl border border-zinc-200 bg-white px-3 text-sm" />
-            </label>
-            <label className="text-sm">Alcohol tolerance, % ABV
-              <input type="number" min="0" max="100" step="0.1" value={alcoholToleranceAbvTypical} onChange={(event) => setAlcoholToleranceAbvTypical(event.target.value)} className="mt-1 h-11 w-full rounded-xl border border-zinc-200 bg-white px-3 text-sm" />
-            </label>
-          </div>
-        ) : null}
-
-        {(category === "consumable" || category === "water_treatment") ? (
-          <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-            <label className="text-sm">Форма
-              <select value={physicalForm} onChange={(event) => setPhysicalForm(event.target.value as CustomPhysicalForm)} className="mt-1 h-11 w-full rounded-xl border border-zinc-200 bg-white px-3 text-sm">
-                {customPhysicalForms.map((option) => (
-                  <option key={option} value={option}>{customPhysicalFormLabels[option]}</option>
-                ))}
-              </select>
-            </label>
-            <label className="text-sm">Concentration / usage
-              <input value={concentration} onChange={(event) => setConcentration(event.target.value)} className="mt-1 h-11 w-full rounded-xl border border-zinc-200 bg-white px-3 text-sm" placeholder="Например, 80% / 1 мл на 10 л" />
-            </label>
-            <label className="text-sm">Единица по умолчанию
-              <select value={defaultDisplayUnit} onChange={(event) => setDefaultDisplayUnit(event.target.value as InventoryUnit)} className="mt-1 h-11 w-full rounded-xl border border-zinc-200 bg-white px-3 text-sm">
-                {unitProfile.allowedUnits.map((unit) => (
-                  <option key={unit} value={unit}>{inventoryUnitLabels[unit] ?? unit}</option>
-                ))}
-              </select>
-            </label>
-          </div>
-        ) : null}
-      </section>
 
       <div className="flex flex-wrap items-center justify-between gap-3 border-t border-zinc-200 pt-5">
         <div className="flex flex-wrap gap-2">
@@ -518,23 +882,25 @@ export function CustomCatalogIngredientForm({
                 category,
                 subtype: normalizedSubtype,
                 displayName,
-                nameRu: nameRu || null,
-                nameEn: nameEn || null,
-                aliases: parseAliasesInput(aliasesText),
+                nameRu: shouldPreserveSourceMetadata ? initial.nameRu ?? null : null,
+                nameEn: shouldPreserveSourceMetadata ? initial.nameEn ?? null : null,
+                aliases: shouldPreserveSourceMetadata ? initial.aliases ?? [] : [],
                 brand: brand || null,
                 country: country || null,
-                productCode: productCode || null,
+                productCode: shouldPreserveSourceMetadata ? initial.productCode ?? null : null,
                 notes: notes || null,
-                displayModeRu,
-                displayNameOverrideRu: displayNameOverrideRu || null,
-                secondaryNameOverrideRu: secondaryNameOverrideRu || null,
-                hideSecondaryNameRu,
+                displayModeRu: shouldPreserveSourceMetadata ? initial.displayModeRu ?? "auto" : "auto",
+                displayNameOverrideRu: shouldPreserveSourceMetadata ? initial.displayNameOverrideRu ?? null : null,
+                secondaryNameOverrideRu: shouldPreserveSourceMetadata ? initial.secondaryNameOverrideRu ?? null : null,
+                hideSecondaryNameRu: shouldPreserveSourceMetadata ? initial.hideSecondaryNameRu ?? false : false,
                 derivedFromIngredientId: initial.derivedFromIngredientId ?? null,
                 derivedFromDisplayName: initial.derivedFromDisplayName ?? null,
                 harvestYear: harvestYear || null,
                 fermentableColorEbc: fermentableColorEbc || null,
                 fermentableExtractYieldPct: fermentableExtractYieldPct || null,
                 fermentableProteinPct: fermentableProteinPct || null,
+                maltType: category === "fermentable" && activeKind === "malt" && maltType !== "unspecified" ? maltType : null,
+                fermentableMaxUsagePct: category === "fermentable" && activeKind === "malt" ? fermentableMaxUsagePct || null : null,
                 hopAlphaAcidPct: hopAlphaAcidPct || null,
                 hopBetaAcidPct: hopBetaAcidPct || null,
                 hopForm: category === "hop" ? hopForm : null,

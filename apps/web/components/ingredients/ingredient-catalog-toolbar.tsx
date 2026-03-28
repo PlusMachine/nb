@@ -130,6 +130,26 @@ const buildCatalogHref = (
   return query ? `${pathname}?${query}` : pathname;
 };
 
+const buildCreateCustomIngredientHref = (
+  params: {
+    category: IngredientCategory | "all";
+    subtype: "malt" | "fermentable" | null;
+  }
+) => {
+  const searchParams = new URLSearchParams();
+
+  if (params.category !== "all") {
+    searchParams.set("category", params.category);
+  }
+
+  if (params.category === "fermentable" && params.subtype) {
+    searchParams.set("subtype", params.subtype);
+  }
+
+  const query = searchParams.toString();
+  return query ? `/app/catalog/new?${query}` : "/app/catalog/new";
+};
+
 export function IngredientCatalogToolbar({
   view,
   q,
@@ -307,7 +327,7 @@ export function IngredientCatalogToolbar({
         </div>
 
         <Link
-          href="/app/catalog/new"
+          href={buildCreateCustomIngredientHref({ category, subtype })}
           className="inline-flex h-11 items-center justify-center rounded-xl bg-zinc-950 px-5 text-sm font-medium text-white"
         >
           Создать свой ингредиент

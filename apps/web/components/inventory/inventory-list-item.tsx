@@ -12,8 +12,13 @@ import {
   Tag,
   X
 } from "lucide-react";
+import { CountryFlagLabel } from "@/components/shared/country-flag";
 import type { InventoryListItemDto } from "@/features/inventory/contracts";
-import { resolveIngredientDisplayNames } from "@/features/ingredients/presentation";
+import {
+  type ResolvedIngredientCountry,
+  resolveIngredientCountry,
+  resolveIngredientDisplayNames
+} from "@/features/ingredients/presentation";
 import { buildInventoryCostDisplay } from "@/features/inventory/display";
 import type { SystemCurrency, SystemCurrencyRateMap } from "@/features/system/currency";
 
@@ -62,6 +67,18 @@ const formatColorBadge = (item: InventoryListItemDto) => {
 
   return null;
 };
+
+type InventoryBadge =
+  | {
+    key: string;
+    kind: "text";
+    label: string;
+  }
+  | {
+    key: string;
+    kind: "country";
+    country: ResolvedIngredientCountry;
+  };
 
 const buildTypedBadges = (item: InventoryListItemDto) => {
   const technicalData = item.source.technicalData;
@@ -122,21 +139,61 @@ const buildTypedBadges = (item: InventoryListItemDto) => {
 };
 
 const buildTechnicalBadges = (item: InventoryListItemDto) => {
-  const badges = [...buildTypedBadges(item)];
+  const badges: InventoryBadge[] = [];
+  const seen = new Set<string>();
+
+  const pushTextBadge = (label?: string | null) => {
+    const trimmed = label?.trim();
+    if (!trimmed) {
+      return;
+    }
+
+    const key = trimmed.toLowerCase();
+    if (seen.has(key)) {
+      return;
+    }
+
+    seen.add(key);
+    badges.push({
+      key: `text:${key}`,
+      kind: "text",
+      label: trimmed
+    });
+  };
+
+  const pushCountryBadge = (country: ResolvedIngredientCountry | null) => {
+    if (!country) {
+      return;
+    }
+
+    const key = `country:${country.code ?? country.label.toLowerCase()}`;
+    if (seen.has(key)) {
+      return;
+    }
+
+    seen.add(key);
+    badges.push({
+      key,
+      kind: "country",
+      country
+    });
+  };
+
+  for (const badge of buildTypedBadges(item)) {
+    pushTextBadge(badge);
+  }
 
   if (item.source.manufacturer) {
-    badges.push(item.source.manufacturer);
+    pushTextBadge(item.source.manufacturer);
   }
 
-  if (item.source.country) {
-    badges.push(item.source.country);
-  }
+  pushCountryBadge(resolveIngredientCountry(item.source));
 
   if (item.source.summary && badges.length < 3) {
-    badges.push(item.source.summary);
+    pushTextBadge(item.source.summary);
   }
 
-  return [...new Set(badges.filter((badge) => badge.trim().length > 0))].slice(0, 5);
+  return badges.slice(0, 5);
 };
 
 const isFreshnessCritical = (freshnessDate: Date | null) => {
@@ -190,7 +247,7 @@ export function InventoryListItem({ item, preferredCurrency, currencyRates }: Pr
               type="button"
               onClick={onClick}
               disabled={isPending}
-              className="rounded-md border border-zinc-200 bg-zinc-50 px-2 py-1 text-[11px] font-medium text-zinc-500 transition-colors hover:bg-zinc-100 hover:text-zinc-700 disabled:opacity-60"
+              className="inline-flex items-center rounded-lg border border-slate-300 bg-slate-900 px-2.5 py-1.5 text-[11px] font-semibold text-white shadow-sm transition-colors hover:border-slate-700 hover:bg-slate-800 disabled:opacity-60"
             >
               {isPending ? "..." : "Закончился"}
             </button>
@@ -253,8 +310,17 @@ export function InventoryListItem({ item, preferredCurrency, currencyRates }: Pr
           {badges.length > 0 ? (
             <div className="flex flex-wrap gap-1.5">
               {badges.map((badge) => (
-                <span key={badge} className="inline-flex items-center rounded-md bg-zinc-50 px-2 py-0.5 text-xs text-zinc-600 ring-1 ring-zinc-200/60">
-                  {badge}
+                <span key={badge.key} className="inline-flex items-center rounded-md bg-zinc-50 px-2 py-0.5 text-xs text-zinc-600 ring-1 ring-zinc-200/60">
+                  {badge.kind === "country" ? (
+                    <CountryFlagLabel
+                      countryCode={badge.country.code}
+                      label={badge.country.label}
+                      iconClassName="h-3 w-4"
+                      className="gap-1"
+                    />
+                  ) : (
+                    badge.label
+                  )}
                 </span>
               ))}
             </div>

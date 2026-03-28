@@ -53,6 +53,22 @@ export const buildCustomFormInitialValueFromCatalogItem = (
 
     return readFiniteNumber(technicalData.proteinPct);
   })(),
+  maltType: (() => {
+    const technicalData = item.technicalData;
+    if (!technicalData || technicalData.type !== "malt") {
+      return null;
+    }
+
+    return readTrimmedString(technicalData.maltType);
+  })(),
+  fermentableMaxUsagePct: (() => {
+    const technicalData = item.technicalData;
+    if (!technicalData || technicalData.type !== "malt") {
+      return null;
+    }
+
+    return readFiniteNumber(technicalData.maxUsagePct);
+  })(),
   hopAlphaAcidPct: item.hopAlphaAcidPct ?? null,
   hopBetaAcidPct: item.hopBetaAcidPct ?? null,
   hopForm: (readTrimmedString(item.hopForm) ?? readTrimmedString(item.properties?.hopForm)) as CustomCatalogIngredientFormInitialValue["hopForm"],

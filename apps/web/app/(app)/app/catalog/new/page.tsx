@@ -16,6 +16,10 @@ const parseCategory = (value: string | undefined): IngredientCategory => (
     : "hop"
 );
 
+const parseFermentableSubtype = (value: string | undefined): "malt" | "fermentable" | undefined => (
+  value === "malt" || value === "fermentable" ? value : undefined
+);
+
 export default async function NewCustomIngredientPage({
   searchParams
 }: {
@@ -25,9 +29,13 @@ export default async function NewCustomIngredientPage({
   const params = searchParams ? await searchParams : {};
   const derivedFrom = typeof params.derivedFrom === "string" ? params.derivedFrom : undefined;
   const category = parseCategory(typeof params.category === "string" ? params.category : undefined);
+  const subtype = category === "fermentable"
+    ? parseFermentableSubtype(typeof params.subtype === "string" ? params.subtype : undefined)
+    : undefined;
 
   let initial: CustomCatalogIngredientFormInitialValue = {
     category,
+    subtype,
     displayName: "",
     aliases: []
   };
@@ -42,7 +50,7 @@ export default async function NewCustomIngredientPage({
   }
 
   return (
-    <main className="space-y-6">
+    <main className="mx-auto max-w-5xl space-y-6">
       <CustomCatalogIngredientForm
         mode="create"
         initial={initial}

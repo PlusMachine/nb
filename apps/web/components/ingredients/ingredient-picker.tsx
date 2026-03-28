@@ -3,6 +3,7 @@
 import React from "react";
 import { useEffect, useId, useMemo, useRef, useState } from "react";
 
+import { CountryFlagLabel } from "@/components/shared/country-flag";
 import type {
   IngredientCategory,
   IngredientSuggestionItem,
@@ -12,6 +13,7 @@ import type {
 import { normalizeSearchText } from "@/features/ingredients/normalization";
 import {
   ingredientCategoryLabels,
+  resolveIngredientCountry,
   resolveIngredientDisplayNames
 } from "@/features/ingredients/presentation";
 
@@ -154,6 +156,21 @@ const stripBrandFromSubtitle = (subtitle: string | undefined, brand: string | nu
   return parts.join(" • ") || null;
 };
 
+const stripCountryFromSubtitle = (subtitle: string | null | undefined, countryLabel: string | null) => {
+  if (!subtitle || !countryLabel) {
+    return subtitle ?? null;
+  }
+
+  const normalizedCountry = normalizeSearchText(countryLabel);
+  const parts = subtitle
+    .split("•")
+    .map((part) => part.trim())
+    .filter(Boolean)
+    .filter((part) => normalizeSearchText(part) !== normalizedCountry);
+
+  return parts.join(" • ") || null;
+};
+
 const buildDedupedSubtitle = (parts: Array<string | null | undefined>) => {
   const seen = new Set<string>();
 
@@ -183,11 +200,14 @@ export const resolveIngredientPickerRowContent = (item: IngredientSuggestionItem
   const inlineBrand = shouldPromoteBrandToPrimaryRow(item) && !isBrandAlreadyRepresentedInPrimaryName(primaryName, brandLabel)
     ? brandLabel
     : null;
-  const normalizedSubtitle = stripBrandFromSubtitle(item.subtitle, inlineBrand ? brandLabel : null);
+  const country = resolveIngredientCountry(item);
+  const normalizedSubtitle = stripCountryFromSubtitle(
+    stripBrandFromSubtitle(item.subtitle, inlineBrand ? brandLabel : null),
+    country?.label ?? null
+  );
 
   const subtitle = buildDedupedSubtitle([
     inlineBrand ? null : brandLabel,
-    item.countryName ?? null,
     normalizedSubtitle
   ]);
 
@@ -195,6 +215,7 @@ export const resolveIngredientPickerRowContent = (item: IngredientSuggestionItem
     primaryName,
     secondaryName,
     inlineBrand,
+    country,
     subtitle
   };
 };
@@ -476,7 +497,7 @@ export const IngredientPicker = ({
               ) : null}
               {groupItems.map((item) => {
                 const index = items.findIndex((candidate) => candidate.id === item.id);
-                const { primaryName, secondaryName, inlineBrand, subtitle } = resolveIngredientPickerRowContent(item);
+                const { primaryName, secondaryName, inlineBrand, country, subtitle } = resolveIngredientPickerRowContent(item);
 
                 return (
                   <button
@@ -504,7 +525,20 @@ export const IngredientPicker = ({
                         ) : null}
                       </div>
                       {secondaryName ? <div className="text-xs text-zinc-500">{secondaryName}</div> : null}
-                      {subtitle ? <div className="text-xs text-zinc-500">{subtitle}</div> : null}
+                      {country || subtitle ? (
+                        <div className="flex flex-wrap items-center gap-x-1.5 gap-y-0.5 text-xs text-zinc-500">
+                          {country ? (
+                            <CountryFlagLabel
+                              countryCode={country.code}
+                              label={country.label}
+                              iconClassName="h-3 w-4"
+                              className="gap-1"
+                            />
+                          ) : null}
+                          {country && subtitle ? <span aria-hidden="true">•</span> : null}
+                          {subtitle ? <span>{subtitle}</span> : null}
+                        </div>
+                      ) : null}
                     </div>
                   </button>
                 );

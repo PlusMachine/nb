@@ -72,6 +72,133 @@ const areNameVariantsEqual = (left?: string, right?: string) => {
   return normalizeSearchText(left) === normalizeSearchText(right);
 };
 
+const countryCodeAliases: Record<string, string> = {
+  UK: "GB",
+  GBR: "GB",
+  USA: "US",
+  RUS: "RU",
+  BLR: "BY",
+  DEU: "DE",
+  GER: "DE",
+  FRA: "FR",
+  BEL: "BE",
+  NLD: "NL",
+  AUT: "AT",
+  POL: "PL",
+  CZE: "CZ",
+  SVK: "SK",
+  FIN: "FI",
+  KAZ: "KZ",
+  UKR: "UA"
+};
+
+const countryNameToCode: Record<string, string> = {
+  "россия": "RU",
+  "russia": "RU",
+  "российская федерация": "RU",
+  "russian federation": "RU",
+  "сша": "US",
+  "usa": "US",
+  "united states": "US",
+  "united states of america": "US",
+  "америка": "US",
+  "беларусь": "BY",
+  "belarus": "BY",
+  "германия": "DE",
+  "germany": "DE",
+  "немецкая": "DE",
+  "франция": "FR",
+  "france": "FR",
+  "бельгия": "BE",
+  "belgium": "BE",
+  "великобритания": "GB",
+  "great britain": "GB",
+  "united kingdom": "GB",
+  "england": "GB",
+  "нидерланды": "NL",
+  "netherlands": "NL",
+  "голландия": "NL",
+  "австрия": "AT",
+  "austria": "AT",
+  "польша": "PL",
+  "poland": "PL",
+  "чехия": "CZ",
+  "czech republic": "CZ",
+  "czechia": "CZ",
+  "словакия": "SK",
+  "slovakia": "SK",
+  "финляндия": "FI",
+  "finland": "FI",
+  "украина": "UA",
+  "ukraine": "UA",
+  "казахстан": "KZ",
+  "kazakhstan": "KZ"
+};
+
+export type ResolvedIngredientCountry = {
+  code: string | null;
+  label: string;
+};
+
+const resolveCountryCode = (source: Pick<IngredientPresentationSource, "countryCode"> & {
+  countryName?: string | null;
+  country?: string | null;
+}) => {
+  const code = normalizeOptionalName(source.countryCode)?.toUpperCase();
+  if (code) {
+    if (/^[A-Z]{2}$/.test(code)) {
+      return code;
+    }
+
+    if (countryCodeAliases[code]) {
+      return countryCodeAliases[code];
+    }
+  }
+
+  const nameCandidate = normalizeOptionalName(source.countryName) ?? normalizeOptionalName(source.country);
+  if (!nameCandidate) {
+    return null;
+  }
+
+  const normalizedName = normalizeSearchText(nameCandidate);
+  if (countryNameToCode[normalizedName]) {
+    return countryNameToCode[normalizedName];
+  }
+
+  const uppercaseName = nameCandidate.toUpperCase();
+  if (/^[A-Z]{2}$/.test(uppercaseName)) {
+    return uppercaseName;
+  }
+
+  if (countryCodeAliases[uppercaseName]) {
+    return countryCodeAliases[uppercaseName];
+  }
+
+  return null;
+};
+
+export const resolveIngredientCountry = (source: Pick<IngredientPresentationSource, "countryCode"> & {
+  countryName?: string | null;
+  country?: string | null;
+}): ResolvedIngredientCountry | null => {
+  const label = normalizeOptionalName(source.countryName) ?? normalizeOptionalName(source.country);
+  const code = resolveCountryCode(source);
+
+  if (!label && !code) {
+    return null;
+  }
+
+  return {
+    code,
+    label: label ?? code ?? ""
+  };
+};
+
+export const formatIngredientCountry = (source: Pick<IngredientPresentationSource, "countryCode"> & {
+  countryName?: string | null;
+  country?: string | null;
+}) => resolveIngredientCountry(source)?.label ?? null;
+
 export const resolveEffectiveDisplayMode = (
   source: Pick<IngredientPresentationSource, "type" | "countryCode" | "nameRu" | "displayModeRu">
 ): Exclude<IngredientDisplayMode, "auto"> => {

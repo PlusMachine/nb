@@ -80,6 +80,8 @@ export const buildCustomIngredientTechnicalData = ({
   fermentableColorEbc,
   fermentableExtractYieldPct,
   fermentableProteinPct,
+  maltType,
+  fermentableMaxUsagePct,
   hopAlphaAcidPct,
   hopBetaAcidPct,
   hopForm,
@@ -97,6 +99,8 @@ export const buildCustomIngredientTechnicalData = ({
   fermentableColorEbc?: number | null;
   fermentableExtractYieldPct?: number | null;
   fermentableProteinPct?: number | null;
+  maltType?: string | null;
+  fermentableMaxUsagePct?: number | null;
   hopAlphaAcidPct?: number | null;
   hopBetaAcidPct?: number | null;
   hopForm?: CustomHopForm | null;
@@ -114,11 +118,13 @@ export const buildCustomIngredientTechnicalData = ({
     const colorEbc = fermentableColorEbc ?? null;
     return {
       type,
+      maltType: maltType ?? null,
       colorEbcMin: colorEbc,
       colorEbcMax: colorEbc,
       colorLovibond: colorEbc == null ? null : ebcToLovibond(colorEbc),
       extractPctDryBasis: fermentableExtractYieldPct ?? null,
-      proteinPct: fermentableProteinPct ?? null
+      proteinPct: fermentableProteinPct ?? null,
+      maxUsagePct: fermentableMaxUsagePct ?? null
     };
   }
 

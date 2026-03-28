@@ -575,6 +575,8 @@ const buildPersistedCustomIngredientValues = (
     fermentableColorEbc: parsed.fermentableColorEbc ?? null,
     fermentableExtractYieldPct: parsed.fermentableExtractYieldPct ?? null,
     fermentableProteinPct: parsed.fermentableProteinPct ?? null,
+    maltType: parsed.maltType ?? null,
+    fermentableMaxUsagePct: parsed.fermentableMaxUsagePct ?? null,
     hopAlphaAcidPct: parsed.hopAlphaAcidPct ?? null,
     hopBetaAcidPct: parsed.hopBetaAcidPct ?? null,
     hopForm: parsed.hopForm ?? null,
@@ -656,6 +658,8 @@ const buildPersistedCustomIngredientValues = (
         hopForm: parsed.hopForm ?? null,
         hopBetaAcidPct: parsed.hopBetaAcidPct ?? null,
         fermentableProteinPct: parsed.fermentableProteinPct ?? null,
+        maltType: parsed.maltType ?? null,
+        fermentableMaxUsagePct: parsed.fermentableMaxUsagePct ?? null,
         yeastForm: parsed.yeastForm ?? null,
         yeastFlocculation: parsed.yeastFlocculation ?? null,
         yeastMinFermentationTempC: parsed.yeastMinFermentationTempC ?? null,
@@ -1197,7 +1201,18 @@ export const getInventorySummaries = async (userId: string): Promise<InventorySu
       consumable: 0,
       water_treatment: 0
     },
+    inStockByCategory: {
+      fermentable: 0,
+      hop: 0,
+      yeast: 0,
+      consumable: 0,
+      water_treatment: 0
+    },
     byFermentableSubtype: {
+      malt: 0,
+      fermentable: 0
+    },
+    inStockByFermentableSubtype: {
       malt: 0,
       fermentable: 0
     }
@@ -1209,7 +1224,8 @@ export const getInventorySummaries = async (userId: string): Promise<InventorySu
     }
 
     summary.totalItems += 1;
-    if (row.normalizedQuantity > 0) {
+    const isInStock = row.normalizedQuantity > 0;
+    if (isInStock) {
       summary.inStockItems += 1;
     } else {
       summary.emptyItems += 1;
@@ -1218,13 +1234,22 @@ export const getInventorySummaries = async (userId: string): Promise<InventorySu
     const category = row.ingredientCategory;
     if (category && category in summary.byCategory) {
       summary.byCategory[category as keyof typeof summary.byCategory] += 1;
+      if (isInStock) {
+        summary.inStockByCategory[category as keyof typeof summary.inStockByCategory] += 1;
+      }
     }
 
     if (category === "fermentable") {
       if (row.ingredientSubtype === "malt") {
         summary.byFermentableSubtype.malt += 1;
+        if (isInStock) {
+          summary.inStockByFermentableSubtype.malt += 1;
+        }
       } else {
         summary.byFermentableSubtype.fermentable += 1;
+        if (isInStock) {
+          summary.inStockByFermentableSubtype.fermentable += 1;
+        }
       }
     }
   }

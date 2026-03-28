@@ -231,7 +231,7 @@ export function InventoryQuantityEditor({
             type="button"
             disabled={isPending}
             onClick={handleMarkFinished}
-            className="w-full rounded-lg bg-amber-50 py-1.5 text-center text-[11px] font-medium text-amber-700 ring-1 ring-amber-200 transition-colors hover:bg-amber-100 disabled:opacity-60"
+            className="w-full rounded-lg border border-slate-300 bg-slate-900 py-2 text-center text-[11px] font-semibold text-white shadow-sm transition-colors hover:border-slate-700 hover:bg-slate-800 disabled:opacity-60"
           >
             {isPending ? "..." : "Закончился"}
           </button>

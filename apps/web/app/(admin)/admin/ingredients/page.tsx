@@ -2,6 +2,7 @@ import Link from "next/link";
 import { ArrowRightLeft, Plus, ShieldAlert } from "lucide-react";
 
 import { DeleteCatalogIngredientButton } from "@/components/ingredients/delete-catalog-ingredient-button";
+import { CountryFlagLabel } from "@/components/shared/country-flag";
 import {
   adminCatalogSortLabels,
   buildAdminIngredientsHref,
@@ -22,6 +23,7 @@ import {
 } from "@/features/ingredients/contracts";
 import {
   ingredientCategoryLabels,
+  resolveIngredientCountry,
   resolveIngredientDisplayNames,
   resolveIngredientFamilyDisplayName
 } from "@/features/ingredients/presentation";
@@ -121,6 +123,7 @@ function CatalogIngredientsTable({ items, showBrandColumn }: CatalogTableProps) 
               displayName: primaryName
             }) ?? null;
             const brandLabel = resolveCatalogBrandLabel(item);
+            const country = resolveIngredientCountry(item);
 
             return (
               <tr key={item.id} className="align-top hover:bg-zinc-50/80">
@@ -143,7 +146,16 @@ function CatalogIngredientsTable({ items, showBrandColumn }: CatalogTableProps) 
                       {item.brandName && item.manufacturer && item.brandName !== item.manufacturer ? (
                         <p className="text-xs text-zinc-500">{item.manufacturer}</p>
                       ) : null}
-                      {item.country ? <p className="text-xs text-zinc-500">{item.country}</p> : null}
+                      {country ? (
+                        <div className="text-xs text-zinc-500">
+                          <CountryFlagLabel
+                            countryCode={country.code}
+                            label={country.label}
+                            iconClassName="h-3 w-4"
+                            className="gap-1"
+                          />
+                        </div>
+                      ) : null}
                     </div>
                   </td>
                 ) : null}
