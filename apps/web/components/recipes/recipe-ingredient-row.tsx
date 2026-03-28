@@ -14,7 +14,7 @@ import {
   resolveIngredientDisplayNames
 } from "@/features/ingredients/presentation";
 import { resolveLegacyIngredientType } from "@/features/ingredients/taxonomy";
-import { resolveHumanFacingInventoryUnitProfile } from "@/features/inventory/units";
+import { getInventoryUnitInputStep, parseInventoryUnit, resolveHumanFacingInventoryUnitProfile } from "@/features/inventory/units";
 import { recipeIngredientStages, type RecipeIngredientStage } from "@/features/recipes/contracts";
 
 export type RecipeIngredientEditorRowValue = {
@@ -198,6 +198,8 @@ export function RecipeIngredientRow({
   const allowedUnits = resolveRecipeIngredientUnitProfile(value).allowedUnits;
   const hasSelectedIngredient = hasRecipeIngredientSelection(value);
   const amountFieldsDisabled = disableAmountUntilSelected && !hasSelectedIngredient;
+  const quantityUnit = parseInventoryUnit(value.amountEnteredUnit) ?? parseInventoryUnit(allowedUnits[0] ?? "") ?? "g";
+  const quantityStep = getInventoryUnitInputStep(quantityUnit);
 
   return (
     <article className="space-y-3 rounded-lg border border-zinc-200 bg-zinc-50 p-3" data-testid="recipe-ingredient-row">
@@ -249,8 +251,8 @@ export function RecipeIngredientRow({
           <label className="text-xs font-medium text-zinc-700">Количество</label>
           <input
             type="number"
-            min={0.001}
-            step="0.001"
+            min={0}
+            step={quantityStep}
             disabled={amountFieldsDisabled}
             value={value.amountEnteredQuantity}
             onChange={(event) => onChange({ ...value, amountEnteredQuantity: event.target.value })}

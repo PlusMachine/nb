@@ -22,6 +22,7 @@ import {
 } from "@/features/inventory/display";
 import type { InventoryPriceInputMode } from "@/features/inventory/purchase-cost";
 import {
+  getInventoryUnitInputStep,
   inventoryUnitLabels,
   resolveHumanFacingInventoryUnitProfile,
   type InventoryUnit
@@ -141,6 +142,7 @@ export function InventoryItemDetailsEditor({ item, preferredCurrency, currencyRa
     () => resolveInventoryEditorUnitProfile(form, item.source, selectedSuggestion),
     [form, item.source, selectedSuggestion]
   );
+  const quantityStep = getInventoryUnitInputStep(form.enteredUnit);
 
   useEffect(() => {
     setForm(createFormState(item, preferredCurrency, currencyRates));
@@ -299,7 +301,7 @@ export function InventoryItemDetailsEditor({ item, preferredCurrency, currencyRa
                   <input
                     type="number"
                     min="0"
-                    step="0.001"
+                    step={quantityStep}
                     value={form.enteredQuantity}
                     onChange={(event) => {
                       setForm((current) => ({ ...current, enteredQuantity: event.target.value }));

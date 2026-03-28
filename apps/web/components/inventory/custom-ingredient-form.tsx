@@ -19,6 +19,7 @@ import {
 } from "@/features/inventory/custom-ingredient";
 import type { InventoryPriceInputMode } from "@/features/inventory/purchase-cost";
 import {
+  getInventoryUnitInputStep,
   inventoryUnitLabels,
   type InventoryUnit
 } from "@/features/inventory/units";
@@ -122,6 +123,7 @@ export function CustomIngredientForm({ category, initialSubtype = null, preferre
     technicalData
   }), [category, resolvedSubtype, resolvedType, technicalData]);
   const [enteredUnit, setEnteredUnit] = useState<InventoryUnit>(unitProfile.defaultUnit);
+  const quantityStep = getInventoryUnitInputStep(enteredUnit);
   const subtypeOptions = shouldShowCustomIngredientSubtypeField(category)
     ? getCustomIngredientSubtypeOptions(category)
     : [];
@@ -322,7 +324,7 @@ export function CustomIngredientForm({ category, initialSubtype = null, preferre
             <input
               type="number"
               min="0"
-              step="0.001"
+              step={quantityStep}
               className="mt-1 w-full rounded-md border px-2 py-2"
               value={enteredQuantity}
               onChange={(e) => setEnteredQuantity(e.target.value)}

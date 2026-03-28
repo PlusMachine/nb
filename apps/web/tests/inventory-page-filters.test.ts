@@ -10,7 +10,8 @@ const mocks = vi.hoisted(() => ({
     totalItems: 3,
     inStockItems: 3,
     emptyItems: 0,
-    byCategory: { fermentable: 1, hop: 2, yeast: 0, water_prep: 0, misc: 0 }
+    byCategory: { fermentable: 1, hop: 2, yeast: 0, water_treatment: 0, consumable: 0 },
+    byFermentableSubtype: { malt: 1, fermentable: 0 }
   }))
 }));
 
@@ -39,15 +40,16 @@ vi.mock("../components/inventory/inventory-summary", () => ({
 import MyIngredientsPage from "../app/(app)/app/ingredients/page";
 
 describe("inventory page filters", () => {
-  it("passes search/category/show-finished/sort query into service layer", async () => {
+  it("passes search/category/sort query into service layer and keeps empty items visible", async () => {
     const view = await MyIngredientsPage({
-      searchParams: Promise.resolve({ search: "citra", category: "hop", finished: "true", sort: "name" })
+      searchParams: Promise.resolve({ search: "citra", category: "hop", sort: "name" })
     });
     const html = renderToStaticMarkup(view);
 
     expect(mocks.listInventoryForUser).toHaveBeenCalledWith("u-1", {
       category: "hop",
       includeEmpty: true,
+      stockState: "all",
       sort: "name",
       search: "citra"
     });

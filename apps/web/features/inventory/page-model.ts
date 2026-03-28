@@ -43,7 +43,6 @@ export const inventorySortLabels: Record<InventorySortOption, string> = {
 };
 
 export const defaultInventorySortOption: InventorySortOption = "default";
-export const defaultInventoryShowFinished = false;
 
 export const resolveInventoryItemCategory = (item: {
   ingredientCategory?: IngredientCategory | null;
@@ -63,15 +62,21 @@ export const resolveInventoryItemCategory = (item: {
 );
 
 export type InventoryGroup = {
-  category: IngredientCategory;
+  category: IngredientCategory | "empty";
   label: string;
   items: InventoryListItemDto[];
 };
 
 export const groupInventoryItems = (items: InventoryListItemDto[]): InventoryGroup[] => {
   const grouped = new Map<IngredientCategory, InventoryListItemDto[]>();
+  const emptyItems: InventoryListItemDto[] = [];
 
   for (const item of items) {
+    if (item.normalizedQuantity <= 0) {
+      emptyItems.push(item);
+      continue;
+    }
+
     const category = resolveInventoryItemCategory(item);
     const existing = grouped.get(category);
     if (existing) {
@@ -81,13 +86,24 @@ export const groupInventoryItems = (items: InventoryListItemDto[]): InventoryGro
     }
   }
 
-  return inventoryCategoryOrder
+  const categoryGroups = inventoryCategoryOrder
     .map((category) => ({
       category,
       label: inventoryCategoryLabels[category],
       items: grouped.get(category) ?? []
     }))
     .filter((group) => group.items.length > 0);
+
+  return emptyItems.length > 0
+    ? [
+      ...categoryGroups,
+      {
+        category: "empty",
+        label: "Закончившиеся",
+        items: emptyItems
+      }
+    ]
+    : categoryGroups;
 };
 
 export const inventorySummaryRows = (summary: InventorySummaryDto) => (
@@ -104,7 +120,6 @@ type InventoryToolbarState = {
   search?: string;
   category?: IngredientCategory | "all";
   subtype?: "malt" | "fermentable" | null;
-  showFinished?: boolean;
   sort?: InventorySortOption;
 };
 
@@ -112,13 +127,11 @@ export const hasActiveInventoryFilters = ({
   search = "",
   category = "all",
   subtype = null,
-  showFinished = defaultInventoryShowFinished,
   sort = defaultInventorySortOption
 }: InventoryToolbarState) => (
   Boolean(search.trim())
   || category !== "all"
   || subtype !== null
-  || showFinished !== defaultInventoryShowFinished
   || sort !== defaultInventorySortOption
 );
 
@@ -128,7 +141,6 @@ export const buildInventoryToolbarHref = (
     search = "",
     category = "all",
     subtype = null,
-    showFinished = defaultInventoryShowFinished,
     sort = defaultInventorySortOption
   }: InventoryToolbarState
 ) => {
@@ -145,10 +157,6 @@ export const buildInventoryToolbarHref = (
 
   if (subtype) {
     params.set("subtype", subtype);
-  }
-
-  if (showFinished !== defaultInventoryShowFinished) {
-    params.set("finished", "true");
   }
 
   if (sort !== defaultInventorySortOption) {

@@ -48,17 +48,6 @@ const parseCategory = (
   return legacyType ? resolveIngredientCategory({ type: legacyType }) ?? undefined : undefined;
 };
 
-const parseShowFinished = (
-  finishedValue: string | undefined,
-  legacyStockValue: string | undefined
-) => {
-  if (finishedValue != null) {
-    return finishedValue === "true";
-  }
-
-  return legacyStockValue === "all" || legacyStockValue === "empty";
-};
-
 const parseSubtype = (value: string | undefined): Extract<IngredientSubtype, "malt" | "fermentable"> | undefined => (
   value === "malt" || value === "fermentable" ? value : undefined
 );
@@ -78,16 +67,19 @@ export default async function MyIngredientsPage({ searchParams }: Props) {
     typeof resolvedParams.type === "string" ? resolvedParams.type : undefined
   );
   const subtype = parseSubtype(typeof resolvedParams.subtype === "string" ? resolvedParams.subtype : undefined);
-  const showFinished = parseShowFinished(
-    typeof resolvedParams.finished === "string" ? resolvedParams.finished : undefined,
-    typeof resolvedParams.stock === "string" ? resolvedParams.stock : undefined
-  );
   const sort = parseSort(typeof resolvedParams.sort === "string" ? resolvedParams.sort : undefined);
   const addSource = typeof resolvedParams.addSource === "string" ? resolvedParams.addSource : undefined;
   const addId = typeof resolvedParams.addId === "string" ? resolvedParams.addId : undefined;
 
   const [items, summary, currencyRates, initialSelection] = await Promise.all([
-    listInventoryForUser(user.id, { category, subtype, includeEmpty: showFinished, sort, search: rawSearch }),
+    listInventoryForUser(user.id, {
+      category,
+      subtype,
+      includeEmpty: true,
+      stockState: "all",
+      sort,
+      search: rawSearch
+    }),
     getInventorySummaries(user.id),
     listSystemCurrencyRates(),
     addSource === "catalog" || addSource === "custom"
@@ -100,7 +92,6 @@ export default async function MyIngredientsPage({ searchParams }: Props) {
     search: rawSearch,
     category: category ?? "all",
     subtype: subtype ?? null,
-    showFinished,
     sort
   });
 
@@ -126,7 +117,6 @@ export default async function MyIngredientsPage({ searchParams }: Props) {
         search={rawSearch}
         category={category ?? "all"}
         subtype={subtype ?? null}
-        showFinished={showFinished}
         sort={sort}
         summary={summary}
       />
@@ -138,7 +128,6 @@ export default async function MyIngredientsPage({ searchParams }: Props) {
             hasFilters={hasFilters}
             search={rawSearch}
             category={category}
-            showFinished={showFinished}
           />
         )
         : <GroupedInventoryList items={items} preferredCurrency={user.preferredCurrency} currencyRates={currencyRates} />}

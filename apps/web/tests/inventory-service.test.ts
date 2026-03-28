@@ -1007,8 +1007,7 @@ describe("inventory service", () => {
       includeEmpty: false
     });
     const emptyItems = await listInventoryForUser("u1", {
-      includeEmpty: true,
-      stockState: "all"
+      includeEmpty: true
     });
 
     expect(inStockFermentables).toHaveLength(1);

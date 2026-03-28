@@ -83,6 +83,30 @@ const items: InventoryListItemDto[] = [
       displayName: "Citra",
       normalizedName: "citra"
     }
+  },
+  {
+    id: "inv-3",
+    enteredQuantity: 0,
+    enteredUnit: "item",
+    normalizedQuantity: 0,
+    normalizedUnit: "item",
+    unitDimension: "count",
+    purchasedAt: null,
+    freshnessDate: null,
+    notes: null,
+    archivedAt: null,
+    createdAt: new Date("2025-01-03"),
+    updatedAt: new Date("2025-01-03"),
+    source: {
+      sourceKind: "custom",
+      sourceId: "cus-2",
+      type: "consumable",
+      category: "consumable",
+      primaryLabelRu: "Whirlfloc Tablet",
+      secondaryLabelRu: null,
+      displayName: "Whirlfloc Tablet",
+      normalizedName: "whirlfloc-tablet"
+    }
   }
 ];
 
@@ -102,11 +126,13 @@ describe("inventory page foundation", () => {
       currencyRates: { RUB: 100, USD: 7900, EUR: 9170 }
     }));
 
-    expect(grouped.map((group) => group.category)).toEqual(["fermentable", "hop"]);
+    expect(grouped.map((group) => group.category)).toEqual(["fermentable", "hop", "empty"]);
     expect(html).toContain("Ферментируемые");
     expect(html).toContain("Хмель");
+    expect(html).toContain("Закончившиеся");
     expect(html).toContain("Пилснер солод");
     expect(html).toContain("Citra");
+    expect(html).toContain("Whirlfloc Tablet");
     expect(html).toContain('aria-label="Удалить"');
   });
 

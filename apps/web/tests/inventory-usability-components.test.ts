@@ -26,6 +26,7 @@ import {
 import { InventorySearchInput, buildInventorySuggestionParams } from "../components/inventory/inventory-search-input";
 import { InventoryToolbar } from "../components/inventory/inventory-toolbar";
 import type { InventoryListItemDto } from "../features/inventory/contracts";
+import { getInventoryUnitInputStep } from "../features/inventory/units";
 import { buildInventoryToolbarHref, hasActiveInventoryFilters } from "../features/inventory/page-model";
 
 describe("inventory usability components", () => {
@@ -34,7 +35,6 @@ describe("inventory usability components", () => {
       search: "citra",
       category: "hop",
       subtype: null,
-      showFinished: true,
       sort: "name",
       summary: {
         totalItems: 10,
@@ -46,10 +46,9 @@ describe("inventory usability components", () => {
     }));
 
     expect(html).toContain("Фильтры по запасам");
-    expect(html).toContain("Ферментируемые");
+    expect(html).toContain("Сбраживаемое сырье");
     expect(html).toContain("Хмель");
     expect(html).toContain("Дрожжи");
-    expect(html).toContain("Закончившиеся");
     expect(html).toContain("Сбросить");
     expect(html).not.toContain("Применить");
     expect(html).not.toContain("Остаток");
@@ -60,7 +59,6 @@ describe("inventory usability components", () => {
       search: "",
       category: "all",
       subtype: null,
-      showFinished: false,
       sort: "default",
       summary: {
         totalItems: 0,
@@ -71,7 +69,7 @@ describe("inventory usability components", () => {
       }
     }));
 
-    expect(html).toContain("Ферментируемые");
+    expect(html).toContain("Сбраживаемое сырье");
     expect(html).toContain("Хмель");
     expect(html).toContain(">Пусто</span>");
     expect(html).toContain("disabled");
@@ -81,30 +79,26 @@ describe("inventory usability components", () => {
     expect(buildInventoryToolbarHref("/app/ingredients", {
       search: "citra",
       category: "hop",
-      showFinished: true,
       sort: "name"
-    })).toBe("/app/ingredients?search=citra&category=hop&finished=true&sort=name");
+    })).toBe("/app/ingredients?search=citra&category=hop&sort=name");
 
     expect(hasActiveInventoryFilters({
       search: "",
       category: "all",
-      showFinished: false,
       sort: "default"
     })).toBe(false);
 
     expect(buildInventorySuggestionParams({
       q: "malt",
       category: "fermentable",
-      showFinished: true,
       limit: 8
-    }).toString()).toBe("q=malt&limit=8&category=fermentable&finished=true");
+    }).toString()).toBe("q=malt&limit=8&category=fermentable");
   });
 
   it("renders standalone search input without legacy category/archive controls", () => {
     const html = renderToStaticMarkup(React.createElement(InventorySearchInput, {
       value: "malt",
       category: "all",
-      showFinished: false,
       onValueChange: () => undefined,
       onSuggestionSelect: () => undefined
     }));
@@ -242,5 +236,13 @@ describe("inventory usability components", () => {
     expect(isInventoryQuantityValueValid("-1")).toBe(false);
     expect(canMarkInventoryItemFinished("2")).toBe(true);
     expect(canMarkInventoryItemFinished("0")).toBe(false);
+  });
+
+  it("uses practical quantity steps for inventory units", () => {
+    expect(getInventoryUnitInputStep("ml")).toBe(1);
+    expect(getInventoryUnitInputStep("g")).toBe(1);
+    expect(getInventoryUnitInputStep("l")).toBe(0.1);
+    expect(getInventoryUnitInputStep("kg")).toBe(0.1);
+    expect(getInventoryUnitInputStep("pack")).toBe(1);
   });
 });

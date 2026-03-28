@@ -109,6 +109,25 @@ export const parseInventoryUnit = (value: string): InventoryUnit | null => {
 
 export const getInventoryUnitDimension = (unit: InventoryUnit): InventoryUnitDimension => unitDimensionByUnit[unit];
 
+export const getInventoryUnitInputStep = (unit: InventoryUnit): number => {
+  switch (unit) {
+    case "g":
+    case "ml":
+      return 1;
+    case "item":
+    case "pack":
+      return 1;
+    case "kg":
+    case "l":
+    case "oz":
+    case "lb":
+    case "gal":
+      return 0.1;
+    default:
+      return 1;
+  }
+};
+
 const normalizeUnitList = (units?: readonly string[] | null): InventoryUnit[] => {
   const normalized = (units ?? [])
     .map((unit) => parseInventoryUnit(unit))

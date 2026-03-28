@@ -6,7 +6,6 @@ import {
   ArrowUpDown,
   Check,
   Droplets,
-  Eye,
   FlaskConical,
   Leaf,
   Package,
@@ -17,7 +16,6 @@ import {
 import type { IngredientCategory } from "@/features/ingredients/contracts";
 import {
   defaultInventorySortOption,
-  defaultInventoryShowFinished,
   buildInventoryToolbarHref,
   hasActiveInventoryFilters,
   inventoryCategoryLabels,
@@ -32,7 +30,6 @@ type Props = {
   search: string;
   category: IngredientCategory | "all";
   subtype: "malt" | "fermentable" | null;
-  showFinished: boolean;
   sort: InventorySortOption;
   summary: InventorySummaryDto;
 };
@@ -83,7 +80,7 @@ const categoryMeta: Record<IngredientCategory, {
   }
 };
 
-export function InventoryToolbar({ search, category, subtype, showFinished, sort, summary }: Props) {
+export function InventoryToolbar({ search, category, subtype, sort, summary }: Props) {
   const pathname = usePathname();
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
@@ -99,9 +96,8 @@ export function InventoryToolbar({ search, category, subtype, showFinished, sort
     search,
     category,
     subtype,
-    showFinished,
     sort
-  }), [category, pathname, search, showFinished, sort, subtype]);
+  }), [category, pathname, search, sort, subtype]);
 
   const replaceHref = useCallback((href: string) => {
     if (href === currentHref) {
@@ -125,7 +121,6 @@ export function InventoryToolbar({ search, category, subtype, showFinished, sort
         search: trimmedLocalSearch,
         category,
         subtype,
-        showFinished,
         sort
       }));
     }, searchDebounceMs);
@@ -133,7 +128,7 @@ export function InventoryToolbar({ search, category, subtype, showFinished, sort
     return () => {
       window.clearTimeout(timer);
     };
-  }, [category, pathname, replaceHref, search, searchValue, showFinished, sort, subtype]);
+  }, [category, pathname, replaceHref, search, searchValue, sort, subtype]);
 
   useEffect(() => {
     if (!sortOpen) return;
@@ -150,7 +145,6 @@ export function InventoryToolbar({ search, category, subtype, showFinished, sort
     search: searchValue,
     category,
     subtype,
-    showFinished,
     sort
   });
   const primaryButtons = [
@@ -209,7 +203,6 @@ export function InventoryToolbar({ search, category, subtype, showFinished, sort
       search: searchValue,
       category: nextCategory === category ? "all" : nextCategory,
       subtype: nextCategory === category || nextCategory !== "fermentable" ? null : subtype,
-      showFinished,
       sort
     }));
   };
@@ -219,7 +212,6 @@ export function InventoryToolbar({ search, category, subtype, showFinished, sort
       search: searchValue,
       category: "fermentable",
       subtype: subtype === nextSubtype ? null : nextSubtype,
-      showFinished,
       sort
     }));
   };
@@ -262,7 +254,6 @@ export function InventoryToolbar({ search, category, subtype, showFinished, sort
           <InventorySearchInput
             value={searchValue}
             category={category}
-            showFinished={showFinished}
             onValueChange={setSearchValue}
             onSuggestionSelect={(value) => {
               setSearchValue(value);
@@ -270,7 +261,6 @@ export function InventoryToolbar({ search, category, subtype, showFinished, sort
                 search: value,
                 category,
                 subtype,
-                showFinished,
                 sort
               }));
             }}
@@ -278,28 +268,6 @@ export function InventoryToolbar({ search, category, subtype, showFinished, sort
         </div>
 
         <div className="flex shrink-0 items-center gap-1.5">
-          <button
-            type="button"
-            onClick={() => {
-              replaceHref(buildInventoryToolbarHref(pathname, {
-                search: searchValue,
-                category,
-                subtype,
-                showFinished: !showFinished,
-                sort
-              }));
-            }}
-            title={showFinished ? "Скрыть закончившиеся" : "Показать закончившиеся"}
-            className={`flex items-center gap-1.5 rounded-lg border px-3 py-2 text-xs font-medium transition-colors ${
-              showFinished
-                ? "border-amber-200 bg-amber-50 text-amber-800"
-                : "border-zinc-200 bg-white text-zinc-600 hover:border-zinc-300 hover:bg-zinc-50"
-            }`}
-          >
-            <Eye className="h-3.5 w-3.5" />
-            <span className="hidden sm:inline">Закончившиеся</span>
-          </button>
-
           <div ref={sortRef} className="relative">
             <button
               type="button"
@@ -326,7 +294,6 @@ export function InventoryToolbar({ search, category, subtype, showFinished, sort
                         search: searchValue,
                         category,
                         subtype,
-                        showFinished,
                         sort: value as InventorySortOption
                       }));
                       setSortOpen(false);
@@ -352,7 +319,6 @@ export function InventoryToolbar({ search, category, subtype, showFinished, sort
                   search: "",
                   category: "all",
                   subtype: null,
-                  showFinished: defaultInventoryShowFinished,
                   sort: defaultInventorySortOption
                 }));
               }}

@@ -9,7 +9,7 @@ import {
   formatInventoryQuantityInputValue,
   resolveInventoryMeasurementForDisplay
 } from "@/features/inventory/display";
-import { inventoryUnitLabels, resolveInventoryUnitProfile } from "@/features/inventory/units";
+import { getInventoryUnitInputStep, inventoryUnitLabels, resolveInventoryUnitProfile } from "@/features/inventory/units";
 
 type Props = {
   item: InventoryListItemDto;
@@ -100,6 +100,7 @@ export function InventoryQuantityEditor({
   const isQuantityValid = isInventoryQuantityValueValid(quantity);
   const isDirty = isInventoryQuantityDraftDirty(quantity, unit, savedQuantity, savedUnit);
   const canMarkFinished = canMarkInventoryItemFinished(quantity);
+  const quantityStep = getInventoryUnitInputStep(unit);
 
   useEffect(() => {
     setQuantity(initialQuantity);
@@ -171,7 +172,7 @@ export function InventoryQuantityEditor({
             <input
               type="number"
               min="0"
-              step="0.001"
+              step={quantityStep}
               value={quantity}
               onChange={(event) => {
                 setQuantity(event.target.value);

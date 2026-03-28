@@ -98,6 +98,7 @@ describe("inventory add-flow", () => {
     expect(html).not.toContain("Базовая ед. изм.");
     expect(html).toContain(`value="${getTodayDateInputValue()}"`);
     expect(html).toContain('aria-label="Очистить дату покупки"');
+    expect(html).toContain('step="0.1"');
   });
 
   it("hides duplicate subtype selector for hop custom flow", () => {
@@ -118,6 +119,7 @@ describe("inventory add-flow", () => {
     const html = renderToStaticMarkup(React.createElement(AddIngredientModal, { open: true, onClose: () => undefined }));
     expect(html).toContain(`value="${getTodayDateInputValue()}"`);
     expect(html).toContain('aria-label="Очистить дату покупки"');
+    expect(html).toContain('step="1"');
   });
 
   it("renders category selector options", () => {

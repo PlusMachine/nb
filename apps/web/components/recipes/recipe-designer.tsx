@@ -43,6 +43,7 @@ import {
   resolveInventoryMeasurementForDisplay
 } from "@/features/inventory/display";
 import {
+  getInventoryUnitInputStep,
   inventoryUnitLabels,
   resolveHumanFacingInventoryUnitProfile,
   type InventoryUnit,
@@ -1266,6 +1267,7 @@ function SectionRow({
 }) {
   const accent = categoryAccentBorder[ingredient.category];
   const unitLabel = inventoryUnitLabels[ingredient.amountEnteredUnit] ?? ingredient.amountEnteredUnit;
+  const quantityStep = getInventoryUnitInputStep(ingredient.amountEnteredUnit);
   const hopUseType = ingredient.category === "hop" ? getHopUseType(ingredient) : null;
   const hasInlineTimeControl = hopUseType === "boil" || hopUseType === "whirlpool" || hopUseType === "dip_hop";
 
@@ -1289,7 +1291,7 @@ function SectionRow({
             onChange={(event) => onQuantityChange(ingredient.localId, event.target.value)}
             className="h-7 w-[72px] rounded-md border border-zinc-200 bg-zinc-50 px-2 text-right text-sm tabular-nums text-zinc-900 focus:border-zinc-400 focus:bg-white focus:outline-none focus:ring-1 focus:ring-zinc-200"
             min={0}
-            step="any"
+            step={quantityStep}
           />
           <span className="text-xs text-zinc-500">{unitLabel}</span>
         </div>
@@ -1753,6 +1755,7 @@ function IngredientEditor({
 
   const isHop = draft.category === "hop";
   const hopUseType = getHopUseType(draft);
+  const quantityStep = getInventoryUnitInputStep(draft.amountEnteredUnit);
 
   return (
     <div className="space-y-4 rounded-2xl border border-zinc-100 bg-white p-5 shadow-lg">
@@ -1796,8 +1799,8 @@ function IngredientEditor({
           Количество
           <input
             type="number"
-            min={0.001}
-            step={0.001}
+            min={0}
+            step={quantityStep}
             value={draft.amountEnteredQuantity}
             onChange={(event) => onChange({ ...draft, amountEnteredQuantity: event.target.value })}
             className="h-10 w-full rounded-md border border-zinc-200 bg-white px-3 text-sm text-zinc-900"

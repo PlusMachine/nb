@@ -1,8 +1,8 @@
 import React from "react";
-import { Droplets, FlaskConical, Leaf, Package, Wheat } from "lucide-react";
+import { AlertTriangle, Droplets, FlaskConical, Leaf, Package, Wheat } from "lucide-react";
 import type { IngredientCategory } from "@/features/ingredients/contracts";
 import type { InventoryListItemDto } from "@/features/inventory/contracts";
-import { groupInventoryItems } from "@/features/inventory/page-model";
+import { groupInventoryItems, type InventoryGroup } from "@/features/inventory/page-model";
 import type { SystemCurrency, SystemCurrencyRateMap } from "@/features/system/currency";
 
 import { InventoryListItem } from "./inventory-list-item";
@@ -13,20 +13,22 @@ type Props = {
   currencyRates: SystemCurrencyRateMap;
 };
 
-const groupIcons: Record<IngredientCategory, React.ComponentType<{ className?: string }>> = {
+const groupIcons: Record<InventoryGroup["category"], React.ComponentType<{ className?: string }>> = {
   fermentable: Wheat,
   hop: Leaf,
   yeast: FlaskConical,
   water_treatment: Droplets,
-  consumable: Package
+  consumable: Package,
+  empty: AlertTriangle
 };
 
-const groupColors: Record<IngredientCategory, string> = {
+const groupColors: Record<InventoryGroup["category"], string> = {
   fermentable: "text-amber-600",
   hop: "text-emerald-600",
   yeast: "text-violet-600",
   water_treatment: "text-sky-600",
-  consumable: "text-zinc-500"
+  consumable: "text-zinc-500",
+  empty: "text-amber-600"
 };
 
 export function GroupedInventoryList({ items, preferredCurrency, currencyRates }: Props) {

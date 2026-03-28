@@ -8,7 +8,6 @@ import type { IngredientCategory, IngredientSuggestionItem } from "@/features/in
 type Props = {
   value: string;
   category: IngredientCategory | "all";
-  showFinished: boolean;
   onValueChange: (value: string) => void;
   onSuggestionSelect: (value: string, item: IngredientSuggestionItem) => void;
 };
@@ -16,20 +15,15 @@ type Props = {
 export const buildInventorySuggestionParams = ({
   q,
   category,
-  showFinished,
   limit
 }: {
   q: string;
   category?: IngredientCategory;
-  showFinished: boolean;
   limit: number;
 }) => {
   const params = new URLSearchParams({ q: q.trim(), limit: String(limit) });
   if (category) {
     params.set("category", category);
-  }
-  if (showFinished) {
-    params.set("finished", "true");
   }
 
   return params;
@@ -38,7 +32,6 @@ export const buildInventorySuggestionParams = ({
 export function InventorySearchInput({
   value,
   category,
-  showFinished,
   onValueChange,
   onSuggestionSelect
 }: Props) {
@@ -59,7 +52,6 @@ export function InventorySearchInput({
         const params = buildInventorySuggestionParams({
           q,
           category: nextCategory,
-          showFinished,
           limit
         });
         const response = await fetch(`/api/inventory/suggestions?${params.toString()}`, { signal });

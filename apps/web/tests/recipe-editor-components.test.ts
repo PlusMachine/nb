@@ -66,6 +66,7 @@ describe("recipe editor components", () => {
 
     expect(html).toContain("Ингредиент");
     expect(html).toContain("Новый ингредиент");
+    expect(html).toContain('step="1"');
   });
 
   it("ingredients editor renders draft and saved sections", () => {

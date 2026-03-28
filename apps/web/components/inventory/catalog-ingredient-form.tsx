@@ -13,6 +13,7 @@ import type {
 import { resolveIngredientDisplayNames } from "@/features/ingredients/presentation";
 import type { InventoryPriceInputMode } from "@/features/inventory/purchase-cost";
 import {
+  getInventoryUnitInputStep,
   inventoryUnitLabels,
   resolveHumanFacingInventoryUnitProfile,
   type InventoryUnit
@@ -107,6 +108,7 @@ export function CatalogIngredientForm({
   const [fields, setFields] = useState<InventoryCommonFields>(() => createInitialCommonFields(category));
   const [localError, setLocalError] = useState<string | null>(null);
   const unitProfile = resolveCatalogIngredientUnitProfile(category, selected);
+  const quantityStep = getInventoryUnitInputStep(fields.enteredUnit);
   const selectedNames = selected ? resolveIngredientDisplayNames(selected) : null;
   const selectedPackEquivalent = selected ? resolveInventoryPackEquivalent(selected.technicalData ?? null) : null;
 
@@ -204,7 +206,7 @@ export function CatalogIngredientForm({
           <input
             type="number"
             min="0"
-            step="0.001"
+            step={quantityStep}
             className="mt-1 w-full rounded-md border px-2 py-2"
             value={fields.enteredQuantity}
             onChange={(e) => setFields((s) => ({ ...s, enteredQuantity: e.target.value }))}

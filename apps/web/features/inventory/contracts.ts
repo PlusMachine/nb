@@ -306,7 +306,7 @@ export const inventoryListQuerySchema = z.object({
   category: z.enum(ingredientCategories).optional(),
   subtype: z.enum(["malt", "fermentable"]).optional(),
   type: z.enum(ingredientTypes).optional(),
-  stockState: z.enum(inventoryStockStates).default("in_stock"),
+  stockState: z.enum(inventoryStockStates).default("all"),
   sort: z.enum(inventorySortOptions).default("default"),
   search: z.string().trim().max(180).optional().default("")
 });

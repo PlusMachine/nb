@@ -1105,14 +1105,12 @@ export const listInventoryForUser = async (userId: string, query: unknown = {}) 
     items = items.filter((item) => (item.source.subtype ?? item.ingredientSubtype ?? null) === parsed.subtype);
   }
 
-  if (!parsed.includeEmpty) {
-    items = items.filter((item) => item.normalizedQuantity > 0);
-  }
-
   if (parsed.stockState === "in_stock") {
     items = items.filter((item) => item.normalizedQuantity > 0);
   } else if (parsed.stockState === "empty") {
     items = items.filter((item) => item.normalizedQuantity <= 0);
+  } else if (!parsed.includeEmpty) {
+    items = items.filter((item) => item.normalizedQuantity > 0);
   }
 
   items = items.sort((left, right) => {

@@ -13,7 +13,7 @@ export async function GET(request: Request) {
       category: searchParams.get("category") ?? undefined,
       type: searchParams.get("type") ?? undefined,
       limit: Number(searchParams.get("limit") ?? "10"),
-      includeEmpty: searchParams.get("finished") === "true",
+      includeEmpty: true,
       stockState: searchParams.get("stock") === "empty"
         ? "empty"
         : searchParams.get("stock") === "in_stock"
