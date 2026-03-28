@@ -117,6 +117,19 @@ const readStringArray = (...values: unknown[]) => {
   return [];
 };
 
+const metadataPropertyKeys = new Set([
+  "category",
+  "subtype",
+  "defaultDisplayUnit",
+  "allowedUnits",
+  "measurementDimension",
+  "brand",
+  "harvestYear",
+  "technicalData"
+]);
+
+const toLovibondFromEbc = (value: number) => Number((value / 1.97).toFixed(2));
+
 const inferType = (source: IngredientTechnicalSource): IngredientType | null => {
   if (
     source.type === "hop"
@@ -254,10 +267,18 @@ export const extractIngredientTechnicalData = (source: IngredientTechnicalSource
   }
 
   const properties = readRecord(source.properties);
-  if (Object.keys(properties).length > 0) {
+  if (isRecord(properties.technicalData) && typeof properties.technicalData.type === "string") {
+    return properties.technicalData as IngredientTechnicalData;
+  }
+
+  const filteredProperties = Object.fromEntries(
+    Object.entries(properties).filter(([key]) => !metadataPropertyKeys.has(key))
+  );
+
+  if (Object.keys(filteredProperties).length > 0) {
     return {
       type,
-      ...properties
+      ...filteredProperties
     } as IngredientTechnicalData;
   }
 
@@ -272,10 +293,23 @@ export const extractIngredientTechnicalData = (source: IngredientTechnicalSource
   }
 
   if (type === "malt" || type === "fermentable") {
+    const colorLovibond = readNumber(source.fermentableColorLovibond);
+    const colorEbc = readNumber(source.fermentableColorEbc);
+
+    if (type === "malt") {
+      return {
+        type,
+        extractPctDryBasis: readNumber(source.fermentableExtractYieldPct),
+        colorEbcMin: colorEbc,
+        colorEbcMax: colorEbc,
+        colorLovibond: colorLovibond ?? (colorEbc == null ? null : toLovibondFromEbc(colorEbc))
+      } as IngredientTechnicalData;
+    }
+
     return {
       type,
       extractPctDryBasis: readNumber(source.fermentableExtractYieldPct),
-      colorLovibond: readNumber(source.fermentableColorLovibond, source.fermentableColorEbc)
+      colorLovibond: colorLovibond ?? (colorEbc == null ? null : toLovibondFromEbc(colorEbc))
     } as IngredientTechnicalData;
   }
 

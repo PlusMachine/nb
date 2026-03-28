@@ -104,6 +104,7 @@ export const buildCustomIngredientLinkage = (
   const properties = isRecord(custom.properties) ? custom.properties : {};
   const technicalData = extractIngredientTechnicalData({
     type: custom.type,
+    technicalData: isRecord(properties.technicalData) ? properties.technicalData : undefined,
     properties: custom.properties,
     hopAlphaAcidPct: custom.hopAlphaAcidPct,
     hopBetaAcidPct: null,
@@ -116,11 +117,16 @@ export const buildCustomIngredientLinkage = (
     yeastMinFermentationTempC: custom.yeastMinFermentationTempC,
     yeastMaxFermentationTempC: custom.yeastMaxFermentationTempC
   });
-  const type = resolveIngredientCategory({ type: custom.type }) === "fermentable" && custom.type !== "fermentable"
-    ? (custom.type as IngredientType)
-    : (custom.type as IngredientType);
-  const category = resolveIngredientCategory({ type });
-  const subtype = resolveIngredientSubtype({ type });
+  const type = custom.type as IngredientType;
+  const category = resolveIngredientCategory({
+    type,
+    category: typeof properties.category === "string" ? properties.category : undefined
+  });
+  const subtype = resolveIngredientSubtype({
+    type,
+    category: typeof properties.category === "string" ? properties.category : undefined,
+    subtype: typeof properties.subtype === "string" ? properties.subtype : undefined
+  });
   const unitProfile = resolveInventoryUnitProfile({
     type,
     category,

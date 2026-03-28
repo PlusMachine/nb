@@ -72,7 +72,8 @@ const buildTypedBadges = (item: InventoryListItemDto) => {
     const hop = technicalData as Extract<NonNullable<typeof technicalData>, { type: "hop" }>;
     return [
       hop.alphaAcidPctTypical != null ? `Альфа ${formatValue(hop.alphaAcidPctTypical)}%` : null,
-      hop.hopForm ? hop.hopForm.replaceAll("_", " ") : null
+      hop.hopForm ? hop.hopForm.replaceAll("_", " ") : null,
+      item.source.harvestYear != null ? `Урожай ${item.source.harvestYear}` : null
     ].filter((badge): badge is string => Boolean(badge));
   }
 

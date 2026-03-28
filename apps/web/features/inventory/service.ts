@@ -50,6 +50,10 @@ import {
   type InventoryUnitProfile
 } from "./units";
 import { resolveInventoryPackEquivalent } from "./pack";
+import {
+  buildCustomIngredientTechnicalData,
+  resolveCustomIngredientUnitProfile
+} from "./custom-ingredient";
 
 type InventoryWriteContext = {
   preferredCurrency?: SystemCurrency | null;
@@ -202,6 +206,16 @@ const buildCustomSourceDto = (
   custom: typeof userCustomIngredients.$inferSelect
 ): InventorySourceDto => {
   const linkage = buildCustomIngredientLinkage(custom);
+  const properties = isRecord(custom.properties) ? custom.properties : {};
+  const brand = custom.manufacturer
+    ?? (typeof properties.brand === "string" && properties.brand.trim().length > 0 ? properties.brand.trim() : null);
+  const harvestYear = typeof properties.harvestYear === "number" && Number.isFinite(properties.harvestYear)
+    ? properties.harvestYear
+    : (() => {
+      const normalized = Number.parseInt(String(custom.hopSeason ?? ""), 10);
+      return Number.isFinite(normalized) ? normalized : null;
+    })();
+
   return {
     sourceKind: "custom",
     sourceId: custom.id,
@@ -218,11 +232,12 @@ const buildCustomSourceDto = (
     nameRu: null,
     nameEn: null,
     normalizedName: normalizeIngredientName(linkage.displayName),
-    brand: null,
-    producer: custom.manufacturer,
-    brandName: null,
-    manufacturer: custom.manufacturer,
+    brand,
+    producer: brand,
+    brandName: brand,
+    manufacturer: brand,
     country: custom.country,
+    harvestYear,
     completenessLevel: null,
     technicalData: linkage.technicalData,
     defaultDisplayUnit: linkage.defaultDisplayUnit,
@@ -231,7 +246,10 @@ const buildCustomSourceDto = (
     packageVariantId: null,
     packageVariantName: null,
     summary: linkage.summary,
-    ...extractIngredientTechnicalFields(custom)
+    ...extractIngredientTechnicalFields({
+      type: linkage.type,
+      technicalData: linkage.technicalData
+    })
   };
 };
 
@@ -532,19 +550,47 @@ export const createUserCustomIngredient = async (userId: string, payload: unknow
     category: parsed.category,
     subtype: parsed.subtype
   });
-  const category = resolveIngredientCategory({ type });
-  const subtype = resolveIngredientSubtype({ type, subtype: parsed.subtype });
+  const category = resolveIngredientCategory({ type, category: parsed.category });
+  const subtype = resolveIngredientSubtype({ type, category, subtype: parsed.subtype });
+  const brand = parsed.brand?.trim() ? parsed.brand.trim() : null;
+  const technicalData = buildCustomIngredientTechnicalData({
+    type,
+    fermentableColorEbc: parsed.fermentableColorEbc ?? null,
+    fermentableExtractYieldPct: parsed.fermentableExtractYieldPct ?? null,
+    hopAlphaAcidPct: parsed.hopAlphaAcidPct ?? null,
+    yeastAttenuationPct: parsed.yeastAttenuationPct ?? null,
+    yeastForm: parsed.yeastForm ?? null
+  });
+  const unitProfile = resolveCustomIngredientUnitProfile({
+    type,
+    category,
+    subtype,
+    technicalData
+  });
+  const defaultDisplayUnit = parsed.defaultDisplayUnit ?? unitProfile.defaultUnit;
 
   const [created] = await db.insert(userCustomIngredients).values({
     userId,
     type,
     displayName: parsed.displayName,
     normalizedName: normalizeIngredientName(parsed.displayName),
+    manufacturer: brand,
+    fermentableColorEbc: parsed.fermentableColorEbc ?? null,
+    fermentableExtractYieldPct: parsed.fermentableExtractYieldPct ?? null,
+    hopAlphaAcidPct: parsed.hopAlphaAcidPct ?? null,
+    hopSeason: parsed.harvestYear == null ? null : String(parsed.harvestYear),
+    yeastAttenuationPct: parsed.yeastAttenuationPct ?? null,
+    yeastForm: parsed.yeastForm === "dry" || parsed.yeastForm === "liquid" ? parsed.yeastForm : null,
     properties: {
       ...parsed.properties,
       category,
       subtype,
-      defaultDisplayUnit: parsed.defaultDisplayUnit
+      brand,
+      harvestYear: parsed.harvestYear ?? null,
+      technicalData,
+      defaultDisplayUnit,
+      allowedUnits: unitProfile.allowedUnits,
+      measurementDimension: unitProfile.measurementDimension
     },
     visibility: parsed.visibility
   }).returning();

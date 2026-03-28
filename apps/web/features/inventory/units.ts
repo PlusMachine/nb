@@ -169,7 +169,9 @@ const resolvePracticalYeastProfile = (
     return null;
   }
 
-  const isLiquid = technicalData.form === "liquid";
+  const isLiquid = technicalData.form === "liquid"
+    || technicalData.form === "slurry"
+    || technicalData.form === "culture";
 
   if (technicalData.form === "dry") {
     return {

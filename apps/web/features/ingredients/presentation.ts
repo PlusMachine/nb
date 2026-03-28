@@ -34,21 +34,21 @@ export const ingredientCategoryLabels: Record<IngredientCategory, string> = {
 
 const subtypeLabels: Record<string, string> = {
   malt: "солод",
-  fermentable: "ферментируемое",
+  fermentable: "другое ферментируемое",
   hop: "хмель",
   yeast: "дрожжи",
-  process_aid: "process aid",
-  nutrient: "nutrient",
-  sanitizer: "sanitizer",
-  cleaner: "cleaner",
-  antioxidant: "antioxidant",
-  fining: "fining",
-  water_source: "source water",
-  salt: "salt",
-  acid: "acid",
-  base: "base",
-  dechlorination: "dechlorination",
-  other: "other"
+  process_aid: "технологическая добавка",
+  nutrient: "питательная добавка",
+  sanitizer: "санитайзер",
+  cleaner: "моющее средство",
+  antioxidant: "антиоксидант",
+  fining: "осветлитель",
+  water_source: "исходная вода",
+  salt: "соль",
+  acid: "кислота",
+  base: "щелочь",
+  dechlorination: "дехлорирование",
+  other: "другое"
 };
 
 const formatNumber = (value: number) => value.toLocaleString("en-US", {

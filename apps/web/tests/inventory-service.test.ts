@@ -153,18 +153,30 @@ describe("inventory service", () => {
   it("creates user custom ingredient with normalized name", async () => {
     const created = await createUserCustomIngredient("u1", {
       category: "hop",
-      subtype: "pellet",
-      defaultDisplayUnit: "g",
-      displayName: "  Citra, T-90  "
+      displayName: "  Citra, T-90  ",
+      brand: "Yakima Chief",
+      hopAlphaAcidPct: 12.5,
+      harvestYear: 2024
     });
 
     expect(created.displayName).toBe("Citra, T-90");
     expect(created.normalizedName).toBe("citra t 90");
     expect(mockState.inserted[0]?.table).toBe("userCustomIngredients");
+    expect(mockState.inserted[0]?.values).toMatchObject({
+      manufacturer: "Yakima Chief",
+      hopAlphaAcidPct: 12.5,
+      hopSeason: "2024"
+    });
     expect(mockState.inserted[0]?.values.properties).toMatchObject({
       category: "hop",
       subtype: "hop",
-      defaultDisplayUnit: "g"
+      brand: "Yakima Chief",
+      harvestYear: 2024,
+      defaultDisplayUnit: "g",
+      technicalData: {
+        type: "hop",
+        alphaAcidPctTypical: 12.5
+      }
     });
   });
 
@@ -962,12 +974,28 @@ describe("inventory service", () => {
           type: "consumable",
           displayName: "Whirlfloc Tablet",
           normalizedName: "whirlfloc tablet",
+          manufacturer: "Brewferm",
+          country: null,
+          fermentableColorEbc: null,
+          fermentableExtractYieldPct: null,
+          hopAlphaAcidPct: null,
+          hopForm: null,
+          hopSeason: null,
+          yeastAttenuationPct: null,
+          yeastType: null,
+          yeastForm: null,
+          yeastMinFermentationTempC: null,
+          yeastMaxFermentationTempC: null,
           properties: {
             category: "consumable",
             subtype: "fining",
+            brand: "Brewferm",
             defaultDisplayUnit: "item",
             allowedUnits: ["item"],
-            measurementDimension: "count"
+            measurementDimension: "count",
+            technicalData: {
+              type: "consumable"
+            }
           }
         },
         packageVariant: null
@@ -987,6 +1015,9 @@ describe("inventory service", () => {
     expect(inStockFermentables[0]?.ingredientCategory).toBe("fermentable");
     expect(emptyItems).toHaveLength(2);
     expect(emptyItems.some((item) => item.ingredientDisplayNameSnapshot === "Whirlfloc Tablet")).toBe(true);
+    const customItem = emptyItems.find((item) => item.userCustomIngredientId === "custom-1");
+    expect(customItem?.source.subtype).toBe("fining");
+    expect(customItem?.source.brand).toBe("Brewferm");
   });
 
   it("reads persisted taxonomy snapshot even without live source row", async () => {

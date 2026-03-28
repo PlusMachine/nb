@@ -16,6 +16,7 @@ import {
   resolveLegacyIngredientType
 } from "../ingredients/taxonomy";
 import { systemCurrencies, type SystemCurrency } from "../system/currency";
+import { customYeastForms } from "./custom-ingredient";
 import {
   inventoryPriceInputModes,
   type InventoryPriceInputMode
@@ -44,6 +45,23 @@ const nullablePositiveInteger = z.preprocess((value) => {
 
   return value;
 }, z.number().int().positive().nullable().optional());
+
+const nullableNumber = (schema: z.ZodNumber) => z.preprocess((value) => {
+  if (value == null) {
+    return null;
+  }
+
+  if (typeof value === "string") {
+    const trimmed = value.trim();
+    if (!trimmed) {
+      return null;
+    }
+
+    return Number(trimmed);
+  }
+
+  return value;
+}, schema.nullable().optional());
 
 const nullablePriceInputMode = z.preprocess((value) => {
   if (value == null) {
@@ -92,6 +110,20 @@ export const createUserCustomIngredientSchema = z.object({
   category: z.enum(ingredientCategories).optional(),
   subtype: z.string().trim().max(80).optional().nullable(),
   displayName: z.string().trim().min(2).max(180),
+  brand: z.string().trim().max(140).optional().nullable(),
+  harvestYear: nullableNumber(z.number().int().min(1900).max(2100)),
+  fermentableColorEbc: nullableNumber(z.number().min(0).max(9999)),
+  fermentableExtractYieldPct: nullableNumber(z.number().min(0).max(100)),
+  hopAlphaAcidPct: nullableNumber(z.number().min(0).max(100)),
+  yeastAttenuationPct: nullableNumber(z.number().min(0).max(100)),
+  yeastForm: z.preprocess((value) => {
+    if (value == null) {
+      return null;
+    }
+
+    const normalized = String(value).trim().toLowerCase();
+    return normalized || null;
+  }, z.enum(customYeastForms).nullable().optional()),
   defaultDisplayUnit: z.string().trim().toLowerCase().pipe(z.enum(inventoryUnits)).optional().nullable(),
   properties: z.record(z.string(), z.unknown()).default({}),
   visibility: z.enum(["private", "shared"]).default("private")
@@ -103,17 +135,14 @@ export const createUserCustomIngredientSchema = z.object({
       path: ["category"]
     });
   }
-
-  if (!value.defaultDisplayUnit) {
-    ctx.addIssue({
-      code: z.ZodIssueCode.custom,
-      message: "Укажите базовую единицу.",
-      path: ["defaultDisplayUnit"]
-    });
-  }
+  const resolvedCategory = resolveIngredientCategory(value);
+  const resolvedType = resolveLegacyIngredientType({
+    type: value.type,
+    category: value.category,
+    subtype: value.subtype
+  });
 
   if (value.category) {
-    const resolvedCategory = resolveIngredientCategory(value);
     if (resolvedCategory !== value.category) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
@@ -124,7 +153,11 @@ export const createUserCustomIngredientSchema = z.object({
   }
 
   if (value.subtype) {
-    const resolvedSubtype = resolveIngredientSubtype(value);
+    const resolvedSubtype = resolveIngredientSubtype({
+      type: resolvedType,
+      category: resolvedCategory,
+      subtype: value.subtype
+    });
     if (!resolvedSubtype) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
@@ -135,12 +168,55 @@ export const createUserCustomIngredientSchema = z.object({
   }
 
   if (value.type && value.category == null) {
-    const resolvedType = resolveLegacyIngredientType(value);
     if (resolvedType !== value.type) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
         message: "Тип ингредиента конфликтует с taxonomy.",
         path: ["type"]
+      });
+    }
+  }
+
+  if (resolvedCategory === "fermentable") {
+    if (value.fermentableColorEbc == null) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "Укажите цвет в EBC.",
+        path: ["fermentableColorEbc"]
+      });
+    }
+
+    if (value.fermentableExtractYieldPct == null) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "Укажите экстрактивность.",
+        path: ["fermentableExtractYieldPct"]
+      });
+    }
+  }
+
+  if (resolvedCategory === "hop" && value.hopAlphaAcidPct == null) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: "Укажите альфа-кислоту.",
+      path: ["hopAlphaAcidPct"]
+    });
+  }
+
+  if (resolvedCategory === "yeast") {
+    if (value.yeastAttenuationPct == null) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "Укажите аттенюацию.",
+        path: ["yeastAttenuationPct"]
+      });
+    }
+
+    if (!value.yeastForm) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "Укажите тип дрожжей.",
+        path: ["yeastForm"]
       });
     }
   }
@@ -219,6 +295,7 @@ export type InventorySourceDto = {
   brandName?: string | null;
   manufacturer?: string | null;
   country?: string | null;
+  harvestYear?: number | null;
   completenessLevel?: IngredientCompletenessLevel | null;
   technicalData?: IngredientTechnicalData | null;
   defaultDisplayUnit?: InventoryUnit;

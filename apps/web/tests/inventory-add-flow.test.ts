@@ -91,8 +91,27 @@ describe("inventory add-flow", () => {
     expect(html).not.toContain("Куплено");
     expect(html).not.toContain("Ед. закупки");
     expect(html).not.toContain(">Валюта<");
+    expect(html).toContain("Параметры ингредиента");
+    expect(html).toContain("Тип ферментируемого");
+    expect(html).toContain("Цвет, EBC");
+    expect(html).toContain("Экстрактивность, %");
+    expect(html).not.toContain("Базовая ед. изм.");
     expect(html).toContain(`value="${getTodayDateInputValue()}"`);
     expect(html).toContain('aria-label="Очистить дату покупки"');
+  });
+
+  it("hides duplicate subtype selector for hop custom flow", () => {
+    const html = renderToStaticMarkup(React.createElement(CustomIngredientForm, {
+      category: "hop",
+      preferredCurrency: "USD",
+      pending: false,
+      onSubmit: async () => undefined
+    }));
+
+    expect(html).toContain("Альфа-кислота, %");
+    expect(html).toContain("Год урожая");
+    expect(html).not.toContain("Подтип");
+    expect(html).not.toContain("Без уточнения");
   });
 
   it("prefills purchase date in catalog add form with today's date", () => {
@@ -165,8 +184,10 @@ describe("inventory add-flow", () => {
   it("adds custom ingredient and then adds it to inventory", async () => {
     const formData = new FormData();
     formData.set("category", "yeast");
-    formData.set("subtype", "kveik");
-    formData.set("displayName", "Kveik");
+    formData.set("displayName", "US-05");
+    formData.set("brand", "Fermentis");
+    formData.set("yeastForm", "dry");
+    formData.set("yeastAttenuationPct", "78");
     formData.set("defaultDisplayUnit", "pack");
     formData.set("enteredQuantity", "1");
     formData.set("enteredUnit", "pack");
@@ -177,7 +198,9 @@ describe("inventory add-flow", () => {
     expect(mockState.createCustomCalls).toHaveLength(1);
     expect(mockState.createCustomCalls[0]).toMatchObject({
       category: "yeast",
-      subtype: "kveik",
+      brand: "Fermentis",
+      yeastForm: "dry",
+      yeastAttenuationPct: 78,
       defaultDisplayUnit: "pack"
     });
     expect(mockState.addCustomCalls[0]?.userCustomIngredientId).toBe("3d6eb945-8e2e-4af9-8d24-ef6c883b5dd0");

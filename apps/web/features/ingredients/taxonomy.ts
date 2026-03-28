@@ -346,7 +346,8 @@ export const resolveIngredientUnits = (
   }
 
   if (category === "yeast") {
-    if (String(input.yeastForm ?? "").trim().toLowerCase() === "liquid") {
+    const normalizedYeastForm = String(input.yeastForm ?? "").trim().toLowerCase();
+    if (normalizedYeastForm === "liquid" || normalizedYeastForm === "slurry" || normalizedYeastForm === "culture") {
       return {
         defaultDisplayUnit: "ml",
         allowedUnits: uniqueUnits(["pack", ...VOLUME_UNITS]),

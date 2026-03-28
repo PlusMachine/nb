@@ -127,6 +127,13 @@ export const addCustomIngredientAction = async (_prevState: AddIngredientResult 
       category: String(formData.get("category") ?? "") || undefined,
       subtype: String(formData.get("subtype") ?? "").trim() || null,
       displayName: String(formData.get("displayName") ?? "").trim(),
+      brand: String(formData.get("brand") ?? "").trim() || null,
+      harvestYear: String(formData.get("harvestYear") ?? "").trim() || null,
+      fermentableColorEbc: String(formData.get("fermentableColorEbc") ?? "").trim() || null,
+      fermentableExtractYieldPct: String(formData.get("fermentableExtractYieldPct") ?? "").trim() || null,
+      hopAlphaAcidPct: String(formData.get("hopAlphaAcidPct") ?? "").trim() || null,
+      yeastAttenuationPct: String(formData.get("yeastAttenuationPct") ?? "").trim() || null,
+      yeastForm: String(formData.get("yeastForm") ?? "").trim() || null,
       defaultDisplayUnit: String(formData.get("defaultDisplayUnit") ?? "").trim() || null
     });
 
