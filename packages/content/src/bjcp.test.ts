@@ -6,7 +6,7 @@ describe("BJCP content index", () => {
   it("loads translated BJCP styles from the content folder", async () => {
     const articles = await listArticles();
 
-    expect(articles.length).toBeGreaterThan(10);
+    expect(articles).toHaveLength(128);
     expect(articles[0]?.slug).toMatch(/^bjcp-/);
   });
 
@@ -25,5 +25,44 @@ describe("BJCP content index", () => {
 
     expect(article?.bjcpId).toBe("1A");
     expect(article?.sections.length).toBeGreaterThan(4);
+  });
+
+  it("includes commercial examples from the source JSON in article sections", async () => {
+    const article = await getArticleBySlug("bjcp-1b-american-lager");
+
+    expect(article?.bjcpId).toBe("1B");
+    expect(article?.sections.some((section) => (
+      section.id === "commercial_examples"
+      && section.label === "Коммерческие примеры"
+      && section.content.includes("Budweiser")
+    ))).toBe(true);
+  });
+
+  it("loads specialty IPA substyles as separate BJCP 2021 entries", async () => {
+    const articles = await listArticles();
+    const specialtyIpas = articles.filter((article) => article.bjcpId.startsWith("21B"));
+
+    expect(specialtyIpas.map((article) => article.bjcpId)).toEqual([
+      "21B",
+      "21B-Belgian IPA",
+      "21B-Black IPA",
+      "21B-Brown IPA",
+      "21B-Brut IPA",
+      "21B-Red IPA",
+      "21B-Rye IPA",
+      "21B-White IPA"
+    ]);
+  });
+
+  it("resolves both canonical and legacy alias slugs for specialty IPA substyles", async () => {
+    const [canonical, legacyAlias] = await Promise.all([
+      getArticleBySlug("bjcp-21b-rye-ipa"),
+      getArticleBySlug("bjcp-21b-rye-rye-ipa")
+    ]);
+
+    expect(canonical?.bjcpId).toBe("21B-Rye IPA");
+    expect(canonical?.slug).toBe("bjcp-21b-rye-ipa");
+    expect(legacyAlias?.bjcpId).toBe("21B-Rye IPA");
+    expect(legacyAlias?.slug).toBe("bjcp-21b-rye-ipa");
   });
 });

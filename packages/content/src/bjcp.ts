@@ -29,7 +29,8 @@ const SECTION_LABELS: Record<string, string> = {
   history: "История",
   characteristic_ingredients: "Характерные ингредиенты",
   style_comparison: "Сравнение со стилями",
-  entry_instructions: "Инструкции"
+  entry_instructions: "Инструкции",
+  commercial_examples: "Коммерческие примеры"
 };
 
 const FEATURED_STYLE_IDS = ["1A", "1C", "2A", "3A", "5B", "10A"] as const;
@@ -61,6 +62,7 @@ type RawBjcpFile = {
     sections_en?: Record<string, string | null | undefined>;
     vital_statistics_text?: string;
     vital_statistics?: Record<string, string | null | undefined>;
+    commercial_examples_text?: string;
   }>;
 };
 
@@ -131,6 +133,31 @@ const slugify = (value: string) => value
   .replace(/[^a-z0-9]+/g, "-")
   .replace(/^-+|-+$/g, "")
   .replace(/-{2,}/g, "-");
+
+const createBjcpArticleSlug = (bjcpId: string, titleEn: string) => {
+  const idSlug = slugify(bjcpId);
+  const titleSlug = slugify(titleEn);
+
+  if (!titleSlug || idSlug.endsWith(titleSlug)) {
+    return `bjcp-${idSlug}`;
+  }
+
+  return `bjcp-${idSlug}-${titleSlug}`;
+};
+
+const getBjcpArticleSlugAliases = (article: Pick<ContentArticle, "bjcpId" | "titleEn" | "slug">) => {
+  const aliases = new Set<string>([article.slug]);
+  const titleSlug = slugify(article.titleEn);
+  const rawLegacySlug = `bjcp-${article.bjcpId.toLowerCase()}-${titleSlug}`;
+  aliases.add(rawLegacySlug);
+
+  const trimmedIpaId = article.bjcpId.replace(/\s+ipa$/i, "");
+  if (trimmedIpaId !== article.bjcpId) {
+    aliases.add(`bjcp-${slugify(trimmedIpaId)}-${titleSlug}`);
+  }
+
+  return aliases;
+};
 
 const compareBjcpIds = (left: string, right: string) => collator.compare(left, right);
 
@@ -238,6 +265,30 @@ const buildSections = (sections?: Record<string, string | null | undefined>): Ar
   return orderedEntries;
 };
 
+const appendExtraSections = (
+  sections: ArticleSection[],
+  extras: Array<{ id: string; content?: string | null | undefined }>
+) => {
+  const nextSections = [...sections];
+  const seen = new Set(nextSections.map((section) => section.id));
+
+  for (const extra of extras) {
+    const content = extra.content?.trim();
+    if (!content || seen.has(extra.id)) {
+      continue;
+    }
+
+    nextSections.push({
+      id: extra.id,
+      label: SECTION_LABELS[extra.id] ?? extra.id,
+      content
+    });
+    seen.add(extra.id);
+  }
+
+  return nextSections;
+};
+
 const buildKeywords = (style: {
   bjcpId: string;
   categoryRu: string;
@@ -263,7 +314,7 @@ const createEmptyIndex = (): BjcpContentIndex => ({ articles: [], categories: []
 const loadBjcpFiles = async () => {
   try {
     const fileNames = (await readdir(BJCP_DIR))
-      .filter((fileName) => fileName.endsWith(".json"))
+      .filter((fileName) => /^bjcp_styles_.*\.json$/i.test(fileName))
       .sort();
 
     const files = await Promise.all(
@@ -334,9 +385,14 @@ const buildIndex = async (): Promise<BjcpContentIndex> => {
         continue;
       }
 
-      const sections = buildSections(style.sections_ru);
+      const sections = appendExtraSections(buildSections(style.sections_ru), [
+        {
+          id: "commercial_examples",
+          content: style.commercial_examples_text
+        }
+      ]);
       const description = style.description_short_ru?.trim() ?? sections[0]?.content ?? `${title} по BJCP`;
-      const slug = `bjcp-${bjcpId.toLowerCase()}-${slugify(titleEn)}`;
+      const slug = createBjcpArticleSlug(bjcpId, titleEn);
       const publishedAt = resolvePublishedAt(articleIndex);
       const stats = buildStats(style.vital_statistics);
 
@@ -406,7 +462,7 @@ export const listArticleCategories = async () => (await getIndex()).categories;
 
 export const getArticleBySlug = async (slug: string) => {
   const articles = await listArticles();
-  return articles.find((article) => article.slug === slug) ?? null;
+  return articles.find((article) => getBjcpArticleSlugAliases(article).has(slug)) ?? null;
 };
 
 export const listRelatedArticles = async (article: ContentArticle, limit = 3) => {

@@ -11,3 +11,12 @@ export {
   type CategorySummary,
   type ContentArticle
 } from "./bjcp";
+
+export {
+  getBjcpCatalogData,
+  type BjcpCatalogData,
+  type BjcpCatalogStyle,
+  type BjcpCatalogUiStrategy,
+  type BjcpCatalogViewMode,
+  type BjcpFamily
+} from "./bjcp-catalog";

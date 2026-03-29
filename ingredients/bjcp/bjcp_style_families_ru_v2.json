@@ -1,0 +1,3326 @@
+{
+  "source_document": "BJCP 2021 Style Guidelines",
+  "source_file": "2021_Guidelines_Beer_1.25.pdf",
+  "version": "2.0",
+  "ui_strategy": {
+    "default_view": "families",
+    "secondary_view": "bjcp_categories",
+    "recommended_quick_chips_ru": [
+      "Лагер",
+      "Пшеничное",
+      "IPA/Хмелевое",
+      "Портер/Стаут",
+      "Кислое",
+      "Бельгийское",
+      "Светлое",
+      "Тёмное",
+      "Историческое",
+      "Локальное"
+    ],
+    "recommended_advanced_filters_ru": [
+      "Цвет",
+      "Тип брожения",
+      "Крепость",
+      "Школа/регион",
+      "Особенности"
+    ],
+    "notes_ru": [
+      "Семейства должны быть основным способом обзора каталога.",
+      "BJCP-категории должны оставаться отдельным строгим режимом просмотра.",
+      "Исторические и локальные стили лучше выделять в отдельные семейства, а не прятать в общие вкусовые кластеры.",
+      "Primary family используется для навигации; поиск и бейджи покрывают вторичные ассоциации.",
+      "Для UX допускаются осмысленные пересечения между семействами, особенно для локальных и исторических стилей."
+    ]
+  },
+  "families": [
+    {
+      "id": "easy_light",
+      "name_ru": "Светлое и питкое",
+      "name_en": "Light & Easy-Drinking",
+      "description_ru": "Понятные, освежающие, светлые стили без тяжёлой солодовой или экстремально яркой вкусовой нагрузки. Лучший вход для большинства пользователей.",
+      "sort_order": 1,
+      "style_count": 18,
+      "style_ids": [
+        "1A",
+        "1B",
+        "1D",
+        "2A",
+        "3A",
+        "3B",
+        "4A",
+        "4B",
+        "5A",
+        "5B",
+        "5C",
+        "5D",
+        "12A",
+        "12B",
+        "27-Kellerbier",
+        "27-Pre-Prohibition-Lager",
+        "X1",
+        "X5"
+      ],
+      "style_names_ru": [
+        "Американский лёгкий лагер",
+        "Американский лагер",
+        "Американское пшеничное пиво",
+        "Международный светлый лагер",
+        "Чешский светлый лагер",
+        "Чешский премиальный светлый лагер",
+        "Мюнхенский хеллес",
+        "Фестбир",
+        "Немецкий ляйхтбир",
+        "Кёльш",
+        "Немецкий хеллес-экспортбир",
+        "Немецкий пилс",
+        "Британский золотой эль",
+        "Австралийский игристый эль",
+        "Келлербир",
+        "Лагер до сухого закона",
+        "Дорада Пампеана",
+        "Новозеландский пилснер"
+      ],
+      "primary_style_count": 13,
+      "cross_listed_style_ids": [
+        "1D",
+        "27-Kellerbier",
+        "27-Pre-Prohibition-Lager",
+        "X1",
+        "X5"
+      ],
+      "has_cross_listings": true
+    },
+    {
+      "id": "malty_lagers",
+      "name_ru": "Янтарные, тёмные и крепкие лагеры",
+      "name_en": "Amber, Dark & Strong Lagers",
+      "description_ru": "Лагеры с более плотным телом, выраженной солодовой глубиной, поджаристостью или повышенной крепостью: от венского лагера до боков.",
+      "sort_order": 2,
+      "style_count": 13,
+      "style_ids": [
+        "2B",
+        "2C",
+        "3C",
+        "3D",
+        "4C",
+        "6A",
+        "6B",
+        "6C",
+        "7A",
+        "8A",
+        "8B",
+        "9A",
+        "9B"
+      ],
+      "style_names_ru": [
+        "Международный янтарный лагер",
+        "Международный тёмный лагер",
+        "Чешский янтарный лагер",
+        "Чешский тёмный лагер",
+        "Хеллес-бок",
+        "Мерцен",
+        "Раухбир",
+        "Дунклес-бок",
+        "Венский лагер",
+        "Мюнхенский дункель",
+        "Шварцбир",
+        "Доппельбок",
+        "Айсбок"
+      ],
+      "primary_style_count": 13,
+      "cross_listed_style_ids": [],
+      "has_cross_listings": false
+    },
+    {
+      "id": "wheat_grain",
+      "name_ru": "Пшеничное и зерновое",
+      "name_en": "Wheat & Grain-Forward",
+      "description_ru": "Пшеничные, ржаные и другие зерновые стили, где характер злаков и текстура важнее, чем чисто лагерная или IPA-логика.",
+      "sort_order": 3,
+      "style_count": 12,
+      "style_ids": [
+        "1D",
+        "10A",
+        "10B",
+        "10C",
+        "21B-White IPA",
+        "22D",
+        "24A",
+        "27-Lichtenhainer",
+        "27-Piwo-Grodziskie",
+        "27-Roggenbier",
+        "27-Sahti",
+        "31A"
+      ],
+      "style_names_ru": [
+        "Американское пшеничное пиво",
+        "Вайсбир",
+        "Тёмный вайсбир",
+        "Вайценбок",
+        "Белый IPA",
+        "Уитвайн",
+        "Витбир",
+        "Лихтенхайнер",
+        "Пиво гродзиске",
+        "Роггенбир",
+        "Сахти",
+        "Пиво с альтернативными зерновыми"
+      ],
+      "primary_style_count": 7,
+      "cross_listed_style_ids": [
+        "21B-White IPA",
+        "27-Lichtenhainer",
+        "27-Piwo-Grodziskie",
+        "27-Roggenbier",
+        "27-Sahti"
+      ],
+      "has_cross_listings": true
+    },
+    {
+      "id": "ipa_hoppy",
+      "name_ru": "IPA, APA и хмелевые стили",
+      "name_en": "IPA, APA & Hoppy Styles",
+      "description_ru": "Всё, что пользователь в русскоязычной среде обычно ищет как «IPA-подобное»: APA, IPA, Hazy, Double IPA и подтипы Specialty IPA.",
+      "sort_order": 4,
+      "style_count": 14,
+      "style_ids": [
+        "12C",
+        "18B",
+        "21A",
+        "21B",
+        "21B-Belgian IPA",
+        "21B-Black IPA",
+        "21B-Brown IPA",
+        "21B-Red IPA",
+        "21B-Rye IPA",
+        "21B-White IPA",
+        "21B-Brut IPA",
+        "21C",
+        "22A",
+        "X2"
+      ],
+      "style_names_ru": [
+        "Английский IPA",
+        "Американский пейл-эль",
+        "Американский IPA",
+        "Специальный IPA",
+        "Бельгийский IPA",
+        "Чёрный IPA",
+        "Коричневый IPA",
+        "Красный IPA",
+        "Ржаной IPA",
+        "Белый IPA",
+        "Брют IPA",
+        "Хейзи IPA",
+        "Двойной IPA",
+        "IPA Аргента"
+      ],
+      "primary_style_count": 13,
+      "cross_listed_style_ids": [
+        "X2"
+      ],
+      "has_cross_listings": true
+    },
+    {
+      "id": "american_ales",
+      "name_ru": "Американская классика",
+      "name_en": "American Ale Classics",
+      "description_ru": "Нехмелевой американский крафтовый канон: cream ale, blonde, amber, brown, California Common, strong ale и barleywine.",
+      "sort_order": 5,
+      "style_count": 9,
+      "style_ids": [
+        "1C",
+        "18A",
+        "19A",
+        "19B",
+        "19C",
+        "22B",
+        "22C",
+        "22D",
+        "27-Kentucky-Common"
+      ],
+      "style_names_ru": [
+        "Крим-эль",
+        "Блонд-эль",
+        "Американский янтарный эль",
+        "Калифорнийский коммон",
+        "Американский браун-эль",
+        "Американский крепкий эль",
+        "Американский барливайн",
+        "Уитвайн",
+        "Кентукки коммон"
+      ],
+      "primary_style_count": 7,
+      "cross_listed_style_ids": [
+        "22D",
+        "27-Kentucky-Common"
+      ],
+      "has_cross_listings": true
+    },
+    {
+      "id": "british_irish",
+      "name_ru": "Британские и ирландские эли",
+      "name_en": "British & Irish Ales",
+      "description_ru": "Bitter, mild, brown ale, scottish и другие солодовые, сессионные и крепкие эли британской школы. Сюда же логично попадает Altbier как старошкольный солодовый эль.",
+      "sort_order": 6,
+      "style_count": 15,
+      "style_ids": [
+        "7B",
+        "11A",
+        "11B",
+        "11C",
+        "13A",
+        "13B",
+        "14A",
+        "14B",
+        "14C",
+        "15A",
+        "17A",
+        "17B",
+        "17C",
+        "17D",
+        "27-London-Brown-Ale"
+      ],
+      "style_names_ru": [
+        "Альтбир",
+        "Обычный биттер",
+        "Бест биттер",
+        "Крепкий биттер",
+        "Тёмный майлд",
+        "Британский браун-эль",
+        "Шотландский лёгкий эль",
+        "Шотландский heavy",
+        "Шотландский export",
+        "Ирландский красный эль",
+        "Крепкий британский эль",
+        "Старый эль",
+        "Уи-хэви",
+        "Английский барливайн",
+        "Лондонский браун-эль"
+      ],
+      "primary_style_count": 14,
+      "cross_listed_style_ids": [
+        "27-London-Brown-Ale"
+      ],
+      "has_cross_listings": true
+    },
+    {
+      "id": "porters_stouts",
+      "name_ru": "Портеры и стауты",
+      "name_en": "Porters & Stouts",
+      "description_ru": "От сухих и овсяных стаутов до балтийского портера и имперских версий. Для пользователя это самостоятельный и очень узнаваемый кластер.",
+      "sort_order": 7,
+      "style_count": 12,
+      "style_ids": [
+        "9C",
+        "13C",
+        "15B",
+        "15C",
+        "16A",
+        "16B",
+        "16C",
+        "16D",
+        "20A",
+        "20B",
+        "20C",
+        "27-Pre-Prohibition-Porter"
+      ],
+      "style_names_ru": [
+        "Балтийский портер",
+        "Английский портер",
+        "Ирландский стаут",
+        "Ирландский экстра-стаут",
+        "Сладкий стаут",
+        "Овсяный стаут",
+        "Тропический стаут",
+        "Иностранный экстра-стаут",
+        "Американский портер",
+        "Американский стаут",
+        "Имперский стаут",
+        "Портер до сухого закона"
+      ],
+      "primary_style_count": 11,
+      "cross_listed_style_ids": [
+        "27-Pre-Prohibition-Porter"
+      ],
+      "has_cross_listings": true
+    },
+    {
+      "id": "belgian_farmhouse",
+      "name_ru": "Бельгийские и фермерские стили",
+      "name_en": "Belgian & Farmhouse",
+      "description_ru": "Фруктово-пряная бельгийская школа, saison, монастырские стили и близкие к ним традиции.",
+      "sort_order": 8,
+      "style_count": 11,
+      "style_ids": [
+        "21B-Belgian IPA",
+        "24A",
+        "24B",
+        "24C",
+        "25A",
+        "25B",
+        "25C",
+        "26A",
+        "26B",
+        "26C",
+        "26D"
+      ],
+      "style_names_ru": [
+        "Бельгийский IPA",
+        "Витбир",
+        "Бельгийский светлый эль",
+        "Бьер-де-гард",
+        "Бельгийский блонд-эль",
+        "Сезон",
+        "Бельгийский золотой крепкий эль",
+        "Бельгийский сингл",
+        "Бельгийский дуббель",
+        "Бельгийский трипель",
+        "Бельгийский тёмный крепкий эль"
+      ],
+      "primary_style_count": 9,
+      "cross_listed_style_ids": [
+        "21B-Belgian IPA",
+        "24A"
+      ],
+      "has_cross_listings": true
+    },
+    {
+      "id": "sour_wild",
+      "name_ru": "Кислые и дикие стили",
+      "name_en": "Sour & Wild",
+      "description_ru": "Кислые, смешанного брожения и wild-стили — один из самых самостоятельных пользовательских кластеров на рынке.",
+      "sort_order": 9,
+      "style_count": 13,
+      "style_ids": [
+        "23A",
+        "23B",
+        "23C",
+        "23D",
+        "23E",
+        "23F",
+        "23G",
+        "27-Lichtenhainer",
+        "28A",
+        "28B",
+        "28C",
+        "28D",
+        "X4"
+      ],
+      "style_names_ru": [
+        "Берлинер-вайссе",
+        "Фламандский красный эль",
+        "Ауд брёйн",
+        "Ламбик",
+        "Гёз",
+        "Фруктовый ламбик",
+        "Гозе",
+        "Лихтенхайнер",
+        "Бретт-пиво",
+        "Кислое пиво смешанного брожения",
+        "Специальное дикое пиво",
+        "Чисто кислое пиво",
+        "Катарина сауэр"
+      ],
+      "primary_style_count": 11,
+      "cross_listed_style_ids": [
+        "27-Lichtenhainer",
+        "X4"
+      ],
+      "has_cross_listings": true
+    },
+    {
+      "id": "specialty",
+      "name_ru": "Фруктовые, пряные и специальные стили",
+      "name_en": "Fruit, Spice & Specialty",
+      "description_ru": "Стили с фруктами, пряностями, копчением, деревом, сахаром и другими специальными модификаторами, а также experimental/mixed-style.",
+      "sort_order": 10,
+      "style_count": 21,
+      "style_ids": [
+        "23F",
+        "27-Sahti",
+        "29A",
+        "29B",
+        "29C",
+        "29D",
+        "30A",
+        "30B",
+        "30C",
+        "30D",
+        "31A",
+        "31B",
+        "32A",
+        "32B",
+        "33A",
+        "33B",
+        "34A",
+        "34B",
+        "34C",
+        "X3",
+        "X4"
+      ],
+      "style_names_ru": [
+        "Фруктовый ламбик",
+        "Сахти",
+        "Фруктовое пиво",
+        "Фруктово-пряное пиво",
+        "Специальное фруктовое пиво",
+        "Виноградный эль",
+        "Пиво со специями, травами или овощами",
+        "Осеннее сезонное пиво",
+        "Зимнее сезонное пиво",
+        "Специальное пряное пиво",
+        "Пиво с альтернативными зерновыми",
+        "Пиво с альтернативными сахарами",
+        "Копчёное пиво классического стиля",
+        "Специальное копчёное пиво",
+        "Пиво с выдержкой в дереве",
+        "Специальное пиво с древесной выдержкой",
+        "Коммерческое специальное пиво",
+        "Пиво смешанного стиля",
+        "Экспериментальное пиво",
+        "Итальянский виноградный эль",
+        "Катарина сауэр"
+      ],
+      "primary_style_count": 16,
+      "cross_listed_style_ids": [
+        "23F",
+        "27-Sahti",
+        "31A",
+        "X3",
+        "X4"
+      ],
+      "has_cross_listings": true
+    },
+    {
+      "id": "historical",
+      "name_ru": "Исторические стили",
+      "name_en": "Historical Styles",
+      "description_ru": "Исторические стили лучше показывать отдельным блоком: так пользователь понимает, что перед ним не повседневная полка, а часть истории пива.",
+      "sort_order": 11,
+      "style_count": 9,
+      "style_ids": [
+        "27-Kellerbier",
+        "27-Kentucky-Common",
+        "27-Lichtenhainer",
+        "27-London-Brown-Ale",
+        "27-Piwo-Grodziskie",
+        "27-Pre-Prohibition-Lager",
+        "27-Pre-Prohibition-Porter",
+        "27-Roggenbier",
+        "27-Sahti"
+      ],
+      "style_names_ru": [
+        "Келлербир",
+        "Кентукки коммон",
+        "Лихтенхайнер",
+        "Лондонский браун-эль",
+        "Пиво гродзиске",
+        "Лагер до сухого закона",
+        "Портер до сухого закона",
+        "Роггенбир",
+        "Сахти"
+      ],
+      "primary_style_count": 9,
+      "cross_listed_style_ids": [],
+      "has_cross_listings": false
+    },
+    {
+      "id": "local",
+      "name_ru": "Локальные стили",
+      "name_en": "Local Styles",
+      "description_ru": "Стили Appendix B. Их удобно вынести в отдельный семейный блок, потому что в обучающем справочнике это самостоятельный исследовательский сценарий.",
+      "sort_order": 12,
+      "style_count": 5,
+      "style_ids": [
+        "X1",
+        "X2",
+        "X3",
+        "X4",
+        "X5"
+      ],
+      "style_names_ru": [
+        "Дорада Пампеана",
+        "IPA Аргента",
+        "Итальянский виноградный эль",
+        "Катарина сауэр",
+        "Новозеландский пилснер"
+      ],
+      "primary_style_count": 5,
+      "cross_listed_style_ids": [],
+      "has_cross_listings": false
+    }
+  ],
+  "styles": [
+    {
+      "bjcp_id": "1A",
+      "name_ru": "Американский лёгкий лагер",
+      "name_en": "American Light Lager",
+      "category_id": "1",
+      "category_ru": "Стандартное американское пиво",
+      "primary_family_id": "easy_light",
+      "primary_family_ru": "Светлое и питкое",
+      "primary_family_en": "Light & Easy-Drinking",
+      "ui_badges_ru": [
+        "Лёгкое",
+        "Светлое",
+        "Лагер",
+        "Традиционный стиль"
+      ],
+      "secondary_family_ids": [],
+      "all_family_ids": [
+        "easy_light"
+      ]
+    },
+    {
+      "bjcp_id": "1B",
+      "name_ru": "Американский лагер",
+      "name_en": "American Lager",
+      "category_id": "1",
+      "category_ru": "Стандартное американское пиво",
+      "primary_family_id": "easy_light",
+      "primary_family_ru": "Светлое и питкое",
+      "primary_family_en": "Light & Easy-Drinking",
+      "ui_badges_ru": [
+        "Стандартная крепость",
+        "Светлое",
+        "Лагер",
+        "Традиционный стиль"
+      ],
+      "secondary_family_ids": [],
+      "all_family_ids": [
+        "easy_light"
+      ]
+    },
+    {
+      "bjcp_id": "1C",
+      "name_ru": "Крим-эль",
+      "name_en": "Cream Ale",
+      "category_id": "1",
+      "category_ru": "Стандартное американское пиво",
+      "primary_family_id": "american_ales",
+      "primary_family_ru": "Американская классика",
+      "primary_family_en": "American Ale Classics",
+      "ui_badges_ru": [
+        "Стандартная крепость",
+        "Светлое",
+        "Традиционный стиль"
+      ],
+      "secondary_family_ids": [],
+      "all_family_ids": [
+        "american_ales"
+      ]
+    },
+    {
+      "bjcp_id": "1D",
+      "name_ru": "Американское пшеничное пиво",
+      "name_en": "American Wheat Beer",
+      "category_id": "1",
+      "category_ru": "Стандартное американское пиво",
+      "primary_family_id": "wheat_grain",
+      "primary_family_ru": "Пшеничное и зерновое",
+      "primary_family_en": "Wheat & Grain-Forward",
+      "ui_badges_ru": [
+        "Стандартная крепость",
+        "Светлое",
+        "Крафтовый стиль"
+      ],
+      "secondary_family_ids": [
+        "easy_light"
+      ],
+      "all_family_ids": [
+        "wheat_grain",
+        "easy_light"
+      ],
+      "cross_listed_in_ru": [
+        "Светлое и питкое"
+      ]
+    },
+    {
+      "bjcp_id": "2A",
+      "name_ru": "Международный светлый лагер",
+      "name_en": "International Pale Lager",
+      "category_id": "2",
+      "category_ru": "Международный лагер",
+      "primary_family_id": "easy_light",
+      "primary_family_ru": "Светлое и питкое",
+      "primary_family_en": "Light & Easy-Drinking",
+      "ui_badges_ru": [
+        "Стандартная крепость",
+        "Светлое",
+        "Лагер",
+        "Традиционный стиль"
+      ],
+      "secondary_family_ids": [],
+      "all_family_ids": [
+        "easy_light"
+      ]
+    },
+    {
+      "bjcp_id": "2B",
+      "name_ru": "Международный янтарный лагер",
+      "name_en": "International Amber Lager",
+      "category_id": "2",
+      "category_ru": "Международный лагер",
+      "primary_family_id": "malty_lagers",
+      "primary_family_ru": "Янтарные, тёмные и крепкие лагеры",
+      "primary_family_en": "Amber, Dark & Strong Lagers",
+      "ui_badges_ru": [
+        "Стандартная крепость",
+        "Янтарное",
+        "Лагер",
+        "Традиционный стиль",
+        "Солодовое"
+      ],
+      "secondary_family_ids": [],
+      "all_family_ids": [
+        "malty_lagers"
+      ]
+    },
+    {
+      "bjcp_id": "2C",
+      "name_ru": "Международный тёмный лагер",
+      "name_en": "International Dark Lager",
+      "category_id": "2",
+      "category_ru": "Международный лагер",
+      "primary_family_id": "malty_lagers",
+      "primary_family_ru": "Янтарные, тёмные и крепкие лагеры",
+      "primary_family_en": "Amber, Dark & Strong Lagers",
+      "ui_badges_ru": [
+        "Стандартная крепость",
+        "Тёмное",
+        "Лагер",
+        "Традиционный стиль",
+        "Солодовое"
+      ],
+      "secondary_family_ids": [],
+      "all_family_ids": [
+        "malty_lagers"
+      ]
+    },
+    {
+      "bjcp_id": "3A",
+      "name_ru": "Чешский светлый лагер",
+      "name_en": "Czech Pale Lager",
+      "category_id": "3",
+      "category_ru": "Чешский лагер",
+      "primary_family_id": "easy_light",
+      "primary_family_ru": "Светлое и питкое",
+      "primary_family_en": "Light & Easy-Drinking",
+      "ui_badges_ru": [
+        "Лёгкое",
+        "Светлое",
+        "Лагер",
+        "Традиционный стиль",
+        "Горькое",
+        "Хмелевое"
+      ],
+      "secondary_family_ids": [],
+      "all_family_ids": [
+        "easy_light"
+      ]
+    },
+    {
+      "bjcp_id": "3B",
+      "name_ru": "Чешский премиальный светлый лагер",
+      "name_en": "Czech Premium Pale Lager",
+      "category_id": "3",
+      "category_ru": "Чешский лагер",
+      "primary_family_id": "easy_light",
+      "primary_family_ru": "Светлое и питкое",
+      "primary_family_en": "Light & Easy-Drinking",
+      "ui_badges_ru": [
+        "Стандартная крепость",
+        "Светлое",
+        "Лагер",
+        "Традиционный стиль",
+        "Хмелевое"
+      ],
+      "secondary_family_ids": [],
+      "all_family_ids": [
+        "easy_light"
+      ]
+    },
+    {
+      "bjcp_id": "3C",
+      "name_ru": "Чешский янтарный лагер",
+      "name_en": "Czech Amber Lager",
+      "category_id": "3",
+      "category_ru": "Чешский лагер",
+      "primary_family_id": "malty_lagers",
+      "primary_family_ru": "Янтарные, тёмные и крепкие лагеры",
+      "primary_family_en": "Amber, Dark & Strong Lagers",
+      "ui_badges_ru": [
+        "Стандартная крепость",
+        "Янтарное",
+        "Лагер",
+        "Традиционный стиль"
+      ],
+      "secondary_family_ids": [],
+      "all_family_ids": [
+        "malty_lagers"
+      ]
+    },
+    {
+      "bjcp_id": "3D",
+      "name_ru": "Чешский тёмный лагер",
+      "name_en": "Czech Dark Lager",
+      "category_id": "3",
+      "category_ru": "Чешский лагер",
+      "primary_family_id": "malty_lagers",
+      "primary_family_ru": "Янтарные, тёмные и крепкие лагеры",
+      "primary_family_en": "Amber, Dark & Strong Lagers",
+      "ui_badges_ru": [
+        "Стандартная крепость",
+        "Тёмное",
+        "Лагер",
+        "Традиционный стиль"
+      ],
+      "secondary_family_ids": [],
+      "all_family_ids": [
+        "malty_lagers"
+      ]
+    },
+    {
+      "bjcp_id": "4A",
+      "name_ru": "Мюнхенский хеллес",
+      "name_en": "Munich Helles",
+      "category_id": "4",
+      "category_ru": "Светлый солодовый европейский лагер",
+      "primary_family_id": "easy_light",
+      "primary_family_ru": "Светлое и питкое",
+      "primary_family_en": "Light & Easy-Drinking",
+      "ui_badges_ru": [
+        "Стандартная крепость",
+        "Светлое",
+        "Лагер",
+        "Традиционный стиль",
+        "Солодовое"
+      ],
+      "secondary_family_ids": [],
+      "all_family_ids": [
+        "easy_light"
+      ]
+    },
+    {
+      "bjcp_id": "4B",
+      "name_ru": "Фестбир",
+      "name_en": "Festbier",
+      "category_id": "4",
+      "category_ru": "Светлый солодовый европейский лагер",
+      "primary_family_id": "easy_light",
+      "primary_family_ru": "Светлое и питкое",
+      "primary_family_en": "Light & Easy-Drinking",
+      "ui_badges_ru": [
+        "Стандартная крепость",
+        "Светлое",
+        "Лагер",
+        "Традиционный стиль",
+        "Солодовое"
+      ],
+      "secondary_family_ids": [],
+      "all_family_ids": [
+        "easy_light"
+      ]
+    },
+    {
+      "bjcp_id": "4C",
+      "name_ru": "Хеллес-бок",
+      "name_en": "Helles Bock",
+      "category_id": "4",
+      "category_ru": "Светлый солодовый европейский лагер",
+      "primary_family_id": "malty_lagers",
+      "primary_family_ru": "Янтарные, тёмные и крепкие лагеры",
+      "primary_family_en": "Amber, Dark & Strong Lagers",
+      "ui_badges_ru": [
+        "Крепкое",
+        "Светлое",
+        "Лагер",
+        "Традиционный стиль",
+        "Солодовое"
+      ],
+      "secondary_family_ids": [],
+      "all_family_ids": [
+        "malty_lagers"
+      ]
+    },
+    {
+      "bjcp_id": "5A",
+      "name_ru": "Немецкий ляйхтбир",
+      "name_en": "German Leichtbier",
+      "category_id": "5",
+      "category_ru": "Светлое горькое европейское пиво",
+      "primary_family_id": "easy_light",
+      "primary_family_ru": "Светлое и питкое",
+      "primary_family_en": "Light & Easy-Drinking",
+      "ui_badges_ru": [
+        "Лёгкое",
+        "Светлое",
+        "Лагер",
+        "Традиционный стиль",
+        "Горькое",
+        "Хмелевое"
+      ],
+      "secondary_family_ids": [],
+      "all_family_ids": [
+        "easy_light"
+      ]
+    },
+    {
+      "bjcp_id": "5B",
+      "name_ru": "Кёльш",
+      "name_en": "Kölsch",
+      "category_id": "5",
+      "category_ru": "Светлое горькое европейское пиво",
+      "primary_family_id": "easy_light",
+      "primary_family_ru": "Светлое и питкое",
+      "primary_family_en": "Light & Easy-Drinking",
+      "ui_badges_ru": [
+        "Стандартная крепость",
+        "Светлое",
+        "Эль",
+        "Традиционный стиль"
+      ],
+      "secondary_family_ids": [],
+      "all_family_ids": [
+        "easy_light"
+      ]
+    },
+    {
+      "bjcp_id": "5C",
+      "name_ru": "Немецкий хеллес-экспортбир",
+      "name_en": "German Helles Exportbier",
+      "category_id": "5",
+      "category_ru": "Светлое горькое европейское пиво",
+      "primary_family_id": "easy_light",
+      "primary_family_ru": "Светлое и питкое",
+      "primary_family_en": "Light & Easy-Drinking",
+      "ui_badges_ru": [
+        "Стандартная крепость",
+        "Светлое",
+        "Лагер",
+        "Традиционный стиль"
+      ],
+      "secondary_family_ids": [],
+      "all_family_ids": [
+        "easy_light"
+      ]
+    },
+    {
+      "bjcp_id": "5D",
+      "name_ru": "Немецкий пилс",
+      "name_en": "German Pils",
+      "category_id": "5",
+      "category_ru": "Светлое горькое европейское пиво",
+      "primary_family_id": "easy_light",
+      "primary_family_ru": "Светлое и питкое",
+      "primary_family_en": "Light & Easy-Drinking",
+      "ui_badges_ru": [
+        "Стандартная крепость",
+        "Светлое",
+        "Лагер",
+        "Традиционный стиль",
+        "Горькое",
+        "Хмелевое"
+      ],
+      "secondary_family_ids": [],
+      "all_family_ids": [
+        "easy_light"
+      ]
+    },
+    {
+      "bjcp_id": "6A",
+      "name_ru": "Мерцен",
+      "name_en": "Märzen",
+      "category_id": "6",
+      "category_ru": "Янтарный солодовый европейский лагер",
+      "primary_family_id": "malty_lagers",
+      "primary_family_ru": "Янтарные, тёмные и крепкие лагеры",
+      "primary_family_en": "Amber, Dark & Strong Lagers",
+      "ui_badges_ru": [
+        "Стандартная крепость",
+        "Янтарное",
+        "Лагер",
+        "Традиционный стиль",
+        "Солодовое"
+      ],
+      "secondary_family_ids": [],
+      "all_family_ids": [
+        "malty_lagers"
+      ]
+    },
+    {
+      "bjcp_id": "6B",
+      "name_ru": "Раухбир",
+      "name_en": "Rauchbier",
+      "category_id": "6",
+      "category_ru": "Янтарный солодовый европейский лагер",
+      "primary_family_id": "malty_lagers",
+      "primary_family_ru": "Янтарные, тёмные и крепкие лагеры",
+      "primary_family_en": "Amber, Dark & Strong Lagers",
+      "ui_badges_ru": [
+        "Стандартная крепость",
+        "Янтарное",
+        "Лагер",
+        "Традиционный стиль",
+        "Солодовое",
+        "Копчёное"
+      ],
+      "secondary_family_ids": [],
+      "all_family_ids": [
+        "malty_lagers"
+      ]
+    },
+    {
+      "bjcp_id": "6C",
+      "name_ru": "Дунклес-бок",
+      "name_en": "Dunkles Bock",
+      "category_id": "6",
+      "category_ru": "Янтарный солодовый европейский лагер",
+      "primary_family_id": "malty_lagers",
+      "primary_family_ru": "Янтарные, тёмные и крепкие лагеры",
+      "primary_family_en": "Amber, Dark & Strong Lagers",
+      "ui_badges_ru": [
+        "Крепкое",
+        "Янтарное",
+        "Лагер",
+        "Традиционный стиль",
+        "Солодовое"
+      ],
+      "secondary_family_ids": [],
+      "all_family_ids": [
+        "malty_lagers"
+      ]
+    },
+    {
+      "bjcp_id": "7A",
+      "name_ru": "Венский лагер",
+      "name_en": "Vienna Lager",
+      "category_id": "7",
+      "category_ru": "Янтарное горькое европейское пиво",
+      "primary_family_id": "malty_lagers",
+      "primary_family_ru": "Янтарные, тёмные и крепкие лагеры",
+      "primary_family_en": "Amber, Dark & Strong Lagers",
+      "ui_badges_ru": [
+        "Стандартная крепость",
+        "Янтарное",
+        "Лагер",
+        "Традиционный стиль"
+      ],
+      "secondary_family_ids": [],
+      "all_family_ids": [
+        "malty_lagers"
+      ]
+    },
+    {
+      "bjcp_id": "7B",
+      "name_ru": "Альтбир",
+      "name_en": "Altbier",
+      "category_id": "7",
+      "category_ru": "Янтарное горькое европейское пиво",
+      "primary_family_id": "british_irish",
+      "primary_family_ru": "Британские и ирландские эли",
+      "primary_family_en": "British & Irish Ales",
+      "ui_badges_ru": [
+        "Стандартная крепость",
+        "Янтарное",
+        "Эль",
+        "Традиционный стиль",
+        "Горькое"
+      ],
+      "secondary_family_ids": [],
+      "all_family_ids": [
+        "british_irish"
+      ]
+    },
+    {
+      "bjcp_id": "8A",
+      "name_ru": "Мюнхенский дункель",
+      "name_en": "Munich Dunkel",
+      "category_id": "8",
+      "category_ru": "Тёмный европейский лагер",
+      "primary_family_id": "malty_lagers",
+      "primary_family_ru": "Янтарные, тёмные и крепкие лагеры",
+      "primary_family_en": "Amber, Dark & Strong Lagers",
+      "ui_badges_ru": [
+        "Стандартная крепость",
+        "Тёмное",
+        "Лагер",
+        "Традиционный стиль",
+        "Солодовое"
+      ],
+      "secondary_family_ids": [],
+      "all_family_ids": [
+        "malty_lagers"
+      ]
+    },
+    {
+      "bjcp_id": "8B",
+      "name_ru": "Шварцбир",
+      "name_en": "Schwarzbier",
+      "category_id": "8",
+      "category_ru": "Тёмный европейский лагер",
+      "primary_family_id": "malty_lagers",
+      "primary_family_ru": "Янтарные, тёмные и крепкие лагеры",
+      "primary_family_en": "Amber, Dark & Strong Lagers",
+      "ui_badges_ru": [
+        "Стандартная крепость",
+        "Тёмное",
+        "Лагер",
+        "Традиционный стиль"
+      ],
+      "secondary_family_ids": [],
+      "all_family_ids": [
+        "malty_lagers"
+      ]
+    },
+    {
+      "bjcp_id": "9A",
+      "name_ru": "Доппельбок",
+      "name_en": "Doppelbock",
+      "category_id": "9",
+      "category_ru": "Крепкое европейское пиво",
+      "primary_family_id": "malty_lagers",
+      "primary_family_ru": "Янтарные, тёмные и крепкие лагеры",
+      "primary_family_en": "Amber, Dark & Strong Lagers",
+      "ui_badges_ru": [
+        "Крепкое",
+        "Янтарное",
+        "Светлое",
+        "Лагер",
+        "Традиционный стиль",
+        "Солодовое"
+      ],
+      "secondary_family_ids": [],
+      "all_family_ids": [
+        "malty_lagers"
+      ]
+    },
+    {
+      "bjcp_id": "9B",
+      "name_ru": "Айсбок",
+      "name_en": "Eisbock",
+      "category_id": "9",
+      "category_ru": "Крепкое европейское пиво",
+      "primary_family_id": "malty_lagers",
+      "primary_family_ru": "Янтарные, тёмные и крепкие лагеры",
+      "primary_family_en": "Amber, Dark & Strong Lagers",
+      "ui_badges_ru": [
+        "Очень крепкое",
+        "Янтарное",
+        "Лагер",
+        "Традиционный стиль",
+        "Солодовое"
+      ],
+      "secondary_family_ids": [],
+      "all_family_ids": [
+        "malty_lagers"
+      ]
+    },
+    {
+      "bjcp_id": "9C",
+      "name_ru": "Балтийский портер",
+      "name_en": "Baltic Porter",
+      "category_id": "9",
+      "category_ru": "Крепкое европейское пиво",
+      "primary_family_id": "porters_stouts",
+      "primary_family_ru": "Портеры и стауты",
+      "primary_family_en": "Porters & Stouts",
+      "ui_badges_ru": [
+        "Крепкое",
+        "Тёмное",
+        "Традиционный стиль",
+        "Солодовое"
+      ],
+      "secondary_family_ids": [],
+      "all_family_ids": [
+        "porters_stouts"
+      ]
+    },
+    {
+      "bjcp_id": "10A",
+      "name_ru": "Вайсбир",
+      "name_en": "Weissbier",
+      "category_id": "10",
+      "category_ru": "Немецкое пшеничное пиво",
+      "primary_family_id": "wheat_grain",
+      "primary_family_ru": "Пшеничное и зерновое",
+      "primary_family_en": "Wheat & Grain-Forward",
+      "ui_badges_ru": [
+        "Стандартная крепость",
+        "Светлое",
+        "Эль",
+        "Традиционный стиль",
+        "Солодовое"
+      ],
+      "secondary_family_ids": [],
+      "all_family_ids": [
+        "wheat_grain"
+      ]
+    },
+    {
+      "bjcp_id": "10B",
+      "name_ru": "Тёмный вайсбир",
+      "name_en": "Dunkles Weissbier",
+      "category_id": "10",
+      "category_ru": "Немецкое пшеничное пиво",
+      "primary_family_id": "wheat_grain",
+      "primary_family_ru": "Пшеничное и зерновое",
+      "primary_family_en": "Wheat & Grain-Forward",
+      "ui_badges_ru": [
+        "Стандартная крепость",
+        "Янтарное",
+        "Эль",
+        "Традиционный стиль",
+        "Солодовое"
+      ],
+      "secondary_family_ids": [],
+      "all_family_ids": [
+        "wheat_grain"
+      ]
+    },
+    {
+      "bjcp_id": "10C",
+      "name_ru": "Вайценбок",
+      "name_en": "Weizenbock",
+      "category_id": "10",
+      "category_ru": "Немецкое пшеничное пиво",
+      "primary_family_id": "wheat_grain",
+      "primary_family_ru": "Пшеничное и зерновое",
+      "primary_family_en": "Wheat & Grain-Forward",
+      "ui_badges_ru": [
+        "Крепкое",
+        "Янтарное",
+        "Светлое",
+        "Эль",
+        "Традиционный стиль",
+        "Солодовое"
+      ],
+      "secondary_family_ids": [],
+      "all_family_ids": [
+        "wheat_grain"
+      ]
+    },
+    {
+      "bjcp_id": "11A",
+      "name_ru": "Обычный биттер",
+      "name_en": "Ordinary Bitter",
+      "category_id": "11",
+      "category_ru": "Британский биттер",
+      "primary_family_id": "british_irish",
+      "primary_family_ru": "Британские и ирландские эли",
+      "primary_family_en": "British & Irish Ales",
+      "ui_badges_ru": [
+        "Лёгкое",
+        "Янтарное",
+        "Эль",
+        "Традиционный стиль",
+        "Горькое"
+      ],
+      "secondary_family_ids": [],
+      "all_family_ids": [
+        "british_irish"
+      ]
+    },
+    {
+      "bjcp_id": "11B",
+      "name_ru": "Бест биттер",
+      "name_en": "Best Bitter",
+      "category_id": "11",
+      "category_ru": "Британский биттер",
+      "primary_family_id": "british_irish",
+      "primary_family_ru": "Британские и ирландские эли",
+      "primary_family_en": "British & Irish Ales",
+      "ui_badges_ru": [
+        "Стандартная крепость",
+        "Янтарное",
+        "Эль",
+        "Традиционный стиль",
+        "Горькое"
+      ],
+      "secondary_family_ids": [],
+      "all_family_ids": [
+        "british_irish"
+      ]
+    },
+    {
+      "bjcp_id": "11C",
+      "name_ru": "Крепкий биттер",
+      "name_en": "Strong Bitter",
+      "category_id": "11",
+      "category_ru": "Британский биттер",
+      "primary_family_id": "british_irish",
+      "primary_family_ru": "Британские и ирландские эли",
+      "primary_family_en": "British & Irish Ales",
+      "ui_badges_ru": [
+        "Стандартная крепость",
+        "Янтарное",
+        "Эль",
+        "Традиционный стиль",
+        "Горькое"
+      ],
+      "secondary_family_ids": [],
+      "all_family_ids": [
+        "british_irish"
+      ]
+    },
+    {
+      "bjcp_id": "12A",
+      "name_ru": "Британский золотой эль",
+      "name_en": "British Golden Ale",
+      "category_id": "12",
+      "category_ru": "Светлое пиво стран Содружества",
+      "primary_family_id": "easy_light",
+      "primary_family_ru": "Светлое и питкое",
+      "primary_family_en": "Light & Easy-Drinking",
+      "ui_badges_ru": [
+        "Стандартная крепость",
+        "Светлое",
+        "Эль",
+        "Крафтовый стиль",
+        "Горькое",
+        "Хмелевое"
+      ],
+      "secondary_family_ids": [],
+      "all_family_ids": [
+        "easy_light"
+      ]
+    },
+    {
+      "bjcp_id": "12B",
+      "name_ru": "Австралийский игристый эль",
+      "name_en": "Australian Sparkling Ale",
+      "category_id": "12",
+      "category_ru": "Светлое пиво стран Содружества",
+      "primary_family_id": "easy_light",
+      "primary_family_ru": "Светлое и питкое",
+      "primary_family_en": "Light & Easy-Drinking",
+      "ui_badges_ru": [
+        "Стандартная крепость",
+        "Светлое",
+        "Эль",
+        "Традиционный стиль",
+        "Горькое"
+      ],
+      "secondary_family_ids": [],
+      "all_family_ids": [
+        "easy_light"
+      ]
+    },
+    {
+      "bjcp_id": "12C",
+      "name_ru": "Английский IPA",
+      "name_en": "English IPA",
+      "category_id": "12",
+      "category_ru": "Светлое пиво стран Содружества",
+      "primary_family_id": "ipa_hoppy",
+      "primary_family_ru": "IPA, APA и хмелевые стили",
+      "primary_family_en": "IPA, APA & Hoppy Styles",
+      "ui_badges_ru": [
+        "Крепкое",
+        "Светлое",
+        "Эль",
+        "Традиционный стиль",
+        "Горькое",
+        "Хмелевое"
+      ],
+      "secondary_family_ids": [],
+      "all_family_ids": [
+        "ipa_hoppy"
+      ]
+    },
+    {
+      "bjcp_id": "13A",
+      "name_ru": "Тёмный майлд",
+      "name_en": "Dark Mild",
+      "category_id": "13",
+      "category_ru": "Коричневое британское пиво",
+      "primary_family_id": "british_irish",
+      "primary_family_ru": "Британские и ирландские эли",
+      "primary_family_en": "British & Irish Ales",
+      "ui_badges_ru": [
+        "Лёгкое",
+        "Тёмное",
+        "Эль",
+        "Традиционный стиль",
+        "Солодовое"
+      ],
+      "secondary_family_ids": [],
+      "all_family_ids": [
+        "british_irish"
+      ]
+    },
+    {
+      "bjcp_id": "13B",
+      "name_ru": "Британский браун-эль",
+      "name_en": "British Brown Ale",
+      "category_id": "13",
+      "category_ru": "Коричневое британское пиво",
+      "primary_family_id": "british_irish",
+      "primary_family_ru": "Британские и ирландские эли",
+      "primary_family_en": "British & Irish Ales",
+      "ui_badges_ru": [
+        "Стандартная крепость",
+        "Янтарное",
+        "Эль",
+        "Традиционный стиль",
+        "Солодовое"
+      ],
+      "secondary_family_ids": [],
+      "all_family_ids": [
+        "british_irish"
+      ]
+    },
+    {
+      "bjcp_id": "13C",
+      "name_ru": "Английский портер",
+      "name_en": "English Porter",
+      "category_id": "13",
+      "category_ru": "Коричневое британское пиво",
+      "primary_family_id": "porters_stouts",
+      "primary_family_ru": "Портеры и стауты",
+      "primary_family_en": "Porters & Stouts",
+      "ui_badges_ru": [
+        "Стандартная крепость",
+        "Тёмное",
+        "Эль",
+        "Традиционный стиль",
+        "Солодовое",
+        "Жареное"
+      ],
+      "secondary_family_ids": [],
+      "all_family_ids": [
+        "porters_stouts"
+      ]
+    },
+    {
+      "bjcp_id": "14A",
+      "name_ru": "Шотландский лёгкий эль",
+      "name_en": "Scottish Light",
+      "category_id": "14",
+      "category_ru": "Шотландский эль",
+      "primary_family_id": "british_irish",
+      "primary_family_ru": "Британские и ирландские эли",
+      "primary_family_en": "British & Irish Ales",
+      "ui_badges_ru": [
+        "Лёгкое",
+        "Янтарное",
+        "Эль",
+        "Традиционный стиль",
+        "Солодовое"
+      ],
+      "secondary_family_ids": [],
+      "all_family_ids": [
+        "british_irish"
+      ]
+    },
+    {
+      "bjcp_id": "14B",
+      "name_ru": "Шотландский heavy",
+      "name_en": "Scottish Heavy",
+      "category_id": "14",
+      "category_ru": "Шотландский эль",
+      "primary_family_id": "british_irish",
+      "primary_family_ru": "Британские и ирландские эли",
+      "primary_family_en": "British & Irish Ales",
+      "ui_badges_ru": [
+        "Лёгкое",
+        "Янтарное",
+        "Эль",
+        "Традиционный стиль",
+        "Солодовое"
+      ],
+      "secondary_family_ids": [],
+      "all_family_ids": [
+        "british_irish"
+      ]
+    },
+    {
+      "bjcp_id": "14C",
+      "name_ru": "Шотландский export",
+      "name_en": "Scottish Export",
+      "category_id": "14",
+      "category_ru": "Шотландский эль",
+      "primary_family_id": "british_irish",
+      "primary_family_ru": "Британские и ирландские эли",
+      "primary_family_en": "British & Irish Ales",
+      "ui_badges_ru": [
+        "Стандартная крепость",
+        "Янтарное",
+        "Эль",
+        "Традиционный стиль",
+        "Солодовое"
+      ],
+      "secondary_family_ids": [],
+      "all_family_ids": [
+        "british_irish"
+      ]
+    },
+    {
+      "bjcp_id": "15A",
+      "name_ru": "Ирландский красный эль",
+      "name_en": "Irish Red Ale",
+      "category_id": "15",
+      "category_ru": "Ирландское пиво",
+      "primary_family_id": "british_irish",
+      "primary_family_ru": "Британские и ирландские эли",
+      "primary_family_en": "British & Irish Ales",
+      "ui_badges_ru": [
+        "Стандартная крепость",
+        "Янтарное",
+        "Эль",
+        "Традиционный стиль"
+      ],
+      "secondary_family_ids": [],
+      "all_family_ids": [
+        "british_irish"
+      ]
+    },
+    {
+      "bjcp_id": "15B",
+      "name_ru": "Ирландский стаут",
+      "name_en": "Irish Stout",
+      "category_id": "15",
+      "category_ru": "Ирландское пиво",
+      "primary_family_id": "porters_stouts",
+      "primary_family_ru": "Портеры и стауты",
+      "primary_family_en": "Porters & Stouts",
+      "ui_badges_ru": [
+        "Стандартная крепость",
+        "Тёмное",
+        "Эль",
+        "Традиционный стиль",
+        "Горькое",
+        "Жареное"
+      ],
+      "secondary_family_ids": [],
+      "all_family_ids": [
+        "porters_stouts"
+      ]
+    },
+    {
+      "bjcp_id": "15C",
+      "name_ru": "Ирландский экстра-стаут",
+      "name_en": "Irish Extra Stout",
+      "category_id": "15",
+      "category_ru": "Ирландское пиво",
+      "primary_family_id": "porters_stouts",
+      "primary_family_ru": "Портеры и стауты",
+      "primary_family_en": "Porters & Stouts",
+      "ui_badges_ru": [
+        "Крепкое",
+        "Тёмное",
+        "Эль",
+        "Традиционный стиль",
+        "Горькое",
+        "Жареное"
+      ],
+      "secondary_family_ids": [],
+      "all_family_ids": [
+        "porters_stouts"
+      ]
+    },
+    {
+      "bjcp_id": "16A",
+      "name_ru": "Сладкий стаут",
+      "name_en": "Sweet Stout",
+      "category_id": "16",
+      "category_ru": "Тёмное британское пиво",
+      "primary_family_id": "porters_stouts",
+      "primary_family_ru": "Портеры и стауты",
+      "primary_family_en": "Porters & Stouts",
+      "ui_badges_ru": [
+        "Стандартная крепость",
+        "Тёмное",
+        "Эль",
+        "Традиционный стиль",
+        "Солодовое",
+        "Жареное"
+      ],
+      "secondary_family_ids": [],
+      "all_family_ids": [
+        "porters_stouts"
+      ]
+    },
+    {
+      "bjcp_id": "16B",
+      "name_ru": "Овсяный стаут",
+      "name_en": "Oatmeal Stout",
+      "category_id": "16",
+      "category_ru": "Тёмное британское пиво",
+      "primary_family_id": "porters_stouts",
+      "primary_family_ru": "Портеры и стауты",
+      "primary_family_en": "Porters & Stouts",
+      "ui_badges_ru": [
+        "Стандартная крепость",
+        "Тёмное",
+        "Эль",
+        "Традиционный стиль",
+        "Жареное"
+      ],
+      "secondary_family_ids": [],
+      "all_family_ids": [
+        "porters_stouts"
+      ]
+    },
+    {
+      "bjcp_id": "16C",
+      "name_ru": "Тропический стаут",
+      "name_en": "Tropical Stout",
+      "category_id": "16",
+      "category_ru": "Тёмное британское пиво",
+      "primary_family_id": "porters_stouts",
+      "primary_family_ru": "Портеры и стауты",
+      "primary_family_en": "Porters & Stouts",
+      "ui_badges_ru": [
+        "Крепкое",
+        "Тёмное",
+        "Эль",
+        "Традиционный стиль",
+        "Солодовое",
+        "Жареное"
+      ],
+      "secondary_family_ids": [],
+      "all_family_ids": [
+        "porters_stouts"
+      ]
+    },
+    {
+      "bjcp_id": "16D",
+      "name_ru": "Иностранный экстра-стаут",
+      "name_en": "Foreign Extra Stout",
+      "category_id": "16",
+      "category_ru": "Тёмное британское пиво",
+      "primary_family_id": "porters_stouts",
+      "primary_family_ru": "Портеры и стауты",
+      "primary_family_en": "Porters & Stouts",
+      "ui_badges_ru": [
+        "Крепкое",
+        "Тёмное",
+        "Эль",
+        "Традиционный стиль",
+        "Жареное"
+      ],
+      "secondary_family_ids": [],
+      "all_family_ids": [
+        "porters_stouts"
+      ]
+    },
+    {
+      "bjcp_id": "17A",
+      "name_ru": "Крепкий британский эль",
+      "name_en": "British Strong Ale",
+      "category_id": "17",
+      "category_ru": "Крепкий британский эль",
+      "primary_family_id": "british_irish",
+      "primary_family_ru": "Британские и ирландские эли",
+      "primary_family_en": "British & Irish Ales",
+      "ui_badges_ru": [
+        "Крепкое",
+        "Янтарное",
+        "Эль",
+        "Традиционный стиль",
+        "Солодовое"
+      ],
+      "secondary_family_ids": [],
+      "all_family_ids": [
+        "british_irish"
+      ]
+    },
+    {
+      "bjcp_id": "17B",
+      "name_ru": "Старый эль",
+      "name_en": "Old Ale",
+      "category_id": "17",
+      "category_ru": "Крепкий британский эль",
+      "primary_family_id": "british_irish",
+      "primary_family_ru": "Британские и ирландские эли",
+      "primary_family_en": "British & Irish Ales",
+      "ui_badges_ru": [
+        "Крепкое",
+        "Янтарное",
+        "Эль",
+        "Традиционный стиль",
+        "Солодовое"
+      ],
+      "secondary_family_ids": [],
+      "all_family_ids": [
+        "british_irish"
+      ]
+    },
+    {
+      "bjcp_id": "17C",
+      "name_ru": "Уи-хэви",
+      "name_en": "Wee Heavy",
+      "category_id": "17",
+      "category_ru": "Крепкий британский эль",
+      "primary_family_id": "british_irish",
+      "primary_family_ru": "Британские и ирландские эли",
+      "primary_family_en": "British & Irish Ales",
+      "ui_badges_ru": [
+        "Крепкое",
+        "Янтарное",
+        "Эль",
+        "Традиционный стиль",
+        "Солодовое"
+      ],
+      "secondary_family_ids": [],
+      "all_family_ids": [
+        "british_irish"
+      ]
+    },
+    {
+      "bjcp_id": "17D",
+      "name_ru": "Английский барливайн",
+      "name_en": "English Barley Wine",
+      "category_id": "17",
+      "category_ru": "Крепкий британский эль",
+      "primary_family_id": "british_irish",
+      "primary_family_ru": "Британские и ирландские эли",
+      "primary_family_en": "British & Irish Ales",
+      "ui_badges_ru": [
+        "Очень крепкое",
+        "Янтарное",
+        "Эль",
+        "Традиционный стиль",
+        "Солодовое"
+      ],
+      "secondary_family_ids": [],
+      "all_family_ids": [
+        "british_irish"
+      ]
+    },
+    {
+      "bjcp_id": "18A",
+      "name_ru": "Блонд-эль",
+      "name_en": "Blonde Ale",
+      "category_id": "18",
+      "category_ru": "Светлый американский эль",
+      "primary_family_id": "american_ales",
+      "primary_family_ru": "Американская классика",
+      "primary_family_en": "American Ale Classics",
+      "ui_badges_ru": [
+        "Стандартная крепость",
+        "Светлое",
+        "Крафтовый стиль"
+      ],
+      "secondary_family_ids": [],
+      "all_family_ids": [
+        "american_ales"
+      ]
+    },
+    {
+      "bjcp_id": "18B",
+      "name_ru": "Американский пейл-эль",
+      "name_en": "American Pale Ale",
+      "category_id": "18",
+      "category_ru": "Светлый американский эль",
+      "primary_family_id": "ipa_hoppy",
+      "primary_family_ru": "IPA, APA и хмелевые стили",
+      "primary_family_en": "IPA, APA & Hoppy Styles",
+      "ui_badges_ru": [
+        "Стандартная крепость",
+        "Светлое",
+        "Эль",
+        "Крафтовый стиль",
+        "Горькое",
+        "Хмелевое"
+      ],
+      "secondary_family_ids": [],
+      "all_family_ids": [
+        "ipa_hoppy"
+      ]
+    },
+    {
+      "bjcp_id": "19A",
+      "name_ru": "Американский янтарный эль",
+      "name_en": "American Amber Ale",
+      "category_id": "19",
+      "category_ru": "Янтарное и коричневое американское пиво",
+      "primary_family_id": "american_ales",
+      "primary_family_ru": "Американская классика",
+      "primary_family_en": "American Ale Classics",
+      "ui_badges_ru": [
+        "Стандартная крепость",
+        "Янтарное",
+        "Эль",
+        "Крафтовый стиль",
+        "Хмелевое"
+      ],
+      "secondary_family_ids": [],
+      "all_family_ids": [
+        "american_ales"
+      ]
+    },
+    {
+      "bjcp_id": "19B",
+      "name_ru": "Калифорнийский коммон",
+      "name_en": "California Common",
+      "category_id": "19",
+      "category_ru": "Янтарное и коричневое американское пиво",
+      "primary_family_id": "american_ales",
+      "primary_family_ru": "Американская классика",
+      "primary_family_en": "American Ale Classics",
+      "ui_badges_ru": [
+        "Стандартная крепость",
+        "Янтарное",
+        "Лагер",
+        "Традиционный стиль",
+        "Горькое",
+        "Хмелевое"
+      ],
+      "secondary_family_ids": [],
+      "all_family_ids": [
+        "american_ales"
+      ]
+    },
+    {
+      "bjcp_id": "19C",
+      "name_ru": "Американский браун-эль",
+      "name_en": "American Brown Ale",
+      "category_id": "19",
+      "category_ru": "Янтарное и коричневое американское пиво",
+      "primary_family_id": "american_ales",
+      "primary_family_ru": "Американская классика",
+      "primary_family_en": "American Ale Classics",
+      "ui_badges_ru": [
+        "Стандартная крепость",
+        "Тёмное",
+        "Эль",
+        "Крафтовый стиль",
+        "Хмелевое"
+      ],
+      "secondary_family_ids": [],
+      "all_family_ids": [
+        "american_ales"
+      ]
+    },
+    {
+      "bjcp_id": "20A",
+      "name_ru": "Американский портер",
+      "name_en": "American Porter",
+      "category_id": "20",
+      "category_ru": "Американские портеры и стауты",
+      "primary_family_id": "porters_stouts",
+      "primary_family_ru": "Портеры и стауты",
+      "primary_family_en": "Porters & Stouts",
+      "ui_badges_ru": [
+        "Стандартная крепость",
+        "Тёмное",
+        "Эль",
+        "Крафтовый стиль",
+        "Горькое",
+        "Жареное",
+        "Хмелевое"
+      ],
+      "secondary_family_ids": [],
+      "all_family_ids": [
+        "porters_stouts"
+      ]
+    },
+    {
+      "bjcp_id": "20B",
+      "name_ru": "Американский стаут",
+      "name_en": "American Stout",
+      "category_id": "20",
+      "category_ru": "Американские портеры и стауты",
+      "primary_family_id": "porters_stouts",
+      "primary_family_ru": "Портеры и стауты",
+      "primary_family_en": "Porters & Stouts",
+      "ui_badges_ru": [
+        "Крепкое",
+        "Тёмное",
+        "Эль",
+        "Крафтовый стиль",
+        "Горькое",
+        "Жареное",
+        "Хмелевое"
+      ],
+      "secondary_family_ids": [],
+      "all_family_ids": [
+        "porters_stouts"
+      ]
+    },
+    {
+      "bjcp_id": "20C",
+      "name_ru": "Имперский стаут",
+      "name_en": "Imperial Stout",
+      "category_id": "20",
+      "category_ru": "Американские портеры и стауты",
+      "primary_family_id": "porters_stouts",
+      "primary_family_ru": "Портеры и стауты",
+      "primary_family_en": "Porters & Stouts",
+      "ui_badges_ru": [
+        "Очень крепкое",
+        "Тёмное",
+        "Эль",
+        "Традиционный стиль",
+        "Крафтовый стиль",
+        "Солодовое",
+        "Горькое",
+        "Жареное"
+      ],
+      "secondary_family_ids": [],
+      "all_family_ids": [
+        "porters_stouts"
+      ]
+    },
+    {
+      "bjcp_id": "21A",
+      "name_ru": "Американский IPA",
+      "name_en": "American IPA",
+      "category_id": "21",
+      "category_ru": "IPA",
+      "primary_family_id": "ipa_hoppy",
+      "primary_family_ru": "IPA, APA и хмелевые стили",
+      "primary_family_en": "IPA, APA & Hoppy Styles",
+      "ui_badges_ru": [
+        "Крепкое",
+        "Светлое",
+        "Эль",
+        "Крафтовый стиль",
+        "Горькое",
+        "Хмелевое"
+      ],
+      "secondary_family_ids": [],
+      "all_family_ids": [
+        "ipa_hoppy"
+      ]
+    },
+    {
+      "bjcp_id": "21B",
+      "name_ru": "Специальный IPA",
+      "name_en": "Specialty IPA",
+      "category_id": "21",
+      "category_ru": "IPA",
+      "primary_family_id": "ipa_hoppy",
+      "primary_family_ru": "IPA, APA и хмелевые стили",
+      "primary_family_en": "IPA, APA & Hoppy Styles",
+      "ui_badges_ru": [],
+      "secondary_family_ids": [],
+      "all_family_ids": [
+        "ipa_hoppy"
+      ]
+    },
+    {
+      "bjcp_id": "21B-Belgian IPA",
+      "name_ru": "Бельгийский IPA",
+      "name_en": "Belgian IPA",
+      "category_id": "21",
+      "category_ru": "IPA",
+      "primary_family_id": "ipa_hoppy",
+      "primary_family_ru": "IPA, APA и хмелевые стили",
+      "primary_family_en": "IPA, APA & Hoppy Styles",
+      "ui_badges_ru": [
+        "Крепкое",
+        "Светлое",
+        "Эль",
+        "Крафтовый стиль",
+        "Горькое",
+        "Хмелевое",
+        "Бельгийское"
+      ],
+      "secondary_family_ids": [
+        "belgian_farmhouse"
+      ],
+      "all_family_ids": [
+        "ipa_hoppy",
+        "belgian_farmhouse"
+      ],
+      "cross_listed_in_ru": [
+        "Бельгийские и фермерские стили"
+      ]
+    },
+    {
+      "bjcp_id": "21B-Black IPA",
+      "name_ru": "Чёрный IPA",
+      "name_en": "Black IPA",
+      "category_id": "21",
+      "category_ru": "IPA",
+      "primary_family_id": "ipa_hoppy",
+      "primary_family_ru": "IPA, APA и хмелевые стили",
+      "primary_family_en": "IPA, APA & Hoppy Styles",
+      "ui_badges_ru": [
+        "Крепкое",
+        "Тёмное",
+        "Эль",
+        "Крафтовый стиль",
+        "Горькое",
+        "Хмелевое"
+      ],
+      "secondary_family_ids": [],
+      "all_family_ids": [
+        "ipa_hoppy"
+      ]
+    },
+    {
+      "bjcp_id": "21B-Brown IPA",
+      "name_ru": "Коричневый IPA",
+      "name_en": "Brown IPA",
+      "category_id": "21",
+      "category_ru": "IPA",
+      "primary_family_id": "ipa_hoppy",
+      "primary_family_ru": "IPA, APA и хмелевые стили",
+      "primary_family_en": "IPA, APA & Hoppy Styles",
+      "ui_badges_ru": [
+        "Крепкое",
+        "Тёмное",
+        "Эль",
+        "Крафтовый стиль",
+        "Горькое",
+        "Хмелевое"
+      ],
+      "secondary_family_ids": [],
+      "all_family_ids": [
+        "ipa_hoppy"
+      ]
+    },
+    {
+      "bjcp_id": "21B-Red IPA",
+      "name_ru": "Красный IPA",
+      "name_en": "Red IPA",
+      "category_id": "21",
+      "category_ru": "IPA",
+      "primary_family_id": "ipa_hoppy",
+      "primary_family_ru": "IPA, APA и хмелевые стили",
+      "primary_family_en": "IPA, APA & Hoppy Styles",
+      "ui_badges_ru": [
+        "Крепкое",
+        "Янтарное",
+        "Эль",
+        "Крафтовый стиль",
+        "Горькое",
+        "Хмелевое"
+      ],
+      "secondary_family_ids": [],
+      "all_family_ids": [
+        "ipa_hoppy"
+      ]
+    },
+    {
+      "bjcp_id": "21B-Rye IPA",
+      "name_ru": "Ржаной IPA",
+      "name_en": "Rye IPA",
+      "category_id": "21",
+      "category_ru": "IPA",
+      "primary_family_id": "ipa_hoppy",
+      "primary_family_ru": "IPA, APA и хмелевые стили",
+      "primary_family_en": "IPA, APA & Hoppy Styles",
+      "ui_badges_ru": [
+        "Крепкое",
+        "Янтарное",
+        "Эль",
+        "Крафтовый стиль",
+        "Горькое",
+        "Хмелевое"
+      ],
+      "secondary_family_ids": [],
+      "all_family_ids": [
+        "ipa_hoppy"
+      ]
+    },
+    {
+      "bjcp_id": "21B-White IPA",
+      "name_ru": "Белый IPA",
+      "name_en": "White IPA",
+      "category_id": "21",
+      "category_ru": "IPA",
+      "primary_family_id": "ipa_hoppy",
+      "primary_family_ru": "IPA, APA и хмелевые стили",
+      "primary_family_en": "IPA, APA & Hoppy Styles",
+      "ui_badges_ru": [
+        "Крепкое",
+        "Светлое",
+        "Эль",
+        "Крафтовый стиль",
+        "Горькое",
+        "Хмелевое",
+        "Пряное",
+        "Пшеничное"
+      ],
+      "secondary_family_ids": [
+        "wheat_grain"
+      ],
+      "all_family_ids": [
+        "ipa_hoppy",
+        "wheat_grain"
+      ],
+      "cross_listed_in_ru": [
+        "Пшеничное и зерновое"
+      ]
+    },
+    {
+      "bjcp_id": "21B-Brut IPA",
+      "name_ru": "Брют IPA",
+      "name_en": "Brut IPA",
+      "category_id": "21",
+      "category_ru": "IPA",
+      "primary_family_id": "ipa_hoppy",
+      "primary_family_ru": "IPA, APA и хмелевые стили",
+      "primary_family_en": "IPA, APA & Hoppy Styles",
+      "ui_badges_ru": [
+        "Крепкое",
+        "Светлое",
+        "Эль",
+        "Крафтовый стиль",
+        "Горькое",
+        "Хмелевое"
+      ],
+      "secondary_family_ids": [],
+      "all_family_ids": [
+        "ipa_hoppy"
+      ]
+    },
+    {
+      "bjcp_id": "21C",
+      "name_ru": "Хейзи IPA",
+      "name_en": "Hazy IPA",
+      "category_id": "21",
+      "category_ru": "IPA",
+      "primary_family_id": "ipa_hoppy",
+      "primary_family_ru": "IPA, APA и хмелевые стили",
+      "primary_family_en": "IPA, APA & Hoppy Styles",
+      "ui_badges_ru": [
+        "Крепкое",
+        "Светлое",
+        "Эль",
+        "Крафтовый стиль",
+        "Горькое",
+        "Хмелевое"
+      ],
+      "secondary_family_ids": [],
+      "all_family_ids": [
+        "ipa_hoppy"
+      ]
+    },
+    {
+      "bjcp_id": "22A",
+      "name_ru": "Двойной IPA",
+      "name_en": "Double IPA",
+      "category_id": "22",
+      "category_ru": "Крепкий американский эль",
+      "primary_family_id": "ipa_hoppy",
+      "primary_family_ru": "IPA, APA и хмелевые стили",
+      "primary_family_en": "IPA, APA & Hoppy Styles",
+      "ui_badges_ru": [
+        "Очень крепкое",
+        "Светлое",
+        "Эль",
+        "Крафтовый стиль",
+        "Горькое",
+        "Хмелевое"
+      ],
+      "secondary_family_ids": [],
+      "all_family_ids": [
+        "ipa_hoppy"
+      ]
+    },
+    {
+      "bjcp_id": "22B",
+      "name_ru": "Американский крепкий эль",
+      "name_en": "American Strong Ale",
+      "category_id": "22",
+      "category_ru": "Крепкий американский эль",
+      "primary_family_id": "american_ales",
+      "primary_family_ru": "Американская классика",
+      "primary_family_en": "American Ale Classics",
+      "ui_badges_ru": [
+        "Крепкое",
+        "Янтарное",
+        "Эль",
+        "Крафтовый стиль",
+        "Горькое",
+        "Хмелевое"
+      ],
+      "secondary_family_ids": [],
+      "all_family_ids": [
+        "american_ales"
+      ]
+    },
+    {
+      "bjcp_id": "22C",
+      "name_ru": "Американский барливайн",
+      "name_en": "American Barleywine",
+      "category_id": "22",
+      "category_ru": "Крепкий американский эль",
+      "primary_family_id": "american_ales",
+      "primary_family_ru": "Американская классика",
+      "primary_family_en": "American Ale Classics",
+      "ui_badges_ru": [
+        "Очень крепкое",
+        "Янтарное",
+        "Эль",
+        "Крафтовый стиль",
+        "Горькое",
+        "Хмелевое"
+      ],
+      "secondary_family_ids": [],
+      "all_family_ids": [
+        "american_ales"
+      ]
+    },
+    {
+      "bjcp_id": "22D",
+      "name_ru": "Уитвайн",
+      "name_en": "Wheatwine",
+      "category_id": "22",
+      "category_ru": "Крепкий американский эль",
+      "primary_family_id": "wheat_grain",
+      "primary_family_ru": "Пшеничное и зерновое",
+      "primary_family_en": "Wheat & Grain-Forward",
+      "ui_badges_ru": [
+        "Очень крепкое",
+        "Янтарное",
+        "Эль",
+        "Крафтовый стиль",
+        "Хмелевое",
+        "Пшеничное"
+      ],
+      "secondary_family_ids": [
+        "american_ales"
+      ],
+      "all_family_ids": [
+        "wheat_grain",
+        "american_ales"
+      ],
+      "cross_listed_in_ru": [
+        "Американская классика"
+      ]
+    },
+    {
+      "bjcp_id": "23A",
+      "name_ru": "Берлинер-вайссе",
+      "name_en": "Berliner Weisse",
+      "category_id": "23",
+      "category_ru": "Европейский кислый эль",
+      "primary_family_id": "sour_wild",
+      "primary_family_ru": "Кислые и дикие стили",
+      "primary_family_en": "Sour & Wild",
+      "ui_badges_ru": [
+        "Лёгкое",
+        "Светлое",
+        "Эль",
+        "Традиционный стиль",
+        "Кислое"
+      ],
+      "secondary_family_ids": [],
+      "all_family_ids": [
+        "sour_wild"
+      ]
+    },
+    {
+      "bjcp_id": "23B",
+      "name_ru": "Фламандский красный эль",
+      "name_en": "Flanders Red Ale",
+      "category_id": "23",
+      "category_ru": "Европейский кислый эль",
+      "primary_family_id": "sour_wild",
+      "primary_family_ru": "Кислые и дикие стили",
+      "primary_family_en": "Sour & Wild",
+      "ui_badges_ru": [
+        "Стандартная крепость",
+        "Янтарное",
+        "Эль",
+        "Традиционный стиль",
+        "Кислое",
+        "Выдержка в дереве/бочке"
+      ],
+      "secondary_family_ids": [],
+      "all_family_ids": [
+        "sour_wild"
+      ]
+    },
+    {
+      "bjcp_id": "23C",
+      "name_ru": "Ауд брёйн",
+      "name_en": "Oud Bruin",
+      "category_id": "23",
+      "category_ru": "Европейский кислый эль",
+      "primary_family_id": "sour_wild",
+      "primary_family_ru": "Кислые и дикие стили",
+      "primary_family_en": "Sour & Wild",
+      "ui_badges_ru": [
+        "Стандартная крепость",
+        "Тёмное",
+        "Эль",
+        "Традиционный стиль",
+        "Солодовое",
+        "Кислое"
+      ],
+      "secondary_family_ids": [],
+      "all_family_ids": [
+        "sour_wild"
+      ]
+    },
+    {
+      "bjcp_id": "23D",
+      "name_ru": "Ламбик",
+      "name_en": "Lambic",
+      "category_id": "23",
+      "category_ru": "Европейский кислый эль",
+      "primary_family_id": "sour_wild",
+      "primary_family_ru": "Кислые и дикие стили",
+      "primary_family_en": "Sour & Wild",
+      "ui_badges_ru": [
+        "Стандартная крепость",
+        "Светлое",
+        "Дикое/смешанное брожение",
+        "Традиционный стиль",
+        "Кислое"
+      ],
+      "secondary_family_ids": [],
+      "all_family_ids": [
+        "sour_wild"
+      ]
+    },
+    {
+      "bjcp_id": "23E",
+      "name_ru": "Гёз",
+      "name_en": "Gueuze",
+      "category_id": "23",
+      "category_ru": "Европейский кислый эль",
+      "primary_family_id": "sour_wild",
+      "primary_family_ru": "Кислые и дикие стили",
+      "primary_family_en": "Sour & Wild",
+      "ui_badges_ru": [
+        "Крепкое",
+        "Светлое",
+        "Дикое/смешанное брожение",
+        "Традиционный стиль",
+        "Кислое"
+      ],
+      "secondary_family_ids": [],
+      "all_family_ids": [
+        "sour_wild"
+      ]
+    },
+    {
+      "bjcp_id": "23F",
+      "name_ru": "Фруктовый ламбик",
+      "name_en": "Fruit Lambic",
+      "category_id": "23",
+      "category_ru": "Европейский кислый эль",
+      "primary_family_id": "sour_wild",
+      "primary_family_ru": "Кислые и дикие стили",
+      "primary_family_en": "Sour & Wild",
+      "ui_badges_ru": [
+        "Стандартная крепость",
+        "Светлое",
+        "Дикое/смешанное брожение",
+        "Традиционный стиль",
+        "Кислое",
+        "Фруктовое"
+      ],
+      "secondary_family_ids": [
+        "specialty"
+      ],
+      "all_family_ids": [
+        "sour_wild",
+        "specialty"
+      ],
+      "cross_listed_in_ru": [
+        "Фруктовые, пряные и специальные стили"
+      ]
+    },
+    {
+      "bjcp_id": "23G",
+      "name_ru": "Гозе",
+      "name_en": "Gose",
+      "category_id": "23",
+      "category_ru": "Европейский кислый эль",
+      "primary_family_id": "sour_wild",
+      "primary_family_ru": "Кислые и дикие стили",
+      "primary_family_en": "Sour & Wild",
+      "ui_badges_ru": [
+        "Стандартная крепость",
+        "Светлое",
+        "Эль",
+        "Исторический стиль",
+        "Кислое",
+        "Пряное"
+      ],
+      "secondary_family_ids": [],
+      "all_family_ids": [
+        "sour_wild"
+      ]
+    },
+    {
+      "bjcp_id": "24A",
+      "name_ru": "Витбир",
+      "name_en": "Witbier",
+      "category_id": "24",
+      "category_ru": "Бельгийский эль",
+      "primary_family_id": "wheat_grain",
+      "primary_family_ru": "Пшеничное и зерновое",
+      "primary_family_en": "Wheat & Grain-Forward",
+      "ui_badges_ru": [
+        "Стандартная крепость",
+        "Светлое",
+        "Эль",
+        "Традиционный стиль",
+        "Пряное",
+        "Бельгийское"
+      ],
+      "secondary_family_ids": [
+        "belgian_farmhouse"
+      ],
+      "all_family_ids": [
+        "wheat_grain",
+        "belgian_farmhouse"
+      ],
+      "cross_listed_in_ru": [
+        "Бельгийские и фермерские стили"
+      ]
+    },
+    {
+      "bjcp_id": "24B",
+      "name_ru": "Бельгийский светлый эль",
+      "name_en": "Belgian Pale Ale",
+      "category_id": "24",
+      "category_ru": "Бельгийский эль",
+      "primary_family_id": "belgian_farmhouse",
+      "primary_family_ru": "Бельгийские и фермерские стили",
+      "primary_family_en": "Belgian & Farmhouse",
+      "ui_badges_ru": [
+        "Стандартная крепость",
+        "Янтарное",
+        "Эль",
+        "Традиционный стиль"
+      ],
+      "secondary_family_ids": [],
+      "all_family_ids": [
+        "belgian_farmhouse"
+      ]
+    },
+    {
+      "bjcp_id": "24C",
+      "name_ru": "Бьер-де-гард",
+      "name_en": "Bière de Garde",
+      "category_id": "24",
+      "category_ru": "Бельгийский эль",
+      "primary_family_id": "belgian_farmhouse",
+      "primary_family_ru": "Бельгийские и фермерские стили",
+      "primary_family_en": "Belgian & Farmhouse",
+      "ui_badges_ru": [
+        "Крепкое",
+        "Светлое",
+        "Янтарное",
+        "Традиционный стиль",
+        "Солодовое"
+      ],
+      "secondary_family_ids": [],
+      "all_family_ids": [
+        "belgian_farmhouse"
+      ]
+    },
+    {
+      "bjcp_id": "25A",
+      "name_ru": "Бельгийский блонд-эль",
+      "name_en": "Belgian Blond Ale",
+      "category_id": "25",
+      "category_ru": "Крепкий бельгийский эль",
+      "primary_family_id": "belgian_farmhouse",
+      "primary_family_ru": "Бельгийские и фермерские стили",
+      "primary_family_en": "Belgian & Farmhouse",
+      "ui_badges_ru": [
+        "Крепкое",
+        "Светлое",
+        "Эль",
+        "Традиционный стиль"
+      ],
+      "secondary_family_ids": [],
+      "all_family_ids": [
+        "belgian_farmhouse"
+      ]
+    },
+    {
+      "bjcp_id": "25B",
+      "name_ru": "Сезон",
+      "name_en": "Saison",
+      "category_id": "25",
+      "category_ru": "Крепкий бельгийский эль",
+      "primary_family_id": "belgian_farmhouse",
+      "primary_family_ru": "Бельгийские и фермерские стили",
+      "primary_family_en": "Belgian & Farmhouse",
+      "ui_badges_ru": [
+        "Стандартная крепость",
+        "Светлое",
+        "Эль",
+        "Традиционный стиль",
+        "Горькое"
+      ],
+      "secondary_family_ids": [],
+      "all_family_ids": [
+        "belgian_farmhouse"
+      ]
+    },
+    {
+      "bjcp_id": "25C",
+      "name_ru": "Бельгийский золотой крепкий эль",
+      "name_en": "Belgian Golden Strong Ale",
+      "category_id": "25",
+      "category_ru": "Крепкий бельгийский эль",
+      "primary_family_id": "belgian_farmhouse",
+      "primary_family_ru": "Бельгийские и фермерские стили",
+      "primary_family_en": "Belgian & Farmhouse",
+      "ui_badges_ru": [
+        "Очень крепкое",
+        "Светлое",
+        "Эль",
+        "Традиционный стиль",
+        "Горькое"
+      ],
+      "secondary_family_ids": [],
+      "all_family_ids": [
+        "belgian_farmhouse"
+      ]
+    },
+    {
+      "bjcp_id": "26A",
+      "name_ru": "Бельгийский сингл",
+      "name_en": "Belgian Single",
+      "category_id": "26",
+      "category_ru": "Монастырский эль",
+      "primary_family_id": "belgian_farmhouse",
+      "primary_family_ru": "Бельгийские и фермерские стили",
+      "primary_family_en": "Belgian & Farmhouse",
+      "ui_badges_ru": [
+        "Стандартная крепость",
+        "Светлое",
+        "Эль",
+        "Крафтовый стиль",
+        "Горькое",
+        "Хмелевое"
+      ],
+      "secondary_family_ids": [],
+      "all_family_ids": [
+        "belgian_farmhouse"
+      ]
+    },
+    {
+      "bjcp_id": "26B",
+      "name_ru": "Бельгийский дуббель",
+      "name_en": "Belgian Dubbel",
+      "category_id": "26",
+      "category_ru": "Монастырский эль",
+      "primary_family_id": "belgian_farmhouse",
+      "primary_family_ru": "Бельгийские и фермерские стили",
+      "primary_family_en": "Belgian & Farmhouse",
+      "ui_badges_ru": [
+        "Крепкое",
+        "Янтарное",
+        "Эль",
+        "Традиционный стиль",
+        "Солодовое"
+      ],
+      "secondary_family_ids": [],
+      "all_family_ids": [
+        "belgian_farmhouse"
+      ]
+    },
+    {
+      "bjcp_id": "26C",
+      "name_ru": "Бельгийский трипель",
+      "name_en": "Belgian Tripel",
+      "category_id": "26",
+      "category_ru": "Монастырский эль",
+      "primary_family_id": "belgian_farmhouse",
+      "primary_family_ru": "Бельгийские и фермерские стили",
+      "primary_family_en": "Belgian & Farmhouse",
+      "ui_badges_ru": [
+        "Крепкое",
+        "Светлое",
+        "Эль",
+        "Традиционный стиль",
+        "Горькое"
+      ],
+      "secondary_family_ids": [],
+      "all_family_ids": [
+        "belgian_farmhouse"
+      ]
+    },
+    {
+      "bjcp_id": "26D",
+      "name_ru": "Бельгийский тёмный крепкий эль",
+      "name_en": "Belgian Dark Strong Ale",
+      "category_id": "26",
+      "category_ru": "Монастырский эль",
+      "primary_family_id": "belgian_farmhouse",
+      "primary_family_ru": "Бельгийские и фермерские стили",
+      "primary_family_en": "Belgian & Farmhouse",
+      "ui_badges_ru": [
+        "Очень крепкое",
+        "Янтарное",
+        "Эль",
+        "Традиционный стиль",
+        "Солодовое",
+        "Пряное",
+        "Выдержка в дереве/бочке",
+        "Копчёное"
+      ],
+      "secondary_family_ids": [],
+      "all_family_ids": [
+        "belgian_farmhouse"
+      ]
+    },
+    {
+      "bjcp_id": "27-Kellerbier",
+      "name_ru": "Келлербир",
+      "name_en": "Kellerbier",
+      "category_id": "27",
+      "category_ru": "Историческое пиво",
+      "primary_family_id": "historical",
+      "primary_family_ru": "Исторические стили",
+      "primary_family_en": "Historical Styles",
+      "ui_badges_ru": [
+        "Стандартная крепость",
+        "Лагер",
+        "Традиционный стиль",
+        "Исторический стиль"
+      ],
+      "secondary_family_ids": [
+        "easy_light"
+      ],
+      "all_family_ids": [
+        "historical",
+        "easy_light"
+      ],
+      "cross_listed_in_ru": [
+        "Светлое и питкое"
+      ]
+    },
+    {
+      "bjcp_id": "27-Kentucky-Common",
+      "name_ru": "Кентукки коммон",
+      "name_en": "Kentucky Common",
+      "category_id": "27",
+      "category_ru": "Историческое пиво",
+      "primary_family_id": "historical",
+      "primary_family_ru": "Исторические стили",
+      "primary_family_en": "Historical Styles",
+      "ui_badges_ru": [
+        "Стандартная крепость",
+        "Янтарное",
+        "Эль",
+        "Исторический стиль",
+        "Американская школа"
+      ],
+      "secondary_family_ids": [
+        "american_ales"
+      ],
+      "all_family_ids": [
+        "historical",
+        "american_ales"
+      ],
+      "cross_listed_in_ru": [
+        "Американская классика"
+      ]
+    },
+    {
+      "bjcp_id": "27-Lichtenhainer",
+      "name_ru": "Лихтенхайнер",
+      "name_en": "Lichtenhainer",
+      "category_id": "27",
+      "category_ru": "Историческое пиво",
+      "primary_family_id": "historical",
+      "primary_family_ru": "Исторические стили",
+      "primary_family_en": "Historical Styles",
+      "ui_badges_ru": [
+        "Стандартная крепость",
+        "Светлое",
+        "Эль",
+        "Исторический стиль",
+        "Кислое",
+        "Копчёное",
+        "Пшеничное"
+      ],
+      "secondary_family_ids": [
+        "sour_wild",
+        "wheat_grain"
+      ],
+      "all_family_ids": [
+        "historical",
+        "sour_wild",
+        "wheat_grain"
+      ],
+      "cross_listed_in_ru": [
+        "Кислые и дикие стили",
+        "Пшеничное и зерновое"
+      ]
+    },
+    {
+      "bjcp_id": "27-London-Brown-Ale",
+      "name_ru": "Лондонский браун-эль",
+      "name_en": "London Brown Ale",
+      "category_id": "27",
+      "category_ru": "Историческое пиво",
+      "primary_family_id": "historical",
+      "primary_family_ru": "Исторические стили",
+      "primary_family_en": "Historical Styles",
+      "ui_badges_ru": [
+        "Лёгкое",
+        "Тёмное",
+        "Эль",
+        "Исторический стиль",
+        "Солодовое",
+        "Британская школа"
+      ],
+      "secondary_family_ids": [
+        "british_irish"
+      ],
+      "all_family_ids": [
+        "historical",
+        "british_irish"
+      ],
+      "cross_listed_in_ru": [
+        "Британские и ирландские эли"
+      ]
+    },
+    {
+      "bjcp_id": "27-Piwo-Grodziskie",
+      "name_ru": "Пиво гродзиске",
+      "name_en": "Piwo Grodziskie",
+      "category_id": "27",
+      "category_ru": "Историческое пиво",
+      "primary_family_id": "historical",
+      "primary_family_ru": "Исторические стили",
+      "primary_family_en": "Historical Styles",
+      "ui_badges_ru": [
+        "Лёгкое",
+        "Светлое",
+        "Эль",
+        "Исторический стиль",
+        "Горькое",
+        "Копчёное",
+        "Пшеничное"
+      ],
+      "secondary_family_ids": [
+        "wheat_grain"
+      ],
+      "all_family_ids": [
+        "historical",
+        "wheat_grain"
+      ],
+      "cross_listed_in_ru": [
+        "Пшеничное и зерновое"
+      ]
+    },
+    {
+      "bjcp_id": "27-Pre-Prohibition-Lager",
+      "name_ru": "Лагер до сухого закона",
+      "name_en": "Pre-Prohibition Lager",
+      "category_id": "27",
+      "category_ru": "Историческое пиво",
+      "primary_family_id": "historical",
+      "primary_family_ru": "Исторические стили",
+      "primary_family_en": "Historical Styles",
+      "ui_badges_ru": [
+        "Стандартная крепость",
+        "Светлое",
+        "Лагер",
+        "Исторический стиль",
+        "Горькое",
+        "Хмелевое"
+      ],
+      "secondary_family_ids": [
+        "easy_light"
+      ],
+      "all_family_ids": [
+        "historical",
+        "easy_light"
+      ],
+      "cross_listed_in_ru": [
+        "Светлое и питкое"
+      ]
+    },
+    {
+      "bjcp_id": "27-Pre-Prohibition-Porter",
+      "name_ru": "Портер до сухого закона",
+      "name_en": "Pre-Prohibition Porter",
+      "category_id": "27",
+      "category_ru": "Историческое пиво",
+      "primary_family_id": "historical",
+      "primary_family_ru": "Исторические стили",
+      "primary_family_en": "Historical Styles",
+      "ui_badges_ru": [
+        "Стандартная крепость",
+        "Тёмное",
+        "Исторический стиль",
+        "Солодовое",
+        "Портер"
+      ],
+      "secondary_family_ids": [
+        "porters_stouts"
+      ],
+      "all_family_ids": [
+        "historical",
+        "porters_stouts"
+      ],
+      "cross_listed_in_ru": [
+        "Портеры и стауты"
+      ]
+    },
+    {
+      "bjcp_id": "27-Roggenbier",
+      "name_ru": "Роггенбир",
+      "name_en": "Roggenbier",
+      "category_id": "27",
+      "category_ru": "Историческое пиво",
+      "primary_family_id": "historical",
+      "primary_family_ru": "Исторические стили",
+      "primary_family_en": "Historical Styles",
+      "ui_badges_ru": [
+        "Стандартная крепость",
+        "Янтарное",
+        "Эль",
+        "Исторический стиль",
+        "Зерновое"
+      ],
+      "secondary_family_ids": [
+        "wheat_grain"
+      ],
+      "all_family_ids": [
+        "historical",
+        "wheat_grain"
+      ],
+      "cross_listed_in_ru": [
+        "Пшеничное и зерновое"
+      ]
+    },
+    {
+      "bjcp_id": "27-Sahti",
+      "name_ru": "Сахти",
+      "name_en": "Sahti",
+      "category_id": "27",
+      "category_ru": "Историческое пиво",
+      "primary_family_id": "historical",
+      "primary_family_ru": "Исторические стили",
+      "primary_family_en": "Historical Styles",
+      "ui_badges_ru": [
+        "Крепкое",
+        "Янтарное",
+        "Эль",
+        "Исторический стиль",
+        "Пряное",
+        "Копчёное",
+        "Выдержка в дереве/бочке",
+        "Фруктовое",
+        "Зерновое",
+        "Специальное"
+      ],
+      "secondary_family_ids": [
+        "wheat_grain",
+        "specialty"
+      ],
+      "all_family_ids": [
+        "historical",
+        "wheat_grain",
+        "specialty"
+      ],
+      "cross_listed_in_ru": [
+        "Пшеничное и зерновое",
+        "Фруктовые, пряные и специальные стили"
+      ]
+    },
+    {
+      "bjcp_id": "28A",
+      "name_ru": "Бретт-пиво",
+      "name_en": "Brett Beer",
+      "category_id": "28",
+      "category_ru": "Американский вайлд-эль",
+      "primary_family_id": "sour_wild",
+      "primary_family_ru": "Кислые и дикие стили",
+      "primary_family_en": "Sour & Wild",
+      "ui_badges_ru": [
+        "Крафтовый стиль"
+      ],
+      "secondary_family_ids": [],
+      "all_family_ids": [
+        "sour_wild"
+      ]
+    },
+    {
+      "bjcp_id": "28B",
+      "name_ru": "Кислое пиво смешанного брожения",
+      "name_en": "Mixed-Fermentation Sour Beer",
+      "category_id": "28",
+      "category_ru": "Американский вайлд-эль",
+      "primary_family_id": "sour_wild",
+      "primary_family_ru": "Кислые и дикие стили",
+      "primary_family_en": "Sour & Wild",
+      "ui_badges_ru": [
+        "Крафтовый стиль",
+        "Кислое"
+      ],
+      "secondary_family_ids": [],
+      "all_family_ids": [
+        "sour_wild"
+      ]
+    },
+    {
+      "bjcp_id": "28C",
+      "name_ru": "Специальное дикое пиво",
+      "name_en": "Wild Specialty Beer",
+      "category_id": "28",
+      "category_ru": "Американский вайлд-эль",
+      "primary_family_id": "sour_wild",
+      "primary_family_ru": "Кислые и дикие стили",
+      "primary_family_en": "Sour & Wild",
+      "ui_badges_ru": [
+        "Крафтовый стиль",
+        "Кислое",
+        "Фруктовое"
+      ],
+      "secondary_family_ids": [],
+      "all_family_ids": [
+        "sour_wild"
+      ]
+    },
+    {
+      "bjcp_id": "28D",
+      "name_ru": "Чисто кислое пиво",
+      "name_en": "Straight Sour Beer",
+      "category_id": "28",
+      "category_ru": "Американский вайлд-эль",
+      "primary_family_id": "sour_wild",
+      "primary_family_ru": "Кислые и дикие стили",
+      "primary_family_en": "Sour & Wild",
+      "ui_badges_ru": [
+        "Светлое",
+        "Эль",
+        "Кислое"
+      ],
+      "secondary_family_ids": [],
+      "all_family_ids": [
+        "sour_wild"
+      ]
+    },
+    {
+      "bjcp_id": "29A",
+      "name_ru": "Фруктовое пиво",
+      "name_en": "Fruit Beer",
+      "category_id": "29",
+      "category_ru": "Фруктовое пиво",
+      "primary_family_id": "specialty",
+      "primary_family_ru": "Фруктовые, пряные и специальные стили",
+      "primary_family_en": "Fruit, Spice & Specialty",
+      "ui_badges_ru": [
+        "Фруктовое"
+      ],
+      "secondary_family_ids": [],
+      "all_family_ids": [
+        "specialty"
+      ]
+    },
+    {
+      "bjcp_id": "29B",
+      "name_ru": "Фруктово-пряное пиво",
+      "name_en": "Fruit and Spice Beer",
+      "category_id": "29",
+      "category_ru": "Фруктовое пиво",
+      "primary_family_id": "specialty",
+      "primary_family_ru": "Фруктовые, пряные и специальные стили",
+      "primary_family_en": "Fruit, Spice & Specialty",
+      "ui_badges_ru": [
+        "Фруктовое",
+        "Пряное"
+      ],
+      "secondary_family_ids": [],
+      "all_family_ids": [
+        "specialty"
+      ]
+    },
+    {
+      "bjcp_id": "29C",
+      "name_ru": "Специальное фруктовое пиво",
+      "name_en": "Specialty Fruit Beer",
+      "category_id": "29",
+      "category_ru": "Фруктовое пиво",
+      "primary_family_id": "specialty",
+      "primary_family_ru": "Фруктовые, пряные и специальные стили",
+      "primary_family_en": "Fruit, Spice & Specialty",
+      "ui_badges_ru": [
+        "Фруктовое"
+      ],
+      "secondary_family_ids": [],
+      "all_family_ids": [
+        "specialty"
+      ]
+    },
+    {
+      "bjcp_id": "29D",
+      "name_ru": "Виноградный эль",
+      "name_en": "Grape Ale",
+      "category_id": "29",
+      "category_ru": "Фруктовое пиво",
+      "primary_family_id": "specialty",
+      "primary_family_ru": "Фруктовые, пряные и специальные стили",
+      "primary_family_en": "Fruit, Spice & Specialty",
+      "ui_badges_ru": [
+        "Фруктовое"
+      ],
+      "secondary_family_ids": [],
+      "all_family_ids": [
+        "specialty"
+      ]
+    },
+    {
+      "bjcp_id": "30A",
+      "name_ru": "Пиво со специями, травами или овощами",
+      "name_en": "Spice, Herb, or Vegetable Beer",
+      "category_id": "30",
+      "category_ru": "Пряное пиво",
+      "primary_family_id": "specialty",
+      "primary_family_ru": "Фруктовые, пряные и специальные стили",
+      "primary_family_en": "Fruit, Spice & Specialty",
+      "ui_badges_ru": [
+        "Пряное"
+      ],
+      "secondary_family_ids": [],
+      "all_family_ids": [
+        "specialty"
+      ]
+    },
+    {
+      "bjcp_id": "30B",
+      "name_ru": "Осеннее сезонное пиво",
+      "name_en": "Autumn Seasonal Beer",
+      "category_id": "30",
+      "category_ru": "Пряное пиво",
+      "primary_family_id": "specialty",
+      "primary_family_ru": "Фруктовые, пряные и специальные стили",
+      "primary_family_en": "Fruit, Spice & Specialty",
+      "ui_badges_ru": [
+        "Пряное"
+      ],
+      "secondary_family_ids": [],
+      "all_family_ids": [
+        "specialty"
+      ]
+    },
+    {
+      "bjcp_id": "30C",
+      "name_ru": "Зимнее сезонное пиво",
+      "name_en": "Winter Seasonal Beer",
+      "category_id": "30",
+      "category_ru": "Пряное пиво",
+      "primary_family_id": "specialty",
+      "primary_family_ru": "Фруктовые, пряные и специальные стили",
+      "primary_family_en": "Fruit, Spice & Specialty",
+      "ui_badges_ru": [
+        "Пряное"
+      ],
+      "secondary_family_ids": [],
+      "all_family_ids": [
+        "specialty"
+      ]
+    },
+    {
+      "bjcp_id": "30D",
+      "name_ru": "Специальное пряное пиво",
+      "name_en": "Specialty Spice Beer",
+      "category_id": "30",
+      "category_ru": "Пряное пиво",
+      "primary_family_id": "specialty",
+      "primary_family_ru": "Фруктовые, пряные и специальные стили",
+      "primary_family_en": "Fruit, Spice & Specialty",
+      "ui_badges_ru": [
+        "Пряное"
+      ],
+      "secondary_family_ids": [],
+      "all_family_ids": [
+        "specialty"
+      ]
+    },
+    {
+      "bjcp_id": "31A",
+      "name_ru": "Пиво с альтернативными зерновыми",
+      "name_en": "Alternative Grain Beer",
+      "category_id": "31",
+      "category_ru": "Пиво с альтернативными сбраживаемыми ингредиентами",
+      "primary_family_id": "wheat_grain",
+      "primary_family_ru": "Пшеничное и зерновое",
+      "primary_family_en": "Wheat & Grain-Forward",
+      "ui_badges_ru": [
+        "Специальное"
+      ],
+      "secondary_family_ids": [
+        "specialty"
+      ],
+      "all_family_ids": [
+        "wheat_grain",
+        "specialty"
+      ],
+      "cross_listed_in_ru": [
+        "Фруктовые, пряные и специальные стили"
+      ]
+    },
+    {
+      "bjcp_id": "31B",
+      "name_ru": "Пиво с альтернативными сахарами",
+      "name_en": "Alternative Sugar Beer",
+      "category_id": "31",
+      "category_ru": "Пиво с альтернативными сбраживаемыми ингредиентами",
+      "primary_family_id": "specialty",
+      "primary_family_ru": "Фруктовые, пряные и специальные стили",
+      "primary_family_en": "Fruit, Spice & Specialty",
+      "ui_badges_ru": [],
+      "secondary_family_ids": [],
+      "all_family_ids": [
+        "specialty"
+      ]
+    },
+    {
+      "bjcp_id": "32A",
+      "name_ru": "Копчёное пиво классического стиля",
+      "name_en": "Classic Style Smoked Beer",
+      "category_id": "32",
+      "category_ru": "Копчёное пиво",
+      "primary_family_id": "specialty",
+      "primary_family_ru": "Фруктовые, пряные и специальные стили",
+      "primary_family_en": "Fruit, Spice & Specialty",
+      "ui_badges_ru": [
+        "Копчёное"
+      ],
+      "secondary_family_ids": [],
+      "all_family_ids": [
+        "specialty"
+      ]
+    },
+    {
+      "bjcp_id": "32B",
+      "name_ru": "Специальное копчёное пиво",
+      "name_en": "Specialty Smoked Beer",
+      "category_id": "32",
+      "category_ru": "Копчёное пиво",
+      "primary_family_id": "specialty",
+      "primary_family_ru": "Фруктовые, пряные и специальные стили",
+      "primary_family_en": "Fruit, Spice & Specialty",
+      "ui_badges_ru": [
+        "Копчёное"
+      ],
+      "secondary_family_ids": [],
+      "all_family_ids": [
+        "specialty"
+      ]
+    },
+    {
+      "bjcp_id": "33A",
+      "name_ru": "Пиво с выдержкой в дереве",
+      "name_en": "Wood-Aged Beer",
+      "category_id": "33",
+      "category_ru": "Пиво с древесной выдержкой",
+      "primary_family_id": "specialty",
+      "primary_family_ru": "Фруктовые, пряные и специальные стили",
+      "primary_family_en": "Fruit, Spice & Specialty",
+      "ui_badges_ru": [
+        "Выдержка в дереве/бочке"
+      ],
+      "secondary_family_ids": [],
+      "all_family_ids": [
+        "specialty"
+      ]
+    },
+    {
+      "bjcp_id": "33B",
+      "name_ru": "Специальное пиво с древесной выдержкой",
+      "name_en": "Specialty Wood-Aged Beer",
+      "category_id": "33",
+      "category_ru": "Пиво с древесной выдержкой",
+      "primary_family_id": "specialty",
+      "primary_family_ru": "Фруктовые, пряные и специальные стили",
+      "primary_family_en": "Fruit, Spice & Specialty",
+      "ui_badges_ru": [
+        "Выдержка в дереве/бочке"
+      ],
+      "secondary_family_ids": [],
+      "all_family_ids": [
+        "specialty"
+      ]
+    },
+    {
+      "bjcp_id": "34A",
+      "name_ru": "Коммерческое специальное пиво",
+      "name_en": "Commercial Specialty Beer",
+      "category_id": "34",
+      "category_ru": "Специальное пиво",
+      "primary_family_id": "specialty",
+      "primary_family_ru": "Фруктовые, пряные и специальные стили",
+      "primary_family_en": "Fruit, Spice & Specialty",
+      "ui_badges_ru": [],
+      "secondary_family_ids": [],
+      "all_family_ids": [
+        "specialty"
+      ]
+    },
+    {
+      "bjcp_id": "34B",
+      "name_ru": "Пиво смешанного стиля",
+      "name_en": "Mixed-Style Beer",
+      "category_id": "34",
+      "category_ru": "Специальное пиво",
+      "primary_family_id": "specialty",
+      "primary_family_ru": "Фруктовые, пряные и специальные стили",
+      "primary_family_en": "Fruit, Spice & Specialty",
+      "ui_badges_ru": [],
+      "secondary_family_ids": [],
+      "all_family_ids": [
+        "specialty"
+      ]
+    },
+    {
+      "bjcp_id": "34C",
+      "name_ru": "Экспериментальное пиво",
+      "name_en": "Experimental Beer",
+      "category_id": "34",
+      "category_ru": "Специальное пиво",
+      "primary_family_id": "specialty",
+      "primary_family_ru": "Фруктовые, пряные и специальные стили",
+      "primary_family_en": "Fruit, Spice & Specialty",
+      "ui_badges_ru": [],
+      "secondary_family_ids": [],
+      "all_family_ids": [
+        "specialty"
+      ]
+    },
+    {
+      "bjcp_id": "X1",
+      "name_ru": "Дорада Пампеана",
+      "name_en": "Dorada Pampeana",
+      "category_id": null,
+      "category_ru": "Аргентинские стили",
+      "primary_family_id": "local",
+      "primary_family_ru": "Локальные стили",
+      "primary_family_en": "Local Styles",
+      "ui_badges_ru": [
+        "Локальный стиль"
+      ],
+      "secondary_family_ids": [
+        "easy_light"
+      ],
+      "all_family_ids": [
+        "local",
+        "easy_light"
+      ],
+      "cross_listed_in_ru": [
+        "Светлое и питкое"
+      ]
+    },
+    {
+      "bjcp_id": "X2",
+      "name_ru": "IPA Аргента",
+      "name_en": "IPA Argenta",
+      "category_id": null,
+      "category_ru": "Аргентинские стили",
+      "primary_family_id": "local",
+      "primary_family_ru": "Локальные стили",
+      "primary_family_en": "Local Styles",
+      "ui_badges_ru": [
+        "Локальный стиль",
+        "IPA"
+      ],
+      "secondary_family_ids": [
+        "ipa_hoppy"
+      ],
+      "all_family_ids": [
+        "local",
+        "ipa_hoppy"
+      ],
+      "cross_listed_in_ru": [
+        "IPA, APA и хмелевые стили"
+      ]
+    },
+    {
+      "bjcp_id": "X3",
+      "name_ru": "Итальянский виноградный эль",
+      "name_en": "Italian Grape Ale",
+      "category_id": null,
+      "category_ru": "Итальянские стили",
+      "primary_family_id": "local",
+      "primary_family_ru": "Локальные стили",
+      "primary_family_en": "Local Styles",
+      "ui_badges_ru": [
+        "Локальный стиль",
+        "Специальное"
+      ],
+      "secondary_family_ids": [
+        "specialty"
+      ],
+      "all_family_ids": [
+        "local",
+        "specialty"
+      ],
+      "cross_listed_in_ru": [
+        "Фруктовые, пряные и специальные стили"
+      ]
+    },
+    {
+      "bjcp_id": "X4",
+      "name_ru": "Катарина сауэр",
+      "name_en": "Catharina Sour",
+      "category_id": null,
+      "category_ru": "Бразильские стили",
+      "primary_family_id": "local",
+      "primary_family_ru": "Локальные стили",
+      "primary_family_en": "Local Styles",
+      "ui_badges_ru": [
+        "Крафтовый стиль",
+        "Фруктовое",
+        "Кислое",
+        "Локальный стиль"
+      ],
+      "secondary_family_ids": [
+        "sour_wild",
+        "specialty"
+      ],
+      "all_family_ids": [
+        "local",
+        "sour_wild",
+        "specialty"
+      ],
+      "cross_listed_in_ru": [
+        "Кислые и дикие стили",
+        "Фруктовые, пряные и специальные стили"
+      ]
+    },
+    {
+      "bjcp_id": "X5",
+      "name_ru": "Новозеландский пилснер",
+      "name_en": "New Zealand Pilsner",
+      "category_id": null,
+      "category_ru": "Новозеландские стили",
+      "primary_family_id": "local",
+      "primary_family_ru": "Локальные стили",
+      "primary_family_en": "Local Styles",
+      "ui_badges_ru": [
+        "Горькое",
+        "Светлое",
+        "Стандартная крепость",
+        "Лагер",
+        "Хмелевое",
+        "Крафтовый стиль",
+        "Локальный стиль"
+      ],
+      "secondary_family_ids": [
+        "easy_light"
+      ],
+      "all_family_ids": [
+        "local",
+        "easy_light"
+      ],
+      "cross_listed_in_ru": [
+        "Светлое и питкое"
+      ]
+    }
+  ],
+  "family_membership_model": {
+    "mode": "multi_family",
+    "notes_ru": [
+      "Один стиль может входить в несколько семейств, но страница стиля остаётся единой.",
+      "primary_family_id — основной навигационный дом стиля.",
+      "secondary_family_ids — дополнительные семейства для discovery и более человеческой навигации.",
+      "style_count у семейства теперь считает все стили, показываемые в этом семействе, включая cross-listings.",
+      "Для избежания дублей в поиске и объединённой выдаче один и тот же стиль должен показываться один раз, даже если совпал по нескольким семействам."
+    ]
+  }
+}

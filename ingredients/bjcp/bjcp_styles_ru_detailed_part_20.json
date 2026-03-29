@@ -46,7 +46,7 @@
   ],
   "styles": [
     {
-      "bjcp_id": "21B-Belgian",
+      "bjcp_id": "21B-Belgian IPA",
       "parent_bjcp_id": "21B",
       "parent_name_en": "Specialty IPA",
       "parent_name_ru": "Специальный IPA",
@@ -118,7 +118,7 @@
       "normalization_status": "extracted_from_21B_defined_subtypes"
     },
     {
-      "bjcp_id": "21B-Black",
+      "bjcp_id": "21B-Black IPA",
       "parent_bjcp_id": "21B",
       "parent_name_en": "Specialty IPA",
       "parent_name_ru": "Специальный IPA",
@@ -190,7 +190,7 @@
       "normalization_status": "extracted_from_21B_defined_subtypes"
     },
     {
-      "bjcp_id": "21B-Brown",
+      "bjcp_id": "21B-Brown IPA",
       "parent_bjcp_id": "21B",
       "parent_name_en": "Specialty IPA",
       "parent_name_ru": "Специальный IPA",
@@ -262,7 +262,7 @@
       "normalization_status": "extracted_from_21B_defined_subtypes"
     },
     {
-      "bjcp_id": "21B-Red",
+      "bjcp_id": "21B-Red IPA",
       "parent_bjcp_id": "21B",
       "parent_name_en": "Specialty IPA",
       "parent_name_ru": "Специальный IPA",
@@ -334,7 +334,7 @@
       "normalization_status": "extracted_from_21B_defined_subtypes"
     },
     {
-      "bjcp_id": "21B-Rye",
+      "bjcp_id": "21B-Rye IPA",
       "parent_bjcp_id": "21B",
       "parent_name_en": "Specialty IPA",
       "parent_name_ru": "Специальный IPA",
@@ -406,7 +406,7 @@
       "normalization_status": "extracted_from_21B_defined_subtypes"
     },
     {
-      "bjcp_id": "21B-White",
+      "bjcp_id": "21B-White IPA",
       "parent_bjcp_id": "21B",
       "parent_name_en": "Specialty IPA",
       "parent_name_ru": "Специальный IPA",
@@ -480,7 +480,7 @@
       "normalization_status": "extracted_from_21B_defined_subtypes"
     },
     {
-      "bjcp_id": "21B-Brut",
+      "bjcp_id": "21B-Brut IPA",
       "parent_bjcp_id": "21B",
       "parent_name_en": "Specialty IPA",
       "parent_name_ru": "Специальный IPA",
