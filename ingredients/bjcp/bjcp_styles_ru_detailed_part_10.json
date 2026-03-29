@@ -1,0 +1,875 @@
+{
+  "source": {
+    "document": "BJCP 2021 Beer Style Guidelines",
+    "file_name": "2021_Guidelines_Beer_1.25.pdf",
+    "language": "ru",
+    "translation_scope": "detailed",
+    "notes": "Подробный русский перевод десятой части корпуса BJCP: категории 20-21 с сохранением короткого описания, полных секций и оригинальных английских секций для сверки. Для 21B Specialty IPA дополнительно включены все определённые в гайде подтипы."
+  },
+  "progress": {
+    "styles_total_in_guideline": 128,
+    "styles_translated_in_this_file": 6,
+    "translated_style_ids": [
+      "20A",
+      "20B",
+      "20C",
+      "21A",
+      "21B",
+      "21C"
+    ],
+    "translated_categories": [
+      "20",
+      "21"
+    ],
+    "next_recommended_batch": [
+      "22A",
+      "22B",
+      "22C",
+      "22D",
+      "23A",
+      "23B"
+    ]
+  },
+  "categories": [
+    {
+      "category_id": "20",
+      "category_en": "AMERICAN PORTER AND STOUT",
+      "category_ru": "Американский портер и стаут",
+      "overview_ru": "Эти стили выросли из английских предшественников, но в руках американских крафтовых пивоваров стали заметно мощнее, крепче, более обжаренными и более ориентированными на хмель. Их объединяют общая историческая линия и близкий вкусовой вектор."
+    },
+    {
+      "category_id": "21",
+      "category_en": "IPA",
+      "category_ru": "IPA",
+      "overview_ru": "Категория IPA охватывает современные American IPA и их производные. Это не отрицание связи с English IPA, а лишь конкурсная группировка схожих по балансу стилей. В современном крафтовом контексте IPA — это прежде всего тип пива, определяемый хмелевым балансом."
+    }
+  ],
+  "styles": [
+    {
+      "bjcp_id": "20A",
+      "name_en": "American Porter",
+      "name_ru": "Американский портер",
+      "category_id": "20",
+      "category_en": "AMERICAN PORTER AND STOUT",
+      "category_ru": "Американский портер и стаут",
+      "bjcp_heading": "20A. American Porter",
+      "description_short_ru": "Тёмное американское пиво с заметной обжаренностью, часто шоколадным профилем, уверенной горечью и нередко выраженным хмелевым характером.",
+      "sections_en": {
+        "overall_impression": "A malty, bitter, and often somewhat hoppy dark beer with a balanced, roasted, and frequently chocolatey character.",
+        "aroma": "Medium-light to medium-strong roast aroma, often with a chocolate, light coffee, or lightly burnt character, sometimes with a background caramel or toffee sweetness, or a malty richness. The resiny, earthy, or floral hop character can vary from low to high. Moderate fruity esters optional. Should not seem sharp, acrid, or acidic. The malt-hop balance can vary, but it should always have a roasted malt aroma.",
+        "appearance": "Medium brown to very dark brown, often with ruby- or garnet-like highlights. Can approach black in color. Clear, if not opaque. Full, tan-colored head with moderately good head retention.",
+        "flavor": "Moderately strong roasted flavor, often with a chocolate and lightly burnt character, sometimes with a sweet caramel or malty richness in support. Medium to high bitterness, and a dry to medium-sweet finish. Dark malts may sharpen this impression, but should not add an acrid, burnt, or harsh flavor. Low to high resiny, earthy, or floral hop flavor, which should not clash with the dark malt. Dry-hopped versions may have a fresh hop or resiny flavor. Moderate fruity esters optional. Should not have an acidic bite.",
+        "mouthfeel": "Medium to medium-full body. Moderately low to moderately high carbonation. Stronger versions may have a slight alcohol warmth. May have a slight dark malt astringency, but this character should not be strong.",
+        "comments": "Sometimes called Robust Porter, becoming increasingly hard to find. A rather broad style open to interpretation by the brewer. Dark malt intensity and flavor can vary significantly. May or may not have a strong hop character, or significant fermentation byproducts; thus may seem to have an “American” or “British” character.",
+        "history": "A stronger, more aggressive version of earlier Pre-Prohibition Porters or English Porters, first brewed in the modern craft beer era (introduced in 1974). This style describes the modern craft version; see Historical Beer: Pre-Prohibition Porter for the older US version.",
+        "characteristic_ingredients": "Pale base malt, frequently crystal malt. Dark malts, often black malt or chocolate malt. American hops typically used for bittering, but US or UK finishing hops can be used. Ale yeast can either be clean US versions or characterful English varieties.",
+        "style_comparison": "More bitter and often stronger with more dark malt qualities and dryness than English Porters or Pre-Prohibition Porters. Less strong and assertive than American Stouts.",
+        "entry_instructions": ""
+      },
+      "sections_ru": {
+        "overall_impression": "Солодовый, горьковатый и нередко умеренно хмелевой тёмный эль с уравновешенным обжаренным профилем и часто выраженными шоколадными оттенками.",
+        "aroma": "Аромат обжаренного солода — от умеренно слабого до умеренно сильного; часто с нотами шоколада, лёгкого кофе или слегка подпалённого зерна. На заднем плане возможны карамельная или ирисочная сладость, а также просто богатая солодовость. Хмелевой характер — смолистый, землистый или цветочный — может варьироваться от слабого до довольно заметного. Умеренные фруктовые эфиры допустимы. Аромат не должен быть резким, едким или кислым. Баланс между солодом и хмелем может отличаться, но обжаренный солодовый тон обязан присутствовать.",
+        "appearance": "Цвет от средне-коричневого до очень тёмно-коричневого, нередко с рубиновыми или гранатовыми отблесками. Может приближаться к чёрному. Прозрачность — от прозрачного до почти непрозрачного. Пена полная, желтовато-коричневая, с умеренно хорошей стойкостью.",
+        "flavor": "Во вкусе умеренно сильная обжаренность, часто с шоколадным и слегка подпалённым оттенком; иногда её поддерживают сладковатая карамель или богатая солодовая основа. Горечь — от умеренной до высокой, финиш — от сухого до умеренно сладковатого. Тёмные солода могут делать вкус чуть более острым, но не должны давать едкую, жжёную или грубую резкость. Хмелевой вкус — от слабого до высокого, обычно смолистый, землистый или цветочный; он не должен конфликтовать с тёмным солодом. В версиях с dry hopping возможны свежие хмелевые или смолистые ноты. Умеренные эфиры допустимы. Кислотный укус недопустим.",
+        "mouthfeel": "Тело от среднего до умеренно полного. Карбонизация — от умеренно низкой до умеренно высокой. В более крепких версиях допустимо лёгкое алкогольное тепло. Возможна лёгкая терпкость от тёмного солода, но она не должна быть заметной или грубой.",
+        "comments": "Иногда стиль называют Robust Porter, хотя сейчас такое обозначение встречается всё реже. Это довольно широкий стиль, допускающий авторскую интерпретацию. Интенсивность и характер тёмных солодов могут заметно различаться. Хмелевой профиль и выраженность побочных продуктов брожения тоже варьируются, поэтому отдельные версии могут восприниматься более «американскими» или более «британскими».",
+        "history": "Более крепкая и напористая версия ранних американских портеров до сухого закона и английских porter’ов, появившаяся в современную крафтовую эпоху; первые образцы датируются 1974 годом. Здесь описана именно современная крафтовая интерпретация. Более старую американскую версию следует смотреть в Historical Beer: Pre-Prohibition Porter.",
+        "characteristic_ingredients": "Светлый базовый солод, часто с добавлением карамельных солодов. Тёмные солода — обычно black malt или chocolate malt. Американский хмель чаще используют на горечь, а на поздние внесения подходят как американские, так и британские сорта. Дрожжи могут быть как чистыми американскими, так и более характерными английскими.",
+        "style_comparison": "Горче и нередко крепче, суше и темнее по солодовому профилю, чем English Porter и Pre-Prohibition Porter. При этом менее мощный и менее напористый, чем American Stout.",
+        "entry_instructions": ""
+      },
+      "vital_statistics": {
+        "og": "1.050 – 1.070",
+        "ibu": "25 – 50",
+        "fg": "1.012 – 1.018",
+        "srm": "22 – 40",
+        "abv": "4.8 – 6.5%"
+      },
+      "vital_statistics_text": "OG: 1.050 – 1.070 | IBUs: 25 – 50 | FG: 1.012 – 1.018 | SRM: 22 – 40 | ABV: 4.8 – 6.5%",
+      "commercial_examples_text": "Anchor Porter, Bell’s Porter, Deschutes Black Butte Porter, Great Lakes Edmund Fitzgerald Porter, Sierra Nevada Porter, Smuttynose Robust Porter",
+      "tags_en": [
+        "standard-strength",
+        "dark-color",
+        "top-fermented",
+        "north-america",
+        "craft-style",
+        "porter-family",
+        "bitter",
+        "roasty",
+        "hoppy"
+      ],
+      "source_guideline_page_start": 36,
+      "source_pdf_page_start": 52,
+      "tags_ru": [
+        "стандартная крепость",
+        "тёмный цвет",
+        "верховое брожение",
+        "Северная Америка",
+        "крафтовый стиль",
+        "семейство porter",
+        "горький",
+        "обжаренный",
+        "хмелевой"
+      ],
+      "translation_status": "completed"
+    },
+    {
+      "bjcp_id": "20B",
+      "name_en": "American Stout",
+      "name_ru": "Американский стаут",
+      "category_id": "20",
+      "category_en": "AMERICAN PORTER AND STOUT",
+      "category_ru": "Американский портер и стаут",
+      "bjcp_heading": "20B. American Stout",
+      "description_short_ru": "Довольно крепкий тёмный стаут с яркой обжаренностью, уверенной горечью и заметным американским хмелевым характером.",
+      "sections_en": {
+        "overall_impression": "A fairly strong, highly roasted, bitter, hoppy dark stout. The body and dark flavors typical of stouts with a more aggressive American hop character and bitterness.",
+        "aroma": "Moderate to strong roast aroma, often with a roasted coffee or dark chocolate quality. Burnt or charcoal aromas are acceptable at low levels. Medium to very low hop aroma, often with a citrusy or resiny character. Medium esters optional. Light alcohol optional. Should not seem sharp, acrid, or acidic.",
+        "appearance": "Generally a jet black color, although some may appear very dark brown. Large, persistent head of light tan to light brown in color. Usually opaque.",
+        "flavor": "Moderate to very high roasted flavors, often tasting of coffee, dark or bittersweet chocolate, or roasted coffee beans. May taste of slightly burnt coffee grounds, but this character should not be prominent. Low to medium malt sweetness, often with rich chocolate or caramel flavors. Medium to high bitterness. Low to high hop flavor, generally citrusy or resiny. Medium to dry finish, occasionally with a lightly burnt quality. Low esters optional. Light but smooth alcohol flavor optional.",
+        "mouthfeel": "Medium to full body. Can be somewhat creamy. Can have a bit of roast-derived astringency, but this character should not be excessive. Medium-high to high carbonation. Light to moderately strong alcohol warmth, but smooth and not excessively hot.",
+        "comments": "Breweries express individuality through varying the roasted malt profile, malt sweetness and flavor, and the amount of finishing hops used. Generally has bolder roasted malt flavors and hopping than other traditional stouts (except Imperial Stouts). Becoming increasingly hard to find.",
+        "history": "A modern craft beer and homebrew style that applied a more aggressive American hopping regime to a strong traditional English or Irish Stout. The homebrew version was once known as West Coast Stout, a common naming scheme for a more highly-hopped beer.",
+        "characteristic_ingredients": "Common American base malts, yeast, and hops. Varied use of dark and roasted malts, as well as caramel-type malts. Adjuncts or additives may be present in low quantities to add complexity.",
+        "style_comparison": "Like a hoppy, bitter, strongly roasted Irish Extra Stout. Much more roast and body than a Black IPA. Bigger, stronger versions belong in the Imperial Stout style. Stronger and more assertive, particularly in the dark malt or grain additions and hop character, than American Porter.",
+        "entry_instructions": ""
+      },
+      "sections_ru": {
+        "overall_impression": "Довольно крепкий, ярко обжаренный, горький и хмелевой тёмный стаут. В нём сохраняются плотность и тёмные вкусы, характерные для stout, но к ним добавляются более агрессивные американские хмелевые ноты и повышенная горечь.",
+        "aroma": "Обжаренный аромат от умеренного до сильного, часто с тонами жареного кофе или тёмного шоколада. Лёгкие подпалённые или угольные ноты допустимы на низком уровне. Хмелевой аромат — от очень слабого до среднего, чаще с цитрусовым или смолистым характером. Умеренные эфиры допустимы. Лёгкий алкоголь тоже допустим. Аромат не должен казаться резким, едким или кислым.",
+        "appearance": "Обычно почти угольно-чёрный, хотя отдельные версии могут выглядеть очень тёмно-коричневыми. Пена крупная и стойкая, от светло-бежевой до светло-коричневой. Как правило, пиво непрозрачное.",
+        "flavor": "Обжаренные вкусы — от умеренных до очень высоких; чаще всего напоминают кофе, тёмный или горько-сладкий шоколад, обжаренные кофейные зёрна. Возможен лёгкий тон слегка пережжённой кофейной гущи, но он не должен доминировать. Солодовая сладость — от слабой до средней, нередко с богатыми шоколадными или карамельными оттенками. Горечь — от средней до высокой. Хмелевой вкус — от слабого до высокого, обычно цитрусовый или смолистый. Финиш от средней сухости до сухого, иногда с лёгкой подпалённой гранью. Эфиры допустимы на низком уровне. Лёгкий, но мягкий алкогольный вкус тоже допустим.",
+        "mouthfeel": "Тело от среднего до полного. Текстура может быть слегка кремовой. Допустима небольшая терпкость от обжаренных зёрен, но она не должна быть чрезмерной. Карбонизация — от средне-высокой до высокой. Алкогольное тепло — от лёгкого до умеренно выраженного, но всегда гладкое, без жгучести.",
+        "comments": "Пивоварни подчёркивают индивидуальность, варьируя профиль обжаренных солодов, степень солодовой сладости и количество позднего хмеля. В целом стиль отличается более смелой обжаренностью и более заметным хмелем, чем традиционные стауты, за исключением Imperial Stout. Сейчас встречается всё реже.",
+        "history": "Современный крафтовый и домашний стиль, возникший как более агрессивно охмелённая американская версия крепкого английского или ирландского стаута. В домашнем пивоварении такую версию раньше часто называли West Coast Stout — по аналогии с другими более хмелевыми американскими стилями.",
+        "characteristic_ingredients": "Типичные американские базовые солода, американские дрожжи и хмель. Широко используются тёмные и обжаренные солода, а также карамельные солода разных типов. Небольшие количества добавок или adjuncts допустимы для усложнения профиля.",
+        "style_comparison": "Похоже на более хмелевую, горькую и обжаренную версию Irish Extra Stout. Значительно более обжаренный и плотный, чем Black IPA. Более крупные и мощные версии уже относятся к Imperial Stout. По обжаренности, телу и хмелевому напору заметно выразительнее, чем American Porter.",
+        "entry_instructions": ""
+      },
+      "vital_statistics": {
+        "og": "1.050 – 1.075",
+        "ibu": "35 – 75",
+        "fg": "1.010 – 1.022",
+        "srm": "30 – 40",
+        "abv": "5.0 – 7.0%"
+      },
+      "vital_statistics_text": "OG: 1.050 – 1.075 | IBUs: 35 – 75 | FG: 1.010 – 1.022 | SRM: 30 – 40 | ABV: 5.0 – 7.0%",
+      "commercial_examples_text": "Avery Out of Bounds Stout, Bell’s Kalamazoo Stout, Deschutes Obsidian Stout, Sierra Nevada Stout, Trillium Secret Stairs",
+      "tags_en": [
+        "high-strength",
+        "dark-color",
+        "top-fermented",
+        "north-america",
+        "craft-style",
+        "stout-family",
+        "bitter",
+        "roasty",
+        "hoppy"
+      ],
+      "source_guideline_page_start": 36,
+      "source_pdf_page_start": 52,
+      "tags_ru": [
+        "высокая крепость",
+        "тёмный цвет",
+        "верховое брожение",
+        "Северная Америка",
+        "крафтовый стиль",
+        "семейство stout",
+        "горький",
+        "обжаренный",
+        "хмелевой"
+      ],
+      "translation_status": "completed"
+    },
+    {
+      "bjcp_id": "20C",
+      "name_en": "Imperial Stout",
+      "name_ru": "Имперский стаут",
+      "category_id": "20",
+      "category_en": "AMERICAN PORTER AND STOUT",
+      "category_ru": "Американский портер и стаут",
+      "bjcp_heading": "20C. Imperial Stout",
+      "description_short_ru": "Очень крепкий и очень тёмный стаут с интенсивной обжаренностью, тонами тёмных или сушёных фруктов и согревающим горько-сладким финишем.",
+      "sections_en": {
+        "overall_impression": "An intensely-flavored, very strong, very dark stout with a broad range of interpretations. Roasty-burnt malt with a depth of dark or dried fruit flavors, and a warming, bittersweet finish. Despite the intense flavors, the components need to meld together to create a complex, harmonious beer, not a hot mess – sometimes only accomplished with age.",
+        "aroma": "Rich, deep, complex, and often quite intense, with a pleasant blend of roast, fruit, hops, and alcohol. Light to moderately strong roast can have a coffee, bittersweet or dark chocolate, cocoa, black licorice, tar, or slightly burnt grain quality, sometimes with a light caramel sweetness or toasty maltiness. Low to moderately strong esters often perceived as dark or dried fruits like plums, prunes, figs, black currants, or raisins. Very low to fairly aggressive hops, often English or American in character. Alcohol flavor optional, but should not be sharp, hot, or solventy. The balance between these main four components can vary greatly; not all need to be noticeable, but those present should have a smooth interplay. Age can add another dimension, including a vinous or port-like impression, but not sourness. Age can decrease aroma intensity.",
+        "appearance": "Color ranges from very dark reddish-brown to jet black. Opaque. Deep tan to dark brown head. Generally has a well-formed head, although head retention may be low to moderate. High alcohol and viscosity may be visible as legs.",
+        "flavor": "Like the aroma, a complex mix of roast, fruit, hops, and alcohol (same descriptors apply). The flavors can be quite intense, often greater than in the aroma, but the same warning about the balance varying greatly still applies. Medium to aggressively high bitterness. The maltiness balances and supports the other flavors, and may have qualities of bread, toast, or caramel. The palate and finish can be fairly dry to moderately sweet, an impression that often changes with age. Should not by syrupy or cloying. Aftertaste of roast, bitterness, and warmth. Same age effects as in the aroma apply.",
+        "mouthfeel": "Full to very full-bodied and chewy, with a velvety, luscious texture. The body and texture may decline with age. Gentle, smooth warmth should be present and noticeable, but as a background character. Low to moderate carbonation.",
+        "comments": "Sometimes known as Russian Imperial Stout or RIS. Varying interpretations exist with American versions having greater bitterness, and more roasted character and late hops, while English varieties often reflect a more complex specialty malt character with a more forward ester profile. Not all Imperial Stouts have a clearly ‘English’ or ‘American’ character; anything in between is allowable as well, which is why it is counter-productive to define strict sub-types. Judges must be aware of the broad range of the style, and not try to judge all examples as clones of a specific commercial beer.",
+        "history": "A style with a long, although not necessarily continuous, heritage. Traces roots to strong English porters brewed for export in the 1700s, and said to have been popular with the Russian Imperial Court. After the Napoleonic wars interrupted trade, these beers were increasingly sold in England. The style eventually all but died out, until being popularly embraced in the modern craft beer era in England as a revival export and in the United States as an adaptation by extending the style with American characteristics.",
+        "characteristic_ingredients": "Pale malt with significant roasted malts or grain. Flaked adjuncts common. American or English ale yeast and hops are typical. Ages very well. Increasingly used as the base beer for many specialty styles.",
+        "style_comparison": "Darker and more roasty than Barleywines, but with similar alcohol. More complex, with a broader range of possible flavors, than lower-gravity stouts.",
+        "entry_instructions": ""
+      },
+      "sections_ru": {
+        "overall_impression": "Очень насыщенный по вкусу, очень крепкий и очень тёмный стаут, допускающий широкий диапазон интерпретаций. В основе — обжаренно-подпалённый солод, глубокие ноты тёмных или сушёных фруктов и согревающий горько-сладкий финиш. При всей мощности вкуса компоненты должны сливаться в сложное и гармоничное целое, а не распадаться на хаотичный набор агрессивных тонов; иногда такой баланс достигается лишь с выдержкой.",
+        "aroma": "Аромат богатый, глубокий, сложный и часто весьма интенсивный, с приятным сочетанием обжаренности, фруктов, хмеля и алкоголя. Обжаренность — от слабой до умеренно сильной — может напоминать кофе, горько-сладкий или тёмный шоколад, какао, чёрную лакрицу, дёготь либо слегка подпалённое зерно; иногда её сопровождают лёгкая карамельная сладость или поджаренно-солодовые ноты. Эфиры — от слабых до умеренно сильных — часто воспринимаются как слива, чернослив, инжир, чёрная смородина, изюм и другие тёмные либо сушёные фрукты. Хмель — от едва заметного до довольно агрессивного, обычно английского или американского склада. Алкоголь допустим, но не должен быть резким, горячим или растворительным. Баланс между этими четырьмя опорами может сильно варьироваться: не все из них обязаны быть одинаково заметными, но то, что есть, должно работать мягко и согласованно. Выдержка может добавить винные или портвейноподобные оттенки, но не кислинку; при этом интенсивность аромата с возрастом может снижаться.",
+        "appearance": "Цвет от очень тёмного красновато-коричневого до угольно-чёрного. Пиво непрозрачное. Пена от тёмно-бежевой до тёмно-коричневой. Обычно формируется хорошо, хотя её стойкость может быть от невысокой до средней. Из-за высокого содержания алкоголя и вязкости на стенках бокала могут быть заметны «ножки».",
+        "flavor": "Как и в аромате, вкус строится на сложной комбинации обжаренности, фруктов, хмеля и алкоголя; действуют те же дескрипторы. Вкусовая интенсивность часто даже выше, чем ароматическая, но и здесь важно помнить о широком диапазоне допустимого баланса. Горечь — от средней до агрессивно высокой. Солодовость поддерживает и связывает остальные элементы, иногда давая хлебные, тостовые или карамельные оттенки. Во рту и в финише пиво может казаться от довольно сухого до умеренно сладковатого; это впечатление часто меняется с выдержкой. Пиво не должно быть ни сиропным, ни приторным. Послевкусие несёт обжаренность, горечь и согревающее тепло. Эффекты выдержки здесь те же, что и в аромате.",
+        "mouthfeel": "Тело от полного до очень полного, плотное и тягучее, с бархатистой, роскошной текстурой. С возрастом плотность и шелковистость могут несколько снижаться. Мягкое, гладкое тепло алкоголя должно ощущаться, но как фон, а не как жгучая доминанта. Карбонизация низкая или умеренная.",
+        "comments": "Стиль также известен как Russian Imperial Stout или сокращённо RIS. Американские версии обычно горче, более обжаренные и сильнее подчёркивают поздний хмель, тогда как английские чаще показывают более сложный профиль специальных солодов и более заметные эфиры. Не каждый Imperial Stout обязан быть явно «английским» или «американским» — допустим и весь промежуточный диапазон, поэтому жёстко делить стиль на подтипы бессмысленно. Судье важно помнить о широте стиля и не оценивать все образцы как копии какого-то одного коммерческого эталона.",
+        "history": "Стиль с долгой, хотя и не обязательно непрерывной историей. Его корни уходят к крепким английским портерам XVIII века, которые варили на экспорт и которые, как считается, пользовались популярностью при российском императорском дворе. После наполеоновских войн, нарушивших торговые пути, эти пива всё чаще продавались уже в самой Англии. Со временем стиль почти исчез, но был заново востребован в современную крафтовую эпоху: в Англии — как возрождённый экспортный тип, а в США — как переосмысленная версия с американскими особенностями.",
+        "characteristic_ingredients": "Светлый базовый солод и значительная доля обжаренных солодов или несоложёного обжаренного зерна. Хлопьевидные adjuncts встречаются часто. Обычно используют английские или американские элиевые дрожжи и соответствующий хмель. Стиль хорошо переносит выдержку и всё чаще служит базой для разнообразных specialty-версий.",
+        "style_comparison": "Темнее и заметно более обжаренный, чем Barleywine, хотя по алкоголю может быть сопоставим. Сложнее и шире по диапазону возможных вкусов, чем стауты более низкой плотности и крепости.",
+        "entry_instructions": ""
+      },
+      "vital_statistics": {
+        "og": "1.075 – 1.115",
+        "ibu": "50 – 90",
+        "fg": "1.018 – 1.030",
+        "srm": "30 – 40",
+        "abv": "8.0 – 12.0%"
+      },
+      "vital_statistics_text": "OG: 1.075 – 1.115 | IBUs: 50 – 90 | FG: 1.018 – 1.030 | SRM: 30 – 40 | ABV: 8.0 – 12.0%",
+      "commercial_examples_text": "American – Bell’s Expedition Stout, Great Divide Yeti Imperial Stout, North Coast Old Rasputin Imperial Stout, Oskar Blues Ten Fidy, Sierra Nevada Narwhal Imperial Stout; English – 2SP Brewing Co The Russian, Courage Imperial Russian Stout, Le Coq Imperial Extra Double Stout, Samuel Smith Imperial Stout, Thornbridge Saint Petersburg",
+      "tags_en": [
+        "very-high-strength",
+        "dark-color",
+        "top-fermented",
+        "british-isles",
+        "north-america",
+        "traditional-style",
+        "craft-style",
+        "stout-family",
+        "malty",
+        "bitter",
+        "roasty"
+      ],
+      "source_guideline_page_start": 37,
+      "source_pdf_page_start": 53,
+      "tags_ru": [
+        "очень высокая крепость",
+        "тёмный цвет",
+        "верховое брожение",
+        "Британские острова",
+        "Северная Америка",
+        "традиционный стиль",
+        "крафтовый стиль",
+        "семейство stout",
+        "солодовый",
+        "горький",
+        "обжаренный"
+      ],
+      "translation_status": "completed"
+    },
+    {
+      "bjcp_id": "21A",
+      "name_en": "American IPA",
+      "name_ru": "Американский IPA",
+      "category_id": "21",
+      "category_en": "IPA",
+      "category_ru": "IPA",
+      "bjcp_heading": "21A. American IPA",
+      "description_short_ru": "Явно хмелевой и горький светлый американский эль умеренно высокой крепости, где чистое брожение и суховатый финиш позволяют раскрыться яркому хмелевому профилю.",
+      "sections_en": {
+        "overall_impression": "A decidedly hoppy and bitter, moderately strong, pale American ale. The balance is hop-forward, with a clean fermentation profile, dryish finish, and clean, supporting malt allowing a creative range of hop character to shine through.",
+        "aroma": "A prominent to intense hop aroma often featuring American or New World hop characteristics, such as citrus, floral, pine, resin, spice, tropical fruit, stone fruit, berry, or melon. Low to medium-low clean, grainy maltiness supports the hop presentation. Generally clean fermentation profile, but light fruitiness acceptable. Restrained alcohol optional.",
+        "appearance": "Color ranging from medium gold to light reddish-amber. Clear, but light haze allowable. Medium-sized, white to off-white head with good persistence.",
+        "flavor": "Medium to very high hop flavor (same descriptors as aroma). Low to medium-low clean and grainy maltiness, possibly with light caramel and toast flavors. Medium-high to very high bitterness. Dry to medium-dry finish. Hoppy, bitter aftertaste with supportive malt. Low esters optional. Background clean alcohol flavor optional.",
+        "mouthfeel": "Medium-light to medium body, with a smooth texture. Medium to medium-high carbonation. No harshness. Very light, smooth warmth optional.",
+        "comments": "The basis for many modern variations, including the stronger Double IPA as well as IPAs with various other ingredients. Those other IPAs should generally be entered in the 21B Specialty IPA style. An India Pale Lager (IPL) can be entered as an American IPA if it has a similar character, otherwise 34B Mixed-Style Beer. Oak is inappropriate in this style; if noticeably oaked, enter in 33A Wood-Aged Beer. Dry, sharply bitter, clear examples are sometimes known as West Coast IPA, which is really just a type of American IPA.",
+        "history": "The first modern American craft beer adaptation of this traditional English style is generally believed to be Anchor Liberty Ale, first brewed in 1975 and using whole Cascade hops; the style has evolved beyond that original beer, which now tastes more like an American Pale Ale in comparison. American-made IPAs from earlier eras were not unknown (particularly the well-regarded Ballantine’s IPA, an oak-aged beer using an old English recipe). This style is based on the modern craft beer examples.",
+        "characteristic_ingredients": "Pale base malt. American or English yeast with a clean or slightly fruity profile. Generally all-malt, but sugar additions are acceptable. Restrained use of crystal malts. Often uses American or New World hops but any varieties are acceptable; new hop varieties continue to be released and may be used even if they do not have the sensory profiles listed as examples.",
+        "style_comparison": "Stronger and more highly hopped than American Pale Ale. Compared to English IPA, has less caramel, bread, and toast; often more American or New World hops; fewer yeast-derived esters; less body and often a more hoppy balance; and is slightly stronger than most examples. Less alcohol than a Double IPA, but with a similar balance.",
+        "entry_instructions": ""
+      },
+      "sections_ru": {
+        "overall_impression": "Ярко хмелевой и горький светлый американский эль умеренно высокой крепости. Баланс отчётливо смещён в сторону хмеля: чистое брожение, суховатый финиш и аккуратная солодовая база нужны здесь прежде всего для того, чтобы раскрыть широкий спектр хмелевых ароматов и вкусов.",
+        "aroma": "Хмелевой аромат — от заметного до интенсивного, часто с типичными американскими или New World оттенками: цитрус, цветы, хвоя, смола, пряности, тропические и косточковые фрукты, ягоды, дыня. Чистая зерновая солодовость — от слабой до умеренно слабой — поддерживает хмель, но не спорит с ним. Профиль брожения обычно чистый, хотя лёгкая фруктовость допустима. Алкоголь, если и заметен, должен быть сдержанным.",
+        "appearance": "Цвет от среднего золота до светлого красновато-янтарного. Пиво обычно прозрачное, хотя лёгкая дымка допустима. Пена средней величины, белая или грязно-белая, с хорошей стойкостью.",
+        "flavor": "Хмелевой вкус — от среднего до очень высокого, с теми же дескрипторами, что и в аромате. Солодовый профиль чистый, зерновой, от слабого до умеренно слабого; возможны лёгкие карамельные и тостовые оттенки. Горечь — от средне-высокой до очень высокой. Финиш сухой или умеренно сухой. Послевкусие хмелевое и горькое, но при этом поддержано солодом. Низкий уровень эфиров допустим. Фоновый чистый алкогольный тон возможен.",
+        "mouthfeel": "Тело от умеренно лёгкого до среднего, текстура гладкая. Карбонизация — от средней до средне-высокой. Грубость недопустима. Возможен очень лёгкий и мягкий согревающий эффект алкоголя.",
+        "comments": "Это базовый стиль для множества современных вариаций, включая более крепкий Double IPA и IPA с самыми разными дополнительными акцентами. Такие вариации обычно следует заявлять как 21B Specialty IPA. India Pale Lager (IPL) можно заявлять как American IPA, если по характеру он близок к этому стилю; в противном случае — 34B Mixed-Style Beer. Дуб для этого стиля неуместен; если древесный характер заметен, пиво лучше относить к 33A Wood-Aged Beer. Сухие, очень ясно горькие и прозрачные версии иногда называют West Coast IPA, но по сути это просто один из вариантов American IPA.",
+        "history": "Первой современной американской крафтовой адаптацией классического английского IPA обычно считают Anchor Liberty Ale, впервые сваренный в 1975 году с использованием шишкового Cascade. С тех пор стиль ушёл далеко вперёд, и исходный образец сегодня воспринимается скорее как American Pale Ale. В более ранние эпохи IPA, сваренный в США, тоже существовал — в частности, высоко ценился Ballantine’s IPA, выдержанный в дубе по старому английскому рецепту. Современное определение стиля опирается именно на крафтовые образцы новой эпохи.",
+        "characteristic_ingredients": "Светлый базовый солод. Американские или английские дрожжи с чистым либо слегка фруктовым профилем. Обычно пиво полностью солодовое, но добавление сахара допустимо. Карамельные солода используют сдержанно. Чаще всего берут американский или другой New World хмель, но в целом допустимы любые сорта; новые разновидности продолжают появляться, и стиль не должен ограничиваться только классическими дескрипторами.",
+        "style_comparison": "Крепче и заметно более охмелён, чем American Pale Ale. По сравнению с English IPA здесь меньше карамели, хлебных и тостовых тонов, чаще встречается американский или New World хмель, меньше эфиров, легче тело и обычно более выражен хмелевой баланс; к тому же стиль немного крепче большинства английских образцов. Алкоголя меньше, чем в Double IPA, но общий баланс у них сходный.",
+        "entry_instructions": ""
+      },
+      "vital_statistics": {
+        "og": "1.056 – 1.070",
+        "ibu": "40 – 70",
+        "fg": "1.008 – 1.014",
+        "srm": "6 – 14",
+        "abv": "5.5 – 7.5%"
+      },
+      "vital_statistics_text": "OG: 1.056 – 1.070 | IBUs: 40 – 70 | FG: 1.008 – 1.014 | SRM: 6 – 14 | ABV: 5.5 – 7.5%",
+      "commercial_examples_text": "Bell’s Two-Hearted Ale, Cigar City Jai Alai, Fat Heads Head Hunter IPA, Firestone Walker Union Jack, Maine Lunch, Russian River Blind Pig IPA",
+      "tags_en": [
+        "high-strength",
+        "pale-color",
+        "top-fermented",
+        "north-america",
+        "craft-style",
+        "ipa-family",
+        "bitter",
+        "hoppy"
+      ],
+      "source_guideline_page_start": 38,
+      "source_pdf_page_start": 54,
+      "tags_ru": [
+        "высокая крепость",
+        "светлый цвет",
+        "верховое брожение",
+        "Северная Америка",
+        "крафтовый стиль",
+        "семейство IPA",
+        "горький",
+        "хмелевой"
+      ],
+      "translation_status": "completed"
+    },
+    {
+      "bjcp_id": "21B",
+      "name_en": "Specialty IPA",
+      "name_ru": "Специальный IPA",
+      "category_id": "21",
+      "category_en": "IPA",
+      "category_ru": "IPA",
+      "bjcp_heading": "21B. Specialty IPA",
+      "description_short_ru": "Категория для IPA-вариаций, которые по балансу узнаются как IPA — хмелевые, горькие и суховатые, — но отличаются от базовых подстилей дополнительной идеей или стилистическим сдвигом.",
+      "sections_en": {
+        "overall_impression": "Recognizable as an IPA by balance – a hop-forward, bitter, dryish beer – with something else present to distinguish it from the standard categories. Should have good drinkability, regardless of the form. Excessive harshness and heaviness are typically faults, as are strong flavor clashes between the hops and the other specialty ingredients.",
+        "aroma": "Detectable hop aroma is required; characterization of hops is dependent on the specific type of Specialty IPA. Other aromatics may be present; hop aroma is typically the strongest element.",
+        "appearance": "Color depends on specific type of Specialty IPA. Most should be clear, but a slight haze is acceptable in most styles. Darker types can be opaque, making clarity irrelevant. Good, persistent head stand with color dependent on the specific type of Specialty IPA.",
+        "flavor": "Variable by type, with the quality of each component dependent on the specific Specialty IPA. Hop flavor typically medium-low to high. Hop bitterness typically medium-high to very high. Malt flavor generally low to medium. Commonly has a medium-dry to dry finish. Some clean alcohol flavor can be noted in stronger versions. Various types of Specialty IPAs can show additional malt and yeast characteristics, depending on the type.",
+        "mouthfeel": "Smooth. Medium-light to medium body. Medium carbonation, generally. A background alcohol warmth can be perceived in stronger versions.",
+        "comments": "Entrants may use this category for a different strength version of an IPA defined by its own BJCP subcategory (e.g., session-strength American or English IPA) – except where an existing BJCP subcategory already exists for that style (e.g., double [American] IPA). A Session IPA is a 21B Specialty IPA with a base style of 21A American IPA with Session strength. A Double IPA is Category 22A not 21B.",
+        "history": "",
+        "characteristic_ingredients": "",
+        "style_comparison": "",
+        "entry_instructions": "Entrant must specify a strength (session, standard, double); if no strength is specified, standard will be assumed. Entrant must specify specific type of Specialty IPA from the list of Currently Defined Types identified in the Style Guidelines, or as amended by Provisional Styles on the BJCP website; OR the entrant must describe the type of Specialty IPA and its key characteristics in comment form so judges will know what to expect.\n\nEntrants may specify specific hop varieties used, if entrants feel that judges may not recognize the varietal characteristics of newer hops. Entrants may specify a combination of defined IPA types (e.g., Black Rye IPA) without providing additional descriptions.\n\nCurrently Defined Types: Belgian IPA, Black IPA, Brown IPA, Red IPA, Rye IPA, White IPA, Brut IPA"
+      },
+      "sections_ru": {
+        "overall_impression": "По балансу это должен быть узнаваемый IPA: хмелевой, горький, суховатый, но с дополнительной особенностью, которая выводит его за рамки стандартных подкатегорий. Независимо от варианта исполнения пиво должно оставаться питким. Чрезмерная грубость, тяжесть и явные конфликты между хмелем и «специальным» компонентом считаются недостатками.",
+        "aroma": "Заметный хмелевой аромат обязателен, но его конкретный характер зависит от выбранного типа Specialty IPA. Могут присутствовать и другие ароматические ноты, однако именно хмель обычно остаётся самым сильным элементом.",
+        "appearance": "Цвет зависит от конкретного типа Specialty IPA. Большинство версий должно быть прозрачным, хотя лёгкая дымка допустима. Более тёмные варианты могут быть непрозрачными, и тогда вопрос прозрачности теряет значение. Пена должна быть хорошей и стойкой, а её оттенок определяется конкретной разновидностью.",
+        "flavor": "Вкусовой профиль варьируется в зависимости от подтипа, и качество каждого компонента следует оценивать с учётом его логики. Хмелевой вкус обычно от умеренно слабого до высокого. Горечь чаще всего от средне-высокой до очень высокой. Солодовая составляющая, как правило, от слабой до средней. Финиш чаще всего умеренно сухой или сухой. В более крепких версиях возможен чистый алкогольный тон. Разные подтипы Specialty IPA могут показывать дополнительные солодовые или дрожжевые особенности.",
+        "mouthfeel": "Текстура должна быть гладкой. Тело — от умеренно лёгкого до среднего. Карбонизация обычно средняя. В более крепких версиях допустимо фоновое согревающее тепло алкоголя.",
+        "comments": "Эту категорию можно использовать и для другой версии по крепости того IPA, который уже определён собственной подкатегорией BJCP, например для session-strength варианта American IPA или English IPA — но только если для этого варианта не существует отдельной официальной подкатегории. Так, Session IPA — это 21B Specialty IPA с базовым стилем 21A American IPA и session-strength крепостью. А Double IPA относится уже к 22A, а не к 21B.",
+        "history": "",
+        "characteristic_ingredients": "",
+        "style_comparison": "",
+        "entry_instructions": "Участник должен указать крепость: session, standard или double; если крепость не указана, по умолчанию предполагается standard. Также необходимо указать конкретный тип Specialty IPA из списка currently defined types в Style Guidelines либо с учётом актуализаций через BJCP Provisional Styles; либо участник должен описать тип Specialty IPA и его ключевые особенности в комментарии, чтобы судьи понимали, чего ожидать.\n\nПри желании можно указать конкретные сорта хмеля, если есть риск, что судьи не узнают характер новых varietal hops. Разрешается указывать комбинацию уже определённых типов IPA, например Black Rye IPA, без дополнительных пояснений.\n\nСейчас определены следующие типы: Belgian IPA, Black IPA, Brown IPA, Red IPA, Rye IPA, White IPA, Brut IPA."
+      },
+      "vital_statistics": {
+        "session_abv": "3.0 – 5.0%",
+        "standard_abv": "5.0 – 7.5%",
+        "double_abv": "7.5 – 10.0%"
+      },
+      "vital_statistics_text": "Variable by type, see individual styles. Strength classifications: Session – ABV: 3.0 – 5.0% | Standard – ABV: 5.0 – 7.5% | Double – ABV: 7.5 – 10.0%",
+      "commercial_examples_text": "",
+      "tags_en": [],
+      "source_guideline_page_start": 38,
+      "source_pdf_page_start": 54,
+      "tags_ru": [],
+      "translation_status": "completed",
+      "defined_subtypes": [
+        {
+          "subtype_id": "21B-Belgian",
+          "name_en": "Specialty IPA: Belgian IPA",
+          "name_ru": "Специальный IPA: Belgian IPA",
+          "description_short_ru": "Сухой и хмелевой IPA, в котором американская горечь и аромат соединяются с фруктово-пряным профилем бельгийских дрожжей.",
+          "sections_en": {
+            "overall_impression": "A dry, hoppy IPA with fruitiness and spiciness of Belgian yeast. Often lighter in color and more attenuated, similar to a Belgian Tripel that has been brewed with more hops.",
+            "aroma": "Moderate to high hop aroma, often reflecting the character of American or New World hops (tropical, melon, stone fruit, citrus, piney, etc.) or Continental hops (spicy, herbal, floral, etc.), possibly with a light dry-hop note. Gentle malt sweetness, sometimes with a sugary or honey character, but rarely caramel. Moderate to high esters, often pears, apples, citrus, or banana. Light spice, clove or pepper, optional. Light alcohol aroma optional.",
+            "appearance": "Light golden to amber in color. Moderate to large off-white head with good retention. Good to quite hazy clarity.",
+            "flavor": "Moderate fruity and spicy flavors, same descriptors as aroma. Moderate to high hop flavor, same descriptors as aroma. Light, relatively neutral grainy malt flavor, optionally with low toast, caramel, or honey. Moderate to high bitterness. Dry to medium-dry finish that often accentuates the perception of bitterness. Aftertaste has a lingering bitterness but is not harsh.",
+            "mouthfeel": "Light to medium body. Medium to high carbonation level, which can lighten the impression of body. Light warmth optional.",
+            "comments": "The choice of yeast strain and hop varieties is critical since many choices will clash horribly.",
+            "history": "A relatively modern style, dating from the mid-2000s. Homebrewers and craft breweries substituted Belgian yeast in their American IPA recipes. Belgian breweries typically added more hops to their stronger pale beers.",
+            "characteristic_ingredients": "Belgian yeast strains used in making Belgian Tripels and Golden Strong Ales. American examples tend to use American or New World hops while Belgian versions tend to use European hops and only pale malt. Sugar adjuncts common.",
+            "style_comparison": "A cross between an American IPA or Double IPA with a Belgian Golden Strong Ale or Belgian Tripel. This style is may be spicier, stronger, drier, and fruitier than an American IPA."
+          },
+          "sections_ru": {
+            "overall_impression": "Сухой и хмелевой IPA, в котором фруктовость и пряность бельгийских дрожжей так же важны, как и хмель. Часто светлее по цвету и сильнее выброжен, чем обычный IPA; местами напоминает Belgian Tripel, сваренный с более щедрым охмелением.",
+            "aroma": "Хмелевой аромат от умеренного до высокого; возможны как американские/New World оттенки — тропики, дыня, косточковые фрукты, цитрус, хвоя, — так и continental-профиль: пряность, травы, цветы. Допустим лёгкий сухохмелевой штрих. Солодовая сладость мягкая, иногда с сахарными или медовыми нюансами, но редко карамельная. Эфиры — от умеренных до высоких, часто груша, яблоко, цитрус или банан. Лёгкая пряность, гвоздика или перец допустимы. Лёгкий алкоголь возможен.",
+            "appearance": "Цвет от светло-золотистого до янтарного. Пена от умеренной до крупной, грязно-белая, с хорошей стойкостью. Прозрачность от хорошей до довольно мутной.",
+            "flavor": "Фруктовые и пряные вкусы — умеренные; хмелевой вкус — от умеренного до высокого; все те же дескрипторы, что и в аромате. Солодовый вкус лёгкий, довольно нейтральный, зерновой; возможны слабые тостовые, карамельные или медовые оттенки. Горечь от умеренной до высокой. Финиш сухой или умеренно сухой и часто дополнительно подчёркивает ощущение горечи. Послевкусие долгое, горьковатое, но не грубое.",
+            "mouthfeel": "Тело от лёгкого до среднего. Карбонизация от средней до высокой и может визуально облегчать тело. Допустимо лёгкое согревающее тепло.",
+            "comments": "Выбор штамма дрожжей и сортов хмеля здесь критически важен: многие сочетания легко вступают в жёсткий конфликт.",
+            "history": "Сравнительно современный стиль, сформировавшийся в середине 2000-х. Домашние и крафтовые пивовары начали подставлять бельгийские дрожжи в рецептуры American IPA, а бельгийские пивоварни, в свою очередь, усиливали охмеление своих крепких светлых элей.",
+            "characteristic_ingredients": "Бельгийские дрожжи, применяемые для Tripel и Golden Strong Ale. Американские версии чаще опираются на американский или другой New World хмель, тогда как бельгийские — на европейские сорта и исключительно светлый солод. Сахарные добавки встречаются часто.",
+            "style_comparison": "Нечто среднее между American IPA или Double IPA и Belgian Golden Strong Ale либо Belgian Tripel. По сравнению с American IPA этот вариант обычно прянее, суше, фруктовее и нередко крепче."
+          },
+          "vital_statistics": {
+            "og": "1.058 – 1.080",
+            "ibu": "50 – 100",
+            "fg": "1.008 – 1.016",
+            "srm": "5 – 8",
+            "abv": "6.2 – 9.5%"
+          },
+          "vital_statistics_text": "OG: 1.058 – 1.080 | IBUs: 50 – 100 | FG: 1.008 – 1.016 | SRM: 5 – 8 | ABV: 6.2 – 9.5%",
+          "commercial_examples_text": "Brewery Vivant Triomphe, Green Flash Le Freak, Houblon Chouffe, Urthel Hop It",
+          "tags_en": [
+            "high-strength",
+            "pale-color",
+            "top-fermented",
+            "north-america",
+            "craft-style",
+            "ipa-family",
+            "specialty-family",
+            "bitter",
+            "hoppy"
+          ],
+          "tags_ru": [
+            "высокая крепость",
+            "светлый цвет",
+            "верховое брожение",
+            "Северная Америка",
+            "крафтовый стиль",
+            "семейство IPA",
+            "семейство specialty IPA",
+            "горький",
+            "хмелевой"
+          ],
+          "source_guideline_page_start": 39,
+          "source_pdf_page_start": 55,
+          "translation_status": "completed"
+        },
+        {
+          "subtype_id": "21B-Black",
+          "name_en": "Specialty IPA: Black IPA",
+          "name_ru": "Специальный IPA: Black IPA",
+          "description_short_ru": "IPA с сухим, хмелевым балансом американского IPA, но тёмного цвета и с мягкой поддерживающей обжаренностью.",
+          "sections_en": {
+            "overall_impression": "A beer with the dryness, hop-forward balance, and flavor characteristics of an American IPA, but darker in color. Darker malts add a gentle and supportive flavor, not a strongly roasted or burnt character.",
+            "aroma": "Moderate to high hop aroma, often with a stone fruit, tropical, citrusy, resinous, pine, berry, or melon character. Very low to moderate malt, possibly with light chocolate, coffee, or toast notes, as well as a background caramel sweetness. Clean fermentation profile, but light esters acceptable.",
+            "appearance": "Dark brown to black color. Clear, if not opaque. Light haze allowable, but should not be murky. Light tan to tan head, moderate size, persistent.",
+            "flavor": "Medium-low to high hop flavor, same descriptors as aroma. Low to medium malt flavor, with restrained chocolate or coffee notes, but not burnt or ashy. The roasted notes should not clash with the hops. Light caramel or toffee optional. Medium-high to very high bitterness. Dry to slightly off-dry finish, with a bitter but not harsh aftertaste, often with a light roast flavor that can contribute to the dry impression. Low to moderate esters optional. Background alcohol flavor optional.",
+            "mouthfeel": "Smooth. Medium-light to medium body. Medium carbonation. Light creaminess optional. Light warmth optional.",
+            "comments": "Most examples are standard strength. Strong examples can sometimes seem like big, hoppy porters if made too extreme, which hurts their drinkability.",
+            "history": "An American IPA variant first commercially produced by Greg Noonan as Blackwatch IPA around 1990. Popularized in the Pacific Northwest and Southern California of the US starting in the early-mid 2000s, and was a popular fad in the early 2010s before fading into obscurity in the US.",
+            "characteristic_ingredients": "Debittered roast malts. Any American or New World hop character is acceptable; new hop varieties continue to be released and should not constrain this style to the example hop characteristics listed.",
+            "style_comparison": "Balance and overall impression of an American or Double IPA with restrained roast similar to the type found in Schwarzbier. Not as rich and roasty as American Stout and Porter, and with less body and increased smoothness and drinkability."
+          },
+          "sections_ru": {
+            "overall_impression": "Пиво с сухостью, хмелевым балансом и вкусовой логикой American IPA, но более тёмного цвета. Тёмные солода должны давать лишь мягкую поддерживающую грань, а не выраженную жжёную или сильно обжаренную доминанту.",
+            "aroma": "Хмелевой аромат от умеренного до высокого; типичны косточковые и тропические фрукты, цитрус, смола, хвоя, ягоды, дыня. Солодовая часть — от очень слабой до умеренной — может давать лёгкие оттенки шоколада, кофе или тоста, а также фоновую карамельную сладость. Брожение чистое, лёгкие эфиры допустимы.",
+            "appearance": "Цвет от тёмно-коричневого до чёрного. Пиво прозрачное, если только не выглядит почти непрозрачным. Лёгкая дымка допустима, но мутность не должна быть грязной или тяжёлой. Пена светло-бежевая или бежевая, средней величины, стойкая.",
+            "flavor": "Хмелевой вкус — от умеренно слабого до высокого, с теми же дескрипторами, что и в аромате. Солодовый вкус — от слабого до среднего; допустимы сдержанные шоколадные или кофейные ноты, но без золы, жжёности и пепельности. Обжаренные тона не должны конфликтовать с хмелем. Лёгкая карамель или ирис допустимы. Горечь — от средне-высокой до очень высокой. Финиш сухой или слегка off-dry, послевкусие горькое, но не жёсткое; лёгкая обжаренная сухость может дополнительно усиливать ощущение сухости. Эфиры — от слабых до умеренных — допустимы. Фоновый алкоголь возможен.",
+            "mouthfeel": "Гладкое тело от умеренно лёгкого до среднего. Карбонизация средняя. Возможна лёгкая кремовость. Допустимо лёгкое согревание алкоголем.",
+            "comments": "Большинство образцов находится в стандартном диапазоне крепости. Слишком экстремальные варианты начинают напоминать крупный и сильно охмелённый porter, что ухудшает питкость.",
+            "history": "Вариация American IPA, впервые коммерчески сваренная Greg Noonan под названием Blackwatch IPA около 1990 года. Наибольшую популярность стиль получил в Тихоокеанском Северо-Западе и Южной Калифорнии в начале-середине 2000-х, а к началу 2010-х стал модной волной, после чего в США заметно утратил видимость.",
+            "characteristic_ingredients": "Обезгореченные обжаренные солода. Подходит любой американский или иной New World хмель; новые сорта продолжают появляться, поэтому стиль не стоит жёстко ограничивать только уже привычными дескрипторами.",
+            "style_comparison": "По балансу это American IPA или Double IPA с очень сдержанной обжаренностью, близкой по функции к тому, что встречается в Schwarzbier. Не такой насыщенный и обжаренный, как American Stout и American Porter; тело легче, а питкость и гладкость выше."
+          },
+          "vital_statistics": {
+            "og": "1.050 – 1.085",
+            "ibu": "50 – 90",
+            "fg": "1.010 – 1.018",
+            "srm": "25 – 40",
+            "abv": "5.5 – 9.0%"
+          },
+          "vital_statistics_text": "OG: 1.050 – 1.085 | IBUs: 50 – 90 | FG: 1.010 – 1.018 | SRM: 25 – 40 | ABV: 5.5 – 9.0%",
+          "commercial_examples_text": "21st Amendment Back in Black, Duck-Rabbit Hoppy Bunny ABA, Stone Sublimely Self-Righteous Black IPA",
+          "tags_en": [
+            "high-strength",
+            "dark-color",
+            "top-fermented",
+            "north-america",
+            "craft-style",
+            "ipa-family",
+            "specialty-family",
+            "bitter",
+            "hoppy"
+          ],
+          "tags_ru": [
+            "высокая крепость",
+            "тёмный цвет",
+            "верховое брожение",
+            "Северная Америка",
+            "крафтовый стиль",
+            "семейство IPA",
+            "семейство specialty IPA",
+            "горький",
+            "хмелевой"
+          ],
+          "source_guideline_page_start": 39,
+          "source_pdf_page_start": 55,
+          "translation_status": "completed"
+        },
+        {
+          "subtype_id": "21B-Brown",
+          "name_en": "Specialty IPA: Brown IPA",
+          "name_ru": "Специальный IPA: Brown IPA",
+          "description_short_ru": "Более солодовая и тёмная вариация IPA: такой же хмелевой и горький, как American IPA, но с оттенками тёмной карамели, шоколада, ириса и сухофруктов.",
+          "sections_en": {
+            "overall_impression": "Hoppy, bitter, and moderately strong like an American IPA, but with dark caramel, chocolate, toffee, or dark fruit character as in an American Brown Ale. Retaining the dryish finish and lean body that makes IPAs so drinkable, a Brown IPA is a little more flavorful and malty than an American IPA without being sweet or heavy.",
+            "aroma": "Moderate to moderately-high hop aroma, often with a stone fruit, tropical fruit, citrus, resin, pine, berry, or melon character. Medium-low to medium malty-sweet aroma mixes in well with the hop selection, and often features milk chocolate, cocoa, toffee, nuts, biscuits, dark caramel, toasted bread, or dark fruit character. Clean fermentation profile. Light esters optional. Light alcohol aroma optional.",
+            "appearance": "Color ranging from reddish-brown to dark brown but not black. Clear, if not opaque. Light haze optional. Medium-sized, cream-colored to tan head with good persistence.",
+            "flavor": "Medium to high hop flavor, same descriptors as aroma. Medium-low to medium clean, supportive malty flavor with same descriptors as aroma. The malt and hop choices should not produce flavor clashes. Medium-high to high bitterness, no harshness. Dry to medium finish, with a bitter, hoppy, and malty aftertaste. Low esters optional. Very low alcohol flavor optional. No highly roasted or burnt malt flavors. The malt should nearly balance the hop bitterness and flavor.",
+            "mouthfeel": "Medium-light to medium body, with a smooth texture. Medium to medium-high carbonation. No harshness. Light warmth optional.",
+            "comments": "Separated from American Brown Ale to better differentiate stronger, highly hopped examples from more balanced, standard-strength beers.",
+            "history": "See American Brown Ale.",
+            "characteristic_ingredients": "Similar to an American IPA, but with medium or dark crystal malts, lightly roasted chocolate-type malts, or other intermediate color character malts. May use sugar adjuncts, including brown sugar. Any American or New World hop character is acceptable, but the hops and character malts should not clash.",
+            "style_comparison": "A stronger and more bitter version of an American Brown Ale, with the dry balance of an American IPA. Has less of a roasted flavor than Black IPA, but more chocolate flavors than a Red IPA."
+          },
+          "sections_ru": {
+            "overall_impression": "По хмелевому напору, горечи и крепости напоминает American IPA, но показывает тёмную карамель, шоколад, ирис и сухофруктовый характер, свойственный American Brown Ale. Сохраняя суховатый финиш и сравнительно стройное тело, Brown IPA чуть более вкусонасыщенный и солодовый, чем American IPA, но не должен становиться тяжёлым или сладким.",
+            "aroma": "Хмелевой аромат — от умеренного до умеренно высокого; типичны косточковые и тропические фрукты, цитрус, смола, хвоя, ягоды, дыня. Солодовая сладость — от умеренно слабой до средней — хорошо вплетается в хмель и нередко даёт молочный шоколад, какао, ирис, орехи, сухое печенье, тёмную карамель, поджаренный хлеб или сухофруктовые оттенки. Брожение чистое. Лёгкие эфиры допустимы. Лёгкий алкоголь возможен.",
+            "appearance": "Цвет от красновато-коричневого до тёмно-коричневого, но не чёрного. Пиво прозрачное, если только не выглядит почти непрозрачным. Лёгкая дымка допустима. Пена средней величины, кремовая или желтовато-бежевая, с хорошей стойкостью.",
+            "flavor": "Хмелевой вкус — от среднего до высокого, с теми же дескрипторами, что и в аромате. Солодовая база — от умеренно слабой до средней, чистая и поддерживающая, с теми же оттенками, что и в аромате. Выбор солода и хмеля не должен порождать вкусовых конфликтов. Горечь от средне-высокой до высокой, без грубости. Финиш от сухого до умеренного, послевкусие горькое, хмелевое и солодовое одновременно. Низкие эфиры допустимы. Очень слабый алкоголь допустим. Сильно обжаренные и жжёные солода недопустимы. Солод должен почти уравновешивать хмелевую горечь и вкус.",
+            "mouthfeel": "Тело от умеренно лёгкого до среднего, текстура гладкая. Карбонизация от средней до средне-высокой. Жёсткость недопустима. Лёгкое алкогольное тепло допустимо.",
+            "comments": "Стиль выделен отдельно от American Brown Ale, чтобы лучше отделять более крепкие и сильно охмелённые версии от более ровных и стандартных по крепости образцов.",
+            "history": "См. American Brown Ale.",
+            "characteristic_ingredients": "Похоже на American IPA, но с использованием средних или тёмных crystal malt, лёгких шоколадных солодов или других character malt промежуточного цвета. Возможны сахарные adjuncts, включая коричневый сахар. Подходит любой американский или иной New World хмель, если он гармонирует с солодовым профилем.",
+            "style_comparison": "Более крепкая и более горькая версия American Brown Ale с сухим балансом American IPA. Менее обжаренный, чем Black IPA, но шоколаднее, чем Red IPA."
+          },
+          "vital_statistics": {
+            "og": "1.056 – 1.070",
+            "ibu": "40 – 70",
+            "fg": "1.008 – 1.016",
+            "srm": "18 – 35",
+            "abv": "5.5 – 7.5%"
+          },
+          "vital_statistics_text": "OG: 1.056 – 1.070 | IBUs: 40 – 70 | FG: 1.008 – 1.016 | SRM: 18 – 35 | ABV: 5.5 – 7.5%",
+          "commercial_examples_text": "Dogfish Head Indian Brown Ale, Harpoon Brown IPA, Russian River Janet’s Brown Ale",
+          "tags_en": [
+            "high-strength",
+            "dark-color",
+            "top-fermented",
+            "north-america",
+            "craft-style",
+            "ipa-family",
+            "specialty-family",
+            "bitter",
+            "hoppy"
+          ],
+          "tags_ru": [
+            "высокая крепость",
+            "тёмный цвет",
+            "верховое брожение",
+            "Северная Америка",
+            "крафтовый стиль",
+            "семейство IPA",
+            "семейство specialty IPA",
+            "горький",
+            "хмелевой"
+          ],
+          "source_guideline_page_start": 40,
+          "source_pdf_page_start": 56,
+          "translation_status": "completed"
+        },
+        {
+          "subtype_id": "21B-Red",
+          "name_en": "Specialty IPA: Red IPA",
+          "name_ru": "Специальный IPA: Red IPA",
+          "description_short_ru": "IPA с карамельными, ирисочными и иногда фруктовыми оттенками American Amber Ale, но с хмелевым, горьким и суховатым балансом.",
+          "sections_en": {
+            "overall_impression": "Hoppy, bitter, and moderately strong like an American IPA, but with some caramel, toffee, or fruit character as in an American Amber Ale. Retaining the dryish finish and lean body that makes IPAs so drinkable, a Red IPA is a little more flavorful and malty than an American IPA without being sweet or heavy.",
+            "aroma": "Moderate to strong hop aroma, often with a stone fruit, tropical fruit, citrus, resin, pine, berry, or melon character. Medium-low to medium malty-sweet aroma mixes in well with the hop selection, and often features medium to dark caramel, toffee, toasted bread, or dark fruit character. Clean fermentation profile. Light esters optional. Light alcohol aroma optional.",
+            "appearance": "Color ranging from light reddish-amber to dark reddish-copper. Clear. Light haze optional. Medium-sized, off-white to cream-colored head with good persistence.",
+            "flavor": "Medium to very high hop flavor, same descriptors as aroma. Medium-low to medium clean, supportive malty flavor with same descriptors as aroma. The malt and hop choices should not produce flavor clashes. Medium-high to very high bitterness, no harshness. Dry to medium finish, with a bitter, hoppy, and malty aftertaste. Low esters optional. Very low alcohol flavor optional. The malt should not overshadow the hop flavor and bitterness in the balance.",
+            "mouthfeel": "Medium-light to medium body, with a smooth texture. Medium to medium-high carbonation. No harshness. Light warmth optional.",
+            "comments": "Separated from American Amber Ale to better differentiate stronger, highly hopped examples from more balanced, standard-strength beers.",
+            "history": "A modern American craft beer style, based on American IPA but with the malt flavors of an American Amber Ale. See American Amber Ale.",
+            "characteristic_ingredients": "Similar to an American IPA, but with medium or dark crystal malts, possibly some character malts with a light toasty aspect. May use sugar adjuncts. Any American or New World hop character is acceptable, but the hops and character malts should not clash.",
+            "style_comparison": "A stronger, hoppier, more bitter version of American Amber Ale. Not as malty and sweet as an American Strong Ale. Drier, less alcohol, and not as malty as American Barleywine. Less chocolate and caramel than Brown IPA, but otherwise similar balance."
+          },
+          "sections_ru": {
+            "overall_impression": "По хмелевому характеру, горечи и крепости близок к American IPA, но добавляет немного карамели, ириса и иногда фруктовых оттенков, как в American Amber Ale. Сохраняя суховатый финиш и стройное тело, Red IPA немного более солодовый и вкусонасыщенный, чем обычный American IPA, но не должен быть ни сладким, ни тяжёлым.",
+            "aroma": "Хмелевой аромат — от умеренного до сильного; часто с тонами косточковых и тропических фруктов, цитруса, смолы, хвои, ягод и дыни. Солодовая сладость — от умеренно слабой до средней — хорошо сочетается с хмелем и нередко даёт оттенки карамели средней или тёмной степени, ириса, поджаренного хлеба и тёмных фруктов. Брожение чистое. Лёгкие эфиры допустимы. Лёгкий алкоголь тоже возможен.",
+            "appearance": "Цвет от светлого красновато-янтарного до тёмного красновато-медного. Пиво прозрачное. Лёгкая дымка допустима. Пена средней величины, от грязно-белой до кремовой, с хорошей стойкостью.",
+            "flavor": "Хмелевой вкус — от среднего до очень высокого, с теми же дескрипторами, что и в аромате. Солодовая поддержка — от умеренно слабой до средней — чистая и гармоничная, с теми же тонами, что и в аромате. Выбор солода и хмеля не должен давать вкусовых конфликтов. Горечь от средне-высокой до очень высокой, без грубости. Финиш от сухого до умеренного, послевкусие одновременно горькое, хмелевое и солодовое. Лёгкие эфиры допустимы. Очень слабый алкоголь возможен. В балансе солод не должен затмевать ни хмелевой вкус, ни горечь.",
+            "mouthfeel": "Тело от умеренно лёгкого до среднего, текстура гладкая. Карбонизация — от средней до средне-высокой. Грубость недопустима. Возможен лёгкий согревающий алкоголь.",
+            "comments": "Стиль выделен отдельно от American Amber Ale, чтобы отчётливее отделять более крепкие и сильно охмелённые версии от более сбалансированных образцов стандартной крепости.",
+            "history": "Современный американский крафтовый стиль, построенный на основе American IPA, но с солодовыми оттенками American Amber Ale. См. также American Amber Ale.",
+            "characteristic_ingredients": "Похож на American IPA, но с использованием средних или тёмных crystal malt, а иногда и характерных солодов с лёгкой тостовой гранью. Возможны сахарные adjuncts. Подходит любой американский или иной New World хмель, если он не спорит с солодовыми оттенками.",
+            "style_comparison": "Более крепкая, более хмелевая и более горькая версия American Amber Ale. Не такой солодовый и сладковатый, как American Strong Ale. Суше, с меньшим алкогольным акцентом и менее солодовый, чем American Barleywine. Шоколада и карамели здесь меньше, чем в Brown IPA, но общий баланс у стилей близок."
+          },
+          "vital_statistics": {
+            "og": "1.056 – 1.070",
+            "ibu": "40 – 70",
+            "fg": "1.008 – 1.016",
+            "srm": "11 – 17",
+            "abv": "5.5 – 7.5%"
+          },
+          "vital_statistics_text": "OG: 1.056 – 1.070 | IBUs: 40 – 70 | FG: 1.008 – 1.016 | SRM: 11 – 17 | ABV: 5.5 – 7.5%",
+          "commercial_examples_text": "Avery Hog Heaven, Cigar City Tocobaga Red IPA, Modern Times Blazing World, Tröegs Nugget Nectar",
+          "tags_en": [
+            "high-strength",
+            "amber-color",
+            "top-fermented",
+            "north-america",
+            "craft-style",
+            "ipa-family",
+            "specialty-family",
+            "bitter",
+            "hoppy"
+          ],
+          "tags_ru": [
+            "высокая крепость",
+            "янтарный цвет",
+            "верховое брожение",
+            "Северная Америка",
+            "крафтовый стиль",
+            "семейство IPA",
+            "семейство specialty IPA",
+            "горький",
+            "хмелевой"
+          ],
+          "source_guideline_page_start": 40,
+          "source_pdf_page_start": 56,
+          "translation_status": "completed"
+        },
+        {
+          "subtype_id": "21B-Rye",
+          "name_en": "Specialty IPA: Rye IPA",
+          "name_ru": "Специальный IPA: Rye IPA",
+          "description_short_ru": "Американский IPA с заметным ржаным солодом: пряный, зерновой, слегка перечный, с более сухим финишем и иногда чуть более кремовым телом.",
+          "sections_en": {
+            "overall_impression": "An American IPA with spicy, grainy rye malt. The rye gives a bready and peppery flavor, a creamier body, and a dry, grainy finish.",
+            "aroma": "Prominent to intense hop aroma, often with a stone fruit, tropical fruit, citrus, resin, pine, berry, or melon character. Low peppery rye malt aroma, along with a clean, background grainy maltiness. Clean fermentation profile. Light esters optional. Light alcohol aroma optional.",
+            "appearance": "Color ranging from medium gold to light reddish-amber. Clear. Light haze optional. Medium-sized, white to off-white head with good persistence.",
+            "flavor": "Medium to very high hop flavor, same descriptors as aroma. Low to medium-low clean, supportive malt possibly with light caramel or toast flavors. Low to moderate grainy, peppery, spicy rye flavor that adds to the dry finish. Medium-high to very high bitterness, no harshness. Dry, bitter, hoppy aftertaste. Low esters optional. Background alcohol flavor optional.",
+            "mouthfeel": "Medium-light to medium body. Smooth texture, may be lightly creamy. Medium to medium-high carbonation. No harshness. Low warmth optional.",
+            "comments": "A modern American craft beer variation of American IPA. Rye malt character should be noticeable, otherwise enter in 21A American IPA.",
+            "history": "A modern craft era variation of American IPA, popular among homebrewers.",
+            "characteristic_ingredients": "Like an American IPA, with a generous portion of rye malt. Any American or New World hop is acceptable, but the hops and malt should not clash. No caraway. No oak.",
+            "style_comparison": "Drier, slightly spicier, and slightly creamier than an American IPA, with more of a lingering bitterness and spiciness in the finish. Does not have the intense rye malt or Weizen yeast character of a Roggenbier."
+          },
+          "sections_ru": {
+            "overall_impression": "American IPA с пряным, зерновым ржаным солодом. Рожь даёт хлебный и слегка перечный характер, иногда делает тело более кремовым и почти всегда усиливает сухое, зерновое ощущение в финале.",
+            "aroma": "Хмелевой аромат от заметного до интенсивного; типичны косточковые и тропические фрукты, цитрус, смола, хвоя, ягоды, дыня. Аромат ржаного солода — слабый, перечный, зерновой — присутствует вместе с чистой фоновой солодовостью. Брожение чистое. Лёгкие эфиры допустимы. Лёгкий алкоголь возможен.",
+            "appearance": "Цвет от среднего золота до светлого красновато-янтарного. Пиво прозрачное. Лёгкая дымка допустима. Пена средней величины, белая или грязно-белая, с хорошей стойкостью.",
+            "flavor": "Хмелевой вкус — от среднего до очень высокого, с теми же дескрипторами, что и в аромате. Солодовая база — от слабой до умеренно слабой, чистая и поддерживающая, иногда с лёгкой карамелью или тостом. Ржаной вкус — от слабого до умеренного, зерновой, перечный, пряный — добавляет сухости в финиш. Горечь от средне-высокой до очень высокой, без грубости. Послевкусие сухое, горькое и хмелевое. Низкие эфиры допустимы. Фоновый алкоголь возможен.",
+            "mouthfeel": "Тело от умеренно лёгкого до среднего. Текстура гладкая, иногда слегка кремовая. Карбонизация от средней до средне-высокой. Жёсткость недопустима. Лёгкое тепло алкоголя допустимо.",
+            "comments": "Современная американская крафтовая вариация American IPA. Ржаной характер должен быть отчётливо заметен; если его нет, пиво логичнее относить к 21A American IPA.",
+            "history": "Современная крафтовая вариация American IPA, особенно популярная среди домашних пивоваров.",
+            "characteristic_ingredients": "По составу близок к American IPA, но с щедрой долей ржаного солода. Подходит любой американский или иной New World хмель, если он не конфликтует с ржаной пряностью. Тмин и дуб недопустимы.",
+            "style_comparison": "Суше, чуть прянее и чуть кремовее, чем American IPA; в финише дольше сохраняются горечь и ржаная пряность. При этом стиль не должен показывать настолько мощный ржаной солод или дрожжевой характер, как Roggenbier."
+          },
+          "vital_statistics": {
+            "og": "1.056 – 1.075",
+            "ibu": "50 – 75",
+            "fg": "1.008 – 1.014",
+            "srm": "6 – 14",
+            "abv": "5.5 – 8.0%"
+          },
+          "vital_statistics_text": "OG: 1.056 – 1.075 | IBUs: 50 – 75 | FG: 1.008 – 1.014 | SRM: 6 – 14 | ABV: 5.5 – 8.0%",
+          "commercial_examples_text": "Founders Red’s Rye IPA, Sierra Nevada Ruthless Rye",
+          "tags_en": [
+            "high-strength",
+            "amber-color",
+            "top-fermented",
+            "north-america",
+            "craft-style",
+            "ipa-family",
+            "specialty-family",
+            "bitter",
+            "hoppy"
+          ],
+          "tags_ru": [
+            "высокая крепость",
+            "янтарный цвет",
+            "верховое брожение",
+            "Северная Америка",
+            "крафтовый стиль",
+            "семейство IPA",
+            "семейство specialty IPA",
+            "горький",
+            "хмелевой"
+          ],
+          "source_guideline_page_start": 41,
+          "source_pdf_page_start": 57,
+          "translation_status": "completed"
+        },
+        {
+          "subtype_id": "21B-White",
+          "name_en": "Specialty IPA: White IPA",
+          "name_ru": "Специальный IPA: White IPA",
+          "description_short_ru": "Освежающая фруктово-пряная вариация American IPA с более светлым цветом, меньшим телом и дрожжевыми либо пряными чертами Witbier.",
+          "sections_en": {
+            "overall_impression": "A fruity, spicy, refreshing version of an American IPA, but with a lighter color, less body, and featuring the distinctive yeast or spice additions typical of a Witbier.",
+            "aroma": "Moderate esters, often orange, grapefruit, apricot, or sometimes banana. Light spices optional, usually coriander, orange peel, pepper, or clove. Medium-low to medium hop aroma, often stone fruit, citrus, or tropical fruit. Esters and spices may reduce perception of hop aroma. Low neutral, grainy, or bready malt. Light alcohol aroma optional.",
+            "appearance": "Pale to deep golden color. Typically hazy. Moderate to large, dense white head that persists.",
+            "flavor": "Moderate to high esters, medium-low to medium-high hop flavor, and light spices, all with the same descriptors as aroma. Light malt flavor, perhaps a bit bready. High bitterness. Moderately dry, refreshing finish. Background alcohol flavor optional.",
+            "mouthfeel": "Medium-light body. Medium to medium-high carbonation. Light spice astringency optional. Low warmth optional.",
+            "comments": "A craft beer interpretation of American IPA crossed with a Witbier. Spice impression may come from Belgian yeast, spice additions, or both.",
+            "history": "American craft brewers developed the style as a late winter or spring seasonal beer to appeal to Witbier and IPA drinkers alike.",
+            "characteristic_ingredients": "Pale and wheat malts, Belgian Witbier yeast, citrusy American type hops. Coriander and orange peel optional.",
+            "style_comparison": "Bitter, hoppy, and stronger like an American IPA but fruity, spicy, and light like a Witbier. Typically late hops are not as prominent as in American IPA."
+          },
+          "sections_ru": {
+            "overall_impression": "Фруктовая, пряная и освежающая вариация American IPA, но более светлая по цвету, менее плотная по телу и с выраженными дрожжевыми либо пряными чертами, характерными для Witbier.",
+            "aroma": "Эфиры от умеренных до высоких, часто напоминают апельсин, грейпфрут, абрикос, иногда банан. Лёгкие пряности допустимы; обычно это кориандр, апельсиновая цедра, перец или гвоздика. Хмелевой аромат — от умеренно слабого до среднего, часто косточковый, цитрусовый или тропический. Эфиры и пряности могут слегка приглушать восприятие хмеля. Солодовая база слабая, нейтральная, зерновая или слегка хлебная. Лёгкий алкоголь возможен.",
+            "appearance": "Цвет от бледного до насыщенно-золотистого. Обычно пиво мутноватое. Пена от умеренной до крупной, плотная, белая и стойкая.",
+            "flavor": "Эфиры — от умеренных до высоких; хмелевой вкус — от умеренно слабого до умеренно высокого; пряности лёгкие. Все они обычно повторяют те же дескрипторы, что и в аромате. Солодовый вкус лёгкий, иногда слегка хлебный. Горечь высокая. Финиш умеренно сухой и освежающий. Фоновый алкоголь допустим.",
+            "mouthfeel": "Тело умеренно лёгкое. Карбонизация от средней до средне-высокой. Возможна лёгкая терпкость от пряностей. Слабое согревание алкоголем допустимо.",
+            "comments": "Крафтовая интерпретация скрещивания American IPA и Witbier. Ощущение пряности может происходить как от бельгийских дрожжей, так и от прямого внесения специй — либо от обоих факторов сразу.",
+            "history": "Американские крафтовые пивовары развили стиль как сезонное пиво конца зимы или весны, рассчитанное одновременно на любителей Witbier и IPA.",
+            "characteristic_ingredients": "Светлые и пшеничные солода, бельгийские дрожжи для Witbier, американский хмель цитрусового направления. Кориандр и апельсиновая цедра допустимы.",
+            "style_comparison": "Такой же горький, хмелевой и сравнительно крепкий, как American IPA, но при этом более фруктовый, пряный и лёгкий, как Witbier. Поздний хмель обычно выражен не так ярко, как в классическом American IPA."
+          },
+          "vital_statistics": {
+            "og": "1.056 – 1.065",
+            "ibu": "40 – 70",
+            "fg": "1.010 – 1.016",
+            "srm": "5 – 6",
+            "abv": "5.5 – 7.0%"
+          },
+          "vital_statistics_text": "OG: 1.056 – 1.065 | IBUs: 40 – 70 | FG: 1.010 – 1.016 | SRM: 5 – 6 | ABV: 5.5 – 7.0%",
+          "commercial_examples_text": "Lagunitas A Little Sumpin’ Sumpin’ Ale, New Belgium Accumulation",
+          "tags_en": [
+            "high-strength",
+            "pale-color",
+            "top-fermented",
+            "north-america",
+            "craft-style",
+            "ipa-family",
+            "specialty-family",
+            "bitter",
+            "hoppy",
+            "spice"
+          ],
+          "tags_ru": [
+            "высокая крепость",
+            "светлый цвет",
+            "верховое брожение",
+            "Северная Америка",
+            "крафтовый стиль",
+            "семейство IPA",
+            "семейство specialty IPA",
+            "горький",
+            "хмелевой",
+            "пряный"
+          ],
+          "source_guideline_page_start": 41,
+          "source_pdf_page_start": 57,
+          "translation_status": "completed"
+        },
+        {
+          "subtype_id": "21B-Brut",
+          "name_en": "Specialty IPA: Brut IPA",
+          "name_ru": "Специальный IPA: Brut IPA",
+          "description_short_ru": "Очень светлый и сухой IPA с крайне высокой карбонизацией, современным ярким хмелем и ощущением, напоминающим игристое белое вино.",
+          "sections_en": {
+            "overall_impression": "A very pale, hop-forward American IPA variant with a bone-dry finish, very high carbonation, and a restrained bitterness level. Can be suggestive of a sparkling white wine or Champagne. The hop character is modern, and emphasizes flavor and aroma dimensions.",
+            "aroma": "Moderately high to intense hop aroma, very bright and hop-forward in the balance. Modern American and New World hop varieties provide a wide range of possible characteristics, such as tropical, stone fruit, citrusy, or white grape, but not grassy, vegetal, or herbal. Malt is subtle, neutral, and in the background, but never caramelly or overly corny-sweet. A light, clean alcohol note is optional. Very clean fermentation character; should not be yeasty.",
+            "appearance": "Very pale color, ranging from very pale straw to very light gold. Crystal clear but a touch of haze is acceptable. High to very high carbonation gives a massive, rocky, billowy, white head with tight, persistent bubbles.",
+            "flavor": "High to very high hop flavor, same descriptors as aroma. Low to very low neutral malt character, subtle in the balance. No strong malt flavors, no caramel. Perceived bitterness is low to very low due to the bone-dry finish and very high carbonation. Neutral to slightly fruity fermentation profile. No diacetyl. Dry to very dry finish with a fresh, hoppy aftertaste, and a clean bitterness.",
+            "mouthfeel": "Light to very light body with a spritzy carbonation (high to very high), reminiscent of a sparkling white wine. No bitter, harsh, hop-derived astringency. Alcohol warmth may be present but should never be hot.",
+            "comments": "Original concept was a sparkling wine-like IPA, although the hop character now varies more widely. Very low final gravity and high carbonation makes balance critical, often requiring a surprisingly low measured bitterness. ‘Brut’ is a wine term indicating dryness. Used incorrectly, added enzymes can cause diacetyl, which is always a flaw.",
+            "history": "A modern craft beer style originating in 2017 at the (now closed) Social Kitchen & Brewery in San Francisco as a west coast reaction to the rising trend of east coast hazy and juicy IPAs as well as thick and sweet so-called milkshake IPAs. The style is still evolving and changing (and perhaps dying, as the beer was quite faddish in 2018-2019 in the US). Most versions seem to be morphing into low-calorie IPAs.",
+            "characteristic_ingredients": "Pilsner or very pale base malts with up to 40% adjuncts. No crystal malt or lactose. Enzymes, such as amyloglucosidase. Highly aromatic, oil-heavy, modern American or New World hops used in a variety of late-hopping or post-boil procedures to emphasize hop aroma and flavor and to minimize bitterness. Neutral yeast.",
+            "style_comparison": "Less malt flavor, bitterness, and color than an American IPA, and much drier and more highly carbonated. Dry-hopped like an American IPA. Similar aroma and flavor as a Hazy IPA but without sweetness and with much less haze. Very pale, highly carbonated, and dry like a Belgian Golden Strong Ale but not as strong and without Belgian yeast character."
+          },
+          "sections_ru": {
+            "overall_impression": "Очень светлая, хмелевая вариация American IPA с абсолютно сухим финишем, очень высокой карбонизацией и сдержанной по ощущению горечью. Может напоминать игристое белое вино или шампанское. Хмелевой профиль современный и строится прежде всего на аромате и вкусе, а не на грубой горечи.",
+            "aroma": "Хмелевой аромат от умеренно высокого до интенсивного, очень яркий и явно доминирующий в балансе. Современные американские и New World сорта могут давать тропические, косточковые, цитрусовые тона или даже белый виноград, но не должны уходить в травянистость, овощность или грубую зелень. Солод едва заметный, нейтральный и фоновый, без карамели и без навязчивой кукурузной сладости. Лёгкий чистый алкоголь допустим. Брожение очень чистое; дрожжевой характер неуместен.",
+            "appearance": "Цвет очень светлый: от почти бесцветной соломы до очень светлого золота. Пиво должно быть кристально чистым, хотя едва заметная дымка допустима. Очень высокая карбонизация создаёт массивную, каменистую, пышную белую пену с плотными и стойкими пузырьками.",
+            "flavor": "Хмелевой вкус высокий или очень высокий, с теми же дескрипторами, что и в аромате. Солодовый характер низкий или очень низкий, нейтральный и лишь слегка заметный в балансе. Выраженной солодовости и карамели быть не должно. Из-за сверхсухого финиша и очень высокой карбонизации воспринимаемая горечь кажется низкой или очень низкой. Профиль брожения нейтральный либо слегка фруктовый. Диацетил недопустим. Финиш сухой или очень сухой, послевкусие свежее, хмелевое, с чистой горечью.",
+            "mouthfeel": "Тело от лёгкого до очень лёгкого. Карбонизация искристая, высокая или очень высокая, и напоминает игристое белое вино. Грубая горькая терпкость от хмеля недопустима. Алкогольное тепло возможно, но ни в коем случае не должно быть горячим.",
+            "comments": "Первоначальная идея заключалась в создании IPA, напоминающего игристое вино, хотя сегодня хмелевой характер внутри стиля может быть шире. Очень низкая конечная плотность и высокая карбонизация делают баланс критически важным, поэтому фактическая измеренная горечь часто оказывается неожиданно низкой. Термин “brut” пришёл из винной терминологии и обозначает сухость. При неправильной работе с ферментными добавками может появляться диацетил, а это всегда дефект.",
+            "history": "Современный крафтовый стиль, возникший в 2017 году в сан-францисской Social Kitchen & Brewery, ныне закрытой. Он был реакцией западного побережья США на растущую популярность восточных hazy и juicy IPA, а также густых и сладких так называемых milkshake IPA. Стиль всё ещё меняется и, возможно, уже теряет актуальность: в США пик моды на него пришёлся на 2018–2019 годы. Многие версии со временем эволюционировали в сторону низкокалорийных IPA.",
+            "characteristic_ingredients": "Pilsner malt или очень светлый базовый солод с добавлением adjuncts до 40%. Crystal malt и лактоза недопустимы. Используются ферменты, например amyloglucosidase. Современный ароматичный американский или New World хмель с высоким содержанием масел вносится преимущественно поздно или после кипа, чтобы подчеркнуть аромат и вкус и минимизировать горечь. Дрожжи нейтральные.",
+            "style_comparison": "Меньше солодового вкуса, цвета и воспринимаемой горечи, чем у American IPA; пиво заметно суше и значительно более газированное. Dry hopping используется так же, как в American IPA. По аромату и вкусу может напоминать Hazy IPA, но без сладковатости и с куда меньшей мутностью. По сухости, бледности и карбонизации местами похож на Belgian Golden Strong Ale, но менее крепок и лишён бельгийского дрожжевого характера."
+          },
+          "vital_statistics": {
+            "og": "1.046 – 1.057",
+            "ibu": "20 – 30",
+            "fg": "0.990 – 1.004",
+            "srm": "2 – 4",
+            "abv": "6.0 – 7.5%"
+          },
+          "vital_statistics_text": "OG: 1.046 – 1.057 | IBUs: 20 – 30 | FG: 0.990 – 1.004 | SRM: 2 – 4 | ABV: 6.0 – 7.5%",
+          "commercial_examples_text": "Drake’s Brightside Extra Brut IPA, Fair State Brewing Co-Op The Brut Squad, Ommegang Brut IPA",
+          "tags_en": [
+            "high-strength",
+            "pale-color",
+            "top-fermented",
+            "north-america",
+            "craft-style",
+            "ipa-family",
+            "specialty-family",
+            "bitter",
+            "hoppy"
+          ],
+          "tags_ru": [
+            "высокая крепость",
+            "светлый цвет",
+            "верховое брожение",
+            "Северная Америка",
+            "крафтовый стиль",
+            "семейство IPA",
+            "семейство specialty IPA",
+            "горький",
+            "хмелевой"
+          ],
+          "source_guideline_page_start": 41,
+          "source_pdf_page_start": 57,
+          "translation_status": "completed"
+        }
+      ],
+      "general_notes_en": "Specialty IPA is a competition entry category, not a distinct style. Beers entered here are not experimental beers; they are a collection of currently-produced types of beer that may or may not have any market longevity. This category also allows for expansion, so potential future IPA variants (St. Patrick’s Day Green IPA, Romulan Blue IPA, Zima Clear IPA, etc.) have a place to be entered without rewriting the style guidelines. The only common element is that they have the balance and overall impression of an IPA (typically, an American IPA) but with some minor tweak.\n\nThe term ‘IPA’ is used as a singular descriptor of a type of hoppy, bitter beer. It is not meant to be spelled out as ‘India Pale Ale’ when used in the context of a Specialty IPA. None of these beers ever historically went to India, and many aren’t pale. But the craft beer market knows what to expect in balance when a beer is described as an ‘IPA’ – so the modifiers used to differentiate them are based on that concept alone.\n\nThe Specialty IPA category is not intended for Classic-style IPAs with added ingredients (such as fruit, spice, wood, smoke, grains, or sugars) – these should be entered in the appropriate Specialty-Type beer category (Fruit Beer, SHV Beer, etc.). The Specialty IPA styles are considered Classic Styles for entering in Specialty-Type category purposes. Classic-style IPAs with unique or special hops should still be entered in the appropriate Classic-style IPA style.",
+      "general_notes_ru": "Specialty IPA — это конкурсная категория, а не отдельный самостоятельный стиль. Сюда попадают не экспериментальные пива, а набор реально существующих на рынке разновидностей IPA, срок жизни которых может оказаться как долгим, так и краткосрочным. Категория специально оставлена расширяемой, чтобы будущие варианты IPA можно было заявлять без переписывания всего гайдлайна. Их объединяет одно: по балансу и общему впечатлению это всё ещё IPA, чаще всего близкий к American IPA, но с определённым стилистическим сдвигом.\n\nТермин “IPA” здесь используется как единичное обозначение хмелевого и горького типа пива; его не следует автоматически разворачивать в “India Pale Ale” именно в контексте Specialty IPA. Исторически ни один из этих вариантов не создавался для Индии, а многие из них к тому же вовсе не являются pale по цвету. Но современный крафтовый рынок уже считывает слово IPA как маркер определённого баланса, и все модификаторы к нему строятся именно на этой идее.\n\nКатегория Specialty IPA не предназначена для классических IPA с добавками вроде фруктов, специй, дерева, дыма, злаков или сахаров — такие пива следует относить в соответствующие specialty-type категории. При этом сами стили внутри Specialty IPA считаются classic styles для целей участия в specialty-type категориях. Классические IPA с необычными сортами хмеля всё равно должны заявляться в соответствующий классический подстиль IPA."
+    },
+    {
+      "bjcp_id": "21C",
+      "name_en": "Hazy IPA",
+      "name_ru": "Хейзи IPA",
+      "category_id": "21",
+      "category_en": "IPA",
+      "category_ru": "IPA",
+      "bjcp_heading": "21C. Hazy IPA",
+      "description_short_ru": "American IPA с очень интенсивным фруктовым хмелем, мягким телом, гладкой текстурой и выраженной мутностью; горечь ощущается мягче, чем у традиционных IPA, но хмель остаётся безусловной доминантой.",
+      "sections_en": {
+        "overall_impression": "An American IPA with intense fruit flavors and aromas, a soft body, smooth mouthfeel, and often opaque with substantial haze. Less perceived bitterness than traditional IPAs but always massively hop-forward.",
+        "aroma": "Intense hop aroma, with stone fruit, tropical fruit, citrus, or other fruity qualities; not grassy or herbal. Clean, neutral, grainy, or lightly bready malt in the background; no caramel or toast. Absence of any malt character is a fault. Neutral to fruity fermentation character. Esters from yeast and hops should not clash. A creamy, buttery, or acidic aroma is inappropriate. Light alcohol aroma optional.",
+        "appearance": "Color ranging from straw to very light amber, sometimes with an orange hue. Hazy, often opaque, clarity; should not be cloudy or murky. The opacity can add a ‘shine’ to the beer and make the color seem darker. Any visible floating hop matter, yeast clumps, or other particulates is a fault. Medium to rocky, meringue-like white head with high to very high retention.",
+        "flavor": "High to very high fruity hop flavor, same descriptors as aroma. Low to medium malt flavor, same descriptors as aroma. Low to medium-high perceived bitterness, often masked by the fuller body and soft, off-dry to medium finish. The hop character in the aftertaste should not be sharp or harsh. Neutral to fruity fermentation profile, supportive of the hops. Should not be sweet, although high ester levels and lower bitterness may sometimes give that impression. Background alcohol flavor optional.",
+        "mouthfeel": "Medium to medium-full body. Medium carbonation. Smooth, possibly silky. No harshness. Light warmth optional. The beer should not have a thick, creamy, viscous mouthfeel, an acidic twang, or a raw starch texture.",
+        "comments": "Also known as New England IPA or NEIPA. An emphasis on late hopping, especially dry-hopping, with hops with tropical fruit qualities lends the ‘juicy’ character for which this style is known.\n\nHeavy examples suggestive of milkshakes, creamsicles, or fruit smoothies are outside this style; IPAs should always be drinkable. Haziness comes from the interaction between polyphenols from dry-hopping and proteins from starchy grains, not suspended yeast, starch haze, or other techniques; a hazy shine is desirable, not a cloudy, murky mess.",
+        "history": "A modern craft beer style originating in the New England region of the United States as an American IPA variant. Alchemist Heady Topper is believed to be the original inspiration as the style grew in popularity during the 2010s. The style continues to evolve, including a trend towards lower bitterness and using the style as the base for other additions.",
+        "characteristic_ingredients": "Grist like an American IPA, but with more flaked grains and less caramel or specialty malts. American or New World hops with fruity characteristics. Neutral to estery yeast. Balanced to chloride-rich water. Heavily dry-hopped, partly during active fermentation, using a variety of hopping doses and temperatures to emphasize depth of hop aroma and flavor over bitterness. Biotransformation of hop oils during fermentation adds to the depth and fruit complexity.",
+        "style_comparison": "Has a fuller, softer mouthfeel, a more fruit-forward late hop expression, a more restrained perceived bitterness balance, and a hazier appearance than American IPA. Many modern American IPAs are fruity and somewhat hazy; examples with a dry, crisp finish, at most medium body, and high perceived bitterness should be entered as 21A American IPA. Noticeable additions of fruit, lactose, vanilla, etc. to increase the fruity, smooth character should be entered in a specialty category defined by the additives (e.g., 29A Fruit Beer, 29C Specialty Fruit Beer, 30D Specialty Spice Beer).",
+        "entry_instructions": ""
+      },
+      "sections_ru": {
+        "overall_impression": "American IPA с очень интенсивными фруктовыми ароматами и вкусами, мягким телом, гладким mouthfeel и, как правило, выраженной мутностью вплоть до почти полной непрозрачности. Воспринимаемая горечь ниже, чем у традиционных IPA, но хмель всё равно безусловно доминирует.",
+        "aroma": "Хмелевой аромат интенсивный, с косточковыми и тропическими фруктами, цитрусом и другими фруктовыми оттенками; травянистость и грубая зелень неуместны. На фоне — чистый, нейтральный, зерновой или слегка хлебный солод; карамель и тост недопустимы. Полное отсутствие солодовой опоры считается недостатком. Профиль брожения — от нейтрального до фруктового. Эфиры дрожжей и хмеля не должны конфликтовать. Сливочный, диацетильный или кислый аромат недопустим. Лёгкий алкоголь допустим.",
+        "appearance": "Цвет от соломенного до очень светло-янтарного, иногда с оранжевым оттенком. Мутность выраженная, часто вплоть до непрозрачности, но пиво не должно быть грязно-мутным или «болотным». Из-за плотной дымки цвет может казаться темнее и приобретать лёгкое внутреннее сияние. Видимые кусочки хмеля, сгустки дрожжей или иные плавающие частицы считаются дефектом. Пена белая, от средней до крупной, местами напоминает меренгу, очень стойкая.",
+        "flavor": "Фруктовый хмелевой вкус — от высокого до очень высокого, с теми же дескрипторами, что и в аромате. Солодовая часть — от слабой до средней, обычно в тех же зерново-хлебных рамках. Воспринимаемая горечь — от слабой до умеренно высокой и часто частично маскируется более полным телом и мягким финишем от off-dry до умеренного. Хмелевое послевкусие не должно быть резким или грубым. Профиль брожения от нейтрального до фруктового, поддерживающий хмель. Пиво не должно быть сладким, хотя высокий уровень эфиров и более мягкая горечь иногда могут давать такое впечатление. Фоновый алкоголь допустим.",
+        "mouthfeel": "Тело от среднего до умеренно полного. Карбонизация средняя. Текстура гладкая, иногда шелковистая. Грубость недопустима. Допустимо лёгкое тепло алкоголя. При этом пиво не должно быть слишком густым, кремовым и вязким, не должно иметь кислый оттенок или ощущение сырого крахмала.",
+        "comments": "Стиль также известен как New England IPA или NEIPA. Характерная «сочность» обычно рождается из акцента на позднем охмелении, особенно на dry hopping, с использованием сортов, дающих тропические фруктовые ноты.\n\nСлишком тяжёлые версии, напоминающие milkshake, creamsicle или фруктовый смузи, выходят за рамки стиля: IPA должен оставаться питким. Мутность здесь возникает из взаимодействия полифенолов dry hopping с белками крахмалистых злаков, а не из взвешенных дрожжей, крахмального помутнения или иных обходных техник. Нужна сияющая дымка, а не мутная грязная взвесь.",
+        "history": "Современный крафтовый стиль, возникший в регионе Новой Англии в США как вариация American IPA. Считается, что одним из первоисточников вдохновения был Alchemist Heady Topper, а настоящий рост популярности пришёлся на 2010-е годы. Стиль продолжает развиваться: заметен тренд к снижению воспринимаемой горечи и использованию этой базы для новых вариаций с добавками.",
+        "characteristic_ingredients": "Засыпь похожа на American IPA, но с большей долей хлопьевидных злаков и меньшим количеством карамельных или специальных солодов. Используется американский или иной New World хмель с ярким фруктовым профилем. Дрожжи — от нейтральных до умеренно эфирных. Вода — от сбалансированной до смещённой в сторону хлоридов. Пиво сильно dry-hop’ят, часто частично во время активного брожения, варьируя дозы и температуры, чтобы усилить глубину аромата и вкуса при более мягкой горечи. Биотрансформация хмелевых масел во время ферментации добавляет дополнительную фруктовую сложность.",
+        "style_comparison": "По сравнению с American IPA у стиля более полное и мягкое тело, более фруктовая поздняя хмелевая экспрессия, более сдержанная по ощущению горечь и заметно более мутный внешний вид. Многие современные American IPA сами по себе могут быть фруктовыми и слегка hazy; если пиво остаётся сухим, чётким по финишу, не выше среднего по телу и с высокой воспринимаемой горечью, его лучше относить к 21A American IPA. Выраженные добавки фруктов, лактозы, ванили и прочего, усиливающие фруктовую и мягкую сторону, уже переводят пиво в соответствующие specialty-категории.",
+        "entry_instructions": ""
+      },
+      "vital_statistics": {
+        "og": "1.060 – 1.085",
+        "ibu": "25 – 60",
+        "fg": "1.010 – 1.015",
+        "srm": "3 – 7",
+        "abv": "6.0 – 9.0%"
+      },
+      "vital_statistics_text": "OG: 1.060 – 1.085 | IBUs: 25 – 60 | FG: 1.010 – 1.015 | SRM: 3 – 7 | ABV: 6.0 – 9.0%",
+      "commercial_examples_text": "Belching Beaver Hazers Gonna Haze, Hill Farmstead Susan, Other Half Green Diamonds Double IPA, Pinthouse Electric Jellyfish, Tree House Julius, Trillium Congress Street, WeldWerks Juicy Bits",
+      "tags_en": [
+        "high-strength",
+        "pale-color",
+        "top-fermented",
+        "north-america",
+        "craft-style",
+        "ipa-family",
+        "bitter",
+        "hoppy"
+      ],
+      "source_guideline_page_start": 42,
+      "source_pdf_page_start": 58,
+      "tags_ru": [
+        "высокая крепость",
+        "светлый цвет",
+        "верховое брожение",
+        "Северная Америка",
+        "крафтовый стиль",
+        "семейство IPA",
+        "горький",
+        "хмелевой"
+      ],
+      "translation_status": "completed"
+    }
+  ]
+}

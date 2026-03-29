@@ -1,0 +1,292 @@
+{
+  "source": "2021_Guidelines_Beer_1.25.pdf",
+  "progress": {
+    "styles_total_in_guideline": 128,
+    "styles_translated_in_this_file": 4,
+    "translated_style_ids": [
+      "27-Pre-Prohibition-Lager",
+      "27-Pre-Prohibition-Porter",
+      "27-Roggenbier",
+      "27-Sahti"
+    ],
+    "translated_categories": [
+      "27"
+    ],
+    "next_recommended_batch": [
+      "28A Brett Beer",
+      "28B Mixed-Fermentation Sour Beer",
+      "28C Wild Specialty Beer",
+      "28D Straight Sour Beer",
+      "29A Fruit Beer",
+      "29B Fruit and Spice Beer",
+      "29C Specialty Fruit Beer",
+      "29D Grape Ale"
+    ]
+  },
+  "categories": [
+    {
+      "category_id": "27",
+      "category_en": "HISTORICAL BEER",
+      "category_ru": "Историческое пиво",
+      "overview_ru": "Категория объединяет стили, которые либо почти исчезли в современную эпоху, либо когда-то были куда заметнее, чем сейчас, и сегодня известны в основном по реконструкциям. Сюда же относятся традиционные и локальные сорта, имеющие культурное значение для отдельных стран и регионов. Попадание в эту категорию не означает, что стиль полностью исчез; чаще речь идёт о редком, мало представленном или заново открываемом стиле."
+    }
+  ],
+  "styles": [
+    {
+      "bjcp_id": "27-Pre-Prohibition-Lager",
+      "name_en": "Pre-Prohibition Lager",
+      "name_ru": "Лагер эпохи до Сухого закона",
+      "category_id": "27",
+      "category_en": "HISTORICAL BEER",
+      "category_ru": "Историческое пиво",
+      "bjcp_heading": "Historical Beer: Pre-Prohibition Lager",
+      "description_short_ru": "Хорошо охмелённый и заметно горький светлый американский лагер с добавками несоложёного сырья; может быть как более кукурузно-зерновым и насыщенным, так и более сухим, хрустким и нейтральным.",
+      "sections_en": {
+        "overall_impression": "A bitter and hoppy pale American adjunct lager, often with a robust, corny flavor profile, although more crisp and neutral-tasting versions exist.",
+        "aroma": "Low to medium grainy maltiness. Low to moderate corn-like sweetness optional. Medium to moderately-high rustic, floral, herbal, or spicy hop aroma, not modern fruity or citrusy varieties. Clean fermentation profile. May show some yeast character, similar to modern American Lager. Low DMS acceptable.",
+        "appearance": "Yellow to deep gold color. Substantial, long lasting white head. Bright clarity.",
+        "flavor": "Medium to medium-high maltiness with a grainy flavor. Optional corn-like roundness and impression of sweetness. Substantial hop bitterness stands up to the malt and lingers through the dry, soft to crisp finish. Medium to high rustic, floral, herbal, or spicy hop flavor. Medium to high bitterness that is clean not coarse. No harsh aftertaste. Generally neutral fermentation profile, but some yeast character similar to American Lager is allowable.",
+        "mouthfeel": "Medium to medium-full body with a moderately rich and creamy mouthfeel. Smooth and well-lagered. Medium to high carbonation levels.",
+        "comments": "Sometimes called Classic American Pilsner. Rice-based versions have a crisper, more neutral character, and lack corn-like flavors.",
+        "history": "An adaptation of continental lagers by immigrant German brewers in the mid-1800s in the US. Became most popular by the 1870s, but weakened in strength, bitterness, and popularity after Prohibition, and was largely replaced by Standard American Lager. Resurrected by homebrewers in the mid-1990s, but few commercial examples exist.",
+        "characteristic_ingredients": "Six-row barley. Corn or rice adjuncts, up to 30%. Traditional American or Continental hops. Modern American hops are inappropriate. Lager yeast.",
+        "style_comparison": "Similar balance and bitterness as modern Czech Premium Pale Lagers, but exhibiting native American grains and hops from the era before US Prohibition. More robust, bitter, and flavorful than modern pale American Lagers, often with higher alcohol.",
+        "entry_instructions": ""
+      },
+      "sections_ru": {
+        "overall_impression": "Светлый американский лагер с добавками несоложёного сырья, хорошо охмелённый и заметно горький. Нередко обладает выразительным кукурузным профилем, хотя встречаются и более сухие, хрусткие и нейтральные по вкусу версии.",
+        "aroma": "Солодовый аромат от слабого до среднего, с зерновым характером. Допустима слабая или умеренная кукурузная сладковатость. Хмелевой аромат от среднего до умеренно высокого, «старошкольный»: деревенский, цветочный, травянистый или пряный; современные цитрусовые и тропические тона здесь неуместны. Профиль брожения чистый. Возможен небольшой дрожжевой оттенок, напоминающий современный American Lager. Низкий уровень DMS допустим.",
+        "appearance": "Цвет от жёлтого до насыщенно-золотистого. Пена белая, обильная и стойкая. Пиво блестяще прозрачное.",
+        "flavor": "Солодовый вкус от среднего до умеренно высокого, с отчётливой зерновой основой. Возможны округлый кукурузный тон и впечатление лёгкой сладости. Выраженная хмелевая горечь уверенно держит солод и тянется через сухой, мягкий или хрусткий финиш. Хмелевой вкус от среднего до высокого, с деревенскими, цветочными, травянистыми или пряными оттенками. Горечь от средней до высокой, чистая, без грубости. Жёсткого послевкусия быть не должно. В целом профиль брожения нейтральный, но допустим лёгкий дрожжевой характер в духе American Lager.",
+        "mouthfeel": "Тело от среднего до умеренно полного, с довольно насыщенной и слегка кремовой текстурой. Пиво гладкое, хорошо лагерированное. Карбонизация средняя или высокая.",
+        "comments": "Иногда стиль называют Classic American Pilsner. Версии на рисе обычно суше, хрустче и нейтральнее, без выраженного кукурузного оттенка.",
+        "history": "Стиль возник как американская адаптация континентальных лагеров, которую в середине XIX века сформировали немецкие пивовары-иммигранты. Наибольшей популярности он достиг к 1870-м годам, но после Сухого закона стал слабее по крепости и горечи, начал терять позиции и в итоге в основном уступил место Standard American Lager. В середине 1990-х стиль заново открыли домашние пивовары, однако коммерческих примеров до сих пор немного.",
+        "characteristic_ingredients": "Шестирядный ячмень, а также кукуруза или рис в качестве добавок — до 30% засыпи. Используются традиционные американские или континентальные хмели; современные американские сорта здесь не подходят. Дрожжи лагерные.",
+        "style_comparison": "По балансу и уровню горечи стиль сопоставим с современным Czech Premium Pale Lager, но показывает американское зерно и хмель эпохи до Сухого закона. Он заметно насыщеннее, горче и выразительнее, чем современные светлые американские лагеры, и часто немного крепче.",
+        "entry_instructions": ""
+      },
+      "vital_statistics": {
+        "og": "1.044 – 1.060",
+        "ibu": "25 – 40",
+        "fg": "1.010 – 1.015",
+        "srm": "3 – 6",
+        "abv": "4.5 – 6.0%"
+      },
+      "vital_statistics_text": "OG: 1.044 – 1.060 | IBUs: 25 – 40 | FG: 1.010 – 1.015 | SRM: 3 – 6 | ABV: 4.5 – 6.0%",
+      "commercial_examples_text": "Capital Supper Club, Coors Batch 19, Little Harpeth Chicken Scratch, Schell Deer Brand, Urban Chestnut Forest Park Pilsner",
+      "tags_en": [
+        "standard-strength",
+        "pale-color",
+        "bottom-fermented",
+        "lagered",
+        "north-america",
+        "historical-style",
+        "pilsner-family",
+        "bitter",
+        "hoppy"
+      ],
+      "source_guideline_page_start": 57,
+      "source_pdf_page_start": 73,
+      "translation_status": "completed",
+      "tags_ru": [
+        "стандартная крепость",
+        "светлый цвет",
+        "низовое брожение",
+        "лагерирование",
+        "Северная Америка",
+        "исторический стиль",
+        "семейство пилснеров",
+        "горький",
+        "хмелевой"
+      ]
+    },
+    {
+      "bjcp_id": "27-Pre-Prohibition-Porter",
+      "name_en": "Pre-Prohibition Porter",
+      "name_ru": "Портер эпохи до Сухого закона",
+      "category_id": "27",
+      "category_en": "HISTORICAL BEER",
+      "category_ru": "Историческое пиво",
+      "bjcp_heading": "Historical Beer: Pre-Prohibition Porter",
+      "description_short_ru": "Исторический американский портер, выросший из английского прототипа, но переосмысленный в США с местным сырьём, добавками и нередко более чистым, почти лагерным профилем брожения.",
+      "sections_en": {
+        "overall_impression": "A historical American adaptation of English Porter by German immigrants using American ingredients, including adjuncts.",
+        "aroma": "Grainy malt aroma with low levels of chocolate, caramel, biscuit, burnt sugar, licorice, or slightly burnt malt. Low hop aroma. Low to moderate low levels of corn or DMS acceptable. No to very low esters. Diacetyl low to none. Clean lager fermentation profile acceptable.",
+        "appearance": "Medium to dark brown, though some examples can be nearly black in color, with ruby or mahogany highlights. Relatively clear. Light to medium tan head, persistent.",
+        "flavor": "Moderate grainy-bready malt flavor, with low levels of chocolate, burnt malt, burnt sugar, caramel, biscuit, licorice, molasses, or toast. Corn or DMS flavor acceptable at low to moderate levels. Medium-low to moderate bitterness. Low floral, spicy, or earthy hop flavor optional. Balance is typically even between malt and hops, with a moderately dry finish. Clean fermentation profile, but faint esters are allowable.",
+        "mouthfeel": "Medium-light to medium body. Moderate carbonation. Low to moderate creaminess. May have a slight dark malt astringency.",
+        "comments": "Also sometimes known as Pennsylvania Porter or East Coast Porter. This style does not describe colonial-era products.",
+        "history": "Commercially brewed in Philadelphia during the revolutionary period as an adaptation of English beer. Evolved later as German immigrants applied lager brewing methods during the second half of the 1800s. Prohibition ended most porter brewing in the US, except in a few regional Northeast and Mid-Atlantic states where it was most popular.",
+        "characteristic_ingredients": "Two row or six row malt. Low percentages of dark malts including black, chocolate, and brown malt (roasted barley is not typically used). Adjuncts are acceptable, including corn, brewers licorice, molasses, and porterine. More historical versions will have up to twenty percent adjuncts. Lager or ale yeast. Historical or traditional American bittering hops, American or German finishing hops.",
+        "style_comparison": "Smoother and less hoppy-bitter than a (modern) American Porter. Less caramelly and smoother than an English Porter with more of an adjunct or lager character. More bitterness and roast than an International Dark Lager.",
+        "entry_instructions": ""
+      },
+      "sections_ru": {
+        "overall_impression": "Историческая американская адаптация English Porter, сформированная под влиянием немецких иммигрантов и местного сырья, включая несоложёные добавки.",
+        "aroma": "В аромате зерновой солод с лёгкими оттенками шоколада, карамели, бисквита, жжёного сахара, лакрицы или слегка подгоревшего солода. Хмелевой аромат слабый. Кукурузные тона или DMS в слабом либо умеренно слабом количестве допустимы. Эфиры отсутствуют или находятся на очень низком уровне. Диацетил — от низкого до нулевого. Чистый, почти лагерный профиль брожения допустим.",
+        "appearance": "Цвет от среднего до тёмно-коричневого; отдельные образцы могут быть почти чёрными, с рубиновыми или махагоновыми отблесками. Прозрачность сравнительно хорошая. Пена светло- или средне-бежевая, стойкая.",
+        "flavor": "Во вкусе умеренный зерновой и хлебный солод, дополненный лёгкими оттенками шоколада, жжёного солода, жжёного сахара, карамели, бисквита, лакрицы, мелассы или тоста. Кукурузный тон или DMS допустимы на слабом либо умеренном уровне. Горечь от умеренно слабой до умеренной. Слабый цветочный, пряный или землистый хмелевой вкус возможен, но не обязателен. Обычно баланс близок к ровному между солодом и хмелем, а финиш умеренно сухой. Профиль брожения чистый, хотя едва заметные эфиры допустимы.",
+        "mouthfeel": "Тело от умеренно лёгкого до среднего. Карбонизация умеренная. Возможна слабая или умеренная кремовость. Допустима лёгкая терпкость тёмного солода.",
+        "comments": "Иногда стиль также называют Pennsylvania Porter или East Coast Porter. Это описание не относится к портерам колониальной эпохи.",
+        "history": "Коммерчески стиль варили в Филадельфии ещё в период Американской революции как местную адаптацию английского пива. Позднее, во второй половине XIX века, немецкие иммигранты придали ему новое развитие, применяя лагерные подходы к брожению. Сухой закон практически уничтожил производство портера в США, за исключением нескольких регионов Северо-Востока и Среднеатлантического побережья, где стиль держался дольше всего.",
+        "characteristic_ingredients": "Двухрядный или шестирядный солод. Тёмные солода в небольшой доле: black, chocolate и brown malt; жжёный ячмень обычно не используется. Допустимы добавки, в том числе кукуруза, пивоваренная лакрица, меласса и porterine. В более старых версиях доля добавок могла доходить до 20%. Дрожжи могут быть как лагерными, так и элевыми. Для горечи применяются исторические или традиционные американские хмели, а для ароматики — американские либо немецкие.",
+        "style_comparison": "Стиль мягче и менее хмелегорький, чем современный American Porter. Он менее карамельный и более гладкий, чем English Porter, при этом в нём сильнее ощущается характер добавок или лагерной технологии. По сравнению с International Dark Lager здесь больше горечи и больше обжаренных оттенков.",
+        "entry_instructions": ""
+      },
+      "vital_statistics": {
+        "og": "1.046 – 1.060",
+        "ibu": "20 – 30",
+        "fg": "1.010 – 1.016",
+        "srm": "20 – 30",
+        "abv": "4.5 – 6.0%"
+      },
+      "vital_statistics_text": "OG: 1.046 – 1.060 | IBUs: 20 – 30 | FG: 1.010 – 1.016 | SRM: 20 – 30 | ABV: 4.5 – 6.0%",
+      "commercial_examples_text": "Stegmaier Porter, Yuengling Porter",
+      "tags_en": [
+        "standard-strength",
+        "dark-color",
+        "any-fermentation",
+        "north-america",
+        "historical-style",
+        "porter-family",
+        "malty"
+      ],
+      "source_guideline_page_start": 58,
+      "source_pdf_page_start": 74,
+      "translation_status": "completed",
+      "tags_ru": [
+        "стандартная крепость",
+        "тёмный цвет",
+        "любой тип брожения",
+        "Северная Америка",
+        "исторический стиль",
+        "семейство портеров",
+        "солодовый"
+      ]
+    },
+    {
+      "bjcp_id": "27-Roggenbier",
+      "name_en": "Roggenbier",
+      "name_ru": "Роггенбир",
+      "category_id": "27",
+      "category_en": "HISTORICAL BEER",
+      "category_ru": "Историческое пиво",
+      "bjcp_heading": "Historical Beer: Roggenbier",
+      "description_short_ru": "Ржаная версия Dunkles Weissbier: более плотная и кремовая, с хлебно-перечным характером ржи, суховатым зерновым финишем и узнаваемым бананово-гвоздичным профилем weizen-дрожжей.",
+      "sections_en": {
+        "overall_impression": "A Dunkles Weissbier made with rye rather than wheat, but with a greater body and light finishing hops. The rye gives a bready and peppery flavor, a creamy body, and a dry, grainy finish that blends with the distinctive banana-and-clove weizen yeast character.",
+        "aroma": "Light to moderate spicy rye aroma (like black pepper) intermingled with light to moderate weizen yeast aromatics (spicy clove and fruity esters, either banana or citrus). Light spicy, floral, or herbal hops are acceptable.",
+        "appearance": "Light coppery-orange to very dark reddish or coppery-brown color. Large creamy off-white to tan head, quite dense and persistent, often thick and rocky. Cloudy, hazy appearance.",
+        "flavor": "Grainy, moderately-low to moderately-strong spicy-peppery rye flavor, often having a hearty flavor reminiscent of rye or pumpernickel bread. Medium to medium-low bitterness allows an initial malt sweetness (sometimes with a bit of caramel) to be tasted before yeast and peppery rye character takes over. Low to moderate banana-and-clove weizen yeast character, although the balance can vary. Medium-dry, grainy finish with a lightly bitter (from rye) aftertaste. Low to moderate spicy, herbal, or floral hop flavor acceptable, and can persist into aftertaste.",
+        "mouthfeel": "Medium to medium-full body. High carbonation. Moderately creamy.",
+        "comments": "Rye is a huskless grain and is difficult to mash, often resulting in a gummy mash texture that is prone to sticking. Rye has been characterized as having the most assertive flavor of all cereal grains. It is inappropriate to add caraway seeds, as some American brewers do; the spicy rye character is traditionally from the rye grain only.",
+        "history": "A specialty German rye beer originally brewed in Regensburg, Bavaria in 1988 by Schierlinger. After eventual purchase by Paulaner, the beer is now positioned as a regional brand and thus hard to find as an export.",
+        "characteristic_ingredients": "Malted rye, up to 60% of the grist. Pale and wheat malts. Crystal-type malts and debittered dark malts can be used. Weizen yeast. German or Czech hops. Patented decoction type mash.",
+        "style_comparison": "A more distinctive variant of a Dunkles Weissbier using malted rye instead of malted wheat. American Rye Beers will not have the weizen yeast character, and likely more hops.",
+        "entry_instructions": ""
+      },
+      "sections_ru": {
+        "overall_impression": "По сути это Dunkles Weissbier, сваренный не на пшенице, а на ржи, но с более плотным телом и лёгкой хмелевой поддержкой в финише. Рожь даёт хлебный и перечный характер, кремовую фактуру и суховатый зерновой финиш, который соединяется с узнаваемым бананово-гвоздичным профилем weizen-дрожжей.",
+        "aroma": "Ржаная пряность от слабой до умеренной, напоминающая чёрный перец, переплетается с лёгкой или умеренной ароматикой weizen-дрожжей: гвоздикой и фруктовыми эфирами, чаще бананом или цитрусом. Допустим слабый пряный, цветочный или травянистый хмелевой тон.",
+        "appearance": "Цвет от светлого медно-оранжевого до очень тёмного красновато-медного или медно-коричневого. Пена крупная, кремовая, от грязно-белой до бежевой, очень плотная и стойкая, часто густая и «скалистая». Внешний вид мутный, с дрожжевой дымкой.",
+        "flavor": "Во вкусе рожь проявляется зерново и пряно, от умеренно слабого до умеренно сильного уровня, нередко с сытным оттенком ржаного или пумперникелевого хлеба. Горечь от средней до умеренно слабой позволяет сначала почувствовать солодовую сладость, иногда с лёгкой карамелью, после чего на первый план выходят дрожжевой характер и перечная рожь. Бананово-гвоздичный профиль weizen-дрожжей — от слабого до умеренного, причём его баланс может варьироваться. Финиш средне-сухой, зерновой, с лёгкой горчинкой ржи в послевкусии. Допустим слабый или умеренный пряный, травянистый либо цветочный хмелевой вкус, который может тянуться и дальше.",
+        "mouthfeel": "Тело от среднего до умеренно полного. Карбонизация высокая. Текстура умеренно кремовая.",
+        "comments": "Рожь — зерно без шелухи, поэтому затирать её непросто: затор часто получается вязким и склонным к «залипанию». Считается, что рожь даёт один из самых напористых вкусов среди злаков. Добавление тмина, как это иногда делают американские пивовары, здесь неуместно: традиционная ржаная пряность должна исходить только от самого зерна.",
+        "history": "Этот специальный немецкий ржаной стиль впервые сварили в 1988 году в Регенсбурге, в Баварии, на пивоварне Schierlinger. Позже бренд перешёл к Paulaner и сейчас фактически существует как региональное пиво, поэтому за пределами Германии его встретить непросто.",
+        "characteristic_ingredients": "Соложёная рожь — до 60% засыпи. Также используются светлый солод и пшеничный солод. Допустимы карамельные солода и мягкие debittered dark malts. Дрожжи — weizen, хмели — немецкие или чешские. Традиционно уместно декокционное затирание.",
+        "style_comparison": "Это более самобытная версия Dunkles Weissbier, где пшеничный солод заменён соложёной рожью. У American Rye Beer не будет weizen-дрожжевого характера, и хмеля там обычно больше.",
+        "entry_instructions": ""
+      },
+      "vital_statistics": {
+        "og": "1.046 – 1.056",
+        "ibu": "10 – 20",
+        "fg": "1.010 – 1.014",
+        "srm": "14 – 19",
+        "abv": "4.5 – 6.0%"
+      },
+      "vital_statistics_text": "OG: 1.046 – 1.056 | IBUs: 10 – 20 | FG: 1.010 – 1.014 | SRM: 14 – 19 | ABV: 4.5 – 6.0%",
+      "commercial_examples_text": "Thurn und Taxis Roggen",
+      "tags_en": [
+        "standard-strength",
+        "amber-color",
+        "top-fermented",
+        "central-europe",
+        "historical-style",
+        "wheat-beer-family"
+      ],
+      "source_guideline_page_start": 58,
+      "source_pdf_page_start": 74,
+      "translation_status": "completed",
+      "tags_ru": [
+        "стандартная крепость",
+        "янтарный цвет",
+        "верховое брожение",
+        "Центральная Европа",
+        "исторический стиль",
+        "семейство пшеничного пива"
+      ]
+    },
+    {
+      "bjcp_id": "27-Sahti",
+      "name_en": "Sahti",
+      "name_ru": "Сахти",
+      "category_id": "27",
+      "category_en": "HISTORICAL BEER",
+      "category_ru": "Историческое пиво",
+      "bjcp_heading": "Historical Beer: Sahti",
+      "description_short_ru": "Крепкое традиционное финское фермерское пиво: сладковатое, тяжёлое и густое, обычно с рожью и можжевельником, а в дрожжевом профиле — с бананом и гвоздикой.",
+      "sections_en": {
+        "overall_impression": "A sweet, heavy, strong traditional Finnish farmhouse beer usually with rye and juniper, and a banana-clove yeast character.",
+        "aroma": "Sweet, worty malt impression. Grainy malt, caramel, and rye in background. Light alcohol aroma. High banana esters with moderate to moderately-high clove-like phenols. May have a low to moderate woody juniper character. Not sour. No hops.",
+        "appearance": "Yellow to dark brown color; most are medium to dark amber. Generally quite cloudy and turbid. Little head, due to low carbonation.",
+        "flavor": "Fairly sweet and often worty raw malt flavor, grainy with some caramel and toffee. Low bitterness. No hop flavor. Light woody or piney character acceptable. Moderate to strong banana and fruitiness, moderate clove and spiciness. Fairly sweet finish. Fresh, not sour.",
+        "mouthfeel": "Thick, viscous, and heavy with protein (no boil means no hot break). Nearly still to medium-low carbonation, similar to English cask ale. Warming from the alcohol level and young age, but this is often masked by sweetness.",
+        "comments": "The use of rye doesn’t mean that it should taste like caraway (a common flavor in rye bread). The juniper acts a bit like hops in the balance and flavor, providing a flavor and bitterness counterpoint to the sweet malt. Piney, woody juniper character more common than gin-like berries.",
+        "history": "An indigenous traditional style from Finland; a farmhouse tradition for at least 500 years, often brewed for festive occasions like summer weddings, and consumed within a week or two of brewing.",
+        "characteristic_ingredients": "Malted barley. Rye is common. Low hops, if any. Juniper boughs (with or without berries) used for lautering (traditionally in a hollowed-out log). Uses Finnish baker’s yeast in a fast, warm fermentation (German Weizen yeast is a reasonable substitute). Long step mash regime. Wort is not boiled.",
+        "style_comparison": "Passing resemblance to Weizenbocks, but sweet and thick with a rye and juniper character.",
+        "entry_instructions": ""
+      },
+      "sections_ru": {
+        "overall_impression": "Сладкое, плотное и крепкое традиционное финское фермерское пиво, обычно сваренное с рожью и можжевельником, с бананово-гвоздичным дрожжевым профилем.",
+        "aroma": "Впечатление сладкого, почти суслового солода. На заднем плане — зерновой солод, карамель и рожь. Возможен лёгкий алкогольный тон. Банановые эфиры выражены сильно, фенольная гвоздика — от умеренной до умеренно высокой. Возможен слабый или умеренный древесный оттенок можжевельника. Кислинки быть не должно. Хмель отсутствует.",
+        "appearance": "Цвет от жёлтого до тёмно-коричневого, но чаще всего — от среднего до тёмного янтарного. Пиво обычно заметно мутное, даже грубовато-туманное. Пены мало из-за низкой карбонизации.",
+        "flavor": "Вкус довольно сладкий и нередко слегка сусловой, с ощущением сырого солода, зерна, карамели и ириски. Горечь низкая. Хмелевого вкуса нет. Допустим лёгкий древесный или хвойный тон. Банановая фруктовость — от умеренной до сильной, гвоздичная пряность — умеренная. Финиш достаточно сладкий. Пиво должно восприниматься свежим, без кислинки.",
+        "mouthfeel": "Тело густое, вязкое и тяжёлое по ощущению, с повышенной белковой насыщенностью, поскольку сусло не кипятят и горячий осадок не формируется. Карбонизация от почти отсутствующей до умеренно слабой, ближе к английскому касковому элю. Чувствуется согревающее действие алкоголя и молодого возраста пива, хотя сладость часто его частично маскирует.",
+        "comments": "Наличие ржи не означает, что вкус должен напоминать тмин, как это бывает в ржаном хлебе. Можжевельник частично выполняет роль, похожую на хмель: он вносит вкусовой и горьковатый контрапункт к сладкому солоду. При этом чаще встречаются хвойно-древесные ноты ветвей, а не «джиновый» характер ягод.",
+        "history": "Это коренной традиционный стиль Финляндии, фермерская пивоваренная традиция как минимум с пятисотлетней историей. Чаще всего его варили к праздничным событиям, например к летним свадьбам, и выпивали в течение одной-двух недель после варки.",
+        "characteristic_ingredients": "Соложёный ячмень; рожь очень распространена. Хмеля мало или нет вовсе. Для фильтрации сусла используют можжевеловые ветви, иногда вместе с ягодами; традиционно это делали в выдолбленном бревне. Брожение быстрое и тёплое, на финских пекарских дрожжах; в качестве разумной замены можно использовать немецкие Weizen-дрожжи. Затирание — длительное, ступенчатое. Сусло не кипятят.",
+        "style_comparison": "Отдалённо стиль напоминает Weizenbock, но он заметно слаще и гуще, с отчётливым характером ржи и можжевельника.",
+        "entry_instructions": ""
+      },
+      "vital_statistics": {
+        "og": "1.076 – 1.120",
+        "ibu": "0 – 15",
+        "fg": "1.016 – 1.038",
+        "srm": "4 – 22",
+        "abv": "7.0 – 11.0%"
+      },
+      "vital_statistics_text": "OG: 1.076 – 1.120 | IBUs: 0 – 15 | FG: 1.016 – 1.038 | SRM: 4 – 22 | ABV: 7.0 – 11.0%",
+      "commercial_examples_text": "Now made year-round by several breweries in Finland.",
+      "tags_en": [
+        "high-strength",
+        "amber-color",
+        "top-fermented",
+        "central-europe",
+        "historical-style",
+        "spice"
+      ],
+      "source_guideline_page_start": 59,
+      "source_pdf_page_start": 75,
+      "translation_status": "completed",
+      "tags_ru": [
+        "высокая крепость",
+        "янтарный цвет",
+        "верховое брожение",
+        "Центральная Европа",
+        "исторический стиль",
+        "пряный"
+      ]
+    }
+  ]
+}

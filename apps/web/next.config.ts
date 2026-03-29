@@ -1,7 +1,7 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  transpilePackages: ["@nb/ui", "@nb/shared", "@nb/db"],
+  transpilePackages: ["@nb/ui", "@nb/shared", "@nb/db", "@nb/content"],
   webpack: (config) => {
     config.ignoreWarnings = [
       ...(config.ignoreWarnings ?? []),

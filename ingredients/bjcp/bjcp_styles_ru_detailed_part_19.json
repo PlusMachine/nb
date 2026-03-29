@@ -1,0 +1,355 @@
+{
+  "source": {
+    "document": "2021_Guidelines_Beer_1.25.pdf",
+    "guideline_edition": "BJCP 2021",
+    "translation_notes_ru": "Подробный перевод выполнен по оригинальному гайду BJCP 2021 с редакторской вычиткой на русском языке. Формулировки сохранены близко к оригиналу, но отредактированы так, чтобы звучать естественно для русскоязычного читателя, знакомого с пивной стилистикой и пивоварной терминологией."
+  },
+  "progress": {
+    "styles_total_in_guideline": 128,
+    "styles_translated_in_this_file": 5,
+    "translated_style_ids": [
+      "X1",
+      "X2",
+      "X3",
+      "X4",
+      "X5"
+    ],
+    "translated_categories": [
+      "X"
+    ],
+    "next_recommended_batch": [
+      "21B-Belgian",
+      "21B-Black",
+      "21B-Brown",
+      "21B-Red",
+      "21B-Rye",
+      "21B-White",
+      "21B-Brut"
+    ],
+    "counting_note_ru": "После добавления Appendix B в корпусе остаются только 7 подтипов Specialty IPA, если считать их как отдельные standalone-объекты. Их содержание уже переведено внутри 21B в part_10, но при желании их можно вынести в отдельный нормализованный файл."
+  },
+  "categories": [
+    {
+      "category_id": "X-AR",
+      "category_en": "Argentine Styles",
+      "category_ru": "Аргентинские стили",
+      "overview_ru": "Локальные аргентинские стили, выросшие из ограниченного доступа к сырью и переосмысления классических светлых и IPA-подобных элей через местные ингредиенты и пивоварную практику."
+    },
+    {
+      "category_id": "X-IT",
+      "category_en": "Italian Styles",
+      "category_ru": "Итальянские стили",
+      "overview_ru": "Итальянские локальные стили в Appendix B отражают тесную связь пивоварения с винодельческой культурой страны и с местными сортами винограда."
+    },
+    {
+      "category_id": "X-BR",
+      "category_en": "Brazilian Styles",
+      "category_ru": "Бразильские стили",
+      "overview_ru": "Бразильский локальный стиль в этом приложении показывает, как тёплый климат, свежие фрукты и современная кислая технология сформировали собственную южноамериканскую интерпретацию fruit sour beer."
+    },
+    {
+      "category_id": "X-NZ",
+      "category_en": "New Zealand Styles",
+      "category_ru": "Новозеландские стили",
+      "overview_ru": "Новозеландский локальный стиль строится вокруг выразительности местного хмеля: тропических, цитрусовых и травянистых оттенков, поданных в сухом, чистом и очень питком формате."
+    }
+  ],
+  "styles": [
+    {
+      "bjcp_id": "X1",
+      "name_en": "Dorada Pampeana",
+      "name_ru": "Дорада пампеана",
+      "category_id": "X-AR",
+      "category_en": "Argentine Styles",
+      "category_ru": "Аргентинские стили",
+      "bjcp_heading": "X1. Dorada Pampeana",
+      "description_short_ru": "Очень питкий, доступный аргентинский светлый эль с уклоном в солодовую сторону: мягкий, чистый, без грубой горечи, с деликатной фруктовостью и умеренным хмелем.",
+      "sections_en": {
+        "overall_impression": "Easy drinkability, malt-oriented.",
+        "aroma": "Light to moderate sweet malty aroma. Low to moderate fruity aroma is acceptable. May have a low to medium hop aroma. No diacetyl.",
+        "appearance": "Light yellow to deep gold color. Clear to brilliant. Low to medium head with good retention.",
+        "flavor": "Initial soft malty sweetness. Caramel flavors typically are absent. Mild to moderate hop flavor (usually Cascade), but should not be aggressive. Low to moderate hop bitterness, the balance is normally towards the malt. Half-dry to something sweet finish. No diacetyl.",
+        "mouthfeel": "Medium-light to medium body. Medium to high carbonation. Smooth without harsh bitterness or astringency.",
+        "comments": "It is difficult to achieve the balance.",
+        "history": "At the beginning Argentine homebrewers were very limited: there weren’t extract, they could use only pils malt, Cascade hops and dry yeast, commonly Nottingham, Windsor or Safale. With these ingredients, Argentine brewers developed a specific version of Blond Ale, named Dorada Pampeana.",
+        "characteristic_ingredients": "Usually only pale or pils malt, although may include low rates of caramelized malt. Commonly Cascade hops. Clean American yeast, slightly fruity British or Kölsch, usually packaged in cold.",
+        "style_comparison": "",
+        "entry_instructions": ""
+      },
+      "sections_ru": {
+        "overall_impression": "Очень питкое, доступное пиво с явным уклоном в солодовую сторону.",
+        "aroma": "Лёгкий или умеренный сладковато-солодовый аромат. Допустим слабый или умеренный фруктовый тон. Хмелевой аромат — от слабого до среднего. Диацетил недопустим.",
+        "appearance": "Цвет от светло-жёлтого до насыщенно-золотистого. Пиво прозрачное или блестяще прозрачное. Пена низкая или средняя, с хорошей стойкостью.",
+        "flavor": "Во вкусе сначала проявляется мягкая солодовая сладость. Карамельные оттенки обычно отсутствуют. Хмелевой вкус слабый или умеренный, чаще всего каскадовый, но не должен быть агрессивным. Горечь слабая или умеренная, баланс обычно смещён в солодовую сторону. Финиш полусухой или слегка сладковатый. Диацетил недопустим.",
+        "mouthfeel": "Тело от средне-лёгкого до среднего. Карбонизация средняя или высокая. Ощущение мягкое, без жёсткой горечи и без вяжущести.",
+        "comments": "Правильно собрать баланс в этом стиле непросто.",
+        "history": "На раннем этапе аргентинские домашние пивовары были сильно ограничены в сырье: экстрактов не было, в распоряжении фактически имелись только пильзенский солод, хмель Cascade и сухие дрожжи вроде Nottingham, Windsor или Safale. Из этих ингредиентов и выросла локальная версия Blond Ale, получившая имя Dorada Pampeana.",
+        "characteristic_ingredients": "Обычно используют только светлый или пильзенский солод, иногда — с небольшими долями карамельного солода. Наиболее типичен хмель Cascade. Дрожжи — чистые американские, слегка фруктовые британские или Kölsch; пиво обычно проходит холодное кондиционирование.",
+        "style_comparison": "",
+        "entry_instructions": ""
+      },
+      "vital_statistics": {
+        "og": "1.042 – 1.054",
+        "ibu": "15 – 22",
+        "fg": "1.009 – 1.013",
+        "srm": "3 – 5",
+        "abv": "4.3% – 5.5%"
+      },
+      "vital_statistics_text": "OG: 1.042 – 1.054 | IBU: 15 – 22 | FG: 1.009 – 1.013 | SRM: 3 – 5 | ABV: 4.3% – 5.5%",
+      "commercial_examples_text": "",
+      "tags_en": [
+        "south-america"
+      ],
+      "tags_ru": [
+        "Южная Америка"
+      ],
+      "source_guideline_page_start": 82,
+      "source_pdf_page_start": 98,
+      "translation_status": "completed",
+      "general_notes_en": "Suggested style placement: Category 18 (Pale American Beer). English rendering in the appendix: Pampas Golden Ale.",
+      "general_notes_ru": "Рекомендуемое размещение в соревнованиях: Category 18 (Pale American Beer). В английской части приложения стиль также дан как Pampas Golden Ale."
+    },
+    {
+      "bjcp_id": "X2",
+      "name_en": "IPA Argenta",
+      "name_ru": "IPA Аргента",
+      "category_id": "X-AR",
+      "category_en": "Argentine Styles",
+      "category_ru": "Аргентинские стили",
+      "bjcp_heading": "X2. IPA Argenta",
+      "description_short_ru": "Аргентинская версия IPA: заметно хмелевая и горькая, но при этом освежающая, умеренно крепкая и без жёсткости; ключевой признак стиля — высокая питкость при хорошем балансе.",
+      "sections_en": {
+        "overall_impression": "A decidedly hoppy and bitter, refreshing and moderately strong Argentine pale ale. The clue is drinkability without harshness and best balance.",
+        "aroma": "Intense hop aroma with a citrusy and floral character derived from Argentine hops. Some clean malty sweetness and caramel may be found in the background, but should be at a lower level than in English examples. Fruitiness from esters and light phenols from fermentation of wheat may also be detected in some versions, although a neutral fermentation character is usual. Some alcohol may be noted in stronger versions. No DMS. The diacetyl is a high demerit because it can cover aroma hops, and never should be present.",
+        "appearance": "Color ranges from medium gold to medium reddish copper; some versions can have an orange-ish tint. Should be clear, although unfiltered dry-hopped versions or with unmalted wheat may be little hazy. Good head stand, persistent.",
+        "flavor": "Hop flavor is medium to high, and should reflect an Argentine hop character: citrusy, grapefruit and tangerine peel must be dominant. May have some floral character like orange blossoms, or herbal and resinous, although it is less common and should only add complexity. Medium-high to very high hop bitterness, although the malt backbone will support the strong hop character and provide the best balance. Malt flavor should be low to medium, and is generally clean and malty sweet although some caramel or spicy flavors from wheat, malted or unmalted, are acceptable at low levels. No diacetyl. Low fruitiness is acceptable but not required. The bitterness may linger into the aftertaste but should not be harsh. Medium-dry to dry finish, refreshing. Some clean alcohol flavor can be noted in stronger versions.",
+        "mouthfeel": "Medium-light to medium-bodied mouthfeel without hop-derived astringency, although moderate to medium-high carbonation can combine with wheat to render an overall dry sensation in the presence of malt sweetness. Some smooth alcohol warming can and should be sensed in stronger (but not all) versions. Body is generally less than in English counterparts, and more dry than American counterparts.",
+        "comments": "",
+        "history": "An Argentine version of the historical English style, developed in 2013 from Somos Cerveceros Association meetings, when its distinctive characteristics were defined. Different from an American IPA in that it is brewed with wheat and using Argentine hops, with its unique flavor and aroma characteristic. Based on a citrus (from Argentine hop) and wheat pairing idea, like in a Witbier. Low amounts of wheat are similar to a Kölsch grist, as is some fruitiness from fermentation.",
+        "characteristic_ingredients": "Pale ale malt (well-modified and suitable for single-temperature infusion mashing) with up to 15% wheat, either malted or unmalted; Caramel malts should be limited and preferably be caramel wheat. Argentine hops like Cascade, Mapuche and Nugget are typical, although Spalt, Victoria or Bullion may be used to add complexity; American yeast that can give a clean or slightly fruity profile. Water character varies from soft to moderately sulfate.",
+        "style_comparison": "",
+        "entry_instructions": ""
+      },
+      "sections_ru": {
+        "overall_impression": "Заметно хмелевая и горькая, освежающая и умеренно крепкая аргентинская pale ale. Ключ к стилю — питкость без жёсткости и грамотно собранный баланс.",
+        "aroma": "Интенсивный хмелевой аромат с цитрусово-цветочным характером аргентинских хмелей. На заднем плане может присутствовать чистая солодовая сладость и немного карамели, но в меньшей степени, чем у английских версий. В некоторых вариантах допустимы эфиры и лёгкие фенольные оттенки, идущие от брожения с пшеницей, хотя в целом более типичен сравнительно нейтральный профиль брожения. В более крепких версиях может ощущаться немного алкоголя. DMS недопустим. Диацетил здесь серьёзный недостаток, потому что он глушит хмелевую ароматику; его быть не должно вовсе.",
+        "appearance": "Цвет от средне-золотистого до средне медно-красноватого; некоторые версии могут отдавать в оранжевый тон. Пиво должно быть прозрачным, хотя нефильтрованные dry-hopped версии или варианты с несоложёной пшеницей могут иметь лёгкую дымку. Пена хорошая, стойкая.",
+        "flavor": "Хмелевой вкус — от среднего до высокого и должен ясно отражать аргентинский хмелевой профиль: на первом плане цитрус, розовый грейпфрут и цедра мандарина. Возможны цветочные оттенки вроде флёрдоранжа, а также травянистые или смолистые ноты, но они встречаются реже и должны лишь добавлять сложности. Горечь от средне-высокой до очень высокой, однако солодовая основа поддерживает мощный хмелевой характер и удерживает пиво в балансе. Солодовый вкус — от слабого до умеренного, обычно чистый и слегка сладковато-солодовый; допустимы также слабые карамельные или пряноватые оттенки от пшеницы, соложёной или несоложёной. Диацетил недопустим. Лёгкая фруктовость допустима, но не обязательна. Горечь может тянуться в послевкусие, но не должна становиться грубой. Финиш умеренно сухой или сухой, освежающий. В более крепких версиях допустим мягкий чистый алкогольный тон.",
+        "mouthfeel": "Тело от средне-лёгкого до среднего, без хмелевой вяжущести. Карбонизация от умеренной до умеренно высокой; в сочетании с пшеницей она может усиливать ощущение сухости даже при наличии солодовой сладости. В более крепких версиях допустимо и даже ожидаемо мягкое согревающее алкогольное тепло, но не во всех образцах. По телу стиль обычно легче английских аналогов и суше американских.",
+        "comments": "",
+        "history": "Это аргентинская версия исторического английского стиля, сформированная в 2013 году в ходе встреч ассоциации Somos Cerveceros, где и были очерчены её отличительные черты. От American IPA стиль отличается добавлением пшеницы в засыпь и использованием аргентинских хмелей с собственным узнаваемым вкусом и ароматом. Идея опирается на сочетание цитрусового хмеля и пшеницы — по аналогии с тем, как это работает в Witbier. Небольшая доля пшеницы в засыпи местами напоминает Kölsch; сходным образом допустима и лёгкая фруктовость брожения.",
+        "characteristic_ingredients": "Основа — pale ale malt, хорошо модифицированный и пригодный для однотемпературного настойного затирания, плюс до 15% пшеницы, соложёной или несоложёной. Карамельные солода должны использоваться ограниченно; предпочтительнее карамельная пшеница. Типичные аргентинские хмели — Cascade, Mapuche и Nugget, хотя для дополнительной сложности могут применяться Spalt, Victoria или Bullion. Дрожжи — американские, дающие чистый или слегка фруктовый профиль. Вода — от мягкой до умеренно сульфатной.",
+        "style_comparison": "",
+        "entry_instructions": ""
+      },
+      "vital_statistics": {
+        "og": "1.055 – 1.065",
+        "ibu": "35 – 60",
+        "fg": "1.008 – 1.015",
+        "srm": "6 – 15",
+        "abv": "5.0 – 6.5%"
+      },
+      "vital_statistics_text": "OG: 1.055 – 1.065 | IBU: 35 – 60 | FG: 1.008 – 1.015 | SRM: 6 – 15 | ABV: 5.0 – 6.5%",
+      "commercial_examples_text": "Antares Ipa Argenta, Kerze Ipa Argenta",
+      "tags_en": [
+        "south-america"
+      ],
+      "tags_ru": [
+        "Южная Америка"
+      ],
+      "source_guideline_page_start": 82,
+      "source_pdf_page_start": 98,
+      "translation_status": "completed",
+      "general_notes_en": "Suggested style placement: Category 21 (IPA). English rendering in the appendix: Argentine IPA.",
+      "general_notes_ru": "Рекомендуемое размещение в соревнованиях: Category 21 (IPA). В английской части приложения стиль также дан как Argentine IPA."
+    },
+    {
+      "bjcp_id": "X3",
+      "name_en": "Italian Grape Ale",
+      "name_ru": "Итальянский виноградный эль",
+      "category_id": "X-IT",
+      "category_en": "Italian Styles",
+      "category_ru": "Итальянские стили",
+      "bjcp_heading": "X3. Italian Grape Ale",
+      "description_short_ru": "Итальянский эль, который может быть как освежающим, так и более сложным по характеру; его лицо формирует конкретный сорт винограда и то, как виноградная часть срастается с пивной основой.",
+      "sections_en": {
+        "overall_impression": "A sometimes refreshing, sometimes more complex Italian ale characterized by different varieties of grapes.",
+        "aroma": "Aromatic characteristics of a particular grape have to be noticeable but do should not overpower the other aromas. The grape character should be pleasant and should not have defects such as oxidation. Malt character is usually restrained and should not exhibit a roasty, stout-like profile. Hop aroma (floral, earthy) can range from medium-low to absent. Some examples can have a low wild character described as barnyard, earthy, goaty but should not be as intense as in a lambic/fruit lambic. No diacetyl.",
+        "appearance": "Color can range from light gold to copper but some examples can be brown. Reddish/ruby color is usually due to the use of red grape varieties. White to reddish head with generally a medium low retention. Clarity is generally good but some cloudiness may be present.",
+        "flavor": "As with aroma, grape character (must or wine-like) must be present and may range from medium-low to medium-high intensity. Varieties of grape can contribute differently on the flavor profile: in general stone/tropical fruit flavors (peach, pear, apricot, pineapple) can come from white grapes and red fruit flavors (e.g., cherry, strawberry) from red grape varieties. Further fruity character of fermentative origin is also common. Different kinds of special malts can be used but should be supportive and balanced, not so prominent as to overshadow the base beer. Strong roasted and/or chocolate character is inappropriate. Light sour notes, due to the use of grape, are common and may help to improve the drinkability but should not be prominent as in Sour ale/Lambic or similar. Oak flavors, along with some barnyard, earthy, goaty notes can be present but should not be predominant. Bitterness and hop flavors are low. Diacetyl is absent.",
+        "mouthfeel": "Medium-high carbonation improves the perception of aroma. Body is generally from low to medium and some acidity can contribute to increase the perception of dryness. Strong examples can show some warming but without being hot or solventy.",
+        "comments": "",
+        "history": "Initially brewed at Birrificio Montegioco and Birrificio Barley in 2006-2007, Italian Grape Ale (IGA) is now produced by many Italian craft breweries. It’s also becoming popular in US and other wine countries. It represents a communion between beer and wine promoted to the large local availability of different varieties of grapes across the country. They can be an expression of territory, biodiversity and creativity of the brewer. Normally seen as a specialty beer in the range of products of the brewery. Breweries call “Wild IGA” or “Sour IGA” any wild/sour version of the style.",
+        "characteristic_ingredients": "Pils in most of cases or pale base malt with some special malts (if any). Grape content can represent up to 40% of whole grist. Grape or grape must, sometimes extensively boiled before use, can be used at different stages: during boiling or more commonly during primary/secondary fermentation. Yeast can show a neutral character (more common) or a fruity/spicy profile (English and Belgian strains). Wine yeast can be used also in conjunction with other yeasts. Old World hop varieties, mainly German or English, are used in low quantities in order not to excessively characterize the beer.",
+        "style_comparison": "Similar to Fruit Beer but evolved as a standalone style due to the abundance of grapes varieties in Italy.",
+        "entry_instructions": ""
+      },
+      "sections_ru": {
+        "overall_impression": "Итальянский эль, который может быть как освежающим, так и более сложным по характеру; определяющую роль в нём играют разные сорта винограда.",
+        "aroma": "Ароматика конкретного сорта винограда должна быть заметной, но не подавлять остальные компоненты. Виноградный характер должен быть приятным, без дефектов вроде окисленности. Солодовая часть обычно сдержанная и не должна уходить в жареный, «стаутовый» профиль. Хмелевой аромат — цветочный или землистый — от средне-слабого до отсутствующего. У некоторых образцов возможен слабый дикий тон с нюансами скотного двора, землистости или козьей кожи, но не такой интенсивный, как у lambic или fruit lambic. Диацетил недопустим.",
+        "appearance": "Цвет — от светло-золотистого до медного, хотя некоторые версии могут быть и коричневатыми. Красноватый или рубиновый оттенок обычно связан с использованием красных сортов винограда. Пена от белой до красноватой, как правило со средней или чуть ниже средней стойкостью. Прозрачность обычно хорошая, хотя небольшая замутнённость возможна.",
+        "flavor": "Как и в аромате, виноградный характер — в виде сусловых или винных оттенков — должен присутствовать и может варьироваться от средне-слабого до средне-высокого. Разные сорта винограда по-разному влияют на вкус: белые сорта чаще дают косточково-фруктовые и тропические ассоциации — персик, грушу, абрикос, ананас, — а красные сорта склонны добавлять красные ягоды и фрукты вроде вишни или клубники. Нередко присутствует и дополнительная фруктовость брожения. Разные специальные солода допустимы, но они должны оставаться в поддерживающей роли и не затмевать базовое пиво. Выраженный жареный или шоколадный характер неуместен. Лёгкая кислинка, связанная с виноградом, встречается часто и может повышать питкость, но не должна быть столь заметной, как в sour ale, lambic и подобных стилях. Дубовые оттенки, а также лёгкие barnyard-, землистые или кожисто-козьи ноты допустимы, но не должны доминировать. Горечь и хмелевой вкус низкие. Диацетил отсутствует.",
+        "mouthfeel": "Карбонизация от средней до высокой усиливает восприятие ароматики. Тело обычно от лёгкого до среднего, а некоторая кислотность может дополнительно усиливать ощущение сухости. Более крепкие версии могут слегка согревать, но без горячего или растворительного характера.",
+        "comments": "",
+        "history": "Впервые стиль был сварен на Birrificio Montegioco и Birrificio Barley в 2006–2007 годах. Сегодня Italian Grape Ale (IGA) делают многие итальянские крафтовые пивоварни; стиль также набирает популярность в США и в других винодельческих странах. По сути, это форма встречи пива и вина, ставшая возможной благодаря широкому локальному выбору сортов винограда по всей Италии. Такой эль может выражать терруар, биоразнообразие и авторскую индивидуальность пивовара. Обычно он воспринимается как специальное, штучное пиво внутри линейки пивоварни. Дикие и кислые варианты производители обычно обозначают как Wild IGA или Sour IGA.",
+        "characteristic_ingredients": "Чаще всего основу составляет пильзенский или другой светлый базовый солод с небольшим количеством специальных солодов, если они вообще используются. Доля винограда может доходить до 40% от общей засыпи. Сам виноград или виноградное сусло, иногда предварительно долго уваренное, можно вносить на разных стадиях: во время кипячения, но чаще — в первичное или вторичное брожение. Дрожжи могут давать как нейтральный профиль, так и фруктово-пряный — например, английские или бельгийские штаммы. Винные дрожжи тоже допустимы, в том числе в сочетании с другими. Хмель — главным образом Old World, чаще немецкий или английский, и в небольших количествах, чтобы не перетягивать внимание на себя.",
+        "style_comparison": "Стиль близок к Fruit Beer, но в Италии он оформился в самостоятельную категорию благодаря богатству местных сортов винограда.",
+        "entry_instructions": ""
+      },
+      "vital_statistics": {
+        "og": "1.045 – 1.100",
+        "ibu": "6 – 30",
+        "fg": "1.005 – 1.015",
+        "srm": "4 – 25",
+        "abv": "4.5 – 12%"
+      },
+      "vital_statistics_text": "OG: 1.045 – 1.100 | IBUs: 6 – 30 | FG: 1.005 – 1.015 | SRM: 4 – 25 | ABV: 4.5 – 12%",
+      "commercial_examples_text": "Montegioco Open Mind, Birrificio Barley BB5-10, Birrificio del Forte Il Tralcio, Viess Beer al mosto di gewurtztraminer, CRAK IGA Cabernet, Birrificio Apuano Ninkasi, Luppolajo Mons Rubus",
+      "tags_en": [
+        "specialty-beer",
+        "fruit"
+      ],
+      "tags_ru": [
+        "специальное пиво",
+        "фруктовое"
+      ],
+      "source_guideline_page_start": 83,
+      "source_pdf_page_start": 99,
+      "translation_status": "completed",
+      "general_notes_en": "For uses outside Italy, see 29D Grape Ale.",
+      "general_notes_ru": "Для использования за пределами Италии BJCP рекомендует ориентироваться на стиль 29D Grape Ale."
+    },
+    {
+      "bjcp_id": "X4",
+      "name_en": "Catharina Sour",
+      "name_ru": "Катарина сауэр",
+      "category_id": "X-BR",
+      "category_en": "Brazilian Styles",
+      "category_ru": "Бразильские стили",
+      "bjcp_heading": "X4. Catharina Sour",
+      "description_short_ru": "Освежающее кислое пшеничное fruit beer с ярким свежим фруктовым профилем и чистой молочной кислотностью; низкая горечь, лёгкое тело и высокая карбонизация выводят фрукт на первый план.",
+      "sections_en": {
+        "overall_impression": "A refreshing fruited sour wheat beer with a vibrant fruit character and a clean lactic acidity. The restrained alcohol, light body, elevated carbonation, and lack of perceived bitterness allows the fresh fruit to be highlighted. The fruit is often, but not always, tropical in nature.",
+        "aroma": "Medium to high fruit character, immediately noticeable and recognizable. A clean lactic sourness, low to medium, supports the fruit. Neutral malt typically, but can have low grainy or bready notes in support. Clean fermentation profile with no wild or funky yeast character. No hop aroma. No sharp alcohol. Optional Spices, Herbs, and Vegetables should support the fruit if present.",
+        "appearance": "Color is often fairly pale – straw to gold. Medium to high white head with fair to good retention. The color of the beer and head can also take on the color of the fruit. Clarity can be quite clear to hazy. Effervescent.",
+        "flavor": "Medium to high fresh fruit flavor dominates, with a supportive but noticeable, low to medium-high clean lactic sourness. The fruit should have a fresh character, not seeming cooked, jam-like, or artificial. The malt is often absent, but if present can have a low grainy or bready quality that never competes with the fruit or sourness. Hop bitterness below sensory threshold. Dry finish with a clean, tart, and fruity aftertaste. No hop flavor, acetic notes, diacetyl, or funky Brett flavors. Spices, Herbs, and Vegetables are optional in support of the fruit.",
+        "mouthfeel": "Low to medium-low body. Medium to high carbonation. No alcohol warmth. Low to medium-high acidity without being aggressively sour or astringent.",
+        "comments": "Best consumed fresh. The acidity may make the beer seem drier and lighter in body than the final gravity might suggest. Berliner Weisse beers with fruit should be entered as 29A Fruit Beer.",
+        "history": "Individual examples existed under different names previously in Brazil, but the style became popular under this name after it was formally defined in 2015 during a workshop between craft brewers and homebrewers in the Brazilian state of Santa Catarina. Featuring local ingredients well-suited to the warm climate, the style has spread to other states within Brazil and elsewhere, and is a very popular modern style in South America – both commercially and in homebrew competitions.",
+        "characteristic_ingredients": "Pilsner malt with wheat malt or unmalted wheat. Kettle sour technique with Lacto is most common, followed by fermentation with a neutral ale yeast. Fruit typically added late in fermentation. Fresh seasonal fruit, often tropical. Spices, Herbs, and Vegetables are optional, but always should support and enhance the fruit presentation.",
+        "style_comparison": "Like a stronger Berliner Weisse, but with fresh fruit and no Brett. Less sour than Lambic and Gueuze, and without Brett character. As of the 2021 Guidelines, similar beer could be entered in the broader 28C Wild Specialty Beer style.",
+        "entry_instructions": ""
+      },
+      "sections_ru": {
+        "overall_impression": "Освежающее кислое пшеничное пиво с фруктами, с ярким фруктовым характером и чистой молочной кислотностью. Сдержанная крепость, лёгкое тело, повышенная карбонизация и практически неощутимая горечь позволяют свежему фрукту выйти на первый план. Фруктовый профиль часто, но не обязательно, тропический.",
+        "aroma": "Фруктовый характер от среднего до высокого, сразу заметный и узнаваемый. Чистая молочная кислотность — от слабой до средней — поддерживает фрукт, а не спорит с ним. Солодовая база обычно нейтральная, хотя допустимы слабые зерновые или хлебные ноты в поддержке. Брожение чистое, без дикого или funky-дрожжевого характера. Хмелевой аромат отсутствует. Резкий алкоголь недопустим. Если используются специи, травы или овощные добавки, они должны только поддерживать фруктовый профиль.",
+        "appearance": "Цвет чаще довольно светлый — от соломенного до золотистого. Пена белая, от средней до высокой, со средней или хорошей стойкостью. Цвет пива и пены может смещаться в сторону цвета использованного фрукта. Прозрачность варьируется от вполне чистой до мутноватой. Пиво выглядит живым и искристым.",
+        "flavor": "Свежий фруктовый вкус от среднего до высокого доминирует, а чистая молочная кислотность от слабой до умеренно высокой заметно его поддерживает. Фрукт должен ощущаться свежим, а не варёным, джемовым или искусственным. Солодовая часть часто почти не читается, но если присутствует, то ограничивается слабым зерновым или хлебным фоном, который не должен конкурировать ни с фруктом, ни с кислотностью. Хмелевая горечь — ниже порога уверенного восприятия. Финиш сухой, с чистым, терпковато-кислым и фруктовым послевкусием. Недопустимы хмелевой вкус, уксусные ноты, диацетил и Brett-фанк. Специи, травы и овощные ингредиенты возможны только как поддержка фрукта.",
+        "mouthfeel": "Тело от лёгкого до средне-лёгкого. Карбонизация от средней до высокой. Алкогольного тепла быть не должно. Кислотность — от слабой до умеренно высокой, но без агрессивной резкости и без вяжущести.",
+        "comments": "Лучше всего пить это пиво свежим. Кислотность может делать его визуально суше и легче по телу, чем можно было бы ожидать по конечной плотности. Berliner Weisse с фруктами следует заявлять в 29A Fruit Beer.",
+        "history": "Отдельные образцы существовали в Бразилии и раньше под разными названиями, но именно как Catharina Sour стиль стал популярен после формального определения в 2015 году на встрече крафтовых и домашних пивоваров в штате Санта-Катарина. Благодаря локальным ингредиентам, хорошо подходящим для жаркого климата, стиль быстро распространился по другим штатам Бразилии и дальше за её пределы и сегодня является очень популярным современным южноамериканским стилем — как в коммерческом пиве, так и на домашних конкурсах.",
+        "characteristic_ingredients": "Основа — пильзенский солод в сочетании с пшеничным солодом или несоложёной пшеницей. Чаще всего используют kettle souring с Lacto, после чего сбраживают пиво нейтральными эльовыми дрожжами. Фрукты обычно добавляют на поздних стадиях брожения. Как правило, это свежие сезонные фрукты, нередко тропические. Специи, травы и овощные добавки возможны, но они всегда должны поддерживать и усиливать фруктовую подачу, а не перетягивать её на себя.",
+        "style_comparison": "Похоже на более крепкий Berliner Weisse, но со свежими фруктами и без Brett. Менее кислое, чем Lambic и Gueuze, и без Brett-характера. Начиная с гайда 2021, похожие сорта можно также заявлять в более широкой категории 28C Wild Specialty Beer.",
+        "entry_instructions": ""
+      },
+      "vital_statistics": {
+        "og": "1.039 – 1.048",
+        "ibu": "2 – 8",
+        "fg": "1.004 – 1.012",
+        "srm": "2 – 6",
+        "abv": "4.0 – 5.5%"
+      },
+      "vital_statistics_text": "OG: 1.039 – 1.048 | IBU: 2 – 8 | FG: 1.004 – 1.012 | SRM: 2 – 6 | ABV: 4.0 – 5.5%",
+      "commercial_examples_text": "Armada Daenerys, Blumenau Catharina Sour Pêssego, Istepô Goiabêra, Itajahy Catharina Araçá Sour, Liffey Coroa Real, UNIKA Tangerina Clemenules",
+      "tags_en": [
+        "craft-style",
+        "south-america",
+        "fruit",
+        "sour",
+        "specialty-beer"
+      ],
+      "tags_ru": [
+        "крафтовый стиль",
+        "Южная Америка",
+        "фруктовое",
+        "кислое",
+        "специальное пиво"
+      ],
+      "source_guideline_page_start": 84,
+      "source_pdf_page_start": 100,
+      "translation_status": "completed",
+      "general_notes_en": "Suggested style placement: Category 29 (Fruit Beer).",
+      "general_notes_ru": "Рекомендуемое размещение в соревнованиях: Category 29 (Fruit Beer)."
+    },
+    {
+      "bjcp_id": "X5",
+      "name_en": "New Zealand Pilsner",
+      "name_ru": "Новозеландский пилснер",
+      "category_id": "X-NZ",
+      "category_en": "New Zealand Styles",
+      "category_ru": "Новозеландские стили",
+      "bjcp_heading": "X5. New Zealand Pilsner",
+      "description_short_ru": "Светлое, сухое, золотистое и очень питкое пиво, в котором современный новозеландский хмель даёт тропические, цитрусовые, фруктовые и травянистые оттенки на фоне мягкой солодовой базы и чистого брожения.",
+      "sections_en": {
+        "overall_impression": "A pale, dry, golden-colored, cleanly-fermented beer showcasing the characteristic tropical, citrusy, fruity, grassy New Zealand-type hops. Medium body, soft mouthfeel, and smooth palate and finish, with a neutral to bready malt base provide the support for this very drinkable, refreshing, hop-forward beer.",
+        "aroma": "Medium to high hop aroma reflective of modern New Zealand hop varieties, often showcasing tropical fruit, citrus (lime, white grapefruit), gooseberry, honeydew melon, with a light green bell pepper or grassy aspect. Medium-low to medium malt in support, with a neutral to bready-crackery quality. Very low DMS acceptable but not required. Neutral, clean yeast character, optionally with a very light sulfury quality. The hop character should be most prominent in the balance, but some malt character must be evident.",
+        "appearance": "Straw to deep gold in color, but most examples are yellow-gold. Generally quite clear to brilliant clarity; haziness is a fault. Creamy, long-lasting white head.",
+        "flavor": "Medium to high hop bitterness, cleanly bitter not harsh, most prominent in the balance and lasting into the aftertaste. Medium to high hop flavor with similar characteristics as the aroma (tropical, citrus, gooseberry, melon, grass). Medium to medium-low malt flavor, grainy-sweet, bready, or crackery. Clean fermentation profile (fermentation esters are a fault). Dry to off-dry with a clean, smooth finish and bitter but not harsh aftertaste. The malt may suggest an impression of sweetness but the beer should not be literally sweet. The finish may be dry but not seem crisp or biting. The balance should always be bitter, but the malt flavor must be noticeable.",
+        "mouthfeel": "Medium to medium-light body. Medium to medium-high carbonation. Smoothness is the most prominent impression. Never harsh nor astringent.",
+        "comments": "The hop aromatics often have a similar quality as many New Zealand Sauvignon Blanc wines, with tropical fruit, grassy, melon, and lime aromatics. Often brewed as a hybrid style in New Zealand using a neutral ale yeast at cool temperatures. Limiting the sulfur content of the finished product is important since it can clash with the hop character.",
+        "history": "Largely defined by the original created at Emerson’s Brewery in the mid-1990s, New Zealand Pilsner has expanded in character as the varieties of New Zealand hops have expanded in number and popularity.",
+        "characteristic_ingredients": "New Zealand hop varieties, such as Motueka, Riwaka, Nelson Sauvin, often with Pacific Jade for bittering. Other new world varieties from Australia or the US may be used, if they have similar characteristics. Pale base malts, Pilsner or pale types, perhaps with a small percentage of wheat malt. Fairly low-mineral water, typically with more chloride than sulfate. Clean lager yeast or very neutral ale yeast.",
+        "style_comparison": "Compared to a German Pils, not as crisp and dry in the finish with a softer, maltier presentation and a fuller body. Compared to a Czech Premium Pale Lager, less malt complexity, a cleaner fermentation. Similar in balance to a Kolsch or British Golden Ale, but with a hoppier aroma. Compared to any of these German styles, showcasing New Zealand hop varieties with tropical, citrusy, fruity, grassy characteristics, often with a white wine-like character. Should not be as hoppy or bitter in balance as an IPA.",
+        "entry_instructions": ""
+      },
+      "sections_ru": {
+        "overall_impression": "Светлое, сухое, золотистое и чисто сброженное пиво, демонстрирующее характерный новозеландский хмель с тропическими, цитрусовыми, фруктовыми и травянистыми оттенками. Среднее тело, мягкое ощущение во рту, гладкое развитие вкуса и финиш, а также нейтральная или слегка хлебная солодовая база поддерживают этот очень питкий, освежающий и хмелеориентированный сорт.",
+        "aroma": "Хмелевой аромат от среднего до высокого, отражающий современные новозеландские сорта хмеля: часто с тропическими фруктами, цитрусом — лаймом и белым грейпфрутом, — крыжовником, медовой дыней и лёгким штрихом зелёного сладкого перца или свежескошенной травы. Солод — от средне-слабого до среднего — поддерживает аромат нейтральными, хлебно-крекерными оттенками. Очень слабый DMS допустим, но не обязателен. Дрожжевой профиль нейтральный и чистый; допустим едва заметный сернистый нюанс. В балансе хмель должен быть на первом плане, но солодовая часть всё равно обязана читаться.",
+        "appearance": "Цвет от соломенного до насыщенно-золотистого, хотя большинство примеров находятся в жёлто-золотистой гамме. Прозрачность высокая, вплоть до блестящей; заметная мутность считается недостатком. Пена белая, кремовая, стойкая.",
+        "flavor": "Горечь от средней до высокой, чистая по характеру и не грубая; именно она доминирует в балансе и тянется в послевкусие. Хмелевой вкус — от среднего до высокого — повторяет ароматический профиль: тропики, цитрус, крыжовник, дыня, травянистость. Солодовый вкус — от среднего до средне-слабого: зерновая сладость, хлебность или крекерные тона. Брожение чистое; эфиры брожения считаются дефектом. Финиш сухой или почти сухой, чистый и гладкий, а послевкусие — горькое, но не жёсткое. Солод может создавать лишь впечатление сладости, но само пиво не должно быть буквально сладким. Финиш может быть сухим, но не должен казаться колким или резко хрустким. Баланс всегда горький, однако солодовый вкус должен быть заметен.",
+        "mouthfeel": "Тело от среднего до средне-лёгкого. Карбонизация от средней до умеренно высокой. Главное впечатление — гладкость и мягкость. Недопустимы грубость и вяжущесть.",
+        "comments": "Хмелевая ароматика часто напоминает многие новозеландские Sauvignon Blanc — с тропическими фруктами, травянистостью, дыней и лаймом. В Новой Зеландии стиль нередко варят как гибрид, используя нейтральные эльовые дрожжи при пониженных температурах. Важно не допускать заметной сернистости в готовом пиве, потому что она легко конфликтует с хмелевым профилем.",
+        "history": "Стиль во многом был сформирован оригинальным пивом пивоварни Emerson’s Brewery в середине 1990-х. По мере того как росло количество и популярность новозеландских сортов хмеля, расширялся и сам характер New Zealand Pilsner.",
+        "characteristic_ingredients": "Типичны новозеландские хмели — например, Motueka, Riwaka, Nelson Sauvin; для горечи нередко используют Pacific Jade. Допустимы и другие New World сорта из Австралии или США, если они дают схожий профиль. Базовый солод — светлый, пильзенский или pale, иногда с небольшой долей пшеничного солода. Вода сравнительно слабо минерализована, обычно с преобладанием хлоридов над сульфатами. Дрожжи — чистые лагерные либо очень нейтральные эльовые.",
+        "style_comparison": "По сравнению с German Pils финиш здесь менее сухой и хрусткий, подача мягче, солод чуть заметнее, а тело полнее. По сравнению с Czech Premium Pale Lager солодовая сложность ниже, а профиль брожения чище. По балансу стиль близок к Kölsch или British Golden Ale, но с более выразительной хмелевой ароматикой. В отличие от этих немецких и родственных стилей, здесь отчётливо демонстрируется новозеландский хмель с тропическими, цитрусовыми, фруктовыми и травянистыми нотами, часто с почти винным, белосортовым оттенком. При этом по общему балансу стиль не должен уходить в такую же хмелевую интенсивность и горечь, как IPA.",
+        "entry_instructions": ""
+      },
+      "vital_statistics": {
+        "og": "1.044 – 1.056",
+        "ibu": "25 – 45",
+        "fg": "1.009 – 1.014",
+        "srm": "2 – 6",
+        "abv": "4.5 – 5.8%"
+      },
+      "vital_statistics_text": "OG: 1.044 – 1.056 | IBU: 25 – 45 | FG: 1.009 – 1.014 | SRM: 2 – 6 | ABV: 4.5 – 5.8%",
+      "commercial_examples_text": "Croucher New Zealand Pilsner, Emerson’s Pilsner, Liberty Halo Pilsner, Panhead Port Road Pilsner, Sawmill Pilsner, Tuatara Mot Eureka",
+      "tags_en": [
+        "bitter",
+        "pale-color",
+        "standard-strength",
+        "bottom-fermented",
+        "hoppy",
+        "pilsner-family",
+        "lagered",
+        "craft-style",
+        "pacific"
+      ],
+      "tags_ru": [
+        "горькое",
+        "светлый цвет",
+        "стандартная крепость",
+        "низовое брожение",
+        "хмелевое",
+        "семейство пилснеров",
+        "лагеризированное",
+        "крафтовый стиль",
+        "Тихоокеанский регион"
+      ],
+      "source_guideline_page_start": 85,
+      "source_pdf_page_start": 101,
+      "translation_status": "completed",
+      "general_notes_en": "Suggested style placement: Category 12 (Pale Commonwealth Beer).",
+      "general_notes_ru": "Рекомендуемое размещение в соревнованиях: Category 12 (Pale Commonwealth Beer)."
+    }
+  ]
+}

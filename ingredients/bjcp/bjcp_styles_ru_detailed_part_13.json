@@ -1,0 +1,485 @@
+{
+  "source": {
+    "document": "BJCP 2021 Beer Style Guidelines",
+    "file_name": "2021_Guidelines_Beer_1.25.pdf",
+    "language": "ru",
+    "translation_scope": "detailed",
+    "notes": "Подробный русский перевод тринадцатой части корпуса BJCP: категории 25 и 26, с короткими описаниями, полными секциями и оригинальными английскими секциями для сверки."
+  },
+  "progress": {
+    "styles_total_in_guideline": 128,
+    "styles_translated_in_this_file": 7,
+    "translated_style_ids": [
+      "25A",
+      "25B",
+      "25C",
+      "26A",
+      "26B",
+      "26C",
+      "26D"
+    ],
+    "translated_categories": [
+      "25",
+      "26"
+    ],
+    "next_recommended_batch": [
+      "Historical Beer: Kellerbier",
+      "Historical Beer: Kentucky Common",
+      "Historical Beer: Lichtenhainer",
+      "Historical Beer: London Brown Ale",
+      "Historical Beer: Piwo Grodziskie"
+    ]
+  },
+  "categories": [
+    {
+      "category_id": "25",
+      "category_en": "STRONG BELGIAN ALE",
+      "category_ru": "Крепкий бельгийский эль",
+      "overview_ru": "В эту категорию входят светлые, хорошо выброженные бельгийские сорта с балансом от ровного до горького, где характер нередко сильнее задают дрожжи, чем солод. Как правило, это более крепкое пиво, хотя диапазон крепости внутри стилей остаётся довольно широким."
+    },
+    {
+      "category_id": "26",
+      "category_en": "MONASTIC ALE",
+      "category_ru": "Монастырский эль",
+      "overview_ru": "Категория объединяет стили, вдохновлённые монастырской бельгийской традицией. Для них типичны верховое брожение, очень высокая степень сбраживания, бутылочная дображиваемость, заметная карбонизация и сложный бельгийский дрожжевой профиль с сочетанием эфиров и фенолов; многие версии при этом довольно крепкие."
+    }
+  ],
+  "styles": [
+    {
+      "bjcp_id": "25A",
+      "name_en": "Belgian Blond Ale",
+      "name_ru": "Бельгийский блонд-эль",
+      "category_id": "25",
+      "category_en": "STRONG BELGIAN ALE",
+      "category_ru": "Крепкий бельгийский эль",
+      "bjcp_heading": "25A. Belgian Blond Ale",
+      "description_short_ru": "Золотистый бельгийский эль умеренно высокой крепости с деликатной цитрусово-пряной дрожжевой сложностью, гладкой солодовой серединой и мягким сухим финишем.",
+      "sections_en": {
+        "overall_impression": "A golden, moderately-strong Belgian ale with a pleasantly subtle citrusy-spicy yeast complexity, smooth malty palate, and dry, soft finish.",
+        "aroma": "Light to moderate grainy-sweet, slightly toasty, or crackery malt. Subtle to moderate yeast profile featuring fruity-citrusy esters (like oranges or lemons), and background spicy-peppery phenols. Light earthy or spicy hop notes optional. Light perfumy alcohol and suggestions of a light malty sweetness can give a slight honey- or sugar-like character. Subtle yet complex.",
+        "appearance": "Deep yellow to deep gold color. Generally very clear. Large, dense, and creamy white to off-white head. Good head retention with Belgian lace.",
+        "flavor": "Similar to the aroma, with the light to moderate grainy-sweet malt flavor being perceived first. Faint, lightly caramelized sugar or honey-like sweetness on palate. Medium bitterness, with the malt slightly more prominent in the balance. Moderate to low yeast profile with orange or lemon esters, and slight spicy-peppery phenols. Can have a light perfumy character. Light hop flavor, can be spicy or earthy, complementing yeast. Finishes medium-dry to dry, smooth, and soft, with light alcohol and malt in the aftertaste.",
+        "mouthfeel": "Medium-high to high carbonation, can give mouth-filling bubbly sensation. Medium body. Light to moderate alcohol warmth, but smooth. Can be somewhat creamy.",
+        "comments": "Most commercial examples are in the 6.5 – 7% ABV range. Often has an almost lager-like character, which gives it a cleaner profile in comparison to many other Belgian styles. Flemish-speaking Belgians use the term Blond, while the French speakers spell it Blonde. Many monastic or artisanal Belgian beers are called Blond but those are not representative of this style.",
+        "history": "Relatively recent development to further appeal to European Pils drinkers, becoming more popular as it is heavily marketed and widely distributed. Despite claims of links back to 1200, the beer style was created after World War II and first popularized by Leffe.",
+        "characteristic_ingredients": "Belgian Pils malt, aromatic malts, sugar or other adjuncts, Belgian Abbey-type yeast strains, continental hops. Spices are not traditionally used; if present, should be a background character only.",
+        "style_comparison": "Similar strength and balance as a Belgian Dubbel but gold in color and without the darker malt flavors. Similar character as a Belgian Strong Golden Ale or Belgian Tripel, although a bit maltier, not as bitter, and lower in alcohol.",
+        "entry_instructions": ""
+      },
+      "sections_ru": {
+        "overall_impression": "Золотистый бельгийский эль умеренно высокой крепости с приятной, ненавязчивой цитрусово-пряной дрожжевой сложностью, гладкой солодовой палитрой и мягким сухим финишем.",
+        "aroma": "Солодовый аромат от лёгкого до умеренного: зерновая сладость, слегка поджаренный хлеб и крекерные ноты. Дрожжевой профиль — от деликатного до умеренного, с фруктово-цитрусовыми эфирами вроде апельсина или лимона и фоновыми перечными фенолами. Допустимы лёгкие землистые или пряные хмелевые штрихи. Лёгкий парфюмный алкоголь и намёк на светлую солодовую сладость могут создавать ассоциации с мёдом или сахаром. Ароматика тонкая, но многослойная.",
+        "appearance": "Цвет от насыщенно-жёлтого до тёмно-золотого. Обычно пиво очень прозрачное. Пена крупная, плотная, кремовая, от белой до слегка кремовой, с хорошей стойкостью и характерным бельгийским кружевом на бокале.",
+        "flavor": "Во вкусе сначала ощущается лёгкая или умеренная зерновато-сладкая солодовая основа. На нёбе возможен тонкий оттенок слегка карамелизованного сахара или медовой сладости. Горечь средняя, но солод остаётся в балансе чуть заметнее. Дрожжевой профиль — от умеренного к сдержанному: эфиры апельсина или лимона, лёгкие перечные фенолы. Возможен очень лёгкий парфюмный тон. Хмелевой вкус слабый, пряный или землистый, и он поддерживает дрожжевой характер, а не спорит с ним. Финиш от умеренно сухого до сухого, гладкий и мягкий; в послевкусии остаются лёгкие алкогольные и солодовые оттенки.",
+        "mouthfeel": "Карбонизация от умеренно высокой до высокой, может давать объёмное, «пузырчатое» ощущение во рту. Тело среднее. Алкогольное тепло — от лёгкого до умеренного, но всегда гладкое. Текстура может быть чуть кремовой.",
+        "comments": "Большинство коммерческих примеров лежат в диапазоне 6,5–7% ABV. Нередко стиль производит почти лагерное впечатление, поэтому кажется чище и аккуратнее многих других бельгийских элей. Во фламандской части Бельгии пишут Blond, во франкоязычной — Blonde. Многие монастырские и ремесленные сорта тоже называются Blond, но они не обязательно соответствуют именно этому стилю.",
+        "history": "Стиль относительно молодой: его создали, чтобы сильнее заинтересовать любителей европейского пилса, а популярность выросла благодаря активному маркетингу и широкой дистрибуции. Несмотря на заявления о связи с традициями XIII века, в современном виде стиль появился после Второй мировой войны, а первым широко известным примером стал Leffe.",
+        "characteristic_ingredients": "Бельгийский пилс-солод, ароматические солода, сахар или другие адъюнкты, бельгийские дрожжи аббатского типа и континентальный хмель. Специи традиционно не используются; если они и есть, то только как едва заметный фон.",
+        "style_comparison": "По крепости и общему балансу стиль близок к Belgian Dubbel, но он золотистый и лишён тёмных солодовых тонов. Также напоминает Belgian Golden Strong Ale или Belgian Tripel, однако обычно чуть солодовее, менее горький и слабее по алкоголю.",
+        "entry_instructions": ""
+      },
+      "vital_statistics": {
+        "og": "1.062 – 1.075",
+        "ibu": "15 – 30",
+        "fg": "1.008 – 1.018",
+        "srm": "4 – 6",
+        "abv": "6.0 – 7.5%"
+      },
+      "vital_statistics_text": "OG: 1.062 – 1.075 | IBUs: 15 – 30 | FG: 1.008 – 1.018 | SRM: 4 – 6 | ABV: 6.0 – 7.5%",
+      "commercial_examples_text": "Affligem Blond, Corsendonk Blond, Grimbergen Blonde, La Trappe Blond, Leffe Blond, Val-Dieu Blonde",
+      "tags_en": [
+        "high-strength",
+        "pale-color",
+        "top-fermented",
+        "western-europe",
+        "traditional-style",
+        "balanced"
+      ],
+      "source_guideline_page_start": 51,
+      "source_pdf_page_start": 67,
+      "translation_status": "completed",
+      "tags_ru": [
+        "высокая крепость",
+        "светлый цвет",
+        "верховое брожение",
+        "Западная Европа",
+        "традиционный стиль",
+        "сбалансированный"
+      ]
+    },
+    {
+      "bjcp_id": "25B",
+      "name_en": "Saison",
+      "name_ru": "Сэзон",
+      "category_id": "25",
+      "category_en": "STRONG BELGIAN ALE",
+      "category_ru": "Крепкий бельгийский эль",
+      "bjcp_heading": "25B. Saison",
+      "description_short_ru": "Семейство освежающих, сильно выброженных бельгийских элей с высокой карбонизацией, сухим финишем, заметной горечью и фруктово-пряным дрожжевым профилем.",
+      "sections_en": {
+        "overall_impression": "A family of refreshing, highly attenuated, hoppy, and fairly bitter Belgian ales with a very dry finish and high carbonation. Characterized by a fruity, spicy, sometimes phenolic fermentation profile, and the use of cereal grains and sometimes spices for complexity. Several variations in strength and color exist.",
+        "aroma": "A pleasantly aromatic mix of fruity-spicy yeast and hops. The fruity esters are moderate to high, and often have a citrus fruit, pome fruit, or stone fruit character. Low to moderately-high spicy notes are often like black pepper, not clove. Hops are low to moderate and have a continental character (spicy, floral, earthy, or fruity). The malt is often overshadowed, but if detected is lightly grainy. Spices and herbs optional, but must not dominate. Sourness optional (see Comments). Strong versions have more aromatic intensity, and can add a light alcohol and moderate malt character. Table versions have less intensity and not have an alcohol character. Darker versions add malt character associated with darker grains.",
+        "appearance": "Pale gold to deep amber in color, sometimes pale orange. Long-lasting, dense, rocky white to ivory head. Belgian lace. Unfiltered, so clarity is variable (poor to good) and may be hazy. Effervescent. Darker versions can be copper to dark brown. Stronger versions may be a little deeper in color.",
+        "flavor": "A balance of fruity and spicy yeast, hoppy bitterness, and grainy malt with moderate to high bitterness, and a very dry finish. The fruity and spicy aspects are medium-low to medium-high, and hop flavor is low to medium, both with similar character as in the aroma (same descriptors apply). Malt is low to medium, with a soft, grainy palate. Very high attenuation, never with a sweet or heavy finish. Bitter, spicy aftertaste. Spices and herbs optional, but if used must be in harmony with the yeast. Sourness optional (see Comments). Darker versions will have more malt character, including flavors from the darker malts. Stronger versions will have greater malt intensity, and a light alcohol note.",
+        "mouthfeel": "Light to medium-low body. Very high carbonation. Effervescent. Light warming alcohol optional. Sourness rare but optional (see Comments). Stronger versions can have up to medium body and be somewhat warming. Table versions have no warmth.",
+        "comments": "This style generally describes the standard-strength pale version, followed by differences for variations in strength and color. Darker versions tend to have more malt character and less apparent hop bitterness, yielding a more balanced presentation. Stronger versions often have more malt flavor, richness, warmth, and body simply due to the higher gravity. There is no correlation between strength and color. Sourness is totally optional, and if present at low to moderate levels, it may substitute somewhat for bitterness in the balance. A Saison should not be both sour and bitter at the same time. The high attenuation may make the beer seem more bitter than the IBUs suggest. Pale versions are often more bitter and hoppy than darker versions. Yeast selection often drives the balance of fruity and spicy notes, and can change the character significantly; allow for a range of interpretations. Often called Farmhouse ales in the US, but this term is not common in Europe where they are simply part of a larger grouping of artisanal ales. Brettanomyces is not typical for this style; Saisons with Brett should be entered in the 28A Brett Beer style. A Grisette is a well-known type of Saison popular with miners; enter Grisette as 25B Saison, Session Strength, Comment: Grisette with wheat as the character grain.",
+        "history": "A provision ale from Wallonia, the French-speaking part of Belgium. Originally a lower-alcohol product so as to not debilitate farm and field workers, but tavern-strength products also existed. The best known modern saison, Saison Dupont, was first produced in the 1920s. Dupont’s super saison was first produced in 1954, and its brown version in the mid-1980s. Fantôme begain producing its ‘seasonal’ saisons in 1988. While the style retains its rustic image, they are now mostly made in large breweries.",
+        "characteristic_ingredients": "Pale base malt. Cereal grains, such as wheat, oats, spelt, or rye. May contain sugary adjuncts. Continental hops. Spicy-fruity Belgian Saison yeast. Spices and herbs are uncommon, but allowable if they don’t dominate.",
+        "style_comparison": "The pale, standard strength versions is like a more highly-attenuated, hoppy, and bitter Belgian Blond Ale with a stronger yeast character. At super strength and pale color, similar to a Belgian Tripel, but often with more of a grainy, rustic quality and sometimes with a spicier yeast character.",
+        "entry_instructions": "The entrant must specify the strength (table, standard, super) and the color (pale, dark). The entrant may identify character grains used."
+      },
+      "sections_ru": {
+        "overall_impression": "Семейство освежающих бельгийских элей с очень высокой степенью сбраживания, заметной охмелённостью, довольно выраженной горечью, очень сухим финишем и высокой карбонизацией. Стиль узнаётся по фруктово-пряному, иногда фенольному профилю брожения, а также по использованию зерновых и иногда специй ради дополнительной сложности. Внутри семейства есть разные версии по крепости и цвету.",
+        "aroma": "Ароматика приятная и живая: смесь фруктово-пряных дрожжей и хмеля. Эфиры — от умеренных до высоких; часто напоминают цитрусовые, семечковые или косточковые фрукты. Пряные ноты — от слабых до умеренно высоких, чаще в духе чёрного перца, а не гвоздики. Хмель — от слабого до умеренного, обычно континентального типа: пряный, цветочный, землистый или слегка фруктовый. Солод нередко уходит на второй план, но если ощущается, то даёт лёгкую зерновую основу. Специи и травы допустимы, но не должны доминировать. Кислинка возможна, см. комментарии. У более крепких версий аромат интенсивнее, может появляться лёгкий алкогольный тон и более заметная солодовость. Столовые версии проще и не должны демонстрировать алкоголь. Тёмные варианты добавляют в аромат характер более тёмного солода.",
+        "appearance": "Цвет от бледно-золотого до глубокого янтарного, иногда с лёгким оранжевым оттенком. Пена долго держится, плотная, каменистая, от белой до цвета слоновой кости. Часто остаётся бельгийское кружево. Пиво обычно нефильтрованное, поэтому прозрачность может колебаться от слабой до хорошей, возможна заметная дымка. Общее впечатление игристое. Тёмные версии бывают от медных до тёмно-коричневых. Более крепкие версии нередко чуть темнее.",
+        "flavor": "Во вкусе сочетаются фруктово-пряный дрожжевой характер, хмелевая горечь и зерновой солод. Горечь — от умеренной до высокой, финиш очень сухой. Фруктовые и пряные оттенки — от умеренно слабых до умеренно высоких; вкус хмеля — от слабого до умеренного, и их дескрипторы в целом совпадают с ароматом. Солодовость — от слабой до умеренной, с мягким зерновым ощущением. Степень сбраживания очень высокая, поэтому стиль никогда не должен заканчиваться сладко или тяжело. Послевкусие горьковато-пряное. Специи и травы допустимы, но, если они используются, обязаны быть в гармонии с дрожжами. Кислинка тоже допустима, см. комментарии. Тёмные версии дают больше солодового характера, включая оттенки тёмных солодов. У более крепких вариантов солод заметнее, а алкоголь может слегка ощущаться.",
+        "mouthfeel": "Тело от лёгкого до умеренно лёгкого. Карбонизация очень высокая. Пиво игристое. Лёгкое алкогольное согревание допустимо. Кислинка встречается редко, но допустима. Более крепкие версии могут доходить до среднего тела и давать чуть более тёплое ощущение. Столовые версии не должны согревать.",
+        "comments": "Базовым описанием здесь считается светлая версия стандартной крепости; далее допускаются вариации по цвету и крепости. Тёмные версии обычно более солодовые и визуально менее горькие по впечатлению, поэтому кажутся более уравновешенными. У крепких вариантов обычно больше солодовой глубины, насыщенности, тепла и тела просто за счёт более высокой плотности. Между крепостью и цветом прямой связи нет. Кислинка полностью необязательна; если она есть на низком или умеренном уровне, то может частично заменять горечь в балансе. Сэзон не должен быть одновременно и кислым, и ярко горьким. Из-за очень высокой степени сбраживания пиво может казаться горше, чем предполагают цифры IBU. Светлые версии часто выглядят более горькими и хмелевыми, чем тёмные. Подбор дрожжей сильно влияет на соотношение фруктовых и пряных нот, поэтому стиль допускает широкий диапазон интерпретаций. В США стиль часто называют farmhouse ale / фермерским элем, но в Европе этот термин употребляют редко: там это скорее часть более широкой группы ремесленных элей. Brettanomyces для стиля нехарактерен; Brett-версии следует относить к 28A Brett Beer. Grisette — известный подтип сэзона, исторически популярный у шахтёров; его можно заявлять как 25B Saison, Session Strength, с пометкой о пшенице как основном character grain.",
+        "history": "Это provision ale из Валлонии, франкоязычной части Бельгии. Изначально он был менее крепким, чтобы не утомлять работников полей и ферм, хотя существовали и более крепкие «трактирные» версии. Самый известный современный образец, Saison Dupont, начали варить в 1920-х. Крепкая версия Dupont появилась в 1954 году, а коричневая — в середине 1980-х. Пивоварня Fantôme начала выпускать свои «сезонные» saisons в 1988 году. Несмотря на сохраняющийся деревенский имидж, сегодня стиль в основном варят уже крупные пивоварни.",
+        "characteristic_ingredients": "Светлый базовый солод. Зерновые вроде пшеницы, овса, спельты или ржи. Возможны сахарные адъюнкты. Континентальный хмель. Бельгийские saison-дрожжи с пряно-фруктовым профилем. Специи и травы встречаются нечасто, но допустимы, если не перетягивают всё на себя.",
+        "style_comparison": "Светлая версия стандартной крепости похожа на Belgian Blond Ale, но сильнее выброжена, суше, хмелевее и горче, а дрожжевой характер у неё выразительнее. В крепкой светлой версии стиль может напоминать Belgian Tripel, но обычно остаётся более зерновым, чуть более rustic по впечатлению и иногда имеет более выраженную пряность дрожжей.",
+        "entry_instructions": "Участник должен указать крепость (table, standard или super) и цветовую версию (pale или dark). При желании можно отдельно отметить использованные зерновые, задающие характер стилю."
+      },
+      "vital_statistics": {
+        "og": "1.048 – 1.065 (standard)",
+        "ibu": "20 – 35",
+        "fg": "1.002 – 1.008 (standard)",
+        "srm": "5 – 14 (pale); 15 – 22 (dark)",
+        "abv": "3.5 – 5.0% (table); 5.0 – 7.0% (standard); 7.0 – 9.5% (super)"
+      },
+      "vital_statistics_text": "OG: 1.048 – 1.065 (standard) | IBUs: 20 – 35 | FG: 1.002 – 1.008 (standard) | SRM: 5 – 14 (pale), 15 – 22 (dark) | ABV: 3.5 – 5.0% (table), 5.0 – 7.0% (standard), 7.0 – 9.5% (super)",
+      "commercial_examples_text": "Ellezelloise Saison 2000, Lefebvre Saison 1900, Saison Dupont, Saison de Pipaix, Saison Voisin, Boulevard Tank 7",
+      "tags_en": [
+        "standard-strength",
+        "pale-color",
+        "top-fermented",
+        "western-europe",
+        "traditional-style",
+        "bitter"
+      ],
+      "source_guideline_page_start": 51,
+      "source_pdf_page_start": 67,
+      "translation_status": "completed",
+      "tags_ru": [
+        "стандартная крепость",
+        "светлый цвет",
+        "верховое брожение",
+        "Западная Европа",
+        "традиционный стиль",
+        "горький"
+      ]
+    },
+    {
+      "bjcp_id": "25C",
+      "name_en": "Belgian Golden Strong Ale",
+      "name_ru": "Бельгийский крепкий золотой эль",
+      "category_id": "25",
+      "category_en": "STRONG BELGIAN ALE",
+      "category_ru": "Крепкий бельгийский эль",
+      "bjcp_heading": "25C. Belgian Golden Strong Ale",
+      "description_short_ru": "Очень светлый, сильно выброженный крепкий бельгийский эль, где фруктовость и хмель заметнее пряности, а сухой финиш и высокая карбонизация делают его удивительно питким.",
+      "sections_en": {
+        "overall_impression": "A very pale, highly attenuated, strong Belgian ale that is more fruity and hoppy than spicy. Complex and delicate, the dry finish, light body, and high carbonation accentuate the yeast and hop character. Sparkling carbonation and effervescent, forming a rocky white head.",
+        "aroma": "A complex bouquet of fruity esters, herbal hops, and peppery alcohol over a nearly neutral malt base. The esters are moderate to high, often pome fruit, especially pear. Hops are herbal, floral, or spicy, low to moderate. Alcohol and phenols often have a peppery or perfumy quality, low to moderate. Alcohol perception should be soft, not hot or solventy. Nearly neutral malt, possibly slightly grainy-sweet.",
+        "appearance": "Pale yellow to gold in color. Good clarity. Effervescent. Massive, long-lasting, rocky, white head resulting in characteristic Belgian lace on the glass as it fades.",
+        "flavor": "Flavor profile similar to aroma (same descriptors and intensities apply) for esters, hops, malt, phenols, and alcohol. The pear-like esters, peppery alcohol, herbal hops, and soft malt flavors carry through the palate into the long, dry finish and aftertaste. Medium to high bitterness, accentuated by the dry finish and high carbonation, lasts into the aftertaste.",
+        "mouthfeel": "Very highly carbonated. Effervescent. Light to medium body, lighter than the substantial gravity would suggest. Carbonation accentuates the perception of lightness. Smooth but noticeable alcohol warmth, not hot or solventy.",
+        "comments": "References to the devil are included in the names of many commercial examples of this style, referring to their potent alcoholic strength and as a tribute to the original example (Duvel). Traditionally bottle-conditioned.",
+        "history": "Developed by the Moortgat brewery after WWI as a response to the growing popularity of Pilsner beers. Originally a darker beer, it achieved its modern form by the 1970s.",
+        "characteristic_ingredients": "Pilsner malt with substantial sugary adjuncts. Continental hops. Fruity Belgian yeast. Fairly soft water. Spicing not traditional.",
+        "style_comparison": "Often confused with Belgian Tripel, but is usually paler, lighter-bodied, crisper, and drier. Tends to use yeast that favor ester development (particularly pome fruit) over spiciness in the balance, and has more of a late hop character.",
+        "entry_instructions": ""
+      },
+      "sections_ru": {
+        "overall_impression": "Очень светлый, сильно выброженный крепкий бельгийский эль, в котором фруктовость и хмель выражены сильнее, чем пряность. Это сложное и деликатное пиво: сухой финиш, лёгкое тело и высокая карбонизация подчёркивают и дрожжевой, и хмелевой характер. Карбонизация искристая, игристая, с крупной каменистой белой пеной.",
+        "aroma": "Сложный букет из фруктовых эфиров, травянистого хмеля и перечного алкогольного тона на почти нейтральной солодовой базе. Эфиры — от умеренных до высоких, чаще всего напоминают семечковые фрукты, особенно грушу. Хмель — от слабого до умеренного, травянистый, цветочный или пряный. Алкоголь и фенолы — от слабых до умеренных, с перечным или парфюмным оттенком. Алкоголь должен восприниматься мягко, без жгучести и растворительной грубости. Солод почти нейтрален, иногда слегка зерновато-сладкий.",
+        "appearance": "Цвет от бледно-жёлтого до золотого. Прозрачность хорошая. Пиво игристое. Пена огромная, стойкая, каменистая, белая; по мере оседания оставляет характерное бельгийское кружево на бокале.",
+        "flavor": "Вкус в целом повторяет аромат по набору и интенсивности эфиров, хмеля, солода, фенолов и алкоголя. Грушеподобные эфиры, перечный алкоголь, травянистый хмель и мягкие солодовые оттенки тянутся через всё нёбо в длинный сухой финиш и послевкусие. Горечь от средней до высокой; сухой финиш и высокая карбонизация делают её ещё заметнее, и она сохраняется в послевкусии.",
+        "mouthfeel": "Карбонизация очень высокая. Пиво игристое. Тело от лёгкого до среднего, при этом кажется легче, чем можно ожидать по исходной плотности. Карбонизация дополнительно усиливает ощущение воздушности. Алкогольное тепло есть, но оно гладкое; недопустимы жгучесть и растворительные ноты.",
+        "comments": "Во многих коммерческих названиях этого стиля встречаются отсылки к дьяволу — это и намёк на серьёзную крепость, и дань первому каноническому примеру, Duvel. Традиционно пиво проходит дображивание в бутылке.",
+        "history": "Стиль создала пивоварня Moortgat после Первой мировой войны как ответ на растущую популярность пилса. Изначально пиво было темнее, а современный облик приобрело к 1970-м годам.",
+        "characteristic_ingredients": "Пилс-солод с заметной долей сахарных адъюнктов, континентальный хмель, бельгийские дрожжи с яркой фруктовостью и довольно мягкая вода. Специи для стиля нехарактерны.",
+        "style_comparison": "Его часто путают с Belgian Tripel, но обычно этот стиль светлее, легче по телу, более хрусткий по финишу и суше. Дрожжи здесь чаще смещают баланс в сторону эфиров, особенно семечковых фруктов, а не пряности, и поздний хмель заметнее.",
+        "entry_instructions": ""
+      },
+      "vital_statistics": {
+        "og": "1.070 – 1.095",
+        "ibu": "22 – 35",
+        "fg": "1.005 – 1.016",
+        "srm": "3 – 6",
+        "abv": "7.5 – 10.5%"
+      },
+      "vital_statistics_text": "OG: 1.070 – 1.095 | IBUs: 22 – 35 | FG: 1.005 – 1.016 | SRM: 3 – 6 | ABV: 7.5 – 10.5%",
+      "commercial_examples_text": "Brigand, Delirium Tremens, Duvel, Judas, Lucifer, Russian River Damnation",
+      "tags_en": [
+        "very-high-strength",
+        "pale-color",
+        "top-fermented",
+        "western-europe",
+        "traditional-style",
+        "bitter"
+      ],
+      "source_guideline_page_start": 52,
+      "source_pdf_page_start": 68,
+      "translation_status": "completed",
+      "tags_ru": [
+        "очень высокая крепость",
+        "светлый цвет",
+        "верховое брожение",
+        "Западная Европа",
+        "традиционный стиль",
+        "горький"
+      ]
+    },
+    {
+      "bjcp_id": "26A",
+      "name_en": "Belgian Single",
+      "name_ru": "Бельгийский сингл",
+      "category_id": "26",
+      "category_en": "MONASTIC ALE",
+      "category_ru": "Монастырский эль",
+      "bjcp_heading": "26A. Belgian Single",
+      "description_short_ru": "Светлый, сухой, горький и хмелевой бельгийский столовое пиво с очень высокой карбонизацией, где впереди идут дрожжи и горечь, а солод лишь поддерживает баланс.",
+      "sections_en": {
+        "overall_impression": "A blond, bitter, hoppy table beer that is very dry and highly carbonated. The aggressive fruity-spicy Belgian yeast character and high bitterness is forward in the balance, with a soft, supportive grainy-sweet malt palate, and a spicy-floral hop profile.",
+        "aroma": "Medium-low to medium-high Belgian yeast character, showing a fruity-spicy character along with medium-low to medium spicy or floral hops, rarely enhanced by light herbal or citrusy spice additions. Low to medium-low malt backdrop, with bready, crackery, grainy, or light honey notes. Fruit expression can vary widely (apple, pear, grapefruit, lemon, orange, peach, apricot). Phenols are typically like black pepper or clove. Bubblegum inappropriate.",
+        "appearance": "Pale yellow to medium gold color. Generally good clarity, with a moderate-sized, persistent, billowy white head with characteristic lacing.",
+        "flavor": "Initial malty flavor is light and has a honeyed biscuit, bready, or cracker character. Grainy but soft malt palate, and a crisp, dry, hoppy-bitter finish. Moderate spicy or floral hop flavor on the palate. Moderate esters similar in character to aroma. Light to moderate spicy phenols as found in the aroma. Medium to high bitterness, accentuated by dryness. The yeast and hop character lasts into the aftertaste.",
+        "mouthfeel": "Medium-light to medium body. Smooth. Medium-high to high carbonation, can be somewhat prickly. Should not have noticeable alcohol warmth.",
+        "comments": "Often not labeled or available outside the monastery, or infrequently brewed. Might also be called monk’s beer, Brother’s beer, or simply a Blond (we don’t use this term to avoid confusion with the very different Belgian Blond Ale style). Highly attenuated, generally 85% or more.",
+        "history": "While monastic breweries have a tradition of brewing a lower-strength beer as a monk’s daily ration (Westmalle began making theirs in 1922), the bitter, pale beer this style describes is a relatively modern invention reflecting current tastes. Westvleteren first brewed theirs in 1999, but it replaced older lower-gravity products.",
+        "characteristic_ingredients": "Pilsner malt. Belgian yeast. Continental hops.",
+        "style_comparison": "Like a top-fermented Belgian interpretation of a German Pils – pale, hoppy, and well-attenuated, but with a strong Belgian yeast character. Has less sweetness, higher attenuation, less character malt, and is more hop-centered than a Belgian Pale Ale. More like a much smaller, more highly-hopped Belgian Tripel (with its bitterness and dryness) than a smaller Belgian Blond Ale.",
+        "entry_instructions": ""
+      },
+      "sections_ru": {
+        "overall_impression": "Светлый, горький и хмелевой бельгийский столовое пиво, очень сухой и сильно газированный. В балансе на первом плане стоят яркий фруктово-пряный бельгийский дрожжевой профиль и высокая горечь, а мягкая зерновато-сладкая солодовая база лишь поддерживает их. Хмель проявляется пряно-цветочным тоном.",
+        "aroma": "Бельгийский дрожжевой характер — от умеренно слабого до умеренно высокого, с выраженным фруктово-пряным профилем. Хмель — от умеренно слабого до умеренного, пряный или цветочный; изредка его дополняют лёгкие травянистые или цитрусово-пряные добавки. Солодовый фон слабый или умеренно слабый: хлебный, крекерный, зерновой, иногда с лёгким медовым намёком. Фруктовость может сильно варьироваться: яблоко, груша, грейпфрут, лимон, апельсин, персик, абрикос. Фенолы обычно напоминают чёрный перец или гвоздику. Жвачная bubblegum-нота недопустима.",
+        "appearance": "Цвет от бледно-жёлтого до средне-золотого. Прозрачность обычно хорошая. Пена средняя по объёму, стойкая, воздушная, белая, с характерным кружевом на бокале.",
+        "flavor": "Начальная солодовая нота лёгкая: медовое печенье, хлебная корочка или крекер. Солодовое ощущение зерновое, но мягкое; финиш хрусткий, сухой, горьковато-хмелевой. Во вкусе заметен умеренный пряный или цветочный хмель. Эфиры — умеренные, по характеру схожи с ароматом. Фенолы — от лёгких до умеренных, тоже как в аромате. Горечь — от средней до высокой, и сухость делает её ещё выразительнее. Дрожжи и хмель заметно тянутся в послевкусие.",
+        "mouthfeel": "Тело от умеренно лёгкого до среднего. Текстура гладкая. Карбонизация от умеренно высокой до высокой, может слегка покалывать. Ощутимого алкогольного согревания быть не должно.",
+        "comments": "Стиль часто вообще не маркируют отдельно, он редко покидает пределы монастыря и варится не так уж часто. Его также могут называть monk’s beer, Brother’s beer или просто Blond, но здесь термин Blond не используется, чтобы не путать стиль с совершенно другим Belgian Blond Ale. Степень сбраживания очень высокая — обычно 85% и выше.",
+        "history": "Монастырские пивоварни давно варили менее крепкое пиво как ежедневный рацион для монахов — например, Westmalle делает такую версию с 1922 года. Но именно этот бледный и горький вариант — относительно современное изобретение, отражающее нынешние вкусы. Westvleteren впервые сварил свою версию в 1999 году, заменив ею более старые и менее плотные сорта.",
+        "characteristic_ingredients": "Пилс-солод, бельгийские дрожжи и континентальный хмель.",
+        "style_comparison": "Это как бельгийская интерпретация German Pils на верховом брожении: светлое, хмелевое и хорошо выброженное пиво, но с ярко выраженным бельгийским дрожжевым характером. По сравнению с Belgian Pale Ale здесь меньше сладости, выше степень сбраживания, меньше специального солода и больше акцента на хмель. По логике баланса стиль ближе к значительно уменьшенному и более охмелённому Belgian Tripel, чем к уменьшенной версии Belgian Blond Ale.",
+        "entry_instructions": ""
+      },
+      "vital_statistics": {
+        "og": "1.044 – 1.054",
+        "ibu": "25 – 45",
+        "fg": "1.004 – 1.010",
+        "srm": "3 – 5",
+        "abv": "4.8 – 6.0%"
+      },
+      "vital_statistics_text": "OG: 1.044 – 1.054 | IBUs: 25 – 45 | FG: 1.004 – 1.010 | SRM: 3 – 5 | ABV: 4.8 – 6.0%",
+      "commercial_examples_text": "Chimay Gold, La Trappe Puur, Russian River Redemption, St. Bernardus Extra 4, Westmalle Extra, Westvleteren Blond",
+      "tags_en": [
+        "standard-strength",
+        "pale-color",
+        "top-fermented",
+        "western-europe",
+        "craft-style",
+        "bitter",
+        "hoppy"
+      ],
+      "source_guideline_page_start": 53,
+      "source_pdf_page_start": 69,
+      "translation_status": "completed",
+      "tags_ru": [
+        "стандартная крепость",
+        "светлый цвет",
+        "верховое брожение",
+        "Западная Европа",
+        "крафтовый стиль",
+        "горький",
+        "хмелевой"
+      ]
+    },
+    {
+      "bjcp_id": "26B",
+      "name_en": "Belgian Dubbel",
+      "name_ru": "Бельгийский дуббель",
+      "category_id": "26",
+      "category_en": "MONASTIC ALE",
+      "category_ru": "Монастырский эль",
+      "bjcp_heading": "26B. Belgian Dubbel",
+      "description_short_ru": "Глубокий красновато-медный бельгийский эль умеренно высокой крепости с богатой солодовостью, тёмными фруктовыми эфирами и мягким алкоголем, который остаётся сухим в финише.",
+      "sections_en": {
+        "overall_impression": "A deep reddish-copper, moderately strong, malty, complex Belgian ale with rich malty flavors, dark or dried fruit esters, and light alcohol blended together in a malty presentation that still finishes fairly dry.",
+        "aroma": "Moderate to moderately strong, rich malty aroma, with hints of chocolate, caramelized sugar, or toast. Never roasted or burnt. Moderate fruity esters, often dark or dried fruit, especially raisins and plums, sometimes pome fruit or banana. Low to moderate spicy, peppery phenols. Hops typically absent, but can have a low spicy, herbal, or floral character. The malt is strongest in the balance, with esters and spice adding complexity. Low soft, perfumy alcohol optional.",
+        "appearance": "Dark amber to copper in color, with an attractive reddish depth of color. Generally clear. Large, dense, and long-lasting creamy off-white head.",
+        "flavor": "Flavor profile similar to aroma (same descriptors and intensities apply) for malt, esters, phenols, alcohol, and hops. Medium-low to medium bitterness, but malt is always most prominent in the balance. The esters and phenols add complexity and interest to the malt, alcohol not typically tasted. Malty-rich, sometimes sweet flavor, that finishes moderately dry with a malty aftertaste accented by yeast esters and phenols.",
+        "mouthfeel": "Smooth, medium to medium-full body. Medium-high carbonation, which can influence the perception of body. Low alcohol warmth optional, never hot or solventy.",
+        "comments": "Most commercial examples are in the 6.5 – 7% ABV range. Can taste somewhat sweet due to restrained bitterness, but the beers are actually fairly dry.",
+        "history": "While dark and strong beers were produced long before, modern Dubbel traces back to the double brown or strong beer first produced at Westmalle in 1922 when the brewery was re-established after World War I. Other examples date from post-World War II.",
+        "characteristic_ingredients": "Spicy-estery Belgian yeast. Impression of a complex grain bill, although many traditional versions are quite simple, with caramelized sugar syrup or unrefined sugars and yeast providing much of the complexity. Continental hops. Spices not typical; if present, should be subtle.",
+        "style_comparison": "Perhaps similar to a Dunkles Bock but with a Belgian yeast and sugar character. Similar in strength and balance to a Belgian Blond Ale, but with a richer malt and ester profile. Less strong and intense than a Belgian Dark Strong Ale.",
+        "entry_instructions": ""
+      },
+      "sections_ru": {
+        "overall_impression": "Глубокий красновато-медный бельгийский эль умеренно высокой крепости, солодовый и сложный, где богатые солодовые тона, эфиры тёмных или сушёных фруктов и лёгкий алкоголь собраны в цельную солодовую картину, но финиш при этом остаётся довольно сухим.",
+        "aroma": "Аромат от умеренного до умеренно сильного, богатый, солодовый, с намёками на шоколад, карамелизованный сахар и тост. Жжёные и подгорелые ноты недопустимы. Фруктовые эфиры — умеренные, чаще в сторону тёмных или сушёных фруктов, особенно изюма и сливы; иногда проявляются семечковые фрукты или банан. Фенолы — от слабых до умеренных, пряно-перечные. Хмель обычно отсутствует, но допустим его лёгкий пряный, травянистый или цветочный штрих. В балансе лидирует солод, а эфиры и пряность лишь добавляют сложности. Мягкий, слегка парфюмный алкоголь на низком уровне возможен.",
+        "appearance": "Цвет от тёмно-янтарного до медного, с красивой красноватой глубиной. Обычно пиво прозрачное. Пена крупная, плотная, кремовая, светло-бежевая, очень стойкая.",
+        "flavor": "Вкус по характеру повторяет аромат: те же солодовые, эфирные, фенольные, алкогольные и хмелевые штрихи сохраняются и здесь. Горечь от умеренно слабой до умеренной, но солод всегда остаётся главным элементом баланса. Эфиры и фенолы добавляют солоду глубину и интерес; сам алкоголь во вкусе обычно не выделяется. Вкус богатый, солодовый, иногда кажущийся слегка сладковатым, однако заканчивается умеренно сухо. В послевкусии остаётся солод, подчёркнутый дрожжевыми эфирами и фенолами.",
+        "mouthfeel": "Текстура гладкая. Тело от среднего до умеренно полного. Карбонизация умеренно высокая и может делать тело чуть более объёмным по ощущению. Лёгкое алкогольное тепло допустимо, но никакой жгучести или растворительных тонов быть не должно.",
+        "comments": "Большинство коммерческих примеров находятся в диапазоне 6,5–7% ABV. Из-за сдержанной горечи пиво иногда кажется более сладким, чем есть на самом деле, хотя по факту оно довольно сухое.",
+        "history": "Хотя тёмные и крепкие сорта в Бельгии варили и раньше, современный Dubbel восходит к «двойному коричневому» или просто крепкому пиву, которое Westmalle впервые выпустил в 1922 году после возобновления работы пивоварни по окончании Первой мировой войны. Другие известные примеры появились уже после Второй мировой.",
+        "characteristic_ingredients": "Бельгийские дрожжи с пряно-эфирным профилем. Засыпь может казаться сложной, хотя многие традиционные версии на деле весьма просты, а значительную часть глубины дают карамелизованный сахарный сироп или нерафинированные сахара вместе с дрожжами. Хмель — континентальный. Специи нехарактерны; если присутствуют, то только очень тонко.",
+        "style_comparison": "В чём-то стиль можно сравнить с Dunkles Bock, но здесь есть типичный бельгийский дрожжевой и сахарный характер. По крепости и общему балансу он близок к Belgian Blond Ale, но заметно богаче солодом и эфирами. До мощи и насыщенности Belgian Dark Strong Ale дуббель обычно не дотягивает.",
+        "entry_instructions": ""
+      },
+      "vital_statistics": {
+        "og": "1.062 – 1.075",
+        "ibu": "15 – 25",
+        "fg": "1.008 – 1.018",
+        "srm": "10 – 17",
+        "abv": "6.0 – 7.6%"
+      },
+      "vital_statistics_text": "OG: 1.062 – 1.075 | IBUs: 15 – 25 | FG: 1.008 – 1.018 | SRM: 10 – 17 | ABV: 6.0 – 7.6%",
+      "commercial_examples_text": "Chimay Red, Corsendonk Bruin, La Trappe Dubbel, Rochefort 6, St. Bernardus Pater 6, Westmalle Dubbel",
+      "tags_en": [
+        "high-strength",
+        "amber-color",
+        "top-fermented",
+        "western-europe",
+        "traditional-style",
+        "malty"
+      ],
+      "source_guideline_page_start": 53,
+      "source_pdf_page_start": 69,
+      "translation_status": "completed",
+      "tags_ru": [
+        "высокая крепость",
+        "янтарный цвет",
+        "верховое брожение",
+        "Западная Европа",
+        "традиционный стиль",
+        "солодовый"
+      ]
+    },
+    {
+      "bjcp_id": "26C",
+      "name_en": "Belgian Tripel",
+      "name_ru": "Бельгийский трипель",
+      "category_id": "26",
+      "category_en": "MONASTIC ALE",
+      "category_ru": "Монастырский эль",
+      "bjcp_heading": "26C. Belgian Tripel",
+      "description_short_ru": "Крепкий, светлый и довольно пряный бельгийский эль с округлой солодовой основой, уверенной горечью, сухим финишем и высокой ароматичностью при неожиданно высокой питкости.",
+      "sections_en": {
+        "overall_impression": "A strong, pale, somewhat spicy Belgian ale with a pleasant rounded malt flavor, firm bitterness, and dry finish. Quite aromatic, with spicy, fruity, and light alcohol notes combining with the supportive clean malt character to produce a surprisingly drinkable beverage considering the high alcohol content.",
+        "aroma": "Complex but seamless bouquet of moderate to significant spiciness, moderate fruity esters, low alcohol, low hops, and light malt. Generous spicy, peppery, sometimes clove-like phenols. Esters often reminiscent of citrus fruit, like oranges or lemons, but may sometimes have a slight ripe banana character. A low yet distinctive spicy, floral, sometimes perfumy hop character is optional. Alcohols are soft, spicy, and low in intensity. The malt character is light, with a soft, slightly grainy-sweet, or slightly honey-like impression.",
+        "appearance": "Deep yellow to pale amber in color. Good clarity. Effervescent. Long-lasting, creamy, rocky, white head resulting in characteristic Belgian lace on the glass as it fades.",
+        "flavor": "Flavor profile similar to aroma (same descriptors apply) for malt, esters, phenols, alcohol, and hops. Esters low to moderate, phenols low to moderate, hops low to moderate, alcohol low, all well combined in a coherent presentation. Medium to high bitterness, accentuated by a dry finish. Moderate bitterness in the aftertaste with substantial spicy-fruity yeast character. Should not be sweet.",
+        "mouthfeel": "Medium-light to medium body, although lighter than the substantial gravity would suggest. Highly carbonated. The alcohol content is deceptive, and has little to no obvious warming sensation. Effervescent. Should not be heavy.",
+        "comments": "High in alcohol but does not taste strongly of alcohol. The best examples are sneaky, not obvious. High carbonation and attenuation helps bring out the many flavors and to increase the perception of a dry finish. Most traditional versions have at least 30 IBUs and are very dry.",
+        "history": "Popularized by the monastery at Westmalle, first brewed in 1931.",
+        "characteristic_ingredients": "Pilsner malt, often pale sugar adjuncts. Continental hops. Spicy-fruity Belgian yeast strains. Spice additions are generally not traditional, and if used, should be a background character only. Fairly soft water.",
+        "style_comparison": "May resemble a Belgian Golden Strong Ale but slightly darker and a bit fuller-bodied, with more emphasis on phenols and less on esters, and fewer late hops. Should not seem like a blond Barleywine.",
+        "entry_instructions": ""
+      },
+      "sections_ru": {
+        "overall_impression": "Крепкий, светлый и довольно пряный бельгийский эль с приятной округлой солодовой основой, уверенной горечью и сухим финишем. Очень ароматный: пряность, фруктовость и лёгкие алкогольные ноты сочетаются с чистым поддерживающим солодом и делают пиво удивительно питким для такой крепости.",
+        "aroma": "Букет сложный, но цельный: от умеренной до заметной пряности, умеренные фруктовые эфиры, слабый алкоголь, слабый хмель и лёгкий солод. Фенолы щедрые, пряно-перечные, иногда с намёком на гвоздику. Эфиры часто напоминают цитрусовые — апельсин или лимон, хотя порой возможен лёгкий оттенок спелого банана. Хмель, если различим, даёт слабый, но характерный пряный, цветочный, иногда парфюмный тон. Алкоголь мягкий, пряный, низкой интенсивности. Солодовая основа лёгкая, с мягким зерновато-сладким или чуть медовым ощущением.",
+        "appearance": "Цвет от насыщенно-жёлтого до бледно-янтарного. Прозрачность хорошая. Пиво игристое. Пена стойкая, кремовая, каменистая, белая, по мере оседания оставляет характерное бельгийское кружево.",
+        "flavor": "По набору характеристик вкус близок к аромату: те же эфиры, фенолы, солод, алкоголь и хмель. Эфиры, фенолы и хмель — от слабых до умеренных; алкоголь слабый. Все элементы хорошо собраны в единое целое. Горечь от средней до высокой, и сухой финиш делает её ещё заметнее. В послевкусии остаётся умеренная горечь и выраженный пряно-фруктовый дрожжевой характер. Пиво не должно казаться сладким.",
+        "mouthfeel": "Тело от умеренно лёгкого до среднего, но субъективно кажется легче, чем можно ожидать по плотности. Карбонизация высокая. Алкоголь обманчиво скрыт и почти не даёт явного согревания. Пиво игристое и не должно быть тяжёлым.",
+        "comments": "Крепость высокая, но вкус алкоголя не должен бросаться в глаза. Лучшие примеры «хитрые»: крепость ощущаешь позже, а не сразу. Высокая карбонизация и сильное сбраживание помогают раскрыть множество нюансов и усиливают впечатление сухого финиша. У большинства традиционных версий горечь не ниже 30 IBU, и они очень сухие.",
+        "history": "Стиль стал знаменит благодаря монастырю Westmalle; впервые его сварили в 1931 году.",
+        "characteristic_ingredients": "Пилс-солод, часто со светлыми сахарными адъюнктами, континентальный хмель, бельгийские дрожжи с пряно-фруктовым профилем и довольно мягкая вода. Специи традиционно не характерны; если они есть, то только как фон.",
+        "style_comparison": "Стиль может напоминать Belgian Golden Strong Ale, но обычно чуть темнее, немного полнее по телу, с большим акцентом на фенолы, меньшим — на эфиры и с менее выраженным поздним хмелем. Он не должен восприниматься как светлый barleywine.",
+        "entry_instructions": ""
+      },
+      "vital_statistics": {
+        "og": "1.075 – 1.085",
+        "ibu": "20 – 40",
+        "fg": "1.008 – 1.014",
+        "srm": "4.5 – 7",
+        "abv": "7.5 – 9.5%"
+      },
+      "vital_statistics_text": "OG: 1.075 – 1.085 | IBUs: 20 – 40 | FG: 1.008 – 1.014 | SRM: 4.5 – 7 | ABV: 7.5 – 9.5%",
+      "commercial_examples_text": "Chimay Tripel, La Rulles Tripel, La Trappe Tripel, St. Bernardus Tripel, Val-Dieu Triple, Westmalle Tripel",
+      "tags_en": [
+        "high-strength",
+        "pale-color",
+        "top-fermented",
+        "western-europe",
+        "traditional-style",
+        "bitter"
+      ],
+      "source_guideline_page_start": 54,
+      "source_pdf_page_start": 70,
+      "translation_status": "completed",
+      "tags_ru": [
+        "высокая крепость",
+        "светлый цвет",
+        "верховое брожение",
+        "Западная Европа",
+        "традиционный стиль",
+        "горький"
+      ]
+    },
+    {
+      "bjcp_id": "26D",
+      "name_en": "Belgian Dark Strong Ale",
+      "name_ru": "Бельгийский крепкий тёмный эль",
+      "category_id": "26",
+      "category_en": "MONASTIC ALE",
+      "category_ru": "Монастырский эль",
+      "bjcp_heading": "26D. Belgian Dark Strong Ale",
+      "description_short_ru": "Тёмный, очень крепкий и сложный бельгийский эль, где богатый солод, тёмные фруктовые тона и пряность образуют гладкий, насыщенный и опасно питкий профиль.",
+      "sections_en": {
+        "overall_impression": "A dark, complex, very strong Belgian ale with a delicious blend of malt richness, dark fruit flavors, and spicy notes. Complex, rich, smooth, and dangerous.",
+        "aroma": "A complex and fairly intense mix of rich maltiness and deep fruit, accentuated by spicy phenols and alcohol. The malt character is moderately-high to high and has a deep, bready-toasty base with dark caramel notes, but no impression of dark or roasted malt. Esters are strong to moderately low, and reminiscent of raisins, plums, dried cherries, figs, dates, or prunes. Spicy phenols like black pepper or vanilla, not clove, may be present as a low to moderate background character. A soft, spicy, perfumy, or rose-like alcohol is low to moderate, but never hot or solvent-like. Hops are usually not noticeable, but if present can add a light spicy, floral, or herbal character.",
+        "appearance": "Deep amber to deep coppery-brown in color (dark in the style name implies more deeply colored than golden, not black). Huge, dense, moussy, persistent cream- to light tan-colored head. Usually clear.",
+        "flavor": "Rich and complex maltiness, but not heavy in the finish. The flavor character is similar to the aroma (same malt, ester, phenol, alcohol, and hop comments apply here as well). Moderately malty-rich on the palate, which can have a sweet impression if bitterness is low. Usually moderately dry to dry finish, although may be up to moderately sweet. Medium-low to moderate bitterness; alcohol provides some of the balance to the malt. Generally malty-rich balance, but can be fairly even with bitterness. The complex and varied flavors should blend smoothly and harmoniously, and often benefit from age. The finish should not be heavy or syrupy.",
+        "mouthfeel": "High carbonation but not sharp. Smooth but noticeable alcohol warmth. Body can range from medium-light to medium-full and creamy. Most are medium-bodied.",
+        "comments": "Also known as a Belgian Quad, mainly outside of Belgium (Quadruple is the name of a specific beer). Has a wider range of interpretation than many other Belgian styles. Traditional versions tend to be drier than many modern commercial versions, which can be rather sweet and full-bodied. Many examples are simply known by their strength or color designation. Some might be labeled Grand Cru, but this is more of a statement of quality than style.",
+        "history": "Westvleteren started making their version just before World War II, with Chimay and Rochefort adding their examples just after. Other monastic breweries created products towards the end of the 20th century, but some secular breweries began producing similar beers starting around 1960.",
+        "characteristic_ingredients": "Spicy-estery Belgian yeast. Impression of a complex grain bill, although many traditional versions are quite simple, with caramelized sugar syrup or unrefined sugars and yeast providing much of the complexity. Continental hops. Spices not typical; if present, should be subtle.",
+        "style_comparison": "Like a larger Belgian Dubbel, with a fuller body and increased malt richness. Not as bitter or hoppy as a Belgian Tripel, but of similar strength.",
+        "entry_instructions": ""
+      },
+      "sections_ru": {
+        "overall_impression": "Тёмный, сложный и очень крепкий бельгийский эль с вкусным сочетанием богатой солодовости, тёмных фруктовых оттенков и пряных нот. Пиво насыщенное, гладкое и опасно питкое.",
+        "aroma": "Аромат сложный и довольно интенсивный: богатая солодовость и глубокая фруктовость, усиленные пряными фенолами и алкоголем. Солодовый характер — от умеренно высокого до высокого, с глубокой хлебно-тостовой базой и нотами тёмной карамели, но без ощущения жжёного или жареного солода. Эфиры — от умеренно слабых до сильных; чаще всего это изюм, слива, сушёная вишня, инжир, финик или чернослив. На фоне могут появляться слабые или умеренные пряные фенолы вроде чёрного перца или ванили, но не гвоздики. Алкоголь — мягкий, пряный, парфюмный или даже слегка розовый по ассоциации, от слабого до умеренного; жгучесть и растворительные ноты недопустимы. Хмель обычно не выделяется, но при наличии может дать лёгкий пряный, цветочный или травянистый оттенок.",
+        "appearance": "Цвет от глубокого янтарного до насыщенного медно-коричневого. Слово dark в названии означает более глубокий оттенок, чем у golden, а не чёрный цвет. Пена огромная, плотная, муссовая, стойкая, от кремовой до светло-бежевой. Обычно пиво прозрачное.",
+        "flavor": "Во вкусе много богатой, сложной солодовости, но финиш не должен казаться тяжёлым. Профиль в целом повторяет аромат: те же солодовые, эфирные, фенольные, алкогольные и хмелевые нюансы. На нёбе солод выражен от умеренного до насыщенного; при невысокой горечи пиво может казаться чуть сладковатым. Обычно финиш от умеренно сухого до сухого, хотя допустима и умеренная сладость. Горечь — от умеренно слабой до умеренной; часть баланса солоду придаёт сам алкоголь. В целом баланс богатый и солодовый, но в некоторых версиях может быть довольно ровным. Сложный набор вкусов должен складываться в гладкое и гармоничное целое; выдержка часто идёт стилю на пользу. Финиш не должен быть тяжёлым или сиропным.",
+        "mouthfeel": "Карбонизация высокая, но не колючая. Алкогольное тепло ощутимое, но гладкое. Тело варьируется от умеренно лёгкого до умеренно полного и может быть кремовым; у большинства образцов оно среднее.",
+        "comments": "За пределами Бельгии стиль часто называют Belgian Quad, хотя Quadruple — это всё же название конкретного пива. Диапазон интерпретаций здесь шире, чем у многих других бельгийских стилей. Традиционные версии обычно суше, тогда как многие современные коммерческие варианты могут быть заметно более сладкими и полнотелыми. Некоторые образцы известны просто по обозначению крепости или цвета. Иногда встречается маркировка Grand Cru, но это скорее заявление о качестве, чем отдельный стиль.",
+        "history": "Westvleteren начал варить свою версию незадолго до Второй мировой войны; вскоре после этого похожие сорта появились у Chimay и Rochefort. Другие монастырские пивоварни пришли к стилю уже ближе к концу XX века, а некоторые светские производители начали выпускать подобное пиво примерно с 1960 года.",
+        "characteristic_ingredients": "Бельгийские дрожжи с пряно-эфирным профилем. Засыпь может казаться сложной, хотя многие традиционные версии довольно просты, а значительную часть глубины дают карамелизованный сахарный сироп или нерафинированные сахара вместе с дрожжами. Хмель — континентальный. Специи нехарактерны; если используются, то должны быть совсем деликатными.",
+        "style_comparison": "Стиль можно представить как увеличенный Belgian Dubbel — с более полным телом и более богатой солодовостью. По сравнению с Belgian Tripel он менее горький и менее хмелевой, хотя крепость у них сопоставима.",
+        "entry_instructions": ""
+      },
+      "vital_statistics": {
+        "og": "1.075 – 1.110",
+        "ibu": "20 – 35",
+        "fg": "1.010 – 1.024",
+        "srm": "12 – 22",
+        "abv": "8.0 – 12.0%"
+      },
+      "vital_statistics_text": "OG: 1.075 – 1.110 | IBUs: 20 – 35 | FG: 1.010 – 1.024 | SRM: 12 – 22 | ABV: 8.0 – 12.0%",
+      "commercial_examples_text": "Achel Extra Bruin, Boulevard The Sixth Glass, Chimay Blue, Rochefort 10, St. Bernardus Abt 12, Westvleteren 12",
+      "tags_en": [
+        "very-high-strength",
+        "amber-color",
+        "top-fermented",
+        "western-europe",
+        "traditional-style",
+        "malty"
+      ],
+      "source_guideline_page_start": 54,
+      "source_pdf_page_start": 70,
+      "translation_status": "completed",
+      "tags_ru": [
+        "очень высокая крепость",
+        "янтарный цвет",
+        "верховое брожение",
+        "Западная Европа",
+        "традиционный стиль",
+        "солодовый"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,372 @@
+{
+  "source": {
+    "document": "BJCP 2021 Beer Style Guidelines",
+    "file_name": "2021_Guidelines_Beer_1.25.pdf",
+    "language": "ru",
+    "translation_scope": "detailed",
+    "notes": "Подробный русский перевод четвёртой части корпуса BJCP: категории 8-9 с сохранением короткого описания, полных секций и оригинальных английских секций для сверки."
+  },
+  "progress": {
+    "styles_total_in_guideline": 128,
+    "styles_translated_in_this_file": 5,
+    "translated_style_ids": [
+      "8A",
+      "8B",
+      "9A",
+      "9B",
+      "9C"
+    ],
+    "translated_categories": [
+      "8",
+      "9"
+    ],
+    "next_recommended_batch": [
+      "10A",
+      "10B",
+      "10C",
+      "11A",
+      "11B",
+      "11C"
+    ]
+  },
+  "categories": [
+    {
+      "category_id": "8",
+      "category_en": "DARK EUROPEAN LAGER",
+      "category_ru": "Тёмный европейский лагер",
+      "overview_ru": "Эта категория объединяет немецкие лагеры крепости vollbier, которые темнее янтарно-коричневого диапазона и строятся вокруг чистого лагерного профиля и выраженного солодового характера."
+    },
+    {
+      "category_id": "9",
+      "category_en": "STRONG EUROPEAN BEER",
+      "category_ru": "Крепкое европейское пиво",
+      "overview_ru": "В эту категорию входят более насыщенные по вкусу и более крепкие лагеры из Германии и балтийского региона. Большинство из них тёмные, но существуют и светлые варианты."
+    }
+  ],
+  "styles": [
+    {
+      "bjcp_id": "8A",
+      "bjcp_heading": "8A. Munich Dunkel",
+      "category_id": "8",
+      "category_en": "DARK EUROPEAN LAGER",
+      "category_ru": "Тёмный европейский лагер",
+      "name_en": "Munich Dunkel",
+      "name_ru": "Мюнхенский дункель",
+      "description_short_ru": "Традиционный солодовый баварский коричневый лагер с глубокими тостово-хлебными солодовыми вкусами, без жжёных оттенков, с мягкой горечью и относительно сухим финишем.",
+      "sections_ru": {
+        "overall_impression": "Традиционный солодовый коричневый лагер из Баварии. Во вкусе — глубокие тостовые и хлебные солодовые тона без какой-либо жжёности или подгорелости. Пиво гладкое, насыщенное, с сдержанной горечью и сравнительно сухим финишем, благодаря чему его можно пить большими порциями.",
+        "aroma": "Солодовая насыщенность от умеренной до высокой: чаще всего напоминает корочку поджаренного хлеба, с намёками на шоколад, орехи, карамель или ирис. В очень свежих традиционных версиях шоколадные оттенки нередко выражены сильнее. Солодовый профиль скорее богатый и хлебный, чем сахаристо-карамельный. Брожение чистое. Допустим лёгкий пряный, цветочный или травянистый аромат хмеля.",
+        "appearance": "Цвет от глубокого медного до тёмно-коричневого, нередко с красноватым или гранатовым отблеском. Пена кремовая, от светло-бежевой до средне-бежевой. Обычно пиво прозрачное.",
+        "flavor": "Богатый солодовый вкус, близкий к ароматике; применимы те же дескрипторы, интенсивность — от средней до высокой. Горечь сдержанная, от умеренно слабой до умеренной, поэтому общий баланс остаётся солодовым. Во вкусе пиво мягкое и солодовое, но не чрезмерно сладкое; финиш средне-сухой, с солодовым послевкусием. Недопустимы жареные, подгорелые или резко горькие солодовые тона; тостовые оттенки не должны уходить в грубую зерновую сухость, а карамельные ноты не должны быть приторными. Лёгкий пряный, травянистый или цветочный вкус хмеля допустим. Профиль брожения чистый.",
+        "mouthfeel": "Тело от среднего к средне-полному; даёт мягкое, слегка декстриновое ощущение во рту, но без тяжеловесности и приторности. Карбонизация умеренная. Характер лагера гладкий. Не должно быть ни резкой терпкости, ни кусачей жёсткости. Алкогольного согревания нет.",
+        "comments": "Традиционный мюнхенский стиль — тёмный собрат Helles. Во франконских версиях горечь обычно выше, чем в мюнхенских.",
+        "history": "Стиль сформировался на пивоварне Spaten в 1830-х годах после появления мюнхенского солода и воспринимался как продолжатель тогдашних тёмных региональных сортов. Возникнув в Мюнхене, он позже стал популярен по всей Баварии, особенно во Франконии.",
+        "characteristic_ingredients": "Традиционно основой служат мюнхенские солоды, хотя допустимо использовать и Pils, и Vienna. Специальные солоды вводят в небольшом количестве — для цвета и глубины вкуса. Декокционное затирание исторически типично. Используются немецкие хмели и лагерные дрожжи.",
+        "style_comparison": "По солодовой насыщенности и крепости уступает Dunkles Bock. Не имеет столь выраженной жарености и обычно не столь горек, как Schwarzbier. Богаче солодом, более сфокусирован на солоде и менее хмелевой, чем Czech Dark Lager."
+      },
+      "sections_en": {
+        "overall_impression": "A traditional malty brown lager from Bavaria. Deeply toasted, bready malt flavors without any roasty or burnt flavors. Smooth and rich, with a restrained bitterness and a relatively dry finish that allows for drinking in quantity.",
+        "aroma": "Moderate to high malt richness, like toasted bread crusts with hints of chocolate, nuts, caramel, or toffee. Fresh traditional versions often show higher levels of chocolate. The malt character is more malty-rich than sugary or caramelly sweet. Clean fermentation profile. A light spicy, floral, or herbal hop aroma is optional.",
+        "appearance": "Deep copper to dark brown, often with a red or garnet tint. Creamy, light to medium tan head. Usually clear.",
+        "flavor": "Rich malt flavors similar to aroma (same malt descriptors apply), medium to high. Restrained bitterness, medium-low to medium, giving an overall malty balance. Malty and soft on the palate without being overly sweet, and medium-dry in the finish with a malty aftertaste. No roast, burnt, or bitter malt flavors, toasted flavors shouldn’t have a harsh grainy dryness, and caramel flavors should not be sweet. Low spicy, herbal, or floral hop flavor optional. Clean fermentation profile.",
+        "mouthfeel": "Medium to medium-full body, providing a soft and dextrinous mouthfeel without being heavy or cloying. Moderate carbonation. Smooth lager character. No harsh or biting astringency. Not warming.",
+        "comments": "A traditional Munich style, the dark companion to Helles. Franconian versions are more bitter than ones from Munich.",
+        "history": "Developed at Spaten in the 1830s after the development of Munich malt, and seen as a successor to dark regional beers of the time. While originating in Munich, the style became popular throughout Bavaria (especially Franconia).",
+        "characteristic_ingredients": "Traditionally, Munich malts, but Pils and Vienna can be used too. Light use of specialty malts for color and depth. Decoction mash traditional. German hops and lager yeast.",
+        "style_comparison": "Not as intense in maltiness or as strong as a Dunkles Bock. Lacking the more roasted flavors and often the hop bitterness of a Schwarzbier. Richer, more malt-centric, and less hoppy than a Czech Dark Lager."
+      },
+      "vital_statistics_text": "OG: 1.048 – 1.056 | IBUs: 18 – 28 | FG: 1.010 – 1.016 | SRM: 17 – 28 | ABV: 4.5 – 5.6%",
+      "vital_statistics": {
+        "og": "1.048-1.056",
+        "ibus": "18-28",
+        "fg": "1.010-1.016",
+        "srm": "17-28",
+        "abv": "4.5-5.6%"
+      },
+      "commercial_examples_text": "Ayinger Altbairisch Dunkel, Ettaler Kloster-Dunkel, Eittinger Urtyp Dunkel, Hacker-Pschorr Münchner Dunkel, Hofbräuhaus Dunkel, Weltenburger Kloster Barock-Dunkel",
+      "tags_en": [
+        "standard-strength",
+        "dark-color",
+        "bottom-fermented",
+        "lagered",
+        "central-europe",
+        "traditional-style",
+        "malty",
+        "dark-lager-family"
+      ],
+      "tags_ru": [
+        "стандартная крепость",
+        "тёмный цвет",
+        "низовое брожение",
+        "лагеризация",
+        "Центральная Европа",
+        "традиционный стиль",
+        "солодовый",
+        "семейство тёмных лагеров"
+      ],
+      "translation_status": "detailed_ru_translated_reviewed_v1",
+      "source_pdf_page_start": 30,
+      "source_guideline_page_start": 14
+    },
+    {
+      "bjcp_id": "8B",
+      "bjcp_heading": "8B. Schwarzbier",
+      "category_id": "8",
+      "category_en": "DARK EUROPEAN LAGER",
+      "category_ru": "Тёмный европейский лагер",
+      "name_en": "Schwarzbier",
+      "name_ru": "Шварцбир",
+      "description_short_ru": "Тёмный немецкий лагер, в котором жареные, но мягкие солодовые тона сочетаются с умеренной горечью; более лёгкое тело, сухость и отсутствие тяжёлого подгорелого послевкусия делают его очень питким.",
+      "sections_ru": {
+        "overall_impression": "Тёмный немецкий лагер, в котором жареные, но мягкие солодовые вкусы уравновешены умеренной хмелевой горечью. Более лёгкое тело, сухость и отсутствие жёсткого, подгорелого или тяжёлого послевкусия делают это пиво весьма питким.",
+        "aroma": "Солодовый аромат от слабого до умеренного, с лёгкой ароматической солодовой сладостью; часто заметны намёки на жареный солод. Солод может быть чистым и нейтральным либо умеренно насыщенным, хлебным, иногда с лёгким оттенком тёмной карамели. Жареный характер может напоминать тёмный шоколад или кофе, но никогда не должен становиться подгорелым. Допустим умеренно слабый пряный, цветочный или травянистый аромат хмеля. Лагерное брожение чистое.",
+        "appearance": "Цвет от среднего коричневого до очень тёмно-коричневого, часто с глубокими рубиновыми или гранатовыми отблесками, но почти никогда не выглядит по-настоящему чёрным. Очень прозрачное. Пена большая, стойкая, светло-коричневая.",
+        "flavor": "Солодовый вкус от слабого до умеренного: от чисто-нейтрального до умеренно насыщенного, хлебно-солодового. Лёгкие или умеренные жареные солодовые оттенки могут давать привкус горького шоколада, но без подгорелости. Горечь от умеренно слабой до умеренной. Хмелевой вкус — от слабого до умеренного, обычно пряный, цветочный или травянистый. Лагерный профиль чистый. Финиш сухой. Небольшая остаточная сладость допустима, но не считается традиционной. В послевкусии остаётся хмелевая горечь, а на заднем плане — дополняющая её, но сдержанная жареность.",
+        "mouthfeel": "Тело от средне-лёгкого до среднего. Карбонизация от умеренной до умеренно высокой. Текстура гладкая. Несмотря на использование тёмных жареных солодов, не должно быть ни жёсткости, ни терпкости.",
+        "comments": "Название буквально означает «чёрное пиво». Хотя стиль иногда называют «чёрным пилсом», он редко бывает настолько чёрным и почти никогда не столь хмелевым и горьким, как Pils. Сильно жареные, портерные по характеру вкусы здесь считаются недостатком.",
+        "history": "Региональная специализация Тюрингии, Саксонии и Франконии в Германии. Именно этот стиль стал вдохновением для чёрных лагеров, которые начали варить в Японии. После объединения Германии в 1990 году его популярность выросла.",
+        "characteristic_ingredients": "База обычно строится на немецких мюнхенских и пилснерных солодах, а шелушёные тёмные жареные солоды заменяются безоболочечными, чтобы получить жареные ноты без подгорелости. Традиционны немецкие сорта хмеля и чистые немецкие лагерные дрожжи.",
+        "style_comparison": "По сравнению с Munich Dunkel обычно темнее, суше во вкусе, легче по телу и имеет заметный, но не высокий край жареного солода, который балансирует солодовую основу. Не должен напоминать American Porter, просто сваренный на лагерных дрожжах. Суше, менее солодовый и менее хмелевой, чем Czech Dark Lager."
+      },
+      "sections_en": {
+        "overall_impression": "A dark German lager that balances roasted yet smooth malt flavors with moderate hop bitterness. The lighter body, dryness, and lack of a harsh, burnt, or heavy aftertaste helps make this beer quite drinkable.",
+        "aroma": "Low to moderate malt, with low aromatic malty sweetness and hints of roast malt often apparent. The malt can be clean and neutral or moderately rich and bready, and may have a hint of dark caramel. The roast character can be somewhat dark chocolate- or coffee-like but should never be burnt. A moderately low spicy, floral, or herbal hop aroma is optional. Clean lager yeast character.",
+        "appearance": "Medium to very dark brown in color, often with deep ruby to garnet highlights, yet almost never truly black. Very clear. Large, persistent, tan-colored head.",
+        "flavor": "Light to moderate malt flavor, which can have a clean, neutral character to a moderately rich, bread-malty quality. Light to moderate roasted malt flavors can give a bitter-chocolate palate that is never burnt. Medium-low to medium bitterness. Light to moderate spicy, floral, or herbal hop flavor. Clean lager character. Dry finish. Some residual sweetness is acceptable but not traditional. Aftertaste of hop bitterness with a complementary but subtle roastiness in the background.",
+        "mouthfeel": "Medium-light to medium body. Moderate to moderately-high carbonation. Smooth. No harshness or astringency, despite the use of dark, roasted malts.",
+        "comments": "Literally means black beer in German. While sometimes called a “black Pils,” the beer is rarely as dark as black or as hop-forward and bitter as a Pils. Strongly roasted, Porter-like flavors are a flaw.",
+        "history": "A regional specialty from Thuringia, Saxony, and Franconia in Germany. Served as the inspiration for black lagers brewed in Japan. Popularity grew after German reunification in 1990.",
+        "characteristic_ingredients": "German Munich malt and Pilsner malts for the base, with huskless dark roasted malts that add roast flavors without burnt flavors. German hop varieties and clean German lager yeasts are traditional.",
+        "style_comparison": "In comparison with a Munich Dunkel, usually darker in color, drier on the palate, lighter in body, and with a noticeable (but not high) roasted malt edge to balance the malt base. Should not taste like an American Porter made with lager yeast. Drier, less malty, with less hop character than a Czech Dark Lager."
+      },
+      "vital_statistics_text": "OG: 1.046 – 1.052 | IBUs: 20 – 35 | FG: 1.010 – 1.016 | SRM: 19 – 30 | ABV: 4.4 – 5.4%",
+      "vital_statistics": {
+        "og": "1.046-1.052",
+        "ibus": "20-35",
+        "fg": "1.010-1.016",
+        "srm": "19-30",
+        "abv": "4.4-5.4%"
+      },
+      "commercial_examples_text": "Chuckanut Schwarz Lager, Devils Backbone Schwartz Bier, Köstritzer Schwarzbier, Kulmbacher Mönchshof Schwarzbier, Neuzeller Original Badebier, pFriem Schwarzbier",
+      "tags_en": [
+        "standard-strength",
+        "dark-color",
+        "bottom-fermented",
+        "lagered",
+        "central-europe",
+        "traditional-style",
+        "balanced",
+        "dark-lager-family"
+      ],
+      "tags_ru": [
+        "стандартная крепость",
+        "тёмный цвет",
+        "низовое брожение",
+        "лагеризация",
+        "Центральная Европа",
+        "традиционный стиль",
+        "сбалансированный",
+        "семейство тёмных лагеров"
+      ],
+      "translation_status": "detailed_ru_translated_reviewed_v1",
+      "source_pdf_page_start": 30,
+      "source_guideline_page_start": 14
+    },
+    {
+      "bjcp_id": "9A",
+      "bjcp_heading": "9A. Doppelbock",
+      "category_id": "9",
+      "category_en": "STRONG EUROPEAN BEER",
+      "category_ru": "Крепкое европейское пиво",
+      "name_en": "Doppelbock",
+      "name_ru": "Доппельбок",
+      "description_short_ru": "Крепкий, богатый и очень солодовый немецкий лагер, у которого есть светлые и тёмные варианты: тёмные версии глубже и насыщеннее по солоду, а светлые чуть суше и немного заметнее по хмелю.",
+      "sections_ru": {
+        "overall_impression": "Крепкий, богатый и очень солодовый немецкий лагер, существующий как в светлом, так и в тёмном варианте. Тёмные версии отличаются более глубоко развитым, насыщенным солодовым профилем, а светлые — чуть большей сухостью и немного более заметным хмелем.",
+        "aroma": "Солодовость очень высокая, возможны лёгкие карамельные ноты, а алкоголь может ощущаться от слабого до умеренного. Хмелевой аромат практически отсутствует. В тёмных версиях заметны богатые продукты реакций Майяра, глубокие тостовые солодовые тона и иногда лёгкий шоколадный оттенок, который никогда не должен быть жареным или подгорелым. Допустимы умеренно слабые оттенки тёмных фруктов — сливы, тёмного винограда, фруктовой пастилы. Светлые версии дают мощную, богатую, нередко тостовую солодовость, иногда с лёгким цветочным, пряным или травянистым акцентом хмеля.",
+        "appearance": "Прозрачность хорошая, пена крупная, кремовая, стойкая. Тёмные версии окрашены от медного до тёмно-коричневого, часто с рубиновыми отблесками, и имеют грязно-белую пену. Светлые версии — от глубокого золотистого до светло-янтарного цвета, с белой пеной.",
+        "flavor": "Вкус очень богатый и солодовый. Хмелевая горечь — от умеренной до умеренно слабой, но всегда позволяет солоду доминировать. Слабый хмелевой вкус допустим. Большинство образцов ощущаются во вкусе довольно солодовато-сладкими, однако во финише должно оставаться впечатление хорошей выброженности. Ощущение сладости здесь обусловлено невысоким уровнем хмеля, а не недоброженностью. Профиль брожения чистый. В тёмных версиях вкус солода и эфиров соответствует аромату — с теми же дескрипторами и примерно той же интенсивностью. Светлые версии показывают мощный хлебный и тостовый солодовый вкус, лёгкий цветочный, пряный или травянистый вкус хмеля и более сухой финиш.",
+        "mouthfeel": "Тело от средне-полного до полного. Карбонизация от умеренной к умеренно низкой. Текстура очень гладкая, без жёсткости и терпкости. Допустимо лёгкое алкогольное согревание, но оно не должно обжигать.",
+        "comments": "Название Doppelbock буквально означает «двойной бок». Большинство версий тёмные и могут демонстрировать карамелизацию и продукты реакций Майяра, возникающие при декокционном затирании, однако отличные светлые версии тоже существуют. Они не будут обладать той же глубиной тёмного солода и фруктов, что тёмные, и обычно чуть суше, хмелевее и горче. Хотя большинство традиционных образцов лежит в нижней части приведённых диапазонов, у стиля по сути нет жёсткого верхнего предела по плотности и алкоголю, если сохраняется тот же баланс.",
+        "history": "Баварская специализация, возникшая в Мюнхене; к XVIII веку такое пиво уже варили монахи ордена святого Франциска Паолы. Исторические версии были менее выброженными, поэтому слаще и слабее по алкоголю, чем современные интерпретации. Монахи называли это пиво «жидким хлебом» и употребляли его во время Великого поста. После судебного решения XIX века, по которому только Paulaner имела право использовать название Salvator, другие пивоварни начали массово давать своим версиям имена, заканчивающиеся на «-ator». Изначально стиль был тёмно-коричневым; светлые версии — более позднее развитие.",
+        "characteristic_ingredients": "Обычно используют солода Pils, Vienna и Munich. Иногда для коррекции цвета добавляют немного тёмного солода. Хмель — традиционный немецкий. Дрожжи — чистые немецкие лагерные. Декокционное затирание исторически характерно.",
+        "style_comparison": "Более крепкая, насыщенная и полнотелая версия либо Dunkles Bock, либо Helles Bock. Светлые версии показывают более высокую выброженность и меньше тёмно-фруктового характера, чем тёмные.",
+        "entry_instructions": "Участник должен указать, является ли образец светлой или тёмной версией."
+      },
+      "sections_en": {
+        "overall_impression": "A strong, rich, and very malty German lager that can have both pale and dark variants. The darker versions have more richly-developed, deeper malt flavors, while the paler versions have slightly more hops and dryness.",
+        "aroma": "Very strong maltiness, possibly with light caramel notes, and up to a moderate alcohol aroma. Virtually no hop aroma. Dark versions have significant, rich Maillard products, deeply toasted malt, and possibly a slight chocolate-like aroma that should never be roasted or burnt. Moderately-low dark fruit, like plums, dark grapes, or fruit leather, is allowable. Pale versions have a rich and strong, often toasty, malt presence, possibly with a light floral, spicy, or herbal hop accent.",
+        "appearance": "Good clarity, with a large, creamy, persistent head. Dark versions are copper to dark brown in color, often with ruby highlights, and an off-white head. Pale versions are deep gold to light amber in color, with a white head.",
+        "flavor": "Very rich and malty. Hop bitterness varies from moderate to moderately low but always allows malt to dominate the flavor. Faint hop flavor optional. Most examples are fairly malty-sweet on the palate, but should have an impression of attenuation in the finish. The impression of sweetness comes from low hopping, not from incomplete fermentation. Clean fermentation profile. Dark versions have malt and ester flavors similar to the aroma (same descriptors and intensities). Pale versions have a strong bready and toasty malt flavor, a light floral, spicy, or herbal hop flavor, and a drier finish.",
+        "mouthfeel": "Medium-full to full body. Moderate to moderately-low carbonation. Very smooth without harshness, astringency. A light alcohol warmth may be noted, but it should never burn.",
+        "comments": "Doppelbock means double bock. Most versions are dark colored and may display the caramelizing and Maillard products of decoction mashing, but excellent pale versions also exist. The pale versions will not have the same richness and darker malt and fruit flavors of the dark versions, and may be a bit drier, hoppier, and more bitter. While most traditional examples are in the lower end of the ranges cited, the style can be considered to have no upper limit for gravity and alcohol, provided the balance remains the same.",
+        "history": "A Bavarian specialty originating in Munich, first made by the monks of St. Francis of Paula by the 1700s. Historical versions were less well-attenuated than modern interpretations, thus with higher sweetness and lower alcohol levels. Was called “liquid bread” by monks, and consumed during the Lenten fast. Breweries adopted beer names ending in “-ator” after a 19th century court ruling that no one but Paulaner was allowed to use the name Salvator. Traditionally dark brown in color; paler examples are a more recent development.",
+        "characteristic_ingredients": "Pils, Vienna, Munich malts. Occasionally dark malt for color adjustment. Traditional German hops. Clean German lager yeast. Decoction mashing is traditional.",
+        "style_comparison": "A stronger, richer, more full-bodied version of either a Dunkles Bock or a Helles Bock. Pale versions will show higher attenuation and less dark fruity character than the darker versions.",
+        "entry_instructions": "The entrant will specify whether the entry is a pale or a dark variant."
+      },
+      "vital_statistics_text": "OG: 1.072 – 1.112 | IBUs: 16 – 26 | FG: 1.016 – 1.024 | SRM: 6 – 25 | ABV: 7.0 – 10.0%",
+      "vital_statistics": {
+        "og": "1.072-1.112",
+        "ibus": "16-26",
+        "fg": "1.016-1.024",
+        "srm": "6-25",
+        "abv": "7.0-10.0%"
+      },
+      "commercial_examples_text": "Dark Versions – Andechs Doppelbock Dunkel, Ayinger Celebrator, Paulaner Salvator, Spaten Optimator, Tröegs Troegenator, Weihenstephaner Korbinian; Pale Versions – Eggenberg Urbock 23º, Meinel Doppelbock Hell, Plank Bavarian Heller Doppelbock, Riegele Auris 19, Schönbuch Doppelbock Hell, Staffelberg-Bräu Zwergator",
+      "tags_en": [
+        "high-strength",
+        "amber-color",
+        "pale-color",
+        "bottom-fermented",
+        "lagered",
+        "central-europe",
+        "traditional-style",
+        "bock-family",
+        "malty"
+      ],
+      "tags_ru": [
+        "высокая крепость",
+        "янтарный цвет",
+        "светлый цвет",
+        "низовое брожение",
+        "лагеризация",
+        "Центральная Европа",
+        "традиционный стиль",
+        "семейство боков",
+        "солодовый"
+      ],
+      "translation_status": "detailed_ru_translated_reviewed_v1",
+      "source_pdf_page_start": 31,
+      "source_guideline_page_start": 15
+    },
+    {
+      "bjcp_id": "9B",
+      "bjcp_heading": "9B. Eisbock",
+      "category_id": "9",
+      "category_en": "STRONG EUROPEAN BEER",
+      "category_ru": "Крепкое европейское пиво",
+      "name_en": "Eisbock",
+      "name_ru": "Айсбок",
+      "description_short_ru": "Крепкий, полнотелый, очень солодовый тёмный немецкий лагер с концентрированным вкусом и нередко вязким ощущением; алкоголь должен быть гладким и согревающим, а не жгучим.",
+      "sections_ru": {
+        "overall_impression": "Крепкий, полнотелый, богатый и очень солодовый тёмный немецкий лагер, часто с некоторой вязкостью. Несмотря на высокую концентрацию вкуса, алкоголь должен быть гладким и согревающим, а не жгучим.",
+        "aroma": "В аромате доминируют богатый, интенсивный солод и отчётливо заметный алкоголь. Солод может давать хлебные и тостовые оттенки, а также карамель и лёгкий шоколад; часто присутствуют тёмные фрукты вроде слив или винограда. Хмелевой аромат отсутствует. Алкоголь не должен быть грубым или растворительным. Брожение чистое.",
+        "appearance": "Цвет от глубокого медного до тёмно-коричневого, часто с красивыми рубиновыми отблесками. Прозрачность хорошая. Пена держится от умеренно до слабо; её цвет — от грязно-белого до тёмно-кремового. На стенках бокала часто заметны выраженные «ножки».",
+        "flavor": "Богатая сладкая солодовость уравновешивается заметным присутствием алкоголя. В солоде могут ощущаться продукты реакций Майяра, тостовые ноты, немного карамели и иногда лёгкий шоколад. Возможны выраженные тёмно-фруктовые эфиры солодового происхождения. Хмелевая горечь лишь настолько компенсирует сладость, чтобы пиво не казалось приторным. Хмелевой вкус отсутствует. Алкоголь помогает уравновесить мощную солодовую основу. Финиш должен оставлять впечатление богатого солода с определённой сухостью от алкоголя. Пиво не должно быть липким, сиропным или приторно сладким. Профиль брожения чистый.",
+        "mouthfeel": "Тело от полного до очень полного. Карбонизация низкая. Алкогольное согревание заметное, но без резкой горячности. Текстура очень гладкая, шелковистая, без грубых граней от алкоголя, горечи, сивушности или других сконцентрированных вкусов.",
+        "comments": "После замораживания нередко требуется длительная лагеризация, чтобы смягчить алкоголь и лучше собрать баланс солода и спиртового тепла. В английской транскрипции стиль часто произносят как “ICE-bock”.",
+        "history": "Стиль возник в Кульмбахе во Франконии в конце XIX века, хотя точные обстоятельства его появления неизвестны. По одной из популярных историй, он родился из-за того, что пиво на пивоварне случайно замёрзло.",
+        "characteristic_ingredients": "Используются те же ингредиенты, что и для Doppelbock. Стиль получают путём замораживания пива, похожего на доппельбок, и удаления льда — то есть «вымораживающей дистилляцией», которая концентрирует вкус, алкоголь и, увы, возможные дефекты. Коммерческие айсбоки обычно концентрируют примерно на 7–33% по объёму.",
+        "style_comparison": "Айсбок — это не просто более крепкий Doppelbock: название указывает именно на процесс замораживания и концентрации, а не только на уровень алкоголя; некоторые Doppelbock могут быть крепче отдельных Eisbock. По плотности, сладости и насыщенности уступает Wheatwine."
+      },
+      "sections_en": {
+        "overall_impression": "A strong, full-bodied, rich, and malty dark German lager often with a viscous quality and strong flavors. Even though flavors are concentrated, the alcohol should be smooth and warming, not burning.",
+        "aroma": "Dominated by rich, intense malt and a definite alcohol presence. The malt can have bready, toasty, qualities, with some caramel or faint chocolate, often with dark fruit notes like plums or grapes. No hop aroma. Alcohol aromas should not be harsh or solventy. Clean fermentation profile.",
+        "appearance": "Deep copper to dark brown in color, often with attractive ruby highlights. Good clarity. Head retention may be moderate to poor. Off-white to deep ivory colored head. Pronounced legs are often evident.",
+        "flavor": "Rich, sweet malt balanced by a significant alcohol presence. The malt can have Maillard products, toasty qualities, some caramel, and occasionally a slight chocolate flavor. May have significant malt-derived dark fruit esters. Hop bitterness just offsets the malt sweetness enough to avoid a cloying character. No hop flavor. Alcohol helps balance the strong malt presence. The finish should be of rich malt with a certain dryness from the alcohol. It should not be sticky, syrupy, or cloyingly sweet. Clean fermentation profile.",
+        "mouthfeel": "Full to very full-bodied. Low carbonation. Significant alcohol warmth without sharp hotness. Very smooth and silky without harsh edges from alcohol, bitterness, fusels, or other concentrated flavors.",
+        "comments": "Extended lagering is often needed post-freezing to smooth the alcohol and enhance the malt and alcohol balance. Pronounced “ICE-bock.”",
+        "history": "Originating in Kulmbach in Franconia in the late 1800s, although exact origins are not known. Fables describe it as coming from beer accidentally freezing at a brewery.",
+        "characteristic_ingredients": "Same as Doppelbock. Produced by freezing a doppelbock-like beer and removing ice (“freeze distillation”), thus concentrating flavor and alcohol, as well as any defects present. Commercial eisbocks are generally concentrated anywhere from 7% to 33% by volume.",
+        "style_comparison": "Eisbocks are not simply stronger Doppelbocks; the name refers to the process of freezing and concentrating the beer, and is not a statement on alcohol; some Doppelbocks are stronger than Eisbocks. Not as thick, rich, or sweet as a Wheatwine."
+      },
+      "vital_statistics_text": "OG: 1.078 – 1.120 | IBUs: 25 – 35 | FG: 1.020 – 1.035 | SRM: 17 – 30 | ABV: 9.0 – 14.0%",
+      "vital_statistics": {
+        "og": "1.078-1.120",
+        "ibus": "25-35",
+        "fg": "1.020-1.035",
+        "srm": "17-30",
+        "abv": "9.0-14.0%"
+      },
+      "commercial_examples_text": "Kulmbacher Eisbock",
+      "tags_en": [
+        "very-high-strength",
+        "amber-color",
+        "bottom-fermented",
+        "lagered",
+        "central-europe",
+        "traditional-style",
+        "bock-family",
+        "malty"
+      ],
+      "tags_ru": [
+        "очень высокая крепость",
+        "янтарный цвет",
+        "низовое брожение",
+        "лагеризация",
+        "Центральная Европа",
+        "традиционный стиль",
+        "семейство боков",
+        "солодовый"
+      ],
+      "translation_status": "detailed_ru_translated_reviewed_v1",
+      "source_pdf_page_start": 31,
+      "source_guideline_page_start": 15
+    },
+    {
+      "bjcp_id": "9C",
+      "bjcp_heading": "9C. Baltic Porter",
+      "category_id": "9",
+      "category_en": "STRONG EUROPEAN BEER",
+      "category_ru": "Крепкое европейское пиво",
+      "name_en": "Baltic Porter",
+      "name_ru": "Балтийский портер",
+      "description_short_ru": "Крепкое тёмное солодовое пиво с разными региональными трактовками, обычно гладкое, согревающее и насыщенно-солодовое, со сложными тёмно-фруктовыми оттенками и жареным характером без подгорелости.",
+      "sections_ru": {
+        "overall_impression": "Крепкое тёмное солодовое пиво, внутри балтийского региона имеющее разные интерпретации. Обычно гладкое, согревающее и насыщенно-солодовое, со сложными тёмно-фруктовыми тонами и жареным характером без подгорелости.",
+        "aroma": "Богатая солодовость, часто с карамелью, ирисом, орехами, глубоким тостом или лакрицей. Алкоголь и эфиры образуют сложный профиль умеренной интенсивности, напоминающий сливы, чернослив, изюм, вишню или смородину; иногда появляется винная, почти портвейновая нота. Глубокие солодовые акценты могут напоминать тёмный шоколад, кофе или мелассу, но никогда не должны быть жжёными. Хмель отсутствует. Кислотности нет. Общее впечатление гладкое, без резкости.",
+        "appearance": "Цвет от тёмного красновато-медного до непрозрачного тёмно-коричневого, но не чёрного. Пена густая, стойкая, светло-коричневая. Пиво прозрачное, хотя самые тёмные версии могут казаться непрозрачными.",
+        "flavor": "Как и в аромате, вкус строится на богатой солодовости и сложном сочетании глубокого солода, эфиров сухофруктов и алкоголя. Солод может давать карамельную, ирисочную, ореховую, мелассную или лакричную сложность. Жареный вкус заметный, но гладкий, напоминающий Schwarzbier и не доходящий до подгорелости. Допустимы лёгкие оттенки чёрной смородины и тёмных сухофруктов. Палитра гладкая, финиш полный. Сначала пиво кажется солодово-сладким, но затем быстро выходят вперёд более тёмные солодовые вкусы и держатся до суховатого финиша, оставляя в послевкусии намёк на жареный кофе или лакрицу и сушёные фрукты. Горечь от умеренно слабой до умеренной — ровно настолько, чтобы уравновесить пиво и не дать ему показаться приторным. Хмелевой вкус — от отсутствующего до умеренно слабого, если присутствует, обычно исходит от слегка пряных сортов. Профиль брожения чистый.",
+        "mouthfeel": "Обычно тело довольно полное и гладкое, а хорошо выдержанное алкогольное согревание может быть обманчиво мягким. Карбонизация от средней до умеренно высокой, из-за чего пиво кажется ещё более полнотелым. При этом оно не должно тяжело лежать на языке благодаря уровню газации.",
+        "comments": "Большинство коммерческих версий находятся в диапазоне 7–8,5% ABV. Лучшие образцы обладают коварной, почти скрытой крепостью и потому пьются опасно легко. Характер балтийских портеров заметно меняется от страны к стране, поэтому не стоит делать выводы о стиле по одному образцу. Одни версии ближе к английским корням, другие — к тому варианту стиля, который особенно закрепился в Польше.",
+        "history": "Стиль независимо развился сразу в нескольких странах Балтийского моря после того, как в начале XIX века был прерван импорт популярных английских портеров и стаутов. Исторически эти пива были верхового брожения, но многие пивоварни позже адаптировали рецептуры под лагерные дрожжи вместе с остальной частью своего производства. Само название Baltic Porter сравнительно новое — оно вошло в употребление с 1990-х годов и описывает современную совокупность схожих по профилю сортов, а не их исторические версии.",
+        "characteristic_ingredients": "Чаще всего используются лагерные дрожжи, хотя при варке в России, если берут элевые дрожжи, брожение всё равно должно идти при низкой температуре. Применяют дебиттерированные тёмные солоды, базовые Munich или Vienna, континентальный хмель. Возможны карамельные солоды и несоложёные добавки. В исторических рецептах нередко встречались brown или amber malt. Поскольку это совокупность региональных вариаций, различия в рецептурах здесь ожидаемы и допустимы.",
+        "style_comparison": "Сочетает тело, солодовую насыщенность, богатство и гладкость Doppelbock, более тёмный солодовый характер English Porter, жареные оттенки Schwarzbier, а также алкоголь и фруктовость Old Ale. Существенно менее жжёный и часто менее крепкий, чем Imperial Stout."
+      },
+      "sections_en": {
+        "overall_impression": "A strong, dark, malty beer with different interpretations within the Baltic region. Smooth, warming, and richly malty, with complex dark fruit flavors and a roasted flavor without burnt notes.",
+        "aroma": "Rich maltiness often containing caramel, toffee, nuts, deep toast, or licorice notes. Complex alcohol and ester profile of moderate strength, and reminiscent of plums, prunes, raisins, cherries, or currants, occasionally with a vinous Port-like quality. Deep malt accents of dark chocolate, coffee, or molasses, but never burnt. No hops. No sourness. Smooth, not sharp, impression.",
+        "appearance": "Dark reddish-copper to opaque dark brown color, but not black. Thick, persistent tan-colored head. Clear, although darker versions can be opaque.",
+        "flavor": "As with aroma, has a rich maltiness with a complex blend of deep malt, dried fruit esters, and alcohol. The malt can have a caramel, toffee, nutty, molasses, or licorice complexity. Prominent yet smooth Schwarzbier-like roasted flavor that stops short of burnt. Light hints of black currants and dark dried fruits. Smooth palate and full finish. Starts malty-sweet but darker malt flavors quickly dominate and persist through the dryish finish, leaving a hint of roast coffee or licorice and dried fruit in the aftertaste. Medium-low to medium bitterness, just to provide balance and prevent it from seeming cloying. Hop flavor from slightly spicy hops ranges from none to medium-low. Clean fermentation profile.",
+        "mouthfeel": "Generally quite full-bodied and smooth, with a well-aged alcohol warmth that can be deceptive. Medium to medium-high carbonation, making it seem even more mouth-filling. Not heavy on the tongue due to carbonation level.",
+        "comments": "Most commercial versions are in the 7–8.5% ABV range. The best examples have a deceptive strength that makes them dangerously easy to drink. The character of these beers varies by country of origin, so be careful about generalizing based on a single example. Some beers are truer to their English roots, while others are more of the style first popularized in Poland.",
+        "history": "Developed indigenously (and independently) in several countries bordering the Baltic Sea after import of popular English porters and stouts was interrupted in the early 1800s. Historically top-fermented, many breweries adapted the recipes for bottom-fermenting yeast along with the rest of their production. The name Baltic Porter is recent (since the 1990s) and describes the modern collection of beers with a somewhat similar profile from these countries, not historical versions.",
+        "characteristic_ingredients": "Generally lager yeast (cold fermented if using ale yeast, as is required when brewed in Russia). Debittered dark malt. Munich or Vienna base malt. Continental hops. May contain crystal malts or adjuncts. Brown or amber malt common in historical recipes. As a collection of regional beers, different formulations are expected.",
+        "style_comparison": "Combines the body, maltiness, richness, and smoothness of a Doppelbock, the darker malt character of an English Porter, the roast flavors of a Schwarzbier, and alcohol and fruitiness of and Old Ale. Much less roasted and often lower in alcohol than an Imperial Stout."
+      },
+      "vital_statistics_text": "OG: 1.060 – 1.090 | IBUs: 20 – 40 | FG: 1.016 – 1.024 | SRM: 17 – 30 | ABV: 6.5 – 9.5%",
+      "vital_statistics": {
+        "og": "1.060-1.090",
+        "ibus": "20-40",
+        "fg": "1.016-1.024",
+        "srm": "17-30",
+        "abv": "6.5-9.5%"
+      },
+      "commercial_examples_text": "Aldaris Mežpils Porteris, Baltika 6 Porter, Devils Backbone Danzig, Okocim Mistrzowski Porter, Sinebrychoff Porter, Zywiec Porter",
+      "tags_en": [
+        "high-strength",
+        "dark-color",
+        "any-fermentation",
+        "lagered",
+        "eastern-europe",
+        "traditional-style",
+        "porter-family",
+        "malty"
+      ],
+      "tags_ru": [
+        "высокая крепость",
+        "тёмный цвет",
+        "любой тип брожения",
+        "лагеризация",
+        "Восточная Европа",
+        "традиционный стиль",
+        "семейство портеров",
+        "солодовый"
+      ],
+      "translation_status": "detailed_ru_translated_reviewed_v1",
+      "source_pdf_page_start": 32,
+      "source_guideline_page_start": 16
+    }
+  ]
+}

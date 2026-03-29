@@ -1,0 +1,349 @@
+{
+  "source": "2021_Guidelines_Beer_1.25.pdf",
+  "progress": {
+    "styles_total_in_guideline": 128,
+    "styles_translated_in_this_file": 5,
+    "translated_style_ids": [
+      "27-Kellerbier",
+      "27-Kentucky-Common",
+      "27-Lichtenhainer",
+      "27-London-Brown-Ale",
+      "27-Piwo-Grodziskie"
+    ],
+    "translated_categories": [
+      "27"
+    ],
+    "next_recommended_batch": [
+      "Historical Beer: Pre-Prohibition Lager",
+      "Historical Beer: Pre-Prohibition Porter",
+      "Historical Beer: Roggenbier",
+      "Historical Beer: Sahti"
+    ]
+  },
+  "categories": [
+    {
+      "category_id": "27",
+      "category_en": "HISTORICAL BEER",
+      "category_ru": "Историческое пиво",
+      "overview_ru": "Категория объединяет стили, которые либо почти исчезли в современную эпоху, либо когда-то были куда заметнее, чем сейчас, и сегодня известны в основном по реконструкциям. Сюда же относятся традиционные и локальные сорта, имеющие культурное значение для отдельных стран и регионов. Попадание в эту категорию не означает, что стиль полностью исчез; чаще речь идёт о редком, мало представленном или заново открываемом стиле."
+    }
+  ],
+  "styles": [
+    {
+      "bjcp_id": "27-Kellerbier",
+      "name_en": "Kellerbier",
+      "name_ru": "Келлербир",
+      "category_id": "27",
+      "category_en": "HISTORICAL BEER",
+      "category_ru": "Историческое пиво",
+      "bjcp_heading": "Historical Beer: Kellerbier",
+      "description_short_ru": "Нефильтрованный и непастеризованный немецкий лагер, который подают свежим, прямо из лагерных ёмкостей; обычно он чуть богаче, плотнее и «живее» базового стиля, но без грубых тонов незрелого пива.",
+      "sections_en": {
+        "overall_impression": "An unfiltered, unpasteurized, fully-attenuated German lager traditionally served from lagering vessels. May be a little richer, more robust, and rustic than the base styles. A fresh beer without fermentation defects associated with young, green (unfinished) beer.",
+        "aroma": "Reflects base style. May have an added bready, yeasty character from the yeast. Clean. Pale versions can have a more robust hop character. Dark versions can have a richer malt profile.",
+        "appearance": "Reflects base style. Can be somewhat hazy or cloudy, but never murky. Likely a little darker in appearance than the base style.",
+        "flavor": "Reflects base style. May have an added bready, yeasty character from the yeast. Pale versions can have a more robust hop character. Dark versions can have a richer malt profile, but should never be roasty. May be slightly more bitter than the base style, and be a little heavier in the finish. Fully fermented with a clean fermentation profile; should not have eggy, buttery, apple-like, or similar flaws.",
+        "mouthfeel": "Reflects base style. May have a bit more body and a creamier texture than the base style. Carbonation typical of the base style, but may be lower.",
+        "comments": "The original Kellerbier is a Märzen-type lager from the Franconia region of Germany, but other traditional versions are based on Munich Helles and Dunkel lagers. Variations based on Pils are a more modern invention with a wider international following and higher production. A traditional serving style more than a beer style, yet these beers do have sensory differences from the base beers. Judge these somewhat like Specialty-Type Beers; consider the range of kellerbiers based on Helles to Märzen to Dunkel to be a continuous spectrum, so allow the brewer to pick the closest one without being too picky about strict adherence to the base style. The name literally means cellar beer, and is a natural, gentle handling of fresh-tasting German lagerbier for seasonal, on-premise service. Like British Bitters, best enjoyed locally as the bottled examples may lack the characteristic freshness.",
+        "history": "Originally referred to lager beer matured in the caves or cellars under the brewery, and then served from them. First applied to amber lager from Franconia, then later to local Munich styles. More recently used internationally to create specialty Pils variants. By tradition, a serving style for a popular summer specialty in Bavaria, but now adapted broadly as a marketing term for unfiltered lagers.",
+        "characteristic_ingredients": "Same as base styles. Traditionally naturally carbonated. Dry-hopping is not a traditional German brewing method, but some modern pale examples use this technique – which is allowable in this style as long as it is balanced. Traditionally lagered and unfiltered, these beers were never meant to be packaged for external sale.",
+        "style_comparison": "Richer or more robust than the base style, possibly with a bit more body and mouthfeel. Can be slightly cloudier than base beer.",
+        "entry_instructions": "The entrant must specify the base style: German Pils, Munich Helles, Märzen, or Munich Dunkel."
+      },
+      "sections_ru": {
+        "overall_impression": "Нефильтрованный, непастеризованный и полностью выброженный немецкий лагер, который традиционно подают прямо из лагерных ёмкостей. Он может быть чуть богаче, выразительнее и более «деревенским» по характеру, чем базовые стили. При этом это свежее пиво без дефектов брожения, характерных для молодого, ещё не дозревшего пива.",
+        "aroma": "Ароматика соответствует базовому стилю. Возможен дополнительный хлебный и слегка дрожжевой оттенок от взвеси дрожжей. Профиль должен оставаться чистым. Светлые версии могут показывать более заметный хмелевой характер, а тёмные — более богатую солодовую глубину.",
+        "appearance": "Внешний вид отталкивается от базового стиля. Допустима лёгкая дымка или мутноватость, но пиво не должно быть грязно-мутным. По цвету оно нередко выглядит немного темнее базового аналога.",
+        "flavor": "Во вкусе сохраняется логика базового стиля. Возможен дополнительный хлебный, слегка дрожжевой штрих. Светлые версии могут быть хмельнее, тёмные — солодовее и глубже, но без жареного характера. Пиво может быть чуть более горьким, чем база, а финиш — немного более весомым. Брожение должно быть полным и чистым; недопустимы сернистые, маслянистые, яблочные и подобные дефекты.",
+        "mouthfeel": "Тело и общее ощущение во рту соответствуют базовому стилю, но возможны немного большая полнота и более кремовая текстура. Карбонизация обычно близка к базе, хотя иногда бывает несколько ниже.",
+        "comments": "Изначально Kellerbier — это франконский лагер мартовского типа, хотя традиционные версии также делают на базе Munich Helles и Dunkel. Варианты на основе Pils — более позднее развитие, которое получило широкое международное распространение. По сути, это скорее традиционный способ подачи, чем отдельный стиль, но сенсорно такие пива всё же отличаются от своих базовых версий. Оценивать их стоит примерно так же гибко, как specialty-type пиво: диапазон от helles через märzen к dunkel образует непрерывный спектр, поэтому пивовару следует позволить выбрать ближайшую базу без чрезмерной придирчивости к жёстким рамкам. Название буквально означает «погребное пиво» и отражает мягкое, бережное обращение со свежим немецким лагером, который предназначен для сезонной подачи прямо на месте. Как и британские bitter, лучше всего он раскрывается локально и свежим; бутылочные версии могут терять ту самую характерную свежесть.",
+        "history": "Первоначально так называли лагер, который выдерживали в пещерах или погребах под пивоварней и оттуда же подавали. Сначала термин относился к янтарным лагерным сортам Франконии, позже — и к местным мюнхенским вариантам. В более новое время его стали использовать и за пределами Германии для обозначения специальных версий pils. Традиционно это был формат подачи популярного летнего сезонного пива в Баварии, а сегодня термин широко используется как маркетинговое обозначение нефильтрованных лагеров.",
+        "characteristic_ingredients": "Состав в целом соответствует выбранному базовому стилю. Традиционно пиво насыщается углекислотой естественным образом. Dry hopping не относится к классическим немецким приёмам пивоварения, однако в современных светлых версиях он встречается и в рамках этого стиля допустим, если остаётся в балансе. Исторически такие лагеры выдерживали и подавали нефильтрованными; изначально они вообще не задумывались как продукт для дальней продажи вне пивоварни.",
+        "style_comparison": "Обычно келлербир чуть богаче, плотнее и выразительнее базового стиля, иногда с более ощутимым телом и текстурой. Также он может быть несколько более мутным, чем соответствующее «чистое» базовое пиво.",
+        "entry_instructions": "Участник должен указать базовый стиль: German Pils, Munich Helles, Märzen или Munich Dunkel."
+      },
+      "vital_statistics": {
+        "note": "Same as base style."
+      },
+      "vital_statistics_text": "Same as base style.",
+      "commercial_examples_text": "Märzen – Faust Kräusen Naturtrüb, Mahrs Bräu aU Ungespundet Kellerbier; Dunkel – Engel Kellerbier Dunkel, Paulaner Ur-Dunkel Naturtrüb; Helles – ABK Kellerbier Naturtrüb, Löwenbräu 1747 Original; Pils – Giesinger Feines Pilschen, Ketterer Zwickel-Pils",
+      "tags_en": [
+        "standard-strength",
+        "bottom-fermented",
+        "central-europe",
+        "traditional-style",
+        "balanced"
+      ],
+      "source_guideline_page_start": 55,
+      "source_pdf_page_start": 71,
+      "translation_status": "completed",
+      "tags_ru": [
+        "стандартная крепость",
+        "низовое брожение",
+        "Центральная Европа",
+        "традиционный стиль",
+        "сбалансированный"
+      ]
+    },
+    {
+      "bjcp_id": "27-Kentucky-Common",
+      "name_en": "Kentucky Common",
+      "name_ru": "Кентукки коммон",
+      "category_id": "27",
+      "category_en": "HISTORICAL BEER",
+      "category_ru": "Историческое пиво",
+      "bjcp_heading": "Historical Beer: Kentucky Common",
+      "description_short_ru": "Лёгкое по вкусу тёмное американское пиво салунного типа: сухое, освежающее, чуть солодовое, с высокой карбонизацией и мягкими тонами тоста и карамели.",
+      "sections_en": {
+        "overall_impression": "A clean, dry, refreshing, slightly malty dark beer with high carbonation. Mild-tasting, with light toast and caramel flavors, served very fresh as a sessionable saloon beer.",
+        "aroma": "Low to medium grainy, corn-like, or sweet maltiness with a low toast, biscuity-grainy, bready, or caramel malt accent. Medium to moderately-low hop aroma, usually floral or spicy in character. Clean fermentation profile, with possible faint berry ester. Low levels of DMS optional. No sourness. Malt-forward in the balance.",
+        "appearance": "Amber-orange to brown in color. Typically clear, but may have some light haze. Foam stand may not be long lasting, and is usually white to beige in color.",
+        "flavor": "Moderate grainy-sweet maltiness with low to medium-low caramel, toffee, bready, or biscuity notes. Generally light palate flavors typical of adjunct beers; a low grainy, corn-like sweetness is common. Medium to low floral or spicy hop flavor. Medium to low bitterness, no coarse or harsh aftertaste. May exhibit light fruitiness. Balance in the finish is towards the malt, possibly with a lightly flinty or minerally-sulfate flavor. The finish is fairly dry. No sourness.",
+        "mouthfeel": "Medium to medium-light body with a relatively soft mouthfeel. Highly carbonated. Can have a creamy texture.",
+        "comments": "Modern accounts of the style often mention lactic sourness or sour mashing, but brewing records from around 1900 at larger breweries have no indication of long acid rests, sour mashing, or extensive aging. These stories are likely modern homebrewer inventions, theorizing that since local Bourbon distillers used a sour mash, beer brewers must also done so. No records indicate sour mashing or even a sour profile in the beer; rather the opposite, that it was brewed as an inexpensive, present-use ale. Enter soured versions in 28B Mixed-Fermentation Sour Beer.",
+        "history": "An American original, Kentucky Common was almost exclusively produced and sold around Louisville, Kentucky from some time after the Civil War until Prohibition. It was inexpensive and quickly produced, racked into barrels while actively fermenting, and tightly bunged to allow carbonation in the saloon cellar. Before the style died, it accounted for about 75% of sales around Louisville. Some have speculated it was a dark variant of Cream Ale, created by immigrant Germanic brewers who added darker grains to help acidify the local carbonate water.",
+        "characteristic_ingredients": "Six-row barley malt. Corn grits. Caramel and black malt. Rustic American bittering hops. Imported Continental finishing hops. High carbonate water. Ale yeast.",
+        "style_comparison": "Like a darker-colored Cream Ale emphasizing corn, but with some light character malt flavor. Malt flavors and balance are probably closest to modern adjunct-driven International Amber or Dark Lagers, Irish Red Ales, or Belgian Pale Ales.",
+        "entry_instructions": ""
+      },
+      "sections_ru": {
+        "overall_impression": "Чистое, сухое, освежающее и слегка солодовое тёмное пиво с высокой карбонизацией. По вкусу оно мягкое и ненавязчивое, с лёгкими оттенками тоста и карамели; исторически его подавали совсем свежим как питкое салунное пиво на каждый день.",
+        "aroma": "Солодовый аромат от слабого до умеренного: зерновой, слегка кукурузный или мягко-сладковатый, с фоновыми оттенками тоста, бисквита, хлебной корки или лёгкой карамели. Хмелевой аромат от умеренно слабого до среднего, обычно цветочный или пряный. Профиль брожения чистый, иногда с едва заметным ягодным эфиром. Низкий уровень DMS допустим. Кислотности быть не должно. В общем балансе стиль тяготеет к солоду.",
+        "appearance": "Цвет от янтарно-оранжевого до коричневого. Обычно пиво прозрачное, хотя возможна лёгкая дымка. Пена чаще всего белая или кремово-бежевая, но держится обычно недолго.",
+        "flavor": "Во вкусе — умеренная зерновато-сладкая солодовость с лёгкими или умеренно слабыми оттенками карамели, ириски, хлеба или бисквита. Как и у многих сортов с адъюнктами, палитра в целом не тяжёлая; лёгкая зерновая или кукурузная сладость здесь обычна. Хмелевой вкус от среднего к слабому, чаще цветочный или пряный. Горечь — от средней к умеренно слабой, без грубого или жёсткого послевкусия. Возможна лёгкая фруктовость. К финишу баланс смещается в сторону солода; иногда появляется тонкий кремнистый или минералистый, сульфатный штрих. Финиш при этом довольно сухой. Кислинка недопустима.",
+        "mouthfeel": "Тело от средне-лёгкого до среднего, ощущение во рту сравнительно мягкое. Карбонизация высокая. Текстура может быть слегка кремовой.",
+        "comments": "В современных пересказах стиля нередко упоминают молочнокислую кислинку или sour mash, однако пивоваренные записи крупных американских предприятий рубежа XIX–XX веков не подтверждают ни длительных кислотных пауз, ни sour mashing, ни заметной выдержки. Скорее всего, это поздняя догадка домашних пивоваров по аналогии с bourbon sour mash. Исторические данные не указывают ни на кислую заторную технологию, ни даже на кислый профиль самого пива; напротив, Kentucky Common варили как недорогой эль для быстрого потребления. Кислые версии следует относить в 28B Mixed-Fermentation Sour Beer.",
+        "history": "Это подлинно американский стиль: Kentucky Common почти исключительно варили и продавали в районе Луисвилла, штат Кентукки, в период после Гражданской войны и вплоть до сухого закона. Пиво было недорогим и быстро производилось; его переливали в бочки ещё во время активного брожения и плотно закупоривали, чтобы оно естественно набирало газ в подвале салуна. До исчезновения стиль обеспечивал около 75% продаж пива в районе Луисвилла. Есть версия, что это был тёмный вариант Cream Ale, созданный пивоварами немецкого происхождения, которые добавляли более тёмные зёрна, чтобы частично подкислить местную высококарбонатную воду.",
+        "characteristic_ingredients": "Шестирядный ячменный солод, кукурузная крупа, карамельные и чёрные солода, грубовато-традиционный американский хмель на горечь, импортный континентальный хмель на поздние внесения, вода с высоким содержанием карбонатов и элевые дрожжи.",
+        "style_comparison": "Похоже на более тёмный Cream Ale с акцентом на кукурузу, но с небольшой долей характерных специальных солодов. По солодовой палитре и общему балансу стиль ближе всего к современным International Amber или Dark Lager с адъюнктами, а также местами напоминает Irish Red Ale или Belgian Pale Ale.",
+        "entry_instructions": ""
+      },
+      "vital_statistics": {
+        "og": "1.044 – 1.055",
+        "ibu": "15 – 30",
+        "fg": "1.010 – 1.018",
+        "srm": "11 – 20",
+        "abv": "4.0 – 5.5%"
+      },
+      "vital_statistics_text": "OG: 1.044 – 1.055 | IBUs: 15 – 30 | FG: 1.010 – 1.018 | SRM: 11 – 20 | ABV: 4.0 – 5.5%",
+      "commercial_examples_text": "Apocalypse Brew Works 1912",
+      "tags_en": [
+        "standard-strength",
+        "amber-color",
+        "top-fermented",
+        "north-america",
+        "historical-style",
+        "balanced"
+      ],
+      "source_guideline_page_start": 56,
+      "source_pdf_page_start": 72,
+      "translation_status": "completed",
+      "tags_ru": [
+        "стандартная крепость",
+        "янтарный цвет",
+        "верховое брожение",
+        "Северная Америка",
+        "исторический стиль",
+        "сбалансированный"
+      ]
+    },
+    {
+      "bjcp_id": "27-Lichtenhainer",
+      "name_en": "Lichtenhainer",
+      "name_ru": "Лихтенхайнер",
+      "category_id": "27",
+      "category_en": "HISTORICAL BEER",
+      "category_ru": "Историческое пиво",
+      "bjcp_heading": "Historical Beer: Lichtenhainer",
+      "description_short_ru": "Историческое центральноевропейское пшеничное пиво невысокой плотности, сочетающее мягкую молочнокислую кислотность и сухое свежее копчение; сложное, но очень освежающее.",
+      "sections_en": {
+        "overall_impression": "A sour, smoked, lower-gravity historical central European wheat beer. Complex yet refreshing character due to high attenuation and carbonation, along with low bitterness and moderate sourness.",
+        "aroma": "Moderately strong fresh smoky aroma. Light hints of sourness. Medium-low fruity esters, possibly apples or lemons. Moderate bready, grainy malt. The smoke character is stronger than the bready notes, and the smoke has a ‘dry’ character, like the remnants of an old fire, not a ‘greasy’ smoke. No hops.",
+        "appearance": "Tall off-white head, rocky and persistent. Yellow to gold color. Fair clarity, may be somewhat hazy.",
+        "flavor": "Moderately strong fruity flavor, possibly lemons or apples. Moderate intensity, clean lactic tartness without any funkiness. Similar dry wood smoke character as aroma, medium strength. Dry finish, with acidity and smoke in the aftertaste. Low bitterness; acidity is providing the balance, not hops. Fresh, clean palate, and slightly puckery aftertaste. The wheat character is on the low side; the smoke and acidity are more prominent in the balance. The tart, lemony, or green apple flavor is strongest in the finish, with smoke a close second. No hops.",
+        "mouthfeel": "Tingly acidity. High carbonation. Medium to medium-light body.",
+        "comments": "Served young. Smoke and sour is an unusual combination that can be an acquired taste.",
+        "history": "Originating in Lichtenhain, in Thüringen (central Germany). Height of popularity was towards the end of the 1800s, and was widely available throughout Thüringen. Like a pre-1840 Berliner Weisse.",
+        "characteristic_ingredients": "Smoked barley malt, wheat malt, Lacto, top-fermenting yeast. Grists vary, but the wheat would typically be 30-50%. Can be made with all barley malt.",
+        "style_comparison": "In the same general historical lower-alcohol central European wheat beer family as Gose, Grodziskie, and Berliner Weisse; has elements of all of them but with its own unique balance – sour and smoke is not found in any of the other styles. Not as acidic as Berliner Weisse, probably more like a smoked Gose without coriander and salt, or a Grodziskie with Gose-like acidity.",
+        "entry_instructions": ""
+      },
+      "sections_ru": {
+        "overall_impression": "Кислое, копчёное историческое центральноевропейское пшеничное пиво невысокой плотности. Благодаря высокой степени сбраживания и карбонизации, низкой горечи и умеренной кислотности оно воспринимается одновременно сложным и очень освежающим.",
+        "aroma": "Аромат свежего дыма заметный, от среднего до умеренно сильного. Кислинка лишь слегка намечена. Эфиры — от умеренно слабых до средних, чаще с ассоциациями яблока или лимона. Солодовость хлебно-зерновая, умеренная. Дым здесь выражен сильнее, чем хлебные ноты, и сам по себе он скорее «сухой», как след давно погасшего костра, а не жирный или сальный. Хмелевой аромат отсутствует.",
+        "appearance": "Пена высокая, каменистая и стойкая, от белой до слегка кремовой. Цвет от жёлтого до золотистого. Прозрачность удовлетворительная; допускается лёгкая дымка.",
+        "flavor": "Во вкусе заметна умеренно сильная фруктовость, чаще всего лимонная или яблочная. Кислотность умеренная, чисто молочнокислая, без фанка и без «грязных» диких тонов. Дым древесный, сухой, как и в аромате, средней силы. Финиш сухой; в послевкусии остаются и кислотность, и дым. Горечь низкая: баланс здесь создаёт именно кислинка, а не хмель. Палитра свежая, чистая, послевкусие слегка стягивающее. Пшеничный характер выражен сдержанно; в балансе заметнее дым и кислотность. К финалу сильнее всего проявляются терпковато-лимонные или зелёно-яблочные ноты, а дым идёт сразу вслед за ними. Хмеля нет.",
+        "mouthfeel": "Во рту ощущается покалывающая кислотность. Карбонизация высокая. Тело от средне-лёгкого до среднего.",
+        "comments": "Традиционно подаётся молодым. Сочетание дыма и кислотности довольно необычно и нередко требует привыкания.",
+        "history": "Стиль происходит из Лихтенхайна в Тюрингии, то есть в центральной части Германии. Пик его популярности пришёлся на конец XIX века, когда такое пиво было широко распространено по всей Тюрингии. По историческому ощущению его можно представить как Berliner Weisse до 1840 года.",
+        "characteristic_ingredients": "Копчёный ячменный солод, пшеничный солод, лактобактерии и дрожжи верхового брожения. Засыпь варьируется, но доля пшеницы обычно составляет 30–50%. Встречаются и полностью ячменные версии.",
+        "style_comparison": "Стиль входит в ту же большую историческую семью центральноевропейских малоградусных пшеничных сортов, что Gose, Grodziskie и Berliner Weisse, и в той или иной мере перекликается со всеми ними. Однако собственный баланс у него уникален: ни один из этих соседних стилей не сочетает одновременно дым и кислотность. Он менее кислый, чем Berliner Weisse; по ощущениям его можно представить как копчёный Gose без кориандра и соли либо как Grodziskie с кислотностью в духе Gose.",
+        "entry_instructions": ""
+      },
+      "vital_statistics": {
+        "og": "1.032 – 1.040",
+        "ibu": "5 – 12",
+        "fg": "1.004 – 1.008",
+        "srm": "3 – 6",
+        "abv": "3.5 – 4.7%"
+      },
+      "vital_statistics_text": "OG: 1.032 – 1.040 | IBUs: 5 – 12 | FG: 1.004 – 1.008 | SRM: 3 – 6 | ABV: 3.5 – 4.7%",
+      "commercial_examples_text": "Live Oak Lichtenhainer, Wöllnitzer Weissbier",
+      "tags_en": [
+        "standard-strength",
+        "pale-color",
+        "top-fermented",
+        "central-europe",
+        "historical-style",
+        "wheat-beer-family",
+        "sour",
+        "smoke"
+      ],
+      "source_guideline_page_start": 56,
+      "source_pdf_page_start": 72,
+      "translation_status": "completed",
+      "tags_ru": [
+        "стандартная крепость",
+        "светлый цвет",
+        "верховое брожение",
+        "Центральная Европа",
+        "исторический стиль",
+        "семейство пшеничного пива",
+        "кислый",
+        "дымный"
+      ]
+    },
+    {
+      "bjcp_id": "27-London-Brown-Ale",
+      "name_en": "London Brown Ale",
+      "name_ru": "Лондонский браун-эль",
+      "category_id": "27",
+      "category_en": "HISTORICAL BEER",
+      "category_ru": "Историческое пиво",
+      "bjcp_heading": "Historical Beer: London Brown Ale",
+      "description_short_ru": "Насыщенно-сладкий, солодовый и малоградусный тёмный браун-эль с карамельно-ирисочной глубиной и мягким сладковатым финишем.",
+      "sections_en": {
+        "overall_impression": "A luscious, sweet, malty, low-alcohol dark brown ale, with caramel and toffee malt complexity and a sweet-tasting finish.",
+        "aroma": "Moderate malty-sweet aroma, often with a rich, caramel, or toffee-like character. Low to medium fruity esters, often dark fruit like plums. Very low earthy or floral hop aroma optional.",
+        "appearance": "Medium to very dark brown color, but can be almost black. Nearly opaque, although should be relatively clear if visible. Low to moderate off-white to tan head.",
+        "flavor": "Deep, caramel or toffee sweet malty flavor on the palate, lasting into the finish, often with hints of biscuit and coffee. Some dark fruit esters can be present; relatively clean fermentation profile for an English ale. Low bitterness. Low earthy or floral hop flavor optional, but rare. Moderately-low roasty or bitter black malt flavor optional. Moderately sweet finish with a smooth, malty aftertaste. May have a sugary-sweet flavor.",
+        "mouthfeel": "Medium body, but the residual sweetness may give a heavier impression. Medium-low to medium carbonation. Quite creamy and smooth in texture, particularly for its gravity.",
+        "comments": "Increasingly rare; Mann’s has over 90% market share in Britain, but in a vanishingly small segment. Always bottled. Frequently used as a sweet mixer with cask mild and bitter in pubs. Commercial versions can be pasteurized and back-sweetened, which gives more of a sugary-sweet flavor.",
+        "history": "Developed by Mann’s as a bottled product in 1902. Claimed at the time to be “the sweetest beer in London.” Pre-WWI versions were around 5% ABV, but same general balance. Declined in popularity in second half of 20th century, and now nearly extinct.",
+        "characteristic_ingredients": "English pale ale malt as a base with a large proportion of darker caramel malts and often some black and wheat malts (this is Mann’s traditional grist – others can rely on dark sugars for color and flavor). Moderate to high carbonate water. English hops. Post-fermentation sweetening with lactose or artificial sweeteners, or sucrose, if pasteurized.",
+        "style_comparison": "May seem somewhat like a less roasty version of a Sweet Stout (and lower-gravity, at least for US sweet stout examples) or a sweet version of a Dark Mild.",
+        "entry_instructions": ""
+      },
+      "sections_ru": {
+        "overall_impression": "Сочный по восприятию, сладкий, солодовый и малоградусный тёмный браун-эль с карамельно-ирисочной сложностью и сладковатым финишем.",
+        "aroma": "Солодовый аромат умеренно сладкий, часто с богатым карамельным или ирисочным характером. Эфиры — от слабых до средних, нередко с тонами тёмных фруктов, например сливы. Очень слабый землистый или цветочный хмелевой аромат допустим, но необязателен.",
+        "appearance": "Цвет от средне-коричневого до очень тёмно-коричневого, вплоть до почти чёрного. Пиво почти непрозрачное, хотя в видимых участках должно оставаться сравнительно ясным. Пена от слабой до умеренной, от грязно-белой до светло-коричневой.",
+        "flavor": "Во вкусе доминирует глубокая сладкая солодовость с карамельно-ирисочным профилем, которая тянется до самого финиша; нередко появляются лёгкие намёки на бисквит и кофе. Возможны эфиры тёмных фруктов. Для английского эля профиль брожения сравнительно чистый. Горечь низкая. Землистый или цветочный хмелевой вкус допустим, но встречается редко. Также возможен умеренно слабый жареный или слегка горьковатый тон чёрного солода. Финиш умеренно сладкий, с гладким солодовым послевкусием. Иногда сладость воспринимается почти сахарной.",
+        "mouthfeel": "Тело среднее, но остаточная сладость может создавать впечатление большей плотности. Карбонизация от умеренно слабой до средней. Для своей крепости пиво удивительно кремовое и гладкое.",
+        "comments": "Стиль становится всё более редким; в Британии Mann’s удерживает свыше 90% этого сегмента, но сам сегмент почти исчезающе мал. Пиво всегда бутылочное. В пабах его часто используют как сладкую добавку к cask mild и bitter. Коммерческие версии могут быть пастеризованными и подслащёнными уже после брожения, из-за чего сладость иногда кажется скорее сахарной, чем солодовой.",
+        "history": "Стиль был создан пивоварней Mann’s как бутылочный продукт в 1902 году. В то время его рекламировали как «самое сладкое пиво Лондона». До Первой мировой войны версии были крепче — около 5% ABV, — но общий баланс оставался тем же. Во второй половине XX века стиль резко потерял популярность и сегодня почти исчез.",
+        "characteristic_ingredients": "Английский pale ale malt в качестве базы, большая доля тёмных карамельных солодов и нередко небольшие количества чёрного и пшеничного солода — такова традиционная засыпь Mann’s; другие версии могут опираться и на тёмные сахара для цвета и вкуса. Вода с умеренным или высоким содержанием карбонатов. Английский хмель. После брожения возможна подсластка лактозой, искусственными подсластителями или, в случае пастеризации, сахарозой.",
+        "style_comparison": "Может напоминать менее жареную версию Sweet Stout — к тому же обычно меньшей крепости, особенно по сравнению с американскими сладкими стаутами, — либо сладкую разновидность Dark Mild.",
+        "entry_instructions": ""
+      },
+      "vital_statistics": {
+        "og": "1.033 – 1.038",
+        "ibu": "15 – 20",
+        "fg": "1.012 – 1.015",
+        "srm": "22 – 35",
+        "abv": "2.8 – 3.6%"
+      },
+      "vital_statistics_text": "OG: 1.033 – 1.038 | IBUs: 15 – 20 | FG: 1.012 – 1.015 | SRM: 22 – 35 | ABV: 2.8 – 3.6%",
+      "commercial_examples_text": "Harveys Bloomsbury Brown Ale, Mann’s Brown Ale",
+      "tags_en": [
+        "session-strength",
+        "dark-color",
+        "top-fermented",
+        "british-isles",
+        "historical-style",
+        "brown-ale-family",
+        "malty",
+        "sweet"
+      ],
+      "source_guideline_page_start": 56,
+      "source_pdf_page_start": 72,
+      "translation_status": "completed",
+      "tags_ru": [
+        "сессионная крепость",
+        "тёмный цвет",
+        "верховое брожение",
+        "Британские острова",
+        "исторический стиль",
+        "семейство коричневых элей",
+        "солодовый",
+        "сладкий"
+      ]
+    },
+    {
+      "bjcp_id": "27-Piwo-Grodziskie",
+      "name_en": "Piwo Grodziskie",
+      "name_ru": "Пиво гродзиске",
+      "category_id": "27",
+      "category_en": "HISTORICAL BEER",
+      "category_ru": "Историческое пиво",
+      "bjcp_heading": "Historical Beer: Piwo Grodziskie",
+      "description_short_ru": "Историческое польское пшеничное пиво низкой плотности: сухое, очень газированное, горьковатое и мягко дубово-копчёное, но без какой-либо кислотности.",
+      "sections_en": {
+        "overall_impression": "A low-gravity, bitter, oak-smoked historical central European wheat beer with a clean fermentation profile and no sourness. Highly carbonated, dry, crisp, and refreshing.",
+        "aroma": "Low to moderate oak wood smoke is the most prominent aroma component, but can be subtle and hard to detect. A low spicy, herbal, or floral hop aroma is typically present, and should be lower than or equal to the smoke in intensity. Hints of grainy wheat are also detected in the best examples. The aroma is otherwise clean, although light pome fruit esters (especially ripe red apple or pear) are welcome. No acidity. Light sulfur optional.",
+        "appearance": "Pale yellow to gold in color with excellent clarity. A tall, billowy, white, tightly-knit head with excellent retention is distinctive. Murkiness is a fault.",
+        "flavor": "Moderately-low to medium oak smoke flavor up front which carries into the finish; the smoke can be stronger in flavor than in aroma. The smoke character is gentle, should not be acrid, and can lend an impression of sweetness. A moderate to strong bitterness is readily evident which lingers through the finish. The overall balance is toward bitterness. Low but perceptible spicy, herbal, or floral hop flavor. Low grainy wheat character in the background. Light pome fruit esters (red apple or pear) may be present. Dry, crisp finish. No sourness.",
+        "mouthfeel": "Light in body, with a crisp and dry finish. Carbonation is quite high and can add a slight carbonic bite or prickly sensation. No alcohol warmth.",
+        "comments": "Pronounced in English as “pivo grow-JEES-kee-uh” (meaning: Grodzisk beer). Known as Grätzer (pronounced “GRATE-sir”) in German-speaking countries, and in some beer literature. Traditionally made using a multi-step mash, a long boil (~2 hours), and multiple strains of ale yeast. The beer is never filtered but Isinglass is used to clarify before bottle conditioning. Traditionally served in tall conical glassware to accommodate the vigorous foam stand.",
+        "history": "Developed as a unique style centuries ago in the Polish city of Grodzisk (known as Grätz when ruled by Prussia and Germany). Its fame and popularity rapidly extended to other parts of the world in the late 19th and early 20th century. Regular commercial production declined after WWII and ceased in the 1990s. This style description describes the traditional version during its period of greatest popularity.",
+        "characteristic_ingredients": "Oak-smoked wheat malt, which has a less intense smoke character than German Rauchmalz, and a drier, crisper, leaner quality – a smoky bacon or ham flavor is inappropriate. Traditional Polish, Czech or German hops. Moderate hardness sulfate water. Clean, attenuative ale yeast; Weizen yeast inappropriate.",
+        "style_comparison": "Similar in strength to a Berliner Weisse, but never sour and much more bitter. Has a smoked character but less intense than in a Rauchbier. Lower gravity than a Lichtenhainer, but more bitter and not sour. More bitter than a Gose, but no salt and spices.",
+        "entry_instructions": ""
+      },
+      "sections_ru": {
+        "overall_impression": "Историческое центральноевропейское пшеничное пиво низкой плотности, горьковатое и копчёное на дубовом солоде, с чистым профилем брожения и без какой-либо кислоты. Очень сильно газировано, сухое, хрусткое и освежающее.",
+        "aroma": "Наиболее заметный компонент аромата — слабое или умеренное дубовое копчение, хотя в тонких версиях его бывает непросто уловить. Обычно присутствует слабый пряный, травянистый или цветочный хмелевой аромат, но по интенсивности он должен быть не выше дыма. В лучших образцах также слышны намёки на зерновую пшеницу. В остальном аромат чистый; лёгкие эфиры семечковых фруктов, особенно спелого красного яблока или груши, приветствуются. Кислотность недопустима. Лёгкий сернистый штрих возможен.",
+        "appearance": "Цвет от бледно-жёлтого до золотистого, прозрачность отличная. Отличительный признак стиля — высокая, пышная, белая и очень плотная пена с превосходной стойкостью. Грязная мутность считается дефектом.",
+        "flavor": "Во вкусе сразу появляется умеренно слабое или среднее дубовое копчение, которое тянется до финиша; при этом во вкусе дым может быть заметнее, чем в аромате. Сам характер копчения мягкий, без резкости и без едкой золы, иногда даже с лёгким впечатлением сладости. Горечь от умеренной до сильной хорошо заметна и сохраняется в послевкусии. Общий баланс смещён в сторону горечи. Хмелевой вкус слабый, но различимый: пряный, травянистый или цветочный. На заднем плане присутствует лёгкий зерновой пшеничный тон. Возможны лёгкие эфиры красного яблока или груши. Финиш сухой и хрусткий. Кислинки быть не должно.",
+        "mouthfeel": "Тело лёгкое, финиш сухой и очень собранный. Карбонизация очень высокая и может давать лёгкое углекислотное покалывание. Алкогольного тепла нет.",
+        "comments": "В англоязычной традиции название произносят примерно как “pivo grow-JEES-kee-uh”, то есть «пиво из Гродзиска». В немецкоязычных странах и части литературы стиль известен как Grätzer. Традиционно его варили с многоступенчатым затиранием, длинным кипом — около двух часов — и несколькими штаммами элевых дрожжей. Пиво не фильтровали, но перед бутылочным дображиванием осветляли рыбьим клеем. Исторически его подавали в высоких конических бокалах, чтобы вместить очень пышную пену.",
+        "history": "Стиль сформировался много веков назад в польском городе Гродзиск, который в период прусского и германского владычества был известен как Grätz. В конце XIX и начале XX века его известность быстро вышла далеко за пределы региона. После Второй мировой войны регулярное коммерческое производство стало угасать и полностью прекратилось в 1990-х. Это описание относится к традиционной версии периода наибольшей популярности стиля.",
+        "characteristic_ingredients": "Пшеничный солод, копчённый на дубе. Такой солод даёт менее интенсивный дымный профиль, чем немецкий Rauchmalz, и обеспечивает более сухой, хрусткий и «поджарый» характер; тона копчёного бекона или ветчины здесь неуместны. Используются традиционные польские, чешские или немецкие хмели, вода средней жёсткости с сульфатным профилем и чистые, хорошо сбраживающие элевые дрожжи. Дрожжи типа Weizen здесь не подходят.",
+        "style_comparison": "По крепости стиль сопоставим с Berliner Weisse, но никогда не бывает кислым и заметно горше. Дымный характер есть, но он слабее, чем у Rauchbier. Плотность ниже, чем у Lichtenhainer, зато горечь выше и кислинка отсутствует. По сравнению с Gose здесь больше горечи и нет ни соли, ни специй.",
+        "entry_instructions": ""
+      },
+      "vital_statistics": {
+        "og": "1.028 – 1.032",
+        "ibu": "20 – 35",
+        "fg": "1.006 – 1.012",
+        "srm": "3 – 6",
+        "abv": "2.5 – 3.3%"
+      },
+      "vital_statistics_text": "OG: 1.028 – 1.032 | IBUs: 20 – 35 | FG: 1.006 – 1.012 | SRM: 3 – 6 | ABV: 2.5 – 3.3%",
+      "commercial_examples_text": "Live Oak Grodziskie",
+      "tags_en": [
+        "session-strength",
+        "pale-color",
+        "top-fermented",
+        "central-europe",
+        "historical-style",
+        "wheat-beer-family",
+        "bitter",
+        "smoke"
+      ],
+      "source_guideline_page_start": 57,
+      "source_pdf_page_start": 73,
+      "translation_status": "completed",
+      "tags_ru": [
+        "сессионная крепость",
+        "светлый цвет",
+        "верховое брожение",
+        "Центральная Европа",
+        "исторический стиль",
+        "семейство пшеничного пива",
+        "горький",
+        "дымный"
+      ]
+    }
+  ]
+}

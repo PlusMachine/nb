@@ -1,0 +1,427 @@
+{
+  "source": {
+    "document": "BJCP 2021 Beer Style Guidelines",
+    "file_name": "2021_Guidelines_Beer_1.25.pdf",
+    "language": "ru",
+    "translation_scope": "detailed",
+    "notes": "Подробный русский перевод шестой части корпуса BJCP: категории 12-13 с сохранением короткого описания, полных секций и оригинальных английских секций для сверки."
+  },
+  "progress": {
+    "styles_total_in_guideline": 128,
+    "styles_translated_in_this_file": 6,
+    "translated_style_ids": [
+      "12A",
+      "12B",
+      "12C",
+      "13A",
+      "13B",
+      "13C"
+    ],
+    "translated_categories": [
+      "12",
+      "13"
+    ],
+    "next_recommended_batch": [
+      "14A",
+      "14B",
+      "14C",
+      "15A",
+      "15B",
+      "15C"
+    ]
+  },
+  "categories": [
+    {
+      "category_id": "12",
+      "category_en": "PALE COMMONWEALTH BEER",
+      "category_ru": "Светлое пиво стран Содружества",
+      "overview_ru": "В эту категорию входят светлые, умеренно крепкие, хмелевые и горькие эли из стран бывшей Британской империи."
+    },
+    {
+      "category_id": "13",
+      "category_en": "BROWN BRITISH BEER",
+      "category_ru": "Коричневое британское пиво",
+      "overview_ru": "Хотя у Dark Mild, Brown Ale и English Porter длинная и богатая история, здесь описаны их современные версии. Они объединены только для целей судейства: их сближают невысокая или умеренная крепость, тёмный цвет, преимущественно солодовый баланс и британское происхождение. Исторически эти стили не происходят друг от друга и не были составными частями друг друга."
+    }
+  ],
+  "styles": [
+    {
+      "bjcp_id": "12A",
+      "bjcp_heading": "12A. British Golden Ale",
+      "category_id": "12",
+      "category_en": "PALE COMMONWEALTH BEER",
+      "category_ru": "Светлое пиво стран Содружества",
+      "name_en": "British Golden Ale",
+      "name_ru": "Британский golden ale",
+      "description_short_ru": "Светлый британский биттер средней или умеренно высокой крепости с подчёркнутым хмелем, хорошей питкостью и освежающим характером.",
+      "sections_ru": {
+        "overall_impression": "Светлый британский биттер средней или умеренно высокой крепости с акцентом на хмель. Для стиля критически важны питкость и освежающий характер, поскольку изначально это было сезонное летнее пиво.",
+        "aroma": "Хмелевой аромат от умеренно слабого до умеренно высокого; допустимы любые сорта хмеля, но чаще встречаются цветочные, травянистые или землистые английские хмели, а также цитрусовые американские. Нередко подчёркивается один конкретный сорт. Солодовый аромат слабый, хлебный, без карамели. Лёгкая фруктовость чаще идёт от хмеля, а не от эфиров. Очень низкий диацетил допустим.",
+        "appearance": "Цвет от соломенного до золотистого. Прозрачность хорошая или блестящая. Пена от слабой до умеренной, белая. Невысокая шапка допустима, если и карбонизация невысока.",
+        "flavor": "Горечь от средней до умеренно высокой. Вкус хмеля — от умеренного до умеренно высокого, допускаются любые сорта, хотя цитрусовые оттенки сегодня встречаются всё чаще. Солодовый характер от умеренно слабого до слабого, обычно хлебный, иногда с лёгкой бисквитной ноткой. Карамель, как правило, отсутствует. Горечь и вкус хмеля должны быть отчётливыми. Эфиры от низких до умеренно слабых. Финиш от умеренно сухого до сухого. По мере роста крепости горечь усиливается, но баланс всегда сохраняется. Очень низкий диацетил допустим.",
+        "mouthfeel": "Тело от лёгкого до среднего. Карбонизация в кеге или каске от низкой до умеренной, тогда как бутылочные коммерческие версии обычно газированы сильнее. В более крепких версиях возможно лёгкое алкогольное согревание, но оно не должно быть заметным.",
+        "comments": "Хорошо охмелённое, жаждоутоляющее пиво, в котором главный акцент сделан на демонстрации хмеля. Подаётся холоднее, чем традиционные биттеры; изначально стиль задумывался как освежающее летнее пиво, но сегодня его нередко варят круглый год. Когда-то его делали в основном на английских хмелях, но сейчас всё чаще используют американские цитрусовые сорта. Golden ale также можно встретить под названиями Golden Bitter, Summer Ale или British Blonde Ale. Выпускается в каске, кеге и бутылке.",
+        "history": "Современные golden ale появились в Англии как ответ на мощно продвигаемые лагеры. Трудно назвать абсолютно первый образец, но многие считают, что именно Summer Lightning от Hop Back, впервые сваренный в 1986 году, по-настоящему запустил стиль.",
+        "characteristic_ingredients": "Светлый pale ale или lager malt с очень низкой цветностью, выступающий как нейтральная основа для хмелевого профиля. Возможны сахарные добавки, кукуруза или пшеница. Часто используют английские хмели, хотя цитрусовые американские сорта становятся всё более обычными. Дрожжи — британские, но сравнительно чисто бродящие.",
+        "style_comparison": "По характеру ближе всего к American Pale Ale, хотя обычно слабее по алкоголю и чаще опирается на британские ингредиенты. По сравнению с британскими bitter и pale ale здесь нет карамели и меньше эфиров. По сухости стиль сопоставим с bitter, но солодовой опоры под хмель меньше, из-за чего баланс ощущается иначе. Американские хмели используются и подчёркиваются здесь чаще, чем в большинстве других современных британских стилей. По уровню охмеления этот стиль находится между Blonde Ale и American Pale Ale."
+      },
+      "sections_en": {
+        "overall_impression": "A hop-forward, average-strength to moderately-strong pale bitter. Drinkability and a refreshing quality are critical components of the style, as it was initially a summer seasonal beer.",
+        "aroma": "Hop aroma is moderately low to moderately high, and can use any variety of hops – floral, herbal, or earthy English hops and citrusy American hops are most common. Frequently a single hop varietal will be showcased. Low bready malt aroma with no caramel. Medium-low to low fruity aroma from the hops rather than esters. Low diacetyl optional.",
+        "appearance": "Straw to golden in color. Good to brilliant clarity. Low to moderate white head. A low head is acceptable when carbonation is also low.",
+        "flavor": "Medium to medium-high bitterness. Hop flavor is moderate to moderately high of any hop variety, although citrus flavors are increasingly common. Medium-low to low malt character, generally bready with perhaps a little biscuity flavor. Caramel flavors are typically absent. Hop bitterness and flavor should be pronounced. Moderately-low to low esters. Medium-dry to dry finish. Bitterness increases with alcohol level, but is always balanced. Low diacetyl optional.",
+        "mouthfeel": "Light to medium body. Low to moderate carbonation on draught, although bottled commercial versions will be higher. Stronger versions may have a slight alcohol warmth, but this character should not be too high.",
+        "comments": "Well-hopped, quenching beer with an emphasis on showcasing hops. Served colder than traditional bitters, this style was originally positioned as a refreshing summer beer, but is now often brewed year-round. Once brewed with English hops, increasingly American citrus-flavored hops are used. Golden Ales are also called Golden Bitters, Summer Ales, or British Blonde Ales. Can be found in cask, keg, and bottle.",
+        "history": "Modern golden ales were developed in England to take on strongly-marketed lagers. While it is difficult to identify the first, Hop Back's Summer Lightning, first brewed in 1986, is thought by many to have got the style off the ground.",
+        "characteristic_ingredients": "Low-color pale or lager malt acting as a blank canvas for the hop character. May use sugar adjuncts, corn, or wheat. English hops frequently used, although citrusy American varietals are becoming more common. Somewhat clean-fermenting British yeast.",
+        "style_comparison": "More similar to an American Pale Ale than anything else, although it is often lower in alcohol and usually features British ingredients. Has no caramel and fewer esters compared to British Bitters and pale ales. Dry as Bitters but with less malt character to support the hops, giving a different balance. Often uses (and features) American hops, more so than most other modern British styles. Balance of hoppiness between a Blonde Ale and an American Pale Ale."
+      },
+      "vital_statistics_text": "OG: 1.038 – 1.053 | IBUs: 20 – 45 | FG: 1.006 – 1.012 | SRM: 2 – 5 | ABV: 3.8 – 5.0%",
+      "vital_statistics": {
+        "og": "1.038-1.053",
+        "ibus": "20-45",
+        "fg": "1.006-1.012",
+        "srm": "2-5",
+        "abv": "3.8-5.0%"
+      },
+      "commercial_examples_text": "Adnams Explorer, Crouch Vale Brewers Gold, Golden Hill Exmoor Gold, Hop Back Summer Lightning, Oakham JHB, Spitfire Golden Ale",
+      "tags_en": [
+        "standard-strength",
+        "pale-color",
+        "top-fermented",
+        "british-isles",
+        "craft-style",
+        "pale-ale-family",
+        "bitter",
+        "hoppy"
+      ],
+      "tags_ru": [
+        "стандартная крепость",
+        "светлый цвет",
+        "верховое брожение",
+        "Британские острова",
+        "крафтовый стиль",
+        "семейство pale ale",
+        "горький",
+        "хмелевой"
+      ],
+      "translation_status": "detailed_ru_translated_reviewed_v1",
+      "source_pdf_page_start": 37,
+      "source_guideline_page_start": 21
+    },
+    {
+      "bjcp_id": "12B",
+      "bjcp_heading": "12B. Australian Sparkling Ale",
+      "category_id": "12",
+      "category_en": "PALE COMMONWEALTH BEER",
+      "category_ru": "Светлое пиво стран Содружества",
+      "name_en": "Australian Sparkling Ale",
+      "name_ru": "Австралийский sparkling ale",
+      "description_short_ru": "Хорошо сбалансированный, светлый и сильно газированный австралийский эль для жаркого климата: довольно горький, с травянисто-пряным хмелем, яблочно-грушевыми эфирами и сухим, очень выброженным финишем.",
+      "sections_ru": {
+        "overall_impression": "Хорошо сбалансированный, светлый, сильно газированный и освежающий эль, подходящий для жаркого климата. Довольно горький, с умеренным травянисто-пряным хмелевым профилем и эфирами семечковых фруктов. Солод во вкусе гладкий и нейтральный, тело сравнительно полное, но финиш при этом хрустко-сухой благодаря высокой степени выброженности.",
+        "aroma": "Довольно мягкий и чистый аромат с уравновешенным сочетанием эфиров, хмеля, солода и дрожжей — все компоненты от низкой до умеренной интенсивности. Эфиры чаще всего напоминают грушу и яблоко, иногда с едва заметным банановым штрихом. Хмель может быть землистым, травянистым или давать фирменный железистый оттенок Pride of Ringwood. Солод — от нейтрально-зернового до умеренно сладковатого или слегка хлебного; карамель недопустима. У совсем свежих образцов возможен лёгкий дрожжевой и сернистый тон.",
+        "appearance": "Цвет от насыщенно-жёлтого до светло-янтарного, чаще всего средне-золотистый. Пена высокая, пышная, стойкая, белая, с мелкими пузырьками. Из-за высокой карбонизации заметна выраженная игра пузырьков. При аккуратной декантации пиво блестяще прозрачное, но обычно его наливают вместе с дрожжами, из-за чего оно становится мутным. Само по себе пиво обычно не мутное, если только дрожжи не были подняты при наливе.",
+        "flavor": "Солодовый вкус от умеренного до слабого, округлый, зерновой или хлебный; в начале он может казаться мягким или слегка солодово-сладким, но к середине вкуса поднимается горечь от средней до умеренно высокой и выравнивает баланс. Карамель обычно отсутствует. Благодаря высокой степени выброженности финиш сухой и хрусткий, хотя тело создаёт ощущение полноты. Вкус хмеля от среднего до умеренно высокого, скорее землистый, иногда травянистый, смолистый, перечный или железистый, но не цветочный; он сохраняется и в послевкусии. Эфиры от умеренно высоких до умеренно слабых, чаще всего грушево-яблочные. Банан допустим, но никогда не должен доминировать. Возможны лёгкие минеральные или сернистые оттенки, особенно если в пиве есть дрожжи. Пиво не должно быть безликим.",
+        "mouthfeel": "Карбонизация от высокой до очень высокой, с наполнением рта пузырьками и звонким, игристым углекислотным покалыванием. Тело от среднего до средне-полного, ближе к более полному, если пиво налито вместе с дрожжами. Текстура гладкая, но с отчётливой газовитостью. В более крепких версиях возможно лёгкое алкогольное согревание, в менее крепких его быть не должно. Пиво должно быть очень хорошо выброженным, без остаточной сладости.",
+        "comments": "Coopers варит свой флагманский Sparkling Ale с 1862 года, хотя рецептура менялась. Сейчас пиво при декантации получается блестяще прозрачным, но пабные бармены часто сначала наливают большую часть в бокал, затем прокручивают бутылку и отправляют в бокал весь оставшийся дрожжевой осадок. В некоторых барах бутылку даже катают по стойке. При подаче из кега пивоварня рекомендует переворачивать кег, чтобы поднять дрожжи. Мутная подача сегодня, похоже, воспринимается потребителями как желательная. Пиво всегда натурально карбонизовано, даже в кеге. Это эль для свежего потребления, который лучше всего пить молодым.",
+        "history": "Пивоваренные записи показывают, что в XIX веке основной объём австралийского пива приходился на draught XXX (Mild) и porter. Бутылочный эль появился как ответ импортным бутылочным pale ale из Великобритании, таким как Bass и Wm Younger’s Monk. К началу XX века бутылочный pale ale вышел из моды, а в фаворе оказались более «лёгкие» лагеры. Многие Australian Sparkling и Pale Ale назывались элями, но на деле были лагерами низового брожения с очень похожим засыпом на те эли, которые они вытеснили. Coopers из Аделаиды, Южная Австралия, остаётся единственной сохранившейся пивоварней, которая продолжает выпускать Sparkling Ale как стиль.",
+        "characteristic_ingredients": "Слабо обсушенный австралийский двухрядный светлый солод; допустимы и лагерные разновидности. Небольшие количества кристаллического солода используются только для корректировки цвета. Современные версии не содержат несоложёных добавок; тростниковый сахар применяется лишь для прайминга. В исторических версиях, где использовали примерно 45% двухрядного солода и 30% более белкового солода (шестирядного), около 25% сахара помогало понизить общий уровень азота. Традиционно использовались австралийские хмели, Cluster и Goldings, пока с середины 1960-х их не вытеснил Pride of Ringwood. Дрожжи — высоко выброживающие, бертонского типа (типичный австралийский штамм). Вода переменная по составу, но обычно с низкими карбонатами и умеренными сульфатами.",
+        "style_comparison": "Внешне стиль похож на английские pale ale, но здесь значительно выше карбонизация, меньше карамели, меньше позднего охмеления и ярче выражены фирменные дрожжи и хмелевой сорт. Из-за высокой выброженности, низкой конечной плотности и несколько грубоватого хмеля пиво ощущается более горьким, чем можно было бы ожидать по уровню IBU."
+      },
+      "sections_en": {
+        "overall_impression": "A well-balanced, pale, highly-carbonated, and refreshing ale suitable for drinking in a hot climate. Fairly bitter, with a moderate herbal-spicy hop and pome fruit ester profile. Smooth, neutral malt flavors with a fuller body but a crisp, highly-attenuated finish.",
+        "aroma": "Fairly soft, clean aroma with a balanced mix of esters, hops, malt, and yeast – all moderate to low in intensity. The esters are frequently pears and apples, optionally with a very light touch of banana. The hops are earthy, herbaceous, or might show the characteristic iron-like Pride of Ringwood nose. The malt can range from neutral grainy to moderately sweet to lightly bready; no caramel should be evident. Very fresh examples can have a lightly yeasty, sulfury nose.",
+        "appearance": "Deep yellow to light amber in color, often medium gold. Tall, frothy, persistent white head with tiny bubbles. Noticeable effervescence due to high carbonation. Brilliant clarity if decanted, but typically poured with yeast to have a cloudy appearance. Not typically cloudy unless yeast roused during the pour.",
+        "flavor": "Medium to low rounded, grainy to bready malt flavor, initially mild to malty-sweet but a medium to medium-high bitterness rises mid-palate to balance the malt. Caramel flavors typically absent. Highly attenuated, giving a dry, crisp finish with lingering bitterness, although the body gives an impression of fullness. Medium to medium-high hop flavor, somewhat earthy and possibly herbal, resinous, peppery, or iron-like but not floral, lasting into aftertaste. Medium-high to medium-low esters, often pears and apples. Banana is optional, but should never dominate. May be lightly minerally or sulfury, especially if yeast is present. Should not be bland.",
+        "mouthfeel": "High to very high carbonation, giving mouth-filling bubbles and a crisp, spritzy carbonic bite. Medium to medium-full body, tending to the higher side if poured with yeast. Smooth but gassy. Stronger versions may have a light alcohol warmth, but lower alcohol versions will not. Very well-attenuated; should not have any residual sweetness.",
+        "comments": "Coopers has been making their flagship Sparkling Ale since 1862, although the formulation has changed over the years. Presently the beer will have brilliant clarity if decanted, but publicans often pour most of the beer into a glass then swirl the bottle and dump in all the yeast. In some bars, the bottle is rolled along the bar. When served on draught, the brewery instructs publicans to invert the keg to rouse the yeast. A cloudy appearance for the style seems to be a modern consumer preference. Always naturally carbonated, even in the keg. A present-use ale, best enjoyed fresh.",
+        "history": "Brewing records show that the majority of Australian beer brewed in the 19th century was draught XXX (Mild) and porter. Ale in bottle was originally developed to compete with imported bottled pale ales from British breweries, such as Bass and Wm Younger’ Monk. By the early 20th century, bottled pale ale went out of fashion and “lighter” lager beers were in vogue. Many Australian Sparkling and Pale Ales were labeled as ales, but were actually bottom-fermented lagers with very similar grists to the ales that they replaced. Coopers of Adelaide, South Australia is the only surviving brewer producing the Sparkling Ale style.",
+        "characteristic_ingredients": "Lightly kilned Australian 2-row pale malt, lager varieties may be used. Small amounts of crystal malt for color adjustment only. Modern examples use no adjuncts, cane sugar for priming only. Historical examples using 45% 2 row, 30% higher protein malt (6 row) would use around 25% sugar to dilute the nitrogen content. Traditionally used Australian hops, Cluster, and Goldings until replaced from mid-1960s by Pride of Ringwood. Highly attenuative Burton-type yeast (Australian-type strain typical). Variable water profile, typically with low carbonate and moderate sulfate.",
+        "style_comparison": "Superficially similar to English Pale Ales, although much more highly carbonated, with less caramel, less late hops, and showcasing the signature yeast strain and hop variety. More bitter than IBUs might suggest due to high attenuation, low final gravity, and somewhat coarse hops."
+      },
+      "vital_statistics_text": "OG: 1.038 – 1.050 | IBUs: 20 – 35 | FG: 1.004 – 1.006 | SRM: 4 – 7 | ABV: 4.5 – 6.0%",
+      "vital_statistics": {
+        "og": "1.038-1.050",
+        "ibus": "20-35",
+        "fg": "1.004-1.006",
+        "srm": "4-7",
+        "abv": "4.5-6.0%"
+      },
+      "commercial_examples_text": "Coopers Sparkling Ale",
+      "tags_en": [
+        "standard-strength",
+        "pale-color",
+        "top-fermented",
+        "pacific",
+        "traditional-style",
+        "pale-ale-family",
+        "bitter"
+      ],
+      "tags_ru": [
+        "стандартная крепость",
+        "светлый цвет",
+        "верховое брожение",
+        "Тихоокеанский регион",
+        "традиционный стиль",
+        "семейство pale ale",
+        "горький"
+      ],
+      "translation_status": "detailed_ru_translated_reviewed_v1",
+      "source_pdf_page_start": 37,
+      "source_guideline_page_start": 21
+    },
+    {
+      "bjcp_id": "12C",
+      "bjcp_heading": "12C. English IPA",
+      "category_id": "12",
+      "category_en": "PALE COMMONWEALTH BEER",
+      "category_ru": "Светлое пиво стран Содружества",
+      "name_en": "English IPA",
+      "name_ru": "Английский IPA",
+      "description_short_ru": "Горький, умеренно крепкий, очень хорошо выброженный британский светлый эль с сухим финишем и выраженным хмелевым ароматом и вкусом.",
+      "sections_ru": {
+        "overall_impression": "Горький, умеренно крепкий, очень хорошо выброженный британский светлый эль с сухим финишем и заметным хмелевым ароматом и вкусом. Наиболее аутентичный профиль дают классические британские ингредиенты.",
+        "aroma": "Хмелевой аромат от умеренного до умеренно высокого, обычно цветочный, пряно-перечный или с апельсиново-цитрусовым оттенком. Лёгкий dry hop допустим, но не обязателен. Солодовый фон от умеренно слабого до среднего, хлебный или бисквитный, при желании с лёгкой карамельной либо тостовой составляющей. Низкая или умеренная фруктовость допустима. Возможен лёгкий сернистый тон.",
+        "appearance": "Цвет от золотистого до глубокого янтарного, хотя большинство образцов всё же довольно светлые. Пиво должно быть прозрачным, хотя нефильтрованные dry-hopped версии могут быть слегка мутноватыми. Пена среднего размера, стойкая, беловатая.",
+        "flavor": "Вкус хмеля от среднего до высокого, горечь от умеренной до уверенной. Хмелевой профиль должен соответствовать аромату: цветочный, пряно-перечный или апельсиново-цитрусовый. Солодовый вкус от умеренно слабого до среднего, обычно с хлебными нотами, иногда с лёгкими или умеренно лёгкими оттенками бисквита, тоста, ириски или карамели. Фруктовость от умеренно слабой до средней. Финиш от умеренно сухого до очень сухого; горечь может тянуться в послевкусие, но не должна быть жёсткой. Баланс смещён к хмелю, однако солод всё равно должен оставаться заметной опорой. Если используется вода с высоким содержанием сульфатов, обычно появляются характерная минеральная сухость, лёгкий сернистый привкус и затяжная горечь. В более крепких версиях может ощущаться немного чистого алкоголя.",
+        "mouthfeel": "Текстура гладкая, тело от средне-лёгкого до среднего, без вяжущей шероховатости от хмеля. Карбонизация от средней до умеренно высокой может усиливать ощущение сухости, даже если солодовая подложка вполне заметна. В более крепких версиях возможен слабый и мягкий согревающий алкоголь.",
+        "comments": "Для того чтобы IPA хорошо доезжал до Индии, важны были высокая степень выброженности и серьёзное охмеление. Но из этого не следует, что в Индию не отправляли другие сорта, например porter; что IPA якобы специально придумали только ради этого маршрута; что IPA был охмелён сильнее любых других «keeping beers»; или что его крепость была для того времени чем-то необычным. Сегодня многие сорта с маркировкой IPA на британском рынке слишком слабы для исторического понимания стиля. По данным CAMRA, «так называемые IPA крепостью около 3,5% не соответствуют стилю». Историк английского пива Мартин Корнелл также замечал, что такие сорта «по сути неотличимы от ordinary bitter». В этих рекомендациях мы опираемся именно на такое понимание, а не на современную маркетинговую практику части британских пивоварен. Также важно помнить, что пиво везли в уже использованных дубовых бочках, поэтому дуб и Brett-характер для стиля неуместны.",
+        "history": "Изначально это был светлый выдержанный эль из Лондона, который начали отправлять в Индию в конце XVIII века. Джордж Ходжсон из Bow Brewery не создал стиль, но стал первым широко известным пивоваром, фактически доминировавшим на этом рынке. После торгового конфликта Ост-Индская компания в 1823 году поручила Samuel Allsopp воссоздать и переосмыслить это пиво уже на богатой сульфатами воде Бертона. Само название India Pale Ale появилось лишь около 1830 года. Со временем и крепость, и популярность стиля снижались, и во второй половине XX века он почти исчез. При этом более крепкая «бертоновская» версия IPA сохранилась, а само название стали применять и к более слабым, более хмелевым, часто бутылочным сортам — тенденция, которая частично сохраняется и сегодня. В эпоху крафта стиль был заново открыт в 1980-х; именно эта современная реинтерпретация и описана в руководстве. Современные образцы вдохновлены классикой, но не обязательно являются её прямым непрерывным продолжением с тем же профилем. White Shield, вероятно, обладает самой длинной линией преемственности: он восходит к старым крепким Burton IPA и впервые был сварен в 1829 году.",
+        "characteristic_ingredients": "Солодовая база — pale ale malt. Наиболее аутентичны английские хмели, особенно на поздних внесениях. Дрожжи — хорошо выброживающие британские. В некоторых версиях возможен рафинированный сахар. При желании может присутствовать сульфатный характер воды бертонского типа.",
+        "style_comparison": "Обычно в английском IPA больше позднего хмеля и меньше фруктовости и карамели, чем в британских pale ale и bitter. По сравнению с типичным American IPA здесь ниже интенсивность хмеля и заметнее солодовый фундамент."
+      },
+      "sections_en": {
+        "overall_impression": "A bitter, moderately-strong, very well-attenuated pale British ale with a dry finish and a hoppy aroma and flavor. Classic British ingredients provide the most authentic flavor profile.",
+        "aroma": "A moderate to moderately-high hop aroma, typically floral, spicy-peppery, or citrus-orange in nature. A slight dry-hop aroma is acceptable, but not required. Medium-low to medium bready or biscuity malt, optionally with a moderately-low caramel-like or toasty malt presence. Low to moderate fruitiness is acceptable. Optional light sulfury note.",
+        "appearance": "Color ranges from golden to deep amber, but most are fairly pale. Should be clear, although unfiltered dry-hopped versions may be a bit hazy. Moderate-sized, persistent head stand with off-white color.",
+        "flavor": "Hop flavor is medium to high, with a moderate to assertive hop bitterness. The hop flavor should be similar to the aroma (floral, spicy-peppery, or citrus-orange). Malt flavor should be medium-low to medium, and be somewhat bready, optionally with light to medium-light biscuit, toast, toffee, or caramel aspects. Medium-low to medium fruitiness. Finish is medium-dry to very dry, and the bitterness may linger into the aftertaste but should not be harsh. The balance is toward the hops, but the malt should still be noticeable in support. If high sulfate water is used, a distinctively minerally, dry finish, some sulfur flavor, and a lingering bitterness are usually present. Some clean alcohol flavor can be noted in stronger versions.",
+        "mouthfeel": "Smooth, medium-light to medium body without hop-derived astringency. Medium to medium-high carbonation can give an overall dry sensation despite a supportive malt presence. A low, smooth alcohol warming can be sensed in stronger versions.",
+        "comments": "The attributes of IPA that were important to its arrival in good condition in India were that it was very well-attenuated, and heavily hopped. Simply because this is how IPA was shipped, doesn’t mean that other beers such as Porter weren’t also sent to India, that IPA was invented to be sent to India, that IPA was more heavily hopped than other keeping beers, or that the alcohol level was unusual for the time. Many modern examples labeled IPA are quite weak in strength. According to CAMRA, “so-called IPAs with strengths of around 3.5% are not true to style.” English beer historian Martyn Cornell has commented that beers like this are “not really distinguishable from an ordinary bitter.” So we choose to agree with these sources for our guidelines rather than what some modern British breweries are calling an IPA; just be aware of these two main types of IPAs in the British market today. The beers were shipped in well-used oak casks, so the style shouldn’t have an oak or Brett character.",
+        "history": "Originally a pale stock ale from London that was first shipped to India in the late 1700s. George Hodgson of the Bow Brewery did not create the style, but was the first well known brewer to dominate the market. After a trade dispute, the East India Company had Samuel Allsopp recreate (and reformulate) the beer in 1823 using Burton’s sulfate-rich water. The name India Pale Ale wasn’t used until around 1830. Strength and popularity declined over time, and the style virtually disappeared in the second half of the 20th century. While the stronger Burton-type IPA remained, the name was also applied to hoppy, lower-gravity, often bottled products (a trend that continues in some modern British examples). The style underwent a craft beer rediscovery in the 1980s, and is what is described in these guidelines. Modern examples are inspired by classic versions, but shouldn’t be assumed to have an unbroken lineage with the exact same profile. White Shield is probably the example with the longest lineage, tracing to the strong Burton IPAs of old and first brewed in 1829.",
+        "characteristic_ingredients": "Pale ale malt. English hops, particularly as finishing hops. Attenuative British ale yeast. Refined sugar may be used in some versions. Optional sulfate character from Burton-type water.",
+        "style_comparison": "Generally will have more late hops and less fruitiness and caramel than British pale ales and Bitters. Has less hop intensity and a more pronounced malt flavor than typical American IPAs."
+      },
+      "vital_statistics_text": "OG: 1.050 – 1.070 | IBUs: 40 – 60 | FG: 1.010 – 1.015 | SRM: 6 – 14 | ABV: 5.0 – 7.5%",
+      "vital_statistics": {
+        "og": "1.050-1.070",
+        "ibus": "40-60",
+        "fg": "1.010-1.015",
+        "srm": "6-14",
+        "abv": "5.0-7.5%"
+      },
+      "commercial_examples_text": "Berkshire Lost Sailor IPA, Fuller's Bengal Lancer, Marston’s Old Empire IPA, Meantime London IPA, Thornbridge Jaipur, Worthington White Shield",
+      "tags_en": [
+        "high-strength",
+        "pale-color",
+        "top-fermented",
+        "british-isles",
+        "traditional-style",
+        "ipa-family",
+        "bitter",
+        "hoppy"
+      ],
+      "tags_ru": [
+        "высокая крепость",
+        "светлый цвет",
+        "верховое брожение",
+        "Британские острова",
+        "традиционный стиль",
+        "семейство IPA",
+        "горький",
+        "хмелевой"
+      ],
+      "translation_status": "detailed_ru_translated_reviewed_v1",
+      "source_pdf_page_start": 38,
+      "source_guideline_page_start": 22
+    },
+    {
+      "bjcp_id": "13A",
+      "bjcp_heading": "13A. Dark Mild",
+      "category_id": "13",
+      "category_en": "BROWN BRITISH BEER",
+      "category_ru": "Коричневое британское пиво",
+      "name_en": "Dark Mild",
+      "name_ru": "Тёмный mild",
+      "description_short_ru": "Тёмный, лёгкий по плотности британский сессионный эль с солодовым акцентом, освежающий, но при этом выразительный для своей крепости, с широким диапазоном оттенков тёмного солода или тёмного сахара.",
+      "sections_ru": {
+        "overall_impression": "Тёмный, лёгкий по плотности британский сессионный эль с солодовым акцентом, который легко пить пинтами. Освежающий, но в то же время выразительный для своей крепости, с широким диапазоном оттенков тёмного солода или тёмного сахара.",
+        "aroma": "Солодовый аромат от слабого до умеренного, иногда с фруктовостью. Солодовый профиль может уходить в карамель, ириску, зерновые, тост, орехи, шоколад или лёгкую обжаренность. Лёгкий землистый или цветочный хмелевой аромат допустим. Очень низкий диацетил допустим.",
+        "appearance": "Цвет от меди до тёмно-коричневого или махагонового. Обычно прозрачное, хотя традиционно может быть нефильтрованным. Пена от слабой до умеренной, беловатая или кремово-бежевая; стойкость может быть невысокой.",
+        "flavor": "В целом это солодовое пиво, но с очень широким спектром солодовых и дрожжевых оттенков: солод, сладость, карамель, ириска, тост, орехи, шоколад, кофе, обжаренность, фрукты, лакрица, слива, изюм — всё это может звучать на хлебной, бисквитной или тостовой основе. Финиш бывает как сладковатым, так и сухим. В версиях с более тёмным солодом возможен сухой, обжаренный финальный штрих. Горечь от слабой до умеренной: её достаточно для баланса, но не настолько, чтобы перекрыть солод. Умеренная фруктовость допустима. Вкус хмеля может присутствовать на низком уровне. Очень низкий диацетил допустим.",
+        "mouthfeel": "Тело от лёгкого до среднего. Карбонизация обычно от низкой до умеренно низкой. В версиях с заметной обжаркой возможна лёгкая терпкость. Более сладкие версии могут казаться неожиданно полными для своей плотности. Пиво не должно быть безжизненно плоским, водянистым или пустым.",
+        "comments": "Большинство образцов — лёгкие сессионные эли примерно в районе 3,2% алкоголя, хотя для экспорта, фестивалей, сезона или специальных случаев могут варить и более крепкие версии — от 4% и выше. Обычно подаются из каска; бутылочные версии сессионной крепости редко хорошо переносят транспортировку. Допустим широкий диапазон интерпретаций. Существуют и светлые mild (от среднего янтаря до светло-коричневого), но они ещё более редки, чем тёмные; в этих рекомендациях описана именно современная тёмная версия.",
+        "history": "Исторически слово mild означало просто «невыдержанный» эль и могло использоваться как определение, противопоставляющее его выдержанным или более сильно охмелённым keeping beer. Современные mild происходят от более слабых элей типа X XIX века, которые начали темнеть в 1880-х, но по-настоящему тёмно-коричневыми стали только после Первой мировой войны. В современном употреблении mild — это пиво пониженной крепости и с меньшей горечью, чем bitter. В руководстве описана именно современная британская версия. Сам термин mild сегодня не слишком популярен у потребителей, и многие пивоварни его уже не используют. Стиль становится всё более редким. Исторической связи между Mild и Porter нет.",
+        "style_comparison": "Некоторые версии могут напоминать современный English Porter пониженной плотности. По сравнению с London Brown Ale этот стиль заметно менее сладкий.",
+        "characteristic_ingredients": "Британские базовые светлые солоды (часто довольно декстриновые), crystal malt, тёмные солода или тёмные сахарные добавки; возможны и несоложёные компоненты, например плющёная кукуруза. Допускается подкрашивание brewer’s caramel. Дрожжи — выразительные британские эльовые. Хмель может быть любым, поскольку его характер здесь приглушён и редко заметен."
+      },
+      "sections_en": {
+        "overall_impression": "A dark, low-gravity, malt-focused British session ale readily suited to drinking in quantity. Refreshing, yet flavorful for its strength, with a wide range of dark malt or dark sugar expression.",
+        "aroma": "Low to moderate malt aroma, and may have some fruitiness. The malt expression can take on a wide range of character, which can include caramel, toffee, grainy, toasted, nutty, chocolate, or lightly roasted. Low earthy or floral hop aroma optional. Very low diacetyl optional.",
+        "appearance": "Copper to dark brown or mahogany color. Generally clear, although is traditionally unfiltered. Low to moderate off-white to tan head; retention may be poor.",
+        "flavor": "Generally a malty beer, although may have a very wide range of malt- and yeast-based flavors (e.g., malty, sweet, caramel, toffee, toast, nutty, chocolate, coffee, roast, fruit, licorice, plum, raisin) over a bready, biscuity, or toasty base. Can finish sweet to dry. Versions with darker malts may have a dry, roasted finish. Low to moderate bitterness, enough to provide some balance but not enough to overpower the malt in the balance. Moderate fruity esters optional. Low hop flavor optional. Low diacetyl optional.",
+        "mouthfeel": "Light to medium body. Generally low to medium-low carbonation. Roast-based versions may have a light astringency. Sweeter versions may seem to have a rather full mouthfeel for the gravity. Should not be flat, watery, or thin.",
+        "comments": "Most are low-gravity session beers around 3.2%, although some versions may be made in the stronger (4%+) range for export, festivals, seasonal or special occasions. Generally served on cask; session-strength bottled versions don’t often travel well. A wide range of interpretations are possible. Pale (medium amber to light brown) versions exist, but these are even more rare than dark milds; these guidelines only describe the modern dark version.",
+        "history": "Historically, ‘mild’ was simply an unaged beer, and could be used as an adjective to distinguish between aged or more highly hopped keeping beers. Modern milds trace their roots to the weaker X-type ales of the 1800s, which started to get darker in the 1880s, but only after WWI did they become dark brown. In current usage, the term implies a lower-strength beer with less hop bitterness than bitters. The guidelines describe the modern British version. The term ‘mild’ is currently somewhat out of favor with consumers, and many breweries no longer use it. Increasingly rare. There is no historic connection or relationship between Mild and Porter.",
+        "style_comparison": "Some versions may seem like lower-gravity modern English Porters. Much less sweet than London Brown Ale.",
+        "characteristic_ingredients": "Pale British base malts (often fairly dextrinous), crystal malt, dark malts or dark sugar adjuncts, may also include adjuncts such as flaked maize, and may be colored with brewer’s caramel. Characterful British ale yeast. Any type of hops, since their character is muted and rarely is noticeable."
+      },
+      "vital_statistics_text": "OG: 1.030 – 1.038 | IBUs: 10 – 25 | FG: 1.008 – 1.013 | SRM: 14 – 25 | ABV: 3.0 – 3.8%",
+      "vital_statistics": {
+        "og": "1.030-1.038",
+        "ibus": "10-25",
+        "fg": "1.008-1.013",
+        "srm": "14-25",
+        "abv": "3.0-3.8%"
+      },
+      "commercial_examples_text": "Brain’s Dark, Greene King XX Mild, Hobson’s Champion Mild, Mighty Oak Oscar Wilde, Moorhouse Black Cat, Theakston Traditional Mild",
+      "tags_en": [
+        "session-strength",
+        "dark-color",
+        "top-fermented",
+        "british-isles",
+        "traditional-style",
+        "brown-ale-family",
+        "malty"
+      ],
+      "tags_ru": [
+        "сессионная крепость",
+        "тёмный цвет",
+        "верховое брожение",
+        "Британские острова",
+        "традиционный стиль",
+        "семейство коричневых элей",
+        "солодовый"
+      ],
+      "translation_status": "detailed_ru_translated_reviewed_v1",
+      "source_pdf_page_start": 39,
+      "source_guideline_page_start": 23
+    },
+    {
+      "bjcp_id": "13B",
+      "bjcp_heading": "13B. British Brown Ale",
+      "category_id": "13",
+      "category_en": "BROWN BRITISH BEER",
+      "category_ru": "Коричневое британское пиво",
+      "name_en": "British Brown Ale",
+      "name_ru": "Британский brown ale",
+      "description_short_ru": "Солодовый, карамельный коричневый британский эль без обжарённости портера — сбалансированный, выразительный и обычно немного крепче среднего современного британского пива.",
+      "sections_ru": {
+        "overall_impression": "Солодовый, карамельный коричневый британский эль без обжарённых оттенков, характерных для porter. Сбалансированный и выразительный, но обычно чуть крепче большинства обычных британских сортов.",
+        "aroma": "Лёгкий сладковатый солодовый аромат с нотами ириски, орехов или лёгкого шоколада, а также с карамельным оттенком от слабого до довольно заметного. Может ощущаться лёгкий, но приятный цветочный или землистый хмель. Лёгкая фруктовость допустима, но не должна выходить на первый план.",
+        "appearance": "Цвет от тёмного янтаря до тёмного красновато-коричневого. Прозрачное. Пена от слабой до умеренной, беловатая или светло-бежевая.",
+        "flavor": "Мягкая или умеренная солодовая сладость, с карамельным характером от лёгкого до выразительного и финишем от среднего по сухости до сухого. В солодовом профиле также возможны ореховые, тостовые, бисквитные, ирисочные и лёгкие шоколадные ноты. Горечь от средне-слабой до средней. Баланс колеблется от примерно ровного до заметно солодового. Лёгкий цветочный или землистый вкус хмеля допустим. Эфиры от слабых до умеренных допустимы.",
+        "mouthfeel": "Тело от средне-лёгкого до среднего. Карбонизация от средней до умеренно высокой.",
+        "comments": "Это широкая категория, допускающая разные трактовки: от более светлых и хмелевых до более глубоких, тёмных и карамельно-насыщенных. Но ни одна версия не должна иметь выраженно обжарённого характера. Более крепкий Double Brown Ale когда-то был гораздо популярнее, но сейчас встречается редко. Хотя London Brown Ale продаётся под названием Brown Ale, в судейской системе BJCP он выделен отдельно из-за заметной разницы в балансе, прежде всего по сладости, а также по крепости. Это не значит, что стили не родственны по семейству, но для оценки их разделяют.",
+        "history": "Brown ale имеет долгую историю в Великобритании, хотя в разные эпохи под этим названием скрывались разные продукты. Современный brown ale — это уже стиль XX века; с историческими сортами того же имени он не тождественен. Пиво такого типа варили в широком диапазоне начальных плотностей, но современные brown ale обычно относятся к более крепкой, по нынешним британским меркам, интерпретации. В этих рекомендациях описан именно современный, более крепкий британский brown ale, а не исторические версии и не более сладкий London Brown Ale из категории Historical Beer. Сегодня это преимущественно, хотя и не исключительно, бутылочный стиль.",
+        "characteristic_ingredients": "Основа — британский mild ale или pale ale malt с карамельными солодами. Возможны и небольшие количества более тёмных солодов, например chocolate malt, чтобы придать цвет и ореховый оттенок. Наиболее аутентичны английские сорта хмеля.",
+        "style_comparison": "По сравнению с британскими bitter здесь баланс заметнее смещён к солоду, а вклад более тёмных солодов даёт дополнительную глубину вкуса. Стиль крепче, чем Dark Mild, и менее обжарённый, чем English Porter."
+      },
+      "sections_en": {
+        "overall_impression": "A malty, caramelly, brown British ale without the roasted flavors of a Porter. Balanced and flavorful, but usually a little stronger than most average UK beers.",
+        "aroma": "Light, sweet malt aroma with toffee, nutty, or light chocolate notes, and a light to heavy caramel quality. A light but appealing floral or earthy hop aroma may also be noticed. A light fruity aroma may be evident, but should not dominate.",
+        "appearance": "Dark amber to dark reddish-brown color. Clear. Low to moderate off-white to light tan head.",
+        "flavor": "Gentle to moderate malt sweetness, with a light to heavy caramel character, and a medium to dry finish. Malt may also have a nutty, toasted, biscuity, toffee, or light chocolate character. Medium to medium-low bitterness. Malt-hop balance ranges from even to malt-focused. Low floral or earthy hop flavor optional. Low to moderate fruity esters optional.",
+        "mouthfeel": "Medium-light to medium body. Medium to medium-high carbonation.",
+        "comments": "A wide-ranging category with different interpretations possible, ranging from lighter-colored to hoppy to deeper, darker, and caramel-focused; however, none of the versions have strongly roasted flavors. A stronger Double Brown Ale was more popular in the past, but is very hard to find now. While London Brown Ales are marketed using the name Brown Ale, we list those as a different judging style due to the significant difference in balance (especially sweetness) and alcohol strength; that doesn’t mean that they aren’t in the same family, though.",
+        "history": "Brown ale has a long history in Great Britain, although different products used that name at various times. Modern brown ale is a 20th century creation; it is not the same as historical products with the same name. A wide range of gravities were brewed, but modern brown ales are generally of the stronger (by current UK standards) interpretation. This style is based on the modern stronger British brown ales, not historical versions or the sweeter London Brown Ale described in the Historical Beer category. Predominantly but not exclusively a bottled product currently.",
+        "characteristic_ingredients": "British mild ale or pale ale malt base with caramel malts. May also have small amounts darker malts (e.g., chocolate) to provide color and the nutty character. English hop varieties are most authentic.",
+        "style_comparison": "More malty balance than British Bitters, with more malt flavors from darker grains. Stronger than a Dark Mild. Less roast than an English Porter."
+      },
+      "vital_statistics_text": "OG: 1.040 – 1.052 | IBUs: 20 – 30 | FG: 1.008 – 1.013 | SRM: 12 – 22 | ABV: 4.2 – 5.9%",
+      "vital_statistics": {
+        "og": "1.040-1.052",
+        "ibus": "20-30",
+        "fg": "1.008-1.013",
+        "srm": "12-22",
+        "abv": "4.2-5.9%"
+      },
+      "commercial_examples_text": "AleSmith Nut Brown Ale, Cigar City Maduro Brown Ale, Maxim Double Maxim, Newcastle Brown Ale, Riggwelter Yorkshire Ale, Samuel Smith’s Nut Brown Ale",
+      "tags_en": [
+        "standard-strength",
+        "amber-color",
+        "top-fermented",
+        "british-isles",
+        "traditional-style",
+        "brown-ale-family",
+        "malty"
+      ],
+      "tags_ru": [
+        "стандартная крепость",
+        "янтарный цвет",
+        "верховое брожение",
+        "Британские острова",
+        "традиционный стиль",
+        "семейство коричневых элей",
+        "солодовый"
+      ],
+      "translation_status": "detailed_ru_translated_reviewed_v1",
+      "source_pdf_page_start": 39,
+      "source_guideline_page_start": 23
+    },
+    {
+      "bjcp_id": "13C",
+      "bjcp_heading": "13C. English Porter",
+      "category_id": "13",
+      "category_en": "BROWN BRITISH BEER",
+      "category_ru": "Коричневое британское пиво",
+      "name_en": "English Porter",
+      "name_ru": "Английский портер",
+      "description_short_ru": "Тёмный британский эль умеренной крепости с сдержанным жареным и горьковатым характером, обычно с шоколадно-карамельным солодовым профилем и без жжёсткой обжарённости.",
+      "sections_ru": {
+        "overall_impression": "Тёмный британский эль умеренной крепости с сдержанным жареным и горьковатым характером. Жареные оттенки могут варьироваться, но обычно без жжёных нот; часто присутствует солодовый профиль с шоколадом и карамелью.",
+        "aroma": "Солодовый аромат от умеренного до умеренно слабого, с хлебными, бисквитными и тостовыми оттенками, а также с мягкой обжаренностью, нередко напоминающей шоколад. Дополнительная солодовая сложность может проявляться как карамель, орехи или ирисочная сладость. Хмель может присутствовать до умеренного уровня, чаще цветочный или землистый. Умеренные фруктовые эфиры допустимы и даже желательны. Низкий диацетил допустим.",
+        "appearance": "Цвет от коричневого до тёмно-коричневого, часто с рубиновыми отблесками. Прозрачность хорошая, хотя пиво может казаться почти непрозрачным. Пена умеренная, беловатая или светло-бежевая, с хорошей или средней стойкостью.",
+        "flavor": "Солодовый вкус умеренный: хлебный, бисквитный и тостовый, с мягкой или умеренной шоколадной обжаренностью. Часто заметны карамельные, ореховые или ирисочные оттенки, а иногда и более тёмные штрихи — кофе или лакрица — но на более низком уровне. Вкус не должен быть жжёным или жёстко обжарённым, хотя небольшое количество тёмного солода может придавать приятную сложность горького шоколада. До умеренного уровня допустим цветочный или землистый вкус хмеля. Эфиры — от слабых до умеренных. Горечь от умеренно слабой до средней; баланс может колебаться от слегка солодового до слегка горького. Финиш от довольно сухого до слегка сладковатого. Умеренно слабый диацетил допустим.",
+        "mouthfeel": "Тело от средне-лёгкого до среднего. Карбонизация от умеренно низкой до умеренно высокой. Текстура может быть от слегка до умеренно кремовой.",
+        "comments": "В самой Британии этот стиль обычно называют просто Porter; название English Porter здесь нужно, чтобы отличать его от других производных портеров, описанных в руководстве.",
+        "history": "Зародившись в Лондоне в начале XVIII века, porter развился как более сильно охмелённая и выдержанная версия популярного тогда Brown Beer. На протяжении своей истории он многократно менялся под влиянием технологических и сырьевых новшеств — например, изобретения black malt в 1817 году и развития промышленного пивоварения, — а также под воздействием вкусов потребителей, войн и налоговой политики. В начале XIX века он был невероятно популярен и широко экспортировался, но уже к 1870-м, по мере превращения в менее плотное и невыдержанное пиво, начал терять позиции. В первой половине XX века плотность всех британских сортов продолжала снижаться, и некоторые стили исчезли совсем; porter ушёл к 1950-м. Эпоха крафта вернула его к жизни в 1978 году. Считается, что название произошло от его популярности у лондонских рабочих-переносчиков. От porter со временем произошли разные региональные вариации, а все stout когда-то изначально назывались stout porter. Исторической связи между Mild и Porter нет.",
+        "characteristic_ingredients": "Засыпи могут заметно различаться, но компонент, обеспечивающий тёмный цвет, присутствует всегда. Обычны chocolate и другие жареные солода, карамельные солода, пивоваренные сахара и подобные добавки. Для лондонских версий brown malt нередко является характерным вкусовым элементом.",
+        "style_comparison": "От American Porter английский porter отличается обычно более мягким, сладковатым и карамельным профилем, меньшей плотностью и, как правило, более низким алкоголем; у американского варианта также чаще заметнее хмель. По сравнению с British Brown Ale здесь больше плотности и больше жареного характера. По плотности стиль выше, чем Dark Mild."
+      },
+      "sections_en": {
+        "overall_impression": "A moderate-strength dark brown English ale with a restrained roasty, bitter character. May have a range of roasted flavors, generally without burnt qualities, and often has a malty chocolate and caramel profile.",
+        "aroma": "Moderate to moderately low bready, biscuity, and toasty malt aroma with mild roastiness, often like chocolate. Additional malt complexity may be present as caramel, nuts, toffee sweetness. May have up to a moderate level of floral or earthy hops. Moderate fruity esters optional, but desirable. Low diacetyl optional.",
+        "appearance": "Brown to dark brown in color, often with ruby highlights. Good clarity, although may be opaque. Moderate off-white to light tan head with good to fair retention.",
+        "flavor": "Moderate bready, biscuity, and toasty malt flavor with a mild to moderate chocolate roastiness, and often a significant caramel, nutty, or toffee character, possibly with lower levels of darker flavors like coffee or licorice. Should not be burnt or harshly roasted, although small amounts may contribute a bitter chocolate complexity. Up to moderate earthy or floral hop flavor optional. Low to moderate fruity esters. Medium-low to medium bitterness varies the balance from slightly malty to slightly bitter, with a fairly dry to slightly sweet finish. Moderately-low diacetyl optional.",
+        "mouthfeel": "Medium-light to medium body. Moderately-low to moderately-high carbonation. Light to moderate creamy texture.",
+        "comments": "Simply called “Porter” in Britain, the name “English Porter” is used to differentiate it from other derivative porters described in these guidelines.",
+        "history": "Originating in London in the early 1700s, porter evolved as a more heavily hopped and aged (keeping) version of the Brown Beer popular at the time. It evolved many times based on various technological and ingredient developments (such as the invention of black malt in 1817, and large-scale industrial brewing), as well as consumer preferences, wars, and tax policy. It became a highly-popular, widely-exported style in the early 1800s before declining by the 1870s as it changed to a lower gravity, unaged beer. As gravities continued to decline in all UK beers in the first half of the 1900s, styles stopped being made (including porter, gone by the 1950s). The craft beer era led to its re-introduction in 1978. The name is said to have been derived from its popularity with the London working class performing various load-carrying tasks of the day. Parent of various regional interpretations over time, and a predecessor to all stouts (which were originally called “stout porters”). There is no historic connection or relationship between Mild and Porter.",
+        "characteristic_ingredients": "Grists vary, but something producing a dark color is always involved. Chocolate or other roasted malts, caramel malt, brewing sugars, and the like are common. London-type porters often use brown malt as a characteristic flavor.",
+        "style_comparison": "Differs from American Porter in that it usually has softer, sweeter, and more caramelly flavors, lower gravities, and usually less alcohol; American Porter also usually has more hop character. More substance and roast than a British Brown Ale. Higher in gravity than a Dark Mild."
+      },
+      "vital_statistics_text": "OG: 1.040 – 1.052 | IBUs: 18 – 35 | FG: 1.008 – 1.014 | SRM: 20 – 30 | ABV: 4.0 – 5.4%",
+      "vital_statistics": {
+        "og": "1.040-1.052",
+        "ibus": "18-35",
+        "fg": "1.008-1.014",
+        "srm": "20-30",
+        "abv": "4.0-5.4%"
+      },
+      "commercial_examples_text": "Bateman’s Salem Porter, Burton Bridge Burton Porter, Fuller's London Porter, Nethergate Old Growler Porter, RCH Old Slug Porter, Samuel Smith Taddy Porter",
+      "tags_en": [
+        "standard-strength",
+        "dark-color",
+        "top-fermented",
+        "british-isles",
+        "traditional-style",
+        "porter-family",
+        "malty",
+        "roasty"
+      ],
+      "tags_ru": [
+        "стандартная крепость",
+        "тёмный цвет",
+        "верховое брожение",
+        "Британские острова",
+        "традиционный стиль",
+        "семейство портеров",
+        "солодовый",
+        "жареный"
+      ],
+      "translation_status": "detailed_ru_translated_reviewed_v1",
+      "source_pdf_page_start": 40,
+      "source_guideline_page_start": 24
+    }
+  ]
+}

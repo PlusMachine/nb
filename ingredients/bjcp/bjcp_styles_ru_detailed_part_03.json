@@ -1,0 +1,369 @@
+{
+  "source": {
+    "document": "BJCP 2021 Beer Style Guidelines",
+    "file_name": "2021_Guidelines_Beer_1.25.pdf",
+    "language": "ru",
+    "translation_scope": "detailed",
+    "notes": "Подробный русский перевод третьей части корпуса BJCP: категории 6-7 с сохранением короткого описания, полных секций и оригинальных английских секций для сверки."
+  },
+  "progress": {
+    "styles_total_in_guideline": 128,
+    "styles_translated_in_this_file": 5,
+    "translated_style_ids": [
+      "6A",
+      "6B",
+      "6C",
+      "7A",
+      "7B"
+    ],
+    "translated_categories": [
+      "6",
+      "7"
+    ],
+    "next_recommended_batch": [
+      "8A",
+      "8B",
+      "9A",
+      "9B",
+      "9C"
+    ]
+  },
+  "categories": [
+    {
+      "category_id": "6",
+      "category_en": "AMBER MALTY EUROPEAN LAGER",
+      "category_ru": "Янтарный солодовый европейский лагер",
+      "overview_ru": "Эта категория объединяет янтарные лагеры немецкого происхождения низового брожения, в которых баланс смещён в солодовую сторону, а крепость лежит в диапазоне от vollbier до starkbier."
+    },
+    {
+      "category_id": "7",
+      "category_en": "AMBER BITTER EUROPEAN BEER",
+      "category_ru": "Янтарное горькое европейское пиво",
+      "overview_ru": "В эту категорию входят янтарные сорта немецкого и австрийского происхождения с балансом от ровного до заметно горького."
+    }
+  ],
+  "styles": [
+    {
+      "bjcp_id": "6A",
+      "bjcp_heading": "6A. Märzen",
+      "category_id": "6",
+      "category_en": "AMBER MALTY EUROPEAN LAGER",
+      "category_ru": "Янтарный солодовый европейский лагер",
+      "name_en": "Märzen",
+      "name_ru": "Мэрцен",
+      "description_short_ru": "Янтарный солодовый немецкий лагер с чистым, насыщенным, тостово-хлебным солодовым вкусом, сдержанной горечью и хорошо выброженным финишем. Общее солодовое впечатление мягкое, элегантное и сложное.",
+      "sections_ru": {
+        "overall_impression": "Янтарный солодовый немецкий лагер с чистым, насыщенным, тостово-хлебным солодовым вкусом, сдержанной горечью и хорошо выброженным финишем. Общее солодовое впечатление мягкое, элегантное и сложное; богатое солодовое послевкусие не должно казаться ни приторным, ни тяжёлым.",
+        "aroma": "Солодовый аромат умеренный: обычно насыщенный, хлебный, слегка тостовый, с лёгкими оттенками корочки свежего хлеба. Характер брожения чистый, лагерный. Допустим очень слабый цветочный, травянистый или пряный аромат хмеля. Карамельная сладость, сухая бисквитность и жареные солодовые тона для стиля неуместны. Может ощущаться очень лёгкий алкоголь, но никогда не резкий. В аромате прежде всего должна читаться чистая, элегантная солодовая насыщенность.",
+        "appearance": "Цвет от янтарно-оранжевого до глубокого красновато-медного; пиво не должно быть золотистым. Прозрачность яркая. Пена стойкая, кремовая, грязно-белая.",
+        "flavor": "Вкус от умеренно насыщенного до насыщенного, богатый солодовый; в начале он может создавать впечатление сладости, но финиш остаётся умеренно сухим или сухим. Характерная солодовая сложность часто даёт хлебные и тостовые оттенки. Горечь умеренная; слабый цветочный, травянистый или пряный вкус хмеля допустим. Хмель обеспечивает достаточный противовес, чтобы солодовый вкус и финиш не казались сладкими. Послевкусие солодовое, с теми же элегантными, насыщенными солодовыми оттенками. Выраженная сладкая карамель, сухой бисквит или жареные ноты для стиля не подходят. Профиль брожения чистый.",
+        "mouthfeel": "Тело среднее, с гладкой кремовой текстурой, которая нередко делает пиво чуть более полным на ощущение. Карбонизация средняя. Пиво должно быть хорошо выброженным, без сладкого или приторного впечатления. Допустимо лёгкое согревание алкоголем, но крепость должна быть скорее скрытой, чем явной.",
+        "comments": "Современные немецкие Oktoberfestbier для внутреннего рынка обычно золотистые — это уже стиль Festbier. Экспортные немецкие версии, по крайней мере для США, чаще янтарно-оранжевые, с характерной тостовой солодовостью, и нередко маркируются как Oktoberfest. Многие крафтовые Oktoberfest-версии тоже опираются именно на этот стиль. Исторические варианты были темнее, ближе к коричневому диапазону, а само слово Märzen долгое время обозначало скорее диапазон крепости, чем конкретный стиль. В этом описании имеется в виду именно более крепкий янтарный лагер. Современный Festbier в этих координатах можно считать более светлой и лёгкой по телу версией Märzen.",
+        "history": "Как подсказывает название, это было более крепкое «мартовское пиво»: его варили в марте и выдерживали летом в холодных пещерах и подвалах. Современная версия восходит к лагеру, который Spaten разработала в 1841 году — примерно в то же время, когда формировался Vienna Lager. Однако само название Märzen намного старше 1841 года: ранние образцы были тёмно-коричневыми, а термин обозначал прежде всего группу плотности около 14 °P, а не конкретный стиль. Янтарный лагер такого типа подавали на Октоберфесте с 1872 по 1990 год, пока стандартным фестивальным пивом не стал золотистый Festbier.",
+        "characteristic_ingredients": "Засыпь может различаться, хотя традиционные немецкие версии делали акцент на мюнхенском солоде. Ощущение элегантности рождается из максимально качественного сырья, прежде всего из базовых солодов. Традиционное декокционное затирание усиливает богатый солодовый профиль.",
+        "style_comparison": "Менее крепкий и менее насыщенно-солодовый, чем Dunkles Bock. Даёт больше глубины и богатства солода, чем Festbier, при более плотном теле и немного меньшем хмелевом акценте. По солодовости сопоставим с Czech Amber Lager, но менее хмелевой и с иным солодовым профилем."
+      },
+      "sections_en": {
+        "overall_impression": "An amber, malty German lager with a clean, rich, toasty, bready malt flavor, restrained bitterness, and a well-attenuated finish. The overall malt impression is soft, elegant, and complex, with a rich malty aftertaste that is never cloying or heavy.",
+        "aroma": "Moderate malty aroma, typically rich, bready, somewhat toasty, with light bread crust notes. Clean lager fermentation character. Very low floral, herbal, or spicy hop aroma optional. Caramel-sweet, biscuity-dry, or roasted malt aromas are inappropriate. Very light alcohol might be detected, but should never be sharp. Clean, elegant malt richness should be the primary aroma.",
+        "appearance": "Amber-orange to deep reddish-copper color; should not be golden. Bright clarity, with persistent, off-white foam stand.",
+        "flavor": "Moderate to high rich malt flavor often initially suggests sweetness, but the finish is moderately-dry to dry. Distinctive and complex maltiness often includes a bready, toasty aspect. Hop bitterness is moderate, and a low floral, herbal, or spicy hop flavor is optional. Hops provide sufficient balance that the malty palate and finish do not seem sweet. The aftertaste is malty, with the same elegant, rich malt flavors lingering. Noticeable sweet caramel, dry biscuit, or roasted flavors are inappropriate. Clean fermentation profile.",
+        "mouthfeel": "Medium body, with a smooth, creamy texture that often suggests a fuller mouthfeel. Medium carbonation. Fully attenuated, without a sweet or cloying impression. May be slightly warming, but the strength should be relatively hidden.",
+        "comments": "Modern domestic German Oktoberfest versions are golden – see the Festbier style for this version. Export German versions (to the United States, at least) are typically orange-amber in color, have a distinctive toasty malt character, and are often labeled Oktoberfest. Many craft versions of Oktoberfest are based on this style. Historic versions of the beer tended to be darker, towards the brown color range, but there have been many ‘shades’ of Märzen (when the name is used as a strength); this style description specifically refers to the stronger amber lager version. The modern Festbier can be thought of as a lighter-bodied, pale Märzen by these terms.",
+        "history": "As the name suggests, brewed as a stronger “March beer” in March and lagered in cold caves over the summer. Modern versions trace back to the lager developed by Spaten in 1841, contemporaneous to the development of Vienna lager. However, the Märzen name is much older than 1841 – the early ones were dark brown, and the name implied a strength band (14 °P) rather than a style. The amber lager style served at Oktoberfest from 1872 until 1990 when the golden Festbier was adopted as the standard festival beer.",
+        "characteristic_ingredients": "Grist varies, although traditional German versions emphasized Munich malt. The notion of elegance is derived from the finest quality ingredients, particularly the base malts. A decoction mash is traditional, and enhances the rich malt profile.",
+        "style_comparison": "Not as strong and rich as a Dunkles Bock. More malt depth and richness than a Festbier, with a heavier body and slightly less hops. Less hoppy but equally malty as a Czech Amber Lager, but with a different malt profile."
+      },
+      "vital_statistics_text": "OG: 1.054 – 1.060 | IBUs: 18 – 24 | FG: 1.010 – 1.014 | SRM: 8 – 17 | ABV: 5.6 – 6.3%",
+      "vital_statistics": {
+        "og": "1.054-1.060",
+        "ibus": "18-24",
+        "fg": "1.010-1.014",
+        "srm": "8-17",
+        "abv": "5.6-6.3%"
+      },
+      "commercial_examples_text": "Hacker-Pschorr Oktoberfest Märzen, Hofmark Märzen, Paulaner Oktoberfest, Saalfelder Ur-Saalfelder, Weltenburger Kloster Anno 1050",
+      "tags_en": [
+        "standard-strength",
+        "amber-color",
+        "bottom-fermented",
+        "lagered",
+        "central-europe",
+        "traditional-style",
+        "amber-lager-family",
+        "malty"
+      ],
+      "tags_ru": [
+        "стандартная крепость",
+        "янтарный цвет",
+        "низовое брожение",
+        "лагеризация",
+        "Центральная Европа",
+        "традиционный стиль",
+        "семейство янтарных лагеров",
+        "солодовый"
+      ],
+      "translation_status": "detailed_ru_translated_reviewed_v1",
+      "source_pdf_page_start": 27,
+      "source_guideline_page_start": 11
+    },
+    {
+      "bjcp_id": "6B",
+      "bjcp_heading": "6B. Rauchbier",
+      "category_id": "6",
+      "category_en": "AMBER MALTY EUROPEAN LAGER",
+      "category_ru": "Янтарный солодовый европейский лагер",
+      "name_en": "Rauchbier",
+      "name_ru": "Раухбир",
+      "description_short_ru": "Янтарный немецкий лагер с солодовой основой и характером букового дыма. Базовый профиль Märzen — богатый тостовый солод, сдержанная горечь, чистое брожение и сравнительно сухой финиш — дополняется заметной или очень выразительной дымностью.",
+      "sections_ru": {
+        "overall_impression": "Янтарный немецкий лагер с солодовой основой и характером букового дыма. Базовый профиль Märzen — богатый тостовый солод, сдержанная горечь, чистое брожение и сравнительно сухой финиш — усиливается заметным или даже очень интенсивным дымным характером.",
+        "aroma": "Аромат — это сочетание дыма и солода, причём их баланс и интенсивность могут заметно меняться. Характер букового дыма варьирует от деликатного до довольно сильного; он может восприниматься как просто дымный, древесный или беконовый. Солодовая часть — от слабой до умеренной, иногда слегка богатой, тостовой или сладковато-солодовой. Обычно дым и солод находятся в обратной пропорции: чем сильнее дым, тем скромнее солод, и наоборот. Допустим слабый цветочный или пряный аромат хмеля. Профиль брожения чистый.",
+        "appearance": "Пиво очень прозрачное, с крупной, кремовой, плотной пеной от кремового до светло-коричневого оттенка. Цвет — от глубокого янтарного до медно-коричневого; часто немного темнее, чем у базового Märzen.",
+        "flavor": "Во вкусе обычно продолжается тот же профиль, что и в аромате: солод и дым сочетаются в разном балансе и с разной интенсивностью, но при этом должны поддерживать друг друга, а не спорить. Черты Märzen должны быть узнаваемы, прежде всего богатая солодовая тостовость, однако вкус букового дыма может быть от слабого до сильного. На нёбе пиво может казаться несколько солодовым, насыщенным и даже сладковатым, но финиш, как правило, остаётся от умеренно сухого до сухого, а дым иногда дополнительно подчёркивает сухость. Послевкусие может нести и солодовую насыщенность, и дымные тона; желателен именно сбалансированный итог. Горечь умеренная и уравновешенная. Допустим хмелевой вкус вплоть до умеренного, с пряными, цветочными или травянистыми нотами. Лагерное брожение чистое.\n\nКачество и характер дыма здесь критически важны: дымность должна быть чистой. На высоком уровне дым может уходить в ветчину или бекон, и это допустимо, пока профиль не становится жирным. Резкие, грубые, горелые, жжёные, едкие, резиновые, сернистые или креозотные дымно-фенольные оттенки для стиля неприемлемы.",
+        "mouthfeel": "Тело среднее. Карбонизация от средней до умеренно высокой. Характер гладкий, лагерный. Значительная вяжущая или фенольно-жёсткая шероховатость неуместна.",
+        "comments": "Буквально Rauchbier по-немецки означает «дымное пиво». Характер и интенсивность дыма зависят от конкретной солодовни и пивоварни, поэтому при оценке нужно допускать заметный диапазон внутри стиля: не каждый образец обязан быть сильно копчёным. Многие другие традиционные немецкие стили тоже могут быть копчёными; такие версии следует относить к 32A Classic Style Smoked Beer. Здесь же имеется в виду именно наиболее распространённый вариант на базе Märzen.",
+        "history": "Историческая специалитетная разновидность из города Бамберг во франконской части Баварии. Копчёное пиво, безусловно, варили и в более ранние эпохи, однако происхождение именно этой конкретной версии остаётся неясным; очевидно лишь, что она сформировалась уже после появления Märzen.",
+        "characteristic_ingredients": "Засыпь типа Märzen с добавлением значительной доли немецкого Rauchmalz — венского по типу солода, копчёного на буковой древесине. Некоторые пивоварни коптят солод самостоятельно. Дрожжи — немецкие лагерные. Хмель — традиционный немецкий или чешский.",
+        "style_comparison": "По сути это Märzen, но с уравновешенным сладковато-дымным ароматом и вкусом, а также обычно чуть более тёмным цветом."
+      },
+      "sections_en": {
+        "overall_impression": "A beechwood-smoked, malty, amber German lager. The expected Märzen profile of toasty-rich malt, restrained bitterness, clean fermentation, and a relatively dry finish is enhanced by a noticeable to intense smoke character.",
+        "aroma": "Blend of smoke and malt, varying in balance and intensity. The beechwood smoke character can range from subtle to fairly strong, and can seem smoky, woody, or bacon-like. The malt character can be low to moderate, and be somewhat rich, toasty, or malty-sweet. The malt and smoke components are often inversely proportional (i.e., when smoke increases, malt decreases, and vice versa). Low floral or spicy hop aroma optional. Clean fermentation profile.",
+        "appearance": "Very clear, with a large, creamy, rich, tan- to cream-colored head. Deep amber to coppery-brown in color, often a little darker than the underlying Märzen style.",
+        "flavor": "Generally follows the aroma profile, with a blend of smoke and malt in varying balance and intensity, yet always mutually supportive. Märzen-like qualities should be evident, particularly a malty, toasty richness, but the beechwood smoke flavor can be low to high. The palate can be somewhat malty, rich, and sweet, yet the finish tends to be medium-dry to dry with the smoke character sometimes enhancing the dryness of the finish. The aftertaste can reflect both malt richness and smoke flavors, with a balanced presentation desirable. Moderate, balanced, hop bitterness. Can have up to a moderate hop flavor with spicy, floral, or herbal notes. Clean lager fermentation character.\n\nThe quality and character of the smoke is important; it should be cleanly smoky. At higher levels, the smoke can take on a ham- or bacon-like character, which is acceptable as long as it doesn’t veer into the greasy range. Harsh, bitter, burnt, acrid, charred, rubbery, sulfury, or creosote-like smoky-phenolic flavors are inappropriate.",
+        "mouthfeel": "Medium body. Medium to medium-high carbonation. Smooth lager character. Significant astringent, phenolic harshness is inappropriate.",
+        "comments": "Literally smoke beer in German. The smoke character and intensity varies by maltster and brewery, so allow for variation in the style when judging – not all examples are highly smoked. Many other traditional German styles are smoked; those should be entered in the 32A Classic Style Smoked Beer style. This style is only for the more common Märzen-based beer.",
+        "history": "A historical specialty of the city of Bamberg, in the Franconian region of Bavaria in Germany. While smoked beers certainly were made long ago, the origins of this specific style are unclear but must have been developed after Märzen was created.",
+        "characteristic_ingredients": "Märzen-type grist, with the addition of a sizeable quantity of German Rauchmalz (beechwood-smoked Vienna-type malt). Some breweries smoke their own malt. German lager yeast. Traditional German or Czech hops.",
+        "style_comparison": "Like a Märzen with but with a balanced, sweet, smoky aroma and flavor and a somewhat darker color."
+      },
+      "vital_statistics_text": "OG: 1.050 – 1.057 | IBUs: 20 – 30 | FG: 1.012 – 1.016 | SRM: 12 – 22 | ABV: 4.8 – 6.0%",
+      "vital_statistics": {
+        "og": "1.050-1.057",
+        "ibus": "20-30",
+        "fg": "1.012-1.016",
+        "srm": "12-22",
+        "abv": "4.8-6.0%"
+      },
+      "commercial_examples_text": "Cervejaria Bamberg Rauchbier, Göller Rauchbier, Rittmayer Rauchbier, Schlenkerla Rauchbier Märzen, Spezial Rauchbier Märzen",
+      "tags_en": [
+        "standard-strength",
+        "amber-color",
+        "bottom-fermented",
+        "lagered",
+        "central-europe",
+        "traditional-style",
+        "amber-lager-family",
+        "malty",
+        "smoke"
+      ],
+      "tags_ru": [
+        "стандартная крепость",
+        "янтарный цвет",
+        "низовое брожение",
+        "лагеризация",
+        "Центральная Европа",
+        "традиционный стиль",
+        "семейство янтарных лагеров",
+        "солодовый",
+        "дымный"
+      ],
+      "translation_status": "detailed_ru_translated_reviewed_v1",
+      "source_pdf_page_start": 27,
+      "source_guideline_page_start": 11
+    },
+    {
+      "bjcp_id": "6C",
+      "bjcp_heading": "6C. Dunkles Bock",
+      "category_id": "6",
+      "category_en": "AMBER MALTY EUROPEAN LAGER",
+      "category_ru": "Янтарный солодовый европейский лагер",
+      "name_en": "Dunkles Bock",
+      "name_ru": "Дунклес бок",
+      "description_short_ru": "Крепкий тёмный солодовый немецкий лагер, в котором подчёркнуты насыщенно-солодовые и слегка тостовые качества континентальных солодов, но финиш не должен быть сладким.",
+      "sections_ru": {
+        "overall_impression": "Крепкий тёмный солодовый немецкий лагер, в котором акцент сделан на богатой солодовости и слегка тостовых качествах континентальных солодов, но без сладкого финиша.",
+        "aroma": "Аромат от умеренного до умеренно сильного, насыщенно хлебно-солодовый, часто с умеренными тонами богатых продуктов Майяра или тостовыми оттенками. Хмелевой аромат практически отсутствует. Небольшой алкоголь допустим. Характер брожения чистый, лагерный, хотя лёгкие ноты тёмных фруктов возможны.",
+        "appearance": "Цвет от светло-медного до коричневого, часто с красивыми гранатовыми отблесками. Для такого тёмного пива прозрачность хорошая. Пена крупная, кремовая, стойкая, грязно-белая.",
+        "flavor": "Сложная богатая солодовость от умеренной до умеренно высокой, в основе которой — насыщенные тостово-солодовые продукты Майяра. Иногда возможны лёгкие тёмно-карамельные ноты. Горечь обычно ровно такая, чтобы поддержать солод, позволяя лёгкой солодовой сладости слегка протянуться в финиш. Пиво хорошо выброжено и не должно быть приторным. Профиль брожения чистый, хотя сам солод может давать лёгкое впечатление тёмных фруктов. Хмелевой вкус отсутствует. Жареные, подгорелые или сухо-бисквитные оттенки неуместны.",
+        "mouthfeel": "Тело от среднего до средне-полного. Карбонизация от умеренной до умеренно низкой. Допустимо некоторое согревание алкоголем, но оно никогда не должно быть жёстким. Текстура гладкая, без грубости и вяжущести.",
+        "comments": "Декокционное затирание играет важную роль в формировании вкуса, поскольку подчёркивает карамельные и майяровские аспекты солода.",
+        "history": "Стиль возник в северогерманском городе Айнбек, который во времена Ганзы — примерно с XIV по XVII век — был важным центром пивоварения и крупным экспортёром. В Мюнхене стиль воссоздали начиная с XVII века. Слово bock по-немецки означает «козёл» или «баран», поэтому это животное так часто появляется на этикетках и в рекламе.",
+        "characteristic_ingredients": "Мюнхенский и венский солод; изредка совсем небольшое количество тёмных жареных солодов допустимо только для корректировки цвета. Несоложёные добавки не используются. Применяются континентальные европейские сорта хмеля и чистые немецкие лагерные дрожжи.",
+        "style_comparison": "Темнее, богаче по солоду и с менее заметной горечью, чем Helles Bock. Менее крепкий и менее насыщенный, чем Doppelbock. Даёт более мощную солодовость и более высокий алкоголь, чем Märzen. Богаче, менее выброжен и менее хмелевой, чем Czech Amber Lager."
+      },
+      "sections_en": {
+        "overall_impression": "A strong, dark, malty German lager beer that emphasizes the malty-rich and somewhat toasty qualities of continental malts without being sweet in the finish.",
+        "aroma": "Medium to medium-high rich bready-malty aroma, often with moderate amounts of rich Maillard products or toasty overtones. Virtually no hop aroma. Some alcohol may be noticeable. Clean lager character, although a slight dark fruit character is allowable.",
+        "appearance": "Light copper to brown color, often with attractive garnet highlights. Good clarity despite the dark color. Large, creamy, persistent, off-white head.",
+        "flavor": "Medium to medium-high complex, rich maltiness is dominated by toasty-rich Maillard products. Some dark caramel notes may be present. Hop bitterness is generally only high enough to support the malt flavors, allowing a bit of malty sweetness to linger into the finish. Well-attenuated, not cloying. Clean fermentation profile, although the malt can provide a slight dark fruit character. No hop flavor. No roasted, burnt, or dry biscuity character.",
+        "mouthfeel": "Medium to medium-full bodied. Moderate to moderately low carbonation. Some alcohol warmth may be found, but should never be hot. Smooth, without harshness or astringency.",
+        "comments": "Decoction mashing plays an important part of flavor development, as it enhances the caramel and Maillard flavor aspects of the malt.",
+        "history": "Originated in the Northern German city of Einbeck, which was a brewing center and popular exporter in the days of the Hanseatic League (14th to 17th century). Recreated in Munich starting in the 17th century. “Bock” translates to “Ram” in German, which is why the animal is often used in logos and advertisements.",
+        "characteristic_ingredients": "Munich and Vienna malts, rarely a tiny bit of dark roasted malts for color adjustment, never any non-malt adjuncts. Continental European hop varieties are used. Clean German lager yeast.",
+        "style_comparison": "Darker, with a richer malty flavor and less apparent bitterness than a Helles Bock. Less alcohol and malty richness than a Doppelbock. Stronger malt flavors and higher alcohol than a Märzen. Richer, less attenuated, and less hoppy than a Czech Amber Lager."
+      },
+      "vital_statistics_text": "OG: 1.064 – 1.072 | IBUs: 20 – 27 | FG: 1.013 – 1.019 | SRM: 14 – 22 | ABV: 6.3 – 7.2%",
+      "vital_statistics": {
+        "og": "1.064-1.072",
+        "ibus": "20-27",
+        "fg": "1.013-1.019",
+        "srm": "14-22",
+        "abv": "6.3-7.2%"
+      },
+      "commercial_examples_text": "Aass Bock, Einbecker Ur-Bock Dunkel, Kneitinger Bock, Lindeboom Bock, Schell’s Bock, Penn Brewery St. Nikolaus Bock",
+      "tags_en": [
+        "high-strength",
+        "amber-color",
+        "bottom-fermented",
+        "lagered",
+        "central-europe",
+        "traditional-style",
+        "bock-family",
+        "malty"
+      ],
+      "tags_ru": [
+        "высокая крепость",
+        "янтарный цвет",
+        "низовое брожение",
+        "лагеризация",
+        "Центральная Европа",
+        "традиционный стиль",
+        "семейство боков",
+        "солодовый"
+      ],
+      "translation_status": "detailed_ru_translated_reviewed_v1",
+      "source_pdf_page_start": 28,
+      "source_guideline_page_start": 12
+    },
+    {
+      "bjcp_id": "7A",
+      "bjcp_heading": "7A. Vienna Lager",
+      "category_id": "7",
+      "category_en": "AMBER BITTER EUROPEAN BEER",
+      "category_ru": "Янтарное горькое европейское пиво",
+      "name_en": "Vienna Lager",
+      "name_ru": "Венский лагер",
+      "description_short_ru": "Континентальный янтарный лагер умеренной крепости с мягкой, гладкой солодовостью и сбалансированной умеренной горечью, при этом с относительно сухим финишем. Солодовый характер чистый, хлебно-насыщенный и слегка тостовый.",
+      "sections_ru": {
+        "overall_impression": "Континентальный янтарный лагер умеренной крепости с мягкой, гладкой солодовостью и сбалансированной умеренной горечью, при этом с относительно сухим финишем. Солодовый характер чистый, хлебно-насыщенный и слегка тостовый; ощущение элегантности создают качественные базовые солода и техника варки, а не специальные солода или добавки.",
+        "aroma": "Солодовый аромат умеренно интенсивный, с тостовыми и насыщенно-солодовыми акцентами. Допустим слабый цветочный или пряный аромат хмеля. Характер лагера чистый. Выраженные карамельные, бисквитные или жареные тона неуместны.",
+        "appearance": "Цвет от светлого красновато-янтарного до медного. Прозрачность яркая. Пена крупная, стойкая, грязно-белая.",
+        "flavor": "На первом плане — мягкая, элегантная солодовая сложность, которую поддерживает достаточно уверенная хмелевая горечь, обеспечивая сбалансированный финиш. Солодовость тяготеет к насыщенно тостовому профилю без заметной карамели, бисквита или жареных оттенков. Финиш довольно сухой, мягкий; в послевкусии сохраняются и богатая солодовость, и хмелевая горечь. Допустим слабый цветочный, пряный или травянистый хмелевой вкус. Профиль брожения чистый.",
+        "mouthfeel": "Тело от средне-лёгкого до среднего, с лёгкой кремовостью. Карбонизация умеренная. Текстура гладкая.",
+        "comments": "Это повседневное пиво стандартной крепости, а не фестивальный сорт. Многие традиционные коммерческие образцы со временем стали слаще и богаче на добавки, из-за чего сегодня нередко напоминают скорее International Amber Lager или даже International Dark Lager.",
+        "history": "Стиль разработал Антон Дрехер в Вене в 1841 году; особенно популярным он стал в середине и во второй половине XIX века. В конце XIX века Santiago Graf и другие австрийские пивовары-иммигранты перенесли этот стиль в Мексику. Сегодня Vienna Lager во многих странах переживает новую жизнь уже как современный крафтовый стиль.",
+        "characteristic_ingredients": "Традиционно используется венский солод наилучшего качества, хотя также возможны пилснерный и мюнхенский солод. Хмель — традиционный континентальный. Дрожжи — чистые немецкие лагерные. Для цвета и лёгкой сладости допустимы небольшие количества специальных солодов.",
+        "style_comparison": "По солодовому профилю похож на Märzen, но легче по интенсивности и телу, а в балансе чуть суше и чуть более горький. По алкоголю слабее, чем Märzen или Festbier. Менее насыщенный по солоду и хмелю, чем Czech Amber Lager."
+      },
+      "sections_en": {
+        "overall_impression": "A moderate-strength continental amber lager with a soft, smooth maltiness and a balanced, moderate bitterness, yet finishing relatively dry. The malt flavor is clean, bready-rich, and somewhat toasty, with an elegant impression derived from quality base malts and process, not specialty malts or adjuncts.",
+        "aroma": "Moderately-intense malt aroma, with toasty and malty-rich accents. A low floral, spicy hop aroma is optional. Clean lager character. A significant caramel, biscuity, or roasted aroma is inappropriate.",
+        "appearance": "Light reddish amber to copper color. Bright clarity. Large, off-white, persistent head.",
+        "flavor": "Soft, elegant malt complexity is in the forefront, with a firm enough hop bitterness to provide a balanced finish. The malt flavor tends towards a rich, toasty character, without significant caramel, biscuity, or roast flavors. Fairly dry, soft finish, with both rich malt and hop bitterness present in the aftertaste. A low floral, spicy, or herbal hop flavor is optional. Clean fermentation profile.",
+        "mouthfeel": "Medium-light to medium body, with a gentle creaminess. Moderate carbonation. Smooth.",
+        "comments": "A standard-strength everyday beer, not a beer brewed for festivals. Many traditional examples have become sweeter and more adjunct-laden, now seeming more like International Amber or Dark Lagers.",
+        "history": "Developed by Anton Dreher in Vienna in 1841, became popular in the mid-late 1800s. The style was brought to Mexico by Santiago Graf and other Austrian immigrant brewers in the late 1800s. Seems to be embraced as a modern craft style in other countries.",
+        "characteristic_ingredients": "Traditionally, best-quality Vienna malt, but can also use Pils and Munich malts. Traditional continental hops. Clean German lager yeast. May use small amounts of specialty malts for color and sweetness.",
+        "style_comparison": "Similar malt flavor as a Märzen, but lighter in intensity, and body, with a touch more bitterness and dryness in the balance. Lower in alcohol than Märzen or Festbier. Less rich, malty, and hoppy than Czech Amber Lager."
+      },
+      "vital_statistics_text": "OG: 1.048 – 1.055 | IBUs: 18 – 30 | FG: 1.010 – 1.014 | SRM: 9 – 15 | ABV: 4.7 – 5.5%",
+      "vital_statistics": {
+        "og": "1.048-1.055",
+        "ibus": "18-30",
+        "fg": "1.010-1.014",
+        "srm": "9-15",
+        "abv": "4.7-5.5%"
+      },
+      "commercial_examples_text": "Chuckanut Vienna Lager, Devils Backbone Vienna Lager, Figueroa Mountain Red Lager, Heavy Seas Cutlass, Ottakringer Wiener Original, Schell’s Firebrick, Theresianer Vienna",
+      "tags_en": [
+        "standard-strength",
+        "amber-color",
+        "bottom-fermented",
+        "lagered",
+        "central-europe",
+        "traditional-style",
+        "amber-lager-family",
+        "balanced"
+      ],
+      "tags_ru": [
+        "стандартная крепость",
+        "янтарный цвет",
+        "низовое брожение",
+        "лагеризация",
+        "Центральная Европа",
+        "традиционный стиль",
+        "семейство янтарных лагеров",
+        "сбалансированный"
+      ],
+      "translation_status": "detailed_ru_translated_reviewed_v1",
+      "source_pdf_page_start": 29,
+      "source_guideline_page_start": 13
+    },
+    {
+      "bjcp_id": "7B",
+      "bjcp_heading": "7B. Altbier",
+      "category_id": "7",
+      "category_en": "AMBER BITTER EUROPEAN BEER",
+      "category_ru": "Янтарное горькое европейское пиво",
+      "name_en": "Altbier",
+      "name_ru": "Альтбир",
+      "description_short_ru": "Холодно выдержанный верхового брожения дюссельдорфский сорт с более чистым и гладким вкусом, чем у большинства элей. Хорошо выброженное горькое янтарное пиво с богатой солодовостью, уравновешивающей выраженную горечь.",
+      "sections_ru": {
+        "overall_impression": "Холодно выдержанное верхового брожения пиво из Дюссельдорфа с более чистым и гладким вкусом, чем у большинства элей. Это умеренно окрашенное, хорошо выброженное, горькое пиво, в котором насыщенная солодовость уравновешивает заметную горечь. Лёгкий пряный хмелевой характер дополняет солод. Пиво сухое, с уверенным телом и гладким ощущением на нёбе.",
+        "aroma": "Аромат солодовый и насыщенный, с зерновыми ассоциациями свежеиспечённого хлеба, орехов или поджаристой хлебной корочки. Более тёмные жареные или шоколадные ноты быть не должны. Интенсивность солода от умеренной до умеренно высокой. Хмель от умеренно слабого до слабого дополняет, но не подавляет солод; характер часто пряный, перечный или цветочный. Брожение очень чистое. Допустимы слабые или умеренно слабые эфиры.",
+        "appearance": "Цвет от янтарного до глубокого медного, но не доходит до коричневого; наиболее типичен бронзово-оранжевый оттенок. Прозрачность блестящая. Пена плотная, кремовая, стойкая, грязно-белая.",
+        "flavor": "Солодовый профиль похож на аромат, но его уравновешивает напористая горечь от средней до высокой. Финиш от умеренно сухого до сухого, а послевкусие — зерновое, горькое и насыщенно-солодовое. Послевкусие длительное, иногда с ореховым или горько-сладким впечатлением. Если пиво выброжено не очень глубоко, солод может частично маскировать ощущаемую горечь, однако в хорошем образце горечь обычно масштабируется вместе с солодовой насыщенностью, сохраняя баланс. Жареных тонов быть не должно. Жёсткость неуместна. Профиль брожения чистый. Допустимы лёгкие фруктовые эфиры, особенно тёмнофруктовые. Хмелевой вкус от умеренного до слабого, пряный, перечный или цветочный. Возможен лёгкий минеральный оттенок.",
+        "mouthfeel": "Тело среднее. Текстура гладкая. Карбонизация от средней до умеренно высокой. Вяжущесть отсутствует или очень слабая.",
+        "comments": "«Alt» здесь означает «старый» способ варки — верховое брожение, которое было распространено до того, как популярность набрали низовые лагеры. Классические традиционные версии из района Altstadt в Дюссельдорфе наливают из кегов или касков. У большинства образцов горечь скорее сбалансированная, в диапазоне примерно 25–35 IBU, а не агрессивно хмелевая, как у известного Zum Uerige. Более крепкие варианты sticke и doppelsticke следует относить к 27 Historical Beer.",
+        "history": "Современный Altbier сформировался в конце XIX века в Дюссельдорфе как попытка использовать лагерные техники, чтобы конкурировать с лагером. В регионе и раньше существовали старые немецкие верховые стили, но прямой связи между ними и современным Altbier BJCP не проводит.",
+        "characteristic_ingredients": "Засыпь варьирует, но обычно состоит из немецких базовых солодов — чаще всего пилснерного, иногда с мюнхенским — с небольшими количествами кристаллических, шоколадных или чёрных солодов. Возможна доля пшеницы, в том числе жареной. Традиционен Spalt, но подходят и другие классические немецкие или чешские хмели. Дрожжи — чистые, высокоаттенюирующие элевые. Традиционно применяется ступенчатое затирание. Брожение идёт при прохладных элевых температурах, затем пиво холодно выдерживается.",
+        "style_comparison": "Более горький и более солодовый, чем International Amber Lager. Отчасти напоминает California Common и по технологии, и по итоговому цвету и вкусу, хотя сырьё иное. Менее крепкий, менее богато-солодовый и более горький, чем Dunkles Bock. Суше, насыщеннее и горче, чем Vienna Lager."
+      },
+      "sections_en": {
+        "overall_impression": "A cold-conditioned, top-fermenting beer from Düsseldorf that has a cleaner and smoother palate than is typical for most ales. “Alt” refers to the “old” style of brewing (using top-fermenting yeast) that was common before bottom-fermenting lager brewing became popular. A moderately colored, well-attenuated, bitter beer with a rich maltiness balancing a strong bitterness. Light and spicy hop character complements the malt. A dry beer with a firm body and smooth palate.",
+        "aroma": "Malty and rich with grainy characteristics like baked bread or nutty, toasted bread crusts. Should not have darker roasted or chocolate notes. Malt intensity is moderate to moderately-high. Moderate to low hops complement but do not dominate the malt, and often have a spicy, peppery, or floral character. Fermentation character is very clean. Low to medium-low esters optional.",
+        "appearance": "The color ranges from amber to deep copper, stopping short of brown; bronze-orange is most common. Brilliant clarity. Thick, creamy, long-lasting off-white head.",
+        "flavor": "Malt profile similar to the aroma, with an assertive, medium to high hop bitterness balancing the rich malty flavors. The beer finishes medium-dry to dry with a grainy, bitter, malty-rich aftertaste. The finish is long-lasting, sometimes with a nutty or bittersweet impression. The apparent bitterness level is sometimes masked by the malt character if the beer is not very dry, but the bitterness tends to scale with the malt richness to maintain balance. No roast. No harshness. Clean fermentation profile. Light fruity esters, especially dark fruit, may be present. Medium to low spicy, peppery, or floral hop flavor. Light minerally character optional.",
+        "mouthfeel": "Medium body. Smooth. Medium to medium-high carbonation. Astringency low to none.",
+        "comments": "Classic, traditional examples in the Altstadt (“old town”) section of Düsseldorf are served from casks. Most examples have a balanced (25-35 IBU) bitterness, not the aggressive hop character of the well-known Zum Uerige. Stronger sticke and doppelsticke beers should be entered in the 27 Historical Beer style instead.",
+        "history": "Developed in the late 19th century in Düsseldorf to use lager techniques to compete with lager. Older German styles were brewed in the area but there is no linkage to modern Altbier.",
+        "characteristic_ingredients": "Grists vary, but usually consist of German base malts (usually Pils, sometimes Munich) with small amounts of crystal, chocolate, or black malts. May include some wheat, including roasted wheat. Spalt hops are traditional, but other traditional German or Czech hops can be used. Clean, highly attenuative ale yeast. A step mash program is traditional. Fermented at cool ale temperatures, then cold conditioned.",
+        "style_comparison": "More bitter and malty than International Amber Lagers. Somewhat similar to California Common, both in production technique and finished flavor and color, though not in ingredients. Less alcohol, less malty richness, and more bitterness than a Dunkles Bock. Drier, richer, and more bitter than a Vienna Lager."
+      },
+      "vital_statistics_text": "OG: 1.044 – 1.052 | IBUs: 25 – 50 | FG: 1.008 – 1.014 | SRM: 9 – 17 | ABV: 4.3 – 5.5%",
+      "vital_statistics": {
+        "og": "1.044-1.052",
+        "ibus": "25-50",
+        "fg": "1.008-1.014",
+        "srm": "9-17",
+        "abv": "4.3-5.5%"
+      },
+      "commercial_examples_text": "Bolten Alt, Diebels Alt, Füchschen Alt, Original Schlüssel Alt, Schlösser Alt, Schumacher Alt, Uerige Altbier",
+      "tags_en": [
+        "standard-strength",
+        "amber-color",
+        "top-fermented",
+        "lagered",
+        "central-europe",
+        "traditional-style",
+        "amber-ale-family",
+        "bitter"
+      ],
+      "tags_ru": [
+        "стандартная крепость",
+        "янтарный цвет",
+        "верховое брожение",
+        "лагеризация",
+        "Центральная Европа",
+        "традиционный стиль",
+        "семейство янтарных элей",
+        "горький"
+      ],
+      "translation_status": "detailed_ru_translated_reviewed_v1",
+      "source_pdf_page_start": 29,
+      "source_guideline_page_start": 13
+    }
+  ]
+}

@@ -1,0 +1,513 @@
+{
+  "source": {
+    "document": "BJCP 2021 Beer Style Guidelines",
+    "file_name": "2021_Guidelines_Beer_1.25.pdf",
+    "language": "ru",
+    "translation_scope": "detailed",
+    "notes": "Подробный русский перевод девятой части корпуса BJCP: категории 17-19 с сохранением короткого описания, полных секций и оригинальных английских секций для сверки."
+  },
+  "progress": {
+    "styles_total_in_guideline": 128,
+    "styles_translated_in_this_file": 7,
+    "translated_style_ids": [
+      "17C",
+      "17D",
+      "18A",
+      "18B",
+      "19A",
+      "19B",
+      "19C"
+    ],
+    "translated_categories": [
+      "17",
+      "18",
+      "19"
+    ],
+    "next_recommended_batch": [
+      "20A",
+      "20B",
+      "20C",
+      "21A",
+      "21B",
+      "21C"
+    ]
+  },
+  "categories": [
+    {
+      "category_id": "17",
+      "category_en": "STRONG BRITISH ALE",
+      "category_ru": "Крепкий британский эль",
+      "overview_ru": "Эта категория охватывает более крепкие эли Британских островов без выраженной жареной составляющей. По стилевому полю она лежит выше bitter, mild и brown ale, но исключает porter и stout."
+    },
+    {
+      "category_id": "18",
+      "category_en": "PALE AMERICAN ALE",
+      "category_ru": "Светлый американский эль",
+      "overview_ru": "Эта категория объединяет современные американские эли средней крепости и светлого цвета, где баланс лежит между умеренной солодовостью и умеренной горечью."
+    },
+    {
+      "category_id": "19",
+      "category_en": "AMBER AND BROWN AMERICAN BEER",
+      "category_ru": "Янтарное и коричневое американское пиво",
+      "overview_ru": "В эту категорию входят современные американские янтарные и коричневые эли верхового брожения, а также тёпло сброженные лагеры стандартной крепости; по балансу они могут быть как довольно ровными, так и заметно горькими."
+    }
+  ],
+  "styles": [
+    {
+      "bjcp_id": "17C",
+      "name_en": "Wee Heavy",
+      "name_ru": "Уи-хеви",
+      "category_id": "17",
+      "category_en": "STRONG BRITISH ALE",
+      "category_ru": "Крепкий британский эль",
+      "bjcp_heading": "17C. Wee Heavy",
+      "description_short_ru": "Крепкий шотландский эль с глубокой солодовой сладостью, тонами карамели, ириса и сухофруктов, плотным телом и мягким согревающим алкоголем.",
+      "sections_en": {
+        "overall_impression": "Rich, sweet malt depth with caramel, toffee, and fruity flavors. Full-bodied and chewy, with warming alcohol. Restrained bitterness, but not cloying or syrupy.",
+        "aroma": "Strong bready-toasty malt, with a high caramel and toffee aspect. A wide range of supportive caramelized sugar and toasty bread type aromas are possible (toasted breadcrumbs, ladyfingers, English biscuits, graham crackers, nougat, butterscotch, etc.). Faint hint of roast is sometimes noted. Low to moderate dark or dried fruit esters and alcohol. Very low earthy, floral, orange-citrus, or spicy hops optional.",
+        "appearance": "Light copper to dark brown color, often with deep ruby highlights. Clear. Usually has a large tan head, which may not persist. Legs may be evident in stronger versions.",
+        "flavor": "Rich, bready-toasty malt that is often full and sweet on the palate with caramel and toffee flavors, but balanced by alcohol and a hint of grainy roast in the finish. The malt often has caramelized sugar and toasty flavors of the same type as described in the aroma. Medium to low alcohol and esters (plums, raisins, dried fruit, etc.). Bitterness low in the balance, giving a sweet to medium-dry finish. Medium-low hop flavor optional, with similar descriptors as the aroma.",
+        "mouthfeel": "Medium-full to full-bodied, sometimes with a thick, chewy, sometimes creamy, viscosity. A smooth alcohol warmth is usually present and is desirable since it balances the malty sweetness. Moderate carbonation.",
+        "comments": "A range of strengths is allowable; not all versions are very strong. Also known as “Strong Scotch Ale,” the term “wee heavy” means “small strong” and traces to the beer that made the term famous, Fowler's Wee Heavy, a 12 Guinea Ale.",
+        "history": "Descended from Edinburgh Ales, a stronger malty beer brewed in a range of strengths, similar to Burton Ale (although at half the hopping rate). Modern versions have two main variants, a more modest 5% ABV beer and the more widely known 8-9% ABV beer. As gravities decreased over times, some of the variations ceased to be produced.",
+        "characteristic_ingredients": "Scottish pale ale malt, a wide range of other ingredients are possible, including adjuncts. Some may use crystal malt or darker grains for color. No peat-smoked malt.",
+        "style_comparison": "Somewhat similar to an English Barley Wine, but often darker and more caramelly.",
+        "entry_instructions": ""
+      },
+      "sections_ru": {
+        "overall_impression": "Богатый, сладковато-солодовый эль с выразительными тонами карамели, ириса и фруктов. Тело полное, вязкое, с приятным согревающим алкоголем. Горечь сдержанная, но пиво не должно быть ни приторным, ни сиропным.",
+        "aroma": "Сильный солодовый аромат с хлебно-поджаренными оттенками, ярко выраженными карамельными и ирисочными нотами. Возможен широкий спектр поддерживающих тонов карамелизованного сахара и поджаренного хлеба: поджаренные сухари, савоярди, английское печенье, крекеры graham, нуга, сливочная тянучка и т.п. Иногда заметен очень лёгкий намёк на обжаренность. Эфиры тёмных или сушёных фруктов и алкоголь — от слабых до умеренных. Очень слабый землистый, цветочный, апельсиново-цитрусовый или пряный хмель допустим.",
+        "appearance": "Цвет от светлой меди до тёмно-коричневого, часто с глубокими рубиновыми отблесками. Пиво прозрачное. Обычно образует крупную желтовато-коричневую пену, но она может быть нестойкой. В более крепких версиях на стенках бокала возможны «ножки».",
+        "flavor": "Во вкусе доминирует богатый хлебно-поджаренный солодовый профиль; тело часто кажется полным и сладковатым, с оттенками карамели и ириса, но сладость уравновешивают алкоголь и лёгкая зерновая жареная сухость в финале. Возможны те же ноты карамелизованного сахара и тоста, что и в аромате. Алкоголь и эфиры (слива, изюм, сухофрукты и т.п.) — от средних к низким. Горечь невысокая и служит лишь для того, чтобы финал оставался от сладкого до умеренно сухого. Вкус хмеля на уровне medium-low допустим и обычно выражен в тех же оттенках, что и аромат.",
+        "mouthfeel": "Тело от умеренно полного до полного; текстура может быть густой, тягучей и местами кремовой. Мягкое алкогольное тепло обычно присутствует и считается желательным, потому что уравновешивает солодовую сладость. Карбонизация умеренная.",
+        "comments": "Допустим широкий диапазон крепости: не все версии действительно экстремально крепкие. Стиль также известен как Strong Scotch Ale. Само выражение “wee heavy” буквально означает «маленький, но крепкий» и исторически связано с пивом Fowler’s Wee Heavy, известным как 12 Guinea Ale.",
+        "history": "Стиль восходит к Edinburgh Ale — более крепкому солодовому пиву, которое варили в разных версиях по плотности и крепости, во многом напоминая Burton Ale, но примерно с вдвое меньшим охмелением. У современных версий обычно выделяют два основных варианта: более умеренный, около 5% ABV, и более известный крепкий, примерно 8-9% ABV. По мере снижения плотности часть прежних вариаций со временем исчезла.",
+        "characteristic_ingredients": "Основа — шотландский pale ale malt; возможен очень широкий набор дополнительных ингредиентов, включая несоложёные добавки. Для цвета иногда используют кристаллические и более тёмные солода или зерновые. Торфяной копчёный солод недопустим.",
+        "style_comparison": "Отчасти напоминает English Barley Wine, но обычно темнее и заметно более карамельный по профилю.",
+        "entry_instructions": ""
+      },
+      "vital_statistics": {
+        "og": "1.070 - 1.130",
+        "ibu": "17 - 35",
+        "fg": "1.018 - 1.040",
+        "srm": "14 - 25",
+        "abv": "6.5 - 10.0%"
+      },
+      "vital_statistics_text": "OG: 1.070 - 1.130 IBUs: 17 - 35 FG: 1.018 - 1.040 SRM: 14 - 25 ABV: 6.5 - 10.0%",
+      "commercial_examples_text": "Belhaven Wee Heavy, Broughton Old Jock, McEwan's Scotch Ale, Orkney Skull Splitter, Traquair House Ale, The Duck-Rabbit Wee Heavy Scotch-Style Ale",
+      "tags_en": [
+        "high-strength",
+        "amber-color",
+        "top-fermented",
+        "british-isles",
+        "traditional-style",
+        "strong-ale-family",
+        "malty"
+      ],
+      "source_guideline_page_start": 32,
+      "source_pdf_page_start": 48,
+      "tags_ru": [
+        "высокая крепость",
+        "янтарный цвет",
+        "верховое брожение",
+        "Британские острова",
+        "традиционный стиль",
+        "семейство strong ale",
+        "солодовый"
+      ],
+      "translation_status": "completed"
+    },
+    {
+      "bjcp_id": "17D",
+      "name_en": "English Barley Wine",
+      "name_ru": "Английский барли вайн",
+      "category_id": "17",
+      "category_en": "STRONG BRITISH ALE",
+      "category_ru": "Крепкий британский эль",
+      "bjcp_heading": "17D. English Barley Wine",
+      "description_short_ru": "Очень крепкий и насыщенно солодовый английский эль для медленного питья, с фруктовой и/или хмелевой глубиной, плотным телом и мягким алкогольным теплом.",
+      "sections_en": {
+        "overall_impression": "A strong and richly malty ale with a pleasant fruity or hoppy depth. A wintertime sipper with a full, chewy body and warming alcohol.",
+        "aroma": "Very rich, strongly malty, often with a caramel-like aroma in darker versions or a light toffee character in paler versions. May have a rich character including bready, toasty, or toffee notes. May have moderate to strong fruitiness, often with a dark- or dried-fruit character, particularly in dark versions. The hop aroma may range from mild to assertive, and is typically floral, earthy, tea-like, or marmalade-like. Alcohol may be low to moderate, but are soft and rounded. Aromatic intensity subsides with age, and can develop a quality like sherry, wine, or port.",
+        "appearance": "Color ranging from golden amber to dark brown, often with ruby highlights and significant depth of color. Should not be black or opaque. Low to moderate off-white head. May have low head retention. Brilliant clarity, particularly when aged, although younger versions can have a little haze. High alcohol and viscosity may be visible as legs.",
+        "flavor": "Medium to high rich, malty sweetness, often complex and multi-layered, with bread, biscuit, and caramel malt flavors (more toffee-like in paler versions) and having a medium to high fruitiness (often with dark or dried fruit aspects). When aged, these fruity components come out more, and darker versions will have a higher level than paler ones. The hop aroma, flavor, and bitterness can vary wildly. Light to strong hops, with an English character (floral, earthy, tea, or marmalade-like) are common. Bitterness can be light to fairly strong, fading with time, so the balance can be malty to somewhat bitter. Stronger versions will have a little alcohol character. The finish and aftertaste can be moderately dry to moderately sweet, often depending on age. Aged versions may develop complex oxidative or vinous flavors at a noticeable but not prominent level. Pale versions typically seem more bitter, better attenuated, and more hop-forward than darker versions.",
+        "mouthfeel": "Full-bodied and chewy, with a velvety, luscious texture, declining with age. A smooth warmth from aged alcohol should be present, but shouldn't burn. Carbonation may be low to moderate, depending on age and conditioning.",
+        "comments": "The richest and strongest of modern English Ales. Their character can change significantly over time; both young and old versions should be appreciated for what they are. The malt profile can vary widely; not all examples will have all possible flavors or aromas. Paler varieties won't have the caramel and richer malt flavors, nor will they typically have the darker dried fruits – don't expect flavors and aromatics that are impossible from a beer of that color. Typically written as “Barley Wine” in the UK, and “Barleywine” in the US.",
+        "history": "A modern descendent of the strongest Burton Ales. Bass No. 1 was first called a barley wine in 1872. Traditionally a darker beer until Tennant (now Whitbread) first produced Gold Label, a gold-colored version in 1951. The original style that inspired derivative variations in Belgium, the United States, and elsewhere in the world.",
+        "characteristic_ingredients": "British pale ale and crystal malts. Limited use of dark malts. Often uses brewing sugars. English hops. British yeast.",
+        "style_comparison": "Less hoppy and bitter, maltier and fruitier than American Barleywine. Can overlap Old Ale on the lower end of the range, but without heavier signs of age. Not as caramelly and often not as sweet as a Wee Heavy.",
+        "entry_instructions": ""
+      },
+      "sections_ru": {
+        "overall_impression": "Очень крепкий и насыщенно солодовый эль с приятной фруктовой или хмелевой глубиной. Это типичное зимнее пиво для неспешного питья: полнотелое, вязкое и согревающее.",
+        "aroma": "Очень богатый, мощно солодовый аромат. В более тёмных версиях он часто уходит в карамель, а в более светлых — в лёгкий ирисочный тон. Возможны выраженные хлебные, поджаренные и ирисочные оттенки. Фруктовость — от умеренной до сильной, нередко с тонами тёмных или сушёных фруктов, особенно в тёмных вариантах. Хмелевой аромат может быть от слабого до довольно заметного; обычно он цветочный, землистый, чайный или напоминает мармелад. Алкоголь — от слабого до умеренного, мягкий и округлый. С возрастом интенсивность аромата снижается, а в профиле могут появляться ассоциации с хересом, вином или портвейном.",
+        "appearance": "Цвет — от золотисто-янтарного до тёмно-коричневого, часто с рубиновыми отблесками и заметной глубиной тона. Пиво не должно быть ни чёрным, ни непрозрачным. Пена от слабой до умеренной, кремово-белая. Стойкость пены может быть невысокой. Прозрачность блестящая, особенно у выдержанных образцов; молодые версии могут быть слегка мутноваты. Высокая крепость и вязкость могут проявляться в виде «ножек» на бокале.",
+        "flavor": "Сладость от средней до высокой, насыщенно солодовая, часто сложная и многослойная: хлеб, бисквит, карамель, а в более светлых версиях — скорее ириска, чем тёмная карамель. Фруктовость от средней до высокой, нередко с оттенками тёмных или сушёных фруктов; с возрастом эти ноты раскрываются сильнее, и в тёмных версиях они обычно выражены заметнее. Хмелевой аромат, вкус и горечь могут сильно различаться по интенсивности. Часто встречается английский хмелевой профиль — цветочный, землистый, чайный или мармеладный. Горечь может быть от слабой до довольно заметной и со временем ослабевает, поэтому баланс варьирует от солодового до умеренно горького. В более крепких версиях ощущается небольшой алкогольный тон. Финал и послевкусие — от умеренно сухих до умеренно сладких, часто в зависимости от возраста. Выдержанные версии могут развивать сложные окислительные или винные оттенки на заметном, но не доминирующем уровне. Светлые версии обычно воспринимаются более горькими, лучше выброженными и более хмелевыми, чем тёмные.",
+        "mouthfeel": "Тело полное и вязкое, текстура бархатистая и сочная, хотя с возрастом она становится менее выраженной. Должно присутствовать мягкое тепло зрелого алкоголя, но без жгучести. Карбонизация — от низкой до умеренной, в зависимости от выдержки и кондиционирования.",
+        "comments": "Это самый насыщенный и самый крепкий среди современных английских элей. Его характер может заметно меняться с возрастом, поэтому и молодые, и выдержанные версии стоит оценивать в логике их собственной зрелости. Солодовый профиль бывает очень разным: не каждый образец обязан показывать весь спектр возможных оттенков. Светлые версии не дадут такой карамели, такой глубокой солодовой насыщенности и таких тёмных сухофруктов, как тёмные; не стоит ждать от пива ароматов и вкусов, которые невозможны при данном цвете. В Великобритании название обычно пишут как “Barley Wine”, а в США — как “Barleywine”.",
+        "history": "Современный потомок самых крепких Burton Ale. Пиво Bass No. 1 впервые было названо barley wine в 1872 году. Исторически стиль был более тёмным, пока Tennant (позже Whitbread) в 1951 году не выпустила Gold Label — золотистую версию этого пива. Именно этот английский стиль стал первоисточником для производных вариаций в Бельгии, США и других странах.",
+        "characteristic_ingredients": "Британские pale ale и crystal malts. Тёмные солода используют ограниченно. Часто добавляют пивоваренные сахара. Хмель — английских сортов. Дрожжи — британские.",
+        "style_comparison": "Менее хмелевой и менее горький, но более солодовый и фруктовый, чем American Barleywine. На нижней границе крепости может пересекаться с Old Ale, но без столь явных признаков выдержки. Обычно не такой карамельный и не такой сладкий, как Wee Heavy.",
+        "entry_instructions": ""
+      },
+      "vital_statistics": {
+        "og": "1.080 - 1.120",
+        "ibu": "35 - 70",
+        "fg": "1.018 - 1.030",
+        "srm": "8 - 22",
+        "abv": "8.0 - 12.0%"
+      },
+      "vital_statistics_text": "OG: 1.080 - 1.120 IBUs: 35 - 70 FG: 1.018 - 1.030 SRM: 8 - 22 ABV: 8.0 - 12.0%",
+      "commercial_examples_text": "Burton Bridge Thomas Sykes Old Ale, Coniston No. 9 Barley Wine, Fuller's Golden Pride, Hogs Back A over T, J.W. Lee's Vintage Harvest Ale, Robinson's Old Tom",
+      "tags_en": [
+        "very-high-strength",
+        "amber-color",
+        "top-fermented",
+        "british-isles",
+        "traditional-style",
+        "strong-ale-family",
+        "malty"
+      ],
+      "source_guideline_page_start": 32,
+      "source_pdf_page_start": 48,
+      "tags_ru": [
+        "очень высокая крепость",
+        "янтарный цвет",
+        "верховое брожение",
+        "Британские острова",
+        "традиционный стиль",
+        "семейство strong ale",
+        "солодовый"
+      ],
+      "translation_status": "completed"
+    },
+    {
+      "bjcp_id": "18A",
+      "name_en": "Blonde Ale",
+      "name_ru": "Блонд эль",
+      "category_id": "18",
+      "category_en": "PALE AMERICAN ALE",
+      "category_ru": "Светлый американский эль",
+      "bjcp_heading": "18A. Blonde Ale",
+      "description_short_ru": "Лёгкий в питкости, дружелюбный и ориентированный на солод американский крафтовый эль со свежим, чистым характером и без агрессивных вкусов.",
+      "sections_en": {
+        "overall_impression": "Easy-drinking, approachable, malt-oriented American craft beer, often with interesting fruit, hop, or character malt notes. Well-balanced and clean, is a refreshing pint without aggressive flavors.",
+        "aroma": "Light to moderate malty aroma, generally neutral or grainy, possibly with a light bread or caramel note. Low to moderate fruitiness is optional, but acceptable. May have a low to medium hop aroma, and can reflect almost any hop variety although citrusy, floral, fruity, and spicy notes are common. Clean fermentation profile.",
+        "appearance": "Light yellow to deep gold in color. Clear to brilliant. Low to medium white head with fair to good retention.",
+        "flavor": "Initial soft maltiness, but can also have light character malt flavor (e.g., bread, toast, biscuit, wheat). Caramel flavors usually absent; if present, they are typically low-color caramel or honey notes. Low to medium fruity esters optional, but are welcome. Light to moderate hop flavor (any variety), but shouldn't be overly aggressive. Medium-low to medium bitterness, but the balance is normally towards the malt or even between malt and hops. Finishes medium-dry to slightly malty; an impression of sweetness is often an expression of lower bitterness than actual residual sweetness. Clean fermentation profile.",
+        "mouthfeel": "Medium-light to medium body. Medium to high carbonation. Smooth without being heavy.",
+        "comments": "Oxidized versions can develop caramel or honey notes, which should not be mistaken for similar malt-derived flavors. Sometimes known as Golden Ale or simply a Gold.",
+        "history": "An American craft beer style produced as a faster-produced alternative to standard American lagers. First believed to be produced in 1987 at Catamount. Often positioned as an entry-level house ale.",
+        "characteristic_ingredients": "Generally all-malt, but can include wheat malt or sugar adjuncts. Any hop variety can be used. Clean American, lightly fruity English, or Kölsch yeast. May also be made with lager yeast, or cold-conditioned.",
+        "style_comparison": "Typically has more flavor than American Lager and Cream Ale. Less bitterness than an American Pale Ale. Perhaps similar to some maltier examples of Kölsch.",
+        "entry_instructions": ""
+      },
+      "sections_ru": {
+        "overall_impression": "Лёгкий в питкости, понятный и дружелюбный американский крафтовый эль с солодовым уклоном, в котором могут появляться интересные фруктовые, хмелевые или слегка характерные солодовые оттенки. Хорошо сбалансирован, чист и освежает, не уходя в агрессивность.",
+        "aroma": "Солодовый аромат от слабого до умеренного, обычно нейтральный или зерновой, иногда с лёгким хлебным или карамельным оттенком. Фруктовость от слабой до умеренной допустима и считается уместной. Хмелевой аромат может быть от слабого до среднего и отражать почти любой сорт хмеля, хотя чаще встречаются цитрусовые, цветочные, фруктовые и пряные ноты. Профиль брожения чистый.",
+        "appearance": "Цвет от светло-жёлтого до глубокого золотого. Прозрачность от чистой до блестящей. Пена белая, от низкой до умеренной, со стойкостью от средней до хорошей.",
+        "flavor": "Во вкусе сначала проявляется мягкая солодовость, но возможны и лёгкие оттенки характерного солода — хлеб, тост, бисквит, пшеница. Карамель обычно отсутствует; если она есть, то скорее в виде очень светлой карамели или медовых нот. Эфиры от слабых до умеренных допустимы и даже желательны. Хмелевой вкус — от слабого до умеренного, любого происхождения, но без излишней напористости. Горечь от умеренно низкой до умеренной, при этом баланс чаще склоняется в сторону солода или остаётся близким к ровному. Финал от умеренно сухого до слегка солодового; ощущение сладости здесь чаще связано не с высокой остаточной сладостью, а с более мягкой горечью. Профиль брожения чистый.",
+        "mouthfeel": "Тело от умеренно лёгкого до среднего. Карбонизация от средней до высокой. Ощущение гладкое, но без тяжеловесности.",
+        "comments": "Окисленные версии могут развивать карамельные или медовые ноты — их не стоит путать с аналогичными оттенками, возникающими из солода. Стиль также может называться Golden Ale или просто Gold.",
+        "history": "Американский крафтовый стиль, созданный как более быстро производимая альтернатива стандартным американским лагерам. Считается, что впервые его сварили в 1987 году на Catamount. Нередко выступает как «домашний» эль начального уровня для широкой аудитории.",
+        "characteristic_ingredients": "Обычно полностью солодовый, хотя возможны пшеничный солод и сахарные добавки. Хмель допустим любой. Дрожжи — чистые американские, слегка фруктовые английские или Kölsch-штаммы. Стиль также могут варить лагерными дрожжами или подвергать холодной выдержке.",
+        "style_comparison": "Обычно выразительнее по вкусу, чем American Lager и Cream Ale. Менее горький, чем American Pale Ale. По характеру может отчасти напоминать более солодовые версии Kölsch.",
+        "entry_instructions": ""
+      },
+      "vital_statistics": {
+        "og": "1.038 - 1.054",
+        "ibu": "15 - 28",
+        "fg": "1.008 - 1.013",
+        "srm": "3 - 6",
+        "abv": "3.8 - 5.5%"
+      },
+      "vital_statistics_text": "OG: 1.038 - 1.054 IBUs: 15 - 28 FG: 1.008 - 1.013 SRM: 3 - 6 ABV: 3.8 - 5.5%",
+      "commercial_examples_text": "Firestone Walker 805, Kona Big Wave Golden Ale, Real Ale Firemans #4 Blonde Ale, Russian River Aud Blonde, Victory Summer Love, Widmer Citra Summer Blonde Brew",
+      "tags_en": [
+        "standard-strength",
+        "pale-color",
+        "any-fermentation",
+        "north-america",
+        "craft-style",
+        "pale-ale-family",
+        "balanced"
+      ],
+      "source_guideline_page_start": 33,
+      "source_pdf_page_start": 49,
+      "tags_ru": [
+        "стандартная крепость",
+        "светлый цвет",
+        "любой тип брожения",
+        "Северная Америка",
+        "крафтовый стиль",
+        "семейство pale ale",
+        "сбалансированный"
+      ],
+      "translation_status": "completed"
+    },
+    {
+      "bjcp_id": "18B",
+      "name_en": "American Pale Ale",
+      "name_ru": "Американский пейл-эль",
+      "category_id": "18",
+      "category_en": "PALE AMERICAN ALE",
+      "category_ru": "Светлый американский эль",
+      "bjcp_heading": "18B. American Pale Ale",
+      "description_short_ru": "Американский крафтовый эль средней крепости, светлый и заметно хмелевой, но при этом достаточно солодовый, чтобы оставаться сбалансированным и питким.",
+      "sections_en": {
+        "overall_impression": "An average-strength, hop-forward, pale American craft beer with sufficient supporting malt to make the beer balanced and drinkable. The clean hop presence can reflect classic or modern American or New World hop varieties with a wide range of characteristics.",
+        "aroma": "Moderate to moderately-high hop aroma from American or New World hop varieties with a wide range of possible characteristics, including citrus, floral, pine, resin, spice, tropical fruit, stone fruit, berry, or melon. None of these specific characteristics are required, but a hoppy aroma should be apparent. Low to moderate neutral to grainy maltiness supports the hop presentation, and can show low amounts of specialty malt character (e.g., bread, toast, biscuit, caramel). Fruity esters optional, up to moderate in strength. Fresh dry-hop aroma optional.",
+        "appearance": "Pale golden to amber. Moderately large white to off-white head with good retention. Generally quite clear.",
+        "flavor": "Hop and malt character similar to aroma (same intensities and descriptors apply). Caramel flavors are often absent or fairly restrained, but are acceptable as long as they don't clash with the hops. Moderate to high bitterness. Clean fermentation profile. Fruity yeast esters can be moderate to none, although many hop varieties are quite fruity. Medium to dry finish. The balance is typically towards the late hops and bitterness; the malt presence should be supportive, not distracting. Hop flavor and bitterness often linger into the finish, but the aftertaste should generally be clean and not harsh. Fresh dry-hop flavor optional.",
+        "mouthfeel": "Medium-light to medium body. Moderate to high carbonation. Overall smooth finish without astringency or harshness.",
+        "comments": "Modern American versions are often just lower gravity IPAs. Traditionally was a style that allowed for experimentation with hop varieties and usage methods, which can now often be found as international adaptations in countries with an emerging craft beer market. Judges should allow for characteristics of modern American or New World hops as they are developed and released.",
+        "history": "A modern American craft beer era adaptation of English pale ale, reflecting indigenous ingredients. Sierra Nevada Pale Ale was first made in 1980 and helped popularize the style. Prior to the explosion in popularity of IPAs, this style was the most well-known and popular of American craft beers.",
+        "characteristic_ingredients": "Neutral pale malt. American or New World hops. Neutral to lightly fruity American or English ale yeast. Small amounts of various specialty malts.",
+        "style_comparison": "Typically lighter in color, cleaner in fermentation profile, and having fewer caramel flavors than English counterparts. There can be some overlap in color between American Pale Ale and American Amber Ale. The American Pale Ale will generally be cleaner, have a less caramelly malt profile, less body, and often more finishing hops. Less bitterness in the balance and alcohol strength than an American IPA. Maltier, more balanced and drinkable, and less intensely hop-focused and bitter than session-strength American IPAs (aka Session IPAs). More bitter and hoppy than a Blonde Ale.",
+        "entry_instructions": ""
+      },
+      "sections_ru": {
+        "overall_impression": "Светлый американский крафтовый эль средней крепости с явным акцентом на хмель, но при этом с достаточной солодовой опорой, чтобы пиво оставалось сбалансированным и удобным для питья. Чистый хмелевой профиль может отражать как классические, так и современные американские или другие New World сорта.",
+        "aroma": "Хмелевой аромат от умеренного до умеренно высокого, с широким спектром возможных оттенков американского и новосветского хмеля: цитрус, цветы, хвоя, смола, специи, тропические фрукты, косточковые фрукты, ягоды, дыня. Ни одна из этих конкретных нот не обязательна, но сам факт заметной хмелевости должен быть очевиден. Нейтральная или зерновая солодовость от слабой до умеренной поддерживает хмель и может давать лёгкие нюансы специального солода — хлеб, тост, бисквит, карамель. Фруктовые эфиры допустимы, вплоть до умеренных. Возможен свежий аромат сухого охмеления.",
+        "appearance": "Цвет от бледно-золотистого до янтарного. Пена белая или слегка кремовая, умеренно крупная, с хорошей стойкостью. Обычно пиво достаточно прозрачное.",
+        "flavor": "Хмелевой и солодовый профиль сходен с ароматом; действуют те же дескрипторы и тот же порядок интенсивности. Карамель часто отсутствует или остаётся очень сдержанной, но допустима, если не спорит с хмелем. Горечь от умеренной до высокой. Брожение чистое. Фруктовые эфиры дрожжей могут быть от нулевых до умеренных, хотя многие сорта хмеля сами по себе весьма фруктовые. Финал от среднего к сухому. Баланс обычно смещён в сторону позднего хмеля и горечи; солод должен поддерживать, а не перетягивать внимание на себя. Хмелевой вкус и горечь часто тянутся в послевкусие, но оно в целом должно оставаться чистым и без жёсткости. Возможен свежий вкус сухого охмеления.",
+        "mouthfeel": "Тело от умеренно лёгкого до среднего. Карбонизация от умеренной до высокой. Общее ощущение гладкое, без вяжущей или грубой жёсткости.",
+        "comments": "Многие современные американские версии по сути представляют собой IPA пониженной плотности. Исторически стиль был удобной площадкой для экспериментов с сортами и методами внесения хмеля, а сегодня подобные интерпретации часто встречаются и в странах с формирующимся крафтовым рынком. При оценке стоит учитывать профиль современных американских и новосветских сортов по мере их появления и распространения.",
+        "history": "Современная американская крафтовая адаптация English pale ale, опирающаяся на местные ингредиенты. Sierra Nevada Pale Ale впервые сварили в 1980 году, и именно это пиво сильно помогло популяризовать стиль. До взрывного роста популярности IPA именно American Pale Ale был самым известным и самым востребованным стилем американского крафта.",
+        "characteristic_ingredients": "Нейтральный светлый солод. Американский или другой New World хмель. Нейтральные или слегка фруктовые американские либо английские эльовые дрожжи. Небольшие количества различных специальных солодов.",
+        "style_comparison": "Обычно светлее по цвету, чище по профилю брожения и содержит меньше карамельных тонов, чем английские аналоги. По цвету частично пересекается с American Amber Ale, но American Pale Ale, как правило, чище, менее карамельный, легче по телу и чаще имеет более заметное позднее охмеление. Он слабее и менее горький по балансу, чем American IPA. При этом он солодовее, более уравновешенный и более питкий, чем сессионные американские IPA. И в то же время он заметно горче и хмелевее, чем Blonde Ale.",
+        "entry_instructions": ""
+      },
+      "vital_statistics": {
+        "og": "1.045 - 1.060",
+        "ibu": "30 - 50",
+        "fg": "1.010 - 1.015",
+        "srm": "5 - 10",
+        "abv": "4.5 - 6.2%"
+      },
+      "vital_statistics_text": "OG: 1.045 - 1.060 IBUs: 30 - 50 FG: 1.010 - 1.015 SRM: 5 - 10 ABV: 4.5 - 6.2%",
+      "commercial_examples_text": "Deschutes Mirror Pond Pale Ale, Half Acre Daisy Cutter Pale Ale, Great Lakes Burning River, La Cumbre Acclimated APA, Sierra Nevada Pale Ale, Stone Pale Ale 2.0",
+      "tags_en": [
+        "standard-strength",
+        "pale-color",
+        "top-fermented",
+        "north-america",
+        "craft-style",
+        "pale-ale-family",
+        "bitter",
+        "hoppy"
+      ],
+      "source_guideline_page_start": 33,
+      "source_pdf_page_start": 49,
+      "tags_ru": [
+        "стандартная крепость",
+        "светлый цвет",
+        "верховое брожение",
+        "Северная Америка",
+        "крафтовый стиль",
+        "семейство pale ale",
+        "горький",
+        "хмелевой"
+      ],
+      "translation_status": "completed"
+    },
+    {
+      "bjcp_id": "19A",
+      "name_en": "American Amber Ale",
+      "name_ru": "Американский янтарный эль",
+      "category_id": "19",
+      "category_en": "AMBER AND BROWN AMERICAN BEER",
+      "category_ru": "Янтарное и коричневое американское пиво",
+      "bjcp_heading": "19A. American Amber Ale",
+      "description_short_ru": "Янтарный американский крафтовый эль умеренной крепости с хмелевым характером и карамельно-солодовой основой; баланс может заметно смещаться от более солодового к более хмелевому.",
+      "sections_en": {
+        "overall_impression": "An amber, hoppy, moderate-strength American craft beer with a malty caramel flavor. The balance can vary quite a bit, with some versions being fairly malty and others being aggressively hoppy. Hoppy and bitter versions should not have clashing flavors with the caramel malt profile.",
+        "aroma": "Low to moderate hop aroma reflective of American or New World hop varieties (citrus, floral, pine, resin, spice, tropical fruit, stone fruit, berry, or melon). A citrusy hop character is common, but not required. Moderately-low to moderately-high maltiness, usually with a moderate caramel character, that can either support, balance, or sometimes mask the hop presentation. Esters vary from moderate to none.",
+        "appearance": "Deep amber to coppery-brown in color, sometimes with a reddish hue. Moderately large off-white head with good retention. Generally quite clear.",
+        "flavor": "Moderate to high hop flavor with similar characteristics as the aroma. Malt flavors are moderate to strong, and usually show an initial malty sweetness followed by a moderate caramel flavor and sometimes toasty or biscuity malt flavors in lesser amounts. Dark or roasted malt flavors absent. Moderate to moderately-high bitterness. Balance can vary from somewhat malty to somewhat bitter. Fruity esters can be moderate to none. Caramel sweetness, hop flavor, and bitterness can linger somewhat into the medium to full yet dry finish.",
+        "mouthfeel": "Medium to medium-full body. Medium to high carbonation. Overall smooth finish without astringency. Stronger versions may have a slight alcohol warmth.",
+        "comments": "Can overlap in color with darker American pale ales, but with a different malt flavor and balance. A range of balance exists in this style, from balanced and malty to more aggressively hopped.",
+        "history": "A modern American craft beer style developed as a variation from American Pale Ales. Mendocino Red Tail Ale was first made in 1983, and was known regionally as a Red Ale. This served as the progenitor of Double Reds (American Strong Ale), Red IPAs, and other hoppy, caramelly beers.",
+        "characteristic_ingredients": "Neutral pale ale malt. Medium to dark crystal malts. American or New World hops, often with citrusy flavors, are common but others may also be used. Neutral to lightly estery yeast.",
+        "style_comparison": "Darker, more caramelly, more body, and generally less bitter in the balance than American Pale Ales. Less alcohol, bitterness, and hop character than Red IPAs. Less strength, malt, and hop character than American Strong Ales. Less chocolate and dark caramel than an American Brown Ale.",
+        "entry_instructions": ""
+      },
+      "sections_ru": {
+        "overall_impression": "Янтарный американский крафтовый эль умеренной крепости с заметным хмелевым характером и карамельно-солодовой основой. Баланс может сильно меняться: от довольно солодового до весьма агрессивно охмелённого. При этом у более горьких и хмелевых версий хмель не должен конфликтовать с карамельным солодовым профилем.",
+        "aroma": "Хмелевой аромат от слабого до умеренного, типичный для американских и новосветских сортов: цитрус, цветы, хвоя, смола, специи, тропические фрукты, косточковые фрукты, ягоды, дыня. Цитрусовый хмелевой профиль встречается часто, но не обязателен. Солодовость от умеренно низкой до умеренно высокой, обычно с выраженной карамельной нотой; она может поддерживать хмель, уравновешивать его или местами даже частично закрывать его подачу. Эфиры — от умеренных до отсутствующих.",
+        "appearance": "Цвет от глубокого янтарного до медно-коричневого, иногда с красноватым оттенком. Пена умеренно крупная, кремово-белая, с хорошей стойкостью. Пиво обычно достаточно прозрачное.",
+        "flavor": "Хмелевой вкус — от умеренного до высокого, с теми же дескрипторами, что и в аромате. Солодовый профиль от умеренного до сильного; обычно он начинается мягкой солодовой сладостью, затем развивается в умеренную карамель и иногда даёт более слабые поджаренные или бисквитные ноты. Тёмные и выраженно жареные солодовые тона недопустимы. Горечь от умеренной до умеренно высокой. Баланс может колебаться от слегка солодового до слегка горького. Фруктовые эфиры — от умеренных до отсутствующих. Карамельная сладость, хмелевой вкус и горечь могут частично тянуться в финал, который при среднем или полном теле остаётся довольно сухим.",
+        "mouthfeel": "Тело от среднего до умеренно полного. Карбонизация от средней до высокой. Общее ощущение гладкое, без вяжущей резкости. В более крепких версиях допустимо лёгкое согревающее алкогольное тепло.",
+        "comments": "По цвету стиль может пересекаться с более тёмными версиями American Pale Ale, но отличается другим солодовым профилем и иным балансом. Внутри стиля допустим широкий диапазон интерпретаций — от уравновешенных и заметно солодовых до гораздо более хмелевых.",
+        "history": "Современный американский крафтовый стиль, выросший как вариация American Pale Ale. Пиво Mendocino Red Tail Ale впервые сварили в 1983 году, и на региональном уровне его знали как Red Ale. Именно оно стало предтечей Double Red, Red IPA и других хмелевых, карамельных интерпретаций.",
+        "characteristic_ingredients": "Нейтральный pale ale malt. Кристаллические солода средней и тёмной степени. Обычно используют американский или другой New World хмель, часто с цитрусовым профилем, хотя возможны и иные варианты. Дрожжи — нейтральные или с лёгкой эфирностью.",
+        "style_comparison": "Темнее, более карамельный и более плотный, а по балансу обычно менее горький, чем American Pale Ale. Уступает Red IPA по крепости, горечи и хмелевому напору. Слабее и мягче, чем American Strong Ale. При этом в нём меньше шоколадных и тёмно-карамельных оттенков, чем в American Brown Ale.",
+        "entry_instructions": ""
+      },
+      "vital_statistics": {
+        "og": "1.045 - 1.060",
+        "ibu": "25 - 40",
+        "fg": "1.010 - 1.015",
+        "srm": "10 - 17",
+        "abv": "4.5 - 6.2%"
+      },
+      "vital_statistics_text": "OG: 1.045 - 1.060 IBUs: 25 - 40 FG: 1.010 - 1.015 SRM: 10 - 17 ABV: 4.5 - 6.2%",
+      "commercial_examples_text": "Anderson Valley Boont Amber Ale, Bell's Amber Ale, Full Sail Amber, North Coast Red Seal Ale, Saint Arnold Amber Ale, Tröegs Hopback Amber Ale",
+      "tags_en": [
+        "standard-strength",
+        "amber-color",
+        "top-fermented",
+        "north-america",
+        "craft-style",
+        "amber-ale-family",
+        "balanced",
+        "hoppy"
+      ],
+      "source_guideline_page_start": 34,
+      "source_pdf_page_start": 50,
+      "tags_ru": [
+        "стандартная крепость",
+        "янтарный цвет",
+        "верховое брожение",
+        "Северная Америка",
+        "крафтовый стиль",
+        "семейство amber ale",
+        "сбалансированный",
+        "хмелевой"
+      ],
+      "translation_status": "completed"
+    },
+    {
+      "bjcp_id": "19B",
+      "name_en": "California Common",
+      "name_ru": "Калифорнийский коммон",
+      "category_id": "19",
+      "category_en": "AMBER AND BROWN AMERICAN BEER",
+      "category_ru": "Янтарное и коричневое американское пиво",
+      "bjcp_heading": "19B. California Common",
+      "description_short_ru": "Стандартное по крепости пиво с поджаренно-карамельной солодовой основой, уверенной горечью, лёгкой фруктовостью и характерным древесно-«рустикальным» хмелевым профилем.",
+      "sections_en": {
+        "overall_impression": "A toasty and caramelly, fairly bitter, standard-strength beer with an interesting fruitiness and rustic, woody hop character. Smooth and well carbonated.",
+        "aroma": "Moderate to high herbal, resinous, floral, or minty hops. Light fruitiness acceptable. Low to moderate caramel or toasty malt supports the hops.",
+        "appearance": "Medium amber to light copper color. Generally clear. Moderate off-white head with good retention.",
+        "flavor": "Moderately malty with a pronounced hop bitterness. The malt character usually has toast (not roast) and caramel flavors. Low to moderately high hop flavor, usually showing rustic, traditional American hop qualities (often herbal, resinous, floral, minty). Finish fairly dry and crisp, with a lingering hop bitterness and a firm, grainy malt flavor. Light fruity esters are acceptable, but otherwise clean.",
+        "mouthfeel": "Medium-bodied. Medium to medium-high carbonation.",
+        "comments": "This style is narrowly defined around the prototypical Anchor Steam example, although allowing other typical ingredients of the era. Northern Brewer hops are not a strict requirement for the style. Modern American and New World-type hops (especially citrusy ones) are inappropriate.",
+        "history": "American West Coast original, brewed originally as Steam Beer during the Gold Rush era. Large shallow open fermenters (coolships) were used to compensate for the lack of refrigeration and to take advantage of the cool temperatures in the San Francisco Bay area. Modern versions are based on Anchor Brewing re-launching the style in the 1970s.",
+        "characteristic_ingredients": "Pale ale malt, non-citrusy hops (often Northern Brewer), small amounts of toasted malt or crystal malts. Lager yeast; however, some strains (often with the mention of “California” in the name) work better than others at the warmer fermentation temperatures (55 to 60 °F) typically used. Note that some German yeast strains produce inappropriate sulfury character.",
+        "style_comparison": "Superficially similar to an American Amber Ale, but with specific choices for malt and hopping - the hop flavor and aroma is traditional (not modern) American hops, malt flavors are toastier, the hopping is always assertive, and a warm-fermented lager yeast is used. Less attenuated, less carbonated and less fruity than Australian Sparkling ale.",
+        "entry_instructions": ""
+      },
+      "sections_ru": {
+        "overall_impression": "Поджаренно-карамельное, довольно горькое пиво стандартной крепости с интересной фруктовостью и слегка грубоватым, древесно-рустикальным хмелевым характером. Гладкое по ощущению и хорошо насыщенное углекислотой.",
+        "aroma": "Хмель от умеренного до высокого: травянистый, смолистый, цветочный или мятный. Лёгкая фруктовость допустима. Низкий или умеренный карамельный и/или поджаренный солод поддерживает хмель.",
+        "appearance": "Цвет от среднего янтарного до светлой меди. Обычно прозрачное. Пена кремово-белая, умеренная, с хорошей стойкостью.",
+        "flavor": "Солодовость умеренная, но сопровождается выраженной хмелевой горечью. Солодовый профиль обычно даёт тостовые (но не жареные) и карамельные ноты. Хмелевой вкус — от слабого до умеренно высокого, как правило с традиционным американским, «старошкольным» характером: травянистым, смолистым, цветочным, мятным. Финал довольно сухой и хрусткий, с тянущейся хмелевой горечью и плотным зерновым солодовым следом. Лёгкие фруктовые эфиры допустимы, но в остальном профиль должен быть чистым.",
+        "mouthfeel": "Тело среднее. Карбонизация от средней до умеренно высокой.",
+        "comments": "Стиль довольно узко привязан к эталонному примеру Anchor Steam, хотя допускает использование и других типичных для эпохи ингредиентов. Northern Brewer для него не является жёстким обязательным требованием. Современные американские и новосветские сорта хмеля, особенно ярко цитрусовые, здесь неуместны.",
+        "history": "Оригинальный стиль западного побережья США, изначально известный как Steam Beer и варившийся ещё во времена золотой лихорадки. Крупные открытые неглубокие ферментёры использовали, чтобы компенсировать отсутствие холодильного оборудования и воспользоваться прохладным климатом района залива Сан-Франциско. Современные версии опираются на возрождение стиля, которое Anchor Brewing осуществила в 1970-х.",
+        "characteristic_ingredients": "Светлый ale malt, нецитрусовый хмель (часто Northern Brewer), небольшие количества поджаренных и/или кристаллических солодов. Дрожжи — лагерные; однако некоторые штаммы, нередко содержащие в названии слово “California”, лучше подходят для сравнительно тёплой ферментации при 55-60 °F. При этом некоторые немецкие лагерные штаммы могут давать нежелательный сернистый характер.",
+        "style_comparison": "На первый взгляд напоминает American Amber Ale, но отличается очень конкретным набором решений по солоду, дрожжам и хмелю: хмелевой аромат и вкус здесь традиционно американские, а не современные; солод заметно более тостовый; охмеление всегда уверенное; брожение ведут тёпло с лагерными дрожжами. Стиль менее выброженный, менее газированный и менее фруктовый, чем Australian Sparkling Ale.",
+        "entry_instructions": ""
+      },
+      "vital_statistics": {
+        "og": "1.048 - 1.054",
+        "ibu": "30 - 45",
+        "fg": "1.011 - 1.014",
+        "srm": "9 - 14",
+        "abv": "4.5 - 5.5%"
+      },
+      "vital_statistics_text": "OG: 1.048 - 1.054 IBUs: 30 - 45 FG: 1.011 - 1.014 SRM: 9 - 14 ABV: 4.5 - 5.5%",
+      "commercial_examples_text": "Anchor Steam, Steamworks Steam Engine Lager",
+      "tags_en": [
+        "standard-strength",
+        "amber-color",
+        "bottom-fermented",
+        "north-america",
+        "traditional-style",
+        "amber-lager-family",
+        "bitter",
+        "hoppy"
+      ],
+      "source_guideline_page_start": 34,
+      "source_pdf_page_start": 50,
+      "tags_ru": [
+        "стандартная крепость",
+        "янтарный цвет",
+        "низовое брожение",
+        "Северная Америка",
+        "традиционный стиль",
+        "семейство amber lager",
+        "горький",
+        "хмелевой"
+      ],
+      "translation_status": "completed"
+    },
+    {
+      "bjcp_id": "19C",
+      "name_en": "American Brown Ale",
+      "name_ru": "Американский браун-эль",
+      "category_id": "19",
+      "category_en": "AMBER AND BROWN AMERICAN BEER",
+      "category_ru": "Янтарное и коричневое американское пиво",
+      "bjcp_heading": "19C. American Brown Ale",
+      "description_short_ru": "Американский эль стандартной крепости, в котором солодовая основа с шоколадом и карамелью сочетается с заметным, но не конфликтующим хмелем.",
+      "sections_en": {
+        "overall_impression": "A malty but hoppy standard-strength American ale frequently with chocolate and caramel flavors. The hop flavor and aroma complement and enhance the malt rather than clashing with it.",
+        "aroma": "Moderate malty-sweet to malty-rich aroma with chocolate, caramel, nutty, or toasty qualities. Hop aroma is typically low to moderate, of almost any type that complements the malt. Some interpretations of the style may optionally feature a stronger hop aroma, an American or New World hop character (citrusy, fruity, tropical, etc.), or a dry-hopped aroma. Fruity esters are moderate to very low. The dark malt character is more robust than other brown ales, yet stops short of being overly Porter-like.",
+        "appearance": "Light to very dark brown color. Clear. Low to moderate off-white to light tan head.",
+        "flavor": "Medium to moderately-high malty-sweet or malty-rich flavor with chocolate, caramel, nutty, or toasty malt complexity, with medium to medium-high bitterness. Medium to medium-dry finish with an aftertaste of both malt and hops. Light to moderate hop flavor, sometimes citrusy, fruity, or tropical, although any hop flavor that complements the malt is acceptable. Very low to moderate fruity esters. The malt and hops are generally equal in intensity, but the balance can vary in either direction. Should not have a roasted character suggestive of a Porter or Stout.",
+        "mouthfeel": "Medium to medium-full body. More bitter versions may have a dry, resiny impression. Moderate to moderately-high carbonation. Stronger versions may be lightly warming.",
+        "comments": "Most commercial American Browns are not as aggressive as the original homebrewed versions, and some modern craft-brewed examples. This style reflects the current commercial offerings typically marketed as American Brown Ales rather than the hoppier, stronger homebrew versions from the early days of homebrewing. These IPA-strength brown ales should be entered as 21B Specialty IPA: Brown IPA.",
+        "history": "An American style from the early modern craft beer era. Derived from English Brown Ales, but with more hops. Pete's Wicked Ale (1986) defined the style, which was first judged at the Great American Beer Festival in 1992.",
+        "characteristic_ingredients": "Pale malt, plus crystal and darker malts (typically chocolate). American hops are typical, but continental or New World hops can also be used.",
+        "style_comparison": "More chocolate and caramel flavors than American Pale or Amber Ales, typically with less prominent bitterness in the balance. Less bitterness, alcohol, and hop character than Brown IPAs. More bitter and generally hoppier than English Brown Ales, with a richer malt presence, usually higher alcohol, and American or New World hop character.",
+        "entry_instructions": ""
+      },
+      "sections_ru": {
+        "overall_impression": "Солодовый, но при этом хмелевой американский эль стандартной крепости, часто с оттенками шоколада и карамели. Хмелевой аромат и вкус должны не спорить с солодом, а дополнять и подчёркивать его.",
+        "aroma": "Аромат от умеренно сладко-солодового до насыщенно солодового, с нотами шоколада, карамели, орехов или тоста. Хмелевой аромат обычно от слабого до умеренного и может быть почти любого типа, если он сочетается с солодом. Некоторые интерпретации дополнительно показывают более яркий хмель, американский или новосветский профиль (цитрус, фрукты, тропики и т.п.) либо аромат сухого охмеления. Эфиры — от очень слабых до умеренных. Тёмный солодовый компонент здесь заметнее, чем в других brown ale, но всё же не должен заходить в зону явного porter-подобного профиля.",
+        "appearance": "Цвет от светло-коричневого до очень тёмно-коричневого. Пиво прозрачное. Пена от слабой до умеренной, кремово-белая или светло-бежевая.",
+        "flavor": "Солодовый вкус от умеренного до умеренно высокого, сладковатый или насыщенно солодовый, с шоколадной, карамельной, ореховой и тостовой сложностью. Горечь от средней до умеренно высокой. Финал от среднего к умеренно сухому, а в послевкусии остаются и солод, и хмель. Хмелевой вкус — от слабого до умеренного; иногда он цитрусовый, фруктовый или тропический, но допустим любой вариант, если он работает в паре с солодом. Эфиры — от очень слабых до умеренных. Солод и хмель чаще всего близки по интенсивности, хотя баланс может смещаться в любую сторону. Жареного профиля, напоминающего Porter или Stout, быть не должно.",
+        "mouthfeel": "Тело от среднего до умеренно полного. У более горьких версий может появляться суховатое смолистое ощущение. Карбонизация от умеренной до умеренно высокой. В более крепких версиях допустимо лёгкое согревающее тепло.",
+        "comments": "Большинство коммерческих American Brown Ale не столь агрессивны, как ранние домашние версии и часть современных крафтовых интерпретаций. В этом описании отражён прежде всего тот профиль, который сегодня обычно продаётся под названием American Brown Ale, а не более крепкие и более хмелевые домашние версии первых лет домашнего пивоварения. Коричневые эли с крепостью и охмелением на уровне IPA следует заявлять как 21B Specialty IPA: Brown IPA.",
+        "history": "Американский стиль ранней эпохи современного крафта. Произошёл от English Brown Ale, но с более заметным охмелением. Пиво Pete’s Wicked Ale (1986) фактически задало рамки стиля; впервые как отдельную категорию его оценивали на Great American Beer Festival в 1992 году.",
+        "characteristic_ingredients": "Светлый базовый солод, кристаллические и более тёмные солода, чаще всего шоколадные. Американский хмель типичен, но возможны и континентальные или другие новосветские сорта.",
+        "style_comparison": "В нём больше шоколада и карамели, чем в American Pale Ale и American Amber Ale, а горечь в балансе обычно ощущается чуть мягче. Он слабее по крепости, горечи и хмелевому напору, чем Brown IPA. По сравнению с English Brown Ale он обычно горче, хмелевее, богаче по солоду, чаще крепче и нередко использует американский либо новосветский хмель.",
+        "entry_instructions": ""
+      },
+      "vital_statistics": {
+        "og": "1.045 - 1.060",
+        "ibu": "20 - 30",
+        "fg": "1.010 - 1.016",
+        "srm": "18 - 35",
+        "abv": "4.3 - 6.2%"
+      },
+      "vital_statistics_text": "OG: 1.045 - 1.060 IBUs: 20 - 30 FG: 1.010 - 1.016 SRM: 18 - 35 ABV: 4.3 - 6.2%",
+      "commercial_examples_text": "Avery Ellie's Brown Ale, Big Sky Moose Drool Brown Ale, Brooklyn Brown Ale, Bell's Best Brown, Smuttynose Old Brown Dog Ale, Telluride Face Down Brown",
+      "tags_en": [
+        "standard-strength",
+        "dark-color",
+        "top-fermented",
+        "north-america",
+        "craft-style",
+        "brown-ale-family",
+        "balanced",
+        "hoppy"
+      ],
+      "source_guideline_page_start": 35,
+      "source_pdf_page_start": 51,
+      "tags_ru": [
+        "стандартная крепость",
+        "тёмный цвет",
+        "верховое брожение",
+        "Северная Америка",
+        "крафтовый стиль",
+        "семейство brown ale",
+        "сбалансированный",
+        "хмелевой"
+      ],
+      "translation_status": "completed"
+    }
+  ]
+}

@@ -162,12 +162,17 @@ export function IngredientCatalogToolbar({
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [searchValue, setSearchValue] = useState(q);
+  const [isSearchFocused, setIsSearchFocused] = useState(false);
   const [sortOpen, setSortOpen] = useState(false);
   const sortRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    if (isSearchFocused) {
+      return;
+    }
+
     setSearchValue(q);
-  }, [q]);
+  }, [isSearchFocused, q]);
 
   const currentHref = useMemo(() => buildCatalogHref(pathname, {
     view,
@@ -247,7 +252,7 @@ export function IngredientCatalogToolbar({
   const primaryButtons = [
     {
       key: "malt",
-      label: "Солода",
+      label: "Солод",
       count: counts.byFermentableSubtype.malt,
       active: category === "fermentable" && subtype === "malt",
       meta: categoryMeta.fermentable,
@@ -338,11 +343,10 @@ export function IngredientCatalogToolbar({
         <button
           type="button"
           onClick={() => replaceWith({ category: "all", subtype: null })}
-          className={`group relative flex flex-col items-center gap-1.5 rounded-xl border px-3 py-3 text-center transition-all ${
-            category === "all"
-              ? "border-transparent bg-zinc-950 text-white ring-2 ring-zinc-300 shadow-sm"
-              : "border-zinc-200 bg-white text-zinc-700 hover:border-zinc-300 hover:shadow-sm"
-          }`}
+          className={`group relative flex flex-col items-center gap-1.5 rounded-xl border px-3 py-3 text-center transition-all ${category === "all"
+            ? "border-transparent bg-zinc-950 text-white ring-2 ring-zinc-300 shadow-sm"
+            : "border-zinc-200 bg-white text-zinc-700 hover:border-zinc-300 hover:shadow-sm"
+            }`}
         >
           <span className={`text-xs font-semibold leading-tight ${category === "all" ? "text-white" : "text-zinc-700"}`}>
             Все категории
@@ -362,13 +366,12 @@ export function IngredientCatalogToolbar({
               type="button"
               disabled={isDisabled}
               onClick={button.onClick}
-              className={`group relative flex flex-col items-center gap-1.5 rounded-xl border px-3 py-3 text-center transition-all ${
-                isDisabled
-                  ? "cursor-not-allowed border-zinc-100 bg-zinc-50 text-zinc-300 opacity-60"
-                  : button.active
+              className={`group relative flex flex-col items-center gap-1.5 rounded-xl border px-3 py-3 text-center transition-all ${isDisabled
+                ? "cursor-not-allowed border-zinc-100 bg-zinc-50 text-zinc-300 opacity-60"
+                : button.active
                   ? `${button.meta.activeBg} ${button.meta.activeRing} border-transparent ring-2 shadow-sm`
                   : "border-zinc-200 bg-white hover:border-zinc-300 hover:shadow-sm"
-              }`}
+                }`}
             >
               <Icon className={`h-6 w-6 ${isDisabled ? "text-zinc-300" : button.active ? button.meta.activeColor : button.meta.color} transition-colors`} />
               <span className={`text-xs font-semibold leading-tight ${isDisabled ? "text-zinc-400" : button.active ? button.meta.activeColor : "text-zinc-700"}`}>
@@ -388,6 +391,8 @@ export function IngredientCatalogToolbar({
           <input
             value={searchValue}
             onChange={(event) => setSearchValue(event.target.value)}
+            onFocus={() => setIsSearchFocused(true)}
+            onBlur={() => setIsSearchFocused(false)}
             className="mt-1 h-11 w-full rounded-xl border border-zinc-200 bg-zinc-50 px-3 text-sm"
             placeholder="Название, алиас, бренд, код"
           />
@@ -399,11 +404,10 @@ export function IngredientCatalogToolbar({
             <button
               type="button"
               onClick={() => setSortOpen((current) => !current)}
-              className={`flex h-11 w-full items-center justify-between rounded-xl border px-3 text-sm transition-colors ${
-                sort !== defaultCatalogSortOption
-                  ? "border-blue-200 bg-blue-50 text-blue-800"
-                  : "border-zinc-200 bg-zinc-50 text-zinc-700 hover:border-zinc-300 hover:bg-white"
-              }`}
+              className={`flex h-11 w-full items-center justify-between rounded-xl border px-3 text-sm transition-colors ${sort !== defaultCatalogSortOption
+                ? "border-blue-200 bg-blue-50 text-blue-800"
+                : "border-zinc-200 bg-zinc-50 text-zinc-700 hover:border-zinc-300 hover:bg-white"
+                }`}
             >
               <span className="inline-flex items-center gap-2">
                 <ArrowUpDown className="h-4 w-4" />
@@ -422,9 +426,8 @@ export function IngredientCatalogToolbar({
                       replaceWith({ sort: option });
                       setSortOpen(false);
                     }}
-                    className={`flex w-full items-center justify-between px-3 py-2 text-left text-sm transition-colors hover:bg-zinc-50 ${
-                      option === sort ? "font-medium text-zinc-950" : "text-zinc-600"
-                    }`}
+                    className={`flex w-full items-center justify-between px-3 py-2 text-left text-sm transition-colors hover:bg-zinc-50 ${option === sort ? "font-medium text-zinc-950" : "text-zinc-600"
+                      }`}
                   >
                     {sortLabels[option]}
                     {option === sort ? <Check className="h-3.5 w-3.5 text-blue-600" /> : null}

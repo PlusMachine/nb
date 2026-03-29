@@ -1,0 +1,427 @@
+{
+  "source": {
+    "document": "BJCP 2021 Beer Style Guidelines",
+    "file_name": "2021_Guidelines_Beer_1.25.pdf",
+    "language": "ru",
+    "translation_scope": "detailed",
+    "notes": "Подробный русский перевод пятой части корпуса BJCP: категории 10-11 с сохранением короткого описания, полных секций и оригинальных английских секций для сверки."
+  },
+  "progress": {
+    "styles_total_in_guideline": 128,
+    "styles_translated_in_this_file": 6,
+    "translated_style_ids": [
+      "10A",
+      "10B",
+      "10C",
+      "11A",
+      "11B",
+      "11C"
+    ],
+    "translated_categories": [
+      "10",
+      "11"
+    ],
+    "next_recommended_batch": [
+      "12A",
+      "12B",
+      "12C",
+      "13A",
+      "13B",
+      "13C"
+    ]
+  },
+  "categories": [
+    {
+      "category_id": "10",
+      "category_en": "GERMAN WHEAT BEER",
+      "category_ru": "Немецкое пшеничное пиво",
+      "overview_ru": "В эту категорию входят немецкие пшеничные сорта крепости от vollbier до starkbier, без кислого характера, как в светлых, так и в тёмных версиях."
+    },
+    {
+      "category_id": "11",
+      "category_en": "BRITISH BITTER",
+      "category_ru": "Британский биттер",
+      "overview_ru": "Семейство британских биттеров выросло из английских pale ale как разливной стиль конца XIX века. Для него важны свежая подача, высокая питкость и баланс, в котором горечь остаётся ведущим впечатлением, а солод и фруктовость поддерживают, но не перегружают профиль."
+    }
+  ],
+  "styles": [
+    {
+      "bjcp_id": "10A",
+      "bjcp_heading": "10A. Weissbier",
+      "category_id": "10",
+      "category_en": "GERMAN WHEAT BEER",
+      "category_ru": "Немецкое пшеничное пиво",
+      "name_en": "Weissbier",
+      "name_ru": "Вайсбир",
+      "description_short_ru": "Светлое, освежающее немецкое пшеничное пиво с высокой карбонизацией, сухим финишем, мягкой пушистой текстурой и классическим дрожжевым профилем банана и гвоздики.",
+      "sections_ru": {
+        "overall_impression": "Светлое, освежающее, умеренно охмелённое немецкое пшеничное пиво с высокой карбонизацией, сухим финишем, воздушной текстурой и характерным дрожжевым профилем вайценовых эфиров и фенолов — прежде всего банана и гвоздики.",
+        "aroma": "Эфиры и фенолы от умеренных до сильных, чаще всего банан и гвоздика; обычно они хорошо уравновешены между собой и, как правило, выражены сильнее солода. Пшеничный аромат — от лёгкого до умеренного: хлебный, тестяной или зерновой. Допустима лёгкая ванильность. Возможен слабый цветочный, пряный или травянистый хмель. Тона жвачки, особенно клубнично-банановой, кислинка и дымный характер считаются дефектом.",
+        "appearance": "Цвет от бледно-соломенного до золотистого. Пена очень плотная, кремово-пушистая, стойкая, белая. Пиво может быть мутным и слегка поблёскивать из-за пшеницы и дрожжей, хотя в бутылке эта взвесь способна осесть.",
+        "flavor": "Вкус банана и гвоздики — от слабого до умеренно сильного, обычно хорошо сбалансирован. Пшеничный вкус мягкий, от слабого до умеренного: хлебный, тестяной или зерновой; его поддерживает лёгкая зерновая сладость pils-солода. Горечь очень низкая или умеренно низкая. Вкус округлый, выразительный, с относительно сухим финишем. Лёгкая ванильность допустима. Слабый цветочный, пряный или травянистый хмелевой вкус возможен, но не обязателен. Ощущение сладости, если и возникает, связано скорее с низкой горечью, а не с остаточным сахаром; слишком сладкий или тяжёлый финиш ухудшает питкость. Жвачка, кислинка и дымность недопустимы. Профиль банана и гвоздики важен, но не должен становиться чрезмерным и разбалансированным.",
+        "mouthfeel": "Тело от средне-лёгкого до среднего, но никогда не тяжёлое. Во рту пиво сначала ощущается пушистым и сливочно-мягким, а затем переходит в лёгкий, игристый финиш благодаря высокой или очень высокой карбонизации. Живо пенится и кажется шипучим.",
+        "comments": "Стиль также известен как hefeweizen или weizenbier, особенно за пределами Баварии. Лучшие впечатления даёт в молодом и свежем состоянии, поскольку обычно плохо переносит выдержку. В Германии популярны облегчённые и безалкогольные версии. Вариант Kristall фильтруют до блестящей прозрачности.",
+        "history": "Пшеничное пиво варили в Баварии ещё до XVI века, но право на его производство долгое время было монополией баварской знати. Современный Weissbier ведёт отсчёт с 1872 года, когда Schneider начал выпуск своей янтарной версии. Светлый Weissbier стал по-настоящему популярен лишь с 1960-х годов, хотя исторически само название в Германии могло относиться и к пиву из солода воздушной сушки — это уже другая традиция. Сегодня стиль особенно популярен на юге Германии.",
+        "characteristic_ingredients": "Солодованная пшеница, составляющая не менее половины засыпи. Pilsner malt. Традиционно — декокционное затирание. Вайценовые дрожжи и сравнительно прохладное брожение.",
+        "style_comparison": "По сравнению с American Wheat здесь есть характер банана и гвоздики от дрожжей и заметно меньше горечи. По сравнению с Dunkles Weissbier стиль светлее, с менее насыщенным солодовым профилем.",
+        "entry_instructions": "Участник может указать, нужно ли перед подачей поднять дрожжевой осадок."
+      },
+      "sections_en": {
+        "overall_impression": "A pale, refreshing, lightly-hopped German wheat beer with high carbonation, dry finish, fluffy mouthfeel, and a distinctive banana-and-clove weizen yeast fermentation profile.",
+        "aroma": "Moderate to strong esters and phenols, typically banana and clove, often well balanced and typically stronger than the malt. Light to moderate bready, doughy, or grainy wheat aroma. Light vanilla optional. Light floral, spicy, or herbal hops optional. Bubblegum (strawberry with banana), sourness, or smoke are faults.",
+        "appearance": "Pale straw to gold in color. Very thick, moussy, long-lasting white head. Can be hazy and have a shine from wheat and yeast, although this can settle out in bottles.",
+        "flavor": "Low to moderately strong banana and clove flavor, often well balanced. Low to moderate soft, somewhat bready, doughy, or grainy wheat flavor supported by the slight Pils malt grainy sweetness. Very low to moderately low bitterness. Well-rounded, flavorful palate with a relatively dry finish. Light vanilla optional. Very low floral, spicy, or herbal hop flavor optional. Any impression of sweetness is due more to low bitterness than any residual sweetness; a sweet or heavy finish impairs drinkability. Bubblegum, sourness, or smoke are faults. While the banana-and-clove profile is important, it should not be so strong as to be extreme and unbalanced.",
+        "mouthfeel": "Medium-light to medium body; never heavy. Fluffy, creamy fullness progressing to a light, spritzy finish aided by high to very high carbonation. Effervescent.",
+        "comments": "Also known as hefeweizen or weizenbier, particularly outside Bavaria. These beers are best enjoyed while young and fresh, as they often don’t age well. In Germany, lower-alcohol light (leicht) and non-alcoholic versions are popular. Kristall versions are filtered for brilliant clarity.",
+        "history": "While Bavaria has a wheat beer tradition dating back before the 1500s, brewing wheat beer used to be a monopoly reserved for Bavarian royalty. Modern Weissbier dates from 1872 when Schneider began production of its amber version. However, pale Weissbier only became popular since the 1960s (although the name historically could be used in Germany to describe beer made from air-dried malt, a different tradition). It is quite popular today, particularly in southern Germany.",
+        "characteristic_ingredients": "Malted wheat, at least half the grist. Pilsner malt. Decoction mash traditional. Weizen yeast, cool fermentation temperatures.",
+        "style_comparison": "Compared to American Wheat, has a banana and clove yeast character and less bitterness. Compared to a Dunkles Weissbier, has a paler color and less malt richness and flavor.",
+        "entry_instructions": "The entrant may specify whether the yeast should be roused before serving."
+      },
+      "vital_statistics_text": "OG: 1.044 – 1.053 | IBUs: 8 – 15 | FG: 1.008 – 1.014 | SRM: 2 – 6 | ABV: 4.3 – 5.6%",
+      "vital_statistics": {
+        "og": "1.044-1.053",
+        "ibus": "8-15",
+        "fg": "1.008-1.014",
+        "srm": "2-6",
+        "abv": "4.3-5.6%"
+      },
+      "commercial_examples_text": "Ayinger Bräuweisse, Distelhäuser Hell Weizen, Hacker-Pschorr Hefeweißbier, Hofbräuhaus Münchner Weisse, Schneider Weisse Original Weissbier, Weihenstephaner Hefeweißbier",
+      "tags_en": [
+        "standard-strength",
+        "pale-color",
+        "top-fermented",
+        "central-europe",
+        "traditional-style",
+        "wheat-beer-family",
+        "malty"
+      ],
+      "tags_ru": [
+        "стандартная крепость",
+        "светлый цвет",
+        "верховое брожение",
+        "Центральная Европа",
+        "традиционный стиль",
+        "семейство пшеничного пива",
+        "солодовый"
+      ],
+      "translation_status": "detailed_ru_translated_reviewed_v1",
+      "source_pdf_page_start": 33,
+      "source_guideline_page_start": 17
+    },
+    {
+      "bjcp_id": "10B",
+      "bjcp_heading": "10B. Dunkles Weissbier",
+      "category_id": "10",
+      "category_en": "GERMAN WHEAT BEER",
+      "category_ru": "Немецкое пшеничное пиво",
+      "name_en": "Dunkles Weissbier",
+      "name_ru": "Тёмный вайсбир",
+      "description_short_ru": "Умеренно тёмное немецкое пшеничное пиво с дрожжевым профилем банана и гвоздики, который поддержан тонами поджаренного хлеба и карамельного солода, при высокой карбонизации и освежающем характере.",
+      "sections_ru": {
+        "overall_impression": "Умеренно тёмное немецкое пшеничное пиво с характерным дрожжевым профилем банана и гвоздики, который опирается на вкус поджаренного хлеба или карамельного солода. Пиво сильно газировано, освежает, обладает кремовой, пушистой текстурой и лёгким финишем.",
+        "aroma": "Эфиры и фенолы умеренные, обычно банан и гвоздика; нередко хорошо сбалансированы как между собой, так и с солодом. Пшеничный аромат от лёгкого до умеренного: хлебный, тестяной или зерновой; часто его сопровождают карамель, корочка хлеба или более богатые солодовые ноты. Лёгкая или умеренная ванильность допустима. Возможен слабый цветочный, пряный или травянистый хмель. Тона клубнично-банановой жвачки, кислинка и дымность считаются дефектом.",
+        "appearance": "Цвет от светло-медного до тёмного махагона. Пена очень плотная, кремово-пушистая, стойкая, от беловатой до кремовой. Пиво может быть мутноватым и слегка поблёскивать из-за пшеницы и дрожжей, хотя в бутылочных версиях эта взвесь иногда оседает.",
+        "flavor": "Вкус банана и гвоздики — от слабого до умеренно сильного; он обычно хорошо согласован и между собой, и с солодовой частью, хотя солод временами может частично прикрывать ощущение гвоздики. Пшеничный вкус от слабого до умеренно высокого, мягкий, хлебный, тестяной или зерновой; его сопровождают более насыщенные карамельные, тостовые и хлебно-корочные оттенки. Сильная жареность недопустима, но лёгкая суховатая поджаренность возможна. Горечь очень низкая или низкая. Вкус округлый, выразительный, часто слегка солодовый, но финиш остаётся относительно сухим. От едва заметной до умеренной ванильности допустимо. Возможен слабый пряный, травянистый или цветочный хмель. Жвачка, кислинка и дымность недопустимы.",
+        "mouthfeel": "Тело от средне-лёгкого до средне-полного. Во рту пиво кажется пушистым и сливочным, затем становится более лёгким к финишу; этому помогает умеренная или высокая карбонизация. Ощущается живым и шипучим.",
+        "comments": "В США стиль часто называют dunkelweizen. В современной Германии встречается всё реже и нередко уступает место kristall- и безалкогольным версиям.",
+        "history": "Баварская традиция варки пшеничного пива насчитывает многие столетия, но право на это долгое время принадлежало только баварской знати и открылось шире лишь к концу XVIII века. Старомодное баварское пшеничное пиво часто было тёмным, как и большинство сортов той эпохи. Светлый Weissbier стал набирать популярность в 1960-х, а традиционный тёмный вариант постепенно начал восприниматься как напиток старшего поколения.",
+        "characteristic_ingredients": "Солодованная пшеница, не менее половины засыпи. В основе могут быть Munich, Vienna или Pilsner malt. Для цвета и нюансов используют тёмный пшеничный солод, карамельный пшеничный солод или другие окрашивающие солоды. Традиционно — декокционное затирание, вайценовые дрожжи и прохладное брожение.",
+        "style_comparison": "Соединяет дрожжевой и пшеничный характер Weissbier с солодовой насыщенностью Munich Dunkel. Из-за более богатого солодового профиля банан и гвоздика часто ощущаются чуть слабее, чем в светлом Weissbier. По дрожжевому профилю близок к Roggenbier, но без ржаного вкуса и без повышенной плотности тела."
+      },
+      "sections_en": {
+        "overall_impression": "A moderately dark German wheat beer with a distinctive banana-and-clove weizen yeast fermentation profile, supported by a toasted bread or caramel malt flavor. Highly carbonated and refreshing, with a creamy, fluffy texture and light finish.",
+        "aroma": "Moderate esters and phenols, typically banana and clove, often well balanced with each other and with the malt. Light to moderate bready, doughy, or grainy wheat aroma, often accompanied by caramel, bread crust, or richer malt notes. Low to moderate vanilla optional. Light floral, spicy, or herbal hops optional. Bubblegum (strawberry with banana), sourness, or smoke are faults.",
+        "appearance": "Light copper to dark, mahogany brown in color. Very thick, moussy, long-lasting off-white head. Can be hazy and have a shine from wheat and yeast, although this can settle out in bottled versions.",
+        "flavor": "Low to moderately strong banana and clove flavor, often well balanced with each other and with the malt, although the malt may sometimes mask the clove impression. Low to medium-high soft, somewhat bready, doughy, or grainy wheat flavor with richer caramel, toast, or bread crust flavors. No strongly roasted flavors, but a touch of roasty dryness is allowable. Very low to low bitterness. Well-rounded, flavorful, often somewhat malty palate with a relatively dry finish. Very light to moderate vanilla optional. Low spicy, herbal, or floral hop flavor optional. Bubblegum, sourness, or smoke are faults.",
+        "mouthfeel": "Medium-light to medium-full body. Fluffy, creamy fullness progressing to a lighter finish, aided by moderate to high carbonation. Effervescent.",
+        "comments": "Often known as dunkelweizen, particularly in the United States. Increasingly rare and often being replaced by Kristall and non-alcoholic versions in Germany.",
+        "history": "Bavaria has a wheat beer brewing traditional hundreds of years old, but the brewing right was reserved for Bavarian royalty until the late 1700s. Old-fashioned Bavarian wheat beer was often dark, as were most beers of the time. Pale Weissbier started to become popular in the 1960s, but traditional dark wheat beer remained somewhat of an old person’s drink.",
+        "characteristic_ingredients": "Malted wheat, at least half the grist. Munich, Vienna, or Pilsner malt. Dark wheat, caramel wheat, or color malt. Decoction mash traditional. Weizen yeast, cool fermentation temperatures.",
+        "style_comparison": "Combines the yeast and wheat character of Weissbier with the malty richness of a Munich Dunkel. The banana-and-clove character is often less apparent than in a Weissbier due to the increased maltiness. Has a similar yeast character as Roggenbier, but without the rye flavor and increased body."
+      },
+      "vital_statistics_text": "OG: 1.044 – 1.057 | IBUs: 10 – 18 | FG: 1.008 – 1.014 | SRM: 14 – 23 | ABV: 4.3 – 5.6%",
+      "vital_statistics": {
+        "og": "1.044-1.057",
+        "ibus": "10-18",
+        "fg": "1.008-1.014",
+        "srm": "14-23",
+        "abv": "4.3-5.6%"
+      },
+      "commercial_examples_text": "Ayinger Urweisse, Ettaler Benediktiner Weißbier Dunkel, Franziskaner Hefe-Weisse Dunkel, Hirsch Dunkel Weisse, Tucher Dunkles Hefe Weizen, Weihenstephaner Hefeweißbier Dunkel",
+      "tags_en": [
+        "standard-strength",
+        "amber-color",
+        "top-fermented",
+        "central-europe",
+        "traditional-style",
+        "wheat-beer-family",
+        "malty"
+      ],
+      "tags_ru": [
+        "стандартная крепость",
+        "янтарный цвет",
+        "верховое брожение",
+        "Центральная Европа",
+        "традиционный стиль",
+        "семейство пшеничного пива",
+        "солодовый"
+      ],
+      "translation_status": "detailed_ru_translated_reviewed_v1",
+      "source_pdf_page_start": 33,
+      "source_guideline_page_start": 17
+    },
+    {
+      "bjcp_id": "10C",
+      "bjcp_heading": "10C. Weizenbock",
+      "category_id": "10",
+      "category_en": "GERMAN WHEAT BEER",
+      "category_ru": "Немецкое пшеничное пиво",
+      "name_en": "Weizenbock",
+      "name_ru": "Вайценбок",
+      "description_short_ru": "Крепкое и солодовое немецкое пшеничное пиво, соединяющее дрожжевой профиль вайсбира с насыщенностью, телом и крепостью боков; встречается как в светлой, так и в тёмной версии.",
+      "sections_ru": {
+        "overall_impression": "Крепкое и солодовое немецкое пшеничное пиво, в котором лучшие пшеничные и дрожжевые черты Weissbier соединяются с насыщенной солодовостью, телом и крепостью Bock. Диапазон стиля включает версии на уровне Bock и Doppelbock, как светлые, так и тёмные.",
+        "aroma": "Солодовая насыщенность от умеренно высокой до высокой, с заметным хлебным и зерновым пшеничным характером. Вайценовый дрожжевой профиль — от умеренно слабого до умеренно высокого; чаще всего это банан и гвоздика. Допустимы ванильные акценты. Хмеля нет. Алкоголь от слабого до умеренного, без жгучести и растворительных тонов. Солод, дрожжи и алкоголь должны быть хорошо сбалансированы и давать сложный, притягательный букет. Жвачка, кислинка и дымность считаются дефектом. В тёмных версиях солодовость глубже и богаче, с мощной тостово-хлебной основой и выраженными продуктами Майяра, как у Dunkles Bock или тёмного Doppelbock. По мере выдержки могут появляться карамель и тёмно-фруктовые эфиры: слива, чернослив, тёмный виноград, фруктовая пастила, изюм. В светлых версиях солодовый профиль зерново-сладковатый, хлебный и тостовый, ближе к Helles Bock или светлому Doppelbock.",
+        "appearance": "Пена очень плотная, муссовая, стойкая. Пиво может быть мутноватым и слегка блестеть из-за пшеницы и дрожжей, хотя с возрастом эта взвесь нередко оседает. Тёмные версии имеют цвет от тёмного янтаря до тёмного рубиново-коричневого, с светло-бежевой пеной. Светлые версии — от золотистого до янтарного цвета, с очень белой или беловатой пеной.",
+        "flavor": "Солодовая насыщенность от умеренно высокой до высокой, с заметным хлебным и зерновым пшеничным вкусом. Дрожжевой характер банана и пряностей — от слабого до умеренного; чаще всего это гвоздика и ваниль. Хмелевого вкуса нет. Горечь от низкой до умеренно низкой; она может давать впечатление лёгкой сладости, но обычно пиво всё же заканчивается сухо. Лёгкий алкоголь способен дополнительно подчеркнуть этот характер. Взаимодействие солода, дрожжей и алкоголя создаёт сложность и глубину, которая часто усиливается с выдержкой. Жвачка, кислинка и дымность недопустимы. В тёмных версиях солод глубже, насыщенно хлебный или тостовый, с заметными продуктами Майяра; возможны карамель и лёгкий шоколад, но не жареность. С возрастом также могут появляться эфиры тёмных фруктов — слива, чернослив, тёмный виноград, фруктовая пастила, изюм. Светлые версии демонстрируют хлебную, тостовую, зерново-сладковатую солодовость.",
+        "mouthfeel": "Тело от средне-полного до полного. Текстура мягкая, гладкая, пушистая или сливочная. Допустимо лёгкое алкогольное согревание. Карбонизация умеренная или высокая.",
+        "comments": "По сути это Weissbier, сваренный до крепости bock или doppelbock, хотя Schneider делает и версию Eisbock. Существуют и светлые, и тёмные варианты, но тёмный встречается чаще. Слегка окисленные продукты Майяра могут давать богатые, интенсивные ароматы и вкусы, часто знакомые по выдержанным импортным коммерческим образцам; у более свежего пива этой черты не будет. Хорошо выдержанные экземпляры способны получить лёгкую хересную сложность. Светлые версии, как и светлые doppelbock, обычно менее богаты солодом и нередко чуть более склонны к хмелю. Однако образцы с заметным поздним хмелем или сухим охмелением следует относить в 34B Mixed-Style Beer.",
+        "history": "Aventinus крепости doppelbock был создан в 1907 году на пивоварне Schneider Weisse Brauhaus в Мюнхене. Светлые версии появились значительно позже.",
+        "characteristic_ingredients": "Солодованная пшеница, не менее половины засыпи. В основе — Munich, Vienna или Pilsner malt. Окрашивающие солоды используются умеренно и только для нюансов. Традиционно — декокционное затирание, вайценовые дрожжи и прохладное брожение.",
+        "style_comparison": "Стиль крепче и богаче, чем Weissbier и Dunkles Weissbier, но сохраняет сходный дрожжевой характер. Наиболее напрямую сопоставим с Doppelbock, включая деление на светлые и тёмные версии. По крепости диапазон широк, но чаще всего лежит между классическим Bock и Doppelbock.",
+        "entry_instructions": "Участник должен указать, является ли образец светлой версией (SRM 6–9) или тёмной (SRM 10–25)."
+      },
+      "sections_en": {
+        "overall_impression": "A strong and malty German wheat beer combining the best wheat and yeast flavors of a Weissbier with the rich maltiness, strength, and body of a Bock. The style range includes Bock and Doppelbock strength, with variations for pale and dark color.",
+        "aroma": "Medium-high to high malty richness with a significant bready, grainy wheat character. Medium-low to medium-high weizen yeast character, typically banana and clove. Vanilla accents optional. No hops. Low to moderate alcohol, not hot or solventy. The malt, yeast, and alcohol are well balanced, complex, and inviting. Bubblegum (strawberry with banana), sourness, or smoke are faults. Dark versions have a deeper, highly toasted, bready malt richness with significant Maillard products, similar to a Dunkles Bock or dark Doppelbock. They can also have caramel and dark fruit esters, like plums, prunes, dark grapes, fruit leather, and raisins, particularly as they age. Pale versions have a grainy-sweet, bready, toasty malty richness, similar to a Helles Bock or pale Doppelbock.",
+        "appearance": "Very thick, moussy, long-lasting head. Can be hazy and have a shine from wheat and yeast, although this can settle out with age. Dark versions are dark amber to dark ruby-brown in color, with a light tan head. Pale versions are gold to amber in color, with a very white to off-white head.",
+        "flavor": "Medium-high to high malty richness with significant bready, grainy wheat flavor. Low to moderate banana and spice (clove, vanilla) yeast character. No hop flavor. Low to medium-low bitterness can give a slightly sweet palate impression, but the beer typically finishes dry. Light alcohol can enhance this character. The interplay between the malt, yeast, and alcohol adds complexity and interest, which is often enhanced with age. Bubblegum, sourness, or smoke are faults. Dark versions have deeper, richly bready or toasty malt flavors with significant Maillard products, optionally with caramel or light chocolate but not roast. Can have some dark fruit esters like plums, prunes, dark grapes, fruit leather, or raisins, particularly as they age. Pale versions have a bready, toasty, grainy-sweet malt richness.",
+        "mouthfeel": "Medium-full to full body. Soft, smooth, fluffy or creamy texture. Mild alcohol warmth. Moderate to high carbonation.",
+        "comments": "A Weissbier brewed to bock or doppelbock strength, although Schneider also produces an Eisbock version. Pale and dark versions exist, but dark is most common. Lightly oxidized Maillard products can produce some rich, intense flavors and aromas that are often seen in aged imported commercial products; fresher versions will not have this character. Well-aged examples might also take on a slight sherry-like complexity. Pale versions, like their doppelbock cousins, have less rich malt complexity and often more hop-forward. However, versions that have significant late hops or are dry-hopped should be entered in 34B Mixed-Style Beer.",
+        "history": "Dopplebock-strength Aventinus was created in 1907 at the Schneider Weisse Brauhaus in Munich. Pale versions are a much more recent invention.",
+        "characteristic_ingredients": "Malted wheat, at least half the grist. Munich, Vienna, or Pilsner malt. Color malts may be used sparingly. Decoction mash traditional. Weizen yeast, cool fermentation temperatures.",
+        "style_comparison": "Stronger and richer than a Weissbier or Dunkles Weissbier, but with similar yeast character. More directly comparable to the Doppelbock style, with the pale and dark variations. Can vary widely in strength, but most are in the Bock to Doppelbock range.",
+        "entry_instructions": "The entrant will specify whether the entry is a pale (SRM 6-9) or a dark (SRM 10-25) version."
+      },
+      "vital_statistics_text": "OG: 1.064 – 1.090 | IBUs: 15 – 30 | FG: 1.015 – 1.022 | SRM: 6 – 25 | ABV: 6.5 – 9.0%",
+      "vital_statistics": {
+        "og": "1.064-1.090",
+        "ibus": "15-30",
+        "fg": "1.015-1.022",
+        "srm": "6-25",
+        "abv": "6.5-9.0%"
+      },
+      "commercial_examples_text": "Dark – Plank Bavarian Dunkler Weizenbock, Penn Weizenbock, Schalchner Weisser Bock, Schneider Weisse Aventinus; Pale – Ayinger Weizenbock, Distelhäuser Weizen Bock, Ladenburger Weizenbock Hell, Weihenstephaner Vitus",
+      "tags_en": [
+        "high-strength",
+        "amber-color",
+        "pale-color",
+        "top-fermented",
+        "central-europe",
+        "traditional-style",
+        "wheat-beer-family",
+        "malty"
+      ],
+      "tags_ru": [
+        "высокая крепость",
+        "янтарный цвет",
+        "светлый цвет",
+        "верховое брожение",
+        "Центральная Европа",
+        "традиционный стиль",
+        "семейство пшеничного пива",
+        "солодовый"
+      ],
+      "translation_status": "detailed_ru_translated_reviewed_v1",
+      "source_pdf_page_start": 34,
+      "source_guideline_page_start": 18
+    },
+    {
+      "bjcp_id": "11A",
+      "bjcp_heading": "11A. Ordinary Bitter",
+      "category_id": "11",
+      "category_en": "BRITISH BITTER",
+      "category_ru": "Британский биттер",
+      "name_en": "Ordinary Bitter",
+      "name_ru": "Ординари биттер",
+      "description_short_ru": "Лёгкий по плотности, алкоголю и карбонизации британский сессионный биттер, в котором солод и эфиры поддерживают, но не заслоняют общее горькое впечатление и высокую питкость.",
+      "sections_ru": {
+        "overall_impression": "Невысокая плотность, крепость и карбонизация делают этот стиль лёгким, очень питким сессионным пивом. Солодовый профиль может заметно различаться по характеру и интенсивности, но не должен перекрывать общее впечатление биттера. Питкость — ключевая черта стиля.",
+        "aroma": "Солодовый аромат от слабого до умеренного, часто — но не всегда — с лёгким карамельным оттенком. Обычны хлебные, бисквитные или слегка тостовые нюансы. Фруктовость от слабой до умеренной. Хмелевой аромат варьирует от умеренного до отсутствующего; обычно это цветочные, землистые, смолистые или фруктовые ноты. Обычно диацетиля нет, хотя его очень низкий уровень допускается.",
+        "appearance": "Цвет от светлого янтаря до светлой меди. Прозрачность хорошая или блестящая. Пена от слабой до умеренной, белая или беловатая. Из-за низкой карбонизации её может быть совсем немного.",
+        "flavor": "Горечь от средней до умеренно высокой. Эфиры от умеренно слабых до умеренно высоких. Хмелевой вкус от умеренного до слабого, обычно землистый, смолистый, фруктовый или цветочный. Солодовость от слабой до умеренной, финиш сухой. Солодовый профиль чаще всего хлебный, бисквитный или слегка тостовый. Лёгкие или умеренные карамельные либо ирисочные ноты допустимы, но не обязательны. Баланс обычно явно склоняется в горечь, хотя она не должна полностью подавлять солод, эфиры и вкус хмеля. Обычно диацетиля нет, но следовые количества допустимы.",
+        "mouthfeel": "Тело от лёгкого до средне-лёгкого. Карбонизация низкая, хотя бутылочные версии могут быть газированнее.",
+        "comments": "Это самый лёгкий по плотности член семейства British Bitter. Для потребителя он обычно называется просто bitter, хотя сами пивовары чаще используют название Ordinary Bitter, чтобы отличить его от других подстилей.",
+        "history": "См. вводные комментарии к категории.",
+        "characteristic_ingredients": "Pale ale, amber и crystal malts. Для коррекции цвета может добавляться небольшое количество тёмного солода. Возможны сахарные добавки, кукуруза или пшеница. Наиболее традиционны английские финишные хмели, но допустимы и другие сорта; если используются американские, нужна очень деликатная подача. Дрожжи — характерные британские.",
+        "style_comparison": "Некоторые современные варианты варят только на светлом солоде и называют golden ale, summer ale или golden bitter. В отличие от американских элей, акцент здесь сделан на охмелении на горечь, а не на агрессивном среднем и позднем внесении хмеля."
+      },
+      "sections_en": {
+        "overall_impression": "Low gravity, alcohol, and carbonation make this an easy-drinking session beer. The malt profile can vary in flavor and intensity, but should never override the overall bitter impression. Drinkability is a critical component of the style.",
+        "aroma": "Low to moderate malt aroma, often (but not always) with a light caramel quality. Bready, biscuity, or lightly toasty malt complexity is common. Mild to moderate fruitiness. Hop aroma can range from moderate to none, typically with a floral, earthy, resiny, or fruity character. Generally no diacetyl, although very low levels are allowed.",
+        "appearance": "Pale amber to light copper color. Good to brilliant clarity. Low to moderate white to off-white head. May have very little head due to low carbonation.",
+        "flavor": "Medium to moderately high bitterness. Moderately low to moderately high fruity esters. Moderate to low hop flavor, typically with an earthy, resiny, fruity, or floral character. Low to medium maltiness with a dry finish. The malt profile is typically bready, biscuity, or lightly toasty. Low to moderate caramel or toffee flavors are optional. Balance is often decidedly bitter, although the bitterness should not completely overpower the malt flavor, esters, and hop flavor. Generally no diacetyl, although very low levels are allowed.",
+        "mouthfeel": "Light to medium-light body. Low carbonation, although bottled examples can have moderate carbonation.",
+        "comments": "The lowest gravity member of the British Bitter family, typically known to consumers simply as “bitter” (although brewers tend to refer to it as Ordinary Bitter to distinguish it from other members of the family).",
+        "history": "See comments in category introduction.",
+        "characteristic_ingredients": "Pale ale, amber, or crystal malts. May use a touch of dark malt for color adjustment. May use sugar adjuncts, corn, or wheat. English finishing hops are most traditional, but any hops are fair game; if American hops are used, a light touch is required. Characterful British yeast.",
+        "style_comparison": "Some modern variants are brewed exclusively with pale malt and are known as golden ales, summer ales, or golden bitters. Emphasis is on the bittering hop addition as opposed to the aggressive middle and late hopping seen in American ales."
+      },
+      "vital_statistics_text": "OG: 1.030 – 1.039 | IBUs: 25 – 35 | FG: 1.007 – 1.011 | SRM: 8 – 14 | ABV: 3.2 – 3.8%",
+      "vital_statistics": {
+        "og": "1.030-1.039",
+        "ibus": "25-35",
+        "fg": "1.007-1.011",
+        "srm": "8-14",
+        "abv": "3.2-3.8%"
+      },
+      "commercial_examples_text": "Bateman’s XB, Brains Bitter, Brakspear Gravity, Fuller’s Chiswick Bitter, Greene King IPA, Tetley’s Original Bitter",
+      "tags_en": [
+        "session-strength",
+        "amber-color",
+        "top-fermented",
+        "british-isles",
+        "traditional-style",
+        "amber-ale-family",
+        "bitter"
+      ],
+      "tags_ru": [
+        "сессионная крепость",
+        "янтарный цвет",
+        "верховое брожение",
+        "Британские острова",
+        "традиционный стиль",
+        "семейство янтарных элей",
+        "горький"
+      ],
+      "translation_status": "detailed_ru_translated_reviewed_v1",
+      "source_pdf_page_start": 35,
+      "source_guideline_page_start": 19
+    },
+    {
+      "bjcp_id": "11B",
+      "bjcp_heading": "11B. Best Bitter",
+      "category_id": "11",
+      "category_en": "BRITISH BITTER",
+      "category_ru": "Британский биттер",
+      "name_en": "Best Bitter",
+      "name_ru": "Бест биттер",
+      "description_short_ru": "Выразительный, но всё ещё очень питкий британский сессионный биттер: иногда чуть более солодовый, чем ordinary bitter, но общий горький характер и освежающая подача остаются обязательными.",
+      "sections_ru": {
+        "overall_impression": "Выразительное, но при этом освежающее сессионное пиво. Некоторые образцы могут сильнее опираться на солод, однако это не должно затмевать общее впечатление биттера. Питкость для стиля принципиальна.",
+        "aroma": "Солодовый аромат от слабого до умеренного, часто — хотя и не обязательно — с лёгкой или умеренно слабой карамельной нотой. Обычны хлебные, бисквитные или слегка тостовые оттенки. Фруктовость от слабой до умеренной. Хмелевой аромат — от умеренного до отсутствующего; чаще цветочный, землистый, смолистый или фруктовый. Обычно диацетиля нет, но очень низкий уровень допустим.",
+        "appearance": "Цвет от светлого янтаря до средней меди. Прозрачность хорошая или блестящая. Пена от слабой до умеренной, белая или беловатая. Из-за низкой карбонизации её может быть совсем немного.",
+        "flavor": "Горечь от средней до умеренно высокой. Эфиры от умеренно слабых до умеренно высоких. Хмелевой вкус от умеренного до слабого, обычно землистый, смолистый, фруктовый или цветочный. Солодовость от слабой до умеренной, финиш сухой. Солодовый профиль чаще всего хлебный, бисквитный или слегка тостовый. Лёгкие или умеренные карамельные либо ирисочные ноты допустимы. Баланс обычно явно горьковатый, но горечь не должна полностью заслонять солод, эфиры и вкус хмеля. Обычно диацетиля нет, хотя следовые количества допустимы.",
+        "mouthfeel": "Тело от средне-лёгкого до среднего. Карбонизация низкая, хотя бутылочные версии могут быть умеренно газированными.",
+        "comments": "В этом подстиле солодовый вкус заметнее, чем у ordinary bitter; при этом он по-прежнему остаётся сессионным элем.",
+        "history": "См. вводные комментарии к категории.",
+        "characteristic_ingredients": "Pale ale, amber и crystal malts. В большинстве версий используется сахар. Для коррекции цвета может применяться небольшое количество карамельного или тёмного солода. Возможны кукуруза или пшеница. Наиболее традиционны английские финишные хмели, но допустимы и другие; если используются американские, подача должна быть деликатной. Дрожжи — характерные британские.",
+        "style_comparison": "Крепче ordinary bitter и часто варится из более качественного сырья. По алкоголю уступает strong bitter. Имеет больше карамельного или базового солодового характера и более насыщенный цвет, чем British Golden Ale. В отличие от американских элей, акцент делается на горечевом внесении хмеля, а не на агрессивном среднем и позднем охмелении."
+      },
+      "sections_en": {
+        "overall_impression": "A flavorful, yet refreshing, session beer. Some examples can be more malt balanced, but this should not override the overall bitter impression. Drinkability is a critical component of the style.",
+        "aroma": "Low to moderate malt aroma, often (but not always) with a low to medium-low caramel quality. Bready, biscuit, or lightly toasty malt complexity is common. Mild to moderate fruitiness. Hop aroma can range from moderate to none, typically with a floral, earthy, resiny, or fruity character. Generally no diacetyl, although very low levels are allowed.",
+        "appearance": "Pale amber to medium copper color. Good to brilliant clarity. Low to moderate white to off-white head. May have very little head due to low carbonation.",
+        "flavor": "Medium to moderately high bitterness. Moderately low to moderately high fruity esters. Moderate to low hop flavor, typically with an earthy, resiny, fruity, or floral character. Low to medium maltiness with a dry finish. The malt profile is typically bready, biscuity, or lightly toasty. Low to moderate caramel or toffee flavors are optional. Balance is often decidedly bitter, although the bitterness should not completely overpower the malt flavor, esters and hop flavor. Generally no diacetyl, although very low levels are allowed.",
+        "mouthfeel": "Medium-light to medium body. Low carbonation, although bottled examples can have moderate carbonation.",
+        "comments": "More evident malt flavor than in an ordinary bitter; this is a stronger, session-strength ale.",
+        "history": "See comments in category introduction.",
+        "characteristic_ingredients": "Pale ale, amber, or crystal malts. Most contain sugar. May use a touch of caramel or dark malt for color adjustment. May use corn or wheat. English finishing hops are most traditional, but any hops are fair game; if American hops are used, a light touch is required. Characterful British yeast.",
+        "style_comparison": "More alcohol than an ordinary bitter, and often using higher-quality ingredients. Less alcohol than a strong bitter. More caramel or base malt character and color than a British Golden Ale. Emphasis is on the bittering hop addition as opposed to the aggressive middle and late hopping seen in American ales."
+      },
+      "vital_statistics_text": "OG: 1.040 – 1.048 | IBUs: 25 – 40 | FG: 1.008 – 1.012 | SRM: 8 – 16 | ABV: 3.8 – 4.6%",
+      "vital_statistics": {
+        "og": "1.040-1.048",
+        "ibus": "25-40",
+        "fg": "1.008-1.012",
+        "srm": "8-16",
+        "abv": "3.8-4.6%"
+      },
+      "commercial_examples_text": "Adnams Southwold Bitter, Fuller’s London Pride, Harvey’s Sussex Best Bitter, Salopian Darwin’s Origin, Surrey Hills Shere Drop, Timothy Taylor Landlord",
+      "tags_en": [
+        "standard-strength",
+        "amber-color",
+        "top-fermented",
+        "british-isles",
+        "traditional-style",
+        "amber-ale-family",
+        "bitter"
+      ],
+      "tags_ru": [
+        "стандартная крепость",
+        "янтарный цвет",
+        "верховое брожение",
+        "Британские острова",
+        "традиционный стиль",
+        "семейство янтарных элей",
+        "горький"
+      ],
+      "translation_status": "detailed_ru_translated_reviewed_v1",
+      "source_pdf_page_start": 35,
+      "source_guideline_page_start": 19
+    },
+    {
+      "bjcp_id": "11C",
+      "bjcp_heading": "11C. Strong Bitter",
+      "category_id": "11",
+      "category_en": "BRITISH BITTER",
+      "category_ru": "Британский биттер",
+      "name_en": "Strong Bitter",
+      "name_ru": "Стронг биттер",
+      "description_short_ru": "Британский биттер средней или умеренно высокой крепости с широким диапазоном трактовок: от почти ровного солодо-хмелевого баланса до заметной горечи, но всегда с хорошей питкостью.",
+      "sections_ru": {
+        "overall_impression": "Британский биттер средней или умеренно высокой крепости. Баланс может колебаться от почти ровного между солодом и хмелем до отчётливо горького. Питкость остаётся ключевой частью стиля. Это довольно широкий стиль, допускающий значительную свободу интерпретации со стороны пивовара.",
+        "aroma": "Хмелевой аромат от умеренно высокого до умеренно слабого, обычно цветочный, землистый, смолистый или фруктовый. Солодовый аромат от среднего до умеренно высокого, при желании с лёгкой или умеренной карамельной составляющей. Эфиры от умеренно слабых до умеренно высоких. Обычно диацетиля нет, хотя очень низкий уровень допускается.",
+        "appearance": "Цвет от светлого янтаря до глубокой меди. Прозрачность хорошая или блестящая. Пена от слабой до умеренной, белая или беловатая. Невысокая шапка допустима, если и карбонизация невысока.",
+        "flavor": "Горечь от средней до умеренно высокой, с хорошо заметной поддержкой солода. Солодовый профиль обычно хлебный, бисквитный, ореховый или слегка тостовый; возможны также лёгкие или умеренные карамельные и ирисочные ноты. Хмелевой вкус от умеренного до умеренно высокого, обычно цветочный, землистый, смолистый или фруктовый. Горечь и вкус хмеля должны быть ощутимыми, но не должны полностью доминировать над солодом. Эфиры — от умеренно слабых до высоких. Допустим лёгкий алкогольный оттенок. Финиш от умеренно сухого до сухого. Обычно диацетиля нет, но очень низкий уровень допускается.",
+        "mouthfeel": "Тело от средне-лёгкого до средне-полного. Карбонизация от низкой до умеренной, хотя бутылочные версии обычно газированнее. В более крепких вариантах возможно лёгкое алкогольное согревание, но оно не должно быть чрезмерным.",
+        "comments": "В современной Англии обозначение ESB — это торговая марка Fuller’s, а не название общего класса пива. Это очень известный, но при этом уникальный сорт с мощным и сложным солодовым профилем, нехарактерным для большинства других strong bitter. Из-за этого судьи иногда слишком сурово оценивают традиционные английские strong bitter, ожидая именно профиль Fuller’s ESB. В США же ESB часто используют как общее обозначение солодового, горького, рыжеватого британского эля стандартной по местным меркам крепости, и потому американские крафтовые версии могут ошибочно восприниматься как эталон стиля.",
+        "history": "См. вводные комментарии к категории. Strong bitter можно рассматривать как более плотную и крепкую версию best bitter, хотя не обязательно «более премиальную», поскольку historically best bitter часто и был лучшим продуктом пивоварни. British pale ale обычно понимают как более дорогой, экспортный, горький светлый эль, примерно близкий к strong bitter, но адаптированный под бутылочную фасовку, в том числе с более высокой карбонизацией. Хотя современный British pale ale часто считают бутылочной формой bitter, исторически это были разные стили.",
+        "characteristic_ingredients": "Pale ale, amber или crystal malts; для коррекции цвета допускается немного чёрного солода. Возможны сахарные добавки, кукуруза или пшеница. Наиболее традиционны английские финишные хмели, но допустимы любые; если используются американские, подача должна быть деликатной. Дрожжи — характерные британские. Версии из Burton используют воду со средним или высоким содержанием сульфатов, что усиливает ощущение сухости и может добавлять минеральные или сернистые оттенки в аромате и вкусе.",
+        "style_comparison": "По сравнению с ordinary и best bitter здесь заметнее и солод, и хмель, и выше алкоголь. Более крепкие версии могут частично пересекаться с British Strong Ale, но strong bitter обычно светлее и горче. В нём больше солодового, особенно карамельного, характера и больше эфиров, чем в American Pale Ale, а финишное охмеление отличается по профилю."
+      },
+      "sections_en": {
+        "overall_impression": "An average-strength to moderately-strong British bitter ale. The balance may vary between fairly even between malt and hops to somewhat bitter. Drinkability is a critical component of the style. A rather broad style that allows for considerable interpretation by the brewer.",
+        "aroma": "Hop aroma moderately-high to moderately-low, typically with a floral, earthy, resiny, or fruity character. Medium to medium-high malt aroma, optionally with a low to moderate caramel component. Medium-low to medium-high fruity esters. Generally no diacetyl, although very low levels are allowed.",
+        "appearance": "Light amber to deep copper color. Good to brilliant clarity. Low to moderate white to off-white head. A low head is acceptable when carbonation is also low.",
+        "flavor": "Medium to medium-high bitterness with supporting malt flavors evident. The malt profile is typically bready, biscuity, nutty, or lightly toasty, and optionally has a moderately low to moderate caramel or toffee flavor. Hop flavor moderate to moderately high, typically with a floral, earthy, resiny, or fruity character. Hop bitterness and flavor should be noticeable, but should not totally dominate malt flavors. Moderately-low to high fruity esters. Optionally may have low amounts of alcohol. Medium-dry to dry finish. Generally no diacetyl, although very low levels are allowed.",
+        "mouthfeel": "Medium-light to medium-full body. Low to moderate carbonation, although bottled versions will be higher. Stronger versions may have a slight alcohol warmth but this character should not be too high.",
+        "comments": "In England today, “ESB” is a Fullers trademark, and no one thinks of it as a generic class of beer. It is a unique (but very well-known) beer that has a very strong, complex malt profile not found in other examples, often leading judges to overly penalize traditional English strong bitters. In America, ESB has been co-opted to describe a malty, bitter, reddish, standard-strength (for the US) British-type ale, and is a popular craft beer style. This may cause some judges to think of US brewpub ESBs as representative of this style.",
+        "history": "See comments in category introduction. Strong bitters can be seen as a higher-gravity version of best bitters (although not necessarily “more premium” since best bitters are traditionally the brewer’s finest product). British pale ales are generally considered a premium, export-strength pale, bitter beer that roughly approximates a strong bitter, although reformulated for bottling (including increasing carbonation levels). While modern British pale ale is considered a bottled bitter, historically the styles were different.",
+        "characteristic_ingredients": "Pale ale, amber, or crystal malts, may use a touch of black malt for color adjustment. May use sugar adjuncts, corn or wheat. English finishing hops are most traditional, but any hops are fair game; if American hops are used, a light touch is required. Characterful British yeast. Burton versions use medium to high sulfate water, which can increase the perception of dryness and add a minerally or sulfury aroma and flavor.",
+        "style_comparison": "More evident malt and hop flavors than in a special or best bitter, as well as more alcohol. Stronger versions may overlap somewhat with British Strong Ales, although Strong Bitters will tend to be paler and more bitter. More malt flavor (particularly caramel) and esters than an American Pale Ale, with different finishing hop character."
+      },
+      "vital_statistics_text": "OG: 1.048 – 1.060 | IBUs: 30 – 50 | FG: 1.010 – 1.016 | SRM: 8 – 18 | ABV: 4.6 – 6.2%",
+      "vital_statistics": {
+        "og": "1.048-1.060",
+        "ibus": "30-50",
+        "fg": "1.010-1.016",
+        "srm": "8-18",
+        "abv": "4.6-6.2%"
+      },
+      "commercial_examples_text": "Bass Ale, Bateman’s Triple XB, Robinsons Trooper, Samuel Smith’s Organic Pale Ale, Shepherd Neame Bishop’s Finger, Summit Extra Pale Ale",
+      "tags_en": [
+        "standard-strength",
+        "amber-color",
+        "top-fermented",
+        "british-isles",
+        "traditional-style",
+        "amber-ale-family",
+        "bitter"
+      ],
+      "tags_ru": [
+        "стандартная крепость",
+        "янтарный цвет",
+        "верховое брожение",
+        "Британские острова",
+        "традиционный стиль",
+        "семейство янтарных элей",
+        "горький"
+      ],
+      "translation_status": "detailed_ru_translated_reviewed_v1",
+      "source_pdf_page_start": 36,
+      "source_guideline_page_start": 20
+    }
+  ]
+}

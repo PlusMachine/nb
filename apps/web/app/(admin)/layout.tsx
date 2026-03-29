@@ -1,7 +1,7 @@
-import { requireRole } from "@/lib/auth";
+import { requireContentRole } from "@/features/content/permissions";
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
-  await requireRole("editor");
+  await requireContentRole("editor");
 
   return (
     <div className="mx-auto max-w-6xl p-6">

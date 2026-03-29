@@ -8,6 +8,7 @@ export default function AdminZonePage() {
         <li><Link className="underline" href="/admin/ingredients">Ingredient catalog</Link></li>
         <li><Link className="underline" href="/admin/ingredients/moderation">Ingredient moderation queue</Link></li>
         <li><Link className="underline" href="/admin/ingredients/merge">Merge duplicates</Link></li>
+        <li><Link className="underline" href="/admin/articles">BJCP / content studio</Link></li>
         <li><Link className="underline" href="/admin/settings/currency">Currency settings</Link></li>
       </ul>
     </div>

@@ -1,0 +1,487 @@
+{
+  "source": {
+    "document": "2021_Guidelines_Beer_1.25.pdf",
+    "guideline_edition": "BJCP 2021",
+    "translation_notes_ru": "Подробный перевод выполнен по оригинальному гайду BJCP 2021 с редакторской вычиткой на русском языке. Формулировки сохранены близко к оригиналу, но местами сглажены и нормализованы ради естественного профильного русского текста."
+  },
+  "progress": {
+    "styles_total_in_guideline": 128,
+    "styles_translated_in_this_file": 8,
+    "translated_style_ids": [
+      "28A",
+      "28B",
+      "28C",
+      "28D",
+      "29A",
+      "29B",
+      "29C",
+      "29D"
+    ],
+    "translated_categories": [
+      "28",
+      "29"
+    ],
+    "next_recommended_batch": [
+      "30A",
+      "30B",
+      "30C",
+      "30D",
+      "31A",
+      "31B"
+    ]
+  },
+  "categories": [
+    {
+      "category_id": "28",
+      "category_en": "AMERICAN WILD ALE",
+      "category_ru": "Американский вайлд-эль",
+      "overview_ru": "Категория объединяет широкий спектр современных диких и кислых сортов, которые не укладываются в традиционные европейские sour, wild или spontaneously fermented стили. Здесь важнее не география, а тип брожения: Brett, Lacto, Pedio, смешанные культуры и их сочетания. Базовый стиль может быть как классическим, так и весьма условным, потому что ферментационный характер нередко выходит на первый план. Фоновая дубовая выдержка допустима во всех стилях категории, а версии с нетипичной древесиной, бочками после другого алкоголя и специальными ингредиентами попадают в 28C."
+    },
+    {
+      "category_id": "29",
+      "category_en": "FRUIT BEER",
+      "category_ru": "Фруктовое пиво",
+      "overview_ru": "Категория для пива с добавлением фруктов в кулинарном, а не ботаническом смысле слова: яблок, груш, косточковых, ягод, цитрусов, сухофруктов, тропических фруктов, инжира, граната и т.д. Сюда не относятся специи, травы и овощные ингредиенты — они рассматриваются отдельно. Главный принцип оценки здесь один: фрукт должен быть узнаваемым, но работать вместе с базовым стилем, а не превращать пиво в фруктовый напиток."
+    }
+  ],
+  "styles": [
+    {
+      "bjcp_id": "28A",
+      "name_en": "Brett Beer",
+      "name_ru": "Бретт-пиво",
+      "category_id": "28",
+      "category_en": "AMERICAN WILD ALE",
+      "category_ru": "Американский вайлд-эль",
+      "bjcp_heading": "28A. Brett Beer",
+      "description_short_ru": "Обычно суше и фруктовее, чем можно ожидать от базового стиля; характер Brett может идти от лёгкой фруктовости до выраженной фанковой глубины, иногда с мягкой немолочной кислотностью.",
+      "sections_en": {
+        "overall_impression": "Most often drier and fruitier than the base style suggests. Fruity or funky notes range from low to high, depending on the age of the beer and strains of Brett used. May possess a light non-lactic acidity.",
+        "aroma": "Variable by base style. Young Brett beers will possess more fruity notes (e.g., tropical fruit, stone fruit, or citrus), but this is variable by the strains of Brett used. Older Brett beers may start to develop a little funk (e.g., barnyard, wet hay, or slightly earthy or smoky notes), but this character should not dominate.",
+        "appearance": "Variable by base style. Clarity can be variable, and depends on the base style and ingredients used. Some haze is not necessarily a fault.",
+        "flavor": "Variable by base style. Brett character may range from minimal to aggressive. Can be quite fruity (e.g., tropical fruit, berry, stone fruit, citrus), or have some smoky, earthy, or barnyard character. Should not be unpleasantly funky, such as Band-Aid, fetid, nail polish remover, cheese, etc. Always fruitier when young, gaining more funk with age. May not be lactic. Malt flavors are often less pronounced than in the base style, leaving a beer most often dry and crisp due to high attenuation by the Brett.",
+        "mouthfeel": "Variable by base style. Generally has a light body, lighter than what might be expected from the base style but an overly thin body is a fault. Generally moderate to high carbonation. Head retention is variable, but often less than the base style.",
+        "comments": "The base style describes most of the character of these beers, but the addition of Brett ensures a drier, thinner, and often fruitier and funkier product. Younger versions are brighter and fruitier, while older ones possess more depth of funk and may lose more of the base style character. The Brett character should always meld with the style; these beers should never be a ‘Brett bomb’. While Brett can produce low levels of organic acids, it is not a primary beer souring method.",
+        "history": "Modern American craft beer interpretations of Belgian wild ales, or experimentations inspired by Belgian wild ales or historical English beers with Brett. So-called 100% Brett beers gained popularity after the year 2000, but this was when S. Trois was thought to be a Brett strain (which it isn’t). Brett used in conjunction with a Sacch fermentation is standard practice now.",
+        "characteristic_ingredients": "Virtually any style of beer (except those already using a Sacch/Brett co-fermentation), then finished with one or more strains of Brett. Alternatively, a mixed fermentation with Sacch and one or more strains of Brett. No Lacto.",
+        "style_comparison": "Compared to the same beer style without Brett, a Brett Beer will be drier, more highly attenuated, fruitier, lighter in body, and slightly funkier as it ages. Less sourness and depth than Belgian ‘wild’ ales.",
+        "entry_instructions": "The entrant must specify either a Base Style, or provide a description of the ingredients, specs, or desired character. The entrant may specify the strains of Brett used."
+      },
+      "sections_ru": {
+        "overall_impression": "Чаще всего суше и фруктовее, чем можно было бы ожидать от базового стиля. Фруктовые и/или фанковые ноты могут варьироваться от слабых до весьма заметных в зависимости от возраста пива и использованных штаммов Brett. Возможна лёгкая кислотность немолочного происхождения.",
+        "aroma": "Зависит от базового стиля. Молодые Brett-версии обычно дают более выраженную фруктовость — тропические и косточковые фрукты, цитрус, — но конкретный профиль определяется штаммом Brett. С возрастом может появляться лёгкий фанковый оттенок — скотный двор, влажное сено, слегка землистые или дымные ноты, — однако он не должен доминировать.",
+        "appearance": "Зависит от базового стиля. Прозрачность может быть разной и определяется как базой, так и использованными ингредиентами. Лёгкая мутность сама по себе не считается недостатком.",
+        "flavor": "Зависит от базового стиля. Характер Brett может быть от минимального до весьма напористого. Профиль нередко бывает ярко фруктовым — тропические фрукты, ягоды, косточковые, цитрус — либо с дымными, землистыми и фермерскими оттенками. Неприятная, грубая фанковость вроде пластыря, гнили, жидкости для снятия лака, сырных тонов и т.п. недопустима. В молодом возрасте фруктовость всегда заметнее; с выдержкой нарастает фанковая глубина. Кислотность может и не быть молочнокислой. Солодовый характер обычно слабее, чем у исходного стиля, поэтому пиво чаще всего получается сухим и хрустким благодаря высокой степени сбраживания Brett.",
+        "mouthfeel": "Зависит от базового стиля. Обычно тело лёгкое — легче, чем можно ожидать от базы, но чрезмерная водянистость уже считается недостатком. Карбонизация, как правило, от средней до высокой. Стойкость пены может быть разной, но нередко ниже, чем у базового стиля.",
+        "comments": "Базовый стиль задаёт основную рамку, но Brett почти всегда делает пиво суше, тоньше и, как правило, более фруктовым и фанковым. Молодые версии ярче и свежее по фруктам, выдержанные — глубже и сложнее по фанку, при этом часть исходного стилевого характера со временем может уйти. Brett должен вписываться в пиво органично; такие образцы не должны превращаться в «Brett-бомбу». Хотя Brett способен вырабатывать небольшие количества органических кислот, это не основной способ закисления пива.",
+        "history": "Современная американская крафтовая интерпретация бельгийских диких элей или эксперименты, вдохновлённые бельгийскими дикими элями и историческими английскими пивами с Brett. Так называемые «100% Brett beers» стали модными после 2000 года, когда S. Trois ещё ошибочно считали штаммом Brett. Сегодня Brett в сочетании с ферментацией Sacch — уже вполне обычная практика.",
+        "characteristic_ingredients": "Практически любой стиль пива, кроме тех, где совместное брожение Sacch/Brett уже само по себе является нормой, с последующим дображиванием одним или несколькими штаммами Brett. Возможен и вариант смешанной ферментации Sacch с одним или несколькими штаммами Brett. Без Lacto.",
+        "style_comparison": "По сравнению с тем же стилем без Brett такое пиво будет суше, сильнее выброженным, более фруктовым, легче по телу и с возрастом — чуть более фанковым. Кислотности и глубины дикого характера здесь меньше, чем у бельгийских «wild ales».",
+        "entry_instructions": "Участник должен либо указать базовый стиль, либо дать описание состава, параметров или целевого характера пива. При желании можно указать использованные штаммы Brett."
+      },
+      "vital_statistics": {
+        "note": "Variable by base style."
+      },
+      "vital_statistics_text": "Variable by base style.",
+      "commercial_examples_text": "Boulevard Saison Brett, Hill Farmstead Arthur, Logsdon Seizoen Bretta, Lost Abbey Brett Devo, Russian River Sanctification, The Bruery Saison Rue",
+      "tags_en": [
+        "north-america",
+        "craft-style",
+        "specialty-beer"
+      ],
+      "source_guideline_page_start": 62,
+      "source_pdf_page_start": 78,
+      "tags_ru": [
+        "Северная Америка",
+        "крафтовый стиль",
+        "специальное пиво"
+      ],
+      "translation_status": "completed",
+      "general_notes_en": "Intended for beer with or without oak aging that has been fermented with Sacch and Brett, or with Brett only.",
+      "general_notes_ru": "Для пива с выдержкой в дубе или без неё, сброженного Sacch и Brett либо только Brett."
+    },
+    {
+      "bjcp_id": "28B",
+      "name_en": "Mixed-Fermentation Sour Beer",
+      "name_ru": "Кислое пиво смешанного брожения",
+      "category_id": "28",
+      "category_en": "AMERICAN WILD ALE",
+      "category_ru": "Американский вайлд-эль",
+      "bjcp_heading": "28B. Mixed-Fermentation Sour Beer",
+      "description_short_ru": "Кислая и фанковая версия базового стиля, где характер смешанного брожения заметен отчётливо, но в удачных образцах не подавляет пиво, а работает с ним в балансе.",
+      "sections_en": {
+        "overall_impression": "A sour and funky version of a base style of beer.",
+        "aroma": "Variable by base style. The contribution of non-Sacch microbes should be noticeable to strong, and often contribute a sour and funky, wild note. The best examples will display a range of aromatics, rather than a single dominant character. The aroma should be inviting, not harsh or unpleasant.",
+        "appearance": "Variable by base style. Clarity can be variable; some haze is not a fault. Head retention can be poor.",
+        "flavor": "Variable by base style. Look for an agreeable balance between the base beer and the fermentation character. A range of results is possible from fairly high acidity and funk to a subtle, pleasant, harmonious beer. The best examples are pleasurable to drink with the esters and phenols complementing the malt or hops. The wild character can be prominent, but does not need to be dominating in a style with an otherwise strong malt or hop profile. Acidity should be firm yet enjoyable, and ranging from clean to complex, but should not be biting or vinegary; prominent, objectionable, or offensive acetic acid is a fault. Bitterness tends to be low, especially as sourness increases.",
+        "mouthfeel": "Variable by base style. Generally has a light body, almost always lighter than what might be expected from the base style. Generally moderate to high carbonation, although often lower in higher alcohol examples.",
+        "comments": "The base beer style becomes less relevant in this style because the various yeast and bacteria tend to dominate the profile. Bitterness is often reserved since bitter and sour flavors clash on the palate. Inappropriate characteristics include diacetyl, solvent, ropy or viscous texture, and heavy oxidation.",
+        "history": "Modern American craft beer interpretations of Belgian sour ales, or experimentations inspired by Belgian sour ales.",
+        "characteristic_ingredients": "Virtually any style of beer. Usually fermented by some combination of Lacto, Pedio, Sacch, and Brett. Can also be a blend of styles. Wood or barrel aging is very common, but not required; if present, should not be a primary or dominant flavor.",
+        "style_comparison": "A sour and funky version of a base style, but do not necessarily have to be as sour or as funky as some traditional European sour examples.",
+        "entry_instructions": "The entrant must specify a description of the beer, identifying yeast or bacteria used and either a Base Style, or the ingredients, specs, or target character of the beer."
+      },
+      "sections_ru": {
+        "overall_impression": "Кислая и фанковая версия некого базового стиля пива.",
+        "aroma": "Зависит от базового стиля. Вклад микроорганизмов помимо Sacch должен ощущаться — от заметного до сильного — и часто даёт кислые, дикие, фанковые ноты. Лучшие примеры раскрываются не одной доминирующей нотой, а целым спектром ароматов. Аромат должен притягивать, а не быть жёстким или неприятным.",
+        "appearance": "Зависит от базового стиля. Прозрачность может быть разной; лёгкая мутность не считается недостатком. Удержание пены может быть слабым.",
+        "flavor": "Зависит от базового стиля. Важно искать гармоничный баланс между основой пива и характером ферментации. Диапазон очень широк: от довольно высокой кислотности и фанка до тонкого, приятного и цельного пива. Лучшие образцы приятно пить: эфиры и фенольность поддерживают солод и хмель, а не спорят с ними. Дикий характер может быть выраженным, но в стилях с яркой солодовой или хмелевой основой он не обязан всё перекрывать. Кислотность должна быть уверенной, но приятной — от чистой до сложной по характеру; она не должна кусаться и не должна уходить в уксус. Явная, неприятная уксусная кислота считается дефектом. Горечь обычно невысокая, особенно по мере роста кислотности.",
+        "mouthfeel": "Зависит от базового стиля. Обычно тело лёгкое, почти всегда легче, чем можно ожидать от исходного стиля. Карбонизация чаще всего от умеренной до высокой, хотя в более крепких версиях нередко ниже.",
+        "comments": "В этом стиле базовый сорт становится менее важным, поскольку профиль во многом формируют разные дрожжи и бактерии. Горечь здесь обычно сдержанная: горькое и кислое плохо уживаются на нёбе. Неподходящими считаются диацетил, растворительные тона, слизисто-тягучая или чрезмерно вязкая текстура, а также сильная окисленность.",
+        "history": "Современные американские крафтовые интерпретации бельгийских кислых элей или эксперименты, вдохновлённые бельгийской кислой традицией.",
+        "characteristic_ingredients": "Практически любой стиль пива. Обычно используется комбинация Lacto, Pedio, Sacch и Brett. Возможны и купажи разных пив. Выдержка в дереве или бочке очень распространена, но не обязательна; если она есть, древесина не должна становиться основным или доминирующим вкусом.",
+        "style_comparison": "По сути, это кислая и фанковая версия базового стиля, но она не обязана быть столь же кислой или столь же дикой, как некоторые традиционные европейские кислые сорта.",
+        "entry_instructions": "Участник должен дать описание пива, указав использованные дрожжи или бактерии, а также либо базовый стиль, либо состав, параметры или целевой характер напитка."
+      },
+      "vital_statistics": {
+        "note": "Variable by base style."
+      },
+      "vital_statistics_text": "Variable by base style.",
+      "commercial_examples_text": "Boulevard Love Child, Jester King Le Petit Prince, Jolly Pumpkin Oro de Calabaza, Lost Abbey Ghosts in the Forest, New Belgium Le Terroir, Russian River Temptation",
+      "tags_en": [
+        "north-america",
+        "craft-style",
+        "specialty-beer",
+        "sour"
+      ],
+      "source_guideline_page_start": 62,
+      "source_pdf_page_start": 78,
+      "tags_ru": [
+        "Северная Америка",
+        "крафтовый стиль",
+        "специальное пиво",
+        "кислый"
+      ],
+      "translation_status": "completed",
+      "general_notes_en": "Intended for beer fermented with any combination of Sacch, Lacto, Pedio, and Brett (or additional yeast or bacteria), with or without oak aging (except if the beer fits instead in 28A or 28D).",
+      "general_notes_ru": "Для пива, сброженного любой комбинацией Sacch, Lacto, Pedio и Brett, а также, при необходимости, другими дрожжами или бактериями; выдержка в дубе допустима, если пиво при этом не лучше подходит под 28A или 28D."
+    },
+    {
+      "bjcp_id": "28C",
+      "name_en": "Wild Specialty Beer",
+      "name_ru": "Специальное дикое пиво",
+      "category_id": "28",
+      "category_en": "AMERICAN WILD ALE",
+      "category_ru": "Американский вайлд-эль",
+      "bjcp_heading": "28C. Wild Specialty Beer",
+      "description_short_ru": "American Wild Ale с фруктами, пряностями, древесиной или другими специальными ингредиентами, где дикое брожение остаётся узнаваемым и работает в гармонии с добавками.",
+      "sections_en": {
+        "overall_impression": "An American Wild Ale with fruit, herbs, spices, or other Specialty-Type Ingredients.",
+        "aroma": "Variable by base style. The Specialty-Type Ingredients should be evident, as well as the defining characteristics of a wild fermentation per the base style. The best examples will blend the aromatics from the fermentation with the special ingredients, creating an aroma that may be difficult to attribute precisely.",
+        "appearance": "Variable by base style, generally showing a color, tint, or hue from any Specialty-Type Ingredient (especially if fruit is used) in both the beer and the head. Clarity can be variable; some haze is not a fault. Head retention is often poor.",
+        "flavor": "Variable by base style. The Specialty-Type Ingredients should be evident, as well as the defining characteristics of a wild fermentation per the base style. If fruit was fermented, the sweetness is generally gone so that only the fruit esters typically remain. Fruit and other Specialty-Type Ingredients can add sourness of their own; if so, the sourness could be prominent, but should not be overwhelming. The acidity and tannin from any fruit or other Specialty-Type Ingredients can both enhance the dryness of the beer, so care must be taken with the balance. The acidity should enhance the perception of any fruit flavor, not detract from it. Wood notes, if present, add flavor but should be balanced.",
+        "mouthfeel": "Variable by base style. Generally has a light body, lighter than what might be expected from the base style. Generally moderate to high carbonation; carbonation should balance the base style if one is declared. The presence of tannin from some Specialty-Type ingredients (often fruit or wood) can provide a slight astringency, enhance the body, or make the beer seem drier than it is.",
+        "comments": "This style is intended for fruited (and other added Specialty-Type Ingredient) versions of other styles within Category 28, not variations of European wild or sour Classic Styles. Fruited versions of Lambic should be entered in 23F Fruit Lambic. Fruited versions of other sour Classic Styles (e.g., Flanders Red, Oud Bruin, Gose, Berliner Weisse) should be entered in 29A Fruit Beer. Beers with sugars and unfermented fruit added post-fermentation should be entered in 29C Specialty Fruit Beer.",
+        "history": "Modern American craft beer interpretations of Belgian wild ales, or experimentations inspired by Belgian wild ales.",
+        "characteristic_ingredients": "Virtually any style of beer. Any combination of Sacch, Brett, Lacto, Pedio, or other similar fermenters. Can also be a blend of styles. While cherries, raspberries, and peaches are most common, other fruits can be used as well. Vegetables with fruit-like characteristics (e.g., chile, rhubarb, pumpkin) may also be used. Wood or barrel aging is very common, but not required. Wood with unusual or unique flavor characteristics, or wood previously in contact with other types of alcohol is allowable.",
+        "style_comparison": "Like a fruit, herb, spice, or wood beer, but sour or funky.",
+        "entry_instructions": "Entrant must specify any Specialty- Type Ingredient (e.g., fruit, spice, herb, or wood) used. Entrant must specify either a description of the beer, identifying yeast or bacteria used and either a Base Style, or the ingredients, specs, or target character of the beer. A general description of the special nature of the beer can cover all the required items."
+      },
+      "sections_ru": {
+        "overall_impression": "American Wild Ale с фруктами, травами, пряностями или другими специальными ингредиентами.",
+        "aroma": "Зависит от базового стиля. Специальные ингредиенты должны ощущаться, так же как и определяющие признаки дикого брожения в рамках выбранной базы. Лучшие образцы сплавляют ферментационный характер и добавки в единый аромат, который порой даже трудно разложить на отдельные составляющие.",
+        "appearance": "Зависит от базового стиля, но обычно цвет, оттенок или тон, внесённый специальным ингредиентом — особенно фруктом, — заметен как в самом пиве, так и в пене. Прозрачность может быть разной; лёгкая мутность не считается дефектом. Стойкость пены часто невысокая.",
+        "flavor": "Зависит от базового стиля. Специальные ингредиенты должны ощущаться, как и характер дикого брожения, определённый базой. Если фрукт прошёл ферментацию, сладость обычно уходит, и остаются главным образом фруктовые эфиры. Фрукты и другие специальные ингредиенты могут добавлять собственную кислотность; она может быть заметной, но не должна захлёстывать всё пиво. Кислотность и танины от фруктов или иных добавок усиливают ощущение сухости, поэтому баланс здесь особенно важен. Кислотность должна подчёркивать фруктовый характер, а не мешать ему. Древесные ноты, если они присутствуют, обязаны быть уместными и сбалансированными.",
+        "mouthfeel": "Зависит от базового стиля. Обычно тело лёгкое, легче ожидаемого от базы. Карбонизация чаще всего от умеренной до высокой; если базовый стиль заявлен, она должна соответствовать его логике. Танины от некоторых специальных ингредиентов — чаще от фруктов или дерева — могут давать лёгкую вяжущесть, добавлять ощущение структуры или делать пиво суше, чем оно есть на самом деле.",
+        "comments": "Стиль предназначен для фруктовых и иных специальных вариаций пив из категории 28, а не для модификаций европейских классических диких или кислых стилей. Фруктовые версии Lambic нужно заявлять как 23F Fruit Lambic. Фруктовые версии других кислых классических стилей — например, Flanders Red, Oud Bruin, Gose или Berliner Weisse — следует относить к 29A Fruit Beer. Пива, в которые после брожения добавлены сахара и невыброженный фрукт, должны идти в 29C Specialty Fruit Beer.",
+        "history": "Современные американские крафтовые интерпретации бельгийских диких элей или эксперименты, вдохновлённые бельгийской дикой традицией.",
+        "characteristic_ingredients": "Практически любой стиль пива. Допустимы любые комбинации Sacch, Brett, Lacto, Pedio и других сходных ферментёров. Возможны также купажи. Чаще всего используют вишню, малину и персик, но подходят и другие фрукты. Допустимы даже овощные ингредиенты с фруктоподобным профилем, например чили, ревень или тыква. Выдержка в дереве или бочке очень распространена, но не обязательна. Допускается дерево с необычным собственным ароматом, а также дерево или бочки, контактировавшие с другими видами алкоголя.",
+        "style_comparison": "Похоже на фруктовое, пряное, травяное или древесное пиво, но с кислым или фанковым диким характером.",
+        "entry_instructions": "Участник должен указать использованные специальные ингредиенты — например, фрукт, пряность, траву или дерево. Также нужно либо описать пиво с указанием дрожжей или бактерий и базового стиля, либо дать состав, параметры или целевой характер напитка. Общее описание особой природы пива может закрывать все эти требования."
+      },
+      "vital_statistics": {
+        "note": "Variable by base style."
+      },
+      "vital_statistics_text": "Variable by base style.",
+      "commercial_examples_text": "Cascade Bourbonic Plague, Jester King Atrial Rubicite, New Belgium Dominga Mimosa Sour, New Glarus Wisconsin Belgian Red, Russian River Supplication, The Lost Abbey Cuvee de Tomme",
+      "tags_en": [
+        "north-america",
+        "craft-style",
+        "specialty-beer",
+        "sour",
+        "fruit"
+      ],
+      "source_guideline_page_start": 63,
+      "source_pdf_page_start": 79,
+      "tags_ru": [
+        "Северная Америка",
+        "крафтовый стиль",
+        "специальное пиво",
+        "кислый",
+        "фруктовый"
+      ],
+      "translation_status": "completed",
+      "general_notes_en": "Intended for variations of a Base Style beer from style 28A, 28B, or 28D. These variations may include the addition of one or more Specialty-Type Ingredients; aging in non-traditional wood varieties that impart a significant and identifiable wood character (e.g., Spanish Cedar, Amburana); or aging in barrels previously containing another alcohol (e.g., spirits, wine, cider).",
+      "general_notes_ru": "Для вариаций базового пива из 28A, 28B или 28D с добавлением одного или нескольких специальных ингредиентов, выдержкой на нетрадиционных породах дерева с отчётливым собственным профилем либо в бочках, где ранее находился другой алкоголь — например, крепкий дистиллят, вино или сидр."
+    },
+    {
+      "bjcp_id": "28D",
+      "name_en": "Straight Sour Beer",
+      "name_ru": "Чисто кислое пиво",
+      "category_id": "28",
+      "category_en": "AMERICAN WILD ALE",
+      "category_ru": "Американский вайлд-эль",
+      "bjcp_heading": "28D. Straight Sour Beer",
+      "description_short_ru": "Светлое, освежающее кислое пиво с чистой молочнокислой кислотностью, мягкой зерновой опорой и умеренными фруктовыми эфирами, без Brett-фанка.",
+      "sections_en": {
+        "overall_impression": "A pale, refreshing, sour beer with a clean lactic sourness. A gentle, pale malt flavor supports the lemony sourness with moderate fruity esters.",
+        "aroma": "A sharply sour character is dominant (moderately-high to high). Can have up to a moderately fruity character (often peach, apricot, lemon, or tart apple). No hop aroma. Supportive pale malt dominates, usually biscuity or crackery. Clean fermentation.",
+        "appearance": "Very pale in color. Clarity ranges from clear to somewhat hazy. Large, dense, white head with poor retention. Effervescent.",
+        "flavor": "Clean lactic sourness dominates and can be quite strong. Some complementary, bready, biscuit, crackery, or grainy flavor is generally noticeable. Hop bitterness is undetectable. Never vinegary or bitingly acidic. Pale fruit character can be moderate including a citrusy-lemony or tart apple fruitiness may be detected. Finish is off-dry to dry. Balance dominated by sourness, but some malt and estery fruit flavor should be present. No hop flavor. Clean.",
+        "mouthfeel": "Light body. Moderate to high carbonation. Never hot, although higher gravity examples can have a warming alcohol character. Crisp acidity.",
+        "comments": "A stronger version of a Berliner Weisse-type beer with less restrictive grist, and no Brett. This beer style is typically used as a base for modern beers that are heavily flavored with fruit, spices, sugars, etc. – those should be entered in 28C Wild Specialty Beer.",
+        "history": "German brewing scientist, Otto Francke, developed what was to become known as the Francke acidification process which allowed the traditional mixed-culture Berliner Weiss methods to be sped up and more consistent; this is also known as kettle souring. Many modern commercial sour beer examples use this method for rapid production, and as an alternative to complex barrel production.",
+        "characteristic_ingredients": "Most or all of the grist is pale, Pils, or wheat malt in any combination. Lightly-kilned malts for more malt depth may be employed. Carapils-type malts can be used for body. Pale sugars can be used to increase gravity without body. No lactose or maltodextrin. May be produced by kettle souring, co-fermentation culture (yeast and LAB), or using specialty yeast that produce lactic acid. No Brett.",
+        "style_comparison": "Lower gravity examples can be very much like a Brett-free Berliner Weisse. Compared to a Lambic, is generally not as acidic and has a clean lactic sourness with restrained to below sensory threshold funk. Higher in alcohol content than both.",
+        "entry_instructions": ""
+      },
+      "sections_ru": {
+        "overall_impression": "Светлое, освежающее кислое пиво с чистой молочнокислой кислотностью. Лимоноподобную кислинку поддерживает мягкий, светлый солодовый фон и умеренный фруктовый эфирный профиль.",
+        "aroma": "Ведущая нота — резкая, отчётливая кислотность от умеренно высокой до высокой. Допустима умеренная фруктовость — чаще персик, абрикос, лимон или терпкое яблоко. Хмелевой аромат отсутствует. Светлый солодовый фон поддерживающий, обычно с бисквитными или крекерными оттенками. Брожение чистое.",
+        "appearance": "Очень светлое по цвету. Прозрачность от чистой до слегка мутной. Пена белая, крупная и плотная, но держится недолго. Пиво выглядит искристым и живым.",
+        "flavor": "Чистая молочнокислая кислотность доминирует и может быть весьма сильной. Обычно заметны и поддерживающие вкусы светлого зерна — хлебные, бисквитные, крекерные или просто зерновые. Хмелевая горечь неощутима. Уксусность и агрессивная, кусающая кислотность недопустимы. Возможен умеренный светлый фруктовый тон — например, цитрусово-лимонный или яблочно-терпкий. Финиш от почти сухого до сухого. Баланс строится на кислотности, но в пиве должны ощущаться и немного солода, и фруктовые эфиры. Хмелевого вкуса нет. Профиль чистый.",
+        "mouthfeel": "Тело лёгкое. Карбонизация от умеренной до высокой. Жгучего алкогольного ощущения быть не должно, хотя в более крепких версиях допустимо лёгкое согревание. Кислотность хрусткая и освежающая.",
+        "comments": "По сути это более крепкая версия Berliner Weisse-подобного пива с менее жёсткими ограничениями по засыпи и без Brett. Такой стиль часто служит базой для современных сортов, щедро ароматизированных фруктами, специями, сахарами и т.п.; такие версии следует относить к 28C Wild Specialty Beer.",
+        "history": "Немецкий пивной учёный Отто Франке разработал процесс, позже получивший название Francke acidification process: он позволял ускорить традиционное смешанное производство Berliner Weisse и сделать его стабильнее. Сегодня этот подход чаще знают как kettle souring. Многие современные коммерческие кислые сорта используют именно его — как быстрый метод производства и альтернативу сложной бочковой выдержке.",
+        "characteristic_ingredients": "В засыпи — в основном или полностью светлый, pils- или пшеничный солод в любых сочетаниях. Для большей глубины допустимы слегка подсушенные солода. Для тела можно использовать солода типа Carapils. Светлые сахара допустимы, если нужно поднять плотность, не утяжеляя тело. Лактоза и мальтодекстрин не допускаются. Производство возможно через kettle souring, ко-ферментацию дрожжей с LAB или с применением специальных дрожжей, продуцирующих молочную кислоту. Brett не используется.",
+        "style_comparison": "Версии с меньшей плотностью могут быть очень близки к Berliner Weisse без Brett. По сравнению с Lambic это пиво обычно менее кислое, с чистой молочнокислой кислотностью и фанком либо очень сдержанным, либо вовсе ниже порога восприятия. По алкоголю оно обычно крепче обоих.",
+        "entry_instructions": ""
+      },
+      "vital_statistics": {
+        "og": "1.048 – 1.065",
+        "fg": "1.006 – 1.013",
+        "ibu": "3 – 8",
+        "srm": "2 – 3",
+        "abv": "4.5 – 7.0%"
+      },
+      "vital_statistics_text": "OG: 1.048 – 1.065 IBUs: 3 – 8 FG: 1.006 – 1.013 SRM: 2 – 3 ABV: 4.5 – 7.0%",
+      "commercial_examples_text": "Rarely found, as this style is typically the base for other Specialty-Type Beers.",
+      "tags_en": [
+        "pale-color",
+        "top-fermented",
+        "sour"
+      ],
+      "source_guideline_page_start": 63,
+      "source_pdf_page_start": 79,
+      "tags_ru": [
+        "светлый цвет",
+        "верховое брожение",
+        "кислый"
+      ],
+      "translation_status": "completed",
+      "general_notes_en": "Intended for beers fermented with Sacch and Lacto, with or without oak aging, produced using any technique (e.g., traditional co-fermentation, quick kettle souring).",
+      "general_notes_ru": "Для пива, сброженного Sacch и Lacto, с выдержкой в дубе или без неё, независимо от метода производства — от традиционного совместного брожения до быстрого kettle souring."
+    },
+    {
+      "bjcp_id": "29A",
+      "name_en": "Fruit Beer",
+      "name_ru": "Фруктовое пиво",
+      "category_id": "29",
+      "category_en": "FRUIT BEER",
+      "category_ru": "Фруктовое пиво",
+      "bjcp_heading": "29A. Fruit Beer",
+      "description_short_ru": "Пиво, где фруктовый компонент ясно ощущается, но остаётся частью базового стиля, а не превращает напиток в подобие фруктового коктейля.",
+      "sections_en": {
+        "overall_impression": "A pleasant integration of fruit with beer, but still recognizable as beer. The fruit character should be evident but in balance with the beer, not so forward as to suggest an artificial product.",
+        "aroma": "Varies by base style. The fruit character should be noticeable in the aroma; however, some fruit (e.g., raspberries, cherries) have stronger aromas and are more distinctive than others (e.g., blueberries, strawberries) – allow for a range of fruit character and intensities from subtle to aggressive. Hop aroma may be lower than in the base style to better show the fruit character. The fruit should add an extra complexity, but not be so prominent as to unbalance the resulting presentation.",
+        "appearance": "Varies by base style and special ingredients. Lighter-colored beer should show distinctive ingredient colors, including in the head. The color of fruit in beer is often lighter than the flesh of the fruit itself and may take on slightly different shades. Variable clarity, although haze is generally undesirable. Some ingredients may impact head retention.",
+        "flavor": "Varies by base style. As with aroma, distinctive fruit flavors should be noticeable, and may range in intensity from subtle to aggressive, but the fruit character should not be so artificial or inappropriately overpowering as to suggest a ‘fruit juice drink.’ Bitterness, hop and malt flavors, alcohol content, and fermentation byproducts, such as esters, should be appropriate for the base style, but be harmonious and balanced with the distinctive fruit flavors present. Fruit generally adds flavor not sweetness, since fruit sugars usually fully ferment, thus lightening the flavor and drying out the finish. However, residual sweetness is not necessarily a negative characteristic unless it has a raw, unfermented quality. Some fruit may add sourness, bitterness, and tannins, which must be balanced in the resulting flavor profile.",
+        "mouthfeel": "Varies by base style. Fruit often decreases body, and makes the beer seem lighter on the palate. Some smaller and darker fruits may add a tannic depth, but this astringency should not overwhelm the base beer.",
+        "comments": "The description of the beer is critical for evaluation; judges should think more about the declared concept than trying to detect each individual ingredient. Balance, drinkability, and execution of the theme are the most important deciding factors. The fruit should complement the original style and not overwhelm it. Base style attributes will be different after the addition of fruit; do not expect the beer to taste identical to the unadulterated base style. Fruit Beers based on a Classic Style should be entered in this style, except Lambic – there is a special style for Fruit Lambic (23F). Fruited sour or mixed fermentation beers without a Classic Style base should be entered in the 28C Wild Specialty Beer. Fruited versions of sour Classic Style beers (e.g., Flanders Red, Oud Bruin, Gose, Berliner Weisse) should be entered in 29A Fruit Beer. Fruit-based versions of Classic Styles where spices are an inherent part of the Classic Style’s definition (e.g., Witbier, Gose) do not count as a Spice Beer for entering purposes.",
+        "history": "",
+        "characteristic_ingredients": "",
+        "style_comparison": "",
+        "entry_instructions": "The entrant must specify the type(s) of fruit used. Entrant must specify a description of the beer, identifying either a Base Style or the ingredients, specs, or target character of the beer. A general description of the special nature of the beer can cover all the required items."
+      },
+      "sections_ru": {
+        "overall_impression": "Приятное сочетание фруктов и пива, которое при этом всё ещё однозначно остаётся пивом. Фруктовый характер должен быть заметным, но уравновешенным, без ощущения искусственности.",
+        "aroma": "Зависит от базового стиля. Фруктовый характер в аромате должен ощущаться, но нужно помнить, что одни фрукты — например, малина или вишня — ароматически заметнее других, вроде черники или клубники. Поэтому допустим очень широкий диапазон интенсивности: от тонкого до яркого. Хмелевой аромат может быть слабее, чем у базового стиля, чтобы лучше раскрыть фрукт. Фрукты должны добавлять сложности, а не разбалтывать общую композицию.",
+        "appearance": "Зависит от базового стиля и использованных специальных ингредиентов. В светлых сортах цвет добавленного ингредиента должен проявляться заметно, в том числе в пене. Цвет фруктов в пиве обычно светлее, чем цвет их мякоти, и может смещаться по оттенку. Прозрачность переменная, но выраженная мутность в целом нежелательна. Некоторые ингредиенты могут ухудшать стойкость пены.",
+        "flavor": "Зависит от базового стиля. Как и в аромате, фруктовый вкус должен быть заметным; по интенсивности он может идти от деликатного до весьма выразительного. Однако фрукт не должен казаться искусственным или настолько подавляющим, чтобы пиво напоминало фруктовый напиток. Горечь, хмелевой и солодовый профиль, крепость и побочные продукты брожения — например эфиры — должны оставаться уместными для базового стиля и при этом гармонировать с фруктовым характером. Обычно фрукты добавляют прежде всего вкус, а не сладость: их сахара, как правило, полностью сбраживаются, делая финиш суше и профиль легче. Остаточная сладость сама по себе не является минусом, если только она не выглядит сырой и недобродившей. Некоторые фрукты могут добавлять кислотность, горечь и танины; всё это должно быть сбалансировано.",
+        "mouthfeel": "Зависит от базового стиля. Фрукты часто уменьшают ощущение тела и делают пиво легче на нёбе. Некоторые мелкие и тёмные плоды могут добавлять танинную глубину, но эта вяжущесть не должна перекрывать основу пива.",
+        "comments": "Описание пива здесь критически важно: судье важнее понять заявленную идею, чем пытаться вычислить каждый отдельный ингредиент. Ключевые критерии — баланс, питкость и качество реализации замысла. Фрукт должен дополнять исходный стиль, а не подавлять его. После добавления фруктов характеристики базового стиля неизбежно меняются, поэтому не стоит ожидать, что пиво будет на вкус точь-в-точь как исходная «чистая» база. Фруктовые версии Classic Style следует заявлять именно сюда, за исключением Lambic: для него есть отдельный стиль 23F Fruit Lambic. Кислые или смешанно-ферментированные фруктовые сорта без базы в виде Classic Style должны идти в 28C Wild Specialty Beer. Фруктовые версии кислых классических стилей — например, Flanders Red, Oud Bruin, Gose или Berliner Weisse — следует заявлять в 29A Fruit Beer. Если у классического стиля специи уже изначально являются частью определения — как у Witbier или Gose, — фруктовая версия такого пива не считается Spice Beer для целей заявки.",
+        "history": "",
+        "characteristic_ingredients": "",
+        "style_comparison": "",
+        "entry_instructions": "Участник должен указать использованный фрукт или фрукты. Также необходимо описать пиво, указав либо базовый стиль, либо состав, параметры или целевой характер напитка. Общее описание особой природы пива может покрывать все обязательные пункты."
+      },
+      "vital_statistics": {
+        "note": "OG, FG, IBUs, SRM, and ABV will vary depending on the underlying base beer, but the fruit will often be reflected in the color."
+      },
+      "vital_statistics_text": "OG, FG, IBUs, SRM, and ABV will vary depending on the underlying base beer, but the fruit will often be reflected in the color.",
+      "commercial_examples_text": "21st Amendment Hell or High Watermelon, Anderson Valley Blood Orange Gose, Avery Liliko’i Kepolo, Ballast Point Grapefruit Sculpin, Bell’s Cherry Stout, Founders Rübæus",
+      "tags_en": [
+        "specialty-beer",
+        "fruit"
+      ],
+      "source_guideline_page_start": 65,
+      "source_pdf_page_start": 81,
+      "tags_ru": [
+        "специальное пиво",
+        "фруктовый"
+      ],
+      "translation_status": "completed"
+    },
+    {
+      "bjcp_id": "29B",
+      "name_en": "Fruit and Spice Beer",
+      "name_ru": "Фруктово-пряное пиво",
+      "category_id": "29",
+      "category_en": "FRUIT BEER",
+      "category_ru": "Фруктовое пиво",
+      "bjcp_heading": "29B. Fruit and Spice Beer",
+      "description_short_ru": "Пиво, где фрукты и специи, травы или овощные ингредиенты различимы по отдельности, но вместе образуют цельный и пивной по сути профиль.",
+      "sections_en": {
+        "overall_impression": "A tasteful union of fruit, spice, and beer, but still recognizable as beer. The fruit and spice character should each be evident but in balance with the beer, not so forward as to suggest an artificial product.",
+        "aroma": "Varies by base style. The fruit and spice character should be noticeable in the aroma; however, note that some fruit and spices (e.g., raspberries, cherries, cinnamon, ginger) have stronger aromas and are more distinctive than others (e.g., blueberries, strawberries) – allow for a range of fruit and spice character and intensity from subtle to aggressive. Hop aroma may be lower than in the base style to better show the specialty character. The specialty ingredients should add an extra complexity, but not be so prominent as to unbalance the resulting presentation.",
+        "appearance": "Varies by base style and special ingredients. Lighter-colored beer should show distinctive ingredient colors, including in the head. The color of fruit in beer is often lighter than the flesh of the fruit itself and may take on slightly different shades. Variable clarity, although haze is generally undesirable. Some ingredients may impact head retention.",
+        "flavor": "Varies by base style. As with aroma, distinctive fruit and spice flavors should be noticeable, and may range in intensity from subtle to aggressive. The fruit character should not be so artificial or inappropriately overpowering as to suggest a spiced fruit juice drink. Hop bitterness, flavor, malt flavors, alcohol content, and fermentation byproducts, such as esters, should be appropriate to the base style, but be harmonious and balanced with the distinctive fruit and spice flavors present. Fruit generally add flavor not sweetness, since fruit sugars usually fully ferment, thus lightening the flavor and drying out the finish. However, residual sweetness is not necessarily a negative characteristic unless it has a raw, unfermented quality. Some ingredients may add sourness, bitterness, and tannins, which must be balanced in the resulting flavor profile.",
+        "mouthfeel": "Varies by base style. Fruit often decreases body, and makes the beer seem lighter on the palate. Some smaller and darker fruits may add a tannic depth, but this astringency should not overwhelm the base beer. SHVs may increase or decrease body. Some SHVs may add a bit of astringency, although a “raw” spice character is undesirable.",
+        "comments": "The description of the beer is critical for evaluation; judges should think more about the declared concept than trying to detect each individual ingredient. Balance, drinkability, and execution of the theme are the most important deciding factors. The specialty ingredients should complement the original style and not overwhelm it. Base style attributes will be different after the addition of fruit and spices; do not expect the beer to taste identical to the unadulterated base style.",
+        "history": "",
+        "characteristic_ingredients": "",
+        "style_comparison": "",
+        "entry_instructions": "The entrant must specify the type of fruit, and the type of SHV used; individual SHV ingredients do not need to be specified if a well-known blend of spices is used (e.g., apple pie spice). Entrant must specify a description of the beer, either a Base Style or the ingredients, specs, or target character of the beer. A general description of the special nature of the beer can cover all the required items."
+      },
+      "sections_ru": {
+        "overall_impression": "Вкусное и уместное соединение фруктов, специй и пива, которое при этом остаётся именно пивом. И фруктовый, и пряный характер должны быть различимы, но не настолько выпячены, чтобы производить впечатление искусственного продукта.",
+        "aroma": "Зависит от базового стиля. Фруктовый и пряный характер должны ощущаться, но стоит помнить, что некоторые фрукты и специи — например, малина, вишня, корица или имбирь — ароматически значительно ярче, чем, скажем, черника или клубника. Поэтому допустим широкий диапазон интенсивности, от тонкой до довольно яркой. Хмелевой аромат может быть слабее, чем у базы, чтобы лучше раскрывались специальные ингредиенты. Добавки должны усложнять аромат, но не ломать его баланс.",
+        "appearance": "Зависит от базового стиля и специальных ингредиентов. В светлых сортах цвет добавленных компонентов должен проявляться заметно, в том числе в пене. Цвет фруктов в пиве обычно светлее, чем цвет их мякоти, и может несколько смещаться по оттенку. Прозрачность переменная, но выраженная мутность в целом нежелательна. Некоторые ингредиенты могут ухудшать стойкость пены.",
+        "flavor": "Зависит от базового стиля. Как и в аромате, фруктовые и пряные вкусы должны быть различимы и могут варьироваться от тонких до ярких. Однако фруктовый характер не должен казаться искусственным или чрезмерным до степени, когда пиво начинает напоминать пряный фруктовый напиток. Горечь, хмелевой и солодовый профиль, крепость и побочные продукты брожения — например эфиры — должны соответствовать базе и при этом гармонировать с фруктово-пряным характером. Обычно фрукты дают прежде всего вкус, а не сладость, поскольку их сахара в основном полностью сбраживаются, облегчая тело и суша финиш. Остаточная сладость не обязательно минус, если только она не выглядит сырой и недобродившей. Некоторые ингредиенты могут добавлять кислотность, горечь и танины; всё это должно быть приведено в равновесие.",
+        "mouthfeel": "Зависит от базового стиля. Фрукты нередко уменьшают ощущение тела и делают пиво легче на нёбе. Некоторые мелкие и тёмные плоды могут добавлять танинную глубину, но эта вяжущесть не должна перекрывать основу пива. SHV-компоненты способны как увеличивать, так и уменьшать тело. Часть из них может давать лёгкую вяжущесть, однако сырой и грубый «специевый» характер нежелателен.",
+        "comments": "Описание пива здесь особенно важно: судье важнее понимать заявленную идею, чем вылавливать каждый ингредиент по отдельности. Главные критерии — баланс, питкость и качество реализации темы. Специальные ингредиенты должны дополнять базовый стиль, а не забивать его. После добавления фруктов и специй характеристики базы неизбежно меняются, поэтому не стоит ожидать от пива точного вкуса исходного «чистого» стиля.",
+        "history": "",
+        "characteristic_ingredients": "",
+        "style_comparison": "",
+        "entry_instructions": "Участник должен указать вид фрукта и тип использованного SHV-компонента; отдельные ингредиенты можно не расписывать, если использована общеизвестная смесь специй, например набор для apple pie spice. Также необходимо описать пиво, указав либо базовый стиль, либо состав, параметры или целевой характер напитка. Общее описание особой природы пива может закрывать все обязательные пункты."
+      },
+      "vital_statistics": {
+        "note": "OG, FG, IBUs, SRM, and ABV will vary depending on the underlying base beer, but the fruit will often be reflected in the color."
+      },
+      "vital_statistics_text": "OG, FG, IBUs, SRM, and ABV will vary depending on the underlying base beer, but the fruit will often be reflected in the color.",
+      "commercial_examples_text": "Cigar City Margarita Gose, Firestone Walker Chocolate Cherry Stout, Golden Road Spicy Mango Cart, Kona Island Colada Cream Ale, New Glarus Blueberry Cocoa Stout, Sun King Orange Vanilla Sunlight",
+      "tags_en": [
+        "specialty-beer",
+        "fruit",
+        "spice"
+      ],
+      "source_guideline_page_start": 65,
+      "source_pdf_page_start": 81,
+      "tags_ru": [
+        "специальное пиво",
+        "фруктовый",
+        "пряный"
+      ],
+      "translation_status": "completed",
+      "general_notes_en": "Use the definitions of Fruit in the preamble to Category 29 and Spice in the preamble to Category 30; any combination of ingredients valid in Styles 29A and 30A are allowable in this category. For this style, the word ‘spice’ means ‘any SHV’.",
+      "general_notes_ru": "Здесь под фруктом понимается определение из вступления к категории 29, а под spice — любое SHV из вступления к категории 30; допустима любая комбинация ингредиентов, разрешённых для 29A и 30A. В рамках этого стиля слово «spice» используется как собирательное обозначение для любых SHV-компонентов."
+    },
+    {
+      "bjcp_id": "29C",
+      "name_en": "Specialty Fruit Beer",
+      "name_ru": "Специальное фруктовое пиво",
+      "category_id": "29",
+      "category_en": "FRUIT BEER",
+      "category_ru": "Фруктовое пиво",
+      "bjcp_heading": "29C. Specialty Fruit Beer",
+      "description_short_ru": "Фруктовое пиво с дополнительным сахаристым компонентом, иной специальной добавкой или нестандартным процессом, где фрукт и база остаются узнаваемыми и гармоничными.",
+      "sections_en": {
+        "overall_impression": "An appealing combination of fruit, sugar, and beer, but still recognizable as a beer. The fruit and sugar character should both be evident but in balance with the beer, not so forward as to suggest an artificial product.",
+        "aroma": "Same as Fruit Beer, except that some additional fermentables (e.g., honey, molasses) may add an aroma component. Whatever additional aroma component is present should be in balance with the fruit and the beer components, and be a pleasant combination.",
+        "appearance": "Same as Fruit Beer.",
+        "flavor": "Same as Fruit Beer, except that some additional fermentables (e.g., honey, molasses) may add a flavor component. Whatever additional flavor component is present should be in balance with the fruit and the beer components, and be a pleasant combination. Added sugars should not have a raw, unfermented flavor. Some added sugars will have unfermentable elements that may provide a fuller and sweeter finish; fully fermentable sugars may thin out the finish.",
+        "mouthfeel": "Same as Fruit Beer, although depending on the type of sugar added, could increase or decrease the body.",
+        "comments": "If the additional fermentables or processes do not add a distinguishable character to the beer, enter it as one of the other (non-Specialty) Fruit Beer styles and omit a description of the extra ingredients or processes.",
+        "history": "",
+        "characteristic_ingredients": "",
+        "style_comparison": "",
+        "entry_instructions": "The entrant must specify the type of fruit used. The entrant must specify the type of additional ingredient (per the introduction) or special process employed. Entrant must specify a description of the beer, identifying either a Base Style or the ingredients, specs, or target character of the beer. A general description of the special nature of the beer can cover all the required items."
+      },
+      "sections_ru": {
+        "overall_impression": "Привлекательное сочетание фруктов, сахаристого компонента и пива, которое всё ещё остаётся пивом. И фруктовый, и сахарный характер должны быть заметными, но уравновешенными, без искусственного ощущения.",
+        "aroma": "Как у Fruit Beer, но некоторые дополнительные сбраживаемые ингредиенты — например мёд или меласса — могут вносить собственную ароматическую ноту. Эта добавочная составляющая должна гармонировать и с фруктом, и с пивной базой, образуя приятную общую картину.",
+        "appearance": "Как у Fruit Beer.",
+        "flavor": "Как у Fruit Beer, но некоторые дополнительные сбраживаемые ингредиенты — например мёд или меласса — могут вносить собственный вкусовой вклад. Этот вклад должен быть гармоничен и с фруктовым, и с пивным компонентом. Добавленные сахара не должны давать сырого, недобродившего вкуса. Часть таких ингредиентов содержит несбраживаемые вещества, которые делают финиш полнее и слаще; полностью сбраживаемые сахара, напротив, могут истончать финиш.",
+        "mouthfeel": "Как у Fruit Beer, хотя в зависимости от типа добавленного сахара тело может как увеличиваться, так и уменьшаться.",
+        "comments": "Если дополнительные сахара, ингредиенты или процесс не создают в пиве различимого характера, такой образец лучше заявлять в одну из остальных, не-специальных фруктовых подкатегорий и не описывать лишние добавки или технологические детали.",
+        "history": "",
+        "characteristic_ingredients": "",
+        "style_comparison": "",
+        "entry_instructions": "Участник должен указать использованный фрукт. Также необходимо указать тип дополнительного ингредиента — в смысле вступления к категории — или применённого специального процесса. Кроме того, нужно описать пиво, указав либо базовый стиль, либо состав, параметры или целевой характер напитка. Общее описание особой природы пива может покрывать все обязательные пункты."
+      },
+      "vital_statistics": {
+        "note": "OG, FG, IBUs, SRM, and ABV will vary depending on the underlying base beer, but the fruit will often be reflected in the color."
+      },
+      "vital_statistics_text": "OG, FG, IBUs, SRM, and ABV will vary depending on the underlying base beer, but the fruit will often be reflected in the color.",
+      "commercial_examples_text": "The Bruery Goses are Red, New Planet Raspberry Ale, Tired Hands Strawberry Milkshake IPA, WeldWerks Piña Colada IPA",
+      "tags_en": [
+        "specialty-beer",
+        "fruit"
+      ],
+      "source_guideline_page_start": 66,
+      "source_pdf_page_start": 82,
+      "tags_ru": [
+        "специальное пиво",
+        "фруктовый"
+      ],
+      "translation_status": "completed",
+      "general_notes_en": "A Specialty Fruit Beer is a Fruit Beer with some additional ingredients, such as fermentable sugars (e.g., honey, brown sugar, invert sugar), sweeteners (e.g., lactose), adjuncts, alternative grains, or other special ingredients added, or some additional process applied. A Specialty Fruit Beer can use any style within the Fruit Beer category as a base style (currently, 29A, 29B, or 29D).",
+      "general_notes_ru": "Specialty Fruit Beer — это Fruit Beer с дополнительными ингредиентами, например сбраживаемыми сахарами — мёдом, коричневым сахаром, инвертом, — подсластителями вроде лактозы, adjuncts, альтернативными злаками, иными специальными компонентами либо с особым технологическим приёмом. В качестве базы могут использоваться любые стили фруктового пива: 29A, 29B или 29D."
+    },
+    {
+      "bjcp_id": "29D",
+      "name_en": "Grape Ale",
+      "name_ru": "Виноградный эль",
+      "category_id": "29",
+      "category_en": "FRUIT BEER",
+      "category_ru": "Фруктовое пиво",
+      "bjcp_heading": "29D. Grape Ale",
+      "description_short_ru": "Пиво с заметным вкладом винограда или виноградного сусла, объединяющее винную фруктовость с пивной основой — от освежающего до сложного и многослойного.",
+      "sections_en": {
+        "overall_impression": "Combines the profile of a sparkling wine and a relatively neutral base beer allowing the aromatic qualities of the grape to blend pleasantly with hop and yeast aromatics. Can be in a range from refreshing to complex.",
+        "aroma": "Aromatic characteristics of the varietal grape are noticeable but should not dominate. The grape character should meld well with the underlying base malt character. While hop aroma is usually restrained, it can range from medium-low to entirely absent. Fermentation is usually quite clean but can have delicate spice and fruity esters. Banana, bubblegum, and the like are considered faults.",
+        "appearance": "Color can range from pale golden to ruby but those using red grapes tend towards burgundy. These darker colors may also come from using cooked or concentrated grape products, never from specialty dark grains. White to reddish head with generally a medium-low retention. Clarity is generally good. Never hazy.",
+        "flavor": "As with the aroma, grape character may range from subtle to medium-high intensity, and be most prominent. Fruit flavors (stone, tropical, berries, etc.) as appropriate for the variety of grape. Darker red grapes can contribute more rustic flavors (e.g., earthy, tobacco, leather). The malt character is supportive, not robust and usually of the pale, lightly kilned varieties. Very low levels of pale crystal malts are allowed but roasted or strong chocolate character is always inappropriate. Bitterness is generally low and hop flavors can be low to non-existent. Mild tart notes, due to variety and amount of grape used, is common and may help to improve the digestibility but should not near the ‘sour’ threshold. Complementary oak is optional but a funky Brett character should not be present. Clean fermentation.",
+        "mouthfeel": "Medium-high to high carbonation improves the perception of aroma. Body is generally from low to medium and some acidity can contribute to increased perception of dryness. Finish is exceedingly dry and crisp. Strong examples may show some warming.",
+        "comments": "Strengths can be as low as 4.5% or as high as 12.5%, but most commonly in the range listed. Perception of color varies widely based on tint of added fruit.",
+        "history": "Initially brewed at Birrificio Montegioco and Birrificio Barley in 2006-2007. Became more popular after being published in the 2015 Guidelines as Italian Grape Ale (IGA), and inspired many local variations in other countries.",
+        "characteristic_ingredients": "Pils or pale base malt, limited pale crystal or wheat malts. Grape must (red or white varieties, typically fresh must) is usually 15 – 20% of the total grist, but can exceed 40%. The must is fermented with the beer, not a blending of wine and beer. Fruity-spicy yeast are most common but neutral varieties can be used. Hops should be selected to complement the overall profile. This beer is not dry-hopped. Oak is allowable, but not required, and it should not be overpowering, or at levels stronger than found in wine.",
+        "style_comparison": "Similar base as several Belgian styles, like Belgian Blonde, Saison, and Belgian Single, but with grapes. Higher strength examples are similar to Belgian Tripel or Belgian Golden Strong Ale, but with grapes. Not funky like Fruit Lambic.",
+        "entry_instructions": "The entrant must specify the type of grape used. The entrant may provide additional information about the base style or characteristic ingredients."
+      },
+      "sections_ru": {
+        "overall_impression": "Соединяет профиль игристого вина с относительно нейтральной пивной базой, позволяя ароматике винограда мягко и естественно сплавляться с хмелевыми и дрожжевыми оттенками. В зависимости от исполнения может быть как освежающим, так и весьма сложным.",
+        "aroma": "Ароматика конкретного сорта винограда должна быть заметной, но не доминирующей. Виноградный характер должен хорошо сливаться с базовым светлым солодом. Хмелевой аромат обычно сдержанный — от умеренно низкого до полного отсутствия. Брожение, как правило, довольно чистое, но возможны деликатные пряные и фруктовые эфиры. Банан, жвачка и подобные тона считаются дефектом.",
+        "appearance": "Цвет — от светло-золотистого до рубинового; версии на красном винограде часто уходят в бургундские оттенки. Более тёмный цвет может также появляться из-за уваренного или концентрированного виноградного сырья, но не из-за тёмных специальных солодов. Пена — от белой до красноватой, обычно со средней или ниже средней стойкостью. Прозрачность в целом хорошая. Мутность недопустима.",
+        "flavor": "Как и в аромате, виноградный характер может варьироваться от тонкого до умеренно высокого и при этом оставаться наиболее заметным элементом. Возможны фруктовые оттенки, соответствующие сорту винограда: косточковые фрукты, тропики, ягоды и т.п. Более тёмные красные сорта могут давать более деревенский, грубоватый спектр — земля, табак, кожа. Солод здесь поддерживающий, а не мощный; обычно используются светлые, мягко подсушенные солода. Совсем небольшие количества светлого карамельного солода допустимы, а вот жареные и выраженно шоколадные тона недопустимы. Горечь обычно низкая, а хмелевой вкус может быть от слабого до отсутствующего. Лёгкая терпкая кислинка, зависящая от сорта и количества винограда, обычна и может делать пиво более гастрономичным и освежающим, но до полноценной «кислой» категории она доходить не должна. Уместная дубовая нота допустима, однако Brett-фанк недопустим. Брожение чистое.",
+        "mouthfeel": "Карбонизация от умеренно высокой до высокой усиливает восприятие аромата. Тело обычно от лёгкого до среднего. Некоторая кислотность может дополнительно усиливать ощущение сухости. Финиш очень сухой и хрусткий. В более крепких версиях возможно лёгкое согревание.",
+        "comments": "Крепость может колебаться от 4,5% до 12,5%, хотя чаще всего стиль попадает в заявленный диапазон. Восприятие цвета сильно зависит от оттенка использованного винограда.",
+        "history": "Стиль впервые начали варить Birrificio Montegioco и Birrificio Barley в 2006–2007 годах. Более широкую популярность он получил после включения в редакцию Guidelines 2015 под названием Italian Grape Ale (IGA), а затем вдохновил множество локальных вариаций в других странах.",
+        "characteristic_ingredients": "Светлый pils- или pale-базовый солод; в небольших количествах допустимы светлые карамельные или пшеничные солода. Виноградное сусло — красных или белых сортов, чаще свежее — обычно составляет 15–20% общей засыпи, но может превышать и 40%. Сусло сбраживается вместе с пивом, а не добавляется как смесь уже готовых вина и пива. Чаще используют дрожжи с фруктово-пряным профилем, но допустимы и нейтральные штаммы. Хмель подбирают так, чтобы он дополнял общий профиль. Dry hopping для этого стиля нехарактерен. Дуб допустим, но не обязателен; он не должен быть чрезмерным и не должен быть сильнее, чем в вине.",
+        "style_comparison": "По базе стиль может напоминать некоторые бельгийские сорта — Belgian Blonde, Saison или Belgian Single, — но с заметным виноградным компонентом. Более крепкие версии сближаются с Belgian Tripel или Belgian Golden Strong Ale, опять же с виноградом. В отличие от Fruit Lambic, здесь не должно быть фанкового дикого характера.",
+        "entry_instructions": "Участник должен указать использованный сорт или тип винограда. Дополнительно можно дать сведения о базовом стиле или характерных ингредиентах."
+      },
+      "vital_statistics": {
+        "og": "1.059 – 1.075",
+        "fg": "1.004 – 1.013",
+        "ibu": "10 – 30",
+        "srm": "4 – 8",
+        "abv": "6.0 – 8.5%"
+      },
+      "vital_statistics_text": "OG: 1.059 – 1.075 IBUs: 10 – 30 FG: 1.004 – 1.013 SRM: 4 – 8 ABV: 6.0 – 8.5%",
+      "commercial_examples_text": "Montegioco Open Mind, Birrificio del Forte Il Tralcio, Luppolajo Mons Rubus, Firestone Walker Feral Vinifera, pFriem Family Brewers Druif, 4 Árvores Abbondanza",
+      "tags_en": [
+        "specialty-beer",
+        "fruit"
+      ],
+      "source_guideline_page_start": 66,
+      "source_pdf_page_start": 82,
+      "tags_ru": [
+        "специальное пиво",
+        "фруктовый"
+      ],
+      "translation_status": "completed",
+      "general_notes_en": "Originally a local Italian style that subsequently inspired brewers in grape-growing regions worldwide to produce versions showcasing local varietals. See X3 Italian Grape Ale for the local version.",
+      "general_notes_ru": "Изначально это был локальный итальянский стиль, который позже вдохновил пивоваров из винодельческих регионов по всему миру варить собственные версии с местными сортами винограда. Локальная итальянская версия описана отдельно как X3 Italian Grape Ale."
+    }
+  ]
+}
