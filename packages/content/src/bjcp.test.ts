@@ -38,6 +38,16 @@ describe("BJCP content index", () => {
     ))).toBe(true);
   });
 
+  it("uses a style-specific hero image when one is available", async () => {
+    const [withImage, withoutImage] = await Promise.all([
+      getArticleBySlug("bjcp-1a-american-light-lager"),
+      getArticleBySlug("bjcp-12a-british-golden-ale")
+    ]);
+
+    expect(withImage?.heroImageUrl).toBe("/images/bjcp/1A%20%E2%80%94%20American%20Light%20Lager.png");
+    expect(withoutImage?.heroImageUrl).toBe("/images/bjcp-placeholder.png");
+  });
+
   it("loads specialty IPA substyles as separate BJCP 2021 entries", async () => {
     const articles = await listArticles();
     const specialtyIpas = articles.filter((article) => article.bjcpId.startsWith("21B"));

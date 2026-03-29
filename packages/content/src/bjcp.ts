@@ -4,6 +4,7 @@ import { fileURLToPath } from "node:url";
 
 const moduleDir = dirname(fileURLToPath(import.meta.url));
 const BJCP_DIR = resolve(moduleDir, "../../../ingredients/bjcp");
+const BJCP_PUBLIC_IMAGES_DIR = resolve(moduleDir, "../../../apps/web/public/images/bjcp");
 const DEFAULT_BJCP_HERO_IMAGE_URL = "/images/bjcp-placeholder.png";
 
 const SECTION_ORDER = [
@@ -330,11 +331,45 @@ const loadBjcpFiles = async () => {
   }
 };
 
+const extractStyleIdFromImageFileName = (fileName: string) => {
+  const normalizedFileName = fileName.normalize("NFC");
+  const basename = normalizedFileName.replace(/\.[^.]+$/u, "");
+  const match = basename.match(/^(.+?)\s+—\s+/u);
+
+  return (match?.[1] ?? basename).trim();
+};
+
+const loadHeroImageUrls = async () => {
+  try {
+    const fileNames = await readdir(BJCP_PUBLIC_IMAGES_DIR);
+    const heroImageUrls = new Map<string, string>();
+
+    for (const fileName of fileNames) {
+      if (!/\.(png|jpe?g|webp|avif)$/iu.test(fileName)) {
+        continue;
+      }
+
+      const styleId = extractStyleIdFromImageFileName(fileName);
+      if (!styleId) {
+        continue;
+      }
+
+      heroImageUrls.set(styleId, `/images/bjcp/${encodeURIComponent(fileName)}`);
+    }
+
+    return heroImageUrls;
+  } catch {
+    return new Map<string, string>();
+  }
+};
+
 const buildIndex = async (): Promise<BjcpContentIndex> => {
   const files = await loadBjcpFiles();
   if (!files.length) {
     return createEmptyIndex();
   }
+
+  const heroImageUrls = await loadHeroImageUrls();
 
   const categories = new Map<string, CategorySummary>();
   const articles: ContentArticle[] = [];
@@ -406,7 +441,7 @@ const buildIndex = async (): Promise<BjcpContentIndex> => {
         description,
         eyebrow: `${bjcpId} · BJCP 2021`,
         category,
-        heroImageUrl: DEFAULT_BJCP_HERO_IMAGE_URL,
+        heroImageUrl: heroImageUrls.get(bjcpId) ?? DEFAULT_BJCP_HERO_IMAGE_URL,
         colorBand: resolveBeerColorBand(style.vital_statistics),
         publishedAt,
         updatedAt: publishedAt,
