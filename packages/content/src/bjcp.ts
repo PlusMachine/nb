@@ -94,6 +94,9 @@ export type CategorySummary = {
   nameEn: string;
   overviewRu: string | null;
   articleCount: number;
+  firstStyleId: string | null;
+  lastStyleId: string | null;
+  styleCodeRange: string | null;
 };
 
 export type ContentArticle = {
@@ -162,6 +165,36 @@ const getBjcpArticleSlugAliases = (article: Pick<ContentArticle, "bjcpId" | "tit
 
 const compareBjcpIds = (left: string, right: string) => collator.compare(left, right);
 
+const getBjcpCategoryCode = (bjcpId: string) => {
+  const normalized = bjcpId.trim();
+  if (!normalized) {
+    return "";
+  }
+
+  return normalized.split(/[-\s]/u)[0] ?? normalized;
+};
+
+const buildCategoryStyleRange = (styleIds: Iterable<string>) => {
+  const uniqueCodes = Array.from(new Set(
+    Array.from(styleIds)
+      .map(getBjcpCategoryCode)
+      .filter(Boolean)
+  )).sort(compareBjcpIds);
+
+  const firstStyleId = uniqueCodes[0] ?? null;
+  const lastStyleId = uniqueCodes.at(-1) ?? null;
+
+  return {
+    firstStyleId,
+    lastStyleId,
+    styleCodeRange: firstStyleId && lastStyleId
+      ? firstStyleId === lastStyleId
+        ? firstStyleId
+        : `${firstStyleId}–${lastStyleId}`
+      : null
+  };
+};
+
 const estimateReadingMinutes = (parts: string[]) => {
   const words = parts
     .join(" ")
@@ -218,9 +251,9 @@ const resolveBeerColorBand = (stats: Record<string, string | null | undefined> |
 
 const buildStats = (stats?: Record<string, string | null | undefined>): ArticleStat[] => {
   const order: Array<[string, string]> = [
-    ["og", "OG"],
+    ["og", "НП"],
+    ["fg", "КП"],
     ["ibu", "IBU"],
-    ["fg", "FG"],
     ["srm", "SRM"],
     ["abv", "ABV"]
   ];
@@ -372,6 +405,7 @@ const buildIndex = async (): Promise<BjcpContentIndex> => {
   const heroImageUrls = await loadHeroImageUrls();
 
   const categories = new Map<string, CategorySummary>();
+  const categoryStyleIds = new Map<string, Set<string>>();
   const articles: ContentArticle[] = [];
 
   for (const file of files) {
@@ -389,7 +423,10 @@ const buildIndex = async (): Promise<BjcpContentIndex> => {
         nameRu,
         nameEn,
         overviewRu: category.overview_ru?.trim() ?? null,
-        articleCount: 0
+        articleCount: 0,
+        firstStyleId: null,
+        lastStyleId: null,
+        styleCodeRange: null
       });
     }
   }
@@ -464,11 +501,21 @@ const buildIndex = async (): Promise<BjcpContentIndex> => {
       });
 
       category.articleCount += 1;
+      const styleIds = categoryStyleIds.get(category.id) ?? new Set<string>();
+      styleIds.add(bjcpId);
+      categoryStyleIds.set(category.id, styleIds);
       articleIndex += 1;
     }
   }
 
   articles.sort((left, right) => compareBjcpIds(left.bjcpId, right.bjcpId));
+
+  for (const category of categories.values()) {
+    const range = buildCategoryStyleRange(categoryStyleIds.get(category.id) ?? []);
+    category.firstStyleId = range.firstStyleId;
+    category.lastStyleId = range.lastStyleId;
+    category.styleCodeRange = range.styleCodeRange;
+  }
 
   const categoryList = Array.from(categories.values())
     .filter((category) => category.articleCount > 0)

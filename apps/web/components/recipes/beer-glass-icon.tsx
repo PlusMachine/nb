@@ -1,15 +1,21 @@
-import React from "react";
+import React, { useId } from "react";
 
 export function BeerGlassIcon({
   color,
+  gradientFrom,
+  gradientTo,
   size = 32,
   className,
 }: {
   color: string;
+  gradientFrom?: string;
+  gradientTo?: string;
   size?: number;
   className?: string;
 }) {
   const width = Math.round(size * 0.71);
+  const gradientId = useId().replace(/:/g, "");
+  const fill = gradientFrom && gradientTo ? `url(#${gradientId})` : color;
 
   return (
     <svg
@@ -20,9 +26,17 @@ export function BeerGlassIcon({
       className={className}
       aria-hidden="true"
     >
+      {gradientFrom && gradientTo ? (
+        <defs>
+          <linearGradient id={gradientId} x1="10" y1="6" x2="10" y2="26" gradientUnits="userSpaceOnUse">
+            <stop offset="0%" stopColor={gradientFrom} />
+            <stop offset="100%" stopColor={gradientTo} />
+          </linearGradient>
+        </defs>
+      ) : null}
       <path
         d="M5 8 L4 21.5 Q4 26 10 26 Q16 26 16 21.5 L15 8 Z"
-        fill={color}
+        fill={fill}
       />
       <path
         d="M5 8 Q7.5 5.8 10 8 Q12.5 5.8 15 8 Z"

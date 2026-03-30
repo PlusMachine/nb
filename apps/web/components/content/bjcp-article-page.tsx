@@ -1,5 +1,8 @@
 import Link from "next/link";
+import { sgToPlato, srmToEbc } from "@nb/brewing-core";
 import type { ContentArticle } from "@nb/content";
+
+import { beerColorFromSrm } from "@/features/recipes/beer-color";
 
 const mediaThemes = [
   "bg-[linear-gradient(150deg,#0f172a_0%,#1e293b_50%,#475569_100%)]",
@@ -11,6 +14,80 @@ const mediaThemes = [
 const resolveMediaTheme = (article: ContentArticle) => {
   const seed = article.bjcpId.charCodeAt(0) + article.category.id.charCodeAt(0);
   return mediaThemes[seed % mediaThemes.length];
+};
+
+const formatNumber = (value: number, precision = 1) => value.toFixed(precision).replace(/\.0$/, "");
+
+const parseStatNumbers = (value: string) => (
+  value.match(/\d+(?:\.\d+)?/g)?.map((item) => Number.parseFloat(item)).filter((item) => Number.isFinite(item)) ?? []
+);
+
+const formatRange = (values: number[], formatter: (value: number) => string) => {
+  if (!values.length) {
+    return null;
+  }
+
+  if (values.length === 1) {
+    return formatter(values[0]!);
+  }
+
+  return `${formatter(values[0]!)} - ${formatter(values[values.length - 1]!)}`;
+};
+
+const formatPlatoRange = (value: string) => {
+  const numbers = parseStatNumbers(value);
+  return formatRange(numbers, (item) => `${sgToPlato(item, 1).toFixed(1)} °P`);
+};
+
+const formatEbcRange = (value: string) => {
+  const numbers = parseStatNumbers(value);
+  return formatRange(numbers, (item) => `${formatNumber(srmToEbc(item), 0)} EBC`);
+};
+
+type PassportStatDefinition = {
+  label: string;
+  supporting: (value: string) => string | null;
+};
+
+const passportStatDefinitions: PassportStatDefinition[] = [
+  {
+    label: "НП",
+    supporting: formatPlatoRange
+  },
+  {
+    label: "КП",
+    supporting: formatPlatoRange
+  },
+  {
+    label: "ABV",
+    supporting: () => null
+  },
+  {
+    label: "IBU",
+    supporting: () => null
+  }
+];
+
+const resolveColorRange = (value: string) => {
+  const numbers = parseStatNumbers(value);
+  if (!numbers.length) {
+    return null;
+  }
+
+  const startSrm = numbers[0]!;
+  const endSrm = numbers[numbers.length - 1]!;
+  const averageSrm = numbers.reduce((sum, item) => sum + item, 0) / numbers.length;
+  const start = beerColorFromSrm(startSrm);
+  const end = beerColorFromSrm(endSrm);
+  const average = beerColorFromSrm(averageSrm);
+
+  return {
+    startSrm,
+    endSrm,
+    startHex: start.hex,
+    endHex: end.hex,
+    averageHex: average.hex
+  };
 };
 
 function ArticleStructuredData({ article }: { article: ContentArticle }) {
@@ -48,55 +125,109 @@ export function BjcpArticlePage({
   article: ContentArticle;
   relatedArticles: ContentArticle[];
 }) {
+  const categoryLabel = `кат. ${article.category.nameRu}`;
   const mediaTheme = resolveMediaTheme(article);
   const mediaStyle = article.heroImageUrl
     ? {
-        backgroundImage: `linear-gradient(180deg, rgba(15, 23, 42, 0.16), rgba(15, 23, 42, 0.72)), url(${article.heroImageUrl})`,
-        backgroundPosition: "center",
-        backgroundSize: "cover"
-      }
+      backgroundImage: `linear-gradient(180deg, rgba(15, 23, 42, 0.16), rgba(15, 23, 42, 0.72)), url(${article.heroImageUrl})`,
+      backgroundPosition: "center",
+      backgroundSize: "cover"
+    }
     : undefined;
+  const statByLabel = new Map(article.stats.map((stat) => [stat.label, stat]));
+  const colorStat = statByLabel.get("SRM") ?? null;
+  const colorRange = colorStat ? resolveColorRange(colorStat.value) : null;
+  const colorEbc = colorStat ? formatEbcRange(colorStat.value) : null;
+  const passportStats = passportStatDefinitions
+    .map((definition) => {
+      const stat = statByLabel.get(definition.label);
+      if (!stat) {
+        return null;
+      }
+
+      return {
+        ...definition,
+        value: stat.value,
+        supportingText: definition.supporting(stat.value)
+      };
+    })
+    .filter((item): item is PassportStatDefinition & { value: string; supportingText: string | null } => item !== null);
 
   return (
     <main className="space-y-14 pb-24 pt-8">
       <ArticleStructuredData article={article} />
 
+      <nav aria-label="Breadcrumb" className="px-1 text-sm text-zinc-500">
+        <ol className="flex flex-wrap items-center gap-2">
+          <li>
+            <Link href="/bjcp" className="transition hover:text-zinc-950">
+              BJCP 2021
+            </Link>
+          </li>
+          <li aria-hidden="true">/</li>
+          <li className="text-zinc-700">{categoryLabel}</li>
+        </ol>
+      </nav>
+
       <section className="overflow-hidden rounded-[2.5rem] border border-white/80 bg-white/90 shadow-[0_50px_120px_-78px_rgba(15,23,42,0.42)] backdrop-blur">
         <div className="grid gap-0 lg:grid-cols-[minmax(0,0.9fr)_minmax(24rem,1.1fr)]">
           <div className="space-y-7 px-6 py-8 sm:px-8 sm:py-10 lg:px-10 lg:py-12">
-            <div className="flex flex-wrap items-center gap-3 text-[11px] font-semibold uppercase tracking-[0.22em] text-zinc-500">
-              <span className="rounded-full border border-zinc-200 bg-slate-50 px-3 py-1">{article.eyebrow}</span>
-              <span>{article.category.nameRu}</span>
-            </div>
-
             <div className="space-y-4">
               <p className="text-sm font-semibold uppercase tracking-[0.22em] text-zinc-500">
                 {article.bjcpHeading}
               </p>
               <h1
-                className="max-w-4xl text-balance text-4xl font-semibold leading-[0.95] text-zinc-950 sm:text-5xl lg:text-6xl"
+                className="max-w-4xl text-balance text-[2.2rem] font-semibold leading-[0.96] text-zinc-950 sm:text-[2.7rem] lg:text-[3.3rem]"
                 style={{ fontFamily: "var(--font-display)" }}
               >
                 {article.title}
               </h1>
-              <p className="max-w-3xl text-sm font-medium uppercase tracking-[0.16em] text-zinc-500">
-                {article.titleEn}
-              </p>
               <p className="max-w-3xl text-pretty text-lg leading-8 text-zinc-600">
                 {article.description}
               </p>
             </div>
 
-            <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
-              {article.stats.map((stat) => (
+            <div className="grid gap-2.5 sm:grid-cols-2">
+              {passportStats.map((stat) => (
                 <div
                   key={stat.label}
-                  className="rounded-[1.5rem] border border-zinc-200 bg-slate-50 px-4 py-4 text-zinc-900"
+                  className="min-h-[6rem] rounded-[1.5rem] border border-zinc-200 bg-slate-50 px-4 py-3 text-zinc-900"
                 >
                   <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-zinc-500">{stat.label}</p>
-                  <p className="mt-2 text-lg font-semibold">{stat.value}</p>
+                  <p className="mt-2 text-lg font-semibold leading-none text-zinc-950 tabular-nums">
+                    {stat.value}
+                  </p>
+                  {stat.supportingText ? (
+                    <p className="mt-1.5 text-xs font-medium tabular-nums text-zinc-500">{stat.supportingText}</p>
+                  ) : (
+                    <p className="mt-1.5 text-xs font-medium text-transparent">.</p>
+                  )}
                 </div>
               ))}
+
+              {colorStat && colorRange ? (
+                <div className="rounded-[1.5rem] border border-zinc-200 bg-slate-50 px-4 py-3 text-zinc-900 sm:col-span-2">
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-zinc-500">Цвет</p>
+                  <div className="mt-2 flex flex-wrap items-end gap-x-2 gap-y-1">
+                    <p className="text-lg font-semibold leading-none text-zinc-950 tabular-nums">
+                      {colorStat.value} SRM
+                    </p>
+                    {colorEbc ? (
+                      <p className="text-xs font-medium tabular-nums text-zinc-500">
+                        {colorEbc}
+                      </p>
+                    ) : null}
+                  </div>
+                  <div className="mt-3 h-2 overflow-hidden rounded-full bg-zinc-200/80 shadow-[inset_0_1px_2px_rgba(15,23,42,0.16)]">
+                    <div
+                      className="h-full rounded-full"
+                      style={{
+                        backgroundImage: `linear-gradient(90deg, ${colorRange.startHex} 0%, ${colorRange.averageHex} 52%, ${colorRange.endHex} 100%)`
+                      }}
+                    />
+                  </div>
+                </div>
+              ) : null}
             </div>
           </div>
 
@@ -106,24 +237,13 @@ export function BjcpArticlePage({
           >
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.24),transparent_32%)]" />
             <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-black/45 to-transparent" />
-            <div className="relative flex h-full min-h-[22rem] flex-col justify-between p-6 text-white sm:p-8 lg:p-10">
-              <div className="flex items-start justify-between gap-4">
-                <span className="rounded-full border border-white/20 bg-white/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.22em] text-white/78">
-                  BJCP style
-                </span>
-                <span className="text-[11px] font-semibold uppercase tracking-[0.22em] text-white/60">
-                  {article.category.id}
-                </span>
-              </div>
+            <div className="relative flex h-full min-h-[22rem] items-end p-6 text-white sm:p-8 lg:p-10">
               <div className="space-y-4">
                 <p className="text-5xl font-semibold leading-none text-white/96 sm:text-6xl" style={{ fontFamily: "var(--font-display)" }}>
                   {article.bjcpId}
                 </p>
                 <p className="max-w-md text-2xl font-medium leading-tight text-white/86">
                   {article.titleEn}
-                </p>
-                <p className="max-w-sm text-sm leading-7 text-white/68">
-                  {article.category.nameRu}
                 </p>
               </div>
             </div>
@@ -134,13 +254,7 @@ export function BjcpArticlePage({
       <article className="mx-auto max-w-3xl">
         <div className="flex flex-wrap gap-3">
           <span className="rounded-full border border-zinc-200 bg-white px-4 py-2 text-sm font-medium text-zinc-700">
-            Категория {article.category.id}
-          </span>
-          <span className="rounded-full border border-zinc-200 bg-white px-4 py-2 text-sm font-medium text-zinc-700">
             {article.readingMinutes} мин чтения
-          </span>
-          <span className="rounded-full border border-zinc-200 bg-white px-4 py-2 text-sm font-medium text-zinc-700">
-            BJCP 2021
           </span>
         </div>
 
@@ -175,7 +289,7 @@ export function BjcpArticlePage({
             </div>
             <div>
               <p className="text-sm font-semibold text-zinc-950">Категория</p>
-              <p className="mt-1 text-sm leading-7 text-zinc-600">{article.category.nameRu}</p>
+              <p className="mt-1 text-sm leading-7 text-zinc-600">{categoryLabel}</p>
             </div>
           </div>
         </section>
@@ -187,7 +301,7 @@ export function BjcpArticlePage({
             <div>
               <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-zinc-500">Ещё по теме</p>
               <h2 className="mt-2 text-3xl font-semibold text-zinc-950" style={{ fontFamily: "var(--font-display)" }}>
-                Другие стили из категории {article.category.id}
+                Другие стили из кат. {article.category.id}
               </h2>
             </div>
             <Link href="/bjcp" className="text-sm font-semibold text-zinc-950">

@@ -189,11 +189,11 @@
         "entry_instructions": "Участник должен указать породу древесины, а также степень тоста или обжига, если она имеет значение. Если используется необычная порода, нужно кратко описать, какие именно сенсорные оттенки она привносит в пиво. Также необходимо описать сам напиток, указав либо базовый стиль, либо состав, параметры или целевой характер. Общее описание особой природы пива может закрывать все обязательные пункты."
       },
       "vital_statistics": {
-        "OG": "varies with base style, typically above-average",
-        "FG": "varies with base style",
-        "ABV": "varies with base style, typically above-average",
-        "IBUs": "varies with base style",
-        "SRM": "varies with base style, often darker than the unadulterated base style"
+        "og": "varies with base style, typically above-average",
+        "fg": "varies with base style",
+        "abv": "varies with base style, typically above-average",
+        "ibu": "varies with base style",
+        "srm": "varies with base style, often darker than the unadulterated base style"
       },
       "vital_statistics_text": "OG: varies with base style, typically above-average | FG: varies with base style | ABV: varies with base style, typically above-average | IBUs: varies with base style | SRM: varies with base style, often darker than the unadulterated base style",
       "commercial_examples_text": "Bush Prestige, Cigar City Spanish Cedar Jai Alai, Firestone Walker Double Barrel Ale, Midnight Sun Arctic Devil, Petrus Aged Pale, Samuel Smith Yorkshire Stingo",
@@ -245,11 +245,11 @@
         "entry_instructions": "Участник должен указать, какой именно дополнительный алкогольный характер ожидается, а при необходимости — и детали по бочке. Если использовалась необычная древесина или какой-либо особый ингредиент, нужно кратко описать, какие сенсорные оттенки он привносит. Также необходимо описать пиво, указав либо базовый стиль, либо состав, параметры или целевой характер. Общее описание особой природы напитка может закрывать все обязательные пункты."
       },
       "vital_statistics": {
-        "OG": "varies with base style, typically above-average",
-        "FG": "varies with base style",
-        "ABV": "varies with base style, typically above-average",
-        "IBUs": "varies with base style",
-        "SRM": "varies with base style, often darker than the unadulterated base style"
+        "og": "varies with base style, typically above-average",
+        "fg": "varies with base style",
+        "abv": "varies with base style, typically above-average",
+        "ibu": "varies with base style",
+        "srm": "varies with base style, often darker than the unadulterated base style"
       },
       "vital_statistics_text": "OG: varies with base style, typically above-average | FG: varies with base style | ABV: varies with base style, typically above-average | IBUs: varies with base style | SRM: varies with base style, often darker than the unadulterated base style",
       "commercial_examples_text": "AleSmith Barrel-Aged Old Numbskull, Founders Kentucky Breakfast Stout, Firestone Walker Parabola, Goose Island Bourbon County Stout, Great Divide Barrel Aged Yeti, The Lost Abbey Angel’s Share Ale",
