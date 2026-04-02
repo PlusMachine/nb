@@ -46,10 +46,32 @@ type RawBjcpFamilyFile = {
     primary_family_ru?: string;
     primary_family_en?: string;
     ui_badges_ru?: string[];
+    ui_color_hint?: string;
     secondary_family_ids?: string[];
     all_family_ids?: string[];
   }>;
 };
+
+const bjcpUiColorHints = [
+  "autumn-amber",
+  "blended-spectrum",
+  "declared-spectrum",
+  "experimental-spectrum",
+  "fruit-spectrum",
+  "fruit-spice-spectrum",
+  "grain-harvest",
+  "hop-spectrum",
+  "lager-hazy",
+  "smoke-malt",
+  "sour-spectrum",
+  "spice-garden",
+  "sugar-caramel",
+  "wild-ale-spectrum",
+  "winter-spice",
+  "wood-barrel"
+] as const;
+
+export type BjcpUiColorHint = typeof bjcpUiColorHints[number];
 
 export type BjcpCatalogViewMode = "families" | "bjcp";
 
@@ -84,6 +106,7 @@ export type BjcpCatalogStyle = ContentArticle & {
   familyNamesRu: string[];
   familyNamesEn: string[];
   badgesRu: string[];
+  uiColorHint: BjcpUiColorHint | null;
 };
 
 export type BjcpCatalogData = {
@@ -104,8 +127,13 @@ const defaultUiStrategy: BjcpCatalogUiStrategy = {
 let cachedCatalogPromise: Promise<BjcpCatalogData> | null = null;
 
 const collator = new Intl.Collator("en", { numeric: true, sensitivity: "base" });
+const bjcpUiColorHintSet = new Set<string>(bjcpUiColorHints);
 
 const compareBjcpIds = (left: string, right: string) => collator.compare(left, right);
+
+const normalizeUiColorHint = (value?: string | null): BjcpUiColorHint | null => (
+  value && bjcpUiColorHintSet.has(value) ? value as BjcpUiColorHint : null
+);
 
 const loadFamilyFile = async (): Promise<RawBjcpFamilyFile> => {
   for (const filePath of BJCP_FAMILY_FILE_CANDIDATES) {
@@ -197,7 +225,8 @@ const buildCatalog = async (): Promise<BjcpCatalogData> => {
       familyIds: familyIds.length ? familyIds : [primaryFamilyId],
       familyNamesRu: familyNamesRu.length ? familyNamesRu : [familyById.get(primaryFamilyId)?.nameRu ?? article.category.nameRu],
       familyNamesEn: familyNamesEn.length ? familyNamesEn : [familyById.get(primaryFamilyId)?.nameEn ?? article.category.nameEn],
-      badgesRu: meta?.ui_badges_ru?.filter(Boolean) ?? []
+      badgesRu: meta?.ui_badges_ru?.filter(Boolean) ?? [],
+      uiColorHint: normalizeUiColorHint(meta?.ui_color_hint)
     };
   });
 

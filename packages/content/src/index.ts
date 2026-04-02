@@ -7,6 +7,7 @@ export {
   type ArticleSection,
   type ArticleSourceInfo,
   type ArticleStat,
+  type ArticleVitalStatistics,
   type BeerColorBand,
   type CategorySummary,
   type ContentArticle
@@ -16,6 +17,7 @@ export {
   getBjcpCatalogData,
   type BjcpCatalogData,
   type BjcpCatalogStyle,
+  type BjcpUiColorHint,
   type BjcpCatalogUiStrategy,
   type BjcpCatalogViewMode,
   type BjcpFamily

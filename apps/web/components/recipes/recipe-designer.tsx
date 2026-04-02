@@ -1,6 +1,6 @@
 "use client";
 
-import { beerStyleFixtures, convertWeight, evaluateStyleFit, getBeerStyleById, getStyleRangeById, sgToPlato, srmToEbc } from "@nb/brewing-core";
+import { beerStyleFixtures, convertWeight, evaluateStyleFit, getBeerStyleById, getStyleRangeById, srmToEbc } from "@nb/brewing-core";
 import {
   CircleCheck,
   CircleAlert,
@@ -61,7 +61,7 @@ import {
   type RecipePublicationState
 } from "@/features/recipes/contracts";
 import { beerColorFromSrm } from "@/features/recipes/beer-color";
-import { formatColorWithEbc, formatGravityWithPlato } from "@/features/recipes/format";
+import { formatColorWithEbc, formatGravityWithPlato, formatPlatoFromSg } from "@/features/recipes/format";
 import { BeerGlassIcon } from "@/components/recipes/beer-glass-icon";
 import {
   buildRecipePublicationChecklist,
@@ -990,7 +990,7 @@ function StyleRangeTrack({
 
 const formatGravityPlato = (sg: number | null) => {
   if (sg == null) return "—";
-  return `${sgToPlato(sg, 1).toFixed(1)} °P`;
+  return formatPlatoFromSg(sg, 1);
 };
 
 function RecipeStyleStatsBlock({

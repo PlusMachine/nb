@@ -1897,6 +1897,7 @@
       "primary_family_ru": "IPA, APA и хмелевые стили",
       "primary_family_en": "IPA, APA & Hoppy Styles",
       "ui_badges_ru": [],
+      "ui_color_hint": "hop-spectrum",
       "secondary_family_ids": [],
       "all_family_ids": [
         "ipa_hoppy"
@@ -2578,6 +2579,7 @@
         "Традиционный стиль",
         "Исторический стиль"
       ],
+      "ui_color_hint": "lager-hazy",
       "secondary_family_ids": [
         "easy_light"
       ],
@@ -3065,6 +3067,7 @@
       "primary_family_ru": "Фруктовые, пряные и специальные стили",
       "primary_family_en": "Fruit, Spice & Specialty",
       "ui_badges_ru": [],
+      "ui_color_hint": "sugar-caramel",
       "secondary_family_ids": [],
       "all_family_ids": [
         "specialty"
@@ -3148,6 +3151,7 @@
       "primary_family_ru": "Фруктовые, пряные и специальные стили",
       "primary_family_en": "Fruit, Spice & Specialty",
       "ui_badges_ru": [],
+      "ui_color_hint": "declared-spectrum",
       "secondary_family_ids": [],
       "all_family_ids": [
         "specialty"
@@ -3163,6 +3167,7 @@
       "primary_family_ru": "Фруктовые, пряные и специальные стили",
       "primary_family_en": "Fruit, Spice & Specialty",
       "ui_badges_ru": [],
+      "ui_color_hint": "blended-spectrum",
       "secondary_family_ids": [],
       "all_family_ids": [
         "specialty"
@@ -3178,6 +3183,7 @@
       "primary_family_ru": "Фруктовые, пряные и специальные стили",
       "primary_family_en": "Fruit, Spice & Specialty",
       "ui_badges_ru": [],
+      "ui_color_hint": "experimental-spectrum",
       "secondary_family_ids": [],
       "all_family_ids": [
         "specialty"

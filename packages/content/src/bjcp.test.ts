@@ -55,13 +55,13 @@ describe("BJCP content index", () => {
   });
 
   it("uses a style-specific hero image when one is available", async () => {
-    const [withImage, withoutImage] = await Promise.all([
+    const [withImage, newlyAddedImage] = await Promise.all([
       getArticleBySlug("bjcp-1a-american-light-lager"),
       getArticleBySlug("bjcp-12a-british-golden-ale")
     ]);
 
     expect(withImage?.heroImageUrl).toBe("/images/bjcp/1A%20%E2%80%94%20American%20Light%20Lager.png");
-    expect(withoutImage?.heroImageUrl).toBe("/images/bjcp-placeholder.png");
+    expect(newlyAddedImage?.heroImageUrl).toBe("/images/bjcp/12A%20%E2%80%94%20British%20Golden%20Ale.png");
   });
 
   it("loads IBU stats from normalized BJCP vital statistics", async () => {
@@ -73,6 +73,27 @@ describe("BJCP content index", () => {
     expect(weissbier?.stats.find((stat) => stat.label === "IBU")?.value).toBe("8-15");
     expect(czechDarkLager?.stats.find((stat) => stat.label === "IBU")?.value).toBe("18 - 34");
     expect(woodAgedBeer?.stats.find((stat) => stat.label === "IBU")?.value).toBe("varies with base style");
+  });
+
+  it("backfills missing primary stats from vital_statistics_text when structured keys are incomplete", async () => {
+    const article = await getArticleBySlug("bjcp-3c-czech-amber-lager");
+
+    expect(article?.bjcpId).toBe("3C");
+    expect(article?.stats.find((stat) => stat.label === "ABV")?.value).toBe("4.4 - 5.8%");
+    expect(article?.vitalStatistics.abv).toBe("4.4 - 5.8%");
+  });
+
+  it("keeps note-driven and subtype-driven vital statistics for styles without numeric ranges", async () => {
+    const [kellerbier, specialtyIpa] = await Promise.all([
+      getArticleBySlug("bjcp-27-kellerbier"),
+      getArticleBySlug("bjcp-21b-specialty-ipa")
+    ]);
+
+    expect(kellerbier?.vitalStatistics.note).toBe("Same as base style.");
+    expect(kellerbier?.stats).toEqual([]);
+    expect(specialtyIpa?.vitalStatistics.sessionAbv).toBe("3.0 – 5.0%");
+    expect(specialtyIpa?.vitalStatistics.standardAbv).toBe("5.0 – 7.5%");
+    expect(specialtyIpa?.vitalStatistics.doubleAbv).toBe("7.5 – 10.0%");
   });
 
   it("keeps BJCP vital_statistics keys normalized for IBU-compatible fields", async () => {

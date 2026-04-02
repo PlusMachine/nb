@@ -1,6 +1,6 @@
 "use client";
 
-import { useDeferredValue, useEffect, useMemo, useRef, useState, useTransition } from "react";
+import { Fragment, useDeferredValue, useEffect, useMemo, useRef, useState, useTransition } from "react";
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import {
@@ -15,6 +15,10 @@ import {
 } from "lucide-react";
 import type { BjcpCatalogData, BjcpCatalogStyle } from "@nb/content";
 
+import {
+  getBjcpCardColorInfo,
+  getBjcpCardStatDisplay
+} from "@/features/content/bjcp-card-stats";
 import {
   buildBjcpCatalogHref,
   getActivePills,
@@ -34,7 +38,6 @@ import {
   type BjcpFilterOptionId,
   type BjcpSuggestion
 } from "@/features/content/bjcp-catalog";
-import { beerColorFromSrm } from "@/features/recipes/beer-color";
 
 import { BjcpEmptyState } from "./bjcp-empty-state";
 import { BjcpFilterSheet } from "./bjcp-filter-sheet";
@@ -62,14 +65,13 @@ const segmentedButtonClassName = (active: boolean) => (
 
 const numericCategoryIdPattern = /^\d+$/;
 
-const chunkArray = <T,>(items: T[], size: number) => {
-  const chunks: T[][] = [];
-
-  for (let index = 0; index < items.length; index += size) {
-    chunks.push(items.slice(index, index + size));
+const getNumericCategoryValue = (categoryId: string) => {
+  if (!numericCategoryIdPattern.test(categoryId)) {
+    return null;
   }
 
-  return chunks;
+  const value = Number.parseInt(categoryId, 10);
+  return Number.isFinite(value) ? value : null;
 };
 
 const formatStyleCountLabel = (count: number) => {
@@ -87,50 +89,10 @@ const formatStyleCountLabel = (count: number) => {
   return `${count} стилей`;
 };
 
-const colorBandFallback: Record<BjcpCatalogStyle["colorBand"], { hex: string; label: string }> = {
-  straw: { hex: "#F3F993", label: "Светлое" },
-  gold: { hex: "#FFBF42", label: "Золотистое" },
-  amber: { hex: "#CF6900", label: "Янтарное" },
-  copper: { hex: "#A63E00", label: "Медное" },
-  brown: { hex: "#6F1A07", label: "Коричневое" },
-  dark: { hex: "#1A0F0B", label: "Тёмное" }
-};
-
-const parseStatNumbers = (value?: string | null) => (
-  value?.match(/\d+(?:\.\d+)?/g)?.map((item) => Number.parseFloat(item)).filter((item) => Number.isFinite(item)) ?? []
-);
-
-const getStyleStatValue = (style: BjcpCatalogStyle, label: string) => (
-  style.stats.find((item: BjcpCatalogStyle["stats"][number]) => item.label === label)?.value ?? null
-);
-
-const getStyleColorInfo = (style: BjcpCatalogStyle) => {
-  const srmValue = getStyleStatValue(style, "SRM");
-  const srmNumbers = parseStatNumbers(srmValue);
-
-  if (srmValue && srmNumbers.length) {
-    const startColor = beerColorFromSrm(srmNumbers[0]!);
-    const endColor = beerColorFromSrm(srmNumbers[srmNumbers.length - 1]!);
-
-    return {
-      startHex: startColor.hex,
-      endHex: endColor.hex,
-      value: srmValue
-    };
-  }
-
-  const fallback = colorBandFallback[style.colorBand];
-  return {
-    startHex: fallback.hex,
-    endHex: fallback.hex,
-    value: fallback.label
-  };
-};
-
 function CategoryStyleDetailCard({ style }: { style: BjcpCatalogStyle }) {
-  const abvValue = getStyleStatValue(style, "ABV") ?? "n/a";
-  const ibuValue = getStyleStatValue(style, "IBU") ?? "n/a";
-  const colorInfo = getStyleColorInfo(style);
+  const abvStat = getBjcpCardStatDisplay(style, "abv");
+  const ibuStat = getBjcpCardStatDisplay(style, "ibu");
+  const colorInfo = getBjcpCardColorInfo(style);
 
   return (
     <Link
@@ -159,15 +121,26 @@ function CategoryStyleDetailCard({ style }: { style: BjcpCatalogStyle }) {
           </div>
 
           <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-[11px] font-medium text-zinc-600">
-            <span>ABV <span className="text-zinc-950">{abvValue}</span></span>
+            <span>ABV <span className={abvStat.isFallback ? "text-zinc-800" : "text-zinc-950"}>{abvStat.value}</span></span>
             <span className="text-zinc-300">·</span>
-            <span>IBU <span className="text-zinc-950">{ibuValue}</span></span>
+            <span>IBU <span className={ibuStat.isFallback ? "text-zinc-800" : "text-zinc-950"}>{ibuStat.value}</span></span>
             <span className="text-zinc-300">·</span>
-            <span>SRM <span className="text-zinc-950">{colorInfo.value}</span></span>
+            <span>SRM <span className={colorInfo.isFallback ? "text-zinc-800" : "text-zinc-950"}>{colorInfo.value}</span></span>
           </div>
         </div>
       </article>
     </Link>
+  );
+}
+
+function AccordionSectionDivider({ label }: { label: string }) {
+  return (
+    <div className="flex items-center gap-3 px-2 pt-4 pb-1" aria-hidden="true">
+      <span className="text-xs font-normal tracking-[0.14em] text-zinc-400">
+        {label}
+      </span>
+      <div className="h-px flex-1 bg-zinc-200/80" />
+    </div>
   );
 }
 
@@ -287,21 +260,39 @@ export function BjcpCatalog({ catalog }: Props) {
   const numericJumpBarCategories = catalog.categories.filter((category) => numericCategoryIdPattern.test(category.id));
   const extraJumpBarCategories = catalog.categories.filter((category) => !numericCategoryIdPattern.test(category.id));
   const jumpBarGroups = [
-    ...chunkArray(numericJumpBarCategories, 8).map((group) => ({
-      key: `jump-${group[0]?.id ?? "numeric"}-${group[group.length - 1]?.id ?? "numeric"}`,
-      label: `${group[0]?.id ?? ""}-${group[group.length - 1]?.id ?? ""}`,
-      targetId: group[0]?.id ?? null,
-      categoryIds: group.map((category) => category.id)
-    })),
-    ...(extraJumpBarCategories.length
-      ? [{
-        key: "jump-extras",
-        label: extraJumpBarCategories.map((category) => category.id).join("/"),
-        targetId: extraJumpBarCategories[0]?.id ?? null,
-        categoryIds: extraJumpBarCategories.map((category) => category.id)
-      }]
-      : [])
-  ];
+    { key: "jump-1-8", label: "1–8", min: 1, max: 8 },
+    { key: "jump-9-17", label: "9–17", min: 9, max: 17 },
+    { key: "jump-18-26", label: "18–26", min: 18, max: 26 },
+    { key: "jump-27-34", label: "27–34", min: 27, max: 34 }
+  ]
+    .map((group) => {
+      const categoryIds = numericJumpBarCategories
+        .filter((category) => {
+          const numericId = getNumericCategoryValue(category.id);
+          return numericId !== null && numericId >= group.min && numericId <= group.max;
+        })
+        .map((category) => category.id);
+
+      return {
+        key: group.key,
+        label: group.label,
+        targetId: categoryIds[0] ?? null,
+        categoryIds
+      };
+    })
+    .filter((group) => group.categoryIds.length > 0);
+
+  if (extraJumpBarCategories.length) {
+    jumpBarGroups.push({
+      key: "jump-locals",
+      label: "X-* Локальные",
+      targetId: extraJumpBarCategories[0]?.id ?? null,
+      categoryIds: extraJumpBarCategories.map((category) => category.id)
+    });
+  }
+
+  const firstHistoricalSpecialCategoryId = catalog.categories.find((category) => category.id === "27")?.id ?? null;
+  const firstLocalCategoryId = extraJumpBarCategories[0]?.id ?? null;
 
   useEffect(() => {
     if (state.view !== "bjcp" || state.chips.length === 0) {
@@ -742,57 +733,65 @@ export function BjcpCatalog({ catalog }: Props) {
           {catalog.categories.map((category: BjcpCatalogData["categories"][number]) => {
             const open = state.category === category.id;
             const categoryStyles = open ? getCategoryPreviewStyles(catalog, category.id) : [];
+            const dividerLabel = category.id === firstHistoricalSpecialCategoryId
+              ? "Исторические и специальные"
+              : category.id === firstLocalCategoryId
+                ? "Локальные"
+                : null;
 
             return (
-              <section
-                key={category.id}
-                id={`bjcp-category-${category.id}`}
-                className={`overflow-hidden rounded-[1.5rem] border transition ${open
-                  ? "border-zinc-300 bg-[linear-gradient(180deg,rgba(250,250,250,0.98),rgba(244,244,245,0.98))] shadow-[0_26px_70px_-54px_rgba(15,23,42,0.35)]"
-                  : "border-zinc-200 bg-white shadow-sm"
-                  } scroll-mt-28`}
-              >
-                <button
-                  type="button"
-                  onClick={() => navigateState(updateState(state, {
-                    ...resetCatalogControls(),
-                    category: open ? null : category.id,
-                    view: "bjcp",
-                    sort: "code"
-                  }))}
-                  className={`flex w-full items-center justify-between gap-4 px-5 py-4 text-left transition ${open ? "hover:bg-white/30" : "hover:bg-zinc-50"}`}
+              <Fragment key={category.id}>
+                {dividerLabel ? <AccordionSectionDivider label={dividerLabel} /> : null}
+
+                <section
+                  id={`bjcp-category-${category.id}`}
+                  className={`overflow-hidden rounded-[1.5rem] border transition ${open
+                    ? "border-zinc-300 bg-[linear-gradient(180deg,rgba(250,250,250,0.98),rgba(244,244,245,0.98))] shadow-[0_26px_70px_-54px_rgba(15,23,42,0.35)]"
+                    : "border-zinc-200 bg-white shadow-sm"
+                    } scroll-mt-28`}
                 >
-                  <div className="min-w-0 flex flex-wrap items-baseline gap-x-3 gap-y-1">
-                    <span className={`text-sm font-medium ${open ? "text-zinc-700" : "text-zinc-500"}`}>
-                      {category.id}
-                    </span>
-                    <h3 className="text-lg font-medium text-zinc-950">{category.nameRu}</h3>
-                  </div>
-
-                  <div className="flex items-center gap-3 pl-3">
-                    <span className="text-sm text-zinc-500">
-                      {category.styleCodeRange ?? category.id}
-                    </span>
-                    <span className={`shrink-0 rounded-full px-3 py-1 text-xs font-semibold ${open
-                      ? "bg-zinc-950 text-white"
-                      : "bg-slate-50 text-zinc-700 ring-1 ring-zinc-200"
-                      }`}>
-                      {formatStyleCountLabel(category.articleCount)}
-                    </span>
-                    {open ? <ChevronDown className="h-5 w-5 text-zinc-500" /> : <ChevronRight className="h-5 w-5 text-zinc-400" />}
-                  </div>
-                </button>
-
-                {open ? (
-                  <div className="border-t border-zinc-200/70 px-5 py-4">
-                    <div className="grid gap-2 md:grid-cols-2 xl:grid-cols-3">
-                      {categoryStyles.map((style: BjcpCatalogStyle) => (
-                        <CategoryStyleDetailCard key={style.slug} style={style} />
-                      ))}
+                  <button
+                    type="button"
+                    onClick={() => navigateState(updateState(state, {
+                      ...resetCatalogControls(),
+                      category: open ? null : category.id,
+                      view: "bjcp",
+                      sort: "code"
+                    }))}
+                    className={`flex w-full items-center justify-between gap-4 px-5 py-4 text-left transition ${open ? "hover:bg-white/30" : "hover:bg-zinc-50"}`}
+                  >
+                    <div className="min-w-0 flex flex-wrap items-baseline gap-x-3 gap-y-1">
+                      <span className={`text-sm font-medium ${open ? "text-zinc-700" : "text-zinc-500"}`}>
+                        {category.id}
+                      </span>
+                      <h3 className="text-lg font-medium text-zinc-950">{category.nameRu}</h3>
                     </div>
-                  </div>
-                ) : null}
-              </section>
+
+                    <div className="flex items-center gap-3 pl-3">
+                      <span className="text-sm text-zinc-500">
+                        {category.styleCodeRange ?? category.id}
+                      </span>
+                      <span className={`shrink-0 rounded-full px-3 py-1 text-xs font-semibold ${open
+                        ? "bg-zinc-950 text-white"
+                        : "bg-slate-50 text-zinc-700 ring-1 ring-zinc-200"
+                        }`}>
+                        {formatStyleCountLabel(category.articleCount)}
+                      </span>
+                      {open ? <ChevronDown className="h-5 w-5 text-zinc-500" /> : <ChevronRight className="h-5 w-5 text-zinc-400" />}
+                    </div>
+                  </button>
+
+                  {open ? (
+                    <div className="border-t border-zinc-200/70 px-5 py-4">
+                      <div className="grid gap-2 md:grid-cols-2 xl:grid-cols-3">
+                        {categoryStyles.map((style: BjcpCatalogStyle) => (
+                          <CategoryStyleDetailCard key={style.slug} style={style} />
+                        ))}
+                      </div>
+                    </div>
+                  ) : null}
+                </section>
+              </Fragment>
             );
           })}
         </section>

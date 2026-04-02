@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { getArticleBySlug, listArticles, listRelatedArticles } from "@nb/content";
+import { getArticleBySlug, getBjcpCatalogData, listArticles, listRelatedArticles } from "@nb/content";
 import { notFound } from "next/navigation";
 
 import { BjcpArticlePage } from "@/components/content/bjcp-article-page";
@@ -56,7 +56,11 @@ export default async function BjcpStylePage({ params }: { params: Promise<{ slug
     notFound();
   }
 
-  const relatedArticles = await listRelatedArticles(article, 3);
+  const [relatedArticles, catalog] = await Promise.all([
+    listRelatedArticles(article, 3),
+    getBjcpCatalogData()
+  ]);
+  const catalogStyle = catalog.styles.find((style) => style.bjcpId === article.bjcpId) ?? null;
 
-  return <BjcpArticlePage article={article} relatedArticles={relatedArticles} />;
+  return <BjcpArticlePage article={article} relatedArticles={relatedArticles} catalogStyle={catalogStyle} />;
 }

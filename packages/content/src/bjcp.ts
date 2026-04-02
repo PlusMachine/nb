@@ -80,6 +80,18 @@ export type ArticleStat = {
   value: string;
 };
 
+export type ArticleVitalStatistics = {
+  og: string | null;
+  fg: string | null;
+  ibu: string | null;
+  srm: string | null;
+  abv: string | null;
+  note: string | null;
+  sessionAbv: string | null;
+  standardAbv: string | null;
+  doubleAbv: string | null;
+};
+
 export type ArticleSourceInfo = {
   document: string | null;
   fileName: string | null;
@@ -116,6 +128,8 @@ export type ContentArticle = {
   readingMinutes: number;
   isFeatured: boolean;
   stats: ArticleStat[];
+  vitalStatistics: ArticleVitalStatistics;
+  vitalStatisticsText: string | null;
   sections: ArticleSection[];
   keywords: string[];
   seoTitle: string;
@@ -129,8 +143,17 @@ type BjcpContentIndex = {
 };
 
 let cachedIndexPromise: Promise<BjcpContentIndex> | null = null;
+const shouldCacheIndex = process.env.NODE_ENV === "production";
 
 const collator = new Intl.Collator("en", { numeric: true, sensitivity: "base" });
+const vitalStatTextLabels = {
+  og: "OG",
+  fg: "FG",
+  ibu: "IBU(?:s)?",
+  srm: "SRM",
+  abv: "ABV"
+} as const;
+const vitalStatTextLabelPattern = Object.values(vitalStatTextLabels).join("|");
 
 const slugify = (value: string) => value
   .toLowerCase()
@@ -223,7 +246,7 @@ const parseAverageNumber = (value?: string | null) => {
   return total / numbers.length;
 };
 
-const resolveBeerColorBand = (stats: Record<string, string | null | undefined> | undefined): BeerColorBand => {
+const resolveBeerColorBand = (stats: Pick<ArticleVitalStatistics, "srm"> | undefined): BeerColorBand => {
   const averageSrm = parseAverageNumber(stats?.srm);
 
   if (averageSrm == null || averageSrm <= 3.5) {
@@ -249,8 +272,92 @@ const resolveBeerColorBand = (stats: Record<string, string | null | undefined> |
   return "dark";
 };
 
-const buildStats = (stats?: Record<string, string | null | undefined>): ArticleStat[] => {
-  const order: Array<[string, string]> = [
+const normalizeVitalStatisticValue = (value?: string | null) => {
+  const trimmed = value?.trim();
+  return trimmed ? trimmed : null;
+};
+
+const cleanExtractedVitalStatisticValue = (value: string) => {
+  const trimmed = value
+    .replace(/\s+\d+\s+BJCP Beer Style Guidelines.*$/iu, "")
+    .replace(/\s*\|\s*$/u, "")
+    .trim();
+
+  return trimmed || null;
+};
+
+const extractVitalStatisticFromText = (
+  value: string | null,
+  key: keyof typeof vitalStatTextLabels
+) => {
+  if (!value) {
+    return null;
+  }
+
+  const regex = new RegExp(
+    `${vitalStatTextLabels[key]}:\\s*(.+?)(?=(?:\\s*\\|\\s*)?(?:${vitalStatTextLabelPattern}):|$)`,
+    "iu"
+  );
+  const match = value.match(regex);
+
+  return match?.[1] ? cleanExtractedVitalStatisticValue(match[1]) : null;
+};
+
+const buildVitalStatistics = (
+  stats?: Record<string, string | null | undefined>,
+  vitalStatisticsText?: string | null
+): ArticleVitalStatistics => {
+  const trimmedText = vitalStatisticsText?.trim() ?? null;
+  const normalized = {
+    og: normalizeVitalStatisticValue(stats?.og),
+    fg: normalizeVitalStatisticValue(stats?.fg),
+    ibu: normalizeVitalStatisticValue(stats?.ibu),
+    srm: normalizeVitalStatisticValue(stats?.srm),
+    abv: normalizeVitalStatisticValue(stats?.abv),
+    note: normalizeVitalStatisticValue(stats?.note),
+    sessionAbv: normalizeVitalStatisticValue(stats?.session_abv),
+    standardAbv: normalizeVitalStatisticValue(stats?.standard_abv),
+    doubleAbv: normalizeVitalStatisticValue(stats?.double_abv)
+  } satisfies ArticleVitalStatistics;
+  const hasSubtypeAbv = Boolean(normalized.sessionAbv || normalized.standardAbv || normalized.doubleAbv);
+
+  if (!normalized.og) {
+    normalized.og = extractVitalStatisticFromText(trimmedText, "og");
+  }
+
+  if (!normalized.fg) {
+    normalized.fg = extractVitalStatisticFromText(trimmedText, "fg");
+  }
+
+  if (!normalized.ibu) {
+    normalized.ibu = extractVitalStatisticFromText(trimmedText, "ibu");
+  }
+
+  if (!normalized.srm) {
+    normalized.srm = extractVitalStatisticFromText(trimmedText, "srm");
+  }
+
+  if (!normalized.abv && !hasSubtypeAbv) {
+    normalized.abv = extractVitalStatisticFromText(trimmedText, "abv");
+  }
+
+  if (
+    !normalized.note
+    && !normalized.og
+    && !normalized.fg
+    && !normalized.ibu
+    && !normalized.srm
+    && !normalized.abv
+    && trimmedText
+  ) {
+    normalized.note = trimmedText;
+  }
+
+  return normalized;
+};
+
+const buildStats = (stats: ArticleVitalStatistics): ArticleStat[] => {
+  const order: Array<[keyof Pick<ArticleVitalStatistics, "og" | "fg" | "ibu" | "srm" | "abv">, string]> = [
     ["og", "НП"],
     ["fg", "КП"],
     ["ibu", "IBU"],
@@ -260,7 +367,7 @@ const buildStats = (stats?: Record<string, string | null | undefined>): ArticleS
 
   return order
     .map(([key, label]) => {
-      const value = stats?.[key];
+      const value = stats[key];
       return value ? { label, value } : null;
     })
     .filter((item): item is ArticleStat => item !== null);
@@ -466,7 +573,9 @@ const buildIndex = async (): Promise<BjcpContentIndex> => {
       const description = style.description_short_ru?.trim() ?? sections[0]?.content ?? `${title} по BJCP`;
       const slug = createBjcpArticleSlug(bjcpId, titleEn);
       const publishedAt = resolvePublishedAt(articleIndex);
-      const stats = buildStats(style.vital_statistics);
+      const vitalStatisticsText = style.vital_statistics_text?.trim() ?? null;
+      const vitalStatistics = buildVitalStatistics(style.vital_statistics, vitalStatisticsText);
+      const stats = buildStats(vitalStatistics);
 
       articles.push({
         slug,
@@ -479,7 +588,7 @@ const buildIndex = async (): Promise<BjcpContentIndex> => {
         eyebrow: `${bjcpId} · BJCP 2021`,
         category,
         heroImageUrl: heroImageUrls.get(bjcpId) ?? DEFAULT_BJCP_HERO_IMAGE_URL,
-        colorBand: resolveBeerColorBand(style.vital_statistics),
+        colorBand: resolveBeerColorBand(vitalStatistics),
         publishedAt,
         updatedAt: publishedAt,
         readingMinutes: estimateReadingMinutes([
@@ -488,6 +597,8 @@ const buildIndex = async (): Promise<BjcpContentIndex> => {
         ]),
         isFeatured: FEATURED_STYLE_IDS.includes(bjcpId as (typeof FEATURED_STYLE_IDS)[number]),
         stats,
+        vitalStatistics,
+        vitalStatisticsText,
         sections,
         keywords: buildKeywords({
           bjcpId,
@@ -528,6 +639,10 @@ const buildIndex = async (): Promise<BjcpContentIndex> => {
 };
 
 const getIndex = async () => {
+  if (!shouldCacheIndex) {
+    return buildIndex();
+  }
+
   cachedIndexPromise ??= buildIndex();
   return cachedIndexPromise;
 };

@@ -1,8 +1,11 @@
+import React from "react";
 import Link from "next/link";
-import { sgToPlato, srmToEbc } from "@nb/brewing-core";
-import type { ContentArticle } from "@nb/content";
+import { srmToEbc } from "@nb/brewing-core";
+import type { BjcpCatalogStyle, ContentArticle } from "@nb/content";
 
+import { getBjcpCardColorInfo } from "@/features/content/bjcp-card-stats";
 import { beerColorFromSrm } from "@/features/recipes/beer-color";
+import { formatPlatoFromSg } from "@/features/recipes/format";
 
 const mediaThemes = [
   "bg-[linear-gradient(150deg,#0f172a_0%,#1e293b_50%,#475569_100%)]",
@@ -36,7 +39,7 @@ const formatRange = (values: number[], formatter: (value: number) => string) => 
 
 const formatPlatoRange = (value: string) => {
   const numbers = parseStatNumbers(value);
-  return formatRange(numbers, (item) => `${sgToPlato(item, 1).toFixed(1)} °P`);
+  return formatRange(numbers, (item) => formatPlatoFromSg(item, 1));
 };
 
 const formatEbcRange = (value: string) => {
@@ -44,34 +47,230 @@ const formatEbcRange = (value: string) => {
   return formatRange(numbers, (item) => `${formatNumber(srmToEbc(item), 0)} EBC`);
 };
 
+const fallbackColorBandAccent: Record<ContentArticle["colorBand"], ColorAccent> = {
+  straw: { startHex: "#FEF3C7", averageHex: "#FDE68A", endHex: "#FBBF24" },
+  gold: { startHex: "#FDE68A", averageHex: "#FBBF24", endHex: "#D97706" },
+  amber: { startHex: "#F59E0B", averageHex: "#D97706", endHex: "#92400E" },
+  copper: { startHex: "#C2410C", averageHex: "#9A3412", endHex: "#7C2D12" },
+  brown: { startHex: "#92400E", averageHex: "#6B3410", endHex: "#451A03" },
+  dark: { startHex: "#7C4A24", averageHex: "#4B2E17", endHex: "#1C1917" }
+};
+
+const emptyPassportStatLabel = "Не указывается в BJCP";
+const emptyPassportStatSupportingText = "Для этого стиля BJCP не задаёт отдельный диапазон.";
+
+type PassportStatKey = "og" | "fg" | "abv" | "ibu" | "srm";
+
 type PassportStatDefinition = {
+  key: PassportStatKey;
   label: string;
+  wide?: boolean;
   supporting: (value: string) => string | null;
 };
 
 const passportStatDefinitions: PassportStatDefinition[] = [
   {
+    key: "og",
     label: "НП",
     supporting: formatPlatoRange
   },
   {
+    key: "fg",
     label: "КП",
     supporting: formatPlatoRange
   },
   {
+    key: "abv",
     label: "ABV",
     supporting: () => null
   },
   {
+    key: "ibu",
     label: "IBU",
     supporting: () => null
+  },
+  {
+    key: "srm",
+    label: "Цвет",
+    wide: true,
+    supporting: formatEbcRange
   }
 ];
 
-const resolveColorRange = (value: string) => {
+type ColorAccent = {
+  startHex: string;
+  averageHex: string;
+  endHex: string;
+};
+
+type PassportStatItem = PassportStatDefinition & {
+  value: string;
+  supportingText: string | null;
+  isTextual: boolean;
+  accent?: ColorAccent;
+};
+
+const normalizeDescriptor = (value: string) => value
+  .toLowerCase()
+  .replace(/[–—]/gu, "-")
+  .replace(/\s+/gu, " ")
+  .replace(/[.\s]+$/u, "")
+  .trim();
+
+const isCompactNumericValue = (value: string) => (
+  parseStatNumbers(value).length > 0 && !/[A-Za-zА-Яа-я]/u.test(value)
+);
+
+const resolveLocalizedDescriptor = (key: PassportStatKey, value: string) => {
+  const normalized = normalizeDescriptor(value);
+
+  if (normalized === "same as base style") {
+    return {
+      value: "Как у базового стиля",
+      supportingText: "Отдельный диапазон для этого стиля BJCP не указывает."
+    };
+  }
+
+  if (
+    normalized === "variable by base style"
+    || normalized === "varies with the base beer style"
+    || normalized === "varies with base style"
+  ) {
+    return {
+      value: "Зависит от базового стиля",
+      supportingText: "Отдельный диапазон для этого стиля BJCP не указывает."
+    };
+  }
+
+  if (normalized === "varies with base style, typically above-average") {
+    return {
+      value: "Зависит от базового стиля",
+      supportingText: "Обычно выше среднего для базовой версии."
+    };
+  }
+
+  if (normalized === "varies with base style, often darker than the unadulterated base style") {
+    return {
+      value: "Зависит от базового стиля",
+      supportingText: "Обычно темнее базовой версии."
+    };
+  }
+
+  if (normalized.startsWith("og, fg, ibus, srm, and abv will vary depending on the underlying base beer")) {
+    if (key === "abv" && normalized.includes("above 5%")) {
+      return {
+        value: "Зависит от базового стиля",
+        supportingText: "Обычно выше 5%."
+      };
+    }
+
+    if (key === "abv" && normalized.includes("above 6%")) {
+      return {
+        value: "Зависит от базового стиля",
+        supportingText: "Обычно выше 6%."
+      };
+    }
+
+    if (key === "srm" && normalized.includes("fruit will often be reflected in the color")) {
+      return {
+        value: "Зависит от базового стиля",
+        supportingText: "Оттенок часто определяется фруктами."
+      };
+    }
+
+    if (key === "srm" && normalized.includes("amber-copper")) {
+      return {
+        value: "Зависит от базового стиля",
+        supportingText: "Чаще встречается янтарно-медный оттенок."
+      };
+    }
+
+    if (key === "srm" && normalized.includes("somewhat dark")) {
+      return {
+        value: "Зависит от базового стиля",
+        supportingText: "Чаще встречается тёмный оттенок."
+      };
+    }
+
+    return {
+      value: "Зависит от базового стиля",
+      supportingText: "Отдельный диапазон для этого стиля BJCP не указывает."
+    };
+  }
+
+  if (normalized.startsWith("og, fg, ibus, srm, and abv will vary depending on the declared beer")) {
+    return {
+      value: "Зависит от заявленного пива",
+      supportingText: "Отдельный диапазон для этого стиля BJCP не указывает."
+    };
+  }
+
+  if (normalized.startsWith("variable by type, see individual styles")) {
+    return {
+      value: "Зависит от подстиля IPA",
+      supportingText: "Параметры отличаются у Session, Standard и Double версий."
+    };
+  }
+
+  return {
+    value: "Смотрите описание стиля",
+    supportingText: value
+  };
+};
+
+const buildSubtypeAbvValue = (article: ContentArticle) => {
+  const variants = [
+    article.vitalStatistics.sessionAbv ? `Session: ${article.vitalStatistics.sessionAbv}` : null,
+    article.vitalStatistics.standardAbv ? `Standard: ${article.vitalStatistics.standardAbv}` : null,
+    article.vitalStatistics.doubleAbv ? `Double: ${article.vitalStatistics.doubleAbv}` : null
+  ].filter((item): item is string => item !== null);
+
+  return variants.length ? variants.join("\n") : null;
+};
+
+const resolveColorAccent = (
+  article: ContentArticle,
+  catalogStyle: BjcpCatalogStyle | null,
+  value: string,
+  supportingText: string | null
+): ColorAccent => {
+  if (catalogStyle) {
+    const colorInfo = getBjcpCardColorInfo(catalogStyle);
+
+    return {
+      startHex: colorInfo.startHex,
+      averageHex: colorInfo.averageHex,
+      endHex: colorInfo.endHex
+    };
+  }
+
   const numbers = parseStatNumbers(value);
   if (!numbers.length) {
-    return null;
+    const descriptor = normalizeDescriptor([value, supportingText].filter(Boolean).join(" "));
+
+    if (descriptor.includes("янтарно-медн") || descriptor.includes("amber-copper")) {
+      return {
+        startHex: "#f59e0b",
+        averageHex: "#d97706",
+        endHex: "#92400e"
+      };
+    }
+
+    if (
+      descriptor.includes("темн")
+      || descriptor.includes("тёмн")
+      || descriptor.includes("dark")
+      || descriptor.includes("темнее")
+      || descriptor.includes("darker")
+    ) {
+      return {
+        startHex: "#7c4a24",
+        averageHex: "#4b2e17",
+        endHex: "#1c1917"
+      };
+    }
+
+    return fallbackColorBandAccent[article.colorBand];
   }
 
   const startSrm = numbers[0]!;
@@ -82,11 +281,65 @@ const resolveColorRange = (value: string) => {
   const average = beerColorFromSrm(averageSrm);
 
   return {
-    startSrm,
-    endSrm,
     startHex: start.hex,
     endHex: end.hex,
     averageHex: average.hex
+  };
+};
+
+const resolvePassportStat = (
+  article: ContentArticle,
+  definition: PassportStatDefinition,
+  catalogStyle: BjcpCatalogStyle | null
+): PassportStatItem => {
+  const rawValue = article.vitalStatistics[definition.key];
+
+  if (rawValue) {
+    const localized = resolveLocalizedDescriptor(definition.key, rawValue);
+    const isNumeric = isCompactNumericValue(rawValue);
+    const value = isNumeric ? rawValue : localized.value;
+    const supportingText = isNumeric ? definition.supporting(rawValue) : localized.supportingText;
+
+    return {
+      ...definition,
+      value,
+      supportingText,
+      isTextual: !isNumeric,
+      accent: definition.key === "srm" ? resolveColorAccent(article, catalogStyle, value, supportingText) : undefined
+    };
+  }
+
+  if (definition.key === "abv") {
+    const subtypeAbv = buildSubtypeAbvValue(article);
+    if (subtypeAbv) {
+      return {
+        ...definition,
+        value: subtypeAbv,
+        supportingText: "Диапазон зависит от подстиля Specialty IPA.",
+        isTextual: true
+      };
+    }
+  }
+
+  const note = article.vitalStatistics.note ?? article.vitalStatisticsText;
+  if (note) {
+    const localized = resolveLocalizedDescriptor(definition.key, note);
+
+    return {
+      ...definition,
+      value: localized.value,
+      supportingText: localized.supportingText,
+      isTextual: true,
+      accent: definition.key === "srm" ? resolveColorAccent(article, catalogStyle, localized.value, localized.supportingText) : undefined
+    };
+  }
+
+  return {
+    ...definition,
+    value: emptyPassportStatLabel,
+    supportingText: emptyPassportStatSupportingText,
+    isTextual: true,
+    accent: definition.key === "srm" ? resolveColorAccent(article, catalogStyle, emptyPassportStatLabel, emptyPassportStatSupportingText) : undefined
   };
 };
 
@@ -120,38 +373,23 @@ function ArticleStructuredData({ article }: { article: ContentArticle }) {
 
 export function BjcpArticlePage({
   article,
-  relatedArticles
+  relatedArticles,
+  catalogStyle = null
 }: {
   article: ContentArticle;
   relatedArticles: ContentArticle[];
+  catalogStyle?: BjcpCatalogStyle | null;
 }) {
   const categoryLabel = `кат. ${article.category.nameRu}`;
   const mediaTheme = resolveMediaTheme(article);
   const mediaStyle = article.heroImageUrl
     ? {
-      backgroundImage: `linear-gradient(180deg, rgba(15, 23, 42, 0.16), rgba(15, 23, 42, 0.72)), url(${article.heroImageUrl})`,
+      backgroundImage: `linear-gradient(180deg, rgba(15, 23, 42, 0.08), rgba(15, 23, 42, 0.52)), url(${article.heroImageUrl})`,
       backgroundPosition: "center",
       backgroundSize: "cover"
     }
     : undefined;
-  const statByLabel = new Map(article.stats.map((stat) => [stat.label, stat]));
-  const colorStat = statByLabel.get("SRM") ?? null;
-  const colorRange = colorStat ? resolveColorRange(colorStat.value) : null;
-  const colorEbc = colorStat ? formatEbcRange(colorStat.value) : null;
-  const passportStats = passportStatDefinitions
-    .map((definition) => {
-      const stat = statByLabel.get(definition.label);
-      if (!stat) {
-        return null;
-      }
-
-      return {
-        ...definition,
-        value: stat.value,
-        supportingText: definition.supporting(stat.value)
-      };
-    })
-    .filter((item): item is PassportStatDefinition & { value: string; supportingText: string | null } => item !== null);
+  const passportStats = passportStatDefinitions.map((definition) => resolvePassportStat(article, definition, catalogStyle));
 
   return (
     <main className="space-y-14 pb-24 pt-8">
@@ -187,47 +425,43 @@ export function BjcpArticlePage({
               </p>
             </div>
 
-            <div className="grid gap-2.5 sm:grid-cols-2">
+            <div className="grid auto-rows-fr gap-2.5 sm:grid-cols-2">
               {passportStats.map((stat) => (
                 <div
-                  key={stat.label}
-                  className="min-h-[6rem] rounded-[1.5rem] border border-zinc-200 bg-slate-50 px-4 py-3 text-zinc-900"
+                  key={stat.key}
+                  className={`h-full min-h-[6.5rem] overflow-hidden rounded-[1.5rem] border border-zinc-200 bg-slate-50 px-4 py-3 text-zinc-900 ${stat.wide ? "sm:col-span-2" : ""}`}
                 >
                   <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-zinc-500">{stat.label}</p>
-                  <p className="mt-2 text-lg font-semibold leading-none text-zinc-950 tabular-nums">
+                  <p
+                    className={`mt-2 whitespace-pre-line break-words text-zinc-950 ${stat.isTextual
+                      ? "text-[13px] font-semibold leading-5 sm:text-sm"
+                      : "text-base font-semibold leading-tight tabular-nums sm:text-lg"
+                    }`}
+                  >
                     {stat.value}
+                    {stat.key === "srm" && !stat.isTextual ? " SRM" : ""}
                   </p>
                   {stat.supportingText ? (
-                    <p className="mt-1.5 text-xs font-medium tabular-nums text-zinc-500">{stat.supportingText}</p>
+                    <p
+                      className={`mt-1.5 whitespace-pre-line break-words text-[11px] font-medium text-zinc-500 ${stat.isTextual ? "" : "tabular-nums"}`}
+                    >
+                      {stat.supportingText}
+                    </p>
                   ) : (
                     <p className="mt-1.5 text-xs font-medium text-transparent">.</p>
                   )}
+                  {stat.accent ? (
+                    <div className="mt-3 h-2 overflow-hidden rounded-full bg-zinc-200/80 shadow-[inset_0_1px_2px_rgba(15,23,42,0.16)]">
+                      <div
+                        className="h-full rounded-full"
+                        style={{
+                          backgroundImage: `linear-gradient(90deg, ${stat.accent.startHex} 0%, ${stat.accent.averageHex} 52%, ${stat.accent.endHex} 100%)`
+                        }}
+                      />
+                    </div>
+                  ) : null}
                 </div>
               ))}
-
-              {colorStat && colorRange ? (
-                <div className="rounded-[1.5rem] border border-zinc-200 bg-slate-50 px-4 py-3 text-zinc-900 sm:col-span-2">
-                  <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-zinc-500">Цвет</p>
-                  <div className="mt-2 flex flex-wrap items-end gap-x-2 gap-y-1">
-                    <p className="text-lg font-semibold leading-none text-zinc-950 tabular-nums">
-                      {colorStat.value} SRM
-                    </p>
-                    {colorEbc ? (
-                      <p className="text-xs font-medium tabular-nums text-zinc-500">
-                        {colorEbc}
-                      </p>
-                    ) : null}
-                  </div>
-                  <div className="mt-3 h-2 overflow-hidden rounded-full bg-zinc-200/80 shadow-[inset_0_1px_2px_rgba(15,23,42,0.16)]">
-                    <div
-                      className="h-full rounded-full"
-                      style={{
-                        backgroundImage: `linear-gradient(90deg, ${colorRange.startHex} 0%, ${colorRange.averageHex} 52%, ${colorRange.endHex} 100%)`
-                      }}
-                    />
-                  </div>
-                </div>
-              ) : null}
             </div>
           </div>
 
@@ -236,7 +470,7 @@ export function BjcpArticlePage({
             style={mediaStyle}
           >
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.24),transparent_32%)]" />
-            <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-black/45 to-transparent" />
+            <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-black/24 to-transparent" />
             <div className="relative flex h-full min-h-[22rem] items-end p-6 text-white sm:p-8 lg:p-10">
               <div className="space-y-4">
                 <p className="text-5xl font-semibold leading-none text-white/96 sm:text-6xl" style={{ fontFamily: "var(--font-display)" }}>

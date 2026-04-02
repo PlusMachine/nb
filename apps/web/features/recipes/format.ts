@@ -12,10 +12,14 @@ const relativeFormatter = new Intl.RelativeTimeFormat("ru-RU", { numeric: "auto"
 
 const formatNumber = (value: number, precision = 1) => value.toFixed(precision).replace(/\.0$/, "");
 
+export const formatPlatoFromSg = (value: number, precision = 1) => (
+  `${Math.max(0, sgToPlato(value, precision)).toFixed(precision)} °P`
+);
+
 export const formatGravityWithPlato = (value: number | null) => (
   value == null
     ? "—"
-    : `${value.toFixed(3)} (${sgToPlato(value, 1).toFixed(1)} °P)`
+    : `${value.toFixed(3)} (${formatPlatoFromSg(value, 1)})`
 );
 
 export const formatColorWithEbc = (value: number | null) => (
