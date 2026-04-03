@@ -141,7 +141,7 @@ describe("inventory usability components", () => {
     expect(html).not.toContain("Показывать архивные");
   });
 
-  it("renders brand and country metadata on the inventory card without opening details", () => {
+  it("renders malt brand inline with title and shows only the country flag", () => {
     const item: InventoryListItemDto = {
       id: "inv-1",
       enteredQuantity: 2,
@@ -199,7 +199,7 @@ describe("inventory usability components", () => {
     expect(html).toContain("Пилснер солод");
     expect(html).toContain("Pilsner Malt");
     expect(html).toContain("BESTMALZ");
-    expect(html).toContain("Германия");
+    expect(html).not.toContain("Германия");
     expect(html).toContain('value="2"');
     expect(html).toContain('<option value="kg" selected="">kg</option>');
     expect(html).toContain("6-7 EBC");

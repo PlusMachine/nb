@@ -12,7 +12,7 @@ import {
   Tag,
   X
 } from "lucide-react";
-import { CountryFlagLabel } from "@/components/shared/country-flag";
+import { CountryFlag } from "@/components/shared/country-flag";
 import type { InventoryListItemDto } from "@/features/inventory/contracts";
 import {
   resolveIngredientBrandLabel,
@@ -180,6 +180,9 @@ export function InventoryListItem({ item, preferredCurrency, currencyRates }: Pr
   const { primaryName, secondaryName } = resolveIngredientDisplayNames(item.source);
   const brandLabel = resolveIngredientBrandLabel(item.source);
   const country = resolveIngredientCountry(item.source);
+  const showInlineBrand = Boolean(
+    brandLabel && (item.source.subtype === "malt" || item.source.category === "fermentable")
+  );
   const costSummary = buildInventoryCostDisplay({
     enteredQuantity: item.enteredQuantity,
     enteredUnit: item.enteredUnit,
@@ -259,24 +262,29 @@ export function InventoryListItem({ item, preferredCurrency, currencyRates }: Pr
         <div className="min-w-0 flex-1 space-y-1.5">
           <div className="flex flex-wrap items-center gap-2">
             <div className="min-w-0">
-              <h3 className="text-base font-semibold text-zinc-950">
-                <Link href={detailHref} className="underline-offset-4 hover:underline">
-                  {primaryName}
-                </Link>
-              </h3>
+              <div className="flex flex-wrap items-center gap-2">
+                <h3 className="text-base font-semibold text-zinc-950">
+                  <Link href={detailHref} className="underline-offset-4 hover:underline">
+                    {primaryName}
+                  </Link>
+                </h3>
+                {showInlineBrand ? (
+                  <span className="inline-flex min-w-0 items-center gap-2 text-sm font-semibold text-zinc-700">
+                    <span aria-hidden="true" className="text-zinc-400">•</span>
+                    <span className="truncate">{brandLabel}</span>
+                  </span>
+                ) : null}
+                {country ? (
+                  <CountryFlag
+                    countryCode={country.code}
+                    className="h-3.5 w-[1.15rem]"
+                  />
+                ) : null}
+              </div>
               {secondaryName ? <p className="text-xs text-zinc-500">{secondaryName}</p> : null}
-              {brandLabel || country ? (
+              {!showInlineBrand && brandLabel ? (
                 <div className="flex flex-wrap items-center gap-x-1.5 gap-y-0.5 text-xs text-zinc-500">
-                  {brandLabel ? <span className="font-medium text-zinc-700">{brandLabel}</span> : null}
-                  {brandLabel && country ? <span aria-hidden="true">•</span> : null}
-                  {country ? (
-                    <CountryFlagLabel
-                      countryCode={country.code}
-                      label={country.label}
-                      iconClassName="h-3 w-4"
-                      className="gap-1"
-                    />
-                  ) : null}
+                  <span className="font-medium text-zinc-700">{brandLabel}</span>
                 </div>
               ) : null}
             </div>
