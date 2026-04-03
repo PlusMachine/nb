@@ -340,6 +340,8 @@ export type InventorySourceDto = {
   producer?: string | null;
   brandName?: string | null;
   manufacturer?: string | null;
+  countryCode?: string | null;
+  countryName?: string | null;
   country?: string | null;
   harvestYear?: number | null;
   completenessLevel?: IngredientCompletenessLevel | null;

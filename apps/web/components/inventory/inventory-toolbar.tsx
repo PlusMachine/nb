@@ -21,6 +21,7 @@ import {
   buildInventoryToolbarHref,
   hasActiveInventoryFilters,
   inventoryCategoryLabels,
+  inventoryPrimaryGroupLabels,
   inventorySortLabels,
   resolveInventoryToolbarCounts
 } from "@/features/inventory/page-model";
@@ -158,7 +159,7 @@ export function InventoryToolbar({ search, category, subtype, showFinished, sort
   const primaryButtons = [
     {
       key: "malt",
-      label: "Солода",
+      label: inventoryPrimaryGroupLabels.malt,
       count: counts.byFermentableSubtype.malt,
       active: category === "fermentable" && subtype === "malt",
       meta: categoryMeta.fermentable,
@@ -166,7 +167,7 @@ export function InventoryToolbar({ search, category, subtype, showFinished, sort
     },
     {
       key: "fermentable",
-      label: "Сбраживаемое сырье",
+      label: inventoryPrimaryGroupLabels.fermentable,
       count: counts.byFermentableSubtype.fermentable,
       active: category === "fermentable" && subtype === "fermentable",
       meta: categoryMeta.fermentable,

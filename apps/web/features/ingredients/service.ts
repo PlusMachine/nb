@@ -153,6 +153,7 @@ const mapIngredientRow = (row: IngredientWithRelations): IngredientCatalogItemDt
   const { primaryName, secondaryName } = resolveIngredientDisplayNames({
     type,
     countryCode: row.countryCode,
+    countryName: row.countryName,
     nameRu: row.nameRu,
     nameEn: row.nameEn,
     displayModeRu: row.displayModeRu as "auto" | "localized_first" | "source_first",

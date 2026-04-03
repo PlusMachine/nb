@@ -189,6 +189,7 @@ export const AdminIngredientForm = ({ initial }: { initial?: IngredientFormValue
     const primaryAndSecondary = resolveIngredientDisplayNames({
       type: resolvedType,
       countryCode: initial?.countryCode ?? null,
+      countryName: initial?.countryName ?? null,
       nameRu: initial?.nameRu ?? null,
       nameEn: initial?.nameEn ?? null,
       displayModeRu: initial?.displayModeRu ?? "auto",

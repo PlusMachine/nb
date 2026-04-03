@@ -176,7 +176,7 @@ export default async function IngredientDetailPage({
   const typeLabel = item.category === "fermentable"
     ? (item.subtype === "malt" ? "Солод" : "Сбраживаемое сырье")
     : formatIngredientSubtypeLabel(item.category, item.subtype);
-  const subtleAliases = item.aliases.map((alias) => alias.alias).filter(Boolean);
+  const subtleAliases = Array.from(new Set(item.aliases.map((alias) => alias.alias).filter(Boolean)));
   const metaBadges = Array.from(new Set([
     typeLabel,
     item.brand ?? null

@@ -89,6 +89,44 @@ const readCatalogFile = (fileName: string): unknown => {
   return JSON.parse(fs.readFileSync(filePath, "utf8"));
 };
 
+const autoLocalizedFirstCountryCodes = new Set(["RU", "BY", "UA", "KZ"]);
+
+const countryCodeAliases: Record<string, string> = {
+  RUS: "RU",
+  BLR: "BY",
+  UKR: "UA",
+  KAZ: "KZ"
+};
+
+const countryNameToCode: Record<string, string> = {
+  "россия": "RU",
+  "russia": "RU",
+  "российская федерация": "RU",
+  "russian federation": "RU",
+  "беларусь": "BY",
+  "belarus": "BY",
+  "украина": "UA",
+  "ukraine": "UA",
+  "казахстан": "KZ",
+  "kazakhstan": "KZ"
+};
+
+const normalizeSeedCountryCode = (countryCode: unknown, countryName: unknown) => {
+  const normalizedCode = readString(countryCode)?.toUpperCase();
+  if (normalizedCode) {
+    if (autoLocalizedFirstCountryCodes.has(normalizedCode)) {
+      return normalizedCode;
+    }
+
+    if (countryCodeAliases[normalizedCode]) {
+      return countryCodeAliases[normalizedCode];
+    }
+  }
+
+  const normalizedName = readString(countryName)?.toLowerCase();
+  return normalizedName ? countryNameToCode[normalizedName] ?? null : null;
+};
+
 export const loadCatalogSeedItems = (fileName: string): unknown[] => {
   const root = readCatalogFile(fileName);
   if (Array.isArray(root)) {
@@ -155,6 +193,7 @@ const resolveDisplayModeRu = (
   type: CatalogSeedFileSpec["type"],
   explicitMode: unknown,
   countryCode: unknown,
+  countryName: unknown,
   nameRu: unknown
 ) => {
   const normalizedExplicit = readString(explicitMode);
@@ -162,15 +201,10 @@ const resolveDisplayModeRu = (
     return normalizedExplicit;
   }
 
-  if (type === "hop") {
-    return readString(countryCode) && ["RU", "BY", "UA", "KZ"].includes(readString(countryCode)!)
-      && readString(nameRu)
+  if (type === "hop" || type === "malt" || type === "yeast") {
+    return normalizeSeedCountryCode(countryCode, countryName) && readString(nameRu)
       ? "localized_first"
       : "source_first";
-  }
-
-  if (type === "yeast") {
-    return "source_first";
   }
 
   return "localized_first";
@@ -189,7 +223,7 @@ const prepareHop = (item: unknown): PreparedSeedIngredient => {
       type: "hop",
       nameRu: readString(source.name_ru),
       nameEn: readString(source.name_en),
-      displayModeRu: resolveDisplayModeRu("hop", null, source.country_code, source.name_ru),
+      displayModeRu: resolveDisplayModeRu("hop", null, source.country_code, null, source.name_ru),
       isActive: true,
       countryCode: readString(source.country_code),
       producer: readString(source.producer),
@@ -241,7 +275,7 @@ const prepareMalt = (item: unknown): PreparedSeedIngredient => {
       type: "malt",
       nameRu: readString(source.name_ru),
       nameEn: readString(source.name_en),
-      displayModeRu: resolveDisplayModeRu("malt", null, source.country_code, source.name_ru),
+      displayModeRu: resolveDisplayModeRu("malt", null, source.country_code, null, source.name_ru),
       isActive: true,
       countryCode: readString(source.country_code),
       brand: readString(source.brand),
@@ -282,7 +316,7 @@ const prepareFermentable = (item: unknown): PreparedSeedIngredient => {
       type: "fermentable",
       nameRu: readString(source.name_ru),
       nameEn: readString(source.name_en),
-      displayModeRu: resolveDisplayModeRu("fermentable", null, null, source.name_ru),
+      displayModeRu: resolveDisplayModeRu("fermentable", null, null, null, source.name_ru),
       isActive: true,
       countryName: readString(source.country_name),
       groupName: readString(source.group),
@@ -318,7 +352,7 @@ const prepareYeast = (item: unknown): PreparedSeedIngredient => {
       type: "yeast",
       nameRu: readString(source.name_ru),
       nameEn: readString(source.name_en),
-      displayModeRu: resolveDisplayModeRu("yeast", null, null, source.name_ru),
+      displayModeRu: resolveDisplayModeRu("yeast", null, null, source.producer_country, source.name_ru),
       isActive: true,
       countryName: readString(source.producer_country),
       brand: readString(source.brand),
@@ -392,7 +426,7 @@ const prepareConsumable = (item: unknown): PreparedSeedIngredient => {
       type: "consumable",
       nameRu: readString(source.name_ru),
       nameEn: readString(source.name_en),
-      displayModeRu: resolveDisplayModeRu("consumable", source.display_mode_ru, null, source.name_ru),
+      displayModeRu: resolveDisplayModeRu("consumable", source.display_mode_ru, null, null, source.name_ru),
       isActive: true,
       category: readString(source.category),
       subcategory: readString(source.subcategory),
@@ -427,7 +461,7 @@ const prepareWaterTreatment = (item: unknown): PreparedSeedIngredient => {
       type: "water_treatment",
       nameRu: readString(source.name_ru),
       nameEn: readString(source.name_en),
-      displayModeRu: resolveDisplayModeRu("water_treatment", source.display_mode_ru, null, source.name_ru),
+      displayModeRu: resolveDisplayModeRu("water_treatment", source.display_mode_ru, null, null, source.name_ru),
       isActive: true,
       category: readString(source.category),
       itemKind: readString(source.item_kind),

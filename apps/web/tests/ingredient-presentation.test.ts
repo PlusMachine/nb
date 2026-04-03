@@ -77,6 +77,58 @@ describe("ingredient presentation", () => {
     });
   });
 
+  it("treats local malt in auto mode as localized-first", () => {
+    expect(resolveIngredientDisplayNames({
+      type: "malt",
+      countryCode: "RU",
+      nameRu: "Пилснер",
+      nameEn: "Pilsner",
+      displayModeRu: "auto"
+    })).toEqual({
+      primaryName: "Пилснер",
+      secondaryName: "Pilsner"
+    });
+  });
+
+  it("treats foreign malt in auto mode as source-first", () => {
+    expect(resolveIngredientDisplayNames({
+      type: "malt",
+      countryCode: "BE",
+      nameRu: "Пильсен 2-рядный яровой",
+      nameEn: "Pilsen 2RS",
+      displayModeRu: "auto"
+    })).toEqual({
+      primaryName: "Pilsen 2RS",
+      secondaryName: "Пильсен 2-рядный яровой"
+    });
+  });
+
+  it("treats local yeast in auto mode as localized-first even when only country name is available", () => {
+    expect(resolveIngredientDisplayNames({
+      type: "yeast",
+      countryName: "Russia",
+      nameRu: "Квик Восс",
+      nameEn: "Voss Kveik",
+      displayModeRu: "auto"
+    })).toEqual({
+      primaryName: "Квик Восс",
+      secondaryName: "Voss Kveik"
+    });
+  });
+
+  it("treats foreign yeast in auto mode as source-first", () => {
+    expect(resolveIngredientDisplayNames({
+      type: "yeast",
+      countryName: "China",
+      nameRu: "BF16 Лагер",
+      nameEn: "BF16 Lager",
+      displayModeRu: "auto"
+    })).toEqual({
+      primaryName: "BF16 Lager",
+      secondaryName: "BF16 Лагер"
+    });
+  });
+
   it("builds hop summaries from typed attributes", () => {
     expect(buildIngredientTypedSummary({
       category: "hop",

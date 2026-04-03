@@ -8,16 +8,17 @@ export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
 
   try {
-    const items = await searchUserCatalogIngredients(user.id, {
+    const result = await searchUserCatalogIngredients(user.id, {
       q: searchParams.get("q") ?? "",
       type: searchParams.get("type") ?? undefined,
       category: searchParams.get("category") ?? undefined,
       subtype: searchParams.get("subtype") ?? undefined,
+      manufacturer: searchParams.get("manufacturer") ?? undefined,
       limit: Number(searchParams.get("limit") ?? "10"),
       includeCustom: searchParams.get("includeCustom") !== "false"
     });
 
-    return NextResponse.json({ items });
+    return NextResponse.json(result);
   } catch (error) {
     return NextResponse.json({ error: (error as Error).message }, { status: 400 });
   }

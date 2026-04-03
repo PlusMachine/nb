@@ -141,7 +141,7 @@ describe("inventory usability components", () => {
     expect(html).not.toContain("Показывать архивные");
   });
 
-  it("renders always-inline quantity editor with finished shortcut", () => {
+  it("renders brand and country metadata on the inventory card without opening details", () => {
     const item: InventoryListItemDto = {
       id: "inv-1",
       enteredQuantity: 2,
@@ -172,8 +172,9 @@ describe("inventory usability components", () => {
         displayName: "Пилснер солод",
         displayNameRu: "Пилснер солод",
         normalizedName: "pilsner-malt",
-        manufacturer: "BESTMALZ",
-        country: "DE",
+        brand: "BESTMALZ",
+        countryCode: "DE",
+        countryName: "Германия",
         technicalData: {
           type: "malt",
           maltType: "base",
@@ -197,9 +198,10 @@ describe("inventory usability components", () => {
 
     expect(html).toContain("Пилснер солод");
     expect(html).toContain("Pilsner Malt");
+    expect(html).toContain("BESTMALZ");
+    expect(html).toContain("Германия");
     expect(html).toContain('value="2"');
     expect(html).toContain('<option value="kg" selected="">kg</option>');
-    expect(html).toContain("BESTMALZ");
     expect(html).toContain("6-7 EBC");
     expect(html).toContain("Экстракт 80%");
     expect(html).toContain('aria-label="Редактировать"');

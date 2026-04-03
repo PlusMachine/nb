@@ -121,6 +121,12 @@
       "tag": "0019_catalog_v2_restructure",
       "when": 1778000000000,
       "breakpoints": true
+    },
+    {
+      "idx": 20,
+      "tag": "0020_malt_yeast_auto_display_mode",
+      "when": 1779000000000,
+      "breakpoints": true
     }
   ]
 }

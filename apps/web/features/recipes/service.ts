@@ -904,6 +904,7 @@ export const recomputeRecipeStats = async (authorId: string, recipeId: string) =
       : resolveIngredientDisplayNames({
         type: source.type as RecipeIngredientDto["type"],
         countryCode: "countryCode" in source ? source.countryCode : null,
+        countryName: "countryName" in source ? source.countryName : null,
         nameRu: "nameRu" in source ? source.nameRu : null,
         nameEn: "nameEn" in source ? source.nameEn : null,
         displayModeRu: "displayModeRu" in source

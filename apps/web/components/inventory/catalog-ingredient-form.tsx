@@ -3,7 +3,7 @@
 import React from "react";
 import { useEffect, useState } from "react";
 
-import { IngredientPicker } from "@/components/ingredients/ingredient-picker";
+import { IngredientPicker, IngredientSelectionCard } from "@/components/ingredients/ingredient-picker";
 import { InventoryPriceInput } from "@/components/inventory/inventory-price-input";
 import type {
   IngredientCategory,
@@ -109,7 +109,6 @@ export function CatalogIngredientForm({
   const [localError, setLocalError] = useState<string | null>(null);
   const unitProfile = resolveCatalogIngredientUnitProfile(category, selected);
   const quantityStep = getInventoryUnitInputStep(fields.enteredUnit);
-  const selectedNames = selected ? resolveIngredientDisplayNames(selected) : null;
   const selectedPackEquivalent = selected ? resolveInventoryPackEquivalent(selected.technicalData ?? null) : null;
 
   useEffect(() => {
@@ -132,6 +131,16 @@ export function CatalogIngredientForm({
   }, [category, initialSelection]);
 
   const purchasePriceError = fieldErrors?.priceInputAmountMinor ?? fieldErrors?.purchasePriceMinor ?? fieldErrors?.purchasePrice;
+  const clearSelectedIngredient = () => {
+    setSelected(null);
+    setPickerValue("");
+    setLocalError(null);
+    const resetProfile = resolveCatalogIngredientUnitProfile(category, null);
+    setFields((current) => ({
+      ...current,
+      enteredUnit: resetProfile.defaultUnit
+    }));
+  };
 
   return (
     <form
@@ -163,14 +172,7 @@ export function CatalogIngredientForm({
             setPickerValue(nextValue);
             setLocalError(null);
             if (selected && nextValue.trim() !== selected.displayName) {
-              setSelected(null);
-              const resetProfile = resolveCatalogIngredientUnitProfile(category, null);
-              setFields((current) => ({
-                ...current,
-                enteredUnit: resetProfile.allowedUnits.includes(current.enteredUnit)
-                  ? current.enteredUnit
-                  : resetProfile.defaultUnit
-              }));
+              clearSelectedIngredient();
             }
           }}
           onSelect={(item) => {
@@ -189,14 +191,14 @@ export function CatalogIngredientForm({
           emptyCta={<button type="button" onClick={onRequestCustom} className="text-sm text-blue-700 underline">Не нашли? Добавить свой ингредиент</button>}
         />
         {selected ? (
-          <p className="text-xs text-zinc-600">
-            Выбрано: {selectedNames?.primaryName}
-            {selected.source === "custom" ? " · СВОЙ" : ""}
-            {selectedNames?.secondaryName ? ` · ${selectedNames.secondaryName}` : ""}
-            {selected.familyDisplayName ? ` · ${selected.familyDisplayName}` : ""}
-            {selected.subtitle ? ` · ${selected.subtitle}` : ""}
-            {selectedPackEquivalent ? ` · 1 pack = ${selectedPackEquivalent.normalizedQuantity} ${selectedPackEquivalent.normalizedUnit}` : ""}
-          </p>
+          <div className="space-y-2">
+            <IngredientSelectionCard item={selected} onClear={clearSelectedIngredient} />
+            {selectedPackEquivalent ? (
+              <p className="text-xs text-zinc-500">
+                1 pack = {selectedPackEquivalent.normalizedQuantity} {selectedPackEquivalent.normalizedUnit}
+              </p>
+            ) : null}
+          </div>
         ) : null}
         {(localError || fieldErrors?.ingredientCatalogItemId) && <p className="text-xs text-red-600">{localError ?? fieldErrors?.ingredientCatalogItemId}</p>}
       </div>

@@ -5,7 +5,10 @@ import type {
 } from "../ingredients/contracts";
 import { ingredientTypes } from "../ingredients/contracts";
 import { ingredientCategoryLabels } from "../ingredients/presentation";
-import { resolveIngredientCategory } from "../ingredients/taxonomy";
+import {
+  resolveIngredientCategory,
+  resolveIngredientSubtype
+} from "../ingredients/taxonomy";
 import type {
   InventoryListItemDto,
   InventorySortOption,
@@ -20,6 +23,26 @@ export const inventoryCategoryLabels: Record<IngredientCategory, string> = {
   yeast: ingredientCategoryLabels.yeast,
   water_treatment: ingredientCategoryLabels.water_treatment,
   consumable: ingredientCategoryLabels.consumable
+};
+
+export const inventoryPrimaryGroupOrder = [
+  "malt",
+  "fermentable",
+  "hop",
+  "yeast",
+  "water_treatment",
+  "consumable"
+] as const;
+
+export type InventoryPrimaryGroupKey = (typeof inventoryPrimaryGroupOrder)[number];
+
+export const inventoryPrimaryGroupLabels: Record<InventoryPrimaryGroupKey, string> = {
+  malt: "Солод",
+  fermentable: "Сбраживаемое сырье",
+  hop: inventoryCategoryLabels.hop,
+  yeast: inventoryCategoryLabels.yeast,
+  water_treatment: inventoryCategoryLabels.water_treatment,
+  consumable: inventoryCategoryLabels.consumable
 };
 
 // Legacy compatibility for older admin/internal selectors that still use IngredientType.
@@ -62,21 +85,75 @@ export const resolveInventoryItemCategory = (item: {
   ?? "consumable"
 );
 
+const resolveInventoryItemSubtype = (item: {
+  ingredientCategory?: IngredientCategory | null;
+  ingredientSubtype?: IngredientSubtype | null;
+  source: {
+    category?: IngredientCategory | null;
+    subtype?: IngredientSubtype | null;
+    type: IngredientType;
+  };
+}): IngredientSubtype | null => (
+  item.ingredientSubtype
+  ?? item.source.subtype
+  ?? resolveIngredientSubtype({
+    category: item.ingredientCategory ?? item.source.category ?? undefined,
+    type: item.source.type,
+    subtype: item.source.subtype
+  })
+);
+
+export const resolveInventoryPrimaryGroup = (item: {
+  ingredientCategory?: IngredientCategory | null;
+  ingredientSubtype?: IngredientSubtype | null;
+  source: {
+    category?: IngredientCategory | null;
+    subtype?: IngredientSubtype | null;
+    type: IngredientType;
+  };
+}): InventoryPrimaryGroupKey => {
+  const category = resolveInventoryItemCategory(item);
+
+  if (category === "hop" || category === "yeast" || category === "water_treatment" || category === "consumable") {
+    return category;
+  }
+
+  return resolveInventoryItemSubtype(item) === "malt" ? "malt" : "fermentable";
+};
+
+export const resolveInventoryFilterLabel = ({
+  category = "all",
+  subtype = null
+}: {
+  category?: IngredientCategory | "all";
+  subtype?: "malt" | "fermentable" | null;
+}): string | null => {
+  if (category === "all") {
+    return null;
+  }
+
+  if (category === "fermentable" && subtype) {
+    return inventoryPrimaryGroupLabels[subtype];
+  }
+
+  return inventoryCategoryLabels[category];
+};
+
 export type InventoryGroup = {
-  category: IngredientCategory;
+  key: InventoryPrimaryGroupKey;
   label: string;
   items: InventoryListItemDto[];
 };
 
 export const groupInventoryItems = (items: InventoryListItemDto[]): InventoryGroup[] => {
-  const grouped = new Map<IngredientCategory, {
+  const grouped = new Map<InventoryPrimaryGroupKey, {
     inStock: InventoryListItemDto[];
     empty: InventoryListItemDto[];
   }>();
 
   for (const item of items) {
-    const category = resolveInventoryItemCategory(item);
-    const existing = grouped.get(category);
+    const key = resolveInventoryPrimaryGroup(item);
+    const existing = grouped.get(key);
     if (existing) {
       if (item.normalizedQuantity > 0) {
         existing.inStock.push(item);
@@ -84,19 +161,19 @@ export const groupInventoryItems = (items: InventoryListItemDto[]): InventoryGro
         existing.empty.push(item);
       }
     } else {
-      grouped.set(category, item.normalizedQuantity > 0
+      grouped.set(key, item.normalizedQuantity > 0
         ? { inStock: [item], empty: [] }
         : { inStock: [], empty: [item] });
     }
   }
 
-  return inventoryCategoryOrder
-    .map((category) => ({
-      category,
-      label: inventoryCategoryLabels[category],
+  return inventoryPrimaryGroupOrder
+    .map((key) => ({
+      key,
+      label: inventoryPrimaryGroupLabels[key],
       items: [
-        ...(grouped.get(category)?.inStock ?? []),
-        ...(grouped.get(category)?.empty ?? [])
+        ...(grouped.get(key)?.inStock ?? []),
+        ...(grouped.get(key)?.empty ?? [])
       ]
     }))
     .filter((group) => group.items.length > 0);

@@ -15,7 +15,7 @@ import {
 import { CountryFlagLabel } from "@/components/shared/country-flag";
 import type { InventoryListItemDto } from "@/features/inventory/contracts";
 import {
-  type ResolvedIngredientCountry,
+  resolveIngredientBrandLabel,
   resolveIngredientCountry,
   resolveIngredientDisplayNames
 } from "@/features/ingredients/presentation";
@@ -68,17 +68,10 @@ const formatColorBadge = (item: InventoryListItemDto) => {
   return null;
 };
 
-type InventoryBadge =
-  | {
-    key: string;
-    kind: "text";
-    label: string;
-  }
-  | {
-    key: string;
-    kind: "country";
-    country: ResolvedIngredientCountry;
-  };
+type InventoryBadge = {
+  key: string;
+  label: string;
+};
 
 const buildTypedBadges = (item: InventoryListItemDto) => {
   const technicalData = item.source.technicalData;
@@ -156,38 +149,13 @@ const buildTechnicalBadges = (item: InventoryListItemDto) => {
     seen.add(key);
     badges.push({
       key: `text:${key}`,
-      kind: "text",
       label: trimmed
-    });
-  };
-
-  const pushCountryBadge = (country: ResolvedIngredientCountry | null) => {
-    if (!country) {
-      return;
-    }
-
-    const key = `country:${country.code ?? country.label.toLowerCase()}`;
-    if (seen.has(key)) {
-      return;
-    }
-
-    seen.add(key);
-    badges.push({
-      key,
-      kind: "country",
-      country
     });
   };
 
   for (const badge of buildTypedBadges(item)) {
     pushTextBadge(badge);
   }
-
-  if (item.source.manufacturer) {
-    pushTextBadge(item.source.manufacturer);
-  }
-
-  pushCountryBadge(resolveIngredientCountry(item.source));
 
   if (item.source.summary && badges.length < 3) {
     pushTextBadge(item.source.summary);
@@ -210,6 +178,8 @@ const isExpired = (freshnessDate: Date | null) => {
 export function InventoryListItem({ item, preferredCurrency, currencyRates }: Props) {
   const badges = buildTechnicalBadges(item);
   const { primaryName, secondaryName } = resolveIngredientDisplayNames(item.source);
+  const brandLabel = resolveIngredientBrandLabel(item.source);
+  const country = resolveIngredientCountry(item.source);
   const costSummary = buildInventoryCostDisplay({
     enteredQuantity: item.enteredQuantity,
     enteredUnit: item.enteredUnit,
@@ -295,6 +265,20 @@ export function InventoryListItem({ item, preferredCurrency, currencyRates }: Pr
                 </Link>
               </h3>
               {secondaryName ? <p className="text-xs text-zinc-500">{secondaryName}</p> : null}
+              {brandLabel || country ? (
+                <div className="flex flex-wrap items-center gap-x-1.5 gap-y-0.5 text-xs text-zinc-500">
+                  {brandLabel ? <span className="font-medium text-zinc-700">{brandLabel}</span> : null}
+                  {brandLabel && country ? <span aria-hidden="true">•</span> : null}
+                  {country ? (
+                    <CountryFlagLabel
+                      countryCode={country.code}
+                      label={country.label}
+                      iconClassName="h-3 w-4"
+                      className="gap-1"
+                    />
+                  ) : null}
+                </div>
+              ) : null}
             </div>
             {item.source.sourceKind === "custom" ? (
               <span className="rounded-full bg-zinc-100 px-2 py-0.5 text-[10px] font-medium uppercase tracking-wider text-zinc-500">Свой</span>
@@ -311,16 +295,7 @@ export function InventoryListItem({ item, preferredCurrency, currencyRates }: Pr
             <div className="flex flex-wrap gap-1.5">
               {badges.map((badge) => (
                 <span key={badge.key} className="inline-flex items-center rounded-md bg-zinc-50 px-2 py-0.5 text-xs text-zinc-600 ring-1 ring-zinc-200/60">
-                  {badge.kind === "country" ? (
-                    <CountryFlagLabel
-                      countryCode={badge.country.code}
-                      label={badge.country.label}
-                      iconClassName="h-3 w-4"
-                      className="gap-1"
-                    />
-                  ) : (
-                    badge.label
-                  )}
+                  {badge.label}
                 </span>
               ))}
             </div>

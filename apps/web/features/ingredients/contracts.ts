@@ -209,8 +209,12 @@ export const ingredientSearchQuerySchema = z.object({
   type: z.enum(ingredientTypes).optional(),
   category: z.enum(ingredientCategories).optional(),
   subtype: z.enum(["malt", "fermentable"]).optional(),
+  manufacturer: z.string().trim().min(1).max(180).optional(),
   limit: z.coerce.number().min(1).max(20).default(10)
 });
+
+export const ingredientSearchSimpleModeThreshold = 10;
+export const ingredientManufacturerRefinementLimit = 6;
 
 export const ingredientUpsertSchema = z.object({
   id: z.string().trim().min(1).max(191).optional(),
@@ -389,6 +393,23 @@ export type IngredientSuggestionItem = {
   matchedPackageVariantName?: string | null;
   score?: number;
   source: "catalog" | "custom";
+};
+
+export type IngredientManufacturerRefinement = {
+  type: "manufacturer";
+  label: string;
+  normalizedLabel: string;
+  count: number;
+  score: number;
+};
+
+export type IngredientSearchResult = {
+  items: IngredientSuggestionItem[];
+  refinements: IngredientManufacturerRefinement[];
+  total: number;
+  isBroadMatch: boolean;
+  hasMore: boolean;
+  appliedManufacturer: IngredientManufacturerRefinement | null;
 };
 
 export const ingredientCatalogViews = ["all", "mine"] as const;

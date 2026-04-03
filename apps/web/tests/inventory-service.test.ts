@@ -1019,6 +1019,72 @@ describe("inventory service", () => {
     expect(customItem?.source.brand).toBe("Brewferm");
   });
 
+  it("keeps catalog brand and country code metadata on inventory cards", async () => {
+    mockState.selectRows = [
+      {
+        inventory: {
+          id: "inv-1",
+          ingredientCatalogItemId: "cat-1",
+          userCustomIngredientId: null,
+          ingredientFamilyId: "fam-1",
+          ingredientCategory: "fermentable",
+          ingredientSubtype: "base_malt",
+          ingredientDisplayNameSnapshot: "Abbey Malt",
+          ingredientDefaultDisplayUnitSnapshot: "kg",
+          ingredientMeasurementDimension: "weight",
+          enteredQuantity: 1,
+          enteredUnit: "kg",
+          normalizedQuantity: 1000,
+          normalizedUnit: "g",
+          unitDimension: "weight",
+          purchasedAt: null,
+          freshnessDate: null,
+          notes: null,
+          archivedAt: null,
+          createdAt: new Date("2025-01-01"),
+          updatedAt: new Date("2025-01-02")
+        },
+        catalog: {
+          id: "cat-1",
+          isActive: true,
+          type: "malt",
+          itemKind: "malt",
+          nameRu: "Аббатский солод",
+          nameEn: "Abbey Malt",
+          displayModeRu: "localized_first",
+          displayNameOverrideRu: null,
+          secondaryNameOverrideRu: null,
+          hideSecondaryNameRu: false,
+          countryCode: "BE",
+          countryName: "Бельгия",
+          brand: "Castle Malting",
+          producer: null,
+          productCode: null,
+          groupName: null,
+          category: null,
+          subcategory: null,
+          presentOnBirrf: true,
+          inventoryEnabled: true,
+          attributes: { color_lovibond: 18 },
+          quantityDefaults: null
+        },
+        custom: null,
+        packageVariant: null
+      }
+    ];
+
+    const items = await listInventoryForUser("u1");
+
+    expect(items).toHaveLength(1);
+    expect(items[0]?.source).toMatchObject({
+      brand: "Castle Malting",
+      brandName: "Castle Malting",
+      countryCode: "BE",
+      countryName: "Бельгия",
+      country: "Бельгия"
+    });
+  });
+
   it("reads persisted taxonomy snapshot even without live source row", async () => {
     mockState.selectRows = [
       {

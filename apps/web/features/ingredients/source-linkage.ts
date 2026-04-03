@@ -52,6 +52,7 @@ export const buildCatalogIngredientLinkage = (
   const { primaryName, secondaryName } = resolveIngredientDisplayNames({
     type: catalog.type as IngredientType,
     countryCode: catalog.countryCode,
+    countryName: catalog.countryName,
     nameRu: catalog.nameRu,
     nameEn: catalog.nameEn,
     displayModeRu: catalog.displayModeRu as "auto" | "localized_first" | "source_first",
@@ -140,6 +141,7 @@ export const buildCustomIngredientLinkage = (
   });
   const { primaryName, secondaryName } = resolveIngredientDisplayNames({
     displayName: custom.displayName,
+    countryName: typeof metadata.properties.country === "string" ? metadata.properties.country : null,
     nameRu: metadata.nameRu,
     nameEn: metadata.nameEn,
     displayModeRu: metadata.displayModeRu,

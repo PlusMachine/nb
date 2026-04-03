@@ -1,8 +1,11 @@
 import React from "react";
 import { PackageOpen, Search, SlidersHorizontal } from "lucide-react";
 
-import type { IngredientCategory } from "@/features/ingredients/contracts";
-import { inventoryCategoryLabels } from "@/features/inventory/page-model";
+import type {
+  IngredientCategory,
+  IngredientSubtype
+} from "@/features/ingredients/contracts";
+import { resolveInventoryFilterLabel } from "@/features/inventory/page-model";
 
 import { AddIngredientTrigger } from "./add-ingredient-trigger";
 
@@ -11,6 +14,7 @@ type Props = {
   hasFilters?: boolean;
   search?: string;
   category?: IngredientCategory;
+  subtype?: Extract<IngredientSubtype, "malt" | "fermentable"> | null;
   showFinished?: boolean;
 };
 
@@ -19,6 +23,7 @@ export function InventoryEmptyState({
   hasFilters = false,
   search = "",
   category,
+  subtype = null,
   showFinished = false
 }: Props) {
   if (!hasAnyItems) {
@@ -41,17 +46,21 @@ export function InventoryEmptyState({
   let title = "Нет результатов";
   let description = "Попробуйте изменить параметры поиска или фильтры.";
   let Icon = SlidersHorizontal;
+  const filterLabel = resolveInventoryFilterLabel({
+    category,
+    subtype
+  });
 
   if (search) {
     title = "По вашему запросу ничего не найдено";
     description = `Не нашли «${search}» среди текущих запасов.`;
     Icon = Search;
   } else if (category && !showFinished) {
-    title = "Для выбранной категории нет позиций в наличии";
-    description = `Включите «Показать закончившиеся», чтобы увидеть позиции с нулевым остатком в категории «${inventoryCategoryLabels[category]}».`;
+    title = `Для выбран${subtype ? "ного фильтра" : "ной категории"} нет позиций в наличии`;
+    description = `Включите «Показать закончившиеся», чтобы увидеть позиции с нулевым остатком ${subtype ? "в разделе" : "в категории"} «${filterLabel}».`;
   } else if (category) {
-    title = "Для выбранной категории нет позиций";
-    description = `В категории «${inventoryCategoryLabels[category]}» пока нет подходящих ингредиентов.`;
+    title = `Для выбран${subtype ? "ного фильтра" : "ной категории"} нет позиций`;
+    description = `${subtype ? "В разделе" : "В категории"} «${filterLabel}» пока нет подходящих ингредиентов.`;
   } else if (!showFinished && !hasFilters) {
     title = "Сейчас в наличии ничего нет";
     description = "Включите «Показать закончившиеся», чтобы увидеть позиции с нулевым остатком и быстро пополнить их.";

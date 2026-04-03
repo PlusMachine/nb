@@ -66,8 +66,9 @@ describe("inventory add-flow", () => {
     expect(html).toContain("Добавить ингредиент");
     expect(html).toContain("Из каталога");
     expect(html).toContain("Категория ингредиента");
-    expect(html).toContain(">Все<");
-    expect(html).toContain('value="all"');
+    expect(html).not.toContain(">Все<");
+    expect(html).not.toContain('value="all"');
+    expect(html).toContain(">Хмель<");
     expect(html).toContain("Начните вводить название ингредиента");
     expect(html).toContain("autofocus");
     expect(html).toContain("За всё");
@@ -122,6 +123,61 @@ describe("inventory add-flow", () => {
     expect(html).toContain('step="1"');
   });
 
+  it("renders a prominent selected ingredient card in catalog flow", () => {
+    const html = renderToStaticMarkup(React.createElement(AddIngredientModal, {
+      open: true,
+      onClose: () => undefined,
+      initialCategory: "fermentable",
+      initialSubtype: "malt",
+      initialSelection: {
+        id: "malt-1",
+        type: "fermentable",
+        category: "fermentable",
+        subtype: "malt",
+        displayName: "Пилснер",
+        primaryLabelRu: "Пилснер",
+        secondaryLabelRu: "Pilsner Malt",
+        brand: "Castle Malting",
+        countryCode: "BE",
+        countryName: "Бельгия",
+        defaultUnit: "kg",
+        source: "catalog",
+        technicalData: {
+          type: "malt",
+          colorLovibond: 1.4,
+          extractPctDryBasis: 81,
+          maxUsagePct: null,
+          minUsagePct: null,
+          proteinPct: null,
+          coarseFineDiffPct: null,
+          moisturePct: null,
+          diastaticPowerLintner: null,
+          grainType: null,
+          maltStyle: null
+        }
+      }
+    }));
+
+    expect(html).toContain("Выбран ингредиент");
+    expect(html).toContain("Пилснер");
+    expect(html).toContain("Castle Malting");
+    expect(html).toContain("Бельгия");
+    expect(html).toContain("81% extract");
+    expect(html).toContain('aria-label="Очистить выбранный ингредиент"');
+  });
+
+  it("uses passed category and subtype as initial add context", () => {
+    const html = renderToStaticMarkup(React.createElement(AddIngredientModal, {
+      open: true,
+      onClose: () => undefined,
+      initialCategory: "fermentable",
+      initialSubtype: "malt"
+    }));
+
+    expect(html).toContain(">Солод<");
+    expect(html).toContain("Начните вводить название ингредиента");
+  });
+
   it("renders category selector options", () => {
     const html = renderToStaticMarkup(React.createElement(IngredientCategorySelector, { value: "hop", onChange: () => undefined }));
     expect(html).toContain("Хмель");
@@ -129,7 +185,7 @@ describe("inventory add-flow", () => {
     expect(html).toContain('value="hop"');
   });
 
-  it("renders all-category option when requested", () => {
+  it("renders all-category option in reusable selector when requested", () => {
     const html = renderToStaticMarkup(React.createElement(IngredientCategorySelector, {
       value: "all",
       onChange: () => undefined,

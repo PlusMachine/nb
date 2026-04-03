@@ -126,6 +126,12 @@ export default async function MyIngredientsPage({ searchParams }: Props) {
         <AddIngredientTrigger
           preferredCurrency={user.preferredCurrency}
           initialSelection={initialSelection}
+          initialCategory={initialSelection?.category ?? category ?? "hop"}
+          initialSubtype={
+            initialSelection?.subtype === "malt" || initialSelection?.subtype === "fermentable"
+              ? initialSelection.subtype
+              : (subtype ?? null)
+          }
           openOnMount={Boolean(initialSelection)}
         />
       </section>
@@ -146,6 +152,7 @@ export default async function MyIngredientsPage({ searchParams }: Props) {
             hasFilters={hasFilters}
             search={rawSearch}
             category={category}
+            subtype={subtype ?? null}
             showFinished={showFinished}
           />
         )

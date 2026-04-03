@@ -3,7 +3,8 @@ import { describe, expect, it } from "vitest";
 import {
   buildQueryVariants,
   normalizeAliasList,
-  normalizeSearchText
+  normalizeSearchText,
+  rewriteIngredientQueryForManufacturer
 } from "../features/ingredients/normalization";
 
 describe("ingredient normalization", () => {
@@ -25,5 +26,41 @@ describe("ingredient normalization", () => {
     expect(typoVariants).toContain("pilsner");
     expect(latinVariants).toContain("pilsner");
     expect(layoutVariants).toContain("pilsner");
+  });
+
+  it("consumes manufacturer-like query fully for brand-first refinements", () => {
+    expect(rewriteIngredientQueryForManufacturer({
+      query: "cast",
+      manufacturer: "Castle Malting"
+    })).toBe("");
+
+    expect(rewriteIngredientQueryForManufacturer({
+      query: "castle",
+      manufacturer: "Castle Malting"
+    })).toBe("");
+  });
+
+  it("keeps only product-specific remainder for mixed manufacturer queries", () => {
+    expect(rewriteIngredientQueryForManufacturer({
+      query: "castle pil",
+      manufacturer: "Castle Malting"
+    })).toBe("pil");
+
+    expect(rewriteIngredientQueryForManufacturer({
+      query: "castle pilsner",
+      manufacturer: "Castle Malting"
+    })).toBe("pilsner");
+  });
+
+  it("preserves non-manufacturer product tokens when scoping by brand", () => {
+    expect(rewriteIngredientQueryForManufacturer({
+      query: "пил",
+      manufacturer: "Castle Malting"
+    })).toBe("пил");
+
+    expect(rewriteIngredientQueryForManufacturer({
+      query: "2rs",
+      manufacturer: "Castle Malting"
+    })).toBe("2rs");
   });
 });

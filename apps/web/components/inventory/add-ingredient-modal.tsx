@@ -2,6 +2,7 @@
 
 import React from "react";
 import { useEffect, useState } from "react";
+import { Droplets, FlaskConical, Leaf, Package, Wheat } from "lucide-react";
 
 import { addCustomIngredientAction, addSelectedIngredientAction, type AddIngredientResult } from "@/app/(app)/app/ingredients/actions";
 import type {
@@ -19,33 +20,38 @@ type Props = {
   onClose: () => void;
   preferredCurrency?: SystemCurrency;
   initialSelection?: IngredientSuggestionItem | null;
+  initialCategory?: IngredientCategory;
+  initialSubtype?: Extract<IngredientSubtype, "malt" | "fermentable"> | null;
 };
 
 type Mode = "catalog" | "custom";
-type AddIngredientCategoryValue = IngredientCategory | "all" | "malt" | "fermentable";
+type AddIngredientCategoryValue = IngredientCategory | "malt" | "fermentable";
 
 const categoryOptions: Array<{
   value: AddIngredientCategoryValue;
   label: string;
+  icon: React.ComponentType<{ className?: string }>;
+  iconClassName: string;
 }> = [
-  { value: "all", label: "Все" },
-  { value: "malt", label: "Солода" },
-  { value: "fermentable", label: "Сбраживаемое сырье" },
-  { value: "hop", label: "Хмель" },
-  { value: "yeast", label: "Дрожжи" },
-  { value: "water_treatment", label: "Водоподготовка" },
-  { value: "consumable", label: "Расходники" }
-];
+    { value: "malt", label: "Солод", icon: Wheat, iconClassName: "text-amber-600" },
+    { value: "fermentable", label: "Сбраживаемое сырье", icon: Wheat, iconClassName: "text-amber-600" },
+    { value: "hop", label: "Хмель", icon: Leaf, iconClassName: "text-emerald-600" },
+    { value: "yeast", label: "Дрожжи", icon: FlaskConical, iconClassName: "text-violet-600" },
+    { value: "water_treatment", label: "Водоподготовка", icon: Droplets, iconClassName: "text-sky-600" },
+    { value: "consumable", label: "Расходники", icon: Package, iconClassName: "text-zinc-500" }
+  ];
 
 export function AddIngredientModal({
   open,
   onClose,
   preferredCurrency = "RUB",
-  initialSelection = null
+  initialSelection = null,
+  initialCategory = "hop",
+  initialSubtype = null
 }: Props) {
-  const [catalogCategory, setCatalogCategory] = useState<IngredientCategory | "all">("all");
+  const [catalogCategory, setCatalogCategory] = useState<IngredientCategory>(initialCategory);
   const [catalogSubtype, setCatalogSubtype] = useState<Extract<IngredientSubtype, "malt" | "fermentable"> | null>(null);
-  const [customCategory, setCustomCategory] = useState<IngredientCategory>("hop");
+  const [customCategory, setCustomCategory] = useState<IngredientCategory>(initialCategory);
   const [customSubtype, setCustomSubtype] = useState<Extract<IngredientSubtype, "malt" | "fermentable"> | null>(null);
   const [mode, setMode] = useState<Mode>("catalog");
   const [result, setResult] = useState<AddIngredientResult | null>(null);
@@ -56,18 +62,19 @@ export function AddIngredientModal({
       return;
     }
 
-    setCatalogCategory(initialSelection?.category ?? "all");
-    setCatalogSubtype(initialSelection?.subtype === "malt" || initialSelection?.subtype === "fermentable"
+    const nextSubtype = initialSelection?.subtype === "malt" || initialSelection?.subtype === "fermentable"
       ? initialSelection.subtype
-      : null);
-    setCustomCategory(initialSelection?.category ?? "hop");
-    setCustomSubtype(initialSelection?.subtype === "malt" || initialSelection?.subtype === "fermentable"
-      ? initialSelection.subtype
-      : null);
+      : initialSubtype;
+    const nextCategory = initialSelection?.category ?? initialCategory;
+
+    setCatalogCategory(nextCategory);
+    setCatalogSubtype(nextSubtype);
+    setCustomCategory(nextCategory);
+    setCustomSubtype(nextSubtype);
     setMode("catalog");
     setResult(null);
     setPending(false);
-  }, [initialSelection, open]);
+  }, [initialCategory, initialSelection, initialSubtype, open]);
 
   if (!open) {
     return null;
@@ -85,22 +92,14 @@ export function AddIngredientModal({
     if (mode === "catalog") {
       setCatalogCategory(nextResolvedCategory);
       setCatalogSubtype(nextResolvedSubtype);
-      if (nextResolvedCategory !== "all") {
-        setCustomCategory(nextResolvedCategory);
-        setCustomSubtype(nextResolvedSubtype);
-      }
+      setCustomCategory(nextResolvedCategory);
+      setCustomSubtype(nextResolvedSubtype);
       return;
     }
 
-    if (nextResolvedCategory === "all") {
-      setCatalogCategory("all");
-      setCatalogSubtype(null);
-      return;
-    }
-
-    setCustomCategory(nextResolvedCategory as IngredientCategory);
+    setCustomCategory(nextResolvedCategory);
     setCustomSubtype(nextResolvedSubtype);
-    setCatalogCategory(nextResolvedCategory as IngredientCategory);
+    setCatalogCategory(nextResolvedCategory);
     setCatalogSubtype(nextResolvedSubtype);
   };
 
@@ -136,22 +135,26 @@ export function AddIngredientModal({
           <fieldset className="space-y-2">
             <legend className="text-sm font-medium">Категория ингредиента</legend>
             <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
-              {categoryOptions
-                .filter((option) => mode === "catalog" || option.value !== "all")
-                .map((option) => (
+              {categoryOptions.map((option) => {
+                const Icon = option.icon;
+
+                return (
                   <button
                     key={option.value}
                     type="button"
                     onClick={() => handleCategoryChange(option.value)}
-                    className={`rounded-md border px-3 py-2 text-center text-xs transition ${
-                      selectedCategoryValue === option.value
+                    className={`rounded-md border px-3 py-2 text-xs transition ${selectedCategoryValue === option.value
                         ? "border-black bg-zinc-100 text-zinc-950"
                         : "border-zinc-200 bg-white text-zinc-600 hover:border-zinc-300 hover:bg-zinc-50"
-                    }`}
+                      }`}
                   >
-                    {option.label}
+                    <span className="inline-flex items-center gap-1.5 whitespace-nowrap">
+                      <Icon className={`h-3.5 w-3.5 shrink-0 ${selectedCategoryValue === option.value ? "text-current" : option.iconClassName}`} />
+                      <span>{option.label}</span>
+                    </span>
                   </button>
-                ))}
+                );
+              })}
             </div>
           </fieldset>
 
@@ -164,7 +167,7 @@ export function AddIngredientModal({
 
           {mode === "catalog" ? (
             <CatalogIngredientForm
-              category={catalogCategory === "all" ? undefined : catalogCategory}
+              category={catalogCategory}
               subtype={catalogSubtype}
               preferredCurrency={preferredCurrency}
               pending={pending}

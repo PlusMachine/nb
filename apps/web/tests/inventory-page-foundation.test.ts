@@ -19,18 +19,18 @@ import { type InventoryListItemDto, type InventorySummaryDto } from "../features
 import { groupInventoryItems } from "../features/inventory/page-model";
 
 const baseSummary: InventorySummaryDto = {
-  totalItems: 3,
-  inStockItems: 2,
+  totalItems: 4,
+  inStockItems: 3,
   emptyItems: 1,
   byCategory: {
-    fermentable: 1,
+    fermentable: 2,
     hop: 2,
     yeast: 0,
     consumable: 0,
     water_treatment: 0
   },
   inStockByCategory: {
-    fermentable: 1,
+    fermentable: 2,
     hop: 1,
     yeast: 0,
     consumable: 0,
@@ -38,11 +38,11 @@ const baseSummary: InventorySummaryDto = {
   },
   byFermentableSubtype: {
     malt: 1,
-    fermentable: 0
+    fermentable: 1
   },
   inStockByFermentableSubtype: {
     malt: 1,
-    fermentable: 0
+    fermentable: 1
   }
 };
 
@@ -73,6 +73,30 @@ const items: InventoryListItemDto[] = [
   },
   {
     id: "inv-2",
+    enteredQuantity: 500,
+    enteredUnit: "g",
+    normalizedQuantity: 500,
+    normalizedUnit: "g",
+    unitDimension: "weight",
+    purchasedAt: null,
+    freshnessDate: null,
+    notes: null,
+    archivedAt: null,
+    createdAt: new Date("2025-01-02"),
+    updatedAt: new Date("2025-01-02"),
+    source: {
+      sourceKind: "catalog",
+      sourceId: "cat-2",
+      type: "fermentable",
+      category: "fermentable",
+      primaryLabelRu: "Декстроза",
+      secondaryLabelRu: "Dextrose",
+      displayName: "Декстроза",
+      normalizedName: "dextrose"
+    }
+  },
+  {
+    id: "inv-3",
     enteredQuantity: 150,
     enteredUnit: "g",
     normalizedQuantity: 150,
@@ -82,8 +106,8 @@ const items: InventoryListItemDto[] = [
     freshnessDate: null,
     notes: "Для IPA",
     archivedAt: null,
-    createdAt: new Date("2025-01-02"),
-    updatedAt: new Date("2025-01-02"),
+    createdAt: new Date("2025-01-03"),
+    updatedAt: new Date("2025-01-03"),
     source: {
       sourceKind: "custom",
       sourceId: "cus-1",
@@ -96,7 +120,7 @@ const items: InventoryListItemDto[] = [
     }
   },
   {
-    id: "inv-3",
+    id: "inv-4",
     enteredQuantity: 0,
     enteredUnit: "item",
     normalizedQuantity: 0,
@@ -106,8 +130,8 @@ const items: InventoryListItemDto[] = [
     freshnessDate: null,
     notes: null,
     archivedAt: null,
-    createdAt: new Date("2025-01-03"),
-    updatedAt: new Date("2025-01-03"),
+    createdAt: new Date("2025-01-04"),
+    updatedAt: new Date("2025-01-04"),
     source: {
       sourceKind: "custom",
       sourceId: "cus-2",
@@ -137,15 +161,31 @@ describe("inventory page foundation", () => {
       currencyRates: { RUB: 100, USD: 7900, EUR: 9170 }
     }));
 
-    expect(grouped.map((group) => group.category)).toEqual(["fermentable", "hop"]);
-    expect(grouped.find((group) => group.category === "hop")?.items.map((item) => item.id)).toEqual(["inv-2", "inv-3"]);
-    expect(html).toContain("Ферментируемые");
+    expect(grouped.map((group) => group.key)).toEqual(["malt", "fermentable", "hop"]);
+    expect(grouped.find((group) => group.key === "fermentable")?.items.map((item) => item.id)).toEqual(["inv-2"]);
+    expect(grouped.find((group) => group.key === "hop")?.items.map((item) => item.id)).toEqual(["inv-3", "inv-4"]);
+    expect(html).toContain("Солод");
+    expect(html).toContain("Сбраживаемое сырье");
     expect(html).toContain("Хмель");
     expect(html).not.toContain("Закончившиеся");
     expect(html).toContain("Пилснер солод");
+    expect(html).toContain("Декстроза");
     expect(html).toContain("Citra");
     expect(html).toContain("Mosaic");
     expect(html).toContain('aria-label="Удалить"');
+  });
+
+  it("uses fermentable subtype labels in empty states", () => {
+    const html = renderToStaticMarkup(React.createElement(InventoryEmptyState, {
+      hasAnyItems: true,
+      hasFilters: true,
+      category: "fermentable",
+      subtype: "malt",
+      showFinished: false
+    }));
+
+    expect(html).toContain("Солод");
+    expect(html).not.toContain("Ферментируемые");
   });
 
   it("renders summary block", () => {

@@ -17,7 +17,13 @@ type IngredientPresentationSource = {
   displayNameOverrideRu?: string | null;
   secondaryNameOverrideRu?: string | null;
   hideSecondaryNameRu?: boolean | null;
+  brand?: string | null;
+  producer?: string | null;
+  brandName?: string | null;
+  manufacturer?: string | null;
   countryCode?: string | null;
+  countryName?: string | null;
+  country?: string | null;
   familyDisplayName?: string | null;
   familyCanonicalName?: string | null;
   technicalData?: IngredientTechnicalData | Record<string, unknown> | null;
@@ -194,26 +200,43 @@ export const resolveIngredientCountry = (source: Pick<IngredientPresentationSour
   };
 };
 
+export const resolveIngredientBrandLabel = (
+  source: Pick<IngredientPresentationSource, "brand" | "producer" | "brandName" | "manufacturer">
+) => normalizeOptionalName(source.brand)
+  ?? normalizeOptionalName(source.producer)
+  ?? normalizeOptionalName(source.brandName)
+  ?? normalizeOptionalName(source.manufacturer)
+  ?? null;
+
 export const formatIngredientCountry = (source: Pick<IngredientPresentationSource, "countryCode"> & {
   countryName?: string | null;
   country?: string | null;
 }) => resolveIngredientCountry(source)?.label ?? null;
 
+const autoLocalizedFirstCountryCodes = new Set(["RU", "BY", "UA", "KZ"]);
+
+const shouldUseLocalizedFirstInAutoMode = (
+  source: Pick<IngredientPresentationSource, "countryCode" | "countryName" | "country" | "nameRu">
+) => {
+  if (!normalizeOptionalName(source.nameRu)) {
+    return false;
+  }
+
+  const countryCode = resolveCountryCode(source);
+  return countryCode ? autoLocalizedFirstCountryCodes.has(countryCode) : false;
+};
+
 export const resolveEffectiveDisplayMode = (
-  source: Pick<IngredientPresentationSource, "type" | "countryCode" | "nameRu" | "displayModeRu">
+  source: Pick<IngredientPresentationSource, "type" | "countryCode" | "countryName" | "country" | "nameRu" | "displayModeRu">
 ): Exclude<IngredientDisplayMode, "auto"> => {
   if (source.displayModeRu === "localized_first" || source.displayModeRu === "source_first") {
     return source.displayModeRu;
   }
 
-  if (source.type === "hop") {
-    return source.countryCode && ["RU", "BY", "UA", "KZ"].includes(source.countryCode) && normalizeOptionalName(source.nameRu)
+  if (source.type === "hop" || source.type === "malt" || source.type === "yeast") {
+    return shouldUseLocalizedFirstInAutoMode(source)
       ? "localized_first"
       : "source_first";
-  }
-
-  if (source.type === "yeast") {
-    return "source_first";
   }
 
   return "localized_first";
@@ -229,6 +252,8 @@ export const resolveIngredientPrimaryDisplayName = (source: Pick<
   | "displayNameEn"
   | "nameRu"
   | "nameEn"
+  | "countryName"
+  | "country"
   | "displayModeRu"
   | "displayNameOverrideRu"
 >) => {
@@ -263,6 +288,8 @@ export const resolveIngredientSecondaryDisplayName = (source: Pick<
   | "displayNameEn"
   | "nameRu"
   | "nameEn"
+  | "countryName"
+  | "country"
   | "displayModeRu"
   | "displayNameOverrideRu"
   | "secondaryNameOverrideRu"
@@ -306,6 +333,8 @@ export const resolveIngredientDisplayNames = (source: Pick<
   | "displayNameEn"
   | "nameRu"
   | "nameEn"
+  | "countryName"
+  | "country"
   | "displayModeRu"
   | "displayNameOverrideRu"
   | "secondaryNameOverrideRu"

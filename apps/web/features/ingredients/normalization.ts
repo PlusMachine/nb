@@ -142,6 +142,17 @@ const applyTokenVariants = (value: string) => {
   return [...variants].filter(Boolean);
 };
 
+const tokenizeSearchTextPreservingRaw = (value: string) => value
+  .normalize("NFKC")
+  .replaceAll("ё", "е")
+  .replace(punctuationRegex, " ")
+  .replace(separatorRegex, " ")
+  .replace(whitespaceRegex, " ")
+  .trim()
+  .split(" ")
+  .map((token) => token.trim())
+  .filter(Boolean);
+
 export const normalizeSearchText = (input: string) => normalizeAndCollapse(input);
 
 export const normalizeIngredientName = normalizeSearchText;
@@ -259,4 +270,59 @@ export const buildQueryVariants = (query: string) => {
   }
 
   return [...variants];
+};
+
+const isCoveredByManufacturerPhrase = (queryVariant: string, manufacturerVariant: string) => {
+  if (!queryVariant || !manufacturerVariant) {
+    return false;
+  }
+
+  return queryVariant === manufacturerVariant
+    || (queryVariant.length >= 2 && manufacturerVariant.startsWith(queryVariant))
+    || (manufacturerVariant.length >= 2 && queryVariant.startsWith(manufacturerVariant));
+};
+
+const isManufacturerLikeToken = (token: string, manufacturerTokens: string[]) => {
+  const tokenVariants = buildQueryVariants(token);
+
+  return tokenVariants.some((tokenVariant) => manufacturerTokens.some((manufacturerToken) => (
+    tokenVariant === manufacturerToken
+    || (tokenVariant.length >= 2 && manufacturerToken.startsWith(tokenVariant))
+    || (manufacturerToken.length >= 4 && tokenVariant.startsWith(manufacturerToken))
+  )));
+};
+
+export const rewriteIngredientQueryForManufacturer = ({
+  query,
+  manufacturer
+}: {
+  query: string;
+  manufacturer: string;
+}) => {
+  const normalizedManufacturer = normalizeSearchText(manufacturer);
+  if (!normalizedManufacturer) {
+    return query.trim();
+  }
+
+  const rawTokens = tokenizeSearchTextPreservingRaw(query);
+  if (rawTokens.length === 0) {
+    return "";
+  }
+
+  const queryVariants = buildQueryVariants(query);
+  const manufacturerVariants = buildQueryVariants(manufacturer);
+
+  if (queryVariants.some((queryVariant) => manufacturerVariants.some((manufacturerVariant) => (
+    isCoveredByManufacturerPhrase(queryVariant, manufacturerVariant)
+  )))) {
+    return "";
+  }
+
+  const manufacturerTokens = [...new Set(
+    manufacturerVariants.flatMap((variant) => variant.split(" ").filter(Boolean))
+  )];
+
+  return rawTokens
+    .filter((token) => !isManufacturerLikeToken(token, manufacturerTokens))
+    .join(" ");
 };

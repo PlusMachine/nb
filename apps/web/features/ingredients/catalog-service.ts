@@ -15,6 +15,8 @@ import type {
   IngredientAliasDto,
   IngredientCatalogSortOption,
   IngredientCategory,
+  IngredientManufacturerRefinement,
+  IngredientSearchResult,
   IngredientSuggestionItem,
   IngredientType,
   UserCatalogIngredientDto,
@@ -23,13 +25,16 @@ import type {
 import {
   ingredientCategories,
   ingredientCatalogSortOptions,
+  ingredientManufacturerRefinementLimit,
   ingredientSearchQuerySchema
 } from "./contracts";
+import { ingredientSearchSimpleModeThreshold } from "./contracts";
 import { sortRankedCatalogItems } from "./catalog-ranking";
 import { readCustomIngredientMetadata } from "./custom-metadata";
 import { buildQueryVariants, normalizeSearchText } from "./normalization";
 import {
   buildIngredientTypedSummary,
+  resolveIngredientBrandLabel,
   resolveIngredientDisplayNames
 } from "./presentation";
 import { loadIngredients, getIngredientById } from "./service";
@@ -50,6 +55,7 @@ type CatalogSearchParams = {
   type?: string;
   category?: string;
   subtype?: string;
+  manufacturer?: string;
   limit?: number;
   includeCustom?: boolean;
 };
@@ -143,6 +149,7 @@ const mapCustomIngredient = (
   });
   const { primaryName, secondaryName } = resolveIngredientDisplayNames({
     displayName: item.displayName,
+    countryName: item.country ?? readTrimmedString(metadata.properties.country),
     nameRu: metadata.nameRu,
     nameEn: metadata.nameEn,
     displayModeRu: metadata.displayModeRu,
@@ -238,6 +245,116 @@ const buildSearchText = (item: UserCatalogIngredientDto) => {
     ...aliases,
     ...variantNames
   ].filter(Boolean).join(" "));
+};
+
+const toIngredientSuggestionItem = (
+  item: UserCatalogIngredientDto,
+  score?: number
+): IngredientSuggestionItem => ({
+  id: item.id,
+  type: item.type,
+  category: item.category,
+  subtype: item.subtype,
+  familyId: item.familyId,
+  primaryLabelRu: item.primaryLabelRu,
+  secondaryLabelRu: item.secondaryLabelRu,
+  displayName: item.displayName,
+  displayNameRu: item.displayNameRu,
+  displayNameEn: item.displayNameEn,
+  nameRu: item.nameRu,
+  nameEn: item.nameEn,
+  displayModeRu: item.displayModeRu,
+  subtitle: [
+    item.brand ?? item.producer ?? null,
+    item.countryName ?? null,
+    buildIngredientTypedSummary({
+      type: item.type,
+      category: item.category,
+      subtype: item.subtype,
+      technicalData: item.technicalData,
+      unitPreferred: item.unitPreferred
+    }) ?? null
+  ].filter(Boolean).join(" • ") || undefined,
+  brand: item.brand,
+  producer: item.producer,
+  brandName: item.brandName,
+  manufacturer: item.manufacturer,
+  countryCode: item.countryCode ?? undefined,
+  countryName: item.countryName ?? undefined,
+  country: item.country ?? undefined,
+  productCode: item.productCode ?? undefined,
+  technicalData: item.technicalData,
+  defaultUnit: item.defaultUnit,
+  defaultDisplayUnit: item.defaultDisplayUnit,
+  allowedUnits: item.allowedUnits,
+  measurementDimension: item.measurementDimension,
+  completenessLevel: item.completenessLevel ?? undefined,
+  quantityDefaults: item.quantityDefaults,
+  unitPreferred: item.unitPreferred,
+  packageVariants: item.packageVariants,
+  familyDisplayName: null,
+  familyCanonicalName: null,
+  score,
+  source: item.source
+});
+
+const resolveManufacturerLabel = (item: Pick<UserCatalogIngredientDto, "brand" | "producer" | "brandName" | "manufacturer">) => (
+  resolveIngredientBrandLabel(item)
+);
+
+const filterItemsByManufacturer = (
+  items: UserCatalogIngredientDto[],
+  manufacturer?: string
+) => {
+  if (!manufacturer) {
+    return items;
+  }
+
+  const normalizedManufacturer = normalizeSearchText(manufacturer);
+  if (!normalizedManufacturer) {
+    return items;
+  }
+
+  return items.filter((item) => normalizeSearchText(resolveManufacturerLabel(item) ?? "") === normalizedManufacturer);
+};
+
+const buildManufacturerRefinements = (
+  rankedItems: RankedCatalogItem[],
+  activeManufacturer?: string
+): IngredientManufacturerRefinement[] => {
+  const normalizedActiveManufacturer = normalizeSearchText(activeManufacturer ?? "");
+  const grouped = new Map<string, IngredientManufacturerRefinement>();
+
+  for (const rankedItem of rankedItems) {
+    const label = resolveManufacturerLabel(rankedItem.item);
+    const normalizedLabel = normalizeSearchText(label ?? "");
+    if (!label || !normalizedLabel || normalizedLabel === normalizedActiveManufacturer) {
+      continue;
+    }
+
+    const current = grouped.get(normalizedLabel);
+    if (current) {
+      current.count += 1;
+      current.score = Math.max(current.score, rankedItem.score);
+      continue;
+    }
+
+    grouped.set(normalizedLabel, {
+      type: "manufacturer",
+      label,
+      normalizedLabel,
+      count: 1,
+      score: rankedItem.score
+    });
+  }
+
+  return [...grouped.values()]
+    .sort((left, right) => (
+      right.score - left.score
+      || right.count - left.count
+      || left.label.localeCompare(right.label, "ru")
+    ))
+    .slice(0, ingredientManufacturerRefinementLimit);
 };
 
 const buildRankedItem = (item: UserCatalogIngredientDto, query: string): RankedCatalogItem | null => {
@@ -415,7 +532,7 @@ const loadUnifiedCatalogItems = async (
 export const searchUserCatalogIngredients = async (
   userId: string,
   params: CatalogSearchParams
-): Promise<IngredientSuggestionItem[]> => {
+): Promise<IngredientSearchResult> => {
   const query = ingredientSearchQuerySchema.parse(params);
   const { allItems, catalogItems } = await loadUnifiedCatalogItems(userId, {
     type: query.type
@@ -433,59 +550,36 @@ export const searchUserCatalogIngredients = async (
     ? categoryFilteredAllItems.filter((item) => item.subtype === query.subtype)
     : categoryFilteredAllItems;
   const searchableItems = params.includeCustom === false ? subtypeFilteredCatalogItems : subtypeFilteredAllItems;
-
-  return searchableItems
+  const manufacturerScopedItems = filterItemsByManufacturer(searchableItems, query.manufacturer);
+  const rankedItems = manufacturerScopedItems
     .map((item) => buildRankedItem(item, query.q))
     .filter((item): item is RankedCatalogItem => item !== null)
-    .sort(sortRankedCatalogItems)
+    .sort(sortRankedCatalogItems);
+  const refinements = buildManufacturerRefinements(rankedItems, query.manufacturer);
+  const total = rankedItems.length;
+  const items = rankedItems
     .slice(0, query.limit)
-    .map(({ item, score }) => ({
-      id: item.id,
-      type: item.type,
-      category: item.category,
-      subtype: item.subtype,
-      familyId: item.familyId,
-      primaryLabelRu: item.primaryLabelRu,
-      secondaryLabelRu: item.secondaryLabelRu,
-      displayName: item.displayName,
-      displayNameRu: item.displayNameRu,
-      displayNameEn: item.displayNameEn,
-      nameRu: item.nameRu,
-      nameEn: item.nameEn,
-      displayModeRu: item.displayModeRu,
-      subtitle: [
-        item.brand ?? item.producer ?? null,
-        item.countryName ?? null,
-        buildIngredientTypedSummary({
-          type: item.type,
-          category: item.category,
-          subtype: item.subtype,
-          technicalData: item.technicalData,
-          unitPreferred: item.unitPreferred
-        }) ?? null
-      ].filter(Boolean).join(" • ") || undefined,
-      brand: item.brand,
-      producer: item.producer,
-      brandName: item.brandName,
-      manufacturer: item.manufacturer,
-      countryCode: item.countryCode ?? undefined,
-      countryName: item.countryName ?? undefined,
-      country: item.country ?? undefined,
-      productCode: item.productCode ?? undefined,
-      technicalData: item.technicalData,
-      defaultUnit: item.defaultUnit,
-      defaultDisplayUnit: item.defaultDisplayUnit,
-      allowedUnits: item.allowedUnits,
-      measurementDimension: item.measurementDimension,
-      completenessLevel: item.completenessLevel ?? undefined,
-      quantityDefaults: item.quantityDefaults,
-      unitPreferred: item.unitPreferred,
-      packageVariants: item.packageVariants,
-      familyDisplayName: null,
-      familyCanonicalName: null,
-      score,
-      source: item.source
-    }));
+    .map(({ item, score }) => toIngredientSuggestionItem(item, score));
+  const normalizedManufacturer = normalizeSearchText(query.manufacturer ?? "");
+  const appliedManufacturer = normalizedManufacturer
+    ? refinements.find((refinement) => refinement.normalizedLabel === normalizedManufacturer)
+      ?? {
+        type: "manufacturer" as const,
+        label: query.manufacturer ?? "",
+        normalizedLabel: normalizedManufacturer,
+        count: total,
+        score: rankedItems[0]?.score ?? 0
+      }
+    : null;
+
+  return {
+    items,
+    refinements: query.manufacturer ? [] : refinements,
+    total,
+    isBroadMatch: total > ingredientSearchSimpleModeThreshold,
+    hasMore: total > items.length,
+    appliedManufacturer
+  };
 };
 
 export const getIngredientSuggestionByRef = async (
@@ -498,52 +592,7 @@ export const getIngredientSuggestionByRef = async (
     return null;
   }
 
-  return {
-    id: item.id,
-    type: item.type,
-    category: item.category,
-    subtype: item.subtype,
-    familyId: item.familyId,
-    primaryLabelRu: item.primaryLabelRu,
-    secondaryLabelRu: item.secondaryLabelRu,
-    displayName: item.displayName,
-    displayNameRu: item.displayNameRu,
-    displayNameEn: item.displayNameEn,
-    nameRu: item.nameRu,
-    nameEn: item.nameEn,
-    displayModeRu: item.displayModeRu,
-    subtitle: [
-      item.brand ?? item.producer ?? null,
-      item.countryName ?? null,
-      buildIngredientTypedSummary({
-        type: item.type,
-        category: item.category,
-        subtype: item.subtype,
-        technicalData: item.technicalData,
-        unitPreferred: item.unitPreferred
-      }) ?? null
-    ].filter(Boolean).join(" • ") || undefined,
-    brand: item.brand,
-    producer: item.producer,
-    brandName: item.brandName,
-    manufacturer: item.manufacturer,
-    countryCode: item.countryCode ?? undefined,
-    countryName: item.countryName ?? undefined,
-    country: item.country ?? undefined,
-    productCode: item.productCode ?? undefined,
-    technicalData: item.technicalData,
-    defaultUnit: item.defaultUnit,
-    defaultDisplayUnit: item.defaultDisplayUnit,
-    allowedUnits: item.allowedUnits,
-    measurementDimension: item.measurementDimension,
-    completenessLevel: item.completenessLevel ?? undefined,
-    quantityDefaults: item.quantityDefaults,
-    unitPreferred: item.unitPreferred,
-    packageVariants: item.packageVariants,
-    familyDisplayName: null,
-    familyCanonicalName: null,
-    source: item.source
-  };
+  return toIngredientSuggestionItem(item);
 };
 
 export const listUserCatalogIngredients = async (

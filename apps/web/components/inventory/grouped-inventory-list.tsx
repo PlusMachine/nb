@@ -13,6 +13,7 @@ type Props = {
 };
 
 const groupIcons = {
+  malt: Wheat,
   fermentable: Wheat,
   hop: Leaf,
   yeast: FlaskConical,
@@ -21,6 +22,7 @@ const groupIcons = {
 };
 
 const groupColors = {
+  malt: "text-amber-600",
   fermentable: "text-amber-600",
   hop: "text-emerald-600",
   yeast: "text-violet-600",
@@ -34,11 +36,11 @@ export function GroupedInventoryList({ items, preferredCurrency, currencyRates }
   return (
     <section className="space-y-6" aria-label="Список ингредиентов по категориям">
       {groups.map((group) => {
-        const Icon = groupIcons[group.category];
-        const color = groupColors[group.category];
+        const Icon = groupIcons[group.key];
+        const color = groupColors[group.key];
 
         return (
-          <section key={group.category} className="space-y-3">
+          <section key={group.key} className="space-y-3">
             <div className="flex items-center gap-2">
               <Icon className={`h-4 w-4 ${color}`} />
               <h3 className="text-sm font-semibold uppercase tracking-wider text-zinc-400">

@@ -5,6 +5,7 @@ import { useState } from "react";
 import { Plus } from "lucide-react";
 
 import type { IngredientSuggestionItem } from "@/features/ingredients/contracts";
+import type { IngredientCategory, IngredientSubtype } from "@/features/ingredients/contracts";
 import type { SystemCurrency } from "@/features/system/currency";
 
 import { AddIngredientModal } from "./add-ingredient-modal";
@@ -14,6 +15,8 @@ type Props = {
   fullWidth?: boolean;
   preferredCurrency?: SystemCurrency;
   initialSelection?: IngredientSuggestionItem | null;
+  initialCategory?: IngredientCategory;
+  initialSubtype?: Extract<IngredientSubtype, "malt" | "fermentable"> | null;
   openOnMount?: boolean;
 };
 
@@ -22,6 +25,8 @@ export function AddIngredientTrigger({
   fullWidth = false,
   preferredCurrency = "RUB",
   initialSelection = null,
+  initialCategory = "hop",
+  initialSubtype = null,
   openOnMount = false
 }: Props) {
   const [open, setOpen] = useState(openOnMount);
@@ -41,6 +46,8 @@ export function AddIngredientTrigger({
         onClose={() => setOpen(false)}
         preferredCurrency={preferredCurrency}
         initialSelection={initialSelection}
+        initialCategory={initialCategory}
+        initialSubtype={initialSubtype}
       />
     </>
   );
