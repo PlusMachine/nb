@@ -12,7 +12,10 @@ import type {
   IngredientSubtype,
   IngredientType
 } from "@/features/ingredients/contracts";
-import { ingredientSearchSimpleModeThreshold } from "@/features/ingredients/contracts";
+import {
+  ingredientSearchExpandedLimit,
+  ingredientSearchSimpleModeThreshold
+} from "@/features/ingredients/contracts";
 import {
   normalizeSearchText,
   rewriteIngredientQueryForManufacturer
@@ -58,7 +61,6 @@ type Props = {
 };
 
 const isAbortError = (error: unknown) => error instanceof DOMException && error.name === "AbortError";
-const ingredientPickerExpandedLimit = 20;
 const ingredientPickerCollapsedResultsCount = 6;
 
 type IngredientPickerSearchResponse = IngredientSearchResult | IngredientSuggestionItem[];
@@ -182,6 +184,34 @@ export const resolveVisibleIngredientItems = ({
   isBroadMatch && !isExpanded
     ? items.slice(0, ingredientPickerCollapsedResultsCount)
     : items
+);
+
+export const countIngredientPickerRefinementCoverage = (
+  refinements: IngredientManufacturerRefinement[]
+) => refinements.reduce((sum, refinement) => sum + refinement.count, 0);
+
+export const resolveIngredientPickerRequestedLimit = ({
+  defaultLimit,
+  isExpanded,
+  total
+}: {
+  defaultLimit: number;
+  isExpanded: boolean;
+  total: number;
+}) => (
+  isExpanded
+    ? Math.max(defaultLimit, Math.min(total || ingredientSearchExpandedLimit, ingredientSearchExpandedLimit))
+    : defaultLimit
+);
+
+export const buildIngredientPickerExpandLabel = ({
+  total
+}: {
+  total: number;
+}) => (
+  total <= ingredientSearchExpandedLimit
+    ? `Показать все результаты (${total})`
+    : `Показать первые ${ingredientSearchExpandedLimit} из ${total}`
 );
 
 export const buildIngredientSearchParams = ({
@@ -556,6 +586,7 @@ export const IngredientPicker = ({
     isBroadMatch: searchResult.isBroadMatch,
     isExpanded
   }), [isExpanded, searchResult.isBroadMatch, searchResult.items]);
+  const refinementCoverage = countIngredientPickerRefinementCoverage(searchResult.refinements);
 
   useEffect(() => {
     setQuery(value ?? "");
@@ -587,9 +618,11 @@ export const IngredientPicker = ({
       return;
     }
 
-    const requestedLimit = isExpanded
-      ? Math.max(limit, ingredientPickerExpandedLimit)
-      : limit;
+    const requestedLimit = resolveIngredientPickerRequestedLimit({
+      defaultLimit: limit,
+      isExpanded,
+      total: searchResult.total
+    });
     const cacheKey = buildIngredientCacheKey({
       q: query,
       type,
@@ -728,6 +761,9 @@ export const IngredientPicker = ({
     ? `Искать внутри ${appliedManufacturer.label}`
     : placeholder;
   const emptyStateQueryLabel = query.trim() || appliedManufacturer?.label || effectiveSearchQuery.trim();
+  const expandedResultsSummary = isExpanded && searchResult.total > searchResult.items.length
+    ? `Показаны первые ${searchResult.items.length} из ${searchResult.total} совпадений. Уточните запрос или производителя.`
+    : null;
 
   const builtInEmptyState = (
     <div className="space-y-2 rounded-md border border-dashed border-zinc-200 bg-zinc-50 px-3 py-3 text-xs text-zinc-600">
@@ -858,6 +894,11 @@ export const IngredientPicker = ({
                   </button>
                 ))}
               </div>
+              {searchResult.refinements.length > 0 && refinementCoverage < searchResult.total ? (
+                <p className="mt-2 text-xs text-zinc-500">
+                  Показаны топ-{searchResult.refinements.length} производителей для {refinementCoverage} из {searchResult.total} совпадений.
+                </p>
+              ) : null}
             </div>
           ) : null}
 
@@ -944,10 +985,13 @@ export const IngredientPicker = ({
                 onClick={() => setIsExpanded(true)}
                 className="text-sm font-medium text-zinc-700 underline underline-offset-2"
               >
-                {searchResult.hasMore
-                  ? `Показать больше результатов (${searchResult.total})`
-                  : "Показать все результаты"}
+                {buildIngredientPickerExpandLabel({ total: searchResult.total })}
               </button>
+            </div>
+          ) : null}
+          {expandedResultsSummary ? (
+            <div className="border-t border-zinc-200 bg-zinc-50 px-3 py-2 text-xs text-zinc-500">
+              {expandedResultsSummary}
             </div>
           ) : null}
         </div>

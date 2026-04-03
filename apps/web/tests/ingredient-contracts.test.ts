@@ -6,9 +6,11 @@ describe("ingredient contracts", () => {
   it("accepts type and category filters from the new taxonomy", () => {
     const byType = ingredientSearchQuerySchema.parse({ q: "citra", type: "hop" });
     const byCategory = ingredientSearchQuerySchema.parse({ q: "chloride", category: "water_treatment" });
+    const expandedLimit = ingredientSearchQuerySchema.parse({ q: "pils", limit: 61 });
 
     expect(byType.type).toBe("hop");
     expect(byCategory.category).toBe("water_treatment");
+    expect(expandedLimit.limit).toBe(61);
   });
 
   it("accepts hop payloads built from canonical names and real aliases", () => {

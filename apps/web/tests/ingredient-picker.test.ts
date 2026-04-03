@@ -4,9 +4,12 @@ import { describe, expect, it } from "vitest";
 
 import {
   buildIngredientSearchParams,
+  buildIngredientPickerExpandLabel,
+  countIngredientPickerRefinementCoverage,
   IngredientPickerManufacturerChip,
   normalizeIngredientSearchResponse,
   resolveIngredientPickerRowContent,
+  resolveIngredientPickerRequestedLimit,
   resolveIngredientPickerSearchQuery,
   resolveVisibleIngredientItems,
   shouldRemoveIngredientManufacturerOnBackspace,
@@ -182,6 +185,39 @@ describe("ingredient picker state helpers", () => {
       isBroadMatch: true,
       isExpanded: true
     })).toHaveLength(8);
+  });
+
+  it("counts only visible top refinement coverage instead of pretending to cover all results", () => {
+    expect(countIngredientPickerRefinementCoverage([
+      { type: "manufacturer", label: "Castle Malting", normalizedLabel: "castle malting", count: 11, score: 80 },
+      { type: "manufacturer", label: "Weyermann", normalizedLabel: "weyermann", count: 9, score: 79 },
+      { type: "manufacturer", label: "Soufflet", normalizedLabel: "soufflet", count: 10, score: 78 }
+    ])).toBe(30);
+  });
+
+  it("requests all matches on expand up to the explicit picker cap", () => {
+    expect(resolveIngredientPickerRequestedLimit({
+      defaultLimit: 10,
+      isExpanded: false,
+      total: 61
+    })).toBe(10);
+
+    expect(resolveIngredientPickerRequestedLimit({
+      defaultLimit: 10,
+      isExpanded: true,
+      total: 61
+    })).toBe(61);
+
+    expect(resolveIngredientPickerRequestedLimit({
+      defaultLimit: 10,
+      isExpanded: true,
+      total: 140
+    })).toBe(100);
+  });
+
+  it("builds an expand label that matches the real expanded fetch behavior", () => {
+    expect(buildIngredientPickerExpandLabel({ total: 61 })).toBe("Показать все результаты (61)");
+    expect(buildIngredientPickerExpandLabel({ total: 140 })).toBe("Показать первые 100 из 140");
   });
 
   it("normalizes flat picker responses into structured search state", () => {

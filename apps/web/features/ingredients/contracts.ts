@@ -210,11 +210,12 @@ export const ingredientSearchQuerySchema = z.object({
   category: z.enum(ingredientCategories).optional(),
   subtype: z.enum(["malt", "fermentable"]).optional(),
   manufacturer: z.string().trim().min(1).max(180).optional(),
-  limit: z.coerce.number().min(1).max(20).default(10)
+  limit: z.coerce.number().min(1).max(100).default(10)
 });
 
 export const ingredientSearchSimpleModeThreshold = 10;
 export const ingredientManufacturerRefinementLimit = 6;
+export const ingredientSearchExpandedLimit = 100;
 
 export const ingredientUpsertSchema = z.object({
   id: z.string().trim().min(1).max(191).optional(),
