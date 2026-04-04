@@ -272,6 +272,13 @@ export const addCatalogInventoryItemSchema = withPurchaseValidation(baseInventor
   packageVariantId: z.string().trim().min(1).optional().nullable()
 }));
 
+export const catalogInventoryTechnicalOverrideSchema = z.object({
+  ingredientCatalogItemId: z.string().trim().min(1),
+  fermentableColorEbc: nullableNumber(z.number().min(0).max(9999)),
+  fermentableExtractYieldPct: nullableNumber(z.number().min(0).max(100)),
+  hopAlphaAcidPct: nullableNumber(z.number().min(0).max(100))
+});
+
 export const addCustomInventoryItemSchema = withPurchaseValidation(baseInventoryFieldsObject.extend({
   userCustomIngredientId: z.string().uuid()
 }));
@@ -351,6 +358,8 @@ export type InventorySourceDto = {
   measurementDimension?: InventoryUnitDimension;
   packageVariantId?: string | null;
   packageVariantName?: string | null;
+  derivedFromIngredientId?: string | null;
+  derivedFromDisplayName?: string | null;
   summary?: string | null;
 } & IngredientTechnicalFields;
 

@@ -15,6 +15,7 @@ import {
   addCustomIngredientToInventory,
   createUserCustomIngredient,
   deleteInventoryItem,
+  resolveCatalogInventoryAdditionSource,
   setInventoryItemQuantityToZero,
   updateInventoryItem,
   updateInventoryQuantity
@@ -74,6 +75,9 @@ const mapError = (error: unknown): AddIngredientResult => {
     if (error.message === "INVALID_PURCHASE_UNIT") {
       return { ok: false, message: "Единица измерения покупки не поддерживается." };
     }
+    if (error.message === "DERIVED_CUSTOM_NAME_CONFLICT") {
+      return { ok: false, message: "Не удалось создать пользовательскую версию ингредиента. Попробуйте еще раз." };
+    }
     return { ok: false, message: "Не удалось сохранить ингредиент. Попробуйте еще раз." };
   }
 
@@ -116,6 +120,14 @@ export const addCatalogIngredientAction = async (_prevState: AddIngredientResult
 export const addSelectedIngredientAction = async (_prevState: AddIngredientResult | null, formData: FormData): Promise<AddIngredientResult> => {
   const ingredientCatalogItemId = String(formData.get("ingredientCatalogItemId") ?? "").trim();
   const userCustomIngredientId = String(formData.get("userCustomIngredientId") ?? "").trim();
+  const fermentableColorEbc = String(formData.get("fermentableColorEbc") ?? "").trim() || null;
+  const fermentableExtractYieldPct = String(formData.get("fermentableExtractYieldPct") ?? "").trim() || null;
+  const hopAlphaAcidPct = String(formData.get("hopAlphaAcidPct") ?? "").trim() || null;
+  const hasCatalogOverrideRequest = Boolean(
+    fermentableColorEbc
+    || fermentableExtractYieldPct
+    || hopAlphaAcidPct
+  );
 
   if (userCustomIngredientId) {
     try {
@@ -151,7 +163,51 @@ export const addSelectedIngredientAction = async (_prevState: AddIngredientResul
   }
 
   if (ingredientCatalogItemId) {
-    return addCatalogIngredientAction(_prevState, formData);
+    if (!hasCatalogOverrideRequest) {
+      return addCatalogIngredientAction(_prevState, formData);
+    }
+
+    try {
+      const user = await requireUser();
+      const preferredCurrency = user.preferredCurrency ?? "RUB";
+      const priceInputAmountMinor = parseOptionalMoney(
+        formData.get("priceInputAmount")
+        ?? formData.get("purchasePrice")
+        ?? formData.get("purchasePriceMinor")
+      );
+
+      const source = await resolveCatalogInventoryAdditionSource(user.id, {
+        ingredientCatalogItemId,
+        fermentableColorEbc,
+        fermentableExtractYieldPct,
+        hopAlphaAcidPct
+      });
+
+      if (source.sourceKind === "catalog") {
+        return addCatalogIngredientAction(_prevState, formData);
+      }
+
+      const payload = addCustomInventoryItemSchema.parse({
+        userCustomIngredientId: source.userCustomIngredientId,
+        enteredQuantity: String(formData.get("enteredQuantity") ?? ""),
+        enteredUnit: String(formData.get("enteredUnit") ?? ""),
+        priceInputMode: String(formData.get("priceInputMode") ?? "").trim() || null,
+        priceInputAmountMinor,
+        priceInputCurrency: priceInputAmountMinor == null
+          ? null
+          : String(formData.get("priceInputCurrency") ?? formData.get("purchaseCurrency") ?? "").trim() || preferredCurrency,
+        purchasedAt: parseOptionalDate(formData.get("purchasedAt") as string | null),
+        freshnessDate: parseOptionalDate(formData.get("freshnessDate") as string | null),
+        notes: String(formData.get("notes") ?? "").trim() || null
+      });
+
+      await addCustomIngredientToInventory(user.id, payload, { preferredCurrency });
+      revalidatePath("/app/ingredients");
+      revalidatePath("/app/catalog");
+      return { ok: true, message: "Свой вариант ингредиента добавлен в запасы." };
+    } catch (error) {
+      return mapError(error);
+    }
   }
 
   return {

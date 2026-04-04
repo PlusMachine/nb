@@ -394,6 +394,8 @@ export type IngredientSuggestionItem = {
   matchedPackageVariantId?: string | null;
   matchedPackageVariantName?: string | null;
   score?: number;
+  derivedFromIngredientId?: string | null;
+  derivedFromDisplayName?: string | null;
   source: "catalog" | "custom";
 };
 

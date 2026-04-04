@@ -25,7 +25,11 @@ import type { SystemCurrency, SystemCurrencyRateMap } from "@/features/system/cu
 
 import { DeleteInventoryItemButton } from "./delete-inventory-item-button";
 import { InventoryItemDetailsEditor } from "./inventory-item-details-editor";
-import { InventoryQuantityEditor } from "./inventory-quantity-editor";
+import {
+  InventoryQuantityEditor,
+  inventoryFinishedActionInlineClassName,
+  inventoryFinishedActionLabel
+} from "./inventory-quantity-editor";
 
 type Props = {
   item: InventoryListItemDto;
@@ -299,6 +303,9 @@ export function InventoryListItem({ item, preferredCurrency, currencyRates }: Pr
   const detailHref = item.source.sourceKind === "custom"
     ? `/app/catalog/custom/${item.source.sourceId}`
     : `/app/catalog/system/${item.source.sourceId}`;
+  const ownershipBadgeLabel = item.source.sourceKind === "custom"
+    ? (item.source.derivedFromIngredientId ? "Измененный" : "Свой")
+    : null;
 
   return (
     <li className={`relative rounded-xl border bg-white p-4 shadow-sm transition-shadow hover:shadow-md ${isEmpty ? "border-zinc-200/60 opacity-60" : expired ? "border-red-200" : freshnessCritical ? "border-amber-200" : "border-zinc-200"
@@ -312,9 +319,9 @@ export function InventoryListItem({ item, preferredCurrency, currencyRates }: Pr
               type="button"
               onClick={onClick}
               disabled={isPending}
-              className="inline-flex items-center rounded-lg border border-slate-300 bg-slate-900 px-2.5 py-1.5 text-[11px] font-semibold text-white shadow-sm transition-colors hover:border-slate-700 hover:bg-slate-800 disabled:opacity-60"
+              className={inventoryFinishedActionInlineClassName}
             >
-              {isPending ? "..." : "Закончился"}
+              {isPending ? "..." : inventoryFinishedActionLabel}
             </button>
           )}
         />
@@ -387,8 +394,8 @@ export function InventoryListItem({ item, preferredCurrency, currencyRates }: Pr
                 </div>
               ) : null}
             </div>
-            {item.source.sourceKind === "custom" ? (
-              <span className="rounded-full bg-zinc-100 px-2 py-0.5 text-[10px] font-medium uppercase tracking-wider text-zinc-500">Свой</span>
+            {ownershipBadgeLabel ? (
+              <span className="rounded-full bg-zinc-100 px-2 py-0.5 text-[10px] font-medium uppercase tracking-wider text-zinc-500">{ownershipBadgeLabel}</span>
             ) : null}
             {item.archivedAt ? (
               <span className="inline-flex items-center gap-1 rounded-full bg-amber-50 px-2 py-0.5 text-[10px] font-medium text-amber-700 ring-1 ring-amber-200">

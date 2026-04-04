@@ -132,6 +132,7 @@ import {
   deleteInventoryItem,
   getInventorySummaries,
   listInventoryForUser,
+  resolveCatalogInventoryAdditionSource,
   searchInventorySuggestions,
   updateInventoryItem,
   updateInventoryQuantity
@@ -178,6 +179,170 @@ describe("inventory service", () => {
         alphaAcidPctTypical: 12.5
       }
     });
+  });
+
+  it("creates a derived fermentable custom ingredient when catalog batch parameters differ", async () => {
+    const catalogItem = {
+      id: "cat-malt-1",
+      isActive: true,
+      type: "malt",
+      itemKind: "malt",
+      nameRu: "Пилснер",
+      nameEn: "Pilsner Malt",
+      displayModeRu: "localized_first",
+      displayNameOverrideRu: null,
+      secondaryNameOverrideRu: null,
+      hideSecondaryNameRu: false,
+      countryCode: "DE",
+      countryName: "Германия",
+      brand: "BESTMALZ",
+      producer: "BESTMALZ",
+      productCode: "PILS",
+      groupName: null,
+      category: null,
+      subcategory: null,
+      presentOnBirrf: true,
+      inventoryEnabled: true,
+      attributes: {
+        extract_pct_dry_basis: 81,
+        color_ebc_min: 5,
+        color_ebc_max: 5,
+        color_lovibond: 2.54,
+        malt_type: "base"
+      },
+      quantityDefaults: null
+    };
+    mockState.catalogFindFirst.mockResolvedValueOnce(catalogItem);
+    mockState.customFindFirst.mockResolvedValueOnce(null);
+
+    const resolved = await resolveCatalogInventoryAdditionSource("u1", {
+      ingredientCatalogItemId: "cat-malt-1",
+      fermentableColorEbc: 6.5,
+      fermentableExtractYieldPct: 82
+    });
+
+    expect(resolved).toMatchObject({
+      sourceKind: "custom"
+    });
+    expect(mockState.inserted[0]?.table).toBe("userCustomIngredients");
+    expect(mockState.inserted[0]?.values).toMatchObject({
+      type: "malt",
+      displayName: "Пилснер",
+      manufacturer: "BESTMALZ",
+      fermentableColorEbc: 6.5,
+      fermentableExtractYieldPct: 82
+    });
+    expect(mockState.inserted[0]?.values.properties).toMatchObject({
+      derivedFromIngredientId: "cat-malt-1",
+      derivedFromDisplayName: "Пилснер",
+      technicalData: {
+        type: "malt",
+        extractPctDryBasis: 82
+      }
+    });
+    expect(catalogItem.attributes).toEqual({
+      extract_pct_dry_basis: 81,
+      color_ebc_min: 5,
+      color_ebc_max: 5,
+      color_lovibond: 2.54,
+      malt_type: "base"
+    });
+  });
+
+  it("creates a derived hop custom ingredient when alpha acid differs", async () => {
+    mockState.catalogFindFirst.mockResolvedValueOnce({
+      id: "cat-hop-1",
+      isActive: true,
+      type: "hop",
+      itemKind: "hop",
+      nameRu: "Цитра",
+      nameEn: "Citra",
+      displayModeRu: "localized_first",
+      displayNameOverrideRu: null,
+      secondaryNameOverrideRu: null,
+      hideSecondaryNameRu: false,
+      countryCode: "US",
+      countryName: "США",
+      brand: "Yakima Chief",
+      producer: "Yakima Chief",
+      productCode: null,
+      groupName: null,
+      category: null,
+      subcategory: null,
+      presentOnBirrf: true,
+      inventoryEnabled: true,
+      attributes: {
+        alpha_acid_pct_typical: 12,
+        beta_acid_pct_typical: 3.8,
+        hop_form: "pellet"
+      },
+      quantityDefaults: null
+    });
+    mockState.customFindFirst.mockResolvedValueOnce(null);
+
+    const resolved = await resolveCatalogInventoryAdditionSource("u1", {
+      ingredientCatalogItemId: "cat-hop-1",
+      hopAlphaAcidPct: 13.2
+    });
+
+    expect(resolved).toMatchObject({
+      sourceKind: "custom"
+    });
+    expect(mockState.inserted[0]?.values).toMatchObject({
+      type: "hop",
+      displayName: "Цитра",
+      hopAlphaAcidPct: 13.2,
+      hopForm: "pellet"
+    });
+    expect(mockState.inserted[0]?.values.properties).toMatchObject({
+      derivedFromIngredientId: "cat-hop-1",
+      technicalData: {
+        type: "hop",
+        alphaAcidPctTypical: 13.2,
+        betaAcidPctTypical: 3.8,
+        hopForm: "pellet"
+      }
+    });
+  });
+
+  it("keeps the original catalog source when override values match the catalog", async () => {
+    mockState.catalogFindFirst.mockResolvedValueOnce({
+      id: "cat-hop-2",
+      isActive: true,
+      type: "hop",
+      itemKind: "hop",
+      nameRu: "Мозаик",
+      nameEn: "Mosaic",
+      displayModeRu: "localized_first",
+      displayNameOverrideRu: null,
+      secondaryNameOverrideRu: null,
+      hideSecondaryNameRu: false,
+      countryCode: "US",
+      countryName: "США",
+      brand: "Yakima Chief",
+      producer: "Yakima Chief",
+      productCode: null,
+      groupName: null,
+      category: null,
+      subcategory: null,
+      presentOnBirrf: true,
+      inventoryEnabled: true,
+      attributes: {
+        alpha_acid_pct_typical: 12
+      },
+      quantityDefaults: null
+    });
+
+    const resolved = await resolveCatalogInventoryAdditionSource("u1", {
+      ingredientCatalogItemId: "cat-hop-2",
+      hopAlphaAcidPct: 12
+    });
+
+    expect(resolved).toEqual({
+      sourceKind: "catalog",
+      ingredientCatalogItemId: "cat-hop-2"
+    });
+    expect(mockState.inserted).toHaveLength(0);
   });
 
   it("adds catalog ingredient to inventory", async () => {

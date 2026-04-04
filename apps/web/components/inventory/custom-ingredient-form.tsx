@@ -4,6 +4,10 @@ import React from "react";
 import { useEffect, useMemo, useState } from "react";
 
 import { InventoryPriceInput } from "@/components/inventory/inventory-price-input";
+import {
+  createInitialInventoryOptionalFields,
+  InventoryOptionalDisclosure
+} from "@/components/inventory/inventory-optional-disclosure";
 import type { IngredientCategory, IngredientSubtype } from "@/features/ingredients/contracts";
 import { formatIngredientSubtypeLabel } from "@/features/ingredients/presentation";
 import { ingredientCategorySubtypes, resolveIngredientSubtype, resolveLegacyIngredientType } from "@/features/ingredients/taxonomy";
@@ -24,7 +28,28 @@ import {
   type InventoryUnit
 } from "@/features/inventory/units";
 import type { SystemCurrency } from "@/features/system/currency";
-import { getTodayDateInputValue } from "./date-input";
+
+export type CustomIngredientSubmitPayload = {
+  type: string;
+  category: IngredientCategory;
+  subtype: string;
+  displayName: string;
+  brand: string;
+  harvestYear: string;
+  fermentableColorEbc: string;
+  fermentableExtractYieldPct: string;
+  hopAlphaAcidPct: string;
+  yeastAttenuationPct: string;
+  yeastForm: string;
+  defaultDisplayUnit: InventoryUnit;
+  enteredQuantity: string;
+  enteredUnit: InventoryUnit;
+  priceInputMode?: InventoryPriceInputMode;
+  priceInputAmount?: string;
+  purchasedAt?: string;
+  freshnessDate?: string;
+  notes?: string;
+};
 
 type Props = {
   category: IngredientCategory;
@@ -32,27 +57,7 @@ type Props = {
   preferredCurrency: SystemCurrency;
   pending: boolean;
   fieldErrors?: Record<string, string>;
-  onSubmit: (payload: {
-    type: string;
-    category: IngredientCategory;
-    subtype: string;
-    displayName: string;
-    brand: string;
-    harvestYear: string;
-    fermentableColorEbc: string;
-    fermentableExtractYieldPct: string;
-    hopAlphaAcidPct: string;
-    yeastAttenuationPct: string;
-    yeastForm: string;
-    defaultDisplayUnit: InventoryUnit;
-    enteredQuantity: string;
-    enteredUnit: InventoryUnit;
-    priceInputMode: InventoryPriceInputMode;
-    priceInputAmount: string;
-    purchasedAt: string;
-    freshnessDate: string;
-    notes: string;
-  }) => Promise<void>;
+  onSubmit: (payload: CustomIngredientSubmitPayload) => Promise<void>;
 };
 
 const parseOptionalNumber = (value: string) => {
@@ -72,6 +77,7 @@ const resolveSubtypeFieldLabel = (category: IngredientCategory) => (
 export const getCustomIngredientSubtypeOptions = (category: IngredientCategory) => ingredientCategorySubtypes[category];
 
 export function CustomIngredientForm({ category, initialSubtype = null, preferredCurrency, pending, fieldErrors, onSubmit }: Props) {
+  const initialOptionalFields = createInitialInventoryOptionalFields();
   const [displayName, setDisplayName] = useState("");
   const [brand, setBrand] = useState("");
   const [subtype, setSubtype] = useState<string>(initialSubtype ?? resolveDefaultCustomIngredientSubtype(category) ?? "");
@@ -82,11 +88,13 @@ export function CustomIngredientForm({ category, initialSubtype = null, preferre
   const [yeastAttenuationPct, setYeastAttenuationPct] = useState("");
   const [yeastForm, setYeastForm] = useState<CustomYeastForm>("dry");
   const [enteredQuantity, setEnteredQuantity] = useState("");
-  const [priceInputMode, setPriceInputMode] = useState<InventoryPriceInputMode>("total");
-  const [priceInputAmount, setPriceInputAmount] = useState("");
-  const [purchasedAt, setPurchasedAt] = useState(() => getTodayDateInputValue());
-  const [freshnessDate, setFreshnessDate] = useState("");
-  const [notes, setNotes] = useState("");
+  const [priceInputMode, setPriceInputMode] = useState<InventoryPriceInputMode>(initialOptionalFields.priceInputMode);
+  const [priceInputAmount, setPriceInputAmount] = useState(initialOptionalFields.priceInputAmount);
+  const [purchasedAt, setPurchasedAt] = useState(initialOptionalFields.purchasedAt);
+  const [freshnessDate, setFreshnessDate] = useState(initialOptionalFields.freshnessDate);
+  const [notes, setNotes] = useState(initialOptionalFields.notes);
+  const [optionalOpen, setOptionalOpen] = useState(false);
+  const [optionalTouched, setOptionalTouched] = useState(false);
 
   const normalizedSubtype = useMemo(
     () => normalizeCustomIngredientSubtype(category, subtype),
@@ -129,14 +137,21 @@ export function CustomIngredientForm({ category, initialSubtype = null, preferre
     : [];
 
   useEffect(() => {
+    const nextOptionalFields = createInitialInventoryOptionalFields();
     setSubtype(initialSubtype ?? resolveDefaultCustomIngredientSubtype(category) ?? "");
     setEnteredUnit(unitProfile.defaultUnit);
-    setPriceInputMode("total");
+    setPriceInputMode(nextOptionalFields.priceInputMode);
+    setPriceInputAmount(nextOptionalFields.priceInputAmount);
     setHopAlphaAcidPct("");
     setHarvestYear("");
     setYeastAttenuationPct("");
     setFermentableColorEbc("");
     setFermentableExtractYieldPct("");
+    setPurchasedAt(nextOptionalFields.purchasedAt);
+    setFreshnessDate(nextOptionalFields.freshnessDate);
+    setNotes(nextOptionalFields.notes);
+    setOptionalOpen(false);
+    setOptionalTouched(false);
 
     if (category !== "yeast") {
       setYeastForm("dry");
@@ -149,14 +164,45 @@ export function CustomIngredientForm({ category, initialSubtype = null, preferre
     }
   }, [enteredUnit, unitProfile]);
 
+  useEffect(() => {
+    if (
+      fieldErrors?.priceInputAmountMinor
+      || fieldErrors?.purchasePriceMinor
+      || fieldErrors?.purchasePrice
+      || fieldErrors?.purchasedAt
+      || fieldErrors?.freshnessDate
+      || fieldErrors?.notes
+    ) {
+      setOptionalOpen(true);
+      setOptionalTouched(true);
+    }
+  }, [fieldErrors]);
+
   const purchasePriceError = fieldErrors?.priceInputAmountMinor ?? fieldErrors?.purchasePriceMinor ?? fieldErrors?.purchasePrice;
+  const optionalFields = {
+    priceInputMode,
+    priceInputAmount,
+    purchasedAt,
+    freshnessDate,
+    notes
+  };
+  const toggleOptionalSection = () => {
+    setOptionalOpen((current) => {
+      const nextOpen = !current;
+      if (nextOpen) {
+        setOptionalTouched(true);
+      }
+
+      return nextOpen;
+    });
+  };
 
   return (
     <form
       className="space-y-4"
       onSubmit={async (event) => {
         event.preventDefault();
-        await onSubmit({
+        const payload: CustomIngredientSubmitPayload = {
           type: resolvedType,
           category,
           subtype: normalizedSubtype ?? "",
@@ -170,19 +216,23 @@ export function CustomIngredientForm({ category, initialSubtype = null, preferre
           yeastForm: category === "yeast" ? yeastForm : "",
           defaultDisplayUnit: unitProfile.defaultUnit,
           enteredQuantity,
-          enteredUnit,
-          priceInputMode,
-          priceInputAmount,
-          purchasedAt,
-          freshnessDate,
-          notes
-        });
+          enteredUnit
+        };
+
+        if (optionalTouched) {
+          payload.priceInputMode = priceInputMode;
+          payload.priceInputAmount = priceInputAmount;
+          payload.purchasedAt = purchasedAt;
+          payload.freshnessDate = freshnessDate;
+          payload.notes = notes;
+        }
+
+        await onSubmit(payload);
       }}
     >
       <div className="rounded-xl border border-zinc-200 p-4">
         <div className="mb-3">
           <h3 className="text-sm font-medium text-zinc-950">Параметры ингредиента</h3>
-          <p className="mt-1 text-xs text-zinc-500">Показываем только те поля, которые реально нужны для выбранной категории.</p>
         </div>
 
         <div className="space-y-3">
@@ -315,12 +365,11 @@ export function CustomIngredientForm({ category, initialSubtype = null, preferre
 
       <div className="rounded-xl border border-zinc-200 p-4">
         <div className="mb-3">
-          <h3 className="text-sm font-medium text-zinc-950">Что добавить в запасы</h3>
-          <p className="mt-1 text-xs text-zinc-500">Единица учета подбирается автоматически: для этой категории будет использоваться {inventoryUnitLabels[unitProfile.defaultUnit]}.</p>
+          <h3 className="text-sm font-medium text-zinc-950">Количество и единица учета</h3>
         </div>
 
-        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-          <label className="text-sm">Количество
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2" data-testid="custom-required-fields">
+          <label className="text-sm">Количество *
             <input
               type="number"
               min="0"
@@ -333,59 +382,71 @@ export function CustomIngredientForm({ category, initialSubtype = null, preferre
             {fieldErrors?.enteredQuantity && <span className="text-xs text-red-600">{fieldErrors.enteredQuantity}</span>}
           </label>
 
-          <label className="text-sm">Единица количества
+          <label className="text-sm">Ед. изм. *
             <select className="mt-1 w-full rounded-md border px-2 py-2" value={enteredUnit} onChange={(e) => setEnteredUnit(e.target.value as InventoryUnit)}>
               {unitProfile.allowedUnits.map((unit) => <option key={unit} value={unit}>{inventoryUnitLabels[unit]}</option>)}
             </select>
             {fieldErrors?.enteredUnit && <span className="text-xs text-red-600">{fieldErrors.enteredUnit}</span>}
           </label>
-
-          <label className="text-sm">Дата покупки
-            <div className="mt-1 flex items-center gap-2">
-              <input
-                type="date"
-                className="w-full rounded-md border px-2 py-2"
-                value={purchasedAt}
-                onChange={(e) => setPurchasedAt(e.target.value)}
-              />
-              <button
-                type="button"
-                className="rounded-md border border-zinc-200 px-2 py-2 text-xs text-zinc-600 transition-colors hover:border-zinc-300 hover:bg-zinc-50"
-                onClick={() => setPurchasedAt("")}
-                aria-label="Очистить дату покупки"
-              >
-                ×
-              </button>
-            </div>
-          </label>
-
-          <label className="text-sm">Годен до
-            <input type="date" className="mt-1 w-full rounded-md border px-2 py-2" value={freshnessDate} onChange={(e) => setFreshnessDate(e.target.value)} />
-          </label>
         </div>
       </div>
 
-      <InventoryPriceInput
+      <InventoryOptionalDisclosure
+        open={optionalOpen}
+        onToggle={toggleOptionalSection}
+        fields={optionalFields}
         preferredCurrency={preferredCurrency}
-        priceInputMode={priceInputMode}
-        priceInputAmount={priceInputAmount}
-        enteredQuantity={enteredQuantity}
-        enteredUnit={enteredUnit}
-        fieldError={purchasePriceError}
-        onPriceInputModeChange={setPriceInputMode}
-        onPriceInputAmountChange={setPriceInputAmount}
-        type={resolvedType}
-        category={category}
-        subtype={resolvedSubtype}
-        defaultDisplayUnit={unitProfile.defaultUnit}
-        allowedUnits={unitProfile.allowedUnits}
-        measurementDimension={unitProfile.measurementDimension}
-        technicalData={technicalData}
-      />
+        testId="custom-optional-disclosure"
+      >
+          <div className="space-y-4">
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+              <label className="text-sm">Дата покупки
+                <div className="mt-1 flex items-center gap-2">
+                  <input
+                    type="date"
+                    className="w-full rounded-md border px-2 py-2"
+                    value={purchasedAt}
+                    onChange={(e) => setPurchasedAt(e.target.value)}
+                  />
+                  <button
+                    type="button"
+                    className="rounded-md border border-zinc-200 px-2 py-2 text-xs text-zinc-600 transition-colors hover:border-zinc-300 hover:bg-zinc-50"
+                    onClick={() => setPurchasedAt("")}
+                    aria-label="Очистить дату покупки"
+                  >
+                    ×
+                  </button>
+                </div>
+              </label>
 
-      <label className="block text-sm">Заметки
-        <textarea className="mt-1 h-20 w-full rounded-md border px-2 py-2" value={notes} onChange={(e) => setNotes(e.target.value)} />
-      </label>
+              <label className="text-sm">Годен до
+                <input type="date" className="mt-1 w-full rounded-md border px-2 py-2" value={freshnessDate} onChange={(e) => setFreshnessDate(e.target.value)} />
+              </label>
+            </div>
+
+            <InventoryPriceInput
+              preferredCurrency={preferredCurrency}
+              priceInputMode={priceInputMode}
+              priceInputAmount={priceInputAmount}
+              enteredQuantity={enteredQuantity}
+              enteredUnit={enteredUnit}
+              fieldError={purchasePriceError}
+              onPriceInputModeChange={setPriceInputMode}
+              onPriceInputAmountChange={setPriceInputAmount}
+              type={resolvedType}
+              category={category}
+              subtype={resolvedSubtype}
+              defaultDisplayUnit={unitProfile.defaultUnit}
+              allowedUnits={unitProfile.allowedUnits}
+              measurementDimension={unitProfile.measurementDimension}
+              technicalData={technicalData}
+            />
+
+            <label className="block text-sm">Заметки
+              <textarea className="mt-1 h-20 w-full rounded-md border px-2 py-2" value={notes} onChange={(e) => setNotes(e.target.value)} />
+            </label>
+          </div>
+      </InventoryOptionalDisclosure>
 
       <button type="submit" disabled={pending} className="w-full rounded-md bg-black px-4 py-2 text-sm text-white disabled:opacity-60">
         {pending ? "Сохранение..." : "Создать и добавить в запасы"}

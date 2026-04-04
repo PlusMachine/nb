@@ -6,6 +6,7 @@ import {
   buildIngredientSearchParams,
   buildIngredientPickerExpandLabel,
   countIngredientPickerRefinementCoverage,
+  IngredientSelectionCard,
   IngredientPickerManufacturerChip,
   normalizeIngredientSearchResponse,
   resolveIngredientPickerRowContent,
@@ -311,5 +312,37 @@ describe("ingredient picker state helpers", () => {
     expect(html).toContain("Производитель");
     expect(html).toContain("Castle Malting");
     expect(html).toContain("Убрать фильтр производителя Castle Malting");
+  });
+
+  it("renders selected ingredient meta with brand and flag combined and without duplicated subtitle", () => {
+    const html = renderToStaticMarkup(React.createElement(IngredientSelectionCard, {
+      item: {
+        id: "malt-1",
+        type: "fermentable",
+        category: "fermentable",
+        subtype: "malt",
+        displayName: "Pilsen 2RW",
+        primaryLabelRu: "Pilsen 2RW",
+        brand: "Castle Malting",
+        countryCode: "BE",
+        countryName: "Бельгия",
+        subtitle: "3.5 EBC • 81% extract",
+        defaultUnit: "kg",
+        source: "catalog"
+      },
+      hideTypedSummary: true,
+      hideSubtitle: true,
+      mergeBrandAndCountry: true,
+      statusBadgeLabel: "ИЗМЕНЕННЫЙ",
+      actionLabel: "Изменить ингредиент",
+      onAction: () => undefined
+    }));
+
+    expect(html).toContain("Castle Malting");
+    expect(html).toContain("ИЗМЕНЕННЫЙ");
+    expect(html).toContain("Изменить ингредиент");
+    expect(html).not.toContain("Бельгия");
+    expect(html).not.toContain("81% extract");
+    expect(html).not.toContain("aria-label=\"Очистить выбранный ингредиент\"");
   });
 });

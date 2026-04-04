@@ -346,7 +346,7 @@ export default async function IngredientCatalogPage({ searchParams }: Props) {
                               </Link>
                               {item.source === "custom" ? (
                                 <span className="rounded-full bg-amber-50 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.12em] text-amber-700 ring-1 ring-amber-200">
-                                  СВОЙ
+                                  {item.derivedFromIngredientId ? "ИЗМЕНЕННЫЙ" : "СВОЙ"}
                                 </span>
                               ) : null}
                             </div>
@@ -430,7 +430,7 @@ export default async function IngredientCatalogPage({ searchParams }: Props) {
                           <h2 className="text-base font-semibold text-zinc-950">{item.primaryLabelRu}</h2>
                           {item.source === "custom" ? (
                             <span className="rounded-full bg-amber-50 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.12em] text-amber-700 ring-1 ring-amber-200">
-                              СВОЙ
+                              {item.derivedFromIngredientId ? "ИЗМЕНЕННЫЙ" : "СВОЙ"}
                             </span>
                           ) : null}
                         </div>

@@ -19,6 +19,18 @@ vi.mock("../app/(app)/app/ingredients/actions", () => ({
 
 import { InventoryListItem } from "../components/inventory/inventory-list-item";
 import {
+  InventoryIngredientCategoryGrid,
+  resolveInventoryIngredientCategoryValue,
+  resolveInventoryIngredientContextFromCategoryValue
+} from "../components/inventory/inventory-ingredient-category-grid";
+import {
+  InventoryItemDetailsEditor,
+  resolveInventoryEditorSelectionResetState,
+  shouldShowInventoryEditorOptionalSection,
+  shouldShowInventoryEditorPickerStage,
+  shouldShowInventoryEditorRequiredFields
+} from "../components/inventory/inventory-item-details-editor";
+import {
   canMarkInventoryItemFinished,
   isInventoryQuantityDraftDirty,
   isInventoryQuantityValueValid
@@ -30,6 +42,31 @@ import { getInventoryUnitInputStep } from "../features/inventory/units";
 import { buildInventoryToolbarHref, hasActiveInventoryFilters } from "../features/inventory/page-model";
 
 describe("inventory usability components", () => {
+  it("uses the same ingredient category grid labels and subtype mapping as the add modal", () => {
+    const html = renderToStaticMarkup(React.createElement(InventoryIngredientCategoryGrid, {
+      value: "malt",
+      onChange: () => undefined
+    }));
+
+    expect(html).toContain("Солод");
+    expect(html).toContain("Сбраживаемое сырье");
+    expect(html).toContain("Хмель");
+    expect(html).toContain("Дрожжи");
+    expect(html).toContain("Водоподготовка");
+    expect(html).toContain("Расходники");
+    expect(html).toContain("text-amber-600");
+
+    expect(resolveInventoryIngredientContextFromCategoryValue("malt")).toEqual({
+      category: "fermentable",
+      subtype: "malt"
+    });
+
+    expect(resolveInventoryIngredientCategoryValue({
+      category: "fermentable",
+      subtype: "malt"
+    })).toBe("malt");
+  });
+
   it("renders toolbar controls without submit-era archive UX", () => {
     const html = renderToStaticMarkup(React.createElement(InventoryToolbar, {
       search: "citra",
@@ -207,8 +244,113 @@ describe("inventory usability components", () => {
     expect(html).toContain("до 100 % засыпи");
     expect(html).not.toContain("80% extract");
     expect(html).toContain("linear-gradient(180deg");
+    expect(html).toContain("0 закончился");
     expect(html).toContain('aria-label="Редактировать"');
     expect(html).toContain('aria-label="Удалить"');
+  });
+
+  it("opens the inventory editor in selected state for the current stock item", () => {
+    const item: InventoryListItemDto = {
+      id: "inv-edit-1",
+      enteredQuantity: 2,
+      enteredUnit: "kg",
+      normalizedQuantity: 2000,
+      normalizedUnit: "g",
+      unitDimension: "weight",
+      priceInputMode: "total",
+      priceInputAmountMinor: 89000,
+      priceInputCurrency: "RUB",
+      purchasePriceMinor: 89000,
+      purchaseCurrency: "RUB",
+      purchaseQuantity: 2,
+      purchaseQuantityUnit: "kg",
+      purchaseQuantityNormalized: 2000,
+      purchaseQuantityNormalizedUnit: "g",
+      normalizedUnitCostMinorRub: 45,
+      purchasedAt: new Date("2025-01-10"),
+      freshnessDate: null,
+      notes: "Открыт мешок",
+      archivedAt: null,
+      createdAt: new Date("2025-01-01"),
+      updatedAt: new Date("2025-01-01"),
+      source: {
+        sourceKind: "catalog",
+        sourceId: "cat-1",
+        type: "fermentable",
+        category: "fermentable",
+        subtype: "malt",
+        primaryLabelRu: "Пилснер",
+        secondaryLabelRu: "Pilsner Malt",
+        displayName: "Пилснер",
+        displayNameRu: "Пилснер",
+        normalizedName: "pilsner",
+        brand: "Castle Malting",
+        countryCode: "BE",
+        countryName: "Бельгия",
+        defaultDisplayUnit: "kg",
+        allowedUnits: ["kg", "g"],
+        measurementDimension: "weight",
+        technicalData: {
+          type: "malt",
+          colorEbcMin: 3,
+          colorEbcMax: 3,
+          colorLovibond: 1.5,
+          extractPctDryBasis: 81,
+          proteinPct: null,
+          maxUsagePct: 100,
+          colorEbcIsApprox: false
+        }
+      }
+    };
+
+    const html = renderToStaticMarkup(React.createElement(InventoryItemDetailsEditor, {
+      item,
+      preferredCurrency: "RUB",
+      currencyRates: { RUB: 100, USD: 7900, EUR: 9170 },
+      initiallyOpen: true
+    }));
+
+    expect(html).toContain("Редактировать ингредиент на складе");
+    expect(html).toContain('data-testid="inventory-editor-selection-stage"');
+    expect(html).toContain('data-testid="inventory-editor-context-summary"');
+    expect(html).toContain("Солод · Каталог");
+    expect(html).toContain("Пилснер");
+    expect(html).toContain("Заменить ингредиент");
+    expect(html).toContain('data-testid="inventory-editor-required-fields"');
+    expect(html).toContain("Количество *");
+    expect(html).toContain("Ед. изм. *");
+    expect(html).toContain('data-testid="inventory-editor-optional-disclosure"');
+    expect(html).not.toContain('data-testid="inventory-editor-selection-controls"');
+    expect(html).not.toContain('data-testid="inventory-editor-picker-stage"');
+    expect(html).not.toContain("Начните вводить название ингредиента");
+  });
+
+  it("returns the inventory editor to picker stage when selection is cleared", () => {
+    expect(resolveInventoryEditorSelectionResetState()).toEqual({
+      pickerValue: "",
+      shouldRefocus: true
+    });
+
+    expect(shouldShowInventoryEditorPickerStage({
+      category: "hop",
+      selected: null
+    })).toBe(true);
+
+    expect(shouldShowInventoryEditorPickerStage({
+      category: "hop",
+      selected: {
+        id: "hop-1",
+        type: "hop",
+        category: "hop",
+        displayName: "Citra",
+        primaryLabelRu: "Citra",
+        defaultUnit: "g",
+        source: "catalog"
+      }
+    })).toBe(false);
+
+    expect(shouldShowInventoryEditorRequiredFields(null)).toBe(false);
+    expect(shouldShowInventoryEditorOptionalSection(null)).toBe(false);
   });
 
   it("shows dry yeast pack quantity with gram equivalent", () => {

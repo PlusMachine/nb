@@ -15,7 +15,7 @@ type Props = {
   fullWidth?: boolean;
   preferredCurrency?: SystemCurrency;
   initialSelection?: IngredientSuggestionItem | null;
-  initialCategory?: IngredientCategory;
+  initialCategory?: IngredientCategory | null;
   initialSubtype?: Extract<IngredientSubtype, "malt" | "fermentable"> | null;
   openOnMount?: boolean;
 };
@@ -25,7 +25,7 @@ export function AddIngredientTrigger({
   fullWidth = false,
   preferredCurrency = "RUB",
   initialSelection = null,
-  initialCategory = "hop",
+  initialCategory = null,
   initialSubtype = null,
   openOnMount = false
 }: Props) {

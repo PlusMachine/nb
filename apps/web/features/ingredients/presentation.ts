@@ -61,6 +61,8 @@ const formatNumber = (value: number) => value.toLocaleString("en-US", {
   maximumFractionDigits: value % 1 === 0 ? 0 : 1
 });
 
+const lovibondToEbc = (value: number) => Number((value * 1.97).toFixed(1));
+
 const normalizeOptionalName = (value?: string | null) => {
   if (typeof value !== "string") {
     return undefined;
@@ -377,17 +379,39 @@ const buildHopSummary = (technicalData: Extract<IngredientTechnicalData, { type:
   ].filter(Boolean).join(" • ")
 );
 
+const resolveMaltColorSummary = (technicalData: Extract<IngredientTechnicalData, { type: "malt" }>) => {
+  if (technicalData.colorEbcMin != null && technicalData.colorEbcMax != null) {
+    return technicalData.colorEbcMin === technicalData.colorEbcMax
+      ? `${formatNumber(technicalData.colorEbcMin)} EBC`
+      : `${formatNumber(technicalData.colorEbcMin)}-${formatNumber(technicalData.colorEbcMax)} EBC`;
+  }
+
+  if (technicalData.colorEbcMin != null) {
+    return `${formatNumber(technicalData.colorEbcMin)} EBC`;
+  }
+
+  if (technicalData.colorEbcMax != null) {
+    return `${formatNumber(technicalData.colorEbcMax)} EBC`;
+  }
+
+  if (technicalData.colorLovibond != null) {
+    return `${formatNumber(lovibondToEbc(technicalData.colorLovibond))} EBC`;
+  }
+
+  return null;
+};
+
 const buildMaltSummary = (technicalData: Extract<IngredientTechnicalData, { type: "malt" }>) => (
   [
-    technicalData.colorLovibond != null ? `${formatNumber(technicalData.colorLovibond)} Lovibond` : null,
-    technicalData.extractPctDryBasis != null ? `${formatNumber(technicalData.extractPctDryBasis)}% extract` : null
+    resolveMaltColorSummary(technicalData),
+    technicalData.extractPctDryBasis != null ? `Экстракт ${formatNumber(technicalData.extractPctDryBasis)}%` : null
   ].filter(Boolean).join(" • ")
 );
 
 const buildFermentableSummary = (technicalData: Extract<IngredientTechnicalData, { type: "fermentable" }>) => (
   [
-    technicalData.colorLovibond != null ? `${formatNumber(technicalData.colorLovibond)} Lovibond` : null,
-    technicalData.extractPctDryBasis != null ? `${formatNumber(technicalData.extractPctDryBasis)}% extract` : null
+    technicalData.colorLovibond != null ? `${formatNumber(lovibondToEbc(technicalData.colorLovibond))} EBC` : null,
+    technicalData.extractPctDryBasis != null ? `Экстракт ${formatNumber(technicalData.extractPctDryBasis)}%` : null
   ].filter(Boolean).join(" • ")
 );
 

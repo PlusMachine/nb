@@ -247,7 +247,7 @@ const buildSearchText = (item: UserCatalogIngredientDto) => {
   ].filter(Boolean).join(" "));
 };
 
-const toIngredientSuggestionItem = (
+export const toIngredientSuggestionItem = (
   item: UserCatalogIngredientDto,
   score?: number
 ): IngredientSuggestionItem => ({
@@ -295,6 +295,8 @@ const toIngredientSuggestionItem = (
   familyDisplayName: null,
   familyCanonicalName: null,
   score,
+  derivedFromIngredientId: item.derivedFromIngredientId,
+  derivedFromDisplayName: item.derivedFromDisplayName,
   source: item.source
 });
 

@@ -1,8 +1,8 @@
 "use client";
 
 import React from "react";
-import { useEffect, useState } from "react";
-import { Droplets, FlaskConical, Leaf, Package, Wheat } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { useRouter } from "next/navigation";
 
 import { addCustomIngredientAction, addSelectedIngredientAction, type AddIngredientResult } from "@/app/(app)/app/ingredients/actions";
@@ -14,19 +14,29 @@ import type {
 import type { SystemCurrency } from "@/features/system/currency";
 
 import { CatalogIngredientForm } from "./catalog-ingredient-form";
-import { CustomIngredientForm } from "./custom-ingredient-form";
+import { CustomIngredientPanel } from "./custom-ingredient-panel";
+import {
+  InventoryIngredientCategoryGrid,
+  resolveInventoryIngredientCategoryValue,
+  resolveInventoryIngredientContextFromCategoryValue,
+  type InventoryIngredientCategoryValue
+} from "./inventory-ingredient-category-grid";
+import {
+  InventoryIngredientContextSummary,
+  resolveInventoryIngredientContextSummaryFromSuggestion
+} from "./inventory-ingredient-context-summary";
 
 type Props = {
   open: boolean;
   onClose: () => void;
   preferredCurrency?: SystemCurrency;
   initialSelection?: IngredientSuggestionItem | null;
-  initialCategory?: IngredientCategory;
+  initialCategory?: IngredientCategory | null;
   initialSubtype?: Extract<IngredientSubtype, "malt" | "fermentable"> | null;
 };
 
 type Mode = "catalog" | "custom";
-type AddIngredientCategoryValue = IngredientCategory | "malt" | "fermentable";
+const addIngredientLastCategoryStorageKey = "nb:add-ingredient:last-category";
 
 type AddIngredientSuccessEffects = {
   onClose: () => void;
@@ -45,52 +55,186 @@ export const applyAddIngredientSuccessEffects = (
   refresh();
 };
 
-const categoryOptions: Array<{
-  value: AddIngredientCategoryValue;
-  label: string;
-  icon: React.ComponentType<{ className?: string }>;
-  iconClassName: string;
-}> = [
-    { value: "malt", label: "Солод", icon: Wheat, iconClassName: "text-amber-600" },
-    { value: "fermentable", label: "Сбраживаемое сырье", icon: Wheat, iconClassName: "text-amber-600" },
-    { value: "hop", label: "Хмель", icon: Leaf, iconClassName: "text-emerald-600" },
-    { value: "yeast", label: "Дрожжи", icon: FlaskConical, iconClassName: "text-violet-600" },
-    { value: "water_treatment", label: "Водоподготовка", icon: Droplets, iconClassName: "text-sky-600" },
-    { value: "consumable", label: "Расходники", icon: Package, iconClassName: "text-zinc-500" }
-  ];
+export const shouldCloseAddIngredientModalFromBackdropInteraction = ({
+  pointerDownStartedOnBackdrop,
+  clickFinishedOnBackdrop
+}: {
+  pointerDownStartedOnBackdrop: boolean;
+  clickFinishedOnBackdrop: boolean;
+}) => pointerDownStartedOnBackdrop && clickFinishedOnBackdrop;
+
+export const applyAddIngredientImmediateControlAction = ({
+  event,
+  action
+}: {
+  event: Pick<React.PointerEvent<HTMLButtonElement>, "preventDefault">;
+  action: () => void;
+}) => {
+  event.preventDefault();
+  action();
+};
+
+export const shouldApplyAddIngredientControlActionOnClick = ({
+  detail
+}: {
+  detail: number;
+}) => detail === 0;
+
+const normalizeAddIngredientCategoryValue = (
+  value: string | null | undefined
+): InventoryIngredientCategoryValue | null => (
+  value === "malt"
+  || value === "fermentable"
+  || value === "hop"
+  || value === "yeast"
+  || value === "water_treatment"
+  || value === "consumable"
+    ? value
+    : null
+);
+
+const readStoredAddIngredientCategoryValue = (): InventoryIngredientCategoryValue | null => {
+  if (typeof window === "undefined") {
+    return null;
+  }
+
+  try {
+    return normalizeAddIngredientCategoryValue(window.localStorage.getItem(addIngredientLastCategoryStorageKey));
+  } catch {
+    return null;
+  }
+};
+
+const persistAddIngredientCategoryValue = (value: InventoryIngredientCategoryValue) => {
+  if (typeof window === "undefined") {
+    return;
+  }
+
+  try {
+    window.localStorage.setItem(addIngredientLastCategoryStorageKey, value);
+  } catch {
+    // Ignore storage failures; the modal can still work with in-memory state.
+  }
+};
+
+export const resolveAddIngredientStartCategoryValue = ({
+  initialSelection,
+  initialCategory,
+  initialSubtype,
+  rememberedCategoryValue
+}: {
+  initialSelection?: IngredientSuggestionItem | null;
+  initialCategory?: IngredientCategory | null;
+  initialSubtype?: Extract<IngredientSubtype, "malt" | "fermentable"> | null;
+  rememberedCategoryValue?: InventoryIngredientCategoryValue | null;
+}): InventoryIngredientCategoryValue => {
+  if (initialSelection?.category === "fermentable" && (initialSelection.subtype === "malt" || initialSelection.subtype === "fermentable")) {
+    return initialSelection.subtype;
+  }
+
+  if (initialSelection?.category) {
+    return initialSelection.category;
+  }
+
+  if (initialCategory === "fermentable" && (initialSubtype === "malt" || initialSubtype === "fermentable")) {
+    return initialSubtype;
+  }
+
+  if (initialCategory) {
+    return initialCategory;
+  }
+
+  return rememberedCategoryValue ?? "malt";
+};
+
+export const resolveAddIngredientStartContext = ({
+  initialSelection,
+  initialCategory,
+  initialSubtype,
+  rememberedCategoryValue
+}: {
+  initialSelection?: IngredientSuggestionItem | null;
+  initialCategory?: IngredientCategory | null;
+  initialSubtype?: Extract<IngredientSubtype, "malt" | "fermentable"> | null;
+  rememberedCategoryValue?: InventoryIngredientCategoryValue | null;
+}) => {
+  const categoryValue = resolveAddIngredientStartCategoryValue({
+    initialSelection,
+    initialCategory,
+    initialSubtype,
+    rememberedCategoryValue
+  });
+  const { category, subtype } = resolveInventoryIngredientContextFromCategoryValue(categoryValue);
+
+  return {
+    categoryValue,
+    category,
+    subtype
+  };
+};
 
 export function AddIngredientModal({
   open,
   onClose,
   preferredCurrency = "RUB",
   initialSelection = null,
-  initialCategory = "hop",
+  initialCategory = null,
   initialSubtype = null
 }: Props) {
   const router = useRouter();
-  const [catalogCategory, setCatalogCategory] = useState<IngredientCategory>(initialCategory);
-  const [catalogSubtype, setCatalogSubtype] = useState<Extract<IngredientSubtype, "malt" | "fermentable"> | null>(null);
-  const [customCategory, setCustomCategory] = useState<IngredientCategory>(initialCategory);
-  const [customSubtype, setCustomSubtype] = useState<Extract<IngredientSubtype, "malt" | "fermentable"> | null>(null);
+  const [catalogCategory, setCatalogCategory] = useState<IngredientCategory | null>(() => resolveAddIngredientStartContext({
+    initialSelection,
+    initialCategory,
+    initialSubtype,
+    rememberedCategoryValue: readStoredAddIngredientCategoryValue()
+  }).category);
+  const [catalogSubtype, setCatalogSubtype] = useState<Extract<IngredientSubtype, "malt" | "fermentable"> | null>(() => resolveAddIngredientStartContext({
+    initialSelection,
+    initialCategory,
+    initialSubtype,
+    rememberedCategoryValue: readStoredAddIngredientCategoryValue()
+  }).subtype);
+  const [customCategory, setCustomCategory] = useState<IngredientCategory | null>(() => resolveAddIngredientStartContext({
+    initialSelection,
+    initialCategory,
+    initialSubtype,
+    rememberedCategoryValue: readStoredAddIngredientCategoryValue()
+  }).category);
+  const [customSubtype, setCustomSubtype] = useState<Extract<IngredientSubtype, "malt" | "fermentable"> | null>(() => resolveAddIngredientStartContext({
+    initialSelection,
+    initialCategory,
+    initialSubtype,
+    rememberedCategoryValue: readStoredAddIngredientCategoryValue()
+  }).subtype);
   const [mode, setMode] = useState<Mode>("catalog");
   const [result, setResult] = useState<AddIngredientResult | null>(null);
   const [pending, setPending] = useState(false);
+  const [selectedIngredient, setSelectedIngredient] = useState<IngredientSuggestionItem | null>(initialSelection);
+  const backdropPointerDownStartedRef = useRef(false);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     if (!open) {
       return;
     }
 
-    const nextSubtype = initialSelection?.subtype === "malt" || initialSelection?.subtype === "fermentable"
-      ? initialSelection.subtype
-      : initialSubtype;
-    const nextCategory = initialSelection?.category ?? initialCategory;
+    const startContext = resolveAddIngredientStartContext({
+      initialSelection,
+      initialCategory,
+      initialSubtype,
+      rememberedCategoryValue: readStoredAddIngredientCategoryValue()
+    });
 
-    setCatalogCategory(nextCategory);
-    setCatalogSubtype(nextSubtype);
-    setCustomCategory(nextCategory);
-    setCustomSubtype(nextSubtype);
+    setCatalogCategory(startContext.category);
+    setCatalogSubtype(startContext.subtype);
+    setCustomCategory(startContext.category);
+    setCustomSubtype(startContext.subtype);
     setMode("catalog");
+    setSelectedIngredient(initialSelection);
     setResult(null);
     setPending(false);
   }, [initialCategory, initialSelection, initialSubtype, open]);
@@ -99,14 +243,13 @@ export function AddIngredientModal({
     return null;
   }
 
-  const selectedCategoryValue: AddIngredientCategoryValue = mode === "catalog"
-    ? (catalogCategory === "fermentable" && catalogSubtype ? catalogSubtype : catalogCategory)
-    : (customCategory === "fermentable" && customSubtype ? customSubtype : customCategory);
+  const selectedCategoryValue: InventoryIngredientCategoryValue | null = mode === "catalog"
+    ? resolveInventoryIngredientCategoryValue({ category: catalogCategory, subtype: catalogSubtype })
+    : resolveInventoryIngredientCategoryValue({ category: customCategory, subtype: customSubtype });
 
-  const handleCategoryChange = (nextCategory: AddIngredientCategoryValue) => {
-    const nextIsSubtype = nextCategory === "malt" || nextCategory === "fermentable";
-    const nextResolvedCategory = nextIsSubtype ? "fermentable" : nextCategory;
-    const nextResolvedSubtype = nextIsSubtype ? nextCategory : null;
+  const handleCategoryChange = (nextCategory: InventoryIngredientCategoryValue) => {
+    const { category: nextResolvedCategory, subtype: nextResolvedSubtype } = resolveInventoryIngredientContextFromCategoryValue(nextCategory);
+    persistAddIngredientCategoryValue(nextCategory);
 
     if (mode === "catalog") {
       setCatalogCategory(nextResolvedCategory);
@@ -124,114 +267,194 @@ export function AddIngredientModal({
 
   const handleSuccess = (nextResult: AddIngredientResult) => {
     setResult(nextResult);
+    if (nextResult.ok && selectedCategoryValue) {
+      persistAddIngredientCategoryValue(selectedCategoryValue);
+    }
     applyAddIngredientSuccessEffects(nextResult, {
       onClose,
       refresh: () => router.refresh()
     });
   };
 
-  return (
+  const showSelectionStageChrome = !selectedIngredient;
+  const selectedIngredientContextSummary = selectedIngredient
+    ? resolveInventoryIngredientContextSummaryFromSuggestion(selectedIngredient)
+    : null;
+
+  const modalContent = (
     <div
-      className="fixed inset-0 z-50 flex items-end justify-center bg-black/40 sm:items-center"
+      className="fixed inset-0 z-[100] flex items-end justify-center bg-zinc-950/55 sm:items-center"
       role="dialog"
       aria-modal="true"
       aria-label="Добавить ингредиент"
+      onPointerDown={(event) => {
+        backdropPointerDownStartedRef.current = event.target === event.currentTarget;
+      }}
       onClick={(event) => {
-        if (event.target === event.currentTarget) {
+        if (shouldCloseAddIngredientModalFromBackdropInteraction({
+          pointerDownStartedOnBackdrop: backdropPointerDownStartedRef.current,
+          clickFinishedOnBackdrop: event.target === event.currentTarget
+        })) {
           onClose();
         }
+
+        backdropPointerDownStartedRef.current = false;
       }}
     >
-      <div className="max-h-[92vh] w-full overflow-y-auto rounded-t-xl bg-white p-5 sm:max-w-2xl sm:rounded-xl" data-testid="add-ingredient-modal">
+      <div className="relative z-[101] max-h-[92vh] w-full overflow-y-auto rounded-t-xl bg-white p-5 shadow-2xl sm:max-w-2xl sm:rounded-xl" data-testid="add-ingredient-modal">
         <div className="mb-4 flex items-center justify-between">
           <h2 className="text-lg font-semibold text-zinc-950">Добавить ингредиент</h2>
           <button type="button" className="text-sm text-zinc-500 transition-colors hover:text-zinc-700" onClick={onClose}>Закрыть</button>
         </div>
 
         <div className="space-y-4">
-          <fieldset className="space-y-2">
-            <legend className="text-sm font-medium">Категория ингредиента</legend>
-            <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
-              {categoryOptions.map((option) => {
-                const Icon = option.icon;
+          {showSelectionStageChrome ? (
+            <>
+              <InventoryIngredientCategoryGrid
+                value={selectedCategoryValue}
+                onChange={handleCategoryChange}
+                testId="add-ingredient-category-grid"
+              />
 
-                return (
-                  <button
-                    key={option.value}
-                    type="button"
-                    onClick={() => handleCategoryChange(option.value)}
-                    className={`rounded-md border px-3 py-2 text-xs transition ${selectedCategoryValue === option.value
-                        ? "border-black bg-zinc-100 text-zinc-950"
-                        : "border-zinc-200 bg-white text-zinc-600 hover:border-zinc-300 hover:bg-zinc-50"
-                      }`}
-                  >
-                    <span className="inline-flex items-center gap-1.5 whitespace-nowrap">
-                      <Icon className={`h-3.5 w-3.5 shrink-0 ${selectedCategoryValue === option.value ? "text-current" : option.iconClassName}`} />
-                      <span>{option.label}</span>
-                    </span>
-                  </button>
-                );
-              })}
-            </div>
-          </fieldset>
+              <div className="grid grid-cols-2 gap-2 rounded-md bg-zinc-100 p-1 text-sm" data-testid="add-ingredient-mode-switch">
+                <button
+                  type="button"
+                  onPointerDown={(event) => applyAddIngredientImmediateControlAction({
+                    event,
+                    action: () => setMode("catalog")
+                  })}
+                  onClick={(event) => {
+                    if (!shouldApplyAddIngredientControlActionOnClick({ detail: event.detail })) {
+                      return;
+                    }
 
-          <div className="grid grid-cols-2 gap-2 rounded-md bg-zinc-100 p-1 text-sm">
-            <button type="button" onClick={() => setMode("catalog")} className={`rounded px-3 py-2 ${mode === "catalog" ? "bg-white shadow" : ""}`}>Из каталога</button>
-            <button type="button" onClick={() => setMode("custom")} className={`rounded px-3 py-2 ${mode === "custom" ? "bg-white shadow" : ""}`}>Свой ингредиент</button>
-          </div>
+                    setMode("catalog");
+                  }}
+                  className={`rounded px-3 py-2 ${mode === "catalog" ? "bg-white shadow" : ""}`}
+                >
+                  Из каталога
+                </button>
+                <button
+                  type="button"
+                  onPointerDown={(event) => applyAddIngredientImmediateControlAction({
+                    event,
+                    action: () => setMode("custom")
+                  })}
+                  onClick={(event) => {
+                    if (!shouldApplyAddIngredientControlActionOnClick({ detail: event.detail })) {
+                      return;
+                    }
+
+                    setMode("custom");
+                  }}
+                  className={`rounded px-3 py-2 ${mode === "custom" ? "bg-white shadow" : ""}`}
+                >
+                  Свой ингредиент
+                </button>
+              </div>
+            </>
+          ) : null}
 
           {result && <p className={`text-sm ${result.ok ? "text-green-700" : "text-red-600"}`}>{result.message}</p>}
 
-          {mode === "catalog" ? (
-            <CatalogIngredientForm
-              category={catalogCategory}
-              subtype={catalogSubtype}
-              preferredCurrency={preferredCurrency}
-              pending={pending}
-              autoFocus
-              initialSelection={initialSelection}
-              fieldErrors={result?.fieldErrors}
-              onRequestCustom={() => setMode("custom")}
-              onSubmit={async (payload) => {
-                setPending(true);
-                const formData = new FormData();
-                Object.entries(payload).forEach(([key, value]) => {
-                  if (value == null) {
-                    return;
-                  }
-
-                  formData.set(key, value);
-                });
-                const nextResult = await addSelectedIngredientAction(null, formData);
-                setPending(false);
-                handleSuccess(nextResult);
-              }}
+          {selectedIngredientContextSummary ? (
+            <InventoryIngredientContextSummary
+              summary={selectedIngredientContextSummary}
+              testId="add-ingredient-context-summary"
             />
-          ) : (
-            <CustomIngredientForm
-              category={customCategory}
-              initialSubtype={customSubtype}
-              preferredCurrency={preferredCurrency}
-              pending={pending}
-              fieldErrors={result?.fieldErrors}
-              onSubmit={async (payload) => {
-                setPending(true);
-                const formData = new FormData();
-                Object.entries(payload).forEach(([key, value]) => {
-                  if (value == null) {
-                    return;
-                  }
+          ) : null}
 
-                  formData.set(key, value);
-                });
-                const nextResult = await addCustomIngredientAction(null, formData);
-                setPending(false);
-                handleSuccess(nextResult);
-              }}
-            />
-          )}
+          <div>
+            {mode === "catalog" && catalogCategory ? (
+              <CatalogIngredientForm
+                category={catalogCategory}
+                subtype={catalogSubtype}
+                preferredCurrency={preferredCurrency}
+                pending={pending}
+                autoFocus
+                initialSelection={initialSelection}
+                fieldErrors={result?.fieldErrors}
+                selectionActionLabel="Изменить выбор"
+                onSelectedIngredientChange={setSelectedIngredient}
+                onRequestCustom={() => {
+                  setSelectedIngredient(null);
+                  setMode("custom");
+                }}
+                onSubmit={async (payload) => {
+                  setPending(true);
+                  const formData = new FormData();
+                  Object.entries(payload).forEach(([key, value]) => {
+                    if (value == null) {
+                      return;
+                    }
+
+                    formData.set(key, value);
+                  });
+                  const nextResult = await addSelectedIngredientAction(null, formData);
+                  setPending(false);
+                  handleSuccess(nextResult);
+                }}
+              />
+            ) : null}
+
+            {mode === "custom" && customCategory ? (
+              <CustomIngredientPanel
+                category={customCategory}
+                initialSubtype={customSubtype}
+                preferredCurrency={preferredCurrency}
+                pending={pending}
+                fieldErrors={result?.fieldErrors}
+                selectionActionLabel="Изменить выбор"
+                onSelectedIngredientChange={setSelectedIngredient}
+                onSubmitCreate={async (payload) => {
+                  setPending(true);
+                  const formData = new FormData();
+                  Object.entries(payload).forEach(([key, value]) => {
+                    if (value == null) {
+                      return;
+                    }
+
+                    formData.set(key, value);
+                  });
+                  const nextResult = await addCustomIngredientAction(null, formData);
+                  setPending(false);
+                  handleSuccess(nextResult);
+                }}
+                onSubmitExisting={async (payload) => {
+                  setPending(true);
+                  const formData = new FormData();
+                  Object.entries(payload).forEach(([key, value]) => {
+                    if (value == null) {
+                      return;
+                    }
+
+                    formData.set(key, value);
+                  });
+                  const nextResult = await addSelectedIngredientAction(null, formData);
+                  setPending(false);
+                  handleSuccess(nextResult);
+                }}
+              />
+            ) : null}
+
+            {((mode === "catalog" && !catalogCategory) || (mode === "custom" && !customCategory)) ? (
+              <div className="flex h-full min-h-[18rem] items-center justify-center rounded-xl border border-dashed border-zinc-200 bg-zinc-50/50 px-4 text-center text-sm text-zinc-500">
+                Выберите категорию, и после этого появится {mode === "catalog" ? "поиск" : "список своих ингредиентов"}.
+              </div>
+            ) : null}
+          </div>
         </div>
       </div>
     </div>
   );
+
+  if (typeof window === "undefined") {
+    return modalContent;
+  }
+
+  if (!mounted) {
+    return null;
+  }
+
+  return createPortal(modalContent, document.body);
 }

@@ -126,7 +126,7 @@ export default async function MyIngredientsPage({ searchParams }: Props) {
         <AddIngredientTrigger
           preferredCurrency={user.preferredCurrency}
           initialSelection={initialSelection}
-          initialCategory={initialSelection?.category ?? category ?? "hop"}
+          initialCategory={initialSelection?.category ?? category ?? null}
           initialSubtype={
             initialSelection?.subtype === "malt" || initialSelection?.subtype === "fermentable"
               ? initialSelection.subtype

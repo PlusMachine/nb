@@ -15,6 +15,7 @@ import { z } from "zod";
 import {
   addCatalogInventoryItemSchema,
   addCustomInventoryItemSchema,
+  catalogInventoryTechnicalOverrideSchema,
   createUserCustomIngredientSchema,
   inventorySourceLinkageSchema,
   inventoryListQuerySchema,
@@ -39,6 +40,7 @@ import {
   buildCustomIngredientLinkage,
   type IngredientSourceLinkage
 } from "../ingredients/source-linkage";
+import { readCustomIngredientMetadata } from "../ingredients/custom-metadata";
 import {
   resolveIngredientCategory,
   resolveIngredientSubtype,
@@ -213,6 +215,7 @@ const buildCustomSourceDto = (
   custom: typeof userCustomIngredients.$inferSelect
 ): InventorySourceDto => {
   const linkage = buildCustomIngredientLinkage(custom);
+  const metadata = readCustomIngredientMetadata(custom);
   const properties = isRecord(custom.properties) ? custom.properties : {};
   const brand = custom.manufacturer
     ?? (typeof properties.brand === "string" && properties.brand.trim().length > 0 ? properties.brand.trim() : null);
@@ -256,6 +259,8 @@ const buildCustomSourceDto = (
     measurementDimension: linkage.measurementDimension,
     packageVariantId: null,
     packageVariantName: null,
+    derivedFromIngredientId: metadata.derivedFromIngredientId,
+    derivedFromDisplayName: metadata.derivedFromDisplayName,
     summary: linkage.summary,
     ...extractIngredientTechnicalFields({
       type: linkage.type,
@@ -693,6 +698,338 @@ export const createUserCustomIngredient = async (userId: string, payload: unknow
   }).returning();
 
   return created;
+};
+
+const readFiniteNumber = (...values: Array<number | null | undefined>) => {
+  for (const value of values) {
+    if (typeof value === "number" && Number.isFinite(value)) {
+      return value;
+    }
+  }
+
+  return null;
+};
+
+const numbersEqual = (left: number | null, right: number | null) => {
+  if (left == null && right == null) {
+    return true;
+  }
+
+  if (left == null || right == null) {
+    return false;
+  }
+
+  return Math.abs(left - right) < 0.001;
+};
+
+const lovibondToEbc = (value: number) => Number((value * 1.97).toFixed(2));
+
+const isMaltTechnicalData = (
+  technicalData: IngredientTechnicalData | null | undefined
+): technicalData is Extract<IngredientTechnicalData, { type: "malt" }> => (
+  technicalData?.type === "malt"
+);
+
+const isFermentableTechnicalData = (
+  technicalData: IngredientTechnicalData | null | undefined
+): technicalData is Extract<IngredientTechnicalData, { type: "fermentable" }> => (
+  technicalData?.type === "fermentable"
+);
+
+const isHopTechnicalData = (
+  technicalData: IngredientTechnicalData | null | undefined
+): technicalData is Extract<IngredientTechnicalData, { type: "hop" }> => (
+  technicalData?.type === "hop"
+);
+
+const isYeastTechnicalData = (
+  technicalData: IngredientTechnicalData | null | undefined
+): technicalData is Extract<IngredientTechnicalData, { type: "yeast" }> => (
+  technicalData?.type === "yeast"
+);
+
+const readFermentableColorEbc = (technicalData?: IngredientTechnicalData | null) => {
+  if (!technicalData) {
+    return null;
+  }
+
+  if (isMaltTechnicalData(technicalData)) {
+    return readFiniteNumber(
+      technicalData.colorEbcMin,
+      technicalData.colorEbcMax,
+      technicalData.colorLovibond == null ? null : lovibondToEbc(technicalData.colorLovibond)
+    );
+  }
+
+  if (isFermentableTechnicalData(technicalData)) {
+    return technicalData.colorLovibond == null ? null : lovibondToEbc(technicalData.colorLovibond);
+  }
+
+  return null;
+};
+
+const readFermentableExtractYieldPct = (technicalData?: IngredientTechnicalData | null) => (
+  isMaltTechnicalData(technicalData) || isFermentableTechnicalData(technicalData)
+    ? readFiniteNumber(technicalData.extractPctDryBasis)
+    : null
+);
+
+const readHopAlphaAcidPct = (technicalData?: IngredientTechnicalData | null) => (
+  isHopTechnicalData(technicalData)
+    ? readFiniteNumber(
+      technicalData.alphaAcidPctTypical,
+      technicalData.alphaAcidPctMax,
+      technicalData.alphaAcidPctMin
+    )
+    : null
+);
+
+const readHopBetaAcidPct = (technicalData?: IngredientTechnicalData | null) => (
+  isHopTechnicalData(technicalData)
+    ? readFiniteNumber(
+      technicalData.betaAcidPctTypical,
+      technicalData.betaAcidPctMax,
+      technicalData.betaAcidPctMin
+    )
+    : null
+);
+
+const formatDerivedOverrideNumber = (value: number | null) => (
+  value == null ? "?" : String(Number(value.toFixed(1)))
+);
+
+type CatalogTechnicalOverrideResolution =
+  | { kind: "none" }
+  | {
+    kind: "fermentable";
+    fermentableColorEbc: number | null;
+    fermentableExtractYieldPct: number | null;
+  }
+  | {
+    kind: "hop";
+    hopAlphaAcidPct: number | null;
+  };
+
+const resolveCatalogTechnicalOverrideResolution = (
+  catalogItem: typeof ingredients.$inferSelect,
+  parsed: z.infer<typeof catalogInventoryTechnicalOverrideSchema>
+): CatalogTechnicalOverrideResolution => {
+  const linkage = buildCatalogIngredientLinkage(catalogItem);
+  const technicalData = linkage.technicalData;
+
+  if (
+    linkage.category === "fermentable"
+    && (parsed.fermentableColorEbc != null || parsed.fermentableExtractYieldPct != null)
+  ) {
+    const currentColorEbc = readFermentableColorEbc(technicalData);
+    const currentExtractYieldPct = readFermentableExtractYieldPct(technicalData);
+    const nextColorEbc = parsed.fermentableColorEbc ?? currentColorEbc;
+    const nextExtractYieldPct = parsed.fermentableExtractYieldPct ?? currentExtractYieldPct;
+
+    if (
+      numbersEqual(nextColorEbc, currentColorEbc)
+      && numbersEqual(nextExtractYieldPct, currentExtractYieldPct)
+    ) {
+      return { kind: "none" };
+    }
+
+    return {
+      kind: "fermentable",
+      fermentableColorEbc: nextColorEbc,
+      fermentableExtractYieldPct: nextExtractYieldPct
+    };
+  }
+
+  if (linkage.category === "hop" && parsed.hopAlphaAcidPct != null) {
+    const currentAlphaAcidPct = readHopAlphaAcidPct(technicalData);
+    if (numbersEqual(parsed.hopAlphaAcidPct, currentAlphaAcidPct)) {
+      return { kind: "none" };
+    }
+
+    return {
+      kind: "hop",
+      hopAlphaAcidPct: parsed.hopAlphaAcidPct
+    };
+  }
+
+  return { kind: "none" };
+};
+
+const matchesDerivedCustomIngredient = ({
+  customIngredient,
+  derivedFromIngredientId,
+  override
+}: {
+  customIngredient: typeof userCustomIngredients.$inferSelect;
+  derivedFromIngredientId: string;
+  override: Exclude<CatalogTechnicalOverrideResolution, { kind: "none" }>;
+}) => {
+  const metadata = readCustomIngredientMetadata(customIngredient);
+  if (metadata.derivedFromIngredientId !== derivedFromIngredientId) {
+    return false;
+  }
+
+  const linkage = buildCustomIngredientLinkage(customIngredient);
+  if (override.kind === "fermentable") {
+    return (
+      numbersEqual(readFermentableColorEbc(linkage.technicalData), override.fermentableColorEbc)
+      && numbersEqual(readFermentableExtractYieldPct(linkage.technicalData), override.fermentableExtractYieldPct)
+    );
+  }
+
+  return numbersEqual(readHopAlphaAcidPct(linkage.technicalData), override.hopAlphaAcidPct);
+};
+
+const findOwnedCustomIngredientByDisplayName = async (
+  userId: string,
+  type: typeof userCustomIngredients.$inferSelect.type,
+  displayName: string
+) => db.query.userCustomIngredients.findFirst({
+  where: and(
+    eq(userCustomIngredients.userId, userId),
+    eq(userCustomIngredients.type, type),
+    eq(userCustomIngredients.normalizedName, normalizeIngredientName(displayName))
+  )
+});
+
+const buildDerivedCustomIngredientPayload = (
+  catalogItem: typeof ingredients.$inferSelect,
+  override: Exclude<CatalogTechnicalOverrideResolution, { kind: "none" }>
+) => {
+  const linkage = buildCatalogIngredientLinkage(catalogItem);
+  const technicalData = linkage.technicalData;
+
+  return {
+    type: linkage.type,
+    category: linkage.category,
+    subtype: linkage.subtype,
+    displayName: linkage.displayName,
+    nameRu: catalogItem.nameRu,
+    nameEn: catalogItem.nameEn,
+    brand: catalogItem.brand ?? catalogItem.producer ?? null,
+    country: catalogItem.countryName ?? null,
+    productCode: catalogItem.productCode ?? null,
+    displayModeRu: catalogItem.displayModeRu as "auto" | "localized_first" | "source_first",
+    displayNameOverrideRu: catalogItem.displayNameOverrideRu ?? null,
+    secondaryNameOverrideRu: catalogItem.secondaryNameOverrideRu ?? null,
+    hideSecondaryNameRu: catalogItem.hideSecondaryNameRu,
+    derivedFromIngredientId: catalogItem.id,
+    derivedFromDisplayName: linkage.displayName,
+    fermentableColorEbc: override.kind === "fermentable"
+      ? override.fermentableColorEbc
+      : readFermentableColorEbc(technicalData),
+    fermentableExtractYieldPct: override.kind === "fermentable"
+      ? override.fermentableExtractYieldPct
+      : readFermentableExtractYieldPct(technicalData),
+    fermentableProteinPct: isMaltTechnicalData(technicalData)
+      ? readFiniteNumber(technicalData.proteinPct)
+      : null,
+    maltType: isMaltTechnicalData(technicalData) ? technicalData.maltType ?? null : null,
+    fermentableMaxUsagePct: isMaltTechnicalData(technicalData)
+      ? readFiniteNumber(technicalData.maxUsagePct)
+      : null,
+    hopAlphaAcidPct: override.kind === "hop"
+      ? override.hopAlphaAcidPct
+      : readHopAlphaAcidPct(technicalData),
+    hopBetaAcidPct: readHopBetaAcidPct(technicalData),
+    hopForm: isHopTechnicalData(technicalData) ? technicalData.hopForm ?? null : null,
+    yeastAttenuationPct: isYeastTechnicalData(technicalData)
+      ? readFiniteNumber(technicalData.attenuationPctTypical)
+      : null,
+    yeastForm: isYeastTechnicalData(technicalData)
+      && (
+        technicalData.form === "dry"
+        || technicalData.form === "liquid"
+        || technicalData.form === "slurry"
+        || technicalData.form === "culture"
+      )
+      ? technicalData.form
+      : null,
+    yeastFlocculation: isYeastTechnicalData(technicalData) ? technicalData.flocculation ?? null : null,
+    yeastMinFermentationTempC: isYeastTechnicalData(technicalData)
+      ? readFiniteNumber(technicalData.fermentationTempCMin)
+      : null,
+    yeastMaxFermentationTempC: isYeastTechnicalData(technicalData)
+      ? readFiniteNumber(technicalData.fermentationTempCMax)
+      : null,
+    alcoholToleranceAbvTypical: isYeastTechnicalData(technicalData)
+      ? readFiniteNumber(technicalData.alcoholToleranceAbvTypical)
+      : null,
+    defaultDisplayUnit: linkage.defaultDisplayUnit,
+    visibility: "private" as const
+  };
+};
+
+const buildDerivedCustomIngredientDescriptor = (
+  override: Exclude<CatalogTechnicalOverrideResolution, { kind: "none" }>
+) => {
+  if (override.kind === "fermentable") {
+    return `${formatDerivedOverrideNumber(override.fermentableColorEbc)} EBC / ${formatDerivedOverrideNumber(override.fermentableExtractYieldPct)}%`;
+  }
+
+  return `${formatDerivedOverrideNumber(override.hopAlphaAcidPct)}% AA`;
+};
+
+const resolveOrCreateDerivedCustomIngredient = async (
+  userId: string,
+  catalogItem: typeof ingredients.$inferSelect,
+  override: Exclude<CatalogTechnicalOverrideResolution, { kind: "none" }>
+) => {
+  const basePayload = buildDerivedCustomIngredientPayload(catalogItem, override);
+  const descriptor = buildDerivedCustomIngredientDescriptor(override);
+  const candidateNames = [
+    basePayload.displayName,
+    `${basePayload.displayName} (${descriptor})`,
+    `${basePayload.displayName} (${descriptor}) 2`,
+    `${basePayload.displayName} (${descriptor}) 3`
+  ];
+
+  for (const candidateName of candidateNames) {
+    const existing = await findOwnedCustomIngredientByDisplayName(userId, basePayload.type, candidateName);
+    if (existing) {
+      if (matchesDerivedCustomIngredient({
+        customIngredient: existing,
+        derivedFromIngredientId: catalogItem.id,
+        override
+      })) {
+        return existing;
+      }
+
+      continue;
+    }
+
+    return createUserCustomIngredient(userId, {
+      ...basePayload,
+      displayName: candidateName
+    });
+  }
+
+  throw new Error("DERIVED_CUSTOM_NAME_CONFLICT");
+};
+
+export const resolveCatalogInventoryAdditionSource = async (
+  userId: string,
+  payload: unknown
+): Promise<
+  | { sourceKind: "catalog"; ingredientCatalogItemId: string }
+  | { sourceKind: "custom"; userCustomIngredientId: string }
+> => {
+  const parsed = catalogInventoryTechnicalOverrideSchema.parse(payload);
+  const catalogItem = await ensureCatalogIngredientExists(parsed.ingredientCatalogItemId);
+  const override = resolveCatalogTechnicalOverrideResolution(catalogItem, parsed);
+
+  if (override.kind === "none") {
+    return {
+      sourceKind: "catalog",
+      ingredientCatalogItemId: catalogItem.id
+    };
+  }
+
+  const derivedCustomIngredient = await resolveOrCreateDerivedCustomIngredient(userId, catalogItem, override);
+  return {
+    sourceKind: "custom",
+    userCustomIngredientId: derivedCustomIngredient.id
+  };
 };
 
 export const updateUserCustomIngredient = async (
