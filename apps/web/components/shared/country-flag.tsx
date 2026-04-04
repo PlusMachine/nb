@@ -89,6 +89,19 @@ const renderFlagArt = (countryCode?: string | null): ReactNode => {
       );
     case "FR":
       return renderVerticalStripes(["#0055A4", "#FFFFFF", "#EF4135"]);
+    case "CA":
+      return (
+        <>
+          <rect x="0" y="0" width="4.5" height={viewBoxHeight} fill="#D80621" />
+          <rect x="4.5" y="0" width="9" height={viewBoxHeight} fill="#FFFFFF" />
+          <rect x="13.5" y="0" width="4.5" height={viewBoxHeight} fill="#D80621" />
+          <path
+            d="M9 2.1 9.6 3.4 10.9 2.9 10.3 4.1 11.4 4.8 10 5 10.1 6.4 9 5.8 7.9 6.4 8 5 6.6 4.8 7.7 4.1 7.1 2.9 8.4 3.4Z"
+            fill="#D80621"
+          />
+          <rect x="8.55" y="5.8" width="0.9" height="2" fill="#D80621" />
+        </>
+      );
     case "GB":
       return renderUnionJack();
     case "FI":

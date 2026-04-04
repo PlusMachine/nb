@@ -112,6 +112,7 @@ export type ConsumableTechnicalData = {
 
 export type WaterTreatmentTechnicalData = {
   type: "water_treatment";
+  formula?: string | null;
   commonForms?: string[];
   unitPreferred?: string | null;
   typicalUseRu?: string | null;

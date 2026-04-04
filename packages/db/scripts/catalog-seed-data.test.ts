@@ -52,4 +52,15 @@ describe("catalog seed data", () => {
     expect(normalizeCatalogAlias("  Star—San Ё  ")).toBe("star san е");
     expect(normalizeCatalogAlias("Calcium   Chloride")).toBe("calcium chloride");
   });
+
+  it("derives yeast country code from producer country names", () => {
+    const prepared = prepareCatalogSeedFile({
+      fileName: "yeasts_catalog_minimal_v2.json",
+      type: "yeast"
+    });
+    const phillySour = prepared.find((item) => item.ingredient.id === "lallemand-philly-sour");
+
+    expect(phillySour?.ingredient.countryName).toBe("Canada");
+    expect(phillySour?.ingredient.countryCode).toBe("CA");
+  });
 });

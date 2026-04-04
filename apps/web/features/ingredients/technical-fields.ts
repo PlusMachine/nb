@@ -63,6 +63,7 @@ type IngredientTechnicalSource = {
   yeastForm?: string | null;
   yeastMinFermentationTempC?: number | null;
   yeastMaxFermentationTempC?: number | null;
+  formula?: string | null;
   unitPreferred?: string | null;
 };
 
@@ -233,6 +234,7 @@ const fromAttributes = (
 
   return {
     type,
+    formula: readString(attributes.formula),
     commonForms: readStringArray(attributes.common_forms),
     unitPreferred: readString(attributes.unit_preferred),
     typicalUseRu: readString(attributes.typical_use_ru),
@@ -332,6 +334,7 @@ export const extractIngredientTechnicalData = (source: IngredientTechnicalSource
   if (type === "water_treatment") {
     return {
       type,
+      formula: readString(source.formula),
       unitPreferred: readString(source.unitPreferred)
     };
   }

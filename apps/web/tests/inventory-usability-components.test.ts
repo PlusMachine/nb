@@ -183,7 +183,7 @@ describe("inventory usability components", () => {
           colorLovibond: 3.5,
           extractPctDryBasis: 80,
           proteinPct: null,
-          maxUsagePct: null,
+          maxUsagePct: 100,
           colorEbcIsApprox: false
         },
         summary: "3.5 Lovibond • 80% extract"
@@ -204,6 +204,9 @@ describe("inventory usability components", () => {
     expect(html).toContain('<option value="kg" selected="">kg</option>');
     expect(html).toContain("6-7 EBC");
     expect(html).toContain("Экстракт 80%");
+    expect(html).toContain("до 100 % засыпи");
+    expect(html).not.toContain("80% extract");
+    expect(html).toContain("linear-gradient(180deg");
     expect(html).toContain('aria-label="Редактировать"');
     expect(html).toContain('aria-label="Удалить"');
   });
@@ -238,6 +241,7 @@ describe("inventory usability components", () => {
         secondaryLabelRu: null,
         displayName: "US-05",
         normalizedName: "us-05",
+        brand: "Fermentis",
         technicalData: {
           type: "yeast",
           form: "dry",
@@ -260,8 +264,118 @@ describe("inventory usability components", () => {
 
     expect(html).toContain('<option value="pack" selected="">pack (пачка)</option>');
     expect(html).toContain("1 pack (11 g)");
+    expect(html).toContain("Fermentis");
     expect(html).toContain("Атт. 78%");
     expect(html).toContain("18-24°C");
+  });
+
+  it("renders canadian flag for lallemand yeast instead of fallback stripes", () => {
+    const item: InventoryListItemDto = {
+      id: "inv-yeast-ca-1",
+      enteredQuantity: 1,
+      enteredUnit: "pack",
+      normalizedQuantity: 11,
+      normalizedUnit: "g",
+      unitDimension: "weight",
+      purchasePriceMinor: null,
+      purchaseCurrency: null,
+      purchaseQuantity: null,
+      purchaseQuantityUnit: null,
+      purchaseQuantityNormalized: null,
+      purchaseQuantityNormalizedUnit: null,
+      normalizedUnitCostMinorRub: null,
+      purchasedAt: null,
+      freshnessDate: null,
+      notes: null,
+      archivedAt: null,
+      createdAt: new Date("2025-01-01"),
+      updatedAt: new Date("2025-01-01"),
+      source: {
+        sourceKind: "catalog",
+        sourceId: "lallemand-philly-sour",
+        type: "yeast",
+        category: "yeast",
+        primaryLabelRu: "Филли Сауэр",
+        secondaryLabelRu: "WildBrew Philly Sour",
+        displayName: "Филли Сауэр",
+        normalizedName: "philly-sour",
+        brand: "Lallemand",
+        countryCode: "CA",
+        countryName: "Canada",
+        technicalData: {
+          type: "yeast",
+          form: "dry",
+          attenuationPctTypical: 78,
+          fermentationTempCMin: 20,
+          fermentationTempCMax: 30
+        }
+      }
+    };
+
+    const html = renderToStaticMarkup(React.createElement(InventoryListItem, {
+      item,
+      preferredCurrency: "RUB",
+      currencyRates: { RUB: 100, USD: 7900, EUR: 9170 }
+    }));
+
+    expect(html).toContain("Lallemand");
+    expect(html).toContain("#D80621");
+    expect(html).not.toContain("#E4E4E7");
+  });
+
+  it("renders hop country flag on the brand line instead of the title row", () => {
+    const item: InventoryListItemDto = {
+      id: "inv-hop-1",
+      enteredQuantity: 100,
+      enteredUnit: "g",
+      normalizedQuantity: 100,
+      normalizedUnit: "g",
+      unitDimension: "weight",
+      purchasePriceMinor: null,
+      purchaseCurrency: null,
+      purchaseQuantity: null,
+      purchaseQuantityUnit: null,
+      purchaseQuantityNormalized: null,
+      purchaseQuantityNormalizedUnit: null,
+      normalizedUnitCostMinorRub: null,
+      purchasedAt: null,
+      freshnessDate: null,
+      notes: null,
+      archivedAt: null,
+      createdAt: new Date("2025-01-01"),
+      updatedAt: new Date("2025-01-01"),
+      source: {
+        sourceKind: "catalog",
+        sourceId: "hop-1",
+        type: "hop",
+        category: "hop",
+        primaryLabelRu: "Цитра",
+        secondaryLabelRu: "Citra",
+        displayName: "Цитра",
+        normalizedName: "citra",
+        brand: "Yakima Chief",
+        countryCode: "US",
+        countryName: "США",
+        technicalData: {
+          type: "hop",
+          alphaAcidPctTypical: 12,
+          hopForm: "pellet"
+        }
+      }
+    };
+
+    const html = renderToStaticMarkup(React.createElement(InventoryListItem, {
+      item,
+      preferredCurrency: "RUB",
+      currencyRates: { RUB: 100, USD: 7900, EUR: 9170 }
+    }));
+
+    expect(html).toContain("Цитра");
+    expect(html).toContain("Citra");
+    expect(html).toContain("Yakima Chief");
+    expect(html).toContain("Альфа 12%");
+    expect(html).toContain("pellet");
+    expect(html).toMatch(/Yakima Chief.*svg/);
   });
 
   it("tracks dirty state and zero-stock validity for inline editor logic", () => {

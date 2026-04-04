@@ -3,6 +3,7 @@
 import React from "react";
 import { useEffect, useState } from "react";
 import { Droplets, FlaskConical, Leaf, Package, Wheat } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 import { addCustomIngredientAction, addSelectedIngredientAction, type AddIngredientResult } from "@/app/(app)/app/ingredients/actions";
 import type {
@@ -27,6 +28,23 @@ type Props = {
 type Mode = "catalog" | "custom";
 type AddIngredientCategoryValue = IngredientCategory | "malt" | "fermentable";
 
+type AddIngredientSuccessEffects = {
+  onClose: () => void;
+  refresh: () => void;
+};
+
+export const applyAddIngredientSuccessEffects = (
+  result: AddIngredientResult,
+  { onClose, refresh }: AddIngredientSuccessEffects
+) => {
+  if (!result.ok) {
+    return;
+  }
+
+  onClose();
+  refresh();
+};
+
 const categoryOptions: Array<{
   value: AddIngredientCategoryValue;
   label: string;
@@ -49,6 +67,7 @@ export function AddIngredientModal({
   initialCategory = "hop",
   initialSubtype = null
 }: Props) {
+  const router = useRouter();
   const [catalogCategory, setCatalogCategory] = useState<IngredientCategory>(initialCategory);
   const [catalogSubtype, setCatalogSubtype] = useState<Extract<IngredientSubtype, "malt" | "fermentable"> | null>(null);
   const [customCategory, setCustomCategory] = useState<IngredientCategory>(initialCategory);
@@ -103,14 +122,12 @@ export function AddIngredientModal({
     setCatalogSubtype(nextResolvedSubtype);
   };
 
-  const handleSuccess = async (nextResult: AddIngredientResult) => {
+  const handleSuccess = (nextResult: AddIngredientResult) => {
     setResult(nextResult);
-    if (nextResult.ok) {
-      onClose();
-      if (typeof window !== "undefined") {
-        window.location.reload();
-      }
-    }
+    applyAddIngredientSuccessEffects(nextResult, {
+      onClose,
+      refresh: () => router.refresh()
+    });
   };
 
   return (
@@ -187,7 +204,7 @@ export function AddIngredientModal({
                 });
                 const nextResult = await addSelectedIngredientAction(null, formData);
                 setPending(false);
-                await handleSuccess(nextResult);
+                handleSuccess(nextResult);
               }}
             />
           ) : (
@@ -209,7 +226,7 @@ export function AddIngredientModal({
                 });
                 const nextResult = await addCustomIngredientAction(null, formData);
                 setPending(false);
-                await handleSuccess(nextResult);
+                handleSuccess(nextResult);
               }}
             />
           )}

@@ -5,11 +5,18 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 const mockState = vi.hoisted(() => ({
   userId: "u1",
   preferredCurrency: "USD",
+  refresh: vi.fn(),
   revalidated: [] as string[],
   createdCustomId: "3d6eb945-8e2e-4af9-8d24-ef6c883b5dd0",
   addCatalogCalls: [] as any[],
   createCustomCalls: [] as any[],
   addCustomCalls: [] as any[]
+}));
+
+vi.mock("next/navigation", () => ({
+  useRouter: () => ({
+    refresh: mockState.refresh
+  })
 }));
 
 vi.mock("next/cache", () => ({
@@ -39,7 +46,10 @@ vi.mock("@/features/inventory/service", () => ({
 import { addCatalogIngredientAction, addCustomIngredientAction } from "../app/(app)/app/ingredients/actions";
 import { IngredientCategorySelector } from "../components/ingredients/ingredient-category-selector";
 import { buildIngredientSearchParams } from "../components/ingredients/ingredient-picker";
-import { AddIngredientModal } from "../components/inventory/add-ingredient-modal";
+import {
+  AddIngredientModal,
+  applyAddIngredientSuccessEffects
+} from "../components/inventory/add-ingredient-modal";
 import { AddIngredientTrigger } from "../components/inventory/add-ingredient-trigger";
 import {
   buildCatalogIngredientPayload,
@@ -50,6 +60,7 @@ import { getTodayDateInputValue } from "../components/inventory/date-input";
 
 describe("inventory add-flow", () => {
   beforeEach(() => {
+    mockState.refresh.mockReset();
     mockState.revalidated = [];
     mockState.addCatalogCalls = [];
     mockState.createCustomCalls = [];
@@ -176,6 +187,32 @@ describe("inventory add-flow", () => {
 
     expect(html).toContain(">Солод<");
     expect(html).toContain("Начните вводить название ингредиента");
+  });
+
+  it("closes modal and refreshes route after successful add", () => {
+    const onClose = vi.fn();
+    const refresh = vi.fn();
+
+    applyAddIngredientSuccessEffects(
+      { ok: true, message: "ok" },
+      { onClose, refresh }
+    );
+
+    expect(onClose).toHaveBeenCalledTimes(1);
+    expect(refresh).toHaveBeenCalledTimes(1);
+  });
+
+  it("does not close modal or refresh route on failed add", () => {
+    const onClose = vi.fn();
+    const refresh = vi.fn();
+
+    applyAddIngredientSuccessEffects(
+      { ok: false, message: "validation" },
+      { onClose, refresh }
+    );
+
+    expect(onClose).not.toHaveBeenCalled();
+    expect(refresh).not.toHaveBeenCalled();
   });
 
   it("renders category selector options", () => {

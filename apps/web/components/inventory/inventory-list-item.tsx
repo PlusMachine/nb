@@ -19,6 +19,7 @@ import {
   resolveIngredientCountry,
   resolveIngredientDisplayNames
 } from "@/features/ingredients/presentation";
+import { beerColorFromSrm } from "@/features/recipes/beer-color";
 import { buildInventoryCostDisplay } from "@/features/inventory/display";
 import type { SystemCurrency, SystemCurrencyRateMap } from "@/features/system/currency";
 
@@ -35,6 +36,40 @@ type Props = {
 const formatValue = (value: number) => (
   value % 1 === 0 ? String(value) : value.toFixed(1).replace(/\.0$/, "")
 );
+
+const ebcToSrm = (value: number) => value / 1.97;
+
+type InventoryBadgeAccent = {
+  startHex: string;
+  averageHex: string;
+  endHex: string;
+};
+
+const resolveMaltColorBadgeAccent = (item: InventoryListItemDto): InventoryBadgeAccent | null => {
+  const technicalData = item.source.technicalData;
+  if (!technicalData || technicalData.type !== "malt") {
+    return null;
+  }
+
+  const malt = technicalData as Extract<NonNullable<typeof technicalData>, { type: "malt" }>;
+  const startEbc = malt.colorEbcMin ?? malt.colorEbcMax;
+  const endEbc = malt.colorEbcMax ?? malt.colorEbcMin;
+
+  if (startEbc == null || endEbc == null) {
+    return null;
+  }
+
+  const averageEbc = (startEbc + endEbc) / 2;
+  const start = beerColorFromSrm(ebcToSrm(startEbc));
+  const average = beerColorFromSrm(ebcToSrm(averageEbc));
+  const end = beerColorFromSrm(ebcToSrm(endEbc));
+
+  return {
+    startHex: start.hex,
+    averageHex: average.hex,
+    endHex: end.hex
+  };
+};
 
 const formatColorBadge = (item: InventoryListItemDto) => {
   const technicalData = item.source.technicalData;
@@ -71,6 +106,7 @@ const formatColorBadge = (item: InventoryListItemDto) => {
 type InventoryBadge = {
   key: string;
   label: string;
+  accent?: InventoryBadgeAccent | null;
 };
 
 const buildTypedBadges = (item: InventoryListItemDto) => {
@@ -82,50 +118,56 @@ const buildTypedBadges = (item: InventoryListItemDto) => {
   if (technicalData.type === "hop") {
     const hop = technicalData as Extract<NonNullable<typeof technicalData>, { type: "hop" }>;
     return [
-      hop.alphaAcidPctTypical != null ? `Альфа ${formatValue(hop.alphaAcidPctTypical)}%` : null,
-      hop.hopForm ? hop.hopForm.replaceAll("_", " ") : null,
-      item.source.harvestYear != null ? `Урожай ${item.source.harvestYear}` : null
-    ].filter((badge): badge is string => Boolean(badge));
+      hop.alphaAcidPctTypical != null ? { label: `Альфа ${formatValue(hop.alphaAcidPctTypical)}%` } : null,
+      hop.hopForm ? { label: hop.hopForm.replaceAll("_", " ") } : null,
+      item.source.harvestYear != null ? { label: `Урожай ${item.source.harvestYear}` } : null
+    ].filter((badge): badge is { label: string; accent?: InventoryBadgeAccent | null } => Boolean(badge));
   }
 
   if (technicalData.type === "malt" || technicalData.type === "fermentable") {
     const fermentable = technicalData as Extract<NonNullable<typeof technicalData>, { type: "malt" | "fermentable" }>;
     return [
-      formatColorBadge(item),
-      fermentable.extractPctDryBasis != null ? `Экстракт ${formatValue(fermentable.extractPctDryBasis)}%` : null,
+      formatColorBadge(item)
+        ? { label: formatColorBadge(item) ?? "", accent: resolveMaltColorBadgeAccent(item) }
+        : null,
+      fermentable.extractPctDryBasis != null ? { label: `Экстракт ${formatValue(fermentable.extractPctDryBasis)}%` } : null,
       fermentable.type === "malt" && fermentable.maxUsagePct != null
-        ? `До ${formatValue(fermentable.maxUsagePct)}%`
+        ? { label: `до ${formatValue(fermentable.maxUsagePct)} % засыпи` }
         : fermentable.type === "fermentable" && fermentable.recommendedMaxPct != null
-          ? `До ${formatValue(fermentable.recommendedMaxPct)}%`
+          ? { label: `До ${formatValue(fermentable.recommendedMaxPct)}%` }
           : null
-    ].filter((badge): badge is string => Boolean(badge));
+    ].filter((badge): badge is { label: string; accent?: InventoryBadgeAccent | null } => Boolean(badge));
   }
 
   if (technicalData.type === "yeast") {
     const yeast = technicalData as Extract<NonNullable<typeof technicalData>, { type: "yeast" }>;
     return [
-      yeast.form ? yeast.form.replaceAll("_", " ") : null,
-      yeast.attenuationPctTypical != null ? `Атт. ${formatValue(yeast.attenuationPctTypical)}%` : null,
+      yeast.form ? { label: yeast.form.replaceAll("_", " ") } : null,
+      yeast.attenuationPctTypical != null ? { label: `Атт. ${formatValue(yeast.attenuationPctTypical)}%` } : null,
       yeast.fermentationTempCMin != null && yeast.fermentationTempCMax != null
-        ? `${formatValue(yeast.fermentationTempCMin)}-${formatValue(yeast.fermentationTempCMax)}°C`
+        ? { label: `${formatValue(yeast.fermentationTempCMin)}-${formatValue(yeast.fermentationTempCMax)}°C` }
         : null
-    ].filter((badge): badge is string => Boolean(badge));
+    ].filter((badge): badge is { label: string; accent?: InventoryBadgeAccent | null } => Boolean(badge));
   }
 
   if (technicalData.type === "water_treatment") {
     const waterTreatment = technicalData as Extract<NonNullable<typeof technicalData>, { type: "water_treatment" }>;
+    const normalizedPreferredUnit = waterTreatment.unitPreferred?.trim().toLowerCase() ?? null;
+    const preferredUnit = normalizedPreferredUnit === "g" || normalizedPreferredUnit === "ml"
+      ? null
+      : waterTreatment.unitPreferred;
+
     return [
-      waterTreatment.unitPreferred ?? null,
-      waterTreatment.waterCalcRole?.[0]?.replaceAll("_", " ") ?? null
-    ].filter((badge): badge is string => Boolean(badge));
+      preferredUnit ? { label: preferredUnit } : null
+    ].filter((badge): badge is { label: string; accent?: InventoryBadgeAccent | null } => Boolean(badge));
   }
 
   if (technicalData.type === "consumable") {
     const consumable = technicalData as Extract<NonNullable<typeof technicalData>, { type: "consumable" }>;
     return [
-      consumable.commonForms?.[0]?.replaceAll("_", " ") ?? null,
-      consumable.usageStage?.[0]?.replaceAll("_", " ") ?? null
-    ].filter((badge): badge is string => Boolean(badge));
+      consumable.commonForms?.[0] ? { label: consumable.commonForms[0].replaceAll("_", " ") } : null,
+      consumable.usageStage?.[0] ? { label: consumable.usageStage[0].replaceAll("_", " ") } : null
+    ].filter((badge): badge is { label: string; accent?: InventoryBadgeAccent | null } => Boolean(badge));
   }
 
   return [];
@@ -135,8 +177,8 @@ const buildTechnicalBadges = (item: InventoryListItemDto) => {
   const badges: InventoryBadge[] = [];
   const seen = new Set<string>();
 
-  const pushTextBadge = (label?: string | null) => {
-    const trimmed = label?.trim();
+  const pushBadge = (badge?: { label?: string | null; accent?: InventoryBadgeAccent | null } | null) => {
+    const trimmed = badge?.label?.trim();
     if (!trimmed) {
       return;
     }
@@ -149,20 +191,64 @@ const buildTechnicalBadges = (item: InventoryListItemDto) => {
     seen.add(key);
     badges.push({
       key: `text:${key}`,
-      label: trimmed
+      label: trimmed,
+      accent: badge?.accent
     });
   };
 
   for (const badge of buildTypedBadges(item)) {
-    pushTextBadge(badge);
+    pushBadge(badge);
   }
 
-  if (item.source.summary && badges.length < 3) {
-    pushTextBadge(item.source.summary);
+  const allowSummaryFallback = item.source.category !== "water_treatment";
+
+  if (allowSummaryFallback && item.source.summary && badges.length === 0) {
+    pushBadge({ label: item.source.summary });
   }
 
   return badges.slice(0, 5);
 };
+
+const chemicalFormulaSubscriptPattern = /[A-Za-zА-Яа-я)\]]/;
+
+const renderChemicalFormula = (formula: string) => {
+  const symbols = [...formula];
+  const parts: React.ReactNode[] = [];
+  let index = 0;
+
+  while (index < symbols.length) {
+    const symbol = symbols[index];
+    const previous = index > 0 ? symbols[index - 1] : null;
+
+    if (/\d/.test(symbol) && previous && chemicalFormulaSubscriptPattern.test(previous)) {
+      const start = index;
+      while (index < symbols.length && /\d/.test(symbols[index])) {
+        index += 1;
+      }
+
+      parts.push(
+        <sub key={`${formula}-sub-${start}`} className="text-[0.8em] leading-none">
+          {symbols.slice(start, index).join("")}
+        </sub>
+      );
+      continue;
+    }
+
+    parts.push(<React.Fragment key={`${formula}-char-${index}`}>{symbol}</React.Fragment>);
+    index += 1;
+  }
+
+  return parts;
+};
+
+const FormulaLabel = ({ formula }: { formula: string }) => (
+  <span
+    aria-label={`Формула: ${formula}`}
+    className="whitespace-nowrap text-[15px] font-medium leading-none tracking-tight text-zinc-700"
+  >
+    {renderChemicalFormula(formula)}
+  </span>
+);
 
 const isFreshnessCritical = (freshnessDate: Date | null) => {
   if (!freshnessDate) return false;
@@ -178,11 +264,17 @@ const isExpired = (freshnessDate: Date | null) => {
 export function InventoryListItem({ item, preferredCurrency, currencyRates }: Props) {
   const badges = buildTechnicalBadges(item);
   const { primaryName, secondaryName } = resolveIngredientDisplayNames(item.source);
+  const waterTreatmentTechnicalData = item.source.technicalData?.type === "water_treatment"
+    ? item.source.technicalData as Extract<NonNullable<typeof item.source.technicalData>, { type: "water_treatment" }>
+    : null;
+  const titleFormula = waterTreatmentTechnicalData?.formula?.trim() ?? null;
   const brandLabel = resolveIngredientBrandLabel(item.source);
-  const country = resolveIngredientCountry(item.source);
   const showInlineBrand = Boolean(
-    brandLabel && (item.source.subtype === "malt" || item.source.category === "fermentable")
+    brandLabel && (item.source.subtype === "malt" || item.source.category === "fermentable" || item.source.category === "yeast")
   );
+  const country = resolveIngredientCountry(item.source);
+  const showCountryInlineWithTitle = country && item.source.category !== "hop";
+  const showCountryOnBrandLine = country && item.source.category === "hop" && !showInlineBrand;
   const costSummary = buildInventoryCostDisplay({
     enteredQuantity: item.enteredQuantity,
     enteredUnit: item.enteredUnit,
@@ -262,7 +354,8 @@ export function InventoryListItem({ item, preferredCurrency, currencyRates }: Pr
         <div className="min-w-0 flex-1 space-y-1.5">
           <div className="flex flex-wrap items-center gap-2">
             <div className="min-w-0">
-              <div className="flex flex-wrap items-center gap-2">
+              <div className="flex flex-wrap items-baseline gap-x-2 gap-y-1">
+                {titleFormula ? <FormulaLabel formula={titleFormula} /> : null}
                 <h3 className="text-base font-semibold text-zinc-950">
                   <Link href={detailHref} className="underline-offset-4 hover:underline">
                     {primaryName}
@@ -274,7 +367,7 @@ export function InventoryListItem({ item, preferredCurrency, currencyRates }: Pr
                     <span className="truncate">{brandLabel}</span>
                   </span>
                 ) : null}
-                {country ? (
+                {showCountryInlineWithTitle ? (
                   <CountryFlag
                     countryCode={country.code}
                     className="h-3.5 w-[1.15rem]"
@@ -285,6 +378,12 @@ export function InventoryListItem({ item, preferredCurrency, currencyRates }: Pr
               {!showInlineBrand && brandLabel ? (
                 <div className="flex flex-wrap items-center gap-x-1.5 gap-y-0.5 text-xs text-zinc-500">
                   <span className="font-medium text-zinc-700">{brandLabel}</span>
+                  {showCountryOnBrandLine ? (
+                    <CountryFlag
+                      countryCode={country.code}
+                      className="h-3.5 w-[1.15rem]"
+                    />
+                  ) : null}
                 </div>
               ) : null}
             </div>
@@ -302,8 +401,23 @@ export function InventoryListItem({ item, preferredCurrency, currencyRates }: Pr
           {badges.length > 0 ? (
             <div className="flex flex-wrap gap-1.5">
               {badges.map((badge) => (
-                <span key={badge.key} className="inline-flex items-center rounded-md bg-zinc-50 px-2 py-0.5 text-xs text-zinc-600 ring-1 ring-zinc-200/60">
+                <span
+                  key={badge.key}
+                  className={`relative inline-flex items-center rounded-md px-2 py-0.5 text-xs text-zinc-600 ring-1 ring-zinc-200/60 ${badge.accent
+                    ? "overflow-hidden bg-[linear-gradient(180deg,rgba(250,250,250,0.98),rgba(244,244,245,0.92))]"
+                    : "bg-zinc-50"
+                  }`}
+                >
                   {badge.label}
+                  {badge.accent ? (
+                    <span
+                      aria-hidden="true"
+                      className="absolute inset-y-0 left-0 w-[4px]"
+                      style={{
+                        backgroundImage: `linear-gradient(180deg, ${badge.accent.startHex} 0%, ${badge.accent.averageHex} 52%, ${badge.accent.endHex} 100%)`
+                      }}
+                    />
+                  ) : null}
                 </span>
               ))}
             </div>
