@@ -20,6 +20,8 @@ import {
   updateInventoryItem,
   updateInventoryQuantity
 } from "@/features/inventory/service";
+import { normalizeIngredientPurchaseLinkInputs } from "@/features/ingredients/purchase-links";
+import { replaceIngredientPurchaseLinksForReference } from "@/features/ingredients/user-metadata-service";
 import { parseMoneyInputToMinor } from "@/features/system/money";
 import { requireUser } from "@/lib/auth";
 
@@ -38,6 +40,10 @@ const parseOptionalDate = (value: string | null) => {
 };
 
 const parseOptionalMoney = (value: FormDataEntryValue | null) => parseMoneyInputToMinor(value);
+const parseBooleanFlag = (value: FormDataEntryValue | null) => String(value ?? "").trim() === "true";
+const parsePurchaseLinksFromFormData = (formData: FormData) => normalizeIngredientPurchaseLinkInputs(
+  formData.getAll("purchaseLinks").map((value) => String(value ?? ""))
+);
 
 const mapError = (error: unknown): AddIngredientResult => {
   if (error instanceof ZodError) {
@@ -78,6 +84,9 @@ const mapError = (error: unknown): AddIngredientResult => {
     if (error.message === "DERIVED_CUSTOM_NAME_CONFLICT") {
       return { ok: false, message: "Не удалось создать пользовательскую версию ингредиента. Попробуйте еще раз." };
     }
+    if (error.message === "INVALID_PURCHASE_LINK_URL") {
+      return { ok: false, message: "Проверьте ссылки на покупку: одна из ссылок заполнена некорректно." };
+    }
     return { ok: false, message: "Не удалось сохранить ингредиент. Попробуйте еще раз." };
   }
 
@@ -88,6 +97,8 @@ export const addCatalogIngredientAction = async (_prevState: AddIngredientResult
   try {
     const user = await requireUser();
     const preferredCurrency = user.preferredCurrency ?? "RUB";
+    const purchaseLinksTouched = parseBooleanFlag(formData.get("purchaseLinksTouched"));
+    const purchaseLinks = purchaseLinksTouched ? parsePurchaseLinksFromFormData(formData) : [];
     const priceInputAmountMinor = parseOptionalMoney(
       formData.get("priceInputAmount")
       ?? formData.get("purchasePrice")
@@ -108,6 +119,12 @@ export const addCatalogIngredientAction = async (_prevState: AddIngredientResult
     });
 
     await addCatalogIngredientToInventory(user.id, payload, { preferredCurrency });
+    if (purchaseLinksTouched) {
+      await replaceIngredientPurchaseLinksForReference(user.id, {
+        source: "catalog",
+        id: payload.ingredientCatalogItemId
+      }, purchaseLinks);
+    }
 
     revalidatePath("/app/ingredients");
     revalidatePath("/app/catalog");
@@ -133,6 +150,8 @@ export const addSelectedIngredientAction = async (_prevState: AddIngredientResul
     try {
       const user = await requireUser();
       const preferredCurrency = user.preferredCurrency ?? "RUB";
+      const purchaseLinksTouched = parseBooleanFlag(formData.get("purchaseLinksTouched"));
+      const purchaseLinks = purchaseLinksTouched ? parsePurchaseLinksFromFormData(formData) : [];
       const priceInputAmountMinor = parseOptionalMoney(
         formData.get("priceInputAmount")
         ?? formData.get("purchasePrice")
@@ -154,6 +173,12 @@ export const addSelectedIngredientAction = async (_prevState: AddIngredientResul
       });
 
       await addCustomIngredientToInventory(user.id, payload, { preferredCurrency });
+      if (purchaseLinksTouched) {
+        await replaceIngredientPurchaseLinksForReference(user.id, {
+          source: "custom",
+          id: userCustomIngredientId
+        }, purchaseLinks);
+      }
       revalidatePath("/app/ingredients");
       revalidatePath("/app/catalog");
       return { ok: true, message: "Ингредиент добавлен в запасы." };
@@ -170,6 +195,8 @@ export const addSelectedIngredientAction = async (_prevState: AddIngredientResul
     try {
       const user = await requireUser();
       const preferredCurrency = user.preferredCurrency ?? "RUB";
+      const purchaseLinksTouched = parseBooleanFlag(formData.get("purchaseLinksTouched"));
+      const purchaseLinks = purchaseLinksTouched ? parsePurchaseLinksFromFormData(formData) : [];
       const priceInputAmountMinor = parseOptionalMoney(
         formData.get("priceInputAmount")
         ?? formData.get("purchasePrice")
@@ -202,6 +229,12 @@ export const addSelectedIngredientAction = async (_prevState: AddIngredientResul
       });
 
       await addCustomIngredientToInventory(user.id, payload, { preferredCurrency });
+      if (purchaseLinksTouched) {
+        await replaceIngredientPurchaseLinksForReference(user.id, {
+          source: "custom",
+          id: source.userCustomIngredientId
+        }, purchaseLinks);
+      }
       revalidatePath("/app/ingredients");
       revalidatePath("/app/catalog");
       return { ok: true, message: "Свой вариант ингредиента добавлен в запасы." };
@@ -220,6 +253,8 @@ export const addCustomIngredientAction = async (_prevState: AddIngredientResult 
   try {
     const user = await requireUser();
     const preferredCurrency = user.preferredCurrency ?? "RUB";
+    const purchaseLinksTouched = parseBooleanFlag(formData.get("purchaseLinksTouched"));
+    const purchaseLinks = purchaseLinksTouched ? parsePurchaseLinksFromFormData(formData) : [];
     const priceInputAmountMinor = parseOptionalMoney(
       formData.get("priceInputAmount")
       ?? formData.get("purchasePrice")
@@ -258,6 +293,12 @@ export const addCustomIngredientAction = async (_prevState: AddIngredientResult 
     });
 
     await addCustomIngredientToInventory(user.id, inventoryPayload, { preferredCurrency });
+    if (purchaseLinksTouched) {
+      await replaceIngredientPurchaseLinksForReference(user.id, {
+        source: "custom",
+        id: customIngredient.id
+      }, purchaseLinks);
+    }
 
     revalidatePath("/app/ingredients");
     revalidatePath("/app/catalog");
@@ -282,6 +323,8 @@ export const updateInventoryItemAction = async (payload: {
   purchasedAt?: string | null;
   freshnessDate?: string | null;
   notes?: string | null;
+  purchaseLinks?: string[];
+  purchaseLinksTouched?: boolean;
 }): Promise<AddIngredientResult> => {
   try {
     const user = await requireUser();
@@ -301,6 +344,24 @@ export const updateInventoryItemAction = async (payload: {
     });
 
     await updateInventoryItem(user.id, payload.inventoryItemId, parsed, { preferredCurrency });
+    if (payload.purchaseLinksTouched) {
+      const purchaseLinks = normalizeIngredientPurchaseLinkInputs(payload.purchaseLinks ?? []);
+      const reference = parsed.userCustomIngredientId
+        ? {
+          source: "custom" as const,
+          id: parsed.userCustomIngredientId
+        }
+        : parsed.ingredientCatalogItemId
+          ? {
+            source: "catalog" as const,
+            id: parsed.ingredientCatalogItemId
+          }
+          : null;
+
+      if (reference) {
+        await replaceIngredientPurchaseLinksForReference(user.id, reference, purchaseLinks);
+      }
+    }
     revalidatePath("/app/ingredients");
 
     return { ok: true, message: "Карточка ингредиента обновлена." };

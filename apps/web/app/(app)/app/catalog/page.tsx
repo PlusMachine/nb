@@ -1,7 +1,9 @@
+import React from "react";
 import Link from "next/link";
 import { Pencil } from "lucide-react";
 
 import { DeleteCustomCatalogIngredientButton } from "@/components/ingredients/delete-custom-catalog-ingredient-button";
+import { IngredientFavoriteToggle } from "@/components/ingredients/ingredient-favorite-toggle";
 import { IngredientCatalogToolbar } from "@/components/ingredients/ingredient-catalog-toolbar";
 import { CountryFlagLabel } from "@/components/shared/country-flag";
 import {
@@ -354,6 +356,14 @@ export default async function IngredientCatalogPage({ searchParams }: Props) {
                           </div>
                           {item.source === "custom" ? (
                             <div className="flex items-center gap-1">
+                              <IngredientFavoriteToggle
+                                reference={{
+                                  source: item.source,
+                                  id: item.id
+                                }}
+                                initialFavorite={item.isFavorite ?? false}
+                                label={item.isFavorite ? "Убрать из избранного" : "Добавить в избранное"}
+                              />
                               <Link
                                 href={`/app/catalog/custom/${item.id}/edit`}
                                 className="rounded-md p-1 text-zinc-400 transition-colors hover:bg-zinc-100 hover:text-zinc-700"
@@ -368,7 +378,16 @@ export default async function IngredientCatalogPage({ searchParams }: Props) {
                                 variant="icon"
                               />
                             </div>
-                          ) : null}
+                          ) : (
+                            <IngredientFavoriteToggle
+                              reference={{
+                                source: item.source,
+                                id: item.id
+                              }}
+                              initialFavorite={item.isFavorite ?? false}
+                              label={item.isFavorite ? "Убрать из избранного" : "Добавить в избранное"}
+                            />
+                          )}
                         </div>
                         <div className="flex flex-wrap gap-1.5">
                           {buildSecondaryMeta(item).map((badge) => (
@@ -440,6 +459,14 @@ export default async function IngredientCatalogPage({ searchParams }: Props) {
                   </div>
                   {item.source === "custom" ? (
                     <div className="flex items-center gap-1">
+                      <IngredientFavoriteToggle
+                        reference={{
+                          source: item.source,
+                          id: item.id
+                        }}
+                        initialFavorite={item.isFavorite ?? false}
+                        label={item.isFavorite ? "Убрать из избранного" : "Добавить в избранное"}
+                      />
                       <Link
                         href={`/app/catalog/custom/${item.id}/edit`}
                         className="rounded-md p-1 text-zinc-400 transition-colors hover:bg-zinc-100 hover:text-zinc-700"
@@ -454,7 +481,16 @@ export default async function IngredientCatalogPage({ searchParams }: Props) {
                         variant="icon"
                       />
                     </div>
-                  ) : null}
+                  ) : (
+                    <IngredientFavoriteToggle
+                      reference={{
+                        source: item.source,
+                        id: item.id
+                      }}
+                      initialFavorite={item.isFavorite ?? false}
+                      label={item.isFavorite ? "Убрать из избранного" : "Добавить в избранное"}
+                    />
+                  )}
                 </div>
 
                 <Link href={buildDetailHref(item)} className="mt-3 block">

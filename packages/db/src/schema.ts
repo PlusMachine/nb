@@ -331,6 +331,46 @@ export const userCustomIngredients = pgTable("user_custom_ingredients", {
   userTypeNameIdx: uniqueIndex("user_custom_ingredients_user_type_name_uidx").on(table.userId, table.type, table.normalizedName)
 }));
 
+export const userIngredientPreferences = pgTable("user_ingredient_preferences", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  userId: uuid("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  ingredientCatalogItemId: text("ingredient_catalog_item_id").references(() => ingredients.id, { onDelete: "cascade" }),
+  userCustomIngredientId: uuid("user_custom_ingredient_id").references(() => userCustomIngredients.id, { onDelete: "cascade" }),
+  isFavorite: boolean("is_favorite").default(false).notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull()
+}, (table) => ({
+  userIdIdx: index("user_ingredient_preferences_user_id_idx").on(table.userId),
+  catalogItemIdx: uniqueIndex("user_ingredient_preferences_user_catalog_item_uidx").on(table.userId, table.ingredientCatalogItemId),
+  customItemIdx: uniqueIndex("user_ingredient_preferences_user_custom_item_uidx").on(table.userId, table.userCustomIngredientId),
+  sourceCheck: check(
+    "user_ingredient_preferences_source_linkage_chk",
+    sql`((ingredient_catalog_item_id is not null and user_custom_ingredient_id is null) or (ingredient_catalog_item_id is null and user_custom_ingredient_id is not null))`
+  )
+}));
+
+export const userIngredientPurchaseLinks = pgTable("user_ingredient_purchase_links", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  userId: uuid("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  ingredientCatalogItemId: text("ingredient_catalog_item_id").references(() => ingredients.id, { onDelete: "cascade" }),
+  userCustomIngredientId: uuid("user_custom_ingredient_id").references(() => userCustomIngredients.id, { onDelete: "cascade" }),
+  url: text("url").notNull(),
+  normalizedUrl: text("normalized_url").notNull(),
+  position: integer("position").default(0).notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull()
+}, (table) => ({
+  userIdIdx: index("user_ingredient_purchase_links_user_id_idx").on(table.userId),
+  catalogPositionIdx: index("user_ingredient_purchase_links_catalog_position_idx").on(table.userId, table.ingredientCatalogItemId, table.position),
+  customPositionIdx: index("user_ingredient_purchase_links_custom_position_idx").on(table.userId, table.userCustomIngredientId, table.position),
+  catalogUrlIdx: uniqueIndex("user_ingredient_purchase_links_user_catalog_url_uidx").on(table.userId, table.ingredientCatalogItemId, table.normalizedUrl),
+  customUrlIdx: uniqueIndex("user_ingredient_purchase_links_user_custom_url_uidx").on(table.userId, table.userCustomIngredientId, table.normalizedUrl),
+  sourceCheck: check(
+    "user_ingredient_purchase_links_source_linkage_chk",
+    sql`((ingredient_catalog_item_id is not null and user_custom_ingredient_id is null) or (ingredient_catalog_item_id is null and user_custom_ingredient_id is not null))`
+  )
+}));
+
 export const userIngredients = pgTable("user_ingredients", {
   id: uuid("id").defaultRandom().primaryKey(),
   userId: uuid("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
@@ -444,7 +484,9 @@ export const recipeIngredients = pgTable("recipe_ingredients", {
 export const usersRelations = relations(users, ({ many }) => ({
   sessions: many(sessions),
   accounts: many(accounts),
-  recipes: many(recipes)
+  recipes: many(recipes),
+  ingredientPreferences: many(userIngredientPreferences),
+  ingredientPurchaseLinks: many(userIngredientPurchaseLinks)
 }));
 
 export const ingredientFamiliesRelations = relations(ingredientFamilies, ({ many }) => ({
@@ -454,7 +496,9 @@ export const ingredientFamiliesRelations = relations(ingredientFamilies, ({ many
 export const ingredientsRelations = relations(ingredients, ({ many }) => ({
   aliases: many(ingredientAliases),
   sources: many(ingredientSources),
-  packageVariants: many(ingredientPackageVariants)
+  packageVariants: many(ingredientPackageVariants),
+  userPreferences: many(userIngredientPreferences),
+  userPurchaseLinks: many(userIngredientPurchaseLinks)
 }));
 
 export const ingredientAliasesRelations = relations(ingredientAliases, ({ one }) => ({
@@ -475,6 +519,41 @@ export const ingredientPackageVariantsRelations = relations(ingredientPackageVar
   ingredient: one(ingredients, {
     fields: [ingredientPackageVariants.ingredientId],
     references: [ingredients.id]
+  })
+}));
+
+export const userCustomIngredientsRelations = relations(userCustomIngredients, ({ many }) => ({
+  userPreferences: many(userIngredientPreferences),
+  userPurchaseLinks: many(userIngredientPurchaseLinks)
+}));
+
+export const userIngredientPreferencesRelations = relations(userIngredientPreferences, ({ one }) => ({
+  user: one(users, {
+    fields: [userIngredientPreferences.userId],
+    references: [users.id]
+  }),
+  catalogItem: one(ingredients, {
+    fields: [userIngredientPreferences.ingredientCatalogItemId],
+    references: [ingredients.id]
+  }),
+  customItem: one(userCustomIngredients, {
+    fields: [userIngredientPreferences.userCustomIngredientId],
+    references: [userCustomIngredients.id]
+  })
+}));
+
+export const userIngredientPurchaseLinksRelations = relations(userIngredientPurchaseLinks, ({ one }) => ({
+  user: one(users, {
+    fields: [userIngredientPurchaseLinks.userId],
+    references: [users.id]
+  }),
+  catalogItem: one(ingredients, {
+    fields: [userIngredientPurchaseLinks.ingredientCatalogItemId],
+    references: [ingredients.id]
+  }),
+  customItem: one(userCustomIngredients, {
+    fields: [userIngredientPurchaseLinks.userCustomIngredientId],
+    references: [userCustomIngredients.id]
   })
 }));
 

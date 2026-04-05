@@ -31,7 +31,7 @@ import {
 import { ingredientSearchSimpleModeThreshold } from "./contracts";
 import { sortRankedCatalogItems } from "./catalog-ranking";
 import { readCustomIngredientMetadata } from "./custom-metadata";
-import { buildQueryVariants, normalizeSearchText } from "./normalization";
+import { normalizeSearchText } from "./normalization";
 import {
   buildIngredientTypedSummary,
   resolveIngredientBrandLabel,
@@ -47,7 +47,11 @@ import {
   resolveIngredientSubtype,
   type IngredientSubtype
 } from "./taxonomy";
-import { scoreIngredientCandidate } from "./ranking";
+import { rankIngredientCandidate } from "./ranking";
+import {
+  applyFavoriteStateToCatalogItems,
+  listIngredientPurchaseLinksByReference
+} from "./user-metadata-service";
 import { resolveHumanFacingInventoryUnitProfile } from "../inventory/units";
 
 type CatalogSearchParams = {
@@ -72,6 +76,7 @@ type CatalogListParams = {
 
 type RankedCatalogItem = {
   item: UserCatalogIngredientDto;
+  tier: number;
   score: number;
 };
 
@@ -297,6 +302,7 @@ export const toIngredientSuggestionItem = (
   score,
   derivedFromIngredientId: item.derivedFromIngredientId,
   derivedFromDisplayName: item.derivedFromDisplayName,
+  isFavorite: item.isFavorite ?? false,
   source: item.source
 });
 
@@ -359,49 +365,64 @@ const buildManufacturerRefinements = (
     .slice(0, ingredientManufacturerRefinementLimit);
 };
 
-const buildRankedItem = (item: UserCatalogIngredientDto, query: string): RankedCatalogItem | null => {
-  const normalizedProductCode = normalizeSearchText(item.productCode ?? "");
-  const normalizedVariantNames = item.packageVariants.flatMap((variant) => [
-    normalizeSearchText([variant.brand, variant.productNameRu].filter(Boolean).join(" ")),
-    normalizeSearchText(variant.productNameRu ?? ""),
-    normalizeSearchText(variant.brand ?? "")
-  ]).filter(Boolean);
-  const variants = buildQueryVariants(query);
+const buildBrandMarketCountMap = (items: UserCatalogIngredientDto[]) => {
+  const counts = new Map<string, number>();
 
-  const candidateScore = scoreIngredientCandidate(variants, {
+  for (const item of items) {
+    const normalizedBrand = normalizeSearchText(resolveManufacturerLabel(item) ?? "");
+    if (!normalizedBrand) {
+      continue;
+    }
+
+    counts.set(normalizedBrand, (counts.get(normalizedBrand) ?? 0) + 1);
+  }
+
+  return counts;
+};
+
+const buildRankedItem = (
+  item: UserCatalogIngredientDto,
+  query: string,
+  brandMarketCounts?: Map<string, number>
+): RankedCatalogItem | null => {
+  const normalizedBrand = normalizeSearchText(resolveManufacturerLabel(item) ?? "");
+  const rank = rankIngredientCandidate(query, {
     displayName: item.displayName,
     displayNameRu: item.nameRu ?? item.displayNameRu,
     displayNameEn: item.nameEn ?? item.displayNameEn,
-    aliases: item.aliases.map((alias) => alias.alias),
-    searchAliasesNorm: item.aliases.map((alias) => alias.aliasNormalized),
+    nameRu: item.nameRu,
+    nameEn: item.nameEn,
+    aliases: item.aliases.map((alias) => ({
+      alias: alias.alias,
+      aliasNormalized: alias.aliasNormalized,
+      isEnabled: alias.isEnabled
+    })),
     searchTextNorm: buildSearchText(item),
     brandName: item.brand ?? item.brandName,
-    manufacturer: item.producer ?? item.manufacturer
+    manufacturer: item.producer ?? item.manufacturer,
+    productCode: item.productCode,
+    isFavorite: item.isFavorite,
+    source: item.source,
+    inventoryUsageCount: item.inventoryUsageCount,
+    recipeUsageCount: item.recipeUsageCount,
+    brandMarketCount: normalizedBrand ? brandMarketCounts?.get(normalizedBrand) ?? 0 : 0,
+    sourcesCount: item.sources.length,
+    packageVariantsCount: item.packageVariants.length,
+    packageVariants: item.packageVariants.map((variant) => ({
+      id: variant.id,
+      brand: variant.brand,
+      productNameRu: variant.productNameRu
+    }))
   });
 
-  let score = candidateScore;
-
-  for (const variant of variants) {
-    if (normalizedProductCode && normalizedProductCode === variant) {
-      score = Math.max(score, 102);
-    } else if (normalizedProductCode && normalizedProductCode.startsWith(variant)) {
-      score = Math.max(score, 84);
-    }
-
-    if (normalizedVariantNames.some((entry) => entry === variant)) {
-      score = Math.max(score, 90);
-    } else if (normalizedVariantNames.some((entry) => entry.startsWith(variant))) {
-      score = Math.max(score, 74);
-    }
-  }
-
-  if (score <= 0) {
+  if (!rank || rank.score <= 0) {
     return null;
   }
 
   return {
     item,
-    score
+    tier: rank.tier,
+    score: rank.score
   };
 };
 
@@ -524,10 +545,15 @@ const loadUnifiedCatalogItems = async (
     !params?.type || item.type === params.type
   ));
 
+  const allItems = await applyFavoriteStateToCatalogItems(userId, [
+    ...filteredCustomItems,
+    ...mappedCatalogItems
+  ]);
+
   return {
-    catalogItems: mappedCatalogItems,
-    customItems: filteredCustomItems,
-    allItems: [...filteredCustomItems, ...mappedCatalogItems]
+    catalogItems: allItems.filter((item) => item.source === "catalog"),
+    customItems: allItems.filter((item) => item.source === "custom"),
+    allItems
   };
 };
 
@@ -553,8 +579,9 @@ export const searchUserCatalogIngredients = async (
     : categoryFilteredAllItems;
   const searchableItems = params.includeCustom === false ? subtypeFilteredCatalogItems : subtypeFilteredAllItems;
   const manufacturerScopedItems = filterItemsByManufacturer(searchableItems, query.manufacturer);
+  const brandMarketCounts = buildBrandMarketCountMap(manufacturerScopedItems);
   const rankedItems = manufacturerScopedItems
-    .map((item) => buildRankedItem(item, query.q))
+    .map((item) => buildRankedItem(item, query.q, brandMarketCounts))
     .filter((item): item is RankedCatalogItem => item !== null)
     .sort(sortRankedCatalogItems);
   const refinements = buildManufacturerRefinements(rankedItems, query.manufacturer);
@@ -611,11 +638,15 @@ export const listUserCatalogIngredients = async (
 
   const rankItems = (items: UserCatalogIngredientDto[]) => (
     params.q?.trim()
-      ? items
-        .map((item) => buildRankedItem(item, params.q ?? ""))
-        .filter((item): item is RankedCatalogItem => item !== null)
-        .sort(sortRankedCatalogItems)
-        .map(({ item }) => item)
+      ? (() => {
+        const brandMarketCounts = buildBrandMarketCountMap(items);
+
+        return items
+          .map((item) => buildRankedItem(item, params.q ?? "", brandMarketCounts))
+          .filter((item): item is RankedCatalogItem => item !== null)
+          .sort(sortRankedCatalogItems)
+          .map(({ item }) => item);
+      })()
       : sortCatalogItems(items, sort)
   );
 
@@ -691,15 +722,30 @@ export const getUserCatalogIngredientByRef = async (
     return null;
   }
 
-  if (hydrated.source === "custom" && hydrated.derivedFromIngredientId && !hydrated.derivedFromDisplayName) {
-    const baseItem = await getIngredientById(hydrated.derivedFromIngredientId);
+  const [favorited] = await applyFavoriteStateToCatalogItems(userId, [hydrated]);
+  if (!favorited) {
+    return null;
+  }
+
+  let result = favorited;
+
+  if (result.source === "custom" && result.derivedFromIngredientId && !result.derivedFromDisplayName) {
+    const baseItem = await getIngredientById(result.derivedFromIngredientId);
     if (baseItem) {
-      return {
-        ...hydrated,
+      result = {
+        ...result,
         derivedFromDisplayName: baseItem.primaryLabelRu
       };
     }
   }
 
-  return hydrated;
+  const purchaseLinks = await listIngredientPurchaseLinksByReference(userId, {
+    source: result.source,
+    id: result.id
+  });
+
+  return {
+    ...result,
+    purchaseLinks
+  };
 };

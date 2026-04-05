@@ -61,6 +61,10 @@ vi.mock("../features/system/currency-rates", () => ({
   )
 }));
 
+vi.mock("../features/ingredients/user-metadata-service", () => ({
+  listIngredientPurchaseLinkSummaries: async () => new Map()
+}));
+
 vi.mock("@nb/db", () => {
   const db = {
     query: {
@@ -341,6 +345,50 @@ describe("inventory service", () => {
     expect(resolved).toEqual({
       sourceKind: "catalog",
       ingredientCatalogItemId: "cat-hop-2"
+    });
+    expect(mockState.inserted).toHaveLength(0);
+  });
+
+  it("keeps the original catalog source when UI-rounded fermentable values match the catalog", async () => {
+    mockState.catalogFindFirst.mockResolvedValueOnce({
+      id: "cat-malt-2",
+      isActive: true,
+      type: "malt",
+      itemKind: "malt",
+      nameRu: "Пилснер Премиум",
+      nameEn: "Pilsner Premium",
+      displayModeRu: "localized_first",
+      displayNameOverrideRu: null,
+      secondaryNameOverrideRu: null,
+      hideSecondaryNameRu: false,
+      countryCode: "RU",
+      countryName: "Россия",
+      brand: "Курский солод",
+      producer: "Курский солод",
+      productCode: null,
+      groupName: null,
+      category: null,
+      subcategory: null,
+      presentOnBirrf: true,
+      inventoryEnabled: true,
+      attributes: {
+        extract_pct_dry_basis: 83,
+        color_ebc_min: 3.7065,
+        color_ebc_max: 3.7065,
+        malt_type: "base"
+      },
+      quantityDefaults: null
+    });
+
+    const resolved = await resolveCatalogInventoryAdditionSource("u1", {
+      ingredientCatalogItemId: "cat-malt-2",
+      fermentableColorEbc: 3.71,
+      fermentableExtractYieldPct: 83
+    });
+
+    expect(resolved).toEqual({
+      sourceKind: "catalog",
+      ingredientCatalogItemId: "cat-malt-2"
     });
     expect(mockState.inserted).toHaveLength(0);
   });

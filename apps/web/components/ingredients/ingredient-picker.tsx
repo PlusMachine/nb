@@ -3,6 +3,7 @@
 import React from "react";
 import { useEffect, useId, useMemo, useRef, useState } from "react";
 
+import { IngredientFavoriteToggle } from "@/components/ingredients/ingredient-favorite-toggle";
 import { CountryFlag, CountryFlagLabel } from "@/components/shared/country-flag";
 import type {
   IngredientCategory,
@@ -914,47 +915,62 @@ export const IngredientPicker = ({
                 const ownershipBadgeLabel = resolveIngredientOwnershipBadgeLabel(item);
 
                 return (
-                  <button
+                  <div
                     key={`${item.source}:${item.id}`}
                     role="option"
                     aria-selected={index === activeIndex}
-                    className={`block w-full px-3 py-2 text-left text-sm hover:bg-zinc-100 ${index === activeIndex ? "bg-zinc-100" : ""}`}
+                    className={`px-3 py-2 text-sm hover:bg-zinc-100 ${index === activeIndex ? "bg-zinc-100" : ""}`}
                     onPointerDown={(event) => event.preventDefault()}
-                    onClick={() => commitSelection(item)}
-                    type="button"
                   >
-                    <div className="min-w-0">
-                      <div className="flex min-w-0 items-center gap-2">
-                        <span className="truncate font-medium text-zinc-950">{primaryName}</span>
-                        {ownershipBadgeLabel ? (
-                          <span className="shrink-0 rounded-full bg-amber-50 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.12em] text-amber-700 ring-1 ring-amber-200">
-                            {ownershipBadgeLabel}
-                          </span>
-                        ) : null}
-                        {inlineBrand ? (
-                          <span className="inline-flex min-w-0 items-baseline gap-2 text-sm font-semibold text-zinc-700">
-                            <span aria-hidden="true" className="text-zinc-400">•</span>
-                            <span className="truncate">{inlineBrand}</span>
-                          </span>
-                        ) : null}
-                      </div>
-                      {secondaryName ? <div className="text-xs text-zinc-500">{secondaryName}</div> : null}
-                      {country || subtitle ? (
-                        <div className="flex flex-wrap items-center gap-x-1.5 gap-y-0.5 text-xs text-zinc-500">
-                          {country ? (
-                            <CountryFlagLabel
-                              countryCode={country.code}
-                              label={country.label}
-                              iconClassName="h-3 w-4"
-                              className="gap-1"
-                            />
+                    <div className="flex items-start gap-2">
+                      <button
+                        type="button"
+                        onClick={() => commitSelection(item)}
+                        className="min-w-0 flex-1 text-left"
+                      >
+                        <div className="min-w-0">
+                          <div className="flex min-w-0 items-center gap-2">
+                            <span className="truncate font-medium text-zinc-950">{primaryName}</span>
+                            {ownershipBadgeLabel ? (
+                              <span className="shrink-0 rounded-full bg-amber-50 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.12em] text-amber-700 ring-1 ring-amber-200">
+                                {ownershipBadgeLabel}
+                              </span>
+                            ) : null}
+                            {inlineBrand ? (
+                              <span className="inline-flex min-w-0 items-baseline gap-2 text-sm font-semibold text-zinc-700">
+                                <span aria-hidden="true" className="text-zinc-400">•</span>
+                                <span className="truncate">{inlineBrand}</span>
+                              </span>
+                            ) : null}
+                          </div>
+                          {secondaryName ? <div className="text-xs text-zinc-500">{secondaryName}</div> : null}
+                          {country || subtitle ? (
+                            <div className="flex flex-wrap items-center gap-x-1.5 gap-y-0.5 text-xs text-zinc-500">
+                              {country ? (
+                                <CountryFlagLabel
+                                  countryCode={country.code}
+                                  label={country.label}
+                                  iconClassName="h-3 w-4"
+                                  className="gap-1"
+                                />
+                              ) : null}
+                              {country && subtitle ? <span aria-hidden="true">•</span> : null}
+                              {subtitle ? <span>{subtitle}</span> : null}
+                            </div>
                           ) : null}
-                          {country && subtitle ? <span aria-hidden="true">•</span> : null}
-                          {subtitle ? <span>{subtitle}</span> : null}
                         </div>
-                      ) : null}
+                      </button>
+                      <IngredientFavoriteToggle
+                        reference={{
+                          source: item.source,
+                          id: item.id
+                        }}
+                        initialFavorite={item.isFavorite ?? false}
+                        suppressParentInteraction
+                        label={item.isFavorite ? "Убрать из избранного" : "Добавить в избранное"}
+                      />
                     </div>
-                  </button>
+                  </div>
                 );
               })}
             </div>

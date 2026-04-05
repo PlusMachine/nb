@@ -113,8 +113,7 @@ describe("ingredient search service", () => {
 
     expect(items[0]).toMatchObject({
       id: "malt-pilsner",
-      displayName: "Пилснер солод",
-      matchedAlias: "Пильзнер"
+      displayName: "Пилснер солод"
     });
   });
 
@@ -181,7 +180,7 @@ describe("ingredient search service", () => {
     expect(items[0]).toMatchObject({
       id: "kursk-pilsner",
       displayName: "Пилснер",
-      matchType: "token"
+      matchType: "brand"
     });
   });
 });

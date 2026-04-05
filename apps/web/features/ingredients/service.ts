@@ -29,12 +29,13 @@ import {
   type IngredientSuggestionItem,
   type IngredientType
 } from "./contracts";
-import { buildQueryVariants, normalizeSearchText } from "./normalization";
+import { normalizeSearchText } from "./normalization";
 import {
   buildIngredientTypedSummary,
   resolveIngredientDisplayNames,
   resolveIngredientPrimaryDisplayName
 } from "./presentation";
+import { rankIngredientCandidate } from "./ranking";
 import { extractIngredientTechnicalData, extractIngredientTechnicalFields } from "./technical-fields";
 import {
   resolveIngredientCategory,
@@ -369,154 +370,44 @@ const rankCatalogItems = (
   return typeof limit === "number" ? ranked.slice(0, limit) : ranked;
 };
 
-const fieldContainsToken = (fields: string[], token: string) => fields.some((field) => field.includes(token));
-
-const hasDistributedTokenMatch = ({
-  tokens,
-  primaryFields,
-  secondaryFields
-}: {
-  tokens: string[];
-  primaryFields: string[];
-  secondaryFields: string[];
-}) => {
-  if (tokens.length < 2 || primaryFields.length === 0 || secondaryFields.length === 0) {
-    return false;
-  }
-
-  const allFields = [...primaryFields, ...secondaryFields];
-
-  return tokens.every((token) => fieldContainsToken(allFields, token))
-    && tokens.some((token) => fieldContainsToken(primaryFields, token))
-    && tokens.some((token) => fieldContainsToken(secondaryFields, token));
-};
-
 const scoreCandidate = (item: IngredientCatalogItemDto, query: string): MatchResult | null => {
-  const variants = buildQueryVariants(query);
-  if (!variants.length) {
+  const rank = rankIngredientCandidate(query, {
+    displayName: item.primaryLabelRu,
+    displayNameRu: item.nameRu,
+    displayNameEn: item.nameEn,
+    nameRu: item.nameRu,
+    nameEn: item.nameEn,
+    aliases: item.aliases
+      .filter((alias) => alias.isEnabled)
+      .map((alias) => ({
+        alias: alias.alias,
+        aliasNormalized: alias.aliasNormalized,
+        isEnabled: alias.isEnabled
+      })),
+    brandName: item.brand,
+    manufacturer: item.producer,
+    productCode: item.productCode,
+    source: "catalog",
+    sourcesCount: item.sources.length,
+    packageVariantsCount: item.packageVariants.length,
+    packageVariants: item.packageVariants.map((variant) => ({
+      id: variant.id,
+      brand: variant.brand,
+      productNameRu: variant.productNameRu
+    }))
+  });
+
+  if (!rank) {
     return null;
   }
 
-  const names = [
-    { kind: "name_ru" as const, value: item.nameRu },
-    { kind: "name_en" as const, value: item.nameEn }
-  ].filter((entry): entry is { kind: "name_ru" | "name_en"; value: string } => typeof entry.value === "string" && entry.value.trim().length > 0)
-    .map((entry) => ({ ...entry, normalized: normalizeSearchText(entry.value) }));
-
-  const aliases = item.aliases
-    .filter((alias) => alias.isEnabled)
-    .map((alias) => ({ alias: alias.alias, normalized: alias.aliasNormalized }));
-
-  const packageVariants = item.packageVariants.map((variant) => ({
-    id: variant.id,
-    name: collapseWhitespace([variant.brand, variant.productNameRu].filter(Boolean).join(" ")).trim(),
-    normalizedName: normalizeSearchText([variant.brand, variant.productNameRu].filter(Boolean).join(" ")),
-    productName: variant.productNameRu ? normalizeSearchText(variant.productNameRu) : "",
-    brand: variant.brand ? normalizeSearchText(variant.brand) : ""
-  }));
-
-  const brand = item.brand ? normalizeSearchText(item.brand) : "";
-  const producer = item.producer ? normalizeSearchText(item.producer) : "";
-  const productCode = item.productCode ? normalizeSearchText(item.productCode) : "";
-
-  let best: MatchResult | null = null;
-
-  const assign = (candidate: MatchResult) => {
-    if (!best || candidate.score > best.score) {
-      best = candidate;
-    }
+  return {
+    score: rank.score,
+    matchType: rank.matchType,
+    matchedAlias: rank.matchedAlias,
+    matchedPackageVariantId: rank.matchedPackageVariantId,
+    matchedPackageVariantName: rank.matchedPackageVariantName
   };
-
-  variants.forEach((variant, variantIndex) => {
-    const penalty = variantIndex * 3;
-    const tokens = variant.split(" ").filter(Boolean);
-    const primaryFields = [
-      ...names.map((name) => name.normalized),
-      ...aliases.map((alias) => alias.normalized),
-      productCode,
-      ...packageVariants.map((variantItem) => variantItem.productName).filter(Boolean)
-    ].filter(Boolean);
-    const secondaryFields = [
-      brand,
-      producer,
-      ...packageVariants.map((variantItem) => variantItem.brand).filter(Boolean)
-    ].filter(Boolean);
-
-    names.forEach((name) => {
-      if (name.kind === "name_ru" && name.normalized === variant) {
-        assign({ score: 1000 - penalty, matchType: "name" });
-      } else if (name.kind === "name_en" && name.normalized === variant) {
-        assign({ score: 990 - penalty, matchType: "name" });
-      } else if (name.kind === "name_ru" && name.normalized.startsWith(variant)) {
-        assign({ score: 960 - penalty, matchType: "name" });
-      } else if (name.kind === "name_en" && name.normalized.startsWith(variant)) {
-        assign({ score: 950 - penalty, matchType: "name" });
-      } else if (tokens.length > 1 && tokens.every((token) => name.normalized.includes(token))) {
-        assign({ score: 800 - penalty, matchType: "token" });
-      }
-    });
-
-    aliases.forEach((alias) => {
-      if (alias.normalized === variant) {
-        assign({ score: 980 - penalty, matchType: "alias", matchedAlias: alias.alias });
-      } else if (alias.normalized.startsWith(variant)) {
-        assign({ score: 940 - penalty, matchType: "alias", matchedAlias: alias.alias });
-      } else if (tokens.length > 1 && tokens.every((token) => alias.normalized.includes(token))) {
-        assign({ score: 790 - penalty, matchType: "alias", matchedAlias: alias.alias });
-      }
-    });
-
-    if (productCode) {
-      if (productCode === variant) {
-        assign({ score: 970 - penalty, matchType: "code" });
-      } else if (productCode.startsWith(variant)) {
-        assign({ score: 945 - penalty, matchType: "code" });
-      }
-    }
-
-    packageVariants.forEach((variantItem) => {
-      if (variantItem.productName === variant || variantItem.normalizedName === variant || variantItem.brand === variant) {
-        assign({
-          score: 930 - penalty,
-          matchType: "package",
-          matchedPackageVariantId: variantItem.id,
-          matchedPackageVariantName: variantItem.name
-        });
-      } else if (
-        variantItem.productName.startsWith(variant)
-        || variantItem.normalizedName.startsWith(variant)
-        || variantItem.brand.startsWith(variant)
-      ) {
-        assign({
-          score: 925 - penalty,
-          matchType: "package",
-          matchedPackageVariantId: variantItem.id,
-          matchedPackageVariantName: variantItem.name
-        });
-      } else if (tokens.length > 1 && tokens.every((token) => variantItem.normalizedName.includes(token))) {
-        assign({
-          score: 810 - penalty,
-          matchType: "package",
-          matchedPackageVariantId: variantItem.id,
-          matchedPackageVariantName: variantItem.name
-        });
-      }
-    });
-
-    if (brand === variant || producer === variant) {
-      assign({ score: 920 - penalty, matchType: "brand" });
-    } else if ((brand && brand.startsWith(variant)) || (producer && producer.startsWith(variant))) {
-      assign({ score: 910 - penalty, matchType: "brand" });
-    } else if (tokens.length > 1 && tokens.every((token) => brand.includes(token) || producer.includes(token))) {
-      assign({ score: 780 - penalty, matchType: "brand" });
-    }
-
-    if (hasDistributedTokenMatch({ tokens, primaryFields, secondaryFields })) {
-      assign({ score: 835 - penalty, matchType: "token" });
-    }
-  });
-
-  return best;
 };
 
 const toStatusFacets = (items: IngredientCatalogItemDto[]) => {

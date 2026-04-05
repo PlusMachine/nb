@@ -12,6 +12,7 @@ export type InventoryOptionalFieldsState = {
   purchasedAt: string;
   freshnessDate: string;
   notes: string;
+  purchaseLinksCount: number;
 };
 
 type InventoryOptionalDisclosureProps = {
@@ -42,7 +43,8 @@ export const createInitialInventoryOptionalFields = (): InventoryOptionalFieldsS
   priceInputAmount: "",
   purchasedAt: "",
   freshnessDate: "",
-  notes: ""
+  notes: "",
+  purchaseLinksCount: 0
 });
 
 export const resolveInventoryOptionalDisclosureSummary = (
@@ -69,6 +71,10 @@ export const resolveInventoryOptionalDisclosureSummary = (
 
   if (freshnessDateLabel) {
     entries.push(`Годен до: ${freshnessDateLabel}`);
+  }
+
+  if (fields.purchaseLinksCount > 0) {
+    entries.push(`Ссылки: ${fields.purchaseLinksCount}`);
   }
 
   if (normalizedNotes) {
@@ -98,7 +104,7 @@ export function InventoryOptionalDisclosure({
       >
         <div className="min-w-0 space-y-1">
           <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
-            <span className="text-sm font-medium text-zinc-900">Добавить цену, дату, срок или заметку</span>
+            <span className="text-sm font-medium text-zinc-900">Добавить цену, ссылки, даты или заметку</span>
             <span className="text-xs text-zinc-500">Необязательно</span>
           </div>
           <p className="text-xs text-zinc-500">

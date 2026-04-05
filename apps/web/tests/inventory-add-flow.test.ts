@@ -12,7 +12,9 @@ const mockState = vi.hoisted(() => ({
   resolveCatalogSourceCalls: [] as any[],
   addCatalogCalls: [] as any[],
   createCustomCalls: [] as any[],
-  addCustomCalls: [] as any[]
+  addCustomCalls: [] as any[],
+  updateItemCalls: [] as any[],
+  replacePurchaseLinkCalls: [] as any[]
 }));
 
 vi.mock("next/navigation", () => ({
@@ -65,11 +67,38 @@ vi.mock("@/features/inventory/service", () => ({
   addCustomIngredientToInventory: async (_userId: string, payload: unknown) => {
     mockState.addCustomCalls.push(payload);
     return { id: "inv-custom" };
+  },
+  updateInventoryItem: async (_userId: string, inventoryItemId: string, payload: unknown) => {
+    mockState.updateItemCalls.push({ inventoryItemId, payload });
+    return { id: inventoryItemId };
+  },
+  updateInventoryQuantity: async () => ({ id: "inv-updated" }),
+  setInventoryItemQuantityToZero: async () => ({ id: "inv-updated" }),
+  deleteInventoryItem: async () => undefined
+}));
+
+vi.mock("@/features/ingredients/user-metadata-service", () => ({
+  replaceIngredientPurchaseLinksForReference: async (_userId: string, reference: unknown, urls: string[]) => {
+    mockState.replacePurchaseLinkCalls.push({ reference, urls });
+    return [];
   }
 }));
 
+vi.mock("@/app/(app)/app/ingredients/metadata-actions", () => ({
+  listIngredientPurchaseLinksAction: vi.fn(async () => []),
+  createIngredientPurchaseLinkAction: vi.fn(async () => ({ ok: true })),
+  updateIngredientPurchaseLinkAction: vi.fn(async () => ({ ok: true })),
+  deleteIngredientPurchaseLinkAction: vi.fn(async () => ({ ok: true })),
+  toggleIngredientFavoriteAction: vi.fn(async () => ({ ok: true, isFavorite: true }))
+}));
 
-import { addCatalogIngredientAction, addCustomIngredientAction, addSelectedIngredientAction } from "../app/(app)/app/ingredients/actions";
+
+import {
+  addCatalogIngredientAction,
+  addCustomIngredientAction,
+  addSelectedIngredientAction,
+  updateInventoryItemAction
+} from "../app/(app)/app/ingredients/actions";
 import { IngredientCategorySelector } from "../components/ingredients/ingredient-category-selector";
 import { buildIngredientSearchParams } from "../components/ingredients/ingredient-picker";
 import {
@@ -113,6 +142,8 @@ describe("inventory add-flow", () => {
     mockState.addCatalogCalls = [];
     mockState.createCustomCalls = [];
     mockState.addCustomCalls = [];
+    mockState.updateItemCalls = [];
+    mockState.replacePurchaseLinkCalls = [];
   });
 
   it("renders CTA trigger", () => {
@@ -150,7 +181,7 @@ describe("inventory add-flow", () => {
     expect(html).toContain("Количество и единица учета");
     expect(html).toContain('data-testid="custom-required-fields"');
     expect(html).toContain('data-testid="custom-optional-disclosure"');
-    expect(html).toContain("Добавить цену, дату, срок или заметку");
+    expect(html).toContain("Добавить цену, ссылки, даты или заметку");
     expect(html).toContain("Необязательно");
     expect(html).toContain("Тип ферментируемого");
     expect(html).toContain("Цвет, EBC");
@@ -205,7 +236,8 @@ describe("inventory add-flow", () => {
       purchasedAt: "",
       freshnessDate: "",
       priceInputAmount: "",
-      notes: ""
+      notes: "",
+      purchaseLinksCount: 0
     });
   });
 
@@ -266,7 +298,7 @@ describe("inventory add-flow", () => {
     expect(html).toContain("81%");
     expect(html).toContain("Уточнить параметры");
     expect(html).toContain('data-testid="catalog-optional-disclosure"');
-    expect(html).toContain("Добавить цену, дату, срок или заметку");
+    expect(html).toContain("Добавить цену, ссылки, даты или заметку");
     expect(html).toContain("Необязательно");
     expect(html).not.toContain("Дополнительно");
   });
@@ -432,7 +464,8 @@ describe("inventory add-flow", () => {
       priceInputAmount: "1250",
       purchasedAt: "2026-04-04",
       freshnessDate: "2026-12-01",
-      notes: "Холодное хранение"
+      notes: "Холодное хранение",
+      purchaseLinksCount: 0
     }, "USD")).toEqual([
       "Цена: 1250 USD",
       "Покупка: 04.04.2026",
@@ -449,11 +482,12 @@ describe("inventory add-flow", () => {
         priceInputAmount: "1250",
         purchasedAt: "2026-04-04",
         freshnessDate: "2026-12-01",
-        notes: "Холодное хранение"
+        notes: "Холодное хранение",
+        purchaseLinksCount: 0
       }
     }, React.createElement("div", null, "body")));
 
-    expect(html).toContain("Добавить цену, дату, срок или заметку");
+    expect(html).toContain("Добавить цену, ссылки, даты или заметку");
     expect(html).toContain("Цена: 1250 USD");
     expect(html).toContain("Покупка: 04.04.2026");
     expect(html).toContain("Годен до: 01.12.2026");
@@ -597,6 +631,38 @@ describe("inventory add-flow", () => {
     expect(mockState.revalidated).toContain("/app/ingredients");
   });
 
+  it("stores purchase links on the catalog ingredient reference without polluting the inventory payload", async () => {
+    const formData = new FormData();
+    formData.set("ingredientCatalogItemId", "catalog-hop-1");
+    formData.set("enteredQuantity", "100");
+    formData.set("enteredUnit", "g");
+    formData.set("purchaseLinksTouched", "true");
+    formData.append("purchaseLinks", "ozon.ru/product/citra");
+    formData.append("purchaseLinks", "https://market.yandex.ru/product--citra");
+
+    const result = await addCatalogIngredientAction(null, formData);
+
+    expect(result.ok).toBe(true);
+    expect(mockState.addCatalogCalls[0]).toMatchObject({
+      ingredientCatalogItemId: "catalog-hop-1",
+      enteredQuantity: 100,
+      enteredUnit: "g"
+    });
+    expect(mockState.addCatalogCalls[0]).not.toHaveProperty("purchaseLinks");
+    expect(mockState.replacePurchaseLinkCalls).toEqual([
+      {
+        reference: {
+          source: "catalog",
+          id: "catalog-hop-1"
+        },
+        urls: [
+          "https://ozon.ru/product/citra",
+          "https://market.yandex.ru/product--citra"
+        ]
+      }
+    ]);
+  });
+
   it("passes per-unit price mode through the add flow", async () => {
     const formData = new FormData();
     formData.set("ingredientCatalogItemId", "3d6eb945-8e2e-4af9-8d24-ef6c883b5dd0");
@@ -645,6 +711,38 @@ describe("inventory add-flow", () => {
       enteredUnit: "pack"
     });
     expect(mockState.revalidated).toContain("/app/ingredients");
+  });
+
+  it("stores purchase links on the created custom ingredient reference", async () => {
+    const formData = new FormData();
+    formData.set("category", "hop");
+    formData.set("displayName", "Citra");
+    formData.set("brand", "Yakima Chief");
+    formData.set("hopAlphaAcidPct", "12.5");
+    formData.set("defaultDisplayUnit", "g");
+    formData.set("enteredQuantity", "100");
+    formData.set("enteredUnit", "g");
+    formData.set("purchaseLinksTouched", "true");
+    formData.append("purchaseLinks", "https://www.wildberries.ru/catalog/123/detail.aspx");
+    formData.append("purchaseLinks", "xn--90aoy.xn--p1ai/citra");
+
+    const result = await addCustomIngredientAction(null, formData);
+
+    expect(result.ok).toBe(true);
+    expect(mockState.createCustomCalls).toHaveLength(1);
+    expect(mockState.addCustomCalls).toHaveLength(1);
+    expect(mockState.replacePurchaseLinkCalls).toEqual([
+      {
+        reference: {
+          source: "custom",
+          id: mockState.createdCustomId
+        },
+        urls: [
+          "https://www.wildberries.ru/catalog/123/detail.aspx",
+          "https://xn--90aoy.xn--p1ai/citra"
+        ]
+      }
+    ]);
   });
 
   it("adds an existing custom ingredient from the picker through the custom inventory path", async () => {
@@ -714,6 +812,46 @@ describe("inventory add-flow", () => {
     expect(mockState.addCustomCalls).toHaveLength(1);
   });
 
+  it("updates inventory item purchase links through the selected ingredient reference and keeps the main edit payload intact", async () => {
+    const result = await updateInventoryItemAction({
+      inventoryItemId: "inv-1",
+      ingredientCatalogItemId: "catalog-malt-1",
+      enteredQuantity: "5",
+      enteredUnit: "kg",
+      notes: "Обновлено",
+      purchaseLinksTouched: true,
+      purchaseLinks: [
+        "rdshop.ru/catalog/pilsner",
+        "https://kolba.ru/catalog/pilsner"
+      ]
+    });
+
+    expect(result.ok).toBe(true);
+    expect(mockState.updateItemCalls).toEqual([
+      {
+        inventoryItemId: "inv-1",
+        payload: expect.objectContaining({
+          ingredientCatalogItemId: "catalog-malt-1",
+          enteredQuantity: 5,
+          enteredUnit: "kg",
+          notes: "Обновлено"
+        })
+      }
+    ]);
+    expect(mockState.replacePurchaseLinkCalls).toEqual([
+      {
+        reference: {
+          source: "catalog",
+          id: "catalog-malt-1"
+        },
+        urls: [
+          "https://rdshop.ru/catalog/pilsner",
+          "https://kolba.ru/catalog/pilsner"
+        ]
+      }
+    ]);
+  });
+
   it("falls back to the existing catalog add path when override values do not require a clone", async () => {
     mockState.resolveCatalogSourceMode = "catalog";
 
@@ -781,7 +919,8 @@ describe("inventory add-flow", () => {
         priceInputAmount: "",
         purchasedAt: "",
         freshnessDate: "",
-        notes: ""
+        notes: "",
+        purchaseLinksCount: 0
       }
     );
 
@@ -793,7 +932,8 @@ describe("inventory add-flow", () => {
       priceInputAmount: "",
       purchasedAt: "",
       freshnessDate: "",
-      notes: ""
+      notes: "",
+      purchaseLinksCount: 0
     })).toThrowError("CATALOG_SELECTION_REQUIRED");
   });
 
@@ -814,7 +954,8 @@ describe("inventory add-flow", () => {
         priceInputAmount: "1250",
         purchasedAt: getTodayDateInputValue(),
         freshnessDate: "2026-12-01",
-        notes: "Холодное хранение"
+        notes: "Холодное хранение",
+        purchaseLinksCount: 0
       },
       {
         includeOptionalDetails: false,
@@ -876,6 +1017,42 @@ describe("inventory add-flow", () => {
         hopAlphaAcidPct: ""
       }
     })).toBe(true);
+  });
+
+  it("does not mark rounded catalog fermentable values as changed", () => {
+    const selected = {
+      id: "malt-2",
+      type: "malt" as const,
+      category: "fermentable" as const,
+      subtype: "malt" as const,
+      displayName: "Пилснер Премиум",
+      defaultUnit: "kg" as const,
+      source: "catalog" as const,
+      technicalData: {
+        type: "malt" as const,
+        colorEbcMin: 3.7065,
+        colorEbcMax: 3.7065,
+        colorLovibond: null,
+        extractPctDryBasis: 83,
+        proteinPct: null,
+        maxUsagePct: null,
+        maltType: "base" as const
+      }
+    };
+
+    expect(resolveCatalogBatchOverrideDefaults(selected)).toMatchObject({
+      kind: "fermentable",
+      fermentableColorEbc: "3.71",
+      fermentableExtractYieldPct: "83"
+    });
+    expect(hasCatalogIngredientTechnicalOverrides({
+      selected,
+      overrides: {
+        fermentableColorEbc: "3.71",
+        fermentableExtractYieldPct: "83",
+        hopAlphaAcidPct: ""
+      }
+    })).toBe(false);
   });
 
   it("defaults dry yeast catalog additions to pack units", () => {

@@ -19,12 +19,19 @@ describe("ingredient normalization", () => {
 
   it("builds ru/en typo and layout query variants", () => {
     const typoVariants = buildQueryVariants("пильзнер");
+    const shortFamilyVariants = buildQueryVariants("pil");
     const latinVariants = buildQueryVariants("pilsen");
+    const familyVariants = buildQueryVariants("pils");
+    const familyVariantsRu = buildQueryVariants("пилс");
     const layoutVariants = buildQueryVariants("зшдытук");
 
     expect(typoVariants).toContain("пилснер");
     expect(typoVariants).toContain("pilsner");
+    expect(shortFamilyVariants).toContain("pilsner");
     expect(latinVariants).toContain("pilsner");
+    expect(familyVariants).toContain("pilsner");
+    expect(familyVariants).toContain("pilsener");
+    expect(familyVariantsRu).toContain("пильзен");
     expect(layoutVariants).toContain("pilsner");
   });
 

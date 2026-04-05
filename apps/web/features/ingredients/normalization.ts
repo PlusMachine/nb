@@ -90,12 +90,42 @@ const keyboardMapPairs = [
 const engToRuKeyboardMap = new Map<string, string>(keyboardMapPairs);
 const ruToEngKeyboardMap = new Map<string, string>(keyboardMapPairs.map(([eng, ru]) => [ru, eng]));
 
-const tokenVariantGroups = [
-  ["pilsner", "pilsener", "pilsen", "пилснер", "пильзнер", "пилзнер", "пилсен", "пильзенер"],
-  ["pale", "paleale", "pale ale", "пэйл", "пейл", "пэйл эль", "пейл эль"],
-  ["munich", "munchen", "munich malt", "мюнхен", "мюнхенский"],
-  ["vienna", "vienna malt", "венский", "виенна"]
+export const canonicalIngredientFamilyGroups = [
+  {
+    key: "pilsner",
+    terms: [
+      "pil",
+      "pils",
+      "pilsen",
+      "pilsner",
+      "pilsener",
+      "пилс",
+      "пилснер",
+      "пилсен",
+      "пильзнер",
+      "пильзен",
+      "пильзенер",
+      "пилзнер",
+      "пильсен",
+      "пилзен",
+      "пилзенер"
+    ]
+  },
+  {
+    key: "pale_ale",
+    terms: ["pale", "paleale", "pale ale", "пэйл", "пейл", "пэйл эль", "пейл эль"]
+  },
+  {
+    key: "munich",
+    terms: ["munich", "munchen", "munich malt", "мюнхен", "мюнхенский"]
+  },
+  {
+    key: "vienna",
+    terms: ["vienna", "vienna malt", "венский", "виенна"]
+  }
 ] as const;
+
+const tokenVariantGroups = canonicalIngredientFamilyGroups.map((group) => group.terms);
 
 const normalizeAndCollapse = (value: string) => value
   .normalize("NFKC")
@@ -117,7 +147,14 @@ const applyTokenVariants = (value: string) => {
 
   for (const group of tokenVariantGroups) {
     for (let index = 0; index < words.length; index += 1) {
-      if (!group.includes(words[index] as never)) {
+      const token = words[index];
+      const matchesGroup = group.some((entry) => (
+        entry === token
+        || (token.length >= 3 && entry.startsWith(token))
+        || (entry.length >= 4 && token.startsWith(entry))
+      ));
+
+      if (!matchesGroup) {
         continue;
       }
 
@@ -232,7 +269,7 @@ export const buildQueryVariants = (query: string) => {
   const variants = new Set<string>();
   const add = (value: string) => {
     const normalized = normalizeSearchText(value);
-    if (!normalized || variants.has(normalized) || variants.size >= 8) {
+    if (!normalized || variants.has(normalized) || variants.size >= 16) {
       return;
     }
 

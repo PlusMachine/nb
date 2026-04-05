@@ -218,6 +218,43 @@ export const ingredientSearchSimpleModeThreshold = 10;
 export const ingredientManufacturerRefinementLimit = 6;
 export const ingredientSearchExpandedLimit = 100;
 
+export const userIngredientReferenceSources = ["catalog", "custom"] as const;
+export type UserIngredientReferenceSource = (typeof userIngredientReferenceSources)[number];
+
+export const userIngredientReferenceSchema = z.object({
+  source: z.enum(userIngredientReferenceSources),
+  id: z.string().trim().min(1).max(191)
+});
+export type UserIngredientReference = z.infer<typeof userIngredientReferenceSchema>;
+
+export const ingredientPurchaseLinkMarketplaces = [
+  "ozon",
+  "wildberries",
+  "avito",
+  "yandex_market",
+  "russkaya_dymka",
+  "kolba",
+  "birrf",
+  "other"
+] as const;
+export type IngredientPurchaseLinkMarketplace = (typeof ingredientPurchaseLinkMarketplaces)[number];
+
+export type IngredientPurchaseLinkDto = {
+  id: string;
+  url: string;
+  normalizedUrl: string;
+  host: string;
+  displayHost: string;
+  marketplace: IngredientPurchaseLinkMarketplace;
+  marketplaceLabel: string;
+  position: number;
+};
+
+export type IngredientPurchaseLinkSummaryDto = {
+  count: number;
+  marketplaces: IngredientPurchaseLinkMarketplace[];
+};
+
 export const ingredientUpsertSchema = z.object({
   id: z.string().trim().min(1).max(191).optional(),
   type: z.enum(ingredientTypes),
@@ -396,6 +433,7 @@ export type IngredientSuggestionItem = {
   score?: number;
   derivedFromIngredientId?: string | null;
   derivedFromDisplayName?: string | null;
+  isFavorite?: boolean;
   source: "catalog" | "custom";
 };
 
@@ -463,6 +501,8 @@ export type UserCatalogIngredientDto = IngredientTechnicalFields & {
   unitPreferred: string | null;
   derivedFromIngredientId: string | null;
   derivedFromDisplayName: string | null;
+  isFavorite?: boolean;
+  purchaseLinks?: IngredientPurchaseLinkDto[];
   inventoryUsageCount: number;
   recipeUsageCount: number;
   inventoryInUse: boolean;

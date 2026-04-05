@@ -11,10 +11,18 @@ vi.mock("next/navigation", () => ({
   useRouter: () => ({ replace: mocks.replace })
 }));
 
-vi.mock("../app/(app)/app/ingredients/actions", () => ({
+vi.mock("@/app/(app)/app/ingredients/actions", () => ({
   updateInventoryInlineAction: vi.fn(async () => ({ ok: true, message: "ok" })),
   updateInventoryItemAction: vi.fn(async () => ({ ok: true, message: "ok" })),
   deleteInventoryItemAction: vi.fn(async () => ({ ok: true, message: "ok" }))
+}));
+
+vi.mock("@/app/(app)/app/ingredients/metadata-actions", () => ({
+  listIngredientPurchaseLinksAction: vi.fn(async () => []),
+  createIngredientPurchaseLinkAction: vi.fn(async () => ({ ok: true })),
+  updateIngredientPurchaseLinkAction: vi.fn(async () => ({ ok: true })),
+  deleteIngredientPurchaseLinkAction: vi.fn(async () => ({ ok: true })),
+  toggleIngredientFavoriteAction: vi.fn(async () => ({ ok: true, isFavorite: true }))
 }));
 
 import { InventoryListItem } from "../components/inventory/inventory-list-item";
@@ -247,6 +255,85 @@ describe("inventory usability components", () => {
     expect(html).toContain("0 закончился");
     expect(html).toContain('aria-label="Редактировать"');
     expect(html).toContain('aria-label="Удалить"');
+  });
+
+  it("renders a compact buy entry with marketplace previews when purchase links exist", () => {
+    const item: InventoryListItemDto = {
+      id: "inv-buy-1",
+      enteredQuantity: 100,
+      enteredUnit: "g",
+      normalizedQuantity: 100,
+      normalizedUnit: "g",
+      unitDimension: "weight",
+      purchasedAt: null,
+      freshnessDate: null,
+      notes: null,
+      archivedAt: null,
+      createdAt: new Date("2025-01-01"),
+      updatedAt: new Date("2025-01-01"),
+      source: {
+        sourceKind: "catalog",
+        sourceId: "cat-hop-1",
+        type: "hop",
+        category: "hop",
+        primaryLabelRu: "Citra",
+        secondaryLabelRu: null,
+        displayName: "Citra",
+        normalizedName: "citra",
+        purchaseLinks: {
+          count: 4,
+          marketplaces: ["ozon", "wildberries", "yandex_market"]
+        }
+      }
+    };
+
+    const html = renderToStaticMarkup(React.createElement(InventoryListItem, {
+      item,
+      preferredCurrency: "RUB",
+      currencyRates: { RUB: 100, USD: 7900, EUR: 9170 }
+    }));
+
+    expect(html).toContain(">Купить<");
+    expect(html).toContain('title="Ozon"');
+    expect(html).toContain('title="Wildberries"');
+    expect(html).toContain('title="Яндекс Маркет"');
+  });
+
+  it("renders a calm add-link entry and does not spam favorites on inventory cards", () => {
+    const item: InventoryListItemDto = {
+      id: "inv-buy-2",
+      enteredQuantity: 1,
+      enteredUnit: "pack",
+      normalizedQuantity: 1,
+      normalizedUnit: "pack",
+      unitDimension: "count",
+      purchasedAt: null,
+      freshnessDate: null,
+      notes: null,
+      archivedAt: null,
+      createdAt: new Date("2025-01-01"),
+      updatedAt: new Date("2025-01-01"),
+      source: {
+        sourceKind: "custom",
+        sourceId: "custom-yeast-1",
+        type: "yeast",
+        category: "yeast",
+        primaryLabelRu: "US-05",
+        secondaryLabelRu: null,
+        displayName: "US-05",
+        normalizedName: "us-05"
+      }
+    };
+
+    const html = renderToStaticMarkup(React.createElement(InventoryListItem, {
+      item,
+      preferredCurrency: "RUB",
+      currencyRates: { RUB: 100, USD: 7900, EUR: 9170 }
+    }));
+
+    expect(html).toContain(">Добавить ссылку<");
+    expect(html).not.toContain("Добавить в избранное");
+    expect(html).not.toContain("Убрать из избранного");
   });
 
   it("opens the inventory editor in selected state for the current stock item", () => {

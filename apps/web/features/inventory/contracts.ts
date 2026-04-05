@@ -3,6 +3,7 @@ import { z } from "zod";
 import {
   ingredientCategories,
   ingredientDisplayModes,
+  type IngredientPurchaseLinkSummaryDto,
   ingredientTypes,
   type IngredientCategory,
   type IngredientCompletenessLevel,
@@ -361,6 +362,7 @@ export type InventorySourceDto = {
   derivedFromIngredientId?: string | null;
   derivedFromDisplayName?: string | null;
   summary?: string | null;
+  purchaseLinks?: IngredientPurchaseLinkSummaryDto;
 } & IngredientTechnicalFields;
 
 export type InventoryListItemDto = {

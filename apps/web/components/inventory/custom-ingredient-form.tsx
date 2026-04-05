@@ -3,6 +3,7 @@
 import React from "react";
 import { useEffect, useMemo, useState } from "react";
 
+import { IngredientPurchaseLinksField } from "@/components/ingredients/ingredient-purchase-links-field";
 import { InventoryPriceInput } from "@/components/inventory/inventory-price-input";
 import {
   createInitialInventoryOptionalFields,
@@ -49,6 +50,8 @@ export type CustomIngredientSubmitPayload = {
   purchasedAt?: string;
   freshnessDate?: string;
   notes?: string;
+  purchaseLinks?: string[];
+  purchaseLinksTouched?: boolean;
 };
 
 type Props = {
@@ -95,6 +98,10 @@ export function CustomIngredientForm({ category, initialSubtype = null, preferre
   const [notes, setNotes] = useState(initialOptionalFields.notes);
   const [optionalOpen, setOptionalOpen] = useState(false);
   const [optionalTouched, setOptionalTouched] = useState(false);
+  const [purchaseLinksState, setPurchaseLinksState] = useState<{ urls: string[]; isLoaded: boolean }>({
+    urls: [],
+    isLoaded: false
+  });
 
   const normalizedSubtype = useMemo(
     () => normalizeCustomIngredientSubtype(category, subtype),
@@ -152,6 +159,10 @@ export function CustomIngredientForm({ category, initialSubtype = null, preferre
     setNotes(nextOptionalFields.notes);
     setOptionalOpen(false);
     setOptionalTouched(false);
+    setPurchaseLinksState({
+      urls: [],
+      isLoaded: false
+    });
 
     if (category !== "yeast") {
       setYeastForm("dry");
@@ -184,7 +195,8 @@ export function CustomIngredientForm({ category, initialSubtype = null, preferre
     priceInputAmount,
     purchasedAt,
     freshnessDate,
-    notes
+    notes,
+    purchaseLinksCount: purchaseLinksState.urls.length
   };
   const toggleOptionalSection = () => {
     setOptionalOpen((current) => {
@@ -225,6 +237,10 @@ export function CustomIngredientForm({ category, initialSubtype = null, preferre
           payload.purchasedAt = purchasedAt;
           payload.freshnessDate = freshnessDate;
           payload.notes = notes;
+          if (purchaseLinksState.isLoaded) {
+            payload.purchaseLinksTouched = true;
+            payload.purchaseLinks = purchaseLinksState.urls;
+          }
         }
 
         await onSubmit(payload);
@@ -440,6 +456,14 @@ export function CustomIngredientForm({ category, initialSubtype = null, preferre
               allowedUnits={unitProfile.allowedUnits}
               measurementDimension={unitProfile.measurementDimension}
               technicalData={technicalData}
+            />
+
+            <IngredientPurchaseLinksField
+              reference={null}
+              enabled={optionalOpen}
+              allowDraftWithoutReference
+              onStateChange={setPurchaseLinksState}
+              testId="custom-purchase-links-field"
             />
 
             <label className="block text-sm">Заметки

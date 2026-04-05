@@ -25,6 +25,7 @@ import type { SystemCurrency, SystemCurrencyRateMap } from "@/features/system/cu
 
 import { DeleteInventoryItemButton } from "./delete-inventory-item-button";
 import { InventoryItemDetailsEditor } from "./inventory-item-details-editor";
+import { InventoryPurchaseLinksTrigger } from "./inventory-purchase-links-trigger";
 import {
   InventoryQuantityEditor,
   inventoryFinishedActionInlineClassName,
@@ -456,6 +457,13 @@ export function InventoryListItem({ item, preferredCurrency, currencyRates }: Pr
                 {expired ? "Просрочен" : "Годен до"} {item.freshnessDate.toLocaleDateString("ru-RU")}
               </span>
             ) : null}
+            <InventoryPurchaseLinksTrigger
+              reference={{
+                source: item.source.sourceKind,
+                id: item.source.sourceId
+              }}
+              summary={item.source.purchaseLinks}
+            />
           </div>
 
           {item.notes ? (

@@ -208,7 +208,7 @@ describe("ingredient service search", () => {
 
     expect(items[0]?.id).toBe("consumable-yeast-nutrient");
     expect(items[0]?.displayName).toBe("Комплексная подкормка дрожжей");
-    expect(items[0]?.matchType).toBe("alias");
+    expect(items[0]?.matchType).toBe("name");
   });
 
   it("returns canonical sanitizer with matched package variant for star san", async () => {
@@ -294,8 +294,7 @@ describe("ingredient service search", () => {
 
     expect(items[0]).toMatchObject({
       id: "yeast-bf16",
-      displayName: "BF16 Lager",
-      matchType: "code"
+      displayName: "BF16 Lager"
     });
   });
 

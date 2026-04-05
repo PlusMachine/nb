@@ -46,6 +46,7 @@ import {
   resolveIngredientSubtype,
   resolveLegacyIngredientType
 } from "../ingredients/taxonomy";
+import { listIngredientPurchaseLinkSummaries } from "../ingredients/user-metadata-service";
 import { type SystemCurrency, listSystemCurrencyRates } from "../system/currency-rates";
 import { normalizeInventoryPurchaseContext } from "./purchase-cost";
 import {
@@ -422,6 +423,27 @@ const mapInventoryRow = (row: InventoryRow): InventoryListItemDto => {
   };
 };
 
+const applyPurchaseLinkSummariesToInventoryItems = async (
+  userId: string,
+  items: InventoryListItemDto[]
+): Promise<InventoryListItemDto[]> => {
+  const summaries = await listIngredientPurchaseLinkSummaries(userId, items.map((item) => ({
+    source: item.source.sourceKind,
+    id: item.source.sourceId
+  })));
+
+  return items.map((item) => ({
+    ...item,
+    source: {
+      ...item.source,
+      purchaseLinks: summaries.get(`${item.source.sourceKind}:${item.source.sourceId}`) ?? {
+        count: 0,
+        marketplaces: []
+      }
+    }
+  }));
+};
+
 const ensureCatalogIngredientExists = async (ingredientCatalogItemId: string) => {
   const catalogItem = await db.query.ingredients.findFirst({
     where: and(
@@ -710,16 +732,23 @@ const readFiniteNumber = (...values: Array<number | null | undefined>) => {
   return null;
 };
 
+const normalizeCatalogComparableNumber = (value: number | null) => (
+  value == null ? null : Number(value.toFixed(2))
+);
+
 const numbersEqual = (left: number | null, right: number | null) => {
-  if (left == null && right == null) {
+  const normalizedLeft = normalizeCatalogComparableNumber(left);
+  const normalizedRight = normalizeCatalogComparableNumber(right);
+
+  if (normalizedLeft == null && normalizedRight == null) {
     return true;
   }
 
-  if (left == null || right == null) {
+  if (normalizedLeft == null || normalizedRight == null) {
     return false;
   }
 
-  return Math.abs(left - right) < 0.001;
+  return Math.abs(normalizedLeft - normalizedRight) < 0.001;
 };
 
 const lovibondToEbc = (value: number) => Number((value * 1.97).toFixed(2));
@@ -1480,7 +1509,7 @@ export const listInventoryForUser = async (userId: string, query: unknown = {}) 
     return left.source.primaryLabelRu.localeCompare(right.source.primaryLabelRu, "ru");
   });
 
-  return items;
+  return applyPurchaseLinkSummariesToInventoryItems(userId, items);
 };
 
 export const searchInventorySuggestions = async (

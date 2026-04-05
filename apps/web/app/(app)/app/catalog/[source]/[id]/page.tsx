@@ -1,7 +1,10 @@
+import React from "react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { DeleteCustomCatalogIngredientButton } from "@/components/ingredients/delete-custom-catalog-ingredient-button";
+import { IngredientFavoriteToggle } from "@/components/ingredients/ingredient-favorite-toggle";
+import { IngredientPurchaseLinksEditor } from "@/components/ingredients/ingredient-purchase-links-manager";
 import { CountryFlagLabel } from "@/components/shared/country-flag";
 import { getUserCatalogIngredientByRef } from "@/features/ingredients/catalog-service";
 import type { IngredientTechnicalData } from "@/features/ingredients/contracts";
@@ -196,6 +199,15 @@ export default async function IngredientDetailPage({
           <div className="min-w-0 flex-1 space-y-5">
             <div className="flex flex-wrap items-center gap-2">
               <h1 className="text-3xl font-semibold tracking-tight text-zinc-950">{item.primaryLabelRu}</h1>
+              <IngredientFavoriteToggle
+                reference={{
+                  source: item.source,
+                  id: item.id
+                }}
+                initialFavorite={item.isFavorite ?? false}
+                size="md"
+                label={item.isFavorite ? "Убрать из избранного" : "Добавить в избранное"}
+              />
               {item.source === "custom" ? (
                 <span className="rounded-full bg-amber-50 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-[0.12em] text-amber-700 ring-1 ring-amber-200">
                   СВОЙ
@@ -318,6 +330,19 @@ export default async function IngredientDetailPage({
                 <p className="mt-2 text-2xl font-semibold text-zinc-950">{item.recipeUsageCount}</p>
                 <p className="mt-1 text-sm text-zinc-500">{item.recipeInUse ? "Уже выбран в рецептах" : "Пока не используется"}</p>
               </div>
+            </div>
+          </section>
+
+          <section className="rounded-[28px] border border-zinc-200 bg-white p-6 shadow-sm">
+            <h2 className="text-sm font-semibold uppercase tracking-[0.12em] text-zinc-500">Где купить</h2>
+            <div className="mt-4">
+              <IngredientPurchaseLinksEditor
+                reference={{
+                  source: item.source,
+                  id: item.id
+                }}
+                initialLinks={item.purchaseLinks}
+              />
             </div>
           </section>
         </div>

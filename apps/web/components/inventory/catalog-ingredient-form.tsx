@@ -4,6 +4,7 @@ import React from "react";
 import { useEffect, useRef, useState } from "react";
 
 import { IngredientPicker, IngredientSelectionCard } from "@/components/ingredients/ingredient-picker";
+import { IngredientPurchaseLinksField } from "@/components/ingredients/ingredient-purchase-links-field";
 import { InventoryPriceInput } from "@/components/inventory/inventory-price-input";
 import {
   createInitialInventoryOptionalFields,
@@ -56,6 +57,8 @@ export type CatalogIngredientSubmitPayload = {
   fermentableColorEbc?: string;
   fermentableExtractYieldPct?: string;
   hopAlphaAcidPct?: string;
+  purchaseLinks?: string[];
+  purchaseLinksTouched?: boolean;
 };
 
 type Props = {
@@ -122,16 +125,23 @@ const parseInputNumber = (value: string) => {
   return Number.isFinite(parsed) ? parsed : null;
 };
 
+const normalizeCatalogComparableNumber = (value: number | null) => (
+  value == null ? null : Number(value.toFixed(2))
+);
+
 const numbersEqual = (left: number | null, right: number | null) => {
-  if (left == null && right == null) {
+  const normalizedLeft = normalizeCatalogComparableNumber(left);
+  const normalizedRight = normalizeCatalogComparableNumber(right);
+
+  if (normalizedLeft == null && normalizedRight == null) {
     return true;
   }
 
-  if (left == null || right == null) {
+  if (normalizedLeft == null || normalizedRight == null) {
     return false;
   }
 
-  return Math.abs(left - right) < 0.001;
+  return Math.abs(normalizedLeft - normalizedRight) < 0.001;
 };
 
 const lovibondToEbc = (value: number) => Number((value * 1.97).toFixed(2));
@@ -532,6 +542,10 @@ export function CatalogIngredientForm({
   const [batchOverrideMode, setBatchOverrideMode] = useState<"catalog" | "customize">("catalog");
   const [optionalOpen, setOptionalOpen] = useState(false);
   const [optionalTouched, setOptionalTouched] = useState(false);
+  const [purchaseLinksState, setPurchaseLinksState] = useState<{ urls: string[]; isLoaded: boolean }>({
+    urls: [],
+    isLoaded: false
+  });
   const [localError, setLocalError] = useState<string | null>(null);
   const [pickerFocusSignal, setPickerFocusSignal] = useState(0);
   const previousContextRef = useRef<{
@@ -607,6 +621,10 @@ export function CatalogIngredientForm({
       setBatchOverrideMode("catalog");
       setOptionalOpen(false);
       setOptionalTouched(false);
+      setPurchaseLinksState({
+        urls: [],
+        isLoaded: false
+      });
       setLocalError(null);
 
       if (shouldRefocusPicker) {
@@ -704,6 +722,10 @@ export function CatalogIngredientForm({
     setBatchOverrideMode("catalog");
     setOptionalOpen(false);
     setOptionalTouched(false);
+    setPurchaseLinksState({
+      urls: [],
+      isLoaded: false
+    });
     const resetProfile = resolveCatalogIngredientUnitProfile(category, null);
     setFields((current) => ({
       ...current,
@@ -742,6 +764,10 @@ export function CatalogIngredientForm({
             includeOptionalDetails: optionalTouched,
             batchOverrides: batchOverrideMode === "customize" ? batchOverrides : null
           });
+          if (optionalTouched && purchaseLinksState.isLoaded) {
+            payload.purchaseLinksTouched = true;
+            payload.purchaseLinks = purchaseLinksState.urls;
+          }
           setLocalError(null);
           await onSubmit(payload);
         } catch (error) {
@@ -939,7 +965,10 @@ export function CatalogIngredientForm({
         <InventoryOptionalDisclosure
           open={optionalOpen}
           onToggle={toggleOptionalSection}
-          fields={fields}
+          fields={{
+            ...fields,
+            purchaseLinksCount: purchaseLinksState.urls.length
+          }}
           preferredCurrency={preferredCurrency}
           testId="catalog-optional-disclosure"
         >
@@ -990,6 +1019,16 @@ export function CatalogIngredientForm({
                 allowedUnits={selected?.allowedUnits}
                 measurementDimension={selected?.measurementDimension}
                 technicalData={selected?.technicalData ?? null}
+              />
+
+              <IngredientPurchaseLinksField
+                reference={selected ? {
+                  source: selected.source,
+                  id: selected.id
+                } : null}
+                enabled={optionalOpen}
+                onStateChange={setPurchaseLinksState}
+                testId="catalog-purchase-links-field"
               />
 
               <label className="block text-sm">Заметки

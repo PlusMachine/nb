@@ -5,11 +5,19 @@ import { describe, expect, it, vi } from "vitest";
 vi.mock("../components/inventory/add-ingredient-trigger", () => ({
   AddIngredientTrigger: () => React.createElement("button", { type: "button" }, "Добавить ингредиент")
 }));
-vi.mock("../app/(app)/app/ingredients/actions", () => ({
+vi.mock("@/app/(app)/app/ingredients/actions", () => ({
   updateInventoryInlineAction: vi.fn(async () => ({ ok: true, message: "ok" })),
   setInventoryItemEmptyAction: vi.fn(async () => ({ ok: true, message: "ok" })),
   updateInventoryItemAction: vi.fn(async () => ({ ok: true, message: "ok" })),
   deleteInventoryItemAction: vi.fn(async () => ({ ok: true, message: "ok" }))
+}));
+
+vi.mock("@/app/(app)/app/ingredients/metadata-actions", () => ({
+  listIngredientPurchaseLinksAction: vi.fn(async () => []),
+  createIngredientPurchaseLinkAction: vi.fn(async () => ({ ok: true })),
+  updateIngredientPurchaseLinkAction: vi.fn(async () => ({ ok: true })),
+  deleteIngredientPurchaseLinkAction: vi.fn(async () => ({ ok: true })),
+  toggleIngredientFavoriteAction: vi.fn(async () => ({ ok: true, isFavorite: true }))
 }));
 
 import { GroupedInventoryList } from "../components/inventory/grouped-inventory-list";

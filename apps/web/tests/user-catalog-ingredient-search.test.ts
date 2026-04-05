@@ -3,7 +3,9 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 const now = new Date("2026-03-27T10:00:00.000Z");
 
 const mockState = vi.hoisted(() => ({
-  catalogItems: [] as any[]
+  catalogItems: [] as any[],
+  customItems: [] as any[],
+  favoriteKeys: new Set<string>()
 }));
 
 const buildCatalogItem = (overrides: Record<string, unknown> = {}) => ({
@@ -63,18 +65,76 @@ const buildCatalogItem = (overrides: Record<string, unknown> = {}) => ({
   ...overrides
 });
 
+const buildCustomIngredientRow = (overrides: Record<string, unknown> = {}) => {
+  const overrideProperties = (overrides.properties as Record<string, unknown> | undefined) ?? {};
+  const baseProperties = {
+    category: "fermentable",
+    subtype: "malt",
+    nameEn: "Custom Pilsner",
+    aliases: []
+  };
+  const baseRow = {
+    id: "custom-ingredient-1",
+    userId: "user-1",
+    type: "fermentable",
+    displayName: "Custom Pilsner",
+    manufacturer: null,
+    country: null,
+    properties: baseProperties,
+    hopAlphaAcidPct: null,
+    hopForm: null,
+    fermentableExtractYieldPct: 80,
+    fermentableColorEbc: 4,
+    yeastAttenuationPct: null,
+    yeastForm: null,
+    yeastMinFermentationTempC: null,
+    yeastMaxFermentationTempC: null,
+    createdAt: now,
+    updatedAt: now
+  };
+
+  return {
+    ...baseRow,
+    ...overrides,
+    properties: {
+      ...baseProperties,
+      ...overrideProperties
+    }
+  };
+};
+
 vi.mock("../features/ingredients/service", () => ({
   loadIngredients: async () => mockState.catalogItems,
   getIngredientById: async () => null
+}));
+
+vi.mock("../features/ingredients/user-metadata-service", () => ({
+  applyFavoriteStateToCatalogItems: async (_userId: string, items: any[]) => items.map((item) => ({
+    ...item,
+    isFavorite: mockState.favoriteKeys.has(`${item.source}:${item.id}`)
+  })),
+  listIngredientPurchaseLinksByReference: async () => []
 }));
 
 vi.mock("@nb/db", () => ({
   db: {
     query: {
       userCustomIngredients: {
-        findMany: async () => []
+        findMany: async () => mockState.customItems
       }
-    }
+    },
+    select: (_shape: Record<string, unknown>) => ({
+      from: () => ({
+        where: () => ({
+          groupBy: async () => []
+        }),
+        innerJoin: () => ({
+          where: () => ({
+            groupBy: async () => []
+          })
+        })
+      })
+    })
   },
   and: (...args: unknown[]) => args,
   eq: (...args: unknown[]) => args,
@@ -92,6 +152,8 @@ import { searchUserCatalogIngredients } from "../features/ingredients/catalog-se
 describe("user catalog ingredient search", () => {
   beforeEach(() => {
     mockState.catalogItems = [];
+    mockState.customItems = [];
+    mockState.favoriteKeys = new Set();
   });
 
   it("returns manufacturer refinements for broad type-first queries", async () => {
@@ -195,5 +257,603 @@ describe("user catalog ingredient search", () => {
       "castle-pilsner-3rs"
     ]);
     expect(result.items.every((item) => item.brand === "Castle Malting")).toBe(true);
+  });
+
+  it("makes favorites visibly stronger inside a broad family-equivalent bucket", async () => {
+    mockState.catalogItems = [
+      buildCatalogItem({
+        id: "pilsner-exact",
+        primaryLabelRu: "Pilsner",
+        displayName: "Pilsner",
+        nameRu: "Pilsner",
+        brand: "Castle Malting",
+        producer: "Castle Malting",
+        brandName: "Castle Malting",
+        manufacturer: "Castle Malting"
+      }),
+      buildCatalogItem({
+        id: "pilsner-favorite",
+        primaryLabelRu: "Pilsen 2RS",
+        displayName: "Pilsen 2RS",
+        displayNameRu: "Pilsen 2RS",
+        displayNameEn: "Pilsen 2RS",
+        nameRu: "Pilsen 2RS",
+        nameEn: "Pilsen 2RS",
+        brand: "Weyermann",
+        producer: "Weyermann",
+        brandName: "Weyermann",
+        manufacturer: "Weyermann",
+        aliases: [{
+          id: "alias-pilsner-favorite",
+          locale: "en",
+          alias: "Pilsner",
+          aliasNormalized: "pilsner",
+          source: "seed",
+          isEnabled: true
+        }]
+      })
+    ];
+    mockState.favoriteKeys = new Set(["catalog:pilsner-favorite"]);
+
+    const result = await searchUserCatalogIngredients("user-1", {
+      q: "pilsner",
+      category: "fermentable",
+      subtype: "malt",
+      limit: 10
+    });
+
+    expect(result.items).toHaveLength(2);
+    expect(result.items[0]).toMatchObject({
+      id: "pilsner-favorite",
+      isFavorite: true
+    });
+    expect(result.items[1]).toMatchObject({
+      id: "pilsner-exact",
+      isFavorite: false
+    });
+  });
+
+  it("keeps strong family-equivalent results grouped near the top for пилснер", async () => {
+    mockState.catalogItems = [
+      buildCatalogItem({
+        id: "ru-pilsner",
+        primaryLabelRu: "Пилснер",
+        displayName: "Пилснер",
+        displayNameRu: "Пилснер",
+        displayNameEn: "Pilsner",
+        nameRu: "Пилснер",
+        nameEn: "Pilsner",
+        brand: "Курский солод",
+        producer: "Курский солод",
+        brandName: "Курский солод",
+        manufacturer: "Курский солод",
+        country: "Россия",
+        countryCode: "RU",
+        countryName: "Россия"
+      }),
+      buildCatalogItem({
+        id: "ru-pilsner-premium",
+        primaryLabelRu: "Пилснер Премиум",
+        displayName: "Пилснер Премиум",
+        displayNameRu: "Пилснер Премиум",
+        displayNameEn: "Pilsner Premium",
+        nameRu: "Пилснер Премиум",
+        nameEn: "Pilsner Premium"
+      }),
+      buildCatalogItem({
+        id: "alias-pilsen",
+        primaryLabelRu: "Pilsen 2RP",
+        displayName: "Pilsen 2RP",
+        displayNameRu: "Pilsen 2RP",
+        displayNameEn: "Pilsen 2RP",
+        nameRu: "Pilsen 2RP",
+        nameEn: "Pilsen 2RP",
+        aliases: [{
+          id: "alias-pilsner-ru",
+          locale: "ru",
+          alias: "пилснер",
+          aliasNormalized: "пилснер",
+          source: "seed",
+          isEnabled: true
+        }]
+      })
+    ];
+
+    const result = await searchUserCatalogIngredients("user-1", {
+      q: "пилснер",
+      category: "fermentable",
+      subtype: "malt",
+      limit: 10
+    });
+
+    const topIds = result.items.slice(0, 3).map((item) => item.id);
+
+    expect(topIds[0]).toBe("ru-pilsner");
+    expect(topIds).toContain("ru-pilsner-premium");
+    expect(topIds).toContain("alias-pilsen");
+  });
+
+  it("keeps strong family equivalents across RU/EN near the top for pilsner", async () => {
+    mockState.catalogItems = [
+      buildCatalogItem({
+        id: "en-pilsner",
+        primaryLabelRu: "Pilsner",
+        displayName: "Pilsner",
+        displayNameRu: "Pilsner",
+        displayNameEn: "Pilsner",
+        nameRu: "Pilsner",
+        nameEn: "Pilsner"
+      }),
+      buildCatalogItem({
+        id: "en-pilsner-premium",
+        primaryLabelRu: "Pilsner Premium",
+        displayName: "Pilsner Premium",
+        displayNameRu: "Pilsner Premium",
+        displayNameEn: "Pilsner Premium",
+        nameRu: "Pilsner Premium",
+        nameEn: "Pilsner Premium"
+      }),
+      buildCatalogItem({
+        id: "ru-alias-only",
+        primaryLabelRu: "Пильзен 2RP",
+        displayName: "Пильзен 2RP",
+        displayNameRu: "Пильзен 2RP",
+        displayNameEn: null,
+        nameRu: "Пильзен 2RP",
+        nameEn: null,
+        aliases: [{
+          id: "alias-pilsner-en",
+          locale: "ru",
+          alias: "пилснер",
+          aliasNormalized: "пилснер",
+          source: "seed",
+          isEnabled: true
+        }]
+      })
+    ];
+
+    const result = await searchUserCatalogIngredients("user-1", {
+      q: "pilsner",
+      category: "fermentable",
+      subtype: "malt",
+      limit: 10
+    });
+
+    const topIds = result.items.slice(0, 3).map((item) => item.id);
+
+    expect(topIds[0]).toBe("en-pilsner");
+    expect(topIds).toContain("en-pilsner-premium");
+    expect(topIds).toContain("ru-alias-only");
+  });
+
+  it("supports generic family recall for пилс without burying modified family variants", async () => {
+    mockState.catalogItems = [
+      buildCatalogItem({
+        id: "ru-pils",
+        primaryLabelRu: "Пилснер",
+        displayName: "Пилснер",
+        displayNameRu: "Пилснер",
+        displayNameEn: "Pilsner",
+        nameRu: "Пилснер",
+        nameEn: "Pilsner"
+      }),
+      buildCatalogItem({
+        id: "ru-pils-extra",
+        primaryLabelRu: "Пилснер Экстра",
+        displayName: "Пилснер Экстра",
+        displayNameRu: "Пилснер Экстра",
+        displayNameEn: "Pilsner Extra",
+        nameRu: "Пилснер Экстра",
+        nameEn: "Pilsner Extra"
+      }),
+      buildCatalogItem({
+        id: "ru-pils-alias",
+        primaryLabelRu: "Pilsen 2RP",
+        displayName: "Pilsen 2RP",
+        displayNameRu: "Pilsen 2RP",
+        displayNameEn: "Pilsen 2RP",
+        nameRu: "Pilsen 2RP",
+        nameEn: "Pilsen 2RP",
+        aliases: [{
+          id: "alias-pils-short-ru",
+          locale: "ru",
+          alias: "пилс",
+          aliasNormalized: "пилс",
+          source: "seed",
+          isEnabled: true
+        }]
+      })
+    ];
+
+    const result = await searchUserCatalogIngredients("user-1", {
+      q: "пилс",
+      category: "fermentable",
+      subtype: "malt",
+      limit: 10
+    });
+
+    const topIds = result.items.slice(0, 3).map((item) => item.id);
+
+    expect(topIds[0]).toBe("ru-pils");
+    expect(topIds).toContain("ru-pils-extra");
+    expect(topIds).toContain("ru-pils-alias");
+  });
+
+  it("supports generic family recall for pils without dropping cross-form family candidates", async () => {
+    mockState.catalogItems = [
+      buildCatalogItem({
+        id: "en-pils",
+        primaryLabelRu: "Pilsner",
+        displayName: "Pilsner",
+        displayNameRu: "Pilsner",
+        displayNameEn: "Pilsner",
+        nameRu: "Pilsner",
+        nameEn: "Pilsner"
+      }),
+      buildCatalogItem({
+        id: "en-pils-extra",
+        primaryLabelRu: "Pilsner Extra",
+        displayName: "Pilsner Extra",
+        displayNameRu: "Pilsner Extra",
+        displayNameEn: "Pilsner Extra",
+        nameRu: "Pilsner Extra",
+        nameEn: "Pilsner Extra"
+      }),
+      buildCatalogItem({
+        id: "en-pils-alias",
+        primaryLabelRu: "Пильзен 2RP",
+        displayName: "Пильзен 2RP",
+        displayNameRu: "Пильзен 2RP",
+        displayNameEn: null,
+        nameRu: "Пильзен 2RP",
+        nameEn: null,
+        aliases: [{
+          id: "alias-pils-short-en",
+          locale: "en",
+          alias: "pils",
+          aliasNormalized: "pils",
+          source: "seed",
+          isEnabled: true
+        }]
+      })
+    ];
+
+    const result = await searchUserCatalogIngredients("user-1", {
+      q: "pils",
+      category: "fermentable",
+      subtype: "malt",
+      limit: 10
+    });
+
+    const topIds = result.items.slice(0, 3).map((item) => item.id);
+
+    expect(topIds[0]).toBe("en-pils");
+    expect(topIds).toContain("en-pils-extra");
+    expect(topIds).toContain("en-pils-alias");
+  });
+
+  it("does not let favorite support-alias helpers outrank strong family-equivalent hits", async () => {
+    mockState.catalogItems = [
+      buildCatalogItem({
+        id: "ru-direct",
+        primaryLabelRu: "Пилснер",
+        displayName: "Пилснер",
+        displayNameRu: "Пилснер",
+        displayNameEn: "Pilsner",
+        nameRu: "Пилснер",
+        nameEn: "Pilsner"
+      }),
+      buildCatalogItem({
+        id: "favorite-helper-alias",
+        primaryLabelRu: "Base Malt",
+        displayName: "Base Malt",
+        displayNameRu: "Base Malt",
+        displayNameEn: "Base Malt",
+        nameRu: "Base Malt",
+        nameEn: "Base Malt",
+        aliases: [{
+          id: "alias-favorite-helper-ru",
+          locale: "ru",
+          alias: "пилснер база",
+          aliasNormalized: "пилснер база",
+          source: "seed",
+          isEnabled: true
+        }]
+      })
+    ];
+    mockState.favoriteKeys = new Set(["catalog:favorite-helper-alias"]);
+
+    const result = await searchUserCatalogIngredients("user-1", {
+      q: "пилснер",
+      category: "fermentable",
+      subtype: "malt",
+      limit: 10
+    });
+
+    expect(result.items.map((item) => item.id)).toEqual([
+      "ru-direct",
+      "favorite-helper-alias"
+    ]);
+    expect(result.items[1]?.isFavorite).toBe(true);
+  });
+
+  it("uses lightweight popularity signals to keep more expected family brands above obscure ones", async () => {
+    mockState.catalogItems = [
+      buildCatalogItem({
+        id: "castle-pilsner",
+        primaryLabelRu: "Castle Pilsner",
+        displayName: "Castle Pilsner",
+        displayNameRu: "Castle Pilsner",
+        displayNameEn: "Castle Pilsner",
+        nameRu: "Castle Pilsner",
+        nameEn: "Castle Pilsner",
+        brand: "Castle Malting",
+        producer: "Castle Malting",
+        brandName: "Castle Malting",
+        manufacturer: "Castle Malting",
+        sources: [{
+          id: "source-castle-pilsner",
+          ingredientId: "castle-pilsner",
+          kind: "catalog",
+          label: "Birrf",
+          url: null,
+          sourceBasis: "seed",
+          position: 0
+        }]
+      }),
+      buildCatalogItem({
+        id: "castle-pilsner-extra",
+        primaryLabelRu: "Castle Pilsner Extra",
+        displayName: "Castle Pilsner Extra",
+        displayNameRu: "Castle Pilsner Extra",
+        displayNameEn: "Castle Pilsner Extra",
+        nameRu: "Castle Pilsner Extra",
+        nameEn: "Castle Pilsner Extra",
+        brand: "Castle Malting",
+        producer: "Castle Malting",
+        brandName: "Castle Malting",
+        manufacturer: "Castle Malting"
+      }),
+      buildCatalogItem({
+        id: "obscure-pilsner",
+        primaryLabelRu: "Obscure Pilsner",
+        displayName: "Obscure Pilsner",
+        displayNameRu: "Obscure Pilsner",
+        displayNameEn: "Obscure Pilsner",
+        nameRu: "Obscure Pilsner",
+        nameEn: "Obscure Pilsner",
+        brand: "Small Mill",
+        producer: "Small Mill",
+        brandName: "Small Mill",
+        manufacturer: "Small Mill"
+      })
+    ];
+
+    const result = await searchUserCatalogIngredients("user-1", {
+      q: "pilsner",
+      category: "fermentable",
+      subtype: "malt",
+      limit: 10
+    });
+
+    const ids = result.items.map((item) => item.id);
+
+    expect(ids[0]).toBe("castle-pilsner");
+    expect(ids.indexOf("castle-pilsner")).toBeLessThan(ids.indexOf("obscure-pilsner"));
+  });
+
+  it("prioritizes modifier-aware family results for пилснер премиум", async () => {
+    mockState.catalogItems = [
+      buildCatalogItem({
+        id: "plain-pilsner",
+        primaryLabelRu: "Пилснер",
+        displayName: "Пилснер",
+        displayNameRu: "Пилснер",
+        displayNameEn: "Pilsner",
+        nameRu: "Пилснер",
+        nameEn: "Pilsner"
+      }),
+      buildCatalogItem({
+        id: "premium-pilsner",
+        primaryLabelRu: "Пилснер Премиум",
+        displayName: "Пилснер Премиум",
+        displayNameRu: "Пилснер Премиум",
+        displayNameEn: "Pilsner Premium",
+        nameRu: "Пилснер Премиум",
+        nameEn: "Pilsner Premium"
+      }),
+      buildCatalogItem({
+        id: "pilsen-2rp",
+        primaryLabelRu: "Pilsen 2RP",
+        displayName: "Pilsen 2RP",
+        displayNameRu: "Pilsen 2RP",
+        displayNameEn: "Pilsen 2RP",
+        nameRu: "Pilsen 2RP",
+        nameEn: "Pilsen 2RP"
+      })
+    ];
+
+    const result = await searchUserCatalogIngredients("user-1", {
+      q: "пилснер премиум",
+      category: "fermentable",
+      subtype: "malt",
+      limit: 10
+    });
+
+    expect(result.items[0]?.id).toBe("premium-pilsner");
+  });
+
+  it("prioritizes brand plus family intent for castle pilsner", async () => {
+    mockState.catalogItems = [
+      buildCatalogItem({
+        id: "castle-pilsner-brand",
+        primaryLabelRu: "Castle Pilsner",
+        displayName: "Castle Pilsner",
+        displayNameRu: "Castle Pilsner",
+        displayNameEn: "Castle Pilsner",
+        nameRu: "Castle Pilsner",
+        nameEn: "Castle Pilsner",
+        brand: "Castle Malting",
+        producer: "Castle Malting",
+        brandName: "Castle Malting",
+        manufacturer: "Castle Malting"
+      }),
+      buildCatalogItem({
+        id: "castle-vienna-brand",
+        primaryLabelRu: "Castle Vienna",
+        displayName: "Castle Vienna",
+        displayNameRu: "Castle Vienna",
+        displayNameEn: "Castle Vienna",
+        nameRu: "Castle Vienna",
+        nameEn: "Castle Vienna",
+        brand: "Castle Malting",
+        producer: "Castle Malting",
+        brandName: "Castle Malting",
+        manufacturer: "Castle Malting"
+      }),
+      buildCatalogItem({
+        id: "weyermann-pilsner-brand",
+        primaryLabelRu: "Weyermann Pilsner",
+        displayName: "Weyermann Pilsner",
+        displayNameRu: "Weyermann Pilsner",
+        displayNameEn: "Weyermann Pilsner",
+        nameRu: "Weyermann Pilsner",
+        nameEn: "Weyermann Pilsner",
+        brand: "Weyermann",
+        producer: "Weyermann",
+        brandName: "Weyermann",
+        manufacturer: "Weyermann"
+      })
+    ];
+
+    const result = await searchUserCatalogIngredients("user-1", {
+      q: "castle pilsner",
+      category: "fermentable",
+      subtype: "malt",
+      limit: 10
+    });
+
+    expect(result.items[0]?.id).toBe("castle-pilsner-brand");
+    expect(result.items[1]?.id).not.toBe("castle-vienna-brand");
+  });
+
+  it("prioritizes code-specific intent for 2rp", async () => {
+    mockState.catalogItems = [
+      buildCatalogItem({
+        id: "pilsen-2rp-code",
+        primaryLabelRu: "Pilsen 2RP",
+        displayName: "Pilsen 2RP",
+        displayNameRu: "Pilsen 2RP",
+        displayNameEn: "Pilsen 2RP",
+        nameRu: "Pilsen 2RP",
+        nameEn: "Pilsen 2RP"
+      }),
+      buildCatalogItem({
+        id: "pilsen-2rs-code",
+        primaryLabelRu: "Pilsen 2RS",
+        displayName: "Pilsen 2RS",
+        displayNameRu: "Pilsen 2RS",
+        displayNameEn: "Pilsen 2RS",
+        nameRu: "Pilsen 2RS",
+        nameEn: "Pilsen 2RS"
+      }),
+      buildCatalogItem({
+        id: "plain-pilsner-code",
+        primaryLabelRu: "Pilsner",
+        displayName: "Pilsner",
+        displayNameRu: "Pilsner",
+        displayNameEn: "Pilsner",
+        nameRu: "Pilsner",
+        nameEn: "Pilsner"
+      })
+    ];
+
+    const result = await searchUserCatalogIngredients("user-1", {
+      q: "2rp",
+      category: "fermentable",
+      subtype: "malt",
+      limit: 10
+    });
+
+    expect(result.items[0]?.id).toBe("pilsen-2rp-code");
+  });
+
+  it("uses custom as a tie-breaker within the same semantic tier", async () => {
+    mockState.catalogItems = [
+      buildCatalogItem({
+        id: "catalog-pilsner-premium",
+        primaryLabelRu: "Pilsner Premium",
+        displayName: "Pilsner Premium",
+        displayNameRu: "Pilsner Premium",
+        displayNameEn: "Pilsner Premium",
+        nameRu: "Pilsner Premium",
+        nameEn: "Pilsner Premium"
+      })
+    ];
+    mockState.customItems = [
+      buildCustomIngredientRow({
+        id: "custom-pilsner-premium",
+        displayName: "Pilsner Premium",
+        properties: {
+          category: "fermentable",
+          subtype: "malt",
+          nameEn: "Pilsner Premium"
+        }
+      })
+    ];
+
+    const result = await searchUserCatalogIngredients("user-1", {
+      q: "pilsner premium",
+      category: "fermentable",
+      subtype: "malt",
+      limit: 10
+    });
+
+    expect(result.items.map((item) => item.id)).toEqual([
+      "custom-pilsner-premium",
+      "catalog-pilsner-premium"
+    ]);
+  });
+
+  it("does not let custom alias-only matches outrank stronger catalog direct-name hits", async () => {
+    mockState.catalogItems = [
+      buildCatalogItem({
+        id: "catalog-direct-pilsner",
+        primaryLabelRu: "Pilsner",
+        displayName: "Pilsner",
+        displayNameRu: "Pilsner",
+        displayNameEn: "Pilsner",
+        nameRu: "Pilsner",
+        nameEn: "Pilsner"
+      })
+    ];
+    mockState.customItems = [
+      buildCustomIngredientRow({
+        id: "custom-alias-pilsner",
+        displayName: "Pilsen 2RP",
+        properties: {
+          category: "fermentable",
+          subtype: "malt",
+          nameEn: "Pilsen 2RP",
+          aliases: [{
+            locale: "en",
+            alias: "Pilsner",
+            isEnabled: true
+          }]
+        }
+      })
+    ];
+
+    const result = await searchUserCatalogIngredients("user-1", {
+      q: "pilsner",
+      category: "fermentable",
+      subtype: "malt",
+      limit: 10
+    });
+
+    expect(result.items.map((item) => item.id)).toEqual([
+      "catalog-direct-pilsner",
+      "custom-alias-pilsner"
+    ]);
   });
 });

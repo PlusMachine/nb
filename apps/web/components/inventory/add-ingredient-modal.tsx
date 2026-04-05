@@ -43,6 +43,25 @@ type AddIngredientSuccessEffects = {
   refresh: () => void;
 };
 
+const appendPayloadToFormData = (formData: FormData, payload: Record<string, unknown>) => {
+  Object.entries(payload).forEach(([key, value]) => {
+    if (value == null) {
+      return;
+    }
+
+    if (Array.isArray(value)) {
+      value.forEach((entry) => {
+        if (entry != null) {
+          formData.append(key, String(entry));
+        }
+      });
+      return;
+    }
+
+    formData.set(key, String(value));
+  });
+};
+
 export const applyAddIngredientSuccessEffects = (
   result: AddIngredientResult,
   { onClose, refresh }: AddIngredientSuccessEffects
@@ -383,13 +402,7 @@ export function AddIngredientModal({
                 onSubmit={async (payload) => {
                   setPending(true);
                   const formData = new FormData();
-                  Object.entries(payload).forEach(([key, value]) => {
-                    if (value == null) {
-                      return;
-                    }
-
-                    formData.set(key, value);
-                  });
+                  appendPayloadToFormData(formData, payload);
                   const nextResult = await addSelectedIngredientAction(null, formData);
                   setPending(false);
                   handleSuccess(nextResult);
@@ -409,13 +422,7 @@ export function AddIngredientModal({
                 onSubmitCreate={async (payload) => {
                   setPending(true);
                   const formData = new FormData();
-                  Object.entries(payload).forEach(([key, value]) => {
-                    if (value == null) {
-                      return;
-                    }
-
-                    formData.set(key, value);
-                  });
+                  appendPayloadToFormData(formData, payload);
                   const nextResult = await addCustomIngredientAction(null, formData);
                   setPending(false);
                   handleSuccess(nextResult);
@@ -423,13 +430,7 @@ export function AddIngredientModal({
                 onSubmitExisting={async (payload) => {
                   setPending(true);
                   const formData = new FormData();
-                  Object.entries(payload).forEach(([key, value]) => {
-                    if (value == null) {
-                      return;
-                    }
-
-                    formData.set(key, value);
-                  });
+                  appendPayloadToFormData(formData, payload);
                   const nextResult = await addSelectedIngredientAction(null, formData);
                   setPending(false);
                   handleSuccess(nextResult);

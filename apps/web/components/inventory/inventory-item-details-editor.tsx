@@ -6,6 +6,7 @@ import { createPortal } from "react-dom";
 
 import { updateInventoryItemAction, type AddIngredientResult } from "@/app/(app)/app/ingredients/actions";
 import { IngredientPicker, IngredientSelectionCard } from "@/components/ingredients/ingredient-picker";
+import { IngredientPurchaseLinksField } from "@/components/ingredients/ingredient-purchase-links-field";
 import {
   InventoryIngredientCategoryGrid,
   resolveInventoryIngredientCategoryValue,
@@ -211,6 +212,10 @@ export function InventoryItemDetailsEditor({
     resolveInventoryEditorInitialSelection(item.source, item.enteredUnit)
   ));
   const [optionalOpen, setOptionalOpen] = useState(false);
+  const [purchaseLinksState, setPurchaseLinksState] = useState<{ urls: string[]; isLoaded: boolean }>({
+    urls: [],
+    isLoaded: false
+  });
   const [pickerFocusSignal, setPickerFocusSignal] = useState(0);
   const [result, setResult] = useState<AddIngredientResult | null>(null);
   const [isPending, startTransition] = useTransition();
@@ -251,6 +256,10 @@ export function InventoryItemDetailsEditor({
     setForm(createFormState(item, preferredCurrency, currencyRates));
     setSelectedSuggestion(resolveInventoryEditorInitialSelection(item.source, item.enteredUnit));
     setOptionalOpen(false);
+    setPurchaseLinksState({
+      urls: [],
+      isLoaded: false
+    });
     setResult(null);
     setEditing(initiallyOpen);
   }, [currencyRates, initiallyOpen, item, preferredCurrency]);
@@ -274,6 +283,10 @@ export function InventoryItemDetailsEditor({
     setForm(createFormState(item, preferredCurrency, currencyRates));
     setSelectedSuggestion(resolveInventoryEditorInitialSelection(item.source, item.enteredUnit));
     setOptionalOpen(false);
+    setPurchaseLinksState({
+      urls: [],
+      isLoaded: false
+    });
     setResult(null);
     setEditing(false);
   };
@@ -284,6 +297,10 @@ export function InventoryItemDetailsEditor({
     setForm(createFormState(item, preferredCurrency, currencyRates));
     setSelectedSuggestion(resolveInventoryEditorInitialSelection(item.source, item.enteredUnit));
     setOptionalOpen(false);
+    setPurchaseLinksState({
+      urls: [],
+      isLoaded: false
+    });
     setResult(null);
     setEditing(true);
   };
@@ -294,6 +311,10 @@ export function InventoryItemDetailsEditor({
 
     setSelectedSuggestion(null);
     setOptionalOpen(false);
+    setPurchaseLinksState({
+      urls: [],
+      isLoaded: false
+    });
     setForm((current) => ({
       ...current,
       type: resolveLegacyIngredientType({ category: current.category }),
@@ -362,7 +383,9 @@ export function InventoryItemDetailsEditor({
                       priceInputAmount: form.priceInputAmount,
                       purchasedAt: form.purchasedAt,
                       freshnessDate: form.freshnessDate,
-                      notes: form.notes
+                      notes: form.notes,
+                      purchaseLinks: purchaseLinksState.urls,
+                      purchaseLinksTouched: purchaseLinksState.isLoaded
                     });
 
                     setResult(nextResult);
@@ -572,6 +595,16 @@ export function InventoryItemDetailsEditor({
                           allowedUnits={selectedSuggestion?.allowedUnits ?? item.source.allowedUnits}
                           measurementDimension={selectedSuggestion?.measurementDimension ?? item.source.measurementDimension}
                           technicalData={selectedSuggestion?.technicalData ?? item.source.technicalData}
+                        />
+
+                        <IngredientPurchaseLinksField
+                          reference={selectedSuggestion ? {
+                            source: selectedSuggestion.source,
+                            id: selectedSuggestion.id
+                          } : null}
+                          enabled={optionalOpen}
+                          onStateChange={setPurchaseLinksState}
+                          testId="inventory-editor-purchase-links-field"
                         />
 
                         <label className="block text-sm">Заметки
