@@ -10,6 +10,7 @@ describe("ingredient contracts", () => {
     const expandedLimit = ingredientSearchQuerySchema.parse({ q: "pils", limit: 61 });
     const byFamily = ingredientSearchQuerySchema.parse({ q: "", category: "fermentable", subtype: "malt", family: "pilsner" });
     const byFavorites = ingredientSearchQuerySchema.parse({ q: "", category: "fermentable", subtype: "malt", favoritesOnly: true });
+    const byCustom = ingredientSearchQuerySchema.parse({ q: "", category: "hop", customOnly: true });
 
     expect(byType.type).toBe("hop");
     expect(byCategory.category).toBe("water_treatment");
@@ -17,6 +18,7 @@ describe("ingredient contracts", () => {
     expect(expandedLimit.limit).toBe(61);
     expect(byFamily.family).toBe("pilsner");
     expect(byFavorites.favoritesOnly).toBe(true);
+    expect(byCustom.customOnly).toBe(true);
   });
 
   it("rejects empty searches that have neither text nor family scope", () => {

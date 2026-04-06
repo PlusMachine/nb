@@ -1,5 +1,6 @@
 import type {
   IngredientCategory,
+  IngredientManufacturerRefinement,
   IngredientSearchFamilyScope,
   IngredientSubtype,
   IngredientSuggestionItem,
@@ -24,6 +25,26 @@ export type IngredientPickerMaltQuickStartFamily = {
   label: string;
   presetQuery: string;
 };
+
+export const ingredientPickerQuickStartBrandLimit = 6;
+
+const buildIngredientPickerQuickStartBrand = (label: string): IngredientManufacturerRefinement => ({
+  type: "manufacturer",
+  label,
+  normalizedLabel: normalizeSearchText(label),
+  value: label,
+  count: 0,
+  score: 0
+});
+
+export const ingredientPickerMaltQuickStartFallbackBrands: IngredientManufacturerRefinement[] = [
+  buildIngredientPickerQuickStartBrand("Курский солод"),
+  buildIngredientPickerQuickStartBrand("Castle Malting"),
+  buildIngredientPickerQuickStartBrand("Soufflet"),
+  buildIngredientPickerQuickStartBrand("Weyermann"),
+  buildIngredientPickerQuickStartBrand("BESTMALZ"),
+  buildIngredientPickerQuickStartBrand("Белсолод")
+];
 
 export const ingredientPickerMaltQuickStartFamilies: IngredientPickerMaltQuickStartFamily[] = [
   { key: "pilsner", label: "Пилснер", presetQuery: "pilsner" },
@@ -73,6 +94,7 @@ export const shouldShowIngredientQuickStart = ({
   hasExplicitSearchState = false,
   hasActiveFamilyScope = false,
   hasActiveFavoritesScope = false,
+  hasActiveCustomScope = false,
   hasActiveManufacturer = false,
   hasActiveGroup = false
 }: {
@@ -83,6 +105,7 @@ export const shouldShowIngredientQuickStart = ({
   hasExplicitSearchState?: boolean;
   hasActiveFamilyScope?: boolean;
   hasActiveFavoritesScope?: boolean;
+  hasActiveCustomScope?: boolean;
   hasActiveManufacturer?: boolean;
   hasActiveGroup?: boolean;
 }) => (
@@ -92,6 +115,7 @@ export const shouldShowIngredientQuickStart = ({
   && !hasExplicitSearchState
   && !hasActiveFamilyScope
   && !hasActiveFavoritesScope
+  && !hasActiveCustomScope
   && !hasActiveManufacturer
   && !hasActiveGroup
   && normalizeSearchText(query).length < 2
@@ -126,7 +150,8 @@ export const resolveIngredientPickerScopedPlaceholder = ({
   activeManufacturerLabel,
   activeGroupLabel,
   activeFamilyLabel,
-  activeFavoritesOnly = false
+  activeFavoritesOnly = false,
+  activeCustomOnly = false
 }: {
   placeholder: string;
   query: string;
@@ -134,6 +159,7 @@ export const resolveIngredientPickerScopedPlaceholder = ({
   activeGroupLabel?: string | null;
   activeFamilyLabel?: string | null;
   activeFavoritesOnly?: boolean;
+  activeCustomOnly?: boolean;
 }) => {
   if (normalizeSearchText(query)) {
     return placeholder;
@@ -153,6 +179,10 @@ export const resolveIngredientPickerScopedPlaceholder = ({
 
   if (activeFavoritesOnly) {
     return "Искать среди избранных";
+  }
+
+  if (activeCustomOnly) {
+    return "Искать среди своих";
   }
 
   return placeholder;

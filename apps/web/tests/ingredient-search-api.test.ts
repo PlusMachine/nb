@@ -11,7 +11,8 @@ vi.mock("../features/ingredients/catalog-service", () => ({
     appliedManufacturer: null,
     appliedGroup: null,
     appliedFamily: null,
-    appliedFavoritesOnly: false
+    appliedFavoritesOnly: false,
+    appliedCustomOnly: false
   }))
 }));
 
@@ -24,7 +25,7 @@ describe("ingredient search api", () => {
   });
 
   it("returns structured picker search shape", async () => {
-    const response = await GET(new Request("http://local/api/ingredients/search?q=citra&manufacturer=Yakima%20Chief&family=pilsner&favoritesOnly=true"));
+    const response = await GET(new Request("http://local/api/ingredients/search?q=citra&manufacturer=Yakima%20Chief&family=pilsner&favoritesOnly=true&customOnly=true"));
     const data = await response.json() as {
       items: Array<{ id: string; source: string }>;
       refinements: Array<{ label: string }>;
@@ -43,7 +44,8 @@ describe("ingredient search api", () => {
       q: "citra",
       manufacturer: "Yakima Chief",
       family: "pilsner",
-      favoritesOnly: true
+      favoritesOnly: true,
+      customOnly: true
     }));
   });
 });

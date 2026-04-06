@@ -781,6 +781,7 @@ export function CatalogIngredientForm({
             category={category}
             subtype={subtype}
             enableQuickStart
+            allowCustomOnlyFilter
             autoFocus={autoFocus}
             focusSignal={pickerFocusSignal}
             onValueChange={(nextValue) => {
@@ -803,7 +804,33 @@ export function CatalogIngredientForm({
               });
             }}
             placeholder="Начните вводить название ингредиента"
-            emptyCta={<button type="button" onClick={onRequestCustom} className="text-sm text-blue-700 underline">Не нашли? Добавить свой ингредиент</button>}
+            emptyCta={({ hasActiveFilters, resetFilters }) => (
+              <div className="space-y-3">
+                <p className="text-sm text-zinc-700">
+                  Ничего не нашли. Попробуйте сменить категорию
+                  {hasActiveFilters ? " или сбросить фильтры" : ""}
+                  , либо добавьте свой ингредиент.
+                </p>
+                <div className="flex flex-wrap items-center gap-2">
+                  {hasActiveFilters ? (
+                    <button
+                      type="button"
+                      onClick={resetFilters}
+                      className="inline-flex items-center rounded-md border border-zinc-300 bg-white px-3 py-2 text-sm font-medium text-zinc-700 transition-colors hover:border-zinc-400 hover:bg-zinc-100 hover:text-zinc-950"
+                    >
+                      Сбросить фильтры
+                    </button>
+                  ) : null}
+                  <button
+                    type="button"
+                    onClick={onRequestCustom}
+                    className="inline-flex items-center rounded-md bg-zinc-950 px-3 py-2 text-sm font-medium text-white transition-colors hover:bg-zinc-800"
+                  >
+                    Добавить свой ингредиент
+                  </button>
+                </div>
+              </div>
+            )}
           />
           {(localError || fieldErrors?.ingredientCatalogItemId) && <p className="text-xs text-red-600">{localError ?? fieldErrors?.ingredientCatalogItemId}</p>}
         </section>

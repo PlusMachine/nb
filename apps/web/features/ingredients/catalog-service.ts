@@ -39,6 +39,8 @@ import { sortRankedCatalogItems } from "./catalog-ranking";
 import { readCustomIngredientMetadata } from "./custom-metadata";
 import { normalizeSearchText } from "./normalization";
 import {
+  ingredientPickerMaltQuickStartFallbackBrands,
+  ingredientPickerQuickStartBrandLimit,
   resolveIngredientPickerQuickStartFamilyScope
 } from "./picker-quick-start";
 import {
@@ -81,6 +83,7 @@ type CatalogSearchParams = {
   group?: string;
   manufacturer?: string;
   favoritesOnly?: boolean;
+  customOnly?: boolean;
   limit?: number;
   includeCustom?: boolean;
 };
@@ -369,6 +372,15 @@ const filterItemsByFavoriteState = (
 ) => (
   favoritesOnly
     ? items.filter((item) => item.isFavorite === true)
+    : items
+);
+
+const filterItemsByCustomState = (
+  items: UserCatalogIngredientDto[],
+  customOnly = false
+) => (
+  customOnly
+    ? items.filter((item) => item.source === "custom")
     : items
 );
 
@@ -755,6 +767,143 @@ const buildScopeOnlyRankedItems = (
   score: Math.max(1, 1000 - index)
 }));
 
+type QuickStartBrandCandidate = IngredientManufacturerRefinement & {
+  inventoryUsageCount: number;
+  recipeUsageCount: number;
+  favoriteCount: number;
+  recentCount: number;
+  fallbackRank: number | null;
+};
+
+const hasQuickStartBrandSignal = (candidate: QuickStartBrandCandidate) => (
+  candidate.recentCount > 0
+  || candidate.inventoryUsageCount > 0
+  || candidate.favoriteCount > 0
+  || candidate.recipeUsageCount > 0
+);
+
+const sortPersonalizedQuickStartBrands = (
+  left: QuickStartBrandCandidate,
+  right: QuickStartBrandCandidate
+) => (
+  right.recentCount - left.recentCount
+  || right.inventoryUsageCount - left.inventoryUsageCount
+  || right.favoriteCount - left.favoriteCount
+  || right.recipeUsageCount - left.recipeUsageCount
+  || ((left.fallbackRank ?? Number.MAX_SAFE_INTEGER) - (right.fallbackRank ?? Number.MAX_SAFE_INTEGER))
+  || right.count - left.count
+  || left.label.localeCompare(right.label, "ru")
+);
+
+const sortRemainingQuickStartBrands = (
+  left: QuickStartBrandCandidate,
+  right: QuickStartBrandCandidate
+) => (
+  ((left.fallbackRank ?? Number.MAX_SAFE_INTEGER) - (right.fallbackRank ?? Number.MAX_SAFE_INTEGER))
+  || right.count - left.count
+  || right.score - left.score
+  || left.label.localeCompare(right.label, "ru")
+);
+
+const buildIngredientPickerQuickStartBrands = ({
+  items,
+  recent
+}: {
+  items: UserCatalogIngredientDto[];
+  recent: IngredientSuggestionItem[];
+}): IngredientManufacturerRefinement[] => {
+  if (items.length === 0) {
+    return [];
+  }
+
+  const fallbackRanks = new Map(
+    ingredientPickerMaltQuickStartFallbackBrands.map((brand, index) => [brand.normalizedLabel, index])
+  );
+  const recentBrandCounts = new Map<string, number>();
+
+  for (const item of recent) {
+    const normalizedBrand = normalizeSearchText(resolveIngredientBrandLabel(item) ?? "");
+    if (!normalizedBrand) {
+      continue;
+    }
+
+    recentBrandCounts.set(normalizedBrand, (recentBrandCounts.get(normalizedBrand) ?? 0) + 1);
+  }
+
+  const grouped = new Map<string, QuickStartBrandCandidate>();
+
+  for (const item of items) {
+    const label = resolveManufacturerLabel(item);
+    const normalizedLabel = normalizeSearchText(label ?? "");
+    if (!label || !normalizedLabel) {
+      continue;
+    }
+
+    const current = grouped.get(normalizedLabel) ?? {
+      type: "manufacturer" as const,
+      label,
+      normalizedLabel,
+      value: label,
+      count: 0,
+      score: 0,
+      inventoryUsageCount: 0,
+      recipeUsageCount: 0,
+      favoriteCount: 0,
+      recentCount: recentBrandCounts.get(normalizedLabel) ?? 0,
+      fallbackRank: fallbackRanks.get(normalizedLabel) ?? null
+    };
+
+    current.count += 1;
+    current.inventoryUsageCount += item.inventoryUsageCount;
+    current.recipeUsageCount += item.recipeUsageCount;
+    current.favoriteCount += Number(item.isFavorite === true);
+    current.score = (
+      current.recentCount * 100
+      + current.inventoryUsageCount * 40
+      + current.favoriteCount * 25
+      + current.recipeUsageCount * 10
+      + current.count
+    );
+    grouped.set(normalizedLabel, current);
+  }
+
+  const candidates = [...grouped.values()];
+  const selected: QuickStartBrandCandidate[] = [];
+  const seen = new Set<string>();
+
+  const pushCandidate = (candidate: QuickStartBrandCandidate | undefined) => {
+    if (!candidate || seen.has(candidate.normalizedLabel) || selected.length >= ingredientPickerQuickStartBrandLimit) {
+      return;
+    }
+
+    selected.push(candidate);
+    seen.add(candidate.normalizedLabel);
+  };
+
+  candidates
+    .filter(hasQuickStartBrandSignal)
+    .sort(sortPersonalizedQuickStartBrands)
+    .forEach(pushCandidate);
+
+  for (const fallbackBrand of ingredientPickerMaltQuickStartFallbackBrands) {
+    pushCandidate(grouped.get(fallbackBrand.normalizedLabel));
+  }
+
+  candidates
+    .filter((candidate) => !seen.has(candidate.normalizedLabel))
+    .sort(sortRemainingQuickStartBrands)
+    .forEach(pushCandidate);
+
+  return selected.map((candidate) => ({
+    type: "manufacturer",
+    label: candidate.label,
+    normalizedLabel: candidate.normalizedLabel,
+    value: candidate.value,
+    count: candidate.count,
+    score: candidate.score
+  }));
+};
+
 export const listIngredientPickerQuickStart = async (
   userId: string,
   params: {
@@ -767,6 +916,7 @@ export const listIngredientPickerQuickStart = async (
   const query = ingredientPickerQuickStartQuerySchema.parse(params);
   if (!(query.category === "fermentable" && query.subtype === "malt")) {
     return {
+      brands: [],
       recent: []
     };
   }
@@ -778,8 +928,16 @@ export const listIngredientPickerQuickStart = async (
     .filter((item): item is IngredientSuggestionItem => item !== null)
     .filter((item) => item.category === query.category && item.subtype === query.subtype)
     .slice(0, query.recentLimit);
+  const { allItems } = await loadUnifiedCatalogItems(userId);
+  const scopedItems = filterItemsByPickerContext(allItems, query.category, query.subtype);
+  const usageAwareItems = await applyUsageCounts(userId, scopedItems);
+  const brands = buildIngredientPickerQuickStartBrands({
+    items: usageAwareItems,
+    recent
+  });
 
   return {
+    brands,
     recent
   };
 };
@@ -807,7 +965,11 @@ export const searchUserCatalogIngredients = async (
     : categoryFilteredAllItems;
   const scopedCatalogItems = filterItemsByQuickStartFamily(subtypeFilteredCatalogItems, familyScope);
   const scopedAllItems = filterItemsByQuickStartFamily(subtypeFilteredAllItems, familyScope);
-  const searchableItems = params.includeCustom === false ? scopedCatalogItems : scopedAllItems;
+  const searchableItems = query.customOnly
+    ? filterItemsByCustomState(scopedAllItems, true)
+    : params.includeCustom === false
+      ? scopedCatalogItems
+      : scopedAllItems;
   const groupScopedItems = query.category === "consumable"
     ? filterItemsByConsumableGroup(searchableItems, query.group)
     : searchableItems;
@@ -873,7 +1035,8 @@ export const searchUserCatalogIngredients = async (
     appliedManufacturer,
     appliedGroup,
     appliedFamily: familyScope,
-    appliedFavoritesOnly: query.favoritesOnly
+    appliedFavoritesOnly: query.favoritesOnly,
+    appliedCustomOnly: query.customOnly
   };
 };
 

@@ -8,6 +8,7 @@ import {
   countIngredientPickerActiveScopes,
   countIngredientPickerRefinementCoverage,
   IngredientPicker,
+  IngredientPickerCustomOnlyChip,
   IngredientPickerFamilyChip,
   IngredientPickerFavoritesChip,
   IngredientPickerLoadingState,
@@ -24,8 +25,11 @@ import {
   resolveIngredientPickerRowContent,
   resolveIngredientPickerRequestedLimit,
   resolveIngredientPickerSearchQuery,
+  resolveIngredientPickerScopedState,
   resolveIngredientPickerScopedPlaceholder,
   resolveVisibleIngredientItems,
+  shouldAllowIngredientFavoritesFilter,
+  shouldAllowIngredientCustomOnlyFilter,
   shouldShowIngredientLoadingState,
   shouldShowIngredientPickerRecentExpandAction,
   shouldCloseIngredientPickerAfterBlur,
@@ -138,6 +142,14 @@ describe("ingredient picker state helpers", () => {
       query: "",
       hasActiveFavoritesScope: true
     })).toBe(false);
+
+    expect(shouldShowIngredientQuickStart({
+      enabled: true,
+      category: "fermentable",
+      subtype: "malt",
+      query: "",
+      hasActiveCustomScope: true
+    })).toBe(false);
   });
 
   it("does not show empty state until the search request is finished and no refinements exist", () => {
@@ -205,7 +217,7 @@ describe("ingredient picker state helpers", () => {
     expect(html).toContain("animate-spin");
   });
 
-  it("passes category, family, manufacturer and favorites filters to search params", () => {
+  it("passes category, family, manufacturer and source scopes to search params", () => {
     const params = buildIngredientSearchParams({
       q: "",
       category: "fermentable",
@@ -213,6 +225,7 @@ describe("ingredient picker state helpers", () => {
       family: "pilsner",
       manufacturer: "Castle Malting",
       favoritesOnly: true,
+      customOnly: true,
       limit: 8
     });
 
@@ -222,6 +235,7 @@ describe("ingredient picker state helpers", () => {
     expect(params.get("family")).toBe("pilsner");
     expect(params.get("manufacturer")).toBe("Castle Malting");
     expect(params.get("favoritesOnly")).toBe("true");
+    expect(params.get("customOnly")).toBe("true");
     expect(params.get("limit")).toBe("8");
   });
 
@@ -231,6 +245,47 @@ describe("ingredient picker state helpers", () => {
     expect(params.get("q")).toBe("saaz");
     expect(params.has("category")).toBe(false);
     expect(params.get("limit")).toBe("8");
+  });
+
+  it("shows custom-only filter only when the current category actually has custom items", () => {
+    expect(shouldAllowIngredientFavoritesFilter({
+      enableQuickStart: true,
+      category: "fermentable",
+      subtype: "malt",
+      hasFavoritesInCategory: true
+    })).toBe(true);
+
+    expect(shouldAllowIngredientFavoritesFilter({
+      enableQuickStart: true,
+      category: "fermentable",
+      subtype: "malt",
+      hasFavoritesInCategory: false
+    })).toBe(false);
+
+    expect(shouldAllowIngredientFavoritesFilter({
+      enableQuickStart: false,
+      category: "fermentable",
+      subtype: "malt",
+      hasFavoritesInCategory: true
+    })).toBe(false);
+
+    expect(shouldAllowIngredientCustomOnlyFilter({
+      allowCustomOnlyFilter: true,
+      includeCustom: true,
+      hasCustomItemsInCategory: true
+    })).toBe(true);
+
+    expect(shouldAllowIngredientCustomOnlyFilter({
+      allowCustomOnlyFilter: true,
+      includeCustom: true,
+      hasCustomItemsInCategory: false
+    })).toBe(false);
+
+    expect(shouldAllowIngredientCustomOnlyFilter({
+      allowCustomOnlyFilter: false,
+      includeCustom: true,
+      hasCustomItemsInCategory: true
+    })).toBe(false);
   });
 
   it("promotes hop producer into the primary row and removes duplicate subtitle producer", () => {
@@ -510,7 +565,8 @@ describe("ingredient picker state helpers", () => {
       },
       appliedGroup: null,
       appliedFamily: null,
-      appliedFavoritesOnly: false
+      appliedFavoritesOnly: false,
+      appliedCustomOnly: false
     });
   });
 
@@ -568,6 +624,12 @@ describe("ingredient picker state helpers", () => {
       query: "",
       activeFavoritesOnly: true
     })).toBe("Искать среди избранных");
+
+    expect(resolveIngredientPickerScopedPlaceholder({
+      placeholder: "Начните вводить название ингредиента",
+      query: "",
+      activeCustomOnly: true
+    })).toBe("Искать среди своих");
   });
 
   it("shows reset-all only when multiple scopes are active", () => {
@@ -593,11 +655,184 @@ describe("ingredient picker state helpers", () => {
         count: 5,
         score: 80
       },
-      activeFavoritesOnly: true
-    })).toBe(3);
+      activeFavoritesOnly: true,
+      activeCustomOnly: true
+    })).toBe(4);
 
     expect(shouldShowIngredientScopeReset({ activeScopeCount: 1 })).toBe(false);
     expect(shouldShowIngredientScopeReset({ activeScopeCount: 2 })).toBe(true);
+  });
+
+  it("opens results state immediately for a brand-first quick-start action", () => {
+    const brand = {
+      type: "manufacturer" as const,
+      label: "Castle Malting",
+      normalizedLabel: "castle malting",
+      value: "Castle Malting",
+      count: 5,
+      score: 80
+    };
+    const nextState = resolveIngredientPickerScopedState({
+      activeScopeCount: 0,
+      nextQuery: "",
+      nextManufacturer: brand,
+      nextFavoritesOnly: false
+    });
+
+    expect(nextState.isOpen).toBe(true);
+    expect(nextState.nextScopeCount).toBe(1);
+    expect(shouldSearchIngredients({
+      isOpen: nextState.isOpen,
+      query: "",
+      hasSearchScope: nextState.nextScopeCount > 0
+    })).toBe(true);
+    expect(shouldShowIngredientQuickStart({
+      enabled: true,
+      category: "fermentable",
+      subtype: "malt",
+      query: "",
+      hasActiveManufacturer: true
+    })).toBe(false);
+  });
+
+  it("opens results state immediately for a family quick-start action", () => {
+    const family = {
+      key: "pilsner",
+      label: "Пилснер",
+      presetQuery: "pilsner"
+    };
+    const nextState = resolveIngredientPickerScopedState({
+      activeScopeCount: 0,
+      nextQuery: "",
+      nextFamily: family,
+      nextFavoritesOnly: false
+    });
+
+    expect(nextState.isOpen).toBe(true);
+    expect(nextState.nextScopeCount).toBe(1);
+    expect(shouldSearchIngredients({
+      isOpen: nextState.isOpen,
+      query: "",
+      hasSearchScope: nextState.nextScopeCount > 0
+    })).toBe(true);
+    expect(shouldShowIngredientQuickStart({
+      enabled: true,
+      category: "fermentable",
+      subtype: "malt",
+      query: "",
+      hasActiveFamilyScope: true
+    })).toBe(false);
+  });
+
+  it("opens results state immediately for the favorites quick-start filter", () => {
+    const nextState = resolveIngredientPickerScopedState({
+      activeScopeCount: 0,
+      nextQuery: "",
+      nextFavoritesOnly: true
+    });
+
+    expect(nextState.isOpen).toBe(true);
+    expect(nextState.nextScopeCount).toBe(1);
+    expect(shouldSearchIngredients({
+      isOpen: nextState.isOpen,
+      query: "",
+      hasSearchScope: nextState.nextScopeCount > 0
+    })).toBe(true);
+    expect(shouldShowIngredientQuickStart({
+      enabled: true,
+      category: "fermentable",
+      subtype: "malt",
+      query: "",
+      hasActiveFavoritesScope: true
+    })).toBe(false);
+  });
+
+  it("opens results state immediately for the custom-only quick filter", () => {
+    const nextState = resolveIngredientPickerScopedState({
+      activeScopeCount: 0,
+      nextQuery: "",
+      nextFavoritesOnly: false,
+      nextCustomOnly: true
+    });
+
+    expect(nextState.isOpen).toBe(true);
+    expect(nextState.nextScopeCount).toBe(1);
+    expect(shouldSearchIngredients({
+      isOpen: nextState.isOpen,
+      query: "",
+      hasSearchScope: nextState.nextScopeCount > 0
+    })).toBe(true);
+    expect(shouldShowIngredientQuickStart({
+      enabled: true,
+      category: "fermentable",
+      subtype: "malt",
+      query: "",
+      hasActiveCustomScope: true
+    })).toBe(false);
+  });
+
+  it("keeps brand, family, favorites and custom scopes composable and clears them together", () => {
+    const brand = {
+      type: "manufacturer" as const,
+      label: "Castle Malting",
+      normalizedLabel: "castle malting",
+      value: "Castle Malting",
+      count: 5,
+      score: 80
+    };
+    const family = {
+      key: "pilsner",
+      label: "Пилснер",
+      presetQuery: "pilsner"
+    };
+
+    const brandOnly = resolveIngredientPickerScopedState({
+      activeScopeCount: 0,
+      nextQuery: "",
+      nextManufacturer: brand,
+      nextFavoritesOnly: false
+    });
+    expect(brandOnly.nextScopeCount).toBe(1);
+
+    const brandAndFamily = resolveIngredientPickerScopedState({
+      activeScopeCount: brandOnly.nextScopeCount,
+      nextQuery: "",
+      nextManufacturer: brand,
+      nextFamily: family,
+      nextFavoritesOnly: false
+    });
+    expect(brandAndFamily.nextScopeCount).toBe(2);
+
+    const brandAndFavorites = resolveIngredientPickerScopedState({
+      activeScopeCount: brandOnly.nextScopeCount,
+      nextQuery: "",
+      nextManufacturer: brand,
+      nextFavoritesOnly: true
+    });
+    expect(brandAndFavorites.nextScopeCount).toBe(2);
+
+    const fullyStacked = resolveIngredientPickerScopedState({
+      activeScopeCount: brandAndFamily.nextScopeCount,
+      nextQuery: "",
+      nextManufacturer: brand,
+      nextFamily: family,
+      nextFavoritesOnly: true,
+      nextCustomOnly: true
+    });
+    expect(fullyStacked.nextScopeCount).toBe(4);
+    expect(shouldShowIngredientScopeReset({ activeScopeCount: fullyStacked.nextScopeCount })).toBe(true);
+
+    const cleared = resolveIngredientPickerScopedState({
+      activeScopeCount: fullyStacked.nextScopeCount,
+      nextQuery: "",
+      nextManufacturer: null,
+      nextFamily: null,
+      nextFavoritesOnly: false,
+      nextCustomOnly: false
+    });
+    expect(cleared.nextScopeCount).toBe(0);
+    expect(cleared.isOpen).toBe(false);
+    expect(cleared.suppressQuickStart).toBe(false);
   });
 
   it("removes the active manufacturer chip on backspace only for an empty query", () => {
@@ -676,8 +911,11 @@ describe("ingredient picker state helpers", () => {
     expect(html).toContain("Убрать семейство Пилснер");
   });
 
-  it("renders the active favorites chip and scope reset action", () => {
+  it("renders the active favorites/custom chips and scope reset action", () => {
     const favoritesHtml = renderToStaticMarkup(React.createElement(IngredientPickerFavoritesChip, {
+      onRemove: () => undefined
+    }));
+    const customOnlyHtml = renderToStaticMarkup(React.createElement(IngredientPickerCustomOnlyChip, {
       onRemove: () => undefined
     }));
     const resetHtml = renderToStaticMarkup(React.createElement(IngredientPickerScopeResetButton, {
@@ -686,11 +924,35 @@ describe("ingredient picker state helpers", () => {
 
     expect(favoritesHtml).toContain("Избранные");
     expect(favoritesHtml).toContain("Убрать фильтр Избранные");
+    expect(customOnlyHtml).toContain("Только свои");
+    expect(customOnlyHtml).toContain("Убрать фильтр Только свои");
     expect(resetHtml).toContain("Сбросить всё");
   });
 
-  it("renders malt quick-start panel with natural microcopy and recent history last", () => {
+  it("renders malt quick-start panel with brand-first hierarchy and collapsed recent block", () => {
     const html = renderToStaticMarkup(React.createElement(IngredientPickerQuickStartPanel, {
+      brands: [{
+        type: "manufacturer",
+        label: "Castle Malting",
+        normalizedLabel: "castle malting",
+        value: "Castle Malting",
+        count: 12,
+        score: 140
+      }, {
+        type: "manufacturer",
+        label: "Weyermann",
+        normalizedLabel: "weyermann",
+        value: "Weyermann",
+        count: 9,
+        score: 90
+      }, {
+        type: "manufacturer",
+        label: "BESTMALZ",
+        normalizedLabel: "bestmalz",
+        value: "BESTMALZ",
+        count: 8,
+        score: 80
+      }],
       recent: [buildSuggestionItem({
         id: "malt-2",
         displayName: "Венский",
@@ -713,18 +975,36 @@ describe("ingredient picker state helpers", () => {
         brand: "Bestmalz"
       })],
       onSelectItem: () => undefined,
+      onSelectBrand: () => undefined,
       onSelectFamily: () => undefined,
-      onToggleFavorites: () => undefined
+      onToggleFavorites: () => undefined,
+      onToggleCustomOnly: () => undefined,
+      showFavoritesFilter: true,
+      showCustomOnlyFilter: true
     }));
 
-    expect(html.indexOf('data-testid="ingredient-picker-quick-start-families"')).toBeLessThan(
+    expect(html.indexOf('data-testid="ingredient-picker-quick-start-favorites"')).toBeLessThan(
+      html.indexOf('data-testid="ingredient-picker-quick-start-brands"')
+    );
+    expect(html.indexOf('data-testid="ingredient-picker-quick-start-brands"')).toBeLessThan(
+      html.indexOf('data-testid="ingredient-picker-quick-start-types"')
+    );
+    expect(html.indexOf('data-testid="ingredient-picker-quick-start-types"')).toBeLessThan(
       html.indexOf('data-testid="ingredient-picker-quick-start-recent"')
     );
-    expect(html).toContain("Подобрать солод");
+    expect(html).toContain("По бренду");
+    expect(html).toContain("Castle Malting");
+    expect(html).toContain("Weyermann");
+    expect(html).toContain("BESTMALZ");
+    expect(html).toContain("Только избранные");
+    expect(html).toContain("Только свои");
     expect(html).toContain("По типу");
-    expect(html).toContain("Недавние");
-    expect(html).not.toContain("Быстрый старт");
-    expect(html).not.toContain("Быстрые фильтры");
+    expect(html).toContain("Недавние (4)");
+    expect(html).not.toContain("Для склада");
+    expect(html).not.toContain("Сначала сузьте поиск");
+    expect(html).not.toContain("Если знаете солодовню");
+    expect(html).not.toContain("Когда бренд не важен");
+    expect(html).not.toContain("Последние выбранные позиции");
     expect(html).toContain("Пилснер");
     expect(html).toContain("Пэйл эль");
     expect(html).toContain("Пшеничный");
@@ -733,24 +1013,26 @@ describe("ingredient picker state helpers", () => {
     expect(html).toContain("Карамельный");
     expect(html).toContain("Жжёный");
     expect(html).toContain("Кислый");
-    expect(html).toContain("Избранные");
     expect(html).toContain("★");
-    expect(html.indexOf("Избранные")).toBeLessThan(html.indexOf("Пилснер"));
-    expect((html.match(/ingredient-picker-quick-start-recent-item/g) ?? [])).toHaveLength(3);
-    expect(html).toContain("Показать ещё");
-    expect(html).toContain("Munich Premium");
+    expect(html.indexOf("Только избранные")).toBeLessThan(html.indexOf("Пилснер"));
+    expect((html.match(/ingredient-picker-quick-start-brand-chip/g) ?? [])).toHaveLength(3);
+    expect((html.match(/ingredient-picker-quick-start-type-chip/g) ?? [])).toHaveLength(8);
+    expect((html.match(/ingredient-picker-quick-start-recent-item/g) ?? [])).toHaveLength(0);
+    expect(html).toContain("Показать");
+    expect(html).not.toContain("border-amber-200");
+    expect(html).not.toContain("rgba(255,252,245");
+    expect(html).not.toContain("Munich Premium");
     expect(html).not.toContain("Acid Malt");
-    expect(html).toContain("3 EBC");
-    expect(html).toContain("Экст-ть 81%");
-    expect(html).toContain("bg-[linear-gradient(180deg,rgba(250,250,250,0.98),rgba(244,244,245,0.92))]");
-    expect(html).not.toContain('data-testid="ingredient-picker-quick-start-favorites"');
+    expect(html).not.toContain("3 EBC");
+    expect(html).not.toContain("Экст-ть 81%");
+    expect(html).not.toContain('data-testid="ingredient-picker-quick-start-recent-list"');
   });
 
-  it("shows no recent expand action when there are at most three items, and expands recent history up to ten items", () => {
-    expect(ingredientPickerCollapsedRecentCount).toBe(3);
+  it("keeps recent history collapsed by default and expands it up to ten items", () => {
+    expect(ingredientPickerCollapsedRecentCount).toBe(0);
     expect(ingredientPickerExpandedRecentCount).toBe(10);
-    expect(shouldShowIngredientPickerRecentExpandAction({ recentCount: 2 })).toBe(false);
-    expect(shouldShowIngredientPickerRecentExpandAction({ recentCount: 3 })).toBe(false);
+    expect(shouldShowIngredientPickerRecentExpandAction({ recentCount: 0 })).toBe(false);
+    expect(shouldShowIngredientPickerRecentExpandAction({ recentCount: 1 })).toBe(true);
     expect(shouldShowIngredientPickerRecentExpandAction({ recentCount: 4 })).toBe(true);
 
     const recent = Array.from({ length: 11 }, (_, index) => buildSuggestionItem({
@@ -762,7 +1044,7 @@ describe("ingredient picker state helpers", () => {
     expect(resolveIngredientPickerVisibleRecentItems({
       recent,
       showAllRecent: false
-    }).map((item) => item.id)).toEqual(["malt-1", "malt-2", "malt-3"]);
+    })).toEqual([]);
 
     expect(resolveIngredientPickerVisibleRecentItems({
       recent,
@@ -779,14 +1061,18 @@ describe("ingredient picker state helpers", () => {
       category: "fermentable",
       subtype: "malt",
       enableQuickStart: true,
+      allowCustomOnlyFilter: true,
       onSelect: () => undefined
     }));
 
     expect(html).toContain('value=""');
     expect(html).toContain('data-testid="ingredient-picker-quick-start"');
-    expect(html).toContain("Подобрать солод");
+    expect(html).toContain("По бренду");
+    expect(html).toContain("Castle Malting");
     expect(html).toContain("По типу");
-    expect(html).toContain("Избранные");
+    expect(html).toContain("Недавние");
+    expect(html).toContain("Загружаем недавние...");
+    expect(html).toContain('data-testid="ingredient-picker-quick-start-recent-loading"');
   });
 
   it("keeps malt family chips as a separate quick-start scope instead of injecting visible text", () => {
@@ -842,8 +1128,16 @@ describe("ingredient picker state helpers", () => {
     expect(html).not.toContain("aria-label=\"Очистить выбранный ингредиент\"");
   });
 
-  it("renders fermentable kind near the title and keeps producer visible in quick-start rows", () => {
+  it("keeps recent history collapsed so secondary rows do not compete with search results", () => {
     const html = renderToStaticMarkup(React.createElement(IngredientPickerQuickStartPanel, {
+      brands: [{
+        type: "manufacturer",
+        label: "Weyermann",
+        normalizedLabel: "weyermann",
+        value: "Weyermann",
+        count: 6,
+        score: 80
+      }],
       recent: [{
         id: "ferm-quick-1",
         type: "fermentable",
@@ -864,13 +1158,15 @@ describe("ingredient picker state helpers", () => {
         source: "catalog"
       }],
       onSelectItem: () => undefined,
+      onSelectBrand: () => undefined,
       onSelectFamily: () => undefined,
       onToggleFavorites: () => undefined
     }));
 
-    expect(html).toContain("Жидкий солодовый экстракт");
-    expect(html).toContain("Weyermann");
-    expect(html).toMatch(/Weyermann.*svg/);
+    expect(html).toContain("Недавние (1)");
+    expect(html).not.toContain("Жидкий солодовый экстракт");
+    expect((html.match(/ingredient-picker-quick-start-recent-item/g) ?? [])).toHaveLength(0);
+    expect(html).not.toContain('data-testid="ingredient-picker-quick-start-recent-list"');
   });
 
   it("keeps generic fermentable producer below the title in the selected picker card", () => {

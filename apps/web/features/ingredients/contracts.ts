@@ -225,6 +225,7 @@ export const ingredientSearchQuerySchema = z.object({
   group: z.string().trim().min(1).max(120).optional(),
   manufacturer: z.string().trim().min(1).max(180).optional(),
   favoritesOnly: z.boolean().optional().default(false),
+  customOnly: z.boolean().optional().default(false),
   limit: z.coerce.number().min(1).max(100).default(10)
 }).refine((value) => (
   value.q.length > 0
@@ -232,6 +233,7 @@ export const ingredientSearchQuerySchema = z.object({
   || Boolean(value.group)
   || Boolean(value.manufacturer)
   || value.favoritesOnly
+  || value.customOnly
 ), {
   message: "Search query or scope is required."
 });
@@ -253,7 +255,7 @@ export const ingredientPickerQuickStartQuerySchema = z.object({
   category: z.enum(ingredientCategories),
   subtype: z.enum(["malt", "fermentable"]).nullable().optional(),
   recentReferences: z.array(userIngredientReferenceSchema).max(12).default([]),
-  recentLimit: z.coerce.number().min(1).max(6).default(3)
+  recentLimit: z.coerce.number().min(1).max(10).default(10)
 });
 
 export const ingredientPurchaseLinkMarketplaces = [
@@ -507,9 +509,11 @@ export type IngredientSearchResult = {
   appliedGroup: IngredientConsumableGroupRefinement | null;
   appliedFamily: IngredientSearchFamilyScope | null;
   appliedFavoritesOnly: boolean;
+  appliedCustomOnly: boolean;
 };
 
 export type IngredientPickerQuickStartResult = {
+  brands: IngredientManufacturerRefinement[];
   recent: IngredientSuggestionItem[];
 };
 

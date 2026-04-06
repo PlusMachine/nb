@@ -159,7 +159,7 @@ describe("user catalog ingredient search", () => {
     mockState.favoriteKeys = new Set();
   });
 
-  it("returns only recent malt selections for quick-start idle state", async () => {
+  it("returns recent malt selections plus brand-first quick-start chips", async () => {
     mockState.catalogItems = [
       buildCatalogItem({
         id: "favorite-pils",
@@ -173,9 +173,25 @@ describe("user catalog ingredient search", () => {
         primaryLabelRu: "Венский",
         displayName: "Венский",
         nameRu: "Венский",
-        nameEn: "Vienna Malt"
+        nameEn: "Vienna Malt",
+        brand: "Weyermann",
+        producer: "Weyermann",
+        brandName: "Weyermann",
+        manufacturer: "Weyermann"
+      }),
+      buildCatalogItem({
+        id: "best-pale",
+        primaryLabelRu: "Пэйл эль",
+        displayName: "Пэйл эль",
+        nameRu: "Пэйл эль",
+        nameEn: "Pale Ale Malt",
+        brand: "BESTMALZ",
+        producer: "BESTMALZ",
+        brandName: "BESTMALZ",
+        manufacturer: "BESTMALZ"
       })
     ];
+    mockState.favoriteKeys = new Set(["catalog:favorite-pils"]);
 
     const result = await listIngredientPickerQuickStart("user-1", {
       category: "fermentable",
@@ -189,6 +205,11 @@ describe("user catalog ingredient search", () => {
     expect(result.recent.map((item) => item.id)).toEqual([
       "recent-vienna",
       "favorite-pils"
+    ]);
+    expect(result.brands.map((brand) => brand.label)).toEqual([
+      "Castle Malting",
+      "Weyermann",
+      "BESTMALZ"
     ]);
   });
 
@@ -341,6 +362,41 @@ describe("user catalog ingredient search", () => {
 
     expect(result.appliedFavoritesOnly).toBe(true);
     expect(result.items.map((item) => item.id)).toEqual(["favorite-pils"]);
+  });
+
+  it("filters results to custom ingredients only even without a typed query", async () => {
+    mockState.catalogItems = [
+      buildCatalogItem({
+        id: "catalog-pils",
+        displayName: "Pilsner",
+        primaryLabelRu: "Pilsner",
+        nameRu: "Pilsner",
+        nameEn: "Pilsner"
+      })
+    ];
+    mockState.customItems = [
+      buildCustomIngredientRow({
+        id: "custom-pils",
+        displayName: "Мой пилс",
+        properties: {
+          category: "fermentable",
+          subtype: "malt",
+          nameEn: "My Pils",
+          aliases: []
+        }
+      })
+    ];
+
+    const result = await searchUserCatalogIngredients("user-1", {
+      q: "",
+      customOnly: true,
+      category: "fermentable",
+      subtype: "malt",
+      limit: 10
+    });
+
+    expect(result.appliedCustomOnly).toBe(true);
+    expect(result.items.map((item) => item.id)).toEqual(["custom-pils"]);
   });
 
   it("stacks family and favorites scopes without dropping either filter", async () => {

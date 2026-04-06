@@ -267,6 +267,7 @@ export const addCustomIngredientAction = async (_prevState: AddIngredientResult 
       subtype: String(formData.get("subtype") ?? "").trim() || null,
       displayName: String(formData.get("displayName") ?? "").trim(),
       brand: String(formData.get("brand") ?? "").trim() || null,
+      country: String(formData.get("country") ?? "").trim() || null,
       harvestYear: String(formData.get("harvestYear") ?? "").trim() || null,
       fermentableColorEbc: String(formData.get("fermentableColorEbc") ?? "").trim() || null,
       fermentableExtractYieldPct: String(formData.get("fermentableExtractYieldPct") ?? "").trim() || null,

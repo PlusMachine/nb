@@ -103,11 +103,11 @@ const normalizeAddIngredientCategoryValue = (
   value: string | null | undefined
 ): InventoryIngredientCategoryValue | null => (
   value === "malt"
-  || value === "fermentable"
-  || value === "hop"
-  || value === "yeast"
-  || value === "water_treatment"
-  || value === "consumable"
+    || value === "fermentable"
+    || value === "hop"
+    || value === "yeast"
+    || value === "water_treatment"
+    || value === "consumable"
     ? value
     : null
 );
@@ -368,7 +368,7 @@ export function AddIngredientModal({
                   }}
                   className={`rounded px-3 py-2 ${mode === "custom" ? "bg-white shadow" : ""}`}
                 >
-                  Свой ингредиент
+                  Добавить свой
                 </button>
               </div>
             </>
@@ -417,8 +417,6 @@ export function AddIngredientModal({
                 preferredCurrency={preferredCurrency}
                 pending={pending}
                 fieldErrors={result?.fieldErrors}
-                selectionActionLabel="Изменить выбор"
-                onSelectedIngredientChange={setSelectedIngredient}
                 onSubmitCreate={async (payload) => {
                   setPending(true);
                   const formData = new FormData();
@@ -427,20 +425,12 @@ export function AddIngredientModal({
                   setPending(false);
                   handleSuccess(nextResult);
                 }}
-                onSubmitExisting={async (payload) => {
-                  setPending(true);
-                  const formData = new FormData();
-                  appendPayloadToFormData(formData, payload);
-                  const nextResult = await addSelectedIngredientAction(null, formData);
-                  setPending(false);
-                  handleSuccess(nextResult);
-                }}
               />
             ) : null}
 
             {((mode === "catalog" && !catalogCategory) || (mode === "custom" && !customCategory)) ? (
               <div className="flex h-full min-h-[18rem] items-center justify-center rounded-xl border border-dashed border-zinc-200 bg-zinc-50/50 px-4 text-center text-sm text-zinc-500">
-                Выберите категорию, и после этого появится {mode === "catalog" ? "поиск" : "список своих ингредиентов"}.
+                Выберите категорию, и после этого появится {mode === "catalog" ? "поиск" : "форма создания своего ингредиента"}.
               </div>
             ) : null}
           </div>

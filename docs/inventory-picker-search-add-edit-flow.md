@@ -1,6 +1,6 @@
 # Поиск через picker в add/edit flow склада
 
-Дата фиксации: `2026-04-05`
+Дата фиксации: `2026-04-06`
 
 Документ описывает текущее поведение поиска ингредиентов через `IngredientPicker` в сценариях:
 
@@ -47,6 +47,7 @@
 - Перед запросом есть debounce `180ms`.
 - Поиск идет не только по системному каталогу, но и по пользовательским ингредиентам.
 - Даже на вкладке `Из каталога` можно выбрать existing custom ingredient.
+- В add flow у catalog-picker есть быстрые scope-фильтры `Только избранные` и `Только свои`.
 - При широкой выдаче результаты сначала схлопываются до `6` строк, хотя API обычно возвращает до `10`.
 - Если совпадений много, picker предлагает `Уточнить производителя`.
 - В add flow для catalog fermentable/hop можно уточнить batch-параметры:
@@ -78,6 +79,8 @@ Picker ищет только если одновременно выполнен�
 - `category`
 - `subtype` для `malt`/`fermentable`
 - `manufacturer`, если выбран refinement
+- `favoritesOnly`, если включен фильтр по избранному
+- `customOnly`, если включен фильтр `Только свои`
 - `limit`
 - `includeCustom`
 
@@ -198,7 +201,7 @@ Picker переходит в refinement mode, если:
 
 - header `Добавить ингредиент`
 - grid категорий
-- switch `Из каталога / Свой ингредиент`
+- switch `Из каталога / ДОБАВИТЬ СВОЙ`
 - picker
 
 После выбора ингредиента:
@@ -217,7 +220,7 @@ Picker переходит в refinement mode, если:
 
 - в catalog-flow показывается CTA `Не нашли? Добавить свой ингредиент`
 - эта кнопка не создает ingredient сразу
-- она только переводит пользователя на custom tab
+- она переводит пользователя в custom-flow, который теперь сразу открывает форму создания
 
 ## 3.2. Edit flow
 
@@ -1035,4 +1038,3 @@ Package variants в inventory card напрямую не раскрываютс�
 - `consumable` ищется по package variants, но не показывает matched package variant в UI
 - catalog tab уже фактически unified picker, и любое “catalog-only” изменение надо делать осознанно
 - add flow и edit flow используют один search/runtime, но разную empty-state и post-selection логику
-

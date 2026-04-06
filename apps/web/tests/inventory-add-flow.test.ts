@@ -160,6 +160,7 @@ describe("inventory add-flow", () => {
     expect(html).toContain("Добавить ингредиент");
     expect(html).toContain('data-testid="add-ingredient-category-grid"');
     expect(html).toContain('data-testid="add-ingredient-mode-switch"');
+    expect(html).toContain("Добавить свой");
     expect(html).toContain("Начните вводить название ингредиента");
     expect(html).not.toContain('data-testid="catalog-required-fields"');
     expect(html).not.toContain('data-testid="catalog-batch-overrides"');
@@ -183,9 +184,15 @@ describe("inventory add-flow", () => {
     expect(html).toContain('data-testid="custom-optional-disclosure"');
     expect(html).toContain("Добавить цену, ссылки, даты или заметку");
     expect(html).toContain("Необязательно");
-    expect(html).toContain("Тип ферментируемого");
+    expect(html).not.toContain("Тип ферментируемого");
     expect(html).toContain("Цвет, EBC");
     expect(html).toContain("Экстрактивность, %");
+    expect(html).toContain("Страна");
+    expect(html).toContain("Выберите страну");
+    expect(html).toContain("placeholder=\"Например: Пшеничный солод\"");
+    expect(html).toContain("placeholder=\"Например: Castle Malting\"");
+    expect(html).toContain("placeholder=\"Например: 3.5\"");
+    expect(html).toContain("placeholder=\"Например: 81\"");
     expect(html).not.toContain("Базовая ед. изм.");
     expect(html).not.toContain(`value="${getTodayDateInputValue()}"`);
     expect(html).not.toContain('aria-label="Очистить дату покупки"');
@@ -208,20 +215,17 @@ describe("inventory add-flow", () => {
     expect(html).not.toContain("Без уточнения");
   });
 
-  it("shows existing custom ingredients browser before the create form in the custom tab", () => {
+  it("opens the custom tab directly in create mode", () => {
     const html = renderToStaticMarkup(React.createElement(CustomIngredientPanel, {
       category: "hop",
       preferredCurrency: "USD",
       pending: false,
-      onSubmitCreate: async () => undefined,
-      onSubmitExisting: async () => undefined
+      onSubmitCreate: async () => undefined
     }));
 
-    expect(html).toContain('data-testid="custom-ingredient-browser"');
-    expect(html).toContain("Поиск среди своих ингредиентов");
-    expect(html).toContain('data-testid="custom-ingredient-browser-sort"');
-    expect(html).toContain("Добавить новый");
-    expect(html).toContain("В этой категории пока нет своих ингредиентов.");
+    expect(html).toContain('data-testid="custom-ingredient-create-panel"');
+    expect(html).toContain("Параметры ингредиента");
+    expect(html).toContain("Количество и единица учета");
   });
 
   it("keeps optional catalog details hidden until the user reaches them", () => {
@@ -333,9 +337,9 @@ describe("inventory add-flow", () => {
     expect(html).toContain('data-testid="catalog-picker-stage"');
     expect(html).toContain("Начните вводить название ингредиента");
     expect(html).toContain('data-testid="ingredient-picker-quick-start"');
-    expect(html).toContain("Подобрать солод");
+    expect(html).toContain("По бренду");
+    expect(html).toContain("Castle Malting");
     expect(html).toContain("По типу");
-    expect(html).toContain("Избранные");
   });
 
   it("prefers remembered category for a fresh add context and falls back to malt", () => {
@@ -694,6 +698,7 @@ describe("inventory add-flow", () => {
     formData.set("category", "yeast");
     formData.set("displayName", "US-05");
     formData.set("brand", "Fermentis");
+    formData.set("country", "Бельгия");
     formData.set("yeastForm", "dry");
     formData.set("yeastAttenuationPct", "78");
     formData.set("defaultDisplayUnit", "pack");
@@ -707,6 +712,7 @@ describe("inventory add-flow", () => {
     expect(mockState.createCustomCalls[0]).toMatchObject({
       category: "yeast",
       brand: "Fermentis",
+      country: "Бельгия",
       yeastForm: "dry",
       yeastAttenuationPct: 78,
       defaultDisplayUnit: "pack"

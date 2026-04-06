@@ -36,6 +36,7 @@ export type CustomIngredientSubmitPayload = {
   subtype: string;
   displayName: string;
   brand: string;
+  country: string;
   harvestYear: string;
   fermentableColorEbc: string;
   fermentableExtractYieldPct: string;
@@ -73,9 +74,35 @@ const parseOptionalNumber = (value: string) => {
   return Number.isFinite(parsed) ? parsed : null;
 };
 
-const resolveSubtypeFieldLabel = (category: IngredientCategory) => (
-  category === "fermentable" ? "Тип ферментируемого" : "Подтип"
-);
+const resolveSubtypeFieldLabel = () => "Подтип";
+
+const customIngredientCountryOptions = [
+  "Россия",
+  "Беларусь",
+  "Украина",
+  "Казахстан",
+  "Германия",
+  "Бельгия",
+  "Чехия",
+  "Великобритания",
+  "США",
+  "Канада",
+  "Франция",
+  "Нидерланды",
+  "Австрия",
+  "Польша",
+  "Финляндия",
+  "Дания",
+  "Словакия",
+  "Словения",
+  "Австралия",
+  "Новая Зеландия",
+  "Китай",
+  "Индия",
+  "ЮАР",
+  "Аргентина",
+  "Бразилия"
+] as const;
 
 export const getCustomIngredientSubtypeOptions = (category: IngredientCategory) => ingredientCategorySubtypes[category];
 
@@ -83,6 +110,7 @@ export function CustomIngredientForm({ category, initialSubtype = null, preferre
   const initialOptionalFields = createInitialInventoryOptionalFields();
   const [displayName, setDisplayName] = useState("");
   const [brand, setBrand] = useState("");
+  const [country, setCountry] = useState("");
   const [subtype, setSubtype] = useState<string>(initialSubtype ?? resolveDefaultCustomIngredientSubtype(category) ?? "");
   const [fermentableColorEbc, setFermentableColorEbc] = useState("");
   const [fermentableExtractYieldPct, setFermentableExtractYieldPct] = useState("");
@@ -139,9 +167,9 @@ export function CustomIngredientForm({ category, initialSubtype = null, preferre
   }), [category, resolvedSubtype, resolvedType, technicalData]);
   const [enteredUnit, setEnteredUnit] = useState<InventoryUnit>(unitProfile.defaultUnit);
   const quantityStep = getInventoryUnitInputStep(enteredUnit);
-  const subtypeOptions = shouldShowCustomIngredientSubtypeField(category)
-    ? getCustomIngredientSubtypeOptions(category)
-    : [];
+  const subtypeOptions = category === "fermentable" || !shouldShowCustomIngredientSubtypeField(category)
+    ? []
+    : getCustomIngredientSubtypeOptions(category);
 
   useEffect(() => {
     const nextOptionalFields = createInitialInventoryOptionalFields();
@@ -152,6 +180,7 @@ export function CustomIngredientForm({ category, initialSubtype = null, preferre
     setHopAlphaAcidPct("");
     setHarvestYear("");
     setYeastAttenuationPct("");
+    setCountry("");
     setFermentableColorEbc("");
     setFermentableExtractYieldPct("");
     setPurchasedAt(nextOptionalFields.purchasedAt);
@@ -220,6 +249,7 @@ export function CustomIngredientForm({ category, initialSubtype = null, preferre
           subtype: normalizedSubtype ?? "",
           displayName,
           brand,
+          country,
           harvestYear,
           fermentableColorEbc,
           fermentableExtractYieldPct,
@@ -252,34 +282,36 @@ export function CustomIngredientForm({ category, initialSubtype = null, preferre
         </div>
 
         <div className="space-y-3">
-          <label className="block text-sm">Название ингредиента
-            <input
-              className="mt-1 w-full rounded-md border px-2 py-2"
-              value={displayName}
-              onChange={(e) => setDisplayName(e.target.value)}
-              placeholder={
-                category === "hop"
-                  ? "Например: Хмель Cascade"
-                  : category === "yeast"
-                    ? "Например: US-05"
-                    : "Например: Пшеничный солод"
-              }
-            />
-            {fieldErrors?.displayName && <span className="text-xs text-red-600">{fieldErrors.displayName}</span>}
-          </label>
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+            <label className="block text-sm">Название ингредиента
+              <input
+                className="mt-1 w-full rounded-md border px-2 py-2"
+                value={displayName}
+                onChange={(e) => setDisplayName(e.target.value)}
+                placeholder={
+                  category === "hop"
+                    ? "Например: Хмель Cascade"
+                    : category === "yeast"
+                      ? "Например: US-05"
+                      : "Например: Пшеничный солод"
+                }
+              />
+              {fieldErrors?.displayName && <span className="text-xs text-red-600">{fieldErrors.displayName}</span>}
+            </label>
 
-          <label className="block text-sm">Бренд
-            <input
-              className="mt-1 w-full rounded-md border px-2 py-2"
-              value={brand}
-              onChange={(e) => setBrand(e.target.value)}
-              placeholder="Необязательно"
-            />
-            {fieldErrors?.brand && <span className="text-xs text-red-600">{fieldErrors.brand}</span>}
-          </label>
+            <label className="block text-sm">Бренд
+              <input
+                className="mt-1 w-full rounded-md border px-2 py-2"
+                value={brand}
+                onChange={(e) => setBrand(e.target.value)}
+                placeholder="Например: Castle Malting"
+              />
+              {fieldErrors?.brand && <span className="text-xs text-red-600">{fieldErrors.brand}</span>}
+            </label>
+          </div>
 
-          {shouldShowCustomIngredientSubtypeField(category) ? (
-            <label className="block text-sm">{resolveSubtypeFieldLabel(category)}
+          {subtypeOptions.length > 0 ? (
+            <label className="block text-sm">{resolveSubtypeFieldLabel()}
               <select className="mt-1 w-full rounded-md border px-2 py-2" value={subtype} onChange={(e) => setSubtype(e.target.value)}>
                 {subtypeOptions.map((option) => (
                   <option key={option} value={option}>{formatIngredientSubtypeLabel(category, option)}</option>
@@ -290,7 +322,7 @@ export function CustomIngredientForm({ category, initialSubtype = null, preferre
           ) : null}
 
           {category === "fermentable" ? (
-            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
               <label className="text-sm">Цвет, EBC
                 <input
                   type="number"
@@ -300,6 +332,7 @@ export function CustomIngredientForm({ category, initialSubtype = null, preferre
                   value={fermentableColorEbc}
                   onChange={(e) => setFermentableColorEbc(e.target.value)}
                   inputMode="decimal"
+                  placeholder="Например: 3.5"
                 />
                 {fieldErrors?.fermentableColorEbc && <span className="text-xs text-red-600">{fieldErrors.fermentableColorEbc}</span>}
               </label>
@@ -313,8 +346,22 @@ export function CustomIngredientForm({ category, initialSubtype = null, preferre
                   value={fermentableExtractYieldPct}
                   onChange={(e) => setFermentableExtractYieldPct(e.target.value)}
                   inputMode="decimal"
+                  placeholder="Например: 81"
                 />
                 {fieldErrors?.fermentableExtractYieldPct && <span className="text-xs text-red-600">{fieldErrors.fermentableExtractYieldPct}</span>}
+              </label>
+              <label className="text-sm">Страна
+                <select
+                  className="mt-1 w-full rounded-md border px-2 py-2"
+                  value={country}
+                  onChange={(e) => setCountry(e.target.value)}
+                >
+                  <option value="">Выберите страну</option>
+                  {customIngredientCountryOptions.map((option) => (
+                    <option key={option} value={option}>{option}</option>
+                  ))}
+                </select>
+                {fieldErrors?.country && <span className="text-xs text-red-600">{fieldErrors.country}</span>}
               </label>
             </div>
           ) : null}
@@ -331,6 +378,7 @@ export function CustomIngredientForm({ category, initialSubtype = null, preferre
                   value={hopAlphaAcidPct}
                   onChange={(e) => setHopAlphaAcidPct(e.target.value)}
                   inputMode="decimal"
+                  placeholder="Например: 12.5"
                 />
                 {fieldErrors?.hopAlphaAcidPct && <span className="text-xs text-red-600">{fieldErrors.hopAlphaAcidPct}</span>}
               </label>
@@ -371,6 +419,7 @@ export function CustomIngredientForm({ category, initialSubtype = null, preferre
                   value={yeastAttenuationPct}
                   onChange={(e) => setYeastAttenuationPct(e.target.value)}
                   inputMode="decimal"
+                  placeholder="Например: 78"
                 />
                 {fieldErrors?.yeastAttenuationPct && <span className="text-xs text-red-600">{fieldErrors.yeastAttenuationPct}</span>}
               </label>
@@ -394,6 +443,7 @@ export function CustomIngredientForm({ category, initialSubtype = null, preferre
               value={enteredQuantity}
               onChange={(e) => setEnteredQuantity(e.target.value)}
               inputMode="decimal"
+              placeholder="Например: 5"
             />
             {fieldErrors?.enteredQuantity && <span className="text-xs text-red-600">{fieldErrors.enteredQuantity}</span>}
           </label>
@@ -467,7 +517,7 @@ export function CustomIngredientForm({ category, initialSubtype = null, preferre
             />
 
             <label className="block text-sm">Заметки
-              <textarea className="mt-1 h-20 w-full rounded-md border px-2 py-2" value={notes} onChange={(e) => setNotes(e.target.value)} />
+              <textarea className="mt-1 h-20 w-full rounded-md border px-2 py-2" value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="Например: куплен под конкретную варку" />
             </label>
           </div>
       </InventoryOptionalDisclosure>

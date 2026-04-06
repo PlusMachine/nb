@@ -17,6 +17,7 @@ export async function GET(request: Request) {
       group: searchParams.get("group") ?? undefined,
       manufacturer: searchParams.get("manufacturer") ?? undefined,
       favoritesOnly: searchParams.get("favoritesOnly") === "true",
+      customOnly: searchParams.get("customOnly") === "true",
       limit: Number(searchParams.get("limit") ?? "10"),
       includeCustom: searchParams.get("includeCustom") !== "false"
     });
