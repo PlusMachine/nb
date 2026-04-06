@@ -247,7 +247,7 @@ describe("ingredient picker state helpers", () => {
     expect(params.get("limit")).toBe("8");
   });
 
-  it("shows custom-only filter only when the current category actually has custom items", () => {
+  it("shows quick-start filters only when matching data exists", () => {
     expect(shouldAllowIngredientFavoritesFilter({
       enableQuickStart: true,
       category: "fermentable",
@@ -1066,9 +1066,9 @@ describe("ingredient picker state helpers", () => {
     }));
 
     expect(html).toContain('value=""');
-    expect(html).toContain('data-testid="ingredient-picker-quick-start"');
+    expect(html).toContain('data-testid="ingredient-picker-quick-start-loading"');
+    expect(html).toContain('data-testid="ingredient-picker-quick-start-favorites"');
     expect(html).toContain("По бренду");
-    expect(html).toContain("Castle Malting");
     expect(html).toContain("По типу");
     expect(html).toContain("Недавние");
     expect(html).toContain("Загружаем недавние...");

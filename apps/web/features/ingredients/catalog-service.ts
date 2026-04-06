@@ -917,7 +917,9 @@ export const listIngredientPickerQuickStart = async (
   if (!(query.category === "fermentable" && query.subtype === "malt")) {
     return {
       brands: [],
-      recent: []
+      recent: [],
+      hasFavoritesAvailable: false,
+      hasCustomAvailable: false
     };
   }
 
@@ -935,10 +937,14 @@ export const listIngredientPickerQuickStart = async (
     items: usageAwareItems,
     recent
   });
+  const hasFavoritesAvailable = scopedItems.some((item) => item.isFavorite === true);
+  const hasCustomAvailable = scopedItems.some((item) => item.source === "custom");
 
   return {
     brands,
-    recent
+    recent,
+    hasFavoritesAvailable,
+    hasCustomAvailable
   };
 };
 

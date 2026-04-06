@@ -1,6 +1,6 @@
 # CONTEXT.md
 
-Файл синхронизирован с текущим состоянием репозитория по коду на 2026-04-03.
+Файл синхронизирован с текущим состоянием репозитория по коду на 2026-04-06.
 Это уже не только беклог, но и описание фактической архитектуры, от которой нужно отталкиваться.
 
 ## 1. Что это за проект
@@ -70,7 +70,9 @@
 - shared ingredient search/picker foundation:
   - `apps/web/features/ingredients/service.ts`
   - `apps/web/features/ingredients/catalog-service.ts`
+  - `apps/web/features/ingredients/picker-quick-start.ts`
   - `apps/web/components/ingredients/ingredient-picker.tsx`
+  - `apps/web/app/api/ingredients/picker-quick-start/route.ts`
 
 ### Важный текущий архитектурный нюанс
 - фактический runtime-каталог сейчас живет в основном на `ingredients` + `ingredient_aliases` + `ingredient_sources` + `ingredient_package_variants`
@@ -133,13 +135,22 @@
 Если нужен поиск/выбор ингредиента, использовать существующую shared foundation:
 - `IngredientPicker`
 - `searchUserCatalogIngredients`
+- `listIngredientPickerQuickStart`
 - `getIngredientSuggestionByRef`
 - `/api/ingredients/search`
+- `/api/ingredients/picker-quick-start`
+
+Это включает и zero-query/preset behavior:
+- malt quick-start
+- manufacturer/group refinements
+- favorites/custom scopes
+- recent selections hydration
 
 Нельзя:
 - делать отдельный picker для recipes
 - делать отдельный picker для inventory
 - делать отдельный search flow для catalog detail / create flows
+- делать отдельный zero-query ingredient chooser рядом с existing quick-start
 
 ---
 
@@ -278,6 +289,7 @@ BJCP/content слой сейчас file-backed через `@nb/content`.
 - search + ranking + fuzzy-ish query handling
 - transliteration / keyboard layout swap / alias-aware search
 - shared `IngredientPicker`
+- shared zero-query malt quick-start (`brand/family/recent`)
 - admin ingredient management
 - moderation queue
 - proposed ingredient flow
@@ -318,6 +330,7 @@ BJCP/content слой сейчас file-backed через `@nb/content`.
 - add-from-catalog flow
 - custom ingredient flow
 - shared picker
+- shared picker quick-start in add/edit malt contexts
 - modal add flow
 
 ### 4C — Inventory usability
@@ -483,6 +496,7 @@ BJCP/content слой сейчас file-backed через `@nb/content`.
 - используй `features/ingredients/service.ts`
 - используй `features/ingredients/catalog-service.ts`
 - используй existing `IngredientPicker`
+- если нужен zero-query/preset flow, расширяй existing picker quick-start, а не строй новый
 - используй existing normalization / presentation / technical-fields helpers
 - не делай новый search flow рядом с existing one
 - не считай `@nb/search` основным runtime search module

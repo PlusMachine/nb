@@ -336,10 +336,11 @@ describe("inventory add-flow", () => {
 
     expect(html).toContain('data-testid="catalog-picker-stage"');
     expect(html).toContain("Начните вводить название ингредиента");
-    expect(html).toContain('data-testid="ingredient-picker-quick-start"');
+    expect(html).toContain('data-testid="ingredient-picker-quick-start-loading"');
+    expect(html).toContain('data-testid="ingredient-picker-quick-start-favorites"');
     expect(html).toContain("По бренду");
-    expect(html).toContain("Castle Malting");
     expect(html).toContain("По типу");
+    expect(html).toContain("Загружаем недавние...");
   });
 
   it("prefers remembered category for a fresh add context and falls back to malt", () => {

@@ -220,6 +220,55 @@ export const IngredientPickerLoadingState = ({
   </div>
 );
 
+const IngredientPickerQuickStartLoadingPanel = ({
+  showCustomOnlyFilter = false
+}: {
+  showCustomOnlyFilter?: boolean;
+}) => (
+  <div
+    className="min-h-[12rem] rounded-md border border-zinc-200 bg-white shadow-sm"
+    data-testid="ingredient-picker-quick-start-loading"
+  >
+    <div className="space-y-4 px-3 py-3">
+      <div className="flex min-h-[34px] flex-wrap items-center gap-2" data-testid="ingredient-picker-quick-start-favorites">
+        <span aria-hidden="true" className="inline-flex h-[34px] w-[132px] animate-pulse rounded-full border border-zinc-200 bg-zinc-100" />
+        {showCustomOnlyFilter ? <span aria-hidden="true" className="inline-flex h-[34px] w-[102px] animate-pulse rounded-full border border-zinc-200 bg-zinc-100" /> : null}
+      </div>
+
+      <section className="space-y-2" data-testid="ingredient-picker-quick-start-brands">
+        <div className="text-[10px] font-medium uppercase tracking-[0.12em] text-zinc-500">По бренду</div>
+        <div className="flex flex-wrap gap-2">
+          <span aria-hidden="true" className="inline-flex h-[34px] w-[126px] animate-pulse rounded-full border border-zinc-200 bg-zinc-100" />
+          <span aria-hidden="true" className="inline-flex h-[34px] w-[104px] animate-pulse rounded-full border border-zinc-200 bg-zinc-100" />
+          <span aria-hidden="true" className="inline-flex h-[34px] w-[96px] animate-pulse rounded-full border border-zinc-200 bg-zinc-100" />
+        </div>
+      </section>
+
+      <section className="space-y-2" data-testid="ingredient-picker-quick-start-types">
+        <div className="text-[10px] font-medium uppercase tracking-[0.12em] text-zinc-500">По типу</div>
+        <div className="flex flex-wrap gap-2">
+          <span aria-hidden="true" className="inline-flex h-[34px] w-[78px] animate-pulse rounded-full border border-zinc-200 bg-zinc-100" />
+          <span aria-hidden="true" className="inline-flex h-[34px] w-[94px] animate-pulse rounded-full border border-zinc-200 bg-zinc-100" />
+          <span aria-hidden="true" className="inline-flex h-[34px] w-[106px] animate-pulse rounded-full border border-zinc-200 bg-zinc-100" />
+          <span aria-hidden="true" className="inline-flex h-[34px] w-[88px] animate-pulse rounded-full border border-zinc-200 bg-zinc-100" />
+        </div>
+      </section>
+
+      <section className="space-y-2" data-testid="ingredient-picker-quick-start-recent">
+        <div className="flex min-h-[1.5rem] items-center">
+          <span className="text-xs font-semibold text-zinc-900">Недавние</span>
+        </div>
+        <div
+          className="rounded-lg border border-dashed border-zinc-200 bg-zinc-50 px-3 py-2 text-xs text-zinc-500"
+          data-testid="ingredient-picker-quick-start-recent-loading"
+        >
+          Загружаем недавние...
+        </div>
+      </section>
+    </div>
+  </div>
+);
+
 export const countIngredientPickerActiveScopes = ({
   activeFamily,
   activeGroup,
@@ -1027,6 +1076,17 @@ const IngredientPickerQuickFilterButton = ({
   </button>
 );
 
+const IngredientPickerQuickFilterSkeleton = ({
+  widthClassName
+}: {
+  widthClassName: string;
+}) => (
+  <span
+    aria-hidden="true"
+    className={`inline-flex h-[34px] animate-pulse rounded-full border border-zinc-200 bg-zinc-100 ${widthClassName}`}
+  />
+);
+
 export const IngredientPickerScopeResetButton = ({
   onClick
 }: {
@@ -1067,6 +1127,7 @@ export const IngredientPickerQuickStartPanel = ({
   brands,
   recent,
   recentState,
+  filtersState = "ready",
   onSelectItem,
   onSelectBrand,
   onSelectFamily,
@@ -1078,6 +1139,7 @@ export const IngredientPickerQuickStartPanel = ({
   brands: IngredientManufacturerRefinement[];
   recent: IngredientSuggestionItem[];
   recentState?: "idle" | "loading" | "empty" | "ready";
+  filtersState?: "loading" | "ready";
   onSelectItem: (item: IngredientSuggestionItem) => void;
   onSelectBrand: (brand: IngredientManufacturerRefinement) => void;
   onSelectFamily: (familyKey: (typeof ingredientPickerMaltQuickStartFamilies)[number]["key"]) => void;
@@ -1103,28 +1165,35 @@ export const IngredientPickerQuickStartPanel = ({
       data-testid="ingredient-picker-quick-start"
     >
       <div className="space-y-4 px-3 py-3">
-        {showFavoritesFilter || (showCustomOnlyFilter && onToggleCustomOnly) ? (
-          <div
-            className="flex flex-wrap items-center gap-2"
-            data-testid="ingredient-picker-quick-start-favorites"
-          >
-            {showFavoritesFilter ? (
-              <IngredientPickerQuickFilterButton
-                label="Только избранные"
-                leadingIcon="★"
-                onClick={onToggleFavorites}
-                testId="ingredient-picker-favorites-filter"
-              />
-            ) : null}
-            {showCustomOnlyFilter && onToggleCustomOnly ? (
-              <IngredientPickerQuickFilterButton
-                label="Только свои"
-                onClick={onToggleCustomOnly}
-                testId="ingredient-picker-custom-only-filter"
-              />
-            ) : null}
-          </div>
-        ) : null}
+        <div
+          className="flex min-h-[34px] flex-wrap items-center gap-2"
+          data-testid="ingredient-picker-quick-start-favorites"
+        >
+          {filtersState === "loading" ? (
+            <>
+              <IngredientPickerQuickFilterSkeleton widthClassName="w-[132px]" />
+              {showCustomOnlyFilter ? <IngredientPickerQuickFilterSkeleton widthClassName="w-[102px]" /> : null}
+            </>
+          ) : (
+            <>
+              {showFavoritesFilter ? (
+                <IngredientPickerQuickFilterButton
+                  label="Только избранные"
+                  leadingIcon="★"
+                  onClick={onToggleFavorites}
+                  testId="ingredient-picker-favorites-filter"
+                />
+              ) : null}
+              {showCustomOnlyFilter && onToggleCustomOnly ? (
+                <IngredientPickerQuickFilterButton
+                  label="Только свои"
+                  onClick={onToggleCustomOnly}
+                  testId="ingredient-picker-custom-only-filter"
+                />
+              ) : null}
+            </>
+          )}
+        </div>
 
         {brands.length > 0 ? (
           <section className="space-y-2" data-testid="ingredient-picker-quick-start-brands">
@@ -1401,7 +1470,9 @@ const resolveIngredientPickerQuickStartSeedData = ({
   brands: category === "fermentable" && subtype === "malt"
     ? ingredientPickerMaltQuickStartFallbackBrands.slice(0, ingredientPickerQuickStartBrandLimit)
     : [],
-  recent: []
+  recent: [],
+  hasFavoritesAvailable: false,
+  hasCustomAvailable: false
 });
 
 const defaultLoadQuickStartIngredients = async ({
@@ -1508,9 +1579,7 @@ export const IngredientPicker = ({
   const [activeManufacturer, setActiveManufacturer] = useState<IngredientManufacturerRefinement | null>(null);
   const [activeFavoritesOnly, setActiveFavoritesOnly] = useState(false);
   const [activeCustomOnly, setActiveCustomOnly] = useState(false);
-  const [hasFavoritesInCategory, setHasFavoritesInCategory] = useState(false);
-  const [hasCustomItemsInCategory, setHasCustomItemsInCategory] = useState(false);
-  const [isQuickStartRecentLoading, setIsQuickStartRecentLoading] = useState(false);
+  const [isQuickStartLoading, setIsQuickStartLoading] = useState(enableQuickStart && category === "fermentable" && subtype === "malt");
   const [suppressQuickStart, setSuppressQuickStart] = useState(false);
   const [activeIndex, setActiveIndex] = useState(0);
   const [isOpen, setIsOpen] = useState(false);
@@ -1520,8 +1589,6 @@ export const IngredientPicker = ({
   const [emptyStateMessage, setEmptyStateMessage] = useState<string | null>(null);
   const cacheRef = useRef(new Map<string, IngredientSearchResult>());
   const quickStartCacheRef = useRef(new Map<string, IngredientPickerQuickStartResult>());
-  const favoritesAvailabilityCacheRef = useRef(new Map<string, boolean>());
-  const customAvailabilityCacheRef = useRef(new Map<string, boolean>());
   const committedLabelRef = useRef(value ?? "");
   const inputRef = useRef<HTMLInputElement | null>(null);
   const rootRef = useRef<HTMLDivElement | null>(null);
@@ -1615,130 +1682,13 @@ export const IngredientPicker = ({
     setActiveManufacturer(null);
     setActiveFavoritesOnly(false);
     setActiveCustomOnly(false);
-    setHasFavoritesInCategory(false);
-    setHasCustomItemsInCategory(false);
-    setIsQuickStartRecentLoading(false);
+    setIsQuickStartLoading(enableQuickStart && category === "fermentable" && subtype === "malt");
     setSuppressQuickStart(false);
     setIsExpanded(false);
     setSearchResult(emptyIngredientSearchResult);
     setActiveIndex(0);
     setHasResolvedQuery(false);
-  }, [category, includeCustom, subtype, type]);
-
-  useEffect(() => {
-    if (!category || subtype !== "malt" || category !== "fermentable" || !enableQuickStart) {
-      setHasFavoritesInCategory(false);
-      return;
-    }
-
-    const cacheKey = `${category}:${subtype ?? ""}`;
-    const cached = favoritesAvailabilityCacheRef.current.get(cacheKey);
-    if (typeof cached === "boolean") {
-      setHasFavoritesInCategory(cached);
-      return;
-    }
-
-    const controller = new AbortController();
-    const params = new URLSearchParams({
-      category,
-      favoritesOnly: "true",
-      limit: "1"
-    });
-
-    if (subtype) {
-      params.set("subtype", subtype);
-    }
-
-    const run = async () => {
-      try {
-        const response = await fetch(`/api/ingredients/search?${params.toString()}`, {
-          signal: controller.signal
-        });
-        if (!response.ok) {
-          throw new Error("Failed to load favorite ingredient availability.");
-        }
-
-        const data = await response.json() as { total?: number };
-        if (controller.signal.aborted) {
-          return;
-        }
-
-        const nextHasFavorites = typeof data.total === "number" && data.total > 0;
-        favoritesAvailabilityCacheRef.current.set(cacheKey, nextHasFavorites);
-        setHasFavoritesInCategory(nextHasFavorites);
-      } catch (error) {
-        if (isAbortError(error) || controller.signal.aborted) {
-          return;
-        }
-
-        favoritesAvailabilityCacheRef.current.set(cacheKey, false);
-        setHasFavoritesInCategory(false);
-      }
-    };
-
-    void run();
-
-    return () => controller.abort();
-  }, [category, enableQuickStart, subtype]);
-
-  useEffect(() => {
-    if (!shouldAllowIngredientCustomOnlyFilter({
-      allowCustomOnlyFilter,
-      includeCustom,
-      hasCustomItemsInCategory: true
-    }) || !category) {
-      setHasCustomItemsInCategory(false);
-      return;
-    }
-
-    const cacheKey = `${category}:${subtype ?? ""}`;
-    const cached = customAvailabilityCacheRef.current.get(cacheKey);
-    if (typeof cached === "boolean") {
-      setHasCustomItemsInCategory(cached);
-      return;
-    }
-
-    const controller = new AbortController();
-    const params = new URLSearchParams({
-      category,
-      limit: "1"
-    });
-
-    if (subtype) {
-      params.set("subtype", subtype);
-    }
-
-    const run = async () => {
-      try {
-        const response = await fetch(`/api/ingredients/custom?${params.toString()}`, {
-          signal: controller.signal
-        });
-        if (!response.ok) {
-          throw new Error("Failed to load custom ingredient availability.");
-        }
-
-        const data = await response.json() as { total?: number };
-        if (controller.signal.aborted) {
-          return;
-        }
-
-        const nextHasCustomItems = typeof data.total === "number" && data.total > 0;
-        customAvailabilityCacheRef.current.set(cacheKey, nextHasCustomItems);
-        setHasCustomItemsInCategory(nextHasCustomItems);
-      } catch (error) {
-        if (isAbortError(error) || controller.signal.aborted) {
-          return;
-        }
-
-        customAvailabilityCacheRef.current.set(cacheKey, false);
-        setHasCustomItemsInCategory(false);
-      }
-    };
-
-    void run();
-
-    return () => controller.abort();
-  }, [allowCustomOnlyFilter, category, includeCustom, subtype]);
+  }, [category, enableQuickStart, includeCustom, subtype, type]);
 
   useEffect(() => {
     if (normalizeSearchText(query).length === 0) {
@@ -1877,12 +1827,12 @@ export const IngredientPicker = ({
 
   useEffect(() => {
     if (!showQuickStart || !category) {
-      setIsQuickStartRecentLoading(false);
+      setIsQuickStartLoading(false);
       return;
     }
 
     if (!hasHydratedRecentSelections) {
-      setIsQuickStartRecentLoading(true);
+      setIsQuickStartLoading(true);
       return;
     }
 
@@ -1890,14 +1840,14 @@ export const IngredientPicker = ({
     const cached = quickStartCacheRef.current.get(cacheKey);
     if (cached) {
       setQuickStartData(cached);
-      setIsQuickStartRecentLoading(false);
+      setIsQuickStartLoading(false);
       return;
     }
 
     const controller = new AbortController();
     const run = async () => {
       try {
-        setIsQuickStartRecentLoading(true);
+        setIsQuickStartLoading(true);
         const nextQuickStartData = await loadQuickStartIngredients({
           category,
           subtype,
@@ -1910,7 +1860,7 @@ export const IngredientPicker = ({
 
         quickStartCacheRef.current.set(cacheKey, nextQuickStartData);
         setQuickStartData(nextQuickStartData);
-        setIsQuickStartRecentLoading(false);
+        setIsQuickStartLoading(false);
       } catch (error) {
         if (isAbortError(error) || controller.signal.aborted) {
           return;
@@ -1920,7 +1870,7 @@ export const IngredientPicker = ({
           category,
           subtype
         }));
-        setIsQuickStartRecentLoading(false);
+        setIsQuickStartLoading(false);
       }
     };
 
@@ -2237,7 +2187,7 @@ export const IngredientPicker = ({
     enableQuickStart,
     category,
     subtype,
-    hasFavoritesInCategory
+    hasFavoritesInCategory: quickStartData.hasFavoritesAvailable
   });
   const showResultsFavoritesQuickFilter = canShowFavoritesFilter
     && !showQuickStart
@@ -2245,7 +2195,7 @@ export const IngredientPicker = ({
   const canShowCustomOnlyFilter = shouldAllowIngredientCustomOnlyFilter({
     allowCustomOnlyFilter,
     includeCustom,
-    hasCustomItemsInCategory
+    hasCustomItemsInCategory: quickStartData.hasCustomAvailable
   });
   const showResultsCustomOnlyQuickFilter = canShowCustomOnlyFilter
     && !showQuickStart
@@ -2513,24 +2463,25 @@ export const IngredientPicker = ({
     ) : builtInEmptyState
   ) : null;
   const quickStartPanel = showQuickStart ? (
-    <IngredientPickerQuickStartPanel
-      brands={quickStartData.brands}
-      recent={quickStartData.recent}
-      recentState={
-        !hasHydratedRecentSelections || isQuickStartRecentLoading
-          ? "loading"
-          : quickStartData.recent.length > 0
-            ? "ready"
-            : "empty"
-      }
-      onSelectItem={commitSelection}
-      onSelectBrand={activateQuickStartBrand}
-      onSelectFamily={activateQuickStartFamily}
-      onToggleFavorites={toggleFavoritesFilter}
-      onToggleCustomOnly={toggleCustomOnlyFilter}
-      showFavoritesFilter={canShowFavoritesFilter}
-      showCustomOnlyFilter={canShowCustomOnlyFilter}
-    />
+    isQuickStartLoading ? (
+      <IngredientPickerQuickStartLoadingPanel
+        showCustomOnlyFilter={allowCustomOnlyFilter && includeCustom !== false}
+      />
+    ) : (
+      <IngredientPickerQuickStartPanel
+        brands={quickStartData.brands}
+        recent={quickStartData.recent}
+        recentState={quickStartData.recent.length > 0 ? "ready" : "empty"}
+        filtersState="ready"
+        onSelectItem={commitSelection}
+        onSelectBrand={activateQuickStartBrand}
+        onSelectFamily={activateQuickStartFamily}
+        onToggleFavorites={toggleFavoritesFilter}
+        onToggleCustomOnly={toggleCustomOnlyFilter}
+        showFavoritesFilter={canShowFavoritesFilter}
+        showCustomOnlyFilter={canShowCustomOnlyFilter}
+      />
+    )
   ) : null;
 
   return (

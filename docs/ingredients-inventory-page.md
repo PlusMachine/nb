@@ -1,6 +1,6 @@
 # Раздел `/app/ingredients` (`Склад моих ингредиентов`)
 
-Дата фиксации: `2026-04-05`
+Дата фиксации: `2026-04-06`
 
 Этот документ описывает текущее поведение раздела `/app/ingredients` по коду и связанным UI-компонентам. Он покрывает:
 
@@ -12,7 +12,7 @@
 
 Если документация и код расходятся, source of truth - текущая реализация в `apps/web`.
 
-Документ повторно сверён с текущим кодом `2026-04-05` и актуализирован с учётом purchase links / user metadata flow.
+Документ повторно сверён с текущим кодом `2026-04-06` и актуализирован с учётом purchase links / user metadata flow и malt quick-start picker flow.
 
 Для низкоуровневого разбора add-flow есть отдельный документ: `docs/ingredients-add-flow.md`. Этот файл не заменяет его, а собирает полную карту раздела `/app/ingredients` и связывает add-flow с остальными сценариями страницы.
 
@@ -41,8 +41,10 @@
 - `apps/web/features/inventory/page-model.ts`
 - `apps/web/features/inventory/service.ts`
 - `apps/web/features/ingredients/catalog-service.ts`
+- `apps/web/features/ingredients/picker-quick-start.ts`
 - `apps/web/app/(app)/app/catalog/[source]/[id]/page.tsx`
 - `apps/web/app/api/inventory/suggestions/route.ts`
+- `apps/web/app/api/ingredients/picker-quick-start/route.ts`
 - `apps/web/app/api/ingredients/custom/route.ts`
 
 ## 1. Назначение страницы
@@ -295,6 +297,13 @@
 - switch `Из каталога / Свой ингредиент`;
 - дальше - catalog flow или custom flow.
 
+Если add modal открыт в catalog-контексте `Солод`, до ввода `2` символов picker stage показывает zero-query quick-start:
+
+- верхнюю строку быстрых фильтров;
+- секцию `По бренду`;
+- секцию `По типу`;
+- секцию `Недавние`.
+
 Когда selection уже есть:
 
 - grid категорий и mode switch скрываются;
@@ -323,6 +332,8 @@
 - блок обязательных полей;
 - disclosure `Дополнительно`;
 - кнопки `Сохранить` и `Отмена`.
+
+Если selection очищен и пользователь остается в контексте `Солод`, picker stage тоже показывает тот же zero-query quick-start, что и add modal, но без quick filter `Только свои`.
 
 Как закрывается:
 
@@ -556,6 +567,28 @@ Dropdown закрывается также по клику вне него.
 - picker;
 - inline suggestions.
 
+Для `fermentable + malt` catalog mode начинается с отдельного zero-query state:
+
+- пока query пустой или короче `2` символов, picker не ходит в обычный `/api/ingredients/search`;
+- вместо этого он показывает quick-start panel;
+- quick-start грузится через `POST /api/ingredients/picker-quick-start`;
+- panel резервирует верхнюю строку быстрых фильтров с первого рендера и во время загрузки показывает skeleton-state.
+
+Что реально приходит в quick-start для склада:
+
+- brand chips для `По бренду`;
+- preset family chips для `По типу`;
+- hydrated `Недавние` из сохранённых reference'ов;
+- availability flags:
+  - `hasFavoritesAvailable`
+  - `hasCustomAvailable`
+
+Из этого следуют UX-правила:
+
+- `Только избранные` показывается только если в текущем unified malt-scope реально есть favorite items;
+- `Только свои` в add catalog flow показывается только если flow разрешает custom-only filter и в этом же scope реально есть custom items;
+- `Недавние` по умолчанию схлопнуты и раскрываются отдельным действием `Показать все`.
+
 Когда ingredient выбран, появляются:
 
 - summary выбранного ингредиента;
@@ -686,6 +719,12 @@ Optional disclosure в create-custom flow теперь тоже включает
 6. По желанию открывается блок `Дополнительно`.
 7. Нажатие `Сохранить` отправляет `updateInventoryItemAction(...)`.
 8. При успехе modal закрывается, карточка обновляется.
+
+Если edit flow после очистки находится в контексте `Солод`, picker stage работает так же, как в add modal:
+
+- до `2` символов показывается quick-start вместо search results;
+- доступны brand chips, family chips и `Недавние`;
+- quick filter `Только свои` здесь не выводится, потому что editor не включает `allowCustomOnlyFilter`.
 
 В required fields edit modal редактируются:
 
@@ -912,12 +951,14 @@ Inventory item связан с одной из двух сущностей:
 - `getIngredientSuggestionByRef(...)` разрешает deep-link из каталога в add modal склада;
 - `listUserCatalogIngredients(...)` возвращает и system catalog items, и custom items пользователя;
 - custom browser в add modal читает `/api/ingredients/custom`, а тот поверх `listUserCatalogIngredients(..., { view: "mine" })`;
-- shared `IngredientPicker` тоже работает поверх unified ingredient search.
+- shared `IngredientPicker` тоже работает поверх unified ingredient search;
+- zero-query malt quick-start идет через `/api/ingredients/picker-quick-start`, который тоже использует тот же unified catalog/runtime.
 
 Следствие:
 
 - inventory custom flow не живет в отдельном ad-hoc хранилище;
-- он использует тот же пользовательский каталог ингредиентов.
+- он использует тот же пользовательский каталог ингредиентов;
+- quick-start availability для `Избранные` и `Только свои` тоже считается серверно по тому же unified ingredient scope.
 
 ### 14.4. User metadata теперь тоже общая между складом и каталогом
 
@@ -1005,6 +1046,7 @@ Catalog detail page показывает блок `Использование`:
 
 - стартует из modal;
 - поддерживает catalog path, existing custom path и create-custom path;
+- в catalog malt-context стартует с zero-query quick-start, а не с пустой выдачи;
 - может сохранить системный ingredient как derived custom variant;
 - подробно разобрано в `docs/ingredients-add-flow.md`.
 
@@ -1012,6 +1054,7 @@ Catalog detail page показывает блок `Использование`:
 
 - открывает отдельную modal;
 - может заменить сам ingredient, а не только batch details;
+- при замене malt ingredient использует тот же quick-start runtime, но без `Только свои`;
 - не предназначено для выставления нулевого остатка.
 
 ### 15.4. Обнуление
@@ -1038,5 +1081,6 @@ Catalog detail page показывает блок `Использование`:
 - `default` sort сейчас по факту эквивалентен sort by name.
 - Обнуление и удаление - это разные сценарии: zero сохраняет карточку, delete удаляет строку.
 - Edit modal умеет менять source linkage inventory item.
+- Shared picker для склада уже включает zero-query malt quick-start; это не отдельный локальный UI-эксперимент страницы.
 - Purchase links редактируются не на inventory row, а на ingredient reference metadata.
 - Склад и каталог используют общий ingredient domain, а не два несвязанных набора данных.

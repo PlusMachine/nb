@@ -28,9 +28,11 @@
 - `apps/web/components/inventory/inventory-item-details-editor.tsx`
 - `apps/web/components/inventory/inventory-list-item.tsx`
 - `apps/web/components/inventory/inventory-ingredient-context-summary.tsx`
+- `apps/web/app/api/ingredients/picker-quick-start/route.ts`
 - `apps/web/features/ingredients/catalog-service.ts`
 - `apps/web/features/ingredients/ranking.ts`
 - `apps/web/features/ingredients/normalization.ts`
+- `apps/web/features/ingredients/picker-quick-start.ts`
 - `apps/web/features/ingredients/presentation.ts`
 - `apps/web/features/inventory/page-model.ts`
 - `packages/db/scripts/catalog-seed.ts`
@@ -43,11 +45,14 @@
 - Для fermentable дополнительно передается subtype:
   - `malt`
   - `fermentable`
+- Для `fermentable + malt` до настоящего поиска показывается отдельный zero-query quick-start.
 - Поиск стартует только если picker открыт и введено минимум `2` символа.
 - Перед запросом есть debounce `180ms`.
 - Поиск идет не только по системному каталогу, но и по пользовательским ингредиентам.
 - Даже на вкладке `Из каталога` можно выбрать existing custom ingredient.
-- В add flow у catalog-picker есть быстрые scope-фильтры `Только избранные` и `Только свои`.
+- В quick-start у malt picker верхняя строка быстрых фильтров резервируется с первого рендера, а во время загрузки показывается skeleton-panel без прыгающего layout.
+- В add flow у malt picker могут появляться быстрые scope-фильтры `Только избранные` и `Только свои`.
+- В edit flow у malt picker может появляться `Только избранные`, но `Только свои` не выводится.
 - При широкой выдаче результаты сначала схлопываются до `6` строк, хотя API обычно возвращает до `10`.
 - Если совпадений много, picker предлагает `Уточнить производителя`.
 - В add flow для catalog fermentable/hop можно уточнить batch-параметры:
@@ -70,6 +75,40 @@ Picker ищет только если одновременно выполнен�
 
 - если активирован refinement по производителю и поле пустое, picker продолжает искать внутри выбранного производителя
 - если input открыт, но символов меньше двух, сетевого поиска нет
+
+Отдельное правило для `fermentable + malt`:
+
+- если `enableQuickStart = true`, при пустом query или query короче `2` символов picker открывает не обычную пустую выдачу, а zero-query quick-start
+- quick-start скрывается, как только появляется явный search state:
+  - query длиной `>= 2`
+  - family scope
+  - `favoritesOnly`
+  - `customOnly`
+  - manufacturer refinement
+  - consumable group refinement
+
+Quick-start идет отдельным путем:
+
+- `POST /api/ingredients/picker-quick-start`
+- request:
+  - `category`
+  - `subtype`
+  - `recentReferences`
+  - `recentLimit`
+- response:
+  - `brands`
+  - `recent`
+  - `hasFavoritesAvailable`
+  - `hasCustomAvailable`
+
+Пока quick-start грузится:
+
+- picker показывает отдельную loading-panel, а не обычный search spinner
+- верхняя строка быстрых фильтров резервируется заранее
+- в add flow skeleton держит два потенциальных слота:
+  - `Только избранные`
+  - `Только свои`
+- в edit flow резервируется только favorite-slot
 
 ### 2.2. Какие параметры уходят в API
 
@@ -192,6 +231,10 @@ Picker переходит в refinement mode, если:
 - в UI при broad match сначала видны `6` строк
 - `Показать все результаты` делает расширенный fetch
 - верхний hard cap расширенного fetch: `100`
+- quick-start `recentLimit`: `10`
+- секция `Недавние` в quick-start по умолчанию полностью схлопнута:
+  - header и счетчик видны
+  - сами recent cards появляются только после `Показать все`
 
 ## 3. Add flow и edit flow: различия
 
@@ -203,6 +246,21 @@ Picker переходит в refinement mode, если:
 - grid категорий
 - switch `Из каталога / ДОБАВИТЬ СВОЙ`
 - picker
+
+Если выбран контекст `Солод`, старт picker stage сейчас такой:
+
+- до ввода `2` символов показывается malt quick-start
+- порядок секций в quick-start:
+  - быстрые фильтры
+  - `По бренду`
+  - `По типу`
+  - `Недавние`
+- `Только избранные` появляется, если в unified malt-scope реально есть favorite items
+- `Только свои` появляется, если в этом же scope реально есть custom items
+- если quick-start API не ответил, panel падает в seed fallback:
+  - fallback brands остаются
+  - recent остаются пустыми
+  - availability flags считаются `false`
 
 После выбора ингредиента:
 
@@ -247,6 +305,13 @@ Edit flow стартует уже с выбранным текущим ингр�
 - снова появляется category grid
 - появляется picker
 - picker refocus-ится
+
+Если после очистки выбран `Солод`, edit flow использует тот же malt quick-start runtime, но с более узким UI:
+
+- до ввода `2` символов показывается zero-query quick-start
+- доступны brand chips, family chips и `Недавние`
+- quick filter `Только избранные` может появиться, если в malt-scope есть избранное
+- quick filter `Только свои` в edit flow не показывается, потому что `allowCustomOnlyFilter` не передается
 
 Если поиск пустой:
 
@@ -959,6 +1024,7 @@ Package variants в inventory card напрямую не раскрываютс�
 - Для fermentable category всегда раскладывается на:
   - `fermentable + malt`
   - `fermentable + fermentable`
+- Для `fermentable + malt` это означает не только search context, но и право на zero-query quick-start.
 
 ### 6.2. Catalog-tab не равен catalog-only
 
@@ -974,6 +1040,12 @@ Package variants в inventory card напрямую не раскрываютс�
 
 - пользователь может на вкладке `Из каталога` выбрать свой ingredient
 - submit path потом корректно уйдет в custom inventory source
+
+Это влияет и на quick-start:
+
+- `hasCustomAvailable` считается по тому же unified scoped list, а не по отдельному catalog-only источнику
+- quick filter `Только свои` в add flow включается только если в этом unified malt-scope реально есть custom ingredients
+- availability-state для быстрых фильтров приходит из `listIngredientPickerQuickStart(...)`, а не из отдельных клиентских пробных запросов
 
 ### 6.3. После выбора ingredient flow “фиксируется”
 
@@ -1033,6 +1105,8 @@ Package variants в inventory card напрямую не раскрываютс�
 
 Если менять picker/search дальше, самые чувствительные места сейчас такие:
 
+- zero-query malt quick-start уже часть shared picker runtime, а не отдельный инвентарный эксперимент
+- availability быстрых фильтров теперь приходит из `listIngredientPickerQuickStart(...)`
 - `fermentable` seed mapping теряет aliases и producer
 - `water_treatment` subtype derivation для `chemical` слишком общая
 - `consumable` ищется по package variants, но не показывает matched package variant в UI

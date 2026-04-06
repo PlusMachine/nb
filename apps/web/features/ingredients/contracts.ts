@@ -515,6 +515,8 @@ export type IngredientSearchResult = {
 export type IngredientPickerQuickStartResult = {
   brands: IngredientManufacturerRefinement[];
   recent: IngredientSuggestionItem[];
+  hasFavoritesAvailable: boolean;
+  hasCustomAvailable: boolean;
 };
 
 export const ingredientCatalogViews = ["all", "mine"] as const;
