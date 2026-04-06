@@ -141,7 +141,7 @@ export function InventoryPriceInput({
   }), [displayMeasurement, preferredCurrency, priceInputAmountMinor, priceInputMode]);
   const effectivePriceUnit = pricePreview.priceDisplayUnit ?? practicalPriceUnit;
   const helperText = priceInputAmountMinor == null
-    ? "Цена сохранится в валюте профиля и автоматически привяжется к текущему количеству."
+    ? null
     : priceInputMode === "per_display_unit"
       ? (
           pricePreview.purchasePriceMinor != null
@@ -165,7 +165,6 @@ export function InventoryPriceInput({
           <p className="text-sm font-medium">
             Цена {priceInputMode === "per_display_unit" ? `за ${inventoryUnitShortLabels[effectivePriceUnit]}` : "за всё количество"}
           </p>
-          <p className="text-xs text-zinc-500">Валюта по умолчанию: {preferredCurrency}</p>
         </div>
         <div className="grid grid-cols-2 gap-1 rounded-md bg-zinc-100 p-1 text-xs" role="group" aria-label="Режим цены">
           {inventoryPriceInputModes.map((mode) => {
@@ -203,7 +202,7 @@ export function InventoryPriceInput({
         {fieldError ? <span className="text-xs text-red-600">{fieldError}</span> : null}
       </label>
 
-      <p className="mt-2 text-xs text-zinc-500">{helperText}</p>
+      {helperText ? <p className="mt-2 text-xs text-zinc-500">{helperText}</p> : null}
     </div>
   );
 }

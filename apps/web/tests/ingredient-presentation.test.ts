@@ -141,6 +141,18 @@ describe("ingredient presentation", () => {
     })).toBe("12.5% AA • pellet");
   });
 
+  it("omits negative fermentable color values from summaries", () => {
+    expect(buildIngredientTypedSummary({
+      category: "fermentable",
+      subtype: "fermentable",
+      technicalData: {
+        type: "fermentable",
+        colorLovibond: -0.5,
+        extractPctDryBasis: 80
+      }
+    })).toBe("Экст-ть 80%");
+  });
+
   it("resolves country labels and codes from country code", () => {
     expect(resolveIngredientCountry({
       countryCode: "US",
@@ -157,6 +169,43 @@ describe("ingredient presentation", () => {
     })).toEqual({
       code: "RU",
       label: "Россия"
+    });
+  });
+
+  it("resolves country labels and codes for catalog countries stored as names only", () => {
+    expect(resolveIngredientCountry({
+      countryName: "Австралия"
+    })).toEqual({
+      code: "AU",
+      label: "Австралия"
+    });
+
+    expect(resolveIngredientCountry({
+      countryName: "Индонезия"
+    })).toEqual({
+      code: "ID",
+      label: "Индонезия"
+    });
+
+    expect(resolveIngredientCountry({
+      countryName: "Таиланд"
+    })).toEqual({
+      code: "TH",
+      label: "Таиланд"
+    });
+
+    expect(resolveIngredientCountry({
+      countryName: "Латвия"
+    })).toEqual({
+      code: "LV",
+      label: "Латвия"
+    });
+
+    expect(resolveIngredientCountry({
+      countryName: "Вьетнам"
+    })).toEqual({
+      code: "VN",
+      label: "Вьетнам"
     });
   });
 });

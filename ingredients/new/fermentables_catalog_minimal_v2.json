@@ -4417,5 +4417,684 @@
         "url": "https://beersmith.com/grain-list/"
       }
     ]
+  },
+  {
+    "id": "weyermann-bavarian-pilsner-ekstrakty-kontsentraty",
+    "type": "fermentable",
+    "group": "extracts_and_concentrates",
+    "ingredient_type": "malt_extract",
+    "fermentability_class": "highly_fermentable",
+    "name_ru": "Баварский пилснер",
+    "name_en": "Bavarian Pilsner",
+    "producer": "Weyermann",
+    "country_name": "Германия",
+    "aliases_ru": [
+      "солодовый экстракт баварский пилснер",
+      "жидкий солодовый экстракт баварский пилснер"
+    ],
+    "aliases_en": [
+      "Liquid Malt Extract Bavarian Pilsner",
+      "Weyermann Bavarian Pilsner LME"
+    ],
+    "extract_pct_dry_basis": 75.0,
+    "color_lovibond": 6.1,
+    "recommended_max_pct": 100,
+    "present_on_birrf": false,
+    "is_usable_in_beer_gravity_calculations": true,
+    "beer_relevance": "core_brewing_or_adjunct",
+    "sources": [
+      {
+        "kind": "official_product_page",
+        "label": "Weyermann / Bavarian Pilsner",
+        "url": "https://www.weyermann.de/en-us/product/weyermann-bavarian-pilsner-4/?cat=malt-extract-en-us"
+      }
+    ]
+  },
+  {
+    "id": "weyermann-bavarian-hefeweizen-ekstrakty-kontsentraty",
+    "type": "fermentable",
+    "group": "extracts_and_concentrates",
+    "ingredient_type": "malt_extract",
+    "fermentability_class": "highly_fermentable",
+    "name_ru": "Баварский хефевайцен",
+    "name_en": "Bavarian Hefeweizen",
+    "producer": "Weyermann",
+    "country_name": "Германия",
+    "aliases_ru": [
+      "солодовый экстракт баварский хефевайцен",
+      "жидкий солодовый экстракт баварский хефевайцен"
+    ],
+    "aliases_en": [
+      "Liquid Malt Extract Bavarian Hefeweizen",
+      "Weyermann Bavarian Hefeweizen LME"
+    ],
+    "extract_pct_dry_basis": 75.0,
+    "color_lovibond": 6.1,
+    "recommended_max_pct": 100,
+    "present_on_birrf": false,
+    "is_usable_in_beer_gravity_calculations": true,
+    "beer_relevance": "core_brewing_or_adjunct",
+    "sources": [
+      {
+        "kind": "official_product_page",
+        "label": "Weyermann / Bavarian Hefeweizen",
+        "url": "https://www.weyermann.de/en-us/product/weyermann-bavarian-hefeweizen-7/?cat=malt-extract-en-us"
+      }
+    ]
+  },
+  {
+    "id": "weyermann-bavarian-maibock-ekstrakty-kontsentraty",
+    "type": "fermentable",
+    "group": "extracts_and_concentrates",
+    "ingredient_type": "malt_extract",
+    "fermentability_class": "highly_fermentable",
+    "name_ru": "Баварский майбок",
+    "name_en": "Bavarian Maibock",
+    "producer": "Weyermann",
+    "country_name": "Германия",
+    "aliases_ru": [
+      "солодовый экстракт баварский майбок",
+      "жидкий солодовый экстракт баварский майбок"
+    ],
+    "aliases_en": [
+      "Liquid Malt Extract Bavarian Maibock",
+      "Weyermann Bavarian Maibock LME"
+    ],
+    "extract_pct_dry_basis": 75.0,
+    "color_lovibond": 13.65,
+    "recommended_max_pct": 100,
+    "present_on_birrf": false,
+    "is_usable_in_beer_gravity_calculations": true,
+    "beer_relevance": "core_brewing_or_adjunct",
+    "sources": [
+      {
+        "kind": "official_product_page",
+        "label": "Weyermann / Bavarian Maibock",
+        "url": "https://www.weyermann.de/en-us/product/weyermann-bavarian-maibock-3/?cat=malt-extract-en-us"
+      }
+    ]
+  },
+  {
+    "id": "weyermann-munich-amber-ekstrakty-kontsentraty",
+    "type": "fermentable",
+    "group": "extracts_and_concentrates",
+    "ingredient_type": "malt_extract",
+    "fermentability_class": "highly_fermentable",
+    "name_ru": "Мюнхенский янтарный",
+    "name_en": "Munich Amber",
+    "producer": "Weyermann",
+    "country_name": "Германия",
+    "aliases_ru": [
+      "солодовый экстракт мюнхенский янтарный",
+      "жидкий солодовый экстракт мюнхенский янтарный"
+    ],
+    "aliases_en": [
+      "Liquid Malt Extract Munich Amber",
+      "Weyermann Munich Amber LME"
+    ],
+    "extract_pct_dry_basis": 75.0,
+    "color_lovibond": 14.6,
+    "recommended_max_pct": 100,
+    "present_on_birrf": false,
+    "is_usable_in_beer_gravity_calculations": true,
+    "beer_relevance": "core_brewing_or_adjunct",
+    "sources": [
+      {
+        "kind": "official_product_page",
+        "label": "Weyermann / Munich Amber",
+        "url": "https://www.weyermann.de/en-us/product/weyermann-munich-amber-5/?cat=malt-extract-en-us"
+      }
+    ]
+  },
+  {
+    "id": "weyermann-bamberg-rauch-ekstrakty-kontsentraty",
+    "type": "fermentable",
+    "group": "extracts_and_concentrates",
+    "ingredient_type": "malt_extract",
+    "fermentability_class": "highly_fermentable",
+    "name_ru": "Бамбергский копчёный",
+    "name_en": "Bamberg Rauch",
+    "producer": "Weyermann",
+    "country_name": "Германия",
+    "aliases_ru": [
+      "солодовый экстракт бамбергский копчёный",
+      "жидкий солодовый экстракт rauch"
+    ],
+    "aliases_en": [
+      "Liquid Malt Extract Bamberg Rauch",
+      "Weyermann Bamberg Rauch LME",
+      "Smoked Malt Extract"
+    ],
+    "extract_pct_dry_basis": 75.0,
+    "color_lovibond": 23.1,
+    "recommended_max_pct": 100,
+    "present_on_birrf": false,
+    "is_usable_in_beer_gravity_calculations": true,
+    "beer_relevance": "core_brewing_or_adjunct",
+    "sources": [
+      {
+        "kind": "official_product_page",
+        "label": "Weyermann / Bamberg Rauch",
+        "url": "https://www.weyermann.de/en-us/product/weyermann-bamberg-rauch-5/?cat=malt-extract-en-us"
+      }
+    ]
+  },
+  {
+    "id": "weyermann-munich-october-beer-ekstrakty-kontsentraty",
+    "type": "fermentable",
+    "group": "extracts_and_concentrates",
+    "ingredient_type": "malt_extract",
+    "fermentability_class": "highly_fermentable",
+    "name_ru": "Мюнхенское октоберфестовое",
+    "name_en": "Munich October Beer",
+    "producer": "Weyermann",
+    "country_name": "Германия",
+    "aliases_ru": [
+      "солодовый экстракт мюнхенское октоберфестовое",
+      "жидкий солодовый экстракт oktoberfest"
+    ],
+    "aliases_en": [
+      "Liquid Malt Extract Munich October Beer",
+      "Weyermann Munich October LME",
+      "Oktoberfest Malt Extract"
+    ],
+    "extract_pct_dry_basis": 75.0,
+    "color_lovibond": 18.35,
+    "recommended_max_pct": 100,
+    "present_on_birrf": false,
+    "is_usable_in_beer_gravity_calculations": true,
+    "beer_relevance": "core_brewing_or_adjunct",
+    "sources": [
+      {
+        "kind": "official_product_page",
+        "label": "Weyermann / Munich October Beer",
+        "url": "https://www.weyermann.de/en-us/product/weyermann-munich-october-beer-3/?cat=malt-extract-en-us"
+      }
+    ]
+  },
+  {
+    "id": "weyermann-vienna-red-ekstrakty-kontsentraty",
+    "type": "fermentable",
+    "group": "extracts_and_concentrates",
+    "ingredient_type": "malt_extract",
+    "fermentability_class": "highly_fermentable",
+    "name_ru": "Венский красный",
+    "name_en": "Vienna Red",
+    "producer": "Weyermann",
+    "country_name": "Германия",
+    "aliases_ru": [
+      "солодовый экстракт венский красный",
+      "жидкий солодовый экстракт vienna red"
+    ],
+    "aliases_en": [
+      "Liquid Malt Extract Vienna Red",
+      "Weyermann Vienna Red LME"
+    ],
+    "extract_pct_dry_basis": 75.0,
+    "color_lovibond": 19.3,
+    "recommended_max_pct": 100,
+    "present_on_birrf": false,
+    "is_usable_in_beer_gravity_calculations": true,
+    "beer_relevance": "core_brewing_or_adjunct",
+    "sources": [
+      {
+        "kind": "official_product_page",
+        "label": "Weyermann / Vienna Red",
+        "url": "https://www.weyermann.de/en-us/product/weyermann-vienna-red-5/?cat=malt-extract-en-us"
+      }
+    ]
+  },
+  {
+    "id": "weyermann-bavarian-dunkel-ekstrakty-kontsentraty",
+    "type": "fermentable",
+    "group": "extracts_and_concentrates",
+    "ingredient_type": "malt_extract",
+    "fermentability_class": "highly_fermentable",
+    "name_ru": "Баварский дункель",
+    "name_en": "Bavarian Dunkel",
+    "producer": "Weyermann",
+    "country_name": "Германия",
+    "aliases_ru": [
+      "солодовый экстракт баварский дункель",
+      "жидкий солодовый экстракт dunkel"
+    ],
+    "aliases_en": [
+      "Liquid Malt Extract Bavarian Dunkel",
+      "Weyermann Bavarian Dunkel LME"
+    ],
+    "extract_pct_dry_basis": 75.0,
+    "color_lovibond": 28.75,
+    "recommended_max_pct": 100,
+    "present_on_birrf": false,
+    "is_usable_in_beer_gravity_calculations": true,
+    "beer_relevance": "core_brewing_or_adjunct",
+    "sources": [
+      {
+        "kind": "official_product_page",
+        "label": "Weyermann / Bavarian Dunkel",
+        "url": "https://www.weyermann.de/en-us/product/weyermann-bavarian-dunkel-5/?cat=malt-extract-en-us"
+      }
+    ]
+  },
+  {
+    "id": "weyermann-sour-wort-ekstrakty-kontsentraty",
+    "type": "fermentable",
+    "group": "extracts_and_concentrates",
+    "ingredient_type": "sour_wort",
+    "fermentability_class": "non_fermentable_or_process",
+    "name_ru": "Кислое сусло",
+    "name_en": "Sour Wort",
+    "producer": "Weyermann",
+    "country_name": "Германия",
+    "aliases_ru": [
+      "закисленное сусло",
+      "кислое сусло Weyermann"
+    ],
+    "aliases_en": [
+      "Weyermann Sour Wort"
+    ],
+    "extract_pct_dry_basis": null,
+    "color_lovibond": null,
+    "recommended_max_pct": null,
+    "present_on_birrf": false,
+    "is_usable_in_beer_gravity_calculations": false,
+    "beer_relevance": "technical_or_color_adjustment",
+    "sources": [
+      {
+        "kind": "official_product_page",
+        "label": "Weyermann / Sour Wort",
+        "url": "https://www.weyermann.de/en-us/product/weyermann-sour-wort-2/?cat=sour-wort-en-us"
+      }
+    ]
+  },
+  {
+    "id": "castle-malting-chateau-chit-wheat-malt-flakes-nesolozhenka",
+    "type": "fermentable",
+    "group": "adjunct_grains",
+    "ingredient_type": "flaked_adjunct",
+    "fermentability_class": "mash_fermentable",
+    "name_ru": "Чит-пшеничные хлопья",
+    "name_en": "Château Chit Wheat Malt Flakes",
+    "producer": "Castle Malting",
+    "country_name": "Бельгия",
+    "aliases_ru": [
+      "чит пшеничные хлопья",
+      "пшеничные чит-хлопья"
+    ],
+    "aliases_en": [
+      "Chit Wheat Flakes",
+      "Chateau Chit Wheat Flakes"
+    ],
+    "extract_pct_dry_basis": null,
+    "color_lovibond": 2.25,
+    "recommended_max_pct": 25,
+    "present_on_birrf": false,
+    "is_usable_in_beer_gravity_calculations": true,
+    "beer_relevance": "core_brewing_or_adjunct",
+    "sources": [
+      {
+        "kind": "official_product_page",
+        "label": "Castle Malting / CHÂTEAU CHIT WHEAT MALT FLAKES",
+        "url": "https://www.castlemalting.com/CastleMaltingMaltsInAFewWords.asp?Language=English"
+      }
+    ]
+  },
+  {
+    "id": "castle-malting-chateau-oat-flakes-nesolozhenka",
+    "type": "fermentable",
+    "group": "adjunct_grains",
+    "ingredient_type": "flaked_adjunct",
+    "fermentability_class": "mash_fermentable",
+    "name_ru": "Овсяные хлопья Château",
+    "name_en": "Château Oat Flakes",
+    "producer": "Castle Malting",
+    "country_name": "Бельгия",
+    "aliases_ru": [
+      "овсяные хлопья castle",
+      "овсяные хлопья шато"
+    ],
+    "aliases_en": [
+      "Chateau Oat Flakes",
+      "Oat Flakes"
+    ],
+    "extract_pct_dry_basis": null,
+    "color_lovibond": 2.05,
+    "recommended_max_pct": 10,
+    "present_on_birrf": false,
+    "is_usable_in_beer_gravity_calculations": true,
+    "beer_relevance": "core_brewing_or_adjunct",
+    "sources": [
+      {
+        "kind": "official_product_page",
+        "label": "Castle Malting / CHÂTEAU OAT FLAKES",
+        "url": "https://www.castlemalting.com/CastleMaltingMaltsInAFewWords.asp?Language=English"
+      }
+    ]
+  },
+  {
+    "id": "castle-malting-chateau-rice-flakes-nesolozhenka",
+    "type": "fermentable",
+    "group": "adjunct_grains",
+    "ingredient_type": "flaked_adjunct",
+    "fermentability_class": "mash_fermentable",
+    "name_ru": "Рисовые хлопья Château",
+    "name_en": "Château Rice Flakes",
+    "producer": "Castle Malting",
+    "country_name": "Бельгия",
+    "aliases_ru": [
+      "рисовые хлопья castle",
+      "рисовые хлопья шато"
+    ],
+    "aliases_en": [
+      "Chateau Rice Flakes",
+      "Rice Flakes"
+    ],
+    "extract_pct_dry_basis": null,
+    "color_lovibond": 1.5,
+    "recommended_max_pct": 20,
+    "present_on_birrf": false,
+    "is_usable_in_beer_gravity_calculations": true,
+    "beer_relevance": "core_brewing_or_adjunct",
+    "sources": [
+      {
+        "kind": "official_product_page",
+        "label": "Castle Malting / CHÂTEAU RICE FLAKES",
+        "url": "https://www.castlemalting.com/CastleMaltingMaltsInAFewWords.asp?Language=English"
+      }
+    ]
+  },
+  {
+    "id": "castle-malting-chateau-maize-flakes-nesolozhenka",
+    "type": "fermentable",
+    "group": "adjunct_grains",
+    "ingredient_type": "flaked_adjunct",
+    "fermentability_class": "mash_fermentable",
+    "name_ru": "Кукурузные хлопья Château",
+    "name_en": "Château Maize Flakes",
+    "producer": "Castle Malting",
+    "country_name": "Бельгия",
+    "aliases_ru": [
+      "кукурузные хлопья castle",
+      "кукурузные хлопья шато"
+    ],
+    "aliases_en": [
+      "Chateau Maize Flakes",
+      "Maize Flakes",
+      "Corn Flakes"
+    ],
+    "extract_pct_dry_basis": null,
+    "color_lovibond": 1.5,
+    "recommended_max_pct": 20,
+    "present_on_birrf": false,
+    "is_usable_in_beer_gravity_calculations": true,
+    "beer_relevance": "core_brewing_or_adjunct",
+    "sources": [
+      {
+        "kind": "official_product_page",
+        "label": "Castle Malting / CHÂTEAU MAIZE FLAKES",
+        "url": "https://www.castlemalting.com/CastleMaltingMaltsInAFewWords.asp?Language=English"
+      }
+    ]
+  },
+  {
+    "id": "castle-malting-chateau-raw-barley-nesolozhenka",
+    "type": "fermentable",
+    "group": "adjunct_grains",
+    "ingredient_type": "raw_adjunct",
+    "fermentability_class": "mash_fermentable",
+    "name_ru": "Ячмень Château (неосоложенный)",
+    "name_en": "Château Raw Barley",
+    "producer": "Castle Malting",
+    "country_name": "Бельгия",
+    "aliases_ru": [
+      "ячмень castle неосоложенный",
+      "сырой ячмень castle"
+    ],
+    "aliases_en": [
+      "Chateau Raw Barley",
+      "Raw Barley"
+    ],
+    "extract_pct_dry_basis": null,
+    "color_lovibond": 1.5,
+    "recommended_max_pct": 15,
+    "present_on_birrf": false,
+    "is_usable_in_beer_gravity_calculations": true,
+    "beer_relevance": "core_brewing_or_adjunct",
+    "sources": [
+      {
+        "kind": "official_product_page",
+        "label": "Castle Malting / CHÂTEAU RAW BARLEY",
+        "url": "https://www.castlemalting.com/CastleMaltingMaltsInAFewWords.asp?Language=English"
+      }
+    ]
+  },
+  {
+    "id": "castle-malting-chateau-raw-wheat-nesolozhenka",
+    "type": "fermentable",
+    "group": "adjunct_grains",
+    "ingredient_type": "raw_adjunct",
+    "fermentability_class": "mash_fermentable",
+    "name_ru": "Пшеница Château (неосоложенная)",
+    "name_en": "Château Raw Wheat",
+    "producer": "Castle Malting",
+    "country_name": "Бельгия",
+    "aliases_ru": [
+      "пшеница castle неосоложенная",
+      "сырая пшеница castle"
+    ],
+    "aliases_en": [
+      "Chateau Raw Wheat",
+      "Raw Wheat"
+    ],
+    "extract_pct_dry_basis": 78.0,
+    "color_lovibond": null,
+    "protein_pct": 10.0,
+    "recommended_max_pct": 20,
+    "present_on_birrf": false,
+    "is_usable_in_beer_gravity_calculations": true,
+    "beer_relevance": "core_brewing_or_adjunct",
+    "sources": [
+      {
+        "kind": "official_product_page",
+        "label": "Castle Malting / CHÂTEAU RAW WHEAT",
+        "url": "https://www.castlemalting.com/CastleMAltingMaltInfo.asp?Language=Italian&Name=CHATEAU-RAW-WHEAT"
+      },
+      {
+        "kind": "official_spec_pdf",
+        "label": "Castle Malting / CHÂTEAU RAW WHEAT spec",
+        "url": "https://www.castlemalting.com/CastleMaltingMaltSpecification.asp?Command=SpecificationShow&FileType=PDF&Language=Danish&SpecificationID=301"
+      }
+    ]
+  },
+  {
+    "id": "castle-malting-chateau-raw-oat-nesolozhenka",
+    "type": "fermentable",
+    "group": "adjunct_grains",
+    "ingredient_type": "raw_adjunct",
+    "fermentability_class": "mash_fermentable",
+    "name_ru": "Овёс Château (неосоложенный)",
+    "name_en": "Château Raw Oat",
+    "producer": "Castle Malting",
+    "country_name": "Бельгия",
+    "aliases_ru": [
+      "овёс castle неосоложенный",
+      "сырой овёс castle"
+    ],
+    "aliases_en": [
+      "Chateau Raw Oat",
+      "Raw Oat"
+    ],
+    "extract_pct_dry_basis": null,
+    "color_lovibond": 2.65,
+    "recommended_max_pct": 30,
+    "present_on_birrf": false,
+    "is_usable_in_beer_gravity_calculations": true,
+    "beer_relevance": "core_brewing_or_adjunct",
+    "sources": [
+      {
+        "kind": "official_product_page",
+        "label": "Castle Malting / CHÂTEAU RAW OAT",
+        "url": "https://www.castlemalting.com/CastleMaltingMaltsInAFewWords.asp?Language=English"
+      }
+    ]
+  },
+  {
+    "id": "castle-malting-invertsuc-70-sahar",
+    "type": "fermentable",
+    "group": "sugars_syrups_honey",
+    "ingredient_type": "syrup",
+    "fermentability_class": "highly_fermentable",
+    "name_ru": "Инвертный сахар 70",
+    "name_en": "Invertsuc 70",
+    "producer": "Castle Malting",
+    "country_name": "Бельгия",
+    "aliases_ru": [
+      "инверт castle 70",
+      "инвертный сироп 70"
+    ],
+    "aliases_en": [
+      "Invert Sugar 70%",
+      "Castle Invertsuc 70"
+    ],
+    "extract_pct_dry_basis": 70.0,
+    "color_lovibond": null,
+    "recommended_max_pct": null,
+    "present_on_birrf": false,
+    "is_usable_in_beer_gravity_calculations": true,
+    "beer_relevance": "beer_common_specialty",
+    "sources": [
+      {
+        "kind": "official_product_page",
+        "label": "Castle Malting / Invertsuc 70",
+        "url": "https://www.castlemalting.com/CastleMaltingSugar.asp?Language=English"
+      }
+    ]
+  },
+  {
+    "id": "castle-malting-organic-invertsuc-75-sahar",
+    "type": "fermentable",
+    "group": "sugars_syrups_honey",
+    "ingredient_type": "syrup",
+    "fermentability_class": "highly_fermentable",
+    "name_ru": "Инвертный сахар 75 (органический)",
+    "name_en": "ORGANIC Invertsuc 75",
+    "producer": "Castle Malting",
+    "country_name": "Бельгия",
+    "aliases_ru": [
+      "органический инверт 75",
+      "органический инвертный сироп 75"
+    ],
+    "aliases_en": [
+      "Organic Invert Sugar 75%",
+      "Castle Organic Invertsuc 75"
+    ],
+    "extract_pct_dry_basis": 75.0,
+    "color_lovibond": null,
+    "recommended_max_pct": null,
+    "present_on_birrf": false,
+    "is_usable_in_beer_gravity_calculations": true,
+    "beer_relevance": "beer_common_specialty",
+    "sources": [
+      {
+        "kind": "official_product_page",
+        "label": "Castle Malting / ORGANIC Invertsuc 75",
+        "url": "https://www.castlemalting.com/CastleMaltingSugar.asp?Language=English"
+      }
+    ]
+  },
+  {
+    "id": "castle-malting-belgogluc-hde-sahar",
+    "type": "fermentable",
+    "group": "sugars_syrups_honey",
+    "ingredient_type": "syrup",
+    "fermentability_class": "highly_fermentable",
+    "name_ru": "Глюкозный сироп Belgogluc HDE",
+    "name_en": "Belgogluc HDE",
+    "producer": "Castle Malting",
+    "country_name": "Бельгия",
+    "aliases_ru": [
+      "бельгоглюк hde",
+      "глюкозный сироп castle hde"
+    ],
+    "aliases_en": [
+      "Belgogluc HDE Bucket",
+      "Castle Belgogluc HDE"
+    ],
+    "extract_pct_dry_basis": null,
+    "color_lovibond": null,
+    "recommended_max_pct": null,
+    "present_on_birrf": false,
+    "is_usable_in_beer_gravity_calculations": true,
+    "beer_relevance": "beer_common_specialty",
+    "sources": [
+      {
+        "kind": "official_product_page",
+        "label": "Castle Malting / Belgogluc HDE",
+        "url": "https://www.castlemalting.com/CastleMaltingSugar.asp?Language=English"
+      }
+    ]
+  },
+  {
+    "id": "castle-malting-belgogluc-hm-70-75-sahar",
+    "type": "fermentable",
+    "group": "sugars_syrups_honey",
+    "ingredient_type": "syrup",
+    "fermentability_class": "highly_fermentable",
+    "name_ru": "Глюкозный сироп Belgogluc HM 70/75%",
+    "name_en": "Belgogluc HM 70/75%",
+    "producer": "Castle Malting",
+    "country_name": "Бельгия",
+    "aliases_ru": [
+      "бельгоглюк hm 70/75",
+      "глюкозный сироп castle hm"
+    ],
+    "aliases_en": [
+      "Castle Belgogluc HM 70/75"
+    ],
+    "extract_pct_dry_basis": null,
+    "color_lovibond": null,
+    "recommended_max_pct": null,
+    "present_on_birrf": false,
+    "is_usable_in_beer_gravity_calculations": true,
+    "beer_relevance": "beer_common_specialty",
+    "sources": [
+      {
+        "kind": "official_product_page",
+        "label": "Castle Malting / Belgogluc HM 70/75%",
+        "url": "https://www.castlemalting.com/CastleMaltingSugar.asp?Language=English"
+      }
+    ]
+  },
+  {
+    "id": "castle-malting-fructomix-f85-73-sahar",
+    "type": "fermentable",
+    "group": "sugars_syrups_honey",
+    "ingredient_type": "syrup",
+    "fermentability_class": "highly_fermentable",
+    "name_ru": "Фруктозный сироп Fructomix F85-73%",
+    "name_en": "Fructomix F85-73%",
+    "producer": "Castle Malting",
+    "country_name": "Бельгия",
+    "aliases_ru": [
+      "фруктомикс f85-73",
+      "фруктозный сироп castle"
+    ],
+    "aliases_en": [
+      "Fructose syrup",
+      "Castle Fructomix F85-73%"
+    ],
+    "extract_pct_dry_basis": 73.0,
+    "color_lovibond": null,
+    "recommended_max_pct": null,
+    "present_on_birrf": false,
+    "is_usable_in_beer_gravity_calculations": true,
+    "beer_relevance": "beer_common_specialty",
+    "sources": [
+      {
+        "kind": "official_product_page",
+        "label": "Castle Malting / Fructomix F85-73%",
+        "url": "https://www.castlemalting.com/CastleMaltingSugar.asp?Language=English"
+      }
+    ]
   }
 ]

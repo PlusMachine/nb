@@ -1,11 +1,13 @@
 {
-  "schema_version": "2.0-minimal",
+  "schema_version": "2.1-minimal",
   "catalog": "water_treatment",
   "language_primary": "ru",
   "notes": [
     "Russian-first for RU UI.",
     "English names stay as compatibility aliases for brewing software and recipe imports.",
-    "Search index should be built on the backend from names, aliases and formulas."
+    "Search index should be built on the backend from names, aliases and formulas.",
+    "Generic-first catalog for brewing water salts, acids, water sources and selected treatment methods.",
+    "Advanced entries are included where they are genuinely useful in calculators or craft workflows, but recommendation_level should drive UI defaults."
   ],
   "items": [
     {
@@ -21,11 +23,17 @@
         "осмос",
         "обратный осмос",
         "вода RO",
-        "обратноосмотическая вода"
+        "обратноосмотическая вода",
+        "осмосная вода",
+        "вода после осмоса",
+        "вода обратного осмоса",
+        "RO/DI вода"
       ],
       "aliases_en": [
         "RO Water",
-        "RO"
+        "RO",
+        "RO/DI Water",
+        "RODI Water"
       ],
       "common_forms": [
         "liquid"
@@ -67,7 +75,8 @@
       "display_mode_ru": "localized_first",
       "aliases_ru": [
         "дистиллят",
-        "дистиллированная"
+        "дистиллированная",
+        "дистиллированная вода"
       ],
       "aliases_en": [],
       "common_forms": [
@@ -158,11 +167,17 @@
         "Campden",
         "таблетка Кампден",
         "кампден",
-        "пиросульфит калия"
+        "пиросульфит калия",
+        "метабисульфит",
+        "пиросульфит",
+        "кампден таблетка",
+        "таблетки Кампден"
       ],
       "aliases_en": [
         "Campden Tablet",
-        "Campden Tablets"
+        "Campden Tablets",
+        "Potassium Campden",
+        "Potassium Campden Tablets"
       ],
       "formula": "K2S2O5",
       "common_forms": [
@@ -215,11 +230,17 @@
         "Campden",
         "таблетка Кампден",
         "кампден",
-        "пиросульфит натрия"
+        "пиросульфит натрия",
+        "метабисульфит",
+        "пиросульфит",
+        "кампден таблетка",
+        "таблетки Кампден"
       ],
       "aliases_en": [
         "Campden Tablet",
-        "Campden Tablets"
+        "Campden Tablets",
+        "Sodium Campden",
+        "Sodium Campden Tablets"
       ],
       "formula": "Na2S2O5",
       "common_forms": [
@@ -271,11 +292,18 @@
       "aliases_ru": [
         "сульфат кальция",
         "кальций сульфат",
-        "гипс пищевой"
+        "гипс пищевой",
+        "сульфат кальция двуводный",
+        "сульфат кальция 2-водный",
+        "кальций сернокислый",
+        "CaSO4·2H2O",
+        "CaSO4"
       ],
       "aliases_en": [
         "Calcium Sulfate",
-        "Calcium Sulfate Dihydrate"
+        "Calcium Sulfate Dihydrate",
+        "Brewing Gypsum",
+        "Calcium Sulphate"
       ],
       "formula": "CaSO4·2H2O",
       "common_forms": [
@@ -334,12 +362,16 @@
         "поваренная соль",
         "хлорид натрия",
         "нейодированная соль",
-        "засолочная соль"
+        "засолочная соль",
+        "NaCl",
+        "каменная соль",
+        "обычная соль"
       ],
       "aliases_en": [
         "Table Salt",
         "Canning Salt",
-        "Non-Iodized Salt"
+        "Non-Iodized Salt",
+        "NaCl"
       ],
       "formula": "NaCl",
       "common_forms": [
@@ -385,6 +417,67 @@
       ]
     },
     {
+      "id": "potassium-chloride",
+      "type": "water_treatment",
+      "item_kind": "chemical",
+      "category": "mineral_salt",
+      "name_ru": "Хлорид калия",
+      "name_en": "Potassium Chloride",
+      "display_mode_ru": "localized_first",
+      "aliases_ru": [
+        "калий хлористый",
+        "KCl",
+        "калиевая соль",
+        "соль без натрия"
+      ],
+      "aliases_en": [
+        "KCl",
+        "Potassium Salt"
+      ],
+      "formula": "KCl",
+      "common_forms": [
+        "crystals",
+        "powder"
+      ],
+      "unit_preferred": "g",
+      "water_calc_role": [
+        "raise_potassium",
+        "raise_chloride",
+        "advanced_profile_tuning"
+      ],
+      "effect_on_ions": {
+        "raises": [
+          "K",
+          "Cl"
+        ]
+      },
+      "ion_contributions_ppm_per_g_per_l": {
+        "K": 524.4,
+        "Cl": 475.6
+      },
+      "ion_contributions_ppm_per_g_per_gal": {
+        "K": 138.5,
+        "Cl": 125.6
+      },
+      "pH_effect_direction": "minimal",
+      "recommended_for": [
+        "advanced tuning",
+        "chloride increase without sodium",
+        "special cases with sodium-sensitive profiles"
+      ],
+      "typical_use_ru": "Нишевая соль для поднятия хлоридов без натрия и без дополнительного кальция; уместна в некоторых продвинутых профилях.",
+      "cautions_ru": "Для большинства варок не обязательна; калий обычно не является целевым ионом в пивоварной воде и используется скорее как техническая альтернатива NaCl.",
+      "storage_notes_ru": "Стабилен по хранению, держать сухим.",
+      "calculation_support": "full",
+      "common_in_homebrewing": false,
+      "common_in_pro_brewing": false,
+      "recommendation_level": "advanced",
+      "source_basis": [
+        "BeerSmith community",
+        "Brewer's Friend community"
+      ]
+    },
+    {
       "id": "calcium-chloride-anhydrous",
       "type": "water_treatment",
       "item_kind": "chemical",
@@ -394,11 +487,14 @@
       "display_mode_ru": "localized_first",
       "aliases_ru": [
         "безводный хлорид кальция",
-        "CaCl2"
+        "CaCl2",
+        "хлористый кальций безводный",
+        "хлорид кальция безводный"
       ],
       "aliases_en": [
         "Anhydrous Calcium Chloride",
-        "CaCl2"
+        "CaCl2",
+        "Calcium Chloride Anhydrous"
       ],
       "formula": "CaCl2",
       "common_forms": [
@@ -458,11 +554,17 @@
         "хлористый кальций",
         "кальций хлористый",
         "CaCl2·2H2O",
-        "хлорид кальция"
+        "хлорид кальция",
+        "хлорид кальция дигидрат",
+        "хлорид кальция двуводный",
+        "кальций хлористый дигидрат",
+        "CaCl2"
       ],
       "aliases_en": [
         "Calcium Chloride",
-        "CaCl2·2H2O"
+        "CaCl2·2H2O",
+        "Calcium Chloride Dihydrate",
+        "Brewing Calcium Chloride"
       ],
       "formula": "CaCl2·2H2O",
       "common_forms": [
@@ -522,11 +624,14 @@
       "display_mode_ru": "localized_first",
       "aliases_ru": [
         "жидкий хлорид кальция",
-        "раствор хлорида кальция"
+        "раствор хлорида кальция",
+        "жидкий кальций хлористый",
+        "кальций хлористый раствор"
       ],
       "aliases_en": [
         "Liquid Calcium Chloride",
-        "Calcium Chloride Solution"
+        "Calcium Chloride Solution",
+        "Liquid CaCl2"
       ],
       "formula": "CaCl2 (solution)",
       "common_forms": [
@@ -574,11 +679,16 @@
       "aliases_ru": [
         "хлористый магний",
         "хлорид магния",
-        "MgCl2·6H2O"
+        "MgCl2·6H2O",
+        "магний хлористый",
+        "бишофит пищевой",
+        "MgCl2"
       ],
       "aliases_en": [
         "Magnesium Chloride",
-        "MgCl2·6H2O"
+        "MgCl2·6H2O",
+        "Magnesium Chloride Hexahydrate",
+        "MgCl2"
       ],
       "formula": "MgCl2·6H2O",
       "common_forms": [
@@ -633,11 +743,18 @@
       "aliases_ru": [
         "сульфат магния",
         "магний сернокислый",
-        "MgSO4·7H2O"
+        "MgSO4·7H2O",
+        "английская соль",
+        "горькая соль",
+        "эпсомит",
+        "MgSO4"
       ],
       "aliases_en": [
         "Magnesium Sulfate",
-        "Magnesium Sulfate Heptahydrate"
+        "Magnesium Sulfate Heptahydrate",
+        "Epsom Salts",
+        "Magnesium Sulphate",
+        "MgSO4·7H2O"
       ],
       "formula": "MgSO4·7H2O",
       "common_forms": [
@@ -687,7 +804,7 @@
       "type": "water_treatment",
       "item_kind": "chemical",
       "category": "alkali",
-      "name_ru": "Гашёная известь",
+      "name_ru": "Гашёная известь (гидроксид кальция)",
       "name_en": "Calcium Hydroxide",
       "display_mode_ru": "localized_first",
       "aliases_ru": [
@@ -695,12 +812,16 @@
         "pickling lime",
         "slaked lime",
         "гидроксид кальция",
-        "Ca(OH)2"
+        "Ca(OH)2",
+        "известь пушонка",
+        "пушонка",
+        "гашенка"
       ],
       "aliases_en": [
         "Pickling Lime",
         "Slaked Lime",
-        "Ca(OH)2"
+        "Ca(OH)2",
+        "Hydrated Lime"
       ],
       "formula": "Ca(OH)2",
       "common_forms": [
@@ -758,12 +879,15 @@
         "карбонат кальция",
         "известняк",
         "CaCO3",
-        "chalk"
+        "chalk",
+        "карбонат кальция пищевой",
+        "школьный мел"
       ],
       "aliases_en": [
         "Chalk",
         "Limestone",
-        "CaCO3"
+        "CaCO3",
+        "Precipitated Chalk"
       ],
       "formula": "CaCO3",
       "common_forms": [
@@ -820,11 +944,14 @@
         "гидрокарбонат натрия",
         "бикарбонат натрия",
         "питьевая сода",
-        "NaHCO3"
+        "NaHCO3",
+        "натрий двууглекислый",
+        "baking soda"
       ],
       "aliases_en": [
         "Baking Soda",
-        "NaHCO3"
+        "NaHCO3",
+        "Sodium Bicarbonate"
       ],
       "formula": "NaHCO3",
       "common_forms": [
@@ -868,6 +995,69 @@
         "Brewer's Friend",
         "Bru'n Water",
         "BYO"
+      ]
+    },
+    {
+      "id": "potassium-bicarbonate",
+      "type": "water_treatment",
+      "item_kind": "chemical",
+      "category": "alkali",
+      "name_ru": "Гидрокарбонат калия",
+      "name_en": "Potassium Bicarbonate",
+      "display_mode_ru": "localized_first",
+      "aliases_ru": [
+        "бикарбонат калия",
+        "кислый углекислый калий",
+        "KHCO3",
+        "калий двууглекислый"
+      ],
+      "aliases_en": [
+        "Potassium Hydrogen Carbonate",
+        "KHCO3"
+      ],
+      "formula": "KHCO3",
+      "common_forms": [
+        "powder",
+        "crystals"
+      ],
+      "unit_preferred": "g",
+      "water_calc_role": [
+        "raise_alkalinity",
+        "raise_bicarbonate",
+        "raise_mash_pH",
+        "advanced_dark_beer_adjustment"
+      ],
+      "effect_on_ions": {
+        "raises": [
+          "K",
+          "HCO3"
+        ],
+        "raises_mash_pH": true
+      },
+      "ion_contributions_ppm_per_g_per_l": {
+        "K": 390.5,
+        "HCO3": 609.5
+      },
+      "ion_contributions_ppm_per_g_per_gal": {
+        "K": 103.2,
+        "HCO3": 161.0
+      },
+      "pH_effect_direction": "raising",
+      "recommended_for": [
+        "advanced users only",
+        "raising alkalinity without sodium",
+        "dark beers when sodium must stay lower"
+      ],
+      "typical_use_ru": "Продвинутый вариант для подъёма щёлочности без внесения натрия; может быть полезен в тёмных сортах и при жёстком лимите по Na.",
+      "cautions_ru": "Гораздо менее базовый реагент, чем пищевая сода; калий обычно не целят отдельно, поэтому использовать только если понимаешь зачем он нужен.",
+      "storage_notes_ru": "Хранить сухо и герметично.",
+      "calculation_support": "full",
+      "common_in_homebrewing": false,
+      "common_in_pro_brewing": false,
+      "recommendation_level": "advanced",
+      "source_basis": [
+        "BeerSmith community",
+        "Brewer's Friend community"
       ]
     },
     {
@@ -939,9 +1129,12 @@
       "display_mode_ru": "localized_first",
       "aliases_ru": [
         "цитратная кислота",
-        "лимонка"
+        "лимонка",
+        "E330"
       ],
-      "aliases_en": [],
+      "aliases_en": [
+        "E330"
+      ],
       "formula": "C6H8O7",
       "common_forms": [
         "powder",
@@ -983,10 +1176,13 @@
       "aliases_ru": [
         "лактик",
         "молочная кислота 80%",
-        "молочная кислота 88%"
+        "молочная кислота 88%",
+        "молочная 80%",
+        "молочная 88%"
       ],
       "aliases_en": [
-        "Lactic Acid 88%"
+        "Lactic Acid 88%",
+        "Lactic Acid 80%"
       ],
       "formula": "C3H6O3",
       "common_forms": [
@@ -1034,9 +1230,14 @@
       "display_mode_ru": "localized_first",
       "aliases_ru": [
         "ортофосфорная кислота 10%",
-        "фосфорная 10%"
+        "фосфорная 10%",
+        "ортофосфорная 10%",
+        "H3PO4 10%"
       ],
-      "aliases_en": [],
+      "aliases_en": [
+        "Phosphoric Acid 10%",
+        "H3PO4 10%"
+      ],
       "formula": "H3PO4 (solution)",
       "common_forms": [
         "liquid"
@@ -1074,18 +1275,24 @@
       "type": "water_treatment",
       "item_kind": "chemical",
       "category": "acid",
-      "name_ru": "Фосфорная кислота 75–85%",
-      "name_en": "Phosphoric Acid 75–85%",
+      "name_ru": "Фосфорная кислота (75% / 85%)",
+      "name_en": "Phosphoric Acid (75% / 85%)",
       "display_mode_ru": "localized_first",
       "aliases_ru": [
         "ортофосфорная кислота",
         "фосфорная кислота 75%",
-        "фосфорная кислота 85%"
+        "фосфорная кислота 85%",
+        "ортофосфорная 75%",
+        "ортофосфорная 85%",
+        "H3PO4 75%",
+        "H3PO4 85%"
       ],
       "aliases_en": [
         "Phosphoric Acid",
         "Phosphoric Acid 75%",
-        "Phosphoric Acid 85%"
+        "Phosphoric Acid 85%",
+        "H3PO4 75%",
+        "H3PO4 85%"
       ],
       "formula": "H3PO4 (solution)",
       "common_forms": [
@@ -1122,6 +1329,127 @@
       ]
     },
     {
+      "id": "hydrochloric-acid",
+      "type": "water_treatment",
+      "item_kind": "chemical",
+      "category": "acid",
+      "name_ru": "Соляная кислота",
+      "name_en": "Hydrochloric Acid",
+      "display_mode_ru": "localized_first",
+      "aliases_ru": [
+        "HCl",
+        "хлороводородная кислота",
+        "соляная",
+        "кислота для снижения щёлочности"
+      ],
+      "aliases_en": [
+        "HCl",
+        "Muriatic Acid"
+      ],
+      "formula": "HCl (solution)",
+      "common_forms": [
+        "liquid"
+      ],
+      "concentration_options": [
+        "10%",
+        "28–32%",
+        "37%",
+        "user_defined"
+      ],
+      "unit_preferred": "ml",
+      "water_calc_role": [
+        "reduce_alkalinity",
+        "lower_mash_pH",
+        "lower_sparge_pH",
+        "advanced_liquor_treatment",
+        "raise_chloride"
+      ],
+      "effect_on_ions": {
+        "adds": [
+          "Cl"
+        ],
+        "depends_on_solution_strength": true
+      },
+      "pH_effect_direction": "strong_lowering",
+      "recommended_for": [
+        "advanced liquor treatment",
+        "alkalinity reduction with chloride contribution",
+        "professional workflows"
+      ],
+      "typical_use_ru": "Продвинутая кислота для снижения щёлочности воды с одновременным подъёмом хлоридов.",
+      "cautions_ru": "Опасный реагент; для большинства домашних варок проще и безопаснее молочная или фосфорная кислота. Точная концентрация обязательна для расчёта.",
+      "storage_notes_ru": "Хранить как кислотный реагент, герметично и отдельно от щелочей/металлов.",
+      "calculation_support": "user_defined_concentration",
+      "common_in_homebrewing": false,
+      "common_in_pro_brewing": true,
+      "recommendation_level": "advanced",
+      "source_basis": [
+        "BeerSmith",
+        "Brewer's Friend",
+        "Bru'n Water"
+      ]
+    },
+    {
+      "id": "sulfuric-acid",
+      "type": "water_treatment",
+      "item_kind": "chemical",
+      "category": "acid",
+      "name_ru": "Серная кислота",
+      "name_en": "Sulfuric Acid",
+      "display_mode_ru": "localized_first",
+      "aliases_ru": [
+        "H2SO4",
+        "серная",
+        "кислота для снижения щёлочности"
+      ],
+      "aliases_en": [
+        "H2SO4"
+      ],
+      "formula": "H2SO4 (solution)",
+      "common_forms": [
+        "liquid"
+      ],
+      "concentration_options": [
+        "10%",
+        "25%",
+        "37%",
+        "93–98%",
+        "user_defined"
+      ],
+      "unit_preferred": "ml",
+      "water_calc_role": [
+        "reduce_alkalinity",
+        "lower_mash_pH",
+        "lower_sparge_pH",
+        "advanced_liquor_treatment",
+        "raise_sulfate"
+      ],
+      "effect_on_ions": {
+        "adds": [
+          "SO4"
+        ],
+        "depends_on_solution_strength": true
+      },
+      "pH_effect_direction": "strong_lowering",
+      "recommended_for": [
+        "advanced liquor treatment",
+        "alkalinity reduction with sulfate contribution",
+        "professional workflows"
+      ],
+      "typical_use_ru": "Продвинутая кислота для снижения щёлочности воды с одновременным подъёмом сульфатов.",
+      "cautions_ru": "Очень опасный реагент, практически не нужен большинству домашних пивоваров. Без точной концентрации и строгой техники безопасности использовать не стоит.",
+      "storage_notes_ru": "Хранить как сильную кислоту; обязательны защита глаз/кожи и аккуратное обращение.",
+      "calculation_support": "user_defined_concentration",
+      "common_in_homebrewing": false,
+      "common_in_pro_brewing": true,
+      "recommendation_level": "advanced",
+      "source_basis": [
+        "BeerSmith",
+        "Brewer's Friend",
+        "Bru'n Water"
+      ]
+    },
+    {
       "id": "acidulated-malt",
       "type": "water_treatment",
       "item_kind": "fermentable",
@@ -1133,11 +1461,15 @@
         "ацидулированный солод",
         "сауэрмальц",
         "sauermalz",
-        "acid malt"
+        "acid malt",
+        "кислый",
+        "ацидсолод"
       ],
       "aliases_en": [
         "Acid Malt",
-        "Sauermalz"
+        "Sauermalz",
+        "Acidulated Malt",
+        "Sour Malt"
       ],
       "common_forms": [
         "grist"
@@ -1177,7 +1509,8 @@
       "aliases_ru": [
         "отстаивание воды",
         "проветривание воды",
-        "аэрация"
+        "аэрация",
+        "выстаивание воды"
       ],
       "aliases_en": [
         "Open-Air Dechlorination"
@@ -1212,7 +1545,9 @@
       "display_mode_ru": "localized_first",
       "aliases_ru": [
         "кипячение",
-        "декарбонизация кипячением"
+        "декарбонизация кипячением",
+        "предкипячение воды",
+        "предварительное кипячение"
       ],
       "aliases_en": [
         "Pre-Boil Decarbonation"
@@ -1249,11 +1584,16 @@
       "aliases_ru": [
         "угольный фильтр",
         "карбон-блок",
-        "GAC"
+        "GAC",
+        "активированный уголь",
+        "угольная фильтрация",
+        "фильтр с активированным углем"
       ],
       "aliases_en": [
         "Carbon Block",
-        "GAC"
+        "GAC",
+        "Activated Carbon Filter",
+        "Carbon Filtration"
       ],
       "common_forms": [
         "process"

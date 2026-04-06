@@ -287,6 +287,7 @@ describe("inventory add-flow", () => {
     expect(html).not.toContain("Бельгия");
     expect(html).toContain("Изменить выбор");
     expect(html).not.toContain('data-testid="catalog-picker-stage"');
+    expect(html).not.toContain('data-testid="ingredient-picker-quick-start"');
     expect(html).not.toContain("Начните вводить название ингредиента");
     expect(html).toContain('data-testid="catalog-required-fields"');
     expect(html).toContain("Количество *");
@@ -314,6 +315,7 @@ describe("inventory add-flow", () => {
     expect(html).toContain('data-testid="add-ingredient-mode-switch"');
     expect(html).toContain('data-testid="catalog-picker-stage"');
     expect(html).toContain("Начните вводить название ингредиента");
+    expect(html).not.toContain('data-testid="ingredient-picker-quick-start"');
     expect(html).not.toContain('data-testid="catalog-selection-stage"');
     expect(html).not.toContain("Изменить выбор");
   });
@@ -330,6 +332,10 @@ describe("inventory add-flow", () => {
 
     expect(html).toContain('data-testid="catalog-picker-stage"');
     expect(html).toContain("Начните вводить название ингредиента");
+    expect(html).toContain('data-testid="ingredient-picker-quick-start"');
+    expect(html).toContain("Подобрать солод");
+    expect(html).toContain("По типу");
+    expect(html).toContain("Избранные");
   });
 
   it("prefers remembered category for a fresh add context and falls back to malt", () => {
@@ -1050,6 +1056,42 @@ describe("inventory add-flow", () => {
       overrides: {
         fermentableColorEbc: "3.71",
         fermentableExtractYieldPct: "83",
+        hopAlphaAcidPct: ""
+      }
+    })).toBe(false);
+  });
+
+  it("uses the average catalog fermentable color when a range is provided", () => {
+    const selected = {
+      id: "malt-range-1",
+      type: "malt" as const,
+      category: "fermentable" as const,
+      subtype: "malt" as const,
+      displayName: "Vienna Malt",
+      defaultUnit: "kg" as const,
+      source: "catalog" as const,
+      technicalData: {
+        type: "malt" as const,
+        colorEbcMin: 4,
+        colorEbcMax: 8,
+        colorLovibond: null,
+        extractPctDryBasis: 80,
+        proteinPct: null,
+        maxUsagePct: null,
+        maltType: "base" as const
+      }
+    };
+
+    expect(resolveCatalogBatchOverrideDefaults(selected)).toMatchObject({
+      kind: "fermentable",
+      fermentableColorEbc: "6",
+      fermentableExtractYieldPct: "80"
+    });
+    expect(hasCatalogIngredientTechnicalOverrides({
+      selected,
+      overrides: {
+        fermentableColorEbc: "6",
+        fermentableExtractYieldPct: "80",
         hopAlphaAcidPct: ""
       }
     })).toBe(false);

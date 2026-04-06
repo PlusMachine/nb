@@ -118,6 +118,11 @@ const readStringArray = (...values: unknown[]) => {
   return [];
 };
 
+const readFermentableExtractForm = (...values: unknown[]) => {
+  const normalized = readString(...values)?.toLowerCase();
+  return normalized === "dry" || normalized === "liquid" ? normalized : null;
+};
+
 const metadataPropertyKeys = new Set([
   "category",
   "subtype",
@@ -129,7 +134,87 @@ const metadataPropertyKeys = new Set([
   "technicalData"
 ]);
 
-const toLovibondFromEbc = (value: number) => Number((value / 1.97).toFixed(2));
+export const sanitizeIngredientColorValue = (value: number | null | undefined) => (
+  typeof value === "number" && Number.isFinite(value) && value >= 0 ? value : null
+);
+
+export const toLovibondFromEbc = (value: number | null | undefined, fractionDigits = 2) => {
+  const normalized = sanitizeIngredientColorValue(value);
+  return normalized == null ? null : Number((normalized / 1.97).toFixed(fractionDigits));
+};
+
+export const lovibondToEbc = (value: number | null | undefined, fractionDigits = 2) => {
+  const normalized = sanitizeIngredientColorValue(value);
+  return normalized == null ? null : Number((normalized * 1.97).toFixed(fractionDigits));
+};
+
+export const resolveIngredientColorRangeEbc = (
+  colorEbcMin?: number | null,
+  colorEbcMax?: number | null
+): { min: number; max: number; average: number } | null => {
+  const normalizedMin = sanitizeIngredientColorValue(colorEbcMin);
+  const normalizedMax = sanitizeIngredientColorValue(colorEbcMax);
+
+  if (normalizedMin == null && normalizedMax == null) {
+    return null;
+  }
+
+  const start = normalizedMin ?? normalizedMax ?? 0;
+  const end = normalizedMax ?? normalizedMin ?? 0;
+  const min = Math.min(start, end);
+  const max = Math.max(start, end);
+
+  return {
+    min,
+    max,
+    average: (min + max) / 2
+  };
+};
+
+export const resolveIngredientTechnicalDataColorRangeEbc = (
+  technicalData: IngredientTechnicalData | null | undefined
+): { min: number; max: number; average: number } | null => {
+  if (!technicalData || (technicalData.type !== "malt" && technicalData.type !== "fermentable")) {
+    return null;
+  }
+
+  if (technicalData.type === "malt") {
+    const malt = technicalData as Extract<IngredientTechnicalData, { type: "malt" }>;
+    const range = resolveIngredientColorRangeEbc(malt.colorEbcMin, malt.colorEbcMax);
+    if (range) {
+      return range;
+    }
+  }
+
+  const fermentable = technicalData as Extract<IngredientTechnicalData, { type: "malt" | "fermentable" }>;
+  const colorLovibond = typeof fermentable.colorLovibond === "number" ? fermentable.colorLovibond : null;
+  const ebc = lovibondToEbc(colorLovibond ?? null);
+  return ebc == null
+    ? null
+    : {
+      min: ebc,
+      max: ebc,
+      average: ebc
+    };
+};
+
+export const resolveIngredientTechnicalDataColorLovibond = (
+  technicalData: IngredientTechnicalData | null | undefined
+) => {
+  const range = resolveIngredientTechnicalDataColorRangeEbc(technicalData);
+  if (range) {
+    return toLovibondFromEbc(range.average);
+  }
+
+  if (!technicalData || (technicalData.type !== "malt" && technicalData.type !== "fermentable")) {
+    return null;
+  }
+
+  const fermentable = technicalData as Extract<IngredientTechnicalData, { type: "malt" | "fermentable" }>;
+  return sanitizeIngredientColorValue(
+    typeof fermentable.colorLovibond === "number" ? fermentable.colorLovibond : null
+  );
+};
 
 const inferType = (source: IngredientTechnicalSource): IngredientType | null => {
   if (
@@ -176,13 +261,19 @@ const fromAttributes = (
   }
 
   if (type === "malt") {
+    const colorRange = resolveIngredientColorRangeEbc(
+      readNumber(attributes.color_ebc_min),
+      readNumber(attributes.color_ebc_max)
+    );
+
     return {
       type,
       maltType: readString(attributes.malt_type),
       extractPctDryBasis: readNumber(attributes.extract_pct_dry_basis),
-      colorEbcMin: readNumber(attributes.color_ebc_min),
-      colorEbcMax: readNumber(attributes.color_ebc_max),
-      colorLovibond: readNumber(attributes.color_lovibond),
+      colorEbcMin: colorRange?.min ?? null,
+      colorEbcMax: colorRange?.max ?? null,
+      colorLovibond: sanitizeIngredientColorValue(readNumber(attributes.color_lovibond))
+        ?? (colorRange ? toLovibondFromEbc(colorRange.average) : null),
       proteinPct: readNumber(attributes.protein_pct),
       maxUsagePct: readNumber(attributes.max_usage_pct),
       colorEbcIsApprox: readBoolean(attributes.color_ebc_is_approx)
@@ -193,8 +284,9 @@ const fromAttributes = (
     return {
       type,
       fermentabilityClass: readString(attributes.fermentability_class),
+      extractForm: readFermentableExtractForm(attributes.extract_form),
       extractPctDryBasis: readNumber(attributes.extract_pct_dry_basis),
-      colorLovibond: readNumber(attributes.color_lovibond),
+      colorLovibond: sanitizeIngredientColorValue(readNumber(attributes.color_lovibond)),
       recommendedMaxPct: readNumber(attributes.recommended_max_pct),
       isUsableInBeerGravityCalculations: readBoolean(attributes.is_usable_in_beer_gravity_calculations),
       beerRelevance: readString(attributes.beer_relevance)
@@ -228,7 +320,16 @@ const fromAttributes = (
       type,
       commonForms: readStringArray(attributes.common_forms),
       usageStage: readStringArray(attributes.usage_stage),
-      dosageReference: isRecord(attributes.dosage_reference) ? attributes.dosage_reference : null
+      dosageReference: isRecord(attributes.dosage_reference) ? attributes.dosage_reference : null,
+      familyKey: readString(attributes.family_key),
+      pickerGroup: readString(attributes.picker_group),
+      marketNamesRu: readStringArray(attributes.market_names_ru),
+      marketNamesEn: readStringArray(attributes.market_names_en),
+      searchPriorityTermsRu: readStringArray(attributes.search_priority_terms_ru),
+      searchPriorityTermsEn: readStringArray(attributes.search_priority_terms_en),
+      pickerFunctionRu: readString(attributes.picker_function_ru),
+      pickerUsageRu: readString(attributes.picker_usage_ru),
+      brandFamilyMode: readString(attributes.brand_family_mode)
     };
   }
 
@@ -253,9 +354,36 @@ const fromAttributes = (
   };
 };
 
+const normalizeStructuredTechnicalData = (technicalData: IngredientTechnicalData): IngredientTechnicalData => {
+  if (technicalData.type === "malt") {
+    const malt = technicalData as Extract<IngredientTechnicalData, { type: "malt" }>;
+    const colorRange = resolveIngredientColorRangeEbc(malt.colorEbcMin, malt.colorEbcMax);
+
+    return {
+      ...malt,
+      colorEbcMin: colorRange?.min ?? null,
+      colorEbcMax: colorRange?.max ?? null,
+      colorLovibond: sanitizeIngredientColorValue(malt.colorLovibond)
+        ?? (colorRange ? toLovibondFromEbc(colorRange.average) : null)
+    };
+  }
+
+  if (technicalData.type === "fermentable") {
+    const fermentable = technicalData as Extract<IngredientTechnicalData, { type: "fermentable" }>;
+
+    return {
+      ...fermentable,
+      extractForm: readFermentableExtractForm(fermentable.extractForm),
+      colorLovibond: sanitizeIngredientColorValue(fermentable.colorLovibond)
+    };
+  }
+
+  return technicalData;
+};
+
 export const extractIngredientTechnicalData = (source: IngredientTechnicalSource): IngredientTechnicalData | null => {
   if (isRecord(source.technicalData) && typeof source.technicalData.type === "string") {
-    return source.technicalData as IngredientTechnicalData;
+    return normalizeStructuredTechnicalData(source.technicalData as IngredientTechnicalData);
   }
 
   const type = inferType(source);
@@ -270,7 +398,7 @@ export const extractIngredientTechnicalData = (source: IngredientTechnicalSource
 
   const properties = readRecord(source.properties);
   if (isRecord(properties.technicalData) && typeof properties.technicalData.type === "string") {
-    return properties.technicalData as IngredientTechnicalData;
+    return normalizeStructuredTechnicalData(properties.technicalData as IngredientTechnicalData);
   }
 
   const filteredProperties = Object.fromEntries(
@@ -295,8 +423,8 @@ export const extractIngredientTechnicalData = (source: IngredientTechnicalSource
   }
 
   if (type === "malt" || type === "fermentable") {
-    const colorLovibond = readNumber(source.fermentableColorLovibond);
-    const colorEbc = readNumber(source.fermentableColorEbc);
+    const colorLovibond = sanitizeIngredientColorValue(readNumber(source.fermentableColorLovibond));
+    const colorEbc = sanitizeIngredientColorValue(readNumber(source.fermentableColorEbc));
 
     if (type === "malt") {
       return {
@@ -362,7 +490,7 @@ export const extractIngredientTechnicalFields = (source: IngredientTechnicalSour
     const fermentable = technicalData as Extract<IngredientTechnicalData, { type: "malt" | "fermentable" }>;
     return {
       fermentableExtractYieldPct: fermentable.extractPctDryBasis ?? null,
-      fermentableColorLovibond: fermentable.colorLovibond ?? null
+      fermentableColorLovibond: resolveIngredientTechnicalDataColorLovibond(fermentable)
     };
   }
 

@@ -218,6 +218,92 @@ const renderFlagArt = (countryCode?: string | null): ReactNode => {
       );
     case "PL":
       return renderHorizontalStripes(["#FFFFFF", "#DC143C"]);
+    case "ID":
+      return renderHorizontalStripes(["#CE1126", "#FFFFFF"]);
+    case "TH":
+      return renderHorizontalStripes(["#A51931", "#FFFFFF", "#2D2A4A", "#FFFFFF", "#A51931"], [1, 1, 2, 1, 1]);
+    case "VN":
+      return (
+        <>
+          <rect x="0" y="0" width={viewBoxWidth} height={viewBoxHeight} fill="#DA251D" />
+          <path
+            d="M9 2.2 9.9 4.8 12.6 4.8 10.4 6.3 11.2 8.9 9 7.3 6.8 8.9 7.6 6.3 5.4 4.8 8.1 4.8Z"
+            fill="#FFFF00"
+          />
+        </>
+      );
+    case "AR":
+      return (
+        <>
+          {renderHorizontalStripes(["#74ACDF", "#FFFFFF", "#74ACDF"])}
+          <circle cx="9" cy="6" r="1" fill="#F6B40E" />
+        </>
+      );
+    case "BR":
+      return (
+        <>
+          <rect x="0" y="0" width={viewBoxWidth} height={viewBoxHeight} fill="#009739" />
+          <polygon points="9,1.5 15.5,6 9,10.5 2.5,6" fill="#FEDD00" />
+          <circle cx="9" cy="6" r="2.2" fill="#012169" />
+        </>
+      );
+    case "EG":
+      return (
+        <>
+          {renderHorizontalStripes(["#CE1126", "#FFFFFF", "#000000"])}
+          <rect x="8.3" y="4.5" width="1.4" height="3" rx="0.3" fill="#C09300" />
+        </>
+      );
+    case "GE":
+      return (
+        <>
+          <rect x="0" y="0" width={viewBoxWidth} height={viewBoxHeight} fill="#FFFFFF" />
+          <rect x="7.2" y="0" width="3.6" height={viewBoxHeight} fill="#FF0000" />
+          <rect x="0" y="4.2" width={viewBoxWidth} height="3.6" fill="#FF0000" />
+          <rect x="3" y="1.4" width="1.1" height="2.2" fill="#FF0000" />
+          <rect x="2.45" y="1.95" width="2.2" height="1.1" fill="#FF0000" />
+          <rect x="13.9" y="1.4" width="1.1" height="2.2" fill="#FF0000" />
+          <rect x="13.35" y="1.95" width="2.2" height="1.1" fill="#FF0000" />
+          <rect x="3" y="8.4" width="1.1" height="2.2" fill="#FF0000" />
+          <rect x="2.45" y="8.95" width="2.2" height="1.1" fill="#FF0000" />
+          <rect x="13.9" y="8.4" width="1.1" height="2.2" fill="#FF0000" />
+          <rect x="13.35" y="8.95" width="2.2" height="1.1" fill="#FF0000" />
+        </>
+      );
+    case "IN":
+      return (
+        <>
+          {renderHorizontalStripes(["#FF9933", "#FFFFFF", "#138808"])}
+          <circle cx="9" cy="6" r="1.2" fill="none" stroke="#000088" strokeWidth="0.35" />
+          <circle cx="9" cy="6" r="0.15" fill="#000088" />
+        </>
+      );
+    case "IR":
+      return (
+        <>
+          {renderHorizontalStripes(["#239F40", "#FFFFFF", "#DA0000"])}
+          <circle cx="9" cy="6" r="0.65" fill="#DA0000" />
+        </>
+      );
+    case "MA":
+      return (
+        <>
+          <rect x="0" y="0" width={viewBoxWidth} height={viewBoxHeight} fill="#C1272D" />
+          <polygon points="9,3 10,5.9 13,5.9 10.6,7.6 11.5,10.4 9,8.7 6.5,10.4 7.4,7.6 5,5.9 8,5.9" fill="none" stroke="#006233" strokeWidth="0.5" />
+        </>
+      );
+    case "UZ":
+      return (
+        <>
+          <rect x="0" y="0" width={viewBoxWidth} height="3.7" fill="#1EB5E7" />
+          <rect x="0" y="4.2" width={viewBoxWidth} height="3.6" fill="#FFFFFF" />
+          <rect x="0" y="8.3" width={viewBoxWidth} height="3.7" fill="#1EB53A" />
+          <rect x="0" y="3.7" width={viewBoxWidth} height="0.5" fill="#CE1126" />
+          <rect x="0" y="7.8" width={viewBoxWidth} height="0.5" fill="#CE1126" />
+          <circle cx="3.4" cy="2.1" r="1.1" fill="#FFFFFF" />
+          <circle cx="3.8" cy="2.1" r="0.9" fill="#1EB5E7" />
+        </>
+      );
     default:
       return (
         <>
@@ -235,10 +321,11 @@ export function CountryFlag({
   countryCode?: string | null;
   className?: string;
 }) {
+  const hasCustomRingReset = /\bring-0\b/.test(className);
   return (
     <span
       aria-hidden="true"
-      className={`inline-flex shrink-0 overflow-hidden rounded-[3px] ring-1 ring-black/10 ${className}`}
+      className={`inline-flex shrink-0 overflow-hidden rounded-[3px] ${hasCustomRingReset ? "" : "ring-1 ring-black/10"} ${className}`}
     >
       <svg viewBox={`0 0 ${viewBoxWidth} ${viewBoxHeight}`} className="h-full w-full" xmlns="http://www.w3.org/2000/svg">
         {renderFlagArt(countryCode)}

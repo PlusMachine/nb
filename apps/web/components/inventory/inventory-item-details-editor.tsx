@@ -433,6 +433,7 @@ export function InventoryItemDetailsEditor({
                       category={form.category}
                       subtype={pickerSubtype}
                       value={form.pickerValue}
+                      enableQuickStart
                       autoFocus
                       focusSignal={pickerFocusSignal}
                       onValueChange={(nextValue) => {

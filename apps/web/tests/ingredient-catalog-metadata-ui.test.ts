@@ -198,4 +198,41 @@ describe("ingredient catalog metadata ui", () => {
     expect(html).toContain("Где купить");
     expect(html).toContain("purchase-links:1");
   });
+
+  it("shows producer as the brand label for fermentables on the detail page", async () => {
+    mockState.detailItem = buildCatalogItem({
+      id: "catalog-fermentable-1",
+      type: "fermentable",
+      category: "fermentable",
+      subtype: "fermentable",
+      primaryLabelRu: "Баварский пилснер",
+      secondaryLabelRu: "Bavarian Pilsner",
+      displayName: "Баварский пилснер",
+      displayNameRu: "Баварский пилснер",
+      displayNameEn: "Bavarian Pilsner",
+      nameRu: "Баварский пилснер",
+      nameEn: "Bavarian Pilsner",
+      brand: null,
+      producer: "Weyermann",
+      brandName: null,
+      manufacturer: "Weyermann",
+      technicalData: {
+        type: "fermentable",
+        extractPctDryBasis: 75,
+        colorLovibond: 6.1
+      },
+      fermentableColorLovibond: 6.1,
+      fermentableExtractYieldPct: 75
+    });
+
+    const html = renderToStaticMarkup(await IngredientDetailPage({
+      params: Promise.resolve({
+        source: "system",
+        id: "catalog-fermentable-1"
+      })
+    }));
+
+    expect(html).toContain("Weyermann");
+    expect(html).toContain("Бренд");
+  });
 });

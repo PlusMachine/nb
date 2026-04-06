@@ -18,6 +18,7 @@ import type {
   IngredientSuggestionItem
 } from "@/features/ingredients/contracts";
 import { resolveIngredientDisplayNames } from "@/features/ingredients/presentation";
+import { resolveIngredientTechnicalDataColorRangeEbc } from "@/features/ingredients/technical-fields";
 import type { InventoryPriceInputMode } from "@/features/inventory/purchase-cost";
 import {
   getInventoryUnitInputStep,
@@ -144,8 +145,6 @@ const numbersEqual = (left: number | null, right: number | null) => {
   return Math.abs(normalizedLeft - normalizedRight) < 0.001;
 };
 
-const lovibondToEbc = (value: number) => Number((value * 1.97).toFixed(2));
-
 const isMaltTechnicalData = (
   technicalData: IngredientTechnicalData | null | undefined
 ): technicalData is Extract<IngredientTechnicalData, { type: "malt" }> => (
@@ -186,11 +185,7 @@ export const resolveCatalogBatchOverrideDefaults = (
   }
 
   if (isMaltTechnicalData(selected.technicalData)) {
-    const colorEbc = readFiniteNumber(
-      selected.technicalData.colorEbcMin,
-      selected.technicalData.colorEbcMax,
-      selected.technicalData.colorLovibond == null ? null : lovibondToEbc(selected.technicalData.colorLovibond)
-    );
+    const colorEbc = resolveIngredientTechnicalDataColorRangeEbc(selected.technicalData)?.average ?? null;
     const extractYieldPct = readFiniteNumber(selected.technicalData.extractPctDryBasis);
 
     return {
@@ -203,9 +198,7 @@ export const resolveCatalogBatchOverrideDefaults = (
   }
 
   if (isFermentableTechnicalData(selected.technicalData)) {
-    const colorEbc = selected.technicalData.colorLovibond == null
-      ? null
-      : lovibondToEbc(selected.technicalData.colorLovibond);
+    const colorEbc = resolveIngredientTechnicalDataColorRangeEbc(selected.technicalData)?.average ?? null;
     const extractYieldPct = readFiniteNumber(selected.technicalData.extractPctDryBasis);
 
     return {
@@ -787,6 +780,7 @@ export function CatalogIngredientForm({
             value={pickerValue}
             category={category}
             subtype={subtype}
+            enableQuickStart
             autoFocus={autoFocus}
             focusSignal={pickerFocusSignal}
             onValueChange={(nextValue) => {

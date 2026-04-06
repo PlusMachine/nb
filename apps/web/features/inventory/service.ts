@@ -27,6 +27,7 @@ import {
 } from "./contracts";
 import type { IngredientTechnicalData } from "../ingredients/contracts";
 import { normalizeIngredientName } from "../ingredients/normalization";
+import { resolveIngredientTechnicalDataColorRangeEbc } from "../ingredients/technical-fields";
 import {
   buildIngredientTypedSummary,
   resolveIngredientPrimaryDisplayName
@@ -172,6 +173,7 @@ const buildCatalogSourceDto = (
     type: linkage.type,
     category: linkage.category,
     subtype: linkage.subtype,
+    itemKind: catalog.itemKind,
     familyId: linkage.familyId,
     familyDisplayName: linkage.familyDisplayName,
     primaryLabelRu: linkage.displayName,
@@ -203,7 +205,7 @@ const buildCatalogSourceDto = (
     allowedUnits: linkage.allowedUnits,
     measurementDimension: linkage.measurementDimension,
     packageVariantId: packageVariant?.id ?? null,
-    packageVariantName: packageVariant?.productNameRu ?? null,
+    packageVariantName: packageVariant?.productNameRu ?? packageVariant?.productNameEn ?? null,
     summary: linkage.summary,
     ...extractIngredientTechnicalFields({
       type: catalog.type,
@@ -233,6 +235,7 @@ const buildCustomSourceDto = (
     type: linkage.type,
     category: linkage.category,
     subtype: linkage.subtype,
+    itemKind: typeof properties.itemKind === "string" ? properties.itemKind : linkage.subtype,
     familyId: linkage.familyId,
     familyDisplayName: linkage.familyDisplayName,
     primaryLabelRu: linkage.displayName,
@@ -334,6 +337,7 @@ const resolvePersistedInventorySource = (row: InventoryRow) => {
       type,
       category,
       subtype,
+      itemKind: row.inventory.ingredientSubtype ?? null,
       familyId: row.inventory.ingredientFamilyId ?? null,
       familyDisplayName: null,
       primaryLabelRu,
@@ -357,7 +361,7 @@ const resolvePersistedInventorySource = (row: InventoryRow) => {
       allowedUnits: unitProfile.allowedUnits,
       measurementDimension: unitProfile.measurementDimension,
       packageVariantId: row.inventory.packageVariantId ?? null,
-      packageVariantName: row.packageVariant?.productNameRu ?? null,
+      packageVariantName: row.packageVariant?.productNameRu ?? row.packageVariant?.productNameEn ?? null,
       summary: null
     } satisfies InventorySourceDto,
     snapshot: {
@@ -751,8 +755,6 @@ const numbersEqual = (left: number | null, right: number | null) => {
   return Math.abs(normalizedLeft - normalizedRight) < 0.001;
 };
 
-const lovibondToEbc = (value: number) => Number((value * 1.97).toFixed(2));
-
 const isMaltTechnicalData = (
   technicalData: IngredientTechnicalData | null | undefined
 ): technicalData is Extract<IngredientTechnicalData, { type: "malt" }> => (
@@ -783,15 +785,11 @@ const readFermentableColorEbc = (technicalData?: IngredientTechnicalData | null)
   }
 
   if (isMaltTechnicalData(technicalData)) {
-    return readFiniteNumber(
-      technicalData.colorEbcMin,
-      technicalData.colorEbcMax,
-      technicalData.colorLovibond == null ? null : lovibondToEbc(technicalData.colorLovibond)
-    );
+    return resolveIngredientTechnicalDataColorRangeEbc(technicalData)?.average ?? null;
   }
 
   if (isFermentableTechnicalData(technicalData)) {
-    return technicalData.colorLovibond == null ? null : lovibondToEbc(technicalData.colorLovibond);
+    return resolveIngredientTechnicalDataColorRangeEbc(technicalData)?.average ?? null;
   }
 
   return null;
@@ -1612,7 +1610,8 @@ export const getInventorySummaries = async (userId: string): Promise<InventorySu
     }
 
     if (category === "fermentable") {
-      if (row.ingredientSubtype === "malt") {
+      const normalizedSubtype = normalizeStoredSubtype("fermentable", row.ingredientSubtype);
+      if (normalizedSubtype === "malt") {
         summary.byFermentableSubtype.malt += 1;
         if (isInStock) {
           summary.inStockByFermentableSubtype.malt += 1;

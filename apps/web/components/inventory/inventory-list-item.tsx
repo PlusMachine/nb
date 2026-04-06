@@ -17,8 +17,10 @@ import type { InventoryListItemDto } from "@/features/inventory/contracts";
 import {
   resolveIngredientBrandLabel,
   resolveIngredientCountry,
-  resolveIngredientDisplayNames
+  resolveIngredientDisplayNames,
+  resolveIngredientFermentableKindLabel
 } from "@/features/ingredients/presentation";
+import { resolveIngredientTechnicalDataColorRangeEbc } from "@/features/ingredients/technical-fields";
 import { beerColorFromSrm } from "@/features/recipes/beer-color";
 import { buildInventoryCostDisplay } from "@/features/inventory/display";
 import type { SystemCurrency, SystemCurrencyRateMap } from "@/features/system/currency";
@@ -56,15 +58,15 @@ const resolveMaltColorBadgeAccent = (item: InventoryListItemDto): InventoryBadge
     return null;
   }
 
-  const malt = technicalData as Extract<NonNullable<typeof technicalData>, { type: "malt" }>;
-  const startEbc = malt.colorEbcMin ?? malt.colorEbcMax;
-  const endEbc = malt.colorEbcMax ?? malt.colorEbcMin;
+  const range = resolveIngredientTechnicalDataColorRangeEbc(technicalData);
+  const startEbc = range?.min ?? null;
+  const endEbc = range?.max ?? null;
 
   if (startEbc == null || endEbc == null) {
     return null;
   }
 
-  const averageEbc = (startEbc + endEbc) / 2;
+  const averageEbc = range?.average ?? ((startEbc + endEbc) / 2);
   const start = beerColorFromSrm(ebcToSrm(startEbc));
   const average = beerColorFromSrm(ebcToSrm(averageEbc));
   const end = beerColorFromSrm(ebcToSrm(endEbc));
@@ -83,26 +85,17 @@ const formatColorBadge = (item: InventoryListItemDto) => {
   }
 
   if (technicalData.type === "malt") {
-    const malt = technicalData as Extract<NonNullable<typeof technicalData>, { type: "malt" }>;
-    if (malt.colorEbcMin != null && malt.colorEbcMax != null) {
-      return malt.colorEbcMin === malt.colorEbcMax
-        ? `${formatValue(malt.colorEbcMin)} EBC`
-        : `${formatValue(malt.colorEbcMin)}-${formatValue(malt.colorEbcMax)} EBC`;
-    }
-
-    if (malt.colorEbcMin != null) {
-      return `${formatValue(malt.colorEbcMin)} EBC`;
-    }
-
-    if (malt.colorEbcMax != null) {
-      return `${formatValue(malt.colorEbcMax)} EBC`;
+    const range = resolveIngredientTechnicalDataColorRangeEbc(technicalData);
+    if (range && (technicalData.colorEbcMin != null || technicalData.colorEbcMax != null)) {
+      return range.min === range.max
+        ? `${formatValue(range.min)} EBC`
+        : `${formatValue(range.min)}-${formatValue(range.max)} EBC`;
     }
   }
 
-  const fermentable = technicalData as Extract<NonNullable<typeof technicalData>, { type: "malt" | "fermentable" }>;
-  if (fermentable.colorLovibond != null) {
-    const ebc = fermentable.colorLovibond * 1.97;
-    return `~${formatValue(ebc)} EBC`;
+  const range = resolveIngredientTechnicalDataColorRangeEbc(technicalData);
+  if (range) {
+    return `${formatValue(range.average)} EBC`;
   }
 
   return null;
@@ -135,7 +128,7 @@ const buildTypedBadges = (item: InventoryListItemDto) => {
       formatColorBadge(item)
         ? { label: formatColorBadge(item) ?? "", accent: resolveMaltColorBadgeAccent(item) }
         : null,
-      fermentable.extractPctDryBasis != null ? { label: `Экстракт ${formatValue(fermentable.extractPctDryBasis)}%` } : null,
+      fermentable.extractPctDryBasis != null ? { label: `Экст-ть ${formatValue(fermentable.extractPctDryBasis)}%` } : null,
       fermentable.type === "malt" && fermentable.maxUsagePct != null
         ? { label: `до ${formatValue(fermentable.maxUsagePct)} % засыпи` }
         : fermentable.type === "fermentable" && fermentable.recommendedMaxPct != null
@@ -274,12 +267,17 @@ export function InventoryListItem({ item, preferredCurrency, currencyRates }: Pr
     : null;
   const titleFormula = waterTreatmentTechnicalData?.formula?.trim() ?? null;
   const brandLabel = resolveIngredientBrandLabel(item.source);
+  const fermentableKindLabel = resolveIngredientFermentableKindLabel(item.source);
   const showInlineBrand = Boolean(
-    brandLabel && (item.source.subtype === "malt" || item.source.category === "fermentable" || item.source.category === "yeast")
+    brandLabel && (item.source.subtype === "malt" || item.source.category === "yeast")
   );
   const country = resolveIngredientCountry(item.source);
-  const showCountryInlineWithTitle = country && item.source.category !== "hop";
-  const showCountryOnBrandLine = country && item.source.category === "hop" && !showInlineBrand;
+  const showCountryInlineWithTitle = country
+    && item.source.category !== "hop"
+    && !(item.source.category === "fermentable" && item.source.subtype === "fermentable");
+  const showCountryOnBrandLine = country
+    && (item.source.category === "hop" || (item.source.category === "fermentable" && item.source.subtype === "fermentable"))
+    && !showInlineBrand;
   const costSummary = buildInventoryCostDisplay({
     enteredQuantity: item.enteredQuantity,
     enteredUnit: item.enteredUnit,
@@ -369,6 +367,12 @@ export function InventoryListItem({ item, preferredCurrency, currencyRates }: Pr
                     {primaryName}
                   </Link>
                 </h3>
+                {fermentableKindLabel ? (
+                  <span className="inline-flex min-w-0 items-center gap-2 text-xs font-medium text-zinc-600">
+                    <span aria-hidden="true" className="text-zinc-400">•</span>
+                    <span className="truncate">{fermentableKindLabel}</span>
+                  </span>
+                ) : null}
                 {showInlineBrand ? (
                   <span className="inline-flex min-w-0 items-center gap-2 text-sm font-semibold text-zinc-700">
                     <span aria-hidden="true" className="text-zinc-400">•</span>

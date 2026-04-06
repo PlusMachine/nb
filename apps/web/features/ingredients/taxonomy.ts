@@ -85,6 +85,19 @@ export const ingredientCategorySubtypes = {
 const WEIGHT_UNITS: IngredientDisplayUnit[] = ["g", "kg", "oz", "lb"];
 const VOLUME_UNITS: IngredientDisplayUnit[] = ["ml", "l", "gal"];
 const COUNT_UNITS: IngredientDisplayUnit[] = ["item", "pack"];
+const fermentableNonMaltTokens = [
+  "extract",
+  "concentrate",
+  "syrup",
+  "sugar",
+  "honey",
+  "molasses",
+  "candi",
+  "dextrose",
+  "glucose",
+  "fructose",
+  "lactose"
+] as const;
 
 const toNormalizedToken = (value: string) => value
   .trim()
@@ -148,6 +161,10 @@ export const normalizeIngredientSubtype = (
   }
 
   if (category === "fermentable") {
+    if (fermentableNonMaltTokens.some((token) => normalized.includes(token))) {
+      return "fermentable";
+    }
+
     if (normalized.includes("malt")) {
       return "malt";
     }
@@ -229,17 +246,20 @@ export const resolveIngredientSubtype = (input: ResolveIngredientTaxonomyInput):
     return input.subtype;
   }
 
-  const normalizedSubtype = normalizeIngredientSubtype(category, input.subtype ?? input.itemKind ?? null);
-  if (normalizedSubtype) {
-    return normalizedSubtype;
-  }
-
+  // For seeded catalog rows, the manifest already determines whether an item is
+  // `malt` or generic `fermentable`. Do not let raw source tokens such as
+  // `malt_extract` override that higher-level classification.
   if (input.type === "malt") {
     return "malt";
   }
 
   if (input.type === "fermentable") {
     return "fermentable";
+  }
+
+  const normalizedSubtype = normalizeIngredientSubtype(category, input.subtype ?? input.itemKind ?? null);
+  if (normalizedSubtype) {
+    return normalizedSubtype;
   }
 
   if (input.type === "hop") {

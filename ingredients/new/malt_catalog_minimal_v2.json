@@ -520,7 +520,6 @@
     "name_ru": "BEST Карамельный Мюнхенский I",
     "aliases_en": [
       "Munich",
-      "Munich Malt",
       "Muenchner",
       "Caramel Malt",
       "Cara Malt"
@@ -565,7 +564,6 @@
     "name_ru": "BEST Карамельный Мюнхенский II",
     "aliases_en": [
       "Munich",
-      "Munich Malt",
       "Muenchner",
       "Caramel Malt",
       "Cara Malt"
@@ -610,7 +608,6 @@
     "name_ru": "BEST Карамельный Мюнхенский III",
     "aliases_en": [
       "Munich",
-      "Munich Malt",
       "Muenchner",
       "Caramel Malt",
       "Cara Malt"
@@ -658,7 +655,6 @@
       "Pilsener",
       "Pilsen",
       "Pils",
-      "Pilsner Malt",
       "Caramel Malt",
       "Cara Malt"
     ],
@@ -703,7 +699,6 @@
     "name_ru": "BEST Карамельный Ржаной солод",
     "aliases_en": [
       "Rye Malt",
-      "Rye",
       "Caramel Malt",
       "Cara Malt"
     ],
@@ -745,7 +740,6 @@
     "name_ru": "BEST Карамельный Пшеничный солод",
     "aliases_en": [
       "Wheat Malt",
-      "Wheat",
       "Caramel Malt",
       "Cara Malt"
     ],
@@ -855,23 +849,33 @@
     "country_code": "DE",
     "name_en": "BEST Heidelberg Malt",
     "name_ru": "BEST Heidelberg солод",
-    "aliases_en": [],
-    "aliases_ru": [],
+    "aliases_en": [
+      "Pilsen Heidelberg"
+    ],
+    "aliases_ru": [
+      "Пильсен Хайдельберг"
+    ],
     "malt_type": "base",
     "extract_pct_dry_basis": 80.5,
-    "color_ebc_min": null,
+    "color_ebc_min": 4.064,
     "color_ebc_max": 2.9,
-    "color_lovibond": null,
-    "protein_pct": null,
-    "max_usage_pct": null,
-    "is_birrf_present": false,
-    "color_ebc_is_approx": false,
+    "color_lovibond": 1.6,
+    "protein_pct": 10.0,
+    "max_usage_pct": 100.0,
+    "is_birrf_present": true,
+    "color_ebc_is_approx": true,
     "sources": [
       {
         "kind": "official_pdf",
         "label": "BESTMALZ Malt Catalog EN",
         "url": "https://bestmalz.de/wp-content/uploads/2023/09/BESTMALZ_Malzbroschuere_Malt_Catalog_EN.pdf",
         "page": 10
+      },
+      {
+        "kind": "birrf_ingredient_listing",
+        "label": "Бир.РФ / Базовый солод стр.3",
+        "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/base_malt/9-3",
+        "page": null
       }
     ]
   },
@@ -888,27 +892,34 @@
     "name_ru": "BEST Heidelberg Пшеничный солод",
     "aliases_en": [
       "Wheat Malt",
-      "Wheat"
+      "Wheat Heidelberg"
     ],
     "aliases_ru": [
       "Пшеничный",
-      "Пшеничный солод"
+      "Пшеничный солод",
+      "Пшеничный Хайдельберг"
     ],
     "malt_type": "other_grain",
     "extract_pct_dry_basis": 82.0,
     "color_ebc_min": 2.5,
     "color_ebc_max": 3.5,
-    "color_lovibond": null,
-    "protein_pct": null,
-    "max_usage_pct": null,
-    "is_birrf_present": false,
-    "color_ebc_is_approx": false,
+    "color_lovibond": 1.8,
+    "protein_pct": 13.0,
+    "max_usage_pct": 75.0,
+    "is_birrf_present": true,
+    "color_ebc_is_approx": true,
     "sources": [
       {
         "kind": "official_pdf",
         "label": "BESTMALZ Malt Catalog EN",
         "url": "https://bestmalz.de/wp-content/uploads/2023/09/BESTMALZ_Malzbroschuere_Malt_Catalog_EN.pdf",
         "page": 52
+      },
+      {
+        "kind": "birrf_ingredient_listing",
+        "label": "Бир.РФ / Базовый солод стр.4",
+        "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/base_malt/9-4",
+        "page": null
       }
     ]
   },
@@ -987,7 +998,6 @@
     "name_ru": "BEST Мюнхенский тёмный солод",
     "aliases_en": [
       "Munich",
-      "Munich Malt",
       "Muenchner"
     ],
     "aliases_ru": [
@@ -1068,8 +1078,7 @@
     "name_en": "BEST Oat Malt",
     "name_ru": "BEST Овсяный солод",
     "aliases_en": [
-      "Oat Malt",
-      "Oat"
+      "Oat Malt"
     ],
     "aliases_ru": [
       "Овсяный",
@@ -1148,8 +1157,7 @@
     "aliases_en": [
       "Pils",
       "Pilsener",
-      "Pilsner",
-      "Pilsner Malt"
+      "Pilsner"
     ],
     "aliases_ru": [
       "BEST Пильзен солод",
@@ -1269,8 +1277,7 @@
     "name_en": "BEST Roasted Wheat Dark",
     "name_ru": "BEST Roasted Пшеничный тёмный",
     "aliases_en": [
-      "Wheat Malt",
-      "Wheat"
+      "Wheat Malt"
     ],
     "aliases_ru": [
       "Пшеничный",
@@ -1306,8 +1313,7 @@
     "name_en": "BEST Roasted Wheat Light",
     "name_ru": "BEST Roasted Пшеничный светлый",
     "aliases_en": [
-      "Wheat Malt",
-      "Wheat"
+      "Wheat Malt"
     ],
     "aliases_ru": [
       "Пшеничный",
@@ -1343,8 +1349,7 @@
     "name_en": "BEST Roasted Wheat Medium",
     "name_ru": "BEST Roasted Пшеничный Medium",
     "aliases_en": [
-      "Wheat Malt",
-      "Wheat"
+      "Wheat Malt"
     ],
     "aliases_ru": [
       "Пшеничный",
@@ -1380,8 +1385,7 @@
     "name_en": "BEST Rye Malt",
     "name_ru": "BEST Ржаной солод",
     "aliases_en": [
-      "Rye Malt",
-      "Rye"
+      "Rye Malt"
     ],
     "aliases_ru": [
       "Ржаной",
@@ -1594,8 +1598,7 @@
     "name_en": "BEST Wheat Malt Dark",
     "name_ru": "Пшеничный темный",
     "aliases_en": [
-      "Wheat",
-      "Wheat Malt"
+      "Wheat"
     ],
     "aliases_ru": [
       "Пшеничный",
@@ -1652,68 +1655,6 @@
         "kind": "birrf_ingredient_listing",
         "label": "Бир.РФ / Спец солод стр.6",
         "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/special_malt/10-6",
-        "page": null
-      }
-    ]
-  },
-  {
-    "id": "bestmalz-pilsen-heidelberg-de-base",
-    "type": "malt",
-    "brand": "Bestmalz",
-    "brand_aliases": [
-      "Бэстмальц",
-      "Бестмальц"
-    ],
-    "country_code": "DE",
-    "name_en": "Pilsen Heidelberg",
-    "name_ru": "Пильсен Хайдельберг",
-    "aliases_en": [],
-    "aliases_ru": [],
-    "malt_type": "base",
-    "extract_pct_dry_basis": 80.5,
-    "color_ebc_min": 4.064,
-    "color_ebc_max": 4.064,
-    "color_lovibond": 1.6,
-    "protein_pct": 10.0,
-    "max_usage_pct": 100.0,
-    "is_birrf_present": true,
-    "color_ebc_is_approx": true,
-    "sources": [
-      {
-        "kind": "birrf_ingredient_listing",
-        "label": "Бир.РФ / Базовый солод стр.3",
-        "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/base_malt/9-3",
-        "page": null
-      }
-    ]
-  },
-  {
-    "id": "bestmalz-wheat-heidelberg-de-base",
-    "type": "malt",
-    "brand": "Bestmalz",
-    "brand_aliases": [
-      "Бэстмальц",
-      "Бестмальц"
-    ],
-    "country_code": "DE",
-    "name_en": "Wheat Heidelberg",
-    "name_ru": "Пшеничный Хайдельберг",
-    "aliases_en": [],
-    "aliases_ru": [],
-    "malt_type": "base",
-    "extract_pct_dry_basis": 82.0,
-    "color_ebc_min": 4.572,
-    "color_ebc_max": 4.572,
-    "color_lovibond": 1.8,
-    "protein_pct": 13.0,
-    "max_usage_pct": 75.0,
-    "is_birrf_present": true,
-    "color_ebc_is_approx": true,
-    "sources": [
-      {
-        "kind": "birrf_ingredient_listing",
-        "label": "Бир.РФ / Базовый солод стр.4",
-        "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/base_malt/9-4",
         "page": null
       }
     ]
@@ -1963,39 +1904,6 @@
     ]
   },
   {
-    "id": "castle-malting--aroma",
-    "type": "malt",
-    "brand": "Castle Malting",
-    "brand_aliases": [
-      "Castle",
-      "Кастл",
-      "Кастл Малтинг",
-      "Шато"
-    ],
-    "country_code": "BE",
-    "name_en": "Aroma",
-    "name_ru": "Арома",
-    "aliases_en": [],
-    "aliases_ru": [],
-    "malt_type": "special",
-    "extract_pct_dry_basis": 78.0,
-    "color_ebc_min": 100.03,
-    "color_ebc_max": 100.03,
-    "color_lovibond": 38.2,
-    "protein_pct": null,
-    "max_usage_pct": 20.0,
-    "is_birrf_present": true,
-    "color_ebc_is_approx": true,
-    "sources": [
-      {
-        "kind": "birrf_ingredients_list",
-        "label": "Бир.РФ / Спец солод стр.1",
-        "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/special_malt/10",
-        "page": null
-      }
-    ]
-  },
-  {
     "id": "castle-malting-arome",
     "type": "malt",
     "brand": "Castle Malting",
@@ -2009,22 +1917,31 @@
     "name_en": "Arome",
     "name_ru": "Арома",
     "aliases_en": [
-      "Aroma Malt"
+      "Aroma Malt",
+      "Arôme Malt",
+      "Arome",
+      "Aroma"
     ],
     "aliases_ru": [
-      "Аром",
-      "Ароматический"
+      "Ароматический",
+      "Аром"
     ],
     "malt_type": "special",
     "extract_pct_dry_basis": 78.0,
     "color_ebc_min": 95.0,
     "color_ebc_max": 105.0,
-    "color_lovibond": null,
+    "color_lovibond": 38.2,
     "protein_pct": null,
-    "max_usage_pct": null,
-    "is_birrf_present": false,
+    "max_usage_pct": 20.0,
+    "is_birrf_present": true,
     "color_ebc_is_approx": false,
     "sources": [
+      {
+        "kind": "official_html",
+        "label": "Castle Malting official",
+        "url": "https://castlemalting.com/CastlemaltingMaltSpecification.asp?Command=Spec&SpecificationID=10&Language=English",
+        "page": null
+      },
       {
         "kind": null,
         "label": "Castle Malting brochure",
@@ -2032,9 +1949,9 @@
         "page": 15
       },
       {
-        "kind": "official_html",
-        "label": "Castle Malting official",
-        "url": "https://castlemalting.com/CastlemaltingMaltSpecification.asp?Command=Spec&SpecificationID=10&Language=English",
+        "kind": "birrf_ingredients_list",
+        "label": "Бир.РФ / Спец солод стр.1",
+        "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/special_malt/10",
         "page": null
       }
     ]
@@ -2196,9 +2113,7 @@
     "country_code": "BE",
     "name_en": "Cafe",
     "name_ru": "Кафе",
-    "aliases_en": [
-      "Café Malt"
-    ],
+    "aliases_en": [],
     "aliases_ru": [],
     "malt_type": "roasted",
     "extract_pct_dry_basis": 75.5,
@@ -2369,39 +2284,6 @@
     ]
   },
   {
-    "id": "castle-malting--cara-belga",
-    "type": "malt",
-    "brand": "Castle Malting",
-    "brand_aliases": [
-      "Castle",
-      "Кастл",
-      "Кастл Малтинг",
-      "Шато"
-    ],
-    "country_code": "BE",
-    "name_en": "Cara Belga",
-    "name_ru": "Кара Белга",
-    "aliases_en": [],
-    "aliases_ru": [],
-    "malt_type": "special",
-    "extract_pct_dry_basis": 76.0,
-    "color_ebc_min": 30.6,
-    "color_ebc_max": 30.6,
-    "color_lovibond": 12.0,
-    "protein_pct": null,
-    "max_usage_pct": 30.0,
-    "is_birrf_present": true,
-    "color_ebc_is_approx": true,
-    "sources": [
-      {
-        "kind": "birrf_ingredients_list",
-        "label": "Бир.РФ / Спец солод стр.2",
-        "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/special_malt/10-2",
-        "page": null
-      }
-    ]
-  },
-  {
     "id": "castle-malting--cara-belgium-malt",
     "type": "malt",
     "brand": "Castle Malting",
@@ -2415,20 +2297,23 @@
     "name_en": "Cara Belgium",
     "name_ru": "Кара Бельгия",
     "aliases_en": [
+      "carabelgiummalt",
       "Cara Belgium Malt",
-      "carabelgiummalt"
+      "Cara Belga"
     ],
     "aliases_ru": [
-      "карабельгия"
+      "карабельгия",
+      "Кара Белга",
+      "Кара Белджиум"
     ],
     "malt_type": "caramel",
     "extract_pct_dry_basis": 76.0,
     "color_ebc_min": 30.0,
     "color_ebc_max": 35.0,
-    "color_lovibond": null,
+    "color_lovibond": 12.0,
     "protein_pct": null,
-    "max_usage_pct": null,
-    "is_birrf_present": false,
+    "max_usage_pct": 30.0,
+    "is_birrf_present": true,
     "color_ebc_is_approx": false,
     "sources": [
       {
@@ -2436,6 +2321,12 @@
         "label": "Castle Malting brochure",
         "url": "https://castlemalting.com/castlemalting-brochures.asp",
         "page": 18
+      },
+      {
+        "kind": "birrf_ingredients_list",
+        "label": "Бир.РФ / Спец солод стр.2",
+        "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/special_malt/10-2",
+        "page": null
       }
     ]
   },
@@ -2797,9 +2688,7 @@
     "country_code": "BE",
     "name_en": "Chit Barley Flakes Chateau",
     "name_ru": "Пшеничный Чит Солод в Хлопьях Шато",
-    "aliases_en": [
-      "Chit Barley Malt Flakes Château"
-    ],
+    "aliases_en": [],
     "aliases_ru": [],
     "malt_type": "special",
     "extract_pct_dry_basis": 75.0,
@@ -2832,9 +2721,7 @@
     "country_code": "BE",
     "name_en": "Chit Wheat Flakes",
     "name_ru": "Пшеничный Чит солод в хлопьях",
-    "aliases_en": [
-      "Chit Wheat Malt Flakes"
-    ],
+    "aliases_en": [],
     "aliases_ru": [],
     "malt_type": "special",
     "extract_pct_dry_basis": 73.0,
@@ -2867,9 +2754,7 @@
     "country_code": "BE",
     "name_en": "Chocolat",
     "name_ru": "Шоколадный",
-    "aliases_en": [
-      "Chocolat Malt"
-    ],
+    "aliases_en": [],
     "aliases_ru": [],
     "malt_type": "base",
     "extract_pct_dry_basis": 75.0,
@@ -2902,9 +2787,7 @@
     "country_code": "BE",
     "name_en": "Chocolat Light",
     "name_ru": "Шоколад светлый",
-    "aliases_en": [
-      "Chocolat Light Malt"
-    ],
+    "aliases_en": [],
     "aliases_ru": [],
     "malt_type": "base",
     "extract_pct_dry_basis": 76.0,
@@ -3032,6 +2915,51 @@
     ]
   },
   {
+    "id": "castle-malting--emmer",
+    "type": "malt",
+    "brand": "Castle Malting",
+    "brand_aliases": [
+      "Castle",
+      "Кастл",
+      "Кастл Малтинг",
+      "Шато"
+    ],
+    "country_code": "BE",
+    "name_en": "Emmer",
+    "name_ru": "Эммер",
+    "aliases_en": [
+      "Chateau Emmer",
+      "Château Emmer"
+    ],
+    "aliases_ru": [
+      "Шато Эммер",
+      "Полуполба"
+    ],
+    "malt_type": "other_grain",
+    "extract_pct_dry_basis": 81.0,
+    "color_ebc_min": 2.5,
+    "color_ebc_max": 5.0,
+    "color_lovibond": null,
+    "protein_pct": 10.0,
+    "max_usage_pct": 40.0,
+    "is_birrf_present": false,
+    "color_ebc_is_approx": false,
+    "sources": [
+      {
+        "kind": "official_html",
+        "label": "Castle Malting official / CHÂTEAU EMMER MALT",
+        "url": "https://www.castlemalting.com/CastleMaltingMaltSpecification.asp?Command=SpecificationShow&CropYear=2021&FileType=HTML&Language=English&SpecificationID=278",
+        "page": null
+      },
+      {
+        "kind": "official_pdf",
+        "label": "Castle Malting official / CHÂTEAU EMMER MALT crop year 2022",
+        "url": "https://www.castlemalting.com/CastleMaltingMaltSpecification.asp?Command=QualityParameters2&CropYear=2022&Language=English&SpecificationID=278",
+        "page": null
+      }
+    ]
+  },
+  {
     "id": "castle-malting-melano",
     "type": "malt",
     "brand": "Castle Malting",
@@ -3085,9 +3013,7 @@
     "country_code": "BE",
     "name_en": "Melano Light",
     "name_ru": "Мелано светлый",
-    "aliases_en": [
-      "Melano Light Malt"
-    ],
+    "aliases_en": [],
     "aliases_ru": [],
     "malt_type": "specialty",
     "extract_pct_dry_basis": 78.0,
@@ -3164,20 +3090,14 @@
     "name_ru": "Мюнхенский светлый",
     "aliases_en": [
       "Muenchner",
-      "Munich",
-      "Munich Lite",
-      "Munich Malt",
-      "munich",
-      "munich malt"
+      "Munich"
     ],
     "aliases_ru": [
       "Мюник",
       "Мюнхенский",
       "Мюнхенский солод",
       "Мюнхнер",
-      "мюних",
-      "мюнхенский",
-      "мюнхнер"
+      "мюних"
     ],
     "malt_type": "base",
     "extract_pct_dry_basis": 80.0,
@@ -3303,9 +3223,7 @@
     "country_code": "BE",
     "name_en": "Peated",
     "name_ru": "Торфяной",
-    "aliases_en": [
-      "Peated Malt"
-    ],
+    "aliases_en": [],
     "aliases_ru": [],
     "malt_type": "smoked",
     "extract_pct_dry_basis": 81.0,
@@ -3635,9 +3553,7 @@
     "country_code": "BE",
     "name_en": "Special Belgium",
     "name_ru": "Спешл Бельгия",
-    "aliases_en": [
-      "Special Belgium Malt"
-    ],
+    "aliases_en": [],
     "aliases_ru": [],
     "malt_type": "specialty",
     "extract_pct_dry_basis": 77.0,
@@ -3707,8 +3623,7 @@
       "vienne"
     ],
     "aliases_ru": [
-      "Вена",
-      "вена"
+      "Вена"
     ],
     "malt_type": "base",
     "extract_pct_dry_basis": 80.0,
@@ -3748,9 +3663,7 @@
     "name_en": "Wheat Arome",
     "name_ru": "Пшеничный аром",
     "aliases_en": [
-      "Wheat Arôme Malt",
-      "wheat",
-      "wheat malt"
+      "wheat"
     ],
     "aliases_ru": [
       "пшеничный",
@@ -3789,8 +3702,7 @@
     "name_ru": "Пшеничный черный",
     "aliases_en": [
       "black",
-      "wheat",
-      "wheat malt"
+      "wheat"
     ],
     "aliases_ru": [
       "Пшеничный жженый",
@@ -3836,8 +3748,7 @@
     "name_en": "Wheat Blanc",
     "name_ru": "Пшеничный светлый",
     "aliases_en": [
-      "wheat",
-      "wheat malt"
+      "wheat"
     ],
     "aliases_ru": [
       "пшеничный",
@@ -3881,9 +3792,7 @@
     "name_en": "Wheat Cafe",
     "name_ru": "Пшеничный кафе",
     "aliases_en": [
-      "Wheat Café Malt",
-      "wheat",
-      "wheat malt"
+      "wheat"
     ],
     "aliases_ru": [
       "пшеничный",
@@ -3921,9 +3830,7 @@
     "name_en": "Wheat Chocolat",
     "name_ru": "Пшеничный шоколадный",
     "aliases_en": [
-      "Wheat Chocolat Malt",
-      "wheat",
-      "wheat malt"
+      "wheat"
     ],
     "aliases_ru": [
       "пшеничный",
@@ -3961,8 +3868,7 @@
     "name_en": "Wheat Crystal",
     "name_ru": "Пшеничный кристальный",
     "aliases_en": [
-      "wheat",
-      "wheat malt"
+      "wheat"
     ],
     "aliases_ru": [
       "Пшеничный кристалл",
@@ -4008,9 +3914,7 @@
     "name_ru": "Пшеничный мюнхенский",
     "aliases_en": [
       "munich",
-      "munich malt",
-      "wheat",
-      "wheat malt"
+      "wheat"
     ],
     "aliases_ru": [
       "мюних",
@@ -4057,11 +3961,8 @@
     "name_en": "Wheat Munich Light",
     "name_ru": "Пшеничный мюнхенский светлый",
     "aliases_en": [
-      "Wheat Munich Lite",
       "munich",
-      "munich malt",
-      "wheat",
-      "wheat malt"
+      "wheat"
     ],
     "aliases_ru": [
       "мюних",
@@ -4108,11 +4009,9 @@
     "name_en": "Wheat Smoked",
     "name_ru": "Пшеничный копченый",
     "aliases_en": [
-      "Wheat Smoked Malt",
       "rauch",
       "smoked",
-      "wheat",
-      "wheat malt"
+      "wheat"
     ],
     "aliases_ru": [
       "дымный",
@@ -4209,7 +4108,6 @@
     "type": "malt",
     "brand": "Crisp Malt",
     "brand_aliases": [
-      "Crisp",
       "Крисп"
     ],
     "country_code": "GB",
@@ -4240,7 +4138,6 @@
     "type": "malt",
     "brand": "Crisp Malt",
     "brand_aliases": [
-      "Crisp",
       "Крисп"
     ],
     "country_code": "GB",
@@ -4271,7 +4168,6 @@
     "type": "malt",
     "brand": "Crisp Malt",
     "brand_aliases": [
-      "Crisp",
       "Крисп"
     ],
     "country_code": "GB",
@@ -4302,7 +4198,6 @@
     "type": "malt",
     "brand": "Crisp Malt",
     "brand_aliases": [
-      "Crisp",
       "Крисп"
     ],
     "country_code": "GB",
@@ -4333,7 +4228,6 @@
     "type": "malt",
     "brand": "Crisp Malt",
     "brand_aliases": [
-      "Crisp",
       "Крисп"
     ],
     "country_code": "GB",
@@ -4364,7 +4258,6 @@
     "type": "malt",
     "brand": "Crisp Malt",
     "brand_aliases": [
-      "Crisp",
       "Крисп"
     ],
     "country_code": "GB",
@@ -4395,7 +4288,6 @@
     "type": "malt",
     "brand": "Crisp Malt",
     "brand_aliases": [
-      "Crisp",
       "Крисп"
     ],
     "country_code": "GB",
@@ -4426,7 +4318,6 @@
     "type": "malt",
     "brand": "Crisp Malt",
     "brand_aliases": [
-      "Crisp",
       "Крисп"
     ],
     "country_code": "GB",
@@ -4457,7 +4348,6 @@
     "type": "malt",
     "brand": "Crisp Malt",
     "brand_aliases": [
-      "Crisp",
       "Крисп"
     ],
     "country_code": "GB",
@@ -4488,7 +4378,6 @@
     "type": "malt",
     "brand": "Crisp Malt",
     "brand_aliases": [
-      "Crisp",
       "Крисп"
     ],
     "country_code": "GB",
@@ -4510,6 +4399,57 @@
         "kind": "birrf_ingredient_listing",
         "label": "Бир.РФ / Базовый солод стр.1",
         "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/base_malt/9",
+        "page": null
+      }
+    ]
+  },
+  {
+    "id": "dingemans-amber-aromatic-md-be-specialty",
+    "type": "malt",
+    "brand": "Dingemans",
+    "brand_aliases": [
+      "Mouterij Dingemans",
+      "Дингеманс"
+    ],
+    "country_code": "BE",
+    "name_en": "Amber - Aromatic MD",
+    "name_ru": "Амбер / Ароматик MD",
+    "aliases_en": [
+      "Amber Aromatic MD",
+      "Aromatic MD",
+      "Amber MD"
+    ],
+    "aliases_ru": [
+      "Амбер Ароматик",
+      "Ароматик MD",
+      "Янтарный ароматик"
+    ],
+    "malt_type": "specialty",
+    "extract_pct_dry_basis": 79.0,
+    "color_ebc_min": 40.0,
+    "color_ebc_max": 60.0,
+    "color_lovibond": null,
+    "protein_pct": 12.0,
+    "max_usage_pct": 30.0,
+    "is_birrf_present": false,
+    "color_ebc_is_approx": false,
+    "sources": [
+      {
+        "kind": "official_html",
+        "label": "Dingemans official / Amber - Aromatic MD",
+        "url": "https://www.dingemansmout.be/malt/amber-aromatic%C2%AE-md",
+        "page": null
+      },
+      {
+        "kind": "official_pdf",
+        "label": "Dingemans specifications / Amber Aromatic MD",
+        "url": "https://www.dingemansmout.be/sites/default/files/downloads/specs/Specifications%20AMBER%20AROMATIC%20MD.pdf",
+        "page": null
+      },
+      {
+        "kind": "distributor_html",
+        "label": "SPMALT / Dingemans range",
+        "url": "https://www.spmalt.ru/ru/malt_range",
         "page": null
       }
     ]
@@ -4608,6 +4548,299 @@
     ]
   },
   {
+    "id": "dingemans-cara-120-md-be-caramel",
+    "type": "malt",
+    "brand": "Dingemans",
+    "brand_aliases": [
+      "Mouterij Dingemans",
+      "Дингеманс"
+    ],
+    "country_code": "BE",
+    "name_en": "Cara 120 MD",
+    "name_ru": "Кара 120 MD",
+    "aliases_en": [
+      "Cara 120",
+      "Cara120 MD"
+    ],
+    "aliases_ru": [
+      "Кара 120",
+      "Cara 120"
+    ],
+    "malt_type": "caramel",
+    "extract_pct_dry_basis": 74.0,
+    "color_ebc_min": 100.0,
+    "color_ebc_max": 140.0,
+    "color_lovibond": null,
+    "protein_pct": 12.5,
+    "max_usage_pct": 15.0,
+    "is_birrf_present": false,
+    "color_ebc_is_approx": false,
+    "sources": [
+      {
+        "kind": "official_html",
+        "label": "Dingemans official / Cara 120 MD",
+        "url": "https://www.dingemansmout.be/malt/cara-120-md",
+        "page": null
+      },
+      {
+        "kind": "official_pdf",
+        "label": "Dingemans specifications / Cara 120 MD",
+        "url": "https://www.dingemansmout.be/sites/default/files/downloads/specs/Specifications%20CARA%20120%20MD.pdf",
+        "page": null
+      },
+      {
+        "kind": "distributor_html",
+        "label": "SPMALT / Dingemans range",
+        "url": "https://www.spmalt.ru/ru/malt_range",
+        "page": null
+      }
+    ]
+  },
+  {
+    "id": "dingemans-cara-20-md-be-caramel",
+    "type": "malt",
+    "brand": "Dingemans",
+    "brand_aliases": [
+      "Mouterij Dingemans",
+      "Дингеманс"
+    ],
+    "country_code": "BE",
+    "name_en": "Cara 20 MD",
+    "name_ru": "Кара 20 MD",
+    "aliases_en": [
+      "Cara 20",
+      "Cara20 MD"
+    ],
+    "aliases_ru": [
+      "Кара 20",
+      "Cara 20"
+    ],
+    "malt_type": "caramel",
+    "extract_pct_dry_basis": 75.0,
+    "color_ebc_min": 15.0,
+    "color_ebc_max": 27.0,
+    "color_lovibond": null,
+    "protein_pct": 12.5,
+    "max_usage_pct": null,
+    "is_birrf_present": false,
+    "color_ebc_is_approx": false,
+    "sources": [
+      {
+        "kind": "official_html",
+        "label": "Dingemans official / Cara 20 MD",
+        "url": "https://www.dingemansmout.be/malt/cara-20-md",
+        "page": null
+      },
+      {
+        "kind": "official_pdf",
+        "label": "Dingemans specifications / Cara 20 MD",
+        "url": "https://www.dingemansmout.be/sites/default/files/downloads/specs/Specifications%20CARA%2020%20MD.pdf",
+        "page": null
+      },
+      {
+        "kind": "distributor_html",
+        "label": "SPMALT / Dingemans range",
+        "url": "https://www.spmalt.ru/ru/malt_range",
+        "page": null
+      }
+    ]
+  },
+  {
+    "id": "dingemans-cara-200-md-be-caramel",
+    "type": "malt",
+    "brand": "Dingemans",
+    "brand_aliases": [
+      "Mouterij Dingemans",
+      "Дингеманс"
+    ],
+    "country_code": "BE",
+    "name_en": "Cara 200 MD",
+    "name_ru": "Кара 200 MD",
+    "aliases_en": [
+      "Cara 200",
+      "Cara200 MD"
+    ],
+    "aliases_ru": [
+      "Кара 200",
+      "Cara 200"
+    ],
+    "malt_type": "caramel",
+    "extract_pct_dry_basis": 74.0,
+    "color_ebc_min": 180.0,
+    "color_ebc_max": 220.0,
+    "color_lovibond": null,
+    "protein_pct": 12.5,
+    "max_usage_pct": 15.0,
+    "is_birrf_present": false,
+    "color_ebc_is_approx": false,
+    "sources": [
+      {
+        "kind": "official_html",
+        "label": "Dingemans official / Cara 200 MD",
+        "url": "https://www.dingemansmout.be/malt/cara-200-md",
+        "page": null
+      },
+      {
+        "kind": "official_pdf",
+        "label": "Dingemans specifications / Cara 200 MD",
+        "url": "https://www.dingemansmout.be/sites/default/files/downloads/specs/Specifications%20CARA%20200%20MD.pdf",
+        "page": null
+      },
+      {
+        "kind": "distributor_html",
+        "label": "SPMALT / Dingemans range",
+        "url": "https://www.spmalt.ru/ru/malt_range",
+        "page": null
+      }
+    ]
+  },
+  {
+    "id": "dingemans-cara-50-md-be-caramel",
+    "type": "malt",
+    "brand": "Dingemans",
+    "brand_aliases": [
+      "Mouterij Dingemans",
+      "Дингеманс"
+    ],
+    "country_code": "BE",
+    "name_en": "Cara 50 MD",
+    "name_ru": "Кара 50 MD",
+    "aliases_en": [
+      "Cara 50",
+      "Cara Vienna"
+    ],
+    "aliases_ru": [
+      "Кара 50",
+      "Кара Вена",
+      "Cara Vienna"
+    ],
+    "malt_type": "caramel",
+    "extract_pct_dry_basis": 75.0,
+    "color_ebc_min": 40.0,
+    "color_ebc_max": 60.0,
+    "color_lovibond": null,
+    "protein_pct": 12.5,
+    "max_usage_pct": 25.0,
+    "is_birrf_present": false,
+    "color_ebc_is_approx": false,
+    "sources": [
+      {
+        "kind": "official_html",
+        "label": "Dingemans official / Cara 50 MD",
+        "url": "https://www.dingemansmout.be/malt/cara-50-md",
+        "page": null
+      },
+      {
+        "kind": "official_pdf",
+        "label": "Dingemans specifications / Cara 50 MD",
+        "url": "https://www.dingemansmout.be/sites/default/files/downloads/specs/Specifications%20CARA%2050%20MD.pdf",
+        "page": null
+      },
+      {
+        "kind": "distributor_html",
+        "label": "SPMALT / Dingemans range",
+        "url": "https://www.spmalt.ru/ru/malt_range",
+        "page": null
+      }
+    ]
+  },
+  {
+    "id": "dingemans-coffee-mroost-450-md-be-roasted",
+    "type": "malt",
+    "brand": "Dingemans",
+    "brand_aliases": [
+      "Mouterij Dingemans",
+      "Дингеманс"
+    ],
+    "country_code": "BE",
+    "name_en": "Coffee Mroost 450 MD",
+    "name_ru": "Кофейный MRoost 450 MD",
+    "aliases_en": [
+      "Coffee MRoost 450 MD",
+      "Coffee Mroost",
+      "Coffee Roasted 450"
+    ],
+    "aliases_ru": [
+      "Кофейный Мруст 450",
+      "Кофейный 450",
+      "Кофейный жженый 450"
+    ],
+    "malt_type": "roasted",
+    "extract_pct_dry_basis": 70.0,
+    "color_ebc_min": 400.0,
+    "color_ebc_max": 500.0,
+    "color_lovibond": null,
+    "protein_pct": 12.5,
+    "max_usage_pct": 5.0,
+    "is_birrf_present": false,
+    "color_ebc_is_approx": false,
+    "sources": [
+      {
+        "kind": "official_html",
+        "label": "Dingemans official / Coffee Mroost 450 MD",
+        "url": "https://www.dingemansmout.be/malt/coffee-mroost-450-md",
+        "page": null
+      },
+      {
+        "kind": "official_pdf",
+        "label": "Dingemans specifications / Coffee Mroost 450 MD",
+        "url": "https://www.dingemansmout.be/sites/default/files/downloads/specs/Specifications%20COFFEE%20MROOST%20450%20MD.pdf",
+        "page": null
+      }
+    ]
+  },
+  {
+    "id": "dingemans-karrewheat-77-md-be-wheat",
+    "type": "malt",
+    "brand": "Dingemans",
+    "brand_aliases": [
+      "Mouterij Dingemans",
+      "Дингеманс"
+    ],
+    "country_code": "BE",
+    "name_en": "Karrewheat 77 MD",
+    "name_ru": "Карревит 77 MD",
+    "aliases_en": [
+      "Karrewheat",
+      "Karrewheat 77",
+      "Caramel Wheat 77"
+    ],
+    "aliases_ru": [
+      "Карревит",
+      "Карамельный пшеничный 77",
+      "Пшеничный карамельный 77"
+    ],
+    "malt_type": "wheat",
+    "extract_pct_dry_basis": 74.0,
+    "color_ebc_min": 70.0,
+    "color_ebc_max": 100.0,
+    "color_lovibond": null,
+    "protein_pct": 12.5,
+    "max_usage_pct": 25.0,
+    "is_birrf_present": false,
+    "color_ebc_is_approx": false,
+    "sources": [
+      {
+        "kind": "official_html",
+        "label": "Dingemans official / Karrewheat 77 MD",
+        "url": "https://www.dingemansmout.be/malt/karrewheat-77-md",
+        "page": null
+      },
+      {
+        "kind": "official_pdf",
+        "label": "Dingemans specifications / Karrewheat 77 MD",
+        "url": "https://www.dingemansmout.be/sites/default/files/downloads/specs/Specifications%20KARREWHEAT%2077%20MD.pdf",
+        "page": null
+      },
+      {
+        "kind": "distributor_html",
+        "label": "SPMALT / Dingemans range",
+        "url": "https://www.spmalt.ru/ru/malt_range",
+        "page": null
+      }
+    ]
+  },
+  {
     "id": "dingemans-mroost-1400-be-special",
     "type": "malt",
     "brand": "Dingemans",
@@ -4701,37 +4934,6 @@
     ]
   },
   {
-    "id": "dingemans-munich-be-special",
-    "type": "malt",
-    "brand": "Dingemans",
-    "brand_aliases": [
-      "Mouterij Dingemans",
-      "Дингеманс"
-    ],
-    "country_code": "BE",
-    "name_en": "Munich",
-    "name_ru": "Мюнхен",
-    "aliases_en": [],
-    "aliases_ru": [],
-    "malt_type": "special",
-    "extract_pct_dry_basis": 79.5,
-    "color_ebc_min": 15.24,
-    "color_ebc_max": 15.24,
-    "color_lovibond": 6.0,
-    "protein_pct": 12.0,
-    "max_usage_pct": 80.0,
-    "is_birrf_present": true,
-    "color_ebc_is_approx": true,
-    "sources": [
-      {
-        "kind": "birrf_ingredient_listing",
-        "label": "Бир.РФ / Спец солод стр.5",
-        "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/special_malt/10-5",
-        "page": null
-      }
-    ]
-  },
-  {
     "id": "dingemans-munich-15-md-be-special",
     "type": "malt",
     "brand": "Dingemans",
@@ -4741,9 +4943,13 @@
     ],
     "country_code": "BE",
     "name_en": "Munich 15 MD",
-    "name_ru": "Мюнхенский 15MD",
-    "aliases_en": [],
-    "aliases_ru": [],
+    "name_ru": "Мюнхенский 15 MD",
+    "aliases_en": [
+      "Munich"
+    ],
+    "aliases_ru": [
+      "Мюнхен"
+    ],
     "malt_type": "special",
     "extract_pct_dry_basis": 79.5,
     "color_ebc_min": 15.24,
@@ -4794,6 +5000,51 @@
     ]
   },
   {
+    "id": "dingemans-pealed-roasted-barley-md-be-roasted",
+    "type": "malt",
+    "brand": "Dingemans",
+    "brand_aliases": [
+      "Mouterij Dingemans",
+      "Дингеманс"
+    ],
+    "country_code": "BE",
+    "name_en": "Pealed Roasted Barley MD",
+    "name_ru": "Очищенный жжёный ячмень MD",
+    "aliases_en": [
+      "Pealed Roasted Barley",
+      "Peeled Roasted Barley",
+      "Roasted Barley MD"
+    ],
+    "aliases_ru": [
+      "Очищенный жженый ячмень",
+      "Жжёный ячмень без оболочки",
+      "Шелушёный жжёный ячмень"
+    ],
+    "malt_type": "roasted",
+    "extract_pct_dry_basis": 70.0,
+    "color_ebc_min": 1000.0,
+    "color_ebc_max": 1400.0,
+    "color_lovibond": null,
+    "protein_pct": 12.5,
+    "max_usage_pct": 5.0,
+    "is_birrf_present": false,
+    "color_ebc_is_approx": false,
+    "sources": [
+      {
+        "kind": "official_html",
+        "label": "Dingemans official / Pealed Roasted Barley MD",
+        "url": "https://www.dingemansmout.be/malt/pealed-roasted-barley-md",
+        "page": null
+      },
+      {
+        "kind": "official_pdf",
+        "label": "Dingemans specifications / Pealed Roasted Barley MD",
+        "url": "https://www.dingemansmout.be/sites/default/files/downloads/specs/Specifications%20PEALED%20ROASTED%20BARLEY%20MD.pdf",
+        "page": null
+      }
+    ]
+  },
+  {
     "id": "dingemans-pilsner-be-base",
     "type": "malt",
     "brand": "Dingemans",
@@ -4825,6 +5076,106 @@
     ]
   },
   {
+    "id": "dingemans-rye-malt-md-be-rye",
+    "type": "malt",
+    "brand": "Dingemans",
+    "brand_aliases": [
+      "Mouterij Dingemans",
+      "Дингеманс"
+    ],
+    "country_code": "BE",
+    "name_en": "Rye Malt MD",
+    "name_ru": "Ржаной MD",
+    "aliases_en": [
+      "Rye MD",
+      "Rye Malt"
+    ],
+    "aliases_ru": [
+      "Ржаной солод MD",
+      "Ржаной солод",
+      "Рожь солодовая"
+    ],
+    "malt_type": "rye",
+    "extract_pct_dry_basis": 81.0,
+    "color_ebc_min": 4.0,
+    "color_ebc_max": 10.0,
+    "color_lovibond": null,
+    "protein_pct": null,
+    "max_usage_pct": 100.0,
+    "is_birrf_present": false,
+    "color_ebc_is_approx": false,
+    "sources": [
+      {
+        "kind": "official_html",
+        "label": "Dingemans official / Rye Malt MD",
+        "url": "https://www.dingemansmout.be/malt/rye-malt-md",
+        "page": null
+      },
+      {
+        "kind": "official_pdf",
+        "label": "Dingemans specifications / Rye Malt MD",
+        "url": "https://www.dingemansmout.be/sites/default/files/downloads/specs/Specifications%20RYE%20MALT%20MD.pdf",
+        "page": null
+      },
+      {
+        "kind": "distributor_html",
+        "label": "SPMALT / Dingemans range",
+        "url": "https://www.spmalt.ru/ru/malt_range",
+        "page": null
+      }
+    ]
+  },
+  {
+    "id": "dingemans-special-b-md-be-caramel",
+    "type": "malt",
+    "brand": "Dingemans",
+    "brand_aliases": [
+      "Mouterij Dingemans",
+      "Дингеманс"
+    ],
+    "country_code": "BE",
+    "name_en": "Special B MD",
+    "name_ru": "Спешл B MD",
+    "aliases_en": [
+      "Special B",
+      "Special B® MD"
+    ],
+    "aliases_ru": [
+      "Спешл Би",
+      "Special B",
+      "Специальный B"
+    ],
+    "malt_type": "caramel",
+    "extract_pct_dry_basis": 72.0,
+    "color_ebc_min": 270.0,
+    "color_ebc_max": 350.0,
+    "color_lovibond": null,
+    "protein_pct": 12.5,
+    "max_usage_pct": 15.0,
+    "is_birrf_present": false,
+    "color_ebc_is_approx": false,
+    "sources": [
+      {
+        "kind": "official_html",
+        "label": "Dingemans official / Special B MD",
+        "url": "https://www.dingemansmout.be/malt/special-b%C2%AE-md",
+        "page": null
+      },
+      {
+        "kind": "official_pdf",
+        "label": "Dingemans specifications / Special B MD",
+        "url": "https://www.dingemansmout.be/sites/default/files/downloads/specs/Specifications%20SPECIAL%20B%C2%AE%20MD.pdf",
+        "page": null
+      },
+      {
+        "kind": "distributor_html",
+        "label": "SPMALT / Dingemans range",
+        "url": "https://www.spmalt.ru/ru/malt_range",
+        "page": null
+      }
+    ]
+  },
+  {
     "id": "dingemans-wheat-be-base",
     "type": "malt",
     "brand": "Dingemans",
@@ -4851,6 +5202,52 @@
         "kind": "birrf_ingredient_listing",
         "label": "Бир.РФ / Базовый солод стр.3",
         "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/base_malt/9-3",
+        "page": null
+      }
+    ]
+  },
+  {
+    "id": "dingemans-winter-pilsen-md-be-base",
+    "type": "malt",
+    "brand": "Dingemans",
+    "brand_aliases": [
+      "Mouterij Dingemans",
+      "Дингеманс"
+    ],
+    "country_code": "BE",
+    "name_en": "Winter Pilsen MD",
+    "name_ru": "Винтер Пильзен MD",
+    "aliases_en": [
+      "Winter Pilsner MD",
+      "Winter Pilsen",
+      "Winter Pilsner"
+    ],
+    "aliases_ru": [
+      "Винтер Пилснер MD",
+      "Винтер Пильснер",
+      "Пилснер для виски",
+      "Винтер Пильзен"
+    ],
+    "malt_type": "base",
+    "extract_pct_dry_basis": 79.5,
+    "color_ebc_min": 2.5,
+    "color_ebc_max": 4.5,
+    "color_lovibond": null,
+    "protein_pct": null,
+    "max_usage_pct": 30.0,
+    "is_birrf_present": false,
+    "color_ebc_is_approx": false,
+    "sources": [
+      {
+        "kind": "distributor_html",
+        "label": "SPMALT / Dingemans range",
+        "url": "https://www.spmalt.ru/ru/malt_range",
+        "page": null
+      },
+      {
+        "kind": "retailer_html",
+        "label": "ZIP Service / Winter Pilsen MD",
+        "url": "https://zip24.ru/p/pilsner-dlya-viski-2-4-ebc-dingemans-492",
         "page": null
       }
     ]
@@ -5314,39 +5711,6 @@
     ]
   },
   {
-    "id": "ireks--roggenbraumalz",
-    "type": "malt",
-    "brand": "IREKS",
-    "brand_aliases": [
-      "Ирекс"
-    ],
-    "country_code": "DE",
-    "name_en": "Roggenbraumalz",
-    "name_ru": "Ржаной",
-    "aliases_en": [
-      "rye malt",
-      "rye"
-    ],
-    "aliases_ru": [],
-    "malt_type": "base",
-    "extract_pct_dry_basis": 80.0,
-    "color_ebc_min": 6.22,
-    "color_ebc_max": 6.22,
-    "color_lovibond": 2.8,
-    "protein_pct": null,
-    "max_usage_pct": 60.0,
-    "is_birrf_present": true,
-    "color_ebc_is_approx": true,
-    "sources": [
-      {
-        "kind": "birrf_ingredients_list",
-        "label": "Бир.РФ / Базовый солод стр.4",
-        "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/base_malt/9-4",
-        "page": null
-      }
-    ]
-  },
-  {
     "id": "ireks-rye",
     "type": "malt",
     "brand": "IREKS",
@@ -5357,7 +5721,7 @@
     "name_en": "Rye",
     "name_ru": "Ржаной",
     "aliases_en": [
-      "Rye Malt"
+      "Roggenbraumalz"
     ],
     "aliases_ru": [
       "Ржаной солод"
@@ -5366,16 +5730,22 @@
     "extract_pct_dry_basis": 80.0,
     "color_ebc_min": 5.976,
     "color_ebc_max": 5.976,
-    "color_lovibond": null,
+    "color_lovibond": 2.8,
     "protein_pct": null,
-    "max_usage_pct": null,
+    "max_usage_pct": 60.0,
     "is_birrf_present": true,
-    "color_ebc_is_approx": false,
+    "color_ebc_is_approx": true,
     "sources": [
       {
         "kind": "beer_rf",
         "label": "Бир.РФ ingredient page",
         "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/special_malt/rzhanoj_ireks/10-1-0-1785",
+        "page": null
+      },
+      {
+        "kind": "birrf_ingredients_list",
+        "label": "Бир.РФ / Базовый солод стр.4",
+        "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/base_malt/9-4",
         "page": null
       }
     ]
@@ -5390,9 +5760,7 @@
     "country_code": "DE",
     "name_en": "Smoked",
     "name_ru": "Копчёный",
-    "aliases_en": [
-      "Smoked Malt"
-    ],
+    "aliases_en": [],
     "aliases_ru": [
       "Копчёный солод"
     ],
@@ -5764,6 +6132,34 @@
     ]
   },
   {
+    "id": "malteurop-venskiy-ua-base",
+    "type": "malt",
+    "brand": "Malteurop",
+    "brand_aliases": [],
+    "country_code": "UA",
+    "name_en": null,
+    "name_ru": "Венский",
+    "aliases_en": [],
+    "aliases_ru": [],
+    "malt_type": "base",
+    "extract_pct_dry_basis": 80.5,
+    "color_ebc_min": 7.62,
+    "color_ebc_max": 7.62,
+    "color_lovibond": 3.0,
+    "protein_pct": 11.3,
+    "max_usage_pct": 100.0,
+    "is_birrf_present": true,
+    "color_ebc_is_approx": true,
+    "sources": [
+      {
+        "kind": "birrf_ingredient_listing",
+        "label": "Бир.РФ / Базовый солод стр.1",
+        "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/base_malt/9",
+        "page": null
+      }
+    ]
+  },
+  {
     "id": "malteurop-karamelnyy-spetsialnyy-svetlyy-50-ua-special",
     "type": "malt",
     "brand": "Malteurop",
@@ -5848,34 +6244,6 @@
     ]
   },
   {
-    "id": "malteurop-venskiy-ua-base",
-    "type": "malt",
-    "brand": "Malteurop",
-    "brand_aliases": [],
-    "country_code": "UA",
-    "name_en": null,
-    "name_ru": "Венский",
-    "aliases_en": [],
-    "aliases_ru": [],
-    "malt_type": "base",
-    "extract_pct_dry_basis": 80.5,
-    "color_ebc_min": 7.62,
-    "color_ebc_max": 7.62,
-    "color_lovibond": 3.0,
-    "protein_pct": 11.3,
-    "max_usage_pct": 100.0,
-    "is_birrf_present": true,
-    "color_ebc_is_approx": true,
-    "sources": [
-      {
-        "kind": "birrf_ingredient_listing",
-        "label": "Бир.РФ / Базовый солод стр.1",
-        "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/base_malt/9",
-        "page": null
-      }
-    ]
-  },
-  {
     "id": "malteurop-yachmennyy-svetlyy-ua-base",
     "type": "malt",
     "brand": "Malteurop",
@@ -5899,6 +6267,34 @@
         "kind": "birrf_ingredient_listing",
         "label": "Бир.РФ / Базовый солод стр.5",
         "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/base_malt/9-5",
+        "page": null
+      }
+    ]
+  },
+  {
+    "id": "mamas-d-venskiy-lv-base",
+    "type": "malt",
+    "brand": "Mamas D",
+    "brand_aliases": [],
+    "country_code": "LV",
+    "name_en": null,
+    "name_ru": "Венский",
+    "aliases_en": [],
+    "aliases_ru": [],
+    "malt_type": "base",
+    "extract_pct_dry_basis": 81.0,
+    "color_ebc_min": 7.62,
+    "color_ebc_max": 7.62,
+    "color_lovibond": 3.0,
+    "protein_pct": 11.0,
+    "max_usage_pct": 100.0,
+    "is_birrf_present": true,
+    "color_ebc_is_approx": true,
+    "sources": [
+      {
+        "kind": "birrf_ingredient_listing",
+        "label": "Бир.РФ / Базовый солод стр.1",
+        "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/base_malt/9",
         "page": null
       }
     ]
@@ -5955,34 +6351,6 @@
         "kind": "birrf_ingredient_listing",
         "label": "Бир.РФ / Базовый солод стр.3",
         "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/base_malt/9-3",
-        "page": null
-      }
-    ]
-  },
-  {
-    "id": "mamas-d-venskiy-lv-base",
-    "type": "malt",
-    "brand": "Mamas D",
-    "brand_aliases": [],
-    "country_code": "LV",
-    "name_en": null,
-    "name_ru": "Венский",
-    "aliases_en": [],
-    "aliases_ru": [],
-    "malt_type": "base",
-    "extract_pct_dry_basis": 81.0,
-    "color_ebc_min": 7.62,
-    "color_ebc_max": 7.62,
-    "color_lovibond": 3.0,
-    "protein_pct": 11.0,
-    "max_usage_pct": 100.0,
-    "is_birrf_present": true,
-    "color_ebc_is_approx": true,
-    "sources": [
-      {
-        "kind": "birrf_ingredient_listing",
-        "label": "Бир.РФ / Базовый солод стр.1",
-        "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/base_malt/9",
         "page": null
       }
     ]
@@ -6163,9 +6531,7 @@
     "id": "pauls-malt-maris-otter-gb-base",
     "type": "malt",
     "brand": "Pauls Malt",
-    "brand_aliases": [
-      "Pauls"
-    ],
+    "brand_aliases": [],
     "country_code": "GB",
     "name_en": "Maris Otter",
     "name_ru": "Марис Оттер",
@@ -6193,9 +6559,7 @@
     "id": "pauls-malt-mark-v-crystal-medium-gb-special",
     "type": "malt",
     "brand": "Pauls Malt",
-    "brand_aliases": [
-      "Pauls"
-    ],
+    "brand_aliases": [],
     "country_code": "GB",
     "name_en": "Mark V (Crystal medium)",
     "name_ru": "Кристаллический средний",
@@ -6215,6 +6579,34 @@
         "kind": "birrf_ingredient_listing",
         "label": "Бир.РФ / Спец солод стр.4",
         "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/special_malt/10-4",
+        "page": null
+      }
+    ]
+  },
+  {
+    "id": "samara-malt-yachmennyy-svetlyy-ru-base",
+    "type": "malt",
+    "brand": "Samara Malt",
+    "brand_aliases": [],
+    "country_code": "RU",
+    "name_en": null,
+    "name_ru": "Ячменный светлый",
+    "aliases_en": [],
+    "aliases_ru": [],
+    "malt_type": "base",
+    "extract_pct_dry_basis": 81.2,
+    "color_ebc_min": 4.064,
+    "color_ebc_max": 4.064,
+    "color_lovibond": 1.6,
+    "protein_pct": 10.0,
+    "max_usage_pct": 100.0,
+    "is_birrf_present": true,
+    "color_ebc_is_approx": true,
+    "sources": [
+      {
+        "kind": "birrf_ingredient_listing",
+        "label": "Бир.РФ / Базовый солод стр.5",
+        "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/base_malt/9-5",
         "page": null
       }
     ]
@@ -6395,34 +6787,6 @@
     ]
   },
   {
-    "id": "samara-malt-yachmennyy-svetlyy-ru-base",
-    "type": "malt",
-    "brand": "Samara Malt",
-    "brand_aliases": [],
-    "country_code": "RU",
-    "name_en": null,
-    "name_ru": "Ячменный светлый",
-    "aliases_en": [],
-    "aliases_ru": [],
-    "malt_type": "base",
-    "extract_pct_dry_basis": 81.2,
-    "color_ebc_min": 4.064,
-    "color_ebc_max": 4.064,
-    "color_lovibond": 1.6,
-    "protein_pct": 10.0,
-    "max_usage_pct": 100.0,
-    "is_birrf_present": true,
-    "color_ebc_is_approx": true,
-    "sources": [
-      {
-        "kind": "birrf_ingredient_listing",
-        "label": "Бир.РФ / Базовый солод стр.5",
-        "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/base_malt/9-5",
-        "page": null
-      }
-    ]
-  },
-  {
     "id": "sessler-cara-belge-sk-special",
     "type": "malt",
     "brand": "Sessler",
@@ -6595,7 +6959,6 @@
     "type": "malt",
     "brand": "Simpsons Malt",
     "brand_aliases": [
-      "Simpsons",
       "Симпсонс"
     ],
     "country_code": "GB",
@@ -6626,7 +6989,6 @@
     "type": "malt",
     "brand": "Simpsons Malt",
     "brand_aliases": [
-      "Simpsons",
       "Симпсонс"
     ],
     "country_code": "GB",
@@ -6657,7 +7019,6 @@
     "type": "malt",
     "brand": "Simpsons Malt",
     "brand_aliases": [
-      "Simpsons",
       "Симпсонс"
     ],
     "country_code": "GB",
@@ -6684,11 +7045,53 @@
     ]
   },
   {
+    "id": "simpsons-malt-caramalt-gb-caramel",
+    "type": "malt",
+    "brand": "Simpsons Malt",
+    "brand_aliases": [
+      "Симпсонс"
+    ],
+    "country_code": "GB",
+    "name_en": "Caramalt",
+    "name_ru": "Карамалт",
+    "aliases_en": [
+      "Cara Malt",
+      "Simpsons Caramalt"
+    ],
+    "aliases_ru": [
+      "Карамельный светлый Simpsons",
+      "Карамалт",
+      "Карамалт Simpsons"
+    ],
+    "malt_type": "caramel",
+    "extract_pct_dry_basis": 70.0,
+    "color_ebc_min": 33.0,
+    "color_ebc_max": 46.0,
+    "color_lovibond": null,
+    "protein_pct": null,
+    "max_usage_pct": null,
+    "is_birrf_present": false,
+    "color_ebc_is_approx": false,
+    "sources": [
+      {
+        "kind": "official_html",
+        "label": "Simpsons official / Caramalt",
+        "url": "https://www.simpsonsmalt.co.uk/our-malts/crystal-malts/caramalt/",
+        "page": null
+      },
+      {
+        "kind": "retailer_html",
+        "label": "HCBeer / Simpsons Malt listing",
+        "url": "https://hcbeer.ru/malt/brand-simpsons_malt/",
+        "page": null
+      }
+    ]
+  },
+  {
     "id": "simpsons-malt-crystall-t-50-gb-special",
     "type": "malt",
     "brand": "Simpsons Malt",
     "brand_aliases": [
-      "Simpsons",
       "Симпсонс"
     ],
     "country_code": "GB",
@@ -6719,7 +7122,6 @@
     "type": "malt",
     "brand": "Simpsons Malt",
     "brand_aliases": [
-      "Simpsons",
       "Симпсонс"
     ],
     "country_code": "GB",
@@ -6750,7 +7152,6 @@
     "type": "malt",
     "brand": "Simpsons Malt",
     "brand_aliases": [
-      "Simpsons",
       "Симпсонс"
     ],
     "country_code": "GB",
@@ -6781,7 +7182,6 @@
     "type": "malt",
     "brand": "Simpsons Malt",
     "brand_aliases": [
-      "Simpsons",
       "Симпсонс"
     ],
     "country_code": "GB",
@@ -6808,11 +7208,98 @@
     ]
   },
   {
+    "id": "simpsons-malt-finest-pale-ale-golden-promise-gb-base",
+    "type": "malt",
+    "brand": "Simpsons Malt",
+    "brand_aliases": [
+      "Симпсонс"
+    ],
+    "country_code": "GB",
+    "name_en": "Finest Pale Ale Golden Promise",
+    "name_ru": "Пэйл Эль Голден Промис",
+    "aliases_en": [
+      "Golden Promise",
+      "Finest Pale Ale Golden Promise®",
+      "Golden Promise Pale Ale Malt"
+    ],
+    "aliases_ru": [
+      "Голден Промис",
+      "Пейл Эль Голден Промис",
+      "Pale Ale Golden Promise"
+    ],
+    "malt_type": "base",
+    "extract_pct_dry_basis": 81.0,
+    "color_ebc_min": 4.4,
+    "color_ebc_max": 6.6,
+    "color_lovibond": null,
+    "protein_pct": 9.7,
+    "max_usage_pct": null,
+    "is_birrf_present": false,
+    "color_ebc_is_approx": false,
+    "sources": [
+      {
+        "kind": "official_html",
+        "label": "Simpsons official / Finest Pale Ale Golden Promise",
+        "url": "https://www.simpsonsmalt.co.uk/our-malts/base-malts/finest-pale-ale-golden-promise/",
+        "page": null
+      },
+      {
+        "kind": "retailer_html",
+        "label": "GreenGod / Pale Ale Golden Promise Simpsons Malt",
+        "url": "https://greengod.ru/catalog/solod/angliyskiy/finest-pale-ale-golden-promise-malt/?oid=1837",
+        "page": null
+      }
+    ]
+  },
+  {
+    "id": "simpsons-malt-golden-naked-oats-gb-other-grain",
+    "type": "malt",
+    "brand": "Simpsons Malt",
+    "brand_aliases": [
+      "Симпсонс"
+    ],
+    "country_code": "GB",
+    "name_en": "Golden Naked Oats",
+    "name_ru": "Голден Нейкед Оутс",
+    "aliases_en": [
+      "GNO",
+      "Golden Naked Oats®",
+      "Golden Naked Oats GNO"
+    ],
+    "aliases_ru": [
+      "Голден Нэйкед Оутс",
+      "Очищенный овсяный кристальный",
+      "Golden Naked Oats"
+    ],
+    "malt_type": "other_grain",
+    "extract_pct_dry_basis": 70.0,
+    "color_ebc_min": 13.0,
+    "color_ebc_max": 26.0,
+    "color_lovibond": null,
+    "protein_pct": null,
+    "max_usage_pct": null,
+    "is_birrf_present": false,
+    "color_ebc_is_approx": false,
+    "sources": [
+      {
+        "kind": "official_html",
+        "label": "Simpsons official / Golden Naked Oats",
+        "url": "https://www.simpsonsmalt.co.uk/our-malts/special-malts/golden-naked-oats/",
+        "page": null
+      },
+      {
+        "kind": "retailer_html",
+        "label": "GreenGod / Golden Naked Oats Simpsons Malt",
+        "url": "https://greengod.ru/catalog/solod/angliyskiy/golden-naked-oats/",
+        "page": null
+      }
+    ]
+  },
+  {
     "id": "simpsons-malt-heavily-peated-60-ppm-gb-base",
     "type": "malt",
     "brand": "Simpsons Malt",
     "brand_aliases": [
-      "Simpsons",
       "Симпсонс"
     ],
     "country_code": "GB",
@@ -6839,11 +7326,54 @@
     ]
   },
   {
+    "id": "simpsons-malt-low-colour-golden-promise-gb-base",
+    "type": "malt",
+    "brand": "Simpsons Malt",
+    "brand_aliases": [
+      "Симпсонс"
+    ],
+    "country_code": "GB",
+    "name_en": "Low Colour Golden Promise",
+    "name_ru": "Низкоцветный Голден Промис",
+    "aliases_en": [
+      "Low Colour Golden Promise®",
+      "LC Golden Promise",
+      "Low Color Golden Promise"
+    ],
+    "aliases_ru": [
+      "Лоу Колор Голден Промис",
+      "Голден Промис низкоцветный",
+      "Low Colour Golden Promise"
+    ],
+    "malt_type": "base",
+    "extract_pct_dry_basis": 80.5,
+    "color_ebc_min": 3.5,
+    "color_ebc_max": 3.9,
+    "color_lovibond": null,
+    "protein_pct": 9.7,
+    "max_usage_pct": null,
+    "is_birrf_present": false,
+    "color_ebc_is_approx": false,
+    "sources": [
+      {
+        "kind": "official_html",
+        "label": "Simpsons official / Low Colour Golden Promise",
+        "url": "https://www.simpsonsmalt.co.uk/our-malts/base-malts/low-colour-golden-promise/",
+        "page": null
+      },
+      {
+        "kind": "retailer_html",
+        "label": "GreenGod / Low Colour Golden Promise Simpsons Malt",
+        "url": "https://greengod.ru/brands/simpsons-malt/",
+        "page": null
+      }
+    ]
+  },
+  {
     "id": "simpsons-malt-low-colour-maris-otter-gb-base",
     "type": "malt",
     "brand": "Simpsons Malt",
     "brand_aliases": [
-      "Simpsons",
       "Симпсонс"
     ],
     "country_code": "GB",
@@ -6874,7 +7404,6 @@
     "type": "malt",
     "brand": "Simpsons Malt",
     "brand_aliases": [
-      "Simpsons",
       "Симпсонс"
     ],
     "country_code": "GB",
@@ -6901,11 +7430,98 @@
     ]
   },
   {
+    "id": "simpsons-malt-premium-english-caramalt-gb-caramel",
+    "type": "malt",
+    "brand": "Simpsons Malt",
+    "brand_aliases": [
+      "Симпсонс"
+    ],
+    "country_code": "GB",
+    "name_en": "Premium English Caramalt",
+    "name_ru": "Премиум Инглиш Карамалт",
+    "aliases_en": [
+      "Premium Caramalt",
+      "English Caramalt"
+    ],
+    "aliases_ru": [
+      "Премиум английский карамалт",
+      "Premium English Caramalt",
+      "Инглиш Карамалт"
+    ],
+    "malt_type": "caramel",
+    "extract_pct_dry_basis": 70.0,
+    "color_ebc_min": 59.0,
+    "color_ebc_max": 73.0,
+    "color_lovibond": null,
+    "protein_pct": null,
+    "max_usage_pct": null,
+    "is_birrf_present": false,
+    "color_ebc_is_approx": false,
+    "sources": [
+      {
+        "kind": "official_html",
+        "label": "Simpsons official / Premium English Caramalt",
+        "url": "https://www.simpsonsmalt.co.uk/our-malts/crystal-malts/premium-english-caramalt/",
+        "page": null
+      },
+      {
+        "kind": "retailer_html",
+        "label": "GreenGod / Premium English Caramalt Simpsons Malt",
+        "url": "https://greengod.ru/catalog/solod/angliyskiy/premium-english-caramalt-malt/?oid=1840",
+        "page": null
+      }
+    ]
+  },
+  {
+    "id": "simpsons-malt-drc-gb-caramel",
+    "type": "malt",
+    "brand": "Simpsons Malt",
+    "brand_aliases": [
+      "Симпсонс"
+    ],
+    "country_code": "GB",
+    "name_en": "Simpsons DRC",
+    "name_ru": "Карамельный двойной обжарки DRC",
+    "aliases_en": [
+      "Double Roasted Crystal",
+      "DRC",
+      "Simpsons DRC®"
+    ],
+    "aliases_ru": [
+      "Double Roasted Crystal",
+      "ДРС",
+      "Карамельный двойной обжарки",
+      "Симпсонс DRC"
+    ],
+    "malt_type": "caramel",
+    "extract_pct_dry_basis": 70.0,
+    "color_ebc_min": 308.0,
+    "color_ebc_max": 352.0,
+    "color_lovibond": null,
+    "protein_pct": null,
+    "max_usage_pct": null,
+    "is_birrf_present": false,
+    "color_ebc_is_approx": false,
+    "sources": [
+      {
+        "kind": "official_html",
+        "label": "Simpsons official / DRC",
+        "url": "https://www.simpsonsmalt.co.uk/our-malts/crystal-malts/simpsons-drc/",
+        "page": null
+      },
+      {
+        "kind": "retailer_html",
+        "label": "Пивоварня.ру / Simpsons DRC",
+        "url": "https://www.pivovarnya.ru/product/solod-double-roasted-crystal-drc-karamelnyy-dvoynoy-obzharki",
+        "page": null
+      }
+    ]
+  },
+  {
     "id": "simpsons-malt-wheat-gb-base",
     "type": "malt",
     "brand": "Simpsons Malt",
     "brand_aliases": [
-      "Simpsons",
       "Симпсонс"
     ],
     "country_code": "GB",
@@ -6970,7 +7586,12 @@
     "name_en": null,
     "name_ru": "Ячменный светлый",
     "aliases_en": [],
-    "aliases_ru": [],
+    "aliases_ru": [
+      "Солод светлый",
+      "Светлый солод",
+      "Светлый солод (пильзенского типа)",
+      "Пильзенского типа"
+    ],
     "malt_type": "base",
     "extract_pct_dry_basis": 81.0,
     "color_ebc_min": 5.08,
@@ -6986,6 +7607,12 @@
         "label": "Бир.РФ / Базовый солод стр.5",
         "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/base_malt/9-5",
         "page": null
+      },
+      {
+        "kind": "official_pdf",
+        "label": "Soufflet Saint Petersburg product catalog",
+        "url": "https://www.soufflet.ru/wp-content/uploads/2021/04/Catalog_products.pdf",
+        "page": 9
       }
     ]
   },
@@ -7000,12 +7627,14 @@
     "name_en": "Black Malt",
     "name_ru": "Жженый черный",
     "aliases_en": [
-      "roasted"
+      "roasted",
+      "Black Malt 1200–1400 EBC"
     ],
     "aliases_ru": [
       "Жженый",
-      "жженый",
-      "черный"
+      "черный",
+      "Солод жженый черный 1200–1400 ЕВС",
+      "Черный 1200–1400 ЕВС"
     ],
     "malt_type": "roasted",
     "extract_pct_dry_basis": 70.0,
@@ -7034,6 +7663,12 @@
         "label": "Бир.РФ ingredient page",
         "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/special_malt/zhzhenyj_chernyj/10-1-0-1454",
         "page": null
+      },
+      {
+        "kind": "official_pdf",
+        "label": "Soufflet Saint Petersburg product catalog",
+        "url": "https://www.soufflet.ru/wp-content/uploads/2021/04/Catalog_products.pdf",
+        "page": 15
       }
     ]
   },
@@ -7259,11 +7894,14 @@
     "name_ru": "Карамельный экстра",
     "aliases_en": [
       "cara",
-      "caramel"
+      "caramel",
+      "Caramel Extra 230–270 EBC"
     ],
     "aliases_ru": [
       "кара",
-      "карамельный"
+      "карамельный",
+      "Солод карамельный экстра 230–270 ЕВС",
+      "Карамельный экстра 230–270 ЕВС"
     ],
     "malt_type": "caramel",
     "extract_pct_dry_basis": 70.0,
@@ -7280,6 +7918,12 @@
         "label": "Бир.РФ ingredient page",
         "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/special_malt/karamel_ehkstra/10-1-0-1457",
         "page": null
+      },
+      {
+        "kind": "official_pdf",
+        "label": "Soufflet Saint Petersburg product catalog",
+        "url": "https://www.soufflet.ru/wp-content/uploads/2021/04/Catalog_products.pdf",
+        "page": 13
       }
     ]
   },
@@ -7293,8 +7937,13 @@
     "country_code": "RU",
     "name_en": "Caramel Munich",
     "name_ru": "Карамель мюнхенская",
-    "aliases_en": [],
-    "aliases_ru": [],
+    "aliases_en": [
+      "Caramel Munich 140–170 EBC"
+    ],
+    "aliases_ru": [
+      "Солод карамельный мюнхенский 140–170 ЕВС",
+      "Карамельный мюнхенский 140–170 ЕВС"
+    ],
     "malt_type": "special",
     "extract_pct_dry_basis": 75.0,
     "color_ebc_min": 168.93,
@@ -7310,6 +7959,12 @@
         "label": "Бир.РФ / Спец солод стр.2",
         "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/special_malt/10-2",
         "page": null
+      },
+      {
+        "kind": "official_pdf",
+        "label": "Soufflet Saint Petersburg product catalog",
+        "url": "https://www.soufflet.ru/wp-content/uploads/2021/04/Catalog_products.pdf",
+        "page": 12
       }
     ]
   },
@@ -7327,7 +7982,6 @@
       "caramel",
       "caramelmunichbio",
       "munich",
-      "munich malt",
       "карамельныймюнхенскийbio"
     ],
     "aliases_ru": [
@@ -7471,8 +8125,7 @@
       "Caramel vienne",
       "caramel",
       "caramelvienna",
-      "vienna",
-      "vienna malt"
+      "vienna"
     ],
     "aliases_ru": [
       "вена",
@@ -7518,7 +8171,6 @@
       "caramel",
       "caramelviennabio",
       "vienna",
-      "vienna malt",
       "карамельныйвенскийbio"
     ],
     "aliases_ru": [
@@ -7558,8 +8210,7 @@
     "aliases_en": [
       "caramel",
       "caramelwheat",
-      "wheat",
-      "wheat malt"
+      "wheat"
     ],
     "aliases_ru": [
       "карамельный",
@@ -7668,8 +8319,7 @@
     "name_en": "Coffee",
     "name_ru": "Кофейный",
     "aliases_en": [
-      "Malt Cafe",
-      "cafe"
+      "Malt Cafe"
     ],
     "aliases_ru": [
       "кофе"
@@ -7708,8 +8358,13 @@
     "country_code": "RU",
     "name_en": "Dark Black Malt",
     "name_ru": "Жженый черный экстра",
-    "aliases_en": [],
-    "aliases_ru": [],
+    "aliases_en": [
+      "Black Malt Extra 1400–1600 EBC"
+    ],
+    "aliases_ru": [
+      "Солод жженый черный экстра 1400–1600 ЕВС",
+      "Черный экстра 1400–1600 ЕВС"
+    ],
     "malt_type": "special",
     "extract_pct_dry_basis": 70.0,
     "color_ebc_min": 1588.27,
@@ -7725,6 +8380,12 @@
         "label": "Бир.РФ / Спец солод стр.1",
         "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/special_malt/10",
         "page": null
+      },
+      {
+        "kind": "official_pdf",
+        "label": "Soufflet Saint Petersburg product catalog",
+        "url": "https://www.soufflet.ru/wp-content/uploads/2021/04/Catalog_products.pdf",
+        "page": 15
       }
     ]
   },
@@ -7765,6 +8426,47 @@
     ]
   },
   {
+    "id": "soufflet-dark-caramel-ambre-ru-special",
+    "type": "malt",
+    "brand": "Soufflet",
+    "brand_aliases": [
+      "Суффле"
+    ],
+    "country_code": "RU",
+    "name_en": "Dark caramel ambre",
+    "name_ru": "Карамель янтарная тёмная",
+    "aliases_en": [
+      "Dark Caramel Amber 120–140 EBC"
+    ],
+    "aliases_ru": [
+      "Солод карамельный янтарный темный 120–140 ЕВС",
+      "Карамельный янтарный темный 120–140 ЕВС"
+    ],
+    "malt_type": "special",
+    "extract_pct_dry_basis": 75.0,
+    "color_ebc_min": 134.62,
+    "color_ebc_max": 134.62,
+    "color_lovibond": 53.0,
+    "protein_pct": 11.5,
+    "max_usage_pct": 10.0,
+    "is_birrf_present": true,
+    "color_ebc_is_approx": true,
+    "sources": [
+      {
+        "kind": "birrf_ingredient_listing",
+        "label": "Бир.РФ / Спец солод стр.3",
+        "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/special_malt/10-3",
+        "page": null
+      },
+      {
+        "kind": "official_pdf",
+        "label": "Soufflet Saint Petersburg product catalog",
+        "url": "https://www.soufflet.ru/wp-content/uploads/2021/04/Catalog_products.pdf",
+        "page": 12
+      }
+    ]
+  },
+  {
     "id": "soufflet-karamelnyy-ekstra-temnyy-birrf",
     "type": "malt",
     "brand": "Soufflet",
@@ -7776,11 +8478,14 @@
     "name_ru": "Карамельный экстра темный",
     "aliases_en": [
       "cara",
-      "caramel"
+      "caramel",
+      "Dark Caramel Extra 290–320 EBC"
     ],
     "aliases_ru": [
       "кара",
-      "карамельный"
+      "карамельный",
+      "Солод карамельный экстра темный 290–320 ЕВС",
+      "Карамельный экстра темный 290–320 ЕВС"
     ],
     "malt_type": "caramel",
     "extract_pct_dry_basis": 75.0,
@@ -7797,6 +8502,12 @@
         "label": "Бир.РФ ingredient page",
         "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/special_malt/karamel_ehkstra_temnaja_sufle/10-1-0-1438",
         "page": null
+      },
+      {
+        "kind": "official_pdf",
+        "label": "Soufflet Saint Petersburg product catalog",
+        "url": "https://www.soufflet.ru/wp-content/uploads/2021/04/Catalog_products.pdf",
+        "page": 13
       }
     ]
   },
@@ -7810,8 +8521,13 @@
     "country_code": "RU",
     "name_en": "Dark Caramel Munich",
     "name_ru": "Карамель мюнхенская темная",
-    "aliases_en": [],
-    "aliases_ru": [],
+    "aliases_en": [
+      "Dark Caramel Munich 180–210 EBC"
+    ],
+    "aliases_ru": [
+      "Солод карамельный мюнхенский темный 180–210 ЕВС",
+      "Карамельный мюнхенский темный 180–210 ЕВС"
+    ],
     "malt_type": "special",
     "extract_pct_dry_basis": 75.0,
     "color_ebc_min": 208.68,
@@ -7827,6 +8543,12 @@
         "label": "Бир.РФ / Спец солод стр.2",
         "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/special_malt/10-2",
         "page": null
+      },
+      {
+        "kind": "official_pdf",
+        "label": "Soufflet Saint Petersburg product catalog",
+        "url": "https://www.soufflet.ru/wp-content/uploads/2021/04/Catalog_products.pdf",
+        "page": 12
       }
     ]
   },
@@ -7843,8 +8565,7 @@
     "aliases_en": [
       "caramel",
       "darkcaramelvienna",
-      "vienna",
-      "vienna malt"
+      "vienna"
     ],
     "aliases_ru": [
       "вена",
@@ -7880,8 +8601,13 @@
     "country_code": "RU",
     "name_en": "Dark Caramel Vienne",
     "name_ru": "Карамель венская темная",
-    "aliases_en": [],
-    "aliases_ru": [],
+    "aliases_en": [
+      "Dark Caramel Vienna 70–100 EBC"
+    ],
+    "aliases_ru": [
+      "Солод карамельный венский темный 70–100 ЕВС",
+      "Карамельный венский темный 70–100 ЕВС"
+    ],
     "malt_type": "special",
     "extract_pct_dry_basis": 75.0,
     "color_ebc_min": 99.5,
@@ -7897,36 +8623,49 @@
         "label": "Бир.РФ / Спец солод стр.2",
         "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/special_malt/10-2",
         "page": null
+      },
+      {
+        "kind": "official_pdf",
+        "label": "Soufflet Saint Petersburg product catalog",
+        "url": "https://www.soufflet.ru/wp-content/uploads/2021/04/Catalog_products.pdf",
+        "page": 11
       }
     ]
   },
   {
-    "id": "soufflet-dark-caramel-ambre-ru-special",
+    "id": "soufflet--dark-chocolate",
     "type": "malt",
     "brand": "Soufflet",
     "brand_aliases": [
       "Суффле"
     ],
     "country_code": "RU",
-    "name_en": "Dark caramel ambre",
-    "name_ru": "Карамель янтарная тёмная",
-    "aliases_en": [],
-    "aliases_ru": [],
-    "malt_type": "special",
-    "extract_pct_dry_basis": 75.0,
-    "color_ebc_min": 134.62,
-    "color_ebc_max": 134.62,
-    "color_lovibond": 53.0,
-    "protein_pct": 11.5,
-    "max_usage_pct": 10.0,
-    "is_birrf_present": true,
-    "color_ebc_is_approx": true,
+    "name_en": "Dark Chocolate",
+    "name_ru": "Жженый шоколадный темный",
+    "aliases_en": [
+      "Dark Chocolate Malt",
+      "Chocolate Dark 1000–1200 EBC"
+    ],
+    "aliases_ru": [
+      "Солод жженый шоколадный темный",
+      "Шоколадный темный",
+      "Шоколадный темный 1000–1200 ЕВС"
+    ],
+    "malt_type": "roasted",
+    "extract_pct_dry_basis": 70.0,
+    "color_ebc_min": 1000.0,
+    "color_ebc_max": 1200.0,
+    "color_lovibond": null,
+    "protein_pct": null,
+    "max_usage_pct": null,
+    "is_birrf_present": false,
+    "color_ebc_is_approx": false,
     "sources": [
       {
-        "kind": "birrf_ingredient_listing",
-        "label": "Бир.РФ / Спец солод стр.3",
-        "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/special_malt/10-3",
-        "page": null
+        "kind": "official_pdf",
+        "label": "Soufflet Saint Petersburg product catalog",
+        "url": "https://www.soufflet.ru/wp-content/uploads/2021/04/Catalog_products.pdf",
+        "page": 15
       }
     ]
   },
@@ -7970,8 +8709,14 @@
     "country_code": "RU",
     "name_en": "Malt Marron",
     "name_ru": "Каштановый",
-    "aliases_en": [],
-    "aliases_ru": [],
+    "aliases_en": [
+      "Marron 200–250 EBC",
+      "Chestnut Roasted 200–250 EBC"
+    ],
+    "aliases_ru": [
+      "Солод жженый каштановый 200–250 ЕВС",
+      "Жженый каштановый 200–250 ЕВС"
+    ],
     "malt_type": "special",
     "extract_pct_dry_basis": 70.0,
     "color_ebc_min": 239.268,
@@ -7987,6 +8732,12 @@
         "label": "Бир.РФ / Спец солод стр.4",
         "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/special_malt/10-4",
         "page": null
+      },
+      {
+        "kind": "official_pdf",
+        "label": "Soufflet Saint Petersburg product catalog",
+        "url": "https://www.soufflet.ru/wp-content/uploads/2021/04/Catalog_products.pdf",
+        "page": 14
       }
     ]
   },
@@ -8000,8 +8751,14 @@
     "country_code": "RU",
     "name_en": "Malt Marron special",
     "name_ru": "Каштановый специальный",
-    "aliases_en": [],
-    "aliases_ru": [],
+    "aliases_en": [
+      "Marron Special 270–320 EBC",
+      "Chestnut Special 270–320 EBC"
+    ],
+    "aliases_ru": [
+      "Солод жженый каштановый специальный 270–320 ЕВС",
+      "Жженый каштановый специальный 270–320 ЕВС"
+    ],
     "malt_type": "special",
     "extract_pct_dry_basis": 70.0,
     "color_ebc_min": 305.816,
@@ -8017,6 +8774,12 @@
         "label": "Бир.РФ / Спец солод стр.4",
         "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/special_malt/10-4",
         "page": null
+      },
+      {
+        "kind": "official_pdf",
+        "label": "Soufflet Saint Petersburg product catalog",
+        "url": "https://www.soufflet.ru/wp-content/uploads/2021/04/Catalog_products.pdf",
+        "page": 14
       }
     ]
   },
@@ -8032,11 +8795,15 @@
     "name_ru": "Янтарный ароматный",
     "aliases_en": [
       "aroma",
-      "aromatic"
+      "aromatic",
+      "Tourambre",
+      "Amber Aromatic"
     ],
     "aliases_ru": [
       "арома",
-      "ароматный"
+      "ароматный",
+      "Солод жженый янтарный ароматный",
+      "Жженый янтарный ароматный"
     ],
     "malt_type": "specialty",
     "extract_pct_dry_basis": 70.0,
@@ -8053,6 +8820,12 @@
         "label": "Бир.РФ ingredient page",
         "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/special_malt/jantarnyj_aromatnyj/10-1-0-1460",
         "page": null
+      },
+      {
+        "kind": "official_pdf",
+        "label": "Soufflet Saint Petersburg product catalog",
+        "url": "https://www.soufflet.ru/wp-content/uploads/2021/04/Catalog_products.pdf",
+        "page": 13
       }
     ]
   },
@@ -8097,8 +8870,7 @@
     "name_en": "Munich 15",
     "name_ru": "Мюнхенский 15",
     "aliases_en": [
-      "munich",
-      "munich malt"
+      "munich"
     ],
     "aliases_ru": [
       "мюних",
@@ -8140,8 +8912,7 @@
     "name_en": "Munich 25",
     "name_ru": "Мюнхенский 25",
     "aliases_en": [
-      "munich",
-      "munich malt"
+      "munich"
     ],
     "aliases_ru": [
       "мюних",
@@ -8186,9 +8957,7 @@
     "aliases_ru": [
       "Пале Эль",
       "Пейл Эль",
-      "Светлый эль",
-      "пале эль",
-      "пейл эль"
+      "Светлый эль"
     ],
     "malt_type": "base",
     "extract_pct_dry_basis": 81.0,
@@ -8380,17 +9149,13 @@
     "aliases_en": [
       "Pils",
       "Pilsen",
-      "Pilsener",
-      "pilsen",
-      "pilsener"
+      "Pilsener"
     ],
     "aliases_ru": [
       "Пилзнер",
       "Пилсен",
       "Пилснер",
       "Пильзен",
-      "пилснер",
-      "пильзен",
       "пильзенер"
     ],
     "malt_type": "base",
@@ -8428,17 +9193,21 @@
     "name_en": "Premium Pilsner",
     "name_ru": "Премиум Пилснер",
     "aliases_en": [
-      "pilsner"
+      "pilsner",
+      "Premium Light Malt"
     ],
     "aliases_ru": [
-      "премиум пильзнер"
+      "премиум пильзнер",
+      "Солод светлый Премиум",
+      "Светлый Премиум",
+      "Премиум светлый солод"
     ],
     "malt_type": "base",
     "extract_pct_dry_basis": 82.0,
     "color_ebc_min": 3.306,
     "color_ebc_max": 3.306,
     "color_lovibond": 1.8,
-    "protein_pct": 4.15,
+    "protein_pct": 10.5,
     "max_usage_pct": 100.0,
     "is_birrf_present": true,
     "color_ebc_is_approx": false,
@@ -8448,6 +9217,12 @@
         "label": "Бир.РФ / Ингредиент Premium Pilsner",
         "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/base_malt/premium_pilsner/9-1-0-1168",
         "page": null
+      },
+      {
+        "kind": "official_pdf",
+        "label": "Soufflet Saint Petersburg product catalog",
+        "url": "https://www.soufflet.ru/wp-content/uploads/2021/04/Catalog_products.pdf",
+        "page": 16
       }
     ]
   },
@@ -8553,10 +9328,12 @@
     "name_ru": "Венский",
     "aliases_en": [
       "Malt Vienne",
-      "vienne"
+      "Dark Vienna"
     ],
     "aliases_ru": [
-      "Вена"
+      "Вена",
+      "Солод темный венский",
+      "Темный венский"
     ],
     "malt_type": "base",
     "extract_pct_dry_basis": 80.5,
@@ -8579,6 +9356,12 @@
         "label": "Бир.РФ listing",
         "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/base_malt",
         "page": null
+      },
+      {
+        "kind": "official_pdf",
+        "label": "Soufflet Saint Petersburg product catalog",
+        "url": "https://www.soufflet.ru/wp-content/uploads/2021/04/Catalog_products.pdf",
+        "page": 10
       }
     ]
   },
@@ -8593,8 +9376,7 @@
     "name_en": "Vienna 10",
     "name_ru": "Венский 10",
     "aliases_en": [
-      "vienna",
-      "vienna malt"
+      "vienna"
     ],
     "aliases_ru": [
       "вена",
@@ -8629,9 +9411,7 @@
     "name_en": "Wheat",
     "name_ru": "Пшеничный",
     "aliases_en": [
-      "Wheat Malt",
-      "Pilsen de Blé",
-      "Pilsen de Ble"
+      "Pilsen de Blé"
     ],
     "aliases_ru": [],
     "malt_type": "base",
@@ -8678,8 +9458,7 @@
       "pilsen",
       "pilsener",
       "pilsner",
-      "wheat",
-      "wheat malt"
+      "wheat"
     ],
     "aliases_ru": [
       "пилснер",
@@ -9536,8 +10315,7 @@
     "aliases_en": [
       "Caramel Malt",
       "Cara Malt",
-      "Cara 100",
-      "Caramel 100"
+      "Cara 100"
     ],
     "aliases_ru": [
       "Карамельный",
@@ -9832,7 +10610,6 @@
     "name_ru": "Мюнхенский светлый",
     "aliases_en": [
       "Munich",
-      "Munich Malt",
       "Muenchner"
     ],
     "aliases_ru": [
@@ -9948,8 +10725,7 @@
     "name_en": "Pot Still Rye Malt",
     "name_ru": "Pot Still Ржаной солод",
     "aliases_en": [
-      "Rye Malt",
-      "Rye"
+      "Rye Malt"
     ],
     "aliases_ru": [
       "Ржаной",
@@ -10046,9 +10822,7 @@
     "country_code": "FI",
     "name_en": "Vienna",
     "name_ru": "Венский",
-    "aliases_en": [
-      "Vienna Malt"
-    ],
+    "aliases_en": [],
     "aliases_ru": [
       "Вена",
       "Венский солод"
@@ -10109,37 +10883,6 @@
     ]
   },
   {
-    "id": "weyermann--abbey",
-    "type": "malt",
-    "brand": "Weyermann",
-    "brand_aliases": [
-      "Вайерман",
-      "Вайерманн"
-    ],
-    "country_code": "DE",
-    "name_en": "Abbey",
-    "name_ru": "Аббатский",
-    "aliases_en": [],
-    "aliases_ru": [],
-    "malt_type": "special",
-    "extract_pct_dry_basis": 72.5,
-    "color_ebc_min": 43.85,
-    "color_ebc_max": 43.85,
-    "color_lovibond": 17.0,
-    "protein_pct": null,
-    "max_usage_pct": 50.0,
-    "is_birrf_present": true,
-    "color_ebc_is_approx": true,
-    "sources": [
-      {
-        "kind": "birrf_ingredients_list",
-        "label": "Бир.РФ / Спец солод стр.1",
-        "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/special_malt/10",
-        "page": null
-      }
-    ]
-  },
-  {
     "id": "weyermann--abbey-malt-biscuit-malt",
     "type": "malt",
     "brand": "Weyermann",
@@ -10150,23 +10893,33 @@
     "country_code": "DE",
     "name_en": "Abbey Malt (Biscuit Malt)",
     "name_ru": "Эбби / Бисквит",
-    "aliases_en": [],
-    "aliases_ru": [],
+    "aliases_en": [
+      "Abbey"
+    ],
+    "aliases_ru": [
+      "Аббатский"
+    ],
     "malt_type": "specialty",
     "extract_pct_dry_basis": 75.0,
     "color_ebc_min": 40.0,
     "color_ebc_max": 50.0,
-    "color_lovibond": null,
+    "color_lovibond": 17.0,
     "protein_pct": null,
-    "max_usage_pct": null,
-    "is_birrf_present": false,
-    "color_ebc_is_approx": false,
+    "max_usage_pct": 50.0,
+    "is_birrf_present": true,
+    "color_ebc_is_approx": true,
     "sources": [
       {
         "kind": null,
         "label": "Weyermann Brewery Product Catalog",
         "url": "https://www.weyermann.de/wp-content/uploads/2023/05/WEYERMANN-PRODUCTS-Brewery-EN.pdf",
         "page": 38
+      },
+      {
+        "kind": "birrf_ingredients_list",
+        "label": "Бир.РФ / Спец солод стр.1",
+        "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/special_malt/10",
+        "page": null
       }
     ]
   },
@@ -10213,8 +10966,7 @@
     "name_en": "Barke Munich Malt",
     "name_ru": "Барке Мюнхенский",
     "aliases_en": [
-      "munich",
-      "munich malt"
+      "munich"
     ],
     "aliases_ru": [
       "Барке Мюнхнер",
@@ -10258,8 +11010,7 @@
     "name_en": "Barke Pale Ale Malt",
     "name_ru": "Barke Пэйл Эль солод",
     "aliases_en": [
-      "Pale Ale",
-      "Pale Ale Malt"
+      "Pale Ale"
     ],
     "aliases_ru": [
       "Пэйл Эль",
@@ -10328,8 +11079,7 @@
     "name_en": "Barke Vienna Malt",
     "name_ru": "Барке Венский",
     "aliases_en": [
-      "vienna",
-      "vienna malt"
+      "vienna"
     ],
     "aliases_ru": [
       "Барке Винер",
@@ -10455,8 +11205,7 @@
     "name_en": "Buckwheat Malt",
     "name_ru": "Гречишный солод",
     "aliases_en": [
-      "Wheat Malt",
-      "Wheat"
+      "Wheat Malt"
     ],
     "aliases_ru": [
       "Пшеничный",
@@ -10576,37 +11325,6 @@
     ]
   },
   {
-    "id": "weyermann--carabogemian",
-    "type": "malt",
-    "brand": "Weyermann",
-    "brand_aliases": [
-      "Вайерман",
-      "Вайерманн"
-    ],
-    "country_code": "DE",
-    "name_en": "CaraBogemian",
-    "name_ru": "КараБогемиан",
-    "aliases_en": [],
-    "aliases_ru": [],
-    "malt_type": "special",
-    "extract_pct_dry_basis": 75.0,
-    "color_ebc_min": 197.55,
-    "color_ebc_max": 197.55,
-    "color_lovibond": 75.0,
-    "protein_pct": null,
-    "max_usage_pct": 20.0,
-    "is_birrf_present": true,
-    "color_ebc_is_approx": true,
-    "sources": [
-      {
-        "kind": "birrf_ingredients_list",
-        "label": "Бир.РФ / Спец солод стр.2",
-        "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/special_malt/10-2",
-        "page": null
-      }
-    ]
-  },
-  {
     "id": "weyermann--carabohemian",
     "type": "malt",
     "brand": "Weyermann",
@@ -10617,299 +11335,28 @@
     "country_code": "DE",
     "name_en": "CaraBohemian",
     "name_ru": "Карабогемский",
-    "aliases_en": [],
-    "aliases_ru": [],
+    "aliases_en": [
+      "CaraBogemian"
+    ],
+    "aliases_ru": [
+      "КараБогемиан"
+    ],
     "malt_type": "caramel",
     "extract_pct_dry_basis": 73.0,
     "color_ebc_min": 170.0,
     "color_ebc_max": 220.0,
-    "color_lovibond": null,
+    "color_lovibond": 75.0,
     "protein_pct": null,
-    "max_usage_pct": null,
-    "is_birrf_present": false,
-    "color_ebc_is_approx": false,
+    "max_usage_pct": 20.0,
+    "is_birrf_present": true,
+    "color_ebc_is_approx": true,
     "sources": [
       {
         "kind": null,
         "label": "Weyermann Brewery Product Catalog",
         "url": "https://www.weyermann.de/wp-content/uploads/2023/05/WEYERMANN-PRODUCTS-Brewery-EN.pdf",
         "page": 26
-      }
-    ]
-  },
-  {
-    "id": "weyermann--carahell",
-    "type": "malt",
-    "brand": "Weyermann",
-    "brand_aliases": [
-      "Вайерман",
-      "Вайерманн"
-    ],
-    "country_code": "DE",
-    "name_en": "CaraHell",
-    "name_ru": "Карахелл",
-    "aliases_en": [],
-    "aliases_ru": [],
-    "malt_type": "caramel",
-    "extract_pct_dry_basis": 74.0,
-    "color_ebc_min": 20.0,
-    "color_ebc_max": 30.0,
-    "color_lovibond": null,
-    "protein_pct": null,
-    "max_usage_pct": null,
-    "is_birrf_present": false,
-    "color_ebc_is_approx": false,
-    "sources": [
-      {
-        "kind": null,
-        "label": "Weyermann Brewery Product Catalog",
-        "url": "https://www.weyermann.de/wp-content/uploads/2023/05/WEYERMANN-PRODUCTS-Brewery-EN.pdf",
-        "page": 17
-      }
-    ]
-  },
-  {
-    "id": "weyermann--caramunich-type-1",
-    "type": "malt",
-    "brand": "Weyermann",
-    "brand_aliases": [
-      "Вайерман",
-      "Вайерманн"
-    ],
-    "country_code": "DE",
-    "name_en": "CaraMunich Type 1",
-    "name_ru": "Карамюних тип 1",
-    "aliases_en": [
-      "caramunichtype1",
-      "munich",
-      "munich malt"
-    ],
-    "aliases_ru": [
-      "карамюнихтип1",
-      "мюних",
-      "мюнхенский",
-      "мюнхнер"
-    ],
-    "malt_type": "caramel",
-    "extract_pct_dry_basis": 73.0,
-    "color_ebc_min": 80.0,
-    "color_ebc_max": 100.0,
-    "color_lovibond": null,
-    "protein_pct": null,
-    "max_usage_pct": null,
-    "is_birrf_present": false,
-    "color_ebc_is_approx": false,
-    "sources": [
-      {
-        "kind": null,
-        "label": "Weyermann Brewery Product Catalog",
-        "url": "https://www.weyermann.de/wp-content/uploads/2023/05/WEYERMANN-PRODUCTS-Brewery-EN.pdf",
-        "page": 21
-      }
-    ]
-  },
-  {
-    "id": "weyermann--caramunich-type-2",
-    "type": "malt",
-    "brand": "Weyermann",
-    "brand_aliases": [
-      "Вайерман",
-      "Вайерманн"
-    ],
-    "country_code": "DE",
-    "name_en": "CaraMunich Type 2",
-    "name_ru": "Карамюних тип 2",
-    "aliases_en": [
-      "caramunichtype2",
-      "munich",
-      "munich malt"
-    ],
-    "aliases_ru": [
-      "карамюнихтип2",
-      "мюних",
-      "мюнхенский",
-      "мюнхнер"
-    ],
-    "malt_type": "caramel",
-    "extract_pct_dry_basis": 73.0,
-    "color_ebc_min": 110.0,
-    "color_ebc_max": 130.0,
-    "color_lovibond": null,
-    "protein_pct": null,
-    "max_usage_pct": null,
-    "is_birrf_present": false,
-    "color_ebc_is_approx": false,
-    "sources": [
-      {
-        "kind": null,
-        "label": "Weyermann Brewery Product Catalog",
-        "url": "https://www.weyermann.de/wp-content/uploads/2023/05/WEYERMANN-PRODUCTS-Brewery-EN.pdf",
-        "page": 22
-      }
-    ]
-  },
-  {
-    "id": "weyermann--caramunich-type-3",
-    "type": "malt",
-    "brand": "Weyermann",
-    "brand_aliases": [
-      "Вайерман",
-      "Вайерманн"
-    ],
-    "country_code": "DE",
-    "name_en": "CaraMunich Type 3",
-    "name_ru": "Карамюних тип 3",
-    "aliases_en": [
-      "caramunichtype3",
-      "munich",
-      "munich malt"
-    ],
-    "aliases_ru": [
-      "карамюнихтип3",
-      "мюних",
-      "мюнхенский",
-      "мюнхнер"
-    ],
-    "malt_type": "caramel",
-    "extract_pct_dry_basis": 73.0,
-    "color_ebc_min": 140.0,
-    "color_ebc_max": 160.0,
-    "color_lovibond": null,
-    "protein_pct": null,
-    "max_usage_pct": null,
-    "is_birrf_present": false,
-    "color_ebc_is_approx": false,
-    "sources": [
-      {
-        "kind": null,
-        "label": "Weyermann Brewery Product Catalog",
-        "url": "https://www.weyermann.de/wp-content/uploads/2023/05/WEYERMANN-PRODUCTS-Brewery-EN.pdf",
-        "page": 23
-      }
-    ]
-  },
-  {
-    "id": "weyermann--carapils",
-    "type": "malt",
-    "brand": "Weyermann",
-    "brand_aliases": [
-      "Вайерман",
-      "Вайерманн"
-    ],
-    "country_code": "DE",
-    "name_en": "CaraPils",
-    "name_ru": "Карапилс",
-    "aliases_en": [],
-    "aliases_ru": [],
-    "malt_type": "caramel",
-    "extract_pct_dry_basis": 75.0,
-    "color_ebc_min": 2.5,
-    "color_ebc_max": 6.5,
-    "color_lovibond": null,
-    "protein_pct": null,
-    "max_usage_pct": null,
-    "is_birrf_present": false,
-    "color_ebc_is_approx": false,
-    "sources": [
-      {
-        "kind": null,
-        "label": "Weyermann Brewery Product Catalog",
-        "url": "https://www.weyermann.de/wp-content/uploads/2023/05/WEYERMANN-PRODUCTS-Brewery-EN.pdf",
-        "page": 16
-      }
-    ]
-  },
-  {
-    "id": "weyermann--carared",
-    "type": "malt",
-    "brand": "Weyermann",
-    "brand_aliases": [
-      "Вайерман",
-      "Вайерманн"
-    ],
-    "country_code": "DE",
-    "name_en": "CaraRed",
-    "name_ru": "Караред",
-    "aliases_en": [],
-    "aliases_ru": [],
-    "malt_type": "caramel",
-    "extract_pct_dry_basis": 74.0,
-    "color_ebc_min": 40.0,
-    "color_ebc_max": 60.0,
-    "color_lovibond": null,
-    "protein_pct": null,
-    "max_usage_pct": null,
-    "is_birrf_present": false,
-    "color_ebc_is_approx": false,
-    "sources": [
-      {
-        "kind": null,
-        "label": "Weyermann Brewery Product Catalog",
-        "url": "https://www.weyermann.de/wp-content/uploads/2023/05/WEYERMANN-PRODUCTS-Brewery-EN.pdf",
-        "page": 19
-      }
-    ]
-  },
-  {
-    "id": "weyermann--cararye",
-    "type": "malt",
-    "brand": "Weyermann",
-    "brand_aliases": [
-      "Вайерман",
-      "Вайерманн"
-    ],
-    "country_code": "DE",
-    "name_en": "CaraRye",
-    "name_ru": "Карарожь",
-    "aliases_en": [
-      "rye",
-      "rye malt"
-    ],
-    "aliases_ru": [
-      "ржаной",
-      "ржаной солод"
-    ],
-    "malt_type": "rye_caramel",
-    "extract_pct_dry_basis": 74.0,
-    "color_ebc_min": 150.0,
-    "color_ebc_max": 200.0,
-    "color_lovibond": null,
-    "protein_pct": null,
-    "max_usage_pct": null,
-    "is_birrf_present": false,
-    "color_ebc_is_approx": false,
-    "sources": [
-      {
-        "kind": null,
-        "label": "Weyermann Brewery Product Catalog",
-        "url": "https://www.weyermann.de/wp-content/uploads/2023/05/WEYERMANN-PRODUCTS-Brewery-EN.pdf",
-        "page": 25
-      }
-    ]
-  },
-  {
-    "id": "weyermann--carawheat",
-    "type": "malt",
-    "brand": "Weyermann",
-    "brand_aliases": [
-      "Вайерман",
-      "Вайерманн"
-    ],
-    "country_code": "DE",
-    "name_en": "CaraWheat",
-    "name_ru": "КараВит",
-    "aliases_en": [],
-    "aliases_ru": [],
-    "malt_type": "special",
-    "extract_pct_dry_basis": 80.0,
-    "color_ebc_min": 123.35,
-    "color_ebc_max": 123.35,
-    "color_lovibond": 47.0,
-    "protein_pct": 12.5,
-    "max_usage_pct": 15.0,
-    "is_birrf_present": true,
-    "color_ebc_is_approx": true,
-    "sources": [
+      },
       {
         "kind": "birrf_ingredients_list",
         "label": "Бир.РФ / Спец солод стр.2",
@@ -11167,6 +11614,283 @@
     ]
   },
   {
+    "id": "weyermann--carahell",
+    "type": "malt",
+    "brand": "Weyermann",
+    "brand_aliases": [
+      "Вайерман",
+      "Вайерманн"
+    ],
+    "country_code": "DE",
+    "name_en": "CaraHell",
+    "name_ru": "Карахелл",
+    "aliases_en": [],
+    "aliases_ru": [],
+    "malt_type": "caramel",
+    "extract_pct_dry_basis": 74.0,
+    "color_ebc_min": 20.0,
+    "color_ebc_max": 30.0,
+    "color_lovibond": null,
+    "protein_pct": null,
+    "max_usage_pct": null,
+    "is_birrf_present": false,
+    "color_ebc_is_approx": false,
+    "sources": [
+      {
+        "kind": null,
+        "label": "Weyermann Brewery Product Catalog",
+        "url": "https://www.weyermann.de/wp-content/uploads/2023/05/WEYERMANN-PRODUCTS-Brewery-EN.pdf",
+        "page": 17
+      }
+    ]
+  },
+  {
+    "id": "weyermann--caramunich-type-1",
+    "type": "malt",
+    "brand": "Weyermann",
+    "brand_aliases": [
+      "Вайерман",
+      "Вайерманн"
+    ],
+    "country_code": "DE",
+    "name_en": "CaraMunich Type 1",
+    "name_ru": "Карамюних тип 1",
+    "aliases_en": [
+      "caramunichtype1",
+      "munich"
+    ],
+    "aliases_ru": [
+      "карамюнихтип1",
+      "мюних",
+      "мюнхенский",
+      "мюнхнер"
+    ],
+    "malt_type": "caramel",
+    "extract_pct_dry_basis": 73.0,
+    "color_ebc_min": 80.0,
+    "color_ebc_max": 100.0,
+    "color_lovibond": null,
+    "protein_pct": null,
+    "max_usage_pct": null,
+    "is_birrf_present": false,
+    "color_ebc_is_approx": false,
+    "sources": [
+      {
+        "kind": null,
+        "label": "Weyermann Brewery Product Catalog",
+        "url": "https://www.weyermann.de/wp-content/uploads/2023/05/WEYERMANN-PRODUCTS-Brewery-EN.pdf",
+        "page": 21
+      }
+    ]
+  },
+  {
+    "id": "weyermann--caramunich-type-2",
+    "type": "malt",
+    "brand": "Weyermann",
+    "brand_aliases": [
+      "Вайерман",
+      "Вайерманн"
+    ],
+    "country_code": "DE",
+    "name_en": "CaraMunich Type 2",
+    "name_ru": "Карамюних тип 2",
+    "aliases_en": [
+      "caramunichtype2",
+      "munich"
+    ],
+    "aliases_ru": [
+      "карамюнихтип2",
+      "мюних",
+      "мюнхенский",
+      "мюнхнер"
+    ],
+    "malt_type": "caramel",
+    "extract_pct_dry_basis": 73.0,
+    "color_ebc_min": 110.0,
+    "color_ebc_max": 130.0,
+    "color_lovibond": null,
+    "protein_pct": null,
+    "max_usage_pct": null,
+    "is_birrf_present": false,
+    "color_ebc_is_approx": false,
+    "sources": [
+      {
+        "kind": null,
+        "label": "Weyermann Brewery Product Catalog",
+        "url": "https://www.weyermann.de/wp-content/uploads/2023/05/WEYERMANN-PRODUCTS-Brewery-EN.pdf",
+        "page": 22
+      }
+    ]
+  },
+  {
+    "id": "weyermann--caramunich-type-3",
+    "type": "malt",
+    "brand": "Weyermann",
+    "brand_aliases": [
+      "Вайерман",
+      "Вайерманн"
+    ],
+    "country_code": "DE",
+    "name_en": "CaraMunich Type 3",
+    "name_ru": "Карамюних тип 3",
+    "aliases_en": [
+      "caramunichtype3",
+      "munich"
+    ],
+    "aliases_ru": [
+      "карамюнихтип3",
+      "мюних",
+      "мюнхенский",
+      "мюнхнер"
+    ],
+    "malt_type": "caramel",
+    "extract_pct_dry_basis": 73.0,
+    "color_ebc_min": 140.0,
+    "color_ebc_max": 160.0,
+    "color_lovibond": null,
+    "protein_pct": null,
+    "max_usage_pct": null,
+    "is_birrf_present": false,
+    "color_ebc_is_approx": false,
+    "sources": [
+      {
+        "kind": null,
+        "label": "Weyermann Brewery Product Catalog",
+        "url": "https://www.weyermann.de/wp-content/uploads/2023/05/WEYERMANN-PRODUCTS-Brewery-EN.pdf",
+        "page": 23
+      }
+    ]
+  },
+  {
+    "id": "weyermann--carapils",
+    "type": "malt",
+    "brand": "Weyermann",
+    "brand_aliases": [
+      "Вайерман",
+      "Вайерманн"
+    ],
+    "country_code": "DE",
+    "name_en": "CaraPils",
+    "name_ru": "Карапилс",
+    "aliases_en": [],
+    "aliases_ru": [],
+    "malt_type": "caramel",
+    "extract_pct_dry_basis": 75.0,
+    "color_ebc_min": 2.5,
+    "color_ebc_max": 6.5,
+    "color_lovibond": null,
+    "protein_pct": null,
+    "max_usage_pct": null,
+    "is_birrf_present": false,
+    "color_ebc_is_approx": false,
+    "sources": [
+      {
+        "kind": null,
+        "label": "Weyermann Brewery Product Catalog",
+        "url": "https://www.weyermann.de/wp-content/uploads/2023/05/WEYERMANN-PRODUCTS-Brewery-EN.pdf",
+        "page": 16
+      }
+    ]
+  },
+  {
+    "id": "weyermann--carared",
+    "type": "malt",
+    "brand": "Weyermann",
+    "brand_aliases": [
+      "Вайерман",
+      "Вайерманн"
+    ],
+    "country_code": "DE",
+    "name_en": "CaraRed",
+    "name_ru": "Караред",
+    "aliases_en": [],
+    "aliases_ru": [],
+    "malt_type": "caramel",
+    "extract_pct_dry_basis": 74.0,
+    "color_ebc_min": 40.0,
+    "color_ebc_max": 60.0,
+    "color_lovibond": null,
+    "protein_pct": null,
+    "max_usage_pct": null,
+    "is_birrf_present": false,
+    "color_ebc_is_approx": false,
+    "sources": [
+      {
+        "kind": null,
+        "label": "Weyermann Brewery Product Catalog",
+        "url": "https://www.weyermann.de/wp-content/uploads/2023/05/WEYERMANN-PRODUCTS-Brewery-EN.pdf",
+        "page": 19
+      }
+    ]
+  },
+  {
+    "id": "weyermann--cararye",
+    "type": "malt",
+    "brand": "Weyermann",
+    "brand_aliases": [
+      "Вайерман",
+      "Вайерманн"
+    ],
+    "country_code": "DE",
+    "name_en": "CaraRye",
+    "name_ru": "Карарожь",
+    "aliases_en": [
+      "rye"
+    ],
+    "aliases_ru": [
+      "ржаной",
+      "ржаной солод"
+    ],
+    "malt_type": "rye_caramel",
+    "extract_pct_dry_basis": 74.0,
+    "color_ebc_min": 150.0,
+    "color_ebc_max": 200.0,
+    "color_lovibond": null,
+    "protein_pct": null,
+    "max_usage_pct": null,
+    "is_birrf_present": false,
+    "color_ebc_is_approx": false,
+    "sources": [
+      {
+        "kind": null,
+        "label": "Weyermann Brewery Product Catalog",
+        "url": "https://www.weyermann.de/wp-content/uploads/2023/05/WEYERMANN-PRODUCTS-Brewery-EN.pdf",
+        "page": 25
+      }
+    ]
+  },
+  {
+    "id": "weyermann--carawheat",
+    "type": "malt",
+    "brand": "Weyermann",
+    "brand_aliases": [
+      "Вайерман",
+      "Вайерманн"
+    ],
+    "country_code": "DE",
+    "name_en": "CaraWheat",
+    "name_ru": "КараВит",
+    "aliases_en": [],
+    "aliases_ru": [],
+    "malt_type": "special",
+    "extract_pct_dry_basis": 80.0,
+    "color_ebc_min": 123.35,
+    "color_ebc_max": 123.35,
+    "color_lovibond": 47.0,
+    "protein_pct": 12.5,
+    "max_usage_pct": 15.0,
+    "is_birrf_present": true,
+    "color_ebc_is_approx": true,
+    "sources": [
+      {
+        "kind": "birrf_ingredients_list",
+        "label": "Бир.РФ / Спец солод стр.2",
+        "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/special_malt/10-2",
+        "page": null
+      }
+    ]
+  },
+  {
     "id": "weyermann--chocolate-rye-malt",
     "type": "malt",
     "brand": "Weyermann",
@@ -11179,8 +11903,7 @@
     "name_ru": "Шоколадный ржаной",
     "aliases_en": [
       "chocolate",
-      "rye",
-      "rye malt"
+      "rye"
     ],
     "aliases_ru": [
       "ржаной",
@@ -11255,8 +11978,7 @@
     "name_ru": "Шоколадный пшеничный",
     "aliases_en": [
       "chocolate",
-      "wheat",
-      "wheat malt"
+      "wheat"
     ],
     "aliases_ru": [
       "пшеничный",
@@ -11524,8 +12246,7 @@
     "name_en": "Floor-Malted Bohemian Rye Malt",
     "name_ru": "Напольного соложения Богемский Ржаной солод",
     "aliases_en": [
-      "Rye Malt",
-      "Rye"
+      "Rye Malt"
     ],
     "aliases_ru": [
       "Ржаной",
@@ -11562,8 +12283,6 @@
     "name_ru": "Богемский пшеничный токового соложения",
     "aliases_en": [
       "Wheat Malt",
-      "Wheat",
-      "Floor Malted Bohemian Wheat",
       "Bohemian Wheat Floor-Malted"
     ],
     "aliases_ru": [
@@ -11675,8 +12394,7 @@
     "name_en": "Munich Type 1",
     "name_ru": "Мюнхенский тип 1",
     "aliases_en": [
-      "munich",
-      "munich malt"
+      "munich"
     ],
     "aliases_ru": [
       "мюних",
@@ -11725,8 +12443,7 @@
     "name_en": "Munich Type 2",
     "name_ru": "Мюнхенский тип 2",
     "aliases_en": [
-      "munich",
-      "munich malt"
+      "munich"
     ],
     "aliases_ru": [
       "мюних",
@@ -11777,8 +12494,7 @@
     "aliases_en": [
       "rauch",
       "smoked",
-      "wheat",
-      "wheat malt"
+      "wheat"
     ],
     "aliases_ru": [
       "Копченый на дубе пшеничный",
@@ -11822,9 +12538,7 @@
     "country_code": "DE",
     "name_en": "Oat Malt",
     "name_ru": "Овсяный солод",
-    "aliases_en": [
-      "Oat"
-    ],
+    "aliases_en": [],
     "aliases_ru": [
       "Овсяный"
     ],
@@ -11904,8 +12618,7 @@
     "name_en": "Pale Rye Malt",
     "name_ru": "Pale Ржаной солод",
     "aliases_en": [
-      "Rye Malt",
-      "Rye"
+      "Rye Malt"
     ],
     "aliases_ru": [
       "Ржаной",
@@ -11926,56 +12639,6 @@
         "label": "Weyermann Products Brewery EN",
         "url": "https://www.weyermann.de/wp-content/uploads/2023/05/WEYERMANN-PRODUCTS-Brewery-EN.pdf",
         "page": 39
-      }
-    ]
-  },
-  {
-    "id": "weyermann-pale-wheat-malt",
-    "type": "malt",
-    "brand": "Weyermann",
-    "brand_aliases": [
-      "Вайерман",
-      "Вайерманн"
-    ],
-    "country_code": "DE",
-    "name_en": "Pale Wheat",
-    "name_ru": "Пшеничный светлый",
-    "aliases_en": [
-      "Wheat Malt",
-      "Wheat",
-      "Wheat Malt Pale"
-    ],
-    "aliases_ru": [
-      "Пшеничный",
-      "Пшеничный солод"
-    ],
-    "malt_type": "other_grain",
-    "extract_pct_dry_basis": 82.0,
-    "color_ebc_min": 3.0,
-    "color_ebc_max": 5.0,
-    "color_lovibond": null,
-    "protein_pct": 11.7,
-    "max_usage_pct": 80.0,
-    "is_birrf_present": false,
-    "color_ebc_is_approx": false,
-    "sources": [
-      {
-        "kind": "official_pdf",
-        "label": "Weyermann Product Specification",
-        "url": "https://www.weyermann.de/wp-content/uploads/2021/01/Weyermann%C2%AE-Wheat-Malt-Pale_Specification-1.pdf",
-        "page": 1
-      },
-      {
-        "kind": "official_pdf",
-        "label": "Weyermann Products Brewery EN",
-        "url": "https://www.weyermann.de/wp-content/uploads/2023/05/WEYERMANN-PRODUCTS-Brewery-EN.pdf",
-        "page": 38
-      },
-      {
-        "kind": "birrf_ingredient_listing",
-        "label": "Бир.РФ / Базовый солод стр.3",
-        "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/base_malt/9-3",
-        "page": null
       }
     ]
   },
@@ -12023,8 +12686,7 @@
     "name_ru": "Пильзнер",
     "aliases_en": [
       "pilsen",
-      "pilsener",
-      "pilsner"
+      "pilsener"
     ],
     "aliases_ru": [
       "пилснер",
@@ -12123,8 +12785,7 @@
     "name_en": "Rye Malt Pale",
     "name_ru": "Ржаной светлый",
     "aliases_en": [
-      "rye",
-      "rye malt"
+      "rye"
     ],
     "aliases_ru": [
       "ржаной",
@@ -12159,9 +12820,7 @@
     "country_code": "DE",
     "name_en": "Smoked Malt",
     "name_ru": "Копчёный солод",
-    "aliases_en": [
-      "Smoked"
-    ],
+    "aliases_en": [],
     "aliases_ru": [
       "Копчёный"
     ],
@@ -12298,8 +12957,7 @@
     "name_en": "Wheat Malt Chocolate Dark",
     "name_ru": "Пшеничный солод Шоколадный тёмный",
     "aliases_en": [
-      "Wheat Malt",
-      "Wheat"
+      "Wheat Malt"
     ],
     "aliases_ru": [
       "Пшеничный",
@@ -12335,8 +12993,7 @@
     "name_en": "Wheat Malt Dark",
     "name_ru": "Пшеничный темный",
     "aliases_en": [
-      "wheat",
-      "wheat malt"
+      "wheat"
     ],
     "aliases_ru": [
       "пшеничный",
@@ -12373,7 +13030,7 @@
     "name_ru": "Пшеничный светлый",
     "aliases_en": [
       "wheat",
-      "wheat malt"
+      "Pale Wheat"
     ],
     "aliases_ru": [
       "пшеничный",
@@ -12384,8 +13041,8 @@
     "color_ebc_min": 3.0,
     "color_ebc_max": 5.0,
     "color_lovibond": null,
-    "protein_pct": null,
-    "max_usage_pct": null,
+    "protein_pct": 11.7,
+    "max_usage_pct": 80.0,
     "is_birrf_present": false,
     "color_ebc_is_approx": false,
     "sources": [
@@ -12394,6 +13051,24 @@
         "label": "Weyermann Brewery Product Catalog",
         "url": "https://www.weyermann.de/wp-content/uploads/2023/05/WEYERMANN-PRODUCTS-Brewery-EN.pdf",
         "page": 12
+      },
+      {
+        "kind": "official_pdf",
+        "label": "Weyermann Product Specification",
+        "url": "https://www.weyermann.de/wp-content/uploads/2021/01/Weyermann%C2%AE-Wheat-Malt-Pale_Specification-1.pdf",
+        "page": 1
+      },
+      {
+        "kind": "official_pdf",
+        "label": "Weyermann Products Brewery EN",
+        "url": "https://www.weyermann.de/wp-content/uploads/2023/05/WEYERMANN-PRODUCTS-Brewery-EN.pdf",
+        "page": 38
+      },
+      {
+        "kind": "birrf_ingredient_listing",
+        "label": "Бир.РФ / Базовый солод стр.3",
+        "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/base_malt/9-3",
+        "page": null
       }
     ]
   },
@@ -12409,8 +13084,7 @@
     "name_en": "Wheat Malt Torrefied",
     "name_ru": "Пшеничный солод Torrefied",
     "aliases_en": [
-      "Wheat Malt",
-      "Wheat"
+      "Wheat Malt"
     ],
     "aliases_ru": [
       "Пшеничный",
@@ -12528,66 +13202,6 @@
     ]
   },
   {
-    "id": "bsk-pilzner-tip-a-ru-base",
-    "type": "malt",
-    "brand": "БСК",
-    "brand_aliases": [],
-    "country_code": "RU",
-    "name_en": null,
-    "name_ru": "Пилснер тип А",
-    "aliases_en": [],
-    "aliases_ru": [
-      "пильзнер тип а"
-    ],
-    "malt_type": "base",
-    "extract_pct_dry_basis": 80.5,
-    "color_ebc_min": 5.334,
-    "color_ebc_max": 5.334,
-    "color_lovibond": 2.1,
-    "protein_pct": 11.2,
-    "max_usage_pct": 100.0,
-    "is_birrf_present": true,
-    "color_ebc_is_approx": true,
-    "sources": [
-      {
-        "kind": "birrf_ingredient_listing",
-        "label": "Бир.РФ / Базовый солод стр.3",
-        "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/base_malt/9-3",
-        "page": null
-      }
-    ]
-  },
-  {
-    "id": "bsk-pilzner-tip-b-ru-base",
-    "type": "malt",
-    "brand": "БСК",
-    "brand_aliases": [],
-    "country_code": "RU",
-    "name_en": null,
-    "name_ru": "Пилснер тип Б",
-    "aliases_en": [],
-    "aliases_ru": [
-      "пильзнер тип б"
-    ],
-    "malt_type": "base",
-    "extract_pct_dry_basis": 81.5,
-    "color_ebc_min": 4.826,
-    "color_ebc_max": 4.826,
-    "color_lovibond": 1.9,
-    "protein_pct": 10.3,
-    "max_usage_pct": 100.0,
-    "is_birrf_present": true,
-    "color_ebc_is_approx": true,
-    "sources": [
-      {
-        "kind": "birrf_ingredient_listing",
-        "label": "Бир.РФ / Базовый солод стр.3",
-        "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/base_malt/9-3",
-        "page": null
-      }
-    ]
-  },
-  {
     "id": "baltiyskiy-solod-kraft-preimum-ru-base",
     "type": "malt",
     "brand": "Балтийский солод",
@@ -12641,6 +13255,36 @@
         "kind": "birrf_ingredient_listing",
         "label": "Бир.РФ / Базовый солод стр.3",
         "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/base_malt/9-3",
+        "page": null
+      }
+    ]
+  },
+  {
+    "id": "bel-ger-venskiy-ua-base",
+    "type": "malt",
+    "brand": "Бел-Гер",
+    "brand_aliases": [
+      "Bel-Ger"
+    ],
+    "country_code": "UA",
+    "name_en": null,
+    "name_ru": "Венский",
+    "aliases_en": [],
+    "aliases_ru": [],
+    "malt_type": "base",
+    "extract_pct_dry_basis": 81.0,
+    "color_ebc_min": 8.382,
+    "color_ebc_max": 8.382,
+    "color_lovibond": 3.3,
+    "protein_pct": 10.0,
+    "max_usage_pct": 100.0,
+    "is_birrf_present": true,
+    "color_ebc_is_approx": true,
+    "sources": [
+      {
+        "kind": "birrf_ingredient_listing",
+        "label": "Бир.РФ / Базовый солод стр.1",
+        "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/base_malt/9",
         "page": null
       }
     ]
@@ -12764,36 +13408,6 @@
     ]
   },
   {
-    "id": "bel-ger-venskiy-ua-base",
-    "type": "malt",
-    "brand": "Бел-Гер",
-    "brand_aliases": [
-      "Bel-Ger"
-    ],
-    "country_code": "UA",
-    "name_en": null,
-    "name_ru": "Венский",
-    "aliases_en": [],
-    "aliases_ru": [],
-    "malt_type": "base",
-    "extract_pct_dry_basis": 81.0,
-    "color_ebc_min": 8.382,
-    "color_ebc_max": 8.382,
-    "color_lovibond": 3.3,
-    "protein_pct": 10.0,
-    "max_usage_pct": 100.0,
-    "is_birrf_present": true,
-    "color_ebc_is_approx": true,
-    "sources": [
-      {
-        "kind": "birrf_ingredient_listing",
-        "label": "Бир.РФ / Базовый солод стр.1",
-        "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/base_malt/9",
-        "page": null
-      }
-    ]
-  },
-  {
     "id": "bel-ger-pale-ale-ua-base",
     "type": "malt",
     "brand": "Бел-Гер",
@@ -12851,36 +13465,6 @@
         "kind": "birrf_ingredient_listing",
         "label": "Бир.РФ / Базовый солод стр.3",
         "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/base_malt/9-3",
-        "page": null
-      }
-    ]
-  },
-  {
-    "id": "belsolod-pshenichnyy-svetlyy-by-base",
-    "type": "malt",
-    "brand": "Белсолод",
-    "brand_aliases": [
-      "Belsolod"
-    ],
-    "country_code": "BY",
-    "name_en": null,
-    "name_ru": "Пшеничный светлый",
-    "aliases_en": [],
-    "aliases_ru": [],
-    "malt_type": "base",
-    "extract_pct_dry_basis": 84.5,
-    "color_ebc_min": 7.366,
-    "color_ebc_max": 7.366,
-    "color_lovibond": 2.9,
-    "protein_pct": 12.0,
-    "max_usage_pct": 70.0,
-    "is_birrf_present": true,
-    "color_ebc_is_approx": true,
-    "sources": [
-      {
-        "kind": "birrf_ingredient_listing",
-        "label": "Бир.РФ / Базовый солод стр.4",
-        "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/base_malt/9-4",
         "page": null
       }
     ]
@@ -13080,6 +13664,72 @@
         "label": "Бир.РФ / Базовый солод стр.4",
         "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/base_malt/9-4",
         "page": null
+      },
+      {
+        "kind": "birrf_ingredient_listing",
+        "label": "Бир.РФ / Базовый солод стр.4",
+        "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/base_malt/9-4",
+        "page": null
+      }
+    ]
+  },
+  {
+    "id": "bsk-pilzner-tip-a-ru-base",
+    "type": "malt",
+    "brand": "БСК",
+    "brand_aliases": [],
+    "country_code": "RU",
+    "name_en": null,
+    "name_ru": "Пилснер тип А",
+    "aliases_en": [],
+    "aliases_ru": [
+      "пильзнер тип а"
+    ],
+    "malt_type": "base",
+    "extract_pct_dry_basis": 80.5,
+    "color_ebc_min": 5.334,
+    "color_ebc_max": 5.334,
+    "color_lovibond": 2.1,
+    "protein_pct": 11.2,
+    "max_usage_pct": 100.0,
+    "is_birrf_present": true,
+    "color_ebc_is_approx": true,
+    "sources": [
+      {
+        "kind": "birrf_ingredient_listing",
+        "label": "Бир.РФ / Базовый солод стр.3",
+        "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/base_malt/9-3",
+        "page": null
+      }
+    ]
+  },
+  {
+    "id": "bsk-pilzner-tip-b-ru-base",
+    "type": "malt",
+    "brand": "БСК",
+    "brand_aliases": [],
+    "country_code": "RU",
+    "name_en": null,
+    "name_ru": "Пилснер тип Б",
+    "aliases_en": [],
+    "aliases_ru": [
+      "пильзнер тип б"
+    ],
+    "malt_type": "base",
+    "extract_pct_dry_basis": 81.5,
+    "color_ebc_min": 4.826,
+    "color_ebc_max": 4.826,
+    "color_lovibond": 1.9,
+    "protein_pct": 10.3,
+    "max_usage_pct": 100.0,
+    "is_birrf_present": true,
+    "color_ebc_is_approx": true,
+    "sources": [
+      {
+        "kind": "birrf_ingredient_listing",
+        "label": "Бир.РФ / Базовый солод стр.3",
+        "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/base_malt/9-3",
+        "page": null
       }
     ]
   },
@@ -13107,6 +13757,34 @@
         "kind": "birrf_ingredient_listing",
         "label": "Бир.РФ / Спец солод стр.5",
         "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/special_malt/10-5",
+        "page": null
+      }
+    ]
+  },
+  {
+    "id": "efremov-venskiy-ru-base",
+    "type": "malt",
+    "brand": "Ефремов",
+    "brand_aliases": [],
+    "country_code": "RU",
+    "name_en": null,
+    "name_ru": "Венский",
+    "aliases_en": [],
+    "aliases_ru": [],
+    "malt_type": "base",
+    "extract_pct_dry_basis": 81.0,
+    "color_ebc_min": 9.652,
+    "color_ebc_max": 9.652,
+    "color_lovibond": 3.8,
+    "protein_pct": 11.5,
+    "max_usage_pct": 100.0,
+    "is_birrf_present": true,
+    "color_ebc_is_approx": true,
+    "sources": [
+      {
+        "kind": "birrf_ingredient_listing",
+        "label": "Бир.РФ / Базовый солод стр.1",
+        "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/base_malt/9",
         "page": null
       }
     ]
@@ -13280,34 +13958,6 @@
     ]
   },
   {
-    "id": "efremov-venskiy-ru-base",
-    "type": "malt",
-    "brand": "Ефремов",
-    "brand_aliases": [],
-    "country_code": "RU",
-    "name_en": null,
-    "name_ru": "Венский",
-    "aliases_en": [],
-    "aliases_ru": [],
-    "malt_type": "base",
-    "extract_pct_dry_basis": 81.0,
-    "color_ebc_min": 9.652,
-    "color_ebc_max": 9.652,
-    "color_lovibond": 3.8,
-    "protein_pct": 11.5,
-    "max_usage_pct": 100.0,
-    "is_birrf_present": true,
-    "color_ebc_is_approx": true,
-    "sources": [
-      {
-        "kind": "birrf_ingredient_listing",
-        "label": "Бир.РФ / Базовый солод стр.1",
-        "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/base_malt/9",
-        "page": null
-      }
-    ]
-  },
-  {
     "id": "efremov-yachmennyy-svetlyy-ru-base",
     "type": "malt",
     "brand": "Ефремов",
@@ -13372,10 +14022,21 @@
       "Grainrus"
     ],
     "country_code": "RU",
-    "name_en": "Black",
-    "name_ru": "Жженый",
-    "aliases_en": [],
-    "aliases_ru": [],
+    "name_en": "Black 1400",
+    "name_ru": "Жженый 1400",
+    "aliases_en": [
+      "Black",
+      "Black Malt",
+      "Roasted Malt 1400",
+      "Black 1400",
+      "Burnt 1400"
+    ],
+    "aliases_ru": [
+      "Жженый",
+      "Жженый солод",
+      "Жженый 1400",
+      "Курский Жженый 1400"
+    ],
     "malt_type": "special",
     "extract_pct_dry_basis": 70.0,
     "color_ebc_min": 1416.55,
@@ -13390,6 +14051,18 @@
         "kind": "birrf_ingredients_list",
         "label": "Бир.РФ / Спец солод стр.1",
         "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/special_malt/10",
+        "page": null
+      },
+      {
+        "kind": "malt_ru_store_product",
+        "label": "malt.ru / Солод Курский жжёный 1400",
+        "url": "https://malt.ru/catalog/solod/zhzhyenyy-1400/",
+        "page": null
+      },
+      {
+        "kind": "birrf_store_product",
+        "label": "Бир.РФ / Солод Жженый 1400 (Курский солод)",
+        "url": "https://xn--90aoy.xn--p1ai/shop/37/desc/solod-zhzhenyj-1400-kurskij-solod-1-kg",
         "page": null
       }
     ]
@@ -13406,9 +14079,7 @@
     "name_en": "Buckwheat",
     "name_ru": "Гречишный",
     "aliases_en": [
-      "buckwheat malt",
-      "wheat",
-      "wheat malt"
+      "wheat"
     ],
     "aliases_ru": [
       "kursky solod",
@@ -13509,6 +14180,59 @@
     ]
   },
   {
+    "id": "kurskiy-solod--caramel-20",
+    "type": "malt",
+    "brand": "Курский солод",
+    "brand_aliases": [
+      "Kursk Malt",
+      "Grainrus"
+    ],
+    "country_code": "RU",
+    "name_en": "Caramel 20",
+    "name_ru": "Карамельный 20",
+    "aliases_en": [
+      "Caramel",
+      "Caramel20",
+      "Cara 20",
+      "Crystal 20"
+    ],
+    "aliases_ru": [
+      "Карамельный",
+      "Карамельный 20",
+      "Карамель 20",
+      "Курский Карамельный 20"
+    ],
+    "malt_type": "caramel",
+    "extract_pct_dry_basis": 75.0,
+    "color_ebc_min": 15.0,
+    "color_ebc_max": 25.0,
+    "color_lovibond": null,
+    "protein_pct": null,
+    "max_usage_pct": 20.0,
+    "is_birrf_present": true,
+    "color_ebc_is_approx": false,
+    "sources": [
+      {
+        "kind": "grainrus_catalog_pdf",
+        "label": "Grainrus product catalog PDF",
+        "url": "https://malt.ru/upload/iblock/2df/2dfeb5a1c7e51f4de38b5acd4584d519.pdf",
+        "page": 26
+      },
+      {
+        "kind": "malt_ru_store_product",
+        "label": "malt.ru / Солод Курский Карамельный 20",
+        "url": "https://malt.ru/catalog/solod/karamelnyy-20/",
+        "page": null
+      },
+      {
+        "kind": "birrf_store_product",
+        "label": "Бир.РФ / Солод Карамельный 20 (Курский солод)",
+        "url": "https://xn--90aoy.xn--p1ai/shop/1608/desc/solod-karamelnyj-20-kurskij-solod-1-kg",
+        "page": null
+      }
+    ]
+  },
+  {
     "id": "kurskiy-solod--caramel-200",
     "type": "malt",
     "brand": "Курский солод",
@@ -13552,6 +14276,112 @@
     ]
   },
   {
+    "id": "kurskiy-solod--caramel-250",
+    "type": "malt",
+    "brand": "Курский солод",
+    "brand_aliases": [
+      "Kursk Malt",
+      "Grainrus"
+    ],
+    "country_code": "RU",
+    "name_en": "Caramel 250",
+    "name_ru": "Карамельный 250",
+    "aliases_en": [
+      "Caramel",
+      "Caramel250",
+      "Cara 250",
+      "Crystal 250"
+    ],
+    "aliases_ru": [
+      "Карамельный",
+      "Карамельный 250",
+      "Карамель 250",
+      "Курский Карамельный 250"
+    ],
+    "malt_type": "caramel",
+    "extract_pct_dry_basis": 70.0,
+    "color_ebc_min": 230.0,
+    "color_ebc_max": 270.0,
+    "color_lovibond": null,
+    "protein_pct": null,
+    "max_usage_pct": null,
+    "is_birrf_present": true,
+    "color_ebc_is_approx": false,
+    "sources": [
+      {
+        "kind": "grainrus_catalog_pdf",
+        "label": "Grainrus product catalog PDF",
+        "url": "https://malt.ru/upload/iblock/2df/2dfeb5a1c7e51f4de38b5acd4584d519.pdf",
+        "page": 27
+      },
+      {
+        "kind": "malt_ru_store_product",
+        "label": "malt.ru / Солод Курский Карамельный 250",
+        "url": "https://malt.ru/catalog/solod/karamelnyy-250_2/",
+        "page": null
+      },
+      {
+        "kind": "birrf_store_product",
+        "label": "Бир.РФ / Солод Карамельный 250 (Курский солод)",
+        "url": "https://xn--90aoy.xn--p1ai/shop/1153/desc/solod-karamelnyj-250-kurskij-solod-1-kg",
+        "page": null
+      }
+    ]
+  },
+  {
+    "id": "kurskiy-solod--caramel-300",
+    "type": "malt",
+    "brand": "Курский солод",
+    "brand_aliases": [
+      "Kursk Malt",
+      "Grainrus"
+    ],
+    "country_code": "RU",
+    "name_en": "Caramel 300",
+    "name_ru": "Карамельный 300",
+    "aliases_en": [
+      "Caramel",
+      "Caramel300",
+      "Cara 300",
+      "Crystal 300"
+    ],
+    "aliases_ru": [
+      "Карамельный",
+      "Карамельный 300",
+      "Карамель 300",
+      "Курский Карамельный 300"
+    ],
+    "malt_type": "caramel",
+    "extract_pct_dry_basis": 70.0,
+    "color_ebc_min": 280.0,
+    "color_ebc_max": 320.0,
+    "color_lovibond": null,
+    "protein_pct": null,
+    "max_usage_pct": null,
+    "is_birrf_present": true,
+    "color_ebc_is_approx": false,
+    "sources": [
+      {
+        "kind": "grainrus_catalog_pdf",
+        "label": "Grainrus product catalog PDF",
+        "url": "https://malt.ru/upload/iblock/2df/2dfeb5a1c7e51f4de38b5acd4584d519.pdf",
+        "page": 28
+      },
+      {
+        "kind": "malt_ru_store_product",
+        "label": "malt.ru / Солод Курский Карамельный 300",
+        "url": "https://malt.ru/catalog/solod/karamelnyy-300/",
+        "page": null
+      },
+      {
+        "kind": "birrf_store_product",
+        "label": "Бир.РФ / Солод Карамельный 300 Двойной обжарки (Курский солод)",
+        "url": "https://xn--90aoy.xn--p1ai/shop/807/desc/solod-karamelnyj-300-dvojnoj-obzharki-kurskij-solod-1-kg",
+        "page": null
+      }
+    ]
+  },
+  {
     "id": "kurskiy-solod--caramel-50",
     "type": "malt",
     "brand": "Курский солод",
@@ -13590,6 +14420,57 @@
         "kind": "birrf_ingredient_listing",
         "label": "Бир.РФ / Спец солод стр.3",
         "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/special_malt/10-3",
+        "page": null
+      }
+    ]
+  },
+  {
+    "id": "kurskiy-solod--chocolate-900",
+    "type": "malt",
+    "brand": "Курский солод",
+    "brand_aliases": [
+      "Kursk Malt",
+      "Grainrus"
+    ],
+    "country_code": "RU",
+    "name_en": "Chocolate 900",
+    "name_ru": "Шоколадный 900",
+    "aliases_en": [
+      "Chocolate",
+      "Chocolate900",
+      "Chocolate Malt 900"
+    ],
+    "aliases_ru": [
+      "Шоколадный",
+      "Шоколадный 900",
+      "Курский Шоколадный 900"
+    ],
+    "malt_type": "roasted",
+    "extract_pct_dry_basis": 70.0,
+    "color_ebc_min": 800.0,
+    "color_ebc_max": 1000.0,
+    "color_lovibond": null,
+    "protein_pct": null,
+    "max_usage_pct": 10.0,
+    "is_birrf_present": true,
+    "color_ebc_is_approx": false,
+    "sources": [
+      {
+        "kind": "grainrus_catalog_pdf",
+        "label": "Grainrus product catalog PDF",
+        "url": "https://malt.ru/upload/iblock/2df/2dfeb5a1c7e51f4de38b5acd4584d519.pdf",
+        "page": 28
+      },
+      {
+        "kind": "malt_ru_store_product",
+        "label": "malt.ru / Солод Курский Шоколадный 900",
+        "url": "https://malt.ru/catalog/solod/shokoladnyy-900/",
+        "page": null
+      },
+      {
+        "kind": "birrf_store_product",
+        "label": "Бир.РФ / Солод Шоколадный 900 (Курский солод)",
+        "url": "https://xn--90aoy.xn--p1ai/shop/36/desc/solod-shokoladnyj-900-kurskij-solod-1-kg",
         "page": null
       }
     ]
@@ -13651,8 +14532,7 @@
     "name_en": "Fermented Rye Malt",
     "name_ru": "Ржаной ферментированный",
     "aliases_en": [
-      "rye",
-      "rye malt"
+      "rye"
     ],
     "aliases_ru": [
       "ржаной",
@@ -13677,6 +14557,60 @@
     ]
   },
   {
+    "id": "kurskiy-solod--melanoidin-70",
+    "type": "malt",
+    "brand": "Курский солод",
+    "brand_aliases": [
+      "Kursk Malt",
+      "Grainrus"
+    ],
+    "country_code": "RU",
+    "name_en": "Melanoidin 70",
+    "name_ru": "Меланоидиновый 70",
+    "aliases_en": [
+      "Melanoidin",
+      "Melano",
+      "Red Ale Malt",
+      "Melanoidin70"
+    ],
+    "aliases_ru": [
+      "Меланоидиновый",
+      "Мелано",
+      "Мелано 70",
+      "Ред Эль",
+      "Курский Меланоидиновый 70"
+    ],
+    "malt_type": "specialty",
+    "extract_pct_dry_basis": 70.0,
+    "color_ebc_min": 70.0,
+    "color_ebc_max": 90.0,
+    "color_lovibond": null,
+    "protein_pct": null,
+    "max_usage_pct": null,
+    "is_birrf_present": true,
+    "color_ebc_is_approx": false,
+    "sources": [
+      {
+        "kind": "grainrus_catalog_pdf",
+        "label": "Grainrus product catalog PDF",
+        "url": "https://malt.ru/upload/iblock/2df/2dfeb5a1c7e51f4de38b5acd4584d519.pdf",
+        "page": 29
+      },
+      {
+        "kind": "malt_ru_store_product",
+        "label": "malt.ru / Солод Курский Меланоидиновый",
+        "url": "https://malt.ru/catalog/solod/melanoidinovyy/",
+        "page": null
+      },
+      {
+        "kind": "birrf_store_product",
+        "label": "Бир.РФ / Солод Меланоидиновый (Курский солод)",
+        "url": "https://xn--90aoy.xn--p1ai/shop/40/desc/solod-melanoidinovyj-kurskij-solod-1-kg",
+        "page": null
+      }
+    ]
+  },
+  {
     "id": "kurskiy-solod--munich-type-2",
     "type": "malt",
     "brand": "Курский солод",
@@ -13688,8 +14622,7 @@
     "name_en": "Munich Type 2",
     "name_ru": "Мюнхенский тип 2",
     "aliases_en": [
-      "munich",
-      "munich malt"
+      "munich"
     ],
     "aliases_ru": [
       "мюних",
@@ -13796,6 +14729,51 @@
     ]
   },
   {
+    "id": "kurskiy-solod--peated",
+    "type": "malt",
+    "brand": "Курский солод",
+    "brand_aliases": [
+      "Kursk Malt",
+      "Grainrus"
+    ],
+    "country_code": "RU",
+    "name_en": "Peated",
+    "name_ru": "Копченый на торфе",
+    "aliases_en": [
+      "Peated Malt",
+      "Peat Smoked Malt"
+    ],
+    "aliases_ru": [
+      "Питед",
+      "Торфяной",
+      "Копченый на торфе / Peated",
+      "Солод на торфе"
+    ],
+    "malt_type": "smoked",
+    "extract_pct_dry_basis": null,
+    "color_ebc_min": null,
+    "color_ebc_max": null,
+    "color_lovibond": null,
+    "protein_pct": null,
+    "max_usage_pct": 100.0,
+    "is_birrf_present": true,
+    "color_ebc_is_approx": false,
+    "sources": [
+      {
+        "kind": "malt_ru_catalog_pdf",
+        "label": "malt.ru / Каталог продукции",
+        "url": "https://malt.ru/upload/iblock/035/035a43b6e144ba8bf9e35c99d6d19a3c.pdf",
+        "page": 48
+      },
+      {
+        "kind": "birrf_store_product",
+        "label": "Бир.РФ / Солод Копченый на торфе / Peated (Курский солод)",
+        "url": "https://xn--90aoy.xn--p1ai/shop/1925/desc/solod-kopchenyj-na-torfe-peated-kurskij-solod-1-kg",
+        "page": null
+      }
+    ]
+  },
+  {
     "id": "kurskiy-solod--pilsner",
     "type": "malt",
     "brand": "Курский солод",
@@ -13847,8 +14825,7 @@
       "Pils",
       "Pilsen",
       "Pilsener",
-      "Pilsner",
-      "Pilsner Malt"
+      "Pilsner"
     ],
     "aliases_ru": [
       "Пилзнер",
@@ -13856,8 +14833,7 @@
       "Пилснер",
       "Пильзен",
       "Пильзнер",
-      "Пильзнер Премиум",
-      "пильзнер премиум"
+      "Пильзнер Премиум"
     ],
     "malt_type": "base",
     "extract_pct_dry_basis": 83.0,
@@ -13884,6 +14860,46 @@
     ]
   },
   {
+    "id": "kurskiy-solod--roasted-barley-900",
+    "type": "malt",
+    "brand": "Курский солод",
+    "brand_aliases": [
+      "Kursk Malt",
+      "Grainrus"
+    ],
+    "country_code": "RU",
+    "name_en": "Roasted Barley 900",
+    "name_ru": "Ячмень жженый 900",
+    "aliases_en": [
+      "Roasted Barley",
+      "Barley 900",
+      "Roasted Barley Malt 900"
+    ],
+    "aliases_ru": [
+      "Жженый ячмень",
+      "Ячмень жженый",
+      "Ячмень жженый 900",
+      "Курский Ячмень жженый 900"
+    ],
+    "malt_type": "roasted",
+    "extract_pct_dry_basis": null,
+    "color_ebc_min": 900.0,
+    "color_ebc_max": 900.0,
+    "color_lovibond": null,
+    "protein_pct": null,
+    "max_usage_pct": null,
+    "is_birrf_present": true,
+    "color_ebc_is_approx": false,
+    "sources": [
+      {
+        "kind": "birrf_store_product",
+        "label": "Бир.РФ / Ячмень жженый 900 (Курский солод)",
+        "url": "https://xn--90aoy.xn--p1ai/shop/1641/desc/jachmen-zhzhenyj-900-kurskij-solod-1-kg",
+        "page": null
+      }
+    ]
+  },
+  {
     "id": "kurskiy-solod--rye-unfermented-malt",
     "type": "malt",
     "brand": "Курский солод",
@@ -13895,7 +14911,6 @@
     "name_en": "Rye Unfermented Malt",
     "name_ru": "Ржаной неферментированный солод",
     "aliases_en": [
-      "rye unfermented",
       "unfermented rye"
     ],
     "aliases_ru": [
@@ -14063,8 +15078,7 @@
     "name_en": "Wheat Malt Dark",
     "name_ru": "Пшеничный темный",
     "aliases_en": [
-      "dark wheat",
-      "wheat dark"
+      "dark wheat"
     ],
     "aliases_ru": [],
     "malt_type": "special",
@@ -14081,6 +15095,52 @@
         "kind": "birrf_ingredients_list",
         "label": "Бир.РФ / Ингредиент Wheat Malt Dark",
         "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/special_malt/pshenichnyj_temnyj_zhzhenyj/10-1-0-2163",
+        "page": null
+      }
+    ]
+  },
+  {
+    "id": "kurskiy-solod--whiskey",
+    "type": "malt",
+    "brand": "Курский солод",
+    "brand_aliases": [
+      "Kursk Malt",
+      "Grainrus"
+    ],
+    "country_code": "RU",
+    "name_en": "Whiskey",
+    "name_ru": "Висковый",
+    "aliases_en": [
+      "Whisky",
+      "Whiskey Malt",
+      "Whisky Malt"
+    ],
+    "aliases_ru": [
+      "Висковый",
+      "Виски",
+      "Вискарный",
+      "Солод для виски"
+    ],
+    "malt_type": "base",
+    "extract_pct_dry_basis": null,
+    "color_ebc_min": 3.5,
+    "color_ebc_max": 4.5,
+    "color_lovibond": null,
+    "protein_pct": null,
+    "max_usage_pct": 100.0,
+    "is_birrf_present": true,
+    "color_ebc_is_approx": false,
+    "sources": [
+      {
+        "kind": "malt_ru_store_product",
+        "label": "malt.ru / Солод Курский висковый",
+        "url": "https://malt.ru/catalog/solod/solod-yachmennyy-svetlyy-rossiyskiy-viskovyy-kurskiy-solod-meshok-25-kg/",
+        "page": null
+      },
+      {
+        "kind": "birrf_store_product",
+        "label": "Бир.РФ / Солод Висковый / Whiskey (Курский солод)",
+        "url": "https://xn--90aoy.xn--p1ai/shop/1751/desc/solod-viskovyj-whiskey-kurskij-solod-25-kg",
         "page": null
       }
     ]
@@ -14137,68 +15197,6 @@
         "kind": "birrf_ingredient_listing",
         "label": "Бир.РФ / Базовый солод стр.5",
         "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/base_malt/9-5",
-        "page": null
-      }
-    ]
-  },
-  {
-    "id": "ooo-privolzhskaya-melnitsa-peyl-el-ru-base",
-    "type": "malt",
-    "brand": "Приволжская мельница",
-    "brand_aliases": [
-      "ООО «Приволжская мельница»"
-    ],
-    "country_code": "RU",
-    "name_en": null,
-    "name_ru": "Пэйл Эль",
-    "aliases_en": [],
-    "aliases_ru": [],
-    "malt_type": "base",
-    "extract_pct_dry_basis": 80.0,
-    "color_ebc_min": 6.096,
-    "color_ebc_max": 6.096,
-    "color_lovibond": 2.4,
-    "protein_pct": 10.0,
-    "max_usage_pct": 100.0,
-    "is_birrf_present": true,
-    "color_ebc_is_approx": true,
-    "sources": [
-      {
-        "kind": "birrf_ingredient_listing",
-        "label": "Бир.РФ / Базовый солод стр.4",
-        "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/base_malt/9-4",
-        "page": null
-      }
-    ]
-  },
-  {
-    "id": "ooo-privolzhskaya-melnitsa-pilzner-ru-base",
-    "type": "malt",
-    "brand": "Приволжская мельница",
-    "brand_aliases": [
-      "ООО «Приволжская мельница»"
-    ],
-    "country_code": "RU",
-    "name_en": null,
-    "name_ru": "Пилснер",
-    "aliases_en": [],
-    "aliases_ru": [
-      "пильзнер"
-    ],
-    "malt_type": "base",
-    "extract_pct_dry_basis": 82.0,
-    "color_ebc_min": 5.334,
-    "color_ebc_max": 5.334,
-    "color_lovibond": 2.1,
-    "protein_pct": 10.0,
-    "max_usage_pct": 100.0,
-    "is_birrf_present": true,
-    "color_ebc_is_approx": true,
-    "sources": [
-      {
-        "kind": "birrf_ingredient_listing",
-        "label": "Бир.РФ / Базовый солод стр.3",
-        "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/base_malt/9-3",
         "page": null
       }
     ]
@@ -14262,6 +15260,38 @@
     ]
   },
   {
+    "id": "ooo-privolzhskaya-melnitsa-pilzner-ru-base",
+    "type": "malt",
+    "brand": "Приволжская мельница",
+    "brand_aliases": [
+      "ООО «Приволжская мельница»"
+    ],
+    "country_code": "RU",
+    "name_en": null,
+    "name_ru": "Пилснер",
+    "aliases_en": [],
+    "aliases_ru": [
+      "пильзнер"
+    ],
+    "malt_type": "base",
+    "extract_pct_dry_basis": 82.0,
+    "color_ebc_min": 5.334,
+    "color_ebc_max": 5.334,
+    "color_lovibond": 2.1,
+    "protein_pct": 10.0,
+    "max_usage_pct": 100.0,
+    "is_birrf_present": true,
+    "color_ebc_is_approx": true,
+    "sources": [
+      {
+        "kind": "birrf_ingredient_listing",
+        "label": "Бир.РФ / Базовый солод стр.3",
+        "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/base_malt/9-3",
+        "page": null
+      }
+    ]
+  },
+  {
     "id": "privolzhskaya-melnitsa-pshenichnyy-svetlyy-ru-base",
     "type": "malt",
     "brand": "Приволжская мельница",
@@ -14278,6 +15308,36 @@
     "color_lovibond": 2.6,
     "protein_pct": 12.5,
     "max_usage_pct": 50.0,
+    "is_birrf_present": true,
+    "color_ebc_is_approx": true,
+    "sources": [
+      {
+        "kind": "birrf_ingredient_listing",
+        "label": "Бир.РФ / Базовый солод стр.4",
+        "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/base_malt/9-4",
+        "page": null
+      }
+    ]
+  },
+  {
+    "id": "ooo-privolzhskaya-melnitsa-peyl-el-ru-base",
+    "type": "malt",
+    "brand": "Приволжская мельница",
+    "brand_aliases": [
+      "ООО «Приволжская мельница»"
+    ],
+    "country_code": "RU",
+    "name_en": null,
+    "name_ru": "Пэйл Эль",
+    "aliases_en": [],
+    "aliases_ru": [],
+    "malt_type": "base",
+    "extract_pct_dry_basis": 80.0,
+    "color_ebc_min": 6.096,
+    "color_ebc_max": 6.096,
+    "color_lovibond": 2.4,
+    "protein_pct": 10.0,
+    "max_usage_pct": 100.0,
     "is_birrf_present": true,
     "color_ebc_is_approx": true,
     "sources": [
@@ -14371,6 +15431,48 @@
         "kind": "birrf_ingredient_listing",
         "label": "Бир.РФ / Спец солод стр.5",
         "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/special_malt/10-5",
+        "page": null
+      }
+    ]
+  },
+  {
+    "id": "rostok-rzhanoy-nefermentirovannyy-svetlyy-ru-rye",
+    "type": "malt",
+    "brand": "Росток",
+    "brand_aliases": [],
+    "country_code": "RU",
+    "name_en": "Rye Non-Fermented",
+    "name_ru": "Ржаной неферментированный светлый",
+    "aliases_en": [
+      "Unfermented Rye",
+      "Rye Light",
+      "Rye Non Fermented"
+    ],
+    "aliases_ru": [
+      "Ржаной неферментированный",
+      "Ржаной светлый",
+      "Неферментированный ржаной солод"
+    ],
+    "malt_type": "rye",
+    "extract_pct_dry_basis": null,
+    "color_ebc_min": 3.0,
+    "color_ebc_max": 8.0,
+    "color_lovibond": null,
+    "protein_pct": null,
+    "max_usage_pct": 60.0,
+    "is_birrf_present": false,
+    "color_ebc_is_approx": false,
+    "sources": [
+      {
+        "kind": "retailer_html",
+        "label": "Alex Brewer / Росток ржаной неферментированный",
+        "url": "https://alexbrewer.ru/catalog/solod_1_kg/solod_rzhanoy_nefermentirovannyy_v_zernakh_rostok_1kg/",
+        "page": null
+      },
+      {
+        "kind": "retailer_html",
+        "label": "MirBeer / Росток ржаной неферментированный",
+        "url": "https://www.mirbeer.ru/catalog/pivovarenie/solod/solod_0_5_1_kg/rostok/solod_rzhanoy_nefermentirovanniy_molotiy_rostok_1_kg/",
         "page": null
       }
     ]
@@ -14502,7 +15604,6 @@
     "name_en": "Munich",
     "name_ru": "Мюнхенский",
     "aliases_en": [
-      "Munich Malt",
       "Muenchner"
     ],
     "aliases_ru": [

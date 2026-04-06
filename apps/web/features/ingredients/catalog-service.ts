@@ -15,10 +15,15 @@ import type {
   IngredientAliasDto,
   IngredientCatalogSortOption,
   IngredientCategory,
+  IngredientConsumableGroupRefinement,
+  IngredientSearchFamilyScope,
+  IngredientPickerQuickStartResult,
   IngredientManufacturerRefinement,
+  IngredientSearchRefinement,
   IngredientSearchResult,
   IngredientSuggestionItem,
   IngredientType,
+  UserIngredientReference,
   UserCatalogIngredientDto,
   UserCatalogListResult
 } from "./contracts";
@@ -26,6 +31,7 @@ import {
   ingredientCategories,
   ingredientCatalogSortOptions,
   ingredientManufacturerRefinementLimit,
+  ingredientPickerQuickStartQuerySchema,
   ingredientSearchQuerySchema
 } from "./contracts";
 import { ingredientSearchSimpleModeThreshold } from "./contracts";
@@ -33,10 +39,22 @@ import { sortRankedCatalogItems } from "./catalog-ranking";
 import { readCustomIngredientMetadata } from "./custom-metadata";
 import { normalizeSearchText } from "./normalization";
 import {
+  resolveIngredientPickerQuickStartFamilyScope
+} from "./picker-quick-start";
+import {
   buildIngredientTypedSummary,
   resolveIngredientBrandLabel,
   resolveIngredientDisplayNames
 } from "./presentation";
+import {
+  buildConsumablePackageSearchLabels,
+  consumablePickerGroupOrder,
+  resolveConsumablePickerGroup,
+  resolveConsumablePickerGroupDescription,
+  resolveConsumablePickerGroupLabel,
+  resolveConsumablePriorityTerms,
+  resolveConsumableTechnicalData
+} from "./consumables";
 import { loadIngredients, getIngredientById } from "./service";
 import {
   extractIngredientTechnicalData,
@@ -47,7 +65,7 @@ import {
   resolveIngredientSubtype,
   type IngredientSubtype
 } from "./taxonomy";
-import { rankIngredientCandidate } from "./ranking";
+import { matchesIngredientFamilyScope, rankIngredientCandidate } from "./ranking";
 import {
   applyFavoriteStateToCatalogItems,
   listIngredientPurchaseLinksByReference
@@ -59,7 +77,10 @@ type CatalogSearchParams = {
   type?: string;
   category?: string;
   subtype?: string;
+  family?: string;
+  group?: string;
   manufacturer?: string;
+  favoritesOnly?: boolean;
   limit?: number;
   includeCustom?: boolean;
 };
@@ -167,6 +188,10 @@ const mapCustomIngredient = (
     ?? readTrimmedString(properties.brand)
     ?? null;
   const country = item.country ?? readTrimmedString(properties.country);
+  const sourceCategory = readTrimmedString(properties.sourceCategory)
+    ?? (category === "consumable" ? readTrimmedString(properties.pickerGroup) ?? readTrimmedString(properties.subtype) : null);
+  const subcategory = readTrimmedString(properties.subcategory);
+  const itemKind = readTrimmedString(properties.itemKind) ?? subtype;
 
   return {
     id: item.id,
@@ -194,6 +219,9 @@ const mapCustomIngredient = (
     countryCode: null,
     countryName: country,
     productCode: metadata.productCode,
+    sourceCategory,
+    subcategory,
+    itemKind,
     aliases: buildCustomAliasDto(metadata.aliases),
     sources: [],
     packageVariants: [],
@@ -234,7 +262,8 @@ const loadCustomIngredients = async (userId: string): Promise<UserCatalogIngredi
 
 const buildSearchText = (item: UserCatalogIngredientDto) => {
   const aliases = item.aliases.map((alias) => alias.aliasNormalized);
-  const variantNames = item.packageVariants.flatMap((variant) => [variant.brand, variant.productNameRu]).filter(Boolean);
+  const variantNames = item.packageVariants.flatMap((variant) => buildConsumablePackageSearchLabels(variant));
+  const consumable = resolveConsumableTechnicalData(item.technicalData);
 
   return normalizeSearchText([
     item.primaryLabelRu,
@@ -246,9 +275,16 @@ const buildSearchText = (item: UserCatalogIngredientDto) => {
     item.producer,
     item.manufacturer,
     item.productCode,
+    item.sourceCategory,
+    item.subcategory,
     item.subtype,
     ...aliases,
-    ...variantNames
+    ...variantNames,
+    ...(consumable?.marketNamesRu ?? []),
+    ...(consumable?.marketNamesEn ?? []),
+    ...(resolveConsumablePriorityTerms(item.technicalData)),
+    consumable?.pickerFunctionRu,
+    consumable?.pickerUsageRu
   ].filter(Boolean).join(" "));
 };
 
@@ -260,6 +296,7 @@ export const toIngredientSuggestionItem = (
   type: item.type,
   category: item.category,
   subtype: item.subtype,
+  itemKind: item.itemKind,
   familyId: item.familyId,
   primaryLabelRu: item.primaryLabelRu,
   secondaryLabelRu: item.secondaryLabelRu,
@@ -326,6 +363,33 @@ const filterItemsByManufacturer = (
   return items.filter((item) => normalizeSearchText(resolveManufacturerLabel(item) ?? "") === normalizedManufacturer);
 };
 
+const filterItemsByFavoriteState = (
+  items: UserCatalogIngredientDto[],
+  favoritesOnly = false
+) => (
+  favoritesOnly
+    ? items.filter((item) => item.isFavorite === true)
+    : items
+);
+
+const filterItemsByConsumableGroup = (
+  items: UserCatalogIngredientDto[],
+  group?: string
+) => {
+  const normalizedGroup = normalizeSearchText(group ?? "");
+  if (!normalizedGroup) {
+    return items;
+  }
+
+  return items.filter((item) => (
+    item.category === "consumable"
+    && normalizeSearchText(resolveConsumablePickerGroup({
+      technicalData: item.technicalData,
+      sourceCategory: item.sourceCategory
+    }) ?? "") === normalizedGroup
+  ));
+};
+
 const buildManufacturerRefinements = (
   rankedItems: RankedCatalogItem[],
   activeManufacturer?: string
@@ -351,6 +415,7 @@ const buildManufacturerRefinements = (
       type: "manufacturer",
       label,
       normalizedLabel,
+      value: label,
       count: 1,
       score: rankedItem.score
     });
@@ -363,6 +428,52 @@ const buildManufacturerRefinements = (
       || left.label.localeCompare(right.label, "ru")
     ))
     .slice(0, ingredientManufacturerRefinementLimit);
+};
+
+const buildConsumableGroupRefinements = (
+  rankedItems: RankedCatalogItem[],
+  activeGroup?: string
+): IngredientConsumableGroupRefinement[] => {
+  const normalizedActiveGroup = normalizeSearchText(activeGroup ?? "");
+  const grouped = new Map<string, IngredientConsumableGroupRefinement>();
+
+  for (const rankedItem of rankedItems) {
+    const value = resolveConsumablePickerGroup({
+      technicalData: rankedItem.item.technicalData,
+      sourceCategory: rankedItem.item.sourceCategory
+    });
+    const normalizedValue = normalizeSearchText(value ?? "");
+    if (!value || !normalizedValue || normalizedValue === normalizedActiveGroup) {
+      continue;
+    }
+
+    const label = resolveConsumablePickerGroupLabel(value) ?? value;
+    const current = grouped.get(normalizedValue);
+    if (current) {
+      current.count += 1;
+      current.score = Math.max(current.score, rankedItem.score);
+      continue;
+    }
+
+    grouped.set(normalizedValue, {
+      type: "consumable_group",
+      label,
+      normalizedLabel: normalizedValue,
+      value,
+      count: 1,
+      score: rankedItem.score,
+      description: resolveConsumablePickerGroupDescription(value)
+    });
+  }
+
+  const groupOrder = new Map<string, number>(consumablePickerGroupOrder.map((value, index) => [value, index]));
+
+  return [...grouped.values()].sort((left, right) => (
+    (groupOrder.get(left.value) ?? Number.MAX_SAFE_INTEGER) - (groupOrder.get(right.value) ?? Number.MAX_SAFE_INTEGER)
+    || right.count - left.count
+    || right.score - left.score
+    || left.label.localeCompare(right.label, "ru")
+  ));
 };
 
 const buildBrandMarketCountMap = (items: UserCatalogIngredientDto[]) => {
@@ -392,9 +503,12 @@ const buildRankedItem = (
     displayNameEn: item.nameEn ?? item.displayNameEn,
     nameRu: item.nameRu,
     nameEn: item.nameEn,
+    category: item.category,
+    sourceCategory: item.sourceCategory,
     aliases: item.aliases.map((alias) => ({
       alias: alias.alias,
       aliasNormalized: alias.aliasNormalized,
+      source: alias.source,
       isEnabled: alias.isEnabled
     })),
     searchTextNorm: buildSearchText(item),
@@ -411,7 +525,12 @@ const buildRankedItem = (
     packageVariants: item.packageVariants.map((variant) => ({
       id: variant.id,
       brand: variant.brand,
-      productNameRu: variant.productNameRu
+      productNameEn: variant.productNameEn,
+      productNameRu: variant.productNameRu,
+      packageAmount: variant.packageAmount,
+      packageUnit: variant.packageUnit,
+      stockContentAmount: variant.stockContentAmount,
+      stockContentUnit: variant.stockContentUnit
     }))
   });
 
@@ -557,11 +676,120 @@ const loadUnifiedCatalogItems = async (
   };
 };
 
+const filterItemsByPickerContext = (
+  items: UserCatalogIngredientDto[],
+  category: IngredientCategory,
+  subtype?: string | null
+) => items.filter((item) => {
+  if (item.category !== category) {
+    return false;
+  }
+
+  if (category === "fermentable" && subtype) {
+    return item.subtype === subtype;
+  }
+
+  return true;
+});
+
+const filterItemsByQuickStartFamily = (
+  items: UserCatalogIngredientDto[],
+  family: IngredientSearchFamilyScope | null
+) => {
+  if (!family) {
+    return items;
+  }
+
+  return items.filter((item) => matchesIngredientFamilyScope(family.presetQuery, {
+    displayName: item.displayName,
+    displayNameRu: item.nameRu ?? item.displayNameRu,
+    displayNameEn: item.nameEn ?? item.displayNameEn,
+    nameRu: item.nameRu,
+    nameEn: item.nameEn,
+    category: item.category,
+    sourceCategory: item.sourceCategory,
+    aliases: item.aliases.map((alias) => ({
+      alias: alias.alias,
+      aliasNormalized: alias.aliasNormalized,
+      source: alias.source,
+      isEnabled: alias.isEnabled
+    })),
+    searchTextNorm: buildSearchText(item),
+    brandName: item.brand ?? item.brandName,
+    manufacturer: item.producer ?? item.manufacturer,
+    productCode: item.productCode,
+    isFavorite: item.isFavorite,
+    source: item.source,
+    inventoryUsageCount: item.inventoryUsageCount,
+    recipeUsageCount: item.recipeUsageCount,
+    brandMarketCount: 0,
+    sourcesCount: item.sources.length,
+    packageVariantsCount: item.packageVariants.length,
+    packageVariants: item.packageVariants.map((variant) => ({
+      id: variant.id,
+      brand: variant.brand,
+      productNameEn: variant.productNameEn,
+      productNameRu: variant.productNameRu,
+      packageAmount: variant.packageAmount,
+      packageUnit: variant.packageUnit,
+      stockContentAmount: variant.stockContentAmount,
+      stockContentUnit: variant.stockContentUnit
+    }))
+  }));
+};
+
+const sortQuickStartItems = (items: UserCatalogIngredientDto[]) => items.slice().sort((left, right) => (
+  Number(right.isFavorite === true) - Number(left.isFavorite === true)
+  || right.inventoryUsageCount - left.inventoryUsageCount
+  || right.recipeUsageCount - left.recipeUsageCount
+  || right.updatedAt.getTime() - left.updatedAt.getTime()
+  || Number(right.source === "custom") - Number(left.source === "custom")
+  || left.primaryLabelRu.localeCompare(right.primaryLabelRu, "ru")
+));
+
+const buildScopeOnlyRankedItems = (
+  items: UserCatalogIngredientDto[]
+): RankedCatalogItem[] => sortQuickStartItems(items).map((item, index) => ({
+  item,
+  tier: 0,
+  score: Math.max(1, 1000 - index)
+}));
+
+export const listIngredientPickerQuickStart = async (
+  userId: string,
+  params: {
+    category: IngredientCategory;
+    subtype?: "malt" | "fermentable" | null;
+    recentReferences?: UserIngredientReference[];
+    recentLimit?: number;
+  }
+): Promise<IngredientPickerQuickStartResult> => {
+  const query = ingredientPickerQuickStartQuerySchema.parse(params);
+  if (!(query.category === "fermentable" && query.subtype === "malt")) {
+    return {
+      recent: []
+    };
+  }
+
+  const recentHydratedItems = await Promise.all(query.recentReferences.map((reference) => (
+    getIngredientSuggestionByRef(userId, reference.source, reference.id)
+  )));
+  const recent = recentHydratedItems
+    .filter((item): item is IngredientSuggestionItem => item !== null)
+    .filter((item) => item.category === query.category && item.subtype === query.subtype)
+    .slice(0, query.recentLimit);
+
+  return {
+    recent
+  };
+};
+
 export const searchUserCatalogIngredients = async (
   userId: string,
   params: CatalogSearchParams
 ): Promise<IngredientSearchResult> => {
   const query = ingredientSearchQuerySchema.parse(params);
+  const familyScope = resolveIngredientPickerQuickStartFamilyScope(query.family ?? null);
   const { allItems, catalogItems } = await loadUnifiedCatalogItems(userId, {
     type: query.type
   });
@@ -577,28 +805,63 @@ export const searchUserCatalogIngredients = async (
   const subtypeFilteredAllItems = query.subtype
     ? categoryFilteredAllItems.filter((item) => item.subtype === query.subtype)
     : categoryFilteredAllItems;
-  const searchableItems = params.includeCustom === false ? subtypeFilteredCatalogItems : subtypeFilteredAllItems;
-  const manufacturerScopedItems = filterItemsByManufacturer(searchableItems, query.manufacturer);
-  const brandMarketCounts = buildBrandMarketCountMap(manufacturerScopedItems);
-  const rankedItems = manufacturerScopedItems
-    .map((item) => buildRankedItem(item, query.q, brandMarketCounts))
-    .filter((item): item is RankedCatalogItem => item !== null)
-    .sort(sortRankedCatalogItems);
-  const refinements = buildManufacturerRefinements(rankedItems, query.manufacturer);
+  const scopedCatalogItems = filterItemsByQuickStartFamily(subtypeFilteredCatalogItems, familyScope);
+  const scopedAllItems = filterItemsByQuickStartFamily(subtypeFilteredAllItems, familyScope);
+  const searchableItems = params.includeCustom === false ? scopedCatalogItems : scopedAllItems;
+  const groupScopedItems = query.category === "consumable"
+    ? filterItemsByConsumableGroup(searchableItems, query.group)
+    : searchableItems;
+  const manufacturerScopedItems = filterItemsByManufacturer(groupScopedItems, query.manufacturer);
+  const favoriteScopedItems = filterItemsByFavoriteState(manufacturerScopedItems, query.favoritesOnly);
+  const normalizedQuery = normalizeSearchText(query.q);
+  const rankingQuery = normalizedQuery.length > 0
+    ? query.q
+    : (familyScope?.presetQuery ?? "");
+  const rankedItems = rankingQuery
+    ? (() => {
+      const brandMarketCounts = buildBrandMarketCountMap(favoriteScopedItems);
+
+      return favoriteScopedItems
+        .map((item) => buildRankedItem(item, rankingQuery, brandMarketCounts))
+        .filter((item): item is RankedCatalogItem => item !== null)
+        .sort(sortRankedCatalogItems);
+    })()
+    : buildScopeOnlyRankedItems(favoriteScopedItems);
+  const refinements: IngredientSearchRefinement[] = query.category === "consumable" && !query.group
+    ? buildConsumableGroupRefinements(rankedItems, query.group)
+    : buildManufacturerRefinements(rankedItems, query.manufacturer);
   const total = rankedItems.length;
   const items = rankedItems
     .slice(0, query.limit)
     .map(({ item, score }) => toIngredientSuggestionItem(item, score));
+  const normalizedGroup = normalizeSearchText(query.group ?? "");
   const normalizedManufacturer = normalizeSearchText(query.manufacturer ?? "");
+  const matchedManufacturerRefinement = normalizedManufacturer
+    ? refinements.find((refinement): refinement is IngredientManufacturerRefinement => (
+      refinement.type === "manufacturer"
+      && refinement.normalizedLabel === normalizedManufacturer
+    )) ?? null
+    : null;
   const appliedManufacturer = normalizedManufacturer
-    ? refinements.find((refinement) => refinement.normalizedLabel === normalizedManufacturer)
-      ?? {
-        type: "manufacturer" as const,
-        label: query.manufacturer ?? "",
-        normalizedLabel: normalizedManufacturer,
-        count: total,
-        score: rankedItems[0]?.score ?? 0
-      }
+    ? matchedManufacturerRefinement ?? {
+      type: "manufacturer" as const,
+      label: query.manufacturer ?? "",
+      normalizedLabel: normalizedManufacturer,
+      value: query.manufacturer ?? "",
+      count: total,
+      score: rankedItems[0]?.score ?? 0
+    }
+    : null;
+  const appliedGroup = normalizedGroup
+    ? {
+      type: "consumable_group" as const,
+      label: resolveConsumablePickerGroupLabel(query.group) ?? query.group ?? "",
+      normalizedLabel: normalizedGroup,
+      value: query.group ?? "",
+      count: total,
+      score: rankedItems[0]?.score ?? 0,
+      description: resolveConsumablePickerGroupDescription(query.group)
+    }
     : null;
 
   return {
@@ -607,7 +870,10 @@ export const searchUserCatalogIngredients = async (
     total,
     isBroadMatch: total > ingredientSearchSimpleModeThreshold,
     hasMore: total > items.length,
-    appliedManufacturer
+    appliedManufacturer,
+    appliedGroup,
+    appliedFamily: familyScope,
+    appliedFavoritesOnly: query.favoritesOnly
   };
 };
 

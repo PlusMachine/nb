@@ -25,13 +25,16 @@ type PreparedSeedIngredient = {
 
 const scriptDir = path.dirname(fileURLToPath(import.meta.url));
 const ingredientsDir = path.resolve(scriptDir, "../../..", "ingredients/new");
+const externalCatalogSeedOverrides: Partial<Record<string, string>> = {
+  "consumables_v4_patch_proposal.json": "/mnt/data/consumables_v4_patch_proposal.json"
+};
 
 export const catalogSeedManifest: readonly CatalogSeedFileSpec[] = [
   { fileName: "hop_catalog_minimal_v2.json", type: "hop" },
   { fileName: "malt_catalog_minimal_v2.json", type: "malt" },
   { fileName: "fermentables_catalog_minimal_v2.json", type: "fermentable" },
   { fileName: "yeasts_catalog_minimal_v2.json", type: "yeast" },
-  { fileName: "consumables_unified_catalog_v3.json", type: "consumable" },
+  { fileName: "consumables_v4_patch_proposal.json", type: "consumable" },
   { fileName: "water_treatment_catalog_minimal_v2.json", type: "water_treatment" }
 ] as const;
 
@@ -85,7 +88,10 @@ export const normalizeCatalogAlias = (value: string) => value
   .trim();
 
 const readCatalogFile = (fileName: string): unknown => {
-  const filePath = path.join(ingredientsDir, fileName);
+  const externalPath = externalCatalogSeedOverrides[fileName];
+  const filePath = externalPath && fs.existsSync(externalPath)
+    ? externalPath
+    : path.join(ingredientsDir, fileName);
   return JSON.parse(fs.readFileSync(filePath, "utf8"));
 };
 
@@ -95,7 +101,29 @@ const countryCodeAliases: Record<string, string> = {
   RUS: "RU",
   BLR: "BY",
   UKR: "UA",
-  KAZ: "KZ"
+  KAZ: "KZ",
+  AUS: "AU",
+  ARG: "AR",
+  BRA: "BR",
+  CHN: "CN",
+  DEU: "DE",
+  DNK: "DK",
+  EGY: "EG",
+  FIN: "FI",
+  FRA: "FR",
+  GBR: "GB",
+  GEO: "GE",
+  GRC: "GR",
+  IDN: "ID",
+  IND: "IN",
+  IRN: "IR",
+  LVA: "LV",
+  MAR: "MA",
+  NZL: "NZ",
+  THA: "TH",
+  USA: "US",
+  UZB: "UZ",
+  VNM: "VN"
 };
 
 const countryNameToCode: Record<string, string> = {
@@ -105,12 +133,66 @@ const countryNameToCode: Record<string, string> = {
   "russian federation": "RU",
   "беларусь": "BY",
   "belarus": "BY",
+  "белоруссия": "BY",
   "канада": "CA",
   "canada": "CA",
+  "сша": "US",
+  "usa": "US",
+  "united states": "US",
+  "united states of america": "US",
+  "германия": "DE",
+  "germany": "DE",
+  "бельгия": "BE",
+  "belgium": "BE",
+  "великобритания": "GB",
+  "great britain": "GB",
+  "united kingdom": "GB",
+  "австралия": "AU",
+  "australia": "AU",
+  "австрия": "AT",
+  "austria": "AT",
+  "аргентина": "AR",
+  "argentina": "AR",
+  "бразилия": "BR",
+  "brazil": "BR",
+  "китай": "CN",
+  "china": "CN",
+  "дания": "DK",
+  "denmark": "DK",
+  "египет": "EG",
+  "egypt": "EG",
+  "финляндия": "FI",
+  "finland": "FI",
+  "франция": "FR",
+  "france": "FR",
+  "грузия": "GE",
+  "georgia": "GE",
+  "греция": "GR",
+  "greece": "GR",
+  "индонезия": "ID",
+  "indonesia": "ID",
+  "индия": "IN",
+  "india": "IN",
+  "иран": "IR",
+  "iran": "IR",
+  "латвия": "LV",
+  "latvia": "LV",
+  "марокко": "MA",
+  "morocco": "MA",
+  "н. зеландия": "NZ",
+  "н зеландия": "NZ",
+  "новая зеландия": "NZ",
+  "new zealand": "NZ",
+  "таиланд": "TH",
+  "thailand": "TH",
   "украина": "UA",
   "ukraine": "UA",
   "казахстан": "KZ",
-  "kazakhstan": "KZ"
+  "kazakhstan": "KZ",
+  "узбекистан": "UZ",
+  "uzbekistan": "UZ",
+  "вьетнам": "VN",
+  "vietnam": "VN"
 };
 
 const normalizeSeedCountryCode = (countryCode: unknown, countryName: unknown) => {
@@ -155,18 +237,48 @@ const buildAliasRows = (
         continue;
       }
 
-      deduped.set(`${group.locale}:${normalized}`, {
-        ingredientId,
-        locale: group.locale,
-        alias,
-        aliasNormalized: normalized,
-        source: group.source ?? "seed",
-        isEnabled: true
-      });
+      const key = `${group.locale}:${normalized}`;
+      if (!deduped.has(key)) {
+        deduped.set(key, {
+          ingredientId,
+          locale: group.locale,
+          alias,
+          aliasNormalized: normalized,
+          source: group.source ?? "seed",
+          isEnabled: true
+        });
+      }
     }
   }
 
   return Array.from(deduped.values());
+};
+
+const resolveFermentableExtractForm = (source: Record<string, unknown>) => {
+  if (readString(source.ingredient_type) !== "malt_extract") {
+    return null;
+  }
+
+  const context = normalizeCatalogAlias([
+    readString(source.name_ru),
+    readString(source.name_en),
+    ...readStringArray(source.aliases_ru),
+    ...readStringArray(source.aliases_en)
+  ].filter((value): value is string => value != null).join(" "));
+
+  if (!context) {
+    return null;
+  }
+
+  if (/\bdme\b/.test(context) || context.includes("spraymalt") || context.includes("сух")) {
+    return "dry";
+  }
+
+  if (/\blme\b/.test(context) || context.includes("liquid") || context.includes("жидк")) {
+    return "liquid";
+  }
+
+  return null;
 };
 
 const buildSourceRows = (
@@ -311,6 +423,7 @@ const prepareFermentable = (item: unknown): PreparedSeedIngredient => {
   if (!id) {
     throw new Error("Fermentable item is missing id");
   }
+  const extractForm = resolveFermentableExtractForm(source);
 
   return {
     ingredient: {
@@ -320,7 +433,9 @@ const prepareFermentable = (item: unknown): PreparedSeedIngredient => {
       nameEn: readString(source.name_en),
       displayModeRu: resolveDisplayModeRu("fermentable", null, null, null, source.name_ru),
       isActive: true,
+      countryCode: normalizeSeedCountryCode(null, source.country_name),
       countryName: readString(source.country_name),
+      producer: readString(source.producer),
       groupName: readString(source.group),
       itemKind: readString(source.ingredient_type),
       presentOnBirrf: readBoolean(source.present_on_birrf),
@@ -331,7 +446,8 @@ const prepareFermentable = (item: unknown): PreparedSeedIngredient => {
         color_lovibond: readNumber(source.color_lovibond),
         recommended_max_pct: readNumber(source.recommended_max_pct),
         is_usable_in_beer_gravity_calculations: readBoolean(source.is_usable_in_beer_gravity_calculations),
-        beer_relevance: readString(source.beer_relevance)
+        beer_relevance: readString(source.beer_relevance),
+        extract_form: extractForm
       }),
       quantityDefaults: null
     },
@@ -409,8 +525,9 @@ const prepareConsumable = (item: unknown): PreparedSeedIngredient => {
           id: variantId,
           ingredientId: id,
           brand: readString(variant.brand),
+          productNameEn: readString(variant.product_name_en),
           productNameRu: readString(variant.product_name_ru),
-          countryNameRu: readString(variant.country_name_ru),
+          countryNameRu: readString(variant.country_name_ru) ?? readString(variant.country_name_en),
           packageAmount: readNumber(packageInfo.amount),
           packageUnit: readString(packageInfo.unit),
           stockContentAmount: readNumber(stockContentInfo.amount),
@@ -438,11 +555,24 @@ const prepareConsumable = (item: unknown): PreparedSeedIngredient => {
       attributes: compactRecord({
         common_forms: readStringArray(source.common_forms),
         usage_stage: readStringArray(source.usage_stage),
-        dosage_reference: isRecord(source.dosage_reference) ? source.dosage_reference : null
+        dosage_reference: isRecord(source.dosage_reference) ? source.dosage_reference : null,
+        family_key: readString(source.family_key),
+        picker_group: readString(source.picker_group) ?? readString(source.category),
+        market_names_ru: readStringArray(source.market_names_ru),
+        market_names_en: readStringArray(source.market_names_en),
+        search_priority_terms_ru: readStringArray(source.search_priority_terms_ru),
+        search_priority_terms_en: readStringArray(source.search_priority_terms_en),
+        picker_function_ru: readString(source.picker_function_ru),
+        picker_usage_ru: readString(source.picker_usage_ru),
+        brand_family_mode: readString(source.brand_family_mode)
       }),
       quantityDefaults: isRecord(source.quantity_defaults) ? source.quantity_defaults : null
     },
     aliases: buildAliasRows(id, [
+      { locale: "ru", values: source.market_names_ru, source: "seed_market_name" },
+      { locale: "en", values: source.market_names_en, source: "seed_market_name" },
+      { locale: "ru", values: source.search_priority_terms_ru, source: "seed_priority_term" },
+      { locale: "en", values: source.search_priority_terms_en, source: "seed_priority_term" },
       { locale: "ru", values: source.aliases_ru },
       { locale: "en", values: source.aliases_en }
     ]),

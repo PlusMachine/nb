@@ -80,6 +80,7 @@ export type MaltTechnicalData = {
 export type FermentableTechnicalData = {
   type: "fermentable";
   fermentabilityClass?: string | null;
+  extractForm?: "dry" | "liquid" | null;
   extractPctDryBasis?: number | null;
   colorLovibond?: number | null;
   recommendedMaxPct?: number | null;
@@ -108,6 +109,15 @@ export type ConsumableTechnicalData = {
   commonForms?: string[];
   usageStage?: string[];
   dosageReference?: Record<string, unknown> | null;
+  familyKey?: string | null;
+  pickerGroup?: string | null;
+  marketNamesRu?: string[];
+  marketNamesEn?: string[];
+  searchPriorityTermsRu?: string[];
+  searchPriorityTermsEn?: string[];
+  pickerFunctionRu?: string | null;
+  pickerUsageRu?: string | null;
+  brandFamilyMode?: string | null;
 };
 
 export type WaterTreatmentTechnicalData = {
@@ -193,6 +203,7 @@ const ingredientSourceInputSchema = z.object({
 const ingredientPackageVariantInputSchema = z.object({
   id: z.string().trim().min(1).max(191),
   brand: optionalString(180),
+  productNameEn: optionalString(300),
   productNameRu: optionalString(300),
   countryNameRu: optionalString(180),
   packageAmount: nullableNumberField(),
@@ -206,12 +217,23 @@ const ingredientPackageVariantInputSchema = z.object({
 });
 
 export const ingredientSearchQuerySchema = z.object({
-  q: z.string().trim().min(1).max(120),
+  q: z.string().trim().max(120).default(""),
   type: z.enum(ingredientTypes).optional(),
   category: z.enum(ingredientCategories).optional(),
   subtype: z.enum(["malt", "fermentable"]).optional(),
+  family: z.string().trim().min(1).max(64).optional(),
+  group: z.string().trim().min(1).max(120).optional(),
   manufacturer: z.string().trim().min(1).max(180).optional(),
+  favoritesOnly: z.boolean().optional().default(false),
   limit: z.coerce.number().min(1).max(100).default(10)
+}).refine((value) => (
+  value.q.length > 0
+  || Boolean(value.family)
+  || Boolean(value.group)
+  || Boolean(value.manufacturer)
+  || value.favoritesOnly
+), {
+  message: "Search query or scope is required."
 });
 
 export const ingredientSearchSimpleModeThreshold = 10;
@@ -226,6 +248,13 @@ export const userIngredientReferenceSchema = z.object({
   id: z.string().trim().min(1).max(191)
 });
 export type UserIngredientReference = z.infer<typeof userIngredientReferenceSchema>;
+
+export const ingredientPickerQuickStartQuerySchema = z.object({
+  category: z.enum(ingredientCategories),
+  subtype: z.enum(["malt", "fermentable"]).nullable().optional(),
+  recentReferences: z.array(userIngredientReferenceSchema).max(12).default([]),
+  recentLimit: z.coerce.number().min(1).max(6).default(3)
+});
 
 export const ingredientPurchaseLinkMarketplaces = [
   "ozon",
@@ -325,6 +354,7 @@ export type IngredientSourceDto = {
 export type IngredientPackageVariantDto = {
   id: string;
   brand: string | null;
+  productNameEn: string | null;
   productNameRu: string | null;
   countryNameRu: string | null;
   packageAmount: number | null;
@@ -441,17 +471,46 @@ export type IngredientManufacturerRefinement = {
   type: "manufacturer";
   label: string;
   normalizedLabel: string;
+  value: string;
   count: number;
   score: number;
+  description?: string | null;
+};
+
+export type IngredientConsumableGroupRefinement = {
+  type: "consumable_group";
+  label: string;
+  normalizedLabel: string;
+  value: string;
+  count: number;
+  score: number;
+  description?: string | null;
+};
+
+export type IngredientSearchRefinement =
+  | IngredientManufacturerRefinement
+  | IngredientConsumableGroupRefinement;
+
+export type IngredientSearchFamilyScope = {
+  key: string;
+  label: string;
+  presetQuery: string;
 };
 
 export type IngredientSearchResult = {
   items: IngredientSuggestionItem[];
-  refinements: IngredientManufacturerRefinement[];
+  refinements: IngredientSearchRefinement[];
   total: number;
   isBroadMatch: boolean;
   hasMore: boolean;
   appliedManufacturer: IngredientManufacturerRefinement | null;
+  appliedGroup: IngredientConsumableGroupRefinement | null;
+  appliedFamily: IngredientSearchFamilyScope | null;
+  appliedFavoritesOnly: boolean;
+};
+
+export type IngredientPickerQuickStartResult = {
+  recent: IngredientSuggestionItem[];
 };
 
 export const ingredientCatalogViews = ["all", "mine"] as const;
@@ -486,6 +545,9 @@ export type UserCatalogIngredientDto = IngredientTechnicalFields & {
   countryCode: string | null;
   countryName: string | null;
   productCode: string | null;
+  sourceCategory: string | null;
+  subcategory: string | null;
+  itemKind: string | null;
   aliases: IngredientAliasDto[];
   sources: IngredientSourceDto[];
   packageVariants: IngredientPackageVariantDto[];

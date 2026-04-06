@@ -7,11 +7,16 @@ import { IngredientFavoriteToggle } from "@/components/ingredients/ingredient-fa
 import { CountryFlag, CountryFlagLabel } from "@/components/shared/country-flag";
 import type {
   IngredientCategory,
+  IngredientConsumableGroupRefinement,
+  IngredientSearchFamilyScope,
   IngredientManufacturerRefinement,
+  IngredientPickerQuickStartResult,
   IngredientSearchResult,
+  IngredientSearchRefinement,
   IngredientSuggestionItem,
   IngredientSubtype,
-  IngredientType
+  IngredientType,
+  UserIngredientReference
 } from "@/features/ingredients/contracts";
 import {
   ingredientSearchExpandedLimit,
@@ -24,10 +29,40 @@ import {
 import {
   ingredientCategoryLabels,
   buildIngredientTypedSummary,
+  type ResolvedIngredientCountry,
   resolveIngredientBrandLabel,
   resolveIngredientCountry,
-  resolveIngredientDisplayNames
+  resolveIngredientDisplayNames,
+  resolveIngredientFermentableKindLabel
 } from "@/features/ingredients/presentation";
+import { resolveIngredientTechnicalDataColorRangeEbc } from "@/features/ingredients/technical-fields";
+import { beerColorFromSrm } from "@/features/recipes/beer-color";
+import {
+  buildIngredientPickerQuickStartFamilySearchValue,
+  filterIngredientPickerRecentReferencesForContext,
+  ingredientPickerMaltQuickStartFamilies,
+  ingredientPickerQuickStartRecentStorageKey,
+  type IngredientPickerStoredRecentSelection,
+  resolveIngredientPickerQuickStartFamilyScope,
+  resolveIngredientPickerScopedPlaceholder,
+  sanitizeIngredientPickerStoredRecentSelections,
+  shouldShowIngredientQuickStart,
+  upsertIngredientPickerRecentSelections
+} from "@/features/ingredients/picker-quick-start";
+import {
+  buildConsumableMarketPrimaryLabel,
+  formatConsumablePackageLabel,
+  resolveConsumableMarketNames,
+  resolveConsumablePackageVariantName,
+  resolveConsumableTechnicalData
+} from "@/features/ingredients/consumables";
+
+export {
+  buildIngredientPickerQuickStartFamilySearchValue,
+  ingredientPickerMaltQuickStartFamilies,
+  resolveIngredientPickerScopedPlaceholder,
+  shouldShowIngredientQuickStart
+};
 
 type Props = {
   value?: string;
@@ -45,6 +80,7 @@ type Props = {
   emptyCta?: React.ReactNode;
   allowCatalogProposal?: boolean;
   includeCustom?: boolean;
+  enableQuickStart?: boolean;
   proposeIngredient?: (params: {
     q: string;
     type?: IngredientType;
@@ -55,20 +91,146 @@ type Props = {
     type?: IngredientType;
     category?: IngredientCategory;
     subtype?: Extract<IngredientSubtype, "malt" | "fermentable"> | null;
+    family?: string;
+    group?: string;
     manufacturer?: string;
+    favoritesOnly?: boolean;
     includeCustom?: boolean;
     limit: number;
     signal: AbortSignal;
   }) => Promise<IngredientSearchResult | IngredientSuggestionItem[]>;
+  loadQuickStartIngredients?: (params: {
+    category: IngredientCategory;
+    subtype?: Extract<IngredientSubtype, "malt" | "fermentable"> | null;
+    recentReferences: UserIngredientReference[];
+    signal: AbortSignal;
+  }) => Promise<IngredientPickerQuickStartResult>;
 };
 
 const isAbortError = (error: unknown) => error instanceof DOMException && error.name === "AbortError";
 const ingredientPickerCollapsedResultsCount = 6;
+export const ingredientPickerExpandedRecentCount = 10;
 
 type IngredientPickerSearchResponse = IngredientSearchResult | IngredientSuggestionItem[];
 
-export const shouldSearchIngredients = ({ isOpen, query }: { isOpen: boolean; query: string }) => (
-  isOpen && normalizeSearchText(query).length >= 2
+const formatIngredientPickerBadgeValue = (value: number) => (
+  value % 1 === 0 ? String(value) : value.toFixed(1).replace(/\.0$/, "")
+);
+
+const ingredientPickerEbcToSrm = (value: number) => value / 1.97;
+
+type IngredientPickerBadgeAccent = {
+  startHex: string;
+  averageHex: string;
+  endHex: string;
+};
+
+const resolveIngredientPickerMaltColorBadge = (
+  item: Pick<IngredientSuggestionItem, "technicalData">
+): { label: string; accent: IngredientPickerBadgeAccent | null } | null => {
+  const technicalData = item.technicalData;
+  if (!technicalData || (technicalData.type !== "malt" && technicalData.type !== "fermentable")) {
+    return null;
+  }
+
+  let startEbc: number | null = null;
+  let endEbc: number | null = null;
+  let label: string | null = null;
+
+  if (technicalData.type === "malt") {
+    const range = resolveIngredientTechnicalDataColorRangeEbc(technicalData);
+    if (range && (technicalData.colorEbcMin != null || technicalData.colorEbcMax != null)) {
+      startEbc = range.min;
+      endEbc = range.max;
+      label = range.min === range.max
+        ? `${formatIngredientPickerBadgeValue(range.min)} EBC`
+        : `${formatIngredientPickerBadgeValue(range.min)}-${formatIngredientPickerBadgeValue(range.max)} EBC`;
+    }
+  }
+
+  if (!label) {
+    const range = resolveIngredientTechnicalDataColorRangeEbc(technicalData);
+    if (!range) {
+      return null;
+    }
+
+    startEbc = range.min;
+    endEbc = range.max;
+    label = `${formatIngredientPickerBadgeValue(range.average)} EBC`;
+  }
+
+  const accent = startEbc != null && endEbc != null
+    ? (() => {
+      const averageEbc = (startEbc + endEbc) / 2;
+      const start = beerColorFromSrm(ingredientPickerEbcToSrm(startEbc));
+      const average = beerColorFromSrm(ingredientPickerEbcToSrm(averageEbc));
+      const end = beerColorFromSrm(ingredientPickerEbcToSrm(endEbc));
+
+      return {
+        startHex: start.hex,
+        averageHex: average.hex,
+        endHex: end.hex
+      };
+    })()
+    : null;
+
+  return { label, accent };
+};
+
+const resolveIngredientPickerExtractBadge = (
+  item: Pick<IngredientSuggestionItem, "technicalData">
+) => {
+  const technicalData = item.technicalData;
+  if (!technicalData || (technicalData.type !== "malt" && technicalData.type !== "fermentable")) {
+    return null;
+  }
+
+  const fermentable = technicalData as Extract<
+    NonNullable<typeof technicalData>,
+    { type: "malt" | "fermentable" }
+  >;
+
+  return fermentable.extractPctDryBasis != null
+    ? `Экст-ть ${formatIngredientPickerBadgeValue(fermentable.extractPctDryBasis)}%`
+    : null;
+};
+
+const IngredientPickerTechnicalPill = ({
+  label,
+  accent
+}: {
+  label: string;
+  accent?: IngredientPickerBadgeAccent | null;
+}) => (
+  <span
+    className={`relative inline-flex items-center rounded-md px-1.5 py-0.5 text-[10px] text-zinc-600 ring-1 ring-zinc-200/60 ${accent
+      ? "overflow-hidden bg-[linear-gradient(180deg,rgba(250,250,250,0.98),rgba(244,244,245,0.92))]"
+      : "bg-zinc-100/80"
+      }`}
+  >
+    <span className="relative z-10 truncate">{label}</span>
+    {accent ? (
+      <span
+        aria-hidden="true"
+        className="absolute inset-y-0 right-0 w-1"
+        style={{
+          backgroundImage: `linear-gradient(180deg, ${accent.startHex} 0%, ${accent.averageHex} 52%, ${accent.endHex} 100%)`
+        }}
+      />
+    ) : null}
+  </span>
+);
+
+export const shouldSearchIngredients = ({
+  isOpen,
+  query,
+  hasSearchScope = false
+}: {
+  isOpen: boolean;
+  query: string;
+  hasSearchScope?: boolean;
+}) => (
+  isOpen && (normalizeSearchText(query).length >= 2 || hasSearchScope)
 );
 
 export const shouldShowIngredientSuggestions = ({
@@ -89,7 +251,8 @@ export const shouldShowIngredientEmptyState = ({
   isOpen,
   itemsCount,
   refinementsCount = 0,
-  query
+  query,
+  hasSearchScope = false
 }: {
   hasResolvedQuery: boolean;
   isLoading: boolean;
@@ -97,27 +260,109 @@ export const shouldShowIngredientEmptyState = ({
   itemsCount: number;
   refinementsCount?: number;
   query: string;
+  hasSearchScope?: boolean;
 }) => (
   isOpen
-  && normalizeSearchText(query).length >= 2
+  && (normalizeSearchText(query).length >= 2 || hasSearchScope)
   && !isLoading
   && hasResolvedQuery
   && itemsCount === 0
   && refinementsCount === 0
 );
 
+export const shouldShowIngredientLoadingState = ({
+  hasResolvedQuery,
+  isOpen,
+  query,
+  hasSearchScope = false
+}: {
+  hasResolvedQuery: boolean;
+  isOpen: boolean;
+  query: string;
+  hasSearchScope?: boolean;
+}) => (
+  shouldSearchIngredients({
+    isOpen,
+    query,
+    hasSearchScope
+  }) && !hasResolvedQuery
+);
+
+export const resolveIngredientPickerLoadingLabel = ({
+  query,
+  hasSearchScope = false
+}: {
+  query: string;
+  hasSearchScope?: boolean;
+}) => (
+  normalizeSearchText(query).length > 0
+    ? "Ищем совпадения..."
+    : hasSearchScope
+      ? "Подбираем варианты по выбранным фильтрам..."
+      : "Ищем ингредиенты..."
+);
+
+export const IngredientPickerLoadingState = ({
+  label
+}: {
+  label: string;
+}) => (
+  <div
+    className="flex min-h-[12rem] items-center justify-center rounded-md border border-zinc-200 bg-white px-3 py-2.5 text-xs text-zinc-600 shadow-sm"
+    data-testid="ingredient-picker-loading"
+    role="status"
+    aria-live="polite"
+  >
+    <div className="flex items-center gap-2">
+      <span
+        aria-hidden="true"
+        className="h-3.5 w-3.5 shrink-0 animate-spin rounded-full border-2 border-zinc-300 border-t-zinc-700"
+      />
+      <span className="font-medium text-zinc-700">{label}</span>
+    </div>
+  </div>
+);
+
+export const countIngredientPickerActiveScopes = ({
+  activeFamily,
+  activeGroup,
+  activeManufacturer,
+  activeFavoritesOnly = false
+}: {
+  activeFamily?: IngredientSearchFamilyScope | null;
+  activeGroup?: IngredientConsumableGroupRefinement | null;
+  activeManufacturer?: IngredientManufacturerRefinement | null;
+  activeFavoritesOnly?: boolean;
+}) => (
+  Number(Boolean(activeFamily))
+  + Number(Boolean(activeGroup))
+  + Number(Boolean(activeManufacturer))
+  + Number(activeFavoritesOnly)
+);
+
+export const shouldShowIngredientScopeReset = ({
+  activeScopeCount
+}: {
+  activeScopeCount: number;
+}) => activeScopeCount >= 2;
+
 export const shouldUseIngredientRefinementMode = ({
   total,
-  refinementsCount,
-  activeManufacturer
+  refinements,
+  activeManufacturer,
+  activeGroup
 }: {
   total: number;
-  refinementsCount: number;
+  refinements: IngredientSearchRefinement[];
   activeManufacturer?: IngredientManufacturerRefinement | null;
+  activeGroup?: IngredientConsumableGroupRefinement | null;
 }) => (
   total > ingredientSearchSimpleModeThreshold
-  && refinementsCount > 0
-  && !activeManufacturer
+  && refinements.length > 0
+  && (
+    (refinements[0]?.type === "manufacturer" && !activeManufacturer)
+    || (refinements[0]?.type === "consumable_group" && !activeGroup)
+  )
 );
 
 export const shouldRemoveIngredientManufacturerOnBackspace = ({
@@ -134,24 +379,39 @@ export const shouldRemoveIngredientManufacturerOnBackspace = ({
   && Boolean(activeManufacturer)
 );
 
+export const shouldCloseIngredientPickerAfterBlur = ({
+  documentHasFocus,
+  nextFocusedInsidePicker
+}: {
+  documentHasFocus: boolean;
+  nextFocusedInsidePicker: boolean;
+}) => documentHasFocus && !nextFocusedInsidePicker;
+
 export const resolveIngredientPickerSearchQuery = ({
   query,
-  activeManufacturer
+  activeManufacturer,
+  activeGroup,
+  activeFamily
 }: {
   query: string;
   activeManufacturer?: IngredientManufacturerRefinement | null;
+  activeGroup?: IngredientConsumableGroupRefinement | null;
+  activeFamily?: IngredientSearchFamilyScope | null;
 }) => {
   const normalizedQuery = normalizeSearchText(query);
   if (normalizedQuery.length > 0) {
     return query;
   }
 
-  return activeManufacturer?.label ?? query;
+  return activeFamily?.presetQuery ?? query;
 };
 
 export const normalizeIngredientSearchResponse = (
   response: IngredientPickerSearchResponse,
-  fallbackManufacturer?: IngredientManufacturerRefinement | null
+  fallbackManufacturer?: IngredientManufacturerRefinement | null,
+  fallbackGroup?: IngredientConsumableGroupRefinement | null,
+  fallbackFamily?: IngredientSearchFamilyScope | null,
+  fallbackFavoritesOnly = false
 ): IngredientSearchResult => {
   if (Array.isArray(response)) {
     return {
@@ -160,7 +420,10 @@ export const normalizeIngredientSearchResponse = (
       total: response.length,
       isBroadMatch: response.length > ingredientSearchSimpleModeThreshold,
       hasMore: false,
-      appliedManufacturer: fallbackManufacturer ?? null
+      appliedManufacturer: fallbackManufacturer ?? null,
+      appliedGroup: fallbackGroup ?? null,
+      appliedFamily: fallbackFamily ?? null,
+      appliedFavoritesOnly: fallbackFavoritesOnly
     };
   }
 
@@ -170,7 +433,10 @@ export const normalizeIngredientSearchResponse = (
     total: response.total,
     isBroadMatch: response.isBroadMatch,
     hasMore: response.hasMore,
-    appliedManufacturer: response.appliedManufacturer ?? fallbackManufacturer ?? null
+    appliedManufacturer: response.appliedManufacturer ?? fallbackManufacturer ?? null,
+    appliedGroup: response.appliedGroup ?? fallbackGroup ?? null,
+    appliedFamily: response.appliedFamily ?? fallbackFamily ?? null,
+    appliedFavoritesOnly: response.appliedFavoritesOnly ?? fallbackFavoritesOnly
   };
 };
 
@@ -189,7 +455,7 @@ export const resolveVisibleIngredientItems = ({
 );
 
 export const countIngredientPickerRefinementCoverage = (
-  refinements: IngredientManufacturerRefinement[]
+  refinements: IngredientSearchRefinement[]
 ) => refinements.reduce((sum, refinement) => sum + refinement.count, 0);
 
 export const resolveIngredientPickerRequestedLimit = ({
@@ -221,7 +487,10 @@ export const buildIngredientSearchParams = ({
   type,
   category,
   subtype,
+  family,
+  group,
   manufacturer,
+  favoritesOnly = false,
   includeCustom = true,
   limit
 }: {
@@ -229,7 +498,10 @@ export const buildIngredientSearchParams = ({
   type?: IngredientType;
   category?: IngredientCategory;
   subtype?: Extract<IngredientSubtype, "malt" | "fermentable"> | null;
+  family?: string;
+  group?: string;
   manufacturer?: string;
+  favoritesOnly?: boolean;
   includeCustom?: boolean;
   limit: number;
 }) => {
@@ -243,8 +515,17 @@ export const buildIngredientSearchParams = ({
   if (subtype) {
     params.set("subtype", subtype);
   }
+  if (family) {
+    params.set("family", family);
+  }
+  if (group) {
+    params.set("group", group);
+  }
   if (manufacturer) {
     params.set("manufacturer", manufacturer);
+  }
+  if (favoritesOnly) {
+    params.set("favoritesOnly", "true");
   }
   if (!includeCustom) {
     params.set("includeCustom", "false");
@@ -258,7 +539,10 @@ export const buildIngredientCacheKey = ({
   type,
   category,
   subtype,
+  family,
+  group,
   manufacturer,
+  favoritesOnly,
   includeCustom,
   limit
 }: {
@@ -266,10 +550,13 @@ export const buildIngredientCacheKey = ({
   type?: IngredientType;
   category?: IngredientCategory;
   subtype?: Extract<IngredientSubtype, "malt" | "fermentable"> | null;
+  family?: string;
+  group?: string;
   manufacturer?: string;
+  favoritesOnly?: boolean;
   includeCustom?: boolean;
   limit: number;
-}) => `${normalizeSearchText(q)}::${type ?? ""}::${category ?? ""}::${subtype ?? ""}::${normalizeSearchText(manufacturer ?? "")}::${includeCustom === false ? "catalog" : "all"}::${limit}`;
+}) => `${normalizeSearchText(q)}::${type ?? ""}::${category ?? ""}::${subtype ?? ""}::${normalizeSearchText(family ?? "")}::${normalizeSearchText(group ?? "")}::${normalizeSearchText(manufacturer ?? "")}::${favoritesOnly ? "favorites" : "all-items"}::${includeCustom === false ? "catalog" : "all"}::${limit}`;
 
 const shouldPromoteBrandToPrimaryRow = (item: IngredientSuggestionItem) => (
   item.type === "hop" || item.subtype === "malt"
@@ -335,6 +622,53 @@ const buildDedupedSubtitle = (parts: Array<string | null | undefined>) => {
     .join(" • ") || null;
 };
 
+const resolveIngredientPickerMetaSummary = ({
+  subtitle,
+  brandLabel
+}: {
+  subtitle?: string | null;
+  brandLabel?: string | null;
+}) => stripBrandFromSubtitle(subtitle ?? undefined, brandLabel ?? null);
+
+const IngredientPickerMetaLine = ({
+  brandLabel,
+  country,
+  summary,
+  compact = false
+}: {
+  brandLabel?: string | null;
+  country?: ResolvedIngredientCountry | null;
+  summary?: string | null;
+  compact?: boolean;
+}) => {
+  if (!brandLabel && !country?.code && !summary) {
+    return null;
+  }
+
+  return (
+    <div className={compact
+      ? "flex min-w-0 flex-wrap items-center gap-x-1 gap-y-0.5 text-[11px] text-zinc-500"
+      : "flex flex-wrap items-center gap-x-1.5 gap-y-0.5 text-xs text-zinc-500"}
+    >
+      {brandLabel ? (
+        <span className="font-medium text-zinc-700">{brandLabel}</span>
+      ) : null}
+      {country?.code ? (
+        <CountryFlag
+          countryCode={country.code}
+          className={compact ? "h-2.5 w-3 shrink-0 ring-0" : "h-3 w-4 shrink-0"}
+        />
+      ) : null}
+      {summary ? (
+        <>
+          {(brandLabel || country?.code) ? <span aria-hidden="true">•</span> : null}
+          <span className={compact ? "truncate" : undefined}>{summary}</span>
+        </>
+      ) : null}
+    </div>
+  );
+};
+
 const resolveIngredientOwnershipBadgeLabel = (item: Pick<IngredientSuggestionItem, "source" | "derivedFromIngredientId">) => {
   if (item.source !== "custom") {
     return null;
@@ -343,9 +677,97 @@ const resolveIngredientOwnershipBadgeLabel = (item: Pick<IngredientSuggestionIte
   return item.derivedFromIngredientId ? "ИЗМЕНЕННЫЙ" : "СВОЙ";
 };
 
+const functionalConsumableTerms = [
+  "санитайзер",
+  "мойка",
+  "осветлитель",
+  "осветление",
+  "подкормка",
+  "пеногаситель",
+  "антиоксидант",
+  "фермент",
+  "кислота",
+  "щелочь"
+];
+
+const shouldPromoteConsumableAlias = (
+  item: IngredientSuggestionItem,
+  alias: string,
+  marketNames: string[]
+) => {
+  const normalizedAlias = normalizeSearchText(alias);
+  if (!normalizedAlias) {
+    return false;
+  }
+
+  if (marketNames.some((name) => normalizeSearchText(name) === normalizedAlias)) {
+    return true;
+  }
+
+  if (/[a-z0-9]/i.test(alias)) {
+    return true;
+  }
+
+  return !functionalConsumableTerms.some((term) => normalizedAlias.includes(term))
+    && normalizedAlias !== normalizeSearchText(item.primaryLabelRu ?? item.displayName);
+};
+
+const resolveMatchedConsumablePackageVariant = (item: IngredientSuggestionItem) => {
+  if (!item.packageVariants?.length) {
+    return null;
+  }
+
+  if (item.matchedPackageVariantId) {
+    const matched = item.packageVariants.find((variant) => variant.id === item.matchedPackageVariantId);
+    if (matched) {
+      return matched;
+    }
+  }
+
+  return item.packageVariants.find((variant) => variant.isDefaultForStock) ?? item.packageVariants[0] ?? null;
+};
+
 export const resolveIngredientPickerRowContent = (item: IngredientSuggestionItem) => {
-  const { primaryName, secondaryName } = resolveIngredientDisplayNames(item);
+  const { primaryName: basePrimaryName, secondaryName: baseSecondaryName } = resolveIngredientDisplayNames(item);
+  const consumableTechnicalData = resolveConsumableTechnicalData(item.technicalData);
+  if (consumableTechnicalData) {
+    const matchedVariant = resolveMatchedConsumablePackageVariant(item);
+    const marketNames = resolveConsumableMarketNames(item.technicalData);
+    const matchedVariantName = item.matchedPackageVariantName?.trim()
+      || resolveConsumablePackageVariantName(matchedVariant);
+    const promotedAlias = item.matchedAlias && shouldPromoteConsumableAlias(item, item.matchedAlias, marketNames)
+      ? item.matchedAlias.trim()
+      : null;
+    const marketPrimaryName = buildConsumableMarketPrimaryLabel(item.technicalData, null);
+    const primaryName = promotedAlias
+      ?? marketPrimaryName
+      ?? (item.matchType === "package" ? matchedVariantName : null)
+      ?? basePrimaryName;
+    const canonicalName = item.primaryLabelRu?.trim() || basePrimaryName;
+    const secondaryName = consumableTechnicalData.pickerFunctionRu?.trim()
+      || (normalizeSearchText(canonicalName) === normalizeSearchText(primaryName) ? baseSecondaryName : canonicalName);
+    const subtitle = buildDedupedSubtitle([
+      matchedVariant?.brand,
+      formatConsumablePackageLabel(matchedVariant),
+      consumableTechnicalData.pickerUsageRu,
+      item.matchType === "package" && matchedVariantName && normalizeSearchText(matchedVariantName) !== normalizeSearchText(primaryName)
+        ? matchedVariantName
+        : null
+    ]);
+
+    return {
+      primaryName,
+      secondaryName,
+      inlineBrand: null,
+      country: null,
+      subtitle
+    };
+  }
+
+  const primaryName = basePrimaryName;
+  const secondaryName = baseSecondaryName;
   const brandLabel = resolveIngredientBrandLabel(item);
+  const inlineKindLabel = resolveIngredientFermentableKindLabel(item);
   const inlineBrand = shouldPromoteBrandToPrimaryRow(item) && !isBrandAlreadyRepresentedInPrimaryName(primaryName, brandLabel)
     ? brandLabel
     : null;
@@ -363,6 +785,7 @@ export const resolveIngredientPickerRowContent = (item: IngredientSuggestionItem
   return {
     primaryName,
     secondaryName,
+    inlineKindLabel,
     inlineBrand,
     country,
     subtitle
@@ -394,11 +817,20 @@ export const IngredientSelectionCard = ({
   statusBadgeLabel = null,
   details
 }: IngredientSelectionCardProps) => {
-  const { primaryName, secondaryName, inlineBrand, country, subtitle } = resolveIngredientPickerRowContent(item);
+  const { primaryName, secondaryName, inlineKindLabel, inlineBrand, country, subtitle } = resolveIngredientPickerRowContent(item);
   const typedSummary = hideTypedSummary ? null : buildIngredientTypedSummary(item);
   const brandLabel = resolveIngredientBrandLabel(item);
   const ownershipBadgeLabel = resolveIngredientOwnershipBadgeLabel(item);
-  const topRowBrandLabel = mergeBrandAndCountry ? (inlineBrand ?? brandLabel) : inlineBrand;
+  const isGenericFermentable = item.type === "fermentable" && item.subtype === "fermentable";
+  const topRowBrandLabel = mergeBrandAndCountry && !isGenericFermentable
+    ? (inlineBrand ?? brandLabel)
+    : inlineBrand;
+  const lowerMetaSummary = hideSubtitle
+    ? null
+    : resolveIngredientPickerMetaSummary({
+      subtitle,
+      brandLabel: topRowBrandLabel ? null : brandLabel
+    });
 
   return (
     <div className={`rounded-lg border border-zinc-200 bg-zinc-50 px-3 py-3 ${className}`.trim()}>
@@ -440,10 +872,24 @@ export const IngredientSelectionCard = ({
               ) : null}
             </span>
           ) : null}
+          {inlineKindLabel ? (
+            <span className="rounded-full bg-white px-2 py-0.5 text-[11px] font-medium text-zinc-600 ring-1 ring-zinc-200">
+              {inlineKindLabel}
+            </span>
+          ) : null}
         </div>
         {secondaryName ? <div className="mt-0.5 text-xs text-zinc-500">{secondaryName}</div> : null}
+        {isGenericFermentable ? (
+          <div className="mt-2">
+            <IngredientPickerMetaLine
+              brandLabel={brandLabel}
+              country={country}
+              summary={lowerMetaSummary}
+            />
+          </div>
+        ) : null}
         <div className="mt-2 flex flex-wrap items-center gap-2 text-xs text-zinc-600">
-          {country && !mergeBrandAndCountry ? (
+          {country && !mergeBrandAndCountry && !isGenericFermentable ? (
             <span className="inline-flex items-center rounded-full bg-white px-2 py-1 ring-1 ring-zinc-200">
               <CountryFlagLabel
                 countryCode={country.code}
@@ -453,7 +899,7 @@ export const IngredientSelectionCard = ({
               />
             </span>
           ) : null}
-          {mergeBrandAndCountry || topRowBrandLabel || !brandLabel ? null : (
+          {mergeBrandAndCountry || topRowBrandLabel || !brandLabel || isGenericFermentable ? null : (
             <span className="rounded-full bg-white px-2 py-1 ring-1 ring-zinc-200">{brandLabel}</span>
           )}
           {typedSummary ? (
@@ -461,7 +907,7 @@ export const IngredientSelectionCard = ({
               {typedSummary}
             </span>
           ) : null}
-          {!hideSubtitle && subtitle && subtitle !== typedSummary ? (
+          {!hideSubtitle && !isGenericFermentable && subtitle && subtitle !== typedSummary ? (
             <span className="text-zinc-500">{subtitle}</span>
           ) : null}
         </div>
@@ -475,30 +921,298 @@ export const IngredientSelectionCard = ({
   );
 };
 
-type IngredientPickerManufacturerChipProps = {
-  refinement: IngredientManufacturerRefinement;
+type IngredientPickerScopePillProps = {
+  label: string;
+  removeLabel: string;
   onRemove: () => void;
+  testId?: string;
 };
+
+const IngredientPickerScopePill = ({
+  label,
+  removeLabel,
+  onRemove,
+  testId
+}: IngredientPickerScopePillProps) => (
+  <button
+    type="button"
+    onPointerDown={(event) => event.preventDefault()}
+    onClick={onRemove}
+    data-testid={testId}
+    className="inline-flex items-center gap-2 rounded-full bg-zinc-950 px-3 py-1.5 text-xs font-medium text-white"
+    aria-label={removeLabel}
+  >
+    <span>{label}</span>
+    <span aria-hidden="true" className="text-zinc-300">×</span>
+  </button>
+);
 
 export const IngredientPickerManufacturerChip = ({
   refinement,
   onRemove
-}: IngredientPickerManufacturerChipProps) => (
-  <div className="flex flex-wrap items-center gap-2" data-testid="ingredient-picker-manufacturer-chip">
-    <span className="text-[11px] font-semibold uppercase tracking-[0.14em] text-zinc-500">
-      Производитель
-    </span>
-    <button
-      type="button"
-      onClick={onRemove}
-      className="inline-flex items-center gap-2 rounded-full bg-zinc-950 px-3 py-1.5 text-xs font-medium text-white"
-      aria-label={`Убрать фильтр производителя ${refinement.label}`}
-    >
-      <span>{refinement.label}</span>
-      <span aria-hidden="true" className="text-zinc-300">×</span>
-    </button>
-  </div>
+}: {
+  refinement: IngredientManufacturerRefinement;
+  onRemove: () => void;
+}) => (
+  <IngredientPickerScopePill
+    label={refinement.label}
+    removeLabel={`Убрать производителя ${refinement.label}`}
+    onRemove={onRemove}
+    testId="ingredient-picker-manufacturer-chip"
+  />
 );
+
+const IngredientPickerGroupChip = ({
+  refinement,
+  onRemove
+}: {
+  refinement: IngredientConsumableGroupRefinement;
+  onRemove: () => void;
+}) => (
+  <IngredientPickerScopePill
+    label={refinement.label}
+    removeLabel={`Убрать группу ${refinement.label}`}
+    onRemove={onRemove}
+    testId="ingredient-picker-group-chip"
+  />
+);
+
+export const IngredientPickerFamilyChip = ({
+  family,
+  onRemove
+}: {
+  family: IngredientSearchFamilyScope;
+  onRemove: () => void;
+}) => (
+  <IngredientPickerScopePill
+    label={family.label}
+    removeLabel={`Убрать семейство ${family.label}`}
+    onRemove={onRemove}
+    testId="ingredient-picker-family-chip"
+  />
+);
+
+export const IngredientPickerFavoritesChip = ({
+  onRemove
+}: {
+  onRemove: () => void;
+}) => (
+  <IngredientPickerScopePill
+    label="Избранные"
+    removeLabel="Убрать фильтр Избранные"
+    onRemove={onRemove}
+    testId="ingredient-picker-favorites-chip"
+  />
+);
+
+const IngredientPickerQuickFilterButton = ({
+  label,
+  leadingIcon,
+  onClick,
+  testId
+}: {
+  label: React.ReactNode;
+  leadingIcon?: React.ReactNode;
+  onClick: () => void;
+  testId?: string;
+}) => (
+  <button
+    type="button"
+    onPointerDown={(event) => event.preventDefault()}
+    onClick={onClick}
+    data-testid={testId}
+    className="inline-flex items-center rounded-full border border-zinc-200 bg-zinc-50 px-3 py-1.5 text-xs font-medium text-zinc-800 transition-colors hover:border-zinc-300 hover:bg-zinc-100"
+  >
+    {leadingIcon ? <span aria-hidden="true" className="mr-1 text-[11px] text-amber-600">{leadingIcon}</span> : null}
+    {label}
+  </button>
+);
+
+export const IngredientPickerScopeResetButton = ({
+  onClick
+}: {
+  onClick: () => void;
+}) => (
+  <button
+    type="button"
+    onPointerDown={(event) => event.preventDefault()}
+    onClick={onClick}
+    data-testid="ingredient-picker-clear-all-scopes"
+    className="text-xs font-medium text-zinc-600 underline decoration-zinc-300 underline-offset-4 transition-colors hover:text-zinc-950"
+  >
+    Сбросить всё
+  </button>
+);
+
+export const ingredientPickerCollapsedRecentCount = 3;
+
+export const resolveIngredientPickerVisibleRecentItems = ({
+  recent,
+  showAllRecent
+}: {
+  recent: IngredientSuggestionItem[];
+  showAllRecent: boolean;
+}) => (
+  showAllRecent
+    ? recent.slice(0, ingredientPickerExpandedRecentCount)
+    : recent.slice(0, ingredientPickerCollapsedRecentCount)
+);
+
+export const shouldShowIngredientPickerRecentExpandAction = ({
+  recentCount
+}: {
+  recentCount: number;
+}) => recentCount > ingredientPickerCollapsedRecentCount;
+
+export const IngredientPickerQuickStartPanel = ({
+  recent,
+  onSelectItem,
+  onSelectFamily,
+  onToggleFavorites
+}: {
+  recent: IngredientSuggestionItem[];
+  onSelectItem: (item: IngredientSuggestionItem) => void;
+  onSelectFamily: (familyKey: (typeof ingredientPickerMaltQuickStartFamilies)[number]["key"]) => void;
+  onToggleFavorites: () => void;
+}) => {
+  const [showAllRecent, setShowAllRecent] = useState(false);
+  const visibleRecent = resolveIngredientPickerVisibleRecentItems({
+    recent,
+    showAllRecent
+  });
+  const hasHiddenRecent = shouldShowIngredientPickerRecentExpandAction({
+    recentCount: recent.length
+  }) && !showAllRecent;
+
+  return (
+    <div
+      className="min-h-[12rem] rounded-md border border-zinc-200 bg-white shadow-sm"
+      data-testid="ingredient-picker-quick-start"
+    >
+      <div className="space-y-3 px-3 py-3">
+        <section className="space-y-2" data-testid="ingredient-picker-quick-start-families">
+          <div className="space-y-1">
+            <div className="text-sm font-semibold text-zinc-950">
+              Подобрать солод
+            </div>
+            <div className="text-[10px] font-medium uppercase tracking-[0.12em] text-zinc-500">
+              По типу
+            </div>
+          </div>
+          <div className="flex flex-wrap gap-2" data-testid="ingredient-picker-quick-start-chip-row">
+            <IngredientPickerQuickFilterButton
+              label="Избранные"
+              leadingIcon="★"
+              onClick={onToggleFavorites}
+              testId="ingredient-picker-favorites-filter"
+            />
+            {ingredientPickerMaltQuickStartFamilies.map((family) => (
+              <button
+                key={family.key}
+                type="button"
+                onPointerDown={(event) => event.preventDefault()}
+                onClick={() => onSelectFamily(family.key)}
+                className="inline-flex items-center rounded-full border border-zinc-200 bg-zinc-50 px-3 py-1.5 text-xs font-medium text-zinc-800 transition-colors hover:border-zinc-300 hover:bg-zinc-100"
+              >
+                {family.label}
+              </button>
+            ))}
+          </div>
+        </section>
+
+        {recent.length > 0 ? (
+          <section className="space-y-2" data-testid="ingredient-picker-quick-start-recent">
+            <div className="text-[10px] font-medium uppercase tracking-[0.12em] text-zinc-500">
+              Недавние
+            </div>
+            <div className="overflow-hidden rounded-md border border-zinc-200 bg-zinc-50/80">
+              {visibleRecent.map((item) => {
+                const { primaryName, inlineKindLabel, inlineBrand, country, subtitle } = resolveIngredientPickerRowContent(item);
+                const ownershipBadgeLabel = resolveIngredientOwnershipBadgeLabel(item);
+                const colorBadge = resolveIngredientPickerMaltColorBadge(item);
+                const extractBadge = resolveIngredientPickerExtractBadge(item);
+                const brandLabel = resolveIngredientBrandLabel(item);
+                const lowerMetaSummary = resolveIngredientPickerMetaSummary({
+                  subtitle,
+                  brandLabel: inlineBrand ? null : brandLabel
+                });
+
+                return (
+                  <button
+                    key={`${item.source}:${item.id}`}
+                    type="button"
+                    onPointerDown={(event) => event.preventDefault()}
+                    onClick={() => onSelectItem(item)}
+                    data-testid="ingredient-picker-quick-start-recent-item"
+                    className="flex w-full items-center gap-2 border-b border-zinc-200/80 px-2.5 py-1 text-left transition-colors last:border-b-0 hover:bg-white/70"
+                  >
+                    <div className="min-w-0 flex-1">
+                      <div className="flex min-w-0 items-center gap-1.5">
+                        <span className="truncate text-[13px] font-medium text-zinc-950">{primaryName}</span>
+                        {inlineKindLabel ? (
+                          <span className="truncate rounded-full bg-white px-1.5 py-0.5 text-[10px] font-medium text-zinc-600 ring-1 ring-zinc-200">
+                            {inlineKindLabel}
+                          </span>
+                        ) : null}
+                        {inlineBrand ? (
+                          <span className="inline-flex min-w-0 items-center gap-1 text-[11px] font-medium text-zinc-600">
+                            <span aria-hidden="true" className="text-zinc-400">•</span>
+                            {country ? (
+                              <CountryFlag
+                                countryCode={country.code}
+                                className="h-2.5 w-3 shrink-0 ring-0"
+                              />
+                            ) : null}
+                            <span className="truncate">{inlineBrand}</span>
+                          </span>
+                        ) : null}
+                      </div>
+                      {!inlineBrand ? (
+                        <IngredientPickerMetaLine
+                          brandLabel={brandLabel}
+                          country={country}
+                          summary={lowerMetaSummary}
+                          compact
+                        />
+                      ) : null}
+                    </div>
+                    <div className="ml-auto flex shrink-0 items-center gap-1">
+                      {extractBadge ? (
+                        <IngredientPickerTechnicalPill label={extractBadge} />
+                      ) : null}
+                      {colorBadge ? (
+                        <IngredientPickerTechnicalPill
+                          label={colorBadge.label}
+                          accent={colorBadge.accent}
+                        />
+                      ) : null}
+                      {ownershipBadgeLabel ? (
+                        <span className="shrink-0 rounded-full bg-amber-50 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.12em] text-amber-700 ring-1 ring-amber-200">
+                          {ownershipBadgeLabel}
+                        </span>
+                      ) : null}
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+            {hasHiddenRecent ? (
+              <button
+                type="button"
+                onPointerDown={(event) => event.preventDefault()}
+                onClick={() => setShowAllRecent(true)}
+                data-testid="ingredient-picker-quick-start-show-more-recent"
+                className="text-xs font-medium text-zinc-600 underline decoration-zinc-300 underline-offset-4 transition-colors hover:text-zinc-950"
+              >
+                Показать ещё
+              </button>
+            ) : null}
+          </section>
+        ) : null}
+      </div>
+    </div>
+  );
+};
 
 const emptyIngredientSearchResult: IngredientSearchResult = {
   items: [],
@@ -506,7 +1220,10 @@ const emptyIngredientSearchResult: IngredientSearchResult = {
   total: 0,
   isBroadMatch: false,
   hasMore: false,
-  appliedManufacturer: null
+  appliedManufacturer: null,
+  appliedGroup: null,
+  appliedFamily: null,
+  appliedFavoritesOnly: false
 };
 
 const defaultSearchIngredients = async ({
@@ -514,7 +1231,10 @@ const defaultSearchIngredients = async ({
   type,
   category,
   subtype,
+  family,
+  group,
   manufacturer,
+  favoritesOnly,
   includeCustom,
   limit,
   signal
@@ -523,12 +1243,15 @@ const defaultSearchIngredients = async ({
   type?: IngredientType;
   category?: IngredientCategory;
   subtype?: Extract<IngredientSubtype, "malt" | "fermentable"> | null;
+  family?: string;
+  group?: string;
   manufacturer?: string;
+  favoritesOnly?: boolean;
   includeCustom?: boolean;
   limit: number;
   signal: AbortSignal;
 }) => {
-  const params = buildIngredientSearchParams({ q, type, category, subtype, manufacturer, includeCustom, limit });
+  const params = buildIngredientSearchParams({ q, type, category, subtype, family, group, manufacturer, favoritesOnly, includeCustom, limit });
   const response = await fetch(`/api/ingredients/search?${params.toString()}`, { signal });
   if (!response.ok) {
     return {
@@ -537,12 +1260,96 @@ const defaultSearchIngredients = async ({
         type: "manufacturer" as const,
         label: manufacturer,
         normalizedLabel: normalizeSearchText(manufacturer),
+        value: manufacturer,
         count: 0,
         score: 0
-      } : null
+      } : null,
+      appliedGroup: group ? {
+        type: "consumable_group" as const,
+        label: group,
+        normalizedLabel: normalizeSearchText(group),
+        value: group,
+        count: 0,
+        score: 0
+      } : null,
+      appliedFamily: resolveIngredientPickerQuickStartFamilyScope(family ?? null),
+      appliedFavoritesOnly: favoritesOnly ?? false
     };
   }
   return await response.json() as IngredientSearchResult;
+};
+
+const readStoredIngredientPickerRecentSelections = () => {
+  if (typeof window === "undefined") {
+    return [];
+  }
+
+  try {
+    const raw = window.localStorage.getItem(ingredientPickerQuickStartRecentStorageKey);
+    if (!raw) {
+      return [];
+    }
+
+    return sanitizeIngredientPickerStoredRecentSelections(JSON.parse(raw));
+  } catch {
+    return [];
+  }
+};
+
+const persistIngredientPickerRecentSelections = (
+  item: Pick<IngredientSuggestionItem, "source" | "id" | "category" | "subtype">,
+  options?: {
+    fallbackCategory?: IngredientCategory;
+    fallbackSubtype?: IngredientSubtype | null;
+  }
+) => {
+  if (typeof window === "undefined") {
+    return;
+  }
+
+  try {
+    const current = readStoredIngredientPickerRecentSelections();
+    const next = upsertIngredientPickerRecentSelections(current, item, {
+      fallbackCategory: options?.fallbackCategory,
+      fallbackSubtype: options?.fallbackSubtype
+    });
+    window.localStorage.setItem(ingredientPickerQuickStartRecentStorageKey, JSON.stringify(next));
+  } catch {
+    // Ignore storage failures; quick-start can still work without recent history.
+  }
+};
+
+const defaultLoadQuickStartIngredients = async ({
+  category,
+  subtype,
+  recentReferences,
+  signal
+}: {
+  category: IngredientCategory;
+  subtype?: Extract<IngredientSubtype, "malt" | "fermentable"> | null;
+  recentReferences: UserIngredientReference[];
+  signal: AbortSignal;
+}) => {
+  const response = await fetch("/api/ingredients/picker-quick-start", {
+    method: "POST",
+    signal,
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      category,
+      subtype: subtype ?? null,
+      recentReferences
+    })
+  });
+
+  if (!response.ok) {
+    return {
+      recent: []
+    };
+  }
+
+  return await response.json() as IngredientPickerQuickStartResult;
 };
 
 const defaultProposeIngredient = async ({
@@ -593,12 +1400,23 @@ export const IngredientPicker = ({
   emptyCta,
   allowCatalogProposal = true,
   includeCustom = true,
+  enableQuickStart = false,
   proposeIngredient = defaultProposeIngredient,
-  searchIngredients = defaultSearchIngredients
+  searchIngredients = defaultSearchIngredients,
+  loadQuickStartIngredients = defaultLoadQuickStartIngredients
 }: Props) => {
   const [query, setQuery] = useState(value ?? "");
   const [searchResult, setSearchResult] = useState<IngredientSearchResult>(emptyIngredientSearchResult);
+  const [quickStartData, setQuickStartData] = useState<IngredientPickerQuickStartResult>({
+    recent: []
+  });
+  const [recentSelections, setRecentSelections] = useState<IngredientPickerStoredRecentSelection[]>([]);
+  const [hasHydratedRecentSelections, setHasHydratedRecentSelections] = useState(false);
+  const [activeQuickStartFamily, setActiveQuickStartFamily] = useState<IngredientSearchFamilyScope | null>(null);
+  const [activeGroup, setActiveGroup] = useState<IngredientConsumableGroupRefinement | null>(null);
   const [activeManufacturer, setActiveManufacturer] = useState<IngredientManufacturerRefinement | null>(null);
+  const [activeFavoritesOnly, setActiveFavoritesOnly] = useState(false);
+  const [suppressQuickStart, setSuppressQuickStart] = useState(false);
   const [activeIndex, setActiveIndex] = useState(0);
   const [isOpen, setIsOpen] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
@@ -606,20 +1424,59 @@ export const IngredientPicker = ({
   const [hasResolvedQuery, setHasResolvedQuery] = useState(false);
   const [emptyStateMessage, setEmptyStateMessage] = useState<string | null>(null);
   const cacheRef = useRef(new Map<string, IngredientSearchResult>());
+  const quickStartCacheRef = useRef(new Map<string, IngredientPickerQuickStartResult>());
   const committedLabelRef = useRef(value ?? "");
   const inputRef = useRef<HTMLInputElement | null>(null);
+  const rootRef = useRef<HTMLDivElement | null>(null);
+  const blurTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const listboxId = useId();
+  const activeGroupValue = activeGroup?.value ?? undefined;
+  const activeGroupKey = activeGroup?.normalizedLabel ?? "";
   const activeManufacturerLabel = activeManufacturer?.label ?? undefined;
   const activeManufacturerKey = activeManufacturer?.normalizedLabel ?? "";
+  const activeQuickStartFamilyKey = activeQuickStartFamily?.key ?? "";
+  const appliedGroup = searchResult.appliedGroup ?? activeGroup;
   const appliedManufacturer = searchResult.appliedManufacturer ?? activeManufacturer;
+  const appliedQuickStartFamily = searchResult.appliedFamily ?? activeQuickStartFamily;
+  const appliedFavoritesOnly = searchResult.appliedFavoritesOnly || activeFavoritesOnly;
+  const quickStartRecentReferences = useMemo(() => filterIngredientPickerRecentReferencesForContext({
+    selections: recentSelections,
+    category,
+    subtype,
+    limit: 3
+  }), [category, recentSelections, subtype]);
+  const quickStartRecentReferencesKey = quickStartRecentReferences
+    .map((reference) => `${reference.source}:${reference.id}`)
+    .join("|");
   const effectiveSearchQuery = resolveIngredientPickerSearchQuery({
     query,
-    activeManufacturer: appliedManufacturer
+    activeManufacturer: appliedManufacturer,
+    activeGroup: appliedGroup,
+    activeFamily: appliedQuickStartFamily
+  });
+  const activeScopeCount = countIngredientPickerActiveScopes({
+    activeFamily: appliedQuickStartFamily,
+    activeGroup: appliedGroup,
+    activeManufacturer: appliedManufacturer,
+    activeFavoritesOnly: appliedFavoritesOnly
+  });
+  const hasSearchScope = activeScopeCount > 0;
+  const showQuickStart = shouldShowIngredientQuickStart({
+    enabled: enableQuickStart,
+    category,
+    subtype,
+    query,
+    hasExplicitSearchState: suppressQuickStart,
+    hasActiveFamilyScope: Boolean(appliedQuickStartFamily),
+    hasActiveFavoritesScope: appliedFavoritesOnly,
+    hasActiveManufacturer: Boolean(appliedManufacturer),
+    hasActiveGroup: Boolean(appliedGroup)
   });
   const refinementMode = shouldUseIngredientRefinementMode({
     total: searchResult.total,
-    refinementsCount: searchResult.refinements.length,
-    activeManufacturer: appliedManufacturer
+    refinements: searchResult.refinements,
+    activeManufacturer: appliedManufacturer,
+    activeGroup: appliedGroup
   });
   const visibleItems = useMemo(() => resolveVisibleIngredientItems({
     items: searchResult.items,
@@ -630,11 +1487,21 @@ export const IngredientPicker = ({
   useEffect(() => {
     setQuery(value ?? "");
     committedLabelRef.current = value ?? "";
-    setIsOpen((current) => current && (Boolean((value ?? "").trim()) || Boolean(activeManufacturerKey)));
-  }, [activeManufacturerKey, value]);
+    setIsOpen((current) => current && (
+      Boolean((value ?? "").trim())
+      || Boolean(activeManufacturerKey)
+      || Boolean(activeGroupKey)
+      || Boolean(activeQuickStartFamilyKey)
+      || activeFavoritesOnly
+    ));
+  }, [activeFavoritesOnly, activeGroupKey, activeManufacturerKey, activeQuickStartFamilyKey, value]);
 
   useEffect(() => {
+    setActiveQuickStartFamily(null);
+    setActiveGroup(null);
     setActiveManufacturer(null);
+    setActiveFavoritesOnly(false);
+    setSuppressQuickStart(false);
     setIsExpanded(false);
     setSearchResult(emptyIngredientSearchResult);
     setActiveIndex(0);
@@ -642,8 +1509,20 @@ export const IngredientPicker = ({
   }, [category, includeCustom, subtype, type]);
 
   useEffect(() => {
+    if (normalizeSearchText(query).length === 0) {
+      setSuppressQuickStart(false);
+    }
+  }, [query]);
+
+  useEffect(() => {
+    setQuickStartData({
+      recent: []
+    });
+  }, [category, enableQuickStart, subtype]);
+
+  useEffect(() => {
     setIsExpanded(false);
-  }, [activeManufacturer?.normalizedLabel, query]);
+  }, [activeFavoritesOnly, activeGroup?.normalizedLabel, activeManufacturer?.normalizedLabel, activeQuickStartFamily?.key, query]);
 
   useEffect(() => {
     if (!focusSignal) {
@@ -654,10 +1533,26 @@ export const IngredientPicker = ({
   }, [focusSignal]);
 
   useEffect(() => {
-    if (!shouldSearchIngredients({ isOpen, query: effectiveSearchQuery })) {
+    return () => {
+      if (blurTimeoutRef.current) {
+        clearTimeout(blurTimeoutRef.current);
+      }
+    };
+  }, []);
+
+  useEffect(() => {
+    setRecentSelections(readStoredIngredientPickerRecentSelections());
+    setHasHydratedRecentSelections(true);
+  }, []);
+
+  useEffect(() => {
+    if (!shouldSearchIngredients({ isOpen, query: effectiveSearchQuery, hasSearchScope })) {
       setSearchResult({
         ...emptyIngredientSearchResult,
-        appliedManufacturer: activeManufacturer
+        appliedGroup: activeGroup,
+        appliedManufacturer: activeManufacturer,
+        appliedFamily: activeQuickStartFamily,
+        appliedFavoritesOnly: activeFavoritesOnly
       });
       setActiveIndex(0);
       setIsLoading(false);
@@ -675,7 +1570,10 @@ export const IngredientPicker = ({
       type,
       category,
       subtype,
+      family: appliedQuickStartFamily?.key,
+      group: activeGroupValue,
       manufacturer: activeManufacturerLabel,
+      favoritesOnly: appliedFavoritesOnly,
       includeCustom,
       limit: requestedLimit
     });
@@ -698,7 +1596,10 @@ export const IngredientPicker = ({
           type,
           category,
           subtype,
+          family: appliedQuickStartFamily?.key,
+          group: activeGroupValue,
           manufacturer: activeManufacturerLabel,
+          favoritesOnly: appliedFavoritesOnly,
           includeCustom,
           limit: requestedLimit,
           signal: controller.signal
@@ -707,7 +1608,7 @@ export const IngredientPicker = ({
           return;
         }
 
-        const nextResult = normalizeIngredientSearchResponse(response, activeManufacturer);
+        const nextResult = normalizeIngredientSearchResponse(response, activeManufacturer, activeGroup, activeQuickStartFamily, activeFavoritesOnly);
         cacheRef.current.set(cacheKey, nextResult);
         setSearchResult(nextResult);
         setActiveIndex(0);
@@ -729,7 +1630,52 @@ export const IngredientPicker = ({
       clearTimeout(timer);
       controller.abort();
     };
-  }, [activeManufacturer, activeManufacturerKey, activeManufacturerLabel, category, effectiveSearchQuery, includeCustom, isExpanded, isOpen, limit, query, searchIngredients, subtype, type]);
+  }, [activeFavoritesOnly, activeGroup, activeGroupKey, activeGroupValue, activeManufacturer, activeManufacturerKey, activeManufacturerLabel, activeQuickStartFamily, appliedQuickStartFamily?.key, category, effectiveSearchQuery, hasSearchScope, includeCustom, isExpanded, isOpen, limit, query, searchIngredients, subtype, type]);
+
+  useEffect(() => {
+    if (!showQuickStart || !category || !hasHydratedRecentSelections) {
+      return;
+    }
+
+    const cacheKey = `${category}:${subtype ?? ""}:${quickStartRecentReferencesKey}`;
+    const cached = quickStartCacheRef.current.get(cacheKey);
+    if (cached) {
+      setQuickStartData(cached);
+      return;
+    }
+
+    const controller = new AbortController();
+    const run = async () => {
+      try {
+        const nextQuickStartData = await loadQuickStartIngredients({
+          category,
+          subtype,
+          recentReferences: quickStartRecentReferences,
+          signal: controller.signal
+        });
+        if (controller.signal.aborted) {
+          return;
+        }
+
+        quickStartCacheRef.current.set(cacheKey, nextQuickStartData);
+        setQuickStartData(nextQuickStartData);
+      } catch (error) {
+        if (isAbortError(error) || controller.signal.aborted) {
+          return;
+        }
+
+        setQuickStartData({
+          recent: []
+        });
+      }
+    };
+
+    void run();
+
+    return () => {
+      controller.abort();
+    };
+  }, [category, hasHydratedRecentSelections, loadQuickStartIngredients, quickStartRecentReferences, quickStartRecentReferencesKey, showQuickStart, subtype]);
 
   const grouped = useMemo(() => visibleItems.reduce<Record<string, IngredientSuggestionItem[]>>((acc, item) => {
     const groupKey = item.category ?? item.type;
@@ -741,11 +1687,26 @@ export const IngredientPicker = ({
   const showGroupHeaders = !category && Object.keys(grouped).length > 1;
 
   const commitSelection = (item: IngredientSuggestionItem) => {
+    if (enableQuickStart) {
+      persistIngredientPickerRecentSelections(item, {
+        fallbackCategory: category,
+        fallbackSubtype: subtype ?? null
+      });
+      setRecentSelections((current) => upsertIngredientPickerRecentSelections(current, item, {
+        fallbackCategory: category,
+        fallbackSubtype: subtype ?? null
+      }));
+    }
+
     committedLabelRef.current = item.displayName;
     setQuery(item.displayName);
     setIsOpen(false);
     setSearchResult(emptyIngredientSearchResult);
+    setActiveQuickStartFamily(null);
+    setActiveGroup(null);
     setActiveManufacturer(null);
+    setActiveFavoritesOnly(false);
+    setSuppressQuickStart(false);
     setActiveIndex(0);
     setIsExpanded(false);
     setIsLoading(false);
@@ -754,13 +1715,98 @@ export const IngredientPicker = ({
     onSelect(item);
   };
 
+  const applyScopedSearchState = ({
+    nextQuery = query,
+    nextFamily = appliedQuickStartFamily,
+    nextGroup = appliedGroup,
+    nextManufacturer = appliedManufacturer,
+    nextFavoritesOnly = appliedFavoritesOnly,
+    focusInput = false,
+    syncInputValue = false
+  }: {
+    nextQuery?: string;
+    nextFamily?: IngredientSearchFamilyScope | null;
+    nextGroup?: IngredientConsumableGroupRefinement | null;
+    nextManufacturer?: IngredientManufacturerRefinement | null;
+    nextFavoritesOnly?: boolean;
+    focusInput?: boolean;
+    syncInputValue?: boolean;
+  }) => {
+    const nextScopeCount = countIngredientPickerActiveScopes({
+      activeFamily: nextFamily ?? null,
+      activeGroup: nextGroup ?? null,
+      activeManufacturer: nextManufacturer ?? null,
+      activeFavoritesOnly: nextFavoritesOnly
+    });
+    const nextNormalizedQuery = normalizeSearchText(nextQuery);
+    setQuery(nextQuery);
+    setActiveQuickStartFamily(nextFamily ?? null);
+    setActiveGroup(nextGroup ?? null);
+    setActiveManufacturer(nextManufacturer ?? null);
+    setActiveFavoritesOnly(nextFavoritesOnly);
+    setSuppressQuickStart(
+      activeScopeCount > 0
+      && nextScopeCount === 0
+      && nextNormalizedQuery.length > 0
+    );
+    setSearchResult({
+      ...emptyIngredientSearchResult,
+      appliedFamily: nextFamily ?? null,
+      appliedGroup: nextGroup ?? null,
+      appliedManufacturer: nextManufacturer ?? null,
+      appliedFavoritesOnly: nextFavoritesOnly
+    });
+    setIsOpen(
+      Boolean(nextNormalizedQuery)
+      || Boolean(nextFamily)
+      || Boolean(nextGroup)
+      || Boolean(nextManufacturer)
+      || nextFavoritesOnly
+    );
+    setActiveIndex(0);
+    setIsExpanded(false);
+    setIsLoading(false);
+    setHasResolvedQuery(false);
+    setEmptyStateMessage(null);
+    if (
+      committedLabelRef.current
+      && normalizeSearchText(nextQuery) !== normalizeSearchText(committedLabelRef.current)
+    ) {
+      committedLabelRef.current = "";
+      onSelectionInvalidated?.();
+    }
+    if (syncInputValue) {
+      onValueChange?.(nextQuery);
+    }
+    if (focusInput) {
+      inputRef.current?.focus();
+    }
+  };
+
   const handleQueryChange = (
     nextValue: string,
-    options?: { nextManufacturer?: IngredientManufacturerRefinement | null }
+    options?: {
+      nextFamily?: IngredientSearchFamilyScope | null;
+      nextGroup?: IngredientConsumableGroupRefinement | null;
+      nextManufacturer?: IngredientManufacturerRefinement | null;
+      nextFavoritesOnly?: boolean;
+    }
   ) => {
     setQuery(nextValue);
-    const manufacturerForOpen = options?.nextManufacturer ?? activeManufacturer;
-    setIsOpen(Boolean(nextValue.trim()) || Boolean(manufacturerForOpen));
+    if (normalizeSearchText(nextValue).length === 0) {
+      setSuppressQuickStart(false);
+    }
+    const familyForOpen = options?.nextFamily ?? appliedQuickStartFamily;
+    const groupForOpen = options?.nextGroup ?? appliedGroup;
+    const manufacturerForOpen = options?.nextManufacturer ?? appliedManufacturer;
+    const favoritesForOpen = options?.nextFavoritesOnly ?? appliedFavoritesOnly;
+    setIsOpen(
+      Boolean(nextValue.trim())
+      || Boolean(familyForOpen)
+      || Boolean(groupForOpen)
+      || Boolean(manufacturerForOpen)
+      || favoritesForOpen
+    );
     setHasResolvedQuery(false);
     setEmptyStateMessage(null);
     if (
@@ -773,13 +1819,79 @@ export const IngredientPicker = ({
     onValueChange?.(nextValue);
   };
 
+  const activateQuickStartFamily = (familyKey: string) => {
+    const nextFamily = resolveIngredientPickerQuickStartFamilyScope(familyKey);
+    if (!nextFamily) {
+      return;
+    }
+
+    applyScopedSearchState({
+      nextQuery: "",
+      nextFamily,
+      nextGroup: appliedGroup,
+      nextManufacturer: appliedManufacturer,
+      nextFavoritesOnly: appliedFavoritesOnly,
+      focusInput: true,
+      syncInputValue: true
+    });
+  };
+
+  const clearQuickStartFamily = () => {
+    applyScopedSearchState({
+      nextFamily: null,
+      nextGroup: appliedGroup,
+      nextManufacturer: appliedManufacturer,
+      nextFavoritesOnly: appliedFavoritesOnly,
+      focusInput: true
+    });
+  };
+
+  const clearGroupFilter = () => {
+    applyScopedSearchState({
+      nextFamily: appliedQuickStartFamily,
+      nextGroup: null,
+      nextManufacturer: appliedManufacturer,
+      nextFavoritesOnly: appliedFavoritesOnly
+    });
+  };
+
   const clearManufacturerFilter = () => {
-    setActiveManufacturer(null);
-    setActiveIndex(0);
-    setHasResolvedQuery(false);
-    setIsExpanded(false);
-    setEmptyStateMessage(null);
-    setIsOpen(Boolean(normalizeSearchText(query)));
+    applyScopedSearchState({
+      nextFamily: appliedQuickStartFamily,
+      nextGroup: appliedGroup,
+      nextManufacturer: null,
+      nextFavoritesOnly: appliedFavoritesOnly
+    });
+  };
+
+  const toggleFavoritesFilter = () => {
+    applyScopedSearchState({
+      nextFamily: appliedQuickStartFamily,
+      nextGroup: appliedGroup,
+      nextManufacturer: appliedManufacturer,
+      nextFavoritesOnly: !appliedFavoritesOnly,
+      focusInput: true
+    });
+  };
+
+  const clearFavoritesFilter = () => {
+    applyScopedSearchState({
+      nextFamily: appliedQuickStartFamily,
+      nextGroup: appliedGroup,
+      nextManufacturer: appliedManufacturer,
+      nextFavoritesOnly: false,
+      focusInput: true
+    });
+  };
+
+  const clearAllScopes = () => {
+    applyScopedSearchState({
+      nextFamily: null,
+      nextGroup: null,
+      nextManufacturer: null,
+      nextFavoritesOnly: false,
+      focusInput: true
+    });
   };
 
   const showSuggestions = shouldShowIngredientSuggestions({
@@ -787,30 +1899,70 @@ export const IngredientPicker = ({
     itemsCount: visibleItems.length,
     refinementsCount: refinementMode ? searchResult.refinements.length : 0
   });
-  const isLoadingVisible = isLoading && isOpen && Boolean(normalizeSearchText(effectiveSearchQuery));
+  const isLoadingVisible = shouldShowIngredientLoadingState({
+    hasResolvedQuery,
+    isOpen,
+    query: effectiveSearchQuery,
+    hasSearchScope
+  });
+  const loadingLabel = resolveIngredientPickerLoadingLabel({
+    query: effectiveSearchQuery,
+    hasSearchScope
+  });
   const showEmptyState = shouldShowIngredientEmptyState({
     hasResolvedQuery,
     isLoading,
     isOpen,
     itemsCount: searchResult.items.length,
     refinementsCount: searchResult.refinements.length,
-    query: effectiveSearchQuery
+    query: effectiveSearchQuery,
+    hasSearchScope
   });
   const showExpandControl = !isExpanded && (
     searchResult.hasMore
     || visibleItems.length < searchResult.items.length
   );
-  const ingredientSectionTitle = appliedManufacturer
-    ? `Результаты: ${appliedManufacturer.label}`
-    : refinementMode
-      ? "Лучшие совпадения"
+  const activeScopeLabels = [
+    appliedQuickStartFamily?.label ?? null,
+    appliedManufacturer?.label ?? null,
+    appliedGroup?.label ?? null,
+    appliedFavoritesOnly ? "Избранные" : null
+  ].filter((label): label is string => Boolean(label));
+  const showScopeReset = shouldShowIngredientScopeReset({
+    activeScopeCount
+  });
+  const activeSearchContextLabel = activeScopeLabels.length === 1
+    ? activeScopeLabels[0] ?? null
+    : activeScopeLabels.length > 1
+      ? "выбранные фильтры"
       : null;
-  const inputPlaceholder = appliedManufacturer && !normalizeSearchText(query)
-    ? `Искать внутри ${appliedManufacturer.label}`
-    : placeholder;
-  const emptyStateQueryLabel = query.trim() || appliedManufacturer?.label || effectiveSearchQuery.trim();
+  const showResultsFavoritesQuickFilter = enableQuickStart
+    && category === "fermentable"
+    && subtype === "malt"
+    && !showQuickStart
+    && !appliedFavoritesOnly;
+  const currentRefinementType = searchResult.refinements[0]?.type ?? null;
+  const refinementPanelTitle = currentRefinementType === "consumable_group"
+    ? "Уточнить группу расходников"
+    : "Уточнить производителя";
+  const ingredientSectionTitle = activeScopeCount > 1
+    ? "Результаты по выбранным фильтрам"
+    : activeSearchContextLabel
+      ? `Результаты: ${activeSearchContextLabel}`
+      : refinementMode
+        ? "Лучшие совпадения"
+        : null;
+  const inputPlaceholder = resolveIngredientPickerScopedPlaceholder({
+    placeholder,
+    query,
+    activeManufacturerLabel: appliedManufacturer?.label ?? null,
+    activeGroupLabel: appliedGroup?.label ?? null,
+    activeFamilyLabel: appliedQuickStartFamily?.label ?? null,
+    activeFavoritesOnly: appliedFavoritesOnly
+  });
+  const emptyStateQueryLabel = query.trim() || activeSearchContextLabel || effectiveSearchQuery.trim();
   const expandedResultsSummary = isExpanded && searchResult.total > searchResult.items.length
-    ? `Показаны первые ${searchResult.items.length} из ${searchResult.total} совпадений. Уточните запрос или производителя.`
+    ? `Показаны первые ${searchResult.items.length} из ${searchResult.total} совпадений. Уточните запрос или используйте фильтры.`
     : null;
 
   const builtInEmptyState = (
@@ -848,12 +2000,12 @@ export const IngredientPicker = ({
   );
 
   const suggestionsPanel = showSuggestions ? (
-    <div className="rounded-md border bg-white shadow-sm">
+    <div className="min-h-[12rem] rounded-md border border-zinc-200 bg-white shadow-sm">
       {refinementMode ? (
         <div className="border-b border-zinc-200 px-3 py-3" data-testid="ingredient-picker-refinements">
           <div className="mb-2 flex items-center justify-between gap-3">
             <div className="text-xs font-medium text-zinc-500">
-              Уточнить производителя
+              {refinementPanelTitle}
             </div>
             <div className="text-xs text-zinc-500">
               {searchResult.total} совпадений
@@ -862,21 +2014,37 @@ export const IngredientPicker = ({
           <div className="flex flex-wrap gap-2">
             {searchResult.refinements.map((refinement) => (
               <button
-                key={refinement.normalizedLabel}
+                key={`${refinement.type}:${refinement.normalizedLabel}`}
                 type="button"
                 onPointerDown={(event) => event.preventDefault()}
                 onClick={() => {
-                  const rewrittenQuery = rewriteIngredientQueryForManufacturer({
-                    query,
-                    manufacturer: refinement.label
-                  });
-                  setActiveManufacturer(refinement);
-                  handleQueryChange(rewrittenQuery, { nextManufacturer: refinement });
+                  if (refinement.type === "manufacturer") {
+                    const rewrittenQuery = rewriteIngredientQueryForManufacturer({
+                      query,
+                      manufacturer: refinement.label
+                    });
+                    setActiveManufacturer(refinement);
+                    handleQueryChange(rewrittenQuery, {
+                      nextFamily: appliedQuickStartFamily,
+                      nextGroup: appliedGroup,
+                      nextManufacturer: refinement,
+                      nextFavoritesOnly: appliedFavoritesOnly
+                    });
+                  } else {
+                    setActiveGroup(refinement);
+                    setActiveManufacturer(null);
+                    handleQueryChange(query, {
+                      nextGroup: refinement,
+                      nextManufacturer: null,
+                      nextFavoritesOnly: appliedFavoritesOnly
+                    });
+                  }
                   setActiveIndex(0);
                   setIsExpanded(false);
                   setEmptyStateMessage(null);
                 }}
                 className="inline-flex items-center gap-2 rounded-full border border-zinc-200 bg-zinc-50 px-3 py-1.5 text-xs font-medium text-zinc-800 transition-colors hover:border-zinc-300 hover:bg-zinc-100"
+                title={refinement.description ?? undefined}
               >
                 <span>{refinement.label}</span>
                 <span className="rounded-full bg-white px-1.5 py-0.5 text-[10px] text-zinc-500 ring-1 ring-zinc-200">
@@ -911,8 +2079,13 @@ export const IngredientPicker = ({
                   candidate.id === item.id
                   && candidate.source === item.source
                 ));
-                const { primaryName, secondaryName, inlineBrand, country, subtitle } = resolveIngredientPickerRowContent(item);
+                const { primaryName, secondaryName, inlineKindLabel, inlineBrand, country, subtitle } = resolveIngredientPickerRowContent(item);
                 const ownershipBadgeLabel = resolveIngredientOwnershipBadgeLabel(item);
+                const brandLabel = resolveIngredientBrandLabel(item);
+                const lowerMetaSummary = resolveIngredientPickerMetaSummary({
+                  subtitle,
+                  brandLabel: inlineBrand ? null : brandLabel
+                });
 
                 return (
                   <div
@@ -936,6 +2109,11 @@ export const IngredientPicker = ({
                                 {ownershipBadgeLabel}
                               </span>
                             ) : null}
+                            {inlineKindLabel ? (
+                              <span className="truncate rounded-full bg-white px-2 py-0.5 text-[10px] font-medium text-zinc-600 ring-1 ring-zinc-200">
+                                {inlineKindLabel}
+                              </span>
+                            ) : null}
                             {inlineBrand ? (
                               <span className="inline-flex min-w-0 items-baseline gap-2 text-sm font-semibold text-zinc-700">
                                 <span aria-hidden="true" className="text-zinc-400">•</span>
@@ -944,20 +2122,28 @@ export const IngredientPicker = ({
                             ) : null}
                           </div>
                           {secondaryName ? <div className="text-xs text-zinc-500">{secondaryName}</div> : null}
-                          {country || subtitle ? (
-                            <div className="flex flex-wrap items-center gap-x-1.5 gap-y-0.5 text-xs text-zinc-500">
-                              {country ? (
-                                <CountryFlagLabel
-                                  countryCode={country.code}
-                                  label={country.label}
-                                  iconClassName="h-3 w-4"
-                                  className="gap-1"
-                                />
-                              ) : null}
-                              {country && subtitle ? <span aria-hidden="true">•</span> : null}
-                              {subtitle ? <span>{subtitle}</span> : null}
-                            </div>
-                          ) : null}
+                          {inlineBrand ? (
+                            country || subtitle ? (
+                              <div className="flex flex-wrap items-center gap-x-1.5 gap-y-0.5 text-xs text-zinc-500">
+                                {country ? (
+                                  <CountryFlagLabel
+                                    countryCode={country.code}
+                                    label={country.label}
+                                    iconClassName="h-3 w-4"
+                                    className="gap-1"
+                                  />
+                                ) : null}
+                                {country && subtitle ? <span aria-hidden="true">•</span> : null}
+                                {subtitle ? <span>{subtitle}</span> : null}
+                              </div>
+                            ) : null
+                          ) : (
+                            <IngredientPickerMetaLine
+                              brandLabel={brandLabel}
+                              country={country}
+                              summary={lowerMetaSummary}
+                            />
+                          )}
                         </div>
                       </button>
                       <IngredientFavoriteToggle
@@ -999,10 +2185,9 @@ export const IngredientPicker = ({
     </div>
   ) : null;
 
-  const loadingPanel = isLoadingVisible ? (
-    <div className="rounded-md border border-zinc-200 bg-white px-3 py-2 text-xs text-zinc-500 shadow-sm">
-      Ищем ингредиенты...
-    </div>
+  const showStandaloneLoadingPanel = isLoadingVisible && !showSuggestions;
+  const loadingPanel = showStandaloneLoadingPanel ? (
+    <IngredientPickerLoadingState label={loadingLabel} />
   ) : null;
 
   const emptyStatePanel = showEmptyState ? (
@@ -1012,29 +2197,92 @@ export const IngredientPicker = ({
       </div>
     ) : builtInEmptyState
   ) : null;
+  const quickStartPanel = showQuickStart ? (
+    <IngredientPickerQuickStartPanel
+      recent={quickStartData.recent}
+      onSelectItem={commitSelection}
+      onSelectFamily={activateQuickStartFamily}
+      onToggleFavorites={toggleFavoritesFilter}
+    />
+  ) : null;
 
   return (
-    <div className="space-y-2">
-      {appliedManufacturer ? (
-        <IngredientPickerManufacturerChip
-          refinement={appliedManufacturer}
-          onRemove={clearManufacturerFilter}
-        />
+    <div ref={rootRef} className="space-y-2">
+      {activeScopeCount > 0 || showResultsFavoritesQuickFilter ? (
+        <div className="flex flex-wrap items-center gap-2">
+          {appliedQuickStartFamily ? (
+            <IngredientPickerFamilyChip
+              family={appliedQuickStartFamily}
+              onRemove={clearQuickStartFamily}
+            />
+          ) : null}
+          {appliedManufacturer ? (
+            <IngredientPickerManufacturerChip
+              refinement={appliedManufacturer}
+              onRemove={clearManufacturerFilter}
+            />
+          ) : null}
+          {appliedGroup ? (
+            <IngredientPickerGroupChip
+              refinement={appliedGroup}
+              onRemove={clearGroupFilter}
+            />
+          ) : null}
+          {appliedFavoritesOnly ? (
+            <IngredientPickerFavoritesChip
+              onRemove={clearFavoritesFilter}
+            />
+          ) : null}
+          {showResultsFavoritesQuickFilter ? (
+            <IngredientPickerQuickFilterButton
+              label="Только избранные"
+              onClick={toggleFavoritesFilter}
+              testId="ingredient-picker-favorites-filter"
+            />
+          ) : null}
+          {showScopeReset ? (
+            <IngredientPickerScopeResetButton onClick={clearAllScopes} />
+          ) : null}
+        </div>
       ) : null}
       <div className="space-y-2">
-        <input
+        <div className="relative">
+          <input
           ref={inputRef}
           value={query}
           onChange={(event) => {
             handleQueryChange(event.target.value);
           }}
           autoFocus={autoFocus}
-          onFocus={() => setIsOpen(Boolean(normalizeSearchText(query)) || Boolean(appliedManufacturer))}
-          onBlur={() => setIsOpen(false)}
+          onFocus={() => setIsOpen(
+            Boolean(normalizeSearchText(query))
+            || Boolean(appliedManufacturer)
+            || Boolean(appliedGroup)
+            || Boolean(appliedQuickStartFamily)
+            || appliedFavoritesOnly
+          )}
+          onBlur={() => {
+            if (blurTimeoutRef.current) {
+              clearTimeout(blurTimeoutRef.current);
+            }
+
+            blurTimeoutRef.current = setTimeout(() => {
+              const nextFocusedInsidePicker = rootRef.current?.contains(document.activeElement) ?? false;
+              if (!shouldCloseIngredientPickerAfterBlur({
+                documentHasFocus: document.hasFocus(),
+                nextFocusedInsidePicker
+              })) {
+                return;
+              }
+
+              setIsOpen(false);
+            }, 0);
+          }}
           placeholder={inputPlaceholder}
-          className="h-10 w-full rounded-md border border-zinc-200 px-3 text-sm"
+          className={`h-10 w-full rounded-md border border-zinc-200 px-3 text-sm ${isLoadingVisible ? "pr-10" : ""}`}
           role="combobox"
           aria-expanded={isOpen}
+          aria-busy={isLoadingVisible}
           aria-controls={showSuggestions && visibleItems.length > 0 ? listboxId : undefined}
           aria-autocomplete="list"
           onKeyDown={(event) => {
@@ -1049,6 +2297,33 @@ export const IngredientPicker = ({
             })) {
               event.preventDefault();
               clearManufacturerFilter();
+              return;
+            }
+            if (
+              event.key === "Backspace"
+              && normalizeSearchText(query).length === 0
+              && appliedQuickStartFamily
+            ) {
+              event.preventDefault();
+              clearQuickStartFamily();
+              return;
+            }
+            if (
+              event.key === "Backspace"
+              && normalizeSearchText(query).length === 0
+              && appliedFavoritesOnly
+            ) {
+              event.preventDefault();
+              clearFavoritesFilter();
+              return;
+            }
+            if (
+              event.key === "Backspace"
+              && normalizeSearchText(query).length === 0
+              && appliedGroup
+            ) {
+              event.preventDefault();
+              clearGroupFilter();
               return;
             }
             if (visibleItems.length === 0) return;
@@ -1068,8 +2343,18 @@ export const IngredientPicker = ({
               }
             }
           }}
-        />
-        {isLoadingVisible ? loadingPanel : null}
+          />
+          {isLoadingVisible ? (
+            <span
+              aria-hidden="true"
+              className="pointer-events-none absolute inset-y-0 right-3 inline-flex items-center"
+            >
+              <span className="h-4 w-4 animate-spin rounded-full border-2 border-zinc-300 border-t-zinc-700" />
+            </span>
+          ) : null}
+        </div>
+        {quickStartPanel}
+        {loadingPanel}
         {showSuggestions ? suggestionsPanel : null}
         {showEmptyState ? emptyStatePanel : null}
       </div>

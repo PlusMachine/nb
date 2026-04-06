@@ -10,3 +10,4 @@ coverage
 *.log
 .drizzle
 .local-artifacts/
+*:Zone.Identifier

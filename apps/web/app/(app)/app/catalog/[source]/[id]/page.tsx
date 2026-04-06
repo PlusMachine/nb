@@ -10,9 +10,14 @@ import { getUserCatalogIngredientByRef } from "@/features/ingredients/catalog-se
 import type { IngredientTechnicalData } from "@/features/ingredients/contracts";
 import {
   formatIngredientSubtypeLabel,
+  resolveIngredientBrandLabel,
   resolveIngredientCountry,
   type ResolvedIngredientCountry
 } from "@/features/ingredients/presentation";
+import {
+  resolveIngredientTechnicalDataColorRangeEbc,
+  sanitizeIngredientColorValue
+} from "@/features/ingredients/technical-fields";
 import { requireUser } from "@/lib/auth";
 
 const buildActionHref = (
@@ -24,24 +29,23 @@ const buildActionHref = (
 const formatValue = (value: number) => value % 1 === 0 ? String(value) : value.toFixed(1).replace(/\.0$/, "");
 
 const resolveFermentableColor = (item: NonNullable<Awaited<ReturnType<typeof getUserCatalogIngredientByRef>>>) => {
-  if (item.fermentableColorLovibond != null) {
-    return `${formatValue(item.fermentableColorLovibond * 1.97)} EBC`;
-  }
-
   const technicalData = item.technicalData;
-  if (technicalData && technicalData.type === "malt" && technicalData.colorEbcMin != null && technicalData.colorEbcMax != null) {
-    const malt = technicalData as Extract<IngredientTechnicalData, { type: "malt" }>;
-    const colorEbcMin = malt.colorEbcMin!;
-    const colorEbcMax = malt.colorEbcMax!;
-    return colorEbcMin === colorEbcMax
-      ? `${formatValue(colorEbcMin)} EBC`
-      : `${formatValue(colorEbcMin)}-${formatValue(colorEbcMax)} EBC`;
+  if (technicalData && (technicalData.type === "malt" || technicalData.type === "fermentable")) {
+    const range = resolveIngredientTechnicalDataColorRangeEbc(technicalData);
+    if (range && technicalData.type === "malt" && (technicalData.colorEbcMin != null || technicalData.colorEbcMax != null)) {
+      return range.min === range.max
+        ? `${formatValue(range.min)} EBC`
+        : `${formatValue(range.min)}-${formatValue(range.max)} EBC`;
+    }
+
+    if (range) {
+      return `${formatValue(range.average)} EBC`;
+    }
   }
 
-  if (technicalData && technicalData.type === "malt" && technicalData.colorEbcMin != null) {
-    const malt = technicalData as Extract<IngredientTechnicalData, { type: "malt" }>;
-    const colorEbcMin = malt.colorEbcMin!;
-    return `${formatValue(colorEbcMin)} EBC`;
+  const colorLovibond = sanitizeIngredientColorValue(item.fermentableColorLovibond);
+  if (colorLovibond != null) {
+    return `${formatValue(colorLovibond * 1.97)} EBC`;
   }
 
   return null;
@@ -107,6 +111,7 @@ const renderTechnicalRows = (item: NonNullable<Awaited<ReturnType<typeof getUser
   const rows: TechnicalRow[] = [];
   const color = resolveFermentableColor(item);
   const technicalData = item.technicalData;
+  const brandLabel = resolveIngredientBrandLabel(item);
 
   if (item.hopAlphaAcidPct != null) {
     rows.push({ label: "Альфа-кислота", kind: "text", value: `${formatValue(item.hopAlphaAcidPct)}%` });
@@ -130,8 +135,8 @@ const renderTechnicalRows = (item: NonNullable<Awaited<ReturnType<typeof getUser
       value: `${item.yeastMinFermentationTempC ?? "?"}-${item.yeastMaxFermentationTempC ?? "?"} °C`
     });
   }
-  if (item.brand) {
-    rows.push({ label: "Бренд", kind: "text", value: item.brand });
+  if (brandLabel) {
+    rows.push({ label: "Бренд", kind: "text", value: brandLabel });
   }
   const country = resolveIngredientCountry(item);
   if (country) {
@@ -180,9 +185,10 @@ export default async function IngredientDetailPage({
     ? (item.subtype === "malt" ? "Солод" : "Сбраживаемое сырье")
     : formatIngredientSubtypeLabel(item.category, item.subtype);
   const subtleAliases = Array.from(new Set(item.aliases.map((alias) => alias.alias).filter(Boolean)));
+  const brandLabel = resolveIngredientBrandLabel(item);
   const metaBadges = Array.from(new Set([
     typeLabel,
-    item.brand ?? null
+    brandLabel
   ].filter(Boolean)));
   const country = resolveIngredientCountry(item);
 

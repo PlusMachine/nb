@@ -1,11 +1,13 @@
 import type { IngredientDisplayMode, IngredientTechnicalData } from "./contracts";
 import { normalizeSearchText } from "./normalization";
+import { resolveIngredientTechnicalDataColorRangeEbc } from "./technical-fields";
 import type { IngredientCategory, IngredientSubtype, LegacyIngredientType as IngredientType } from "./taxonomy";
 
 type IngredientPresentationSource = {
   category?: IngredientCategory | null;
   subtype?: IngredientSubtype | null;
   type?: IngredientType | null;
+  itemKind?: string | null;
   primaryLabelRu?: string | null;
   secondaryLabelRu?: string | null;
   displayName?: string | null;
@@ -57,11 +59,33 @@ const subtypeLabels: Record<string, string> = {
   other: "другое"
 };
 
+const fermentableItemKindLabels: Record<string, string> = {
+  raw_adjunct: "Несоложенка",
+  flaked_adjunct: "Хлопья",
+  flour_adjunct: "Мука",
+  torrefied_adjunct: "Торрефицированное сырье",
+  sugar: "Сахар",
+  syrup: "Сироп",
+  honey: "Мёд",
+  molasses: "Меласса",
+  fruit_or_vegetable: "Фрукты и овощи",
+  fruit_puree: "Фруктовое пюре",
+  juice: "Сок",
+  juice_concentrate: "Концентрат сока",
+  dried_fruit: "Сухофрукты",
+  kvass_concentrate: "Концентрат квасного сусла",
+  body_builder: "Телообразователь",
+  sour_wort: "Кислое сусло",
+  process_adjunct: "Технологическая добавка",
+  coloring_extract: "Красящий экстракт",
+  coloring_sugar: "Красящий сахар",
+  malt_corn_concentrate: "Солодово-кукурузный концентрат",
+  extract: "Экстракт"
+};
+
 const formatNumber = (value: number) => value.toLocaleString("en-US", {
   maximumFractionDigits: value % 1 === 0 ? 0 : 1
 });
-
-const lovibondToEbc = (value: number) => Number((value * 1.97).toFixed(1));
 
 const normalizeOptionalName = (value?: string | null) => {
   if (typeof value !== "string") {
@@ -92,7 +116,24 @@ const countryCodeAliases: Record<string, string> = {
   BEL: "BE",
   NLD: "NL",
   AUT: "AT",
+  AUS: "AU",
+  ARG: "AR",
+  BRA: "BR",
+  CHN: "CN",
+  DNK: "DK",
+  EGY: "EG",
+  GEO: "GE",
+  GRC: "GR",
+  IDN: "ID",
+  IND: "IN",
+  IRN: "IR",
+  LVA: "LV",
+  MAR: "MA",
+  NZL: "NZ",
   POL: "PL",
+  THA: "TH",
+  UZB: "UZ",
+  VNM: "VN",
   CZE: "CZ",
   SVK: "SK",
   FIN: "FI",
@@ -123,13 +164,44 @@ const countryNameToCode: Record<string, string> = {
   "great britain": "GB",
   "united kingdom": "GB",
   "england": "GB",
+  "австралия": "AU",
+  "australia": "AU",
+  "аргентина": "AR",
+  "argentina": "AR",
+  "бразилия": "BR",
+  "brazil": "BR",
+  "китай": "CN",
+  "china": "CN",
+  "дания": "DK",
+  "denmark": "DK",
+  "египет": "EG",
+  "egypt": "EG",
+  "грузия": "GE",
+  "georgia": "GE",
+  "греция": "GR",
+  "greece": "GR",
+  "индонезия": "ID",
+  "indonesia": "ID",
+  "индия": "IN",
+  "india": "IN",
+  "иран": "IR",
+  "iran": "IR",
+  "латвия": "LV",
+  "latvia": "LV",
+  "марокко": "MA",
+  "morocco": "MA",
   "нидерланды": "NL",
   "netherlands": "NL",
   "голландия": "NL",
+  "н зеландия": "NZ",
+  "новая зеландия": "NZ",
+  "new zealand": "NZ",
   "австрия": "AT",
   "austria": "AT",
   "польша": "PL",
   "poland": "PL",
+  "таиланд": "TH",
+  "thailand": "TH",
   "чехия": "CZ",
   "czech republic": "CZ",
   "czechia": "CZ",
@@ -137,10 +209,14 @@ const countryNameToCode: Record<string, string> = {
   "slovakia": "SK",
   "финляндия": "FI",
   "finland": "FI",
+  "узбекистан": "UZ",
+  "uzbekistan": "UZ",
   "украина": "UA",
   "ukraine": "UA",
   "казахстан": "KZ",
-  "kazakhstan": "KZ"
+  "kazakhstan": "KZ",
+  "вьетнам": "VN",
+  "vietnam": "VN"
 };
 
 export type ResolvedIngredientCountry = {
@@ -209,6 +285,74 @@ export const resolveIngredientBrandLabel = (
   ?? normalizeOptionalName(source.brandName)
   ?? normalizeOptionalName(source.manufacturer)
   ?? null;
+
+export const resolveIngredientFermentableKindLabel = (source: Pick<
+  IngredientPresentationSource,
+  | "category"
+  | "subtype"
+  | "type"
+  | "itemKind"
+  | "technicalData"
+  | "primaryLabelRu"
+  | "secondaryLabelRu"
+  | "displayName"
+  | "displayNameRu"
+  | "displayNameEn"
+  | "nameRu"
+  | "nameEn"
+>) => {
+  const itemKind = normalizeOptionalName(source.itemKind)?.toLowerCase();
+  if (!itemKind) {
+    return null;
+  }
+
+  const isFermentable = source.subtype === "fermentable"
+    || source.type === "fermentable"
+    || (source.category === "fermentable" && source.subtype !== "malt");
+  if (!isFermentable) {
+    return null;
+  }
+
+  if (itemKind === "malt_extract") {
+    const technicalData = source.technicalData && typeof source.technicalData === "object"
+      ? source.technicalData as IngredientTechnicalData
+      : null;
+    const extractForm = technicalData?.type === "fermentable"
+      && (technicalData.extractForm === "dry" || technicalData.extractForm === "liquid")
+      ? technicalData.extractForm
+      : null;
+
+    if (extractForm === "dry") {
+      return "Сухой солодовый экстракт";
+    }
+
+    if (extractForm === "liquid") {
+      return "Жидкий солодовый экстракт";
+    }
+
+    const context = normalizeSearchText([
+      source.primaryLabelRu,
+      source.secondaryLabelRu,
+      source.displayName,
+      source.displayNameRu,
+      source.displayNameEn,
+      source.nameRu,
+      source.nameEn
+    ].filter(Boolean).join(" "));
+
+    if (context.includes("dme") || context.includes("spraymalt") || context.includes("сух")) {
+      return "Сухой солодовый экстракт";
+    }
+
+    if (context.includes("lme") || context.includes("liquid") || context.includes("жидк")) {
+      return "Жидкий солодовый экстракт";
+    }
+
+    return "Солодовый экстракт";
+  }
+
+  return fermentableItemKindLabels[itemKind] ?? itemKind.replaceAll("_", " ");
+};
 
 export const formatIngredientCountry = (source: Pick<IngredientPresentationSource, "countryCode"> & {
   countryName?: string | null;
@@ -380,22 +524,15 @@ const buildHopSummary = (technicalData: Extract<IngredientTechnicalData, { type:
 );
 
 const resolveMaltColorSummary = (technicalData: Extract<IngredientTechnicalData, { type: "malt" }>) => {
-  if (technicalData.colorEbcMin != null && technicalData.colorEbcMax != null) {
-    return technicalData.colorEbcMin === technicalData.colorEbcMax
-      ? `${formatNumber(technicalData.colorEbcMin)} EBC`
-      : `${formatNumber(technicalData.colorEbcMin)}-${formatNumber(technicalData.colorEbcMax)} EBC`;
+  const range = resolveIngredientTechnicalDataColorRangeEbc(technicalData);
+  if (range && (technicalData.colorEbcMin != null || technicalData.colorEbcMax != null)) {
+    return range.min === range.max
+      ? `${formatNumber(range.min)} EBC`
+      : `${formatNumber(range.min)}-${formatNumber(range.max)} EBC`;
   }
 
-  if (technicalData.colorEbcMin != null) {
-    return `${formatNumber(technicalData.colorEbcMin)} EBC`;
-  }
-
-  if (technicalData.colorEbcMax != null) {
-    return `${formatNumber(technicalData.colorEbcMax)} EBC`;
-  }
-
-  if (technicalData.colorLovibond != null) {
-    return `${formatNumber(lovibondToEbc(technicalData.colorLovibond))} EBC`;
+  if (range) {
+    return `${formatNumber(range.average)} EBC`;
   }
 
   return null;
@@ -404,16 +541,18 @@ const resolveMaltColorSummary = (technicalData: Extract<IngredientTechnicalData,
 const buildMaltSummary = (technicalData: Extract<IngredientTechnicalData, { type: "malt" }>) => (
   [
     resolveMaltColorSummary(technicalData),
-    technicalData.extractPctDryBasis != null ? `Экстракт ${formatNumber(technicalData.extractPctDryBasis)}%` : null
+    technicalData.extractPctDryBasis != null ? `Экст-ть ${formatNumber(technicalData.extractPctDryBasis)}%` : null
   ].filter(Boolean).join(" • ")
 );
 
-const buildFermentableSummary = (technicalData: Extract<IngredientTechnicalData, { type: "fermentable" }>) => (
-  [
-    technicalData.colorLovibond != null ? `${formatNumber(lovibondToEbc(technicalData.colorLovibond))} EBC` : null,
-    technicalData.extractPctDryBasis != null ? `Экстракт ${formatNumber(technicalData.extractPctDryBasis)}%` : null
-  ].filter(Boolean).join(" • ")
-);
+const buildFermentableSummary = (technicalData: Extract<IngredientTechnicalData, { type: "fermentable" }>) => {
+  const colorRange = resolveIngredientTechnicalDataColorRangeEbc(technicalData);
+
+  return [
+    colorRange ? `${formatNumber(colorRange.average)} EBC` : null,
+    technicalData.extractPctDryBasis != null ? `Экст-ть ${formatNumber(technicalData.extractPctDryBasis)}%` : null
+  ].filter(Boolean).join(" • ");
+};
 
 const buildYeastSummary = (technicalData: Extract<IngredientTechnicalData, { type: "yeast" }>) => (
   [

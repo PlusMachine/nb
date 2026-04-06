@@ -13,7 +13,10 @@ export async function GET(request: Request) {
       type: searchParams.get("type") ?? undefined,
       category: searchParams.get("category") ?? undefined,
       subtype: searchParams.get("subtype") ?? undefined,
+      family: searchParams.get("family") ?? undefined,
+      group: searchParams.get("group") ?? undefined,
       manufacturer: searchParams.get("manufacturer") ?? undefined,
+      favoritesOnly: searchParams.get("favoritesOnly") === "true",
       limit: Number(searchParams.get("limit") ?? "10"),
       includeCustom: searchParams.get("includeCustom") !== "false"
     });

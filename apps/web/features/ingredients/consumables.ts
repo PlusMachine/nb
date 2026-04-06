@@ -1,0 +1,216 @@
+import type {
+  ConsumableTechnicalData,
+  IngredientPackageVariantDto,
+  IngredientTechnicalData
+} from "./contracts";
+
+const normalizeKey = (value: string | null | undefined) => value?.trim().toLowerCase() ?? "";
+
+const dedupeStrings = (values: Array<string | null | undefined>) => {
+  const seen = new Set<string>();
+  const result: string[] = [];
+
+  for (const value of values) {
+    if (typeof value !== "string") {
+      continue;
+    }
+
+    const trimmed = value.trim();
+    const key = normalizeKey(trimmed);
+    if (!trimmed || !key || seen.has(key)) {
+      continue;
+    }
+
+    seen.add(key);
+    result.push(trimmed);
+  }
+
+  return result;
+};
+
+export const consumablePickerGroupOrder = [
+  "sanitizer",
+  "cleaner",
+  "fining",
+  "enzyme",
+  "nutrient",
+  "antioxidant",
+  "defoamer",
+  "gas"
+] as const;
+
+export const consumablePickerGroupLabels: Record<string, string> = {
+  sanitizer: "Санитайзеры",
+  cleaner: "Мойка",
+  fining: "Осветление",
+  enzyme: "Ферменты",
+  nutrient: "Подкормки",
+  antioxidant: "Антиоксиданты",
+  defoamer: "Пеногасители",
+  gas: "Газы"
+};
+
+export const consumablePickerGroupDescriptions: Record<string, string> = {
+  sanitizer: "No-rinse, йодофор и CIP-санитайзеры",
+  cleaner: "Щелочная, кислородная и кислотная мойка",
+  fining: "Киповое и постферментационное осветление",
+  enzyme: "Ферменты для затора, ароматики и брожения",
+  nutrient: "Подкормки, ре-гидратация и дрожжевые оболочки",
+  antioxidant: "Стабилизация и защита от окисления",
+  defoamer: "Пеногасители для брожения и кипа",
+  gas: "CO2 и газовая расходка"
+};
+
+export const resolveConsumableTechnicalData = (
+  technicalData?: IngredientTechnicalData | null
+): ConsumableTechnicalData | null => (
+  technicalData?.type === "consumable"
+    ? technicalData as ConsumableTechnicalData
+    : null
+);
+
+export const resolveConsumablePickerGroup = (source: {
+  technicalData?: IngredientTechnicalData | null;
+  sourceCategory?: string | null;
+}) => {
+  const technicalData = resolveConsumableTechnicalData(source.technicalData);
+  return technicalData?.pickerGroup?.trim()
+    || source.sourceCategory?.trim()
+    || null;
+};
+
+export const resolveConsumablePickerGroupLabel = (value?: string | null) => {
+  const normalized = normalizeKey(value);
+  if (!normalized) {
+    return null;
+  }
+
+  return consumablePickerGroupLabels[normalized] ?? value?.trim() ?? null;
+};
+
+export const resolveConsumablePickerGroupDescription = (value?: string | null) => {
+  const normalized = normalizeKey(value);
+  if (!normalized) {
+    return null;
+  }
+
+  return consumablePickerGroupDescriptions[normalized] ?? null;
+};
+
+export const resolveConsumableMarketNames = (
+  technicalData?: IngredientTechnicalData | null
+) => {
+  const consumable = resolveConsumableTechnicalData(technicalData);
+  return dedupeStrings([
+    ...(consumable?.marketNamesRu ?? []),
+    ...(consumable?.marketNamesEn ?? [])
+  ]);
+};
+
+export const resolveConsumablePriorityTerms = (
+  technicalData?: IngredientTechnicalData | null
+) => {
+  const consumable = resolveConsumableTechnicalData(technicalData);
+  return dedupeStrings([
+    ...(consumable?.searchPriorityTermsRu ?? []),
+    ...(consumable?.searchPriorityTermsEn ?? [])
+  ]);
+};
+
+export const buildConsumableMarketPrimaryLabel = (
+  technicalData?: IngredientTechnicalData | null,
+  fallback?: string | null
+) => {
+  const marketNames = resolveConsumableMarketNames(technicalData);
+  if (marketNames.length === 0) {
+    return fallback?.trim() || null;
+  }
+
+  if (marketNames.length === 1) {
+    return marketNames[0] ?? fallback?.trim() ?? null;
+  }
+
+  const topThree = marketNames.slice(0, 3);
+  const joinedThree = topThree.join(" / ");
+  if (joinedThree.length <= 42) {
+    return joinedThree;
+  }
+
+  return marketNames.slice(0, 2).join(" / ");
+};
+
+const normalizePackageUnit = (value?: string | null) => {
+  const normalized = normalizeKey(value);
+  if (!normalized) {
+    return null;
+  }
+
+  if (normalized === "item") {
+    return "шт";
+  }
+
+  if (normalized === "l") {
+    return "l";
+  }
+
+  return value?.trim() ?? null;
+};
+
+export const formatConsumablePackageLabel = (variant?: Pick<
+  IngredientPackageVariantDto,
+  "packageAmount" | "packageUnit"
+> | null) => {
+  if (!variant || variant.packageAmount == null) {
+    return null;
+  }
+
+  const unit = normalizePackageUnit(variant.packageUnit);
+  if (!unit) {
+    return String(variant.packageAmount);
+  }
+
+  return `${variant.packageAmount} ${unit}`;
+};
+
+export const resolveConsumablePackageVariantName = (
+  variant?: Pick<IngredientPackageVariantDto, "brand" | "productNameEn" | "productNameRu"> | null
+) => {
+  if (!variant) {
+    return null;
+  }
+
+  const productName = variant.productNameEn?.trim() || variant.productNameRu?.trim() || null;
+  if (productName && variant.brand?.trim()) {
+    const normalizedProductName = normalizeKey(productName);
+    const normalizedBrand = normalizeKey(variant.brand);
+    if (normalizedProductName.includes(normalizedBrand)) {
+      return productName;
+    }
+
+    return `${variant.brand.trim()} ${productName}`;
+  }
+
+  return productName || variant.brand?.trim() || null;
+};
+
+export const buildConsumablePackageSearchLabels = (
+  variant: Pick<
+    IngredientPackageVariantDto,
+    "brand" | "productNameEn" | "productNameRu" | "packageAmount" | "packageUnit" | "stockContentAmount" | "stockContentUnit"
+  >
+) => {
+  const labels = dedupeStrings([
+    variant.productNameRu,
+    variant.productNameEn,
+    resolveConsumablePackageVariantName(variant),
+    formatConsumablePackageLabel(variant),
+    variant.stockContentAmount != null && variant.stockContentUnit
+      ? `${variant.stockContentAmount} ${normalizePackageUnit(variant.stockContentUnit) ?? variant.stockContentUnit}`
+      : null,
+    variant.packageAmount != null && variant.packageUnit
+      ? `${variant.packageAmount}${normalizePackageUnit(variant.packageUnit) ?? variant.packageUnit}`
+      : null
+  ]);
+
+  return labels;
+};

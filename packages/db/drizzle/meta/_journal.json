@@ -133,6 +133,12 @@
       "tag": "0021_ingredient_user_metadata",
       "when": 1780000000000,
       "breakpoints": true
+    },
+    {
+      "idx": 22,
+      "tag": "0022_ingredient_package_variants_product_name_en",
+      "when": 1781000000000,
+      "breakpoints": true
     }
   ]
 }

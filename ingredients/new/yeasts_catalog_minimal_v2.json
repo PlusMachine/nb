@@ -1,24 +1,25 @@
 {
   "dataset": "beer_yeasts_all_minimal",
   "schema_version": "v1_minimal_clean",
-  "scope": "Beer yeasts only; dry and liquid brewing yeast strains with emphasis on Russia-market relevance, searchable Russian names, and full current dry lineups for Lallemand, Fermentis, and Mangrove Jack’s.",
+  "scope": "Beer-first yeast catalog with dry and liquid brewing strains, expanded with selected cider/mead/wine yeasts that are popular on the Russian homebrewing market and often used by brewers for cider, mead, fruit ferments, stuck ferment restarts, or cross-over projects.",
   "stats": {
-    "total_items": 176,
-    "brands": 12,
-    "dry": 86,
+    "total_items": 191,
+    "brands": 13,
+    "dry": 101,
     "liquid": 90,
     "present_on_birrf_true": 91,
-    "popular_in_russia_true": 176,
+    "popular_in_russia_true": 191,
     "by_brand": {
       "ASP Lab": 56,
       "Angel Yeast": 5,
       "BeerGenomics": 11,
-      "BeerVingem": 6,
-      "Fermentis": 22,
+      "BeerVingem": 7,
+      "Fermentis": 26,
       "Gozdawa": 4,
       "GrainLab": 3,
-      "Lallemand": 25,
-      "Mangrove Jack's": 17,
+      "Lallemand": 26,
+      "Lalvin": 5,
+      "Mangrove Jack's": 21,
       "Omega Yeast": 7,
       "White Labs": 7,
       "Wyeast": 13
@@ -1129,7 +1130,7 @@
       "brand": "ASP Lab",
       "producer_country": "Russia",
       "product_code": "AL 505",
-      "name_ru": "Деннис Фэйворит",
+      "name_ru": "Денни’с Фейворит",
       "name_en": "Denny's Favorite",
       "form": "liquid",
       "yeast_family": "ale",
@@ -1146,7 +1147,13 @@
       "analog_reference": "Wyeast 1450",
       "source_urls": [
         "https://asplab.ru/yeast"
-      ]
+      ],
+      "aliases_ru": [
+        "Denny's Favorite",
+        "Деннис Фейворит",
+        "Денни Фейворит"
+      ],
+      "aliases_en": []
     },
     {
       "id": "asp-lab-al-506-barbarian",
@@ -1256,7 +1263,7 @@
       "brand": "ASP Lab",
       "producer_country": "Russia",
       "product_code": "AL 512",
-      "name_ru": "Kölsch II",
+      "name_ru": "Кёльш II",
       "name_en": "Kolsch II",
       "form": "liquid",
       "yeast_family": "ale",
@@ -1270,18 +1277,23 @@
       "source_basis": "official",
       "analog_reference": "WLP029",
       "aliases_ru": [
-        "Кёльш II"
+        "Кёльш II",
+        "Kolsch II",
+        "Kölsch II",
+        "Кольш II",
+        "Кёльн II"
       ],
       "source_urls": [
         "https://asplab.ru/yeast"
-      ]
+      ],
+      "aliases_en": []
     },
     {
       "id": "asp-lab-al-513-kolsch",
       "brand": "ASP Lab",
       "producer_country": "Russia",
       "product_code": "AL 513",
-      "name_ru": "Kölsch",
+      "name_ru": "Кёльш",
       "name_en": "Kolsch",
       "form": "liquid",
       "yeast_family": "ale",
@@ -1293,11 +1305,16 @@
       "source_basis": "official",
       "analog_reference": "W177",
       "aliases_ru": [
-        "Кёльш"
+        "Кёльш",
+        "Kolsch",
+        "Kölsch",
+        "Кольш",
+        "Кёльн"
       ],
       "source_urls": [
         "https://asplab.ru/yeast"
-      ]
+      ],
+      "aliases_en": []
     },
     {
       "id": "asp-lab-al-514-irish-ale",
@@ -2363,7 +2380,15 @@
       "aliases_ru": [
         "К-97",
         "кёльш",
-        "германский эль"
+        "германский эль",
+        "K97",
+        "К97",
+        "SafAle K-97",
+        "СафЭль K-97"
+      ],
+      "aliases_en": [
+        "K97",
+        "Fermentis K-97"
       ]
     },
     {
@@ -2438,7 +2463,15 @@
       "source_basis": "official+birrf",
       "pof": "negative",
       "aliases_ru": [
-        "ЭС-04"
+        "ЭС-04",
+        "S04",
+        "ЭС04",
+        "SafAle S-04",
+        "СафЭль S-04"
+      ],
+      "aliases_en": [
+        "S04",
+        "Fermentis S-04"
       ]
     },
     {
@@ -2597,7 +2630,16 @@
       "source_basis": "official+birrf",
       "pof": "negative",
       "aliases_ru": [
-        "ЮС-05"
+        "ЮС-05",
+        "US05",
+        "ЮС05",
+        "SafAle US-05",
+        "СафЭль US-05",
+        "Fermentis US-05"
+      ],
+      "aliases_en": [
+        "US05",
+        "Fermentis US-05"
       ]
     },
     {
@@ -2620,7 +2662,17 @@
       "source_basis": "official+birrf",
       "notes": "Один из самых популярных сухих лагерных штаммов.",
       "aliases_ru": [
-        "34/70"
+        "34/70",
+        "W34/70",
+        "34-70",
+        "34 70",
+        "СафЛагер 34/70",
+        "Fermentis W-34/70"
+      ],
+      "aliases_en": [
+        "W34/70",
+        "34-70",
+        "Fermentis W-34/70"
       ]
     },
     {
@@ -3357,7 +3409,9 @@
       "notes": "Чистый современный лагерный штамм.",
       "pof": "negative",
       "aliases_ru": [
-        "LalBrew NovaLager"
+        "LalBrew NovaLager",
+        "NovaLager",
+        "Нова Лагер"
       ],
       "aliases_en": [
         "LalBrew NovaLager"
@@ -3386,7 +3440,13 @@
       "notes": "Кислящий штамм для sour beer.",
       "aliases_ru": [
         "Кислый эль",
-        "кислые дрожжи"
+        "кислые дрожжи",
+        "Philly Sour",
+        "Филли Сауэр",
+        "WildBrew Philly Sour"
+      ],
+      "aliases_en": [
+        "WildBrew Philly Sour"
       ]
     },
     {
@@ -3411,7 +3471,8 @@
       "source_basis": "official+birrf",
       "notes": "Фруктовый современный эльовый штамм.",
       "aliases_ru": [
-        "LalBrew Pomona"
+        "LalBrew Pomona",
+        "Помона Эль"
       ],
       "aliases_en": [
         "LalBrew Pomona"
@@ -3439,10 +3500,14 @@
       "source_basis": "official+birrf",
       "aliases_ru": [
         "LalBrew Verdant IPA",
-        "Вердант ИПА"
+        "Вердант ИПА",
+        "Verdant",
+        "Вердант",
+        "LalBrew Verdant"
       ],
       "aliases_en": [
-        "LalBrew Verdant IPA"
+        "LalBrew Verdant IPA",
+        "LalBrew Verdant"
       ]
     },
     {
@@ -3466,10 +3531,15 @@
       "present_on_birrf": true,
       "source_basis": "official+birrf",
       "aliases_ru": [
-        "LalBrew Voss"
+        "LalBrew Voss",
+        "Voss",
+        "Восс",
+        "Voss Kveik"
       ],
       "aliases_en": [
-        "LalBrew Voss Kveik"
+        "LalBrew Voss Kveik",
+        "LalBrew Voss",
+        "Voss Kveik"
       ]
     },
     {
@@ -3718,7 +3788,12 @@
       "present_on_birrf": true,
       "source_basis": "official+birrf",
       "aliases_ru": [
-        "M36 Liberty Bell"
+        "M36 Liberty Bell",
+        "Liberty Bell",
+        "Либерти Белл"
+      ],
+      "aliases_en": [
+        "Liberty Bell"
       ]
     },
     {
@@ -3770,7 +3845,16 @@
       "fermentation_temp_c_max": 23,
       "fermentation_temp_c_optimum": 20.5,
       "present_on_birrf": true,
-      "source_basis": "official+birrf"
+      "source_basis": "official+birrf",
+      "aliases_ru": [
+        "M44 West Coast",
+        "West Coast Ale",
+        "М44 West Coast"
+      ],
+      "aliases_en": [
+        "US West Coast",
+        "West Coast Ale"
+      ]
     },
     {
       "id": "mangrove-jack-s-m47",
@@ -3809,7 +3893,12 @@
       "source_basis": "official+birrf",
       "aliases_ru": [
         "калифорнийский лагер",
-        "steam beer"
+        "steam beer",
+        "California Common",
+        "Калифорнийский коммон"
+      ],
+      "aliases_en": [
+        "California Common"
       ]
     },
     {
@@ -3930,10 +4019,15 @@
       "notes": "Один из главных референсов для NEIPA: haze + residual sweetness + juicy hop expression.",
       "pof": "negative",
       "aliases_ru": [
-        "Британский эль 5"
+        "Британский эль 5",
+        "British Ale V",
+        "Британский эль V"
       ],
       "source_urls": [
         "https://omegayeast.com/yeast/ales/british-ale-v"
+      ],
+      "aliases_en": [
+        "OYL-011"
       ]
     },
     {
@@ -4568,10 +4662,12 @@
       "notes": "Один из главных мировых референсов для NEIPA/hazy IPA.",
       "aliases_ru": [
         "Лондон Эль III",
-        "London Ale III"
+        "London Ale III",
+        "1318"
       ],
       "aliases_en": [
-        "London Ale III"
+        "London Ale III",
+        "1318"
       ],
       "source_urls": [
         "https://wyeastlab.com/product/london-ale-iii/"
@@ -4582,7 +4678,7 @@
       "brand": "Wyeast",
       "producer_country": "USA",
       "product_code": "1450",
-      "name_ru": "Денни Фейворит 50 1450",
+      "name_ru": "Денни’с Фейворит 50 1450",
       "name_en": "1450 Denny's Favorite 50",
       "form": "liquid",
       "yeast_family": "american",
@@ -4602,7 +4698,9 @@
       "notes": "Универсальный strain с плотным mouthfeel; хорошо подчёркивает солод/фрукты.",
       "aliases_ru": [
         "Денни Фейворит 50",
-        "Denny's Favorite"
+        "Denny's Favorite",
+        "Denny's Favorite 50",
+        "1450 Denny's Favorite 50"
       ],
       "aliases_en": [
         "Denny's Favorite 50"
@@ -4780,6 +4878,506 @@
       ],
       "source_urls": [
         "https://wyeastlab.com/product/belgian-high-gravity/"
+      ]
+    },
+    {
+      "id": "lallemand-koln",
+      "brand": "Lallemand",
+      "producer_country": "Canada",
+      "product_code": "Köln",
+      "name_ru": "Кёльн",
+      "name_en": "LalBrew Köln",
+      "form": "dry",
+      "yeast_family": "ale",
+      "birrf_category": "Элевые",
+      "attenuation_pct_min": 78,
+      "attenuation_pct_max": 83,
+      "attenuation_pct_typical": 80.5,
+      "flocculation": "medium-high",
+      "fermentation_temp_c_min": 15,
+      "fermentation_temp_c_max": 25,
+      "alcohol_tolerance_abv_typical": 9.0,
+      "species": "Saccharomyces cerevisiae",
+      "present_on_birrf": false,
+      "source_basis": "official+retail_russia",
+      "notes": "Классический сухой Kölsch-штамм; в РФ продаётся в домашней рознице.",
+      "pof": "negative",
+      "aliases_ru": [
+        "LalBrew Koln",
+        "LalBrew Köln",
+        "Кёльш",
+        "Колш",
+        "Кёльн",
+        "Кольш",
+        "Lallemand Koln"
+      ],
+      "aliases_en": [
+        "LalBrew Koln",
+        "Koln",
+        "Köln",
+        "Kölsch Style Ale",
+        "Koelsch"
+      ],
+      "source_urls": [
+        "https://admin.lallemandbrewing.com/wp-content/uploads/2023/05/TDS_LPS_BREWINGYEAST_KOLN_ENG_A4-5.pdf",
+        "https://www.mirbeer.ru/catalog/pivovarenie/drozhzhi/lallemand/pivnie_drozhzhi_lallemand_lalbrew_koln_kolsh_style_ale_11_g/"
+      ]
+    },
+    {
+      "id": "fermentis-safcider-ab-1",
+      "brand": "Fermentis",
+      "producer_country": "France",
+      "product_code": "AB-1",
+      "name_ru": "SafCider AB-1",
+      "name_en": "SafCider AB-1",
+      "form": "dry",
+      "yeast_family": "cider",
+      "birrf_category": "Прочие",
+      "fermentation_temp_c_min": 10,
+      "fermentation_temp_c_max": 30,
+      "species": "Saccharomyces cerevisiae",
+      "present_on_birrf": false,
+      "source_basis": "official+retail_russia",
+      "notes": "Сидровый штамм для сбалансированных сладких и сухих сидров; на российском рынке встречается в домашней рознице и может быть интересен пивоварам для сидра/графа.",
+      "aliases_ru": [
+        "AB1",
+        "СафСайдер AB-1",
+        "сидровые дрожжи Fermentis",
+        "яблочный баланс"
+      ],
+      "aliases_en": [
+        "AB1",
+        "Fermentis SafCider AB-1",
+        "Apple Balanced"
+      ],
+      "source_urls": [
+        "https://fermentis.com/en/product/safcider-ab-1/",
+        "https://www.mirbeer.ru/catalog/pivovarenie/drozhzhi/pivnie_drozhzhi_verhovie/drozhzhi_fermentis_safcider_5_g/"
+      ]
+    },
+    {
+      "id": "fermentis-safcider-ac-4",
+      "brand": "Fermentis",
+      "producer_country": "France",
+      "product_code": "AC-4",
+      "name_ru": "SafCider AC-4",
+      "name_en": "SafCider AC-4",
+      "form": "dry",
+      "yeast_family": "cider",
+      "birrf_category": "Прочие",
+      "fermentation_temp_c_min": 10,
+      "fermentation_temp_c_max": 30,
+      "species": "Saccharomyces cerevisiae",
+      "present_on_birrf": false,
+      "source_basis": "official+retail_russia",
+      "notes": "Сидровый штамм для свежего и crisp-профиля; хорошо усваивает фруктозу, подходит и для сложных условий брожения.",
+      "aliases_ru": [
+        "AC4",
+        "СафСайдер AC-4",
+        "сидр AC-4",
+        "яблоко/цветочный сидр"
+      ],
+      "aliases_en": [
+        "AC4",
+        "Fermentis SafCider AC-4",
+        "Apple Crisp"
+      ],
+      "source_urls": [
+        "https://fermentis.com/en/product/safcider-ac-4/",
+        "https://www.mirbeer.ru/catalog/pivovarenie/drozhzhi/fermentis/fermentis_11_5_g/drozhzhi_dlya_sidra_fermentis_safcider_ac_4_5_g/"
+      ]
+    },
+    {
+      "id": "fermentis-safcider-as-2",
+      "brand": "Fermentis",
+      "producer_country": "France",
+      "product_code": "AS-2",
+      "name_ru": "SafCider AS-2",
+      "name_en": "SafCider AS-2",
+      "form": "dry",
+      "yeast_family": "cider",
+      "birrf_category": "Прочие",
+      "fermentation_temp_c_min": 10,
+      "fermentation_temp_c_max": 30,
+      "species": "Saccharomyces bayanus",
+      "present_on_birrf": false,
+      "source_basis": "official+retail_russia",
+      "notes": "Сидровый штамм для более сладкого и округлого профиля с яблочно-цитрусовой ароматикой.",
+      "aliases_ru": [
+        "AS2",
+        "СафСайдер AS-2",
+        "сидр AS-2",
+        "яблочная сладость"
+      ],
+      "aliases_en": [
+        "AS2",
+        "Fermentis SafCider AS-2",
+        "Apple Sweet"
+      ],
+      "source_urls": [
+        "https://fermentis.com/en/product/safcider-as-2/",
+        "https://www.mirbeer.ru/catalog/pivovarenie/drozhzhi/fermentis/fermentis_11_5_g/drozhzhi_dlya_sidra_fermentis_safcider_as_2_5_g/"
+      ]
+    },
+    {
+      "id": "fermentis-safcider-tf-6",
+      "brand": "Fermentis",
+      "producer_country": "France",
+      "product_code": "TF-6",
+      "name_ru": "SafCider TF-6",
+      "name_en": "SafCider TF-6",
+      "form": "dry",
+      "yeast_family": "cider",
+      "birrf_category": "Прочие",
+      "fermentation_temp_c_min": 10,
+      "fermentation_temp_c_max": 30,
+      "species": "Saccharomyces cerevisiae",
+      "present_on_birrf": false,
+      "source_basis": "official+retail_russia",
+      "notes": "Сидровый штамм для очень фруктового профиля; особенно уместен для сладких сидров и яркой ароматической экспрессии.",
+      "aliases_ru": [
+        "TF6",
+        "СафСайдер TF-6",
+        "сидр TF-6",
+        "очень фруктовый сидр"
+      ],
+      "aliases_en": [
+        "TF6",
+        "Fermentis SafCider TF-6"
+      ],
+      "source_urls": [
+        "https://fermentis.com/en/product/safcider-tf-6/",
+        "https://www.mirbeer.ru/catalog/pivovarenie/drozhzhi/fermentis/fermentis_11_5_g/drozhzhi_dlya_sidra_fermentis_safcider_tf_6_5_g/"
+      ]
+    },
+    {
+      "id": "mangrove-jack-s-m02-cider",
+      "brand": "Mangrove Jack's",
+      "producer_country": "New Zealand",
+      "product_code": "M02",
+      "name_ru": "M02 Cider",
+      "name_en": "M02 Cider",
+      "form": "dry",
+      "yeast_family": "cider",
+      "birrf_category": "Прочие",
+      "flocculation": "high",
+      "fermentation_temp_c_min": 12,
+      "fermentation_temp_c_max": 28,
+      "species": "Saccharomyces bayanus",
+      "present_on_birrf": false,
+      "source_basis": "official+retail_russia",
+      "notes": "Популярный в РФ сидровый штамм Mangrove Jack's; часто используется домашними пивоварами для сидра и гибридных фруктовых проектов.",
+      "aliases_ru": [
+        "сидр M02",
+        "Mangrove Jack's Cider",
+        "сидровые Mangrove Jack's",
+        "сидровые дрожжи M02"
+      ],
+      "aliases_en": [
+        "Cider M02",
+        "Mangrove Jack's Cider",
+        "M02 Cider Yeast"
+      ],
+      "source_urls": [
+        "https://mangrovejacks.com/products/craft-series-cider-yeast",
+        "https://www.mirbeer.ru/catalog/pivovarenie/drozhzhi/mangrove_jacks/mangrove_jacks_10_g/drozhzhi_mangrove_jack_s_cider_m02_10_g/"
+      ]
+    },
+    {
+      "id": "mangrove-jack-s-m05-mead",
+      "brand": "Mangrove Jack's",
+      "producer_country": "New Zealand",
+      "product_code": "M05",
+      "name_ru": "M05 Mead",
+      "name_en": "M05 Mead",
+      "form": "dry",
+      "yeast_family": "mead",
+      "birrf_category": "Прочие",
+      "attenuation_pct_min": 95,
+      "attenuation_pct_max": 100,
+      "attenuation_pct_typical": 97.5,
+      "flocculation": "high",
+      "fermentation_temp_c_min": 15,
+      "fermentation_temp_c_max": 30,
+      "alcohol_tolerance_abv_typical": 18.0,
+      "species": "Saccharomyces cerevisiae",
+      "present_on_birrf": false,
+      "source_basis": "official+retail_russia",
+      "notes": "Медовушный штамм с высокой спиртоустойчивостью; в РФ продаётся в той же домашней рознице, где покупают пивные дрожжи.",
+      "aliases_ru": [
+        "медовуха M05",
+        "дрожжи для медовухи",
+        "Mangrove Jack's Mead",
+        "мёд M05"
+      ],
+      "aliases_en": [
+        "Mead M05",
+        "Mangrove Jack's Mead",
+        "M05 Mead Yeast"
+      ],
+      "source_urls": [
+        "https://mangrovejacks.com/products/mead-m05-yeast-10g",
+        "https://www.mirbeer.ru/catalog/pivovarenie/drozhzhi/mangrove_jacks/mangrove_jacks_10_g/drozhzhi_mangrove_jack_s_mead_m05_10_g/"
+      ]
+    },
+    {
+      "id": "mangrove-jack-s-cl23-wine",
+      "brand": "Mangrove Jack's",
+      "producer_country": "New Zealand",
+      "product_code": "CL23",
+      "name_ru": "CL23 Wine",
+      "name_en": "CL23 Wine Yeast",
+      "form": "dry",
+      "yeast_family": "wine",
+      "birrf_category": "Прочие",
+      "fermentation_temp_c_min": 14,
+      "fermentation_temp_c_max": 32,
+      "alcohol_tolerance_abv_typical": 18.0,
+      "species": "Saccharomyces bayanus",
+      "present_on_birrf": false,
+      "source_basis": "official+retail_russia",
+      "notes": "Нейтральный robust white/sparkling wine strain; иногда выбирают и для кроссовер-проектов брожения у домашних пивоваров.",
+      "aliases_ru": [
+        "винные CL23",
+        "белое/игристое CL23",
+        "Mangrove Jack's CL23"
+      ],
+      "aliases_en": [
+        "CL23",
+        "White Wine Yeast",
+        "Mangrove Jack's CL23"
+      ],
+      "source_urls": [
+        "https://mangrovejacks.com/products/cl23-wine-yeast",
+        "https://www.mirbeer.ru/catalog/vinodelie/ingredienti/vinnie_drozhzhi/vinnie_drozhzhi_mangrove_jack_s_cl23_8_g/"
+      ]
+    },
+    {
+      "id": "mangrove-jack-s-sn9-wine",
+      "brand": "Mangrove Jack's",
+      "producer_country": "New Zealand",
+      "product_code": "SN9",
+      "name_ru": "SN9 Wine",
+      "name_en": "SN9 Wine Yeast",
+      "form": "dry",
+      "yeast_family": "wine",
+      "birrf_category": "Прочие",
+      "fermentation_temp_c_min": 14,
+      "fermentation_temp_c_max": 28,
+      "alcohol_tolerance_abv_typical": 18.0,
+      "species": "Saccharomyces bayanus",
+      "present_on_birrf": false,
+      "source_basis": "official+retail_russia",
+      "notes": "Универсальный robust wine strain, востребован в РФ для креплёных, фруктовых вин, перри и иногда медовых проектов.",
+      "aliases_ru": [
+        "винные SN9",
+        "Mangrove Jack's SN9",
+        "универсальные винные SN9"
+      ],
+      "aliases_en": [
+        "SN9",
+        "Mangrove Jack's SN9"
+      ],
+      "source_urls": [
+        "https://mangrovejacks.com/products/sn9-wine-yeast",
+        "https://www.mirbeer.ru/catalog/vinodelie/ingredienti/vinnie_drozhzhi/vinnie_drozhzhi_mangrove_jack_s_sn9_8_g/"
+      ]
+    },
+    {
+      "id": "lalvin-ec-1118",
+      "brand": "Lalvin",
+      "producer_country": "Canada",
+      "product_code": "EC-1118",
+      "name_ru": "EC-1118",
+      "name_en": "Lalvin EC-1118",
+      "form": "dry",
+      "yeast_family": "wine",
+      "birrf_category": "Прочие",
+      "fermentation_temp_c_min": 10,
+      "fermentation_temp_c_max": 30,
+      "alcohol_tolerance_abv_typical": 18.0,
+      "species": "Saccharomyces cerevisiae bayanus",
+      "present_on_birrf": false,
+      "source_basis": "official+retail_russia",
+      "notes": "Один из самых популярных универсальных винных штаммов в РФ; часто берут для сидра, медовухи и перезапуска остановившегося брожения.",
+      "aliases_ru": [
+        "Lalvin EC1118",
+        "EC1118",
+        "Приз де Мусс",
+        "винные EC-1118"
+      ],
+      "aliases_en": [
+        "EC1118",
+        "Prise de Mousse"
+      ],
+      "source_urls": [
+        "https://www.lallemandwine.com/en/scandinavia/products/wine-yeasts/lalvin-ec1118-prise-de-mousse/",
+        "https://www.mirbeer.ru/catalog/vinodelie/ingredienti/vinnie_drozhzhi/vinnie_drozhzhi_lalvin_ec_1118_5_g/"
+      ]
+    },
+    {
+      "id": "lalvin-k1-v1116",
+      "brand": "Lalvin",
+      "producer_country": "Canada",
+      "product_code": "K1-V1116",
+      "name_ru": "K1-V1116",
+      "name_en": "Lalvin K1-V1116",
+      "form": "dry",
+      "yeast_family": "wine",
+      "birrf_category": "Прочие",
+      "fermentation_temp_c_min": 10,
+      "fermentation_temp_c_max": 35,
+      "alcohol_tolerance_abv_typical": 18.0,
+      "species": "Saccharomyces cerevisiae",
+      "present_on_birrf": false,
+      "source_basis": "official+retail_russia",
+      "notes": "Очень популярный в РФ универсальный wine/mead strain; хорошо стартует в сложных условиях и часто используется для фруктовых и медовых проектов.",
+      "aliases_ru": [
+        "K1V1116",
+        "V1116",
+        "Lalvin V1116",
+        "K1",
+        "винные K1-V1116"
+      ],
+      "aliases_en": [
+        "K1V1116",
+        "V1116",
+        "Lalvin V1116"
+      ],
+      "source_urls": [
+        "https://www.lallemandwine.com/en/croatia/products/wine-yeasts/lalvin-v1116/",
+        "https://www.mirbeer.ru/catalog/vinodelie/ingredienti/vinnie_drozhzhi/vinnie_drozhzhi_lalvin_k1_v1116_5_g/"
+      ]
+    },
+    {
+      "id": "lalvin-71b-1122",
+      "brand": "Lalvin",
+      "producer_country": "Canada",
+      "product_code": "71B-1122",
+      "name_ru": "71B-1122",
+      "name_en": "Lalvin 71B-1122",
+      "form": "dry",
+      "yeast_family": "wine",
+      "birrf_category": "Прочие",
+      "fermentation_temp_c_min": 15,
+      "fermentation_temp_c_max": 30,
+      "alcohol_tolerance_abv_typical": 14.0,
+      "species": "Saccharomyces cerevisiae var. cerevisiae",
+      "present_on_birrf": false,
+      "source_basis": "official+retail_russia",
+      "notes": "Очень ходовой фруктовый винный штамм; интересен и для фруктовых/медовых экспериментов из-за способности смягчать высокую яблочную кислотность.",
+      "aliases_ru": [
+        "71B",
+        "Lalvin 71B",
+        "71B1122",
+        "винные 71B"
+      ],
+      "aliases_en": [
+        "71B",
+        "71B1122",
+        "Lalvin 71B"
+      ],
+      "source_urls": [
+        "https://products.lallemandwine.com/storage/files/wine-yeasts/191-technical-datasheet-cp-1711125142.pdf",
+        "https://www.mirbeer.ru/catalog/vinodelie/ingredienti/vinnie_drozhzhi/vinnie_drozhzhi_lalvin_71b_1122_5_g/"
+      ]
+    },
+    {
+      "id": "lalvin-icv-d47",
+      "brand": "Lalvin",
+      "producer_country": "Canada",
+      "product_code": "ICV/D47",
+      "name_ru": "ICV/D47",
+      "name_en": "Lalvin ICV D47",
+      "form": "dry",
+      "yeast_family": "wine",
+      "birrf_category": "Прочие",
+      "fermentation_temp_c_min": 15,
+      "fermentation_temp_c_max": 30,
+      "alcohol_tolerance_abv_typical": 14.0,
+      "species": "Saccharomyces cerevisiae var. cerevisiae",
+      "present_on_birrf": false,
+      "source_basis": "official+retail_russia",
+      "notes": "Очень популярный в РФ штамм для медовухи и белых/фруктовых вин; ценят за объём, округлость и фруктово-цветочный профиль.",
+      "aliases_ru": [
+        "D47",
+        "ICV D47",
+        "Lalvin D47",
+        "винные D47"
+      ],
+      "aliases_en": [
+        "D47",
+        "ICV D47",
+        "Lalvin D47"
+      ],
+      "source_urls": [
+        "https://www.lallemandwine.com/en/china/products/wine-yeasts/lalvin-icv-d47/",
+        "https://www.mirbeer.ru/catalog/vinodelie/ingredienti/vinnie_drozhzhi/vinnie_drozhzhi_lalvin_icv_d47_5_g/"
+      ]
+    },
+    {
+      "id": "lalvin-qa23",
+      "brand": "Lalvin",
+      "producer_country": "Canada",
+      "product_code": "QA23",
+      "name_ru": "QA23",
+      "name_en": "Lalvin QA23",
+      "form": "dry",
+      "yeast_family": "wine",
+      "birrf_category": "Прочие",
+      "fermentation_temp_c_min": 14,
+      "fermentation_temp_c_max": 28,
+      "alcohol_tolerance_abv_typical": 16.0,
+      "species": "Saccharomyces cerevisiae var. cerevisiae",
+      "present_on_birrf": false,
+      "source_basis": "official+retail_russia",
+      "notes": "Очень популярный white wine strain; особенно интересен для ароматных фруктовых и thiol-friendly проектов.",
+      "aliases_ru": [
+        "QA-23",
+        "Lalvin QA23",
+        "винные QA23"
+      ],
+      "aliases_en": [
+        "QA-23",
+        "Lalvin QA-23"
+      ],
+      "source_urls": [
+        "https://www.lallemandwine.com/en/scandinavia/products/wine-yeasts/lalvin-qa23/",
+        "https://www.mirbeer.ru/catalog/vinodelie/ingredienti/vinnie_drozhzhi/vinnie_drozhzhi_lalvin_qa23_5_g/"
+      ]
+    },
+    {
+      "id": "beervingem-bvg-07-cider",
+      "brand": "BeerVingem",
+      "producer_country": "Russia",
+      "product_code": "BVG-07",
+      "name_ru": "BVG-07 Cider",
+      "name_en": "BVG-07 Cider",
+      "form": "dry",
+      "yeast_family": "cider",
+      "birrf_category": "Прочие",
+      "flocculation": "high",
+      "fermentation_temp_c_min": 8,
+      "fermentation_temp_c_max": 32,
+      "alcohol_tolerance_abv_typical": 11.0,
+      "species": "Saccharomyces bayanus",
+      "present_on_birrf": false,
+      "source_basis": "retail_russia+birrf_recipe",
+      "notes": "Локальный сидровый штамм, реально встречается в российской домашней рознице и уместен для складского каталога дрожжей.",
+      "aliases_ru": [
+        "Cider BVG-07",
+        "Для сидра",
+        "сидровые Beervingem",
+        "Бирвингем сидр"
+      ],
+      "aliases_en": [
+        "Cider BVG07",
+        "BeerVingem Cider",
+        "Cider"
+      ],
+      "source_urls": [
+        "https://www.mirbeer.ru/catalog/pivovarenie/drozhzhi/beervingem/drozhzhi_dlya_sidra_beervingem_cider_bvg_07_5_g/",
+        "https://xn--90aoy.xn--p1ai/beer_recipes/bjcp_2008/other/sidor_sidorych/3-1-0-66663"
       ]
     }
   ]

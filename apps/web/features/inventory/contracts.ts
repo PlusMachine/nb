@@ -334,6 +334,7 @@ export type InventorySourceDto = {
   type: IngredientType;
   category?: IngredientCategory;
   subtype?: IngredientSubtype | null;
+  itemKind?: string | null;
   familyId?: string | null;
   familyDisplayName?: string | null;
   primaryLabelRu: string;

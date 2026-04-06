@@ -3,6 +3,7 @@ import {
   canonicalIngredientFamilyGroups,
   normalizeSearchText
 } from "./normalization";
+import { buildConsumablePackageSearchLabels } from "./consumables";
 
 type MatchType = "name" | "alias" | "code" | "package" | "brand" | "token";
 type SearchScript = "cyrillic" | "latin" | "mixed" | "neutral";
@@ -15,6 +16,7 @@ type RankedCandidateAlias =
     alias?: string | null;
     aliasNormalized?: string | null;
     normalized?: string | null;
+    source?: string | null;
     isEnabled?: boolean;
   };
 
@@ -22,12 +24,19 @@ type RankedCandidatePackageVariant = {
   id?: string | null;
   name?: string | null;
   productName?: string | null;
+  productNameEn?: string | null;
   productNameRu?: string | null;
   normalizedName?: string | null;
   brand?: string | null;
+  packageAmount?: number | null;
+  packageUnit?: string | null;
+  stockContentAmount?: number | null;
+  stockContentUnit?: string | null;
 };
 
 export type RankedCandidate = {
+  category?: string | null;
+  sourceCategory?: string | null;
   displayName?: string;
   displayNameRu?: string | null;
   displayNameEn?: string | null;
@@ -65,7 +74,11 @@ type NormalizedEntry = {
   normalized: string;
 };
 
-type AliasEntry = NormalizedEntry;
+type AliasSourceKind = "default" | "market_name" | "priority_term";
+
+type AliasEntry = NormalizedEntry & {
+  sourceKind: AliasSourceKind;
+};
 
 type PackageFieldEntry = NormalizedEntry & {
   variantId?: string | null;
@@ -123,6 +136,8 @@ type CodeMatch = {
 type NormalizedCandidate = {
   nameEntries: NormalizedEntry[];
   aliasEntries: AliasEntry[];
+  marketAliasEntries: AliasEntry[];
+  priorityAliasEntries: AliasEntry[];
   packageFieldEntries: PackageFieldEntry[];
   brandEntries: NormalizedEntry[];
   productCodeEntry: NormalizedEntry | null;
@@ -137,6 +152,9 @@ const neutralFamilyCompanionTokens = new Set([
   "malt",
   "malted",
   "солод"
+]);
+const packageUnitTokens = new Set([
+  "g", "kg", "mg", "ml", "l", "oz", "lb", "gal", "pack", "item", "шт", "г", "кг", "мг", "мл", "л"
 ]);
 
 const namedFamilies: NamedFamily[] = canonicalIngredientFamilyGroups.map((group) => ({
@@ -276,58 +294,103 @@ const dedupeEntries = <T extends { normalized: string }>(entries: T[]) => {
   return [...deduped.values()];
 };
 
+const resolveAliasSourceKind = (source?: string | null): AliasSourceKind => {
+  const normalized = normalizeSearchText(source ?? "");
+  if (normalized.includes("priority term")) {
+    return "priority_term";
+  }
+
+  if (normalized.includes("market name")) {
+    return "market_name";
+  }
+
+  return "default";
+};
+
+const aliasSourceKindWeight: Record<AliasSourceKind, number> = {
+  default: 0,
+  market_name: 1,
+  priority_term: 2
+};
+
 const buildAliasEntries = (candidate: RankedCandidate) => {
-  const fromAliases = (candidate.aliases ?? [])
-    .map((alias, index) => {
-      if (typeof alias === "string") {
-        return {
-          value: alias,
-          normalized: candidate.searchAliasesNorm?.[index] ?? normalizeSearchText(alias)
-        };
-      }
+  const deduped = new Map<string, AliasEntry>();
+  const assign = (entry: AliasEntry | null) => {
+    if (!entry?.normalized) {
+      return;
+    }
 
-      if (alias.isEnabled === false) {
-        return null;
-      }
+    const current = deduped.get(entry.normalized);
+    if (!current || aliasSourceKindWeight[entry.sourceKind] > aliasSourceKindWeight[current.sourceKind]) {
+      deduped.set(entry.normalized, entry);
+    }
+  };
 
-      const value = alias.alias?.trim() ?? "";
-      const normalized = alias.aliasNormalized?.trim()
-        || alias.normalized?.trim()
-        || normalizeSearchText(value);
+  (candidate.aliases ?? []).forEach((alias, index) => {
+    if (typeof alias === "string") {
+      const normalized = candidate.searchAliasesNorm?.[index] ?? normalizeSearchText(alias);
+      assign(normalized ? {
+        value: alias,
+        normalized,
+        sourceKind: "default"
+      } : null);
+      return;
+    }
 
-      if (!value || !normalized) {
-        return null;
-      }
+    if (alias.isEnabled === false) {
+      return;
+    }
 
-      return { value, normalized };
-    })
-    .filter((entry): entry is AliasEntry => entry !== null);
+    const value = alias.alias?.trim() ?? "";
+    const normalized = alias.aliasNormalized?.trim()
+      || alias.normalized?.trim()
+      || normalizeSearchText(value);
 
-  const fromNormalizedOnly = (candidate.searchAliasesNorm ?? [])
-    .filter((normalized) => normalized && !fromAliases.some((entry) => entry.normalized === normalized))
-    .map((normalized) => ({
+    assign(value && normalized ? {
+      value,
+      normalized,
+      sourceKind: resolveAliasSourceKind(alias.source)
+    } : null);
+  });
+
+  (candidate.searchAliasesNorm ?? []).forEach((normalized) => {
+    assign(normalized ? {
       value: normalized,
-      normalized
-    }));
+      normalized,
+      sourceKind: "default"
+    } : null);
+  });
 
-  return dedupeEntries([
-    ...fromAliases,
-    ...fromNormalizedOnly
-  ]);
+  return [...deduped.values()];
 };
 
 const buildPackageFieldEntries = (candidate: RankedCandidate) => {
   const entries: PackageFieldEntry[] = [];
 
   for (const variant of candidate.packageVariants ?? []) {
-    const productName = variant.productName ?? variant.productNameRu ?? null;
+    const productName = variant.productName ?? variant.productNameEn ?? variant.productNameRu ?? null;
     const variantName = variant.name?.trim()
       || [variant.brand, productName].filter(Boolean).join(" ").trim()
       || null;
     const normalizedName = variant.normalizedName?.trim()
       || normalizeSearchText([variant.brand, productName].filter(Boolean).join(" "));
 
-    for (const value of [productName, variantName, variant.brand]) {
+    for (const value of [
+      productName,
+      variant.productNameEn,
+      variant.productNameRu,
+      variantName,
+      variant.brand,
+      ...buildConsumablePackageSearchLabels({
+        brand: variant.brand ?? null,
+        productNameEn: variant.productNameEn ?? null,
+        productNameRu: variant.productNameRu ?? null,
+        packageAmount: variant.packageAmount ?? null,
+        packageUnit: variant.packageUnit ?? null,
+        stockContentAmount: variant.stockContentAmount ?? null,
+        stockContentUnit: variant.stockContentUnit ?? null
+      })
+    ]) {
       const entry = buildEntry(value);
       if (!entry) {
         continue;
@@ -363,6 +426,8 @@ const normalizeCandidate = (candidate: RankedCandidate): NormalizedCandidate => 
   ].filter((entry): entry is NormalizedEntry => entry !== null));
 
   const aliasEntries = buildAliasEntries(candidate);
+  const marketAliasEntries = aliasEntries.filter((entry) => entry.sourceKind === "market_name");
+  const priorityAliasEntries = aliasEntries.filter((entry) => entry.sourceKind === "priority_term");
   const packageFieldEntries = buildPackageFieldEntries(candidate);
   const brandEntries = dedupeEntries([
     buildEntry(candidate.brandName),
@@ -386,6 +451,8 @@ const normalizeCandidate = (candidate: RankedCandidate): NormalizedCandidate => 
   return {
     nameEntries,
     aliasEntries,
+    marketAliasEntries,
+    priorityAliasEntries,
     packageFieldEntries,
     brandEntries,
     productCodeEntry,
@@ -394,6 +461,12 @@ const normalizeCandidate = (candidate: RankedCandidate): NormalizedCandidate => 
     searchTextNorm
   };
 };
+
+const isConsumableCandidate = (candidate: RankedCandidate) => candidate.category === "consumable";
+
+const isPackageLikeQuery = (queryInfo: QueryAnalysis) => (
+  queryInfo.tokens.some((token) => /\d/.test(token) || packageUnitTokens.has(token))
+);
 
 const scoreTextMatch = (
   field: string,
@@ -1256,6 +1329,152 @@ const buildFallbackRank = (
   return best;
 };
 
+const buildConsumableRank = (
+  queryInfo: QueryAnalysis,
+  candidate: RankedCandidate,
+  normalizedCandidate: NormalizedCandidate
+): IngredientCandidateRank | null => {
+  const sameScriptMarketAliases = normalizedCandidate.marketAliasEntries
+    .filter((entry) => matchesQueryScript(entry.normalized, queryInfo.queryScript));
+  const sameScriptPriorityAliases = normalizedCandidate.priorityAliasEntries
+    .filter((entry) => matchesQueryScript(entry.normalized, queryInfo.queryScript));
+  const sameScriptPackageEntries = normalizedCandidate.packageFieldEntries
+    .filter((entry) => matchesQueryScript(entry.normalized, queryInfo.queryScript));
+  const sameScriptNameEntries = normalizedCandidate.nameEntries
+    .filter((entry) => matchesQueryScript(entry.normalized, queryInfo.queryScript));
+  const sameScriptAliasEntries = normalizedCandidate.aliasEntries
+    .filter((entry) => matchesQueryScript(entry.normalized, queryInfo.queryScript));
+  const variants = queryInfo.sameScriptVariants.length > 0
+    ? queryInfo.sameScriptVariants
+    : [queryInfo.base];
+  const packageLikeQuery = isPackageLikeQuery(queryInfo);
+  let best: IngredientCandidateRank | null = null;
+
+  best = assignTextTier({
+    best,
+    entries: sameScriptPackageEntries,
+    variants,
+    tierMap: packageLikeQuery
+      ? {
+        exact: 0,
+        prefix: 0,
+        token_start: 0,
+        all_tokens: 0,
+        contains: 1
+      }
+      : {
+        exact: 0,
+        prefix: 1,
+        token_start: 1,
+        all_tokens: 1,
+        contains: 2
+      },
+    allowSubstring: true,
+    matchType: "package",
+    buildExtras: (entry) => ({
+      matchedPackageVariantId: (entry as PackageFieldEntry).variantId ?? null,
+      matchedPackageVariantName: (entry as PackageFieldEntry).variantName ?? entry.value
+    })
+  });
+
+  best = assignTextTier({
+    best,
+    entries: sameScriptPriorityAliases,
+    variants,
+    tierMap: packageLikeQuery
+      ? {
+        exact: 1,
+        prefix: 1,
+        token_start: 2,
+        all_tokens: 2,
+        contains: 3
+      }
+      : {
+        exact: 0,
+        prefix: 0,
+        token_start: 1,
+        all_tokens: 1,
+        contains: 2
+      },
+    allowSubstring: true,
+    matchType: "alias",
+    buildExtras: (entry) => ({
+      matchedAlias: entry.value
+    })
+  });
+
+  best = assignTextTier({
+    best,
+    entries: sameScriptMarketAliases,
+    variants,
+    tierMap: packageLikeQuery
+      ? {
+        exact: 1,
+        prefix: 1,
+        token_start: 2,
+        all_tokens: 2,
+        contains: 3
+      }
+      : {
+        exact: 0,
+        prefix: 1,
+        token_start: 1,
+        all_tokens: 1,
+        contains: 2
+      },
+    allowSubstring: true,
+    matchType: "alias",
+    buildExtras: (entry) => ({
+      matchedAlias: entry.value
+    })
+  });
+
+  best = assignTextTier({
+    best,
+    entries: sameScriptNameEntries,
+    variants,
+    tierMap: {
+      exact: 1,
+      prefix: 1,
+      token_start: 2,
+      all_tokens: 2,
+      contains: 3
+    },
+    allowSubstring: true,
+    matchType: "name"
+  });
+
+  best = assignTextTier({
+    best,
+    entries: sameScriptAliasEntries,
+    variants,
+    tierMap: {
+      exact: 2,
+      prefix: 2,
+      token_start: 3,
+      all_tokens: 3,
+      contains: 4
+    },
+    allowSubstring: true,
+    matchType: "alias",
+    buildExtras: (entry) => ({
+      matchedAlias: entry.value
+    })
+  });
+
+  if (!best) {
+    return null;
+  }
+
+  const favoriteBoost = computeFavoriteBoost(queryInfo, candidate) * 10;
+  const popularityBoost = computePopularityBoost(queryInfo, candidate) * 8;
+
+  return {
+    ...best,
+    score: best.score + favoriteBoost + popularityBoost
+  };
+};
+
 export const rankIngredientCandidate = (
   query: string | string[],
   candidate: RankedCandidate
@@ -1267,6 +1486,12 @@ export const rankIngredientCandidate = (
   }
 
   const normalizedCandidate = normalizeCandidate(candidate);
+  const consumableRank = isConsumableCandidate(candidate)
+    ? buildConsumableRank(queryInfo, candidate, normalizedCandidate)
+    : null;
+  if (consumableRank) {
+    return consumableRank;
+  }
   const intentAwareRank = queryInfo.intent === "default"
     ? null
     : buildIntentAwareRank(queryInfo, candidate, normalizedCandidate);
@@ -1276,6 +1501,19 @@ export const rankIngredientCandidate = (
   }
 
   return buildFallbackRank(queryInfo, normalizedCandidate);
+};
+
+export const matchesIngredientFamilyScope = (
+  familyQuery: string,
+  candidate: RankedCandidate
+) => {
+  const queryInfo = analyzeQuery(familyQuery);
+  if (!queryInfo?.family) {
+    return false;
+  }
+
+  const normalizedCandidate = normalizeCandidate(candidate);
+  return buildIntentAwareRank(queryInfo, candidate, normalizedCandidate) !== null;
 };
 
 export const scoreIngredientCandidate = (

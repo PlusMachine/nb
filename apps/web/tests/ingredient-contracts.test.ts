@@ -6,11 +6,21 @@ describe("ingredient contracts", () => {
   it("accepts type and category filters from the new taxonomy", () => {
     const byType = ingredientSearchQuerySchema.parse({ q: "citra", type: "hop" });
     const byCategory = ingredientSearchQuerySchema.parse({ q: "chloride", category: "water_treatment" });
+    const byConsumableGroup = ingredientSearchQuerySchema.parse({ q: "pbw", category: "consumable", group: "cleaner" });
     const expandedLimit = ingredientSearchQuerySchema.parse({ q: "pils", limit: 61 });
+    const byFamily = ingredientSearchQuerySchema.parse({ q: "", category: "fermentable", subtype: "malt", family: "pilsner" });
+    const byFavorites = ingredientSearchQuerySchema.parse({ q: "", category: "fermentable", subtype: "malt", favoritesOnly: true });
 
     expect(byType.type).toBe("hop");
     expect(byCategory.category).toBe("water_treatment");
+    expect(byConsumableGroup.group).toBe("cleaner");
     expect(expandedLimit.limit).toBe(61);
+    expect(byFamily.family).toBe("pilsner");
+    expect(byFavorites.favoritesOnly).toBe(true);
+  });
+
+  it("rejects empty searches that have neither text nor family scope", () => {
+    expect(() => ingredientSearchQuerySchema.parse({ q: "" })).toThrow(/Search query or scope is required/);
   });
 
   it("accepts hop payloads built from canonical names and real aliases", () => {
@@ -62,6 +72,7 @@ describe("ingredient contracts", () => {
       packageVariants: [{
         id: "pv-star-san-946",
         brand: "Five Star",
+        productNameEn: "Star San",
         productNameRu: "Star San",
         packageAmount: 946,
         packageUnit: "ml",
@@ -85,6 +96,7 @@ describe("ingredient contracts", () => {
       packageVariants: [{
         id: "not-allowed",
         brand: "Test",
+        productNameEn: "Lactic Acid",
         productNameRu: "Lactic Acid"
       }]
     })).toThrow(/Package variants are only supported for consumables/);

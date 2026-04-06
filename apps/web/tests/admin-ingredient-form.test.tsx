@@ -79,6 +79,7 @@ describe("admin ingredient form", () => {
         packageVariants: [{
           id: "pv-1",
           brand: "Five Star",
+          productNameEn: "Star San",
           productNameRu: "Star San",
           countryNameRu: null,
           packageAmount: 946,

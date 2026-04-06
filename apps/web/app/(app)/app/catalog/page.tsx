@@ -22,6 +22,10 @@ import {
   ingredientCategoryLabels,
   resolveIngredientCountry
 } from "@/features/ingredients/presentation";
+import {
+  resolveIngredientTechnicalDataColorRangeEbc,
+  sanitizeIngredientColorValue
+} from "@/features/ingredients/technical-fields";
 import { listUserCatalogIngredients } from "@/features/ingredients/catalog-service";
 import { requireUser } from "@/lib/auth";
 
@@ -119,31 +123,23 @@ const buildDetailHref = (item: UserCatalogIngredientDto) => (
 const formatValue = (value: number) => value % 1 === 0 ? String(value) : value.toFixed(1).replace(/\.0$/, "");
 
 const formatColorBadge = (item: UserCatalogIngredientDto) => {
-  if (item.fermentableColorLovibond != null) {
-    return `${formatValue(item.fermentableColorLovibond * 1.97)} EBC`;
-  }
-
   const technicalData = item.technicalData;
   if (technicalData && (technicalData.type === "malt" || technicalData.type === "fermentable")) {
-    if (technicalData.type === "malt" && technicalData.colorEbcMin != null && technicalData.colorEbcMax != null) {
-      const malt = technicalData as Extract<IngredientTechnicalData, { type: "malt" }>;
-      const colorEbcMin = malt.colorEbcMin!;
-      const colorEbcMax = malt.colorEbcMax!;
-      return colorEbcMin === colorEbcMax
-        ? `${formatValue(colorEbcMin)} EBC`
-        : `${formatValue(colorEbcMin)}-${formatValue(colorEbcMax)} EBC`;
+    const range = resolveIngredientTechnicalDataColorRangeEbc(technicalData);
+    if (range && technicalData.type === "malt" && (technicalData.colorEbcMin != null || technicalData.colorEbcMax != null)) {
+      return range.min === range.max
+        ? `${formatValue(range.min)} EBC`
+        : `${formatValue(range.min)}-${formatValue(range.max)} EBC`;
     }
 
-    if (technicalData.type === "malt" && technicalData.colorEbcMin != null) {
-      const malt = technicalData as Extract<IngredientTechnicalData, { type: "malt" }>;
-      const colorEbcMin = malt.colorEbcMin!;
-      return `${formatValue(colorEbcMin)} EBC`;
+    if (range) {
+      return `${formatValue(range.average)} EBC`;
     }
+  }
 
-    if (technicalData.type === "fermentable" && technicalData.colorLovibond != null) {
-      const fermentable = technicalData as Extract<IngredientTechnicalData, { type: "fermentable" }>;
-      return `${formatValue((fermentable.colorLovibond ?? 0) * 1.97)} EBC`;
-    }
+  const colorLovibond = sanitizeIngredientColorValue(item.fermentableColorLovibond);
+  if (colorLovibond != null) {
+    return `${formatValue(colorLovibond * 1.97)} EBC`;
   }
 
   return null;
@@ -164,7 +160,7 @@ const buildKeyStats = (item: UserCatalogIngredientDto) => {
   if (item.category === "fermentable") {
     return [
       formatColorBadge(item),
-      item.fermentableExtractYieldPct != null ? `Экстракт ${formatValue(item.fermentableExtractYieldPct)}%` : null,
+      item.fermentableExtractYieldPct != null ? `Экст-ть ${formatValue(item.fermentableExtractYieldPct)}%` : null,
       technicalData && technicalData.type === "malt" && technicalData.proteinPct != null
         ? `Белок ${formatValue((technicalData as Extract<IngredientTechnicalData, { type: "malt" }>).proteinPct ?? 0)}%`
         : null

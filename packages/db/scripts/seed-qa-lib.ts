@@ -61,6 +61,18 @@ const resolveInventoryCategory = (item: IngredientRow) => {
   return "consumable" as const;
 };
 
+const resolveInventorySubtype = (item: IngredientRow) => {
+  if (item.type === "malt") {
+    return "malt";
+  }
+
+  if (item.type === "fermentable") {
+    return "fermentable";
+  }
+
+  return item.itemKind;
+};
+
 const resolveDisplayNameSnapshot = (item: IngredientRow) => item.nameRu ?? item.nameEn ?? item.id;
 
 const resolveDefaultDisplayUnitSnapshot = (item: IngredientRow) => {
@@ -145,7 +157,7 @@ const createInventorySeedRow = (
   packageVariantId: packageVariantId ?? null,
   ingredientFamilyId: null,
   ingredientCategory: resolveInventoryCategory(item),
-  ingredientSubtype: item.itemKind,
+  ingredientSubtype: resolveInventorySubtype(item),
   ingredientDisplayNameSnapshot: resolveDisplayNameSnapshot(item),
   ingredientDefaultDisplayUnitSnapshot: resolveDefaultDisplayUnitSnapshot(item),
   ingredientMeasurementDimension: resolveMeasurementDimension(resolveDefaultDisplayUnitSnapshot(item)),

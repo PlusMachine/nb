@@ -1,16 +1,18 @@
 # Раздел `/app/ingredients` (`Склад моих ингредиентов`)
 
-Дата фиксации: `2026-04-04`
+Дата фиксации: `2026-04-05`
 
 Этот документ описывает текущее поведение раздела `/app/ingredients` по коду и связанным UI-компонентам. Он покрывает:
 
 - состав страницы;
 - реальные ссылки и переходы;
 - все модалки и немодальные оверлеи;
-- flow фильтрации, сортировки, поиска, добавления, редактирования, удаления и обнуления;
+- flow фильтрации, сортировки, поиска, добавления, редактирования, удаления, обнуления и ссылок на покупку;
 - связь склада с каталогом ингредиентов.
 
 Если документация и код расходятся, source of truth - текущая реализация в `apps/web`.
+
+Документ повторно сверён с текущим кодом `2026-04-05` и актуализирован с учётом purchase links / user metadata flow.
 
 Для низкоуровневого разбора add-flow есть отдельный документ: `docs/ingredients-add-flow.md`. Этот файл не заменяет его, а собирает полную карту раздела `/app/ingredients` и связывает add-flow с остальными сценариями страницы.
 
@@ -18,17 +20,21 @@
 
 - `apps/web/app/(app)/app/ingredients/page.tsx`
 - `apps/web/app/(app)/app/ingredients/actions.ts`
+- `apps/web/app/(app)/app/ingredients/metadata-actions.ts`
 - `apps/web/components/inventory/add-ingredient-trigger.tsx`
 - `apps/web/components/inventory/add-ingredient-modal.tsx`
 - `apps/web/components/inventory/catalog-ingredient-form.tsx`
 - `apps/web/components/inventory/custom-ingredient-panel.tsx`
 - `apps/web/components/inventory/custom-ingredient-form.tsx`
+- `apps/web/components/inventory/inventory-purchase-links-trigger.tsx`
 - `apps/web/components/inventory/inventory-toolbar.tsx`
 - `apps/web/components/inventory/grouped-inventory-list.tsx`
 - `apps/web/components/inventory/inventory-list-item.tsx`
 - `apps/web/components/inventory/inventory-quantity-editor.tsx`
 - `apps/web/components/inventory/inventory-item-details-editor.tsx`
 - `apps/web/components/inventory/delete-inventory-item-button.tsx`
+- `apps/web/components/ingredients/ingredient-purchase-links-field.tsx`
+- `apps/web/components/ingredients/ingredient-purchase-links-manager.tsx`
 - `apps/web/components/shared/confirm-action-dialog.tsx`
 - `apps/web/components/inventory/inventory-empty-state.tsx`
 - `apps/web/components/inventory/inventory-search-input.tsx`
@@ -173,9 +179,14 @@
 - цену за единицу;
 - дату покупки;
 - срок годности;
+- quick trigger ссылок на покупку;
 - заметки;
 - inline editor количества и единицы;
 - action-кнопки справа сверху.
+
+Если для ingredient reference уже сохранены purchase links, карточка показывает control `Купить` и до трёх marketplace badge'ей.
+
+Если ссылок ещё нет, на карточке показывается action `Добавить ссылку`.
 
 Карточка может визуально менять состояние:
 
@@ -236,6 +247,7 @@
 - toggle `Показать/Скрыть закончившиеся`;
 - dropdown сортировки;
 - `Сбросить`;
+- `Купить / Добавить ссылку`;
 - `0 закончился`;
 - иконка `Редактировать`;
 - иконка `Удалить`.
@@ -341,7 +353,35 @@
 - клавишей `Escape`, если не идет pending state;
 - автоматически после успешного удаления.
 
-### 5.4. Немодальные оверлеи
+### 5.4. Диалог `Ссылки на покупку`
+
+Компонент: `IngredientPurchaseLinksDialog`
+
+Как открывается:
+
+- по control `Купить` в карточке склада, если ссылки уже есть;
+- по control `Добавить ссылку` в карточке склада, если ссылок ещё нет.
+
+Что внутри:
+
+- title `Ссылки на покупку`;
+- верхняя метка `Покупка`;
+- editor списка ссылок;
+- add/edit/delete flow для URL;
+- marketplace badge и host для каждой ссылки.
+
+Как закрывается:
+
+- кликом по backdrop;
+- кнопкой закрытия;
+- клавишей `Escape`.
+
+Важно:
+
+- это отдельный modal dialog;
+- он редактирует не inventory row как таковую, а user metadata для ingredient reference (`catalog` или `custom`).
+
+### 5.5. Немодальные оверлеи
 
 На странице есть и overlays, которые не являются модалками:
 
@@ -521,17 +561,23 @@ Dropdown закрывается также по клику вне него.
 - summary выбранного ингредиента;
 - selection card;
 - обязательные inventory-поля: количество и единица;
-- optional disclosure с ценой/датами/заметкой;
+- optional disclosure с ценой, ссылками, датами и заметкой;
 - иногда блок batch-specific technical overrides.
 
 В optional disclosure catalog-flow можно заполнить:
 
 - цену;
+- ссылки на покупку;
 - дату покупки;
 - срок годности;
 - заметку.
 
 UI disclosure для optional полей в add-flow показывает summary состояния и позволяет оставить все эти поля пустыми до последующего редактирования.
+
+Если выбран уже существующий ingredient reference:
+
+- поле ссылок на покупку загружает уже сохранённые ссылки для этого reference;
+- при submit add-flow может не только добавить item в inventory, но и обновить purchase links для выбранного `catalog` или `custom` ingredient.
 
 Batch override поддерживается для:
 
@@ -578,6 +624,15 @@ Batch override поддерживается для:
 - для yeast - `Тип дрожжей` и `Аттенюация, %`;
 - для category с subtype - еще и поле subtype.
 
+Optional disclosure в create-custom flow теперь тоже включает:
+
+- цену;
+- ссылки на покупку;
+- даты;
+- заметку.
+
+Так как нового custom ingredient ещё не существует, purchase links в этом сценарии сначала ведутся как draft без reference, а после успешного создания привязываются к созданному custom ingredient.
+
 ### 8.6. Что важно для UX
 
 - при наличии selection category grid и mode switch скрываются;
@@ -618,7 +673,8 @@ Batch override поддерживается для:
 Важно:
 
 - edit modal использует тот же shared picker-подход;
-- в нем можно выбрать как системный, так и пользовательский ingredient, если он попадает в текущий search context.
+- в нем можно выбрать как системный, так и пользовательский ingredient, если он попадает в текущий search context;
+- optional section edit modal теперь умеет редактировать и purchase links выбранного ingredient reference.
 
 ### 9.3. Как выглядит flow
 
@@ -641,7 +697,13 @@ Batch override поддерживается для:
 - `Дата покупки`;
 - `Годен до`;
 - цена через `InventoryPriceInput`;
+- `Ссылки на покупку`;
 - `Заметки`.
+
+При сохранении:
+
+- inventory row обновляет batch fields;
+- purchase links, если section была загружена/трогалась, заменяются для текущего выбранного reference.
 
 ### 9.4. Ограничения и важные детали
 
@@ -735,9 +797,72 @@ Batch override поддерживается для:
 - кнопка `0 закончился` вызывает `updateInventoryInlineAction(...)`;
 - то есть обнуление реализовано как частный случай обычного inline update quantity.
 
-## 12. Flow удаления
+## 12. Flow ссылок на покупку
 
-### 12.1. Пользовательский сценарий
+### 12.1. Быстрый trigger в карточке склада
+
+В карточке склада purchase links показываются в строке метаданных рядом с ценой и датами.
+
+Логика trigger'а такая:
+
+- если `purchaseLinks.count > 0`, кнопка показывает `Купить`;
+- если ссылок нет, кнопка показывает `Добавить ссылку`;
+- если ссылок несколько, рядом выводятся badge'и площадок, максимум `3`.
+
+Summary для карточки приходит не из inventory row, а как `purchaseLinks` summary внутри `item.source`.
+
+### 12.2. Что открывается по trigger'у
+
+Trigger открывает `IngredientPurchaseLinksDialog`.
+
+Внутри dialog пользователь может:
+
+- увидеть текущие ссылки;
+- открыть ссылку во внешнем tab/window;
+- добавить новую ссылку;
+- редактировать существующую;
+- удалить существующую.
+
+Площадка определяется автоматически по URL.
+
+UI показывает:
+
+- marketplace badge;
+- label площадки;
+- host ссылки.
+
+### 12.3. Как purchase links встроены в add/edit flow
+
+Purchase links присутствуют и в формах:
+
+- add catalog flow;
+- add existing custom flow;
+- create custom flow;
+- edit inventory item flow.
+
+Во всех этих случаях links ведутся через `IngredientPurchaseLinksField`.
+
+Важная доменная особенность:
+
+- это metadata на уровне `UserIngredientReference`;
+- они не принадлежат отдельной inventory row;
+- изменение ссылок из склада отражается в detail page каталога для того же reference.
+
+### 12.4. Что сохраняется на сервере
+
+При add/edit из `/app/ingredients` purchase links проходят отдельным metadata path:
+
+- UI передаёт `purchaseLinks` и `purchaseLinksTouched`;
+- action нормализует URL;
+- затем вызывает `replaceIngredientPurchaseLinksForReference(...)` для `catalog` или `custom` reference.
+
+Если ссылка невалидна, пользователь получает ошибку:
+
+- `Проверьте ссылки на покупку: одна из ссылок заполнена некорректно.`
+
+## 13. Flow удаления
+
+### 13.1. Пользовательский сценарий
 
 1. Пользователь нажимает иконку `Удалить`.
 2. Открывается confirm dialog.
@@ -745,7 +870,7 @@ Batch override поддерживается для:
 4. Запись удаляется из `userIngredients`.
 5. При успехе dialog закрывается, карточка исчезает из списка.
 
-### 12.2. Важные свойства удаления
+### 13.2. Важные свойства удаления
 
 - это hard delete;
 - undo/recovery path в UI нет;
@@ -755,11 +880,11 @@ Success message:
 
 - `Ингредиент удален из запасов.`
 
-## 13. Связь склада с каталогом ингредиентов
+## 14. Связь склада с каталогом ингредиентов
 
 Это ключевой раздел, потому что склад и каталог в текущей архитектуре тесно связаны.
 
-### 13.1. Связь на уровне переходов
+### 14.1. Связь на уровне переходов
 
 Связь двусторонняя:
 
@@ -768,7 +893,7 @@ Success message:
 2. Из склада можно перейти обратно в catalog detail:
    - link в заголовке карточки -> `/app/catalog/system/...` или `/app/catalog/custom/...`
 
-### 13.2. Связь на уровне данных
+### 14.2. Связь на уровне данных
 
 Inventory item связан с одной из двух сущностей:
 
@@ -780,7 +905,7 @@ Inventory item связан с одной из двух сущностей:
 - inventory не хранит независимый каталог внутри себя;
 - он хранит user-specific остатки, привязанные к catalog/custom domain.
 
-### 13.3. Связь через unified catalog service
+### 14.3. Связь через unified catalog service
 
 Каталог и склад используют общий ingredient layer:
 
@@ -794,7 +919,34 @@ Inventory item связан с одной из двух сущностей:
 - inventory custom flow не живет в отдельном ad-hoc хранилище;
 - он использует тот же пользовательский каталог ингредиентов.
 
-### 13.4. Usage counters в каталоге завязаны на склад
+### 14.4. User metadata теперь тоже общая между складом и каталогом
+
+Для ingredient reference теперь есть общий слой пользовательских metadata:
+
+- `isFavorite`;
+- `purchaseLinks`.
+
+Catalog detail page читает:
+
+- favorite state;
+- полный список `purchaseLinks`.
+
+На уровне UI это выражено так:
+
+- в header detail page есть toggle избранного;
+- ниже есть секция `Где купить` с полным editor'ом ссылок.
+
+Inventory list page читает:
+
+- summary purchase links для каждого `item.source`.
+
+Следствие:
+
+- на складе можно быстро открыть и изменить links через `Купить / Добавить ссылку`;
+- в catalog detail для того же ingredient пользователь видит те же данные в секции `Где купить`;
+- metadata-actions для favorite/purchase links revalidate и `/app/ingredients`, и `/app/catalog`, и detail page конкретного ingredient.
+
+### 14.5. Usage counters в каталоге завязаны на склад
 
 Catalog detail page показывает блок `Использование`:
 
@@ -813,7 +965,7 @@ Catalog detail page показывает блок `Использование`:
 - каталог знает, используется ли ingredient в складе;
 - detail page может показать `Используется в остатках`.
 
-### 13.5. Derived/custom path меняет то, как склад связан с каталогом
+### 14.6. Derived/custom path меняет то, как склад связан с каталогом
 
 Если пользователь добавляет системный ingredient без overrides:
 
@@ -832,7 +984,7 @@ Catalog detail page показывает блок `Использование`:
 - склад связан с каталогом не только напрямую;
 - он может быть связан через пользовательский производный слой.
 
-### 13.6. Что склад не делает
+### 14.7. Что склад не делает
 
 Склад не является отдельной копией каталога:
 
@@ -841,43 +993,50 @@ Catalog detail page показывает блок `Использование`:
 - он не открывает отдельную inventory detail page;
 - роль detail/view layer остается у каталога.
 
-## 14. Практический summary по пользовательским flow
+## 15. Практический summary по пользовательским flow
 
-### 14.1. Сортировка
+### 15.1. Сортировка
 
 - работает через query params и server-side sort;
 - визуально меняет порядок внутри групп;
 - пустые позиции все равно остаются в хвосте группы.
 
-### 14.2. Добавление
+### 15.2. Добавление
 
 - стартует из modal;
 - поддерживает catalog path, existing custom path и create-custom path;
 - может сохранить системный ingredient как derived custom variant;
 - подробно разобрано в `docs/ingredients-add-flow.md`.
 
-### 14.3. Редактирование
+### 15.3. Редактирование
 
 - открывает отдельную modal;
 - может заменить сам ingredient, а не только batch details;
 - не предназначено для выставления нулевого остатка.
 
-### 14.4. Обнуление
+### 15.4. Обнуление
 
 - отдельной модалки нет;
 - это inline action `0 закончился`;
 - позиция остается на складе, просто становится empty.
 
-### 14.5. Удаление
+### 15.5. Удаление
 
 - идет через confirm dialog;
 - удаляет запись без восстановления.
 
-## 15. Короткий список того, что стоит помнить при дальнейших изменениях UI
+### 15.6. Ссылки на покупку
+
+- на карточке склада это отдельный metadata-trigger;
+- links общие для ingredient reference и видны также в каталоге;
+- add/edit flow на складе умеют их менять.
+
+## 16. Короткий список того, что стоит помнить при дальнейших изменениях UI
 
 - На странице склада почти все действия делаются без перехода на новый route: через modal, dropdown или `router.replace`.
 - Единственный регулярный navigation path со страницы - ссылка из имени карточки в catalog detail.
 - `default` sort сейчас по факту эквивалентен sort by name.
 - Обнуление и удаление - это разные сценарии: zero сохраняет карточку, delete удаляет строку.
 - Edit modal умеет менять source linkage inventory item.
+- Purchase links редактируются не на inventory row, а на ingredient reference metadata.
 - Склад и каталог используют общий ingredient domain, а не два несвязанных набора данных.

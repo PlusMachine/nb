@@ -1,50 +1,38 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { Trash2 } from "lucide-react";
+import { Pencil, Plus, Trash2 } from "lucide-react";
 import { listIngredientPurchaseLinksAction } from "@/app/(app)/app/ingredients/metadata-actions";
 import type { UserIngredientReference } from "@/features/ingredients/contracts";
 import {
   buildIngredientPurchaseLinkView,
-  normalizeIngredientPurchaseLinkInput
+  normalizeIngredientPurchaseLinkInput,
+  normalizeIngredientPurchaseLinkInputs
 } from "@/features/ingredients/purchase-links";
 import { PurchaseLinkMarketplaceBadge } from "./ingredient-purchase-links-manager";
 
-const ensureTrailingBlankRow = (rows: string[]) => {
-  const normalizedRows = rows.length > 0 ? rows : [""];
-  const filledRows = normalizedRows.filter((row) => row.trim().length > 0);
-  return [...filledRows, ""];
-};
+export const createIngredientPurchaseLinkRows = (urls: string[] = []) => urls;
 
-export const createIngredientPurchaseLinkRows = (urls: string[] = []) => ensureTrailingBlankRow(urls);
-
-const isRecognizedPurchaseLink = (value: string) => {
-  try {
-    return Boolean(normalizeIngredientPurchaseLinkInput(value));
-  } catch {
-    return false;
-  }
-};
-
-export const updateIngredientPurchaseLinkRows = (
+export const saveIngredientPurchaseLinkRow = (
   rows: string[],
-  index: number,
-  value: string
+  draft: { mode: "new"; value: string } | { mode: "edit"; index: number; value: string }
 ) => {
-  const nextRows = rows.map((row, rowIndex) => rowIndex === index ? value : row);
-  const isLastRow = index === nextRows.length - 1;
-
-  if (isLastRow && isRecognizedPurchaseLink(value)) {
-    return [...ensureTrailingBlankRow(nextRows)];
+  const normalizedUrl = normalizeIngredientPurchaseLinkInput(draft.value);
+  if (!normalizedUrl) {
+    throw new Error("INVALID_PURCHASE_LINK_URL");
   }
 
-  return ensureTrailingBlankRow(nextRows);
+  const nextRows = draft.mode === "new"
+    ? [...rows, normalizedUrl]
+    : rows.map((row, rowIndex) => rowIndex === draft.index ? normalizedUrl : row);
+
+  return normalizeIngredientPurchaseLinkInputs(nextRows);
 };
 
 export const removeIngredientPurchaseLinkRow = (
   rows: string[],
   index: number
-) => ensureTrailingBlankRow(rows.filter((_row, rowIndex) => rowIndex !== index));
+) => rows.filter((_row, rowIndex) => rowIndex !== index);
 
 export const extractIngredientPurchaseLinkUrls = (rows: string[]) => rows
   .map((row) => row.trim())
@@ -55,12 +43,41 @@ type PurchaseLinksFieldState = {
   isLoaded: boolean;
 };
 
+type DraftState =
+  | { mode: "new"; value: string }
+  | { mode: "edit"; index: number; value: string };
+
 type Props = {
   reference: UserIngredientReference | null;
   enabled: boolean;
   allowDraftWithoutReference?: boolean;
   onStateChange?: (state: PurchaseLinksFieldState) => void;
   testId?: string;
+};
+
+const buildDraftPreview = (
+  draft: DraftState | null,
+  rows: string[]
+) => {
+  if (!draft) {
+    return null;
+  }
+
+  try {
+    const normalizedUrl = normalizeIngredientPurchaseLinkInput(draft.value);
+    if (!normalizedUrl) {
+      return null;
+    }
+
+    return buildIngredientPurchaseLinkView({
+      id: draft.mode === "edit" ? `draft-edit-${draft.index}` : "draft-new",
+      url: normalizedUrl,
+      normalizedUrl,
+      position: draft.mode === "edit" ? draft.index : rows.length
+    });
+  } catch {
+    return null;
+  }
 };
 
 export function IngredientPurchaseLinksField({
@@ -70,34 +87,44 @@ export function IngredientPurchaseLinksField({
   onStateChange,
   testId
 }: Props) {
-  const referenceKey = reference ? `${reference.source}:${reference.id}` : "none";
+  const referenceSource = reference?.source ?? null;
+  const referenceId = reference?.id ?? null;
+  const referenceKey = referenceSource && referenceId ? `${referenceSource}:${referenceId}` : "none";
   const [rows, setRows] = useState<string[]>(() => createIngredientPurchaseLinkRows());
   const [isLoaded, setIsLoaded] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
+  const [draft, setDraft] = useState<DraftState | null>(null);
+  const [draftError, setDraftError] = useState<string | null>(null);
 
   useEffect(() => {
     if (!enabled) {
       return;
     }
 
-    if (!reference && !allowDraftWithoutReference) {
+    if (!referenceSource || !referenceId) {
+      if (allowDraftWithoutReference) {
+        setIsLoaded(true);
+        setIsLoading(false);
+        setMessage(null);
+        setDraft(null);
+        setDraftError(null);
+        return;
+      }
+
       setRows(createIngredientPurchaseLinkRows());
       setIsLoaded(false);
+      setIsLoading(false);
       setMessage(null);
+      setDraft(null);
+      setDraftError(null);
       return;
     }
 
-    if (!reference && allowDraftWithoutReference) {
-      setIsLoaded(true);
-      setMessage(null);
-      return;
-    }
-
-    const currentReference = reference;
-    if (!currentReference) {
-      return;
-    }
+    const currentReference: UserIngredientReference = {
+      source: referenceSource,
+      id: referenceId
+    };
     let cancelled = false;
     setIsLoading(true);
     setMessage(null);
@@ -110,6 +137,8 @@ export function IngredientPurchaseLinksField({
 
         setRows(createIngredientPurchaseLinkRows(links.map((link) => link.url)));
         setIsLoaded(true);
+        setDraft(null);
+        setDraftError(null);
       })
       .catch(() => {
         if (cancelled) {
@@ -119,6 +148,8 @@ export function IngredientPurchaseLinksField({
         setRows(createIngredientPurchaseLinkRows());
         setIsLoaded(true);
         setMessage("Не удалось загрузить сохранённые ссылки.");
+        setDraft(null);
+        setDraftError(null);
       })
       .finally(() => {
         if (!cancelled) {
@@ -129,9 +160,10 @@ export function IngredientPurchaseLinksField({
     return () => {
       cancelled = true;
     };
-  }, [allowDraftWithoutReference, enabled, reference, referenceKey]);
+  }, [allowDraftWithoutReference, enabled, referenceId, referenceKey, referenceSource]);
 
   const urls = useMemo(() => extractIngredientPurchaseLinkUrls(rows), [rows]);
+  const draftPreview = useMemo(() => buildDraftPreview(draft, rows), [draft, rows]);
 
   useEffect(() => {
     onStateChange?.({
@@ -144,75 +176,194 @@ export function IngredientPurchaseLinksField({
     return null;
   }
 
+  const saveDraft = () => {
+    if (!draft) {
+      return;
+    }
+
+    try {
+      setRows((current) => saveIngredientPurchaseLinkRow(current, draft));
+      setDraft(null);
+      setDraftError(null);
+    } catch {
+      setDraftError("Укажите корректную ссылку.");
+    }
+  };
+
+  const cancelDraft = () => {
+    setDraft(null);
+    setDraftError(null);
+  };
+
   return (
     <section className="space-y-3" data-testid={testId}>
       <div className="space-y-1">
         <h4 className="text-sm font-medium text-zinc-900">Ссылки на покупку</h4>
-        <p className="text-xs text-zinc-500">Площадки определяются автоматически по URL.</p>
       </div>
 
       {isLoading ? (
         <p className="text-sm text-zinc-500">Загружаем ссылки...</p>
       ) : null}
 
-      <div className="space-y-3">
-        {rows.map((row, index) => {
-          const preview = (() => {
-            try {
-              const normalizedUrl = normalizeIngredientPurchaseLinkInput(row);
-              if (!normalizedUrl) {
-                return null;
-              }
+      {rows.length > 0 ? (
+        <div className="space-y-3">
+          {rows.map((row, index) => {
+            const preview = buildIngredientPurchaseLinkView({
+              id: `saved-${index}`,
+              url: row,
+              normalizedUrl: row,
+              position: index
+            });
+            const isEditing = draft?.mode === "edit" && draft.index === index;
 
-              return buildIngredientPurchaseLinkView({
-                id: `draft-${index}`,
-                url: normalizedUrl,
-                normalizedUrl,
-                position: index
-              });
-            } catch {
-              return null;
+            if (isEditing) {
+              return (
+                <div key={`purchase-link-row-${index}`} className="space-y-3 rounded-2xl border border-zinc-200 bg-zinc-50 p-3">
+                  <input
+                    type="url"
+                    value={draft.value}
+                    onChange={(event) => {
+                      setDraft({
+                        mode: "edit",
+                        index,
+                        value: event.target.value
+                      });
+                      setDraftError(null);
+                    }}
+                    className="w-full rounded-xl border border-zinc-200 bg-white px-3 py-2 text-sm"
+                    placeholder="https://..."
+                  />
+                  {draftPreview ? (
+                    <div className="flex items-center gap-2 text-sm text-zinc-600">
+                      <PurchaseLinkMarketplaceBadge marketplace={draftPreview.marketplace} />
+                      <span className="font-medium text-zinc-900">{draftPreview.marketplaceLabel}</span>
+                      <span className="text-zinc-400">•</span>
+                      <span>{draftPreview.displayHost}</span>
+                    </div>
+                  ) : null}
+                  <div className="flex flex-wrap gap-2">
+                    <button
+                      type="button"
+                      onClick={saveDraft}
+                      className="rounded-xl bg-zinc-900 px-3 py-2 text-sm font-medium text-white"
+                    >
+                      Готово
+                    </button>
+                    <button
+                      type="button"
+                      onClick={cancelDraft}
+                      className="rounded-xl border border-zinc-200 px-3 py-2 text-sm font-medium text-zinc-700"
+                    >
+                      Отмена
+                    </button>
+                  </div>
+                </div>
+              );
             }
-          })();
-          const isFilled = row.trim().length > 0;
 
-          return (
-            <div key={`purchase-link-row-${index}`} className="space-y-2 rounded-2xl border border-zinc-200 bg-zinc-50 p-3">
-              <div className="flex items-start gap-2">
-                <input
-                  type="url"
-                  value={row}
-                  onChange={(event) => {
-                    setRows((current) => updateIngredientPurchaseLinkRows(current, index, event.target.value));
-                  }}
-                  className="min-w-0 flex-1 rounded-xl border border-zinc-200 bg-white px-3 py-2 text-sm"
-                  placeholder="https://..."
-                />
-                {isFilled ? (
+            return (
+              <div key={`purchase-link-row-${index}`} className="flex items-center justify-between gap-3 rounded-2xl border border-zinc-200 bg-zinc-50 p-3">
+                <div className="min-w-0 flex items-center gap-2">
+                  <PurchaseLinkMarketplaceBadge marketplace={preview.marketplace} />
+                  <div className="min-w-0">
+                    <p className="truncate text-sm font-medium text-zinc-900">{preview.marketplaceLabel}</p>
+                    <p className="truncate text-xs text-zinc-500">{preview.displayHost}</p>
+                  </div>
+                </div>
+                <div className="flex shrink-0 items-center gap-1">
                   <button
                     type="button"
-                    onClick={() => setRows((current) => removeIngredientPurchaseLinkRow(current, index))}
+                    onClick={() => {
+                      setDraft({
+                        mode: "edit",
+                        index,
+                        value: row
+                      });
+                      setDraftError(null);
+                    }}
+                    className="rounded-xl border border-zinc-200 bg-white p-2 text-zinc-400 transition-colors hover:bg-zinc-100 hover:text-zinc-700"
+                    aria-label="Редактировать ссылку"
+                  >
+                    <Pencil className="h-4 w-4" />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setRows((current) => removeIngredientPurchaseLinkRow(current, index));
+                      setDraftError(null);
+                    }}
                     className="rounded-xl border border-zinc-200 bg-white p-2 text-zinc-400 transition-colors hover:bg-red-50 hover:text-red-600"
                     aria-label="Удалить ссылку"
                   >
                     <Trash2 className="h-4 w-4" />
                   </button>
-                ) : null}
-              </div>
-
-              {preview ? (
-                <div className="flex items-center gap-2 text-sm text-zinc-600">
-                  <PurchaseLinkMarketplaceBadge marketplace={preview.marketplace} />
-                  <span className="font-medium text-zinc-900">{preview.marketplaceLabel}</span>
-                  <span className="text-zinc-400">•</span>
-                  <span>{preview.displayHost}</span>
                 </div>
-              ) : null}
-            </div>
-          );
-        })}
-      </div>
+              </div>
+            );
+          })}
+        </div>
+      ) : null}
 
+      {draft?.mode === "new" ? (
+        <div className="space-y-3 rounded-2xl border border-zinc-200 bg-zinc-50 p-3">
+          <input
+            type="url"
+            value={draft.value}
+            onChange={(event) => {
+              setDraft({
+                mode: "new",
+                value: event.target.value
+              });
+              setDraftError(null);
+            }}
+            className="w-full rounded-xl border border-zinc-200 bg-white px-3 py-2 text-sm"
+            placeholder="https://..."
+          />
+          {draftPreview ? (
+            <div className="flex items-center gap-2 text-sm text-zinc-600">
+              <PurchaseLinkMarketplaceBadge marketplace={draftPreview.marketplace} />
+              <span className="font-medium text-zinc-900">{draftPreview.marketplaceLabel}</span>
+              <span className="text-zinc-400">•</span>
+              <span>{draftPreview.displayHost}</span>
+            </div>
+          ) : null}
+          <div className="flex flex-wrap gap-2">
+            <button
+              type="button"
+              onClick={saveDraft}
+              className="rounded-xl bg-zinc-900 px-3 py-2 text-sm font-medium text-white"
+            >
+              Готово
+            </button>
+            <button
+              type="button"
+              onClick={cancelDraft}
+              className="rounded-xl border border-zinc-200 px-3 py-2 text-sm font-medium text-zinc-700"
+            >
+              Отмена
+            </button>
+          </div>
+        </div>
+      ) : null}
+
+      {!isLoading && draft == null ? (
+        <button
+          type="button"
+          onClick={() => {
+            setDraft({
+              mode: "new",
+              value: ""
+            });
+            setDraftError(null);
+          }}
+          className="inline-flex items-center gap-2 rounded-xl border border-zinc-200 bg-white px-3 py-2 text-sm font-medium text-zinc-700 transition-colors hover:bg-zinc-100"
+        >
+          <Plus className="h-4 w-4" />
+          Добавить ссылку
+        </button>
+      ) : null}
+
+      {draftError ? <p className="text-sm text-red-600">{draftError}</p> : null}
       {message ? <p className="text-sm text-red-600">{message}</p> : null}
     </section>
   );

@@ -108,6 +108,7 @@ const mapSourceRow = (row: typeof ingredientSources.$inferSelect): IngredientSou
 const mapPackageVariantRow = (row: typeof ingredientPackageVariants.$inferSelect): IngredientPackageVariantDto => ({
   id: row.id,
   brand: row.brand,
+  productNameEn: row.productNameEn,
   productNameRu: row.productNameRu,
   countryNameRu: row.countryNameRu,
   packageAmount: row.packageAmount,
@@ -377,11 +378,14 @@ const scoreCandidate = (item: IngredientCatalogItemDto, query: string): MatchRes
     displayNameEn: item.nameEn,
     nameRu: item.nameRu,
     nameEn: item.nameEn,
+    category: item.category,
+    sourceCategory: item.sourceCategory,
     aliases: item.aliases
       .filter((alias) => alias.isEnabled)
       .map((alias) => ({
         alias: alias.alias,
         aliasNormalized: alias.aliasNormalized,
+        source: alias.source,
         isEnabled: alias.isEnabled
       })),
     brandName: item.brand,
@@ -393,7 +397,12 @@ const scoreCandidate = (item: IngredientCatalogItemDto, query: string): MatchRes
     packageVariants: item.packageVariants.map((variant) => ({
       id: variant.id,
       brand: variant.brand,
-      productNameRu: variant.productNameRu
+      productNameEn: variant.productNameEn,
+      productNameRu: variant.productNameRu,
+      packageAmount: variant.packageAmount,
+      packageUnit: variant.packageUnit,
+      stockContentAmount: variant.stockContentAmount,
+      stockContentUnit: variant.stockContentUnit
     }))
   });
 
@@ -498,6 +507,7 @@ const upsertIngredientRelations = async (
       id: variant.id,
       ingredientId,
       brand: variant.brand,
+      productNameEn: variant.productNameEn,
       productNameRu: variant.productNameRu,
       countryNameRu: variant.countryNameRu,
       packageAmount: variant.packageAmount ?? null,
@@ -695,6 +705,7 @@ const toUpsertPayload = (item: IngredientCatalogItemDto): z.infer<typeof ingredi
   packageVariants: item.packageVariants.map((variant) => ({
     id: variant.id,
     brand: variant.brand,
+    productNameEn: variant.productNameEn,
     productNameRu: variant.productNameRu,
     countryNameRu: variant.countryNameRu,
     packageAmount: variant.packageAmount,

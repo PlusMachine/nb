@@ -1,6 +1,6 @@
 # Flow добавления ингредиента на `/app/ingredients`
 
-Дата фиксации: `2026-04-04`
+Дата фиксации: `2026-04-05`
 
 Этот документ описывает текущее поведение flow добавления ингредиента в склад по коду. Если документация и код расходятся, source of truth - текущая реализация в `apps/web`.
 
@@ -11,6 +11,7 @@
 - Catalog-flow через shared picker
 - Custom-flow через список своих ингредиентов и создание нового
 - Inline-уточнение технических параметров для catalog ingredient
+- Purchase links внутри optional sections
 - Server-side ветки submit и derived custom path
 - Успех, revalidation и deep-link/open-with-selection сценарии
 
@@ -23,10 +24,13 @@
 - `apps/web/components/inventory/custom-ingredient-panel.tsx`
 - `apps/web/components/inventory/custom-ingredient-form.tsx`
 - `apps/web/components/ingredients/ingredient-picker.tsx`
+- `apps/web/components/ingredients/ingredient-purchase-links-field.tsx`
 - `apps/web/components/inventory/inventory-price-input.tsx`
 - `apps/web/app/(app)/app/ingredients/actions.ts`
+- `apps/web/app/(app)/app/ingredients/metadata-actions.ts`
 - `apps/web/app/api/ingredients/custom/route.ts`
 - `apps/web/features/ingredients/catalog-service.ts`
+- `apps/web/features/ingredients/user-metadata-service.ts`
 - `apps/web/features/ingredients/presentation.ts`
 - `apps/web/features/inventory/contracts.ts`
 - `apps/web/features/inventory/service.ts`
@@ -174,6 +178,7 @@ Deep-link обрабатывается на сервере:
 
 - количество
 - единица
+- ссылки на покупку
 - дата покупки
 - срок годности
 - цена
@@ -240,7 +245,7 @@ Catalog-flow использует существующий shared picker, а н�
 1. Compact context summary, например `Солод · Из каталога` или `Хмель · Свой`
 2. Карточка выбранного ингредиента
 3. Required block `Количество * / Ед. изм. *`
-4. Optional disclosure с row `Добавить цену, дату, срок или заметку`
+4. Optional disclosure с row `Добавить цену, ссылки, даты или заметку`
 
 При этом selection chrome больше не остается primary UI:
 
@@ -401,7 +406,7 @@ Unit profile по-прежнему вычисляется через existing in
 
 Optional section в catalog-flow рендерится как tappable row:
 
-- `Добавить цену, дату, срок или заметку`
+- `Добавить цену, ссылки, даты или заметку`
 - вторичная подпись: `Необязательно`
 
 Поведение:
@@ -416,6 +421,7 @@ Optional section в catalog-flow рендерится как tappable row:
 - `Дата покупки`
 - `Годен до`
 - price block
+- `Ссылки на покупку`
 - `Заметки`
 
 ### 12.1. Дата покупки
@@ -446,6 +452,33 @@ Price block остается прежним по архитектуре и ис�
 - используется `preferredCurrency` пользователя
 - helper/preview цены и нормализация по единице по-прежнему происходят внутри existing price runtime
 
+### 12.3. Purchase links
+
+Optional section теперь включает `IngredientPurchaseLinksField`.
+
+Поведение зависит от сценария:
+
+- если выбран existing `catalog` ingredient, field загружает уже сохранённые ссылки этого catalog reference;
+- если выбран existing `custom` ingredient, field загружает ссылки этого custom reference;
+- если selection изменён, purchase links field перепривязывается к новому reference.
+
+Что может сделать пользователь:
+
+- добавить ссылку;
+- редактировать ссылку;
+- удалить ссылку.
+
+Площадка определяется автоматически по URL.
+В summary disclosure это отражается строкой вида:
+
+- `Ссылки: N`
+
+На submit:
+
+- UI отправляет `purchaseLinks` и `purchaseLinksTouched`;
+- action нормализует URL;
+- после inventory add links заменяются для выбранного reference через metadata layer.
+
 ## 13. Submit matrix для catalog-flow
 
 Кнопка submit:
@@ -457,12 +490,15 @@ Price block остается прежним по архитектуре и ис�
 
 На submit form всегда вызывает `addSelectedIngredientAction`, а дальше сервер сам выбирает нужную ветку.
 
+Если optional purchase links были загружены и тронуты, action дополнительно обновляет ссылки для итогового ingredient reference.
+
 ### 13.1. Выбран existing custom ingredient из shared picker
 
 Если selected item пришел из picker с `source === "custom"`:
 
 - в payload идет `userCustomIngredientId`
 - action вызывает existing `addCustomIngredientToInventory(...)`
+- при `purchaseLinksTouched` links обновляются для этого же `custom` reference
 - сообщение успеха:
   `Ингредиент добавлен в запасы.`
 
@@ -472,6 +508,7 @@ Price block остается прежним по архитектуре и ис�
 
 - action делегирует в `addCatalogIngredientAction`
 - дальше вызывается existing `addCatalogIngredientToInventory(...)`
+- при `purchaseLinksTouched` links обновляются для этого же `catalog` reference
 
 ### 13.3. Выбран catalog ingredient с override-полями
 
@@ -489,6 +526,7 @@ Price block остается прежним по архитектуре и ис�
 2. Отличие есть
    - service находит или создает derived custom ingredient
    - дальше inventory add идет через existing `addCustomIngredientToInventory(...)`
+   - при `purchaseLinksTouched` links сохраняются уже на derived `custom` reference
    - success message становится явным:
      `Свой вариант ингредиента добавлен в запасы.`
 
@@ -610,7 +648,7 @@ API route внутри использует existing ingredient catalog service 
 - кнопку `К списку своих ингредиентов`
 - карточку выбранного ингредиента
 - required block `Количество * / Ед. изм. *`
-- optional row `Добавить цену, дату, срок или заметку`
+- optional row `Добавить цену, ссылки, даты или заметку`
 
 Submit в этом сценарии идет через `onSubmitExisting -> addSelectedIngredientAction`.
 
@@ -628,7 +666,7 @@ Custom form сейчас разбита на три слоя:
 
 1. `Параметры ингредиента`
 2. `Количество и единица учета`
-3. optional row `Добавить цену, дату, срок или заметку`
+3. optional row `Добавить цену, ссылки, даты или заметку`
 
 Это не новый отдельный wizard.
 Это одна форма внутри той же модалки.
@@ -690,7 +728,7 @@ Unit profile для custom create path вычисляется через existin
 
 - по умолчанию свернута
 - раскрывается нажатием на всю строку
-- использует ту же предметную подпись `Добавить цену, дату, срок или заметку`
+- использует ту же предметную подпись `Добавить цену, ссылки, даты или заметку`
 - автоматически открывается при server-side errors в optional fields
 - по умолчанию не подставляет `Дату покупки`, пока пользователь сам ее не выберет
 
@@ -699,7 +737,13 @@ Unit profile для custom create path вычисляется через existin
 - `Дата покупки`
 - `Годен до`
 - тот же `InventoryPriceInput`
+- `Ссылки на покупку`
 - `Заметки`
+
+В create-custom path purchase links работают через draft-режим без reference:
+
+- field разрешает вводить ссылки до появления реального ingredient id;
+- после успешного `createUserCustomIngredient(...)` action привязывает эти ссылки к только что созданному custom ingredient.
 
 ### 16.5. Submit create path
 
@@ -712,6 +756,8 @@ Unit profile для custom create path вычисляется через existin
 
 1. `createUserCustomIngredient(...)`
 2. `addCustomIngredientToInventory(...)`
+
+Если optional links были тронуты, после создания action ещё и сохраняет purchase links на созданный `custom` reference.
 
 То есть новый custom ingredient сразу создается и тут же добавляется в склад.
 
@@ -735,6 +781,8 @@ Unit profile для custom create path вычисляется через existin
 - custom create + add:
   `Собственный ингредиент создан и добавлен в запасы.`
 
+Если в submit одновременно менялись purchase links, они сохраняются в том же flow, без отдельного dialog.
+
 ## 18. Ошибки и автоповедение формы
 
 ### 18.1. Catalog-flow
@@ -751,6 +799,7 @@ Server-side mapped errors включают:
 - `Единица измерения не поддерживается.`
 - `Эта единица измерения не подходит для выбранного ингредиента.`
 - `Не удалось создать пользовательскую версию ингредиента. Попробуйте еще раз.`
+- `Проверьте ссылки на покупку: одна из ссылок заполнена некорректно.`
 
 Если сервер вернул ошибки по optional fields:
 

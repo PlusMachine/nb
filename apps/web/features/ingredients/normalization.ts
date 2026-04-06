@@ -122,6 +122,22 @@ export const canonicalIngredientFamilyGroups = [
   {
     key: "vienna",
     terms: ["vienna", "vienna malt", "венский", "виенна"]
+  },
+  {
+    key: "wheat",
+    terms: ["wheat", "wheat malt", "пшеничный", "пшеничный солод"]
+  },
+  {
+    key: "caramel",
+    terms: ["cara", "caramel", "crystal", "карамельный", "карамельный солод"]
+  },
+  {
+    key: "roasted",
+    terms: ["roasted", "black", "chocolate", "black malt", "chocolate malt", "жженый", "шоколадный", "черный солод"]
+  },
+  {
+    key: "acidulated",
+    terms: ["acidulated", "acid malt", "sauer", "sauer malt", "кислый", "кислый солод"]
   }
 ] as const;
 

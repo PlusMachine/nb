@@ -59,7 +59,9 @@ export function IngredientPurchaseLinksEditor({
   emptyStateTitle = "Ссылок на покупку пока нет",
   emptyStateDescription = "Добавьте площадки, где вы обычно заказываете этот ингредиент."
 }: IngredientPurchaseLinksEditorProps) {
-  const referenceKey = `${reference.source}:${reference.id}`;
+  const referenceSource = reference.source;
+  const referenceId = reference.id;
+  const referenceKey = `${referenceSource}:${referenceId}`;
   const [links, setLinks] = useState<IngredientPurchaseLinkDto[]>(initialLinks ?? []);
   const [hasLoaded, setHasLoaded] = useState(Boolean(initialLinks));
   const [isLoading, setIsLoading] = useState(false);
@@ -84,7 +86,10 @@ export function IngredientPurchaseLinksEditor({
     let cancelled = false;
     setIsLoading(true);
 
-    void listIngredientPurchaseLinksAction(reference)
+    void listIngredientPurchaseLinksAction({
+      source: referenceSource,
+      id: referenceId
+    })
       .then((nextLinks) => {
         if (cancelled) {
           return;
@@ -109,7 +114,7 @@ export function IngredientPurchaseLinksEditor({
     return () => {
       cancelled = true;
     };
-  }, [enabled, hasLoaded, reference, referenceKey]);
+  }, [enabled, hasLoaded, referenceId, referenceKey, referenceSource]);
 
   const draftPreview = useMemo(() => {
     try {
@@ -275,24 +280,25 @@ export function IngredientPurchaseLinksEditor({
             }
 
             return (
-              <div key={link.id} className="flex items-center justify-between gap-3 rounded-2xl border border-zinc-200 bg-white px-3 py-3">
-                <div className="min-w-0 flex items-center gap-3">
+              <div
+                key={link.id}
+                className="flex items-stretch gap-2 rounded-2xl border border-zinc-200 bg-white p-1"
+              >
+                <a
+                  href={link.url}
+                  target="_blank"
+                  rel="noreferrer"
+                  aria-label={`Открыть ${link.marketplaceLabel}`}
+                  className="group flex min-w-0 flex-1 items-center gap-3 rounded-[1rem] px-3 py-3 transition-colors hover:bg-zinc-50 focus-visible:bg-zinc-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-300"
+                >
                   <PurchaseLinkMarketplaceBadge marketplace={link.marketplace} />
-                  <div className="min-w-0">
+                  <div className="min-w-0 flex-1">
                     <p className="truncate text-sm font-medium text-zinc-950">{link.marketplaceLabel}</p>
                     <p className="truncate text-xs text-zinc-500">{link.displayHost}</p>
                   </div>
-                </div>
-                <div className="flex shrink-0 items-center gap-1">
-                  <a
-                    href={link.url}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="rounded-full p-2 text-zinc-400 transition-colors hover:bg-zinc-100 hover:text-zinc-700"
-                    aria-label={`Открыть ${link.marketplaceLabel}`}
-                  >
-                    <ExternalLink className="h-4 w-4" />
-                  </a>
+                  <ExternalLink className="h-4 w-4 shrink-0 text-zinc-300 transition-colors group-hover:text-zinc-500 group-focus-visible:text-zinc-500" />
+                </a>
+                <div className="flex shrink-0 items-center gap-1 pr-1">
                   <button
                     type="button"
                     onClick={() => startEdit(link)}

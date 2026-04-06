@@ -12,7 +12,7 @@ vi.mock("@/app/(app)/app/ingredients/metadata-actions", () => ({
 import {
   createIngredientPurchaseLinkRows,
   removeIngredientPurchaseLinkRow,
-  updateIngredientPurchaseLinkRows
+  saveIngredientPurchaseLinkRow
 } from "../components/ingredients/ingredient-purchase-links-field";
 import { IngredientPurchaseLinksDialog } from "../components/ingredients/ingredient-purchase-links-manager";
 import {
@@ -45,37 +45,42 @@ describe("ingredient purchase links", () => {
     ]);
   });
 
-  it("adds trailing draft rows only after a valid URL and keeps inline edit/remove predictable", () => {
-    expect(createIngredientPurchaseLinkRows()).toEqual([""]);
+  it("commits added and edited rows explicitly and keeps remove predictable", () => {
+    expect(createIngredientPurchaseLinkRows()).toEqual([]);
     expect(createIngredientPurchaseLinkRows(["https://ozon.ru/product/citra"])).toEqual([
-      "https://ozon.ru/product/citra",
-      ""
+      "https://ozon.ru/product/citra"
     ]);
 
-    const afterFirstLink = updateIngredientPurchaseLinkRows([""], 0, "ozon.ru/product/citra");
-    expect(afterFirstLink).toEqual([
-      "ozon.ru/product/citra",
-      ""
-    ]);
+    const afterFirstLink = saveIngredientPurchaseLinkRow([], {
+      mode: "new",
+      value: "ozon.ru/product/citra"
+    });
+    expect(afterFirstLink).toEqual(["https://ozon.ru/product/citra"]);
 
-    const afterSecondLink = updateIngredientPurchaseLinkRows(afterFirstLink, 1, "rdshop.ru/catalog/citra");
+    const afterSecondLink = saveIngredientPurchaseLinkRow(afterFirstLink, {
+      mode: "new",
+      value: "rdshop.ru/catalog/citra"
+    });
     expect(afterSecondLink).toEqual([
-      "ozon.ru/product/citra",
-      "rdshop.ru/catalog/citra",
-      ""
+      "https://ozon.ru/product/citra",
+      "https://rdshop.ru/catalog/citra"
     ]);
 
-    const afterEdit = updateIngredientPurchaseLinkRows(afterSecondLink, 0, "kolba.ru/catalog/citra");
+    const afterEdit = saveIngredientPurchaseLinkRow(afterSecondLink, {
+      mode: "edit",
+      index: 0,
+      value: "kolba.ru/catalog/citra"
+    });
     expect(afterEdit).toEqual([
-      "kolba.ru/catalog/citra",
-      "rdshop.ru/catalog/citra",
-      ""
+      "https://kolba.ru/catalog/citra",
+      "https://rdshop.ru/catalog/citra"
     ]);
 
     expect(removeIngredientPurchaseLinkRow(afterEdit, 0)).toEqual([
-      "rdshop.ru/catalog/citra",
-      ""
+      "https://rdshop.ru/catalog/citra"
     ]);
+
+    expect(removeIngredientPurchaseLinkRow(["https://rdshop.ru/catalog/citra"], 0)).toEqual([]);
   });
 
   it("renders purchase links inside an editable sheet surface instead of raw URLs", () => {

@@ -1,6 +1,7 @@
 import type { CustomCatalogIngredientFormInitialValue } from "@/components/ingredients/custom-catalog-ingredient-form";
 
 import type { UserCatalogIngredientDto } from "./contracts";
+import { lovibondToEbc } from "./technical-fields";
 
 const isRecord = (value: unknown): value is Record<string, unknown> => (
   typeof value === "object"
@@ -20,8 +21,6 @@ const readTrimmedString = (value: unknown) => {
 const readFiniteNumber = (value: unknown) => (
   typeof value === "number" && Number.isFinite(value) ? value : null
 );
-
-const lovibondToEbc = (value: number) => Number((value * 1.97).toFixed(2));
 
 export const buildCustomFormInitialValueFromCatalogItem = (
   item: UserCatalogIngredientDto

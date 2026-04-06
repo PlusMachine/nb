@@ -56,6 +56,11 @@ describe("inventory usability components", () => {
       onChange: () => undefined
     }));
 
+    expect(html.indexOf("Солод")).toBeLessThan(html.indexOf("Хмель"));
+    expect(html.indexOf("Хмель")).toBeLessThan(html.indexOf("Дрожжи"));
+    expect(html.indexOf("Дрожжи")).toBeLessThan(html.indexOf("Сбраживаемое сырье"));
+    expect(html.indexOf("Сбраживаемое сырье")).toBeLessThan(html.indexOf("Водоподготовка"));
+    expect(html.indexOf("Водоподготовка")).toBeLessThan(html.indexOf("Расходники"));
     expect(html).toContain("Солод");
     expect(html).toContain("Сбраживаемое сырье");
     expect(html).toContain("Хмель");
@@ -248,7 +253,7 @@ describe("inventory usability components", () => {
     expect(html).toContain('value="2"');
     expect(html).toContain('<option value="kg" selected="">kg</option>');
     expect(html).toContain("6-7 EBC");
-    expect(html).toContain("Экстракт 80%");
+    expect(html).toContain("Экст-ть 80%");
     expect(html).toContain("до 100 % засыпи");
     expect(html).not.toContain("80% extract");
     expect(html).toContain("linear-gradient(180deg");
@@ -297,6 +302,75 @@ describe("inventory usability components", () => {
     expect(html).toContain('title="Ozon"');
     expect(html).toContain('title="Wildberries"');
     expect(html).toContain('title="Яндекс Маркет"');
+  });
+
+  it("renders a single fermentable color value without an approximate marker", () => {
+    const item: InventoryListItemDto = {
+      id: "inv-fermentable-1",
+      enteredQuantity: 1,
+      enteredUnit: "kg",
+      normalizedQuantity: 1000,
+      normalizedUnit: "g",
+      unitDimension: "weight",
+      purchasedAt: null,
+      freshnessDate: null,
+      notes: null,
+      archivedAt: null,
+      createdAt: new Date("2025-01-01"),
+      updatedAt: new Date("2025-01-01"),
+      source: {
+        sourceKind: "catalog",
+        sourceId: "cat-fermentable-1",
+        type: "fermentable",
+        category: "fermentable",
+        subtype: "fermentable",
+        familyId: null,
+        familyDisplayName: null,
+        primaryLabelRu: "Баварский пилснер",
+        secondaryLabelRu: "Bavarian Pilsner",
+        displayName: "Баварский пилснер",
+        displayNameRu: "Баварский пилснер",
+        displayNameEn: "Bavarian Pilsner",
+        nameRu: "Баварский пилснер",
+        nameEn: "Bavarian Pilsner",
+        normalizedName: "bavarian-pilsner",
+        brand: "Weyermann",
+        producer: "Weyermann",
+        brandName: "Weyermann",
+        manufacturer: "Weyermann",
+        countryCode: "DE",
+        countryName: "Германия",
+        country: "Германия",
+        completenessLevel: "recommended",
+        technicalData: {
+          type: "fermentable",
+          colorLovibond: 6.09,
+          extractPctDryBasis: 75,
+          recommendedMaxPct: 100
+        },
+        defaultDisplayUnit: "kg",
+        allowedUnits: ["kg", "g"],
+        measurementDimension: "weight",
+        packageVariantId: null,
+        packageVariantName: null,
+        summary: "12 EBC • 75% extract",
+        fermentableExtractYieldPct: 75,
+        fermentableColorLovibond: 6.09,
+        purchaseLinks: {
+          count: 0,
+          marketplaces: []
+        }
+      }
+    };
+
+    const html = renderToStaticMarkup(React.createElement(InventoryListItem, {
+      item,
+      preferredCurrency: "RUB",
+      currencyRates: { RUB: 100, USD: 7900, EUR: 9170 }
+    }));
+
+    expect(html).toContain("12 EBC");
+    expect(html).not.toContain("~12 EBC");
   });
 
   it("renders a calm add-link entry and does not spam favorites on inventory cards", () => {
@@ -409,6 +483,7 @@ describe("inventory usability components", () => {
     expect(html).toContain('data-testid="inventory-editor-optional-disclosure"');
     expect(html).not.toContain('data-testid="inventory-editor-selection-controls"');
     expect(html).not.toContain('data-testid="inventory-editor-picker-stage"');
+    expect(html).not.toContain('data-testid="ingredient-picker-quick-start"');
     expect(html).not.toContain("Начните вводить название ингредиента");
   });
 
@@ -605,6 +680,63 @@ describe("inventory usability components", () => {
     expect(html).toContain("Альфа 12%");
     expect(html).toContain("pellet");
     expect(html).toMatch(/Yakima Chief.*svg/);
+  });
+
+  it("renders fermentable kind near the title and keeps brand on the lower line like hops", () => {
+    const item: InventoryListItemDto = {
+      id: "inv-ferm-1",
+      enteredQuantity: 1,
+      enteredUnit: "kg",
+      normalizedQuantity: 1000,
+      normalizedUnit: "g",
+      unitDimension: "weight",
+      purchasePriceMinor: null,
+      purchaseCurrency: null,
+      purchaseQuantity: null,
+      purchaseQuantityUnit: null,
+      purchaseQuantityNormalized: null,
+      purchaseQuantityNormalizedUnit: null,
+      normalizedUnitCostMinorRub: null,
+      purchasedAt: null,
+      freshnessDate: null,
+      notes: null,
+      archivedAt: null,
+      createdAt: new Date("2025-01-01"),
+      updatedAt: new Date("2025-01-01"),
+      source: {
+        sourceKind: "catalog",
+        sourceId: "ferm-1",
+        type: "fermentable",
+        category: "fermentable",
+        subtype: "fermentable",
+        itemKind: "malt_extract",
+        primaryLabelRu: "Баварский пилснер",
+        secondaryLabelRu: "Bavarian Pilsner",
+        displayName: "Баварский пилснер",
+        normalizedName: "bavarian-pilsner",
+        producer: "Weyermann",
+        countryCode: "DE",
+        countryName: "Германия",
+        technicalData: {
+          type: "fermentable",
+          extractForm: "liquid",
+          extractPctDryBasis: 75,
+          colorLovibond: 6.1,
+          recommendedMaxPct: 100
+        }
+      }
+    };
+
+    const html = renderToStaticMarkup(React.createElement(InventoryListItem, {
+      item,
+      preferredCurrency: "RUB",
+      currencyRates: { RUB: 100, USD: 7900, EUR: 9170 }
+    }));
+
+    expect(html).toContain("Баварский пилснер");
+    expect(html).toContain("Жидкий солодовый экстракт");
+    expect(html).toContain("Weyermann");
+    expect(html).toMatch(/Weyermann.*svg/);
   });
 
   it("tracks dirty state and zero-stock validity for inline editor logic", () => {

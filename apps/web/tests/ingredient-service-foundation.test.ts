@@ -57,6 +57,7 @@ const buildIngredientRow = (overrides: Record<string, unknown> = {}) => ({
     id: string;
     ingredientId: string;
     brand: string | null;
+    productNameEn: string | null;
     productNameRu: string | null;
     countryNameRu: string | null;
     packageAmount: number | null;
@@ -208,7 +209,7 @@ describe("ingredient service search", () => {
 
     expect(items[0]?.id).toBe("consumable-yeast-nutrient");
     expect(items[0]?.displayName).toBe("Комплексная подкормка дрожжей");
-    expect(items[0]?.matchType).toBe("name");
+    expect(items[0]?.matchType).toBe("alias");
   });
 
   it("returns canonical sanitizer with matched package variant for star san", async () => {
@@ -225,6 +226,7 @@ describe("ingredient service search", () => {
           id: "pv-star-san-946",
           ingredientId: "acid-sanitizer",
           brand: "Five Star",
+          productNameEn: "Star San",
           productNameRu: "Star San",
           countryNameRu: "USA",
           packageAmount: 946,
@@ -312,6 +314,7 @@ describe("ingredient service search", () => {
           id: "pv-whirlfloc-20",
           ingredientId: "kettle-fining",
           brand: "BreakBrite",
+          productNameEn: "Whirlfloc Tablets",
           productNameRu: "Whirlfloc Tablets",
           countryNameRu: "RU",
           packageAmount: 20,
@@ -355,5 +358,120 @@ describe("ingredient service search", () => {
 
     expect(result.items).toHaveLength(1);
     expect(result.items[0]?.id).toBe("ingredient-25");
+  });
+
+  it("prioritizes consumable market names above abstract canonical labels for pbw", async () => {
+    mockState.rows = [
+      buildIngredientRow({
+        id: "cleaner-pbw",
+        type: "consumable",
+        nameRu: "Щелочное порошковое моющее средство",
+        nameEn: "Alkaline Brewery Cleaner Powder",
+        displayModeRu: "localized_first",
+        itemKind: "cleaner",
+        category: "cleaner",
+        attributes: {
+          picker_group: "cleaner",
+          market_names_ru: ["PBW"],
+          market_names_en: ["PBW", "Powdered Brewery Wash"],
+          search_priority_terms_ru: ["пбв", "pbw", "щелочная мойка"]
+        },
+        aliases: [{
+          id: "alias-pbw-market",
+          ingredientId: "cleaner-pbw",
+          locale: "en",
+          alias: "PBW",
+          aliasNormalized: "pbw",
+          source: "seed_market_name",
+          isEnabled: true,
+          createdAt: now,
+          updatedAt: now
+        }]
+      }),
+      buildIngredientRow({
+        id: "cleaner-generic",
+        type: "consumable",
+        nameRu: "Щелочное моющее средство",
+        nameEn: "Alkaline Cleaner",
+        displayModeRu: "localized_first",
+        itemKind: "cleaner",
+        category: "cleaner"
+      })
+    ];
+
+    const items = await searchCatalogItems({ q: "pbw", category: "consumable", limit: 8 });
+
+    expect(items[0]).toMatchObject({
+      id: "cleaner-pbw",
+      matchType: "alias",
+      matchedAlias: "PBW"
+    });
+  });
+
+  it("matches functional consumable queries through priority terms", async () => {
+    mockState.rows = [
+      buildIngredientRow({
+        id: "sanitizer-acid",
+        type: "consumable",
+        nameRu: "Санитайзер без смывания",
+        nameEn: "No-Rinse Sanitizer",
+        displayModeRu: "localized_first",
+        itemKind: "sanitizer",
+        category: "sanitizer",
+        attributes: {
+          picker_group: "sanitizer",
+          search_priority_terms_ru: ["санитайзер", "санитайзер без смывания"]
+        },
+        aliases: [{
+          id: "alias-sanitizer-priority",
+          ingredientId: "sanitizer-acid",
+          locale: "ru",
+          alias: "санитайзер",
+          aliasNormalized: "санитайзер",
+          source: "seed_priority_term",
+          isEnabled: true,
+          createdAt: now,
+          updatedAt: now
+        }]
+      }),
+      buildIngredientRow({
+        id: "fining-kettle",
+        type: "consumable",
+        nameRu: "Котловой осветлитель",
+        nameEn: "Kettle Fining",
+        displayModeRu: "localized_first",
+        itemKind: "fining",
+        category: "fining",
+        attributes: {
+          picker_group: "fining",
+          search_priority_terms_ru: ["осветлитель"]
+        },
+        aliases: [{
+          id: "alias-fining-priority",
+          ingredientId: "fining-kettle",
+          locale: "ru",
+          alias: "осветлитель",
+          aliasNormalized: "осветлитель",
+          source: "seed_priority_term",
+          isEnabled: true,
+          createdAt: now,
+          updatedAt: now
+        }]
+      })
+    ];
+
+    const sanitizerResults = await searchCatalogItems({ q: "санитайзер", category: "consumable", limit: 8 });
+    const finingResults = await searchCatalogItems({ q: "осветлитель", category: "consumable", limit: 8 });
+
+    expect(sanitizerResults[0]).toMatchObject({
+      id: "sanitizer-acid",
+      matchType: "alias",
+      matchedAlias: "санитайзер"
+    });
+    expect(finingResults[0]).toMatchObject({
+      id: "fining-kettle",
+      matchType: "alias",
+      matchedAlias: "осветлитель"
+    });
   });
 });

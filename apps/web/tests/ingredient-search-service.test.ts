@@ -183,4 +183,32 @@ describe("ingredient search service", () => {
       matchType: "brand"
     });
   });
+
+  it("keeps malt extracts in the fermentable subtype when mapping seeded catalog rows", async () => {
+    mockState.rows = [
+      buildIngredientRow({
+        id: "bavarian-pilsner-extract",
+        type: "fermentable",
+        nameRu: "Баварский пилснер",
+        nameEn: "Bavarian Pilsner",
+        displayModeRu: "localized_first",
+        producer: "Weyermann",
+        countryName: "Germany",
+        itemKind: "malt_extract",
+        attributes: {
+          extract_pct_dry_basis: 75,
+          color_lovibond: 6.1,
+          fermentability_class: "highly_fermentable"
+        }
+      })
+    ];
+
+    const items = await searchIngredientSuggestions({ q: "баварский", category: "fermentable", limit: 8 });
+
+    expect(items[0]).toMatchObject({
+      id: "bavarian-pilsner-extract",
+      category: "fermentable",
+      subtype: "fermentable"
+    });
+  });
 });

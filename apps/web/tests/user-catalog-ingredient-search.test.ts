@@ -105,7 +105,7 @@ const buildCustomIngredientRow = (overrides: Record<string, unknown> = {}) => {
 
 vi.mock("../features/ingredients/service", () => ({
   loadIngredients: async () => mockState.catalogItems,
-  getIngredientById: async () => null
+  getIngredientById: async (id: string) => mockState.catalogItems.find((item) => item.id === id) ?? null
 }));
 
 vi.mock("../features/ingredients/user-metadata-service", () => ({
@@ -147,13 +147,430 @@ vi.mock("@nb/db", () => ({
   userIngredients: { ingredientCatalogItemId: "ingredientCatalogItemId", userCustomIngredientId: "userCustomIngredientId", userId: "userId", archivedAt: "archivedAt" }
 }));
 
-import { searchUserCatalogIngredients } from "../features/ingredients/catalog-service";
+import {
+  listIngredientPickerQuickStart,
+  searchUserCatalogIngredients
+} from "../features/ingredients/catalog-service";
 
 describe("user catalog ingredient search", () => {
   beforeEach(() => {
     mockState.catalogItems = [];
     mockState.customItems = [];
     mockState.favoriteKeys = new Set();
+  });
+
+  it("returns only recent malt selections for quick-start idle state", async () => {
+    mockState.catalogItems = [
+      buildCatalogItem({
+        id: "favorite-pils",
+        primaryLabelRu: "Пилснер",
+        displayName: "Пилснер",
+        nameRu: "Пилснер",
+        nameEn: "Pilsner Malt"
+      }),
+      buildCatalogItem({
+        id: "recent-vienna",
+        primaryLabelRu: "Венский",
+        displayName: "Венский",
+        nameRu: "Венский",
+        nameEn: "Vienna Malt"
+      })
+    ];
+
+    const result = await listIngredientPickerQuickStart("user-1", {
+      category: "fermentable",
+      subtype: "malt",
+      recentReferences: [
+        { source: "catalog", id: "recent-vienna" },
+        { source: "catalog", id: "favorite-pils" }
+      ]
+    });
+
+    expect(result.recent.map((item) => item.id)).toEqual([
+      "recent-vienna",
+      "favorite-pils"
+    ]);
+  });
+
+  it("returns immediate malt family-scoped results even when the visible query is empty", async () => {
+    mockState.catalogItems = [
+      buildCatalogItem({
+        id: "castle-pilsner",
+        primaryLabelRu: "Пилснер",
+        displayName: "Пилснер",
+        displayNameRu: "Пилснер",
+        displayNameEn: "Pilsner Malt",
+        nameRu: "Пилснер",
+        nameEn: "Pilsner Malt",
+        brand: "Castle Malting",
+        producer: "Castle Malting",
+        brandName: "Castle Malting",
+        manufacturer: "Castle Malting"
+      }),
+      buildCatalogItem({
+        id: "soufflet-pilsen",
+        primaryLabelRu: "Pilsen 2RP",
+        displayName: "Pilsen 2RP",
+        displayNameRu: "Pilsen 2RP",
+        displayNameEn: "Pilsen 2RP",
+        nameRu: "Pilsen 2RP",
+        nameEn: "Pilsen 2RP",
+        brand: "Soufflet",
+        producer: "Soufflet",
+        brandName: "Soufflet",
+        manufacturer: "Soufflet"
+      }),
+      buildCatalogItem({
+        id: "castle-vienna",
+        primaryLabelRu: "Венский",
+        displayName: "Венский",
+        displayNameRu: "Венский",
+        displayNameEn: "Vienna Malt",
+        nameRu: "Венский",
+        nameEn: "Vienna Malt",
+        brand: "Castle Malting",
+        producer: "Castle Malting",
+        brandName: "Castle Malting",
+        manufacturer: "Castle Malting"
+      })
+    ];
+
+    const result = await searchUserCatalogIngredients("user-1", {
+      q: "",
+      family: "pilsner",
+      category: "fermentable",
+      subtype: "malt",
+      limit: 10
+    });
+
+    expect(result.appliedFamily).toMatchObject({
+      key: "pilsner",
+      label: "Пилснер"
+    });
+    expect(result.items.map((item) => item.id)).toEqual([
+      "castle-pilsner",
+      "soufflet-pilsen"
+    ]);
+    expect(result.items.some((item) => item.id === "castle-vienna")).toBe(false);
+  });
+
+  it("refines typed malt search inside the active family scope instead of replacing it with visible text", async () => {
+    mockState.catalogItems = [
+      buildCatalogItem({
+        id: "castle-pilsner",
+        primaryLabelRu: "Castle Pilsner",
+        displayName: "Castle Pilsner",
+        displayNameRu: "Castle Pilsner",
+        displayNameEn: "Castle Pilsner",
+        nameRu: "Castle Pilsner",
+        nameEn: "Castle Pilsner",
+        brand: "Castle Malting",
+        producer: "Castle Malting",
+        brandName: "Castle Malting",
+        manufacturer: "Castle Malting"
+      }),
+      buildCatalogItem({
+        id: "castle-vienna",
+        primaryLabelRu: "Castle Vienna",
+        displayName: "Castle Vienna",
+        displayNameRu: "Castle Vienna",
+        displayNameEn: "Castle Vienna",
+        nameRu: "Castle Vienna",
+        nameEn: "Castle Vienna",
+        brand: "Castle Malting",
+        producer: "Castle Malting",
+        brandName: "Castle Malting",
+        manufacturer: "Castle Malting"
+      }),
+      buildCatalogItem({
+        id: "weyermann-pilsner",
+        primaryLabelRu: "Weyermann Pilsner",
+        displayName: "Weyermann Pilsner",
+        displayNameRu: "Weyermann Pilsner",
+        displayNameEn: "Weyermann Pilsner",
+        nameRu: "Weyermann Pilsner",
+        nameEn: "Weyermann Pilsner",
+        brand: "Weyermann",
+        producer: "Weyermann",
+        brandName: "Weyermann",
+        manufacturer: "Weyermann"
+      })
+    ];
+
+    const result = await searchUserCatalogIngredients("user-1", {
+      q: "castle",
+      family: "pilsner",
+      category: "fermentable",
+      subtype: "malt",
+      limit: 10
+    });
+
+    expect(result.appliedFamily).toMatchObject({
+      key: "pilsner",
+      label: "Пилснер"
+    });
+    expect(result.items.map((item) => item.id)).toEqual(["castle-pilsner"]);
+  });
+
+  it("filters malt results to favorites only even without a typed query", async () => {
+    mockState.catalogItems = [
+      buildCatalogItem({
+        id: "favorite-pils",
+        primaryLabelRu: "Пилснер",
+        displayName: "Пилснер",
+        nameRu: "Пилснер",
+        nameEn: "Pilsner Malt"
+      }),
+      buildCatalogItem({
+        id: "plain-vienna",
+        primaryLabelRu: "Венский",
+        displayName: "Венский",
+        nameRu: "Венский",
+        nameEn: "Vienna Malt"
+      })
+    ];
+    mockState.favoriteKeys = new Set(["catalog:favorite-pils"]);
+
+    const result = await searchUserCatalogIngredients("user-1", {
+      q: "",
+      favoritesOnly: true,
+      category: "fermentable",
+      subtype: "malt",
+      limit: 10
+    });
+
+    expect(result.appliedFavoritesOnly).toBe(true);
+    expect(result.items.map((item) => item.id)).toEqual(["favorite-pils"]);
+  });
+
+  it("stacks family and favorites scopes without dropping either filter", async () => {
+    mockState.catalogItems = [
+      buildCatalogItem({
+        id: "favorite-pils",
+        primaryLabelRu: "Пилснер",
+        displayName: "Пилснер",
+        nameRu: "Пилснер",
+        nameEn: "Pilsner Malt"
+      }),
+      buildCatalogItem({
+        id: "plain-pils",
+        primaryLabelRu: "Pilsen 2RP",
+        displayName: "Pilsen 2RP",
+        nameRu: "Pilsen 2RP",
+        nameEn: "Pilsen 2RP"
+      }),
+      buildCatalogItem({
+        id: "favorite-vienna",
+        primaryLabelRu: "Венский",
+        displayName: "Венский",
+        nameRu: "Венский",
+        nameEn: "Vienna Malt"
+      })
+    ];
+    mockState.favoriteKeys = new Set([
+      "catalog:favorite-pils",
+      "catalog:favorite-vienna"
+    ]);
+
+    const result = await searchUserCatalogIngredients("user-1", {
+      q: "",
+      family: "pilsner",
+      favoritesOnly: true,
+      category: "fermentable",
+      subtype: "malt",
+      limit: 10
+    });
+
+    expect(result.appliedFamily).toMatchObject({
+      key: "pilsner"
+    });
+    expect(result.appliedFavoritesOnly).toBe(true);
+    expect(result.items.map((item) => item.id)).toEqual(["favorite-pils"]);
+  });
+
+  it("stacks family, manufacturer and favorites scopes together", async () => {
+    mockState.catalogItems = [
+      buildCatalogItem({
+        id: "castle-favorite-pils",
+        primaryLabelRu: "Castle Pilsner",
+        displayName: "Castle Pilsner",
+        nameRu: "Castle Pilsner",
+        nameEn: "Castle Pilsner",
+        brand: "Castle Malting",
+        producer: "Castle Malting",
+        brandName: "Castle Malting",
+        manufacturer: "Castle Malting"
+      }),
+      buildCatalogItem({
+        id: "castle-plain-pils",
+        primaryLabelRu: "Castle Pilsen 2RP",
+        displayName: "Castle Pilsen 2RP",
+        nameRu: "Castle Pilsen 2RP",
+        nameEn: "Castle Pilsen 2RP",
+        brand: "Castle Malting",
+        producer: "Castle Malting",
+        brandName: "Castle Malting",
+        manufacturer: "Castle Malting"
+      }),
+      buildCatalogItem({
+        id: "weyermann-favorite-pils",
+        primaryLabelRu: "Weyermann Pilsner",
+        displayName: "Weyermann Pilsner",
+        nameRu: "Weyermann Pilsner",
+        nameEn: "Weyermann Pilsner",
+        brand: "Weyermann",
+        producer: "Weyermann",
+        brandName: "Weyermann",
+        manufacturer: "Weyermann"
+      })
+    ];
+    mockState.favoriteKeys = new Set([
+      "catalog:castle-favorite-pils",
+      "catalog:weyermann-favorite-pils"
+    ]);
+
+    const result = await searchUserCatalogIngredients("user-1", {
+      q: "",
+      family: "pilsner",
+      manufacturer: "Castle Malting",
+      favoritesOnly: true,
+      category: "fermentable",
+      subtype: "malt",
+      limit: 10
+    });
+
+    expect(result.appliedFamily).toMatchObject({
+      key: "pilsner"
+    });
+    expect(result.appliedManufacturer).toMatchObject({
+      label: "Castle Malting"
+    });
+    expect(result.appliedFavoritesOnly).toBe(true);
+    expect(result.items.map((item) => item.id)).toEqual(["castle-favorite-pils"]);
+  });
+
+  it("matches caramel quick-start preset queries through family-aware malt search", async () => {
+    mockState.catalogItems = [
+      buildCatalogItem({
+        id: "cara-120",
+        primaryLabelRu: "Cara 120",
+        displayName: "Cara 120",
+        nameRu: "Cara 120",
+        nameEn: "Crystal 120"
+      }),
+      buildCatalogItem({
+        id: "pils-base",
+        primaryLabelRu: "Pilsner Base",
+        displayName: "Pilsner Base",
+        nameRu: "Пилснер",
+        nameEn: "Pilsner Base Malt"
+      })
+    ];
+
+    const result = await searchUserCatalogIngredients("user-1", {
+      q: "caramel",
+      category: "fermentable",
+      subtype: "malt",
+      limit: 5
+    });
+
+    expect(result.items[0]?.id).toBe("cara-120");
+  });
+
+  it("prefers consumable group refinements before manufacturer refinements for broad queries", async () => {
+    mockState.catalogItems = [
+      buildCatalogItem({
+        id: "sanitizer-acid-1",
+        type: "consumable",
+        category: "consumable",
+        subtype: null,
+        primaryLabelRu: "Кислотный санитайзер",
+        displayName: "Кислотный санитайзер",
+        nameRu: "Кислотный санитайзер",
+        nameEn: "Acid Sanitizer",
+        brand: "Five Star",
+        producer: "Five Star",
+        brandName: "Five Star",
+        manufacturer: "Five Star",
+        sourceCategory: "sanitizer",
+        itemKind: "process_aid",
+        technicalData: {
+          type: "consumable",
+          pickerGroup: "sanitizer",
+          searchPriorityTermsEn: ["acid sanitizer"]
+        },
+        defaultUnit: "ml",
+        defaultDisplayUnit: "ml",
+        allowedUnits: ["ml", "l"],
+        measurementDimension: "volume",
+        completenessLevel: "recommended"
+      }),
+      buildCatalogItem({
+        id: "cleaner-acid-1",
+        type: "consumable",
+        category: "consumable",
+        subtype: null,
+        primaryLabelRu: "Кислотная мойка",
+        displayName: "Кислотная мойка",
+        nameRu: "Кислотная мойка",
+        nameEn: "Acid Beerstone Remover",
+        brand: "Bir.RF",
+        producer: "Bir.RF",
+        brandName: "Bir.RF",
+        manufacturer: "Bir.RF",
+        sourceCategory: "cleaner",
+        itemKind: "process_aid",
+        technicalData: {
+          type: "consumable",
+          pickerGroup: "cleaner",
+          searchPriorityTermsEn: ["acid cleaner", "acid beerstone remover"]
+        },
+        defaultUnit: "g",
+        defaultDisplayUnit: "g",
+        allowedUnits: ["g", "kg"],
+        measurementDimension: "weight",
+        completenessLevel: "recommended"
+      }),
+      buildCatalogItem({
+        id: "cleaner-acid-2",
+        type: "consumable",
+        category: "consumable",
+        subtype: null,
+        primaryLabelRu: "Кислотный дескейлер",
+        displayName: "Кислотный дескейлер",
+        nameRu: "Кислотный дескейлер",
+        nameEn: "Acid CIP Cleaner",
+        brand: "KegLand",
+        producer: "KegLand",
+        brandName: "KegLand",
+        manufacturer: "KegLand",
+        sourceCategory: "cleaner",
+        itemKind: "process_aid",
+        technicalData: {
+          type: "consumable",
+          pickerGroup: "cleaner",
+          searchPriorityTermsEn: ["acid cleaner", "acid cip cleaner"]
+        },
+        defaultUnit: "g",
+        defaultDisplayUnit: "g",
+        allowedUnits: ["g", "kg"],
+        measurementDimension: "weight",
+        completenessLevel: "recommended"
+      })
+    ];
+
+    const result = await searchUserCatalogIngredients("user-1", {
+      q: "acid",
+      category: "consumable",
+      limit: 10
+    });
+
+    expect(result.refinements.slice(0, 2)).toMatchObject([
+      { type: "consumable_group", label: "Санитайзеры", value: "sanitizer", count: 1 },
+      { type: "consumable_group", label: "Мойка", value: "cleaner", count: 2 }
+    ]);
+    expect(result.appliedManufacturer).toBeNull();
+    expect(result.appliedGroup).toBeNull();
   });
 
   it("returns manufacturer refinements for broad type-first queries", async () => {
@@ -257,6 +674,79 @@ describe("user catalog ingredient search", () => {
       "castle-pilsner-3rs"
     ]);
     expect(result.items.every((item) => item.brand === "Castle Malting")).toBe(true);
+  });
+
+  it("uses manufacturer refinements as a secondary layer inside a selected consumable group", async () => {
+    mockState.catalogItems = [
+      buildCatalogItem({
+        id: "cleaner-pbw-1",
+        type: "consumable",
+        category: "consumable",
+        subtype: null,
+        primaryLabelRu: "Щелочная мойка PBW",
+        displayName: "Щелочная мойка PBW",
+        nameRu: "Щелочная мойка PBW",
+        nameEn: "PBW Cleaner",
+        brand: "Five Star",
+        producer: "Five Star",
+        brandName: "Five Star",
+        manufacturer: "Five Star",
+        sourceCategory: "cleaner",
+        itemKind: "process_aid",
+        technicalData: {
+          type: "consumable",
+          pickerGroup: "cleaner",
+          searchPriorityTermsEn: ["pbw", "alkaline cleaner"]
+        },
+        defaultUnit: "g",
+        defaultDisplayUnit: "g",
+        allowedUnits: ["g", "kg"],
+        measurementDimension: "weight",
+        completenessLevel: "recommended"
+      }),
+      buildCatalogItem({
+        id: "cleaner-pbw-2",
+        type: "consumable",
+        category: "consumable",
+        subtype: null,
+        primaryLabelRu: "Щелочная мойка",
+        displayName: "Щелочная мойка",
+        nameRu: "Щелочная мойка",
+        nameEn: "Alkaline Cleaner",
+        brand: "KegLand",
+        producer: "KegLand",
+        brandName: "KegLand",
+        manufacturer: "KegLand",
+        sourceCategory: "cleaner",
+        itemKind: "process_aid",
+        technicalData: {
+          type: "consumable",
+          pickerGroup: "cleaner",
+          searchPriorityTermsEn: ["pbw", "alkaline cleaner"]
+        },
+        defaultUnit: "g",
+        defaultDisplayUnit: "g",
+        allowedUnits: ["g", "kg"],
+        measurementDimension: "weight",
+        completenessLevel: "recommended"
+      })
+    ];
+
+    const result = await searchUserCatalogIngredients("user-1", {
+      q: "pbw",
+      category: "consumable",
+      group: "cleaner",
+      limit: 10
+    });
+
+    expect(result.appliedGroup).toMatchObject({
+      label: "Мойка",
+      value: "cleaner"
+    });
+    expect(result.refinements).toMatchObject([
+      { type: "manufacturer", label: "Five Star", value: "Five Star", count: 1 },
+      { type: "manufacturer", label: "KegLand", value: "KegLand", count: 1 }
+    ]);
   });
 
   it("makes favorites visibly stronger inside a broad family-equivalent bucket", async () => {
