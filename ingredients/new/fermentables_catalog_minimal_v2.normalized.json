@@ -19,7 +19,23 @@
         "label": "Бир.РФ / Ингредиенты",
         "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/raw/11"
       }
-    ]
+    ],
+    "aliases_ru": [],
+    "aliases_en": [],
+    "product_family": "adjunct_grain",
+    "subtype_key": "raw_adjunct",
+    "physical_form": "grain",
+    "extract_form": null,
+    "base_material_family": "unknown",
+    "base_materials": [
+      "unknown"
+    ],
+    "hopping_state": "not_applicable",
+    "is_hopped_product": false,
+    "functional_role": "gravity_source",
+    "gravity_calc_mode": "normal",
+    "display_type_ru": "Несоложёнка",
+    "display_type_en": "Raw Adjunct"
   },
   {
     "id": "buckwheat-nesolozhenka",
@@ -49,7 +65,21 @@
         "label": "Бир.РФ / Ингредиенты",
         "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/raw/11"
       }
-    ]
+    ],
+    "product_family": "adjunct_grain",
+    "subtype_key": "raw_adjunct",
+    "physical_form": "grain",
+    "extract_form": null,
+    "base_material_family": "buckwheat",
+    "base_materials": [
+      "buckwheat"
+    ],
+    "hopping_state": "not_applicable",
+    "is_hopped_product": false,
+    "functional_role": "gravity_source",
+    "gravity_calc_mode": "normal",
+    "display_type_ru": "Несоложёнка",
+    "display_type_en": "Raw Adjunct"
   },
   {
     "id": "kompaniya-uvelka-ooo-resurs-buckwheat-flakes-nesolozhenka",
@@ -74,7 +104,23 @@
         "label": "Бир.РФ / Ингредиенты",
         "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/raw/11"
       }
-    ]
+    ],
+    "aliases_ru": [],
+    "aliases_en": [],
+    "product_family": "adjunct_grain",
+    "subtype_key": "flaked_adjunct",
+    "physical_form": "flakes",
+    "extract_form": null,
+    "base_material_family": "buckwheat",
+    "base_materials": [
+      "buckwheat"
+    ],
+    "hopping_state": "not_applicable",
+    "is_hopped_product": false,
+    "functional_role": "gravity_source",
+    "gravity_calc_mode": "normal",
+    "display_type_ru": "Хлопья / плющёнка",
+    "display_type_en": "Flaked Adjunct"
   },
   {
     "id": "castle-malting-roasted-barley-nesolozhenka",
@@ -98,7 +144,23 @@
         "label": "Бир.РФ / Ингредиенты",
         "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/raw/11"
       }
-    ]
+    ],
+    "aliases_ru": [],
+    "aliases_en": [],
+    "product_family": "adjunct_grain",
+    "subtype_key": "raw_adjunct",
+    "physical_form": "grain",
+    "extract_form": null,
+    "base_material_family": "barley",
+    "base_materials": [
+      "barley"
+    ],
+    "hopping_state": "not_applicable",
+    "is_hopped_product": false,
+    "functional_role": "gravity_source",
+    "gravity_calc_mode": "normal",
+    "display_type_ru": "Несоложёнка",
+    "display_type_en": "Raw Adjunct"
   },
   {
     "id": "kurskiy-solod-roasted-barley-nesolozhenka",
@@ -122,7 +184,23 @@
         "label": "Бир.РФ / Ингредиенты",
         "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/raw/11"
       }
-    ]
+    ],
+    "aliases_ru": [],
+    "aliases_en": [],
+    "product_family": "adjunct_grain",
+    "subtype_key": "raw_adjunct",
+    "physical_form": "grain",
+    "extract_form": null,
+    "base_material_family": "barley",
+    "base_materials": [
+      "barley"
+    ],
+    "hopping_state": "not_applicable",
+    "is_hopped_product": false,
+    "functional_role": "gravity_source",
+    "gravity_calc_mode": "normal",
+    "display_type_ru": "Несоложёнка",
+    "display_type_en": "Raw Adjunct"
   },
   {
     "id": "crisp-malt-roasted-barley-nesolozhenka",
@@ -146,7 +224,23 @@
         "label": "Бир.РФ / Ингредиенты",
         "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/raw/11"
       }
-    ]
+    ],
+    "aliases_ru": [],
+    "aliases_en": [],
+    "product_family": "adjunct_grain",
+    "subtype_key": "raw_adjunct",
+    "physical_form": "grain",
+    "extract_form": null,
+    "base_material_family": "barley",
+    "base_materials": [
+      "barley"
+    ],
+    "hopping_state": "not_applicable",
+    "is_hopped_product": false,
+    "functional_role": "gravity_source",
+    "gravity_calc_mode": "normal",
+    "display_type_ru": "Несоложёнка",
+    "display_type_en": "Raw Adjunct"
   },
   {
     "id": "simpsons-malt-roasted-barley-nesolozhenka",
@@ -171,7 +265,23 @@
         "label": "Бир.РФ / Ингредиенты",
         "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/raw/11"
       }
-    ]
+    ],
+    "aliases_ru": [],
+    "aliases_en": [],
+    "product_family": "adjunct_grain",
+    "subtype_key": "raw_adjunct",
+    "physical_form": "grain",
+    "extract_form": null,
+    "base_material_family": "barley",
+    "base_materials": [
+      "barley"
+    ],
+    "hopping_state": "not_applicable",
+    "is_hopped_product": false,
+    "functional_role": "gravity_source",
+    "gravity_calc_mode": "normal",
+    "display_type_ru": "Несоложёнка",
+    "display_type_en": "Raw Adjunct"
   },
   {
     "id": "weyermann-roasted-barley-nesolozhenka",
@@ -196,7 +306,23 @@
         "label": "Бир.РФ / Ингредиенты",
         "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/raw/11"
       }
-    ]
+    ],
+    "aliases_ru": [],
+    "aliases_en": [],
+    "product_family": "adjunct_grain",
+    "subtype_key": "raw_adjunct",
+    "physical_form": "grain",
+    "extract_form": null,
+    "base_material_family": "barley",
+    "base_materials": [
+      "barley"
+    ],
+    "hopping_state": "not_applicable",
+    "is_hopped_product": false,
+    "functional_role": "gravity_source",
+    "gravity_calc_mode": "normal",
+    "display_type_ru": "Несоложёнка",
+    "display_type_en": "Raw Adjunct"
   },
   {
     "id": "kukuruznaya-krupa-nesolozhenka",
@@ -226,7 +352,21 @@
         "label": "Бир.РФ / Ингредиенты",
         "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/raw/11"
       }
-    ]
+    ],
+    "product_family": "adjunct_grain",
+    "subtype_key": "raw_adjunct",
+    "physical_form": "grain",
+    "extract_form": null,
+    "base_material_family": "corn",
+    "base_materials": [
+      "corn"
+    ],
+    "hopping_state": "not_applicable",
+    "is_hopped_product": false,
+    "functional_role": "gravity_source",
+    "gravity_calc_mode": "normal",
+    "display_type_ru": "Несоложёнка",
+    "display_type_en": "Raw Adjunct"
   },
   {
     "id": "corn-flour-nesolozhenka",
@@ -253,7 +393,22 @@
         "label": "Бир.РФ / Ингредиенты",
         "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/raw/11"
       }
-    ]
+    ],
+    "aliases_ru": [],
+    "product_family": "adjunct_grain",
+    "subtype_key": "flour_adjunct",
+    "physical_form": "flour",
+    "extract_form": null,
+    "base_material_family": "corn",
+    "base_materials": [
+      "corn"
+    ],
+    "hopping_state": "not_applicable",
+    "is_hopped_product": false,
+    "functional_role": "gravity_source",
+    "gravity_calc_mode": "normal",
+    "display_type_ru": "Мука / помол",
+    "display_type_en": "Adjunct Flour"
   },
   {
     "id": "flaked-corn-nesolozhenka",
@@ -284,7 +439,21 @@
         "label": "Бир.РФ / Ингредиенты",
         "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/raw/11"
       }
-    ]
+    ],
+    "product_family": "adjunct_grain",
+    "subtype_key": "flaked_adjunct",
+    "physical_form": "flakes",
+    "extract_form": null,
+    "base_material_family": "corn",
+    "base_materials": [
+      "corn"
+    ],
+    "hopping_state": "not_applicable",
+    "is_hopped_product": false,
+    "functional_role": "gravity_source",
+    "gravity_calc_mode": "normal",
+    "display_type_ru": "Хлопья / плющёнка",
+    "display_type_en": "Flaked Adjunct"
   },
   {
     "id": "semolina-nesolozhenka",
@@ -308,7 +477,23 @@
         "label": "Бир.РФ / Ингредиенты",
         "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/raw/11"
       }
-    ]
+    ],
+    "aliases_ru": [],
+    "aliases_en": [],
+    "product_family": "adjunct_grain",
+    "subtype_key": "raw_adjunct",
+    "physical_form": "grain",
+    "extract_form": null,
+    "base_material_family": "unknown",
+    "base_materials": [
+      "unknown"
+    ],
+    "hopping_state": "not_applicable",
+    "is_hopped_product": false,
+    "functional_role": "gravity_source",
+    "gravity_calc_mode": "normal",
+    "display_type_ru": "Несоложёнка",
+    "display_type_en": "Raw Adjunct"
   },
   {
     "id": "oves-nesolozhenka",
@@ -336,7 +521,21 @@
         "label": "Бир.РФ / Ингредиенты",
         "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/raw/11"
       }
-    ]
+    ],
+    "product_family": "adjunct_grain",
+    "subtype_key": "raw_adjunct",
+    "physical_form": "grain",
+    "extract_form": null,
+    "base_material_family": "oats",
+    "base_materials": [
+      "oats"
+    ],
+    "hopping_state": "not_applicable",
+    "is_hopped_product": false,
+    "functional_role": "gravity_source",
+    "gravity_calc_mode": "normal",
+    "display_type_ru": "Несоложёнка",
+    "display_type_en": "Raw Adjunct"
   },
   {
     "id": "flaked-oats-nesolozhenka",
@@ -366,7 +565,21 @@
         "label": "Бир.РФ / Ингредиенты",
         "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/raw/11"
       }
-    ]
+    ],
+    "product_family": "adjunct_grain",
+    "subtype_key": "flaked_adjunct",
+    "physical_form": "flakes",
+    "extract_form": null,
+    "base_material_family": "oats",
+    "base_materials": [
+      "oats"
+    ],
+    "hopping_state": "not_applicable",
+    "is_hopped_product": false,
+    "functional_role": "gravity_source",
+    "gravity_calc_mode": "normal",
+    "display_type_ru": "Хлопья / плющёнка",
+    "display_type_en": "Flaked Adjunct"
   },
   {
     "id": "triticum-dicoccum-nesolozhenka",
@@ -389,7 +602,23 @@
         "label": "Бир.РФ / Ингредиенты",
         "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/raw/11"
       }
-    ]
+    ],
+    "aliases_ru": [],
+    "aliases_en": [],
+    "product_family": "adjunct_grain",
+    "subtype_key": "raw_adjunct",
+    "physical_form": "grain",
+    "extract_form": null,
+    "base_material_family": "unknown",
+    "base_materials": [
+      "unknown"
+    ],
+    "hopping_state": "not_applicable",
+    "is_hopped_product": false,
+    "functional_role": "gravity_source",
+    "gravity_calc_mode": "normal",
+    "display_type_ru": "Несоложёнка",
+    "display_type_en": "Raw Adjunct"
   },
   {
     "id": "wheat-nesolozhenka",
@@ -420,7 +649,21 @@
         "label": "Бир.РФ / Ингредиенты",
         "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/raw/11"
       }
-    ]
+    ],
+    "product_family": "adjunct_grain",
+    "subtype_key": "raw_adjunct",
+    "physical_form": "grain",
+    "extract_form": null,
+    "base_material_family": "wheat",
+    "base_materials": [
+      "wheat"
+    ],
+    "hopping_state": "not_applicable",
+    "is_hopped_product": false,
+    "functional_role": "gravity_source",
+    "gravity_calc_mode": "normal",
+    "display_type_ru": "Несоложёнка",
+    "display_type_en": "Raw Adjunct"
   },
   {
     "id": "pshenichnaya-krupa-nesolozhenka",
@@ -449,7 +692,21 @@
         "label": "Бир.РФ / Ингредиенты",
         "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/raw/11"
       }
-    ]
+    ],
+    "product_family": "adjunct_grain",
+    "subtype_key": "raw_adjunct",
+    "physical_form": "grain",
+    "extract_form": null,
+    "base_material_family": "wheat",
+    "base_materials": [
+      "wheat"
+    ],
+    "hopping_state": "not_applicable",
+    "is_hopped_product": false,
+    "functional_role": "gravity_source",
+    "gravity_calc_mode": "normal",
+    "display_type_ru": "Несоложёнка",
+    "display_type_en": "Raw Adjunct"
   },
   {
     "id": "wheat-flour-nesolozhenka",
@@ -476,7 +733,22 @@
         "label": "Бир.РФ / Ингредиенты",
         "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/raw/11"
       }
-    ]
+    ],
+    "aliases_en": [],
+    "product_family": "adjunct_grain",
+    "subtype_key": "flour_adjunct",
+    "physical_form": "flour",
+    "extract_form": null,
+    "base_material_family": "wheat",
+    "base_materials": [
+      "wheat"
+    ],
+    "hopping_state": "not_applicable",
+    "is_hopped_product": false,
+    "functional_role": "gravity_source",
+    "gravity_calc_mode": "normal",
+    "display_type_ru": "Мука / помол",
+    "display_type_en": "Adjunct Flour"
   },
   {
     "id": "flaked-wheat-nesolozhenka",
@@ -508,7 +780,21 @@
         "label": "Бир.РФ / Ингредиенты",
         "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/raw/11"
       }
-    ]
+    ],
+    "product_family": "adjunct_grain",
+    "subtype_key": "flaked_adjunct",
+    "physical_form": "flakes",
+    "extract_form": null,
+    "base_material_family": "wheat",
+    "base_materials": [
+      "wheat"
+    ],
+    "hopping_state": "not_applicable",
+    "is_hopped_product": false,
+    "functional_role": "gravity_source",
+    "gravity_calc_mode": "normal",
+    "display_type_ru": "Хлопья / плющёнка",
+    "display_type_en": "Flaked Adjunct"
   },
   {
     "id": "psheno-nesolozhenka",
@@ -531,7 +817,24 @@
         "label": "Бир.РФ / Ингредиенты",
         "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/raw/11"
       }
-    ]
+    ],
+    "aliases_ru": [],
+    "aliases_en": [],
+    "product_family": "adjunct_grain",
+    "subtype_key": "raw_adjunct",
+    "physical_form": "grain",
+    "extract_form": null,
+    "base_material_family": "mixed_grain",
+    "base_materials": [
+      "wheat",
+      "millet"
+    ],
+    "hopping_state": "not_applicable",
+    "is_hopped_product": false,
+    "functional_role": "gravity_source",
+    "gravity_calc_mode": "normal",
+    "display_type_ru": "Несоложёнка",
+    "display_type_en": "Raw Adjunct"
   },
   {
     "id": "rye-flour-nesolozhenka",
@@ -558,7 +861,22 @@
         "label": "Бир.РФ / Ингредиенты",
         "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/raw/11"
       }
-    ]
+    ],
+    "aliases_en": [],
+    "product_family": "adjunct_grain",
+    "subtype_key": "flour_adjunct",
+    "physical_form": "flour",
+    "extract_form": null,
+    "base_material_family": "rye",
+    "base_materials": [
+      "rye"
+    ],
+    "hopping_state": "not_applicable",
+    "is_hopped_product": false,
+    "functional_role": "gravity_source",
+    "gravity_calc_mode": "normal",
+    "display_type_ru": "Мука / помол",
+    "display_type_en": "Adjunct Flour"
   },
   {
     "id": "flaked-rye-nesolozhenka",
@@ -590,7 +908,21 @@
         "label": "Бир.РФ / Ингредиенты",
         "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/raw/11"
       }
-    ]
+    ],
+    "product_family": "adjunct_grain",
+    "subtype_key": "flaked_adjunct",
+    "physical_form": "flakes",
+    "extract_form": null,
+    "base_material_family": "rye",
+    "base_materials": [
+      "rye"
+    ],
+    "hopping_state": "not_applicable",
+    "is_hopped_product": false,
+    "functional_role": "gravity_source",
+    "gravity_calc_mode": "normal",
+    "display_type_ru": "Хлопья / плющёнка",
+    "display_type_en": "Flaked Adjunct"
   },
   {
     "id": "ris-droblenyy-nesolozhenka",
@@ -620,7 +952,21 @@
         "label": "Бир.РФ / Ингредиенты",
         "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/raw/11"
       }
-    ]
+    ],
+    "product_family": "adjunct_grain",
+    "subtype_key": "raw_adjunct",
+    "physical_form": "grain",
+    "extract_form": null,
+    "base_material_family": "rice",
+    "base_materials": [
+      "rice"
+    ],
+    "hopping_state": "not_applicable",
+    "is_hopped_product": false,
+    "functional_role": "gravity_source",
+    "gravity_calc_mode": "normal",
+    "display_type_ru": "Несоложёнка",
+    "display_type_en": "Raw Adjunct"
   },
   {
     "id": "rice-hulls-nesolozhenka",
@@ -650,7 +996,21 @@
         "label": "Бир.РФ / Ингредиенты",
         "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/raw/11"
       }
-    ]
+    ],
+    "product_family": "adjunct_grain",
+    "subtype_key": "process_adjunct",
+    "physical_form": "hulls_husks",
+    "extract_form": null,
+    "base_material_family": "rice",
+    "base_materials": [
+      "rice"
+    ],
+    "hopping_state": "not_applicable",
+    "is_hopped_product": false,
+    "functional_role": "process_only",
+    "gravity_calc_mode": "excluded",
+    "display_type_ru": "Техническая добавка",
+    "display_type_en": "Process Adjunct"
   },
   {
     "id": "rice-flaked-grits-nesolozhenka",
@@ -682,7 +1042,21 @@
         "label": "Бир.РФ / Ингредиенты",
         "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/raw/11"
       }
-    ]
+    ],
+    "product_family": "adjunct_grain",
+    "subtype_key": "flaked_adjunct",
+    "physical_form": "flakes",
+    "extract_form": null,
+    "base_material_family": "rice",
+    "base_materials": [
+      "rice"
+    ],
+    "hopping_state": "not_applicable",
+    "is_hopped_product": false,
+    "functional_role": "gravity_source",
+    "gravity_calc_mode": "normal",
+    "display_type_ru": "Хлопья / плющёнка",
+    "display_type_en": "Flaked Adjunct"
   },
   {
     "id": "rye-nesolozhenka",
@@ -712,7 +1086,21 @@
         "label": "Бир.РФ / Ингредиенты",
         "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/raw/11"
       }
-    ]
+    ],
+    "product_family": "adjunct_grain",
+    "subtype_key": "raw_adjunct",
+    "physical_form": "grain",
+    "extract_form": null,
+    "base_material_family": "rye",
+    "base_materials": [
+      "rye"
+    ],
+    "hopping_state": "not_applicable",
+    "is_hopped_product": false,
+    "functional_role": "gravity_source",
+    "gravity_calc_mode": "normal",
+    "display_type_ru": "Несоложёнка",
+    "display_type_en": "Raw Adjunct"
   },
   {
     "id": "sorghum-nesolozhenka",
@@ -742,7 +1130,21 @@
         "label": "Бир.РФ / Ингредиенты",
         "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/raw/11"
       }
-    ]
+    ],
+    "product_family": "adjunct_grain",
+    "subtype_key": "raw_adjunct",
+    "physical_form": "grain",
+    "extract_form": null,
+    "base_material_family": "sorghum",
+    "base_materials": [
+      "sorghum"
+    ],
+    "hopping_state": "not_applicable",
+    "is_hopped_product": false,
+    "functional_role": "gravity_source",
+    "gravity_calc_mode": "normal",
+    "display_type_ru": "Несоложёнка",
+    "display_type_en": "Raw Adjunct"
   },
   {
     "id": "crisp-malt-torrefied-wheat-nesolozhenka",
@@ -772,7 +1174,21 @@
         "label": "Бир.РФ / Ингредиенты",
         "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/raw/11"
       }
-    ]
+    ],
+    "product_family": "adjunct_grain",
+    "subtype_key": "torrefied_adjunct",
+    "physical_form": "torrefied_grain",
+    "extract_form": null,
+    "base_material_family": "wheat",
+    "base_materials": [
+      "wheat"
+    ],
+    "hopping_state": "not_applicable",
+    "is_hopped_product": false,
+    "functional_role": "gravity_source",
+    "gravity_calc_mode": "normal",
+    "display_type_ru": "Торрефицированная несоложёнка",
+    "display_type_en": "Torrefied Adjunct"
   },
   {
     "id": "thomas-fawcett-sons-torrefied-wheat-nesolozhenka",
@@ -803,7 +1219,21 @@
         "label": "Бир.РФ / Ингредиенты",
         "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/raw/11"
       }
-    ]
+    ],
+    "product_family": "adjunct_grain",
+    "subtype_key": "torrefied_adjunct",
+    "physical_form": "torrefied_grain",
+    "extract_form": null,
+    "base_material_family": "wheat",
+    "base_materials": [
+      "wheat"
+    ],
+    "hopping_state": "not_applicable",
+    "is_hopped_product": false,
+    "functional_role": "gravity_source",
+    "gravity_calc_mode": "normal",
+    "display_type_ru": "Торрефицированная несоложёнка",
+    "display_type_en": "Torrefied Adjunct"
   },
   {
     "id": "hlopya-3-zlaka-nesolozhenka",
@@ -825,7 +1255,23 @@
         "label": "Бир.РФ / Ингредиенты",
         "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/raw/11"
       }
-    ]
+    ],
+    "aliases_ru": [],
+    "aliases_en": [],
+    "product_family": "adjunct_grain",
+    "subtype_key": "flaked_adjunct",
+    "physical_form": "flakes",
+    "extract_form": null,
+    "base_material_family": "unknown",
+    "base_materials": [
+      "unknown"
+    ],
+    "hopping_state": "not_applicable",
+    "is_hopped_product": false,
+    "functional_role": "gravity_source",
+    "gravity_calc_mode": "normal",
+    "display_type_ru": "Хлопья / плющёнка",
+    "display_type_en": "Flaked Adjunct"
   },
   {
     "id": "uvelka-hlopya-4-zlaka-nesolozhenka",
@@ -849,7 +1295,23 @@
         "label": "Бир.РФ / Ингредиенты",
         "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/raw/11"
       }
-    ]
+    ],
+    "aliases_ru": [],
+    "aliases_en": [],
+    "product_family": "adjunct_grain",
+    "subtype_key": "flaked_adjunct",
+    "physical_form": "flakes",
+    "extract_form": null,
+    "base_material_family": "unknown",
+    "base_materials": [
+      "unknown"
+    ],
+    "hopping_state": "not_applicable",
+    "is_hopped_product": false,
+    "functional_role": "gravity_source",
+    "gravity_calc_mode": "normal",
+    "display_type_ru": "Хлопья / плющёнка",
+    "display_type_en": "Flaked Adjunct"
   },
   {
     "id": "crisp-malt-flaked-torrefied-oats-nesolozhenka",
@@ -876,7 +1338,22 @@
         "label": "Бир.РФ / Ингредиенты",
         "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/raw/11"
       }
-    ]
+    ],
+    "aliases_ru": [],
+    "product_family": "adjunct_grain",
+    "subtype_key": "flaked_adjunct",
+    "physical_form": "flakes",
+    "extract_form": null,
+    "base_material_family": "oats",
+    "base_materials": [
+      "oats"
+    ],
+    "hopping_state": "not_applicable",
+    "is_hopped_product": false,
+    "functional_role": "gravity_source",
+    "gravity_calc_mode": "normal",
+    "display_type_ru": "Хлопья / плющёнка",
+    "display_type_en": "Flaked Adjunct"
   },
   {
     "id": "crisp-malt-flaked-torrefied-barley-nesolozhenka",
@@ -903,7 +1380,22 @@
         "label": "Бир.РФ / Ингредиенты",
         "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/raw/11"
       }
-    ]
+    ],
+    "aliases_ru": [],
+    "product_family": "adjunct_grain",
+    "subtype_key": "flaked_adjunct",
+    "physical_form": "flakes",
+    "extract_form": null,
+    "base_material_family": "barley",
+    "base_materials": [
+      "barley"
+    ],
+    "hopping_state": "not_applicable",
+    "is_hopped_product": false,
+    "functional_role": "gravity_source",
+    "gravity_calc_mode": "normal",
+    "display_type_ru": "Хлопья / плющёнка",
+    "display_type_en": "Flaked Adjunct"
   },
   {
     "id": "castle-malting-chit-barley-flakes-nesolozhenka",
@@ -931,7 +1423,22 @@
         "label": "Бир.РФ / Ингредиенты",
         "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/raw/11"
       }
-    ]
+    ],
+    "aliases_en": [],
+    "product_family": "adjunct_grain",
+    "subtype_key": "flaked_adjunct",
+    "physical_form": "flakes",
+    "extract_form": null,
+    "base_material_family": "barley",
+    "base_materials": [
+      "barley"
+    ],
+    "hopping_state": "not_applicable",
+    "is_hopped_product": false,
+    "functional_role": "gravity_source",
+    "gravity_calc_mode": "normal",
+    "display_type_ru": "Хлопья / плющёнка",
+    "display_type_en": "Flaked Adjunct"
   },
   {
     "id": "yachmennaya-krupa-nesolozhenka",
@@ -954,7 +1461,23 @@
         "label": "Бир.РФ / Ингредиенты",
         "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/raw/11"
       }
-    ]
+    ],
+    "aliases_ru": [],
+    "aliases_en": [],
+    "product_family": "adjunct_grain",
+    "subtype_key": "raw_adjunct",
+    "physical_form": "grain",
+    "extract_form": null,
+    "base_material_family": "barley",
+    "base_materials": [
+      "barley"
+    ],
+    "hopping_state": "not_applicable",
+    "is_hopped_product": false,
+    "functional_role": "gravity_source",
+    "gravity_calc_mode": "normal",
+    "display_type_ru": "Несоложёнка",
+    "display_type_en": "Raw Adjunct"
   },
   {
     "id": "flaked-barley-nesolozhenka",
@@ -986,7 +1509,21 @@
         "label": "Бир.РФ / Ингредиенты",
         "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/raw/11"
       }
-    ]
+    ],
+    "product_family": "adjunct_grain",
+    "subtype_key": "flaked_adjunct",
+    "physical_form": "flakes",
+    "extract_form": null,
+    "base_material_family": "barley",
+    "base_materials": [
+      "barley"
+    ],
+    "hopping_state": "not_applicable",
+    "is_hopped_product": false,
+    "functional_role": "gravity_source",
+    "gravity_calc_mode": "normal",
+    "display_type_ru": "Хлопья / плющёнка",
+    "display_type_en": "Flaked Adjunct"
   },
   {
     "id": "barley-2-row-nesolozhenka",
@@ -1018,7 +1555,21 @@
         "label": "Бир.РФ / Ингредиенты",
         "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/raw/11"
       }
-    ]
+    ],
+    "product_family": "adjunct_grain",
+    "subtype_key": "raw_adjunct",
+    "physical_form": "grain",
+    "extract_form": null,
+    "base_material_family": "barley",
+    "base_materials": [
+      "barley"
+    ],
+    "hopping_state": "not_applicable",
+    "is_hopped_product": false,
+    "functional_role": "gravity_source",
+    "gravity_calc_mode": "normal",
+    "display_type_ru": "Несоложёнка",
+    "display_type_en": "Raw Adjunct"
   },
   {
     "id": "belgosuc-n-v-sandy-sugar-dark-sahar",
@@ -1027,7 +1578,7 @@
     "ingredient_type": "sugar",
     "fermentability_class": "highly_fermentable",
     "name_ru": "Бельгийский карамельный сахар",
-    "name_en": "Сandy sugar dark",
+    "name_en": "Candy Sugar Dark",
     "producer": "Belgosuc N.V.",
     "country_name": "Бельгия",
     "extract_pct_dry_basis": 99,
@@ -1042,7 +1593,26 @@
         "label": "Бир.РФ / Ингредиенты",
         "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/sugar/5"
       }
-    ]
+    ],
+    "aliases_ru": [],
+    "aliases_en": [
+      "Belgian Candy Sugar Dark",
+      "Belgian Candi Sugar Dark"
+    ],
+    "product_family": "sugar_syrup_honey",
+    "subtype_key": "sugar",
+    "physical_form": "crystals",
+    "extract_form": null,
+    "base_material_family": "unknown",
+    "base_materials": [
+      "unknown"
+    ],
+    "hopping_state": "not_applicable",
+    "is_hopped_product": false,
+    "functional_role": "gravity_source",
+    "gravity_calc_mode": "normal",
+    "display_type_ru": "Сахар",
+    "display_type_en": "Sugar"
   },
   {
     "id": "kotanyi-vanilnyy-sahar-s-naturalnoy-vanilyu-sahar",
@@ -1065,7 +1635,23 @@
         "label": "Бир.РФ / Ингредиенты",
         "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/sugar/5"
       }
-    ]
+    ],
+    "aliases_ru": [],
+    "aliases_en": [],
+    "product_family": "sugar_syrup_honey",
+    "subtype_key": "sugar",
+    "physical_form": "crystals",
+    "extract_form": null,
+    "base_material_family": "unknown",
+    "base_materials": [
+      "unknown"
+    ],
+    "hopping_state": "not_applicable",
+    "is_hopped_product": false,
+    "functional_role": "gravity_source",
+    "gravity_calc_mode": "normal",
+    "display_type_ru": "Сахар",
+    "display_type_en": "Sugar"
   },
   {
     "id": "dextrose-sahar",
@@ -1096,7 +1682,22 @@
         "label": "Бир.РФ / Ингредиенты",
         "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/sugar/5"
       }
-    ]
+    ],
+    "product_family": "sugar_syrup_honey",
+    "subtype_key": "sugar",
+    "physical_form": "crystals",
+    "extract_form": null,
+    "base_material_family": "corn",
+    "base_materials": [
+      "corn",
+      "glucose"
+    ],
+    "hopping_state": "not_applicable",
+    "is_hopped_product": false,
+    "functional_role": "gravity_source",
+    "gravity_calc_mode": "normal",
+    "display_type_ru": "Сахар",
+    "display_type_en": "Sugar"
   },
   {
     "id": "roasted-sugar-sahar",
@@ -1119,7 +1720,23 @@
         "label": "Бир.РФ / Ингредиенты",
         "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/sugar/5"
       }
-    ]
+    ],
+    "aliases_ru": [],
+    "aliases_en": [],
+    "product_family": "sugar_syrup_honey",
+    "subtype_key": "sugar",
+    "physical_form": "crystals",
+    "extract_form": null,
+    "base_material_family": "unknown",
+    "base_materials": [
+      "unknown"
+    ],
+    "hopping_state": "not_applicable",
+    "is_hopped_product": false,
+    "functional_role": "gravity_source",
+    "gravity_calc_mode": "normal",
+    "display_type_ru": "Сахар",
+    "display_type_en": "Sugar"
   },
   {
     "id": "invert-sugar-sahar",
@@ -1149,7 +1766,21 @@
         "label": "Бир.РФ / Ингредиенты",
         "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/sugar/invertnyj_sakhar_sirop/5-1-0-300"
       }
-    ]
+    ],
+    "product_family": "sugar_syrup_honey",
+    "subtype_key": "sugar",
+    "physical_form": "crystals",
+    "extract_form": null,
+    "base_material_family": "unknown",
+    "base_materials": [
+      "unknown"
+    ],
+    "hopping_state": "not_applicable",
+    "is_hopped_product": false,
+    "functional_role": "gravity_source",
+    "gravity_calc_mode": "normal",
+    "display_type_ru": "Сахар",
+    "display_type_en": "Sugar"
   },
   {
     "id": "candico-candi-syrup-amber-sahar",
@@ -1176,7 +1807,22 @@
         "label": "Бир.РФ / Ингредиенты",
         "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/sugar/5"
       }
-    ]
+    ],
+    "aliases_en": [],
+    "product_family": "sugar_syrup_honey",
+    "subtype_key": "syrup",
+    "physical_form": "syrup",
+    "extract_form": null,
+    "base_material_family": "fruit",
+    "base_materials": [
+      "fruit"
+    ],
+    "hopping_state": "not_applicable",
+    "is_hopped_product": false,
+    "functional_role": "gravity_source",
+    "gravity_calc_mode": "normal",
+    "display_type_ru": "Сироп",
+    "display_type_en": "Syrup"
   },
   {
     "id": "candy-belgian-sugar-white-sahar",
@@ -1207,7 +1853,21 @@
         "label": "Бир.РФ / Ингредиенты",
         "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/sugar/5"
       }
-    ]
+    ],
+    "product_family": "sugar_syrup_honey",
+    "subtype_key": "sugar",
+    "physical_form": "crystals",
+    "extract_form": null,
+    "base_material_family": "beet",
+    "base_materials": [
+      "beet"
+    ],
+    "hopping_state": "not_applicable",
+    "is_hopped_product": false,
+    "functional_role": "gravity_source",
+    "gravity_calc_mode": "normal",
+    "display_type_ru": "Сахар",
+    "display_type_en": "Sugar"
   },
   {
     "id": "castle-malting-candy-belgian-sugar-dark-sahar",
@@ -1239,7 +1899,21 @@
         "label": "Бир.РФ / Ингредиенты",
         "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/sugar/5"
       }
-    ]
+    ],
+    "product_family": "sugar_syrup_honey",
+    "subtype_key": "sugar",
+    "physical_form": "crystals",
+    "extract_form": null,
+    "base_material_family": "beet",
+    "base_materials": [
+      "beet"
+    ],
+    "hopping_state": "not_applicable",
+    "is_hopped_product": false,
+    "functional_role": "gravity_source",
+    "gravity_calc_mode": "normal",
+    "display_type_ru": "Сахар",
+    "display_type_en": "Sugar"
   },
   {
     "id": "maple-syrup-sahar",
@@ -1265,7 +1939,23 @@
         "label": "Бир.РФ / Ингредиенты",
         "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/sugar/klenoviy_sirop/5-1-0-302"
       }
-    ]
+    ],
+    "aliases_en": [],
+    "product_family": "sugar_syrup_honey",
+    "subtype_key": "syrup",
+    "physical_form": "syrup",
+    "extract_form": null,
+    "base_material_family": "fruit",
+    "base_materials": [
+      "maple",
+      "fruit"
+    ],
+    "hopping_state": "not_applicable",
+    "is_hopped_product": false,
+    "functional_role": "gravity_source",
+    "gravity_calc_mode": "normal",
+    "display_type_ru": "Сироп",
+    "display_type_en": "Syrup"
   },
   {
     "id": "coconut-sugar-sahar",
@@ -1289,7 +1979,23 @@
         "label": "Бир.РФ / Ингредиенты",
         "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/sugar/5"
       }
-    ]
+    ],
+    "aliases_ru": [],
+    "aliases_en": [],
+    "product_family": "sugar_syrup_honey",
+    "subtype_key": "sugar",
+    "physical_form": "crystals",
+    "extract_form": null,
+    "base_material_family": "coconut",
+    "base_materials": [
+      "coconut"
+    ],
+    "hopping_state": "not_applicable",
+    "is_hopped_product": false,
+    "functional_role": "gravity_source",
+    "gravity_calc_mode": "normal",
+    "display_type_ru": "Сахар",
+    "display_type_en": "Sugar"
   },
   {
     "id": "lactose-sahar",
@@ -1312,7 +2018,23 @@
         "label": "Бир.РФ / Ингредиенты",
         "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/sugar/5"
       }
-    ]
+    ],
+    "aliases_ru": [],
+    "aliases_en": [],
+    "product_family": "sugar_syrup_honey",
+    "subtype_key": "sugar",
+    "physical_form": "crystals",
+    "extract_form": null,
+    "base_material_family": "lactose",
+    "base_materials": [
+      "lactose"
+    ],
+    "hopping_state": "not_applicable",
+    "is_hopped_product": false,
+    "functional_role": "gravity_source",
+    "gravity_calc_mode": "excluded",
+    "display_type_ru": "Сахар",
+    "display_type_en": "Sugar"
   },
   {
     "id": "mangrove-jacks-sarbonation-drops-sahar",
@@ -1321,7 +2043,7 @@
     "ingredient_type": "sugar",
     "fermentability_class": "highly_fermentable",
     "name_ru": "Леденцы для карбонизации пива",
-    "name_en": "Сarbonation Drops",
+    "name_en": "Carbonation Drops",
     "producer": "Mangrove Jacks",
     "country_name": "Н. Зеландия",
     "extract_pct_dry_basis": 100,
@@ -1336,7 +2058,28 @@
         "label": "Бир.РФ / Ингредиенты",
         "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/sugar/5"
       }
-    ]
+    ],
+    "aliases_ru": [
+      "карбонизационные леденцы",
+      "леденцы для карбонизации"
+    ],
+    "aliases_en": [
+      "Mangrove Jack's Carbonation Drops"
+    ],
+    "product_family": "sugar_syrup_honey",
+    "subtype_key": "sugar",
+    "physical_form": "pieces",
+    "extract_form": null,
+    "base_material_family": "unknown",
+    "base_materials": [
+      "unknown"
+    ],
+    "hopping_state": "not_applicable",
+    "is_hopped_product": false,
+    "functional_role": "gravity_source",
+    "gravity_calc_mode": "normal",
+    "display_type_ru": "Сахар",
+    "display_type_en": "Sugar"
   },
   {
     "id": "malinovyy-sirop-sahar",
@@ -1358,7 +2101,23 @@
         "label": "Бир.РФ / Ингредиенты",
         "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/sugar/5"
       }
-    ]
+    ],
+    "aliases_ru": [],
+    "aliases_en": [],
+    "product_family": "sugar_syrup_honey",
+    "subtype_key": "syrup",
+    "physical_form": "syrup",
+    "extract_form": null,
+    "base_material_family": "fruit",
+    "base_materials": [
+      "fruit"
+    ],
+    "hopping_state": "not_applicable",
+    "is_hopped_product": false,
+    "functional_role": "gravity_source",
+    "gravity_calc_mode": "normal",
+    "display_type_ru": "Сироп",
+    "display_type_en": "Syrup"
   },
   {
     "id": "maltodextrin-sahar",
@@ -1381,7 +2140,23 @@
         "label": "Бир.РФ / Ингредиенты",
         "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/sugar/5"
       }
-    ]
+    ],
+    "aliases_ru": [],
+    "aliases_en": [],
+    "product_family": "sugar_syrup_honey",
+    "subtype_key": "body_builder",
+    "physical_form": "powder",
+    "extract_form": null,
+    "base_material_family": "unknown",
+    "base_materials": [
+      "unknown"
+    ],
+    "hopping_state": "not_applicable",
+    "is_hopped_product": false,
+    "functional_role": "body_adjustment",
+    "gravity_calc_mode": "excluded",
+    "display_type_ru": "Телообразующая добавка",
+    "display_type_en": "Body Builder"
   },
   {
     "id": "castle-malting-maltodextrine-sahar",
@@ -1408,7 +2183,22 @@
         "label": "Бир.РФ / Ингредиенты",
         "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/sugar/5"
       }
-    ]
+    ],
+    "aliases_ru": [],
+    "product_family": "sugar_syrup_honey",
+    "subtype_key": "body_builder",
+    "physical_form": "powder",
+    "extract_form": null,
+    "base_material_family": "unknown",
+    "base_materials": [
+      "unknown"
+    ],
+    "hopping_state": "not_applicable",
+    "is_hopped_product": false,
+    "functional_role": "body_adjustment",
+    "gravity_calc_mode": "excluded",
+    "display_type_ru": "Телообразующая добавка",
+    "display_type_en": "Body Builder"
   },
   {
     "id": "kompaniya-pischevyh-kontsentratov-molasses-sahar",
@@ -1437,7 +2227,21 @@
         "label": "Бир.РФ / Ингредиенты",
         "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/sugar/5"
       }
-    ]
+    ],
+    "product_family": "sugar_syrup_honey",
+    "subtype_key": "molasses",
+    "physical_form": "syrup",
+    "extract_form": null,
+    "base_material_family": "unknown",
+    "base_materials": [
+      "unknown"
+    ],
+    "hopping_state": "not_applicable",
+    "is_hopped_product": false,
+    "functional_role": "gravity_source",
+    "gravity_calc_mode": "normal",
+    "display_type_ru": "Патока / меласса",
+    "display_type_en": "Molasses"
   },
   {
     "id": "richi-mango-syrup-sahar",
@@ -1462,7 +2266,23 @@
         "label": "Бир.РФ / Ингредиенты",
         "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/sugar/5"
       }
-    ]
+    ],
+    "aliases_ru": [],
+    "aliases_en": [],
+    "product_family": "sugar_syrup_honey",
+    "subtype_key": "syrup",
+    "physical_form": "syrup",
+    "extract_form": null,
+    "base_material_family": "fruit",
+    "base_materials": [
+      "fruit"
+    ],
+    "hopping_state": "not_applicable",
+    "is_hopped_product": false,
+    "functional_role": "gravity_source",
+    "gravity_calc_mode": "normal",
+    "display_type_ru": "Сироп",
+    "display_type_en": "Syrup"
   },
   {
     "id": "honey-sahar",
@@ -1487,7 +2307,23 @@
         "label": "Бир.РФ / Ингредиенты",
         "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/sugar/med/5-1-0-137"
       }
-    ]
+    ],
+    "aliases_ru": [],
+    "aliases_en": [],
+    "product_family": "sugar_syrup_honey",
+    "subtype_key": "honey",
+    "physical_form": "liquid",
+    "extract_form": null,
+    "base_material_family": "honey",
+    "base_materials": [
+      "honey"
+    ],
+    "hopping_state": "not_applicable",
+    "is_hopped_product": false,
+    "functional_role": "gravity_source",
+    "gravity_calc_mode": "normal",
+    "display_type_ru": "Мёд",
+    "display_type_en": "Honey"
   },
   {
     "id": "melassa-trostnikovaya-sahar",
@@ -1513,7 +2349,22 @@
         "label": "Бир.РФ / Ингредиенты",
         "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/sugar/5"
       }
-    ]
+    ],
+    "aliases_ru": [],
+    "product_family": "sugar_syrup_honey",
+    "subtype_key": "molasses",
+    "physical_form": "syrup",
+    "extract_form": null,
+    "base_material_family": "sugarcane",
+    "base_materials": [
+      "sugarcane"
+    ],
+    "hopping_state": "not_applicable",
+    "is_hopped_product": false,
+    "functional_role": "gravity_source",
+    "gravity_calc_mode": "normal",
+    "display_type_ru": "Патока / меласса",
+    "display_type_en": "Molasses"
   },
   {
     "id": "palmovyi-sahar-sahar",
@@ -1537,7 +2388,23 @@
         "label": "Бир.РФ / Ингредиенты",
         "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/sugar/palmovyj_sakhar/5-1-0-511"
       }
-    ]
+    ],
+    "aliases_ru": [],
+    "aliases_en": [],
+    "product_family": "sugar_syrup_honey",
+    "subtype_key": "sugar",
+    "physical_form": "crystals",
+    "extract_form": null,
+    "base_material_family": "palm",
+    "base_materials": [
+      "palm"
+    ],
+    "hopping_state": "not_applicable",
+    "is_hopped_product": false,
+    "functional_role": "gravity_source",
+    "gravity_calc_mode": "normal",
+    "display_type_ru": "Сахар",
+    "display_type_en": "Sugar"
   },
   {
     "id": "murphy-and-son-pivovarennyi-invertnyi-sahar-n1-sahar",
@@ -1570,7 +2437,21 @@
         "label": "Бир.РФ / Ингредиенты",
         "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/sugar/5"
       }
-    ]
+    ],
+    "product_family": "sugar_syrup_honey",
+    "subtype_key": "sugar",
+    "physical_form": "crystals",
+    "extract_form": null,
+    "base_material_family": "unknown",
+    "base_materials": [
+      "unknown"
+    ],
+    "hopping_state": "not_applicable",
+    "is_hopped_product": false,
+    "functional_role": "gravity_source",
+    "gravity_calc_mode": "normal",
+    "display_type_ru": "Сахар",
+    "display_type_en": "Sugar"
   },
   {
     "id": "murphy-and-son-pivovarennyi-invertnyi-sahar-n2-sahar",
@@ -1603,7 +2484,21 @@
         "label": "Бир.РФ / Ингредиенты",
         "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/sugar/5"
       }
-    ]
+    ],
+    "product_family": "sugar_syrup_honey",
+    "subtype_key": "sugar",
+    "physical_form": "crystals",
+    "extract_form": null,
+    "base_material_family": "unknown",
+    "base_materials": [
+      "unknown"
+    ],
+    "hopping_state": "not_applicable",
+    "is_hopped_product": false,
+    "functional_role": "gravity_source",
+    "gravity_calc_mode": "normal",
+    "display_type_ru": "Сахар",
+    "display_type_en": "Sugar"
   },
   {
     "id": "murphy-and-son-pivovarennyi-invertnyi-sahar-n3-sahar",
@@ -1636,7 +2531,21 @@
         "label": "Бир.РФ / Ингредиенты",
         "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/sugar/5"
       }
-    ]
+    ],
+    "product_family": "sugar_syrup_honey",
+    "subtype_key": "sugar",
+    "physical_form": "crystals",
+    "extract_form": null,
+    "base_material_family": "unknown",
+    "base_materials": [
+      "unknown"
+    ],
+    "hopping_state": "not_applicable",
+    "is_hopped_product": false,
+    "functional_role": "gravity_source",
+    "gravity_calc_mode": "normal",
+    "display_type_ru": "Сахар",
+    "display_type_en": "Sugar"
   },
   {
     "id": "murphy-and-son-pivovarennyi-invertnyi-sahar-n4-sahar",
@@ -1669,7 +2578,21 @@
         "label": "Бир.РФ / Ингредиенты",
         "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/sugar/5"
       }
-    ]
+    ],
+    "product_family": "sugar_syrup_honey",
+    "subtype_key": "sugar",
+    "physical_form": "crystals",
+    "extract_form": null,
+    "base_material_family": "unknown",
+    "base_materials": [
+      "unknown"
+    ],
+    "hopping_state": "not_applicable",
+    "is_hopped_product": false,
+    "functional_role": "gravity_source",
+    "gravity_calc_mode": "normal",
+    "display_type_ru": "Сахар",
+    "display_type_en": "Sugar"
   },
   {
     "id": "sahar-korichnevyi-trostnikovyi-demerara-sahar",
@@ -1699,7 +2622,21 @@
         "label": "Бир.РФ / Ингредиенты",
         "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/sugar/5"
       }
-    ]
+    ],
+    "product_family": "sugar_syrup_honey",
+    "subtype_key": "sugar",
+    "physical_form": "crystals",
+    "extract_form": null,
+    "base_material_family": "sugarcane",
+    "base_materials": [
+      "sugarcane"
+    ],
+    "hopping_state": "not_applicable",
+    "is_hopped_product": false,
+    "functional_role": "gravity_source",
+    "gravity_calc_mode": "normal",
+    "display_type_ru": "Сахар",
+    "display_type_en": "Sugar"
   },
   {
     "id": "aroba-sahar-ledentsovyy-navat-belyy-sahar",
@@ -1722,7 +2659,23 @@
         "label": "Бир.РФ / Ингредиенты",
         "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/sugar/5"
       }
-    ]
+    ],
+    "aliases_ru": [],
+    "aliases_en": [],
+    "product_family": "sugar_syrup_honey",
+    "subtype_key": "sugar",
+    "physical_form": "pieces",
+    "extract_form": null,
+    "base_material_family": "unknown",
+    "base_materials": [
+      "unknown"
+    ],
+    "hopping_state": "not_applicable",
+    "is_hopped_product": false,
+    "functional_role": "gravity_source",
+    "gravity_calc_mode": "normal",
+    "display_type_ru": "Сахар",
+    "display_type_en": "Sugar"
   },
   {
     "id": "maitre-de-sucre-sahar-ledencovyi-korichnevyi-kristallicheskii-sahar",
@@ -1748,7 +2701,22 @@
         "label": "Бир.РФ / Ингредиенты",
         "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/sugar/5"
       }
-    ]
+    ],
+    "aliases_ru": [],
+    "product_family": "sugar_syrup_honey",
+    "subtype_key": "sugar",
+    "physical_form": "pieces",
+    "extract_form": null,
+    "base_material_family": "unknown",
+    "base_materials": [
+      "unknown"
+    ],
+    "hopping_state": "not_applicable",
+    "is_hopped_product": false,
+    "functional_role": "gravity_source",
+    "gravity_calc_mode": "normal",
+    "display_type_ru": "Сахар",
+    "display_type_en": "Sugar"
   },
   {
     "id": "maitre-de-sucre-sahar-ledentsovyy-prozrachnyy-kristallicheskiy-sahar",
@@ -1771,7 +2739,23 @@
         "label": "Бир.РФ / Ингредиенты",
         "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/sugar/5"
       }
-    ]
+    ],
+    "aliases_ru": [],
+    "aliases_en": [],
+    "product_family": "sugar_syrup_honey",
+    "subtype_key": "sugar",
+    "physical_form": "pieces",
+    "extract_form": null,
+    "base_material_family": "unknown",
+    "base_materials": [
+      "unknown"
+    ],
+    "hopping_state": "not_applicable",
+    "is_hopped_product": false,
+    "functional_role": "gravity_source",
+    "gravity_calc_mode": "normal",
+    "display_type_ru": "Сахар",
+    "display_type_en": "Sugar"
   },
   {
     "id": "kotanyi-kotanyi-orange-sugar-sahar",
@@ -1795,7 +2779,23 @@
         "label": "Бир.РФ / Ингредиенты",
         "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/sugar/5"
       }
-    ]
+    ],
+    "aliases_ru": [],
+    "aliases_en": [],
+    "product_family": "sugar_syrup_honey",
+    "subtype_key": "sugar",
+    "physical_form": "crystals",
+    "extract_form": null,
+    "base_material_family": "fruit",
+    "base_materials": [
+      "fruit"
+    ],
+    "hopping_state": "not_applicable",
+    "is_hopped_product": false,
+    "functional_role": "gravity_source",
+    "gravity_calc_mode": "normal",
+    "display_type_ru": "Сахар",
+    "display_type_en": "Sugar"
   },
   {
     "id": "muscovado-sahar",
@@ -1824,7 +2824,21 @@
         "label": "Бир.РФ / Ингредиенты",
         "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/sugar/5"
       }
-    ]
+    ],
+    "product_family": "sugar_syrup_honey",
+    "subtype_key": "sugar",
+    "physical_form": "crystals",
+    "extract_form": null,
+    "base_material_family": "sugarcane",
+    "base_materials": [
+      "sugarcane"
+    ],
+    "hopping_state": "not_applicable",
+    "is_hopped_product": false,
+    "functional_role": "gravity_source",
+    "gravity_calc_mode": "normal",
+    "display_type_ru": "Сахар",
+    "display_type_en": "Sugar"
   },
   {
     "id": "sahar-pesok-sahar",
@@ -1853,7 +2867,21 @@
         "label": "Бир.РФ / Ингредиенты",
         "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/sugar/5"
       }
-    ]
+    ],
+    "product_family": "sugar_syrup_honey",
+    "subtype_key": "sugar",
+    "physical_form": "crystals",
+    "extract_form": null,
+    "base_material_family": "fruit",
+    "base_materials": [
+      "fruit"
+    ],
+    "hopping_state": "not_applicable",
+    "is_hopped_product": false,
+    "functional_role": "gravity_source",
+    "gravity_calc_mode": "normal",
+    "display_type_ru": "Сахар",
+    "display_type_en": "Sugar"
   },
   {
     "id": "murphy-and-son-caramel-color-sahar",
@@ -1877,7 +2905,23 @@
         "label": "Бир.РФ / Ингредиенты",
         "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/sugar/5"
       }
-    ]
+    ],
+    "aliases_ru": [],
+    "aliases_en": [],
+    "product_family": "sugar_syrup_honey",
+    "subtype_key": "coloring_sugar",
+    "physical_form": "liquid",
+    "extract_form": null,
+    "base_material_family": "beet",
+    "base_materials": [
+      "beet"
+    ],
+    "hopping_state": "not_applicable",
+    "is_hopped_product": false,
+    "functional_role": "color_adjustment",
+    "gravity_calc_mode": "excluded",
+    "display_type_ru": "Красящий сахар",
+    "display_type_en": "Coloring Sugar"
   },
   {
     "id": "barinoff-gingerbread-syrup-sahar",
@@ -1901,7 +2945,23 @@
         "label": "Бир.РФ / Ингредиенты",
         "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/sugar/5"
       }
-    ]
+    ],
+    "aliases_ru": [],
+    "aliases_en": [],
+    "product_family": "sugar_syrup_honey",
+    "subtype_key": "syrup",
+    "physical_form": "syrup",
+    "extract_form": null,
+    "base_material_family": "fruit",
+    "base_materials": [
+      "fruit"
+    ],
+    "hopping_state": "not_applicable",
+    "is_hopped_product": false,
+    "functional_role": "gravity_source",
+    "gravity_calc_mode": "normal",
+    "display_type_ru": "Сироп",
+    "display_type_en": "Syrup"
   },
   {
     "id": "barinoff-passion-fruit-syrup-sahar",
@@ -1932,7 +2992,21 @@
         "label": "Бир.РФ / Ингредиенты",
         "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/sugar/sirop_barinof_marakujja/5-1-0-2145"
       }
-    ]
+    ],
+    "product_family": "sugar_syrup_honey",
+    "subtype_key": "syrup",
+    "physical_form": "syrup",
+    "extract_form": null,
+    "base_material_family": "fruit",
+    "base_materials": [
+      "fruit"
+    ],
+    "hopping_state": "not_applicable",
+    "is_hopped_product": false,
+    "functional_role": "gravity_source",
+    "gravity_calc_mode": "normal",
+    "display_type_ru": "Сироп",
+    "display_type_en": "Syrup"
   },
   {
     "id": "barinoff-chocolate-cookie-syrup-sahar",
@@ -1956,7 +3030,23 @@
         "label": "Бир.РФ / Ингредиенты",
         "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/sugar/5"
       }
-    ]
+    ],
+    "aliases_ru": [],
+    "aliases_en": [],
+    "product_family": "sugar_syrup_honey",
+    "subtype_key": "syrup",
+    "physical_form": "syrup",
+    "extract_form": null,
+    "base_material_family": "fruit",
+    "base_materials": [
+      "fruit"
+    ],
+    "hopping_state": "not_applicable",
+    "is_hopped_product": false,
+    "functional_role": "gravity_source",
+    "gravity_calc_mode": "normal",
+    "display_type_ru": "Сироп",
+    "display_type_en": "Syrup"
   },
   {
     "id": "monin-passion-fruit-syrup-sahar",
@@ -1987,7 +3077,21 @@
         "label": "Бир.РФ / Ингредиенты",
         "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/sugar/sirop_iz_marakuji/5-1-0-2116"
       }
-    ]
+    ],
+    "product_family": "sugar_syrup_honey",
+    "subtype_key": "syrup",
+    "physical_form": "syrup",
+    "extract_form": null,
+    "base_material_family": "fruit",
+    "base_materials": [
+      "fruit"
+    ],
+    "hopping_state": "not_applicable",
+    "is_hopped_product": false,
+    "functional_role": "gravity_source",
+    "gravity_calc_mode": "normal",
+    "display_type_ru": "Сироп",
+    "display_type_en": "Syrup"
   },
   {
     "id": "trostnikovyi-sahar-sahar",
@@ -2012,7 +3116,22 @@
         "label": "Бир.РФ / Ингредиенты",
         "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/sugar/5"
       }
-    ]
+    ],
+    "aliases_en": [],
+    "product_family": "sugar_syrup_honey",
+    "subtype_key": "sugar",
+    "physical_form": "crystals",
+    "extract_form": null,
+    "base_material_family": "sugarcane",
+    "base_materials": [
+      "sugarcane"
+    ],
+    "hopping_state": "not_applicable",
+    "is_hopped_product": false,
+    "functional_role": "gravity_source",
+    "gravity_calc_mode": "normal",
+    "display_type_ru": "Сахар",
+    "display_type_en": "Sugar"
   },
   {
     "id": "turbinado-sahar",
@@ -2034,7 +3153,23 @@
         "label": "Бир.РФ / Ингредиенты",
         "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/sugar/5"
       }
-    ]
+    ],
+    "aliases_ru": [],
+    "aliases_en": [],
+    "product_family": "sugar_syrup_honey",
+    "subtype_key": "sugar",
+    "physical_form": "crystals",
+    "extract_form": null,
+    "base_material_family": "sugarcane",
+    "base_materials": [
+      "sugarcane"
+    ],
+    "hopping_state": "not_applicable",
+    "is_hopped_product": false,
+    "functional_role": "gravity_source",
+    "gravity_calc_mode": "normal",
+    "display_type_ru": "Сахар",
+    "display_type_en": "Sugar"
   },
   {
     "id": "finikovyi-sirop-sahar",
@@ -2060,7 +3195,22 @@
         "label": "Бир.РФ / Ингредиенты",
         "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/sugar/5"
       }
-    ]
+    ],
+    "aliases_ru": [],
+    "product_family": "sugar_syrup_honey",
+    "subtype_key": "syrup",
+    "physical_form": "syrup",
+    "extract_form": null,
+    "base_material_family": "fruit",
+    "base_materials": [
+      "fruit"
+    ],
+    "hopping_state": "not_applicable",
+    "is_hopped_product": false,
+    "functional_role": "gravity_source",
+    "gravity_calc_mode": "normal",
+    "display_type_ru": "Сироп",
+    "display_type_en": "Syrup"
   },
   {
     "id": "fruktoza-sahar",
@@ -2084,7 +3234,24 @@
         "label": "Бир.РФ / Ингредиенты",
         "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/sugar/fruktoza/5-1-0-1275"
       }
-    ]
+    ],
+    "aliases_ru": [],
+    "aliases_en": [],
+    "product_family": "sugar_syrup_honey",
+    "subtype_key": "sugar",
+    "physical_form": "crystals",
+    "extract_form": null,
+    "base_material_family": "fruit",
+    "base_materials": [
+      "fructose",
+      "fruit"
+    ],
+    "hopping_state": "not_applicable",
+    "is_hopped_product": false,
+    "functional_role": "gravity_source",
+    "gravity_calc_mode": "normal",
+    "display_type_ru": "Сахар",
+    "display_type_en": "Sugar"
   },
   {
     "id": "apricot-frukty-ovoschi",
@@ -2106,7 +3273,23 @@
         "label": "Бир.РФ / Ингредиенты",
         "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/other/24"
       }
-    ]
+    ],
+    "aliases_ru": [],
+    "aliases_en": [],
+    "product_family": "fruit_vegetable",
+    "subtype_key": "whole_fruit_or_vegetable",
+    "physical_form": "whole",
+    "extract_form": null,
+    "base_material_family": "fruit",
+    "base_materials": [
+      "fruit"
+    ],
+    "hopping_state": "not_applicable",
+    "is_hopped_product": false,
+    "functional_role": "gravity_source",
+    "gravity_calc_mode": "normal",
+    "display_type_ru": "Фрукты / овощи",
+    "display_type_en": "Fruit / Vegetable"
   },
   {
     "id": "ananas-comosus-frukty-ovoschi",
@@ -2115,7 +3298,7 @@
     "ingredient_type": "fruit_or_vegetable",
     "fermentability_class": "partially_fermentable",
     "name_ru": "Ананас",
-    "name_en": "Ananas comosus",
+    "name_en": "Pineapple",
     "country_name": "Неизвестно",
     "extract_pct_dry_basis": 5,
     "color_lovibond": 0.5,
@@ -2129,7 +3312,26 @@
         "label": "Бир.РФ / Ингредиенты",
         "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/other/24"
       }
-    ]
+    ],
+    "aliases_ru": [],
+    "aliases_en": [
+      "Ananas",
+      "Ananas comosus"
+    ],
+    "product_family": "fruit_vegetable",
+    "subtype_key": "whole_fruit_or_vegetable",
+    "physical_form": "whole",
+    "extract_form": null,
+    "base_material_family": "fruit",
+    "base_materials": [
+      "fruit"
+    ],
+    "hopping_state": "not_applicable",
+    "is_hopped_product": false,
+    "functional_role": "gravity_source",
+    "gravity_calc_mode": "normal",
+    "display_type_ru": "Фрукты / овощи",
+    "display_type_en": "Fruit / Vegetable"
   },
   {
     "id": "citrus-sinensis-frukty-ovoschi",
@@ -2138,7 +3340,7 @@
     "ingredient_type": "fruit_or_vegetable",
     "fermentability_class": "partially_fermentable",
     "name_ru": "Апельсин",
-    "name_en": "Cītrus sinēnsis",
+    "name_en": "Orange",
     "country_name": "Бразилия",
     "extract_pct_dry_basis": 10,
     "color_lovibond": 1,
@@ -2153,7 +3355,25 @@
         "label": "Бир.РФ / Ингредиенты",
         "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/other/24"
       }
-    ]
+    ],
+    "aliases_ru": [],
+    "aliases_en": [
+      "Citrus sinensis"
+    ],
+    "product_family": "fruit_vegetable",
+    "subtype_key": "whole_fruit_or_vegetable",
+    "physical_form": "whole",
+    "extract_form": null,
+    "base_material_family": "fruit",
+    "base_materials": [
+      "fruit"
+    ],
+    "hopping_state": "not_applicable",
+    "is_hopped_product": false,
+    "functional_role": "gravity_source",
+    "gravity_calc_mode": "normal",
+    "display_type_ru": "Фрукты / овощи",
+    "display_type_en": "Fruit / Vegetable"
   },
   {
     "id": "dzhem-ko-apelsinovyy-sok-kontsentrirovannyy-frukty-ovoschi",
@@ -2176,7 +3396,23 @@
         "label": "Бир.РФ / Ингредиенты",
         "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/other/24"
       }
-    ]
+    ],
+    "aliases_ru": [],
+    "aliases_en": [],
+    "product_family": "fruit_vegetable",
+    "subtype_key": "juice_concentrate",
+    "physical_form": "concentrated_juice",
+    "extract_form": null,
+    "base_material_family": "fruit",
+    "base_materials": [
+      "fruit"
+    ],
+    "hopping_state": "not_applicable",
+    "is_hopped_product": false,
+    "functional_role": "gravity_source",
+    "gravity_calc_mode": "normal",
+    "display_type_ru": "Концентрированный сок",
+    "display_type_en": "Juice Concentrate"
   },
   {
     "id": "banana-frukty-ovoschi",
@@ -2198,7 +3434,23 @@
         "label": "Бир.РФ / Ингредиенты",
         "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/other/24"
       }
-    ]
+    ],
+    "aliases_ru": [],
+    "aliases_en": [],
+    "product_family": "fruit_vegetable",
+    "subtype_key": "whole_fruit_or_vegetable",
+    "physical_form": "whole",
+    "extract_form": null,
+    "base_material_family": "fruit",
+    "base_materials": [
+      "fruit"
+    ],
+    "hopping_state": "not_applicable",
+    "is_hopped_product": false,
+    "functional_role": "gravity_source",
+    "gravity_calc_mode": "normal",
+    "display_type_ru": "Фрукты / овощи",
+    "display_type_en": "Fruit / Vegetable"
   },
   {
     "id": "vinograd-izabella-frukty-ovoschi",
@@ -2220,13 +3472,29 @@
         "label": "Бир.РФ / Ингредиенты",
         "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/other/24"
       }
-    ]
+    ],
+    "aliases_ru": [],
+    "aliases_en": [],
+    "product_family": "fruit_vegetable",
+    "subtype_key": "whole_fruit_or_vegetable",
+    "physical_form": "whole",
+    "extract_form": null,
+    "base_material_family": "fruit",
+    "base_materials": [
+      "fruit"
+    ],
+    "hopping_state": "not_applicable",
+    "is_hopped_product": false,
+    "functional_role": "gravity_source",
+    "gravity_calc_mode": "normal",
+    "display_type_ru": "Фрукты / овощи",
+    "display_type_en": "Fruit / Vegetable"
   },
   {
     "id": "dzhemka-vinogradnyy-sok-belyy-kontsentrirovannyy-frukty-ovoschi",
     "type": "fermentable",
     "group": "fruits_and_vegetables",
-    "ingredient_type": "juice",
+    "ingredient_type": "juice_concentrate",
     "fermentability_class": "highly_fermentable",
     "name_ru": "Виноградный сок белый концентрированный",
     "producer": "Джемка",
@@ -2243,13 +3511,29 @@
         "label": "Бир.РФ / Ингредиенты",
         "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/other/24"
       }
-    ]
+    ],
+    "aliases_ru": [],
+    "aliases_en": [],
+    "product_family": "fruit_vegetable",
+    "subtype_key": "juice_concentrate",
+    "physical_form": "concentrated_juice",
+    "extract_form": null,
+    "base_material_family": "fruit",
+    "base_materials": [
+      "fruit"
+    ],
+    "hopping_state": "not_applicable",
+    "is_hopped_product": false,
+    "functional_role": "gravity_source",
+    "gravity_calc_mode": "normal",
+    "display_type_ru": "Концентрированный сок",
+    "display_type_en": "Juice Concentrate"
   },
   {
     "id": "dzhemka-vinogradnyy-sok-krasnyy-kontsentrirovannyy-frukty-ovoschi",
     "type": "fermentable",
     "group": "fruits_and_vegetables",
-    "ingredient_type": "juice",
+    "ingredient_type": "juice_concentrate",
     "fermentability_class": "highly_fermentable",
     "name_ru": "Виноградный сок красный концентрированный",
     "producer": "Джемка",
@@ -2267,7 +3551,23 @@
         "label": "Бир.РФ / Ингредиенты",
         "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/other/sok_koncentrirovannyj_vinogradnyj_krasnyj/24-1-0-1335"
       }
-    ]
+    ],
+    "aliases_ru": [],
+    "aliases_en": [],
+    "product_family": "fruit_vegetable",
+    "subtype_key": "juice_concentrate",
+    "physical_form": "concentrated_juice",
+    "extract_form": null,
+    "base_material_family": "fruit",
+    "base_materials": [
+      "fruit"
+    ],
+    "hopping_state": "not_applicable",
+    "is_hopped_product": false,
+    "functional_role": "gravity_source",
+    "gravity_calc_mode": "normal",
+    "display_type_ru": "Концентрированный сок",
+    "display_type_en": "Juice Concentrate"
   },
   {
     "id": "vishnevyy-sok-kontsentrirovannyy-frukty-ovoschi",
@@ -2289,7 +3589,23 @@
         "label": "Бир.РФ / Ингредиенты",
         "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/other/24"
       }
-    ]
+    ],
+    "aliases_ru": [],
+    "aliases_en": [],
+    "product_family": "fruit_vegetable",
+    "subtype_key": "juice_concentrate",
+    "physical_form": "concentrated_juice",
+    "extract_form": null,
+    "base_material_family": "fruit",
+    "base_materials": [
+      "fruit"
+    ],
+    "hopping_state": "not_applicable",
+    "is_hopped_product": false,
+    "functional_role": "gravity_source",
+    "gravity_calc_mode": "normal",
+    "display_type_ru": "Концентрированный сок",
+    "display_type_en": "Juice Concentrate"
   },
   {
     "id": "cherry-frukty-ovoschi",
@@ -2311,7 +3627,23 @@
         "label": "Бир.РФ / Ингредиенты",
         "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/other/24"
       }
-    ]
+    ],
+    "aliases_ru": [],
+    "aliases_en": [],
+    "product_family": "fruit_vegetable",
+    "subtype_key": "whole_fruit_or_vegetable",
+    "physical_form": "whole",
+    "extract_form": null,
+    "base_material_family": "fruit",
+    "base_materials": [
+      "fruit"
+    ],
+    "hopping_state": "not_applicable",
+    "is_hopped_product": false,
+    "functional_role": "gravity_source",
+    "gravity_calc_mode": "normal",
+    "display_type_ru": "Фрукты / овощи",
+    "display_type_en": "Fruit / Vegetable"
   },
   {
     "id": "vishnya-sushenaya-s-kostochkoy-frukty-ovoschi",
@@ -2334,7 +3666,23 @@
         "label": "Бир.РФ / Ингредиенты",
         "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/other/24"
       }
-    ]
+    ],
+    "aliases_ru": [],
+    "aliases_en": [],
+    "product_family": "fruit_vegetable",
+    "subtype_key": "dried_fruit",
+    "physical_form": "dried",
+    "extract_form": null,
+    "base_material_family": "fruit",
+    "base_materials": [
+      "fruit"
+    ],
+    "hopping_state": "not_applicable",
+    "is_hopped_product": false,
+    "functional_role": "gravity_source",
+    "gravity_calc_mode": "normal",
+    "display_type_ru": "Сухофрукты",
+    "display_type_en": "Dried Fruit"
   },
   {
     "id": "greypfrutovyy-sok-frukty-ovoschi",
@@ -2356,7 +3704,23 @@
         "label": "Бир.РФ / Ингредиенты",
         "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/other/24"
       }
-    ]
+    ],
+    "aliases_ru": [],
+    "aliases_en": [],
+    "product_family": "fruit_vegetable",
+    "subtype_key": "juice",
+    "physical_form": "juice",
+    "extract_form": null,
+    "base_material_family": "fruit",
+    "base_materials": [
+      "fruit"
+    ],
+    "hopping_state": "not_applicable",
+    "is_hopped_product": false,
+    "functional_role": "gravity_source",
+    "gravity_calc_mode": "normal",
+    "display_type_ru": "Сок",
+    "display_type_en": "Juice"
   },
   {
     "id": "pear-frukty-ovoschi",
@@ -2378,7 +3742,23 @@
         "label": "Бир.РФ / Ингредиенты",
         "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/other/24"
       }
-    ]
+    ],
+    "aliases_ru": [],
+    "aliases_en": [],
+    "product_family": "fruit_vegetable",
+    "subtype_key": "whole_fruit_or_vegetable",
+    "physical_form": "whole",
+    "extract_form": null,
+    "base_material_family": "fruit",
+    "base_materials": [
+      "fruit"
+    ],
+    "hopping_state": "not_applicable",
+    "is_hopped_product": false,
+    "functional_role": "gravity_source",
+    "gravity_calc_mode": "normal",
+    "display_type_ru": "Фрукты / овощи",
+    "display_type_en": "Fruit / Vegetable"
   },
   {
     "id": "grushevyy-sok-kontsentrirovannyy-frukty-ovoschi",
@@ -2400,7 +3780,23 @@
         "label": "Бир.РФ / Ингредиенты",
         "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/other/24"
       }
-    ]
+    ],
+    "aliases_ru": [],
+    "aliases_en": [],
+    "product_family": "fruit_vegetable",
+    "subtype_key": "juice_concentrate",
+    "physical_form": "concentrated_juice",
+    "extract_form": null,
+    "base_material_family": "fruit",
+    "base_materials": [
+      "fruit"
+    ],
+    "hopping_state": "not_applicable",
+    "is_hopped_product": false,
+    "functional_role": "gravity_source",
+    "gravity_calc_mode": "normal",
+    "display_type_ru": "Концентрированный сок",
+    "display_type_en": "Juice Concentrate"
   },
   {
     "id": "ezhevika-frukty-ovoschi",
@@ -2422,7 +3818,23 @@
         "label": "Бир.РФ / Ингредиенты",
         "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/other/24"
       }
-    ]
+    ],
+    "aliases_ru": [],
+    "aliases_en": [],
+    "product_family": "fruit_vegetable",
+    "subtype_key": "whole_fruit_or_vegetable",
+    "physical_form": "whole",
+    "extract_form": null,
+    "base_material_family": "fruit",
+    "base_materials": [
+      "fruit"
+    ],
+    "hopping_state": "not_applicable",
+    "is_hopped_product": false,
+    "functional_role": "gravity_source",
+    "gravity_calc_mode": "normal",
+    "display_type_ru": "Фрукты / овощи",
+    "display_type_en": "Fruit / Vegetable"
   },
   {
     "id": "barinoff-ezhevichnyi-sok-koncentrirovannyi-frukty-ovoschi",
@@ -2449,7 +3861,22 @@
         "label": "Бир.РФ / Ингредиенты",
         "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/other/24"
       }
-    ]
+    ],
+    "aliases_ru": [],
+    "product_family": "fruit_vegetable",
+    "subtype_key": "juice_concentrate",
+    "physical_form": "concentrated_juice",
+    "extract_form": null,
+    "base_material_family": "fruit",
+    "base_materials": [
+      "fruit"
+    ],
+    "hopping_state": "not_applicable",
+    "is_hopped_product": false,
+    "functional_role": "gravity_source",
+    "gravity_calc_mode": "normal",
+    "display_type_ru": "Концентрированный сок",
+    "display_type_en": "Juice Concentrate"
   },
   {
     "id": "izyum-frukty-ovoschi",
@@ -2474,7 +3901,23 @@
         "label": "Бир.РФ / Ингредиенты",
         "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/other/izjum/24-1-0-617"
       }
-    ]
+    ],
+    "aliases_ru": [],
+    "aliases_en": [],
+    "product_family": "fruit_vegetable",
+    "subtype_key": "dried_fruit",
+    "physical_form": "dried",
+    "extract_form": null,
+    "base_material_family": "fruit",
+    "base_materials": [
+      "fruit"
+    ],
+    "hopping_state": "not_applicable",
+    "is_hopped_product": false,
+    "functional_role": "gravity_source",
+    "gravity_calc_mode": "normal",
+    "display_type_ru": "Сухофрукты",
+    "display_type_en": "Dried Fruit"
   },
   {
     "id": "kivi-frukty-ovoschi",
@@ -2497,7 +3940,23 @@
         "label": "Бир.РФ / Ингредиенты",
         "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/other/kivi/24-1-0-271"
       }
-    ]
+    ],
+    "aliases_ru": [],
+    "aliases_en": [],
+    "product_family": "fruit_vegetable",
+    "subtype_key": "whole_fruit_or_vegetable",
+    "physical_form": "whole",
+    "extract_form": null,
+    "base_material_family": "fruit",
+    "base_materials": [
+      "fruit"
+    ],
+    "hopping_state": "not_applicable",
+    "is_hopped_product": false,
+    "functional_role": "gravity_source",
+    "gravity_calc_mode": "normal",
+    "display_type_ru": "Фрукты / овощи",
+    "display_type_en": "Fruit / Vegetable"
   },
   {
     "id": "kizil-obyknovennyi-frukty-ovoschi",
@@ -2525,7 +3984,21 @@
         "label": "Бир.РФ / Ингредиенты",
         "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/other/24"
       }
-    ]
+    ],
+    "product_family": "fruit_vegetable",
+    "subtype_key": "whole_fruit_or_vegetable",
+    "physical_form": "whole",
+    "extract_form": null,
+    "base_material_family": "fruit",
+    "base_materials": [
+      "fruit"
+    ],
+    "hopping_state": "not_applicable",
+    "is_hopped_product": false,
+    "functional_role": "gravity_source",
+    "gravity_calc_mode": "normal",
+    "display_type_ru": "Фрукты / овощи",
+    "display_type_en": "Fruit / Vegetable"
   },
   {
     "id": "klubnika-frukty-ovoschi",
@@ -2548,7 +4021,23 @@
         "label": "Бир.РФ / Ингредиенты",
         "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/other/klubnika/24-1-0-269"
       }
-    ]
+    ],
+    "aliases_ru": [],
+    "aliases_en": [],
+    "product_family": "fruit_vegetable",
+    "subtype_key": "whole_fruit_or_vegetable",
+    "physical_form": "whole",
+    "extract_form": null,
+    "base_material_family": "fruit",
+    "base_materials": [
+      "fruit"
+    ],
+    "hopping_state": "not_applicable",
+    "is_hopped_product": false,
+    "functional_role": "gravity_source",
+    "gravity_calc_mode": "normal",
+    "display_type_ru": "Фрукты / овощи",
+    "display_type_en": "Fruit / Vegetable"
   },
   {
     "id": "happy-apple-klubnichnyi-sok-koncentrirovannyi-frukty-ovoschi",
@@ -2574,7 +4063,22 @@
         "label": "Бир.РФ / Ингредиенты",
         "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/other/24"
       }
-    ]
+    ],
+    "aliases_ru": [],
+    "product_family": "fruit_vegetable",
+    "subtype_key": "juice_concentrate",
+    "physical_form": "concentrated_juice",
+    "extract_form": null,
+    "base_material_family": "fruit",
+    "base_materials": [
+      "fruit"
+    ],
+    "hopping_state": "not_applicable",
+    "is_hopped_product": false,
+    "functional_role": "gravity_source",
+    "gravity_calc_mode": "normal",
+    "display_type_ru": "Концентрированный сок",
+    "display_type_en": "Juice Concentrate"
   },
   {
     "id": "klyukva-frukty-ovoschi",
@@ -2597,7 +4101,23 @@
         "label": "Бир.РФ / Ингредиенты",
         "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/other/kljukva/24-1-0-260"
       }
-    ]
+    ],
+    "aliases_ru": [],
+    "aliases_en": [],
+    "product_family": "fruit_vegetable",
+    "subtype_key": "whole_fruit_or_vegetable",
+    "physical_form": "whole",
+    "extract_form": null,
+    "base_material_family": "fruit",
+    "base_materials": [
+      "fruit"
+    ],
+    "hopping_state": "not_applicable",
+    "is_hopped_product": false,
+    "functional_role": "gravity_source",
+    "gravity_calc_mode": "normal",
+    "display_type_ru": "Фрукты / овощи",
+    "display_type_en": "Fruit / Vegetable"
   },
   {
     "id": "klyukvennyi-sok-koncentrirovannyi-frukty-ovoschi",
@@ -2623,7 +4143,22 @@
         "label": "Бир.РФ / Ингредиенты",
         "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/other/kljukvennyj_sok_koncentrirovannyj/24-1-0-643"
       }
-    ]
+    ],
+    "aliases_ru": [],
+    "product_family": "fruit_vegetable",
+    "subtype_key": "juice_concentrate",
+    "physical_form": "concentrated_juice",
+    "extract_form": null,
+    "base_material_family": "fruit",
+    "base_materials": [
+      "fruit"
+    ],
+    "hopping_state": "not_applicable",
+    "is_hopped_product": false,
+    "functional_role": "gravity_source",
+    "gravity_calc_mode": "normal",
+    "display_type_ru": "Концентрированный сок",
+    "display_type_en": "Juice Concentrate"
   },
   {
     "id": "kryzhovnik-frukty-ovoschi",
@@ -2632,10 +4167,12 @@
     "ingredient_type": "fruit_or_vegetable",
     "fermentability_class": "partially_fermentable",
     "name_ru": "Крыжовник",
-    "name_en": "Grooseberry",
+    "name_en": "Gooseberry",
     "country_name": "Россия",
     "aliases_en": [
-      "Gooseberry"
+      "Gooseberry",
+      "Grossularia",
+      "Grooseberry"
     ],
     "extract_pct_dry_basis": 9,
     "color_lovibond": 0.4,
@@ -2648,7 +4185,22 @@
         "label": "Бир.РФ / Ингредиенты",
         "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/other/24"
       }
-    ]
+    ],
+    "aliases_ru": [],
+    "product_family": "fruit_vegetable",
+    "subtype_key": "whole_fruit_or_vegetable",
+    "physical_form": "whole",
+    "extract_form": null,
+    "base_material_family": "fruit",
+    "base_materials": [
+      "fruit"
+    ],
+    "hopping_state": "not_applicable",
+    "is_hopped_product": false,
+    "functional_role": "gravity_source",
+    "gravity_calc_mode": "normal",
+    "display_type_ru": "Фрукты / овощи",
+    "display_type_en": "Fruit / Vegetable"
   },
   {
     "id": "ooo-ph-merkuriy-layma-sok-kontsentrirovannyy-frukty-ovoschi",
@@ -2671,7 +4223,23 @@
         "label": "Бир.РФ / Ингредиенты",
         "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/other/24"
       }
-    ]
+    ],
+    "aliases_ru": [],
+    "aliases_en": [],
+    "product_family": "fruit_vegetable",
+    "subtype_key": "juice_concentrate",
+    "physical_form": "concentrated_juice",
+    "extract_form": null,
+    "base_material_family": "fruit",
+    "base_materials": [
+      "fruit"
+    ],
+    "hopping_state": "not_applicable",
+    "is_hopped_product": false,
+    "functional_role": "gravity_source",
+    "gravity_calc_mode": "normal",
+    "display_type_ru": "Концентрированный сок",
+    "display_type_en": "Juice Concentrate"
   },
   {
     "id": "raspberry-frukty-ovoschi",
@@ -2693,7 +4261,23 @@
         "label": "Бир.РФ / Ингредиенты",
         "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/other/24"
       }
-    ]
+    ],
+    "aliases_ru": [],
+    "aliases_en": [],
+    "product_family": "fruit_vegetable",
+    "subtype_key": "whole_fruit_or_vegetable",
+    "physical_form": "whole",
+    "extract_form": null,
+    "base_material_family": "fruit",
+    "base_materials": [
+      "fruit"
+    ],
+    "hopping_state": "not_applicable",
+    "is_hopped_product": false,
+    "functional_role": "gravity_source",
+    "gravity_calc_mode": "normal",
+    "display_type_ru": "Фрукты / овощи",
+    "display_type_en": "Fruit / Vegetable"
   },
   {
     "id": "malinovyy-sok-kontsentrirovannyy-frukty-ovoschi",
@@ -2716,7 +4300,23 @@
         "label": "Бир.РФ / Ингредиенты",
         "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/other/malinovyj_sok_koncentrirovannyj/24-1-0-646"
       }
-    ]
+    ],
+    "aliases_ru": [],
+    "aliases_en": [],
+    "product_family": "fruit_vegetable",
+    "subtype_key": "juice_concentrate",
+    "physical_form": "concentrated_juice",
+    "extract_form": null,
+    "base_material_family": "fruit",
+    "base_materials": [
+      "fruit"
+    ],
+    "hopping_state": "not_applicable",
+    "is_hopped_product": false,
+    "functional_role": "gravity_source",
+    "gravity_calc_mode": "normal",
+    "display_type_ru": "Концентрированный сок",
+    "display_type_en": "Juice Concentrate"
   },
   {
     "id": "mango-frukty-ovoschi",
@@ -2738,7 +4338,23 @@
         "label": "Бир.РФ / Ингредиенты",
         "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/other/24"
       }
-    ]
+    ],
+    "aliases_ru": [],
+    "aliases_en": [],
+    "product_family": "fruit_vegetable",
+    "subtype_key": "whole_fruit_or_vegetable",
+    "physical_form": "whole",
+    "extract_form": null,
+    "base_material_family": "fruit",
+    "base_materials": [
+      "fruit"
+    ],
+    "hopping_state": "not_applicable",
+    "is_hopped_product": false,
+    "functional_role": "gravity_source",
+    "gravity_calc_mode": "normal",
+    "display_type_ru": "Фрукты / овощи",
+    "display_type_en": "Fruit / Vegetable"
   },
   {
     "id": "mandarin-frukty-ovoschi",
@@ -2760,7 +4376,23 @@
         "label": "Бир.РФ / Ингредиенты",
         "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/other/24"
       }
-    ]
+    ],
+    "aliases_ru": [],
+    "aliases_en": [],
+    "product_family": "fruit_vegetable",
+    "subtype_key": "whole_fruit_or_vegetable",
+    "physical_form": "whole",
+    "extract_form": null,
+    "base_material_family": "fruit",
+    "base_materials": [
+      "fruit"
+    ],
+    "hopping_state": "not_applicable",
+    "is_hopped_product": false,
+    "functional_role": "gravity_source",
+    "gravity_calc_mode": "normal",
+    "display_type_ru": "Фрукты / овощи",
+    "display_type_en": "Fruit / Vegetable"
   },
   {
     "id": "oblepihovyy-sok-kontsentrirovannyy-frukty-ovoschi",
@@ -2782,7 +4414,23 @@
         "label": "Бир.РФ / Ингредиенты",
         "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/other/24"
       }
-    ]
+    ],
+    "aliases_ru": [],
+    "aliases_en": [],
+    "product_family": "fruit_vegetable",
+    "subtype_key": "juice_concentrate",
+    "physical_form": "concentrated_juice",
+    "extract_form": null,
+    "base_material_family": "fruit",
+    "base_materials": [
+      "fruit"
+    ],
+    "hopping_state": "not_applicable",
+    "is_hopped_product": false,
+    "functional_role": "gravity_source",
+    "gravity_calc_mode": "normal",
+    "display_type_ru": "Концентрированный сок",
+    "display_type_en": "Juice Concentrate"
   },
   {
     "id": "peach-frukty-ovoschi",
@@ -2804,7 +4452,23 @@
         "label": "Бир.РФ / Ингредиенты",
         "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/other/24"
       }
-    ]
+    ],
+    "aliases_ru": [],
+    "aliases_en": [],
+    "product_family": "fruit_vegetable",
+    "subtype_key": "whole_fruit_or_vegetable",
+    "physical_form": "whole",
+    "extract_form": null,
+    "base_material_family": "fruit",
+    "base_materials": [
+      "fruit"
+    ],
+    "hopping_state": "not_applicable",
+    "is_hopped_product": false,
+    "functional_role": "gravity_source",
+    "gravity_calc_mode": "normal",
+    "display_type_ru": "Фрукты / овощи",
+    "display_type_en": "Fruit / Vegetable"
   },
   {
     "id": "ravieruit-puree-passon-fruit-frukty-ovoschi",
@@ -2813,8 +4477,8 @@
     "ingredient_type": "fruit_puree",
     "fermentability_class": "partially_fermentable",
     "name_ru": "Пюре Маракуйя",
-    "name_en": "Puree Passon Fruit",
-    "producer": "RaviEruit",
+    "name_en": "Passion Fruit Puree",
+    "producer": "Ravifruit",
     "country_name": "Франция",
     "extract_pct_dry_basis": 15,
     "color_lovibond": 4,
@@ -2829,7 +4493,29 @@
         "label": "Бир.РФ / Ингредиенты",
         "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/other/24"
       }
-    ]
+    ],
+    "aliases_ru": [
+      "пюре маракуйи"
+    ],
+    "aliases_en": [
+      "Passionfruit Puree",
+      "Fruit Puree Passion Fruit",
+      "Puree Passon Fruit"
+    ],
+    "product_family": "fruit_vegetable",
+    "subtype_key": "fruit_puree",
+    "physical_form": "puree",
+    "extract_form": null,
+    "base_material_family": "fruit",
+    "base_materials": [
+      "fruit"
+    ],
+    "hopping_state": "not_applicable",
+    "is_hopped_product": false,
+    "functional_role": "gravity_source",
+    "gravity_calc_mode": "normal",
+    "display_type_ru": "Фруктовое пюре",
+    "display_type_en": "Fruit Puree"
   },
   {
     "id": "u-ley-grapefruit-puree-frukty-ovoschi",
@@ -2853,7 +4539,23 @@
         "label": "Бир.РФ / Ингредиенты",
         "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/other/24"
       }
-    ]
+    ],
+    "aliases_ru": [],
+    "aliases_en": [],
+    "product_family": "fruit_vegetable",
+    "subtype_key": "fruit_puree",
+    "physical_form": "puree",
+    "extract_form": null,
+    "base_material_family": "fruit",
+    "base_materials": [
+      "fruit"
+    ],
+    "hopping_state": "not_applicable",
+    "is_hopped_product": false,
+    "functional_role": "gravity_source",
+    "gravity_calc_mode": "normal",
+    "display_type_ru": "Фруктовое пюре",
+    "display_type_en": "Fruit Puree"
   },
   {
     "id": "u-ley-raspberry-puree-frukty-ovoschi",
@@ -2877,7 +4579,23 @@
         "label": "Бир.РФ / Ингредиенты",
         "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/other/24"
       }
-    ]
+    ],
+    "aliases_ru": [],
+    "aliases_en": [],
+    "product_family": "fruit_vegetable",
+    "subtype_key": "fruit_puree",
+    "physical_form": "puree",
+    "extract_form": null,
+    "base_material_family": "fruit",
+    "base_materials": [
+      "fruit"
+    ],
+    "hopping_state": "not_applicable",
+    "is_hopped_product": false,
+    "functional_role": "gravity_source",
+    "gravity_calc_mode": "normal",
+    "display_type_ru": "Фруктовое пюре",
+    "display_type_en": "Fruit Puree"
   },
   {
     "id": "u-ley-pyure-chernichnoe-frukty-ovoschi",
@@ -2901,7 +4619,23 @@
         "label": "Бир.РФ / Ингредиенты",
         "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/other/24"
       }
-    ]
+    ],
+    "aliases_ru": [],
+    "aliases_en": [],
+    "product_family": "fruit_vegetable",
+    "subtype_key": "fruit_puree",
+    "physical_form": "puree",
+    "extract_form": null,
+    "base_material_family": "fruit",
+    "base_materials": [
+      "fruit"
+    ],
+    "hopping_state": "not_applicable",
+    "is_hopped_product": false,
+    "functional_role": "gravity_source",
+    "gravity_calc_mode": "normal",
+    "display_type_ru": "Фруктовое пюре",
+    "display_type_en": "Fruit Puree"
   },
   {
     "id": "svekla-frukty-ovoschi",
@@ -2910,11 +4644,12 @@
     "ingredient_type": "fruit_or_vegetable",
     "fermentability_class": "partially_fermentable",
     "name_ru": "Свекла",
-    "name_en": "Béta",
+    "name_en": "Beet",
     "country_name": "Россия",
     "aliases_en": [
       "Beta",
-      "Beet"
+      "Beet",
+      "Beta vulgaris"
     ],
     "extract_pct_dry_basis": 10,
     "color_lovibond": 10,
@@ -2929,7 +4664,23 @@
         "label": "Бир.РФ / Ингредиенты",
         "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/other/24"
       }
-    ]
+    ],
+    "aliases_ru": [],
+    "product_family": "fruit_vegetable",
+    "subtype_key": "whole_fruit_or_vegetable",
+    "physical_form": "whole",
+    "extract_form": null,
+    "base_material_family": "vegetable",
+    "base_materials": [
+      "beet",
+      "vegetable"
+    ],
+    "hopping_state": "not_applicable",
+    "is_hopped_product": false,
+    "functional_role": "gravity_source",
+    "gravity_calc_mode": "normal",
+    "display_type_ru": "Фрукты / овощи",
+    "display_type_en": "Fruit / Vegetable"
   },
   {
     "id": "sliva-frukty-ovoschi",
@@ -2952,7 +4703,23 @@
         "label": "Бир.РФ / Ингредиенты",
         "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/other/sliva/24-1-0-267"
       }
-    ]
+    ],
+    "aliases_ru": [],
+    "aliases_en": [],
+    "product_family": "fruit_vegetable",
+    "subtype_key": "whole_fruit_or_vegetable",
+    "physical_form": "whole",
+    "extract_form": null,
+    "base_material_family": "fruit",
+    "base_materials": [
+      "fruit"
+    ],
+    "hopping_state": "not_applicable",
+    "is_hopped_product": false,
+    "functional_role": "gravity_source",
+    "gravity_calc_mode": "normal",
+    "display_type_ru": "Фрукты / овощи",
+    "display_type_en": "Fruit / Vegetable"
   },
   {
     "id": "sok-klenovyi-frukty-ovoschi",
@@ -2977,7 +4744,23 @@
         "label": "Бир.РФ / Ингредиенты",
         "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/other/24"
       }
-    ]
+    ],
+    "aliases_ru": [],
+    "product_family": "fruit_vegetable",
+    "subtype_key": "juice",
+    "physical_form": "juice",
+    "extract_form": null,
+    "base_material_family": "fruit",
+    "base_materials": [
+      "maple",
+      "fruit"
+    ],
+    "hopping_state": "not_applicable",
+    "is_hopped_product": false,
+    "functional_role": "gravity_source",
+    "gravity_calc_mode": "normal",
+    "display_type_ru": "Сок",
+    "display_type_en": "Juice"
   },
   {
     "id": "tykva-frukty-ovoschi",
@@ -3001,7 +4784,23 @@
         "label": "Бир.РФ / Ингредиенты",
         "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/other/24"
       }
-    ]
+    ],
+    "aliases_ru": [],
+    "aliases_en": [],
+    "product_family": "fruit_vegetable",
+    "subtype_key": "whole_fruit_or_vegetable",
+    "physical_form": "whole",
+    "extract_form": null,
+    "base_material_family": "vegetable",
+    "base_materials": [
+      "vegetable"
+    ],
+    "hopping_state": "not_applicable",
+    "is_hopped_product": false,
+    "functional_role": "gravity_source",
+    "gravity_calc_mode": "normal",
+    "display_type_ru": "Фрукты / овощи",
+    "display_type_en": "Fruit / Vegetable"
   },
   {
     "id": "finiki-frukty-ovoschi",
@@ -3023,7 +4822,23 @@
         "label": "Бир.РФ / Ингредиенты",
         "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/other/24"
       }
-    ]
+    ],
+    "aliases_ru": [],
+    "aliases_en": [],
+    "product_family": "fruit_vegetable",
+    "subtype_key": "dried_fruit",
+    "physical_form": "dried",
+    "extract_form": null,
+    "base_material_family": "fruit",
+    "base_materials": [
+      "fruit"
+    ],
+    "hopping_state": "not_applicable",
+    "is_hopped_product": false,
+    "functional_role": "gravity_source",
+    "gravity_calc_mode": "normal",
+    "display_type_ru": "Сухофрукты",
+    "display_type_en": "Dried Fruit"
   },
   {
     "id": "hurma-frukty-ovoschi",
@@ -3048,7 +4863,23 @@
         "label": "Бир.РФ / Ингредиенты",
         "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/other/khurma/24-1-0-1729"
       }
-    ]
+    ],
+    "aliases_ru": [],
+    "aliases_en": [],
+    "product_family": "fruit_vegetable",
+    "subtype_key": "whole_fruit_or_vegetable",
+    "physical_form": "whole",
+    "extract_form": null,
+    "base_material_family": "fruit",
+    "base_materials": [
+      "fruit"
+    ],
+    "hopping_state": "not_applicable",
+    "is_hopped_product": false,
+    "functional_role": "gravity_source",
+    "gravity_calc_mode": "normal",
+    "display_type_ru": "Фрукты / овощи",
+    "display_type_en": "Fruit / Vegetable"
   },
   {
     "id": "cikorii-frukty-ovoschi",
@@ -3057,10 +4888,11 @@
     "ingredient_type": "fruit_or_vegetable",
     "fermentability_class": "partially_fermentable",
     "name_ru": "Цикорий",
-    "name_en": "Cichorium intybus",
+    "name_en": "Chicory",
     "country_name": "Неизвестно",
     "aliases_en": [
-      "Chicory"
+      "Chicory",
+      "Cichorium intybus"
     ],
     "extract_pct_dry_basis": 70,
     "color_lovibond": 300.2,
@@ -3076,7 +4908,23 @@
         "label": "Бир.РФ / Ингредиенты",
         "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/other/cikorij/24-1-0-1639"
       }
-    ]
+    ],
+    "aliases_ru": [],
+    "product_family": "fruit_vegetable",
+    "subtype_key": "whole_fruit_or_vegetable",
+    "physical_form": "whole",
+    "extract_form": null,
+    "base_material_family": "chicory",
+    "base_materials": [
+      "chicory",
+      "vegetable"
+    ],
+    "hopping_state": "not_applicable",
+    "is_hopped_product": false,
+    "functional_role": "gravity_source",
+    "gravity_calc_mode": "normal",
+    "display_type_ru": "Фрукты / овощи",
+    "display_type_en": "Fruit / Vegetable"
   },
   {
     "id": "chernaya-smorodina-frukty-ovoschi",
@@ -3085,7 +4933,7 @@
     "ingredient_type": "fruit_or_vegetable",
     "fermentability_class": "partially_fermentable",
     "name_ru": "Черная смородина",
-    "name_en": "Ríbes nígrum",
+    "name_en": "Black Currant",
     "country_name": "Россия",
     "aliases_en": [
       "Ribes nigrum",
@@ -3105,7 +4953,22 @@
         "label": "Бир.РФ / Ингредиенты",
         "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/other/smorodina_chjornaja/24-1-0-1081"
       }
-    ]
+    ],
+    "aliases_ru": [],
+    "product_family": "fruit_vegetable",
+    "subtype_key": "whole_fruit_or_vegetable",
+    "physical_form": "whole",
+    "extract_form": null,
+    "base_material_family": "fruit",
+    "base_materials": [
+      "fruit"
+    ],
+    "hopping_state": "not_applicable",
+    "is_hopped_product": false,
+    "functional_role": "gravity_source",
+    "gravity_calc_mode": "normal",
+    "display_type_ru": "Фрукты / овощи",
+    "display_type_en": "Fruit / Vegetable"
   },
   {
     "id": "chernika-frukty-ovoschi",
@@ -3127,7 +4990,23 @@
         "label": "Бир.РФ / Ингредиенты",
         "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/other/24"
       }
-    ]
+    ],
+    "aliases_ru": [],
+    "aliases_en": [],
+    "product_family": "fruit_vegetable",
+    "subtype_key": "whole_fruit_or_vegetable",
+    "physical_form": "whole",
+    "extract_form": null,
+    "base_material_family": "fruit",
+    "base_materials": [
+      "fruit"
+    ],
+    "hopping_state": "not_applicable",
+    "is_hopped_product": false,
+    "functional_role": "gravity_source",
+    "gravity_calc_mode": "normal",
+    "display_type_ru": "Фрукты / овощи",
+    "display_type_en": "Fruit / Vegetable"
   },
   {
     "id": "dzhemka-chernichnyy-sok-kontsentrirovannyy-frukty-ovoschi",
@@ -3151,7 +5030,23 @@
         "label": "Бир.РФ / Ингредиенты",
         "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/other/chernichnyj_sok_koncentrirovannyj_rossija/24-1-0-1637"
       }
-    ]
+    ],
+    "aliases_ru": [],
+    "aliases_en": [],
+    "product_family": "fruit_vegetable",
+    "subtype_key": "juice_concentrate",
+    "physical_form": "concentrated_juice",
+    "extract_form": null,
+    "base_material_family": "fruit",
+    "base_materials": [
+      "fruit"
+    ],
+    "hopping_state": "not_applicable",
+    "is_hopped_product": false,
+    "functional_role": "gravity_source",
+    "gravity_calc_mode": "normal",
+    "display_type_ru": "Концентрированный сок",
+    "display_type_en": "Juice Concentrate"
   },
   {
     "id": "chernoplodnaya-ryabina-frukty-ovoschi",
@@ -3174,7 +5069,23 @@
         "label": "Бир.РФ / Ингредиенты",
         "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/other/24"
       }
-    ]
+    ],
+    "aliases_ru": [],
+    "aliases_en": [],
+    "product_family": "fruit_vegetable",
+    "subtype_key": "whole_fruit_or_vegetable",
+    "physical_form": "whole",
+    "extract_form": null,
+    "base_material_family": "fruit",
+    "base_materials": [
+      "fruit"
+    ],
+    "hopping_state": "not_applicable",
+    "is_hopped_product": false,
+    "functional_role": "gravity_source",
+    "gravity_calc_mode": "normal",
+    "display_type_ru": "Фрукты / овощи",
+    "display_type_en": "Fruit / Vegetable"
   },
   {
     "id": "gemoss-chernosliv-frukty-ovoschi",
@@ -3183,11 +5094,13 @@
     "ingredient_type": "dried_fruit",
     "fermentability_class": "highly_fermentable",
     "name_ru": "Чернослив",
-    "name_en": "Prunum passum",
+    "name_en": "Prunes",
     "producer": "Gemoss",
     "country_name": "Аргентина",
     "aliases_en": [
-      "Prunes"
+      "Prunes",
+      "Dried Plums",
+      "Prunum passum"
     ],
     "extract_pct_dry_basis": 80,
     "color_lovibond": 23.1,
@@ -3202,7 +5115,22 @@
         "label": "Бир.РФ / Ингредиенты",
         "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/other/24"
       }
-    ]
+    ],
+    "aliases_ru": [],
+    "product_family": "fruit_vegetable",
+    "subtype_key": "dried_fruit",
+    "physical_form": "dried",
+    "extract_form": null,
+    "base_material_family": "fruit",
+    "base_materials": [
+      "fruit"
+    ],
+    "hopping_state": "not_applicable",
+    "is_hopped_product": false,
+    "functional_role": "gravity_source",
+    "gravity_calc_mode": "normal",
+    "display_type_ru": "Сухофрукты",
+    "display_type_en": "Dried Fruit"
   },
   {
     "id": "dzhem-ko-chernosmorodinovyy-sok-kontsentrirovannyy-frukty-ovoschi",
@@ -3226,7 +5154,23 @@
         "label": "Бир.РФ / Ингредиенты",
         "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/other/sok_chernosmorodinovyj_koncentrirovannyj/24-1-0-1641"
       }
-    ]
+    ],
+    "aliases_ru": [],
+    "aliases_en": [],
+    "product_family": "fruit_vegetable",
+    "subtype_key": "juice_concentrate",
+    "physical_form": "concentrated_juice",
+    "extract_form": null,
+    "base_material_family": "fruit",
+    "base_materials": [
+      "fruit"
+    ],
+    "hopping_state": "not_applicable",
+    "is_hopped_product": false,
+    "functional_role": "gravity_source",
+    "gravity_calc_mode": "normal",
+    "display_type_ru": "Концентрированный сок",
+    "display_type_en": "Juice Concentrate"
   },
   {
     "id": "shipovnik-frukty-ovoschi",
@@ -3252,7 +5196,22 @@
         "label": "Бир.РФ / Ингредиенты",
         "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/other/24"
       }
-    ]
+    ],
+    "aliases_ru": [],
+    "product_family": "fruit_vegetable",
+    "subtype_key": "whole_fruit_or_vegetable",
+    "physical_form": "whole",
+    "extract_form": null,
+    "base_material_family": "fruit",
+    "base_materials": [
+      "fruit"
+    ],
+    "hopping_state": "not_applicable",
+    "is_hopped_product": false,
+    "functional_role": "gravity_source",
+    "gravity_calc_mode": "normal",
+    "display_type_ru": "Фрукты / овощи",
+    "display_type_en": "Fruit / Vegetable"
   },
   {
     "id": "yablochnyy-sok-kontsentrirovannyy-1-5-frukty-ovoschi",
@@ -3275,7 +5234,23 @@
         "label": "Бир.РФ / Ингредиенты",
         "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/other/jablochnyj_sok_koncentrirovannyj_1_5/24-1-0-645"
       }
-    ]
+    ],
+    "aliases_ru": [],
+    "aliases_en": [],
+    "product_family": "fruit_vegetable",
+    "subtype_key": "juice_concentrate",
+    "physical_form": "concentrated_juice",
+    "extract_form": null,
+    "base_material_family": "fruit",
+    "base_materials": [
+      "fruit"
+    ],
+    "hopping_state": "not_applicable",
+    "is_hopped_product": false,
+    "functional_role": "gravity_source",
+    "gravity_calc_mode": "normal",
+    "display_type_ru": "Концентрированный сок",
+    "display_type_en": "Juice Concentrate"
   },
   {
     "id": "yablochnyy-sok-kontsentrirovannyy-2-5-frukty-ovoschi",
@@ -3298,7 +5273,23 @@
         "label": "Бир.РФ / Ингредиенты",
         "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/other/jablochnyj_sok_koncentrirovannyj_2_5/24-1-0-644"
       }
-    ]
+    ],
+    "aliases_ru": [],
+    "aliases_en": [],
+    "product_family": "fruit_vegetable",
+    "subtype_key": "juice_concentrate",
+    "physical_form": "concentrated_juice",
+    "extract_form": null,
+    "base_material_family": "fruit",
+    "base_materials": [
+      "fruit"
+    ],
+    "hopping_state": "not_applicable",
+    "is_hopped_product": false,
+    "functional_role": "gravity_source",
+    "gravity_calc_mode": "normal",
+    "display_type_ru": "Концентрированный сок",
+    "display_type_en": "Juice Concentrate"
   },
   {
     "id": "muntons-amber-dme-ekstrakty-kontsentraty",
@@ -3323,7 +5314,28 @@
         "label": "Бир.РФ / Ингредиенты",
         "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/extracts/6"
       }
-    ]
+    ],
+    "aliases_ru": [
+      "амбер дме",
+      "сухой солодовый экстракт amber"
+    ],
+    "aliases_en": [
+      "Amber Dry Malt Extract"
+    ],
+    "product_family": "extract_concentrate",
+    "subtype_key": "malt_extract",
+    "physical_form": "powder",
+    "extract_form": "dry",
+    "base_material_family": "barley",
+    "base_materials": [
+      "barley"
+    ],
+    "hopping_state": "unknown",
+    "is_hopped_product": false,
+    "functional_role": "gravity_source",
+    "gravity_calc_mode": "normal",
+    "display_type_ru": "Сухой солодовый экстракт",
+    "display_type_en": "Dry Malt Extract"
   },
   {
     "id": "coopers-amber-liquid-malt-extract-ekstrakty-kontsentraty",
@@ -3347,7 +5359,28 @@
         "label": "Бир.РФ / Ингредиенты",
         "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/extracts/6"
       }
-    ]
+    ],
+    "aliases_ru": [
+      "жидкий солодовый экстракт amber",
+      "лме amber"
+    ],
+    "aliases_en": [
+      "Amber LME"
+    ],
+    "product_family": "extract_concentrate",
+    "subtype_key": "malt_extract",
+    "physical_form": "liquid",
+    "extract_form": "liquid",
+    "base_material_family": "barley",
+    "base_materials": [
+      "barley"
+    ],
+    "hopping_state": "unknown",
+    "is_hopped_product": false,
+    "functional_role": "gravity_source",
+    "gravity_calc_mode": "normal",
+    "display_type_ru": "Жидкий солодовый экстракт",
+    "display_type_en": "Liquid Malt Extract"
   },
   {
     "id": "muntons-dark-dme-ekstrakty-kontsentraty",
@@ -3372,7 +5405,28 @@
         "label": "Бир.РФ / Ингредиенты",
         "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/extracts/6"
       }
-    ]
+    ],
+    "aliases_ru": [
+      "дарк дме",
+      "сухой солодовый экстракт dark"
+    ],
+    "aliases_en": [
+      "Dark Dry Malt Extract"
+    ],
+    "product_family": "extract_concentrate",
+    "subtype_key": "malt_extract",
+    "physical_form": "powder",
+    "extract_form": "dry",
+    "base_material_family": "barley",
+    "base_materials": [
+      "barley"
+    ],
+    "hopping_state": "unknown",
+    "is_hopped_product": false,
+    "functional_role": "gravity_source",
+    "gravity_calc_mode": "normal",
+    "display_type_ru": "Сухой солодовый экстракт",
+    "display_type_en": "Dry Malt Extract"
   },
   {
     "id": "coopers-dark-liquid-malt-extract-ekstrakty-kontsentraty",
@@ -3396,7 +5450,28 @@
         "label": "Бир.РФ / Ингредиенты",
         "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/extracts/6"
       }
-    ]
+    ],
+    "aliases_ru": [
+      "жидкий солодовый экстракт dark",
+      "лме dark"
+    ],
+    "aliases_en": [
+      "Dark LME"
+    ],
+    "product_family": "extract_concentrate",
+    "subtype_key": "malt_extract",
+    "physical_form": "liquid",
+    "extract_form": "liquid",
+    "base_material_family": "barley",
+    "base_materials": [
+      "barley"
+    ],
+    "hopping_state": "unknown",
+    "is_hopped_product": false,
+    "functional_role": "gravity_source",
+    "gravity_calc_mode": "normal",
+    "display_type_ru": "Жидкий солодовый экстракт",
+    "display_type_en": "Liquid Malt Extract"
   },
   {
     "id": "weyermann-lme-sinamar-carafa-special-ekstrakty-kontsentraty",
@@ -3420,7 +5495,23 @@
         "label": "Бир.РФ / Ингредиенты",
         "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/extracts/6"
       }
-    ]
+    ],
+    "aliases_ru": [],
+    "aliases_en": [],
+    "product_family": "extract_concentrate",
+    "subtype_key": "coloring_extract",
+    "physical_form": "liquid",
+    "extract_form": "liquid",
+    "base_material_family": "barley",
+    "base_materials": [
+      "barley"
+    ],
+    "hopping_state": "not_applicable",
+    "is_hopped_product": false,
+    "functional_role": "color_adjustment",
+    "gravity_calc_mode": "excluded",
+    "display_type_ru": "Красящий экстракт",
+    "display_type_en": "Coloring Extract"
   },
   {
     "id": "ilguciema-kvass-concentrate-ekstrakty-kontsentraty",
@@ -3444,7 +5535,23 @@
         "label": "Бир.РФ / Ингредиенты",
         "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/extracts/6"
       }
-    ]
+    ],
+    "aliases_ru": [],
+    "aliases_en": [],
+    "product_family": "extract_concentrate",
+    "subtype_key": "kvass_concentrate",
+    "physical_form": "liquid",
+    "extract_form": null,
+    "base_material_family": "kvass_wort",
+    "base_materials": [
+      "kvass_wort"
+    ],
+    "hopping_state": "not_applicable",
+    "is_hopped_product": false,
+    "functional_role": "gravity_source",
+    "gravity_calc_mode": "normal",
+    "display_type_ru": "Концентрат кваса / квасного сусла",
+    "display_type_en": "Kvass Wort Concentrate"
   },
   {
     "id": "kontsentrat-kvasnogo-susla-ekstrakty-kontsentraty",
@@ -3466,7 +5573,23 @@
         "label": "Бир.РФ / Ингредиенты",
         "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/extracts/6"
       }
-    ]
+    ],
+    "aliases_ru": [],
+    "aliases_en": [],
+    "product_family": "extract_concentrate",
+    "subtype_key": "kvass_concentrate",
+    "physical_form": "liquid",
+    "extract_form": null,
+    "base_material_family": "kvass_wort",
+    "base_materials": [
+      "kvass_wort"
+    ],
+    "hopping_state": "not_applicable",
+    "is_hopped_product": false,
+    "functional_role": "gravity_source",
+    "gravity_calc_mode": "normal",
+    "display_type_ru": "Концентрат кваса / квасного сусла",
+    "display_type_en": "Kvass Wort Concentrate"
   },
   {
     "id": "tatkrahmalpatoka-kvass-wort-concentrate-ekstrakty-kontsentraty",
@@ -3490,7 +5613,23 @@
         "label": "Бир.РФ / Ингредиенты",
         "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/extracts/6"
       }
-    ]
+    ],
+    "aliases_ru": [],
+    "aliases_en": [],
+    "product_family": "extract_concentrate",
+    "subtype_key": "kvass_concentrate",
+    "physical_form": "liquid",
+    "extract_form": null,
+    "base_material_family": "kvass_wort",
+    "base_materials": [
+      "kvass_wort"
+    ],
+    "hopping_state": "not_applicable",
+    "is_hopped_product": false,
+    "functional_role": "gravity_source",
+    "gravity_calc_mode": "normal",
+    "display_type_ru": "Концентрат кваса / квасного сусла",
+    "display_type_en": "Kvass Wort Concentrate"
   },
   {
     "id": "kolsold-kontsentrat-kukuruznyy-i-yachmennyy-solod-svetlyy-burbon-ekstrakty-kontsentraty",
@@ -3513,6 +5652,26 @@
         "label": "Бир.РФ / Ингредиенты",
         "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/extracts/6"
       }
+    ],
+    "aliases_ru": [],
+    "aliases_en": [],
+    "product_family": "extract_concentrate",
+    "subtype_key": "malt_corn_concentrate",
+    "physical_form": "liquid",
+    "extract_form": "liquid",
+    "base_material_family": "mixed_grain",
+    "base_materials": [
+      "barley",
+      "corn"
+    ],
+    "hopping_state": "unknown",
+    "is_hopped_product": false,
+    "functional_role": "gravity_source",
+    "gravity_calc_mode": "normal",
+    "display_type_ru": "Зерновой солодовый концентрат",
+    "display_type_en": "Malt & Grain Concentrate",
+    "normalization_review_flags": [
+      "hopping_state_not_confirmed"
     ]
   },
   {
@@ -3536,7 +5695,23 @@
         "label": "Бир.РФ / Ингредиенты",
         "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/extracts/6"
       }
-    ]
+    ],
+    "aliases_ru": [],
+    "aliases_en": [],
+    "product_family": "extract_concentrate",
+    "subtype_key": "malt_extract",
+    "physical_form": "liquid",
+    "extract_form": "liquid",
+    "base_material_family": "rye",
+    "base_materials": [
+      "rye"
+    ],
+    "hopping_state": "unknown",
+    "is_hopped_product": false,
+    "functional_role": "gravity_source",
+    "gravity_calc_mode": "normal",
+    "display_type_ru": "Жидкий солодовый экстракт",
+    "display_type_en": "Liquid Malt Extract"
   },
   {
     "id": "domashnyaya-manufaktura-kontsentrat-solodovyy-neohmelennyy-pshenichnyy-ekstrakty-kontsentraty",
@@ -3560,7 +5735,23 @@
         "label": "Бир.РФ / Ингредиенты",
         "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/extracts/6"
       }
-    ]
+    ],
+    "aliases_ru": [],
+    "aliases_en": [],
+    "product_family": "extract_concentrate",
+    "subtype_key": "malt_extract",
+    "physical_form": "liquid",
+    "extract_form": "liquid",
+    "base_material_family": "wheat",
+    "base_materials": [
+      "wheat"
+    ],
+    "hopping_state": "unhopped",
+    "is_hopped_product": false,
+    "functional_role": "gravity_source",
+    "gravity_calc_mode": "normal",
+    "display_type_ru": "Жидкий солодовый экстракт",
+    "display_type_en": "Liquid Malt Extract"
   },
   {
     "id": "ooo-fabrika-doktor-guber-kontsentrat-solodovyy-neohmelennyy-pshenichnyy-ekstrakty-kontsentraty",
@@ -3583,7 +5774,23 @@
         "label": "Бир.РФ / Ингредиенты",
         "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/extracts/6"
       }
-    ]
+    ],
+    "aliases_ru": [],
+    "aliases_en": [],
+    "product_family": "extract_concentrate",
+    "subtype_key": "malt_extract",
+    "physical_form": "liquid",
+    "extract_form": "liquid",
+    "base_material_family": "wheat",
+    "base_materials": [
+      "wheat"
+    ],
+    "hopping_state": "unhopped",
+    "is_hopped_product": false,
+    "functional_role": "gravity_source",
+    "gravity_calc_mode": "normal",
+    "display_type_ru": "Жидкий солодовый экстракт",
+    "display_type_en": "Liquid Malt Extract"
   },
   {
     "id": "ooo-fabrika-doktor-guber-kontsentrat-solodovyy-neohmelennyy-yachmennyy-ekstrakty-kontsentraty",
@@ -3606,7 +5813,23 @@
         "label": "Бир.РФ / Ингредиенты",
         "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/extracts/6"
       }
-    ]
+    ],
+    "aliases_ru": [],
+    "aliases_en": [],
+    "product_family": "extract_concentrate",
+    "subtype_key": "malt_extract",
+    "physical_form": "liquid",
+    "extract_form": "liquid",
+    "base_material_family": "barley",
+    "base_materials": [
+      "barley"
+    ],
+    "hopping_state": "unhopped",
+    "is_hopped_product": false,
+    "functional_role": "gravity_source",
+    "gravity_calc_mode": "normal",
+    "display_type_ru": "Жидкий солодовый экстракт",
+    "display_type_en": "Liquid Malt Extract"
   },
   {
     "id": "ooo-kompaniya-pischevyh-kontsentratov-kontsentrat-yachmennogo-soloda-svetlyy-ohmelennyy-petr-kolosov-ekstrakty-kontsentraty",
@@ -3629,7 +5852,23 @@
         "label": "Бир.РФ / Ингредиенты",
         "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/extracts/6"
       }
-    ]
+    ],
+    "aliases_ru": [],
+    "aliases_en": [],
+    "product_family": "extract_concentrate",
+    "subtype_key": "malt_extract",
+    "physical_form": "liquid",
+    "extract_form": "liquid",
+    "base_material_family": "barley",
+    "base_materials": [
+      "barley"
+    ],
+    "hopping_state": "hopped",
+    "is_hopped_product": true,
+    "functional_role": "gravity_source_with_bitterness",
+    "gravity_calc_mode": "normal",
+    "display_type_ru": "Жидкий охмелённый солодовый экстракт",
+    "display_type_en": "Liquid Hopped Malt Extract"
   },
   {
     "id": "muntons-light-dme-ekstrakty-kontsentraty",
@@ -3654,7 +5893,28 @@
         "label": "Бир.РФ / Ингредиенты",
         "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/extracts/6"
       }
-    ]
+    ],
+    "aliases_ru": [
+      "лайт дме",
+      "сухой солодовый экстракт light"
+    ],
+    "aliases_en": [
+      "Light Dry Malt Extract"
+    ],
+    "product_family": "extract_concentrate",
+    "subtype_key": "malt_extract",
+    "physical_form": "powder",
+    "extract_form": "dry",
+    "base_material_family": "barley",
+    "base_materials": [
+      "barley"
+    ],
+    "hopping_state": "unknown",
+    "is_hopped_product": false,
+    "functional_role": "gravity_source",
+    "gravity_calc_mode": "normal",
+    "display_type_ru": "Сухой солодовый экстракт",
+    "display_type_en": "Dry Malt Extract"
   },
   {
     "id": "coopers-light-liquid-malt-extract-ekstrakty-kontsentraty",
@@ -3678,7 +5938,28 @@
         "label": "Бир.РФ / Ингредиенты",
         "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/extracts/6"
       }
-    ]
+    ],
+    "aliases_ru": [
+      "жидкий солодовый экстракт light",
+      "лме light"
+    ],
+    "aliases_en": [
+      "Light LME"
+    ],
+    "product_family": "extract_concentrate",
+    "subtype_key": "malt_extract",
+    "physical_form": "liquid",
+    "extract_form": "liquid",
+    "base_material_family": "barley",
+    "base_materials": [
+      "barley"
+    ],
+    "hopping_state": "unknown",
+    "is_hopped_product": false,
+    "functional_role": "gravity_source",
+    "gravity_calc_mode": "normal",
+    "display_type_ru": "Жидкий солодовый экстракт",
+    "display_type_en": "Liquid Malt Extract"
   },
   {
     "id": "muntons-medium-ekstrakty-kontsentraty",
@@ -3691,7 +5972,9 @@
     "producer": "Muntons",
     "country_name": "Великобритания",
     "aliases_ru": [
-      "мёд"
+      "медиум",
+      "сухой солодовый экстракт медиум",
+      "muntons medium"
     ],
     "extract_pct_dry_basis": 95,
     "color_lovibond": 12.9,
@@ -3706,7 +5989,26 @@
         "label": "Бир.РФ / Ингредиенты",
         "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/extracts/6"
       }
-    ]
+    ],
+    "aliases_en": [
+      "Medium Malt Extract",
+      "Muntons Medium Malt Extract",
+      "Dried Medium Malt Extract"
+    ],
+    "product_family": "extract_concentrate",
+    "subtype_key": "malt_extract",
+    "physical_form": "powder",
+    "extract_form": "dry",
+    "base_material_family": "barley",
+    "base_materials": [
+      "barley"
+    ],
+    "hopping_state": "unknown",
+    "is_hopped_product": false,
+    "functional_role": "gravity_source",
+    "gravity_calc_mode": "normal",
+    "display_type_ru": "Сухой солодовый экстракт",
+    "display_type_en": "Dry Malt Extract"
   },
   {
     "id": "svoya-kruzhka-neohmelennyy-solodovyy-ekstrakt-dlya-temnyh-sortov-ekstrakty-kontsentraty",
@@ -3729,7 +6031,23 @@
         "label": "Бир.РФ / Ингредиенты",
         "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/extracts/6"
       }
-    ]
+    ],
+    "aliases_ru": [],
+    "aliases_en": [],
+    "product_family": "extract_concentrate",
+    "subtype_key": "malt_extract",
+    "physical_form": "liquid",
+    "extract_form": "liquid",
+    "base_material_family": "barley",
+    "base_materials": [
+      "barley"
+    ],
+    "hopping_state": "unhopped",
+    "is_hopped_product": false,
+    "functional_role": "gravity_source",
+    "gravity_calc_mode": "normal",
+    "display_type_ru": "Жидкий солодовый экстракт",
+    "display_type_en": "Liquid Malt Extract"
   },
   {
     "id": "svoya-kruzhka-neohmelenyy-solodovyy-ekstrakt-dlya-svetlyh-sortov-ekstrakty-kontsentraty",
@@ -3752,7 +6070,23 @@
         "label": "Бир.РФ / Ингредиенты",
         "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/extracts/6"
       }
-    ]
+    ],
+    "aliases_ru": [],
+    "aliases_en": [],
+    "product_family": "extract_concentrate",
+    "subtype_key": "malt_extract",
+    "physical_form": "liquid",
+    "extract_form": "liquid",
+    "base_material_family": "barley",
+    "base_materials": [
+      "barley"
+    ],
+    "hopping_state": "unhopped",
+    "is_hopped_product": false,
+    "functional_role": "gravity_source",
+    "gravity_calc_mode": "normal",
+    "display_type_ru": "Жидкий солодовый экстракт",
+    "display_type_en": "Liquid Malt Extract"
   },
   {
     "id": "muntons-premium-pilsner-ekstrakty-kontsentraty",
@@ -3776,7 +6110,23 @@
         "label": "Бир.РФ / Ингредиенты",
         "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/extracts/6"
       }
-    ]
+    ],
+    "aliases_ru": [],
+    "aliases_en": [],
+    "product_family": "extract_concentrate",
+    "subtype_key": "malt_extract",
+    "physical_form": "liquid",
+    "extract_form": "liquid",
+    "base_material_family": "barley",
+    "base_materials": [
+      "barley"
+    ],
+    "hopping_state": "hopped",
+    "is_hopped_product": true,
+    "functional_role": "gravity_source_with_bitterness",
+    "gravity_calc_mode": "normal",
+    "display_type_ru": "Жидкий охмелённый солодовый экстракт",
+    "display_type_en": "Liquid Hopped Malt Extract"
   },
   {
     "id": "muntons-muntons-wheat-beer-ekstrakty-kontsentraty",
@@ -3800,7 +6150,23 @@
         "label": "Бир.РФ / Ингредиенты",
         "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/extracts/6"
       }
-    ]
+    ],
+    "aliases_ru": [],
+    "aliases_en": [],
+    "product_family": "extract_concentrate",
+    "subtype_key": "malt_extract",
+    "physical_form": "liquid",
+    "extract_form": "liquid",
+    "base_material_family": "wheat",
+    "base_materials": [
+      "wheat"
+    ],
+    "hopping_state": "hopped",
+    "is_hopped_product": true,
+    "functional_role": "gravity_source_with_bitterness",
+    "gravity_calc_mode": "normal",
+    "display_type_ru": "Жидкий охмелённый солодовый экстракт",
+    "display_type_en": "Liquid Hopped Malt Extract"
   },
   {
     "id": "npbrew-pivnoe-suslo-svetloe-ekstrakty-kontsentraty",
@@ -3823,7 +6189,23 @@
         "label": "Бир.РФ / Ингредиенты",
         "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/extracts/6"
       }
-    ]
+    ],
+    "aliases_ru": [],
+    "aliases_en": [],
+    "product_family": "extract_concentrate",
+    "subtype_key": "malt_extract",
+    "physical_form": "liquid",
+    "extract_form": "liquid",
+    "base_material_family": "barley",
+    "base_materials": [
+      "barley"
+    ],
+    "hopping_state": "hopped",
+    "is_hopped_product": true,
+    "functional_role": "gravity_source_with_bitterness",
+    "gravity_calc_mode": "normal",
+    "display_type_ru": "Жидкий охмелённый солодовый экстракт",
+    "display_type_en": "Liquid Hopped Malt Extract"
   },
   {
     "id": "polotsky-concentrate-ekstrakty-kontsentraty",
@@ -3846,6 +6228,27 @@
         "label": "Бир.РФ / Ингредиенты",
         "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/extracts/6"
       }
+    ],
+    "aliases_ru": [],
+    "aliases_en": [],
+    "product_family": "extract_concentrate",
+    "subtype_key": "malt_extract",
+    "physical_form": "liquid",
+    "extract_form": "liquid",
+    "base_material_family": "barley",
+    "base_materials": [
+      "barley"
+    ],
+    "hopping_state": "unknown",
+    "is_hopped_product": false,
+    "functional_role": "gravity_source",
+    "gravity_calc_mode": "normal",
+    "display_type_ru": "Жидкий солодовый экстракт",
+    "display_type_en": "Liquid Malt Extract",
+    "normalization_review_flags": [
+      "ambiguous_hopping_state",
+      "market_has_both_hopped_and_unhopped_variants",
+      "consider_split_into_two_catalog_entries"
     ]
   },
   {
@@ -3871,7 +6274,28 @@
         "label": "Бир.РФ / Ингредиенты",
         "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/extracts/6"
       }
-    ]
+    ],
+    "aliases_ru": [
+      "пшеничный дме",
+      "сухой солодовый экстракт wheat"
+    ],
+    "aliases_en": [
+      "Wheat Dry Malt Extract"
+    ],
+    "product_family": "extract_concentrate",
+    "subtype_key": "malt_extract",
+    "physical_form": "powder",
+    "extract_form": "dry",
+    "base_material_family": "wheat",
+    "base_materials": [
+      "wheat"
+    ],
+    "hopping_state": "unknown",
+    "is_hopped_product": false,
+    "functional_role": "gravity_source",
+    "gravity_calc_mode": "normal",
+    "display_type_ru": "Сухой солодовый экстракт",
+    "display_type_en": "Dry Malt Extract"
   },
   {
     "id": "coopers-wheat-liquid-malt-extract-ekstrakty-kontsentraty",
@@ -3895,7 +6319,28 @@
         "label": "Бир.РФ / Ингредиенты",
         "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/extracts/6"
       }
-    ]
+    ],
+    "aliases_ru": [
+      "жидкий солодовый экстракт wheat",
+      "пшеничный лме"
+    ],
+    "aliases_en": [
+      "Wheat LME"
+    ],
+    "product_family": "extract_concentrate",
+    "subtype_key": "malt_extract",
+    "physical_form": "liquid",
+    "extract_form": "liquid",
+    "base_material_family": "wheat",
+    "base_materials": [
+      "wheat"
+    ],
+    "hopping_state": "unknown",
+    "is_hopped_product": false,
+    "functional_role": "gravity_source",
+    "gravity_calc_mode": "normal",
+    "display_type_ru": "Жидкий солодовый экстракт",
+    "display_type_en": "Liquid Malt Extract"
   },
   {
     "id": "weyermann-sinamar-ekstrakty-kontsentraty",
@@ -3919,7 +6364,23 @@
         "label": "Бир.РФ / Ингредиенты",
         "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/extracts/6"
       }
-    ]
+    ],
+    "aliases_ru": [],
+    "aliases_en": [],
+    "product_family": "extract_concentrate",
+    "subtype_key": "coloring_extract",
+    "physical_form": "liquid",
+    "extract_form": "liquid",
+    "base_material_family": "barley",
+    "base_materials": [
+      "barley"
+    ],
+    "hopping_state": "not_applicable",
+    "is_hopped_product": false,
+    "functional_role": "color_adjustment",
+    "gravity_calc_mode": "excluded",
+    "display_type_ru": "Красящий экстракт",
+    "display_type_en": "Coloring Extract"
   },
   {
     "id": "ilguciema-malt-extract-ekstrakty-kontsentraty",
@@ -3943,6 +6404,25 @@
         "label": "Бир.РФ / Ингредиенты",
         "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/extracts/6"
       }
+    ],
+    "aliases_ru": [],
+    "aliases_en": [],
+    "product_family": "extract_concentrate",
+    "subtype_key": "malt_extract",
+    "physical_form": "liquid",
+    "extract_form": "liquid",
+    "base_material_family": "barley",
+    "base_materials": [
+      "barley"
+    ],
+    "hopping_state": "unknown",
+    "is_hopped_product": false,
+    "functional_role": "gravity_source",
+    "gravity_calc_mode": "normal",
+    "display_type_ru": "Жидкий солодовый экстракт",
+    "display_type_en": "Liquid Malt Extract",
+    "normalization_review_flags": [
+      "physical_form_inferred_from_category_and producer site"
     ]
   },
   {
@@ -3965,7 +6445,23 @@
         "label": "Бир.РФ / Ингредиенты",
         "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/extracts/6"
       }
-    ]
+    ],
+    "aliases_ru": [],
+    "aliases_en": [],
+    "product_family": "extract_concentrate",
+    "subtype_key": "malt_extract",
+    "physical_form": "liquid",
+    "extract_form": "liquid",
+    "base_material_family": "barley",
+    "base_materials": [
+      "barley"
+    ],
+    "hopping_state": "unhopped",
+    "is_hopped_product": false,
+    "functional_role": "gravity_source",
+    "gravity_calc_mode": "normal",
+    "display_type_ru": "Жидкий солодовый экстракт",
+    "display_type_en": "Liquid Malt Extract"
   },
   {
     "id": "muntons-extra-light-dme-ekstrakty-kontsentraty",
@@ -3990,7 +6486,28 @@
         "label": "Бир.РФ / Ингредиенты",
         "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/extracts/6"
       }
-    ]
+    ],
+    "aliases_ru": [
+      "экстра лайт дме",
+      "сухой солодовый экстракт extra light"
+    ],
+    "aliases_en": [
+      "Extra Light Dry Malt Extract"
+    ],
+    "product_family": "extract_concentrate",
+    "subtype_key": "malt_extract",
+    "physical_form": "powder",
+    "extract_form": "dry",
+    "base_material_family": "barley",
+    "base_materials": [
+      "barley"
+    ],
+    "hopping_state": "unknown",
+    "is_hopped_product": false,
+    "functional_role": "gravity_source",
+    "gravity_calc_mode": "normal",
+    "display_type_ru": "Сухой солодовый экстракт",
+    "display_type_en": "Dry Malt Extract"
   },
   {
     "id": "krahmalprodukty-ukrainy-ekstrakt-pshenichno-solodovyy-ohmelennyy-ekstrakty-kontsentraty",
@@ -4014,7 +6531,23 @@
         "label": "Бир.РФ / Ингредиенты",
         "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/extracts/6"
       }
-    ]
+    ],
+    "aliases_ru": [],
+    "aliases_en": [],
+    "product_family": "extract_concentrate",
+    "subtype_key": "malt_extract",
+    "physical_form": "liquid",
+    "extract_form": "liquid",
+    "base_material_family": "wheat",
+    "base_materials": [
+      "wheat"
+    ],
+    "hopping_state": "hopped",
+    "is_hopped_product": true,
+    "functional_role": "gravity_source_with_bitterness",
+    "gravity_calc_mode": "normal",
+    "display_type_ru": "Жидкий охмелённый солодовый экстракт",
+    "display_type_en": "Liquid Hopped Malt Extract"
   },
   {
     "id": "tatkrahmalpatoka-malt-extract-light-ekstrakty-kontsentraty",
@@ -4038,6 +6571,25 @@
         "label": "Бир.РФ / Ингредиенты",
         "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/extracts/6"
       }
+    ],
+    "aliases_ru": [],
+    "aliases_en": [],
+    "product_family": "extract_concentrate",
+    "subtype_key": "malt_extract",
+    "physical_form": "liquid",
+    "extract_form": "liquid",
+    "base_material_family": "barley",
+    "base_materials": [
+      "barley"
+    ],
+    "hopping_state": "unknown",
+    "is_hopped_product": false,
+    "functional_role": "gravity_source",
+    "gravity_calc_mode": "normal",
+    "display_type_ru": "Жидкий солодовый экстракт",
+    "display_type_en": "Liquid Malt Extract",
+    "normalization_review_flags": [
+      "hopping_state_not_confirmed"
     ]
   },
   {
@@ -4062,6 +6614,25 @@
         "label": "Бир.РФ / Ингредиенты",
         "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/extracts/6"
       }
+    ],
+    "aliases_ru": [],
+    "aliases_en": [],
+    "product_family": "extract_concentrate",
+    "subtype_key": "malt_extract",
+    "physical_form": "liquid",
+    "extract_form": "liquid",
+    "base_material_family": "barley",
+    "base_materials": [
+      "barley"
+    ],
+    "hopping_state": "unknown",
+    "is_hopped_product": false,
+    "functional_role": "gravity_source",
+    "gravity_calc_mode": "normal",
+    "display_type_ru": "Жидкий солодовый экстракт",
+    "display_type_en": "Liquid Malt Extract",
+    "normalization_review_flags": [
+      "hopping_state_not_confirmed"
     ]
   },
   {
@@ -4086,6 +6657,25 @@
         "label": "Бир.РФ / Ингредиенты",
         "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/extracts/6"
       }
+    ],
+    "aliases_ru": [],
+    "aliases_en": [],
+    "product_family": "extract_concentrate",
+    "subtype_key": "malt_extract",
+    "physical_form": "liquid",
+    "extract_form": "liquid",
+    "base_material_family": "barley",
+    "base_materials": [
+      "barley"
+    ],
+    "hopping_state": "unknown",
+    "is_hopped_product": false,
+    "functional_role": "gravity_source",
+    "gravity_calc_mode": "normal",
+    "display_type_ru": "Жидкий солодовый экстракт",
+    "display_type_en": "Liquid Malt Extract",
+    "normalization_review_flags": [
+      "hopping_state_not_confirmed"
     ]
   },
   {
@@ -4110,6 +6700,25 @@
         "label": "Бир.РФ / Ингредиенты",
         "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/extracts/6"
       }
+    ],
+    "aliases_ru": [],
+    "aliases_en": [],
+    "product_family": "extract_concentrate",
+    "subtype_key": "malt_extract",
+    "physical_form": "liquid",
+    "extract_form": "liquid",
+    "base_material_family": "barley",
+    "base_materials": [
+      "barley"
+    ],
+    "hopping_state": "unknown",
+    "is_hopped_product": false,
+    "functional_role": "gravity_source",
+    "gravity_calc_mode": "normal",
+    "display_type_ru": "Жидкий солодовый экстракт",
+    "display_type_en": "Liquid Malt Extract",
+    "normalization_review_flags": [
+      "hopping_state_not_confirmed"
     ]
   },
   {
@@ -4134,6 +6743,25 @@
         "label": "Бир.РФ / Ингредиенты",
         "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/extracts/6"
       }
+    ],
+    "aliases_ru": [],
+    "aliases_en": [],
+    "product_family": "extract_concentrate",
+    "subtype_key": "malt_extract",
+    "physical_form": "liquid",
+    "extract_form": "liquid",
+    "base_material_family": "barley",
+    "base_materials": [
+      "barley"
+    ],
+    "hopping_state": "unknown",
+    "is_hopped_product": false,
+    "functional_role": "gravity_source",
+    "gravity_calc_mode": "normal",
+    "display_type_ru": "Жидкий солодовый экстракт",
+    "display_type_en": "Liquid Malt Extract",
+    "normalization_review_flags": [
+      "hopping_state_not_confirmed"
     ]
   },
   {
@@ -4157,7 +6785,23 @@
         "label": "Бир.РФ / Ингредиенты",
         "url": "https://xn--90aoy.xn--p1ai/ingredients/grain/extracts/6"
       }
-    ]
+    ],
+    "aliases_ru": [],
+    "aliases_en": [],
+    "product_family": "extract_concentrate",
+    "subtype_key": "malt_extract",
+    "physical_form": "liquid",
+    "extract_form": "liquid",
+    "base_material_family": "barley",
+    "base_materials": [
+      "barley"
+    ],
+    "hopping_state": "unhopped",
+    "is_hopped_product": false,
+    "functional_role": "gravity_source",
+    "gravity_calc_mode": "normal",
+    "display_type_ru": "Жидкий солодовый экстракт",
+    "display_type_en": "Liquid Malt Extract"
   },
   {
     "id": "nectar-agavy-industry",
@@ -4187,7 +6831,22 @@
         "label": "Brewer's Friend",
         "url": "https://www.brewersfriend.com/fermentables/agave-nectar/"
       }
-    ]
+    ],
+    "product_family": "sugar_syrup_honey",
+    "subtype_key": "sugar",
+    "physical_form": "crystals",
+    "extract_form": null,
+    "base_material_family": "fruit",
+    "base_materials": [
+      "agave",
+      "fruit"
+    ],
+    "hopping_state": "not_applicable",
+    "is_hopped_product": false,
+    "functional_role": "gravity_source",
+    "gravity_calc_mode": "normal",
+    "display_type_ru": "Сахар",
+    "display_type_en": "Sugar"
   },
   {
     "id": "risovyj-sirop-solids-industry",
@@ -4213,7 +6872,23 @@
         "label": "Brewer's Friend",
         "url": "https://www.brewersfriend.com/fermentables/rice-syrup-solids/"
       }
-    ]
+    ],
+    "aliases_en": [],
+    "product_family": "sugar_syrup_honey",
+    "subtype_key": "sugar",
+    "physical_form": "crystals",
+    "extract_form": null,
+    "base_material_family": "fruit",
+    "base_materials": [
+      "rice",
+      "fruit"
+    ],
+    "hopping_state": "not_applicable",
+    "is_hopped_product": false,
+    "functional_role": "gravity_source",
+    "gravity_calc_mode": "normal",
+    "display_type_ru": "Сахар",
+    "display_type_en": "Sugar"
   },
   {
     "id": "risovyj-ekstrakt-sirop-industry",
@@ -4244,7 +6919,21 @@
         "label": "BeerSmith",
         "url": "https://beersmith.com/grain-list/"
       }
-    ]
+    ],
+    "product_family": "extract_concentrate",
+    "subtype_key": "special_extract",
+    "physical_form": "liquid",
+    "extract_form": "liquid",
+    "base_material_family": "rice",
+    "base_materials": [
+      "rice"
+    ],
+    "hopping_state": "unknown",
+    "is_hopped_product": false,
+    "functional_role": "gravity_source",
+    "gravity_calc_mode": "normal",
+    "display_type_ru": "Экстракт / сироп",
+    "display_type_en": "Extract Syrup"
   },
   {
     "id": "med-syroj-industry",
@@ -4270,7 +6959,22 @@
         "label": "Brewer's Friend",
         "url": "https://www.brewersfriend.com/fermentables/raw-honey/"
       }
-    ]
+    ],
+    "aliases_en": [],
+    "product_family": "sugar_syrup_honey",
+    "subtype_key": "honey",
+    "physical_form": "liquid",
+    "extract_form": null,
+    "base_material_family": "honey",
+    "base_materials": [
+      "honey"
+    ],
+    "hopping_state": "not_applicable",
+    "is_hopped_product": false,
+    "functional_role": "gravity_source",
+    "gravity_calc_mode": "normal",
+    "display_type_ru": "Мёд",
+    "display_type_en": "Honey"
   },
   {
     "id": "med-grechishnyj-industry",
@@ -4299,7 +7003,22 @@
         "label": "Brewer's Friend",
         "url": "https://www.brewersfriend.com/fermentables/honey-%28buckwheat%29/"
       }
-    ]
+    ],
+    "product_family": "sugar_syrup_honey",
+    "subtype_key": "honey",
+    "physical_form": "liquid",
+    "extract_form": null,
+    "base_material_family": "honey",
+    "base_materials": [
+      "buckwheat",
+      "honey"
+    ],
+    "hopping_state": "not_applicable",
+    "is_hopped_product": false,
+    "functional_role": "gravity_source",
+    "gravity_calc_mode": "normal",
+    "display_type_ru": "Мёд",
+    "display_type_en": "Honey"
   },
   {
     "id": "korichnevyj-sahar-svetlyj-industry",
@@ -4329,7 +7048,21 @@
         "label": "BeerSmith",
         "url": "https://beersmith.com/grain-list/"
       }
-    ]
+    ],
+    "product_family": "sugar_syrup_honey",
+    "subtype_key": "sugar",
+    "physical_form": "crystals",
+    "extract_form": null,
+    "base_material_family": "unknown",
+    "base_materials": [
+      "unknown"
+    ],
+    "hopping_state": "not_applicable",
+    "is_hopped_product": false,
+    "functional_role": "gravity_source",
+    "gravity_calc_mode": "normal",
+    "display_type_ru": "Сахар",
+    "display_type_en": "Sugar"
   },
   {
     "id": "korichnevyj-sahar-temnyj-industry",
@@ -4359,7 +7092,21 @@
         "label": "BeerSmith",
         "url": "https://beersmith.com/grain-list/"
       }
-    ]
+    ],
+    "product_family": "sugar_syrup_honey",
+    "subtype_key": "sugar",
+    "physical_form": "crystals",
+    "extract_form": null,
+    "base_material_family": "unknown",
+    "base_materials": [
+      "unknown"
+    ],
+    "hopping_state": "not_applicable",
+    "is_hopped_product": false,
+    "functional_role": "gravity_source",
+    "gravity_calc_mode": "normal",
+    "display_type_ru": "Сахар",
+    "display_type_en": "Sugar"
   },
   {
     "id": "kukuruznyj-sirop-industry",
@@ -4386,7 +7133,23 @@
         "label": "BeerSmith",
         "url": "https://beersmith.com/grain-list/"
       }
-    ]
+    ],
+    "aliases_en": [],
+    "product_family": "sugar_syrup_honey",
+    "subtype_key": "syrup",
+    "physical_form": "syrup",
+    "extract_form": null,
+    "base_material_family": "fruit",
+    "base_materials": [
+      "corn",
+      "fruit"
+    ],
+    "hopping_state": "not_applicable",
+    "is_hopped_product": false,
+    "functional_role": "gravity_source",
+    "gravity_calc_mode": "normal",
+    "display_type_ru": "Сироп",
+    "display_type_en": "Syrup"
   },
   {
     "id": "yachmen-torrefied-industry",
@@ -4416,685 +7179,20 @@
         "label": "BeerSmith",
         "url": "https://beersmith.com/grain-list/"
       }
-    ]
-  },
-  {
-    "id": "weyermann-bavarian-pilsner-ekstrakty-kontsentraty",
-    "type": "fermentable",
-    "group": "extracts_and_concentrates",
-    "ingredient_type": "malt_extract",
-    "fermentability_class": "highly_fermentable",
-    "name_ru": "Баварский пилснер",
-    "name_en": "Bavarian Pilsner",
-    "producer": "Weyermann",
-    "country_name": "Германия",
-    "aliases_ru": [
-      "солодовый экстракт баварский пилснер",
-      "жидкий солодовый экстракт баварский пилснер"
     ],
-    "aliases_en": [
-      "Liquid Malt Extract Bavarian Pilsner",
-      "Weyermann Bavarian Pilsner LME"
+    "product_family": "adjunct_grain",
+    "subtype_key": "torrefied_adjunct",
+    "physical_form": "torrefied_grain",
+    "extract_form": null,
+    "base_material_family": "barley",
+    "base_materials": [
+      "barley"
     ],
-    "extract_pct_dry_basis": 75.0,
-    "color_lovibond": 6.1,
-    "recommended_max_pct": 100,
-    "present_on_birrf": false,
-    "is_usable_in_beer_gravity_calculations": true,
-    "beer_relevance": "core_brewing_or_adjunct",
-    "sources": [
-      {
-        "kind": "official_product_page",
-        "label": "Weyermann / Bavarian Pilsner",
-        "url": "https://www.weyermann.de/en-us/product/weyermann-bavarian-pilsner-4/?cat=malt-extract-en-us"
-      }
-    ]
-  },
-  {
-    "id": "weyermann-bavarian-hefeweizen-ekstrakty-kontsentraty",
-    "type": "fermentable",
-    "group": "extracts_and_concentrates",
-    "ingredient_type": "malt_extract",
-    "fermentability_class": "highly_fermentable",
-    "name_ru": "Баварский хефевайцен",
-    "name_en": "Bavarian Hefeweizen",
-    "producer": "Weyermann",
-    "country_name": "Германия",
-    "aliases_ru": [
-      "солодовый экстракт баварский хефевайцен",
-      "жидкий солодовый экстракт баварский хефевайцен"
-    ],
-    "aliases_en": [
-      "Liquid Malt Extract Bavarian Hefeweizen",
-      "Weyermann Bavarian Hefeweizen LME"
-    ],
-    "extract_pct_dry_basis": 75.0,
-    "color_lovibond": 6.1,
-    "recommended_max_pct": 100,
-    "present_on_birrf": false,
-    "is_usable_in_beer_gravity_calculations": true,
-    "beer_relevance": "core_brewing_or_adjunct",
-    "sources": [
-      {
-        "kind": "official_product_page",
-        "label": "Weyermann / Bavarian Hefeweizen",
-        "url": "https://www.weyermann.de/en-us/product/weyermann-bavarian-hefeweizen-7/?cat=malt-extract-en-us"
-      }
-    ]
-  },
-  {
-    "id": "weyermann-bavarian-maibock-ekstrakty-kontsentraty",
-    "type": "fermentable",
-    "group": "extracts_and_concentrates",
-    "ingredient_type": "malt_extract",
-    "fermentability_class": "highly_fermentable",
-    "name_ru": "Баварский майбок",
-    "name_en": "Bavarian Maibock",
-    "producer": "Weyermann",
-    "country_name": "Германия",
-    "aliases_ru": [
-      "солодовый экстракт баварский майбок",
-      "жидкий солодовый экстракт баварский майбок"
-    ],
-    "aliases_en": [
-      "Liquid Malt Extract Bavarian Maibock",
-      "Weyermann Bavarian Maibock LME"
-    ],
-    "extract_pct_dry_basis": 75.0,
-    "color_lovibond": 13.65,
-    "recommended_max_pct": 100,
-    "present_on_birrf": false,
-    "is_usable_in_beer_gravity_calculations": true,
-    "beer_relevance": "core_brewing_or_adjunct",
-    "sources": [
-      {
-        "kind": "official_product_page",
-        "label": "Weyermann / Bavarian Maibock",
-        "url": "https://www.weyermann.de/en-us/product/weyermann-bavarian-maibock-3/?cat=malt-extract-en-us"
-      }
-    ]
-  },
-  {
-    "id": "weyermann-munich-amber-ekstrakty-kontsentraty",
-    "type": "fermentable",
-    "group": "extracts_and_concentrates",
-    "ingredient_type": "malt_extract",
-    "fermentability_class": "highly_fermentable",
-    "name_ru": "Мюнхенский янтарный",
-    "name_en": "Munich Amber",
-    "producer": "Weyermann",
-    "country_name": "Германия",
-    "aliases_ru": [
-      "солодовый экстракт мюнхенский янтарный",
-      "жидкий солодовый экстракт мюнхенский янтарный"
-    ],
-    "aliases_en": [
-      "Liquid Malt Extract Munich Amber",
-      "Weyermann Munich Amber LME"
-    ],
-    "extract_pct_dry_basis": 75.0,
-    "color_lovibond": 14.6,
-    "recommended_max_pct": 100,
-    "present_on_birrf": false,
-    "is_usable_in_beer_gravity_calculations": true,
-    "beer_relevance": "core_brewing_or_adjunct",
-    "sources": [
-      {
-        "kind": "official_product_page",
-        "label": "Weyermann / Munich Amber",
-        "url": "https://www.weyermann.de/en-us/product/weyermann-munich-amber-5/?cat=malt-extract-en-us"
-      }
-    ]
-  },
-  {
-    "id": "weyermann-bamberg-rauch-ekstrakty-kontsentraty",
-    "type": "fermentable",
-    "group": "extracts_and_concentrates",
-    "ingredient_type": "malt_extract",
-    "fermentability_class": "highly_fermentable",
-    "name_ru": "Бамбергский копчёный",
-    "name_en": "Bamberg Rauch",
-    "producer": "Weyermann",
-    "country_name": "Германия",
-    "aliases_ru": [
-      "солодовый экстракт бамбергский копчёный",
-      "жидкий солодовый экстракт rauch"
-    ],
-    "aliases_en": [
-      "Liquid Malt Extract Bamberg Rauch",
-      "Weyermann Bamberg Rauch LME",
-      "Smoked Malt Extract"
-    ],
-    "extract_pct_dry_basis": 75.0,
-    "color_lovibond": 23.1,
-    "recommended_max_pct": 100,
-    "present_on_birrf": false,
-    "is_usable_in_beer_gravity_calculations": true,
-    "beer_relevance": "core_brewing_or_adjunct",
-    "sources": [
-      {
-        "kind": "official_product_page",
-        "label": "Weyermann / Bamberg Rauch",
-        "url": "https://www.weyermann.de/en-us/product/weyermann-bamberg-rauch-5/?cat=malt-extract-en-us"
-      }
-    ]
-  },
-  {
-    "id": "weyermann-munich-october-beer-ekstrakty-kontsentraty",
-    "type": "fermentable",
-    "group": "extracts_and_concentrates",
-    "ingredient_type": "malt_extract",
-    "fermentability_class": "highly_fermentable",
-    "name_ru": "Мюнхенское октоберфестовое",
-    "name_en": "Munich October Beer",
-    "producer": "Weyermann",
-    "country_name": "Германия",
-    "aliases_ru": [
-      "солодовый экстракт мюнхенское октоберфестовое",
-      "жидкий солодовый экстракт oktoberfest"
-    ],
-    "aliases_en": [
-      "Liquid Malt Extract Munich October Beer",
-      "Weyermann Munich October LME",
-      "Oktoberfest Malt Extract"
-    ],
-    "extract_pct_dry_basis": 75.0,
-    "color_lovibond": 18.35,
-    "recommended_max_pct": 100,
-    "present_on_birrf": false,
-    "is_usable_in_beer_gravity_calculations": true,
-    "beer_relevance": "core_brewing_or_adjunct",
-    "sources": [
-      {
-        "kind": "official_product_page",
-        "label": "Weyermann / Munich October Beer",
-        "url": "https://www.weyermann.de/en-us/product/weyermann-munich-october-beer-3/?cat=malt-extract-en-us"
-      }
-    ]
-  },
-  {
-    "id": "weyermann-vienna-red-ekstrakty-kontsentraty",
-    "type": "fermentable",
-    "group": "extracts_and_concentrates",
-    "ingredient_type": "malt_extract",
-    "fermentability_class": "highly_fermentable",
-    "name_ru": "Венский красный",
-    "name_en": "Vienna Red",
-    "producer": "Weyermann",
-    "country_name": "Германия",
-    "aliases_ru": [
-      "солодовый экстракт венский красный",
-      "жидкий солодовый экстракт vienna red"
-    ],
-    "aliases_en": [
-      "Liquid Malt Extract Vienna Red",
-      "Weyermann Vienna Red LME"
-    ],
-    "extract_pct_dry_basis": 75.0,
-    "color_lovibond": 19.3,
-    "recommended_max_pct": 100,
-    "present_on_birrf": false,
-    "is_usable_in_beer_gravity_calculations": true,
-    "beer_relevance": "core_brewing_or_adjunct",
-    "sources": [
-      {
-        "kind": "official_product_page",
-        "label": "Weyermann / Vienna Red",
-        "url": "https://www.weyermann.de/en-us/product/weyermann-vienna-red-5/?cat=malt-extract-en-us"
-      }
-    ]
-  },
-  {
-    "id": "weyermann-bavarian-dunkel-ekstrakty-kontsentraty",
-    "type": "fermentable",
-    "group": "extracts_and_concentrates",
-    "ingredient_type": "malt_extract",
-    "fermentability_class": "highly_fermentable",
-    "name_ru": "Баварский дункель",
-    "name_en": "Bavarian Dunkel",
-    "producer": "Weyermann",
-    "country_name": "Германия",
-    "aliases_ru": [
-      "солодовый экстракт баварский дункель",
-      "жидкий солодовый экстракт dunkel"
-    ],
-    "aliases_en": [
-      "Liquid Malt Extract Bavarian Dunkel",
-      "Weyermann Bavarian Dunkel LME"
-    ],
-    "extract_pct_dry_basis": 75.0,
-    "color_lovibond": 28.75,
-    "recommended_max_pct": 100,
-    "present_on_birrf": false,
-    "is_usable_in_beer_gravity_calculations": true,
-    "beer_relevance": "core_brewing_or_adjunct",
-    "sources": [
-      {
-        "kind": "official_product_page",
-        "label": "Weyermann / Bavarian Dunkel",
-        "url": "https://www.weyermann.de/en-us/product/weyermann-bavarian-dunkel-5/?cat=malt-extract-en-us"
-      }
-    ]
-  },
-  {
-    "id": "weyermann-sour-wort-ekstrakty-kontsentraty",
-    "type": "fermentable",
-    "group": "extracts_and_concentrates",
-    "ingredient_type": "sour_wort",
-    "fermentability_class": "non_fermentable_or_process",
-    "name_ru": "Кислое сусло",
-    "name_en": "Sour Wort",
-    "producer": "Weyermann",
-    "country_name": "Германия",
-    "aliases_ru": [
-      "закисленное сусло",
-      "кислое сусло Weyermann"
-    ],
-    "aliases_en": [
-      "Weyermann Sour Wort"
-    ],
-    "extract_pct_dry_basis": null,
-    "color_lovibond": null,
-    "recommended_max_pct": null,
-    "present_on_birrf": false,
-    "is_usable_in_beer_gravity_calculations": false,
-    "beer_relevance": "technical_or_color_adjustment",
-    "sources": [
-      {
-        "kind": "official_product_page",
-        "label": "Weyermann / Sour Wort",
-        "url": "https://www.weyermann.de/en-us/product/weyermann-sour-wort-2/?cat=sour-wort-en-us"
-      }
-    ]
-  },
-  {
-    "id": "castle-malting-chateau-chit-wheat-malt-flakes-nesolozhenka",
-    "type": "fermentable",
-    "group": "adjunct_grains",
-    "ingredient_type": "flaked_adjunct",
-    "fermentability_class": "mash_fermentable",
-    "name_ru": "Чит-пшеничные хлопья",
-    "name_en": "Château Chit Wheat Malt Flakes",
-    "producer": "Castle Malting",
-    "country_name": "Бельгия",
-    "aliases_ru": [
-      "чит пшеничные хлопья",
-      "пшеничные чит-хлопья"
-    ],
-    "aliases_en": [
-      "Chit Wheat Flakes",
-      "Chateau Chit Wheat Flakes"
-    ],
-    "extract_pct_dry_basis": null,
-    "color_lovibond": 2.25,
-    "recommended_max_pct": 25,
-    "present_on_birrf": false,
-    "is_usable_in_beer_gravity_calculations": true,
-    "beer_relevance": "core_brewing_or_adjunct",
-    "sources": [
-      {
-        "kind": "official_product_page",
-        "label": "Castle Malting / CHÂTEAU CHIT WHEAT MALT FLAKES",
-        "url": "https://www.castlemalting.com/CastleMaltingMaltsInAFewWords.asp?Language=English"
-      }
-    ]
-  },
-  {
-    "id": "castle-malting-chateau-oat-flakes-nesolozhenka",
-    "type": "fermentable",
-    "group": "adjunct_grains",
-    "ingredient_type": "flaked_adjunct",
-    "fermentability_class": "mash_fermentable",
-    "name_ru": "Овсяные хлопья Château",
-    "name_en": "Château Oat Flakes",
-    "producer": "Castle Malting",
-    "country_name": "Бельгия",
-    "aliases_ru": [
-      "овсяные хлопья castle",
-      "овсяные хлопья шато"
-    ],
-    "aliases_en": [
-      "Chateau Oat Flakes",
-      "Oat Flakes"
-    ],
-    "extract_pct_dry_basis": null,
-    "color_lovibond": 2.05,
-    "recommended_max_pct": 10,
-    "present_on_birrf": false,
-    "is_usable_in_beer_gravity_calculations": true,
-    "beer_relevance": "core_brewing_or_adjunct",
-    "sources": [
-      {
-        "kind": "official_product_page",
-        "label": "Castle Malting / CHÂTEAU OAT FLAKES",
-        "url": "https://www.castlemalting.com/CastleMaltingMaltsInAFewWords.asp?Language=English"
-      }
-    ]
-  },
-  {
-    "id": "castle-malting-chateau-rice-flakes-nesolozhenka",
-    "type": "fermentable",
-    "group": "adjunct_grains",
-    "ingredient_type": "flaked_adjunct",
-    "fermentability_class": "mash_fermentable",
-    "name_ru": "Рисовые хлопья Château",
-    "name_en": "Château Rice Flakes",
-    "producer": "Castle Malting",
-    "country_name": "Бельгия",
-    "aliases_ru": [
-      "рисовые хлопья castle",
-      "рисовые хлопья шато"
-    ],
-    "aliases_en": [
-      "Chateau Rice Flakes",
-      "Rice Flakes"
-    ],
-    "extract_pct_dry_basis": null,
-    "color_lovibond": 1.5,
-    "recommended_max_pct": 20,
-    "present_on_birrf": false,
-    "is_usable_in_beer_gravity_calculations": true,
-    "beer_relevance": "core_brewing_or_adjunct",
-    "sources": [
-      {
-        "kind": "official_product_page",
-        "label": "Castle Malting / CHÂTEAU RICE FLAKES",
-        "url": "https://www.castlemalting.com/CastleMaltingMaltsInAFewWords.asp?Language=English"
-      }
-    ]
-  },
-  {
-    "id": "castle-malting-chateau-maize-flakes-nesolozhenka",
-    "type": "fermentable",
-    "group": "adjunct_grains",
-    "ingredient_type": "flaked_adjunct",
-    "fermentability_class": "mash_fermentable",
-    "name_ru": "Кукурузные хлопья Château",
-    "name_en": "Château Maize Flakes",
-    "producer": "Castle Malting",
-    "country_name": "Бельгия",
-    "aliases_ru": [
-      "кукурузные хлопья castle",
-      "кукурузные хлопья шато"
-    ],
-    "aliases_en": [
-      "Chateau Maize Flakes",
-      "Maize Flakes",
-      "Corn Flakes"
-    ],
-    "extract_pct_dry_basis": null,
-    "color_lovibond": 1.5,
-    "recommended_max_pct": 20,
-    "present_on_birrf": false,
-    "is_usable_in_beer_gravity_calculations": true,
-    "beer_relevance": "core_brewing_or_adjunct",
-    "sources": [
-      {
-        "kind": "official_product_page",
-        "label": "Castle Malting / CHÂTEAU MAIZE FLAKES",
-        "url": "https://www.castlemalting.com/CastleMaltingMaltsInAFewWords.asp?Language=English"
-      }
-    ]
-  },
-  {
-    "id": "castle-malting-chateau-raw-barley-nesolozhenka",
-    "type": "fermentable",
-    "group": "adjunct_grains",
-    "ingredient_type": "raw_adjunct",
-    "fermentability_class": "mash_fermentable",
-    "name_ru": "Ячмень Château (неосоложенный)",
-    "name_en": "Château Raw Barley",
-    "producer": "Castle Malting",
-    "country_name": "Бельгия",
-    "aliases_ru": [
-      "ячмень castle неосоложенный",
-      "сырой ячмень castle"
-    ],
-    "aliases_en": [
-      "Chateau Raw Barley",
-      "Raw Barley"
-    ],
-    "extract_pct_dry_basis": null,
-    "color_lovibond": 1.5,
-    "recommended_max_pct": 15,
-    "present_on_birrf": false,
-    "is_usable_in_beer_gravity_calculations": true,
-    "beer_relevance": "core_brewing_or_adjunct",
-    "sources": [
-      {
-        "kind": "official_product_page",
-        "label": "Castle Malting / CHÂTEAU RAW BARLEY",
-        "url": "https://www.castlemalting.com/CastleMaltingMaltsInAFewWords.asp?Language=English"
-      }
-    ]
-  },
-  {
-    "id": "castle-malting-chateau-raw-wheat-nesolozhenka",
-    "type": "fermentable",
-    "group": "adjunct_grains",
-    "ingredient_type": "raw_adjunct",
-    "fermentability_class": "mash_fermentable",
-    "name_ru": "Пшеница Château (неосоложенная)",
-    "name_en": "Château Raw Wheat",
-    "producer": "Castle Malting",
-    "country_name": "Бельгия",
-    "aliases_ru": [
-      "пшеница castle неосоложенная",
-      "сырая пшеница castle"
-    ],
-    "aliases_en": [
-      "Chateau Raw Wheat",
-      "Raw Wheat"
-    ],
-    "extract_pct_dry_basis": 78.0,
-    "color_lovibond": null,
-    "protein_pct": 10.0,
-    "recommended_max_pct": 20,
-    "present_on_birrf": false,
-    "is_usable_in_beer_gravity_calculations": true,
-    "beer_relevance": "core_brewing_or_adjunct",
-    "sources": [
-      {
-        "kind": "official_product_page",
-        "label": "Castle Malting / CHÂTEAU RAW WHEAT",
-        "url": "https://www.castlemalting.com/CastleMAltingMaltInfo.asp?Language=Italian&Name=CHATEAU-RAW-WHEAT"
-      },
-      {
-        "kind": "official_spec_pdf",
-        "label": "Castle Malting / CHÂTEAU RAW WHEAT spec",
-        "url": "https://www.castlemalting.com/CastleMaltingMaltSpecification.asp?Command=SpecificationShow&FileType=PDF&Language=Danish&SpecificationID=301"
-      }
-    ]
-  },
-  {
-    "id": "castle-malting-chateau-raw-oat-nesolozhenka",
-    "type": "fermentable",
-    "group": "adjunct_grains",
-    "ingredient_type": "raw_adjunct",
-    "fermentability_class": "mash_fermentable",
-    "name_ru": "Овёс Château (неосоложенный)",
-    "name_en": "Château Raw Oat",
-    "producer": "Castle Malting",
-    "country_name": "Бельгия",
-    "aliases_ru": [
-      "овёс castle неосоложенный",
-      "сырой овёс castle"
-    ],
-    "aliases_en": [
-      "Chateau Raw Oat",
-      "Raw Oat"
-    ],
-    "extract_pct_dry_basis": null,
-    "color_lovibond": 2.65,
-    "recommended_max_pct": 30,
-    "present_on_birrf": false,
-    "is_usable_in_beer_gravity_calculations": true,
-    "beer_relevance": "core_brewing_or_adjunct",
-    "sources": [
-      {
-        "kind": "official_product_page",
-        "label": "Castle Malting / CHÂTEAU RAW OAT",
-        "url": "https://www.castlemalting.com/CastleMaltingMaltsInAFewWords.asp?Language=English"
-      }
-    ]
-  },
-  {
-    "id": "castle-malting-invertsuc-70-sahar",
-    "type": "fermentable",
-    "group": "sugars_syrups_honey",
-    "ingredient_type": "syrup",
-    "fermentability_class": "highly_fermentable",
-    "name_ru": "Инвертный сахар 70",
-    "name_en": "Invertsuc 70",
-    "producer": "Castle Malting",
-    "country_name": "Бельгия",
-    "aliases_ru": [
-      "инверт castle 70",
-      "инвертный сироп 70"
-    ],
-    "aliases_en": [
-      "Invert Sugar 70%",
-      "Castle Invertsuc 70"
-    ],
-    "extract_pct_dry_basis": 70.0,
-    "color_lovibond": null,
-    "recommended_max_pct": null,
-    "present_on_birrf": false,
-    "is_usable_in_beer_gravity_calculations": true,
-    "beer_relevance": "beer_common_specialty",
-    "sources": [
-      {
-        "kind": "official_product_page",
-        "label": "Castle Malting / Invertsuc 70",
-        "url": "https://www.castlemalting.com/CastleMaltingSugar.asp?Language=English"
-      }
-    ]
-  },
-  {
-    "id": "castle-malting-organic-invertsuc-75-sahar",
-    "type": "fermentable",
-    "group": "sugars_syrups_honey",
-    "ingredient_type": "syrup",
-    "fermentability_class": "highly_fermentable",
-    "name_ru": "Инвертный сахар 75 (органический)",
-    "name_en": "ORGANIC Invertsuc 75",
-    "producer": "Castle Malting",
-    "country_name": "Бельгия",
-    "aliases_ru": [
-      "органический инверт 75",
-      "органический инвертный сироп 75"
-    ],
-    "aliases_en": [
-      "Organic Invert Sugar 75%",
-      "Castle Organic Invertsuc 75"
-    ],
-    "extract_pct_dry_basis": 75.0,
-    "color_lovibond": null,
-    "recommended_max_pct": null,
-    "present_on_birrf": false,
-    "is_usable_in_beer_gravity_calculations": true,
-    "beer_relevance": "beer_common_specialty",
-    "sources": [
-      {
-        "kind": "official_product_page",
-        "label": "Castle Malting / ORGANIC Invertsuc 75",
-        "url": "https://www.castlemalting.com/CastleMaltingSugar.asp?Language=English"
-      }
-    ]
-  },
-  {
-    "id": "castle-malting-belgogluc-hde-sahar",
-    "type": "fermentable",
-    "group": "sugars_syrups_honey",
-    "ingredient_type": "syrup",
-    "fermentability_class": "highly_fermentable",
-    "name_ru": "Глюкозный сироп Belgogluc HDE",
-    "name_en": "Belgogluc HDE",
-    "producer": "Castle Malting",
-    "country_name": "Бельгия",
-    "aliases_ru": [
-      "бельгоглюк hde",
-      "глюкозный сироп castle hde"
-    ],
-    "aliases_en": [
-      "Belgogluc HDE Bucket",
-      "Castle Belgogluc HDE"
-    ],
-    "extract_pct_dry_basis": null,
-    "color_lovibond": null,
-    "recommended_max_pct": null,
-    "present_on_birrf": false,
-    "is_usable_in_beer_gravity_calculations": true,
-    "beer_relevance": "beer_common_specialty",
-    "sources": [
-      {
-        "kind": "official_product_page",
-        "label": "Castle Malting / Belgogluc HDE",
-        "url": "https://www.castlemalting.com/CastleMaltingSugar.asp?Language=English"
-      }
-    ]
-  },
-  {
-    "id": "castle-malting-belgogluc-hm-70-75-sahar",
-    "type": "fermentable",
-    "group": "sugars_syrups_honey",
-    "ingredient_type": "syrup",
-    "fermentability_class": "highly_fermentable",
-    "name_ru": "Глюкозный сироп Belgogluc HM 70/75%",
-    "name_en": "Belgogluc HM 70/75%",
-    "producer": "Castle Malting",
-    "country_name": "Бельгия",
-    "aliases_ru": [
-      "бельгоглюк hm 70/75",
-      "глюкозный сироп castle hm"
-    ],
-    "aliases_en": [
-      "Castle Belgogluc HM 70/75"
-    ],
-    "extract_pct_dry_basis": null,
-    "color_lovibond": null,
-    "recommended_max_pct": null,
-    "present_on_birrf": false,
-    "is_usable_in_beer_gravity_calculations": true,
-    "beer_relevance": "beer_common_specialty",
-    "sources": [
-      {
-        "kind": "official_product_page",
-        "label": "Castle Malting / Belgogluc HM 70/75%",
-        "url": "https://www.castlemalting.com/CastleMaltingSugar.asp?Language=English"
-      }
-    ]
-  },
-  {
-    "id": "castle-malting-fructomix-f85-73-sahar",
-    "type": "fermentable",
-    "group": "sugars_syrups_honey",
-    "ingredient_type": "syrup",
-    "fermentability_class": "highly_fermentable",
-    "name_ru": "Фруктозный сироп Fructomix F85-73%",
-    "name_en": "Fructomix F85-73%",
-    "producer": "Castle Malting",
-    "country_name": "Бельгия",
-    "aliases_ru": [
-      "фруктомикс f85-73",
-      "фруктозный сироп castle"
-    ],
-    "aliases_en": [
-      "Fructose syrup",
-      "Castle Fructomix F85-73%"
-    ],
-    "extract_pct_dry_basis": 73.0,
-    "color_lovibond": null,
-    "recommended_max_pct": null,
-    "present_on_birrf": false,
-    "is_usable_in_beer_gravity_calculations": true,
-    "beer_relevance": "beer_common_specialty",
-    "sources": [
-      {
-        "kind": "official_product_page",
-        "label": "Castle Malting / Fructomix F85-73%",
-        "url": "https://www.castlemalting.com/CastleMaltingSugar.asp?Language=English"
-      }
-    ]
+    "hopping_state": "not_applicable",
+    "is_hopped_product": false,
+    "functional_role": "gravity_source",
+    "gravity_calc_mode": "normal",
+    "display_type_ru": "Торрефицированная несоложёнка",
+    "display_type_en": "Torrefied Adjunct"
   }
 ]

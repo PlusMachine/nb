@@ -20,12 +20,14 @@ export const customHopForms = ["pellet", "whole_cone", "lupulin", "cryo", "stand
 export type CustomHopForm = (typeof customHopForms)[number];
 
 export const customHopFormLabels: Record<CustomHopForm, string> = {
-  pellet: "Пеллеты",
+  pellet: "Гранулы",
   whole_cone: "Шишковой",
   lupulin: "Люпулин",
   cryo: "Cryo",
-  standard: "Стандарт"
+  standard: "Гранулы"
 };
+
+export const customHopSelectableForms = ["pellet", "whole_cone", "lupulin", "cryo"] as const;
 
 export const customPhysicalForms = ["solid", "powder", "crystal", "liquid", "solution", "tablet"] as const;
 export type CustomPhysicalForm = (typeof customPhysicalForms)[number];

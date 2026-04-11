@@ -148,6 +148,9 @@ vi.mock("@nb/db", () => ({
 }));
 
 import {
+  getIngredientPickerQuickStartAvailability,
+  getIngredientPickerQuickStartByContext,
+  getIngredientPickerQuickStartAvailabilityBySubtype,
   listIngredientPickerQuickStart,
   searchUserCatalogIngredients
 } from "../features/ingredients/catalog-service";
@@ -209,8 +212,611 @@ describe("user catalog ingredient search", () => {
     expect(result.brands.map((brand) => brand.label)).toEqual([
       "Castle Malting",
       "Weyermann",
-      "BESTMALZ"
+      "Bestmalz"
     ]);
+    expect(result.groups ?? []).toEqual([]);
+  });
+
+  it("returns fermentable quick-start chips grouped by canonical fermentable group", async () => {
+    mockState.catalogItems = [
+      buildCatalogItem({
+        id: "extract-1",
+        subtype: "fermentable",
+        groupName: "extracts_and_concentrates",
+        brand: "Muntons",
+        producer: "Muntons",
+        brandName: "Muntons",
+        manufacturer: "Muntons",
+        technicalData: {
+          type: "fermentable",
+          displayTypeRu: "Сухой солодовый экстракт",
+          subtypeKey: "malt_extract",
+          productFamily: "extract_concentrate",
+          extractForm: "dry"
+        }
+      }),
+      buildCatalogItem({
+        id: "sugar-1",
+        subtype: "fermentable",
+        groupName: "sugars_syrups_honey",
+        brand: null,
+        producer: null,
+        brandName: null,
+        manufacturer: null,
+        technicalData: {
+          type: "fermentable",
+          displayTypeRu: "Сахар",
+          subtypeKey: "sugar",
+          productFamily: "sugar_syrup_honey"
+        }
+      }),
+      buildCatalogItem({
+        id: "sugar-2",
+        subtype: "fermentable",
+        groupName: "sugars_and_syrups",
+        brand: null,
+        producer: null,
+        brandName: null,
+        manufacturer: null,
+        technicalData: {
+          type: "fermentable",
+          displayTypeRu: "Сироп",
+          subtypeKey: "syrup",
+          productFamily: "sugar_syrup_honey"
+        }
+      })
+    ];
+
+    const result = await listIngredientPickerQuickStart("user-1", {
+      category: "fermentable",
+      subtype: "fermentable",
+      recentReferences: [
+        { source: "catalog", id: "extract-1" }
+      ]
+    });
+
+    expect(result.brands).toEqual([]);
+    expect((result.groups ?? []).map((group) => group.value)).toEqual([
+      "extracts_and_concentrates",
+      "sugars_and_syrups"
+    ]);
+    expect((result.groups ?? []).map((group) => group.label)).toEqual([
+      "Экстракты и концентраты",
+      "Сахара и сиропы"
+    ]);
+  });
+
+  it("returns hop quick-start recent items and preloaded context data without brand chips", async () => {
+    mockState.catalogItems = [
+      buildCatalogItem({
+        id: "hop-favorite",
+        type: "hop",
+        category: "hop",
+        subtype: "hop",
+        primaryLabelRu: "Citra",
+        displayName: "Citra",
+        displayNameRu: "Citra",
+        displayNameEn: "Citra",
+        nameRu: "Citra",
+        nameEn: "Citra",
+        brand: "Yakima Chief",
+        producer: "Yakima Chief",
+        brandName: "Yakima Chief",
+        manufacturer: "Yakima Chief",
+        itemKind: "hop",
+        technicalData: {
+          type: "hop",
+          alphaAcidPctTypical: 13,
+          hopForm: "pellet"
+        },
+        defaultUnit: "g",
+        defaultDisplayUnit: "g",
+        allowedUnits: ["kg", "g"],
+        measurementDimension: "mass"
+      }),
+      buildCatalogItem({
+        id: "hop-recent",
+        type: "hop",
+        category: "hop",
+        subtype: "hop",
+        primaryLabelRu: "Mosaic",
+        displayName: "Mosaic",
+        displayNameRu: "Mosaic",
+        displayNameEn: "Mosaic",
+        nameRu: "Mosaic",
+        nameEn: "Mosaic",
+        brand: "Цук",
+        producer: "Цук",
+        brandName: "Цук",
+        manufacturer: "Цук",
+        itemKind: "hop",
+        technicalData: {
+          type: "hop",
+          alphaAcidPctTypical: 12,
+          hopForm: "pellet"
+        },
+        defaultUnit: "g",
+        defaultDisplayUnit: "g",
+        allowedUnits: ["kg", "g"],
+        measurementDimension: "mass"
+      })
+    ];
+    mockState.customItems = [
+      buildCustomIngredientRow({
+        id: "hop-custom",
+        type: "hop",
+        displayName: "My Hop",
+        manufacturer: "Hop Heaven",
+        hopAlphaAcidPct: 9,
+        fermentableExtractYieldPct: null,
+        fermentableColorEbc: null,
+        properties: {
+          category: "hop",
+          subtype: "hop",
+          nameEn: "My Hop",
+          aliases: []
+        }
+      })
+    ];
+    mockState.favoriteKeys = new Set(["catalog:hop-favorite"]);
+
+    const quickStart = await listIngredientPickerQuickStart("user-1", {
+      category: "hop",
+      recentReferences: [
+        { source: "catalog", id: "hop-recent" }
+      ]
+    });
+
+    expect(quickStart.recent.map((item) => item.id)).toEqual(["hop-recent"]);
+    expect(quickStart.brands).toEqual([]);
+    expect(quickStart.groups ?? []).toEqual([]);
+    expect(quickStart.hasFavoritesAvailable).toBe(true);
+    expect(quickStart.hasCustomAvailable).toBe(true);
+
+    await expect(getIngredientPickerQuickStartByContext("user-1")).resolves.toMatchObject({
+      hop: {
+        hasFavoritesAvailable: true,
+        hasCustomAvailable: true
+      }
+    });
+  });
+
+  it("returns yeast quick-start brands, recent items and preloaded context data", async () => {
+    mockState.catalogItems = [
+      buildCatalogItem({
+        id: "yeast-favorite",
+        type: "yeast",
+        category: "yeast",
+        subtype: "yeast",
+        primaryLabelRu: "US-05",
+        displayName: "US-05",
+        displayNameRu: "US-05",
+        displayNameEn: "US-05",
+        nameRu: "US-05",
+        nameEn: "US-05",
+        brand: "Fermentis",
+        producer: "Fermentis",
+        brandName: "Fermentis",
+        manufacturer: "Fermentis",
+        itemKind: "yeast",
+        technicalData: {
+          type: "yeast",
+          form: "dry"
+        },
+        defaultUnit: "g",
+        defaultDisplayUnit: "g",
+        allowedUnits: ["g", "pcs"],
+        measurementDimension: "count"
+      }),
+      buildCatalogItem({
+        id: "yeast-recent",
+        type: "yeast",
+        category: "yeast",
+        subtype: "yeast",
+        primaryLabelRu: "Verdant IPA",
+        displayName: "Verdant IPA",
+        displayNameRu: "Verdant IPA",
+        displayNameEn: "Verdant IPA",
+        nameRu: "Verdant IPA",
+        nameEn: "Verdant IPA",
+        brand: "Lallemand",
+        producer: "Lallemand",
+        brandName: "Lallemand",
+        manufacturer: "Lallemand",
+        itemKind: "yeast",
+        technicalData: {
+          type: "yeast",
+          form: "dry"
+        },
+        defaultUnit: "g",
+        defaultDisplayUnit: "g",
+        allowedUnits: ["g", "pcs"],
+        measurementDimension: "count"
+      })
+    ];
+    mockState.customItems = [
+      buildCustomIngredientRow({
+        id: "yeast-custom",
+        type: "yeast",
+        displayName: "My House Yeast",
+        manufacturer: "Mangrove Jack's",
+        yeastAttenuationPct: 78,
+        fermentableExtractYieldPct: null,
+        fermentableColorEbc: null,
+        properties: {
+          category: "yeast",
+          subtype: "yeast",
+          nameEn: "My House Yeast",
+          aliases: []
+        }
+      })
+    ];
+    mockState.favoriteKeys = new Set(["catalog:yeast-favorite"]);
+
+    const quickStart = await listIngredientPickerQuickStart("user-1", {
+      category: "yeast",
+      recentReferences: [
+        { source: "catalog", id: "yeast-recent" }
+      ]
+    });
+
+    expect(quickStart.recent.map((item) => item.id)).toEqual(["yeast-recent"]);
+    expect(quickStart.brands.map((brand) => brand.label)).toEqual([
+      "Lallemand",
+      "Fermentis",
+      "Mangrove Jack's"
+    ]);
+    expect(quickStart.groups ?? []).toEqual([]);
+    expect(quickStart.hasFavoritesAvailable).toBe(true);
+    expect(quickStart.hasCustomAvailable).toBe(true);
+
+    await expect(getIngredientPickerQuickStartByContext("user-1")).resolves.toMatchObject({
+      yeast: {
+        hasFavoritesAvailable: true,
+        hasCustomAvailable: true
+      }
+    });
+  });
+
+  it("returns water treatment quick-start groups, recent items and preloaded context data", async () => {
+    mockState.catalogItems = [
+      buildCatalogItem({
+        id: "wt-favorite",
+        type: "water_treatment",
+        category: "water_treatment",
+        subtype: "salt",
+        primaryLabelRu: "Хлорид кальция",
+        displayName: "Хлорид кальция",
+        nameRu: "Хлорид кальция",
+        nameEn: "Calcium Chloride",
+        brand: null,
+        producer: null,
+        brandName: null,
+        manufacturer: null,
+        itemKind: "salt",
+        technicalData: {
+          type: "water_treatment"
+        },
+        defaultUnit: "g",
+        defaultDisplayUnit: "g",
+        allowedUnits: ["g", "kg"],
+        measurementDimension: "weight"
+      }),
+      buildCatalogItem({
+        id: "wt-recent",
+        type: "water_treatment",
+        category: "water_treatment",
+        subtype: "acid",
+        primaryLabelRu: "Молочная кислота",
+        displayName: "Молочная кислота",
+        nameRu: "Молочная кислота",
+        nameEn: "Lactic Acid",
+        brand: null,
+        producer: null,
+        brandName: null,
+        manufacturer: null,
+        itemKind: "acid",
+        technicalData: {
+          type: "water_treatment"
+        },
+        defaultUnit: "ml",
+        defaultDisplayUnit: "ml",
+        allowedUnits: ["ml", "l"],
+        measurementDimension: "volume"
+      })
+    ];
+    mockState.customItems = [
+      buildCustomIngredientRow({
+        id: "wt-custom",
+        type: "water_treatment",
+        displayName: "Осмос",
+        manufacturer: null,
+        fermentableExtractYieldPct: null,
+        fermentableColorEbc: null,
+        properties: {
+          category: "water_treatment",
+          subtype: "water_source",
+          nameEn: "RO Water",
+          aliases: []
+        }
+      })
+    ];
+    mockState.favoriteKeys = new Set(["catalog:wt-favorite"]);
+
+    const quickStart = await listIngredientPickerQuickStart("user-1", {
+      category: "water_treatment",
+      recentReferences: [
+        { source: "catalog", id: "wt-recent" }
+      ]
+    });
+
+    expect(quickStart.recent.map((item) => item.id)).toEqual(["wt-recent"]);
+    expect((quickStart.groups ?? []).map((group) => group.value)).toEqual([
+      "salt",
+      "acid",
+      "base",
+      "dechlorination",
+      "water_source"
+    ]);
+    expect(quickStart.brands).toEqual([]);
+    expect(quickStart.hasFavoritesAvailable).toBe(true);
+    expect(quickStart.hasCustomAvailable).toBe(true);
+
+    await expect(getIngredientPickerQuickStartByContext("user-1")).resolves.toMatchObject({
+      water_treatment: {
+        hasFavoritesAvailable: true,
+        hasCustomAvailable: true
+      }
+    });
+  });
+
+  it("returns consumable quick-start groups, recent items and preloaded context data", async () => {
+    mockState.catalogItems = [
+      buildCatalogItem({
+        id: "cons-favorite",
+        type: "consumable",
+        category: "consumable",
+        subtype: null,
+        primaryLabelRu: "Star San",
+        displayName: "Star San",
+        nameRu: "Star San",
+        nameEn: "Star San",
+        sourceCategory: "sanitizer",
+        itemKind: "process_aid",
+        technicalData: {
+          type: "consumable",
+          pickerGroup: "sanitizer"
+        },
+        defaultUnit: "ml",
+        defaultDisplayUnit: "ml",
+        allowedUnits: ["ml", "l"],
+        measurementDimension: "volume"
+      }),
+      buildCatalogItem({
+        id: "cons-recent",
+        type: "consumable",
+        category: "consumable",
+        subtype: null,
+        primaryLabelRu: "Кронен-пробки",
+        displayName: "Кронен-пробки",
+        nameRu: "Кронен-пробки",
+        nameEn: "Crown Caps",
+        sourceCategory: "packaging",
+        itemKind: "other",
+        technicalData: {
+          type: "consumable",
+          usageStage: ["packaging"]
+        },
+        defaultUnit: "item",
+        defaultDisplayUnit: "item",
+        allowedUnits: ["item", "pack"],
+        measurementDimension: "count"
+      })
+    ];
+    mockState.customItems = [
+      buildCustomIngredientRow({
+        id: "cons-custom",
+        type: "consumable",
+        displayName: "CO2",
+        manufacturer: null,
+        fermentableExtractYieldPct: null,
+        fermentableColorEbc: null,
+        properties: {
+          category: "consumable",
+          subtype: "other",
+          sourceCategory: "gas",
+          nameEn: "CO2",
+          aliases: []
+        }
+      })
+    ];
+    mockState.favoriteKeys = new Set(["catalog:cons-favorite"]);
+
+    const quickStart = await listIngredientPickerQuickStart("user-1", {
+      category: "consumable",
+      recentReferences: [
+        { source: "catalog", id: "cons-recent" }
+      ]
+    });
+
+    expect(quickStart.recent.map((item) => item.id)).toEqual(["cons-recent"]);
+    expect((quickStart.groups ?? []).map((group) => group.value)).toEqual([
+      "sanitizer",
+      "cleaner",
+      "fining",
+      "enzyme",
+      "nutrient",
+      "antioxidant",
+      "packaging",
+      "gas"
+    ]);
+    expect(quickStart.brands).toEqual([]);
+    expect(quickStart.hasFavoritesAvailable).toBe(true);
+    expect(quickStart.hasCustomAvailable).toBe(true);
+
+    await expect(getIngredientPickerQuickStartByContext("user-1")).resolves.toMatchObject({
+      consumable: {
+        hasFavoritesAvailable: true,
+        hasCustomAvailable: true
+      }
+    });
+  });
+
+  it("returns precomputed quick-start availability for both fermentable subtypes", async () => {
+    mockState.catalogItems = [
+      buildCatalogItem({
+        id: "malt-favorite",
+        subtype: "malt"
+      })
+    ];
+    mockState.customItems = [
+      buildCustomIngredientRow({
+        id: "fermentable-custom",
+        displayName: "Мой экстракт",
+        properties: {
+          category: "fermentable",
+          subtype: "fermentable",
+          nameEn: "My Extract",
+          aliases: []
+        }
+      })
+    ];
+    mockState.favoriteKeys = new Set(["catalog:malt-favorite"]);
+
+    await expect(getIngredientPickerQuickStartAvailability("user-1", {
+      category: "fermentable",
+      subtype: "malt"
+    })).resolves.toEqual({
+      hasFavoritesAvailable: true,
+      hasCustomAvailable: false
+    });
+
+    await expect(getIngredientPickerQuickStartAvailability("user-1", {
+      category: "fermentable",
+      subtype: "fermentable"
+    })).resolves.toEqual({
+      hasFavoritesAvailable: false,
+      hasCustomAvailable: true
+    });
+
+    await expect(getIngredientPickerQuickStartAvailabilityBySubtype("user-1")).resolves.toEqual({
+      malt: {
+        hasFavoritesAvailable: true,
+        hasCustomAvailable: false
+      },
+      fermentable: {
+        hasFavoritesAvailable: false,
+        hasCustomAvailable: true
+      }
+    });
+  });
+
+  it("filters water treatment groups through sourceCategory and itemKind aliases, not only subtype", async () => {
+    mockState.catalogItems = [
+      buildCatalogItem({
+        id: "wt-acid-structured",
+        type: "water_treatment",
+        category: "water_treatment",
+        subtype: "other",
+        itemKind: "lactic_acid",
+        sourceCategory: "кислоты",
+        primaryLabelRu: "Молочная кислота 80%",
+        displayName: "Молочная кислота 80%",
+        nameRu: "Молочная кислота 80%",
+        nameEn: "Lactic Acid 80%",
+        technicalData: {
+          type: "water_treatment",
+          formula: "C3H6O3",
+          recommendedFor: ["acidification"]
+        },
+        defaultUnit: "ml",
+        defaultDisplayUnit: "ml",
+        allowedUnits: ["ml", "l"],
+        measurementDimension: "volume"
+      }),
+      buildCatalogItem({
+        id: "wt-base-water",
+        type: "water_treatment",
+        category: "water_treatment",
+        subtype: "water_source",
+        primaryLabelRu: "Осмос",
+        displayName: "Осмос",
+        nameRu: "Осмос",
+        nameEn: "RO Water",
+        technicalData: {
+          type: "water_treatment"
+        },
+        defaultUnit: "l",
+        defaultDisplayUnit: "l",
+        allowedUnits: ["l", "ml"],
+        measurementDimension: "volume"
+      })
+    ];
+
+    const result = await searchUserCatalogIngredients("user-1", {
+      q: "",
+      category: "water_treatment",
+      group: "acid",
+      limit: 10
+    });
+
+    expect(result.items.map((item) => item.id)).toEqual(["wt-acid-structured"]);
+    expect(result.appliedGroup?.value).toBe("acid");
+  });
+
+  it("filters consumable groups through subcategory and sourceCategory aliases", async () => {
+    mockState.catalogItems = [
+      buildCatalogItem({
+        id: "cons-sani-structured",
+        type: "consumable",
+        category: "consumable",
+        subtype: "process_aid",
+        itemKind: "process_aid",
+        sourceCategory: "process_aid",
+        subcategory: "Санитайзеры",
+        primaryLabelRu: "Star San",
+        displayName: "Star San",
+        nameRu: "Star San",
+        nameEn: "Star San",
+        technicalData: {
+          type: "consumable"
+        },
+        defaultUnit: "ml",
+        defaultDisplayUnit: "ml",
+        allowedUnits: ["ml", "l"],
+        measurementDimension: "volume"
+      }),
+      buildCatalogItem({
+        id: "cons-pack-structured",
+        type: "consumable",
+        category: "consumable",
+        subtype: "other",
+        itemKind: "closure",
+        sourceCategory: "packaging",
+        subcategory: "Тара и укупорка",
+        primaryLabelRu: "Кронен-пробки",
+        displayName: "Кронен-пробки",
+        nameRu: "Кронен-пробки",
+        nameEn: "Crown Caps",
+        technicalData: {
+          type: "consumable"
+        },
+        defaultUnit: "item",
+        defaultDisplayUnit: "item",
+        allowedUnits: ["item", "pack"],
+        measurementDimension: "count"
+      })
+    ];
+
+    const result = await searchUserCatalogIngredients("user-1", {
+      q: "",
+      category: "consumable",
+      group: "sanitizer",
+      limit: 10
+    });
+
+    expect(result.items.map((item) => item.id)).toEqual(["cons-sani-structured"]);
+    expect(result.appliedGroup?.value).toBe("sanitizer");
   });
 
   it("returns immediate malt family-scoped results even when the visible query is empty", async () => {
@@ -331,6 +937,48 @@ describe("user catalog ingredient search", () => {
       label: "Пилснер"
     });
     expect(result.items.map((item) => item.id)).toEqual(["castle-pilsner"]);
+  });
+
+  it("filters generic fermentables by normalized group and exposes the applied group label", async () => {
+    mockState.catalogItems = [
+      buildCatalogItem({
+        id: "extract-1",
+        subtype: "fermentable",
+        groupName: "extracts_and_concentrates",
+        technicalData: {
+          type: "fermentable",
+          displayTypeRu: "Сухой солодовый экстракт",
+          subtypeKey: "malt_extract",
+          productFamily: "extract_concentrate",
+          extractForm: "dry"
+        }
+      }),
+      buildCatalogItem({
+        id: "fruit-1",
+        subtype: "fermentable",
+        groupName: "fruits_and_vegetables",
+        technicalData: {
+          type: "fermentable",
+          displayTypeRu: "Фруктовое пюре",
+          subtypeKey: "fruit_puree",
+          productFamily: "fruit_vegetable"
+        }
+      })
+    ];
+
+    const result = await searchUserCatalogIngredients("user-1", {
+      q: "",
+      category: "fermentable",
+      subtype: "fermentable",
+      group: "extracts_and_concentrates",
+      limit: 10
+    });
+
+    expect(result.items.map((item) => item.id)).toEqual(["extract-1"]);
+    expect(result.appliedGroup).toMatchObject({
+      value: "extracts_and_concentrates",
+      label: "Экстракты и концентраты"
+    });
   });
 
   it("filters malt results to favorites only even without a typed query", async () => {

@@ -47,7 +47,11 @@ import { InventorySearchInput, buildInventorySuggestionParams } from "../compone
 import { InventoryToolbar } from "../components/inventory/inventory-toolbar";
 import type { InventoryListItemDto } from "../features/inventory/contracts";
 import { getInventoryUnitInputStep } from "../features/inventory/units";
-import { buildInventoryToolbarHref, hasActiveInventoryFilters } from "../features/inventory/page-model";
+import {
+  buildInventoryToolbarHref,
+  hasActiveInventoryFilters,
+  resolveInventoryShowFinished
+} from "../features/inventory/page-model";
 
 describe("inventory usability components", () => {
   it("uses the same ingredient category grid labels and subtype mapping as the add modal", () => {
@@ -153,6 +157,7 @@ describe("inventory usability components", () => {
     expect(html).toContain("Хмель");
     expect(html).toContain(">Пусто</span>");
     expect(html).toContain("disabled");
+    expect(html).not.toContain("Показать закончившиеся");
   });
 
   it("builds live URLs and inventory suggestion params", () => {
@@ -169,6 +174,9 @@ describe("inventory usability components", () => {
       showFinished: false,
       sort: "default"
     })).toBe(false);
+
+    expect(resolveInventoryShowFinished(true, { emptyItems: 0 })).toBe(false);
+    expect(resolveInventoryShowFinished(true, { emptyItems: 2 })).toBe(true);
 
     expect(buildInventorySuggestionParams({
       q: "malt",
@@ -257,9 +265,51 @@ describe("inventory usability components", () => {
     expect(html).toContain("до 100 % засыпи");
     expect(html).not.toContain("80% extract");
     expect(html).toContain("linear-gradient(180deg");
-    expect(html).toContain("0 закончился");
+    expect(html).toContain("обнулить остаток");
     expect(html).toContain('aria-label="Редактировать"');
     expect(html).toContain('aria-label="Удалить"');
+  });
+
+  it("renders localized hop form badges instead of raw enum values", () => {
+    const item: InventoryListItemDto = {
+      id: "inv-hop-1",
+      enteredQuantity: 100,
+      enteredUnit: "g",
+      normalizedQuantity: 100,
+      normalizedUnit: "g",
+      unitDimension: "weight",
+      purchasedAt: null,
+      freshnessDate: null,
+      notes: null,
+      archivedAt: null,
+      createdAt: new Date("2025-01-01"),
+      updatedAt: new Date("2025-01-01"),
+      source: {
+        sourceKind: "catalog",
+        sourceId: "cat-hop-1",
+        type: "hop",
+        category: "hop",
+        primaryLabelRu: "Citra",
+        secondaryLabelRu: "Цитра",
+        displayName: "Citra",
+        displayNameRu: "Цитра",
+        normalizedName: "citra",
+        technicalData: {
+          type: "hop",
+          alphaAcidPctTypical: 12.5,
+          hopForm: "standard"
+        }
+      }
+    };
+
+    const html = renderToStaticMarkup(React.createElement(InventoryListItem, {
+      item,
+      preferredCurrency: "RUB",
+      currencyRates: { RUB: 100, USD: 7900, EUR: 9170 }
+    }));
+
+    expect(html).toContain("Гранулы");
+    expect(html).not.toContain("standard");
   });
 
   it("renders a compact buy entry with marketplace previews when purchase links exist", () => {
@@ -678,7 +728,7 @@ describe("inventory usability components", () => {
     expect(html).toContain("Citra");
     expect(html).toContain("Yakima Chief");
     expect(html).toContain("Альфа 12%");
-    expect(html).toContain("pellet");
+    expect(html).toContain("Гранулы");
     expect(html).toMatch(/Yakima Chief.*svg/);
   });
 
@@ -737,6 +787,8 @@ describe("inventory usability components", () => {
     expect(html).toContain("Жидкий солодовый экстракт");
     expect(html).toContain("Weyermann");
     expect(html).toMatch(/Weyermann.*svg/);
+    expect(html).toMatch(/Weyermann.*Жидкий солодовый экстракт/);
+    expect(html).toContain("до 100 % засыпи");
   });
 
   it("tracks dirty state and zero-stock validity for inline editor logic", () => {

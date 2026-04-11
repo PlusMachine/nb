@@ -6,6 +6,114 @@ import type {
 
 const normalizeKey = (value: string | null | undefined) => value?.trim().toLowerCase() ?? "";
 
+export const canonicalizeConsumablePickerGroup = (value?: string | null) => {
+  const normalized = normalizeKey(value).replace(/[\s-]+/g, "_");
+  if (!normalized) {
+    return null;
+  }
+
+  if (
+    normalized === "sanitizer"
+    || normalized === "sanitizers"
+    || normalized.includes("sanitize")
+    || normalized.includes("sanit")
+    || normalized === "санитайзер"
+    || normalized === "санитайзеры"
+    || normalized.includes("дезинф")
+  ) {
+    return "sanitizer";
+  }
+
+  if (
+    normalized === "cleaner"
+    || normalized === "cleaners"
+    || normalized.includes("clean")
+    || normalized.includes("wash")
+    || normalized.includes("cip")
+    || normalized === "мойка"
+    || normalized.startsWith("моющ")
+    || normalized.includes("очист")
+  ) {
+    return "cleaner";
+  }
+
+  if (
+    normalized === "fining"
+    || normalized === "finings"
+    || normalized.includes("clarif")
+    || normalized.startsWith("освет")
+    || normalized.startsWith("клариф")
+  ) {
+    return "fining";
+  }
+
+  if (
+    normalized === "enzyme"
+    || normalized === "enzymes"
+    || normalized.includes("enzyme")
+    || normalized.includes("enzym")
+    || normalized.startsWith("фермент")
+  ) {
+    return "enzyme";
+  }
+
+  if (
+    normalized === "nutrient"
+    || normalized === "nutrients"
+    || normalized.includes("nutrient")
+    || normalized.includes("yeast_food")
+    || normalized.startsWith("подкорм")
+    || normalized.includes("питат")
+  ) {
+    return "nutrient";
+  }
+
+  if (
+    normalized === "antioxidant"
+    || normalized === "antioxidants"
+    || normalized.includes("antioxid")
+    || normalized.startsWith("антиокс")
+  ) {
+    return "antioxidant";
+  }
+
+  if (
+    normalized === "packaging"
+    || normalized === "package"
+    || normalized === "closure"
+    || normalized === "closures"
+    || normalized.includes("bottle")
+    || normalized.includes("cap")
+    || normalized.includes("crown")
+    || normalized.includes("cork")
+    || normalized.includes("keg")
+    || normalized === "tara"
+    || normalized === "tara_i_ukuporka"
+    || normalized === "ukuporka"
+    || normalized.includes("тара")
+    || normalized.includes("укупор")
+    || normalized.includes("крыш")
+    || normalized.includes("пробк")
+    || normalized.includes("бутыл")
+  ) {
+    return "packaging";
+  }
+
+  if (
+    normalized === "gas"
+    || normalized === "gases"
+    || normalized === "co2"
+    || normalized === "carbon_dioxide"
+    || normalized === "газ"
+    || normalized === "газы"
+    || normalized.includes("углекисл")
+  ) {
+    return "gas";
+  }
+
+  return normalized in consumablePickerGroupLabels ? normalized : null;
+};
+
 const dedupeStrings = (values: Array<string | null | undefined>) => {
   const seen = new Set<string>();
   const result: string[] = [];
@@ -35,7 +143,7 @@ export const consumablePickerGroupOrder = [
   "enzyme",
   "nutrient",
   "antioxidant",
-  "defoamer",
+  "packaging",
   "gas"
 ] as const;
 
@@ -46,7 +154,7 @@ export const consumablePickerGroupLabels: Record<string, string> = {
   enzyme: "Ферменты",
   nutrient: "Подкормки",
   antioxidant: "Антиоксиданты",
-  defoamer: "Пеногасители",
+  packaging: "Тара и укупорка",
   gas: "Газы"
 };
 
@@ -57,7 +165,7 @@ export const consumablePickerGroupDescriptions: Record<string, string> = {
   enzyme: "Ферменты для затора, ароматики и брожения",
   nutrient: "Подкормки, ре-гидратация и дрожжевые оболочки",
   antioxidant: "Стабилизация и защита от окисления",
-  defoamer: "Пеногасители для брожения и кипа",
+  packaging: "Тара, крышки, пробки и расходка для розлива",
   gas: "CO2 и газовая расходка"
 };
 
@@ -72,15 +180,37 @@ export const resolveConsumableTechnicalData = (
 export const resolveConsumablePickerGroup = (source: {
   technicalData?: IngredientTechnicalData | null;
   sourceCategory?: string | null;
+  subcategory?: string | null;
+  groupName?: string | null;
+  subtype?: string | null;
+  itemKind?: string | null;
 }) => {
   const technicalData = resolveConsumableTechnicalData(source.technicalData);
-  return technicalData?.pickerGroup?.trim()
-    || source.sourceCategory?.trim()
-    || null;
+  const candidates = [
+    technicalData?.pickerGroup ?? null,
+    source.sourceCategory ?? null,
+    source.subcategory ?? null,
+    source.groupName ?? null,
+    source.subtype ?? null,
+    source.itemKind ?? null
+  ];
+
+  for (const candidate of candidates) {
+    const explicitGroup = canonicalizeConsumablePickerGroup(candidate);
+    if (explicitGroup) {
+      return explicitGroup;
+    }
+  }
+
+  if ((technicalData?.usageStage ?? []).some((stage) => normalizeKey(stage) === "packaging")) {
+    return "packaging";
+  }
+
+  return null;
 };
 
 export const resolveConsumablePickerGroupLabel = (value?: string | null) => {
-  const normalized = normalizeKey(value);
+  const normalized = canonicalizeConsumablePickerGroup(value);
   if (!normalized) {
     return null;
   }
@@ -89,7 +219,7 @@ export const resolveConsumablePickerGroupLabel = (value?: string | null) => {
 };
 
 export const resolveConsumablePickerGroupDescription = (value?: string | null) => {
-  const normalized = normalizeKey(value);
+  const normalized = canonicalizeConsumablePickerGroup(value);
   if (!normalized) {
     return null;
   }

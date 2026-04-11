@@ -14,25 +14,25 @@ describe("catalog seed data", () => {
     );
 
     expect(counts).toEqual({
-      "hop_catalog_minimal_v2.json": 187,
+      "hop_catalog_minimal_v2.json": 218,
       "malt_catalog_minimal_v2.json": 442,
-      "fermentables_catalog_minimal_v2.json": 194,
-      "yeasts_catalog_minimal_v2.json": 176,
+      "fermentables_catalog_minimal_v2.normalized.json": 173,
+      "yeasts_catalog_minimal_v2.json": 191,
       "consumables_v4_patch_proposal.json": 32,
-      "water_treatment_catalog_minimal_v2.json": 24
+      "water_treatment_catalog_minimal_v2.json": 28
     });
   });
 
   it("prepares canonical ingredients from the new catalog only", () => {
     const prepared = catalogSeedManifest.flatMap((spec) => prepareCatalogSeedFile(spec));
 
-    expect(prepared).toHaveLength(1055);
-    expect(prepared.filter((item) => item.ingredient.type === "hop")).toHaveLength(187);
+    expect(prepared).toHaveLength(1084);
+    expect(prepared.filter((item) => item.ingredient.type === "hop")).toHaveLength(218);
     expect(prepared.filter((item) => item.ingredient.type === "malt")).toHaveLength(442);
-    expect(prepared.filter((item) => item.ingredient.type === "fermentable")).toHaveLength(194);
-    expect(prepared.filter((item) => item.ingredient.type === "yeast")).toHaveLength(176);
+    expect(prepared.filter((item) => item.ingredient.type === "fermentable")).toHaveLength(173);
+    expect(prepared.filter((item) => item.ingredient.type === "yeast")).toHaveLength(191);
     expect(prepared.filter((item) => item.ingredient.type === "consumable")).toHaveLength(32);
-    expect(prepared.filter((item) => item.ingredient.type === "water_treatment")).toHaveLength(24);
+    expect(prepared.filter((item) => item.ingredient.type === "water_treatment")).toHaveLength(28);
   });
 
   it("seeds package variants only for consumables", () => {
@@ -88,7 +88,7 @@ describe("catalog seed data", () => {
 
   it("derives fermentable country codes from country names used in the catalog", () => {
     const prepared = prepareCatalogSeedFile({
-      fileName: "fermentables_catalog_minimal_v2.json",
+      fileName: "fermentables_catalog_minimal_v2.normalized.json",
       type: "fermentable"
     });
 
@@ -101,14 +101,17 @@ describe("catalog seed data", () => {
 
   it("keeps fermentables file classification authoritative even for malt extract source tokens", () => {
     const prepared = prepareCatalogSeedFile({
-      fileName: "fermentables_catalog_minimal_v2.json",
+      fileName: "fermentables_catalog_minimal_v2.normalized.json",
       type: "fermentable"
     });
-    const bavarianPilsner = prepared.find((item) => item.ingredient.id === "weyermann-bavarian-pilsner-ekstrakty-kontsentraty");
+    const bavarianPilsner = prepared.find((item) => item.ingredient.id === "muntons-premium-pilsner-ekstrakty-kontsentraty");
 
     expect(bavarianPilsner?.ingredient.type).toBe("fermentable");
     expect(bavarianPilsner?.ingredient.itemKind).toBe("malt_extract");
-    expect(bavarianPilsner?.ingredient.producer).toBe("Weyermann");
+    expect(bavarianPilsner?.ingredient.producer).toBe("Muntons");
     expect((bavarianPilsner?.ingredient.attributes ?? {}).extract_form).toBe("liquid");
+    expect((bavarianPilsner?.ingredient.attributes ?? {}).display_type_ru).toBe("Жидкий охмелённый солодовый экстракт");
+    expect((bavarianPilsner?.ingredient.attributes ?? {}).product_family).toBe("extract_concentrate");
+    expect((bavarianPilsner?.ingredient.attributes ?? {}).subtype_key).toBe("malt_extract");
   });
 });

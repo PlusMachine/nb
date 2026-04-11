@@ -28,9 +28,9 @@ const formatDirtyQuantityValue = (value: string) => {
   return Number.isFinite(parsed) ? formatInventoryQuantityInputValue(parsed) : value;
 };
 
-export const inventoryFinishedActionLabel = "0 закончился";
-export const inventoryFinishedActionInlineClassName = "inline-flex items-center rounded-lg border border-zinc-200 bg-zinc-100 px-2.5 py-1.5 text-[11px] font-medium text-zinc-600 transition-colors hover:border-zinc-300 hover:bg-zinc-200 hover:text-zinc-800 disabled:opacity-60";
-export const inventoryFinishedActionBlockClassName = "w-full rounded-lg border border-zinc-200 bg-zinc-100 py-2 text-center text-[11px] font-medium text-zinc-600 transition-colors hover:border-zinc-300 hover:bg-zinc-200 hover:text-zinc-800 disabled:opacity-60";
+export const inventoryFinishedActionLabel = "обнулить остаток";
+export const inventoryFinishedActionInlineClassName = "inline-flex h-6 items-center text-[11px] font-normal leading-none text-zinc-500 transition-colors hover:text-zinc-800 disabled:opacity-60";
+export const inventoryFinishedActionBlockClassName = "w-full py-2 text-center text-[11px] font-normal text-zinc-500 transition-colors hover:text-zinc-800 disabled:opacity-60";
 
 export const isInventoryQuantityDraftDirty = (
   quantity: string,

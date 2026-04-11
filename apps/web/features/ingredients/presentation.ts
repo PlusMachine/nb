@@ -1,6 +1,6 @@
 import type { IngredientDisplayMode, IngredientTechnicalData } from "./contracts";
 import { normalizeSearchText } from "./normalization";
-import { resolveIngredientTechnicalDataColorRangeEbc } from "./technical-fields";
+import { formatHopFormLabel, resolveIngredientTechnicalDataColorRangeEbc } from "./technical-fields";
 import type { IngredientCategory, IngredientSubtype, LegacyIngredientType as IngredientType } from "./taxonomy";
 
 type IngredientPresentationSource = {
@@ -60,10 +60,10 @@ const subtypeLabels: Record<string, string> = {
 };
 
 const fermentableItemKindLabels: Record<string, string> = {
-  raw_adjunct: "Несоложенка",
+  raw_adjunct: "Несоложёнка",
   flaked_adjunct: "Хлопья",
   flour_adjunct: "Мука",
-  torrefied_adjunct: "Торрефицированное сырье",
+  torrefied_adjunct: "Торрефицированное сырьё",
   sugar: "Сахар",
   syrup: "Сироп",
   honey: "Мёд",
@@ -71,15 +71,15 @@ const fermentableItemKindLabels: Record<string, string> = {
   fruit_or_vegetable: "Фрукты и овощи",
   fruit_puree: "Фруктовое пюре",
   juice: "Сок",
-  juice_concentrate: "Концентрат сока",
+  juice_concentrate: "Концентрированный сок",
   dried_fruit: "Сухофрукты",
   kvass_concentrate: "Концентрат квасного сусла",
   body_builder: "Телообразователь",
   sour_wort: "Кислое сусло",
-  process_adjunct: "Технологическая добавка",
+  process_adjunct: "Техническая добавка",
   coloring_extract: "Красящий экстракт",
-  coloring_sugar: "Красящий сахар",
-  malt_corn_concentrate: "Солодово-кукурузный концентрат",
+  coloring_sugar: "Сахарный колер",
+  malt_corn_concentrate: "Солодовый концентрат",
   extract: "Экстракт"
 };
 
@@ -103,6 +103,12 @@ const areNameVariantsEqual = (left?: string, right?: string) => {
 
   return normalizeSearchText(left) === normalizeSearchText(right);
 };
+
+const normalizeOptionalKey = (value?: string | null) => normalizeOptionalName(value)?.toLowerCase() ?? null;
+
+const capitalizeFirst = (value: string) => value
+  ? `${value[0]?.toUpperCase() ?? ""}${value.slice(1)}`
+  : value;
 
 const countryCodeAliases: Record<string, string> = {
   UK: "GB",
@@ -286,6 +292,111 @@ export const resolveIngredientBrandLabel = (
   ?? normalizeOptionalName(source.manufacturer)
   ?? null;
 
+type FermentableTypeBadgeInput = {
+  displayTypeRu?: string | null;
+  productFamily?: string | null;
+  subtypeKey?: string | null;
+  functionalRole?: string | null;
+  extractForm?: "dry" | "liquid" | null;
+  physicalForm?: string | null;
+  baseMaterialFamily?: string | null;
+  hoppingState?: "hopped" | "unhopped" | "unknown" | "not_applicable" | null;
+};
+
+const resolveFermentableBadgeForm = (input: Pick<FermentableTypeBadgeInput, "extractForm" | "physicalForm">) => {
+  if (input.extractForm === "dry" || input.extractForm === "liquid") {
+    return input.extractForm;
+  }
+
+  const normalizedPhysicalForm = normalizeOptionalKey(input.physicalForm);
+  return normalizedPhysicalForm === "dry" || normalizedPhysicalForm === "liquid"
+    ? normalizedPhysicalForm
+    : null;
+};
+
+export const resolveFermentableTypeBadgeRu = (input: FermentableTypeBadgeInput): string | null => {
+  const displayTypeRu = normalizeOptionalName(input.displayTypeRu);
+  if (displayTypeRu) {
+    return displayTypeRu;
+  }
+
+  const functionalRole = normalizeOptionalKey(input.functionalRole);
+  const subtypeKey = normalizeOptionalKey(input.subtypeKey);
+  const productFamily = normalizeOptionalKey(input.productFamily);
+  const baseMaterialFamily = normalizeOptionalKey(input.baseMaterialFamily);
+  const hoppingState = normalizeOptionalKey(input.hoppingState) as FermentableTypeBadgeInput["hoppingState"];
+
+  if (functionalRole === "color_only" || functionalRole === "color_adjustment" || subtypeKey === "coloring_extract") {
+    return "Красящий экстракт";
+  }
+
+  if (subtypeKey === "sour_wort" || functionalRole === "acidification") {
+    return "Кислое сусло";
+  }
+
+  if (subtypeKey === "kvass_concentrate") {
+    return "Концентрат квасного сусла";
+  }
+
+  if (subtypeKey === "body_builder") {
+    return "Добавка для тела";
+  }
+
+  if (subtypeKey === "malt_extract") {
+    const form = resolveFermentableBadgeForm(input);
+    const base = baseMaterialFamily === "wheat"
+      ? "пшеничный "
+      : baseMaterialFamily === "rye"
+        ? "ржаной "
+        : "";
+
+    if (hoppingState === "hopped") {
+      return `Охмелённый ${base}солодовый экстракт`.replace(/\s+/g, " ").trim();
+    }
+
+    if (form === "dry") {
+      return `Сухой ${base}солодовый экстракт`.replace(/\s+/g, " ").trim();
+    }
+
+    if (form === "liquid") {
+      return `Жидкий ${base}солодовый экстракт`.replace(/\s+/g, " ").trim();
+    }
+
+    return capitalizeFirst(`${base}солодовый экстракт`.replace(/\s+/g, " ").trim());
+  }
+
+  if (subtypeKey) {
+    const subtypeLabel = fermentableItemKindLabels[subtypeKey];
+    if (subtypeLabel) {
+      return subtypeLabel;
+    }
+
+    if (subtypeKey === "whole_fruit_or_vegetable") {
+      return "Фрукты и овощи";
+    }
+
+    if (subtypeKey === "special_extract") {
+      return "Экстракт";
+    }
+  }
+
+  switch (productFamily) {
+    case "extract":
+    case "extract_concentrate":
+      return "Экстракт";
+    case "adjunct_grain":
+      return "Несоложёнка";
+    case "sugar":
+    case "sugar_syrup_honey":
+      return "Сахар";
+    case "fruit":
+    case "fruit_vegetable":
+      return "Фруктовая добавка";
+    default:
+      return null;
+  }
+};
+
 export const resolveIngredientFermentableKindLabel = (source: Pick<
   IngredientPresentationSource,
   | "category"
@@ -293,19 +404,7 @@ export const resolveIngredientFermentableKindLabel = (source: Pick<
   | "type"
   | "itemKind"
   | "technicalData"
-  | "primaryLabelRu"
-  | "secondaryLabelRu"
-  | "displayName"
-  | "displayNameRu"
-  | "displayNameEn"
-  | "nameRu"
-  | "nameEn"
 >) => {
-  const itemKind = normalizeOptionalName(source.itemKind)?.toLowerCase();
-  if (!itemKind) {
-    return null;
-  }
-
   const isFermentable = source.subtype === "fermentable"
     || source.type === "fermentable"
     || (source.category === "fermentable" && source.subtype !== "malt");
@@ -313,45 +412,23 @@ export const resolveIngredientFermentableKindLabel = (source: Pick<
     return null;
   }
 
-  if (itemKind === "malt_extract") {
-    const technicalData = source.technicalData && typeof source.technicalData === "object"
-      ? source.technicalData as IngredientTechnicalData
-      : null;
-    const extractForm = technicalData?.type === "fermentable"
-      && (technicalData.extractForm === "dry" || technicalData.extractForm === "liquid")
-      ? technicalData.extractForm
-      : null;
+  const technicalData = source.technicalData && typeof source.technicalData === "object"
+    ? source.technicalData as IngredientTechnicalData
+    : null;
+  const fermentableTechnicalData = technicalData?.type === "fermentable"
+    ? technicalData as Extract<IngredientTechnicalData, { type: "fermentable" }>
+    : null;
 
-    if (extractForm === "dry") {
-      return "Сухой солодовый экстракт";
-    }
-
-    if (extractForm === "liquid") {
-      return "Жидкий солодовый экстракт";
-    }
-
-    const context = normalizeSearchText([
-      source.primaryLabelRu,
-      source.secondaryLabelRu,
-      source.displayName,
-      source.displayNameRu,
-      source.displayNameEn,
-      source.nameRu,
-      source.nameEn
-    ].filter(Boolean).join(" "));
-
-    if (context.includes("dme") || context.includes("spraymalt") || context.includes("сух")) {
-      return "Сухой солодовый экстракт";
-    }
-
-    if (context.includes("lme") || context.includes("liquid") || context.includes("жидк")) {
-      return "Жидкий солодовый экстракт";
-    }
-
-    return "Солодовый экстракт";
-  }
-
-  return fermentableItemKindLabels[itemKind] ?? itemKind.replaceAll("_", " ");
+  return resolveFermentableTypeBadgeRu({
+    displayTypeRu: fermentableTechnicalData?.displayTypeRu,
+    productFamily: fermentableTechnicalData?.productFamily,
+    subtypeKey: fermentableTechnicalData?.subtypeKey ?? source.itemKind ?? null,
+    functionalRole: fermentableTechnicalData?.functionalRole,
+    extractForm: fermentableTechnicalData?.extractForm,
+    physicalForm: fermentableTechnicalData?.physicalForm,
+    baseMaterialFamily: fermentableTechnicalData?.baseMaterialFamily,
+    hoppingState: fermentableTechnicalData?.hoppingState
+  });
 };
 
 export const formatIngredientCountry = (source: Pick<IngredientPresentationSource, "countryCode"> & {
@@ -519,7 +596,7 @@ const buildHopSummary = (technicalData: Extract<IngredientTechnicalData, { type:
     technicalData.alphaAcidPctTypical != null
       ? `${formatNumber(technicalData.alphaAcidPctTypical)}% AA`
       : null,
-    technicalData.hopForm && technicalData.hopForm !== "standard" ? technicalData.hopForm : null
+    formatHopFormLabel(technicalData.hopForm)
   ].filter(Boolean).join(" • ")
 );
 

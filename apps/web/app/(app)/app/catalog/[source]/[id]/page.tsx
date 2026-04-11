@@ -12,6 +12,7 @@ import {
   formatIngredientSubtypeLabel,
   resolveIngredientBrandLabel,
   resolveIngredientCountry,
+  resolveIngredientFermentableKindLabel,
   type ResolvedIngredientCountry
 } from "@/features/ingredients/presentation";
 import {
@@ -182,7 +183,7 @@ export default async function IngredientDetailPage({
   const technicalRows = renderTechnicalRows(item);
   const primaryFacts = buildPrimaryFacts(item);
   const typeLabel = item.category === "fermentable"
-    ? (item.subtype === "malt" ? "Солод" : "Сбраживаемое сырье")
+    ? (item.subtype === "malt" ? "Солод" : resolveIngredientFermentableKindLabel(item) ?? "Сбраживаемое сырье")
     : formatIngredientSubtypeLabel(item.category, item.subtype);
   const subtleAliases = Array.from(new Set(item.aliases.map((alias) => alias.alias).filter(Boolean)));
   const brandLabel = resolveIngredientBrandLabel(item);

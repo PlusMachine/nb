@@ -230,12 +230,12 @@ export const createRecipeCustomIngredientAction = async (payload: {
 }): Promise<RecipeCustomIngredientResult> => {
   try {
     const user = await requireUser();
-    const [{ buildCustomIngredientLinkage }, { resolveLegacyIngredientType }, { createUserCustomIngredient }] = await Promise.all([
+    const [{ buildCustomIngredientLinkage }, { resolveLegacyIngredientType }, { createUserCustomInventoryIngredient }] = await Promise.all([
       import("@/features/ingredients/source-linkage"),
       import("@/features/ingredients/taxonomy"),
       import("@/features/inventory/service")
     ]);
-    const customIngredient = await createUserCustomIngredient(user.id, {
+    const customIngredient = await createUserCustomInventoryIngredient(user.id, {
       category: payload.category,
       type: resolveLegacyIngredientType({
         category: payload.category,

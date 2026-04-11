@@ -293,6 +293,7 @@ const toSuggestionItem = (
   countryCode: dto.countryCode,
   countryName: dto.countryName,
   productCode: dto.productCode,
+  groupName: dto.groupName,
   technicalData: dto.technicalData,
   defaultUnit: dto.defaultUnit,
   defaultDisplayUnit: dto.defaultDisplayUnit,

@@ -1,12 +1,15 @@
 import React from "react";
+import { redirect } from "next/navigation";
 import { GroupedInventoryList } from "@/components/inventory/grouped-inventory-list";
 import { InventoryEmptyState } from "@/components/inventory/inventory-empty-state";
 import { AddIngredientTrigger } from "@/components/inventory/add-ingredient-trigger";
 import { InventoryToolbar } from "@/components/inventory/inventory-toolbar";
 import {
+  buildInventoryToolbarHref,
   defaultInventorySortOption,
   defaultInventoryShowFinished,
-  hasActiveInventoryFilters
+  hasActiveInventoryFilters,
+  resolveInventoryShowFinished
 } from "@/features/inventory/page-model";
 import { getInventorySummaries, listInventoryForUser } from "@/features/inventory/service";
 import {
@@ -21,7 +24,10 @@ import {
   type InventorySortOption
 } from "@/features/inventory/contracts";
 import { resolveIngredientCategory } from "@/features/ingredients/taxonomy";
-import { getIngredientSuggestionByRef } from "@/features/ingredients/catalog-service";
+import {
+  getIngredientPickerQuickStartByContext,
+  getIngredientSuggestionByRef
+} from "@/features/ingredients/catalog-service";
 import { listSystemCurrencyRates } from "@/features/system/currency-rates";
 import { requireUser } from "@/lib/auth";
 
@@ -79,7 +85,7 @@ export default async function MyIngredientsPage({ searchParams }: Props) {
     typeof resolvedParams.type === "string" ? resolvedParams.type : undefined
   );
   const subtype = parseSubtype(typeof resolvedParams.subtype === "string" ? resolvedParams.subtype : undefined);
-  const showFinished = parseShowFinished(
+  const requestedShowFinished = parseShowFinished(
     typeof resolvedParams.finished === "string" ? resolvedParams.finished : undefined,
     typeof resolvedParams.stock === "string" ? resolvedParams.stock : undefined
   );
@@ -87,12 +93,12 @@ export default async function MyIngredientsPage({ searchParams }: Props) {
   const addSource = typeof resolvedParams.addSource === "string" ? resolvedParams.addSource : undefined;
   const addId = typeof resolvedParams.addId === "string" ? resolvedParams.addId : undefined;
 
-  const [items, summary, currencyRates, initialSelection] = await Promise.all([
+  const [items, summary, currencyRates, initialSelection, initialQuickStartDataByContext] = await Promise.all([
     listInventoryForUser(user.id, {
       category,
       subtype,
-      includeEmpty: showFinished,
-      stockState: showFinished ? "all" : "in_stock",
+      includeEmpty: requestedShowFinished,
+      stockState: requestedShowFinished ? "all" : "in_stock",
       sort,
       search: rawSearch
     }),
@@ -100,8 +106,20 @@ export default async function MyIngredientsPage({ searchParams }: Props) {
     listSystemCurrencyRates(),
     addSource === "catalog" || addSource === "custom"
       ? getIngredientSuggestionByRef(user.id, addSource, addId ?? "")
-      : Promise.resolve(null)
+      : Promise.resolve(null),
+    getIngredientPickerQuickStartByContext(user.id)
   ]);
+  const showFinished = resolveInventoryShowFinished(requestedShowFinished, summary);
+
+  if (requestedShowFinished && !showFinished) {
+    redirect(buildInventoryToolbarHref("/app/ingredients", {
+      search: rawSearch,
+      category: category ?? "all",
+      subtype: subtype ?? null,
+      showFinished: false,
+      sort
+    }));
+  }
 
   const hasAnyItems = summary.totalItems > 0;
   const hasFilters = hasActiveInventoryFilters({
@@ -125,6 +143,7 @@ export default async function MyIngredientsPage({ searchParams }: Props) {
         </div>
         <AddIngredientTrigger
           preferredCurrency={user.preferredCurrency}
+          initialQuickStartDataByContext={initialQuickStartDataByContext}
           initialSelection={initialSelection}
           initialCategory={initialSelection?.category ?? category ?? null}
           initialSubtype={
@@ -154,6 +173,7 @@ export default async function MyIngredientsPage({ searchParams }: Props) {
             category={category}
             subtype={subtype ?? null}
             showFinished={showFinished}
+            initialQuickStartDataByContext={initialQuickStartDataByContext}
           />
         )
         : <GroupedInventoryList items={items} preferredCurrency={user.preferredCurrency} currencyRates={currencyRates} />}

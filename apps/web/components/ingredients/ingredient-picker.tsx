@@ -10,6 +10,7 @@ import type {
   IngredientConsumableGroupRefinement,
   IngredientSearchFamilyScope,
   IngredientManufacturerRefinement,
+  IngredientPickerQuickStartAvailability,
   IngredientPickerQuickStartResult,
   IngredientSearchResult,
   IngredientSearchRefinement,
@@ -36,14 +37,16 @@ import {
   resolveIngredientFermentableKindLabel
 } from "@/features/ingredients/presentation";
 import {
+  buildIngredientPickerQuickStartBrandsFromRecentSelections,
+  buildIngredientPickerQuickStartGroupsFromRecentSelections,
   buildIngredientPickerQuickStartFamilySearchValue,
   filterIngredientPickerRecentReferencesForContext,
-  ingredientPickerMaltQuickStartFallbackBrands,
   ingredientPickerMaltQuickStartFamilies,
   ingredientPickerQuickStartBrandLimit,
   ingredientPickerQuickStartRecentStorageKey,
   type IngredientPickerStoredRecentSelection,
   resolveIngredientPickerQuickStartFamilyScope,
+  resolveWaterTreatmentQuickStartGroup,
   resolveIngredientPickerScopedPlaceholder,
   sanitizeIngredientPickerStoredRecentSelections,
   shouldShowIngredientQuickStart,
@@ -52,6 +55,7 @@ import {
 import {
   buildConsumableMarketPrimaryLabel,
   formatConsumablePackageLabel,
+  resolveConsumablePickerGroup,
   resolveConsumableMarketNames,
   resolveConsumablePackageVariantName,
   resolveConsumableTechnicalData
@@ -69,6 +73,9 @@ type Props = {
   type?: IngredientType;
   category?: IngredientCategory;
   subtype?: Extract<IngredientSubtype, "malt" | "fermentable"> | null;
+  initialQuickStartData?: IngredientPickerQuickStartResult | null;
+  initialQuickStartAvailability?: IngredientPickerQuickStartAvailability | null;
+  hydrateRecentSelectionsOnInit?: boolean;
   limit?: number;
   autoFocus?: boolean;
   focusSignal?: number;
@@ -216,55 +223,6 @@ export const IngredientPickerLoadingState = ({
         className="h-3.5 w-3.5 shrink-0 animate-spin rounded-full border-2 border-zinc-300 border-t-zinc-700"
       />
       <span className="font-medium text-zinc-700">{label}</span>
-    </div>
-  </div>
-);
-
-const IngredientPickerQuickStartLoadingPanel = ({
-  showCustomOnlyFilter = false
-}: {
-  showCustomOnlyFilter?: boolean;
-}) => (
-  <div
-    className="min-h-[12rem] rounded-md border border-zinc-200 bg-white shadow-sm"
-    data-testid="ingredient-picker-quick-start-loading"
-  >
-    <div className="space-y-4 px-3 py-3">
-      <div className="flex min-h-[34px] flex-wrap items-center gap-2" data-testid="ingredient-picker-quick-start-favorites">
-        <span aria-hidden="true" className="inline-flex h-[34px] w-[132px] animate-pulse rounded-full border border-zinc-200 bg-zinc-100" />
-        {showCustomOnlyFilter ? <span aria-hidden="true" className="inline-flex h-[34px] w-[102px] animate-pulse rounded-full border border-zinc-200 bg-zinc-100" /> : null}
-      </div>
-
-      <section className="space-y-2" data-testid="ingredient-picker-quick-start-brands">
-        <div className="text-[10px] font-medium uppercase tracking-[0.12em] text-zinc-500">По бренду</div>
-        <div className="flex flex-wrap gap-2">
-          <span aria-hidden="true" className="inline-flex h-[34px] w-[126px] animate-pulse rounded-full border border-zinc-200 bg-zinc-100" />
-          <span aria-hidden="true" className="inline-flex h-[34px] w-[104px] animate-pulse rounded-full border border-zinc-200 bg-zinc-100" />
-          <span aria-hidden="true" className="inline-flex h-[34px] w-[96px] animate-pulse rounded-full border border-zinc-200 bg-zinc-100" />
-        </div>
-      </section>
-
-      <section className="space-y-2" data-testid="ingredient-picker-quick-start-types">
-        <div className="text-[10px] font-medium uppercase tracking-[0.12em] text-zinc-500">По типу</div>
-        <div className="flex flex-wrap gap-2">
-          <span aria-hidden="true" className="inline-flex h-[34px] w-[78px] animate-pulse rounded-full border border-zinc-200 bg-zinc-100" />
-          <span aria-hidden="true" className="inline-flex h-[34px] w-[94px] animate-pulse rounded-full border border-zinc-200 bg-zinc-100" />
-          <span aria-hidden="true" className="inline-flex h-[34px] w-[106px] animate-pulse rounded-full border border-zinc-200 bg-zinc-100" />
-          <span aria-hidden="true" className="inline-flex h-[34px] w-[88px] animate-pulse rounded-full border border-zinc-200 bg-zinc-100" />
-        </div>
-      </section>
-
-      <section className="space-y-2" data-testid="ingredient-picker-quick-start-recent">
-        <div className="flex min-h-[1.5rem] items-center">
-          <span className="text-xs font-semibold text-zinc-900">Недавние</span>
-        </div>
-        <div
-          className="rounded-lg border border-dashed border-zinc-200 bg-zinc-50 px-3 py-2 text-xs text-zinc-500"
-          data-testid="ingredient-picker-quick-start-recent-loading"
-        >
-          Загружаем недавние...
-        </div>
-      </section>
     </div>
   </div>
 );
@@ -637,15 +595,17 @@ const resolveIngredientPickerMetaSummary = ({
 const IngredientPickerMetaLine = ({
   brandLabel,
   country,
+  badgeLabel,
   summary,
   compact = false
 }: {
   brandLabel?: string | null;
   country?: ResolvedIngredientCountry | null;
+  badgeLabel?: string | null;
   summary?: string | null;
   compact?: boolean;
 }) => {
-  if (!brandLabel && !country?.code && !summary) {
+  if (!brandLabel && !country?.code && !badgeLabel && !summary) {
     return null;
   }
 
@@ -663,9 +623,14 @@ const IngredientPickerMetaLine = ({
           className={compact ? "h-2.5 w-3 shrink-0 ring-0" : "h-3 w-4 shrink-0"}
         />
       ) : null}
+      {badgeLabel ? (
+        <span className="rounded-full bg-white px-2 py-0.5 text-[11px] font-medium text-zinc-600 ring-1 ring-zinc-200">
+          {badgeLabel}
+        </span>
+      ) : null}
       {summary ? (
         <>
-          {(brandLabel || country?.code) ? <span aria-hidden="true">•</span> : null}
+          {(brandLabel || country?.code || badgeLabel) ? <span aria-hidden="true">•</span> : null}
           <span className={compact ? "truncate" : undefined}>{summary}</span>
         </>
       ) : null}
@@ -826,6 +791,7 @@ export const IngredientSelectionCard = ({
   const brandLabel = resolveIngredientBrandLabel(item);
   const ownershipBadgeLabel = resolveIngredientOwnershipBadgeLabel(item);
   const isGenericFermentable = item.type === "fermentable" && item.subtype === "fermentable";
+  const topRowKindLabel = isGenericFermentable ? null : inlineKindLabel;
   const topRowBrandLabel = mergeBrandAndCountry && !isGenericFermentable
     ? (inlineBrand ?? brandLabel)
     : inlineBrand;
@@ -876,9 +842,9 @@ export const IngredientSelectionCard = ({
               ) : null}
             </span>
           ) : null}
-          {inlineKindLabel ? (
+          {topRowKindLabel ? (
             <span className="rounded-full bg-white px-2 py-0.5 text-[11px] font-medium text-zinc-600 ring-1 ring-zinc-200">
-              {inlineKindLabel}
+              {topRowKindLabel}
             </span>
           ) : null}
         </div>
@@ -888,6 +854,7 @@ export const IngredientSelectionCard = ({
             <IngredientPickerMetaLine
               brandLabel={brandLabel}
               country={country}
+              badgeLabel={inlineKindLabel}
               summary={lowerMetaSummary}
             />
           </div>
@@ -1021,8 +988,13 @@ export const shouldAllowIngredientFavoritesFilter = ({
   hasFavoritesInCategory?: boolean;
 }) => (
   enableQuickStart
-  && category === "fermentable"
-  && subtype === "malt"
+  && (
+    category === "hop"
+    || category === "yeast"
+    || category === "consumable"
+    || category === "water_treatment"
+    || (category === "fermentable" && (subtype === "malt" || subtype === "fermentable"))
+  )
   && hasFavoritesInCategory
 );
 
@@ -1125,28 +1097,32 @@ export const shouldShowIngredientPickerRecentExpandAction = ({
 
 export const IngredientPickerQuickStartPanel = ({
   brands,
+  groups = [],
   recent,
   recentState,
-  filtersState = "ready",
   onSelectItem,
   onSelectBrand,
+  onSelectGroup,
   onSelectFamily,
   onToggleFavorites,
   onToggleCustomOnly,
   showFavoritesFilter = true,
-  showCustomOnlyFilter = false
+  showCustomOnlyFilter = false,
+  showTypeFamilies = true
 }: {
   brands: IngredientManufacturerRefinement[];
+  groups?: IngredientConsumableGroupRefinement[];
   recent: IngredientSuggestionItem[];
   recentState?: "idle" | "loading" | "empty" | "ready";
-  filtersState?: "loading" | "ready";
   onSelectItem: (item: IngredientSuggestionItem) => void;
   onSelectBrand: (brand: IngredientManufacturerRefinement) => void;
+  onSelectGroup?: (group: IngredientConsumableGroupRefinement) => void;
   onSelectFamily: (familyKey: (typeof ingredientPickerMaltQuickStartFamilies)[number]["key"]) => void;
   onToggleFavorites: () => void;
   onToggleCustomOnly?: () => void;
   showFavoritesFilter?: boolean;
   showCustomOnlyFilter?: boolean;
+  showTypeFamilies?: boolean;
 }) => {
   const [showAllRecent, setShowAllRecent] = useState(false);
   const resolvedRecentState = recentState ?? (recent.length > 0 ? "ready" : "idle");
@@ -1158,42 +1134,36 @@ export const IngredientPickerQuickStartPanel = ({
     recentCount: recent.length
   });
   const showRecentSection = resolvedRecentState !== "idle";
+  const recentHeaderClassName = "flex min-h-[1.5rem] items-center justify-between gap-3 text-left";
 
   return (
     <div
-      className="min-h-[12rem] rounded-md border border-zinc-200 bg-white shadow-sm"
+      className="rounded-md border border-zinc-200 bg-white shadow-sm"
       data-testid="ingredient-picker-quick-start"
     >
       <div className="space-y-4 px-3 py-3">
-        <div
-          className="flex min-h-[34px] flex-wrap items-center gap-2"
-          data-testid="ingredient-picker-quick-start-favorites"
-        >
-          {filtersState === "loading" ? (
-            <>
-              <IngredientPickerQuickFilterSkeleton widthClassName="w-[132px]" />
-              {showCustomOnlyFilter ? <IngredientPickerQuickFilterSkeleton widthClassName="w-[102px]" /> : null}
-            </>
-          ) : (
-            <>
-              {showFavoritesFilter ? (
-                <IngredientPickerQuickFilterButton
-                  label="Только избранные"
-                  leadingIcon="★"
-                  onClick={onToggleFavorites}
-                  testId="ingredient-picker-favorites-filter"
-                />
-              ) : null}
-              {showCustomOnlyFilter && onToggleCustomOnly ? (
-                <IngredientPickerQuickFilterButton
-                  label="Только свои"
-                  onClick={onToggleCustomOnly}
-                  testId="ingredient-picker-custom-only-filter"
-                />
-              ) : null}
-            </>
-          )}
-        </div>
+        {showFavoritesFilter || (showCustomOnlyFilter && onToggleCustomOnly) ? (
+          <div
+            className="flex flex-wrap items-center gap-2"
+            data-testid="ingredient-picker-quick-start-favorites"
+          >
+            {showFavoritesFilter ? (
+              <IngredientPickerQuickFilterButton
+                label="Только избранные"
+                leadingIcon="★"
+                onClick={onToggleFavorites}
+                testId="ingredient-picker-favorites-filter"
+              />
+            ) : null}
+            {showCustomOnlyFilter && onToggleCustomOnly ? (
+              <IngredientPickerQuickFilterButton
+                label="Только свои"
+                onClick={onToggleCustomOnly}
+                testId="ingredient-picker-custom-only-filter"
+              />
+            ) : null}
+          </div>
+        ) : null}
 
         {brands.length > 0 ? (
           <section className="space-y-2" data-testid="ingredient-picker-quick-start-brands">
@@ -1213,25 +1183,45 @@ export const IngredientPickerQuickStartPanel = ({
           </section>
         ) : null}
 
-        <section className="space-y-2" data-testid="ingredient-picker-quick-start-types">
-          <div className="text-[10px] font-medium uppercase tracking-[0.12em] text-zinc-500">
-            По типу
-          </div>
-          <div className="flex flex-wrap gap-2" data-testid="ingredient-picker-quick-start-type-row">
-            {ingredientPickerMaltQuickStartFamilies.map((family) => (
-              <IngredientPickerQuickFilterButton
-                key={family.key}
-                label={family.label}
-                onClick={() => onSelectFamily(family.key)}
-                testId="ingredient-picker-quick-start-type-chip"
-              />
-            ))}
-          </div>
-        </section>
+        {groups.length > 0 ? (
+          <section className="space-y-2" data-testid="ingredient-picker-quick-start-groups">
+            <div className="text-[10px] font-medium uppercase tracking-[0.12em] text-zinc-500">
+              По группе
+            </div>
+            <div className="flex flex-wrap gap-2" data-testid="ingredient-picker-quick-start-group-row">
+              {groups.map((group) => (
+                <IngredientPickerQuickFilterButton
+                  key={group.value}
+                  label={group.label}
+                  onClick={() => onSelectGroup?.(group)}
+                  testId="ingredient-picker-quick-start-group-chip"
+                />
+              ))}
+            </div>
+          </section>
+        ) : null}
+
+        {showTypeFamilies ? (
+          <section className="space-y-2" data-testid="ingredient-picker-quick-start-types">
+            <div className="text-[10px] font-medium uppercase tracking-[0.12em] text-zinc-500">
+              По типу
+            </div>
+            <div className="flex flex-wrap gap-2" data-testid="ingredient-picker-quick-start-type-row">
+              {ingredientPickerMaltQuickStartFamilies.map((family) => (
+                <IngredientPickerQuickFilterButton
+                  key={family.key}
+                  label={family.label}
+                  onClick={() => onSelectFamily(family.key)}
+                  testId="ingredient-picker-quick-start-type-chip"
+                />
+              ))}
+            </div>
+          </section>
+        ) : null}
 
         {showRecentSection ? (
           <section
-            className="space-y-2"
+            className={resolvedRecentState === "ready" && showAllRecent ? "space-y-3" : "space-y-0"}
             data-testid="ingredient-picker-quick-start-recent"
           >
             {resolvedRecentState === "ready" && showRecentToggle ? (
@@ -1241,7 +1231,7 @@ export const IngredientPickerQuickStartPanel = ({
                 onClick={() => setShowAllRecent((current) => !current)}
                 data-testid="ingredient-picker-quick-start-recent-toggle"
                 aria-expanded={showAllRecent}
-                className="flex w-full items-center justify-between gap-3 text-left"
+                className={`${recentHeaderClassName} w-full`}
               >
                 <span className="text-xs font-semibold text-zinc-900">
                   Недавние ({recent.length})
@@ -1250,32 +1240,36 @@ export const IngredientPickerQuickStartPanel = ({
                   {showAllRecent ? "Скрыть" : "Показать все"}
                 </span>
               </button>
+            ) : resolvedRecentState === "loading" ? (
+              <div className={recentHeaderClassName}>
+                <span className="text-xs font-semibold text-zinc-900">Недавние</span>
+                <span
+                  className="text-xs font-medium text-zinc-700"
+                  data-testid="ingredient-picker-quick-start-recent-loading"
+                >
+                  Загружаем недавние...
+                </span>
+              </div>
+            ) : resolvedRecentState === "empty" ? (
+              <div className={recentHeaderClassName}>
+                <span className="text-xs font-semibold text-zinc-900">Недавние</span>
+                <span
+                  className="text-xs font-medium text-zinc-500"
+                  data-testid="ingredient-picker-quick-start-recent-empty"
+                >
+                  Пока пусто
+                </span>
+              </div>
             ) : (
               <div className="flex min-h-[1.5rem] items-center">
                 <span className="text-xs font-semibold text-zinc-900">
-                  {resolvedRecentState === "ready" ? `Недавние (${recent.length})` : "Недавние"}
+                  Недавние ({recent.length})
                 </span>
               </div>
             )}
-            {resolvedRecentState === "loading" ? (
-              <div
-                className="rounded-lg border border-dashed border-zinc-200 bg-zinc-50 px-3 py-2 text-xs text-zinc-500"
-                data-testid="ingredient-picker-quick-start-recent-loading"
-              >
-                Загружаем недавние...
-              </div>
-            ) : null}
-            {resolvedRecentState === "empty" ? (
-              <div
-                className="rounded-lg border border-dashed border-zinc-200 bg-zinc-50 px-3 py-2 text-xs text-zinc-500"
-                data-testid="ingredient-picker-quick-start-recent-empty"
-              >
-                Последние выбранные ингредиенты появятся здесь.
-              </div>
-            ) : null}
             {resolvedRecentState === "ready" && showAllRecent ? (
               <div
-                className="mt-3 grid gap-2 sm:grid-cols-2"
+                className="grid gap-2 sm:grid-cols-2"
                 data-testid="ingredient-picker-quick-start-recent-list"
               >
                 {visibleRecent.map((item) => {
@@ -1437,8 +1431,36 @@ const readStoredIngredientPickerRecentSelections = () => {
   }
 };
 
+const resolveIngredientPickerRecentGroupValue = (
+  item: Pick<IngredientSuggestionItem, "category" | "subtype" | "itemKind" | "groupName" | "sourceCategory" | "subcategory" | "technicalData">
+) => {
+  if (item.category === "consumable") {
+    return resolveConsumablePickerGroup({
+      technicalData: item.technicalData,
+      sourceCategory: item.sourceCategory ?? item.groupName ?? null,
+      subcategory: item.subcategory ?? null,
+      groupName: item.groupName ?? null,
+      subtype: item.subtype ?? null,
+      itemKind: item.itemKind ?? null
+    });
+  }
+
+  if (item.category === "water_treatment") {
+    return resolveWaterTreatmentQuickStartGroup({
+      technicalData: item.technicalData,
+      sourceCategory: item.sourceCategory ?? item.groupName ?? null,
+      subcategory: item.subcategory ?? null,
+      subtype: item.subtype ?? null,
+      groupName: item.groupName ?? null,
+      itemKind: item.itemKind ?? null
+    });
+  }
+
+  return item.groupName ?? null;
+};
+
 const persistIngredientPickerRecentSelections = (
-  item: Pick<IngredientSuggestionItem, "source" | "id" | "category" | "subtype">,
+  item: Pick<IngredientSuggestionItem, "source" | "id" | "category" | "subtype" | "itemKind" | "brand" | "producer" | "brandName" | "manufacturer" | "groupName" | "sourceCategory" | "subcategory" | "technicalData">,
   options?: {
     fallbackCategory?: IngredientCategory;
     fallbackSubtype?: IngredientSubtype | null;
@@ -1452,7 +1474,9 @@ const persistIngredientPickerRecentSelections = (
     const current = readStoredIngredientPickerRecentSelections();
     const next = upsertIngredientPickerRecentSelections(current, item, {
       fallbackCategory: options?.fallbackCategory,
-      fallbackSubtype: options?.fallbackSubtype
+      fallbackSubtype: options?.fallbackSubtype,
+      brandLabel: resolveIngredientBrandLabel(item),
+      groupValue: resolveIngredientPickerRecentGroupValue(item)
     });
     window.localStorage.setItem(ingredientPickerQuickStartRecentStorageKey, JSON.stringify(next));
   } catch {
@@ -1462,17 +1486,51 @@ const persistIngredientPickerRecentSelections = (
 
 const resolveIngredientPickerQuickStartSeedData = ({
   category,
-  subtype
+  subtype,
+  initialQuickStartData = null,
+  initialQuickStartAvailability = null,
+  recentSelections = []
 }: {
   category?: IngredientCategory;
   subtype?: Extract<IngredientSubtype, "malt" | "fermentable"> | null;
-}): IngredientPickerQuickStartResult => ({
-  brands: category === "fermentable" && subtype === "malt"
-    ? ingredientPickerMaltQuickStartFallbackBrands.slice(0, ingredientPickerQuickStartBrandLimit)
+  initialQuickStartData?: IngredientPickerQuickStartResult | null;
+  initialQuickStartAvailability?: IngredientPickerQuickStartAvailability | null;
+  recentSelections?: IngredientPickerStoredRecentSelection[];
+}): IngredientPickerQuickStartResult => initialQuickStartData ?? ({
+  brands: (category === "fermentable" && subtype === "malt") || category === "yeast"
+    ? buildIngredientPickerQuickStartBrandsFromRecentSelections({
+      selections: recentSelections,
+      category,
+      subtype,
+      limit: ingredientPickerQuickStartBrandLimit
+    })
+    : [],
+  groups: ((category === "fermentable" && subtype === "fermentable") || category === "consumable" || category === "water_treatment")
+    ? buildIngredientPickerQuickStartGroupsFromRecentSelections({
+      selections: recentSelections,
+      category,
+      subtype
+    })
     : [],
   recent: [],
-  hasFavoritesAvailable: false,
-  hasCustomAvailable: false
+  hasFavoritesAvailable: (
+    category === "hop"
+    || category === "yeast"
+    || category === "consumable"
+    || category === "water_treatment"
+    || (category === "fermentable" && (subtype === "malt" || subtype === "fermentable"))
+  )
+    ? (initialQuickStartAvailability?.hasFavoritesAvailable ?? false)
+    : false,
+  hasCustomAvailable: (
+    category === "hop"
+    || category === "yeast"
+    || category === "consumable"
+    || category === "water_treatment"
+    || (category === "fermentable" && (subtype === "malt" || subtype === "fermentable"))
+  )
+    ? (initialQuickStartAvailability?.hasCustomAvailable ?? false)
+    : false
 });
 
 const defaultLoadQuickStartIngredients = async ({
@@ -1501,10 +1559,7 @@ const defaultLoadQuickStartIngredients = async ({
   });
 
   if (!response.ok) {
-    return resolveIngredientPickerQuickStartSeedData({
-      category,
-      subtype
-    });
+    throw new Error("Failed to load ingredient picker quick-start.");
   }
 
   return await response.json() as IngredientPickerQuickStartResult;
@@ -1547,6 +1602,9 @@ export const IngredientPicker = ({
   type,
   category,
   subtype,
+  initialQuickStartData = null,
+  initialQuickStartAvailability = null,
+  hydrateRecentSelectionsOnInit = false,
   limit = 10,
   autoFocus = false,
   focusSignal = 0,
@@ -1564,22 +1622,36 @@ export const IngredientPicker = ({
   searchIngredients = defaultSearchIngredients,
   loadQuickStartIngredients = defaultLoadQuickStartIngredients
 }: Props) => {
+  const initialRecentSelectionsRef = useRef<IngredientPickerStoredRecentSelection[] | null>(null);
+  if (initialRecentSelectionsRef.current === null) {
+    initialRecentSelectionsRef.current = hydrateRecentSelectionsOnInit && typeof window !== "undefined"
+      ? readStoredIngredientPickerRecentSelections()
+      : [];
+  }
+
   const [query, setQuery] = useState(value ?? "");
   const [searchResult, setSearchResult] = useState<IngredientSearchResult>(emptyIngredientSearchResult);
   const [quickStartData, setQuickStartData] = useState<IngredientPickerQuickStartResult>(() => (
     resolveIngredientPickerQuickStartSeedData({
       category,
-      subtype
+      subtype,
+      initialQuickStartData,
+      initialQuickStartAvailability,
+      recentSelections: initialRecentSelectionsRef.current ?? []
     })
   ));
-  const [recentSelections, setRecentSelections] = useState<IngredientPickerStoredRecentSelection[]>([]);
-  const [hasHydratedRecentSelections, setHasHydratedRecentSelections] = useState(false);
+  const [recentSelections, setRecentSelections] = useState<IngredientPickerStoredRecentSelection[]>(() => (
+    initialRecentSelectionsRef.current ?? []
+  ));
+  const [hasHydratedRecentSelections, setHasHydratedRecentSelections] = useState(() => (
+    hydrateRecentSelectionsOnInit && typeof window !== "undefined"
+  ));
   const [activeQuickStartFamily, setActiveQuickStartFamily] = useState<IngredientSearchFamilyScope | null>(null);
   const [activeGroup, setActiveGroup] = useState<IngredientConsumableGroupRefinement | null>(null);
   const [activeManufacturer, setActiveManufacturer] = useState<IngredientManufacturerRefinement | null>(null);
   const [activeFavoritesOnly, setActiveFavoritesOnly] = useState(false);
   const [activeCustomOnly, setActiveCustomOnly] = useState(false);
-  const [isQuickStartLoading, setIsQuickStartLoading] = useState(enableQuickStart && category === "fermentable" && subtype === "malt");
+  const [isQuickStartRecentLoading, setIsQuickStartRecentLoading] = useState(false);
   const [suppressQuickStart, setSuppressQuickStart] = useState(false);
   const [activeIndex, setActiveIndex] = useState(0);
   const [isOpen, setIsOpen] = useState(false);
@@ -1682,7 +1754,7 @@ export const IngredientPicker = ({
     setActiveManufacturer(null);
     setActiveFavoritesOnly(false);
     setActiveCustomOnly(false);
-    setIsQuickStartLoading(enableQuickStart && category === "fermentable" && subtype === "malt");
+    setIsQuickStartRecentLoading(false);
     setSuppressQuickStart(false);
     setIsExpanded(false);
     setSearchResult(emptyIngredientSearchResult);
@@ -1699,9 +1771,12 @@ export const IngredientPicker = ({
   useEffect(() => {
     setQuickStartData(resolveIngredientPickerQuickStartSeedData({
       category,
-      subtype
+      subtype,
+      initialQuickStartData,
+      initialQuickStartAvailability,
+      recentSelections
     }));
-  }, [category, enableQuickStart, subtype]);
+  }, [category, enableQuickStart, initialQuickStartAvailability, initialQuickStartData, recentSelections, subtype]);
 
   useEffect(() => {
     setIsExpanded(false);
@@ -1724,9 +1799,13 @@ export const IngredientPicker = ({
   }, []);
 
   useEffect(() => {
+    if (hasHydratedRecentSelections) {
+      return;
+    }
+
     setRecentSelections(readStoredIngredientPickerRecentSelections());
     setHasHydratedRecentSelections(true);
-  }, []);
+  }, [hasHydratedRecentSelections]);
 
   useEffect(() => {
     if (!shouldSearchIngredients({ isOpen, query: effectiveSearchQuery, hasSearchScope })) {
@@ -1827,12 +1906,12 @@ export const IngredientPicker = ({
 
   useEffect(() => {
     if (!showQuickStart || !category) {
-      setIsQuickStartLoading(false);
+      setIsQuickStartRecentLoading(false);
       return;
     }
 
     if (!hasHydratedRecentSelections) {
-      setIsQuickStartLoading(true);
+      setIsQuickStartRecentLoading(true);
       return;
     }
 
@@ -1840,14 +1919,14 @@ export const IngredientPicker = ({
     const cached = quickStartCacheRef.current.get(cacheKey);
     if (cached) {
       setQuickStartData(cached);
-      setIsQuickStartLoading(false);
+      setIsQuickStartRecentLoading(false);
       return;
     }
 
     const controller = new AbortController();
     const run = async () => {
       try {
-        setIsQuickStartLoading(true);
+        setIsQuickStartRecentLoading(true);
         const nextQuickStartData = await loadQuickStartIngredients({
           category,
           subtype,
@@ -1858,9 +1937,17 @@ export const IngredientPicker = ({
           return;
         }
 
-        quickStartCacheRef.current.set(cacheKey, nextQuickStartData);
-        setQuickStartData(nextQuickStartData);
-        setIsQuickStartLoading(false);
+        const resolvedQuickStartData = initialQuickStartData
+          ? {
+            ...nextQuickStartData,
+            brands: initialQuickStartData.brands,
+            groups: initialQuickStartData.groups ?? []
+          }
+          : nextQuickStartData;
+
+        quickStartCacheRef.current.set(cacheKey, resolvedQuickStartData);
+        setQuickStartData(resolvedQuickStartData);
+        setIsQuickStartRecentLoading(false);
       } catch (error) {
         if (isAbortError(error) || controller.signal.aborted) {
           return;
@@ -1868,9 +1955,12 @@ export const IngredientPicker = ({
 
         setQuickStartData(resolveIngredientPickerQuickStartSeedData({
           category,
-          subtype
+          subtype,
+          initialQuickStartData,
+          initialQuickStartAvailability,
+          recentSelections
         }));
-        setIsQuickStartLoading(false);
+        setIsQuickStartRecentLoading(false);
       }
     };
 
@@ -1879,7 +1969,7 @@ export const IngredientPicker = ({
     return () => {
       controller.abort();
     };
-  }, [category, hasHydratedRecentSelections, loadQuickStartIngredients, quickStartRecentReferences, quickStartRecentReferencesKey, showQuickStart, subtype]);
+  }, [category, hasHydratedRecentSelections, initialQuickStartAvailability, initialQuickStartData, loadQuickStartIngredients, quickStartRecentReferences, quickStartRecentReferencesKey, recentSelections, showQuickStart, subtype]);
 
   const grouped = useMemo(() => visibleItems.reduce<Record<string, IngredientSuggestionItem[]>>((acc, item) => {
     const groupKey = item.category ?? item.type;
@@ -1898,7 +1988,9 @@ export const IngredientPicker = ({
       });
       setRecentSelections((current) => upsertIngredientPickerRecentSelections(current, item, {
         fallbackCategory: category,
-        fallbackSubtype: subtype ?? null
+        fallbackSubtype: subtype ?? null,
+        brandLabel: resolveIngredientBrandLabel(item),
+        groupValue: resolveIngredientPickerRecentGroupValue(item)
       }));
     }
 
@@ -2029,6 +2121,19 @@ export const IngredientPicker = ({
       nextFamily: appliedQuickStartFamily,
       nextGroup: appliedGroup,
       nextManufacturer: brand,
+      nextFavoritesOnly: appliedFavoritesOnly,
+      nextCustomOnly: appliedCustomOnly,
+      focusInput: true,
+      syncInputValue: true
+    });
+  };
+
+  const activateQuickStartGroup = (group: IngredientConsumableGroupRefinement) => {
+    applyScopedSearchState({
+      nextQuery: query,
+      nextFamily: appliedQuickStartFamily,
+      nextGroup: group,
+      nextManufacturer: null,
       nextFavoritesOnly: appliedFavoritesOnly,
       nextCustomOnly: appliedCustomOnly,
       focusInput: true,
@@ -2202,7 +2307,7 @@ export const IngredientPicker = ({
     && !appliedCustomOnly;
   const currentRefinementType = searchResult.refinements[0]?.type ?? null;
   const refinementPanelTitle = currentRefinementType === "consumable_group"
-    ? "Уточнить группу расходников"
+    ? (category === "fermentable" ? "Уточнить группу сбраживаемых" : "Уточнить группу расходников")
     : "Уточнить производителя";
   const ingredientSectionTitle = activeScopeCount > 1
     ? "Результаты по выбранным фильтрам"
@@ -2463,25 +2568,27 @@ export const IngredientPicker = ({
     ) : builtInEmptyState
   ) : null;
   const quickStartPanel = showQuickStart ? (
-    isQuickStartLoading ? (
-      <IngredientPickerQuickStartLoadingPanel
-        showCustomOnlyFilter={allowCustomOnlyFilter && includeCustom !== false}
-      />
-    ) : (
-      <IngredientPickerQuickStartPanel
-        brands={quickStartData.brands}
-        recent={quickStartData.recent}
-        recentState={quickStartData.recent.length > 0 ? "ready" : "empty"}
-        filtersState="ready"
-        onSelectItem={commitSelection}
-        onSelectBrand={activateQuickStartBrand}
-        onSelectFamily={activateQuickStartFamily}
-        onToggleFavorites={toggleFavoritesFilter}
-        onToggleCustomOnly={toggleCustomOnlyFilter}
-        showFavoritesFilter={canShowFavoritesFilter}
-        showCustomOnlyFilter={canShowCustomOnlyFilter}
-      />
-    )
+    <IngredientPickerQuickStartPanel
+      brands={quickStartData.brands}
+      groups={quickStartData.groups ?? []}
+      recent={quickStartData.recent}
+      recentState={
+        !hasHydratedRecentSelections || isQuickStartRecentLoading
+          ? "loading"
+          : quickStartData.recent.length > 0
+            ? "ready"
+            : "empty"
+      }
+      onSelectItem={commitSelection}
+      onSelectBrand={activateQuickStartBrand}
+      onSelectGroup={activateQuickStartGroup}
+      onSelectFamily={activateQuickStartFamily}
+      onToggleFavorites={toggleFavoritesFilter}
+      onToggleCustomOnly={toggleCustomOnlyFilter}
+      showFavoritesFilter={canShowFavoritesFilter}
+      showCustomOnlyFilter={canShowCustomOnlyFilter}
+      showTypeFamilies={subtype === "malt"}
+    />
   ) : null;
 
   return (

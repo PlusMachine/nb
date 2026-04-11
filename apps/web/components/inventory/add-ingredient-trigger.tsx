@@ -4,8 +4,12 @@ import React from "react";
 import { useState } from "react";
 import { Plus } from "lucide-react";
 
-import type { IngredientSuggestionItem } from "@/features/ingredients/contracts";
-import type { IngredientCategory, IngredientSubtype } from "@/features/ingredients/contracts";
+import type {
+  IngredientCategory,
+  IngredientPickerQuickStartResultByContext,
+  IngredientSuggestionItem,
+  IngredientSubtype
+} from "@/features/ingredients/contracts";
 import type { SystemCurrency } from "@/features/system/currency";
 
 import { AddIngredientModal } from "./add-ingredient-modal";
@@ -17,6 +21,7 @@ type Props = {
   initialSelection?: IngredientSuggestionItem | null;
   initialCategory?: IngredientCategory | null;
   initialSubtype?: Extract<IngredientSubtype, "malt" | "fermentable"> | null;
+  initialQuickStartDataByContext?: IngredientPickerQuickStartResultByContext | null;
   openOnMount?: boolean;
 };
 
@@ -27,6 +32,7 @@ export function AddIngredientTrigger({
   initialSelection = null,
   initialCategory = null,
   initialSubtype = null,
+  initialQuickStartDataByContext = null,
   openOnMount = false
 }: Props) {
   const [open, setOpen] = useState(openOnMount);
@@ -48,6 +54,7 @@ export function AddIngredientTrigger({
         initialSelection={initialSelection}
         initialCategory={initialCategory}
         initialSubtype={initialSubtype}
+        initialQuickStartDataByContext={initialQuickStartDataByContext}
       />
     </>
   );

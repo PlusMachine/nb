@@ -3,6 +3,18 @@ import type { IngredientTechnicalData, IngredientTechnicalFields, IngredientType
 export const hopForms = ["pellet", "whole_cone", "lupulin", "cryo", "standard"] as const;
 export type HopForm = (typeof hopForms)[number];
 
+const hopFormDisplayLabels: Record<string, string> = {
+  pellet: "Гранулы",
+  standard: "Гранулы",
+  whole_cone: "Шишковой",
+  cone: "Шишковой",
+  leaf: "Шишковой",
+  cryo: "Крио",
+  lupulin: "Люпулин",
+  lupulin_concentrate: "Люпулин",
+  lupomax: "LUPOMAX"
+};
+
 export const yeastFlocculationLevels = ["low", "medium", "high"] as const;
 export type YeastFlocculationLevel = (typeof yeastFlocculationLevels)[number];
 
@@ -45,6 +57,15 @@ export const miscUsagePhaseLabels: Record<MiscUsagePhase, string> = {
   packaging: "Packaging",
   finished_beer: "Finished beer",
   other: "Other"
+};
+
+export const formatHopFormLabel = (value?: string | null) => {
+  const normalized = readString(value)?.toLowerCase();
+  if (!normalized) {
+    return null;
+  }
+
+  return hopFormDisplayLabels[normalized] ?? normalized.replaceAll("_", " ");
 };
 
 type IngredientTechnicalSource = {
@@ -121,6 +142,16 @@ const readStringArray = (...values: unknown[]) => {
 const readFermentableExtractForm = (...values: unknown[]) => {
   const normalized = readString(...values)?.toLowerCase();
   return normalized === "dry" || normalized === "liquid" ? normalized : null;
+};
+
+const readFermentableHoppingState = (...values: unknown[]) => {
+  const normalized = readString(...values)?.toLowerCase();
+  return normalized === "hopped"
+    || normalized === "unhopped"
+    || normalized === "unknown"
+    || normalized === "not_applicable"
+    ? normalized
+    : null;
 };
 
 const metadataPropertyKeys = new Set([
@@ -285,6 +316,17 @@ const fromAttributes = (
       type,
       fermentabilityClass: readString(attributes.fermentability_class),
       extractForm: readFermentableExtractForm(attributes.extract_form),
+      productFamily: readString(attributes.product_family),
+      subtypeKey: readString(attributes.subtype_key),
+      physicalForm: readString(attributes.physical_form),
+      baseMaterialFamily: readString(attributes.base_material_family),
+      baseMaterials: readStringArray(attributes.base_materials),
+      hoppingState: readFermentableHoppingState(attributes.hopping_state),
+      isHoppedProduct: readBoolean(attributes.is_hopped_product),
+      functionalRole: readString(attributes.functional_role),
+      gravityCalcMode: readString(attributes.gravity_calc_mode),
+      displayTypeRu: readString(attributes.display_type_ru),
+      displayTypeEn: readString(attributes.display_type_en),
       extractPctDryBasis: readNumber(attributes.extract_pct_dry_basis),
       colorLovibond: sanitizeIngredientColorValue(readNumber(attributes.color_lovibond)),
       recommendedMaxPct: readNumber(attributes.recommended_max_pct),
@@ -374,6 +416,7 @@ const normalizeStructuredTechnicalData = (technicalData: IngredientTechnicalData
     return {
       ...fermentable,
       extractForm: readFermentableExtractForm(fermentable.extractForm),
+      hoppingState: readFermentableHoppingState(fermentable.hoppingState),
       colorLovibond: sanitizeIngredientColorValue(fermentable.colorLovibond)
     };
   }

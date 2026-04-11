@@ -14,12 +14,15 @@ import { formatIngredientSubtypeLabel } from "@/features/ingredients/presentatio
 import { ingredientCategorySubtypes, resolveIngredientSubtype, resolveLegacyIngredientType } from "@/features/ingredients/taxonomy";
 import {
   buildCustomIngredientTechnicalData,
+  customHopFormLabels,
+  customHopSelectableForms,
   customYeastFormLabels,
   customYeastForms,
   normalizeCustomIngredientSubtype,
   resolveCustomIngredientUnitProfile,
   resolveDefaultCustomIngredientSubtype,
   shouldShowCustomIngredientSubtypeField,
+  type CustomHopForm,
   type CustomYeastForm
 } from "@/features/inventory/custom-ingredient";
 import type { InventoryPriceInputMode } from "@/features/inventory/purchase-cost";
@@ -41,6 +44,7 @@ export type CustomIngredientSubmitPayload = {
   fermentableColorEbc: string;
   fermentableExtractYieldPct: string;
   hopAlphaAcidPct: string;
+  hopForm: string;
   yeastAttenuationPct: string;
   yeastForm: string;
   defaultDisplayUnit: InventoryUnit;
@@ -76,6 +80,73 @@ const parseOptionalNumber = (value: string) => {
 
 const resolveSubtypeFieldLabel = () => "Подтип";
 
+type CustomIngredientPlaceholderKind =
+  | "malt"
+  | "fermentable"
+  | "hop"
+  | "yeast"
+  | "water_treatment"
+  | "consumable";
+
+const resolveCustomIngredientPlaceholderKind = (
+  category: IngredientCategory,
+  subtype: IngredientSubtype | null
+): CustomIngredientPlaceholderKind => {
+  if (category === "fermentable") {
+    return subtype === "fermentable" ? "fermentable" : "malt";
+  }
+
+  return category;
+};
+
+const resolveCustomIngredientDisplayNamePlaceholder = (kind: CustomIngredientPlaceholderKind) => {
+  if (kind === "malt") {
+    return "Например: Пшеничный солод";
+  }
+
+  if (kind === "fermentable") {
+    return "Например: Декстроза";
+  }
+
+  if (kind === "hop") {
+    return "Например: Хмель Cascade";
+  }
+
+  if (kind === "yeast") {
+    return "Например: US-05";
+  }
+
+  if (kind === "water_treatment") {
+    return "Например: Молочная кислота 80%";
+  }
+
+  return "Например: Irish Moss";
+};
+
+const resolveCustomIngredientBrandPlaceholder = (kind: CustomIngredientPlaceholderKind) => {
+  if (kind === "malt") {
+    return "Например: Castle Malting";
+  }
+
+  if (kind === "fermentable") {
+    return "Например: Briess";
+  }
+
+  if (kind === "hop") {
+    return "Например: Yakima Chief Hops";
+  }
+
+  if (kind === "yeast") {
+    return "Например: Fermentis";
+  }
+
+  if (kind === "water_treatment") {
+    return "Например: Неохим";
+  }
+
+  return "Например: Five Star Chemicals";
+};
+
 const customIngredientCountryOptions = [
   "Россия",
   "Беларусь",
@@ -104,6 +175,18 @@ const customIngredientCountryOptions = [
   "Бразилия"
 ] as const;
 
+function FieldBadge({ required }: { required: boolean }) {
+  return (
+    <span className={`inline-flex items-center rounded-full px-1.5 py-0.5 text-[9px] font-medium leading-none ${
+      required
+        ? "bg-amber-50 text-amber-600 ring-1 ring-amber-100"
+        : "bg-zinc-100 text-zinc-500 ring-1 ring-zinc-200/70"
+    }`}>
+      {required ? "обязательно" : "необязательно"}
+    </span>
+  );
+}
+
 export const getCustomIngredientSubtypeOptions = (category: IngredientCategory) => ingredientCategorySubtypes[category];
 
 export function CustomIngredientForm({ category, initialSubtype = null, preferredCurrency, pending, fieldErrors, onSubmit }: Props) {
@@ -115,6 +198,7 @@ export function CustomIngredientForm({ category, initialSubtype = null, preferre
   const [fermentableColorEbc, setFermentableColorEbc] = useState("");
   const [fermentableExtractYieldPct, setFermentableExtractYieldPct] = useState("");
   const [hopAlphaAcidPct, setHopAlphaAcidPct] = useState("");
+  const [hopForm, setHopForm] = useState<CustomHopForm>("pellet");
   const [harvestYear, setHarvestYear] = useState("");
   const [yeastAttenuationPct, setYeastAttenuationPct] = useState("");
   const [yeastForm, setYeastForm] = useState<CustomYeastForm>("dry");
@@ -148,6 +232,7 @@ export function CustomIngredientForm({ category, initialSubtype = null, preferre
     fermentableColorEbc: parseOptionalNumber(fermentableColorEbc),
     fermentableExtractYieldPct: parseOptionalNumber(fermentableExtractYieldPct),
     hopAlphaAcidPct: parseOptionalNumber(hopAlphaAcidPct),
+    hopForm: category === "hop" ? hopForm : null,
     yeastAttenuationPct: parseOptionalNumber(yeastAttenuationPct),
     yeastForm: category === "yeast" ? yeastForm : null
   }), [
@@ -155,6 +240,7 @@ export function CustomIngredientForm({ category, initialSubtype = null, preferre
     fermentableColorEbc,
     fermentableExtractYieldPct,
     hopAlphaAcidPct,
+    hopForm,
     resolvedType,
     yeastAttenuationPct,
     yeastForm
@@ -165,6 +251,7 @@ export function CustomIngredientForm({ category, initialSubtype = null, preferre
     subtype: resolvedSubtype,
     technicalData
   }), [category, resolvedSubtype, resolvedType, technicalData]);
+  const placeholderKind = resolveCustomIngredientPlaceholderKind(category, resolvedSubtype);
   const [enteredUnit, setEnteredUnit] = useState<InventoryUnit>(unitProfile.defaultUnit);
   const quantityStep = getInventoryUnitInputStep(enteredUnit);
   const subtypeOptions = category === "fermentable" || !shouldShowCustomIngredientSubtypeField(category)
@@ -178,6 +265,7 @@ export function CustomIngredientForm({ category, initialSubtype = null, preferre
     setPriceInputMode(nextOptionalFields.priceInputMode);
     setPriceInputAmount(nextOptionalFields.priceInputAmount);
     setHopAlphaAcidPct("");
+    setHopForm("pellet");
     setHarvestYear("");
     setYeastAttenuationPct("");
     setCountry("");
@@ -254,6 +342,7 @@ export function CustomIngredientForm({ category, initialSubtype = null, preferre
           fermentableColorEbc,
           fermentableExtractYieldPct,
           hopAlphaAcidPct,
+          hopForm: category === "hop" ? hopForm : "",
           yeastAttenuationPct,
           yeastForm: category === "yeast" ? yeastForm : "",
           defaultDisplayUnit: unitProfile.defaultUnit,
@@ -283,18 +372,16 @@ export function CustomIngredientForm({ category, initialSubtype = null, preferre
 
         <div className="space-y-3">
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-            <label className="block text-sm">Название ингредиента
+            <label className="block text-sm">
+              <span className="flex items-center gap-2">
+                <span>Название ингредиента</span>
+                <FieldBadge required />
+              </span>
               <input
                 className="mt-1 w-full rounded-md border px-2 py-2"
                 value={displayName}
                 onChange={(e) => setDisplayName(e.target.value)}
-                placeholder={
-                  category === "hop"
-                    ? "Например: Хмель Cascade"
-                    : category === "yeast"
-                      ? "Например: US-05"
-                      : "Например: Пшеничный солод"
-                }
+                placeholder={resolveCustomIngredientDisplayNamePlaceholder(placeholderKind)}
               />
               {fieldErrors?.displayName && <span className="text-xs text-red-600">{fieldErrors.displayName}</span>}
             </label>
@@ -304,7 +391,7 @@ export function CustomIngredientForm({ category, initialSubtype = null, preferre
                 className="mt-1 w-full rounded-md border px-2 py-2"
                 value={brand}
                 onChange={(e) => setBrand(e.target.value)}
-                placeholder="Например: Castle Malting"
+                placeholder={resolveCustomIngredientBrandPlaceholder(placeholderKind)}
               />
               {fieldErrors?.brand && <span className="text-xs text-red-600">{fieldErrors.brand}</span>}
             </label>
@@ -367,8 +454,20 @@ export function CustomIngredientForm({ category, initialSubtype = null, preferre
           ) : null}
 
           {category === "hop" ? (
-            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-              <label className="text-sm">Альфа-кислота, %
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+              <label className="text-sm">Тип хмеля
+                <select
+                  className="mt-1 w-full rounded-md border px-2 py-2"
+                  value={hopForm}
+                  onChange={(e) => setHopForm(e.target.value as CustomHopForm)}
+                >
+                  {customHopSelectableForms.map((option) => (
+                    <option key={option} value={option}>{customHopFormLabels[option]}</option>
+                  ))}
+                </select>
+                {fieldErrors?.hopForm && <span className="text-xs text-red-600">{fieldErrors.hopForm}</span>}
+              </label>
+              <label className="text-sm">Альфа, %
                 <input
                   type="number"
                   min="0"
@@ -382,7 +481,7 @@ export function CustomIngredientForm({ category, initialSubtype = null, preferre
                 />
                 {fieldErrors?.hopAlphaAcidPct && <span className="text-xs text-red-600">{fieldErrors.hopAlphaAcidPct}</span>}
               </label>
-              <label className="text-sm">Год урожая
+              <label className="text-sm">Урожай
                 <input
                   type="number"
                   min="1900"
@@ -434,7 +533,11 @@ export function CustomIngredientForm({ category, initialSubtype = null, preferre
         </div>
 
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2" data-testid="custom-required-fields">
-          <label className="text-sm">Количество *
+          <label className="text-sm">
+            <span className="flex items-center gap-2">
+              <span>Количество</span>
+              <FieldBadge required />
+            </span>
             <input
               type="number"
               min="0"
@@ -448,7 +551,7 @@ export function CustomIngredientForm({ category, initialSubtype = null, preferre
             {fieldErrors?.enteredQuantity && <span className="text-xs text-red-600">{fieldErrors.enteredQuantity}</span>}
           </label>
 
-          <label className="text-sm">Ед. изм. *
+          <label className="text-sm">Ед. изм.
             <select className="mt-1 w-full rounded-md border px-2 py-2" value={enteredUnit} onChange={(e) => setEnteredUnit(e.target.value as InventoryUnit)}>
               {unitProfile.allowedUnits.map((unit) => <option key={unit} value={unit}>{inventoryUnitLabels[unit]}</option>)}
             </select>

@@ -17,6 +17,7 @@ import {
   addCustomInventoryItemSchema,
   catalogInventoryTechnicalOverrideSchema,
   createUserCustomIngredientSchema,
+  createUserCustomInventoryIngredientSchema,
   inventorySourceLinkageSchema,
   inventoryListQuerySchema,
   type InventoryListItemDto,
@@ -717,6 +718,17 @@ const buildPersistedCustomIngredientValues = (
 
 export const createUserCustomIngredient = async (userId: string, payload: unknown) => {
   const parsed = createUserCustomIngredientSchema.parse(payload);
+  const prepared = buildPersistedCustomIngredientValues(parsed, userId);
+
+  const [created] = await db.insert(userCustomIngredients).values({
+    ...prepared.values
+  }).returning();
+
+  return created;
+};
+
+export const createUserCustomInventoryIngredient = async (userId: string, payload: unknown) => {
+  const parsed = createUserCustomInventoryIngredientSchema.parse(payload);
   const prepared = buildPersistedCustomIngredientValues(parsed, userId);
 
   const [created] = await db.insert(userCustomIngredients).values({

@@ -16,8 +16,13 @@ import type {
   IngredientCatalogSortOption,
   IngredientCategory,
   IngredientConsumableGroupRefinement,
+  IngredientPickerQuickStartAvailability,
+  IngredientPickerQuickStartAvailabilityByContext,
+  IngredientPickerQuickStartAvailabilityBySubtype,
   IngredientSearchFamilyScope,
   IngredientPickerQuickStartResult,
+  IngredientPickerQuickStartResultByContext,
+  IngredientPickerQuickStartResultBySubtype,
   IngredientManufacturerRefinement,
   IngredientSearchRefinement,
   IngredientSearchResult,
@@ -39,9 +44,20 @@ import { sortRankedCatalogItems } from "./catalog-ranking";
 import { readCustomIngredientMetadata } from "./custom-metadata";
 import { normalizeSearchText } from "./normalization";
 import {
+  canonicalizeWaterTreatmentQuickStartGroup,
+  ingredientPickerConsumableQuickStartFallbackGroups,
+  canonicalizeFermentableQuickStartGroup,
+  ingredientPickerFermentableQuickStartFallbackGroups,
+  ingredientPickerFermentableQuickStartGroupOrder,
   ingredientPickerMaltQuickStartFallbackBrands,
   ingredientPickerQuickStartBrandLimit,
-  resolveIngredientPickerQuickStartFamilyScope
+  ingredientPickerWaterTreatmentQuickStartFallbackGroups,
+  resolveFermentableQuickStartGroupLabel,
+  resolveIngredientPickerQuickStartGroupDisplayLimit,
+  resolveIngredientPickerQuickStartBrandLabel,
+  resolveIngredientPickerQuickStartFamilyScope,
+  resolveWaterTreatmentQuickStartGroup,
+  resolveWaterTreatmentQuickStartGroupLabel
 } from "./picker-quick-start";
 import {
   buildIngredientTypedSummary,
@@ -50,6 +66,7 @@ import {
 } from "./presentation";
 import {
   buildConsumablePackageSearchLabels,
+  canonicalizeConsumablePickerGroup,
   consumablePickerGroupOrder,
   resolveConsumablePickerGroup,
   resolveConsumablePickerGroupDescription,
@@ -191,8 +208,13 @@ const mapCustomIngredient = (
     ?? readTrimmedString(properties.brand)
     ?? null;
   const country = item.country ?? readTrimmedString(properties.country);
+  const groupName = readTrimmedString(properties.groupName)
+    ?? readTrimmedString(properties.group)
+    ?? null;
   const sourceCategory = readTrimmedString(properties.sourceCategory)
-    ?? (category === "consumable" ? readTrimmedString(properties.pickerGroup) ?? readTrimmedString(properties.subtype) : null);
+    ?? ((category === "consumable" || category === "water_treatment")
+      ? readTrimmedString(properties.pickerGroup) ?? readTrimmedString(properties.subtype)
+      : null);
   const subcategory = readTrimmedString(properties.subcategory);
   const itemKind = readTrimmedString(properties.itemKind) ?? subtype;
 
@@ -222,6 +244,7 @@ const mapCustomIngredient = (
     countryCode: null,
     countryName: country,
     productCode: metadata.productCode,
+    groupName,
     sourceCategory,
     subcategory,
     itemKind,
@@ -278,6 +301,7 @@ const buildSearchText = (item: UserCatalogIngredientDto) => {
     item.producer,
     item.manufacturer,
     item.productCode,
+    item.groupName,
     item.sourceCategory,
     item.subcategory,
     item.subtype,
@@ -328,6 +352,9 @@ export const toIngredientSuggestionItem = (
   countryName: item.countryName ?? undefined,
   country: item.country ?? undefined,
   productCode: item.productCode ?? undefined,
+  groupName: item.groupName ?? undefined,
+  sourceCategory: item.sourceCategory ?? undefined,
+  subcategory: item.subcategory ?? undefined,
   technicalData: item.technicalData,
   defaultUnit: item.defaultUnit,
   defaultDisplayUnit: item.defaultDisplayUnit,
@@ -384,8 +411,71 @@ const filterItemsByCustomState = (
     : items
 );
 
-const filterItemsByConsumableGroup = (
+const resolveIngredientGroupValue = (item: UserCatalogIngredientDto) => {
+  if (item.category === "consumable") {
+    return resolveConsumablePickerGroup({
+      technicalData: item.technicalData,
+      sourceCategory: item.sourceCategory,
+      subcategory: item.subcategory,
+      groupName: item.groupName,
+      subtype: item.subtype,
+      itemKind: item.itemKind
+    });
+  }
+
+  if (item.category === "water_treatment") {
+    return resolveWaterTreatmentQuickStartGroup({
+      technicalData: item.technicalData,
+      sourceCategory: item.sourceCategory,
+      subcategory: item.subcategory,
+      subtype: item.subtype,
+      groupName: item.groupName,
+      itemKind: item.itemKind
+    });
+  }
+
+  if (item.category === "fermentable" && item.subtype === "fermentable") {
+    return canonicalizeFermentableQuickStartGroup(item.groupName);
+  }
+
+  return null;
+};
+
+const resolveIngredientGroupLabel = (
+  category: IngredientCategory | undefined,
+  group?: string | null
+) => {
+  if (!group) {
+    return null;
+  }
+
+  if (category === "consumable") {
+    return resolveConsumablePickerGroupLabel(group) ?? group;
+  }
+
+  if (category === "water_treatment") {
+    return resolveWaterTreatmentQuickStartGroupLabel(group) ?? group;
+  }
+
+  if (category === "fermentable") {
+    return resolveFermentableQuickStartGroupLabel(group) ?? group;
+  }
+
+  return group;
+};
+
+const resolveIngredientGroupDescription = (
+  category: IngredientCategory | undefined,
+  group?: string | null
+) => (
+  category === "consumable"
+    ? resolveConsumablePickerGroupDescription(group)
+    : null
+);
+
+const filterItemsByGroup = (
   items: UserCatalogIngredientDto[],
+  category: IngredientCategory | undefined,
   group?: string
 ) => {
   const normalizedGroup = normalizeSearchText(group ?? "");
@@ -394,11 +484,8 @@ const filterItemsByConsumableGroup = (
   }
 
   return items.filter((item) => (
-    item.category === "consumable"
-    && normalizeSearchText(resolveConsumablePickerGroup({
-      technicalData: item.technicalData,
-      sourceCategory: item.sourceCategory
-    }) ?? "") === normalizedGroup
+    item.category === category
+    && normalizeSearchText(resolveIngredientGroupValue(item) ?? "") === normalizedGroup
   ));
 };
 
@@ -452,7 +539,11 @@ const buildConsumableGroupRefinements = (
   for (const rankedItem of rankedItems) {
     const value = resolveConsumablePickerGroup({
       technicalData: rankedItem.item.technicalData,
-      sourceCategory: rankedItem.item.sourceCategory
+      sourceCategory: rankedItem.item.sourceCategory,
+      subcategory: rankedItem.item.subcategory,
+      groupName: rankedItem.item.groupName,
+      subtype: rankedItem.item.subtype,
+      itemKind: rankedItem.item.itemKind
     });
     const normalizedValue = normalizeSearchText(value ?? "");
     if (!value || !normalizedValue || normalizedValue === normalizedActiveGroup) {
@@ -479,6 +570,92 @@ const buildConsumableGroupRefinements = (
   }
 
   const groupOrder = new Map<string, number>(consumablePickerGroupOrder.map((value, index) => [value, index]));
+
+  return [...grouped.values()].sort((left, right) => (
+    (groupOrder.get(left.value) ?? Number.MAX_SAFE_INTEGER) - (groupOrder.get(right.value) ?? Number.MAX_SAFE_INTEGER)
+    || right.count - left.count
+    || right.score - left.score
+    || left.label.localeCompare(right.label, "ru")
+  ));
+};
+
+const buildFermentableGroupRefinements = (
+  rankedItems: RankedCatalogItem[],
+  activeGroup?: string
+): IngredientConsumableGroupRefinement[] => {
+  const normalizedActiveGroup = normalizeSearchText(canonicalizeFermentableQuickStartGroup(activeGroup) ?? "");
+  const grouped = new Map<string, IngredientConsumableGroupRefinement>();
+
+  for (const rankedItem of rankedItems) {
+    const value = resolveIngredientGroupValue(rankedItem.item);
+    const normalizedValue = normalizeSearchText(value ?? "");
+    if (!value || !normalizedValue || normalizedValue === normalizedActiveGroup) {
+      continue;
+    }
+
+    const label = resolveIngredientGroupLabel("fermentable", value) ?? value;
+    const current = grouped.get(normalizedValue);
+    if (current) {
+      current.count += 1;
+      current.score = Math.max(current.score, rankedItem.score);
+      continue;
+    }
+
+    grouped.set(normalizedValue, {
+      type: "consumable_group",
+      label,
+      normalizedLabel: normalizedValue,
+      value,
+      count: 1,
+      score: rankedItem.score,
+      description: null
+    });
+  }
+
+  const groupOrder = new Map<string, number>(ingredientPickerFermentableQuickStartGroupOrder.map((value, index) => [value, index]));
+
+  return [...grouped.values()].sort((left, right) => (
+    (groupOrder.get(left.value) ?? Number.MAX_SAFE_INTEGER) - (groupOrder.get(right.value) ?? Number.MAX_SAFE_INTEGER)
+    || right.count - left.count
+    || right.score - left.score
+    || left.label.localeCompare(right.label, "ru")
+  ));
+};
+
+const buildWaterTreatmentGroupRefinements = (
+  rankedItems: RankedCatalogItem[],
+  activeGroup?: string
+): IngredientConsumableGroupRefinement[] => {
+  const normalizedActiveGroup = normalizeSearchText(canonicalizeWaterTreatmentQuickStartGroup(activeGroup) ?? "");
+  const grouped = new Map<string, IngredientConsumableGroupRefinement>();
+
+  for (const rankedItem of rankedItems) {
+    const value = resolveIngredientGroupValue(rankedItem.item);
+    const normalizedValue = normalizeSearchText(value ?? "");
+    if (!value || !normalizedValue || normalizedValue === normalizedActiveGroup) {
+      continue;
+    }
+
+    const label = resolveIngredientGroupLabel("water_treatment", value) ?? value;
+    const current = grouped.get(normalizedValue);
+    if (current) {
+      current.count += 1;
+      current.score = Math.max(current.score, rankedItem.score);
+      continue;
+    }
+
+    grouped.set(normalizedValue, {
+      type: "consumable_group",
+      label,
+      normalizedLabel: normalizedValue,
+      value,
+      count: 1,
+      score: rankedItem.score,
+      description: null
+    });
+  }
+
+  const groupOrder = new Map<string, number>(ingredientPickerWaterTreatmentQuickStartFallbackGroups.map((group, index) => [group.value, index]));
 
   return [...grouped.values()].sort((left, right) => (
     (groupOrder.get(left.value) ?? Number.MAX_SAFE_INTEGER) - (groupOrder.get(right.value) ?? Number.MAX_SAFE_INTEGER)
@@ -692,7 +869,16 @@ const filterItemsByPickerContext = (
   items: UserCatalogIngredientDto[],
   category: IngredientCategory,
   subtype?: string | null
-) => items.filter((item) => {
+) => items.filter((item) => matchesIngredientPickerContext(item, category, subtype));
+
+const matchesIngredientPickerContext = (
+  item: {
+    category?: IngredientCategory;
+    subtype?: IngredientSubtype | null;
+  },
+  category: IngredientCategory,
+  subtype?: string | null
+) => {
   if (item.category !== category) {
     return false;
   }
@@ -702,7 +888,88 @@ const filterItemsByPickerContext = (
   }
 
   return true;
-});
+};
+
+export const getIngredientPickerQuickStartAvailability = async (
+  userId: string,
+  params: {
+    category: IngredientCategory;
+    subtype?: "malt" | "fermentable" | null;
+  }
+): Promise<IngredientPickerQuickStartAvailability> => {
+  if (!(params.category === "hop"
+    || params.category === "yeast"
+    || params.category === "water_treatment"
+    || params.category === "consumable"
+    || (params.category === "fermentable" && (params.subtype === "malt" || params.subtype === "fermentable")))) {
+    return {
+      hasFavoritesAvailable: false,
+      hasCustomAvailable: false
+    };
+  }
+
+  const { allItems } = await loadUnifiedCatalogItems(userId);
+  const scopedItems = filterItemsByPickerContext(allItems, params.category, params.subtype);
+
+  return {
+    hasFavoritesAvailable: scopedItems.some((item) => item.isFavorite === true),
+    hasCustomAvailable: scopedItems.some((item) => item.source === "custom")
+  };
+};
+
+export const getIngredientPickerQuickStartAvailabilityBySubtype = async (
+  userId: string
+): Promise<IngredientPickerQuickStartAvailabilityBySubtype> => {
+  const { allItems } = await loadUnifiedCatalogItems(userId);
+
+  const buildAvailability = (
+    subtype: Extract<IngredientSubtype, "malt" | "fermentable">
+  ): IngredientPickerQuickStartAvailability => {
+    const scopedItems = filterItemsByPickerContext(allItems, "fermentable", subtype);
+
+    return {
+      hasFavoritesAvailable: scopedItems.some((item) => item.isFavorite === true),
+      hasCustomAvailable: scopedItems.some((item) => item.source === "custom")
+    };
+  };
+
+  return {
+    malt: buildAvailability("malt"),
+    fermentable: buildAvailability("fermentable")
+  };
+};
+
+export const getIngredientPickerQuickStartAvailabilityByContext = async (
+  userId: string
+): Promise<IngredientPickerQuickStartAvailabilityByContext> => {
+  const [fermentableAvailability, hopAvailability, yeastAvailability, waterTreatmentAvailability, consumableAvailability] = await Promise.all([
+    getIngredientPickerQuickStartAvailabilityBySubtype(userId),
+    getIngredientPickerQuickStartAvailability(userId, {
+      category: "hop",
+      subtype: null
+    }),
+    getIngredientPickerQuickStartAvailability(userId, {
+      category: "yeast",
+      subtype: null
+    }),
+    getIngredientPickerQuickStartAvailability(userId, {
+      category: "water_treatment",
+      subtype: null
+    }),
+    getIngredientPickerQuickStartAvailability(userId, {
+      category: "consumable",
+      subtype: null
+    })
+  ]);
+
+  return {
+    ...fermentableAvailability,
+    hop: hopAvailability,
+    yeast: yeastAvailability,
+    water_treatment: waterTreatmentAvailability,
+    consumable: consumableAvailability
+  };
+};
 
 const filterItemsByQuickStartFamily = (
   items: UserCatalogIngredientDto[],
@@ -775,16 +1042,26 @@ type QuickStartBrandCandidate = IngredientManufacturerRefinement & {
   fallbackRank: number | null;
 };
 
-const hasQuickStartBrandSignal = (candidate: QuickStartBrandCandidate) => (
+type QuickStartGroupCandidate = IngredientConsumableGroupRefinement & {
+  inventoryUsageCount: number;
+  recipeUsageCount: number;
+  favoriteCount: number;
+  recentCount: number;
+  fallbackRank: number | null;
+};
+
+type QuickStartCandidate = QuickStartBrandCandidate | QuickStartGroupCandidate;
+
+const hasQuickStartSignal = (candidate: QuickStartCandidate) => (
   candidate.recentCount > 0
   || candidate.inventoryUsageCount > 0
   || candidate.favoriteCount > 0
   || candidate.recipeUsageCount > 0
 );
 
-const sortPersonalizedQuickStartBrands = (
-  left: QuickStartBrandCandidate,
-  right: QuickStartBrandCandidate
+const sortPersonalizedQuickStartCandidates = (
+  left: QuickStartCandidate,
+  right: QuickStartCandidate
 ) => (
   right.recentCount - left.recentCount
   || right.inventoryUsageCount - left.inventoryUsageCount
@@ -795,9 +1072,9 @@ const sortPersonalizedQuickStartBrands = (
   || left.label.localeCompare(right.label, "ru")
 );
 
-const sortRemainingQuickStartBrands = (
-  left: QuickStartBrandCandidate,
-  right: QuickStartBrandCandidate
+const sortRemainingQuickStartCandidates = (
+  left: QuickStartCandidate,
+  right: QuickStartCandidate
 ) => (
   ((left.fallbackRank ?? Number.MAX_SAFE_INTEGER) - (right.fallbackRank ?? Number.MAX_SAFE_INTEGER))
   || right.count - left.count
@@ -807,17 +1084,19 @@ const sortRemainingQuickStartBrands = (
 
 const buildIngredientPickerQuickStartBrands = ({
   items,
-  recent
+  recent,
+  fallbackBrands = ingredientPickerMaltQuickStartFallbackBrands
 }: {
   items: UserCatalogIngredientDto[];
   recent: IngredientSuggestionItem[];
+  fallbackBrands?: IngredientManufacturerRefinement[];
 }): IngredientManufacturerRefinement[] => {
   if (items.length === 0) {
     return [];
   }
 
   const fallbackRanks = new Map(
-    ingredientPickerMaltQuickStartFallbackBrands.map((brand, index) => [brand.normalizedLabel, index])
+    fallbackBrands.map((brand, index) => [brand.normalizedLabel, index])
   );
   const recentBrandCounts = new Map<string, number>();
 
@@ -833,7 +1112,7 @@ const buildIngredientPickerQuickStartBrands = ({
   const grouped = new Map<string, QuickStartBrandCandidate>();
 
   for (const item of items) {
-    const label = resolveManufacturerLabel(item);
+    const label = resolveIngredientPickerQuickStartBrandLabel(resolveManufacturerLabel(item));
     const normalizedLabel = normalizeSearchText(label ?? "");
     if (!label || !normalizedLabel) {
       continue;
@@ -881,17 +1160,17 @@ const buildIngredientPickerQuickStartBrands = ({
   };
 
   candidates
-    .filter(hasQuickStartBrandSignal)
-    .sort(sortPersonalizedQuickStartBrands)
+    .filter(hasQuickStartSignal)
+    .sort(sortPersonalizedQuickStartCandidates)
     .forEach(pushCandidate);
 
-  for (const fallbackBrand of ingredientPickerMaltQuickStartFallbackBrands) {
+  for (const fallbackBrand of fallbackBrands) {
     pushCandidate(grouped.get(fallbackBrand.normalizedLabel));
   }
 
   candidates
     .filter((candidate) => !seen.has(candidate.normalizedLabel))
-    .sort(sortRemainingQuickStartBrands)
+    .sort(sortRemainingQuickStartCandidates)
     .forEach(pushCandidate);
 
   return selected.map((candidate) => ({
@@ -901,6 +1180,160 @@ const buildIngredientPickerQuickStartBrands = ({
     value: candidate.value,
     count: candidate.count,
     score: candidate.score
+  }));
+};
+
+const buildIngredientPickerQuickStartScopedGroups = ({
+  items,
+  recent,
+  category,
+  fallbackGroups
+}: {
+  items: UserCatalogIngredientDto[];
+  recent: IngredientSuggestionItem[];
+  category: IngredientCategory;
+  fallbackGroups: IngredientConsumableGroupRefinement[];
+}): IngredientConsumableGroupRefinement[] => {
+  const shouldUseFixedGroupOrder = category === "consumable" || category === "water_treatment";
+
+  if (items.length === 0) {
+    return fallbackGroups.map((group) => ({
+      type: "consumable_group",
+      label: group.label,
+      normalizedLabel: group.normalizedLabel,
+      value: group.value,
+      count: 0,
+      score: 0,
+      description: group.description
+    }));
+  }
+
+  const maxGroups = Math.max(1, resolveIngredientPickerQuickStartGroupDisplayLimit({
+    category
+  }));
+
+  const fallbackRanks = new Map(
+    fallbackGroups.map((group, index) => [group.value, index])
+  );
+  const recentGroupCounts = new Map<string, number>();
+
+  for (const item of recent) {
+    const normalizedGroup = category === "consumable"
+      ? resolveConsumablePickerGroup({
+        technicalData: item.technicalData,
+        sourceCategory: item.sourceCategory ?? item.groupName ?? null,
+        subcategory: item.subcategory ?? null,
+        groupName: item.groupName ?? null,
+        subtype: item.subtype ?? null,
+        itemKind: item.itemKind ?? null
+      })
+      : category === "water_treatment"
+        ? resolveWaterTreatmentQuickStartGroup({
+          technicalData: item.technicalData,
+          sourceCategory: item.sourceCategory ?? item.groupName ?? null,
+          subcategory: item.subcategory ?? null,
+          subtype: item.subtype ?? null,
+          groupName: item.groupName ?? null,
+          itemKind: item.itemKind ?? null
+        })
+        : canonicalizeFermentableQuickStartGroup(item.groupName);
+    if (!normalizedGroup) {
+      continue;
+    }
+
+    recentGroupCounts.set(normalizedGroup, (recentGroupCounts.get(normalizedGroup) ?? 0) + 1);
+  }
+
+  const grouped = new Map<string, QuickStartGroupCandidate>();
+
+  for (const item of items) {
+    const value = resolveIngredientGroupValue(item);
+    if (!value) {
+      continue;
+    }
+
+    const label = resolveIngredientGroupLabel(category, value) ?? value;
+    const current = grouped.get(value) ?? {
+      type: "consumable_group" as const,
+      label,
+      normalizedLabel: value,
+      value,
+      count: 0,
+      score: 0,
+      description: resolveIngredientGroupDescription(category, value),
+      inventoryUsageCount: 0,
+      recipeUsageCount: 0,
+      favoriteCount: 0,
+      recentCount: recentGroupCounts.get(value) ?? 0,
+      fallbackRank: fallbackRanks.get(value) ?? null
+    };
+
+    current.count += 1;
+    current.inventoryUsageCount += item.inventoryUsageCount;
+    current.recipeUsageCount += item.recipeUsageCount;
+    current.favoriteCount += Number(item.isFavorite === true);
+    current.score = (
+      current.recentCount * 100
+      + current.inventoryUsageCount * 40
+      + current.favoriteCount * 25
+      + current.recipeUsageCount * 10
+      + current.count
+    );
+    grouped.set(value, current);
+  }
+
+  if (shouldUseFixedGroupOrder) {
+    return fallbackGroups
+      .map((fallbackGroup) => {
+        const candidate = grouped.get(fallbackGroup.value);
+        return {
+          type: "consumable_group" as const,
+          label: candidate?.label ?? fallbackGroup.label,
+          normalizedLabel: candidate?.normalizedLabel ?? fallbackGroup.normalizedLabel,
+          value: fallbackGroup.value,
+          count: candidate?.count ?? 0,
+          score: candidate?.score ?? 0,
+          description: candidate?.description ?? fallbackGroup.description
+        };
+      })
+      .slice(0, maxGroups);
+  }
+
+  const candidates = [...grouped.values()];
+  const selected: QuickStartGroupCandidate[] = [];
+  const seen = new Set<string>();
+
+  const pushCandidate = (candidate: QuickStartGroupCandidate | undefined) => {
+    if (!candidate || seen.has(candidate.value) || selected.length >= maxGroups) {
+      return;
+    }
+
+    selected.push(candidate);
+    seen.add(candidate.value);
+  };
+
+  candidates
+    .filter(hasQuickStartSignal)
+    .sort(sortPersonalizedQuickStartCandidates)
+    .forEach(pushCandidate);
+
+  for (const fallbackGroup of fallbackGroups) {
+    pushCandidate(grouped.get(fallbackGroup.value));
+  }
+
+  candidates
+    .filter((candidate) => !seen.has(candidate.value))
+    .sort(sortRemainingQuickStartCandidates)
+    .forEach(pushCandidate);
+
+  return selected.map((candidate) => ({
+    type: "consumable_group",
+    label: candidate.label,
+    normalizedLabel: candidate.normalizedLabel,
+    value: candidate.value,
+    count: candidate.count,
+    score: candidate.score,
+    description: candidate.description
   }));
 };
 
@@ -914,9 +1347,14 @@ export const listIngredientPickerQuickStart = async (
   }
 ): Promise<IngredientPickerQuickStartResult> => {
   const query = ingredientPickerQuickStartQuerySchema.parse(params);
-  if (!(query.category === "fermentable" && query.subtype === "malt")) {
+  if (!(query.category === "hop"
+    || query.category === "yeast"
+    || query.category === "water_treatment"
+    || query.category === "consumable"
+    || (query.category === "fermentable" && (query.subtype === "malt" || query.subtype === "fermentable")))) {
     return {
       brands: [],
+      groups: [],
       recent: [],
       hasFavoritesAvailable: false,
       hasCustomAvailable: false
@@ -928,23 +1366,102 @@ export const listIngredientPickerQuickStart = async (
   )));
   const recent = recentHydratedItems
     .filter((item): item is IngredientSuggestionItem => item !== null)
-    .filter((item) => item.category === query.category && item.subtype === query.subtype)
+    .filter((item) => matchesIngredientPickerContext(item, query.category, query.subtype))
     .slice(0, query.recentLimit);
   const { allItems } = await loadUnifiedCatalogItems(userId);
   const scopedItems = filterItemsByPickerContext(allItems, query.category, query.subtype);
   const usageAwareItems = await applyUsageCounts(userId, scopedItems);
-  const brands = buildIngredientPickerQuickStartBrands({
-    items: usageAwareItems,
-    recent
-  });
+  const brands = (query.subtype === "malt" || query.category === "yeast")
+    ? buildIngredientPickerQuickStartBrands({
+      items: usageAwareItems,
+      recent,
+      fallbackBrands: query.category === "yeast" ? [] : ingredientPickerMaltQuickStartFallbackBrands
+    })
+    : [];
+  const groups = query.category === "consumable"
+    ? buildIngredientPickerQuickStartScopedGroups({
+      items: usageAwareItems,
+      recent,
+      category: "consumable",
+      fallbackGroups: ingredientPickerConsumableQuickStartFallbackGroups
+    })
+    : query.category === "water_treatment"
+      ? buildIngredientPickerQuickStartScopedGroups({
+        items: usageAwareItems,
+        recent,
+        category: "water_treatment",
+        fallbackGroups: ingredientPickerWaterTreatmentQuickStartFallbackGroups
+      })
+      : query.subtype === "fermentable"
+        ? buildIngredientPickerQuickStartScopedGroups({
+          items: usageAwareItems,
+          recent,
+          category: "fermentable",
+          fallbackGroups: ingredientPickerFermentableQuickStartFallbackGroups
+        })
+        : [];
   const hasFavoritesAvailable = scopedItems.some((item) => item.isFavorite === true);
   const hasCustomAvailable = scopedItems.some((item) => item.source === "custom");
 
   return {
     brands,
+    groups,
     recent,
     hasFavoritesAvailable,
     hasCustomAvailable
+  };
+};
+
+export const getIngredientPickerQuickStartByContext = async (
+  userId: string
+): Promise<IngredientPickerQuickStartResultByContext> => {
+  const [malt, fermentable, hop, yeast, waterTreatment, consumable] = await Promise.all([
+    listIngredientPickerQuickStart(userId, {
+      category: "fermentable",
+      subtype: "malt",
+      recentReferences: []
+    }),
+    listIngredientPickerQuickStart(userId, {
+      category: "fermentable",
+      subtype: "fermentable",
+      recentReferences: []
+    }),
+    listIngredientPickerQuickStart(userId, {
+      category: "hop",
+      recentReferences: []
+    }),
+    listIngredientPickerQuickStart(userId, {
+      category: "yeast",
+      recentReferences: []
+    }),
+    listIngredientPickerQuickStart(userId, {
+      category: "water_treatment",
+      recentReferences: []
+    }),
+    listIngredientPickerQuickStart(userId, {
+      category: "consumable",
+      recentReferences: []
+    })
+  ]);
+
+  return {
+    malt,
+    fermentable,
+    hop,
+    yeast,
+    water_treatment: waterTreatment,
+    consumable
+  };
+};
+
+export const getIngredientPickerQuickStartBySubtype = async (
+  userId: string
+): Promise<IngredientPickerQuickStartResultBySubtype> => {
+  const { malt, fermentable } = await getIngredientPickerQuickStartByContext(userId);
+
+  return {
+    malt,
+    fermentable
   };
 };
 
@@ -977,8 +1494,12 @@ export const searchUserCatalogIngredients = async (
       ? scopedCatalogItems
       : scopedAllItems;
   const groupScopedItems = query.category === "consumable"
-    ? filterItemsByConsumableGroup(searchableItems, query.group)
-    : searchableItems;
+    ? filterItemsByGroup(searchableItems, "consumable", query.group)
+    : query.category === "water_treatment"
+      ? filterItemsByGroup(searchableItems, "water_treatment", query.group)
+    : query.category === "fermentable" && query.subtype === "fermentable"
+      ? filterItemsByGroup(searchableItems, "fermentable", query.group)
+      : searchableItems;
   const manufacturerScopedItems = filterItemsByManufacturer(groupScopedItems, query.manufacturer);
   const favoriteScopedItems = filterItemsByFavoriteState(manufacturerScopedItems, query.favoritesOnly);
   const normalizedQuery = normalizeSearchText(query.q);
@@ -997,12 +1518,23 @@ export const searchUserCatalogIngredients = async (
     : buildScopeOnlyRankedItems(favoriteScopedItems);
   const refinements: IngredientSearchRefinement[] = query.category === "consumable" && !query.group
     ? buildConsumableGroupRefinements(rankedItems, query.group)
-    : buildManufacturerRefinements(rankedItems, query.manufacturer);
+    : query.category === "water_treatment" && !query.group
+      ? buildWaterTreatmentGroupRefinements(rankedItems, query.group)
+    : query.category === "fermentable" && query.subtype === "fermentable" && !query.group
+      ? buildFermentableGroupRefinements(rankedItems, query.group)
+      : buildManufacturerRefinements(rankedItems, query.manufacturer);
   const total = rankedItems.length;
   const items = rankedItems
     .slice(0, query.limit)
     .map(({ item, score }) => toIngredientSuggestionItem(item, score));
-  const normalizedGroup = normalizeSearchText(query.group ?? "");
+  const resolvedGroupValue = query.category === "fermentable"
+    ? canonicalizeFermentableQuickStartGroup(query.group)
+    : query.category === "consumable"
+      ? canonicalizeConsumablePickerGroup(query.group)
+      : query.category === "water_treatment"
+        ? canonicalizeWaterTreatmentQuickStartGroup(query.group)
+    : query.group ?? null;
+  const normalizedGroup = normalizeSearchText(resolvedGroupValue ?? "");
   const normalizedManufacturer = normalizeSearchText(query.manufacturer ?? "");
   const matchedManufacturerRefinement = normalizedManufacturer
     ? refinements.find((refinement): refinement is IngredientManufacturerRefinement => (
@@ -1023,12 +1555,12 @@ export const searchUserCatalogIngredients = async (
   const appliedGroup = normalizedGroup
     ? {
       type: "consumable_group" as const,
-      label: resolveConsumablePickerGroupLabel(query.group) ?? query.group ?? "",
+      label: resolveIngredientGroupLabel(query.category, resolvedGroupValue) ?? resolvedGroupValue ?? "",
       normalizedLabel: normalizedGroup,
-      value: query.group ?? "",
+      value: resolvedGroupValue ?? "",
       count: total,
       score: rankedItems[0]?.score ?? 0,
-      description: resolveConsumablePickerGroupDescription(query.group)
+      description: resolveIngredientGroupDescription(query.category, resolvedGroupValue)
     }
     : null;
 

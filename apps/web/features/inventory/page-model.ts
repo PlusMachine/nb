@@ -68,6 +68,11 @@ export const inventorySortLabels: Record<InventorySortOption, string> = {
 export const defaultInventorySortOption: InventorySortOption = "default";
 export const defaultInventoryShowFinished = false;
 
+export const resolveInventoryShowFinished = (
+  requestedShowFinished: boolean,
+  summary: Pick<InventorySummaryDto, "emptyItems">
+) => requestedShowFinished && summary.emptyItems > 0;
+
 export const resolveInventoryItemCategory = (item: {
   ingredientCategory?: IngredientCategory | null;
   source: {

@@ -156,6 +156,7 @@ export function InventoryToolbar({ search, category, subtype, showFinished, sort
     sort
   });
   const counts = resolveInventoryToolbarCounts(summary, showFinished);
+  const hasFinishedItems = summary.emptyItems > 0;
   const primaryButtons = [
     {
       key: "malt",
@@ -281,27 +282,29 @@ export function InventoryToolbar({ search, category, subtype, showFinished, sort
         </div>
 
         <div className="flex shrink-0 items-center gap-1.5">
-          <button
-            type="button"
-            onClick={() => {
-              replaceHref(buildInventoryToolbarHref(pathname, {
-                search: searchValue,
-                category,
-                subtype,
-                showFinished: !showFinished,
-                sort
-              }));
-            }}
-            title={showFinished ? "Скрыть закончившиеся" : "Показать закончившиеся"}
-            className={`flex items-center gap-1.5 rounded-lg border px-3 py-2 text-xs font-medium transition-colors ${
-              showFinished
-                ? "border-amber-200 bg-amber-50 text-amber-800"
-                : "border-zinc-200 bg-white text-zinc-600 hover:border-zinc-300 hover:bg-zinc-50"
-            }`}
-          >
-            <Eye className="h-3.5 w-3.5" />
-            <span className="hidden sm:inline">{showFinished ? "Скрыть закончившиеся" : "Показать закончившиеся"}</span>
-          </button>
+          {hasFinishedItems ? (
+            <button
+              type="button"
+              onClick={() => {
+                replaceHref(buildInventoryToolbarHref(pathname, {
+                  search: searchValue,
+                  category,
+                  subtype,
+                  showFinished: !showFinished,
+                  sort
+                }));
+              }}
+              title={showFinished ? "Скрыть закончившиеся" : "Показать закончившиеся"}
+              className={`flex items-center gap-1.5 rounded-lg border px-3 py-2 text-xs font-medium transition-colors ${
+                showFinished
+                  ? "border-amber-200 bg-amber-50 text-amber-800"
+                  : "border-zinc-200 bg-white text-zinc-600 hover:border-zinc-300 hover:bg-zinc-50"
+              }`}
+            >
+              <Eye className="h-3.5 w-3.5" />
+              <span className="hidden sm:inline">{showFinished ? "Скрыть закончившиеся" : "Показать закончившиеся"}</span>
+            </button>
+          ) : null}
 
           <div ref={sortRef} className="relative">
             <button

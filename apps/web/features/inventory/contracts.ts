@@ -107,7 +107,7 @@ const withPurchaseValidation = <T extends z.ZodTypeAny>(schema: T) => schema.sup
   }
 });
 
-export const createUserCustomIngredientSchema = z.object({
+const createUserCustomIngredientBaseSchema = z.object({
   type: z.enum(ingredientTypes).optional(),
   category: z.enum(ingredientCategories).optional(),
   subtype: z.string().trim().max(80).optional().nullable(),
@@ -173,7 +173,13 @@ export const createUserCustomIngredientSchema = z.object({
   defaultDisplayUnit: z.string().trim().toLowerCase().pipe(z.enum(inventoryUnits)).optional().nullable(),
   properties: z.record(z.string(), z.unknown()).default({}),
   visibility: z.enum(["private", "shared"]).default("private")
-}).superRefine((value, ctx) => {
+});
+
+const buildCreateUserCustomIngredientSchema = ({
+  requireTechnicalFields = true
+}: {
+  requireTechnicalFields?: boolean;
+} = {}) => createUserCustomIngredientBaseSchema.superRefine((value, ctx) => {
   if (!value.type && !value.category) {
     ctx.addIssue({
       code: z.ZodIssueCode.custom,
@@ -223,6 +229,10 @@ export const createUserCustomIngredientSchema = z.object({
     }
   }
 
+  if (!requireTechnicalFields) {
+    return;
+  }
+
   if (resolvedCategory === "fermentable") {
     if (value.fermentableColorEbc == null) {
       ctx.addIssue({
@@ -266,6 +276,11 @@ export const createUserCustomIngredientSchema = z.object({
       });
     }
   }
+});
+
+export const createUserCustomIngredientSchema = buildCreateUserCustomIngredientSchema();
+export const createUserCustomInventoryIngredientSchema = buildCreateUserCustomIngredientSchema({
+  requireTechnicalFields: false
 });
 
 export const addCatalogInventoryItemSchema = withPurchaseValidation(baseInventoryFieldsObject.extend({

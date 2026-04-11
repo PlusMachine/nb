@@ -64,6 +64,10 @@ vi.mock("@/features/inventory/service", () => ({
     mockState.createCustomCalls.push(payload);
     return { id: mockState.createdCustomId };
   },
+  createUserCustomInventoryIngredient: async (_userId: string, payload: unknown) => {
+    mockState.createCustomCalls.push(payload);
+    return { id: mockState.createdCustomId };
+  },
   addCustomIngredientToInventory: async (_userId: string, payload: unknown) => {
     mockState.addCustomCalls.push(payload);
     return { id: "inv-custom" };
@@ -173,6 +177,7 @@ describe("inventory add-flow", () => {
   it("keeps custom flow focused on ingredient parameters and required stock fields by default", () => {
     const html = renderToStaticMarkup(React.createElement(CustomIngredientForm, {
       category: "fermentable",
+      initialSubtype: "malt",
       preferredCurrency: "USD",
       pending: false,
       onSubmit: async () => undefined
@@ -184,6 +189,10 @@ describe("inventory add-flow", () => {
     expect(html).toContain('data-testid="custom-optional-disclosure"');
     expect(html).toContain("Добавить цену, ссылки, даты или заметку");
     expect(html).toContain("Необязательно");
+    expect((html.match(/>обязательно</g) ?? [])).toHaveLength(2);
+    expect(html).not.toContain("Минимум для создания");
+    expect(html).not.toContain("Короткое понятное имя");
+    expect(html).not.toContain("Стартовый остаток");
     expect(html).not.toContain("Тип ферментируемого");
     expect(html).toContain("Цвет, EBC");
     expect(html).toContain("Экстрактивность, %");
@@ -194,11 +203,57 @@ describe("inventory add-flow", () => {
     expect(html).toContain("placeholder=\"Например: 3.5\"");
     expect(html).toContain("placeholder=\"Например: 81\"");
     expect(html).not.toContain("Базовая ед. изм.");
+    expect(html).not.toContain("Ед. изм. *");
     expect(html).not.toContain(`value="${getTodayDateInputValue()}"`);
     expect(html).not.toContain('aria-label="Очистить дату покупки"');
     expect(html).not.toContain("За всё");
     expect(html).not.toContain("За единицу");
     expect(html).toContain('step="0.1"');
+  });
+
+  it("uses category-specific placeholders in custom flow outside malt", () => {
+    const fermentableHtml = renderToStaticMarkup(React.createElement(CustomIngredientForm, {
+      category: "fermentable",
+      initialSubtype: "fermentable",
+      preferredCurrency: "USD",
+      pending: false,
+      onSubmit: async () => undefined
+    }));
+    const hopHtml = renderToStaticMarkup(React.createElement(CustomIngredientForm, {
+      category: "hop",
+      preferredCurrency: "USD",
+      pending: false,
+      onSubmit: async () => undefined
+    }));
+    const yeastHtml = renderToStaticMarkup(React.createElement(CustomIngredientForm, {
+      category: "yeast",
+      preferredCurrency: "USD",
+      pending: false,
+      onSubmit: async () => undefined
+    }));
+    const waterTreatmentHtml = renderToStaticMarkup(React.createElement(CustomIngredientForm, {
+      category: "water_treatment",
+      preferredCurrency: "USD",
+      pending: false,
+      onSubmit: async () => undefined
+    }));
+    const consumableHtml = renderToStaticMarkup(React.createElement(CustomIngredientForm, {
+      category: "consumable",
+      preferredCurrency: "USD",
+      pending: false,
+      onSubmit: async () => undefined
+    }));
+
+    expect(fermentableHtml).toContain("placeholder=\"Например: Декстроза\"");
+    expect(fermentableHtml).toContain("placeholder=\"Например: Briess\"");
+    expect(hopHtml).toContain("placeholder=\"Например: Хмель Cascade\"");
+    expect(hopHtml).toContain("placeholder=\"Например: Yakima Chief Hops\"");
+    expect(yeastHtml).toContain("placeholder=\"Например: US-05\"");
+    expect(yeastHtml).toContain("placeholder=\"Например: Fermentis\"");
+    expect(waterTreatmentHtml).toContain("placeholder=\"Например: Молочная кислота 80%\"");
+    expect(waterTreatmentHtml).toContain("placeholder=\"Например: Неохим\"");
+    expect(consumableHtml).toContain("placeholder=\"Например: Irish Moss\"");
+    expect(consumableHtml).toContain("placeholder=\"Например: Five Star Chemicals\"");
   });
 
   it("hides duplicate subtype selector for hop custom flow", () => {
@@ -209,8 +264,11 @@ describe("inventory add-flow", () => {
       onSubmit: async () => undefined
     }));
 
-    expect(html).toContain("Альфа-кислота, %");
-    expect(html).toContain("Год урожая");
+    expect(html).toContain("Тип хмеля");
+    expect(html).toContain("Альфа, %");
+    expect(html).toContain("Урожай");
+    expect(html).toContain("Гранулы");
+    expect(html).not.toContain(">Стандарт<");
     expect(html).not.toContain("Подтип");
     expect(html).not.toContain("Без уточнения");
   });
@@ -319,7 +377,8 @@ describe("inventory add-flow", () => {
     expect(html).toContain('data-testid="add-ingredient-mode-switch"');
     expect(html).toContain('data-testid="catalog-picker-stage"');
     expect(html).toContain("Начните вводить название ингредиента");
-    expect(html).not.toContain('data-testid="ingredient-picker-quick-start"');
+    expect(html).toContain('data-testid="ingredient-picker-quick-start"');
+    expect(html).toContain("Загружаем недавние...");
     expect(html).not.toContain('data-testid="catalog-selection-stage"');
     expect(html).not.toContain("Изменить выбор");
   });
@@ -328,6 +387,10 @@ describe("inventory add-flow", () => {
     const html = renderToStaticMarkup(React.createElement(CatalogIngredientForm, {
       category: "fermentable",
       subtype: "malt",
+      initialQuickStartAvailability: {
+        hasFavoritesAvailable: true,
+        hasCustomAvailable: true
+      },
       preferredCurrency: "USD",
       pending: false,
       onSubmit: async () => undefined,
@@ -336,10 +399,239 @@ describe("inventory add-flow", () => {
 
     expect(html).toContain('data-testid="catalog-picker-stage"');
     expect(html).toContain("Начните вводить название ингредиента");
-    expect(html).toContain('data-testid="ingredient-picker-quick-start-loading"');
+    expect(html).toContain('data-testid="ingredient-picker-quick-start"');
     expect(html).toContain('data-testid="ingredient-picker-quick-start-favorites"');
+    expect(html).toContain("Только избранные");
+    expect(html).toContain("Только свои");
     expect(html).toContain("По бренду");
+    expect(html).toContain("Castle Malting");
     expect(html).toContain("По типу");
+    expect(html).toContain("Загружаем недавние...");
+  });
+
+  it("shows fermentable quick-start groups in the catalog form for generic fermentables", () => {
+    const html = renderToStaticMarkup(React.createElement(CatalogIngredientForm, {
+      category: "fermentable",
+      subtype: "fermentable",
+      preferredCurrency: "USD",
+      pending: false,
+      onSubmit: async () => undefined,
+      onRequestCustom: () => undefined
+    }));
+
+    expect(html).toContain('data-testid="ingredient-picker-quick-start"');
+    expect(html).toContain("По группе");
+    expect(html).not.toContain("По бренду");
+    expect(html).not.toContain('data-testid="ingredient-picker-quick-start-types"');
+  });
+
+  it("uses the passed hop quick-start context in the catalog form", () => {
+    const html = renderToStaticMarkup(React.createElement(CatalogIngredientForm, {
+      category: "hop",
+      initialQuickStartData: {
+        brands: [],
+        recent: [],
+        hasFavoritesAvailable: true,
+        hasCustomAvailable: true
+      },
+      preferredCurrency: "USD",
+      pending: false,
+      onSubmit: async () => undefined,
+      onRequestCustom: () => undefined
+    }));
+
+    expect(html).toContain('data-testid="ingredient-picker-quick-start"');
+    expect(html).toContain('data-testid="ingredient-picker-quick-start-favorites"');
+    expect(html).toContain("Только избранные");
+    expect(html).toContain("Только свои");
+    expect(html).not.toContain("По бренду");
+    expect(html).not.toContain('data-testid="ingredient-picker-quick-start-types"');
+    expect(html).toContain("Загружаем недавние...");
+  });
+
+  it("uses the passed yeast quick-start context in the catalog form", () => {
+    const html = renderToStaticMarkup(React.createElement(CatalogIngredientForm, {
+      category: "yeast",
+      initialQuickStartData: {
+        brands: [{
+          type: "manufacturer",
+          label: "Fermentis",
+          normalizedLabel: "fermentis",
+          value: "Fermentis",
+          count: 8,
+          score: 80
+        }],
+        recent: [],
+        hasFavoritesAvailable: true,
+        hasCustomAvailable: true
+      },
+      preferredCurrency: "USD",
+      pending: false,
+      onSubmit: async () => undefined,
+      onRequestCustom: () => undefined
+    }));
+
+    expect(html).toContain('data-testid="ingredient-picker-quick-start"');
+    expect(html).toContain('data-testid="ingredient-picker-quick-start-favorites"');
+    expect(html).toContain("Только избранные");
+    expect(html).toContain("Только свои");
+    expect(html).toContain("По бренду");
+    expect(html).toContain("Fermentis");
+    expect(html).not.toContain('data-testid="ingredient-picker-quick-start-types"');
+    expect(html).toContain("Загружаем недавние...");
+  });
+
+  it("uses the passed water treatment quick-start context in the catalog form", () => {
+    const html = renderToStaticMarkup(React.createElement(CatalogIngredientForm, {
+      category: "water_treatment",
+      initialQuickStartData: {
+        brands: [],
+        groups: [{
+          type: "consumable_group",
+          label: "Соли",
+          normalizedLabel: "salt",
+          value: "salt",
+          count: 8,
+          score: 80
+        }, {
+          type: "consumable_group",
+          label: "Кислоты",
+          normalizedLabel: "acid",
+          value: "acid",
+          count: 0,
+          score: 0
+        }, {
+          type: "consumable_group",
+          label: "Щёлочи",
+          normalizedLabel: "base",
+          value: "base",
+          count: 0,
+          score: 0
+        }, {
+          type: "consumable_group",
+          label: "Дехлорирование",
+          normalizedLabel: "dechlorination",
+          value: "dechlorination",
+          count: 0,
+          score: 0
+        }, {
+          type: "consumable_group",
+          label: "База воды",
+          normalizedLabel: "water_source",
+          value: "water_source",
+          count: 2,
+          score: 20
+        }],
+        recent: [],
+        hasFavoritesAvailable: true,
+        hasCustomAvailable: true
+      },
+      preferredCurrency: "USD",
+      pending: false,
+      onSubmit: async () => undefined,
+      onRequestCustom: () => undefined
+    }));
+
+    expect(html).toContain('data-testid="ingredient-picker-quick-start"');
+    expect(html).toContain('data-testid="ingredient-picker-quick-start-favorites"');
+    expect(html).toContain("Только избранные");
+    expect(html).toContain("Только свои");
+    expect(html).toContain("По группе");
+    expect(html).toContain("Соли");
+    expect(html).toContain("Кислоты");
+    expect(html).toContain("Щёлочи");
+    expect(html).toContain("Дехлорирование");
+    expect(html).toContain("База воды");
+    expect(html).not.toContain("По бренду");
+    expect(html).toContain("Загружаем недавние...");
+  });
+
+  it("uses the passed consumable quick-start context in the catalog form", () => {
+    const html = renderToStaticMarkup(React.createElement(CatalogIngredientForm, {
+      category: "consumable",
+      initialQuickStartData: {
+        brands: [],
+        groups: [{
+          type: "consumable_group",
+          label: "Санитайзеры",
+          normalizedLabel: "sanitizer",
+          value: "sanitizer",
+          count: 8,
+          score: 80
+        }, {
+          type: "consumable_group",
+          label: "Мойка",
+          normalizedLabel: "cleaner",
+          value: "cleaner",
+          count: 0,
+          score: 0
+        }, {
+          type: "consumable_group",
+          label: "Осветление",
+          normalizedLabel: "fining",
+          value: "fining",
+          count: 0,
+          score: 0
+        }, {
+          type: "consumable_group",
+          label: "Ферменты",
+          normalizedLabel: "enzyme",
+          value: "enzyme",
+          count: 0,
+          score: 0
+        }, {
+          type: "consumable_group",
+          label: "Подкормки",
+          normalizedLabel: "nutrient",
+          value: "nutrient",
+          count: 0,
+          score: 0
+        }, {
+          type: "consumable_group",
+          label: "Антиоксиданты",
+          normalizedLabel: "antioxidant",
+          value: "antioxidant",
+          count: 0,
+          score: 0
+        }, {
+          type: "consumable_group",
+          label: "Тара и укупорка",
+          normalizedLabel: "packaging",
+          value: "packaging",
+          count: 0,
+          score: 0
+        }, {
+          type: "consumable_group",
+          label: "Газы",
+          normalizedLabel: "gas",
+          value: "gas",
+          count: 2,
+          score: 20
+        }],
+        recent: [],
+        hasFavoritesAvailable: true,
+        hasCustomAvailable: true
+      },
+      preferredCurrency: "USD",
+      pending: false,
+      onSubmit: async () => undefined,
+      onRequestCustom: () => undefined
+    }));
+
+    expect(html).toContain('data-testid="ingredient-picker-quick-start"');
+    expect(html).toContain('data-testid="ingredient-picker-quick-start-favorites"');
+    expect(html).toContain("Только избранные");
+    expect(html).toContain("Только свои");
+    expect(html).toContain("По группе");
+    expect(html).toContain("Санитайзеры");
+    expect(html).toContain("Мойка");
+    expect(html).toContain("Осветление");
+    expect(html).toContain("Ферменты");
+    expect(html).toContain("Подкормки");
+    expect(html).toContain("Антиоксиданты");
+    expect(html).toContain("Тара и укупорка");
+    expect(html).toContain("Газы");
+    expect(html).not.toContain("По бренду");
     expect(html).toContain("Загружаем недавние...");
   });
 
@@ -756,6 +1048,49 @@ describe("inventory add-flow", () => {
         ]
       }
     ]);
+  });
+
+  it("passes hop form through custom ingredient add flow", async () => {
+    const formData = new FormData();
+    formData.set("category", "hop");
+    formData.set("displayName", "Citra");
+    formData.set("brand", "Yakima Chief");
+    formData.set("hopForm", "cryo");
+    formData.set("hopAlphaAcidPct", "12.5");
+    formData.set("harvestYear", "2025");
+    formData.set("defaultDisplayUnit", "g");
+    formData.set("enteredQuantity", "100");
+    formData.set("enteredUnit", "g");
+
+    const result = await addCustomIngredientAction(null, formData);
+
+    expect(result.ok).toBe(true);
+    expect(mockState.createCustomCalls).toHaveLength(1);
+    expect(mockState.createCustomCalls[0]).toMatchObject({
+      category: "hop",
+      hopForm: "cryo",
+      hopAlphaAcidPct: 12.5,
+      harvestYear: 2025
+    });
+  });
+
+  it("allows quick custom creation with only name and quantity", async () => {
+    const formData = new FormData();
+    formData.set("category", "hop");
+    formData.set("displayName", "Citra");
+    formData.set("defaultDisplayUnit", "g");
+    formData.set("enteredQuantity", "100");
+    formData.set("enteredUnit", "g");
+
+    const result = await addCustomIngredientAction(null, formData);
+
+    expect(result.ok).toBe(true);
+    expect(mockState.createCustomCalls).toHaveLength(1);
+    expect(mockState.createCustomCalls[0]).toMatchObject({
+      category: "hop",
+      displayName: "Citra",
+      defaultDisplayUnit: "g"
+    });
   });
 
   it("adds an existing custom ingredient from the picker through the custom inventory path", async () => {

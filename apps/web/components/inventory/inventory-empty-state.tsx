@@ -3,6 +3,7 @@ import { PackageOpen, Search, SlidersHorizontal } from "lucide-react";
 
 import type {
   IngredientCategory,
+  IngredientPickerQuickStartResultByContext,
   IngredientSubtype
 } from "@/features/ingredients/contracts";
 import { resolveInventoryFilterLabel } from "@/features/inventory/page-model";
@@ -16,6 +17,7 @@ type Props = {
   category?: IngredientCategory;
   subtype?: Extract<IngredientSubtype, "malt" | "fermentable"> | null;
   showFinished?: boolean;
+  initialQuickStartDataByContext?: IngredientPickerQuickStartResultByContext | null;
 };
 
 export function InventoryEmptyState({
@@ -24,7 +26,8 @@ export function InventoryEmptyState({
   search = "",
   category,
   subtype = null,
-  showFinished = false
+  showFinished = false,
+  initialQuickStartDataByContext = null
 }: Props) {
   if (!hasAnyItems) {
     return (
@@ -38,7 +41,7 @@ export function InventoryEmptyState({
             Здесь будут ваши запасы солода, хмеля, дрожжей и других ингредиентов. Это база для подбора рецептов и планирования варок.
           </p>
         </div>
-        <AddIngredientTrigger />
+        <AddIngredientTrigger initialQuickStartDataByContext={initialQuickStartDataByContext} />
       </section>
     );
   }

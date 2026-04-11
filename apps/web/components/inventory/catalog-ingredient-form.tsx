@@ -13,6 +13,8 @@ import {
 } from "@/components/inventory/inventory-optional-disclosure";
 import type {
   IngredientCategory,
+  IngredientPickerQuickStartAvailability,
+  IngredientPickerQuickStartResult,
   IngredientTechnicalData,
   IngredientSubtype,
   IngredientSuggestionItem
@@ -65,6 +67,8 @@ export type CatalogIngredientSubmitPayload = {
 type Props = {
   category?: IngredientCategory;
   subtype?: Extract<IngredientSubtype, "malt" | "fermentable"> | null;
+  initialQuickStartData?: IngredientPickerQuickStartResult | null;
+  initialQuickStartAvailability?: IngredientPickerQuickStartAvailability | null;
   preferredCurrency: SystemCurrency;
   pending: boolean;
   autoFocus?: boolean;
@@ -499,6 +503,8 @@ export const buildCatalogIngredientPayload = (
 export function CatalogIngredientForm({
   category,
   subtype,
+  initialQuickStartData = null,
+  initialQuickStartAvailability = null,
   preferredCurrency,
   pending,
   autoFocus = false,
@@ -780,6 +786,9 @@ export function CatalogIngredientForm({
             value={pickerValue}
             category={category}
             subtype={subtype}
+            initialQuickStartData={initialQuickStartData}
+            initialQuickStartAvailability={initialQuickStartAvailability}
+            hydrateRecentSelectionsOnInit
             enableQuickStart
             allowCustomOnlyFilter
             autoFocus={autoFocus}

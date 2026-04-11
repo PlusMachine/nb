@@ -8,6 +8,7 @@ import { useRouter } from "next/navigation";
 import { addCustomIngredientAction, addSelectedIngredientAction, type AddIngredientResult } from "@/app/(app)/app/ingredients/actions";
 import type {
   IngredientCategory,
+  IngredientPickerQuickStartResultByContext,
   IngredientSuggestionItem,
   IngredientSubtype
 } from "@/features/ingredients/contracts";
@@ -33,6 +34,7 @@ type Props = {
   initialSelection?: IngredientSuggestionItem | null;
   initialCategory?: IngredientCategory | null;
   initialSubtype?: Extract<IngredientSubtype, "malt" | "fermentable"> | null;
+  initialQuickStartDataByContext?: IngredientPickerQuickStartResultByContext | null;
 };
 
 type Mode = "catalog" | "custom";
@@ -198,7 +200,8 @@ export function AddIngredientModal({
   preferredCurrency = "RUB",
   initialSelection = null,
   initialCategory = null,
-  initialSubtype = null
+  initialSubtype = null,
+  initialQuickStartDataByContext = null
 }: Props) {
   const router = useRouter();
   const [catalogCategory, setCatalogCategory] = useState<IngredientCategory | null>(() => resolveAddIngredientStartContext({
@@ -265,6 +268,18 @@ export function AddIngredientModal({
   const selectedCategoryValue: InventoryIngredientCategoryValue | null = mode === "catalog"
     ? resolveInventoryIngredientCategoryValue({ category: catalogCategory, subtype: catalogSubtype })
     : resolveInventoryIngredientCategoryValue({ category: customCategory, subtype: customSubtype });
+  const initialQuickStartData = catalogCategory === "hop"
+    ? (initialQuickStartDataByContext?.hop ?? null)
+    : catalogCategory === "yeast"
+      ? (initialQuickStartDataByContext?.yeast ?? null)
+    : catalogCategory === "water_treatment"
+      ? (initialQuickStartDataByContext?.water_treatment ?? null)
+    : catalogCategory === "consumable"
+      ? (initialQuickStartDataByContext?.consumable ?? null)
+    : catalogCategory === "fermentable"
+      && (catalogSubtype === "malt" || catalogSubtype === "fermentable")
+      ? (initialQuickStartDataByContext?.[catalogSubtype] ?? null)
+      : null;
 
   const handleCategoryChange = (nextCategory: InventoryIngredientCategoryValue) => {
     const { category: nextResolvedCategory, subtype: nextResolvedSubtype } = resolveInventoryIngredientContextFromCategoryValue(nextCategory);
@@ -388,6 +403,7 @@ export function AddIngredientModal({
               <CatalogIngredientForm
                 category={catalogCategory}
                 subtype={catalogSubtype}
+                initialQuickStartData={initialQuickStartData}
                 preferredCurrency={preferredCurrency}
                 pending={pending}
                 autoFocus

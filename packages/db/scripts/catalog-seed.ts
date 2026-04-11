@@ -32,7 +32,7 @@ const externalCatalogSeedOverrides: Partial<Record<string, string>> = {
 export const catalogSeedManifest: readonly CatalogSeedFileSpec[] = [
   { fileName: "hop_catalog_minimal_v2.json", type: "hop" },
   { fileName: "malt_catalog_minimal_v2.json", type: "malt" },
-  { fileName: "fermentables_catalog_minimal_v2.json", type: "fermentable" },
+  { fileName: "fermentables_catalog_minimal_v2.normalized.json", type: "fermentable" },
   { fileName: "yeasts_catalog_minimal_v2.json", type: "yeast" },
   { fileName: "consumables_v4_patch_proposal.json", type: "consumable" },
   { fileName: "water_treatment_catalog_minimal_v2.json", type: "water_treatment" }
@@ -254,31 +254,19 @@ const buildAliasRows = (
   return Array.from(deduped.values());
 };
 
-const resolveFermentableExtractForm = (source: Record<string, unknown>) => {
-  if (readString(source.ingredient_type) !== "malt_extract") {
-    return null;
-  }
+const readFermentableExtractForm = (value: unknown) => {
+  const normalized = readString(value)?.toLowerCase();
+  return normalized === "dry" || normalized === "liquid" ? normalized : null;
+};
 
-  const context = normalizeCatalogAlias([
-    readString(source.name_ru),
-    readString(source.name_en),
-    ...readStringArray(source.aliases_ru),
-    ...readStringArray(source.aliases_en)
-  ].filter((value): value is string => value != null).join(" "));
-
-  if (!context) {
-    return null;
-  }
-
-  if (/\bdme\b/.test(context) || context.includes("spraymalt") || context.includes("сух")) {
-    return "dry";
-  }
-
-  if (/\blme\b/.test(context) || context.includes("liquid") || context.includes("жидк")) {
-    return "liquid";
-  }
-
-  return null;
+const readFermentableHoppingState = (value: unknown) => {
+  const normalized = readString(value)?.toLowerCase();
+  return normalized === "hopped"
+    || normalized === "unhopped"
+    || normalized === "unknown"
+    || normalized === "not_applicable"
+    ? normalized
+    : null;
 };
 
 const buildSourceRows = (
@@ -423,7 +411,8 @@ const prepareFermentable = (item: unknown): PreparedSeedIngredient => {
   if (!id) {
     throw new Error("Fermentable item is missing id");
   }
-  const extractForm = resolveFermentableExtractForm(source);
+  const extractForm = readFermentableExtractForm(source.extract_form);
+  const subtypeKey = readString(source.subtype_key) ?? readString(source.ingredient_type);
 
   return {
     ingredient: {
@@ -437,21 +426,35 @@ const prepareFermentable = (item: unknown): PreparedSeedIngredient => {
       countryName: readString(source.country_name),
       producer: readString(source.producer),
       groupName: readString(source.group),
-      itemKind: readString(source.ingredient_type),
+      itemKind: subtypeKey,
       presentOnBirrf: readBoolean(source.present_on_birrf),
       inventoryEnabled: true,
       attributes: compactRecord({
         fermentability_class: readString(source.fermentability_class),
+        product_family: readString(source.product_family),
+        subtype_key: subtypeKey,
+        physical_form: readString(source.physical_form),
         extract_pct_dry_basis: readNumber(source.extract_pct_dry_basis),
         color_lovibond: readNumber(source.color_lovibond),
         recommended_max_pct: readNumber(source.recommended_max_pct),
         is_usable_in_beer_gravity_calculations: readBoolean(source.is_usable_in_beer_gravity_calculations),
         beer_relevance: readString(source.beer_relevance),
-        extract_form: extractForm
+        extract_form: extractForm,
+        base_material_family: readString(source.base_material_family),
+        base_materials: readStringArray(source.base_materials),
+        hopping_state: readFermentableHoppingState(source.hopping_state),
+        is_hopped_product: readBoolean(source.is_hopped_product),
+        functional_role: readString(source.functional_role),
+        gravity_calc_mode: readString(source.gravity_calc_mode),
+        display_type_ru: readString(source.display_type_ru),
+        display_type_en: readString(source.display_type_en)
       }),
       quantityDefaults: null
     },
-    aliases: [],
+    aliases: buildAliasRows(id, [
+      { locale: "ru", values: source.aliases_ru },
+      { locale: "en", values: source.aliases_en }
+    ]),
     sources: buildSourceRows(id, source.sources),
     packageVariants: []
   };

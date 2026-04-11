@@ -20,7 +20,7 @@ import {
   resolveIngredientDisplayNames,
   resolveIngredientFermentableKindLabel
 } from "@/features/ingredients/presentation";
-import { resolveIngredientTechnicalDataColorRangeEbc } from "@/features/ingredients/technical-fields";
+import { formatHopFormLabel, resolveIngredientTechnicalDataColorRangeEbc } from "@/features/ingredients/technical-fields";
 import { beerColorFromSrm } from "@/features/recipes/beer-color";
 import { buildInventoryCostDisplay } from "@/features/inventory/display";
 import type { SystemCurrency, SystemCurrencyRateMap } from "@/features/system/currency";
@@ -115,9 +115,10 @@ const buildTypedBadges = (item: InventoryListItemDto) => {
 
   if (technicalData.type === "hop") {
     const hop = technicalData as Extract<NonNullable<typeof technicalData>, { type: "hop" }>;
+    const hopFormLabel = formatHopFormLabel(hop.hopForm);
     return [
       hop.alphaAcidPctTypical != null ? { label: `Альфа ${formatValue(hop.alphaAcidPctTypical)}%` } : null,
-      hop.hopForm ? { label: hop.hopForm.replaceAll("_", " ") } : null,
+      hopFormLabel ? { label: hopFormLabel } : null,
       item.source.harvestYear != null ? { label: `Урожай ${item.source.harvestYear}` } : null
     ].filter((badge): badge is { label: string; accent?: InventoryBadgeAccent | null } => Boolean(badge));
   }
@@ -132,7 +133,7 @@ const buildTypedBadges = (item: InventoryListItemDto) => {
       fermentable.type === "malt" && fermentable.maxUsagePct != null
         ? { label: `до ${formatValue(fermentable.maxUsagePct)} % засыпи` }
         : fermentable.type === "fermentable" && fermentable.recommendedMaxPct != null
-          ? { label: `До ${formatValue(fermentable.recommendedMaxPct)}%` }
+          ? { label: `до ${formatValue(fermentable.recommendedMaxPct)} % засыпи` }
           : null
     ].filter((badge): badge is { label: string; accent?: InventoryBadgeAccent | null } => Boolean(badge));
   }
@@ -268,9 +269,12 @@ export function InventoryListItem({ item, preferredCurrency, currencyRates }: Pr
   const titleFormula = waterTreatmentTechnicalData?.formula?.trim() ?? null;
   const brandLabel = resolveIngredientBrandLabel(item.source);
   const fermentableKindLabel = resolveIngredientFermentableKindLabel(item.source);
+  const isGenericFermentable = item.source.category === "fermentable" && item.source.subtype === "fermentable";
   const showInlineBrand = Boolean(
     brandLabel && (item.source.subtype === "malt" || item.source.category === "yeast")
   );
+  const showFermentableKindOnBrandLine = Boolean(fermentableKindLabel && isGenericFermentable && !showInlineBrand);
+  const showFermentableKindInlineWithTitle = Boolean(fermentableKindLabel && !showFermentableKindOnBrandLine);
   const country = resolveIngredientCountry(item.source);
   const showCountryInlineWithTitle = country
     && item.source.category !== "hop"
@@ -332,7 +336,7 @@ export function InventoryListItem({ item, preferredCurrency, currencyRates }: Pr
             <button
               type="button"
               onClick={onClick}
-              className="rounded-md p-1 text-zinc-400 transition-colors hover:bg-zinc-100 hover:text-zinc-700"
+              className="inline-flex h-6 w-6 items-center justify-center rounded-md text-zinc-400 transition-colors hover:bg-zinc-100 hover:text-zinc-700"
               aria-label="Редактировать"
             >
               <Pencil className="h-4 w-4" />
@@ -347,7 +351,7 @@ export function InventoryListItem({ item, preferredCurrency, currencyRates }: Pr
               type="button"
               onClick={onClick}
               disabled={isPending}
-              className="rounded-md p-1 text-zinc-400 transition-colors hover:bg-red-50 hover:text-red-600 disabled:opacity-60"
+              className="inline-flex h-6 w-6 items-center justify-center rounded-md text-zinc-400 transition-colors hover:bg-red-50 hover:text-red-600 disabled:opacity-60"
               aria-label="Удалить"
             >
               <X className="h-4 w-4" />
@@ -367,7 +371,7 @@ export function InventoryListItem({ item, preferredCurrency, currencyRates }: Pr
                     {primaryName}
                   </Link>
                 </h3>
-                {fermentableKindLabel ? (
+                {showFermentableKindInlineWithTitle ? (
                   <span className="inline-flex min-w-0 items-center gap-2 text-xs font-medium text-zinc-600">
                     <span aria-hidden="true" className="text-zinc-400">•</span>
                     <span className="truncate">{fermentableKindLabel}</span>
@@ -395,6 +399,11 @@ export function InventoryListItem({ item, preferredCurrency, currencyRates }: Pr
                       countryCode={country.code}
                       className="h-3.5 w-[1.15rem]"
                     />
+                  ) : null}
+                  {showFermentableKindOnBrandLine ? (
+                    <span className="rounded-full bg-zinc-50 px-2 py-0.5 text-[11px] font-medium text-zinc-600 ring-1 ring-zinc-200/70">
+                      {fermentableKindLabel}
+                    </span>
                   ) : null}
                 </div>
               ) : null}

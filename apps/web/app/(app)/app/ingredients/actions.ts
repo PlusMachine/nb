@@ -6,14 +6,14 @@ import { ZodError } from "zod";
 import {
   addCatalogInventoryItemSchema,
   addCustomInventoryItemSchema,
-  createUserCustomIngredientSchema,
+  createUserCustomInventoryIngredientSchema,
   updateInventoryItemSchema,
   updateInventoryQuantitySchema
 } from "@/features/inventory/contracts";
 import {
   addCatalogIngredientToInventory,
   addCustomIngredientToInventory,
-  createUserCustomIngredient,
+  createUserCustomInventoryIngredient,
   deleteInventoryItem,
   resolveCatalogInventoryAdditionSource,
   setInventoryItemQuantityToZero,
@@ -261,7 +261,7 @@ export const addCustomIngredientAction = async (_prevState: AddIngredientResult 
       ?? formData.get("purchasePriceMinor")
     );
 
-    const customPayload = createUserCustomIngredientSchema.parse({
+    const customPayload = createUserCustomInventoryIngredientSchema.parse({
       type: String(formData.get("type") ?? "") || undefined,
       category: String(formData.get("category") ?? "") || undefined,
       subtype: String(formData.get("subtype") ?? "").trim() || null,
@@ -272,12 +272,13 @@ export const addCustomIngredientAction = async (_prevState: AddIngredientResult 
       fermentableColorEbc: String(formData.get("fermentableColorEbc") ?? "").trim() || null,
       fermentableExtractYieldPct: String(formData.get("fermentableExtractYieldPct") ?? "").trim() || null,
       hopAlphaAcidPct: String(formData.get("hopAlphaAcidPct") ?? "").trim() || null,
+      hopForm: String(formData.get("hopForm") ?? "").trim() || null,
       yeastAttenuationPct: String(formData.get("yeastAttenuationPct") ?? "").trim() || null,
       yeastForm: String(formData.get("yeastForm") ?? "").trim() || null,
       defaultDisplayUnit: String(formData.get("defaultDisplayUnit") ?? "").trim() || null
     });
 
-    const customIngredient = await createUserCustomIngredient(user.id, customPayload);
+    const customIngredient = await createUserCustomInventoryIngredient(user.id, customPayload);
 
     const inventoryPayload = addCustomInventoryItemSchema.parse({
       userCustomIngredientId: customIngredient.id,

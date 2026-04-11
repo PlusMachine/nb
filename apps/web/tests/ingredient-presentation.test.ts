@@ -4,6 +4,7 @@ import {
   buildIngredientTypedSummary,
   resolveIngredientCountry,
   resolveIngredientDisplayNames,
+  resolveFermentableTypeBadgeRu,
   resolveIngredientFamilyDisplayName
 } from "../features/ingredients/presentation";
 
@@ -138,7 +139,7 @@ describe("ingredient presentation", () => {
         alphaAcidPctTypical: 12.5,
         hopForm: "pellet"
       }
-    })).toBe("12.5% AA • pellet");
+    })).toBe("12.5% AA • Гранулы");
   });
 
   it("omits negative fermentable color values from summaries", () => {
@@ -151,6 +152,43 @@ describe("ingredient presentation", () => {
         extractPctDryBasis: 80
       }
     })).toBe("Экст-ть 80%");
+  });
+
+  it("prefers explicit fermentable display type overrides", () => {
+    expect(resolveFermentableTypeBadgeRu({
+      displayTypeRu: "Красящий экстракт",
+      subtypeKey: "malt_extract",
+      extractForm: "liquid"
+    })).toBe("Красящий экстракт");
+  });
+
+  it("builds fermentable extract badges from normalized fields without parsing names", () => {
+    expect(resolveFermentableTypeBadgeRu({
+      subtypeKey: "malt_extract",
+      extractForm: "dry",
+      baseMaterialFamily: "wheat",
+      hoppingState: "unhopped"
+    })).toBe("Сухой пшеничный солодовый экстракт");
+
+    expect(resolveFermentableTypeBadgeRu({
+      subtypeKey: "malt_extract",
+      extractForm: "liquid",
+      baseMaterialFamily: "barley",
+      hoppingState: "hopped"
+    })).toBe("Охмелённый солодовый экстракт");
+  });
+
+  it("handles special-role fermentables before generic extract rules", () => {
+    expect(resolveFermentableTypeBadgeRu({
+      subtypeKey: "coloring_extract",
+      functionalRole: "color_adjustment",
+      extractForm: "liquid"
+    })).toBe("Красящий экстракт");
+
+    expect(resolveFermentableTypeBadgeRu({
+      subtypeKey: "kvass_concentrate",
+      productFamily: "extract_concentrate"
+    })).toBe("Концентрат квасного сусла");
   });
 
   it("resolves country labels and codes from country code", () => {

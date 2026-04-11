@@ -81,6 +81,17 @@ export type FermentableTechnicalData = {
   type: "fermentable";
   fermentabilityClass?: string | null;
   extractForm?: "dry" | "liquid" | null;
+  productFamily?: string | null;
+  subtypeKey?: string | null;
+  physicalForm?: string | null;
+  baseMaterialFamily?: string | null;
+  baseMaterials?: string[];
+  hoppingState?: "hopped" | "unhopped" | "unknown" | "not_applicable" | null;
+  isHoppedProduct?: boolean | null;
+  functionalRole?: string | null;
+  gravityCalcMode?: string | null;
+  displayTypeRu?: string | null;
+  displayTypeEn?: string | null;
   extractPctDryBasis?: number | null;
   colorLovibond?: number | null;
   recommendedMaxPct?: number | null;
@@ -447,6 +458,8 @@ export type IngredientSuggestionItem = {
   countryName?: string | null;
   country?: string | null;
   productCode?: string | null;
+  sourceCategory?: string | null;
+  subcategory?: string | null;
   technicalData?: IngredientTechnicalData | null;
   defaultUnit: IngredientDisplayUnit;
   defaultDisplayUnit?: IngredientDisplayUnit;
@@ -455,6 +468,7 @@ export type IngredientSuggestionItem = {
   completenessLevel?: IngredientCompletenessLevel;
   quantityDefaults?: Record<string, unknown> | null;
   unitPreferred?: string | null;
+  groupName?: string | null;
   packageVariants?: IngredientPackageVariantDto[];
   familyDisplayName?: string | null;
   familyCanonicalName?: string | null;
@@ -512,12 +526,40 @@ export type IngredientSearchResult = {
   appliedCustomOnly: boolean;
 };
 
-export type IngredientPickerQuickStartResult = {
-  brands: IngredientManufacturerRefinement[];
-  recent: IngredientSuggestionItem[];
+export type IngredientPickerQuickStartAvailability = {
   hasFavoritesAvailable: boolean;
   hasCustomAvailable: boolean;
 };
+
+export type IngredientPickerQuickStartContextKey =
+  | Extract<IngredientSubtype, "malt" | "fermentable">
+  | Extract<IngredientCategory, "hop" | "yeast" | "water_treatment" | "consumable">;
+
+export type IngredientPickerQuickStartAvailabilityByContext = Record<
+  IngredientPickerQuickStartContextKey,
+  IngredientPickerQuickStartAvailability
+>;
+
+export type IngredientPickerQuickStartAvailabilityBySubtype = Record<
+  Extract<IngredientSubtype, "malt" | "fermentable">,
+  IngredientPickerQuickStartAvailability
+>;
+
+export type IngredientPickerQuickStartResult = IngredientPickerQuickStartAvailability & {
+  brands: IngredientManufacturerRefinement[];
+  groups?: IngredientConsumableGroupRefinement[];
+  recent: IngredientSuggestionItem[];
+};
+
+export type IngredientPickerQuickStartResultByContext = Record<
+  IngredientPickerQuickStartContextKey,
+  IngredientPickerQuickStartResult
+>;
+
+export type IngredientPickerQuickStartResultBySubtype = Pick<
+  IngredientPickerQuickStartResultByContext,
+  Extract<IngredientSubtype, "malt" | "fermentable">
+>;
 
 export const ingredientCatalogViews = ["all", "mine"] as const;
 export type IngredientCatalogView = (typeof ingredientCatalogViews)[number];
@@ -551,6 +593,7 @@ export type UserCatalogIngredientDto = IngredientTechnicalFields & {
   countryCode: string | null;
   countryName: string | null;
   productCode: string | null;
+  groupName: string | null;
   sourceCategory: string | null;
   subcategory: string | null;
   itemKind: string | null;
