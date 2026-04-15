@@ -4,6 +4,7 @@ import type { IngredientCategory, IngredientTechnicalData, IngredientType, Ingre
 import { resolvePreferredCurrency, convertCurrencyMinor, convertRubMinorToCurrencyMinor, formatCurrencyMinor, formatUnitPriceMinor } from "../system/money";
 import type { SystemCurrency, SystemCurrencyRateMap } from "../system/currency";
 import {
+  getInventoryUnitQuantityPrecision,
   inventoryUnitShortLabels,
   resolveHumanFacingInventoryUnitProfile,
   type InventoryUnit
@@ -31,9 +32,9 @@ type InventoryCostDisplayInput = InventoryDisplayInput & {
   normalizedUnitCostMinorRub?: number | null;
 };
 
-const formatDisplayNumber = (value: number) => {
-  const rounded = roundTo(value, 3);
-  return Number.isInteger(rounded) ? String(rounded) : rounded.toFixed(3).replace(/0+$/, "").replace(/\.$/, "");
+const formatDisplayNumber = (value: number, precision = 3) => {
+  const rounded = roundTo(value, precision);
+  return Number.isInteger(rounded) ? String(rounded) : rounded.toFixed(precision).replace(/0+$/, "").replace(/\.$/, "");
 };
 
 const resolvePackNormalizedQuantity = (technicalData?: IngredientTechnicalData | null) => (
@@ -107,7 +108,9 @@ export const resolveInventoryMeasurementForDisplay = (input: InventoryDisplayInp
   };
 };
 
-export const formatInventoryQuantityInputValue = (value: number) => formatDisplayNumber(value);
+export const formatInventoryQuantityInputValue = (value: number, unit?: InventoryUnit) => (
+  formatDisplayNumber(value, unit ? getInventoryUnitQuantityPrecision(unit) : 3)
+);
 
 const resolveDisplayUnitCostMinor = (
   normalizedUnitCostMinorRub: number,
@@ -141,7 +144,7 @@ const resolveDisplayUnitCostMinor = (
 
 export const formatInventoryQuantityForDisplay = (input: InventoryDisplayInput) => {
   const displayMeasurement = resolveInventoryMeasurementForDisplay(input);
-  const base = `${formatDisplayNumber(displayMeasurement.quantity)} ${inventoryUnitShortLabels[displayMeasurement.unit]}`;
+  const base = `${formatInventoryQuantityInputValue(displayMeasurement.quantity, displayMeasurement.unit)} ${inventoryUnitShortLabels[displayMeasurement.unit]}`;
 
   if (displayMeasurement.unit !== "pack") {
     return base;
@@ -152,7 +155,7 @@ export const formatInventoryQuantityForDisplay = (input: InventoryDisplayInput) 
     return base;
   }
 
-  return `${base} (${formatDisplayNumber(input.normalizedQuantity)} ${inventoryUnitShortLabels[input.normalizedUnit]})`;
+  return `${base} (${formatInventoryQuantityInputValue(input.normalizedQuantity, input.normalizedUnit)} ${inventoryUnitShortLabels[input.normalizedUnit]})`;
 };
 
 export const buildInventoryCostDisplay = (

@@ -1,4 +1,13 @@
-import type { StyleFitResult, StyleRange } from "@nb/brewing-core";
+import {
+  bitternessFormulas,
+  mashPhModels,
+  waterEngineModes,
+  type BitternessFormula,
+  type MashPhModel,
+  type StyleFitResult,
+  type StyleRange,
+  type WaterEngineMode
+} from "@nb/brewing-core";
 import { z } from "zod";
 
 import {
@@ -6,20 +15,46 @@ import {
   ingredientTypes,
   type IngredientCategory,
   type IngredientSubtype,
+  type IngredientTechnicalData,
   type IngredientType
 } from "../ingredients/contracts";
 import { resolveIngredientCategory, resolveLegacyIngredientType, resolveIngredientSubtype } from "../ingredients/taxonomy";
 import { inventoryUnits, type InventoryUnit, type InventoryUnitDimension } from "../inventory/units";
+import { equipmentProfileSnapshotSchema, type EquipmentProfileSnapshot } from "../equipment-profiles/contracts";
 
 export const recipePublicationStates = ["draft", "private", "published"] as const;
 export const recipeIngredientStages = ["mash", "boil", "whirlpool", "fermentation", "packaging", "other"] as const;
-export const recipeHopUseTypes = ["boil", "whirlpool", "dry_hop", "dip_hop", "other"] as const;
+export const recipeHopUseTypes = ["boil", "first_wort_hop", "whirlpool", "dry_hop", "dip_hop", "other"] as const;
 export const recipeFermentableUseTypes = ["mash", "steep", "boil"] as const;
+export const recipeInventoryIntentModes = ["none", "use_stock", "catalog", "custom", "imported"] as const;
+export const recipeBitternessFormulas = bitternessFormulas;
+export const recipeWaterEngineModes = waterEngineModes;
+export const recipeMashPhModels = mashPhModels;
 
 export type RecipePublicationState = (typeof recipePublicationStates)[number];
 export type RecipeIngredientStage = (typeof recipeIngredientStages)[number];
 export type RecipeHopUseType = (typeof recipeHopUseTypes)[number];
 export type RecipeFermentableUseType = (typeof recipeFermentableUseTypes)[number];
+export type RecipeInventoryIntentMode = (typeof recipeInventoryIntentModes)[number];
+
+export const recipeBitternessFormulaLabels: Record<BitternessFormula, string> = {
+  tinseth_whirlpool_v2: "Tinseth + whirlpool v2",
+  tinseth_classic: "Tinseth classic",
+  rager: "Rager",
+  garetz: "Garetz",
+  noonan_legacy: "Noonan legacy"
+};
+
+export const recipeWaterEngineLabels: Record<WaterEngineMode, string> = {
+  profile_only: "Профиль воды",
+  balanced_default: "Баланс + pH",
+  advanced_manual: "Advanced manual"
+};
+
+export const recipeMashPhModelLabels: Record<MashPhModel, string> = {
+  kolbach_ra_quick: "Kolbach RA quick",
+  hybrid_mash_ph_v1: "Hybrid mash pH v1"
+};
 
 export const recipePublicationStateLabels: Record<RecipePublicationState, string> = {
   draft: "Приватный",
@@ -49,14 +84,12 @@ const optionalTemperatureStepSchema = z.object({
 
 export const defaultRecipeProcessMeta = {
   mashProfile: {
-    steps: [
-      {
-        id: "mash-step-1",
-        name: "Основной настой",
-        temperatureC: 67,
-        durationMinutes: 60
-      }
-    ]
+    steps: [] as Array<{
+      id: string;
+      name: string;
+      temperatureC: number;
+      durationMinutes: number;
+    }>
   },
   fermentationProfile: {
     primaryTemperatureC: 20,
@@ -82,7 +115,7 @@ export const defaultRecipeProcessMeta = {
 
 export const recipeProcessMetaSchema = z.object({
   mashProfile: z.object({
-    steps: z.array(mashStepSchema).min(1).max(10).default(defaultRecipeProcessMeta.mashProfile.steps)
+    steps: z.array(mashStepSchema).max(10).default(defaultRecipeProcessMeta.mashProfile.steps)
   }).default(defaultRecipeProcessMeta.mashProfile),
   fermentationProfile: z.object({
     primaryTemperatureC: z.coerce.number().min(-10).max(50).optional().nullable().default(defaultRecipeProcessMeta.fermentationProfile.primaryTemperatureC),
@@ -95,6 +128,108 @@ export const recipeProcessMetaSchema = z.object({
 
 export type RecipeProcessMeta = z.infer<typeof recipeProcessMetaSchema>;
 
+export const recipeCalculationMetaSchema = z.object({
+  bitternessFormula: z.enum(recipeBitternessFormulas).default("tinseth_whirlpool_v2"),
+  bitternessSettings: z.object({
+    includeBoilCarryoverIntoWhirlpool: z.coerce.boolean().default(true),
+    whirlpoolUtilizationFactor: z.coerce.number().positive().max(3).default(1),
+    hopFormUtilizationFactor: z.coerce.number().positive().max(3).default(1),
+    firstWortHopMode: z.enum(["bonus_10pct", "treat_as_20min", "treat_as_boil_start"]).default("bonus_10pct")
+  }).partial().default({})
+}).default({
+  bitternessFormula: "tinseth_whirlpool_v2",
+  bitternessSettings: {}
+});
+
+export type RecipeCalculationMeta = z.infer<typeof recipeCalculationMetaSchema>;
+
+const waterProfileSchema = z.object({
+  ca: z.coerce.number().min(0).default(0),
+  mg: z.coerce.number().min(0).default(0),
+  na: z.coerce.number().min(0).default(0),
+  cl: z.coerce.number().min(0).default(0),
+  so4: z.coerce.number().min(0).default(0),
+  hco3: z.coerce.number().min(0).default(0),
+  ph: z.coerce.number().min(0).max(14).optional().nullable()
+});
+
+export const recipeWaterPlanMetaSchema = z.object({
+  setupEnabled: z.coerce.boolean().default(false),
+  engine: z.enum(recipeWaterEngineModes).default("balanced_default"),
+  phModel: z.enum(recipeMashPhModels).default("hybrid_mash_ph_v1"),
+  sourceProfileMode: z.enum(["saved", "preset", "manual", "ro_distilled"]).default("preset"),
+  sourceProfilePresetId: z.string().trim().max(80).optional().nullable(),
+  sourceProfile: waterProfileSchema.optional().nullable(),
+  targetProfileMode: z.enum(["balanced", "malty", "hoppy", "manual", "style"]).default("balanced"),
+  targetProfilePresetId: z.string().trim().max(80).optional().nullable(),
+  targetProfile: waterProfileSchema.optional().nullable(),
+  showWaterAdditivesInIngredients: z.coerce.boolean().default(false),
+  blendRatio: z.object({
+    tap: z.coerce.number().min(0).max(1).default(1),
+    ro: z.coerce.number().min(0).max(1).default(0),
+    distilled: z.coerce.number().min(0).max(1).default(0)
+  }).optional().nullable(),
+  mashWaterVolumeL: z.coerce.number().min(0).optional().nullable(),
+  spargeWaterVolumeL: z.coerce.number().min(0).optional().nullable(),
+  totalWaterVolumeL: z.coerce.number().min(0).optional().nullable(),
+  allowedSalts: z.array(z.string()).optional().default([]),
+  allowedAcids: z.array(z.string()).optional().default([]),
+  manualSaltAdditions: z.array(z.object({
+    salt: z.string(),
+    grams: z.coerce.number().min(0)
+  })).optional().default([]),
+  targetMashPh: z.coerce.number().min(4).max(7).optional().nullable(),
+  spargeAcidificationEnabled: z.coerce.boolean().default(false),
+  spargeSourcePh: z.coerce.number().min(0).max(14).optional().nullable(),
+  targetSpargePh: z.coerce.number().min(4).max(7).optional().nullable(),
+  targetSpargeAlkalinity: z.coerce.number().min(0).optional().nullable(),
+  selectedAcid: z.enum(["lactic_acid", "phosphoric_acid"]).optional().nullable(),
+  acidConcentrationPct: z.coerce.number().positive().max(100).optional().nullable(),
+  calibrationOffset: z.coerce.number().min(-2).max(2).optional().nullable()
+}).default({
+  setupEnabled: false,
+  engine: "balanced_default",
+  phModel: "hybrid_mash_ph_v1",
+  sourceProfileMode: "preset",
+  sourceProfilePresetId: "ro_distilled",
+  targetProfileMode: "balanced",
+  targetProfilePresetId: "balanced",
+  showWaterAdditivesInIngredients: false,
+  allowedSalts: [],
+  allowedAcids: [],
+  manualSaltAdditions: [],
+  targetMashPh: 5.35,
+  spargeAcidificationEnabled: false,
+  spargeSourcePh: null,
+  targetSpargePh: 5.7,
+  selectedAcid: "lactic_acid"
+});
+
+export type RecipeWaterPlanMeta = z.infer<typeof recipeWaterPlanMetaSchema>;
+
+export const recipeInventorySelectionMetaSchema = z.object({
+  inventoryItemId: z.string().uuid().optional().nullable(),
+  stockQuantityLabel: z.string().trim().max(120).optional().nullable(),
+  stockNormalizedQuantity: z.coerce.number().min(0).optional().nullable(),
+  stockNormalizedUnit: z.string().trim().max(32).optional().nullable(),
+  freshnessDate: z.string().trim().max(64).optional().nullable()
+}).passthrough();
+
+export type RecipeInventorySelectionMeta = z.infer<typeof recipeInventorySelectionMetaSchema>;
+
+export type RecipeImportedIngredientSnapshot = {
+  version: 1;
+  source?: string | null;
+  name: string;
+  type: IngredientType;
+  category: IngredientCategory;
+  subtype?: IngredientSubtype | null;
+  defaultDisplayUnit?: InventoryUnit | null;
+  allowedUnits?: InventoryUnit[] | null;
+  measurementDimension?: InventoryUnitDimension | null;
+  technicalData?: IngredientTechnicalData | null;
+};
+
 export const recipeSourceLinkageSchema = z.object({
   ingredientCatalogItemId: z.string().trim().min(1).optional().nullable(),
   userCustomIngredientId: z.string().uuid().optional().nullable()
@@ -104,6 +239,7 @@ export const recipeSourceLinkageSchema = z.object({
 });
 
 export const recipeIngredientPayloadSchema = z.object({
+  persistentKey: z.string().uuid().optional().nullable(),
   ingredientCatalogItemId: z.string().trim().min(1).optional().nullable(),
   userCustomIngredientId: z.string().uuid().optional().nullable(),
   type: z.enum(ingredientTypes).optional(),
@@ -114,14 +250,23 @@ export const recipeIngredientPayloadSchema = z.object({
   amountEnteredUnit: z.string().trim().toLowerCase().pipe(z.enum(inventoryUnits)),
   stage: z.enum(recipeIngredientStages).default("other"),
   timeOffset: z.coerce.number().int().optional().nullable(),
-  stepMeta: z.record(z.string(), z.unknown()).optional().nullable()
+  stepMeta: z.record(z.string(), z.unknown()).optional().nullable(),
+  inventoryIntentMode: z.enum(recipeInventoryIntentModes).optional().nullable(),
+  inventorySelectionMeta: recipeInventorySelectionMetaSchema.optional().nullable(),
+  externalImportMeta: z.record(z.string(), z.unknown()).optional().nullable()
 }).superRefine((value, ctx) => {
-  const linkage = recipeSourceLinkageSchema.safeParse({
-    ingredientCatalogItemId: value.ingredientCatalogItemId,
-    userCustomIngredientId: value.userCustomIngredientId
-  });
+  const hasCatalogSource = Boolean(value.ingredientCatalogItemId);
+  const hasCustomSource = Boolean(value.userCustomIngredientId);
 
-  if (!linkage.success) {
+  if (value.inventoryIntentMode === "imported") {
+    if (hasCatalogSource || hasCustomSource) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "Imported ingredient must not be linked to catalog or custom source",
+        path: ["ingredientCatalogItemId"]
+      });
+    }
+  } else if (hasCatalogSource === hasCustomSource) {
     ctx.addIssue({
       code: z.ZodIssueCode.custom,
       message: "Exactly one source is required",
@@ -183,6 +328,13 @@ const baseRecipePayloadSchema = z.object({
   description: z.string().trim().max(6000).optional().nullable(),
   authorNotes: z.string().trim().max(6000).optional().nullable(),
   processMeta: recipeProcessMetaSchema.optional().nullable(),
+  calculationMeta: recipeCalculationMetaSchema.optional().nullable(),
+  draftState: z.record(z.string(), z.unknown()).optional().nullable(),
+  importMeta: z.record(z.string(), z.unknown()).optional().nullable(),
+  equipmentProfileId: z.string().uuid().optional().nullable(),
+  equipmentProfileSnapshot: equipmentProfileSnapshotSchema.optional().nullable(),
+  waterPlanMeta: recipeWaterPlanMetaSchema.optional().nullable(),
+  brewPlanMeta: z.record(z.string(), z.unknown()).optional().nullable(),
   heroImageId: z.string().uuid().optional().nullable()
 });
 
@@ -203,6 +355,8 @@ export const listAuthorRecipesQuerySchema = z.object({
 export type RecipeIngredientDto = {
   id: string;
   recipeId: string;
+  persistentKey: string;
+  displayOrder: number;
   ingredientCatalogItemId: string | null;
   userCustomIngredientId: string | null;
   type: IngredientType;
@@ -215,11 +369,19 @@ export type RecipeIngredientDto = {
   ingredientDisplayNameSnapshot?: string | null;
   ingredientFamilyDisplayName?: string | null;
   ingredientSummary?: string | null;
+  ingredientBrand?: string | null;
+  ingredientProducer?: string | null;
+  ingredientBrandName?: string | null;
+  ingredientManufacturer?: string | null;
+  ingredientCountryCode?: string | null;
+  ingredientCountryName?: string | null;
+  ingredientCountry?: string | null;
   ingredientDefaultDisplayUnit?: InventoryUnit | null;
   ingredientDefaultDisplayUnitSnapshot?: InventoryUnit | null;
   ingredientAllowedUnits?: InventoryUnit[] | null;
   ingredientMeasurementDimension?: InventoryUnitDimension | null;
   ingredientMeasurementDimensionSnapshot?: InventoryUnitDimension | null;
+  ingredientTechnicalData?: IngredientTechnicalData | null;
   amountEnteredQuantity: number;
   amountEnteredUnit: InventoryUnit;
   amountNormalizedQuantity: number;
@@ -227,6 +389,9 @@ export type RecipeIngredientDto = {
   stage: RecipeIngredientStage;
   timeOffset: number | null;
   stepMeta: Record<string, unknown> | null;
+  inventoryIntentMode?: RecipeInventoryIntentMode | null;
+  inventorySelectionMeta?: RecipeInventorySelectionMeta | null;
+  externalImportMeta?: Record<string, unknown> | null;
   createdAt: Date;
   updatedAt: Date;
 };
@@ -266,6 +431,13 @@ export type RecipeDetailDto = RecipeListItemDto & {
   description: string | null;
   authorNotes: string | null;
   processMeta: RecipeProcessMeta;
+  calculationMeta?: RecipeCalculationMeta | null;
+  draftState?: Record<string, unknown> | null;
+  importMeta?: Record<string, unknown> | null;
+  equipmentProfileId?: string | null;
+  equipmentProfileSnapshot?: EquipmentProfileSnapshot | null;
+  waterPlanMeta?: RecipeWaterPlanMeta | null;
+  brewPlanMeta?: Record<string, unknown> | null;
   heroImageId: string | null;
   ingredients: RecipeIngredientDto[];
   versions: RecipeVersionOptionDto[];
@@ -279,8 +451,38 @@ export type RecipeDraftPreviewDto = {
   fg: number | null;
   abv: number | null;
   ibu: number | null;
+  bitternessFormula?: BitternessFormula;
   color: number | null;
   styleId: string | null;
   styleRange: StyleRange | null;
   styleFit: StyleFitResult | null;
+};
+
+export type RecipeStockCoverageLineDto = {
+  recipeIngredientId: string;
+  recipeIngredientPersistentKey: string;
+  displayOrder: number;
+  ingredientDisplayName: string | null;
+  requiredQuantityNormalized: number;
+  requiredNormalizedUnit: InventoryUnit;
+  allocatedQuantityNormalized: number;
+  availableQuantityNormalized: number | null;
+  normalizedUnit: InventoryUnit;
+  status: "unselected" | "short" | "covered" | "reserved" | "consumed" | "released";
+  inventoryItemId: string | null;
+  inventoryDisplayName: string | null;
+  allocationId: string | null;
+};
+
+export type RecipeStockCoverageDto = {
+  recipeId: string;
+  lines: RecipeStockCoverageLineDto[];
+  summary: {
+    totalLines: number;
+    selectedLines: number;
+    coveredLines: number;
+    reservedLines: number;
+    consumedLines: number;
+    shortLines: number;
+  };
 };

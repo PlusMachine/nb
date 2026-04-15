@@ -139,6 +139,24 @@
       "tag": "0022_ingredient_package_variants_product_name_en",
       "when": 1781000000000,
       "breakpoints": true
+    },
+    {
+      "idx": 23,
+      "tag": "0023_recipe_master_v15_foundation",
+      "when": 1782000000000,
+      "breakpoints": true
+    },
+    {
+      "idx": 24,
+      "tag": "0024_recipe_inventory_batches",
+      "when": 1783000000000,
+      "breakpoints": true
+    },
+    {
+      "idx": 25,
+      "tag": "0025_recipe_imported_ingredient_snapshots",
+      "when": 1784000000000,
+      "breakpoints": true
     }
   ]
 }

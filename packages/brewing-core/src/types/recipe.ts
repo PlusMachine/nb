@@ -12,7 +12,9 @@ export interface HopAdditionInput {
   alphaAcidPercent: number;
   weightG: number;
   boilTimeMinutes: number;
-  use?: "boil" | "whirlpool" | "dry_hop";
+  use?: "boil" | "first_wort_hop" | "whirlpool" | "dry_hop" | "dip_hop" | "other";
+  temperatureC?: number | null;
+  utilizationFactor?: number | null;
 }
 
 export interface RecipeStats {

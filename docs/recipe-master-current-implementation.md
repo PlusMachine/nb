@@ -1,604 +1,713 @@
-# Мастер рецептов: текущая реализация
+# Мастер рецептов: текущее состояние
 
-Документ описывает текущее устройство мастера рецептов на 2026-04-11 по коду приложения. Основные точки входа:
+Дата актуализации: 2026-04-14.
 
-- `/app/recipes` — список рецептов пользователя, `apps/web/app/(app)/app/recipes/page.tsx`.
-- `/app/recipes/new` — создание рецепта, `apps/web/app/(app)/app/recipes/new/page.tsx`.
-- `/app/recipes/[id]/edit` — редактирование рецепта, `apps/web/app/(app)/app/recipes/[id]/edit/page.tsx`.
-- `/app/recipes/[id]` — legacy route, сразу редиректит на `/app/recipes/[id]/edit`.
-- `/recipes/[slug]` — публичная страница опубликованного рецепта, `apps/web/app/(public)/recipes/[slug]/page.tsx`.
+Документ описывает фактическое состояние мастера рецептов после pass `Recipe Master UX Simplification + Water/Equipment Fix`. Основная цель текущего UI: быстро собрать базовый рецепт, а воду, оборудование, импорт, старт варки и тонкие расчетные настройки держать в компактных secondary flows.
 
-Главный UI мастера — `apps/web/components/recipes/recipe-designer.tsx`. Обертки над ним: `recipe-editor-page.tsx` показывает бейджи приватности/автосохранения, `recipe-form.tsx` просто прокидывает props в `RecipeDesigner`.
+## 1. Точки входа
 
-## 1. Модель данных
+- `/app/recipes` — список рецептов пользователя.
+- `/app/recipes/new` — создание рецепта.
+- `/app/recipes/[id]/edit` — редактирование рецепта.
+- `/app/recipes/[id]` — legacy route, редиректит на `/app/recipes/[id]/edit`.
+- `/app/equipment` — профили оборудования.
+- `/recipes/[slug]` — публичная страница опубликованного рецепта.
 
-### Таблица `recipes`
+Основной UI мастера находится в `apps/web/components/recipes/recipe-designer.tsx`.
 
-Описана в `packages/db/src/schema.ts`.
+Вспомогательные компоненты текущего UX:
+
+- `recipe-actions-menu.tsx` — компактные header actions: импорт/экспорт и старт варки.
+- `bitterness-settings-drawer.tsx` — настройки расчета IBU из кнопки рядом с IBU.
+- `water-setup-wizard.tsx` и `water-summary-card.tsx` — guided flow по воде.
+- `ingredient-add-drawer.tsx`, `stock-ingredient-list.tsx` — drawer добавления ингредиента и список склада.
+- `stock-coverage-summary.tsx` — компактная сводка покрытия складом.
+- `import-export-modal.tsx` — modal wizard для BeerXML/Brewfather import/export.
+- `start-brew-modal.tsx` — modal flow для создания партии.
+- `components/equipment/*` — basic/advanced form и summary для `/app/equipment`.
+
+## 2. Состояние PR-плана
+
+PR1 реализован:
+
+- DB-поля v1.5 в `recipes` и `recipe_ingredients`;
+- stable `recipe_ingredients.persistentKey`;
+- `syncRecipeIngredients()` вместо delete-all/insert-all;
+- `equipment_profiles`;
+- выбор профиля оборудования в мастере;
+- практическое масштабирование рецепта под выбранный профиль.
+
+PR2 реализован:
+
+- `tinseth_whirlpool_v2` как default;
+- `tinseth_classic`, `rager`, `garetz`, `noonan_legacy`;
+- gravity at time of addition;
+- whirlpool/hopstand IBU через temperature factor;
+- optional late hop carryover;
+- dry hop не входит в standard IBU total;
+- first wort hop modes;
+- equipment `hopUtilizationFactor`.
+
+PR3 частично реализован и UX упрощен:
+
+- `profile_only`, `balanced_default`, `advanced_manual`;
+- `kolbach_ra_quick`, `hybrid_mash_ph_v1`;
+- salt contribution через mass fractions;
+- target-profile salt solver;
+- mash pH estimate at 20C;
+- mash acid estimate;
+- отдельный UI-подшаг для sparge acidification;
+- built-in source/target presets.
+
+Ограничение PR3: это practical calculator, не лабораторный acid-base simulator. Автоматическое зеркалирование salt/acid additions в `recipe_ingredients` пока сведено к сохранению preference `showWaterAdditivesInIngredients`; полноценное создание line items требует надежного source ingredient mapping.
+
+PR4 реализован:
+
+- source modes в add-ingredient flow: `Из склада`, `Из каталога`, `Создать свой`;
+- stock suggestions через inventory runtime;
+- allocations/reserve/consume/release;
+- confirmed consume пишет `inventory_transactions`;
+- autosave не списывает склад.
+
+PR5 реализован как modal wizard:
+
+- BeerXML export с доступными recipe stats, ingredient technical fields и mash steps;
+- BeerXML import;
+- Brewfather JSON import с тестовой поддержкой;
+- canonical import mapping на сервисном уровне;
+- импортированные ингредиенты сначала сохраняются как recipe-local snapshot, а не как пользовательские custom ingredients;
+- импорт технических полей ingredients: fermentable color/yield, hop alpha/form, yeast attenuation/form;
+- импорт BeerXML/Brewfather mash steps в `processMeta.mashProfile`;
+- BeerXML/Brewfather `MISC` попадает в consumable/water treatment taxonomy.
+
+Ограничение PR5: отдельного import report screen пока нет.
+
+PR6 реализован как пользовательское действие `Начать варку`:
+
+- создание `brew_batches`;
+- сохранение brew plan data при создании batch;
+- опция списать ингредиенты перед созданием batch.
+
+Ограничение PR6: пошаговый brew session экран и live device control еще не реализованы.
+
+## 3. Информационная архитектура страницы рецепта
+
+Основная визуальная ось теперь такая:
+
+1. Header:
+   - название рецепта;
+   - стиль BJCP;
+   - публикация;
+   - версия для существующего рецепта;
+   - compact actions `Импорт / экспорт` и `Начать варку`;
+   - save status отображается wrapper-компонентом страницы.
+2. Batch summary и live preview:
+   - объем;
+   - эффективность;
+   - кипячение;
+   - OG;
+   - FG;
+   - ABV;
+   - IBU;
+   - цвет;
+   - fit по стилю, если выбран BJCP style.
+3. Core recipe sections:
+   - `Сбраживаемое`;
+   - `Хмель`;
+   - `Дрожжи`;
+   - `Прочее / расходники`.
+4. Process profiles:
+   - `Mash Profile`;
+   - `Fermentation Profile`.
+5. Advanced lower area:
+   - `Вода`;
+   - `Оборудование`;
+   - `Покрытие складом`.
+6. Bottom content:
+   - `Описание рецепта`;
+   - `Личные заметки`.
+
+С основной оси убраны крупные блоки:
+
+- `Расчет горечи`;
+- textarea-блок import/export;
+- отдельный блок brew mode;
+- отдельная крупная секция `Водоподготовка` как равноправная ingredient section.
+
+## 4. Header и autosave flow
+
+Header содержит title input, BJCP style picker, publication controls и actions menu.
+
+Autosave flow:
+
+1. Любое изменение state меняет `currentSignature`.
+2. Через debounce 1500 мс вызывается `persistRecipe()`.
+3. Для нового рецепта вызывается `createRecipeAction()`.
+4. Для существующего рецепта вызывается `updateRecipeAction()`.
+5. После первого create заполняется `activeRecipeId`.
+6. Для `/app/recipes/new` URL получает `?recipeId={id}`, а серверная перезагрузка редиректит на edit route.
+
+Live preview flow:
+
+1. Через debounce 400 мс вызывается `previewRecipeDraftAction(savePayload)`.
+2. Preview обновляет OG/FG/ABV/IBU/color/style fit независимо от autosave.
+3. Если выбран BJCP style, preview показывает `В стиле` или `Отклонения`.
+
+Publication flow:
+
+1. `Опубликовать` видна только для уже созданного private recipe.
+2. Если checklist не готов, открывается readiness dialog.
+3. Если checklist готов, открывается confirm dialog.
+4. Confirm сохраняет recipe с `publicationState = "published"`.
+5. `Сделать приватным` работает через отдельный confirm.
+
+Checklist для публикации:
+
+- title;
+- BJCP style;
+- description;
+- fermentable;
+- hop;
+- yeast;
+- positive boil time.
+
+## 5. Batch summary и live preview
+
+Левый блок `Параметры партии` показывает:
+
+- цвет;
+- OG;
+- FG;
+- IBU;
+- ABV;
+- стиль;
+- поля объема, эффективности и времени кипячения.
+
+Правый блок `Расчёт показателей` показывает треки по:
+
+- OG;
+- FG;
+- ABV;
+- IBU;
+- Color.
+
+Рядом с IBU есть маленькая кнопка `⚙`. Она открывает drawer `Настройки расчета горечи`.
+
+## 6. Настройки горечи
+
+Большого блока `Расчет горечи` в основной оси нет.
+
+Drawer открывается по кнопке рядом с IBU и показывает:
+
+- `Формула IBU`;
+- `Учитывать whirlpool`;
+- `Учитывать carryover позднего хмеля`;
+- `FWH mode`;
+- пояснение, что dry hop не входит в standard IBU total.
+
+Default:
+
+- formula: `tinseth_whirlpool_v2`;
+- whirlpool учитывается;
+- late hop carryover включен;
+- FWH mode: `bonus_10pct`.
+
+Расчетные возможности в core:
+
+- Tinseth classic;
+- Tinseth + whirlpool v2;
+- Rager;
+- Garetz;
+- Noonan legacy;
+- gravity at time of addition;
+- kettle gravity curve от equipment volumes;
+- whirlpool temperature factor;
+- equipment hop utilization factor.
+
+## 7. Core ingredient flow
+
+На основной странице показываются только ключевые секции:
+
+- `Сбраживаемое`;
+- `Хмель`;
+- `Дрожжи`;
+- `Прочее / расходники`.
+
+Хмель внутри секции группируется по use type:
+
+- boil;
+- first wort hop;
+- whirlpool/hopstand;
+- dry hop;
+- dip hop;
+- other.
+
+Add flow:
+
+1. Пользователь нажимает `+ Добавить` в нужной секции.
+2. Открывается drawer позиции.
+3. Вверху drawer пользователь выбирает путь:
+   - `Из склада`;
+   - `Из каталога`;
+   - `Создать свой`.
+4. Для `Из склада` сначала показывается предзагруженный список подходящих stock positions по категории.
+5. Search в stock mode остается вторичным уточнением.
+6. Для `Из каталога` используется общий ingredient picker/search runtime.
+7. Для `Создать свой` используется создание custom ingredient через recipe action.
+
+При выборе позиции со склада:
+
+- `inventoryIntentMode = "use_stock"`;
+- `inventorySelectionMeta.inventoryItemId` сохраняет source stock item;
+- autosave сохраняет только recipe line;
+- списания склада не происходит.
+
+Позиция валидна, когда выбран catalog/custom source и количество больше нуля. Для импортированных строк допустим третий режим: `inventoryIntentMode = "imported"`, оба source id пустые, а исходный ингредиент хранится в snapshot внутри `externalImportMeta.importedIngredient`.
+
+Импортированная строка в списке ингредиентов показывает бейдж `Импортировано` и два действия:
+
+- `Сохранить как свой` — создает пользовательский custom ingredient из snapshot и сразу привязывает строку к нему;
+- `Подобрать из каталога` — открывает обычный picker, чтобы заменить snapshot на catalog/custom source.
+
+Секция `Прочее / расходники` используется для misc/process additions:
+
+- фининги;
+- нутриенты;
+- таблетки;
+- прочие process aids.
+
+Секция `Водоподготовка` не возвращается как отдельный равноправный блок. Водные соли и кислоты остаются внутри блока `Вода`, а recipe line mirroring включается отдельным preference.
+
+## 8. Вода: guided flow
+
+Отдельной крупной ingredient-секции `Водоподготовка` больше нет. Вода находится в одном блоке `Вода` ниже process profiles.
+
+Свернутый summary:
+
+- если вода не настроена: `Водоподготовка не настроена`;
+- если настроена: `Затор X л • промывка Y л • pH ~Z • добавки рассчитаны`.
+
+Flow внутри блока:
+
+1. `Настроить водоподготовку?`
+   - `Пока нет`;
+   - `Да, настроить`.
+2. `Какая у вас исходная вода?`
+   - RO / Дистиллят;
+   - Pilsen;
+   - Dublin;
+   - Munich;
+   - manual entry.
+3. `Какой результат нужен?`
+   - Balanced;
+   - Light & Malty;
+   - Light & Hoppy;
+   - По стилю;
+   - Вручную.
+4. `Примерные рекомендации по воде`
+   - вода в затор;
+   - вода в промывку;
+   - соли в затор;
+   - соли в промывку;
+   - кислота в затор;
+   - примерный расчет pH;
+   - итоговый профиль;
+   - SO4:Cl ratio;
+   - warnings.
+5. `Показать расширенные настройки`
+   - схема расчета;
+   - модель pH;
+   - acid type;
+   - acid concentration;
+   - toggle `Показывать добавки воды в списке ингредиентов`;
+   - manual salt additions;
+   - advanced salts.
+
+UI copy объясняет:
+
+- зачем нужна кислота;
+- что кислоту для затора добавляют в mash water;
+- что кислоту для промывки добавляют отдельно в sparge water;
+- что SO4:Cl больше в сторону SO4 обычно суше/хмелевее, а больше в сторону Cl мягче/солодовее.
+
+### Sparge acidification
+
+Внутри результата есть отдельный подшаг `Подкисление промывочной воды`.
+
+Поля:
+
+- включено/выключено;
+- исходный pH воды;
+- целевой pH промывочной воды;
+- рассчитанный объем кислоты.
+
+Результат считается через practical acid solver в `buildRecipeWaterPlanResult()`.
+
+### Built-in profiles
+
+Ion order: Ca / Mg / Na / Cl / SO4 / HCO3.
+
+Source examples:
+
+- RO / Дистиллят = 0 / 0 / 0 / 0 / 0 / 0;
+- Pilsen = 7 / 3 / 2 / 5 / 5 / 25;
+- Dublin = 110 / 4 / 12 / 19 / 53 / 280;
+- Munich = 82 / 20 / 4 / 2 / 16 / 320.
+
+Target profiles:
+
+- Balanced = 80 / 5 / 25 / 75 / 80 / 100;
+- Light & Malty = 60 / 5 / 10 / 95 / 55 / 0;
+- Light & Hoppy = 75 / 5 / 10 / 50 / 150 / 0.
+
+City-based presets помечены как примерные исторические профили и не заменяют анализ воды пользователя.
+
+## 9. Оборудование
+
+### В мастере рецептов
+
+Блок `Оборудование` находится ниже воды и свернут по умолчанию.
+
+Свернутый summary:
+
+- если профиль не выбран: `Профиль по умолчанию`;
+- если профиль выбран: `{name} • {volume} л в ферментер • {efficiency}% • испарение {evaporation} л/ч`.
+
+Действия:
+
+- `Выбрать профиль`;
+- `Обновить из профиля`;
+- `Использовать профиль по умолчанию`;
+- `Изменить`;
+- `Масштабировать рецепт`.
+
+Summary внутри блока показывает:
+
+- метод;
+- целевой объем;
+- pre-boil hot;
+- post-boil hot;
+- mash / sparge water;
+- калибровку хмеля;
+- warning, если используется профиль по умолчанию;
+- warning, если pre-boil volume превышает kettle limit.
+
+Изменение профиля на `/app/equipment` не меняет существующий рецепт автоматически. Пользователь явно обновляет профиль в мастере.
+
+### `/app/equipment`
+
+Страница профилей оборудования больше не показывает все поля одним полотном.
+
+Basic mode показывает:
+
+- название;
+- метод варки;
+- целевой объем;
+- объем партии;
+- время кипячения;
+- эффективность;
+- испарение в час;
+- потери в котле / на чиллере;
+- grain absorption;
+- метод расчета воды;
+- mash thickness.
+
+Derived summary показывает:
+
+- pre-boil;
+- post-boil;
+- total water;
+- mash water;
+- sparge water;
+- предупреждения по vessel limits.
+
+Advanced mode открыт только через `Расширенные параметры` и содержит:
+
+- mash efficiency;
+- fermenter loss;
+- mash tun dead space;
+- sparge dead space;
+- cooling shrinkage;
+- top-up water;
+- max mash volume;
+- max kettle volume;
+- hop utilization factor;
+- altitude;
+- notes.
+
+Starter BIAB defaults:
+
+- `brewhouseEfficiencyPct = 68`;
+- `grainAbsorptionLPerKg = 0.70`;
+- `mashTunDeadspaceL = 0`;
+- no sparge behavior через `biab_single_vessel`.
+
+## 10. Склад
+
+Большой отдельный блок склада убран из середины страницы.
+
+Склад встроен в add-ingredient flow:
+
+1. Пользователь нажимает `+ Добавить`.
+2. В drawer выбирает `Из склада`.
+3. Сразу видит список подходящих stock positions.
+4. Может уточнить поиск.
+5. Выбирает позицию.
+6. Recipe line получает stock selection metadata.
+
+Ниже advanced area есть компактный summary `Покрытие складом`.
+
+Он показывает:
+
+- сколько ингредиентов связано со складом;
+- хватает ли на варку;
+- сколько позиций не хватает, если есть shortage.
+
+Действия:
+
+- `Проверить покрытие`;
+- `Списать на варку`.
+
+Принцип не изменился:
+
+- autosave рецепта не списывает склад;
+- confirmed consume выполняется только по явному действию;
+- consume пишет `inventory_transactions` и уменьшает normalized stock quantity.
+
+## 11. Импорт / экспорт
+
+Textarea-блок больше не находится в основной оси страницы.
+
+Header action `Импорт / экспорт` открывает modal wizard.
+
+Import flow:
+
+1. `Что хотите сделать?` -> `Импортировать рецепт`.
+2. `Формат` -> `BeerXML` или `Импорт из Brewfather (тестовая поддержка)`.
+3. Пользователь вставляет текст или загружает файл.
+4. Нажимает `Импортировать`.
+5. Action создает private recipe.
+6. UI редиректит на edit page нового recipe.
+
+Import mapping:
+
+- BeerXML `<FERMENTABLE><COLOR>` конвертируется из Lovibond в EBC;
+- BeerXML `<FERMENTABLE><YIELD>` сохраняется как extract yield;
+- BeerXML/Brewfather hop `ALPHA`/`alpha` сохраняется как hop AA%;
+- BeerXML/Brewfather hop form (`Pellet`, `Leaf`, `Cryo` и т.п.) сохраняется в snapshot technical data;
+- BeerXML/Brewfather yeast attenuation/form сохраняются в snapshot technical data;
+- BeerXML `<MASH_STEP>` и Brewfather `mash.steps` попадают в `processMeta.mashProfile.steps`;
+- BeerXML `IBU_METHOD` сохраняется в `calculationMeta.bitternessFormula`, а если method отсутствует, используется `tinseth_whirlpool_v2`;
+- imported recipe stats из файла сохраняются в `importMeta.importedStats` для аудита.
+
+Import service больше не создает custom ingredients автоматически. Каждая импортированная строка рецепта сохраняется как recipe-local snapshot:
+
+- `ingredientCatalogItemId = null`;
+- `userCustomIngredientId = null`;
+- `inventoryIntentMode = "imported"`;
+- `externalImportMeta.importedIngredient` содержит имя, taxonomy, default unit, allowed units, measurement dimension и technical data.
+
+Alpha acid, цвет, экстрактивность, yeast attenuation/form и формы misc/water treatment сохраняются в snapshot technical data и участвуют в расчете рецепта. Они не добавляются в имя ингредиента. Перенос в `СВОИ` или подбор аналога из каталога выполняется только явным действием пользователя на карточке импортированной строки.
+
+Export flow:
+
+1. `Что хотите сделать?` -> `Экспортировать рецепт`.
+2. Формат: BeerXML.
+3. Пользователь нажимает `Подготовить BeerXML`.
+4. UI сначала сохраняет текущий рецепт.
+5. Export result появляется в одном textarea.
+6. Доступны `Копировать` и `Скачать`.
+
+Export mapping:
+
+- recipe-level BeerXML поля получают доступные `OG`, `FG`, `IBU`, `IBU_METHOD`, `COLOR`, `ABV`, `BATCH_SIZE`, `BOIL_TIME`, `EFFICIENCY`, `TYPE`, `NOTES`;
+- если у рецепта есть equipment profile snapshot, `BOIL_SIZE` рассчитывается как pre-boil hot volume по текущей volume ladder;
+- fermentables экспортируются в `FERMENTABLES` с `TYPE`, `AMOUNT` в кг, `YIELD`, `COLOR` в Lovibond и `ADD_AFTER_BOIL`;
+- hops экспортируются в `HOPS` с `ALPHA`, `AMOUNT` в кг, `USE`, `TIME` и `FORM`;
+- yeast экспортируется в `YEASTS` с `FORM`, `AMOUNT`, `AMOUNT_IS_WEIGHT` и `ATTENUATION`;
+- consumables и water treatment line items экспортируются в `MISCS` с `TYPE`, `USE`, `TIME`, `AMOUNT` и `AMOUNT_IS_WEIGHT`;
+- mash steps из `processMeta.mashProfile.steps` экспортируются в `MASH/MASH_STEPS` как `MASH_STEP` с `STEP_TEMP` и `STEP_TIME`.
+
+## 12. Старт варки
+
+Отдельного блока brew mode больше нет.
+
+Header action `Начать варку` открывает modal.
+
+Flow:
+
+1. Пользователь нажимает `Начать варку`.
+2. Modal предлагает:
+   - `Пока не списывать`;
+   - `Списать ингредиенты со склада`.
+3. После подтверждения UI сохраняет рецепт.
+4. Если выбрано списание, вызывается confirmed consume.
+5. Затем создается batch через `createBrewBatchFromRecipeAction(recipeId)`.
+6. Batch создается со статусом `planned`.
+
+Пошаговый brew session UI пока не реализован.
+
+## 13. Process profile
+
+`Mash Profile` находится сразу после core ingredient sections.
+
+Возможности:
+
+- список mash steps;
+- температура;
+- длительность;
+- добавить step;
+- удалить step, если step больше одного.
+
+`Fermentation Profile` находится рядом ниже.
+
+Возможности:
+
+- primary temperature;
+- primary duration;
+- extra fermentation steps;
+- cold crash;
+- conditioning.
+
+`processMeta` сохраняется в recipe. На текущем этапе process profile не меняет OG/FG/ABV/IBU/color.
+
+## 14. Описание и заметки
+
+Внизу страницы:
+
+- `Описание рецепта` — публичный текст, required для publication;
+- `Личные заметки` — private author notes.
+
+Private notes не показываются на публичной странице.
+
+## 15. Модель данных
+
+### `recipes`
 
 Ключевые поля:
 
-- `id` — UUID рецепта.
-- `authorId` — владелец, FK на `users`.
-- `recipeFamilyId` — UUID семейства версий рецепта.
-- `versionNumber` — номер версии внутри семейства, по умолчанию `1`.
-- `publicationState` — enum `draft | private | published`, дефолт БД `draft`.
-- `title`, `slug`, `styleId`.
-- `batchSizeEnteredQuantity`, `batchSizeEnteredUnit` — значение объема партии как ввел пользователь.
-- `batchSizeNormalizedQuantity`, `batchSizeNormalizedUnit` — нормализованный объем. Сейчас объем нормализуется в `ml`.
-- `efficiency` — эффективность, nullable.
-- `boilTimeMinutes` — время кипячения, default `60`.
-- `og`, `fg`, `abv`, `ibu`, `color` — сохраненный snapshot расчетов. `color` хранится в SRM.
-- `description` — публичное описание.
-- `authorNotes` — приватные заметки автора.
-- `processMeta` — JSON с профилями затирания/брожения.
-- `heroImageId` — пока только поле, публичный UI показывает заглушку.
-- `createdAt`, `updatedAt`.
+- `publicationState`;
+- `title`, `slug`, `styleId`;
+- batch entered/normalized quantity/unit;
+- `efficiency`, `boilTimeMinutes`;
+- calculated values: `og`, `fg`, `abv`, `ibu`, `color`;
+- `description`, `authorNotes`, `heroImageId`;
+- `processMeta`;
+- `calculationMeta`;
+- `draftState`;
+- `importMeta`;
+- `equipmentProfileId`;
+- `equipmentProfileSnapshot`;
+- `waterPlanMeta`;
+- `brewPlanMeta`.
 
-Индексы: по автору, семейству, publication state, уникальный `slug`, уникальная пара `(recipeFamilyId, versionNumber)`.
+### `recipe_ingredients`
 
-### Таблица `recipe_ingredients`
+Каждая строка имеет:
 
-Каждая позиция ингредиента хранится отдельно и ссылается либо на системный каталог, либо на пользовательский ингредиент:
+- `persistentKey`;
+- `displayOrder`;
+- source linkage: catalog ingredient или user custom ingredient; для imported snapshot допустим recipe-local режим без catalog/custom source;
+- taxonomy fields and display snapshots;
+- entered/normalized amount;
+- `stage`, `timeOffset`, `stepMeta`;
+- `inventoryIntentMode`;
+- `inventorySelectionMeta`;
+- `externalImportMeta`; для imported lines содержит `externalImportMeta.importedIngredient` snapshot.
 
-- `recipeId` — FK на `recipes`, cascade delete.
-- `ingredientCatalogItemId` — ссылка на `ingredients`, nullable, on delete set null.
-- `userCustomIngredientId` — ссылка на `user_custom_ingredients`, nullable, on delete set null.
-- CHECK `recipe_ingredients_source_linkage_chk`: ровно один источник должен быть заполнен.
-- `ingredientFamilyId`, `ingredientCategory`, `ingredientSubtype`.
-- `ingredientDisplayNameSnapshot`, `ingredientDefaultDisplayUnitSnapshot`, `ingredientMeasurementDimension` — snapshot части данных источника на момент сохранения.
-- `type` — legacy ingredient type.
-- `amountEnteredQuantity`, `amountEnteredUnit` — введенное количество.
-- `amountNormalizedQuantity`, `amountNormalizedUnit` — нормализованное количество.
-- `stage` — `mash | boil | whirlpool | fermentation | packaging | other`.
-- `timeOffset` — целое число минут, nullable.
-- `stepMeta` — JSON с деталями использования.
+Сохранение идет через `syncRecipeIngredients()`:
 
-## 2. Создание рецепта
+- match по `persistentKey`;
+- update existing rows;
+- insert new rows;
+- delete rows not present in payload.
 
-### Вход в `/app/recipes/new`
+### Inventory and batches
 
-`NewRecipePage` требует авторизацию через `requireUser()`.
+Используются:
 
-Если в query есть `recipeId`, страница сразу редиректит на `/app/recipes/{recipeId}/edit`. Это используется после автосоздания рецепта, чтобы закрепить URL за уже созданной записью.
+- `recipe_inventory_allocations`;
+- `inventory_transactions`;
+- `brew_batches`;
+- `equipment_profiles`;
+- optional water profile data is stored in `waterPlanMeta` for the recipe.
 
-Для нового рецепта подготавливаются:
+## 16. Расчеты
 
-- `initialTitle` через `getNextDefaultRecipeTitle(user.id)`.
-- `initialIngredientSelection`, если в query есть `addSource=catalog|custom` и `addId`. В этом случае `getIngredientSuggestionByRef(user.id, source, id)` достает ingredient suggestion, и мастер сразу открывает редактор новой позиции с этим ингредиентом.
+Stats use:
 
-### Дефолты нового рецепта в UI
-
-В `RecipeDesigner` для нового рецепта используются:
-
-- `title` — `initialTitle` или пустая строка.
-- `styleId` — пустая строка.
-- `description`, `authorNotes` — пустые строки.
-- `publicationState` — через `normalizeEditorPublicationState(undefined)`, то есть `private`.
-- `batchSize` — `20 l`.
-- `efficiency` — `75`.
-- `boilTimeMinutes` — `60`.
-- `processMeta` — `defaultRecipeProcessMeta`.
-- `ingredients` — пустой список.
-
-Важная деталь: хотя enum поддерживает `draft`, UI мастера нормализует все непубличное состояние в `private`. Новый рецепт из мастера создается как `private`, не как `draft`.
-
-## 3. Редактирование рецепта
-
-`EditRecipePage` требует пользователя, вызывает `getOwnedRecipeById(user.id, id)` и отдает DTO в `RecipeEditorPage`. Если рецепт не найден или не принадлежит пользователю — `notFound()`.
-
-В `RecipeDesigner` данные рецепта раскладываются в локальный state:
-
-- поля рецепта напрямую (`title`, `styleId`, `description`, `authorNotes`, `publicationState`, batch/efficiency/boil);
-- `processMeta` клонируется через `cloneRecipeProcessMeta`;
-- ингредиенты преобразуются из `RecipeDetailDto["ingredients"]` в `DesignerIngredient` через `toDesignerIngredient`.
-
-При чтении ингредиента `hydrateRecipeIngredientDto()` пытается подтянуть live-связку:
-
-- если есть `ingredientCatalogItemId` — читает активный catalog ingredient;
-- если есть `userCustomIngredientId` — читает custom ingredient владельца;
-- если live-связка недоступна, использует snapshot/meta fallback.
-
-## 4. Ингредиенты в мастере
-
-### Категории
-
-UI группирует позиции по категориям:
-
-- `fermentable` — "Сбраживаемое".
-- `hop` — "Хмель".
-- `yeast` — "Дрожжи".
-- `water_treatment` — "Водоподготовка".
-- `consumable` — "Расходники".
-
-Хмель дополнительно группируется по `recipeHopUseTypes`:
-
-- `boil`;
-- `whirlpool`;
-- `dry_hop`;
-- `dip_hop`;
-- `other`.
-
-### Создание пустой позиции
-
-`createEmptyIngredient(category, hopUseType)` создает локальный `DesignerIngredient`:
-
-- генерирует `localId`;
-- источник (`ingredientCatalogItemId`/`userCustomIngredientId`) пустой;
-- выбирает default unit через `resolveHumanFacingInventoryUnitProfile`;
-- для хмеля выставляет `stage` по `hopUseType`;
-- для сбраживаемых выставляет `stage = "mash"` и `stepMeta.use = "mash"`;
-- для дрожжей выставляет `stage = "fermentation"`;
-- для остальных — `stage = "other"`.
-
-### Выбор ингредиента
-
-В редакторе позиции используется общий `IngredientPicker`.
-
-Поиск идет через `GET /api/ingredients/search`, который вызывает `searchUserCatalogIngredients(user.id, params)`. В поиске участвуют:
-
-- системные catalog ingredients из таблицы `ingredients`;
-- пользовательские custom ingredients из `user_custom_ingredients`, если `includeCustom` не выключен;
-- quick filters: category, subtype, family, group, manufacturer, favoritesOnly, customOnly;
-- ranking по нормализованному тексту, алиасам, бренду/производителю, product code, usage counts, package variants и другим признакам.
-
-Когда пользователь выбирает suggestion:
-
-- если `item.source === "catalog"`, заполняется `ingredientCatalogItemId = item.id`, `userCustomIngredientId = null`;
-- если `item.source === "custom"`, заполняется `userCustomIngredientId = item.id`, `ingredientCatalogItemId = null`;
-- обновляются `selectedName`, `selectedSecondaryName`, `selectedSummary`, `familyDisplayName`, category/subtype/type, default unit, allowed units, measurement dimension.
-
-Если пользователь меняет строку поиска после выбора, `applyQueryChange()` сбрасывает источник и возвращает позицию в состояние "не выбран ингредиент".
-
-### Создание своего ингредиента из мастера
-
-Если поиск ничего не нашел, empty CTA предлагает:
-
-- `Создать свой ингредиент`;
-- `Предложить ингредиент в каталог`.
-
-`Создать свой ингредиент` вызывает `createRecipeCustomIngredientAction()`:
-
-- требует пользователя;
-- вызывает `createUserCustomInventoryIngredient(user.id, ...)`;
-- передает category, subtype, displayName, defaultDisplayUnit, visibility `private`;
-- строит `IngredientSuggestionItem` через `buildCustomIngredientLinkage`;
-- возвращает item с `source: "custom"`;
-- выбранная позиция сразу применяет этот item через `applySelection()`.
-
-`Предложить ингредиент в каталог` вызывает `proposeRecipeIngredientAction()`:
-
-- создает proposal через `createProposedIngredient`;
-- `sourceType` ставится `recipe_designer`;
-- в `sourcePayload` сохраняются category/subtype.
-
-Предложение не добавляет ингредиент в рецепт автоматически.
-
-### Валидация позиции
-
-Позицию можно сохранить из модального редактора только если:
-
-- выбран catalog или custom source;
-- количество является конечным числом `> 0`.
-
-Количество можно менять inline в списке. Для хмеля с `boil`, `whirlpool`, `dip_hop` inline также редактируются минуты.
-
-### `stepMeta` по категориям
-
-При сборке payload `buildIngredientPayload()` записывает:
-
-- для fermentable: `stepMeta.use`, только если use не `mash`;
-- для hop: `stepMeta.useType`;
-- `timeMinutes`, если заполнено;
-- `temperatureC`, если заполнено;
-- `durationDays`, если заполнено;
-- `fermentationTempC`, если заполнено;
-- `stageLabel`, если непустой.
-
-Для хмеля `stage` всегда пересчитывается из `useType`:
-
-- `boil` -> `boil`;
-- `whirlpool` -> `whirlpool`;
-- `dry_hop` -> `fermentation`;
-- остальное -> `other`.
-
-## 5. Параметры процесса
-
-`processMeta` валидируется схемой `recipeProcessMetaSchema`.
-
-Дефолт:
-
-```json
-{
-  "mashProfile": {
-    "steps": [
-      {
-        "id": "mash-step-1",
-        "name": "Основной настой",
-        "temperatureC": 67,
-        "durationMinutes": 60
-      }
-    ]
-  },
-  "fermentationProfile": {
-    "primaryTemperatureC": 20,
-    "primaryDurationDays": 10,
-    "extraSteps": [],
-    "coldCrash": {
-      "enabled": false,
-      "temperatureC": 2,
-      "durationDays": 2
-    },
-    "conditioning": {
-      "enabled": false,
-      "temperatureC": 12,
-      "durationDays": 14
-    }
-  }
-}
-```
-
-Ограничения:
-
-- mash steps: минимум 1, максимум 10; температура 0..100 °C; duration 1..600 минут.
-- fermentation primary temperature: -10..50 °C, nullable.
-- fermentation primary duration: 1..365 дней, nullable.
-- extra fermentation steps: максимум 10; temperature -10..50 °C; duration 1..365 дней.
-- coldCrash/conditioning: `enabled`, nullable temperature/duration с теми же диапазонами.
-
-Сейчас `processMeta` сохраняется и валидируется, но не участвует в расчетах OG/FG/ABV/IBU/color.
-
-## 6. Автосохранение и сохранение
-
-`RecipeDesigner` собирает `payload` из локального state:
-
-- title;
-- styleId;
-- description;
-- authorNotes;
-- publicationState;
-- batchSizeEnteredQuantity/unit;
+- batch volume;
 - efficiency;
-- boilTimeMinutes;
-- processMeta;
-- ingredients.
-
-`savePayload = normalizeSavePayload(payload)` подставляет UI-дефолты для некорректных чисел:
-
-- batch size: `20 l`;
-- boil time: `60`.
-
-Автосохранение:
-
-- `currentSignature = JSON.stringify(payload)`;
-- если signature отличается от `savedSignature`, ставится таймер 1500 мс;
-- перед сохранением `buildAutosaveBlockedResult()` проверяет zod-схему и publication validation;
-- если есть ошибки, save блокируется и signature помечается как `blockedSignature`;
-- если ошибок нет, вызывается `createRecipeAction` или `updateRecipeAction`.
-
-Для превью расчетов отдельный debounce 400 мс: `previewRecipeDraftAction(savePayload)`.
-
-После успешного первого create:
-
-- `activeRecipeId` заполняется id созданного рецепта;
-- `RecipeEditorPage` переключает `editorMode` в `edit`;
-- если пользователь все еще на `/app/recipes/new`, через 250 мс URL заменяется на `/app/recipes/new?recipeId={id}`;
-- при следующей серверной загрузке такой URL редиректит на `/app/recipes/{id}/edit`.
-
-Server actions после create/update делают `revalidatePath` для:
-
-- `/app/recipes`;
-- `/app/recipes/{id}`;
-- `/app/recipes/{id}/edit`.
-
-Delete дополнительно инвалидирует `/recipes` и публичный `/recipes/{slug}`, если slug есть.
-
-## 7. Как сервис сохраняет рецепт
-
-### `createRecipe(authorId, payload)`
-
-Порядок:
-
-1. Нормализует create payload defaults.
-2. Валидирует `createRecipePayloadSchema`.
-3. Готовит ингредиенты через `prepareRecipeIngredientEntries()`.
-4. Парсит `processMeta`.
-5. Проверяет требования публикации через `validateRecipeForPublicationState()`.
-6. Нормализует batch size через `normalizeRecipeBatchSize()`.
-7. Генерирует уникальный slug из title через `resolveUniqueRecipeSlug()`.
-8. Вставляет строку в `recipes`.
-9. Полностью заменяет ingredients через `replaceRecipeIngredients()`.
-10. Пересчитывает stats через `recomputeRecipeStats()`.
-11. Возвращает `getRecipeById(authorId, created.id)`.
-
-Slug при коллизии пытается пересоздаться до 5 раз. Базовая логика slug вынесена в `features/recipes/slug.ts`.
-
-### `updateRecipe(authorId, recipeId, payload)`
-
-Порядок:
-
-1. Валидирует update payload.
-2. Проверяет владение рецептом через `ensureOwnedRecipe()`.
-3. Если ingredients не пришли, берет текущие из `getOwnedRecipeById()`.
-4. Готовит next ingredients и проверяет publication state.
-5. Если поменялся title, пересчитывает slug.
-6. Обновляет строку `recipes`.
-7. Если в payload есть ingredients, полностью удаляет старые `recipe_ingredients` и вставляет новые.
-8. Если `recomputeStats` true, пересчитывает stats.
-9. Возвращает `getRecipeById(authorId, recipeId)`.
-
-В action `updateRecipeAction()` всегда передает `recomputeStats: true`.
-
-### Подготовка ингредиентов
-
-`prepareRecipeIngredientEntries()` для каждой позиции:
-
-- если есть `ingredientCatalogItemId`, требует активный catalog ingredient через `ensureCatalogIngredientExists()`;
-- если есть `userCustomIngredientId`, требует custom ingredient текущего пользователя через `ensureOwnedCustomIngredient()`;
-- строит normalized source linkage через `buildCatalogIngredientLinkage()` или `buildCustomIngredientLinkage()`;
-- проверяет, что payload type/category/subtype/familyId не конфликтуют с source linkage;
-- нормализует количество через `normalizeRecipeIngredientAmountWithSource()`;
-- чистит `stepMeta` от устаревшего `ingredientLinkage`.
-
-`replaceRecipeIngredients()` всегда делает delete all by `recipeId`, потом bulk insert новых строк. Это означает, что id позиций ингредиентов при каждом полном сохранении пересоздаются.
-
-## 8. Нормализация единиц
-
-Логика в `apps/web/features/recipes/units.ts`.
-
-Batch size:
-
-- принимаются только volume units;
-- entered quantity округляется до 3 знаков;
-- normalized unit всегда `ml`;
-- `toBatchVolumeLiters()` делит normalized ml на 1000 и округляет до 3 знаков.
-
-Ингредиенты:
-
-- unit парсится через inventory unit profile;
-- для weight units normalized unit всегда `g`;
-- для volume units normalized unit всегда `ml`;
-- для count units normalized unit остается такой же count unit;
-- entered и normalized quantities округляются до 3 знаков на уровне helper-ов brewing core/inventory.
-
-Профиль единиц зависит от source linkage: type, category, subtype, defaultDisplayUnit, allowedUnits, measurementDimension, technicalData.
-
-## 9. Расчеты показателей
-
-Расчеты идут в `computeRecipeStatsSnapshot()` и используют `@nb/brewing-core`.
-
-Вход:
-
-- batch volume в литрах;
-- `efficiency`, если пусто — `75`;
-- `boilTimeMinutes`, если пусто — `60`;
-- подготовленные ingredients с нормализованными количествами и техническими данными источника.
-
-### Какие ингредиенты участвуют
+- boil time;
+- `calculationMeta`;
+- `equipmentProfileSnapshot` or default profile;
+- hydrated ingredients with technical data.
 
 Fermentables:
 
-- учитываются ingredient type `fermentable` или `malt`;
-- учитываются только строки, где normalized unit `g`;
-- вес переводится в kg;
-- `potentialPpg = getIngredientPotentialPpg(source.raw, 36)`;
-- `colorLovibond = getIngredientColorLovibond(source.raw, 2)`.
-
-`getIngredientPotentialPpg()` берет `fermentableExtractYieldPct` и считает:
-
-```text
-potentialPpg = fermentableExtractYieldPct * 0.46
-```
-
-Если данных нет — fallback `36`.
-
-`getIngredientColorLovibond()` берет цвет из technical fields. Если данных нет — fallback `2`.
+- gravity from potential PPG or fallback;
+- color from technical data or fallback;
+- current FG still uses fixed attenuation estimate.
 
 Hops:
 
-- учитывается только type `hop`;
-- учитываются только строки, где normalized unit `g`;
-- `alphaAcidPercent = getIngredientAlphaAcidPercent(source.raw, 5)`;
-- `use` для расчета: `dry_hop` остается `dry_hop`, `whirlpool` и `dip_hop` превращаются в `whirlpool`, все остальное — `boil`;
-- время берется из `stepMeta.timeMinutes`, затем `timeOffset`, затем fallback: для boil — общее `boilTimeMinutes`, иначе `0`.
+- amount in grams;
+- alpha acid from technical data or fallback;
+- use type from `stepMeta`/stage;
+- time from `stepMeta.timeMinutes`, `timeOffset`, or boil fallback.
 
-Важно: текущая функция `calculateIbuTinseth()` фильтрует hop additions и считает IBU только для `use === "boil"`. Whirlpool/dip hop/dry hop сейчас в IBU не добавляют вклад.
+Water:
 
-### OG
+- volumes from manual override, equipment profile, or default profile;
+- source/target profiles;
+- salt solver;
+- mash pH estimate;
+- mash acid estimate;
+- optional sparge acid estimate.
 
-В `brewing-core/src/calculations/gravity.ts`:
+## 17. Публичное отображение
 
-```text
-batchGallons = batchVolumeL * 0.2641720524
-totalGravityPoints = sum(weightKg * 2.2046226218 * potentialPpg)
-effectivePoints = totalGravityPoints * efficiency / 100
-OG = 1 + effectivePoints / (batchGallons * 1000)
-```
+Public recipe route shows only recipes with `publicationState === "published"`.
 
-Результат округляется до 3 знаков.
-
-### FG
-
-Используется фиксированная аттенюация `DEFAULT_ATTENUATION = 75`, не аттенюация выбранных дрожжей:
-
-```text
-gravityPoints = (OG - 1) * 1000
-remainingPoints = gravityPoints * (1 - 75 / 100)
-FG = 1 + remainingPoints / 1000
-```
-
-Результат округляется до 3 знаков.
-
-### ABV
-
-```text
-ABV = (OG - FG) * 131.25
-```
-
-Результат округляется до 2 знаков.
-
-### IBU Tinseth
-
-В `brewing-core/src/calculations/ibu.ts`:
-
-```text
-bignessFactor = 1.65 * 0.000125 ** (OG - 1)
-boilTimeFactor = (1 - exp(-0.04 * boilTimeMinutes)) / 4.15
-utilization = bignessFactor * boilTimeFactor
-IBU addition = weightG * (alphaAcidPercent / 100) * utilization * 1000 / batchVolumeL
-IBU = sum(boil additions)
-```
-
-Результат округляется до 1 знака.
-
-### Цвет
-
-В `brewing-core/src/calculations/color.ts`:
-
-```text
-volumeGal = batchVolumeL * 0.2641720524
-MCU = sum((weightKg * 2.2046226218 * colorLovibond) / volumeGal)
-SRM = 1.4922 * MCU ** 0.6859
-EBC = SRM * 1.97
-```
-
-MCU округляется до 2 знаков, SRM/EBC — до 1 знака. В `recipes.color` сохраняется SRM.
-
-### Когда расчет возвращает null
-
-Если нет fermentables и hops, возвращаются `og`, `fg`, `abv`, `ibu`, `color` как `null`.
-
-Если есть только хмель, но нет fermentables:
-
-- OG `null`;
-- IBU тоже `null`, потому что IBU считается только если есть OG;
-- color `null`.
-
-Если есть fermentables, но нет hops:
-
-- OG/FG/ABV/color считаются;
-- IBU `null`.
-
-## 10. BJCP стиль и соответствие стилю
-
-Стиль выбирается через `StylePicker` из `beerStyleFixtures` пакета `@nb/brewing-core`.
-
-В live preview:
-
-- `previewRecipeDraft()` берет style range через `getStyleRangeById(styleId)`;
-- если есть хотя бы один показатель, вызывает `evaluateStyleFit(styleRange, { og, fg, abv, ibu, srm })`;
-- UI показывает глобальную шкалу и диапазон выбранного BJCP стиля.
-
-На публичной странице и в списке рецептов `RecipeStatsSummary` повторно оценивает соответствие стилю по сохраненным snapshot-показателям.
-
-## 11. Публикация
-
-Состояния:
-
-- `private` — приватный рецепт, доступен владельцу в `/app`.
-- `published` — публичный рецепт доступен по `/recipes/{slug}`.
-- `draft` есть в enum/схеме, но мастер сейчас нормализует его в `private`.
-
-Публиковать можно только уже созданный рецепт (`activeRecipeId` должен быть truthy). Для еще не сохраненного рецепта кнопка публикации не показывается.
-
-Требования для `published` в `publication-validation.ts`:
-
-- title непустой;
-- выбран `styleId`;
-- `description` непустой;
-- есть хотя бы один `fermentable`;
-- есть хотя бы один `hop`;
-- есть хотя бы один `yeast`;
-- `boilTimeMinutes` — положительное целое число.
-
-Для `private` и `draft` требуется только title.
-
-При клике `Опубликовать`:
-
-- если checklist не готов, открывается `PublicationReadinessDialog`;
-- если готов, открывается confirm dialog;
-- confirm вызывает `persistRecipe({ nextPublicationState: "published" })`.
-
-При клике `Сделать приватным`:
-
-- открывается confirm dialog;
-- confirm вызывает `persistRecipe({ nextPublicationState: "private" })`.
-
-Публичная страница:
-
-- `/recipes/[slug]` вызывает `getPublicRecipeBySlug(slug)`;
-- сервис возвращает рецепт только если `publicationState === "published"`;
-- `private`/`draft` дают `FORBIDDEN`, route показывает not found.
-
-## 12. Версии, клонирование и удаление
-
-### Версии
-
-На edit-странице, если рецепт уже создан, показывается select версий и кнопка `Новая версия`.
-
-`createRecipeVersion()`:
-
-- проверяет владение текущим рецептом;
-- находит все рецепты с тем же `recipeFamilyId`;
-- `nextVersionNumber = max(versionNumber) + 1`;
-- вызывает `createRecipe()` с тем же содержимым, `publicationState: "private"`, тем же `recipeFamilyId` и новым `versionNumber`;
-- после успешного action UI редиректит на `/app/recipes/{newId}/edit`.
-
-Перед созданием новой версии UI пытается сохранить текущие изменения.
-
-### Клонирование
-
-В списке рецептов есть `CloneRecipeButton`. Action `cloneRecipeAction()` вызывает `cloneRecipe()`:
-
-- берет owned recipe;
-- вызывает `createRecipe()` с title `${recipe.title} (копия)`;
-- publication state всегда `private`;
-- копирует стиль, batch size, efficiency, boil time, description, authorNotes, processMeta и ingredients;
-- создает новое `recipeFamilyId`, потому что options не передаются.
-
-### Удаление
-
-`deleteRecipeAction()`:
-
-- требует владение рецептом;
-- удаляет строку из `recipes`;
-- `recipe_ingredients` удаляются каскадом;
-- revalidate делает для owner paths и публичной страницы, если slug был.
-
-## 13. Отображение рецепта
-
-### В списке `/app/recipes`
-
-`listRecipesForAuthor()` возвращает рецепты автора, сортировка по `updatedAt desc`, лимит по умолчанию 50. Для каждой строки дополнительно считается `versionCount` по `recipeFamilyId`.
-
-Карточка показывает:
-
-- publication state label;
-- updated label;
-- title и version number, если версий больше одной;
-- batch size и boil time;
-- `RecipeStatsSummary`;
-- ссылку на публичную страницу, если recipe `published`;
-- кнопки delete/clone.
-
-### На публичной странице
-
-`PublicRecipePage` показывает:
+Public page shows:
 
 - header;
-- hero image placeholder или `heroImageId`;
-- `RecipeStatsSummary`;
-- `RecipeIngredientsSection`;
-- `RecipeMetaSection` без приватных заметок.
+- stats summary;
+- ingredient sections;
+- public description.
 
-`RecipeIngredientsSection` группирует ингредиенты по тем же категориям, показывает имя, secondary name, stage/use/time/temp/duration/stageLabel и форматированное количество.
+Private notes are not shown.
 
-## 14. Известные особенности текущей реализации
+## 18. Тестовое покрытие
 
-- UI мастера не использует состояние `draft`; новые и непубличные рецепты становятся `private`.
-- `processMeta` сохраняется, но не влияет на расчеты.
-- Yeast attenuation из каталога не влияет на FG; используется фиксированное `75%`.
-- Water treatment и consumables сохраняются как позиции рецепта, но не влияют на расчет воды, pH или stats.
-- Whirlpool/dip hop/dry hop сохраняются в рецепте, но IBU сейчас считает только boil additions.
-- При сохранении ingredients заменяются полностью, поэтому id строк `recipe_ingredients` пересоздаются.
-- `heroImageId` есть в модели, но полноценной загрузки/отображения изображения в мастере по текущему коду нет.
+Ключевые тесты:
+
+- `recipe-service.test.ts`;
+- `recipe-editor-components.test.ts`;
+- `recipe-editor-pages-wiring.test.ts`;
+- `equipment-profile-volume-plan.test.ts`;
+- `equipment-profiles-page.test.ts`;
+- `recipe-equipment-scaling.test.ts`;
+- `recipe-water-plan.test.ts`;
+- `recipe-inventory-service.test.ts`;
+- `recipe-interop.test.ts`;
+- brewing-core IBU/water tests.
+
+Текущий UX pass дополнительно покрыт обновленными assertions в:
+
+- `recipe-editor-components.test.ts`;
+- `recipe-water-plan.test.ts`;
+- `equipment-profiles-page.test.ts`.
+
+## 19. Известные ограничения
+
+- Yeast attenuation из каталога пока не управляет FG.
+- Scaling to equipment — practical approximation, не full IBU-preserving optimizer.
+- Water pH/acid model — practical estimate.
+- City water presets are examples, not lab-grade targets.
+- Import report UI еще не выделен отдельным экраном.
+- Imported ingredient snapshot можно вручную привязать к custom/catalog из строки рецепта; автоматического batch-matching импортированных ингредиентов с каталогом пока нет.
+- Brew session UI еще не пошаговый.
+- Live device control не реализован.
+- `showWaterAdditivesInIngredients` пока сохраняет preference, но automatic salt/acid line mirroring требует source ingredient mapping.
+- Hero image upload в мастере не реализован.

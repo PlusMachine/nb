@@ -52,6 +52,10 @@ import { listIngredientPurchaseLinkSummaries } from "../ingredients/user-metadat
 import { type SystemCurrency, listSystemCurrencyRates } from "../system/currency-rates";
 import { normalizeInventoryPurchaseContext } from "./purchase-cost";
 import {
+  buildInventoryCostDisplay,
+  formatInventoryQuantityForDisplay
+} from "./display";
+import {
   getInventoryUnitDimension,
   normalizeInventoryMeasurementForProfile,
   parseInventoryUnit,
@@ -919,7 +923,7 @@ const matchesDerivedCustomIngredient = ({
   return numbersEqual(readHopAlphaAcidPct(linkage.technicalData), override.hopAlphaAcidPct);
 };
 
-const findOwnedCustomIngredientByDisplayName = async (
+export const findOwnedCustomIngredientByDisplayName = async (
   userId: string,
   type: typeof userCustomIngredients.$inferSelect.type,
   displayName: string
@@ -1524,10 +1528,14 @@ export const listInventoryForUser = async (userId: string, query: unknown = {}) 
 
 export const searchInventorySuggestions = async (
   userId: string,
-  query: unknown
+  query: unknown,
+  options: {
+    preferredCurrency?: SystemCurrency | null;
+  } = {}
 ) => {
   const base = inventoryListQuerySchema.parse(query);
   const q = String((query as { q?: string }).q ?? "").trim();
+  const dedupeSource = (query as { dedupeSource?: boolean }).dedupeSource !== false;
   const items = await listInventoryForUser(userId, {
     ...base,
     search: q,
@@ -1539,29 +1547,84 @@ export const searchInventorySuggestions = async (
   const deduped = new Map<string, InventoryListItemDto>();
 
   for (const item of items) {
-    const key = `${item.source.sourceKind}:${item.source.sourceId}:${item.packageVariantId ?? ""}`;
+    const key = dedupeSource
+      ? `${item.source.sourceKind}:${item.source.sourceId}:${item.packageVariantId ?? ""}`
+      : item.id;
     if (!deduped.has(key)) {
       deduped.set(key, item);
     }
   }
 
+  const currencyRates = await listSystemCurrencyRates();
+  const preferredCurrency = options.preferredCurrency ?? "RUB";
+
   return Array.from(deduped.values())
     .slice(0, limit)
-    .map((item) => ({
-      id: item.source.sourceId,
-      type: item.source.type,
-      category: item.source.category,
-      subtype: item.source.subtype,
-      primaryLabelRu: item.source.primaryLabelRu,
-      secondaryLabelRu: item.source.secondaryLabelRu,
-      displayName: item.source.displayName,
-      subtitle: item.source.summary ?? undefined,
-      defaultUnit: item.source.defaultDisplayUnit ?? "g",
-      defaultDisplayUnit: item.source.defaultDisplayUnit,
-      allowedUnits: item.source.allowedUnits,
-      measurementDimension: item.source.measurementDimension,
-      source: item.source.sourceKind === "catalog" ? "catalog" as const : "custom" as const
-    }));
+    .map((item) => {
+      const costDisplay = buildInventoryCostDisplay({
+        enteredQuantity: item.enteredQuantity,
+        enteredUnit: item.enteredUnit,
+        normalizedQuantity: item.normalizedQuantity,
+        normalizedUnit: item.normalizedUnit,
+        type: item.source.type,
+        category: item.source.category,
+        subtype: item.source.subtype,
+        defaultDisplayUnit: item.source.defaultDisplayUnit,
+        allowedUnits: item.source.allowedUnits,
+        measurementDimension: item.source.measurementDimension,
+        technicalData: item.source.technicalData,
+        purchasePriceMinor: item.purchasePriceMinor,
+        purchaseCurrency: item.purchaseCurrency,
+        purchaseQuantityNormalizedUnit: item.purchaseQuantityNormalizedUnit,
+        normalizedUnitCostMinorRub: item.normalizedUnitCostMinorRub
+      }, preferredCurrency, currencyRates);
+
+      return {
+        id: item.source.sourceId,
+        type: item.source.type,
+        category: item.source.category,
+        subtype: item.source.subtype,
+        itemKind: item.source.itemKind,
+        familyId: item.source.familyId,
+        primaryLabelRu: item.source.primaryLabelRu,
+        secondaryLabelRu: item.source.secondaryLabelRu,
+        displayName: item.source.displayName,
+        displayNameRu: item.source.displayNameRu,
+        displayNameEn: item.source.displayNameEn,
+        nameRu: item.source.nameRu,
+        nameEn: item.source.nameEn,
+        subtitle: item.source.summary ?? undefined,
+        brand: item.source.brand,
+        producer: item.source.producer,
+        brandName: item.source.brandName,
+        manufacturer: item.source.manufacturer,
+        countryCode: item.source.countryCode,
+        countryName: item.source.countryName,
+        country: item.source.country,
+        harvestYear: item.source.harvestYear,
+        matchedPackageVariantName: item.source.packageVariantName,
+        defaultUnit: item.source.defaultDisplayUnit ?? "g",
+        defaultDisplayUnit: item.source.defaultDisplayUnit,
+        allowedUnits: item.source.allowedUnits,
+        measurementDimension: item.source.measurementDimension,
+        technicalData: item.source.technicalData,
+        familyDisplayName: item.source.familyDisplayName,
+        derivedFromIngredientId: item.source.derivedFromIngredientId,
+        derivedFromDisplayName: item.source.derivedFromDisplayName,
+        source: item.source.sourceKind === "catalog" ? "catalog" as const : "custom" as const,
+        inventoryItemId: item.id,
+        inventoryQuantityLabel: formatInventoryQuantityForDisplay(item),
+        inventoryNormalizedQuantity: item.normalizedQuantity,
+        inventoryNormalizedUnit: item.normalizedUnit,
+        inventoryPurchasePriceLabel: costDisplay.totalPrice,
+        inventoryUnitPriceLabel: costDisplay.unitPrice,
+        inventoryPurchasedAt: item.purchasedAt?.toISOString() ?? null,
+        inventoryFreshnessDate: item.freshnessDate?.toISOString() ?? null,
+        inventoryUpdatedAt: item.updatedAt.toISOString(),
+        inventoryNotes: item.notes,
+        inventoryPurchaseLinksCount: item.source.purchaseLinks?.count ?? null
+      };
+    });
 };
 
 export const getInventorySummaries = async (userId: string): Promise<InventorySummaryDto> => {

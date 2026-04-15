@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import {
   Droplets,
   FlaskConical,
-  Leaf,
+  Hop,
   Package,
   Wheat
 } from "lucide-react";
@@ -128,7 +128,7 @@ const userFacingIngredientKindOptions = [
     description: "Сорт и форма",
     category: "hop",
     subtype: null,
-    icon: Leaf
+    icon: Hop
   },
   {
     value: "yeast",

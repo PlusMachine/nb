@@ -33,7 +33,9 @@ import {
 } from "../components/inventory/inventory-ingredient-category-grid";
 import {
   InventoryItemDetailsEditor,
+  resolveInventoryEditorQuickStartData,
   resolveInventoryEditorSelectionResetState,
+  resolveInventoryEditorSelectionResetTaxonomy,
   shouldShowInventoryEditorOptionalSection,
   shouldShowInventoryEditorPickerStage,
   shouldShowInventoryEditorRequiredFields
@@ -44,9 +46,9 @@ import {
   isInventoryQuantityValueValid
 } from "../components/inventory/inventory-quantity-editor";
 import { InventorySearchInput, buildInventorySuggestionParams } from "../components/inventory/inventory-search-input";
-import { InventoryToolbar } from "../components/inventory/inventory-toolbar";
+import { InventoryToolbar, shouldShowInventorySearchInput } from "../components/inventory/inventory-toolbar";
 import type { InventoryListItemDto } from "../features/inventory/contracts";
-import { getInventoryUnitInputStep } from "../features/inventory/units";
+import { getInventoryUnitInputStep, getInventoryUnitQuantityPrecision } from "../features/inventory/units";
 import {
   buildInventoryToolbarHref,
   hasActiveInventoryFilters,
@@ -133,6 +135,33 @@ describe("inventory usability components", () => {
 
     expect(html).toContain("Показать закончившиеся");
     expect(html).toMatch(/Хмель<\/span><span[^>]*>1<\/span>/);
+  });
+
+  it("hides inventory search for short visible lists and keeps sorting above the list", () => {
+    expect(shouldShowInventorySearchInput({ search: "", visibleItemCount: 12 })).toBe(false);
+    expect(shouldShowInventorySearchInput({ search: "", visibleItemCount: 13 })).toBe(true);
+    expect(shouldShowInventorySearchInput({ search: "citra", visibleItemCount: 3 })).toBe(true);
+
+    const html = renderToStaticMarkup(React.createElement(InventoryToolbar, {
+      search: "",
+      category: "all",
+      subtype: null,
+      showFinished: false,
+      sort: "default",
+      visibleItemCount: 12,
+      summary: {
+        totalItems: 12,
+        inStockItems: 12,
+        emptyItems: 0,
+        byCategory: { fermentable: 4, hop: 4, yeast: 2, consumable: 1, water_treatment: 1 },
+        inStockByCategory: { fermentable: 4, hop: 4, yeast: 2, consumable: 1, water_treatment: 1 },
+        byFermentableSubtype: { malt: 3, fermentable: 1 },
+        inStockByFermentableSubtype: { malt: 3, fermentable: 1 }
+      }
+    }));
+
+    expect(html).not.toContain("Поиск ингредиентов...");
+    expect(html).toContain("По умолчанию");
   });
 
   it("renders zero counts on category tiles", () => {
@@ -259,6 +288,7 @@ describe("inventory usability components", () => {
     expect(html).toContain("BESTMALZ");
     expect(html).not.toContain("Германия");
     expect(html).toContain('value="2"');
+    expect(html).toContain('step="0.01"');
     expect(html).toContain('<option value="kg" selected="">kg</option>');
     expect(html).toContain("6-7 EBC");
     expect(html).toContain("Экст-ть 80%");
@@ -268,6 +298,44 @@ describe("inventory usability components", () => {
     expect(html).toContain("обнулить остаток");
     expect(html).toContain('aria-label="Редактировать"');
     expect(html).toContain('aria-label="Удалить"');
+  });
+
+  it("renders a finished status instead of the zero-out action for empty inventory items", () => {
+    const item: InventoryListItemDto = {
+      id: "inv-empty-1",
+      enteredQuantity: 0,
+      enteredUnit: "kg",
+      normalizedQuantity: 0,
+      normalizedUnit: "g",
+      unitDimension: "weight",
+      purchasedAt: null,
+      freshnessDate: null,
+      notes: null,
+      archivedAt: null,
+      createdAt: new Date("2025-01-01"),
+      updatedAt: new Date("2025-01-01"),
+      source: {
+        sourceKind: "catalog",
+        sourceId: "cat-empty-1",
+        type: "malt",
+        category: "fermentable",
+        subtype: "malt",
+        primaryLabelRu: "Пилснер солод",
+        secondaryLabelRu: "Pilsner Malt",
+        displayName: "Пилснер солод",
+        normalizedName: "pilsner-malt"
+      }
+    };
+
+    const html = renderToStaticMarkup(React.createElement(InventoryListItem, {
+      item,
+      preferredCurrency: "RUB",
+      currencyRates: { RUB: 100, USD: 7900, EUR: 9170 }
+    }));
+
+    expect(html).toContain("закончился");
+    expect(html).toContain("text-pink-500");
+    expect(html).not.toContain("обнулить остаток");
   });
 
   it("renders localized hop form badges instead of raw enum values", () => {
@@ -542,6 +610,20 @@ describe("inventory usability components", () => {
       pickerValue: "",
       shouldRefocus: true
     });
+    expect(resolveInventoryEditorSelectionResetTaxonomy({
+      category: "fermentable",
+      subtype: "malt"
+    })).toEqual({
+      type: "malt",
+      subtype: "malt"
+    });
+    expect(resolveInventoryEditorSelectionResetTaxonomy({
+      category: "fermentable",
+      subtype: "fermentable"
+    })).toEqual({
+      type: "fermentable",
+      subtype: "fermentable"
+    });
 
     expect(shouldShowInventoryEditorPickerStage({
       category: "hop",
@@ -563,6 +645,85 @@ describe("inventory usability components", () => {
 
     expect(shouldShowInventoryEditorRequiredFields(null)).toBe(false);
     expect(shouldShowInventoryEditorOptionalSection(null)).toBe(false);
+  });
+
+  it("resolves editor quick-start data for the currently selected picker context", () => {
+    const quickStartByContext = {
+      malt: {
+        brands: [{
+          type: "manufacturer" as const,
+          label: "Castle Malting",
+          normalizedLabel: "castle malting",
+          value: "Castle Malting",
+          count: 4,
+          score: 40
+        }],
+        groups: [],
+        recent: [],
+        hasFavoritesAvailable: true,
+        hasCustomAvailable: false
+      },
+      fermentable: {
+        brands: [],
+        groups: [{
+          type: "consumable_group" as const,
+          label: "Экстракты",
+          normalizedLabel: "extract",
+          value: "extract",
+          count: 2,
+          score: 20
+        }],
+        recent: [],
+        hasFavoritesAvailable: false,
+        hasCustomAvailable: false
+      },
+      hop: {
+        brands: [],
+        groups: [],
+        recent: [],
+        hasFavoritesAvailable: false,
+        hasCustomAvailable: true
+      },
+      yeast: {
+        brands: [],
+        groups: [],
+        recent: [],
+        hasFavoritesAvailable: false,
+        hasCustomAvailable: false
+      },
+      water_treatment: {
+        brands: [],
+        groups: [],
+        recent: [],
+        hasFavoritesAvailable: false,
+        hasCustomAvailable: false
+      },
+      consumable: {
+        brands: [],
+        groups: [],
+        recent: [],
+        hasFavoritesAvailable: false,
+        hasCustomAvailable: false
+      }
+    };
+
+    expect(resolveInventoryEditorQuickStartData({
+      category: "fermentable",
+      subtype: "malt",
+      initialQuickStartDataByContext: quickStartByContext
+    })?.brands[0]?.label).toBe("Castle Malting");
+
+    expect(resolveInventoryEditorQuickStartData({
+      category: "fermentable",
+      subtype: "fermentable",
+      initialQuickStartDataByContext: quickStartByContext
+    })?.groups?.[0]?.label).toBe("Экстракты");
+
+    expect(resolveInventoryEditorQuickStartData({
+      category: "hop",
+      subtype: null,
+      initialQuickStartDataByContext: quickStartByContext
+    })?.hasCustomAvailable).toBe(true);
   });
 
   it("shows dry yeast pack quantity with gram equivalent", () => {
@@ -802,10 +963,15 @@ describe("inventory usability components", () => {
   });
 
   it("uses practical quantity steps for inventory units", () => {
-    expect(getInventoryUnitInputStep("ml")).toBe(1);
-    expect(getInventoryUnitInputStep("g")).toBe(1);
-    expect(getInventoryUnitInputStep("l")).toBe(0.1);
-    expect(getInventoryUnitInputStep("kg")).toBe(0.1);
+    expect(getInventoryUnitQuantityPrecision("ml")).toBe(1);
+    expect(getInventoryUnitInputStep("ml")).toBe(0.1);
+    expect(getInventoryUnitQuantityPrecision("g")).toBe(1);
+    expect(getInventoryUnitInputStep("g")).toBe(0.1);
+    expect(getInventoryUnitQuantityPrecision("l")).toBe(2);
+    expect(getInventoryUnitInputStep("l")).toBe(0.01);
+    expect(getInventoryUnitQuantityPrecision("kg")).toBe(2);
+    expect(getInventoryUnitInputStep("kg")).toBe(0.01);
+    expect(getInventoryUnitQuantityPrecision("pack")).toBe(0);
     expect(getInventoryUnitInputStep("pack")).toBe(1);
   });
 });

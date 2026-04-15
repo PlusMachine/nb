@@ -2,6 +2,7 @@ import React from "react";
 import { redirect } from "next/navigation";
 
 import { RecipeEditorPage } from "@/components/recipes/recipe-editor-page";
+import { listEquipmentProfiles } from "@/features/equipment-profiles/service";
 import { getIngredientSuggestionByRef } from "@/features/ingredients/catalog-service";
 import { getNextDefaultRecipeTitle } from "@/features/recipes/service";
 import { requireUser } from "@/lib/auth";
@@ -21,12 +22,20 @@ export default async function NewRecipePage({
     redirect(`/app/recipes/${recipeId}/edit`);
   }
 
-  const [initialTitle, initialIngredientSelection] = await Promise.all([
+  const [initialTitle, initialIngredientSelection, equipmentProfiles] = await Promise.all([
     getNextDefaultRecipeTitle(user.id),
     addSource === "catalog" || addSource === "custom"
       ? getIngredientSuggestionByRef(user.id, addSource, addId ?? "")
-      : Promise.resolve(null)
+      : Promise.resolve(null),
+    listEquipmentProfiles(user.id)
   ]);
 
-  return <RecipeEditorPage mode="create" initialTitle={initialTitle} initialIngredientSelection={initialIngredientSelection} />;
+  return (
+    <RecipeEditorPage
+      mode="create"
+      initialTitle={initialTitle}
+      initialIngredientSelection={initialIngredientSelection}
+      equipmentProfiles={equipmentProfiles}
+    />
+  );
 }

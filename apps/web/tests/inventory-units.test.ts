@@ -6,7 +6,7 @@ import {
   resolveHumanFacingInventoryUnitProfile,
   resolveInventoryUnitProfile
 } from "../features/inventory/units";
-import { buildInventoryCostDisplay, formatInventoryQuantityForDisplay } from "../features/inventory/display";
+import { buildInventoryCostDisplay, formatInventoryQuantityForDisplay, formatInventoryQuantityInputValue } from "../features/inventory/display";
 import { defaultSystemCurrencyRates } from "../features/system/currency";
 
 describe("inventory unit normalization", () => {
@@ -163,6 +163,12 @@ describe("inventory unit normalization", () => {
       category: "fermentable",
       defaultDisplayUnit: "kg"
     })).toBe("0.5 kg");
+  });
+
+  it("formats inventory quantities with unit-specific precision", () => {
+    expect(formatInventoryQuantityInputValue(0.925, "kg")).toBe("0.93");
+    expect(formatInventoryQuantityInputValue(120.24, "g")).toBe("120.2");
+    expect(formatInventoryQuantityInputValue(2.4, "pack")).toBe("2");
   });
 
   it("forces human-facing fermentable defaults to kilograms even when source default is grams", () => {

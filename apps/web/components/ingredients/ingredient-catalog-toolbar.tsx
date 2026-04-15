@@ -8,7 +8,7 @@ import {
   Check,
   Droplets,
   FlaskConical,
-  Leaf,
+  Hop,
   RotateCcw,
   Package,
   Wheat
@@ -65,7 +65,7 @@ const categoryMeta: Record<IngredientCategory, {
     activeRing: "ring-amber-300"
   },
   hop: {
-    icon: Leaf,
+    icon: Hop,
     color: "text-emerald-600",
     activeColor: "text-emerald-800",
     activeBg: "bg-emerald-50",

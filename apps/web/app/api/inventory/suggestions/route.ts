@@ -19,7 +19,10 @@ export async function GET(request: Request) {
         : searchParams.get("stock") === "in_stock"
           ? "in_stock"
           : "all",
-      includeArchived: searchParams.get("archived") === "true"
+      includeArchived: searchParams.get("archived") === "true",
+      dedupeSource: searchParams.get("dedupe") !== "false"
+    }, {
+      preferredCurrency: user.preferredCurrency
     });
 
     return NextResponse.json({ items });

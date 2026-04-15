@@ -23,9 +23,9 @@ type Props = {
   }) => React.ReactNode;
 };
 
-const formatDirtyQuantityValue = (value: string) => {
+const formatDirtyQuantityValue = (value: string, unit: InventoryListItemDto["enteredUnit"]) => {
   const parsed = Number(value);
-  return Number.isFinite(parsed) ? formatInventoryQuantityInputValue(parsed) : value;
+  return Number.isFinite(parsed) ? formatInventoryQuantityInputValue(parsed, unit) : value;
 };
 
 export const inventoryFinishedActionLabel = "обнулить остаток";
@@ -70,7 +70,7 @@ export function InventoryQuantityEditor({
     measurementDimension: item.source.measurementDimension,
     technicalData: item.source.technicalData
   }), [item]);
-  const initialQuantity = formatInventoryQuantityInputValue(displayMeasurement.quantity);
+  const initialQuantity = formatInventoryQuantityInputValue(displayMeasurement.quantity, displayMeasurement.unit);
   const initialUnit = displayMeasurement.unit;
   const [quantity, setQuantity] = useState(initialQuantity);
   const [unit, setUnit] = useState(initialUnit);
@@ -130,7 +130,7 @@ export function InventoryQuantityEditor({
 
       setFeedback({ ok: result.ok, message: result.message });
       if (result.ok) {
-        const formattedQuantity = formatDirtyQuantityValue(nextQuantity);
+        const formattedQuantity = formatDirtyQuantityValue(nextQuantity, nextUnit);
         setQuantity(formattedQuantity);
         setSavedQuantity(formattedQuantity);
         setUnit(nextUnit);

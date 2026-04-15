@@ -35,6 +35,8 @@ const publicRecipe: RecipeDetailDto = {
     {
       id: "ri-1",
       recipeId: "r-public",
+      persistentKey: "00000000-0000-4000-8000-000000000021",
+      displayOrder: 0,
       ingredientCatalogItemId: "cat-1",
       userCustomIngredientId: null,
       type: "hop",

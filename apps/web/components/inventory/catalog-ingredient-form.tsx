@@ -23,7 +23,6 @@ import { resolveIngredientDisplayNames } from "@/features/ingredients/presentati
 import { resolveIngredientTechnicalDataColorRangeEbc } from "@/features/ingredients/technical-fields";
 import type { InventoryPriceInputMode } from "@/features/inventory/purchase-cost";
 import {
-  getInventoryUnitInputStep,
   inventoryUnitLabels,
   resolveHumanFacingInventoryUnitProfile,
   type InventoryUnit
@@ -555,7 +554,6 @@ export function CatalogIngredientForm({
   const selectedRef = useRef<IngredientSuggestionItem | null>(selected);
   const pickerValueRef = useRef(pickerValue);
   const unitProfile = resolveCatalogIngredientUnitProfile(category, selected);
-  const quantityStep = getInventoryUnitInputStep(fields.enteredUnit);
   const selectedPackEquivalent = selected ? resolveInventoryPackEquivalent(selected.technicalData ?? null) : null;
   const batchOverrideDefaults = resolveCatalogBatchOverrideDefaults(selected);
   const showRequiredInventoryBlock = shouldShowCatalogRequiredInventoryBlock(selected);
@@ -968,7 +966,7 @@ export function CatalogIngredientForm({
               <input
                 type="number"
                 min="0"
-                step={quantityStep}
+                step="any"
                 className="mt-1 w-full rounded-md border px-2 py-2"
                 value={fields.enteredQuantity}
                 onChange={(e) => setFields((s) => ({ ...s, enteredQuantity: e.target.value }))}

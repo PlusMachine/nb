@@ -7,32 +7,44 @@ import {
   ingredients,
   recipeIngredients,
   recipes,
+  userBrewingSettings,
   userCustomIngredients
 } from "@nb/db";
 import {
   calculateAbv,
+  calculateBitterness,
   calculateColor,
   calculateFg,
-  calculateIbuTinseth,
   calculateOg,
   evaluateStyleFit,
   getStyleRangeById,
+  type HopAdditionInput,
   roundTo
 } from "@nb/brewing-core";
 import {
   createRecipePayloadSchema,
   defaultRecipeProcessMeta,
   listAuthorRecipesQuerySchema,
+  recipeBitternessFormulas,
+  recipeCalculationMetaSchema,
   recipeProcessMetaSchema,
+  recipeWaterPlanMetaSchema,
+  type RecipeCalculationMeta,
   type RecipeDetailDto,
   type RecipeDraftPreviewDto,
   type RecipeIngredientDto,
   type RecipeListItemDto,
   type RecipeHopUseType,
+  type RecipeImportedIngredientSnapshot,
+  type RecipeInventoryIntentMode,
+  type RecipeInventorySelectionMeta,
   type RecipePublicationState,
+  type RecipeWaterPlanMeta,
   type RecipeVersionOptionDto,
   updateRecipePayloadSchema
 } from "./contracts";
+import { equipmentProfileSnapshotSchema, type EquipmentProfileSnapshot } from "../equipment-profiles/contracts";
+import { calculateEquipmentVolumePlan } from "../equipment-profiles/volume-plan";
 import { getRecipePublicationFieldErrors } from "./publication-validation";
 import {
   normalizeRecipeBatchSize,
@@ -42,11 +54,13 @@ import {
 } from "./units";
 import { appendSlugSuffix, toRecipeSlugBase } from "./slug";
 import {
+  extractIngredientTechnicalData,
   getIngredientAlphaAcidPercent,
   getIngredientColorLovibond,
   getIngredientPotentialPpg
 } from "../ingredients/technical-fields";
-import { resolveIngredientDisplayNames } from "../ingredients/presentation";
+import { ingredientCategories, ingredientTypes } from "../ingredients/contracts";
+import { buildIngredientTypedSummary, resolveIngredientDisplayNames } from "../ingredients/presentation";
 import {
   resolveIngredientCategory,
   resolveIngredientSubtype,
@@ -279,6 +293,106 @@ const normalizeStoredRecipeSubtype = (
   }) as RecipeIngredientDto["ingredientSubtype"];
 };
 
+type RecipeStatsSourceRaw = Parameters<typeof getIngredientPotentialPpg>[0];
+
+const isRecipeIngredientType = (value: unknown): value is RecipeIngredientDto["type"] => (
+  typeof value === "string" && (ingredientTypes as readonly string[]).includes(value)
+);
+
+const isRecipeIngredientCategory = (value: unknown): value is NonNullable<RecipeIngredientDto["ingredientCategory"]> => (
+  typeof value === "string" && (ingredientCategories as readonly string[]).includes(value)
+);
+
+const parseRecipeUnitOrNull = (value: unknown) => (
+  typeof value === "string" ? parseRecipeUnit(value) : null
+);
+
+const parseAllowedRecipeUnits = (value: unknown) => (
+  Array.isArray(value)
+    ? value.map(parseRecipeUnitOrNull).filter((unit): unit is NonNullable<ReturnType<typeof parseRecipeUnitOrNull>> => unit != null)
+    : []
+);
+
+const readImportedIngredientLinkage = (
+  externalImportMeta: Record<string, unknown> | null | undefined
+): IngredientSourceLinkage | null => {
+  if (!isRecord(externalImportMeta) || !isRecord(externalImportMeta.importedIngredient)) {
+    return null;
+  }
+
+  const snapshot = externalImportMeta.importedIngredient as Partial<RecipeImportedIngredientSnapshot>;
+  if (snapshot.version !== 1 || !isRecipeIngredientType(snapshot.type)) {
+    return null;
+  }
+
+  const category = isRecipeIngredientCategory(snapshot.category)
+    ? snapshot.category
+    : resolveIngredientCategory({ type: snapshot.type });
+  const subtype = resolveIngredientSubtype({
+    type: snapshot.type,
+    category,
+    subtype: typeof snapshot.subtype === "string" ? snapshot.subtype : undefined
+  }) ?? null;
+  const technicalData = extractIngredientTechnicalData({
+    type: snapshot.type,
+    technicalData: snapshot.technicalData ?? undefined
+  });
+  const defaultDisplayUnit = parseRecipeUnitOrNull(snapshot.defaultDisplayUnit);
+  const allowedUnits = parseAllowedRecipeUnits(snapshot.allowedUnits);
+  const measurementDimension = snapshot.measurementDimension === "weight"
+    || snapshot.measurementDimension === "volume"
+    || snapshot.measurementDimension === "count"
+    ? snapshot.measurementDimension
+    : null;
+  const unitProfile = resolveInventoryUnitProfile({
+    type: snapshot.type,
+    category,
+    subtype,
+    defaultDisplayUnit,
+    allowedUnits: allowedUnits.length ? allowedUnits : undefined,
+    measurementDimension,
+    technicalData
+  });
+  const unitPreferred = technicalData?.type === "water_treatment" && typeof technicalData.unitPreferred === "string"
+    ? technicalData.unitPreferred
+    : null;
+
+  return {
+    type: snapshot.type,
+    category,
+    subtype,
+    familyId: null,
+    displayName: typeof snapshot.name === "string" && snapshot.name.trim() ? snapshot.name.trim() : "Imported ingredient",
+    displayNameRu: null,
+    displayNameEn: null,
+    familyDisplayName: null,
+    summary: buildIngredientTypedSummary({
+      type: snapshot.type,
+      category,
+      subtype,
+      technicalData,
+      unitPreferred
+    }) ?? null,
+    brand: null,
+    producer: null,
+    brandName: null,
+    manufacturer: null,
+    countryCode: null,
+    countryName: null,
+    country: null,
+    defaultDisplayUnit: defaultDisplayUnit ?? unitProfile.defaultUnit,
+    allowedUnits: allowedUnits.length ? allowedUnits : unitProfile.allowedUnits,
+    measurementDimension: measurementDimension ?? unitProfile.measurementDimension,
+    technicalData
+  };
+};
+
+const buildRecipeStatsSourceRaw = (source: IngredientSourceLinkage): RecipeStatsSourceRaw => ({
+  type: source.type,
+  technicalData: source.technicalData ?? undefined,
+  properties: source.technicalData ? { technicalData: source.technicalData } : {}
+});
+
 const resolveRecipeStyleRange = (styleId: string | null | undefined) => getStyleRangeById(styleId);
 
 const parseRecipeProcessMeta = (processMeta: Record<string, unknown> | null | undefined) => (
@@ -288,6 +402,54 @@ const parseRecipeProcessMeta = (processMeta: Record<string, unknown> | null | un
 const sanitizeRecipeProcessMeta = (processMeta: Record<string, unknown> | null | undefined) => (
   parseRecipeProcessMeta(processMeta) as Record<string, unknown>
 );
+
+const parseRecipeCalculationMeta = (
+  calculationMeta: Record<string, unknown> | null | undefined,
+  fallback?: RecipeCalculationMeta
+): RecipeCalculationMeta => {
+  const parsed = recipeCalculationMetaSchema.safeParse(calculationMeta ?? fallback ?? {});
+  return parsed.success ? parsed.data : (fallback ?? recipeCalculationMetaSchema.parse({}));
+};
+
+const sanitizeRecipeCalculationMeta = (
+  calculationMeta: Record<string, unknown> | null | undefined,
+  fallback?: RecipeCalculationMeta
+) => parseRecipeCalculationMeta(calculationMeta, fallback) as Record<string, unknown>;
+
+const parseRecipeWaterPlanMeta = (
+  waterPlanMeta: Record<string, unknown> | null | undefined
+): RecipeWaterPlanMeta | null => {
+  if (!waterPlanMeta) {
+    return null;
+  }
+
+  const parsed = recipeWaterPlanMetaSchema.safeParse(waterPlanMeta);
+  return parsed.success ? parsed.data : null;
+};
+
+const sanitizeRecipeWaterPlanMeta = (
+  waterPlanMeta: Record<string, unknown> | null | undefined
+) => {
+  const parsed = parseRecipeWaterPlanMeta(waterPlanMeta);
+  return parsed ? parsed as Record<string, unknown> : null;
+};
+
+const isRecipeBitternessFormula = (value: string): value is RecipeCalculationMeta["bitternessFormula"] => (
+  (recipeBitternessFormulas as readonly string[]).includes(value)
+);
+
+const getUserRecipeCalculationMeta = async (authorId: string): Promise<RecipeCalculationMeta> => {
+  const settings = await db.query.userBrewingSettings.findFirst({
+    where: eq(userBrewingSettings.userId, authorId)
+  });
+
+  return recipeCalculationMetaSchema.parse({
+    bitternessFormula: settings && isRecipeBitternessFormula(settings.preferredBitternessFormula)
+      ? settings.preferredBitternessFormula
+      : "tinseth_whirlpool_v2",
+    bitternessSettings: settings?.bitternessSettings ?? {}
+  });
+};
 
 const hasOwn = (value: Record<string, unknown>, key: string) => Object.prototype.hasOwnProperty.call(value, key);
 
@@ -366,7 +528,7 @@ const resolveHopUseType = (
   stepMeta: Record<string, unknown> | null | undefined
 ): RecipeHopUseType => {
   const metaUseType = readStringMeta(stepMeta, "useType");
-  if (metaUseType === "boil" || metaUseType === "whirlpool" || metaUseType === "dry_hop" || metaUseType === "dip_hop" || metaUseType === "other") {
+  if (metaUseType === "boil" || metaUseType === "first_wort_hop" || metaUseType === "whirlpool" || metaUseType === "dry_hop" || metaUseType === "dip_hop" || metaUseType === "other") {
     return metaUseType;
   }
 
@@ -408,19 +570,25 @@ const resolveHopTimeMinutes = (
 };
 
 type PreparedRecipeIngredientEntry = {
+  persistentKey: string | null;
   ingredientCatalogItemId: string | null;
   userCustomIngredientId: string | null;
   source: IngredientSourceLinkage;
-  sourceRaw: typeof ingredients.$inferSelect | typeof userCustomIngredients.$inferSelect;
+  sourceRaw: RecipeStatsSourceRaw;
   amount: ReturnType<typeof normalizeRecipeIngredientAmountWithSource>;
   stage: typeof recipeIngredients.$inferInsert.stage;
   timeOffset: number | null;
   stepMeta: Record<string, unknown> | null;
+  inventoryIntentMode: RecipeInventoryIntentMode | null;
+  inventorySelectionMeta: RecipeInventorySelectionMeta | null;
+  externalImportMeta: Record<string, unknown> | null;
+  displayOrder: number;
 };
 
 const prepareRecipeIngredientEntries = async (
   authorId: string,
   payloadIngredients: Array<{
+    persistentKey?: string | null;
     ingredientCatalogItemId?: string | null;
     userCustomIngredientId?: string | null;
     type?: typeof recipeIngredients.$inferInsert.type;
@@ -432,13 +600,16 @@ const prepareRecipeIngredientEntries = async (
     stage: typeof recipeIngredients.$inferInsert.stage;
     timeOffset?: number | null;
     stepMeta?: Record<string, unknown> | null;
+    inventoryIntentMode?: RecipeInventoryIntentMode | null;
+    inventorySelectionMeta?: RecipeInventorySelectionMeta | null;
+    externalImportMeta?: Record<string, unknown> | null;
   }>
 ) => {
   const preparedValues: PreparedRecipeIngredientEntry[] = [];
 
-  for (const ingredient of payloadIngredients) {
+  for (const [index, ingredient] of payloadIngredients.entries()) {
     let resolvedSource: IngredientSourceLinkage;
-    let rawSource: typeof ingredients.$inferSelect | typeof userCustomIngredients.$inferSelect;
+    let rawSource: RecipeStatsSourceRaw;
 
     if (ingredient.ingredientCatalogItemId) {
       const catalog = await ensureCatalogIngredientExists(ingredient.ingredientCatalogItemId);
@@ -454,6 +625,13 @@ const prepareRecipeIngredientEntries = async (
       if (ingredient.familyId != null) {
         throw new Error("INGREDIENT_LINKAGE_MISMATCH");
       }
+    } else if (ingredient.inventoryIntentMode === "imported") {
+      const importedSource = readImportedIngredientLinkage(ingredient.externalImportMeta ?? null);
+      if (!importedSource) {
+        throw new Error("INVALID_SOURCE_LINKAGE");
+      }
+      resolvedSource = importedSource;
+      rawSource = buildRecipeStatsSourceRaw(importedSource);
     } else {
       throw new Error("INVALID_SOURCE_LINKAGE");
     }
@@ -478,6 +656,7 @@ const prepareRecipeIngredientEntries = async (
     }
 
     preparedValues.push({
+      persistentKey: ingredient.persistentKey ?? null,
       ingredientCatalogItemId: ingredient.ingredientCatalogItemId ?? null,
       userCustomIngredientId: ingredient.userCustomIngredientId ?? null,
       source: resolvedSource,
@@ -497,7 +676,11 @@ const prepareRecipeIngredientEntries = async (
       ),
       stage: ingredient.stage as RecipeIngredientDto["stage"],
       timeOffset: ingredient.timeOffset ?? null,
-      stepMeta: sanitizeRecipeStepMeta(ingredient.stepMeta ?? null)
+      stepMeta: sanitizeRecipeStepMeta(ingredient.stepMeta ?? null),
+      inventoryIntentMode: ingredient.inventoryIntentMode ?? null,
+      inventorySelectionMeta: ingredient.inventorySelectionMeta ?? null,
+      externalImportMeta: ingredient.externalImportMeta ?? null,
+      displayOrder: index
     });
   }
 
@@ -538,6 +721,13 @@ type RecipeIngredientResolvedSource = {
   displayNameEn: RecipeIngredientDto["ingredientDisplayNameEn"];
   familyDisplayName: RecipeIngredientDto["ingredientFamilyDisplayName"];
   summary: RecipeIngredientDto["ingredientSummary"];
+  brand: RecipeIngredientDto["ingredientBrand"];
+  producer: RecipeIngredientDto["ingredientProducer"];
+  brandName: RecipeIngredientDto["ingredientBrandName"];
+  manufacturer: RecipeIngredientDto["ingredientManufacturer"];
+  countryCode: RecipeIngredientDto["ingredientCountryCode"];
+  countryName: RecipeIngredientDto["ingredientCountryName"];
+  country: RecipeIngredientDto["ingredientCountry"];
   defaultDisplayUnit: RecipeIngredientDto["ingredientDefaultDisplayUnit"];
   allowedUnits: RecipeIngredientDto["ingredientAllowedUnits"];
   measurementDimension: RecipeIngredientDto["ingredientMeasurementDimension"];
@@ -574,6 +764,13 @@ const readRecipeIngredientLinkageMeta = (
     displayNameEn: typeof linkage.displayNameEn === "string" ? linkage.displayNameEn : null,
     familyDisplayName: typeof linkage.familyDisplayName === "string" ? linkage.familyDisplayName : null,
     summary: typeof linkage.summary === "string" ? linkage.summary : null,
+    brand: typeof linkage.brand === "string" ? linkage.brand : null,
+    producer: typeof linkage.producer === "string" ? linkage.producer : null,
+    brandName: typeof linkage.brandName === "string" ? linkage.brandName : null,
+    manufacturer: typeof linkage.manufacturer === "string" ? linkage.manufacturer : null,
+    countryCode: typeof linkage.countryCode === "string" ? linkage.countryCode : null,
+    countryName: typeof linkage.countryName === "string" ? linkage.countryName : null,
+    country: typeof linkage.country === "string" ? linkage.country : null,
     defaultDisplayUnit,
     allowedUnits,
     measurementDimension,
@@ -603,14 +800,19 @@ const buildPersistedRecipeResolvedSource = (
   stepMetaLinkage: RecipeIngredientResolvedSource | null,
   liveLinkage?: IngredientSourceLinkage | null
 ): RecipeIngredientResolvedSource => {
+  const importedLinkage = readImportedIngredientLinkage(ingredient.externalImportMeta as Record<string, unknown> | null | undefined);
+  const technicalData = liveLinkage?.technicalData ?? importedLinkage?.technicalData ?? null;
   const category = normalizeStoredRecipeCategory(ingredient.ingredientCategory)
+    ?? importedLinkage?.category
     ?? stepMetaLinkage?.category
     ?? resolveIngredientCategory({ type: ingredient.type });
   const subtype = normalizeStoredRecipeSubtype(category, ingredient.ingredientSubtype)
+    ?? importedLinkage?.subtype
     ?? stepMetaLinkage?.subtype
     ?? null;
   const type = (
     liveLinkage?.type
+    ?? importedLinkage?.type
     ?? resolveLegacyIngredientType({ category, subtype })
     ?? (ingredient.type as RecipeIngredientDto["type"])
   ) as RecipeIngredientDto["type"];
@@ -619,38 +821,50 @@ const buildPersistedRecipeResolvedSource = (
     category,
     subtype,
     defaultDisplayUnit: ingredient.ingredientDefaultDisplayUnitSnapshot
+      ?? importedLinkage?.defaultDisplayUnit
       ?? stepMetaLinkage?.defaultDisplayUnit
       ?? liveLinkage?.defaultDisplayUnit
       ?? null,
+    allowedUnits: importedLinkage?.allowedUnits ?? stepMetaLinkage?.allowedUnits ?? liveLinkage?.allowedUnits ?? undefined,
     measurementDimension: ingredient.ingredientMeasurementDimension
+      ?? importedLinkage?.measurementDimension
       ?? stepMetaLinkage?.measurementDimension
       ?? liveLinkage?.measurementDimension
       ?? null,
-    technicalData: liveLinkage?.technicalData ?? null
+    technicalData
   });
 
   return {
     type,
     category,
     subtype,
-    familyId: ingredient.ingredientFamilyId ?? stepMetaLinkage?.familyId ?? liveLinkage?.familyId ?? null,
-    displayName: liveLinkage?.displayName ?? ingredient.ingredientDisplayNameSnapshot ?? stepMetaLinkage?.displayName ?? null,
-    displayNameRu: liveLinkage?.displayNameRu ?? stepMetaLinkage?.displayNameRu ?? null,
-    displayNameEn: liveLinkage?.displayNameEn ?? stepMetaLinkage?.displayNameEn ?? null,
-    familyDisplayName: liveLinkage?.familyDisplayName ?? stepMetaLinkage?.familyDisplayName ?? null,
-    summary: liveLinkage?.summary ?? stepMetaLinkage?.summary ?? null,
+    familyId: ingredient.ingredientFamilyId ?? importedLinkage?.familyId ?? stepMetaLinkage?.familyId ?? liveLinkage?.familyId ?? null,
+    displayName: liveLinkage?.displayName ?? ingredient.ingredientDisplayNameSnapshot ?? importedLinkage?.displayName ?? stepMetaLinkage?.displayName ?? null,
+    displayNameRu: liveLinkage?.displayNameRu ?? importedLinkage?.displayNameRu ?? stepMetaLinkage?.displayNameRu ?? null,
+    displayNameEn: liveLinkage?.displayNameEn ?? importedLinkage?.displayNameEn ?? stepMetaLinkage?.displayNameEn ?? null,
+    familyDisplayName: liveLinkage?.familyDisplayName ?? importedLinkage?.familyDisplayName ?? stepMetaLinkage?.familyDisplayName ?? null,
+    summary: liveLinkage?.summary ?? importedLinkage?.summary ?? stepMetaLinkage?.summary ?? null,
+    brand: liveLinkage?.brand ?? importedLinkage?.brand ?? stepMetaLinkage?.brand ?? null,
+    producer: liveLinkage?.producer ?? importedLinkage?.producer ?? stepMetaLinkage?.producer ?? null,
+    brandName: liveLinkage?.brandName ?? importedLinkage?.brandName ?? stepMetaLinkage?.brandName ?? null,
+    manufacturer: liveLinkage?.manufacturer ?? importedLinkage?.manufacturer ?? stepMetaLinkage?.manufacturer ?? null,
+    countryCode: liveLinkage?.countryCode ?? importedLinkage?.countryCode ?? stepMetaLinkage?.countryCode ?? null,
+    countryName: liveLinkage?.countryName ?? importedLinkage?.countryName ?? stepMetaLinkage?.countryName ?? null,
+    country: liveLinkage?.country ?? importedLinkage?.country ?? stepMetaLinkage?.country ?? null,
     defaultDisplayUnit: ingredient.ingredientDefaultDisplayUnitSnapshot
       ? parseRecipeIngredientUnit(ingredient.ingredientDefaultDisplayUnitSnapshot)
-      : unitProfile.defaultUnit,
-    allowedUnits: unitProfile.allowedUnits,
-    measurementDimension: ingredient.ingredientMeasurementDimension ?? unitProfile.measurementDimension,
-    technicalData: liveLinkage?.technicalData ?? null
+      : importedLinkage?.defaultDisplayUnit ?? unitProfile.defaultUnit,
+    allowedUnits: importedLinkage?.allowedUnits ?? unitProfile.allowedUnits,
+    measurementDimension: ingredient.ingredientMeasurementDimension ?? importedLinkage?.measurementDimension ?? unitProfile.measurementDimension,
+    technicalData
   };
 };
 
 const mapRecipeIngredientBase = (ingredient: typeof recipeIngredients.$inferSelect) => ({
   id: ingredient.id,
   recipeId: ingredient.recipeId,
+  persistentKey: ingredient.persistentKey,
+  displayOrder: ingredient.displayOrder ?? 0,
   ingredientCatalogItemId: ingredient.ingredientCatalogItemId,
   userCustomIngredientId: ingredient.userCustomIngredientId,
   type: ingredient.type as RecipeIngredientDto["type"],
@@ -661,6 +875,9 @@ const mapRecipeIngredientBase = (ingredient: typeof recipeIngredients.$inferSele
   stage: ingredient.stage,
   timeOffset: ingredient.timeOffset,
   stepMeta: ingredient.stepMeta as Record<string, unknown> | null,
+  inventoryIntentMode: ingredient.inventoryIntentMode as RecipeInventoryIntentMode | null,
+  inventorySelectionMeta: ingredient.inventorySelectionMeta as RecipeInventorySelectionMeta | null,
+  externalImportMeta: ingredient.externalImportMeta as Record<string, unknown> | null,
   createdAt: ingredient.createdAt,
   updatedAt: ingredient.updatedAt
 });
@@ -694,11 +911,19 @@ const hydrateRecipeIngredientDto = async (
     ingredientDisplayNameSnapshot: resolvedSource?.displayName ?? null,
     ingredientFamilyDisplayName: resolvedSource?.familyDisplayName ?? null,
     ingredientSummary: resolvedSource?.summary ?? null,
+    ingredientBrand: resolvedSource?.brand ?? null,
+    ingredientProducer: resolvedSource?.producer ?? null,
+    ingredientBrandName: resolvedSource?.brandName ?? null,
+    ingredientManufacturer: resolvedSource?.manufacturer ?? null,
+    ingredientCountryCode: resolvedSource?.countryCode ?? null,
+    ingredientCountryName: resolvedSource?.countryName ?? null,
+    ingredientCountry: resolvedSource?.country ?? null,
     ingredientDefaultDisplayUnit: resolvedSource?.defaultDisplayUnit ?? null,
     ingredientDefaultDisplayUnitSnapshot: resolvedSource?.defaultDisplayUnit ?? null,
     ingredientAllowedUnits: resolvedSource?.allowedUnits ?? null,
     ingredientMeasurementDimension: resolvedSource?.measurementDimension ?? null,
-    ingredientMeasurementDimensionSnapshot: resolvedSource?.measurementDimension ?? null
+    ingredientMeasurementDimensionSnapshot: resolvedSource?.measurementDimension ?? null,
+    ingredientTechnicalData: resolvedSource?.technicalData ?? null
   };
 };
 
@@ -727,6 +952,28 @@ const mapRecipeListDto = (recipe: typeof recipes.$inferSelect): RecipeListItemDt
   updatedAt: recipe.updatedAt
 });
 
+const parseRecipeEquipmentProfileSnapshot = (
+  value: Record<string, unknown> | null | undefined
+) => {
+  if (!value) {
+    return null;
+  }
+
+  const parsed = equipmentProfileSnapshotSchema.safeParse(value);
+  return parsed.success ? parsed.data : null;
+};
+
+const sortRecipeIngredientsByDisplayOrder = (
+  ingredients: Array<typeof recipeIngredients.$inferSelect>
+) => [...ingredients].sort((left, right) => {
+  const orderDiff = (left.displayOrder ?? 0) - (right.displayOrder ?? 0);
+  if (orderDiff !== 0) {
+    return orderDiff;
+  }
+
+  return left.createdAt.getTime() - right.createdAt.getTime();
+});
+
 const mapRecipeDetailDto = async (
   recipe: typeof recipes.$inferSelect,
   ingredients: Array<typeof recipeIngredients.$inferSelect>
@@ -735,15 +982,52 @@ const mapRecipeDetailDto = async (
   description: recipe.description,
   authorNotes: recipe.authorNotes,
   processMeta: parseRecipeProcessMeta(recipe.processMeta as Record<string, unknown> | null | undefined),
+  calculationMeta: parseRecipeCalculationMeta(recipe.calculationMeta as Record<string, unknown> | null | undefined),
+  draftState: (recipe.draftState as Record<string, unknown> | null | undefined) ?? null,
+  importMeta: (recipe.importMeta as Record<string, unknown> | null | undefined) ?? null,
+  equipmentProfileId: recipe.equipmentProfileId ?? null,
+  equipmentProfileSnapshot: parseRecipeEquipmentProfileSnapshot(recipe.equipmentProfileSnapshot as Record<string, unknown> | null | undefined),
+  waterPlanMeta: parseRecipeWaterPlanMeta(recipe.waterPlanMeta as Record<string, unknown> | null | undefined),
+  brewPlanMeta: (recipe.brewPlanMeta as Record<string, unknown> | null | undefined) ?? null,
   heroImageId: recipe.heroImageId,
   versions: await listRecipeVersions(recipe.authorId, recipe.recipeFamilyId),
-  ingredients: await Promise.all(ingredients.map((ingredient) => hydrateRecipeIngredientDto(recipe.authorId, ingredient)))
+  ingredients: await Promise.all(sortRecipeIngredientsByDisplayOrder(ingredients).map((ingredient) => hydrateRecipeIngredientDto(recipe.authorId, ingredient)))
 });
 
-const replaceRecipeIngredients = async (
+const toRecipeIngredientInsert = (
+  recipeId: string,
+  ingredient: PreparedRecipeIngredientEntry,
+  persistentKey = ingredient.persistentKey ?? crypto.randomUUID()
+): typeof recipeIngredients.$inferInsert => ({
+  recipeId,
+  persistentKey,
+  displayOrder: ingredient.displayOrder,
+  ingredientCatalogItemId: ingredient.ingredientCatalogItemId,
+  userCustomIngredientId: ingredient.userCustomIngredientId,
+  ingredientFamilyId: ingredient.source.familyId,
+  ingredientCategory: ingredient.source.category,
+  ingredientSubtype: ingredient.source.subtype,
+  ingredientDisplayNameSnapshot: ingredient.source.displayName,
+  ingredientDefaultDisplayUnitSnapshot: ingredient.source.defaultDisplayUnit,
+  ingredientMeasurementDimension: ingredient.source.measurementDimension,
+  type: ingredient.source.type,
+  amountEnteredQuantity: ingredient.amount.enteredQuantity,
+  amountEnteredUnit: ingredient.amount.enteredUnit,
+  amountNormalizedQuantity: ingredient.amount.normalizedQuantity,
+  amountNormalizedUnit: ingredient.amount.normalizedUnit,
+  stage: ingredient.stage,
+  timeOffset: ingredient.timeOffset,
+  stepMeta: ingredient.stepMeta,
+  inventoryIntentMode: ingredient.inventoryIntentMode,
+  inventorySelectionMeta: ingredient.inventorySelectionMeta as Record<string, unknown> | null,
+  externalImportMeta: ingredient.externalImportMeta
+});
+
+const syncRecipeIngredients = async (
   authorId: string,
   recipeId: string,
   payloadIngredients: Array<{
+    persistentKey?: string | null;
     ingredientCatalogItemId?: string | null;
     userCustomIngredientId?: string | null;
     type?: typeof recipeIngredients.$inferInsert.type;
@@ -755,36 +1039,45 @@ const replaceRecipeIngredients = async (
     stage: typeof recipeIngredients.$inferInsert.stage;
     timeOffset?: number | null;
     stepMeta?: Record<string, unknown> | null;
+    inventoryIntentMode?: RecipeInventoryIntentMode | null;
+    inventorySelectionMeta?: RecipeInventorySelectionMeta | null;
+    externalImportMeta?: Record<string, unknown> | null;
   }>
 ) => {
-  await db.delete(recipeIngredients).where(eq(recipeIngredients.recipeId, recipeId));
+  const existingIngredients = await db.query.recipeIngredients.findMany({
+    where: eq(recipeIngredients.recipeId, recipeId)
+  });
+  const preparedIngredients = await prepareRecipeIngredientEntries(authorId, payloadIngredients);
+  const existingByPersistentKey = new Map(existingIngredients.map((ingredient) => [ingredient.persistentKey, ingredient]));
+  const retainedIds = new Set<string>();
 
-  if (!payloadIngredients.length) {
-    return;
+  for (const ingredient of preparedIngredients) {
+    const persistentKey = ingredient.persistentKey ?? crypto.randomUUID();
+    const existing = existingByPersistentKey.get(persistentKey);
+    const nextValue = toRecipeIngredientInsert(recipeId, ingredient, persistentKey);
+
+    if (existing) {
+      retainedIds.add(existing.id);
+      await db.update(recipeIngredients).set({
+        ...nextValue,
+        updatedAt: new Date()
+      }).where(and(
+        eq(recipeIngredients.recipeId, recipeId),
+        eq(recipeIngredients.id, existing.id)
+      )).returning();
+    } else {
+      await db.insert(recipeIngredients).values(nextValue);
+    }
   }
 
-  const preparedIngredients = await prepareRecipeIngredientEntries(authorId, payloadIngredients);
-  const preparedValues: Array<typeof recipeIngredients.$inferInsert> = preparedIngredients.map((ingredient) => ({
-    recipeId,
-    ingredientCatalogItemId: ingredient.ingredientCatalogItemId,
-    userCustomIngredientId: ingredient.userCustomIngredientId,
-    ingredientFamilyId: ingredient.source.familyId,
-    ingredientCategory: ingredient.source.category,
-    ingredientSubtype: ingredient.source.subtype,
-    ingredientDisplayNameSnapshot: ingredient.source.displayName,
-    ingredientDefaultDisplayUnitSnapshot: ingredient.source.defaultDisplayUnit,
-    ingredientMeasurementDimension: ingredient.source.measurementDimension,
-    type: ingredient.source.type,
-    amountEnteredQuantity: ingredient.amount.enteredQuantity,
-    amountEnteredUnit: ingredient.amount.enteredUnit,
-    amountNormalizedQuantity: ingredient.amount.normalizedQuantity,
-    amountNormalizedUnit: ingredient.amount.normalizedUnit,
-    stage: ingredient.stage,
-    timeOffset: ingredient.timeOffset,
-    stepMeta: ingredient.stepMeta
-  }));
-
-  await db.insert(recipeIngredients).values(preparedValues);
+  for (const existing of existingIngredients) {
+    if (!retainedIds.has(existing.id)) {
+      await db.delete(recipeIngredients).where(and(
+        eq(recipeIngredients.recipeId, recipeId),
+        eq(recipeIngredients.id, existing.id)
+      ));
+    }
+  }
 };
 
 const computeRecipeStatsSnapshot = (input: {
@@ -792,6 +1085,8 @@ const computeRecipeStatsSnapshot = (input: {
   batchSizeNormalizedUnit: string;
   efficiency: number | null | undefined;
   boilTimeMinutes: number;
+  calculationMeta: RecipeCalculationMeta;
+  equipmentProfileSnapshot?: EquipmentProfileSnapshot | null;
   ingredients: Array<{
     id: string;
     type: RecipeIngredientDto["type"];
@@ -804,14 +1099,14 @@ const computeRecipeStatsSnapshot = (input: {
       displayName: string;
       category: RecipeIngredientDto["ingredientCategory"];
       technicalData: IngredientSourceLinkage["technicalData"];
-      raw: typeof ingredients.$inferSelect | typeof userCustomIngredients.$inferSelect;
+      raw: RecipeStatsSourceRaw;
     };
   }>;
 }) => {
   const batchVolumeL = toBatchVolumeLiters(input.batchSizeNormalizedQuantity, input.batchSizeNormalizedUnit);
   const efficiency = input.efficiency ?? DEFAULT_EFFICIENCY;
   const fermentables: Array<{ id: string; name: string; weightKg: number; potentialPpg: number; colorLovibond: number }> = [];
-  const hops: Array<{ id: string; name: string; alphaAcidPercent: number; weightG: number; boilTimeMinutes: number; use?: "boil" | "whirlpool" | "dry_hop" }> = [];
+  const hops: HopAdditionInput[] = [];
 
   for (const ingredient of input.ingredients) {
     if (ingredient.type === "fermentable" || ingredient.type === "malt") {
@@ -839,9 +1134,13 @@ const computeRecipeStatsSnapshot = (input: {
       const useType = resolveHopUseType(ingredient.stage, ingredient.stepMeta);
       const use = useType === "dry_hop"
         ? "dry_hop"
-        : useType === "whirlpool" || useType === "dip_hop"
-          ? "whirlpool"
-          : "boil";
+        : useType === "first_wort_hop"
+          ? "first_wort_hop"
+          : useType === "whirlpool" || useType === "dip_hop"
+            ? useType
+            : useType === "other"
+              ? "other"
+              : "boil";
 
       hops.push({
         id: ingredient.id,
@@ -849,7 +1148,8 @@ const computeRecipeStatsSnapshot = (input: {
         alphaAcidPercent: getIngredientAlphaAcidPercent(ingredient.source.raw, 5),
         weightG,
         boilTimeMinutes: resolveHopTimeMinutes(ingredient, input.boilTimeMinutes),
-        use
+        use,
+        temperatureC: readNumberMeta(ingredient.stepMeta, "temperatureC")
       });
     }
   }
@@ -861,6 +1161,7 @@ const computeRecipeStatsSnapshot = (input: {
       fg: null,
       abv: null,
       ibu: null,
+      bitternessFormula: input.calculationMeta.bitternessFormula,
       color: null
     };
   }
@@ -870,7 +1171,38 @@ const computeRecipeStatsSnapshot = (input: {
     : null;
   const fg = og ? calculateFg({ og, attenuationPercent: DEFAULT_ATTENUATION }) : null;
   const abv = og && fg ? calculateAbv(og, fg) : null;
-  const ibu = hops.length && og ? calculateIbuTinseth({ og, batchVolumeL, hopAdditions: hops }) : null;
+  const totalGrainKg = fermentables.reduce((sum, item) => sum + item.weightKg, 0);
+  const volumePlan = input.equipmentProfileSnapshot
+    ? calculateEquipmentVolumePlan(input.equipmentProfileSnapshot, totalGrainKg)
+    : null;
+  const postBoilVolumeL = volumePlan?.postBoilHotL ?? batchVolumeL;
+  const fermentableGravityPoints = og ? (og - 1) * 1000 * postBoilVolumeL : null;
+  const whirlpoolAdditions = hops.filter((hop) => hop.use === "whirlpool" || hop.use === "dip_hop");
+  const whirlpoolTimeMinutes = whirlpoolAdditions.reduce((max, hop) => Math.max(max, hop.boilTimeMinutes), 0);
+  const whirlpoolTemperatureC = whirlpoolAdditions.reduce<number | null>((current, hop) => (
+    current ?? hop.temperatureC ?? null
+  ), null);
+  const bitternessSettings = input.calculationMeta.bitternessSettings ?? {};
+  const ibu = hops.length && og
+    ? calculateBitterness({
+      formula: input.calculationMeta.bitternessFormula,
+      og,
+      batchVolumeL,
+      boilTimeMinutes: input.boilTimeMinutes,
+      hopAdditions: hops,
+      preBoilVolumeL: volumePlan?.preBoilHotL ?? null,
+      postBoilVolumeL,
+      fermentableGravityPoints,
+      hopUtilizationFactor: input.equipmentProfileSnapshot?.hopUtilizationFactor ?? 1,
+      hopFormUtilizationFactor: bitternessSettings.hopFormUtilizationFactor ?? 1,
+      whirlpoolUtilizationFactor: bitternessSettings.whirlpoolUtilizationFactor ?? 1,
+      includeBoilCarryoverIntoWhirlpool: bitternessSettings.includeBoilCarryoverIntoWhirlpool ?? true,
+      whirlpoolTimeMinutes,
+      whirlpoolTemperatureC,
+      firstWortHopMode: bitternessSettings.firstWortHopMode ?? "bonus_10pct",
+      altitudeM: input.equipmentProfileSnapshot?.altitudeM ?? 0
+    }).ibu
+    : null;
   const color = fermentables.length ? calculateColor(fermentables, batchVolumeL).srm : null;
 
   return {
@@ -879,7 +1211,8 @@ const computeRecipeStatsSnapshot = (input: {
     fg,
     abv,
     ibu,
-    color
+    color,
+    bitternessFormula: input.calculationMeta.bitternessFormula
   };
 };
 
@@ -889,37 +1222,27 @@ export const recomputeRecipeStats = async (authorId: string, recipeId: string) =
     where: eq(recipeIngredients.recipeId, recipeId)
   });
   const hydratedIngredients = await Promise.all(ingredients.map(async (ingredient) => {
-    const source = ingredient.ingredientCatalogItemId
-      ? await ensureCatalogIngredientExists(ingredient.ingredientCatalogItemId)
-      : ingredient.userCustomIngredientId
-        ? await ensureOwnedCustomIngredient(authorId, ingredient.userCustomIngredientId)
-        : null;
+    let liveLinkage: IngredientSourceLinkage | null = null;
+    let rawSource: RecipeStatsSourceRaw | null = null;
 
-    if (!source) {
-      return null;
+    if (ingredient.ingredientCatalogItemId) {
+      const catalog = await ensureCatalogIngredientExists(ingredient.ingredientCatalogItemId);
+      liveLinkage = buildCatalogIngredientLinkage(catalog);
+      rawSource = catalog;
+    } else if (ingredient.userCustomIngredientId) {
+      const custom = await ensureOwnedCustomIngredient(authorId, ingredient.userCustomIngredientId);
+      liveLinkage = buildCustomIngredientLinkage(custom);
+      rawSource = custom;
     }
 
-    const sourceDisplayName = "displayName" in source
-      ? source.displayName
-      : resolveIngredientDisplayNames({
-        type: source.type as RecipeIngredientDto["type"],
-        countryCode: "countryCode" in source ? source.countryCode : null,
-        countryName: "countryName" in source ? source.countryName : null,
-        nameRu: "nameRu" in source ? source.nameRu : null,
-        nameEn: "nameEn" in source ? source.nameEn : null,
-        displayModeRu: "displayModeRu" in source
-          ? source.displayModeRu as "auto" | "localized_first" | "source_first"
-          : "auto",
-        displayNameOverrideRu: "displayNameOverrideRu" in source ? source.displayNameOverrideRu : null,
-        secondaryNameOverrideRu: "secondaryNameOverrideRu" in source ? source.secondaryNameOverrideRu : null,
-        hideSecondaryNameRu: "hideSecondaryNameRu" in source ? source.hideSecondaryNameRu : false
-      }).primaryName;
+    const stepMetaLinkage = readRecipeIngredientLinkageMeta(ingredient.stepMeta as Record<string, unknown> | null);
+    const resolvedSource = buildPersistedRecipeResolvedSource(ingredient, stepMetaLinkage, liveLinkage);
     const resolvedType = (
       resolveLegacyIngredientType({
-        category: normalizeStoredRecipeCategory(ingredient.ingredientCategory),
-        subtype: ingredient.ingredientSubtype
+        category: resolvedSource.category,
+        subtype: resolvedSource.subtype
       })
-      ?? source.type
+      ?? resolvedSource.type
     ) as RecipeIngredientDto["type"];
 
     return {
@@ -931,19 +1254,46 @@ export const recomputeRecipeStats = async (authorId: string, recipeId: string) =
       timeOffset: ingredient.timeOffset,
       stepMeta: ingredient.stepMeta as Record<string, unknown> | null,
       source: {
-        displayName: sourceDisplayName,
-        category: normalizeStoredRecipeCategory(ingredient.ingredientCategory) ?? resolveIngredientCategory({ type: resolvedType }),
-        technicalData: null,
-        raw: source
+        displayName: resolvedSource.displayName ?? "Ingredient",
+        category: resolvedSource.category,
+        technicalData: resolvedSource.technicalData,
+        raw: rawSource ?? buildRecipeStatsSourceRaw({
+          type: resolvedSource.type,
+          category: resolvedSource.category ?? resolveIngredientCategory({ type: resolvedType }),
+          subtype: resolvedSource.subtype ?? null,
+          familyId: resolvedSource.familyId ?? null,
+          displayName: resolvedSource.displayName ?? "Ingredient",
+          displayNameRu: resolvedSource.displayNameRu ?? null,
+          displayNameEn: resolvedSource.displayNameEn ?? null,
+          familyDisplayName: resolvedSource.familyDisplayName ?? null,
+          summary: resolvedSource.summary ?? null,
+          brand: resolvedSource.brand ?? null,
+          producer: resolvedSource.producer ?? null,
+          brandName: resolvedSource.brandName ?? null,
+          manufacturer: resolvedSource.manufacturer ?? null,
+          countryCode: resolvedSource.countryCode ?? null,
+          countryName: resolvedSource.countryName ?? null,
+          country: resolvedSource.country ?? null,
+          defaultDisplayUnit: resolvedSource.defaultDisplayUnit ?? "g",
+          allowedUnits: resolvedSource.allowedUnits ?? [resolvedSource.defaultDisplayUnit ?? "g"],
+          measurementDimension: resolvedSource.measurementDimension ?? "weight",
+          technicalData: resolvedSource.technicalData
+        })
       }
     };
   }));
 
+  const calculationMeta = parseRecipeCalculationMeta(
+    recipe.calculationMeta as Record<string, unknown> | null | undefined,
+    await getUserRecipeCalculationMeta(authorId)
+  );
   const stats = computeRecipeStatsSnapshot({
     batchSizeNormalizedQuantity: recipe.batchSizeNormalizedQuantity,
     batchSizeNormalizedUnit: recipe.batchSizeNormalizedUnit,
     efficiency: recipe.efficiency,
     boilTimeMinutes: recipe.boilTimeMinutes ?? DEFAULT_BOIL_TIME_MINUTES,
+    calculationMeta,
+    equipmentProfileSnapshot: parseRecipeEquipmentProfileSnapshot(recipe.equipmentProfileSnapshot as Record<string, unknown> | null | undefined),
     ingredients: hydratedIngredients.filter((ingredient): ingredient is NonNullable<typeof ingredient> => Boolean(ingredient))
   });
 
@@ -972,6 +1322,12 @@ export const createRecipe = async (
   const parsed = createRecipePayloadSchema.parse(normalizeCreateRecipePayloadDefaults(payload));
   const preparedIngredients = await prepareRecipeIngredientEntries(authorId, parsed.ingredients);
   const nextProcessMeta = parseRecipeProcessMeta(parsed.processMeta ?? null);
+  const nextCalculationMeta = parsed.calculationMeta != null
+    ? parseRecipeCalculationMeta(parsed.calculationMeta)
+    : null;
+  const nextWaterPlanMeta = parsed.waterPlanMeta != null
+    ? sanitizeRecipeWaterPlanMeta(parsed.waterPlanMeta as Record<string, unknown>)
+    : null;
   validateRecipeForPublicationState({
     publicationState: parsed.publicationState,
     title: parsed.title,
@@ -1005,6 +1361,13 @@ export const createRecipe = async (
         description: parsed.description ?? null,
         authorNotes: parsed.authorNotes ?? null,
         processMeta: sanitizeRecipeProcessMeta(nextProcessMeta as Record<string, unknown>),
+        calculationMeta: nextCalculationMeta ? sanitizeRecipeCalculationMeta(nextCalculationMeta as Record<string, unknown>) : null,
+        draftState: parsed.draftState ?? null,
+        importMeta: parsed.importMeta ?? null,
+        equipmentProfileId: parsed.equipmentProfileId ?? null,
+        equipmentProfileSnapshot: (parsed.equipmentProfileSnapshot as Record<string, unknown> | null | undefined) ?? null,
+        waterPlanMeta: nextWaterPlanMeta,
+        brewPlanMeta: parsed.brewPlanMeta ?? null,
         heroImageId: parsed.heroImageId ?? null
       }).returning();
       break;
@@ -1019,7 +1382,7 @@ export const createRecipe = async (
     throw new Error("CREATE_FAILED");
   }
 
-  await replaceRecipeIngredients(authorId, created.id, parsed.ingredients);
+  await syncRecipeIngredients(authorId, created.id, parsed.ingredients);
   await recomputeRecipeStats(authorId, created.id);
 
   return getRecipeById(authorId, created.id);
@@ -1029,6 +1392,7 @@ export const updateRecipe = async (authorId: string, recipeId: string, payload: 
   const parsed = updateRecipePayloadSchema.parse(normalizeUpdateRecipePayloadDefaults(payload));
   const current = await ensureOwnedRecipe(authorId, recipeId);
   const nextIngredientsPayload = parsed.ingredients ?? (await getOwnedRecipeById(authorId, recipeId)).ingredients.map((ingredient) => ({
+    persistentKey: ingredient.persistentKey,
     ingredientCatalogItemId: ingredient.ingredientCatalogItemId,
     userCustomIngredientId: ingredient.userCustomIngredientId,
     type: ingredient.type,
@@ -1039,7 +1403,10 @@ export const updateRecipe = async (authorId: string, recipeId: string, payload: 
     amountEnteredUnit: ingredient.amountEnteredUnit,
     stage: ingredient.stage,
     timeOffset: ingredient.timeOffset,
-    stepMeta: ingredient.stepMeta
+    stepMeta: ingredient.stepMeta,
+    inventoryIntentMode: ingredient.inventoryIntentMode ?? null,
+    inventorySelectionMeta: ingredient.inventorySelectionMeta ?? null,
+    externalImportMeta: ingredient.externalImportMeta ?? null
   }));
   const preparedIngredients = await prepareRecipeIngredientEntries(authorId, nextIngredientsPayload);
 
@@ -1054,6 +1421,9 @@ export const updateRecipe = async (authorId: string, recipeId: string, payload: 
   const nextProcessMeta = parsed.processMeta !== undefined
     ? parseRecipeProcessMeta(parsed.processMeta ?? null)
     : parseRecipeProcessMeta(current.processMeta as Record<string, unknown> | null | undefined);
+  const nextCalculationMeta = parsed.calculationMeta !== undefined
+    ? parsed.calculationMeta == null ? null : parseRecipeCalculationMeta(parsed.calculationMeta)
+    : parseRecipeCalculationMeta(current.calculationMeta as Record<string, unknown> | null | undefined, await getUserRecipeCalculationMeta(authorId));
   validateRecipeForPublicationState({
     publicationState: parsed.publicationState ?? current.publicationState,
     title: nextTitle,
@@ -1087,6 +1457,19 @@ export const updateRecipe = async (authorId: string, recipeId: string, payload: 
         processMeta: parsed.processMeta !== undefined
           ? sanitizeRecipeProcessMeta(nextProcessMeta as Record<string, unknown>)
           : current.processMeta,
+        calculationMeta: parsed.calculationMeta !== undefined
+          ? nextCalculationMeta == null ? null : sanitizeRecipeCalculationMeta(nextCalculationMeta as Record<string, unknown>)
+          : current.calculationMeta,
+        draftState: parsed.draftState !== undefined ? parsed.draftState : current.draftState,
+        importMeta: parsed.importMeta !== undefined ? parsed.importMeta : current.importMeta,
+        equipmentProfileId: parsed.equipmentProfileId !== undefined ? parsed.equipmentProfileId : current.equipmentProfileId,
+        equipmentProfileSnapshot: parsed.equipmentProfileSnapshot !== undefined
+          ? parsed.equipmentProfileSnapshot as Record<string, unknown> | null
+          : current.equipmentProfileSnapshot,
+        waterPlanMeta: parsed.waterPlanMeta !== undefined
+          ? parsed.waterPlanMeta == null ? null : sanitizeRecipeWaterPlanMeta(parsed.waterPlanMeta as Record<string, unknown>)
+          : current.waterPlanMeta,
+        brewPlanMeta: parsed.brewPlanMeta !== undefined ? parsed.brewPlanMeta : current.brewPlanMeta,
         heroImageId: parsed.heroImageId !== undefined ? parsed.heroImageId : current.heroImageId,
         updatedAt: new Date()
       }).where(eq(recipes.id, recipeId)).returning();
@@ -1103,7 +1486,7 @@ export const updateRecipe = async (authorId: string, recipeId: string, payload: 
   }
 
   if (parsed.ingredients) {
-    await replaceRecipeIngredients(authorId, recipeId, parsed.ingredients);
+    await syncRecipeIngredients(authorId, recipeId, parsed.ingredients);
   }
 
   if (parsed.recomputeStats) {
@@ -1133,6 +1516,10 @@ export const cloneRecipe = async (authorId: string, recipeId: string) => {
     description: recipe.description,
     authorNotes: recipe.authorNotes,
     processMeta: recipe.processMeta,
+    calculationMeta: recipe.calculationMeta ?? null,
+    equipmentProfileId: recipe.equipmentProfileId ?? null,
+    equipmentProfileSnapshot: recipe.equipmentProfileSnapshot ?? null,
+    waterPlanMeta: recipe.waterPlanMeta ?? null,
     ingredients: recipe.ingredients.map((ingredient) => ({
       ingredientCatalogItemId: ingredient.ingredientCatalogItemId,
       userCustomIngredientId: ingredient.userCustomIngredientId,
@@ -1144,7 +1531,10 @@ export const cloneRecipe = async (authorId: string, recipeId: string) => {
       amountEnteredUnit: ingredient.amountEnteredUnit,
       stage: ingredient.stage,
       timeOffset: ingredient.timeOffset,
-      stepMeta: ingredient.stepMeta
+      stepMeta: ingredient.stepMeta,
+      inventoryIntentMode: ingredient.inventoryIntentMode ?? null,
+      inventorySelectionMeta: ingredient.inventorySelectionMeta ?? null,
+      externalImportMeta: ingredient.externalImportMeta ?? null
     }))
   });
 };
@@ -1170,6 +1560,10 @@ export const createRecipeVersion = async (authorId: string, recipeId: string) =>
     description: recipe.description,
     authorNotes: recipe.authorNotes,
     processMeta: recipe.processMeta,
+    calculationMeta: recipe.calculationMeta ?? null,
+    equipmentProfileId: recipe.equipmentProfileId ?? null,
+    equipmentProfileSnapshot: recipe.equipmentProfileSnapshot ?? null,
+    waterPlanMeta: recipe.waterPlanMeta ?? null,
     ingredients: recipe.ingredients.map((ingredient) => ({
       ingredientCatalogItemId: ingredient.ingredientCatalogItemId,
       userCustomIngredientId: ingredient.userCustomIngredientId,
@@ -1181,7 +1575,10 @@ export const createRecipeVersion = async (authorId: string, recipeId: string) =>
       amountEnteredUnit: ingredient.amountEnteredUnit,
       stage: ingredient.stage,
       timeOffset: ingredient.timeOffset,
-      stepMeta: ingredient.stepMeta
+      stepMeta: ingredient.stepMeta,
+      inventoryIntentMode: ingredient.inventoryIntentMode ?? null,
+      inventorySelectionMeta: ingredient.inventorySelectionMeta ?? null,
+      externalImportMeta: ingredient.externalImportMeta ?? null
     }))
   }, {
     recipeFamilyId: currentRecipe.recipeFamilyId,
@@ -1192,7 +1589,7 @@ export const createRecipeVersion = async (authorId: string, recipeId: string) =>
 export const setRecipeIngredients = async (authorId: string, recipeId: string, ingredientsPayload: unknown) => {
   const parsed = createRecipePayloadSchema.shape.ingredients.parse(ingredientsPayload);
   await ensureOwnedRecipe(authorId, recipeId);
-  await replaceRecipeIngredients(authorId, recipeId, parsed);
+  await syncRecipeIngredients(authorId, recipeId, parsed);
   await recomputeRecipeStats(authorId, recipeId);
 
   return getRecipeById(authorId, recipeId);
@@ -1297,11 +1694,17 @@ export const previewRecipeDraft = async (authorId: string, payload: unknown): Pr
   const parsed = createRecipePayloadSchema.parse(normalizedPayload);
   const batchSize = normalizeRecipeBatchSize(parsed.batchSizeEnteredQuantity, parsed.batchSizeEnteredUnit);
   const preparedIngredients = await prepareRecipeIngredientEntries(authorId, parsed.ingredients);
+  const calculationMeta = parseRecipeCalculationMeta(
+    parsed.calculationMeta ?? null,
+    await getUserRecipeCalculationMeta(authorId)
+  );
   const stats = computeRecipeStatsSnapshot({
     batchSizeNormalizedQuantity: batchSize.normalizedQuantity,
     batchSizeNormalizedUnit: batchSize.normalizedUnit,
     efficiency: parsed.efficiency,
     boilTimeMinutes: parsed.boilTimeMinutes,
+    calculationMeta,
+    equipmentProfileSnapshot: parsed.equipmentProfileSnapshot ?? null,
     ingredients: preparedIngredients.map((ingredient, index) => ({
       id: `${index + 1}`,
       type: ingredient.source.type,
@@ -1338,6 +1741,7 @@ export const previewRecipeDraft = async (authorId: string, payload: unknown): Pr
     fg: stats.fg,
     abv: stats.abv,
     ibu: stats.ibu,
+    bitternessFormula: stats.bitternessFormula,
     color: stats.color,
     styleId: parsed.styleId ?? null,
     styleRange,

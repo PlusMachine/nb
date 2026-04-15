@@ -457,6 +457,7 @@ export type IngredientSuggestionItem = {
   countryCode?: string | null;
   countryName?: string | null;
   country?: string | null;
+  harvestYear?: number | null;
   productCode?: string | null;
   sourceCategory?: string | null;
   subcategory?: string | null;
@@ -472,6 +473,17 @@ export type IngredientSuggestionItem = {
   packageVariants?: IngredientPackageVariantDto[];
   familyDisplayName?: string | null;
   familyCanonicalName?: string | null;
+  inventoryItemId?: string | null;
+  inventoryQuantityLabel?: string | null;
+  inventoryNormalizedQuantity?: number | null;
+  inventoryNormalizedUnit?: string | null;
+  inventoryPurchasePriceLabel?: string | null;
+  inventoryUnitPriceLabel?: string | null;
+  inventoryPurchasedAt?: string | null;
+  inventoryFreshnessDate?: string | null;
+  inventoryUpdatedAt?: string | null;
+  inventoryNotes?: string | null;
+  inventoryPurchaseLinksCount?: number | null;
   matchType?: "name" | "alias" | "code" | "package" | "brand" | "token";
   matchedAlias?: string | null;
   matchedPackageVariantId?: string | null;

@@ -5,6 +5,13 @@ import { resolveIngredientCategory } from "@/features/ingredients/taxonomy";
 import { formatInventoryQuantityForDisplay } from "@/features/inventory/display";
 import type { RecipeDetailDto } from "@/features/recipes/contracts";
 
+import {
+  buildRecipeIngredientTechnicalBadges,
+  RecipeIngredientTechnicalBadges,
+  RecipeIngredientTitleBlock,
+  type RecipeIngredientCardSource
+} from "./recipe-ingredient-card-display";
+
 const stageLabel: Record<RecipeDetailDto["ingredients"][number]["stage"], string> = {
   mash: "Затирание",
   boil: "Кипячение",
@@ -80,6 +87,24 @@ const buildMetaLine = (ingredient: RecipeDetailDto["ingredients"][number]) => {
   return parts.join(" · ");
 };
 
+const buildIngredientCardSource = (ingredient: RecipeDetailDto["ingredients"][number]): RecipeIngredientCardSource => {
+  const category = ingredient.ingredientCategory ?? resolveIngredientCategory({ type: ingredient.type });
+
+  return {
+    type: ingredient.type,
+    category,
+    subtype: ingredient.ingredientSubtype ?? null,
+    brand: ingredient.ingredientBrand ?? null,
+    producer: ingredient.ingredientProducer ?? null,
+    brandName: ingredient.ingredientBrandName ?? null,
+    manufacturer: ingredient.ingredientManufacturer ?? null,
+    countryCode: ingredient.ingredientCountryCode ?? null,
+    countryName: ingredient.ingredientCountryName ?? null,
+    country: ingredient.ingredientCountry ?? null,
+    technicalData: ingredient.ingredientTechnicalData ?? null
+  };
+};
+
 export function RecipeIngredientsSection({ ingredients }: { ingredients: RecipeDetailDto["ingredients"] }) {
   const grouped = sectionOrder.map((category) => ({
     category,
@@ -112,13 +137,22 @@ export function RecipeIngredientsSection({ ingredients }: { ingredients: RecipeD
                     displayNameRu: ingredient.ingredientDisplayNameRu,
                     displayNameEn: ingredient.ingredientDisplayNameEn
                   });
+                  const cardSource = buildIngredientCardSource(ingredient);
+                  const badges = buildRecipeIngredientTechnicalBadges(cardSource);
+                  const summaryFallback = badges.length ? null : ingredient.ingredientSummary;
 
                   return (
                     <li key={ingredient.id} className={`rounded-lg border-l-[3px] bg-white px-3 py-2.5 ring-1 ring-zinc-100 ${accent}`}>
-                      <div className="flex items-center justify-between gap-3">
+                      <div className="flex items-start justify-between gap-3">
                         <div className="min-w-0">
-                          <div className="truncate text-sm font-medium text-zinc-900">{primaryName}</div>
-                          {secondaryName ? <div className="mt-0.5 text-xs text-zinc-500">{secondaryName}</div> : null}
+                          <RecipeIngredientTitleBlock
+                            source={cardSource}
+                            primaryName={primaryName}
+                            secondaryName={secondaryName}
+                            titleClassName="truncate text-sm font-medium text-zinc-900"
+                          />
+                          {summaryFallback ? <div className="mt-1 text-xs text-zinc-500">{summaryFallback}</div> : null}
+                          <RecipeIngredientTechnicalBadges badges={badges} className="mt-1.5" />
                           <div className="mt-0.5 text-xs text-zinc-500">{buildMetaLine(ingredient)}</div>
                         </div>
                         <div className="shrink-0 text-right text-sm font-medium tabular-nums text-zinc-700">{formatInventoryQuantityForDisplay({

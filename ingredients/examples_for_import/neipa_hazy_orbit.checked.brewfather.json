@@ -1,0 +1,256 @@
+{
+  "_id": "example-neipa_hazy_orbit",
+  "name": "Hazy Orbit NEIPA",
+  "author": "OpenAI example",
+  "type": "All Grain",
+  "style": {
+    "name": "New England IPA",
+    "category": "IPA",
+    "categoryNumber": "",
+    "styleLetter": "",
+    "styleGuide": "Custom",
+    "type": "Ale",
+    "ogMin": 1.06,
+    "ogMax": 1.076,
+    "fgMin": 1.01,
+    "fgMax": 1.018,
+    "ibuMin": 29.0,
+    "ibuMax": 45.0,
+    "colorMin": 3.0,
+    "colorMax": 9.0,
+    "abvMin": 6.1,
+    "abvMax": 8.1
+  },
+  "equipment": {
+    "name": "20 L all-grain kettle setup",
+    "batchSize": 20.0,
+    "boilSize": 27.0,
+    "boilTime": 30,
+    "efficiency": 72.0
+  },
+  "batchSize": 20.0,
+  "boilSize": 27.0,
+  "boilTime": 30,
+  "efficiency": 72.0,
+  "og": 1.068,
+  "fg": 1.014,
+  "fgEstimated": 1.014,
+  "attenuation": 79.4,
+  "color": 6.0,
+  "ibu": 37.0,
+  "ibuFormula": "tinseth",
+  "buGuRatio": 0.544,
+  "abv": 7.1,
+  "carbonation": 2.4,
+  "fermentables": [
+    {
+      "name": "Pale Ale Malt",
+      "type": "Grain",
+      "amount": 4.6,
+      "percentage": 68.0,
+      "lovibond": 3.0,
+      "color": 3.0,
+      "use": "Mash",
+      "time": 60,
+      "timeUnit": "min"
+    },
+    {
+      "name": "Flaked Oats",
+      "type": "Adjunct",
+      "amount": 0.8,
+      "percentage": 11.8,
+      "lovibond": 1.0,
+      "color": 1.0,
+      "use": "Mash",
+      "time": 60,
+      "timeUnit": "min"
+    },
+    {
+      "name": "Wheat Malt",
+      "type": "Grain",
+      "amount": 0.7,
+      "percentage": 10.4,
+      "lovibond": 2.0,
+      "color": 2.0,
+      "use": "Mash",
+      "time": 60,
+      "timeUnit": "min"
+    },
+    {
+      "name": "Flaked Wheat",
+      "type": "Adjunct",
+      "amount": 0.35,
+      "percentage": 5.2,
+      "lovibond": 1.6,
+      "color": 1.6,
+      "use": "Mash",
+      "time": 60,
+      "timeUnit": "min"
+    },
+    {
+      "name": "Dextrose",
+      "type": "Sugar",
+      "amount": 0.3,
+      "percentage": 4.4,
+      "lovibond": 0.0,
+      "color": 0.0,
+      "use": "Boil",
+      "time": 10,
+      "timeUnit": "min"
+    }
+  ],
+  "hops": [
+    {
+      "name": "Magnum",
+      "alpha": 12.0,
+      "amount": 10,
+      "use": "Boil",
+      "type": "Pellet",
+      "time": 30,
+      "timeUnit": "min"
+    },
+    {
+      "name": "Citra",
+      "alpha": 12.0,
+      "amount": 40,
+      "use": "Aroma",
+      "type": "Pellet",
+      "time": 20,
+      "timeUnit": "min",
+      "temp": 80
+    },
+    {
+      "name": "Mosaic",
+      "alpha": 11.5,
+      "amount": 40,
+      "use": "Aroma",
+      "type": "Pellet",
+      "time": 20,
+      "timeUnit": "min",
+      "temp": 80
+    },
+    {
+      "name": "Galaxy",
+      "alpha": 14.0,
+      "amount": 30,
+      "use": "Aroma",
+      "type": "Pellet",
+      "time": 20,
+      "timeUnit": "min",
+      "temp": 80
+    },
+    {
+      "name": "Citra",
+      "alpha": 12.0,
+      "amount": 60,
+      "use": "Dry Hop",
+      "type": "Pellet",
+      "time": 3,
+      "timeUnit": "days"
+    },
+    {
+      "name": "Mosaic",
+      "alpha": 11.5,
+      "amount": 60,
+      "use": "Dry Hop",
+      "type": "Pellet",
+      "time": 3,
+      "timeUnit": "days"
+    },
+    {
+      "name": "Galaxy",
+      "alpha": 14.0,
+      "amount": 40,
+      "use": "Dry Hop",
+      "type": "Pellet",
+      "time": 3,
+      "timeUnit": "days"
+    }
+  ],
+  "yeasts": [
+    {
+      "name": "Wyeast 1318 London Ale III",
+      "laboratory": "Wyeast",
+      "productId": "1318",
+      "type": "Ale",
+      "form": "Liquid",
+      "attenuation": 75.0,
+      "amount": 1,
+      "unit": "pkg"
+    }
+  ],
+  "miscs": [
+    {
+      "name": "Whirlfloc Tablet",
+      "type": "Fining",
+      "use": "Boil",
+      "time": 10,
+      "timeUnit": "min",
+      "amount": 1,
+      "unit": "items"
+    },
+    {
+      "name": "Yeast Nutrient",
+      "type": "Other",
+      "use": "Boil",
+      "time": 10,
+      "timeUnit": "min",
+      "amount": 5,
+      "unit": "g"
+    }
+  ],
+  "fermentablesTotalAmount": 6.75,
+  "hopsTotalAmount": 280,
+  "mash": {
+    "name": "Hazy Orbit NEIPA Mash",
+    "ph": 5.4,
+    "spargeTemp": 76.0,
+    "steps": [
+      {
+        "name": "Saccharification",
+        "type": "Infusion",
+        "stepTemp": 67.0,
+        "stepTime": 60
+      },
+      {
+        "name": "Mash Out",
+        "type": "Infusion",
+        "stepTemp": 76.0,
+        "stepTime": 10
+      }
+    ]
+  },
+  "fermentation": {
+    "name": "Hazy Orbit NEIPA Fermentation",
+    "pressurized": false,
+    "steps": [
+      {
+        "name": "Primary",
+        "type": "Primary",
+        "stepTemp": 19.0,
+        "stepTime": 4
+      },
+      {
+        "name": "Rise",
+        "type": "Secondary",
+        "stepTemp": 21.0,
+        "stepTime": 5
+      },
+      {
+        "name": "Dry Hop",
+        "type": "Tertiary",
+        "stepTemp": 20.0,
+        "stepTime": 3
+      },
+      {
+        "name": "Cold Crash",
+        "type": "Cold Crash",
+        "stepTemp": 3.0,
+        "stepTime": 2
+      }
+    ]
+  },
+  "notes": "Example NEIPA focused on soft bitterness, heavy whirlpool, and expressive dry hop.",
+  "path": "/",
+  "hidden": false
+}

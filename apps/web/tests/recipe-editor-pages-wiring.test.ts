@@ -30,6 +30,19 @@ const recipe = {
 const mocks = vi.hoisted(() => ({
   requireUser: vi.fn(async () => ({ id: "u-1" })),
   getOwnedRecipeById: vi.fn(async () => recipe),
+  listEquipmentProfiles: vi.fn(async () => []),
+  listRecipeStockCoverage: vi.fn(async () => ({
+    recipeId: "r-1",
+    lines: [],
+    summary: {
+      totalLines: 0,
+      selectedLines: 0,
+      coveredLines: 0,
+      reservedLines: 0,
+      consumedLines: 0,
+      shortLines: 0
+    }
+  })),
   getNextDefaultRecipeTitle: vi.fn(async () => "Новый рецепт 7"),
   usePathname: vi.fn(() => "/app/recipes/new"),
   useRouter: vi.fn(() => ({ replace: vi.fn(), push: vi.fn() })),
@@ -47,6 +60,12 @@ vi.mock("../features/recipes/service", () => ({
   getOwnedRecipeById: mocks.getOwnedRecipeById,
   getNextDefaultRecipeTitle: mocks.getNextDefaultRecipeTitle
 }));
+vi.mock("../features/recipes/inventory-service", () => ({
+  listRecipeStockCoverage: mocks.listRecipeStockCoverage
+}));
+vi.mock("../features/equipment-profiles/service", () => ({
+  listEquipmentProfiles: mocks.listEquipmentProfiles
+}));
 vi.mock("next/navigation", () => ({
   notFound: mocks.notFound,
   redirect: mocks.redirect,
@@ -62,6 +81,7 @@ describe("recipe editor pages wiring", () => {
     const html = renderToStaticMarkup(view);
 
     expect(mocks.getOwnedRecipeById).toHaveBeenCalledWith("u-1", "r-1");
+    expect(mocks.listEquipmentProfiles).toHaveBeenCalledWith("u-1");
     expect(html).toContain("Название рецепта");
     expect(html).toContain("Автосохранение");
   });
@@ -81,6 +101,7 @@ describe("recipe editor pages wiring", () => {
     expect(html).toContain("Название рецепта");
     expect(html).toContain("Автосохранение");
     expect(mocks.getNextDefaultRecipeTitle).toHaveBeenCalledWith("u-1");
+    expect(mocks.listEquipmentProfiles).toHaveBeenCalledWith("u-1");
     expect(html).toContain("Новый рецепт 7");
   });
 

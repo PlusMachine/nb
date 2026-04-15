@@ -60,6 +60,11 @@ import {
   resolveConsumablePackageVariantName,
   resolveConsumableTechnicalData
 } from "@/features/ingredients/consumables";
+import {
+  formatHopFormLabel,
+  resolveIngredientTechnicalDataColorRangeEbc
+} from "@/features/ingredients/technical-fields";
+import { beerColorFromSrm } from "@/features/recipes/beer-color";
 
 export {
   buildIngredientPickerQuickStartFamilySearchValue,
@@ -521,7 +526,7 @@ export const buildIngredientCacheKey = ({
 }) => `${normalizeSearchText(q)}::${type ?? ""}::${category ?? ""}::${subtype ?? ""}::${normalizeSearchText(family ?? "")}::${normalizeSearchText(group ?? "")}::${normalizeSearchText(manufacturer ?? "")}::${favoritesOnly ? "favorites" : "all-items"}::${customOnly ? "custom-only" : "all-sources"}::${includeCustom === false ? "catalog" : "all"}::${limit}`;
 
 const shouldPromoteBrandToPrimaryRow = (item: IngredientSuggestionItem) => (
-  item.type === "hop" || item.subtype === "malt"
+  item.subtype === "malt"
 );
 
 const isBrandAlreadyRepresentedInPrimaryName = (primaryName: string, brand?: string | null) => {
@@ -591,6 +596,300 @@ const resolveIngredientPickerMetaSummary = ({
   subtitle?: string | null;
   brandLabel?: string | null;
 }) => stripBrandFromSubtitle(subtitle ?? undefined, brandLabel ?? null);
+
+const resolveIngredientPickerStockLabel = (item: Pick<IngredientSuggestionItem, "inventoryQuantityLabel">) => {
+  const quantity = item.inventoryQuantityLabel?.trim();
+  return quantity ? `Остаток: ${quantity}` : null;
+};
+
+const formatBadgeValue = (value: number) => (
+  value % 1 === 0 ? String(value) : value.toFixed(1).replace(/\.0$/, "")
+);
+
+const readBadgeNumber = (...values: Array<number | null | undefined>) => {
+  for (const value of values) {
+    if (typeof value === "number" && Number.isFinite(value)) {
+      return value;
+    }
+  }
+
+  return null;
+};
+
+const ebcToSrm = (value: number) => value / 1.97;
+
+type IngredientPickerBadgeAccent = {
+  startHex: string;
+  averageHex: string;
+  endHex: string;
+};
+
+export type IngredientPickerTechnicalBadge = {
+  key: string;
+  label: string;
+  accent?: IngredientPickerBadgeAccent | null;
+};
+
+const resolveColorBadgeAccent = (item: Pick<IngredientSuggestionItem, "technicalData">): IngredientPickerBadgeAccent | null => {
+  const technicalData = item.technicalData;
+  if (!technicalData || technicalData.type !== "malt") {
+    return null;
+  }
+
+  const range = resolveIngredientTechnicalDataColorRangeEbc(technicalData);
+  const startEbc = range?.min ?? null;
+  const endEbc = range?.max ?? null;
+
+  if (startEbc == null || endEbc == null) {
+    return null;
+  }
+
+  const averageEbc = range?.average ?? ((startEbc + endEbc) / 2);
+  const start = beerColorFromSrm(ebcToSrm(startEbc));
+  const average = beerColorFromSrm(ebcToSrm(averageEbc));
+  const end = beerColorFromSrm(ebcToSrm(endEbc));
+
+  return {
+    startHex: start.hex,
+    averageHex: average.hex,
+    endHex: end.hex
+  };
+};
+
+const formatColorBadge = (item: Pick<IngredientSuggestionItem, "technicalData">) => {
+  const technicalData = item.technicalData;
+  if (!technicalData || (technicalData.type !== "malt" && technicalData.type !== "fermentable")) {
+    return null;
+  }
+
+  const range = resolveIngredientTechnicalDataColorRangeEbc(technicalData);
+  if (!range) {
+    return null;
+  }
+
+  if (technicalData.type === "malt" && (technicalData.colorEbcMin != null || technicalData.colorEbcMax != null)) {
+    return range.min === range.max
+      ? `${formatBadgeValue(range.min)} EBC`
+      : `${formatBadgeValue(range.min)}-${formatBadgeValue(range.max)} EBC`;
+  }
+
+  return `${formatBadgeValue(range.average)} EBC`;
+};
+
+export const buildIngredientPickerTechnicalBadges = (item: IngredientSuggestionItem): IngredientPickerTechnicalBadge[] => {
+  const technicalData = item.technicalData;
+  if (!technicalData) {
+    return [];
+  }
+
+  const badges: IngredientPickerTechnicalBadge[] = [];
+  const seen = new Set<string>();
+  const pushBadge = (label?: string | null, accent?: IngredientPickerBadgeAccent | null) => {
+    const trimmed = label?.trim();
+    if (!trimmed) {
+      return;
+    }
+
+    const key = trimmed.toLowerCase();
+    if (seen.has(key)) {
+      return;
+    }
+
+    seen.add(key);
+    badges.push({
+      key: `text:${key}`,
+      label: trimmed,
+      accent
+    });
+  };
+
+  if (technicalData.type === "hop") {
+    const hop = technicalData as Extract<NonNullable<typeof technicalData>, { type: "hop" }>;
+    const alphaAcidPct = readBadgeNumber(
+      hop.alphaAcidPctTypical,
+      hop.alphaAcidPctMax,
+      hop.alphaAcidPctMin
+    );
+    const hopFormLabel = formatHopFormLabel(hop.hopForm);
+
+    pushBadge(alphaAcidPct != null ? `Альфа ${formatBadgeValue(alphaAcidPct)}%` : null);
+    pushBadge(hopFormLabel);
+    pushBadge(item.harvestYear != null ? `Урожай ${item.harvestYear}` : null);
+  } else if (technicalData.type === "malt" || technicalData.type === "fermentable") {
+    const fermentable = technicalData as Extract<NonNullable<typeof technicalData>, { type: "malt" | "fermentable" }>;
+    pushBadge(formatColorBadge(item), resolveColorBadgeAccent(item));
+    pushBadge(fermentable.extractPctDryBasis != null ? `Экст-ть ${formatBadgeValue(fermentable.extractPctDryBasis)}%` : null);
+    pushBadge(
+      fermentable.type === "malt" && fermentable.maxUsagePct != null
+        ? `до ${formatBadgeValue(fermentable.maxUsagePct)} % засыпи`
+        : fermentable.type === "fermentable" && fermentable.recommendedMaxPct != null
+          ? `до ${formatBadgeValue(fermentable.recommendedMaxPct)} % засыпи`
+          : null
+    );
+  } else if (technicalData.type === "yeast") {
+    const yeast = technicalData as Extract<NonNullable<typeof technicalData>, { type: "yeast" }>;
+    pushBadge(yeast.form ? yeast.form.replaceAll("_", " ") : null);
+    pushBadge(yeast.attenuationPctTypical != null ? `Атт. ${formatBadgeValue(yeast.attenuationPctTypical)}%` : null);
+    pushBadge(
+      yeast.fermentationTempCMin != null && yeast.fermentationTempCMax != null
+        ? `${formatBadgeValue(yeast.fermentationTempCMin)}-${formatBadgeValue(yeast.fermentationTempCMax)}°C`
+        : null
+    );
+  } else if (technicalData.type === "water_treatment") {
+    const waterTreatment = technicalData as Extract<NonNullable<typeof technicalData>, { type: "water_treatment" }>;
+    const normalizedPreferredUnit = waterTreatment.unitPreferred?.trim().toLowerCase() ?? null;
+    pushBadge(normalizedPreferredUnit === "g" || normalizedPreferredUnit === "ml" ? null : waterTreatment.unitPreferred);
+  } else if (technicalData.type === "consumable") {
+    const consumable = technicalData as Extract<NonNullable<typeof technicalData>, { type: "consumable" }>;
+    pushBadge(consumable.commonForms?.[0]?.replaceAll("_", " ") ?? null);
+    pushBadge(consumable.usageStage?.[0]?.replaceAll("_", " ") ?? null);
+  }
+
+  return badges.slice(0, 5);
+};
+
+const formatIngredientPickerInventoryDate = (value?: string | null) => {
+  if (!value) {
+    return null;
+  }
+
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) {
+    return null;
+  }
+
+  return {
+    date,
+    label: date.toLocaleDateString("ru-RU")
+  };
+};
+
+const truncateIngredientPickerMeta = (value: string, maxLength = 120) => (
+  value.length > maxLength ? `${value.slice(0, maxLength - 3).trimEnd()}...` : value
+);
+
+export const buildIngredientPickerInventoryMetaItems = (item: IngredientSuggestionItem) => {
+  const items: string[] = [];
+  const purchasedAt = formatIngredientPickerInventoryDate(item.inventoryPurchasedAt);
+  const freshnessDate = formatIngredientPickerInventoryDate(item.inventoryFreshnessDate);
+  const updatedAt = formatIngredientPickerInventoryDate(item.inventoryUpdatedAt);
+
+  if (item.inventoryPurchasePriceLabel) {
+    items.push(`Покупка ${item.inventoryPurchasePriceLabel}`);
+  }
+
+  if (item.inventoryUnitPriceLabel) {
+    items.push(item.inventoryUnitPriceLabel);
+  }
+
+  if (purchasedAt) {
+    items.push(`Куплен ${purchasedAt.label}`);
+  }
+
+  if (freshnessDate) {
+    const expired = freshnessDate.date.getTime() < Date.now();
+    items.push(`${expired ? "Просрочен" : "Годен до"} ${freshnessDate.label}`);
+  } else if (updatedAt) {
+    items.push(`Обновлен ${updatedAt.label}`);
+  }
+
+  if (item.inventoryPurchaseLinksCount && item.inventoryPurchaseLinksCount > 0) {
+    items.push(`Ссылки: ${item.inventoryPurchaseLinksCount}`);
+  }
+
+  if (item.inventoryNotes?.trim()) {
+    items.push(`Заметка: ${truncateIngredientPickerMeta(item.inventoryNotes.trim())}`);
+  }
+
+  return items;
+};
+
+export const IngredientPickerInventoryMetaLine = ({
+  item,
+  className = "",
+  compact = false
+}: {
+  item: IngredientSuggestionItem;
+  className?: string;
+  compact?: boolean;
+}) => {
+  const items = buildIngredientPickerInventoryMetaItems(item);
+  if (items.length === 0) {
+    return null;
+  }
+
+  return (
+    <div className={`flex flex-wrap items-center gap-x-3 gap-y-1 ${compact ? "text-[11px]" : "text-xs"} text-zinc-500 ${className}`.trim()}>
+      {items.map((entry) => (
+        <span key={entry}>{entry}</span>
+      ))}
+    </div>
+  );
+};
+
+export const shouldSuppressIngredientPickerMetaSummary = (
+  item: Pick<IngredientSuggestionItem, "category" | "type">,
+  badges: IngredientPickerTechnicalBadge[]
+) => (
+  badges.length > 0
+  && (
+    item.category === "hop"
+    || item.category === "fermentable"
+    || item.category === "yeast"
+    || item.type === "hop"
+    || item.type === "yeast"
+  )
+);
+
+export const IngredientPickerTechnicalBadges = ({
+  badges,
+  stockLabel,
+  className = "",
+  compact = false
+}: {
+  badges: IngredientPickerTechnicalBadge[];
+  stockLabel?: string | null;
+  className?: string;
+  compact?: boolean;
+}) => {
+  if (badges.length === 0 && !stockLabel) {
+    return null;
+  }
+
+  const badgeClassName = compact
+    ? "relative inline-flex items-center rounded-md px-1.5 py-0.5 text-[11px] text-zinc-600 ring-1 ring-zinc-200/60"
+    : "relative inline-flex items-center rounded-md px-2 py-0.5 text-xs text-zinc-600 ring-1 ring-zinc-200/60";
+
+  return (
+    <div className={`flex flex-wrap gap-1.5 ${className}`.trim()}>
+      {badges.map((badge) => (
+        <span
+          key={badge.key}
+          className={`${badgeClassName} ${badge.accent
+            ? "overflow-hidden bg-[linear-gradient(180deg,rgba(250,250,250,0.98),rgba(244,244,245,0.92))]"
+            : "bg-zinc-50"
+          }`}
+        >
+          {badge.label}
+          {badge.accent ? (
+            <span
+              aria-hidden="true"
+              className="absolute inset-y-0 left-0 w-[4px]"
+              style={{
+                backgroundImage: `linear-gradient(180deg, ${badge.accent.startHex} 0%, ${badge.accent.averageHex} 52%, ${badge.accent.endHex} 100%)`
+              }}
+            />
+          ) : null}
+        </span>
+      ))}
+      {stockLabel ? (
+        <span className={`${compact ? "rounded-md px-1.5 py-0.5 text-[11px]" : "rounded-md px-2 py-0.5 text-xs"} bg-emerald-50 font-medium text-emerald-800 ring-1 ring-emerald-200`}>
+          {stockLabel}
+        </span>
+      ) : null}
+    </div>
+  );
+};
 
 const IngredientPickerMetaLine = ({
   brandLabel,
@@ -698,6 +997,7 @@ const resolveMatchedConsumablePackageVariant = (item: IngredientSuggestionItem) 
 
 export const resolveIngredientPickerRowContent = (item: IngredientSuggestionItem) => {
   const { primaryName: basePrimaryName, secondaryName: baseSecondaryName } = resolveIngredientDisplayNames(item);
+  const stockLabel = resolveIngredientPickerStockLabel(item);
   const consumableTechnicalData = resolveConsumableTechnicalData(item.technicalData);
   if (consumableTechnicalData) {
     const matchedVariant = resolveMatchedConsumablePackageVariant(item);
@@ -729,7 +1029,8 @@ export const resolveIngredientPickerRowContent = (item: IngredientSuggestionItem
       secondaryName,
       inlineBrand: null,
       country: null,
-      subtitle
+      subtitle,
+      stockLabel
     };
   }
 
@@ -757,7 +1058,8 @@ export const resolveIngredientPickerRowContent = (item: IngredientSuggestionItem
     inlineKindLabel,
     inlineBrand,
     country,
-    subtitle
+    subtitle,
+    stockLabel
   };
 };
 
@@ -786,8 +1088,10 @@ export const IngredientSelectionCard = ({
   statusBadgeLabel = null,
   details
 }: IngredientSelectionCardProps) => {
-  const { primaryName, secondaryName, inlineKindLabel, inlineBrand, country, subtitle } = resolveIngredientPickerRowContent(item);
+  const { primaryName, secondaryName, inlineKindLabel, inlineBrand, country, subtitle, stockLabel } = resolveIngredientPickerRowContent(item);
   const typedSummary = hideTypedSummary ? null : buildIngredientTypedSummary(item);
+  const technicalBadges = hideTypedSummary ? [] : buildIngredientPickerTechnicalBadges(item);
+  const fallbackTypedSummary = technicalBadges.length > 0 ? null : typedSummary;
   const brandLabel = resolveIngredientBrandLabel(item);
   const ownershipBadgeLabel = resolveIngredientOwnershipBadgeLabel(item);
   const isGenericFermentable = item.type === "fermentable" && item.subtype === "fermentable";
@@ -801,6 +1105,9 @@ export const IngredientSelectionCard = ({
       subtitle,
       brandLabel: topRowBrandLabel ? null : brandLabel
     });
+  const showLowerMetaSummary = shouldSuppressIngredientPickerMetaSummary(item, technicalBadges)
+    ? null
+    : lowerMetaSummary;
 
   return (
     <div className={`rounded-lg border border-zinc-200 bg-zinc-50 px-3 py-3 ${className}`.trim()}>
@@ -855,7 +1162,7 @@ export const IngredientSelectionCard = ({
               brandLabel={brandLabel}
               country={country}
               badgeLabel={inlineKindLabel}
-              summary={lowerMetaSummary}
+              summary={showLowerMetaSummary}
             />
           </div>
         ) : null}
@@ -873,15 +1180,17 @@ export const IngredientSelectionCard = ({
           {mergeBrandAndCountry || topRowBrandLabel || !brandLabel || isGenericFermentable ? null : (
             <span className="rounded-full bg-white px-2 py-1 ring-1 ring-zinc-200">{brandLabel}</span>
           )}
-          {typedSummary ? (
+          {fallbackTypedSummary ? (
             <span className="rounded-full bg-white px-2 py-1 font-medium text-zinc-700 ring-1 ring-zinc-200">
-              {typedSummary}
+              {fallbackTypedSummary}
             </span>
           ) : null}
-          {!hideSubtitle && !isGenericFermentable && subtitle && subtitle !== typedSummary ? (
-            <span className="text-zinc-500">{subtitle}</span>
+          {!hideSubtitle && !isGenericFermentable && showLowerMetaSummary && showLowerMetaSummary !== fallbackTypedSummary ? (
+            <span className="text-zinc-500">{showLowerMetaSummary}</span>
           ) : null}
         </div>
+        <IngredientPickerTechnicalBadges badges={technicalBadges} stockLabel={stockLabel} className="mt-2" />
+        <IngredientPickerInventoryMetaLine item={item} className="mt-2" />
         {details ? (
           <div className="mt-3 border-t border-zinc-200 pt-3">
             {details}
@@ -1273,13 +1582,17 @@ export const IngredientPickerQuickStartPanel = ({
                 data-testid="ingredient-picker-quick-start-recent-list"
               >
                 {visibleRecent.map((item) => {
-                  const { primaryName, inlineKindLabel, inlineBrand, country, subtitle } = resolveIngredientPickerRowContent(item);
+                  const { primaryName, inlineKindLabel, inlineBrand, country, subtitle, stockLabel } = resolveIngredientPickerRowContent(item);
                   const ownershipBadgeLabel = resolveIngredientOwnershipBadgeLabel(item);
                   const brandLabel = resolveIngredientBrandLabel(item);
+                  const technicalBadges = buildIngredientPickerTechnicalBadges(item);
                   const lowerMetaSummary = resolveIngredientPickerMetaSummary({
                     subtitle,
                     brandLabel: inlineBrand ? null : brandLabel
                   });
+                  const showLowerMetaSummary = shouldSuppressIngredientPickerMetaSummary(item, technicalBadges)
+                    ? null
+                    : lowerMetaSummary;
 
                   return (
                     <button
@@ -1317,10 +1630,10 @@ export const IngredientPickerQuickStartPanel = ({
                                 className="h-2.5 w-3 shrink-0 ring-0"
                               />
                             ) : null}
-                            {subtitle ? (
+                            {showLowerMetaSummary ? (
                               <>
                                 <span aria-hidden="true">•</span>
-                                <span className="truncate">{subtitle}</span>
+                                <span className="truncate">{showLowerMetaSummary}</span>
                               </>
                             ) : null}
                           </div>
@@ -1328,10 +1641,16 @@ export const IngredientPickerQuickStartPanel = ({
                           <IngredientPickerMetaLine
                             brandLabel={brandLabel}
                             country={country}
-                            summary={lowerMetaSummary}
+                            summary={showLowerMetaSummary}
                             compact
                           />
                         )}
+                        <IngredientPickerTechnicalBadges
+                          badges={technicalBadges}
+                          stockLabel={stockLabel}
+                          className="mt-2"
+                          compact
+                        />
                       </div>
                     </button>
                   );
@@ -2444,13 +2763,17 @@ export const IngredientPicker = ({
                   candidate.id === item.id
                   && candidate.source === item.source
                 ));
-                const { primaryName, secondaryName, inlineKindLabel, inlineBrand, country, subtitle } = resolveIngredientPickerRowContent(item);
+                const { primaryName, secondaryName, inlineKindLabel, inlineBrand, country, subtitle, stockLabel } = resolveIngredientPickerRowContent(item);
                 const ownershipBadgeLabel = resolveIngredientOwnershipBadgeLabel(item);
                 const brandLabel = resolveIngredientBrandLabel(item);
+                const technicalBadges = buildIngredientPickerTechnicalBadges(item);
                 const lowerMetaSummary = resolveIngredientPickerMetaSummary({
                   subtitle,
                   brandLabel: inlineBrand ? null : brandLabel
                 });
+                const showLowerMetaSummary = shouldSuppressIngredientPickerMetaSummary(item, technicalBadges)
+                  ? null
+                  : lowerMetaSummary;
 
                 return (
                   <div
@@ -2488,7 +2811,7 @@ export const IngredientPicker = ({
                           </div>
                           {secondaryName ? <div className="text-xs text-zinc-500">{secondaryName}</div> : null}
                           {inlineBrand ? (
-                            country || subtitle ? (
+                            country || showLowerMetaSummary ? (
                               <div className="flex flex-wrap items-center gap-x-1.5 gap-y-0.5 text-xs text-zinc-500">
                                 {country ? (
                                   <CountryFlagLabel
@@ -2498,17 +2821,19 @@ export const IngredientPicker = ({
                                     className="gap-1"
                                   />
                                 ) : null}
-                                {country && subtitle ? <span aria-hidden="true">•</span> : null}
-                                {subtitle ? <span>{subtitle}</span> : null}
+                                {country && showLowerMetaSummary ? <span aria-hidden="true">•</span> : null}
+                                {showLowerMetaSummary ? <span>{showLowerMetaSummary}</span> : null}
                               </div>
                             ) : null
                           ) : (
                             <IngredientPickerMetaLine
                               brandLabel={brandLabel}
                               country={country}
-                              summary={lowerMetaSummary}
+                              summary={showLowerMetaSummary}
                             />
                           )}
+                          <IngredientPickerTechnicalBadges badges={technicalBadges} stockLabel={stockLabel} className="mt-1.5" />
+                          <IngredientPickerInventoryMetaLine item={item} className="mt-1.5" compact />
                         </div>
                       </button>
                       <IngredientFavoriteToggle

@@ -1,3 +1,5 @@
+import { readFileSync } from "node:fs";
+
 import React from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it, vi } from "vitest";
@@ -5,8 +7,14 @@ import { describe, expect, it, vi } from "vitest";
 import NewRecipePage from "../app/(app)/app/recipes/new/page";
 import EditRecipePage from "../app/(app)/app/recipes/[id]/edit/page";
 import { RecipeEditorErrorState } from "../components/recipes/recipe-editor-error-state";
-import { RecipeDesigner } from "../components/recipes/recipe-designer";
+import { buildImportRecipeSummary } from "../components/recipes/import-export-modal";
+import {
+  RecipeDesigner,
+  resolveRecipeIngredientEditorSourceMode,
+  resolveRecipeIngredientSearchType
+} from "../components/recipes/recipe-designer";
 import { RecipeIngredientsEditor } from "../components/recipes/recipe-ingredients-editor";
+import { StartBrewModal } from "../components/recipes/start-brew-modal";
 import {
   applyRecipeIngredientCategoryChange,
   applyRecipeIngredientSelection,
@@ -27,8 +35,18 @@ vi.mock("../app/(app)/app/recipes/actions", () => ({
   createRecipeAction: vi.fn(),
   updateRecipeAction: vi.fn(),
   createRecipeVersionAction: vi.fn(),
+  createBrewBatchFromRecipeAction: vi.fn(),
+  consumeRecipeInventoryAction: vi.fn(),
   previewRecipeDraftAction: vi.fn(),
   createRecipeCustomIngredientAction: vi.fn(),
+  exportRecipeBeerXmlAction: vi.fn(),
+  getEquipmentProfileSnapshotAction: vi.fn(),
+  getRecipeStockCoverageAction: vi.fn(),
+  importBeerXmlRecipeAction: vi.fn(),
+  importBrewfatherJsonRecipeAction: vi.fn(),
+  releaseRecipeInventoryAction: vi.fn(),
+  reserveRecipeInventoryAction: vi.fn(),
+  syncRecipeInventoryAllocationsAction: vi.fn(),
   proposeRecipeIngredientAction: vi.fn()
 }));
 
@@ -55,6 +73,19 @@ const buildRow = (overrides: Partial<Parameters<typeof getRecipeIngredientValida
 });
 
 describe("recipe editor components", () => {
+  it("builds import summary from BeerXML content", () => {
+    const beerXml = readFileSync(new URL("../../../ingredients/examples_for_import/neipa_hazy_orbit.checked.beerxml", import.meta.url), "utf8");
+    const result = buildImportRecipeSummary("beerxml", beerXml);
+
+    expect(result?.ok).toBe(true);
+    if (result?.ok) {
+      expect(result.summary.title).toBe("Hazy Orbit NEIPA");
+      expect(result.summary.ingredientCountLabel).toMatch(/\d+ поз\./);
+      expect(result.summary.ingredientBreakdown).toContain("хмель");
+      expect(result.summary.parameters).toContain("л");
+    }
+  });
+
   it("ingredient row renders", () => {
     const html = renderToStaticMarkup(
       React.createElement(RecipeIngredientRow, {
@@ -66,7 +97,7 @@ describe("recipe editor components", () => {
 
     expect(html).toContain("Ингредиент");
     expect(html).toContain("Новый ингредиент");
-    expect(html).toContain('step="1"');
+    expect(html).toContain('step="0.1"');
   });
 
   it("ingredients editor renders draft and saved sections", () => {
@@ -146,6 +177,28 @@ describe("recipe editor components", () => {
     expect(selected.defaultDisplayUnit).toBe("kg");
   });
 
+  it("fermentable recipe searches include malt and generic fermentables", () => {
+    expect(resolveRecipeIngredientSearchType({
+      category: "fermentable",
+      type: "fermentable"
+    })).toBeUndefined();
+    expect(resolveRecipeIngredientSearchType({
+      category: "fermentable",
+      type: "malt"
+    })).toBeUndefined();
+    expect(resolveRecipeIngredientSearchType({
+      category: "hop",
+      type: "hop"
+    })).toBe("hop");
+  });
+
+  it("recipe ingredient editor keeps custom source mode distinct from catalog", () => {
+    expect(resolveRecipeIngredientEditorSourceMode("use_stock")).toBe("use_stock");
+    expect(resolveRecipeIngredientEditorSourceMode("custom")).toBe("custom");
+    expect(resolveRecipeIngredientEditorSourceMode("catalog")).toBe("catalog");
+    expect(resolveRecipeIngredientEditorSourceMode("imported")).toBe("catalog");
+  });
+
   it("changing text after selection clears stale linkage", () => {
     const selected = buildRow({
       ingredientCatalogItemId: "cat-1",
@@ -202,11 +255,44 @@ describe("recipe editor components", () => {
     expect(html).toContain("Ошибка валидации");
   });
 
+  it("start brew modal renders a visible success state", () => {
+    const html = renderToStaticMarkup(
+      React.createElement(StartBrewModal, {
+        open: true,
+        pending: false,
+        result: {
+          ok: true,
+          message: "Партия создана. Пошаговый режим варки появится здесь позже.",
+          brewBatchId: "batch-1"
+        },
+        onStart: () => undefined,
+        onClose: () => undefined
+      })
+    );
+
+    expect(html).toContain("Партия добавлена в план варки.");
+    expect(html).toContain("Закрыть");
+    expect(html).not.toContain("Списать ингредиенты со склада");
+  });
+
   it("designer header renders aligned field labels", () => {
     const html = renderToStaticMarkup(React.createElement(RecipeDesigner, { mode: "create" }));
 
     expect(html).toContain("Название рецепта");
     expect(html).toContain("Стиль BJCP");
+    expect(html).toContain("Оборудование");
+    expect(html).toContain("Вода");
+    expect(html).toContain("Покрытие складом");
+    expect(html).toContain("Прочее / расходники");
+    expect(html).toContain("Импорт / экспорт");
+    expect(html).toContain("Начать варку");
+    expect(html).toContain("Mash Profile");
+    expect(html).toContain("(0)");
+    expect(html).not.toContain('value="67"');
+    expect(html).not.toContain("Equipment profile");
+    expect(html).not.toContain("Brew mode");
+    expect(html).not.toContain("foundation");
+    expect(html).not.toContain("snapshot");
     expect(html).not.toContain("Сохранить");
     expect(html).not.toContain("Публикация");
   });

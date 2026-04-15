@@ -47,13 +47,25 @@ const recipeDetail: RecipeDetailDto = {
     {
       id: "ri-0",
       recipeId: "r-1",
+      persistentKey: "00000000-0000-4000-8000-000000000010",
+      displayOrder: 0,
       ingredientCatalogItemId: "cat-0",
       userCustomIngredientId: null,
       type: "fermentable",
       ingredientCategory: "fermentable",
+      ingredientSubtype: "malt",
       ingredientDisplayName: "Pilsner Malt",
       ingredientDisplayNameRu: "Пилснер солод",
+      ingredientBrand: "Castle Malting",
+      ingredientCountryCode: "BE",
+      ingredientCountryName: "Бельгия",
       ingredientDefaultDisplayUnitSnapshot: "g",
+      ingredientTechnicalData: {
+        type: "malt",
+        colorEbcMin: 5,
+        colorEbcMax: 8,
+        extractPctDryBasis: 80
+      },
       amountEnteredQuantity: 500,
       amountEnteredUnit: "g",
       amountNormalizedQuantity: 500,
@@ -67,9 +79,22 @@ const recipeDetail: RecipeDetailDto = {
     {
       id: "ri-1",
       recipeId: "r-1",
+      persistentKey: "00000000-0000-4000-8000-000000000011",
+      displayOrder: 1,
       ingredientCatalogItemId: "cat-1",
       userCustomIngredientId: null,
       type: "hop",
+      ingredientCategory: "hop",
+      ingredientSubtype: "hop",
+      ingredientDisplayName: "Citra",
+      ingredientBrand: "Yakima Chief",
+      ingredientCountryCode: "US",
+      ingredientCountryName: "США",
+      ingredientTechnicalData: {
+        type: "hop",
+        alphaAcidPctTypical: 12.5,
+        hopForm: "pellet"
+      },
       amountEnteredQuantity: 50,
       amountEnteredUnit: "g",
       amountNormalizedQuantity: 50,
@@ -123,6 +148,13 @@ describe("recipes read components", () => {
 
     expect(html).toContain("Ингредиенты");
     expect(html).toContain("Pilsner Malt");
+    expect(html).toContain("Castle Malting");
+    expect(html).toContain("5-8 EBC");
+    expect(html).toContain("Экст-ть 80%");
+    expect(html).toContain("Citra");
+    expect(html).toContain("Yakima Chief");
+    expect(html).toContain("Альфа 12.5%");
+    expect(html).toContain("Гранулы");
     expect(html).toContain("0.5 kg");
     expect(html).toContain("Кипячение");
     expect(html).toContain("Описание");

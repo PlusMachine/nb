@@ -8,7 +8,7 @@ import {
   Droplets,
   Eye,
   FlaskConical,
-  Leaf,
+  Hop,
   Package,
   RotateCcw,
   Wheat
@@ -37,9 +37,19 @@ type Props = {
   showFinished: boolean;
   sort: InventorySortOption;
   summary: InventorySummaryDto;
+  visibleItemCount?: number;
 };
 
 const searchDebounceMs = 250;
+export const inventorySearchVisibilityThreshold = 12;
+
+export const shouldShowInventorySearchInput = ({
+  search,
+  visibleItemCount
+}: {
+  search: string;
+  visibleItemCount: number;
+}) => Boolean(search.trim()) || visibleItemCount > inventorySearchVisibilityThreshold;
 
 const categoryMeta: Record<IngredientCategory, {
   icon: React.ComponentType<{ className?: string }>;
@@ -56,7 +66,7 @@ const categoryMeta: Record<IngredientCategory, {
     activeRing: "ring-amber-300"
   },
   hop: {
-    icon: Leaf,
+    icon: Hop,
     color: "text-emerald-600",
     activeColor: "text-emerald-800",
     activeBg: "bg-emerald-50",
@@ -85,7 +95,7 @@ const categoryMeta: Record<IngredientCategory, {
   }
 };
 
-export function InventoryToolbar({ search, category, subtype, showFinished, sort, summary }: Props) {
+export function InventoryToolbar({ search, category, subtype, showFinished, sort, summary, visibleItemCount }: Props) {
   const pathname = usePathname();
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
@@ -157,6 +167,11 @@ export function InventoryToolbar({ search, category, subtype, showFinished, sort
   });
   const counts = resolveInventoryToolbarCounts(summary, showFinished);
   const hasFinishedItems = summary.emptyItems > 0;
+  const effectiveVisibleItemCount = visibleItemCount ?? (showFinished ? summary.totalItems : summary.inStockItems);
+  const showSearchInput = shouldShowInventorySearchInput({
+    search: searchValue,
+    visibleItemCount: effectiveVisibleItemCount
+  });
   const primaryButtons = [
     {
       key: "malt",
@@ -219,10 +234,12 @@ export function InventoryToolbar({ search, category, subtype, showFinished, sort
   };
 
   const handleSubtypeClick = (nextSubtype: "malt" | "fermentable") => {
+    const isActiveSubtype = category === "fermentable" && subtype === nextSubtype;
+
     replaceHref(buildInventoryToolbarHref(pathname, {
       search: searchValue,
-      category: "fermentable",
-      subtype: subtype === nextSubtype ? null : nextSubtype,
+      category: isActiveSubtype ? "all" : "fermentable",
+      subtype: isActiveSubtype ? null : nextSubtype,
       showFinished,
       sort
     }));
@@ -261,25 +278,27 @@ export function InventoryToolbar({ search, category, subtype, showFinished, sort
         })}
       </div>
 
-      <div className="flex items-center gap-2">
-        <div className="flex-1">
-          <InventorySearchInput
-            value={searchValue}
-            category={category}
-            showFinished={showFinished}
-            onValueChange={setSearchValue}
-            onSuggestionSelect={(value) => {
-              setSearchValue(value);
-              replaceHref(buildInventoryToolbarHref(pathname, {
-                search: value,
-                category,
-                subtype,
-                showFinished,
-                sort
-              }));
-            }}
-          />
-        </div>
+      <div className={`flex items-center gap-2 ${showSearchInput ? "" : "justify-end"}`}>
+        {showSearchInput ? (
+          <div className="flex-1">
+            <InventorySearchInput
+              value={searchValue}
+              category={category}
+              showFinished={showFinished}
+              onValueChange={setSearchValue}
+              onSuggestionSelect={(value) => {
+                setSearchValue(value);
+                replaceHref(buildInventoryToolbarHref(pathname, {
+                  search: value,
+                  category,
+                  subtype,
+                  showFinished,
+                  sort
+                }));
+              }}
+            />
+          </div>
+        ) : null}
 
         <div className="flex shrink-0 items-center gap-1.5">
           {hasFinishedItems ? (

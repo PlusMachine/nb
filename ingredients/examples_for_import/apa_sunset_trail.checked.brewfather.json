@@ -1,0 +1,226 @@
+{
+  "_id": "example-apa_sunset_trail",
+  "name": "Sunset Trail APA",
+  "author": "OpenAI example",
+  "type": "All Grain",
+  "style": {
+    "name": "American Pale Ale",
+    "category": "Pale American Ale",
+    "categoryNumber": "18",
+    "styleLetter": "B",
+    "styleGuide": "BJCP 2021",
+    "type": "Ale",
+    "ogMin": 1.045,
+    "ogMax": 1.06,
+    "fgMin": 1.01,
+    "fgMax": 1.015,
+    "ibuMin": 30.0,
+    "ibuMax": 50.0,
+    "colorMin": 5.0,
+    "colorMax": 10.0,
+    "abvMin": 4.5,
+    "abvMax": 6.2
+  },
+  "equipment": {
+    "name": "20 L all-grain kettle setup",
+    "batchSize": 20.0,
+    "boilSize": 27.0,
+    "boilTime": 60,
+    "efficiency": 74.0
+  },
+  "batchSize": 20.0,
+  "boilSize": 27.0,
+  "boilTime": 60,
+  "efficiency": 74.0,
+  "og": 1.054,
+  "fg": 1.011,
+  "fgEstimated": 1.011,
+  "attenuation": 79.6,
+  "color": 8.0,
+  "ibu": 36.0,
+  "ibuFormula": "tinseth",
+  "buGuRatio": 0.667,
+  "abv": 5.6,
+  "carbonation": 2.4,
+  "fermentables": [
+    {
+      "name": "Pale Ale Malt",
+      "type": "Grain",
+      "amount": 4.4,
+      "percentage": 85.4,
+      "lovibond": 3.0,
+      "color": 3.0,
+      "use": "Mash",
+      "time": 60,
+      "timeUnit": "min"
+    },
+    {
+      "name": "Munich Malt",
+      "type": "Grain",
+      "amount": 0.35,
+      "percentage": 6.8,
+      "lovibond": 8.0,
+      "color": 8.0,
+      "use": "Mash",
+      "time": 60,
+      "timeUnit": "min"
+    },
+    {
+      "name": "Crystal 40L",
+      "type": "Grain",
+      "amount": 0.25,
+      "percentage": 4.9,
+      "lovibond": 40.0,
+      "color": 40.0,
+      "use": "Mash",
+      "time": 60,
+      "timeUnit": "min"
+    },
+    {
+      "name": "Carapils",
+      "type": "Grain",
+      "amount": 0.15,
+      "percentage": 2.9,
+      "lovibond": 1.5,
+      "color": 1.5,
+      "use": "Mash",
+      "time": 60,
+      "timeUnit": "min"
+    }
+  ],
+  "hops": [
+    {
+      "name": "Cascade",
+      "alpha": 6.5,
+      "amount": 20,
+      "use": "Boil",
+      "type": "Pellet",
+      "time": 60,
+      "timeUnit": "min"
+    },
+    {
+      "name": "Centennial",
+      "alpha": 10.0,
+      "amount": 20,
+      "use": "Boil",
+      "type": "Pellet",
+      "time": 15,
+      "timeUnit": "min"
+    },
+    {
+      "name": "Cascade",
+      "alpha": 6.5,
+      "amount": 30,
+      "use": "Aroma",
+      "type": "Pellet",
+      "time": 20,
+      "timeUnit": "min",
+      "temp": 80
+    },
+    {
+      "name": "Centennial",
+      "alpha": 10.0,
+      "amount": 30,
+      "use": "Aroma",
+      "type": "Pellet",
+      "time": 20,
+      "timeUnit": "min",
+      "temp": 80
+    },
+    {
+      "name": "Cascade",
+      "alpha": 6.5,
+      "amount": 35,
+      "use": "Dry Hop",
+      "type": "Pellet",
+      "time": 3,
+      "timeUnit": "days"
+    },
+    {
+      "name": "Centennial",
+      "alpha": 10.0,
+      "amount": 25,
+      "use": "Dry Hop",
+      "type": "Pellet",
+      "time": 3,
+      "timeUnit": "days"
+    }
+  ],
+  "yeasts": [
+    {
+      "name": "SafAle US-05",
+      "laboratory": "Fermentis",
+      "productId": "US-05",
+      "type": "Ale",
+      "form": "Dry",
+      "attenuation": 78.0,
+      "amount": 11.5,
+      "unit": "g"
+    }
+  ],
+  "miscs": [
+    {
+      "name": "Whirlfloc Tablet",
+      "type": "Fining",
+      "use": "Boil",
+      "time": 10,
+      "timeUnit": "min",
+      "amount": 1,
+      "unit": "items"
+    }
+  ],
+  "fermentablesTotalAmount": 5.15,
+  "hopsTotalAmount": 160,
+  "mash": {
+    "name": "Sunset Trail APA Mash",
+    "ph": 5.4,
+    "spargeTemp": 76.0,
+    "steps": [
+      {
+        "name": "Saccharification",
+        "type": "Infusion",
+        "stepTemp": 66.0,
+        "stepTime": 60
+      },
+      {
+        "name": "Mash Out",
+        "type": "Infusion",
+        "stepTemp": 76.0,
+        "stepTime": 10
+      }
+    ]
+  },
+  "fermentation": {
+    "name": "Sunset Trail APA Fermentation",
+    "pressurized": false,
+    "steps": [
+      {
+        "name": "Primary",
+        "type": "Primary",
+        "stepTemp": 18.0,
+        "stepTime": 7
+      },
+      {
+        "name": "Conditioning",
+        "type": "Conditioning",
+        "stepTemp": 20.0,
+        "stepTime": 5
+      },
+      {
+        "name": "Dry Hop",
+        "type": "Tertiary",
+        "stepTemp": 18.0,
+        "stepTime": 3
+      },
+      {
+        "name": "Cold Crash",
+        "type": "Cold Crash",
+        "stepTemp": 3.0,
+        "stepTime": 2
+      }
+    ]
+  },
+  "notes": "Example APA with clean fermentation, citrus-forward hops, and a small caramel backbone.",
+  "path": "/",
+  "hidden": false
+}

@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<RECIPES>
+  <RECIPE>
+    <NAME>Abbey Lantern Dubbel</NAME>
+    <VERSION>1</VERSION>
+    <TYPE>All Grain</TYPE>
+    <BREWER>OpenAI example</BREWER>
+    <BATCH_SIZE>20.0</BATCH_SIZE>
+    <BOIL_SIZE>27.5</BOIL_SIZE>
+    <BOIL_TIME>90</BOIL_TIME>
+    <EFFICIENCY>74.0</EFFICIENCY>
+    <NOTES>Example Dubbel with dark fruit profile, restrained bitterness, and classic Belgian fermentation character.</NOTES>
+    <OG>1.07</OG>
+    <FG>1.012</FG>
+    <IBU>22.0</IBU>
+    <COLOR>18.0</COLOR>
+    <ABV>7.6</ABV>
+    <CARBONATION>2.4</CARBONATION>
+    <FERMENTABLES>
+      <FERMENTABLE>
+        <NAME>Belgian Pilsner Malt</NAME>
+        <VERSION>1</VERSION>
+        <TYPE>Grain</TYPE>
+        <AMOUNT>4.2000</AMOUNT>
+        <YIELD>80.0</YIELD>
+        <COLOR>1.8</COLOR>
+        <ADD_AFTER_BOIL>FALSE</ADD_AFTER_BOIL>
+      </FERMENTABLE>
+      <FERMENTABLE>
+        <NAME>Munich Malt</NAME>
+        <VERSION>1</VERSION>
+        <TYPE>Grain</TYPE>
+        <AMOUNT>0.6000</AMOUNT>
+        <YIELD>80.0</YIELD>
+        <COLOR>8.0</COLOR>
+        <ADD_AFTER_BOIL>FALSE</ADD_AFTER_BOIL>
+      </FERMENTABLE>
+      <FERMENTABLE>
+        <NAME>Special B</NAME>
+        <VERSION>1</VERSION>
+        <TYPE>Grain</TYPE>
+        <AMOUNT>0.2500</AMOUNT>
+        <YIELD>80.0</YIELD>
+        <COLOR>180.0</COLOR>
+        <ADD_AFTER_BOIL>FALSE</ADD_AFTER_BOIL>
+      </FERMENTABLE>
+      <FERMENTABLE>
+        <NAME>Aromatic Malt</NAME>
+        <VERSION>1</VERSION>
+        <TYPE>Grain</TYPE>
+        <AMOUNT>0.2000</AMOUNT>
+        <YIELD>80.0</YIELD>
+        <COLOR>20.0</COLOR>
+        <ADD_AFTER_BOIL>FALSE</ADD_AFTER_BOIL>
+      </FERMENTABLE>
+      <FERMENTABLE>
+        <NAME>Caramunich I</NAME>
+        <VERSION>1</VERSION>
+        <TYPE>Grain</TYPE>
+        <AMOUNT>0.2500</AMOUNT>
+        <YIELD>80.0</YIELD>
+        <COLOR>35.0</COLOR>
+        <ADD_AFTER_BOIL>FALSE</ADD_AFTER_BOIL>
+      </FERMENTABLE>
+      <FERMENTABLE>
+        <NAME>Dark Candi Syrup D-180</NAME>
+        <VERSION>1</VERSION>
+        <TYPE>Sugar</TYPE>
+        <AMOUNT>0.2800</AMOUNT>
+        <YIELD>80.0</YIELD>
+        <COLOR>180.0</COLOR>
+        <ADD_AFTER_BOIL>TRUE</ADD_AFTER_BOIL>
+      </FERMENTABLE>
+    </FERMENTABLES>
+    <HOPS>
+      <HOP>
+        <NAME>Styrian Goldings</NAME>
+        <VERSION>1</VERSION>
+        <ALPHA>5.5</ALPHA>
+        <AMOUNT>0.03500</AMOUNT>
+        <USE>Boil</USE>
+        <TIME>60</TIME>
+        <FORM>Pellet</FORM>
+      </HOP>
+      <HOP>
+        <NAME>Saaz</NAME>
+        <VERSION>1</VERSION>
+        <ALPHA>3.5</ALPHA>
+        <AMOUNT>0.01500</AMOUNT>
+        <USE>Boil</USE>
+        <TIME>15</TIME>
+        <FORM>Pellet</FORM>
+      </HOP>
+    </HOPS>
+    <MISCS>
+      <MISC>
+        <NAME>Yeast Nutrient</NAME>
+        <VERSION>1</VERSION>
+        <TYPE>Other</TYPE>
+        <USE>Boil</USE>
+        <TIME>10</TIME>
+        <AMOUNT>0.00500</AMOUNT>
+        <AMOUNT_IS_WEIGHT>TRUE</AMOUNT_IS_WEIGHT>
+      </MISC>
+    </MISCS>
+    <YEASTS>
+      <YEAST>
+        <NAME>Wyeast 1762 Belgian Abbey II</NAME>
+        <VERSION>1</VERSION>
+        <TYPE>Ale</TYPE>
+        <FORM>Liquid</FORM>
+        <AMOUNT>1.00000</AMOUNT>
+        <AMOUNT_IS_WEIGHT>FALSE</AMOUNT_IS_WEIGHT>
+        <LABORATORY>Wyeast</LABORATORY>
+        <PRODUCT_ID>1762</PRODUCT_ID>
+        <ATTENUATION>76.0</ATTENUATION>
+      </YEAST>
+    </YEASTS>
+    <STYLE>
+      <NAME>Belgian Dubbel</NAME>
+      <CATEGORY>Belgian Ale</CATEGORY>
+      <VERSION>1</VERSION>
+      <TYPE>Ale</TYPE>
+      <OG_MIN>1.062</OG_MIN>
+      <OG_MAX>1.078</OG_MAX>
+      <FG_MIN>1.008</FG_MIN>
+      <FG_MAX>1.016</FG_MAX>
+      <IBU_MIN>14.0</IBU_MIN>
+      <IBU_MAX>30.0</IBU_MAX>
+      <COLOR_MIN>15.0</COLOR_MIN>
+      <COLOR_MAX>21.0</COLOR_MAX>
+      <ABV_MIN>6.6</ABV_MIN>
+      <ABV_MAX>8.6</ABV_MAX>
+    </STYLE>
+    <MASH>
+      <NAME>Abbey Lantern Dubbel Mash</NAME>
+      <VERSION>1</VERSION>
+      <GRAIN_TEMP>22.0</GRAIN_TEMP>
+      <TUN_TEMP>22.0</TUN_TEMP>
+      <SPARGE_TEMP>76.0</SPARGE_TEMP>
+      <PH>5.4</PH>
+      <MASH_STEPS>
+        <MASH_STEP>
+          <NAME>Beta Rest</NAME>
+          <VERSION>1</VERSION>
+          <TYPE>Infusion</TYPE>
+          <STEP_TEMP>64.0</STEP_TEMP>
+          <STEP_TIME>45</STEP_TIME>
+        </MASH_STEP>
+        <MASH_STEP>
+          <NAME>Alpha Rest</NAME>
+          <VERSION>1</VERSION>
+          <TYPE>Infusion</TYPE>
+          <STEP_TEMP>68.0</STEP_TEMP>
+          <STEP_TIME>25</STEP_TIME>
+        </MASH_STEP>
+        <MASH_STEP>
+          <NAME>Mash Out</NAME>
+          <VERSION>1</VERSION>
+          <TYPE>Infusion</TYPE>
+          <STEP_TEMP>76.0</STEP_TEMP>
+          <STEP_TIME>10</STEP_TIME>
+        </MASH_STEP>
+      </MASH_STEPS>
+    </MASH>
+    <PRIMARY_AGE>2</PRIMARY_AGE>
+    <PRIMARY_TEMP>18.0</PRIMARY_TEMP>
+    <SECONDARY_AGE>5</SECONDARY_AGE>
+    <SECONDARY_TEMP>21.0</SECONDARY_TEMP>
+    <TERTIARY_AGE>5</TERTIARY_AGE>
+    <TERTIARY_TEMP>22.0</TERTIARY_TEMP>
+    <AGE>10</AGE>
+    <AGE_TEMP>12.0</AGE_TEMP>
+  </RECIPE>
+</RECIPES>

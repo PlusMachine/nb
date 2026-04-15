@@ -183,6 +183,13 @@ describe("inventory page foundation", () => {
     expect(html).toContain('aria-label="Удалить"');
   });
 
+  it("keeps finished items in the incoming sort order within a group", () => {
+    const sortedItems = [items[3], items[2], items[0]];
+    const grouped = groupInventoryItems(sortedItems);
+
+    expect(grouped.find((group) => group.key === "hop")?.items.map((item) => item.id)).toEqual(["inv-4", "inv-3"]);
+  });
+
   it("uses fermentable subtype labels in empty states", () => {
     const html = renderToStaticMarkup(React.createElement(InventoryEmptyState, {
       hasAnyItems: true,

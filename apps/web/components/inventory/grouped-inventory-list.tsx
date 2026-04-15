@@ -1,5 +1,6 @@
 import React from "react";
-import { Droplets, FlaskConical, Leaf, Package, Wheat } from "lucide-react";
+import { Droplets, FlaskConical, Hop, Package, Wheat } from "lucide-react";
+import type { IngredientPickerQuickStartResultByContext } from "@/features/ingredients/contracts";
 import type { InventoryListItemDto } from "@/features/inventory/contracts";
 import { groupInventoryItems } from "@/features/inventory/page-model";
 import type { SystemCurrency, SystemCurrencyRateMap } from "@/features/system/currency";
@@ -10,12 +11,13 @@ type Props = {
   items: InventoryListItemDto[];
   preferredCurrency: SystemCurrency;
   currencyRates: SystemCurrencyRateMap;
+  initialQuickStartDataByContext?: IngredientPickerQuickStartResultByContext | null;
 };
 
 const groupIcons = {
   malt: Wheat,
   fermentable: Wheat,
-  hop: Leaf,
+  hop: Hop,
   yeast: FlaskConical,
   water_treatment: Droplets,
   consumable: Package
@@ -30,7 +32,12 @@ const groupColors = {
   consumable: "text-zinc-500"
 };
 
-export function GroupedInventoryList({ items, preferredCurrency, currencyRates }: Props) {
+export function GroupedInventoryList({
+  items,
+  preferredCurrency,
+  currencyRates,
+  initialQuickStartDataByContext = null
+}: Props) {
   const groups = groupInventoryItems(items);
 
   return (
@@ -55,6 +62,7 @@ export function GroupedInventoryList({ items, preferredCurrency, currencyRates }
                   item={item}
                   preferredCurrency={preferredCurrency}
                   currencyRates={currencyRates}
+                  initialQuickStartDataByContext={initialQuickStartDataByContext}
                 />
               ))}
             </ul>

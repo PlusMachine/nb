@@ -1,6 +1,6 @@
 "use client";
 
-import { beerStyleFixtures, convertWeight, evaluateStyleFit, getBeerStyleById, getStyleRangeById, srmToEbc } from "@nb/brewing-core";
+import { beerStyleFixtures, convertVolume, convertWeight, evaluateStyleFit, getBeerStyleById, getStyleRangeById, srmToEbc } from "@nb/brewing-core";
 import {
   CircleCheck,
   CircleAlert,
@@ -25,15 +25,46 @@ import {
   createRecipeCustomIngredientAction,
   createRecipeAction,
   createRecipeVersionAction,
+  createBrewBatchFromRecipeAction,
+  consumeRecipeInventoryAction,
+  exportRecipeBeerXmlAction,
+  getEquipmentProfileSnapshotAction,
+  getRecipeStockCoverageAction,
+  importBeerXmlRecipeAction,
+  importBrewfatherJsonRecipeAction,
   previewRecipeDraftAction,
   proposeRecipeIngredientAction,
+  releaseRecipeInventoryAction,
+  reserveRecipeInventoryAction,
+  syncRecipeInventoryAllocationsAction,
   updateRecipeAction,
   type RecipeEditorPayload,
-  type RecipeEditorResult
+  type RecipeEditorResult,
+  type RecipeInventoryActionResult
 } from "@/app/(app)/app/recipes/actions";
-import { IngredientPicker } from "@/components/ingredients/ingredient-picker";
+import { IngredientPicker, IngredientSelectionCard } from "@/components/ingredients/ingredient-picker";
+import {
+  buildRecipeIngredientTechnicalBadges,
+  RecipeIngredientTechnicalBadges,
+  RecipeIngredientTitleBlock,
+  type RecipeIngredientCardSource
+} from "@/components/recipes/recipe-ingredient-card-display";
+import {
+  InventoryIngredientCategoryGrid,
+  resolveInventoryIngredientContextFromCategoryValue,
+  type InventoryIngredientCategoryValue
+} from "@/components/inventory/inventory-ingredient-category-grid";
+import {
+  InventoryIngredientContextSummary,
+  resolveInventoryIngredientContextSummary
+} from "@/components/inventory/inventory-ingredient-context-summary";
 import { ConfirmActionDialog } from "@/components/shared/confirm-action-dialog";
-import type { IngredientCategory, IngredientSuggestionItem, IngredientSubtype, IngredientType } from "@/features/ingredients/contracts";
+import {
+  starterEquipmentProfileDefaults,
+  type EquipmentProfileDto,
+  type EquipmentProfileSnapshot
+} from "@/features/equipment-profiles/contracts";
+import type { IngredientCategory, IngredientSuggestionItem, IngredientSubtype, IngredientTechnicalData, IngredientType } from "@/features/ingredients/contracts";
 import {
   resolveIngredientDisplayNames
 } from "@/features/ingredients/presentation";
@@ -52,28 +83,56 @@ import {
 import {
   createRecipePayloadSchema,
   defaultRecipeProcessMeta,
+  recipeBitternessFormulaLabels,
+  recipeBitternessFormulas,
   recipeFermentableUseTypes,
   recipeHopUseTypes,
+  recipeMashPhModelLabels,
+  recipeMashPhModels,
+  recipeWaterEngineLabels,
+  recipeWaterEngineModes,
+  type RecipeCalculationMeta,
   type RecipeDetailDto,
   type RecipeDraftPreviewDto,
   type RecipeHopUseType,
+  type RecipeImportedIngredientSnapshot,
+  type RecipeInventoryIntentMode,
+  type RecipeInventorySelectionMeta,
   type RecipeProcessMeta,
-  type RecipePublicationState
+  type RecipePublicationState,
+  type RecipeStockCoverageDto,
+  type RecipeWaterPlanMeta
 } from "@/features/recipes/contracts";
 import { beerColorFromSrm } from "@/features/recipes/beer-color";
 import { formatColorWithEbc, formatGravityWithPlato, formatPlatoFromSg } from "@/features/recipes/format";
 import { BeerGlassIcon } from "@/components/recipes/beer-glass-icon";
+import { BitternessSettingsDrawer } from "@/components/recipes/bitterness-settings-drawer";
+import { ImportExportModal, type ImportExportActionResult } from "@/components/recipes/import-export-modal";
+import { IngredientAddDrawer } from "@/components/recipes/ingredient-add-drawer";
+import { RecipeActionsMenu } from "@/components/recipes/recipe-actions-menu";
+import { StartBrewModal, type StartBrewResult } from "@/components/recipes/start-brew-modal";
+import { StockCoverageSummary } from "@/components/recipes/stock-coverage-summary";
+import { StockIngredientList } from "@/components/recipes/stock-ingredient-list";
+import { WaterSetupWizard } from "@/components/recipes/water-setup-wizard";
 import {
   buildRecipePublicationChecklist,
   getRecipePublicationFieldErrors
 } from "@/features/recipes/publication-validation";
 import { globalBrewingRanges } from "@/features/recipes/style-ranges";
+import {
+  buildRecipeWaterPlanResult,
+  type RecipeWaterPlanFermentableInput,
+  type RecipeWaterPlanResult
+} from "@/features/recipes/water-plan";
+import { scaleRecipeEditorToEquipment } from "@/features/recipes/equipment-scaling";
 
 type Props = {
   mode: "create" | "edit";
   initialRecipe?: RecipeDetailDto;
   initialTitle?: string;
   initialIngredientSelection?: IngredientSuggestionItem | null;
+  initialStockCoverage?: RecipeStockCoverageDto | null;
+  equipmentProfiles?: EquipmentProfileDto[];
   onSaveStatusChange?: (status: RecipeSaveStatus) => void;
   onRecipeCreated?: (recipe: RecipeDetailDto) => void;
   onPublicationStateChange?: (state: RecipePublicationState) => void;
@@ -81,18 +140,53 @@ type Props = {
 
 export type RecipeSaveStatus = "saved" | "saving" | "error";
 
+export const resolveRecipeIngredientSearchType = ({
+  category,
+  type
+}: {
+  category?: IngredientCategory | null;
+  type?: IngredientType | null;
+}): IngredientType | undefined => (
+  category === "fermentable" ? undefined : type ?? undefined
+);
+
+type RecipeIngredientEditorSourceMode = "use_stock" | "catalog" | "custom";
+
+export const resolveRecipeIngredientEditorSourceMode = (
+  mode?: RecipeInventoryIntentMode | null
+): RecipeIngredientEditorSourceMode => {
+  if (mode === "use_stock") {
+    return "use_stock";
+  }
+
+  if (mode === "custom") {
+    return "custom";
+  }
+
+  return "catalog";
+};
+
 type DesignerIngredient = {
   localId: string;
+  persistentKey: string;
   ingredientCatalogItemId: string | null;
   userCustomIngredientId: string | null;
   selectedName: string;
   selectedSecondaryName: string;
   selectedSummary: string;
   familyDisplayName: string;
+  brand: string | null;
+  producer: string | null;
+  brandName: string | null;
+  manufacturer: string | null;
+  countryCode: string | null;
+  countryName: string | null;
+  country: string | null;
   category: IngredientCategory;
   subtype: IngredientSubtype | null;
   familyId: string | null;
   type: IngredientType;
+  technicalData: IngredientTechnicalData | null;
   defaultDisplayUnit: InventoryUnit;
   allowedUnits: InventoryUnit[];
   measurementDimension: InventoryUnitDimension | null;
@@ -109,6 +203,9 @@ type DesignerIngredient = {
     fermentationTempC?: string;
     stageLabel?: string;
   };
+  inventoryIntentMode: RecipeInventoryIntentMode;
+  inventorySelectionMeta: RecipeInventorySelectionMeta | null;
+  externalImportMeta: Record<string, unknown> | null;
 };
 
 type OpenEditorState = {
@@ -121,6 +218,7 @@ type OpenEditorState = {
 
 const hopUseTypeLabels: Record<RecipeHopUseType, string> = {
   boil: "Кипячение",
+  first_wort_hop: "First Wort Hop",
   whirlpool: "Whirlpool / Hopstand",
   dry_hop: "Dry Hop",
   dip_hop: "Dip Hop",
@@ -145,12 +243,15 @@ const fermentableUseLabels: Record<(typeof recipeFermentableUseTypes)[number], s
 const createLocalId = () => (
   typeof crypto !== "undefined" && typeof crypto.randomUUID === "function"
     ? crypto.randomUUID()
-    : `draft-${Date.now()}-${Math.random().toString(16).slice(2)}`
+    : "10000000-1000-4000-8000-100000000000".replace(/[018]/g, (char) => (
+      (Number(char) ^ Math.random() * 16 >> Number(char) / 4).toString(16)
+    ))
 );
 
 const DEFAULT_BATCH_SIZE_ENTERED_QUANTITY = 20;
 const DEFAULT_BATCH_SIZE_ENTERED_UNIT: InventoryUnit = "l";
 const DEFAULT_BOIL_TIME_MINUTES = 60;
+const DEFAULT_EFFICIENCY = 75;
 
 const cloneRecipeProcessMeta = (value: RecipeProcessMeta = defaultRecipeProcessMeta): RecipeProcessMeta => ({
   mashProfile: {
@@ -181,6 +282,60 @@ const cloneRecipeProcessMeta = (value: RecipeProcessMeta = defaultRecipeProcessM
       durationDays: value.fermentationProfile.conditioning.durationDays ?? null
     }
   }
+});
+
+const cloneRecipeCalculationMeta = (value?: RecipeCalculationMeta | null): RecipeCalculationMeta => ({
+  bitternessFormula: value?.bitternessFormula ?? "tinseth_whirlpool_v2",
+  bitternessSettings: {
+    ...(value?.bitternessSettings ?? {})
+  }
+});
+
+const cloneRecipeWaterPlanMeta = (value?: RecipeWaterPlanMeta | null): RecipeWaterPlanMeta => ({
+  setupEnabled: value?.setupEnabled ?? false,
+  engine: value?.engine ?? "balanced_default",
+  phModel: value?.phModel ?? "hybrid_mash_ph_v1",
+  sourceProfileMode: value?.sourceProfileMode ?? "preset",
+  sourceProfilePresetId: value?.sourceProfilePresetId ?? "ro_distilled",
+  sourceProfile: value?.sourceProfile ?? null,
+  targetProfileMode: value?.targetProfileMode ?? "balanced",
+  targetProfilePresetId: value?.targetProfilePresetId ?? "balanced",
+  targetProfile: value?.targetProfile ?? null,
+  showWaterAdditivesInIngredients: value?.showWaterAdditivesInIngredients ?? false,
+  blendRatio: value?.blendRatio ?? null,
+  mashWaterVolumeL: value?.mashWaterVolumeL ?? null,
+  spargeWaterVolumeL: value?.spargeWaterVolumeL ?? null,
+  totalWaterVolumeL: value?.totalWaterVolumeL ?? null,
+  allowedSalts: value?.allowedSalts ?? [],
+  allowedAcids: value?.allowedAcids ?? [],
+  manualSaltAdditions: value?.manualSaltAdditions ?? [],
+  targetMashPh: value?.targetMashPh ?? 5.35,
+  spargeAcidificationEnabled: value?.spargeAcidificationEnabled ?? false,
+  spargeSourcePh: value?.spargeSourcePh ?? null,
+  targetSpargePh: value?.targetSpargePh ?? null,
+  targetSpargeAlkalinity: value?.targetSpargeAlkalinity ?? null,
+  selectedAcid: value?.selectedAcid ?? "lactic_acid",
+  acidConcentrationPct: value?.acidConcentrationPct ?? null,
+  calibrationOffset: value?.calibrationOffset ?? null
+});
+
+const cloneEquipmentProfileSnapshot = (value?: EquipmentProfileSnapshot | null): EquipmentProfileSnapshot | null => (
+  value ? {
+    ...value,
+    mashEfficiencyPct: value.mashEfficiencyPct ?? null,
+    maxMashVolumeL: value.maxMashVolumeL ?? null,
+    maxKettleVolumeL: value.maxKettleVolumeL ?? null,
+    notes: value.notes ?? null
+  } : null
+);
+
+const buildStarterEquipmentProfileSnapshot = (batchVolumeL?: number | null): EquipmentProfileSnapshot => ({
+  ...starterEquipmentProfileDefaults,
+  id: null,
+  targetBatchVolumeL: batchVolumeL && batchVolumeL > 0
+    ? batchVolumeL
+    : starterEquipmentProfileDefaults.targetBatchVolumeL,
+  snapshotAt: new Date().toISOString()
 });
 
 const useIsMobile = () => {
@@ -295,7 +450,7 @@ const normalizeEditorPublicationState = (state: RecipePublicationState | null | 
 );
 
 const mapHopStageFromUseType = (useType: RecipeHopUseType): DesignerIngredient["stage"] => {
-  if (useType === "boil") return "boil";
+  if (useType === "boil" || useType === "first_wort_hop") return "boil";
   if (useType === "whirlpool") return "whirlpool";
   if (useType === "dry_hop") return "fermentation";
   return "other";
@@ -307,16 +462,25 @@ const createEmptyIngredient = (category: IngredientCategory, hopUseType: RecipeH
   if (category === "hop") {
     return {
       localId: createLocalId(),
+      persistentKey: createLocalId(),
       ingredientCatalogItemId: null,
       userCustomIngredientId: null,
       selectedName: "",
       selectedSecondaryName: "",
       selectedSummary: "",
       familyDisplayName: "",
+      brand: null,
+      producer: null,
+      brandName: null,
+      manufacturer: null,
+      countryCode: null,
+      countryName: null,
+      country: null,
       category,
       subtype: null,
       familyId: null,
       type: resolveLegacyIngredientType({ category }) ?? "hop",
+      technicalData: null,
       defaultDisplayUnit: unitProfile.defaultUnit,
       allowedUnits: unitProfile.allowedUnits,
       measurementDimension: unitProfile.measurementDimension,
@@ -326,26 +490,40 @@ const createEmptyIngredient = (category: IngredientCategory, hopUseType: RecipeH
       timeOffset: "",
       stepMeta: {
         useType: hopUseType,
-        timeMinutes: hopUseType === "boil" || hopUseType === "whirlpool" || hopUseType === "dip_hop" ? "" : undefined,
+        timeMinutes: hopUseType === "boil" || hopUseType === "first_wort_hop" || hopUseType === "whirlpool" || hopUseType === "dip_hop" ? "" : undefined,
         temperatureC: hopUseType === "whirlpool" || hopUseType === "dip_hop" ? "" : undefined,
         durationDays: hopUseType === "dry_hop" ? "" : undefined
-      }
+      },
+      inventoryIntentMode: "use_stock",
+      inventorySelectionMeta: null,
+      externalImportMeta: null
     };
   }
 
   if (category === "fermentable") {
+    const subtype: Extract<IngredientSubtype, "malt" | "fermentable"> = "malt";
+
     return {
       localId: createLocalId(),
+      persistentKey: createLocalId(),
       ingredientCatalogItemId: null,
       userCustomIngredientId: null,
       selectedName: "",
       selectedSecondaryName: "",
       selectedSummary: "",
       familyDisplayName: "",
+      brand: null,
+      producer: null,
+      brandName: null,
+      manufacturer: null,
+      countryCode: null,
+      countryName: null,
+      country: null,
       category,
-      subtype: null,
+      subtype,
       familyId: null,
-      type: resolveLegacyIngredientType({ category }) ?? "fermentable",
+      type: resolveLegacyIngredientType({ category, subtype }) ?? "malt",
+      technicalData: null,
       defaultDisplayUnit: unitProfile.defaultUnit,
       allowedUnits: unitProfile.allowedUnits,
       measurementDimension: unitProfile.measurementDimension,
@@ -355,22 +533,34 @@ const createEmptyIngredient = (category: IngredientCategory, hopUseType: RecipeH
       timeOffset: "",
       stepMeta: {
         use: "mash"
-      }
+      },
+      inventoryIntentMode: "use_stock",
+      inventorySelectionMeta: null,
+      externalImportMeta: null
     };
   }
 
   return {
     localId: createLocalId(),
+    persistentKey: createLocalId(),
     ingredientCatalogItemId: null,
     userCustomIngredientId: null,
     selectedName: "",
     selectedSecondaryName: "",
     selectedSummary: "",
     familyDisplayName: "",
+    brand: null,
+    producer: null,
+    brandName: null,
+    manufacturer: null,
+    countryCode: null,
+    countryName: null,
+    country: null,
     category,
     subtype: null,
     familyId: null,
     type: resolveLegacyIngredientType({ category }) ?? "consumable",
+    technicalData: null,
     defaultDisplayUnit: unitProfile.defaultUnit,
     allowedUnits: unitProfile.allowedUnits,
     measurementDimension: unitProfile.measurementDimension,
@@ -378,7 +568,10 @@ const createEmptyIngredient = (category: IngredientCategory, hopUseType: RecipeH
     amountEnteredUnit: unitProfile.defaultUnit,
     stage: category === "yeast" ? "fermentation" : "other",
     timeOffset: "",
-    stepMeta: {}
+    stepMeta: {},
+    inventoryIntentMode: "use_stock",
+    inventorySelectionMeta: null,
+    externalImportMeta: null
   };
 };
 
@@ -401,14 +594,38 @@ const applySelection = (current: DesignerIngredient, item: IngredientSuggestionI
     selectedSecondaryName: secondaryName ?? "",
     selectedSummary: item.subtitle ?? "",
     familyDisplayName: item.familyDisplayName ?? "",
+    brand: item.brand ?? null,
+    producer: item.producer ?? null,
+    brandName: item.brandName ?? null,
+    manufacturer: item.manufacturer ?? null,
+    countryCode: item.countryCode ?? null,
+    countryName: item.countryName ?? null,
+    country: item.country ?? null,
     category: item.category ?? current.category,
     subtype: item.subtype ?? null,
     familyId: item.familyId ?? null,
     type: item.type,
+    technicalData: item.technicalData ?? null,
     defaultDisplayUnit: unitProfile.defaultUnit,
     allowedUnits: unitProfile.allowedUnits,
     measurementDimension: unitProfile.measurementDimension,
-    amountEnteredUnit: unitProfile.defaultUnit
+    amountEnteredUnit: unitProfile.defaultUnit,
+    inventoryIntentMode: item.inventoryItemId ? "use_stock" : item.source === "custom" ? "custom" : "catalog",
+    inventorySelectionMeta: item.inventoryItemId
+      ? {
+        inventoryItemId: item.inventoryItemId,
+        stockQuantityLabel: item.inventoryQuantityLabel ?? null,
+        stockNormalizedQuantity: item.inventoryNormalizedQuantity ?? null,
+        stockNormalizedUnit: item.inventoryNormalizedUnit ?? null,
+        freshnessDate: item.inventoryFreshnessDate ?? null,
+        stockPurchasePriceLabel: item.inventoryPurchasePriceLabel ?? null,
+        stockUnitPriceLabel: item.inventoryUnitPriceLabel ?? null,
+        purchasedAt: item.inventoryPurchasedAt ?? null,
+        updatedAt: item.inventoryUpdatedAt ?? null,
+        notes: item.inventoryNotes ?? null,
+        purchaseLinksCount: item.inventoryPurchaseLinksCount ?? null
+      }
+      : null
   };
 };
 
@@ -417,7 +634,16 @@ const applyQueryChange = (current: DesignerIngredient, nextValue: string): Desig
     return {
       ...current,
       selectedName: nextValue,
-      selectedSecondaryName: ""
+      selectedSecondaryName: "",
+      brand: null,
+      producer: null,
+      brandName: null,
+      manufacturer: null,
+      countryCode: null,
+      countryName: null,
+      country: null,
+      technicalData: null,
+      inventoryIntentMode: current.inventoryIntentMode === "imported" ? "catalog" : current.inventoryIntentMode
     };
   }
 
@@ -430,12 +656,140 @@ const applyQueryChange = (current: DesignerIngredient, nextValue: string): Desig
     selectedSecondaryName: "",
     selectedSummary: "",
     familyDisplayName: "",
+    brand: null,
+    producer: null,
+    brandName: null,
+    manufacturer: null,
+    countryCode: null,
+    countryName: null,
+    country: null,
     subtype: null,
     familyId: null,
+    technicalData: null,
     defaultDisplayUnit: unitProfile.defaultUnit,
     allowedUnits: unitProfile.allowedUnits,
     measurementDimension: unitProfile.measurementDimension,
-    amountEnteredUnit: unitProfile.defaultUnit
+    amountEnteredUnit: unitProfile.defaultUnit,
+    inventoryIntentMode: current.inventoryIntentMode === "use_stock" ? "use_stock" : "catalog",
+    inventorySelectionMeta: null
+  };
+};
+
+const clearRecipeIngredientSelection = (current: DesignerIngredient): DesignerIngredient => {
+  const cleared = applyQueryChange(current, "");
+
+  return {
+    ...cleared,
+    inventoryIntentMode: current.inventoryIntentMode === "custom" ? "custom" : cleared.inventoryIntentMode,
+    inventorySelectionMeta: null
+  };
+};
+
+const resolveRecipeIngredientCategoryValue = (
+  ingredient: Pick<DesignerIngredient, "category" | "subtype">
+): InventoryIngredientCategoryValue => {
+  if (ingredient.category === "fermentable") {
+    return ingredient.subtype === "fermentable" ? "fermentable" : "malt";
+  }
+
+  return ingredient.category;
+};
+
+const applyRecipeIngredientCategoryContextChange = (
+  current: DesignerIngredient,
+  nextCategoryValue: InventoryIngredientCategoryValue
+): DesignerIngredient => {
+  const { category, subtype } = resolveInventoryIngredientContextFromCategoryValue(nextCategoryValue);
+  const currentCategoryValue = resolveRecipeIngredientCategoryValue(current);
+
+  if (currentCategoryValue === nextCategoryValue) {
+    return current;
+  }
+
+  const nextDraft = createEmptyIngredient(
+    category,
+    category === "hop" ? getHopUseType(current) : "boil"
+  );
+  const nextType = resolveLegacyIngredientType({ category, subtype: subtype ?? undefined }) ?? nextDraft.type;
+  const unitProfile = resolveHumanFacingInventoryUnitProfile({
+    type: nextType,
+    category,
+    subtype
+  });
+
+  return {
+    ...nextDraft,
+    localId: current.localId,
+    persistentKey: current.persistentKey,
+    subtype,
+    type: nextType,
+    defaultDisplayUnit: unitProfile.defaultUnit,
+    allowedUnits: unitProfile.allowedUnits,
+    measurementDimension: unitProfile.measurementDimension,
+    amountEnteredUnit: unitProfile.defaultUnit,
+    inventoryIntentMode: resolveRecipeIngredientEditorSourceMode(current.inventoryIntentMode),
+    inventorySelectionMeta: null
+  };
+};
+
+const readInventorySelectionMetaString = (
+  meta: RecipeInventorySelectionMeta | null,
+  key: string
+) => {
+  const value = meta?.[key];
+  return typeof value === "string" && value.trim() ? value : null;
+};
+
+const readInventorySelectionMetaNumber = (
+  meta: RecipeInventorySelectionMeta | null,
+  key: string
+) => {
+  const value = meta?.[key];
+  return typeof value === "number" && Number.isFinite(value) ? value : null;
+};
+
+const buildSelectedIngredientPreview = (ingredient: DesignerIngredient): IngredientSuggestionItem | null => {
+  const id = ingredient.userCustomIngredientId ?? ingredient.ingredientCatalogItemId;
+  if (!id || !ingredient.selectedName.trim()) {
+    return null;
+  }
+
+  const meta = ingredient.inventorySelectionMeta;
+  return {
+    id,
+    type: ingredient.type,
+    category: ingredient.category,
+    subtype: ingredient.subtype,
+    familyId: ingredient.familyId,
+    familyDisplayName: ingredient.familyDisplayName || null,
+    displayName: ingredient.selectedName,
+    primaryLabelRu: ingredient.selectedName,
+    secondaryLabelRu: ingredient.selectedSecondaryName || null,
+    subtitle: ingredient.selectedSummary || undefined,
+    brand: ingredient.brand,
+    producer: ingredient.producer,
+    brandName: ingredient.brandName,
+    manufacturer: ingredient.manufacturer,
+    countryCode: ingredient.countryCode,
+    countryName: ingredient.countryName,
+    country: ingredient.country,
+    technicalData: ingredient.technicalData,
+    defaultUnit: ingredient.defaultDisplayUnit,
+    defaultDisplayUnit: ingredient.defaultDisplayUnit,
+    allowedUnits: ingredient.allowedUnits,
+    measurementDimension: ingredient.measurementDimension ?? undefined,
+    source: ingredient.userCustomIngredientId ? "custom" : "catalog",
+    inventoryItemId: meta?.inventoryItemId ?? null,
+    inventoryQuantityLabel: meta?.stockQuantityLabel ?? null,
+    inventoryNormalizedQuantity: meta?.stockNormalizedQuantity ?? null,
+    inventoryNormalizedUnit: meta?.stockNormalizedUnit ?? null,
+    inventoryPurchasePriceLabel: readInventorySelectionMetaString(meta, "stockPurchasePriceLabel"),
+    inventoryUnitPriceLabel: readInventorySelectionMetaString(meta, "stockUnitPriceLabel"),
+    inventoryPurchasedAt: readInventorySelectionMetaString(meta, "purchasedAt"),
+    inventoryFreshnessDate: meta?.freshnessDate ?? null,
+    inventoryUpdatedAt: readInventorySelectionMetaString(meta, "updatedAt"),
+    inventoryNotes: readInventorySelectionMetaString(meta, "notes"),
+    inventoryPurchaseLinksCount: readInventorySelectionMetaNumber(meta, "purchaseLinksCount")
   };
 };
 
@@ -487,6 +841,7 @@ const buildIngredientPayload = (ingredient: DesignerIngredient): RecipeEditorPay
   }
 
   return {
+    persistentKey: ingredient.persistentKey,
     ingredientCatalogItemId: ingredient.ingredientCatalogItemId,
     userCustomIngredientId: ingredient.userCustomIngredientId,
     type: ingredient.type,
@@ -497,7 +852,10 @@ const buildIngredientPayload = (ingredient: DesignerIngredient): RecipeEditorPay
     amountEnteredUnit: ingredient.amountEnteredUnit,
     stage: ingredient.category === "hop" ? mapHopStageFromUseType(getHopUseType(ingredient)) : ingredient.stage,
     timeOffset: timeMinutes,
-    stepMeta: Object.keys(stepMeta).length ? stepMeta : null
+    stepMeta: Object.keys(stepMeta).length ? stepMeta : null,
+    inventoryIntentMode: ingredient.inventoryIntentMode,
+    inventorySelectionMeta: ingredient.inventorySelectionMeta,
+    externalImportMeta: ingredient.externalImportMeta
   };
 };
 
@@ -531,17 +889,26 @@ const toDesignerIngredient = (ingredient: RecipeDetailDto["ingredients"][number]
   });
 
   return {
-    localId: ingredient.id,
+    localId: ingredient.persistentKey ?? ingredient.id,
+    persistentKey: ingredient.persistentKey ?? ingredient.id,
     ingredientCatalogItemId: ingredient.ingredientCatalogItemId,
     userCustomIngredientId: ingredient.userCustomIngredientId,
     selectedName: ingredientNames.primaryName,
     selectedSecondaryName: ingredientNames.secondaryName ?? "",
     selectedSummary: ingredient.ingredientSummary ?? "",
     familyDisplayName: ingredient.ingredientFamilyDisplayName ?? "",
+    brand: ingredient.ingredientBrand ?? null,
+    producer: ingredient.ingredientProducer ?? null,
+    brandName: ingredient.ingredientBrandName ?? null,
+    manufacturer: ingredient.ingredientManufacturer ?? null,
+    countryCode: ingredient.ingredientCountryCode ?? null,
+    countryName: ingredient.ingredientCountryName ?? null,
+    country: ingredient.ingredientCountry ?? null,
     category,
     subtype: ingredient.ingredientSubtype ?? null,
     familyId: ingredient.ingredientFamilyId ?? null,
     type: ingredient.type,
+    technicalData: ingredient.ingredientTechnicalData ?? null,
     defaultDisplayUnit: unitProfile.defaultUnit,
     allowedUnits: ingredient.ingredientAllowedUnits ?? unitProfile.allowedUnits,
     measurementDimension: ingredient.ingredientMeasurementDimension ?? ingredient.ingredientMeasurementDimensionSnapshot ?? unitProfile.measurementDimension,
@@ -557,7 +924,10 @@ const toDesignerIngredient = (ingredient: RecipeDetailDto["ingredients"][number]
       durationDays: typeof stepMeta.durationDays === "number" ? String(stepMeta.durationDays) : "",
       fermentationTempC: typeof stepMeta.fermentationTempC === "number" ? String(stepMeta.fermentationTempC) : "",
       stageLabel: typeof stepMeta.stageLabel === "string" ? stepMeta.stageLabel : ""
-    }
+    },
+    inventoryIntentMode: ingredient.inventoryIntentMode ?? "catalog",
+    inventorySelectionMeta: ingredient.inventorySelectionMeta ?? null,
+    externalImportMeta: ingredient.externalImportMeta ?? null
   };
 };
 
@@ -586,12 +956,34 @@ const buildInitialPreview = (recipe?: RecipeDetailDto): RecipeDraftPreviewDto | 
     fg: recipe.fg,
     abv: recipe.abv,
     ibu: recipe.ibu,
+    bitternessFormula: recipe.calculationMeta?.bitternessFormula ?? "tinseth_whirlpool_v2",
     color: recipe.color,
     styleId: recipe.styleId,
     styleRange,
     styleFit
   };
 };
+
+const buildEditorPayloadFromRecipe = (
+  recipe: RecipeDetailDto,
+  ingredients: DesignerIngredient[] = recipe.ingredients.map(toDesignerIngredient)
+): RecipeEditorPayload => normalizeSavePayload({
+  title: recipe.title,
+  styleId: recipe.styleId ?? null,
+  description: recipe.description ?? null,
+  authorNotes: recipe.authorNotes ?? null,
+  publicationState: normalizeEditorPublicationState(recipe.publicationState),
+  batchSizeEnteredQuantity: recipe.batchSizeEnteredQuantity,
+  batchSizeEnteredUnit: recipe.batchSizeEnteredUnit,
+  efficiency: recipe.efficiency ?? null,
+  boilTimeMinutes: recipe.boilTimeMinutes,
+  processMeta: cloneRecipeProcessMeta(recipe.processMeta),
+  calculationMeta: cloneRecipeCalculationMeta(recipe.calculationMeta ?? null),
+  equipmentProfileId: recipe.equipmentProfileId ?? null,
+  equipmentProfileSnapshot: cloneEquipmentProfileSnapshot(recipe.equipmentProfileSnapshot ?? null),
+  waterPlanMeta: cloneRecipeWaterPlanMeta(recipe.waterPlanMeta ?? null),
+  ingredients: ingredients.map(buildIngredientPayload)
+});
 
 const buildSummaryDetails = (ingredient: DesignerIngredient) => {
   const details: string[] = [];
@@ -606,7 +998,7 @@ const buildSummaryDetails = (ingredient: DesignerIngredient) => {
   if (ingredient.category === "hop") {
     const useType = getHopUseType(ingredient);
     details.push(hopUseTypeLabels[useType]);
-    if (useType === "boil" || useType === "whirlpool" || useType === "dip_hop") {
+    if (useType === "boil" || useType === "first_wort_hop" || useType === "whirlpool" || useType === "dip_hop") {
       if (ingredient.stepMeta.timeMinutes) {
         details.push(`${ingredient.stepMeta.timeMinutes} мин`);
       }
@@ -639,6 +1031,20 @@ const buildSummaryDetails = (ingredient: DesignerIngredient) => {
 };
 
 const getQuantityText = (ingredient: DesignerIngredient) => `${ingredient.amountEnteredQuantity || "—"} ${inventoryUnitLabels[ingredient.amountEnteredUnit] ?? ingredient.amountEnteredUnit}`;
+
+const buildDesignerIngredientCardSource = (ingredient: DesignerIngredient): RecipeIngredientCardSource => ({
+  type: ingredient.type,
+  category: ingredient.category,
+  subtype: ingredient.subtype,
+  brand: ingredient.brand,
+  producer: ingredient.producer,
+  brandName: ingredient.brandName,
+  manufacturer: ingredient.manufacturer,
+  countryCode: ingredient.countryCode,
+  countryName: ingredient.countryName,
+  country: ingredient.country,
+  technicalData: ingredient.technicalData
+});
 
 const getSectionTitle = (category: IngredientCategory) => {
   if (category === "fermentable") return "Сбраживаемое";
@@ -689,12 +1095,30 @@ const getFermentableWeightTotalKg = (ingredients: DesignerIngredient[]) => {
   }, 0);
 };
 
+const getBatchVolumeLiters = (quantityInput: string, unit: InventoryUnit): number | null => {
+  const quantity = Number(quantityInput);
+  if (!Number.isFinite(quantity) || quantity <= 0) return null;
+  if (!["ml", "l", "gal"].includes(unit)) return null;
+  return convertVolume({ value: quantity, unit: unit as "ml" | "l" | "gal" }, "l").value;
+};
+
 const getIngredientWeightKg = (ingredient: DesignerIngredient): number => {
   const quantity = Number(ingredient.amountEnteredQuantity);
   if (!Number.isFinite(quantity) || quantity <= 0) return 0;
   if (!["g", "kg", "oz", "lb"].includes(ingredient.amountEnteredUnit)) return 0;
   return convertWeight({ value: quantity, unit: ingredient.amountEnteredUnit as "g" | "kg" | "oz" | "lb" }, "kg").value;
 };
+
+const getFermentablesForWaterPlan = (ingredients: DesignerIngredient[]): RecipeWaterPlanFermentableInput[] => (
+  ingredients
+    .filter((ingredient) => ingredient.category === "fermentable")
+    .map((ingredient) => ({
+      name: ingredient.selectedName,
+      subtype: ingredient.subtype,
+      weightKg: getIngredientWeightKg(ingredient)
+    }))
+    .filter((ingredient) => ingredient.weightKg > 0)
+);
 
 const getFermentablePercentage = (ingredient: DesignerIngredient, totalKg: number): number | null => {
   if (totalKg <= 0) return null;
@@ -717,8 +1141,30 @@ const getHopTimeMinutesValue = (ingredient: DesignerIngredient) => {
   return Number.isFinite(value) ? value : -1;
 };
 
+const isRecipeDesignerRecord = (value: unknown): value is Record<string, unknown> => (
+  typeof value === "object"
+  && value !== null
+  && !Array.isArray(value)
+);
+
+const readImportedDesignerIngredientSnapshot = (ingredient: DesignerIngredient): RecipeImportedIngredientSnapshot | null => {
+  const snapshot = ingredient.externalImportMeta?.importedIngredient;
+  if (!isRecipeDesignerRecord(snapshot) || snapshot.version !== 1 || typeof snapshot.name !== "string") {
+    return null;
+  }
+
+  return snapshot as unknown as RecipeImportedIngredientSnapshot;
+};
+
+const isImportedDesignerIngredient = (ingredient: DesignerIngredient) => (
+  ingredient.inventoryIntentMode === "imported"
+  && !ingredient.ingredientCatalogItemId
+  && !ingredient.userCustomIngredientId
+  && readImportedDesignerIngredientSnapshot(ingredient) != null
+);
+
 const isIngredientValid = (ingredient: DesignerIngredient) => {
-  if (!ingredient.ingredientCatalogItemId && !ingredient.userCustomIngredientId) {
+  if (!ingredient.ingredientCatalogItemId && !ingredient.userCustomIngredientId && !isImportedDesignerIngredient(ingredient)) {
     return false;
   }
 
@@ -996,11 +1442,13 @@ const formatGravityPlato = (sg: number | null) => {
 function RecipeStyleStatsBlock({
   preview,
   recalculating,
-  previewError
+  previewError,
+  onOpenBitternessSettings
 }: {
   preview: RecipeDraftPreviewDto | null;
   recalculating: boolean;
   previewError: string | null;
+  onOpenBitternessSettings: () => void;
 }) {
   const hasStyleRange = Boolean(preview?.styleRange);
   const hasCalculatedMetrics = [preview?.og, preview?.fg, preview?.abv, preview?.ibu, preview?.color].some((value) => value != null);
@@ -1092,8 +1540,20 @@ function RecipeStyleStatsBlock({
           const appearance = hasStyleRange ? getMetricStatusAppearance(item.status) : getMetricStatusAppearance("no_style");
 
           return (
-            <div key={item.label} className="group grid items-center gap-x-2 rounded-lg px-1 py-1 transition-colors hover:bg-zinc-50 sm:grid-cols-[36px_minmax(0,1fr)_60px]">
-              <div className="text-[11px] font-bold uppercase tracking-wider text-zinc-400">{item.label}</div>
+            <div key={item.label} className="group grid items-center gap-x-2 rounded-lg px-1 py-1 transition-colors hover:bg-zinc-50 sm:grid-cols-[46px_minmax(0,1fr)_60px]">
+              <div className="flex items-center gap-1 text-[11px] font-bold uppercase tracking-wider text-zinc-400">
+                <span>{item.label}</span>
+                {item.label === "IBU" ? (
+                  <button
+                    type="button"
+                    onClick={onOpenBitternessSettings}
+                    className="rounded px-1 text-[12px] leading-none text-zinc-400 hover:bg-zinc-100 hover:text-zinc-800"
+                    aria-label="Открыть настройки расчета горечи"
+                  >
+                    ⚙
+                  </button>
+                ) : null}
+              </div>
               <div>
                 <StyleRangeTrack
                   actualValue={item.actualValue}
@@ -1250,12 +1710,422 @@ function RecipeBatchParametersBlock({
   );
 }
 
+function BitternessCalculationBlock({
+  calculationMeta,
+  onChange
+}: {
+  calculationMeta: RecipeCalculationMeta;
+  onChange: (next: RecipeCalculationMeta) => void;
+}) {
+  return (
+    <details className="group rounded-2xl border border-zinc-100 bg-white p-5 shadow-sm">
+      <summary className="flex cursor-pointer list-none items-center gap-2 text-sm font-semibold text-zinc-700">
+        <div className="flex h-7 w-7 items-center justify-center rounded-md bg-zinc-100">
+          <Target className="h-3.5 w-3.5 text-zinc-500" />
+        </div>
+        Расчет горечи
+        <span className="text-xs font-normal text-zinc-400">{recipeBitternessFormulaLabels[calculationMeta.bitternessFormula]}</span>
+        <ChevronRight className="ml-auto h-4 w-4 text-zinc-400 transition-transform group-open:rotate-90" />
+      </summary>
+      <div className="mt-3 grid gap-3 sm:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
+        <label className="text-xs text-zinc-600">
+          Формула IBU
+          <select
+            value={calculationMeta.bitternessFormula}
+            onChange={(event) => onChange({
+              ...calculationMeta,
+              bitternessFormula: event.target.value as RecipeCalculationMeta["bitternessFormula"]
+            })}
+            className="mt-1 h-10 w-full rounded-lg border border-zinc-200 bg-white px-3 text-sm text-zinc-900"
+          >
+            {recipeBitternessFormulas.map((formula) => (
+              <option key={formula} value={formula}>{recipeBitternessFormulaLabels[formula]}</option>
+            ))}
+          </select>
+        </label>
+        <label className="text-xs text-zinc-600">
+          Whirlpool factor
+          <input
+            type="number"
+            min={0.1}
+            max={3}
+            step={0.05}
+            value={calculationMeta.bitternessSettings.whirlpoolUtilizationFactor ?? 1}
+            onChange={(event) => onChange({
+              ...calculationMeta,
+              bitternessSettings: {
+                ...calculationMeta.bitternessSettings,
+                whirlpoolUtilizationFactor: Number(event.target.value || 1)
+              }
+            })}
+            className="mt-1 h-10 w-full rounded-lg border border-zinc-200 bg-white px-3 text-sm text-zinc-900"
+          />
+        </label>
+      </div>
+      <label className="mt-3 flex items-start gap-2 text-xs text-zinc-600">
+        <input
+          type="checkbox"
+          checked={calculationMeta.bitternessSettings.includeBoilCarryoverIntoWhirlpool ?? true}
+          onChange={(event) => onChange({
+            ...calculationMeta,
+            bitternessSettings: {
+              ...calculationMeta.bitternessSettings,
+              includeBoilCarryoverIntoWhirlpool: event.target.checked
+            }
+          })}
+          className="mt-0.5 h-4 w-4 rounded border-zinc-300"
+        />
+        <span>Учитывать carryover позднего boil-хмеля в whirlpool как практическое приближение.</span>
+      </label>
+      <p className="mt-2 text-xs text-zinc-400">Dry hop не входит в стандартный IBU total по умолчанию.</p>
+    </details>
+  );
+}
+
+const waterPlanVolumeSourceLabels: Record<RecipeWaterPlanResult["waterVolumes"]["source"], string> = {
+  equipment_profile: "из профиля оборудования",
+  starter_profile: "профиль по умолчанию",
+  manual_override: "ручной объем"
+};
+
+const waterPlanWarningLabels: Record<string, string> = {
+  equipment_profile_missing_using_starter: "Нет профиля оборудования: объемы считаются по профилю по умолчанию.",
+  mash_volume_limit_exceeded: "Объем затора превышает лимит профиля, часть воды перенесена в промывку.",
+  source_profile_missing_or_zero: "Исходный профиль воды не заполнен.",
+  target_profile_missing_or_zero: "Целевой профиль воды не заполнен.",
+  grain_bill_missing_for_mash_ph: "Для pH нужен зерновой состав.",
+  mash_ph_ballpark_estimate: "Mash pH — практическая оценка, калибруется по измерениям.",
+  mash_acid_model_practical_approximation: "Кислота считается практическим приближением.",
+  target_already_reached: "Целевой pH уже достигнут без кислоты.",
+  target_not_reached_within_max_acid: "Целевой pH не достигнут в заданном лимите кислоты.",
+  calcium_above_practical_range: "Ca выше практического диапазона.",
+  magnesium_above_practical_range: "Mg выше практического диапазона.",
+  sodium_above_practical_range: "Na выше практического диапазона.",
+  chloride_above_practical_range: "Cl выше практического диапазона.",
+  sulfate_above_practical_range: "SO4 выше практического диапазона.",
+  bicarbonate_above_practical_range: "HCO3 выше практического диапазона."
+};
+
+const formatWaterPlanAdditions = (items: RecipeWaterPlanResult["mashSaltAdditions"]) => (
+  items.length ? items.map((item) => `${item.label} ${item.grams.toFixed(2)} г`).join(", ") : "без добавок"
+);
+
+const formatWaterProfileLine = (profile: RecipeWaterPlanResult["finalProfile"]) => (
+  `Ca ${profile.ca.toFixed(0)} · Mg ${profile.mg.toFixed(0)} · Na ${profile.na.toFixed(0)} · Cl ${profile.cl.toFixed(0)} · SO4 ${profile.so4.toFixed(0)} · HCO3 ${profile.hco3.toFixed(0)} ppm`
+);
+
+const equipmentBrewMethodLabels: Record<EquipmentProfileSnapshot["brewMethod"], string> = {
+  biab_single_vessel: "BIAB / одна емкость",
+  mash_sparge_two_vessel: "Затор + промывка",
+  three_vessel: "Три емкости",
+  extract_partial_boil: "Экстракт / частичное кипячение"
+};
+
+function EquipmentProfileBlock({
+  equipmentProfiles,
+  selectedEquipmentProfileId,
+  equipmentProfileSnapshot,
+  waterPlanResult,
+  pending,
+  onSelectProfile,
+  onRefreshFromProfile,
+  onUseStarterProfile,
+  onScaleToProfile
+}: {
+  equipmentProfiles: EquipmentProfileDto[];
+  selectedEquipmentProfileId: string | null;
+  equipmentProfileSnapshot: EquipmentProfileSnapshot | null;
+  waterPlanResult: RecipeWaterPlanResult;
+  pending: boolean;
+  onSelectProfile: (profileId: string | null) => void;
+  onRefreshFromProfile: () => void;
+  onUseStarterProfile: () => void;
+  onScaleToProfile: () => void;
+}) {
+  const canRefresh = Boolean(selectedEquipmentProfileId);
+  const summary = equipmentProfileSnapshot
+    ? `${equipmentProfileSnapshot.name} • ${equipmentProfileSnapshot.targetBatchVolumeL} л в ферментер • ${equipmentProfileSnapshot.brewhouseEfficiencyPct}% • испарение ${equipmentProfileSnapshot.evaporationRateLPerHr} л/ч`
+    : "Профиль по умолчанию";
+
+  return (
+    <details className="group rounded-2xl border border-zinc-100 bg-white p-5 shadow-sm">
+      <summary className="flex cursor-pointer list-none items-center gap-2 text-sm font-semibold text-zinc-700">
+        <div className="flex h-7 w-7 items-center justify-center rounded-md bg-zinc-100">
+          <FlaskConical className="h-3.5 w-3.5 text-zinc-500" />
+        </div>
+        Оборудование
+        <span className="text-xs font-normal text-zinc-400">
+          {summary}
+        </span>
+        <ChevronRight className="ml-auto h-4 w-4 text-zinc-400 transition-transform group-open:rotate-90" />
+      </summary>
+      <div className="mt-3 grid gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.2fr)]">
+        <div className="space-y-3">
+          <label className="text-xs text-zinc-600">
+            Выбрать профиль
+            <select
+              value={selectedEquipmentProfileId ?? ""}
+              onChange={(event) => onSelectProfile(event.target.value || null)}
+              disabled={pending}
+              className="mt-1 h-10 w-full rounded-lg border border-zinc-200 bg-white px-3 text-sm text-zinc-900 disabled:opacity-60"
+            >
+              <option value="">Использовать профиль по умолчанию</option>
+              {equipmentProfiles.map((profile) => (
+                <option key={profile.id} value={profile.id}>{profile.name}</option>
+              ))}
+            </select>
+          </label>
+          <div className="flex flex-wrap gap-2">
+            <button
+              type="button"
+              disabled={!canRefresh || pending}
+              onClick={onRefreshFromProfile}
+              className="rounded-md bg-zinc-900 px-3 py-2 text-xs font-medium text-white disabled:opacity-50"
+            >
+              Обновить из профиля
+            </button>
+            <button
+              type="button"
+              disabled={pending}
+              onClick={onUseStarterProfile}
+              className="rounded-md border border-zinc-300 bg-white px-3 py-2 text-xs text-zinc-700 disabled:opacity-50"
+            >
+              Использовать профиль по умолчанию
+            </button>
+            <a
+              href="/app/equipment"
+              className="rounded-md border border-zinc-300 bg-white px-3 py-2 text-xs text-zinc-700"
+            >
+              Изменить
+            </a>
+            <button
+              type="button"
+              disabled={!equipmentProfileSnapshot || pending}
+              onClick={onScaleToProfile}
+              className="rounded-md border border-zinc-300 bg-white px-3 py-2 text-xs text-zinc-700 disabled:opacity-50"
+            >
+              Масштабировать рецепт
+            </button>
+          </div>
+          <p className="text-xs leading-5 text-zinc-500">
+            Изменение профиля на странице оборудования не меняет этот рецепт, пока вы явно не обновите профиль здесь.
+          </p>
+        </div>
+        <div className="space-y-2 rounded-lg bg-zinc-50 px-3 py-3 text-xs text-zinc-600">
+          <div className="grid gap-2 sm:grid-cols-2">
+            <div>
+              <span className="block text-[11px] uppercase text-zinc-400">Метод</span>
+              <span className="font-medium text-zinc-800">{equipmentBrewMethodLabels[equipmentProfileSnapshot?.brewMethod ?? "biab_single_vessel"]}</span>
+            </div>
+            <div>
+              <span className="block text-[11px] uppercase text-zinc-400">Целевой объем</span>
+              <span className="font-medium text-zinc-800">{equipmentProfileSnapshot?.targetBatchVolumeL ?? waterPlanResult.volumePlan.fermenterTargetColdL} л</span>
+            </div>
+            <div>
+              <span className="block text-[11px] uppercase text-zinc-400">Pre-boil hot</span>
+              <span className="font-medium text-zinc-800">{waterPlanResult.volumePlan.preBoilHotL.toFixed(1)} л</span>
+            </div>
+            <div>
+              <span className="block text-[11px] uppercase text-zinc-400">Post-boil hot</span>
+              <span className="font-medium text-zinc-800">{waterPlanResult.volumePlan.postBoilHotL.toFixed(1)} л</span>
+            </div>
+            <div>
+              <span className="block text-[11px] uppercase text-zinc-400">Mash / sparge</span>
+              <span className="font-medium text-zinc-800">
+                {waterPlanResult.waterVolumes.mashWaterL.toFixed(1)} / {waterPlanResult.waterVolumes.spargeWaterL.toFixed(1)} л
+              </span>
+            </div>
+            <div>
+              <span className="block text-[11px] uppercase text-zinc-400">Калибровка хмеля</span>
+              <span className="font-medium text-zinc-800">{equipmentProfileSnapshot?.hopUtilizationFactor ?? 1}</span>
+            </div>
+          </div>
+          {!equipmentProfileSnapshot ? (
+            <p className="text-amber-700">Используются стартовые значения. Для точных объемов выберите свой профиль оборудования.</p>
+          ) : null}
+          {waterPlanResult.volumePlan.warnings.includes("kettle_volume_limit_exceeded") ? (
+            <p className="text-amber-700">Объем до кипячения превышает лимит котла.</p>
+          ) : null}
+        </div>
+      </div>
+    </details>
+  );
+}
+
+function WaterPlanBlock({
+  waterPlanMeta,
+  waterPlanResult,
+  onChange
+}: {
+  waterPlanMeta: RecipeWaterPlanMeta;
+  waterPlanResult: RecipeWaterPlanResult;
+  onChange: (next: RecipeWaterPlanMeta) => void;
+}) {
+  const source = waterPlanMeta.sourceProfile ?? { ca: 0, mg: 0, na: 0, cl: 0, so4: 0, hco3: 0, ph: null };
+  const target = waterPlanMeta.targetProfile ?? { ca: 0, mg: 0, na: 0, cl: 0, so4: 0, hco3: 0, ph: null };
+  const visibleWarnings = waterPlanResult.warnings.slice(0, 3);
+
+  const updateIon = (kind: "sourceProfile" | "targetProfile", key: keyof typeof source, value: string) => {
+    onChange({
+      ...waterPlanMeta,
+      [kind]: {
+        ...(kind === "sourceProfile" ? source : target),
+        [key]: value.trim() ? Number(value) : 0
+      }
+    });
+  };
+
+  return (
+    <details className="group rounded-2xl border border-zinc-100 bg-white p-5 shadow-sm">
+      <summary className="flex cursor-pointer list-none items-center gap-2 text-sm font-semibold text-zinc-700">
+        <div className="flex h-7 w-7 items-center justify-center rounded-md bg-sky-50">
+          <Droplets className="h-3.5 w-3.5 text-sky-600" />
+        </div>
+        Вода
+        <span className="text-xs font-normal text-zinc-400">{recipeWaterEngineLabels[waterPlanMeta.engine]}</span>
+        <ChevronRight className="ml-auto h-4 w-4 text-zinc-400 transition-transform group-open:rotate-90" />
+      </summary>
+      <div className="mt-3 grid gap-3 md:grid-cols-2">
+        <label className="text-xs text-zinc-600">
+          Схема
+          <select
+            value={waterPlanMeta.engine}
+            onChange={(event) => onChange({ ...waterPlanMeta, engine: event.target.value as RecipeWaterPlanMeta["engine"] })}
+            className="mt-1 h-10 w-full rounded-lg border border-zinc-200 bg-white px-3 text-sm text-zinc-900"
+          >
+            {recipeWaterEngineModes.map((engine) => (
+              <option key={engine} value={engine}>{recipeWaterEngineLabels[engine]}</option>
+            ))}
+          </select>
+        </label>
+        <label className="text-xs text-zinc-600">
+          pH model
+          <select
+            value={waterPlanMeta.phModel}
+            onChange={(event) => onChange({ ...waterPlanMeta, phModel: event.target.value as RecipeWaterPlanMeta["phModel"] })}
+            className="mt-1 h-10 w-full rounded-lg border border-zinc-200 bg-white px-3 text-sm text-zinc-900"
+          >
+            {recipeMashPhModels.map((model) => (
+              <option key={model} value={model}>{recipeMashPhModelLabels[model]}</option>
+            ))}
+          </select>
+        </label>
+        {waterPlanMeta.engine !== "profile_only" ? (
+          <>
+            <label className="text-xs text-zinc-600">
+              Целевой mash pH
+              <input
+                type="number"
+                min={4}
+                max={7}
+                step={0.01}
+                value={waterPlanMeta.targetMashPh ?? 5.35}
+                onChange={(event) => onChange({ ...waterPlanMeta, targetMashPh: toOptionalNumber(event.target.value) ?? 5.35 })}
+                className="mt-1 h-10 w-full rounded-lg border border-zinc-200 bg-white px-3 text-sm text-zinc-900"
+              />
+            </label>
+            <label className="text-xs text-zinc-600">
+              Кислота
+              <select
+                value={waterPlanMeta.selectedAcid ?? "lactic_acid"}
+                onChange={(event) => onChange({ ...waterPlanMeta, selectedAcid: event.target.value as RecipeWaterPlanMeta["selectedAcid"] })}
+                className="mt-1 h-10 w-full rounded-lg border border-zinc-200 bg-white px-3 text-sm text-zinc-900"
+              >
+                <option value="lactic_acid">Lactic Acid</option>
+                <option value="phosphoric_acid">Phosphoric Acid</option>
+              </select>
+            </label>
+          </>
+        ) : null}
+      </div>
+      <div className="mt-4 border-y border-zinc-100 py-3">
+        <div className="grid gap-3 md:grid-cols-4">
+          <div>
+            <div className="text-[11px] uppercase text-zinc-400">Затор</div>
+            <div className="text-sm font-semibold text-zinc-800">{waterPlanResult.waterVolumes.mashWaterL.toFixed(1)} л</div>
+          </div>
+          <div>
+            <div className="text-[11px] uppercase text-zinc-400">Промывка</div>
+            <div className="text-sm font-semibold text-zinc-800">{waterPlanResult.waterVolumes.spargeWaterL.toFixed(1)} л</div>
+          </div>
+          <div>
+            <div className="text-[11px] uppercase text-zinc-400">Всего</div>
+            <div className="text-sm font-semibold text-zinc-800">{waterPlanResult.waterVolumes.totalWaterL.toFixed(1)} л</div>
+          </div>
+          <div>
+            <div className="text-[11px] uppercase text-zinc-400">Mash pH 20°C</div>
+            <div className="text-sm font-semibold text-zinc-800">
+              {waterPlanResult.predictedMashPhAfterAcid20C != null ? waterPlanResult.predictedMashPhAfterAcid20C.toFixed(2) : "—"}
+            </div>
+          </div>
+        </div>
+        <div className="mt-3 grid gap-2 text-xs text-zinc-600 md:grid-cols-2">
+          <div>
+            <span className="font-medium text-zinc-700">В затор: </span>
+            {formatWaterPlanAdditions(waterPlanResult.mashSaltAdditions)}
+          </div>
+          <div>
+            <span className="font-medium text-zinc-700">В промывку: </span>
+            {formatWaterPlanAdditions(waterPlanResult.spargeSaltAdditions)}
+          </div>
+          {waterPlanResult.mashAcidAddition ? (
+            <div>
+              <span className="font-medium text-zinc-700">Кислота в затор: </span>
+              {waterPlanResult.mashAcidAddition.label} {waterPlanResult.mashAcidAddition.mashAcidMl.toFixed(2)} мл
+            </div>
+          ) : null}
+          <div>
+            <span className="font-medium text-zinc-700">SO4:Cl: </span>
+            {waterPlanResult.sulfateChlorideRatio ?? "—"}
+            <span className="ml-2 text-zinc-400">{waterPlanVolumeSourceLabels[waterPlanResult.waterVolumes.source]}</span>
+          </div>
+        </div>
+        <p className="mt-2 text-xs text-zinc-500">{formatWaterProfileLine(waterPlanResult.finalProfile)}</p>
+        {visibleWarnings.length ? (
+          <div className="mt-2 space-y-1 text-xs text-amber-700">
+            {visibleWarnings.map((warning) => (
+              <p key={warning}>{waterPlanWarningLabels[warning] ?? warning}</p>
+            ))}
+          </div>
+        ) : null}
+      </div>
+      <div className="mt-4 grid gap-4 lg:grid-cols-2">
+        {([
+          ["sourceProfile", "Исходная вода", source],
+          ["targetProfile", "Цель", target]
+        ] as const).map(([kind, title, profile]) => (
+          <div key={kind} className="space-y-2">
+            <h4 className="text-xs font-semibold text-zinc-600">{title}</h4>
+            <div className="grid grid-cols-3 gap-2">
+              {(["ca", "mg", "na", "cl", "so4", "hco3"] as const).map((key) => (
+                <label key={key} className="text-[11px] uppercase text-zinc-400">
+                  {key}
+                  <input
+                    type="number"
+                    min={0}
+                    value={profile[key]}
+                    onChange={(event) => updateIon(kind, key, event.target.value)}
+                    className="mt-1 h-9 w-full rounded-lg border border-zinc-200 bg-white px-2 text-sm text-zinc-900"
+                  />
+                </label>
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
+      <p className="mt-3 text-xs text-zinc-400">Подробный solver солей и кислот использует этот source/target профиль; advanced-поля остаются свернутыми.</p>
+    </details>
+  );
+}
+
 function SectionRow({
   ingredient,
   onEdit,
   onDelete,
   onQuantityChange,
   onTimeChange,
+  onAddImportedAsCustom,
+  onMapImportedSource,
   percentage
 }: {
   ingredient: DesignerIngredient;
@@ -1263,6 +2133,8 @@ function SectionRow({
   onDelete: (localId: string) => void;
   onQuantityChange: (localId: string, quantity: string) => void;
   onTimeChange: (localId: string, timeMinutes: string) => void;
+  onAddImportedAsCustom?: (ingredient: DesignerIngredient) => void;
+  onMapImportedSource?: (ingredient: DesignerIngredient) => void;
   percentage?: number | null;
 }) {
   const accent = categoryAccentBorder[ingredient.category];
@@ -1270,19 +2142,53 @@ function SectionRow({
   const quantityStep = getInventoryUnitInputStep(ingredient.amountEnteredUnit);
   const hopUseType = ingredient.category === "hop" ? getHopUseType(ingredient) : null;
   const hasInlineTimeControl = hopUseType === "boil" || hopUseType === "whirlpool" || hopUseType === "dip_hop";
+  const isImported = isImportedDesignerIngredient(ingredient);
+  const cardSource = buildDesignerIngredientCardSource(ingredient);
+  const technicalBadges = buildRecipeIngredientTechnicalBadges(cardSource);
+  const summaryDetails = buildSummaryDetails(ingredient);
+  const summaryFallback = technicalBadges.length ? null : (ingredient.selectedSummary || ingredient.familyDisplayName || null);
 
   return (
     <li className={`rounded-lg border-l-[3px] bg-white px-3 py-2.5 shadow-sm ring-1 ring-zinc-100 transition-shadow hover:shadow-md ${accent}`}>
       <div className="flex items-center gap-3">
         <div className="min-w-0 flex-1">
-          <div className="flex items-center gap-2">
-            <span className="truncate text-sm font-semibold text-zinc-950">{ingredient.selectedName || "Не выбран"}</span>
+          <div className="flex min-w-0 flex-wrap items-start gap-2">
+            <div className="min-w-0 flex-1">
+              <RecipeIngredientTitleBlock
+                source={cardSource}
+                primaryName={ingredient.selectedName || "Не выбран"}
+                secondaryName={ingredient.selectedSecondaryName}
+              />
+            </div>
             {percentage != null && percentage > 0 ? (
               <span className="shrink-0 rounded bg-amber-50 px-1.5 py-0.5 text-[11px] font-medium tabular-nums text-amber-700">{percentage.toFixed(1)}%</span>
             ) : null}
+            {isImported ? (
+              <span className="shrink-0 rounded bg-sky-50 px-1.5 py-0.5 text-[11px] font-medium text-sky-700">Импортировано</span>
+            ) : null}
           </div>
-          {ingredient.selectedSecondaryName ? <div className="mt-0.5 text-xs text-zinc-500">{ingredient.selectedSecondaryName}</div> : null}
-          <div className="mt-0.5 text-xs text-zinc-500">{buildSummaryDetails(ingredient) || ingredient.selectedSummary || ingredient.familyDisplayName || "—"}</div>
+          {summaryDetails ? <div className="mt-1 text-xs text-zinc-500">{summaryDetails}</div> : null}
+          {summaryFallback ? <div className="mt-1 text-xs text-zinc-500">{summaryFallback}</div> : null}
+          {!summaryDetails && !summaryFallback && !technicalBadges.length ? <div className="mt-1 text-xs text-zinc-500">-</div> : null}
+          <RecipeIngredientTechnicalBadges badges={technicalBadges} className="mt-1.5" />
+          {isImported ? (
+            <div className="mt-2 flex flex-wrap gap-2">
+              <button
+                type="button"
+                onClick={() => onAddImportedAsCustom?.(ingredient)}
+                className="rounded-md border border-zinc-300 bg-white px-2 py-1 text-xs text-zinc-700 transition-colors hover:bg-zinc-50"
+              >
+                Сохранить как свой
+              </button>
+              <button
+                type="button"
+                onClick={() => onMapImportedSource?.(ingredient)}
+                className="rounded-md border border-zinc-300 bg-white px-2 py-1 text-xs text-zinc-700 transition-colors hover:bg-zinc-50"
+              >
+                Подобрать из каталога
+              </button>
+            </div>
+          ) : null}
         </div>
         <div className="flex shrink-0 items-center gap-1">
           <input
@@ -1318,6 +2224,233 @@ function SectionRow({
         </div>
       </div>
     </li>
+  );
+}
+
+function StockCoverageBlock({
+  coverage,
+  pending,
+  activeRecipeId,
+  onAction
+}: {
+  coverage: RecipeStockCoverageDto | null;
+  pending: boolean;
+  activeRecipeId: string | null;
+  onAction: (action: "sync" | "reserve" | "consume" | "release") => void;
+}) {
+  const summary = coverage?.summary;
+  const hasRecipe = Boolean(activeRecipeId);
+
+  return (
+    <details className="group rounded-2xl border border-zinc-100 bg-white p-5 shadow-sm">
+      <summary className="flex cursor-pointer list-none items-center gap-2 text-sm font-semibold text-zinc-700">
+        <div className="flex h-7 w-7 items-center justify-center rounded-md bg-emerald-50">
+          <Package className="h-3.5 w-3.5 text-emerald-600" />
+        </div>
+        Склад
+        {summary ? (
+          <span className="text-xs font-normal text-zinc-400">
+            {summary.selectedLines}/{summary.totalLines} позиций
+          </span>
+        ) : null}
+        <ChevronRight className="ml-auto h-4 w-4 text-zinc-400 transition-transform group-open:rotate-90" />
+      </summary>
+      <div className="mt-3 space-y-3">
+        <p className="text-xs leading-5 text-zinc-500">
+          Autosave рецепта не списывает остатки. Сначала выберите ингредиент «Из склада», затем выполните явное действие.
+        </p>
+        <div className="flex flex-wrap gap-2">
+          <button
+            type="button"
+            disabled={!hasRecipe || pending}
+            onClick={() => onAction("sync")}
+            className="rounded-md bg-zinc-900 px-3 py-2 text-xs font-medium text-white disabled:opacity-50"
+          >
+            Подобрать из склада
+          </button>
+          <button
+            type="button"
+            disabled={!hasRecipe || pending || !summary?.selectedLines}
+            onClick={() => onAction("reserve")}
+            className="rounded-md border border-zinc-300 bg-white px-3 py-2 text-xs text-zinc-700 disabled:opacity-50"
+          >
+            Зарезервировать
+          </button>
+          <button
+            type="button"
+            disabled={!hasRecipe || pending || !summary?.selectedLines}
+            onClick={() => onAction("consume")}
+            className="rounded-md border border-rose-300 bg-white px-3 py-2 text-xs text-rose-700 disabled:opacity-50"
+          >
+            Списать ингредиенты
+          </button>
+          <button
+            type="button"
+            disabled={!hasRecipe || pending || !summary?.selectedLines}
+            onClick={() => onAction("release")}
+            className="rounded-md border border-zinc-300 bg-white px-3 py-2 text-xs text-zinc-700 disabled:opacity-50"
+          >
+            Снять резерв
+          </button>
+        </div>
+        {coverage?.lines.length ? (
+          <div className="space-y-1.5">
+            {coverage.lines.map((line) => (
+              <div key={line.recipeIngredientId} className="grid gap-2 rounded-lg bg-zinc-50 px-3 py-2 text-xs text-zinc-600 sm:grid-cols-[minmax(0,1fr)_120px_120px]">
+                <div className="min-w-0">
+                  <div className="truncate font-medium text-zinc-800">{line.ingredientDisplayName ?? "Позиция рецепта"}</div>
+                  <div className="truncate text-zinc-400">{line.inventoryDisplayName ?? "Складская позиция не выбрана"}</div>
+                </div>
+                <div className="tabular-nums">
+                  Нужно: {line.requiredQuantityNormalized} {line.requiredNormalizedUnit}
+                </div>
+                <div className="text-right tabular-nums">
+                  {line.status === "covered" ? "покрыто" : line.status === "reserved" ? "резерв" : line.status === "consumed" ? "списано" : line.status === "short" ? "не хватает" : line.status === "released" ? "снято" : "не выбрано"}
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <p className="rounded-lg border border-dashed border-zinc-200 px-3 py-2.5 text-sm text-zinc-400">Покрытие появится после сохранения рецепта и подбора складских позиций.</p>
+        )}
+      </div>
+    </details>
+  );
+}
+
+function InteropBlock({
+  pending,
+  activeRecipeId,
+  beerXmlExport,
+  beerXmlImport,
+  brewfatherJsonImport,
+  onBeerXmlExportChange,
+  onBeerXmlImportChange,
+  onBrewfatherJsonImportChange,
+  onExportBeerXml,
+  onImportBeerXml,
+  onImportBrewfatherJson
+}: {
+  pending: boolean;
+  activeRecipeId: string | null;
+  beerXmlExport: string;
+  beerXmlImport: string;
+  brewfatherJsonImport: string;
+  onBeerXmlExportChange: (next: string) => void;
+  onBeerXmlImportChange: (next: string) => void;
+  onBrewfatherJsonImportChange: (next: string) => void;
+  onExportBeerXml: () => void;
+  onImportBeerXml: () => void;
+  onImportBrewfatherJson: () => void;
+}) {
+  return (
+    <details className="group rounded-2xl border border-zinc-100 bg-white p-5 shadow-sm">
+      <summary className="flex cursor-pointer list-none items-center gap-2 text-sm font-semibold text-zinc-700">
+        <div className="flex h-7 w-7 items-center justify-center rounded-md bg-zinc-100">
+          <FileText className="h-3.5 w-3.5 text-zinc-500" />
+        </div>
+        Import / export
+        <span className="text-xs font-normal text-zinc-400">BeerXML · Brewfather JSON</span>
+        <ChevronRight className="ml-auto h-4 w-4 text-zinc-400 transition-transform group-open:rotate-90" />
+      </summary>
+      <div className="mt-3 grid gap-4 lg:grid-cols-2">
+        <div className="space-y-2">
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <h4 className="text-xs font-semibold text-zinc-600">BeerXML export</h4>
+            <button
+              type="button"
+              disabled={!activeRecipeId || pending}
+              onClick={onExportBeerXml}
+              className="rounded-md bg-zinc-900 px-3 py-2 text-xs font-medium text-white disabled:opacity-50"
+            >
+              Экспортировать BeerXML
+            </button>
+          </div>
+          <textarea
+            value={beerXmlExport}
+            onChange={(event) => onBeerXmlExportChange(event.target.value)}
+            className="min-h-36 w-full rounded-lg border border-zinc-200 bg-zinc-50 px-3 py-2 font-mono text-xs text-zinc-800"
+            placeholder="После экспорта BeerXML появится здесь."
+          />
+        </div>
+        <div className="space-y-3">
+          <div className="space-y-2">
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <h4 className="text-xs font-semibold text-zinc-600">BeerXML import</h4>
+              <button
+                type="button"
+                disabled={pending || !beerXmlImport.trim()}
+                onClick={onImportBeerXml}
+                className="rounded-md border border-zinc-300 bg-white px-3 py-2 text-xs text-zinc-700 disabled:opacity-50"
+              >
+                Импортировать BeerXML
+              </button>
+            </div>
+            <textarea
+              value={beerXmlImport}
+              onChange={(event) => onBeerXmlImportChange(event.target.value)}
+              className="min-h-28 w-full rounded-lg border border-zinc-200 bg-white px-3 py-2 font-mono text-xs text-zinc-800"
+              placeholder="<RECIPES>...</RECIPES>"
+            />
+          </div>
+          <div className="space-y-2">
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <h4 className="text-xs font-semibold text-zinc-600">Импорт из Brewfather (тестовая поддержка)</h4>
+              <button
+                type="button"
+                disabled={pending || !brewfatherJsonImport.trim()}
+                onClick={onImportBrewfatherJson}
+                className="rounded-md border border-zinc-300 bg-white px-3 py-2 text-xs text-zinc-700 disabled:opacity-50"
+              >
+                Импортировать JSON
+              </button>
+            </div>
+            <textarea
+              value={brewfatherJsonImport}
+              onChange={(event) => onBrewfatherJsonImportChange(event.target.value)}
+              className="min-h-28 w-full rounded-lg border border-zinc-200 bg-white px-3 py-2 font-mono text-xs text-zinc-800"
+              placeholder='{"name":"Recipe","fermentables":[]}'
+            />
+          </div>
+        </div>
+      </div>
+    </details>
+  );
+}
+
+function BrewModeFoundationBlock({
+  pending,
+  activeRecipeId,
+  onCreateBatch
+}: {
+  pending: boolean;
+  activeRecipeId: string | null;
+  onCreateBatch: () => void;
+}) {
+  return (
+    <details className="group rounded-2xl border border-zinc-100 bg-white p-5 shadow-sm">
+      <summary className="flex cursor-pointer list-none items-center gap-2 text-sm font-semibold text-zinc-700">
+        <div className="flex h-7 w-7 items-center justify-center rounded-md bg-orange-50">
+          <Timer className="h-3.5 w-3.5 text-orange-500" />
+        </div>
+        Пошаговая варка
+        <span className="text-xs font-normal text-zinc-400">Пошаговый режим варки появится здесь</span>
+        <ChevronRight className="ml-auto h-4 w-4 text-zinc-400 transition-transform group-open:rotate-90" />
+      </summary>
+      <div className="mt-3 flex flex-wrap items-center gap-3">
+        <p className="max-w-2xl text-xs leading-5 text-zinc-500">
+          Партия создается явным действием из текущего рецепта, воды, процесса и стабильных строк ингредиентов.
+        </p>
+        <button
+          type="button"
+          disabled={!activeRecipeId || pending}
+          onClick={onCreateBatch}
+          className="rounded-md bg-zinc-900 px-3 py-2 text-xs font-medium text-white disabled:opacity-50"
+        >
+          Начать варку
+        </button>
+      </div>
+    </details>
   );
 }
 
@@ -1378,14 +2511,13 @@ function RecipeProfiles({
                 </div>
                 <button
                   type="button"
-                  disabled={processMeta.mashProfile.steps.length === 1}
                   onClick={() => onChange({
                     ...processMeta,
                     mashProfile: {
                       steps: processMeta.mashProfile.steps.filter((candidate) => candidate.id !== step.id)
                     }
                   })}
-                  className="rounded-md p-1.5 text-zinc-400 transition-colors hover:bg-rose-50 hover:text-rose-600 disabled:opacity-30"
+                  className="rounded-md p-1.5 text-zinc-400 transition-colors hover:bg-rose-50 hover:text-rose-600"
                 >
                   <span className="text-xs font-medium">✕</span>
                 </button>
@@ -1677,6 +2809,40 @@ function PublicationReadinessDialog({
   );
 }
 
+const searchStockIngredientsForRecipe = async ({
+  q,
+  type,
+  category,
+  subtype,
+  limit,
+  signal
+}: {
+  q: string;
+  type?: IngredientType;
+  category?: IngredientCategory;
+  subtype?: Extract<IngredientSubtype, "malt" | "fermentable"> | null;
+  limit: number;
+  signal: AbortSignal;
+}) => {
+  const params = new URLSearchParams();
+  const effectiveType = resolveRecipeIngredientSearchType({ category, type });
+  params.set("q", q);
+  params.set("limit", String(limit));
+  params.set("stock", "in_stock");
+  params.set("dedupe", "false");
+  if (effectiveType) params.set("type", effectiveType);
+  if (category) params.set("category", category);
+  if (subtype) params.set("subtype", subtype);
+
+  const response = await fetch(`/api/inventory/suggestions?${params.toString()}`, { signal });
+  if (!response.ok) {
+    return [] as IngredientSuggestionItem[];
+  }
+
+  const data = await response.json() as { items?: IngredientSuggestionItem[] };
+  return data.items ?? [];
+};
+
 function IngredientEditor({
   draft,
   isExisting,
@@ -1696,9 +2862,9 @@ function IngredientEditor({
   saveLabel: string;
   fieldError?: string | null;
 }) {
-  const [creatingCustom, setCreatingCustom] = useState(false);
   const [pendingCustom, setPendingCustom] = useState(false);
   const [customMessage, setCustomMessage] = useState<string | null>(null);
+  const [showStockSearch, setShowStockSearch] = useState(false);
   const placeholder = {
     fermentable: "Найти солод, сахар или другой ферментируемый ингредиент",
     hop: "Найти сорт или форму хмеля",
@@ -1707,31 +2873,113 @@ function IngredientEditor({
     consumable: "Найти расходник или процессную добавку"
   }[draft.category];
 
-  const emptyCta = (
-    <div className="space-y-2 rounded-lg border border-dashed border-zinc-200 bg-zinc-50 p-3 text-xs text-zinc-600">
-      <p>Ничего не найдено для «{draft.selectedName.trim() || "этого запроса"}».</p>
-      <div className="flex flex-wrap gap-2">
+  const isHop = draft.category === "hop";
+  const hopUseType = getHopUseType(draft);
+  const quantityStep = getInventoryUnitInputStep(draft.amountEnteredUnit);
+  const sourceMode = resolveRecipeIngredientEditorSourceMode(draft.inventoryIntentMode);
+  const selectedCategoryValue = resolveRecipeIngredientCategoryValue(draft);
+  const pickerSubtype = draft.category === "fermentable"
+    ? selectedCategoryValue === "fermentable" ? "fermentable" : "malt"
+    : null;
+  const ingredientSearchType = resolveRecipeIngredientSearchType({
+    category: draft.category,
+    type: draft.type
+  });
+  const selectedIngredientPreview = buildSelectedIngredientPreview(draft);
+  const selectedStockPreview = sourceMode === "use_stock" && draft.inventorySelectionMeta?.inventoryItemId
+    ? selectedIngredientPreview
+    : null;
+  const selectedCatalogPreview = sourceMode !== "use_stock" ? selectedIngredientPreview : null;
+  const selectedPreview = selectedStockPreview ?? selectedCatalogPreview;
+  const showIngredientPicker = !selectedPreview && (
+    sourceMode === "catalog"
+    || (sourceMode === "use_stock" && showStockSearch)
+  );
+  const contextSummary = sourceMode === "use_stock"
+    ? `${getSectionTitle(draft.category)} · Из склада`
+    : resolveInventoryIngredientContextSummary({
+      category: draft.category,
+      subtype: pickerSubtype,
+      source: sourceMode === "custom" ? "custom" : "catalog"
+    });
+  const switchSourceMode = (mode: RecipeIngredientEditorSourceMode) => {
+    if (mode === sourceMode) {
+      return;
+    }
+
+    setShowStockSearch(false);
+    setCustomMessage(null);
+    onChange({
+      ...clearRecipeIngredientSelection(draft),
+      inventoryIntentMode: mode,
+      inventorySelectionMeta: null
+    });
+  };
+  const switchToCustomWithCurrentName = () => {
+    const cleared = clearRecipeIngredientSelection(draft);
+    setShowStockSearch(false);
+    setCustomMessage(null);
+    onChange({
+      ...cleared,
+      selectedName: draft.selectedName,
+      inventoryIntentMode: "custom",
+      inventorySelectionMeta: null
+    });
+  };
+  const createCustomIngredient = async () => {
+    const displayName = draft.selectedName.trim();
+    if (!displayName) {
+      setCustomMessage("Укажите название ингредиента.");
+      return;
+    }
+
+    setPendingCustom(true);
+    const result = await createRecipeCustomIngredientAction({
+      category: draft.category,
+      subtype: pickerSubtype,
+      displayName,
+      defaultDisplayUnit: draft.amountEnteredUnit
+    });
+    setPendingCustom(false);
+    setCustomMessage(result.message);
+
+    if (result.ok && result.item) {
+      onChange(applySelection({
+        ...draft,
+        inventoryIntentMode: "custom",
+        inventorySelectionMeta: null
+      }, result.item));
+    }
+  };
+  const emptyCta = ({
+    hasActiveFilters,
+    resetFilters
+  }: {
+    hasActiveFilters: boolean;
+    resetFilters: () => void;
+  }) => (
+    <div className="space-y-3">
+      <p className="text-sm text-zinc-700">
+        Ничего не нашли. Попробуйте сменить категорию
+        {hasActiveFilters ? " или сбросить фильтры" : ""}
+        , либо добавьте свой ингредиент.
+      </p>
+      <div className="flex flex-wrap items-center gap-2">
+        {hasActiveFilters ? (
+          <button
+            type="button"
+            onClick={resetFilters}
+            className="inline-flex items-center rounded-md border border-zinc-300 bg-white px-3 py-2 text-sm font-medium text-zinc-700 transition-colors hover:border-zinc-400 hover:bg-zinc-100 hover:text-zinc-950"
+          >
+            Сбросить фильтры
+          </button>
+        ) : null}
         <button
           type="button"
-          disabled={pendingCustom || !draft.selectedName.trim()}
-          onClick={async () => {
-            setPendingCustom(true);
-            const result = await createRecipeCustomIngredientAction({
-              category: draft.category,
-              subtype: draft.subtype,
-              displayName: draft.selectedName.trim(),
-              defaultDisplayUnit: draft.amountEnteredUnit
-            });
-            setPendingCustom(false);
-            setCustomMessage(result.message);
-            if (result.ok && result.item) {
-              setCreatingCustom(false);
-              onChange(applySelection(draft, result.item));
-            }
-          }}
-          className="rounded-md bg-zinc-900 px-3 py-2 text-xs font-medium text-white disabled:opacity-60"
+          onClick={switchToCustomWithCurrentName}
+          className="inline-flex items-center rounded-md bg-zinc-950 px-3 py-2 text-sm font-medium text-white transition-colors hover:bg-zinc-800"
         >
-          Создать свой ингредиент
+          Добавить свой ингредиент
         </button>
         <button
           type="button"
@@ -1739,26 +2987,22 @@ function IngredientEditor({
           onClick={async () => {
             const result = await proposeRecipeIngredientAction({
               category: draft.category,
-              subtype: draft.subtype,
+              subtype: pickerSubtype,
               displayName: draft.selectedName.trim()
             });
             setCustomMessage(result.message);
           }}
-          className="rounded-md border border-zinc-300 bg-white px-3 py-2 text-xs"
+          className="inline-flex items-center rounded-md border border-zinc-300 bg-white px-3 py-2 text-sm font-medium text-zinc-700 transition-colors hover:border-zinc-400 hover:bg-zinc-100 hover:text-zinc-950 disabled:opacity-60"
         >
-          Предложить ингредиент в каталог
+          Предложить в каталог
         </button>
       </div>
       {customMessage ? <p className="text-xs text-zinc-500">{customMessage}</p> : null}
     </div>
   );
 
-  const isHop = draft.category === "hop";
-  const hopUseType = getHopUseType(draft);
-  const quantityStep = getInventoryUnitInputStep(draft.amountEnteredUnit);
-
   return (
-    <div className="space-y-4 rounded-2xl border border-zinc-100 bg-white p-5 shadow-lg">
+    <div className="space-y-4">
       <div className="flex items-start justify-between gap-3">
         <div>
           <h3 className="text-sm font-semibold text-zinc-950">
@@ -1766,31 +3010,149 @@ function IngredientEditor({
           </h3>
           <p className="text-xs text-zinc-500">{getSectionTitle(draft.category)}</p>
         </div>
-        {creatingCustom ? null : (
-          <button type="button" onClick={() => setCreatingCustom((current) => !current)} className="text-xs text-zinc-500 underline">
-            {creatingCustom ? "Скрыть" : "Custom ingredient"}
-          </button>
-        )}
+        <button
+          type="button"
+          className="text-sm text-zinc-500 transition-colors hover:text-zinc-700"
+          onClick={onCancel}
+        >
+          Закрыть
+        </button>
       </div>
+
+      <InventoryIngredientCategoryGrid
+        value={selectedCategoryValue}
+        onChange={(nextCategory) => {
+          setShowStockSearch(false);
+          setCustomMessage(null);
+          onChange(applyRecipeIngredientCategoryContextChange(draft, nextCategory));
+        }}
+        legend="Категория ингредиента"
+        testId="recipe-ingredient-category-grid"
+      />
+
+      <div className="grid gap-2 rounded-md bg-zinc-100 p-1 text-sm sm:grid-cols-3" data-testid="recipe-ingredient-source-switch">
+        {([
+          ["use_stock", "Из склада"],
+          ["catalog", "Из каталога"],
+          ["custom", "Добавить свой"]
+        ] as const).map(([mode, label]) => (
+          <button
+            key={mode}
+            type="button"
+            onClick={() => switchSourceMode(mode)}
+            className={`rounded px-3 py-2 font-medium transition-colors ${sourceMode === mode ? "bg-white text-zinc-950 shadow" : "text-zinc-500 hover:bg-white/70"}`}
+          >
+            {label}
+          </button>
+        ))}
+      </div>
+
+      <InventoryIngredientContextSummary
+        summary={contextSummary}
+        testId="recipe-ingredient-context-summary"
+      />
 
       <div className="space-y-1">
         <label className="text-xs font-medium text-zinc-700">Ингредиент</label>
-        <IngredientPicker
-          category={draft.category}
-          value={draft.selectedName}
-          onValueChange={(value) => onChange(applyQueryChange(draft, value))}
-          onSelect={(item) => onChange(applySelection(draft, item))}
-          placeholder={placeholder}
-          emptyCta={emptyCta}
-        />
+        {selectedPreview ? (
+          <IngredientSelectionCard
+            item={selectedPreview}
+            label={selectedStockPreview ? "Выбрано со склада" : selectedPreview.source === "custom" ? "Выбрано: свой ингредиент" : "Выбрано из каталога"}
+            actionLabel="Изменить выбор"
+            onAction={() => {
+              setShowStockSearch(false);
+              onChange(clearRecipeIngredientSelection(draft));
+            }}
+            hideTypedSummary={!selectedStockPreview}
+            hideSubtitle={!selectedStockPreview}
+            mergeBrandAndCountry
+          />
+        ) : sourceMode === "custom" ? (
+          <div className="space-y-3 rounded-md border border-zinc-200 bg-white px-3 py-3 shadow-sm" data-testid="recipe-custom-ingredient-create-panel">
+            <label className="block text-sm font-medium text-zinc-900">
+              Название своего ингредиента
+              <input
+                value={draft.selectedName}
+                onChange={(event) => {
+                  setCustomMessage(null);
+                  onChange(applyQueryChange(draft, event.target.value));
+                }}
+                placeholder={placeholder}
+                className="mt-1 h-10 w-full rounded-md border border-zinc-200 px-3 text-sm text-zinc-900"
+              />
+            </label>
+            <div className="flex flex-wrap items-center gap-2">
+              <button
+                type="button"
+                disabled={pendingCustom || !draft.selectedName.trim()}
+                onClick={() => void createCustomIngredient()}
+                className="inline-flex items-center rounded-md bg-zinc-950 px-3 py-2 text-sm font-medium text-white transition-colors hover:bg-zinc-800 disabled:opacity-60"
+              >
+                {pendingCustom ? "Создание..." : "Создать свой ингредиент"}
+              </button>
+              <button
+                type="button"
+                disabled={!draft.selectedName.trim()}
+                onClick={async () => {
+                  const result = await proposeRecipeIngredientAction({
+                    category: draft.category,
+                    subtype: pickerSubtype,
+                    displayName: draft.selectedName.trim()
+                  });
+                  setCustomMessage(result.message);
+                }}
+                className="inline-flex items-center rounded-md border border-zinc-300 bg-white px-3 py-2 text-sm font-medium text-zinc-700 transition-colors hover:border-zinc-400 hover:bg-zinc-100 hover:text-zinc-950 disabled:opacity-60"
+              >
+                Предложить в каталог
+              </button>
+            </div>
+            {customMessage ? <p className="text-xs text-zinc-500">{customMessage}</p> : null}
+          </div>
+        ) : (
+          <>
+            {showIngredientPicker ? (
+              <IngredientPicker
+                type={ingredientSearchType}
+                category={draft.category}
+                subtype={pickerSubtype}
+                value={draft.selectedName}
+                onValueChange={(value) => onChange(applyQueryChange(draft, value))}
+                onSelect={(item) => {
+                  setShowStockSearch(false);
+                  onChange(applySelection(draft, item));
+                }}
+                searchIngredients={sourceMode === "use_stock" ? searchStockIngredientsForRecipe : undefined}
+                hydrateRecentSelectionsOnInit={sourceMode !== "use_stock"}
+                enableQuickStart={sourceMode !== "use_stock"}
+                allowCustomOnlyFilter={sourceMode !== "use_stock"}
+                placeholder={sourceMode === "use_stock" ? "Поиск по складу" : placeholder}
+                emptyCta={emptyCta}
+              />
+            ) : null}
+            <StockIngredientList
+              active={sourceMode === "use_stock"}
+              category={draft.category}
+              type={ingredientSearchType}
+              subtype={pickerSubtype}
+              searchIngredients={searchStockIngredientsForRecipe}
+              onOverflowChange={setShowStockSearch}
+              onSelect={(item) => {
+                setShowStockSearch(false);
+                onChange(applySelection(draft, item));
+              }}
+            />
+          </>
+        )}
         <p className="text-xs text-zinc-500">
-          {draft.ingredientCatalogItemId || draft.userCustomIngredientId
-            ? [
-              draft.selectedSecondaryName || null,
-              draft.selectedSummary || null,
-              draft.familyDisplayName || null
-            ].filter(Boolean).join(" · ") || "Ингредиент выбран."
-            : "Сначала выберите ингредиент из каталога или создайте свой."}
+          {draft.inventorySelectionMeta?.stockQuantityLabel
+            ? `Выбрано со склада: ${draft.inventorySelectionMeta.stockQuantityLabel}.`
+            : draft.ingredientCatalogItemId || draft.userCustomIngredientId
+              ? "Ингредиент выбран. Укажите количество и параметры добавления в рецепт."
+              : sourceMode === "use_stock"
+                ? "Выберите позицию со склада или уточните поиск."
+                : sourceMode === "custom"
+                  ? "Создайте свой ингредиент, затем укажите количество и параметры добавления."
+                  : "Выберите ингредиент из каталога или добавьте свой."}
         </p>
       </div>
 
@@ -2037,6 +3399,8 @@ export function RecipeDesigner({
   initialRecipe,
   initialTitle,
   initialIngredientSelection = null,
+  initialStockCoverage = null,
+  equipmentProfiles = [],
   onSaveStatusChange,
   onRecipeCreated,
   onPublicationStateChange
@@ -2060,7 +3424,15 @@ export function RecipeDesigner({
   const [efficiency, setEfficiency] = useState(initialRecipe?.efficiency != null ? String(initialRecipe.efficiency) : "75");
   const [boilTimeMinutes, setBoilTimeMinutes] = useState(initialRecipe?.boilTimeMinutes != null ? String(initialRecipe.boilTimeMinutes) : "60");
   const [processMeta, setProcessMeta] = useState<RecipeProcessMeta>(() => cloneRecipeProcessMeta(initialRecipe?.processMeta ?? defaultRecipeProcessMeta));
+  const [calculationMeta, setCalculationMeta] = useState<RecipeCalculationMeta>(() => cloneRecipeCalculationMeta(initialRecipe?.calculationMeta ?? null));
+  const [waterPlanMeta, setWaterPlanMeta] = useState<RecipeWaterPlanMeta>(() => cloneRecipeWaterPlanMeta(initialRecipe?.waterPlanMeta ?? null));
+  const [equipmentProfileId, setEquipmentProfileId] = useState<string | null>(initialRecipe?.equipmentProfileId ?? null);
+  const [equipmentProfileSnapshot, setEquipmentProfileSnapshot] = useState<EquipmentProfileSnapshot | null>(() => cloneEquipmentProfileSnapshot(initialRecipe?.equipmentProfileSnapshot ?? null));
   const [ingredients, setIngredients] = useState<DesignerIngredient[]>(initialRecipe?.ingredients.map(toDesignerIngredient) ?? []);
+  const [stockCoverage, setStockCoverage] = useState<RecipeStockCoverageDto | null>(initialStockCoverage);
+  const [beerXmlExport, setBeerXmlExport] = useState("");
+  const [beerXmlImport, setBeerXmlImport] = useState("");
+  const [brewfatherJsonImport, setBrewfatherJsonImport] = useState("");
   const [openEditor, setOpenEditor] = useState<OpenEditorState | null>(null);
   const [saveResult, setSaveResult] = useState<RecipeEditorResult | null>(null);
   const [preview, setPreview] = useState<RecipeDraftPreviewDto | null>(buildInitialPreview(initialRecipe));
@@ -2072,6 +3444,10 @@ export function RecipeDesigner({
   const [publishConfirmOpen, setPublishConfirmOpen] = useState(false);
   const [makePrivateConfirmOpen, setMakePrivateConfirmOpen] = useState(false);
   const [readinessDialogOpen, setReadinessDialogOpen] = useState(false);
+  const [bitternessSettingsOpen, setBitternessSettingsOpen] = useState(false);
+  const [importExportOpen, setImportExportOpen] = useState(false);
+  const [startBrewOpen, setStartBrewOpen] = useState(false);
+  const [startBrewResult, setStartBrewResult] = useState<StartBrewResult>(null);
   const pendingSaveRef = useRef(false);
   const initialSelectionAppliedRef = useRef(false);
 
@@ -2086,14 +3462,25 @@ export function RecipeDesigner({
     efficiency: efficiency.trim() ? Number(efficiency) : null,
     boilTimeMinutes: Number(boilTimeMinutes || 0),
     processMeta,
+    calculationMeta,
+    equipmentProfileId,
+    equipmentProfileSnapshot,
+    waterPlanMeta,
     ingredients: ingredients.map(buildIngredientPayload)
-  }), [authorNotes, batchSize.quantity, batchSize.unit, boilTimeMinutes, description, efficiency, ingredients, processMeta, publicationState, styleId, title]);
+  }), [authorNotes, batchSize.quantity, batchSize.unit, boilTimeMinutes, calculationMeta, description, efficiency, equipmentProfileId, equipmentProfileSnapshot, ingredients, processMeta, publicationState, styleId, title, waterPlanMeta]);
+  const waterPlanResult = useMemo(() => buildRecipeWaterPlanResult({
+    waterPlanMeta,
+    equipmentProfileSnapshot,
+    fallbackBatchVolumeL: getBatchVolumeLiters(batchSize.quantity, batchSize.unit),
+    grainKg: getFermentableWeightTotalKg(ingredients),
+    beerSrm: preview?.color ?? initialRecipe?.color ?? null,
+    fermentables: getFermentablesForWaterPlan(ingredients)
+  }), [batchSize.quantity, batchSize.unit, equipmentProfileSnapshot, ingredients, initialRecipe?.color, preview?.color, waterPlanMeta]);
   const savePayload = useMemo(() => normalizeSavePayload(payload), [payload]);
 
   const currentSignature = useMemo(() => JSON.stringify(payload), [payload]);
   const [savedSignature, setSavedSignature] = useState(currentSignature);
   const isDirty = currentSignature !== savedSignature;
-  const editorDirty = openEditor ? serializeIngredient(openEditor.draft) !== openEditor.initialSignature : false;
   const hasCurrentSaveError = saveResultSignature === currentSignature && Boolean(saveResult && !saveResult.ok);
   const saveStatus: RecipeSaveStatus = hasCurrentSaveError ? "error" : (pendingSave || isDirty ? "saving" : "saved");
   const persistMode: "create" | "edit" = activeRecipeId ? "edit" : mode;
@@ -2269,18 +3656,11 @@ export function RecipeDesigner({
   }, [blockedSignature, currentSignature, isDirty, persistRecipe]);
 
   const maybeOpenEditor = (next: OpenEditorState) => {
-    if (editorDirty && !window.confirm("Текущий редактор ингредиента содержит несохранённые изменения. Закрыть его?")) {
-      return;
-    }
     setOpenEditor(next);
   };
 
-  const closeEditor = (force = false) => {
+  const closeEditor = () => {
     if (!openEditor) {
-      return;
-    }
-
-    if (!force && editorDirty && !window.confirm("Закрыть редактор ингредиента без сохранения изменений?")) {
       return;
     }
 
@@ -2315,6 +3695,53 @@ export function RecipeDesigner({
     setIngredients((current) => current.filter((ingredient) => ingredient.localId !== localId));
     if (openEditor?.localId === localId) {
       setOpenEditor(null);
+    }
+  };
+
+  const openImportedCatalogMatcher = (ingredient: DesignerIngredient) => {
+    const draft = {
+      ...ingredient,
+      inventoryIntentMode: "catalog" as RecipeInventoryIntentMode,
+      inventorySelectionMeta: null
+    };
+    maybeOpenEditor({
+      localId: ingredient.localId,
+      category: ingredient.category,
+      draft,
+      initialSignature: serializeIngredient(draft),
+      isExisting: true
+    });
+  };
+
+  const addImportedIngredientAsCustom = async (ingredient: DesignerIngredient) => {
+    const snapshot = readImportedDesignerIngredientSnapshot(ingredient);
+    const displayName = snapshot?.name?.trim() || ingredient.selectedName.trim();
+    if (!displayName) {
+      return;
+    }
+
+    setPendingSave(true);
+    const result = await createRecipeCustomIngredientAction({
+      category: ingredient.category,
+      subtype: ingredient.subtype,
+      displayName,
+      defaultDisplayUnit: snapshot?.defaultDisplayUnit ?? ingredient.defaultDisplayUnit,
+      technicalData: (snapshot?.technicalData ?? null) as IngredientTechnicalData | null
+    });
+    setPendingSave(false);
+    setSaveResult({ ok: result.ok, message: result.message });
+    setSaveResultSignature(currentSignature);
+
+    if (result.ok && result.item) {
+      setIngredients((current) => current.map((line) => (
+        line.localId === ingredient.localId
+          ? applySelection({
+            ...line,
+            inventoryIntentMode: "custom",
+            inventorySelectionMeta: null
+          }, result.item!)
+          : line
+      )));
     }
   };
 
@@ -2367,7 +3794,6 @@ export function RecipeDesigner({
   const fermentables = getCategoryRows(ingredients, "fermentable");
   const hops = getCategoryRows(ingredients, "hop");
   const yeasts = getCategoryRows(ingredients, "yeast");
-  const waterTreatment = getCategoryRows(ingredients, "water_treatment");
   const consumables = getCategoryRows(ingredients, "consumable");
 
   const fermentableTotalKg = getFermentableWeightTotalKg(fermentables);
@@ -2424,6 +3850,8 @@ export function RecipeDesigner({
                           onDelete={deleteIngredient}
                           onQuantityChange={updateIngredientQuantity}
                           onTimeChange={updateHopTimeMinutes}
+                          onAddImportedAsCustom={addImportedIngredientAsCustom}
+                          onMapImportedSource={openImportedCatalogMatcher}
                         />
                       ))}
                     </ul>
@@ -2443,16 +3871,11 @@ export function RecipeDesigner({
         empty: "Добавьте дрожжи для публикации рецепта."
       },
       {
-        category: "water_treatment",
-        title: "Водоподготовка",
-        items: waterTreatment,
-        empty: "Добавки для воды можно оставить пустыми."
-      },
-      {
         category: "consumable",
-        title: "Расходники",
+        title: "Прочее / расходники",
+        subtitle: consumables.length ? `${consumables.length} поз.` : undefined,
         items: consumables,
-        empty: "Фининг, нутриенты и другие process aids."
+        empty: "Whirlfloc, нутриенты, фининги и другие процессные добавки можно держать здесь."
       }
     ];
 
@@ -2547,6 +3970,341 @@ export function RecipeDesigner({
     });
   };
 
+  const runInventoryAction = async (action: "sync" | "reserve" | "consume" | "release") => {
+    const saveBeforeInventoryResult = await persistRecipe({ surfaceInlineResult: true });
+    if (saveBeforeInventoryResult && !saveBeforeInventoryResult.ok) {
+      return;
+    }
+
+    const recipeId = saveBeforeInventoryResult?.recipe?.id ?? activeRecipeId;
+    if (!recipeId) {
+      return;
+    }
+
+    const actionMap: Record<typeof action, (recipeId: string) => Promise<RecipeInventoryActionResult>> = {
+      sync: syncRecipeInventoryAllocationsAction,
+      reserve: reserveRecipeInventoryAction,
+      consume: consumeRecipeInventoryAction,
+      release: releaseRecipeInventoryAction
+    };
+
+    setPendingSave(true);
+    const result = await actionMap[action](recipeId);
+    setPendingSave(false);
+    setSaveResult({
+      ok: result.ok,
+      message: result.message
+    });
+    setSaveResultSignature(currentSignature);
+
+    if (result.coverage) {
+      setStockCoverage(result.coverage);
+      return;
+    }
+
+    const refreshed = await getRecipeStockCoverageAction(recipeId);
+    if (refreshed.coverage) {
+      setStockCoverage(refreshed.coverage);
+    }
+  };
+
+  const handleExportBeerXml = async (): Promise<ImportExportActionResult> => {
+    const saveBeforeExportResult = await persistRecipe({ surfaceInlineResult: true });
+    if (saveBeforeExportResult && !saveBeforeExportResult.ok) {
+      return {
+        ok: false,
+        message: saveBeforeExportResult.message,
+        fieldErrors: saveBeforeExportResult.fieldErrors
+      };
+    }
+
+    const recipeId = saveBeforeExportResult?.recipe?.id ?? activeRecipeId;
+    if (!recipeId) {
+      return { ok: false, message: "Сначала сохраните рецепт, затем подготовьте экспорт." };
+    }
+
+    setPendingSave(true);
+    try {
+      const result = await exportRecipeBeerXmlAction(recipeId);
+      setSaveResult({ ok: result.ok, message: result.message });
+      setSaveResultSignature(currentSignature);
+
+      if (result.ok && result.beerXml) {
+        setBeerXmlExport(result.beerXml);
+      }
+
+      return { ok: result.ok, message: result.message };
+    } finally {
+      setPendingSave(false);
+    }
+  };
+
+  const applyImportedRecipe = React.useCallback((recipe: RecipeDetailDto, message: string) => {
+    const normalizedState = normalizeEditorPublicationState(recipe.publicationState);
+    const nextIngredients = recipe.ingredients.map(toDesignerIngredient);
+    const nextProcessMeta = cloneRecipeProcessMeta(recipe.processMeta);
+    const nextCalculationMeta = cloneRecipeCalculationMeta(recipe.calculationMeta ?? null);
+    const nextWaterPlanMeta = cloneRecipeWaterPlanMeta(recipe.waterPlanMeta ?? null);
+    const nextEquipmentProfileSnapshot = cloneEquipmentProfileSnapshot(recipe.equipmentProfileSnapshot ?? null);
+    const nextPayload = buildEditorPayloadFromRecipe(recipe, nextIngredients);
+    const nextSignature = JSON.stringify(nextPayload);
+
+    setActiveRecipeId(recipe.id);
+    setActiveRecipeSlug(recipe.slug);
+    setActiveVersionNumber(recipe.versionNumber);
+    setRecipeVersions(recipe.versions);
+    setTitle(recipe.title);
+    setStyleId(recipe.styleId ?? "");
+    setDescription(recipe.description ?? "");
+    setAuthorNotes(recipe.authorNotes ?? "");
+    setPublicationState(normalizedState);
+    setSavedPublicationState(normalizedState);
+    setBatchSize({
+      quantity: String(recipe.batchSizeEnteredQuantity),
+      unit: recipe.batchSizeEnteredUnit
+    });
+    setEfficiency(recipe.efficiency != null ? String(recipe.efficiency) : "");
+    setBoilTimeMinutes(String(recipe.boilTimeMinutes));
+    setProcessMeta(nextProcessMeta);
+    setCalculationMeta(nextCalculationMeta);
+    setWaterPlanMeta(nextWaterPlanMeta);
+    setEquipmentProfileId(recipe.equipmentProfileId ?? null);
+    setEquipmentProfileSnapshot(nextEquipmentProfileSnapshot);
+    setIngredients(nextIngredients);
+    setStockCoverage(null);
+    setPreview(buildInitialPreview(recipe));
+    setPreviewError(null);
+    setBlockedSignature(null);
+    setSavedSignature(nextSignature);
+    setSaveResult({ ok: true, message });
+    setSaveResultSignature(nextSignature);
+    setOpenEditor(null);
+    setImportExportOpen(false);
+    onRecipeCreated?.(recipe);
+
+    if (typeof window !== "undefined") {
+      window.history.replaceState(window.history.state, "", `/app/recipes/${recipe.id}/edit`);
+    }
+  }, [onRecipeCreated]);
+
+  const handleImportBeerXml = async (): Promise<RecipeEditorResult> => {
+    const beerXml = beerXmlImport.trim();
+    if (!beerXml) {
+      return { ok: false, message: "Вставьте BeerXML или загрузите файл перед импортом." };
+    }
+
+    setPendingSave(true);
+    try {
+      const result = await importBeerXmlRecipeAction(beerXml);
+
+      if (!result.ok || !result.recipe) {
+        setSaveResult(result);
+        setSaveResultSignature(currentSignature);
+        return result;
+      }
+
+      applyImportedRecipe(result.recipe, result.message);
+
+      return result;
+    } finally {
+      setPendingSave(false);
+    }
+  };
+
+  const handleImportBrewfatherJson = async (): Promise<RecipeEditorResult> => {
+    const json = brewfatherJsonImport.trim();
+    if (!json) {
+      return { ok: false, message: "Вставьте Brewfather JSON или загрузите файл перед импортом." };
+    }
+
+    let parsed: unknown;
+    try {
+      parsed = JSON.parse(json);
+    } catch {
+      const result = { ok: false, message: "Brewfather JSON не удалось прочитать: проверьте синтаксис файла." };
+      setSaveResult(result);
+      setSaveResultSignature(currentSignature);
+      return result;
+    }
+
+    setPendingSave(true);
+    try {
+      const result = await importBrewfatherJsonRecipeAction(parsed);
+
+      if (!result.ok || !result.recipe) {
+        setSaveResult(result);
+        setSaveResultSignature(currentSignature);
+        return result;
+      }
+
+      applyImportedRecipe(result.recipe, result.message);
+
+      return result;
+    } finally {
+      setPendingSave(false);
+    }
+  };
+
+  const handleCreateBrewBatch = async () => {
+    const saveBeforeBatchResult = await persistRecipe({ surfaceInlineResult: true });
+    if (saveBeforeBatchResult && !saveBeforeBatchResult.ok) {
+      return;
+    }
+
+    const recipeId = saveBeforeBatchResult?.recipe?.id ?? activeRecipeId;
+    if (!recipeId) {
+      return;
+    }
+
+    setPendingSave(true);
+    const result = await createBrewBatchFromRecipeAction(recipeId);
+    setPendingSave(false);
+    setSaveResult({ ok: result.ok, message: result.message });
+    setSaveResultSignature(currentSignature);
+  };
+
+  const handleStartBrew = async ({ consumeIngredients }: { consumeIngredients: boolean }) => {
+    setStartBrewResult(null);
+    const saveBeforeBatchResult = await persistRecipe({ surfaceInlineResult: true });
+    if (saveBeforeBatchResult && !saveBeforeBatchResult.ok) {
+      setStartBrewResult({
+        ok: false,
+        message: saveBeforeBatchResult.message
+      });
+      return;
+    }
+
+    const recipeId = saveBeforeBatchResult?.recipe?.id ?? activeRecipeId;
+    if (!recipeId) {
+      setStartBrewResult({
+        ok: false,
+        message: "Сначала сохраните рецепт, затем начните варку."
+      });
+      return;
+    }
+
+    setPendingSave(true);
+    try {
+      if (consumeIngredients) {
+        const consumeResult = await consumeRecipeInventoryAction(recipeId);
+        if (!consumeResult.ok) {
+          setSaveResult({ ok: false, message: consumeResult.message });
+          setSaveResultSignature(currentSignature);
+          setStartBrewResult({
+            ok: false,
+            message: consumeResult.message
+          });
+          if (consumeResult.coverage) {
+            setStockCoverage(consumeResult.coverage);
+          }
+          return;
+        }
+        if (consumeResult.coverage) {
+          setStockCoverage(consumeResult.coverage);
+        }
+      }
+
+      const batchResult = await createBrewBatchFromRecipeAction(recipeId);
+      const nextResult = {
+        ok: batchResult.ok,
+        message: batchResult.ok
+          ? "Партия создана. Пошаговый режим варки появится здесь позже, а пока рецепт сохранен как план варки."
+          : batchResult.message,
+        brewBatchId: batchResult.brewBatchId ?? null
+      };
+      setStartBrewResult(nextResult);
+      setSaveResult({ ok: batchResult.ok, message: batchResult.message });
+      setSaveResultSignature(currentSignature);
+    } catch {
+      const message = "Не удалось начать варку. Попробуйте еще раз.";
+      setStartBrewResult({
+        ok: false,
+        message
+      });
+      setSaveResult({ ok: false, message });
+      setSaveResultSignature(currentSignature);
+    } finally {
+      setPendingSave(false);
+    }
+  };
+
+  const handleSelectEquipmentProfile = async (profileId: string | null) => {
+    if (!profileId) {
+      setEquipmentProfileId(null);
+      setEquipmentProfileSnapshot(null);
+      return;
+    }
+
+    setPendingSave(true);
+    const result = await getEquipmentProfileSnapshotAction(profileId);
+    setPendingSave(false);
+
+    if (!result.ok || !result.snapshot) {
+      setSaveResult({ ok: false, message: result.message });
+      setSaveResultSignature(currentSignature);
+      return;
+    }
+
+    setEquipmentProfileId(profileId);
+    setEquipmentProfileSnapshot(result.snapshot);
+  };
+
+  const handleRefreshEquipmentProfile = async () => {
+    if (!equipmentProfileId) {
+      return;
+    }
+
+    setPendingSave(true);
+    const result = await getEquipmentProfileSnapshotAction(equipmentProfileId);
+    setPendingSave(false);
+
+    if (!result.ok || !result.snapshot) {
+      setSaveResult({ ok: false, message: result.message });
+      setSaveResultSignature(currentSignature);
+      return;
+    }
+
+    setEquipmentProfileSnapshot(result.snapshot);
+    setSaveResult({ ok: true, message: result.message });
+    setSaveResultSignature(currentSignature);
+  };
+
+  const handleUseStarterEquipmentProfile = () => {
+    setEquipmentProfileId(null);
+    setEquipmentProfileSnapshot(null);
+    setSaveResult({
+      ok: true,
+      message: `Starter profile используется для расчетов: ${buildStarterEquipmentProfileSnapshot(getBatchVolumeLiters(batchSize.quantity, batchSize.unit)).targetBatchVolumeL} л.`
+    });
+    setSaveResultSignature(currentSignature);
+  };
+
+  const handleScaleRecipeToEquipmentProfile = () => {
+    if (!equipmentProfileSnapshot) {
+      return;
+    }
+
+    const currentBatchVolumeL = getBatchVolumeLiters(batchSize.quantity, batchSize.unit) ?? DEFAULT_BATCH_SIZE_ENTERED_QUANTITY;
+    const currentEfficiencyPct = Number(efficiency) || DEFAULT_EFFICIENCY;
+    const scaled = scaleRecipeEditorToEquipment({
+      currentBatchVolumeL,
+      targetBatchVolumeL: equipmentProfileSnapshot.targetBatchVolumeL,
+      currentEfficiencyPct,
+      targetEfficiencyPct: equipmentProfileSnapshot.brewhouseEfficiencyPct,
+      ingredients
+    });
+
+    setBatchSize({ quantity: scaled.batchSizeQuantityL, unit: "l" });
+    setEfficiency(scaled.efficiencyPct);
+    setBoilTimeMinutes(String(equipmentProfileSnapshot.boilTimeMin));
+    setIngredients(scaled.ingredients);
+    setSaveResult({
+      ok: true,
+      message: `Рецепт масштабирован под ${equipmentProfileSnapshot.name}: x${scaled.volumeRatio}.`
+    });
+    setSaveResultSignature(currentSignature);
+  };
+
   return (
     <div className="space-y-5">
       <section className="-mx-4 bg-white/90 px-4 py-3 shadow-[0_1px_3px_0_rgb(0_0_0_/_0.04)] backdrop-blur-md">
@@ -2600,6 +4358,14 @@ export function RecipeDesigner({
                 ) : null}
               </>
             ) : null}
+            <RecipeActionsMenu
+              pending={pendingSave}
+              onOpenImportExport={() => setImportExportOpen(true)}
+              onOpenStartBrew={() => {
+                setStartBrewResult(null);
+                setStartBrewOpen(true);
+              }}
+            />
           </div>
         </div>
         {activeRecipeId ? (
@@ -2658,7 +4424,12 @@ export function RecipeDesigner({
           sectionErrors={sectionErrors}
           preview={preview}
         />
-        <RecipeStyleStatsBlock preview={preview} recalculating={recalculating} previewError={previewError} />
+        <RecipeStyleStatsBlock
+          preview={preview}
+          recalculating={recalculating}
+          previewError={previewError}
+          onOpenBitternessSettings={() => setBitternessSettingsOpen(true)}
+        />
       </section>
 
       <div className="space-y-4">
@@ -2706,6 +4477,8 @@ export function RecipeDesigner({
                       onDelete={deleteIngredient}
                       onQuantityChange={updateIngredientQuantity}
                       onTimeChange={updateHopTimeMinutes}
+                      onAddImportedAsCustom={addImportedIngredientAsCustom}
+                      onMapImportedSource={openImportedCatalogMatcher}
                     />
                   ))}
                 </ul>
@@ -2722,6 +4495,29 @@ export function RecipeDesigner({
         {sectionErrors["processMeta.mashProfile.steps"] ? (
           <p className="text-xs text-rose-700">{sectionErrors["processMeta.mashProfile.steps"]}</p>
         ) : null}
+      </div>
+
+      <div className="space-y-4">
+        <WaterSetupWizard waterPlanMeta={waterPlanMeta} waterPlanResult={waterPlanResult} onChange={setWaterPlanMeta} />
+
+        <EquipmentProfileBlock
+          equipmentProfiles={equipmentProfiles}
+          selectedEquipmentProfileId={equipmentProfileId}
+          equipmentProfileSnapshot={equipmentProfileSnapshot}
+          waterPlanResult={waterPlanResult}
+          pending={pendingSave}
+          onSelectProfile={(profileId) => void handleSelectEquipmentProfile(profileId)}
+          onRefreshFromProfile={() => void handleRefreshEquipmentProfile()}
+          onUseStarterProfile={handleUseStarterEquipmentProfile}
+          onScaleToProfile={handleScaleRecipeToEquipmentProfile}
+        />
+
+        <StockCoverageSummary
+          coverage={stockCoverage}
+          pending={pendingSave}
+          activeRecipeId={activeRecipeId}
+          onAction={(action) => void runInventoryAction(action)}
+        />
       </div>
 
       <section className="grid gap-4 lg:grid-cols-2">
@@ -2777,15 +4573,39 @@ export function RecipeDesigner({
         onClose={() => setReadinessDialogOpen(false)}
       />
 
-      {openEditor ? (
-        <div className="fixed inset-0 z-30 bg-black/45 p-3 sm:p-6" onClick={() => closeEditor()}>
-          <div className={`mx-auto overflow-y-auto ${isMobile ? "mt-auto max-h-[92vh] w-full" : "mt-6 max-h-[calc(100vh-96px)] w-full max-w-3xl"}`}>
-            <div onClick={(event) => event.stopPropagation()}>
-              {editorPanel}
-            </div>
-          </div>
-        </div>
-      ) : null}
+      <BitternessSettingsDrawer
+        open={bitternessSettingsOpen}
+        calculationMeta={calculationMeta}
+        onChange={setCalculationMeta}
+        onClose={() => setBitternessSettingsOpen(false)}
+      />
+
+      <ImportExportModal
+        open={importExportOpen}
+        pending={pendingSave}
+        activeRecipeId={activeRecipeId}
+        beerXmlExport={beerXmlExport}
+        beerXmlImport={beerXmlImport}
+        brewfatherJsonImport={brewfatherJsonImport}
+        onBeerXmlImportChange={setBeerXmlImport}
+        onBrewfatherJsonImportChange={setBrewfatherJsonImport}
+        onExportBeerXml={handleExportBeerXml}
+        onImportBeerXml={handleImportBeerXml}
+        onImportBrewfatherJson={handleImportBrewfatherJson}
+        onClose={() => setImportExportOpen(false)}
+      />
+
+      <StartBrewModal
+        open={startBrewOpen}
+        pending={pendingSave}
+        result={startBrewResult}
+        onStart={(options) => void handleStartBrew(options)}
+        onClose={() => setStartBrewOpen(false)}
+      />
+
+      <IngredientAddDrawer open={Boolean(openEditor)} isMobile={isMobile} onClose={() => closeEditor()}>
+        {editorPanel}
+      </IngredientAddDrawer>
     </div>
   );
 }

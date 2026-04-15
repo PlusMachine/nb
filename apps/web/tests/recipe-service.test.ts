@@ -2,14 +2,17 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { toRecipeSlugBase } from "../features/recipes/slug";
 
+vi.mock("server-only", () => ({}));
+
 const uuid = (n: number) => `00000000-0000-4000-8000-${String(n).padStart(12, "0")}`;
 
 const { tableRefs, mockState } = vi.hoisted(() => ({
   tableRefs: {
     recipes: { name: "recipes", id: "id", authorId: "authorId", publicationState: "publicationState", slug: "slug", createdAt: "createdAt", updatedAt: "updatedAt" },
-    recipeIngredients: { name: "recipe_ingredients", id: "id", recipeId: "recipeId", ingredientCatalogItemId: "ingredientCatalogItemId", userCustomIngredientId: "userCustomIngredientId", type: "type", stage: "stage" },
+    recipeIngredients: { name: "recipe_ingredients", id: "id", recipeId: "recipeId", persistentKey: "persistentKey", displayOrder: "displayOrder", ingredientCatalogItemId: "ingredientCatalogItemId", userCustomIngredientId: "userCustomIngredientId", type: "type", stage: "stage" },
     ingredients: { name: "ingredients", id: "id", isActive: "isActive", type: "type" },
-    userCustomIngredients: { name: "userCustomIngredients", id: "id", userId: "userId", type: "type" }
+    userBrewingSettings: { name: "userBrewingSettings", userId: "userId" },
+    userCustomIngredients: { name: "userCustomIngredients", id: "id", userId: "userId", type: "type", normalizedName: "normalizedName" }
   },
   mockState: {
     idCounter: 0,
@@ -75,9 +78,20 @@ vi.mock("@nb/db", () => {
         findFirst: async (arg: any) => {
           const id = getEqValue(arg?.where, "id");
           const userId = getEqValue(arg?.where, "userId");
-          const item = mockState.customById.get(id) ?? null;
+          const type = getEqValue(arg?.where, "type");
+          const normalizedName = getEqValue(arg?.where, "normalizedName");
+          const item = id
+            ? mockState.customById.get(id) ?? null
+            : [...mockState.customById.values()].find((candidate) => (
+              (!userId || candidate.userId === userId)
+              && (!type || candidate.type === type)
+              && (!normalizedName || candidate.normalizedName === normalizedName)
+            )) ?? null;
           return item && item.userId === userId ? item : null;
         }
+      },
+      userBrewingSettings: {
+        findFirst: async () => null
       }
     },
     insert: (table: { name: string }) => ({
@@ -85,7 +99,14 @@ vi.mock("@nb/db", () => {
         if (table.name === "recipe_ingredients") {
           const payload = Array.isArray(values) ? values : [values];
           for (const value of payload) {
-            const row = { ...value, id: uuid(++mockState.idCounter), createdAt: now, updatedAt: now };
+            const row = {
+              ...value,
+              id: uuid(++mockState.idCounter),
+              persistentKey: value.persistentKey ?? uuid(++mockState.idCounter),
+              displayOrder: value.displayOrder ?? 0,
+              createdAt: now,
+              updatedAt: now
+            };
             const current = mockState.ingredientsByRecipeId.get(row.recipeId) ?? [];
             current.push(row);
             mockState.ingredientsByRecipeId.set(row.recipeId, current);
@@ -100,15 +121,33 @@ vi.mock("@nb/db", () => {
               return [row];
             }
 
+            if (table.name === "userCustomIngredients") {
+              const row = { ...values, id: uuid(++mockState.idCounter), createdAt: now, updatedAt: now };
+              mockState.customById.set(row.id, row);
+              return [row];
+            }
+
             return Array.isArray(values) ? values : [values];
           }
         };
       }
     }),
-    update: (_table: { name: string }) => ({
+    update: (table: { name: string }) => ({
       set: (set: any) => ({
         where: (where: any) => ({
           returning: async () => {
+            if (table.name === "recipe_ingredients") {
+              const recipeId = getEqValue(where, "recipeId");
+              const id = getEqValue(where, "id");
+              const current = recipeId ? mockState.ingredientsByRecipeId.get(recipeId) ?? [] : [];
+              const index = current.findIndex((ingredient) => ingredient.id === id);
+              if (index < 0) return [];
+              const updated = { ...current[index], ...set };
+              current[index] = updated;
+              mockState.ingredientsByRecipeId.set(recipeId, current);
+              return [updated];
+            }
+
             const id = getEqValue(where, "id") ?? [...mockState.recipesById.keys()][0];
             const current = id ? mockState.recipesById.get(id) : null;
             if (!current || !id) return [];
@@ -123,7 +162,13 @@ vi.mock("@nb/db", () => {
       where: async (where: any) => {
         if (table.name === "recipe_ingredients") {
           const recipeId = getEqValue(where, "recipeId");
-          mockState.ingredientsByRecipeId.set(recipeId, []);
+          const id = getEqValue(where, "id");
+          if (!id) {
+            mockState.ingredientsByRecipeId.set(recipeId, []);
+            return;
+          }
+          const current = mockState.ingredientsByRecipeId.get(recipeId) ?? [];
+          mockState.ingredientsByRecipeId.set(recipeId, current.filter((ingredient) => ingredient.id !== id));
           return;
         }
 
@@ -148,6 +193,7 @@ vi.mock("@nb/db", () => {
     recipes: tableRefs.recipes,
     recipeIngredients: tableRefs.recipeIngredients,
     ingredients: tableRefs.ingredients,
+    userBrewingSettings: tableRefs.userBrewingSettings,
     userCustomIngredients: tableRefs.userCustomIngredients
   };
 });
@@ -163,6 +209,7 @@ import {
   recomputeRecipeStats,
   updateRecipe
 } from "../features/recipes/service";
+import { createRecipeFromCanonicalImport } from "../features/recipes/interop/import-service";
 
 const buildReadyPrivatePayload = (overrides: Record<string, unknown> = {}) => ({
   title: "Ready private recipe",
@@ -319,6 +366,7 @@ describe("recipe service", () => {
       userId: "u1",
       type: "hop",
       displayName: "My Hop",
+      normalizedName: "my hop",
       properties: {
         category: "hop",
         subtype: "hop",
@@ -395,6 +443,233 @@ describe("recipe service", () => {
     expect(preview.ibu).not.toBeNull();
   });
 
+  it("default bitterness engine counts whirlpool hopstand IBU", async () => {
+    const preview = await previewRecipeDraft("u1", {
+      title: "Whirlpool default",
+      batchSizeEnteredQuantity: 20,
+      batchSizeEnteredUnit: "l",
+      boilTimeMinutes: 60,
+      ingredients: [
+        { ingredientCatalogItemId: uuid(101), type: "malt", amountEnteredQuantity: 4, amountEnteredUnit: "kg", stage: "mash" },
+        {
+          ingredientCatalogItemId: uuid(102),
+          type: "hop",
+          category: "hop",
+          amountEnteredQuantity: 80,
+          amountEnteredUnit: "g",
+          stage: "whirlpool",
+          timeOffset: 20,
+          stepMeta: { useType: "whirlpool", timeMinutes: 20, temperatureC: 85 }
+        }
+      ]
+    });
+
+    expect(preview.bitternessFormula).toBe("tinseth_whirlpool_v2");
+    expect(preview.ibu).toBeGreaterThan(0);
+  });
+
+  it("creates imported recipes with recipe-local ingredient snapshots", async () => {
+    const recipe = await createRecipeFromCanonicalImport("u1", {
+      title: "Imported custom taxonomy",
+      batchSizeL: 20,
+      boilTimeMinutes: 60,
+      ingredients: [
+        {
+          name: "Imported Pale Malt",
+          type: "malt",
+          category: "fermentable",
+          amount: 4,
+          unit: "kg",
+          stage: "mash",
+          fermentableColorEbc: 5,
+          fermentableExtractYieldPct: 80
+        },
+        {
+          name: "Imported Cascade",
+          type: "hop",
+          category: "hop",
+          amount: 35,
+          unit: "g",
+          stage: "boil",
+          timeOffset: 60,
+          hopAlphaAcidPct: 6.5,
+          hopForm: "pellet"
+        },
+        {
+          name: "Imported Cascade",
+          type: "hop",
+          category: "hop",
+          amount: 20,
+          unit: "g",
+          stage: "whirlpool",
+          timeOffset: 20,
+          hopAlphaAcidPct: 6.5,
+          hopForm: "pellet"
+        },
+        {
+          name: "Imported US-05",
+          type: "yeast",
+          category: "yeast",
+          amount: 11.5,
+          unit: "g",
+          stage: "fermentation",
+          yeastAttenuationPct: 78,
+          yeastForm: "dry"
+        },
+        {
+          name: "Imported Whirlfloc",
+          type: "consumable",
+          category: "consumable",
+          amount: 1,
+          unit: "item",
+          stage: "boil",
+          timeOffset: 10,
+          physicalForm: "tablet"
+        }
+      ]
+    });
+
+    expect(recipe.ingredients.map((ingredient) => ingredient.type)).toEqual(["malt", "hop", "hop", "yeast", "consumable"]);
+    expect(recipe.ingredients.map((ingredient) => ingredient.ingredientCategory)).toEqual(["fermentable", "hop", "hop", "yeast", "consumable"]);
+    expect(recipe.ingredients[0]?.ingredientSubtype).toBe("malt");
+    expect(recipe.ingredients.every((ingredient) => ingredient.inventoryIntentMode === "imported")).toBe(true);
+    expect(recipe.ingredients.every((ingredient) => ingredient.ingredientCatalogItemId == null && ingredient.userCustomIngredientId == null)).toBe(true);
+    expect(recipe.ingredients[0]?.externalImportMeta?.importedIngredient).toMatchObject({
+      name: "Imported Pale Malt",
+      type: "malt",
+      category: "fermentable",
+      technicalData: { type: "malt", extractPctDryBasis: 80 }
+    });
+    expect(recipe.ingredients[1]?.externalImportMeta?.importedIngredient).toMatchObject({
+      name: "Imported Cascade",
+      type: "hop",
+      category: "hop",
+      technicalData: { type: "hop", alphaAcidPctTypical: 6.5, hopForm: "pellet" }
+    });
+    expect(recipe.ingredients[0]?.ingredientSummary).toContain("EBC");
+    expect(recipe.ingredients[0]?.ingredientSummary).toContain("80");
+    expect(recipe.ingredients[1]?.ingredientSummary).toContain("6.5% AA");
+    expect(recipe.ingredients[4]?.ingredientSummary).toContain("tablet");
+    expect(mockState.customById.size).toBe(1);
+    expect(recipe.ibu).toBeGreaterThan(0);
+    expect(recipe.color).toBeGreaterThan(0);
+  });
+
+  it("keeps imported hop alpha in the recipe snapshot instead of creating a custom ingredient", async () => {
+    mockState.customById.set(uuid(260), {
+      id: uuid(260),
+      userId: "u1",
+      type: "hop",
+      displayName: "Imported Cascade",
+      normalizedName: "imported cascade",
+      hopAlphaAcidPct: null,
+      hopForm: null,
+      properties: {
+        category: "hop",
+        subtype: "hop",
+        defaultDisplayUnit: "g",
+        allowedUnits: ["g"],
+        measurementDimension: "weight",
+        technicalData: { type: "hop", alphaAcidPctTypical: null, hopForm: null }
+      }
+    });
+
+    const recipe = await createRecipeFromCanonicalImport("u1", {
+      title: "Imported hop alpha conflict",
+      batchSizeL: 20,
+      boilTimeMinutes: 60,
+      calculationMeta: { bitternessFormula: "tinseth_whirlpool_v2", bitternessSettings: {} },
+      ingredients: [
+        {
+          name: "Imported Pale Malt",
+          type: "malt",
+          category: "fermentable",
+          amount: 4,
+          unit: "kg",
+          stage: "mash",
+          fermentableColorEbc: 5,
+          fermentableExtractYieldPct: 80
+        },
+        {
+          name: "Imported Cascade",
+          type: "hop",
+          category: "hop",
+          amount: 50,
+          unit: "g",
+          stage: "whirlpool",
+          timeOffset: 20,
+          stepMeta: { useType: "whirlpool", timeMinutes: 20, temperatureC: 85 },
+          hopAlphaAcidPct: 6.5,
+          hopForm: "pellet"
+        }
+      ]
+    });
+
+    const hopLine = recipe.ingredients.find((ingredient) => ingredient.ingredientCategory === "hop");
+    expect(hopLine?.ingredientDisplayName).toBe("Imported Cascade");
+    expect(hopLine?.ingredientDisplayName).not.toContain("AA");
+    expect(hopLine?.ingredientCatalogItemId).toBeNull();
+    expect(hopLine?.userCustomIngredientId).toBeNull();
+    expect(hopLine?.inventoryIntentMode).toBe("imported");
+    expect(hopLine?.ingredientTechnicalData).toMatchObject({
+      type: "hop",
+      alphaAcidPctTypical: 6.5,
+      hopForm: "pellet"
+    });
+    expect(hopLine?.externalImportMeta?.importedIngredient).toMatchObject({
+      name: "Imported Cascade",
+      technicalData: { type: "hop", alphaAcidPctTypical: 6.5, hopForm: "pellet" }
+    });
+    expect(mockState.customById.get(uuid(260))?.hopAlphaAcidPct).toBeNull();
+    expect(recipe.ibu).toBeGreaterThan(0);
+  });
+
+  it("keeps imported misc technical data in the recipe snapshot when a custom name already exists", async () => {
+    mockState.customById.set(uuid(250), {
+      id: uuid(250),
+      userId: "u1",
+      type: "consumable",
+      displayName: "Imported Whirlfloc",
+      normalizedName: "imported whirlfloc",
+      properties: {
+        category: "consumable",
+        subtype: "other",
+        defaultDisplayUnit: "item",
+        allowedUnits: ["item"],
+        measurementDimension: "count",
+        technicalData: { type: "consumable", commonForms: [] }
+      }
+    });
+
+    const recipe = await createRecipeFromCanonicalImport("u1", {
+      title: "Imported misc conflict",
+      batchSizeL: 20,
+      boilTimeMinutes: 60,
+      ingredients: [
+        {
+          name: "Imported Whirlfloc",
+          type: "consumable",
+          category: "consumable",
+          amount: 1,
+          unit: "item",
+          stage: "boil",
+          timeOffset: 10,
+          physicalForm: "tablet"
+        }
+      ]
+    });
+
+    expect(recipe.ingredients[0]?.ingredientDisplayName).toBe("Imported Whirlfloc");
+    expect(recipe.ingredients[0]?.ingredientSummary).toContain("tablet");
+    expect(recipe.ingredients[0]?.userCustomIngredientId).toBeNull();
+    expect(recipe.ingredients[0]?.inventoryIntentMode).toBe("imported");
+    expect(recipe.ingredients[0]?.externalImportMeta?.importedIngredient).toMatchObject({
+      name: "Imported Whirlfloc",
+      technicalData: { type: "consumable", commonForms: ["tablet"] }
+    });
+    expect(mockState.customById.size).toBe(2);
+  });
+
   it("persists taxonomy snapshot columns on recipe ingredients", async () => {
     const recipe = await createRecipe("u1", {
       title: "Snapshot recipe",
@@ -428,6 +703,44 @@ describe("recipe service", () => {
     expect(persisted[0]?.stepMeta ?? null).toBeNull();
   });
 
+  it("keeps recipe ingredient identity across edits", async () => {
+    const recipe = await createRecipe("u1", {
+      title: "Stable lines",
+      batchSizeEnteredQuantity: 20,
+      batchSizeEnteredUnit: "l",
+      ingredients: [
+        {
+          ingredientCatalogItemId: uuid(101),
+          type: "malt",
+          category: "fermentable",
+          amountEnteredQuantity: 4,
+          amountEnteredUnit: "kg",
+          stage: "mash"
+        }
+      ]
+    });
+    const [createdLine] = mockState.ingredientsByRecipeId.get(recipe.id) ?? [];
+
+    await updateRecipe("u1", recipe.id, {
+      ingredients: [
+        {
+          persistentKey: createdLine.persistentKey,
+          ingredientCatalogItemId: uuid(101),
+          type: "malt",
+          category: "fermentable",
+          amountEnteredQuantity: 5,
+          amountEnteredUnit: "kg",
+          stage: "mash"
+        }
+      ]
+    });
+
+    const [updatedLine] = mockState.ingredientsByRecipeId.get(recipe.id) ?? [];
+    expect(updatedLine.id).toBe(createdLine.id);
+    expect(updatedLine.persistentKey).toBe(createdLine.persistentKey);
+    expect(updatedLine.amountEnteredQuantity).toBe(5);
+  });
+
   it("hydrates recipe dto from persisted snapshot when source row is unavailable", async () => {
     const recipe = await createRecipe("u1", {
       title: "Persisted only",
@@ -439,6 +752,8 @@ describe("recipe service", () => {
       {
         id: uuid(777),
         recipeId: recipe.id,
+        persistentKey: uuid(778),
+        displayOrder: 0,
         ingredientCatalogItemId: uuid(999),
         userCustomIngredientId: null,
         ingredientFamilyId: uuid(302),

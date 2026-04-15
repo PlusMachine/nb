@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { Droplets, FlaskConical, Leaf, Package, Wheat } from "lucide-react";
+import { Droplets, FlaskConical, Hop, Package, Wheat } from "lucide-react";
 
 import type {
   IngredientCategory,
@@ -17,7 +17,7 @@ const categoryOptions: Array<{
   iconClassName: string;
 }> = [
   { value: "malt", label: "Солод", icon: Wheat, iconClassName: "text-amber-600" },
-  { value: "hop", label: "Хмель", icon: Leaf, iconClassName: "text-emerald-600" },
+  { value: "hop", label: "Хмель", icon: Hop, iconClassName: "text-emerald-600" },
   { value: "yeast", label: "Дрожжи", icon: FlaskConical, iconClassName: "text-violet-600" },
   { value: "fermentable", label: "Сбраживаемое сырье", icon: Wheat, iconClassName: "text-amber-600" },
   { value: "water_treatment", label: "Водоподготовка", icon: Droplets, iconClassName: "text-sky-600" },

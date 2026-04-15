@@ -13,6 +13,7 @@ import {
   X
 } from "lucide-react";
 import { CountryFlag } from "@/components/shared/country-flag";
+import type { IngredientPickerQuickStartResultByContext } from "@/features/ingredients/contracts";
 import type { InventoryListItemDto } from "@/features/inventory/contracts";
 import {
   resolveIngredientBrandLabel,
@@ -38,6 +39,7 @@ type Props = {
   item: InventoryListItemDto;
   preferredCurrency: SystemCurrency;
   currencyRates: SystemCurrencyRateMap;
+  initialQuickStartDataByContext?: IngredientPickerQuickStartResultByContext | null;
 };
 
 const formatValue = (value: number) => (
@@ -249,6 +251,8 @@ const FormulaLabel = ({ formula }: { formula: string }) => (
   </span>
 );
 
+const inventoryFinishedStatusClassName = "inline-flex h-6 items-center text-[11px] font-medium leading-none text-pink-500";
+
 const isFreshnessCritical = (freshnessDate: Date | null) => {
   if (!freshnessDate) return false;
   const daysUntil = (freshnessDate.getTime() - Date.now()) / (1000 * 60 * 60 * 24);
@@ -260,7 +264,12 @@ const isExpired = (freshnessDate: Date | null) => {
   return freshnessDate.getTime() < Date.now();
 };
 
-export function InventoryListItem({ item, preferredCurrency, currencyRates }: Props) {
+export function InventoryListItem({
+  item,
+  preferredCurrency,
+  currencyRates,
+  initialQuickStartDataByContext = null
+}: Props) {
   const badges = buildTechnicalBadges(item);
   const { primaryName, secondaryName } = resolveIngredientDisplayNames(item.source);
   const waterTreatmentTechnicalData = item.source.technicalData?.type === "water_treatment"
@@ -311,27 +320,32 @@ export function InventoryListItem({ item, preferredCurrency, currencyRates }: Pr
     : null;
 
   return (
-    <li className={`relative rounded-xl border bg-white p-4 shadow-sm transition-shadow hover:shadow-md ${isEmpty ? "border-zinc-200/60 opacity-60" : expired ? "border-red-200" : freshnessCritical ? "border-amber-200" : "border-zinc-200"
+    <li className={`relative rounded-xl border bg-white p-4 shadow-sm transition-shadow hover:shadow-md ${isEmpty ? "border-zinc-200/60" : expired ? "border-red-200" : freshnessCritical ? "border-amber-200" : "border-zinc-200"
       }`}>
       <div className="absolute right-2.5 top-2.5 z-10 flex items-center gap-1">
-        <InventoryQuantityEditor
-          item={item}
-          hideEditor
-          renderFinishedAction={({ onClick, isPending }) => (
-            <button
-              type="button"
-              onClick={onClick}
-              disabled={isPending}
-              className={inventoryFinishedActionInlineClassName}
-            >
-              {isPending ? "..." : inventoryFinishedActionLabel}
-            </button>
-          )}
-        />
+        {isEmpty ? (
+          <span className={inventoryFinishedStatusClassName}>закончился</span>
+        ) : (
+          <InventoryQuantityEditor
+            item={item}
+            hideEditor
+            renderFinishedAction={({ onClick, isPending }) => (
+              <button
+                type="button"
+                onClick={onClick}
+                disabled={isPending}
+                className={inventoryFinishedActionInlineClassName}
+              >
+                {isPending ? "..." : inventoryFinishedActionLabel}
+              </button>
+            )}
+          />
+        )}
         <InventoryItemDetailsEditor
           item={item}
           preferredCurrency={preferredCurrency}
           currencyRates={currencyRates}
+          initialQuickStartDataByContext={initialQuickStartDataByContext}
           renderTrigger={(onClick) => (
             <button
               type="button"

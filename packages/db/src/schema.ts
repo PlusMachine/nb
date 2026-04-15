@@ -38,6 +38,16 @@ export const inventoryPriceInputModeEnum = pgEnum("inventory_price_input_mode", 
 export const systemCurrencyEnum = pgEnum("system_currency", ["RUB", "USD", "EUR"]);
 export const recipePublicationStateEnum = pgEnum("recipe_publication_state", ["draft", "private", "published"]);
 export const recipeIngredientStageEnum = pgEnum("recipe_ingredient_stage", ["mash", "boil", "whirlpool", "fermentation", "packaging", "other"]);
+export const recipeInventoryAllocationStatusEnum = pgEnum("recipe_inventory_allocation_status", ["allocated", "reserved", "released", "consumed"]);
+export const inventoryTransactionTypeEnum = pgEnum("inventory_transaction_type", ["consume", "reserve", "release", "adjustment"]);
+export const brewBatchStatusEnum = pgEnum("brew_batch_status", ["planned", "brewing", "fermenting", "completed", "cancelled"]);
+export const equipmentBrewMethodEnum = pgEnum("equipment_brew_method", [
+  "biab_single_vessel",
+  "mash_sparge_two_vessel",
+  "three_vessel",
+  "extract_partial_boil"
+]);
+export const equipmentBatchTargetTypeEnum = pgEnum("equipment_batch_target_type", ["fermenter", "packaged"]);
 
 export const users = pgTable("users", {
   id: uuid("id").defaultRandom().primaryKey(),
@@ -412,7 +422,56 @@ export const userIngredients = pgTable("user_ingredients", {
   customItemIdx: index("user_ingredients_custom_item_idx").on(table.userCustomIngredientId),
   packageVariantIdx: index("user_ingredients_package_variant_idx").on(table.packageVariantId),
   familyIdx: index("user_ingredients_family_idx").on(table.ingredientFamilyId),
-  categoryIdx: index("user_ingredients_category_idx").on(table.ingredientCategory)
+  categoryIdx: index("user_ingredients_category_idx").on(table.ingredientCategory),
+  sourceCheck: check(
+    "user_ingredients_source_linkage_chk",
+    sql`((ingredient_catalog_item_id is not null and user_custom_ingredient_id is null) or (ingredient_catalog_item_id is null and user_custom_ingredient_id is not null))`
+  )
+}));
+
+export const equipmentProfiles = pgTable("equipment_profiles", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  userId: uuid("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  name: varchar("name", { length: 180 }).notNull(),
+  brewMethod: equipmentBrewMethodEnum("brew_method").default("biab_single_vessel").notNull(),
+  batchTargetType: equipmentBatchTargetTypeEnum("batch_target_type").default("fermenter").notNull(),
+  targetBatchVolumeL: doublePrecision("target_batch_volume_l").notNull(),
+  boilTimeMin: integer("boil_time_min").default(60).notNull(),
+  brewhouseEfficiencyPct: doublePrecision("brewhouse_efficiency_pct").default(75).notNull(),
+  mashEfficiencyPct: doublePrecision("mash_efficiency_pct"),
+  evaporationRateLPerHr: doublePrecision("evaporation_rate_l_per_hr").default(3).notNull(),
+  trubChillerLossL: doublePrecision("trub_chiller_loss_l").default(0).notNull(),
+  fermenterLossL: doublePrecision("fermenter_loss_l").default(0).notNull(),
+  mashTunDeadspaceL: doublePrecision("mash_tun_deadspace_l").default(0).notNull(),
+  spargeVesselDeadspaceL: doublePrecision("sparge_vessel_deadspace_l").default(0).notNull(),
+  grainAbsorptionLPerKg: doublePrecision("grain_absorption_l_per_kg").default(0.75).notNull(),
+  coolingShrinkagePct: doublePrecision("cooling_shrinkage_pct").default(4).notNull(),
+  topUpWaterL: doublePrecision("top_up_water_l").default(0).notNull(),
+  mashThicknessLPerKg: doublePrecision("mash_thickness_l_per_kg").default(3).notNull(),
+  maxMashVolumeL: doublePrecision("max_mash_volume_l"),
+  maxKettleVolumeL: doublePrecision("max_kettle_volume_l"),
+  hopUtilizationFactor: doublePrecision("hop_utilization_factor").default(1).notNull(),
+  altitudeM: doublePrecision("altitude_m").default(0).notNull(),
+  notes: text("notes"),
+  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull()
+}, (table) => ({
+  userIdIdx: index("equipment_profiles_user_id_idx").on(table.userId),
+  userNameIdx: uniqueIndex("equipment_profiles_user_name_uidx").on(table.userId, table.name)
+}));
+
+export const userBrewingSettings = pgTable("user_brewing_settings", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  userId: uuid("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  preferredBitternessFormula: varchar("preferred_bitterness_formula", { length: 64 }).default("tinseth_whirlpool_v2").notNull(),
+  bitternessSettings: jsonb("bitterness_settings").$type<Record<string, unknown>>().default({}).notNull(),
+  preferredWaterEngine: varchar("preferred_water_engine", { length: 64 }).default("balanced_default").notNull(),
+  preferredMashPhModel: varchar("preferred_mash_ph_model", { length: 64 }).default("hybrid_mash_ph_v1").notNull(),
+  waterSettings: jsonb("water_settings").$type<Record<string, unknown>>().default({}).notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull()
+}, (table) => ({
+  userIdIdx: uniqueIndex("user_brewing_settings_user_id_uidx").on(table.userId)
 }));
 
 export const recipes = pgTable("recipes", {
@@ -438,6 +497,13 @@ export const recipes = pgTable("recipes", {
   description: text("description"),
   authorNotes: text("author_notes"),
   processMeta: jsonb("process_meta").$type<Record<string, unknown>>(),
+  calculationMeta: jsonb("calculation_meta").$type<Record<string, unknown>>(),
+  draftState: jsonb("draft_state").$type<Record<string, unknown>>(),
+  importMeta: jsonb("import_meta").$type<Record<string, unknown>>(),
+  equipmentProfileId: uuid("equipment_profile_id").references(() => equipmentProfiles.id, { onDelete: "set null" }),
+  equipmentProfileSnapshot: jsonb("equipment_profile_snapshot").$type<Record<string, unknown>>(),
+  waterPlanMeta: jsonb("water_plan_meta").$type<Record<string, unknown>>(),
+  brewPlanMeta: jsonb("brew_plan_meta").$type<Record<string, unknown>>(),
   heroImageId: uuid("hero_image_id"),
   createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull()
@@ -446,12 +512,15 @@ export const recipes = pgTable("recipes", {
   familyIdIdx: index("recipes_family_id_idx").on(table.recipeFamilyId),
   familyVersionIdx: uniqueIndex("recipes_family_version_uidx").on(table.recipeFamilyId, table.versionNumber),
   publicationStateIdx: index("recipes_publication_state_idx").on(table.publicationState),
+  equipmentProfileIdx: index("recipes_equipment_profile_id_idx").on(table.equipmentProfileId),
   slugIdx: uniqueIndex("recipes_slug_uidx").on(table.slug)
 }));
 
 export const recipeIngredients = pgTable("recipe_ingredients", {
   id: uuid("id").defaultRandom().primaryKey(),
   recipeId: uuid("recipe_id").notNull().references(() => recipes.id, { onDelete: "cascade" }),
+  persistentKey: uuid("persistent_key").defaultRandom().notNull(),
+  displayOrder: integer("display_order").default(0).notNull(),
   ingredientCatalogItemId: text("ingredient_catalog_item_id").references(() => ingredients.id, { onDelete: "set null" }),
   userCustomIngredientId: uuid("user_custom_ingredient_id").references(() => userCustomIngredients.id, { onDelete: "set null" }),
   ingredientFamilyId: uuid("ingredient_family_id").references(() => ingredientFamilies.id, { onDelete: "set null" }),
@@ -468,18 +537,93 @@ export const recipeIngredients = pgTable("recipe_ingredients", {
   stage: recipeIngredientStageEnum("stage").default("other").notNull(),
   timeOffset: integer("time_offset"),
   stepMeta: jsonb("step_meta").$type<Record<string, unknown>>(),
+  inventoryIntentMode: varchar("inventory_intent_mode", { length: 32 }),
+  inventorySelectionMeta: jsonb("inventory_selection_meta").$type<Record<string, unknown>>(),
+  externalImportMeta: jsonb("external_import_meta").$type<Record<string, unknown>>(),
   createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull()
 }, (table) => ({
   recipeIdIdx: index("recipe_ingredients_recipe_id_idx").on(table.recipeId),
+  persistentKeyIdx: uniqueIndex("recipe_ingredients_recipe_persistent_key_uidx").on(table.recipeId, table.persistentKey),
+  displayOrderIdx: index("recipe_ingredients_recipe_display_order_idx").on(table.recipeId, table.displayOrder),
   catalogItemIdx: index("recipe_ingredients_catalog_item_idx").on(table.ingredientCatalogItemId),
   customItemIdx: index("recipe_ingredients_custom_item_idx").on(table.userCustomIngredientId),
   familyIdx: index("recipe_ingredients_family_idx").on(table.ingredientFamilyId),
   categoryIdx: index("recipe_ingredients_category_idx").on(table.ingredientCategory),
   sourceCheck: check(
     "recipe_ingredients_source_linkage_chk",
-    sql`((ingredient_catalog_item_id is not null and user_custom_ingredient_id is null) or (ingredient_catalog_item_id is null and user_custom_ingredient_id is not null))`
+    sql`((ingredient_catalog_item_id is not null and user_custom_ingredient_id is null and coalesce(inventory_intent_mode, '') <> 'imported') or (ingredient_catalog_item_id is null and user_custom_ingredient_id is not null and coalesce(inventory_intent_mode, '') <> 'imported') or (ingredient_catalog_item_id is null and user_custom_ingredient_id is null and inventory_intent_mode = 'imported'))`
   )
+}));
+
+export const brewBatches = pgTable("brew_batches", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  userId: uuid("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  recipeId: uuid("recipe_id").notNull().references(() => recipes.id, { onDelete: "cascade" }),
+  status: brewBatchStatusEnum("status").default("planned").notNull(),
+  name: varchar("name", { length: 180 }).notNull(),
+  brewPlanSnapshot: jsonb("brew_plan_snapshot").$type<Record<string, unknown>>().default({}).notNull(),
+  recipeSnapshot: jsonb("recipe_snapshot").$type<Record<string, unknown>>(),
+  equipmentProfileSnapshot: jsonb("equipment_profile_snapshot").$type<Record<string, unknown>>(),
+  waterPlanSnapshot: jsonb("water_plan_snapshot").$type<Record<string, unknown>>(),
+  deviceHints: jsonb("device_hints").$type<Record<string, unknown>[]>().default([]).notNull(),
+  notes: text("notes"),
+  plannedFor: timestamp("planned_for", { withTimezone: true }),
+  startedAt: timestamp("started_at", { withTimezone: true }),
+  completedAt: timestamp("completed_at", { withTimezone: true }),
+  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull()
+}, (table) => ({
+  userIdIdx: index("brew_batches_user_id_idx").on(table.userId),
+  recipeIdIdx: index("brew_batches_recipe_id_idx").on(table.recipeId),
+  statusIdx: index("brew_batches_status_idx").on(table.status)
+}));
+
+export const recipeInventoryAllocations = pgTable("recipe_inventory_allocations", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  userId: uuid("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  recipeId: uuid("recipe_id").notNull().references(() => recipes.id, { onDelete: "cascade" }),
+  recipeIngredientId: uuid("recipe_ingredient_id").notNull().references(() => recipeIngredients.id, { onDelete: "cascade" }),
+  recipeIngredientPersistentKey: uuid("recipe_ingredient_persistent_key").notNull(),
+  inventoryItemId: uuid("inventory_item_id").notNull().references(() => userIngredients.id, { onDelete: "restrict" }),
+  status: recipeInventoryAllocationStatusEnum("status").default("allocated").notNull(),
+  allocatedQuantityNormalized: doublePrecision("allocated_quantity_normalized").notNull(),
+  allocatedNormalizedUnit: varchar("allocated_normalized_unit", { length: 32 }).notNull(),
+  allocationMeta: jsonb("allocation_meta").$type<Record<string, unknown>>().default({}).notNull(),
+  allocatedAt: timestamp("allocated_at", { withTimezone: true }).defaultNow().notNull(),
+  reservedAt: timestamp("reserved_at", { withTimezone: true }),
+  releasedAt: timestamp("released_at", { withTimezone: true }),
+  consumedAt: timestamp("consumed_at", { withTimezone: true }),
+  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull()
+}, (table) => ({
+  userRecipeIdx: index("recipe_inventory_allocations_user_recipe_idx").on(table.userId, table.recipeId),
+  recipeIngredientIdx: index("recipe_inventory_allocations_recipe_ingredient_idx").on(table.recipeIngredientId),
+  persistentKeyIdx: index("recipe_inventory_allocations_persistent_key_idx").on(table.recipeId, table.recipeIngredientPersistentKey),
+  inventoryItemIdx: index("recipe_inventory_allocations_inventory_item_idx").on(table.inventoryItemId),
+  statusIdx: index("recipe_inventory_allocations_status_idx").on(table.status)
+}));
+
+export const inventoryTransactions = pgTable("inventory_transactions", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  userId: uuid("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  inventoryItemId: uuid("inventory_item_id").notNull().references(() => userIngredients.id, { onDelete: "restrict" }),
+  recipeId: uuid("recipe_id").references(() => recipes.id, { onDelete: "set null" }),
+  recipeIngredientId: uuid("recipe_ingredient_id").references(() => recipeIngredients.id, { onDelete: "set null" }),
+  brewBatchId: uuid("brew_batch_id").references(() => brewBatches.id, { onDelete: "set null" }),
+  type: inventoryTransactionTypeEnum("type").notNull(),
+  quantityDeltaNormalized: doublePrecision("quantity_delta_normalized").notNull(),
+  normalizedUnit: varchar("normalized_unit", { length: 32 }).notNull(),
+  quantityBeforeNormalized: doublePrecision("quantity_before_normalized").notNull(),
+  quantityAfterNormalized: doublePrecision("quantity_after_normalized").notNull(),
+  transactionMeta: jsonb("transaction_meta").$type<Record<string, unknown>>().default({}).notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull()
+}, (table) => ({
+  userIdIdx: index("inventory_transactions_user_id_idx").on(table.userId),
+  inventoryItemIdx: index("inventory_transactions_inventory_item_idx").on(table.inventoryItemId),
+  recipeIdx: index("inventory_transactions_recipe_idx").on(table.recipeId),
+  brewBatchIdx: index("inventory_transactions_brew_batch_idx").on(table.brewBatchId),
+  typeIdx: index("inventory_transactions_type_idx").on(table.type)
 }));
 
 export const usersRelations = relations(users, ({ many }) => ({
@@ -487,7 +631,12 @@ export const usersRelations = relations(users, ({ many }) => ({
   accounts: many(accounts),
   recipes: many(recipes),
   ingredientPreferences: many(userIngredientPreferences),
-  ingredientPurchaseLinks: many(userIngredientPurchaseLinks)
+  ingredientPurchaseLinks: many(userIngredientPurchaseLinks),
+  equipmentProfiles: many(equipmentProfiles),
+  brewingSettings: many(userBrewingSettings),
+  brewBatches: many(brewBatches),
+  recipeInventoryAllocations: many(recipeInventoryAllocations),
+  inventoryTransactions: many(inventoryTransactions)
 }));
 
 export const ingredientFamiliesRelations = relations(ingredientFamilies, ({ many }) => ({
@@ -558,6 +707,21 @@ export const userIngredientPurchaseLinksRelations = relations(userIngredientPurc
   })
 }));
 
+export const equipmentProfilesRelations = relations(equipmentProfiles, ({ one, many }) => ({
+  user: one(users, {
+    fields: [equipmentProfiles.userId],
+    references: [users.id]
+  }),
+  recipes: many(recipes)
+}));
+
+export const userBrewingSettingsRelations = relations(userBrewingSettings, ({ one }) => ({
+  user: one(users, {
+    fields: [userBrewingSettings.userId],
+    references: [users.id]
+  })
+}));
+
 export const ingredientCatalogItemsRelations = relations(ingredientCatalogItems, ({ one }) => ({
   family: one(ingredientFamilies, {
     fields: [ingredientCatalogItems.familyId],
@@ -570,10 +734,17 @@ export const recipesRelations = relations(recipes, ({ one, many }) => ({
     fields: [recipes.authorId],
     references: [users.id]
   }),
-  ingredients: many(recipeIngredients)
+  equipmentProfile: one(equipmentProfiles, {
+    fields: [recipes.equipmentProfileId],
+    references: [equipmentProfiles.id]
+  }),
+  ingredients: many(recipeIngredients),
+  brewBatches: many(brewBatches),
+  inventoryAllocations: many(recipeInventoryAllocations),
+  inventoryTransactions: many(inventoryTransactions)
 }));
 
-export const recipeIngredientsRelations = relations(recipeIngredients, ({ one }) => ({
+export const recipeIngredientsRelations = relations(recipeIngredients, ({ one, many }) => ({
   recipe: one(recipes, {
     fields: [recipeIngredients.recipeId],
     references: [recipes.id]
@@ -585,5 +756,78 @@ export const recipeIngredientsRelations = relations(recipeIngredients, ({ one })
   customItem: one(userCustomIngredients, {
     fields: [recipeIngredients.userCustomIngredientId],
     references: [userCustomIngredients.id]
+  }),
+  inventoryAllocations: many(recipeInventoryAllocations),
+  inventoryTransactions: many(inventoryTransactions)
+}));
+
+export const userIngredientsRelations = relations(userIngredients, ({ one, many }) => ({
+  user: one(users, {
+    fields: [userIngredients.userId],
+    references: [users.id]
+  }),
+  catalogItem: one(ingredients, {
+    fields: [userIngredients.ingredientCatalogItemId],
+    references: [ingredients.id]
+  }),
+  customItem: one(userCustomIngredients, {
+    fields: [userIngredients.userCustomIngredientId],
+    references: [userCustomIngredients.id]
+  }),
+  recipeInventoryAllocations: many(recipeInventoryAllocations),
+  inventoryTransactions: many(inventoryTransactions)
+}));
+
+export const brewBatchesRelations = relations(brewBatches, ({ one, many }) => ({
+  user: one(users, {
+    fields: [brewBatches.userId],
+    references: [users.id]
+  }),
+  recipe: one(recipes, {
+    fields: [brewBatches.recipeId],
+    references: [recipes.id]
+  }),
+  inventoryTransactions: many(inventoryTransactions)
+}));
+
+export const recipeInventoryAllocationsRelations = relations(recipeInventoryAllocations, ({ one }) => ({
+  user: one(users, {
+    fields: [recipeInventoryAllocations.userId],
+    references: [users.id]
+  }),
+  recipe: one(recipes, {
+    fields: [recipeInventoryAllocations.recipeId],
+    references: [recipes.id]
+  }),
+  recipeIngredient: one(recipeIngredients, {
+    fields: [recipeInventoryAllocations.recipeIngredientId],
+    references: [recipeIngredients.id]
+  }),
+  inventoryItem: one(userIngredients, {
+    fields: [recipeInventoryAllocations.inventoryItemId],
+    references: [userIngredients.id]
+  })
+}));
+
+export const inventoryTransactionsRelations = relations(inventoryTransactions, ({ one }) => ({
+  user: one(users, {
+    fields: [inventoryTransactions.userId],
+    references: [users.id]
+  }),
+  inventoryItem: one(userIngredients, {
+    fields: [inventoryTransactions.inventoryItemId],
+    references: [userIngredients.id]
+  }),
+  recipe: one(recipes, {
+    fields: [inventoryTransactions.recipeId],
+    references: [recipes.id]
+  }),
+  recipeIngredient: one(recipeIngredients, {
+    fields: [inventoryTransactions.recipeIngredientId],
+    references: [recipeIngredients.id]
+  }),
+  brewBatch: one(brewBatches, {
+    fields: [inventoryTransactions.brewBatchId],
+    references: [brewBatches.id]
   })
 }));

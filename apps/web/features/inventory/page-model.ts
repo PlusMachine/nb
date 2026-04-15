@@ -151,24 +151,15 @@ export type InventoryGroup = {
 };
 
 export const groupInventoryItems = (items: InventoryListItemDto[]): InventoryGroup[] => {
-  const grouped = new Map<InventoryPrimaryGroupKey, {
-    inStock: InventoryListItemDto[];
-    empty: InventoryListItemDto[];
-  }>();
+  const grouped = new Map<InventoryPrimaryGroupKey, InventoryListItemDto[]>();
 
   for (const item of items) {
     const key = resolveInventoryPrimaryGroup(item);
     const existing = grouped.get(key);
     if (existing) {
-      if (item.normalizedQuantity > 0) {
-        existing.inStock.push(item);
-      } else {
-        existing.empty.push(item);
-      }
+      existing.push(item);
     } else {
-      grouped.set(key, item.normalizedQuantity > 0
-        ? { inStock: [item], empty: [] }
-        : { inStock: [], empty: [item] });
+      grouped.set(key, [item]);
     }
   }
 
@@ -176,10 +167,7 @@ export const groupInventoryItems = (items: InventoryListItemDto[]): InventoryGro
     .map((key) => ({
       key,
       label: inventoryPrimaryGroupLabels[key],
-      items: [
-        ...(grouped.get(key)?.inStock ?? []),
-        ...(grouped.get(key)?.empty ?? [])
-      ]
+      items: grouped.get(key) ?? []
     }))
     .filter((group) => group.items.length > 0);
 };

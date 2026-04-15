@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   calculateAbv,
+  calculateBitterness,
   calculateColor,
   calculateFg,
   calculateIbuTinseth,
@@ -38,6 +39,39 @@ describe("IBU and color", () => {
   it("calculates Tinseth IBU", () => {
     const ibu = calculateIbuTinseth({ og: 1.059, batchVolumeL: 20, hopAdditions: hops });
     expect(ibu).toBe(31.3);
+  });
+
+  it("calculates whirlpool bitterness in the default Tinseth v2 engine", () => {
+    const result = calculateBitterness({
+      formula: "tinseth_whirlpool_v2",
+      og: 1.059,
+      batchVolumeL: 20,
+      boilTimeMinutes: 60,
+      preBoilVolumeL: 25,
+      postBoilVolumeL: 21,
+      whirlpoolTimeMinutes: 20,
+      whirlpoolTemperatureC: 85,
+      hopAdditions: [
+        ...hops,
+        { id: "mosaic-wp", name: "Mosaic", alphaAcidPercent: 12, weightG: 50, boilTimeMinutes: 20, use: "whirlpool", temperatureC: 85 },
+        { id: "citra-dh", name: "Citra", alphaAcidPercent: 12, weightG: 80, boilTimeMinutes: 3, use: "dry_hop" }
+      ]
+    });
+
+    expect(result.ibu).toBeGreaterThan(31.3);
+    expect(result.contributions.some((contribution) => contribution.use === "whirlpool")).toBe(true);
+    expect(result.warnings).toContain("dry_hop_ibu_ignored");
+  });
+
+  it("keeps alternative bitterness engines switchable", () => {
+    const rager = calculateBitterness({ formula: "rager", og: 1.059, batchVolumeL: 20, hopAdditions: hops });
+    const garetz = calculateBitterness({ formula: "garetz", og: 1.059, batchVolumeL: 20, hopAdditions: hops, altitudeM: 1200 });
+    const noonan = calculateBitterness({ formula: "noonan_legacy", og: 1.059, batchVolumeL: 20, hopAdditions: hops });
+
+    expect(rager.ibu).toBeGreaterThan(0);
+    expect(garetz.formula).toBe("garetz");
+    expect(garetz.warnings).toContain("garetz_conservative_compat_approximation");
+    expect(noonan.formula).toBe("noonan_legacy");
   });
 
   it("calculates color via MCU->SRM->EBC", () => {

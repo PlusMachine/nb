@@ -19,6 +19,8 @@ import {
 import { InventoryPriceInput } from "@/components/inventory/inventory-price-input";
 import type {
   IngredientCategory,
+  IngredientPickerQuickStartResult,
+  IngredientPickerQuickStartResultByContext,
   IngredientSubtype,
   IngredientSuggestionItem,
   IngredientType
@@ -45,6 +47,7 @@ type Props = {
   item: InventoryListItemDto;
   preferredCurrency: SystemCurrency;
   currencyRates: SystemCurrencyRateMap;
+  initialQuickStartDataByContext?: IngredientPickerQuickStartResultByContext | null;
   renderTrigger?: (onClick: () => void) => React.ReactNode;
   initiallyOpen?: boolean;
 };
@@ -159,7 +162,7 @@ const createFormState = (
     selectedDisplayName: item.source.displayName,
     ingredientCatalogItemId: item.source.sourceKind === "catalog" ? item.source.sourceId : null,
     userCustomIngredientId: item.source.sourceKind === "custom" ? item.source.sourceId : null,
-    enteredQuantity: formatInventoryQuantityInputValue(displayMeasurement.quantity),
+    enteredQuantity: formatInventoryQuantityInputValue(displayMeasurement.quantity, displayMeasurement.unit),
     enteredUnit: displayMeasurement.unit,
     priceInputMode: item.priceInputMode ?? (displayPriceMinor != null ? "total" : "total"),
     priceInputAmount: formatMoneyInputValueFromMinor(displayPriceMinor),
@@ -199,10 +202,64 @@ export const resolveInventoryEditorSelectionResetState = () => ({
   shouldRefocus: true
 });
 
+export const resolveInventoryEditorSelectionResetTaxonomy = ({
+  category,
+  subtype
+}: {
+  category: IngredientCategory;
+  subtype: IngredientSubtype | null;
+}) => {
+  const nextSubtype = category === "fermentable" && (subtype === "malt" || subtype === "fermentable")
+    ? subtype
+    : null;
+
+  return {
+    type: resolveLegacyIngredientType({ category, subtype: nextSubtype }),
+    subtype: nextSubtype
+  };
+};
+
+export const resolveInventoryEditorQuickStartData = ({
+  category,
+  subtype,
+  initialQuickStartDataByContext
+}: {
+  category?: IngredientCategory | null;
+  subtype?: IngredientSubtype | null;
+  initialQuickStartDataByContext?: IngredientPickerQuickStartResultByContext | null;
+}): IngredientPickerQuickStartResult | null => {
+  if (!initialQuickStartDataByContext) {
+    return null;
+  }
+
+  if (category === "hop") {
+    return initialQuickStartDataByContext.hop ?? null;
+  }
+
+  if (category === "yeast") {
+    return initialQuickStartDataByContext.yeast ?? null;
+  }
+
+  if (category === "water_treatment") {
+    return initialQuickStartDataByContext.water_treatment ?? null;
+  }
+
+  if (category === "consumable") {
+    return initialQuickStartDataByContext.consumable ?? null;
+  }
+
+  if (category === "fermentable" && (subtype === "malt" || subtype === "fermentable")) {
+    return initialQuickStartDataByContext[subtype] ?? null;
+  }
+
+  return null;
+};
+
 export function InventoryItemDetailsEditor({
   item,
   preferredCurrency,
   currencyRates,
+  initialQuickStartDataByContext = null,
   renderTrigger,
   initiallyOpen = false
 }: Props) {
@@ -247,6 +304,11 @@ export function InventoryItemDetailsEditor({
   const pickerSubtype = form.subtype === "malt" || form.subtype === "fermentable"
     ? form.subtype
     : null;
+  const initialQuickStartData = resolveInventoryEditorQuickStartData({
+    category: form.category,
+    subtype: form.subtype,
+    initialQuickStartDataByContext
+  });
 
   useEffect(() => {
     setMounted(true);
@@ -307,7 +369,10 @@ export function InventoryItemDetailsEditor({
 
   const clearSelectedIngredient = () => {
     const resetState = resolveInventoryEditorSelectionResetState();
-    const resetUnitProfile = resolveHumanFacingInventoryUnitProfile({ category: form.category });
+    const resetUnitProfile = resolveHumanFacingInventoryUnitProfile({
+      category: form.category,
+      subtype: form.subtype
+    });
 
     setSelectedSuggestion(null);
     setOptionalOpen(false);
@@ -317,8 +382,10 @@ export function InventoryItemDetailsEditor({
     });
     setForm((current) => ({
       ...current,
-      type: resolveLegacyIngredientType({ category: current.category }),
-      subtype: null,
+      ...resolveInventoryEditorSelectionResetTaxonomy({
+        category: current.category,
+        subtype: current.subtype
+      }),
       familyId: null,
       pickerValue: resetState.pickerValue,
       selectedDisplayName: "",
@@ -433,6 +500,7 @@ export function InventoryItemDetailsEditor({
                       category={form.category}
                       subtype={pickerSubtype}
                       value={form.pickerValue}
+                      initialQuickStartData={initialQuickStartData}
                       enableQuickStart
                       autoFocus
                       focusSignal={pickerFocusSignal}

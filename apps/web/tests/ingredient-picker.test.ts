@@ -39,7 +39,9 @@ import {
   shouldShowIngredientQuickStart,
   shouldShowIngredientEmptyState,
   shouldShowIngredientSuggestions,
-  shouldUseIngredientRefinementMode
+  shouldUseIngredientRefinementMode,
+  buildIngredientPickerInventoryMetaItems,
+  buildIngredientPickerTechnicalBadges
 } from "../components/ingredients/ingredient-picker";
 import { buildIngredientPickerQuickStartBrandsFromRecentSelections } from "../features/ingredients/picker-quick-start";
 
@@ -331,7 +333,7 @@ describe("ingredient picker state helpers", () => {
     })).toBe(false);
   });
 
-  it("promotes hop producer into the primary row and removes duplicate subtitle producer", () => {
+  it("keeps hop producer below the primary row and removes duplicate country", () => {
     const view = resolveIngredientPickerRowContent({
       id: "hop-1",
       type: "hop",
@@ -346,12 +348,12 @@ describe("ingredient picker state helpers", () => {
     });
 
     expect(view.primaryName).toBe("Каскад");
-    expect(view.inlineBrand).toBe("Yakima Chief");
+    expect(view.inlineBrand).toBeNull();
     expect(view.country).toEqual({
       code: "US",
       label: "США"
     });
-    expect(view.subtitle).toBe("6% AA");
+    expect(view.subtitle).toBe("Yakima Chief • 6% AA");
   });
 
   it("promotes malt brand into the primary row only when it is not already in the title", () => {
@@ -1480,6 +1482,148 @@ describe("ingredient picker state helpers", () => {
     expect(html).not.toContain("Бельгия");
     expect(html).not.toContain("81% extract");
     expect(html).not.toContain("aria-label=\"Очистить выбранный ингредиент\"");
+  });
+
+  it("builds picker badges for hop alpha acid and keeps hop brand below the title", () => {
+    const item = {
+      id: "hop-1",
+      type: "hop" as const,
+      category: "hop" as const,
+      subtype: "hop" as const,
+      displayName: "Citra",
+      primaryLabelRu: "Citra",
+      brand: "Yakima Chief",
+      countryCode: "US",
+      countryName: "США",
+      subtitle: "Yakima Chief • США • 12.5% AA • Гранулы",
+      technicalData: {
+        type: "hop" as const,
+        alphaAcidPctTypical: 12.5,
+        hopForm: "pellet"
+      },
+      defaultUnit: "g" as const,
+      source: "catalog" as const
+    };
+
+    expect(buildIngredientPickerTechnicalBadges(item).map((badge) => badge.label)).toEqual([
+      "Альфа 12.5%",
+      "Гранулы"
+    ]);
+
+    const view = resolveIngredientPickerRowContent(item);
+    expect(view.inlineBrand).toBeNull();
+    expect(view.subtitle).toBe("Yakima Chief • 12.5% AA • Гранулы");
+
+    const html = renderToStaticMarkup(React.createElement(IngredientSelectionCard, {
+      item
+    }));
+
+    expect(html).toContain("Альфа 12.5%");
+    expect(html).toContain("Гранулы");
+    expect(html).toContain("Yakima Chief");
+  });
+
+  it("renders malt picker badges with the same EBC accent treatment as inventory cards", () => {
+    const item = buildSuggestionItem({
+      technicalData: {
+        type: "malt",
+        colorEbcMin: 5,
+        colorEbcMax: 8,
+        extractPctDryBasis: 80
+      }
+    });
+
+    const badges = buildIngredientPickerTechnicalBadges(item);
+
+    expect(badges.map((badge) => badge.label)).toEqual([
+      "5-8 EBC",
+      "Экст-ть 80%"
+    ]);
+    expect(badges[0]?.accent).toMatchObject({
+      startHex: expect.any(String),
+      averageHex: expect.any(String),
+      endHex: expect.any(String)
+    });
+  });
+
+  it("adds stock quantity to picker cards without replacing catalog metadata", () => {
+    const view = resolveIngredientPickerRowContent({
+      id: "malt-stock-1",
+      type: "fermentable",
+      category: "fermentable",
+      subtype: "malt",
+      displayName: "Pilsen 2RW",
+      primaryLabelRu: "Pilsen 2RW",
+      brand: "Castle Malting",
+      countryCode: "BE",
+      countryName: "Бельгия",
+      subtitle: "Castle Malting • Бельгия • 3.5 EBC",
+      defaultUnit: "kg",
+      source: "catalog",
+      inventoryItemId: "inv-1",
+      inventoryQuantityLabel: "2.5 kg",
+      inventoryPurchasePriceLabel: "10 €",
+      inventoryUnitPriceLabel: "4 € / kg",
+      inventoryPurchasedAt: "2026-04-01T00:00:00.000Z",
+      inventoryFreshnessDate: "2099-12-01T00:00:00.000Z",
+      inventoryNotes: "Открытый пакет хранится в контейнере"
+    });
+
+    expect(view.inlineBrand).toBe("Castle Malting");
+    expect(view.subtitle).toBe("3.5 EBC");
+    expect(view.stockLabel).toBe("Остаток: 2.5 kg");
+    expect(buildIngredientPickerInventoryMetaItems({
+      id: "malt-stock-1",
+      type: "fermentable",
+      category: "fermentable",
+      subtype: "malt",
+      displayName: "Pilsen 2RW",
+      primaryLabelRu: "Pilsen 2RW",
+      defaultUnit: "kg",
+      source: "catalog",
+      inventoryPurchasePriceLabel: "10 €",
+      inventoryUnitPriceLabel: "4 € / kg",
+      inventoryPurchasedAt: "2026-04-01T00:00:00.000Z",
+      inventoryFreshnessDate: "2099-12-01T00:00:00.000Z",
+      inventoryNotes: "Открытый пакет хранится в контейнере"
+    })).toEqual([
+      "Покупка 10 €",
+      "4 € / kg",
+      "Куплен 01.04.2026",
+      "Годен до 01.12.2099",
+      "Заметка: Открытый пакет хранится в контейнере"
+    ]);
+
+    const html = renderToStaticMarkup(React.createElement(IngredientSelectionCard, {
+      item: {
+        id: "malt-stock-1",
+        type: "fermentable",
+        category: "fermentable",
+        subtype: "malt",
+        displayName: "Pilsen 2RW",
+        primaryLabelRu: "Pilsen 2RW",
+        brand: "Castle Malting",
+        countryCode: "BE",
+        countryName: "Бельгия",
+        subtitle: "Castle Malting • Бельгия • 3.5 EBC",
+        defaultUnit: "kg",
+        source: "catalog",
+        inventoryItemId: "inv-1",
+        inventoryQuantityLabel: "2.5 kg",
+        inventoryPurchasePriceLabel: "10 €",
+        inventoryUnitPriceLabel: "4 € / kg",
+        inventoryPurchasedAt: "2026-04-01T00:00:00.000Z",
+        inventoryFreshnessDate: "2099-12-01T00:00:00.000Z",
+        inventoryNotes: "Открытый пакет хранится в контейнере"
+      }
+    }));
+
+    expect(html).toContain("Castle Malting");
+    expect(html).toContain("3.5 EBC");
+    expect(html).toContain("Остаток: 2.5 kg");
+    expect(html).toContain("Покупка 10 €");
+    expect(html).toContain("Годен до 01.12.2099");
+    expect(html).toContain("Открытый пакет хранится в контейнере");
   });
 
   it("keeps recent history collapsed so secondary rows do not compete with search results", () => {

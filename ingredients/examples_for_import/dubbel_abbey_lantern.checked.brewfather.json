@@ -1,0 +1,216 @@
+{
+  "_id": "example-dubbel_abbey_lantern",
+  "name": "Abbey Lantern Dubbel",
+  "author": "OpenAI example",
+  "type": "All Grain",
+  "style": {
+    "name": "Belgian Dubbel",
+    "category": "Belgian Strong Ale",
+    "categoryNumber": "26",
+    "styleLetter": "B",
+    "styleGuide": "BJCP 2021",
+    "type": "Ale",
+    "ogMin": 1.062,
+    "ogMax": 1.075,
+    "fgMin": 1.008,
+    "fgMax": 1.018,
+    "ibuMin": 15.0,
+    "ibuMax": 25.0,
+    "colorMin": 10.0,
+    "colorMax": 17.0,
+    "abvMin": 6.0,
+    "abvMax": 7.6
+  },
+  "equipment": {
+    "name": "20 L all-grain kettle setup",
+    "batchSize": 20.0,
+    "boilSize": 27.5,
+    "boilTime": 90,
+    "efficiency": 74.0
+  },
+  "batchSize": 20.0,
+  "boilSize": 27.5,
+  "boilTime": 90,
+  "efficiency": 74.0,
+  "og": 1.07,
+  "fg": 1.012,
+  "fgEstimated": 1.012,
+  "attenuation": 82.9,
+  "color": 18.0,
+  "ibu": 22.0,
+  "ibuFormula": "tinseth",
+  "buGuRatio": 0.314,
+  "abv": 7.6,
+  "carbonation": 2.4,
+  "fermentables": [
+    {
+      "name": "Belgian Pilsner Malt",
+      "type": "Grain",
+      "amount": 4.2,
+      "percentage": 72.6,
+      "lovibond": 1.8,
+      "color": 1.8,
+      "use": "Mash",
+      "time": 60,
+      "timeUnit": "min"
+    },
+    {
+      "name": "Munich Malt",
+      "type": "Grain",
+      "amount": 0.6,
+      "percentage": 10.4,
+      "lovibond": 8.0,
+      "color": 8.0,
+      "use": "Mash",
+      "time": 60,
+      "timeUnit": "min"
+    },
+    {
+      "name": "Special B",
+      "type": "Grain",
+      "amount": 0.25,
+      "percentage": 4.3,
+      "lovibond": 180.0,
+      "color": 180.0,
+      "use": "Mash",
+      "time": 60,
+      "timeUnit": "min"
+    },
+    {
+      "name": "Aromatic Malt",
+      "type": "Grain",
+      "amount": 0.2,
+      "percentage": 3.5,
+      "lovibond": 20.0,
+      "color": 20.0,
+      "use": "Mash",
+      "time": 60,
+      "timeUnit": "min"
+    },
+    {
+      "name": "Caramunich I",
+      "type": "Grain",
+      "amount": 0.25,
+      "percentage": 4.3,
+      "lovibond": 35.0,
+      "color": 35.0,
+      "use": "Mash",
+      "time": 60,
+      "timeUnit": "min"
+    },
+    {
+      "name": "Dark Candi Syrup D-180",
+      "type": "Sugar",
+      "amount": 0.28,
+      "percentage": 4.8,
+      "lovibond": 180.0,
+      "color": 180.0,
+      "use": "Boil",
+      "time": 10,
+      "timeUnit": "min"
+    }
+  ],
+  "hops": [
+    {
+      "name": "Styrian Goldings",
+      "alpha": 5.5,
+      "amount": 35,
+      "use": "Boil",
+      "type": "Pellet",
+      "time": 60,
+      "timeUnit": "min"
+    },
+    {
+      "name": "Saaz",
+      "alpha": 3.5,
+      "amount": 15,
+      "use": "Boil",
+      "type": "Pellet",
+      "time": 15,
+      "timeUnit": "min"
+    }
+  ],
+  "yeasts": [
+    {
+      "name": "Wyeast 1762 Belgian Abbey II",
+      "laboratory": "Wyeast",
+      "productId": "1762",
+      "type": "Ale",
+      "form": "Liquid",
+      "attenuation": 76.0,
+      "amount": 1,
+      "unit": "pkg"
+    }
+  ],
+  "miscs": [
+    {
+      "name": "Yeast Nutrient",
+      "type": "Other",
+      "use": "Boil",
+      "time": 10,
+      "timeUnit": "min",
+      "amount": 5,
+      "unit": "g"
+    }
+  ],
+  "fermentablesTotalAmount": 5.78,
+  "hopsTotalAmount": 50,
+  "mash": {
+    "name": "Abbey Lantern Dubbel Mash",
+    "ph": 5.4,
+    "spargeTemp": 76.0,
+    "steps": [
+      {
+        "name": "Beta Rest",
+        "type": "Infusion",
+        "stepTemp": 64.0,
+        "stepTime": 45
+      },
+      {
+        "name": "Alpha Rest",
+        "type": "Infusion",
+        "stepTemp": 68.0,
+        "stepTime": 25
+      },
+      {
+        "name": "Mash Out",
+        "type": "Infusion",
+        "stepTemp": 76.0,
+        "stepTime": 10
+      }
+    ]
+  },
+  "fermentation": {
+    "name": "Abbey Lantern Dubbel Fermentation",
+    "pressurized": false,
+    "steps": [
+      {
+        "name": "Start",
+        "type": "Primary",
+        "stepTemp": 18.0,
+        "stepTime": 2
+      },
+      {
+        "name": "Ramp",
+        "type": "Secondary",
+        "stepTemp": 21.0,
+        "stepTime": 5
+      },
+      {
+        "name": "Finish",
+        "type": "Tertiary",
+        "stepTemp": 22.0,
+        "stepTime": 5
+      },
+      {
+        "name": "Conditioning",
+        "type": "Conditioning",
+        "stepTemp": 12.0,
+        "stepTime": 10
+      }
+    ]
+  },
+  "notes": "Example Dubbel with dark fruit profile, restrained bitterness, and classic Belgian fermentation character.",
+  "path": "/",
+  "hidden": false
+}

@@ -162,6 +162,7 @@ export default async function MyIngredientsPage({ searchParams }: Props) {
         showFinished={showFinished}
         sort={sort}
         summary={summary}
+        visibleItemCount={items.length}
       />
 
       {items.length === 0
@@ -176,7 +177,14 @@ export default async function MyIngredientsPage({ searchParams }: Props) {
             initialQuickStartDataByContext={initialQuickStartDataByContext}
           />
         )
-        : <GroupedInventoryList items={items} preferredCurrency={user.preferredCurrency} currencyRates={currencyRates} />}
+        : (
+          <GroupedInventoryList
+            items={items}
+            preferredCurrency={user.preferredCurrency}
+            currencyRates={currencyRates}
+            initialQuickStartDataByContext={initialQuickStartDataByContext}
+          />
+        )}
     </main>
   );
 }

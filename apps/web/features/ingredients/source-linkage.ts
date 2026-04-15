@@ -30,6 +30,13 @@ export type IngredientSourceLinkage = {
   displayNameEn?: string | null;
   familyDisplayName: string | null;
   summary: string | null;
+  brand: string | null;
+  producer: string | null;
+  brandName: string | null;
+  manufacturer: string | null;
+  countryCode: string | null;
+  countryName: string | null;
+  country: string | null;
   defaultDisplayUnit: InventoryUnit;
   allowedUnits: InventoryUnit[];
   measurementDimension: InventoryUnitDimension;
@@ -93,6 +100,13 @@ export const buildCatalogIngredientLinkage = (
       technicalData,
       unitPreferred
     }) ?? null,
+    brand: catalog.brand,
+    producer: catalog.producer,
+    brandName: catalog.brand,
+    manufacturer: catalog.producer,
+    countryCode: catalog.countryCode,
+    countryName: catalog.countryName,
+    country: catalog.countryName,
     defaultDisplayUnit: unitProfile.defaultUnit,
     allowedUnits: unitProfile.allowedUnits,
     measurementDimension: unitProfile.measurementDimension,
@@ -165,6 +179,13 @@ export const buildCustomIngredientLinkage = (
       subtype,
       technicalData
     }) ?? null,
+    brand: null,
+    producer: null,
+    brandName: null,
+    manufacturer: custom.manufacturer,
+    countryCode: null,
+    countryName: custom.country,
+    country: custom.country,
     defaultDisplayUnit: unitProfile.defaultUnit,
     allowedUnits: unitProfile.allowedUnits,
     measurementDimension: unitProfile.measurementDimension,

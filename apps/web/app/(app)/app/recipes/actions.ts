@@ -3,10 +3,22 @@
 import { revalidatePath } from "next/cache";
 import { ZodError } from "zod";
 
-import type { IngredientCategory, IngredientSuggestionItem, IngredientType } from "@/features/ingredients/contracts";
-import type { RecipeDetailDto } from "@/features/recipes/contracts";
+import type { IngredientCategory, IngredientSuggestionItem, IngredientTechnicalData, IngredientType } from "@/features/ingredients/contracts";
+import type { EquipmentProfileSnapshot } from "@/features/equipment-profiles/contracts";
+import { getEquipmentProfileSnapshot } from "@/features/equipment-profiles/service";
+import type { RecipeCalculationMeta, RecipeDetailDto, RecipeInventoryIntentMode, RecipeInventorySelectionMeta, RecipeStockCoverageDto, RecipeWaterPlanMeta } from "@/features/recipes/contracts";
 import type { RecipeDraftPreviewDto } from "@/features/recipes/contracts";
-import { cloneRecipe, createRecipe, createRecipeVersion, deleteRecipe, previewRecipeDraft, updateRecipe } from "@/features/recipes/service";
+import { cloneRecipe, createRecipe, createRecipeVersion, deleteRecipe, getOwnedRecipeById, previewRecipeDraft, updateRecipe } from "@/features/recipes/service";
+import {
+  consumeRecipeInventoryAllocations,
+  listRecipeStockCoverage,
+  releaseRecipeInventoryAllocations,
+  reserveRecipeInventoryAllocations,
+  syncRecipeSelectedInventoryAllocations
+} from "@/features/recipes/inventory-service";
+import { createBrewBatchFromRecipe } from "@/features/brew-batches/service";
+import { exportRecipeToBeerXml, importBeerXmlToCanonicalRecipe } from "@/features/recipes/interop/beerxml";
+import { importBrewfatherJsonToCanonicalRecipe } from "@/features/recipes/interop/brewfather-json";
 import { requireUser } from "@/lib/auth";
 
 export type RecipeEditorPayload = {
@@ -20,7 +32,15 @@ export type RecipeEditorPayload = {
   efficiency?: number | null;
   boilTimeMinutes: number;
   processMeta?: Record<string, unknown> | null;
+  calculationMeta?: RecipeCalculationMeta | null;
+  draftState?: Record<string, unknown> | null;
+  importMeta?: Record<string, unknown> | null;
+  equipmentProfileId?: string | null;
+  equipmentProfileSnapshot?: EquipmentProfileSnapshot | null;
+  waterPlanMeta?: RecipeWaterPlanMeta | null;
+  brewPlanMeta?: Record<string, unknown> | null;
   ingredients: Array<{
+    persistentKey?: string | null;
     ingredientCatalogItemId?: string | null;
     userCustomIngredientId?: string | null;
     type?: IngredientType;
@@ -32,6 +52,9 @@ export type RecipeEditorPayload = {
     stage: "mash" | "boil" | "whirlpool" | "fermentation" | "packaging" | "other";
     timeOffset?: number | null;
     stepMeta?: Record<string, unknown> | null;
+    inventoryIntentMode?: RecipeInventoryIntentMode | null;
+    inventorySelectionMeta?: RecipeInventorySelectionMeta | null;
+    externalImportMeta?: Record<string, unknown> | null;
   }>;
 };
 
@@ -89,6 +112,54 @@ const mapRecipeEditorError = (error: unknown): RecipeEditorResult => {
   }
 
   return { ok: false, message: "Не удалось сохранить рецепт. Попробуйте еще раз." };
+};
+
+const mapRecipeImportError = (error: unknown, formatLabel: string): RecipeEditorResult => {
+  if (error instanceof Error) {
+    if (error.message === "EMPTY_BEERXML") {
+      return { ok: false, message: "BeerXML пустой. Загрузите файл или вставьте XML перед импортом." };
+    }
+
+    if (error.message === "INVALID_BEERXML") {
+      return { ok: false, message: "BeerXML не распознан: в файле не найден блок RECIPE." };
+    }
+
+    if (error.message === "INVALID_BREWFATHER_JSON") {
+      return { ok: false, message: "Brewfather JSON не распознан: проверьте, что выбран экспорт рецепта из Brewfather." };
+    }
+
+    if (error.message === "INVALID_IMPORT_RECIPE") {
+      return { ok: false, message: `${formatLabel}: в импортируемом рецепте не найдено название.` };
+    }
+
+    if (error.message === "IMPORT_RECIPE_EMPTY") {
+      return { ok: false, message: `${formatLabel}: в рецепте не найдены ингредиенты для импорта.` };
+    }
+
+    if (error.message === "INVALID_IMPORT_INGREDIENT_AMOUNT") {
+      return { ok: false, message: `${formatLabel}: у одного из ингредиентов нет корректного количества.` };
+    }
+
+    if (error.message === "IMPORTED_CUSTOM_NAME_CONFLICT") {
+      return {
+        ok: false,
+        message: `${formatLabel}: не удалось подобрать уникальное имя для одного из импортируемых ингредиентов. Переименуйте похожий собственный ингредиент или попробуйте импорт еще раз.`
+      };
+    }
+
+    if (error.message.includes("user_custom_ingredients_user_type_name_uidx")) {
+      return { ok: false, message: `${formatLabel}: импорт не выполнен, потому что один из импортируемых ингредиентов уже есть среди ваших собственных ингредиентов.` };
+    }
+  }
+
+  const mapped = mapRecipeEditorError(error);
+  const genericMessage = "Не удалось сохранить рецепт. Попробуйте еще раз.";
+  return {
+    ...mapped,
+    message: mapped.message === genericMessage
+      ? `${formatLabel}: импорт не выполнен. Проверьте файл и попробуйте еще раз.`
+      : `${formatLabel}: ${mapped.message}`
+  };
 };
 
 export type RecipePreviewResult = {
@@ -222,29 +293,81 @@ export type RecipeCustomIngredientResult = {
   fieldErrors?: Record<string, string>;
 };
 
+const readCustomPhysicalFormFromTechnicalData = (technicalData?: IngredientTechnicalData | null) => {
+  if (!technicalData || (technicalData.type !== "consumable" && technicalData.type !== "water_treatment")) {
+    return null;
+  }
+
+  const commonForms = Array.isArray(technicalData.commonForms) ? technicalData.commonForms : [];
+  const first = commonForms.find((value) => typeof value === "string" && value.trim());
+  return first ?? null;
+};
+
+const readCustomConcentrationFromTechnicalData = (technicalData?: IngredientTechnicalData | null) => {
+  if (!technicalData) {
+    return null;
+  }
+
+  if (technicalData.type === "water_treatment") {
+    return typeof technicalData.typicalUseRu === "string" ? technicalData.typicalUseRu : null;
+  }
+
+  if (technicalData.type === "consumable") {
+    const reference = technicalData.dosageReference;
+    if (reference && typeof reference === "object" && !Array.isArray(reference)) {
+      const referenceRecord = reference as Record<string, unknown>;
+      return typeof referenceRecord.label === "string" ? referenceRecord.label : null;
+    }
+  }
+
+  return null;
+};
+
 export const createRecipeCustomIngredientAction = async (payload: {
   category: IngredientCategory;
   subtype?: string | null;
   displayName: string;
   defaultDisplayUnit: string;
+  technicalData?: IngredientTechnicalData | null;
 }): Promise<RecipeCustomIngredientResult> => {
   try {
     const user = await requireUser();
-    const [{ buildCustomIngredientLinkage }, { resolveLegacyIngredientType }, { createUserCustomInventoryIngredient }] = await Promise.all([
+    const [
+      { buildCustomIngredientLinkage },
+      { resolveLegacyIngredientType },
+      { createUserCustomInventoryIngredient },
+      { extractIngredientTechnicalFields, lovibondToEbc }
+    ] = await Promise.all([
       import("@/features/ingredients/source-linkage"),
       import("@/features/ingredients/taxonomy"),
-      import("@/features/inventory/service")
+      import("@/features/inventory/service"),
+      import("@/features/ingredients/technical-fields")
     ]);
+    const resolvedType = resolveLegacyIngredientType({
+      category: payload.category,
+      subtype: payload.subtype ?? undefined
+    }) ?? payload.technicalData?.type ?? undefined;
+    const technicalFields = payload.technicalData && resolvedType
+      ? extractIngredientTechnicalFields({ type: resolvedType, technicalData: payload.technicalData })
+      : {};
     const customIngredient = await createUserCustomInventoryIngredient(user.id, {
       category: payload.category,
-      type: resolveLegacyIngredientType({
-        category: payload.category,
-        subtype: payload.subtype ?? undefined
-      }) ?? undefined,
+      type: resolvedType,
       subtype: payload.subtype ?? null,
       displayName: payload.displayName,
       defaultDisplayUnit: payload.defaultDisplayUnit,
-      visibility: "private"
+      visibility: "private",
+      fermentableColorEbc: lovibondToEbc(technicalFields.fermentableColorLovibond),
+      fermentableExtractYieldPct: technicalFields.fermentableExtractYieldPct ?? null,
+      hopAlphaAcidPct: technicalFields.hopAlphaAcidPct ?? null,
+      hopBetaAcidPct: technicalFields.hopBetaAcidPct ?? null,
+      hopForm: technicalFields.hopForm ?? null,
+      yeastAttenuationPct: technicalFields.yeastAttenuationPct ?? null,
+      yeastForm: technicalFields.yeastForm ?? null,
+      yeastMinFermentationTempC: technicalFields.yeastMinFermentationTempC ?? null,
+      yeastMaxFermentationTempC: technicalFields.yeastMaxFermentationTempC ?? null,
+      physicalForm: readCustomPhysicalFormFromTechnicalData(payload.technicalData),
+      concentration: readCustomConcentrationFromTechnicalData(payload.technicalData)
     });
     revalidatePath("/app/catalog");
     const linkage = buildCustomIngredientLinkage(customIngredient);
@@ -304,5 +427,193 @@ export const proposeRecipeIngredientAction = async (payload: {
       ok: false,
       message: "Не удалось отправить ингредиент в каталог. Попробуйте ещё раз."
     };
+  }
+};
+
+export type RecipeInventoryActionResult = {
+  ok: boolean;
+  message: string;
+  coverage?: RecipeStockCoverageDto;
+};
+
+export type RecipeEquipmentProfileSnapshotResult = {
+  ok: boolean;
+  message: string;
+  snapshot?: EquipmentProfileSnapshot;
+};
+
+export const getEquipmentProfileSnapshotAction = async (
+  profileId: string
+): Promise<RecipeEquipmentProfileSnapshotResult> => {
+  try {
+    const user = await requireUser();
+    return {
+      ok: true,
+      message: "Equipment profile snapshot обновлен.",
+      snapshot: await getEquipmentProfileSnapshot(user.id, profileId)
+    };
+  } catch (error) {
+    if (error instanceof Error && error.message === "NOT_FOUND") {
+      return { ok: false, message: "Equipment profile не найден." };
+    }
+
+    return { ok: false, message: "Не удалось обновить equipment profile snapshot." };
+  }
+};
+
+const runRecipeInventoryAction = async (
+  recipeId: string,
+  action: (userId: string, recipeId: string) => Promise<RecipeStockCoverageDto>,
+  successMessage: string
+): Promise<RecipeInventoryActionResult> => {
+  try {
+    const user = await requireUser();
+    const coverage = await action(user.id, recipeId);
+
+    revalidatePath("/app/recipes");
+    revalidatePath(`/app/recipes/${recipeId}`);
+    revalidatePath(`/app/recipes/${recipeId}/edit`);
+
+    return {
+      ok: true,
+      message: successMessage,
+      coverage
+    };
+  } catch (error) {
+    if (error instanceof Error) {
+      if (error.message === "NOT_FOUND") {
+        return { ok: false, message: "Рецепт или складская позиция не найдены." };
+      }
+
+      if (error.message === "INCOMPATIBLE_INVENTORY_SOURCE") {
+        return { ok: false, message: "Складская позиция не совпадает с ингредиентом рецепта." };
+      }
+
+      if (error.message === "INCOMPATIBLE_UNIT") {
+        return { ok: false, message: "Единицы рецепта и склада несовместимы." };
+      }
+
+      if (error.message === "INSUFFICIENT_STOCK") {
+        return { ok: false, message: "На складе недостаточно остатка для списания." };
+      }
+    }
+
+    return { ok: false, message: "Не удалось выполнить действие со складом." };
+  }
+};
+
+export const syncRecipeInventoryAllocationsAction = async (recipeId: string) => (
+  runRecipeInventoryAction(recipeId, syncRecipeSelectedInventoryAllocations, "Складские позиции подобраны для рецепта.")
+);
+
+export const reserveRecipeInventoryAction = async (recipeId: string) => (
+  runRecipeInventoryAction(recipeId, reserveRecipeInventoryAllocations, "Ингредиенты зарезервированы.")
+);
+
+export const consumeRecipeInventoryAction = async (recipeId: string) => (
+  runRecipeInventoryAction(recipeId, consumeRecipeInventoryAllocations, "Ингредиенты списаны со склада.")
+);
+
+export const releaseRecipeInventoryAction = async (recipeId: string) => (
+  runRecipeInventoryAction(recipeId, releaseRecipeInventoryAllocations, "Резерв снят.")
+);
+
+export const getRecipeStockCoverageAction = async (recipeId: string): Promise<RecipeInventoryActionResult> => {
+  try {
+    const user = await requireUser();
+    return {
+      ok: true,
+      message: "Покрытие склада обновлено.",
+      coverage: await listRecipeStockCoverage(user.id, recipeId)
+    };
+  } catch {
+    return { ok: false, message: "Не удалось обновить покрытие склада." };
+  }
+};
+
+export const createBrewBatchFromRecipeAction = async (
+  recipeId: string
+): Promise<{ ok: boolean; message: string; brewBatchId?: string }> => {
+  try {
+    const user = await requireUser();
+    const batch = await createBrewBatchFromRecipe(user.id, recipeId);
+
+    revalidatePath("/app/recipes");
+    revalidatePath(`/app/recipes/${recipeId}`);
+    revalidatePath(`/app/recipes/${recipeId}/edit`);
+
+    return {
+      ok: true,
+      message: "Партия варки создана.",
+      brewBatchId: batch.id
+    };
+  } catch (error) {
+    if (error instanceof Error && error.message === "NOT_FOUND") {
+      return { ok: false, message: "Рецепт не найден." };
+    }
+
+    return { ok: false, message: "Не удалось создать партию варки." };
+  }
+};
+
+export const exportRecipeBeerXmlAction = async (
+  recipeId: string
+): Promise<{ ok: boolean; message: string; beerXml?: string }> => {
+  try {
+    const user = await requireUser();
+    const recipe = await getOwnedRecipeById(user.id, recipeId);
+    return {
+      ok: true,
+      message: "BeerXML экспорт подготовлен.",
+      beerXml: exportRecipeToBeerXml(recipe)
+    };
+  } catch {
+    return { ok: false, message: "Не удалось подготовить BeerXML экспорт." };
+  }
+};
+
+export const importBeerXmlRecipeAction = async (
+  beerXml: string
+): Promise<RecipeEditorResult> => {
+  try {
+    const user = await requireUser();
+    const { createRecipeFromCanonicalImport } = await import("@/features/recipes/interop/import-service");
+    const canonical = importBeerXmlToCanonicalRecipe(beerXml);
+    const recipe = await createRecipeFromCanonicalImport(user.id, canonical);
+
+    revalidatePath("/app/recipes");
+    revalidatePath(`/app/recipes/${recipe.id}`);
+    revalidatePath(`/app/recipes/${recipe.id}/edit`);
+
+    return {
+      ok: true,
+      message: "BeerXML рецепт импортирован.",
+      recipe
+    };
+  } catch (error) {
+    return mapRecipeImportError(error, "BeerXML");
+  }
+};
+
+export const importBrewfatherJsonRecipeAction = async (
+  payload: unknown
+): Promise<RecipeEditorResult> => {
+  try {
+    const user = await requireUser();
+    const { createRecipeFromCanonicalImport } = await import("@/features/recipes/interop/import-service");
+    const canonical = importBrewfatherJsonToCanonicalRecipe(payload);
+    const recipe = await createRecipeFromCanonicalImport(user.id, canonical);
+
+    revalidatePath("/app/recipes");
+    revalidatePath(`/app/recipes/${recipe.id}`);
+    revalidatePath(`/app/recipes/${recipe.id}/edit`);
+
+    return {
+      ok: true,
+      message: "Brewfather JSON импортирован.",
+      recipe
+    };
+  } catch (error) {
+    return mapRecipeImportError(error, "Brewfather JSON");
   }
 };

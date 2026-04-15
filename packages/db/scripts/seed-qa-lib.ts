@@ -14,6 +14,44 @@ type IngredientRow = typeof ingredients.$inferSelect & {
   packageVariants: Array<typeof ingredientPackageVariants.$inferSelect>;
 };
 
+type InventorySeedItem = {
+  ingredientId: string;
+  enteredQuantity: number;
+  enteredUnit: string;
+  normalizedQuantity: number;
+  normalizedUnit: string;
+  ingredientSubtype?: string | null;
+  notes?: string;
+  packageVariantId?: string | null;
+};
+
+const qaAdminInventorySeedItems: InventorySeedItem[] = [
+  { ingredientId: "castle-malting--cara-cafe", enteredQuantity: 0.9, enteredUnit: "kg", normalizedQuantity: 900, normalizedUnit: "g" },
+  { ingredientId: "castle-malting--cara-clair", enteredQuantity: 2.2, enteredUnit: "kg", normalizedQuantity: 2200, normalizedUnit: "g" },
+  { ingredientId: "kurskiy-solod--caramel-150", enteredQuantity: 1.2, enteredUnit: "kg", normalizedQuantity: 1200, normalizedUnit: "g" },
+  { ingredientId: "kurskiy-solod--munich-type-2", enteredQuantity: 0, enteredUnit: "kg", normalizedQuantity: 0, normalizedUnit: "g" },
+  { ingredientId: "kurskiy-solod--pilsner", enteredQuantity: 0, enteredUnit: "kg", normalizedQuantity: 0, normalizedUnit: "g" },
+  { ingredientId: "castle-malting-pilsen-2rs-be-base", enteredQuantity: 5, enteredUnit: "kg", normalizedQuantity: 5000, normalizedUnit: "g" },
+  { ingredientId: "kurskiy-solod--wheat", enteredQuantity: 1, enteredUnit: "kg", normalizedQuantity: 1000, normalizedUnit: "g" },
+  { ingredientId: "kurskiy-solod--pale-ale", enteredQuantity: 5, enteredUnit: "kg", normalizedQuantity: 5000, normalizedUnit: "g" },
+  { ingredientId: "rice-hulls-nesolozhenka", enteredQuantity: 0.5, enteredUnit: "kg", normalizedQuantity: 500, normalizedUnit: "g" },
+  { ingredientId: "kurskiy-solod--chocolate-900", enteredQuantity: 0.4, enteredUnit: "kg", normalizedQuantity: 400, normalizedUnit: "g" },
+  { ingredientId: "au-galaxy-beervingem-standard", enteredQuantity: 100, enteredUnit: "g", normalizedQuantity: 100, normalizedUnit: "g", ingredientSubtype: "hop" },
+  { ingredientId: "cz-saaz-beervingem-standard", enteredQuantity: 80, enteredUnit: "g", normalizedQuantity: 80, normalizedUnit: "g", notes: "Хмель для QA-аккаунта." },
+  { ingredientId: "us-cascade-beervingem-standard", enteredQuantity: 100, enteredUnit: "g", normalizedQuantity: 100, normalizedUnit: "g", ingredientSubtype: "hop" },
+  { ingredientId: "us-lupulin-citra-lupulin-concentrate", enteredQuantity: 20, enteredUnit: "g", normalizedQuantity: 20, normalizedUnit: "g", ingredientSubtype: "hop" },
+  { ingredientId: "de-hallertaur-magnum-standard", enteredQuantity: 50, enteredUnit: "g", normalizedQuantity: 50, normalizedUnit: "g", ingredientSubtype: "hop" },
+  { ingredientId: "us-mosaic-beervingem-standard", enteredQuantity: 100, enteredUnit: "g", normalizedQuantity: 100, normalizedUnit: "g", ingredientSubtype: "hop" },
+  { ingredientId: "us-citra-beervingem-standard", enteredQuantity: 200, enteredUnit: "g", normalizedQuantity: 200, normalizedUnit: "g", ingredientSubtype: "hop" },
+  { ingredientId: "fermentis-t-58", enteredQuantity: 0, enteredUnit: "pack", normalizedQuantity: 0, normalizedUnit: "g", ingredientSubtype: "yeast" },
+  { ingredientId: "fermentis-us-05", enteredQuantity: 1, enteredUnit: "pack", normalizedQuantity: 11, normalizedUnit: "g", ingredientSubtype: "yeast" },
+  { ingredientId: "lallemand-pomona", enteredQuantity: 1, enteredUnit: "pack", normalizedQuantity: 11, normalizedUnit: "g", ingredientSubtype: "yeast" },
+  { ingredientId: "lallemand-philly-sour", enteredQuantity: 1, enteredUnit: "pack", normalizedQuantity: 11, normalizedUnit: "g", ingredientSubtype: "yeast" },
+  { ingredientId: "star-san-acid-no-rinse-sanitizer", enteredQuantity: 300, enteredUnit: "ml", normalizedQuantity: 300, normalizedUnit: "ml" },
+  { ingredientId: "kettle-fining-irish-moss", enteredQuantity: 4, enteredUnit: "pack", normalizedQuantity: 4, normalizedUnit: "pack" },
+  { ingredientId: "lactic-acid", enteredQuantity: 200, enteredUnit: "ml", normalizedQuantity: 200, normalizedUnit: "ml", ingredientSubtype: "other" }
+];
+
 const isRecord = (value: unknown): value is Record<string, unknown> => (
   typeof value === "object"
   && value !== null
@@ -142,6 +180,11 @@ const getSeedIngredient = (
   return item;
 };
 
+const getSeedIngredientById = (
+  items: IngredientRow[],
+  ingredientId: string
+) => getSeedIngredient(items, ingredientId, (item) => item.id === ingredientId);
+
 const createInventorySeedRow = (
   userId: string,
   item: IngredientRow,
@@ -167,6 +210,28 @@ const createInventorySeedRow = (
   normalizedUnit,
   unitDimension: resolveMeasurementDimension(normalizedUnit),
   notes: notes ?? null
+});
+
+const createInventorySeedRows = (
+  userId: string,
+  catalogItems: IngredientRow[],
+  seedItems: InventorySeedItem[]
+) => seedItems.map((seedItem) => {
+  const row = createInventorySeedRow(
+    userId,
+    getSeedIngredientById(catalogItems, seedItem.ingredientId),
+    seedItem.enteredQuantity,
+    seedItem.enteredUnit,
+    seedItem.normalizedQuantity,
+    seedItem.normalizedUnit,
+    seedItem.notes,
+    seedItem.packageVariantId
+  );
+
+  return {
+    ...row,
+    ingredientSubtype: seedItem.ingredientSubtype ?? row.ingredientSubtype
+  };
 });
 
 export const seedQaFixtures = async (): Promise<{
@@ -212,7 +277,6 @@ export const seedQaFixtures = async (): Promise<{
     && hasAnyText(item, ["pale ale", "пэйл эль"])
   ));
   const citra = getSeedIngredient(catalogItems, "Citra", (item) => item.type === "hop" && hasText(item, "citra"));
-  const saaz = getSeedIngredient(catalogItems, "Saaz", (item) => item.type === "hop" && hasText(item, "saaz"));
   const us05 = getSeedIngredient(catalogItems, "US-05", (item) => item.type === "yeast" && hasText(item, "us-05"));
   const dextrose = getSeedIngredient(catalogItems, "Dextrose", (item) => item.type === "fermentable" && hasText(item, "dextrose"));
   const riceHulls = getSeedIngredient(catalogItems, "Rice hulls", (item) => (
@@ -224,7 +288,6 @@ export const seedQaFixtures = async (): Promise<{
     && hasAnyText(item, ["подкормка", "дрожжевая подкормка", "yeast nutrient"])
   ));
   const whirlfloc = getSeedIngredient(catalogItems, "Whirlfloc", (item) => item.type === "consumable" && hasText(item, "whirlfloc"));
-  const lacticAcid = getSeedIngredient(catalogItems, "Lactic acid", (item) => item.type === "water_treatment" && hasText(item, "молочная кислота"));
 
   const whirlflocVariant = whirlfloc.packageVariants[0];
   if (!whirlflocVariant) {
@@ -251,8 +314,7 @@ export const seedQaFixtures = async (): Promise<{
       "Пакетная фасовка для кипячения.",
       whirlflocVariant.id
     ),
-    createInventorySeedRow(qaAdmin.id, saaz, 80, "g", 80, "g", "Хмель для QA-аккаунта."),
-    createInventorySeedRow(qaAdmin.id, lacticAcid, 250, "ml", 250, "ml", "Коррекция pH воды.")
+    ...createInventorySeedRows(qaAdmin.id, catalogItems, qaAdminInventorySeedItems)
   ]);
 
   console.log(`QA seed complete: ${dbUsers.length} users, ${seedResult.processed} catalog items, inventory reset for qa.user/qa.admin.`);

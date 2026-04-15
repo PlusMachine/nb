@@ -27,7 +27,6 @@ import {
 } from "@/features/inventory/custom-ingredient";
 import type { InventoryPriceInputMode } from "@/features/inventory/purchase-cost";
 import {
-  getInventoryUnitInputStep,
   inventoryUnitLabels,
   type InventoryUnit
 } from "@/features/inventory/units";
@@ -253,7 +252,6 @@ export function CustomIngredientForm({ category, initialSubtype = null, preferre
   }), [category, resolvedSubtype, resolvedType, technicalData]);
   const placeholderKind = resolveCustomIngredientPlaceholderKind(category, resolvedSubtype);
   const [enteredUnit, setEnteredUnit] = useState<InventoryUnit>(unitProfile.defaultUnit);
-  const quantityStep = getInventoryUnitInputStep(enteredUnit);
   const subtypeOptions = category === "fermentable" || !shouldShowCustomIngredientSubtypeField(category)
     ? []
     : getCustomIngredientSubtypeOptions(category);
@@ -541,7 +539,7 @@ export function CustomIngredientForm({ category, initialSubtype = null, preferre
             <input
               type="number"
               min="0"
-              step={quantityStep}
+              step="any"
               className="mt-1 w-full rounded-md border px-2 py-2"
               value={enteredQuantity}
               onChange={(e) => setEnteredQuantity(e.target.value)}

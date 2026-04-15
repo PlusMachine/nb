@@ -208,7 +208,7 @@ describe("inventory add-flow", () => {
     expect(html).not.toContain('aria-label="Очистить дату покупки"');
     expect(html).not.toContain("За всё");
     expect(html).not.toContain("За единицу");
-    expect(html).toContain('step="0.1"');
+    expect(html).toContain('step="any"');
   });
 
   it("uses category-specific placeholders in custom flow outside malt", () => {
