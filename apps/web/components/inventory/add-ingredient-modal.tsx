@@ -309,6 +309,26 @@ export function AddIngredientModal({
       return;
     }
 
+    const handleEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        event.preventDefault();
+        onClose();
+      }
+    };
+
+    document.addEventListener("keydown", handleEscape);
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.removeEventListener("keydown", handleEscape);
+      document.body.style.overflow = "";
+    };
+  }, [open, onClose]);
+
+  useEffect(() => {
+    if (!open) {
+      return;
+    }
+
     const startContext = resolveAddIngredientStartContext({
       initialSelection,
       initialCategory,
@@ -398,7 +418,7 @@ export function AddIngredientModal({
 
   const modalContent = (
     <div
-      className="fixed inset-0 z-[100] flex items-end justify-center bg-zinc-950/55 sm:items-center"
+      className="animate-modal-backdrop fixed inset-0 z-[100] flex items-end justify-center bg-zinc-950/50 backdrop-blur-[2px] sm:items-center sm:p-4"
       role="dialog"
       aria-modal="true"
       aria-label="Добавить ингредиент"
@@ -416,11 +436,20 @@ export function AddIngredientModal({
         backdropPointerDownStartedRef.current = false;
       }}
     >
-      <div className="relative z-[101] max-h-[92vh] w-full overflow-y-auto rounded-t-xl bg-white p-5 shadow-2xl sm:max-w-2xl sm:rounded-xl" data-testid="add-ingredient-modal">
-        <div className="mb-4 flex items-center justify-between">
-          <h2 className="text-lg font-semibold text-zinc-950">Добавить ингредиент</h2>
-          <button type="button" className="text-sm text-zinc-500 transition-colors hover:text-zinc-700" onClick={onClose}>Закрыть</button>
+      <div className="animate-modal-content relative z-[101] max-h-[94vh] w-full overflow-y-auto rounded-t-2xl bg-white shadow-2xl ring-1 ring-black/[0.06] sm:max-w-2xl sm:rounded-2xl" data-testid="add-ingredient-modal">
+        <div className="sticky top-0 z-10 flex items-center justify-between border-b border-zinc-100 bg-white/95 px-5 py-4 backdrop-blur-sm sm:rounded-t-2xl">
+          <h2 className="text-base font-semibold text-zinc-900">Добавить ингредиент</h2>
+          <button
+            type="button"
+            onClick={onClose}
+            className="flex h-8 w-8 items-center justify-center rounded-lg text-zinc-400 transition-colors hover:bg-zinc-100 hover:text-zinc-600"
+            aria-label="Закрыть"
+          >
+            <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+          </button>
         </div>
+
+        <div className="p-5">
 
         <div className="space-y-4">
           {showSelectionStageChrome ? (
@@ -431,7 +460,7 @@ export function AddIngredientModal({
                 testId="add-ingredient-category-grid"
               />
 
-              <div className="grid grid-cols-2 gap-2 rounded-md bg-zinc-100 p-1 text-sm" data-testid="add-ingredient-mode-switch">
+              <div className="grid grid-cols-2 gap-1 rounded-xl bg-zinc-100 p-1 text-sm" data-testid="add-ingredient-mode-switch">
                 <button
                   type="button"
                   onPointerDown={(event) => applyAddIngredientImmediateControlAction({
@@ -445,7 +474,7 @@ export function AddIngredientModal({
 
                     setMode("catalog");
                   }}
-                  className={`rounded px-3 py-2 ${mode === "catalog" ? "bg-white shadow" : ""}`}
+                  className={`rounded-lg px-3 py-2 font-medium transition-all duration-150 ${mode === "catalog" ? "bg-white text-zinc-900 shadow-sm" : "text-zinc-500 hover:text-zinc-700"}`}
                 >
                   Из каталога
                 </button>
@@ -462,7 +491,7 @@ export function AddIngredientModal({
 
                     setMode("custom");
                   }}
-                  className={`rounded px-3 py-2 ${mode === "custom" ? "bg-white shadow" : ""}`}
+                  className={`rounded-lg px-3 py-2 font-medium transition-all duration-150 ${mode === "custom" ? "bg-white text-zinc-900 shadow-sm" : "text-zinc-500 hover:text-zinc-700"}`}
                 >
                   Добавить свой
                 </button>
@@ -533,6 +562,7 @@ export function AddIngredientModal({
               </div>
             ) : null}
           </div>
+        </div>
         </div>
       </div>
     </div>

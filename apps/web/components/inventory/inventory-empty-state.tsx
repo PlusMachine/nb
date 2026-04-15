@@ -33,14 +33,14 @@ export function InventoryEmptyState({
 }: Props) {
   if (!hasAnyItems) {
     return (
-      <section className="flex flex-col items-center gap-4 rounded-2xl border border-dashed border-zinc-300 bg-zinc-50/50 px-6 py-12 text-center">
-        <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-zinc-100">
-          <PackageOpen className="h-7 w-7 text-zinc-400" />
+      <section className="flex flex-col items-center gap-5 rounded-2xl border border-dashed border-zinc-200 bg-white px-6 py-14 text-center">
+        <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-zinc-50">
+          <PackageOpen className="h-8 w-8 text-zinc-300" />
         </div>
-        <div className="space-y-1">
-          <h2 className="text-lg font-semibold text-zinc-900">Пока нет ингредиентов</h2>
-          <p className="mx-auto max-w-sm text-sm text-zinc-500">
-            Здесь будут ваши запасы солода, хмеля, дрожжей и других ингредиентов. Это база для подбора рецептов и планирования варок.
+        <div className="space-y-2">
+          <h2 className="text-lg font-semibold text-zinc-800">Пока нет ингредиентов</h2>
+          <p className="mx-auto max-w-xs text-sm leading-relaxed text-zinc-400">
+            Здесь будут ваши запасы солода, хмеля, дрожжей и других ингредиентов для варки.
           </p>
         </div>
         <AddIngredientTrigger initialQuickStartDataByContext={initialQuickStartDataByContext} />
@@ -58,20 +58,20 @@ export function InventoryEmptyState({
   });
 
   if (search) {
-    title = "По вашему запросу ничего не найдено";
+    title = "Ничего не найдено";
     description = `Не нашли «${search}» среди текущих запасов.`;
     Icon = Search;
   } else if (category && !showFinished) {
-    title = `Для выбран${subtype ? "ного фильтра" : "ной категории"} нет позиций в наличии`;
-    description = `Включите «Показать закончившиеся», чтобы увидеть позиции с нулевым остатком ${subtype ? "в разделе" : "в категории"} «${filterLabel}».`;
+    title = `Нет позиций в наличии`;
+    description = `Включите «Показать закончившиеся», чтобы увидеть позиции с нулевым остатком в «${filterLabel}».`;
   } else if (category) {
-    title = `Для выбран${subtype ? "ного фильтра" : "ной категории"} нет позиций`;
-    description = `${subtype ? "В разделе" : "В категории"} «${filterLabel}» пока нет подходящих ингредиентов.`;
+    title = `Нет позиций`;
+    description = `В «${filterLabel}» пока нет ингредиентов.`;
   } else if (!showFinished && !hasFilters) {
     title = "Сейчас в наличии ничего нет";
-    description = "Включите «Показать закончившиеся», чтобы увидеть позиции с нулевым остатком и быстро пополнить их.";
+    description = "Включите «Показать закончившиеся», чтобы увидеть позиции с нулевым остатком.";
   } else if (showFinished) {
-    title = "Даже закончившихся позиций не найдено";
+    title = "Ничего не найдено";
     description = "Попробуйте изменить запрос или снять часть фильтров.";
   } else if (!hasFilters) {
     title = "Список пуст";
@@ -79,13 +79,13 @@ export function InventoryEmptyState({
   }
 
   return (
-    <section className="flex flex-col items-center gap-3 rounded-2xl border border-dashed border-zinc-200 bg-zinc-50/30 px-6 py-10 text-center">
-      <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-zinc-100">
-        <Icon className="h-5 w-5 text-zinc-400" />
+    <section className="flex flex-col items-center gap-3 rounded-2xl border border-dashed border-zinc-200 bg-white px-6 py-10 text-center">
+      <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-zinc-50">
+        <Icon className="h-5 w-5 text-zinc-300" />
       </div>
       <div className="space-y-1">
-        <h2 className="text-base font-semibold text-zinc-900">{title}</h2>
-        <p className="text-sm text-zinc-500">{description}</p>
+        <h2 className="text-base font-semibold text-zinc-700">{title}</h2>
+        <p className="text-sm text-zinc-400">{description}</p>
       </div>
     </section>
   );

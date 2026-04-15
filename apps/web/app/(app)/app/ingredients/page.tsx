@@ -143,12 +143,12 @@ export default async function MyIngredientsPage({ searchParams }: Props) {
   });
 
   return (
-    <main className="space-y-6">
+    <main className="space-y-5">
       <section className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div className="space-y-1">
-          <h1 className="text-2xl font-bold tracking-tight text-zinc-950">Склад моих ингредиентов</h1>
+          <h1 className="text-xl font-bold tracking-tight text-zinc-900 sm:text-2xl">Мой склад</h1>
           {hasAnyItems ? (
-            <p className="text-sm text-zinc-500">
+            <p className="text-sm text-zinc-400">
               {summary.inStockItems} в наличии{summary.emptyItems > 0 ? ` · ${summary.emptyItems} закончились` : ""}
             </p>
           ) : null}

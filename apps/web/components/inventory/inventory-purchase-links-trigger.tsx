@@ -2,7 +2,7 @@
 
 import React from "react";
 import { useState } from "react";
-import { ShoppingCart } from "lucide-react";
+import { Link2 } from "lucide-react";
 import { IngredientPurchaseLinksDialog, PurchaseLinkMarketplaceBadge } from "@/components/ingredients/ingredient-purchase-links-manager";
 import type {
   IngredientPurchaseLinkSummaryDto,
@@ -22,21 +22,17 @@ export function InventoryPurchaseLinksTrigger({
   const count = summary?.count ?? 0;
   const marketplaces = summary?.marketplaces ?? [];
 
-  return (
-    <>
-      <button
-        type="button"
-        onClick={() => setOpen(true)}
-        className={count > 0
-          ? "inline-flex items-center gap-2 rounded-full border border-zinc-200 bg-zinc-50 px-2.5 py-1 text-xs font-medium text-zinc-700 transition-colors hover:bg-zinc-100"
-          : "inline-flex items-center gap-2 text-xs font-medium text-zinc-500 underline decoration-zinc-300 underline-offset-4 transition-colors hover:text-zinc-700"
-        }
-      >
-        <ShoppingCart className="h-3.5 w-3.5" />
-        <span>{count > 0 ? "Купить" : "Добавить ссылку"}</span>
-        {count > 0 ? (
+  if (count > 0) {
+    return (
+      <>
+        <button
+          type="button"
+          onClick={() => setOpen(true)}
+          className="inline-flex items-center gap-1.5 rounded-lg py-0.5 text-xs text-zinc-400 transition-colors hover:text-zinc-600"
+          title="Ссылки на покупку"
+        >
           <span className="inline-flex items-center gap-1">
-            {marketplaces.slice(0, 3).map((marketplace) => (
+            {marketplaces.slice(0, 4).map((marketplace) => (
               <PurchaseLinkMarketplaceBadge
                 key={`inventory-link-badge-${reference.source}-${reference.id}-${marketplace}`}
                 marketplace={marketplace}
@@ -44,7 +40,30 @@ export function InventoryPurchaseLinksTrigger({
               />
             ))}
           </span>
-        ) : null}
+          {count > 4 ? (
+            <span className="text-[11px] text-zinc-400">+{count - 4}</span>
+          ) : null}
+        </button>
+
+        <IngredientPurchaseLinksDialog
+          open={open}
+          onClose={() => setOpen(false)}
+          reference={reference}
+        />
+      </>
+    );
+  }
+
+  return (
+    <>
+      <button
+        type="button"
+        onClick={() => setOpen(true)}
+        className="hidden items-center gap-1 rounded-lg py-0.5 text-xs text-zinc-400 transition-colors hover:text-zinc-600 group-hover:inline-flex"
+        title="Добавить ссылку на покупку"
+      >
+        <Link2 className="h-3 w-3" />
+        <span>добавить ссылку на покупку</span>
       </button>
 
       <IngredientPurchaseLinksDialog

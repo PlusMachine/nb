@@ -23,13 +23,16 @@ const categoryOptions: Array<{
   label: string;
   icon: React.ComponentType<{ className?: string }>;
   iconClassName: string;
+  activeBg: string;
+  activeText: string;
+  activeRing: string;
 }> = [
-  { value: "fermentable", label: "Сбраживаемые", icon: Wheat, iconClassName: "text-amber-600" },
-  { value: "hop", label: "Хмель", icon: Hop, iconClassName: "text-emerald-600" },
-  { value: "yeast", label: "Дрожжи", icon: FlaskConical, iconClassName: "text-violet-600" },
-  { value: "water_treatment", label: "Водоподготовка", icon: Droplets, iconClassName: "text-sky-600" },
-  { value: "consumable_supply", label: "Расходники", icon: Package, iconClassName: "text-zinc-500" },
-  { value: "consumable_additive", label: "Другие добавки", icon: Package, iconClassName: "text-amber-600" }
+  { value: "fermentable", label: "Сбраживаемые", icon: Wheat, iconClassName: "text-amber-500", activeBg: "bg-amber-50", activeText: "text-amber-800", activeRing: "ring-amber-200" },
+  { value: "hop", label: "Хмель", icon: Hop, iconClassName: "text-emerald-500", activeBg: "bg-emerald-50", activeText: "text-emerald-800", activeRing: "ring-emerald-200" },
+  { value: "yeast", label: "Дрожжи", icon: FlaskConical, iconClassName: "text-violet-500", activeBg: "bg-violet-50", activeText: "text-violet-800", activeRing: "ring-violet-200" },
+  { value: "water_treatment", label: "Водоподготовка", icon: Droplets, iconClassName: "text-sky-500", activeBg: "bg-sky-50", activeText: "text-sky-800", activeRing: "ring-sky-200" },
+  { value: "consumable_supply", label: "Расходники", icon: Package, iconClassName: "text-zinc-400", activeBg: "bg-zinc-100", activeText: "text-zinc-800", activeRing: "ring-zinc-300" },
+  { value: "consumable_additive", label: "Другие добавки", icon: Package, iconClassName: "text-orange-500", activeBg: "bg-orange-50", activeText: "text-orange-800", activeRing: "ring-orange-200" }
 ];
 
 export const resolveInventoryIngredientContextFromCategoryValue = (
@@ -108,10 +111,11 @@ export function InventoryIngredientCategoryGrid({
 }: Props) {
   return (
     <fieldset className="space-y-2" data-testid={testId}>
-      <legend className="text-sm font-medium">{legend}</legend>
-      <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+      <legend className="text-sm font-medium text-zinc-700">{legend}</legend>
+      <div className="grid grid-cols-2 gap-1.5 sm:grid-cols-3">
         {categoryOptions.map((option) => {
           const Icon = option.icon;
+          const isActive = value === option.value;
 
           return (
             <button
@@ -128,15 +132,14 @@ export function InventoryIngredientCategoryGrid({
 
                 onChange(option.value);
               }}
-              className={`rounded-md border px-3 py-2 text-xs transition ${value === option.value
-                ? "border-black bg-zinc-100 text-zinc-950"
-                : "border-zinc-200 bg-white text-zinc-600 hover:border-zinc-300 hover:bg-zinc-50"
-                }`}
+              className={`flex items-center gap-2 rounded-xl border px-3 py-2.5 text-[13px] font-medium transition-all duration-150 ${
+                isActive
+                  ? `${option.activeBg} ${option.activeText} border-transparent ring-1 ${option.activeRing} shadow-sm`
+                  : "border-zinc-200 bg-white text-zinc-600 hover:border-zinc-300 hover:bg-zinc-50 active:scale-[0.97]"
+              }`}
             >
-              <span className="inline-flex items-center gap-1.5 whitespace-nowrap">
-                <Icon className={`h-3.5 w-3.5 shrink-0 ${value === option.value ? "text-current" : option.iconClassName}`} />
-                <span>{option.label}</span>
-              </span>
+              <Icon className={`h-4 w-4 shrink-0 ${isActive ? "text-current" : option.iconClassName}`} />
+              <span className="truncate">{option.label}</span>
             </button>
           );
         })}

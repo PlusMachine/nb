@@ -351,6 +351,26 @@ export function InventoryItemDetailsEditor({
   }, []);
 
   useEffect(() => {
+    if (!editing) {
+      return;
+    }
+
+    const handleEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        event.preventDefault();
+        resetForm();
+      }
+    };
+
+    document.addEventListener("keydown", handleEscape);
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.removeEventListener("keydown", handleEscape);
+      document.body.style.overflow = "";
+    };
+  }, [editing]);
+
+  useEffect(() => {
     setForm(createFormState(item, preferredCurrency, currencyRates));
     setSelectedSuggestion(resolveInventoryEditorInitialSelection(item.source, item.enteredUnit));
     setOptionalOpen(false);
@@ -450,7 +470,7 @@ export function InventoryItemDetailsEditor({
       {editing ? (() => {
         const modalContent = (
           <div
-            className="fixed inset-0 z-[100] flex items-end justify-center bg-zinc-950/55 sm:items-center"
+            className="animate-modal-backdrop fixed inset-0 z-[100] flex items-end justify-center bg-zinc-950/50 backdrop-blur-[2px] sm:items-center sm:p-4"
             role="dialog"
             aria-modal="true"
             aria-label={`Редактировать ингредиент на складе: ${item.source.displayName}`}
@@ -465,11 +485,20 @@ export function InventoryItemDetailsEditor({
               backdropPointerDownStartedRef.current = false;
             }}
           >
-            <div className="relative z-[101] max-h-[92vh] w-full overflow-y-auto rounded-t-xl bg-white p-5 shadow-2xl sm:max-w-2xl sm:rounded-xl">
-              <div className="mb-4 flex items-center justify-between">
-                <h2 className="text-lg font-semibold text-zinc-950">Редактировать ингредиент на складе</h2>
-                <button type="button" onClick={resetForm} className="text-sm text-zinc-500 transition-colors hover:text-zinc-700">Закрыть</button>
+            <div className="animate-modal-content relative z-[101] max-h-[94vh] w-full overflow-y-auto rounded-t-2xl bg-white shadow-2xl ring-1 ring-black/[0.06] sm:max-w-2xl sm:rounded-2xl">
+              <div className="sticky top-0 z-10 flex items-center justify-between border-b border-zinc-100 bg-white/95 px-5 py-4 backdrop-blur-sm sm:rounded-t-2xl">
+                <h2 className="text-base font-semibold text-zinc-900">Редактировать ингредиент</h2>
+                <button
+                  type="button"
+                  onClick={resetForm}
+                  className="flex h-8 w-8 items-center justify-center rounded-lg text-zinc-400 transition-colors hover:bg-zinc-100 hover:text-zinc-600"
+                  aria-label="Закрыть"
+                >
+                  <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+                </button>
               </div>
+
+              <div className="p-5">
 
               <form
                 className="space-y-4"
@@ -651,9 +680,9 @@ export function InventoryItemDetailsEditor({
                 ) : null}
 
                 {showRequiredFields ? (
-                  <section className="space-y-3 rounded-xl border border-zinc-200 bg-white p-4" data-testid="inventory-editor-required-fields">
+                  <section className="space-y-3 rounded-xl border border-zinc-100 bg-zinc-50/50 p-4" data-testid="inventory-editor-required-fields">
                     <div className="grid gap-3 sm:grid-cols-2">
-                      <label className="text-sm">Количество *
+                      <label className="block text-sm font-medium text-zinc-700">Количество *
                         <input
                           type="number"
                           min="0"
@@ -663,15 +692,15 @@ export function InventoryItemDetailsEditor({
                             setForm((current) => ({ ...current, enteredQuantity: event.target.value }));
                             setResult(null);
                           }}
-                          className="mt-1 w-full rounded-lg border border-zinc-200 px-3 py-2"
+                          className="mt-1.5 w-full rounded-xl border border-zinc-200 bg-white px-3.5 py-2.5 text-sm transition-colors focus:border-zinc-400 focus:outline-none focus:ring-2 focus:ring-zinc-200"
                           inputMode="decimal"
                         />
-                        {result?.fieldErrors?.enteredQuantity ? <span className="text-xs text-red-600">{result.fieldErrors.enteredQuantity}</span> : null}
+                        {result?.fieldErrors?.enteredQuantity ? <span className="mt-1 block text-xs text-red-500">{result.fieldErrors.enteredQuantity}</span> : null}
                       </label>
 
-                      <label className="text-sm">Ед. изм. *
+                      <label className="block text-sm font-medium text-zinc-700">Ед. изм. *
                         <select
-                          className="mt-1 w-full rounded-lg border border-zinc-200 px-3 py-2"
+                          className="mt-1.5 w-full rounded-xl border border-zinc-200 bg-white px-3.5 py-2.5 text-sm transition-colors focus:border-zinc-400 focus:outline-none focus:ring-2 focus:ring-zinc-200"
                           value={form.enteredUnit}
                           onChange={(event) => {
                             setForm((current) => ({ ...current, enteredUnit: event.target.value as InventoryUnit }));
@@ -680,31 +709,31 @@ export function InventoryItemDetailsEditor({
                         >
                           {unitProfile.allowedUnits.map((unit) => <option key={unit} value={unit}>{inventoryUnitLabels[unit]}</option>)}
                         </select>
-                        {result?.fieldErrors?.enteredUnit ? <span className="text-xs text-red-600">{result.fieldErrors.enteredUnit}</span> : null}
+                        {result?.fieldErrors?.enteredUnit ? <span className="mt-1 block text-xs text-red-500">{result.fieldErrors.enteredUnit}</span> : null}
                       </label>
                     </div>
                   </section>
                 ) : null}
 
                 {showOptionalSection ? (
-                  <section className="space-y-3 rounded-xl border border-zinc-200 bg-white p-4" data-testid="inventory-editor-optional-disclosure">
+                  <section className="space-y-3 rounded-xl border border-zinc-100 bg-zinc-50/50 p-4" data-testid="inventory-editor-optional-disclosure">
                     <button
                       type="button"
                       onClick={() => setOptionalOpen((current) => !current)}
                       className="flex w-full items-center justify-between gap-3 text-left"
                       aria-expanded={optionalOpen}
                     >
-                      <span className="text-sm font-medium text-zinc-900">Дополнительно</span>
-                      <span className="text-sm text-zinc-500">{optionalOpen ? "Скрыть" : "Открыть"}</span>
+                      <span className="text-sm font-medium text-zinc-700">Дополнительно</span>
+                      <span className="text-xs font-medium text-zinc-400">{optionalOpen ? "Скрыть" : "Показать"}</span>
                     </button>
 
                     {optionalOpen ? (
                       <div className="space-y-4">
                         <div className="grid gap-3 sm:grid-cols-2">
-                          <label className="text-sm">Дата покупки
+                          <label className="block text-sm font-medium text-zinc-700">Дата покупки
                             <input
                               type="date"
-                              className="mt-1 w-full rounded-lg border border-zinc-200 px-3 py-2"
+                              className="mt-1.5 w-full rounded-xl border border-zinc-200 bg-white px-3.5 py-2.5 text-sm transition-colors focus:border-zinc-400 focus:outline-none focus:ring-2 focus:ring-zinc-200"
                               value={form.purchasedAt}
                               onChange={(event) => {
                                 setForm((current) => ({ ...current, purchasedAt: event.target.value }));
@@ -713,10 +742,10 @@ export function InventoryItemDetailsEditor({
                             />
                           </label>
 
-                          <label className="text-sm">Годен до
+                          <label className="block text-sm font-medium text-zinc-700">Годен до
                             <input
                               type="date"
-                              className="mt-1 w-full rounded-lg border border-zinc-200 px-3 py-2"
+                              className="mt-1.5 w-full rounded-xl border border-zinc-200 bg-white px-3.5 py-2.5 text-sm transition-colors focus:border-zinc-400 focus:outline-none focus:ring-2 focus:ring-zinc-200"
                               value={form.freshnessDate}
                               onChange={(event) => {
                                 setForm((current) => ({ ...current, freshnessDate: event.target.value }));
@@ -760,16 +789,16 @@ export function InventoryItemDetailsEditor({
                           testId="inventory-editor-purchase-links-field"
                         />
 
-                        <label className="block text-sm">Заметки
+                        <label className="block text-sm font-medium text-zinc-700">Заметки
                           <textarea
-                            className="mt-1 h-20 w-full rounded-lg border border-zinc-200 px-3 py-2"
+                            className="mt-1.5 h-20 w-full resize-none rounded-xl border border-zinc-200 bg-white px-3.5 py-2.5 text-sm transition-colors focus:border-zinc-400 focus:outline-none focus:ring-2 focus:ring-zinc-200"
                             value={form.notes}
                             onChange={(event) => {
                               setForm((current) => ({ ...current, notes: event.target.value }));
                               setResult(null);
                             }}
                           />
-                          {result?.fieldErrors?.notes ? <span className="text-xs text-red-600">{result.fieldErrors.notes}</span> : null}
+                          {result?.fieldErrors?.notes ? <span className="mt-1 block text-xs text-red-500">{result.fieldErrors.notes}</span> : null}
                         </label>
                       </div>
                     ) : null}
@@ -778,23 +807,24 @@ export function InventoryItemDetailsEditor({
 
                 {result && !result.ok ? <p className="text-xs text-red-600">{result.message}</p> : null}
 
-                <div className="flex flex-wrap gap-2">
+                <div className="flex gap-3 pt-2">
                   <button
                     type="submit"
                     disabled={isPending || !canSubmitInventoryForm(form)}
-                    className="rounded-xl bg-zinc-900 px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-zinc-800 disabled:cursor-not-allowed disabled:opacity-60"
+                    className="flex-1 rounded-xl bg-zinc-900 px-5 py-3 text-sm font-semibold text-white transition-all duration-150 hover:bg-zinc-800 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50 sm:flex-initial"
                   >
                     {isPending ? "Сохраняем..." : "Сохранить"}
                   </button>
                   <button
                     type="button"
                     onClick={resetForm}
-                    className="rounded-xl border border-zinc-200 px-5 py-2.5 text-sm font-medium text-zinc-600 transition-colors hover:bg-zinc-100"
+                    className="rounded-xl border border-zinc-200 px-5 py-3 text-sm font-medium text-zinc-500 transition-all duration-150 hover:bg-zinc-50"
                   >
                     Отмена
                   </button>
                 </div>
               </form>
+              </div>
             </div>
           </div>
         );

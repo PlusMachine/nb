@@ -7,10 +7,9 @@ import {
   Archive,
   Calendar,
   Clock,
-  Pencil,
+  MoreHorizontal,
   ShoppingCart,
-  Tag,
-  X
+  Tag
 } from "lucide-react";
 import { CountryFlag } from "@/components/shared/country-flag";
 import type { IngredientPickerQuickStartResultByContext } from "@/features/ingredients/contracts";
@@ -119,9 +118,9 @@ const buildTypedBadges = (item: InventoryListItemDto) => {
     const hop = technicalData as Extract<NonNullable<typeof technicalData>, { type: "hop" }>;
     const hopFormLabel = formatHopFormLabel(hop.hopForm);
     return [
-      hop.alphaAcidPctTypical != null ? { label: `Альфа ${formatValue(hop.alphaAcidPctTypical)}%` } : null,
+      hop.alphaAcidPctTypical != null ? { label: `α ${formatValue(hop.alphaAcidPctTypical)}%` } : null,
       hopFormLabel ? { label: hopFormLabel } : null,
-      item.source.harvestYear != null ? { label: `Урожай ${item.source.harvestYear}` } : null
+      item.source.harvestYear != null ? { label: `${item.source.harvestYear}` } : null
     ].filter((badge): badge is { label: string; accent?: InventoryBadgeAccent | null } => Boolean(badge));
   }
 
@@ -131,11 +130,11 @@ const buildTypedBadges = (item: InventoryListItemDto) => {
       formatColorBadge(item)
         ? { label: formatColorBadge(item) ?? "", accent: resolveMaltColorBadgeAccent(item) }
         : null,
-      fermentable.extractPctDryBasis != null ? { label: `Экст-ть ${formatValue(fermentable.extractPctDryBasis)}%` } : null,
+      fermentable.extractPctDryBasis != null ? { label: `Экстр. ${formatValue(fermentable.extractPctDryBasis)}%` } : null,
       fermentable.type === "malt" && fermentable.maxUsagePct != null
-        ? { label: `до ${formatValue(fermentable.maxUsagePct)} % засыпи` }
+        ? { label: `до ${formatValue(fermentable.maxUsagePct)}%` }
         : fermentable.type === "fermentable" && fermentable.recommendedMaxPct != null
-          ? { label: `до ${formatValue(fermentable.recommendedMaxPct)} % засыпи` }
+          ? { label: `до ${formatValue(fermentable.recommendedMaxPct)}%` }
           : null
     ].filter((badge): badge is { label: string; accent?: InventoryBadgeAccent | null } => Boolean(badge));
   }
@@ -146,7 +145,7 @@ const buildTypedBadges = (item: InventoryListItemDto) => {
       yeast.form ? { label: yeast.form.replaceAll("_", " ") } : null,
       yeast.attenuationPctTypical != null ? { label: `Атт. ${formatValue(yeast.attenuationPctTypical)}%` } : null,
       yeast.fermentationTempCMin != null && yeast.fermentationTempCMax != null
-        ? { label: `${formatValue(yeast.fermentationTempCMin)}-${formatValue(yeast.fermentationTempCMax)}°C` }
+        ? { label: `${formatValue(yeast.fermentationTempCMin)}–${formatValue(yeast.fermentationTempCMax)}°C` }
         : null
     ].filter((badge): badge is { label: string; accent?: InventoryBadgeAccent | null } => Boolean(badge));
   }
@@ -207,7 +206,7 @@ const buildTechnicalBadges = (item: InventoryListItemDto) => {
     pushBadge({ label: item.source.summary });
   }
 
-  return badges.slice(0, 5);
+  return badges.slice(0, 4);
 };
 
 const chemicalFormulaSubscriptPattern = /[A-Za-zА-Яа-я)\]]/;
@@ -245,13 +244,11 @@ const renderChemicalFormula = (formula: string) => {
 const FormulaLabel = ({ formula }: { formula: string }) => (
   <span
     aria-label={`Формула: ${formula}`}
-    className="whitespace-nowrap text-[15px] font-medium leading-none tracking-tight text-zinc-700"
+    className="whitespace-nowrap text-sm font-semibold leading-none tracking-tight text-zinc-600"
   >
     {renderChemicalFormula(formula)}
   </span>
 );
-
-const inventoryFinishedStatusClassName = "inline-flex h-6 items-center text-[11px] font-medium leading-none text-pink-500";
 
 const isFreshnessCritical = (freshnessDate: Date | null) => {
   if (!freshnessDate) return false;
@@ -319,135 +316,141 @@ export function InventoryListItem({
     ? (item.source.derivedFromIngredientId ? "Измененный" : "Свой")
     : null;
 
-  return (
-    <li className={`relative rounded-xl border bg-white p-4 shadow-sm transition-shadow hover:shadow-md ${isEmpty ? "border-zinc-200/60" : expired ? "border-red-200" : freshnessCritical ? "border-amber-200" : "border-zinc-200"
-      }`}>
-      <div className="absolute right-2.5 top-2.5 z-10 flex items-center gap-1">
-        {isEmpty ? (
-          <span className={inventoryFinishedStatusClassName}>закончился</span>
-        ) : (
-          <InventoryQuantityEditor
-            item={item}
-            hideEditor
-            renderFinishedAction={({ onClick, isPending }) => (
-              <button
-                type="button"
-                onClick={onClick}
-                disabled={isPending}
-                className={inventoryFinishedActionInlineClassName}
-              >
-                {isPending ? "..." : inventoryFinishedActionLabel}
-              </button>
-            )}
-          />
-        )}
-        <InventoryItemDetailsEditor
-          item={item}
-          preferredCurrency={preferredCurrency}
-          currencyRates={currencyRates}
-          initialQuickStartDataByContext={initialQuickStartDataByContext}
-          renderTrigger={(onClick) => (
-            <button
-              type="button"
-              onClick={onClick}
-              className="inline-flex h-6 w-6 items-center justify-center rounded-md text-zinc-400 transition-colors hover:bg-zinc-100 hover:text-zinc-700"
-              aria-label="Редактировать"
-            >
-              <Pencil className="h-4 w-4" />
-            </button>
-          )}
-        />
-        <DeleteInventoryItemButton
-          inventoryItemId={item.id}
-          displayName={primaryName}
-          renderTrigger={(onClick, isPending) => (
-            <button
-              type="button"
-              onClick={onClick}
-              disabled={isPending}
-              className="inline-flex h-6 w-6 items-center justify-center rounded-md text-zinc-400 transition-colors hover:bg-red-50 hover:text-red-600 disabled:opacity-60"
-              aria-label="Удалить"
-            >
-              <X className="h-4 w-4" />
-            </button>
-          )}
-        />
-      </div>
+  const statusBorderColor = isEmpty
+    ? "border-zinc-200"
+    : expired
+      ? "border-red-200"
+      : freshnessCritical
+        ? "border-amber-200"
+        : "border-zinc-200";
 
-      <div className="flex items-start gap-4 pr-6">
-        <div className="min-w-0 flex-1 space-y-1.5">
-          <div className="flex flex-wrap items-center gap-2">
-            <div className="min-w-0">
-              <div className="flex flex-wrap items-baseline gap-x-2 gap-y-1">
-                {titleFormula ? <FormulaLabel formula={titleFormula} /> : null}
-                <h3 className="text-base font-semibold text-zinc-950">
-                  <Link href={detailHref} className="underline-offset-4 hover:underline">
-                    {primaryName}
-                  </Link>
-                </h3>
-                {showFermentableKindInlineWithTitle ? (
-                  <span className="inline-flex min-w-0 items-center gap-2 text-xs font-medium text-zinc-600">
-                    <span aria-hidden="true" className="text-zinc-400">•</span>
-                    <span className="truncate">{fermentableKindLabel}</span>
-                  </span>
-                ) : null}
-                {showInlineBrand ? (
-                  <span className="inline-flex min-w-0 items-center gap-2 text-sm font-semibold text-zinc-700">
-                    <span aria-hidden="true" className="text-zinc-400">•</span>
-                    <span className="truncate">{brandLabel}</span>
-                  </span>
-                ) : null}
-                {showCountryInlineWithTitle ? (
-                  <CountryFlag
-                    countryCode={country.code}
-                    className="h-3.5 w-[1.15rem]"
-                  />
-                ) : null}
-              </div>
-              {secondaryName ? <p className="text-xs text-zinc-500">{secondaryName}</p> : null}
-              {!showInlineBrand && brandLabel ? (
-                <div className="flex flex-wrap items-center gap-x-1.5 gap-y-0.5 text-xs text-zinc-500">
-                  <span className="font-medium text-zinc-700">{brandLabel}</span>
-                  {showCountryOnBrandLine ? (
-                    <CountryFlag
-                      countryCode={country.code}
-                      className="h-3.5 w-[1.15rem]"
-                    />
-                  ) : null}
-                  {showFermentableKindOnBrandLine ? (
-                    <span className="rounded-full bg-zinc-50 px-2 py-0.5 text-[11px] font-medium text-zinc-600 ring-1 ring-zinc-200/70">
-                      {fermentableKindLabel}
-                    </span>
-                  ) : null}
-                </div>
-              ) : null}
-            </div>
+  const hasMetadata = Boolean(costSummary.totalPrice || costSummary.unitPrice || item.purchasedAt || item.freshnessDate);
+
+  return (
+    <li className={`group relative rounded-2xl border bg-white p-4 shadow-sm transition-all duration-200 hover:shadow-md sm:p-5 ${statusBorderColor} ${isEmpty ? "opacity-60" : ""}`}>
+      {/* Top row: title + actions */}
+      <div className="flex items-start gap-3">
+        <div className="min-w-0 flex-1">
+          {/* Title line */}
+          <div className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
+            {titleFormula ? <FormulaLabel formula={titleFormula} /> : null}
+            <h3 className="text-[15px] font-semibold leading-snug text-zinc-900">
+              <Link href={detailHref} className="hover:text-zinc-600 transition-colors">
+                {primaryName}
+              </Link>
+            </h3>
+            {showFermentableKindInlineWithTitle ? (
+              <span className="text-xs text-zinc-400">{fermentableKindLabel}</span>
+            ) : null}
+            {showInlineBrand ? (
+              <span className="text-[13px] font-medium text-zinc-500">{brandLabel}</span>
+            ) : null}
+            {showCountryInlineWithTitle ? (
+              <CountryFlag countryCode={country.code} className="h-3 w-4 self-center" />
+            ) : null}
             {ownershipBadgeLabel ? (
-              <span className="rounded-full bg-zinc-100 px-2 py-0.5 text-[10px] font-medium uppercase tracking-wider text-zinc-500">{ownershipBadgeLabel}</span>
+              <span className="rounded-md bg-zinc-100 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-zinc-400">{ownershipBadgeLabel}</span>
             ) : null}
             {item.archivedAt ? (
-              <span className="inline-flex items-center gap-1 rounded-full bg-amber-50 px-2 py-0.5 text-[10px] font-medium text-amber-700 ring-1 ring-amber-200">
+              <span className="inline-flex items-center gap-0.5 rounded-md bg-amber-50 px-1.5 py-0.5 text-[10px] font-semibold text-amber-600">
                 <Archive className="h-2.5 w-2.5" />
                 Архив
               </span>
             ) : null}
           </div>
 
+          {/* Subtitle + brand line */}
+          {secondaryName ? (
+            <p className="mt-0.5 text-xs text-zinc-400">{secondaryName}</p>
+          ) : null}
+          {!showInlineBrand && brandLabel ? (
+            <div className="mt-0.5 flex flex-wrap items-center gap-x-1.5 text-xs text-zinc-500">
+              <span className="font-medium">{brandLabel}</span>
+              {showCountryOnBrandLine ? (
+                <CountryFlag countryCode={country.code} className="h-3 w-4" />
+              ) : null}
+              {showFermentableKindOnBrandLine ? (
+                <span className="rounded bg-zinc-100 px-1.5 py-0.5 text-[11px] font-medium text-zinc-500">
+                  {fermentableKindLabel}
+                </span>
+              ) : null}
+            </div>
+          ) : null}
+        </div>
+
+        {/* Actions cluster */}
+        <div className="flex shrink-0 items-center gap-0.5">
+          {isEmpty ? (
+            <span className="mr-1 text-xs font-medium text-rose-400">закончился</span>
+          ) : (
+            <InventoryQuantityEditor
+              item={item}
+              hideEditor
+              renderFinishedAction={({ onClick, isPending }) => (
+                <button
+                  type="button"
+                  onClick={onClick}
+                  disabled={isPending}
+                  className={inventoryFinishedActionInlineClassName}
+                >
+                  {isPending ? "..." : inventoryFinishedActionLabel}
+                </button>
+              )}
+            />
+          )}
+          <InventoryItemDetailsEditor
+            item={item}
+            preferredCurrency={preferredCurrency}
+            currencyRates={currencyRates}
+            initialQuickStartDataByContext={initialQuickStartDataByContext}
+            renderTrigger={(onClick) => (
+              <button
+                type="button"
+                onClick={onClick}
+                className="inline-flex h-8 w-8 items-center justify-center rounded-lg text-zinc-300 transition-colors hover:bg-zinc-100 hover:text-zinc-600"
+                aria-label="Редактировать"
+              >
+                <MoreHorizontal className="h-4 w-4" />
+              </button>
+            )}
+          />
+          <DeleteInventoryItemButton
+            inventoryItemId={item.id}
+            displayName={primaryName}
+            renderTrigger={(onClick, isPending) => (
+              <button
+                type="button"
+                onClick={onClick}
+                disabled={isPending}
+                className="inline-flex h-8 w-8 items-center justify-center rounded-lg text-zinc-300 transition-colors hover:bg-red-50 hover:text-red-500 disabled:opacity-60 sm:opacity-0 sm:group-hover:opacity-100"
+                aria-label="Удалить"
+              >
+                <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
+              </button>
+            )}
+          />
+        </div>
+      </div>
+
+      {/* Badges + quantity row */}
+      <div className="mt-2.5 flex items-end justify-between gap-3">
+        <div className="min-w-0 space-y-2">
           {badges.length > 0 ? (
-            <div className="flex flex-wrap gap-1.5">
+            <div className="flex flex-wrap items-center gap-1.5">
               {badges.map((badge) => (
                 <span
                   key={badge.key}
-                  className={`relative inline-flex items-center rounded-md px-2 py-0.5 text-xs text-zinc-600 ring-1 ring-zinc-200/60 ${badge.accent
-                    ? "overflow-hidden bg-[linear-gradient(180deg,rgba(250,250,250,0.98),rgba(244,244,245,0.92))]"
-                    : "bg-zinc-50"
+                  className={`relative inline-flex items-center rounded-md px-2 py-0.5 text-xs font-medium ${
+                    badge.accent
+                      ? "overflow-hidden bg-gradient-to-b from-zinc-50/95 to-zinc-100/90 text-zinc-700 ring-1 ring-zinc-200/70"
+                      : "bg-zinc-100/80 text-zinc-500"
                   }`}
                 >
                   {badge.label}
                   {badge.accent ? (
                     <span
                       aria-hidden="true"
-                      className="absolute inset-y-0 left-0 w-[4px]"
+                      className="absolute inset-y-0 left-0 w-[3px]"
                       style={{
                         backgroundImage: `linear-gradient(180deg, ${badge.accent.startHex} 0%, ${badge.accent.averageHex} 52%, ${badge.accent.endHex} 100%)`
                       }}
@@ -455,50 +458,51 @@ export function InventoryListItem({
                   ) : null}
                 </span>
               ))}
+              <InventoryPurchaseLinksTrigger
+                reference={{
+                  source: item.source.sourceKind,
+                  id: item.source.sourceId
+                }}
+                summary={item.source.purchaseLinks}
+              />
             </div>
           ) : null}
 
-          <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-zinc-500">
-            {costSummary.totalPrice ? (
-              <span className="inline-flex items-center gap-1">
-                <ShoppingCart className="h-3 w-3" />
-                {costSummary.totalPrice}
-              </span>
-            ) : null}
-            {costSummary.unitPrice ? (
-              <span className="inline-flex items-center gap-1">
-                <Tag className="h-3 w-3" />
-                {costSummary.unitPrice}
-              </span>
-            ) : null}
-            {item.purchasedAt ? (
-              <span className="inline-flex items-center gap-1">
-                <Calendar className="h-3 w-3" />
-                {item.purchasedAt.toLocaleDateString("ru-RU")}
-              </span>
-            ) : null}
-            {item.freshnessDate ? (
-              <span className={`inline-flex items-center gap-1 ${expired ? "font-medium text-red-600" : freshnessCritical ? "font-medium text-amber-600" : ""
-                }`}>
-                {expired || freshnessCritical ? <AlertTriangle className="h-3 w-3" /> : <Clock className="h-3 w-3" />}
-                {expired ? "Просрочен" : "Годен до"} {item.freshnessDate.toLocaleDateString("ru-RU")}
-              </span>
-            ) : null}
-            <InventoryPurchaseLinksTrigger
-              reference={{
-                source: item.source.sourceKind,
-                id: item.source.sourceId
-              }}
-              summary={item.source.purchaseLinks}
-            />
-          </div>
+          {hasMetadata ? (
+            <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-zinc-400">
+              {costSummary.totalPrice ? (
+                <span className="inline-flex items-center gap-1">
+                  <ShoppingCart className="h-3 w-3" />
+                  {costSummary.totalPrice}
+                </span>
+              ) : null}
+              {costSummary.unitPrice ? (
+                <span className="inline-flex items-center gap-1">
+                  <Tag className="h-3 w-3" />
+                  {costSummary.unitPrice}
+                </span>
+              ) : null}
+              {item.purchasedAt ? (
+                <span className="inline-flex items-center gap-1">
+                  <Calendar className="h-3 w-3" />
+                  {item.purchasedAt.toLocaleDateString("ru-RU")}
+                </span>
+              ) : null}
+              {item.freshnessDate ? (
+                <span className={`inline-flex items-center gap-1 ${expired ? "font-medium text-red-500" : freshnessCritical ? "font-medium text-amber-500" : ""}`}>
+                  {expired || freshnessCritical ? <AlertTriangle className="h-3 w-3" /> : <Clock className="h-3 w-3" />}
+                  {expired ? "Просрочен" : "до"} {item.freshnessDate.toLocaleDateString("ru-RU")}
+                </span>
+              ) : null}
+            </div>
+          ) : null}
 
           {item.notes ? (
-            <p className="text-sm leading-relaxed text-zinc-500">{item.notes}</p>
+            <p className="line-clamp-2 text-xs leading-relaxed text-zinc-400">{item.notes}</p>
           ) : null}
         </div>
 
-        <div className="flex shrink-0 flex-col items-end gap-2 pt-8">
+        <div className="flex shrink-0 flex-col items-end">
           <InventoryQuantityEditor item={item} showFinishedAction={false} />
         </div>
       </div>

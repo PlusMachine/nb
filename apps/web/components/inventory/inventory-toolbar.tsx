@@ -7,6 +7,7 @@ import {
   Check,
   Droplets,
   Eye,
+  EyeOff,
   FlaskConical,
   Hop,
   Package,
@@ -63,52 +64,52 @@ export const shouldShowInventorySearchInput = ({
 
 const categoryMeta: Record<PrimaryButtonKey, {
   icon: React.ComponentType<{ className?: string }>;
-  color: string;
   activeColor: string;
   activeBg: string;
   activeRing: string;
+  dotColor: string;
 }> = {
   fermentable: {
     icon: Wheat,
-    color: "text-amber-600",
     activeColor: "text-amber-800",
     activeBg: "bg-amber-50",
-    activeRing: "ring-amber-300"
+    activeRing: "ring-amber-300/80",
+    dotColor: "bg-amber-500"
   },
   hop: {
     icon: Hop,
-    color: "text-emerald-600",
     activeColor: "text-emerald-800",
     activeBg: "bg-emerald-50",
-    activeRing: "ring-emerald-300"
+    activeRing: "ring-emerald-300/80",
+    dotColor: "bg-emerald-500"
   },
   yeast: {
     icon: FlaskConical,
-    color: "text-violet-600",
     activeColor: "text-violet-800",
     activeBg: "bg-violet-50",
-    activeRing: "ring-violet-300"
+    activeRing: "ring-violet-300/80",
+    dotColor: "bg-violet-500"
   },
   water_treatment: {
     icon: Droplets,
-    color: "text-sky-600",
     activeColor: "text-sky-800",
     activeBg: "bg-sky-50",
-    activeRing: "ring-sky-300"
+    activeRing: "ring-sky-300/80",
+    dotColor: "bg-sky-500"
   },
   consumable_supply: {
     icon: Package,
-    color: "text-zinc-500",
     activeColor: "text-zinc-800",
     activeBg: "bg-zinc-100",
-    activeRing: "ring-zinc-300"
+    activeRing: "ring-zinc-300/80",
+    dotColor: "bg-zinc-400"
   },
   consumable_additive: {
     icon: Package,
-    color: "text-amber-600",
-    activeColor: "text-amber-800",
-    activeBg: "bg-amber-50",
-    activeRing: "ring-amber-300"
+    activeColor: "text-orange-800",
+    activeBg: "bg-orange-50",
+    activeRing: "ring-orange-300/80",
+    dotColor: "bg-orange-500"
   }
 };
 
@@ -297,8 +298,8 @@ export function InventoryToolbar({
   ];
 
   return (
-    <section className="space-y-4" aria-label="Фильтры по запасам">
-      <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 xl:grid-cols-6">
+    <section className="space-y-3" aria-label="Фильтры по запасам">
+      <div className="grid grid-cols-3 gap-2 sm:grid-cols-6">
         {primaryButtons.map((button) => {
           const meta = categoryMeta[button.key];
           const Icon = meta.icon;
@@ -310,20 +311,24 @@ export function InventoryToolbar({
               type="button"
               disabled={isDisabled}
               onClick={() => handlePrimaryFilterClick(button.key)}
-              className={`group relative flex flex-col items-center gap-1.5 rounded-xl border px-3 py-3 text-center transition-all ${
+              className={`flex items-center justify-center gap-1.5 rounded-xl border px-2 py-2.5 text-xs font-medium transition-all duration-150 sm:gap-2 sm:px-3 sm:text-[13px] ${
                 isDisabled
-                  ? "cursor-not-allowed border-zinc-100 bg-zinc-50 text-zinc-300 opacity-60"
+                  ? "cursor-not-allowed border-zinc-100 bg-zinc-50 text-zinc-300"
                   : button.active
-                    ? `${meta.activeBg} ${meta.activeRing} ring-2 border-transparent shadow-sm`
-                    : "border-zinc-200 bg-white hover:border-zinc-300 hover:shadow-sm"
+                    ? `${meta.activeBg} ${meta.activeRing} ring-1 border-transparent ${meta.activeColor} shadow-sm`
+                    : "border-zinc-200 bg-white text-zinc-600 hover:border-zinc-300 hover:bg-zinc-50 active:scale-[0.97]"
               }`}
             >
-              <Icon className={`h-6 w-6 ${isDisabled ? "text-zinc-300" : button.active ? meta.activeColor : meta.color} transition-colors`} />
-              <span className={`text-xs font-semibold leading-tight ${isDisabled ? "text-zinc-400" : button.active ? meta.activeColor : "text-zinc-700"}`}>
-                {button.label}
-              </span>
-              <span className={`text-[11px] font-medium ${isDisabled ? "text-zinc-400" : button.active ? meta.activeColor : "text-zinc-400"}${isDisabled ? "" : " tabular-nums"}`}>
-                {isDisabled ? "Пусто" : button.count}
+              <Icon className={`h-4 w-4 shrink-0 ${isDisabled ? "text-zinc-300" : button.active ? "text-current" : ""}`} />
+              <span className="truncate">{button.label}</span>
+              <span className={`hidden shrink-0 rounded-full px-1.5 py-0.5 text-center text-[11px] font-semibold leading-none sm:block ${
+                isDisabled
+                  ? "bg-zinc-100 text-zinc-400"
+                  : button.active
+                    ? "bg-white/70 text-current"
+                    : "bg-zinc-100 text-zinc-500"
+              }`}>
+                {button.count}
               </span>
             </button>
           );
@@ -331,15 +336,15 @@ export function InventoryToolbar({
       </div>
 
       {category === "fermentable" ? (
-        <div className="flex flex-wrap gap-2" data-testid="inventory-fermentable-subfilters">
+        <div className="flex flex-wrap gap-1.5" data-testid="inventory-fermentable-subfilters">
           {(["fermentable", "malt"] as const).map((value) => (
             <button
               key={value}
               type="button"
               onClick={() => handleSubtypeClick(value)}
-              className={`rounded-full border px-3 py-1.5 text-xs font-medium transition-colors ${
+              className={`rounded-full border px-3 py-1.5 text-xs font-medium transition-all duration-150 ${
                 subtype === value
-                  ? "border-amber-300 bg-amber-50 text-amber-900"
+                  ? "border-amber-300 bg-amber-50 text-amber-900 shadow-sm"
                   : "border-zinc-200 bg-white text-zinc-600 hover:border-zinc-300 hover:bg-zinc-50"
               }`}
             >
@@ -349,9 +354,9 @@ export function InventoryToolbar({
         </div>
       ) : null}
 
-      <div className={`flex items-center gap-2 ${showSearchInput ? "" : "justify-end"}`}>
+      <div className="flex items-center gap-2">
         {showSearchInput ? (
-          <div className="flex-1">
+          <div className="min-w-0 flex-1">
             <InventorySearchInput
               value={searchValue}
               category={category}
@@ -374,7 +379,7 @@ export function InventoryToolbar({
           </div>
         ) : null}
 
-        <div className="flex shrink-0 items-center gap-1.5">
+        <div className={`flex shrink-0 items-center gap-1.5 ${showSearchInput ? "" : "ml-auto"}`}>
           {hasFinishedItems ? (
             <button
               type="button"
@@ -389,13 +394,13 @@ export function InventoryToolbar({
                 }));
               }}
               title={showFinished ? "Скрыть закончившиеся" : "Показать закончившиеся"}
-              className={`flex items-center gap-1.5 rounded-lg border px-3 py-2 text-xs font-medium transition-colors ${
+              className={`flex items-center gap-1.5 rounded-lg border px-3 py-2 text-xs font-medium transition-all duration-150 ${
                 showFinished
-                  ? "border-amber-200 bg-amber-50 text-amber-800"
-                  : "border-zinc-200 bg-white text-zinc-600 hover:border-zinc-300 hover:bg-zinc-50"
+                  ? "border-amber-200 bg-amber-50 text-amber-800 shadow-sm"
+                  : "border-zinc-200 bg-white text-zinc-500 hover:border-zinc-300 hover:bg-zinc-50"
               }`}
             >
-              <Eye className="h-3.5 w-3.5" />
+              {showFinished ? <EyeOff className="h-3.5 w-3.5" /> : <Eye className="h-3.5 w-3.5" />}
               <span className="hidden sm:inline">{showFinished ? "Скрыть закончившиеся" : "Показать закончившиеся"}</span>
             </button>
           ) : null}
@@ -405,10 +410,10 @@ export function InventoryToolbar({
               type="button"
               onClick={() => setSortOpen(!sortOpen)}
               title="Сортировка"
-              className={`flex items-center gap-1.5 rounded-lg border px-3 py-2 text-xs font-medium transition-colors ${
+              className={`flex items-center gap-1.5 rounded-lg border px-3 py-2 text-xs font-medium transition-all duration-150 ${
                 sort !== defaultInventorySortOption
-                  ? "border-blue-200 bg-blue-50 text-blue-800"
-                  : "border-zinc-200 bg-white text-zinc-600 hover:border-zinc-300 hover:bg-zinc-50"
+                  ? "border-blue-200 bg-blue-50 text-blue-800 shadow-sm"
+                  : "border-zinc-200 bg-white text-zinc-500 hover:border-zinc-300 hover:bg-zinc-50"
               }`}
             >
               <ArrowUpDown className="h-3.5 w-3.5" />
@@ -416,7 +421,7 @@ export function InventoryToolbar({
             </button>
 
             {sortOpen ? (
-              <div className="absolute right-0 z-20 mt-1 w-48 rounded-xl border border-zinc-200 bg-white py-1 shadow-lg">
+              <div className="absolute right-0 z-20 mt-1.5 w-52 rounded-xl border border-zinc-200 bg-white py-1 shadow-xl ring-1 ring-black/[0.04]">
                 {Object.entries(inventorySortLabels).map(([value, label]) => (
                   <button
                     key={value}
@@ -432,12 +437,12 @@ export function InventoryToolbar({
                       }));
                       setSortOpen(false);
                     }}
-                    className={`flex w-full items-center justify-between px-3 py-2 text-left text-sm transition-colors hover:bg-zinc-50 ${
+                    className={`flex w-full items-center justify-between px-3.5 py-2.5 text-left text-sm transition-colors hover:bg-zinc-50 ${
                       value === sort ? "font-medium text-zinc-950" : "text-zinc-600"
                     }`}
                   >
                     {label}
-                    {value === sort ? <Check className="h-3.5 w-3.5 text-blue-600" /> : null}
+                    {value === sort ? <Check className="h-4 w-4 text-blue-600" /> : null}
                   </button>
                 ))}
               </div>
@@ -459,7 +464,7 @@ export function InventoryToolbar({
                 }));
               }}
               title="Сбросить фильтры"
-              className="flex items-center gap-1 rounded-lg border border-zinc-200 bg-white px-3 py-2 text-xs font-medium text-zinc-600 transition-colors hover:border-zinc-300 hover:bg-zinc-50"
+              className="flex items-center gap-1 rounded-lg border border-zinc-200 bg-white px-3 py-2 text-xs font-medium text-zinc-500 transition-all duration-150 hover:border-zinc-300 hover:bg-zinc-50"
             >
               <RotateCcw className="h-3.5 w-3.5" />
               <span className="hidden sm:inline">Сбросить</span>

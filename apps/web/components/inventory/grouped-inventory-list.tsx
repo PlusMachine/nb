@@ -24,12 +24,21 @@ const groupIcons = {
 };
 
 const groupColors = {
-  fermentable: "text-amber-600",
-  hop: "text-emerald-600",
-  yeast: "text-violet-600",
-  water_treatment: "text-sky-600",
-  consumable_supply: "text-zinc-500",
-  consumable_additive: "text-amber-600"
+  fermentable: "text-amber-500",
+  hop: "text-emerald-500",
+  yeast: "text-violet-500",
+  water_treatment: "text-sky-500",
+  consumable_supply: "text-zinc-400",
+  consumable_additive: "text-orange-500"
+};
+
+const groupBg = {
+  fermentable: "bg-amber-50",
+  hop: "bg-emerald-50",
+  yeast: "bg-violet-50",
+  water_treatment: "bg-sky-50",
+  consumable_supply: "bg-zinc-100",
+  consumable_additive: "bg-orange-50"
 };
 
 export function GroupedInventoryList({
@@ -41,19 +50,24 @@ export function GroupedInventoryList({
   const groups = groupInventoryItems(items);
 
   return (
-    <section className="space-y-6" aria-label="Список ингредиентов по категориям">
+    <section className="space-y-8" aria-label="Список ингредиентов по категориям">
       {groups.map((group) => {
         const Icon = groupIcons[group.key];
         const color = groupColors[group.key];
+        const bg = groupBg[group.key];
 
         return (
           <section key={group.key} className="space-y-3">
-            <div className="flex items-center gap-2">
-              <Icon className={`h-4 w-4 ${color}`} />
-              <h3 className="text-sm font-semibold uppercase tracking-wider text-zinc-400">
+            <div className="flex items-center gap-2.5">
+              <div className={`flex h-7 w-7 items-center justify-center rounded-lg ${bg}`}>
+                <Icon className={`h-3.5 w-3.5 ${color}`} />
+              </div>
+              <h3 className="text-sm font-semibold text-zinc-700">
                 {group.label}
               </h3>
-              <span className="text-xs tabular-nums text-zinc-400">{group.items.length}</span>
+              <span className="rounded-full bg-zinc-100 px-2 py-0.5 text-xs font-medium tabular-nums text-zinc-400">
+                {group.items.length}
+              </span>
             </div>
             <ul className="space-y-2">
               {group.items.map((item) => (

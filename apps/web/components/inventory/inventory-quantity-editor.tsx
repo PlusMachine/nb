@@ -29,8 +29,8 @@ const formatDirtyQuantityValue = (value: string, unit: InventoryListItemDto["ent
 };
 
 export const inventoryFinishedActionLabel = "обнулить остаток";
-export const inventoryFinishedActionInlineClassName = "inline-flex h-6 items-center text-[11px] font-normal leading-none text-zinc-500 transition-colors hover:text-zinc-800 disabled:opacity-60";
-export const inventoryFinishedActionBlockClassName = "w-full py-2 text-center text-[11px] font-normal text-zinc-500 transition-colors hover:text-zinc-800 disabled:opacity-60";
+export const inventoryFinishedActionInlineClassName = "inline-flex h-8 items-center rounded-lg px-2 text-xs font-medium leading-none text-zinc-400 opacity-0 transition-all group-hover:opacity-100 hover:bg-zinc-100 hover:text-zinc-600 disabled:opacity-60";
+export const inventoryFinishedActionBlockClassName = "w-full py-2 text-center text-xs font-medium text-zinc-400 transition-colors hover:text-zinc-600 disabled:opacity-60";
 
 export const isInventoryQuantityDraftDirty = (
   quantity: string,
@@ -183,7 +183,7 @@ export function InventoryQuantityEditor({
                 setFeedback(null);
               }}
               onKeyDown={handleKeyDown}
-              className="w-[4.5rem] rounded-lg border border-zinc-200 px-2 py-1.5 text-right text-sm tabular-nums transition-colors focus:border-zinc-400 focus:outline-none"
+              className="w-[5rem] rounded-xl border border-zinc-200 bg-white px-2.5 py-2 text-right text-sm tabular-nums transition-all focus:border-zinc-400 focus:outline-none focus:ring-2 focus:ring-zinc-200"
               inputMode="decimal"
               aria-label="Количество"
             />
@@ -194,30 +194,30 @@ export function InventoryQuantityEditor({
                 setFeedback(null);
               }}
               onKeyDown={handleKeyDown}
-              className="rounded-lg border border-zinc-200 py-1.5 pl-1.5 pr-6 text-sm transition-colors focus:border-zinc-400 focus:outline-none"
+              className="rounded-xl border border-zinc-200 bg-white py-2 pl-2 pr-7 text-sm transition-all focus:border-zinc-400 focus:outline-none focus:ring-2 focus:ring-zinc-200"
               aria-label="Единица измерения"
             >
               {unitOptions.map((option) => <option key={option} value={option}>{inventoryUnitLabels[option]}</option>)}
             </select>
           </div>
           {showEquivalentHint ? (
-            <p className="text-right text-[11px] text-zinc-500">{displayQuantity}</p>
+            <p className="text-right text-xs text-zinc-400">{displayQuantity}</p>
           ) : null}
           {isDirty ? (
             <div className="flex items-center gap-1.5">
               <button
                 type="submit"
                 disabled={isPending || !isQuantityValid}
-                className="flex-1 rounded-lg bg-zinc-900 py-1.5 text-xs font-medium text-white transition-colors hover:bg-zinc-800 disabled:opacity-60"
+                className="flex-1 rounded-xl bg-zinc-900 py-2 text-xs font-semibold text-white transition-all hover:bg-zinc-800 active:scale-[0.97] disabled:opacity-50"
                 aria-label="Сохранить количество"
               >
-                OK
+                {isPending ? "..." : "OK"}
               </button>
               <button
                 type="button"
                 onClick={reset}
                 disabled={isPending}
-                className="rounded-lg border border-zinc-200 px-2.5 py-1.5 text-xs text-zinc-500 transition-colors hover:bg-zinc-50 disabled:opacity-60"
+                className="rounded-xl border border-zinc-200 px-3 py-2 text-xs font-medium text-zinc-400 transition-colors hover:bg-zinc-50 disabled:opacity-50"
                 aria-label="Отменить изменения количества"
               >
                 ✕

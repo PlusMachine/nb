@@ -4,15 +4,61 @@
 
 :root {
   color-scheme: light;
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1);
 }
 
 body {
-  background:
-    radial-gradient(circle at top left, rgba(148, 163, 184, 0.18), transparent 28rem),
-    radial-gradient(circle at top right, rgba(226, 232, 240, 0.95), transparent 30rem),
-    linear-gradient(180deg, #f8fafc 0%, #eef2f7 100%);
+  background: #f4f4f6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 ::selection {
   background: rgba(59, 130, 246, 0.18);
+}
+
+@layer utilities {
+  .scrollbar-none {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .scrollbar-none::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+@keyframes modal-backdrop-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes modal-slide-up {
+  from { opacity: 0; transform: translateY(16px) scale(0.98); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes modal-sheet-up {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}
+
+.animate-modal-backdrop {
+  animation: modal-backdrop-in 0.2s var(--ease-out-quart) both;
+}
+
+.animate-modal-content {
+  animation: modal-slide-up 0.25s var(--ease-out-expo) both;
+}
+
+.animate-modal-sheet {
+  animation: modal-sheet-up 0.3s var(--ease-out-expo) both;
+}
+
+@media (max-width: 639px) {
+  .animate-modal-content {
+    animation: modal-sheet-up 0.3s var(--ease-out-expo) both;
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+  }
 }

@@ -95,7 +95,7 @@ export function InventoryOptionalDisclosure({
   const summaryEntries = resolveInventoryOptionalDisclosureSummary(fields, preferredCurrency);
 
   return (
-    <section className="space-y-3 rounded-xl border border-zinc-200 bg-white p-4" data-testid={testId}>
+    <section className="space-y-3 rounded-xl border border-zinc-100 bg-zinc-50/50 p-4" data-testid={testId}>
       <button
         type="button"
         onClick={onToggle}
@@ -104,17 +104,17 @@ export function InventoryOptionalDisclosure({
       >
         <div className="min-w-0 space-y-1">
           <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
-            <span className="text-sm font-medium text-zinc-900">Добавить цену, ссылки, даты или заметку</span>
-            <span className="text-xs text-zinc-500">Необязательно</span>
+            <span className="text-sm font-medium text-zinc-700">Цена, даты и заметки</span>
+            <span className="text-xs text-zinc-400">Необязательно</span>
           </div>
-          <p className="text-xs text-zinc-500">
-            {summaryEntries.length > 0
-              ? summaryEntries.join(" • ")
-              : "Можно оставить пустым и заполнить позже."}
-          </p>
+          {summaryEntries.length > 0 ? (
+            <p className="text-xs text-zinc-400">
+              {summaryEntries.join(" · ")}
+            </p>
+          ) : null}
         </div>
         <ChevronDown
-          className={`mt-0.5 h-4 w-4 shrink-0 text-zinc-400 transition-transform ${open ? "rotate-180" : ""}`}
+          className={`mt-0.5 h-4 w-4 shrink-0 text-zinc-400 transition-transform duration-200 ${open ? "rotate-180" : ""}`}
         />
       </button>
 
