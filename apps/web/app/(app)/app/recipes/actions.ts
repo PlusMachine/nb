@@ -293,6 +293,11 @@ export type RecipeCustomIngredientResult = {
   fieldErrors?: Record<string, string>;
 };
 
+const readOptionalTrimmedString = (value?: string | null) => {
+  const normalized = String(value ?? "").trim();
+  return normalized || null;
+};
+
 const readCustomPhysicalFormFromTechnicalData = (technicalData?: IngredientTechnicalData | null) => {
   if (!technicalData || (technicalData.type !== "consumable" && technicalData.type !== "water_treatment")) {
     return null;
@@ -328,6 +333,15 @@ export const createRecipeCustomIngredientAction = async (payload: {
   subtype?: string | null;
   displayName: string;
   defaultDisplayUnit: string;
+  brand?: string | null;
+  country?: string | null;
+  harvestYear?: string | null;
+  fermentableColorEbc?: string | null;
+  fermentableExtractYieldPct?: string | null;
+  hopAlphaAcidPct?: string | null;
+  hopForm?: string | null;
+  yeastAttenuationPct?: string | null;
+  yeastForm?: string | null;
   technicalData?: IngredientTechnicalData | null;
 }): Promise<RecipeCustomIngredientResult> => {
   try {
@@ -355,15 +369,25 @@ export const createRecipeCustomIngredientAction = async (payload: {
       type: resolvedType,
       subtype: payload.subtype ?? null,
       displayName: payload.displayName,
+      brand: readOptionalTrimmedString(payload.brand),
+      country: readOptionalTrimmedString(payload.country),
+      harvestYear: readOptionalTrimmedString(payload.harvestYear),
       defaultDisplayUnit: payload.defaultDisplayUnit,
       visibility: "private",
-      fermentableColorEbc: lovibondToEbc(technicalFields.fermentableColorLovibond),
-      fermentableExtractYieldPct: technicalFields.fermentableExtractYieldPct ?? null,
-      hopAlphaAcidPct: technicalFields.hopAlphaAcidPct ?? null,
+      fermentableColorEbc: readOptionalTrimmedString(payload.fermentableColorEbc)
+        ?? lovibondToEbc(technicalFields.fermentableColorLovibond),
+      fermentableExtractYieldPct: readOptionalTrimmedString(payload.fermentableExtractYieldPct)
+        ?? technicalFields.fermentableExtractYieldPct
+        ?? null,
+      hopAlphaAcidPct: readOptionalTrimmedString(payload.hopAlphaAcidPct)
+        ?? technicalFields.hopAlphaAcidPct
+        ?? null,
       hopBetaAcidPct: technicalFields.hopBetaAcidPct ?? null,
-      hopForm: technicalFields.hopForm ?? null,
-      yeastAttenuationPct: technicalFields.yeastAttenuationPct ?? null,
-      yeastForm: technicalFields.yeastForm ?? null,
+      hopForm: readOptionalTrimmedString(payload.hopForm) ?? technicalFields.hopForm ?? null,
+      yeastAttenuationPct: readOptionalTrimmedString(payload.yeastAttenuationPct)
+        ?? technicalFields.yeastAttenuationPct
+        ?? null,
+      yeastForm: readOptionalTrimmedString(payload.yeastForm) ?? technicalFields.yeastForm ?? null,
       yeastMinFermentationTempC: technicalFields.yeastMinFermentationTempC ?? null,
       yeastMaxFermentationTempC: technicalFields.yeastMaxFermentationTempC ?? null,
       physicalForm: readCustomPhysicalFormFromTechnicalData(payload.technicalData),

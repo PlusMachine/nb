@@ -281,7 +281,7 @@ describe("user catalog ingredient search", () => {
       "sugars_and_syrups"
     ]);
     expect((result.groups ?? []).map((group) => group.label)).toEqual([
-      "Экстракты и концентраты",
+      "Концентраты",
       "Сахара и сиропы"
     ]);
   });
@@ -977,7 +977,7 @@ describe("user catalog ingredient search", () => {
     expect(result.items.map((item) => item.id)).toEqual(["extract-1"]);
     expect(result.appliedGroup).toMatchObject({
       value: "extracts_and_concentrates",
-      label: "Экстракты и концентраты"
+      label: "Концентраты"
     });
   });
 

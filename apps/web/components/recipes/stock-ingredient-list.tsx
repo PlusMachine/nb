@@ -9,7 +9,7 @@ import {
   resolveIngredientPickerRowContent,
   shouldSuppressIngredientPickerMetaSummary
 } from "@/components/ingredients/ingredient-picker";
-import { CountryFlagLabel } from "@/components/shared/country-flag";
+import { CountryFlag } from "@/components/shared/country-flag";
 import type { IngredientCategory, IngredientSubtype, IngredientSuggestionItem, IngredientType } from "@/features/ingredients/contracts";
 import {
   resolveIngredientBrandLabel
@@ -20,6 +20,7 @@ export type StockIngredientSearch = (input: {
   type?: IngredientType;
   category?: IngredientCategory;
   subtype?: Extract<IngredientSubtype, "malt" | "fermentable"> | null;
+  group?: string;
   limit: number;
   signal: AbortSignal;
 }) => Promise<IngredientSuggestionItem[]>;
@@ -31,6 +32,7 @@ export function StockIngredientList({
   category,
   type,
   subtype,
+  group,
   searchIngredients,
   onOverflowChange,
   onSelect
@@ -39,6 +41,7 @@ export function StockIngredientList({
   category: IngredientCategory;
   type?: IngredientType;
   subtype?: Extract<IngredientSubtype, "malt" | "fermentable"> | null;
+  group?: string;
   searchIngredients: StockIngredientSearch;
   onOverflowChange?: (hasOverflow: boolean) => void;
   onSelect: (item: IngredientSuggestionItem) => void;
@@ -62,6 +65,7 @@ export function StockIngredientList({
           type,
           category,
           subtype,
+          group,
           limit: stockIngredientListVisibleLimit + 1,
           signal: controller.signal
         });
@@ -89,16 +93,13 @@ export function StockIngredientList({
         // Older browser/runtime implementations can throw while aborting an already cancelled signal.
       }
     };
-  }, [active, category, onOverflowChange, searchIngredients, subtype, type]);
+  }, [active, category, group, onOverflowChange, searchIngredients, subtype, type]);
 
   if (!active) return null;
 
   return (
-    <div className="space-y-2 rounded-lg border border-emerald-100 bg-emerald-50/60 p-3">
-      <div className="flex items-center justify-between gap-2">
-        <h4 className="text-xs font-semibold text-emerald-950">Подходящие позиции на складе</h4>
-        {loading ? <span className="text-[11px] text-emerald-700">Загрузка...</span> : null}
-      </div>
+    <div className="space-y-2">
+      {loading ? <div className="text-[11px] text-zinc-500">Загрузка...</div> : null}
       {items.length ? (
         <div className="grid gap-1.5">
           {items.map((item) => {
@@ -118,7 +119,7 @@ export function StockIngredientList({
                 key={`${item.inventoryItemId ?? item.id}:${item.source}`}
                 type="button"
                 onClick={() => onSelect(item)}
-                className="rounded-lg border border-zinc-200 bg-white px-3 py-3 text-left text-xs text-zinc-700 transition-colors hover:border-emerald-200 hover:bg-emerald-50/60"
+                className="rounded-lg border border-zinc-200 bg-white px-3 py-3 text-left text-xs text-zinc-700 transition-colors hover:border-zinc-300 hover:bg-zinc-50"
               >
                 <span className="flex min-w-0 flex-wrap items-center gap-2">
                   <span className="truncate text-sm font-semibold text-zinc-950">{primaryName}</span>
@@ -128,9 +129,15 @@ export function StockIngredientList({
                     </span>
                   ) : null}
                   {inlineBrand ? (
-                    <span className="inline-flex min-w-0 items-baseline gap-2 text-sm font-semibold text-zinc-700">
+                    <span className="inline-flex min-w-0 items-center gap-2 text-sm font-semibold text-zinc-700">
                       <span aria-hidden="true" className="text-zinc-400">•</span>
                       <span className="truncate">{inlineBrand}</span>
+                      {country ? (
+                        <CountryFlag
+                          countryCode={country.code}
+                          className="h-3 w-4 shrink-0 ring-0"
+                        />
+                      ) : null}
                     </span>
                   ) : null}
                   {inlineKindLabel ? (
@@ -141,18 +148,24 @@ export function StockIngredientList({
                 </span>
                 {secondaryName ? <span className="mt-0.5 block text-xs text-zinc-500">{secondaryName}</span> : null}
                 <span className="mt-2 flex flex-wrap items-center gap-2 text-xs text-zinc-600">
-                  {country ? (
+                  {inlineBrand || !brandLabel ? null : (
+                    <span className="inline-flex items-center gap-1.5 rounded-full bg-white px-2 py-1 ring-1 ring-zinc-200">
+                      <span>{brandLabel}</span>
+                      {country ? (
+                        <CountryFlag
+                          countryCode={country.code}
+                          className="h-3 w-4 shrink-0 ring-0"
+                        />
+                      ) : null}
+                    </span>
+                  )}
+                  {brandLabel || !country ? null : (
                     <span className="inline-flex items-center rounded-full bg-white px-2 py-1 ring-1 ring-zinc-200">
-                      <CountryFlagLabel
+                      <CountryFlag
                         countryCode={country.code}
-                        label={country.label}
-                        iconClassName="h-3 w-4"
-                        className="gap-1"
+                        className="h-3 w-4 shrink-0 ring-0"
                       />
                     </span>
-                  ) : null}
-                  {inlineBrand || !brandLabel ? null : (
-                    <span className="rounded-full bg-white px-2 py-1 ring-1 ring-zinc-200">{brandLabel}</span>
                   )}
                   {showSubtitle ? (
                     <span className="text-zinc-500">{showSubtitle}</span>
@@ -164,11 +177,7 @@ export function StockIngredientList({
             );
           })}
         </div>
-      ) : (
-        <p className="text-xs leading-5 text-emerald-900">
-          {loading ? "Ищем позиции по категории." : "На складе нет подходящих позиций. Можно выбрать из каталога или создать свой ингредиент."}
-        </p>
-      )}
+      ) : null}
     </div>
   );
 }

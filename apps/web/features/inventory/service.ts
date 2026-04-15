@@ -204,6 +204,7 @@ const buildCatalogSourceDto = (
     countryCode: catalog.countryCode,
     countryName: catalog.countryName,
     country: catalog.countryName,
+    groupName: catalog.groupName ?? null,
     completenessLevel: "recommended",
     technicalData: linkage.technicalData,
     defaultDisplayUnit: linkage.defaultDisplayUnit,
@@ -227,6 +228,9 @@ const buildCustomSourceDto = (
   const properties = isRecord(custom.properties) ? custom.properties : {};
   const brand = custom.manufacturer
     ?? (typeof properties.brand === "string" && properties.brand.trim().length > 0 ? properties.brand.trim() : null);
+  const groupName = typeof properties.groupName === "string" && properties.groupName.trim().length > 0
+    ? properties.groupName.trim()
+    : (typeof properties.group === "string" && properties.group.trim().length > 0 ? properties.group.trim() : null);
   const harvestYear = typeof properties.harvestYear === "number" && Number.isFinite(properties.harvestYear)
     ? properties.harvestYear
     : (() => {
@@ -260,6 +264,7 @@ const buildCustomSourceDto = (
     countryCode: null,
     countryName: custom.country,
     country: custom.country,
+    groupName,
     harvestYear,
     completenessLevel: null,
     technicalData: linkage.technicalData,
@@ -360,6 +365,7 @@ const resolvePersistedInventorySource = (row: InventoryRow) => {
       countryCode: null,
       countryName: null,
       country: null,
+      groupName: null,
       completenessLevel: null,
       technicalData: null,
       defaultDisplayUnit: unitProfile.defaultUnit,
@@ -1585,6 +1591,7 @@ export const searchInventorySuggestions = async (
         category: item.source.category,
         subtype: item.source.subtype,
         itemKind: item.source.itemKind,
+        groupName: item.source.groupName,
         familyId: item.source.familyId,
         primaryLabelRu: item.source.primaryLabelRu,
         secondaryLabelRu: item.source.secondaryLabelRu,

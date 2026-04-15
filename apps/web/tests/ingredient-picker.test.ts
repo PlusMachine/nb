@@ -1078,7 +1078,7 @@ describe("ingredient picker state helpers", () => {
       brands: [],
       groups: [{
         type: "consumable_group",
-        label: "Экстракты и концентраты",
+        label: "Концентраты",
         normalizedLabel: "extracts_and_concentrates",
         value: "extracts_and_concentrates",
         count: 12,
@@ -1102,10 +1102,35 @@ describe("ingredient picker state helpers", () => {
 
     expect(html).toContain('data-testid="ingredient-picker-quick-start-groups"');
     expect(html).toContain("По группе");
-    expect(html).toContain("Экстракты и концентраты");
+    expect(html).toContain("Концентраты");
     expect(html).toContain("Сахара и сиропы");
     expect(html).not.toContain('data-testid="ingredient-picker-quick-start-types"');
     expect((html.match(/ingredient-picker-quick-start-group-chip/g) ?? [])).toHaveLength(2);
+  });
+
+  it("treats a forced fermentable group as an external active scope", () => {
+    const html = renderToStaticMarkup(React.createElement(IngredientPicker, {
+      category: "fermentable",
+      subtype: "fermentable",
+      value: "",
+      enableQuickStart: true,
+      forcedGroup: {
+        type: "consumable_group",
+        label: "Сахара и сиропы",
+        normalizedLabel: "sugars_and_syrups",
+        value: "sugars_and_syrups",
+        count: 0,
+        score: 0
+      },
+      hideForcedGroupChip: true,
+      onForcedGroupClear: () => undefined,
+      onSelect: () => undefined
+    }));
+
+    expect(html).toContain('placeholder="Искать внутри Сахара и сиропы"');
+    expect(html).not.toContain('data-testid="ingredient-picker-quick-start"');
+    expect(html).not.toContain('data-testid="ingredient-picker-group-chip"');
+    expect(html).not.toContain('data-testid="ingredient-picker-clear-all-scopes"');
   });
 
   it("keeps recent history collapsed by default and expands it up to ten items", () => {

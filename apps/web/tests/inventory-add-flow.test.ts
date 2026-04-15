@@ -286,6 +286,30 @@ describe("inventory add-flow", () => {
     expect(html).toContain("Количество и единица учета");
   });
 
+  it("reuses the same ingredient parameter form for recipe custom flow without stock-only sections", () => {
+    const html = renderToStaticMarkup(React.createElement(CustomIngredientForm, {
+      category: "fermentable",
+      initialSubtype: "malt",
+      initialDisplayName: "Vienna Malt",
+      pending: false,
+      mode: "recipe",
+      submitLabel: "Создать свой ингредиент",
+      onSubmit: async () => undefined
+    }));
+
+    expect(html).toContain("Параметры ингредиента");
+    expect(html).toContain("placeholder=\"Например: Пшеничный солод\"");
+    expect(html).toContain("placeholder=\"Например: Castle Malting\"");
+    expect(html).toContain("Цвет, EBC");
+    expect(html).toContain("Экстрактивность, %");
+    expect(html).toContain("Страна");
+    expect(html).toContain("Создать свой ингредиент");
+    expect(html).not.toContain("Количество и единица учета");
+    expect(html).not.toContain('data-testid="custom-required-fields"');
+    expect(html).not.toContain('data-testid="custom-optional-disclosure"');
+    expect(html).not.toContain("Создать и добавить в запасы");
+  });
+
   it("keeps optional catalog details hidden until the user reaches them", () => {
     const html = renderToStaticMarkup(React.createElement(AddIngredientModal, { open: true, onClose: () => undefined }));
     expect(html).not.toContain(`value="${getTodayDateInputValue()}"`);

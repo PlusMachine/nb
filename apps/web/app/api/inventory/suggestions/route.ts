@@ -11,6 +11,7 @@ export async function GET(request: Request) {
     const items = await searchInventorySuggestions(user.id, {
       q: searchParams.get("q") ?? "",
       category: searchParams.get("category") ?? undefined,
+      subtype: searchParams.get("subtype") ?? undefined,
       type: searchParams.get("type") ?? undefined,
       limit: Number(searchParams.get("limit") ?? "10"),
       includeEmpty: searchParams.get("finished") === "true",

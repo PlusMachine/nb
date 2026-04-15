@@ -98,10 +98,10 @@ export const canonicalizeFermentableQuickStartGroup = (value?: string | null) =>
 };
 
 const fermentableQuickStartGroupLabels: Record<string, string> = {
-  adjunct_grains: "Зерно и несоложёнка",
+  adjunct_grains: "Неосоложенка",
   sugars_and_syrups: "Сахара и сиропы",
-  fruits_and_vegetables: "Фрукты и овощи",
-  extracts_and_concentrates: "Экстракты и концентраты"
+  fruits_and_vegetables: "Фрукты и соки",
+  extracts_and_concentrates: "Концентраты"
 };
 
 export const ingredientPickerFermentableQuickStartGroupOrder = [

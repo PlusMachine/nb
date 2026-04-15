@@ -4,7 +4,7 @@ import React from "react";
 import { useEffect, useId, useMemo, useRef, useState } from "react";
 
 import { IngredientFavoriteToggle } from "@/components/ingredients/ingredient-favorite-toggle";
-import { CountryFlag, CountryFlagLabel } from "@/components/shared/country-flag";
+import { CountryFlag } from "@/components/shared/country-flag";
 import type {
   IngredientCategory,
   IngredientConsumableGroupRefinement,
@@ -78,6 +78,9 @@ type Props = {
   type?: IngredientType;
   category?: IngredientCategory;
   subtype?: Extract<IngredientSubtype, "malt" | "fermentable"> | null;
+  forcedGroup?: IngredientConsumableGroupRefinement | null;
+  hideForcedGroupChip?: boolean;
+  onForcedGroupClear?: () => void;
   initialQuickStartData?: IngredientPickerQuickStartResult | null;
   initialQuickStartAvailability?: IngredientPickerQuickStartAvailability | null;
   hydrateRecentSelectionsOnInit?: boolean;
@@ -1169,11 +1172,9 @@ export const IngredientSelectionCard = ({
         <div className="mt-2 flex flex-wrap items-center gap-2 text-xs text-zinc-600">
           {country && !mergeBrandAndCountry && !isGenericFermentable ? (
             <span className="inline-flex items-center rounded-full bg-white px-2 py-1 ring-1 ring-zinc-200">
-              <CountryFlagLabel
+              <CountryFlag
                 countryCode={country.code}
-                label={country.label}
-                iconClassName="h-3 w-4"
-                className="gap-1"
+                className="h-3 w-4 shrink-0 ring-0"
               />
             </span>
           ) : null}
@@ -1921,6 +1922,9 @@ export const IngredientPicker = ({
   type,
   category,
   subtype,
+  forcedGroup = null,
+  hideForcedGroupChip = false,
+  onForcedGroupClear,
   initialQuickStartData = null,
   initialQuickStartAvailability = null,
   hydrateRecentSelectionsOnInit = false,
@@ -1985,12 +1989,13 @@ export const IngredientPicker = ({
   const rootRef = useRef<HTMLDivElement | null>(null);
   const blurTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const listboxId = useId();
-  const activeGroupValue = activeGroup?.value ?? undefined;
-  const activeGroupKey = activeGroup?.normalizedLabel ?? "";
+  const forcedGroupKey = forcedGroup?.normalizedLabel ?? "";
+  const activeGroupValue = forcedGroup?.value ?? activeGroup?.value ?? undefined;
+  const activeGroupKey = forcedGroup?.normalizedLabel ?? activeGroup?.normalizedLabel ?? "";
   const activeManufacturerLabel = activeManufacturer?.label ?? undefined;
   const activeManufacturerKey = activeManufacturer?.normalizedLabel ?? "";
   const activeQuickStartFamilyKey = activeQuickStartFamily?.key ?? "";
-  const appliedGroup = searchResult.appliedGroup ?? activeGroup;
+  const appliedGroup = forcedGroup ?? searchResult.appliedGroup ?? activeGroup;
   const appliedManufacturer = searchResult.appliedManufacturer ?? activeManufacturer;
   const appliedQuickStartFamily = searchResult.appliedFamily ?? activeQuickStartFamily;
   const appliedFavoritesOnly = searchResult.appliedFavoritesOnly || activeFavoritesOnly;
@@ -2019,6 +2024,9 @@ export const IngredientPicker = ({
   });
   const hasSearchScope = activeScopeCount > 0;
   const resetFilters = () => {
+    if (forcedGroup) {
+      onForcedGroupClear?.();
+    }
     setActiveQuickStartFamily(null);
     setActiveGroup(null);
     setActiveManufacturer(null);
@@ -2079,7 +2087,21 @@ export const IngredientPicker = ({
     setSearchResult(emptyIngredientSearchResult);
     setActiveIndex(0);
     setHasResolvedQuery(false);
-  }, [category, enableQuickStart, includeCustom, subtype, type]);
+  }, [category, enableQuickStart, forcedGroupKey, includeCustom, subtype, type]);
+
+  useEffect(() => {
+    if (!forcedGroup) {
+      return;
+    }
+
+    setSearchResult((current) => ({
+      ...current,
+      appliedGroup: forcedGroup
+    }));
+    setIsOpen(true);
+    setHasResolvedQuery(false);
+    setEmptyStateMessage(null);
+  }, [forcedGroup, forcedGroupKey]);
 
   useEffect(() => {
     if (normalizeSearchText(query).length === 0) {
@@ -2130,7 +2152,7 @@ export const IngredientPicker = ({
     if (!shouldSearchIngredients({ isOpen, query: effectiveSearchQuery, hasSearchScope })) {
       setSearchResult({
         ...emptyIngredientSearchResult,
-        appliedGroup: activeGroup,
+        appliedGroup,
         appliedManufacturer: activeManufacturer,
         appliedFamily: activeQuickStartFamily,
         appliedFavoritesOnly: activeFavoritesOnly,
@@ -2221,7 +2243,7 @@ export const IngredientPicker = ({
       clearTimeout(timer);
       controller.abort();
     };
-  }, [activeCustomOnly, activeFavoritesOnly, activeGroup, activeGroupKey, activeGroupValue, activeManufacturer, activeManufacturerKey, activeManufacturerLabel, activeQuickStartFamily, appliedQuickStartFamily?.key, category, effectiveSearchQuery, hasSearchScope, includeCustom, isExpanded, isOpen, limit, query, searchIngredients, subtype, type]);
+  }, [activeCustomOnly, activeFavoritesOnly, activeGroup, activeGroupKey, activeGroupValue, activeManufacturer, activeManufacturerKey, activeManufacturerLabel, activeQuickStartFamily, appliedGroup, appliedQuickStartFamily?.key, category, effectiveSearchQuery, hasSearchScope, includeCustom, isExpanded, isOpen, limit, query, searchIngredients, subtype, type]);
 
   useEffect(() => {
     if (!showQuickStart || !category) {
@@ -2490,6 +2512,11 @@ export const IngredientPicker = ({
   };
 
   const clearGroupFilter = () => {
+    if (forcedGroup) {
+      onForcedGroupClear?.();
+      return;
+    }
+
     applyScopedSearchState({
       nextFamily: appliedQuickStartFamily,
       nextGroup: null,
@@ -2554,6 +2581,10 @@ export const IngredientPicker = ({
   };
 
   const clearAllScopes = () => {
+    if (forcedGroup) {
+      onForcedGroupClear?.();
+    }
+
     applyScopedSearchState({
       nextFamily: null,
       nextGroup: null,
@@ -2599,9 +2630,17 @@ export const IngredientPicker = ({
     appliedFavoritesOnly ? "Избранные" : null,
     appliedCustomOnly ? "Только свои" : null
   ].filter((label): label is string => Boolean(label));
+  const hasOnlyHiddenForcedGroupScope = Boolean(
+    forcedGroup
+    && hideForcedGroupChip
+    && !appliedQuickStartFamily
+    && !appliedManufacturer
+    && !appliedFavoritesOnly
+    && !appliedCustomOnly
+  );
   const showScopeReset = shouldShowIngredientScopeReset({
     activeScopeCount
-  });
+  }) && !hasOnlyHiddenForcedGroupScope;
   const activeSearchContextLabel = activeScopeLabels.length === 1
     ? activeScopeLabels[0] ?? null
     : activeScopeLabels.length > 1
@@ -2803,25 +2842,22 @@ export const IngredientPicker = ({
                               </span>
                             ) : null}
                             {inlineBrand ? (
-                              <span className="inline-flex min-w-0 items-baseline gap-2 text-sm font-semibold text-zinc-700">
+                              <span className="inline-flex min-w-0 items-center gap-2 text-sm font-semibold text-zinc-700">
                                 <span aria-hidden="true" className="text-zinc-400">•</span>
                                 <span className="truncate">{inlineBrand}</span>
+                                {country ? (
+                                  <CountryFlag
+                                    countryCode={country.code}
+                                    className="h-3 w-4 shrink-0 ring-0"
+                                  />
+                                ) : null}
                               </span>
                             ) : null}
                           </div>
                           {secondaryName ? <div className="text-xs text-zinc-500">{secondaryName}</div> : null}
                           {inlineBrand ? (
-                            country || showLowerMetaSummary ? (
+                            showLowerMetaSummary ? (
                               <div className="flex flex-wrap items-center gap-x-1.5 gap-y-0.5 text-xs text-zinc-500">
-                                {country ? (
-                                  <CountryFlagLabel
-                                    countryCode={country.code}
-                                    label={country.label}
-                                    iconClassName="h-3 w-4"
-                                    className="gap-1"
-                                  />
-                                ) : null}
-                                {country && showLowerMetaSummary ? <span aria-hidden="true">•</span> : null}
                                 {showLowerMetaSummary ? <span>{showLowerMetaSummary}</span> : null}
                               </div>
                             ) : null
@@ -2932,7 +2968,7 @@ export const IngredientPicker = ({
               onRemove={clearManufacturerFilter}
             />
           ) : null}
-          {appliedGroup ? (
+          {appliedGroup && !(forcedGroup && hideForcedGroupChip) ? (
             <IngredientPickerGroupChip
               refinement={appliedGroup}
               onRemove={clearGroupFilter}

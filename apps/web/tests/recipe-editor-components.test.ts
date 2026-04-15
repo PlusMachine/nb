@@ -10,8 +10,10 @@ import { RecipeEditorErrorState } from "../components/recipes/recipe-editor-erro
 import { buildImportRecipeSummary } from "../components/recipes/import-export-modal";
 import {
   RecipeDesigner,
+  resolveRecipeFermentablePickerScopeContext,
   resolveRecipeIngredientEditorSourceMode,
-  resolveRecipeIngredientSearchType
+  resolveRecipeIngredientSearchType,
+  shouldAutoFocusRecipeIngredientPicker
 } from "../components/recipes/recipe-designer";
 import { RecipeIngredientsEditor } from "../components/recipes/recipe-ingredients-editor";
 import { StartBrewModal } from "../components/recipes/start-brew-modal";
@@ -192,11 +194,78 @@ describe("recipe editor components", () => {
     })).toBe("hop");
   });
 
+  it("maps merged recipe fermentable filters to subtype and group search context", () => {
+    expect(resolveRecipeFermentablePickerScopeContext("malt")).toEqual({
+      subtype: "malt",
+      group: null,
+      label: "Солод"
+    });
+
+    expect(resolveRecipeFermentablePickerScopeContext("adjunct_grains")).toEqual({
+      subtype: "fermentable",
+      group: "adjunct_grains",
+      label: "Неосоложенка"
+    });
+
+    expect(resolveRecipeFermentablePickerScopeContext("sugars_and_syrups")).toEqual({
+      subtype: "fermentable",
+      group: "sugars_and_syrups",
+      label: "Сахара и сиропы"
+    });
+
+    expect(resolveRecipeFermentablePickerScopeContext(null)).toEqual({
+      subtype: null,
+      group: null,
+      label: null
+    });
+  });
+
   it("recipe ingredient editor keeps custom source mode distinct from catalog", () => {
     expect(resolveRecipeIngredientEditorSourceMode("use_stock")).toBe("use_stock");
     expect(resolveRecipeIngredientEditorSourceMode("custom")).toBe("custom");
     expect(resolveRecipeIngredientEditorSourceMode("catalog")).toBe("catalog");
     expect(resolveRecipeIngredientEditorSourceMode("imported")).toBe("catalog");
+  });
+
+  it("auto-focuses the picker when matching an imported ingredient to catalog", () => {
+    const importedIngredient = {
+      inventoryIntentMode: "catalog",
+      ingredientCatalogItemId: null,
+      userCustomIngredientId: null,
+      externalImportMeta: {
+        importedIngredient: {
+          version: 1,
+          name: "Imported Cascade"
+        }
+      }
+    } as unknown as Parameters<typeof shouldAutoFocusRecipeIngredientPicker>[0]["ingredient"];
+
+    expect(shouldAutoFocusRecipeIngredientPicker({
+      ingredient: importedIngredient,
+      hasSelectedPreview: false,
+      sourceMode: "catalog"
+    })).toBe(true);
+
+    expect(shouldAutoFocusRecipeIngredientPicker({
+      ingredient: importedIngredient,
+      hasSelectedPreview: true,
+      sourceMode: "catalog"
+    })).toBe(false);
+
+    expect(shouldAutoFocusRecipeIngredientPicker({
+      ingredient: importedIngredient,
+      hasSelectedPreview: false,
+      sourceMode: "use_stock"
+    })).toBe(false);
+
+    expect(shouldAutoFocusRecipeIngredientPicker({
+      ingredient: {
+        ...importedIngredient,
+        externalImportMeta: null
+      } as unknown as Parameters<typeof shouldAutoFocusRecipeIngredientPicker>[0]["ingredient"],
+      hasSelectedPreview: false,
+      sourceMode: "catalog"
+    })).toBe(false);
   });
 
   it("changing text after selection clears stale linkage", () => {

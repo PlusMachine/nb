@@ -367,6 +367,7 @@ export type InventorySourceDto = {
   countryCode?: string | null;
   countryName?: string | null;
   country?: string | null;
+  groupName?: string | null;
   harvestYear?: number | null;
   completenessLevel?: IngredientCompletenessLevel | null;
   technicalData?: IngredientTechnicalData | null;

@@ -61,9 +61,13 @@ export type CustomIngredientSubmitPayload = {
 type Props = {
   category: IngredientCategory;
   initialSubtype?: Extract<IngredientSubtype, "malt" | "fermentable"> | null;
-  preferredCurrency: SystemCurrency;
+  initialDisplayName?: string;
+  preferredCurrency?: SystemCurrency;
   pending: boolean;
+  mode?: "inventory" | "recipe";
+  submitLabel?: string;
   fieldErrors?: Record<string, string>;
+  onDisplayNameChange?: (value: string) => void;
   onSubmit: (payload: CustomIngredientSubmitPayload) => Promise<void>;
 };
 
@@ -188,9 +192,20 @@ function FieldBadge({ required }: { required: boolean }) {
 
 export const getCustomIngredientSubtypeOptions = (category: IngredientCategory) => ingredientCategorySubtypes[category];
 
-export function CustomIngredientForm({ category, initialSubtype = null, preferredCurrency, pending, fieldErrors, onSubmit }: Props) {
+export function CustomIngredientForm({
+  category,
+  initialSubtype = null,
+  initialDisplayName = "",
+  preferredCurrency = "RUB",
+  pending,
+  mode = "inventory",
+  submitLabel,
+  fieldErrors,
+  onDisplayNameChange,
+  onSubmit
+}: Props) {
   const initialOptionalFields = createInitialInventoryOptionalFields();
-  const [displayName, setDisplayName] = useState("");
+  const [displayName, setDisplayName] = useState(initialDisplayName);
   const [brand, setBrand] = useState("");
   const [country, setCountry] = useState("");
   const [subtype, setSubtype] = useState<string>(initialSubtype ?? resolveDefaultCustomIngredientSubtype(category) ?? "");
@@ -255,6 +270,12 @@ export function CustomIngredientForm({ category, initialSubtype = null, preferre
   const subtypeOptions = category === "fermentable" || !shouldShowCustomIngredientSubtypeField(category)
     ? []
     : getCustomIngredientSubtypeOptions(category);
+  const showInventoryFields = mode === "inventory";
+  const resolvedSubmitLabel = submitLabel ?? (showInventoryFields ? "Создать и добавить в запасы" : "Создать свой ингредиент");
+
+  useEffect(() => {
+    setDisplayName(initialDisplayName);
+  }, [initialDisplayName]);
 
   useEffect(() => {
     const nextOptionalFields = createInitialInventoryOptionalFields();
@@ -283,6 +304,10 @@ export function CustomIngredientForm({ category, initialSubtype = null, preferre
       setYeastForm("dry");
     }
   }, [category, initialSubtype]);
+
+  useEffect(() => {
+    onDisplayNameChange?.(displayName);
+  }, [displayName, onDisplayNameChange]);
 
   useEffect(() => {
     if (!unitProfile.allowedUnits.includes(enteredUnit)) {
@@ -525,106 +550,110 @@ export function CustomIngredientForm({ category, initialSubtype = null, preferre
         </div>
       </div>
 
-      <div className="rounded-xl border border-zinc-200 p-4">
-        <div className="mb-3">
-          <h3 className="text-sm font-medium text-zinc-950">Количество и единица учета</h3>
-        </div>
-
-        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2" data-testid="custom-required-fields">
-          <label className="text-sm">
-            <span className="flex items-center gap-2">
-              <span>Количество</span>
-              <FieldBadge required />
-            </span>
-            <input
-              type="number"
-              min="0"
-              step="any"
-              className="mt-1 w-full rounded-md border px-2 py-2"
-              value={enteredQuantity}
-              onChange={(e) => setEnteredQuantity(e.target.value)}
-              inputMode="decimal"
-              placeholder="Например: 5"
-            />
-            {fieldErrors?.enteredQuantity && <span className="text-xs text-red-600">{fieldErrors.enteredQuantity}</span>}
-          </label>
-
-          <label className="text-sm">Ед. изм.
-            <select className="mt-1 w-full rounded-md border px-2 py-2" value={enteredUnit} onChange={(e) => setEnteredUnit(e.target.value as InventoryUnit)}>
-              {unitProfile.allowedUnits.map((unit) => <option key={unit} value={unit}>{inventoryUnitLabels[unit]}</option>)}
-            </select>
-            {fieldErrors?.enteredUnit && <span className="text-xs text-red-600">{fieldErrors.enteredUnit}</span>}
-          </label>
-        </div>
-      </div>
-
-      <InventoryOptionalDisclosure
-        open={optionalOpen}
-        onToggle={toggleOptionalSection}
-        fields={optionalFields}
-        preferredCurrency={preferredCurrency}
-        testId="custom-optional-disclosure"
-      >
-          <div className="space-y-4">
-            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-              <label className="text-sm">Дата покупки
-                <div className="mt-1 flex items-center gap-2">
-                  <input
-                    type="date"
-                    className="w-full rounded-md border px-2 py-2"
-                    value={purchasedAt}
-                    onChange={(e) => setPurchasedAt(e.target.value)}
-                  />
-                  <button
-                    type="button"
-                    className="rounded-md border border-zinc-200 px-2 py-2 text-xs text-zinc-600 transition-colors hover:border-zinc-300 hover:bg-zinc-50"
-                    onClick={() => setPurchasedAt("")}
-                    aria-label="Очистить дату покупки"
-                  >
-                    ×
-                  </button>
-                </div>
-              </label>
-
-              <label className="text-sm">Годен до
-                <input type="date" className="mt-1 w-full rounded-md border px-2 py-2" value={freshnessDate} onChange={(e) => setFreshnessDate(e.target.value)} />
-              </label>
+      {showInventoryFields ? (
+        <>
+          <div className="rounded-xl border border-zinc-200 p-4">
+            <div className="mb-3">
+              <h3 className="text-sm font-medium text-zinc-950">Количество и единица учета</h3>
             </div>
 
-            <InventoryPriceInput
-              preferredCurrency={preferredCurrency}
-              priceInputMode={priceInputMode}
-              priceInputAmount={priceInputAmount}
-              enteredQuantity={enteredQuantity}
-              enteredUnit={enteredUnit}
-              fieldError={purchasePriceError}
-              onPriceInputModeChange={setPriceInputMode}
-              onPriceInputAmountChange={setPriceInputAmount}
-              type={resolvedType}
-              category={category}
-              subtype={resolvedSubtype}
-              defaultDisplayUnit={unitProfile.defaultUnit}
-              allowedUnits={unitProfile.allowedUnits}
-              measurementDimension={unitProfile.measurementDimension}
-              technicalData={technicalData}
-            />
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2" data-testid="custom-required-fields">
+              <label className="text-sm">
+                <span className="flex items-center gap-2">
+                  <span>Количество</span>
+                  <FieldBadge required />
+                </span>
+                <input
+                  type="number"
+                  min="0"
+                  step="any"
+                  className="mt-1 w-full rounded-md border px-2 py-2"
+                  value={enteredQuantity}
+                  onChange={(e) => setEnteredQuantity(e.target.value)}
+                  inputMode="decimal"
+                  placeholder="Например: 5"
+                />
+                {fieldErrors?.enteredQuantity && <span className="text-xs text-red-600">{fieldErrors.enteredQuantity}</span>}
+              </label>
 
-            <IngredientPurchaseLinksField
-              reference={null}
-              enabled={optionalOpen}
-              allowDraftWithoutReference
-              onStateChange={setPurchaseLinksState}
-              testId="custom-purchase-links-field"
-            />
-
-            <label className="block text-sm">Заметки
-              <textarea className="mt-1 h-20 w-full rounded-md border px-2 py-2" value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="Например: куплен под конкретную варку" />
-            </label>
+              <label className="text-sm">Ед. изм.
+                <select className="mt-1 w-full rounded-md border px-2 py-2" value={enteredUnit} onChange={(e) => setEnteredUnit(e.target.value as InventoryUnit)}>
+                  {unitProfile.allowedUnits.map((unit) => <option key={unit} value={unit}>{inventoryUnitLabels[unit]}</option>)}
+                </select>
+                {fieldErrors?.enteredUnit && <span className="text-xs text-red-600">{fieldErrors.enteredUnit}</span>}
+              </label>
+            </div>
           </div>
-      </InventoryOptionalDisclosure>
+
+          <InventoryOptionalDisclosure
+            open={optionalOpen}
+            onToggle={toggleOptionalSection}
+            fields={optionalFields}
+            preferredCurrency={preferredCurrency}
+            testId="custom-optional-disclosure"
+          >
+              <div className="space-y-4">
+                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                  <label className="text-sm">Дата покупки
+                    <div className="mt-1 flex items-center gap-2">
+                      <input
+                        type="date"
+                        className="w-full rounded-md border px-2 py-2"
+                        value={purchasedAt}
+                        onChange={(e) => setPurchasedAt(e.target.value)}
+                      />
+                      <button
+                        type="button"
+                        className="rounded-md border border-zinc-200 px-2 py-2 text-xs text-zinc-600 transition-colors hover:border-zinc-300 hover:bg-zinc-50"
+                        onClick={() => setPurchasedAt("")}
+                        aria-label="Очистить дату покупки"
+                      >
+                        ×
+                      </button>
+                    </div>
+                  </label>
+
+                  <label className="text-sm">Годен до
+                    <input type="date" className="mt-1 w-full rounded-md border px-2 py-2" value={freshnessDate} onChange={(e) => setFreshnessDate(e.target.value)} />
+                  </label>
+                </div>
+
+                <InventoryPriceInput
+                  preferredCurrency={preferredCurrency}
+                  priceInputMode={priceInputMode}
+                  priceInputAmount={priceInputAmount}
+                  enteredQuantity={enteredQuantity}
+                  enteredUnit={enteredUnit}
+                  fieldError={purchasePriceError}
+                  onPriceInputModeChange={setPriceInputMode}
+                  onPriceInputAmountChange={setPriceInputAmount}
+                  type={resolvedType}
+                  category={category}
+                  subtype={resolvedSubtype}
+                  defaultDisplayUnit={unitProfile.defaultUnit}
+                  allowedUnits={unitProfile.allowedUnits}
+                  measurementDimension={unitProfile.measurementDimension}
+                  technicalData={technicalData}
+                />
+
+                <IngredientPurchaseLinksField
+                  reference={null}
+                  enabled={optionalOpen}
+                  allowDraftWithoutReference
+                  onStateChange={setPurchaseLinksState}
+                  testId="custom-purchase-links-field"
+                />
+
+                <label className="block text-sm">Заметки
+                  <textarea className="mt-1 h-20 w-full rounded-md border px-2 py-2" value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="Например: куплен под конкретную варку" />
+                </label>
+              </div>
+          </InventoryOptionalDisclosure>
+        </>
+      ) : null}
 
       <button type="submit" disabled={pending} className="w-full rounded-md bg-black px-4 py-2 text-sm text-white disabled:opacity-60">
-        {pending ? "Сохранение..." : "Создать и добавить в запасы"}
+        {pending ? "Сохранение..." : resolvedSubmitLabel}
       </button>
     </form>
   );

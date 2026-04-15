@@ -43,6 +43,7 @@ import {
   type RecipeInventoryActionResult
 } from "@/app/(app)/app/recipes/actions";
 import { IngredientPicker, IngredientSelectionCard } from "@/components/ingredients/ingredient-picker";
+import { CustomIngredientForm, type CustomIngredientSubmitPayload } from "@/components/inventory/custom-ingredient-form";
 import {
   buildRecipeIngredientTechnicalBadges,
   RecipeIngredientTechnicalBadges,
@@ -50,12 +51,8 @@ import {
   type RecipeIngredientCardSource
 } from "@/components/recipes/recipe-ingredient-card-display";
 import {
-  InventoryIngredientCategoryGrid,
-  resolveInventoryIngredientContextFromCategoryValue,
-  type InventoryIngredientCategoryValue
-} from "@/components/inventory/inventory-ingredient-category-grid";
-import {
   InventoryIngredientContextSummary,
+  resolveInventoryIngredientContextCategoryLabel,
   resolveInventoryIngredientContextSummary
 } from "@/components/inventory/inventory-ingredient-context-summary";
 import { ConfirmActionDialog } from "@/components/shared/confirm-action-dialog";
@@ -64,7 +61,22 @@ import {
   type EquipmentProfileDto,
   type EquipmentProfileSnapshot
 } from "@/features/equipment-profiles/contracts";
-import type { IngredientCategory, IngredientSuggestionItem, IngredientSubtype, IngredientTechnicalData, IngredientType } from "@/features/ingredients/contracts";
+import type {
+  IngredientCategory,
+  IngredientConsumableGroupRefinement,
+  IngredientSuggestionItem,
+  IngredientSubtype,
+  IngredientTechnicalData,
+  IngredientType
+} from "@/features/ingredients/contracts";
+import {
+  buildIngredientPickerQuickStartGroupsFromRecentSelections,
+  canonicalizeFermentableQuickStartGroup,
+  ingredientPickerQuickStartRecentStorageKey,
+  resolveFermentableQuickStartGroupLabel,
+  sanitizeIngredientPickerStoredRecentSelections,
+  type IngredientPickerStoredRecentSelection
+} from "@/features/ingredients/picker-quick-start";
 import {
   resolveIngredientDisplayNames
 } from "@/features/ingredients/presentation";
@@ -165,6 +177,251 @@ export const resolveRecipeIngredientEditorSourceMode = (
 
   return "catalog";
 };
+
+const recipeIngredientCategoryOptions: Array<{
+  value: IngredientCategory;
+  label: string;
+  icon: React.ComponentType<{ className?: string }>;
+  iconClassName: string;
+}> = [
+  { value: "fermentable", label: "Сбраживаемое", icon: Wheat, iconClassName: "text-amber-600" },
+  { value: "hop", label: "Хмель", icon: Hop, iconClassName: "text-emerald-600" },
+  { value: "yeast", label: "Дрожжи", icon: FlaskConical, iconClassName: "text-violet-600" },
+  { value: "water_treatment", label: "Водоподготовка", icon: Droplets, iconClassName: "text-sky-600" },
+  { value: "consumable", label: "Расходники", icon: Package, iconClassName: "text-zinc-500" }
+];
+
+export type RecipeFermentablePickerScope =
+  | "malt"
+  | "adjunct_grains"
+  | "extracts_and_concentrates"
+  | "sugars_and_syrups"
+  | "fruits_and_vegetables";
+
+const isRecipeFermentableGroupScope = (
+  value: string
+): value is Exclude<RecipeFermentablePickerScope, "malt"> => (
+  value === "adjunct_grains"
+  || value === "extracts_and_concentrates"
+  || value === "sugars_and_syrups"
+  || value === "fruits_and_vegetables"
+);
+
+export const resolveRecipeFermentablePickerScopeContext = (
+  scope?: RecipeFermentablePickerScope | null
+): {
+  subtype: Extract<IngredientSubtype, "malt" | "fermentable"> | null;
+  group: string | null;
+  label: string | null;
+} => {
+  if (!scope) {
+    return {
+      subtype: null,
+      group: null,
+      label: null
+    };
+  }
+
+  if (scope === "malt") {
+    return {
+      subtype: "malt",
+      group: null,
+      label: "Солод"
+    };
+  }
+
+  const label = resolveFermentableQuickStartGroupLabel(scope) ?? null;
+  return {
+    subtype: "fermentable",
+    group: scope,
+    label
+  };
+};
+
+const buildRecipeFermentableForcedGroup = (
+  scope?: RecipeFermentablePickerScope | null
+): IngredientConsumableGroupRefinement | null => {
+  const context = resolveRecipeFermentablePickerScopeContext(scope);
+  if (!context.group || !context.label) {
+    return null;
+  }
+
+  return {
+    type: "consumable_group",
+    label: context.label,
+    normalizedLabel: context.group,
+    value: context.group,
+    count: 0,
+    score: 0
+  };
+};
+
+const resolveRecipeIngredientEditorCategoryLabel = ({
+  category
+}: {
+  category?: IngredientCategory | null;
+}) => {
+  if (category === "fermentable") {
+    return "Сбраживаемое";
+  }
+
+  return resolveInventoryIngredientContextCategoryLabel({ category });
+};
+
+const resolveRecipeFermentablePickerScopeFromIngredient = (
+  ingredient: DesignerIngredient
+): RecipeFermentablePickerScope | null => {
+  if (ingredient.category !== "fermentable") {
+    return null;
+  }
+
+  return ingredient.subtype === "malt" ? "malt" : null;
+};
+
+function RecipeIngredientCategoryGrid({
+  value,
+  onChange,
+  legend = "Категория ингредиента",
+  testId
+}: {
+  value: IngredientCategory;
+  onChange: (value: IngredientCategory) => void;
+  legend?: string;
+  testId?: string;
+}) {
+  return (
+    <fieldset className="space-y-2" data-testid={testId}>
+      <legend className="text-sm font-medium">{legend}</legend>
+      <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+        {recipeIngredientCategoryOptions.map((option) => {
+          const Icon = option.icon;
+
+          return (
+            <button
+              key={option.value}
+              type="button"
+              onPointerDown={(event) => {
+                event.preventDefault();
+                onChange(option.value);
+              }}
+              onClick={(event) => {
+                if (event.detail !== 0) {
+                  return;
+                }
+
+                onChange(option.value);
+              }}
+              className={`rounded-md border px-3 py-2 text-xs transition ${
+                value === option.value
+                  ? "border-black bg-zinc-100 text-zinc-950"
+                  : "border-zinc-200 bg-white text-zinc-600 hover:border-zinc-300 hover:bg-zinc-50"
+              }`}
+            >
+              <span className="inline-flex items-center gap-1.5 whitespace-nowrap">
+                <Icon className={`h-3.5 w-3.5 shrink-0 ${value === option.value ? "text-current" : option.iconClassName}`} />
+                <span>{option.label}</span>
+              </span>
+            </button>
+          );
+        })}
+      </div>
+    </fieldset>
+  );
+}
+
+function RecipeFermentableScopePicker({
+  value,
+  onChange
+}: {
+  value: RecipeFermentablePickerScope | null;
+  onChange: (value: RecipeFermentablePickerScope | null) => void;
+}) {
+  const [recentSelections, setRecentSelections] = useState<IngredientPickerStoredRecentSelection[]>([]);
+  const options = useMemo<Array<{ value: RecipeFermentablePickerScope; label: string }>>(() => {
+    const orderedGroups: Array<{
+      value: Exclude<RecipeFermentablePickerScope, "malt">;
+      label: string;
+    }> = buildIngredientPickerQuickStartGroupsFromRecentSelections({
+      selections: recentSelections,
+      category: "fermentable",
+      subtype: "fermentable"
+    })
+      .flatMap((group) => (
+        isRecipeFermentableGroupScope(group.value)
+          ? [{
+            value: group.value,
+            label: group.label
+          }]
+          : []
+      ));
+
+    return [
+      { value: "malt", label: "Солод" },
+      ...orderedGroups
+    ];
+  }, [recentSelections]);
+
+  useEffect(() => {
+    if (typeof window === "undefined") {
+      return;
+    }
+
+    try {
+      const raw = window.localStorage.getItem(ingredientPickerQuickStartRecentStorageKey);
+      if (!raw) {
+        setRecentSelections([]);
+        return;
+      }
+
+      setRecentSelections(sanitizeIngredientPickerStoredRecentSelections(JSON.parse(raw)));
+    } catch {
+      setRecentSelections([]);
+    }
+  }, []);
+
+  return (
+    <div className="space-y-2" data-testid="recipe-fermentable-scope-picker">
+      <div className="text-[10px] font-medium uppercase tracking-[0.12em] text-zinc-500">
+        По типу сбраживаемого
+      </div>
+      <div className="flex flex-wrap gap-2">
+        {options.map((option) => {
+          const active = value === option.value;
+          return (
+            <button
+              key={option.value}
+              type="button"
+              onClick={() => onChange(active ? null : option.value)}
+              className={`inline-flex items-center rounded-full border px-3 py-1.5 text-xs font-medium transition-colors ${
+                active
+                  ? "border-zinc-950 bg-zinc-950 text-white"
+                  : "border-zinc-200 bg-white text-zinc-700 hover:border-zinc-300 hover:bg-zinc-50"
+              }`}
+            >
+              {option.label}
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+export const shouldAutoFocusRecipeIngredientPicker = ({
+  ingredient,
+  hasSelectedPreview,
+  sourceMode
+}: {
+  ingredient: DesignerIngredient;
+  hasSelectedPreview: boolean;
+  sourceMode: RecipeIngredientEditorSourceMode;
+}) => (
+  !hasSelectedPreview
+  && sourceMode === "catalog"
+  && !ingredient.ingredientCatalogItemId
+  && !ingredient.userCustomIngredientId
+  && readImportedDesignerIngredientSnapshot(ingredient) != null
+);
 
 type DesignerIngredient = {
   localId: string;
@@ -456,8 +713,25 @@ const mapHopStageFromUseType = (useType: RecipeHopUseType): DesignerIngredient["
   return "other";
 };
 
-const createEmptyIngredient = (category: IngredientCategory, hopUseType: RecipeHopUseType = "boil"): DesignerIngredient => {
-  const unitProfile = resolveHumanFacingInventoryUnitProfile({ category });
+const resolveRecipeFermentableSubtype = (
+  category: IngredientCategory,
+  subtype?: IngredientSubtype | null
+): Extract<IngredientSubtype, "malt" | "fermentable"> | null => (
+  category === "fermentable" && (subtype === "malt" || subtype === "fermentable")
+    ? subtype
+    : null
+);
+
+const createEmptyIngredient = (
+  category: IngredientCategory,
+  hopUseType: RecipeHopUseType = "boil",
+  subtype: Extract<IngredientSubtype, "malt" | "fermentable"> | null = null
+): DesignerIngredient => {
+  const fermentableSubtype = resolveRecipeFermentableSubtype(category, subtype);
+  const unitProfile = resolveHumanFacingInventoryUnitProfile({
+    category,
+    subtype: fermentableSubtype
+  });
 
   if (category === "hop") {
     return {
@@ -501,8 +775,6 @@ const createEmptyIngredient = (category: IngredientCategory, hopUseType: RecipeH
   }
 
   if (category === "fermentable") {
-    const subtype: Extract<IngredientSubtype, "malt" | "fermentable"> = "malt";
-
     return {
       localId: createLocalId(),
       persistentKey: createLocalId(),
@@ -520,9 +792,9 @@ const createEmptyIngredient = (category: IngredientCategory, hopUseType: RecipeH
       countryName: null,
       country: null,
       category,
-      subtype,
+      subtype: fermentableSubtype,
       familyId: null,
-      type: resolveLegacyIngredientType({ category, subtype }) ?? "malt",
+      type: resolveLegacyIngredientType({ category, subtype: fermentableSubtype }) ?? "fermentable",
       technicalData: null,
       defaultDisplayUnit: unitProfile.defaultUnit,
       allowedUnits: unitProfile.allowedUnits,
@@ -647,7 +919,10 @@ const applyQueryChange = (current: DesignerIngredient, nextValue: string): Desig
     };
   }
 
-  const unitProfile = resolveHumanFacingInventoryUnitProfile({ category: current.category });
+  const unitProfile = resolveHumanFacingInventoryUnitProfile({
+    category: current.category,
+    subtype: resolveRecipeFermentableSubtype(current.category, current.subtype)
+  });
   return {
     ...current,
     ingredientCatalogItemId: null,
@@ -663,7 +938,7 @@ const applyQueryChange = (current: DesignerIngredient, nextValue: string): Desig
     countryCode: null,
     countryName: null,
     country: null,
-    subtype: null,
+    subtype: resolveRecipeFermentableSubtype(current.category, current.subtype),
     familyId: null,
     technicalData: null,
     defaultDisplayUnit: unitProfile.defaultUnit,
@@ -685,48 +960,27 @@ const clearRecipeIngredientSelection = (current: DesignerIngredient): DesignerIn
   };
 };
 
-const resolveRecipeIngredientCategoryValue = (
-  ingredient: Pick<DesignerIngredient, "category" | "subtype">
-): InventoryIngredientCategoryValue => {
-  if (ingredient.category === "fermentable") {
-    return ingredient.subtype === "fermentable" ? "fermentable" : "malt";
-  }
-
-  return ingredient.category;
-};
-
 const applyRecipeIngredientCategoryContextChange = (
   current: DesignerIngredient,
-  nextCategoryValue: InventoryIngredientCategoryValue
+  nextCategory: IngredientCategory,
+  nextSubtype: Extract<IngredientSubtype, "malt" | "fermentable"> | null = null
 ): DesignerIngredient => {
-  const { category, subtype } = resolveInventoryIngredientContextFromCategoryValue(nextCategoryValue);
-  const currentCategoryValue = resolveRecipeIngredientCategoryValue(current);
+  const normalizedNextSubtype = resolveRecipeFermentableSubtype(nextCategory, nextSubtype);
 
-  if (currentCategoryValue === nextCategoryValue) {
+  if (current.category === nextCategory && current.subtype === normalizedNextSubtype) {
     return current;
   }
 
   const nextDraft = createEmptyIngredient(
-    category,
-    category === "hop" ? getHopUseType(current) : "boil"
+    nextCategory,
+    nextCategory === "hop" ? getHopUseType(current) : "boil",
+    normalizedNextSubtype
   );
-  const nextType = resolveLegacyIngredientType({ category, subtype: subtype ?? undefined }) ?? nextDraft.type;
-  const unitProfile = resolveHumanFacingInventoryUnitProfile({
-    type: nextType,
-    category,
-    subtype
-  });
 
   return {
     ...nextDraft,
     localId: current.localId,
     persistentKey: current.persistentKey,
-    subtype,
-    type: nextType,
-    defaultDisplayUnit: unitProfile.defaultUnit,
-    allowedUnits: unitProfile.allowedUnits,
-    measurementDimension: unitProfile.measurementDimension,
-    amountEnteredUnit: unitProfile.defaultUnit,
     inventoryIntentMode: resolveRecipeIngredientEditorSourceMode(current.inventoryIntentMode),
     inventorySelectionMeta: null
   };
@@ -2143,29 +2397,49 @@ function SectionRow({
   const hopUseType = ingredient.category === "hop" ? getHopUseType(ingredient) : null;
   const hasInlineTimeControl = hopUseType === "boil" || hopUseType === "whirlpool" || hopUseType === "dip_hop";
   const isImported = isImportedDesignerIngredient(ingredient);
+  const isFromStock = ingredient.inventoryIntentMode === "use_stock" || Boolean(ingredient.inventorySelectionMeta?.inventoryItemId);
   const cardSource = buildDesignerIngredientCardSource(ingredient);
   const technicalBadges = buildRecipeIngredientTechnicalBadges(cardSource);
   const summaryDetails = buildSummaryDetails(ingredient);
   const summaryFallback = technicalBadges.length ? null : (ingredient.selectedSummary || ingredient.familyDisplayName || null);
 
   return (
-    <li className={`rounded-lg border-l-[3px] bg-white px-3 py-2.5 shadow-sm ring-1 ring-zinc-100 transition-shadow hover:shadow-md ${accent}`}>
-      <div className="flex items-center gap-3">
+    <li className={`relative rounded-lg border-l-[3px] bg-white px-3 py-2.5 shadow-sm ring-1 ring-zinc-100 transition-shadow hover:shadow-md ${accent}`}>
+      <div className="absolute right-2.5 top-2.5 z-10 flex shrink-0 gap-1">
+        <button
+          type="button"
+          onClick={() => onEdit(ingredient)}
+          className="rounded-md p-1.5 text-zinc-400 transition-colors hover:bg-zinc-100 hover:text-zinc-700"
+          aria-label="Редактировать"
+        >
+          <Pencil className="h-3.5 w-3.5" />
+        </button>
+        <button
+          type="button"
+          onClick={() => onDelete(ingredient.localId)}
+          className="rounded-md p-1.5 text-zinc-400 transition-colors hover:bg-rose-50 hover:text-rose-600"
+          aria-label="Удалить"
+        >
+          <span className="text-xs font-medium">✕</span>
+        </button>
+      </div>
+
+      <div className="flex items-center gap-3 pr-12">
         <div className="min-w-0 flex-1">
           <div className="flex min-w-0 flex-wrap items-start gap-2">
-            <div className="min-w-0 flex-1">
+            <div className="flex min-w-0 flex-1 flex-wrap items-start gap-2">
               <RecipeIngredientTitleBlock
                 source={cardSource}
                 primaryName={ingredient.selectedName || "Не выбран"}
                 secondaryName={ingredient.selectedSecondaryName}
               />
+              {isFromStock ? (
+                <span className="mt-0.5 shrink-0 rounded bg-zinc-100 px-1.5 py-0.5 text-[11px] font-medium text-zinc-700">Со склада</span>
+              ) : null}
+              {isImported ? (
+                <span className="mt-0.5 shrink-0 rounded bg-sky-50 px-1.5 py-0.5 text-[11px] font-medium text-sky-700">Импортировано</span>
+              ) : null}
             </div>
-            {percentage != null && percentage > 0 ? (
-              <span className="shrink-0 rounded bg-amber-50 px-1.5 py-0.5 text-[11px] font-medium tabular-nums text-amber-700">{percentage.toFixed(1)}%</span>
-            ) : null}
-            {isImported ? (
-              <span className="shrink-0 rounded bg-sky-50 px-1.5 py-0.5 text-[11px] font-medium text-sky-700">Импортировано</span>
-            ) : null}
           </div>
           {summaryDetails ? <div className="mt-1 text-xs text-zinc-500">{summaryDetails}</div> : null}
           {summaryFallback ? <div className="mt-1 text-xs text-zinc-500">{summaryFallback}</div> : null}
@@ -2191,6 +2465,9 @@ function SectionRow({
           ) : null}
         </div>
         <div className="flex shrink-0 items-center gap-1">
+          {percentage != null && percentage > 0 ? (
+            <span className="shrink-0 px-1 text-[11px] font-medium tabular-nums text-zinc-600">{percentage.toFixed(1)}%</span>
+          ) : null}
           <input
             type="number"
             value={ingredient.amountEnteredQuantity}
@@ -2214,14 +2491,6 @@ function SectionRow({
             <span className="text-xs text-zinc-500">мин</span>
           </div>
         ) : null}
-        <div className="flex shrink-0 gap-1">
-          <button type="button" onClick={() => onEdit(ingredient)} className="rounded-md p-1.5 text-zinc-400 transition-colors hover:bg-zinc-100 hover:text-zinc-700">
-            <Pencil className="h-3.5 w-3.5" />
-          </button>
-          <button type="button" onClick={() => onDelete(ingredient.localId)} className="rounded-md p-1.5 text-zinc-400 transition-colors hover:bg-rose-50 hover:text-rose-600">
-            <span className="text-xs font-medium">✕</span>
-          </button>
-        </div>
       </div>
     </li>
   );
@@ -2814,6 +3083,7 @@ const searchStockIngredientsForRecipe = async ({
   type,
   category,
   subtype,
+  group,
   limit,
   signal
 }: {
@@ -2821,6 +3091,7 @@ const searchStockIngredientsForRecipe = async ({
   type?: IngredientType;
   category?: IngredientCategory;
   subtype?: Extract<IngredientSubtype, "malt" | "fermentable"> | null;
+  group?: string;
   limit: number;
   signal: AbortSignal;
 }) => {
@@ -2840,7 +3111,17 @@ const searchStockIngredientsForRecipe = async ({
   }
 
   const data = await response.json() as { items?: IngredientSuggestionItem[] };
-  return data.items ?? [];
+  const items = data.items ?? [];
+  const normalizedGroup = category === "fermentable" && subtype === "fermentable"
+    ? canonicalizeFermentableQuickStartGroup(group)
+    : null;
+  if (!normalizedGroup) {
+    return items;
+  }
+
+  return items.filter((item) => (
+    canonicalizeFermentableQuickStartGroup(item.groupName ?? null) === normalizedGroup
+  ));
 };
 
 function IngredientEditor({
@@ -2851,7 +3132,8 @@ function IngredientEditor({
   onCancel,
   onDelete,
   saveLabel,
-  fieldError
+  fieldError,
+  saveDisabled = false
 }: {
   draft: DesignerIngredient;
   isExisting: boolean;
@@ -2861,26 +3143,45 @@ function IngredientEditor({
   onDelete?: () => void;
   saveLabel: string;
   fieldError?: string | null;
+  saveDisabled?: boolean;
 }) {
   const [pendingCustom, setPendingCustom] = useState(false);
   const [customMessage, setCustomMessage] = useState<string | null>(null);
+  const [customFieldErrors, setCustomFieldErrors] = useState<Record<string, string> | undefined>(undefined);
+  const [customDisplayName, setCustomDisplayName] = useState(draft.selectedName);
   const [showStockSearch, setShowStockSearch] = useState(false);
-  const placeholder = {
-    fermentable: "Найти солод, сахар или другой ферментируемый ингредиент",
-    hop: "Найти сорт или форму хмеля",
-    yeast: "Найти дрожжи",
-    water_treatment: "Найти соль, кислоту или добавку для воды",
-    consumable: "Найти расходник или процессную добавку"
-  }[draft.category];
+  const [fermentableScope, setFermentableScope] = useState<RecipeFermentablePickerScope | null>(() => (
+    resolveRecipeFermentablePickerScopeFromIngredient(draft)
+  ));
 
   const isHop = draft.category === "hop";
   const hopUseType = getHopUseType(draft);
   const quantityStep = getInventoryUnitInputStep(draft.amountEnteredUnit);
   const sourceMode = resolveRecipeIngredientEditorSourceMode(draft.inventoryIntentMode);
-  const selectedCategoryValue = resolveRecipeIngredientCategoryValue(draft);
+  const fermentableScopeContext = resolveRecipeFermentablePickerScopeContext(fermentableScope);
+  const resolvedDraftFermentableSubtype = resolveRecipeFermentableSubtype(draft.category, draft.subtype);
   const pickerSubtype = draft.category === "fermentable"
-    ? selectedCategoryValue === "fermentable" ? "fermentable" : "malt"
+    ? sourceMode === "custom"
+      ? resolvedDraftFermentableSubtype ?? fermentableScopeContext.subtype
+      : fermentableScopeContext.subtype ?? resolvedDraftFermentableSubtype
+    : resolvedDraftFermentableSubtype;
+  const forcedFermentableGroup = draft.category === "fermentable"
+    ? buildRecipeFermentableForcedGroup(fermentableScope)
     : null;
+  const placeholder = draft.category === "fermentable"
+    ? pickerSubtype === "malt"
+      ? "Найти солод"
+      : forcedFermentableGroup?.label
+        ? `Найти ${forcedFermentableGroup.label.toLowerCase()}`
+        : pickerSubtype === "fermentable"
+          ? "Найти сахар, экстракт или другой сбраживаемый ингредиент"
+          : "Найти солод, сахар или другой ферментируемый ингредиент"
+    : {
+      hop: "Найти сорт или форму хмеля",
+      yeast: "Найти дрожжи",
+      water_treatment: "Найти соль, кислоту или добавку для воды",
+      consumable: "Найти расходник или процессную добавку"
+    }[draft.category];
   const ingredientSearchType = resolveRecipeIngredientSearchType({
     category: draft.category,
     type: draft.type
@@ -2891,17 +3192,39 @@ function IngredientEditor({
     : null;
   const selectedCatalogPreview = sourceMode !== "use_stock" ? selectedIngredientPreview : null;
   const selectedPreview = selectedStockPreview ?? selectedCatalogPreview;
+  const showRecipeFields = Boolean(selectedPreview || isImportedDesignerIngredient(draft));
   const showIngredientPicker = !selectedPreview && (
     sourceMode === "catalog"
     || (sourceMode === "use_stock" && showStockSearch)
   );
+  const autoFocusPicker = shouldAutoFocusRecipeIngredientPicker({
+    ingredient: draft,
+    hasSelectedPreview: Boolean(selectedPreview),
+    sourceMode
+  });
+  const contextCategoryLabel = resolveRecipeIngredientEditorCategoryLabel({
+    category: draft.category
+  }) ?? getSectionTitle(draft.category);
   const contextSummary = sourceMode === "use_stock"
-    ? `${getSectionTitle(draft.category)} · Из склада`
-    : resolveInventoryIngredientContextSummary({
-      category: draft.category,
-      subtype: pickerSubtype,
-      source: sourceMode === "custom" ? "custom" : "catalog"
-    });
+    ? `${contextCategoryLabel} · Из склада`
+    : draft.category === "fermentable"
+      ? `${contextCategoryLabel} · ${sourceMode === "custom" ? "Свой" : "Из каталога"}`
+      : resolveInventoryIngredientContextSummary({
+        category: draft.category,
+        subtype: draft.subtype,
+        source: sourceMode === "custom" ? "custom" : "catalog"
+      });
+
+  useEffect(() => {
+    if (sourceMode === "custom") {
+      setCustomDisplayName(draft.selectedName);
+    }
+  }, [draft.selectedName, sourceMode]);
+
+  useEffect(() => {
+    setFermentableScope(resolveRecipeFermentablePickerScopeFromIngredient(draft));
+  }, [draft.localId, draft.category]);
+
   const switchSourceMode = (mode: RecipeIngredientEditorSourceMode) => {
     if (mode === sourceMode) {
       return;
@@ -2909,6 +3232,7 @@ function IngredientEditor({
 
     setShowStockSearch(false);
     setCustomMessage(null);
+    setCustomFieldErrors(undefined);
     onChange({
       ...clearRecipeIngredientSelection(draft),
       inventoryIntentMode: mode,
@@ -2919,6 +3243,7 @@ function IngredientEditor({
     const cleared = clearRecipeIngredientSelection(draft);
     setShowStockSearch(false);
     setCustomMessage(null);
+    setCustomFieldErrors(undefined);
     onChange({
       ...cleared,
       selectedName: draft.selectedName,
@@ -2926,22 +3251,41 @@ function IngredientEditor({
       inventorySelectionMeta: null
     });
   };
-  const createCustomIngredient = async () => {
-    const displayName = draft.selectedName.trim();
-    if (!displayName) {
-      setCustomMessage("Укажите название ингредиента.");
-      return;
-    }
-
+  const handleFermentableScopeChange = (nextScope: RecipeFermentablePickerScope | null) => {
+    setShowStockSearch(false);
+    setCustomMessage(null);
+    setCustomFieldErrors(undefined);
+    setFermentableScope(nextScope);
+    onChange(applyRecipeIngredientCategoryContextChange(
+      draft,
+      "fermentable",
+      resolveRecipeFermentablePickerScopeContext(nextScope).subtype
+    ));
+  };
+  const createCustomIngredient = async (payload: CustomIngredientSubmitPayload) => {
     setPendingCustom(true);
+    setCustomMessage(null);
+    setCustomFieldErrors(undefined);
     const result = await createRecipeCustomIngredientAction({
-      category: draft.category,
-      subtype: pickerSubtype,
-      displayName,
-      defaultDisplayUnit: draft.amountEnteredUnit
+      category: payload.category,
+      subtype: payload.subtype,
+      displayName: payload.displayName,
+      brand: payload.brand,
+      country: payload.country,
+      harvestYear: payload.harvestYear,
+      fermentableColorEbc: payload.fermentableColorEbc,
+      fermentableExtractYieldPct: payload.fermentableExtractYieldPct,
+      hopAlphaAcidPct: payload.hopAlphaAcidPct,
+      hopForm: payload.hopForm,
+      yeastAttenuationPct: payload.yeastAttenuationPct,
+      yeastForm: payload.yeastForm,
+      defaultDisplayUnit: payload.defaultDisplayUnit
     });
     setPendingCustom(false);
-    setCustomMessage(result.message);
+    setCustomFieldErrors(result.fieldErrors);
+    if (!result.ok) {
+      setCustomMessage(result.message);
+    }
 
     if (result.ok && result.item) {
       onChange(applySelection({
@@ -3008,7 +3352,7 @@ function IngredientEditor({
           <h3 className="text-sm font-semibold text-zinc-950">
             {isExisting ? "Редактор позиции" : "Новая позиция"}
           </h3>
-          <p className="text-xs text-zinc-500">{getSectionTitle(draft.category)}</p>
+          <p className="text-xs text-zinc-500">{contextCategoryLabel}</p>
         </div>
         <button
           type="button"
@@ -3019,11 +3363,13 @@ function IngredientEditor({
         </button>
       </div>
 
-      <InventoryIngredientCategoryGrid
-        value={selectedCategoryValue}
+      <RecipeIngredientCategoryGrid
+        value={draft.category}
         onChange={(nextCategory) => {
           setShowStockSearch(false);
           setCustomMessage(null);
+          setCustomFieldErrors(undefined);
+          setFermentableScope(null);
           onChange(applyRecipeIngredientCategoryContextChange(draft, nextCategory));
         }}
         legend="Категория ингредиента"
@@ -3052,6 +3398,13 @@ function IngredientEditor({
         testId="recipe-ingredient-context-summary"
       />
 
+      {draft.category === "fermentable" && !selectedPreview && sourceMode !== "custom" ? (
+        <RecipeFermentableScopePicker
+          value={fermentableScope}
+          onChange={handleFermentableScopeChange}
+        />
+      ) : null}
+
       <div className="space-y-1">
         <label className="text-xs font-medium text-zinc-700">Ингредиент</label>
         {selectedPreview ? (
@@ -3068,36 +3421,30 @@ function IngredientEditor({
             mergeBrandAndCountry
           />
         ) : sourceMode === "custom" ? (
-          <div className="space-y-3 rounded-md border border-zinc-200 bg-white px-3 py-3 shadow-sm" data-testid="recipe-custom-ingredient-create-panel">
-            <label className="block text-sm font-medium text-zinc-900">
-              Название своего ингредиента
-              <input
-                value={draft.selectedName}
-                onChange={(event) => {
-                  setCustomMessage(null);
-                  onChange(applyQueryChange(draft, event.target.value));
-                }}
-                placeholder={placeholder}
-                className="mt-1 h-10 w-full rounded-md border border-zinc-200 px-3 text-sm text-zinc-900"
-              />
-            </label>
+          <div className="space-y-3" data-testid="recipe-custom-ingredient-create-panel">
+            <CustomIngredientForm
+              mode="recipe"
+              category={draft.category}
+              initialSubtype={pickerSubtype}
+              initialDisplayName={draft.selectedName}
+              pending={pendingCustom}
+              fieldErrors={customFieldErrors}
+              submitLabel="Создать свой ингредиент"
+              onDisplayNameChange={(value) => {
+                setCustomMessage(null);
+                setCustomDisplayName(value);
+              }}
+              onSubmit={createCustomIngredient}
+            />
             <div className="flex flex-wrap items-center gap-2">
               <button
                 type="button"
-                disabled={pendingCustom || !draft.selectedName.trim()}
-                onClick={() => void createCustomIngredient()}
-                className="inline-flex items-center rounded-md bg-zinc-950 px-3 py-2 text-sm font-medium text-white transition-colors hover:bg-zinc-800 disabled:opacity-60"
-              >
-                {pendingCustom ? "Создание..." : "Создать свой ингредиент"}
-              </button>
-              <button
-                type="button"
-                disabled={!draft.selectedName.trim()}
+                disabled={!customDisplayName.trim()}
                 onClick={async () => {
                   const result = await proposeRecipeIngredientAction({
                     category: draft.category,
                     subtype: pickerSubtype,
-                    displayName: draft.selectedName.trim()
+                    displayName: customDisplayName.trim()
                   });
                   setCustomMessage(result.message);
                 }}
@@ -3115,6 +3462,9 @@ function IngredientEditor({
                 type={ingredientSearchType}
                 category={draft.category}
                 subtype={pickerSubtype}
+                forcedGroup={forcedFermentableGroup}
+                hideForcedGroupChip
+                onForcedGroupClear={() => handleFermentableScopeChange(null)}
                 value={draft.selectedName}
                 onValueChange={(value) => onChange(applyQueryChange(draft, value))}
                 onSelect={(item) => {
@@ -3125,6 +3475,7 @@ function IngredientEditor({
                 hydrateRecentSelectionsOnInit={sourceMode !== "use_stock"}
                 enableQuickStart={sourceMode !== "use_stock"}
                 allowCustomOnlyFilter={sourceMode !== "use_stock"}
+                autoFocus={autoFocusPicker}
                 placeholder={sourceMode === "use_stock" ? "Поиск по складу" : placeholder}
                 emptyCta={emptyCta}
               />
@@ -3134,6 +3485,7 @@ function IngredientEditor({
               category={draft.category}
               type={ingredientSearchType}
               subtype={pickerSubtype}
+              group={forcedFermentableGroup?.value ?? undefined}
               searchIngredients={searchStockIngredientsForRecipe}
               onOverflowChange={setShowStockSearch}
               onSelect={(item) => {
@@ -3143,239 +3495,233 @@ function IngredientEditor({
             />
           </>
         )}
-        <p className="text-xs text-zinc-500">
-          {draft.inventorySelectionMeta?.stockQuantityLabel
-            ? `Выбрано со склада: ${draft.inventorySelectionMeta.stockQuantityLabel}.`
-            : draft.ingredientCatalogItemId || draft.userCustomIngredientId
-              ? "Ингредиент выбран. Укажите количество и параметры добавления в рецепт."
-              : sourceMode === "use_stock"
-                ? "Выберите позицию со склада или уточните поиск."
-                : sourceMode === "custom"
-                  ? "Создайте свой ингредиент, затем укажите количество и параметры добавления."
-                  : "Выберите ингредиент из каталога или добавьте свой."}
-        </p>
       </div>
 
-      <div className="grid gap-3 sm:grid-cols-[1fr_160px]">
-        <label className="space-y-1 text-xs font-medium text-zinc-700">
-          Количество
-          <input
-            type="number"
-            min={0}
-            step={quantityStep}
-            value={draft.amountEnteredQuantity}
-            onChange={(event) => onChange({ ...draft, amountEnteredQuantity: event.target.value })}
-            className="h-10 w-full rounded-md border border-zinc-200 bg-white px-3 text-sm text-zinc-900"
-          />
-        </label>
-        <label className="space-y-1 text-xs font-medium text-zinc-700">
-          Ед. изм.
-          <select
-            value={draft.amountEnteredUnit}
-            onChange={(event) => onChange({ ...draft, amountEnteredUnit: event.target.value as InventoryUnit })}
-            className="h-10 w-full rounded-md border border-zinc-200 bg-white px-3 text-sm text-zinc-900"
-          >
-            {draft.allowedUnits.map((unit) => (
-              <option key={unit} value={unit}>{inventoryUnitLabels[unit] ?? unit}</option>
-            ))}
-          </select>
-        </label>
-      </div>
-
-      {draft.category === "fermentable" ? (
-        <div className="grid gap-3 sm:grid-cols-[180px_160px]">
-          <label className="space-y-1 text-xs font-medium text-zinc-700">
-            Использование
-            <select
-              value={draft.stepMeta.use ?? "mash"}
-              onChange={(event) => onChange({
-                ...draft,
-                stage: event.target.value === "boil" ? "boil" : "mash",
-                stepMeta: {
-                  ...draft.stepMeta,
-                  use: event.target.value
-                }
-              })}
-              className="h-10 w-full rounded-md border border-zinc-200 bg-white px-3 text-sm text-zinc-900"
-            >
-              {recipeFermentableUseTypes.map((use) => <option key={use} value={use}>{fermentableUseLabels[use]}</option>)}
-            </select>
-          </label>
-          {(draft.stepMeta.use ?? "mash") === "boil" ? (
+      {showRecipeFields ? (
+        <>
+          <div className="grid gap-3 sm:grid-cols-[1fr_160px]">
             <label className="space-y-1 text-xs font-medium text-zinc-700">
-              Минут от конца
+              Количество
               <input
                 type="number"
                 min={0}
-                value={draft.stepMeta.timeMinutes ?? ""}
-                onChange={(event) => onChange({
-                  ...draft,
-                  timeOffset: event.target.value,
-                  stepMeta: {
-                    ...draft.stepMeta,
-                    timeMinutes: event.target.value
-                  }
-                })}
+                step={quantityStep}
+                value={draft.amountEnteredQuantity}
+                onChange={(event) => onChange({ ...draft, amountEnteredQuantity: event.target.value })}
                 className="h-10 w-full rounded-md border border-zinc-200 bg-white px-3 text-sm text-zinc-900"
               />
             </label>
-          ) : null}
-        </div>
-      ) : null}
-
-      {isHop ? (
-        <div className="grid gap-3 sm:grid-cols-2">
-          <label className="space-y-1 text-xs font-medium text-zinc-700">
-            Тип добавления
-            <select
-              value={hopUseType}
-              onChange={(event) => onChange({
-                ...draft,
-                stage: mapHopStageFromUseType(event.target.value as RecipeHopUseType),
-                stepMeta: {
-                  ...draft.stepMeta,
-                  useType: event.target.value as RecipeHopUseType
-                }
-              })}
-              className="h-10 w-full rounded-md border border-zinc-200 bg-white px-3 text-sm text-zinc-900"
-            >
-              {recipeHopUseTypes.map((useType) => <option key={useType} value={useType}>{hopUseTypeLabels[useType]}</option>)}
-            </select>
-          </label>
-
-          {(hopUseType === "boil" || hopUseType === "whirlpool" || hopUseType === "dip_hop") ? (
             <label className="space-y-1 text-xs font-medium text-zinc-700">
-              Минут
-              <input
-                type="number"
-                min={0}
-                value={draft.stepMeta.timeMinutes ?? ""}
-                onChange={(event) => onChange({
-                  ...draft,
-                  timeOffset: event.target.value,
-                  stepMeta: {
-                    ...draft.stepMeta,
-                    timeMinutes: event.target.value
-                  }
-                })}
+              Ед. изм.
+              <select
+                value={draft.amountEnteredUnit}
+                onChange={(event) => onChange({ ...draft, amountEnteredUnit: event.target.value as InventoryUnit })}
                 className="h-10 w-full rounded-md border border-zinc-200 bg-white px-3 text-sm text-zinc-900"
-              />
+              >
+                {draft.allowedUnits.map((unit) => (
+                  <option key={unit} value={unit}>{inventoryUnitLabels[unit] ?? unit}</option>
+                ))}
+              </select>
             </label>
-          ) : hopUseType === "dry_hop" ? (
-            <label className="space-y-1 text-xs font-medium text-zinc-700">
-              Длительность, дн
-              <input
-                type="number"
-                min={1}
-                value={draft.stepMeta.durationDays ?? ""}
-                onChange={(event) => onChange({
-                  ...draft,
-                  stepMeta: {
-                    ...draft.stepMeta,
-                    durationDays: event.target.value
-                  }
-                })}
-                className="h-10 w-full rounded-md border border-zinc-200 bg-white px-3 text-sm text-zinc-900"
-              />
-            </label>
-          ) : (
-            <label className="space-y-1 text-xs font-medium text-zinc-700">
-              Stage label
-              <input
-                value={draft.stepMeta.stageLabel ?? ""}
-                onChange={(event) => onChange({
-                  ...draft,
-                  stepMeta: {
-                    ...draft.stepMeta,
-                    stageLabel: event.target.value
-                  }
-                })}
-                className="h-10 w-full rounded-md border border-zinc-200 bg-white px-3 text-sm text-zinc-900"
-                placeholder="Например, first wort"
-              />
-            </label>
-          )}
-
-          {(hopUseType === "whirlpool" || hopUseType === "dip_hop") ? (
-            <label className="space-y-1 text-xs font-medium text-zinc-700">
-              Температура, °C
-              <input
-                type="number"
-                min={0}
-                value={draft.stepMeta.temperatureC ?? ""}
-                onChange={(event) => onChange({
-                  ...draft,
-                  stepMeta: {
-                    ...draft.stepMeta,
-                    temperatureC: event.target.value
-                  }
-                })}
-                className="h-10 w-full rounded-md border border-zinc-200 bg-white px-3 text-sm text-zinc-900"
-              />
-            </label>
-          ) : null}
-        </div>
-      ) : null}
-
-      {draft.category === "yeast" ? (
-        <div className="grid gap-3 sm:grid-cols-2">
-          <label className="space-y-1 text-xs font-medium text-zinc-700">
-            Основная температура брожения, °C
-            <input
-              type="number"
-              value={draft.stepMeta.fermentationTempC ?? ""}
-              onChange={(event) => onChange({
-                ...draft,
-                stepMeta: {
-                  ...draft.stepMeta,
-                  fermentationTempC: event.target.value
-                }
-              })}
-              className="h-10 w-full rounded-md border border-zinc-200 bg-white px-3 text-sm text-zinc-900"
-            />
-          </label>
-          <div className="rounded-xl border border-zinc-100 bg-zinc-50 px-3 py-2 text-xs text-zinc-500">
-            {draft.selectedSummary || "Рекомендуемый диапазон выбранных дрожжей будет показан здесь, если он есть в каталоге."}
           </div>
-        </div>
-      ) : null}
 
-      {draft.category === "water_treatment" || draft.category === "consumable" ? (
-        <div className="grid gap-3 sm:grid-cols-2">
-          <label className="space-y-1 text-xs font-medium text-zinc-700">
-            Стадия
-            <select
-              value={draft.stage}
-              onChange={(event) => onChange({ ...draft, stage: event.target.value as DesignerIngredient["stage"] })}
-              className="h-10 w-full rounded-md border border-zinc-200 bg-white px-3 text-sm text-zinc-900"
-            >
-              {Object.entries(stageLabels).map(([value, label]) => <option key={value} value={value}>{label}</option>)}
-            </select>
-          </label>
-          <label className="space-y-1 text-xs font-medium text-zinc-700">
-            Время, если нужно
-            <input
-              type="number"
-              value={draft.stepMeta.timeMinutes ?? ""}
-              onChange={(event) => onChange({
-                ...draft,
-                timeOffset: event.target.value,
-                stepMeta: {
-                  ...draft.stepMeta,
-                  timeMinutes: event.target.value
-                }
-              })}
-              className="h-10 w-full rounded-md border border-zinc-200 bg-white px-3 text-sm text-zinc-900"
-              placeholder="минуты"
-            />
-          </label>
-        </div>
+          {draft.category === "fermentable" ? (
+            <div className="grid gap-3 sm:grid-cols-[180px_160px]">
+              <label className="space-y-1 text-xs font-medium text-zinc-700">
+                Использование
+                <select
+                  value={draft.stepMeta.use ?? "mash"}
+                  onChange={(event) => onChange({
+                    ...draft,
+                    stage: event.target.value === "boil" ? "boil" : "mash",
+                    stepMeta: {
+                      ...draft.stepMeta,
+                      use: event.target.value
+                    }
+                  })}
+                  className="h-10 w-full rounded-md border border-zinc-200 bg-white px-3 text-sm text-zinc-900"
+                >
+                  {recipeFermentableUseTypes.map((use) => <option key={use} value={use}>{fermentableUseLabels[use]}</option>)}
+                </select>
+              </label>
+              {(draft.stepMeta.use ?? "mash") === "boil" ? (
+                <label className="space-y-1 text-xs font-medium text-zinc-700">
+                  Минут от конца
+                  <input
+                    type="number"
+                    min={0}
+                    value={draft.stepMeta.timeMinutes ?? ""}
+                    onChange={(event) => onChange({
+                      ...draft,
+                      timeOffset: event.target.value,
+                      stepMeta: {
+                        ...draft.stepMeta,
+                        timeMinutes: event.target.value
+                      }
+                    })}
+                    className="h-10 w-full rounded-md border border-zinc-200 bg-white px-3 text-sm text-zinc-900"
+                  />
+                </label>
+              ) : null}
+            </div>
+          ) : null}
+
+          {isHop ? (
+            <div className="grid gap-3 sm:grid-cols-2">
+              <label className="space-y-1 text-xs font-medium text-zinc-700">
+                Тип добавления
+                <select
+                  value={hopUseType}
+                  onChange={(event) => onChange({
+                    ...draft,
+                    stage: mapHopStageFromUseType(event.target.value as RecipeHopUseType),
+                    stepMeta: {
+                      ...draft.stepMeta,
+                      useType: event.target.value as RecipeHopUseType
+                    }
+                  })}
+                  className="h-10 w-full rounded-md border border-zinc-200 bg-white px-3 text-sm text-zinc-900"
+                >
+                  {recipeHopUseTypes.map((useType) => <option key={useType} value={useType}>{hopUseTypeLabels[useType]}</option>)}
+                </select>
+              </label>
+
+              {(hopUseType === "boil" || hopUseType === "whirlpool" || hopUseType === "dip_hop") ? (
+                <label className="space-y-1 text-xs font-medium text-zinc-700">
+                  Минут
+                  <input
+                    type="number"
+                    min={0}
+                    value={draft.stepMeta.timeMinutes ?? ""}
+                    onChange={(event) => onChange({
+                      ...draft,
+                      timeOffset: event.target.value,
+                      stepMeta: {
+                        ...draft.stepMeta,
+                        timeMinutes: event.target.value
+                      }
+                    })}
+                    className="h-10 w-full rounded-md border border-zinc-200 bg-white px-3 text-sm text-zinc-900"
+                  />
+                </label>
+              ) : hopUseType === "dry_hop" ? (
+                <label className="space-y-1 text-xs font-medium text-zinc-700">
+                  Длительность, дн
+                  <input
+                    type="number"
+                    min={1}
+                    value={draft.stepMeta.durationDays ?? ""}
+                    onChange={(event) => onChange({
+                      ...draft,
+                      stepMeta: {
+                        ...draft.stepMeta,
+                        durationDays: event.target.value
+                      }
+                    })}
+                    className="h-10 w-full rounded-md border border-zinc-200 bg-white px-3 text-sm text-zinc-900"
+                  />
+                </label>
+              ) : (
+                <label className="space-y-1 text-xs font-medium text-zinc-700">
+                  Stage label
+                  <input
+                    value={draft.stepMeta.stageLabel ?? ""}
+                    onChange={(event) => onChange({
+                      ...draft,
+                      stepMeta: {
+                        ...draft.stepMeta,
+                        stageLabel: event.target.value
+                      }
+                    })}
+                    className="h-10 w-full rounded-md border border-zinc-200 bg-white px-3 text-sm text-zinc-900"
+                    placeholder="Например, first wort"
+                  />
+                </label>
+              )}
+
+              {(hopUseType === "whirlpool" || hopUseType === "dip_hop") ? (
+                <label className="space-y-1 text-xs font-medium text-zinc-700">
+                  Температура, °C
+                  <input
+                    type="number"
+                    min={0}
+                    value={draft.stepMeta.temperatureC ?? ""}
+                    onChange={(event) => onChange({
+                      ...draft,
+                      stepMeta: {
+                        ...draft.stepMeta,
+                        temperatureC: event.target.value
+                      }
+                    })}
+                    className="h-10 w-full rounded-md border border-zinc-200 bg-white px-3 text-sm text-zinc-900"
+                  />
+                </label>
+              ) : null}
+            </div>
+          ) : null}
+
+          {draft.category === "yeast" ? (
+            <div className="grid gap-3 sm:grid-cols-2">
+              <label className="space-y-1 text-xs font-medium text-zinc-700">
+                Основная температура брожения, °C
+                <input
+                  type="number"
+                  value={draft.stepMeta.fermentationTempC ?? ""}
+                  onChange={(event) => onChange({
+                    ...draft,
+                    stepMeta: {
+                      ...draft.stepMeta,
+                      fermentationTempC: event.target.value
+                    }
+                  })}
+                  className="h-10 w-full rounded-md border border-zinc-200 bg-white px-3 text-sm text-zinc-900"
+                />
+              </label>
+              {draft.selectedSummary ? (
+                <div className="rounded-xl border border-zinc-100 bg-zinc-50 px-3 py-2 text-xs text-zinc-500">
+                  {draft.selectedSummary}
+                </div>
+              ) : null}
+            </div>
+          ) : null}
+
+          {draft.category === "water_treatment" || draft.category === "consumable" ? (
+            <div className="grid gap-3 sm:grid-cols-2">
+              <label className="space-y-1 text-xs font-medium text-zinc-700">
+                Стадия
+                <select
+                  value={draft.stage}
+                  onChange={(event) => onChange({ ...draft, stage: event.target.value as DesignerIngredient["stage"] })}
+                  className="h-10 w-full rounded-md border border-zinc-200 bg-white px-3 text-sm text-zinc-900"
+                >
+                  {Object.entries(stageLabels).map(([value, label]) => <option key={value} value={value}>{label}</option>)}
+                </select>
+              </label>
+              <label className="space-y-1 text-xs font-medium text-zinc-700">
+                Время, если нужно
+                <input
+                  type="number"
+                  value={draft.stepMeta.timeMinutes ?? ""}
+                  onChange={(event) => onChange({
+                    ...draft,
+                    timeOffset: event.target.value,
+                    stepMeta: {
+                      ...draft.stepMeta,
+                      timeMinutes: event.target.value
+                    }
+                  })}
+                  className="h-10 w-full rounded-md border border-zinc-200 bg-white px-3 text-sm text-zinc-900"
+                  placeholder="минуты"
+                />
+              </label>
+            </div>
+          ) : null}
+        </>
       ) : null}
 
       {fieldError ? <p className="text-sm text-rose-700">{fieldError}</p> : null}
 
-      <div className="flex flex-wrap items-center justify-between gap-2 border-t border-zinc-100 pt-3">
-        <div className="text-xs text-zinc-500">На странице одновременно открыт только один редактор ингредиента.</div>
+      <div className="flex flex-wrap items-center justify-end gap-2 border-t border-zinc-100 pt-3">
         <div className="flex flex-wrap gap-2">
           {onDelete ? (
             <button type="button" onClick={onDelete} className="rounded-md border border-rose-300 bg-white px-3 py-2 text-sm text-rose-700">
@@ -3385,9 +3731,11 @@ function IngredientEditor({
           <button type="button" onClick={onCancel} className="rounded-md border border-zinc-300 bg-white px-3 py-2 text-sm">
             Отмена
           </button>
-          <button type="button" onClick={onSave} className="rounded-md bg-zinc-900 px-3 py-2 text-sm font-medium text-white">
-            {saveLabel}
-          </button>
+          {showRecipeFields ? (
+            <button type="button" onClick={onSave} disabled={saveDisabled} className="rounded-md bg-zinc-900 px-3 py-2 text-sm font-medium text-white disabled:opacity-50">
+              {saveLabel}
+            </button>
+          ) : null}
         </div>
       </div>
     </div>
@@ -3496,7 +3844,14 @@ export function RecipeDesigner({
 
     const selectionCategory = initialIngredientSelection.category
       ?? resolveIngredientCategory({ type: initialIngredientSelection.type });
-    const draft = applySelection(createEmptyIngredient(selectionCategory), initialIngredientSelection);
+    const draft = applySelection(
+      createEmptyIngredient(
+        selectionCategory,
+        "boil",
+        resolveRecipeFermentableSubtype(selectionCategory, initialIngredientSelection.subtype ?? null)
+      ),
+      initialIngredientSelection
+    );
     initialSelectionAppliedRef.current = true;
     setOpenEditor({
       localId: null,
@@ -3668,7 +4023,11 @@ export function RecipeDesigner({
   };
 
   const openAddEditor = (category: IngredientCategory, hopUseType: RecipeHopUseType = "boil") => {
-    const draft = createEmptyIngredient(category, hopUseType);
+    const draft = createEmptyIngredient(
+      category,
+      hopUseType,
+      null
+    );
     maybeOpenEditor({
       localId: null,
       category,
@@ -3888,13 +4247,8 @@ export function RecipeDesigner({
       onCancel={() => closeEditor()}
       onDelete={openEditor.localId ? () => deleteIngredient(openEditor.localId!) : undefined}
       saveLabel={openEditor.localId ? "Сохранить позицию" : "Добавить позицию"}
-      fieldError={
-        !openEditor.draft.ingredientCatalogItemId && !openEditor.draft.userCustomIngredientId
-          ? "Выберите ингредиент."
-          : !openEditor.draft.amountEnteredQuantity.trim()
-            ? "Укажите количество."
-            : null
-      }
+      fieldError={null}
+      saveDisabled={!isIngredientValid(openEditor.draft)}
     />
   ) : null;
 
