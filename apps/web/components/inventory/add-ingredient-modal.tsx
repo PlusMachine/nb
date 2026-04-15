@@ -34,6 +34,7 @@ type Props = {
   initialSelection?: IngredientSuggestionItem | null;
   initialCategory?: IngredientCategory | null;
   initialSubtype?: Extract<IngredientSubtype, "malt" | "fermentable"> | null;
+  initialGroup?: string | null;
   initialQuickStartDataByContext?: IngredientPickerQuickStartResultByContext | null;
 };
 
@@ -104,13 +105,17 @@ export const shouldApplyAddIngredientControlActionOnClick = ({
 const normalizeAddIngredientCategoryValue = (
   value: string | null | undefined
 ): InventoryIngredientCategoryValue | null => (
-  value === "malt"
-    || value === "fermentable"
+  value === "fermentable"
     || value === "hop"
     || value === "yeast"
     || value === "water_treatment"
-    || value === "consumable"
+    || value === "consumable_supply"
+    || value === "consumable_additive"
     ? value
+    : value === "malt"
+      ? "fermentable"
+      : value === "consumable"
+        ? "consumable_additive"
     : null
 );
 
@@ -124,6 +129,32 @@ const readStoredAddIngredientCategoryValue = (): InventoryIngredientCategoryValu
   } catch {
     return null;
   }
+};
+
+const resolveAddIngredientStartFermentableSubtype = ({
+  initialSelection,
+  initialCategory,
+  initialSubtype
+}: {
+  initialSelection?: IngredientSuggestionItem | null;
+  initialCategory?: IngredientCategory | null;
+  initialSubtype?: Extract<IngredientSubtype, "malt" | "fermentable"> | null;
+}) => {
+  if (
+    initialSelection?.category === "fermentable"
+    && (initialSelection.subtype === "malt" || initialSelection.subtype === "fermentable")
+  ) {
+    return initialSelection.subtype;
+  }
+
+  if (
+    initialCategory === "fermentable"
+    && (initialSubtype === "malt" || initialSubtype === "fermentable")
+  ) {
+    return initialSubtype;
+  }
+
+  return null;
 };
 
 const persistAddIngredientCategoryValue = (value: InventoryIngredientCategoryValue) => {
@@ -142,55 +173,70 @@ export const resolveAddIngredientStartCategoryValue = ({
   initialSelection,
   initialCategory,
   initialSubtype,
+  initialGroup,
   rememberedCategoryValue
 }: {
   initialSelection?: IngredientSuggestionItem | null;
   initialCategory?: IngredientCategory | null;
   initialSubtype?: Extract<IngredientSubtype, "malt" | "fermentable"> | null;
+  initialGroup?: string | null;
   rememberedCategoryValue?: InventoryIngredientCategoryValue | null;
 }): InventoryIngredientCategoryValue => {
-  if (initialSelection?.category === "fermentable" && (initialSelection.subtype === "malt" || initialSelection.subtype === "fermentable")) {
-    return initialSelection.subtype;
-  }
-
   if (initialSelection?.category) {
-    return initialSelection.category;
-  }
-
-  if (initialCategory === "fermentable" && (initialSubtype === "malt" || initialSubtype === "fermentable")) {
-    return initialSubtype;
+    return resolveInventoryIngredientCategoryValue({
+      category: initialSelection.category,
+      subtype: initialSelection.subtype ?? null,
+      technicalData: initialSelection.technicalData ?? null,
+      groupName: initialSelection.groupName ?? null,
+      itemKind: initialSelection.itemKind ?? null
+    }) ?? "fermentable";
   }
 
   if (initialCategory) {
-    return initialCategory;
+    return resolveInventoryIngredientCategoryValue({
+      category: initialCategory,
+      subtype: initialSubtype ?? null,
+      group: initialGroup ?? null
+    }) ?? "fermentable";
   }
 
-  return rememberedCategoryValue ?? "malt";
+  return rememberedCategoryValue ?? "fermentable";
 };
 
 export const resolveAddIngredientStartContext = ({
   initialSelection,
   initialCategory,
   initialSubtype,
+  initialGroup,
   rememberedCategoryValue
 }: {
   initialSelection?: IngredientSuggestionItem | null;
   initialCategory?: IngredientCategory | null;
   initialSubtype?: Extract<IngredientSubtype, "malt" | "fermentable"> | null;
+  initialGroup?: string | null;
   rememberedCategoryValue?: InventoryIngredientCategoryValue | null;
 }) => {
   const categoryValue = resolveAddIngredientStartCategoryValue({
     initialSelection,
     initialCategory,
     initialSubtype,
+    initialGroup,
     rememberedCategoryValue
   });
-  const { category, subtype } = resolveInventoryIngredientContextFromCategoryValue(categoryValue);
+  const { category, subtype, group } = resolveInventoryIngredientContextFromCategoryValue(categoryValue);
+  const fermentableSubtype = categoryValue === "fermentable"
+    ? resolveAddIngredientStartFermentableSubtype({
+      initialSelection,
+      initialCategory,
+      initialSubtype
+    }) ?? subtype
+    : subtype;
 
   return {
     categoryValue,
     category,
-    subtype
+    subtype: fermentableSubtype,
+    group
   };
 };
 
@@ -201,6 +247,7 @@ export function AddIngredientModal({
   initialSelection = null,
   initialCategory = null,
   initialSubtype = null,
+  initialGroup = null,
   initialQuickStartDataByContext = null
 }: Props) {
   const router = useRouter();
@@ -208,26 +255,44 @@ export function AddIngredientModal({
     initialSelection,
     initialCategory,
     initialSubtype,
+    initialGroup,
     rememberedCategoryValue: readStoredAddIngredientCategoryValue()
   }).category);
   const [catalogSubtype, setCatalogSubtype] = useState<Extract<IngredientSubtype, "malt" | "fermentable"> | null>(() => resolveAddIngredientStartContext({
     initialSelection,
     initialCategory,
     initialSubtype,
+    initialGroup,
     rememberedCategoryValue: readStoredAddIngredientCategoryValue()
   }).subtype);
+  const [catalogGroup, setCatalogGroup] = useState<string | null>(() => resolveAddIngredientStartContext({
+    initialSelection,
+    initialCategory,
+    initialSubtype,
+    initialGroup,
+    rememberedCategoryValue: readStoredAddIngredientCategoryValue()
+  }).group);
   const [customCategory, setCustomCategory] = useState<IngredientCategory | null>(() => resolveAddIngredientStartContext({
     initialSelection,
     initialCategory,
     initialSubtype,
+    initialGroup,
     rememberedCategoryValue: readStoredAddIngredientCategoryValue()
   }).category);
-  const [customSubtype, setCustomSubtype] = useState<Extract<IngredientSubtype, "malt" | "fermentable"> | null>(() => resolveAddIngredientStartContext({
+  const [customSubtype, setCustomSubtype] = useState<IngredientSubtype | null>(() => resolveAddIngredientStartContext({
     initialSelection,
     initialCategory,
     initialSubtype,
+    initialGroup,
     rememberedCategoryValue: readStoredAddIngredientCategoryValue()
   }).subtype);
+  const [customGroup, setCustomGroup] = useState<string | null>(() => resolveAddIngredientStartContext({
+    initialSelection,
+    initialCategory,
+    initialSubtype,
+    initialGroup,
+    rememberedCategoryValue: readStoredAddIngredientCategoryValue()
+  }).group);
   const [mode, setMode] = useState<Mode>("catalog");
   const [result, setResult] = useState<AddIngredientResult | null>(null);
   const [pending, setPending] = useState(false);
@@ -248,26 +313,29 @@ export function AddIngredientModal({
       initialSelection,
       initialCategory,
       initialSubtype,
+      initialGroup,
       rememberedCategoryValue: readStoredAddIngredientCategoryValue()
     });
 
     setCatalogCategory(startContext.category);
     setCatalogSubtype(startContext.subtype);
+    setCatalogGroup(startContext.group);
     setCustomCategory(startContext.category);
     setCustomSubtype(startContext.subtype);
+    setCustomGroup(startContext.group);
     setMode("catalog");
     setSelectedIngredient(initialSelection);
     setResult(null);
     setPending(false);
-  }, [initialCategory, initialSelection, initialSubtype, open]);
+  }, [initialCategory, initialGroup, initialSelection, initialSubtype, open]);
 
   if (!open) {
     return null;
   }
 
   const selectedCategoryValue: InventoryIngredientCategoryValue | null = mode === "catalog"
-    ? resolveInventoryIngredientCategoryValue({ category: catalogCategory, subtype: catalogSubtype })
-    : resolveInventoryIngredientCategoryValue({ category: customCategory, subtype: customSubtype });
+    ? resolveInventoryIngredientCategoryValue({ category: catalogCategory, subtype: catalogSubtype, group: catalogGroup })
+    : resolveInventoryIngredientCategoryValue({ category: customCategory, subtype: customSubtype, group: customGroup });
   const initialQuickStartData = catalogCategory === "hop"
     ? (initialQuickStartDataByContext?.hop ?? null)
     : catalogCategory === "yeast"
@@ -282,21 +350,34 @@ export function AddIngredientModal({
       : null;
 
   const handleCategoryChange = (nextCategory: InventoryIngredientCategoryValue) => {
-    const { category: nextResolvedCategory, subtype: nextResolvedSubtype } = resolveInventoryIngredientContextFromCategoryValue(nextCategory);
+    const {
+      category: nextResolvedCategory,
+      subtype: nextResolvedSubtype,
+      group: nextResolvedGroup
+    } = resolveInventoryIngredientContextFromCategoryValue(nextCategory);
     persistAddIngredientCategoryValue(nextCategory);
+    const nextCustomSubtype = nextCategory === "consumable_supply"
+      ? "sanitizer"
+      : nextCategory === "consumable_additive"
+        ? "process_aid"
+        : nextResolvedSubtype;
 
     if (mode === "catalog") {
       setCatalogCategory(nextResolvedCategory);
       setCatalogSubtype(nextResolvedSubtype);
+      setCatalogGroup(nextResolvedGroup);
       setCustomCategory(nextResolvedCategory);
-      setCustomSubtype(nextResolvedSubtype);
+      setCustomSubtype(nextCustomSubtype);
+      setCustomGroup(nextResolvedGroup);
       return;
     }
 
     setCustomCategory(nextResolvedCategory);
-    setCustomSubtype(nextResolvedSubtype);
+    setCustomSubtype(nextCustomSubtype);
+    setCustomGroup(nextResolvedGroup);
     setCatalogCategory(nextResolvedCategory);
     setCatalogSubtype(nextResolvedSubtype);
+    setCatalogGroup(nextResolvedGroup);
   };
 
   const handleSuccess = (nextResult: AddIngredientResult) => {
@@ -404,12 +485,14 @@ export function AddIngredientModal({
                 category={catalogCategory}
                 subtype={catalogSubtype}
                 initialQuickStartData={initialQuickStartData}
+                forcedGroup={catalogGroup}
                 preferredCurrency={preferredCurrency}
                 pending={pending}
                 autoFocus
                 initialSelection={initialSelection}
                 fieldErrors={result?.fieldErrors}
                 selectionActionLabel="Изменить выбор"
+                onSubtypeChange={setCatalogSubtype}
                 onSelectedIngredientChange={setSelectedIngredient}
                 onRequestCustom={() => {
                   setSelectedIngredient(null);

@@ -1464,8 +1464,84 @@ describe("inventory service", () => {
 
   it("builds summaries", async () => {
     mockState.selectRows = [
-      { archivedAt: null, normalizedQuantity: 120, catalogType: "hop", customType: null, ingredientCategory: "hop", ingredientSubtype: "hop" },
-      { archivedAt: null, normalizedQuantity: 0, catalogType: null, customType: "consumable", ingredientCategory: "consumable", ingredientSubtype: "fining" }
+      {
+        inventory: {
+          id: "inv-hop-1",
+          userId: "u1",
+          ingredientCatalogItemId: "cat-hop-1",
+          userCustomIngredientId: null,
+          ingredientFamilyId: null,
+          ingredientCategory: "hop",
+          ingredientSubtype: "hop",
+          ingredientDisplayNameSnapshot: "Citra",
+          ingredientDefaultDisplayUnitSnapshot: "g",
+          ingredientMeasurementDimension: "weight",
+          enteredQuantity: 120,
+          enteredUnit: "g",
+          normalizedQuantity: 120,
+          normalizedUnit: "g",
+          unitDimension: "weight",
+          priceInputMode: null,
+          priceInputAmountMinor: null,
+          priceInputCurrency: null,
+          purchasePriceMinor: null,
+          purchaseCurrency: null,
+          purchaseQuantity: null,
+          purchaseQuantityUnit: null,
+          purchaseQuantityNormalized: null,
+          purchaseQuantityNormalizedUnit: null,
+          normalizedUnitCostMinorRub: null,
+          purchasedAt: null,
+          freshnessDate: null,
+          notes: null,
+          archivedAt: null,
+          packageVariantId: null,
+          createdAt: new Date("2025-01-01"),
+          updatedAt: new Date("2025-01-01")
+        },
+        catalog: null,
+        custom: null,
+        packageVariant: null
+      },
+      {
+        inventory: {
+          id: "inv-consumable-1",
+          userId: "u1",
+          ingredientCatalogItemId: null,
+          userCustomIngredientId: "cus-consumable-1",
+          ingredientFamilyId: null,
+          ingredientCategory: "consumable",
+          ingredientSubtype: "fining",
+          ingredientDisplayNameSnapshot: "Irish Moss",
+          ingredientDefaultDisplayUnitSnapshot: "g",
+          ingredientMeasurementDimension: "weight",
+          enteredQuantity: 0,
+          enteredUnit: "g",
+          normalizedQuantity: 0,
+          normalizedUnit: "g",
+          unitDimension: "weight",
+          priceInputMode: null,
+          priceInputAmountMinor: null,
+          priceInputCurrency: null,
+          purchasePriceMinor: null,
+          purchaseCurrency: null,
+          purchaseQuantity: null,
+          purchaseQuantityUnit: null,
+          purchaseQuantityNormalized: null,
+          purchaseQuantityNormalizedUnit: null,
+          normalizedUnitCostMinorRub: null,
+          purchasedAt: null,
+          freshnessDate: null,
+          notes: null,
+          archivedAt: null,
+          packageVariantId: null,
+          createdAt: new Date("2025-01-02"),
+          updatedAt: new Date("2025-01-02")
+        },
+        catalog: null,
+        custom: null,
+        packageVariant: null
+      }
     ];
 
     const summary = await getInventorySummaries("u1");
@@ -1477,5 +1553,8 @@ describe("inventory service", () => {
     expect(summary.byCategory.consumable).toBe(1);
     expect(summary.inStockByCategory.hop).toBe(1);
     expect(summary.inStockByCategory.consumable).toBe(0);
+    expect(summary.byPrimaryGroup.hop).toBe(1);
+    expect(summary.byPrimaryGroup.consumable_additive).toBe(1);
+    expect(summary.inStockByPrimaryGroup.consumable_additive).toBe(0);
   });
 });

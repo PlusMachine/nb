@@ -21,6 +21,7 @@ import {
   buildInventoryToolbarHref,
   hasActiveInventoryFilters,
   inventoryCategoryLabels,
+  inventoryFermentableSubtypeLabels,
   inventoryPrimaryGroupLabels,
   inventorySortLabels,
   resolveInventoryToolbarCounts
@@ -34,11 +35,20 @@ type Props = {
   search: string;
   category: IngredientCategory | "all";
   subtype: "malt" | "fermentable" | null;
+  group?: string | null;
   showFinished: boolean;
   sort: InventorySortOption;
   summary: InventorySummaryDto;
   visibleItemCount?: number;
 };
+
+type PrimaryButtonKey =
+  | "fermentable"
+  | "hop"
+  | "yeast"
+  | "water_treatment"
+  | "consumable_supply"
+  | "consumable_additive";
 
 const searchDebounceMs = 250;
 export const inventorySearchVisibilityThreshold = 12;
@@ -51,7 +61,7 @@ export const shouldShowInventorySearchInput = ({
   visibleItemCount: number;
 }) => Boolean(search.trim()) || visibleItemCount > inventorySearchVisibilityThreshold;
 
-const categoryMeta: Record<IngredientCategory, {
+const categoryMeta: Record<PrimaryButtonKey, {
   icon: React.ComponentType<{ className?: string }>;
   color: string;
   activeColor: string;
@@ -86,16 +96,32 @@ const categoryMeta: Record<IngredientCategory, {
     activeBg: "bg-sky-50",
     activeRing: "ring-sky-300"
   },
-  consumable: {
+  consumable_supply: {
     icon: Package,
     color: "text-zinc-500",
     activeColor: "text-zinc-800",
     activeBg: "bg-zinc-100",
     activeRing: "ring-zinc-300"
+  },
+  consumable_additive: {
+    icon: Package,
+    color: "text-amber-600",
+    activeColor: "text-amber-800",
+    activeBg: "bg-amber-50",
+    activeRing: "ring-amber-300"
   }
 };
 
-export function InventoryToolbar({ search, category, subtype, showFinished, sort, summary, visibleItemCount }: Props) {
+export function InventoryToolbar({
+  search,
+  category,
+  subtype,
+  group = null,
+  showFinished,
+  sort,
+  summary,
+  visibleItemCount
+}: Props) {
   const pathname = usePathname();
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
@@ -111,9 +137,10 @@ export function InventoryToolbar({ search, category, subtype, showFinished, sort
     search,
     category,
     subtype,
+    group,
     showFinished,
     sort
-  }), [category, pathname, search, showFinished, sort, subtype]);
+  }), [category, group, pathname, search, showFinished, sort, subtype]);
 
   const replaceHref = useCallback((href: string) => {
     if (href === currentHref) {
@@ -137,6 +164,7 @@ export function InventoryToolbar({ search, category, subtype, showFinished, sort
         search: trimmedLocalSearch,
         category,
         subtype,
+        group,
         showFinished,
         sort
       }));
@@ -145,15 +173,19 @@ export function InventoryToolbar({ search, category, subtype, showFinished, sort
     return () => {
       window.clearTimeout(timer);
     };
-  }, [category, pathname, replaceHref, search, searchValue, showFinished, sort, subtype]);
+  }, [category, group, pathname, replaceHref, search, searchValue, showFinished, sort, subtype]);
 
   useEffect(() => {
-    if (!sortOpen) return;
+    if (!sortOpen) {
+      return;
+    }
+
     const handleClickOutside = (event: MouseEvent) => {
       if (sortRef.current && !sortRef.current.contains(event.target as Node)) {
         setSortOpen(false);
       }
     };
+
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [sortOpen]);
@@ -162,6 +194,7 @@ export function InventoryToolbar({ search, category, subtype, showFinished, sort
     search: searchValue,
     category,
     subtype,
+    group,
     showFinished,
     sort
   });
@@ -172,84 +205,103 @@ export function InventoryToolbar({ search, category, subtype, showFinished, sort
     search: searchValue,
     visibleItemCount: effectiveVisibleItemCount
   });
-  const primaryButtons = [
-    {
-      key: "malt",
-      label: inventoryPrimaryGroupLabels.malt,
-      count: counts.byFermentableSubtype.malt,
-      active: category === "fermentable" && subtype === "malt",
-      meta: categoryMeta.fermentable,
-      onClick: () => handleSubtypeClick("malt")
-    },
-    {
-      key: "fermentable",
-      label: inventoryPrimaryGroupLabels.fermentable,
-      count: counts.byFermentableSubtype.fermentable,
-      active: category === "fermentable" && subtype === "fermentable",
-      meta: categoryMeta.fermentable,
-      onClick: () => handleSubtypeClick("fermentable")
-    },
-    {
-      key: "hop",
-      label: inventoryCategoryLabels.hop,
-      count: counts.byCategory.hop,
-      active: category === "hop" && subtype === null,
-      meta: categoryMeta.hop,
-      onClick: () => handleCategoryClick("hop")
-    },
-    {
-      key: "yeast",
-      label: inventoryCategoryLabels.yeast,
-      count: counts.byCategory.yeast,
-      active: category === "yeast" && subtype === null,
-      meta: categoryMeta.yeast,
-      onClick: () => handleCategoryClick("yeast")
-    },
-    {
-      key: "water_treatment",
-      label: inventoryCategoryLabels.water_treatment,
-      count: counts.byCategory.water_treatment,
-      active: category === "water_treatment" && subtype === null,
-      meta: categoryMeta.water_treatment,
-      onClick: () => handleCategoryClick("water_treatment")
-    },
-    {
-      key: "consumable",
-      label: inventoryCategoryLabels.consumable,
-      count: counts.byCategory.consumable,
-      active: category === "consumable" && subtype === null,
-      meta: categoryMeta.consumable,
-      onClick: () => handleCategoryClick("consumable")
-    }
-  ] as const;
 
-  const handleCategoryClick = (nextCategory: IngredientCategory | "all") => {
+  const handlePrimaryFilterClick = (nextKey: PrimaryButtonKey) => {
+    const isActive = (
+      (nextKey === "fermentable" && category === "fermentable")
+      || (nextKey === "hop" && category === "hop")
+      || (nextKey === "yeast" && category === "yeast")
+      || (nextKey === "water_treatment" && category === "water_treatment")
+      || (nextKey === "consumable_supply" && category === "consumable" && group === "inventory_supplies")
+      || (nextKey === "consumable_additive" && category === "consumable" && group === "inventory_additives")
+    );
+
+    if (isActive) {
+      replaceHref(buildInventoryToolbarHref(pathname, {
+        search: searchValue,
+        category: "all",
+        subtype: null,
+        group: null,
+        showFinished,
+        sort
+      }));
+      return;
+    }
+
+    const nextState = nextKey === "fermentable"
+      ? { category: "fermentable" as const, subtype: subtype ?? "fermentable", group: null }
+      : nextKey === "consumable_supply"
+        ? { category: "consumable" as const, subtype: null, group: "inventory_supplies" }
+        : nextKey === "consumable_additive"
+          ? { category: "consumable" as const, subtype: null, group: "inventory_additives" }
+          : { category: nextKey, subtype: null, group: null };
+
     replaceHref(buildInventoryToolbarHref(pathname, {
       search: searchValue,
-      category: nextCategory === category ? "all" : nextCategory,
-      subtype: nextCategory === category || nextCategory !== "fermentable" ? null : subtype,
+      category: nextState.category,
+      subtype: nextState.subtype,
+      group: nextState.group,
       showFinished,
       sort
     }));
   };
 
   const handleSubtypeClick = (nextSubtype: "malt" | "fermentable") => {
-    const isActiveSubtype = category === "fermentable" && subtype === nextSubtype;
-
     replaceHref(buildInventoryToolbarHref(pathname, {
       search: searchValue,
-      category: isActiveSubtype ? "all" : "fermentable",
-      subtype: isActiveSubtype ? null : nextSubtype,
+      category: "fermentable",
+      subtype: nextSubtype,
+      group: null,
       showFinished,
       sort
     }));
   };
 
+  const primaryButtons = [
+    {
+      key: "fermentable" as const,
+      label: inventoryPrimaryGroupLabels.fermentable,
+      count: counts.byPrimaryGroup.fermentable,
+      active: category === "fermentable"
+    },
+    {
+      key: "hop" as const,
+      label: inventoryCategoryLabels.hop,
+      count: counts.byPrimaryGroup.hop,
+      active: category === "hop"
+    },
+    {
+      key: "yeast" as const,
+      label: inventoryCategoryLabels.yeast,
+      count: counts.byPrimaryGroup.yeast,
+      active: category === "yeast"
+    },
+    {
+      key: "water_treatment" as const,
+      label: inventoryCategoryLabels.water_treatment,
+      count: counts.byPrimaryGroup.water_treatment,
+      active: category === "water_treatment"
+    },
+    {
+      key: "consumable_supply" as const,
+      label: inventoryPrimaryGroupLabels.consumable_supply,
+      count: counts.byPrimaryGroup.consumable_supply,
+      active: category === "consumable" && group === "inventory_supplies"
+    },
+    {
+      key: "consumable_additive" as const,
+      label: inventoryPrimaryGroupLabels.consumable_additive,
+      count: counts.byPrimaryGroup.consumable_additive,
+      active: category === "consumable" && group === "inventory_additives"
+    }
+  ];
+
   return (
     <section className="space-y-4" aria-label="Фильтры по запасам">
       <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 xl:grid-cols-6">
         {primaryButtons.map((button) => {
-          const Icon = button.meta.icon;
+          const meta = categoryMeta[button.key];
+          const Icon = meta.icon;
           const isDisabled = button.count === 0 && !button.active;
 
           return (
@@ -257,20 +309,20 @@ export function InventoryToolbar({ search, category, subtype, showFinished, sort
               key={button.key}
               type="button"
               disabled={isDisabled}
-              onClick={button.onClick}
+              onClick={() => handlePrimaryFilterClick(button.key)}
               className={`group relative flex flex-col items-center gap-1.5 rounded-xl border px-3 py-3 text-center transition-all ${
                 isDisabled
                   ? "cursor-not-allowed border-zinc-100 bg-zinc-50 text-zinc-300 opacity-60"
                   : button.active
-                  ? `${button.meta.activeBg} ${button.meta.activeRing} ring-2 border-transparent shadow-sm`
-                  : "border-zinc-200 bg-white hover:border-zinc-300 hover:shadow-sm"
+                    ? `${meta.activeBg} ${meta.activeRing} ring-2 border-transparent shadow-sm`
+                    : "border-zinc-200 bg-white hover:border-zinc-300 hover:shadow-sm"
               }`}
             >
-              <Icon className={`h-6 w-6 ${isDisabled ? "text-zinc-300" : button.active ? button.meta.activeColor : button.meta.color} transition-colors`} />
-              <span className={`text-xs font-semibold leading-tight ${isDisabled ? "text-zinc-400" : button.active ? button.meta.activeColor : "text-zinc-700"}`}>
+              <Icon className={`h-6 w-6 ${isDisabled ? "text-zinc-300" : button.active ? meta.activeColor : meta.color} transition-colors`} />
+              <span className={`text-xs font-semibold leading-tight ${isDisabled ? "text-zinc-400" : button.active ? meta.activeColor : "text-zinc-700"}`}>
                 {button.label}
               </span>
-              <span className={`text-[11px] font-medium ${isDisabled ? "text-zinc-400" : button.active ? button.meta.activeColor : "text-zinc-400"}${isDisabled ? "" : " tabular-nums"}`}>
+              <span className={`text-[11px] font-medium ${isDisabled ? "text-zinc-400" : button.active ? meta.activeColor : "text-zinc-400"}${isDisabled ? "" : " tabular-nums"}`}>
                 {isDisabled ? "Пусто" : button.count}
               </span>
             </button>
@@ -278,12 +330,33 @@ export function InventoryToolbar({ search, category, subtype, showFinished, sort
         })}
       </div>
 
+      {category === "fermentable" ? (
+        <div className="flex flex-wrap gap-2" data-testid="inventory-fermentable-subfilters">
+          {(["fermentable", "malt"] as const).map((value) => (
+            <button
+              key={value}
+              type="button"
+              onClick={() => handleSubtypeClick(value)}
+              className={`rounded-full border px-3 py-1.5 text-xs font-medium transition-colors ${
+                subtype === value
+                  ? "border-amber-300 bg-amber-50 text-amber-900"
+                  : "border-zinc-200 bg-white text-zinc-600 hover:border-zinc-300 hover:bg-zinc-50"
+              }`}
+            >
+              {inventoryFermentableSubtypeLabels[value]}
+            </button>
+          ))}
+        </div>
+      ) : null}
+
       <div className={`flex items-center gap-2 ${showSearchInput ? "" : "justify-end"}`}>
         {showSearchInput ? (
           <div className="flex-1">
             <InventorySearchInput
               value={searchValue}
               category={category}
+              subtype={subtype}
+              group={group}
               showFinished={showFinished}
               onValueChange={setSearchValue}
               onSuggestionSelect={(value) => {
@@ -292,6 +365,7 @@ export function InventoryToolbar({ search, category, subtype, showFinished, sort
                   search: value,
                   category,
                   subtype,
+                  group,
                   showFinished,
                   sort
                 }));
@@ -309,6 +383,7 @@ export function InventoryToolbar({ search, category, subtype, showFinished, sort
                   search: searchValue,
                   category,
                   subtype,
+                  group,
                   showFinished: !showFinished,
                   sort
                 }));
@@ -351,6 +426,7 @@ export function InventoryToolbar({ search, category, subtype, showFinished, sort
                         search: searchValue,
                         category,
                         subtype,
+                        group,
                         showFinished,
                         sort: value as InventorySortOption
                       }));
@@ -377,6 +453,7 @@ export function InventoryToolbar({ search, category, subtype, showFinished, sort
                   search: "",
                   category: "all",
                   subtype: null,
+                  group: null,
                   showFinished: defaultInventoryShowFinished,
                   sort: defaultInventorySortOption
                 }));

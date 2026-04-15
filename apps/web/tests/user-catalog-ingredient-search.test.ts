@@ -641,6 +641,7 @@ describe("user catalog ingredient search", () => {
 
     expect(quickStart.recent.map((item) => item.id)).toEqual(["cons-recent"]);
     expect((quickStart.groups ?? []).map((group) => group.value)).toEqual([
+      "process_aid",
       "sanitizer",
       "cleaner",
       "fining",
@@ -817,6 +818,75 @@ describe("user catalog ingredient search", () => {
 
     expect(result.items.map((item) => item.id)).toEqual(["cons-sani-structured"]);
     expect(result.appliedGroup?.value).toBe("sanitizer");
+  });
+
+  it("filters consumables by broad warehouse groups", async () => {
+    mockState.catalogItems = [
+      buildCatalogItem({
+        id: "cons-sani-broad",
+        type: "consumable",
+        category: "consumable",
+        subtype: "sanitizer",
+        itemKind: "sanitizer",
+        sourceCategory: "sanitizer",
+        primaryLabelRu: "Star San",
+        displayName: "Star San",
+        nameRu: "Star San",
+        nameEn: "Star San",
+        technicalData: {
+          type: "consumable",
+          pickerGroup: "sanitizer"
+        },
+        defaultUnit: "ml",
+        defaultDisplayUnit: "ml",
+        allowedUnits: ["ml", "l"],
+        measurementDimension: "volume"
+      }),
+      buildCatalogItem({
+        id: "cons-fining-broad",
+        type: "consumable",
+        category: "consumable",
+        subtype: "fining",
+        itemKind: "fining",
+        sourceCategory: "fining",
+        primaryLabelRu: "Irish Moss",
+        displayName: "Irish Moss",
+        nameRu: "Irish Moss",
+        nameEn: "Irish Moss",
+        technicalData: {
+          type: "consumable",
+          pickerGroup: "fining"
+        },
+        defaultUnit: "g",
+        defaultDisplayUnit: "g",
+        allowedUnits: ["g"],
+        measurementDimension: "weight"
+      })
+    ];
+
+    const supplies = await searchUserCatalogIngredients("user-1", {
+      q: "",
+      category: "consumable",
+      group: "inventory_supplies",
+      limit: 10
+    });
+    const additives = await searchUserCatalogIngredients("user-1", {
+      q: "",
+      category: "consumable",
+      group: "inventory_additives",
+      limit: 10
+    });
+
+    expect(supplies.items.map((item) => item.id)).toEqual(["cons-sani-broad"]);
+    expect(supplies.appliedGroup).toMatchObject({
+      label: "Расходники",
+      value: "inventory_supplies"
+    });
+    expect(additives.items.map((item) => item.id)).toEqual(["cons-fining-broad"]);
+    expect(additives.appliedGroup).toMatchObject({
+      label: "Другие добавки",
+      value: "inventory_additives"
+    });
   });
 
   it("returns immediate malt family-scoped results even when the visible query is empty", async () => {

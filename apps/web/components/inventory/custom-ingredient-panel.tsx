@@ -12,7 +12,7 @@ import { CustomIngredientForm, type CustomIngredientSubmitPayload } from "./cust
 
 type Props = {
   category: IngredientCategory;
-  initialSubtype?: Extract<IngredientSubtype, "malt" | "fermentable"> | null;
+  initialSubtype?: IngredientSubtype | null;
   preferredCurrency: SystemCurrency;
   pending: boolean;
   fieldErrors?: Record<string, string>;

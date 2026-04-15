@@ -23,8 +23,11 @@ const consumableSubtypes = [
   "nutrient",
   "sanitizer",
   "cleaner",
+  "enzyme",
   "antioxidant",
   "fining",
+  "packaging",
+  "gas",
   "other"
 ] as const;
 const waterTreatmentSubtypes = [
@@ -190,11 +193,36 @@ export const normalizeIngredientSubtype = (
   }
 
   if (normalized.includes("process")) return "process_aid";
+  if (
+    normalized.includes("rice_hull")
+    || normalized.includes("rice_husk")
+    || normalized.includes("husk")
+    || normalized.includes("лузг")
+    || normalized.includes("шелух")
+  ) return "process_aid";
   if (normalized.includes("nutrient")) return "nutrient";
   if (normalized.includes("sanitize")) return "sanitizer";
   if (normalized.includes("clean")) return "cleaner";
+  if (normalized.includes("enzyme") || normalized.includes("enzym") || normalized.includes("фермент")) return "enzyme";
   if (normalized.includes("antioxid")) return "antioxidant";
   if (normalized.includes("fining")) return "fining";
+  if (
+    normalized.includes("package")
+    || normalized.includes("bottle")
+    || normalized.includes("cap")
+    || normalized.includes("cork")
+    || normalized.includes("tara")
+    || normalized.includes("тара")
+    || normalized.includes("укупор")
+    || normalized.includes("крыш")
+    || normalized.includes("бутыл")
+  ) return "packaging";
+  if (
+    normalized === "gas"
+    || normalized === "gases"
+    || normalized === "co2"
+    || normalized.includes("углекисл")
+  ) return "gas";
   return "other";
 };
 

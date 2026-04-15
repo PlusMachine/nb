@@ -68,6 +68,9 @@ import {
   buildConsumablePackageSearchLabels,
   canonicalizeConsumablePickerGroup,
   consumablePickerGroupOrder,
+  isConsumableInventoryBroadGroup,
+  resolveConsumableInventoryBroadGroup,
+  resolveConsumableInventoryBroadGroupLabel,
   resolveConsumablePickerGroup,
   resolveConsumablePickerGroupDescription,
   resolveConsumablePickerGroupLabel,
@@ -450,6 +453,10 @@ const resolveIngredientGroupLabel = (
   }
 
   if (category === "consumable") {
+    if (isConsumableInventoryBroadGroup(group)) {
+      return resolveConsumableInventoryBroadGroupLabel(group) ?? group;
+    }
+
     return resolveConsumablePickerGroupLabel(group) ?? group;
   }
 
@@ -485,7 +492,18 @@ const filterItemsByGroup = (
 
   return items.filter((item) => (
     item.category === category
-    && normalizeSearchText(resolveIngredientGroupValue(item) ?? "") === normalizedGroup
+    && (
+      category === "consumable" && isConsumableInventoryBroadGroup(group)
+        ? resolveConsumableInventoryBroadGroup({
+          technicalData: item.technicalData,
+          sourceCategory: item.sourceCategory,
+          subcategory: item.subcategory,
+          groupName: item.groupName,
+          subtype: item.subtype,
+          itemKind: item.itemKind
+        }) === group
+        : normalizeSearchText(resolveIngredientGroupValue(item) ?? "") === normalizedGroup
+    )
   ));
 };
 
@@ -1530,7 +1548,9 @@ export const searchUserCatalogIngredients = async (
   const resolvedGroupValue = query.category === "fermentable"
     ? canonicalizeFermentableQuickStartGroup(query.group)
     : query.category === "consumable"
-      ? canonicalizeConsumablePickerGroup(query.group)
+      ? (isConsumableInventoryBroadGroup(query.group)
+        ? query.group
+        : canonicalizeConsumablePickerGroup(query.group))
       : query.category === "water_treatment"
         ? canonicalizeWaterTreatmentQuickStartGroup(query.group)
     : query.group ?? null;

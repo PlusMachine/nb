@@ -55,35 +55,69 @@ import {
   resolveInventoryShowFinished
 } from "../features/inventory/page-model";
 
+const createInventorySummary = (overrides?: Partial<Parameters<typeof InventoryToolbar>[0]["summary"]>) => ({
+  totalItems: 0,
+  inStockItems: 0,
+  emptyItems: 0,
+  byCategory: { fermentable: 0, hop: 0, yeast: 0, consumable: 0, water_treatment: 0 },
+  inStockByCategory: { fermentable: 0, hop: 0, yeast: 0, consumable: 0, water_treatment: 0 },
+  byPrimaryGroup: {
+    fermentable: 0,
+    hop: 0,
+    yeast: 0,
+    water_treatment: 0,
+    consumable_supply: 0,
+    consumable_additive: 0
+  },
+  inStockByPrimaryGroup: {
+    fermentable: 0,
+    hop: 0,
+    yeast: 0,
+    water_treatment: 0,
+    consumable_supply: 0,
+    consumable_additive: 0
+  },
+  byFermentableSubtype: { malt: 0, fermentable: 0 },
+  inStockByFermentableSubtype: { malt: 0, fermentable: 0 },
+  ...overrides
+});
+
 describe("inventory usability components", () => {
   it("uses the same ingredient category grid labels and subtype mapping as the add modal", () => {
     const html = renderToStaticMarkup(React.createElement(InventoryIngredientCategoryGrid, {
-      value: "malt",
+      value: "fermentable",
       onChange: () => undefined
     }));
 
-    expect(html.indexOf("Солод")).toBeLessThan(html.indexOf("Хмель"));
+    expect(html.indexOf("Сбраживаемые")).toBeLessThan(html.indexOf("Хмель"));
     expect(html.indexOf("Хмель")).toBeLessThan(html.indexOf("Дрожжи"));
-    expect(html.indexOf("Дрожжи")).toBeLessThan(html.indexOf("Сбраживаемое сырье"));
-    expect(html.indexOf("Сбраживаемое сырье")).toBeLessThan(html.indexOf("Водоподготовка"));
+    expect(html.indexOf("Дрожжи")).toBeLessThan(html.indexOf("Водоподготовка"));
     expect(html.indexOf("Водоподготовка")).toBeLessThan(html.indexOf("Расходники"));
-    expect(html).toContain("Солод");
-    expect(html).toContain("Сбраживаемое сырье");
+    expect(html.indexOf("Расходники")).toBeLessThan(html.indexOf("Другие добавки"));
+    expect(html).toContain("Сбраживаемые");
     expect(html).toContain("Хмель");
     expect(html).toContain("Дрожжи");
     expect(html).toContain("Водоподготовка");
     expect(html).toContain("Расходники");
+    expect(html).toContain("Другие добавки");
     expect(html).toContain("text-amber-600");
 
-    expect(resolveInventoryIngredientContextFromCategoryValue("malt")).toEqual({
+    expect(resolveInventoryIngredientContextFromCategoryValue("fermentable")).toEqual({
       category: "fermentable",
-      subtype: "malt"
+      subtype: "fermentable",
+      group: null
+    });
+
+    expect(resolveInventoryIngredientContextFromCategoryValue("consumable_supply")).toEqual({
+      category: "consumable",
+      subtype: null,
+      group: "inventory_supplies"
     });
 
     expect(resolveInventoryIngredientCategoryValue({
       category: "fermentable",
       subtype: "malt"
-    })).toBe("malt");
+    })).toBe("fermentable");
   });
 
   it("renders toolbar controls without submit-era archive UX", () => {
@@ -91,21 +125,24 @@ describe("inventory usability components", () => {
       search: "citra",
       category: "hop",
       subtype: null,
+      group: null,
       showFinished: true,
       sort: "name",
-      summary: {
+      summary: createInventorySummary({
         totalItems: 10,
         inStockItems: 8,
         emptyItems: 2,
         byCategory: { fermentable: 3, hop: 4, yeast: 2, consumable: 1, water_treatment: 0 },
         inStockByCategory: { fermentable: 2, hop: 1, yeast: 2, consumable: 1, water_treatment: 0 },
+        byPrimaryGroup: { fermentable: 3, hop: 4, yeast: 2, water_treatment: 0, consumable_supply: 1, consumable_additive: 0 },
+        inStockByPrimaryGroup: { fermentable: 2, hop: 1, yeast: 2, water_treatment: 0, consumable_supply: 1, consumable_additive: 0 },
         byFermentableSubtype: { malt: 2, fermentable: 1 },
         inStockByFermentableSubtype: { malt: 1, fermentable: 1 }
-      }
+      })
     }));
 
     expect(html).toContain("Фильтры по запасам");
-    expect(html).toContain("Сбраживаемое сырье");
+    expect(html).toContain("Сбраживаемые");
     expect(html).toContain("Хмель");
     expect(html).toContain("Дрожжи");
     expect(html).toContain("Скрыть закончившиеся");
@@ -120,17 +157,20 @@ describe("inventory usability components", () => {
       search: "",
       category: "all",
       subtype: null,
+      group: null,
       showFinished: false,
       sort: "default",
-      summary: {
+      summary: createInventorySummary({
         totalItems: 3,
         inStockItems: 1,
         emptyItems: 2,
         byCategory: { fermentable: 0, hop: 3, yeast: 0, consumable: 0, water_treatment: 0 },
         inStockByCategory: { fermentable: 0, hop: 1, yeast: 0, consumable: 0, water_treatment: 0 },
+        byPrimaryGroup: { fermentable: 0, hop: 3, yeast: 0, water_treatment: 0, consumable_supply: 0, consumable_additive: 0 },
+        inStockByPrimaryGroup: { fermentable: 0, hop: 1, yeast: 0, water_treatment: 0, consumable_supply: 0, consumable_additive: 0 },
         byFermentableSubtype: { malt: 0, fermentable: 0 },
         inStockByFermentableSubtype: { malt: 0, fermentable: 0 }
-      }
+      })
     }));
 
     expect(html).toContain("Показать закончившиеся");
@@ -146,18 +186,21 @@ describe("inventory usability components", () => {
       search: "",
       category: "all",
       subtype: null,
+      group: null,
       showFinished: false,
       sort: "default",
       visibleItemCount: 12,
-      summary: {
+      summary: createInventorySummary({
         totalItems: 12,
         inStockItems: 12,
         emptyItems: 0,
         byCategory: { fermentable: 4, hop: 4, yeast: 2, consumable: 1, water_treatment: 1 },
         inStockByCategory: { fermentable: 4, hop: 4, yeast: 2, consumable: 1, water_treatment: 1 },
+        byPrimaryGroup: { fermentable: 4, hop: 4, yeast: 2, water_treatment: 1, consumable_supply: 0, consumable_additive: 1 },
+        inStockByPrimaryGroup: { fermentable: 4, hop: 4, yeast: 2, water_treatment: 1, consumable_supply: 0, consumable_additive: 1 },
         byFermentableSubtype: { malt: 3, fermentable: 1 },
         inStockByFermentableSubtype: { malt: 3, fermentable: 1 }
-      }
+      })
     }));
 
     expect(html).not.toContain("Поиск ингредиентов...");
@@ -169,20 +212,23 @@ describe("inventory usability components", () => {
       search: "",
       category: "all",
       subtype: null,
+      group: null,
       showFinished: false,
       sort: "default",
-      summary: {
+      summary: createInventorySummary({
         totalItems: 0,
         inStockItems: 0,
         emptyItems: 0,
         byCategory: { fermentable: 0, hop: 0, yeast: 0, consumable: 0, water_treatment: 0 },
         inStockByCategory: { fermentable: 0, hop: 0, yeast: 0, consumable: 0, water_treatment: 0 },
+        byPrimaryGroup: { fermentable: 0, hop: 0, yeast: 0, water_treatment: 0, consumable_supply: 0, consumable_additive: 0 },
+        inStockByPrimaryGroup: { fermentable: 0, hop: 0, yeast: 0, water_treatment: 0, consumable_supply: 0, consumable_additive: 0 },
         byFermentableSubtype: { malt: 0, fermentable: 0 },
         inStockByFermentableSubtype: { malt: 0, fermentable: 0 }
-      }
+      })
     }));
 
-    expect(html).toContain("Сбраживаемое сырье");
+    expect(html).toContain("Сбраживаемые");
     expect(html).toContain("Хмель");
     expect(html).toContain(">Пусто</span>");
     expect(html).toContain("disabled");

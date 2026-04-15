@@ -21,6 +21,7 @@ type Props = {
   initialSelection?: IngredientSuggestionItem | null;
   initialCategory?: IngredientCategory | null;
   initialSubtype?: Extract<IngredientSubtype, "malt" | "fermentable"> | null;
+  initialGroup?: string | null;
   initialQuickStartDataByContext?: IngredientPickerQuickStartResultByContext | null;
   openOnMount?: boolean;
 };
@@ -32,6 +33,7 @@ export function AddIngredientTrigger({
   initialSelection = null,
   initialCategory = null,
   initialSubtype = null,
+  initialGroup = null,
   initialQuickStartDataByContext = null,
   openOnMount = false
 }: Props) {
@@ -54,6 +56,7 @@ export function AddIngredientTrigger({
         initialSelection={initialSelection}
         initialCategory={initialCategory}
         initialSubtype={initialSubtype}
+        initialGroup={initialGroup}
         initialQuickStartDataByContext={initialQuickStartDataByContext}
       />
     </>

@@ -3,11 +3,17 @@
 import React from "react";
 
 import { IngredientPicker } from "@/components/ingredients/ingredient-picker";
-import type { IngredientCategory, IngredientSuggestionItem } from "@/features/ingredients/contracts";
+import type {
+  IngredientCategory,
+  IngredientSuggestionItem,
+  IngredientSubtype
+} from "@/features/ingredients/contracts";
 
 type Props = {
   value: string;
   category: IngredientCategory | "all";
+  subtype?: Extract<IngredientSubtype, "malt" | "fermentable"> | null;
+  group?: string | null;
   showFinished: boolean;
   onValueChange: (value: string) => void;
   onSuggestionSelect: (value: string, item: IngredientSuggestionItem) => void;
@@ -16,17 +22,27 @@ type Props = {
 export const buildInventorySuggestionParams = ({
   q,
   category,
+  subtype,
+  group,
   showFinished,
   limit
 }: {
   q: string;
   category?: IngredientCategory;
+  subtype?: Extract<IngredientSubtype, "malt" | "fermentable"> | null;
+  group?: string | null;
   showFinished: boolean;
   limit: number;
 }) => {
   const params = new URLSearchParams({ q: q.trim(), limit: String(limit) });
   if (category) {
     params.set("category", category);
+  }
+  if (subtype) {
+    params.set("subtype", subtype);
+  }
+  if (group) {
+    params.set("group", group);
   }
   if (showFinished) {
     params.set("finished", "true");
@@ -38,6 +54,8 @@ export const buildInventorySuggestionParams = ({
 export function InventorySearchInput({
   value,
   category,
+  subtype = null,
+  group = null,
   showFinished,
   onValueChange,
   onSuggestionSelect
@@ -59,6 +77,8 @@ export function InventorySearchInput({
         const params = buildInventorySuggestionParams({
           q,
           category: nextCategory,
+          subtype,
+          group,
           showFinished,
           limit
         });

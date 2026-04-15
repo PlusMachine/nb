@@ -60,7 +60,7 @@ export type CustomIngredientSubmitPayload = {
 
 type Props = {
   category: IngredientCategory;
-  initialSubtype?: Extract<IngredientSubtype, "malt" | "fermentable"> | null;
+  initialSubtype?: IngredientSubtype | null;
   initialDisplayName?: string;
   preferredCurrency?: SystemCurrency;
   pending: boolean;
@@ -267,7 +267,7 @@ export function CustomIngredientForm({
   }), [category, resolvedSubtype, resolvedType, technicalData]);
   const placeholderKind = resolveCustomIngredientPlaceholderKind(category, resolvedSubtype);
   const [enteredUnit, setEnteredUnit] = useState<InventoryUnit>(unitProfile.defaultUnit);
-  const subtypeOptions = category === "fermentable" || !shouldShowCustomIngredientSubtypeField(category)
+  const subtypeOptions = !shouldShowCustomIngredientSubtypeField(category)
     ? []
     : getCustomIngredientSubtypeOptions(category);
   const showInventoryFields = mode === "inventory";

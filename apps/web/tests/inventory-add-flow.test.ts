@@ -659,18 +659,18 @@ describe("inventory add-flow", () => {
     expect(html).toContain("Загружаем недавние...");
   });
 
-  it("prefers remembered category for a fresh add context and falls back to malt", () => {
+  it("prefers remembered category for a fresh add context and falls back to fermentables", () => {
     expect(resolveAddIngredientStartCategoryValue({
       rememberedCategoryValue: "hop"
     })).toBe("hop");
 
-    expect(resolveAddIngredientStartCategoryValue({})).toBe("malt");
+    expect(resolveAddIngredientStartCategoryValue({})).toBe("fermentable");
 
     expect(resolveAddIngredientStartCategoryValue({
       initialCategory: "fermentable",
       initialSubtype: "malt",
       rememberedCategoryValue: "hop"
-    })).toBe("malt");
+    })).toBe("fermentable");
   });
 
   it("keeps typed picker text across category switches until an ingredient is selected", () => {

@@ -12,6 +12,7 @@ export async function GET(request: Request) {
       q: searchParams.get("q") ?? "",
       category: searchParams.get("category") ?? undefined,
       subtype: searchParams.get("subtype") ?? undefined,
+      group: searchParams.get("group") ?? undefined,
       type: searchParams.get("type") ?? undefined,
       limit: Number(searchParams.get("limit") ?? "10"),
       includeEmpty: searchParams.get("finished") === "true",

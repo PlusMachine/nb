@@ -12,6 +12,8 @@ const mocks = vi.hoisted(() => ({
     emptyItems: 1,
     byCategory: { fermentable: 1, hop: 2, yeast: 0, water_treatment: 0, consumable: 0 },
     inStockByCategory: { fermentable: 1, hop: 1, yeast: 0, water_treatment: 0, consumable: 0 },
+    byPrimaryGroup: { fermentable: 1, hop: 2, yeast: 0, water_treatment: 0, consumable_supply: 0, consumable_additive: 0 },
+    inStockByPrimaryGroup: { fermentable: 1, hop: 1, yeast: 0, water_treatment: 0, consumable_supply: 0, consumable_additive: 0 },
     byFermentableSubtype: { malt: 1, fermentable: 0 },
     inStockByFermentableSubtype: { malt: 1, fermentable: 0 }
   }))
@@ -54,6 +56,8 @@ describe("inventory page filters", () => {
 
     expect(mocks.listInventoryForUser).toHaveBeenCalledWith("u-1", {
       category: "hop",
+      subtype: undefined,
+      group: undefined,
       includeEmpty: true,
       stockState: "all",
       sort: "name",
@@ -70,6 +74,7 @@ describe("inventory page filters", () => {
     expect(mocks.listInventoryForUser).toHaveBeenLastCalledWith("u-1", {
       category: "hop",
       subtype: undefined,
+      group: undefined,
       includeEmpty: false,
       stockState: "in_stock",
       sort: "default",

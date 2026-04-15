@@ -31,6 +31,16 @@ export type InventoryStockState = (typeof inventoryStockStates)[number];
 export const inventorySortOptions = ["default", "name", "quantity", "updated", "best_before", "price"] as const;
 export type InventorySortOption = (typeof inventorySortOptions)[number];
 
+export const inventoryPrimaryGroupKeys = [
+  "fermentable",
+  "hop",
+  "yeast",
+  "water_treatment",
+  "consumable_supply",
+  "consumable_additive"
+] as const;
+export type InventoryPrimaryGroupKey = (typeof inventoryPrimaryGroupKeys)[number];
+
 const nullablePositiveInteger = z.preprocess((value) => {
   if (value == null) {
     return null;
@@ -337,6 +347,7 @@ export const inventoryListQuerySchema = z.object({
   includeEmpty: z.coerce.boolean().default(false),
   category: z.enum(ingredientCategories).optional(),
   subtype: z.enum(["malt", "fermentable"]).optional(),
+  group: z.string().trim().min(1).max(120).optional(),
   type: z.enum(ingredientTypes).optional(),
   stockState: z.enum(inventoryStockStates).default("all"),
   sort: z.enum(inventorySortOptions).default("default"),
@@ -423,6 +434,8 @@ export type InventorySummaryDto = {
   emptyItems: number;
   byCategory: Record<IngredientCategory, number>;
   inStockByCategory: Record<IngredientCategory, number>;
+  byPrimaryGroup: Record<InventoryPrimaryGroupKey, number>;
+  inStockByPrimaryGroup: Record<InventoryPrimaryGroupKey, number>;
   byFermentableSubtype: {
     malt: number;
     fermentable: number;

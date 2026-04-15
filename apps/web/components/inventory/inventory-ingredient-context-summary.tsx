@@ -4,9 +4,11 @@ import React from "react";
 
 import type {
   IngredientCategory,
+  IngredientTechnicalData,
   IngredientSubtype,
   IngredientSuggestionItem
 } from "@/features/ingredients/contracts";
+import { resolveConsumableInventoryBroadGroup } from "@/features/ingredients/consumables";
 import type { InventorySourceDto } from "@/features/inventory/contracts";
 
 const inventoryIngredientContextCategoryLabels: Record<IngredientCategory, string> = {
@@ -22,10 +24,16 @@ type ContextSourceLabelStyle = "from" | "short";
 
 export const resolveInventoryIngredientContextCategoryLabel = ({
   category,
-  subtype
+  subtype,
+  technicalData,
+  groupName,
+  itemKind
 }: {
   category?: IngredientCategory | null;
   subtype?: IngredientSubtype | null;
+  technicalData?: IngredientTechnicalData | null;
+  groupName?: string | null;
+  itemKind?: string | null;
 }) => {
   if (!category) {
     return null;
@@ -39,6 +47,17 @@ export const resolveInventoryIngredientContextCategoryLabel = ({
     if (subtype === "fermentable") {
       return "Сбраживаемое сырье";
     }
+  }
+
+  if (category === "consumable") {
+    return resolveConsumableInventoryBroadGroup({
+      technicalData,
+      groupName,
+      subtype,
+      itemKind
+    }) === "inventory_supplies"
+      ? "Расходники"
+      : "Другие добавки";
   }
 
   return inventoryIngredientContextCategoryLabels[category];
@@ -61,15 +80,27 @@ export const resolveInventoryIngredientContextSourceLabel = ({
 export const resolveInventoryIngredientContextSummary = ({
   category,
   subtype,
+  technicalData,
+  groupName,
+  itemKind,
   source,
   sourceLabelStyle = "from"
 }: {
   category?: IngredientCategory | null;
   subtype?: IngredientSubtype | null;
+  technicalData?: IngredientTechnicalData | null;
+  groupName?: string | null;
+  itemKind?: string | null;
   source: ContextSourceKind;
   sourceLabelStyle?: ContextSourceLabelStyle;
 }) => {
-  const categoryLabel = resolveInventoryIngredientContextCategoryLabel({ category, subtype });
+  const categoryLabel = resolveInventoryIngredientContextCategoryLabel({
+    category,
+    subtype,
+    technicalData,
+    groupName,
+    itemKind
+  });
   const sourceLabel = resolveInventoryIngredientContextSourceLabel({
     source,
     style: sourceLabelStyle
@@ -79,25 +110,31 @@ export const resolveInventoryIngredientContextSummary = ({
 };
 
 export const resolveInventoryIngredientContextSummaryFromSuggestion = (
-  item: Pick<IngredientSuggestionItem, "category" | "subtype" | "source">,
+  item: Pick<IngredientSuggestionItem, "category" | "subtype" | "source" | "technicalData" | "groupName" | "itemKind">,
   options?: {
     sourceLabelStyle?: ContextSourceLabelStyle;
   }
 ) => resolveInventoryIngredientContextSummary({
   category: item.category,
   subtype: item.subtype ?? null,
+  technicalData: item.technicalData ?? null,
+  groupName: item.groupName ?? null,
+  itemKind: item.itemKind ?? null,
   source: item.source,
   sourceLabelStyle: options?.sourceLabelStyle
 });
 
 export const resolveInventoryIngredientContextSummaryFromInventorySource = (
-  source: Pick<InventorySourceDto, "category" | "subtype" | "sourceKind">,
+  source: Pick<InventorySourceDto, "category" | "subtype" | "sourceKind" | "technicalData" | "groupName" | "itemKind">,
   options?: {
     sourceLabelStyle?: ContextSourceLabelStyle;
   }
 ) => resolveInventoryIngredientContextSummary({
   category: source.category,
   subtype: source.subtype ?? null,
+  technicalData: source.technicalData ?? null,
+  groupName: source.groupName ?? null,
+  itemKind: source.itemKind ?? null,
   source: source.sourceKind,
   sourceLabelStyle: options?.sourceLabelStyle
 });

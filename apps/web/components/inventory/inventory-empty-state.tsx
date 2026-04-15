@@ -16,6 +16,7 @@ type Props = {
   search?: string;
   category?: IngredientCategory;
   subtype?: Extract<IngredientSubtype, "malt" | "fermentable"> | null;
+  group?: string | null;
   showFinished?: boolean;
   initialQuickStartDataByContext?: IngredientPickerQuickStartResultByContext | null;
 };
@@ -26,6 +27,7 @@ export function InventoryEmptyState({
   search = "",
   category,
   subtype = null,
+  group = null,
   showFinished = false,
   initialQuickStartDataByContext = null
 }: Props) {
@@ -51,7 +53,8 @@ export function InventoryEmptyState({
   let Icon = SlidersHorizontal;
   const filterLabel = resolveInventoryFilterLabel({
     category,
-    subtype
+    subtype,
+    group
   });
 
   if (search) {

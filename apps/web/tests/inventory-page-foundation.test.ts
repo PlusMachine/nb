@@ -44,6 +44,22 @@ const baseSummary: InventorySummaryDto = {
     consumable: 0,
     water_treatment: 0
   },
+  byPrimaryGroup: {
+    fermentable: 2,
+    hop: 2,
+    yeast: 0,
+    water_treatment: 0,
+    consumable_supply: 0,
+    consumable_additive: 0
+  },
+  inStockByPrimaryGroup: {
+    fermentable: 2,
+    hop: 1,
+    yeast: 0,
+    water_treatment: 0,
+    consumable_supply: 0,
+    consumable_additive: 0
+  },
   byFermentableSubtype: {
     malt: 1,
     fermentable: 1
@@ -169,11 +185,10 @@ describe("inventory page foundation", () => {
       currencyRates: { RUB: 100, USD: 7900, EUR: 9170 }
     }));
 
-    expect(grouped.map((group) => group.key)).toEqual(["malt", "fermentable", "hop"]);
-    expect(grouped.find((group) => group.key === "fermentable")?.items.map((item) => item.id)).toEqual(["inv-2"]);
+    expect(grouped.map((group) => group.key)).toEqual(["fermentable", "hop"]);
+    expect(grouped.find((group) => group.key === "fermentable")?.items.map((item) => item.id)).toEqual(["inv-1", "inv-2"]);
     expect(grouped.find((group) => group.key === "hop")?.items.map((item) => item.id)).toEqual(["inv-3", "inv-4"]);
-    expect(html).toContain("Солод");
-    expect(html).toContain("Сбраживаемое сырье");
+    expect(html).toContain("Сбраживаемые");
     expect(html).toContain("Хмель");
     expect(html).not.toContain("Закончившиеся");
     expect(html).toContain("Пилснер солод");
@@ -209,7 +224,7 @@ describe("inventory page foundation", () => {
     expect(html).toContain("Всего позиций");
     expect(html).toContain("В наличии");
     expect(html).toContain("Пустые");
-    expect(html).toContain("Ферментируемые");
+    expect(html).toContain("Сбраживаемые");
     expect(html).toContain("Хмель");
   });
 

@@ -38,6 +38,22 @@ export const canonicalizeConsumablePickerGroup = (value?: string | null) => {
   }
 
   if (
+    normalized === "process_aid"
+    || normalized === "process_aids"
+    || normalized === "filter_aid"
+    || normalized === "filter_aids"
+    || normalized.includes("process")
+    || normalized.includes("rice_hull")
+    || normalized.includes("rice_husk")
+    || normalized.includes("лузг")
+    || normalized.includes("шелух")
+    || normalized.includes("filter")
+    || normalized.startsWith("тех")
+  ) {
+    return "process_aid";
+  }
+
+  if (
     normalized === "fining"
     || normalized === "finings"
     || normalized.includes("clarif")
@@ -137,6 +153,7 @@ const dedupeStrings = (values: Array<string | null | undefined>) => {
 };
 
 export const consumablePickerGroupOrder = [
+  "process_aid",
   "sanitizer",
   "cleaner",
   "fining",
@@ -148,6 +165,7 @@ export const consumablePickerGroupOrder = [
 ] as const;
 
 export const consumablePickerGroupLabels: Record<string, string> = {
+  process_aid: "Тех. добавки",
   sanitizer: "Санитайзеры",
   cleaner: "Мойка",
   fining: "Осветление",
@@ -159,6 +177,7 @@ export const consumablePickerGroupLabels: Record<string, string> = {
 };
 
 export const consumablePickerGroupDescriptions: Record<string, string> = {
+  process_aid: "Рисовая лузга, фильтрующие и процессные добавки",
   sanitizer: "No-rinse, йодофор и CIP-санитайзеры",
   cleaner: "Щелочная, кислородная и кислотная мойка",
   fining: "Киповое и постферментационное осветление",
@@ -194,9 +213,19 @@ export const resolveConsumablePickerGroup = (source: {
     source.subtype ?? null,
     source.itemKind ?? null
   ];
+  let fallbackGroup: string | null = null;
 
   for (const candidate of candidates) {
     const explicitGroup = canonicalizeConsumablePickerGroup(candidate);
+    if (!explicitGroup) {
+      continue;
+    }
+
+    if (explicitGroup === "process_aid") {
+      fallbackGroup ??= explicitGroup;
+      continue;
+    }
+
     if (explicitGroup) {
       return explicitGroup;
     }
@@ -206,7 +235,69 @@ export const resolveConsumablePickerGroup = (source: {
     return "packaging";
   }
 
+  return fallbackGroup;
+};
+
+export const consumableInventoryBroadGroupValues = [
+  "inventory_supplies",
+  "inventory_additives"
+] as const;
+
+export type ConsumableInventoryBroadGroupValue = (typeof consumableInventoryBroadGroupValues)[number];
+
+export const consumableInventorySupplyGroups = [
+  "sanitizer",
+  "cleaner",
+  "packaging",
+  "gas"
+] as const;
+
+export const consumableInventoryAdditiveGroups = [
+  "process_aid",
+  "fining",
+  "enzyme",
+  "nutrient",
+  "antioxidant",
+  "other"
+] as const;
+
+const consumableInventorySupplyGroupSet = new Set<string>(consumableInventorySupplyGroups);
+const consumableInventoryAdditiveGroupSet = new Set<string>(consumableInventoryAdditiveGroups);
+
+export const isConsumableInventoryBroadGroup = (
+  value?: string | null
+): value is ConsumableInventoryBroadGroupValue => (
+  value === "inventory_supplies" || value === "inventory_additives"
+);
+
+export const resolveConsumableInventoryBroadGroupLabel = (
+  value?: string | null
+) => {
+  if (value === "inventory_supplies") {
+    return "Расходники";
+  }
+
+  if (value === "inventory_additives") {
+    return "Другие добавки";
+  }
+
   return null;
+};
+
+export const resolveConsumableInventoryBroadGroup = (
+  source: Parameters<typeof resolveConsumablePickerGroup>[0]
+) => {
+  const resolvedGroup = resolveConsumablePickerGroup(source);
+
+  if (resolvedGroup && consumableInventorySupplyGroupSet.has(resolvedGroup)) {
+    return "inventory_supplies" as const;
+  }
+
+  if (resolvedGroup && consumableInventoryAdditiveGroupSet.has(resolvedGroup)) {
+    return "inventory_additives" as const;
+  }
+
+  return "inventory_additives" as const;
 };
 
 export const resolveConsumablePickerGroupLabel = (value?: string | null) => {

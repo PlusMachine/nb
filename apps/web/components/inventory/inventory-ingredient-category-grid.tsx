@@ -5,10 +5,18 @@ import { Droplets, FlaskConical, Hop, Package, Wheat } from "lucide-react";
 
 import type {
   IngredientCategory,
+  IngredientTechnicalData,
   IngredientSubtype
 } from "@/features/ingredients/contracts";
+import {
+  isConsumableInventoryBroadGroup,
+  resolveConsumableInventoryBroadGroup
+} from "@/features/ingredients/consumables";
 
-export type InventoryIngredientCategoryValue = IngredientCategory | "malt" | "fermentable";
+export type InventoryIngredientCategoryValue =
+  | IngredientCategory
+  | "consumable_supply"
+  | "consumable_additive";
 
 const categoryOptions: Array<{
   value: InventoryIngredientCategoryValue;
@@ -16,12 +24,12 @@ const categoryOptions: Array<{
   icon: React.ComponentType<{ className?: string }>;
   iconClassName: string;
 }> = [
-  { value: "malt", label: "Солод", icon: Wheat, iconClassName: "text-amber-600" },
+  { value: "fermentable", label: "Сбраживаемые", icon: Wheat, iconClassName: "text-amber-600" },
   { value: "hop", label: "Хмель", icon: Hop, iconClassName: "text-emerald-600" },
   { value: "yeast", label: "Дрожжи", icon: FlaskConical, iconClassName: "text-violet-600" },
-  { value: "fermentable", label: "Сбраживаемое сырье", icon: Wheat, iconClassName: "text-amber-600" },
   { value: "water_treatment", label: "Водоподготовка", icon: Droplets, iconClassName: "text-sky-600" },
-  { value: "consumable", label: "Расходники", icon: Package, iconClassName: "text-zinc-500" }
+  { value: "consumable_supply", label: "Расходники", icon: Package, iconClassName: "text-zinc-500" },
+  { value: "consumable_additive", label: "Другие добавки", icon: Package, iconClassName: "text-amber-600" }
 ];
 
 export const resolveInventoryIngredientContextFromCategoryValue = (
@@ -29,31 +37,57 @@ export const resolveInventoryIngredientContextFromCategoryValue = (
 ): {
   category: IngredientCategory;
   subtype: Extract<IngredientSubtype, "malt" | "fermentable"> | null;
+  group: string | null;
 } => {
-  const nextIsSubtype = value === "malt" || value === "fermentable";
-
   return {
-    category: nextIsSubtype ? "fermentable" : value,
-    subtype: nextIsSubtype ? value : null
+    category: value === "consumable_supply" || value === "consumable_additive"
+      ? "consumable"
+      : value,
+    subtype: value === "fermentable" ? "fermentable" : null,
+    group: value === "consumable_supply"
+      ? "inventory_supplies"
+      : value === "consumable_additive"
+        ? "inventory_additives"
+        : null
   };
 };
 
 export const resolveInventoryIngredientCategoryValue = ({
   category,
-  subtype
-}: {
+  subtype,
+  group,
+  technicalData,
+  groupName,
+  itemKind
+  }: {
   category?: IngredientCategory | null;
   subtype?: IngredientSubtype | null;
+  group?: string | null;
+  technicalData?: IngredientTechnicalData | null;
+  groupName?: string | null;
+  itemKind?: string | null;
 }): InventoryIngredientCategoryValue | null => {
   if (!category) {
     return null;
   }
 
-  if (
-    category === "fermentable"
-    && (subtype === "malt" || subtype === "fermentable")
-  ) {
-    return subtype;
+  if (category === "fermentable") {
+    return "fermentable";
+  }
+
+  if (category === "consumable") {
+    const resolvedGroup = isConsumableInventoryBroadGroup(group)
+      ? group
+      : resolveConsumableInventoryBroadGroup({
+        technicalData,
+        groupName,
+        subtype,
+        itemKind
+      });
+
+    return resolvedGroup === "inventory_supplies"
+      ? "consumable_supply"
+      : "consumable_additive";
   }
 
   return category;

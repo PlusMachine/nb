@@ -15,21 +15,21 @@ type Props = {
 };
 
 const groupIcons = {
-  malt: Wheat,
   fermentable: Wheat,
   hop: Hop,
   yeast: FlaskConical,
   water_treatment: Droplets,
-  consumable: Package
+  consumable_supply: Package,
+  consumable_additive: Package
 };
 
 const groupColors = {
-  malt: "text-amber-600",
   fermentable: "text-amber-600",
   hop: "text-emerald-600",
   yeast: "text-violet-600",
   water_treatment: "text-sky-600",
-  consumable: "text-zinc-500"
+  consumable_supply: "text-zinc-500",
+  consumable_additive: "text-amber-600"
 };
 
 export function GroupedInventoryList({

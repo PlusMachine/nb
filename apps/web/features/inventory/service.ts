@@ -44,6 +44,10 @@ import {
 } from "../ingredients/source-linkage";
 import { readCustomIngredientMetadata } from "../ingredients/custom-metadata";
 import {
+  isConsumableInventoryBroadGroup,
+  resolveConsumableInventoryBroadGroup,
+} from "../ingredients/consumables";
+import {
   resolveIngredientCategory,
   resolveIngredientSubtype,
   resolveLegacyIngredientType
@@ -55,6 +59,7 @@ import {
   buildInventoryCostDisplay,
   formatInventoryQuantityForDisplay
 } from "./display";
+import { resolveInventoryPrimaryGroup } from "./page-model";
 import {
   getInventoryUnitDimension,
   normalizeInventoryMeasurementForProfile,
@@ -119,6 +124,22 @@ const ensureSourceLinkage = (ingredientCatalogItemId?: string | null, userCustom
   if (!result.success) {
     throw new Error("INVALID_SOURCE_LINKAGE");
   }
+};
+
+const matchesInventoryConsumableGroup = (
+  item: Pick<InventoryListItemDto, "ingredientSubtype" | "source">,
+  group?: string
+) => {
+  if (!group || !isConsumableInventoryBroadGroup(group)) {
+    return true;
+  }
+
+  return resolveConsumableInventoryBroadGroup({
+    technicalData: item.source.technicalData,
+    groupName: item.source.groupName ?? null,
+    subtype: item.source.subtype ?? item.ingredientSubtype ?? null,
+    itemKind: item.source.itemKind ?? null
+  }) === group;
 };
 
 const buildInventoryWhere = (userId: string, includeArchived: boolean) => and(
@@ -1501,6 +1522,10 @@ export const listInventoryForUser = async (userId: string, query: unknown = {}) 
     items = items.filter((item) => (item.source.subtype ?? item.ingredientSubtype ?? null) === parsed.subtype);
   }
 
+  if (parsed.category === "consumable" && parsed.group) {
+    items = items.filter((item) => matchesInventoryConsumableGroup(item, parsed.group));
+  }
+
   if (parsed.stockState === "in_stock") {
     items = items.filter((item) => item.normalizedQuantity > 0);
   } else if (parsed.stockState === "empty") {
@@ -1636,11 +1661,15 @@ export const searchInventorySuggestions = async (
 
 export const getInventorySummaries = async (userId: string): Promise<InventorySummaryDto> => {
   const rows = await db.select({
-    archivedAt: userIngredients.archivedAt,
-    normalizedQuantity: userIngredients.normalizedQuantity,
-    ingredientCategory: userIngredients.ingredientCategory,
-    ingredientSubtype: userIngredients.ingredientSubtype
-  }).from(userIngredients).where(eq(userIngredients.userId, userId));
+    inventory: userIngredients,
+    catalog: ingredients,
+    custom: userCustomIngredients,
+    packageVariant: ingredientPackageVariants
+  }).from(userIngredients)
+    .leftJoin(ingredients, eq(userIngredients.ingredientCatalogItemId, ingredients.id))
+    .leftJoin(userCustomIngredients, eq(userIngredients.userCustomIngredientId, userCustomIngredients.id))
+    .leftJoin(ingredientPackageVariants, eq(userIngredients.packageVariantId, ingredientPackageVariants.id))
+    .where(eq(userIngredients.userId, userId));
 
   const summary: InventorySummaryDto = {
     totalItems: 0,
@@ -1660,6 +1689,22 @@ export const getInventorySummaries = async (userId: string): Promise<InventorySu
       consumable: 0,
       water_treatment: 0
     },
+    byPrimaryGroup: {
+      fermentable: 0,
+      hop: 0,
+      yeast: 0,
+      water_treatment: 0,
+      consumable_supply: 0,
+      consumable_additive: 0
+    },
+    inStockByPrimaryGroup: {
+      fermentable: 0,
+      hop: 0,
+      yeast: 0,
+      water_treatment: 0,
+      consumable_supply: 0,
+      consumable_additive: 0
+    },
     byFermentableSubtype: {
       malt: 0,
       fermentable: 0
@@ -1671,19 +1716,21 @@ export const getInventorySummaries = async (userId: string): Promise<InventorySu
   };
 
   for (const row of rows) {
-    if (row.archivedAt) {
+    const item = mapInventoryRow(row);
+
+    if (item.archivedAt) {
       continue;
     }
 
     summary.totalItems += 1;
-    const isInStock = row.normalizedQuantity > 0;
+    const isInStock = item.normalizedQuantity > 0;
     if (isInStock) {
       summary.inStockItems += 1;
     } else {
       summary.emptyItems += 1;
     }
 
-    const category = row.ingredientCategory;
+    const category = item.ingredientCategory ?? item.source.category ?? "consumable";
     if (category && category in summary.byCategory) {
       summary.byCategory[category as keyof typeof summary.byCategory] += 1;
       if (isInStock) {
@@ -1691,8 +1738,14 @@ export const getInventorySummaries = async (userId: string): Promise<InventorySu
       }
     }
 
+    const primaryGroup = resolveInventoryPrimaryGroup(item);
+    summary.byPrimaryGroup[primaryGroup] += 1;
+    if (isInStock) {
+      summary.inStockByPrimaryGroup[primaryGroup] += 1;
+    }
+
     if (category === "fermentable") {
-      const normalizedSubtype = normalizeStoredSubtype("fermentable", row.ingredientSubtype);
+      const normalizedSubtype = normalizeStoredSubtype("fermentable", item.ingredientSubtype ?? item.source.subtype);
       if (normalizedSubtype === "malt") {
         summary.byFermentableSubtype.malt += 1;
         if (isInStock) {

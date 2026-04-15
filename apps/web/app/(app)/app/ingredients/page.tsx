@@ -7,7 +7,6 @@ import { InventoryToolbar } from "@/components/inventory/inventory-toolbar";
 import {
   buildInventoryToolbarHref,
   defaultInventorySortOption,
-  defaultInventoryShowFinished,
   hasActiveInventoryFilters,
   resolveInventoryShowFinished
 } from "@/features/inventory/page-model";
@@ -59,6 +58,11 @@ const parseSubtype = (value: string | undefined): Extract<IngredientSubtype, "ma
   value === "malt" || value === "fermentable" ? value : undefined
 );
 
+const parseGroup = (value: string | undefined): string | undefined => {
+  const normalized = value?.trim();
+  return normalized ? normalized : undefined;
+};
+
 const parseShowFinished = (
   finishedValue: string | undefined,
   legacyStockValue: string | undefined
@@ -84,7 +88,12 @@ export default async function MyIngredientsPage({ searchParams }: Props) {
     typeof resolvedParams.category === "string" ? resolvedParams.category : undefined,
     typeof resolvedParams.type === "string" ? resolvedParams.type : undefined
   );
-  const subtype = parseSubtype(typeof resolvedParams.subtype === "string" ? resolvedParams.subtype : undefined);
+  const parsedSubtype = parseSubtype(typeof resolvedParams.subtype === "string" ? resolvedParams.subtype : undefined)
+    ?? (typeof resolvedParams.type === "string" && resolvedParams.type === "malt" ? "malt" : undefined);
+  const subtype = category === "fermentable"
+    ? (parsedSubtype ?? "fermentable")
+    : parsedSubtype;
+  const group = parseGroup(typeof resolvedParams.group === "string" ? resolvedParams.group : undefined);
   const requestedShowFinished = parseShowFinished(
     typeof resolvedParams.finished === "string" ? resolvedParams.finished : undefined,
     typeof resolvedParams.stock === "string" ? resolvedParams.stock : undefined
@@ -97,6 +106,7 @@ export default async function MyIngredientsPage({ searchParams }: Props) {
     listInventoryForUser(user.id, {
       category,
       subtype,
+      group,
       includeEmpty: requestedShowFinished,
       stockState: requestedShowFinished ? "all" : "in_stock",
       sort,
@@ -116,6 +126,7 @@ export default async function MyIngredientsPage({ searchParams }: Props) {
       search: rawSearch,
       category: category ?? "all",
       subtype: subtype ?? null,
+      group: group ?? null,
       showFinished: false,
       sort
     }));
@@ -126,6 +137,7 @@ export default async function MyIngredientsPage({ searchParams }: Props) {
     search: rawSearch,
     category: category ?? "all",
     subtype: subtype ?? null,
+    group: group ?? null,
     showFinished,
     sort
   });
@@ -151,6 +163,7 @@ export default async function MyIngredientsPage({ searchParams }: Props) {
               ? initialSelection.subtype
               : (subtype ?? null)
           }
+          initialGroup={group ?? null}
           openOnMount={Boolean(initialSelection)}
         />
       </section>
@@ -159,6 +172,7 @@ export default async function MyIngredientsPage({ searchParams }: Props) {
         search={rawSearch}
         category={category ?? "all"}
         subtype={subtype ?? null}
+        group={group ?? null}
         showFinished={showFinished}
         sort={sort}
         summary={summary}
@@ -173,6 +187,7 @@ export default async function MyIngredientsPage({ searchParams }: Props) {
             search={rawSearch}
             category={category}
             subtype={subtype ?? null}
+            group={group ?? null}
             showFinished={showFinished}
             initialQuickStartDataByContext={initialQuickStartDataByContext}
           />

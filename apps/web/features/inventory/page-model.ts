@@ -4,55 +4,57 @@ import type {
   IngredientType
 } from "../ingredients/contracts";
 import { ingredientTypes } from "../ingredients/contracts";
-import { ingredientCategoryLabels } from "../ingredients/presentation";
+import {
+  isConsumableInventoryBroadGroup,
+  resolveConsumableInventoryBroadGroup,
+  resolveConsumableInventoryBroadGroupLabel
+} from "../ingredients/consumables";
 import {
   resolveIngredientCategory,
   resolveIngredientSubtype
 } from "../ingredients/taxonomy";
 import type {
   InventoryListItemDto,
+  InventoryPrimaryGroupKey,
   InventorySortOption,
   InventorySummaryDto
 } from "./contracts";
+import { inventoryPrimaryGroupKeys } from "./contracts";
 
 export const inventoryCategoryOrder: IngredientCategory[] = ["fermentable", "hop", "yeast", "water_treatment", "consumable"];
 
 export const inventoryCategoryLabels: Record<IngredientCategory, string> = {
-  fermentable: ingredientCategoryLabels.fermentable,
-  hop: ingredientCategoryLabels.hop,
-  yeast: ingredientCategoryLabels.yeast,
-  water_treatment: ingredientCategoryLabels.water_treatment,
-  consumable: ingredientCategoryLabels.consumable
+  fermentable: "Сбраживаемые",
+  hop: "Хмель",
+  yeast: "Дрожжи",
+  water_treatment: "Водоподготовка",
+  consumable: "Расходники и добавки"
 };
 
-export const inventoryPrimaryGroupOrder = [
-  "malt",
-  "fermentable",
-  "hop",
-  "yeast",
-  "water_treatment",
-  "consumable"
-] as const;
+export const inventoryFermentableSubtypeLabels: Record<Extract<IngredientSubtype, "malt" | "fermentable">, string> = {
+  malt: "Солод",
+  fermentable: "Сбраживаемое сырье"
+};
 
-export type InventoryPrimaryGroupKey = (typeof inventoryPrimaryGroupOrder)[number];
+export const inventoryPrimaryGroupOrder: InventoryPrimaryGroupKey[] = [...inventoryPrimaryGroupKeys];
 
 export const inventoryPrimaryGroupLabels: Record<InventoryPrimaryGroupKey, string> = {
-  malt: "Солод",
-  fermentable: "Сбраживаемое сырье",
+  fermentable: inventoryCategoryLabels.fermentable,
   hop: inventoryCategoryLabels.hop,
   yeast: inventoryCategoryLabels.yeast,
   water_treatment: inventoryCategoryLabels.water_treatment,
-  consumable: inventoryCategoryLabels.consumable
+  consumable_supply: "Расходники",
+  consumable_additive: "Другие добавки"
 };
 
 // Legacy compatibility for older admin/internal selectors that still use IngredientType.
 export const inventoryTypeOrder: IngredientType[] = [...ingredientTypes];
 export const inventoryTypeLabels: Record<IngredientType, string> = {
   malt: "Солод",
-  fermentable: "Ферментируемые",
+  fermentable: "Сбраживаемые",
   hop: "Хмель",
   yeast: "Дрожжи",
-  consumable: "Расходники",
+  consumable: "Расходники и добавки",
   water_treatment: "Водоподготовка"
 };
 
@@ -108,6 +110,25 @@ const resolveInventoryItemSubtype = (item: {
   })
 );
 
+export const resolveInventoryConsumablePrimaryGroup = (item: {
+  ingredientSubtype?: IngredientSubtype | null;
+  source: {
+    technicalData?: InventoryListItemDto["source"]["technicalData"] | null;
+    groupName?: string | null;
+    subtype?: IngredientSubtype | null;
+    itemKind?: string | null;
+  };
+}): Extract<InventoryPrimaryGroupKey, "consumable_supply" | "consumable_additive"> => (
+  resolveConsumableInventoryBroadGroup({
+    technicalData: item.source.technicalData,
+    groupName: item.source.groupName ?? null,
+    subtype: item.source.subtype ?? item.ingredientSubtype ?? null,
+    itemKind: item.source.itemKind ?? null
+  }) === "inventory_supplies"
+    ? "consumable_supply"
+    : "consumable_additive"
+);
+
 export const resolveInventoryPrimaryGroup = (item: {
   ingredientCategory?: IngredientCategory | null;
   ingredientSubtype?: IngredientSubtype | null;
@@ -115,30 +136,43 @@ export const resolveInventoryPrimaryGroup = (item: {
     category?: IngredientCategory | null;
     subtype?: IngredientSubtype | null;
     type: IngredientType;
+    technicalData?: InventoryListItemDto["source"]["technicalData"] | null;
+    groupName?: string | null;
+    itemKind?: string | null;
   };
 }): InventoryPrimaryGroupKey => {
   const category = resolveInventoryItemCategory(item);
 
-  if (category === "hop" || category === "yeast" || category === "water_treatment" || category === "consumable") {
-    return category;
+  if (category === "consumable") {
+    return resolveInventoryConsumablePrimaryGroup(item);
   }
 
-  return resolveInventoryItemSubtype(item) === "malt" ? "malt" : "fermentable";
+  if (category === "fermentable") {
+    return "fermentable";
+  }
+
+  return category;
 };
 
 export const resolveInventoryFilterLabel = ({
   category = "all",
-  subtype = null
+  subtype = null,
+  group = null
 }: {
   category?: IngredientCategory | "all";
   subtype?: "malt" | "fermentable" | null;
+  group?: string | null;
 }): string | null => {
   if (category === "all") {
     return null;
   }
 
+  if (category === "consumable" && group && isConsumableInventoryBroadGroup(group)) {
+    return resolveConsumableInventoryBroadGroupLabel(group);
+  }
+
   if (category === "fermentable" && subtype) {
-    return inventoryPrimaryGroupLabels[subtype];
+    return inventoryFermentableSubtypeLabels[subtype];
   }
 
   return inventoryCategoryLabels[category];
@@ -173,12 +207,12 @@ export const groupInventoryItems = (items: InventoryListItemDto[]): InventoryGro
 };
 
 export const inventorySummaryRows = (summary: InventorySummaryDto) => (
-  inventoryCategoryOrder
-    .filter((category) => summary.byCategory[category] > 0)
-    .map((category) => ({
-      category,
-      label: inventoryCategoryLabels[category],
-      count: summary.byCategory[category]
+  inventoryPrimaryGroupOrder
+    .filter((group) => summary.byPrimaryGroup[group] > 0)
+    .map((group) => ({
+      category: group,
+      label: inventoryPrimaryGroupLabels[group],
+      count: summary.byPrimaryGroup[group]
     }))
 );
 
@@ -186,6 +220,7 @@ type InventoryToolbarState = {
   search?: string;
   category?: IngredientCategory | "all";
   subtype?: "malt" | "fermentable" | null;
+  group?: string | null;
   showFinished?: boolean;
   sort?: InventorySortOption;
 };
@@ -194,12 +229,14 @@ export const hasActiveInventoryFilters = ({
   search = "",
   category = "all",
   subtype = null,
+  group = null,
   showFinished = defaultInventoryShowFinished,
   sort = defaultInventorySortOption
 }: InventoryToolbarState) => (
   Boolean(search.trim())
   || category !== "all"
   || subtype !== null
+  || Boolean(group)
   || showFinished !== defaultInventoryShowFinished
   || sort !== defaultInventorySortOption
 );
@@ -210,6 +247,7 @@ export const buildInventoryToolbarHref = (
     search = "",
     category = "all",
     subtype = null,
+    group = null,
     showFinished = defaultInventoryShowFinished,
     sort = defaultInventorySortOption
   }: InventoryToolbarState
@@ -229,6 +267,10 @@ export const buildInventoryToolbarHref = (
     params.set("subtype", subtype);
   }
 
+  if (group) {
+    params.set("group", group);
+  }
+
   if (showFinished !== defaultInventoryShowFinished) {
     params.set("finished", "true");
   }
@@ -242,6 +284,6 @@ export const buildInventoryToolbarHref = (
 };
 
 export const resolveInventoryToolbarCounts = (summary: InventorySummaryDto, showFinished: boolean) => ({
-  byCategory: showFinished ? summary.byCategory : summary.inStockByCategory,
+  byPrimaryGroup: showFinished ? summary.byPrimaryGroup : summary.inStockByPrimaryGroup,
   byFermentableSubtype: showFinished ? summary.byFermentableSubtype : summary.inStockByFermentableSubtype
 });

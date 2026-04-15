@@ -19,12 +19,14 @@ import {
 import { InventoryPriceInput } from "@/components/inventory/inventory-price-input";
 import type {
   IngredientCategory,
+  IngredientConsumableGroupRefinement,
   IngredientPickerQuickStartResult,
   IngredientPickerQuickStartResultByContext,
   IngredientSubtype,
   IngredientSuggestionItem,
   IngredientType
 } from "@/features/ingredients/contracts";
+import { resolveConsumableInventoryBroadGroupLabel } from "@/features/ingredients/consumables";
 import { resolveIngredientDisplayNames } from "@/features/ingredients/presentation";
 import { resolveIngredientCategory, resolveLegacyIngredientType } from "@/features/ingredients/taxonomy";
 import type { InventoryListItemDto } from "@/features/inventory/contracts";
@@ -33,6 +35,7 @@ import {
   resolveInventoryMeasurementForDisplay
 } from "@/features/inventory/display";
 import { resolveInventoryPackEquivalent } from "@/features/inventory/pack";
+import { inventoryFermentableSubtypeLabels } from "@/features/inventory/page-model";
 import type { InventoryPriceInputMode } from "@/features/inventory/purchase-cost";
 import {
   getInventoryUnitInputStep,
@@ -56,6 +59,7 @@ type FormState = {
   type: IngredientType;
   category: IngredientCategory;
   subtype: IngredientSubtype | null;
+  group: string | null;
   familyId: string | null;
   pickerValue: string;
   selectedDisplayName: string;
@@ -126,8 +130,20 @@ export const resolveInventoryEditorInitialSelection = (
   measurementDimension: source.measurementDimension as IngredientSuggestionItem["measurementDimension"],
   derivedFromIngredientId: source.derivedFromIngredientId ?? null,
   derivedFromDisplayName: source.derivedFromDisplayName ?? null,
+  groupName: source.groupName ?? null,
+  itemKind: source.itemKind ?? null,
   source: source.sourceKind === "catalog" ? "catalog" : "custom"
 });
+
+const resolveInventoryEditorBroadGroup = (
+  categoryValue: ReturnType<typeof resolveInventoryIngredientCategoryValue>
+) => (
+  categoryValue === "consumable_supply"
+    ? "inventory_supplies"
+    : categoryValue === "consumable_additive"
+      ? "inventory_additives"
+      : null
+);
 
 const createFormState = (
   item: InventoryListItemDto,
@@ -152,11 +168,20 @@ const createFormState = (
   const displayPriceMinor = storedPriceInputAmountMinor != null && storedPriceInputCurrency
     ? convertCurrencyMinor(storedPriceInputAmountMinor, storedPriceInputCurrency, preferredCurrency, currencyRates)
     : storedPriceInputAmountMinor;
+  const categoryValue = resolveInventoryIngredientCategoryValue({
+    category: item.source.category ?? resolveIngredientCategory({ type: item.source.type }),
+    subtype: item.source.subtype ?? null,
+    technicalData: item.source.technicalData ?? null,
+    groupName: item.source.groupName ?? null,
+    itemKind: item.source.itemKind ?? null
+  });
+  const group = resolveInventoryEditorBroadGroup(categoryValue);
 
   return {
     type: item.source.type,
     category: item.source.category ?? resolveIngredientCategory({ type: item.source.type }),
     subtype: item.source.subtype ?? null,
+    group,
     familyId: item.source.familyId ?? null,
     pickerValue: item.source.displayName,
     selectedDisplayName: item.source.displayName,
@@ -299,10 +324,21 @@ export function InventoryItemDetailsEditor({
     : null;
   const selectionCategoryValue = resolveInventoryIngredientCategoryValue({
     category: form.category,
-    subtype: form.subtype
+    subtype: form.subtype,
+    group: form.group
   });
   const pickerSubtype = form.subtype === "malt" || form.subtype === "fermentable"
     ? form.subtype
+    : null;
+  const forcedGroupRefinement: IngredientConsumableGroupRefinement | null = form.group
+    ? {
+      type: "consumable_group",
+      label: resolveConsumableInventoryBroadGroupLabel(form.group) ?? form.group,
+      normalizedLabel: form.group,
+      value: form.group,
+      count: 0,
+      score: 0
+    }
     : null;
   const initialQuickStartData = resolveInventoryEditorQuickStartData({
     category: form.category,
@@ -467,7 +503,11 @@ export function InventoryItemDetailsEditor({
                     <InventoryIngredientCategoryGrid
                       value={selectionCategoryValue}
                       onChange={(nextCategoryValue) => {
-                        const { category: nextCategory, subtype: nextSubtype } = resolveInventoryIngredientContextFromCategoryValue(nextCategoryValue);
+                        const {
+                          category: nextCategory,
+                          subtype: nextSubtype,
+                          group: nextGroup
+                        } = resolveInventoryIngredientContextFromCategoryValue(nextCategoryValue);
                         const nextUnitProfile = resolveHumanFacingInventoryUnitProfile({
                           category: nextCategory,
                           subtype: nextSubtype
@@ -476,9 +516,10 @@ export function InventoryItemDetailsEditor({
                         setOptionalOpen(false);
                         setForm((current) => ({
                           ...current,
-                          type: resolveLegacyIngredientType({ category: nextCategory }),
+                          type: resolveLegacyIngredientType({ category: nextCategory, subtype: nextSubtype }),
                           category: nextCategory,
                           subtype: nextSubtype,
+                          group: nextGroup,
                           familyId: null,
                           pickerValue: "",
                           selectedDisplayName: "",
@@ -495,10 +536,43 @@ export function InventoryItemDetailsEditor({
 
                 {showPickerStage ? (
                   <section className="space-y-2" data-testid="inventory-editor-picker-stage">
+                    {form.category === "fermentable" ? (
+                      <div className="flex flex-wrap gap-2" data-testid="inventory-editor-fermentable-subtype-switch">
+                        {(["fermentable", "malt"] as const).map((value) => (
+                          <button
+                            key={value}
+                            type="button"
+                            onClick={() => {
+                              const nextUnitProfile = resolveHumanFacingInventoryUnitProfile({
+                                category: "fermentable",
+                                subtype: value
+                              });
+                              setForm((current) => ({
+                                ...current,
+                                type: resolveLegacyIngredientType({ category: "fermentable", subtype: value }),
+                                subtype: value,
+                                enteredUnit: nextUnitProfile.defaultUnit
+                              }));
+                              setResult(null);
+                              setPickerFocusSignal((current) => current + 1);
+                            }}
+                            className={`rounded-full border px-3 py-1.5 text-xs font-medium transition-colors ${
+                              pickerSubtype === value
+                                ? "border-amber-300 bg-amber-50 text-amber-900"
+                                : "border-zinc-200 bg-white text-zinc-600 hover:border-zinc-300 hover:bg-zinc-50"
+                            }`}
+                          >
+                            {inventoryFermentableSubtypeLabels[value]}
+                          </button>
+                        ))}
+                      </div>
+                    ) : null}
                     <label className="text-sm font-medium text-zinc-900">Ингредиент</label>
                     <IngredientPicker
                       category={form.category}
                       subtype={pickerSubtype}
+                      forcedGroup={forcedGroupRefinement}
+                      hideForcedGroupChip
                       value={form.pickerValue}
                       initialQuickStartData={initialQuickStartData}
                       enableQuickStart
@@ -514,12 +588,22 @@ export function InventoryItemDetailsEditor({
                       onSelect={(selected) => {
                         const nextUnitProfile = resolveInventoryEditorUnitProfile(form, item.source, selected);
                         const displayNames = resolveIngredientDisplayNames(selected);
+                        const nextCategory = selected.category ?? form.category;
+                        const nextSubtype = selected.subtype ?? null;
+                        const nextGroup = resolveInventoryEditorBroadGroup(resolveInventoryIngredientCategoryValue({
+                          category: nextCategory,
+                          subtype: nextSubtype,
+                          technicalData: selected.technicalData ?? null,
+                          groupName: selected.groupName ?? null,
+                          itemKind: selected.itemKind ?? null
+                        }));
                         setSelectedSuggestion(selected);
                         setForm((current) => ({
                           ...current,
                           type: selected.type,
-                          category: selected.category ?? current.category,
-                          subtype: selected.subtype ?? null,
+                          category: nextCategory,
+                          subtype: nextSubtype,
+                          group: nextGroup,
                           familyId: selected.familyId ?? null,
                           pickerValue: displayNames.primaryName,
                           selectedDisplayName: displayNames.primaryName,

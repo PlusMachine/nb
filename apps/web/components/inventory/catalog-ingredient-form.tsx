@@ -13,14 +13,17 @@ import {
 } from "@/components/inventory/inventory-optional-disclosure";
 import type {
   IngredientCategory,
+  IngredientConsumableGroupRefinement,
   IngredientPickerQuickStartAvailability,
   IngredientPickerQuickStartResult,
   IngredientTechnicalData,
   IngredientSubtype,
   IngredientSuggestionItem
 } from "@/features/ingredients/contracts";
+import { resolveConsumableInventoryBroadGroupLabel } from "@/features/ingredients/consumables";
 import { resolveIngredientDisplayNames } from "@/features/ingredients/presentation";
 import { resolveIngredientTechnicalDataColorRangeEbc } from "@/features/ingredients/technical-fields";
+import { inventoryFermentableSubtypeLabels } from "@/features/inventory/page-model";
 import type { InventoryPriceInputMode } from "@/features/inventory/purchase-cost";
 import {
   inventoryUnitLabels,
@@ -75,10 +78,12 @@ type Props = {
   fieldErrors?: Record<string, string>;
   hidePicker?: boolean;
   selectionActionLabel?: string;
+  forcedGroup?: string | null;
   onSubmit: (payload: CatalogIngredientSubmitPayload) => Promise<void>;
   onRequestCustom: () => void;
   onSelectionCleared?: () => void;
   onSelectedIngredientChange?: (selected: IngredientSuggestionItem | null) => void;
+  onSubtypeChange?: (subtype: Extract<IngredientSubtype, "malt" | "fermentable">) => void;
 };
 
 const createInitialCommonFields = (category?: IngredientCategory): InventoryCommonFields => {
@@ -511,10 +516,12 @@ export function CatalogIngredientForm({
   fieldErrors,
   hidePicker = false,
   selectionActionLabel = "Изменить ингредиент",
+  forcedGroup = null,
   onSubmit,
   onRequestCustom,
   onSelectionCleared,
-  onSelectedIngredientChange
+  onSelectedIngredientChange,
+  onSubtypeChange
 }: Props) {
   const [selected, setSelected] = useState<IngredientSuggestionItem | null>(() => resolveInitialSelectionForContext({
     category,
@@ -564,6 +571,16 @@ export function CatalogIngredientForm({
     hidePicker,
     selected
   });
+  const forcedGroupRefinement: IngredientConsumableGroupRefinement | null = forcedGroup
+    ? {
+      type: "consumable_group",
+      label: resolveConsumableInventoryBroadGroupLabel(forcedGroup) ?? forcedGroup,
+      normalizedLabel: forcedGroup,
+      value: forcedGroup,
+      count: 0,
+      score: 0
+    }
+    : null;
   const hasTechnicalOverrides = hasCatalogIngredientTechnicalOverrides({
     selected,
     overrides: batchOverrides
@@ -779,11 +796,31 @@ export function CatalogIngredientForm({
     >
       {showPickerStage ? (
         <section className="space-y-2" data-testid="catalog-picker-stage">
+          {category === "fermentable" && onSubtypeChange ? (
+            <div className="flex flex-wrap gap-2" data-testid="catalog-fermentable-subtype-switch">
+              {(["fermentable", "malt"] as const).map((value) => (
+                <button
+                  key={value}
+                  type="button"
+                  onClick={() => onSubtypeChange(value)}
+                  className={`rounded-full border px-3 py-1.5 text-xs font-medium transition-colors ${
+                    subtype === value
+                      ? "border-amber-300 bg-amber-50 text-amber-900"
+                      : "border-zinc-200 bg-white text-zinc-600 hover:border-zinc-300 hover:bg-zinc-50"
+                  }`}
+                >
+                  {inventoryFermentableSubtypeLabels[value]}
+                </button>
+              ))}
+            </div>
+          ) : null}
           <label className="text-sm font-medium text-zinc-900">Ингредиент</label>
           <IngredientPicker
             value={pickerValue}
             category={category}
             subtype={subtype}
+            forcedGroup={forcedGroupRefinement}
+            hideForcedGroupChip
             initialQuickStartData={initialQuickStartData}
             initialQuickStartAvailability={initialQuickStartAvailability}
             hydrateRecentSelectionsOnInit
