@@ -100,11 +100,11 @@ describe("inventory usability components", () => {
     expect(html).toContain("Водоподготовка");
     expect(html).toContain("Расходники");
     expect(html).toContain("Другие добавки");
-    expect(html).toContain("text-amber-600");
+    expect(html).toMatch(/text-(amber-800|orange-500)/);
 
     expect(resolveInventoryIngredientContextFromCategoryValue("fermentable")).toEqual({
       category: "fermentable",
-      subtype: "fermentable",
+      subtype: null,
       group: null
     });
 
@@ -118,6 +118,45 @@ describe("inventory usability components", () => {
       category: "fermentable",
       subtype: "malt"
     })).toBe("fermentable");
+  });
+
+  it("renders fermentable business chips and split consumable chips in the toolbar", () => {
+    const fermentableHtml = renderToStaticMarkup(React.createElement(InventoryToolbar, {
+      search: "",
+      category: "fermentable",
+      subtype: null,
+      group: null,
+      showFinished: false,
+      sort: "default",
+      summary: createInventorySummary({
+        byPrimaryGroup: { fermentable: 5, hop: 0, yeast: 0, water_treatment: 0, consumable_supply: 0, consumable_additive: 0 },
+        inStockByPrimaryGroup: { fermentable: 5, hop: 0, yeast: 0, water_treatment: 0, consumable_supply: 0, consumable_additive: 0 }
+      })
+    }));
+
+    const consumableHtml = renderToStaticMarkup(React.createElement(InventoryToolbar, {
+      search: "",
+      category: "consumable",
+      subtype: null,
+      group: "inventory_supplies",
+      showFinished: false,
+      sort: "default",
+      summary: createInventorySummary({
+        byPrimaryGroup: { fermentable: 0, hop: 0, yeast: 0, water_treatment: 0, consumable_supply: 4, consumable_additive: 4 },
+        inStockByPrimaryGroup: { fermentable: 0, hop: 0, yeast: 0, water_treatment: 0, consumable_supply: 4, consumable_additive: 4 }
+      })
+    }));
+
+    expect(fermentableHtml).toContain("Солод");
+    expect(fermentableHtml).toContain("Неосоложенка");
+    expect(fermentableHtml).toContain("Концентраты");
+    expect(fermentableHtml).toContain("Сахара и сиропы");
+    expect(fermentableHtml).toContain("Фрукты и соки");
+
+    expect(consumableHtml).toContain("Санитайзеры");
+    expect(consumableHtml).toContain("Мойка");
+    expect(consumableHtml).toContain("Тара и укупорка");
+    expect(consumableHtml).toContain("Газы");
   });
 
   it("renders toolbar controls without submit-era archive UX", () => {
@@ -823,11 +862,11 @@ describe("inventory usability components", () => {
       currencyRates: { RUB: 100, USD: 7900, EUR: 9170 }
     }));
 
-    expect(html).toContain('<option value="pack" selected="">pack (пачка)</option>');
-    expect(html).toContain("1 pack (11 g)");
+    expect(html).toContain('<option value="pack" selected="">пачка 11g</option>');
+    expect(html).not.toContain("1 pack (11 g)");
     expect(html).toContain("Fermentis");
     expect(html).toContain("Атт. 78%");
-    expect(html).toContain("18-24°C");
+    expect(html).toContain("18–24°C");
   });
 
   it("renders canadian flag for lallemand yeast instead of fallback stripes", () => {

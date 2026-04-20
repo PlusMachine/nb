@@ -27,6 +27,15 @@ const slugify = (value: string) => (
     .toLowerCase()
 );
 
+// Keep this slug format aligned with the BJCP article routes in @nb/content.
+const slugifyBjcpArticleSegment = (value: string) => (
+  value
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .replace(/-{2,}/g, "-")
+);
+
 const parseNumericRange = (value: string | null | undefined): NumericRange | null => {
   if (!value) {
     return null;
@@ -120,3 +129,29 @@ export const getBeerStyleById = (id: string | null | undefined) => (
 export const getStyleRangeById = (id: string | null | undefined) => (
   id ? styleRangesById.get(id) ?? null : null
 );
+
+export const buildBjcpArticleSlug = (
+  style: Pick<BeerStyle, "id" | "bjcpId" | "name"> | null | undefined
+) => {
+  if (!style || style.bjcpId === "LEGACY") {
+    return null;
+  }
+
+  const titleSlug = slugifyBjcpArticleSegment(style.name);
+  const rawId = style.id === style.bjcpId ? style.bjcpId : `${style.bjcpId}-${style.name}`;
+  const idSlug = slugifyBjcpArticleSegment(rawId);
+  if (!idSlug) {
+    return null;
+  }
+
+  if (!titleSlug || idSlug.endsWith(titleSlug)) {
+    return `bjcp-${idSlug}`;
+  }
+
+  return `bjcp-${idSlug}-${titleSlug}`;
+};
+
+export const getBjcpArticleHrefByStyleId = (id: string | null | undefined) => {
+  const slug = buildBjcpArticleSlug(getBeerStyleById(id));
+  return slug ? `/bjcp/${slug}` : null;
+};

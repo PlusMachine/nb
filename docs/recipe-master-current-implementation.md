@@ -1,6 +1,6 @@
 # Мастер рецептов: текущее состояние
 
-Дата актуализации: 2026-04-14.
+Дата актуализации: 2026-04-18.
 
 Документ описывает фактическое состояние мастера рецептов после pass `Recipe Master UX Simplification + Water/Equipment Fix`. Основная цель текущего UI: быстро собрать базовый рецепт, а воду, оборудование, импорт, старт варки и тонкие расчетные настройки держать в компактных secondary flows.
 
@@ -151,7 +151,8 @@ Live preview flow:
 
 1. Через debounce 400 мс вызывается `previewRecipeDraftAction(savePayload)`.
 2. Preview обновляет OG/FG/ABV/IBU/color/style fit независимо от autosave.
-3. Если выбран BJCP style, preview показывает `В стиле` или `Отклонения`.
+3. FG в preview считается как прогноз, но в normal state подается спокойно: helper только когда расчета нет, `Прогноз по умолчанию` только для fallback-сценария без usable yeast attenuation, короткие ручные подписи только для override-режимов.
+4. Если выбран BJCP style, preview показывает `В стиле` или `Отклонения`.
 
 Publication flow:
 
@@ -181,7 +182,13 @@ Checklist для публикации:
 - IBU;
 - ABV;
 - стиль;
+- под FG — только мягкий helper/label в реально важных состояниях (`Добавьте сбраживаемое`, `Прогноз по умолчанию`, `Ручная attenuation`, `Ручной FG`);
+- advanced controls FG открываются только по маленькой шестеренке / info icon внутри карточки FG и не меняют высоту шапки;
 - поля объема, эффективности и времени кипячения.
+
+Продуктовый принцип для FG:
+
+`FG должен оставаться обычным расчетным показателем, а не отдельным центром внимания. Подробности расчета и ручные коррекции открываются только по запросу.`
 
 Правый блок `Расчёт показателей` показывает треки по:
 
@@ -569,7 +576,10 @@ Flow:
 - cold crash;
 - conditioning.
 
-`processMeta` сохраняется в recipe. На текущем этапе process profile не меняет OG/FG/ABV/IBU/color.
+`processMeta` сохраняется в recipe.
+
+- `mashProfile` теперь участвует в FG calculation через выбор главной паузы и practical correction fermentability;
+- `fermentationProfile` по-прежнему сохраняется как process plan, но не является прямым драйвером OG/FG/ABV/IBU/color.
 
 ## 14. Описание и заметки
 
@@ -647,7 +657,69 @@ Fermentables:
 
 - gravity from potential PPG or fallback;
 - color from technical data or fallback;
-- current FG still uses fixed attenuation estimate.
+- OG по-прежнему считается из fermentables, efficiency и batch volume;
+- FG теперь uses progressive estimate: default -> mash-adjusted -> yeast-adjusted -> manual override.
+
+### FG / КП: модель прогноза
+
+FG в мастере рецептов — это прогноз, а не лабораторно гарантированная конечная плотность.
+
+Порядок работы модели:
+
+1. Пока нет fermentables или OG не считается, FG не показывается и UI отдает `—` с helper `Добавьте сбраживаемое`.
+2. Как только появляются fermentables и считается OG, мастер уже показывает FG по default estimate.
+3. Если дрожжи еще не выбраны, базовая attenuation = `75%`.
+4. Если в `processMeta.mashProfile.steps` есть mash profile, модель выбирает главную паузу:
+   - самый длинный mash step в диапазоне `62–70°C`;
+   - если такого шага нет, первый mash step.
+5. Главная пауза дает practical correction:
+   - `mashAdjPctPoints = clamp((67 - mainMashTempC) * 0.75, -4, 4)`.
+6. Grain bill добавляет practical grist corrections по доле gravity points, а не по массе:
+   - simple sugars: `simpleSugarAdj = min(simpleSugarSharePct * 0.20, 3.0)`;
+   - crystal / caramel / dextrin: `crystalDextrinAdj = min(crystalDextrinSharePct * 0.10, 2.5)`;
+   - lactose / maltodextrin: `lactoseAdj = min(lactoseSharePct * 0.35, 4.0)`.
+7. Если выбраны дрожжи и у них есть attenuation:
+   - диапазон `min/max` превращается в midpoint для main estimate;
+   - single attenuation используется как single value fallback.
+8. Base attenuation собирается так:
+   - `manualAttenuationOverridePct ?? yeast midpoint ?? yeast single ?? 75`.
+9. Effective attenuation:
+   - `effectiveAttenuationPct = clamp(baseAttenuationPct + mashAdjPctPoints + simpleSugarAdj - crystalDextrinAdj - lactoseAdj, 60, 90)`.
+10. FG:
+   - manual FG override имеет наивысший приоритет;
+   - иначе `remainingPoints = gravityPoints * (1 - effectiveAttenuationPct / 100)`;
+   - `predictedFg = 1 + remainingPoints / 1000`.
+
+UI подает это как короткий source label:
+
+- если FG пока недоступна: `—` и helper `Добавьте сбраживаемое`;
+- если recipe живет на fallback без usable yeast attenuation: `Прогноз по умолчанию`;
+- если расчет идет в normal estimate режиме с usable yeast attenuation: без подписи вообще;
+- при ручной attenuation: `Ручная attenuation`;
+- при ручной FG override: `Ручной FG`.
+
+Внутренняя модель по-прежнему считает FG range для снижения ложной точности:
+
+- с yeast attenuation range — по min/max attenuation;
+- без дрожжей — по default range `72–78`, с теми же mash/grist corrections;
+- при manual FG override range не показывается.
+
+Но range не занимает место в summary и не показывается как отдельная карточка в шапке. Если UI показывает диапазон, это делается только во втором слое `Показать детали расчета`.
+
+Основной ручной control в UI — `Ожидаемая attenuation, %` с practical input range `60–90` и внятным placeholder.
+
+`Зафиксировать КП вручную` остается только advanced override: число фиксируется и больше не следует автоматически за OG, grain bill и остальными расчетами.
+
+Подача в UI intentionally спокойная:
+
+- нет постоянного раскрытого блока `FG / КП` в шапке;
+- нет постоянных технических labels вроде `Источник attenuation` или `Диапазон FG`;
+- нет always-visible manual override fields;
+- advanced controls открываются только по маленькой шестеренке / info icon у FG;
+- на desktop эта иконка показывается по hover карточки, на touch/mobile может быть видна постоянно;
+- внутри панели сначала идут короткие человеческие пояснения и ручные поля, а technical breakdown (`source`, mash influence, grist corrections, optional range) открывается только по `Показать детали расчета`.
+
+Это practical estimate, не лабораторная модель. mash profile участвует в FG calculation, yeast attenuation влияет на FG, если она доступна, fermentation profile по-прежнему не используется как прямой драйвер FG, а equipment profile влияет на FG только косвенно через recipe volumes и OG.
 
 Hops:
 
@@ -701,7 +773,11 @@ Private notes are not shown.
 
 ## 19. Известные ограничения
 
-- Yeast attenuation из каталога пока не управляет FG.
+- FG model — practical estimate, не лабораторная модель брожения.
+- Fermentation temperature/profile пока не используются как основной драйвер FG.
+- Alcohol tolerance, stressed fermentation и отдельные high-gravity guardrails пока не добавлены.
+- Ingredient-level fermentability beyond sugar / crystal / lactose heuristics пока ограничена.
+- Фактическая FG может заметно отличаться от прогноза.
 - Scaling to equipment — practical approximation, не full IBU-preserving optimizer.
 - Water pH/acid model — practical estimate.
 - City water presets are examples, not lab-grade targets.

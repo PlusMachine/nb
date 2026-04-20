@@ -44,9 +44,12 @@ import {
 } from "../ingredients/source-linkage";
 import { readCustomIngredientMetadata } from "../ingredients/custom-metadata";
 import {
+  canonicalizeConsumablePickerGroup,
   isConsumableInventoryBroadGroup,
   resolveConsumableInventoryBroadGroup,
+  resolveConsumablePickerGroup,
 } from "../ingredients/consumables";
+import { canonicalizeFermentableQuickStartGroup } from "../ingredients/picker-quick-start";
 import {
   resolveIngredientCategory,
   resolveIngredientSubtype,
@@ -130,16 +133,47 @@ const matchesInventoryConsumableGroup = (
   item: Pick<InventoryListItemDto, "ingredientSubtype" | "source">,
   group?: string
 ) => {
-  if (!group || !isConsumableInventoryBroadGroup(group)) {
+  if (!group) {
     return true;
   }
 
-  return resolveConsumableInventoryBroadGroup({
+  if (isConsumableInventoryBroadGroup(group)) {
+    return resolveConsumableInventoryBroadGroup({
+      technicalData: item.source.technicalData,
+      groupName: item.source.groupName ?? null,
+      subtype: item.source.subtype ?? item.ingredientSubtype ?? null,
+      itemKind: item.source.itemKind ?? null
+    }) === group;
+  }
+
+  const normalizedGroup = canonicalizeConsumablePickerGroup(group);
+  if (!normalizedGroup) {
+    return true;
+  }
+
+  return resolveConsumablePickerGroup({
     technicalData: item.source.technicalData,
+    sourceCategory: item.source.groupName ?? null,
     groupName: item.source.groupName ?? null,
     subtype: item.source.subtype ?? item.ingredientSubtype ?? null,
     itemKind: item.source.itemKind ?? null
-  }) === group;
+  }) === normalizedGroup;
+};
+
+const matchesInventoryFermentableGroup = (
+  item: Pick<InventoryListItemDto, "source">,
+  group?: string
+) => {
+  if (!group) {
+    return true;
+  }
+
+  const normalizedGroup = canonicalizeFermentableQuickStartGroup(group);
+  if (!normalizedGroup) {
+    return true;
+  }
+
+  return canonicalizeFermentableQuickStartGroup(item.source.groupName ?? null) === normalizedGroup;
 };
 
 const buildInventoryWhere = (userId: string, includeArchived: boolean) => and(
@@ -1520,6 +1554,10 @@ export const listInventoryForUser = async (userId: string, query: unknown = {}) 
 
   if (parsed.subtype) {
     items = items.filter((item) => (item.source.subtype ?? item.ingredientSubtype ?? null) === parsed.subtype);
+  }
+
+  if (parsed.category === "fermentable" && parsed.group) {
+    items = items.filter((item) => matchesInventoryFermentableGroup(item, parsed.group));
   }
 
   if (parsed.category === "consumable" && parsed.group) {

@@ -110,6 +110,7 @@ import {
   applyAddIngredientImmediateControlAction,
   applyAddIngredientSuccessEffects,
   resolveAddIngredientStartCategoryValue,
+  resolveAddIngredientStartContext,
   shouldApplyAddIngredientControlActionOnClick,
   shouldCloseAddIngredientModalFromBackdropInteraction
 } from "../components/inventory/add-ingredient-modal";
@@ -124,6 +125,7 @@ import {
   resolveCatalogSelectionResetState,
   resolveCatalogBatchOverrideDefaults,
   resolveCatalogIngredientUnitProfile,
+  resolveVisibleConsumableCatalogGroupSwitchValues,
   shouldShowCatalogOptionalSection,
   shouldShowCatalogPickerStage,
   shouldShowCatalogRequiredInventoryBlock
@@ -449,6 +451,26 @@ describe("inventory add-flow", () => {
     expect(html).not.toContain('data-testid="ingredient-picker-quick-start-types"');
   });
 
+  it("renders fermentable business chips in the catalog picker", () => {
+    const html = renderToStaticMarkup(React.createElement(CatalogIngredientForm, {
+      category: "fermentable",
+      subtype: null,
+      preferredCurrency: "USD",
+      pending: false,
+      onSubmit: async () => undefined,
+      onRequestCustom: () => undefined,
+      onSubtypeChange: () => undefined,
+      onGroupChange: () => undefined
+    }));
+
+    expect(html).toContain('data-testid="catalog-fermentable-subtype-switch"');
+    expect(html).toContain("Солод");
+    expect(html).toContain("Неосоложенка");
+    expect(html).toContain("Концентраты");
+    expect(html).toContain("Сахара и сиропы");
+    expect(html).toContain("Фрукты и соки");
+  });
+
   it("uses the passed hop quick-start context in the catalog form", () => {
     const html = renderToStaticMarkup(React.createElement(CatalogIngredientForm, {
       category: "hop",
@@ -659,6 +681,65 @@ describe("inventory add-flow", () => {
     expect(html).toContain("Загружаем недавние...");
   });
 
+  it("renders split consumable chips in the catalog picker", () => {
+    const html = renderToStaticMarkup(React.createElement(CatalogIngredientForm, {
+      category: "consumable",
+      forcedGroup: "inventory_supplies",
+      preferredCurrency: "USD",
+      pending: false,
+      onSubmit: async () => undefined,
+      onRequestCustom: () => undefined,
+      onGroupChange: () => undefined
+    }));
+
+    expect(html).toContain('data-testid="catalog-consumable-group-switch"');
+    expect(html).toContain("Санитайзеры");
+    expect(html).toContain("Мойка");
+    expect(html).toContain("Тара и укупорка");
+    expect(html).toContain("Газы");
+  });
+
+  it("hides the additive fallback chip when there is no real coverage", () => {
+    expect(resolveVisibleConsumableCatalogGroupSwitchValues({
+      activeConsumableBroadGroup: "inventory_additives",
+      initialQuickStartData: {
+        brands: [],
+        groups: [{
+          type: "consumable_group",
+          label: "Тех. добавки",
+          normalizedLabel: "process_aid",
+          value: "process_aid",
+          count: 3,
+          score: 30
+        }, {
+          type: "consumable_group",
+          label: "Осветление",
+          normalizedLabel: "fining",
+          value: "fining",
+          count: 12,
+          score: 120
+        }],
+        recent: [],
+        hasFavoritesAvailable: false,
+        hasCustomAvailable: false
+      }
+    })).toEqual(["process_aid", "fining", "enzyme", "nutrient", "antioxidant"]);
+  });
+
+  it("keeps the additive fallback chip visible when it is already selected", () => {
+    expect(resolveVisibleConsumableCatalogGroupSwitchValues({
+      activeConsumableBroadGroup: "inventory_additives",
+      initialQuickStartData: {
+        brands: [],
+        groups: [],
+        recent: [],
+        hasFavoritesAvailable: false,
+        hasCustomAvailable: false
+      },
+      forcedGroup: "other"
+    })).toContain("other");
+  });
+
   it("prefers remembered category for a fresh add context and falls back to fermentables", () => {
     expect(resolveAddIngredientStartCategoryValue({
       rememberedCategoryValue: "hop"
@@ -671,6 +752,34 @@ describe("inventory add-flow", () => {
       initialSubtype: "malt",
       rememberedCategoryValue: "hop"
     })).toBe("fermentable");
+  });
+
+  it("defaults fermentables to malt when no explicit chip context exists", () => {
+    expect(resolveAddIngredientStartContext({})).toMatchObject({
+      category: "fermentable",
+      subtype: "malt",
+      group: null
+    });
+
+    expect(resolveAddIngredientStartContext({
+      rememberedCategoryValue: "fermentable"
+    })).toMatchObject({
+      category: "fermentable",
+      subtype: "malt",
+      group: null
+    });
+  });
+
+  it("inherits explicit fermentable context instead of forcing malt", () => {
+    expect(resolveAddIngredientStartContext({
+      initialCategory: "fermentable",
+      initialSubtype: "fermentable",
+      initialGroup: "sugars_and_syrups"
+    })).toMatchObject({
+      category: "fermentable",
+      subtype: "fermentable",
+      group: "sugars_and_syrups"
+    });
   });
 
   it("keeps typed picker text across category switches until an ingredient is selected", () => {

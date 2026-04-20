@@ -1,0 +1,92 @@
+{
+  "schema_version": "brewing_additives_split_manifest_v1",
+  "source_catalog": "consumables_v4_patch_proposal.json / brewing_consumables_unified_v4_stock_aware",
+  "target_catalog": {
+    "catalog_name": "Пивоваренные добавки",
+    "catalog_name_en": "Brewing Additives",
+    "top_level_type": "additive",
+    "scope": "Рецептурные и процессные добавки, которые пивовар воспринимает как часть варки, брожения, стабилизации или упаковки пива."
+  },
+  "split_rationale_ru": [
+    "В эту категорию попадают вещества и препараты, которые реально вносятся в процесс и мыслятся как рецептные/технологические добавки.",
+    "Бренд у большинства позиций вторичен; главный first-level flow должен быть group-first.",
+    "Whirlfloc, Irish Moss, Biofine, Ковелос, ферменты, подкормки и антиоксиданты не должны жить рядом с мойкой, санитацией, газами и тарой."
+  ],
+  "primary_quick_filter_chips_ru": [
+    "Осветление",
+    "Ферменты",
+    "Подкормки",
+    "Антиоксиданты",
+    "Пеногасители",
+    "Консерванты"
+  ],
+  "secondary_chips_by_primary_ru": {
+    "Осветление": [
+      "Для кипа",
+      "После брожения",
+      "Стабилизация"
+    ],
+    "Ферменты": [
+      "Осахаривание",
+      "Диацетил",
+      "Хмелевой аромат",
+      "Clarity"
+    ],
+    "Подкормки": [
+      "Комплексные",
+      "Регидратация",
+      "Поддержка"
+    ],
+    "Антиоксиданты": [
+      "Горячая сторона",
+      "Упаковка",
+      "Сульфиты"
+    ],
+    "Пеногасители": [
+      "Кипячение",
+      "Брожение"
+    ],
+    "Консерванты": [
+      "Микробный контроль"
+    ]
+  },
+  "existing_category_to_new_group": {
+    "fining": "Осветление",
+    "enzyme": "Ферменты",
+    "nutrient": "Подкормки",
+    "antioxidant": "Антиоксиданты",
+    "defoamer": "Пеногасители",
+    "preservative": "Консерванты"
+  },
+  "item_ids": [
+    "antioxidant-finished-beer",
+    "antioxidant-brewtan-b",
+    "antioxidant-ascorbic-acid",
+    "metabisulfite-potassium",
+    "metabisulfite-sodium",
+    "antioxidant-wort",
+    "fermcap-s-silicone-antifoam",
+    "sofeksil-silicone-antifoam",
+    "clarity-ferm-enzyme",
+    "amyloglucosidase-enzyme",
+    "aldc-diacetyl-reduction-enzyme",
+    "hop-aroma-enzyme",
+    "alpha-amylase-enzyme",
+    "biofine-clear-liquid-fining",
+    "cold-side-fining-agar",
+    "vinoflok-liquid-fining",
+    "cold-side-fining-gelatin",
+    "kovelos-pivovar-liquid-fining",
+    "kovelos-stab-ns-liquid-fining",
+    "cold-side-fining-isinglass",
+    "kettle-fining-whirlfloc-granules",
+    "kettle-fining-whirlfloc-tablets",
+    "kettle-fining-irish-moss",
+    "pvpp-stabilizer",
+    "kovelos-stab31-xerogel-fining",
+    "yeast-nutrient-complex",
+    "yeast-rehydration-nutrient",
+    "yeast-hulls-inactivated",
+    "potassium-sorbate-preservative"
+  ]
+}

@@ -8,6 +8,7 @@ import PublicRecipeError from "../app/(public)/recipes/[slug]/error";
 import PublicRecipeNotFound from "../app/(public)/recipes/[slug]/not-found";
 import PublicRecipesError from "../app/(public)/recipes/error";
 import { RecipeEmptyState } from "../components/recipes/recipe-empty-state";
+import { buildRecipeIngredientTechnicalBadges } from "../components/recipes/recipe-ingredient-card-display";
 import { PublicRecipePage } from "../components/recipes/public-recipe-page";
 import { PublicRecipeList } from "../components/recipes/public-recipe-list";
 import { RecipeIngredientsSection } from "../components/recipes/recipe-ingredients-section";
@@ -39,6 +40,22 @@ const recipeDetail: RecipeDetailDto = {
   description: "Мутный IPA",
   authorNotes: "Добавить сухое охмеление",
   processMeta: defaultRecipeProcessMeta,
+  fgEstimateMode: "yeast_estimate",
+  fgEstimateDetails: {
+    baseAttenuationPct: 78,
+    attenuationSource: "yeast",
+    mainMashTempC: 66,
+    mashAdjPctPoints: 0.75,
+    simpleSugarSharePct: 0,
+    crystalDextrinSharePct: 8,
+    lactoseSharePct: 0,
+    simpleSugarAdj: 0,
+    crystalDextrinAdj: 0.8,
+    lactoseAdj: 0,
+    effectiveAttenuationPct: 77.95,
+    fgRangeMin: 1.01,
+    fgRangeMax: 1.014
+  },
   heroImageId: null,
   versions: [{ id: "r-1", versionNumber: 1, updatedAt: new Date("2026-01-02T00:00:00.000Z") }],
   createdAt: new Date("2026-01-01T00:00:00.000Z"),
@@ -121,8 +138,29 @@ describe("recipes read components", () => {
 
     expect(html).toContain("Ключевые показатели");
     expect(html).toContain("OG");
+    expect(html).not.toContain("Прогноз по умолчанию");
+    expect(html).not.toContain("Ручная attenuation");
+    expect(html).not.toContain("Ручной FG");
     expect(html).toContain("ABV");
     expect(html).toContain("IBU");
+  });
+
+  it("shows only the compact default FG label for fallback estimates", () => {
+    const html = renderToStaticMarkup(React.createElement(RecipeStatsSummary, {
+      recipe: {
+        ...recipeDetail,
+        fgEstimateMode: "default_estimate",
+        fgEstimateDetails: {
+          ...recipeDetail.fgEstimateDetails!,
+          attenuationSource: "default",
+          baseAttenuationPct: 75
+        }
+      }
+    }));
+
+    expect(html).toContain("Прогноз по умолчанию");
+    expect(html).not.toContain("прогноз по дрожжам");
+    expect(html).not.toContain("прогноз по умолчанию • атт. 75%");
   });
 
   it("renders style-linked stats as numeric summary without range graph", () => {
@@ -159,6 +197,27 @@ describe("recipes read components", () => {
     expect(html).toContain("Кипячение");
     expect(html).toContain("Описание");
     expect(html).toContain("Личные заметки");
+  });
+
+  it("keeps EBC accent badges for non-malt fermentables in recipe ingredient cards", () => {
+    const badges = buildRecipeIngredientTechnicalBadges({
+      technicalData: {
+        type: "fermentable",
+        colorEbcMin: 12,
+        colorEbcMax: 12,
+        extractPctDryBasis: 79
+      }
+    });
+
+    expect(badges.map((badge) => badge.label)).toEqual([
+      "12 EBC",
+      "Экст-ть 79%"
+    ]);
+    expect(badges[0]?.accent).toMatchObject({
+      startHex: expect.any(String),
+      averageHex: expect.any(String),
+      endHex: expect.any(String)
+    });
   });
 
   it("renders public listing item with slug link", () => {

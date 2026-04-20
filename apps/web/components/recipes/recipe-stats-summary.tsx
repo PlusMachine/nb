@@ -4,10 +4,12 @@ import { CircleAlert, CircleCheck, Gauge, Palette, Percent, Zap } from "lucide-r
 
 import type { RecipeDetailDto, RecipeListItemDto } from "@/features/recipes/contracts";
 import { beerColorFromSrm } from "@/features/recipes/beer-color";
+import { resolveRecipeFgHelperText, resolveRecipeFgSourceLabel } from "@/features/recipes/fg-estimate";
 import { formatGravityWithPlato } from "@/features/recipes/format";
 import { BeerGlassIcon } from "@/components/recipes/beer-glass-icon";
 
-type RecipeStatsSource = Pick<RecipeListItemDto | RecipeDetailDto, "og" | "fg" | "abv" | "ibu" | "color" | "styleId">;
+type RecipeStatsSource = Pick<RecipeListItemDto | RecipeDetailDto, "og" | "fg" | "abv" | "ibu" | "color" | "styleId">
+  & Partial<Pick<RecipeDetailDto, "fgEstimateMode" | "fgEstimateDetails">>;
 
 const metricIcons: Record<string, React.ComponentType<{ className?: string }>> = {
   OG: Gauge,
@@ -23,7 +25,13 @@ const metricStatusLabels: Record<"in_range" | "below" | "above", string> = {
   above: "Выше"
 };
 
-export function RecipeStatsSummary({ recipe }: { recipe: RecipeStatsSource }) {
+export function RecipeStatsSummary({
+  recipe,
+  gravityLabels = { og: "OG", fg: "FG" }
+}: {
+  recipe: RecipeStatsSource;
+  gravityLabels?: { og: string; fg: string };
+}) {
   const selectedStyle = getBeerStyleById(recipe.styleId);
   const styleRange = getStyleRangeById(recipe.styleId);
   const fit = styleRange && recipe.og != null && recipe.fg != null && recipe.abv != null && recipe.ibu != null && recipe.color != null
@@ -37,10 +45,19 @@ export function RecipeStatsSummary({ recipe }: { recipe: RecipeStatsSource }) {
     : null;
   const hasValues = [recipe.og, recipe.fg, recipe.abv, recipe.ibu, recipe.color].some((value) => value != null);
   const overallFit = fit?.overallFit ?? false;
+  const fgSourceLabel = resolveRecipeFgSourceLabel(recipe.fgEstimateMode, recipe.fgEstimateDetails);
+  const fgHelperText = resolveRecipeFgHelperText(recipe.fgEstimateMode, recipe.fg);
 
   const items = [
-    { key: "OG", label: "OG", value: formatGravityWithPlato(recipe.og), status: fit?.og.status ?? null },
-    { key: "FG", label: "FG", value: formatGravityWithPlato(recipe.fg), status: fit?.fg.status ?? null },
+    { key: "OG", label: gravityLabels.og, value: formatGravityWithPlato(recipe.og), status: fit?.og.status ?? null },
+    {
+      key: "FG",
+      label: gravityLabels.fg,
+      value: formatGravityWithPlato(recipe.fg),
+      status: fit?.fg.status ?? null,
+      sourceLabel: recipe.fg != null ? fgSourceLabel : null,
+      helperText: recipe.fg == null ? fgHelperText : null
+    },
     { key: "ABV", label: "ABV", value: recipe.abv == null ? "—" : `${recipe.abv.toFixed(1)}%`, status: fit?.abv.status ?? null },
     { key: "IBU", label: "IBU", value: recipe.ibu == null ? "—" : `${recipe.ibu.toFixed(0)}`, status: fit?.ibu.status ?? null },
     {
@@ -104,10 +121,24 @@ export function RecipeStatsSummary({ recipe }: { recipe: RecipeStatsSource }) {
                 <dd className="mt-1.5 min-w-0">
                   <div className="text-lg font-semibold tabular-nums text-zinc-950">{gravityParts[1]}</div>
                   <div className="text-xs font-medium tabular-nums text-zinc-500">{gravityParts[2]}</div>
+                  {"sourceLabel" in stat && stat.sourceLabel ? (
+                    <div className="mt-1 text-[11px] font-medium text-zinc-500">{stat.sourceLabel}</div>
+                  ) : null}
+                  {"helperText" in stat && stat.helperText ? (
+                    <div className="mt-1 text-[11px] text-zinc-400">{stat.helperText}</div>
+                  ) : null}
                 </dd>
               ) : (
-                <dd className="mt-1.5 text-lg font-semibold tabular-nums text-zinc-950">
-                  {strValue ?? "—"}
+                <dd className="mt-1.5">
+                  <div className="text-lg font-semibold tabular-nums text-zinc-950">
+                    {strValue ?? "—"}
+                  </div>
+                  {"sourceLabel" in stat && stat.sourceLabel ? (
+                    <div className="mt-1 text-[11px] font-medium text-zinc-500">{stat.sourceLabel}</div>
+                  ) : null}
+                  {"helperText" in stat && stat.helperText ? (
+                    <div className="mt-1 text-[11px] text-zinc-400">{stat.helperText}</div>
+                  ) : null}
                 </dd>
               )}
               {stat.status ? (

@@ -90,9 +90,7 @@ export default async function MyIngredientsPage({ searchParams }: Props) {
   );
   const parsedSubtype = parseSubtype(typeof resolvedParams.subtype === "string" ? resolvedParams.subtype : undefined)
     ?? (typeof resolvedParams.type === "string" && resolvedParams.type === "malt" ? "malt" : undefined);
-  const subtype = category === "fermentable"
-    ? (parsedSubtype ?? "fermentable")
-    : parsedSubtype;
+  const subtype = parsedSubtype;
   const group = parseGroup(typeof resolvedParams.group === "string" ? resolvedParams.group : undefined);
   const requestedShowFinished = parseShowFinished(
     typeof resolvedParams.finished === "string" ? resolvedParams.finished : undefined,

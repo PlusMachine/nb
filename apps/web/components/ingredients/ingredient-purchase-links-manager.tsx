@@ -22,24 +22,89 @@ import {
   normalizeIngredientPurchaseLinkInput
 } from "@/features/ingredients/purchase-links";
 
+/* ── Favicon URLs per marketplace ───────────────────────────────── */
+
+const marketplaceFaviconUrl: Record<IngredientPurchaseLinkMarketplace, string | null> = {
+  ozon:           "https://www.google.com/s2/favicons?domain=ozon.ru&sz=64",
+  wildberries:    "https://www.google.com/s2/favicons?domain=wildberries.ru&sz=64",
+  avito:          "https://www.google.com/s2/favicons?domain=avito.ru&sz=64",
+  yandex_market:  "https://www.google.com/s2/favicons?domain=market.yandex.ru&sz=64",
+  russkaya_dymka: "https://www.google.com/s2/favicons?domain=rdshop.ru&sz=64",
+  kolba:          "https://www.google.com/s2/favicons?domain=kolba.ru&sz=64",
+  birrf:          "https://www.google.com/s2/favicons?domain=xn--90aoy.xn--p1ai&sz=64",
+  other:          null
+};
+
+const marketplaceFallbackBg: Record<IngredientPurchaseLinkMarketplace, string> = {
+  ozon:           "#005BFF",
+  wildberries:    "#CB11AB",
+  avito:          "#00AAFF",
+  yandex_market:  "#FC3F1D",
+  russkaya_dymka: "#8B3A3A",
+  kolba:          "#2D6A4F",
+  birrf:          "#1B4F72",
+  other:          "#71717A"
+};
+
+const marketplaceFallbackShort: Record<IngredientPurchaseLinkMarketplace, string> = {
+  ozon:           "O",
+  wildberries:    "W",
+  avito:          "A",
+  yandex_market:  "Я",
+  russkaya_dymka: "Р",
+  kolba:          "К",
+  birrf:          "Б",
+  other:          "?"
+};
+
+/* ─────────────────────────────────────────────────────────────────── */
+
 type MarketplaceBadgeProps = {
   marketplace: IngredientPurchaseLinkMarketplace;
   className?: string;
+  /** sm — 20px для карточек; md — 28px для модалки */
+  size?: "sm" | "md";
 };
 
 export function PurchaseLinkMarketplaceBadge({
   marketplace,
-  className = ""
+  className = "",
+  size = "md"
 }: MarketplaceBadgeProps) {
-  const abbreviation = ingredientPurchaseLinkMarketplaceAbbreviations[marketplace];
+  const [imgError, setImgError] = React.useState(false);
+  const faviconUrl = marketplaceFaviconUrl[marketplace];
+  const label = ingredientPurchaseLinkMarketplaceLabels[marketplace];
+  const showFavicon = faviconUrl && !imgError;
+
+  const px = size === "sm" ? "h-5 w-5" : "h-7 w-7";
+
+  if (showFavicon) {
+    return (
+      <span
+        title={label}
+        aria-label={label}
+        className={`inline-flex shrink-0 items-center justify-center overflow-hidden rounded-full bg-white ring-1 ring-zinc-200 ${px} ${className}`.trim()}
+      >
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src={faviconUrl}
+          alt=""
+          aria-hidden="true"
+          className="h-3/4 w-3/4 object-contain"
+          onError={() => setImgError(true)}
+        />
+      </span>
+    );
+  }
 
   return (
     <span
-      aria-hidden="true"
-      className={`inline-flex h-6 min-w-6 items-center justify-center rounded-full border border-zinc-200 bg-zinc-50 px-1.5 text-[10px] font-semibold uppercase tracking-[0.12em] text-zinc-600 ${className}`.trim()}
-      title={ingredientPurchaseLinkMarketplaceLabels[marketplace]}
+      title={label}
+      aria-label={label}
+      style={{ backgroundColor: marketplaceFallbackBg[marketplace] }}
+      className={`inline-flex shrink-0 items-center justify-center rounded-full text-white ${px} ${size === "sm" ? "text-[10px]" : "text-xs"} font-bold leading-none ${className}`.trim()}
     >
-      {abbreviation}
+      {marketplaceFallbackShort[marketplace]}
     </span>
   );
 }
@@ -48,14 +113,38 @@ type IngredientPurchaseLinksEditorProps = {
   reference: UserIngredientReference;
   initialLinks?: IngredientPurchaseLinkDto[];
   enabled?: boolean;
+  autoStartCreateWhenEmpty?: boolean;
+  onRequestClose?: () => void;
   emptyStateTitle?: string;
   emptyStateDescription?: string;
 };
+
+export const resolveIngredientPurchaseLinkInitialEditingId = ({
+  autoStartCreateWhenEmpty = false,
+  linksCount
+}: {
+  autoStartCreateWhenEmpty?: boolean;
+  linksCount?: number | null;
+}): string | "new" | null => (
+  autoStartCreateWhenEmpty && linksCount === 0 ? "new" : null
+);
+
+export const shouldCloseIngredientPurchaseLinksOnCancel = ({
+  editingId,
+  linksCount
+}: {
+  editingId: string | "new" | null;
+  linksCount: number;
+}) => (
+  editingId === "new" && linksCount === 0
+);
 
 export function IngredientPurchaseLinksEditor({
   reference,
   initialLinks,
   enabled = true,
+  autoStartCreateWhenEmpty = false,
+  onRequestClose,
   emptyStateTitle = "Ссылок на покупку пока нет",
   emptyStateDescription = "Добавьте площадки, где вы обычно заказываете этот ингредиент."
 }: IngredientPurchaseLinksEditorProps) {
@@ -65,18 +154,28 @@ export function IngredientPurchaseLinksEditor({
   const [links, setLinks] = useState<IngredientPurchaseLinkDto[]>(initialLinks ?? []);
   const [hasLoaded, setHasLoaded] = useState(Boolean(initialLinks));
   const [isLoading, setIsLoading] = useState(false);
-  const [editingId, setEditingId] = useState<string | "new" | null>(null);
+  const [editingId, setEditingId] = useState<string | "new" | null>(() => (
+    resolveIngredientPurchaseLinkInitialEditingId({
+      autoStartCreateWhenEmpty,
+      linksCount: initialLinks?.length
+    })
+  ));
   const [draftUrl, setDraftUrl] = useState("");
   const [message, setMessage] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
 
   useEffect(() => {
+    const nextEditingId = resolveIngredientPurchaseLinkInitialEditingId({
+      autoStartCreateWhenEmpty,
+      linksCount: initialLinks?.length
+    });
+
     setLinks(initialLinks ?? []);
     setHasLoaded(Boolean(initialLinks));
-    setEditingId(null);
+    setEditingId(nextEditingId);
     setDraftUrl("");
     setMessage(null);
-  }, [initialLinks, referenceKey]);
+  }, [autoStartCreateWhenEmpty, initialLinks, referenceKey]);
 
   useEffect(() => {
     if (!enabled || hasLoaded) {
@@ -95,8 +194,16 @@ export function IngredientPurchaseLinksEditor({
           return;
         }
 
+        const nextEditingId = resolveIngredientPurchaseLinkInitialEditingId({
+          autoStartCreateWhenEmpty,
+          linksCount: nextLinks.length
+        });
+
         setLinks(nextLinks);
         setHasLoaded(true);
+        setEditingId(nextEditingId);
+        setDraftUrl("");
+        setMessage(null);
       })
       .catch(() => {
         if (cancelled) {
@@ -114,7 +221,7 @@ export function IngredientPurchaseLinksEditor({
     return () => {
       cancelled = true;
     };
-  }, [enabled, hasLoaded, referenceId, referenceKey, referenceSource]);
+  }, [autoStartCreateWhenEmpty, enabled, hasLoaded, referenceId, referenceKey, referenceSource]);
 
   const draftPreview = useMemo(() => {
     try {
@@ -147,6 +254,11 @@ export function IngredientPurchaseLinksEditor({
   };
 
   const cancelEdit = () => {
+    if (shouldCloseIngredientPurchaseLinksOnCancel({ editingId, linksCount: links.length })) {
+      onRequestClose?.();
+      return;
+    }
+
     setEditingId(null);
     setDraftUrl("");
     setMessage(null);
@@ -323,17 +435,15 @@ export function IngredientPurchaseLinksEditor({
       ) : null}
 
       {editingId === "new" ? (
-        <div className="space-y-3 rounded-2xl border border-zinc-200 bg-zinc-50 p-3">
-          <label className="block text-sm font-medium text-zinc-900">
-            Ссылка на покупку
-            <input
-              type="url"
-              value={draftUrl}
-              onChange={(event) => setDraftUrl(event.target.value)}
-              className="mt-2 w-full rounded-xl border border-zinc-200 bg-white px-3 py-2 text-sm"
-              placeholder="https://..."
-            />
-          </label>
+        <div className="space-y-3">
+          <input
+            type="url"
+            value={draftUrl}
+            onChange={(event) => setDraftUrl(event.target.value)}
+            className="w-full rounded-xl border border-zinc-200 bg-white px-3 py-2 text-sm"
+            placeholder="https://..."
+            aria-label="Ссылка"
+          />
           {draftPreview ? (
             <div className="flex items-center gap-2 text-sm text-zinc-600">
               <PurchaseLinkMarketplaceBadge marketplace={draftPreview.marketplace} />
@@ -383,6 +493,7 @@ type IngredientPurchaseLinksDialogProps = {
   onClose: () => void;
   reference: UserIngredientReference;
   initialLinks?: IngredientPurchaseLinkDto[];
+  autoStartCreateWhenEmpty?: boolean;
   title?: string;
 };
 
@@ -391,6 +502,7 @@ export function IngredientPurchaseLinksDialog({
   onClose,
   reference,
   initialLinks,
+  autoStartCreateWhenEmpty = false,
   title = "Ссылки на покупку"
 }: IngredientPurchaseLinksDialogProps) {
   const [mounted, setMounted] = useState(false);
@@ -432,8 +544,7 @@ export function IngredientPurchaseLinksDialog({
       >
         <div className="flex items-start justify-between gap-4">
           <div>
-            <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-zinc-500">Покупка</p>
-            <h2 className="mt-2 text-2xl font-semibold text-zinc-950">{title}</h2>
+            <h2 className="text-2xl font-semibold text-zinc-950">{title}</h2>
           </div>
           <button
             type="button"
@@ -450,6 +561,8 @@ export function IngredientPurchaseLinksDialog({
             reference={reference}
             initialLinks={initialLinks}
             enabled={open}
+            autoStartCreateWhenEmpty={autoStartCreateWhenEmpty}
+            onRequestClose={onClose}
           />
         </div>
       </div>

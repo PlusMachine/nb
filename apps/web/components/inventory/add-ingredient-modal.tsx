@@ -154,6 +154,14 @@ const resolveAddIngredientStartFermentableSubtype = ({
     return initialSubtype;
   }
 
+  if (
+    initialSelection?.category === "fermentable"
+    || initialCategory === "fermentable"
+    || (!initialSelection && !initialCategory)
+  ) {
+    return "malt";
+  }
+
   return null;
 };
 
@@ -231,12 +239,17 @@ export const resolveAddIngredientStartContext = ({
       initialSubtype
     }) ?? subtype
     : subtype;
+  const resolvedGroup = typeof initialGroup === "string" && initialGroup.trim().length > 0
+    ? initialGroup.trim()
+    : categoryValue === "fermentable" && initialSelection?.category === "fermentable"
+      ? (initialSelection.groupName ?? group)
+      : group;
 
   return {
     categoryValue,
     category,
     subtype: fermentableSubtype,
-    group
+    group: resolvedGroup
   };
 };
 
@@ -522,6 +535,7 @@ export function AddIngredientModal({
                 fieldErrors={result?.fieldErrors}
                 selectionActionLabel="Изменить выбор"
                 onSubtypeChange={setCatalogSubtype}
+                onGroupChange={setCatalogGroup}
                 onSelectedIngredientChange={setSelectedIngredient}
                 onRequestCustom={() => {
                   setSelectedIngredient(null);

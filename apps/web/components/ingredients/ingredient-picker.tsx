@@ -635,7 +635,7 @@ export type IngredientPickerTechnicalBadge = {
 
 const resolveColorBadgeAccent = (item: Pick<IngredientSuggestionItem, "technicalData">): IngredientPickerBadgeAccent | null => {
   const technicalData = item.technicalData;
-  if (!technicalData || technicalData.type !== "malt") {
+  if (!technicalData || (technicalData.type !== "malt" && technicalData.type !== "fermentable")) {
     return null;
   }
 
@@ -1333,6 +1333,22 @@ export const IngredientPickerCustomOnlyChip = ({
     onRemove={onRemove}
     testId="ingredient-picker-custom-only-chip"
   />
+);
+
+export const resolveIngredientPickerRefinementPanelTitle = ({
+  currentRefinementType,
+  category
+}: {
+  currentRefinementType?: IngredientSearchRefinement["type"] | null;
+  category?: IngredientCategory;
+}) => (
+  currentRefinementType === "consumable_group"
+    ? category === "fermentable"
+      ? "Уточнить группу сбраживаемых"
+      : category === "water_treatment"
+        ? "Уточнить группу водоподготовки"
+        : "Уточнить группу расходников"
+    : "Уточнить производителя"
 );
 
 const IngredientPickerQuickFilterButton = ({
@@ -2664,9 +2680,10 @@ export const IngredientPicker = ({
     && !showQuickStart
     && !appliedCustomOnly;
   const currentRefinementType = searchResult.refinements[0]?.type ?? null;
-  const refinementPanelTitle = currentRefinementType === "consumable_group"
-    ? (category === "fermentable" ? "Уточнить группу сбраживаемых" : "Уточнить группу расходников")
-    : "Уточнить производителя";
+  const refinementPanelTitle = resolveIngredientPickerRefinementPanelTitle({
+    currentRefinementType,
+    category
+  });
   const ingredientSectionTitle = activeScopeCount > 1
     ? "Результаты по выбранным фильтрам"
     : activeSearchContextLabel

@@ -9,6 +9,7 @@ import {
   formatInventoryQuantityInputValue,
   resolveInventoryMeasurementForDisplay
 } from "@/features/inventory/display";
+import { resolveInventoryPackEquivalent } from "@/features/inventory/pack";
 import { getInventoryUnitInputStep, inventoryUnitLabels, resolveInventoryUnitProfile } from "@/features/inventory/units";
 
 type Props = {
@@ -17,6 +18,7 @@ type Props = {
   onAction?: () => void;
   hideEditor?: boolean;
   showFinishedAction?: boolean;
+  showEquivalentHint?: boolean;
   renderFinishedAction?: (args: {
     onClick: () => void;
     isPending: boolean;
@@ -55,6 +57,7 @@ export function InventoryQuantityEditor({
   onAction,
   hideEditor = false,
   showFinishedAction = true,
+  showEquivalentHint = true,
   renderFinishedAction
 }: Props) {
   const displayMeasurement = useMemo(() => resolveInventoryMeasurementForDisplay({
@@ -100,11 +103,22 @@ export function InventoryQuantityEditor({
     measurementDimension: item.source.measurementDimension,
     technicalData: item.source.technicalData
   }), [item]);
-  const showEquivalentHint = displayQuantity.includes("(");
+  const shouldShowEquivalentHint = showEquivalentHint && displayQuantity.includes("(");
   const isQuantityValid = isInventoryQuantityValueValid(quantity);
   const isDirty = isInventoryQuantityDraftDirty(quantity, unit, savedQuantity, savedUnit);
   const canMarkFinished = canMarkInventoryItemFinished(quantity);
   const quantityStep = getInventoryUnitInputStep(unit);
+  const packEquivalent = useMemo(
+    () => resolveInventoryPackEquivalent(item.source.technicalData),
+    [item.source.technicalData]
+  );
+  const getUnitLabel = (option: typeof unit) => {
+    if (option !== "pack" || !packEquivalent) {
+      return inventoryUnitLabels[option];
+    }
+
+    return `пачка ${formatInventoryQuantityInputValue(packEquivalent.normalizedQuantity, packEquivalent.normalizedUnit)}${packEquivalent.normalizedUnit}`;
+  };
 
   useEffect(() => {
     setQuantity(initialQuantity);
@@ -197,10 +211,10 @@ export function InventoryQuantityEditor({
               className="rounded-xl border border-zinc-200 bg-white py-2 pl-2 pr-7 text-sm transition-all focus:border-zinc-400 focus:outline-none focus:ring-2 focus:ring-zinc-200"
               aria-label="Единица измерения"
             >
-              {unitOptions.map((option) => <option key={option} value={option}>{inventoryUnitLabels[option]}</option>)}
+              {unitOptions.map((option) => <option key={option} value={option}>{getUnitLabel(option)}</option>)}
             </select>
           </div>
-          {showEquivalentHint ? (
+          {shouldShowEquivalentHint ? (
             <p className="text-right text-xs text-zinc-400">{displayQuantity}</p>
           ) : null}
           {isDirty ? (

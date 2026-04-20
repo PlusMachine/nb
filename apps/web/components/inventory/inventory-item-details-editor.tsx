@@ -26,7 +26,18 @@ import type {
   IngredientSuggestionItem,
   IngredientType
 } from "@/features/ingredients/contracts";
-import { resolveConsumableInventoryBroadGroupLabel } from "@/features/ingredients/consumables";
+import {
+  consumableInventoryAdditiveGroups,
+  consumableInventorySupplyGroups,
+  isConsumableInventoryBroadGroup,
+  resolveConsumableInventoryBroadGroup,
+  resolveConsumableInventoryBroadGroupLabel,
+  resolveConsumablePickerGroupLabel
+} from "@/features/ingredients/consumables";
+import {
+  ingredientPickerFermentableQuickStartGroupOrder,
+  resolveFermentableQuickStartGroupLabel
+} from "@/features/ingredients/picker-quick-start";
 import { resolveIngredientDisplayNames } from "@/features/ingredients/presentation";
 import { resolveIngredientCategory, resolveLegacyIngredientType } from "@/features/ingredients/taxonomy";
 import type { InventoryListItemDto } from "@/features/inventory/contracts";
@@ -144,6 +155,23 @@ const resolveInventoryEditorBroadGroup = (
       ? "inventory_additives"
       : null
 );
+
+const fermentableChipValues = [
+  "malt",
+  ...ingredientPickerFermentableQuickStartGroupOrder
+] as const;
+
+const resolveInventoryEditorConsumableBroadGroup = (group?: string | null) => {
+  if (!group) {
+    return null;
+  }
+
+  return isConsumableInventoryBroadGroup(group)
+    ? group
+    : resolveConsumableInventoryBroadGroup({
+      sourceCategory: group
+    });
+};
 
 const createFormState = (
   item: InventoryListItemDto,
@@ -308,15 +336,25 @@ export function InventoryItemDetailsEditor({
     [form, item.source, selectedSuggestion]
   );
   const quantityStep = getInventoryUnitInputStep(form.enteredUnit);
+  const selectedPackEquivalent = useMemo(
+    () => selectedSuggestion
+      ? resolveInventoryPackEquivalent(selectedSuggestion.technicalData ?? null)
+      : null,
+    [selectedSuggestion]
+  );
+  const getUnitLabel = (unit: InventoryUnit) => {
+    if (unit !== "pack" || !selectedPackEquivalent) {
+      return inventoryUnitLabels[unit];
+    }
+
+    return `пачка ${formatInventoryQuantityInputValue(selectedPackEquivalent.normalizedQuantity, selectedPackEquivalent.normalizedUnit)}${selectedPackEquivalent.normalizedUnit}`;
+  };
   const showPickerStage = shouldShowInventoryEditorPickerStage({
     category: form.category,
     selected: selectedSuggestion
   });
   const showRequiredFields = shouldShowInventoryEditorRequiredFields(selectedSuggestion);
   const showOptionalSection = shouldShowInventoryEditorOptionalSection(selectedSuggestion);
-  const selectedPackEquivalent = selectedSuggestion
-    ? resolveInventoryPackEquivalent(selectedSuggestion.technicalData ?? null)
-    : null;
   const selectedContextSummary = selectedSuggestion
     ? resolveInventoryIngredientContextSummaryFromSuggestion(selectedSuggestion, {
       sourceLabelStyle: "short"
@@ -330,10 +368,15 @@ export function InventoryItemDetailsEditor({
   const pickerSubtype = form.subtype === "malt" || form.subtype === "fermentable"
     ? form.subtype
     : null;
+  const activeConsumableBroadGroup = form.category === "consumable"
+    ? resolveInventoryEditorConsumableBroadGroup(form.group)
+    : null;
   const forcedGroupRefinement: IngredientConsumableGroupRefinement | null = form.group
     ? {
       type: "consumable_group",
-      label: resolveConsumableInventoryBroadGroupLabel(form.group) ?? form.group,
+      label: activeConsumableBroadGroup && isConsumableInventoryBroadGroup(form.group)
+        ? (resolveConsumableInventoryBroadGroupLabel(form.group) ?? form.group)
+        : resolveConsumablePickerGroupLabel(form.group) ?? resolveConsumableInventoryBroadGroupLabel(form.group) ?? form.group,
       normalizedLabel: form.group,
       value: form.group,
       count: 0,
@@ -567,31 +610,64 @@ export function InventoryItemDetailsEditor({
                   <section className="space-y-2" data-testid="inventory-editor-picker-stage">
                     {form.category === "fermentable" ? (
                       <div className="flex flex-wrap gap-2" data-testid="inventory-editor-fermentable-subtype-switch">
-                        {(["fermentable", "malt"] as const).map((value) => (
+                        {fermentableChipValues.map((value) => (
                           <button
                             key={value}
                             type="button"
                             onClick={() => {
                               const nextUnitProfile = resolveHumanFacingInventoryUnitProfile({
                                 category: "fermentable",
-                                subtype: value
+                                subtype: value === "malt" ? "malt" : "fermentable"
                               });
                               setForm((current) => ({
                                 ...current,
-                                type: resolveLegacyIngredientType({ category: "fermentable", subtype: value }),
-                                subtype: value,
+                                type: resolveLegacyIngredientType({
+                                  category: "fermentable",
+                                  subtype: value === "malt" ? "malt" : "fermentable"
+                                }),
+                                subtype: value === "malt" ? "malt" : "fermentable",
+                                group: value === "malt" ? null : value,
                                 enteredUnit: nextUnitProfile.defaultUnit
                               }));
                               setResult(null);
                               setPickerFocusSignal((current) => current + 1);
                             }}
                             className={`rounded-full border px-3 py-1.5 text-xs font-medium transition-colors ${
-                              pickerSubtype === value
+                              (value === "malt" && pickerSubtype === "malt" && !form.group)
+                              || (value !== "malt" && pickerSubtype === "fermentable" && form.group === value)
                                 ? "border-amber-300 bg-amber-50 text-amber-900"
                                 : "border-zinc-200 bg-white text-zinc-600 hover:border-zinc-300 hover:bg-zinc-50"
                             }`}
                           >
-                            {inventoryFermentableSubtypeLabels[value]}
+                            {value === "malt" ? inventoryFermentableSubtypeLabels.malt : resolveFermentableQuickStartGroupLabel(value)}
+                          </button>
+                        ))}
+                      </div>
+                    ) : null}
+                    {form.category === "consumable" && activeConsumableBroadGroup ? (
+                      <div className="flex flex-wrap gap-2" data-testid="inventory-editor-consumable-group-switch">
+                        {(activeConsumableBroadGroup === "inventory_supplies"
+                          ? consumableInventorySupplyGroups
+                          : consumableInventoryAdditiveGroups
+                        ).map((value) => (
+                          <button
+                            key={value}
+                            type="button"
+                            onClick={() => {
+                              setForm((current) => ({
+                                ...current,
+                                group: current.group === value ? activeConsumableBroadGroup : value
+                              }));
+                              setResult(null);
+                              setPickerFocusSignal((current) => current + 1);
+                            }}
+                            className={`rounded-full border px-3 py-1.5 text-xs font-medium transition-colors ${
+                              form.group === value
+                                ? "border-amber-300 bg-amber-50 text-amber-900"
+                                : "border-zinc-200 bg-white text-zinc-600 hover:border-zinc-300 hover:bg-zinc-50"
+                            }`}
+                          >
+                            {resolveConsumablePickerGroupLabel(value) ?? value}
                           </button>
                         ))}
                       </div>
@@ -670,11 +746,11 @@ export function InventoryItemDetailsEditor({
                         hideSubtitle
                         mergeBrandAndCountry
                       />
-                      {selectedPackEquivalent ? (
-                        <p className="text-xs text-zinc-500">
-                          1 pack = {selectedPackEquivalent.normalizedQuantity} {selectedPackEquivalent.normalizedUnit}
-                        </p>
-                      ) : null}
+                        {selectedPackEquivalent ? (
+                          <p className="text-xs text-zinc-500">
+                            1 pack = {selectedPackEquivalent.normalizedQuantity} {selectedPackEquivalent.normalizedUnit}
+                          </p>
+                        ) : null}
                     </div>
                   </section>
                 ) : null}
@@ -707,7 +783,7 @@ export function InventoryItemDetailsEditor({
                             setResult(null);
                           }}
                         >
-                          {unitProfile.allowedUnits.map((unit) => <option key={unit} value={unit}>{inventoryUnitLabels[unit]}</option>)}
+                          {unitProfile.allowedUnits.map((unit) => <option key={unit} value={unit}>{getUnitLabel(unit)}</option>)}
                         </select>
                         {result?.fieldErrors?.enteredUnit ? <span className="mt-1 block text-xs text-red-500">{result.fieldErrors.enteredUnit}</span> : null}
                       </label>

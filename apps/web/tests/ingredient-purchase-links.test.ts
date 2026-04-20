@@ -14,7 +14,11 @@ import {
   removeIngredientPurchaseLinkRow,
   saveIngredientPurchaseLinkRow
 } from "../components/ingredients/ingredient-purchase-links-field";
-import { IngredientPurchaseLinksDialog } from "../components/ingredients/ingredient-purchase-links-manager";
+import {
+  IngredientPurchaseLinksDialog,
+  resolveIngredientPurchaseLinkInitialEditingId,
+  shouldCloseIngredientPurchaseLinksOnCancel
+} from "../components/ingredients/ingredient-purchase-links-manager";
 import {
   buildIngredientPurchaseLinkView,
   detectIngredientPurchaseMarketplaceByHost,
@@ -118,5 +122,56 @@ describe("ingredient purchase links", () => {
     expect(html).toContain('aria-label="Удалить ссылку"');
     expect(html).toContain(">Добавить ссылку<");
     expect(html).not.toContain(">https://ozon.ru/product/citra<");
+  });
+
+  it("resolves auto-create mode only for empty link collections", () => {
+    expect(resolveIngredientPurchaseLinkInitialEditingId({
+      autoStartCreateWhenEmpty: true,
+      linksCount: 0
+    })).toBe("new");
+    expect(resolveIngredientPurchaseLinkInitialEditingId({
+      autoStartCreateWhenEmpty: true,
+      linksCount: 2
+    })).toBeNull();
+    expect(resolveIngredientPurchaseLinkInitialEditingId({
+      autoStartCreateWhenEmpty: false,
+      linksCount: 0
+    })).toBeNull();
+  });
+
+  it("closes the modal on cancel only for the very first link draft", () => {
+    expect(shouldCloseIngredientPurchaseLinksOnCancel({
+      editingId: "new",
+      linksCount: 0
+    })).toBe(true);
+    expect(shouldCloseIngredientPurchaseLinksOnCancel({
+      editingId: "new",
+      linksCount: 2
+    })).toBe(false);
+    expect(shouldCloseIngredientPurchaseLinksOnCancel({
+      editingId: "link-1",
+      linksCount: 1
+    })).toBe(false);
+  });
+
+  it("opens straight into link input when empty-state auto-create is enabled", () => {
+    const html = renderToStaticMarkup(React.createElement(IngredientPurchaseLinksDialog, {
+      open: true,
+      onClose: () => undefined,
+      reference: {
+        source: "catalog",
+        id: "cat-hop-empty"
+      },
+      initialLinks: [],
+      autoStartCreateWhenEmpty: true
+    }));
+
+    expect(html).toContain('placeholder="https://..."');
+    expect(html).toContain('aria-label="Ссылка"');
+    expect(html).toContain(">Добавить<");
+    expect(html).not.toContain(">Добавить ссылку<");
+    expect(html).not.toContain("Ссылок на покупку пока нет");
+    expect(html).not.toContain("Покупка");
+    expect(html).not.toContain("Ссылка на покупку");
   });
 });

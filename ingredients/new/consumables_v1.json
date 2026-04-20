@@ -1,0 +1,87 @@
+{
+  "schema_version": "brewing_consumables_split_manifest_v1",
+  "source_catalog": "consumables_v4_patch_proposal.json / brewing_consumables_unified_v4_stock_aware",
+  "target_catalog": {
+    "catalog_name": "Пивоваренные расходники",
+    "catalog_name_en": "Brewing Consumables",
+    "top_level_type": "consumable",
+    "scope": "Эксплуатационные расходники, мойка, санитация, тара, укупорка и газы."
+  },
+  "split_rationale_ru": [
+    "В эту категорию попадает то, что пивовар держит как хозрасходник или packaging/serving inventory, а не как рецептурную добавку.",
+    "First-level flow тоже должен быть group-first, без упора на бренды.",
+    "Тара и укупорка требуют count-based inventory flow; санитайзеры и мойка — function-first flow."
+  ],
+  "primary_quick_filter_chips_ru": [
+    "Санитайзеры",
+    "Мойка",
+    "Тара",
+    "Укупорка",
+    "Газы"
+  ],
+  "secondary_chips_by_primary_ru": {
+    "Санитайзеры": [
+      "No-rinse",
+      "Низкопенные",
+      "Йодофор",
+      "PAA"
+    ],
+    "Мойка": [
+      "Щелочная",
+      "Кислотная",
+      "CIP",
+      "Для линий"
+    ],
+    "Тара": [
+      "Банки",
+      "Стекло",
+      "ПЭТ"
+    ],
+    "Укупорка": [
+      "Кронен 26",
+      "Кронен 29",
+      "Баночные крышки",
+      "O2 cap"
+    ],
+    "Газы": [
+      "Картриджи",
+      "Баллоны"
+    ]
+  },
+  "existing_category_to_new_group": {
+    "sanitizer": "Санитайзеры",
+    "cleaner": "Мойка",
+    "packaging": "Тара/Укупорка",
+    "gas": "Газы"
+  },
+  "item_ids": [
+    "acid-beerstone-remover",
+    "pbw-liquid-cleaner",
+    "alkaline-low-foam-cip-cleaner",
+    "alkaline-brewery-cleaner-powder",
+    "pbw-tablets-large",
+    "pbw-tablets-small",
+    "caustic-alkali-cleaner",
+    "liquid-line-cleaner",
+    "oxygen-based-cleaner",
+    "co2-threaded-cartridge",
+    "co2-cylinder-filled",
+    "aluminum-can-330-with-lids",
+    "aluminum-can-500-with-lids",
+    "can-lids-cdl202",
+    "crown-caps-26mm",
+    "crown-caps-29mm",
+    "crown-caps-26mm-oxygen-scavenging",
+    "glass-beer-bottle-330-crown-26",
+    "glass-beer-bottle-500-crown-26",
+    "pet-beer-bottle-1l-screwcap",
+    "swing-top-bottle-500",
+    "bio-san-acid-no-rinse-sanitizer",
+    "brew-san-acid-no-rinse-sanitizer",
+    "chemipro-san-acid-no-rinse-sanitizer",
+    "star-san-acid-no-rinse-sanitizer",
+    "saniclean-low-foam-acid-sanitizer",
+    "iodophor-sanitizer",
+    "peracetic-acid-sanitizer"
+  ]
+}

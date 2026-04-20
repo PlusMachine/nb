@@ -17,6 +17,17 @@ import {
 
 import type { IngredientCategory } from "@/features/ingredients/contracts";
 import {
+  consumableInventoryAdditiveGroups,
+  consumableInventorySupplyGroups,
+  isConsumableInventoryBroadGroup,
+  resolveConsumableInventoryBroadGroup,
+  resolveConsumablePickerGroupLabel
+} from "@/features/ingredients/consumables";
+import {
+  ingredientPickerFermentableQuickStartGroupOrder,
+  resolveFermentableQuickStartGroupLabel
+} from "@/features/ingredients/picker-quick-start";
+import {
   defaultInventorySortOption,
   defaultInventoryShowFinished,
   buildInventoryToolbarHref,
@@ -113,6 +124,23 @@ const categoryMeta: Record<PrimaryButtonKey, {
   }
 };
 
+const fermentableChipValues = [
+  "malt",
+  ...ingredientPickerFermentableQuickStartGroupOrder
+] as const;
+
+const resolveConsumableToolbarBroadGroup = (group?: string | null) => {
+  if (!group) {
+    return null;
+  }
+
+  return isConsumableInventoryBroadGroup(group)
+    ? group
+    : resolveConsumableInventoryBroadGroup({
+      sourceCategory: group
+    });
+};
+
 export function InventoryToolbar({
   search,
   category,
@@ -206,6 +234,9 @@ export function InventoryToolbar({
     search: searchValue,
     visibleItemCount: effectiveVisibleItemCount
   });
+  const activeConsumableBroadGroup = category === "consumable"
+    ? resolveConsumableToolbarBroadGroup(group)
+    : null;
 
   const handlePrimaryFilterClick = (nextKey: PrimaryButtonKey) => {
     const isActive = (
@@ -213,8 +244,8 @@ export function InventoryToolbar({
       || (nextKey === "hop" && category === "hop")
       || (nextKey === "yeast" && category === "yeast")
       || (nextKey === "water_treatment" && category === "water_treatment")
-      || (nextKey === "consumable_supply" && category === "consumable" && group === "inventory_supplies")
-      || (nextKey === "consumable_additive" && category === "consumable" && group === "inventory_additives")
+      || (nextKey === "consumable_supply" && category === "consumable" && activeConsumableBroadGroup === "inventory_supplies")
+      || (nextKey === "consumable_additive" && category === "consumable" && activeConsumableBroadGroup === "inventory_additives")
     );
 
     if (isActive) {
@@ -230,7 +261,7 @@ export function InventoryToolbar({
     }
 
     const nextState = nextKey === "fermentable"
-      ? { category: "fermentable" as const, subtype: subtype ?? "fermentable", group: null }
+      ? { category: "fermentable" as const, subtype: null, group: null }
       : nextKey === "consumable_supply"
         ? { category: "consumable" as const, subtype: null, group: "inventory_supplies" }
         : nextKey === "consumable_additive"
@@ -247,12 +278,37 @@ export function InventoryToolbar({
     }));
   };
 
-  const handleSubtypeClick = (nextSubtype: "malt" | "fermentable") => {
+  const handleFermentableChipClick = (nextValue: (typeof fermentableChipValues)[number]) => {
+    const isActive = nextValue === "malt"
+      ? subtype === "malt" && !group
+      : subtype === "fermentable" && group === nextValue;
+
     replaceHref(buildInventoryToolbarHref(pathname, {
       search: searchValue,
       category: "fermentable",
-      subtype: nextSubtype,
-      group: null,
+      subtype: isActive
+        ? null
+        : nextValue === "malt"
+          ? "malt"
+          : "fermentable",
+      group: isActive || nextValue === "malt" ? null : nextValue,
+      showFinished,
+      sort
+    }));
+  };
+
+  const handleConsumableChipClick = (nextValue: string) => {
+    if (!activeConsumableBroadGroup) {
+      return;
+    }
+
+    const isActive = group === nextValue;
+
+    replaceHref(buildInventoryToolbarHref(pathname, {
+      search: searchValue,
+      category: "consumable",
+      subtype: null,
+      group: isActive ? activeConsumableBroadGroup : nextValue,
       showFinished,
       sort
     }));
@@ -287,13 +343,13 @@ export function InventoryToolbar({
       key: "consumable_supply" as const,
       label: inventoryPrimaryGroupLabels.consumable_supply,
       count: counts.byPrimaryGroup.consumable_supply,
-      active: category === "consumable" && group === "inventory_supplies"
+      active: category === "consumable" && activeConsumableBroadGroup === "inventory_supplies"
     },
     {
       key: "consumable_additive" as const,
       label: inventoryPrimaryGroupLabels.consumable_additive,
       count: counts.byPrimaryGroup.consumable_additive,
-      active: category === "consumable" && group === "inventory_additives"
+      active: category === "consumable" && activeConsumableBroadGroup === "inventory_additives"
     }
   ];
 
@@ -337,18 +393,41 @@ export function InventoryToolbar({
 
       {category === "fermentable" ? (
         <div className="flex flex-wrap gap-1.5" data-testid="inventory-fermentable-subfilters">
-          {(["fermentable", "malt"] as const).map((value) => (
+          {fermentableChipValues.map((value) => (
             <button
               key={value}
               type="button"
-              onClick={() => handleSubtypeClick(value)}
+              onClick={() => handleFermentableChipClick(value)}
               className={`rounded-full border px-3 py-1.5 text-xs font-medium transition-all duration-150 ${
-                subtype === value
+                (value === "malt" && subtype === "malt" && !group)
+                || (value !== "malt" && subtype === "fermentable" && group === value)
                   ? "border-amber-300 bg-amber-50 text-amber-900 shadow-sm"
                   : "border-zinc-200 bg-white text-zinc-600 hover:border-zinc-300 hover:bg-zinc-50"
               }`}
             >
-              {inventoryFermentableSubtypeLabels[value]}
+              {value === "malt" ? inventoryFermentableSubtypeLabels.malt : resolveFermentableQuickStartGroupLabel(value)}
+            </button>
+          ))}
+        </div>
+      ) : null}
+
+      {category === "consumable" && activeConsumableBroadGroup ? (
+        <div className="flex flex-wrap gap-1.5" data-testid="inventory-consumable-subfilters">
+          {(activeConsumableBroadGroup === "inventory_supplies"
+            ? consumableInventorySupplyGroups
+            : consumableInventoryAdditiveGroups
+          ).map((value) => (
+            <button
+              key={value}
+              type="button"
+              onClick={() => handleConsumableChipClick(value)}
+              className={`rounded-full border px-3 py-1.5 text-xs font-medium transition-all duration-150 ${
+                group === value
+                  ? "border-amber-300 bg-amber-50 text-amber-900 shadow-sm"
+                  : "border-zinc-200 bg-white text-zinc-600 hover:border-zinc-300 hover:bg-zinc-50"
+              }`}
+            >
+              {resolveConsumablePickerGroupLabel(value) ?? value}
             </button>
           ))}
         </div>

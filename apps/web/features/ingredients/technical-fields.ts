@@ -218,6 +218,16 @@ export const resolveIngredientTechnicalDataColorRangeEbc = (
   }
 
   const fermentable = technicalData as Extract<IngredientTechnicalData, { type: "malt" | "fermentable" }>;
+  if (technicalData.type === "fermentable") {
+    const directRange = resolveIngredientColorRangeEbc(
+      fermentable.colorEbcMin,
+      fermentable.colorEbcMax
+    );
+    if (directRange) {
+      return directRange;
+    }
+  }
+
   const colorLovibond = typeof fermentable.colorLovibond === "number" ? fermentable.colorLovibond : null;
   const ebc = lovibondToEbc(colorLovibond ?? null);
   return ebc == null
@@ -312,6 +322,11 @@ const fromAttributes = (
   }
 
   if (type === "fermentable") {
+    const colorRange = resolveIngredientColorRangeEbc(
+      readNumber(attributes.color_ebc_min),
+      readNumber(attributes.color_ebc_max)
+    );
+
     return {
       type,
       fermentabilityClass: readString(attributes.fermentability_class),
@@ -328,7 +343,11 @@ const fromAttributes = (
       displayTypeRu: readString(attributes.display_type_ru),
       displayTypeEn: readString(attributes.display_type_en),
       extractPctDryBasis: readNumber(attributes.extract_pct_dry_basis),
-      colorLovibond: sanitizeIngredientColorValue(readNumber(attributes.color_lovibond)),
+      colorEbcMin: colorRange?.min ?? null,
+      colorEbcMax: colorRange?.max ?? null,
+      colorLovibond: sanitizeIngredientColorValue(readNumber(attributes.color_lovibond))
+        ?? (colorRange ? toLovibondFromEbc(colorRange.average) : null),
+      colorEbcIsApprox: readBoolean(attributes.color_ebc_is_approx),
       recommendedMaxPct: readNumber(attributes.recommended_max_pct),
       isUsableInBeerGravityCalculations: readBoolean(attributes.is_usable_in_beer_gravity_calculations),
       beerRelevance: readString(attributes.beer_relevance)
@@ -345,6 +364,8 @@ const fromAttributes = (
       form,
       yeastFamily: readString(attributes.yeast_family),
       birrfCategory: readString(attributes.birrf_category),
+      attenuationPctMin: readNumber(attributes.attenuation_pct_min),
+      attenuationPctMax: readNumber(attributes.attenuation_pct_max),
       attenuationPctTypical: readNumber(attributes.attenuation_pct_typical),
       flocculation: readString(attributes.flocculation),
       fermentationTempCMin: readNumber(attributes.fermentation_temp_c_min),
@@ -482,6 +503,8 @@ export const extractIngredientTechnicalData = (source: IngredientTechnicalSource
     return {
       type,
       extractPctDryBasis: readNumber(source.fermentableExtractYieldPct),
+      colorEbcMin: colorEbc,
+      colorEbcMax: colorEbc,
       colorLovibond: colorLovibond ?? (colorEbc == null ? null : toLovibondFromEbc(colorEbc))
     } as IngredientTechnicalData;
   }

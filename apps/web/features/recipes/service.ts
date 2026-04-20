@@ -14,7 +14,6 @@ import {
   calculateAbv,
   calculateBitterness,
   calculateColor,
-  calculateFg,
   calculateOg,
   evaluateStyleFit,
   getStyleRangeById,
@@ -38,6 +37,7 @@ import {
   type RecipeImportedIngredientSnapshot,
   type RecipeInventoryIntentMode,
   type RecipeInventorySelectionMeta,
+  type RecipeProcessMeta,
   type RecipePublicationState,
   type RecipeWaterPlanMeta,
   type RecipeVersionOptionDto,
@@ -46,6 +46,7 @@ import {
 import { equipmentProfileSnapshotSchema, type EquipmentProfileSnapshot } from "../equipment-profiles/contracts";
 import { calculateEquipmentVolumePlan } from "../equipment-profiles/volume-plan";
 import { getRecipePublicationFieldErrors } from "./publication-validation";
+import { calculateRecipeFgEstimate } from "./fg-estimate";
 import {
   normalizeRecipeBatchSize,
   normalizeRecipeIngredientAmountWithSource,
@@ -74,7 +75,6 @@ import {
 import { resolveInventoryUnitProfile } from "../inventory/units";
 
 const DEFAULT_EFFICIENCY = 75;
-const DEFAULT_ATTENUATION = 75;
 const DEFAULT_BATCH_SIZE_ENTERED_QUANTITY = 20;
 const DEFAULT_BATCH_SIZE_ENTERED_UNIT = "l";
 const DEFAULT_BOIL_TIME_MINUTES = 60;
@@ -977,22 +977,28 @@ const sortRecipeIngredientsByDisplayOrder = (
 const mapRecipeDetailDto = async (
   recipe: typeof recipes.$inferSelect,
   ingredients: Array<typeof recipeIngredients.$inferSelect>
-): Promise<RecipeDetailDto> => ({
-  ...mapRecipeListDto(recipe),
-  description: recipe.description,
-  authorNotes: recipe.authorNotes,
-  processMeta: parseRecipeProcessMeta(recipe.processMeta as Record<string, unknown> | null | undefined),
-  calculationMeta: parseRecipeCalculationMeta(recipe.calculationMeta as Record<string, unknown> | null | undefined),
-  draftState: (recipe.draftState as Record<string, unknown> | null | undefined) ?? null,
-  importMeta: (recipe.importMeta as Record<string, unknown> | null | undefined) ?? null,
-  equipmentProfileId: recipe.equipmentProfileId ?? null,
-  equipmentProfileSnapshot: parseRecipeEquipmentProfileSnapshot(recipe.equipmentProfileSnapshot as Record<string, unknown> | null | undefined),
-  waterPlanMeta: parseRecipeWaterPlanMeta(recipe.waterPlanMeta as Record<string, unknown> | null | undefined),
-  brewPlanMeta: (recipe.brewPlanMeta as Record<string, unknown> | null | undefined) ?? null,
-  heroImageId: recipe.heroImageId,
-  versions: await listRecipeVersions(recipe.authorId, recipe.recipeFamilyId),
-  ingredients: await Promise.all(sortRecipeIngredientsByDisplayOrder(ingredients).map((ingredient) => hydrateRecipeIngredientDto(recipe.authorId, ingredient)))
-});
+) => {
+  const calculationMeta = parseRecipeCalculationMeta(recipe.calculationMeta as Record<string, unknown> | null | undefined);
+
+  return {
+    ...mapRecipeListDto(recipe),
+    description: recipe.description,
+    authorNotes: recipe.authorNotes,
+    processMeta: parseRecipeProcessMeta(recipe.processMeta as Record<string, unknown> | null | undefined),
+    calculationMeta,
+    fgEstimateMode: calculationMeta.fgEstimateMode ?? null,
+    fgEstimateDetails: calculationMeta.fgEstimateDetails ?? null,
+    draftState: (recipe.draftState as Record<string, unknown> | null | undefined) ?? null,
+    importMeta: (recipe.importMeta as Record<string, unknown> | null | undefined) ?? null,
+    equipmentProfileId: recipe.equipmentProfileId ?? null,
+    equipmentProfileSnapshot: parseRecipeEquipmentProfileSnapshot(recipe.equipmentProfileSnapshot as Record<string, unknown> | null | undefined),
+    waterPlanMeta: parseRecipeWaterPlanMeta(recipe.waterPlanMeta as Record<string, unknown> | null | undefined),
+    brewPlanMeta: (recipe.brewPlanMeta as Record<string, unknown> | null | undefined) ?? null,
+    heroImageId: recipe.heroImageId,
+    versions: await listRecipeVersions(recipe.authorId, recipe.recipeFamilyId),
+    ingredients: await Promise.all(sortRecipeIngredientsByDisplayOrder(ingredients).map((ingredient) => hydrateRecipeIngredientDto(recipe.authorId, ingredient)))
+  };
+};
 
 const toRecipeIngredientInsert = (
   recipeId: string,
@@ -1085,6 +1091,7 @@ const computeRecipeStatsSnapshot = (input: {
   batchSizeNormalizedUnit: string;
   efficiency: number | null | undefined;
   boilTimeMinutes: number;
+  processMeta?: RecipeProcessMeta | null;
   calculationMeta: RecipeCalculationMeta;
   equipmentProfileSnapshot?: EquipmentProfileSnapshot | null;
   ingredients: Array<{
@@ -1159,6 +1166,8 @@ const computeRecipeStatsSnapshot = (input: {
       efficiency,
       og: null,
       fg: null,
+      fgEstimateMode: "unavailable" as const,
+      fgEstimateDetails: null,
       abv: null,
       ibu: null,
       bitternessFormula: input.calculationMeta.bitternessFormula,
@@ -1169,7 +1178,24 @@ const computeRecipeStatsSnapshot = (input: {
   const og = fermentables.length
     ? calculateOg({ fermentables, batchVolumeL, brewhouseEfficiencyPercent: efficiency })
     : null;
-  const fg = og ? calculateFg({ og, attenuationPercent: DEFAULT_ATTENUATION }) : null;
+  const fgEstimate = calculateRecipeFgEstimate({
+    og,
+    fermentables: fermentables.map((fermentable, index) => ({
+      name: fermentable.name,
+      weightKg: fermentable.weightKg,
+      potentialPpg: fermentable.potentialPpg,
+      technicalData: input.ingredients.find((ingredient) => ingredient.id === fermentable.id)?.source.technicalData ?? null
+    })),
+    yeasts: input.ingredients
+      .filter((ingredient) => ingredient.type === "yeast")
+      .map((ingredient) => ({
+        name: ingredient.source.displayName,
+        technicalData: ingredient.source.technicalData ?? null
+      })),
+    processMeta: input.processMeta ?? null,
+    calculationMeta: input.calculationMeta
+  });
+  const fg = fgEstimate.predictedFg;
   const abv = og && fg ? calculateAbv(og, fg) : null;
   const totalGrainKg = fermentables.reduce((sum, item) => sum + item.weightKg, 0);
   const volumePlan = input.equipmentProfileSnapshot
@@ -1209,6 +1235,8 @@ const computeRecipeStatsSnapshot = (input: {
     efficiency,
     og,
     fg,
+    fgEstimateMode: fgEstimate.fgEstimateMode,
+    fgEstimateDetails: fgEstimate.fgEstimateDetails,
     abv,
     ibu,
     color,
@@ -1292,9 +1320,15 @@ export const recomputeRecipeStats = async (authorId: string, recipeId: string) =
     batchSizeNormalizedUnit: recipe.batchSizeNormalizedUnit,
     efficiency: recipe.efficiency,
     boilTimeMinutes: recipe.boilTimeMinutes ?? DEFAULT_BOIL_TIME_MINUTES,
+    processMeta: parseRecipeProcessMeta(recipe.processMeta as Record<string, unknown> | null | undefined),
     calculationMeta,
     equipmentProfileSnapshot: parseRecipeEquipmentProfileSnapshot(recipe.equipmentProfileSnapshot as Record<string, unknown> | null | undefined),
     ingredients: hydratedIngredients.filter((ingredient): ingredient is NonNullable<typeof ingredient> => Boolean(ingredient))
+  });
+  const nextCalculationMeta = sanitizeRecipeCalculationMeta({
+    ...calculationMeta,
+    fgEstimateMode: stats.fgEstimateMode,
+    fgEstimateDetails: stats.fgEstimateDetails
   });
 
   const [updated] = await db.update(recipes).set({
@@ -1304,6 +1338,7 @@ export const recomputeRecipeStats = async (authorId: string, recipeId: string) =
     abv: stats.abv,
     ibu: stats.ibu,
     color: stats.color,
+    calculationMeta: nextCalculationMeta,
     updatedAt: new Date()
   }).where(eq(recipes.id, recipeId)).returning();
 
@@ -1703,6 +1738,7 @@ export const previewRecipeDraft = async (authorId: string, payload: unknown): Pr
     batchSizeNormalizedUnit: batchSize.normalizedUnit,
     efficiency: parsed.efficiency,
     boilTimeMinutes: parsed.boilTimeMinutes,
+    processMeta: parseRecipeProcessMeta(parsed.processMeta ?? null),
     calculationMeta,
     equipmentProfileSnapshot: parsed.equipmentProfileSnapshot ?? null,
     ingredients: preparedIngredients.map((ingredient, index) => ({
@@ -1739,6 +1775,8 @@ export const previewRecipeDraft = async (authorId: string, payload: unknown): Pr
     boilTimeMinutes: parsed.boilTimeMinutes,
     og: stats.og,
     fg: stats.fg,
+    fgEstimateMode: stats.fgEstimateMode,
+    fgEstimateDetails: stats.fgEstimateDetails,
     abv: stats.abv,
     ibu: stats.ibu,
     bitternessFormula: stats.bitternessFormula,

@@ -18,7 +18,8 @@ describe("catalog seed data", () => {
       "malt_catalog_minimal_v2.json": 442,
       "fermentables_catalog_minimal_v2.normalized.json": 173,
       "yeasts_catalog_minimal_v2.json": 191,
-      "consumables_v4_patch_proposal.json": 32,
+      "additives_v1.json": 29,
+      "consumables_v1.json": 28,
       "water_treatment_catalog_minimal_v2.json": 28
     });
   });
@@ -26,16 +27,16 @@ describe("catalog seed data", () => {
   it("prepares canonical ingredients from the new catalog only", () => {
     const prepared = catalogSeedManifest.flatMap((spec) => prepareCatalogSeedFile(spec));
 
-    expect(prepared).toHaveLength(1084);
+    expect(prepared).toHaveLength(1109);
     expect(prepared.filter((item) => item.ingredient.type === "hop")).toHaveLength(218);
     expect(prepared.filter((item) => item.ingredient.type === "malt")).toHaveLength(442);
     expect(prepared.filter((item) => item.ingredient.type === "fermentable")).toHaveLength(173);
     expect(prepared.filter((item) => item.ingredient.type === "yeast")).toHaveLength(191);
-    expect(prepared.filter((item) => item.ingredient.type === "consumable")).toHaveLength(32);
+    expect(prepared.filter((item) => item.ingredient.type === "consumable")).toHaveLength(57);
     expect(prepared.filter((item) => item.ingredient.type === "water_treatment")).toHaveLength(28);
   });
 
-  it("seeds package variants only for consumables", () => {
+  it("seeds package variants only for additive/consumable split items", () => {
     const prepared = catalogSeedManifest.flatMap((spec) => prepareCatalogSeedFile(spec));
     const withPackageVariants = prepared.filter((item) => item.packageVariants.length > 0);
     const withoutConsumables = prepared.filter((item) => (
@@ -43,17 +44,17 @@ describe("catalog seed data", () => {
       && item.packageVariants.length > 0
     ));
 
-    expect(withPackageVariants).toHaveLength(32);
-    expect(withPackageVariants.flatMap((item) => item.packageVariants)).toHaveLength(86);
+    expect(withPackageVariants).toHaveLength(57);
+    expect(withPackageVariants.flatMap((item) => item.packageVariants)).toHaveLength(125);
     expect(withoutConsumables).toHaveLength(0);
   });
 
-  it("preserves new consumable runtime/search fields from the v4 seed", () => {
+  it("preserves runtime/search fields when split manifests resolve legacy consumable data", () => {
     const prepared = prepareCatalogSeedFile({
-      fileName: "consumables_v4_patch_proposal.json",
+      fileName: "consumables_v1.json",
       type: "consumable"
     });
-    const starSan = prepared.find((item) => item.ingredient.id === "acid-no-rinse-sanitizer");
+    const starSan = prepared.find((item) => item.ingredient.id === "star-san-acid-no-rinse-sanitizer");
     const attributes = starSan?.ingredient.attributes ?? {};
 
     expect(attributes).toMatchObject({
@@ -64,9 +65,9 @@ describe("catalog seed data", () => {
       brand_family_mode: "matched_variant_brand"
     });
     expect(Array.isArray(attributes.market_names_en) ? attributes.market_names_en : []).toContain("Star San");
-    expect(Array.isArray(attributes.search_priority_terms_ru) ? attributes.search_priority_terms_ru : []).toContain("санитайзер");
+    expect(Array.isArray(attributes.search_priority_terms_ru) ? attributes.search_priority_terms_ru : []).toContain("санитайзер без смывания");
     expect(starSan?.aliases.some((alias) => alias.source === "seed_market_name" && alias.alias === "Star San")).toBe(true);
-    expect(starSan?.aliases.some((alias) => alias.source === "seed_priority_term" && alias.alias === "санитайзер")).toBe(true);
+    expect(starSan?.aliases.some((alias) => alias.source === "seed_priority_term" && alias.alias === "санитайзер без смывания")).toBe(true);
     expect(starSan?.packageVariants.some((variant) => variant.productNameEn === "Star San")).toBe(true);
   });
 

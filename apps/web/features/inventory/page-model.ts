@@ -7,8 +7,10 @@ import { ingredientTypes } from "../ingredients/contracts";
 import {
   isConsumableInventoryBroadGroup,
   resolveConsumableInventoryBroadGroup,
-  resolveConsumableInventoryBroadGroupLabel
+  resolveConsumableInventoryBroadGroupLabel,
+  resolveConsumablePickerGroupLabel
 } from "../ingredients/consumables";
+import { resolveFermentableQuickStartGroupLabel } from "../ingredients/picker-quick-start";
 import {
   resolveIngredientCategory,
   resolveIngredientSubtype
@@ -171,8 +173,20 @@ export const resolveInventoryFilterLabel = ({
     return resolveConsumableInventoryBroadGroupLabel(group);
   }
 
+  if (category === "consumable" && group) {
+    return resolveConsumablePickerGroupLabel(group) ?? group;
+  }
+
+  if (category === "fermentable" && group) {
+    return resolveFermentableQuickStartGroupLabel(group) ?? group;
+  }
+
+  if (category === "fermentable" && subtype === "malt") {
+    return inventoryFermentableSubtypeLabels.malt;
+  }
+
   if (category === "fermentable" && subtype) {
-    return inventoryFermentableSubtypeLabels[subtype];
+    return inventoryCategoryLabels.fermentable;
   }
 
   return inventoryCategoryLabels[category];

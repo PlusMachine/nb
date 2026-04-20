@@ -93,7 +93,10 @@ export type FermentableTechnicalData = {
   displayTypeRu?: string | null;
   displayTypeEn?: string | null;
   extractPctDryBasis?: number | null;
+  colorEbcMin?: number | null;
+  colorEbcMax?: number | null;
   colorLovibond?: number | null;
+  colorEbcIsApprox?: boolean | null;
   recommendedMaxPct?: number | null;
   isUsableInBeerGravityCalculations?: boolean | null;
   beerRelevance?: string | null;
@@ -104,6 +107,8 @@ export type YeastTechnicalData = {
   form?: string | null;
   yeastFamily?: string | null;
   birrfCategory?: string | null;
+  attenuationPctMin?: number | null;
+  attenuationPctMax?: number | null;
   attenuationPctTypical?: number | null;
   flocculation?: string | null;
   fermentationTempCMin?: number | null;

@@ -32,23 +32,27 @@ export function InventoryPurchaseLinksTrigger({
           title="Ссылки на покупку"
         >
           <span className="inline-flex items-center gap-1">
-            {marketplaces.slice(0, 4).map((marketplace) => (
+            {marketplaces.slice(0, 5).map((marketplace) => (
               <PurchaseLinkMarketplaceBadge
                 key={`inventory-link-badge-${reference.source}-${reference.id}-${marketplace}`}
                 marketplace={marketplace}
-                className="h-5 min-w-5 px-1 text-[9px]"
+                size="sm"
               />
             ))}
           </span>
           {count > 4 ? (
             <span className="text-[11px] text-zinc-400">+{count - 4}</span>
           ) : null}
+          <span className="hidden text-[11px] font-medium text-zinc-500 group-hover:inline">
+            ссылка на покупку
+          </span>
         </button>
 
         <IngredientPurchaseLinksDialog
           open={open}
           onClose={() => setOpen(false)}
           reference={reference}
+          autoStartCreateWhenEmpty
         />
       </>
     );
@@ -70,6 +74,7 @@ export function InventoryPurchaseLinksTrigger({
         open={open}
         onClose={() => setOpen(false)}
         reference={reference}
+        autoStartCreateWhenEmpty
       />
     </>
   );

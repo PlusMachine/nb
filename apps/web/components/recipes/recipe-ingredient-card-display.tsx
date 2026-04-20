@@ -95,7 +95,7 @@ const formatPercentRange = ({
 const ebcToSrm = (value: number) => value / 1.97;
 
 const resolveColorBadgeAccent = (technicalData: IngredientTechnicalData | null | undefined): RecipeIngredientBadgeAccent | null => {
-  if (!technicalData || technicalData.type !== "malt") {
+  if (!technicalData || (technicalData.type !== "malt" && technicalData.type !== "fermentable")) {
     return null;
   }
 

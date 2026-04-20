@@ -25,6 +25,7 @@ import {
   RecipeIngredientRow
 } from "../components/recipes/recipe-ingredient-row";
 import { RecipeStatsPreview } from "../components/recipes/recipe-stats-preview";
+import { defaultRecipeProcessMeta, type RecipeDetailDto } from "../features/recipes/contracts";
 import { buildRecipePublicationChecklist } from "../features/recipes/publication-validation";
 
 vi.mock("next/navigation", () => ({
@@ -71,6 +72,39 @@ const buildRow = (overrides: Partial<Parameters<typeof getRecipeIngredientValida
   amountEnteredUnit: "g",
   stage: "boil" as const,
   timeOffset: "60",
+  ...overrides
+});
+
+const buildRecipeDetail = (overrides: Partial<RecipeDetailDto> = {}): RecipeDetailDto => ({
+  id: "recipe-1",
+  authorId: "user-1",
+  recipeFamilyId: "family-1",
+  versionNumber: 1,
+  versionCount: 1,
+  publicationState: "private",
+  title: "Тестовый рецепт",
+  slug: "test-recipe",
+  styleId: null,
+  batchSizeEnteredQuantity: 20,
+  batchSizeEnteredUnit: "l",
+  batchSizeNormalizedQuantity: 20000,
+  batchSizeNormalizedUnit: "ml",
+  efficiency: 75,
+  boilTimeMinutes: 60,
+  og: null,
+  fg: null,
+  abv: null,
+  ibu: null,
+  color: null,
+  createdAt: new Date("2026-04-20T10:00:00Z"),
+  updatedAt: new Date("2026-04-20T10:00:00Z"),
+  description: null,
+  authorNotes: null,
+  processMeta: defaultRecipeProcessMeta,
+  calculationMeta: null,
+  heroImageId: null,
+  ingredients: [],
+  versions: [],
   ...overrides
 });
 
@@ -315,7 +349,7 @@ describe("recipe editor components", () => {
     );
 
     expect(html).toContain("Предпросмотр статистики");
-    expect(html).toContain("OG");
+    expect(html).toContain("НП");
     expect(html).toContain("20 l");
   });
 
@@ -356,14 +390,31 @@ describe("recipe editor components", () => {
     expect(html).toContain("Импорт / экспорт");
     expect(html).toContain("Начать варку");
     expect(html).toContain("Mash Profile");
+    expect(html).toContain("aria-label=\"Открыть настройки КП\"");
     expect(html).toContain("(0)");
     expect(html).not.toContain('value="67"');
     expect(html).not.toContain("Equipment profile");
     expect(html).not.toContain("Brew mode");
     expect(html).not.toContain("foundation");
     expect(html).not.toContain("snapshot");
+    expect(html).not.toContain("FG / КП");
+    expect(html).not.toContain("Ожидаемая attenuation, %");
+    expect(html).not.toContain("Зафиксировать КП вручную");
     expect(html).not.toContain("Сохранить");
     expect(html).not.toContain("Публикация");
+  });
+
+  it("shows the selected BJCP style as a native link inside batch parameters", () => {
+    const html = renderToStaticMarkup(React.createElement(RecipeDesigner, {
+      mode: "edit",
+      initialRecipe: buildRecipeDetail({
+        styleId: "1A"
+      })
+    }));
+
+    expect(html).toContain("BJCP 1A · Описание стиля");
+    expect(html).toContain('href="/bjcp/bjcp-1a-american-light-lager"');
+    expect(html).not.toContain("Открыть стиль в справочнике");
   });
 
   it("builds publication readiness checklist for publish action", () => {

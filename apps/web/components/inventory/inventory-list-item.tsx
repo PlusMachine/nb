@@ -503,7 +503,7 @@ export function InventoryListItem({
         </div>
 
         <div className="flex shrink-0 flex-col items-end">
-          <InventoryQuantityEditor item={item} showFinishedAction={false} />
+          <InventoryQuantityEditor item={item} showFinishedAction={false} showEquivalentHint={false} />
         </div>
       </div>
     </li>

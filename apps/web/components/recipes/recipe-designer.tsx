@@ -1,11 +1,12 @@
 "use client";
 
-import { beerStyleFixtures, convertVolume, convertWeight, evaluateStyleFit, getBeerStyleById, getStyleRangeById, srmToEbc } from "@nb/brewing-core";
+import { beerStyleFixtures, convertVolume, convertWeight, evaluateStyleFit, getBeerStyleById, getBjcpArticleHrefByStyleId, getStyleRangeById, srmToEbc } from "@nb/brewing-core";
 import {
   CircleCheck,
   CircleAlert,
   ChevronRight,
   Droplets,
+  ExternalLink,
   FileText,
   FlaskConical,
   Hop,
@@ -130,6 +131,10 @@ import {
   buildRecipePublicationChecklist,
   getRecipePublicationFieldErrors
 } from "@/features/recipes/publication-validation";
+import {
+  resolveRecipeFgHelperText,
+  resolveRecipeFgSourceLabel
+} from "@/features/recipes/fg-estimate";
 import { globalBrewingRanges } from "@/features/recipes/style-ranges";
 import {
   buildRecipeWaterPlanResult,
@@ -184,12 +189,12 @@ const recipeIngredientCategoryOptions: Array<{
   icon: React.ComponentType<{ className?: string }>;
   iconClassName: string;
 }> = [
-  { value: "fermentable", label: "Сбраживаемое", icon: Wheat, iconClassName: "text-amber-600" },
-  { value: "hop", label: "Хмель", icon: Hop, iconClassName: "text-emerald-600" },
-  { value: "yeast", label: "Дрожжи", icon: FlaskConical, iconClassName: "text-violet-600" },
-  { value: "water_treatment", label: "Водоподготовка", icon: Droplets, iconClassName: "text-sky-600" },
-  { value: "consumable", label: "Расходники", icon: Package, iconClassName: "text-zinc-500" }
-];
+    { value: "fermentable", label: "Сбраживаемое", icon: Wheat, iconClassName: "text-amber-600" },
+    { value: "hop", label: "Хмель", icon: Hop, iconClassName: "text-emerald-600" },
+    { value: "yeast", label: "Дрожжи", icon: FlaskConical, iconClassName: "text-violet-600" },
+    { value: "water_treatment", label: "Водоподготовка", icon: Droplets, iconClassName: "text-sky-600" },
+    { value: "consumable", label: "Расходники", icon: Package, iconClassName: "text-zinc-500" }
+  ];
 
 export type RecipeFermentablePickerScope =
   | "malt"
@@ -311,11 +316,10 @@ function RecipeIngredientCategoryGrid({
 
                 onChange(option.value);
               }}
-              className={`rounded-md border px-3 py-2 text-xs transition ${
-                value === option.value
-                  ? "border-black bg-zinc-100 text-zinc-950"
-                  : "border-zinc-200 bg-white text-zinc-600 hover:border-zinc-300 hover:bg-zinc-50"
-              }`}
+              className={`rounded-md border px-3 py-2 text-xs transition ${value === option.value
+                ? "border-black bg-zinc-100 text-zinc-950"
+                : "border-zinc-200 bg-white text-zinc-600 hover:border-zinc-300 hover:bg-zinc-50"
+                }`}
             >
               <span className="inline-flex items-center gap-1.5 whitespace-nowrap">
                 <Icon className={`h-3.5 w-3.5 shrink-0 ${value === option.value ? "text-current" : option.iconClassName}`} />
@@ -392,11 +396,10 @@ function RecipeFermentableScopePicker({
               key={option.value}
               type="button"
               onClick={() => onChange(active ? null : option.value)}
-              className={`inline-flex items-center rounded-full border px-3 py-1.5 text-xs font-medium transition-colors ${
-                active
-                  ? "border-zinc-950 bg-zinc-950 text-white"
-                  : "border-zinc-200 bg-white text-zinc-700 hover:border-zinc-300 hover:bg-zinc-50"
-              }`}
+              className={`inline-flex items-center rounded-full border px-3 py-1.5 text-xs font-medium transition-colors ${active
+                ? "border-zinc-950 bg-zinc-950 text-white"
+                : "border-zinc-200 bg-white text-zinc-700 hover:border-zinc-300 hover:bg-zinc-50"
+                }`}
             >
               {option.label}
             </button>
@@ -545,7 +548,13 @@ const cloneRecipeCalculationMeta = (value?: RecipeCalculationMeta | null): Recip
   bitternessFormula: value?.bitternessFormula ?? "tinseth_whirlpool_v2",
   bitternessSettings: {
     ...(value?.bitternessSettings ?? {})
-  }
+  },
+  fgEstimateMode: value?.fgEstimateMode ?? null,
+  manualAttenuationOverridePct: value?.manualAttenuationOverridePct ?? null,
+  manualFgOverrideValue: value?.manualFgOverrideValue ?? null,
+  fgEstimateDetails: value?.fgEstimateDetails ? {
+    ...value.fgEstimateDetails
+  } : null
 });
 
 const cloneRecipeWaterPlanMeta = (value?: RecipeWaterPlanMeta | null): RecipeWaterPlanMeta => ({
@@ -1208,6 +1217,8 @@ const buildInitialPreview = (recipe?: RecipeDetailDto): RecipeDraftPreviewDto | 
     boilTimeMinutes: recipe.boilTimeMinutes,
     og: recipe.og,
     fg: recipe.fg,
+    fgEstimateMode: recipe.fgEstimateMode ?? recipe.calculationMeta?.fgEstimateMode ?? (recipe.fg != null ? "default_estimate" : "unavailable"),
+    fgEstimateDetails: recipe.fgEstimateDetails ?? recipe.calculationMeta?.fgEstimateDetails ?? null,
     abv: recipe.abv,
     ibu: recipe.ibu,
     bitternessFormula: recipe.calculationMeta?.bitternessFormula ?? "tinseth_whirlpool_v2",
@@ -1696,13 +1707,11 @@ const formatGravityPlato = (sg: number | null) => {
 function RecipeStyleStatsBlock({
   preview,
   recalculating,
-  previewError,
-  onOpenBitternessSettings
+  previewError
 }: {
   preview: RecipeDraftPreviewDto | null;
   recalculating: boolean;
   previewError: string | null;
-  onOpenBitternessSettings: () => void;
 }) {
   const hasStyleRange = Boolean(preview?.styleRange);
   const hasCalculatedMetrics = [preview?.og, preview?.fg, preview?.abv, preview?.ibu, preview?.color].some((value) => value != null);
@@ -1712,7 +1721,7 @@ function RecipeStyleStatsBlock({
 
   const items = [
     {
-      label: "OG",
+      label: "НП",
       valueLabel: preview?.og != null ? `${preview.og.toFixed(3)} · ${formatGravityPlato(preview.og)}` : "—",
       actualValue: preview?.og ?? null,
       globalRange: globalBrewingRanges.og,
@@ -1722,7 +1731,7 @@ function RecipeStyleStatsBlock({
       status: hasStyleRange && preview?.og != null ? fit?.og.status ?? null : null
     },
     {
-      label: "FG",
+      label: "КП",
       valueLabel: preview?.fg != null ? `${preview.fg.toFixed(3)} · ${formatGravityPlato(preview.fg)}` : "—",
       actualValue: preview?.fg ?? null,
       globalRange: globalBrewingRanges.fg,
@@ -1797,16 +1806,6 @@ function RecipeStyleStatsBlock({
             <div key={item.label} className="group grid items-center gap-x-2 rounded-lg px-1 py-1 transition-colors hover:bg-zinc-50 sm:grid-cols-[46px_minmax(0,1fr)_60px]">
               <div className="flex items-center gap-1 text-[11px] font-bold uppercase tracking-wider text-zinc-400">
                 <span>{item.label}</span>
-                {item.label === "IBU" ? (
-                  <button
-                    type="button"
-                    onClick={onOpenBitternessSettings}
-                    className="rounded px-1 text-[12px] leading-none text-zinc-400 hover:bg-zinc-100 hover:text-zinc-800"
-                    aria-label="Открыть настройки расчета горечи"
-                  >
-                    ⚙
-                  </button>
-                ) : null}
               </div>
               <div>
                 <StyleRangeTrack
@@ -1835,6 +1834,225 @@ function RecipeStyleStatsBlock({
   );
 }
 
+const clampNumber = (value: number, min: number, max: number) => Math.min(Math.max(value, min), max);
+
+const formatSignedPctPoints = (value: number) => `${value >= 0 ? "+" : ""}${value.toFixed(2)} п.п.`;
+
+function FgSettingsPopover({
+  preview,
+  calculationMeta,
+  onChange
+}: {
+  preview: RecipeDraftPreviewDto | null;
+  calculationMeta: RecipeCalculationMeta;
+  onChange: React.Dispatch<React.SetStateAction<RecipeCalculationMeta>>;
+}) {
+  const [open, setOpen] = useState(false);
+  const [manualFgEnabled, setManualFgEnabled] = useState(Boolean(calculationMeta.manualFgOverrideValue != null));
+  const [manualAttenuationInput, setManualAttenuationInput] = useState(
+    toInputString(calculationMeta.manualAttenuationOverridePct ?? null)
+  );
+  const [manualFgInput, setManualFgInput] = useState(
+    toInputString(calculationMeta.manualFgOverrideValue ?? null)
+  );
+  const popoverRef = useRef<HTMLDivElement | null>(null);
+  const triggerRef = useRef<HTMLButtonElement | null>(null);
+
+  useEffect(() => {
+    if (calculationMeta.manualFgOverrideValue != null) {
+      setManualFgEnabled(true);
+    }
+  }, [calculationMeta.manualFgOverrideValue]);
+
+  useEffect(() => {
+    setManualAttenuationInput(toInputString(calculationMeta.manualAttenuationOverridePct ?? null));
+  }, [calculationMeta.manualAttenuationOverridePct]);
+
+  useEffect(() => {
+    setManualFgInput(toInputString(calculationMeta.manualFgOverrideValue ?? null));
+  }, [calculationMeta.manualFgOverrideValue]);
+
+  useEffect(() => {
+    if (!open) {
+      return undefined;
+    }
+
+    const handlePointerDown = (event: MouseEvent) => {
+      const target = event.target as Node | null;
+      if (
+        (popoverRef.current && popoverRef.current.contains(target))
+        || (triggerRef.current && triggerRef.current.contains(target))
+      ) {
+        return;
+      }
+
+      closePopover();
+    };
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        closePopover();
+      }
+    };
+
+    document.addEventListener("mousedown", handlePointerDown);
+    document.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      document.removeEventListener("mousedown", handlePointerDown);
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [manualFgEnabled, open, manualAttenuationInput, manualFgInput]);
+
+  const commitManualAttenuation = () => {
+    const parsed = toOptionalNumber(manualAttenuationInput);
+    const nextValue = parsed == null || !Number.isFinite(parsed)
+      ? null
+      : clampNumber(parsed, 60, 90);
+
+    setManualAttenuationInput(toInputString(nextValue));
+    onChange((current) => ({
+      ...current,
+      manualAttenuationOverridePct: nextValue
+    }));
+  };
+
+  const commitManualFg = () => {
+    const parsed = toOptionalNumber(manualFgInput);
+    const nextValue = parsed == null || !Number.isFinite(parsed)
+      ? null
+      : clampNumber(parsed, 0.99, 1.2);
+
+    setManualFgInput(toInputString(nextValue));
+    onChange((current) => ({
+      ...current,
+      manualFgOverrideValue: nextValue
+    }));
+  };
+
+  const closePopover = () => {
+    commitManualAttenuation();
+    if (manualFgEnabled) {
+      commitManualFg();
+    }
+    setOpen(false);
+  };
+
+  return (
+    <div className="relative">
+      <button
+        ref={triggerRef}
+        type="button"
+        onClick={() => {
+          if (open) {
+            closePopover();
+            return;
+          }
+
+          setOpen(true);
+        }}
+        className={`inline-flex h-7 w-7 items-center justify-center rounded-lg text-[13px] leading-none transition-colors hover:bg-zinc-100 hover:text-zinc-700 ${open ? "bg-zinc-100 text-zinc-700" : "text-zinc-400"}`}
+        aria-label="Открыть настройки КП"
+      >
+        ⚙
+      </button>
+
+      {open ? (
+        <div
+          ref={popoverRef}
+          className="absolute right-0 top-9 z-20 w-[min(20rem,calc(100vw-2.5rem))] rounded-2xl border border-zinc-200 bg-white p-3 shadow-xl"
+        >
+          <div className="flex items-start justify-between gap-3">
+            <div>
+              <h4 className="text-sm font-semibold text-zinc-900">Прогноз КП</h4>
+            </div>
+            <button
+              type="button"
+              onClick={closePopover}
+              className="inline-flex h-7 w-7 items-center justify-center rounded-lg text-sm text-zinc-300 transition-colors hover:bg-zinc-100 hover:text-zinc-700"
+              aria-label="Закрыть настройки КП"
+            >
+              ×
+            </button>
+          </div>
+
+          <div className="mt-2.5 space-y-2.5">
+            <label className="space-y-1 text-[11px] font-medium text-zinc-500">
+              Ожидаемая attenuation, %
+              <input
+                type="number"
+                min={60}
+                max={90}
+                step={0.1}
+                disabled={manualFgEnabled}
+                value={manualAttenuationInput}
+                onChange={(event) => setManualAttenuationInput(event.target.value)}
+                onBlur={commitManualAttenuation}
+                onKeyDown={(event) => {
+                  if (event.key === "Enter") {
+                    event.currentTarget.blur();
+                  }
+                }}
+                className={`h-9 w-full rounded-lg border px-2.5 text-sm tabular-nums shadow-sm ${manualFgEnabled
+                  ? "border-zinc-100 bg-zinc-50 text-zinc-400"
+                  : "border-zinc-200 bg-white text-zinc-900"
+                  }`}
+                placeholder="Например, 75"
+              />
+              <span className="block text-[11px] font-normal text-zinc-400">
+                Пусто — использовать авторасчет
+              </span>
+            </label>
+
+            <div className="space-y-1.5">
+              <label className="flex items-center gap-2 text-[11px] font-medium text-zinc-600">
+                <input
+                  type="checkbox"
+                  checked={manualFgEnabled}
+                  onChange={(event) => {
+                    const nextEnabled = event.target.checked;
+                    setManualFgEnabled(nextEnabled);
+                    if (nextEnabled) {
+                      setManualFgInput(toInputString(calculationMeta.manualFgOverrideValue ?? preview?.fg ?? null));
+                    } else {
+                      setManualFgInput("");
+                      onChange((current) => ({
+                        ...current,
+                        manualFgOverrideValue: null
+                      }));
+                    }
+                  }}
+                  className="h-4 w-4 rounded border-zinc-300"
+                />
+                Зафиксировать КП вручную
+              </label>
+
+              {manualFgEnabled ? (
+                <input
+                  type="number"
+                  min={0.99}
+                  max={1.2}
+                  step={0.001}
+                  value={manualFgInput}
+                  onChange={(event) => setManualFgInput(event.target.value)}
+                  onBlur={commitManualFg}
+                  onKeyDown={(event) => {
+                    if (event.key === "Enter") {
+                      event.currentTarget.blur();
+                    }
+                  }}
+                  className="h-9 w-full rounded-lg border border-zinc-200 bg-white px-2.5 text-sm tabular-nums text-zinc-900 shadow-sm"
+                  placeholder={preview?.fg != null ? preview.fg.toFixed(3) : "1.012"}
+                />
+              ) : null}
+            </div>
+          </div>
+        </div>
+      ) : null}
+    </div>
+  );
+}
+
 function RecipeBatchParametersBlock({
   batchSize,
   setBatchSize,
@@ -1842,8 +2060,12 @@ function RecipeBatchParametersBlock({
   setEfficiency,
   boilTimeMinutes,
   setBoilTimeMinutes,
+  styleId,
+  calculationMeta,
+  setCalculationMeta,
   sectionErrors,
-  preview
+  preview,
+  onOpenBitternessSettings
 }: {
   batchSize: { quantity: string; unit: InventoryUnit };
   setBatchSize: React.Dispatch<React.SetStateAction<{ quantity: string; unit: InventoryUnit }>>;
@@ -1851,12 +2073,20 @@ function RecipeBatchParametersBlock({
   setEfficiency: React.Dispatch<React.SetStateAction<string>>;
   boilTimeMinutes: string;
   setBoilTimeMinutes: React.Dispatch<React.SetStateAction<string>>;
+  styleId: string | null;
+  calculationMeta: RecipeCalculationMeta;
+  setCalculationMeta: React.Dispatch<React.SetStateAction<RecipeCalculationMeta>>;
   sectionErrors: Record<string, string>;
   preview: RecipeDraftPreviewDto | null;
+  onOpenBitternessSettings: () => void;
 }) {
   const colorSrmValue = preview?.color != null ? preview.color.toFixed(1) : null;
   const colorEbcValue = preview?.color != null ? srmToEbc(preview.color).toFixed(0) : null;
   const colorInfo = preview?.color != null ? beerColorFromSrm(preview.color) : null;
+  const selectedStyle = getBeerStyleById(styleId);
+  const selectedStyleArticleHref = getBjcpArticleHrefByStyleId(styleId);
+  const fgSourceLabel = resolveRecipeFgSourceLabel(preview?.fgEstimateMode, preview?.fgEstimateDetails);
+  const fgHelperText = resolveRecipeFgHelperText(preview?.fgEstimateMode, preview?.fg);
 
   const summaryItems = [
     {
@@ -1866,11 +2096,38 @@ function RecipeBatchParametersBlock({
         ? { srm: colorSrmValue, ebc: colorEbcValue }
         : null
     },
-    { key: "og", label: "OG", value: formatGravityWithPlato(preview?.og ?? null) },
-    { key: "fg", label: "FG", value: formatGravityWithPlato(preview?.fg ?? null) },
-    { key: "ibu", label: "IBU", value: preview?.ibu != null ? `${preview.ibu.toFixed(0)}` : "—" },
+    { key: "og", label: "НП", value: formatGravityWithPlato(preview?.og ?? null) },
+    {
+      key: "fg",
+      label: "КП",
+      value: formatGravityWithPlato(preview?.fg ?? null),
+      sourceLabel: preview?.fg != null ? fgSourceLabel : null,
+      helperText: preview?.fg == null ? fgHelperText : null,
+      settingsControl: (
+        <FgSettingsPopover
+          preview={preview}
+          calculationMeta={calculationMeta}
+          onChange={setCalculationMeta}
+        />
+      )
+    },
+    {
+      key: "ibu",
+      label: "IBU",
+      value: preview?.ibu != null ? `${preview.ibu.toFixed(0)}` : "—",
+      settingsControl: (
+        <button
+          type="button"
+          onClick={onOpenBitternessSettings}
+          className="inline-flex h-7 w-7 items-center justify-center rounded-lg text-[13px] leading-none text-zinc-400 transition-colors hover:bg-zinc-100 hover:text-zinc-700"
+          aria-label="Открыть настройки расчета горечи"
+        >
+          ⚙
+        </button>
+      )
+    },
     { key: "abv", label: "ABV", value: preview?.abv != null ? `${preview.abv.toFixed(1)}%` : "—" },
-    { key: "style", label: "Стиль", value: preview?.styleRange?.name ?? "Вне BJCP" }
+    { key: "style", label: "Стиль", value: selectedStyle?.name ?? "Вне BJCP" }
   ];
 
   return (
@@ -1888,10 +2145,13 @@ function RecipeBatchParametersBlock({
           return (
             <div
               key={item.key}
-              className="min-w-0 rounded-xl border border-zinc-100 bg-zinc-50/80 px-3 py-2.5"
+              className="group relative min-w-0 rounded-xl border border-zinc-100 bg-zinc-50/80 px-3 py-2.5"
             >
-              <dt className="truncate text-[11px] font-medium uppercase tracking-[0.08em] text-zinc-400">
-                {item.label}
+              <dt className="flex items-center gap-1 text-[11px] font-medium uppercase tracking-[0.08em] text-zinc-400">
+                <span className="truncate">{item.label}</span>
+                {"settingsControl" in item && item.settingsControl ? (
+                  <span className="ml-auto shrink-0">{item.settingsControl}</span>
+                ) : null}
               </dt>
               {isColor && item.value && typeof item.value === "object" ? (
                 <dd className="mt-1 flex min-w-0 items-center gap-1.5">
@@ -1911,7 +2171,32 @@ function RecipeBatchParametersBlock({
                 </dd>
               ) : isStyle ? (
                 <dd className="mt-1 min-w-0" title={typeof item.value === "string" ? item.value : undefined}>
-                  <div className="truncate text-sm font-semibold text-zinc-950">{typeof item.value === "string" ? item.value : "—"}</div>
+                  {selectedStyle && selectedStyleArticleHref ? (
+                    <a
+                      href={selectedStyleArticleHref}
+                      target="_blank"
+                      rel="noreferrer"
+                      aria-label={`Открыть описание BJCP стиля ${selectedStyle.name}`}
+                      className="group/link -mx-1 -my-1 flex items-start gap-2 rounded-lg px-1 py-1 transition-colors hover:bg-white focus-visible:bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-300"
+                    >
+                      <div className="min-w-0 flex-1">
+                        <div className="truncate text-sm font-semibold text-zinc-950">{selectedStyle.name}</div>
+                        <div className="truncate text-[11px] font-medium text-zinc-500 underline-offset-2 transition-colors group-hover/link:text-zinc-700 group-hover/link:underline group-focus-visible:text-zinc-700 group-focus-visible:underline">
+                          BJCP {selectedStyle.bjcpId} · Описание стиля
+                        </div>
+                      </div>
+                      <ExternalLink className="mt-0.5 h-3.5 w-3.5 shrink-0 text-zinc-300 transition-colors group-hover/link:text-zinc-500 group-focus-visible:text-zinc-500" />
+                    </a>
+                  ) : (
+                    <div>
+                      <div className="truncate text-sm font-semibold text-zinc-950">{typeof item.value === "string" ? item.value : "—"}</div>
+                      {selectedStyle?.bjcpId && selectedStyle.bjcpId !== "LEGACY" ? (
+                        <div className="truncate text-[11px] font-medium text-zinc-500">
+                          BJCP {selectedStyle.bjcpId}
+                        </div>
+                      ) : null}
+                    </div>
+                  )}
                 </dd>
               ) : isGravity ? (() => {
                 const strVal = typeof item.value === "string" ? item.value : "—";
@@ -1922,15 +2207,37 @@ function RecipeBatchParametersBlock({
                       <div>
                         <div className="text-sm font-semibold tabular-nums text-zinc-950">{parts[1]}</div>
                         <div className="text-xs font-medium tabular-nums text-zinc-500">{parts[2]}</div>
+                        {"sourceLabel" in item && item.sourceLabel ? (
+                          <div className="mt-1 text-[11px] font-medium text-zinc-500">{item.sourceLabel}</div>
+                        ) : null}
+                        {"helperText" in item && item.helperText ? (
+                          <div className="mt-1 text-[11px] text-zinc-400">{item.helperText}</div>
+                        ) : null}
                       </div>
                     ) : (
-                      <div className="text-sm font-semibold tabular-nums text-zinc-950">{strVal}</div>
+                      <div>
+                        <div className="text-sm font-semibold tabular-nums text-zinc-950">{strVal}</div>
+                        {"sourceLabel" in item && item.sourceLabel ? (
+                          <div className="mt-1 text-[11px] font-medium text-zinc-500">{item.sourceLabel}</div>
+                        ) : null}
+                        {"helperText" in item && item.helperText ? (
+                          <div className="mt-1 text-[11px] text-zinc-400">{item.helperText}</div>
+                        ) : null}
+                      </div>
                     )}
                   </dd>
                 );
               })() : (
-                <dd className="mt-1 text-base font-semibold tabular-nums text-zinc-950">
-                  {typeof item.value === "string" ? item.value : "—"}
+                <dd className="mt-1">
+                  <div className="text-base font-semibold tabular-nums text-zinc-950">
+                    {typeof item.value === "string" ? item.value : "—"}
+                  </div>
+                  {"sourceLabel" in item && item.sourceLabel ? (
+                    <div className="mt-1 text-[11px] font-medium text-zinc-500">{item.sourceLabel}</div>
+                  ) : null}
+                  {"helperText" in item && item.helperText ? (
+                    <div className="mt-1 text-[11px] text-zinc-400">{item.helperText}</div>
+                  ) : null}
                 </dd>
               )}
             </div>
@@ -4171,7 +4478,7 @@ export function RecipeDesigner({
         title: "Сбраживаемое",
         subtitle: fermentables.length ? `${fermentableTotalKg.toFixed(2)} кг` : undefined,
         items: fermentables,
-        empty: "Соберите grain bill или добавьте сахар/экстракт."
+        empty: "Добавьте солод, сахар, экстракт или другие сбраживаемые.",
       },
       {
         category: "hop",
@@ -4775,14 +5082,17 @@ export function RecipeDesigner({
           setEfficiency={setEfficiency}
           boilTimeMinutes={boilTimeMinutes}
           setBoilTimeMinutes={setBoilTimeMinutes}
+          styleId={styleId.trim() || null}
+          calculationMeta={calculationMeta}
+          setCalculationMeta={setCalculationMeta}
           sectionErrors={sectionErrors}
           preview={preview}
+          onOpenBitternessSettings={() => setBitternessSettingsOpen(true)}
         />
         <RecipeStyleStatsBlock
           preview={preview}
           recalculating={recalculating}
           previewError={previewError}
-          onOpenBitternessSettings={() => setBitternessSettingsOpen(true)}
         />
       </section>
 

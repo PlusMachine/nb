@@ -128,6 +128,36 @@ export const recipeProcessMetaSchema = z.object({
 
 export type RecipeProcessMeta = z.infer<typeof recipeProcessMetaSchema>;
 
+export const recipeFgEstimateModes = [
+  "unavailable",
+  "default_estimate",
+  "yeast_estimate",
+  "manual_attenuation_override",
+  "manual_fg_override"
+] as const;
+export type RecipeFgEstimateMode = (typeof recipeFgEstimateModes)[number];
+
+export const recipeFgAttenuationSources = ["default", "yeast", "manual"] as const;
+export type RecipeFgAttenuationSource = (typeof recipeFgAttenuationSources)[number];
+
+export const recipeFgEstimateDetailsSchema = z.object({
+  baseAttenuationPct: z.coerce.number().min(0).max(100),
+  attenuationSource: z.enum(recipeFgAttenuationSources),
+  mainMashTempC: z.coerce.number().min(0).max(100).optional().nullable(),
+  mashAdjPctPoints: z.coerce.number().min(-20).max(20),
+  simpleSugarSharePct: z.coerce.number().min(0).max(100),
+  crystalDextrinSharePct: z.coerce.number().min(0).max(100),
+  lactoseSharePct: z.coerce.number().min(0).max(100),
+  simpleSugarAdj: z.coerce.number().min(0).max(10),
+  crystalDextrinAdj: z.coerce.number().min(0).max(10),
+  lactoseAdj: z.coerce.number().min(0).max(10),
+  effectiveAttenuationPct: z.coerce.number().min(0).max(100),
+  fgRangeMin: z.coerce.number().min(0.99).max(1.2).optional().nullable(),
+  fgRangeMax: z.coerce.number().min(0.99).max(1.2).optional().nullable()
+});
+
+export type RecipeFgEstimateDetails = z.infer<typeof recipeFgEstimateDetailsSchema>;
+
 export const recipeCalculationMetaSchema = z.object({
   bitternessFormula: z.enum(recipeBitternessFormulas).default("tinseth_whirlpool_v2"),
   bitternessSettings: z.object({
@@ -135,7 +165,11 @@ export const recipeCalculationMetaSchema = z.object({
     whirlpoolUtilizationFactor: z.coerce.number().positive().max(3).default(1),
     hopFormUtilizationFactor: z.coerce.number().positive().max(3).default(1),
     firstWortHopMode: z.enum(["bonus_10pct", "treat_as_20min", "treat_as_boil_start"]).default("bonus_10pct")
-  }).partial().default({})
+  }).partial().default({}),
+  fgEstimateMode: z.enum(recipeFgEstimateModes).optional().nullable(),
+  manualAttenuationOverridePct: z.coerce.number().min(0).max(100).optional().nullable(),
+  manualFgOverrideValue: z.coerce.number().min(0.99).max(1.2).optional().nullable(),
+  fgEstimateDetails: recipeFgEstimateDetailsSchema.optional().nullable()
 }).default({
   bitternessFormula: "tinseth_whirlpool_v2",
   bitternessSettings: {}
@@ -432,6 +466,8 @@ export type RecipeDetailDto = RecipeListItemDto & {
   authorNotes: string | null;
   processMeta: RecipeProcessMeta;
   calculationMeta?: RecipeCalculationMeta | null;
+  fgEstimateMode?: RecipeFgEstimateMode | null;
+  fgEstimateDetails?: RecipeFgEstimateDetails | null;
   draftState?: Record<string, unknown> | null;
   importMeta?: Record<string, unknown> | null;
   equipmentProfileId?: string | null;
@@ -449,6 +485,8 @@ export type RecipeDraftPreviewDto = {
   boilTimeMinutes: number;
   og: number | null;
   fg: number | null;
+  fgEstimateMode: RecipeFgEstimateMode;
+  fgEstimateDetails: RecipeFgEstimateDetails | null;
   abv: number | null;
   ibu: number | null;
   bitternessFormula?: BitternessFormula;

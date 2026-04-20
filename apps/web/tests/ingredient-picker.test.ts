@@ -43,6 +43,7 @@ import {
   buildIngredientPickerInventoryMetaItems,
   buildIngredientPickerTechnicalBadges
 } from "../components/ingredients/ingredient-picker";
+import { resolveIngredientPickerRefinementPanelTitle } from "../components/ingredients/ingredient-picker";
 import { buildIngredientPickerQuickStartBrandsFromRecentSelections } from "../features/ingredients/picker-quick-start";
 
 const buildSuggestionItem = (overrides: Record<string, unknown> = {}) => ({
@@ -527,6 +528,28 @@ describe("ingredient picker state helpers", () => {
         score: 82
       }
     })).toBe(false);
+  });
+
+  it("uses category-specific copy for group refinements", () => {
+    expect(resolveIngredientPickerRefinementPanelTitle({
+      currentRefinementType: "consumable_group",
+      category: "fermentable"
+    })).toBe("Уточнить группу сбраживаемых");
+
+    expect(resolveIngredientPickerRefinementPanelTitle({
+      currentRefinementType: "consumable_group",
+      category: "water_treatment"
+    })).toBe("Уточнить группу водоподготовки");
+
+    expect(resolveIngredientPickerRefinementPanelTitle({
+      currentRefinementType: "consumable_group",
+      category: "consumable"
+    })).toBe("Уточнить группу расходников");
+
+    expect(resolveIngredientPickerRefinementPanelTitle({
+      currentRefinementType: "manufacturer",
+      category: "water_treatment"
+    })).toBe("Уточнить производителя");
   });
 
   it("collapses broad ingredient lists until expanded", () => {
@@ -1563,6 +1586,30 @@ describe("ingredient picker state helpers", () => {
     expect(badges.map((badge) => badge.label)).toEqual([
       "5-8 EBC",
       "Экст-ть 80%"
+    ]);
+    expect(badges[0]?.accent).toMatchObject({
+      startHex: expect.any(String),
+      averageHex: expect.any(String),
+      endHex: expect.any(String)
+    });
+  });
+
+  it("renders EBC accent for non-malt fermentables when color is available", () => {
+    const item = buildSuggestionItem({
+      subtype: "fermentable",
+      technicalData: {
+        type: "fermentable",
+        colorEbcMin: 12,
+        colorEbcMax: 12,
+        extractPctDryBasis: 79
+      }
+    });
+
+    const badges = buildIngredientPickerTechnicalBadges(item);
+
+    expect(badges.map((badge) => badge.label)).toEqual([
+      "12 EBC",
+      "Экст-ть 79%"
     ]);
     expect(badges[0]?.accent).toMatchObject({
       startHex: expect.any(String),

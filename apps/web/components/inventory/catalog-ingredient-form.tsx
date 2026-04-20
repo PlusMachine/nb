@@ -20,7 +20,18 @@ import type {
   IngredientSubtype,
   IngredientSuggestionItem
 } from "@/features/ingredients/contracts";
-import { resolveConsumableInventoryBroadGroupLabel } from "@/features/ingredients/consumables";
+import {
+  consumableInventoryAdditiveGroups,
+  consumableInventorySupplyGroups,
+  isConsumableInventoryBroadGroup,
+  resolveConsumableInventoryBroadGroup,
+  resolveConsumableInventoryBroadGroupLabel,
+  resolveConsumablePickerGroupLabel
+} from "@/features/ingredients/consumables";
+import {
+  ingredientPickerFermentableQuickStartGroupOrder,
+  resolveFermentableQuickStartGroupLabel
+} from "@/features/ingredients/picker-quick-start";
 import { resolveIngredientDisplayNames } from "@/features/ingredients/presentation";
 import { resolveIngredientTechnicalDataColorRangeEbc } from "@/features/ingredients/technical-fields";
 import { inventoryFermentableSubtypeLabels } from "@/features/inventory/page-model";
@@ -84,6 +95,7 @@ type Props = {
   onSelectionCleared?: () => void;
   onSelectedIngredientChange?: (selected: IngredientSuggestionItem | null) => void;
   onSubtypeChange?: (subtype: Extract<IngredientSubtype, "malt" | "fermentable">) => void;
+  onGroupChange?: (group: string | null) => void;
 };
 
 const createInitialCommonFields = (category?: IngredientCategory): InventoryCommonFields => {
@@ -93,6 +105,52 @@ const createInitialCommonFields = (category?: IngredientCategory): InventoryComm
     enteredUnit: unitProfile.defaultUnit,
     ...createInitialInventoryOptionalFields()
   };
+};
+
+const fermentableChipValues = [
+  "malt",
+  ...ingredientPickerFermentableQuickStartGroupOrder
+] as const;
+
+const resolveConsumablePickerBroadGroup = (group?: string | null) => {
+  if (!group) {
+    return null;
+  }
+
+  return isConsumableInventoryBroadGroup(group)
+    ? group
+    : resolveConsumableInventoryBroadGroup({
+      sourceCategory: group
+    });
+};
+
+export const resolveVisibleConsumableCatalogGroupSwitchValues = ({
+  activeConsumableBroadGroup,
+  initialQuickStartData,
+  forcedGroup
+}: {
+  activeConsumableBroadGroup: "inventory_supplies" | "inventory_additives" | null;
+  initialQuickStartData?: IngredientPickerQuickStartResult | null;
+  forcedGroup?: string | null;
+}) => {
+  if (!activeConsumableBroadGroup) {
+    return [];
+  }
+
+  const baseGroups = activeConsumableBroadGroup === "inventory_supplies"
+    ? consumableInventorySupplyGroups
+    : consumableInventoryAdditiveGroups;
+  const quickStartGroupCoverage = new Set(
+    (initialQuickStartData?.groups ?? [])
+      .filter((group) => group.count > 0)
+      .map((group) => group.value)
+  );
+
+  return baseGroups.filter((value) => (
+    value !== "other"
+    || forcedGroup === value
+    || quickStartGroupCoverage.has(value)
+  ));
 };
 
 export const createInitialCatalogBatchOverrideFields = (): CatalogBatchOverrideFields => ({
@@ -521,7 +579,8 @@ export function CatalogIngredientForm({
   onRequestCustom,
   onSelectionCleared,
   onSelectedIngredientChange,
-  onSubtypeChange
+  onSubtypeChange,
+  onGroupChange
 }: Props) {
   const [selected, setSelected] = useState<IngredientSuggestionItem | null>(() => resolveInitialSelectionForContext({
     category,
@@ -571,10 +630,20 @@ export function CatalogIngredientForm({
     hidePicker,
     selected
   });
+  const activeConsumableBroadGroup = category === "consumable"
+    ? resolveConsumablePickerBroadGroup(forcedGroup)
+    : null;
+  const visibleConsumableGroupSwitchValues = resolveVisibleConsumableCatalogGroupSwitchValues({
+    activeConsumableBroadGroup,
+    initialQuickStartData,
+    forcedGroup
+  });
   const forcedGroupRefinement: IngredientConsumableGroupRefinement | null = forcedGroup
     ? {
       type: "consumable_group",
-      label: resolveConsumableInventoryBroadGroupLabel(forcedGroup) ?? forcedGroup,
+      label: activeConsumableBroadGroup && isConsumableInventoryBroadGroup(forcedGroup)
+        ? (resolveConsumableInventoryBroadGroupLabel(forcedGroup) ?? forcedGroup)
+        : resolveConsumablePickerGroupLabel(forcedGroup) ?? resolveConsumableInventoryBroadGroupLabel(forcedGroup) ?? forcedGroup,
       normalizedLabel: forcedGroup,
       value: forcedGroup,
       count: 0,
@@ -798,18 +867,46 @@ export function CatalogIngredientForm({
         <section className="space-y-2" data-testid="catalog-picker-stage">
           {category === "fermentable" && onSubtypeChange ? (
             <div className="flex flex-wrap gap-2" data-testid="catalog-fermentable-subtype-switch">
-              {(["fermentable", "malt"] as const).map((value) => (
+              {fermentableChipValues.map((value) => (
                 <button
                   key={value}
                   type="button"
-                  onClick={() => onSubtypeChange(value)}
+                  onClick={() => {
+                    if (value === "malt") {
+                      onSubtypeChange("malt");
+                      onGroupChange?.(null);
+                      return;
+                    }
+
+                    onSubtypeChange("fermentable");
+                    onGroupChange?.(value);
+                  }}
                   className={`rounded-full border px-3 py-1.5 text-xs font-medium transition-colors ${
-                    subtype === value
+                    (value === "malt" && subtype === "malt" && !forcedGroup)
+                    || (value !== "malt" && subtype === "fermentable" && forcedGroup === value)
                       ? "border-amber-300 bg-amber-50 text-amber-900"
                       : "border-zinc-200 bg-white text-zinc-600 hover:border-zinc-300 hover:bg-zinc-50"
                   }`}
                 >
-                  {inventoryFermentableSubtypeLabels[value]}
+                  {value === "malt" ? inventoryFermentableSubtypeLabels.malt : resolveFermentableQuickStartGroupLabel(value)}
+                </button>
+              ))}
+            </div>
+          ) : null}
+          {category === "consumable" && activeConsumableBroadGroup ? (
+            <div className="flex flex-wrap gap-2" data-testid="catalog-consumable-group-switch">
+              {visibleConsumableGroupSwitchValues.map((value) => (
+                <button
+                  key={value}
+                  type="button"
+                  onClick={() => onGroupChange?.(forcedGroup === value ? activeConsumableBroadGroup : value)}
+                  className={`rounded-full border px-3 py-1.5 text-xs font-medium transition-colors ${
+                    forcedGroup === value
+                      ? "border-amber-300 bg-amber-50 text-amber-900"
+                      : "border-zinc-200 bg-white text-zinc-600 hover:border-zinc-300 hover:bg-zinc-50"
+                  }`}
+                >
+                  {resolveConsumablePickerGroupLabel(value) ?? value}
                 </button>
               ))}
             </div>

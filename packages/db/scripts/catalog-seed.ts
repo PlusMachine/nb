@@ -1,5 +1,6 @@
 import fs from "node:fs";
 import path from "node:path";
+import { execFileSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
 
 import {
@@ -24,7 +25,8 @@ type PreparedSeedIngredient = {
 };
 
 const scriptDir = path.dirname(fileURLToPath(import.meta.url));
-const ingredientsDir = path.resolve(scriptDir, "../../..", "ingredients/new");
+const repoRootDir = path.resolve(scriptDir, "../../..");
+const ingredientsDir = path.resolve(repoRootDir, "ingredients/new");
 const externalCatalogSeedOverrides: Partial<Record<string, string>> = {
   "consumables_v4_patch_proposal.json": "/mnt/data/consumables_v4_patch_proposal.json"
 };
@@ -34,7 +36,8 @@ export const catalogSeedManifest: readonly CatalogSeedFileSpec[] = [
   { fileName: "malt_catalog_minimal_v2.json", type: "malt" },
   { fileName: "fermentables_catalog_minimal_v2.normalized.json", type: "fermentable" },
   { fileName: "yeasts_catalog_minimal_v2.json", type: "yeast" },
-  { fileName: "consumables_v4_patch_proposal.json", type: "consumable" },
+  { fileName: "additives_v1.json", type: "consumable" },
+  { fileName: "consumables_v1.json", type: "consumable" },
   { fileName: "water_treatment_catalog_minimal_v2.json", type: "water_treatment" }
 ] as const;
 
@@ -87,12 +90,49 @@ export const normalizeCatalogAlias = (value: string) => value
   .replace(/\s+/g, " ")
   .trim();
 
-const readCatalogFile = (fileName: string): unknown => {
+const readCatalogFileText = (fileName: string) => {
   const externalPath = externalCatalogSeedOverrides[fileName];
-  const filePath = externalPath && fs.existsSync(externalPath)
-    ? externalPath
-    : path.join(ingredientsDir, fileName);
-  return JSON.parse(fs.readFileSync(filePath, "utf8"));
+  if (externalPath && fs.existsSync(externalPath)) {
+    return fs.readFileSync(externalPath, "utf8");
+  }
+
+  const filePath = path.join(ingredientsDir, fileName);
+  if (fs.existsSync(filePath)) {
+    return fs.readFileSync(filePath, "utf8");
+  }
+
+  try {
+    const gitBlobPath = path.posix.join("ingredients/new", fileName);
+    const lastCommitWithFile = execFileSync("git", [
+      "log",
+      "--format=%H",
+      "--diff-filter=AM",
+      "-n",
+      "1",
+      "--",
+      gitBlobPath
+    ], {
+      cwd: repoRootDir,
+      encoding: "utf8"
+    }).trim();
+
+    if (!lastCommitWithFile) {
+      throw new Error(`No git history found for ${fileName}`);
+    }
+
+    return execFileSync("git", ["show", `${lastCommitWithFile}:${gitBlobPath}`], {
+      cwd: repoRootDir,
+      encoding: "utf8"
+    });
+  } catch (error) {
+    throw new Error(`Catalog seed file not found: ${fileName}`, {
+      cause: error
+    });
+  }
+};
+
+const readCatalogFile = (fileName: string): unknown => {
+  return JSON.parse(readCatalogFileText(fileName));
 };
 
 const autoLocalizedFirstCountryCodes = new Set(["RU", "BY", "UA", "KZ"]);
@@ -212,16 +252,50 @@ const normalizeSeedCountryCode = (countryCode: unknown, countryName: unknown) =>
 };
 
 export const loadCatalogSeedItems = (fileName: string): unknown[] => {
-  const root = readCatalogFile(fileName);
-  if (Array.isArray(root)) {
-    return root;
-  }
+  const readItems = (targetFileName: string, trail: string[]): unknown[] => {
+    if (trail.includes(targetFileName)) {
+      throw new Error(`Circular seed manifest reference: ${[...trail, targetFileName].join(" -> ")}`);
+    }
 
-  if (isRecord(root) && Array.isArray(root.items)) {
-    return root.items;
-  }
+    const root = readCatalogFile(targetFileName);
+    if (Array.isArray(root)) {
+      return root;
+    }
 
-  throw new Error(`Unsupported seed root shape for ${fileName}`);
+    if (isRecord(root) && Array.isArray(root.items)) {
+      return root.items;
+    }
+
+    if (isRecord(root) && Array.isArray(root.item_ids)) {
+      const sourceCatalog = readString(root.source_catalog);
+      const sourceCatalogFileName = sourceCatalog?.match(/([A-Za-z0-9_.-]+\.json)/)?.[1] ?? null;
+      if (!sourceCatalogFileName) {
+        throw new Error(`Split seed manifest ${targetFileName} is missing source_catalog JSON reference`);
+      }
+
+      const sourceItems = readItems(sourceCatalogFileName, [...trail, targetFileName]);
+      const sourceItemsById = new Map<string, unknown>();
+
+      for (const item of sourceItems) {
+        const itemId = isRecord(item) ? readString(item.id) : null;
+        if (itemId) {
+          sourceItemsById.set(itemId, item);
+        }
+      }
+
+      const itemIds = readStringArray(root.item_ids);
+      const missingItemIds = itemIds.filter((itemId) => !sourceItemsById.has(itemId));
+      if (missingItemIds.length > 0) {
+        throw new Error(`Split seed manifest ${targetFileName} references missing item ids: ${missingItemIds.join(", ")}`);
+      }
+
+      return itemIds.map((itemId) => sourceItemsById.get(itemId)!);
+    }
+
+    throw new Error(`Unsupported seed root shape for ${targetFileName}`);
+  };
+
+  return readItems(fileName, []);
 };
 
 const buildAliasRows = (

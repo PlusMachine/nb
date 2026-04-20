@@ -9,7 +9,19 @@ export function RecipeStatsPreview({ recipe }: { recipe: Pick<RecipeDetailDto, "
     <section className="space-y-2 rounded-2xl border border-zinc-100 bg-white p-5 shadow-sm" data-testid="recipe-stats-preview">
       <h2 className="text-base font-semibold text-zinc-950">Предпросмотр статистики</h2>
       <p className="text-sm text-zinc-500">Объём партии: {recipe ? `${recipe.batchSizeEnteredQuantity} ${recipe.batchSizeEnteredUnit}` : "—"}</p>
-      <RecipeStatsSummary recipe={recipe ?? { og: null, fg: null, abv: null, ibu: null, color: null, styleId: null }} />
+      <RecipeStatsSummary
+        recipe={recipe ?? {
+          og: null,
+          fg: null,
+          fgEstimateMode: "unavailable",
+          fgEstimateDetails: null,
+          abv: null,
+          ibu: null,
+          color: null,
+          styleId: null
+        }}
+        gravityLabels={{ og: "НП", fg: "КП" }}
+      />
     </section>
   );
 }

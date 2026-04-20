@@ -46,7 +46,7 @@ export const resolveInventoryIngredientContextFromCategoryValue = (
     category: value === "consumable_supply" || value === "consumable_additive"
       ? "consumable"
       : value,
-    subtype: value === "fermentable" ? "fermentable" : null,
+    subtype: null,
     group: value === "consumable_supply"
       ? "inventory_supplies"
       : value === "consumable_additive"
@@ -83,6 +83,7 @@ export const resolveInventoryIngredientCategoryValue = ({
       ? group
       : resolveConsumableInventoryBroadGroup({
         technicalData,
+        sourceCategory: group ?? null,
         groupName,
         subtype,
         itemKind

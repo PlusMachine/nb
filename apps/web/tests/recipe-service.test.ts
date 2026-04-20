@@ -1,5 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
+import { defaultRecipeProcessMeta } from "../features/recipes/contracts";
 import { toRecipeSlugBase } from "../features/recipes/slug";
 
 vi.mock("server-only", () => ({}));
@@ -356,6 +357,8 @@ describe("recipe service", () => {
       quantityDefaults: null,
       attributes: {
         form: "dry",
+        attenuation_pct_min: 74,
+        attenuation_pct_max: 82,
         attenuation_pct_typical: 78,
         package_size: 11,
         package_unit: "g"
@@ -440,7 +443,42 @@ describe("recipe service", () => {
     });
 
     expect(preview.og).not.toBeNull();
+    expect(preview.fgEstimateMode).toBe("default_estimate");
+    expect(preview.fgEstimateDetails?.baseAttenuationPct).toBe(75);
     expect(preview.ibu).not.toBeNull();
+  });
+
+  it("preview draft uses yeast attenuation and mash profile in FG estimate", async () => {
+    const defaultPreview = await previewRecipeDraft("u1", {
+      title: "FG default",
+      batchSizeEnteredQuantity: 20,
+      batchSizeEnteredUnit: "l",
+      boilTimeMinutes: 60,
+      ingredients: [
+        { ingredientCatalogItemId: uuid(101), type: "malt", amountEnteredQuantity: 4, amountEnteredUnit: "kg", stage: "mash" }
+      ]
+    });
+    const yeastPreview = await previewRecipeDraft("u1", {
+      title: "FG yeast",
+      batchSizeEnteredQuantity: 20,
+      batchSizeEnteredUnit: "l",
+      boilTimeMinutes: 60,
+      processMeta: {
+        mashProfile: {
+          steps: [{ id: "m1", name: "Beta", temperatureC: 65, durationMinutes: 60 }]
+        },
+        fermentationProfile: defaultRecipeProcessMeta.fermentationProfile
+      },
+      ingredients: [
+        { ingredientCatalogItemId: uuid(101), type: "malt", amountEnteredQuantity: 4, amountEnteredUnit: "kg", stage: "mash" },
+        { ingredientCatalogItemId: uuid(103), type: "yeast", amountEnteredQuantity: 11, amountEnteredUnit: "g", stage: "fermentation" }
+      ]
+    });
+
+    expect(yeastPreview.fgEstimateMode).toBe("yeast_estimate");
+    expect(yeastPreview.fgEstimateDetails?.baseAttenuationPct).toBe(78);
+    expect(yeastPreview.fgEstimateDetails?.mainMashTempC).toBe(65);
+    expect(yeastPreview.fg).toBeLessThan(defaultPreview.fg ?? 99);
   });
 
   it("default bitterness engine counts whirlpool hopstand IBU", async () => {
