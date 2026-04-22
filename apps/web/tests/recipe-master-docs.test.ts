@@ -19,5 +19,8 @@ describe("recipe master docs", () => {
     expect(content).toContain("FG должен оставаться обычным расчетным показателем, а не отдельным центром внимания.");
     expect(content).toContain("нет постоянного раскрытого блока `FG / КП` в шапке");
     expect(content).toContain("advanced controls открываются только по маленькой шестеренке / info icon у FG");
+    expect(content).toContain("Фото пива");
+    expect(content).toContain("object storage instead of DB blobs");
+    expect(content).toContain("silent draft creation before first upload");
   });
 });

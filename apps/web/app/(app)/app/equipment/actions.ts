@@ -6,6 +6,9 @@ import { redirect } from "next/navigation";
 import {
   createEquipmentProfile,
   deleteEquipmentProfile,
+  duplicateEquipmentProfile,
+  getEquipmentProfile,
+  setDefaultEquipmentProfile,
   updateEquipmentProfile
 } from "@/features/equipment-profiles/service";
 import { requireUser } from "@/lib/auth";
@@ -19,22 +22,28 @@ const optionalNumberValue = (formData: FormData, key: string) => {
 
 const stringValue = (formData: FormData, key: string) => String(formData.get(key) ?? "").trim();
 
-const buildEquipmentProfilePayload = (formData: FormData) => ({
+const buildEquipmentProfilePayload = (
+  formData: FormData,
+  preserved?: { mashEfficiencyPct: number | null | undefined }
+) => ({
   name: stringValue(formData, "name"),
-  brewMethod: stringValue(formData, "brewMethod"),
-  batchTargetType: stringValue(formData, "batchTargetType"),
+  brewMethod: formData.has("brewMethod")
+    ? stringValue(formData, "brewMethod")
+    : "mash_sparge_two_vessel",
   targetBatchVolumeL: numberValue(formData, "targetBatchVolumeL"),
   boilTimeMin: numberValue(formData, "boilTimeMin"),
   brewhouseEfficiencyPct: numberValue(formData, "brewhouseEfficiencyPct"),
-  mashEfficiencyPct: optionalNumberValue(formData, "mashEfficiencyPct"),
+  mashEfficiencyPct: formData.has("mashEfficiencyPct")
+    ? optionalNumberValue(formData, "mashEfficiencyPct")
+    : preserved?.mashEfficiencyPct ?? null,
   evaporationRateLPerHr: numberValue(formData, "evaporationRateLPerHr"),
   trubChillerLossL: numberValue(formData, "trubChillerLossL"),
   fermenterLossL: numberValue(formData, "fermenterLossL"),
-  mashTunDeadspaceL: numberValue(formData, "mashTunDeadspaceL"),
-  spargeVesselDeadspaceL: numberValue(formData, "spargeVesselDeadspaceL"),
+  mashTunDeadspaceL: formData.has("mashTunDeadspaceL") ? numberValue(formData, "mashTunDeadspaceL") : 0,
+  spargeVesselDeadspaceL: formData.has("spargeVesselDeadspaceL") ? numberValue(formData, "spargeVesselDeadspaceL") : 0,
   grainAbsorptionLPerKg: numberValue(formData, "grainAbsorptionLPerKg"),
   coolingShrinkagePct: numberValue(formData, "coolingShrinkagePct"),
-  topUpWaterL: numberValue(formData, "topUpWaterL"),
+  topUpWaterL: formData.has("topUpWaterL") ? numberValue(formData, "topUpWaterL") : 0,
   mashThicknessLPerKg: numberValue(formData, "mashThicknessLPerKg"),
   maxMashVolumeL: optionalNumberValue(formData, "maxMashVolumeL"),
   maxKettleVolumeL: optionalNumberValue(formData, "maxKettleVolumeL"),
@@ -57,7 +66,10 @@ export const createEquipmentProfileAction = async (formData: FormData) => {
 
 export const updateEquipmentProfileAction = async (profileId: string, formData: FormData) => {
   const user = await requireUser();
-  await updateEquipmentProfile(user.id, profileId, buildEquipmentProfilePayload(formData));
+  const currentProfile = await getEquipmentProfile(user.id, profileId);
+  await updateEquipmentProfile(user.id, profileId, buildEquipmentProfilePayload(formData, {
+    mashEfficiencyPct: currentProfile.mashEfficiencyPct
+  }));
   refreshEquipmentPaths();
   redirect("/app/equipment");
 };
@@ -65,6 +77,20 @@ export const updateEquipmentProfileAction = async (profileId: string, formData: 
 export const deleteEquipmentProfileAction = async (profileId: string) => {
   const user = await requireUser();
   await deleteEquipmentProfile(user.id, profileId);
+  refreshEquipmentPaths();
+  redirect("/app/equipment");
+};
+
+export const duplicateEquipmentProfileAction = async (profileId: string) => {
+  const user = await requireUser();
+  await duplicateEquipmentProfile(user.id, profileId);
+  refreshEquipmentPaths();
+  redirect("/app/equipment");
+};
+
+export const setDefaultEquipmentProfileAction = async (profileId: string) => {
+  const user = await requireUser();
+  await setDefaultEquipmentProfile(user.id, profileId);
   refreshEquipmentPaths();
   redirect("/app/equipment");
 };

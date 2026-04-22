@@ -17,6 +17,14 @@ import {
   syncRecipeSelectedInventoryAllocations
 } from "@/features/recipes/inventory-service";
 import { createBrewBatchFromRecipe } from "@/features/brew-batches/service";
+import type { RecipeImageDto } from "@/features/recipe-images/contracts";
+import {
+  createRecipeDraftIfNeededForImageUpload,
+  deleteRecipeImage,
+  listRecipeImages,
+  reorderRecipeImages,
+  setRecipeCoverImage
+} from "@/features/recipe-images/service";
 import { exportRecipeToBeerXml, importBeerXmlToCanonicalRecipe } from "@/features/recipes/interop/beerxml";
 import { importBrewfatherJsonToCanonicalRecipe } from "@/features/recipes/interop/brewfather-json";
 import { requireUser } from "@/lib/auth";
@@ -168,6 +176,23 @@ export type RecipePreviewResult = {
   preview?: RecipeDraftPreviewDto;
   fieldErrors?: Record<string, string>;
 };
+
+export type RecipeImagesResult = {
+  ok: boolean;
+  message: string;
+  images?: RecipeImageDto[];
+};
+
+export type RecipeImageResult = {
+  ok: boolean;
+  message: string;
+  image?: RecipeImageDto;
+  recipe?: RecipeDetailDto;
+};
+
+const isRecipeImagesSchemaMissing = (error: unknown) => (
+  error instanceof Error && error.message === "RECIPE_IMAGES_SCHEMA_MISSING"
+);
 
 export const createRecipeAction = async (payload: RecipeEditorPayload): Promise<RecipeEditorResult> => {
   try {
@@ -639,5 +664,158 @@ export const importBrewfatherJsonRecipeAction = async (
     };
   } catch (error) {
     return mapRecipeImportError(error, "Brewfather JSON");
+  }
+};
+
+export const createRecipeDraftForImageUploadAction = async (
+  maybeRecipeId?: string | null,
+  draftSeed?: Partial<RecipeEditorPayload> | null
+): Promise<RecipeImageResult> => {
+  try {
+    const user = await requireUser();
+    const recipe = await createRecipeDraftIfNeededForImageUpload(user.id, maybeRecipeId, draftSeed);
+
+    revalidatePath("/app/recipes");
+    revalidatePath(`/app/recipes/${recipe.id}`);
+    revalidatePath(`/app/recipes/${recipe.id}/edit`);
+
+    return {
+      ok: true,
+      message: "Черновик рецепта подготовлен для загрузки фото.",
+      recipe
+    };
+  } catch (error) {
+    if (isRecipeImagesSchemaMissing(error)) {
+      return { ok: false, message: "Фото временно недоступны." };
+    }
+
+    if (error instanceof Error && error.message === "NOT_FOUND") {
+      return { ok: false, message: "Рецепт не найден или недоступен." };
+    }
+
+    return { ok: false, message: "Не удалось подготовить рецепт для загрузки фото." };
+  }
+};
+
+export const listRecipeImagesAction = async (
+  recipeId: string
+): Promise<RecipeImagesResult> => {
+  try {
+    const user = await requireUser();
+    return {
+      ok: true,
+      message: "Фото рецепта загружены.",
+      images: await listRecipeImages(recipeId, user.id)
+    };
+  } catch (error) {
+    if (isRecipeImagesSchemaMissing(error)) {
+      return { ok: false, message: "Фото временно недоступны.", images: [] };
+    }
+
+    if (error instanceof Error && error.message === "NOT_FOUND") {
+      return { ok: false, message: "Рецепт не найден." };
+    }
+
+    return { ok: false, message: "Не удалось получить фотографии рецепта." };
+  }
+};
+
+export const deleteRecipeImageAction = async (
+  imageId: string
+): Promise<{ ok: boolean; message: string }> => {
+  try {
+    const user = await requireUser();
+    const result = await deleteRecipeImage(imageId, user.id);
+
+    revalidatePath("/app/recipes");
+    revalidatePath(`/app/recipes/${result.recipeId}`);
+    revalidatePath(`/app/recipes/${result.recipeId}/edit`);
+
+    return {
+      ok: true,
+      message: "Фото удалено."
+    };
+  } catch (error) {
+    if (isRecipeImagesSchemaMissing(error)) {
+      return { ok: false, message: "Фото временно недоступны." };
+    }
+
+    if (error instanceof Error && error.message === "NOT_FOUND") {
+      return { ok: false, message: "Фото не найдено." };
+    }
+
+    return { ok: false, message: "Не удалось удалить фото." };
+  }
+};
+
+export const setRecipeCoverImageAction = async (
+  imageId: string
+): Promise<RecipeImageResult> => {
+  try {
+    const user = await requireUser();
+    const image = await setRecipeCoverImage(imageId, user.id);
+
+    revalidatePath("/app/recipes");
+    revalidatePath(`/app/recipes/${image.recipeId}`);
+    revalidatePath(`/app/recipes/${image.recipeId}/edit`);
+    revalidatePath("/recipes");
+
+    return {
+      ok: true,
+      message: "Обложка обновлена.",
+      image
+    };
+  } catch (error) {
+    if (isRecipeImagesSchemaMissing(error)) {
+      return { ok: false, message: "Фото временно недоступны." };
+    }
+
+    if (error instanceof Error) {
+      if (error.message === "NOT_FOUND") {
+        return { ok: false, message: "Фото не найдено." };
+      }
+
+      if (error.message === "IMAGE_NOT_READY") {
+        return { ok: false, message: "Сделать обложкой можно только загруженное фото." };
+      }
+    }
+
+    return { ok: false, message: "Не удалось обновить обложку." };
+  }
+};
+
+export const reorderRecipeImagesAction = async (
+  recipeId: string,
+  orderedImageIds: string[]
+): Promise<RecipeImagesResult> => {
+  try {
+    const user = await requireUser();
+    const images = await reorderRecipeImages(recipeId, orderedImageIds, user.id);
+
+    revalidatePath("/app/recipes");
+    revalidatePath(`/app/recipes/${recipeId}`);
+    revalidatePath(`/app/recipes/${recipeId}/edit`);
+
+    return {
+      ok: true,
+      message: "Порядок фотографий обновлен.",
+      images
+    };
+  } catch (error) {
+    if (isRecipeImagesSchemaMissing(error)) {
+      return { ok: false, message: "Фото временно недоступны.", images: [] };
+    }
+
+    if (error instanceof Error) {
+      if (error.message === "NOT_FOUND") {
+        return { ok: false, message: "Рецепт не найден." };
+      }
+
+      if (error.message === "IMAGE_REORDER_MISMATCH") {
+        return { ok: false, message: "Не удалось сохранить новый порядок фотографий." };
+      }
+    }
+
+    return { ok: false, message: "Не удалось изменить порядок фотографий." };
   }
 };

@@ -18,9 +18,7 @@ export const calculateEquipmentVolumePlan = (
 ): EquipmentVolumePlan => {
   const nonNegativeGrainKg = Math.max(0, grainKg);
   const boilTimeHr = profile.boilTimeMin / 60;
-  const fermenterTargetColdL = profile.batchTargetType === "packaged"
-    ? profile.targetBatchVolumeL + profile.fermenterLossL
-    : profile.targetBatchVolumeL;
+  const fermenterTargetColdL = profile.targetBatchVolumeL;
   const postBoilColdBeforeKettleLossL = fermenterTargetColdL + profile.trubChillerLossL;
   const postBoilHotL = postBoilColdBeforeKettleLossL / (1 - profile.coolingShrinkagePct / 100);
   const preBoilHotL = postBoilHotL + profile.evaporationRateLPerHr * boilTimeHr;

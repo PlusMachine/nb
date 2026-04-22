@@ -9,18 +9,26 @@ import {
   ExternalLink,
   FileText,
   FlaskConical,
+  Globe,
   Hop,
+  Loader2,
+  Lock,
   Package,
   Pencil,
+  Plus,
+  Search,
+  Sparkles,
   StickyNote,
   Target,
   Thermometer,
   Timer,
-  Wheat
+  Trash2,
+  Wheat,
+  X
 } from "lucide-react";
 import React, { startTransition, useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 
 import {
   createRecipeCustomIngredientAction,
@@ -123,6 +131,7 @@ import { BitternessSettingsDrawer } from "@/components/recipes/bitterness-settin
 import { ImportExportModal, type ImportExportActionResult } from "@/components/recipes/import-export-modal";
 import { IngredientAddDrawer } from "@/components/recipes/ingredient-add-drawer";
 import { RecipeActionsMenu } from "@/components/recipes/recipe-actions-menu";
+import { RecipeImagesSection } from "@/components/recipes/recipe-images-section";
 import { StartBrewModal, type StartBrewResult } from "@/components/recipes/start-brew-modal";
 import { StockCoverageSummary } from "@/components/recipes/stock-coverage-summary";
 import { StockIngredientList } from "@/components/recipes/stock-ingredient-list";
@@ -135,6 +144,7 @@ import {
   resolveRecipeFgHelperText,
   resolveRecipeFgSourceLabel
 } from "@/features/recipes/fg-estimate";
+import type { RecipeImageDto } from "@/features/recipe-images/contracts";
 import { globalBrewingRanges } from "@/features/recipes/style-ranges";
 import {
   buildRecipeWaterPlanResult,
@@ -149,6 +159,7 @@ type Props = {
   initialTitle?: string;
   initialIngredientSelection?: IngredientSuggestionItem | null;
   initialStockCoverage?: RecipeStockCoverageDto | null;
+  initialImages?: RecipeImageDto[];
   equipmentProfiles?: EquipmentProfileDto[];
   onSaveStatusChange?: (status: RecipeSaveStatus) => void;
   onRecipeCreated?: (recipe: RecipeDetailDto) => void;
@@ -156,6 +167,24 @@ type Props = {
 };
 
 export type RecipeSaveStatus = "saved" | "saving" | "error";
+
+export const buildRecipeEditHref = (recipeId: string) => `/app/recipes/${recipeId}/edit`;
+
+const replaceRecipeEditorUrl = (recipeId: string) => {
+  if (typeof window === "undefined") {
+    return;
+  }
+
+  const nextHref = buildRecipeEditHref(recipeId);
+  const currentHref = `${window.location.pathname}${window.location.search}`;
+  if (currentHref === nextHref) {
+    return;
+  }
+
+  // `null` lets Next.js copy its internal router state and update the URL
+  // without triggering a route navigation or a full page reload.
+  window.history.replaceState(null, "", nextHref);
+};
 
 export const resolveRecipeIngredientSearchType = ({
   category,
@@ -480,10 +509,26 @@ const hopUseTypeLabels: Record<RecipeHopUseType, string> = {
   boil: "Кипячение",
   first_wort_hop: "First Wort Hop",
   whirlpool: "Whirlpool / Hopstand",
-  dry_hop: "Dry Hop",
-  dip_hop: "Dip Hop",
+  dry_hop: "Сухое охмеление",
+  dip_hop: "Dip Hopping",
   other: "Другое"
 };
+
+const hopUseTypeSectionLabels: Record<RecipeHopUseType, string> = {
+  ...hopUseTypeLabels,
+  boil: "Добавление на кипячение"
+};
+
+const recipeHopUseTypeUiOrder: RecipeHopUseType[] = [
+  "boil",
+  "dry_hop",
+  "whirlpool",
+  "dip_hop",
+  "first_wort_hop",
+  "other"
+];
+
+const recipeAdditionalHopUseTypeUiOrder = recipeHopUseTypeUiOrder.filter((useType) => useType !== "boil");
 
 const stageLabels: Record<DesignerIngredient["stage"], string> = {
   mash: "Затор",
@@ -1460,18 +1505,18 @@ const getMetricStatusAppearance = (status: "in_range" | "below" | "above" | "no_
   if (status === "below") {
     return {
       label: "Ниже",
-      badgeClassName: "bg-amber-50 text-amber-700 ring-1 ring-amber-200",
-      needleClassName: "bg-amber-500",
-      needleDotClassName: "bg-amber-500 ring-2 ring-white shadow"
+      badgeClassName: "bg-zinc-100 text-zinc-600 ring-1 ring-zinc-200",
+      needleClassName: "bg-zinc-400",
+      needleDotClassName: "bg-zinc-500 ring-2 ring-white shadow"
     };
   }
 
   if (status === "above") {
     return {
       label: "Выше",
-      badgeClassName: "bg-rose-50 text-rose-700 ring-1 ring-rose-200",
-      needleClassName: "bg-rose-500",
-      needleDotClassName: "bg-rose-500 ring-2 ring-white shadow"
+      badgeClassName: "bg-zinc-100 text-zinc-600 ring-1 ring-zinc-200",
+      needleClassName: "bg-zinc-400",
+      needleDotClassName: "bg-zinc-500 ring-2 ring-white shadow"
     };
   }
 
@@ -1622,7 +1667,7 @@ function StylePicker({
 
   return (
     <div ref={containerRef} className={`relative ${className ?? "min-w-[280px] shrink-0"}`}>
-      <label id={labelId} htmlFor={id} className="mb-1 block text-[11px] font-medium text-zinc-600">
+      <label id={labelId} htmlFor={id} className="mb-1 block text-[11px] font-medium uppercase tracking-wide text-zinc-500">
         Стиль BJCP
       </label>
       <button
@@ -1776,29 +1821,29 @@ function RecipeStyleStatsBlock({
     items.every((item) => item.actualValue == null || item.status === "in_range");
 
   return (
-    <section className="flex h-full flex-col rounded-2xl border border-zinc-100 bg-white p-4 shadow-sm">
-      <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
-        <div className="flex items-center gap-2">
-          <Target className="h-4 w-4 text-zinc-400" />
-          <h2 className="text-sm font-semibold text-zinc-900">
+    <section className="flex h-full flex-col overflow-hidden rounded-2xl border border-zinc-200/70 bg-white shadow-[0_1px_3px_0_rgb(0_0_0_/_0.04)]">
+      <div className="flex flex-wrap items-center justify-between gap-2 border-b border-zinc-100 bg-zinc-50/40 px-4 py-3">
+        <div className="flex min-w-0 items-center gap-2">
+          <h2 className="truncate text-sm font-semibold text-zinc-700">
             {styleName ? `Ваш рецепт и BJCP ${styleName}` : "Расчёт показателей"}
           </h2>
           {hasStyleRange && hasCalculatedMetrics ? (
-            <span className={`flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-medium ${overallFit ? "bg-emerald-50 text-emerald-700 ring-1 ring-emerald-200" : "bg-amber-50 text-amber-700 ring-1 ring-amber-200"}`}>
+            <span className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-medium ${overallFit ? "bg-emerald-50 text-emerald-700 ring-1 ring-inset ring-emerald-200" : "bg-zinc-100 text-zinc-600 ring-1 ring-inset ring-zinc-200"}`}>
               {overallFit ? <CircleCheck className="h-3 w-3" /> : <CircleAlert className="h-3 w-3" />}
               {overallFit ? "В стиле" : "Отклонения"}
             </span>
           ) : null}
           {recalculating ? (
-            <span className="rounded-full bg-zinc-100 px-2 py-0.5 text-[10px] font-medium text-zinc-500">
-              Пересчёт...
+            <span className="inline-flex items-center gap-1 rounded-full bg-zinc-100 px-2 py-0.5 text-[10px] font-medium text-zinc-500">
+              <Loader2 className="h-3 w-3 animate-spin" />
+              Пересчёт…
             </span>
           ) : null}
         </div>
         {previewError ? <p className="text-xs text-rose-500">{previewError}</p> : null}
       </div>
 
-      <div className="-mx-1 flex-1">
+      <div className="flex-1 px-3 py-3">
         {items.map((item) => {
           const appearance = hasStyleRange ? getMetricStatusAppearance(item.status) : getMetricStatusAppearance("no_style");
 
@@ -2131,140 +2176,142 @@ function RecipeBatchParametersBlock({
   ];
 
   return (
-    <div className="flex h-full flex-col rounded-2xl border border-zinc-100 bg-white p-4 shadow-sm">
-      <div className="mb-4">
+    <div className="flex h-full flex-col overflow-hidden rounded-2xl border border-zinc-200/70 bg-white shadow-[0_1px_3px_0_rgb(0_0_0_/_0.04)]">
+      <div className="border-b border-zinc-100 bg-zinc-50/40 px-4 py-3">
         <h3 className="text-sm font-semibold text-zinc-700">Параметры партии</h3>
       </div>
 
-      <dl className="mb-4 grid grid-cols-2 gap-2 xl:grid-cols-3">
-        {summaryItems.map((item) => {
-          const isColor = item.key === "color";
-          const isStyle = item.key === "style";
-          const isGravity = item.key === "og" || item.key === "fg";
+      <div className="flex flex-1 flex-col p-4">
+        <dl className="mb-4 grid grid-cols-2 gap-2 xl:grid-cols-3">
+          {summaryItems.map((item) => {
+            const isColor = item.key === "color";
+            const isStyle = item.key === "style";
+            const isGravity = item.key === "og" || item.key === "fg";
 
-          return (
-            <div
-              key={item.key}
-              className="group relative min-w-0 rounded-xl border border-zinc-100 bg-zinc-50/80 px-3 py-2.5"
-            >
-              <dt className="flex items-center gap-1 text-[11px] font-medium uppercase tracking-[0.08em] text-zinc-400">
-                <span className="truncate">{item.label}</span>
-                {"settingsControl" in item && item.settingsControl ? (
-                  <span className="ml-auto shrink-0">{item.settingsControl}</span>
-                ) : null}
-              </dt>
-              {isColor && item.value && typeof item.value === "object" ? (
-                <dd className="mt-1 flex min-w-0 items-center gap-1.5">
-                  {colorInfo ? (
-                    <BeerGlassIcon color={colorInfo.hex} size={22} className="shrink-0 text-zinc-300" />
+            return (
+              <div
+                key={item.key}
+                className="group relative min-w-0 rounded-xl border border-zinc-100 bg-zinc-50/80 px-3 py-2.5"
+              >
+                <dt className="flex items-center gap-1 text-[11px] font-medium uppercase tracking-[0.08em] text-zinc-400">
+                  <span className="truncate">{item.label}</span>
+                  {"settingsControl" in item && item.settingsControl ? (
+                    <span className="ml-auto shrink-0">{item.settingsControl}</span>
                   ) : null}
-                  <div className="min-w-0">
-                    <div className="text-sm font-semibold tabular-nums text-zinc-950">
-                      <span>{item.value.srm} <span className="text-xs font-medium text-zinc-500">SRM</span></span>
-                      {" / "}
-                      <span>{item.value.ebc} <span className="text-xs font-medium text-zinc-500">EBC</span></span>
-                    </div>
+                </dt>
+                {isColor && item.value && typeof item.value === "object" ? (
+                  <dd className="mt-1 flex min-w-0 items-center gap-1.5">
                     {colorInfo ? (
-                      <div className="truncate text-xs text-zinc-500">{colorInfo.label}</div>
+                      <BeerGlassIcon color={colorInfo.hex} size={22} className="shrink-0 text-zinc-300" />
                     ) : null}
-                  </div>
-                </dd>
-              ) : isStyle ? (
-                <dd className="mt-1 min-w-0" title={typeof item.value === "string" ? item.value : undefined}>
-                  {selectedStyle && selectedStyleArticleHref ? (
-                    <a
-                      href={selectedStyleArticleHref}
-                      target="_blank"
-                      rel="noreferrer"
-                      aria-label={`Открыть описание BJCP стиля ${selectedStyle.name}`}
-                      className="group/link -mx-1 -my-1 flex items-start gap-2 rounded-lg px-1 py-1 transition-colors hover:bg-white focus-visible:bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-300"
-                    >
-                      <div className="min-w-0 flex-1">
-                        <div className="truncate text-sm font-semibold text-zinc-950">{selectedStyle.name}</div>
-                        <div className="truncate text-[11px] font-medium text-zinc-500 underline-offset-2 transition-colors group-hover/link:text-zinc-700 group-hover/link:underline group-focus-visible:text-zinc-700 group-focus-visible:underline">
-                          BJCP {selectedStyle.bjcpId} · Описание стиля
-                        </div>
+                    <div className="min-w-0">
+                      <div className="text-sm font-semibold tabular-nums text-zinc-950">
+                        <span>{item.value.srm} <span className="text-xs font-medium text-zinc-500">SRM</span></span>
+                        {" / "}
+                        <span>{item.value.ebc} <span className="text-xs font-medium text-zinc-500">EBC</span></span>
                       </div>
-                      <ExternalLink className="mt-0.5 h-3.5 w-3.5 shrink-0 text-zinc-300 transition-colors group-hover/link:text-zinc-500 group-focus-visible:text-zinc-500" />
-                    </a>
-                  ) : (
-                    <div>
-                      <div className="truncate text-sm font-semibold text-zinc-950">{typeof item.value === "string" ? item.value : "—"}</div>
-                      {selectedStyle?.bjcpId && selectedStyle.bjcpId !== "LEGACY" ? (
-                        <div className="truncate text-[11px] font-medium text-zinc-500">
-                          BJCP {selectedStyle.bjcpId}
-                        </div>
+                      {colorInfo ? (
+                        <div className="truncate text-xs text-zinc-500">{colorInfo.label}</div>
                       ) : null}
                     </div>
-                  )}
-                </dd>
-              ) : isGravity ? (() => {
-                const strVal = typeof item.value === "string" ? item.value : "—";
-                const parts = strVal !== "—" ? strVal.match(/^([\d.]+)\s*\((.+)\)$/) : null;
-                return (
-                  <dd className="mt-1 min-w-0">
-                    {parts ? (
-                      <div>
-                        <div className="text-sm font-semibold tabular-nums text-zinc-950">{parts[1]}</div>
-                        <div className="text-xs font-medium tabular-nums text-zinc-500">{parts[2]}</div>
-                        {"sourceLabel" in item && item.sourceLabel ? (
-                          <div className="mt-1 text-[11px] font-medium text-zinc-500">{item.sourceLabel}</div>
-                        ) : null}
-                        {"helperText" in item && item.helperText ? (
-                          <div className="mt-1 text-[11px] text-zinc-400">{item.helperText}</div>
-                        ) : null}
-                      </div>
+                  </dd>
+                ) : isStyle ? (
+                  <dd className="mt-1 min-w-0" title={typeof item.value === "string" ? item.value : undefined}>
+                    {selectedStyle && selectedStyleArticleHref ? (
+                      <a
+                        href={selectedStyleArticleHref}
+                        target="_blank"
+                        rel="noreferrer"
+                        aria-label={`Открыть описание BJCP стиля ${selectedStyle.name}`}
+                        className="group/link -mx-1 -my-1 flex items-start gap-2 rounded-lg px-1 py-1 transition-colors hover:bg-white focus-visible:bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-300"
+                      >
+                        <div className="min-w-0 flex-1">
+                          <div className="truncate text-sm font-semibold text-zinc-950">{selectedStyle.name}</div>
+                          <div className="truncate text-[11px] font-medium text-zinc-500 underline-offset-2 transition-colors group-hover/link:text-zinc-700 group-hover/link:underline group-focus-visible:text-zinc-700 group-focus-visible:underline">
+                            BJCP {selectedStyle.bjcpId} · Описание стиля
+                          </div>
+                        </div>
+                        <ExternalLink className="mt-0.5 h-3.5 w-3.5 shrink-0 text-zinc-300 transition-colors group-hover/link:text-zinc-500 group-focus-visible:text-zinc-500" />
+                      </a>
                     ) : (
                       <div>
-                        <div className="text-sm font-semibold tabular-nums text-zinc-950">{strVal}</div>
-                        {"sourceLabel" in item && item.sourceLabel ? (
-                          <div className="mt-1 text-[11px] font-medium text-zinc-500">{item.sourceLabel}</div>
-                        ) : null}
-                        {"helperText" in item && item.helperText ? (
-                          <div className="mt-1 text-[11px] text-zinc-400">{item.helperText}</div>
+                        <div className="truncate text-sm font-semibold text-zinc-950">{typeof item.value === "string" ? item.value : "—"}</div>
+                        {selectedStyle?.bjcpId && selectedStyle.bjcpId !== "LEGACY" ? (
+                          <div className="truncate text-[11px] font-medium text-zinc-500">
+                            BJCP {selectedStyle.bjcpId}
+                          </div>
                         ) : null}
                       </div>
                     )}
                   </dd>
-                );
-              })() : (
-                <dd className="mt-1">
-                  <div className="text-base font-semibold tabular-nums text-zinc-950">
-                    {typeof item.value === "string" ? item.value : "—"}
-                  </div>
-                  {"sourceLabel" in item && item.sourceLabel ? (
-                    <div className="mt-1 text-[11px] font-medium text-zinc-500">{item.sourceLabel}</div>
-                  ) : null}
-                  {"helperText" in item && item.helperText ? (
-                    <div className="mt-1 text-[11px] text-zinc-400">{item.helperText}</div>
-                  ) : null}
-                </dd>
-              )}
-            </div>
-          );
-        })}
-      </dl>
+                ) : isGravity ? (() => {
+                  const strVal = typeof item.value === "string" ? item.value : "—";
+                  const parts = strVal !== "—" ? strVal.match(/^([\d.]+)\s*\((.+)\)$/) : null;
+                  return (
+                    <dd className="mt-1 min-w-0">
+                      {parts ? (
+                        <div>
+                          <div className="text-sm font-semibold tabular-nums text-zinc-950">{parts[1]}</div>
+                          <div className="text-xs font-medium tabular-nums text-zinc-500">{parts[2]}</div>
+                          {"sourceLabel" in item && item.sourceLabel ? (
+                            <div className="mt-1 text-[11px] font-medium text-zinc-500">{item.sourceLabel}</div>
+                          ) : null}
+                          {"helperText" in item && item.helperText ? (
+                            <div className="mt-1 text-[11px] text-zinc-400">{item.helperText}</div>
+                          ) : null}
+                        </div>
+                      ) : (
+                        <div>
+                          <div className="text-sm font-semibold tabular-nums text-zinc-950">{strVal}</div>
+                          {"sourceLabel" in item && item.sourceLabel ? (
+                            <div className="mt-1 text-[11px] font-medium text-zinc-500">{item.sourceLabel}</div>
+                          ) : null}
+                          {"helperText" in item && item.helperText ? (
+                            <div className="mt-1 text-[11px] text-zinc-400">{item.helperText}</div>
+                          ) : null}
+                        </div>
+                      )}
+                    </dd>
+                  );
+                })() : (
+                  <dd className="mt-1">
+                    <div className="text-base font-semibold tabular-nums text-zinc-950">
+                      {typeof item.value === "string" ? item.value : "—"}
+                    </div>
+                    {"sourceLabel" in item && item.sourceLabel ? (
+                      <div className="mt-1 text-[11px] font-medium text-zinc-500">{item.sourceLabel}</div>
+                    ) : null}
+                    {"helperText" in item && item.helperText ? (
+                      <div className="mt-1 text-[11px] text-zinc-400">{item.helperText}</div>
+                    ) : null}
+                  </dd>
+                )}
+              </div>
+            );
+          })}
+        </dl>
 
-      <div className="mt-auto">
-        <div className="grid gap-3 sm:grid-cols-3 sm:items-end">
-          <label className="space-y-1 text-[11px] font-medium text-zinc-500">
-            Объём
-            <div className="relative">
-              <input type="number" min={0.1} step={0.1} value={batchSize.quantity} onChange={(event) => setBatchSize((current) => ({ ...current, quantity: event.target.value }))} className="h-9 w-full rounded-lg border border-zinc-200 bg-white px-2.5 pr-10 text-sm tabular-nums text-zinc-900 shadow-sm" />
-              <span className="pointer-events-none absolute inset-y-0 right-3 flex items-center text-sm font-medium text-zinc-400">
-                л
-              </span>
-            </div>
-          </label>
-          <label className="space-y-1 text-[11px] font-medium text-zinc-500">
-            Эффективность, %
-            <input type="number" min={1} max={100} value={efficiency} onChange={(event) => setEfficiency(event.target.value)} className="h-9 w-full rounded-lg border border-zinc-200 bg-white px-2.5 text-sm tabular-nums text-zinc-900 shadow-sm" />
-          </label>
-          <label className="space-y-1 text-[11px] font-medium text-zinc-500">
-            Кипячение, мин
-            <input type="number" min={1} value={boilTimeMinutes} onChange={(event) => setBoilTimeMinutes(event.target.value)} className="h-9 w-full rounded-lg border border-zinc-200 bg-white px-2.5 text-sm tabular-nums text-zinc-900 shadow-sm" />
-            {sectionErrors.boilTimeMinutes ? <span className="block text-xs text-rose-600">{sectionErrors.boilTimeMinutes}</span> : null}
-          </label>
+        <div className="mt-auto border-t border-zinc-100 pt-3">
+          <div className="grid gap-3 sm:grid-cols-3 sm:items-end">
+            <label className="space-y-1 text-[11px] font-medium uppercase tracking-wide text-zinc-500">
+              Объём
+              <div className="relative">
+                <input type="number" min={0.1} step={0.1} value={batchSize.quantity} onChange={(event) => setBatchSize((current) => ({ ...current, quantity: event.target.value }))} className="h-9 w-full rounded-lg border border-zinc-200 bg-white px-2.5 pr-10 text-sm tabular-nums text-zinc-900 shadow-sm focus:border-zinc-400 focus:outline-none focus:ring-2 focus:ring-zinc-200" />
+                <span className="pointer-events-none absolute inset-y-0 right-3 flex items-center text-sm font-medium text-zinc-400">
+                  л
+                </span>
+              </div>
+            </label>
+            <label className="space-y-1 text-[11px] font-medium uppercase tracking-wide text-zinc-500">
+              Эффективность, %
+              <input type="number" min={1} max={100} value={efficiency} onChange={(event) => setEfficiency(event.target.value)} className="h-9 w-full rounded-lg border border-zinc-200 bg-white px-2.5 text-sm tabular-nums text-zinc-900 shadow-sm focus:border-zinc-400 focus:outline-none focus:ring-2 focus:ring-zinc-200" />
+            </label>
+            <label className="space-y-1 text-[11px] font-medium uppercase tracking-wide text-zinc-500">
+              Кипячение, мин
+              <input type="number" min={1} value={boilTimeMinutes} onChange={(event) => setBoilTimeMinutes(event.target.value)} className="h-9 w-full rounded-lg border border-zinc-200 bg-white px-2.5 text-sm tabular-nums text-zinc-900 shadow-sm focus:border-zinc-400 focus:outline-none focus:ring-2 focus:ring-zinc-200" />
+              {sectionErrors.boilTimeMinutes ? <span className="block text-xs normal-case tracking-normal text-rose-600">{sectionErrors.boilTimeMinutes}</span> : null}
+            </label>
+          </div>
         </div>
       </div>
     </div>
@@ -2712,7 +2759,7 @@ function SectionRow({
 
   return (
     <li className={`relative rounded-lg border-l-[3px] bg-white px-3 py-2.5 shadow-sm ring-1 ring-zinc-100 transition-shadow hover:shadow-md ${accent}`}>
-      <div className="absolute right-2.5 top-2.5 z-10 flex shrink-0 gap-1">
+      <div className="absolute right-2 top-2 z-10 flex shrink-0 gap-0.5">
         <button
           type="button"
           onClick={() => onEdit(ingredient)}
@@ -2727,26 +2774,24 @@ function SectionRow({
           className="rounded-md p-1.5 text-zinc-400 transition-colors hover:bg-rose-50 hover:text-rose-600"
           aria-label="Удалить"
         >
-          <span className="text-xs font-medium">✕</span>
+          <X className="h-3.5 w-3.5" />
         </button>
       </div>
 
-      <div className="flex items-center gap-3 pr-12">
+      <div className="flex items-center gap-3 pr-14">
         <div className="min-w-0 flex-1">
-          <div className="flex min-w-0 flex-wrap items-start gap-2">
-            <div className="flex min-w-0 flex-1 flex-wrap items-start gap-2">
-              <RecipeIngredientTitleBlock
-                source={cardSource}
-                primaryName={ingredient.selectedName || "Не выбран"}
-                secondaryName={ingredient.selectedSecondaryName}
-              />
-              {isFromStock ? (
-                <span className="mt-0.5 shrink-0 rounded bg-zinc-100 px-1.5 py-0.5 text-[11px] font-medium text-zinc-700">Со склада</span>
-              ) : null}
-              {isImported ? (
-                <span className="mt-0.5 shrink-0 rounded bg-sky-50 px-1.5 py-0.5 text-[11px] font-medium text-sky-700">Импортировано</span>
-              ) : null}
-            </div>
+          <div className="flex min-w-0 flex-wrap items-start gap-x-2 gap-y-1">
+            <RecipeIngredientTitleBlock
+              source={cardSource}
+              primaryName={ingredient.selectedName || "Не выбран"}
+              secondaryName={ingredient.selectedSecondaryName}
+            />
+            {isFromStock ? (
+              <span className="mt-0.5 shrink-0 rounded bg-zinc-100 px-1.5 py-0.5 text-[11px] font-medium text-zinc-700">Со склада</span>
+            ) : null}
+            {isImported ? (
+              <span className="mt-0.5 shrink-0 rounded bg-sky-50 px-1.5 py-0.5 text-[11px] font-medium text-sky-700">Импортировано</span>
+            ) : null}
           </div>
           {summaryDetails ? <div className="mt-1 text-xs text-zinc-500">{summaryDetails}</div> : null}
           {summaryFallback ? <div className="mt-1 text-xs text-zinc-500">{summaryFallback}</div> : null}
@@ -3652,394 +3697,430 @@ function IngredientEditor({
     </div>
   );
 
+  const sourceModeMeta: Record<RecipeIngredientEditorSourceMode, { label: string; icon: React.ReactNode; description: string }> = {
+    use_stock: { label: "Из склада", icon: <Package className="h-3.5 w-3.5" />, description: "Использовать уже купленный" },
+    catalog: { label: "Из каталога", icon: <Search className="h-3.5 w-3.5" />, description: "Подобрать по каталогу" },
+    custom: { label: "Свой", icon: <Sparkles className="h-3.5 w-3.5" />, description: "Создать свой" }
+  };
+
   return (
-    <div className="space-y-4">
-      <div className="flex items-start justify-between gap-3">
-        <div>
-          <h3 className="text-sm font-semibold text-zinc-950">
+    <div className="flex min-h-0 flex-1 flex-col">
+      <div className="flex shrink-0 items-start justify-between gap-3 border-b border-zinc-100 px-4 py-3 sm:px-6 sm:py-4">
+        <div className="min-w-0">
+          <h3 className="truncate text-base font-semibold text-zinc-950 sm:text-lg">
             {isExisting ? "Редактор позиции" : "Новая позиция"}
           </h3>
-          <p className="text-xs text-zinc-500">{contextCategoryLabel}</p>
+          <p className="mt-0.5 truncate text-xs text-zinc-500">{contextCategoryLabel}</p>
         </div>
         <button
           type="button"
-          className="text-sm text-zinc-500 transition-colors hover:text-zinc-700"
+          className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-zinc-500 transition-colors hover:bg-zinc-100 hover:text-zinc-800"
           onClick={onCancel}
+          aria-label="Закрыть"
+          title="Закрыть"
         >
-          Закрыть
+          <X className="h-4 w-4" />
         </button>
       </div>
 
-      <RecipeIngredientCategoryGrid
-        value={draft.category}
-        onChange={(nextCategory) => {
-          setShowStockSearch(false);
-          setCustomMessage(null);
-          setCustomFieldErrors(undefined);
-          setFermentableScope(null);
-          onChange(applyRecipeIngredientCategoryContextChange(draft, nextCategory));
-        }}
-        legend="Категория ингредиента"
-        testId="recipe-ingredient-category-grid"
-      />
-
-      <div className="grid gap-2 rounded-md bg-zinc-100 p-1 text-sm sm:grid-cols-3" data-testid="recipe-ingredient-source-switch">
-        {([
-          ["use_stock", "Из склада"],
-          ["catalog", "Из каталога"],
-          ["custom", "Добавить свой"]
-        ] as const).map(([mode, label]) => (
-          <button
-            key={mode}
-            type="button"
-            onClick={() => switchSourceMode(mode)}
-            className={`rounded px-3 py-2 font-medium transition-colors ${sourceMode === mode ? "bg-white text-zinc-950 shadow" : "text-zinc-500 hover:bg-white/70"}`}
-          >
-            {label}
-          </button>
-        ))}
-      </div>
-
-      <InventoryIngredientContextSummary
-        summary={contextSummary}
-        testId="recipe-ingredient-context-summary"
-      />
-
-      {draft.category === "fermentable" && !selectedPreview && sourceMode !== "custom" ? (
-        <RecipeFermentableScopePicker
-          value={fermentableScope}
-          onChange={handleFermentableScopeChange}
+      <div className="flex-1 space-y-4 overflow-y-auto overscroll-contain px-4 py-4 sm:px-6 sm:py-5">
+        <RecipeIngredientCategoryGrid
+          value={draft.category}
+          onChange={(nextCategory) => {
+            setShowStockSearch(false);
+            setCustomMessage(null);
+            setCustomFieldErrors(undefined);
+            setFermentableScope(null);
+            onChange(applyRecipeIngredientCategoryContextChange(draft, nextCategory));
+          }}
+          legend="Категория ингредиента"
+          testId="recipe-ingredient-category-grid"
         />
-      ) : null}
 
-      <div className="space-y-1">
-        <label className="text-xs font-medium text-zinc-700">Ингредиент</label>
-        {selectedPreview ? (
-          <IngredientSelectionCard
-            item={selectedPreview}
-            label={selectedStockPreview ? "Выбрано со склада" : selectedPreview.source === "custom" ? "Выбрано: свой ингредиент" : "Выбрано из каталога"}
-            actionLabel="Изменить выбор"
-            onAction={() => {
-              setShowStockSearch(false);
-              onChange(clearRecipeIngredientSelection(draft));
-            }}
-            hideTypedSummary={!selectedStockPreview}
-            hideSubtitle={!selectedStockPreview}
-            mergeBrandAndCountry
-          />
-        ) : sourceMode === "custom" ? (
-          <div className="space-y-3" data-testid="recipe-custom-ingredient-create-panel">
-            <CustomIngredientForm
-              mode="recipe"
-              category={draft.category}
-              initialSubtype={pickerSubtype}
-              initialDisplayName={draft.selectedName}
-              pending={pendingCustom}
-              fieldErrors={customFieldErrors}
-              submitLabel="Создать свой ингредиент"
-              onDisplayNameChange={(value) => {
-                setCustomMessage(null);
-                setCustomDisplayName(value);
-              }}
-              onSubmit={createCustomIngredient}
-            />
-            <div className="flex flex-wrap items-center gap-2">
-              <button
-                type="button"
-                disabled={!customDisplayName.trim()}
-                onClick={async () => {
-                  const result = await proposeRecipeIngredientAction({
-                    category: draft.category,
-                    subtype: pickerSubtype,
-                    displayName: customDisplayName.trim()
-                  });
-                  setCustomMessage(result.message);
-                }}
-                className="inline-flex items-center rounded-md border border-zinc-300 bg-white px-3 py-2 text-sm font-medium text-zinc-700 transition-colors hover:border-zinc-400 hover:bg-zinc-100 hover:text-zinc-950 disabled:opacity-60"
-              >
-                Предложить в каталог
-              </button>
-            </div>
-            {customMessage ? <p className="text-xs text-zinc-500">{customMessage}</p> : null}
+        <div>
+          <span className="mb-1.5 block text-[11px] font-medium uppercase tracking-wide text-zinc-500">Источник</span>
+          <div className="grid grid-cols-3 gap-1.5 rounded-xl bg-zinc-100 p-1" data-testid="recipe-ingredient-source-switch">
+            {(["use_stock", "catalog", "custom"] as const).map((mode) => {
+              const meta = sourceModeMeta[mode];
+              const active = sourceMode === mode;
+              return (
+                <button
+                  key={mode}
+                  type="button"
+                  onClick={() => switchSourceMode(mode)}
+                  className={`flex min-w-0 flex-col items-center justify-center gap-0.5 rounded-lg px-2 py-2 text-xs font-medium transition-all sm:flex-row sm:gap-2 sm:py-2.5 sm:text-sm ${active ? "bg-white text-zinc-900 shadow-sm ring-1 ring-zinc-200" : "text-zinc-600 hover:text-zinc-800"}`}
+                  aria-pressed={active}
+                >
+                  <span className={`shrink-0 ${active ? "text-zinc-900" : "text-zinc-500"}`}>{meta.icon}</span>
+                  <span className="truncate">{meta.label}</span>
+                </button>
+              );
+            })}
           </div>
-        ) : (
-          <>
-            {showIngredientPicker ? (
-              <IngredientPicker
-                type={ingredientSearchType}
+        </div>
+
+        <InventoryIngredientContextSummary
+          summary={contextSummary}
+          testId="recipe-ingredient-context-summary"
+        />
+
+        {draft.category === "fermentable" && !selectedPreview && sourceMode !== "custom" ? (
+          <RecipeFermentableScopePicker
+            value={fermentableScope}
+            onChange={handleFermentableScopeChange}
+          />
+        ) : null}
+
+        <div className="space-y-1">
+          <label className="text-xs font-medium text-zinc-700">Ингредиент</label>
+          {selectedPreview ? (
+            <IngredientSelectionCard
+              item={selectedPreview}
+              label={selectedStockPreview ? "Выбрано со склада" : selectedPreview.source === "custom" ? "Выбрано: свой ингредиент" : "Выбрано из каталога"}
+              actionLabel="Изменить выбор"
+              onAction={() => {
+                setShowStockSearch(false);
+                onChange(clearRecipeIngredientSelection(draft));
+              }}
+              hideTypedSummary={!selectedStockPreview}
+              hideSubtitle={!selectedStockPreview}
+              mergeBrandAndCountry
+            />
+          ) : sourceMode === "custom" ? (
+            <div className="space-y-3" data-testid="recipe-custom-ingredient-create-panel">
+              <CustomIngredientForm
+                mode="recipe"
                 category={draft.category}
+                initialSubtype={pickerSubtype}
+                initialDisplayName={draft.selectedName}
+                pending={pendingCustom}
+                fieldErrors={customFieldErrors}
+                submitLabel="Создать свой ингредиент"
+                onDisplayNameChange={(value) => {
+                  setCustomMessage(null);
+                  setCustomDisplayName(value);
+                }}
+                onSubmit={createCustomIngredient}
+              />
+              <div className="flex flex-wrap items-center gap-2">
+                <button
+                  type="button"
+                  disabled={!customDisplayName.trim()}
+                  onClick={async () => {
+                    const result = await proposeRecipeIngredientAction({
+                      category: draft.category,
+                      subtype: pickerSubtype,
+                      displayName: customDisplayName.trim()
+                    });
+                    setCustomMessage(result.message);
+                  }}
+                  className="inline-flex items-center rounded-md border border-zinc-300 bg-white px-3 py-2 text-sm font-medium text-zinc-700 transition-colors hover:border-zinc-400 hover:bg-zinc-100 hover:text-zinc-950 disabled:opacity-60"
+                >
+                  Предложить в каталог
+                </button>
+              </div>
+              {customMessage ? <p className="text-xs text-zinc-500">{customMessage}</p> : null}
+            </div>
+          ) : (
+            <>
+              {showIngredientPicker ? (
+                <IngredientPicker
+                  type={ingredientSearchType}
+                  category={draft.category}
+                  subtype={pickerSubtype}
+                  forcedGroup={forcedFermentableGroup}
+                  hideForcedGroupChip
+                  onForcedGroupClear={() => handleFermentableScopeChange(null)}
+                  value={draft.selectedName}
+                  onValueChange={(value) => onChange(applyQueryChange(draft, value))}
+                  onSelect={(item) => {
+                    setShowStockSearch(false);
+                    onChange(applySelection(draft, item));
+                  }}
+                  searchIngredients={sourceMode === "use_stock" ? searchStockIngredientsForRecipe : undefined}
+                  hydrateRecentSelectionsOnInit={sourceMode !== "use_stock"}
+                  enableQuickStart={sourceMode !== "use_stock"}
+                  allowCustomOnlyFilter={sourceMode !== "use_stock"}
+                  autoFocus={autoFocusPicker}
+                  placeholder={sourceMode === "use_stock" ? "Поиск по складу" : placeholder}
+                  emptyCta={emptyCta}
+                />
+              ) : null}
+              <StockIngredientList
+                active={sourceMode === "use_stock"}
+                category={draft.category}
+                type={ingredientSearchType}
                 subtype={pickerSubtype}
-                forcedGroup={forcedFermentableGroup}
-                hideForcedGroupChip
-                onForcedGroupClear={() => handleFermentableScopeChange(null)}
-                value={draft.selectedName}
-                onValueChange={(value) => onChange(applyQueryChange(draft, value))}
+                group={forcedFermentableGroup?.value ?? undefined}
+                searchIngredients={searchStockIngredientsForRecipe}
+                onOverflowChange={setShowStockSearch}
                 onSelect={(item) => {
                   setShowStockSearch(false);
                   onChange(applySelection(draft, item));
                 }}
-                searchIngredients={sourceMode === "use_stock" ? searchStockIngredientsForRecipe : undefined}
-                hydrateRecentSelectionsOnInit={sourceMode !== "use_stock"}
-                enableQuickStart={sourceMode !== "use_stock"}
-                allowCustomOnlyFilter={sourceMode !== "use_stock"}
-                autoFocus={autoFocusPicker}
-                placeholder={sourceMode === "use_stock" ? "Поиск по складу" : placeholder}
-                emptyCta={emptyCta}
               />
+            </>
+          )}
+        </div>
+
+        {showRecipeFields ? (
+          <>
+            <div className="grid gap-3 sm:grid-cols-[1fr_160px]">
+              <label className="space-y-1 text-xs font-medium text-zinc-700">
+                Количество
+                <input
+                  type="number"
+                  min={0}
+                  step={quantityStep}
+                  value={draft.amountEnteredQuantity}
+                  onChange={(event) => onChange({ ...draft, amountEnteredQuantity: event.target.value })}
+                  className="h-10 w-full rounded-md border border-zinc-200 bg-white px-3 text-sm text-zinc-900"
+                />
+              </label>
+              <label className="space-y-1 text-xs font-medium text-zinc-700">
+                Ед. изм.
+                <select
+                  value={draft.amountEnteredUnit}
+                  onChange={(event) => onChange({ ...draft, amountEnteredUnit: event.target.value as InventoryUnit })}
+                  className="h-10 w-full rounded-md border border-zinc-200 bg-white px-3 text-sm text-zinc-900"
+                >
+                  {draft.allowedUnits.map((unit) => (
+                    <option key={unit} value={unit}>{inventoryUnitLabels[unit] ?? unit}</option>
+                  ))}
+                </select>
+              </label>
+            </div>
+
+            {draft.category === "fermentable" ? (
+              <div className="grid gap-3 sm:grid-cols-[180px_160px]">
+                <label className="space-y-1 text-xs font-medium text-zinc-700">
+                  Использование
+                  <select
+                    value={draft.stepMeta.use ?? "mash"}
+                    onChange={(event) => onChange({
+                      ...draft,
+                      stage: event.target.value === "boil" ? "boil" : "mash",
+                      stepMeta: {
+                        ...draft.stepMeta,
+                        use: event.target.value
+                      }
+                    })}
+                    className="h-10 w-full rounded-md border border-zinc-200 bg-white px-3 text-sm text-zinc-900"
+                  >
+                    {recipeFermentableUseTypes.map((use) => <option key={use} value={use}>{fermentableUseLabels[use]}</option>)}
+                  </select>
+                </label>
+                {(draft.stepMeta.use ?? "mash") === "boil" ? (
+                  <label className="space-y-1 text-xs font-medium text-zinc-700">
+                    Минут от конца
+                    <input
+                      type="number"
+                      min={0}
+                      value={draft.stepMeta.timeMinutes ?? ""}
+                      onChange={(event) => onChange({
+                        ...draft,
+                        timeOffset: event.target.value,
+                        stepMeta: {
+                          ...draft.stepMeta,
+                          timeMinutes: event.target.value
+                        }
+                      })}
+                      className="h-10 w-full rounded-md border border-zinc-200 bg-white px-3 text-sm text-zinc-900"
+                    />
+                  </label>
+                ) : null}
+              </div>
             ) : null}
-            <StockIngredientList
-              active={sourceMode === "use_stock"}
-              category={draft.category}
-              type={ingredientSearchType}
-              subtype={pickerSubtype}
-              group={forcedFermentableGroup?.value ?? undefined}
-              searchIngredients={searchStockIngredientsForRecipe}
-              onOverflowChange={setShowStockSearch}
-              onSelect={(item) => {
-                setShowStockSearch(false);
-                onChange(applySelection(draft, item));
-              }}
-            />
+
+            {isHop ? (
+              <div className="grid gap-3 sm:grid-cols-2">
+                <label className="space-y-1 text-xs font-medium text-zinc-700">
+                  Тип добавления
+                  <select
+                    value={hopUseType}
+                    onChange={(event) => onChange({
+                      ...draft,
+                      stage: mapHopStageFromUseType(event.target.value as RecipeHopUseType),
+                      stepMeta: {
+                        ...draft.stepMeta,
+                        useType: event.target.value as RecipeHopUseType
+                      }
+                    })}
+                    className="h-10 w-full rounded-md border border-zinc-200 bg-white px-3 text-sm text-zinc-900"
+                  >
+                    {recipeHopUseTypeUiOrder.map((useType) => <option key={useType} value={useType}>{hopUseTypeLabels[useType]}</option>)}
+                  </select>
+                </label>
+
+                {(hopUseType === "boil" || hopUseType === "whirlpool" || hopUseType === "dip_hop") ? (
+                  <label className="space-y-1 text-xs font-medium text-zinc-700">
+                    Минут
+                    <input
+                      type="number"
+                      min={0}
+                      value={draft.stepMeta.timeMinutes ?? ""}
+                      onChange={(event) => onChange({
+                        ...draft,
+                        timeOffset: event.target.value,
+                        stepMeta: {
+                          ...draft.stepMeta,
+                          timeMinutes: event.target.value
+                        }
+                      })}
+                      className="h-10 w-full rounded-md border border-zinc-200 bg-white px-3 text-sm text-zinc-900"
+                    />
+                  </label>
+                ) : hopUseType === "dry_hop" ? (
+                  <label className="space-y-1 text-xs font-medium text-zinc-700">
+                    Длительность, дн
+                    <input
+                      type="number"
+                      min={1}
+                      value={draft.stepMeta.durationDays ?? ""}
+                      onChange={(event) => onChange({
+                        ...draft,
+                        stepMeta: {
+                          ...draft.stepMeta,
+                          durationDays: event.target.value
+                        }
+                      })}
+                      className="h-10 w-full rounded-md border border-zinc-200 bg-white px-3 text-sm text-zinc-900"
+                    />
+                  </label>
+                ) : (
+                  <label className="space-y-1 text-xs font-medium text-zinc-700">
+                    Stage label
+                    <input
+                      value={draft.stepMeta.stageLabel ?? ""}
+                      onChange={(event) => onChange({
+                        ...draft,
+                        stepMeta: {
+                          ...draft.stepMeta,
+                          stageLabel: event.target.value
+                        }
+                      })}
+                      className="h-10 w-full rounded-md border border-zinc-200 bg-white px-3 text-sm text-zinc-900"
+                      placeholder="Например, first wort"
+                    />
+                  </label>
+                )}
+
+                {(hopUseType === "whirlpool" || hopUseType === "dip_hop") ? (
+                  <label className="space-y-1 text-xs font-medium text-zinc-700">
+                    Температура, °C
+                    <input
+                      type="number"
+                      min={0}
+                      value={draft.stepMeta.temperatureC ?? ""}
+                      onChange={(event) => onChange({
+                        ...draft,
+                        stepMeta: {
+                          ...draft.stepMeta,
+                          temperatureC: event.target.value
+                        }
+                      })}
+                      className="h-10 w-full rounded-md border border-zinc-200 bg-white px-3 text-sm text-zinc-900"
+                    />
+                  </label>
+                ) : null}
+              </div>
+            ) : null}
+
+            {draft.category === "yeast" ? (
+              <div className="grid gap-3 sm:grid-cols-2">
+                <label className="space-y-1 text-xs font-medium text-zinc-700">
+                  Основная температура брожения, °C
+                  <input
+                    type="number"
+                    value={draft.stepMeta.fermentationTempC ?? ""}
+                    onChange={(event) => onChange({
+                      ...draft,
+                      stepMeta: {
+                        ...draft.stepMeta,
+                        fermentationTempC: event.target.value
+                      }
+                    })}
+                    className="h-10 w-full rounded-md border border-zinc-200 bg-white px-3 text-sm text-zinc-900"
+                  />
+                </label>
+                {draft.selectedSummary ? (
+                  <div className="rounded-xl border border-zinc-100 bg-zinc-50 px-3 py-2 text-xs text-zinc-500">
+                    {draft.selectedSummary}
+                  </div>
+                ) : null}
+              </div>
+            ) : null}
+
+            {draft.category === "water_treatment" || draft.category === "consumable" ? (
+              <div className="grid gap-3 sm:grid-cols-2">
+                <label className="space-y-1 text-xs font-medium text-zinc-700">
+                  Стадия
+                  <select
+                    value={draft.stage}
+                    onChange={(event) => onChange({ ...draft, stage: event.target.value as DesignerIngredient["stage"] })}
+                    className="h-10 w-full rounded-md border border-zinc-200 bg-white px-3 text-sm text-zinc-900"
+                  >
+                    {Object.entries(stageLabels).map(([value, label]) => <option key={value} value={value}>{label}</option>)}
+                  </select>
+                </label>
+                <label className="space-y-1 text-xs font-medium text-zinc-700">
+                  Время, если нужно
+                  <input
+                    type="number"
+                    value={draft.stepMeta.timeMinutes ?? ""}
+                    onChange={(event) => onChange({
+                      ...draft,
+                      timeOffset: event.target.value,
+                      stepMeta: {
+                        ...draft.stepMeta,
+                        timeMinutes: event.target.value
+                      }
+                    })}
+                    className="h-10 w-full rounded-md border border-zinc-200 bg-white px-3 text-sm text-zinc-900"
+                    placeholder="минуты"
+                  />
+                </label>
+              </div>
+            ) : null}
           </>
-        )}
+        ) : null}
+
+        {fieldError ? (
+          <div className="flex items-center gap-2 rounded-lg bg-rose-50 px-3 py-2 text-sm text-rose-700 ring-1 ring-inset ring-rose-200">
+            <CircleAlert className="h-4 w-4 shrink-0" />
+            <span>{fieldError}</span>
+          </div>
+        ) : null}
       </div>
 
-      {showRecipeFields ? (
-        <>
-          <div className="grid gap-3 sm:grid-cols-[1fr_160px]">
-            <label className="space-y-1 text-xs font-medium text-zinc-700">
-              Количество
-              <input
-                type="number"
-                min={0}
-                step={quantityStep}
-                value={draft.amountEnteredQuantity}
-                onChange={(event) => onChange({ ...draft, amountEnteredQuantity: event.target.value })}
-                className="h-10 w-full rounded-md border border-zinc-200 bg-white px-3 text-sm text-zinc-900"
-              />
-            </label>
-            <label className="space-y-1 text-xs font-medium text-zinc-700">
-              Ед. изм.
-              <select
-                value={draft.amountEnteredUnit}
-                onChange={(event) => onChange({ ...draft, amountEnteredUnit: event.target.value as InventoryUnit })}
-                className="h-10 w-full rounded-md border border-zinc-200 bg-white px-3 text-sm text-zinc-900"
-              >
-                {draft.allowedUnits.map((unit) => (
-                  <option key={unit} value={unit}>{inventoryUnitLabels[unit] ?? unit}</option>
-                ))}
-              </select>
-            </label>
-          </div>
-
-          {draft.category === "fermentable" ? (
-            <div className="grid gap-3 sm:grid-cols-[180px_160px]">
-              <label className="space-y-1 text-xs font-medium text-zinc-700">
-                Использование
-                <select
-                  value={draft.stepMeta.use ?? "mash"}
-                  onChange={(event) => onChange({
-                    ...draft,
-                    stage: event.target.value === "boil" ? "boil" : "mash",
-                    stepMeta: {
-                      ...draft.stepMeta,
-                      use: event.target.value
-                    }
-                  })}
-                  className="h-10 w-full rounded-md border border-zinc-200 bg-white px-3 text-sm text-zinc-900"
-                >
-                  {recipeFermentableUseTypes.map((use) => <option key={use} value={use}>{fermentableUseLabels[use]}</option>)}
-                </select>
-              </label>
-              {(draft.stepMeta.use ?? "mash") === "boil" ? (
-                <label className="space-y-1 text-xs font-medium text-zinc-700">
-                  Минут от конца
-                  <input
-                    type="number"
-                    min={0}
-                    value={draft.stepMeta.timeMinutes ?? ""}
-                    onChange={(event) => onChange({
-                      ...draft,
-                      timeOffset: event.target.value,
-                      stepMeta: {
-                        ...draft.stepMeta,
-                        timeMinutes: event.target.value
-                      }
-                    })}
-                    className="h-10 w-full rounded-md border border-zinc-200 bg-white px-3 text-sm text-zinc-900"
-                  />
-                </label>
-              ) : null}
-            </div>
-          ) : null}
-
-          {isHop ? (
-            <div className="grid gap-3 sm:grid-cols-2">
-              <label className="space-y-1 text-xs font-medium text-zinc-700">
-                Тип добавления
-                <select
-                  value={hopUseType}
-                  onChange={(event) => onChange({
-                    ...draft,
-                    stage: mapHopStageFromUseType(event.target.value as RecipeHopUseType),
-                    stepMeta: {
-                      ...draft.stepMeta,
-                      useType: event.target.value as RecipeHopUseType
-                    }
-                  })}
-                  className="h-10 w-full rounded-md border border-zinc-200 bg-white px-3 text-sm text-zinc-900"
-                >
-                  {recipeHopUseTypes.map((useType) => <option key={useType} value={useType}>{hopUseTypeLabels[useType]}</option>)}
-                </select>
-              </label>
-
-              {(hopUseType === "boil" || hopUseType === "whirlpool" || hopUseType === "dip_hop") ? (
-                <label className="space-y-1 text-xs font-medium text-zinc-700">
-                  Минут
-                  <input
-                    type="number"
-                    min={0}
-                    value={draft.stepMeta.timeMinutes ?? ""}
-                    onChange={(event) => onChange({
-                      ...draft,
-                      timeOffset: event.target.value,
-                      stepMeta: {
-                        ...draft.stepMeta,
-                        timeMinutes: event.target.value
-                      }
-                    })}
-                    className="h-10 w-full rounded-md border border-zinc-200 bg-white px-3 text-sm text-zinc-900"
-                  />
-                </label>
-              ) : hopUseType === "dry_hop" ? (
-                <label className="space-y-1 text-xs font-medium text-zinc-700">
-                  Длительность, дн
-                  <input
-                    type="number"
-                    min={1}
-                    value={draft.stepMeta.durationDays ?? ""}
-                    onChange={(event) => onChange({
-                      ...draft,
-                      stepMeta: {
-                        ...draft.stepMeta,
-                        durationDays: event.target.value
-                      }
-                    })}
-                    className="h-10 w-full rounded-md border border-zinc-200 bg-white px-3 text-sm text-zinc-900"
-                  />
-                </label>
-              ) : (
-                <label className="space-y-1 text-xs font-medium text-zinc-700">
-                  Stage label
-                  <input
-                    value={draft.stepMeta.stageLabel ?? ""}
-                    onChange={(event) => onChange({
-                      ...draft,
-                      stepMeta: {
-                        ...draft.stepMeta,
-                        stageLabel: event.target.value
-                      }
-                    })}
-                    className="h-10 w-full rounded-md border border-zinc-200 bg-white px-3 text-sm text-zinc-900"
-                    placeholder="Например, first wort"
-                  />
-                </label>
-              )}
-
-              {(hopUseType === "whirlpool" || hopUseType === "dip_hop") ? (
-                <label className="space-y-1 text-xs font-medium text-zinc-700">
-                  Температура, °C
-                  <input
-                    type="number"
-                    min={0}
-                    value={draft.stepMeta.temperatureC ?? ""}
-                    onChange={(event) => onChange({
-                      ...draft,
-                      stepMeta: {
-                        ...draft.stepMeta,
-                        temperatureC: event.target.value
-                      }
-                    })}
-                    className="h-10 w-full rounded-md border border-zinc-200 bg-white px-3 text-sm text-zinc-900"
-                  />
-                </label>
-              ) : null}
-            </div>
-          ) : null}
-
-          {draft.category === "yeast" ? (
-            <div className="grid gap-3 sm:grid-cols-2">
-              <label className="space-y-1 text-xs font-medium text-zinc-700">
-                Основная температура брожения, °C
-                <input
-                  type="number"
-                  value={draft.stepMeta.fermentationTempC ?? ""}
-                  onChange={(event) => onChange({
-                    ...draft,
-                    stepMeta: {
-                      ...draft.stepMeta,
-                      fermentationTempC: event.target.value
-                    }
-                  })}
-                  className="h-10 w-full rounded-md border border-zinc-200 bg-white px-3 text-sm text-zinc-900"
-                />
-              </label>
-              {draft.selectedSummary ? (
-                <div className="rounded-xl border border-zinc-100 bg-zinc-50 px-3 py-2 text-xs text-zinc-500">
-                  {draft.selectedSummary}
-                </div>
-              ) : null}
-            </div>
-          ) : null}
-
-          {draft.category === "water_treatment" || draft.category === "consumable" ? (
-            <div className="grid gap-3 sm:grid-cols-2">
-              <label className="space-y-1 text-xs font-medium text-zinc-700">
-                Стадия
-                <select
-                  value={draft.stage}
-                  onChange={(event) => onChange({ ...draft, stage: event.target.value as DesignerIngredient["stage"] })}
-                  className="h-10 w-full rounded-md border border-zinc-200 bg-white px-3 text-sm text-zinc-900"
-                >
-                  {Object.entries(stageLabels).map(([value, label]) => <option key={value} value={value}>{label}</option>)}
-                </select>
-              </label>
-              <label className="space-y-1 text-xs font-medium text-zinc-700">
-                Время, если нужно
-                <input
-                  type="number"
-                  value={draft.stepMeta.timeMinutes ?? ""}
-                  onChange={(event) => onChange({
-                    ...draft,
-                    timeOffset: event.target.value,
-                    stepMeta: {
-                      ...draft.stepMeta,
-                      timeMinutes: event.target.value
-                    }
-                  })}
-                  className="h-10 w-full rounded-md border border-zinc-200 bg-white px-3 text-sm text-zinc-900"
-                  placeholder="минуты"
-                />
-              </label>
-            </div>
-          ) : null}
-        </>
-      ) : null}
-
-      {fieldError ? <p className="text-sm text-rose-700">{fieldError}</p> : null}
-
-      <div className="flex flex-wrap items-center justify-end gap-2 border-t border-zinc-100 pt-3">
-        <div className="flex flex-wrap gap-2">
+      <div className="flex shrink-0 items-center justify-between gap-2 border-t border-zinc-100 bg-white px-4 py-3 sm:px-6 sm:py-4">
+        <div>
           {onDelete ? (
-            <button type="button" onClick={onDelete} className="rounded-md border border-rose-300 bg-white px-3 py-2 text-sm text-rose-700">
-              Удалить
+            <button
+              type="button"
+              onClick={onDelete}
+              className="inline-flex h-10 items-center gap-1.5 rounded-lg border border-rose-200 bg-white px-3 text-sm font-medium text-rose-600 transition-colors hover:border-rose-300 hover:bg-rose-50"
+            >
+              <Trash2 className="h-3.5 w-3.5" />
+              <span className="hidden sm:inline">Удалить</span>
             </button>
           ) : null}
-          <button type="button" onClick={onCancel} className="rounded-md border border-zinc-300 bg-white px-3 py-2 text-sm">
+        </div>
+        <div className="flex flex-1 justify-end gap-2">
+          <button
+            type="button"
+            onClick={onCancel}
+            className="inline-flex h-10 items-center rounded-lg border border-zinc-200 bg-white px-4 text-sm font-medium text-zinc-700 transition-colors hover:bg-zinc-50"
+          >
             Отмена
           </button>
           {showRecipeFields ? (
-            <button type="button" onClick={onSave} disabled={saveDisabled} className="rounded-md bg-zinc-900 px-3 py-2 text-sm font-medium text-white disabled:opacity-50">
+            <button
+              type="button"
+              onClick={onSave}
+              disabled={saveDisabled}
+              className="inline-flex h-10 items-center rounded-lg bg-zinc-900 px-4 text-sm font-medium text-white shadow-sm transition-colors hover:bg-zinc-800 disabled:cursor-not-allowed disabled:opacity-50"
+            >
               {saveLabel}
             </button>
           ) : null}
@@ -4055,6 +4136,7 @@ export function RecipeDesigner({
   initialTitle,
   initialIngredientSelection = null,
   initialStockCoverage = null,
+  initialImages = [],
   equipmentProfiles = [],
   onSaveStatusChange,
   onRecipeCreated,
@@ -4062,8 +4144,6 @@ export function RecipeDesigner({
 }: Props) {
   const isMobile = useIsMobile();
   const router = useRouter();
-  const pathname = usePathname();
-  const searchParams = useSearchParams();
   const initialPublicationState = normalizeEditorPublicationState(initialRecipe?.publicationState);
   const [activeRecipeId, setActiveRecipeId] = useState(initialRecipe?.id ?? null);
   const [activeRecipeSlug, setActiveRecipeSlug] = useState(initialRecipe?.slug ?? null);
@@ -4177,25 +4257,6 @@ export function RecipeDesigner({
     pendingSaveRef.current = pendingSave;
   }, [pendingSave]);
 
-  const trackedRecipeId = searchParams.get("recipeId");
-
-  useEffect(() => {
-    if (!activeRecipeId) return;
-    if (pathname !== "/app/recipes/new") return;
-    if (trackedRecipeId === activeRecipeId) return;
-
-    const syncRecipeUrlTimer = window.setTimeout(() => {
-      const currentRecipeId = new URLSearchParams(window.location.search).get("recipeId");
-      if (window.location.pathname !== "/app/recipes/new" || currentRecipeId === activeRecipeId) {
-        return;
-      }
-
-      window.history.replaceState(window.history.state, "", `/app/recipes/new?recipeId=${activeRecipeId}`);
-    }, 250);
-
-    return () => window.clearTimeout(syncRecipeUrlTimer);
-  }, [activeRecipeId, pathname, trackedRecipeId]);
-
   useEffect(() => {
     if (typeof window === "undefined" || (!isDirty && !pendingSave)) {
       return undefined;
@@ -4296,6 +4357,7 @@ export function RecipeDesigner({
       if (!activeRecipeId) {
         setActiveRecipeId(savedRecipe.id);
         onRecipeCreated?.(savedRecipe);
+        replaceRecipeEditorUrl(savedRecipe.id);
       }
 
       return result;
@@ -4304,7 +4366,7 @@ export function RecipeDesigner({
     setSaveResult(result);
     setSaveResultSignature(surfaceInlineResult ? nextSignature : null);
     return result;
-  }, [activeRecipeId, currentSignature, onRecipeCreated, payload, persistMode, publicationState, router]);
+  }, [activeRecipeId, onRecipeCreated, payload, persistMode, publicationState]);
 
   useEffect(() => {
     if (!isDirty) return;
@@ -4486,49 +4548,82 @@ export function RecipeDesigner({
         subtitle: hops.length ? `${hopTotalG.toFixed(0)} г` : undefined,
         items: hops,
         empty: "Пока нет хмеля. Добавьте кипячение, whirlpool, dry hop или dip hop.",
-        renderItems: (items) => (
-          <div className="space-y-4">
-            {recipeHopUseTypes.map((useType) => {
-              const rows = items
-                .filter((item) => getHopUseType(item) === useType)
-                .sort((left, right) => getHopTimeMinutesValue(right) - getHopTimeMinutesValue(left));
-              return (
-                <div key={useType} className="space-y-1.5">
-                  <div className="flex items-center justify-between gap-2 border-b border-zinc-100 px-1 pb-1.5">
-                    <h4 className="text-xs font-bold uppercase tracking-wider text-zinc-600">{hopUseTypeLabels[useType]}</h4>
-                    <button type="button" onClick={() => openAddEditor("hop", useType)} className="rounded-md px-2 py-1 text-xs text-zinc-500 transition-colors hover:bg-zinc-100 hover:text-zinc-700">
-                      + Добавить
-                    </button>
+        renderItems: (items) => {
+          const usedTypes = recipeHopUseTypeUiOrder.filter(
+            (useType) => useType === "boil" || items.some((item) => getHopUseType(item) === useType)
+          );
+          const unusedTypes = recipeAdditionalHopUseTypeUiOrder.filter(
+            (useType) => !items.some((item) => getHopUseType(item) === useType)
+          );
+          return (
+            <div className="space-y-3">
+              {usedTypes.map((useType) => {
+                const rows = items
+                  .filter((item) => getHopUseType(item) === useType)
+                  .sort((left, right) => getHopTimeMinutesValue(right) - getHopTimeMinutesValue(left));
+                return (
+                  <div key={useType} className="space-y-1.5">
+                    <div className="flex items-center justify-between gap-2 border-b border-zinc-100 px-1 pb-1.5">
+                      <h4 className="text-xs font-bold uppercase tracking-wider text-zinc-500">{hopUseTypeSectionLabels[useType]}</h4>
+                      {rows.length ? <button type="button" onClick={() => openAddEditor("hop", useType)} className="rounded-md px-2 py-1 text-xs text-zinc-500 transition-colors hover:bg-zinc-100 hover:text-zinc-700">
+                        + Добавить
+                      </button> : null}
+                    </div>
+                    {rows.length ? (
+                      <ul className="space-y-1.5">
+                        {rows.map((ingredient) => (
+                          <SectionRow
+                            key={ingredient.localId}
+                            ingredient={ingredient}
+                            onEdit={(value) => maybeOpenEditor({
+                              localId: value.localId,
+                              category: value.category,
+                              draft: { ...value },
+                              initialSignature: serializeIngredient(value),
+                              isExisting: true
+                            })}
+                            onDelete={deleteIngredient}
+                            onQuantityChange={updateIngredientQuantity}
+                            onTimeChange={updateHopTimeMinutes}
+                            onAddImportedAsCustom={addImportedIngredientAsCustom}
+                            onMapImportedSource={openImportedCatalogMatcher}
+                          />
+                        ))}
+                      </ul>
+                    ) : (
+                      <button
+                        type="button"
+                        onClick={() => openAddEditor("hop", useType)}
+                        className="flex w-full items-center justify-center gap-2 rounded-xl border border-dashed border-zinc-300 bg-zinc-50/40 px-4 py-6 text-sm text-zinc-500 transition-colors hover:border-zinc-400 hover:bg-zinc-50 hover:text-zinc-700"
+                      >
+                        <Plus className="h-4 w-4" />
+                        <span>Добавьте хмель на кипячение</span>
+                      </button>
+                    )}
                   </div>
-                  {rows.length ? (
-                    <ul className="space-y-1.5">
-                      {rows.map((ingredient) => (
-                        <SectionRow
-                          key={ingredient.localId}
-                          ingredient={ingredient}
-                          onEdit={(value) => maybeOpenEditor({
-                            localId: value.localId,
-                            category: value.category,
-                            draft: { ...value },
-                            initialSignature: serializeIngredient(value),
-                            isExisting: true
-                          })}
-                          onDelete={deleteIngredient}
-                          onQuantityChange={updateIngredientQuantity}
-                          onTimeChange={updateHopTimeMinutes}
-                          onAddImportedAsCustom={addImportedIngredientAsCustom}
-                          onMapImportedSource={openImportedCatalogMatcher}
-                        />
-                      ))}
-                    </ul>
-                  ) : (
-                    <p className="rounded-lg border border-dashed border-zinc-200 px-3 py-2.5 text-sm text-zinc-400">Пусто</p>
-                  )}
-                </div>
-              );
-            })}
-          </div>
-        )
+                );
+              })}
+              {unusedTypes.length ? (
+                <details className="group">
+                  <summary className="flex cursor-pointer list-none items-center gap-2 rounded-lg border border-zinc-200 bg-zinc-50 px-3 py-2 text-xs font-semibold text-zinc-600 transition-colors hover:border-zinc-300 hover:bg-zinc-100 hover:text-zinc-800">
+                    <ChevronRight className="h-3.5 w-3.5 transition-transform group-open:rotate-90" />
+                    Другие типы охмеления
+                  </summary>
+                  <div className="mt-2 space-y-3">
+                    {unusedTypes.map((useType) => (
+                      <div key={useType} className="flex items-center justify-between gap-2 rounded-lg border border-dashed border-zinc-200 px-3 py-2">
+                        <span className="text-xs text-zinc-500">{hopUseTypeLabels[useType]}</span>
+                        <button type="button" onClick={() => openAddEditor("hop", useType)} className="rounded-md px-2 py-1 text-xs text-zinc-500 transition-colors hover:bg-zinc-100 hover:text-zinc-700">
+                          + Добавить
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                </details>
+              ) : null}
+            </div>
+          );
+        }
       },
       {
         category: "yeast",
@@ -4601,7 +4696,7 @@ export function RecipeDesigner({
     }
 
     startTransition(() => {
-      router.push(`/app/recipes/${nextRecipeId}/edit`);
+      router.push(buildRecipeEditHref(nextRecipeId));
     });
   };
 
@@ -4627,7 +4722,7 @@ export function RecipeDesigner({
 
     const nextRecipe = result.recipe;
     startTransition(() => {
-      router.push(`/app/recipes/${nextRecipe.id}/edit`);
+      router.push(buildRecipeEditHref(nextRecipe.id));
     });
   };
 
@@ -4742,10 +4837,7 @@ export function RecipeDesigner({
     setOpenEditor(null);
     setImportExportOpen(false);
     onRecipeCreated?.(recipe);
-
-    if (typeof window !== "undefined") {
-      window.history.replaceState(window.history.state, "", `/app/recipes/${recipe.id}/edit`);
-    }
+    replaceRecipeEditorUrl(recipe.id);
   }, [onRecipeCreated]);
 
   const handleImportBeerXml = async (): Promise<RecipeEditorResult> => {
@@ -4966,58 +5058,98 @@ export function RecipeDesigner({
     setSaveResultSignature(currentSignature);
   };
 
+  const handleRecipeCreatedFromImages = React.useCallback((recipe: RecipeDetailDto) => {
+    const normalizedState = normalizeEditorPublicationState(recipe.publicationState);
+
+    setActiveRecipeId(recipe.id);
+    setActiveRecipeSlug(recipe.slug);
+    setActiveVersionNumber(recipe.versionNumber);
+    setRecipeVersions(recipe.versions);
+    setSavedPublicationState(normalizedState);
+
+    if (!title.trim()) {
+      setTitle(recipe.title);
+    }
+
+    onRecipeCreated?.(recipe);
+    replaceRecipeEditorUrl(recipe.id);
+  }, [onRecipeCreated, title]);
+
+  const headerSaveStatusMeta: { label: string; icon: React.ReactNode; className: string } = saveStatus === "saving"
+    ? {
+      label: "Сохранение…",
+      icon: <Loader2 className="h-3.5 w-3.5 animate-spin" />,
+      className: "bg-blue-50 text-blue-700 ring-blue-200"
+    }
+    : saveStatus === "error"
+      ? {
+        label: "Ошибка сохранения",
+        icon: <CircleAlert className="h-3.5 w-3.5" />,
+        className: "bg-rose-50 text-rose-700 ring-rose-200"
+      }
+      : {
+        label: "Сохранено",
+        icon: <CircleCheck className="h-3.5 w-3.5" />,
+        className: "bg-emerald-50 text-emerald-700 ring-emerald-200"
+      };
+
+  const visibilityChipMeta = savedVisibility === "published"
+    ? { label: "Опубликован", icon: <Globe className="h-3.5 w-3.5" />, className: "bg-violet-50 text-violet-700 ring-violet-200" }
+    : { label: "Приватный", icon: <Lock className="h-3.5 w-3.5" />, className: "bg-zinc-100 text-zinc-700 ring-zinc-200" };
+
   return (
     <div className="space-y-5">
-      <section className="-mx-4 bg-white/90 px-4 py-3 shadow-[0_1px_3px_0_rgb(0_0_0_/_0.04)] backdrop-blur-md">
-        <div className="grid gap-3 xl:grid-cols-[minmax(0,1.4fr)_minmax(220px,1fr)_auto] xl:items-end">
-          <div className="min-w-0">
-            <label className="block min-w-0">
-              <span className="mb-1 block text-[11px] font-medium text-zinc-600">Название рецепта</span>
-              <input
-                id="recipe-title"
-                value={title}
-                onChange={(event) => setTitle(event.target.value)}
-                className="h-10 w-full min-w-0 rounded-lg border border-zinc-200 bg-white px-3 text-sm font-semibold text-zinc-900 shadow-sm placeholder:font-normal placeholder:text-zinc-400 focus:border-zinc-400 focus:outline-none focus:ring-1 focus:ring-zinc-200"
-                placeholder="Название рецепта"
-              />
-            </label>
-          </div>
-          <div className="space-y-1">
-            <StylePicker id="recipe-style" value={styleId} onChange={setStyleId} className="min-w-0" />
-            {sectionErrors.styleId ? <p className="text-xs text-rose-600">{sectionErrors.styleId}</p> : null}
-          </div>
-          <div className="flex flex-wrap items-end gap-2 xl:justify-end">
+      <section className="-mx-4 border-b border-zinc-200/70 bg-gradient-to-b from-white via-white to-zinc-50/50 px-4 py-4 sm:rounded-2xl sm:border sm:border-zinc-100 sm:bg-white sm:px-5 sm:py-5 sm:shadow-sm">
+        <div className="mb-3 flex flex-wrap items-center gap-2">
+          <span className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-medium ring-1 ring-inset ${visibilityChipMeta.className}`}>
+            {visibilityChipMeta.icon}
+            {visibilityChipMeta.label}
+          </span>
+          <span className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-medium ring-1 ring-inset ${headerSaveStatusMeta.className}`}>
+            {headerSaveStatusMeta.icon}
+            {headerSaveStatusMeta.label}
+          </span>
+          {activeRecipeId ? (
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-zinc-100 px-2.5 py-1 text-[11px] font-medium text-zinc-700 ring-1 ring-inset ring-zinc-200">
+              v{activeVersionNumber}
+              <span className="text-zinc-400">• текущая</span>
+            </span>
+          ) : null}
+          <div className="ml-auto flex items-center gap-1.5">
+            {canManagePublication && savedVisibility === "published" && activeRecipeSlug ? (
+              <a
+                href={`/recipes/${activeRecipeSlug}`}
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex h-9 items-center gap-1.5 rounded-lg border border-zinc-200 bg-white px-3 text-xs font-medium text-zinc-700 transition-colors hover:bg-zinc-50 sm:text-sm"
+                title="Открыть публичную страницу"
+              >
+                <ExternalLink className="h-3.5 w-3.5" />
+                <span className="hidden sm:inline">Публичная</span>
+              </a>
+            ) : null}
             {canManagePublication && savedVisibility === "private" ? (
               <button
                 type="button"
                 onClick={handlePublishClick}
                 disabled={pendingSave}
-                className="inline-flex h-10 items-center justify-center rounded-lg border border-zinc-900 bg-zinc-900 px-4 text-sm font-medium text-white transition-colors hover:bg-zinc-800 disabled:cursor-not-allowed disabled:opacity-60"
+                className="inline-flex h-9 items-center gap-1.5 rounded-lg border border-zinc-900 bg-zinc-900 px-3 text-xs font-medium text-white transition-colors hover:bg-zinc-800 disabled:cursor-not-allowed disabled:opacity-60 sm:px-4 sm:text-sm"
               >
+                <Globe className="h-3.5 w-3.5" />
                 Опубликовать
               </button>
             ) : null}
             {canManagePublication && savedVisibility === "published" ? (
-              <>
-                <button
-                  type="button"
-                  onClick={() => setMakePrivateConfirmOpen(true)}
-                  disabled={pendingSave}
-                  className="inline-flex h-10 items-center justify-center rounded-lg border border-zinc-300 bg-white px-4 text-sm font-medium text-zinc-700 transition-colors hover:bg-zinc-100 disabled:cursor-not-allowed disabled:opacity-60"
-                >
-                  Сделать приватным
-                </button>
-                {activeRecipeSlug ? (
-                  <a
-                    href={`/recipes/${activeRecipeSlug}`}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="inline-flex h-10 items-center justify-center rounded-lg border border-zinc-200 bg-white px-4 text-sm font-medium text-zinc-700 transition-colors hover:bg-zinc-100"
-                  >
-                    Открыть публичную страницу
-                  </a>
-                ) : null}
-              </>
+              <button
+                type="button"
+                onClick={() => setMakePrivateConfirmOpen(true)}
+                disabled={pendingSave}
+                className="inline-flex h-9 items-center gap-1.5 rounded-lg border border-zinc-200 bg-white px-3 text-xs font-medium text-zinc-700 transition-colors hover:bg-zinc-50 disabled:cursor-not-allowed disabled:opacity-60 sm:text-sm"
+              >
+                <Lock className="h-3.5 w-3.5" />
+                <span className="hidden sm:inline">В&nbsp;приватные</span>
+                <span className="sm:hidden">Приватный</span>
+              </button>
             ) : null}
             <RecipeActionsMenu
               pending={pendingSave}
@@ -5029,43 +5161,68 @@ export function RecipeDesigner({
             />
           </div>
         </div>
-        {activeRecipeId ? (
-          <div className="mt-2 flex flex-wrap items-end gap-2">
-            <label className="block">
-              <span className="mb-1 block text-[11px] font-medium text-zinc-600">Версия</span>
-              <select
-                value={activeRecipeId}
-                onChange={(event) => handleVersionChange(event.target.value)}
-                className="h-8 min-w-[92px] rounded-md border border-zinc-200 bg-white px-2 text-xs text-zinc-700"
-              >
-                {recipeVersions.map((version) => (
-                  <option key={version.id} value={version.id}>
-                    {`v${version.versionNumber}${version.id === activeRecipeId ? " • current" : ""}`}
-                  </option>
-                ))}
-              </select>
+
+        <div className="grid gap-3 md:grid-cols-[minmax(0,1.6fr)_minmax(240px,1fr)] md:items-start">
+          <div className="min-w-0">
+            <label htmlFor="recipe-title" className="mb-1 block text-[11px] font-medium uppercase tracking-wide text-zinc-500">
+              Название рецепта
             </label>
+            <input
+              id="recipe-title"
+              value={title}
+              onChange={(event) => setTitle(event.target.value)}
+              className="h-11 w-full min-w-0 rounded-xl border border-zinc-200 bg-white px-3.5 text-base font-semibold text-zinc-900 shadow-sm placeholder:font-normal placeholder:text-zinc-400 focus:border-zinc-400 focus:outline-none focus:ring-2 focus:ring-zinc-200 sm:text-lg"
+              placeholder="Например, Tropical NEIPA"
+            />
+            {sectionErrors.title ? <p className="mt-1 text-xs text-rose-600">{sectionErrors.title}</p> : null}
+          </div>
+          <div className="min-w-0">
+            <StylePicker id="recipe-style" value={styleId} onChange={setStyleId} className="min-w-0" />
+            {sectionErrors.styleId ? <p className="mt-1 text-xs text-rose-600">{sectionErrors.styleId}</p> : null}
+          </div>
+        </div>
+
+        {activeRecipeId ? (
+          <div className="mt-3 flex flex-wrap items-center gap-2 border-t border-zinc-100 pt-3 text-xs text-zinc-600">
+            {recipeVersions.length > 1 ? (
+              <label className="inline-flex items-center gap-1.5">
+                <span className="text-zinc-500">Версия:</span>
+                <select
+                  value={activeRecipeId}
+                  onChange={(event) => handleVersionChange(event.target.value)}
+                  className="h-8 min-w-[96px] rounded-md border border-zinc-200 bg-white px-2 text-xs font-medium text-zinc-700 focus:border-zinc-400 focus:outline-none focus:ring-1 focus:ring-zinc-200"
+                >
+                  {recipeVersions.map((version) => (
+                    <option key={version.id} value={version.id}>
+                      {`v${version.versionNumber}${version.id === activeRecipeId ? " • current" : ""}`}
+                    </option>
+                  ))}
+                </select>
+              </label>
+            ) : (
+              <span className="text-xs text-zinc-500">v{activeVersionNumber}</span>
+            )}
             <button
               type="button"
               onClick={() => void handleCreateVersion()}
               disabled={pendingSave}
-              className="inline-flex h-8 items-center justify-center rounded-md border border-zinc-200 bg-white px-2.5 text-xs font-medium text-zinc-700 transition-colors hover:bg-zinc-100 disabled:cursor-not-allowed disabled:opacity-60"
+              className="inline-flex h-8 items-center gap-1 rounded-md border border-zinc-200 bg-white px-2.5 text-xs font-medium text-zinc-700 transition-colors hover:bg-zinc-50 disabled:cursor-not-allowed disabled:opacity-60"
             >
               Новая версия
             </button>
-            <span className="mb-1 text-xs text-zinc-500">Текущая: v{activeVersionNumber}</span>
           </div>
         ) : null}
-        {sectionErrors.title ? <p className="mt-1.5 text-xs text-rose-600">{sectionErrors.title}</p> : null}
+
         {visibleSaveResult && !visibleSaveResult.ok ? (
-          <div className="mt-1.5 flex flex-wrap items-center gap-3 text-xs">
-            <p className="text-rose-600">{visibleSaveResult.message}</p>
+          <div className="mt-3 flex flex-wrap items-center gap-3 rounded-lg bg-rose-50 px-3 py-2 text-xs text-rose-700 ring-1 ring-inset ring-rose-200">
+            <CircleAlert className="h-4 w-4 shrink-0" />
+            <span className="min-w-0 flex-1">{visibleSaveResult.message}</span>
             {hasRetriableSaveError ? (
               <button
                 type="button"
                 onClick={() => void persistRecipe()}
                 disabled={pendingSave}
-                className="font-medium text-zinc-700 underline decoration-zinc-300 underline-offset-2 transition-colors hover:text-zinc-950 disabled:opacity-60"
+                className="shrink-0 font-medium text-rose-700 underline decoration-rose-300 underline-offset-2 transition-colors hover:text-rose-900 disabled:opacity-60"
               >
                 Повторить
               </button>
@@ -5100,55 +5257,72 @@ export function RecipeDesigner({
         {sectionDefinitions.map((section) => {
           const IconComponent = categoryIcons[section.category];
           const iconBg = categoryIconBg[section.category];
+          const itemCount = section.items.length;
+          const hasError = Boolean(sectionErrors[`ingredients.${section.category}`]);
           return (
-            <section key={section.category} className="rounded-2xl border border-zinc-100 bg-white p-5 shadow-sm">
-              <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
-                <div className="flex items-center gap-2.5">
-                  <div className={`flex h-8 w-8 items-center justify-center rounded-lg ${iconBg}`}>
+            <section key={section.category} className={`overflow-hidden rounded-2xl border ${hasError ? "border-rose-200" : "border-zinc-200/70"} bg-white shadow-[0_1px_3px_0_rgb(0_0_0_/_0.04)]`}>
+              <header className="flex items-center justify-between gap-3 border-b border-zinc-100 bg-zinc-50/40 px-4 py-3 sm:px-5">
+                <div className="flex min-w-0 items-center gap-2.5">
+                  <div className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg ${iconBg}`}>
                     <IconComponent className="h-4 w-4" />
                   </div>
-                  <div>
+                  <div className="min-w-0">
                     <div className="flex items-baseline gap-2">
-                      <h2 className="text-base font-semibold text-zinc-950">{section.title}</h2>
+                      <h2 className="truncate text-base font-semibold text-zinc-950">{section.title}</h2>
                       {section.subtitle ? <span className="text-sm tabular-nums text-zinc-400">({section.subtitle})</span> : null}
                     </div>
-                    {sectionErrors[`ingredients.${section.category}`] ? <p className="text-xs text-rose-700">{sectionErrors[`ingredients.${section.category}`]}</p> : null}
+                    {hasError ? <p className="mt-0.5 text-xs text-rose-700">{sectionErrors[`ingredients.${section.category}`]}</p> : null}
                   </div>
                 </div>
                 {section.category !== "hop" ? (
-                  <button type="button" onClick={() => openAddEditor(section.category)} className="rounded-lg px-3 py-1.5 text-sm text-zinc-500 transition-colors hover:bg-zinc-100 hover:text-zinc-700">
-                    + Добавить
+                  <button
+                    type="button"
+                    onClick={() => openAddEditor(section.category)}
+                    className="inline-flex h-8 shrink-0 items-center gap-1 rounded-lg border border-zinc-200 bg-white px-2.5 text-xs font-medium text-zinc-700 shadow-sm transition-colors hover:border-zinc-300 hover:bg-zinc-50 sm:h-9 sm:px-3 sm:text-sm"
+                  >
+                    <Plus className="h-3.5 w-3.5" />
+                    <span className="hidden sm:inline">Добавить</span>
                   </button>
                 ) : null}
-              </div>
+              </header>
 
-              {section.renderItems ? (
-                section.renderItems(section.items)
-              ) : section.items.length ? (
-                <ul className="space-y-1.5">
-                  {section.items.map((ingredient) => (
-                    <SectionRow
-                      key={ingredient.localId}
-                      ingredient={ingredient}
-                      percentage={section.category === "fermentable" ? getFermentablePercentage(ingredient, fermentableTotalKg) : null}
-                      onEdit={(value) => maybeOpenEditor({
-                        localId: value.localId,
-                        category: value.category,
-                        draft: { ...value },
-                        initialSignature: serializeIngredient(value),
-                        isExisting: true
-                      })}
-                      onDelete={deleteIngredient}
-                      onQuantityChange={updateIngredientQuantity}
-                      onTimeChange={updateHopTimeMinutes}
-                      onAddImportedAsCustom={addImportedIngredientAsCustom}
-                      onMapImportedSource={openImportedCatalogMatcher}
-                    />
-                  ))}
-                </ul>
-              ) : (
-                <div className="rounded-lg border border-dashed border-zinc-200 px-3 py-3 text-sm text-zinc-400">{section.empty}</div>
-              )}
+              <div className="p-3 sm:p-4">
+                {section.renderItems ? (
+                  section.renderItems(section.items)
+                ) : section.items.length ? (
+                  <ul className="space-y-2">
+                    {section.items.map((ingredient) => (
+                      <SectionRow
+                        key={ingredient.localId}
+                        ingredient={ingredient}
+                        percentage={section.category === "fermentable" ? getFermentablePercentage(ingredient, fermentableTotalKg) : null}
+                        onEdit={(value) => maybeOpenEditor({
+                          localId: value.localId,
+                          category: value.category,
+                          draft: { ...value },
+                          initialSignature: serializeIngredient(value),
+                          isExisting: true
+                        })}
+                        onDelete={deleteIngredient}
+                        onQuantityChange={updateIngredientQuantity}
+                        onTimeChange={updateHopTimeMinutes}
+                        onAddImportedAsCustom={addImportedIngredientAsCustom}
+                        onMapImportedSource={openImportedCatalogMatcher}
+                      />
+                    ))}
+                  </ul>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={() => section.category !== "hop" ? openAddEditor(section.category) : undefined}
+                    disabled={section.category === "hop"}
+                    className="flex w-full items-center justify-center gap-2 rounded-xl border border-dashed border-zinc-300 bg-zinc-50/40 px-4 py-6 text-sm text-zinc-500 transition-colors hover:border-zinc-400 hover:bg-zinc-50 hover:text-zinc-700 disabled:cursor-default disabled:hover:border-zinc-300 disabled:hover:bg-zinc-50/40 disabled:hover:text-zinc-500"
+                  >
+                    {section.category !== "hop" ? <Plus className="h-4 w-4" /> : null}
+                    <span>{section.empty}</span>
+                  </button>
+                )}
+              </div>
             </section>
           );
         })}
@@ -5184,28 +5358,56 @@ export function RecipeDesigner({
         />
       </div>
 
-      <section className="grid gap-4 lg:grid-cols-2">
-        <details className="group rounded-2xl border border-zinc-100 bg-white p-5 shadow-sm" open>
-          <summary className="flex cursor-pointer list-none items-center gap-2 text-sm font-semibold text-zinc-700">
-            <div className="flex h-7 w-7 items-center justify-center rounded-md bg-zinc-100">
-              <FileText className="h-3.5 w-3.5 text-zinc-500" />
+      <section className="space-y-4">
+        <RecipeImagesSection
+          recipeId={activeRecipeId}
+          recipeTitle={title}
+          initialImages={initialImages}
+          draftSeed={payload}
+          onRecipeCreated={handleRecipeCreatedFromImages}
+        />
+        <div className="grid gap-4 lg:grid-cols-2">
+          <details className="group overflow-hidden rounded-2xl border border-zinc-200/70 bg-white shadow-[0_1px_3px_0_rgb(0_0_0_/_0.04)]" open>
+            <summary className="flex cursor-pointer list-none items-center gap-2.5 border-b border-transparent bg-zinc-50/40 px-4 py-3 text-sm font-semibold text-zinc-800 group-open:border-zinc-100">
+              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-sky-50 text-sky-600">
+                <FileText className="h-4 w-4" />
+              </div>
+              <span className="text-[15px]">Описание рецепта</span>
+              <span className="ml-2 rounded-full bg-zinc-100 px-2 py-0.5 text-[10px] font-medium text-zinc-500">публично</span>
+              <ChevronRight className="ml-auto h-4 w-4 text-zinc-400 transition-transform group-open:rotate-90" />
+            </summary>
+            <div className="p-4">
+              <textarea
+                value={description}
+                onChange={(event) => setDescription(event.target.value)}
+                className="min-h-28 w-full rounded-xl border border-zinc-200 bg-zinc-50/50 px-3 py-2.5 text-sm text-zinc-900 placeholder:text-zinc-400 focus:border-zinc-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-zinc-200"
+                placeholder="Публичное описание рецепта — что это за пиво, вдохновение, особенности…"
+              />
+              {sectionErrors.description ? <p className="mt-2 text-xs text-rose-700">{sectionErrors.description}</p> : null}
             </div>
-            Описание рецепта
-            <ChevronRight className="ml-auto h-4 w-4 text-zinc-400 transition-transform group-open:rotate-90" />
-          </summary>
-          <textarea value={description} onChange={(event) => setDescription(event.target.value)} className="mt-3 min-h-28 w-full rounded-lg border border-zinc-200 bg-zinc-50 px-3 py-2 text-sm text-zinc-900 focus:border-zinc-300 focus:bg-white focus:outline-none" placeholder="Публичное описание рецепта" />
-          {sectionErrors.description ? <p className="mt-2 text-xs text-rose-700">{sectionErrors.description}</p> : null}
-        </details>
-        <details className="group rounded-2xl border border-zinc-100 bg-white p-5 shadow-sm" open>
-          <summary className="flex cursor-pointer list-none items-center gap-2 text-sm font-semibold text-zinc-700">
-            <div className="flex h-7 w-7 items-center justify-center rounded-md bg-zinc-100">
-              <StickyNote className="h-3.5 w-3.5 text-zinc-500" />
+          </details>
+          <details className="group overflow-hidden rounded-2xl border border-zinc-200/70 bg-white shadow-[0_1px_3px_0_rgb(0_0_0_/_0.04)]" open>
+            <summary className="flex cursor-pointer list-none items-center gap-2.5 border-b border-transparent bg-zinc-50/40 px-4 py-3 text-sm font-semibold text-zinc-800 group-open:border-zinc-100">
+              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-amber-50 text-amber-600">
+                <StickyNote className="h-4 w-4" />
+              </div>
+              <span className="text-[15px]">Личные заметки</span>
+              <span className="ml-2 inline-flex items-center gap-1 rounded-full bg-zinc-100 px-2 py-0.5 text-[10px] font-medium text-zinc-500">
+                <Lock className="h-3 w-3" />
+                приватно
+              </span>
+              <ChevronRight className="ml-auto h-4 w-4 text-zinc-400 transition-transform group-open:rotate-90" />
+            </summary>
+            <div className="p-4">
+              <textarea
+                value={authorNotes}
+                onChange={(event) => setAuthorNotes(event.target.value)}
+                className="min-h-28 w-full rounded-xl border border-zinc-200 bg-zinc-50/50 px-3 py-2.5 text-sm text-zinc-900 placeholder:text-zinc-400 focus:border-zinc-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-zinc-200"
+                placeholder="Видны только вам — TODO, лоты, наблюдения с прошлых варок…"
+              />
             </div>
-            Личные заметки
-            <ChevronRight className="ml-auto h-4 w-4 text-zinc-400 transition-transform group-open:rotate-90" />
-          </summary>
-          <textarea value={authorNotes} onChange={(event) => setAuthorNotes(event.target.value)} className="mt-3 min-h-28 w-full rounded-lg border border-zinc-200 bg-zinc-50 px-3 py-2 text-sm text-zinc-900 focus:border-zinc-300 focus:bg-white focus:outline-none" placeholder="Видны только вам" />
-        </details>
+          </details>
+        </div>
       </section>
 
       <ConfirmActionDialog

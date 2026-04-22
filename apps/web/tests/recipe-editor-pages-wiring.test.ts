@@ -30,6 +30,7 @@ const recipe = {
 const mocks = vi.hoisted(() => ({
   requireUser: vi.fn(async () => ({ id: "u-1" })),
   getOwnedRecipeById: vi.fn(async () => recipe),
+  listRecipeImages: vi.fn(async () => []),
   listEquipmentProfiles: vi.fn(async () => []),
   listRecipeStockCoverage: vi.fn(async () => ({
     recipeId: "r-1",
@@ -60,6 +61,9 @@ vi.mock("../features/recipes/service", () => ({
   getOwnedRecipeById: mocks.getOwnedRecipeById,
   getNextDefaultRecipeTitle: mocks.getNextDefaultRecipeTitle
 }));
+vi.mock("../features/recipe-images/service", () => ({
+  listRecipeImages: mocks.listRecipeImages
+}));
 vi.mock("../features/recipes/inventory-service", () => ({
   listRecipeStockCoverage: mocks.listRecipeStockCoverage
 }));
@@ -81,6 +85,7 @@ describe("recipe editor pages wiring", () => {
     const html = renderToStaticMarkup(view);
 
     expect(mocks.getOwnedRecipeById).toHaveBeenCalledWith("u-1", "r-1");
+    expect(mocks.listRecipeImages).toHaveBeenCalledWith("r-1", "u-1");
     expect(mocks.listEquipmentProfiles).toHaveBeenCalledWith("u-1");
     expect(html).toContain("Название рецепта");
     expect(html).toContain("Автосохранение");

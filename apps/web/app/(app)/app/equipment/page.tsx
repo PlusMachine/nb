@@ -1,20 +1,21 @@
 import React from "react";
 import Link from "next/link";
+import { Copy, Pencil, Plus, Star, Trash2, X } from "lucide-react";
 
 import {
   type EquipmentProfileDto,
   type EquipmentProfilePayload
 } from "@/features/equipment-profiles/contracts";
-import { EquipmentProfileFormAdvanced } from "@/components/equipment/equipment-profile-form-advanced";
-import { EquipmentProfileFormBasic } from "@/components/equipment/equipment-profile-form-basic";
-import { EquipmentProfileSummary } from "@/components/equipment/equipment-profile-summary";
-import { buildStarterEquipmentProfileDefaults } from "@/features/equipment/defaults";
+import { EquipmentProfileFormFields } from "@/components/equipment/equipment-profile-form-basic";
+import { buildNextEquipmentProfileName, buildStarterEquipmentProfileDefaults } from "@/features/equipment/defaults";
 import { listEquipmentProfiles } from "@/features/equipment-profiles/service";
 import { requireUser } from "@/lib/auth";
 
 import {
   createEquipmentProfileAction,
   deleteEquipmentProfileAction,
+  duplicateEquipmentProfileAction,
+  setDefaultEquipmentProfileAction,
   updateEquipmentProfileAction
 } from "./actions";
 
@@ -32,22 +33,16 @@ function EquipmentProfileForm({
     : updateEquipmentProfileAction.bind(null, profile.id!);
 
   return (
-    <form action={action} className="space-y-4 rounded-lg border border-zinc-100 bg-white p-4 shadow-sm">
-      <EquipmentProfileFormBasic profile={profile} />
-      <EquipmentProfileSummary profile={profile} />
-      <EquipmentProfileFormAdvanced profile={profile} />
-      <div className="flex flex-wrap gap-2">
-        <button type="submit" className="rounded-md bg-zinc-900 px-3 py-2 text-sm font-medium text-white">
+    <form action={action} className="space-y-4">
+      <EquipmentProfileFormFields profile={profile} />
+      <div className="flex flex-wrap items-center gap-2 border-t border-zinc-100 pt-4">
+        <button type="submit" className="inline-flex items-center gap-1.5 rounded-md bg-zinc-900 px-3 py-2 text-sm font-medium text-white">
           {mode === "create" ? "Создать профиль" : "Сохранить профиль"}
         </button>
-        {mode === "edit" ? (
-          <button
-            formAction={deleteEquipmentProfileAction.bind(null, profile.id!)}
-            className="rounded-md border border-rose-300 bg-white px-3 py-2 text-sm text-rose-700"
-          >
-            Удалить
-          </button>
-        ) : null}
+        <Link href="/app/equipment" className="inline-flex items-center gap-1.5 rounded-md border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-700">
+          <X className="h-3.5 w-3.5" aria-hidden="true" />
+          Отменить
+        </Link>
       </div>
     </form>
   );
@@ -57,7 +52,6 @@ const toProfileFormValue = (profile: EquipmentProfileDto): ProfileFormValue => (
   id: profile.id,
   name: profile.name,
   brewMethod: profile.brewMethod,
-  batchTargetType: profile.batchTargetType,
   targetBatchVolumeL: profile.targetBatchVolumeL,
   boilTimeMin: profile.boilTimeMin,
   brewhouseEfficiencyPct: profile.brewhouseEfficiencyPct,
@@ -78,10 +72,123 @@ const toProfileFormValue = (profile: EquipmentProfileDto): ProfileFormValue => (
   notes: profile.notes
 });
 
-export default async function EquipmentProfilesPage() {
+const formatLiters = (value: number | null | undefined) => value == null ? "не задан" : `${value.toFixed(1)} л`;
+const formatRate = (value: number) => `${value.toFixed(1)} л/ч`;
+const formatPct = (value: number) => `${value.toFixed(0)}%`;
+
+const formatProfilesCount = (count: number) => {
+  const lastDigit = count % 10;
+  const lastTwoDigits = count % 100;
+
+  if (lastDigit === 1 && lastTwoDigits !== 11) {
+    return `${count} профиль`;
+  }
+
+  if (lastDigit >= 2 && lastDigit <= 4 && (lastTwoDigits < 12 || lastTwoDigits > 14)) {
+    return `${count} профиля`;
+  }
+
+  return `${count} профилей`;
+};
+
+function ProfileMetric({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="rounded-md bg-zinc-50 px-3 py-2">
+      <span className="block text-[11px] uppercase text-zinc-400">{label}</span>
+      <span className="text-sm font-medium text-zinc-900">{value}</span>
+    </div>
+  );
+}
+
+function EquipmentProfileCard({
+  profile,
+  isDefault,
+  isEditing
+}: {
+  profile: EquipmentProfileDto;
+  isDefault: boolean;
+  isEditing: boolean;
+}) {
+  return (
+    <article className={isDefault
+      ? "rounded-lg border border-zinc-300 bg-white p-4 shadow-sm"
+      : "rounded-lg border border-zinc-100 bg-white p-4 shadow-sm"
+    }>
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <div className="min-w-0">
+          <div className="flex flex-wrap items-center gap-2">
+            <h3 className="break-words text-base font-semibold text-zinc-950">{profile.name}</h3>
+            {isDefault ? (
+              <span className="inline-flex items-center gap-1 rounded-full bg-zinc-900 px-2 py-0.5 text-xs font-medium text-white">
+                <Star className="h-3 w-3" aria-hidden="true" />
+                Основной
+              </span>
+            ) : null}
+          </div>
+        </div>
+
+        <div className="flex flex-wrap justify-end gap-2">
+          <Link
+            href={`/app/equipment?edit=${profile.id}`}
+            className="inline-flex items-center gap-1.5 rounded-md border border-zinc-300 bg-white px-3 py-2 text-xs font-medium text-zinc-700 hover:bg-zinc-50"
+          >
+            <Pencil className="h-3.5 w-3.5" aria-hidden="true" />
+            Редактировать
+          </Link>
+          <form action={duplicateEquipmentProfileAction.bind(null, profile.id)}>
+            <button type="submit" className="inline-flex items-center gap-1.5 rounded-md border border-zinc-300 bg-white px-3 py-2 text-xs font-medium text-zinc-700 hover:bg-zinc-50">
+              <Copy className="h-3.5 w-3.5" aria-hidden="true" />
+              Дублировать
+            </button>
+          </form>
+          {!isDefault ? (
+            <form action={setDefaultEquipmentProfileAction.bind(null, profile.id)}>
+              <button type="submit" className="inline-flex items-center gap-1.5 rounded-md border border-zinc-300 bg-white px-3 py-2 text-xs font-medium text-zinc-700 hover:bg-zinc-50">
+                <Star className="h-3.5 w-3.5" aria-hidden="true" />
+                Сделать основным
+              </button>
+            </form>
+          ) : null}
+          <form action={deleteEquipmentProfileAction.bind(null, profile.id)}>
+            <button type="submit" className="inline-flex items-center gap-1.5 rounded-md border border-rose-200 bg-white px-3 py-2 text-xs font-medium text-rose-700 hover:bg-rose-50">
+              <Trash2 className="h-3.5 w-3.5" aria-hidden="true" />
+              Удалить
+            </button>
+          </form>
+        </div>
+      </div>
+
+      <div className="mt-4 grid gap-2 sm:grid-cols-3">
+        <ProfileMetric label="Типичный объем партии" value={formatLiters(profile.targetBatchVolumeL)} />
+        <ProfileMetric label="Эффективность" value={formatPct(profile.brewhouseEfficiencyPct)} />
+        <ProfileMetric label="Испарение" value={formatRate(profile.evaporationRateLPerHr)} />
+      </div>
+
+      {isEditing ? (
+        <div className="mt-4 border-t border-zinc-100 pt-4">
+          <EquipmentProfileForm key={profile.id} profile={toProfileFormValue(profile)} mode="edit" />
+        </div>
+      ) : null}
+    </article>
+  );
+}
+
+export default async function EquipmentProfilesPage({
+  searchParams
+}: {
+  searchParams?: Promise<{ edit?: string; mode?: string }>;
+}) {
   const user = await requireUser();
+  const resolvedSearchParams = searchParams ? await searchParams : undefined;
   const profiles = await listEquipmentProfiles(user.id);
-  const starterProfile = buildStarterEquipmentProfileDefaults("biab_single_vessel");
+  const starterProfile = buildStarterEquipmentProfileDefaults(
+    "mash_sparge_two_vessel",
+    buildNextEquipmentProfileName(profiles)
+  );
+  const defaultProfileId = profiles.find((profile) => profile.isDefault)?.id ?? profiles[0]?.id ?? null;
+  const editingProfileId = resolvedSearchParams?.edit?.trim();
+  const isCreating = resolvedSearchParams?.mode === "create";
+  const editingProfile = profiles.find((profile) => profile.id === editingProfileId) ?? null;
 
   return (
     <main className="space-y-5">
@@ -89,32 +196,46 @@ export default async function EquipmentProfilesPage() {
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div>
             <h1 className="text-xl font-semibold text-zinc-950">Профили оборудования</h1>
-            <p className="mt-1 max-w-3xl text-sm leading-6 text-zinc-600">
-              Задайте объемы, потери, промывку и базовую калибровку варки. В обычном режиме достаточно заполнить верхние поля, а редкие параметры спрятаны ниже.
+            <p className="mt-1 text-xs text-zinc-500">
+              {formatProfilesCount(profiles.length)}
+              {defaultProfileId ? ` · основной: ${profiles.find((profile) => profile.id === defaultProfileId)?.name ?? "выбран"}` : ""}
             </p>
           </div>
-          <Link href="/app/recipes/new" className="rounded-md border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-700">
-            В мастер рецептов
-          </Link>
+          {!isCreating ? (
+            <Link href="/app/equipment?mode=create" className="inline-flex items-center gap-1.5 rounded-md bg-zinc-900 px-3 py-2 text-sm font-medium text-white">
+              <Plus className="h-4 w-4" aria-hidden="true" />
+              Создать профиль
+            </Link>
+          ) : null}
         </div>
       </section>
 
-      <section className="space-y-3">
-        <h2 className="text-base font-semibold text-zinc-900">Новый профиль</h2>
-        <EquipmentProfileForm profile={starterProfile} mode="create" />
-      </section>
+      {isCreating ? (
+        <section className="rounded-lg border border-zinc-100 bg-white p-4 shadow-sm">
+          <div className="mb-4 flex flex-wrap items-start justify-between gap-3">
+            <div>
+              <h2 className="text-base font-semibold text-zinc-900">Новый профиль</h2>
+            </div>
+          </div>
+          <EquipmentProfileForm key="create" profile={starterProfile} mode="create" />
+        </section>
+      ) : null}
 
       <section className="space-y-3">
-        <h2 className="text-base font-semibold text-zinc-900">Мои профили</h2>
         {profiles.length ? (
           <div className="space-y-4">
             {profiles.map((profile) => (
-              <EquipmentProfileForm key={profile.id} profile={toProfileFormValue(profile)} mode="edit" />
+              <EquipmentProfileCard
+                key={profile.id}
+                profile={profile}
+                isDefault={profile.id === defaultProfileId}
+                isEditing={editingProfile?.id === profile.id}
+              />
             ))}
           </div>
         ) : (
           <p className="rounded-lg border border-dashed border-zinc-200 bg-white px-4 py-5 text-sm text-zinc-500">
-            Пока нет сохраненных профилей. Создайте первый профиль из готовых значений для BIAB.
+            Профилей пока нет.
           </p>
         )}
       </section>

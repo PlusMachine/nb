@@ -7,17 +7,13 @@ export const equipmentBrewMethods = [
   "extract_partial_boil"
 ] as const;
 
-export const equipmentBatchTargetTypes = ["fermenter", "packaged"] as const;
-
 export type EquipmentBrewMethod = (typeof equipmentBrewMethods)[number];
-export type EquipmentBatchTargetType = (typeof equipmentBatchTargetTypes)[number];
 
 const optionalNonNegativeNumber = z.coerce.number().min(0).optional().nullable();
 
 export const equipmentProfilePayloadSchema = z.object({
   name: z.string().trim().min(1).max(180),
   brewMethod: z.enum(equipmentBrewMethods).default("biab_single_vessel"),
-  batchTargetType: z.enum(equipmentBatchTargetTypes).default("fermenter"),
   targetBatchVolumeL: z.coerce.number().positive(),
   boilTimeMin: z.coerce.number().int().min(1).max(600).default(60),
   brewhouseEfficiencyPct: z.coerce.number().positive().max(100).default(75),
@@ -52,24 +48,24 @@ export type EquipmentProfileSnapshot = z.infer<typeof equipmentProfileSnapshotSc
 export type EquipmentProfileDto = EquipmentProfilePayload & {
   id: string;
   userId: string;
+  isDefault: boolean;
   createdAt: Date;
   updatedAt: Date;
 };
 
 export const starterEquipmentProfileDefaults: EquipmentProfilePayload = {
-  name: "Starter 20L BIAB",
-  brewMethod: "biab_single_vessel",
-  batchTargetType: "fermenter",
+  name: "Профиль оборудования (1)",
+  brewMethod: "mash_sparge_two_vessel",
   targetBatchVolumeL: 20,
   boilTimeMin: 60,
-  brewhouseEfficiencyPct: 68,
+  brewhouseEfficiencyPct: 70,
   mashEfficiencyPct: null,
   evaporationRateLPerHr: 3,
   trubChillerLossL: 1,
   fermenterLossL: 0,
   mashTunDeadspaceL: 0,
   spargeVesselDeadspaceL: 0,
-  grainAbsorptionLPerKg: 0.7,
+  grainAbsorptionLPerKg: 0.8,
   coolingShrinkagePct: 4,
   topUpWaterL: 0,
   mashThicknessLPerKg: 3,

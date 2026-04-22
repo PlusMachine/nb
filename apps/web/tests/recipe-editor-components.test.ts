@@ -10,6 +10,7 @@ import { RecipeEditorErrorState } from "../components/recipes/recipe-editor-erro
 import { buildImportRecipeSummary } from "../components/recipes/import-export-modal";
 import {
   RecipeDesigner,
+  buildRecipeEditHref,
   resolveRecipeFermentablePickerScopeContext,
   resolveRecipeIngredientEditorSourceMode,
   resolveRecipeIngredientSearchType,
@@ -402,6 +403,22 @@ describe("recipe editor components", () => {
     expect(html).not.toContain("Зафиксировать КП вручную");
     expect(html).not.toContain("Сохранить");
     expect(html).not.toContain("Публикация");
+  });
+
+  it("opens the empty boil hop additions group by default", () => {
+    const html = renderToStaticMarkup(React.createElement(RecipeDesigner, { mode: "create" }));
+
+    expect(html).toContain("Добавление на кипячение");
+    expect(html).toContain("Добавьте хмель на кипячение");
+    expect(html).toContain("Другие типы охмеления");
+    expect(html.indexOf("Сухое охмеление")).toBeLessThan(html.indexOf("Whirlpool / Hopstand"));
+    expect(html.indexOf("Whirlpool / Hopstand")).toBeLessThan(html.indexOf("Dip Hopping"));
+    expect(html.indexOf("Dip Hopping")).toBeLessThan(html.indexOf("First Wort Hop"));
+    expect(html.indexOf("First Wort Hop")).toBeLessThan(html.indexOf("Другое"));
+  });
+
+  it("builds canonical edit href for saved recipes", () => {
+    expect(buildRecipeEditHref("recipe-1")).toBe("/app/recipes/recipe-1/edit");
   });
 
   it("shows the selected BJCP style as a native link inside batch parameters", () => {

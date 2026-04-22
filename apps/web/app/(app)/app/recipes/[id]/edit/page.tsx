@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 
 import { RecipeEditorPage } from "@/components/recipes/recipe-editor-page";
 import { listEquipmentProfiles } from "@/features/equipment-profiles/service";
+import { listRecipeImages } from "@/features/recipe-images/service";
 import { listRecipeStockCoverage } from "@/features/recipes/inventory-service";
 import { getOwnedRecipeById } from "@/features/recipes/service";
 import { requireUser } from "@/lib/auth";
@@ -12,9 +13,10 @@ export default async function EditRecipePage({ params }: { params: Promise<{ id:
   const { id } = await params;
 
   try {
-    const [recipe, stockCoverage, equipmentProfiles] = await Promise.all([
+    const [recipe, stockCoverage, initialImages, equipmentProfiles] = await Promise.all([
       getOwnedRecipeById(user.id, id),
       listRecipeStockCoverage(user.id, id),
+      listRecipeImages(id, user.id),
       listEquipmentProfiles(user.id)
     ]);
     return (
@@ -22,6 +24,7 @@ export default async function EditRecipePage({ params }: { params: Promise<{ id:
         mode="edit"
         recipe={recipe}
         initialStockCoverage={stockCoverage}
+        initialImages={initialImages}
         equipmentProfiles={equipmentProfiles}
       />
     );

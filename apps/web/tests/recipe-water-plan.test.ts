@@ -7,7 +7,6 @@ const equipmentProfile: EquipmentProfileSnapshot = {
   id: "00000000-0000-4000-8000-000000000301",
   name: "Test BIAB",
   brewMethod: "biab_single_vessel",
-  batchTargetType: "fermenter",
   targetBatchVolumeL: 20,
   boilTimeMin: 60,
   brewhouseEfficiencyPct: 75,

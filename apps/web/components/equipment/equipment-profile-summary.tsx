@@ -4,41 +4,51 @@ import type { EquipmentProfilePayload } from "@/features/equipment-profiles/cont
 import { buildEquipmentProfileVolumeSummary } from "@/features/equipment/summary";
 
 const warningLabels: Record<string, string> = {
-  mash_volume_limit_exceeded: "Объем затора превышает лимит.",
-  kettle_volume_limit_exceeded: "Объем до кипячения превышает лимит котла."
+  mash_volume_limit_exceeded: "Лимит затора",
+  kettle_volume_limit_exceeded: "Лимит котла"
 };
+
+const formatLiters = (value: number) => Number.isFinite(value) ? `${value.toFixed(1)} л` : "—";
+const formatOptionalLiters = (value: number | null | undefined) => value == null ? "не задан" : formatLiters(value);
 
 export function EquipmentProfileSummary({
   profile,
-  grainKg = 5
+  grainKg = 5,
+  compact = false
 }: {
   profile: EquipmentProfilePayload;
   grainKg?: number;
+  compact?: boolean;
 }) {
   const summary = buildEquipmentProfileVolumeSummary(profile, grainKg);
+  const maxMashVolumeL = profile.maxMashVolumeL ?? (profile.brewMethod === "biab_single_vessel" ? profile.maxKettleVolumeL : null);
 
   return (
-    <div className="rounded-lg border border-zinc-100 bg-zinc-50 px-3 py-3 text-xs text-zinc-600">
-      <div className="grid gap-2 sm:grid-cols-3">
+    <section className={compact
+      ? "space-y-3 rounded-lg border border-zinc-200 bg-zinc-50 px-3 py-3 text-xs text-zinc-600"
+      : "space-y-3 rounded-lg border border-emerald-100 bg-emerald-50/50 px-3 py-3 text-xs text-zinc-600"
+    }>
+      <h3 className="text-sm font-semibold text-zinc-800">Что будет рассчитано</h3>
+      <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-5">
         <div>
           <span className="block text-[11px] uppercase text-zinc-400">Pre-boil</span>
-          <span className="font-medium text-zinc-800">{summary.preBoilHotL.toFixed(1)} л</span>
+          <span className="font-medium text-zinc-800">{formatLiters(summary.preBoilHotL)}</span>
         </div>
         <div>
           <span className="block text-[11px] uppercase text-zinc-400">Post-boil</span>
-          <span className="font-medium text-zinc-800">{summary.postBoilHotL.toFixed(1)} л</span>
+          <span className="font-medium text-zinc-800">{formatLiters(summary.postBoilHotL)}</span>
         </div>
         <div>
-          <span className="block text-[11px] uppercase text-zinc-400">Total water</span>
-          <span className="font-medium text-zinc-800">{summary.totalWaterL.toFixed(1)} л</span>
+          <span className="block text-[11px] uppercase text-zinc-400">Всего воды</span>
+          <span className="font-medium text-zinc-800">{formatLiters(summary.totalWaterL)}</span>
         </div>
         <div>
-          <span className="block text-[11px] uppercase text-zinc-400">Mash water</span>
-          <span className="font-medium text-zinc-800">{summary.mashWaterL.toFixed(1)} л</span>
+          <span className="block text-[11px] uppercase text-zinc-400">Mash / sparge</span>
+          <span className="font-medium text-zinc-800">{formatLiters(summary.mashWaterL)} / {formatLiters(summary.spargeWaterL)}</span>
         </div>
         <div>
-          <span className="block text-[11px] uppercase text-zinc-400">Sparge water</span>
-          <span className="font-medium text-zinc-800">{summary.spargeWaterL.toFixed(1)} л</span>
+          <span className="block text-[11px] uppercase text-zinc-400">Max mash</span>
+          <span className="font-medium text-zinc-800">{formatOptionalLiters(maxMashVolumeL)}</span>
         </div>
       </div>
       {summary.warnings.length ? (
@@ -46,6 +56,6 @@ export function EquipmentProfileSummary({
           {summary.warnings.map((warning) => <p key={warning}>{warningLabels[warning] ?? warning}</p>)}
         </div>
       ) : null}
-    </div>
+    </section>
   );
 }

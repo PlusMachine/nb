@@ -10,4 +10,6 @@ coverage
 *.log
 .drizzle
 .local-artifacts/
+.storage/
+apps/web/.storage/
 *:Zone.Identifier

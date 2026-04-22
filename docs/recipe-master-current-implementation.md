@@ -124,6 +124,7 @@ PR6 реализован как пользовательское действи�
    - `Оборудование`;
    - `Покрытие складом`.
 6. Bottom content:
+   - `Фото пива`;
    - `Описание рецепта`;
    - `Личные заметки`.
 
@@ -145,7 +146,8 @@ Autosave flow:
 3. Для нового рецепта вызывается `createRecipeAction()`.
 4. Для существующего рецепта вызывается `updateRecipeAction()`.
 5. После первого create заполняется `activeRecipeId`.
-6. Для `/app/recipes/new` URL получает `?recipeId={id}`, а серверная перезагрузка редиректит на edit route.
+6. URL тихо переключается на `/app/recipes/{id}/edit` без полного reload.
+7. Блок `Фото пива` использует этот же принцип: если recipe id еще нет, перед первым upload quietly создается private draft, и только потом начинается upload flow.
 
 Live preview flow:
 
@@ -403,51 +405,62 @@ Summary внутри блока показывает:
 
 ### `/app/equipment`
 
-Страница профилей оборудования больше не показывает все поля одним полотном.
+Страница профилей оборудования больше не показывает все поля одним полотном. Форма разделена на четыре блока: `Основное`, `Вода`, `Что будет рассчитано`, `Дополнительно`.
 
-Basic mode показывает:
+`Основное` показывает:
 
 - название;
-- метод варки;
 - целевой объем;
 - объем партии;
 - время кипячения;
 - эффективность;
 - испарение в час;
-- потери в котле / на чиллере;
-- grain absorption;
-- метод расчета воды;
-- mash thickness.
+- потери в котле / на чиллере.
+
+`Вода` показывает:
+
+- поглощение воды зерном;
+- гидромодуль.
+
+Промывка и split воды не задаются как equipment-level выбор. `brewMethod`, `mashTunDeadspaceL`, `spargeVesselDeadspaceL` и `topUpWaterL` не выводятся в обычную форму.
 
 Derived summary показывает:
 
 - pre-boil;
 - post-boil;
-- total water;
-- mash water;
-- sparge water;
+- всего воды;
 - предупреждения по vessel limits.
 
-Advanced mode открыт только через `Расширенные параметры` и содержит:
+`Дополнительно` скрыт по умолчанию и не имеет вложенных секций. Внутри:
 
-- mash efficiency;
-- fermenter loss;
-- mash tun dead space;
-- sparge dead space;
-- cooling shrinkage;
-- top-up water;
-- max mash volume;
-- max kettle volume;
-- hop utilization factor;
-- altitude;
-- notes.
+- потери в ферментере;
+- усадка при охлаждении;
+- Лимит заторника;
+- Лимит объема варочника;
+- калибровка утилизации хмеля;
+- высота над уровнем моря;
+- заметки.
 
-Starter BIAB defaults:
+`mashEfficiencyPct` хранится в модели и snapshot, но не выводится в форму профиля оборудования.
 
-- `brewhouseEfficiencyPct = 68`;
-- `grainAbsorptionLPerKg = 0.70`;
+Starter defaults:
+
+- `name = Профиль оборудования (1)` для первого профиля; при создании следующего свободный номер увеличивается;
+- `targetBatchVolumeL = 20`;
+- `boilTimeMin = 60`;
+- `brewhouseEfficiencyPct = 70`;
+- `grainAbsorptionLPerKg = 0.80`;
+- `mashThicknessLPerKg = 3.0`;
 - `mashTunDeadspaceL = 0`;
-- no sparge behavior через `biab_single_vessel`.
+- `evaporationRateLPerHr = 3`;
+- `trubChillerLossL = 1`;
+- `fermenterLossL = 0`;
+- `topUpWaterL = 0`;
+- `coolingShrinkagePct = 4`;
+- `maxMashVolumeL = null`;
+- `maxKettleVolumeL = null`;
+- `hopUtilizationFactor = 1`;
+- `altitudeM = 0`.
 
 ## 10. Склад
 
@@ -581,14 +594,41 @@ Flow:
 - `mashProfile` теперь участвует в FG calculation через выбор главной паузы и practical correction fermentability;
 - `fermentationProfile` по-прежнему сохраняется как process plan, но не является прямым драйвером OG/FG/ABV/IBU/color.
 
-## 14. Описание и заметки
+## 14. Фото, описание и заметки
 
 Внизу страницы:
 
+- `Фото пива` — secondary editor block рядом с текстовыми полями;
 - `Описание рецепта` — публичный текст, required для publication;
 - `Личные заметки` — private author notes.
 
 Private notes не показываются на публичной странице.
+
+### `Фото пива`
+
+Блок находится в нижней secondary area мастера и сознательно не конкурирует с batch stats / publication / brew actions.
+
+Текущий editor UX:
+
+- empty state с copy `Фото пива` / `Загрузить фото`;
+- quiet drag-and-drop support, но primary action — кнопка;
+- cover показывает изображение целиком, без crop;
+- desktop layout: большая cover слева, вертикальная thumbnail-лента справа;
+- mobile layout: дополнительные фото выводятся в горизонтальной thumbnail-ленте со scroll / arrow navigation;
+- layout остается editor grid, а не public gallery/masonry;
+- lightbox preview по клику;
+- reorder через `dnd-kit`;
+- `Сделать обложкой`, `Удалить`, `Повторить` для failed item;
+- progress per file;
+- partial upload failures не ломают остальные файлы;
+- если пользователь выбирает больше 8 фото, лишние файлы не отправляются на upload API, а блок показывает короткое сообщение про лимит;
+- ошибки лимитов показываются на уровне блока, а не как набор непонятных failed-карточек.
+
+В v1 пока не реализованы:
+
+- публичная gallery section на public recipe page;
+- caption/alt editor в основном UX;
+- видео, HEIC, GIF.
 
 ## 15. Модель данных
 
@@ -631,6 +671,38 @@ Private notes не показываются на публичной страни
 - update existing rows;
 - insert new rows;
 - delete rows not present in payload.
+
+### `recipe_images`
+
+Фото хранятся как object storage instead of DB blobs. В Postgres лежит только metadata-модель `recipe_images`:
+
+- `recipeId`;
+- storage keys для `original`, `large`, `medium`, `thumb`;
+- размеры, `mimeType`, `sizeBytes`, optional `blurDataUrl`;
+- optional `caption`, `altText`;
+- `sortOrder`;
+- `isCover`;
+- `status` = `uploading | ready | failed`;
+- timestamps + soft delete через `deletedAt`.
+
+Поведение:
+
+- cover concept живет в `recipe_images.isCover`, а `recipes.heroImageId` синхронизируется с текущей ready cover;
+- одновременно допускается только одна cover image;
+- если cover удаляется или upload fail'ится, cover переходит к первой ready image;
+- новые фото добавляются в конец списка;
+- retry использует существующий slot, если upload уже успел создать DB row;
+- first upload умеет работать через silent draft creation before first upload.
+
+Storage pipeline:
+
+- EXIF orientation читается и применяется через autorotate;
+- metadata/geodata strip'ятся;
+- server генерирует `original`, `large`, `medium`, `thumb`;
+- grid использует `thumb`, lightbox — `medium/large`;
+- upload route валидирует MIME/size до создания draft/slot;
+- image processing принимает только raster `jpeg/png/webp`, spoofed SVG/other payloads отвергаются;
+- local object storage key проверяется на path traversal, а image responses отдаются с `nosniff`.
 
 ### Inventory and batches
 
@@ -750,6 +822,14 @@ Public page shows:
 
 Private notes are not shown.
 
+Структура фото уже готова к будущему public recipe gallery:
+
+- `recipe_images.sortOrder`;
+- `recipe_images.isCover`;
+- app-local image route может отдавать ready images владельцу или, в будущем, public recipe viewer.
+
+Но отдельная публичная gallery layout секция пока не реализована.
+
 ## 18. Тестовое покрытие
 
 Ключевые тесты:
@@ -786,4 +866,4 @@ Private notes are not shown.
 - Brew session UI еще не пошаговый.
 - Live device control не реализован.
 - `showWaterAdditivesInIngredients` пока сохраняет preference, но automatic salt/acid line mirroring требует source ingredient mapping.
-- Hero image upload в мастере не реализован.
+- Публичная recipe gallery пока не реализована, хотя image model и storage pipeline уже готовы к этому расширению.

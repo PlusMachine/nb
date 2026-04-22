@@ -4,6 +4,7 @@ import React from "react";
 
 import type { EquipmentProfileDto } from "@/features/equipment-profiles/contracts";
 import type { IngredientSuggestionItem } from "@/features/ingredients/contracts";
+import type { RecipeImageDto } from "@/features/recipe-images/contracts";
 import type { RecipeDetailDto, RecipeStockCoverageDto } from "@/features/recipes/contracts";
 import type { RecipePublicationState } from "@/features/recipes/contracts";
 
@@ -15,6 +16,7 @@ type Props = {
   initialTitle?: string;
   initialIngredientSelection?: IngredientSuggestionItem | null;
   initialStockCoverage?: RecipeStockCoverageDto | null;
+  initialImages?: RecipeImageDto[];
   equipmentProfiles?: EquipmentProfileDto[];
   onSaveStatusChange?: (status: RecipeSaveStatus) => void;
   onRecipeCreated?: (recipe: RecipeDetailDto) => void;
@@ -27,6 +29,7 @@ export function RecipeForm({
   initialTitle,
   initialIngredientSelection,
   initialStockCoverage,
+  initialImages,
   equipmentProfiles,
   onSaveStatusChange,
   onRecipeCreated,
@@ -39,6 +42,7 @@ export function RecipeForm({
       initialTitle={initialTitle}
       initialIngredientSelection={initialIngredientSelection}
       initialStockCoverage={initialStockCoverage}
+      initialImages={initialImages}
       equipmentProfiles={equipmentProfiles}
       onSaveStatusChange={onSaveStatusChange}
       onRecipeCreated={onRecipeCreated}
