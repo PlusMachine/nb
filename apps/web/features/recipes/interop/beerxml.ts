@@ -4,7 +4,6 @@ import type { CanonicalRecipe, CanonicalRecipeIngredient } from "./canonical";
 import { mapRecipeToCanonical } from "./canonical";
 import type { RecipeDetailDto } from "../contracts";
 import { lovibondToEbc, toLovibondFromEbc } from "../../ingredients/technical-fields";
-import { calculateEquipmentVolumePlan } from "../../equipment-profiles/volume-plan";
 import type { CustomHopForm, CustomPhysicalForm, CustomYeastForm } from "../../inventory/custom-ingredient";
 
 const escapeXml = (value: string) => value
@@ -301,9 +300,7 @@ const getRecipeImportStats = (recipe: RecipeDetailDto) => {
   };
 };
 
-const getRecipeType = (recipe: RecipeDetailDto) => (
-  recipe.equipmentProfileSnapshot?.brewMethod === "extract_partial_boil" ? "Extract" : "All Grain"
-);
+const getRecipeType = (_recipe: RecipeDetailDto) => "All Grain";
 
 const mapBitternessFormulaToBeerXmlMethod = (formula?: string | null) => {
   switch (formula) {
@@ -339,17 +336,7 @@ const readCanonicalBitternessFormula = (canonical: CanonicalRecipe) => (
     : null
 );
 
-const getTotalFermentableKg = (canonical: CanonicalRecipe) => canonical.ingredients
-  .filter((ingredient) => ingredient.category === "fermentable")
-  .reduce((total, ingredient) => total + (toBeerXmlWeightKg(ingredient.amount, ingredient.unit) ?? 0), 0);
-
-const getBoilSizeL = (recipe: RecipeDetailDto, canonical: CanonicalRecipe) => {
-  if (!recipe.equipmentProfileSnapshot) {
-    return null;
-  }
-
-  return calculateEquipmentVolumePlan(recipe.equipmentProfileSnapshot, getTotalFermentableKg(canonical)).preBoilHotL;
-};
+const getBoilSizeL = (_recipe: RecipeDetailDto, _canonical: CanonicalRecipe) => null;
 
 export const exportRecipeToBeerXml = (recipe: RecipeDetailDto) => {
   const canonical = mapRecipeToCanonical(recipe);

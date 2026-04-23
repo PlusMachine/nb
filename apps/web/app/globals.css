@@ -45,6 +45,12 @@ body {
   to { transform: translateY(0); }
 }
 
+@keyframes route-progress-slide {
+  0% { transform: translateX(-100%); }
+  55% { transform: translateX(70%); }
+  100% { transform: translateX(220%); }
+}
+
 .animate-modal-backdrop {
   animation: modal-backdrop-in 0.2s var(--ease-out-quart) both;
 }
@@ -55,6 +61,10 @@ body {
 
 .animate-modal-sheet {
   animation: modal-sheet-up 0.3s var(--ease-out-expo) both;
+}
+
+.animate-route-progress {
+  animation: route-progress-slide 1.1s var(--ease-out-quart) infinite;
 }
 
 @media (max-width: 639px) {

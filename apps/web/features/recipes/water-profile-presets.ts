@@ -7,6 +7,8 @@ export type RecipeWaterProfilePreset = {
   profile: WaterProfile;
   kind: "source" | "target";
   isHistoricalExample?: boolean;
+  tags?: string[];
+  badge?: string;
 };
 
 const profile = (
@@ -22,8 +24,15 @@ const profile = (
 export const builtInSourceWaterProfiles = [
   {
     id: "ro_distilled",
-    name: "RO / Дистиллят",
-    description: "Почти нулевая минерализация как старт для сборки профиля.",
+    name: "Осмос",
+    description: "Обратный осмос.",
+    profile: profile(0, 0, 0, 0, 0, 0, 7),
+    kind: "source"
+  },
+  {
+    id: "distilled_water",
+    name: "Дистиллированная вода",
+    description: "Дистиллят.",
     profile: profile(0, 0, 0, 0, 0, 0, 7),
     kind: "source"
   },
@@ -56,24 +65,84 @@ export const builtInSourceWaterProfiles = [
 export const builtInTargetWaterProfiles = [
   {
     id: "balanced",
-    name: "Balanced",
+    name: "Balanced Ale",
     description: "Нейтральный старт для большинства светлых и янтарных элей.",
     profile: profile(80, 5, 25, 75, 80, 100),
-    kind: "target"
+    kind: "target",
+    badge: "универсальный",
+    tags: ["balanced", "ale", "amber", "универсальный"]
+  },
+  {
+    id: "neipa",
+    name: "NEIPA / Hazy IPA",
+    description: "Мягкий хлоридный профиль для сочного хмелевого характера.",
+    profile: profile(100, 10, 20, 175, 80, 0),
+    kind: "target",
+    badge: "hoppy",
+    tags: ["neipa", "hazy", "ipa", "хмелевой", "сочный"]
+  },
+  {
+    id: "west_coast_ipa",
+    name: "West Coast IPA",
+    description: "Сульфатный профиль для сухого, четкого хмелевого акцента.",
+    profile: profile(100, 10, 15, 60, 250, 0),
+    kind: "target",
+    badge: "hoppy",
+    tags: ["west coast", "ipa", "сухой", "хмелевой"]
+  },
+  {
+    id: "pilsner",
+    name: "Pilsner",
+    description: "Чистый светлый профиль с умеренной минерализацией.",
+    profile: profile(50, 5, 10, 50, 75, 0),
+    kind: "target",
+    badge: "lager",
+    tags: ["pilsner", "pils", "lager", "лагер"]
+  },
+  {
+    id: "helles",
+    name: "Helles",
+    description: "Мягкий солодовый лагерный профиль.",
+    profile: profile(50, 5, 10, 75, 50, 60),
+    kind: "target",
+    badge: "malty",
+    tags: ["helles", "lager", "malty", "солодовый"]
+  },
+  {
+    id: "dubbel",
+    name: "Dubbel",
+    description: "Профиль для темных бельгийских элей с умеренной щелочностью.",
+    profile: profile(70, 10, 25, 75, 75, 150),
+    kind: "target",
+    badge: "belgian",
+    tags: ["dubbel", "belgian", "dark", "бельгийский"]
+  },
+  {
+    id: "stout",
+    name: "Stout",
+    description: "Более щелочной профиль для темной засыпи.",
+    profile: profile(90, 10, 35, 80, 60, 180),
+    kind: "target",
+    badge: "dark",
+    tags: ["stout", "porter", "dark", "roasted", "темный"]
   },
   {
     id: "light_malty",
     name: "Light & Malty",
     description: "Больше хлоридов для мягкого солодового акцента.",
     profile: profile(60, 5, 10, 95, 55, 0),
-    kind: "target"
+    kind: "target",
+    badge: "malty",
+    tags: ["malty", "light", "chloride", "солодовый"]
   },
   {
     id: "light_hoppy",
     name: "Light & Hoppy",
     description: "Больше сульфатов для сухого хмелевого акцента.",
     profile: profile(75, 5, 10, 50, 150, 0),
-    kind: "target"
+    kind: "target",
+    badge: "hoppy",
+    tags: ["hoppy", "light", "sulfate", "хмелевой"]
   }
 ] satisfies RecipeWaterProfilePreset[];
 

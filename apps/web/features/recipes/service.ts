@@ -44,7 +44,6 @@ import {
   updateRecipePayloadSchema
 } from "./contracts";
 import { equipmentProfileSnapshotSchema, type EquipmentProfileSnapshot } from "../equipment-profiles/contracts";
-import { calculateEquipmentVolumePlan } from "../equipment-profiles/volume-plan";
 import { getRecipePublicationFieldErrors } from "./publication-validation";
 import { calculateRecipeFgEstimate } from "./fg-estimate";
 import {
@@ -1197,11 +1196,7 @@ const computeRecipeStatsSnapshot = (input: {
   });
   const fg = fgEstimate.predictedFg;
   const abv = og && fg ? calculateAbv(og, fg) : null;
-  const totalGrainKg = fermentables.reduce((sum, item) => sum + item.weightKg, 0);
-  const volumePlan = input.equipmentProfileSnapshot
-    ? calculateEquipmentVolumePlan(input.equipmentProfileSnapshot, totalGrainKg)
-    : null;
-  const postBoilVolumeL = volumePlan?.postBoilHotL ?? batchVolumeL;
+  const postBoilVolumeL = batchVolumeL;
   const fermentableGravityPoints = og ? (og - 1) * 1000 * postBoilVolumeL : null;
   const whirlpoolAdditions = hops.filter((hop) => hop.use === "whirlpool" || hop.use === "dip_hop");
   const whirlpoolTimeMinutes = whirlpoolAdditions.reduce((max, hop) => Math.max(max, hop.boilTimeMinutes), 0);
@@ -1216,17 +1211,17 @@ const computeRecipeStatsSnapshot = (input: {
       batchVolumeL,
       boilTimeMinutes: input.boilTimeMinutes,
       hopAdditions: hops,
-      preBoilVolumeL: volumePlan?.preBoilHotL ?? null,
+      preBoilVolumeL: null,
       postBoilVolumeL,
       fermentableGravityPoints,
-      hopUtilizationFactor: input.equipmentProfileSnapshot?.hopUtilizationFactor ?? 1,
+      hopUtilizationFactor: 1,
       hopFormUtilizationFactor: bitternessSettings.hopFormUtilizationFactor ?? 1,
       whirlpoolUtilizationFactor: bitternessSettings.whirlpoolUtilizationFactor ?? 1,
       includeBoilCarryoverIntoWhirlpool: bitternessSettings.includeBoilCarryoverIntoWhirlpool ?? true,
       whirlpoolTimeMinutes,
       whirlpoolTemperatureC,
       firstWortHopMode: bitternessSettings.firstWortHopMode ?? "bonus_10pct",
-      altitudeM: input.equipmentProfileSnapshot?.altitudeM ?? 0
+      altitudeM: 0
     }).ibu
     : null;
   const color = fermentables.length ? calculateColor(fermentables, batchVolumeL).srm : null;

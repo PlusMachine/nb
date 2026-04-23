@@ -5,7 +5,6 @@ import { ZodError } from "zod";
 
 import type { IngredientCategory, IngredientSuggestionItem, IngredientTechnicalData, IngredientType } from "@/features/ingredients/contracts";
 import type { EquipmentProfileSnapshot } from "@/features/equipment-profiles/contracts";
-import { getEquipmentProfileSnapshot } from "@/features/equipment-profiles/service";
 import type { RecipeCalculationMeta, RecipeDetailDto, RecipeInventoryIntentMode, RecipeInventorySelectionMeta, RecipeStockCoverageDto, RecipeWaterPlanMeta } from "@/features/recipes/contracts";
 import type { RecipeDraftPreviewDto } from "@/features/recipes/contracts";
 import { cloneRecipe, createRecipe, createRecipeVersion, deleteRecipe, getOwnedRecipeById, previewRecipeDraft, updateRecipe } from "@/features/recipes/service";
@@ -483,31 +482,6 @@ export type RecipeInventoryActionResult = {
   ok: boolean;
   message: string;
   coverage?: RecipeStockCoverageDto;
-};
-
-export type RecipeEquipmentProfileSnapshotResult = {
-  ok: boolean;
-  message: string;
-  snapshot?: EquipmentProfileSnapshot;
-};
-
-export const getEquipmentProfileSnapshotAction = async (
-  profileId: string
-): Promise<RecipeEquipmentProfileSnapshotResult> => {
-  try {
-    const user = await requireUser();
-    return {
-      ok: true,
-      message: "Equipment profile snapshot обновлен.",
-      snapshot: await getEquipmentProfileSnapshot(user.id, profileId)
-    };
-  } catch (error) {
-    if (error instanceof Error && error.message === "NOT_FOUND") {
-      return { ok: false, message: "Equipment profile не найден." };
-    }
-
-    return { ok: false, message: "Не удалось обновить equipment profile snapshot." };
-  }
 };
 
 const runRecipeInventoryAction = async (

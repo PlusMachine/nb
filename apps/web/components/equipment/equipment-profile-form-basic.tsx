@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 
-import type { EquipmentBrewMethod, EquipmentProfilePayload } from "@/features/equipment-profiles/contracts";
+import type { EquipmentProfilePayload } from "@/features/equipment-profiles/contracts";
 
 export const equipmentFormInputClassName = "mt-1 h-9 w-full rounded-md border border-zinc-200 bg-white px-2.5 text-sm text-zinc-900";
 
@@ -10,18 +10,13 @@ const optionalValue = (value: number | null | undefined) => value == null ? "" :
 
 type EquipmentProfileFormValues = {
   name: string;
-  brewMethod: EquipmentBrewMethod;
   targetBatchVolumeL: string;
-  boilTimeMin: string;
   brewhouseEfficiencyPct: string;
   evaporationRateLPerHr: string;
   trubChillerLossL: string;
   fermenterLossL: string;
-  mashTunDeadspaceL: string;
-  spargeVesselDeadspaceL: string;
   grainAbsorptionLPerKg: string;
   coolingShrinkagePct: string;
-  topUpWaterL: string;
   mashThicknessLPerKg: string;
   maxMashVolumeL: string;
   maxKettleVolumeL: string;
@@ -30,22 +25,17 @@ type EquipmentProfileFormValues = {
   notes: string;
 };
 
-type NumberFieldName = Exclude<keyof EquipmentProfileFormValues, "name" | "brewMethod" | "notes">;
+type NumberFieldName = Exclude<keyof EquipmentProfileFormValues, "name" | "notes">;
 
 const profileToFormValues = (profile: EquipmentProfilePayload): EquipmentProfileFormValues => ({
   name: profile.name,
-  brewMethod: profile.brewMethod,
   targetBatchVolumeL: optionalValue(profile.targetBatchVolumeL),
-  boilTimeMin: optionalValue(profile.boilTimeMin),
   brewhouseEfficiencyPct: optionalValue(profile.brewhouseEfficiencyPct),
   evaporationRateLPerHr: optionalValue(profile.evaporationRateLPerHr),
   trubChillerLossL: optionalValue(profile.trubChillerLossL),
   fermenterLossL: optionalValue(profile.fermenterLossL),
-  mashTunDeadspaceL: optionalValue(profile.mashTunDeadspaceL),
-  spargeVesselDeadspaceL: optionalValue(profile.spargeVesselDeadspaceL),
   grainAbsorptionLPerKg: optionalValue(profile.grainAbsorptionLPerKg),
   coolingShrinkagePct: optionalValue(profile.coolingShrinkagePct),
-  topUpWaterL: optionalValue(profile.topUpWaterL),
   mashThicknessLPerKg: optionalValue(profile.mashThicknessLPerKg),
   maxMashVolumeL: optionalValue(profile.maxMashVolumeL),
   maxKettleVolumeL: optionalValue(profile.maxKettleVolumeL),
@@ -70,19 +60,13 @@ const toOptionalNumber = (value: string) => {
 
 const formValuesToProfile = (values: EquipmentProfileFormValues): EquipmentProfilePayload => ({
   name: values.name,
-  brewMethod: values.brewMethod,
   targetBatchVolumeL: toNumber(values.targetBatchVolumeL),
-  boilTimeMin: Math.round(toNumber(values.boilTimeMin)),
   brewhouseEfficiencyPct: toNumber(values.brewhouseEfficiencyPct),
-  mashEfficiencyPct: null,
   evaporationRateLPerHr: toNumber(values.evaporationRateLPerHr),
   trubChillerLossL: toNumber(values.trubChillerLossL),
   fermenterLossL: toNumber(values.fermenterLossL),
-  mashTunDeadspaceL: toNumber(values.mashTunDeadspaceL),
-  spargeVesselDeadspaceL: toNumber(values.spargeVesselDeadspaceL),
   grainAbsorptionLPerKg: toNumber(values.grainAbsorptionLPerKg),
   coolingShrinkagePct: Math.min(Math.max(toNumber(values.coolingShrinkagePct), 0), 20),
-  topUpWaterL: toNumber(values.topUpWaterL),
   mashThicknessLPerKg: toNumber(values.mashThicknessLPerKg),
   maxMashVolumeL: toOptionalNumber(values.maxMashVolumeL),
   maxKettleVolumeL: toOptionalNumber(values.maxKettleVolumeL),
@@ -134,13 +118,8 @@ export function EquipmentProfileFormFields({ profile }: { profile: EquipmentProf
 
   return (
     <div className="space-y-4">
-      <input type="hidden" name="brewMethod" value={values.brewMethod} />
-      <input type="hidden" name="mashTunDeadspaceL" value={values.mashTunDeadspaceL} />
-      <input type="hidden" name="spargeVesselDeadspaceL" value={values.spargeVesselDeadspaceL} />
-      <input type="hidden" name="topUpWaterL" value={values.topUpWaterL} />
       <section className="space-y-3">
         <div className="grid gap-3 md:grid-cols-3">
-          <input type="hidden" name="boilTimeMin" value={values.boilTimeMin} />
           <label className="text-xs font-medium text-zinc-600 md:col-span-3">
             Название
             <input

@@ -37,7 +37,6 @@ import {
   createBrewBatchFromRecipeAction,
   consumeRecipeInventoryAction,
   exportRecipeBeerXmlAction,
-  getEquipmentProfileSnapshotAction,
   getRecipeStockCoverageAction,
   importBeerXmlRecipeAction,
   importBrewfatherJsonRecipeAction,
@@ -66,7 +65,6 @@ import {
 } from "@/components/inventory/inventory-ingredient-context-summary";
 import { ConfirmActionDialog } from "@/components/shared/confirm-action-dialog";
 import {
-  starterEquipmentProfileDefaults,
   type EquipmentProfileDto,
   type EquipmentProfileSnapshot
 } from "@/features/equipment-profiles/contracts";
@@ -125,7 +123,7 @@ import {
   type RecipeWaterPlanMeta
 } from "@/features/recipes/contracts";
 import { beerColorFromSrm } from "@/features/recipes/beer-color";
-import { formatColorWithEbc, formatGravityWithPlato, formatPlatoFromSg } from "@/features/recipes/format";
+import { formatBrixFromSg, formatColorWithEbc, formatGravityWithPlato, formatPlatoFromSg } from "@/features/recipes/format";
 import { BeerGlassIcon } from "@/components/recipes/beer-glass-icon";
 import { BitternessSettingsDrawer } from "@/components/recipes/bitterness-settings-drawer";
 import { ImportExportModal, type ImportExportActionResult } from "@/components/recipes/import-export-modal";
@@ -151,7 +149,6 @@ import {
   type RecipeWaterPlanFermentableInput,
   type RecipeWaterPlanResult
 } from "@/features/recipes/water-plan";
-import { scaleRecipeEditorToEquipment } from "@/features/recipes/equipment-scaling";
 
 type Props = {
   mode: "create" | "edit";
@@ -170,12 +167,20 @@ export type RecipeSaveStatus = "saved" | "saving" | "error";
 
 export const buildRecipeEditHref = (recipeId: string) => `/app/recipes/${recipeId}/edit`;
 
+export const buildRecipeWizardResumeHref = (recipeId: string) => `/app/recipes/new?recipeId=${encodeURIComponent(recipeId)}`;
+
+export const buildRecipeEditorResumeHref = (recipeId: string, currentPath: string) => (
+  currentPath === "/app/recipes/new"
+    ? buildRecipeWizardResumeHref(recipeId)
+    : buildRecipeEditHref(recipeId)
+);
+
 const replaceRecipeEditorUrl = (recipeId: string) => {
   if (typeof window === "undefined") {
     return;
   }
 
-  const nextHref = buildRecipeEditHref(recipeId);
+  const nextHref = buildRecipeEditorResumeHref(recipeId, window.location.pathname);
   const currentHref = `${window.location.pathname}${window.location.search}`;
   if (currentHref === nextHref) {
     return;
@@ -608,6 +613,8 @@ const cloneRecipeWaterPlanMeta = (value?: RecipeWaterPlanMeta | null): RecipeWat
   phModel: value?.phModel ?? "hybrid_mash_ph_v1",
   sourceProfileMode: value?.sourceProfileMode ?? "preset",
   sourceProfilePresetId: value?.sourceProfilePresetId ?? "ro_distilled",
+  sourceProfileSavedId: value?.sourceProfileSavedId ?? null,
+  sourceProfileName: value?.sourceProfileName ?? null,
   sourceProfile: value?.sourceProfile ?? null,
   targetProfileMode: value?.targetProfileMode ?? "balanced",
   targetProfilePresetId: value?.targetProfilePresetId ?? "balanced",
@@ -633,21 +640,38 @@ const cloneRecipeWaterPlanMeta = (value?: RecipeWaterPlanMeta | null): RecipeWat
 const cloneEquipmentProfileSnapshot = (value?: EquipmentProfileSnapshot | null): EquipmentProfileSnapshot | null => (
   value ? {
     ...value,
-    mashEfficiencyPct: value.mashEfficiencyPct ?? null,
     maxMashVolumeL: value.maxMashVolumeL ?? null,
     maxKettleVolumeL: value.maxKettleVolumeL ?? null,
     notes: value.notes ?? null
   } : null
 );
 
-const buildStarterEquipmentProfileSnapshot = (batchVolumeL?: number | null): EquipmentProfileSnapshot => ({
-  ...starterEquipmentProfileDefaults,
-  id: null,
-  targetBatchVolumeL: batchVolumeL && batchVolumeL > 0
-    ? batchVolumeL
-    : starterEquipmentProfileDefaults.targetBatchVolumeL,
+const buildEquipmentProfileSnapshotFromDto = (profile: EquipmentProfileDto): EquipmentProfileSnapshot => ({
+  id: profile.id,
+  name: profile.name,
+  targetBatchVolumeL: profile.targetBatchVolumeL,
+  brewhouseEfficiencyPct: profile.brewhouseEfficiencyPct,
+  evaporationRateLPerHr: profile.evaporationRateLPerHr,
+  trubChillerLossL: profile.trubChillerLossL,
+  fermenterLossL: profile.fermenterLossL,
+  grainAbsorptionLPerKg: profile.grainAbsorptionLPerKg,
+  coolingShrinkagePct: profile.coolingShrinkagePct,
+  mashThicknessLPerKg: profile.mashThicknessLPerKg,
+  maxMashVolumeL: profile.maxMashVolumeL,
+  maxKettleVolumeL: profile.maxKettleVolumeL,
+  hopUtilizationFactor: profile.hopUtilizationFactor,
+  altitudeM: profile.altitudeM,
+  notes: profile.notes,
   snapshotAt: new Date().toISOString()
 });
+
+const formatEquipmentProfileRecipeValue = (value: number) => {
+  const rounded = Number(value.toFixed(2));
+  return Number.isInteger(rounded) ? String(Math.trunc(rounded)) : String(rounded);
+};
+
+const formatEquipmentProfilePercentValue = (value: number) => `${formatEquipmentProfileRecipeValue(value)}%`;
+const formatEquipmentProfileLitersValue = (value: number) => `${formatEquipmentProfileRecipeValue(value)} л`;
 
 const useIsMobile = () => {
   const [isMobile, setIsMobile] = useState(false);
@@ -1982,6 +2006,9 @@ function FgSettingsPopover({
     }
     setOpen(false);
   };
+  const manualFgDisplayValue = manualFgEnabled
+    ? toOptionalNumber(manualFgInput) ?? calculationMeta.manualFgOverrideValue ?? preview?.fg ?? null
+    : null;
 
   return (
     <div className="relative">
@@ -2005,7 +2032,7 @@ function FgSettingsPopover({
       {open ? (
         <div
           ref={popoverRef}
-          className="absolute right-0 top-9 z-20 w-[min(20rem,calc(100vw-2.5rem))] rounded-2xl border border-zinc-200 bg-white p-3 shadow-xl"
+          className="absolute right-0 top-9 z-20 w-[min(20rem,calc(100vw-2.5rem))] rounded-2xl border border-zinc-200 bg-white p-3 normal-case tracking-normal shadow-xl"
         >
           <div className="flex items-start justify-between gap-3">
             <div>
@@ -2073,22 +2100,29 @@ function FgSettingsPopover({
               </label>
 
               {manualFgEnabled ? (
-                <input
-                  type="number"
-                  min={0.99}
-                  max={1.2}
-                  step={0.001}
-                  value={manualFgInput}
-                  onChange={(event) => setManualFgInput(event.target.value)}
-                  onBlur={commitManualFg}
-                  onKeyDown={(event) => {
-                    if (event.key === "Enter") {
-                      event.currentTarget.blur();
-                    }
-                  }}
-                  className="h-9 w-full rounded-lg border border-zinc-200 bg-white px-2.5 text-sm tabular-nums text-zinc-900 shadow-sm"
-                  placeholder={preview?.fg != null ? preview.fg.toFixed(3) : "1.012"}
-                />
+                <div className="space-y-1">
+                  <input
+                    type="number"
+                    min={0.99}
+                    max={1.2}
+                    step={0.001}
+                    value={manualFgInput}
+                    onChange={(event) => setManualFgInput(event.target.value)}
+                    onBlur={commitManualFg}
+                    onKeyDown={(event) => {
+                      if (event.key === "Enter") {
+                        event.currentTarget.blur();
+                      }
+                    }}
+                    className="h-9 w-full rounded-lg border border-zinc-200 bg-white px-2.5 text-sm tabular-nums text-zinc-900 shadow-sm"
+                    placeholder={preview?.fg != null ? preview.fg.toFixed(3) : "1.012"}
+                  />
+                  {manualFgDisplayValue != null ? (
+                    <span className="block text-[11px] font-normal tabular-nums text-zinc-400">
+                      {formatBrixFromSg(manualFgDisplayValue, 1)}
+                    </span>
+                  ) : null}
+                </div>
               ) : null}
             </div>
           </div>
@@ -2110,6 +2144,9 @@ function RecipeBatchParametersBlock({
   setCalculationMeta,
   sectionErrors,
   preview,
+  equipmentProfiles,
+  selectedEquipmentProfileId,
+  onSelectEquipmentProfile,
   onOpenBitternessSettings
 }: {
   batchSize: { quantity: string; unit: InventoryUnit };
@@ -2123,6 +2160,9 @@ function RecipeBatchParametersBlock({
   setCalculationMeta: React.Dispatch<React.SetStateAction<RecipeCalculationMeta>>;
   sectionErrors: Record<string, string>;
   preview: RecipeDraftPreviewDto | null;
+  equipmentProfiles: EquipmentProfileDto[];
+  selectedEquipmentProfileId: string | null;
+  onSelectEquipmentProfile: (profileId: string | null) => void;
   onOpenBitternessSettings: () => void;
 }) {
   const colorSrmValue = preview?.color != null ? preview.color.toFixed(1) : null;
@@ -2130,6 +2170,11 @@ function RecipeBatchParametersBlock({
   const colorInfo = preview?.color != null ? beerColorFromSrm(preview.color) : null;
   const selectedStyle = getBeerStyleById(styleId);
   const selectedStyleArticleHref = getBjcpArticleHrefByStyleId(styleId);
+  const selectedEquipmentProfile = equipmentProfiles.find((profile) => profile.id === selectedEquipmentProfileId) ?? null;
+  const equipmentProfileSelectValue = selectedEquipmentProfile?.id ?? "";
+  const selectedEquipmentProfileLabel = selectedEquipmentProfile
+    ? selectedEquipmentProfile.name
+    : "Без профиля";
   const fgSourceLabel = resolveRecipeFgSourceLabel(preview?.fgEstimateMode, preview?.fgEstimateDetails);
   const fgHelperText = resolveRecipeFgHelperText(preview?.fgEstimateMode, preview?.fg);
 
@@ -2312,6 +2357,25 @@ function RecipeBatchParametersBlock({
               {sectionErrors.boilTimeMinutes ? <span className="block text-xs normal-case tracking-normal text-rose-600">{sectionErrors.boilTimeMinutes}</span> : null}
             </label>
           </div>
+
+          <div className="mt-3 border-t border-zinc-100 pt-3">
+            <label className="space-y-1 text-[11px] font-medium uppercase tracking-wide text-zinc-500">
+              Оборудование
+              <select
+                value={equipmentProfileSelectValue}
+                onChange={(event) => onSelectEquipmentProfile(event.target.value || null)}
+                className="h-9 w-full rounded-lg border border-zinc-200 bg-white px-2.5 text-sm normal-case tracking-normal text-zinc-900 shadow-sm focus:border-zinc-400 focus:outline-none focus:ring-2 focus:ring-zinc-200"
+              >
+                <option value={equipmentProfileSelectValue} hidden>{selectedEquipmentProfileLabel}</option>
+                <option value="">Без профиля — ручной ввод параметров</option>
+                {equipmentProfiles.map((profile) => (
+                  <option key={profile.id} value={profile.id}>
+                    {profile.name}{profile.isDefault ? " · Основной" : ""} — {formatEquipmentProfileLitersValue(profile.targetBatchVolumeL)} · {formatEquipmentProfilePercentValue(profile.brewhouseEfficiencyPct)}
+                  </option>
+                ))}
+              </select>
+            </label>
+          </div>
         </div>
       </div>
     </div>
@@ -2391,14 +2455,12 @@ function BitternessCalculationBlock({
 }
 
 const waterPlanVolumeSourceLabels: Record<RecipeWaterPlanResult["waterVolumes"]["source"], string> = {
-  equipment_profile: "из профиля оборудования",
-  starter_profile: "профиль по умолчанию",
-  manual_override: "ручной объем"
+  batch_size: "объем партии",
+  manual_split: "разделение воды"
 };
 
 const waterPlanWarningLabels: Record<string, string> = {
-  equipment_profile_missing_using_starter: "Нет профиля оборудования: объемы считаются по профилю по умолчанию.",
-  mash_volume_limit_exceeded: "Объем затора превышает лимит профиля, часть воды перенесена в промывку.",
+  water_split_sum_differs_from_batch_volume: "Сумма заторной и промывочной воды отличается от объема партии.",
   source_profile_missing_or_zero: "Исходный профиль воды не заполнен.",
   target_profile_missing_or_zero: "Целевой профиль воды не заполнен.",
   grain_bill_missing_for_mash_ph: "Для pH нужен зерновой состав.",
@@ -2415,150 +2477,12 @@ const waterPlanWarningLabels: Record<string, string> = {
 };
 
 const formatWaterPlanAdditions = (items: RecipeWaterPlanResult["mashSaltAdditions"]) => (
-  items.length ? items.map((item) => `${item.label} ${item.grams.toFixed(2)} г`).join(", ") : "без добавок"
+  items.length ? items.map((item) => `${item.label} ${item.formula} ${item.grams.toFixed(2)} г`).join(", ") : "без добавок"
 );
 
 const formatWaterProfileLine = (profile: RecipeWaterPlanResult["finalProfile"]) => (
   `Ca ${profile.ca.toFixed(0)} · Mg ${profile.mg.toFixed(0)} · Na ${profile.na.toFixed(0)} · Cl ${profile.cl.toFixed(0)} · SO4 ${profile.so4.toFixed(0)} · HCO3 ${profile.hco3.toFixed(0)} ppm`
 );
-
-const equipmentBrewMethodLabels: Record<EquipmentProfileSnapshot["brewMethod"], string> = {
-  biab_single_vessel: "BIAB / одна емкость",
-  mash_sparge_two_vessel: "Затор + промывка",
-  three_vessel: "Три емкости",
-  extract_partial_boil: "Экстракт / частичное кипячение"
-};
-
-function EquipmentProfileBlock({
-  equipmentProfiles,
-  selectedEquipmentProfileId,
-  equipmentProfileSnapshot,
-  waterPlanResult,
-  pending,
-  onSelectProfile,
-  onRefreshFromProfile,
-  onUseStarterProfile,
-  onScaleToProfile
-}: {
-  equipmentProfiles: EquipmentProfileDto[];
-  selectedEquipmentProfileId: string | null;
-  equipmentProfileSnapshot: EquipmentProfileSnapshot | null;
-  waterPlanResult: RecipeWaterPlanResult;
-  pending: boolean;
-  onSelectProfile: (profileId: string | null) => void;
-  onRefreshFromProfile: () => void;
-  onUseStarterProfile: () => void;
-  onScaleToProfile: () => void;
-}) {
-  const canRefresh = Boolean(selectedEquipmentProfileId);
-  const summary = equipmentProfileSnapshot
-    ? `${equipmentProfileSnapshot.name} • ${equipmentProfileSnapshot.targetBatchVolumeL} л в ферментер • ${equipmentProfileSnapshot.brewhouseEfficiencyPct}% • испарение ${equipmentProfileSnapshot.evaporationRateLPerHr} л/ч`
-    : "Профиль по умолчанию";
-
-  return (
-    <details className="group rounded-2xl border border-zinc-100 bg-white p-5 shadow-sm">
-      <summary className="flex cursor-pointer list-none items-center gap-2 text-sm font-semibold text-zinc-700">
-        <div className="flex h-7 w-7 items-center justify-center rounded-md bg-zinc-100">
-          <FlaskConical className="h-3.5 w-3.5 text-zinc-500" />
-        </div>
-        Оборудование
-        <span className="text-xs font-normal text-zinc-400">
-          {summary}
-        </span>
-        <ChevronRight className="ml-auto h-4 w-4 text-zinc-400 transition-transform group-open:rotate-90" />
-      </summary>
-      <div className="mt-3 grid gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.2fr)]">
-        <div className="space-y-3">
-          <label className="text-xs text-zinc-600">
-            Выбрать профиль
-            <select
-              value={selectedEquipmentProfileId ?? ""}
-              onChange={(event) => onSelectProfile(event.target.value || null)}
-              disabled={pending}
-              className="mt-1 h-10 w-full rounded-lg border border-zinc-200 bg-white px-3 text-sm text-zinc-900 disabled:opacity-60"
-            >
-              <option value="">Использовать профиль по умолчанию</option>
-              {equipmentProfiles.map((profile) => (
-                <option key={profile.id} value={profile.id}>{profile.name}</option>
-              ))}
-            </select>
-          </label>
-          <div className="flex flex-wrap gap-2">
-            <button
-              type="button"
-              disabled={!canRefresh || pending}
-              onClick={onRefreshFromProfile}
-              className="rounded-md bg-zinc-900 px-3 py-2 text-xs font-medium text-white disabled:opacity-50"
-            >
-              Обновить из профиля
-            </button>
-            <button
-              type="button"
-              disabled={pending}
-              onClick={onUseStarterProfile}
-              className="rounded-md border border-zinc-300 bg-white px-3 py-2 text-xs text-zinc-700 disabled:opacity-50"
-            >
-              Использовать профиль по умолчанию
-            </button>
-            <a
-              href="/app/equipment"
-              className="rounded-md border border-zinc-300 bg-white px-3 py-2 text-xs text-zinc-700"
-            >
-              Изменить
-            </a>
-            <button
-              type="button"
-              disabled={!equipmentProfileSnapshot || pending}
-              onClick={onScaleToProfile}
-              className="rounded-md border border-zinc-300 bg-white px-3 py-2 text-xs text-zinc-700 disabled:opacity-50"
-            >
-              Масштабировать рецепт
-            </button>
-          </div>
-          <p className="text-xs leading-5 text-zinc-500">
-            Изменение профиля на странице оборудования не меняет этот рецепт, пока вы явно не обновите профиль здесь.
-          </p>
-        </div>
-        <div className="space-y-2 rounded-lg bg-zinc-50 px-3 py-3 text-xs text-zinc-600">
-          <div className="grid gap-2 sm:grid-cols-2">
-            <div>
-              <span className="block text-[11px] uppercase text-zinc-400">Метод</span>
-              <span className="font-medium text-zinc-800">{equipmentBrewMethodLabels[equipmentProfileSnapshot?.brewMethod ?? "biab_single_vessel"]}</span>
-            </div>
-            <div>
-              <span className="block text-[11px] uppercase text-zinc-400">Целевой объем</span>
-              <span className="font-medium text-zinc-800">{equipmentProfileSnapshot?.targetBatchVolumeL ?? waterPlanResult.volumePlan.fermenterTargetColdL} л</span>
-            </div>
-            <div>
-              <span className="block text-[11px] uppercase text-zinc-400">Pre-boil hot</span>
-              <span className="font-medium text-zinc-800">{waterPlanResult.volumePlan.preBoilHotL.toFixed(1)} л</span>
-            </div>
-            <div>
-              <span className="block text-[11px] uppercase text-zinc-400">Post-boil hot</span>
-              <span className="font-medium text-zinc-800">{waterPlanResult.volumePlan.postBoilHotL.toFixed(1)} л</span>
-            </div>
-            <div>
-              <span className="block text-[11px] uppercase text-zinc-400">Mash / sparge</span>
-              <span className="font-medium text-zinc-800">
-                {waterPlanResult.waterVolumes.mashWaterL.toFixed(1)} / {waterPlanResult.waterVolumes.spargeWaterL.toFixed(1)} л
-              </span>
-            </div>
-            <div>
-              <span className="block text-[11px] uppercase text-zinc-400">Калибровка хмеля</span>
-              <span className="font-medium text-zinc-800">{equipmentProfileSnapshot?.hopUtilizationFactor ?? 1}</span>
-            </div>
-          </div>
-          {!equipmentProfileSnapshot ? (
-            <p className="text-amber-700">Используются стартовые значения. Для точных объемов выберите свой профиль оборудования.</p>
-          ) : null}
-          {waterPlanResult.volumePlan.warnings.includes("kettle_volume_limit_exceeded") ? (
-            <p className="text-amber-700">Объем до кипячения превышает лимит котла.</p>
-          ) : null}
-        </div>
-      </div>
-    </details>
-  );
-}
 
 function WaterPlanBlock({
   waterPlanMeta,
@@ -2639,8 +2563,8 @@ function WaterPlanBlock({
                 onChange={(event) => onChange({ ...waterPlanMeta, selectedAcid: event.target.value as RecipeWaterPlanMeta["selectedAcid"] })}
                 className="mt-1 h-10 w-full rounded-lg border border-zinc-200 bg-white px-3 text-sm text-zinc-900"
               >
-                <option value="lactic_acid">Lactic Acid</option>
-                <option value="phosphoric_acid">Phosphoric Acid</option>
+                <option value="lactic_acid">Молочная кислота</option>
+                <option value="phosphoric_acid">Фосфорная кислота</option>
               </select>
             </label>
           </>
@@ -4145,6 +4069,13 @@ export function RecipeDesigner({
   const isMobile = useIsMobile();
   const router = useRouter();
   const initialPublicationState = normalizeEditorPublicationState(initialRecipe?.publicationState);
+  const initialDefaultEquipmentProfile = initialRecipe
+    ? null
+    : equipmentProfiles.find((profile) => profile.isDefault) ?? equipmentProfiles[0] ?? null;
+  const initialSavedEquipmentProfile = initialRecipe?.equipmentProfileId
+    ? equipmentProfiles.find((profile) => profile.id === initialRecipe.equipmentProfileId) ?? null
+    : null;
+  const initialSelectedEquipmentProfile = initialRecipe ? initialSavedEquipmentProfile : initialDefaultEquipmentProfile;
   const [activeRecipeId, setActiveRecipeId] = useState(initialRecipe?.id ?? null);
   const [activeRecipeSlug, setActiveRecipeSlug] = useState(initialRecipe?.slug ?? null);
   const [activeVersionNumber, setActiveVersionNumber] = useState(initialRecipe?.versionNumber ?? 1);
@@ -4155,14 +4086,30 @@ export function RecipeDesigner({
   const [authorNotes, setAuthorNotes] = useState(initialRecipe?.authorNotes ?? "");
   const [publicationState, setPublicationState] = useState<RecipePublicationState>(initialPublicationState);
   const [savedPublicationState, setSavedPublicationState] = useState<RecipePublicationState>(initialPublicationState);
-  const [batchSize, setBatchSize] = useState({ quantity: initialRecipe ? String(initialRecipe.batchSizeEnteredQuantity) : "20", unit: "l" as InventoryUnit });
-  const [efficiency, setEfficiency] = useState(initialRecipe?.efficiency != null ? String(initialRecipe.efficiency) : "75");
+  const [batchSize, setBatchSize] = useState({
+    quantity: initialRecipe
+      ? String(initialRecipe.batchSizeEnteredQuantity)
+      : String(initialDefaultEquipmentProfile?.targetBatchVolumeL ?? 20),
+    unit: "l" as InventoryUnit
+  });
+  const [efficiency, setEfficiency] = useState(initialRecipe?.efficiency != null
+    ? String(initialRecipe.efficiency)
+    : String(initialDefaultEquipmentProfile?.brewhouseEfficiencyPct ?? 75));
   const [boilTimeMinutes, setBoilTimeMinutes] = useState(initialRecipe?.boilTimeMinutes != null ? String(initialRecipe.boilTimeMinutes) : "60");
   const [processMeta, setProcessMeta] = useState<RecipeProcessMeta>(() => cloneRecipeProcessMeta(initialRecipe?.processMeta ?? defaultRecipeProcessMeta));
   const [calculationMeta, setCalculationMeta] = useState<RecipeCalculationMeta>(() => cloneRecipeCalculationMeta(initialRecipe?.calculationMeta ?? null));
   const [waterPlanMeta, setWaterPlanMeta] = useState<RecipeWaterPlanMeta>(() => cloneRecipeWaterPlanMeta(initialRecipe?.waterPlanMeta ?? null));
-  const [equipmentProfileId, setEquipmentProfileId] = useState<string | null>(initialRecipe?.equipmentProfileId ?? null);
-  const [equipmentProfileSnapshot, setEquipmentProfileSnapshot] = useState<EquipmentProfileSnapshot | null>(() => cloneEquipmentProfileSnapshot(initialRecipe?.equipmentProfileSnapshot ?? null));
+  const [equipmentProfileId, setEquipmentProfileId] = useState<string | null>(initialSelectedEquipmentProfile?.id ?? null);
+  const [equipmentProfileSnapshot, setEquipmentProfileSnapshot] = useState<EquipmentProfileSnapshot | null>(() => (
+    initialRecipe
+      ? (
+        initialSavedEquipmentProfile
+          ? cloneEquipmentProfileSnapshot(initialRecipe.equipmentProfileSnapshot ?? null)
+            ?? buildEquipmentProfileSnapshotFromDto(initialSavedEquipmentProfile)
+          : null
+      )
+      : (initialDefaultEquipmentProfile ? buildEquipmentProfileSnapshotFromDto(initialDefaultEquipmentProfile) : null)
+  ));
   const [ingredients, setIngredients] = useState<DesignerIngredient[]>(initialRecipe?.ingredients.map(toDesignerIngredient) ?? []);
   const [stockCoverage, setStockCoverage] = useState<RecipeStockCoverageDto | null>(initialStockCoverage);
   const [beerXmlExport, setBeerXmlExport] = useState("");
@@ -4205,12 +4152,11 @@ export function RecipeDesigner({
   }), [authorNotes, batchSize.quantity, batchSize.unit, boilTimeMinutes, calculationMeta, description, efficiency, equipmentProfileId, equipmentProfileSnapshot, ingredients, processMeta, publicationState, styleId, title, waterPlanMeta]);
   const waterPlanResult = useMemo(() => buildRecipeWaterPlanResult({
     waterPlanMeta,
-    equipmentProfileSnapshot,
     fallbackBatchVolumeL: getBatchVolumeLiters(batchSize.quantity, batchSize.unit),
     grainKg: getFermentableWeightTotalKg(ingredients),
     beerSrm: preview?.color ?? initialRecipe?.color ?? null,
     fermentables: getFermentablesForWaterPlan(ingredients)
-  }), [batchSize.quantity, batchSize.unit, equipmentProfileSnapshot, ingredients, initialRecipe?.color, preview?.color, waterPlanMeta]);
+  }), [batchSize.quantity, batchSize.unit, ingredients, initialRecipe?.color, preview?.color, waterPlanMeta]);
   const savePayload = useMemo(() => normalizeSavePayload(payload), [payload]);
 
   const currentSignature = useMemo(() => JSON.stringify(payload), [payload]);
@@ -4497,6 +4443,27 @@ export function RecipeDesigner({
       })
     );
   };
+
+  const handleSelectEquipmentProfile = React.useCallback((profileId: string | null) => {
+    if (!profileId) {
+      setEquipmentProfileId(null);
+      setEquipmentProfileSnapshot(null);
+      return;
+    }
+
+    const profile = equipmentProfiles.find((item) => item.id === profileId);
+    if (!profile) {
+      return;
+    }
+
+    setEquipmentProfileId(profile.id);
+    setEquipmentProfileSnapshot(buildEquipmentProfileSnapshotFromDto(profile));
+    setBatchSize((current) => ({
+      ...current,
+      quantity: formatEquipmentProfileRecipeValue(profile.targetBatchVolumeL)
+    }));
+    setEfficiency(formatEquipmentProfileRecipeValue(profile.brewhouseEfficiencyPct));
+  }, [equipmentProfiles]);
 
   const visibleSaveResult = saveResultSignature === currentSignature ? saveResult : null;
   const sectionErrors = visibleSaveResult?.fieldErrors ?? {};
@@ -4981,83 +4948,6 @@ export function RecipeDesigner({
     }
   };
 
-  const handleSelectEquipmentProfile = async (profileId: string | null) => {
-    if (!profileId) {
-      setEquipmentProfileId(null);
-      setEquipmentProfileSnapshot(null);
-      return;
-    }
-
-    setPendingSave(true);
-    const result = await getEquipmentProfileSnapshotAction(profileId);
-    setPendingSave(false);
-
-    if (!result.ok || !result.snapshot) {
-      setSaveResult({ ok: false, message: result.message });
-      setSaveResultSignature(currentSignature);
-      return;
-    }
-
-    setEquipmentProfileId(profileId);
-    setEquipmentProfileSnapshot(result.snapshot);
-  };
-
-  const handleRefreshEquipmentProfile = async () => {
-    if (!equipmentProfileId) {
-      return;
-    }
-
-    setPendingSave(true);
-    const result = await getEquipmentProfileSnapshotAction(equipmentProfileId);
-    setPendingSave(false);
-
-    if (!result.ok || !result.snapshot) {
-      setSaveResult({ ok: false, message: result.message });
-      setSaveResultSignature(currentSignature);
-      return;
-    }
-
-    setEquipmentProfileSnapshot(result.snapshot);
-    setSaveResult({ ok: true, message: result.message });
-    setSaveResultSignature(currentSignature);
-  };
-
-  const handleUseStarterEquipmentProfile = () => {
-    setEquipmentProfileId(null);
-    setEquipmentProfileSnapshot(null);
-    setSaveResult({
-      ok: true,
-      message: `Starter profile используется для расчетов: ${buildStarterEquipmentProfileSnapshot(getBatchVolumeLiters(batchSize.quantity, batchSize.unit)).targetBatchVolumeL} л.`
-    });
-    setSaveResultSignature(currentSignature);
-  };
-
-  const handleScaleRecipeToEquipmentProfile = () => {
-    if (!equipmentProfileSnapshot) {
-      return;
-    }
-
-    const currentBatchVolumeL = getBatchVolumeLiters(batchSize.quantity, batchSize.unit) ?? DEFAULT_BATCH_SIZE_ENTERED_QUANTITY;
-    const currentEfficiencyPct = Number(efficiency) || DEFAULT_EFFICIENCY;
-    const scaled = scaleRecipeEditorToEquipment({
-      currentBatchVolumeL,
-      targetBatchVolumeL: equipmentProfileSnapshot.targetBatchVolumeL,
-      currentEfficiencyPct,
-      targetEfficiencyPct: equipmentProfileSnapshot.brewhouseEfficiencyPct,
-      ingredients
-    });
-
-    setBatchSize({ quantity: scaled.batchSizeQuantityL, unit: "l" });
-    setEfficiency(scaled.efficiencyPct);
-    setBoilTimeMinutes(String(equipmentProfileSnapshot.boilTimeMin));
-    setIngredients(scaled.ingredients);
-    setSaveResult({
-      ok: true,
-      message: `Рецепт масштабирован под ${equipmentProfileSnapshot.name}: x${scaled.volumeRatio}.`
-    });
-    setSaveResultSignature(currentSignature);
-  };
-
   const handleRecipeCreatedFromImages = React.useCallback((recipe: RecipeDetailDto) => {
     const normalizedState = normalizeEditorPublicationState(recipe.publicationState);
 
@@ -5244,6 +5134,9 @@ export function RecipeDesigner({
           setCalculationMeta={setCalculationMeta}
           sectionErrors={sectionErrors}
           preview={preview}
+          equipmentProfiles={equipmentProfiles}
+          selectedEquipmentProfileId={equipmentProfileId}
+          onSelectEquipmentProfile={handleSelectEquipmentProfile}
           onOpenBitternessSettings={() => setBitternessSettingsOpen(true)}
         />
         <RecipeStyleStatsBlock
@@ -5337,18 +5230,6 @@ export function RecipeDesigner({
 
       <div className="space-y-4">
         <WaterSetupWizard waterPlanMeta={waterPlanMeta} waterPlanResult={waterPlanResult} onChange={setWaterPlanMeta} />
-
-        <EquipmentProfileBlock
-          equipmentProfiles={equipmentProfiles}
-          selectedEquipmentProfileId={equipmentProfileId}
-          equipmentProfileSnapshot={equipmentProfileSnapshot}
-          waterPlanResult={waterPlanResult}
-          pending={pendingSave}
-          onSelectProfile={(profileId) => void handleSelectEquipmentProfile(profileId)}
-          onRefreshFromProfile={() => void handleRefreshEquipmentProfile()}
-          onUseStarterProfile={handleUseStarterEquipmentProfile}
-          onScaleToProfile={handleScaleRecipeToEquipmentProfile}
-        />
 
         <StockCoverageSummary
           coverage={stockCoverage}

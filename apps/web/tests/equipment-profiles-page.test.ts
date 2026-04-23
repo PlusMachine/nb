@@ -6,19 +6,13 @@ const equipmentProfile = {
   id: "00000000-0000-4000-8000-000000000301",
   userId: "00000000-0000-4000-8000-000000000002",
   name: "Garage BIAB",
-  brewMethod: "biab_single_vessel",
   targetBatchVolumeL: 20,
-  boilTimeMin: 60,
   brewhouseEfficiencyPct: 75,
-  mashEfficiencyPct: null as number | null,
   evaporationRateLPerHr: 3,
   trubChillerLossL: 1,
   fermenterLossL: 0,
-  mashTunDeadspaceL: 0,
-  spargeVesselDeadspaceL: 0,
   grainAbsorptionLPerKg: 0.75,
   coolingShrinkagePct: 4,
-  topUpWaterL: 0,
   mashThicknessLPerKg: 3,
   maxMashVolumeL: null as number | null,
   maxKettleVolumeL: null as number | null,
@@ -39,8 +33,6 @@ const secondaryEquipmentProfile = {
   evaporationRateLPerHr: 2.5,
   trubChillerLossL: 0.7,
   fermenterLossL: 0.3,
-  mashTunDeadspaceL: 0.5,
-  spargeVesselDeadspaceL: 0.2,
   maxMashVolumeL: 14,
   maxKettleVolumeL: 18,
   isDefault: false
@@ -77,18 +69,13 @@ vi.mock("../features/equipment-profiles/service", () => ({
 const buildFormData = () => {
   const formData = new FormData();
   formData.set("name", "Garage BIAB");
-  formData.set("brewMethod", "mash_sparge_two_vessel");
   formData.set("targetBatchVolumeL", "20");
-  formData.set("boilTimeMin", "60");
   formData.set("brewhouseEfficiencyPct", "75");
   formData.set("evaporationRateLPerHr", "3");
   formData.set("trubChillerLossL", "1");
   formData.set("fermenterLossL", "0");
-  formData.set("mashTunDeadspaceL", "0.4");
-  formData.set("spargeVesselDeadspaceL", "0.2");
   formData.set("grainAbsorptionLPerKg", "0.75");
   formData.set("coolingShrinkagePct", "4");
-  formData.set("topUpWaterL", "0");
   formData.set("mashThicknessLPerKg", "3");
   formData.set("maxMashVolumeL", "");
   formData.set("maxKettleVolumeL", "");
@@ -237,11 +224,8 @@ describe("equipment profiles page", () => {
       "00000000-0000-4000-8000-000000000002",
       expect.objectContaining({
         name: "Garage BIAB",
-        brewMethod: "mash_sparge_two_vessel",
         targetBatchVolumeL: 20,
-        mashTunDeadspaceL: 0.4,
-        spargeVesselDeadspaceL: 0.2,
-        topUpWaterL: 0
+        brewhouseEfficiencyPct: 75
       })
     );
     expect(mocks.revalidatePath).toHaveBeenCalledWith("/app/equipment");
@@ -250,16 +234,14 @@ describe("equipment profiles page", () => {
   it("updates equipment profile from the focused editor form", async () => {
     const { updateEquipmentProfileAction } = await import("../app/(app)/app/equipment/actions");
     const formData = buildFormData();
-    mocks.getEquipmentProfile.mockResolvedValueOnce({ ...equipmentProfile, mashEfficiencyPct: 81 });
 
     await expect(updateEquipmentProfileAction(equipmentProfile.id, formData)).rejects.toThrow("NEXT_REDIRECT:/app/equipment");
     expect(mocks.updateEquipmentProfile).toHaveBeenLastCalledWith(
       "00000000-0000-4000-8000-000000000002",
       equipmentProfile.id,
       expect.objectContaining({
-        brewMethod: "mash_sparge_two_vessel",
-        mashEfficiencyPct: 81,
-        targetBatchVolumeL: 20
+        targetBatchVolumeL: 20,
+        brewhouseEfficiencyPct: 75
       })
     );
   });

@@ -21,7 +21,7 @@ export function EquipmentProfileSummary({
   compact?: boolean;
 }) {
   const summary = buildEquipmentProfileVolumeSummary(profile, grainKg);
-  const maxMashVolumeL = profile.maxMashVolumeL ?? (profile.brewMethod === "biab_single_vessel" ? profile.maxKettleVolumeL : null);
+  const maxMashVolumeL = profile.maxMashVolumeL ?? null;
 
   return (
     <section className={compact

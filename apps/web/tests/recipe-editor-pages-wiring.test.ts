@@ -110,12 +110,18 @@ describe("recipe editor pages wiring", () => {
     expect(html).toContain("Новый рецепт 7");
   });
 
-  it("new route redirects to edit when recipeId query is present", async () => {
+  it("new route resumes an autosaved recipe without redirecting", async () => {
     const { default: NewRecipePage } = await import("../app/(app)/app/recipes/new/page");
 
-    await expect(NewRecipePage({
+    const html = renderToStaticMarkup(await NewRecipePage({
       searchParams: Promise.resolve({ recipeId: "r-1" })
-    })).rejects.toThrow("NEXT_REDIRECT:/app/recipes/r-1/edit");
-    expect(mocks.redirect).toHaveBeenCalledWith("/app/recipes/r-1/edit");
+    }));
+
+    expect(mocks.redirect).not.toHaveBeenCalled();
+    expect(mocks.getOwnedRecipeById).toHaveBeenCalledWith("u-1", "r-1");
+    expect(mocks.listRecipeStockCoverage).toHaveBeenCalledWith("u-1", "r-1");
+    expect(mocks.listRecipeImages).toHaveBeenCalledWith("r-1", "u-1");
+    expect(mocks.listEquipmentProfiles).toHaveBeenCalledWith("u-1");
+    expect(html).toContain("Edit me");
   });
 });

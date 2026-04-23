@@ -1,10 +1,12 @@
 import React from "react";
-import { redirect } from "next/navigation";
+import { notFound } from "next/navigation";
 
 import { RecipeEditorPage } from "@/components/recipes/recipe-editor-page";
 import { listEquipmentProfiles } from "@/features/equipment-profiles/service";
 import { getIngredientSuggestionByRef } from "@/features/ingredients/catalog-service";
-import { getNextDefaultRecipeTitle } from "@/features/recipes/service";
+import { listRecipeImages } from "@/features/recipe-images/service";
+import { listRecipeStockCoverage } from "@/features/recipes/inventory-service";
+import { getNextDefaultRecipeTitle, getOwnedRecipeById } from "@/features/recipes/service";
 import { requireUser } from "@/lib/auth";
 
 export default async function NewRecipePage({
@@ -19,7 +21,29 @@ export default async function NewRecipePage({
   const addId = resolvedSearchParams?.addId?.trim();
 
   if (recipeId) {
-    redirect(`/app/recipes/${recipeId}/edit`);
+    try {
+      const [recipe, stockCoverage, initialImages, equipmentProfiles] = await Promise.all([
+        getOwnedRecipeById(user.id, recipeId),
+        listRecipeStockCoverage(user.id, recipeId),
+        listRecipeImages(recipeId, user.id),
+        listEquipmentProfiles(user.id)
+      ]);
+
+      return (
+        <RecipeEditorPage
+          mode="edit"
+          recipe={recipe}
+          initialStockCoverage={stockCoverage}
+          initialImages={initialImages}
+          equipmentProfiles={equipmentProfiles}
+        />
+      );
+    } catch (error) {
+      if (error instanceof Error && error.message === "NOT_FOUND") {
+        notFound();
+      }
+      throw error;
+    }
   }
 
   const [initialTitle, initialIngredientSelection, equipmentProfiles] = await Promise.all([

@@ -7,7 +7,6 @@ import {
   createEquipmentProfile,
   deleteEquipmentProfile,
   duplicateEquipmentProfile,
-  getEquipmentProfile,
   setDefaultEquipmentProfile,
   updateEquipmentProfile
 } from "@/features/equipment-profiles/service";
@@ -22,28 +21,15 @@ const optionalNumberValue = (formData: FormData, key: string) => {
 
 const stringValue = (formData: FormData, key: string) => String(formData.get(key) ?? "").trim();
 
-const buildEquipmentProfilePayload = (
-  formData: FormData,
-  preserved?: { mashEfficiencyPct: number | null | undefined }
-) => ({
+const buildEquipmentProfilePayload = (formData: FormData) => ({
   name: stringValue(formData, "name"),
-  brewMethod: formData.has("brewMethod")
-    ? stringValue(formData, "brewMethod")
-    : "mash_sparge_two_vessel",
   targetBatchVolumeL: numberValue(formData, "targetBatchVolumeL"),
-  boilTimeMin: numberValue(formData, "boilTimeMin"),
   brewhouseEfficiencyPct: numberValue(formData, "brewhouseEfficiencyPct"),
-  mashEfficiencyPct: formData.has("mashEfficiencyPct")
-    ? optionalNumberValue(formData, "mashEfficiencyPct")
-    : preserved?.mashEfficiencyPct ?? null,
   evaporationRateLPerHr: numberValue(formData, "evaporationRateLPerHr"),
   trubChillerLossL: numberValue(formData, "trubChillerLossL"),
   fermenterLossL: numberValue(formData, "fermenterLossL"),
-  mashTunDeadspaceL: formData.has("mashTunDeadspaceL") ? numberValue(formData, "mashTunDeadspaceL") : 0,
-  spargeVesselDeadspaceL: formData.has("spargeVesselDeadspaceL") ? numberValue(formData, "spargeVesselDeadspaceL") : 0,
   grainAbsorptionLPerKg: numberValue(formData, "grainAbsorptionLPerKg"),
   coolingShrinkagePct: numberValue(formData, "coolingShrinkagePct"),
-  topUpWaterL: formData.has("topUpWaterL") ? numberValue(formData, "topUpWaterL") : 0,
   mashThicknessLPerKg: numberValue(formData, "mashThicknessLPerKg"),
   maxMashVolumeL: optionalNumberValue(formData, "maxMashVolumeL"),
   maxKettleVolumeL: optionalNumberValue(formData, "maxKettleVolumeL"),
@@ -66,10 +52,7 @@ export const createEquipmentProfileAction = async (formData: FormData) => {
 
 export const updateEquipmentProfileAction = async (profileId: string, formData: FormData) => {
   const user = await requireUser();
-  const currentProfile = await getEquipmentProfile(user.id, profileId);
-  await updateEquipmentProfile(user.id, profileId, buildEquipmentProfilePayload(formData, {
-    mashEfficiencyPct: currentProfile.mashEfficiencyPct
-  }));
+  await updateEquipmentProfile(user.id, profileId, buildEquipmentProfilePayload(formData));
   refreshEquipmentPaths();
   redirect("/app/equipment");
 };

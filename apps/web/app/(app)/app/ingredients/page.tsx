@@ -24,7 +24,6 @@ import {
 } from "@/features/inventory/contracts";
 import { resolveIngredientCategory } from "@/features/ingredients/taxonomy";
 import {
-  getIngredientPickerQuickStartByContext,
   getIngredientSuggestionByRef
 } from "@/features/ingredients/catalog-service";
 import { listSystemCurrencyRates } from "@/features/system/currency-rates";
@@ -100,7 +99,7 @@ export default async function MyIngredientsPage({ searchParams }: Props) {
   const addSource = typeof resolvedParams.addSource === "string" ? resolvedParams.addSource : undefined;
   const addId = typeof resolvedParams.addId === "string" ? resolvedParams.addId : undefined;
 
-  const [items, summary, currencyRates, initialSelection, initialQuickStartDataByContext] = await Promise.all([
+  const [items, summary, currencyRates, initialSelection] = await Promise.all([
     listInventoryForUser(user.id, {
       category,
       subtype,
@@ -114,8 +113,7 @@ export default async function MyIngredientsPage({ searchParams }: Props) {
     listSystemCurrencyRates(),
     addSource === "catalog" || addSource === "custom"
       ? getIngredientSuggestionByRef(user.id, addSource, addId ?? "")
-      : Promise.resolve(null),
-    getIngredientPickerQuickStartByContext(user.id)
+      : Promise.resolve(null)
   ]);
   const showFinished = resolveInventoryShowFinished(requestedShowFinished, summary);
 
@@ -139,7 +137,6 @@ export default async function MyIngredientsPage({ searchParams }: Props) {
     showFinished,
     sort
   });
-
   return (
     <main className="space-y-5">
       <section className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
@@ -153,7 +150,6 @@ export default async function MyIngredientsPage({ searchParams }: Props) {
         </div>
         <AddIngredientTrigger
           preferredCurrency={user.preferredCurrency}
-          initialQuickStartDataByContext={initialQuickStartDataByContext}
           initialSelection={initialSelection}
           initialCategory={initialSelection?.category ?? category ?? null}
           initialSubtype={
@@ -187,7 +183,6 @@ export default async function MyIngredientsPage({ searchParams }: Props) {
             subtype={subtype ?? null}
             group={group ?? null}
             showFinished={showFinished}
-            initialQuickStartDataByContext={initialQuickStartDataByContext}
           />
         )
         : (
@@ -195,7 +190,6 @@ export default async function MyIngredientsPage({ searchParams }: Props) {
             items={items}
             preferredCurrency={user.preferredCurrency}
             currencyRates={currencyRates}
-            initialQuickStartDataByContext={initialQuickStartDataByContext}
           />
         )}
     </main>

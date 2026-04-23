@@ -16,6 +16,10 @@ export const formatPlatoFromSg = (value: number, precision = 1) => (
   `${Math.max(0, sgToPlato(value, precision)).toFixed(precision)} °P`
 );
 
+export const formatBrixFromSg = (value: number, precision = 1) => (
+  `${Math.max(0, sgToPlato(value, precision)).toFixed(precision)} °Bx`
+);
+
 export const formatGravityWithPlato = (value: number | null) => (
   value == null
     ? "—"

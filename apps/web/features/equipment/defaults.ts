@@ -1,4 +1,4 @@
-import { starterEquipmentProfileDefaults, type EquipmentBrewMethod, type EquipmentProfilePayload } from "../equipment-profiles/contracts";
+import { starterEquipmentProfileDefaults, type EquipmentProfilePayload } from "../equipment-profiles/contracts";
 
 const profileNamePattern = /^Профиль оборудования (?:\((\d+)\)|(\d+))$/;
 
@@ -27,16 +27,12 @@ export const buildNextEquipmentProfileName = (profiles: Array<{ name: string }>)
 
 export const equipmentProfileSaneDefaults: Partial<EquipmentProfilePayload> = {
   targetBatchVolumeL: 20,
-  boilTimeMin: 60,
   brewhouseEfficiencyPct: 70,
   evaporationRateLPerHr: 3,
   trubChillerLossL: 1,
   fermenterLossL: 0,
-  mashTunDeadspaceL: 0,
-  spargeVesselDeadspaceL: 0,
   grainAbsorptionLPerKg: 0.8,
   coolingShrinkagePct: 4,
-  topUpWaterL: 0,
   mashThicknessLPerKg: 3,
   maxMashVolumeL: null,
   maxKettleVolumeL: null,
@@ -45,11 +41,9 @@ export const equipmentProfileSaneDefaults: Partial<EquipmentProfilePayload> = {
 };
 
 export const buildStarterEquipmentProfileDefaults = (
-  brewMethod: EquipmentBrewMethod = "mash_sparge_two_vessel",
   name = formatEquipmentProfileName(1)
 ): EquipmentProfilePayload => ({
   ...starterEquipmentProfileDefaults,
   name,
-  brewMethod,
   ...equipmentProfileSaneDefaults
 });

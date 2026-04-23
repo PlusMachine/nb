@@ -1355,6 +1355,60 @@ const buildIngredientPickerQuickStartScopedGroups = ({
   }));
 };
 
+const buildIngredientPickerQuickStartFromItems = ({
+  category,
+  subtype,
+  scopedItems,
+  usageAwareItems,
+  recent
+}: {
+  category: IngredientCategory;
+  subtype?: "malt" | "fermentable" | null;
+  scopedItems: UserCatalogIngredientDto[];
+  usageAwareItems: UserCatalogIngredientDto[];
+  recent: IngredientSuggestionItem[];
+}): IngredientPickerQuickStartResult => {
+  const brands = (subtype === "malt" || category === "yeast")
+    ? buildIngredientPickerQuickStartBrands({
+      items: usageAwareItems,
+      recent,
+      fallbackBrands: category === "yeast" ? [] : ingredientPickerMaltQuickStartFallbackBrands
+    })
+    : [];
+  const groups = category === "consumable"
+    ? buildIngredientPickerQuickStartScopedGroups({
+      items: usageAwareItems,
+      recent,
+      category: "consumable",
+      fallbackGroups: ingredientPickerConsumableQuickStartFallbackGroups
+    })
+    : category === "water_treatment"
+      ? buildIngredientPickerQuickStartScopedGroups({
+        items: usageAwareItems,
+        recent,
+        category: "water_treatment",
+        fallbackGroups: ingredientPickerWaterTreatmentQuickStartFallbackGroups
+      })
+      : subtype === "fermentable"
+        ? buildIngredientPickerQuickStartScopedGroups({
+          items: usageAwareItems,
+          recent,
+          category: "fermentable",
+          fallbackGroups: ingredientPickerFermentableQuickStartFallbackGroups
+        })
+        : [];
+  const hasFavoritesAvailable = scopedItems.some((item) => item.isFavorite === true);
+  const hasCustomAvailable = scopedItems.some((item) => item.source === "custom");
+
+  return {
+    brands,
+    groups,
+    recent,
+    hasFavoritesAvailable,
+    hasCustomAvailable
+  };
+};
+
 export const listIngredientPickerQuickStart = async (
   userId: string,
   params: {
@@ -1389,86 +1443,39 @@ export const listIngredientPickerQuickStart = async (
   const { allItems } = await loadUnifiedCatalogItems(userId);
   const scopedItems = filterItemsByPickerContext(allItems, query.category, query.subtype);
   const usageAwareItems = await applyUsageCounts(userId, scopedItems);
-  const brands = (query.subtype === "malt" || query.category === "yeast")
-    ? buildIngredientPickerQuickStartBrands({
-      items: usageAwareItems,
-      recent,
-      fallbackBrands: query.category === "yeast" ? [] : ingredientPickerMaltQuickStartFallbackBrands
-    })
-    : [];
-  const groups = query.category === "consumable"
-    ? buildIngredientPickerQuickStartScopedGroups({
-      items: usageAwareItems,
-      recent,
-      category: "consumable",
-      fallbackGroups: ingredientPickerConsumableQuickStartFallbackGroups
-    })
-    : query.category === "water_treatment"
-      ? buildIngredientPickerQuickStartScopedGroups({
-        items: usageAwareItems,
-        recent,
-        category: "water_treatment",
-        fallbackGroups: ingredientPickerWaterTreatmentQuickStartFallbackGroups
-      })
-      : query.subtype === "fermentable"
-        ? buildIngredientPickerQuickStartScopedGroups({
-          items: usageAwareItems,
-          recent,
-          category: "fermentable",
-          fallbackGroups: ingredientPickerFermentableQuickStartFallbackGroups
-        })
-        : [];
-  const hasFavoritesAvailable = scopedItems.some((item) => item.isFavorite === true);
-  const hasCustomAvailable = scopedItems.some((item) => item.source === "custom");
 
-  return {
-    brands,
-    groups,
-    recent,
-    hasFavoritesAvailable,
-    hasCustomAvailable
-  };
+  return buildIngredientPickerQuickStartFromItems({
+    category: query.category,
+    subtype: query.subtype,
+    scopedItems,
+    usageAwareItems,
+    recent
+  });
 };
 
 export const getIngredientPickerQuickStartByContext = async (
   userId: string
 ): Promise<IngredientPickerQuickStartResultByContext> => {
-  const [malt, fermentable, hop, yeast, waterTreatment, consumable] = await Promise.all([
-    listIngredientPickerQuickStart(userId, {
-      category: "fermentable",
-      subtype: "malt",
-      recentReferences: []
-    }),
-    listIngredientPickerQuickStart(userId, {
-      category: "fermentable",
-      subtype: "fermentable",
-      recentReferences: []
-    }),
-    listIngredientPickerQuickStart(userId, {
-      category: "hop",
-      recentReferences: []
-    }),
-    listIngredientPickerQuickStart(userId, {
-      category: "yeast",
-      recentReferences: []
-    }),
-    listIngredientPickerQuickStart(userId, {
-      category: "water_treatment",
-      recentReferences: []
-    }),
-    listIngredientPickerQuickStart(userId, {
-      category: "consumable",
-      recentReferences: []
-    })
-  ]);
+  const { allItems } = await loadUnifiedCatalogItems(userId);
+  const allUsageAwareItems = await applyUsageCounts(userId, allItems);
+  const buildContext = (
+    category: IngredientCategory,
+    subtype?: "malt" | "fermentable" | null
+  ) => buildIngredientPickerQuickStartFromItems({
+    category,
+    subtype,
+    scopedItems: filterItemsByPickerContext(allItems, category, subtype),
+    usageAwareItems: filterItemsByPickerContext(allUsageAwareItems, category, subtype),
+    recent: []
+  });
 
   return {
-    malt,
-    fermentable,
-    hop,
-    yeast,
-    water_treatment: waterTreatment,
-    consumable
+    malt: buildContext("fermentable", "malt"),
+    fermentable: buildContext("fermentable", "fermentable"),
+    hop: buildContext("hop"),
+    yeast: buildContext("yeast"),
+    water_treatment: buildContext("water_treatment"),
+    consumable: buildContext("consumable")
   };
 };
 

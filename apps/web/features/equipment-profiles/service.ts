@@ -3,27 +3,20 @@ import { and, count, db, desc, eq, equipmentProfiles } from "@nb/db";
 import {
   equipmentProfilePayloadSchema,
   updateEquipmentProfilePayloadSchema,
-  type EquipmentProfileDto,
-  type EquipmentProfileSnapshot
+  type EquipmentProfileDto
 } from "./contracts";
 
 const mapEquipmentProfileDto = (row: typeof equipmentProfiles.$inferSelect): EquipmentProfileDto => ({
   id: row.id,
   userId: row.userId,
   name: row.name,
-  brewMethod: row.brewMethod,
   targetBatchVolumeL: row.targetBatchVolumeL,
-  boilTimeMin: row.boilTimeMin,
   brewhouseEfficiencyPct: row.brewhouseEfficiencyPct,
-  mashEfficiencyPct: row.mashEfficiencyPct,
   evaporationRateLPerHr: row.evaporationRateLPerHr,
   trubChillerLossL: row.trubChillerLossL,
   fermenterLossL: row.fermenterLossL,
-  mashTunDeadspaceL: row.mashTunDeadspaceL,
-  spargeVesselDeadspaceL: row.spargeVesselDeadspaceL,
   grainAbsorptionLPerKg: row.grainAbsorptionLPerKg,
   coolingShrinkagePct: row.coolingShrinkagePct,
-  topUpWaterL: row.topUpWaterL,
   mashThicknessLPerKg: row.mashThicknessLPerKg,
   maxMashVolumeL: row.maxMashVolumeL,
   maxKettleVolumeL: row.maxKettleVolumeL,
@@ -34,38 +27,6 @@ const mapEquipmentProfileDto = (row: typeof equipmentProfiles.$inferSelect): Equ
   createdAt: row.createdAt,
   updatedAt: row.updatedAt
 });
-
-export const buildEquipmentProfileSnapshot = (
-  row: typeof equipmentProfiles.$inferSelect,
-  snapshotAt = new Date()
-): EquipmentProfileSnapshot => {
-  const dto = mapEquipmentProfileDto(row);
-
-  return {
-    id: dto.id,
-    name: dto.name,
-    brewMethod: dto.brewMethod,
-    targetBatchVolumeL: dto.targetBatchVolumeL,
-    boilTimeMin: dto.boilTimeMin,
-    brewhouseEfficiencyPct: dto.brewhouseEfficiencyPct,
-    mashEfficiencyPct: dto.mashEfficiencyPct,
-    evaporationRateLPerHr: dto.evaporationRateLPerHr,
-    trubChillerLossL: dto.trubChillerLossL,
-    fermenterLossL: dto.fermenterLossL,
-    mashTunDeadspaceL: dto.mashTunDeadspaceL,
-    spargeVesselDeadspaceL: dto.spargeVesselDeadspaceL,
-    grainAbsorptionLPerKg: dto.grainAbsorptionLPerKg,
-    coolingShrinkagePct: dto.coolingShrinkagePct,
-    topUpWaterL: dto.topUpWaterL,
-    mashThicknessLPerKg: dto.mashThicknessLPerKg,
-    maxMashVolumeL: dto.maxMashVolumeL,
-    maxKettleVolumeL: dto.maxKettleVolumeL,
-    hopUtilizationFactor: dto.hopUtilizationFactor,
-    altitudeM: dto.altitudeM,
-    notes: dto.notes,
-    snapshotAt: snapshotAt.toISOString()
-  };
-};
 
 const buildDuplicateEquipmentProfileName = (sourceName: string, existingNames: Set<string>) => {
   const baseName = sourceName.trim() || "Профиль оборудования";
@@ -112,21 +73,6 @@ export const getEquipmentProfile = async (userId: string, profileId: string): Pr
   }
 
   return mapEquipmentProfileDto(row);
-};
-
-export const getEquipmentProfileSnapshot = async (
-  userId: string,
-  profileId: string
-): Promise<EquipmentProfileSnapshot> => {
-  const row = await db.query.equipmentProfiles.findFirst({
-    where: and(eq(equipmentProfiles.id, profileId), eq(equipmentProfiles.userId, userId))
-  });
-
-  if (!row) {
-    throw new Error("NOT_FOUND");
-  }
-
-  return buildEquipmentProfileSnapshot(row);
 };
 
 export const createEquipmentProfile = async (

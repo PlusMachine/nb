@@ -42,12 +42,6 @@ export const recipeInventoryAllocationStatusEnum = pgEnum("recipe_inventory_allo
 export const inventoryTransactionTypeEnum = pgEnum("inventory_transaction_type", ["consume", "reserve", "release", "adjustment"]);
 export const brewBatchStatusEnum = pgEnum("brew_batch_status", ["planned", "brewing", "fermenting", "completed", "cancelled"]);
 export const recipeImageStatusEnum = pgEnum("recipe_image_status", ["uploading", "ready", "failed"]);
-export const equipmentBrewMethodEnum = pgEnum("equipment_brew_method", [
-  "biab_single_vessel",
-  "mash_sparge_two_vessel",
-  "three_vessel",
-  "extract_partial_boil"
-]);
 
 export const users = pgTable("users", {
   id: uuid("id").defaultRandom().primaryKey(),
@@ -433,19 +427,13 @@ export const equipmentProfiles = pgTable("equipment_profiles", {
   id: uuid("id").defaultRandom().primaryKey(),
   userId: uuid("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
   name: varchar("name", { length: 180 }).notNull(),
-  brewMethod: equipmentBrewMethodEnum("brew_method").default("biab_single_vessel").notNull(),
   targetBatchVolumeL: doublePrecision("target_batch_volume_l").notNull(),
-  boilTimeMin: integer("boil_time_min").default(60).notNull(),
   brewhouseEfficiencyPct: doublePrecision("brewhouse_efficiency_pct").default(75).notNull(),
-  mashEfficiencyPct: doublePrecision("mash_efficiency_pct"),
   evaporationRateLPerHr: doublePrecision("evaporation_rate_l_per_hr").default(3).notNull(),
   trubChillerLossL: doublePrecision("trub_chiller_loss_l").default(0).notNull(),
   fermenterLossL: doublePrecision("fermenter_loss_l").default(0).notNull(),
-  mashTunDeadspaceL: doublePrecision("mash_tun_deadspace_l").default(0).notNull(),
-  spargeVesselDeadspaceL: doublePrecision("sparge_vessel_deadspace_l").default(0).notNull(),
   grainAbsorptionLPerKg: doublePrecision("grain_absorption_l_per_kg").default(0.75).notNull(),
   coolingShrinkagePct: doublePrecision("cooling_shrinkage_pct").default(4).notNull(),
-  topUpWaterL: doublePrecision("top_up_water_l").default(0).notNull(),
   mashThicknessLPerKg: doublePrecision("mash_thickness_l_per_kg").default(3).notNull(),
   maxMashVolumeL: doublePrecision("max_mash_volume_l"),
   maxKettleVolumeL: doublePrecision("max_kettle_volume_l"),

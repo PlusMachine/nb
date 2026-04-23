@@ -51,19 +51,13 @@ function EquipmentProfileForm({
 const toProfileFormValue = (profile: EquipmentProfileDto): ProfileFormValue => ({
   id: profile.id,
   name: profile.name,
-  brewMethod: profile.brewMethod,
   targetBatchVolumeL: profile.targetBatchVolumeL,
-  boilTimeMin: profile.boilTimeMin,
   brewhouseEfficiencyPct: profile.brewhouseEfficiencyPct,
-  mashEfficiencyPct: profile.mashEfficiencyPct,
   evaporationRateLPerHr: profile.evaporationRateLPerHr,
   trubChillerLossL: profile.trubChillerLossL,
   fermenterLossL: profile.fermenterLossL,
-  mashTunDeadspaceL: profile.mashTunDeadspaceL,
-  spargeVesselDeadspaceL: profile.spargeVesselDeadspaceL,
   grainAbsorptionLPerKg: profile.grainAbsorptionLPerKg,
   coolingShrinkagePct: profile.coolingShrinkagePct,
-  topUpWaterL: profile.topUpWaterL,
   mashThicknessLPerKg: profile.mashThicknessLPerKg,
   maxMashVolumeL: profile.maxMashVolumeL,
   maxKettleVolumeL: profile.maxKettleVolumeL,
@@ -182,7 +176,6 @@ export default async function EquipmentProfilesPage({
   const resolvedSearchParams = searchParams ? await searchParams : undefined;
   const profiles = await listEquipmentProfiles(user.id);
   const starterProfile = buildStarterEquipmentProfileDefaults(
-    "mash_sparge_two_vessel",
     buildNextEquipmentProfileName(profiles)
   );
   const defaultProfileId = profiles.find((profile) => profile.isDefault)?.id ?? profiles[0]?.id ?? null;

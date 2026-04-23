@@ -10,7 +10,9 @@ import { RecipeEditorErrorState } from "../components/recipes/recipe-editor-erro
 import { buildImportRecipeSummary } from "../components/recipes/import-export-modal";
 import {
   RecipeDesigner,
+  buildRecipeEditorResumeHref,
   buildRecipeEditHref,
+  buildRecipeWizardResumeHref,
   resolveRecipeFermentablePickerScopeContext,
   resolveRecipeIngredientEditorSourceMode,
   resolveRecipeIngredientSearchType,
@@ -26,6 +28,7 @@ import {
   RecipeIngredientRow
 } from "../components/recipes/recipe-ingredient-row";
 import { RecipeStatsPreview } from "../components/recipes/recipe-stats-preview";
+import type { EquipmentProfileDto } from "../features/equipment-profiles/contracts";
 import { defaultRecipeProcessMeta, type RecipeDetailDto } from "../features/recipes/contracts";
 import { buildRecipePublicationChecklist } from "../features/recipes/publication-validation";
 
@@ -44,7 +47,6 @@ vi.mock("../app/(app)/app/recipes/actions", () => ({
   previewRecipeDraftAction: vi.fn(),
   createRecipeCustomIngredientAction: vi.fn(),
   exportRecipeBeerXmlAction: vi.fn(),
-  getEquipmentProfileSnapshotAction: vi.fn(),
   getRecipeStockCoverageAction: vi.fn(),
   importBeerXmlRecipeAction: vi.fn(),
   importBrewfatherJsonRecipeAction: vi.fn(),
@@ -106,6 +108,29 @@ const buildRecipeDetail = (overrides: Partial<RecipeDetailDto> = {}): RecipeDeta
   heroImageId: null,
   ingredients: [],
   versions: [],
+  ...overrides
+});
+
+const buildEquipmentProfile = (overrides: Partial<EquipmentProfileDto> = {}): EquipmentProfileDto => ({
+  id: "profile-1",
+  userId: "user-1",
+  name: "Клон Braumeister",
+  targetBatchVolumeL: 27,
+  brewhouseEfficiencyPct: 72,
+  evaporationRateLPerHr: 3,
+  trubChillerLossL: 1,
+  fermenterLossL: 0,
+  grainAbsorptionLPerKg: 0.8,
+  coolingShrinkagePct: 4,
+  mashThicknessLPerKg: 3,
+  maxMashVolumeL: null,
+  maxKettleVolumeL: null,
+  hopUtilizationFactor: 1,
+  altitudeM: 0,
+  notes: null,
+  isDefault: true,
+  createdAt: new Date("2026-04-20T10:00:00Z"),
+  updatedAt: new Date("2026-04-20T10:00:00Z"),
   ...overrides
 });
 
@@ -385,6 +410,10 @@ describe("recipe editor components", () => {
     expect(html).toContain("Название рецепта");
     expect(html).toContain("Стиль BJCP");
     expect(html).toContain("Оборудование");
+    expect(html).toContain("Без профиля — ручной ввод параметров");
+    expect(html).not.toContain("Профиль не выбран. Параметры задаются вручную.");
+    expect(html).not.toContain("На основе профиля оборудования");
+    expect(html).not.toContain("Значения сохраняются в рецепте");
     expect(html).toContain("Вода");
     expect(html).toContain("Покрытие складом");
     expect(html).toContain("Прочее / расходники");
@@ -405,6 +434,28 @@ describe("recipe editor components", () => {
     expect(html).not.toContain("Публикация");
   });
 
+  it("uses the default equipment profile as the initial profile for a new recipe", () => {
+    const html = renderToStaticMarkup(React.createElement(RecipeDesigner, {
+      mode: "create",
+      equipmentProfiles: [
+        buildEquipmentProfile(),
+        buildEquipmentProfile({
+          id: "profile-2",
+          name: "HERMS",
+          targetBatchVolumeL: 20,
+          brewhouseEfficiencyPct: 70,
+          isDefault: false
+        })
+      ]
+    }));
+
+    expect(html).toContain("Клон Braumeister · Основной — 27 л · 72%");
+    expect(html).toContain("HERMS");
+    expect(html).not.toContain("Основано на профиле Клон Braumeister");
+    expect(html).toContain('value="27"');
+    expect(html).toContain('value="72"');
+  });
+
   it("opens the empty boil hop additions group by default", () => {
     const html = renderToStaticMarkup(React.createElement(RecipeDesigner, { mode: "create" }));
 
@@ -419,6 +470,12 @@ describe("recipe editor components", () => {
 
   it("builds canonical edit href for saved recipes", () => {
     expect(buildRecipeEditHref("recipe-1")).toBe("/app/recipes/recipe-1/edit");
+  });
+
+  it("builds stable wizard resume href for autosaved new recipes", () => {
+    expect(buildRecipeWizardResumeHref("recipe-1")).toBe("/app/recipes/new?recipeId=recipe-1");
+    expect(buildRecipeEditorResumeHref("recipe-1", "/app/recipes/new")).toBe("/app/recipes/new?recipeId=recipe-1");
+    expect(buildRecipeEditorResumeHref("recipe-1", "/app/recipes/r-0/edit")).toBe("/app/recipes/recipe-1/edit");
   });
 
   it("shows the selected BJCP style as a native link inside batch parameters", () => {
