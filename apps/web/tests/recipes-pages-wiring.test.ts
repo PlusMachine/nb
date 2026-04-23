@@ -56,8 +56,8 @@ vi.mock("next/navigation", () => ({
 
 describe("recipes pages wiring", () => {
   it("list page uses listRecipesForAuthor", async () => {
-    const { default: RecipesPage } = await import("../app/(app)/app/recipes/page");
-    const view = await RecipesPage();
+    const { MyRecipesContent } = await import("../app/(app)/app/recipes/content");
+    const view = await MyRecipesContent();
     const html = renderToStaticMarkup(view);
 
     expect(mocks.listRecipesForAuthor).toHaveBeenCalledWith("u-1");
@@ -71,8 +71,8 @@ describe("recipes pages wiring", () => {
 
   it("list page empty state scenario works", async () => {
     mocks.listRecipesForAuthor.mockResolvedValueOnce([]);
-    const { default: RecipesPage } = await import("../app/(app)/app/recipes/page");
-    const view = await RecipesPage();
+    const { MyRecipesContent } = await import("../app/(app)/app/recipes/content");
+    const view = await MyRecipesContent();
     const html = renderToStaticMarkup(view);
 
     expect(html).toContain("Пока нет рецептов");

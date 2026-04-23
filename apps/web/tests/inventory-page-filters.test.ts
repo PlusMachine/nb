@@ -45,11 +45,11 @@ vi.mock("../components/inventory/inventory-summary", () => ({
   InventorySummary: () => React.createElement("div", null, "SUMMARY")
 }));
 
-import MyIngredientsPage from "../app/(app)/app/ingredients/page";
+import { MyIngredientsContent } from "../app/(app)/app/ingredients/content";
 
 describe("inventory page filters", () => {
   it("passes search/category/show-finished/sort query into service layer", async () => {
-    const view = await MyIngredientsPage({
+    const view = await MyIngredientsContent({
       searchParams: Promise.resolve({ search: "citra", category: "hop", finished: "true", sort: "name" })
     });
     const html = renderToStaticMarkup(view);
@@ -67,7 +67,7 @@ describe("inventory page filters", () => {
   });
 
   it("hides empty items by default", async () => {
-    await MyIngredientsPage({
+    await MyIngredientsContent({
       searchParams: Promise.resolve({ category: "hop" })
     });
 
@@ -83,11 +83,11 @@ describe("inventory page filters", () => {
   });
 
   it("shows search-specific empty state", async () => {
-    const view = await MyIngredientsPage({
+    const view = await MyIngredientsContent({
       searchParams: Promise.resolve({ search: "zzz" })
     });
     const html = renderToStaticMarkup(view);
 
-    expect(html).toContain("По вашему запросу ничего не найдено");
+    expect(html).toContain("Ничего не найдено");
   });
 });

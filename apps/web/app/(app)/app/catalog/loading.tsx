@@ -3,7 +3,7 @@ import { Loader2 } from "lucide-react";
 
 const skeletonRows = Array.from({ length: 6 }, (_, index) => index);
 
-export default function CatalogLoading() {
+export function CatalogLoadingSkeleton() {
   return (
     <main className="space-y-6" aria-busy="true">
       <section className="space-y-3">
@@ -73,4 +73,8 @@ export default function CatalogLoading() {
       </section>
     </main>
   );
+}
+
+export default function CatalogLoading() {
+  return <CatalogLoadingSkeleton />;
 }

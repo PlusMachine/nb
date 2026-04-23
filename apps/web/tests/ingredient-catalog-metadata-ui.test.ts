@@ -52,7 +52,7 @@ vi.mock("@/components/shared/country-flag", () => ({
   CountryFlagLabel: ({ label }: any) => React.createElement("span", null, label)
 }));
 
-import IngredientCatalogPage from "../app/(app)/app/catalog/page";
+import { IngredientCatalogContent } from "../app/(app)/app/catalog/content";
 import IngredientDetailPage from "../app/(app)/app/catalog/[source]/[id]/page";
 
 const buildCatalogItem = (overrides: Record<string, unknown> = {}) => ({
@@ -162,7 +162,7 @@ describe("ingredient catalog metadata ui", () => {
       }
     };
 
-    const html = renderToStaticMarkup(await IngredientCatalogPage({
+    const html = renderToStaticMarkup(await IngredientCatalogContent({
       searchParams: Promise.resolve({})
     }));
 

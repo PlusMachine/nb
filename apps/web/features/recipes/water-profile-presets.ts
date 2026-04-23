@@ -26,7 +26,7 @@ export const builtInSourceWaterProfiles = [
     id: "ro_distilled",
     name: "Осмос",
     description: "Обратный осмос.",
-    profile: profile(0, 0, 0, 0, 0, 0, 7),
+    profile: profile(1, 0, 8, 4, 1, 16, 7),
     kind: "source"
   },
   {

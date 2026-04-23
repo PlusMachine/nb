@@ -4,6 +4,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { usePathname, useSearchParams } from "next/navigation";
 import { Loader2 } from "lucide-react";
 
+const pendingDisplayDelayMs = 140;
 const pendingResetMs = 10000;
 
 const isModifiedClick = (event: MouseEvent) => (
@@ -30,9 +31,14 @@ export function AppRouteFeedback() {
   const searchParams = useSearchParams();
   const searchParamsKey = searchParams.toString();
   const [pending, setPending] = useState(false);
+  const displayTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const resetTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
+    if (displayTimerRef.current) {
+      clearTimeout(displayTimerRef.current);
+      displayTimerRef.current = null;
+    }
     if (resetTimerRef.current) {
       clearTimeout(resetTimerRef.current);
       resetTimerRef.current = null;
@@ -57,19 +63,30 @@ export function AppRouteFeedback() {
         return;
       }
 
-      setPending(true);
+      if (displayTimerRef.current) {
+        clearTimeout(displayTimerRef.current);
+      }
       if (resetTimerRef.current) {
         clearTimeout(resetTimerRef.current);
-      }
-      resetTimerRef.current = setTimeout(() => {
-        setPending(false);
         resetTimerRef.current = null;
-      }, pendingResetMs);
+      }
+      displayTimerRef.current = setTimeout(() => {
+        setPending(true);
+        displayTimerRef.current = null;
+        resetTimerRef.current = setTimeout(() => {
+          setPending(false);
+          resetTimerRef.current = null;
+        }, pendingResetMs);
+      }, pendingDisplayDelayMs);
     };
 
     document.addEventListener("click", handleClick, true);
     return () => {
       document.removeEventListener("click", handleClick, true);
+      if (displayTimerRef.current) {
+        clearTimeout(displayTimerRef.current);
+        displayTimerRef.current = null;
+      }
       if (resetTimerRef.current) {
         clearTimeout(resetTimerRef.current);
         resetTimerRef.current = null;

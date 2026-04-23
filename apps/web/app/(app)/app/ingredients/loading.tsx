@@ -1,7 +1,7 @@
 import React from "react";
 import { Loader2 } from "lucide-react";
 
-export default function IngredientsLoading() {
+export function IngredientsLoadingSkeleton() {
   return (
     <main className="space-y-5" aria-busy="true">
       <section className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
@@ -43,4 +43,8 @@ export default function IngredientsLoading() {
       </section>
     </main>
   );
+}
+
+export default function IngredientsLoading() {
+  return <IngredientsLoadingSkeleton />;
 }
