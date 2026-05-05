@@ -616,8 +616,15 @@ const cloneRecipeWaterPlanMeta = (value?: RecipeWaterPlanMeta | null): RecipeWat
   sourceProfileSavedId: value?.sourceProfileSavedId ?? null,
   sourceProfileName: value?.sourceProfileName ?? null,
   sourceProfile: value?.sourceProfile ?? null,
-  targetProfileMode: value?.targetProfileMode ?? "balanced",
-  targetProfilePresetId: value?.targetProfilePresetId ?? "balanced",
+  targetProfileMode: value?.targetProfileMode ?? "catalog",
+  targetProfilePresetId: value?.targetProfilePresetId ?? null,
+  targetProfileSlug: value?.targetProfileSlug ?? null,
+  targetProfileSavedId: value?.targetProfileSavedId ?? null,
+  targetProfileName: value?.targetProfileName ?? null,
+  targetProfileSource: value?.targetProfileSource ?? null,
+  targetProfileIsOverridden: value?.targetProfileIsOverridden ?? false,
+  targetProfileResolvedFromBjcpStyleKey:
+    value?.targetProfileResolvedFromBjcpStyleKey ?? null,
   targetProfile: value?.targetProfile ?? null,
   showWaterAdditivesInIngredients: value?.showWaterAdditivesInIngredients ?? false,
   blendRatio: value?.blendRatio ?? null,
@@ -5229,7 +5236,12 @@ export function RecipeDesigner({
       </div>
 
       <div className="space-y-4">
-        <WaterSetupWizard waterPlanMeta={waterPlanMeta} waterPlanResult={waterPlanResult} onChange={setWaterPlanMeta} />
+        <WaterSetupWizard
+          waterPlanMeta={waterPlanMeta}
+          waterPlanResult={waterPlanResult}
+          styleId={styleId.trim() || null}
+          onChange={setWaterPlanMeta}
+        />
 
         <StockCoverageSummary
           coverage={stockCoverage}

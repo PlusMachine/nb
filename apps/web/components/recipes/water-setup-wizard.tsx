@@ -16,11 +16,19 @@ import {
 } from "@/features/recipes/water-plan";
 import {
   builtInSourceWaterProfiles,
-  builtInTargetWaterProfiles,
   findBuiltInSourceWaterProfile,
-  findBuiltInTargetWaterProfile,
   type RecipeWaterProfilePreset,
 } from "@/features/recipes/water-profiles";
+import {
+  getAlternativeTargetProfilesForBjcpStyle,
+  getDefaultTargetProfileForBjcpStyle,
+  getWaterTargetProfileBySlug,
+  getWaterTargetQuickPickProfiles,
+  getWaterTargetStyleDefault,
+  resolveWaterTargetBjcpStyleKey,
+  searchWaterTargetProfiles,
+  type WaterTargetProfileCatalogItem,
+} from "@/features/recipes/water-target-profiles";
 
 import { WaterSummaryCard } from "./water-summary-card";
 
@@ -33,9 +41,12 @@ export type SavedSourceWaterProfile = {
   createdAt: string;
   updatedAt: string;
 };
+export type SavedTargetWaterProfile = SavedSourceWaterProfile;
 
 const savedSourceWaterProfilesStorageKey =
   "nb:recipe-water:source-profiles";
+const savedTargetWaterProfilesStorageKey =
+  "nb:recipe-water:target-profiles";
 
 const emptyProfile: WaterProfileMeta = {
   ca: 0,
@@ -160,6 +171,19 @@ const readStoredSavedSourceWaterProfiles = () => {
   }
 };
 
+const readStoredSavedTargetWaterProfiles = () => {
+  if (typeof window === "undefined") {
+    return [];
+  }
+
+  try {
+    const raw = window.localStorage.getItem(savedTargetWaterProfilesStorageKey);
+    return raw ? sanitizeSavedSourceWaterProfiles(JSON.parse(raw)) : [];
+  } catch {
+    return [];
+  }
+};
+
 const persistSavedSourceWaterProfiles = (
   profiles: SavedSourceWaterProfile[],
 ) => {
@@ -177,9 +201,30 @@ const persistSavedSourceWaterProfiles = (
   }
 };
 
+const persistSavedTargetWaterProfiles = (
+  profiles: SavedTargetWaterProfile[],
+) => {
+  if (typeof window === "undefined") {
+    return;
+  }
+
+  try {
+    window.localStorage.setItem(
+      savedTargetWaterProfilesStorageKey,
+      JSON.stringify(profiles),
+    );
+  } catch {
+    // Saved profiles are a convenience layer; editing the recipe still works.
+  }
+};
+
 export const getNextSavedSourceWaterProfileName = (
   profiles: SavedSourceWaterProfile[],
 ) => `Сохраненный профиль ${profiles.length + 1}`;
+
+export const getNextSavedTargetWaterProfileName = (
+  profiles: SavedTargetWaterProfile[],
+) => `Целевой профиль ${profiles.length + 1}`;
 
 const createSavedSourceWaterProfileId = () => {
   if (typeof crypto !== "undefined" && "randomUUID" in crypto) {
@@ -245,8 +290,6 @@ const saltOptionGroups = [
 const defaultSourcePreset = () =>
   findBuiltInSourceWaterProfile("ro_distilled") ??
   builtInSourceWaterProfiles[0];
-const defaultTargetPreset = () =>
-  findBuiltInTargetWaterProfile("balanced") ?? builtInTargetWaterProfiles[0];
 const selectableSourceWaterProfiles: RecipeWaterProfilePreset[] = [
   "ro_distilled",
   "distilled_water",
@@ -254,18 +297,6 @@ const selectableSourceWaterProfiles: RecipeWaterProfilePreset[] = [
   const preset = findBuiltInSourceWaterProfile(id);
   return preset ? [preset] : [];
 });
-
-const targetModeForPreset = (
-  presetId: string,
-): RecipeWaterPlanMeta["targetProfileMode"] => {
-  if (["neipa", "west_coast_ipa", "light_hoppy"].includes(presetId)) {
-    return "hoppy";
-  }
-  if (["helles", "dubbel", "stout", "light_malty"].includes(presetId)) {
-    return "malty";
-  }
-  return "balanced";
-};
 
 const toOptionalNumber = (value: string) => {
   const trimmed = value.trim();
@@ -327,8 +358,14 @@ export const createRecipeWaterPlanResetMeta = (): RecipeWaterPlanMeta => ({
   sourceProfileSavedId: null,
   sourceProfileName: null,
   sourceProfile: null,
-  targetProfileMode: "balanced",
+  targetProfileMode: "catalog",
   targetProfilePresetId: null,
+  targetProfileSlug: null,
+  targetProfileSavedId: null,
+  targetProfileName: null,
+  targetProfileSource: null,
+  targetProfileIsOverridden: false,
+  targetProfileResolvedFromBjcpStyleKey: null,
   targetProfile: null,
   showWaterAdditivesInIngredients: false,
   blendRatio: null,
@@ -355,12 +392,16 @@ export const ensureRecipeWaterPlanConfigured = (
     findBuiltInSourceWaterProfile(
       waterPlanMeta.sourceProfilePresetId ?? "ro_distilled",
     ) ?? defaultSourcePreset();
-  const targetPreset =
-    findBuiltInTargetWaterProfile(
-      waterPlanMeta.targetProfilePresetId ?? "balanced",
-    ) ?? defaultTargetPreset();
   const hasSourceProfile = Boolean(waterPlanMeta.sourceProfile);
-  const hasTargetProfile = Boolean(waterPlanMeta.targetProfile);
+  const targetProfileSlug =
+    waterPlanMeta.targetProfileSlug ?? waterPlanMeta.targetProfilePresetId;
+  const targetProfileMode =
+    waterPlanMeta.targetProfileMode === "style" ||
+    waterPlanMeta.targetProfileMode === "balanced" ||
+    waterPlanMeta.targetProfileMode === "malty" ||
+    waterPlanMeta.targetProfileMode === "hoppy"
+      ? "catalog"
+      : waterPlanMeta.targetProfileMode;
 
   return {
     ...waterPlanMeta,
@@ -380,16 +421,16 @@ export const ensureRecipeWaterPlanConfigured = (
     sourceProfile: hasSourceProfile
       ? waterPlanMeta.sourceProfile
       : cloneProfile(sourcePreset.profile),
-    targetProfileMode:
-      hasTargetProfile && waterPlanMeta.targetProfileMode !== "style"
-        ? waterPlanMeta.targetProfileMode
-        : targetModeForPreset(targetPreset.id),
-    targetProfilePresetId: hasTargetProfile
-      ? waterPlanMeta.targetProfilePresetId
-      : targetPreset.id,
-    targetProfile: hasTargetProfile
-      ? waterPlanMeta.targetProfile
-      : cloneProfile(targetPreset.profile),
+    targetProfileMode,
+    targetProfileSlug,
+    targetProfilePresetId: targetProfileSlug,
+    targetProfileSavedId:
+      targetProfileMode === "saved" ? waterPlanMeta.targetProfileSavedId : null,
+    targetProfileName: waterPlanMeta.targetProfileName ?? null,
+    targetProfileSource: waterPlanMeta.targetProfileSource ?? null,
+    targetProfileIsOverridden: waterPlanMeta.targetProfileIsOverridden ?? false,
+    targetProfileResolvedFromBjcpStyleKey:
+      waterPlanMeta.targetProfileResolvedFromBjcpStyleKey ?? null,
   };
 };
 
@@ -443,9 +484,66 @@ export const applyRecipeWaterTargetPreset = (
 ): RecipeWaterPlanMeta => ({
   ...waterPlanMeta,
   setupEnabled: true,
-  targetProfileMode: targetModeForPreset(preset.id),
+  targetProfileMode: "catalog",
   targetProfilePresetId: preset.id,
+  targetProfileSlug: preset.id,
+  targetProfileSavedId: null,
+  targetProfileName: preset.name,
+  targetProfileSource: "user_catalog",
+  targetProfileIsOverridden: true,
   targetProfile: cloneProfile(preset.profile),
+});
+
+export const applyRecipeWaterCatalogTargetProfile = (
+  waterPlanMeta: RecipeWaterPlanMeta,
+  profile: WaterTargetProfileCatalogItem,
+  source: NonNullable<RecipeWaterPlanMeta["targetProfileSource"]> = "user_catalog",
+  resolvedFromBjcpStyleKey: string | null = null,
+  overridden = source !== "auto_style",
+): RecipeWaterPlanMeta => ({
+  ...waterPlanMeta,
+  setupEnabled: true,
+  targetProfileMode: "catalog",
+  targetProfilePresetId: profile.slug,
+  targetProfileSlug: profile.slug,
+  targetProfileSavedId: null,
+  targetProfileName: profile.displayName,
+  targetProfileSource: source,
+  targetProfileIsOverridden: overridden,
+  targetProfileResolvedFromBjcpStyleKey: resolvedFromBjcpStyleKey,
+  targetProfile: cloneProfile(profile.profile),
+});
+
+export const applyRecipeWaterSavedTargetProfile = (
+  waterPlanMeta: RecipeWaterPlanMeta,
+  savedProfile: SavedTargetWaterProfile,
+): RecipeWaterPlanMeta => ({
+  ...waterPlanMeta,
+  setupEnabled: true,
+  targetProfileMode: "saved",
+  targetProfilePresetId: null,
+  targetProfileSlug: null,
+  targetProfileSavedId: savedProfile.id,
+  targetProfileName: savedProfile.name,
+  targetProfileSource: "user_saved",
+  targetProfileIsOverridden: true,
+  targetProfile: cloneProfile(savedProfile.profile),
+});
+
+export const setRecipeWaterManualTargetProfile = (
+  waterPlanMeta: RecipeWaterPlanMeta,
+  profile: WaterProfileMeta,
+): RecipeWaterPlanMeta => ({
+  ...waterPlanMeta,
+  setupEnabled: true,
+  targetProfileMode: "manual",
+  targetProfilePresetId: null,
+  targetProfileSlug: null,
+  targetProfileSavedId: null,
+  targetProfileName: null,
+  targetProfileSource: "manual",
+  targetProfileIsOverridden: true,
+  targetProfile: cloneProfile(profile),
 });
 
 export const setRecipeWaterVolumeMode = (
@@ -668,69 +766,272 @@ function SourceSavedWaterProfileOption({
   profiles,
   selectedId,
   selected,
+  showProfileSummary = false,
   onSelect,
   onDelete,
 }: {
   profiles: SavedSourceWaterProfile[];
   selectedId: string | null | undefined;
   selected: boolean;
+  showProfileSummary?: boolean;
   onSelect: (profile: SavedSourceWaterProfile) => void;
   onDelete: (profileId: string) => void;
 }) {
+  const [isOpen, setIsOpen] = React.useState(false);
+  const rootRef = React.useRef<HTMLDivElement | null>(null);
+  const selectedProfile =
+    profiles.find((profile) => profile.id === selectedId) ?? profiles[0];
+  const isSingleProfile = profiles.length === 1;
+
+  React.useEffect(() => {
+    if (profiles.length <= 1) {
+      setIsOpen(false);
+    }
+  }, [profiles.length]);
+
+  React.useEffect(() => {
+    if (!isOpen) {
+      return;
+    }
+
+    const handlePointerDown = (event: PointerEvent) => {
+      if (!(event.target instanceof Node)) {
+        return;
+      }
+
+      if (rootRef.current?.contains(event.target)) {
+        return;
+      }
+
+      setIsOpen(false);
+    };
+
+    const handleFocusIn = (event: FocusEvent) => {
+      if (!(event.target instanceof Node)) {
+        return;
+      }
+
+      if (rootRef.current?.contains(event.target)) {
+        return;
+      }
+
+      setIsOpen(false);
+    };
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setIsOpen(false);
+      }
+    };
+
+    document.addEventListener("pointerdown", handlePointerDown);
+    document.addEventListener("focusin", handleFocusIn);
+    window.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      document.removeEventListener("pointerdown", handlePointerDown);
+      document.removeEventListener("focusin", handleFocusIn);
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [isOpen]);
+
   if (!profiles.length) {
     return null;
   }
 
-  const selectedProfile = profiles.find((profile) => profile.id === selectedId);
+  if (isSingleProfile) {
+    const profile = profiles[0];
+    const isCurrent = profile.id === selectedId;
+
+    return (
+      <div
+        ref={rootRef}
+        className={`grid ${showProfileSummary ? "min-h-12" : "h-10"} min-w-0 grid-cols-[minmax(0,1fr)_2.5rem] items-center overflow-hidden rounded-lg border ${selected && isCurrent ? "border-zinc-900 bg-zinc-900" : "border-zinc-200 bg-white"}`}
+      >
+        <button
+          type="button"
+          aria-pressed={selected && isCurrent}
+          onClick={() => onSelect(profile)}
+          className={`flex h-full min-w-0 ${showProfileSummary ? "flex-col items-start justify-center py-1.5" : "items-center"} px-3 text-left text-sm font-medium transition-colors ${selected && isCurrent ? "text-white" : "text-zinc-700 hover:bg-zinc-50 hover:text-zinc-950"}`}
+        >
+          <span className="max-w-full truncate">{profile.name}</span>
+          {showProfileSummary ? (
+            <span className={`mt-0.5 max-w-full truncate text-[11px] font-normal ${selected && isCurrent ? "text-white/70" : "text-zinc-400"}`}>
+              {formatProfile(profile.profile)} ppm
+            </span>
+          ) : null}
+        </button>
+        <button
+          type="button"
+          onClick={(event) => {
+            event.stopPropagation();
+            onDelete(profile.id);
+          }}
+          className={`inline-flex h-full w-10 items-center justify-center border-l transition-colors ${selected && isCurrent ? "border-white/10 text-white/70 hover:bg-white/10 hover:text-white" : "border-zinc-200 text-zinc-400 hover:bg-zinc-50 hover:text-zinc-800"}`}
+          aria-label={`Удалить профиль ${profile.name}`}
+          title="Удалить"
+        >
+          <Trash2 className="h-4 w-4" />
+        </button>
+      </div>
+    );
+  }
 
   return (
-    <details className="relative min-w-0">
-      <summary
-        className={`flex h-10 cursor-pointer list-none items-center justify-between gap-2 rounded-lg border px-3 text-sm font-medium transition-colors [&::-webkit-details-marker]:hidden ${selected ? "border-zinc-900 bg-zinc-900 text-white" : "border-zinc-200 bg-white text-zinc-700 hover:border-zinc-300 hover:bg-zinc-50"}`}
+    <div ref={rootRef} className="relative min-w-0">
+      <button
+        type="button"
+        aria-expanded={isOpen}
+        aria-haspopup="menu"
+        onClick={() => setIsOpen((open) => !open)}
+        className={`flex h-10 w-full cursor-pointer list-none items-center justify-between gap-2 rounded-lg border px-3 text-sm font-medium transition-colors [&::-webkit-details-marker]:hidden ${selected ? "border-zinc-900 bg-zinc-900 text-white" : "border-zinc-200 bg-white text-zinc-700 hover:border-zinc-300 hover:bg-zinc-50"}`}
       >
         <span className="min-w-0 truncate">
           {selectedProfile?.name ?? "Сохраненный профиль"}
         </span>
         <ChevronRight
-          className={`h-4 w-4 shrink-0 transition-transform ${selected ? "text-white/70" : "text-zinc-400"}`}
+          className={`h-4 w-4 shrink-0 transition-transform ${isOpen ? "rotate-90" : ""} ${selected ? "text-white/70" : "text-zinc-400"}`}
         />
-      </summary>
-      <div className="absolute left-0 top-11 z-20 w-full min-w-60 overflow-hidden rounded-lg border border-zinc-200 bg-white shadow-lg">
-        {profiles.map((profile) => {
-          const isCurrent = profile.id === selectedId;
+      </button>
+      {isOpen ? (
+        <div
+          role="menu"
+          className="absolute left-0 top-11 z-20 w-full min-w-60 overflow-hidden rounded-lg border border-zinc-200 bg-white shadow-lg"
+        >
+          {profiles.map((profile) => {
+            const isCurrent = profile.id === selectedId;
 
-          return (
-            <div
-              key={profile.id}
-              className="grid grid-cols-[minmax(0,1fr)_2.25rem] items-center border-b border-zinc-100 last:border-b-0"
-            >
-              <button
-                type="button"
-                onClick={(event) => {
-                  onSelect(profile);
-                  event.currentTarget.closest("details")?.removeAttribute("open");
-                }}
-                className={`min-w-0 truncate px-3 py-2.5 text-left text-sm transition-colors ${isCurrent ? "bg-zinc-50 font-semibold text-zinc-950" : "text-zinc-700 hover:bg-zinc-50 hover:text-zinc-950"}`}
+            return (
+              <div
+                key={profile.id}
+                className="grid grid-cols-[minmax(0,1fr)_2.25rem] items-center border-b border-zinc-100 last:border-b-0"
               >
-                {profile.name}
-              </button>
-              <button
-                type="button"
-                onClick={(event) => {
-                  event.stopPropagation();
-                  onDelete(profile.id);
-                }}
-                className="inline-flex h-9 w-9 items-center justify-center text-zinc-400 transition-colors hover:bg-zinc-50 hover:text-zinc-800"
-                aria-label={`Удалить профиль ${profile.name}`}
-                title="Удалить"
-              >
-                <Trash2 className="h-4 w-4" />
-              </button>
-            </div>
-          );
-        })}
+                <button
+                  type="button"
+                  onClick={() => {
+                    onSelect(profile);
+                    setIsOpen(false);
+                  }}
+                  className={`min-w-0 px-3 py-2.5 text-left text-sm transition-colors ${isCurrent ? "bg-zinc-50 font-semibold text-zinc-950" : "text-zinc-700 hover:bg-zinc-50 hover:text-zinc-950"}`}
+                >
+                  <span className="block truncate">{profile.name}</span>
+                  {showProfileSummary ? (
+                    <span className="mt-0.5 block truncate text-[11px] font-normal text-zinc-400">
+                      {formatProfile(profile.profile)} ppm
+                    </span>
+                  ) : null}
+                </button>
+                <button
+                  type="button"
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    onDelete(profile.id);
+                  }}
+                  className="inline-flex h-9 w-9 items-center justify-center text-zinc-400 transition-colors hover:bg-zinc-50 hover:text-zinc-800"
+                  aria-label={`Удалить профиль ${profile.name}`}
+                  title="Удалить"
+                >
+                  <Trash2 className="h-4 w-4" />
+                </button>
+              </div>
+            );
+          })}
+        </div>
+      ) : null}
+    </div>
+  );
+}
+
+function TargetModeButton({
+  label,
+  selected,
+  disabled = false,
+  onClick,
+}: {
+  label: string;
+  selected: boolean;
+  disabled?: boolean;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      disabled={disabled}
+      onClick={onClick}
+      className={`flex h-10 items-center justify-center rounded-lg border px-3 text-sm font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-45 ${selected ? "border-zinc-900 bg-zinc-900 text-white" : "border-zinc-200 bg-white text-zinc-700 hover:bg-zinc-50"}`}
+    >
+      {label}
+    </button>
+  );
+}
+
+function TargetCatalogProfileRow({
+  profile,
+  selected,
+  badgeLabel = null,
+  onSelect,
+}: {
+  profile: WaterTargetProfileCatalogItem;
+  selected: boolean;
+  badgeLabel?: string | null;
+  onSelect: (profile: WaterTargetProfileCatalogItem) => void;
+}) {
+  return (
+    <button
+      type="button"
+      aria-pressed={selected}
+      onClick={() => onSelect(profile)}
+      className={`grid gap-1 rounded-lg border px-3 py-2 text-left transition-colors ${selected ? "border-sky-300 bg-sky-50 text-sky-950" : "border-zinc-200 bg-white text-zinc-700 hover:border-zinc-300 hover:bg-zinc-50"}`}
+    >
+      <span className="flex min-w-0 items-center gap-2">
+        <span className="min-w-0 flex-1 truncate text-sm font-semibold">
+          {profile.displayName}
+        </span>
+        {badgeLabel ? (
+          <span className={`shrink-0 rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.08em] ${selected ? "bg-white/80 text-sky-700 ring-1 ring-sky-200" : "bg-emerald-50 text-emerald-700 ring-1 ring-emerald-200"}`}>
+            {badgeLabel}
+          </span>
+        ) : null}
+      </span>
+      <span className="truncate text-[11px] text-zinc-500">
+        {profile.badge} · {formatProfile(profile.profile)} ppm
+      </span>
+    </button>
+  );
+}
+
+function TargetCatalogSelectionCard({
+  label,
+  title,
+  profile,
+  onChangeClick,
+}: {
+  label: string;
+  title: string;
+  profile: WaterProfileMeta;
+  onChangeClick: () => void;
+}) {
+  return (
+    <div className="rounded-lg border border-zinc-200 bg-zinc-50 px-3 py-3">
+      <div className="mb-1 flex items-start justify-between gap-3">
+        <div className="text-xs font-medium text-zinc-500">{label}</div>
+        <button
+          type="button"
+          onClick={onChangeClick}
+          className="inline-flex shrink-0 items-center text-sm font-medium text-zinc-600 underline decoration-zinc-300 underline-offset-4 transition-colors hover:text-zinc-950"
+        >
+          Изменить
+        </button>
       </div>
-    </details>
+      <div className="min-w-0">
+        <div className="truncate text-sm font-semibold text-zinc-950 sm:text-base">
+          {title}
+        </div>
+        <div className="mt-0.5 truncate text-xs text-zinc-500">
+          {formatProfile(profile)} ppm
+        </div>
+      </div>
+    </div>
   );
 }
 
@@ -911,16 +1212,21 @@ function TargetMashPhField({
 export function WaterSetupWizard({
   waterPlanMeta,
   waterPlanResult,
+  styleId = null,
   onChange,
 }: {
   waterPlanMeta: RecipeWaterPlanMeta;
   waterPlanResult: RecipeWaterPlanResult;
+  styleId?: string | null;
   onChange: (next: RecipeWaterPlanMeta) => void;
 }) {
-  const [isOpen, setIsOpen] = React.useState(true);
+  const [isOpen, setIsOpen] = React.useState(false);
   const [targetQuery, setTargetQuery] = React.useState("");
   const [savedSourceProfiles, setSavedSourceProfiles] = React.useState<
     SavedSourceWaterProfile[]
+  >([]);
+  const [savedTargetProfiles, setSavedTargetProfiles] = React.useState<
+    SavedTargetWaterProfile[]
   >([]);
   const [manualProfileName, setManualProfileName] = React.useState(
     getNextSavedSourceWaterProfileName([]),
@@ -931,6 +1237,19 @@ export function WaterSetupWizard({
     React.useState(false);
   const [sourceProfileSaveMessage, setSourceProfileSaveMessage] =
     React.useState<string | null>(null);
+  const [targetProfileName, setTargetProfileName] = React.useState(
+    getNextSavedTargetWaterProfileName([]),
+  );
+  const [targetProfileNameTouched, setTargetProfileNameTouched] =
+    React.useState(false);
+  const [targetProfileSaveOpen, setTargetProfileSaveOpen] =
+    React.useState(false);
+  const [targetProfileSaveMessage, setTargetProfileSaveMessage] =
+    React.useState<string | null>(null);
+  const [targetCatalogPickerOpen, setTargetCatalogPickerOpen] =
+    React.useState(false);
+  const [showAllTargetProfiles, setShowAllTargetProfiles] =
+    React.useState(false);
   const effectiveWaterPlanMeta = React.useMemo(
     () =>
       waterPlanMeta.setupEnabled
@@ -951,6 +1270,96 @@ export function WaterSetupWizard({
   const selectedSavedSourceProfile = savedSourceProfiles.find(
     (profile) => profile.id === effectiveWaterPlanMeta.sourceProfileSavedId,
   );
+  const selectedSavedTargetProfile = savedTargetProfiles.find(
+    (profile) => profile.id === effectiveWaterPlanMeta.targetProfileSavedId,
+  );
+  const targetStyleKey = resolveWaterTargetBjcpStyleKey(styleId);
+  const targetStyleDefault = getWaterTargetStyleDefault(targetStyleKey);
+  const selectedCatalogTarget = getWaterTargetProfileBySlug(
+    effectiveWaterPlanMeta.targetProfileSlug ??
+      effectiveWaterPlanMeta.targetProfilePresetId,
+  );
+  const targetQueryTrimmed = targetQuery.trim();
+  const targetQuickPicks = React.useMemo(
+    () => getWaterTargetQuickPickProfiles(6),
+    [],
+  );
+  const targetStyleAlternatives = React.useMemo(
+    () => getAlternativeTargetProfilesForBjcpStyle(targetStyleKey).slice(0, 3),
+    [targetStyleKey],
+  );
+  const targetFeaturedSlugs = React.useMemo(() => {
+    const slugs = targetStyleDefault?.defaultProfile
+      ? [
+          targetStyleDefault.defaultProfile.slug,
+          ...targetStyleAlternatives.map((profile) => profile.slug),
+        ]
+      : targetQuickPicks.map((profile) => profile.slug);
+
+    return Array.from(new Set(slugs));
+  }, [targetQuickPicks, targetStyleAlternatives, targetStyleDefault]);
+  const targetVisibleCatalogResults = React.useMemo(
+    () => {
+      if (targetQueryTrimmed) {
+        return searchWaterTargetProfiles(targetQueryTrimmed, {
+          limit: showAllTargetProfiles ? undefined : 12,
+        });
+      }
+
+      return showAllTargetProfiles
+        ? searchWaterTargetProfiles("", { excludeSlugs: targetFeaturedSlugs })
+        : [];
+    },
+    [showAllTargetProfiles, targetFeaturedSlugs, targetQueryTrimmed],
+  );
+  const targetCatalogTotalResults = React.useMemo(
+    () =>
+      targetQueryTrimmed
+        ? searchWaterTargetProfiles(targetQueryTrimmed).length
+        : searchWaterTargetProfiles("", {
+            excludeSlugs: targetFeaturedSlugs,
+          }).length,
+    [targetFeaturedSlugs, targetQueryTrimmed],
+  );
+  const targetSuggestedEntries = React.useMemo(() => {
+    if (targetQueryTrimmed) {
+      return [] as Array<{
+        profile: WaterTargetProfileCatalogItem;
+        badgeLabel: string | null;
+      }>;
+    }
+
+    if (targetStyleDefault?.defaultProfile) {
+      return [
+        {
+          profile: targetStyleDefault.defaultProfile,
+          badgeLabel: "Подходит по стилю",
+        },
+        ...targetStyleAlternatives.map((profile) => ({
+          profile,
+          badgeLabel: "Подходит по стилю",
+        })),
+      ];
+    }
+
+    return targetQuickPicks.map((profile) => ({
+      profile,
+      badgeLabel: "Быстрый выбор",
+    }));
+  }, [
+    targetQueryTrimmed,
+    targetQuickPicks,
+    targetStyleAlternatives,
+    targetStyleDefault,
+  ]);
+  const canShowMoreTargetProfiles =
+    targetCatalogTotalResults > targetVisibleCatalogResults.length;
+  const showTargetStyleChangedNotice =
+    Boolean(targetStyleDefault?.defaultProfile) &&
+    Boolean(effectiveWaterPlanMeta.targetProfileIsOverridden) &&
+    Boolean(effectiveWaterPlanMeta.targetProfileResolvedFromBjcpStyleKey) &&
+    effectiveWaterPlanMeta.targetProfileResolvedFromBjcpStyleKey !==
+      targetStyleKey;
   const sourceName =
     effectiveWaterPlanMeta.sourceProfileMode === "manual"
       ? "Ручной профиль"
@@ -966,15 +1375,57 @@ export function WaterSetupWizard({
   const targetName =
     effectiveWaterPlanMeta.targetProfileMode === "manual"
       ? "Ручной целевой профиль"
-      : getSelectedPresetName(
-          effectiveWaterPlanMeta.targetProfilePresetId,
-          builtInTargetWaterProfiles,
-          "Профиль из рецепта",
-        );
+      : effectiveWaterPlanMeta.targetProfileMode === "saved"
+        ? effectiveWaterPlanMeta.targetProfileName ??
+          selectedSavedTargetProfile?.name ??
+          "Сохраненный профиль"
+        : effectiveWaterPlanMeta.targetProfileName ??
+          selectedCatalogTarget?.displayName ??
+          (effectiveWaterPlanMeta.targetProfile ? "Профиль из рецепта" : null) ??
+          "Целевой профиль";
+  const targetSelectionLabel =
+    effectiveWaterPlanMeta.targetProfileSource === "auto_style"
+      ? "Подходит по стилю"
+      : "Выбрано из каталога";
+  const showTargetCatalogPicker = targetCatalogPickerOpen;
 
   React.useEffect(() => {
     setSavedSourceProfiles(readStoredSavedSourceWaterProfiles());
+    setSavedTargetProfiles(readStoredSavedTargetWaterProfiles());
   }, []);
+
+  React.useEffect(() => {
+    const defaultProfile = getDefaultTargetProfileForBjcpStyle(targetStyleKey);
+    if (!targetStyleKey || !defaultProfile) {
+      return;
+    }
+
+    const canAutoSelect =
+      !waterPlanMeta.targetProfileIsOverridden &&
+      (!waterPlanMeta.targetProfile ||
+        waterPlanMeta.targetProfileSource === "auto_style");
+
+    if (!canAutoSelect) {
+      return;
+    }
+
+    if (
+      waterPlanMeta.targetProfileSlug === defaultProfile.slug &&
+      waterPlanMeta.targetProfileResolvedFromBjcpStyleKey === targetStyleKey
+    ) {
+      return;
+    }
+
+    onChange(
+      applyRecipeWaterCatalogTargetProfile(
+        ensureRecipeWaterPlanConfigured(waterPlanMeta),
+        defaultProfile,
+        "auto_style",
+        targetStyleKey,
+        false,
+      ),
+    );
+  }, [onChange, targetStyleKey, waterPlanMeta]);
 
   React.useEffect(() => {
     if (waterPlanMeta.setupEnabled || !savedSourceProfiles.length) {
@@ -996,6 +1447,14 @@ export function WaterSetupWizard({
       );
     }
   }, [manualProfileNameTouched, savedSourceProfiles]);
+
+  React.useEffect(() => {
+    if (!targetProfileNameTouched) {
+      setTargetProfileName(
+        getNextSavedTargetWaterProfileName(savedTargetProfiles),
+      );
+    }
+  }, [savedTargetProfiles, targetProfileNameTouched]);
 
   const updateManualSalt = (
     index: number,
@@ -1028,6 +1487,13 @@ export function WaterSetupWizard({
   ) => {
     setSavedSourceProfiles(profiles);
     persistSavedSourceWaterProfiles(profiles);
+  };
+
+  const updateSavedTargetProfiles = (
+    profiles: SavedTargetWaterProfile[],
+  ) => {
+    setSavedTargetProfiles(profiles);
+    persistSavedTargetWaterProfiles(profiles);
   };
 
   const handleSaveManualSourceProfile = () => {
@@ -1067,10 +1533,58 @@ export function WaterSetupWizard({
     }
   };
 
+  const handleSaveManualTargetProfile = () => {
+    const fallbackName =
+      getNextSavedTargetWaterProfileName(savedTargetProfiles);
+    const name = (targetProfileName.trim() || fallbackName).slice(0, 120);
+    const now = new Date().toISOString();
+    const savedProfile: SavedTargetWaterProfile = {
+      id: createSavedSourceWaterProfileId(),
+      name,
+      profile: cloneProfile(target),
+      createdAt: now,
+      updatedAt: now,
+    };
+    const nextProfiles = [savedProfile, ...savedTargetProfiles].slice(0, 30);
+
+    updateSavedTargetProfiles(nextProfiles);
+    setTargetProfileNameTouched(false);
+    setTargetProfileSaveOpen(false);
+    setTargetProfileSaveMessage(`${name} сохранен`);
+    onChange(
+      applyRecipeWaterSavedTargetProfile(effectiveWaterPlanMeta, savedProfile),
+    );
+  };
+
+  const handleDeleteSavedTargetProfile = (profileId: string) => {
+    const nextProfiles = savedTargetProfiles.filter(
+      (profile) => profile.id !== profileId,
+    );
+    updateSavedTargetProfiles(nextProfiles);
+
+    if (effectiveWaterPlanMeta.targetProfileSavedId === profileId) {
+      onChange({
+        ...effectiveWaterPlanMeta,
+        targetProfileMode: "catalog",
+        targetProfileSavedId: null,
+        targetProfileSource: null,
+        targetProfileName: null,
+        targetProfile: null,
+      });
+    }
+  };
+
   return (
     <details
       open={isOpen}
-      onToggle={(event) => setIsOpen(event.currentTarget.open)}
+      onToggle={(event) => {
+        const nextOpen = event.currentTarget.open;
+        setIsOpen(nextOpen);
+        if (!nextOpen) {
+          setTargetCatalogPickerOpen(false);
+          setShowAllTargetProfiles(false);
+        }
+      }}
       className="group rounded-2xl border border-zinc-100 bg-white p-5 shadow-sm"
     >
       <summary className="flex cursor-pointer list-none items-center gap-2 text-sm font-semibold text-zinc-700">
@@ -1085,23 +1599,23 @@ export function WaterSetupWizard({
       </summary>
 
       <div className="mt-4 space-y-4">
-        <div className="flex items-start justify-between gap-3">
-          {waterPlanMeta.setupEnabled ? (
+        {waterPlanMeta.setupEnabled ? (
+          <div className="flex items-start justify-between gap-3">
             <div className="min-w-0 flex-1">
               <WaterSummaryCard
                 waterPlanMeta={waterPlanMeta}
                 waterPlanResult={waterPlanResult}
               />
             </div>
-          ) : null}
-          <button
-            type="button"
-            onClick={() => onChange(createRecipeWaterPlanResetMeta())}
-            className="ml-auto rounded-md border border-zinc-200 bg-white px-2.5 py-1.5 text-xs font-medium text-zinc-500 hover:bg-zinc-50 hover:text-zinc-800"
-          >
-            Сбросить воду
-          </button>
-        </div>
+            <button
+              type="button"
+              onClick={() => onChange(createRecipeWaterPlanResetMeta())}
+              className="ml-auto rounded-md border border-zinc-200 bg-white px-2.5 py-1.5 text-xs font-medium text-zinc-500 hover:bg-zinc-50 hover:text-zinc-800"
+            >
+              Сбросить воду
+            </button>
+          </div>
+        ) : null}
 
         <section className="space-y-2">
           <div className="flex items-center justify-between gap-3">
@@ -1233,61 +1747,228 @@ export function WaterSetupWizard({
         </section>
 
         <section className="space-y-3">
-          <div>
-            <h3 className="text-sm font-semibold text-zinc-900">
-              2. Целевой профиль
-            </h3>
-            <p className="mt-1 text-xs text-zinc-500">
-              По умолчанию выбран универсальный профиль; при необходимости
-              выберите стиль вручную.
-            </p>
-          </div>
-          <WaterProfileSelector
-            title="Цель"
-            selectedName={targetName}
-            selectedProfile={effectiveWaterPlanMeta.targetProfile}
-            selectedPresetId={effectiveWaterPlanMeta.targetProfilePresetId}
-            searchPlaceholder="NEIPA, Pilsner, Helles, Stout..."
-            query={targetQuery}
-            onQueryChange={setTargetQuery}
-            profiles={builtInTargetWaterProfiles}
-            onSelect={(preset) =>
-              onChange(
-                applyRecipeWaterTargetPreset(effectiveWaterPlanMeta, preset),
-              )
-            }
-          />
-          <button
-            type="button"
-            onClick={() =>
-              onChange({
-                ...effectiveWaterPlanMeta,
-                setupEnabled: true,
-                targetProfileMode: "manual",
-                targetProfilePresetId: null,
-                targetProfile: cloneProfile(target),
-              })
-            }
-            className={`rounded-lg border px-3 py-2 text-left text-sm ${effectiveWaterPlanMeta.targetProfileMode === "manual" ? "border-sky-300 bg-sky-50 text-sky-950" : "border-zinc-200 bg-white text-zinc-700 hover:bg-zinc-50"}`}
-          >
-            <span className="block font-semibold">Задать цель вручную</span>
-            <span className="mt-1 block text-xs text-zinc-500">
-              Используйте, если у вас есть профиль из другой программы или
-              лаборатории.
-            </span>
-          </button>
-          {effectiveWaterPlanMeta.targetProfileMode === "manual" ? (
-            <ProfileIonEditor
-              profile={target}
-              onChange={(profile) =>
-                onChange({
-                  ...effectiveWaterPlanMeta,
-                  setupEnabled: true,
-                  targetProfile: profile,
-                })
+          <h3 className="text-sm font-semibold text-zinc-900">
+            2. Целевой профиль
+          </h3>
+
+          <div className={`grid gap-2 ${savedTargetProfiles.length ? "sm:grid-cols-3" : "sm:grid-cols-2"}`}>
+            {savedTargetProfiles.length ? (
+              <SourceSavedWaterProfileOption
+                profiles={savedTargetProfiles}
+                selectedId={effectiveWaterPlanMeta.targetProfileSavedId}
+                selected={effectiveWaterPlanMeta.targetProfileMode === "saved"}
+                showProfileSummary
+                onSelect={(profile) => {
+                  setTargetProfileSaveMessage(null);
+                  setTargetCatalogPickerOpen(false);
+                  setShowAllTargetProfiles(false);
+                  onChange(
+                    applyRecipeWaterSavedTargetProfile(
+                      effectiveWaterPlanMeta,
+                      profile,
+                    ),
+                  );
+                }}
+                onDelete={handleDeleteSavedTargetProfile}
+              />
+            ) : null}
+            <TargetModeButton
+              label="Подобрать профиль"
+              selected={
+                (effectiveWaterPlanMeta.targetProfileMode === "catalog" &&
+                  Boolean(effectiveWaterPlanMeta.targetProfile)) ||
+                targetCatalogPickerOpen
               }
+              onClick={() => {
+                setTargetCatalogPickerOpen(true);
+              }}
+            />
+            <TargetModeButton
+              label="Вручную"
+              selected={effectiveWaterPlanMeta.targetProfileMode === "manual"}
+              onClick={() => {
+                setTargetProfileSaveMessage(null);
+                setTargetCatalogPickerOpen(false);
+                onChange(
+                  setRecipeWaterManualTargetProfile(
+                    effectiveWaterPlanMeta,
+                    target,
+                  ),
+                );
+              }}
+            />
+          </div>
+
+          {effectiveWaterPlanMeta.targetProfileMode === "catalog" &&
+          !showTargetCatalogPicker &&
+          effectiveWaterPlanMeta.targetProfile ? (
+            <TargetCatalogSelectionCard
+              label={targetSelectionLabel}
+              title={
+                selectedCatalogTarget?.displayName ??
+                effectiveWaterPlanMeta.targetProfileName ??
+                "Выбранный профиль"
+              }
+              profile={target}
+              onChangeClick={() => {
+                setShowAllTargetProfiles(false);
+                setTargetCatalogPickerOpen(true);
+              }}
             />
           ) : null}
+
+          {showTargetCatalogPicker ? (
+            <div className="space-y-3 rounded-xl border border-zinc-200 bg-white p-3">
+              <label className="flex h-10 items-center gap-2 rounded-lg border border-zinc-200 bg-zinc-50 px-3 text-sm text-zinc-600">
+                <Search className="h-4 w-4 shrink-0 text-zinc-400" />
+                <input
+                  type="search"
+                  value={targetQuery}
+                  onChange={(event) => {
+                    setTargetQuery(event.target.value);
+                    setShowAllTargetProfiles(false);
+                  }}
+                  placeholder="IPA, lager, blanche, стаут..."
+                  className="h-full min-w-0 flex-1 bg-transparent text-sm text-zinc-900 outline-none placeholder:text-zinc-400"
+                />
+              </label>
+
+              <div className={`grid gap-2 ${showAllTargetProfiles ? "max-h-96 overflow-y-auto pr-1" : ""}`}>
+                {targetSuggestedEntries.map(({ profile, badgeLabel }) => (
+                  <TargetCatalogProfileRow
+                    key={`${profile.slug}:${badgeLabel ?? "default"}`}
+                    profile={profile}
+                    badgeLabel={badgeLabel}
+                    selected={
+                      effectiveWaterPlanMeta.targetProfileSlug === profile.slug
+                    }
+                    onSelect={(selectedProfile) => {
+                      setTargetCatalogPickerOpen(false);
+                      setShowAllTargetProfiles(false);
+                      onChange(
+                        applyRecipeWaterCatalogTargetProfile(
+                          effectiveWaterPlanMeta,
+                          selectedProfile,
+                          "user_catalog",
+                          targetStyleKey,
+                        ),
+                      );
+                    }}
+                  />
+                ))}
+                {targetVisibleCatalogResults.map((profile) => (
+                  <TargetCatalogProfileRow
+                    key={profile.slug}
+                    profile={profile}
+                    selected={
+                      effectiveWaterPlanMeta.targetProfileSlug === profile.slug
+                    }
+                    onSelect={(selectedProfile) => {
+                      setTargetCatalogPickerOpen(false);
+                      setShowAllTargetProfiles(false);
+                      onChange(
+                        applyRecipeWaterCatalogTargetProfile(
+                          effectiveWaterPlanMeta,
+                          selectedProfile,
+                          "user_catalog",
+                          targetStyleKey,
+                        ),
+                      );
+                    }}
+                  />
+                ))}
+              </div>
+              {canShowMoreTargetProfiles ? (
+                <button
+                  type="button"
+                  onClick={() => setShowAllTargetProfiles(true)}
+                  className="inline-flex h-9 items-center justify-center rounded-lg border border-zinc-200 bg-white px-3 text-sm font-medium text-zinc-600 hover:bg-zinc-50 hover:text-zinc-950"
+                >
+                  {targetQueryTrimmed
+                    ? `Показать все результаты (${targetCatalogTotalResults})`
+                    : `Показать все профили (${targetCatalogTotalResults})`}
+                </button>
+              ) : null}
+              {!targetSuggestedEntries.length && !targetVisibleCatalogResults.length ? (
+                <div className="rounded-lg border border-dashed border-zinc-200 bg-zinc-50 px-3 py-3 text-sm text-zinc-500">
+                  Ничего не найдено. Попробуйте IPA, lager, pils, witbier,
+                  stout.
+                </div>
+              ) : null}
+            </div>
+          ) : null}
+
+          {showTargetStyleChangedNotice ? (
+            <div className="rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-800">
+              Стиль изменился. При желании можно подобрать другой профиль воды.
+            </div>
+          ) : null}
+
+          <div className="space-y-2 rounded-xl bg-zinc-50 p-3">
+            <ProfileIonEditor
+              profile={target}
+              compact
+              onChange={(profile) =>
+                onChange(
+                  setRecipeWaterManualTargetProfile(
+                    effectiveWaterPlanMeta,
+                    profile,
+                  ),
+                )
+              }
+            />
+            {effectiveWaterPlanMeta.targetProfileMode === "manual" ? (
+              <div className="flex flex-wrap items-center gap-2">
+                {targetProfileSaveOpen ? (
+                  <>
+                    <input
+                      type="text"
+                      aria-label="Название целевого профиля"
+                      value={targetProfileName}
+                      onChange={(event) => {
+                        setTargetProfileNameTouched(true);
+                        setTargetProfileName(event.target.value);
+                      }}
+                      maxLength={120}
+                      className="h-8 w-52 rounded-lg border border-zinc-200 bg-white px-2 text-sm text-zinc-900"
+                      placeholder={getNextSavedTargetWaterProfileName(savedTargetProfiles)}
+                    />
+                    <button
+                      type="button"
+                      onClick={handleSaveManualTargetProfile}
+                      className="inline-flex h-8 items-center justify-center rounded-lg bg-zinc-900 px-3 text-xs font-medium text-white hover:bg-zinc-800"
+                    >
+                      ОК
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setTargetProfileSaveOpen(false)}
+                      className="h-8 rounded-lg px-2 text-xs font-medium text-zinc-500 hover:bg-white hover:text-zinc-800"
+                    >
+                      Отмена
+                    </button>
+                  </>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setTargetProfileSaveMessage(null);
+                      setTargetProfileSaveOpen(true);
+                    }}
+                    className="inline-flex h-8 items-center justify-center gap-1.5 rounded-lg border border-zinc-200 bg-white px-2.5 text-xs font-medium text-zinc-600 hover:bg-zinc-50 hover:text-zinc-900"
+                  >
+                    <Save className="h-3.5 w-3.5" />
+                    Сохранить
+                  </button>
+                )}
+                {targetProfileSaveMessage ? (
+                  <span className="text-xs text-emerald-700">
+                    {targetProfileSaveMessage}
+                  </span>
+                ) : null}
+              </div>
+            ) : null}
+          </div>
         </section>
 
         {waterPlanMeta.setupEnabled ? (

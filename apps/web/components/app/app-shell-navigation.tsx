@@ -6,6 +6,7 @@ import { usePathname, useRouter } from "next/navigation";
 
 type AppShellNavigationProps = {
   email: string;
+  onNavigateStart?: (href: string) => void;
 };
 
 const navItems = [
@@ -22,7 +23,7 @@ const isActivePath = (pathname: string, href: string, exact?: boolean) => (
   exact ? pathname === href : pathname === href || pathname.startsWith(`${href}/`)
 );
 
-export function AppShellNavigation({ email }: AppShellNavigationProps) {
+export function AppShellNavigation({ email, onNavigateStart }: AppShellNavigationProps) {
   const pathname = usePathname();
   const router = useRouter();
 
@@ -40,6 +41,8 @@ export function AppShellNavigation({ email }: AppShellNavigationProps) {
             <Link
               key={item.href}
               href={item.href}
+              onPointerDown={() => onNavigateStart?.(item.href)}
+              onClick={() => onNavigateStart?.(item.href)}
               onFocus={() => router.prefetch(item.href)}
               onMouseEnter={() => router.prefetch(item.href)}
               className={`whitespace-nowrap rounded-lg px-3 py-2 font-medium transition-colors ${

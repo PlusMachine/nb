@@ -4,6 +4,7 @@ import { describe, expect, it } from "vitest";
 
 import {
   applyRecipeWaterSavedSourceProfile,
+  applyRecipeWaterCatalogTargetProfile,
   applyRecipeWaterSourcePreset,
   createRecipeWaterPlanResetMeta,
   ensureRecipeWaterPlanConfigured,
@@ -21,6 +22,12 @@ import {
 } from "../features/recipes/contracts";
 import { buildRecipeWaterPlanResult } from "../features/recipes/water-plan";
 import { findBuiltInSourceWaterProfile } from "../features/recipes/water-profiles";
+import {
+  getAlternativeTargetProfilesForBjcpStyle,
+  getDefaultTargetProfileForBjcpStyle,
+  resolveWaterTargetBjcpStyleKey,
+  searchWaterTargetProfiles,
+} from "../features/recipes/water-target-profiles";
 
 const buildResult = (waterPlanMeta: RecipeWaterPlanMeta) =>
   buildRecipeWaterPlanResult({
@@ -50,12 +57,16 @@ describe("recipe water flow UI", () => {
     );
     const html = renderWaterBlock(meta);
 
+    expect(html).not.toContain('<details open="" class="group rounded-2xl');
     expect(html).toContain("1. Исходная вода");
     expect(html).toContain("2. Целевой профиль");
     expect(html).toContain("3. Как вносить соли");
     expect(html).toContain("4. Что добавить");
     expect(html).toContain("Добавить в воду");
-    expect(html).toContain("NEIPA / Hazy IPA");
+    expect(html).toContain("Подобрать профиль");
+    expect(html).not.toContain("Сохраненные");
+    expect(html).not.toContain("Сбалансированный лагер");
+    expect(html).not.toContain("IPA, lager, blanche, стаут...");
     expect(html).toContain("Осмос");
     expect(html).toContain("Дистиллированная вода");
     expect(html).toContain("Вручную");
@@ -301,10 +312,29 @@ describe("recipe water flow UI", () => {
     const result = buildResult(normalized);
     const html = renderWaterBlock(normalized);
 
-    expect(normalized.targetProfileMode).toBe("balanced");
+    expect(normalized.targetProfileMode).toBe("catalog");
     expect(result.targetProfile?.ca).toBe(80);
-    expect(html).toContain("Профиль из рецепта");
+    expect(html).toContain('value="80"');
+    expect(html).toContain("Выбранный профиль");
     expect(html).not.toContain("По стилю");
+  });
+
+  it("labels automatically selected BJCP target profiles as style matches", () => {
+    const styleKey = resolveWaterTargetBjcpStyleKey("21B-belgian-ipa");
+    const defaultProfile = getDefaultTargetProfileForBjcpStyle(styleKey);
+    expect(defaultProfile).not.toBeNull();
+
+    const meta = applyRecipeWaterCatalogTargetProfile(
+      ensureRecipeWaterPlanConfigured(createRecipeWaterPlanResetMeta()),
+      defaultProfile!,
+      "auto_style",
+      styleKey,
+      false,
+    );
+    const html = renderWaterBlock(meta);
+
+    expect(html).toContain("Подходит по стилю");
+    expect(html).not.toContain("Выбрано из поиска");
   });
 
   it("offers manual profile saving with a default name", () => {
@@ -322,5 +352,37 @@ describe("recipe water flow UI", () => {
     expect(html).toContain("Сохранить");
     expect(html).not.toContain("Название профиля");
     expect(html).not.toContain("Найти");
+  });
+
+  it("resolves BJCP style defaults and keeps alternatives deduped by slug", () => {
+    const styleKey = resolveWaterTargetBjcpStyleKey("21B-belgian-ipa");
+    const defaultProfile = getDefaultTargetProfileForBjcpStyle(styleKey);
+    const alternatives = getAlternativeTargetProfilesForBjcpStyle(styleKey);
+
+    expect(styleKey).toBe("21B-belgian");
+    expect(defaultProfile?.slug).toBe("yellow-hoppy-brewfather");
+    expect(alternatives.map((profile) => profile.slug)).not.toContain(
+      defaultProfile?.slug,
+    );
+    expect(new Set(alternatives.map((profile) => profile.slug)).size).toBe(
+      alternatives.length,
+    );
+  });
+
+  it("searches target water profile catalog through profile, intent and source aliases", () => {
+    expect(searchWaterTargetProfiles("ipa")[0]?.slug).toBeTruthy();
+    expect(searchWaterTargetProfiles("lager")[0]?.slug).toBeTruthy();
+    expect(searchWaterTargetProfiles("blanche").map((item) => item.slug)).toContain(
+      "balanced-electric-brewery",
+    );
+    expect(searchWaterTargetProfiles("бланш").map((item) => item.slug)).toContain(
+      "balanced-electric-brewery",
+    );
+    expect(searchWaterTargetProfiles("janish").map((item) => item.slug)).toContain(
+      "scott-janish-2015-ipa",
+    );
+    expect(searchWaterTargetProfiles("porter").map((item) => item.slug)).toContain(
+      "london-porter-bf",
+    );
   });
 });

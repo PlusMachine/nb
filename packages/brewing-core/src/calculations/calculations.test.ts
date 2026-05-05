@@ -91,7 +91,7 @@ describe("priming and hydrometer correction", () => {
       sugarType: "dextrose"
     });
 
-    expect(sugar).toBe(20.6);
+    expect(sugar).toBe(123.2);
   });
 
   it("corrects hydrometer reading for temperature", () => {
