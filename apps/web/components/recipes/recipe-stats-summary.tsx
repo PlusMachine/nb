@@ -1,5 +1,5 @@
 import React from "react";
-import { evaluateStyleFit, getBeerStyleById, getStyleRangeById } from "@nb/brewing-core";
+import { evaluateStyleFit, getBeerStyleById, getBjcpStyleDisplayName, getStyleRangeById } from "@nb/brewing-core";
 import { CircleAlert, CircleCheck, Gauge, Palette, Percent, Zap } from "lucide-react";
 
 import type { RecipeDetailDto, RecipeListItemDto } from "@/features/recipes/contracts";
@@ -73,7 +73,12 @@ export function RecipeStatsSummary({
       <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
         <div>
           <h2 className="text-base font-semibold text-zinc-950">Ключевые показатели</h2>
-          {selectedStyle ? <p className="text-xs text-zinc-500">BJCP: {selectedStyle.name}</p> : null}
+          {selectedStyle ? (
+            <p className="text-xs text-zinc-500">
+              BJCP: {getBjcpStyleDisplayName(selectedStyle)}
+              {!styleRange ? " · диапазоны не указаны" : ""}
+            </p>
+          ) : null}
         </div>
         {styleRange && hasValues ? (
           <span className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium ${overallFit ? "bg-emerald-50 text-emerald-700 ring-1 ring-emerald-200" : "bg-amber-50 text-amber-700 ring-1 ring-amber-200"}`}>

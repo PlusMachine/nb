@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { ArrowRight } from "lucide-react";
 import React, { type CSSProperties } from "react";
 
 import {
@@ -105,20 +104,20 @@ function CalculatorCard({ calculator }: { calculator: CalculatorCatalogItem }) {
   return (
     <Link
       href={calculator.href}
-      className="group block h-[150px] w-[300px] max-w-full overflow-hidden rounded-2xl border border-zinc-200 bg-white bg-contain bg-right-center bg-no-repeat shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:border-zinc-400 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-300"
+      className="group relative block h-[150px] overflow-hidden rounded-2xl border border-zinc-200 bg-white bg-contain bg-right-bottom bg-no-repeat shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:border-zinc-300 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-300 active:scale-[0.98]"
       data-calculator-card={calculator.slug}
       style={style}
     >
-      <article className="flex h-full items-start justify-between gap-3 px-3.5 py-3 sm:px-4">
-        <div className="min-w-0 max-w-[220px] space-y-1">
-          <h3 className="text-[15px] font-semibold leading-snug text-zinc-950">
+      <div className="absolute inset-0 bg-gradient-to-r from-white from-50% to-transparent" />
+      <article className="relative flex h-full flex-col justify-between p-3.5 sm:p-4">
+        <div className="max-w-[65%] space-y-0.5">
+          <h3 className="text-[14px] font-semibold leading-snug text-zinc-900 sm:text-[15px]">
             {copy.title}
           </h3>
-          <p className="text-[13px] leading-5 text-zinc-600">{copy.description}</p>
+          <p className="line-clamp-2 text-[12px] leading-relaxed text-zinc-500 sm:text-[13px]">
+            {copy.description}
+          </p>
         </div>
-        <span className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-md text-zinc-300 transition-colors group-hover:bg-zinc-100 group-hover:text-zinc-600">
-          <ArrowRight className="h-4 w-4" />
-        </span>
       </article>
     </Link>
   );
@@ -126,9 +125,9 @@ function CalculatorCard({ calculator }: { calculator: CalculatorCatalogItem }) {
 
 export function CalculatorsIndex() {
   return (
-    <main className="space-y-5 pb-16 pt-5 sm:pt-6">
-      <section className="rounded-2xl border border-zinc-200 bg-white px-4 py-3.5 shadow-sm sm:px-5">
-        <div className="max-w-3xl space-y-2">
+    <main className="pb-16 pt-5 sm:pt-6">
+      <section className="mb-5 rounded-2xl border border-zinc-200 bg-white px-4 py-3.5 shadow-sm sm:mb-6 sm:px-5">
+        <div className="max-w-3xl space-y-1">
           <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-zinc-400">hmelo tools</p>
           <h1 className="text-2xl font-semibold leading-tight text-zinc-950 sm:text-3xl">
             Калькуляторы для пивоварения
@@ -136,21 +135,16 @@ export function CalculatorsIndex() {
         </div>
       </section>
 
-      <section className="space-y-5" aria-label="Все калькуляторы">
-        {calculatorSections.map((section) => {
-          const sectionCalculators = calculators.filter((calculator) => calculator.section === section);
-
-          return (
-            <div key={section} className="space-y-2.5">
-              <h2 className="sr-only">{section}</h2>
-              <div className="grid justify-center gap-2.5 sm:grid-cols-2 xl:grid-cols-4 xl:justify-start">
-                {sectionCalculators.map((calculator) => (
-                  <CalculatorCard key={calculator.slug} calculator={calculator} />
-                ))}
-              </div>
-            </div>
-          );
-        })}
+      <section aria-label="Все калькуляторы">
+        <div className="grid gap-2.5 sm:grid-cols-2 xl:grid-cols-3">
+          {calculatorSections.flatMap((section) =>
+            calculators
+              .filter((calculator) => calculator.section === section)
+              .map((calculator) => (
+                <CalculatorCard key={calculator.slug} calculator={calculator} />
+              ))
+          )}
+        </div>
       </section>
     </main>
   );

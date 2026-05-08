@@ -1,6 +1,6 @@
 "use client";
 
-import { beerStyleFixtures, convertVolume, convertWeight, evaluateStyleFit, getBeerStyleById, getBjcpArticleHrefByStyleId, getStyleRangeById, srmToEbc } from "@nb/brewing-core";
+import { beerStyleFixtures, convertVolume, convertWeight, evaluateStyleFit, getBeerStyleById, getBjcpArticleHrefByStyleId, getBjcpStyleDisplayName, getStyleRangeById, searchBeerStyles, srmToEbc } from "@nb/brewing-core";
 import {
   CircleCheck,
   CircleAlert,
@@ -1596,10 +1596,7 @@ function StylePicker({
       return beerStyleFixtures;
     }
 
-    return beerStyleFixtures.filter((style) => {
-      const haystack = `${style.id} ${style.bjcpId} ${style.name} ${style.family ?? ""}`.toLowerCase();
-      return haystack.includes(normalized);
-    });
+    return searchBeerStyles(normalized);
   }, [query]);
 
   const updateDropdownPosition = () => {
@@ -1669,26 +1666,32 @@ function StylePicker({
         </button>
 
         {filteredStyles.length ? (
-          filteredStyles.map((style) => (
-            <button
-              key={style.id}
-              type="button"
-              onClick={() => {
-                onChange(style.id);
-                setQuery("");
-                setOpen(false);
-              }}
-              className={`mt-1 flex w-full items-start justify-between gap-3 rounded-xl px-3 py-2 text-left hover:bg-zinc-50 ${value === style.id ? "bg-zinc-50" : ""}`}
-            >
-              <div className="min-w-0">
-                <div className="truncate text-sm font-medium text-zinc-900">{style.name}</div>
-                <div className="text-xs text-zinc-500">
-                  {style.family ? `${style.bjcpId} • ${style.family}` : style.bjcpId}
+          filteredStyles.map((style) => {
+            const styleCode = style.styleKey ?? style.bjcpId;
+            const styleFamily = style.familyRu ?? style.family;
+            const subtitle = [styleCode, style.name, styleFamily].filter(Boolean).join(" • ");
+
+            return (
+              <button
+                key={style.id}
+                type="button"
+                onClick={() => {
+                  onChange(style.id);
+                  setQuery("");
+                  setOpen(false);
+                }}
+                className={`mt-1 flex w-full items-start justify-between gap-3 rounded-xl px-3 py-2 text-left hover:bg-zinc-50 ${value === style.id ? "bg-zinc-50" : ""}`}
+              >
+                <div className="min-w-0">
+                  <div className="truncate text-sm font-medium text-zinc-900">{getBjcpStyleDisplayName(style)}</div>
+                  <div className="text-xs text-zinc-500">
+                    {subtitle}
+                  </div>
                 </div>
-              </div>
-              {value === style.id ? <span className="text-[11px] text-zinc-500">выбран</span> : null}
-            </button>
-          ))
+                {value === style.id ? <span className="text-[11px] text-zinc-500">выбран</span> : null}
+              </button>
+            );
+          })
         ) : (
           <div className="px-3 py-4 text-sm text-zinc-500">Ничего не найдено.</div>
         )}
@@ -1710,7 +1713,7 @@ function StylePicker({
         className="flex h-10 w-full items-center justify-between gap-3 rounded-xl border border-zinc-200 bg-white px-3 text-left text-sm text-zinc-900 shadow-sm"
       >
         <span className={`truncate ${selectedStyle ? "text-zinc-900" : "text-zinc-500"}`}>
-          {selectedStyle ? selectedStyle.name : "Выбрать стиль"}
+          {selectedStyle ? getBjcpStyleDisplayName(selectedStyle) : "Выбрать стиль"}
         </span>
         <span className="shrink-0 text-[11px] uppercase tracking-[0.12em] text-zinc-400">
           {selectedStyle?.bjcpId ?? "BJCP"}
@@ -1728,7 +1731,8 @@ function StyleRangeTrack({
   styleRange,
   status,
   valueLabel,
-  hasStyle
+  hasStyle,
+  missingStyleRange
 }: {
   actualValue: number | null;
   globalRange: { min: number; max: number };
@@ -1736,8 +1740,9 @@ function StyleRangeTrack({
   status: "in_range" | "below" | "above" | null;
   valueLabel: string;
   hasStyle: boolean;
+  missingStyleRange: boolean;
 }) {
-  const appearance = hasStyle ? getMetricStatusAppearance(status) : getMetricStatusAppearance("no_style");
+  const appearance = hasStyle && !missingStyleRange ? getMetricStatusAppearance(status) : getMetricStatusAppearance("no_style");
   const valuePercent = getMetricPositionPercent(actualValue, globalRange.min, globalRange.max);
 
   const bandLeft = styleRange ? clampPercent(((styleRange.min - globalRange.min) / (globalRange.max - globalRange.min)) * 100) : null;
@@ -1745,32 +1750,41 @@ function StyleRangeTrack({
   const bandWidth = bandLeft != null && bandRight != null ? bandRight - bandLeft : null;
 
   if (valuePercent == null && bandLeft == null) {
-    return <div className="flex h-5 items-center text-[11px] text-zinc-400">Нет данных</div>;
+    return (
+      <div className="flex h-5 items-center text-[11px] text-zinc-400">
+        {missingStyleRange ? "Не указано в BJCP" : "Нет данных"}
+      </div>
+    );
   }
 
   return (
-    <div className="relative h-6 w-full rounded-md bg-zinc-100">
-      {bandLeft != null && bandWidth != null && (
-        <div
-          className="absolute inset-y-0 rounded-md bg-emerald-500/[.12] ring-1 ring-inset ring-emerald-500/20"
-          style={{ left: `${bandLeft}%`, width: `${bandWidth}%` }}
-        />
-      )}
-      {valuePercent != null && (
-        <>
+    <div className="space-y-0.5">
+      <div className="relative h-6 w-full rounded-md bg-zinc-100">
+        {bandLeft != null && bandWidth != null && (
           <div
-            className={`absolute top-0 h-full w-[2px] -translate-x-[1px] ${appearance.needleClassName}`}
-            style={{ left: `${valuePercent}%` }}
+            className="absolute inset-y-0 rounded-md bg-emerald-500/[.12] ring-1 ring-inset ring-emerald-500/20"
+            style={{ left: `${bandLeft}%`, width: `${bandWidth}%` }}
           />
-          <div
-            className={`absolute top-1/2 h-3 w-3 -translate-x-1/2 -translate-y-1/2 rounded-full ${appearance.needleDotClassName}`}
-            style={{ left: `${valuePercent}%` }}
-          />
-        </>
-      )}
-      <span className="pointer-events-none absolute inset-0 flex items-center justify-center text-[11px] font-semibold tabular-nums text-zinc-700">
-        {valueLabel}
-      </span>
+        )}
+        {valuePercent != null && (
+          <>
+            <div
+              className={`absolute top-0 h-full w-[2px] -translate-x-[1px] ${appearance.needleClassName}`}
+              style={{ left: `${valuePercent}%` }}
+            />
+            <div
+              className={`absolute top-1/2 h-3 w-3 -translate-x-1/2 -translate-y-1/2 rounded-full ${appearance.needleDotClassName}`}
+              style={{ left: `${valuePercent}%` }}
+            />
+          </>
+        )}
+        <span className="pointer-events-none absolute inset-0 flex items-center justify-center text-[11px] font-semibold tabular-nums text-zinc-700">
+          {valueLabel}
+        </span>
+      </div>
+      {missingStyleRange ? (
+        <div className="text-[9px] font-medium leading-tight text-zinc-500">Диапазон не указан в BJCP</div>
+      ) : null}
     </div>
   );
 }
@@ -1778,6 +1792,22 @@ function StyleRangeTrack({
 const formatGravityPlato = (sg: number | null) => {
   if (sg == null) return "—";
   return formatPlatoFromSg(sg, 1);
+};
+
+const getRangeStatus = (
+  actualValue: number | null,
+  styleRange: { min: number; max: number } | null
+): "in_range" | "below" | "above" | null => {
+  if (actualValue == null || !styleRange) {
+    return null;
+  }
+  if (actualValue < styleRange.min) {
+    return "below";
+  }
+  if (actualValue > styleRange.max) {
+    return "above";
+  }
+  return "in_range";
 };
 
 function RecipeStyleStatsBlock({
@@ -1789,11 +1819,12 @@ function RecipeStyleStatsBlock({
   recalculating: boolean;
   previewError: string | null;
 }) {
-  const hasStyleRange = Boolean(preview?.styleRange);
+  const selectedStyle = getBeerStyleById(preview?.styleId);
   const hasCalculatedMetrics = [preview?.og, preview?.fg, preview?.abv, preview?.ibu, preview?.color].some((value) => value != null);
-  const styleRange = preview?.styleRange ?? null;
-  const fit = preview?.styleFit;
-  const styleName = styleRange?.name ?? null;
+  const hasSelectedStyle = Boolean(selectedStyle);
+  const hasAnyStyleMetric = Boolean(selectedStyle && [selectedStyle.og, selectedStyle.fg, selectedStyle.abv, selectedStyle.ibu, selectedStyle.colorSrm].some((value) => value != null));
+  const styleName = selectedStyle ? getBjcpStyleDisplayName(selectedStyle) : null;
+  const selectedStyleArticleHref = getBjcpArticleHrefByStyleId(preview?.styleId);
 
   const items = [
     {
@@ -1801,67 +1832,88 @@ function RecipeStyleStatsBlock({
       valueLabel: preview?.og != null ? `${preview.og.toFixed(3)} · ${formatGravityPlato(preview.og)}` : "—",
       actualValue: preview?.og ?? null,
       globalRange: globalBrewingRanges.og,
-      styleRange: styleRange?.og ?? null,
+      styleRange: selectedStyle?.og ?? null,
       globalMinLabel: globalBrewingRanges.og.min.toFixed(3),
       globalMaxLabel: globalBrewingRanges.og.max.toFixed(3),
-      status: hasStyleRange && preview?.og != null ? fit?.og.status ?? null : null
+      status: getRangeStatus(preview?.og ?? null, selectedStyle?.og ?? null)
     },
     {
       label: "КП",
       valueLabel: preview?.fg != null ? `${preview.fg.toFixed(3)} · ${formatGravityPlato(preview.fg)}` : "—",
       actualValue: preview?.fg ?? null,
       globalRange: globalBrewingRanges.fg,
-      styleRange: styleRange?.fg ?? null,
+      styleRange: selectedStyle?.fg ?? null,
       globalMinLabel: globalBrewingRanges.fg.min.toFixed(3),
       globalMaxLabel: globalBrewingRanges.fg.max.toFixed(3),
-      status: hasStyleRange && preview?.fg != null ? fit?.fg.status ?? null : null
+      status: getRangeStatus(preview?.fg ?? null, selectedStyle?.fg ?? null)
     },
     {
       label: "ABV",
       valueLabel: preview?.abv != null ? `${preview.abv.toFixed(1)}%` : "—",
       actualValue: preview?.abv ?? null,
       globalRange: globalBrewingRanges.abv,
-      styleRange: styleRange?.abv ?? null,
+      styleRange: selectedStyle?.abv ?? null,
       globalMinLabel: `${globalBrewingRanges.abv.min.toFixed(0)}%`,
       globalMaxLabel: `${globalBrewingRanges.abv.max.toFixed(0)}%`,
-      status: hasStyleRange && preview?.abv != null ? fit?.abv.status ?? null : null
+      status: getRangeStatus(preview?.abv ?? null, selectedStyle?.abv ?? null)
     },
     {
       label: "IBU",
       valueLabel: preview?.ibu != null ? `${preview.ibu.toFixed(0)}` : "—",
       actualValue: preview?.ibu ?? null,
       globalRange: globalBrewingRanges.ibu,
-      styleRange: styleRange?.ibu ?? null,
+      styleRange: selectedStyle?.ibu ?? null,
       globalMinLabel: `${globalBrewingRanges.ibu.min.toFixed(0)}`,
       globalMaxLabel: `${globalBrewingRanges.ibu.max.toFixed(0)}`,
-      status: hasStyleRange && preview?.ibu != null ? fit?.ibu.status ?? null : null
+      status: getRangeStatus(preview?.ibu ?? null, selectedStyle?.ibu ?? null)
     },
     {
       label: "Color",
       valueLabel: preview?.color != null ? formatColorWithEbc(preview.color) : "—",
       actualValue: preview?.color ?? null,
       globalRange: globalBrewingRanges.colorSrm,
-      styleRange: styleRange?.colorSrm ?? null,
+      styleRange: selectedStyle?.colorSrm ?? null,
       globalMinLabel: `${globalBrewingRanges.colorSrm.min.toFixed(0)}`,
       globalMaxLabel: `${globalBrewingRanges.colorSrm.max.toFixed(0)}`,
-      status: hasStyleRange && preview?.color != null ? fit?.colorSrm.status ?? null : null
+      status: getRangeStatus(preview?.color ?? null, selectedStyle?.colorSrm ?? null)
     }
   ];
 
-  const overallFit = items.some((item) => item.actualValue != null) &&
-    items.every((item) => item.actualValue == null || item.status === "in_range");
+  const comparableItems = items.filter((item) => item.actualValue != null && item.styleRange);
+  const overallFit = comparableItems.length > 0 &&
+    comparableItems.every((item) => item.status === "in_range");
 
   return (
     <section className="flex h-full flex-col overflow-hidden rounded-2xl border border-zinc-200/70 bg-white shadow-[0_1px_3px_0_rgb(0_0_0_/_0.04)]">
       <div className="flex flex-wrap items-center justify-between gap-2 border-b border-zinc-100 bg-zinc-50/40 px-4 py-3">
         <div className="flex min-w-0 items-center gap-2">
           <h2 className="truncate text-sm font-semibold text-zinc-700">
-            {styleName ? `Ваш рецепт и BJCP ${styleName}` : "Расчёт показателей"}
+            {styleName && selectedStyleArticleHref ? (
+              <>
+                <span>Ваш рецепт и </span>
+                <a
+                  href={selectedStyleArticleHref}
+                  target="_blank"
+                  rel="noreferrer"
+                  aria-label={`Открыть описание BJCP стиля ${selectedStyle?.name ?? styleName}`}
+                  className="inline-flex min-w-0 items-center gap-1.5 rounded-md underline-offset-2 transition-colors hover:text-zinc-950 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-300"
+                >
+                  <span className="truncate">{`BJCP ${styleName}`}</span>
+                  <ExternalLink className="h-3.5 w-3.5 shrink-0 text-zinc-400" />
+                </a>
+              </>
+            ) : styleName ? `Ваш рецепт и BJCP ${styleName}` : "Расчёт показателей"}
           </h2>
-          {hasStyleRange && hasCalculatedMetrics ? (
+          {comparableItems.length > 0 ? (
             <span className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-medium ${overallFit ? "bg-emerald-50 text-emerald-700 ring-1 ring-inset ring-emerald-200" : "bg-zinc-100 text-zinc-600 ring-1 ring-inset ring-zinc-200"}`}>
               {overallFit ? <CircleCheck className="h-3 w-3" /> : <CircleAlert className="h-3 w-3" />}
               {overallFit ? "В стиле" : "Отклонения"}
+            </span>
+          ) : null}
+          {hasSelectedStyle && hasCalculatedMetrics && !hasAnyStyleMetric ? (
+            <span className="inline-flex items-center gap-1 rounded-full bg-zinc-100 px-2 py-0.5 text-[10px] font-medium text-zinc-600 ring-1 ring-inset ring-zinc-200">
+              <CircleAlert className="h-3 w-3" />
+              Диапазоны BJCP не указаны
             </span>
           ) : null}
           {recalculating ? (
@@ -1876,7 +1928,8 @@ function RecipeStyleStatsBlock({
 
       <div className="flex-1 px-3 py-3">
         {items.map((item) => {
-          const appearance = hasStyleRange ? getMetricStatusAppearance(item.status) : getMetricStatusAppearance("no_style");
+          const missingStyleRange = hasSelectedStyle && !item.styleRange;
+          const appearance = hasSelectedStyle && !missingStyleRange ? getMetricStatusAppearance(item.status) : getMetricStatusAppearance("no_style");
 
           return (
             <div key={item.label} className="group grid items-center gap-x-2 rounded-lg px-1 py-1 transition-colors hover:bg-zinc-50 sm:grid-cols-[46px_minmax(0,1fr)_60px]">
@@ -1890,7 +1943,8 @@ function RecipeStyleStatsBlock({
                   styleRange={item.styleRange}
                   status={item.status}
                   valueLabel={item.valueLabel}
-                  hasStyle={hasStyleRange}
+                  hasStyle={hasSelectedStyle}
+                  missingStyleRange={missingStyleRange}
                 />
                 <div className="flex justify-between text-[9px] tabular-nums text-zinc-400">
                   <span>{item.globalMinLabel}</span>
@@ -2176,7 +2230,6 @@ function RecipeBatchParametersBlock({
   const colorEbcValue = preview?.color != null ? srmToEbc(preview.color).toFixed(0) : null;
   const colorInfo = preview?.color != null ? beerColorFromSrm(preview.color) : null;
   const selectedStyle = getBeerStyleById(styleId);
-  const selectedStyleArticleHref = getBjcpArticleHrefByStyleId(styleId);
   const selectedEquipmentProfile = equipmentProfiles.find((profile) => profile.id === selectedEquipmentProfileId) ?? null;
   const equipmentProfileSelectValue = selectedEquipmentProfile?.id ?? "";
   const selectedEquipmentProfileLabel = selectedEquipmentProfile
@@ -2269,32 +2322,14 @@ function RecipeBatchParametersBlock({
                   </dd>
                 ) : isStyle ? (
                   <dd className="mt-1 min-w-0" title={typeof item.value === "string" ? item.value : undefined}>
-                    {selectedStyle && selectedStyleArticleHref ? (
-                      <a
-                        href={selectedStyleArticleHref}
-                        target="_blank"
-                        rel="noreferrer"
-                        aria-label={`Открыть описание BJCP стиля ${selectedStyle.name}`}
-                        className="group/link -mx-1 -my-1 flex items-start gap-2 rounded-lg px-1 py-1 transition-colors hover:bg-white focus-visible:bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-300"
-                      >
-                        <div className="min-w-0 flex-1">
-                          <div className="truncate text-sm font-semibold text-zinc-950">{selectedStyle.name}</div>
-                          <div className="truncate text-[11px] font-medium text-zinc-500 underline-offset-2 transition-colors group-hover/link:text-zinc-700 group-hover/link:underline group-focus-visible:text-zinc-700 group-focus-visible:underline">
-                            BJCP {selectedStyle.bjcpId} · Описание стиля
-                          </div>
+                    <div>
+                      <div className="truncate text-sm font-semibold text-zinc-950">{typeof item.value === "string" ? item.value : "—"}</div>
+                      {selectedStyle?.bjcpId && selectedStyle.bjcpId !== "LEGACY" ? (
+                        <div className="truncate text-[11px] font-medium text-zinc-500">
+                          BJCP {selectedStyle.bjcpId}
                         </div>
-                        <ExternalLink className="mt-0.5 h-3.5 w-3.5 shrink-0 text-zinc-300 transition-colors group-hover/link:text-zinc-500 group-focus-visible:text-zinc-500" />
-                      </a>
-                    ) : (
-                      <div>
-                        <div className="truncate text-sm font-semibold text-zinc-950">{typeof item.value === "string" ? item.value : "—"}</div>
-                        {selectedStyle?.bjcpId && selectedStyle.bjcpId !== "LEGACY" ? (
-                          <div className="truncate text-[11px] font-medium text-zinc-500">
-                            BJCP {selectedStyle.bjcpId}
-                          </div>
-                        ) : null}
-                      </div>
-                    )}
+                      ) : null}
+                    </div>
                   </dd>
                 ) : isGravity ? (() => {
                   const strVal = typeof item.value === "string" ? item.value : "—";

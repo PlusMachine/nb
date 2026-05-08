@@ -434,6 +434,24 @@ describe("recipe editor components", () => {
     expect(html).not.toContain("Публикация");
   });
 
+  it("marks selected BJCP styles without fixed ranges in the recipe stat tracks", () => {
+    const html = renderToStaticMarkup(React.createElement(RecipeDesigner, {
+      mode: "edit",
+      initialRecipe: buildRecipeDetail({
+        styleId: "34A",
+        og: 1.052,
+        fg: 1.012,
+        abv: 5.3,
+        ibu: 24,
+        color: 7
+      })
+    }));
+
+    expect(html).toContain("Специальное пиво по коммерческому образцу");
+    expect(html).toContain("Диапазоны BJCP не указаны");
+    expect(html).toContain("Диапазон не указан в BJCP");
+  });
+
   it("uses the default equipment profile as the initial profile for a new recipe", () => {
     const html = renderToStaticMarkup(React.createElement(RecipeDesigner, {
       mode: "create",
@@ -478,7 +496,7 @@ describe("recipe editor components", () => {
     expect(buildRecipeEditorResumeHref("recipe-1", "/app/recipes/r-0/edit")).toBe("/app/recipes/recipe-1/edit");
   });
 
-  it("shows the selected BJCP style as a native link inside batch parameters", () => {
+  it("shows the selected BJCP style as a native link in the stats heading", () => {
     const html = renderToStaticMarkup(React.createElement(RecipeDesigner, {
       mode: "edit",
       initialRecipe: buildRecipeDetail({
@@ -486,8 +504,11 @@ describe("recipe editor components", () => {
       })
     }));
 
-    expect(html).toContain("BJCP 1A · Описание стиля");
+    expect(html).toContain("<span>Ваш рецепт и </span>");
     expect(html).toContain('href="/bjcp/bjcp-1a-american-light-lager"');
+    expect(html).toContain(">BJCP Американский лёгкий лагер</span>");
+    expect(html).not.toContain(">Ваш рецепт и BJCP Американский лёгкий лагер</span>");
+    expect(html).not.toContain("BJCP 1A · Описание стиля");
     expect(html).not.toContain("Открыть стиль в справочнике");
   });
 

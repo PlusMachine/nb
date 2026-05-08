@@ -6,8 +6,16 @@ export interface NumericRange {
 export interface BeerStyle {
   id: string;
   bjcpId: string;
+  styleKey?: string;
   name: string;
+  nameRu?: string | null;
   family: string | null;
+  familyRu?: string | null;
+  familyNamesRu?: string[];
+  familyNamesEn?: string[];
+  categoryId?: string | null;
+  categoryNameRu?: string | null;
+  badgesRu?: string[];
   og: NumericRange | null;
   fg: NumericRange | null;
   abv: NumericRange | null;

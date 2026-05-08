@@ -5,14 +5,15 @@ import {
   getBeerStyleById,
   getBjcpArticleHrefByStyleId,
   getStyleRangeById,
+  searchBeerStyles,
   styleRangeFixtures
 } from "./fixtures";
 
 describe("style fixtures", () => {
   it("loads the full BJCP catalog with unique application ids", () => {
-    expect(beerStyleFixtures.length).toBe(115);
+    expect(beerStyleFixtures.length).toBe(128);
     expect(new Set(beerStyleFixtures.map((style) => style.id)).size).toBe(beerStyleFixtures.length);
-    expect(styleRangeFixtures.length).toBe(104);
+    expect(styleRangeFixtures.length).toBe(107);
   });
 
   it("keeps duplicate BJCP codes distinct for picker storage", () => {
@@ -20,16 +21,31 @@ describe("style fixtures", () => {
     const blackIpa = getBeerStyleById("21B-black-ipa");
 
     expect(belgianIpa?.bjcpId).toBe("21B");
+    expect(belgianIpa?.styleKey).toBe("21B-Belgian IPA");
     expect(blackIpa?.bjcpId).toBe("21B");
     expect(belgianIpa?.name).toBe("Belgian IPA");
     expect(blackIpa?.name).toBe("Black IPA");
+    expect(getBeerStyleById("21B-Belgian IPA")?.id).toBe("21B-belgian-ipa");
   });
 
   it("exposes variable styles for selection without pretending they have fixed ranges", () => {
     const fruitBeer = getBeerStyleById("29A");
+    const commercialSpecialty = getBeerStyleById("34A");
 
     expect(fruitBeer?.name).toBe("Fruit Beer");
     expect(getStyleRangeById("29A")).toBeNull();
+    expect(getStyleRangeById("21B")).toBeNull();
+    expect(commercialSpecialty?.name).toBe("Commercial Specialty Beer");
+    expect(getStyleRangeById("34A")).toBeNull();
+  });
+
+  it("searches BJCP styles with Russian names, aliases, transliteration, and keyboard layout recovery", () => {
+    expect(searchBeerStyles("Бланш")[0]?.id).toBe("24A");
+    expect(searchBeerStyles("neipa")[0]?.id).toBe("21C");
+    expect(searchBeerStyles("кельш")[0]?.id).toBe("5B");
+    expect(searchBeerStyles("kolsch")[0]?.id).toBe("5B");
+    expect(searchBeerStyles("пилснер").slice(0, 2).map((style) => style.id)).toEqual(["5D", "X5"]);
+    expect(searchBeerStyles("зшдытук").slice(0, 2).map((style) => style.id)).toEqual(["5D", "X5"]);
   });
 
   it("keeps legacy style ids readable after catalog upgrade", () => {

@@ -1,4 +1,5 @@
 import rawBjcpStyles from "./bjcp-2021.raw.json";
+import { searchBjcpStyles } from "./search";
 import type { BeerStyle, NumericRange, StyleRange } from "./types";
 
 type RawVitalStatistics = {
@@ -12,9 +13,17 @@ type RawVitalStatistics = {
 type RawBjcpStyle = {
   style_key: string;
   bjcp_id: string;
+  full_bjcp_id?: string | null;
+  category_id?: string | null;
+  category_ru?: string | null;
   name: string;
+  name_ru?: string | null;
   family: string | null;
-  vital_statistics_raw: string;
+  family_ru?: string | null;
+  family_names_ru?: string[];
+  family_names_en?: string[];
+  badges_ru?: string[];
+  vital_statistics_raw: string | null;
   vital_statistics: RawVitalStatistics | null;
 };
 
@@ -54,34 +63,66 @@ const parseNumericRange = (value: string | null | undefined): NumericRange | nul
   };
 };
 
-const rawStyleFixtures = rawBjcpStyles as RawBjcpStyle[];
+const rawVitalStatisticLabels: Record<keyof RawVitalStatistics, string> = {
+  OG: "OG",
+  FG: "FG",
+  IBUs: "IBUs?",
+  SRM: "SRM",
+  ABV: "ABV"
+};
 
-const bjcpIdCounts = rawStyleFixtures.reduce((counts, style) => {
-  const bjcpId = style.bjcp_id.trim();
-  counts.set(bjcpId, (counts.get(bjcpId) ?? 0) + 1);
-  return counts;
-}, new Map<string, number>());
+const getRawVitalStatistic = (raw: string | null | undefined, key: keyof RawVitalStatistics) => {
+  if (!raw) {
+    return null;
+  }
+  if (/\b(variable|varies|vary|same as|depending)\b/i.test(raw)) {
+    return null;
+  }
+
+  const label = rawVitalStatisticLabels[key];
+  const match = raw
+    .replace(/–/g, "-")
+    .match(new RegExp(`${label}:\\s*(-?\\d+(?:\\.\\d+)?)\\s*-\\s*(-?\\d+(?:\\.\\d+)?%?)`, "i"));
+
+  return match ? `${match[1]} - ${match[2]}` : null;
+};
+
+const getVitalStatistic = (style: RawBjcpStyle, key: keyof RawVitalStatistics) => (
+  style.vital_statistics?.[key] ?? getRawVitalStatistic(style.vital_statistics_raw, key)
+);
+
+const rawStyleFixtures = rawBjcpStyles as RawBjcpStyle[];
 
 const getNormalizedStyleId = (style: RawBjcpStyle) => {
   const bjcpId = style.bjcp_id.trim();
-  if ((bjcpIdCounts.get(bjcpId) ?? 0) <= 1) {
+  const fullBjcpId = style.full_bjcp_id?.trim() || bjcpId;
+
+  if (fullBjcpId === bjcpId) {
     return bjcpId;
   }
 
-  // Some BJCP categories in the source reuse one BJCP code across several named substyles.
+  // Keep saved recipe IDs stable for BJCP substyles that share an official parent code.
   return `${bjcpId}-${slugify(style.name)}`;
 };
 
 export const beerStyleFixtures: BeerStyle[] = rawStyleFixtures.map((style) => ({
   id: getNormalizedStyleId(style),
   bjcpId: style.bjcp_id.trim(),
+  styleKey: style.full_bjcp_id?.trim() || style.bjcp_id.trim(),
   name: style.name.trim(),
+  nameRu: style.name_ru?.trim() || null,
   family: style.family?.trim() || null,
-  og: parseNumericRange(style.vital_statistics?.OG),
-  fg: parseNumericRange(style.vital_statistics?.FG),
-  abv: parseNumericRange(style.vital_statistics?.ABV),
-  ibu: parseNumericRange(style.vital_statistics?.IBUs),
-  colorSrm: parseNumericRange(style.vital_statistics?.SRM)
+  familyRu: style.family_ru?.trim() || null,
+  familyNamesRu: style.family_names_ru ?? [],
+  familyNamesEn: style.family_names_en ?? [],
+  categoryId: style.category_id?.trim() || null,
+  categoryNameRu: style.category_ru?.trim() || null,
+  badgesRu: style.badges_ru ?? [],
+  og: parseNumericRange(getVitalStatistic(style, "OG")),
+  fg: parseNumericRange(getVitalStatistic(style, "FG")),
+  abv: parseNumericRange(getVitalStatistic(style, "ABV")),
+  ibu: parseNumericRange(getVitalStatistic(style, "IBUs")),
+  colorSrm: parseNumericRange(getVitalStatistic(style, "SRM"))
 }));
 
 export const hasStyleRange = (style: BeerStyle): style is StyleRange => (
@@ -119,8 +160,22 @@ const legacyStyleAliases: StyleRange[] = [
   }
 ];
 
-const beerStylesById = new Map([...beerStyleFixtures, ...legacyStyleAliases].map((style) => [style.id, style] as const));
-const styleRangesById = new Map([...styleRangeFixtures, ...legacyStyleAliases].map((style) => [style.id, style] as const));
+const buildStyleLookupEntries = <T extends BeerStyle>(styles: T[]) => styles.flatMap((style) => {
+  const entries: Array<readonly [string, T]> = [[style.id, style]];
+  if (style.styleKey && style.styleKey !== style.id) {
+    entries.push([style.styleKey, style]);
+  }
+  return entries;
+});
+
+const beerStylesById = new Map([
+  ...buildStyleLookupEntries(beerStyleFixtures),
+  ...legacyStyleAliases.map((style) => [style.id, style] as const)
+]);
+const styleRangesById = new Map([
+  ...buildStyleLookupEntries(styleRangeFixtures),
+  ...legacyStyleAliases.map((style) => [style.id, style] as const)
+]);
 
 export const getBeerStyleById = (id: string | null | undefined) => (
   id ? beerStylesById.get(id) ?? null : null
@@ -131,14 +186,14 @@ export const getStyleRangeById = (id: string | null | undefined) => (
 );
 
 export const buildBjcpArticleSlug = (
-  style: Pick<BeerStyle, "id" | "bjcpId" | "name"> | null | undefined
+  style: Pick<BeerStyle, "id" | "bjcpId" | "styleKey" | "name"> | null | undefined
 ) => {
   if (!style || style.bjcpId === "LEGACY") {
     return null;
   }
 
   const titleSlug = slugifyBjcpArticleSegment(style.name);
-  const rawId = style.id === style.bjcpId ? style.bjcpId : `${style.bjcpId}-${style.name}`;
+  const rawId = style.styleKey ?? (style.id === style.bjcpId ? style.bjcpId : `${style.bjcpId}-${style.name}`);
   const idSlug = slugifyBjcpArticleSegment(rawId);
   if (!idSlug) {
     return null;
@@ -155,3 +210,7 @@ export const getBjcpArticleHrefByStyleId = (id: string | null | undefined) => {
   const slug = buildBjcpArticleSlug(getBeerStyleById(id));
   return slug ? `/bjcp/${slug}` : null;
 };
+
+export const searchBeerStyles = (query: string, options: { limit?: number } = {}) => (
+  searchBjcpStyles(beerStyleFixtures, query, options).map(({ item }) => item)
+);

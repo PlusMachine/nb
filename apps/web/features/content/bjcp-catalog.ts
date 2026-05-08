@@ -3,11 +3,13 @@ import type {
   BjcpCatalogStyle,
   BjcpFamily
 } from "@nb/content";
-
 import {
-  buildQueryVariants,
-  normalizeSearchText
-} from "@/features/ingredients/normalization";
+  buildBjcpQueryVariants,
+  foldBjcpSearchDiacritics,
+  normalizeBjcpSearchText,
+  scoreBjcpSearchText,
+  scoreBjcpStyle
+} from "@nb/brewing-core";
 
 export type BjcpCatalogView = "families" | "bjcp";
 export type BjcpCatalogSortOption = "relevance" | "name" | "code";
@@ -231,54 +233,6 @@ export const advancedFilterDefinitions: Array<{
   }
 ];
 
-const styleAliasMap: Record<string, string[]> = {
-  "5B": ["kolsch", "kölsch", "кельш"],
-  "10A": ["weissbier", "weizen", "вайцен", "вайценбир", "hefeweizen"],
-  "10B": ["dunkelweizen", "dunkles weissbier", "тёмный вайцен", "дункельвайцен"],
-  "10C": ["weizenbock", "вайценбок"],
-  "12C": ["english ipa"],
-  "21A": ["american ipa", "west coast ipa"],
-  "21C": ["hazy ipa", "new england ipa", "new england", "neipa", "неипа", "нэипа"],
-  "21B-Belgian IPA": ["belgian ipa", "бельгийский ipa"],
-  "21B-Black IPA": ["black ipa", "черный ipa", "чёрный ipa"],
-  "21B-Brown IPA": ["brown ipa", "коричневый ipa"],
-  "21B-Red IPA": ["red ipa", "красный ipa"],
-  "21B-Rye IPA": ["rye ipa", "ржаной ipa"],
-  "21B-White IPA": ["white ipa", "белый ipa"],
-  "21B-Brut IPA": ["brut ipa", "брют ipa", "брют-ipa"],
-  "24A": ["witbier", "blanche", "бланш", "витбир", "вит"],
-  "25A": ["saison"],
-  "27A": ["gose", "гозе"],
-  "27B": ["gueuze", "геуз"],
-  "27C": ["lambic", "ламбик"],
-  "27D": ["fruit lambic", "fruit lambiek", "фруктовый ламбик"],
-  "31A": ["alternative grain beer", "альтернативные зерновые"],
-  "32A": ["kvass", "квас"],
-  "X5": ["piwo grodziskie", "grätzer", "гродзиское", "гродзиский"]
-};
-
-const foldDiacritics = (value: string) => value
-  .normalize("NFKD")
-  .replace(/[\u0300-\u036f]/g, "")
-  .replaceAll("ß", "ss");
-
-const dedupe = (values: string[]) => {
-  const out: string[] = [];
-  const seen = new Set<string>();
-
-  for (const value of values) {
-    const normalized = normalizeSearchText(foldDiacritics(value));
-    if (!normalized || seen.has(normalized)) {
-      continue;
-    }
-
-    seen.add(normalized);
-    out.push(value);
-  }
-
-  return out;
-};
-
 const isKnownQuickChip = (value: string): value is BjcpQuickChipId => value in quickChips;
 
 const getKnownFilterValues = (group: BjcpFilterGroup) => new Set(
@@ -454,7 +408,7 @@ const getStyleStrength = (style: BjcpCatalogStyle): BjcpFilterOptionId => {
 };
 
 const getStyleRegion = (style: BjcpCatalogStyle): BjcpFilterOptionId => {
-  const haystack = normalizeSearchText(foldDiacritics([
+  const haystack = normalizeBjcpSearchText(foldBjcpSearchDiacritics([
     style.title,
     style.titleEn,
     style.categoryNameRu,
@@ -592,81 +546,14 @@ export const hasActiveBjcpCatalogControls = (state: BjcpCatalogState) => (
   || hasAnyAdvancedFilters(state.filters)
 );
 
-const buildSearchTerms = (style: BjcpCatalogStyle) => {
-  const explicitAliases = styleAliasMap[style.bjcpId] ?? [];
-  const nameAliases = dedupe([
-    style.bjcpId,
-    style.title,
-    style.titleEn,
-    foldDiacritics(style.titleEn),
-    ...explicitAliases
-  ]);
-
-  return {
-    exact: nameAliases,
-    family: dedupe([...style.familyNamesRu, ...style.familyNamesEn]),
-    category: dedupe([style.categoryId, style.categoryNameRu]),
-    badges: style.badgesRu
-  };
-};
-
-const scoreText = (candidate: string, variant: string, exactScore: number, prefixScore: number, containsScore: number) => {
-  const normalizedCandidate = normalizeSearchText(foldDiacritics(candidate));
-  if (!normalizedCandidate) {
-    return 0;
-  }
-  if (normalizedCandidate === variant) {
-    return exactScore;
-  }
-  if (normalizedCandidate.startsWith(variant)) {
-    return prefixScore;
-  }
-  if (normalizedCandidate.includes(variant)) {
-    return containsScore;
-  }
-  return 0;
-};
-
-const scoreStyle = (style: BjcpCatalogStyle, query: string) => {
-  const variants = buildQueryVariants(foldDiacritics(query));
-  let score = 0;
-  const terms = buildSearchTerms(style);
-
-  for (const variant of variants) {
-    score = Math.max(score, scoreText(style.bjcpId, variant, 1200, 980, 0));
-
-    for (const candidate of terms.exact) {
-      score = Math.max(score, scoreText(candidate, variant, 1100, 860, 720));
-    }
-
-    for (const candidate of styleAliasMap[style.bjcpId] ?? []) {
-      score = Math.max(score, scoreText(candidate, variant, 1040, 820, 680));
-    }
-
-    for (const candidate of terms.family) {
-      score = Math.max(score, scoreText(candidate, variant, 420, 360, 280));
-    }
-
-    for (const candidate of terms.category) {
-      score = Math.max(score, scoreText(candidate, variant, 380, 320, 240));
-    }
-
-    for (const candidate of terms.badges) {
-      score = Math.max(score, scoreText(candidate, variant, 260, 220, 180));
-    }
-  }
-
-  return score;
-};
-
 const scoreFamily = (family: BjcpFamily, query: string) => {
-  const variants = buildQueryVariants(foldDiacritics(query));
+  const variants = buildBjcpQueryVariants(foldBjcpSearchDiacritics(query));
   let score = 0;
-  const aliases = dedupe([family.id, family.nameRu, family.nameEn]);
+  const aliases = [family.id, family.nameRu, family.nameEn];
 
   for (const variant of variants) {
     for (const candidate of aliases) {
-      score = Math.max(score, scoreText(candidate, variant, 700, 520, 320));
+      score = Math.max(score, scoreBjcpSearchText(candidate, variant, 700, 520, 320));
     }
   }
 
@@ -674,12 +561,12 @@ const scoreFamily = (family: BjcpFamily, query: string) => {
 };
 
 const scoreCategory = (categoryId: string, categoryName: string, query: string) => {
-  const variants = buildQueryVariants(foldDiacritics(query));
+  const variants = buildBjcpQueryVariants(foldBjcpSearchDiacritics(query));
   let score = 0;
 
   for (const variant of variants) {
-    score = Math.max(score, scoreText(categoryId, variant, 680, 520, 0));
-    score = Math.max(score, scoreText(categoryName, variant, 620, 480, 300));
+    score = Math.max(score, scoreBjcpSearchText(categoryId, variant, 680, 520, 0));
+    score = Math.max(score, scoreBjcpSearchText(categoryName, variant, 620, 480, 300));
   }
 
   return score;
@@ -687,7 +574,7 @@ const scoreCategory = (categoryId: string, categoryName: string, query: string) 
 
 export const getBjcpSearchSuggestions = (query: string, catalog: BjcpCatalogData): BjcpSuggestionSections => {
   const trimmed = query.trim();
-  if (normalizeSearchText(trimmed).length < 2) {
+  if (normalizeBjcpSearchText(trimmed).length < 2) {
     return {
       styles: [],
       families: [],
@@ -696,7 +583,7 @@ export const getBjcpSearchSuggestions = (query: string, catalog: BjcpCatalogData
   }
 
   const styles = catalog.styles
-    .map((style: BjcpCatalogStyle): ScoredStyle => ({ style, score: scoreStyle(style, trimmed) }))
+    .map((style: BjcpCatalogStyle): ScoredStyle => ({ style, score: scoreBjcpStyle(style, trimmed) }))
     .filter((entry: ScoredStyle) => entry.score > 0)
     .sort((left: ScoredStyle, right: ScoredStyle) => right.score - left.score || collator.compare(left.style.bjcpId, right.style.bjcpId))
     .slice(0, 6)
@@ -820,7 +707,7 @@ export const getBjcpCatalogResults = (state: BjcpCatalogState, catalog: BjcpCata
 
   if (searchQuery) {
     const scored = catalog.styles
-      .map((style: BjcpCatalogStyle): ScoredStyle => ({ style, score: scoreStyle(style, searchQuery) }))
+      .map((style: BjcpCatalogStyle): ScoredStyle => ({ style, score: scoreBjcpStyle(style, searchQuery) }))
       .filter((entry: ScoredStyle) => entry.score > 0);
 
     relevance = new Map(scored.map((entry: ScoredStyle) => [entry.style.slug, entry.score] as const));
