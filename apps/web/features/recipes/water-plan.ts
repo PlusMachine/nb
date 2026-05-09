@@ -17,7 +17,10 @@ import {
   type WaterProfile,
 } from "@nb/brewing-core";
 
-import type { RecipeWaterPlanMeta } from "./contracts";
+import type {
+  RecipeWaterManualSaltAdditionTarget,
+  RecipeWaterPlanMeta,
+} from "./contracts";
 
 export type RecipeWaterPlanFermentableInput = {
   name?: string | null;
@@ -26,6 +29,7 @@ export type RecipeWaterPlanFermentableInput = {
 };
 
 export type RecipeWaterPlanSaltAddition = SaltAddition & {
+  target: RecipeWaterManualSaltAdditionTarget;
   label: string;
   formula: string;
 };
@@ -37,7 +41,9 @@ export type RecipeWaterPlanResult = {
     mashWaterL: number;
     spargeWaterL: number;
     totalWaterL: number;
-    source: "batch_size" | "manual_split";
+    suggestedMashWaterL: number | null;
+    suggestedSpargeWaterL: number | null;
+    source: "batch_size" | "equipment_profile" | "manual_split";
   };
   sourceProfile: WaterProfile;
   targetProfile: WaterProfile | null;
@@ -83,10 +89,18 @@ const quickModeSaltIds: BrewingSaltId[] = [
   "gypsum",
   "calcium_chloride",
   "epsom_salt",
-  "baking_soda",
 ];
 const advancedSaltIds = Object.keys(brewingSaltDefinitions) as BrewingSaltId[];
 const brewingAcidIds = Object.keys(brewingAcidDefinitions) as BrewingAcidId[];
+const manualSaltAdditionTargets = new Set<RecipeWaterManualSaltAdditionTarget>([
+  "all",
+  "mash",
+  "sparge",
+]);
+
+type ScopedSaltAddition = SaltAddition & {
+  target: RecipeWaterManualSaltAdditionTarget;
+};
 
 const isBrewingSaltId = (value: string): value is BrewingSaltId =>
   value in brewingSaltDefinitions;
@@ -192,21 +206,27 @@ const resolveAcid = (waterPlanMeta: RecipeWaterPlanMeta): BrewingAcidId => {
 
 const normalizeManualSaltAdditions = (
   additions: RecipeWaterPlanMeta["manualSaltAdditions"],
-): SaltAddition[] =>
+): ScopedSaltAddition[] =>
   (additions ?? [])
     .filter(
-      (addition): addition is SaltAddition =>
+      (
+        addition,
+      ): addition is RecipeWaterPlanMeta["manualSaltAdditions"][number] =>
         isBrewingSaltId(addition.salt) &&
         Number.isFinite(addition.grams) &&
         addition.grams > 0,
     )
     .map((addition) => ({
-      salt: addition.salt,
+      salt: addition.salt as BrewingSaltId,
       grams: roundTo(addition.grams, 2),
+      target:
+        addition.target && manualSaltAdditionTargets.has(addition.target)
+          ? addition.target
+          : "all",
     }));
 
 const toLabeledSaltAdditions = (
-  additions: SaltAddition[],
+  additions: ScopedSaltAddition[],
 ): RecipeWaterPlanSaltAddition[] =>
   additions
     .filter((addition) => addition.grams > 0)
@@ -217,8 +237,8 @@ const toLabeledSaltAdditions = (
       formula: recipeWaterSaltPresentation[addition.salt].formula,
     }));
 
-const splitSaltAdditionsByWaterVolume = (
-  additions: SaltAddition[],
+const scopeSaltAdditionsToWaterBucket = (
+  additions: ScopedSaltAddition[],
   mashWaterL: number,
   spargeWaterL: number,
   bucket: "mash" | "sparge",
@@ -233,13 +253,45 @@ const splitSaltAdditionsByWaterVolume = (
         ? 1
         : 0;
 
-  return toLabeledSaltAdditions(
-    additions.map((addition) => ({
-      salt: addition.salt,
-      grams: addition.grams * ratio,
-    })),
-  );
+  return additions
+    .map((addition) => {
+      const grams =
+        addition.target === "all"
+          ? addition.grams * ratio
+          : addition.target === bucket
+            ? addition.grams
+            : 0;
+
+      return {
+        ...addition,
+        grams,
+      };
+    })
+    .filter((addition) => addition.grams > 0);
 };
+
+const splitSaltAdditionsByWaterVolume = (
+  additions: ScopedSaltAddition[],
+  mashWaterL: number,
+  spargeWaterL: number,
+  bucket: "mash" | "sparge",
+) =>
+  toLabeledSaltAdditions(
+    scopeSaltAdditionsToWaterBucket(
+      additions,
+      mashWaterL,
+      spargeWaterL,
+      bucket,
+    ),
+  );
+
+const scopeSolverSaltAdditions = (
+  additions: SaltAddition[],
+): ScopedSaltAddition[] =>
+  additions.map((addition) => ({
+    ...addition,
+    target: "all",
+  }));
 
 const classifyFermentable = (fermentable: RecipeWaterPlanFermentableInput) => {
   const haystack =
@@ -329,16 +381,40 @@ const buildWarningsForFinalProfile = (profile: WaterProfile) => {
 export const buildRecipeWaterPlanResult = (input: {
   waterPlanMeta: RecipeWaterPlanMeta;
   fallbackBatchVolumeL?: number | null;
+  equipmentVolumePlan?: {
+    totalWaterL: number;
+    mashWaterL: number;
+    spargeWaterL: number;
+  } | null;
   grainKg: number;
   beerSrm?: number | null;
   fermentables?: RecipeWaterPlanFermentableInput[];
 }): RecipeWaterPlanResult => {
   const warnings: string[] = [];
   const grainKg = Math.max(0, input.grainKg);
-  const totalWaterL = roundTo(
+  const recipeBatchVolumeL =
+    input.fallbackBatchVolumeL != null
+      ? Math.max(0, input.fallbackBatchVolumeL)
+      : null;
+  const equipmentTotalWaterL =
+    input.equipmentVolumePlan && Number.isFinite(input.equipmentVolumePlan.totalWaterL)
+      ? Math.max(0, input.equipmentVolumePlan.totalWaterL)
+      : null;
+  const suggestedMashWaterL =
+    input.equipmentVolumePlan && Number.isFinite(input.equipmentVolumePlan.mashWaterL)
+      ? roundTo(Math.max(0, input.equipmentVolumePlan.mashWaterL), 2)
+      : null;
+  const suggestedSpargeWaterL =
+    input.equipmentVolumePlan && Number.isFinite(input.equipmentVolumePlan.spargeWaterL)
+      ? roundTo(Math.max(0, input.equipmentVolumePlan.spargeWaterL), 2)
+      : null;
+  const automaticTotalWaterL = roundTo(
     Math.max(
       0,
-      input.fallbackBatchVolumeL ?? input.waterPlanMeta.totalWaterVolumeL ?? 0,
+      input.waterPlanMeta.totalWaterVolumeL ??
+        equipmentTotalWaterL ??
+        recipeBatchVolumeL ??
+        0,
     ),
     2,
   );
@@ -350,27 +426,36 @@ export const buildRecipeWaterPlanResult = (input: {
       ? Math.max(
           0,
           input.waterPlanMeta.mashWaterVolumeL ??
-            totalWaterL - (input.waterPlanMeta.spargeWaterVolumeL ?? 0),
+            automaticTotalWaterL - (input.waterPlanMeta.spargeWaterVolumeL ?? 0),
         )
-      : totalWaterL,
+      : automaticTotalWaterL,
     2,
   );
   const spargeWaterL = roundTo(
     hasManualSplit
       ? Math.max(
           0,
-          input.waterPlanMeta.spargeWaterVolumeL ?? totalWaterL - mashWaterL,
+          input.waterPlanMeta.spargeWaterVolumeL ?? automaticTotalWaterL - mashWaterL,
         )
       : 0,
     2,
   );
-  const splitTotalWaterL = mashWaterL + spargeWaterL;
+  const splitTotalWaterL = roundTo(mashWaterL + spargeWaterL, 2);
+  const totalWaterL = hasManualSplit ? splitTotalWaterL : automaticTotalWaterL;
 
-  if (hasManualSplit && Math.abs(splitTotalWaterL - totalWaterL) > 0.05) {
-    warnings.push("water_split_sum_differs_from_batch_volume");
+  if (
+    hasManualSplit &&
+    recipeBatchVolumeL != null &&
+    splitTotalWaterL + 0.05 < recipeBatchVolumeL
+  ) {
+    warnings.push("water_split_below_batch_volume");
   }
 
-  const volumeSource = hasManualSplit ? "manual_split" : "batch_size";
+  const volumeSource = hasManualSplit
+    ? "manual_split"
+    : equipmentTotalWaterL != null
+      ? "equipment_profile"
+      : "batch_size";
   const sourceProfile = normalizeProfile(
     input.waterPlanMeta.sourceProfile ?? emptyWaterProfile,
   );
@@ -409,19 +494,32 @@ export const buildRecipeWaterPlanResult = (input: {
           allowedSalts: resolveAllowedSalts(input.waterPlanMeta),
         })
       : null;
-  const saltAdditions = useManualAdditions
+  const saltAdditions: ScopedSaltAddition[] = useManualAdditions
     ? manualSaltAdditions
-    : (solverResult?.additions ?? []);
+    : scopeSolverSaltAdditions(solverResult?.additions ?? []);
   const finalProfile =
     totalWaterL > 0
       ? applySaltAdditions(sourceProfile, totalWaterL, saltAdditions)
       : sourceProfile;
+  const mashProfileForPh =
+    mashWaterL > 0
+      ? applySaltAdditions(
+          sourceProfile,
+          mashWaterL,
+          scopeSaltAdditionsToWaterBucket(
+            saltAdditions,
+            mashWaterL,
+            spargeWaterL,
+            "mash",
+          ),
+        )
+      : finalProfile;
   const mashPhEstimate =
     !mashPhEnabled || grainKg <= 0 || mashWaterL <= 0
       ? null
       : estimateMashPh({
           sourceProfile,
-          finalProfile,
+          finalProfile: mashProfileForPh,
           mashWaterLiters: mashWaterL,
           grainKg,
           beerSrm: input.beerSrm ?? null,
@@ -452,9 +550,7 @@ export const buildRecipeWaterPlanResult = (input: {
     input.waterPlanMeta.spargeSourcePh ?? sourceProfile.ph ?? 7;
   const targetSpargePh = input.waterPlanMeta.targetSpargePh ?? 5.7;
   const spargeAcidAddition =
-    mashPhEnabled &&
-    input.waterPlanMeta.spargeAcidificationEnabled &&
-    spargeWaterL > 0
+    input.waterPlanMeta.spargeAcidificationEnabled && spargeWaterL > 0
       ? solveMashAcidAddition({
           unadjustedMashPh20C: spargeSourcePh,
           targetMashPh20C: targetSpargePh,
@@ -482,6 +578,8 @@ export const buildRecipeWaterPlanResult = (input: {
       mashWaterL,
       spargeWaterL,
       totalWaterL,
+      suggestedMashWaterL,
+      suggestedSpargeWaterL,
       source: volumeSource,
     },
     sourceProfile,

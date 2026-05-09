@@ -68,6 +68,7 @@ import {
   type EquipmentProfileDto,
   type EquipmentProfileSnapshot
 } from "@/features/equipment-profiles/contracts";
+import { calculateEquipmentVolumePlan } from "@/features/equipment-profiles/volume-plan";
 import type {
   IngredientCategory,
   IngredientConsumableGroupRefinement,
@@ -2498,11 +2499,12 @@ function BitternessCalculationBlock({
 
 const waterPlanVolumeSourceLabels: Record<RecipeWaterPlanResult["waterVolumes"]["source"], string> = {
   batch_size: "объем партии",
+  equipment_profile: "профиль оборудования",
   manual_split: "разделение воды"
 };
 
 const waterPlanWarningLabels: Record<string, string> = {
-  water_split_sum_differs_from_batch_volume: "Сумма заторной и промывочной воды отличается от объема партии.",
+  water_split_below_batch_volume: "Сумма заторной и промывочной воды меньше объема партии.",
   source_profile_missing_or_zero: "Исходный профиль воды не заполнен.",
   target_profile_missing_or_zero: "Целевой профиль воды не заполнен.",
   grain_bill_missing_for_mash_ph: "Для pH нужен зерновой состав.",
@@ -4192,13 +4194,37 @@ export function RecipeDesigner({
     waterPlanMeta,
     ingredients: ingredients.map(buildIngredientPayload)
   }), [authorNotes, batchSize.quantity, batchSize.unit, boilTimeMinutes, calculationMeta, description, efficiency, equipmentProfileId, equipmentProfileSnapshot, ingredients, processMeta, publicationState, styleId, title, waterPlanMeta]);
+  const batchVolumeL = useMemo(
+    () => getBatchVolumeLiters(batchSize.quantity, batchSize.unit),
+    [batchSize.quantity, batchSize.unit],
+  );
+  const fermentableWeightKg = useMemo(
+    () => getFermentableWeightTotalKg(ingredients),
+    [ingredients],
+  );
+  const equipmentVolumePlan = useMemo(() => {
+    if (!equipmentProfileSnapshot) {
+      return null;
+    }
+
+    return calculateEquipmentVolumePlan(
+      {
+        ...equipmentProfileSnapshot,
+        targetBatchVolumeL:
+          batchVolumeL ?? equipmentProfileSnapshot.targetBatchVolumeL,
+      },
+      fermentableWeightKg,
+      Number(boilTimeMinutes || 0),
+    );
+  }, [batchVolumeL, boilTimeMinutes, equipmentProfileSnapshot, fermentableWeightKg]);
   const waterPlanResult = useMemo(() => buildRecipeWaterPlanResult({
     waterPlanMeta,
-    fallbackBatchVolumeL: getBatchVolumeLiters(batchSize.quantity, batchSize.unit),
-    grainKg: getFermentableWeightTotalKg(ingredients),
+    fallbackBatchVolumeL: batchVolumeL,
+    equipmentVolumePlan,
+    grainKg: fermentableWeightKg,
     beerSrm: preview?.color ?? initialRecipe?.color ?? null,
     fermentables: getFermentablesForWaterPlan(ingredients)
-  }), [batchSize.quantity, batchSize.unit, ingredients, initialRecipe?.color, preview?.color, waterPlanMeta]);
+  }), [batchVolumeL, equipmentVolumePlan, fermentableWeightKg, ingredients, initialRecipe?.color, preview?.color, waterPlanMeta]);
   const savePayload = useMemo(() => normalizeSavePayload(payload), [payload]);
 
   const currentSignature = useMemo(() => JSON.stringify(payload), [payload]);

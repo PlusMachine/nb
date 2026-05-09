@@ -82,6 +82,98 @@ const assertInventorySourceMatchesRecipeLine = (
   }
 };
 
+const inventorySourceMatchesRecipeLine = (
+  line: typeof recipeIngredients.$inferSelect,
+  inventoryItem: typeof userIngredients.$inferSelect
+) => {
+  const catalogMatches = line.ingredientCatalogItemId
+    && inventoryItem.ingredientCatalogItemId
+    && line.ingredientCatalogItemId === inventoryItem.ingredientCatalogItemId;
+  const customMatches = line.userCustomIngredientId
+    && inventoryItem.userCustomIngredientId
+    && line.userCustomIngredientId === inventoryItem.userCustomIngredientId;
+
+  return Boolean(catalogMatches || customMatches);
+};
+
+const inventoryItemCanCoverRecipeLine = (
+  line: typeof recipeIngredients.$inferSelect,
+  inventoryItem: typeof userIngredients.$inferSelect
+) => (
+  inventorySourceMatchesRecipeLine(line, inventoryItem)
+  && line.amountNormalizedUnit === inventoryItem.normalizedUnit
+);
+
+const findOwnedInventoryItemByRecipeLineSource = async (
+  userId: string,
+  line: typeof recipeIngredients.$inferSelect
+) => {
+  const sourceFilter = line.ingredientCatalogItemId
+    ? eq(userIngredients.ingredientCatalogItemId, line.ingredientCatalogItemId)
+    : line.userCustomIngredientId
+      ? eq(userIngredients.userCustomIngredientId, line.userCustomIngredientId)
+      : null;
+
+  if (!sourceFilter) {
+    return null;
+  }
+
+  const candidates = await db.query.userIngredients.findMany({
+    where: and(
+      eq(userIngredients.userId, userId),
+      sourceFilter
+    )
+  });
+
+  return candidates
+    .filter((item) => !item.archivedAt && inventoryItemCanCoverRecipeLine(line, item))
+    .sort((left, right) => (
+      right.normalizedQuantity - left.normalizedQuantity
+      || right.updatedAt.getTime() - left.updatedAt.getTime()
+    ))[0] ?? null;
+};
+
+const resolveOwnedInventoryItemForRecipeLine = async (
+  userId: string,
+  line: typeof recipeIngredients.$inferSelect,
+  inventoryItemId: string | null
+) => {
+  if (inventoryItemId) {
+    const selected = await db.query.userIngredients.findFirst({
+      where: and(eq(userIngredients.id, inventoryItemId), eq(userIngredients.userId, userId))
+    });
+
+    if (selected && inventoryItemCanCoverRecipeLine(line, selected)) {
+      return selected;
+    }
+  }
+
+  return findOwnedInventoryItemByRecipeLineSource(userId, line);
+};
+
+const updateRecipeLineInventorySelectionMeta = async (
+  line: typeof recipeIngredients.$inferSelect,
+  inventoryItem: typeof userIngredients.$inferSelect
+) => {
+  const currentMeta = line.inventorySelectionMeta && typeof line.inventorySelectionMeta === "object" && !Array.isArray(line.inventorySelectionMeta)
+    ? line.inventorySelectionMeta
+    : {};
+
+  if ((currentMeta as { inventoryItemId?: unknown }).inventoryItemId === inventoryItem.id) {
+    return;
+  }
+
+  await db.update(recipeIngredients).set({
+    inventorySelectionMeta: {
+      ...currentMeta,
+      inventoryItemId: inventoryItem.id,
+      stockNormalizedQuantity: inventoryItem.normalizedQuantity,
+      stockNormalizedUnit: inventoryItem.normalizedUnit
+    },
+    updatedAt: new Date()
+  }).where(eq(recipeIngredients.id, line.id));
+};
+
 const allocationStatusRank = (status: string) => {
   if (status === "reserved") return 5;
   if (status === "allocated") return 4;
@@ -263,15 +355,17 @@ export const syncRecipeSelectedInventoryAllocations = async (
     }
 
     const inventoryItemId = readInventoryItemIdFromMeta(line.inventorySelectionMeta);
-    if (!inventoryItemId) {
+    const inventoryItem = await resolveOwnedInventoryItemForRecipeLine(userId, line, inventoryItemId);
+    if (!inventoryItem) {
       continue;
     }
 
+    await updateRecipeLineInventorySelectionMeta(line, inventoryItem);
     await allocateRecipeIngredientFromInventory({
       userId,
       recipeId,
       recipeIngredientPersistentKey: line.persistentKey,
-      inventoryItemId
+      inventoryItemId: inventoryItem.id
     });
   }
 

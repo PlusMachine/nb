@@ -169,19 +169,20 @@ Equipment snapshot больше не передает в IBU расчет `preBo
 
 ## Water setup
 
-Water setup - это пошаговая настройка минерализации воды, а не расчет полного объема воды под оборудование.
+Water setup - это пошаговая настройка минерализации воды и pH. Общий объем воды теперь отделен от размера партии.
 
-Объем для минерализации берется из размера партии рецепта:
+Объем для минерализации берется так:
 
-- `totalWaterL = batchSize` в литрах;
-- если `batchSize` недоступен, fallback - legacy `waterPlanMeta.totalWaterVolumeL`;
-- если split не включен, весь объем считается заторной водой, `spargeWaterL = 0`;
-- если нажать `Разбить объем`, мастер создает ручной split `mashWaterVolumeL / spargeWaterVolumeL`;
-- если сумма split отличается от размера партии, появляется warning `water_split_sum_differs_from_batch_volume`.
+- если выбран профиль оборудования, `RecipeDesigner` строит `equipmentVolumePlan` от текущего batch size назад через trub/chiller loss, cooling shrinkage, boil-off, boil time и grain absorption;
+- если профиля оборудования нет, fallback - batch size рецепта в литрах;
+- legacy `waterPlanMeta.totalWaterVolumeL` остается поддержанным override;
+- если split не включен, весь рассчитанный total считается одним объемом, `spargeWaterL = 0`;
+- если нажать `Разделить на затор и промывку`, мастер использует suggested split из equipment plan, а без него fallback 65/35;
+- если пользователь вручную задает split, `totalWaterL = mashWaterL + spargeWaterL`.
+
+Сумма split может быть больше размера партии: это нормальный сценарий, потому что часть воды теряется на absorption зерна, кипячение, trub/chiller loss и shrinkage. Warning появляется только если ручной split меньше batch size: `water_split_below_batch_volume`.
 
 Соли считаются на общий объем. При split итоговые добавки делятся между заторной и промывочной водой пропорционально их объемам. Кислота в промывку считается только если включена acidification промывки и `spargeWaterL > 0`.
-
-Профиль оборудования на этот water plan не влияет.
 
 ## Ответ по старому списку полей water/volume plan
 

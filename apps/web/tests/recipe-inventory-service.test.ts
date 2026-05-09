@@ -15,7 +15,13 @@ const { tableRefs, mockState } = vi.hoisted(() => ({
       status: "status"
     },
     inventoryTransactions: { name: "inventory_transactions", id: "id" },
-    userIngredients: { name: "user_ingredients", id: "id", userId: "userId" }
+    userIngredients: {
+      name: "user_ingredients",
+      id: "id",
+      userId: "userId",
+      ingredientCatalogItemId: "ingredientCatalogItemId",
+      userCustomIngredientId: "userCustomIngredientId"
+    }
   },
   mockState: {
     idCounter: 0,
@@ -146,6 +152,11 @@ vi.mock("@nb/db", () => {
             });
           }
 
+          if (table.name === "recipe_ingredients") {
+            const id = getEqValue(where, "id");
+            mockState.lines = mockState.lines.map((line) => line.id === id ? { ...line, ...set } : line);
+          }
+
           if (table.name === "user_ingredients") {
             const id = getEqValue(where, "id");
             mockState.inventory = mockState.inventory.map((item) => item.id === id ? { ...item, ...set } : item);
@@ -203,7 +214,9 @@ describe("recipe inventory allocation service", () => {
       normalizedQuantity: 100,
       normalizedUnit: "g",
       enteredQuantity: 100,
-      enteredUnit: "g"
+      enteredUnit: "g",
+      archivedAt: null,
+      updatedAt: new Date("2026-01-01T00:00:00.000Z")
     }];
     mockState.allocations = [];
     mockState.transactions = [];
@@ -218,6 +231,59 @@ describe("recipe inventory allocation service", () => {
       inventoryItemId: uuid(21),
       status: "covered",
       requiredQuantityNormalized: 50
+    });
+  });
+
+  it("restores a stale selected inventory id from the recipe source linkage", async () => {
+    mockState.lines[0].inventorySelectionMeta = { inventoryItemId: uuid(99) };
+
+    const coverage = await syncRecipeSelectedInventoryAllocations(uuid(2), uuid(1));
+
+    expect(mockState.allocations).toHaveLength(1);
+    expect(mockState.lines[0].inventorySelectionMeta).toMatchObject({
+      inventoryItemId: uuid(21),
+      stockNormalizedQuantity: 100,
+      stockNormalizedUnit: "g"
+    });
+    expect(coverage.lines[0]).toMatchObject({
+      inventoryItemId: uuid(21),
+      status: "covered"
+    });
+  });
+
+  it("skips stale stock selections without aborting coverage sync for other lines", async () => {
+    mockState.lines = [
+      {
+        ...mockState.lines[0],
+        id: uuid(11),
+        persistentKey: uuid(111),
+        ingredientCatalogItemId: "missing-malt",
+        ingredientDisplayNameSnapshot: "Missing malt",
+        inventorySelectionMeta: { inventoryItemId: uuid(99) }
+      },
+      {
+        ...mockState.lines[0],
+        id: uuid(12),
+        persistentKey: uuid(112),
+        displayOrder: 1,
+        inventorySelectionMeta: { inventoryItemId: uuid(21) }
+      }
+    ];
+
+    const coverage = await syncRecipeSelectedInventoryAllocations(uuid(2), uuid(1));
+
+    expect(mockState.allocations).toHaveLength(1);
+    expect(coverage.summary).toMatchObject({
+      totalLines: 2,
+      selectedLines: 1
+    });
+    expect(coverage.lines[0]).toMatchObject({
+      status: "unselected",
+      inventoryItemId: null
+    });
+    expect(coverage.lines[1]).toMatchObject({
+      status: "covered",
+      inventoryItemId: uuid(21)
     });
   });
 

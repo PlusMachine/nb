@@ -30,12 +30,14 @@ export const recipeInventoryIntentModes = ["none", "use_stock", "catalog", "cust
 export const recipeBitternessFormulas = bitternessFormulas;
 export const recipeWaterEngineModes = waterEngineModes;
 export const recipeMashPhModels = mashPhModels;
+export const recipeWaterManualSaltAdditionTargets = ["all", "mash", "sparge"] as const;
 
 export type RecipePublicationState = (typeof recipePublicationStates)[number];
 export type RecipeIngredientStage = (typeof recipeIngredientStages)[number];
 export type RecipeHopUseType = (typeof recipeHopUseTypes)[number];
 export type RecipeFermentableUseType = (typeof recipeFermentableUseTypes)[number];
 export type RecipeInventoryIntentMode = (typeof recipeInventoryIntentModes)[number];
+export type RecipeWaterManualSaltAdditionTarget = (typeof recipeWaterManualSaltAdditionTargets)[number];
 
 export const recipeBitternessFormulaLabels: Record<BitternessFormula, string> = {
   tinseth_whirlpool_v2: "Tinseth + whirlpool v2",
@@ -218,7 +220,8 @@ export const recipeWaterPlanMetaSchema = z.object({
   allowedAcids: z.array(z.string()).optional().default([]),
   manualSaltAdditions: z.array(z.object({
     salt: z.string(),
-    grams: z.coerce.number().min(0)
+    grams: z.coerce.number().min(0),
+    target: z.enum(recipeWaterManualSaltAdditionTargets).optional()
   })).optional().default([]),
   targetMashPh: z.coerce.number().min(4).max(7).optional().nullable(),
   spargeAcidificationEnabled: z.coerce.boolean().default(false),

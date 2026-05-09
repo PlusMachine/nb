@@ -3,6 +3,8 @@ import {
   inArray,
   ingredientPackageVariants,
   ingredients,
+  inventoryTransactions,
+  recipeInventoryAllocations,
   userIngredients,
   users
 } from "../src";
@@ -294,7 +296,11 @@ export const seedQaFixtures = async (): Promise<{
     throw new Error("Expected Whirlfloc package variant for QA seed.");
   }
 
-  await db.delete(userIngredients).where(inArray(userIngredients.userId, [qaUser.id, qaAdmin.id]));
+  const qaUserIds = [qaUser.id, qaAdmin.id];
+
+  await db.delete(inventoryTransactions).where(inArray(inventoryTransactions.userId, qaUserIds));
+  await db.delete(recipeInventoryAllocations).where(inArray(recipeInventoryAllocations.userId, qaUserIds));
+  await db.delete(userIngredients).where(inArray(userIngredients.userId, qaUserIds));
 
   await db.insert(userIngredients).values([
     createInventorySeedRow(qaUser.id, pilsnerMalt, 6, "kg", 6000, "g", "Базовый солод для лагеров."),

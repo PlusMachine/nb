@@ -6,6 +6,7 @@ import React from "react";
 import {
   recipeMashPhModelLabels,
   recipeMashPhModels,
+  type RecipeWaterManualSaltAdditionTarget,
   type RecipeWaterPlanMeta,
 } from "@/features/recipes/contracts";
 import {
@@ -239,9 +240,24 @@ const saltCalculationModeLabels = {
   manual: "Ручные добавки солей",
 };
 
+const manualSaltAdditionTargetLabels: Record<
+  RecipeWaterManualSaltAdditionTarget,
+  string
+> = {
+  all: "Вся вода",
+  mash: "Затор",
+  sparge: "Промывка",
+};
+
+const brewfatherDefaultAutoSalts = [
+  "gypsum",
+  "calcium_chloride",
+  "epsom_salt",
+];
+
 const waterWarningLabels: Record<string, string> = {
-  water_split_sum_differs_from_batch_volume:
-    "Сумма заторной и промывочной воды отличается от объема партии.",
+  water_split_below_batch_volume:
+    "Сумма заторной и промывочной воды меньше объема партии.",
   source_profile_missing_or_zero:
     "Выберите исходную воду или введите профиль вручную.",
   target_profile_missing_or_zero: "Выберите целевой профиль воды.",
@@ -260,6 +276,10 @@ const lowPriorityWarnings = new Set([
   "mash_ph_ballpark_estimate",
   "mash_acid_model_practical_approximation",
   "target_already_reached",
+]);
+const blockingWaterWarnings = new Set([
+  "source_profile_missing_or_zero",
+  "target_profile_missing_or_zero",
 ]);
 
 const ionKeys = ["ca", "mg", "na", "cl", "so4", "hco3"] as const;
@@ -550,6 +570,10 @@ export const setRecipeWaterVolumeMode = (
   waterPlanMeta: RecipeWaterPlanMeta,
   mode: WaterVolumeMode,
   totalWaterL: number,
+  suggestedSplit?: {
+    mashWaterL: number | null;
+    spargeWaterL: number | null;
+  },
 ): RecipeWaterPlanMeta => {
   if (mode === "single") {
     return {
@@ -558,17 +582,43 @@ export const setRecipeWaterVolumeMode = (
       mashWaterVolumeL: null,
       spargeWaterVolumeL: null,
       totalWaterVolumeL: null,
+      manualSaltAdditions: (waterPlanMeta.manualSaltAdditions ?? []).map(
+        (addition) => ({
+          ...addition,
+          target: "all" as RecipeWaterManualSaltAdditionTarget,
+        }),
+      ),
       spargeAcidificationEnabled: false,
     };
   }
 
-  const mashWaterL = Number((Math.max(0, totalWaterL) * 0.65).toFixed(1));
+  const suggestedMashWaterL =
+    suggestedSplit?.mashWaterL != null && suggestedSplit.mashWaterL >= 0
+      ? suggestedSplit.mashWaterL
+      : null;
+  const suggestedSpargeWaterL =
+    suggestedSplit?.spargeWaterL != null && suggestedSplit.spargeWaterL >= 0
+      ? suggestedSplit.spargeWaterL
+      : null;
+  const hasSuggestedSplit =
+    suggestedMashWaterL != null &&
+    suggestedSpargeWaterL != null &&
+    suggestedMashWaterL + suggestedSpargeWaterL > 0;
+  const mashWaterL = Number(
+    (hasSuggestedSplit
+      ? (suggestedMashWaterL ?? 0)
+      : Math.max(0, totalWaterL) * 0.65
+    ).toFixed(1),
+  );
   return {
     ...waterPlanMeta,
     setupEnabled: true,
     mashWaterVolumeL: mashWaterL,
     spargeWaterVolumeL: Number(
-      Math.max(0, totalWaterL - mashWaterL).toFixed(1),
+      (hasSuggestedSplit
+        ? (suggestedSpargeWaterL ?? 0)
+        : Math.max(0, totalWaterL - mashWaterL)
+      ).toFixed(1),
     ),
     totalWaterVolumeL: null,
   };
@@ -590,8 +640,6 @@ export const setRecipeWaterTargetMashPh = (
     waterPlanMeta.engine === "advanced_manual"
       ? "advanced_manual"
       : autoSaltEngineForTargetMashPh(targetMashPh),
-  spargeAcidificationEnabled:
-    targetMashPh == null ? false : waterPlanMeta.spargeAcidificationEnabled,
 });
 
 export const setRecipeWaterSaltCalculationMode = (
@@ -604,6 +652,21 @@ export const setRecipeWaterSaltCalculationMode = (
     mode === "manual"
       ? "advanced_manual"
       : autoSaltEngineForTargetMashPh(waterPlanMeta.targetMashPh),
+});
+
+export const isRecipeWaterAutoBakingSodaEnabled = (
+  waterPlanMeta: RecipeWaterPlanMeta,
+) => (waterPlanMeta.allowedSalts ?? []).includes("baking_soda");
+
+export const setRecipeWaterAutoBakingSodaEnabled = (
+  waterPlanMeta: RecipeWaterPlanMeta,
+  enabled: boolean,
+): RecipeWaterPlanMeta => ({
+  ...waterPlanMeta,
+  setupEnabled: true,
+  allowedSalts: enabled
+    ? [...brewfatherDefaultAutoSalts, "baking_soda"]
+    : [],
 });
 
 export const removeRecipeWaterManualSaltAddition = (
@@ -1072,100 +1135,7 @@ function ProfileIonEditor({
   );
 }
 
-const getAcidMl = (
-  addition:
-    | RecipeWaterPlanResult["mashAcidAddition"]
-    | RecipeWaterPlanResult["spargeAcidAddition"],
-) => {
-  if (!addition) {
-    return null;
-  }
-
-  return "spargeAcidMl" in addition
-    ? addition.spargeAcidMl
-    : addition.mashAcidMl;
-};
-
-function WaterAdditionsCard({
-  title,
-  volumeLabel,
-  saltAdditions,
-  acidAddition,
-  showAcid,
-  headerControl,
-  children,
-}: {
-  title: string;
-  volumeLabel: string;
-  saltAdditions: RecipeWaterPlanResult["mashSaltAdditions"];
-  acidAddition?:
-    | RecipeWaterPlanResult["mashAcidAddition"]
-    | RecipeWaterPlanResult["spargeAcidAddition"];
-  showAcid?: boolean;
-  headerControl?: React.ReactNode;
-  children?: React.ReactNode;
-}) {
-  const acidMl = getAcidMl(acidAddition ?? null);
-
-  return (
-    <div className="rounded-xl border border-zinc-200 bg-white p-4 shadow-sm">
-      <div className="flex items-start justify-between gap-3">
-        <div>
-          <h4 className="text-sm font-semibold text-zinc-950">{title}</h4>
-          <p className="mt-0.5 text-xs text-zinc-500">{volumeLabel}</p>
-        </div>
-      </div>
-
-      {headerControl ? <div className="mt-3">{headerControl}</div> : null}
-
-      <div className="mt-3 space-y-2">
-        {saltAdditions.length ? (
-          saltAdditions.map((item) => (
-            <div
-              key={`${item.salt}-${item.grams}`}
-              className="flex items-center justify-between gap-3 rounded-lg bg-zinc-50 px-3 py-2 text-sm"
-            >
-              <span>
-                <span className="block font-medium text-zinc-700">
-                  {item.label}
-                </span>
-                <span className="mt-0.5 block text-xs text-zinc-500">
-                  {item.formula}
-                </span>
-              </span>
-              <span className="tabular-nums text-zinc-950">
-                {item.grams.toFixed(2)} г
-              </span>
-            </div>
-          ))
-        ) : (
-          <div className="rounded-lg bg-zinc-50 px-3 py-2 text-sm text-zinc-500">
-            Соли не нужны
-          </div>
-        )}
-
-        {showAcid ? (
-          <div className="flex items-center justify-between gap-3 rounded-lg bg-zinc-50 px-3 py-2 text-sm">
-            <span className="font-medium text-zinc-700">
-              {acidAddition?.label ?? "Кислота"}
-            </span>
-            <span className="tabular-nums text-zinc-950">
-              {acidMl == null
-                ? "pH не рассчитан"
-                : acidMl > 0
-                  ? `${acidMl.toFixed(2)} мл`
-                  : "не нужна"}
-            </span>
-          </div>
-        ) : null}
-      </div>
-
-      {children ? <div className="mt-3">{children}</div> : null}
-    </div>
-  );
-}
-
-function TargetMashPhField({
+function MashPhCorrectionCard({
   value,
   onChange,
 }: {
@@ -1175,18 +1145,18 @@ function TargetMashPhField({
   const enabled = value != null;
 
   return (
-    <div className="rounded-lg border border-zinc-100 bg-zinc-50 px-3 py-2">
-      <label className="flex items-center gap-2 text-xs font-medium text-zinc-700">
+    <div className="rounded-xl border border-zinc-200 bg-white p-4 shadow-sm">
+      <label className="flex items-center gap-2 text-sm font-semibold text-zinc-800">
         <input
           type="checkbox"
           checked={enabled}
           onChange={(event) => onChange(event.target.checked ? 5.35 : null)}
           className="h-4 w-4 rounded border-zinc-300"
         />
-        Рассчитывать pH затора
+        Корректировать pH затора
       </label>
       {enabled ? (
-        <label className="mt-2 block text-xs font-medium text-zinc-600">
+        <label className="mt-3 block text-xs font-medium text-zinc-600">
           Целевой pH затора
           <input
             type="number"
@@ -1205,6 +1175,66 @@ function TargetMashPhField({
           pH затора не рассчитывается.
         </p>
       )}
+    </div>
+  );
+}
+
+function SpargeAcidificationCard({
+  enabled,
+  sourcePh,
+  targetPh,
+  onEnabledChange,
+  onSourcePhChange,
+  onTargetPhChange,
+}: {
+  enabled: boolean;
+  sourcePh: number;
+  targetPh: number;
+  onEnabledChange: (enabled: boolean) => void;
+  onSourcePhChange: (value: number | null) => void;
+  onTargetPhChange: (value: number) => void;
+}) {
+  return (
+    <div className="rounded-xl border border-zinc-200 bg-white p-4 shadow-sm">
+      <label className="flex items-center gap-2 text-sm font-semibold text-zinc-800">
+        <input
+          type="checkbox"
+          checked={enabled}
+          onChange={(event) => onEnabledChange(event.target.checked)}
+          className="h-4 w-4 rounded border-zinc-300"
+        />
+        Подкислить промывочную воду
+      </label>
+      {enabled ? (
+        <div className="mt-3 grid gap-3 sm:grid-cols-2">
+          <label className="text-xs font-medium text-zinc-600">
+            Исходный pH
+            <input
+              type="number"
+              min={0}
+              max={14}
+              step={0.01}
+              value={sourcePh}
+              onChange={(event) => onSourcePhChange(toOptionalNumber(event.target.value))}
+              className="mt-1 h-9 w-full rounded-lg border border-zinc-200 bg-white px-2 text-sm text-zinc-900"
+            />
+          </label>
+          <label className="text-xs font-medium text-zinc-600">
+            Целевой pH промывки
+            <input
+              type="number"
+              min={4}
+              max={7}
+              step={0.01}
+              value={targetPh}
+              onChange={(event) =>
+                onTargetPhChange(toOptionalNumber(event.target.value) ?? 5.7)
+              }
+              className="mt-1 h-9 w-full rounded-lg border border-zinc-200 bg-white px-2 text-sm text-zinc-900"
+            />
+          </label>
+        </div>
+      ) : null}
     </div>
   );
 }
@@ -1261,12 +1291,32 @@ export function WaterSetupWizard({
   const target = effectiveWaterPlanMeta.targetProfile ?? emptyProfile;
   const selectedAcid = effectiveWaterPlanMeta.selectedAcid ?? "lactic_acid";
   const mashPhEnabled = isRecipeWaterMashPhEnabled(effectiveWaterPlanMeta);
+  const spargeAcidificationEnabled =
+    Boolean(effectiveWaterPlanMeta.spargeAcidificationEnabled) &&
+    waterPlanResult.waterVolumes.spargeWaterL > 0;
+  const acidCalculationEnabled = mashPhEnabled || spargeAcidificationEnabled;
   const saltCalculationMode =
     effectiveWaterPlanMeta.engine === "advanced_manual" ? "manual" : "auto";
   const isSplitVolume = waterPlanResult.waterVolumes.source === "manual_split";
   const visibleWarnings = waterPlanResult.warnings
-    .filter((warning) => !lowPriorityWarnings.has(warning))
+    .filter(
+      (warning) =>
+        !lowPriorityWarnings.has(warning) &&
+        !(
+          warning === "target_profile_missing_or_zero" &&
+          waterPlanResult.engine === "advanced_manual"
+        ),
+    )
     .slice(0, 3);
+  const hasBlockingWarning = visibleWarnings.some(
+    (warning) =>
+      warning === "source_profile_missing_or_zero" ||
+      (warning === "target_profile_missing_or_zero" &&
+        waterPlanResult.engine !== "advanced_manual"),
+  );
+  const secondaryVisibleWarnings = visibleWarnings.filter(
+    (warning) => !blockingWaterWarnings.has(warning),
+  );
   const selectedSavedSourceProfile = savedSourceProfiles.find(
     (profile) => profile.id === effectiveWaterPlanMeta.sourceProfileSavedId,
   );
@@ -1458,10 +1508,18 @@ export function WaterSetupWizard({
 
   const updateManualSalt = (
     index: number,
-    patch: { salt?: string; grams?: number },
+    patch: {
+      salt?: string;
+      grams?: number;
+      target?: RecipeWaterManualSaltAdditionTarget;
+    },
   ) => {
     const next = [...(effectiveWaterPlanMeta.manualSaltAdditions ?? [])];
-    const current = next[index] ?? { salt: "gypsum", grams: 0 };
+    const current = next[index] ?? {
+      salt: "gypsum",
+      grams: 0,
+      target: "all" as RecipeWaterManualSaltAdditionTarget,
+    };
     next[index] = { ...current, ...patch };
     onChange({
       ...effectiveWaterPlanMeta,
@@ -1575,48 +1633,73 @@ export function WaterSetupWizard({
   };
 
   return (
-    <details
-      open={isOpen}
-      onToggle={(event) => {
-        const nextOpen = event.currentTarget.open;
-        setIsOpen(nextOpen);
-        if (!nextOpen) {
-          setTargetCatalogPickerOpen(false);
-          setShowAllTargetProfiles(false);
-        }
-      }}
-      className="group rounded-2xl border border-zinc-100 bg-white p-5 shadow-sm"
-    >
-      <summary className="flex cursor-pointer list-none items-center gap-2 text-sm font-semibold text-zinc-700">
-        <span className="flex h-7 w-7 items-center justify-center rounded-md bg-sky-50 text-xs font-bold text-sky-700">
-          H2O
-        </span>
-        Вода
-        <span className="text-xs font-normal text-zinc-400">
-          {waterPlanMeta.setupEnabled ? "профиль -> добавки" : "выберите источник"}
-        </span>
-        <ChevronRight className="ml-auto h-4 w-4 text-zinc-400 transition-transform group-open:rotate-90" />
-      </summary>
-
-      <div className="mt-4 space-y-4">
-        {waterPlanMeta.setupEnabled ? (
-          <div className="flex items-start justify-between gap-3">
-            <div className="min-w-0 flex-1">
-              <WaterSummaryCard
-                waterPlanMeta={waterPlanMeta}
-                waterPlanResult={waterPlanResult}
-              />
+    <section className="rounded-2xl border border-zinc-100 bg-white p-5 shadow-sm">
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <div className="flex min-w-0 items-start gap-2">
+          <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-sky-50 text-xs font-bold text-sky-700">
+            H2O
+          </span>
+          <div className="min-w-0">
+            <div className="flex flex-wrap items-center gap-2">
+              <h2 className="text-sm font-semibold text-zinc-800">Вода</h2>
             </div>
-            <button
-              type="button"
-              onClick={() => onChange(createRecipeWaterPlanResetMeta())}
-              className="ml-auto rounded-md border border-zinc-200 bg-white px-2.5 py-1.5 text-xs font-medium text-zinc-500 hover:bg-zinc-50 hover:text-zinc-800"
-            >
-              Сбросить воду
-            </button>
           </div>
+        </div>
+        {waterPlanMeta.setupEnabled ? (
+          <button
+            type="button"
+            onClick={() => onChange(createRecipeWaterPlanResetMeta())}
+            className="rounded-md border border-zinc-200 bg-white px-2.5 py-1.5 text-xs font-medium text-zinc-500 hover:bg-zinc-50 hover:text-zinc-800"
+          >
+            Сбросить воду
+          </button>
         ) : null}
+      </div>
 
+      <div className="mt-4">
+        <WaterSummaryCard
+          waterPlanMeta={waterPlanMeta}
+          waterPlanResult={waterPlanResult}
+        />
+      </div>
+
+      {waterPlanMeta.setupEnabled && secondaryVisibleWarnings.length ? (
+        <div className="mt-3 grid gap-2">
+          {secondaryVisibleWarnings.map((warning) => (
+            <div
+              key={warning}
+              className="rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-800"
+            >
+              {waterWarningLabels[warning] ?? warning}
+            </div>
+          ))}
+        </div>
+      ) : null}
+
+      <details
+        open={isOpen}
+        onToggle={(event) => {
+          const nextOpen = event.currentTarget.open;
+          setIsOpen(nextOpen);
+          if (!nextOpen) {
+            setTargetCatalogPickerOpen(false);
+            setShowAllTargetProfiles(false);
+          }
+        }}
+        className="group mt-4 rounded-xl border border-zinc-200 bg-zinc-50/40"
+      >
+        <summary className="flex cursor-pointer list-none items-center gap-2 px-3 py-3 text-sm font-semibold text-zinc-800">
+          <SlidersHorizontal className="h-4 w-4 shrink-0 text-zinc-400" />
+          <span className="min-w-0 flex-1">
+            <span className="block">Настройка воды</span>
+            <span className="mt-0.5 block truncate text-xs font-normal text-zinc-400">
+              источник, цель, объемы и pH
+            </span>
+          </span>
+          <ChevronRight className="h-4 w-4 shrink-0 text-zinc-400 transition-transform group-open:rotate-90" />
+        </summary>
+
+        <div className="space-y-4 border-t border-zinc-100 bg-white p-4">
         <section className="space-y-2">
           <div className="flex items-center justify-between gap-3">
             <h3 className="text-sm font-semibold text-zinc-900">
@@ -2009,6 +2092,12 @@ export function WaterSetupWizard({
                         waterPlanMeta,
                         "split",
                         waterPlanResult.waterVolumes.totalWaterL,
+                        {
+                          mashWaterL:
+                            waterPlanResult.waterVolumes.suggestedMashWaterL,
+                          spargeWaterL:
+                            waterPlanResult.waterVolumes.suggestedSpargeWaterL,
+                        },
                       ),
                     )
                   }
@@ -2062,163 +2151,51 @@ export function WaterSetupWizard({
                 </div>
               ) : null}
 
-              {waterPlanResult.warnings.includes(
-                "water_split_sum_differs_from_batch_volume",
-              ) ? (
-                <div className="rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-800">
-                  Сумма заторной и промывочной воды отличается от объема партии.
-                </div>
-              ) : null}
             </section>
 
             <section className="space-y-3">
-              <div className="flex flex-wrap items-end justify-between gap-3">
-                <div>
-                  <h3 className="text-sm font-semibold text-zinc-900">
-                    4. Что добавить
-                  </h3>
-                  <p className="mt-1 text-xs text-zinc-500">
-                    Финальный профиль:{" "}
-                    {formatProfile(waterPlanResult.finalProfile)} ppm
-                  </p>
-                </div>
-                <div className="text-xs text-zinc-500">
-                  SO4:Cl {waterPlanResult.sulfateChlorideRatio ?? "—"}
-                </div>
-              </div>
-
-              {!isSplitVolume ? (
-                <WaterAdditionsCard
-                  title="Добавить в воду"
-                  volumeLabel={`${waterPlanResult.waterVolumes.totalWaterL.toFixed(1)} л`}
-                  saltAdditions={waterPlanResult.totalSaltAdditions}
-                  acidAddition={waterPlanResult.mashAcidAddition}
-                  showAcid={mashPhEnabled}
-                  headerControl={
-                    <TargetMashPhField
-                      value={mashPhEnabled ? waterPlanMeta.targetMashPh : null}
-                      onChange={(value) =>
-                        onChange(
-                          setRecipeWaterTargetMashPh(waterPlanMeta, value),
-                        )
-                      }
-                    />
+              <h3 className="text-sm font-semibold text-zinc-900">
+                4. pH и подкисление
+              </h3>
+              <div className="grid gap-3 lg:grid-cols-2">
+                <MashPhCorrectionCard
+                  value={mashPhEnabled ? waterPlanMeta.targetMashPh : null}
+                  onChange={(value) =>
+                    onChange(setRecipeWaterTargetMashPh(waterPlanMeta, value))
                   }
                 />
-              ) : (
-                <div className="grid gap-3 lg:grid-cols-2">
-                  <WaterAdditionsCard
-                    title="В затор"
-                    volumeLabel={`${waterPlanResult.waterVolumes.mashWaterL.toFixed(1)} л`}
-                    saltAdditions={waterPlanResult.mashSaltAdditions}
-                    acidAddition={waterPlanResult.mashAcidAddition}
-                    showAcid={mashPhEnabled}
-                    headerControl={
-                      <TargetMashPhField
-                        value={
-                          mashPhEnabled ? waterPlanMeta.targetMashPh : null
-                        }
-                        onChange={(value) =>
-                          onChange(
-                            setRecipeWaterTargetMashPh(waterPlanMeta, value),
-                          )
-                        }
-                      />
+                {isSplitVolume && waterPlanResult.waterVolumes.spargeWaterL > 0 ? (
+                  <SpargeAcidificationCard
+                    enabled={Boolean(waterPlanMeta.spargeAcidificationEnabled)}
+                    sourcePh={waterPlanMeta.spargeSourcePh ?? source.ph ?? 7}
+                    targetPh={waterPlanMeta.targetSpargePh ?? 5.7}
+                    onEnabledChange={(enabled) =>
+                      onChange({
+                        ...waterPlanMeta,
+                        setupEnabled: true,
+                        spargeAcidificationEnabled: enabled,
+                      })
+                    }
+                    onSourcePhChange={(value) =>
+                      onChange({
+                        ...waterPlanMeta,
+                        setupEnabled: true,
+                        spargeSourcePh: value,
+                      })
+                    }
+                    onTargetPhChange={(value) =>
+                      onChange({
+                        ...waterPlanMeta,
+                        setupEnabled: true,
+                        targetSpargePh: value,
+                      })
                     }
                   />
-                  <WaterAdditionsCard
-                    title="В промывку"
-                    volumeLabel={`${waterPlanResult.waterVolumes.spargeWaterL.toFixed(1)} л`}
-                    saltAdditions={waterPlanResult.spargeSaltAdditions}
-                    acidAddition={waterPlanResult.spargeAcidAddition}
-                    showAcid={
-                      mashPhEnabled && waterPlanMeta.spargeAcidificationEnabled
-                    }
-                  >
-                    {mashPhEnabled ? (
-                      <label className="flex items-center gap-2 text-sm font-medium text-zinc-700">
-                        <input
-                          type="checkbox"
-                          checked={
-                            waterPlanMeta.spargeAcidificationEnabled ?? false
-                          }
-                          onChange={(event) =>
-                            onChange({
-                              ...waterPlanMeta,
-                              setupEnabled: true,
-                              spargeAcidificationEnabled: event.target.checked,
-                            })
-                          }
-                          className="h-4 w-4 rounded border-zinc-300"
-                        />
-                        Подкислить промывочную воду
-                      </label>
-                    ) : null}
-                    {mashPhEnabled &&
-                    waterPlanMeta.spargeAcidificationEnabled ? (
-                      <div className="mt-3 grid gap-3 sm:grid-cols-2">
-                        <label className="text-xs font-medium text-zinc-600">
-                          Исходный pH
-                          <input
-                            type="number"
-                            min={0}
-                            max={14}
-                            step={0.01}
-                            value={
-                              waterPlanMeta.spargeSourcePh ?? source.ph ?? 7
-                            }
-                            onChange={(event) =>
-                              onChange({
-                                ...waterPlanMeta,
-                                setupEnabled: true,
-                                spargeSourcePh: toOptionalNumber(
-                                  event.target.value,
-                                ),
-                              })
-                            }
-                            className="mt-1 h-9 w-full rounded-lg border border-zinc-200 bg-white px-2 text-sm text-zinc-900"
-                          />
-                        </label>
-                        <label className="text-xs font-medium text-zinc-600">
-                          Целевой pH
-                          <input
-                            type="number"
-                            min={4}
-                            max={7}
-                            step={0.01}
-                            value={waterPlanMeta.targetSpargePh ?? 5.7}
-                            onChange={(event) =>
-                              onChange({
-                                ...waterPlanMeta,
-                                setupEnabled: true,
-                                targetSpargePh:
-                                  toOptionalNumber(event.target.value) ?? 5.7,
-                              })
-                            }
-                            className="mt-1 h-9 w-full rounded-lg border border-zinc-200 bg-white px-2 text-sm text-zinc-900"
-                          />
-                        </label>
-                      </div>
-                    ) : null}
-                  </WaterAdditionsCard>
-                </div>
-              )}
-
-              {visibleWarnings.length ? (
-                <div className="grid gap-2">
-                  {visibleWarnings.map((warning) => (
-                    <div
-                      key={warning}
-                      className="rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-800"
-                    >
-                      {waterWarningLabels[warning] ?? warning}
-                    </div>
-                  ))}
-                </div>
-              ) : null}
+                ) : null}
+              </div>
             </section>
 
-            <details className="rounded-xl border border-zinc-100 bg-white p-3">
+            <details className="group rounded-xl border border-zinc-100 bg-white p-3">
               <summary className="flex cursor-pointer list-none items-center gap-2 text-sm font-semibold text-zinc-800">
                 <SlidersHorizontal className="h-4 w-4 text-zinc-400" />
                 Расширенные настройки
@@ -2247,29 +2224,51 @@ export function WaterSetupWizard({
                     </option>
                   </select>
                 </label>
+                {saltCalculationMode === "auto" ? (
+                  <label className="flex min-h-10 items-center gap-2 self-end rounded-lg border border-zinc-200 bg-zinc-50 px-3 py-2 text-sm font-medium text-zinc-700">
+                    <input
+                      type="checkbox"
+                      checked={isRecipeWaterAutoBakingSodaEnabled(
+                        effectiveWaterPlanMeta,
+                      )}
+                      onChange={(event) =>
+                        onChange(
+                          setRecipeWaterAutoBakingSodaEnabled(
+                            waterPlanMeta,
+                            event.target.checked,
+                          ),
+                        )
+                      }
+                      className="h-4 w-4 rounded border-zinc-300"
+                    />
+                    Считать пищевую соду (NaHCO3) в авторасчете
+                  </label>
+                ) : null}
                 {mashPhEnabled ? (
+                  <label className="text-xs font-medium text-zinc-600">
+                    Модель pH
+                    <select
+                      value={waterPlanMeta.phModel}
+                      onChange={(event) =>
+                        onChange({
+                          ...waterPlanMeta,
+                          setupEnabled: true,
+                          phModel: event.target
+                            .value as RecipeWaterPlanMeta["phModel"],
+                        })
+                      }
+                      className="mt-1 h-10 w-full rounded-lg border border-zinc-200 bg-white px-3 text-sm text-zinc-900"
+                    >
+                      {recipeMashPhModels.map((model) => (
+                        <option key={model} value={model}>
+                          {recipeMashPhModelLabels[model]}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+                ) : null}
+                {acidCalculationEnabled ? (
                   <>
-                    <label className="text-xs font-medium text-zinc-600">
-                      Модель pH
-                      <select
-                        value={waterPlanMeta.phModel}
-                        onChange={(event) =>
-                          onChange({
-                            ...waterPlanMeta,
-                            setupEnabled: true,
-                            phModel: event.target
-                              .value as RecipeWaterPlanMeta["phModel"],
-                          })
-                        }
-                        className="mt-1 h-10 w-full rounded-lg border border-zinc-200 bg-white px-3 text-sm text-zinc-900"
-                      >
-                        {recipeMashPhModels.map((model) => (
-                          <option key={model} value={model}>
-                            {recipeMashPhModelLabels[model]}
-                          </option>
-                        ))}
-                      </select>
-                    </label>
                     <label className="text-xs font-medium text-zinc-600">
                       Кислота
                       <select
@@ -2293,6 +2292,33 @@ export function WaterSetupWizard({
                         )}
                       </select>
                     </label>
+                  </>
+                ) : null}
+                {mashPhEnabled ? (
+                  <label className="text-xs font-medium text-zinc-600">
+                    Калибровка pH
+                    <input
+                      type="number"
+                      min={-2}
+                      max={2}
+                      step={0.01}
+                      value={waterPlanMeta.calibrationOffset ?? ""}
+                      onChange={(event) =>
+                        onChange({
+                          ...waterPlanMeta,
+                          setupEnabled: true,
+                          calibrationOffset: toOptionalNumber(
+                            event.target.value,
+                          ),
+                        })
+                      }
+                      className="mt-1 h-10 w-full rounded-lg border border-zinc-200 bg-white px-3 text-sm text-zinc-900"
+                      placeholder="0.00"
+                    />
+                  </label>
+                ) : null}
+                {acidCalculationEnabled ? (
+                  <>
                     <label className="text-xs font-medium text-zinc-600">
                       Концентрация кислоты, %
                       <input
@@ -2316,27 +2342,6 @@ export function WaterSetupWizard({
                         }
                       />
                     </label>
-                    <label className="text-xs font-medium text-zinc-600">
-                      Калибровка pH
-                      <input
-                        type="number"
-                        min={-2}
-                        max={2}
-                        step={0.01}
-                        value={waterPlanMeta.calibrationOffset ?? ""}
-                        onChange={(event) =>
-                          onChange({
-                            ...waterPlanMeta,
-                            setupEnabled: true,
-                            calibrationOffset: toOptionalNumber(
-                              event.target.value,
-                            ),
-                          })
-                        }
-                        className="mt-1 h-10 w-full rounded-lg border border-zinc-200 bg-white px-3 text-sm text-zinc-900"
-                        placeholder="0.00"
-                      />
-                    </label>
                   </>
                 ) : null}
               </div>
@@ -2355,7 +2360,7 @@ export function WaterSetupWizard({
                         engine: "advanced_manual",
                         manualSaltAdditions: [
                           ...(waterPlanMeta.manualSaltAdditions ?? []),
-                          { salt: "gypsum", grams: 0 },
+                          { salt: "gypsum", grams: 0, target: "all" },
                         ],
                       })
                     }
@@ -2368,7 +2373,11 @@ export function WaterSetupWizard({
                   (addition, index) => (
                     <div
                       key={index}
-                      className="grid gap-2 sm:grid-cols-[1fr_120px_36px]"
+                      className={
+                        isSplitVolume
+                          ? "grid gap-2 sm:grid-cols-[1fr_130px_120px_36px]"
+                          : "grid gap-2 sm:grid-cols-[1fr_120px_36px]"
+                      }
                     >
                       <select
                         value={addition.salt}
@@ -2399,6 +2408,27 @@ export function WaterSetupWizard({
                         }
                         className="h-9 rounded-lg border border-zinc-200 bg-white px-2 text-sm text-zinc-900"
                       />
+                      {isSplitVolume ? (
+                        <select
+                          aria-label="Куда добавить соль"
+                          value={addition.target ?? "all"}
+                          onChange={(event) =>
+                            updateManualSalt(index, {
+                              target: event.target
+                                .value as RecipeWaterManualSaltAdditionTarget,
+                            })
+                          }
+                          className="h-9 rounded-lg border border-zinc-200 bg-white px-2 text-sm text-zinc-900"
+                        >
+                          {Object.entries(manualSaltAdditionTargetLabels).map(
+                            ([value, label]) => (
+                              <option key={value} value={value}>
+                                {label}
+                              </option>
+                            ),
+                          )}
+                        </select>
+                      ) : null}
                       <button
                         type="button"
                         onClick={() =>
@@ -2426,7 +2456,8 @@ export function WaterSetupWizard({
             </details>
           </>
         ) : null}
-      </div>
-    </details>
+        </div>
+      </details>
+    </section>
   );
 }

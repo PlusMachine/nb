@@ -26,25 +26,28 @@
 
 ## 2. Верхний UX блока: как пользователь в него входит
 
-Внешний контейнер воды — это `<details>`:
+Внешний контейнер воды — это обычный `<section>`, а не скрывающий весь блок `<details>`.
 
-- закрыт по умолчанию;
-- в summary-строке слева круглый/квадратный бейдж `H2O`;
-- заголовок — `Вода`;
-- справа стрелка раскрытия.
+Верх блока всегда виден в основном flow рецепта:
 
-Подзаголовок summary зависит от persisted state:
+- слева бейдж `H2O`;
+- заголовок `Вода`;
+- кнопка `Сбросить воду`, если `waterPlanMeta.setupEnabled === true`.
 
-- если `waterPlanMeta.setupEnabled === false`: `выберите источник`;
-- если `waterPlanMeta.setupEnabled === true`: `профиль -> добавки`.
+Сразу под заголовком рендерится `WaterSummaryCard`:
+
+- если вода настроена, он показывает объемы, pH, итоговые соли/кислоту и финальный профиль;
+- если вода не настроена, он показывает компактное состояние `Вода не настроена`.
+
+Настройки вынесены в отдельный внутренний `<details>` с заголовком `Настройка воды`. Именно там пользователь меняет source, target, split, pH и advanced-параметры.
 
 Важно:
 
-- отдельного CTA `Настроить воду` больше нет;
-- отдельного вопроса `Настроить водоподготовку?` больше нет;
-- пустого экрана с единственной кнопкой запуска water flow больше нет.
+- итоговые добавки больше не скрываются вместе с настройками;
+- отдельного вопроса `Настроить водоподготовку?` нет;
+- настройка воды и план добавок теперь разделены визуально.
 
-Пользователь входит в water flow просто раскрывая блок `Вода`.
+Пользователь входит в настройку воды раскрывая внутренний блок `Настройка воды`.
 
 ## 3. Главная runtime-идея: persisted state и "effective" state
 
@@ -82,34 +85,36 @@ const effectiveWaterPlanMeta =
 
 ## 4. Что пользователь видит сразу после открытия блока
 
-Если `setupEnabled = false`, в текущем UX пользователь видит:
+Если `setupEnabled = false`, в основном flow пользователь видит:
 
-- кнопку `Сбросить воду`;
+- заголовок блока `Вода`;
+- карточку `Вода не настроена`;
+- закрытый блок `Настройка воды`.
+
+После раскрытия `Настройка воды` пользователь видит:
+
 - шаг `1. Исходная вода`;
 - шаг `2. Целевой профиль`;
 - source ion editor;
 - target ion editor.
 
-Но он не видит:
+Он не видит шаги `3. Как вносить соли`, `4. pH и подкисление` и `Расширенные настройки`, пока вода не будет активирована первым meaningful action.
 
-- summary-card сверху;
-- шаг `3. Как вносить соли`;
-- шаг `4. Что добавить`;
-- блок `Расширенные настройки`.
-
-То есть flow начинается не с результата, а с выбора source/target.
+Отдельного шага `Что добавить` в настройках больше нет: итоговые соли/кислота живут в `WaterSummaryCard` основного flow.
 
 ## 5. Реальный end-to-end flow от начала до конца
 
 Текущий flow выглядит так:
 
 ```text
-Раскрыть блок "Вода"
+Увидеть блок "Вода" в основном flow рецепта
+-> если вода настроена, сразу увидеть итоговые добавки
+-> при необходимости раскрыть "Настройка воды"
 -> выбрать / отредактировать исходную воду
 -> выбрать / отредактировать целевой профиль
 -> тем самым активировать water setup
 -> выбрать один объем или split mash/sparge
--> посмотреть рассчитанные соли / кислоту
+-> посмотреть рассчитанные соли / кислоту в WaterSummaryCard над настройками
 -> при необходимости открыть advanced и перейти в manual mode, сменить pH model, acid, concentration, calibration
 -> при необходимости сохранить source/target profile в localStorage
 -> при необходимости сбросить воду обратно в disabled state
@@ -264,13 +269,13 @@ Default naming:
 
 Если saved target profiles нет:
 
-- `Поиск`;
+- `Подобрать профиль`;
 - `Вручную`.
 
 Если saved target profiles есть:
 
 - dropdown saved target profiles;
-- `Поиск`;
+- `Подобрать профиль`;
 - `Вручную`.
 
 Итого актуальные target options:
@@ -278,7 +283,7 @@ Default naming:
 | UI option | Что делает |
 |---|---|
 | `Сохраненный профиль` | Открывает dropdown сохраненных target profiles |
-| `Поиск` | Включает `catalog` mode и открывает search picker |
+| `Подобрать профиль` | Включает `catalog` mode и открывает search picker |
 | `Вручную` | Переводит target в manual mode, используя текущий target profile как старт |
 
 ### 7.3. Auto-default от BJCP стиля
@@ -313,9 +318,9 @@ applyRecipeWaterCatalogTargetProfile(
 
 То есть runtime сейчас auto-select-ит любой найденный `defaultProfile`, не проверяя флаг `autoSelectDefault`.
 
-### 7.4. Что видно в режиме `Поиск`
+### 7.4. Что видно в режиме `Подобрать профиль`
 
-При нажатии `Поиск`:
+При нажатии `Подобрать профиль`:
 
 - `targetProfileMode` переключается в `catalog`;
 - открывается target catalog picker.
@@ -496,52 +501,77 @@ UX аналогичен source:
 
 С этого момента в UI появляются:
 
-- `WaterSummaryCard` сверху;
+- полноценный `WaterSummaryCard` в основном flow блока воды;
 - шаг `3. Как вносить соли`;
-- шаг `4. Что добавить`;
+- шаг `4. pH и подкисление`;
 - `Расширенные настройки`.
 
-Это и есть фактическая граница между "source/target only" и "full water plan".
+Это и есть фактическая граница между "source/target only" и "full water plan". Итоговые добавки не являются отдельным шагом настройки: они всегда показываются в основном flow через `WaterSummaryCard`.
 
 ## 9. WaterSummaryCard: что реально показывается
 
-`WaterSummaryCard` внутри текущего `WaterSetupWizard` рендерится только если:
+`WaterSummaryCard` внутри текущего `WaterSetupWizard` рендерится всегда.
 
-```ts
-waterPlanMeta.setupEnabled === true
+Если `waterPlanMeta.setupEnabled !== true`, карточка показывает компактное disabled state:
+
+```text
+Вода не настроена
 ```
 
-Поэтому текст `Вода не настроена`, который есть внутри `WaterSummaryCard`, в текущем rendered flow практически недостижим: сам wizard его не вызывает в disabled state.
+Если вода активирована, но source/target еще не хватает для авторасчета, карточка не показывает неполный план добавок. Вместо этого она выводит blocking state:
 
-Когда вода уже настроена, summary пишет:
+```text
+Выберите исходную воду или введите профиль вручную.
+```
+
+или:
+
+```text
+Выберите целевой профиль воды.
+```
+
+В `advanced_manual` target profile не считается обязательным для отображения ручных солей.
+
+Когда вода уже настроена, summary показывает:
 
 - в single mode:
 
 ```text
-Один объем: X л • pH ~Y • добавки рассчитаны
+Один объем: X л • pH ~Y
+Итоговые добавки
+Добавить в воду · X л
+- <соль>
+  <формула>                                      <г>
+- <кислота>
+  кислота                                       <мл>
+Итоговый профиль: Ca ... ppm
 ```
 
 - в split mode:
 
 ```text
-Затор X л • промывка Y л • pH ~Y • добавки рассчитаны
-```
-
-или вместо `добавки рассчитаны`:
-
-```text
-без добавок
+Затор X л • промывка Y л • pH ~Y
+Итоговые добавки
+В затор · X л
+- <соль>
+  <формула>                                      <г>
+- <кислота>
+  кислота                                       <мл>
+В промывку · Y л
+- <соль>
+  <формула>                                      <г>
+Итоговый профиль: Ca ... ppm
 ```
 
 Правила:
 
 - `pH ~Y` показывается только если есть `predictedMashPhAfterAcid20C`;
-- additions считаются по факту положительных salts/acid additions;
-- acid addition `0 мл` не считается "добавкой".
+- строки добавок показывают только название, формулу/тип кислоты и количество;
+- декоративные бейджи `Соль` / `Кислота` в итоговом списке не показываются.
 
 ## 10. Кнопка `Сбросить воду`
 
-Кнопка `Сбросить воду` видна всегда внутри раскрытого блока.
+Кнопка `Сбросить воду` видна в заголовке блока воды только если вода уже настроена.
 
 Она вызывает `createRecipeWaterPlanResetMeta()`, который реально чистит state:
 
@@ -596,7 +626,10 @@ waterPlanMeta.setupEnabled === true
 
 ```ts
 totalWaterL =
-  fallbackBatchVolumeL ?? waterPlanMeta.totalWaterVolumeL ?? 0
+  waterPlanMeta.totalWaterVolumeL ??
+  equipmentVolumePlan?.totalWaterL ??
+  fallbackBatchVolumeL ??
+  0
 ```
 
 В реальном `RecipeDesigner` `fallbackBatchVolumeL` приходит из batch size рецепта:
@@ -605,12 +638,14 @@ totalWaterL =
 getBatchVolumeLiters(batchSize.quantity, batchSize.unit)
 ```
 
+Если выбран профиль оборудования, `RecipeDesigner` также строит `equipmentVolumePlan` из текущего batch size, boil time, trub/chiller loss, cooling shrinkage, boil-off и grain absorption.
+
 Следствия:
 
-- главный источник total water сейчас — batch size рецепта;
-- equipment profile на water volume не влияет;
-- потери на кип, trub, absorption, deadspace и т.д. здесь не учитываются;
-- water plan оперирует практическим recipe batch volume, а не полным liquor plan.
+- с профилем оборудования главный источник total water — расчет общей воды на варку;
+- без профиля оборудования fallback остается batch size рецепта;
+- `waterPlanMeta.totalWaterVolumeL` остается legacy override;
+- потери на кипячение, trub/chiller, shrinkage и absorption зерна учитываются через equipment plan.
 
 ### 11.3. Что делает `Считать одним объемом`
 
@@ -632,11 +667,11 @@ getBatchVolumeLiters(batchSize.quantity, batchSize.unit)
 При первом переключении в split mode:
 
 ```ts
-mashWaterL = round(totalWaterL * 0.65, 1)
-spargeWaterL = round(totalWaterL - mashWaterL, 1)
+mashWaterL = round(equipmentVolumePlan.mashWaterL ?? totalWaterL * 0.65, 1)
+spargeWaterL = round(equipmentVolumePlan.spargeWaterL ?? totalWaterL - mashWaterL, 1)
 ```
 
-То есть default split сейчас 65/35.
+То есть default split берется из оборудования, а без suggested split остается 65/35.
 
 После включения split mode пользователь видит 2 input-а:
 
@@ -654,53 +689,87 @@ spargeWaterL = round(totalWaterL - mashWaterL, 1)
 Если:
 
 ```ts
-abs((mashWaterL + spargeWaterL) - totalWaterL) > 0.05
+mashWaterL + spargeWaterL < batchSize
 ```
 
 показывается warning:
 
 ```text
-Сумма заторной и промывочной воды отличается от объема партии.
+Сумма заторной и промывочной воды меньше объема партии.
 ```
 
 Нюанс:
 
-- если batch size потом меняется, а split volumes остались старыми, warning тоже появится;
+- split больше batch size — нормальный сценарий, так как часть воды уйдет в absorption зерна, кипячение, trub/chiller loss и shrinkage;
 - автоматической пересборки существующего split под новый batch size нет.
 
-## 12. Шаг 4. Что добавить
+## 12. Шаг 4. pH и подкисление
 
 Шаг виден только после `setupEnabled = true`.
 
-### 12.1. Верх шага
+### 12.1. Карточка `Корректировать pH затора`
 
-Слева:
+Эта карточка видна в one-volume и split mode.
 
-- заголовок `4. Что добавить`;
-- строка `Финальный профиль: Ca ... / Mg ... / Na ... / Cl ... / SO4 ... / HCO3 ... ppm`.
+Содержимое:
 
-Справа:
+- checkbox `Корректировать pH затора`;
+- если включен:
+  - input `Целевой pH затора`;
+- если выключен:
+  - текст `pH затора не рассчитывается.`.
 
-- compact indicator `SO4:Cl X`.
+Поведение:
 
-Если chloride `0`, `sulfateChlorideRatio()` возвращает `null`, и UI показывает `—`.
+- включение checkbox ставит `targetMashPh = 5.35`;
+- выключение checkbox ставит `targetMashPh = null`;
+- если pH выключен, effective engine для auto mode становится `profile_only`.
 
-### 12.2. One-volume mode
+### 12.2. Карточка `Подкислить промывочную воду`
 
-В one-volume mode рендерится одна карточка:
+Эта карточка видна только если:
+
+- текущий режим split;
+- `spargeWaterL > 0`.
+
+Она не зависит от включения pH затора.
+
+UI:
+
+- checkbox `Подкислить промывочную воду`;
+- если включен:
+  - input `Исходный pH`;
+  - input `Целевой pH промывки`.
+
+Defaults:
+
+- `spargeSourcePh ?? sourceProfile.ph ?? 7`;
+- `targetSpargePh ?? 5.7`.
+
+Важно:
+
+- в single mode этого блока нет;
+- при переключении обратно в one-volume mode `spargeAcidificationEnabled` сбрасывается в `false`.
+
+## 13. Итоговые добавки в основном flow
+
+Отдельного шага `5. Что добавить` больше нет. Итоговые соли и кислота показываются в `WaterSummaryCard`, который находится над раскрываемой настройкой воды.
+
+### 13.1. One-volume mode
+
+В one-volume mode `WaterSummaryCard` показывает одну группу:
 
 - `Добавить в воду`.
 
 Внутри:
 
 - volume label = общий объем в литрах;
-- header control = `TargetMashPhField`;
 - список солей;
 - строка кислоты, если включен mash pH.
 
-### 12.3. Split mode
+### 13.2. Split mode
 
-В split mode рендерятся две карточки:
+В split mode `WaterSummaryCard` показывает две группы:
 
 - `В затор`;
 - `В промывку`.
@@ -709,17 +778,15 @@ abs((mashWaterL + spargeWaterL) - totalWaterL) > 0.05
 
 - volume label = `mashWaterL`;
 - salts = `mashSaltAdditions`;
-- acid row = mash acid;
-- `TargetMashPhField`.
+- acid row = mash acid.
 
 Карточка `В промывку` содержит:
 
 - volume label = `spargeWaterL`;
 - salts = `spargeSaltAdditions`;
-- acid row = sparge acid;
-- controls для sparge acidification.
+- acid row = sparge acid.
 
-### 12.4. Что видно в salt rows
+### 13.3. Что видно в salt rows
 
 Каждая salt row показывает:
 
@@ -730,72 +797,18 @@ abs((mashWaterL + spargeWaterL) - totalWaterL) > 0.05
 Если salts нет, карточка пишет:
 
 ```text
-Соли не нужны
+Без добавок
 ```
 
-### 12.5. Как ведет себя acid row
+### 13.4. Как ведет себя acid row
 
-Если acid row показан, справа пользователь видит одно из трех состояний:
+Acid row попадает в `WaterSummaryCard` только если расчет дал положительный объем кислоты.
 
-- `XX.XX мл`, если кислота нужна;
-- `не нужна`, если solver вернул `0 мл`;
-- `pH не рассчитан`, если acid row requested, но acid addition отсутствует.
+Если acid addition `0 мл` или acid calculation не дал результата, строка кислоты в итоговых добавках не показывается.
 
-### 12.6. `Рассчитывать pH затора`
+### 13.5. Какие warnings реально видит пользователь
 
-`TargetMashPhField` рендерится:
-
-- в single mode внутри `Добавить в воду`;
-- в split mode внутри `В затор`.
-
-Это не advanced-control, а часть основного flow.
-
-Содержимое:
-
-- checkbox `Рассчитывать pH затора`;
-- если включен:
-  - input `Целевой pH затора`;
-- если выключен:
-  - текст `pH затора не рассчитывается.`
-
-Поведение:
-
-- включение checkbox ставит `targetMashPh = 5.35`;
-- выключение checkbox ставит `targetMashPh = null`.
-
-Дополнительный runtime-эффект:
-
-- если pH выключен, effective engine для auto mode становится `profile_only`;
-- `spargeAcidificationEnabled` автоматически выключается.
-
-### 12.7. Подкисление промывочной воды
-
-Sparge acid controls показываются только если:
-
-- текущий режим split;
-- mash pH вообще включен;
-- включен checkbox `Подкислить промывочную воду`.
-
-UI:
-
-- checkbox `Подкислить промывочную воду`;
-- input `Исходный pH`;
-- input `Целевой pH`.
-
-Defaults:
-
-- `spargeSourcePh ?? sourceProfile.ph ?? 7`;
-- `targetSpargePh ?? 5.7`.
-
-Важно:
-
-- если mash pH выключен, весь sparge acid UI скрывается;
-- в single mode этого блока нет вообще;
-- при переключении обратно в one-volume mode `spargeAcidificationEnabled` сбрасывается в `false`.
-
-### 12.8. Какие warnings реально видит пользователь
-
-В шаге 4 показываются только первые 3 visible warnings:
+Warnings показываются под `WaterSummaryCard`, только первые 3 visible warnings:
 
 ```ts
 waterPlanResult.warnings
@@ -813,7 +826,7 @@ User-facing warning labels:
 
 | Warning key | UI text |
 |---|---|
-| `water_split_sum_differs_from_batch_volume` | `Сумма заторной и промывочной воды отличается от объема партии.` |
+| `water_split_below_batch_volume` | `Сумма заторной и промывочной воды меньше объема партии.` |
 | `source_profile_missing_or_zero` | `Выберите исходную воду или введите профиль вручную.` |
 | `target_profile_missing_or_zero` | `Выберите целевой профиль воды.` |
 | `grain_bill_missing_for_mash_ph` | `Для расчета pH нужна засыпь.` |
@@ -825,7 +838,7 @@ User-facing warning labels:
 | `sulfate_above_practical_range` | `SO4 выше практического диапазона.` |
 | `bicarbonate_above_practical_range` | `HCO3 выше практического диапазона.` |
 
-## 13. Расширенные настройки
+## 14. Расширенные настройки
 
 Advanced block — вложенный `<details>`, свернут по умолчанию.
 
@@ -834,25 +847,27 @@ Header:
 - icon `SlidersHorizontal`;
 - title `Расширенные настройки`.
 
-### 13.1. Поля, которые видны всегда
+### 14.1. Поля, которые видны всегда
 
 Всегда visible:
 
 - select `Расчет солей`;
+- checkbox `Считать пищевую соду (NaHCO3) в авторасчете` в auto mode;
 - блок `Ручные добавки солей`.
 
-### 13.2. Поля, которые видны только при включенном mash pH
+### 14.2. Поля pH и кислоты
 
 Только если `mashPhEnabled === true`:
 
 - `Модель pH`;
-- `Кислота`;
-- `Концентрация кислоты, %`;
 - `Калибровка pH`.
 
-Если `targetMashPh = null`, эти поля исчезают.
+Если включен хотя бы один acid calculation (`mashPhEnabled` или `spargeAcidificationEnabled && spargeWaterL > 0`):
 
-### 13.3. Select `Расчет солей`
+- `Кислота`;
+- `Концентрация кислоты, %`.
+
+### 14.3. Select `Расчет солей`
 
 UI options:
 
@@ -872,21 +887,35 @@ saltCalculationMode =
 - отдельного видимого режима `Только минерализация` нет;
 - отдельного видимого engine selector для `profile_only / balanced_default / advanced_manual` нет.
 
-### 13.4. `Модель pH`
+### 14.4. `Считать пищевую соду (NaHCO3) в авторасчете`
+
+Checkbox visible only in auto salt mode.
+
+Default:
+
+- unchecked;
+- `allowedSalts = []`, which resolves to Brewfather-like default auto salts.
+
+When checked:
+
+- `allowedSalts = ["gypsum", "calcium_chloride", "epsom_salt", "baking_soda"]`;
+- auto solver may raise `Na` and `HCO3` with baking soda, still using target overshoot protection.
+
+### 14.5. `Модель pH`
 
 Options:
 
 - `Kolbach RA quick`;
 - `Hybrid mash pH v1`.
 
-### 13.5. `Кислота`
+### 14.6. `Кислота`
 
 Options:
 
 - `Молочная кислота`;
 - `Фосфорная кислота`.
 
-### 13.6. `Концентрация кислоты, %`
+### 14.7. `Концентрация кислоты, %`
 
 Input optional:
 
@@ -895,7 +924,7 @@ Input optional:
   - `88` для lactic acid;
   - `85` для phosphoric acid.
 
-### 13.7. `Калибровка pH`
+### 14.8. `Калибровка pH`
 
 Input optional:
 
@@ -903,7 +932,7 @@ Input optional:
 - step `0.01`;
 - placeholder `0.00`.
 
-### 13.8. `Ручные добавки солей`
+### 14.9. `Ручные добавки солей`
 
 Этот подблок visible всегда, но типичный смысл имеет в `advanced_manual`.
 
@@ -918,13 +947,17 @@ Header:
 - и добавляет новую строку:
 
 ```ts
-{ salt: "gypsum", grams: 0 }
+{ salt: "gypsum", grams: 0, target: "all" }
 ```
 
 Строка manual salt row состоит из:
 
 - select соли;
 - numeric input grams;
+- select `Куда добавить соль` в split mode:
+  - `Вся вода`;
+  - `Затор`;
+  - `Промывка`;
 - trash button удаления.
 
 Список options в select сгруппирован:
@@ -953,9 +986,9 @@ Footer note:
 Основной авторасчет держит простой набор солей. Chalk и slaked lime доступны только здесь.
 ```
 
-## 14. Persistence и storage
+## 15. Persistence и storage
 
-### 14.1. Что сохраняется в рецепте
+### 15.1. Что сохраняется в рецепте
 
 Persisted model:
 
@@ -965,7 +998,7 @@ waterPlanMeta: RecipeWaterPlanMeta
 
 Она хранится в `recipes.water_plan_meta` (`jsonb`).
 
-### 14.2. Что не сохраняется как отдельная сущность
+### 15.2. Что не сохраняется как отдельная сущность
 
 `waterPlanResult` не хранится в БД. Он пересчитывается на лету в `RecipeDesigner`:
 
@@ -979,7 +1012,7 @@ buildRecipeWaterPlanResult({
 })
 ```
 
-### 14.3. Что сохраняется только локально в браузере
+### 15.3. Что сохраняется только локально в браузере
 
 Saved source/target profiles не идут в recipe payload. Они живут в `localStorage`:
 
@@ -994,7 +1027,7 @@ Saved source/target profiles не идут в recipe payload. Они живут 
 - `ph` допускается только в диапазоне `0..14`;
 - хранится максимум `30` профилей.
 
-### 14.4. Важный UX-эффект localStorage
+### 15.4. Важный UX-эффект localStorage
 
 Если:
 
@@ -1005,11 +1038,11 @@ Saved source/target profiles не идут в recipe payload. Они живут 
 
 Для target такого auto-apply нет.
 
-## 15. Полная расчетная модель
+## 16. Полная расчетная модель
 
 Ниже описано, как wizard считает volumes, salts, pH и acid additions.
 
-## 16. Входные данные для расчета
+## 17. Входные данные для расчета
 
 `buildRecipeWaterPlanResult()` получает:
 
@@ -1024,24 +1057,29 @@ Saved source/target profiles не идут в recipe payload. Они живут 
 | Input | Откуда берется |
 |---|---|
 | `fallbackBatchVolumeL` | batch size рецепта, конвертированный в литры (`ml/l/gal`) |
+| `equipmentVolumePlan` | профиль оборудования + текущий batch size + boil time + масса зерна |
 | `grainKg` | сумма fermentables, конвертированная в кг (`g/kg/oz/lb`) |
 | `beerSrm` | preview color или initial recipe color |
 | `fermentables` | только ингредиенты категории `fermentable`, с именем, subtype и weightKg |
 
-Оборудование в water calculation не участвует.
+## 18. Расчет объемов
 
-## 17. Расчет объемов
-
-### 17.1. Общий объем
+### 18.1. Общий объем
 
 ```ts
 totalWaterL = roundTo(
-  max(0, fallbackBatchVolumeL ?? waterPlanMeta.totalWaterVolumeL ?? 0),
+  max(
+    0,
+    waterPlanMeta.totalWaterVolumeL ??
+      equipmentVolumePlan?.totalWaterL ??
+      fallbackBatchVolumeL ??
+      0
+  ),
   2
 )
 ```
 
-### 17.2. Определение split mode
+### 18.2. Определение split mode
 
 `hasManualSplit = mashWaterVolumeL != null || spargeWaterVolumeL != null`
 
@@ -1049,15 +1087,16 @@ totalWaterL = roundTo(
 
 - `mashWaterL = totalWaterL`;
 - `spargeWaterL = 0`;
-- `source = "batch_size"`.
+- `source = "equipment_profile"` или `"batch_size"`.
 
 Если split задан:
 
 - `mashWaterL = provided mash or total - sparge`;
 - `spargeWaterL = provided sparge or total - mash`;
+- `totalWaterL = mashWaterL + spargeWaterL`;
 - `source = "manual_split"`.
 
-## 18. Нормализация source/target profiles
+## 19. Нормализация source/target profiles
 
 Source и target переводятся в `WaterProfile` с fallback на нули:
 
@@ -1080,9 +1119,9 @@ Warnings:
 - source без meaningful ions дает `source_profile_missing_or_zero`, кроме специальных low/zero-mineral modes (`ro_distilled`, `distilled`);
 - target без meaningful ions дает `target_profile_missing_or_zero`.
 
-## 19. Как считаются соли
+## 20. Как считаются соли
 
-### 19.1. Базовая формула ion delta
+### 20.1. Базовая формула ion delta
 
 `applySaltAdditions()` считает вклад каждой соли по mass fractions:
 
@@ -1092,14 +1131,17 @@ ppmIonDelta = (saltGrams * 1000 * ionMassFraction) / waterLiters
 
 Потом суммирует этот delta по каждому иону и округляет до 3 знаков.
 
-### 19.2. Какие соли доступны auto solver-у
+### 20.2. Какие соли доступны auto solver-у
 
 Quick set:
 
 - `gypsum`;
 - `calcium_chloride`;
-- `epsom_salt`;
-- `baking_soda`.
+- `epsom_salt`.
+
+Optional auto salt:
+
+- `baking_soda`, only when `allowedSalts` explicitly includes it via checkbox `Считать пищевую соду (NaHCO3) в авторасчете`.
 
 Advanced set:
 
@@ -1112,7 +1154,7 @@ Advanced set:
   - `advanced_manual` -> полный набор;
   - любой auto engine -> quick set.
 
-### 19.3. Когда запускается auto solver
+### 20.3. Когда запускается auto solver
 
 Auto solver работает, если одновременно:
 
@@ -1125,34 +1167,36 @@ Auto solver работает, если одновременно:
 - auto solver не запускается;
 - список auto salts = `[]`.
 
-### 19.4. Как работает target solver
+### 20.4. Как работает target solver
 
-`solveWaterTargetProfile()` — это greedy practical solver, не linear programming и не лабораторный water engine.
+`solveWaterTargetProfile()` — это constrained practical solver, приближенный к Brewfather Auto defaults.
 
 Алгоритм:
 
 1. start с нулевых additions;
-2. считает score между final profile и target;
-3. проходит allowed salts в 3 прохода по шагам:
+2. score считается только по ионам, которые реально меняют включенные auto salts;
+3. candidate отбрасывается, если он выводит регулируемый ион выше target profile value; если source уже выше target, ceiling остается на source value;
+4. проходит allowed salts по шагам:
    - `1 г`;
    - `0.25 г`;
    - `0.05 г`;
-4. на каждом шаге пытается добавить соль, если это улучшает score;
-5. лимит на одну соль по умолчанию `20 г`;
-6. guard limit `400` итераций на шаг.
+   - `0.01 г`;
+5. на каждом шаге может добавить или убрать соль, если это улучшает score;
+6. лимит на одну соль по умолчанию `20 г`;
+7. guard limit `1200` итераций на шаг.
 
 Score profile:
 
-- `ca` weight `2`;
+- `ca` weight `1`;
 - `mg` weight `1`;
 - `na` weight `1`;
-- `cl` weight `2`;
-- `so4` weight `2`;
-- `hco3` weight `2`.
+- `cl` weight `1`;
+- `so4` weight `1`;
+- `hco3` weight `1`.
 
 Score = сумма квадратов отклонений, умноженных на веса.
 
-### 19.5. Manual salts
+### 20.5. Manual salts
 
 Если effective engine = `advanced_manual`, используются только `manualSaltAdditions`.
 
@@ -1160,29 +1204,37 @@ Score = сумма квадратов отклонений, умноженных
 
 - пустой manual salt list не запускает auto solver;
 - это означает "без солей", а не fallback в auto mode.
+- legacy rows без `target` считаются как `target: "all"`;
+- `target: "mash"` вносится только в затор;
+- `target: "sparge"` вносится только в промывку;
+- `target: "all"` делится между затором и промывкой по объему.
+- при переключении обратно в single volume все manual salt targets нормализуются в `target: "all"`, чтобы скрытый sparge/mash target не оставался за кадром.
 
-### 19.6. Как total salts делятся между mash и sparge
+### 20.6. Как total salts делятся между mash и sparge
 
-Сначала все salts считаются на `totalWaterL`.
+Auto solver считает salts на `totalWaterL` и помечает их как `target: "all"`.
 
-Потом, если UI split:
+Потом, если UI split и addition имеет `target: "all"`:
 
 ```ts
 ratio = mashWaterL / (mashWaterL + spargeWaterL)
 ratio = spargeWaterL / (mashWaterL + spargeWaterL)
 ```
 
-И каждое total addition пропорционально режется в:
+Такой total addition пропорционально режется в:
 
 - `mashSaltAdditions`;
 - `spargeSaltAdditions`.
 
+Manual additions с `target: "mash"` попадают только в `mashSaltAdditions`, а с `target: "sparge"` - только в `spargeSaltAdditions`.
+
 То есть:
 
-- solver сам по себе не решает затор и промывку отдельно;
-- split в текущей реализации — это proportional presentation/splitting уже рассчитанного общего набора солей.
+- auto solver сам по себе не решает затор и промывку отдельно;
+- manual mode позволяет явно задать место внесения соли;
+- mash pH использует профиль заторной воды после солей, которые реально попали в затор.
 
-## 20. Финальный профиль, ratio и residual alkalinity
+## 21. Финальный профиль, ratio и residual alkalinity
 
 `finalProfile`:
 
@@ -1195,7 +1247,7 @@ ratio = spargeWaterL / (mashWaterL + spargeWaterL)
 - `alkalinityAsCaCO3FromHco3 = hco3 * 50 / 61`;
 - `residualAlkalinityAsCaCO3 = alkalinityAsCaCO3 - (ca / 1.4 + mg / 1.7)`.
 
-## 21. Классификация засыпи для mash pH
+## 22. Классификация засыпи для mash pH
 
 Перед pH estimate fermentables сводятся в проценты категорий:
 
@@ -1212,7 +1264,7 @@ ratio = spargeWaterL / (mashWaterL + spargeWaterL)
 - `adjunct`, `sugar`, `rice`, `corn` -> adjunct;
 - иначе -> base.
 
-## 22. Когда mash pH вообще считается
+## 23. Когда mash pH вообще считается
 
 `mashPhEstimate = null`, если выполнено хотя бы одно:
 
@@ -1224,9 +1276,9 @@ ratio = spargeWaterL / (mashWaterL + spargeWaterL)
 
 - если pH requested, но `grainKg <= 0`, добавляется `grain_bill_missing_for_mash_ph`.
 
-## 23. Модели mash pH
+## 24. Модели mash pH
 
-### 23.1. Kolbach RA quick
+### 24.1. Kolbach RA quick
 
 ```ts
 ra = residualAlkalinityAsCaCO3(profile)
@@ -1243,7 +1295,7 @@ Defaults:
 
 - `mash_ph_ballpark_estimate`.
 
-### 23.2. Hybrid mash pH v1
+### 24.2. Hybrid mash pH v1
 
 База:
 
@@ -1277,9 +1329,9 @@ predicted =
 
 Это practical approximation, а не полноценная mash chemistry model.
 
-## 24. Как считается кислота
+## 25. Как считается кислота
 
-### 24.1. Выбор кислоты
+### 25.1. Выбор кислоты
 
 `resolveAcid()` использует:
 
@@ -1287,14 +1339,14 @@ predicted =
 2. иначе первый allowed acid;
 3. иначе fallback `lactic_acid`.
 
-### 24.2. Defaults по концентрации
+### 25.2. Defaults по концентрации
 
 Если `acidConcentrationPct` пустой:
 
 - `lactic_acid -> 88%`;
 - `phosphoric_acid -> 85%`.
 
-### 24.3. Neutralization strength
+### 25.3. Neutralization strength
 
 ```ts
 acidMeqPerMl =
@@ -1305,7 +1357,7 @@ acidMeqPerMl =
   * 1000
 ```
 
-### 24.4. Practical pH drop model
+### 25.4. Practical pH drop model
 
 Для оценки pH после кислоты используется:
 
@@ -1318,7 +1370,7 @@ phDrop = acidMeq / practicalBufferMeqPerPh
 predictedPh = unadjustedPh - phDrop
 ```
 
-### 24.5. Mash acid solver
+### 25.5. Mash acid solver
 
 `solveMashAcidAddition()`:
 
@@ -1340,7 +1392,7 @@ predictedPh = unadjustedPh - phDrop
 
 - `mash_acid_model_practical_approximation`.
 
-### 24.6. Mash acid addition
+### 25.6. Mash acid addition
 
 Для mash solver получает:
 
@@ -1351,7 +1403,7 @@ predictedPh = unadjustedPh - phDrop
 - `alkalinityAsCaCO3 = alkalinityAsCaCO3FromHco3(finalProfile.hco3)`;
 - выбранную кислоту и концентрацию.
 
-### 24.7. Sparge acid addition
+### 25.7. Sparge acid addition
 
 Для sparge используется тот же solver, но с другими inputs:
 
@@ -1367,7 +1419,7 @@ predictedPh = unadjustedPh - phDrop
 - ориентируется на source water pH и alkalinity;
 - остается practical approximation.
 
-## 25. Итоговый predicted mash pH
+## 26. Итоговый predicted mash pH
 
 `predictedMashPhAfterAcid20C`:
 
@@ -1377,7 +1429,7 @@ predictedPh = unadjustedPh - phDrop
 
 Это значение идет в summary-card и в основной UX как главный pH output.
 
-## 26. Practical range warnings для финального профиля
+## 27. Practical range warnings для финального профиля
 
 Thresholds:
 
@@ -1388,7 +1440,7 @@ Thresholds:
 - `SO4 > 350` -> warning;
 - `HCO3 > 250` -> warning.
 
-## 27. Legacy compatibility
+## 28. Legacy compatibility
 
 Совместимость, которая реально сохранена:
 
@@ -1399,93 +1451,94 @@ Thresholds:
 - `builtInTargetWaterProfiles` остаются в коде для compatibility/older flows;
 - `showWaterAdditivesInIngredients` остается в schema и persistence.
 
-## 28. Что есть в schema/code, но не выведено в текущий UI
+## 29. Что есть в schema/code, но не выведено в текущий UI
 
 Сейчас не показаны или не задействованы в rendered water flow:
 
 - `showWaterAdditivesInIngredients` — скрыто, line mirroring в ingredients нет;
 - `blendRatio` — есть в schema, нет UI;
 - `targetSpargeAlkalinity` — есть в schema, нет отдельного UI поля;
-- `totalWaterVolumeL` — есть в schema, но normal flow питается от batch size;
+- `totalWaterVolumeL` — есть в schema как legacy/manual override, normal flow питается от equipment plan или batch size fallback;
 - historical source presets `Pilsen`, `Dublin`, `Munich` — есть в данных, не рендерятся;
 - searchable source selector helper — есть в файле, не используется;
-- `WaterSummaryCard` empty state `Вода не настроена` — есть в компоненте, но не рендерится из текущего wizard flow;
+- `WaterSummaryCard` empty state `Вода не настроена` — рендерится в основном flow, пока `setupEnabled = false`;
 - `autoSelectDefault` в style-default seed читается, но не управляет actual auto-select effect.
 
-## 29. Что пользователь может сделать от начала до конца
+## 30. Что пользователь может сделать от начала до конца
 
 Полный перечень user actions в текущем water flow:
 
-1. Раскрыть/свернуть блок `Вода`.
-2. Нажать `Сбросить воду`.
-3. Выбрать source:
+1. Посмотреть итоговые добавки в блоке `Вода`, если вода уже настроена.
+2. Раскрыть/свернуть блок `Настройка воды`.
+3. Нажать `Сбросить воду`.
+4. Выбрать source:
    - `Сохраненный профиль`;
    - `Осмос`;
    - `Дистиллированная вода`;
    - `Вручную`.
-4. Отредактировать source ions:
+5. Отредактировать source ions:
    - `Ca`, `Mg`, `Na`, `Cl`, `SO4`, `HCO3`.
-5. Сохранить manual source profile:
+6. Сохранить manual source profile:
    - `Сохранить`;
    - `ОК`;
    - `Отмена`.
-6. Удалить saved source profile через trash icon.
-7. Выбрать target:
+7. Удалить saved source profile через trash icon.
+8. Выбрать target:
    - `Сохраненный профиль`;
-   - `Поиск`;
+   - `Подобрать профиль`;
    - `Вручную`.
-8. Искать target profile по каталогу.
-9. Выбрать target из suggested/quick-pick/search results.
-10. Нажать `Изменить` у выбранного catalog target.
-11. Отредактировать target ions:
+9. Искать target profile по каталогу.
+10. Выбрать target из suggested/quick-pick/search results.
+11. Нажать `Изменить` у выбранного catalog target.
+12. Отредактировать target ions:
    - `Ca`, `Mg`, `Na`, `Cl`, `SO4`, `HCO3`.
-12. Сохранить manual target profile:
+13. Сохранить manual target profile:
    - `Сохранить`;
    - `ОК`;
    - `Отмена`.
-13. Удалить saved target profile через trash icon.
-14. Выбрать volume mode:
+14. Удалить saved target profile через trash icon.
+15. Выбрать volume mode:
    - `Считать одним объемом`;
    - `Разделить на затор и промывку`.
-15. В split mode вручную задать:
+16. В split mode вручную задать:
    - `Заторная вода, л`;
    - `Промывочная вода, л`.
-16. Включить/выключить:
-   - `Рассчитывать pH затора`.
-17. Изменить:
+17. Включить/выключить:
+   - `Корректировать pH затора`.
+18. Изменить:
    - `Целевой pH затора`.
-18. В split mode включить/выключить:
+19. В split mode включить/выключить:
    - `Подкислить промывочную воду`.
-19. В split mode изменить:
+20. В split mode изменить:
    - `Исходный pH`;
-   - `Целевой pH`.
-20. Открыть `Расширенные настройки`.
-21. Переключить `Расчет солей`:
+   - `Целевой pH промывки`.
+21. Открыть `Расширенные настройки`.
+22. Переключить `Расчет солей`:
    - `Авторасчет солей`;
    - `Ручные добавки солей`.
-22. При включенном mash pH изменить:
+23. При включенном mash pH изменить:
    - `Модель pH`;
-   - `Кислота`;
-   - `Концентрация кислоты, %`;
    - `Калибровка pH`.
-23. В manual salts:
+24. При включенном подкислении затора или промывки изменить:
+   - `Кислота`;
+   - `Концентрация кислоты, %`.
+25. В manual salts:
    - `+ Добавить`;
    - выбрать соль в `select`;
    - изменить `grams`;
    - удалить строку trash-button.
 
-## 30. Короткий вывод
+## 31. Короткий вывод
 
-Текущий water flow в recipe master — это уже не "включить модуль воды", а встроенный progressive editor:
+Текущий water flow в recipe master — это summary-first встроенный progressive editor:
 
-- сначала source/target;
-- затем volume split;
-- затем live result;
-- затем advanced tuning.
+- итоговые добавки видны в основном flow, когда вода настроена;
+- source/target, volume split и pH живут в раскрываемой `Настройка воды`;
+- advanced tuning остается вторичным уровнем внутри настройки.
 
 Но при этом важно не переоценивать точность:
 
-- water plan опирается на batch size, а не на полноценный liquor plan;
+- water plan опирается на equipment liquor plan, а без профиля — на batch size fallback;
 - salt solver greedy/practical;
 - mash pH и acid solver тоже practical approximations;
 - часть schema уже подготовлена под более глубокий water domain, но в текущем UI еще не выведена.

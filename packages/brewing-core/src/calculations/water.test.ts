@@ -53,6 +53,36 @@ describe("water chemistry", () => {
     expect(result.finalProfile.cl).toBeGreaterThan(softWater.cl);
   });
 
+  it("keeps default auto salts Brewfather-like and avoids target overshoot", () => {
+    const result = solveWaterTargetProfile({
+      sourceProfile: softWater,
+      targetProfile: { ca: 80, mg: 12, na: 50, cl: 90, so4: 150, hco3: 160 },
+      waterLiters: 25
+    });
+
+    expect(result.additions.map((addition) => addition.salt)).not.toContain("baking_soda");
+    expect(result.finalProfile.hco3).toBe(softWater.hco3);
+    expect(result.finalProfile.ca).toBeLessThanOrEqual(80.01);
+    expect(result.finalProfile.mg).toBeLessThanOrEqual(12.01);
+    expect(result.finalProfile.cl).toBeLessThanOrEqual(90.01);
+    expect(result.finalProfile.so4).toBeLessThanOrEqual(150.01);
+  });
+
+  it("can include baking soda when explicitly allowed", () => {
+    const result = solveWaterTargetProfile({
+      sourceProfile: softWater,
+      targetProfile: { ca: 80, mg: 12, na: 80, cl: 90, so4: 150, hco3: 160 },
+      waterLiters: 25,
+      allowedSalts: ["gypsum", "calcium_chloride", "epsom_salt", "baking_soda"]
+    });
+
+    expect(result.additions.map((addition) => addition.salt)).toContain("baking_soda");
+    expect(result.finalProfile.na).toBeGreaterThan(softWater.na);
+    expect(result.finalProfile.hco3).toBeGreaterThan(softWater.hco3);
+    expect(result.finalProfile.na).toBeLessThanOrEqual(80.01);
+    expect(result.finalProfile.hco3).toBeLessThanOrEqual(160.01);
+  });
+
   it("estimates mash pH with RA and grist acidity components", () => {
     const estimate = estimateMashPh({
       sourceProfile: softWater,

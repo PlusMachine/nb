@@ -53,6 +53,7 @@ export interface WaterTargetSolverInput {
   waterLiters: number;
   allowedSalts?: BrewingSaltId[];
   maxGramsPerSalt?: number;
+  preventTargetOvershoot?: boolean;
 }
 
 export interface WaterTargetSolverResult {
@@ -200,63 +201,130 @@ export const applySaltAdditions = (
   return next;
 };
 
-const scoreWaterProfile = (profile: WaterProfile, target: WaterProfile) => {
-  const weights: Record<keyof Omit<WaterProfile, "ph">, number> = {
-    ca: 2,
-    mg: 1,
-    na: 1,
-    cl: 2,
-    so4: 2,
-    hco3: 2
-  };
+const getSaltAdjustedIonKeys = (salts: BrewingSaltId[]) => {
+  const keys = new Set<keyof Omit<WaterProfile, "ph">>();
 
-  return ionKeys.reduce((sum, key) => sum + ((profile[key] - target[key]) ** 2) * weights[key], 0);
+  for (const salt of salts) {
+    const definition = brewingSaltDefinitions[salt];
+    for (const key of ionKeys) {
+      if ((definition.ionMassFractions[key] ?? 0) > 0) {
+        keys.add(key);
+      }
+    }
+  }
+
+  return [...keys];
 };
 
+const scoreWaterProfile = (
+  profile: WaterProfile,
+  target: WaterProfile,
+  scoreIonKeys: Array<keyof Omit<WaterProfile, "ph">> = ionKeys
+) => {
+  const weights: Record<keyof Omit<WaterProfile, "ph">, number> = {
+    ca: 1,
+    mg: 1,
+    na: 1,
+    cl: 1,
+    so4: 1,
+    hco3: 1
+  };
+
+  return scoreIonKeys.reduce((sum, key) => sum + ((profile[key] - target[key]) ** 2) * weights[key], 0);
+};
+
+const exceedsTargetProfile = (
+  source: WaterProfile,
+  candidate: WaterProfile,
+  target: WaterProfile,
+  scoreIonKeys: Array<keyof Omit<WaterProfile, "ph">>,
+  tolerancePpm = 0.01
+) => scoreIonKeys.some((key) => {
+  const ceiling = Math.max(source[key], target[key]);
+  return candidate[key] > ceiling + tolerancePpm;
+});
+
+const toSolverAdditions = (additions: Map<BrewingSaltId, number>) => (
+  [...additions.entries()].map(([candidateSalt, grams]) => ({
+    salt: candidateSalt,
+    grams
+  }))
+);
+
+const roundSolverAdditions = (additions: Map<BrewingSaltId, number>) => (
+  [...additions.entries()]
+    .filter(([, grams]) => grams > 0)
+    .map(([salt, grams]) => ({ salt, grams: roundTo(grams, 2) }))
+);
+
+const hasMeaningfulWaterSolverMove = (
+  candidateScore: number,
+  bestScore: number,
+  epsilon = 0.0001
+) => candidateScore < bestScore - epsilon;
+
 export const solveWaterTargetProfile = (input: WaterTargetSolverInput): WaterTargetSolverResult => {
-  const allowedSalts = input.allowedSalts ?? ["gypsum", "calcium_chloride", "epsom_salt", "baking_soda"];
+  const allowedSalts = input.allowedSalts ?? ["gypsum", "calcium_chloride", "epsom_salt"];
   const maxGramsPerSalt = input.maxGramsPerSalt ?? 20;
+  const preventTargetOvershoot = input.preventTargetOvershoot ?? true;
+  const scoreIonKeys = getSaltAdjustedIonKeys(allowedSalts);
   const additions = new Map<BrewingSaltId, number>(allowedSalts.map((salt) => [salt, 0]));
   let finalProfile = applySaltAdditions(input.sourceProfile, input.waterLiters, []);
-  let bestScore = scoreWaterProfile(finalProfile, input.targetProfile);
+  let bestScore = scoreWaterProfile(finalProfile, input.targetProfile, scoreIonKeys);
 
-  for (const step of [1, 0.25, 0.05]) {
+  for (const step of [1, 0.25, 0.05, 0.01]) {
     let improved = true;
     let guard = 0;
-    while (improved && guard < 400) {
+    while (improved && guard < 1200) {
       improved = false;
       guard += 1;
 
       for (const salt of allowedSalts) {
-        const current = additions.get(salt) ?? 0;
-        if (current + step > maxGramsPerSalt) {
-          continue;
-        }
+        for (const direction of [1, -1]) {
+          const current = additions.get(salt) ?? 0;
+          const next = roundTo(current + (step * direction), 4);
+          if (next < 0 || next > maxGramsPerSalt) {
+            continue;
+          }
 
-        const candidateAdditions = new Map(additions);
-        candidateAdditions.set(salt, current + step);
-        const candidate = [...candidateAdditions.entries()].map(([candidateSalt, grams]) => ({
-          salt: candidateSalt,
-          grams
-        }));
-        const candidateProfile = applySaltAdditions(input.sourceProfile, input.waterLiters, candidate);
-        const candidateScore = scoreWaterProfile(candidateProfile, input.targetProfile);
+          const candidateAdditions = new Map(additions);
+          candidateAdditions.set(salt, next);
+          const candidateProfile = applySaltAdditions(
+            input.sourceProfile,
+            input.waterLiters,
+            toSolverAdditions(candidateAdditions)
+          );
 
-        if (candidateScore < bestScore) {
-          bestScore = candidateScore;
-          finalProfile = candidateProfile;
-          additions.set(salt, current + step);
-          improved = true;
+          if (
+            preventTargetOvershoot &&
+            exceedsTargetProfile(
+              input.sourceProfile,
+              candidateProfile,
+              input.targetProfile,
+              scoreIonKeys
+            )
+          ) {
+            continue;
+          }
+
+          const candidateScore = scoreWaterProfile(candidateProfile, input.targetProfile, scoreIonKeys);
+
+          if (hasMeaningfulWaterSolverMove(candidateScore, bestScore)) {
+            bestScore = candidateScore;
+            finalProfile = candidateProfile;
+            additions.set(salt, next);
+            improved = true;
+          }
         }
       }
     }
   }
 
+  const roundedAdditions = roundSolverAdditions(additions);
+
   return {
-    additions: [...additions.entries()]
-      .filter(([, grams]) => grams > 0)
-      .map(([salt, grams]) => ({ salt, grams: roundTo(grams, 2) })),
-    finalProfile,
+    additions: roundedAdditions,
+    finalProfile: applySaltAdditions(input.sourceProfile, input.waterLiters, roundedAdditions),
     score: roundTo(bestScore, 2)
   };
 };

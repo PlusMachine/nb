@@ -43,4 +43,11 @@ describe("equipment volume plan", () => {
     expect(plan.spargeWaterL).toBeCloseTo(16.625, 3);
     expect(plan.warnings).toContain("mash_volume_limit_exceeded");
   });
+
+  it("uses recipe boil time for boil-off losses", () => {
+    const plan = calculateEquipmentVolumePlan(baseProfile, 5, 90);
+
+    expect(plan.preBoilHotL).toBeCloseTo(26.375, 3);
+    expect(plan.totalWaterL).toBeCloseTo(30.125, 3);
+  });
 });

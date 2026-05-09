@@ -14,10 +14,13 @@ export type EquipmentVolumePlan = {
 
 export const calculateEquipmentVolumePlan = (
   profile: EquipmentProfileSnapshot,
-  grainKg: number
+  grainKg: number,
+  boilTimeMinutes = 60
 ): EquipmentVolumePlan => {
   const nonNegativeGrainKg = Math.max(0, grainKg);
-  const boilTimeHr = 1;
+  const boilTimeHr = Number.isFinite(boilTimeMinutes) && boilTimeMinutes > 0
+    ? boilTimeMinutes / 60
+    : 1;
   const fermenterTargetColdL = profile.targetBatchVolumeL;
   const postBoilColdBeforeKettleLossL = fermenterTargetColdL + profile.trubChillerLossL;
   const postBoilHotL = postBoilColdBeforeKettleLossL / (1 - profile.coolingShrinkagePct / 100);
