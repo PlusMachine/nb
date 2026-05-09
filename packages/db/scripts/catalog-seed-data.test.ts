@@ -18,7 +18,7 @@ describe("catalog seed data", () => {
       "malt_catalog_minimal_v2.json": 442,
       "fermentables_catalog_minimal_v2.normalized.json": 173,
       "yeasts_catalog_minimal_v2.json": 191,
-      "additives_v1.json": 29,
+      "additives_v2_1.json": 118,
       "consumables_v1.json": 28,
       "water_treatment_catalog_minimal_v2.json": 28
     });
@@ -27,12 +27,12 @@ describe("catalog seed data", () => {
   it("prepares canonical ingredients from the new catalog only", () => {
     const prepared = catalogSeedManifest.flatMap((spec) => prepareCatalogSeedFile(spec));
 
-    expect(prepared).toHaveLength(1109);
+    expect(prepared).toHaveLength(1198);
     expect(prepared.filter((item) => item.ingredient.type === "hop")).toHaveLength(218);
     expect(prepared.filter((item) => item.ingredient.type === "malt")).toHaveLength(442);
     expect(prepared.filter((item) => item.ingredient.type === "fermentable")).toHaveLength(173);
     expect(prepared.filter((item) => item.ingredient.type === "yeast")).toHaveLength(191);
-    expect(prepared.filter((item) => item.ingredient.type === "consumable")).toHaveLength(57);
+    expect(prepared.filter((item) => item.ingredient.type === "consumable")).toHaveLength(146);
     expect(prepared.filter((item) => item.ingredient.type === "water_treatment")).toHaveLength(28);
   });
 
@@ -69,6 +69,38 @@ describe("catalog seed data", () => {
     expect(starSan?.aliases.some((alias) => alias.source === "seed_market_name" && alias.alias === "Star San")).toBe(true);
     expect(starSan?.aliases.some((alias) => alias.source === "seed_priority_term" && alias.alias === "санитайзер без смывания")).toBe(true);
     expect(starSan?.packageVariants.some((variant) => variant.productNameEn === "Star San")).toBe(true);
+  });
+
+  it("prepares the additive v2.1 seed with the new picker groups", () => {
+    const prepared = prepareCatalogSeedFile({
+      fileName: "additives_v2_1.json",
+      type: "consumable"
+    });
+    const riceHulls = prepared.find((item) => item.ingredient.id === "rice-hulls-lauter-aid");
+    const irishMoss = prepared.find((item) => item.ingredient.id === "kettle-fining-irish-moss");
+
+    expect(prepared).toHaveLength(118);
+    expect(riceHulls?.ingredient.category).toBe("lauter_aid");
+    expect(riceHulls?.ingredient.subcategory).toBe("Фильтрующая добавка");
+    expect(riceHulls?.ingredient.itemKind).toBe("lauter_aid");
+    expect(riceHulls?.ingredient.groupName).toBe("Фильтрация затора");
+    expect(riceHulls?.ingredient.attributes).toMatchObject({
+      picker_group: "lauter_aid",
+      beerxml_misc_type: "Other",
+      additive_group_ru: "Фильтрация затора"
+    });
+    expect(riceHulls?.ingredient.quantityDefaults).toMatchObject({
+      recipe_unit_default: "g",
+      stock_unit_default: "g"
+    });
+    expect(riceHulls?.aliases.some((alias) => alias.aliasNormalized === "rice hulls")).toBe(true);
+
+    expect(irishMoss?.ingredient.category).toBe("technical_additives");
+    expect(irishMoss?.ingredient.subcategory).toBe("fining");
+    expect(irishMoss?.ingredient.itemKind).toBe("technical_additives");
+    expect(irishMoss?.ingredient.attributes).toMatchObject({
+      picker_group: "technical_additives"
+    });
   });
 
   it("normalizes aliases for search without mutating display text", () => {

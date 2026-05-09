@@ -485,7 +485,10 @@ const filterItemsByGroup = (
   category: IngredientCategory | undefined,
   group?: string
 ) => {
-  const normalizedGroup = normalizeSearchText(group ?? "");
+  const comparableGroup = category === "consumable" && !isConsumableInventoryBroadGroup(group)
+    ? canonicalizeConsumablePickerGroup(group) ?? group
+    : group;
+  const normalizedGroup = normalizeSearchText(comparableGroup ?? "");
   if (!normalizedGroup) {
     return items;
   }
@@ -551,7 +554,7 @@ const buildConsumableGroupRefinements = (
   rankedItems: RankedCatalogItem[],
   activeGroup?: string
 ): IngredientConsumableGroupRefinement[] => {
-  const normalizedActiveGroup = normalizeSearchText(activeGroup ?? "");
+  const normalizedActiveGroup = normalizeSearchText(canonicalizeConsumablePickerGroup(activeGroup) ?? activeGroup ?? "");
   const grouped = new Map<string, IngredientConsumableGroupRefinement>();
 
   for (const rankedItem of rankedItems) {

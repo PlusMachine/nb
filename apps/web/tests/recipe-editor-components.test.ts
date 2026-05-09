@@ -8,14 +8,19 @@ import NewRecipePage from "../app/(app)/app/recipes/new/page";
 import EditRecipePage from "../app/(app)/app/recipes/[id]/edit/page";
 import { RecipeEditorErrorState } from "../components/recipes/recipe-editor-error-state";
 import { buildImportRecipeSummary } from "../components/recipes/import-export-modal";
+import { CustomIngredientForm } from "../components/inventory/custom-ingredient-form";
 import {
   RecipeDesigner,
+  buildRecipeStockIngredientSearchParams,
   buildRecipeEditorResumeHref,
   buildRecipeEditHref,
   buildRecipeWizardResumeHref,
   resolveRecipeFermentablePickerScopeContext,
+  resolveRecipeIngredientForcedGroup,
   resolveRecipeIngredientEditorSourceMode,
   resolveRecipeIngredientSearchType,
+  recipeConsumableAdditiveGroup,
+  recipeConsumableSubtypeOptions,
   shouldAutoFocusRecipeIngredientPicker
 } from "../components/recipes/recipe-designer";
 import { RecipeIngredientsEditor } from "../components/recipes/recipe-ingredients-editor";
@@ -287,6 +292,61 @@ describe("recipe editor components", () => {
     expect(resolveRecipeIngredientEditorSourceMode("imported")).toBe("catalog");
   });
 
+  it("scopes recipe consumables to the inventory other-additives group", () => {
+    expect(resolveRecipeIngredientForcedGroup({
+      category: "consumable",
+      fermentableGroup: null
+    })).toMatchObject({
+      label: "Другие добавки",
+      value: recipeConsumableAdditiveGroup
+    });
+
+    expect(recipeConsumableSubtypeOptions).toEqual([
+      "technical_additives",
+      "lauter_aid",
+      "spice",
+      "citrus_zest",
+      "herb_flower",
+      "coffee_cacao",
+      "wood_aging",
+      "flavoring",
+      "other"
+    ]);
+
+    const params = buildRecipeStockIngredientSearchParams({
+      q: "",
+      type: "consumable",
+      category: "consumable",
+      group: recipeConsumableAdditiveGroup,
+      limit: 13
+    });
+
+    expect(params.get("group")).toBe("inventory_additives");
+    expect(params.get("category")).toBe("consumable");
+    expect(params.get("type")).toBe("consumable");
+    expect(params.get("stock")).toBe("in_stock");
+  });
+
+  it("keeps recipe custom consumables inside other-additive subtypes", () => {
+    const html = renderToStaticMarkup(React.createElement(CustomIngredientForm, {
+      mode: "recipe",
+      category: "consumable",
+      subtypeOptions: recipeConsumableSubtypeOptions,
+      pending: false,
+      onSubmit: async () => undefined
+    }));
+
+    expect(html).toContain("техдобавка");
+    expect(html).toContain("фильтрация затора");
+    expect(html).toContain("специя");
+    expect(html).toContain("цедра и цитрус");
+    expect(html).toContain("ароматизатор");
+    expect(html).not.toContain("санитайзер");
+    expect(html).not.toContain("моющее средство");
+    expect(html).not.toContain("тара и укупорка");
+    expect(html).not.toContain(">газ<");
+  });
+
   it("auto-focuses the picker when matching an imported ingredient to catalog", () => {
     const importedIngredient = {
       inventoryIntentMode: "catalog",
@@ -416,7 +476,7 @@ describe("recipe editor components", () => {
     expect(html).not.toContain("Значения сохраняются в рецепте");
     expect(html).toContain("Вода");
     expect(html).toContain("Покрытие складом");
-    expect(html).toContain("Прочее / расходники");
+    expect(html).toContain("Другие добавки");
     expect(html).toContain("Импорт / экспорт");
     expect(html).toContain("Начать варку");
     expect(html).toContain("Mash Profile");

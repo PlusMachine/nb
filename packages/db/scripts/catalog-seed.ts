@@ -36,7 +36,7 @@ export const catalogSeedManifest: readonly CatalogSeedFileSpec[] = [
   { fileName: "malt_catalog_minimal_v2.json", type: "malt" },
   { fileName: "fermentables_catalog_minimal_v2.normalized.json", type: "fermentable" },
   { fileName: "yeasts_catalog_minimal_v2.json", type: "yeast" },
-  { fileName: "additives_v1.json", type: "consumable" },
+  { fileName: "additives_v2_1.json", type: "consumable" },
   { fileName: "consumables_v1.json", type: "consumable" },
   { fileName: "water_treatment_catalog_minimal_v2.json", type: "water_treatment" }
 ] as const;
@@ -79,6 +79,237 @@ const compactRecord = (value: Record<string, unknown>) => Object.fromEntries(
     && !(Array.isArray(entry) && entry.length === 0)
   ))
 );
+
+const legacyAdditiveSourceCatalogFileName = "consumables_v4_patch_proposal.json";
+
+const normalizeSeedTaxonomyKey = (value?: string | null) => (value ?? "")
+  .normalize("NFKC")
+  .trim()
+  .toLowerCase()
+  .replaceAll("ё", "е")
+  .replace(/[\s,/|+&-]+/g, "_")
+  .replace(/[^a-zа-я0-9_]+/g, "")
+  .replace(/_+/g, "_")
+  .replace(/^_+|_+$/g, "");
+
+const canonicalConsumableSeedGroups: Record<string, string> = {
+  tech_additives: "technical_additives",
+  technical_additives: "technical_additives",
+  technical: "technical_additives",
+  process_aid: "technical_additives",
+  process_aids: "technical_additives",
+  fining: "technical_additives",
+  finings: "technical_additives",
+  enzyme: "technical_additives",
+  enzymes: "technical_additives",
+  nutrient: "technical_additives",
+  nutrients: "technical_additives",
+  antioxidant: "technical_additives",
+  antioxidants: "technical_additives",
+  defoamer: "technical_additives",
+  defoamers: "technical_additives",
+  preservative: "technical_additives",
+  preservatives: "technical_additives",
+  техдобавки: "technical_additives",
+  технические_добавки: "technical_additives",
+  технологические_добавки: "technical_additives",
+  осветление: "technical_additives",
+  ферменты: "technical_additives",
+  подкормки: "technical_additives",
+  антиоксиданты: "technical_additives",
+  пеногасители: "technical_additives",
+  консерванты: "technical_additives",
+
+  lauter_aid: "lauter_aid",
+  lauter_aids: "lauter_aid",
+  filter_aid: "lauter_aid",
+  filter_aids: "lauter_aid",
+  фильтрация_затора: "lauter_aid",
+  фильтрующая_добавка: "lauter_aid",
+
+  spice: "spice",
+  spices: "spice",
+  специи: "spice",
+
+  citrus_zest: "citrus_zest",
+  citrus: "citrus_zest",
+  zest: "citrus_zest",
+  peel: "citrus_zest",
+  цедра: "citrus_zest",
+  цедра_и_цитрус: "citrus_zest",
+  цитрус: "citrus_zest",
+
+  herb_flower: "herb_flower",
+  herbs_flowers: "herb_flower",
+  herbs_and_flowers: "herb_flower",
+  herb: "herb_flower",
+  herbs: "herb_flower",
+  flower: "herb_flower",
+  flowers: "herb_flower",
+  травы_и_цветы: "herb_flower",
+  травы: "herb_flower",
+  цветы: "herb_flower",
+  чай: "herb_flower",
+
+  coffee_cacao: "coffee_cacao",
+  coffee_cocoa: "coffee_cacao",
+  coffee: "coffee_cacao",
+  cacao: "coffee_cacao",
+  cocoa: "coffee_cacao",
+  кофе_какао: "coffee_cacao",
+  кофе_какао_и_десертные_добавки: "coffee_cacao",
+  кофе: "coffee_cacao",
+  какао: "coffee_cacao",
+
+  wood_aging: "wood_aging",
+  wood: "wood_aging",
+  aging: "wood_aging",
+  oak: "wood_aging",
+  дерево_выдержка: "wood_aging",
+  дерево_и_выдержка: "wood_aging",
+  выдержка: "wood_aging",
+  древесина: "wood_aging",
+
+  flavoring: "flavoring",
+  flavorings: "flavoring",
+  flavor: "flavoring",
+  flavour: "flavoring",
+  extract: "flavoring",
+  extracts: "flavoring",
+  ароматизаторы: "flavoring",
+  ароматизаторы_и_экстракты: "flavoring",
+  экстракты: "flavoring",
+
+  sanitizer: "sanitizer",
+  sanitizers: "sanitizer",
+  санитайзер: "sanitizer",
+  санитайзеры: "sanitizer",
+  cleaner: "cleaner",
+  cleaners: "cleaner",
+  мойка: "cleaner",
+  packaging: "packaging",
+  package: "packaging",
+  тара: "packaging",
+  тара_укупорка: "packaging",
+  тара_и_укупорка: "packaging",
+  укупорка: "packaging",
+  gas: "gas",
+  gases: "gas",
+  газы: "gas",
+  other: "other",
+  другое: "other"
+};
+
+const canonicalizeConsumableSeedGroup = (value?: string | null) => {
+  const normalized = normalizeSeedTaxonomyKey(value);
+  if (!normalized) {
+    return null;
+  }
+
+  const mapped = canonicalConsumableSeedGroups[normalized];
+  if (mapped) {
+    return mapped;
+  }
+
+  if (normalized.includes("лузг") || normalized.includes("шелух") || normalized.includes("hull") || normalized.includes("husk")) {
+    return "lauter_aid";
+  }
+
+  if (normalized.includes("цедр") || normalized.includes("цитрус") || normalized.includes("zest") || normalized.includes("peel")) {
+    return "citrus_zest";
+  }
+
+  if (normalized.includes("спец") || normalized.includes("spice")) {
+    return "spice";
+  }
+
+  if (normalized.includes("трав") || normalized.includes("цвет") || normalized.includes("herb") || normalized.includes("flower")) {
+    return "herb_flower";
+  }
+
+  if (normalized.includes("кофе") || normalized.includes("какао") || normalized.includes("coffee") || normalized.includes("cacao") || normalized.includes("cocoa")) {
+    return "coffee_cacao";
+  }
+
+  if (normalized.includes("дерев") || normalized.includes("дуб") || normalized.includes("wood") || normalized.includes("oak")) {
+    return "wood_aging";
+  }
+
+  if (normalized.includes("аромат") || normalized.includes("экстракт") || normalized.includes("flavor") || normalized.includes("extract")) {
+    return "flavoring";
+  }
+
+  if (
+    normalized.includes("освет")
+    || normalized.includes("фермент")
+    || normalized.includes("подкорм")
+    || normalized.includes("антиокс")
+    || normalized.includes("пено")
+    || normalized.includes("консерв")
+  ) {
+    return "technical_additives";
+  }
+
+  return null;
+};
+
+const normalizeSeedUseStage = (value?: string | null) => {
+  const normalized = normalizeSeedTaxonomyKey(value);
+  if (!normalized) {
+    return null;
+  }
+
+  if (normalized === "mash" || normalized.includes("затор")) return "mash";
+  if (normalized === "boil" || normalized.includes("кип")) return "boil";
+  if (normalized === "flameout" || normalized === "whirlpool" || normalized.includes("вирпул") || normalized.includes("выключ")) return "whirlpool";
+  if (
+    normalized === "primary"
+    || normalized === "secondary"
+    || normalized === "fermentation"
+    || normalized.includes("брож")
+  ) return "fermentation";
+  if (normalized === "bottling" || normalized === "packaging" || normalized.includes("розлив") || normalized.includes("упаков")) return "packaging";
+
+  return "other";
+};
+
+const normalizeSeedInventoryUnit = (value?: string | null) => {
+  const normalized = normalizeSeedTaxonomyKey(value);
+  if (!normalized) {
+    return null;
+  }
+
+  if (normalized === "pcs" || normalized === "pc" || normalized === "piece" || normalized === "pieces" || normalized === "шт") {
+    return "item";
+  }
+
+  return ["g", "kg", "oz", "lb", "ml", "l", "gal", "item", "pack"].includes(normalized)
+    ? normalized
+    : null;
+};
+
+const buildConsumableQuantityDefaults = (source: Record<string, unknown>) => {
+  if (isRecord(source.quantity_defaults)) {
+    return source.quantity_defaults;
+  }
+
+  const defaultUnit = normalizeSeedInventoryUnit(readString(source.default_unit));
+  const stockUnits = readStringArray(source.stock_units)
+    .map((unit) => normalizeSeedInventoryUnit(unit))
+    .filter((unit): unit is string => unit != null);
+  const uniqueStockUnits = [...new Set(defaultUnit ? [defaultUnit, ...stockUnits] : stockUnits)];
+  const stockUnitDefault = defaultUnit ?? uniqueStockUnits[0] ?? null;
+
+  if (!stockUnitDefault && uniqueStockUnits.length === 0) {
+    return null;
+  }
+
+  return compactRecord({
+    recipe_unit_default: defaultUnit,
+    stock_unit_default: stockUnitDefault,
+    stock_units_supported: uniqueStockUnits
+  });
+};
 
 export const normalizeCatalogAlias = (value: string) => value
   .normalize("NFKC")
@@ -252,6 +483,30 @@ const normalizeSeedCountryCode = (countryCode: unknown, countryName: unknown) =>
 };
 
 export const loadCatalogSeedItems = (fileName: string): unknown[] => {
+  const readItemsById = (
+    sourceFileName: string,
+    itemIds: string[],
+    trail: string[],
+    targetFileName: string
+  ) => {
+    const sourceItems = readItems(sourceFileName, [...trail, targetFileName]);
+    const sourceItemsById = new Map<string, unknown>();
+
+    for (const item of sourceItems) {
+      const itemId = isRecord(item) ? readString(item.id) : null;
+      if (itemId) {
+        sourceItemsById.set(itemId, item);
+      }
+    }
+
+    const missingItemIds = itemIds.filter((itemId) => !sourceItemsById.has(itemId));
+    if (missingItemIds.length > 0) {
+      throw new Error(`Split seed manifest ${targetFileName} references missing item ids: ${missingItemIds.join(", ")}`);
+    }
+
+    return itemIds.map((itemId) => sourceItemsById.get(itemId)!);
+  };
+
   const readItems = (targetFileName: string, trail: string[]): unknown[] => {
     if (trail.includes(targetFileName)) {
       throw new Error(`Circular seed manifest reference: ${[...trail, targetFileName].join(" -> ")}`);
@@ -263,6 +518,21 @@ export const loadCatalogSeedItems = (fileName: string): unknown[] => {
     }
 
     if (isRecord(root) && Array.isArray(root.items)) {
+      const schemaVersion = readString(root.schema_version);
+      const sourceManifestSummary = isRecord(root.source_manifest_summary)
+        ? root.source_manifest_summary
+        : null;
+      const existingItemIds = sourceManifestSummary
+        ? readStringArray(sourceManifestSummary.existing_item_ids)
+        : [];
+
+      if (schemaVersion?.startsWith("brewing_additives_seed_v2_1") && existingItemIds.length > 0) {
+        return [
+          ...readItemsById(legacyAdditiveSourceCatalogFileName, existingItemIds, trail, targetFileName),
+          ...root.items
+        ];
+      }
+
       return root.items;
     }
 
@@ -273,23 +543,8 @@ export const loadCatalogSeedItems = (fileName: string): unknown[] => {
         throw new Error(`Split seed manifest ${targetFileName} is missing source_catalog JSON reference`);
       }
 
-      const sourceItems = readItems(sourceCatalogFileName, [...trail, targetFileName]);
-      const sourceItemsById = new Map<string, unknown>();
-
-      for (const item of sourceItems) {
-        const itemId = isRecord(item) ? readString(item.id) : null;
-        if (itemId) {
-          sourceItemsById.set(itemId, item);
-        }
-      }
-
       const itemIds = readStringArray(root.item_ids);
-      const missingItemIds = itemIds.filter((itemId) => !sourceItemsById.has(itemId));
-      if (missingItemIds.length > 0) {
-        throw new Error(`Split seed manifest ${targetFileName} references missing item ids: ${missingItemIds.join(", ")}`);
-      }
-
-      return itemIds.map((itemId) => sourceItemsById.get(itemId)!);
+      return readItemsById(sourceCatalogFileName, itemIds, trail, targetFileName);
     }
 
     throw new Error(`Unsupported seed root shape for ${targetFileName}`);
@@ -584,6 +839,38 @@ const prepareConsumable = (item: unknown): PreparedSeedIngredient => {
   if (!id) {
     throw new Error("Consumable item is missing id");
   }
+  const rawPickerGroup = readString(source.picker_group)
+    ?? readString(source.group_ru)
+    ?? readString(source.category)
+    ?? readString(source.item_kind);
+  const pickerGroup = canonicalizeConsumableSeedGroup(rawPickerGroup) ?? rawPickerGroup;
+  const isNewAdditiveSeedItem = Boolean(readString(source.group_ru) || readString(source.beerxml_misc_type));
+  const rawUsageStages = readStringArray(source.usage_stage);
+  const allowedUses = readStringArray(source.allowed_uses);
+  const usageStage = rawUsageStages.length > 0
+    ? rawUsageStages
+    : [...new Set(
+      [readString(source.default_use), ...allowedUses]
+        .map((stage) => normalizeSeedUseStage(stage))
+        .filter((stage): stage is NonNullable<ReturnType<typeof normalizeSeedUseStage>> => stage != null)
+    )];
+  const commonForms = readStringArray(source.common_forms);
+  const form = readString(source.form);
+  const marketNamesRu = readStringArray(source.market_names_ru);
+  const marketNamesEn = readStringArray(source.market_names_en);
+  const searchBoostTerms = readStringArray(source.search_boost_terms);
+  const searchPriorityTermsRu = [
+    ...readStringArray(source.search_priority_terms_ru),
+    ...searchBoostTerms
+  ];
+  const searchPriorityTermsEn = [
+    ...readStringArray(source.search_priority_terms_en),
+    ...readStringArray(source.aliases_en)
+  ];
+  const additiveGroupRu = readString(source.group_ru);
+  const additiveSubcategoryRu = readString(source.subcategory_ru);
+  const legacyCategory = readString(source.category);
+  const legacySubcategory = readString(source.subcategory);
 
   const packageVariants = Array.isArray(source.package_variants)
     ? source.package_variants
@@ -625,31 +912,54 @@ const prepareConsumable = (item: unknown): PreparedSeedIngredient => {
       nameEn: readString(source.name_en),
       displayModeRu: resolveDisplayModeRu("consumable", source.display_mode_ru, null, null, source.name_ru),
       isActive: true,
-      category: readString(source.category),
-      subcategory: readString(source.subcategory),
-      itemKind: readString(source.item_kind),
+      groupName: additiveGroupRu,
+      category: pickerGroup ?? readString(source.category),
+      subcategory: isNewAdditiveSeedItem
+        ? additiveSubcategoryRu
+        : pickerGroup === "technical_additives"
+          ? legacyCategory ?? legacySubcategory
+          : legacySubcategory ?? legacyCategory,
+      itemKind: pickerGroup ?? readString(source.item_kind),
       inventoryEnabled: true,
       attributes: compactRecord({
-        common_forms: readStringArray(source.common_forms),
-        usage_stage: readStringArray(source.usage_stage),
-        dosage_reference: isRecord(source.dosage_reference) ? source.dosage_reference : null,
+        common_forms: commonForms.length > 0 ? commonForms : form ? [form] : [],
+        usage_stage: usageStage,
+        dosage_reference: isRecord(source.dosage_reference)
+          ? source.dosage_reference
+          : compactRecord({
+            hint_ru: readString(source.dosage_hint_ru),
+            default_use: readString(source.default_use),
+            allowed_uses: allowedUses
+          }),
         family_key: readString(source.family_key),
-        picker_group: readString(source.picker_group) ?? readString(source.category),
-        market_names_ru: readStringArray(source.market_names_ru),
-        market_names_en: readStringArray(source.market_names_en),
-        search_priority_terms_ru: readStringArray(source.search_priority_terms_ru),
-        search_priority_terms_en: readStringArray(source.search_priority_terms_en),
-        picker_function_ru: readString(source.picker_function_ru),
-        picker_usage_ru: readString(source.picker_usage_ru),
-        brand_family_mode: readString(source.brand_family_mode)
+        picker_group: pickerGroup,
+        market_names_ru: marketNamesRu,
+        market_names_en: marketNamesEn,
+        search_priority_terms_ru: searchPriorityTermsRu,
+        search_priority_terms_en: searchPriorityTermsEn,
+        picker_function_ru: readString(source.picker_function_ru) ?? additiveSubcategoryRu ?? additiveGroupRu,
+        picker_usage_ru: readString(source.picker_usage_ru) ?? readString(source.dosage_hint_ru),
+        brand_family_mode: readString(source.brand_family_mode),
+        beerxml_misc_type: readString(source.beerxml_misc_type),
+        additive_group_ru: additiveGroupRu,
+        additive_subcategory_ru: additiveSubcategoryRu,
+        legacy_subcategory: legacySubcategory,
+        default_use: readString(source.default_use),
+        allowed_uses: allowedUses,
+        stock_units: readStringArray(source.stock_units),
+        flavor_tags_ru: readStringArray(source.flavor_tags_ru),
+        typical_styles_ru: readStringArray(source.typical_styles_ru),
+        gravity_contribution: readString(source.gravity_contribution),
+        notes_ru: readString(source.notes_ru)
       }),
-      quantityDefaults: isRecord(source.quantity_defaults) ? source.quantity_defaults : null
+      quantityDefaults: buildConsumableQuantityDefaults(source)
     },
     aliases: buildAliasRows(id, [
       { locale: "ru", values: source.market_names_ru, source: "seed_market_name" },
       { locale: "en", values: source.market_names_en, source: "seed_market_name" },
-      { locale: "ru", values: source.search_priority_terms_ru, source: "seed_priority_term" },
-      { locale: "en", values: source.search_priority_terms_en, source: "seed_priority_term" },
+      { locale: "ru", values: searchPriorityTermsRu, source: "seed_priority_term" },
+      { locale: "en", values: searchPriorityTermsEn, source: "seed_priority_term" },
+      { locale: "neutral", values: source.search_boost_terms, source: "seed_priority_term" },
       { locale: "ru", values: source.aliases_ru },
       { locale: "en", values: source.aliases_en }
     ]),

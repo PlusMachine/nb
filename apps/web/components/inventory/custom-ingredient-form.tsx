@@ -61,6 +61,7 @@ export type CustomIngredientSubmitPayload = {
 type Props = {
   category: IngredientCategory;
   initialSubtype?: IngredientSubtype | null;
+  subtypeOptions?: readonly IngredientSubtype[];
   initialDisplayName?: string;
   preferredCurrency?: SystemCurrency;
   pending: boolean;
@@ -195,6 +196,7 @@ export const getCustomIngredientSubtypeOptions = (category: IngredientCategory) 
 export function CustomIngredientForm({
   category,
   initialSubtype = null,
+  subtypeOptions: customSubtypeOptions,
   initialDisplayName = "",
   preferredCurrency = "RUB",
   pending,
@@ -205,10 +207,25 @@ export function CustomIngredientForm({
   onSubmit
 }: Props) {
   const initialOptionalFields = createInitialInventoryOptionalFields();
+  const baseSubtypeOptions: readonly IngredientSubtype[] = !shouldShowCustomIngredientSubtypeField(category)
+    ? []
+    : getCustomIngredientSubtypeOptions(category) as readonly IngredientSubtype[];
+  const subtypeOptions: readonly IngredientSubtype[] = customSubtypeOptions?.length
+    ? baseSubtypeOptions.filter((option) => customSubtypeOptions.includes(option))
+    : baseSubtypeOptions;
+  const subtypeOptionsKey = subtypeOptions.join("|");
+  const resolveInitialSubtypeValue = () => {
+    const requestedSubtype = initialSubtype ?? resolveDefaultCustomIngredientSubtype(category) ?? "";
+    if (subtypeOptions.includes(requestedSubtype as IngredientSubtype)) {
+      return requestedSubtype;
+    }
+
+    return subtypeOptions[0] ?? "";
+  };
   const [displayName, setDisplayName] = useState(initialDisplayName);
   const [brand, setBrand] = useState("");
   const [country, setCountry] = useState("");
-  const [subtype, setSubtype] = useState<string>(initialSubtype ?? resolveDefaultCustomIngredientSubtype(category) ?? "");
+  const [subtype, setSubtype] = useState<string>(() => resolveInitialSubtypeValue());
   const [fermentableColorEbc, setFermentableColorEbc] = useState("");
   const [fermentableExtractYieldPct, setFermentableExtractYieldPct] = useState("");
   const [hopAlphaAcidPct, setHopAlphaAcidPct] = useState("");
@@ -267,9 +284,6 @@ export function CustomIngredientForm({
   }), [category, resolvedSubtype, resolvedType, technicalData]);
   const placeholderKind = resolveCustomIngredientPlaceholderKind(category, resolvedSubtype);
   const [enteredUnit, setEnteredUnit] = useState<InventoryUnit>(unitProfile.defaultUnit);
-  const subtypeOptions = !shouldShowCustomIngredientSubtypeField(category)
-    ? []
-    : getCustomIngredientSubtypeOptions(category);
   const showInventoryFields = mode === "inventory";
   const resolvedSubmitLabel = submitLabel ?? (showInventoryFields ? "Создать и добавить в запасы" : "Создать свой ингредиент");
 
@@ -279,7 +293,7 @@ export function CustomIngredientForm({
 
   useEffect(() => {
     const nextOptionalFields = createInitialInventoryOptionalFields();
-    setSubtype(initialSubtype ?? resolveDefaultCustomIngredientSubtype(category) ?? "");
+    setSubtype(resolveInitialSubtypeValue());
     setEnteredUnit(unitProfile.defaultUnit);
     setPriceInputMode(nextOptionalFields.priceInputMode);
     setPriceInputAmount(nextOptionalFields.priceInputAmount);
@@ -303,7 +317,7 @@ export function CustomIngredientForm({
     if (category !== "yeast") {
       setYeastForm("dry");
     }
-  }, [category, initialSubtype]);
+  }, [category, initialSubtype, subtypeOptionsKey]);
 
   useEffect(() => {
     onDisplayNameChange?.(displayName);

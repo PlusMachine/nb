@@ -20,6 +20,10 @@ import {
   resolveIngredientDisplayNames,
   resolveIngredientFermentableKindLabel
 } from "@/features/ingredients/presentation";
+import {
+  formatConsumableFormLabel,
+  formatConsumableUsageStageLabel
+} from "@/features/ingredients/consumables";
 import { formatHopFormLabel, resolveIngredientTechnicalDataColorRangeEbc } from "@/features/ingredients/technical-fields";
 import { beerColorFromSrm } from "@/features/recipes/beer-color";
 import { buildInventoryCostDisplay } from "@/features/inventory/display";
@@ -164,9 +168,11 @@ const buildTypedBadges = (item: InventoryListItemDto) => {
 
   if (technicalData.type === "consumable") {
     const consumable = technicalData as Extract<NonNullable<typeof technicalData>, { type: "consumable" }>;
+    const formLabel = formatConsumableFormLabel(consumable.commonForms?.[0]);
+    const usageStageLabel = formatConsumableUsageStageLabel(consumable.usageStage?.[0]);
     return [
-      consumable.commonForms?.[0] ? { label: consumable.commonForms[0].replaceAll("_", " ") } : null,
-      consumable.usageStage?.[0] ? { label: consumable.usageStage[0].replaceAll("_", " ") } : null
+      formLabel ? { label: formLabel } : null,
+      usageStageLabel ? { label: usageStageLabel } : null
     ].filter((badge): badge is { label: string; accent?: InventoryBadgeAccent | null } => Boolean(badge));
   }
 

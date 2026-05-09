@@ -13,6 +13,10 @@ import {
   resolveIngredientFermentableKindLabel
 } from "@/features/ingredients/presentation";
 import {
+  formatConsumableFormLabel,
+  formatConsumableUsageStageLabel
+} from "@/features/ingredients/consumables";
+import {
   formatHopFormLabel,
   resolveIngredientTechnicalDataColorRangeEbc
 } from "@/features/ingredients/technical-fields";
@@ -197,8 +201,8 @@ export const buildRecipeIngredientTechnicalBadges = (
     pushBadge(normalizedPreferredUnit === "g" || normalizedPreferredUnit === "ml" ? null : waterTreatment.unitPreferred);
   } else if (technicalData.type === "consumable") {
     const consumable = technicalData as Extract<IngredientTechnicalData, { type: "consumable" }>;
-    pushBadge(consumable.commonForms?.[0]?.replaceAll("_", " ") ?? null);
-    pushBadge(consumable.usageStage?.[0]?.replaceAll("_", " ") ?? null);
+    pushBadge(formatConsumableFormLabel(consumable.commonForms?.[0]));
+    pushBadge(formatConsumableUsageStageLabel(consumable.usageStage?.[0]));
   }
 
   return badges.slice(0, 5);

@@ -13,7 +13,8 @@ describe("admin ingredient form", () => {
   it("exposes subtype options from the new taxonomy source of truth", () => {
     expect(getAdminIngredientSubtypeOptions("fermentable")).toContain("malt");
     expect(getAdminIngredientSubtypeOptions("water_treatment")).toContain("acid");
-    expect(getAdminIngredientSubtypeOptions("consumable")).toContain("fining");
+    expect(getAdminIngredientSubtypeOptions("consumable")).toContain("technical_additives");
+    expect(getAdminIngredientSubtypeOptions("consumable")).toContain("flavoring");
   });
 
   it("returns category-aware field visibility", () => {

@@ -1,4 +1,5 @@
 import type { IngredientDisplayMode, IngredientTechnicalData } from "./contracts";
+import { formatConsumableFormLabel } from "./consumables";
 import { normalizeSearchText } from "./normalization";
 import { formatHopFormLabel, resolveIngredientTechnicalDataColorRangeEbc } from "./technical-fields";
 import type { IngredientCategory, IngredientSubtype, LegacyIngredientType as IngredientType } from "./taxonomy";
@@ -45,13 +46,21 @@ const subtypeLabels: Record<string, string> = {
   fermentable: "другое ферментируемое",
   hop: "хмель",
   yeast: "дрожжи",
-  process_aid: "технологическая добавка",
-  nutrient: "питательная добавка",
+  technical_additives: "техдобавка",
+  lauter_aid: "фильтрация затора",
+  spice: "специя",
+  citrus_zest: "цедра и цитрус",
+  herb_flower: "травы и цветы",
+  coffee_cacao: "кофе/какао",
+  wood_aging: "дерево/выдержка",
+  flavoring: "ароматизатор",
+  process_aid: "техдобавка",
+  nutrient: "техдобавка",
+  enzyme: "техдобавка",
+  antioxidant: "техдобавка",
+  fining: "техдобавка",
   sanitizer: "санитайзер",
   cleaner: "моющее средство",
-  enzyme: "фермент",
-  antioxidant: "антиоксидант",
-  fining: "осветлитель",
   packaging: "тара и укупорка",
   gas: "газ",
   water_source: "исходная вода",
@@ -652,7 +661,7 @@ const buildConsumableSummary = (
 ) => (
   [
     subtype ? formatIngredientSubtypeLabel("consumable", subtype) : null,
-    technicalData.commonForms?.[0] ?? null
+    formatConsumableFormLabel(technicalData.commonForms?.[0])
   ].filter(Boolean).join(" • ")
 );
 

@@ -29,7 +29,7 @@ const sectionLabels: Record<SectionCategory, string> = {
   hop: "Хмель",
   yeast: "Дрожжи",
   water_treatment: "Водоподготовка",
-  consumable: "Расходники"
+  consumable: "Другие добавки"
 };
 
 const sectionIcons: Record<SectionCategory, React.ComponentType<{ className?: string }>> = {

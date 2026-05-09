@@ -416,7 +416,7 @@ describe("ingredient picker state helpers", () => {
     expect(view.subtitle).toBe("Weyermann • 12 EBC");
   });
 
-  it("surfaces consumable package/market match in picker rows instead of abstract canonical title", () => {
+  it("surfaces a single consumable market name without exposing aliases", () => {
     const view = resolveIngredientPickerRowContent({
       id: "acid-sanitizer",
       type: "consumable",
@@ -452,10 +452,61 @@ describe("ingredient picker state helpers", () => {
       source: "catalog"
     });
 
-    expect(view.primaryName).toBe("Star San / Brew San / Bio San");
+    expect(view.primaryName).toBe("Star San");
     expect(view.secondaryName).toBe("Кислотный no-rinse санитайзер");
     expect(view.country).toBeNull();
-    expect(view.subtitle).toBe("Beergineer • 100 ml • Финальная дезинфекция без смывания • Beergineer Star San");
+    expect(view.subtitle).toBe("Beergineer • 100 ml");
+  });
+
+  it("keeps matched consumable aliases searchable but hidden from row labels", () => {
+    const view = resolveIngredientPickerRowContent({
+      id: "gelatin-fining",
+      type: "consumable",
+      category: "consumable",
+      displayName: "Желатин пищевой для осветления",
+      primaryLabelRu: "Желатин пищевой для осветления",
+      technicalData: {
+        type: "consumable",
+        pickerFunctionRu: "Желатин пищевой для осветления",
+        pickerUsageRu: "Осветление после брожения",
+        marketNamesRu: ["Желатин пищевой", "gelatin fining", "gelatin"]
+      },
+      matchType: "alias",
+      matchedAlias: "gelatin fining",
+      defaultUnit: "g",
+      source: "catalog"
+    });
+
+    expect(view.primaryName).toBe("Желатин пищевой");
+    expect(view.secondaryName).toBe("Желатин пищевой для осветления");
+    expect(view.subtitle).toBeNull();
+    expect(view.primaryName).not.toContain("gelatin");
+  });
+
+  it("uses the clean display variant for consumable market names", () => {
+    const view = resolveIngredientPickerRowContent({
+      id: "brewtan-b",
+      type: "consumable",
+      category: "consumable",
+      displayName: "Brewtan B / галлотанин для стабилизации",
+      primaryLabelRu: "Brewtan B / галлотанин для стабилизации",
+      nameEn: "Brewtan B",
+      technicalData: {
+        type: "consumable",
+        pickerFunctionRu: "Галлотанин для стабилизации",
+        pickerUsageRu: "Стабилизация в заторе и кипячении",
+        marketNamesRu: ["brewtan b", "Стабилизатор Брютан Б / Brewtan B"],
+        marketNamesEn: ["Brewtan B"]
+      },
+      matchType: "alias",
+      matchedAlias: "брютан б",
+      defaultUnit: "g",
+      source: "catalog"
+    });
+
+    expect(view.primaryName).toBe("Brewtan B");
+    expect(view.secondaryName).toBe("Галлотанин для стабилизации");
+    expect(view.primaryName).not.toContain("/");
   });
 
   it("enables refinement mode only for broad result sets without an active scope of the same type", () => {
@@ -1349,30 +1400,30 @@ describe("ingredient picker state helpers", () => {
           score: 0
         }, {
           type: "consumable_group",
-          label: "Осветление",
-          normalizedLabel: "fining",
-          value: "fining",
+          label: "Техдобавки",
+          normalizedLabel: "technical_additives",
+          value: "technical_additives",
           count: 0,
           score: 0
         }, {
           type: "consumable_group",
-          label: "Ферменты",
-          normalizedLabel: "enzyme",
-          value: "enzyme",
+          label: "Фильтрация затора",
+          normalizedLabel: "lauter_aid",
+          value: "lauter_aid",
           count: 0,
           score: 0
         }, {
           type: "consumable_group",
-          label: "Подкормки",
-          normalizedLabel: "nutrient",
-          value: "nutrient",
+          label: "Специи",
+          normalizedLabel: "spice",
+          value: "spice",
           count: 0,
           score: 0
         }, {
           type: "consumable_group",
-          label: "Антиоксиданты",
-          normalizedLabel: "antioxidant",
-          value: "antioxidant",
+          label: "Цедра и цитрус",
+          normalizedLabel: "citrus_zest",
+          value: "citrus_zest",
           count: 0,
           score: 0
         }, {
@@ -1406,10 +1457,10 @@ describe("ingredient picker state helpers", () => {
     expect(html).toContain("По группе");
     expect(html).toContain("Санитайзеры");
     expect(html).toContain("Мойка");
-    expect(html).toContain("Осветление");
-    expect(html).toContain("Ферменты");
-    expect(html).toContain("Подкормки");
-    expect(html).toContain("Антиоксиданты");
+    expect(html).toContain("Техдобавки");
+    expect(html).toContain("Фильтрация затора");
+    expect(html).toContain("Специи");
+    expect(html).toContain("Цедра и цитрус");
     expect(html).toContain("Тара и укупорка");
     expect(html).toContain("Газы");
     expect(html).not.toContain("По бренду");
@@ -1616,6 +1667,73 @@ describe("ingredient picker state helpers", () => {
       averageHex: expect.any(String),
       endHex: expect.any(String)
     });
+  });
+
+  it("localizes consumable picker badges and keeps dosage hints out of row subtitles", () => {
+    const item = {
+      id: "rice-hulls",
+      type: "consumable" as const,
+      category: "consumable" as const,
+      displayName: "Рисовая лузга",
+      primaryLabelRu: "Рисовая лузга",
+      technicalData: {
+        type: "consumable" as const,
+        commonForms: ["husk"],
+        usageStage: ["mash"],
+        pickerFunctionRu: "Фильтрующая добавка",
+        pickerUsageRu: "Обычно до 5% от засыпи; не дробить.",
+        pickerGroup: "lauter_aid",
+        marketNamesRu: ["Рисовая лузга"]
+      },
+      defaultUnit: "g" as const,
+      source: "catalog" as const
+    };
+
+    expect(buildIngredientPickerTechnicalBadges(item).map((badge) => badge.label)).toEqual([
+      "Лузга",
+      "Затор"
+    ]);
+
+    expect(resolveIngredientPickerRowContent(item).subtitle).toBeNull();
+  });
+
+  it("hides generic consumable brands while keeping useful package sizes", () => {
+    const view = resolveIngredientPickerRowContent({
+      id: "paa",
+      type: "consumable",
+      category: "consumable",
+      displayName: "PAA",
+      primaryLabelRu: "PAA",
+      technicalData: {
+        type: "consumable",
+        pickerFunctionRu: "Профессиональный санитайзер для CIP",
+        pickerUsageRu: "Санитация и CIP",
+        marketNamesRu: ["PAA"],
+        pickerGroup: "sanitizer"
+      },
+      packageVariants: [{
+        id: "pv-paa-1l",
+        brand: "Generic",
+        productNameEn: "PAA",
+        productNameRu: null,
+        countryNameRu: null,
+        packageAmount: 1,
+        packageUnit: "l",
+        stockContentAmount: 1,
+        stockContentUnit: "l",
+        sourceGroup: null,
+        sourceUrl: null,
+        isDefaultForStock: true,
+        position: 0
+      }],
+      matchType: "package",
+      matchedPackageVariantId: "pv-paa-1l",
+      matchedPackageVariantName: "PAA",
+      defaultUnit: "ml",
+      source: "catalog"
+    });
+
+    expect(view.subtitle).toBe("1 l");
   });
 
   it("adds stock quantity to picker cards without replacing catalog metadata", () => {

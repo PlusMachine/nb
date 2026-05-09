@@ -1,0 +1,4545 @@
+{
+  "schema_version": "brewing_additives_seed_v2_1_no_fruit_puree",
+  "derived_from": "brewing_additives_split_manifest_v1",
+  "catalog_name": "Пивоваренные добавки",
+  "catalog_name_en": "Brewing Additives",
+  "top_level_type": "additive",
+  "scope_ru": "Рецептурные и процессные добавки для варки, брожения, стабилизации, вкуса/аромата и упаковки пива. Соли/кислоты воды, мойка/санитация и явно сбраживаемые сахара должны жить в отдельных каталогах.",
+  "source_manifest_summary": {
+    "existing_manifest_item_count": 29,
+    "existing_groups_ru": [
+      "Осветление",
+      "Ферменты",
+      "Подкормки",
+      "Антиоксиданты",
+      "Пеногасители",
+      "Консерванты"
+    ],
+    "existing_item_ids": [
+      "antioxidant-finished-beer",
+      "antioxidant-brewtan-b",
+      "antioxidant-ascorbic-acid",
+      "metabisulfite-potassium",
+      "metabisulfite-sodium",
+      "antioxidant-wort",
+      "fermcap-s-silicone-antifoam",
+      "sofeksil-silicone-antifoam",
+      "clarity-ferm-enzyme",
+      "amyloglucosidase-enzyme",
+      "aldc-diacetyl-reduction-enzyme",
+      "hop-aroma-enzyme",
+      "alpha-amylase-enzyme",
+      "biofine-clear-liquid-fining",
+      "cold-side-fining-agar",
+      "vinoflok-liquid-fining",
+      "cold-side-fining-gelatin",
+      "kovelos-pivovar-liquid-fining",
+      "kovelos-stab-ns-liquid-fining",
+      "cold-side-fining-isinglass",
+      "kettle-fining-whirlfloc-granules",
+      "kettle-fining-whirlfloc-tablets",
+      "kettle-fining-irish-moss",
+      "pvpp-stabilizer",
+      "kovelos-stab31-xerogel-fining",
+      "yeast-nutrient-complex",
+      "yeast-rehydration-nutrient",
+      "yeast-hulls-inactivated",
+      "potassium-sorbate-preservative"
+    ]
+  },
+  "recommended_picker_model": {
+    "first_level_flow": "group-first with search always on top",
+    "primary_quick_filter_chips_ru": [
+      "Техдобавки",
+      "Фильтрация затора",
+      "Специи",
+      "Цедра и цитрус",
+      "Травы и цветы",
+      "Кофе/какао",
+      "Дерево/выдержка",
+      "Ароматизаторы"
+    ],
+    "secondary_chips_by_primary_ru": {
+      "Техдобавки": [
+        "Осветление",
+        "Ферменты",
+        "Подкормки",
+        "Антиоксиданты",
+        "Пеногасители",
+        "Консерванты"
+      ],
+      "Фильтрация затора": [
+        "Рисовая лузга",
+        "Другая лузга"
+      ],
+      "Специи": [
+        "Кориандр",
+        "Ваниль",
+        "Зимние специи",
+        "Перец/чили",
+        "Семена",
+        "Корни"
+      ],
+      "Цедра и цитрус": [
+        "Апельсин/померанец",
+        "Лимон/лайм",
+        "Грейпфрут",
+        "Юдзу/бергамот"
+      ],
+      "Травы и цветы": [
+        "Цветы",
+        "Чай",
+        "Хвойные",
+        "Травы"
+      ],
+      "Кофе/какао": [
+        "Кофе",
+        "Какао",
+        "Кокос",
+        "Ореховые"
+      ],
+      "Дерево/выдержка": [
+        "Дубовая щепа",
+        "Дубовые кубики",
+        "Спирали",
+        "Другая древесина"
+      ],
+      "Ароматизаторы": [
+        "Фруктовые",
+        "Десертные",
+        "Алкогольные/бочковые",
+        "Хмелевой аромат"
+      ]
+    }
+  },
+  "beerxml_misc_mapping_note": {
+    "supported_types": [
+      "Water Agent",
+      "Fining",
+      "Spice",
+      "Herb",
+      "Flavor",
+      "Other"
+    ],
+    "app_decision_ru": "Water Agent не использовать для солей/кислот в этом seed: они должны быть в water treatment. Для совместимости импорт BeerXML/Brewfather может маппить Water Agent в water treatment, а Spice/Herb/Flavor/Other/Fining — сюда."
+  },
+  "items_added_count": 89,
+  "total_ids_after_merge": 118,
+  "new_item_ids": [
+    "rice-hulls-lauter-aid",
+    "oat-hulls-lauter-aid",
+    "barley-hulls-lauter-aid",
+    "bitter-orange-peel-curacao",
+    "sweet-orange-peel",
+    "fresh-orange-zest",
+    "lemon-zest",
+    "lime-zest",
+    "grapefruit-peel",
+    "tangerine-peel",
+    "yuzu-peel",
+    "bergamot-peel",
+    "coriander-seed",
+    "grains-of-paradise",
+    "juniper-berries",
+    "cinnamon-stick",
+    "cinnamon-ground",
+    "clove",
+    "nutmeg",
+    "allspice",
+    "ginger-dried",
+    "ginger-fresh",
+    "cardamom-green",
+    "star-anise",
+    "anise-seed",
+    "fennel-seed",
+    "black-pepper",
+    "pink-pepper",
+    "sichuan-pepper",
+    "chili-pepper",
+    "chipotle-pepper",
+    "licorice-root",
+    "vanilla-bean",
+    "pumpkin-pie-spice",
+    "hibiscus-flowers",
+    "lavender-flowers",
+    "chamomile-flowers",
+    "elderflower",
+    "heather-tips",
+    "lemongrass",
+    "mint",
+    "rosemary",
+    "thyme",
+    "sage",
+    "spruce-tips",
+    "rosehips",
+    "rose-petals",
+    "cacao-nibs",
+    "cocoa-powder",
+    "chocolate-extract",
+    "coffee-beans-whole",
+    "coffee-ground",
+    "cold-brew-coffee",
+    "espresso",
+    "toasted-coconut",
+    "coconut-flakes",
+    "peanut-butter-powder",
+    "marshmallow-flavoring",
+    "caramel-flavoring",
+    "almond-extract",
+    "hazelnut-extract",
+    "oak-chips-light-toast",
+    "oak-chips-medium-toast",
+    "oak-chips-heavy-toast",
+    "oak-cubes-medium-toast",
+    "oak-spirals-medium-toast",
+    "bourbon-oak-chips",
+    "rum-oak-chips",
+    "cherry-wood-chips",
+    "palo-santo-wood",
+    "black-tea",
+    "earl-grey-tea",
+    "green-tea",
+    "matcha-tea",
+    "rooibos",
+    "vanilla-extract",
+    "orange-extract",
+    "lemon-extract",
+    "raspberry-extract",
+    "cherry-extract",
+    "mango-extract",
+    "passionfruit-extract",
+    "peach-extract",
+    "coconut-extract",
+    "coffee-extract",
+    "bourbon-flavoring",
+    "rum-flavoring",
+    "phantasm-powder",
+    "hop-terpene-extract"
+  ],
+  "items": [
+    {
+      "id": "rice-hulls-lauter-aid",
+      "name_ru": "Рисовая лузга",
+      "name_en": "Rice Hulls",
+      "aliases_ru": [
+        "рисовая шелуха",
+        "рисовая оболочка",
+        "лузга рисовая",
+        "rice hulls",
+        "rice husks"
+      ],
+      "aliases_en": [
+        "rice husks",
+        "lautering aid"
+      ],
+      "group_ru": "Фильтрация затора",
+      "subcategory_ru": "Фильтрующая добавка",
+      "beerxml_misc_type": "Other",
+      "default_use": "Mash",
+      "allowed_uses": [
+        "Mash"
+      ],
+      "default_unit": "g",
+      "stock_units": [
+        "g",
+        "kg"
+      ],
+      "form": "husk",
+      "flavor_tags_ru": [
+        "нейтрально",
+        "фильтрация",
+        "затор"
+      ],
+      "typical_styles_ru": [
+        "Witbier",
+        "Weissbier",
+        "NEIPA",
+        "Rye IPA",
+        "овсяные стауты"
+      ],
+      "dosage_hint_ru": "Обычно до 5% от засыпи или около 5–10% от массы безоболочечных/хлопьев; не дробить.",
+      "gravity_contribution": "none",
+      "notes_ru": "Не даёт вкуса, цвета и плотности; нужна для предотвращения stuck mash/sparge.",
+      "search_boost_terms": [
+        "рисовая шелуха",
+        "рисовая оболочка",
+        "лузга рисовая",
+        "rice hulls",
+        "rice husks",
+        "lautering aid",
+        "Рисовая лузга",
+        "Rice Hulls"
+      ]
+    },
+    {
+      "id": "oat-hulls-lauter-aid",
+      "name_ru": "Овсяная лузга",
+      "name_en": "Oat Hulls",
+      "aliases_ru": [
+        "овсяная шелуха",
+        "oat hulls"
+      ],
+      "aliases_en": [
+        "oat husks"
+      ],
+      "group_ru": "Фильтрация затора",
+      "subcategory_ru": "Фильтрующая добавка",
+      "beerxml_misc_type": "Other",
+      "default_use": "Mash",
+      "allowed_uses": [
+        "Mash"
+      ],
+      "default_unit": "g",
+      "stock_units": [
+        "g",
+        "kg"
+      ],
+      "form": "husk",
+      "flavor_tags_ru": [
+        "нейтрально",
+        "фильтрация"
+      ],
+      "typical_styles_ru": [
+        "ржаные/пшеничные/овсяные засыпи"
+      ],
+      "dosage_hint_ru": "Использовать как альтернативу рисовой лузге, если доступна; не дробить.",
+      "gravity_contribution": "none",
+      "notes_ru": "Менее распространена в homebrew, но логически та же задача — разрыхлить фильтрующий слой.",
+      "search_boost_terms": [
+        "овсяная шелуха",
+        "oat hulls",
+        "oat husks",
+        "Овсяная лузга",
+        "Oat Hulls"
+      ]
+    },
+    {
+      "id": "barley-hulls-lauter-aid",
+      "name_ru": "Ячменная лузга",
+      "name_en": "Barley Hulls",
+      "aliases_ru": [
+        "ячменная шелуха",
+        "barley husks"
+      ],
+      "aliases_en": [
+        "barley husks"
+      ],
+      "group_ru": "Фильтрация затора",
+      "subcategory_ru": "Фильтрующая добавка",
+      "beerxml_misc_type": "Other",
+      "default_use": "Mash",
+      "allowed_uses": [
+        "Mash"
+      ],
+      "default_unit": "g",
+      "stock_units": [
+        "g",
+        "kg"
+      ],
+      "form": "husk",
+      "flavor_tags_ru": [
+        "нейтрально",
+        "фильтрация"
+      ],
+      "typical_styles_ru": [
+        "пшеничные/ржаные засыпи"
+      ],
+      "dosage_hint_ru": "Использовать как фильтрующую добавку в затор; не дробить.",
+      "gravity_contribution": "none",
+      "notes_ru": "Альтернатива рисовой лузге, встречается реже.",
+      "search_boost_terms": [
+        "ячменная шелуха",
+        "barley husks",
+        "Ячменная лузга",
+        "Barley Hulls"
+      ]
+    },
+    {
+      "id": "bitter-orange-peel-curacao",
+      "name_ru": "Цедра горького апельсина / померанца",
+      "name_en": "Bitter Orange Peel / Curaçao Orange Peel",
+      "aliases_ru": [
+        "померанец",
+        "курасао",
+        "горькая апельсиновая цедра",
+        "цедра померанца",
+        "bitter orange peel",
+        "curacao orange peel"
+      ],
+      "aliases_en": [
+        "curaçao orange peel",
+        "bitter orange peel"
+      ],
+      "group_ru": "Цедра и цитрус",
+      "subcategory_ru": "Апельсин",
+      "beerxml_misc_type": "Flavor",
+      "default_use": "Boil",
+      "allowed_uses": [
+        "Boil",
+        "Flameout",
+        "Primary",
+        "Secondary",
+        "Bottling"
+      ],
+      "default_unit": "g",
+      "stock_units": [
+        "g",
+        "kg"
+      ],
+      "form": "dried_peel",
+      "flavor_tags_ru": [
+        "цитрус",
+        "горечь",
+        "пряность"
+      ],
+      "typical_styles_ru": [
+        "Witbier",
+        "Saison",
+        "Belgian Blond",
+        "Christmas Ale"
+      ],
+      "dosage_hint_ru": "Обычно в конце кипа/whirlpool; дозу лучше подбирать по рецепту.",
+      "gravity_contribution": "none",
+      "notes_ru": null,
+      "search_boost_terms": [
+        "померанец",
+        "курасао",
+        "горькая апельсиновая цедра",
+        "цедра померанца",
+        "bitter orange peel",
+        "curacao orange peel",
+        "curaçao orange peel",
+        "Цедра горького апельсина / померанца",
+        "Bitter Orange Peel / Curaçao Orange Peel"
+      ]
+    },
+    {
+      "id": "sweet-orange-peel",
+      "name_ru": "Цедра сладкого апельсина",
+      "name_en": "Sweet Orange Peel",
+      "aliases_ru": [
+        "сладкая апельсиновая цедра",
+        "orange peel sweet",
+        "sweet orange"
+      ],
+      "aliases_en": [
+        "orange peel sweet"
+      ],
+      "group_ru": "Цедра и цитрус",
+      "subcategory_ru": "Апельсин",
+      "beerxml_misc_type": "Flavor",
+      "default_use": "Boil",
+      "allowed_uses": [
+        "Boil",
+        "Flameout",
+        "Primary",
+        "Secondary",
+        "Bottling"
+      ],
+      "default_unit": "g",
+      "stock_units": [
+        "g",
+        "kg"
+      ],
+      "form": "dried_peel",
+      "flavor_tags_ru": [
+        "цитрус",
+        "апельсин"
+      ],
+      "typical_styles_ru": [
+        "Witbier",
+        "Wheat Ale",
+        "Saison",
+        "IPA"
+      ],
+      "dosage_hint_ru": null,
+      "gravity_contribution": "none",
+      "notes_ru": null,
+      "search_boost_terms": [
+        "сладкая апельсиновая цедра",
+        "orange peel sweet",
+        "sweet orange",
+        "Цедра сладкого апельсина",
+        "Sweet Orange Peel"
+      ]
+    },
+    {
+      "id": "fresh-orange-zest",
+      "name_ru": "Свежая апельсиновая цедра",
+      "name_en": "Fresh Orange Zest",
+      "aliases_ru": [
+        "цедра апельсина",
+        "апельсиновая цедра свежая",
+        "orange zest"
+      ],
+      "aliases_en": [
+        "orange zest"
+      ],
+      "group_ru": "Цедра и цитрус",
+      "subcategory_ru": "Апельсин",
+      "beerxml_misc_type": "Spice",
+      "default_use": "Flameout",
+      "allowed_uses": [
+        "Boil",
+        "Flameout",
+        "Primary",
+        "Secondary",
+        "Bottling"
+      ],
+      "default_unit": "g",
+      "stock_units": [
+        "g",
+        "kg"
+      ],
+      "form": "fresh_zest",
+      "flavor_tags_ru": [
+        "цитрус",
+        "свежесть"
+      ],
+      "typical_styles_ru": [
+        "Witbier",
+        "Wheat Ale",
+        "IPA",
+        "Sour Ale"
+      ],
+      "dosage_hint_ru": null,
+      "gravity_contribution": "none",
+      "notes_ru": null,
+      "search_boost_terms": [
+        "цедра апельсина",
+        "апельсиновая цедра свежая",
+        "orange zest",
+        "Свежая апельсиновая цедра",
+        "Fresh Orange Zest"
+      ]
+    },
+    {
+      "id": "lemon-zest",
+      "name_ru": "Лимонная цедра",
+      "name_en": "Lemon Zest",
+      "aliases_ru": [
+        "цедра лимона",
+        "lemon peel",
+        "lemon zest"
+      ],
+      "aliases_en": [
+        "lemon peel"
+      ],
+      "group_ru": "Цедра и цитрус",
+      "subcategory_ru": "Лимон",
+      "beerxml_misc_type": "Spice",
+      "default_use": "Flameout",
+      "allowed_uses": [
+        "Boil",
+        "Flameout",
+        "Primary",
+        "Secondary",
+        "Bottling"
+      ],
+      "default_unit": "g",
+      "stock_units": [
+        "g",
+        "kg"
+      ],
+      "form": "fresh_or_dried_zest",
+      "flavor_tags_ru": [
+        "цитрус",
+        "лимон"
+      ],
+      "typical_styles_ru": [
+        "Saison",
+        "Wheat Ale",
+        "Gose",
+        "Sour Ale"
+      ],
+      "dosage_hint_ru": null,
+      "gravity_contribution": "none",
+      "notes_ru": null,
+      "search_boost_terms": [
+        "цедра лимона",
+        "lemon peel",
+        "lemon zest",
+        "Лимонная цедра",
+        "Lemon Zest"
+      ]
+    },
+    {
+      "id": "lime-zest",
+      "name_ru": "Цедра лайма",
+      "name_en": "Lime Zest",
+      "aliases_ru": [
+        "лаймовая цедра",
+        "lime peel",
+        "lime zest"
+      ],
+      "aliases_en": [
+        "lime peel"
+      ],
+      "group_ru": "Цедра и цитрус",
+      "subcategory_ru": "Лайм",
+      "beerxml_misc_type": "Flavor",
+      "default_use": "Flameout",
+      "allowed_uses": [
+        "Boil",
+        "Flameout",
+        "Primary",
+        "Secondary",
+        "Bottling"
+      ],
+      "default_unit": "g",
+      "stock_units": [
+        "g",
+        "kg"
+      ],
+      "form": "fresh_or_dried_zest",
+      "flavor_tags_ru": [
+        "цитрус",
+        "лайм"
+      ],
+      "typical_styles_ru": [
+        "Gose",
+        "Sour Ale",
+        "Mexican Lager",
+        "IPA"
+      ],
+      "dosage_hint_ru": null,
+      "gravity_contribution": "none",
+      "notes_ru": null,
+      "search_boost_terms": [
+        "лаймовая цедра",
+        "lime peel",
+        "lime zest",
+        "Цедра лайма",
+        "Lime Zest"
+      ]
+    },
+    {
+      "id": "grapefruit-peel",
+      "name_ru": "Цедра грейпфрута",
+      "name_en": "Grapefruit Peel",
+      "aliases_ru": [
+        "грейпфрутовая цедра",
+        "grapefruit zest"
+      ],
+      "aliases_en": [
+        "grapefruit zest"
+      ],
+      "group_ru": "Цедра и цитрус",
+      "subcategory_ru": "Грейпфрут",
+      "beerxml_misc_type": "Flavor",
+      "default_use": "Flameout",
+      "allowed_uses": [
+        "Boil",
+        "Flameout",
+        "Primary",
+        "Secondary",
+        "Bottling"
+      ],
+      "default_unit": "g",
+      "stock_units": [
+        "g",
+        "kg"
+      ],
+      "form": "fresh_or_dried_zest",
+      "flavor_tags_ru": [
+        "цитрус",
+        "грейпфрут",
+        "горчинка"
+      ],
+      "typical_styles_ru": [
+        "IPA",
+        "Pale Ale",
+        "Sour Ale"
+      ],
+      "dosage_hint_ru": null,
+      "gravity_contribution": "none",
+      "notes_ru": null,
+      "search_boost_terms": [
+        "грейпфрутовая цедра",
+        "grapefruit zest",
+        "Цедра грейпфрута",
+        "Grapefruit Peel"
+      ]
+    },
+    {
+      "id": "tangerine-peel",
+      "name_ru": "Цедра мандарина",
+      "name_en": "Tangerine Peel",
+      "aliases_ru": [
+        "мандариновая цедра",
+        "tangerine zest",
+        "mandarin peel"
+      ],
+      "aliases_en": [
+        "mandarin peel",
+        "tangerine zest"
+      ],
+      "group_ru": "Цедра и цитрус",
+      "subcategory_ru": "Мандарин",
+      "beerxml_misc_type": "Flavor",
+      "default_use": "Flameout",
+      "allowed_uses": [
+        "Boil",
+        "Flameout",
+        "Primary",
+        "Secondary",
+        "Bottling"
+      ],
+      "default_unit": "g",
+      "stock_units": [
+        "g",
+        "kg"
+      ],
+      "form": "fresh_or_dried_zest",
+      "flavor_tags_ru": [
+        "цитрус",
+        "мандарин"
+      ],
+      "typical_styles_ru": [
+        "Wheat Ale",
+        "IPA",
+        "Sour Ale"
+      ],
+      "dosage_hint_ru": null,
+      "gravity_contribution": "none",
+      "notes_ru": null,
+      "search_boost_terms": [
+        "мандариновая цедра",
+        "tangerine zest",
+        "mandarin peel",
+        "Цедра мандарина",
+        "Tangerine Peel"
+      ]
+    },
+    {
+      "id": "yuzu-peel",
+      "name_ru": "Цедра юдзу",
+      "name_en": "Yuzu Peel",
+      "aliases_ru": [
+        "юзу",
+        "цедра юзу",
+        "yuzu zest"
+      ],
+      "aliases_en": [
+        "yuzu zest"
+      ],
+      "group_ru": "Цедра и цитрус",
+      "subcategory_ru": "Юдзу",
+      "beerxml_misc_type": "Flavor",
+      "default_use": "Flameout",
+      "allowed_uses": [
+        "Boil",
+        "Flameout",
+        "Primary",
+        "Secondary",
+        "Bottling"
+      ],
+      "default_unit": "g",
+      "stock_units": [
+        "g",
+        "kg"
+      ],
+      "form": "fresh_or_dried_zest",
+      "flavor_tags_ru": [
+        "цитрус",
+        "юдзу"
+      ],
+      "typical_styles_ru": [
+        "Saison",
+        "Gose",
+        "Sour Ale",
+        "IPA"
+      ],
+      "dosage_hint_ru": null,
+      "gravity_contribution": "none",
+      "notes_ru": null,
+      "search_boost_terms": [
+        "юзу",
+        "цедра юзу",
+        "yuzu zest",
+        "Цедра юдзу",
+        "Yuzu Peel"
+      ]
+    },
+    {
+      "id": "bergamot-peel",
+      "name_ru": "Цедра бергамота",
+      "name_en": "Bergamot Peel",
+      "aliases_ru": [
+        "бергамотовая цедра",
+        "bergamot zest"
+      ],
+      "aliases_en": [
+        "bergamot zest"
+      ],
+      "group_ru": "Цедра и цитрус",
+      "subcategory_ru": "Бергамот",
+      "beerxml_misc_type": "Flavor",
+      "default_use": "Flameout",
+      "allowed_uses": [
+        "Boil",
+        "Flameout",
+        "Primary",
+        "Secondary",
+        "Bottling"
+      ],
+      "default_unit": "g",
+      "stock_units": [
+        "g",
+        "kg"
+      ],
+      "form": "fresh_or_dried_zest",
+      "flavor_tags_ru": [
+        "цитрус",
+        "чайный",
+        "earl grey"
+      ],
+      "typical_styles_ru": [
+        "Saison",
+        "Wheat Ale",
+        "Tea Beer"
+      ],
+      "dosage_hint_ru": null,
+      "gravity_contribution": "none",
+      "notes_ru": null,
+      "search_boost_terms": [
+        "бергамотовая цедра",
+        "bergamot zest",
+        "Цедра бергамота",
+        "Bergamot Peel"
+      ]
+    },
+    {
+      "id": "coriander-seed",
+      "name_ru": "Семена кориандра",
+      "name_en": "Coriander Seed",
+      "aliases_ru": [
+        "кориандр",
+        "кориандр дробленый",
+        "семена кориандра дробленые",
+        "coriander"
+      ],
+      "aliases_en": [
+        "crushed coriander"
+      ],
+      "group_ru": "Специи",
+      "subcategory_ru": "Семена",
+      "beerxml_misc_type": "Spice",
+      "default_use": "Boil",
+      "allowed_uses": [
+        "Boil",
+        "Flameout",
+        "Primary",
+        "Secondary",
+        "Bottling"
+      ],
+      "default_unit": "g",
+      "stock_units": [
+        "g",
+        "kg"
+      ],
+      "form": "seed",
+      "flavor_tags_ru": [
+        "цитрус",
+        "пряность"
+      ],
+      "typical_styles_ru": [
+        "Witbier",
+        "Saison",
+        "Belgian Ale"
+      ],
+      "dosage_hint_ru": null,
+      "gravity_contribution": "none",
+      "notes_ru": null,
+      "search_boost_terms": [
+        "кориандр",
+        "кориандр дробленый",
+        "семена кориандра дробленые",
+        "coriander",
+        "crushed coriander",
+        "Семена кориандра",
+        "Coriander Seed"
+      ]
+    },
+    {
+      "id": "grains-of-paradise",
+      "name_ru": "Райские зёрна",
+      "name_en": "Grains of Paradise",
+      "aliases_ru": [
+        "melegueta pepper",
+        "райские зерна",
+        "гвинейский перец"
+      ],
+      "aliases_en": [
+        "melegueta pepper"
+      ],
+      "group_ru": "Специи",
+      "subcategory_ru": "Семена",
+      "beerxml_misc_type": "Spice",
+      "default_use": "Boil",
+      "allowed_uses": [
+        "Boil",
+        "Flameout",
+        "Primary",
+        "Secondary",
+        "Bottling"
+      ],
+      "default_unit": "g",
+      "stock_units": [
+        "g",
+        "kg"
+      ],
+      "form": "seed",
+      "flavor_tags_ru": [
+        "перец",
+        "цитрус",
+        "пряность"
+      ],
+      "typical_styles_ru": [
+        "Witbier",
+        "Saison",
+        "Christmas Ale"
+      ],
+      "dosage_hint_ru": null,
+      "gravity_contribution": "none",
+      "notes_ru": null,
+      "search_boost_terms": [
+        "melegueta pepper",
+        "райские зерна",
+        "гвинейский перец",
+        "Райские зёрна",
+        "Grains of Paradise"
+      ]
+    },
+    {
+      "id": "juniper-berries",
+      "name_ru": "Можжевеловые ягоды",
+      "name_en": "Juniper Berries",
+      "aliases_ru": [
+        "можжевельник",
+        "juniper"
+      ],
+      "aliases_en": [
+        "juniper"
+      ],
+      "group_ru": "Специи",
+      "subcategory_ru": "Ягоды",
+      "beerxml_misc_type": "Spice",
+      "default_use": "Boil",
+      "allowed_uses": [
+        "Boil",
+        "Flameout",
+        "Primary",
+        "Secondary",
+        "Bottling"
+      ],
+      "default_unit": "g",
+      "stock_units": [
+        "g",
+        "kg"
+      ],
+      "form": "dried_berries",
+      "flavor_tags_ru": [
+        "смола",
+        "хвоя",
+        "gin"
+      ],
+      "typical_styles_ru": [
+        "Sahti",
+        "Gruit",
+        "Saison",
+        "Nordic Ale"
+      ],
+      "dosage_hint_ru": null,
+      "gravity_contribution": "none",
+      "notes_ru": null,
+      "search_boost_terms": [
+        "можжевельник",
+        "juniper",
+        "Можжевеловые ягоды",
+        "Juniper Berries"
+      ]
+    },
+    {
+      "id": "cinnamon-stick",
+      "name_ru": "Корица палочками",
+      "name_en": "Cinnamon Stick",
+      "aliases_ru": [
+        "палочка корицы",
+        "корица",
+        "cinnamon"
+      ],
+      "aliases_en": [
+        "cinnamon"
+      ],
+      "group_ru": "Специи",
+      "subcategory_ru": "Кора",
+      "beerxml_misc_type": "Spice",
+      "default_use": "Boil",
+      "allowed_uses": [
+        "Boil",
+        "Flameout",
+        "Primary",
+        "Secondary",
+        "Bottling"
+      ],
+      "default_unit": "g",
+      "stock_units": [
+        "g",
+        "kg"
+      ],
+      "form": "stick",
+      "flavor_tags_ru": [
+        "тепло",
+        "сладкая пряность"
+      ],
+      "typical_styles_ru": [
+        "Winter Ale",
+        "Pumpkin Ale",
+        "Stout",
+        "Porter"
+      ],
+      "dosage_hint_ru": null,
+      "gravity_contribution": "none",
+      "notes_ru": null,
+      "search_boost_terms": [
+        "палочка корицы",
+        "корица",
+        "cinnamon",
+        "Корица палочками",
+        "Cinnamon Stick"
+      ]
+    },
+    {
+      "id": "cinnamon-ground",
+      "name_ru": "Корица молотая",
+      "name_en": "Ground Cinnamon",
+      "aliases_ru": [
+        "молотая корица",
+        "cinnamon powder"
+      ],
+      "aliases_en": [
+        "cinnamon powder"
+      ],
+      "group_ru": "Специи",
+      "subcategory_ru": "Кора",
+      "beerxml_misc_type": "Spice",
+      "default_use": "Boil",
+      "allowed_uses": [
+        "Boil",
+        "Flameout",
+        "Primary",
+        "Secondary",
+        "Bottling"
+      ],
+      "default_unit": "g",
+      "stock_units": [
+        "g",
+        "kg"
+      ],
+      "form": "powder",
+      "flavor_tags_ru": [
+        "тепло",
+        "сладкая пряность"
+      ],
+      "typical_styles_ru": [
+        "Winter Ale",
+        "Pumpkin Ale"
+      ],
+      "dosage_hint_ru": null,
+      "gravity_contribution": "none",
+      "notes_ru": null,
+      "search_boost_terms": [
+        "молотая корица",
+        "cinnamon powder",
+        "Корица молотая",
+        "Ground Cinnamon"
+      ]
+    },
+    {
+      "id": "clove",
+      "name_ru": "Гвоздика",
+      "name_en": "Clove",
+      "aliases_ru": [
+        "гвоздика целая",
+        "cloves"
+      ],
+      "aliases_en": [
+        "cloves"
+      ],
+      "group_ru": "Специи",
+      "subcategory_ru": "Бутоны",
+      "beerxml_misc_type": "Spice",
+      "default_use": "Boil",
+      "allowed_uses": [
+        "Boil",
+        "Flameout",
+        "Primary",
+        "Secondary",
+        "Bottling"
+      ],
+      "default_unit": "g",
+      "stock_units": [
+        "g",
+        "kg"
+      ],
+      "form": "whole_or_ground",
+      "flavor_tags_ru": [
+        "пряность",
+        "фенольность"
+      ],
+      "typical_styles_ru": [
+        "Winter Ale",
+        "Pumpkin Ale",
+        "Belgian Ale"
+      ],
+      "dosage_hint_ru": null,
+      "gravity_contribution": "none",
+      "notes_ru": null,
+      "search_boost_terms": [
+        "гвоздика целая",
+        "cloves",
+        "Гвоздика",
+        "Clove"
+      ]
+    },
+    {
+      "id": "nutmeg",
+      "name_ru": "Мускатный орех",
+      "name_en": "Nutmeg",
+      "aliases_ru": [
+        "мускат",
+        "nutmeg"
+      ],
+      "aliases_en": [
+        "nutmeg"
+      ],
+      "group_ru": "Специи",
+      "subcategory_ru": "Орех/семя",
+      "beerxml_misc_type": "Spice",
+      "default_use": "Boil",
+      "allowed_uses": [
+        "Boil",
+        "Flameout",
+        "Primary",
+        "Secondary",
+        "Bottling"
+      ],
+      "default_unit": "g",
+      "stock_units": [
+        "g",
+        "kg"
+      ],
+      "form": "whole_or_ground",
+      "flavor_tags_ru": [
+        "тепло",
+        "пряность"
+      ],
+      "typical_styles_ru": [
+        "Pumpkin Ale",
+        "Winter Ale",
+        "Stout"
+      ],
+      "dosage_hint_ru": null,
+      "gravity_contribution": "none",
+      "notes_ru": null,
+      "search_boost_terms": [
+        "мускат",
+        "nutmeg",
+        "Мускатный орех",
+        "Nutmeg"
+      ]
+    },
+    {
+      "id": "allspice",
+      "name_ru": "Душистый перец",
+      "name_en": "Allspice",
+      "aliases_ru": [
+        "ямайский перец",
+        "all spice",
+        "pimento"
+      ],
+      "aliases_en": [
+        "pimento"
+      ],
+      "group_ru": "Специи",
+      "subcategory_ru": "Ягоды",
+      "beerxml_misc_type": "Spice",
+      "default_use": "Boil",
+      "allowed_uses": [
+        "Boil",
+        "Flameout",
+        "Primary",
+        "Secondary",
+        "Bottling"
+      ],
+      "default_unit": "g",
+      "stock_units": [
+        "g",
+        "kg"
+      ],
+      "form": "whole_or_ground",
+      "flavor_tags_ru": [
+        "корица",
+        "гвоздика",
+        "тепло"
+      ],
+      "typical_styles_ru": [
+        "Pumpkin Ale",
+        "Winter Ale",
+        "Porter"
+      ],
+      "dosage_hint_ru": null,
+      "gravity_contribution": "none",
+      "notes_ru": null,
+      "search_boost_terms": [
+        "ямайский перец",
+        "all spice",
+        "pimento",
+        "Душистый перец",
+        "Allspice"
+      ]
+    },
+    {
+      "id": "ginger-dried",
+      "name_ru": "Имбирь сушёный",
+      "name_en": "Dried Ginger",
+      "aliases_ru": [
+        "имбирь молотый",
+        "сухой имбирь",
+        "ginger powder"
+      ],
+      "aliases_en": [
+        "ginger powder"
+      ],
+      "group_ru": "Специи",
+      "subcategory_ru": "Корень",
+      "beerxml_misc_type": "Spice",
+      "default_use": "Boil",
+      "allowed_uses": [
+        "Boil",
+        "Flameout",
+        "Primary",
+        "Secondary",
+        "Bottling"
+      ],
+      "default_unit": "g",
+      "stock_units": [
+        "g",
+        "kg"
+      ],
+      "form": "dried_root",
+      "flavor_tags_ru": [
+        "имбирь",
+        "острота",
+        "цитрус"
+      ],
+      "typical_styles_ru": [
+        "Ginger Beer",
+        "Saison",
+        "Winter Ale",
+        "Pumpkin Ale"
+      ],
+      "dosage_hint_ru": null,
+      "gravity_contribution": "none",
+      "notes_ru": null,
+      "search_boost_terms": [
+        "имбирь молотый",
+        "сухой имбирь",
+        "ginger powder",
+        "Имбирь сушёный",
+        "Dried Ginger"
+      ]
+    },
+    {
+      "id": "ginger-fresh",
+      "name_ru": "Имбирь свежий",
+      "name_en": "Fresh Ginger",
+      "aliases_ru": [
+        "свежий корень имбиря",
+        "fresh ginger root"
+      ],
+      "aliases_en": [
+        "fresh ginger root"
+      ],
+      "group_ru": "Специи",
+      "subcategory_ru": "Корень",
+      "beerxml_misc_type": "Spice",
+      "default_use": "Flameout",
+      "allowed_uses": [
+        "Boil",
+        "Flameout",
+        "Primary",
+        "Secondary",
+        "Bottling"
+      ],
+      "default_unit": "g",
+      "stock_units": [
+        "g",
+        "kg"
+      ],
+      "form": "fresh_root",
+      "flavor_tags_ru": [
+        "свежий имбирь",
+        "острота"
+      ],
+      "typical_styles_ru": [
+        "Ginger Beer",
+        "Saison",
+        "Wheat Ale"
+      ],
+      "dosage_hint_ru": null,
+      "gravity_contribution": "none",
+      "notes_ru": null,
+      "search_boost_terms": [
+        "свежий корень имбиря",
+        "fresh ginger root",
+        "Имбирь свежий",
+        "Fresh Ginger"
+      ]
+    },
+    {
+      "id": "cardamom-green",
+      "name_ru": "Кардамон зелёный",
+      "name_en": "Green Cardamom",
+      "aliases_ru": [
+        "кардамон",
+        "зеленый кардамон",
+        "cardamom"
+      ],
+      "aliases_en": [
+        "cardamom"
+      ],
+      "group_ru": "Специи",
+      "subcategory_ru": "Стручки",
+      "beerxml_misc_type": "Spice",
+      "default_use": "Boil",
+      "allowed_uses": [
+        "Boil",
+        "Flameout",
+        "Primary",
+        "Secondary",
+        "Bottling"
+      ],
+      "default_unit": "g",
+      "stock_units": [
+        "g",
+        "kg"
+      ],
+      "form": "pods",
+      "flavor_tags_ru": [
+        "эвкалипт",
+        "цитрус",
+        "пряность"
+      ],
+      "typical_styles_ru": [
+        "Winter Ale",
+        "Saison",
+        "Spiced Ale"
+      ],
+      "dosage_hint_ru": null,
+      "gravity_contribution": "none",
+      "notes_ru": null,
+      "search_boost_terms": [
+        "кардамон",
+        "зеленый кардамон",
+        "cardamom",
+        "Кардамон зелёный",
+        "Green Cardamom"
+      ]
+    },
+    {
+      "id": "star-anise",
+      "name_ru": "Бадьян",
+      "name_en": "Star Anise",
+      "aliases_ru": [
+        "анис звездчатый",
+        "звездчатый анис",
+        "star anise"
+      ],
+      "aliases_en": [
+        "star anise"
+      ],
+      "group_ru": "Специи",
+      "subcategory_ru": "Звёздочки",
+      "beerxml_misc_type": "Spice",
+      "default_use": "Boil",
+      "allowed_uses": [
+        "Boil",
+        "Flameout",
+        "Primary",
+        "Secondary",
+        "Bottling"
+      ],
+      "default_unit": "g",
+      "stock_units": [
+        "g",
+        "kg"
+      ],
+      "form": "whole",
+      "flavor_tags_ru": [
+        "анис",
+        "лакрица"
+      ],
+      "typical_styles_ru": [
+        "Winter Ale",
+        "Stout",
+        "Porter"
+      ],
+      "dosage_hint_ru": null,
+      "gravity_contribution": "none",
+      "notes_ru": null,
+      "search_boost_terms": [
+        "анис звездчатый",
+        "звездчатый анис",
+        "star anise",
+        "Бадьян",
+        "Star Anise"
+      ]
+    },
+    {
+      "id": "anise-seed",
+      "name_ru": "Анис семена",
+      "name_en": "Anise Seed",
+      "aliases_ru": [
+        "анис",
+        "семена аниса",
+        "aniseed"
+      ],
+      "aliases_en": [
+        "aniseed"
+      ],
+      "group_ru": "Специи",
+      "subcategory_ru": "Семена",
+      "beerxml_misc_type": "Spice",
+      "default_use": "Boil",
+      "allowed_uses": [
+        "Boil",
+        "Flameout",
+        "Primary",
+        "Secondary",
+        "Bottling"
+      ],
+      "default_unit": "g",
+      "stock_units": [
+        "g",
+        "kg"
+      ],
+      "form": "seed",
+      "flavor_tags_ru": [
+        "анис",
+        "лакрица"
+      ],
+      "typical_styles_ru": [
+        "Spiced Ale",
+        "Saison"
+      ],
+      "dosage_hint_ru": null,
+      "gravity_contribution": "none",
+      "notes_ru": null,
+      "search_boost_terms": [
+        "анис",
+        "семена аниса",
+        "aniseed",
+        "Анис семена",
+        "Anise Seed"
+      ]
+    },
+    {
+      "id": "fennel-seed",
+      "name_ru": "Фенхель семена",
+      "name_en": "Fennel Seed",
+      "aliases_ru": [
+        "семена фенхеля",
+        "fennel"
+      ],
+      "aliases_en": [
+        "fennel"
+      ],
+      "group_ru": "Специи",
+      "subcategory_ru": "Семена",
+      "beerxml_misc_type": "Spice",
+      "default_use": "Boil",
+      "allowed_uses": [
+        "Boil",
+        "Flameout",
+        "Primary",
+        "Secondary",
+        "Bottling"
+      ],
+      "default_unit": "g",
+      "stock_units": [
+        "g",
+        "kg"
+      ],
+      "form": "seed",
+      "flavor_tags_ru": [
+        "анис",
+        "травяной"
+      ],
+      "typical_styles_ru": [
+        "Saison",
+        "Gruit",
+        "Spiced Ale"
+      ],
+      "dosage_hint_ru": null,
+      "gravity_contribution": "none",
+      "notes_ru": null,
+      "search_boost_terms": [
+        "семена фенхеля",
+        "fennel",
+        "Фенхель семена",
+        "Fennel Seed"
+      ]
+    },
+    {
+      "id": "black-pepper",
+      "name_ru": "Чёрный перец",
+      "name_en": "Black Pepper",
+      "aliases_ru": [
+        "черный перец горошек",
+        "black peppercorns"
+      ],
+      "aliases_en": [
+        "black peppercorns"
+      ],
+      "group_ru": "Специи",
+      "subcategory_ru": "Перец",
+      "beerxml_misc_type": "Spice",
+      "default_use": "Boil",
+      "allowed_uses": [
+        "Boil",
+        "Flameout",
+        "Primary",
+        "Secondary",
+        "Bottling"
+      ],
+      "default_unit": "g",
+      "stock_units": [
+        "g",
+        "kg"
+      ],
+      "form": "peppercorns",
+      "flavor_tags_ru": [
+        "перец",
+        "острота"
+      ],
+      "typical_styles_ru": [
+        "Saison",
+        "Belgian Ale",
+        "Spiced Ale"
+      ],
+      "dosage_hint_ru": null,
+      "gravity_contribution": "none",
+      "notes_ru": null,
+      "search_boost_terms": [
+        "черный перец горошек",
+        "black peppercorns",
+        "Чёрный перец",
+        "Black Pepper"
+      ]
+    },
+    {
+      "id": "pink-pepper",
+      "name_ru": "Розовый перец",
+      "name_en": "Pink Peppercorn",
+      "aliases_ru": [
+        "розовый перец горошек",
+        "pink pepper"
+      ],
+      "aliases_en": [
+        "pink pepper"
+      ],
+      "group_ru": "Специи",
+      "subcategory_ru": "Перец",
+      "beerxml_misc_type": "Spice",
+      "default_use": "Boil",
+      "allowed_uses": [
+        "Boil",
+        "Flameout",
+        "Primary",
+        "Secondary",
+        "Bottling"
+      ],
+      "default_unit": "g",
+      "stock_units": [
+        "g",
+        "kg"
+      ],
+      "form": "peppercorns",
+      "flavor_tags_ru": [
+        "перец",
+        "ягодный"
+      ],
+      "typical_styles_ru": [
+        "Saison",
+        "Sour Ale",
+        "Spiced Ale"
+      ],
+      "dosage_hint_ru": null,
+      "gravity_contribution": "none",
+      "notes_ru": null,
+      "search_boost_terms": [
+        "розовый перец горошек",
+        "pink pepper",
+        "Розовый перец",
+        "Pink Peppercorn"
+      ]
+    },
+    {
+      "id": "sichuan-pepper",
+      "name_ru": "Сычуаньский перец",
+      "name_en": "Sichuan Pepper",
+      "aliases_ru": [
+        "сичуаньский перец",
+        "szechuan pepper"
+      ],
+      "aliases_en": [
+        "szechuan pepper"
+      ],
+      "group_ru": "Специи",
+      "subcategory_ru": "Перец",
+      "beerxml_misc_type": "Spice",
+      "default_use": "Boil",
+      "allowed_uses": [
+        "Boil",
+        "Flameout",
+        "Primary",
+        "Secondary",
+        "Bottling"
+      ],
+      "default_unit": "g",
+      "stock_units": [
+        "g",
+        "kg"
+      ],
+      "form": "peppercorns",
+      "flavor_tags_ru": [
+        "цитрус",
+        "перец",
+        "онемение"
+      ],
+      "typical_styles_ru": [
+        "Experimental Ale",
+        "Sour Ale"
+      ],
+      "dosage_hint_ru": null,
+      "gravity_contribution": "none",
+      "notes_ru": null,
+      "search_boost_terms": [
+        "сичуаньский перец",
+        "szechuan pepper",
+        "Сычуаньский перец",
+        "Sichuan Pepper"
+      ]
+    },
+    {
+      "id": "chili-pepper",
+      "name_ru": "Перец чили",
+      "name_en": "Chili Pepper",
+      "aliases_ru": [
+        "чили",
+        "острый перец",
+        "chile pepper"
+      ],
+      "aliases_en": [
+        "chile pepper"
+      ],
+      "group_ru": "Специи",
+      "subcategory_ru": "Острый перец",
+      "beerxml_misc_type": "Spice",
+      "default_use": "Secondary",
+      "allowed_uses": [
+        "Boil",
+        "Flameout",
+        "Primary",
+        "Secondary",
+        "Bottling"
+      ],
+      "default_unit": "g",
+      "stock_units": [
+        "g",
+        "kg"
+      ],
+      "form": "whole_or_flakes",
+      "flavor_tags_ru": [
+        "острота",
+        "перец"
+      ],
+      "typical_styles_ru": [
+        "Chili Stout",
+        "Mexican Lager",
+        "Experimental Ale"
+      ],
+      "dosage_hint_ru": "Добавлять осторожно, лучше tincture/настойкой и по вкусу.",
+      "gravity_contribution": "none",
+      "notes_ru": "Острота сильно зависит от сорта и партии.",
+      "search_boost_terms": [
+        "чили",
+        "острый перец",
+        "chile pepper",
+        "Перец чили",
+        "Chili Pepper"
+      ]
+    },
+    {
+      "id": "chipotle-pepper",
+      "name_ru": "Чипотле",
+      "name_en": "Chipotle Pepper",
+      "aliases_ru": [
+        "копченый халапеньо",
+        "chipotle chili"
+      ],
+      "aliases_en": [
+        "chipotle chili"
+      ],
+      "group_ru": "Специи",
+      "subcategory_ru": "Острый перец",
+      "beerxml_misc_type": "Spice",
+      "default_use": "Secondary",
+      "allowed_uses": [
+        "Boil",
+        "Flameout",
+        "Primary",
+        "Secondary",
+        "Bottling"
+      ],
+      "default_unit": "g",
+      "stock_units": [
+        "g",
+        "kg"
+      ],
+      "form": "dried_chili",
+      "flavor_tags_ru": [
+        "дым",
+        "острота",
+        "перец"
+      ],
+      "typical_styles_ru": [
+        "Smoked Porter",
+        "Chili Stout",
+        "Experimental Ale"
+      ],
+      "dosage_hint_ru": null,
+      "gravity_contribution": "none",
+      "notes_ru": null,
+      "search_boost_terms": [
+        "копченый халапеньо",
+        "chipotle chili",
+        "Чипотле",
+        "Chipotle Pepper"
+      ]
+    },
+    {
+      "id": "licorice-root",
+      "name_ru": "Корень солодки",
+      "name_en": "Licorice Root",
+      "aliases_ru": [
+        "лакрица",
+        "солодка",
+        "liquorice root"
+      ],
+      "aliases_en": [
+        "liquorice root"
+      ],
+      "group_ru": "Специи",
+      "subcategory_ru": "Корень",
+      "beerxml_misc_type": "Spice",
+      "default_use": "Boil",
+      "allowed_uses": [
+        "Boil",
+        "Flameout",
+        "Primary",
+        "Secondary",
+        "Bottling"
+      ],
+      "default_unit": "g",
+      "stock_units": [
+        "g",
+        "kg"
+      ],
+      "form": "dried_root",
+      "flavor_tags_ru": [
+        "лакрица",
+        "сладость"
+      ],
+      "typical_styles_ru": [
+        "Stout",
+        "Porter",
+        "Winter Ale"
+      ],
+      "dosage_hint_ru": null,
+      "gravity_contribution": "none",
+      "notes_ru": null,
+      "search_boost_terms": [
+        "лакрица",
+        "солодка",
+        "liquorice root",
+        "Корень солодки",
+        "Licorice Root"
+      ]
+    },
+    {
+      "id": "vanilla-bean",
+      "name_ru": "Ванильный стручок",
+      "name_en": "Vanilla Bean",
+      "aliases_ru": [
+        "ваниль",
+        "стручки ванили",
+        "vanilla pod",
+        "vanilla beans"
+      ],
+      "aliases_en": [
+        "vanilla pod",
+        "vanilla beans"
+      ],
+      "group_ru": "Специи",
+      "subcategory_ru": "Ваниль",
+      "beerxml_misc_type": "Spice",
+      "default_use": "Secondary",
+      "allowed_uses": [
+        "Boil",
+        "Flameout",
+        "Primary",
+        "Secondary",
+        "Bottling"
+      ],
+      "default_unit": "pcs",
+      "stock_units": [
+        "pcs",
+        "g"
+      ],
+      "form": "bean",
+      "flavor_tags_ru": [
+        "ваниль",
+        "сладость",
+        "десерт"
+      ],
+      "typical_styles_ru": [
+        "Imperial Stout",
+        "Porter",
+        "Pastry Sour",
+        "Barrel-aged Ale"
+      ],
+      "dosage_hint_ru": "Часто добавляют в secondary/кег через настойку; дозировать по вкусу.",
+      "gravity_contribution": "none",
+      "notes_ru": null,
+      "search_boost_terms": [
+        "ваниль",
+        "стручки ванили",
+        "vanilla pod",
+        "vanilla beans",
+        "Ванильный стручок",
+        "Vanilla Bean"
+      ]
+    },
+    {
+      "id": "pumpkin-pie-spice",
+      "name_ru": "Смесь специй для тыквенного пирога",
+      "name_en": "Pumpkin Pie Spice",
+      "aliases_ru": [
+        "pumpkin spice",
+        "специи для тыквенного эля"
+      ],
+      "aliases_en": [
+        "pumpkin spice"
+      ],
+      "group_ru": "Специи",
+      "subcategory_ru": "Смесь специй",
+      "beerxml_misc_type": "Spice",
+      "default_use": "Boil",
+      "allowed_uses": [
+        "Boil",
+        "Flameout",
+        "Primary",
+        "Secondary",
+        "Bottling"
+      ],
+      "default_unit": "g",
+      "stock_units": [
+        "g",
+        "kg"
+      ],
+      "form": "spice_blend",
+      "flavor_tags_ru": [
+        "корица",
+        "гвоздика",
+        "мускат",
+        "имбирь"
+      ],
+      "typical_styles_ru": [
+        "Pumpkin Ale",
+        "Winter Ale"
+      ],
+      "dosage_hint_ru": null,
+      "gravity_contribution": "none",
+      "notes_ru": null,
+      "search_boost_terms": [
+        "pumpkin spice",
+        "специи для тыквенного эля",
+        "Смесь специй для тыквенного пирога",
+        "Pumpkin Pie Spice"
+      ]
+    },
+    {
+      "id": "hibiscus-flowers",
+      "name_ru": "Гибискус / каркаде",
+      "name_en": "Hibiscus Flowers",
+      "aliases_ru": [
+        "каркаде",
+        "цветы гибискуса",
+        "hibiscus"
+      ],
+      "aliases_en": [
+        "hibiscus"
+      ],
+      "group_ru": "Травы и цветы",
+      "subcategory_ru": "Цветы",
+      "beerxml_misc_type": "Herb",
+      "default_use": "Boil",
+      "allowed_uses": [
+        "Boil",
+        "Flameout",
+        "Primary",
+        "Secondary",
+        "Bottling"
+      ],
+      "default_unit": "g",
+      "stock_units": [
+        "g",
+        "kg"
+      ],
+      "form": "dried_flowers",
+      "flavor_tags_ru": [
+        "кислотность",
+        "ягоды",
+        "красный цвет"
+      ],
+      "typical_styles_ru": [
+        "Sour Ale",
+        "Gose",
+        "Wheat Ale"
+      ],
+      "dosage_hint_ru": null,
+      "gravity_contribution": "none",
+      "notes_ru": null,
+      "search_boost_terms": [
+        "каркаде",
+        "цветы гибискуса",
+        "hibiscus",
+        "Гибискус / каркаде",
+        "Hibiscus Flowers"
+      ]
+    },
+    {
+      "id": "lavender-flowers",
+      "name_ru": "Лаванда",
+      "name_en": "Lavender Flowers",
+      "aliases_ru": [
+        "цветы лаванды",
+        "lavender"
+      ],
+      "aliases_en": [
+        "lavender"
+      ],
+      "group_ru": "Травы и цветы",
+      "subcategory_ru": "Цветы",
+      "beerxml_misc_type": "Herb",
+      "default_use": "Flameout",
+      "allowed_uses": [
+        "Boil",
+        "Flameout",
+        "Primary",
+        "Secondary",
+        "Bottling"
+      ],
+      "default_unit": "g",
+      "stock_units": [
+        "g",
+        "kg"
+      ],
+      "form": "dried_flowers",
+      "flavor_tags_ru": [
+        "цветочный",
+        "парфюмный"
+      ],
+      "typical_styles_ru": [
+        "Saison",
+        "Wheat Ale",
+        "Honey Ale"
+      ],
+      "dosage_hint_ru": "Очень легко передозировать; лучше добавлять с тестом по вкусу.",
+      "gravity_contribution": "none",
+      "notes_ru": null,
+      "search_boost_terms": [
+        "цветы лаванды",
+        "lavender",
+        "Лаванда",
+        "Lavender Flowers"
+      ]
+    },
+    {
+      "id": "chamomile-flowers",
+      "name_ru": "Ромашка",
+      "name_en": "Chamomile Flowers",
+      "aliases_ru": [
+        "цветы ромашки",
+        "chamomile"
+      ],
+      "aliases_en": [
+        "chamomile"
+      ],
+      "group_ru": "Травы и цветы",
+      "subcategory_ru": "Цветы",
+      "beerxml_misc_type": "Herb",
+      "default_use": "Flameout",
+      "allowed_uses": [
+        "Boil",
+        "Flameout",
+        "Primary",
+        "Secondary",
+        "Bottling"
+      ],
+      "default_unit": "g",
+      "stock_units": [
+        "g",
+        "kg"
+      ],
+      "form": "dried_flowers",
+      "flavor_tags_ru": [
+        "цветочный",
+        "чайный",
+        "мёд"
+      ],
+      "typical_styles_ru": [
+        "Saison",
+        "Wheat Ale",
+        "Gruit"
+      ],
+      "dosage_hint_ru": null,
+      "gravity_contribution": "none",
+      "notes_ru": null,
+      "search_boost_terms": [
+        "цветы ромашки",
+        "chamomile",
+        "Ромашка",
+        "Chamomile Flowers"
+      ]
+    },
+    {
+      "id": "elderflower",
+      "name_ru": "Бузина цветы",
+      "name_en": "Elderflower",
+      "aliases_ru": [
+        "цветы бузины",
+        "elder flowers"
+      ],
+      "aliases_en": [
+        "elder flowers"
+      ],
+      "group_ru": "Травы и цветы",
+      "subcategory_ru": "Цветы",
+      "beerxml_misc_type": "Herb",
+      "default_use": "Flameout",
+      "allowed_uses": [
+        "Boil",
+        "Flameout",
+        "Primary",
+        "Secondary",
+        "Bottling"
+      ],
+      "default_unit": "g",
+      "stock_units": [
+        "g",
+        "kg"
+      ],
+      "form": "dried_flowers",
+      "flavor_tags_ru": [
+        "цветочный",
+        "виноград",
+        "мускат"
+      ],
+      "typical_styles_ru": [
+        "Saison",
+        "Sour Ale",
+        "Wheat Ale"
+      ],
+      "dosage_hint_ru": null,
+      "gravity_contribution": "none",
+      "notes_ru": null,
+      "search_boost_terms": [
+        "цветы бузины",
+        "elder flowers",
+        "Бузина цветы",
+        "Elderflower"
+      ]
+    },
+    {
+      "id": "heather-tips",
+      "name_ru": "Вереск",
+      "name_en": "Heather Tips",
+      "aliases_ru": [
+        "вересковые цветы",
+        "heather"
+      ],
+      "aliases_en": [
+        "heather"
+      ],
+      "group_ru": "Травы и цветы",
+      "subcategory_ru": "Цветы/травы",
+      "beerxml_misc_type": "Herb",
+      "default_use": "Boil",
+      "allowed_uses": [
+        "Boil",
+        "Flameout",
+        "Primary",
+        "Secondary",
+        "Bottling"
+      ],
+      "default_unit": "g",
+      "stock_units": [
+        "g",
+        "kg"
+      ],
+      "form": "dried_tips",
+      "flavor_tags_ru": [
+        "травяной",
+        "цветочный"
+      ],
+      "typical_styles_ru": [
+        "Gruit",
+        "Scottish Ale",
+        "Saison"
+      ],
+      "dosage_hint_ru": null,
+      "gravity_contribution": "none",
+      "notes_ru": null,
+      "search_boost_terms": [
+        "вересковые цветы",
+        "heather",
+        "Вереск",
+        "Heather Tips"
+      ]
+    },
+    {
+      "id": "lemongrass",
+      "name_ru": "Лемонграсс",
+      "name_en": "Lemongrass",
+      "aliases_ru": [
+        "лимонная трава",
+        "цитронелла",
+        "lemon grass"
+      ],
+      "aliases_en": [
+        "lemon grass"
+      ],
+      "group_ru": "Травы и цветы",
+      "subcategory_ru": "Трава",
+      "beerxml_misc_type": "Herb",
+      "default_use": "Flameout",
+      "allowed_uses": [
+        "Boil",
+        "Flameout",
+        "Primary",
+        "Secondary",
+        "Bottling"
+      ],
+      "default_unit": "g",
+      "stock_units": [
+        "g",
+        "kg"
+      ],
+      "form": "dried_or_fresh",
+      "flavor_tags_ru": [
+        "лимон",
+        "травяной"
+      ],
+      "typical_styles_ru": [
+        "Wheat Ale",
+        "Saison",
+        "Sour Ale"
+      ],
+      "dosage_hint_ru": null,
+      "gravity_contribution": "none",
+      "notes_ru": null,
+      "search_boost_terms": [
+        "лимонная трава",
+        "цитронелла",
+        "lemon grass",
+        "Лемонграсс",
+        "Lemongrass"
+      ]
+    },
+    {
+      "id": "mint",
+      "name_ru": "Мята",
+      "name_en": "Mint",
+      "aliases_ru": [
+        "peppermint",
+        "spearmint",
+        "мята перечная"
+      ],
+      "aliases_en": [
+        "peppermint",
+        "spearmint"
+      ],
+      "group_ru": "Травы и цветы",
+      "subcategory_ru": "Трава",
+      "beerxml_misc_type": "Herb",
+      "default_use": "Secondary",
+      "allowed_uses": [
+        "Boil",
+        "Flameout",
+        "Primary",
+        "Secondary",
+        "Bottling"
+      ],
+      "default_unit": "g",
+      "stock_units": [
+        "g",
+        "kg"
+      ],
+      "form": "fresh_or_dried",
+      "flavor_tags_ru": [
+        "мята",
+        "холодок"
+      ],
+      "typical_styles_ru": [
+        "Stout",
+        "Sour Ale",
+        "Experimental Ale"
+      ],
+      "dosage_hint_ru": null,
+      "gravity_contribution": "none",
+      "notes_ru": null,
+      "search_boost_terms": [
+        "peppermint",
+        "spearmint",
+        "мята перечная",
+        "Мята",
+        "Mint"
+      ]
+    },
+    {
+      "id": "rosemary",
+      "name_ru": "Розмарин",
+      "name_en": "Rosemary",
+      "aliases_ru": [
+        "розмарин сушеный",
+        "rosemary"
+      ],
+      "aliases_en": [
+        "rosemary"
+      ],
+      "group_ru": "Травы и цветы",
+      "subcategory_ru": "Трава",
+      "beerxml_misc_type": "Herb",
+      "default_use": "Flameout",
+      "allowed_uses": [
+        "Boil",
+        "Flameout",
+        "Primary",
+        "Secondary",
+        "Bottling"
+      ],
+      "default_unit": "g",
+      "stock_units": [
+        "g",
+        "kg"
+      ],
+      "form": "fresh_or_dried",
+      "flavor_tags_ru": [
+        "смола",
+        "хвоя",
+        "травяной"
+      ],
+      "typical_styles_ru": [
+        "Saison",
+        "Gruit",
+        "Experimental Ale"
+      ],
+      "dosage_hint_ru": null,
+      "gravity_contribution": "none",
+      "notes_ru": null,
+      "search_boost_terms": [
+        "розмарин сушеный",
+        "rosemary",
+        "Розмарин",
+        "Rosemary"
+      ]
+    },
+    {
+      "id": "thyme",
+      "name_ru": "Тимьян / чабрец",
+      "name_en": "Thyme",
+      "aliases_ru": [
+        "чабрец",
+        "тимьян",
+        "thyme"
+      ],
+      "aliases_en": [
+        "thyme"
+      ],
+      "group_ru": "Травы и цветы",
+      "subcategory_ru": "Трава",
+      "beerxml_misc_type": "Herb",
+      "default_use": "Flameout",
+      "allowed_uses": [
+        "Boil",
+        "Flameout",
+        "Primary",
+        "Secondary",
+        "Bottling"
+      ],
+      "default_unit": "g",
+      "stock_units": [
+        "g",
+        "kg"
+      ],
+      "form": "fresh_or_dried",
+      "flavor_tags_ru": [
+        "травяной",
+        "пряный"
+      ],
+      "typical_styles_ru": [
+        "Saison",
+        "Gruit",
+        "Experimental Ale"
+      ],
+      "dosage_hint_ru": null,
+      "gravity_contribution": "none",
+      "notes_ru": null,
+      "search_boost_terms": [
+        "чабрец",
+        "тимьян",
+        "thyme",
+        "Тимьян / чабрец",
+        "Thyme"
+      ]
+    },
+    {
+      "id": "sage",
+      "name_ru": "Шалфей",
+      "name_en": "Sage",
+      "aliases_ru": [
+        "sage",
+        "шалфей сушеный"
+      ],
+      "aliases_en": [
+        "sage"
+      ],
+      "group_ru": "Травы и цветы",
+      "subcategory_ru": "Трава",
+      "beerxml_misc_type": "Herb",
+      "default_use": "Flameout",
+      "allowed_uses": [
+        "Boil",
+        "Flameout",
+        "Primary",
+        "Secondary",
+        "Bottling"
+      ],
+      "default_unit": "g",
+      "stock_units": [
+        "g",
+        "kg"
+      ],
+      "form": "fresh_or_dried",
+      "flavor_tags_ru": [
+        "травяной",
+        "камфорный"
+      ],
+      "typical_styles_ru": [
+        "Saison",
+        "Gruit",
+        "Experimental Ale"
+      ],
+      "dosage_hint_ru": null,
+      "gravity_contribution": "none",
+      "notes_ru": null,
+      "search_boost_terms": [
+        "sage",
+        "шалфей сушеный",
+        "Шалфей",
+        "Sage"
+      ]
+    },
+    {
+      "id": "spruce-tips",
+      "name_ru": "Еловые побеги",
+      "name_en": "Spruce Tips",
+      "aliases_ru": [
+        "ель",
+        "еловые почки",
+        "spruce"
+      ],
+      "aliases_en": [
+        "spruce"
+      ],
+      "group_ru": "Травы и цветы",
+      "subcategory_ru": "Хвойные",
+      "beerxml_misc_type": "Herb",
+      "default_use": "Boil",
+      "allowed_uses": [
+        "Boil",
+        "Flameout",
+        "Primary",
+        "Secondary",
+        "Bottling"
+      ],
+      "default_unit": "g",
+      "stock_units": [
+        "g",
+        "kg"
+      ],
+      "form": "fresh_or_dried",
+      "flavor_tags_ru": [
+        "хвоя",
+        "смола",
+        "цитрус"
+      ],
+      "typical_styles_ru": [
+        "Spruce Beer",
+        "Gruit",
+        "Saison"
+      ],
+      "dosage_hint_ru": null,
+      "gravity_contribution": "none",
+      "notes_ru": null,
+      "search_boost_terms": [
+        "ель",
+        "еловые почки",
+        "spruce",
+        "Еловые побеги",
+        "Spruce Tips"
+      ]
+    },
+    {
+      "id": "rosehips",
+      "name_ru": "Шиповник",
+      "name_en": "Rosehips",
+      "aliases_ru": [
+        "плоды шиповника",
+        "rose hip"
+      ],
+      "aliases_en": [
+        "rose hip"
+      ],
+      "group_ru": "Травы и цветы",
+      "subcategory_ru": "Плоды/ягоды",
+      "beerxml_misc_type": "Herb",
+      "default_use": "Boil",
+      "allowed_uses": [
+        "Boil",
+        "Flameout",
+        "Primary",
+        "Secondary",
+        "Bottling"
+      ],
+      "default_unit": "g",
+      "stock_units": [
+        "g",
+        "kg"
+      ],
+      "form": "dried_fruit",
+      "flavor_tags_ru": [
+        "ягоды",
+        "чайный",
+        "кислотность"
+      ],
+      "typical_styles_ru": [
+        "Sour Ale",
+        "Saison",
+        "Gruit"
+      ],
+      "dosage_hint_ru": null,
+      "gravity_contribution": "none",
+      "notes_ru": null,
+      "search_boost_terms": [
+        "плоды шиповника",
+        "rose hip",
+        "Шиповник",
+        "Rosehips"
+      ]
+    },
+    {
+      "id": "rose-petals",
+      "name_ru": "Лепестки розы",
+      "name_en": "Rose Petals",
+      "aliases_ru": [
+        "розовые лепестки",
+        "rose petals"
+      ],
+      "aliases_en": [
+        "rose petals"
+      ],
+      "group_ru": "Травы и цветы",
+      "subcategory_ru": "Цветы",
+      "beerxml_misc_type": "Herb",
+      "default_use": "Flameout",
+      "allowed_uses": [
+        "Boil",
+        "Flameout",
+        "Primary",
+        "Secondary",
+        "Bottling"
+      ],
+      "default_unit": "g",
+      "stock_units": [
+        "g",
+        "kg"
+      ],
+      "form": "dried_flowers",
+      "flavor_tags_ru": [
+        "цветочный",
+        "парфюмный"
+      ],
+      "typical_styles_ru": [
+        "Saison",
+        "Sour Ale",
+        "Experimental Ale"
+      ],
+      "dosage_hint_ru": null,
+      "gravity_contribution": "none",
+      "notes_ru": null,
+      "search_boost_terms": [
+        "розовые лепестки",
+        "rose petals",
+        "Лепестки розы",
+        "Rose Petals"
+      ]
+    },
+    {
+      "id": "cacao-nibs",
+      "name_ru": "Какао-бобы дроблёные / какао-нибсы",
+      "name_en": "Cacao Nibs",
+      "aliases_ru": [
+        "какао крупка",
+        "какао nibs",
+        "cocoa nibs",
+        "cacao nibs"
+      ],
+      "aliases_en": [
+        "cocoa nibs"
+      ],
+      "group_ru": "Кофе, какао и десертные добавки",
+      "subcategory_ru": "Какао",
+      "beerxml_misc_type": "Flavor",
+      "default_use": "Secondary",
+      "allowed_uses": [
+        "Flameout",
+        "Primary",
+        "Secondary",
+        "Bottling"
+      ],
+      "default_unit": "g",
+      "stock_units": [
+        "g",
+        "kg"
+      ],
+      "form": "nibs",
+      "flavor_tags_ru": [
+        "шоколад",
+        "какао",
+        "горечь"
+      ],
+      "typical_styles_ru": [
+        "Stout",
+        "Porter",
+        "Imperial Stout",
+        "Pastry Sour"
+      ],
+      "dosage_hint_ru": null,
+      "gravity_contribution": "none",
+      "notes_ru": null,
+      "search_boost_terms": [
+        "какао крупка",
+        "какао nibs",
+        "cocoa nibs",
+        "cacao nibs",
+        "Какао-бобы дроблёные / какао-нибсы",
+        "Cacao Nibs"
+      ]
+    },
+    {
+      "id": "cocoa-powder",
+      "name_ru": "Какао-порошок",
+      "name_en": "Cocoa Powder",
+      "aliases_ru": [
+        "какао порошок",
+        "cacao powder"
+      ],
+      "aliases_en": [
+        "cacao powder"
+      ],
+      "group_ru": "Кофе, какао и десертные добавки",
+      "subcategory_ru": "Какао",
+      "beerxml_misc_type": "Flavor",
+      "default_use": "Boil",
+      "allowed_uses": [
+        "Boil",
+        "Flameout",
+        "Primary",
+        "Secondary",
+        "Bottling"
+      ],
+      "default_unit": "g",
+      "stock_units": [
+        "g",
+        "kg"
+      ],
+      "form": "powder",
+      "flavor_tags_ru": [
+        "шоколад",
+        "какао"
+      ],
+      "typical_styles_ru": [
+        "Stout",
+        "Porter",
+        "Pastry Beer"
+      ],
+      "dosage_hint_ru": null,
+      "gravity_contribution": "none",
+      "notes_ru": null,
+      "search_boost_terms": [
+        "какао порошок",
+        "cacao powder",
+        "Какао-порошок",
+        "Cocoa Powder"
+      ]
+    },
+    {
+      "id": "chocolate-extract",
+      "name_ru": "Шоколадный экстракт / ароматизатор",
+      "name_en": "Chocolate Extract",
+      "aliases_ru": [
+        "ароматизатор шоколад",
+        "шоколадный ароматизатор",
+        "chocolate flavoring"
+      ],
+      "aliases_en": [
+        "chocolate flavoring"
+      ],
+      "group_ru": "Ароматизаторы и экстракты",
+      "subcategory_ru": "Десертные",
+      "beerxml_misc_type": "Flavor",
+      "default_use": "Bottling",
+      "allowed_uses": [
+        "Secondary",
+        "Bottling"
+      ],
+      "default_unit": "ml",
+      "stock_units": [
+        "ml",
+        "l"
+      ],
+      "form": "extract",
+      "flavor_tags_ru": [
+        "шоколад",
+        "ароматизатор"
+      ],
+      "typical_styles_ru": [
+        "Stout",
+        "Porter",
+        "Pastry Beer"
+      ],
+      "dosage_hint_ru": "Добавлять по вкусу на упаковке/в кег.",
+      "gravity_contribution": "none",
+      "notes_ru": "Экстракты лучше дозировать тестом в 100 мл образце.",
+      "search_boost_terms": [
+        "ароматизатор шоколад",
+        "шоколадный ароматизатор",
+        "chocolate flavoring",
+        "Шоколадный экстракт / ароматизатор",
+        "Chocolate Extract"
+      ]
+    },
+    {
+      "id": "coffee-beans-whole",
+      "name_ru": "Кофе в зёрнах",
+      "name_en": "Whole Coffee Beans",
+      "aliases_ru": [
+        "кофейные зерна",
+        "кофе цельнозерновой",
+        "dry beaning",
+        "coffee beans"
+      ],
+      "aliases_en": [
+        "dry beaning",
+        "coffee beans"
+      ],
+      "group_ru": "Кофе, какао и десертные добавки",
+      "subcategory_ru": "Кофе",
+      "beerxml_misc_type": "Flavor",
+      "default_use": "Secondary",
+      "allowed_uses": [
+        "Flameout",
+        "Primary",
+        "Secondary",
+        "Bottling"
+      ],
+      "default_unit": "g",
+      "stock_units": [
+        "g",
+        "kg"
+      ],
+      "form": "whole_beans",
+      "flavor_tags_ru": [
+        "кофе",
+        "обжарка"
+      ],
+      "typical_styles_ru": [
+        "Coffee Stout",
+        "Porter",
+        "Brown Ale"
+      ],
+      "dosage_hint_ru": null,
+      "gravity_contribution": "none",
+      "notes_ru": null,
+      "search_boost_terms": [
+        "кофейные зерна",
+        "кофе цельнозерновой",
+        "dry beaning",
+        "coffee beans",
+        "Кофе в зёрнах",
+        "Whole Coffee Beans"
+      ]
+    },
+    {
+      "id": "coffee-ground",
+      "name_ru": "Кофе молотый",
+      "name_en": "Ground Coffee",
+      "aliases_ru": [
+        "молотый кофе",
+        "ground coffee"
+      ],
+      "aliases_en": [
+        "ground coffee"
+      ],
+      "group_ru": "Кофе, какао и десертные добавки",
+      "subcategory_ru": "Кофе",
+      "beerxml_misc_type": "Flavor",
+      "default_use": "Flameout",
+      "allowed_uses": [
+        "Flameout",
+        "Primary",
+        "Secondary",
+        "Bottling"
+      ],
+      "default_unit": "g",
+      "stock_units": [
+        "g",
+        "kg"
+      ],
+      "form": "ground",
+      "flavor_tags_ru": [
+        "кофе",
+        "обжарка"
+      ],
+      "typical_styles_ru": [
+        "Coffee Stout",
+        "Porter"
+      ],
+      "dosage_hint_ru": null,
+      "gravity_contribution": "none",
+      "notes_ru": null,
+      "search_boost_terms": [
+        "молотый кофе",
+        "ground coffee",
+        "Кофе молотый",
+        "Ground Coffee"
+      ]
+    },
+    {
+      "id": "cold-brew-coffee",
+      "name_ru": "Колд брю кофе",
+      "name_en": "Cold Brew Coffee",
+      "aliases_ru": [
+        "cold brew",
+        "кофе холодного заваривания",
+        "кофейный концентрат"
+      ],
+      "aliases_en": [
+        "coffee concentrate"
+      ],
+      "group_ru": "Кофе, какао и десертные добавки",
+      "subcategory_ru": "Кофе",
+      "beerxml_misc_type": "Flavor",
+      "default_use": "Bottling",
+      "allowed_uses": [
+        "Flameout",
+        "Primary",
+        "Secondary",
+        "Bottling"
+      ],
+      "default_unit": "ml",
+      "stock_units": [
+        "ml",
+        "l"
+      ],
+      "form": "liquid",
+      "flavor_tags_ru": [
+        "кофе",
+        "мягкий"
+      ],
+      "typical_styles_ru": [
+        "Coffee Stout",
+        "Porter"
+      ],
+      "dosage_hint_ru": "Добавлять по вкусу на упаковке/в кег.",
+      "gravity_contribution": "none",
+      "notes_ru": null,
+      "search_boost_terms": [
+        "cold brew",
+        "кофе холодного заваривания",
+        "кофейный концентрат",
+        "coffee concentrate",
+        "Колд брю кофе",
+        "Cold Brew Coffee"
+      ]
+    },
+    {
+      "id": "espresso",
+      "name_ru": "Эспрессо",
+      "name_en": "Espresso",
+      "aliases_ru": [
+        "espresso",
+        "кофе эспрессо"
+      ],
+      "aliases_en": [
+        "espresso"
+      ],
+      "group_ru": "Кофе, какао и десертные добавки",
+      "subcategory_ru": "Кофе",
+      "beerxml_misc_type": "Flavor",
+      "default_use": "Bottling",
+      "allowed_uses": [
+        "Flameout",
+        "Primary",
+        "Secondary",
+        "Bottling"
+      ],
+      "default_unit": "ml",
+      "stock_units": [
+        "ml",
+        "l"
+      ],
+      "form": "liquid",
+      "flavor_tags_ru": [
+        "кофе",
+        "обжарка"
+      ],
+      "typical_styles_ru": [
+        "Coffee Stout",
+        "Porter"
+      ],
+      "dosage_hint_ru": "Добавлять по вкусу; учитывать разбавление.",
+      "gravity_contribution": "none",
+      "notes_ru": null,
+      "search_boost_terms": [
+        "espresso",
+        "кофе эспрессо",
+        "Эспрессо",
+        "Espresso"
+      ]
+    },
+    {
+      "id": "toasted-coconut",
+      "name_ru": "Кокосовая стружка обжаренная",
+      "name_en": "Toasted Coconut",
+      "aliases_ru": [
+        "обжаренный кокос",
+        "кокосовая стружка",
+        "toasted coconut flakes"
+      ],
+      "aliases_en": [
+        "toasted coconut flakes"
+      ],
+      "group_ru": "Кофе, какао и десертные добавки",
+      "subcategory_ru": "Кокос",
+      "beerxml_misc_type": "Flavor",
+      "default_use": "Secondary",
+      "allowed_uses": [
+        "Flameout",
+        "Primary",
+        "Secondary",
+        "Bottling"
+      ],
+      "default_unit": "g",
+      "stock_units": [
+        "g",
+        "kg"
+      ],
+      "form": "flakes",
+      "flavor_tags_ru": [
+        "кокос",
+        "десерт"
+      ],
+      "typical_styles_ru": [
+        "Stout",
+        "Porter",
+        "Pastry Sour"
+      ],
+      "dosage_hint_ru": null,
+      "gravity_contribution": "none",
+      "notes_ru": null,
+      "search_boost_terms": [
+        "обжаренный кокос",
+        "кокосовая стружка",
+        "toasted coconut flakes",
+        "Кокосовая стружка обжаренная",
+        "Toasted Coconut"
+      ]
+    },
+    {
+      "id": "coconut-flakes",
+      "name_ru": "Кокосовая стружка",
+      "name_en": "Coconut Flakes",
+      "aliases_ru": [
+        "кокосовые хлопья",
+        "coconut chips"
+      ],
+      "aliases_en": [
+        "coconut chips"
+      ],
+      "group_ru": "Кофе, какао и десертные добавки",
+      "subcategory_ru": "Кокос",
+      "beerxml_misc_type": "Flavor",
+      "default_use": "Secondary",
+      "allowed_uses": [
+        "Flameout",
+        "Primary",
+        "Secondary",
+        "Bottling"
+      ],
+      "default_unit": "g",
+      "stock_units": [
+        "g",
+        "kg"
+      ],
+      "form": "flakes",
+      "flavor_tags_ru": [
+        "кокос",
+        "десерт"
+      ],
+      "typical_styles_ru": [
+        "Stout",
+        "Porter",
+        "Pastry Sour"
+      ],
+      "dosage_hint_ru": null,
+      "gravity_contribution": "none",
+      "notes_ru": null,
+      "search_boost_terms": [
+        "кокосовые хлопья",
+        "coconut chips",
+        "Кокосовая стружка",
+        "Coconut Flakes"
+      ]
+    },
+    {
+      "id": "peanut-butter-powder",
+      "name_ru": "Арахисовая паста порошковая",
+      "name_en": "Peanut Butter Powder",
+      "aliases_ru": [
+        "pb2",
+        "арахисовый порошок",
+        "peanut powder"
+      ],
+      "aliases_en": [
+        "PB2",
+        "peanut powder"
+      ],
+      "group_ru": "Кофе, какао и десертные добавки",
+      "subcategory_ru": "Орехи",
+      "beerxml_misc_type": "Flavor",
+      "default_use": "Secondary",
+      "allowed_uses": [
+        "Flameout",
+        "Primary",
+        "Secondary",
+        "Bottling"
+      ],
+      "default_unit": "g",
+      "stock_units": [
+        "g",
+        "kg"
+      ],
+      "form": "powder",
+      "flavor_tags_ru": [
+        "арахис",
+        "десерт"
+      ],
+      "typical_styles_ru": [
+        "Stout",
+        "Porter",
+        "Pastry Beer"
+      ],
+      "dosage_hint_ru": "Использовать обезжиренный порошок; жиры ухудшают пену.",
+      "gravity_contribution": "none",
+      "notes_ru": "Обычная арахисовая паста нежелательна из-за жира.",
+      "search_boost_terms": [
+        "pb2",
+        "арахисовый порошок",
+        "peanut powder",
+        "PB2",
+        "Арахисовая паста порошковая",
+        "Peanut Butter Powder"
+      ]
+    },
+    {
+      "id": "marshmallow-flavoring",
+      "name_ru": "Ароматизатор маршмеллоу",
+      "name_en": "Marshmallow Flavoring",
+      "aliases_ru": [
+        "маршмеллоу",
+        "зефир ароматизатор",
+        "marshmallow extract"
+      ],
+      "aliases_en": [
+        "marshmallow extract"
+      ],
+      "group_ru": "Ароматизаторы и экстракты",
+      "subcategory_ru": "Десертные",
+      "beerxml_misc_type": "Flavor",
+      "default_use": "Bottling",
+      "allowed_uses": [
+        "Secondary",
+        "Bottling"
+      ],
+      "default_unit": "ml",
+      "stock_units": [
+        "ml",
+        "l"
+      ],
+      "form": "extract",
+      "flavor_tags_ru": [
+        "ваниль",
+        "сладость",
+        "десерт"
+      ],
+      "typical_styles_ru": [
+        "Pastry Stout",
+        "Pastry Sour"
+      ],
+      "dosage_hint_ru": "Добавлять по вкусу на упаковке/в кег.",
+      "gravity_contribution": "none",
+      "notes_ru": null,
+      "search_boost_terms": [
+        "маршмеллоу",
+        "зефир ароматизатор",
+        "marshmallow extract",
+        "Ароматизатор маршмеллоу",
+        "Marshmallow Flavoring"
+      ]
+    },
+    {
+      "id": "caramel-flavoring",
+      "name_ru": "Карамельный ароматизатор",
+      "name_en": "Caramel Flavoring",
+      "aliases_ru": [
+        "ароматизатор карамель",
+        "caramel extract"
+      ],
+      "aliases_en": [
+        "caramel extract"
+      ],
+      "group_ru": "Ароматизаторы и экстракты",
+      "subcategory_ru": "Десертные",
+      "beerxml_misc_type": "Flavor",
+      "default_use": "Bottling",
+      "allowed_uses": [
+        "Secondary",
+        "Bottling"
+      ],
+      "default_unit": "ml",
+      "stock_units": [
+        "ml",
+        "l"
+      ],
+      "form": "extract",
+      "flavor_tags_ru": [
+        "карамель",
+        "десерт"
+      ],
+      "typical_styles_ru": [
+        "Stout",
+        "Porter",
+        "Pastry Beer"
+      ],
+      "dosage_hint_ru": "Добавлять по вкусу на упаковке/в кег.",
+      "gravity_contribution": "none",
+      "notes_ru": null,
+      "search_boost_terms": [
+        "ароматизатор карамель",
+        "caramel extract",
+        "Карамельный ароматизатор",
+        "Caramel Flavoring"
+      ]
+    },
+    {
+      "id": "almond-extract",
+      "name_ru": "Миндальный экстракт",
+      "name_en": "Almond Extract",
+      "aliases_ru": [
+        "ароматизатор миндаль",
+        "миндаль ароматизатор",
+        "almond flavoring"
+      ],
+      "aliases_en": [
+        "almond flavoring"
+      ],
+      "group_ru": "Ароматизаторы и экстракты",
+      "subcategory_ru": "Ореховые",
+      "beerxml_misc_type": "Flavor",
+      "default_use": "Bottling",
+      "allowed_uses": [
+        "Secondary",
+        "Bottling"
+      ],
+      "default_unit": "ml",
+      "stock_units": [
+        "ml",
+        "l"
+      ],
+      "form": "extract",
+      "flavor_tags_ru": [
+        "миндаль",
+        "орех"
+      ],
+      "typical_styles_ru": [
+        "Stout",
+        "Porter",
+        "Pastry Beer"
+      ],
+      "dosage_hint_ru": "Добавлять по вкусу на упаковке/в кег.",
+      "gravity_contribution": "none",
+      "notes_ru": null,
+      "search_boost_terms": [
+        "ароматизатор миндаль",
+        "миндаль ароматизатор",
+        "almond flavoring",
+        "Миндальный экстракт",
+        "Almond Extract"
+      ]
+    },
+    {
+      "id": "hazelnut-extract",
+      "name_ru": "Фундучный экстракт / ароматизатор",
+      "name_en": "Hazelnut Extract",
+      "aliases_ru": [
+        "лесной орех ароматизатор",
+        "фундук ароматизатор",
+        "hazelnut flavoring"
+      ],
+      "aliases_en": [
+        "hazelnut flavoring"
+      ],
+      "group_ru": "Ароматизаторы и экстракты",
+      "subcategory_ru": "Ореховые",
+      "beerxml_misc_type": "Flavor",
+      "default_use": "Bottling",
+      "allowed_uses": [
+        "Secondary",
+        "Bottling"
+      ],
+      "default_unit": "ml",
+      "stock_units": [
+        "ml",
+        "l"
+      ],
+      "form": "extract",
+      "flavor_tags_ru": [
+        "фундук",
+        "орех",
+        "десерт"
+      ],
+      "typical_styles_ru": [
+        "Stout",
+        "Porter",
+        "Pastry Beer"
+      ],
+      "dosage_hint_ru": "Добавлять по вкусу на упаковке/в кег.",
+      "gravity_contribution": "none",
+      "notes_ru": null,
+      "search_boost_terms": [
+        "лесной орех ароматизатор",
+        "фундук ароматизатор",
+        "hazelnut flavoring",
+        "Фундучный экстракт / ароматизатор",
+        "Hazelnut Extract"
+      ]
+    },
+    {
+      "id": "oak-chips-light-toast",
+      "name_ru": "Дубовая щепа слабой обжарки",
+      "name_en": "Oak Chips Light Toast",
+      "aliases_ru": [
+        "дубовые чипсы слабой обжарки",
+        "дубовая щепа",
+        "oak chips"
+      ],
+      "aliases_en": [
+        "oak chips"
+      ],
+      "group_ru": "Дерево и выдержка",
+      "subcategory_ru": "Дубовая щепа",
+      "beerxml_misc_type": "Flavor",
+      "default_use": "Secondary",
+      "allowed_uses": [
+        "Secondary",
+        "Bottling"
+      ],
+      "default_unit": "g",
+      "stock_units": [
+        "g",
+        "kg"
+      ],
+      "form": "wood_chips",
+      "flavor_tags_ru": [
+        "дуб",
+        "ваниль",
+        "танин",
+        "выдержка"
+      ],
+      "typical_styles_ru": [
+        "Stout",
+        "Porter",
+        "Barleywine",
+        "Old Ale",
+        "Sour Ale"
+      ],
+      "dosage_hint_ru": "Контакт контролировать дегустацией; щепа отдаёт вкус быстрее кубиков.",
+      "gravity_contribution": "none",
+      "notes_ru": null,
+      "search_boost_terms": [
+        "дубовые чипсы слабой обжарки",
+        "дубовая щепа",
+        "oak chips",
+        "Дубовая щепа слабой обжарки",
+        "Oak Chips Light Toast"
+      ]
+    },
+    {
+      "id": "oak-chips-medium-toast",
+      "name_ru": "Дубовая щепа средней обжарки",
+      "name_en": "Oak Chips Medium Toast",
+      "aliases_ru": [
+        "дубовые чипсы средней обжарки",
+        "дубовая щепа",
+        "oak chips"
+      ],
+      "aliases_en": [
+        "oak chips"
+      ],
+      "group_ru": "Дерево и выдержка",
+      "subcategory_ru": "Дубовая щепа",
+      "beerxml_misc_type": "Flavor",
+      "default_use": "Secondary",
+      "allowed_uses": [
+        "Secondary",
+        "Bottling"
+      ],
+      "default_unit": "g",
+      "stock_units": [
+        "g",
+        "kg"
+      ],
+      "form": "wood_chips",
+      "flavor_tags_ru": [
+        "дуб",
+        "ваниль",
+        "танин",
+        "выдержка"
+      ],
+      "typical_styles_ru": [
+        "Stout",
+        "Porter",
+        "Barleywine",
+        "Old Ale",
+        "Sour Ale"
+      ],
+      "dosage_hint_ru": "Контакт контролировать дегустацией; щепа отдаёт вкус быстрее кубиков.",
+      "gravity_contribution": "none",
+      "notes_ru": null,
+      "search_boost_terms": [
+        "дубовые чипсы средней обжарки",
+        "дубовая щепа",
+        "oak chips",
+        "Дубовая щепа средней обжарки",
+        "Oak Chips Medium Toast"
+      ]
+    },
+    {
+      "id": "oak-chips-heavy-toast",
+      "name_ru": "Дубовая щепа сильной обжарки",
+      "name_en": "Oak Chips Heavy Toast",
+      "aliases_ru": [
+        "дубовые чипсы сильной обжарки",
+        "дубовая щепа",
+        "oak chips"
+      ],
+      "aliases_en": [
+        "oak chips"
+      ],
+      "group_ru": "Дерево и выдержка",
+      "subcategory_ru": "Дубовая щепа",
+      "beerxml_misc_type": "Flavor",
+      "default_use": "Secondary",
+      "allowed_uses": [
+        "Secondary",
+        "Bottling"
+      ],
+      "default_unit": "g",
+      "stock_units": [
+        "g",
+        "kg"
+      ],
+      "form": "wood_chips",
+      "flavor_tags_ru": [
+        "дуб",
+        "ваниль",
+        "танин",
+        "выдержка"
+      ],
+      "typical_styles_ru": [
+        "Stout",
+        "Porter",
+        "Barleywine",
+        "Old Ale",
+        "Sour Ale"
+      ],
+      "dosage_hint_ru": "Контакт контролировать дегустацией; щепа отдаёт вкус быстрее кубиков.",
+      "gravity_contribution": "none",
+      "notes_ru": null,
+      "search_boost_terms": [
+        "дубовые чипсы сильной обжарки",
+        "дубовая щепа",
+        "oak chips",
+        "Дубовая щепа сильной обжарки",
+        "Oak Chips Heavy Toast"
+      ]
+    },
+    {
+      "id": "oak-cubes-medium-toast",
+      "name_ru": "Дубовые кубики средней обжарки",
+      "name_en": "Oak Cubes Medium Toast",
+      "aliases_ru": [
+        "дубовые кубики",
+        "oak cubes",
+        "medium toast oak"
+      ],
+      "aliases_en": [
+        "oak cubes"
+      ],
+      "group_ru": "Дерево и выдержка",
+      "subcategory_ru": "Дубовые кубики",
+      "beerxml_misc_type": "Flavor",
+      "default_use": "Secondary",
+      "allowed_uses": [
+        "Secondary",
+        "Bottling"
+      ],
+      "default_unit": "g",
+      "stock_units": [
+        "g",
+        "kg"
+      ],
+      "form": "wood_cubes",
+      "flavor_tags_ru": [
+        "дуб",
+        "ваниль",
+        "танин",
+        "выдержка"
+      ],
+      "typical_styles_ru": [
+        "Stout",
+        "Porter",
+        "Barleywine",
+        "Old Ale",
+        "Sour Ale"
+      ],
+      "dosage_hint_ru": "Медленнее щепы; контакт контролировать дегустацией.",
+      "gravity_contribution": "none",
+      "notes_ru": null,
+      "search_boost_terms": [
+        "дубовые кубики",
+        "oak cubes",
+        "medium toast oak",
+        "Дубовые кубики средней обжарки",
+        "Oak Cubes Medium Toast"
+      ]
+    },
+    {
+      "id": "oak-spirals-medium-toast",
+      "name_ru": "Дубовая спираль средней обжарки",
+      "name_en": "Oak Spiral Medium Toast",
+      "aliases_ru": [
+        "дубовые спирали",
+        "oak spirals"
+      ],
+      "aliases_en": [
+        "oak spirals"
+      ],
+      "group_ru": "Дерево и выдержка",
+      "subcategory_ru": "Дубовая спираль",
+      "beerxml_misc_type": "Flavor",
+      "default_use": "Secondary",
+      "allowed_uses": [
+        "Secondary",
+        "Bottling"
+      ],
+      "default_unit": "pcs",
+      "stock_units": [
+        "pcs",
+        "g"
+      ],
+      "form": "wood_spiral",
+      "flavor_tags_ru": [
+        "дуб",
+        "ваниль",
+        "танин",
+        "выдержка"
+      ],
+      "typical_styles_ru": [
+        "Barrel-aged Ale",
+        "Stout",
+        "Sour Ale"
+      ],
+      "dosage_hint_ru": "Обычно учитывается по штукам/массе и времени контакта.",
+      "gravity_contribution": "none",
+      "notes_ru": null,
+      "search_boost_terms": [
+        "дубовые спирали",
+        "oak spirals",
+        "Дубовая спираль средней обжарки",
+        "Oak Spiral Medium Toast"
+      ]
+    },
+    {
+      "id": "bourbon-oak-chips",
+      "name_ru": "Бурбонная дубовая щепа",
+      "name_en": "Bourbon Oak Chips",
+      "aliases_ru": [
+        "дубовая щепа бурбон",
+        "bourbon chips",
+        "bourbon barrel chips"
+      ],
+      "aliases_en": [
+        "bourbon barrel chips"
+      ],
+      "group_ru": "Дерево и выдержка",
+      "subcategory_ru": "Ароматизированная щепа",
+      "beerxml_misc_type": "Flavor",
+      "default_use": "Secondary",
+      "allowed_uses": [
+        "Secondary",
+        "Bottling"
+      ],
+      "default_unit": "g",
+      "stock_units": [
+        "g",
+        "kg"
+      ],
+      "form": "wood_chips",
+      "flavor_tags_ru": [
+        "дуб",
+        "бурбон",
+        "ваниль"
+      ],
+      "typical_styles_ru": [
+        "Imperial Stout",
+        "Porter",
+        "Barleywine"
+      ],
+      "dosage_hint_ru": null,
+      "gravity_contribution": "none",
+      "notes_ru": null,
+      "search_boost_terms": [
+        "дубовая щепа бурбон",
+        "bourbon chips",
+        "bourbon barrel chips",
+        "Бурбонная дубовая щепа",
+        "Bourbon Oak Chips"
+      ]
+    },
+    {
+      "id": "rum-oak-chips",
+      "name_ru": "Ромовая дубовая щепа",
+      "name_en": "Rum Oak Chips",
+      "aliases_ru": [
+        "дубовая щепа ром",
+        "rum chips",
+        "rum barrel chips"
+      ],
+      "aliases_en": [
+        "rum barrel chips"
+      ],
+      "group_ru": "Дерево и выдержка",
+      "subcategory_ru": "Ароматизированная щепа",
+      "beerxml_misc_type": "Flavor",
+      "default_use": "Secondary",
+      "allowed_uses": [
+        "Secondary",
+        "Bottling"
+      ],
+      "default_unit": "g",
+      "stock_units": [
+        "g",
+        "kg"
+      ],
+      "form": "wood_chips",
+      "flavor_tags_ru": [
+        "дуб",
+        "ром",
+        "ваниль"
+      ],
+      "typical_styles_ru": [
+        "Stout",
+        "Porter",
+        "Winter Ale"
+      ],
+      "dosage_hint_ru": null,
+      "gravity_contribution": "none",
+      "notes_ru": null,
+      "search_boost_terms": [
+        "дубовая щепа ром",
+        "rum chips",
+        "rum barrel chips",
+        "Ромовая дубовая щепа",
+        "Rum Oak Chips"
+      ]
+    },
+    {
+      "id": "cherry-wood-chips",
+      "name_ru": "Вишнёвая щепа",
+      "name_en": "Cherry Wood Chips",
+      "aliases_ru": [
+        "щепа вишня",
+        "cherry wood"
+      ],
+      "aliases_en": [
+        "cherry wood"
+      ],
+      "group_ru": "Дерево и выдержка",
+      "subcategory_ru": "Другая древесина",
+      "beerxml_misc_type": "Flavor",
+      "default_use": "Secondary",
+      "allowed_uses": [
+        "Secondary",
+        "Bottling"
+      ],
+      "default_unit": "g",
+      "stock_units": [
+        "g",
+        "kg"
+      ],
+      "form": "wood_chips",
+      "flavor_tags_ru": [
+        "дерево",
+        "фруктовый",
+        "дым"
+      ],
+      "typical_styles_ru": [
+        "Smoked Ale",
+        "Experimental Ale"
+      ],
+      "dosage_hint_ru": null,
+      "gravity_contribution": "none",
+      "notes_ru": null,
+      "search_boost_terms": [
+        "щепа вишня",
+        "cherry wood",
+        "Вишнёвая щепа",
+        "Cherry Wood Chips"
+      ]
+    },
+    {
+      "id": "palo-santo-wood",
+      "name_ru": "Пало санто",
+      "name_en": "Palo Santo Wood",
+      "aliases_ru": [
+        "палосанто",
+        "palo santo chips"
+      ],
+      "aliases_en": [
+        "palo santo chips"
+      ],
+      "group_ru": "Дерево и выдержка",
+      "subcategory_ru": "Другая древесина",
+      "beerxml_misc_type": "Flavor",
+      "default_use": "Secondary",
+      "allowed_uses": [
+        "Secondary",
+        "Bottling"
+      ],
+      "default_unit": "g",
+      "stock_units": [
+        "g",
+        "kg"
+      ],
+      "form": "wood_chips",
+      "flavor_tags_ru": [
+        "дерево",
+        "смола",
+        "экзотика"
+      ],
+      "typical_styles_ru": [
+        "Strong Ale",
+        "Experimental Ale"
+      ],
+      "dosage_hint_ru": "Нишевая добавка; добавлять осторожно и по вкусу.",
+      "gravity_contribution": "none",
+      "notes_ru": null,
+      "search_boost_terms": [
+        "палосанто",
+        "palo santo chips",
+        "Пало санто",
+        "Palo Santo Wood"
+      ]
+    },
+    {
+      "id": "black-tea",
+      "name_ru": "Чёрный чай",
+      "name_en": "Black Tea",
+      "aliases_ru": [
+        "черный чай",
+        "black tea"
+      ],
+      "aliases_en": [
+        "black tea"
+      ],
+      "group_ru": "Травы и цветы",
+      "subcategory_ru": "Чай",
+      "beerxml_misc_type": "Herb",
+      "default_use": "Secondary",
+      "allowed_uses": [
+        "Boil",
+        "Flameout",
+        "Primary",
+        "Secondary",
+        "Bottling"
+      ],
+      "default_unit": "g",
+      "stock_units": [
+        "g",
+        "kg"
+      ],
+      "form": "tea",
+      "flavor_tags_ru": [
+        "чай",
+        "танин"
+      ],
+      "typical_styles_ru": [
+        "Tea Beer",
+        "Porter",
+        "Sour Ale"
+      ],
+      "dosage_hint_ru": null,
+      "gravity_contribution": "none",
+      "notes_ru": null,
+      "search_boost_terms": [
+        "черный чай",
+        "black tea",
+        "Чёрный чай",
+        "Black Tea"
+      ]
+    },
+    {
+      "id": "earl-grey-tea",
+      "name_ru": "Чай Эрл Грей",
+      "name_en": "Earl Grey Tea",
+      "aliases_ru": [
+        "earl grey",
+        "бергамотовый чай",
+        "эрл грей"
+      ],
+      "aliases_en": [
+        "earl grey"
+      ],
+      "group_ru": "Травы и цветы",
+      "subcategory_ru": "Чай",
+      "beerxml_misc_type": "Herb",
+      "default_use": "Secondary",
+      "allowed_uses": [
+        "Boil",
+        "Flameout",
+        "Primary",
+        "Secondary",
+        "Bottling"
+      ],
+      "default_unit": "g",
+      "stock_units": [
+        "g",
+        "kg"
+      ],
+      "form": "tea",
+      "flavor_tags_ru": [
+        "чай",
+        "бергамот",
+        "цитрус"
+      ],
+      "typical_styles_ru": [
+        "Saison",
+        "Wheat Ale",
+        "Tea Beer"
+      ],
+      "dosage_hint_ru": null,
+      "gravity_contribution": "none",
+      "notes_ru": null,
+      "search_boost_terms": [
+        "earl grey",
+        "бергамотовый чай",
+        "эрл грей",
+        "Чай Эрл Грей",
+        "Earl Grey Tea"
+      ]
+    },
+    {
+      "id": "green-tea",
+      "name_ru": "Зелёный чай",
+      "name_en": "Green Tea",
+      "aliases_ru": [
+        "green tea",
+        "чай зеленый"
+      ],
+      "aliases_en": [
+        "green tea"
+      ],
+      "group_ru": "Травы и цветы",
+      "subcategory_ru": "Чай",
+      "beerxml_misc_type": "Herb",
+      "default_use": "Secondary",
+      "allowed_uses": [
+        "Boil",
+        "Flameout",
+        "Primary",
+        "Secondary",
+        "Bottling"
+      ],
+      "default_unit": "g",
+      "stock_units": [
+        "g",
+        "kg"
+      ],
+      "form": "tea",
+      "flavor_tags_ru": [
+        "чай",
+        "травяной"
+      ],
+      "typical_styles_ru": [
+        "Saison",
+        "Sour Ale",
+        "Tea Beer"
+      ],
+      "dosage_hint_ru": null,
+      "gravity_contribution": "none",
+      "notes_ru": null,
+      "search_boost_terms": [
+        "green tea",
+        "чай зеленый",
+        "Зелёный чай",
+        "Green Tea"
+      ]
+    },
+    {
+      "id": "matcha-tea",
+      "name_ru": "Матча",
+      "name_en": "Matcha",
+      "aliases_ru": [
+        "маття",
+        "matcha powder"
+      ],
+      "aliases_en": [
+        "matcha powder"
+      ],
+      "group_ru": "Травы и цветы",
+      "subcategory_ru": "Чай",
+      "beerxml_misc_type": "Herb",
+      "default_use": "Secondary",
+      "allowed_uses": [
+        "Boil",
+        "Flameout",
+        "Primary",
+        "Secondary",
+        "Bottling"
+      ],
+      "default_unit": "g",
+      "stock_units": [
+        "g",
+        "kg"
+      ],
+      "form": "powder",
+      "flavor_tags_ru": [
+        "чай",
+        "травяной",
+        "умами"
+      ],
+      "typical_styles_ru": [
+        "Sour Ale",
+        "Experimental Ale"
+      ],
+      "dosage_hint_ru": null,
+      "gravity_contribution": "none",
+      "notes_ru": null,
+      "search_boost_terms": [
+        "маття",
+        "matcha powder",
+        "Матча",
+        "Matcha"
+      ]
+    },
+    {
+      "id": "rooibos",
+      "name_ru": "Ройбуш",
+      "name_en": "Rooibos",
+      "aliases_ru": [
+        "rooibos tea",
+        "ройбос"
+      ],
+      "aliases_en": [
+        "rooibos tea"
+      ],
+      "group_ru": "Травы и цветы",
+      "subcategory_ru": "Чай",
+      "beerxml_misc_type": "Herb",
+      "default_use": "Secondary",
+      "allowed_uses": [
+        "Boil",
+        "Flameout",
+        "Primary",
+        "Secondary",
+        "Bottling"
+      ],
+      "default_unit": "g",
+      "stock_units": [
+        "g",
+        "kg"
+      ],
+      "form": "tea",
+      "flavor_tags_ru": [
+        "чай",
+        "мёд",
+        "сухофрукты"
+      ],
+      "typical_styles_ru": [
+        "Amber Ale",
+        "Saison",
+        "Tea Beer"
+      ],
+      "dosage_hint_ru": null,
+      "gravity_contribution": "none",
+      "notes_ru": null,
+      "search_boost_terms": [
+        "rooibos tea",
+        "ройбос",
+        "Ройбуш",
+        "Rooibos"
+      ]
+    },
+    {
+      "id": "vanilla-extract",
+      "name_ru": "Ванильный экстракт",
+      "name_en": "Vanilla Extract",
+      "aliases_ru": [
+        "экстракт ванили",
+        "ванильный ароматизатор",
+        "vanilla flavoring"
+      ],
+      "aliases_en": [
+        "vanilla flavoring"
+      ],
+      "group_ru": "Ароматизаторы и экстракты",
+      "subcategory_ru": "Десертные",
+      "beerxml_misc_type": "Flavor",
+      "default_use": "Bottling",
+      "allowed_uses": [
+        "Secondary",
+        "Bottling"
+      ],
+      "default_unit": "ml",
+      "stock_units": [
+        "ml",
+        "l",
+        "drops"
+      ],
+      "form": "extract",
+      "flavor_tags_ru": [
+        "ваниль",
+        "десерт"
+      ],
+      "typical_styles_ru": [
+        "Stout",
+        "Porter",
+        "Pastry Sour"
+      ],
+      "dosage_hint_ru": "Добавлять по вкусу на упаковке/в кег; для UI хорошо иметь поле “капли/мл”.",
+      "gravity_contribution": "none",
+      "notes_ru": "Экстракты и ароматизаторы лучше дозировать тестом в маленьком образце.",
+      "search_boost_terms": [
+        "экстракт ванили",
+        "ванильный ароматизатор",
+        "vanilla flavoring",
+        "Ванильный экстракт",
+        "Vanilla Extract"
+      ]
+    },
+    {
+      "id": "orange-extract",
+      "name_ru": "Апельсиновый экстракт / ароматизатор",
+      "name_en": "Orange Extract",
+      "aliases_ru": [
+        "апельсиновый ароматизатор",
+        "orange flavoring"
+      ],
+      "aliases_en": [
+        "orange flavoring"
+      ],
+      "group_ru": "Ароматизаторы и экстракты",
+      "subcategory_ru": "Фруктовые",
+      "beerxml_misc_type": "Flavor",
+      "default_use": "Bottling",
+      "allowed_uses": [
+        "Secondary",
+        "Bottling"
+      ],
+      "default_unit": "ml",
+      "stock_units": [
+        "ml",
+        "l",
+        "drops"
+      ],
+      "form": "extract",
+      "flavor_tags_ru": [
+        "апельсин",
+        "цитрус"
+      ],
+      "typical_styles_ru": [
+        "Wheat Ale",
+        "Sour Ale",
+        "IPA"
+      ],
+      "dosage_hint_ru": "Добавлять по вкусу на упаковке/в кег; для UI хорошо иметь поле “капли/мл”.",
+      "gravity_contribution": "none",
+      "notes_ru": "Экстракты и ароматизаторы лучше дозировать тестом в маленьком образце.",
+      "search_boost_terms": [
+        "апельсиновый ароматизатор",
+        "orange flavoring",
+        "Апельсиновый экстракт / ароматизатор",
+        "Orange Extract"
+      ]
+    },
+    {
+      "id": "lemon-extract",
+      "name_ru": "Лимонный экстракт / ароматизатор",
+      "name_en": "Lemon Extract",
+      "aliases_ru": [
+        "лимонный ароматизатор",
+        "lemon flavoring"
+      ],
+      "aliases_en": [
+        "lemon flavoring"
+      ],
+      "group_ru": "Ароматизаторы и экстракты",
+      "subcategory_ru": "Фруктовые",
+      "beerxml_misc_type": "Flavor",
+      "default_use": "Bottling",
+      "allowed_uses": [
+        "Secondary",
+        "Bottling"
+      ],
+      "default_unit": "ml",
+      "stock_units": [
+        "ml",
+        "l",
+        "drops"
+      ],
+      "form": "extract",
+      "flavor_tags_ru": [
+        "лимон",
+        "цитрус"
+      ],
+      "typical_styles_ru": [
+        "Wheat Ale",
+        "Sour Ale"
+      ],
+      "dosage_hint_ru": "Добавлять по вкусу на упаковке/в кег; для UI хорошо иметь поле “капли/мл”.",
+      "gravity_contribution": "none",
+      "notes_ru": "Экстракты и ароматизаторы лучше дозировать тестом в маленьком образце.",
+      "search_boost_terms": [
+        "лимонный ароматизатор",
+        "lemon flavoring",
+        "Лимонный экстракт / ароматизатор",
+        "Lemon Extract"
+      ]
+    },
+    {
+      "id": "raspberry-extract",
+      "name_ru": "Малиновый экстракт / ароматизатор",
+      "name_en": "Raspberry Extract",
+      "aliases_ru": [
+        "малиновый ароматизатор",
+        "raspberry flavoring"
+      ],
+      "aliases_en": [
+        "raspberry flavoring"
+      ],
+      "group_ru": "Ароматизаторы и экстракты",
+      "subcategory_ru": "Фруктовые",
+      "beerxml_misc_type": "Flavor",
+      "default_use": "Bottling",
+      "allowed_uses": [
+        "Secondary",
+        "Bottling"
+      ],
+      "default_unit": "ml",
+      "stock_units": [
+        "ml",
+        "l",
+        "drops"
+      ],
+      "form": "extract",
+      "flavor_tags_ru": [
+        "малина",
+        "ягоды"
+      ],
+      "typical_styles_ru": [
+        "Sour Ale",
+        "Fruit Beer"
+      ],
+      "dosage_hint_ru": "Добавлять по вкусу на упаковке/в кег; для UI хорошо иметь поле “капли/мл”.",
+      "gravity_contribution": "none",
+      "notes_ru": "Экстракты и ароматизаторы лучше дозировать тестом в маленьком образце.",
+      "search_boost_terms": [
+        "малиновый ароматизатор",
+        "raspberry flavoring",
+        "Малиновый экстракт / ароматизатор",
+        "Raspberry Extract"
+      ]
+    },
+    {
+      "id": "cherry-extract",
+      "name_ru": "Вишнёвый экстракт / ароматизатор",
+      "name_en": "Cherry Extract",
+      "aliases_ru": [
+        "вишневый ароматизатор",
+        "cherry flavoring"
+      ],
+      "aliases_en": [
+        "cherry flavoring"
+      ],
+      "group_ru": "Ароматизаторы и экстракты",
+      "subcategory_ru": "Фруктовые",
+      "beerxml_misc_type": "Flavor",
+      "default_use": "Bottling",
+      "allowed_uses": [
+        "Secondary",
+        "Bottling"
+      ],
+      "default_unit": "ml",
+      "stock_units": [
+        "ml",
+        "l",
+        "drops"
+      ],
+      "form": "extract",
+      "flavor_tags_ru": [
+        "вишня",
+        "ягоды"
+      ],
+      "typical_styles_ru": [
+        "Sour Ale",
+        "Stout",
+        "Fruit Beer"
+      ],
+      "dosage_hint_ru": "Добавлять по вкусу на упаковке/в кег; для UI хорошо иметь поле “капли/мл”.",
+      "gravity_contribution": "none",
+      "notes_ru": "Экстракты и ароматизаторы лучше дозировать тестом в маленьком образце.",
+      "search_boost_terms": [
+        "вишневый ароматизатор",
+        "cherry flavoring",
+        "Вишнёвый экстракт / ароматизатор",
+        "Cherry Extract"
+      ]
+    },
+    {
+      "id": "mango-extract",
+      "name_ru": "Манговый экстракт / ароматизатор",
+      "name_en": "Mango Extract",
+      "aliases_ru": [
+        "манговый ароматизатор",
+        "mango flavoring"
+      ],
+      "aliases_en": [
+        "mango flavoring"
+      ],
+      "group_ru": "Ароматизаторы и экстракты",
+      "subcategory_ru": "Фруктовые",
+      "beerxml_misc_type": "Flavor",
+      "default_use": "Bottling",
+      "allowed_uses": [
+        "Secondary",
+        "Bottling"
+      ],
+      "default_unit": "ml",
+      "stock_units": [
+        "ml",
+        "l",
+        "drops"
+      ],
+      "form": "extract",
+      "flavor_tags_ru": [
+        "манго",
+        "тропики"
+      ],
+      "typical_styles_ru": [
+        "Sour Ale",
+        "IPA"
+      ],
+      "dosage_hint_ru": "Добавлять по вкусу на упаковке/в кег; для UI хорошо иметь поле “капли/мл”.",
+      "gravity_contribution": "none",
+      "notes_ru": "Экстракты и ароматизаторы лучше дозировать тестом в маленьком образце.",
+      "search_boost_terms": [
+        "манговый ароматизатор",
+        "mango flavoring",
+        "Манговый экстракт / ароматизатор",
+        "Mango Extract"
+      ]
+    },
+    {
+      "id": "passionfruit-extract",
+      "name_ru": "Экстракт / ароматизатор маракуйи",
+      "name_en": "Passion Fruit Extract",
+      "aliases_ru": [
+        "ароматизатор маракуйя",
+        "passionfruit flavoring"
+      ],
+      "aliases_en": [
+        "passionfruit flavoring"
+      ],
+      "group_ru": "Ароматизаторы и экстракты",
+      "subcategory_ru": "Фруктовые",
+      "beerxml_misc_type": "Flavor",
+      "default_use": "Bottling",
+      "allowed_uses": [
+        "Secondary",
+        "Bottling"
+      ],
+      "default_unit": "ml",
+      "stock_units": [
+        "ml",
+        "l",
+        "drops"
+      ],
+      "form": "extract",
+      "flavor_tags_ru": [
+        "маракуйя",
+        "тропики"
+      ],
+      "typical_styles_ru": [
+        "Sour Ale",
+        "IPA"
+      ],
+      "dosage_hint_ru": "Добавлять по вкусу на упаковке/в кег; для UI хорошо иметь поле “капли/мл”.",
+      "gravity_contribution": "none",
+      "notes_ru": "Экстракты и ароматизаторы лучше дозировать тестом в маленьком образце.",
+      "search_boost_terms": [
+        "ароматизатор маракуйя",
+        "passionfruit flavoring",
+        "Экстракт / ароматизатор маракуйи",
+        "Passion Fruit Extract"
+      ]
+    },
+    {
+      "id": "peach-extract",
+      "name_ru": "Персиковый экстракт / ароматизатор",
+      "name_en": "Peach Extract",
+      "aliases_ru": [
+        "персиковый ароматизатор",
+        "peach flavoring"
+      ],
+      "aliases_en": [
+        "peach flavoring"
+      ],
+      "group_ru": "Ароматизаторы и экстракты",
+      "subcategory_ru": "Фруктовые",
+      "beerxml_misc_type": "Flavor",
+      "default_use": "Bottling",
+      "allowed_uses": [
+        "Secondary",
+        "Bottling"
+      ],
+      "default_unit": "ml",
+      "stock_units": [
+        "ml",
+        "l",
+        "drops"
+      ],
+      "form": "extract",
+      "flavor_tags_ru": [
+        "персик",
+        "косточковые"
+      ],
+      "typical_styles_ru": [
+        "Wheat Ale",
+        "Sour Ale"
+      ],
+      "dosage_hint_ru": "Добавлять по вкусу на упаковке/в кег; для UI хорошо иметь поле “капли/мл”.",
+      "gravity_contribution": "none",
+      "notes_ru": "Экстракты и ароматизаторы лучше дозировать тестом в маленьком образце.",
+      "search_boost_terms": [
+        "персиковый ароматизатор",
+        "peach flavoring",
+        "Персиковый экстракт / ароматизатор",
+        "Peach Extract"
+      ]
+    },
+    {
+      "id": "coconut-extract",
+      "name_ru": "Кокосовый экстракт / ароматизатор",
+      "name_en": "Coconut Extract",
+      "aliases_ru": [
+        "кокосовый ароматизатор",
+        "coconut flavoring"
+      ],
+      "aliases_en": [
+        "coconut flavoring"
+      ],
+      "group_ru": "Ароматизаторы и экстракты",
+      "subcategory_ru": "Десертные",
+      "beerxml_misc_type": "Flavor",
+      "default_use": "Bottling",
+      "allowed_uses": [
+        "Secondary",
+        "Bottling"
+      ],
+      "default_unit": "ml",
+      "stock_units": [
+        "ml",
+        "l",
+        "drops"
+      ],
+      "form": "extract",
+      "flavor_tags_ru": [
+        "кокос",
+        "десерт"
+      ],
+      "typical_styles_ru": [
+        "Stout",
+        "Porter",
+        "Pastry Sour"
+      ],
+      "dosage_hint_ru": "Добавлять по вкусу на упаковке/в кег; для UI хорошо иметь поле “капли/мл”.",
+      "gravity_contribution": "none",
+      "notes_ru": "Экстракты и ароматизаторы лучше дозировать тестом в маленьком образце.",
+      "search_boost_terms": [
+        "кокосовый ароматизатор",
+        "coconut flavoring",
+        "Кокосовый экстракт / ароматизатор",
+        "Coconut Extract"
+      ]
+    },
+    {
+      "id": "coffee-extract",
+      "name_ru": "Кофейный экстракт / ароматизатор",
+      "name_en": "Coffee Extract",
+      "aliases_ru": [
+        "кофейный ароматизатор",
+        "coffee flavoring"
+      ],
+      "aliases_en": [
+        "coffee flavoring"
+      ],
+      "group_ru": "Ароматизаторы и экстракты",
+      "subcategory_ru": "Десертные",
+      "beerxml_misc_type": "Flavor",
+      "default_use": "Bottling",
+      "allowed_uses": [
+        "Secondary",
+        "Bottling"
+      ],
+      "default_unit": "ml",
+      "stock_units": [
+        "ml",
+        "l",
+        "drops"
+      ],
+      "form": "extract",
+      "flavor_tags_ru": [
+        "кофе",
+        "обжарка"
+      ],
+      "typical_styles_ru": [
+        "Stout",
+        "Porter"
+      ],
+      "dosage_hint_ru": "Добавлять по вкусу на упаковке/в кег; для UI хорошо иметь поле “капли/мл”.",
+      "gravity_contribution": "none",
+      "notes_ru": "Экстракты и ароматизаторы лучше дозировать тестом в маленьком образце.",
+      "search_boost_terms": [
+        "кофейный ароматизатор",
+        "coffee flavoring",
+        "Кофейный экстракт / ароматизатор",
+        "Coffee Extract"
+      ]
+    },
+    {
+      "id": "bourbon-flavoring",
+      "name_ru": "Ароматизатор бурбон",
+      "name_en": "Bourbon Flavoring",
+      "aliases_ru": [
+        "бурбон ароматизатор",
+        "bourbon extract"
+      ],
+      "aliases_en": [
+        "bourbon extract"
+      ],
+      "group_ru": "Ароматизаторы и экстракты",
+      "subcategory_ru": "Алкогольные/бочковые",
+      "beerxml_misc_type": "Flavor",
+      "default_use": "Bottling",
+      "allowed_uses": [
+        "Secondary",
+        "Bottling"
+      ],
+      "default_unit": "ml",
+      "stock_units": [
+        "ml",
+        "l",
+        "drops"
+      ],
+      "form": "extract",
+      "flavor_tags_ru": [
+        "бурбон",
+        "дуб",
+        "ваниль"
+      ],
+      "typical_styles_ru": [
+        "Imperial Stout",
+        "Porter",
+        "Barleywine"
+      ],
+      "dosage_hint_ru": "Добавлять по вкусу на упаковке/в кег; для UI хорошо иметь поле “капли/мл”.",
+      "gravity_contribution": "none",
+      "notes_ru": "Экстракты и ароматизаторы лучше дозировать тестом в маленьком образце.",
+      "search_boost_terms": [
+        "бурбон ароматизатор",
+        "bourbon extract",
+        "Ароматизатор бурбон",
+        "Bourbon Flavoring"
+      ]
+    },
+    {
+      "id": "rum-flavoring",
+      "name_ru": "Ароматизатор ром",
+      "name_en": "Rum Flavoring",
+      "aliases_ru": [
+        "ром ароматизатор",
+        "rum extract"
+      ],
+      "aliases_en": [
+        "rum extract"
+      ],
+      "group_ru": "Ароматизаторы и экстракты",
+      "subcategory_ru": "Алкогольные/бочковые",
+      "beerxml_misc_type": "Flavor",
+      "default_use": "Bottling",
+      "allowed_uses": [
+        "Secondary",
+        "Bottling"
+      ],
+      "default_unit": "ml",
+      "stock_units": [
+        "ml",
+        "l",
+        "drops"
+      ],
+      "form": "extract",
+      "flavor_tags_ru": [
+        "ром",
+        "сухофрукты"
+      ],
+      "typical_styles_ru": [
+        "Stout",
+        "Porter",
+        "Winter Ale"
+      ],
+      "dosage_hint_ru": "Добавлять по вкусу на упаковке/в кег; для UI хорошо иметь поле “капли/мл”.",
+      "gravity_contribution": "none",
+      "notes_ru": "Экстракты и ароматизаторы лучше дозировать тестом в маленьком образце.",
+      "search_boost_terms": [
+        "ром ароматизатор",
+        "rum extract",
+        "Ароматизатор ром",
+        "Rum Flavoring"
+      ]
+    },
+    {
+      "id": "phantasm-powder",
+      "name_ru": "Phantasm Powder",
+      "name_en": "Phantasm Powder",
+      "aliases_ru": [
+        "фантазм",
+        "phantasm"
+      ],
+      "aliases_en": [
+        "phantasm"
+      ],
+      "group_ru": "Ароматизаторы и экстракты",
+      "subcategory_ru": "Хмелевой аромат / тиолы",
+      "beerxml_misc_type": "Other",
+      "default_use": "Boil",
+      "allowed_uses": [
+        "Boil",
+        "Secondary",
+        "Bottling"
+      ],
+      "default_unit": "g",
+      "stock_units": [
+        "g",
+        "kg"
+      ],
+      "form": "powder",
+      "flavor_tags_ru": [
+        "тиолы",
+        "тропики",
+        "хмелевой аромат"
+      ],
+      "typical_styles_ru": [
+        "IPA",
+        "Hazy IPA",
+        "Sour IPA"
+      ],
+      "dosage_hint_ru": "Вносится по рекомендациям производителя; обычно работает вместе с дрожжами/биотрансформацией.",
+      "gravity_contribution": "none",
+      "notes_ru": "Не считать как хмель по IBU.",
+      "search_boost_terms": [
+        "фантазм",
+        "phantasm",
+        "Phantasm Powder"
+      ]
+    },
+    {
+      "id": "hop-terpene-extract",
+      "name_ru": "Хмелевой терпеновый экстракт",
+      "name_en": "Hop Terpene Extract",
+      "aliases_ru": [
+        "хмелевые терпены",
+        "hop terpenes",
+        "terpene blend"
+      ],
+      "aliases_en": [
+        "hop terpenes",
+        "terpene blend"
+      ],
+      "group_ru": "Ароматизаторы и экстракты",
+      "subcategory_ru": "Хмелевой аромат",
+      "beerxml_misc_type": "Flavor",
+      "default_use": "Bottling",
+      "allowed_uses": [
+        "Secondary",
+        "Bottling"
+      ],
+      "default_unit": "ml",
+      "stock_units": [
+        "ml",
+        "drops"
+      ],
+      "form": "extract",
+      "flavor_tags_ru": [
+        "хмель",
+        "арома",
+        "терпены"
+      ],
+      "typical_styles_ru": [
+        "IPA",
+        "Hazy IPA",
+        "Non-alcoholic Beer"
+      ],
+      "dosage_hint_ru": "Добавлять по вкусу/по инструкции производителя, обычно на холодной стороне.",
+      "gravity_contribution": "none",
+      "notes_ru": "Не считать как хмель по IBU.",
+      "search_boost_terms": [
+        "хмелевые терпены",
+        "hop terpenes",
+        "terpene blend",
+        "Хмелевой терпеновый экстракт",
+        "Hop Terpene Extract"
+      ]
+    }
+  ],
+  "keep_out_of_additives_ru": [
+    {
+      "name": "Соли и кислоты воды",
+      "target_catalog": "water_treatment",
+      "examples": [
+        "Gypsum",
+        "Calcium Chloride",
+        "Lactic acid",
+        "Phosphoric acid",
+        "Baking soda"
+      ]
+    },
+    {
+      "name": "Свежие фрукты, ягоды, овощи, пюре, соки и концентраты",
+      "target_catalog": "fermentables",
+      "examples": [
+        "Raspberry puree",
+        "Mango puree",
+        "Passionfruit puree",
+        "Cherry puree",
+        "Pomegranate juice/concentrate",
+        "Pumpkin puree"
+      ],
+      "reason_ru": "Вносят массу, воду и сбраживаемые сахара; должны участвовать в расчётах плотности/ABV и складском учёте как adjunct/fruit, а не как вкусовая добавка."
+    },
+    {
+      "name": "Сбраживаемые сахара и подсластители с вкладом в плотность",
+      "target_catalog": "fermentables",
+      "examples": [
+        "Lactose",
+        "Honey",
+        "Maple syrup",
+        "Invert sugar",
+        "Molasses"
+      ]
+    },
+    {
+      "name": "Мойка и санитация",
+      "target_catalog": "consumables/sanitation",
+      "examples": [
+        "PBW",
+        "Star San",
+        "Saniclean"
+      ]
+    },
+    {
+      "name": "Чистые культуры дрожжей/бактерий",
+      "target_catalog": "yeast_or_cultures",
+      "examples": [
+        "Lactobacillus",
+        "Brettanomyces",
+        "kveik culture"
+      ]
+    }
+  ],
+  "revision_note_ru": "Удалён блок свежих фруктов/ягод/овощей и пюре: такие позиции должны жить в fermentables как adjunct/fruit с учётом массы, сахаров, Brix/PPG и влияния на OG/ABV. В additives оставлены цедра, специи, травы, дерево, кофе/какао и ароматические экстракты/эссенции.",
+  "removed_from_v2_to_fermentables": [
+    "raspberry-puree",
+    "cherry-puree",
+    "sour-cherry-puree",
+    "blackberry-puree",
+    "blueberry-puree",
+    "strawberry-puree",
+    "mango-puree",
+    "passionfruit-puree",
+    "peach-puree",
+    "apricot-puree",
+    "pineapple-puree",
+    "cranberry-puree",
+    "pomegranate-juice",
+    "pumpkin-puree",
+    "cucumber",
+    "beetroot"
+  ]
+}

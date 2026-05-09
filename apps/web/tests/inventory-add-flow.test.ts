@@ -189,7 +189,7 @@ describe("inventory add-flow", () => {
     expect(html).toContain("Количество и единица учета");
     expect(html).toContain('data-testid="custom-required-fields"');
     expect(html).toContain('data-testid="custom-optional-disclosure"');
-    expect(html).toContain("Добавить цену, ссылки, даты или заметку");
+    expect(html).toContain("Цена, даты и заметки");
     expect(html).toContain("Необязательно");
     expect((html.match(/>обязательно</g) ?? [])).toHaveLength(2);
     expect(html).not.toContain("Минимум для создания");
@@ -387,7 +387,7 @@ describe("inventory add-flow", () => {
     expect(html).toContain("81%");
     expect(html).toContain("Уточнить параметры");
     expect(html).toContain('data-testid="catalog-optional-disclosure"');
-    expect(html).toContain("Добавить цену, ссылки, даты или заметку");
+    expect(html).toContain("Цена, даты и заметки");
     expect(html).toContain("Необязательно");
     expect(html).not.toContain("Дополнительно");
   });
@@ -613,30 +613,30 @@ describe("inventory add-flow", () => {
           score: 0
         }, {
           type: "consumable_group",
-          label: "Осветление",
-          normalizedLabel: "fining",
-          value: "fining",
+          label: "Техдобавки",
+          normalizedLabel: "technical_additives",
+          value: "technical_additives",
           count: 0,
           score: 0
         }, {
           type: "consumable_group",
-          label: "Ферменты",
-          normalizedLabel: "enzyme",
-          value: "enzyme",
+          label: "Фильтрация затора",
+          normalizedLabel: "lauter_aid",
+          value: "lauter_aid",
           count: 0,
           score: 0
         }, {
           type: "consumable_group",
-          label: "Подкормки",
-          normalizedLabel: "nutrient",
-          value: "nutrient",
+          label: "Специи",
+          normalizedLabel: "spice",
+          value: "spice",
           count: 0,
           score: 0
         }, {
           type: "consumable_group",
-          label: "Антиоксиданты",
-          normalizedLabel: "antioxidant",
-          value: "antioxidant",
+          label: "Цедра и цитрус",
+          normalizedLabel: "citrus_zest",
+          value: "citrus_zest",
           count: 0,
           score: 0
         }, {
@@ -671,10 +671,10 @@ describe("inventory add-flow", () => {
     expect(html).toContain("По группе");
     expect(html).toContain("Санитайзеры");
     expect(html).toContain("Мойка");
-    expect(html).toContain("Осветление");
-    expect(html).toContain("Ферменты");
-    expect(html).toContain("Подкормки");
-    expect(html).toContain("Антиоксиданты");
+    expect(html).toContain("Техдобавки");
+    expect(html).toContain("Фильтрация затора");
+    expect(html).toContain("Специи");
+    expect(html).toContain("Цедра и цитрус");
     expect(html).toContain("Тара и укупорка");
     expect(html).toContain("Газы");
     expect(html).not.toContain("По бренду");
@@ -706,16 +706,16 @@ describe("inventory add-flow", () => {
         brands: [],
         groups: [{
           type: "consumable_group",
-          label: "Тех. добавки",
-          normalizedLabel: "process_aid",
-          value: "process_aid",
+          label: "Техдобавки",
+          normalizedLabel: "technical_additives",
+          value: "technical_additives",
           count: 3,
           score: 30
         }, {
           type: "consumable_group",
-          label: "Осветление",
-          normalizedLabel: "fining",
-          value: "fining",
+          label: "Фильтрация затора",
+          normalizedLabel: "lauter_aid",
+          value: "lauter_aid",
           count: 12,
           score: 120
         }],
@@ -723,7 +723,16 @@ describe("inventory add-flow", () => {
         hasFavoritesAvailable: false,
         hasCustomAvailable: false
       }
-    })).toEqual(["process_aid", "fining", "enzyme", "nutrient", "antioxidant"]);
+    })).toEqual([
+      "technical_additives",
+      "lauter_aid",
+      "spice",
+      "citrus_zest",
+      "herb_flower",
+      "coffee_cacao",
+      "wood_aging",
+      "flavoring"
+    ]);
   });
 
   it("keeps the additive fallback chip visible when it is already selected", () => {
@@ -923,7 +932,7 @@ describe("inventory add-flow", () => {
       }
     }, React.createElement("div", null, "body")));
 
-    expect(html).toContain("Добавить цену, ссылки, даты или заметку");
+    expect(html).toContain("Цена, даты и заметки");
     expect(html).toContain("Цена: 1250 USD");
     expect(html).toContain("Покупка: 04.04.2026");
     expect(html).toContain("Годен до: 01.12.2026");
@@ -1381,7 +1390,8 @@ describe("inventory add-flow", () => {
 
   it("exposes subtype options for custom category flow", () => {
     expect(getCustomIngredientSubtypeOptions("water_treatment")).toContain("acid");
-    expect(getCustomIngredientSubtypeOptions("consumable")).toContain("fining");
+    expect(getCustomIngredientSubtypeOptions("consumable")).toContain("technical_additives");
+    expect(getCustomIngredientSubtypeOptions("consumable")).toContain("citrus_zest");
   });
 
   it("submits selected catalog entity instead of free text", () => {

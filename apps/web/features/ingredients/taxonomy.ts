@@ -19,13 +19,16 @@ const fermentableSubtypes = ["malt", "fermentable"] as const;
 const hopSubtypes = ["hop"] as const;
 const yeastSubtypes = ["yeast"] as const;
 const consumableSubtypes = [
-  "process_aid",
-  "nutrient",
+  "technical_additives",
+  "lauter_aid",
+  "spice",
+  "citrus_zest",
+  "herb_flower",
+  "coffee_cacao",
+  "wood_aging",
+  "flavoring",
   "sanitizer",
   "cleaner",
-  "enzyme",
-  "antioxidant",
-  "fining",
   "packaging",
   "gas",
   "other"
@@ -105,8 +108,9 @@ const fermentableNonMaltTokens = [
 const toNormalizedToken = (value: string) => value
   .trim()
   .toLowerCase()
+  .replaceAll("ё", "е")
   .replace(/[\s/]+/g, "_")
-  .replace(/[^a-z0-9_]+/g, "")
+  .replace(/[^a-zа-я0-9_]+/g, "")
   .replace(/^_+|_+$/g, "");
 
 const getKnownSubtypeSet = (category: IngredientCategory) => new Set<string>(ingredientCategorySubtypes[category]);
@@ -192,20 +196,74 @@ export const normalizeIngredientSubtype = (
     return "other";
   }
 
-  if (normalized.includes("process")) return "process_aid";
   if (
-    normalized.includes("rice_hull")
+    normalized.includes("technical_additives")
+    || normalized.includes("tech_additives")
+    || normalized.includes("process")
+    || normalized.startsWith("тех")
+    || normalized.includes("fining")
+    || normalized.includes("clarif")
+    || normalized.startsWith("освет")
+    || normalized.includes("nutrient")
+    || normalized.startsWith("подкорм")
+    || normalized.includes("питат")
+    || normalized.includes("enzyme")
+    || normalized.includes("enzym")
+    || normalized.includes("фермент")
+    || normalized.includes("antioxid")
+    || normalized.startsWith("антиокс")
+    || normalized.includes("defoam")
+    || normalized.includes("пено")
+    || normalized.includes("preserv")
+    || normalized.includes("консерв")
+  ) return "technical_additives";
+  if (
+    normalized.includes("lauter")
+    || normalized.includes("filter_aid")
+    || normalized.includes("rice_hull")
     || normalized.includes("rice_husk")
     || normalized.includes("husk")
     || normalized.includes("лузг")
     || normalized.includes("шелух")
-  ) return "process_aid";
-  if (normalized.includes("nutrient")) return "nutrient";
+    || normalized.includes("фильтр")
+  ) return "lauter_aid";
+  if (normalized.includes("spice") || normalized.includes("спец")) return "spice";
+  if (
+    normalized.includes("citrus")
+    || normalized.includes("zest")
+    || normalized.includes("peel")
+    || normalized.includes("цедр")
+    || normalized.includes("цитрус")
+  ) return "citrus_zest";
+  if (
+    normalized.includes("herb")
+    || normalized.includes("flower")
+    || normalized.includes("трав")
+    || normalized.includes("цвет")
+    || normalized.includes("чай")
+  ) return "herb_flower";
+  if (
+    normalized.includes("coffee")
+    || normalized.includes("cacao")
+    || normalized.includes("cocoa")
+    || normalized.includes("кофе")
+    || normalized.includes("какао")
+  ) return "coffee_cacao";
+  if (
+    normalized.includes("wood")
+    || normalized.includes("oak")
+    || normalized.includes("дерев")
+    || normalized.includes("дуб")
+  ) return "wood_aging";
+  if (
+    normalized.includes("flavor")
+    || normalized.includes("flavour")
+    || normalized.includes("extract")
+    || normalized.includes("аромат")
+    || normalized.includes("экстракт")
+  ) return "flavoring";
   if (normalized.includes("sanitize")) return "sanitizer";
   if (normalized.includes("clean")) return "cleaner";
-  if (normalized.includes("enzyme") || normalized.includes("enzym") || normalized.includes("фермент")) return "enzyme";
-  if (normalized.includes("antioxid")) return "antioxidant";
-  if (normalized.includes("fining")) return "fining";
   if (
     normalized.includes("package")
     || normalized.includes("bottle")

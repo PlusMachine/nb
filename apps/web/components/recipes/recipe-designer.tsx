@@ -86,6 +86,10 @@ import {
   type IngredientPickerStoredRecentSelection
 } from "@/features/ingredients/picker-quick-start";
 import {
+  consumableInventoryAdditiveGroups,
+  resolveConsumableInventoryBroadGroupLabel
+} from "@/features/ingredients/consumables";
+import {
   resolveIngredientDisplayNames
 } from "@/features/ingredients/presentation";
 import { resolveIngredientCategory, resolveLegacyIngredientType } from "@/features/ingredients/taxonomy";
@@ -228,7 +232,7 @@ const recipeIngredientCategoryOptions: Array<{
     { value: "hop", label: "Хмель", icon: Hop, iconClassName: "text-emerald-600" },
     { value: "yeast", label: "Дрожжи", icon: FlaskConical, iconClassName: "text-violet-600" },
     { value: "water_treatment", label: "Водоподготовка", icon: Droplets, iconClassName: "text-sky-600" },
-    { value: "consumable", label: "Расходники", icon: Package, iconClassName: "text-zinc-500" }
+    { value: "consumable", label: "Другие добавки", icon: Package, iconClassName: "text-zinc-500" }
   ];
 
 export type RecipeFermentablePickerScope =
@@ -294,6 +298,32 @@ const buildRecipeFermentableForcedGroup = (
     count: 0,
     score: 0
   };
+};
+
+export const recipeConsumableAdditiveGroup = "inventory_additives";
+export const recipeConsumableSubtypeOptions = consumableInventoryAdditiveGroups as readonly IngredientSubtype[];
+
+const buildRecipeConsumableForcedGroup = (): IngredientConsumableGroupRefinement => ({
+  type: "consumable_group",
+  label: resolveConsumableInventoryBroadGroupLabel(recipeConsumableAdditiveGroup) ?? "Другие добавки",
+  normalizedLabel: recipeConsumableAdditiveGroup,
+  value: recipeConsumableAdditiveGroup,
+  count: 0,
+  score: 0
+});
+
+export const resolveRecipeIngredientForcedGroup = ({
+  category,
+  fermentableGroup
+}: {
+  category: IngredientCategory;
+  fermentableGroup?: IngredientConsumableGroupRefinement | null;
+}): IngredientConsumableGroupRefinement | null => {
+  if (category === "consumable") {
+    return buildRecipeConsumableForcedGroup();
+  }
+
+  return fermentableGroup ?? null;
 };
 
 const resolveRecipeIngredientEditorCategoryLabel = ({
@@ -1393,7 +1423,7 @@ const getSectionTitle = (category: IngredientCategory) => {
   if (category === "hop") return "Хмель";
   if (category === "yeast") return "Дрожжи";
   if (category === "water_treatment") return "Водоподготовка";
-  return "Расходники";
+  return "Другие добавки";
 };
 
 const categoryIcons: Record<IngredientCategory, React.ComponentType<{ className?: string }>> = {
@@ -3415,15 +3445,14 @@ const searchStockIngredientsForRecipe = async ({
   limit: number;
   signal: AbortSignal;
 }) => {
-  const params = new URLSearchParams();
-  const effectiveType = resolveRecipeIngredientSearchType({ category, type });
-  params.set("q", q);
-  params.set("limit", String(limit));
-  params.set("stock", "in_stock");
-  params.set("dedupe", "false");
-  if (effectiveType) params.set("type", effectiveType);
-  if (category) params.set("category", category);
-  if (subtype) params.set("subtype", subtype);
+  const params = buildRecipeStockIngredientSearchParams({
+    q,
+    type,
+    category,
+    subtype,
+    group,
+    limit
+  });
 
   const response = await fetch(`/api/inventory/suggestions?${params.toString()}`, { signal });
   if (!response.ok) {
@@ -3442,6 +3471,34 @@ const searchStockIngredientsForRecipe = async ({
   return items.filter((item) => (
     canonicalizeFermentableQuickStartGroup(item.groupName ?? null) === normalizedGroup
   ));
+};
+
+export const buildRecipeStockIngredientSearchParams = ({
+  q,
+  type,
+  category,
+  subtype,
+  group,
+  limit
+}: {
+  q: string;
+  type?: IngredientType;
+  category?: IngredientCategory;
+  subtype?: Extract<IngredientSubtype, "malt" | "fermentable"> | null;
+  group?: string;
+  limit: number;
+}) => {
+  const params = new URLSearchParams();
+  const effectiveType = resolveRecipeIngredientSearchType({ category, type });
+  params.set("q", q);
+  params.set("limit", String(limit));
+  params.set("stock", "in_stock");
+  params.set("dedupe", "false");
+  if (effectiveType) params.set("type", effectiveType);
+  if (category) params.set("category", category);
+  if (subtype) params.set("subtype", subtype);
+  if (group) params.set("group", group);
+  return params;
 };
 
 function IngredientEditor({
@@ -3488,6 +3545,10 @@ function IngredientEditor({
   const forcedFermentableGroup = draft.category === "fermentable"
     ? buildRecipeFermentableForcedGroup(fermentableScope)
     : null;
+  const forcedRecipeIngredientGroup = resolveRecipeIngredientForcedGroup({
+    category: draft.category,
+    fermentableGroup: forcedFermentableGroup
+  });
   const placeholder = draft.category === "fermentable"
     ? pickerSubtype === "malt"
       ? "Найти солод"
@@ -3500,7 +3561,7 @@ function IngredientEditor({
       hop: "Найти сорт или форму хмеля",
       yeast: "Найти дрожжи",
       water_treatment: "Найти соль, кислоту или добавку для воды",
-      consumable: "Найти расходник или процессную добавку"
+      consumable: "Найти Irish Moss, цедру, специю или другую добавку"
     }[draft.category];
   const ingredientSearchType = resolveRecipeIngredientSearchType({
     category: draft.category,
@@ -3760,6 +3821,7 @@ function IngredientEditor({
                 mode="recipe"
                 category={draft.category}
                 initialSubtype={pickerSubtype}
+                subtypeOptions={draft.category === "consumable" ? recipeConsumableSubtypeOptions : undefined}
                 initialDisplayName={draft.selectedName}
                 pending={pendingCustom}
                 fieldErrors={customFieldErrors}
@@ -3796,9 +3858,9 @@ function IngredientEditor({
                   type={ingredientSearchType}
                   category={draft.category}
                   subtype={pickerSubtype}
-                  forcedGroup={forcedFermentableGroup}
+                  forcedGroup={forcedRecipeIngredientGroup}
                   hideForcedGroupChip
-                  onForcedGroupClear={() => handleFermentableScopeChange(null)}
+                  onForcedGroupClear={forcedFermentableGroup ? () => handleFermentableScopeChange(null) : undefined}
                   value={draft.selectedName}
                   onValueChange={(value) => onChange(applyQueryChange(draft, value))}
                   onSelect={(item) => {
@@ -3819,7 +3881,7 @@ function IngredientEditor({
                 category={draft.category}
                 type={ingredientSearchType}
                 subtype={pickerSubtype}
-                group={forcedFermentableGroup?.value ?? undefined}
+                group={forcedRecipeIngredientGroup?.value ?? undefined}
                 searchIngredients={searchStockIngredientsForRecipe}
                 onOverflowChange={setShowStockSearch}
                 onSelect={(item) => {
@@ -4668,10 +4730,10 @@ export function RecipeDesigner({
       },
       {
         category: "consumable",
-        title: "Прочее / расходники",
+        title: "Другие добавки",
         subtitle: consumables.length ? `${consumables.length} поз.` : undefined,
         items: consumables,
-        empty: "Whirlfloc, нутриенты, фининги и другие процессные добавки можно держать здесь."
+        empty: "Irish Moss, Whirlfloc, нутриенты, цедру, специи и другие рецептные добавки можно держать здесь."
       }
     ];
 

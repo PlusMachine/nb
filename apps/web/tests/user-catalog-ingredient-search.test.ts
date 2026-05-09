@@ -641,13 +641,16 @@ describe("user catalog ingredient search", () => {
 
     expect(quickStart.recent.map((item) => item.id)).toEqual(["cons-recent"]);
     expect((quickStart.groups ?? []).map((group) => group.value)).toEqual([
-      "process_aid",
+      "technical_additives",
+      "lauter_aid",
+      "spice",
+      "citrus_zest",
+      "herb_flower",
+      "coffee_cacao",
+      "wood_aging",
+      "flavoring",
       "sanitizer",
       "cleaner",
-      "fining",
-      "enzyme",
-      "nutrient",
-      "antioxidant",
       "packaging",
       "gas"
     ]);

@@ -54,9 +54,11 @@ import {
 } from "@/features/ingredients/picker-quick-start";
 import {
   buildConsumableMarketPrimaryLabel,
+  formatConsumableFormLabel,
   formatConsumablePackageLabel,
+  formatConsumablePickerBrandLabel,
+  formatConsumableUsageStageLabel,
   resolveConsumablePickerGroup,
-  resolveConsumableMarketNames,
   resolveConsumablePackageVariantName,
   resolveConsumableTechnicalData
 } from "@/features/ingredients/consumables";
@@ -744,8 +746,8 @@ export const buildIngredientPickerTechnicalBadges = (item: IngredientSuggestionI
     pushBadge(normalizedPreferredUnit === "g" || normalizedPreferredUnit === "ml" ? null : waterTreatment.unitPreferred);
   } else if (technicalData.type === "consumable") {
     const consumable = technicalData as Extract<NonNullable<typeof technicalData>, { type: "consumable" }>;
-    pushBadge(consumable.commonForms?.[0]?.replaceAll("_", " ") ?? null);
-    pushBadge(consumable.usageStage?.[0]?.replaceAll("_", " ") ?? null);
+    pushBadge(formatConsumableFormLabel(consumable.commonForms?.[0]));
+    pushBadge(formatConsumableUsageStageLabel(consumable.usageStage?.[0]));
   }
 
   return badges.slice(0, 5);
@@ -948,41 +950,6 @@ const resolveIngredientOwnershipBadgeLabel = (item: Pick<IngredientSuggestionIte
   return item.derivedFromIngredientId ? "ИЗМЕНЕННЫЙ" : "СВОЙ";
 };
 
-const functionalConsumableTerms = [
-  "санитайзер",
-  "мойка",
-  "осветлитель",
-  "осветление",
-  "подкормка",
-  "пеногаситель",
-  "антиоксидант",
-  "фермент",
-  "кислота",
-  "щелочь"
-];
-
-const shouldPromoteConsumableAlias = (
-  item: IngredientSuggestionItem,
-  alias: string,
-  marketNames: string[]
-) => {
-  const normalizedAlias = normalizeSearchText(alias);
-  if (!normalizedAlias) {
-    return false;
-  }
-
-  if (marketNames.some((name) => normalizeSearchText(name) === normalizedAlias)) {
-    return true;
-  }
-
-  if (/[a-z0-9]/i.test(alias)) {
-    return true;
-  }
-
-  return !functionalConsumableTerms.some((term) => normalizedAlias.includes(term))
-    && normalizedAlias !== normalizeSearchText(item.primaryLabelRu ?? item.displayName);
-};
-
 const resolveMatchedConsumablePackageVariant = (item: IngredientSuggestionItem) => {
   if (!item.packageVariants?.length) {
     return null;
@@ -998,31 +965,53 @@ const resolveMatchedConsumablePackageVariant = (item: IngredientSuggestionItem) 
   return item.packageVariants.find((variant) => variant.isDefaultForStock) ?? item.packageVariants[0] ?? null;
 };
 
+const shouldShowConsumableMatchedVariantName = ({
+  matchedVariantName,
+  primaryName,
+  brand
+}: {
+  matchedVariantName?: string | null;
+  primaryName: string;
+  brand?: string | null;
+}) => {
+  const normalizedVariantName = normalizeSearchText(matchedVariantName ?? "");
+  const normalizedPrimaryName = normalizeSearchText(primaryName);
+  if (!normalizedVariantName || !normalizedPrimaryName || normalizedVariantName === normalizedPrimaryName) {
+    return false;
+  }
+
+  const normalizedBrand = normalizeSearchText(brand ?? "");
+  const variantNameWithoutBrand = normalizedBrand
+    ? normalizeSearchText(normalizedVariantName.replace(normalizedBrand, ""))
+    : normalizedVariantName;
+
+  return variantNameWithoutBrand !== normalizedPrimaryName
+    && !variantNameWithoutBrand.includes(normalizedPrimaryName);
+};
+
 export const resolveIngredientPickerRowContent = (item: IngredientSuggestionItem) => {
   const { primaryName: basePrimaryName, secondaryName: baseSecondaryName } = resolveIngredientDisplayNames(item);
   const stockLabel = resolveIngredientPickerStockLabel(item);
   const consumableTechnicalData = resolveConsumableTechnicalData(item.technicalData);
   if (consumableTechnicalData) {
     const matchedVariant = resolveMatchedConsumablePackageVariant(item);
-    const marketNames = resolveConsumableMarketNames(item.technicalData);
     const matchedVariantName = item.matchedPackageVariantName?.trim()
       || resolveConsumablePackageVariantName(matchedVariant);
-    const promotedAlias = item.matchedAlias && shouldPromoteConsumableAlias(item, item.matchedAlias, marketNames)
-      ? item.matchedAlias.trim()
-      : null;
     const marketPrimaryName = buildConsumableMarketPrimaryLabel(item.technicalData, null);
-    const primaryName = promotedAlias
-      ?? marketPrimaryName
+    const primaryName = marketPrimaryName
       ?? (item.matchType === "package" ? matchedVariantName : null)
       ?? basePrimaryName;
     const canonicalName = item.primaryLabelRu?.trim() || basePrimaryName;
     const secondaryName = consumableTechnicalData.pickerFunctionRu?.trim()
       || (normalizeSearchText(canonicalName) === normalizeSearchText(primaryName) ? baseSecondaryName : canonicalName);
     const subtitle = buildDedupedSubtitle([
-      matchedVariant?.brand,
+      formatConsumablePickerBrandLabel(matchedVariant?.brand),
       formatConsumablePackageLabel(matchedVariant),
-      consumableTechnicalData.pickerUsageRu,
-      item.matchType === "package" && matchedVariantName && normalizeSearchText(matchedVariantName) !== normalizeSearchText(primaryName)
+      item.matchType === "package" && shouldShowConsumableMatchedVariantName({
+        matchedVariantName,
+        primaryName,
+        brand: matchedVariant?.brand
+      })
         ? matchedVariantName
         : null
     ]);

@@ -392,7 +392,7 @@ export function AddIngredientModal({
     const nextCustomSubtype = nextCategory === "consumable_supply"
       ? "sanitizer"
       : nextCategory === "consumable_additive"
-        ? "process_aid"
+        ? "technical_additives"
         : nextResolvedSubtype;
 
     if (mode === "catalog") {
