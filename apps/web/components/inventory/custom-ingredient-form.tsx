@@ -31,6 +31,7 @@ import {
   type InventoryUnit
 } from "@/features/inventory/units";
 import type { SystemCurrency } from "@/features/system/currency";
+import { hasValidationErrors, validateNumericInput } from "@/features/forms/numeric-validation";
 
 export type CustomIngredientSubmitPayload = {
   type: string;
@@ -46,6 +47,7 @@ export type CustomIngredientSubmitPayload = {
   hopForm: string;
   yeastAttenuationPct: string;
   yeastForm: string;
+  waterTreatmentConcentrationPct: string;
   defaultDisplayUnit: InventoryUnit;
   enteredQuantity: string;
   enteredUnit: InventoryUnit;
@@ -233,6 +235,7 @@ export function CustomIngredientForm({
   const [harvestYear, setHarvestYear] = useState("");
   const [yeastAttenuationPct, setYeastAttenuationPct] = useState("");
   const [yeastForm, setYeastForm] = useState<CustomYeastForm>("dry");
+  const [waterTreatmentConcentrationPct, setWaterTreatmentConcentrationPct] = useState("");
   const [enteredQuantity, setEnteredQuantity] = useState("");
   const [priceInputMode, setPriceInputMode] = useState<InventoryPriceInputMode>(initialOptionalFields.priceInputMode);
   const [priceInputAmount, setPriceInputAmount] = useState(initialOptionalFields.priceInputAmount);
@@ -241,6 +244,7 @@ export function CustomIngredientForm({
   const [notes, setNotes] = useState(initialOptionalFields.notes);
   const [optionalOpen, setOptionalOpen] = useState(false);
   const [optionalTouched, setOptionalTouched] = useState(false);
+  const [localFieldErrors, setLocalFieldErrors] = useState<Record<string, string | null>>({});
   const [purchaseLinksState, setPurchaseLinksState] = useState<{ urls: string[]; isLoaded: boolean }>({
     urls: [],
     isLoaded: false
@@ -265,7 +269,10 @@ export function CustomIngredientForm({
     hopAlphaAcidPct: parseOptionalNumber(hopAlphaAcidPct),
     hopForm: category === "hop" ? hopForm : null,
     yeastAttenuationPct: parseOptionalNumber(yeastAttenuationPct),
-    yeastForm: category === "yeast" ? yeastForm : null
+    yeastForm: category === "yeast" ? yeastForm : null,
+    waterTreatmentConcentrationPct: category === "water_treatment" && resolvedSubtype === "acid"
+      ? parseOptionalNumber(waterTreatmentConcentrationPct)
+      : null
   }), [
     category,
     fermentableColorEbc,
@@ -273,6 +280,8 @@ export function CustomIngredientForm({
     hopAlphaAcidPct,
     hopForm,
     resolvedType,
+    resolvedSubtype,
+    waterTreatmentConcentrationPct,
     yeastAttenuationPct,
     yeastForm
   ]);
@@ -286,6 +295,70 @@ export function CustomIngredientForm({
   const [enteredUnit, setEnteredUnit] = useState<InventoryUnit>(unitProfile.defaultUnit);
   const showInventoryFields = mode === "inventory";
   const resolvedSubmitLabel = submitLabel ?? (showInventoryFields ? "Создать и добавить в запасы" : "Создать свой ингредиент");
+
+  const validateLocalFields = () => {
+    const errors: Record<string, string | null> = {};
+
+    if (category === "fermentable") {
+      errors.fermentableColorEbc = validateNumericInput(fermentableColorEbc, {
+        label: "Цвет EBC",
+        min: 0,
+        max: 9999
+      });
+      errors.fermentableExtractYieldPct = validateNumericInput(fermentableExtractYieldPct, {
+        label: "Экстрактивность",
+        min: 0,
+        max: 100
+      });
+    }
+
+    if (category === "hop") {
+      errors.hopAlphaAcidPct = validateNumericInput(hopAlphaAcidPct, {
+        label: "Альфа-кислота",
+        min: 0,
+        max: 100
+      });
+      errors.harvestYear = validateNumericInput(harvestYear, {
+        label: "Урожай",
+        min: 1900,
+        max: 2100,
+        integer: true
+      });
+    }
+
+    if (category === "yeast") {
+      errors.yeastAttenuationPct = validateNumericInput(yeastAttenuationPct, {
+        label: "Аттенюация",
+        min: 0,
+        max: 100
+      });
+    }
+
+    if (category === "water_treatment" && resolvedSubtype === "acid") {
+      errors.waterTreatmentConcentrationPct = validateNumericInput(waterTreatmentConcentrationPct, {
+        label: "Концентрация кислоты",
+        min: 0,
+        max: 100,
+        exclusiveMin: true
+      });
+    }
+
+    if (showInventoryFields) {
+      errors.enteredQuantity = validateNumericInput(enteredQuantity, {
+        label: "Количество",
+        required: true,
+        min: 0,
+        exclusiveMin: true
+      });
+      errors.priceInputAmount = validateNumericInput(priceInputAmount, {
+        label: "Цена",
+        min: 0,
+        exclusiveMin: true
+      });
+    }
+
+    return errors;
+  };
 
   useEffect(() => {
     setDisplayName(initialDisplayName);
@@ -301,6 +374,7 @@ export function CustomIngredientForm({
     setHopForm("pellet");
     setHarvestYear("");
     setYeastAttenuationPct("");
+    setWaterTreatmentConcentrationPct("");
     setCountry("");
     setFermentableColorEbc("");
     setFermentableExtractYieldPct("");
@@ -309,6 +383,7 @@ export function CustomIngredientForm({
     setNotes(nextOptionalFields.notes);
     setOptionalOpen(false);
     setOptionalTouched(false);
+    setLocalFieldErrors({});
     setPurchaseLinksState({
       urls: [],
       isLoaded: false
@@ -368,6 +443,12 @@ export function CustomIngredientForm({
       className="space-y-4"
       onSubmit={async (event) => {
         event.preventDefault();
+        const nextFieldErrors = validateLocalFields();
+        setLocalFieldErrors(nextFieldErrors);
+        if (hasValidationErrors(nextFieldErrors)) {
+          return;
+        }
+
         const payload: CustomIngredientSubmitPayload = {
           type: resolvedType,
           category,
@@ -382,6 +463,9 @@ export function CustomIngredientForm({
           hopForm: category === "hop" ? hopForm : "",
           yeastAttenuationPct,
           yeastForm: category === "yeast" ? yeastForm : "",
+          waterTreatmentConcentrationPct: category === "water_treatment" && resolvedSubtype === "acid"
+            ? waterTreatmentConcentrationPct
+            : "",
           defaultDisplayUnit: unitProfile.defaultUnit,
           enteredQuantity,
           enteredUnit
@@ -450,15 +534,18 @@ export function CustomIngredientForm({
               <label className="text-sm">Цвет, EBC
                 <input
                   type="number"
-                  min="0"
+                  min="0.0001"
                   step="0.1"
                   className="mt-1 w-full rounded-md border px-2 py-2"
                   value={fermentableColorEbc}
-                  onChange={(e) => setFermentableColorEbc(e.target.value)}
+                  onChange={(e) => {
+                    setFermentableColorEbc(e.target.value);
+                    setLocalFieldErrors((current) => ({ ...current, fermentableColorEbc: null }));
+                  }}
                   inputMode="decimal"
                   placeholder="Например: 3.5"
                 />
-                {fieldErrors?.fermentableColorEbc && <span className="text-xs text-red-600">{fieldErrors.fermentableColorEbc}</span>}
+                {(localFieldErrors.fermentableColorEbc || fieldErrors?.fermentableColorEbc) && <span className="text-xs text-red-600">{localFieldErrors.fermentableColorEbc ?? fieldErrors?.fermentableColorEbc}</span>}
               </label>
               <label className="text-sm">Экстрактивность, %
                 <input
@@ -468,11 +555,14 @@ export function CustomIngredientForm({
                   step="0.1"
                   className="mt-1 w-full rounded-md border px-2 py-2"
                   value={fermentableExtractYieldPct}
-                  onChange={(e) => setFermentableExtractYieldPct(e.target.value)}
+                  onChange={(e) => {
+                    setFermentableExtractYieldPct(e.target.value);
+                    setLocalFieldErrors((current) => ({ ...current, fermentableExtractYieldPct: null }));
+                  }}
                   inputMode="decimal"
                   placeholder="Например: 81"
                 />
-                {fieldErrors?.fermentableExtractYieldPct && <span className="text-xs text-red-600">{fieldErrors.fermentableExtractYieldPct}</span>}
+                {(localFieldErrors.fermentableExtractYieldPct || fieldErrors?.fermentableExtractYieldPct) && <span className="text-xs text-red-600">{localFieldErrors.fermentableExtractYieldPct ?? fieldErrors?.fermentableExtractYieldPct}</span>}
               </label>
               <label className="text-sm">Страна
                 <select
@@ -512,11 +602,14 @@ export function CustomIngredientForm({
                   step="0.1"
                   className="mt-1 w-full rounded-md border px-2 py-2"
                   value={hopAlphaAcidPct}
-                  onChange={(e) => setHopAlphaAcidPct(e.target.value)}
+                  onChange={(e) => {
+                    setHopAlphaAcidPct(e.target.value);
+                    setLocalFieldErrors((current) => ({ ...current, hopAlphaAcidPct: null }));
+                  }}
                   inputMode="decimal"
                   placeholder="Например: 12.5"
                 />
-                {fieldErrors?.hopAlphaAcidPct && <span className="text-xs text-red-600">{fieldErrors.hopAlphaAcidPct}</span>}
+                {(localFieldErrors.hopAlphaAcidPct || fieldErrors?.hopAlphaAcidPct) && <span className="text-xs text-red-600">{localFieldErrors.hopAlphaAcidPct ?? fieldErrors?.hopAlphaAcidPct}</span>}
               </label>
               <label className="text-sm">Урожай
                 <input
@@ -526,11 +619,14 @@ export function CustomIngredientForm({
                   step="1"
                   className="mt-1 w-full rounded-md border px-2 py-2"
                   value={harvestYear}
-                  onChange={(e) => setHarvestYear(e.target.value)}
+                  onChange={(e) => {
+                    setHarvestYear(e.target.value);
+                    setLocalFieldErrors((current) => ({ ...current, harvestYear: null }));
+                  }}
                   inputMode="numeric"
                   placeholder="Необязательно"
                 />
-                {fieldErrors?.harvestYear && <span className="text-xs text-red-600">{fieldErrors.harvestYear}</span>}
+                {(localFieldErrors.harvestYear || fieldErrors?.harvestYear) && <span className="text-xs text-red-600">{localFieldErrors.harvestYear ?? fieldErrors?.harvestYear}</span>}
               </label>
             </div>
           ) : null}
@@ -553,11 +649,36 @@ export function CustomIngredientForm({
                   step="0.1"
                   className="mt-1 w-full rounded-md border px-2 py-2"
                   value={yeastAttenuationPct}
-                  onChange={(e) => setYeastAttenuationPct(e.target.value)}
+                  onChange={(e) => {
+                    setYeastAttenuationPct(e.target.value);
+                    setLocalFieldErrors((current) => ({ ...current, yeastAttenuationPct: null }));
+                  }}
                   inputMode="decimal"
                   placeholder="Например: 78"
                 />
-                {fieldErrors?.yeastAttenuationPct && <span className="text-xs text-red-600">{fieldErrors.yeastAttenuationPct}</span>}
+                {(localFieldErrors.yeastAttenuationPct || fieldErrors?.yeastAttenuationPct) && <span className="text-xs text-red-600">{localFieldErrors.yeastAttenuationPct ?? fieldErrors?.yeastAttenuationPct}</span>}
+              </label>
+            </div>
+          ) : null}
+
+          {category === "water_treatment" && resolvedSubtype === "acid" ? (
+            <div className="grid grid-cols-1 gap-3 sm:max-w-xs">
+              <label className="text-sm">Концентрация кислоты, %
+                <input
+                  type="number"
+                  min="1"
+                  max="100"
+                  step="0.1"
+                  className="mt-1 w-full rounded-md border px-2 py-2"
+                  value={waterTreatmentConcentrationPct}
+                  onChange={(e) => {
+                    setWaterTreatmentConcentrationPct(e.target.value);
+                    setLocalFieldErrors((current) => ({ ...current, waterTreatmentConcentrationPct: null }));
+                  }}
+                  inputMode="decimal"
+                  placeholder="Например: 80"
+                />
+                {(localFieldErrors.waterTreatmentConcentrationPct || fieldErrors?.waterTreatmentConcentrationPct) && <span className="text-xs text-red-600">{localFieldErrors.waterTreatmentConcentrationPct ?? fieldErrors?.waterTreatmentConcentrationPct}</span>}
               </label>
             </div>
           ) : null}
@@ -583,11 +704,14 @@ export function CustomIngredientForm({
                   step="any"
                   className="mt-1 w-full rounded-md border px-2 py-2"
                   value={enteredQuantity}
-                  onChange={(e) => setEnteredQuantity(e.target.value)}
+                  onChange={(e) => {
+                    setEnteredQuantity(e.target.value);
+                    setLocalFieldErrors((current) => ({ ...current, enteredQuantity: null }));
+                  }}
                   inputMode="decimal"
                   placeholder="Например: 5"
                 />
-                {fieldErrors?.enteredQuantity && <span className="text-xs text-red-600">{fieldErrors.enteredQuantity}</span>}
+                {(localFieldErrors.enteredQuantity || fieldErrors?.enteredQuantity) && <span className="text-xs text-red-600">{localFieldErrors.enteredQuantity ?? fieldErrors?.enteredQuantity}</span>}
               </label>
 
               <label className="text-sm">Ед. изм.
@@ -638,9 +762,12 @@ export function CustomIngredientForm({
                   priceInputAmount={priceInputAmount}
                   enteredQuantity={enteredQuantity}
                   enteredUnit={enteredUnit}
-                  fieldError={purchasePriceError}
+                  fieldError={localFieldErrors.priceInputAmount ?? purchasePriceError}
                   onPriceInputModeChange={setPriceInputMode}
-                  onPriceInputAmountChange={setPriceInputAmount}
+                  onPriceInputAmountChange={(value) => {
+                    setPriceInputAmount(value);
+                    setLocalFieldErrors((current) => ({ ...current, priceInputAmount: null }));
+                  }}
                   type={resolvedType}
                   category={category}
                   subtype={resolvedSubtype}

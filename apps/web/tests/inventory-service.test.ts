@@ -32,6 +32,7 @@ const { tableRefs, mockState } = vi.hoisted(() => ({
       purchaseQuantityNormalized: "purchaseQuantityNormalized",
       purchaseQuantityNormalizedUnit: "purchaseQuantityNormalizedUnit",
       normalizedUnitCostMinorRub: "normalizedUnitCostMinorRub",
+      properties: "properties",
       purchasedAt: "purchasedAt",
       freshnessDate: "freshnessDate",
       notes: "notes",
@@ -185,6 +186,29 @@ describe("inventory service", () => {
     });
   });
 
+  it("stores water treatment acid concentration on custom ingredients", async () => {
+    const created = await createUserCustomIngredient("u1", {
+      category: "water_treatment",
+      subtype: "acid",
+      displayName: "Молочная кислота",
+      waterTreatmentConcentrationPct: 75,
+      defaultDisplayUnit: "ml"
+    });
+
+    expect(created.displayName).toBe("Молочная кислота");
+    expect(mockState.inserted[0]?.values.properties).toMatchObject({
+      category: "water_treatment",
+      subtype: "acid",
+      concentration: "75%",
+      waterTreatmentConcentrationPct: 75,
+      technicalData: {
+        type: "water_treatment",
+        concentrationPct: 75,
+        displayFormula: "75%"
+      }
+    });
+  });
+
   it("creates a derived fermentable custom ingredient when catalog batch parameters differ", async () => {
     const catalogItem = {
       id: "cat-malt-1",
@@ -309,6 +333,48 @@ describe("inventory service", () => {
     });
   });
 
+  it("keeps catalog water acid source when concentration differs", async () => {
+    mockState.catalogFindFirst.mockResolvedValueOnce({
+      id: "lactic-acid",
+      isActive: true,
+      type: "water_treatment",
+      itemKind: "acid",
+      nameRu: "Молочная кислота",
+      nameEn: "Lactic Acid",
+      displayModeRu: "localized_first",
+      displayNameOverrideRu: null,
+      secondaryNameOverrideRu: null,
+      hideSecondaryNameRu: false,
+      countryCode: null,
+      countryName: null,
+      brand: null,
+      producer: null,
+      productCode: null,
+      groupName: null,
+      category: null,
+      subcategory: null,
+      presentOnBirrf: true,
+      inventoryEnabled: true,
+      attributes: {
+        display_formula: "88%",
+        default_concentration_pct: 88,
+        unit_preferred: "ml",
+        common_forms: ["solution"]
+      },
+      quantityDefaults: null
+    });
+    const resolved = await resolveCatalogInventoryAdditionSource("u1", {
+      ingredientCatalogItemId: "lactic-acid",
+      waterTreatmentConcentrationPct: 75
+    });
+
+    expect(resolved).toEqual({
+      sourceKind: "catalog",
+      ingredientCatalogItemId: "lactic-acid"
+    });
+    expect(mockState.inserted).toHaveLength(0);
+  });
+
   it("keeps the original catalog source when override values match the catalog", async () => {
     mockState.catalogFindFirst.mockResolvedValueOnce({
       id: "cat-hop-2",
@@ -345,6 +411,47 @@ describe("inventory service", () => {
     expect(resolved).toEqual({
       sourceKind: "catalog",
       ingredientCatalogItemId: "cat-hop-2"
+    });
+    expect(mockState.inserted).toHaveLength(0);
+  });
+
+  it("keeps catalog water acid source when concentration matches the catalog", async () => {
+    mockState.catalogFindFirst.mockResolvedValueOnce({
+      id: "lactic-acid",
+      isActive: true,
+      type: "water_treatment",
+      itemKind: "acid",
+      nameRu: "Молочная кислота",
+      nameEn: "Lactic Acid",
+      displayModeRu: "localized_first",
+      displayNameOverrideRu: null,
+      secondaryNameOverrideRu: null,
+      hideSecondaryNameRu: false,
+      countryCode: null,
+      countryName: null,
+      brand: null,
+      producer: null,
+      productCode: null,
+      groupName: null,
+      category: null,
+      subcategory: null,
+      presentOnBirrf: true,
+      inventoryEnabled: true,
+      attributes: {
+        default_concentration_pct: 88,
+        display_formula: "88%"
+      },
+      quantityDefaults: null
+    });
+
+    const resolved = await resolveCatalogInventoryAdditionSource("u1", {
+      ingredientCatalogItemId: "lactic-acid",
+      waterTreatmentConcentrationPct: 88
+    });
+
+    expect(resolved).toEqual({
+      sourceKind: "catalog",
+      ingredientCatalogItemId: "lactic-acid"
     });
     expect(mockState.inserted).toHaveLength(0);
   });
@@ -521,6 +628,53 @@ describe("inventory service", () => {
       normalizedQuantity: 2000,
       normalizedUnit: "g",
       unitDimension: "weight"
+    });
+  });
+
+  it("stores water acid concentration as an inventory item property", async () => {
+    mockState.catalogFindFirst.mockResolvedValueOnce({
+      id: "lactic-acid",
+      isActive: true,
+      type: "water_treatment",
+      itemKind: "lactic_acid",
+      nameRu: "Молочная кислота",
+      nameEn: "Lactic Acid",
+      displayModeRu: "localized_first",
+      displayNameOverrideRu: null,
+      secondaryNameOverrideRu: null,
+      hideSecondaryNameRu: false,
+      countryCode: null,
+      countryName: null,
+      brand: null,
+      producer: null,
+      productCode: null,
+      groupName: null,
+      category: "кислоты",
+      subcategory: null,
+      presentOnBirrf: true,
+      inventoryEnabled: true,
+      attributes: {
+        default_concentration_pct: 88,
+        display_formula: "88%",
+        unit_preferred: "ml"
+      },
+      quantityDefaults: null
+    });
+
+    await addCatalogIngredientToInventory("u1", {
+      ingredientCatalogItemId: "lactic-acid",
+      enteredQuantity: 250,
+      enteredUnit: "ml",
+      waterTreatmentConcentrationPct: 75
+    });
+
+    expect(mockState.inserted[0]?.values).toMatchObject({
+      ingredientCatalogItemId: "lactic-acid",
+      userCustomIngredientId: null,
+      ingredientCategory: "water_treatment",
+      properties: {
+        waterTreatmentConcentrationPct: 75
+      }
     });
   });
 
@@ -1228,7 +1382,7 @@ describe("inventory service", () => {
     expect(emptyItems).toHaveLength(2);
     expect(emptyItems.some((item) => item.ingredientDisplayNameSnapshot === "Whirlfloc Tablet")).toBe(true);
     const customItem = emptyItems.find((item) => item.userCustomIngredientId === "custom-1");
-    expect(customItem?.source.subtype).toBe("fining");
+    expect(customItem?.source.subtype).toBe("technical_additives");
     expect(customItem?.source.brand).toBe("Brewferm");
   });
 

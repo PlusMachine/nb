@@ -587,7 +587,7 @@ describe("recipe service", () => {
     expect(recipe.ingredients[0]?.ingredientSummary).toContain("EBC");
     expect(recipe.ingredients[0]?.ingredientSummary).toContain("80");
     expect(recipe.ingredients[1]?.ingredientSummary).toContain("6.5% AA");
-    expect(recipe.ingredients[4]?.ingredientSummary).toContain("tablet");
+    expect(recipe.ingredients[4]?.ingredientSummary).toContain("Таблетки");
     expect(mockState.customById.size).toBe(1);
     expect(recipe.ibu).toBeGreaterThan(0);
     expect(recipe.color).toBeGreaterThan(0);
@@ -698,7 +698,7 @@ describe("recipe service", () => {
     });
 
     expect(recipe.ingredients[0]?.ingredientDisplayName).toBe("Imported Whirlfloc");
-    expect(recipe.ingredients[0]?.ingredientSummary).toContain("tablet");
+    expect(recipe.ingredients[0]?.ingredientSummary).toContain("Таблетки");
     expect(recipe.ingredients[0]?.userCustomIngredientId).toBeNull();
     expect(recipe.ingredients[0]?.inventoryIntentMode).toBe("imported");
     expect(recipe.ingredients[0]?.externalImportMeta?.importedIngredient).toMatchObject({

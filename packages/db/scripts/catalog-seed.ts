@@ -988,6 +988,10 @@ const prepareWaterTreatment = (item: unknown): PreparedSeedIngredient => {
       inventoryEnabled: true,
       attributes: compactRecord({
         formula: readString(source.formula),
+        display_formula: readString(source.display_formula),
+        calculation_formula: readString(source.calculation_formula),
+        concentration_options: readStringArray(source.concentration_options),
+        default_concentration_pct: readNumber(source.default_concentration_pct),
         common_forms: readStringArray(source.common_forms),
         unit_preferred: readString(source.unit_preferred),
         typical_use_ru: readString(source.typical_use_ru),

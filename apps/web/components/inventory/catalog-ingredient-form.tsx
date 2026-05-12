@@ -34,6 +34,7 @@ import {
 } from "@/features/ingredients/picker-quick-start";
 import { resolveIngredientDisplayNames } from "@/features/ingredients/presentation";
 import { resolveIngredientTechnicalDataColorRangeEbc } from "@/features/ingredients/technical-fields";
+import { isWaterTreatmentAcidLike, readWaterTreatmentConcentrationPct } from "@/features/ingredients/water-treatment";
 import { inventoryFermentableSubtypeLabels } from "@/features/inventory/page-model";
 import type { InventoryPriceInputMode } from "@/features/inventory/purchase-cost";
 import {
@@ -43,6 +44,7 @@ import {
 } from "@/features/inventory/units";
 import { resolveInventoryPackEquivalent } from "@/features/inventory/pack";
 import type { SystemCurrency } from "@/features/system/currency";
+import { hasValidationErrors, validateNumericInput } from "@/features/forms/numeric-validation";
 
 type InventoryCommonFields = InventoryOptionalFieldsState & {
   enteredQuantity: string;
@@ -53,6 +55,7 @@ export type CatalogBatchOverrideFields = {
   fermentableColorEbc: string;
   fermentableExtractYieldPct: string;
   hopAlphaAcidPct: string;
+  waterTreatmentConcentrationPct: string;
 };
 
 type CatalogBatchSummaryEntry = {
@@ -73,6 +76,7 @@ export type CatalogIngredientSubmitPayload = {
   fermentableColorEbc?: string;
   fermentableExtractYieldPct?: string;
   hopAlphaAcidPct?: string;
+  waterTreatmentConcentrationPct?: string;
   purchaseLinks?: string[];
   purchaseLinksTouched?: boolean;
 };
@@ -156,7 +160,8 @@ export const resolveVisibleConsumableCatalogGroupSwitchValues = ({
 export const createInitialCatalogBatchOverrideFields = (): CatalogBatchOverrideFields => ({
   fermentableColorEbc: "",
   fermentableExtractYieldPct: "",
-  hopAlphaAcidPct: ""
+  hopAlphaAcidPct: "",
+  waterTreatmentConcentrationPct: ""
 });
 
 const readFiniteNumber = (...values: Array<number | null | undefined>) => {
@@ -190,6 +195,67 @@ const parseInputNumber = (value: string) => {
 
   const parsed = Number(normalized);
   return Number.isFinite(parsed) ? parsed : null;
+};
+
+const validateCatalogIngredientNumbers = ({
+  fields,
+  batchOverrides,
+  batchOverrideDefaults,
+  batchOverrideMode
+}: {
+  fields: InventoryCommonFields;
+  batchOverrides: CatalogBatchOverrideFields;
+  batchOverrideDefaults: CatalogBatchOverrideDefaults | null;
+  batchOverrideMode: "catalog" | "customize";
+}) => {
+  const errors: Record<string, string | null> = {
+    enteredQuantity: validateNumericInput(fields.enteredQuantity, {
+      label: "Количество",
+      required: true,
+      min: 0,
+      exclusiveMin: true
+    })
+  };
+
+  if (!batchOverrideDefaults) {
+    return errors;
+  }
+
+  const shouldValidateOverrides =
+    batchOverrideMode === "customize" ||
+    batchOverrideDefaults.kind === "water_treatment_acid";
+
+  if (!shouldValidateOverrides) {
+    return errors;
+  }
+
+  if (batchOverrideDefaults.kind === "fermentable") {
+    errors.fermentableColorEbc = validateNumericInput(batchOverrides.fermentableColorEbc, {
+      label: "Цвет EBC",
+      min: 0,
+      max: 9999
+    });
+    errors.fermentableExtractYieldPct = validateNumericInput(batchOverrides.fermentableExtractYieldPct, {
+      label: "Экстрактивность",
+      min: 0,
+      max: 100
+    });
+  } else if (batchOverrideDefaults.kind === "hop") {
+    errors.hopAlphaAcidPct = validateNumericInput(batchOverrides.hopAlphaAcidPct, {
+      label: "Альфа-кислота",
+      min: 0,
+      max: 100
+    });
+  } else {
+    errors.waterTreatmentConcentrationPct = validateNumericInput(batchOverrides.waterTreatmentConcentrationPct, {
+      label: "Концентрация кислоты",
+      min: 0,
+      max: 100,
+      exclusiveMin: true
+    });
+  }
+
+  return errors;
 };
 
 const normalizeCatalogComparableNumber = (value: number | null) => (
@@ -229,6 +295,12 @@ const isHopTechnicalData = (
   technicalData?.type === "hop"
 );
 
+const isWaterTreatmentTechnicalData = (
+  technicalData: IngredientTechnicalData | null | undefined
+): technicalData is Extract<IngredientTechnicalData, { type: "water_treatment" }> => (
+  technicalData?.type === "water_treatment"
+);
+
 type CatalogBatchOverrideDefaults =
   | {
     kind: "fermentable";
@@ -241,6 +313,11 @@ type CatalogBatchOverrideDefaults =
     kind: "hop";
     hopAlphaAcidPct: string;
     alphaAcidPct: number | null;
+  }
+  | {
+    kind: "water_treatment_acid";
+    waterTreatmentConcentrationPct: string;
+    concentrationPct: number | null;
   };
 
 export const resolveCatalogBatchOverrideDefaults = (
@@ -287,6 +364,19 @@ export const resolveCatalogBatchOverrideDefaults = (
       kind: "hop",
       hopAlphaAcidPct: formatInputNumber(alphaAcidPct),
       alphaAcidPct
+    };
+  }
+
+  if (
+    isWaterTreatmentTechnicalData(selected.technicalData)
+    && isWaterTreatmentAcidLike(selected)
+  ) {
+    const concentrationPct = readWaterTreatmentConcentrationPct(selected.technicalData);
+
+    return {
+      kind: "water_treatment_acid",
+      waterTreatmentConcentrationPct: formatInputNumber(concentrationPct),
+      concentrationPct
     };
   }
 
@@ -343,7 +433,11 @@ export const hasCatalogIngredientTechnicalOverrides = ({
     );
   }
 
-  return !numbersEqual(parseInputNumber(overrides.hopAlphaAcidPct), defaults.alphaAcidPct);
+  if (defaults.kind === "hop") {
+    return !numbersEqual(parseInputNumber(overrides.hopAlphaAcidPct), defaults.alphaAcidPct);
+  }
+
+  return !numbersEqual(parseInputNumber(overrides.waterTreatmentConcentrationPct), defaults.concentrationPct);
 };
 
 export const resolveCatalogBatchOverrideSummaryState = ({
@@ -390,22 +484,46 @@ export const resolveCatalogBatchOverrideSummaryState = ({
     };
   }
 
-  const currentAlpha = formatCatalogBatchNumber(
-    hasTechnicalOverrides ? overrides.hopAlphaAcidPct : defaults.hopAlphaAcidPct,
-    "% AA"
-  ) ?? "Альфа-кислота не указана";
-  const catalogAlpha = formatCatalogBatchNumber(defaults.hopAlphaAcidPct, "% AA") ?? "Альфа-кислота не указана";
+  if (defaults.kind === "hop") {
+    const currentAlpha = formatCatalogBatchNumber(
+      hasTechnicalOverrides ? overrides.hopAlphaAcidPct : defaults.hopAlphaAcidPct,
+      "% AA"
+    ) ?? "Альфа-кислота не указана";
+    const catalogAlpha = formatCatalogBatchNumber(defaults.hopAlphaAcidPct, "% AA") ?? "Альфа-кислота не указана";
+
+    return {
+      currentEntries: [
+        { label: "Альфа-кислота", value: currentAlpha }
+      ],
+      catalogEntries: hasTechnicalOverrides
+        ? [
+          { label: "Альфа-кислота", value: catalogAlpha }
+        ]
+        : null,
+      statusBadgeLabel: hasTechnicalOverrides ? "ИЗМЕНЕННЫЙ" : null
+    };
+  }
+
+  const currentConcentration = formatCatalogBatchNumber(
+    hasTechnicalOverrides
+      ? overrides.waterTreatmentConcentrationPct
+      : defaults.waterTreatmentConcentrationPct,
+    "%"
+  ) ?? "Концентрация не указана";
+  const catalogConcentration =
+    formatCatalogBatchNumber(defaults.waterTreatmentConcentrationPct, "%") ??
+    "Концентрация не указана";
 
   return {
     currentEntries: [
-      { label: "Альфа-кислота", value: currentAlpha }
+      { label: "Концентрация", value: currentConcentration }
     ],
     catalogEntries: hasTechnicalOverrides
       ? [
-        { label: "Альфа-кислота", value: catalogAlpha }
+        { label: "Концентрация", value: catalogConcentration }
       ]
       : null,
-    statusBadgeLabel: hasTechnicalOverrides ? "ИЗМЕНЕННЫЙ" : null
+    statusBadgeLabel: hasTechnicalOverrides ? "УТОЧНЕНО" : null
   };
 };
 
@@ -416,7 +534,12 @@ export const resolveCatalogDerivedVariantPresentation = ({
   selected: IngredientSuggestionItem | null;
   hasTechnicalOverrides: boolean;
 }) => {
-  const isDerivedVariantFlow = Boolean(selected?.source === "catalog" && hasTechnicalOverrides);
+  const defaults = resolveCatalogBatchOverrideDefaults(selected);
+  const isDerivedVariantFlow = Boolean(
+    selected?.source === "catalog"
+    && hasTechnicalOverrides
+    && defaults?.kind !== "water_treatment_acid"
+  );
 
   return {
     isDerivedVariantFlow,
@@ -438,14 +561,25 @@ const buildInitialBatchOverridesFromSelection = (
     return {
       fermentableColorEbc: defaults.fermentableColorEbc,
       fermentableExtractYieldPct: defaults.fermentableExtractYieldPct,
-      hopAlphaAcidPct: ""
+      hopAlphaAcidPct: "",
+      waterTreatmentConcentrationPct: ""
+    };
+  }
+
+  if (defaults.kind === "hop") {
+    return {
+      fermentableColorEbc: "",
+      fermentableExtractYieldPct: "",
+      hopAlphaAcidPct: defaults.hopAlphaAcidPct,
+      waterTreatmentConcentrationPct: ""
     };
   }
 
   return {
     fermentableColorEbc: "",
     fermentableExtractYieldPct: "",
-    hopAlphaAcidPct: defaults.hopAlphaAcidPct
+    hopAlphaAcidPct: "",
+    waterTreatmentConcentrationPct: defaults.waterTreatmentConcentrationPct
   };
 };
 
@@ -558,6 +692,9 @@ export const buildCatalogIngredientPayload = (
   if (batchOverrides?.hopAlphaAcidPct?.trim()) {
     payload.hopAlphaAcidPct = batchOverrides.hopAlphaAcidPct;
   }
+  if (batchOverrides?.waterTreatmentConcentrationPct?.trim()) {
+    payload.waterTreatmentConcentrationPct = batchOverrides.waterTreatmentConcentrationPct;
+  }
 
   return payload;
 };
@@ -611,6 +748,7 @@ export function CatalogIngredientForm({
     isLoaded: false
   });
   const [localError, setLocalError] = useState<string | null>(null);
+  const [localFieldErrors, setLocalFieldErrors] = useState<Record<string, string | null>>({});
   const [pickerFocusSignal, setPickerFocusSignal] = useState(0);
   const previousContextRef = useRef<{
     category?: IngredientCategory;
@@ -709,6 +847,7 @@ export function CatalogIngredientForm({
         isLoaded: false
       });
       setLocalError(null);
+      setLocalFieldErrors({});
 
       if (shouldRefocusPicker) {
         setPickerFocusSignal((current) => current + 1);
@@ -781,6 +920,7 @@ export function CatalogIngredientForm({
       fieldErrors?.fermentableColorEbc
       || fieldErrors?.fermentableExtractYieldPct
       || fieldErrors?.hopAlphaAcidPct
+      || fieldErrors?.waterTreatmentConcentrationPct
     );
 
     if (hasOptionalErrors) {
@@ -801,6 +941,7 @@ export function CatalogIngredientForm({
     onSelectedIngredientChange?.(null);
     setPickerValue(resetState.pickerValue);
     setLocalError(null);
+    setLocalFieldErrors({});
     setBatchOverrides(createInitialCatalogBatchOverrideFields());
     setBatchOverrideMode("catalog");
     setOptionalOpen(false);
@@ -843,9 +984,22 @@ export function CatalogIngredientForm({
       onSubmit={async (event) => {
         event.preventDefault();
         try {
+          const shouldIncludeBatchOverrides =
+            batchOverrideMode === "customize" ||
+            batchOverrideDefaults?.kind === "water_treatment_acid";
+          const nextFieldErrors = validateCatalogIngredientNumbers({
+            fields,
+            batchOverrides,
+            batchOverrideDefaults,
+            batchOverrideMode
+          });
+          setLocalFieldErrors(nextFieldErrors);
+          if (hasValidationErrors(nextFieldErrors)) {
+            return;
+          }
           const payload = buildCatalogIngredientPayload(selected, fields, {
             includeOptionalDetails: optionalTouched,
-            batchOverrides: batchOverrideMode === "customize" ? batchOverrides : null
+            batchOverrides: shouldIncludeBatchOverrides ? batchOverrides : null
           });
           if (optionalTouched && purchaseLinksState.isLoaded) {
             payload.purchaseLinksTouched = true;
@@ -928,12 +1082,14 @@ export function CatalogIngredientForm({
             onValueChange={(nextValue) => {
               setPickerValue(nextValue);
               setLocalError(null);
+              setLocalFieldErrors({});
             }}
             onSelect={(item) => {
               setSelected(item);
               onSelectedIngredientChange?.(item);
               setPickerValue(resolveIngredientDisplayNames(item).primaryName);
               setLocalError(null);
+              setLocalFieldErrors({});
               setBatchOverrides(buildInitialBatchOverridesFromSelection(item));
               setBatchOverrideMode("catalog");
               const nextUnitProfile = resolveCatalogIngredientUnitProfile(category, item);
@@ -996,14 +1152,18 @@ export function CatalogIngredientForm({
                         {entry.label}: <span className="font-medium text-zinc-950">{entry.value}</span>
                       </span>
                     ))}
-                    <span aria-hidden="true" className="text-zinc-300">•</span>
-                    <button
-                      type="button"
-                      onClick={toggleBatchOverrideEditor}
-                      className="inline-flex items-center text-sm font-medium text-zinc-700 underline decoration-zinc-300 underline-offset-4 transition-colors hover:text-zinc-950"
-                    >
-                      {batchOverrideMode === "customize" ? "Готово" : "Уточнить параметры"}
-                    </button>
+                    {batchOverrideDefaults.kind !== "water_treatment_acid" ? (
+                      <>
+                        <span aria-hidden="true" className="text-zinc-300">•</span>
+                        <button
+                          type="button"
+                          onClick={toggleBatchOverrideEditor}
+                          className="inline-flex items-center text-sm font-medium text-zinc-700 underline decoration-zinc-300 underline-offset-4 transition-colors hover:text-zinc-950"
+                        >
+                          {batchOverrideMode === "customize" ? "Готово" : "Уточнить параметры"}
+                        </button>
+                      </>
+                    ) : null}
                   </div>
 
                   {overrideSummaryState.catalogEntries ? (
@@ -1021,13 +1181,16 @@ export function CatalogIngredientForm({
                           step="0.1"
                           className="mt-1 w-full rounded-md border px-2 py-2"
                           value={batchOverrides.fermentableColorEbc}
-                          onChange={(event) => setBatchOverrides((current) => ({
-                            ...current,
-                            fermentableColorEbc: event.target.value
-                          }))}
+                          onChange={(event) => {
+                            setBatchOverrides((current) => ({
+                              ...current,
+                              fermentableColorEbc: event.target.value
+                            }));
+                            setLocalFieldErrors((current) => ({ ...current, fermentableColorEbc: null }));
+                          }}
                           inputMode="decimal"
                         />
-                        {fieldErrors?.fermentableColorEbc && <span className="text-xs text-red-600">{fieldErrors.fermentableColorEbc}</span>}
+                        {(localFieldErrors.fermentableColorEbc || fieldErrors?.fermentableColorEbc) && <span className="text-xs text-red-600">{localFieldErrors.fermentableColorEbc ?? fieldErrors?.fermentableColorEbc}</span>}
                       </label>
 
                       <label className="text-sm">Экстрактивность, %
@@ -1038,13 +1201,16 @@ export function CatalogIngredientForm({
                           step="0.1"
                           className="mt-1 w-full rounded-md border px-2 py-2"
                           value={batchOverrides.fermentableExtractYieldPct}
-                          onChange={(event) => setBatchOverrides((current) => ({
-                            ...current,
-                            fermentableExtractYieldPct: event.target.value
-                          }))}
+                          onChange={(event) => {
+                            setBatchOverrides((current) => ({
+                              ...current,
+                              fermentableExtractYieldPct: event.target.value
+                            }));
+                            setLocalFieldErrors((current) => ({ ...current, fermentableExtractYieldPct: null }));
+                          }}
                           inputMode="decimal"
                         />
-                        {fieldErrors?.fermentableExtractYieldPct && <span className="text-xs text-red-600">{fieldErrors.fermentableExtractYieldPct}</span>}
+                        {(localFieldErrors.fermentableExtractYieldPct || fieldErrors?.fermentableExtractYieldPct) && <span className="text-xs text-red-600">{localFieldErrors.fermentableExtractYieldPct ?? fieldErrors?.fermentableExtractYieldPct}</span>}
                       </label>
                     </div>
                   ) : null}
@@ -1059,13 +1225,40 @@ export function CatalogIngredientForm({
                           step="0.1"
                           className="mt-1 w-full rounded-md border px-2 py-2"
                           value={batchOverrides.hopAlphaAcidPct}
-                          onChange={(event) => setBatchOverrides((current) => ({
-                            ...current,
-                            hopAlphaAcidPct: event.target.value
-                          }))}
+                          onChange={(event) => {
+                            setBatchOverrides((current) => ({
+                              ...current,
+                              hopAlphaAcidPct: event.target.value
+                            }));
+                            setLocalFieldErrors((current) => ({ ...current, hopAlphaAcidPct: null }));
+                          }}
                           inputMode="decimal"
                         />
-                        {fieldErrors?.hopAlphaAcidPct && <span className="text-xs text-red-600">{fieldErrors.hopAlphaAcidPct}</span>}
+                        {(localFieldErrors.hopAlphaAcidPct || fieldErrors?.hopAlphaAcidPct) && <span className="text-xs text-red-600">{localFieldErrors.hopAlphaAcidPct ?? fieldErrors?.hopAlphaAcidPct}</span>}
+                      </label>
+                    </div>
+                  ) : null}
+
+                  {batchOverrideDefaults.kind === "water_treatment_acid" ? (
+                    <div className="grid grid-cols-1 gap-3 sm:max-w-xs">
+                      <label className="text-sm">Концентрация кислоты, %
+                        <input
+                          type="number"
+                          min="1"
+                          max="100"
+                          step="0.1"
+                          className="mt-1 w-full rounded-md border px-2 py-2"
+                          value={batchOverrides.waterTreatmentConcentrationPct}
+                          onChange={(event) => {
+                            setBatchOverrides((current) => ({
+                              ...current,
+                              waterTreatmentConcentrationPct: event.target.value
+                            }));
+                            setLocalFieldErrors((current) => ({ ...current, waterTreatmentConcentrationPct: null }));
+                          }}
+                          inputMode="decimal"
+                        />
+                        {(localFieldErrors.waterTreatmentConcentrationPct || fieldErrors?.waterTreatmentConcentrationPct) && <span className="text-xs text-red-600">{localFieldErrors.waterTreatmentConcentrationPct ?? fieldErrors?.waterTreatmentConcentrationPct}</span>}
                       </label>
                     </div>
                   ) : null}
@@ -1099,14 +1292,17 @@ export function CatalogIngredientForm({
             <label className="text-sm">Количество *
               <input
                 type="number"
-                min="0"
+                min="0.0001"
                 step="any"
                 className="mt-1 w-full rounded-md border px-2 py-2"
                 value={fields.enteredQuantity}
-                onChange={(e) => setFields((s) => ({ ...s, enteredQuantity: e.target.value }))}
+                onChange={(e) => {
+                  setFields((s) => ({ ...s, enteredQuantity: e.target.value }));
+                  setLocalFieldErrors((current) => ({ ...current, enteredQuantity: null }));
+                }}
                 inputMode="decimal"
               />
-              {fieldErrors?.enteredQuantity && <span className="text-xs text-red-600">{fieldErrors.enteredQuantity}</span>}
+              {(localFieldErrors.enteredQuantity || fieldErrors?.enteredQuantity) && <span className="text-xs text-red-600">{localFieldErrors.enteredQuantity ?? fieldErrors?.enteredQuantity}</span>}
             </label>
 
             <label className="text-sm">Ед. изм. *

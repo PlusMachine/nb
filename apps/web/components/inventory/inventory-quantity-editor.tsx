@@ -11,6 +11,7 @@ import {
 } from "@/features/inventory/display";
 import { resolveInventoryPackEquivalent } from "@/features/inventory/pack";
 import { getInventoryUnitInputStep, inventoryUnitLabels, resolveInventoryUnitProfile } from "@/features/inventory/units";
+import { validateNumericInput } from "@/features/forms/numeric-validation";
 
 type Props = {
   item: InventoryListItemDto;
@@ -42,8 +43,11 @@ export const isInventoryQuantityDraftDirty = (
 ) => quantity !== savedQuantity || unit !== savedUnit;
 
 export const isInventoryQuantityValueValid = (quantity: string) => {
-  const parsed = Number(quantity);
-  return Number.isFinite(parsed) && parsed >= 0;
+  return !validateNumericInput(quantity, {
+    label: "Количество",
+    required: true,
+    min: 0
+  });
 };
 
 export const canMarkInventoryItemFinished = (quantity: string) => {
@@ -105,6 +109,11 @@ export function InventoryQuantityEditor({
   }), [item]);
   const shouldShowEquivalentHint = showEquivalentHint && displayQuantity.includes("(");
   const isQuantityValid = isInventoryQuantityValueValid(quantity);
+  const quantityError = validateNumericInput(quantity, {
+    label: "Количество",
+    required: true,
+    min: 0
+  });
   const isDirty = isInventoryQuantityDraftDirty(quantity, unit, savedQuantity, savedUnit);
   const canMarkFinished = canMarkInventoryItemFinished(quantity);
   const quantityStep = getInventoryUnitInputStep(unit);
@@ -255,7 +264,7 @@ export function InventoryQuantityEditor({
           </button>
         )
       ) : null}
-      {!isQuantityValid ? <p className="text-xs text-red-600">Ошибка</p> : null}
+      {quantityError ? <p className="text-xs text-red-600">{quantityError}</p> : null}
       {feedback ? <p className={`text-xs ${feedback.ok ? "text-emerald-700" : "text-red-600"}`}>{feedback.message}</p> : null}
     </form>
   );

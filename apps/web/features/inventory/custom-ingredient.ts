@@ -4,6 +4,10 @@ import type {
   IngredientType
 } from "../ingredients/contracts";
 import type { IngredientSubtype } from "../ingredients/taxonomy";
+import {
+  formatWaterTreatmentConcentrationPct,
+  normalizeWaterTreatmentConcentrationPct
+} from "../ingredients/water-treatment";
 import { resolveHumanFacingInventoryUnitProfile } from "./units";
 
 export const customYeastForms = ["dry", "liquid", "slurry", "culture"] as const;
@@ -95,6 +99,7 @@ export const buildCustomIngredientTechnicalData = ({
   alcoholToleranceAbvTypical,
   physicalForm,
   concentration,
+  waterTreatmentConcentrationPct,
   unitPreferred
 }: {
   type: IngredientType;
@@ -114,6 +119,7 @@ export const buildCustomIngredientTechnicalData = ({
   alcoholToleranceAbvTypical?: number | null;
   physicalForm?: CustomPhysicalForm | null;
   concentration?: string | null;
+  waterTreatmentConcentrationPct?: number | null;
   unitPreferred?: string | null;
 }): IngredientTechnicalData => {
   if (type === "malt") {
@@ -171,11 +177,18 @@ export const buildCustomIngredientTechnicalData = ({
   }
 
   if (type === "water_treatment") {
+    const concentrationPct = normalizeWaterTreatmentConcentrationPct(waterTreatmentConcentrationPct)
+      ?? normalizeWaterTreatmentConcentrationPct(concentration);
+    const displayFormula = formatWaterTreatmentConcentrationPct(concentrationPct);
+
     return {
       type,
       commonForms: physicalForm ? [physicalForm] : [],
       unitPreferred: unitPreferred ?? null,
-      typicalUseRu: concentration ?? null
+      typicalUseRu: concentration ?? null,
+      concentrationPct,
+      defaultConcentrationPct: concentrationPct,
+      displayFormula
     };
   }
 

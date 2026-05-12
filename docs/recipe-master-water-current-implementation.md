@@ -283,47 +283,28 @@ Default naming:
 | UI option | Что делает |
 |---|---|
 | `Сохраненный профиль` | Открывает dropdown сохраненных target profiles |
-| `Подобрать профиль` | Включает `catalog` mode и открывает search picker |
+| `Подобрать профиль` | Открывает search picker; `catalog` сохраняется после выбора профиля |
 | `Вручную` | Переводит target в manual mode, используя текущий target profile как старт |
 
-### 7.3. Auto-default от BJCP стиля
+### 7.3. BJCP-default как подсказка, а не auto-select
 
-Если в рецепте выбран стиль (`styleId`) и для него находится BJCP mapping в `water-target-profiles.ts`, wizard делает auto-select default target profile через effect:
+Если в рецепте выбран стиль (`styleId`) и для него находится BJCP mapping в `water-target-profiles.ts`, wizard использует его только для списка подсказок в catalog picker.
 
-```ts
-applyRecipeWaterCatalogTargetProfile(
-  ensureRecipeWaterPlanConfigured(waterPlanMeta),
-  defaultProfile,
-  "auto_style",
-  targetStyleKey,
-  false,
-)
-```
+Важно:
 
-Условия auto-select:
+- mount/render wizard не вызывает `onChange`;
+- target profile не сохраняется автоматически;
+- `setupEnabled` не становится `true` только из-за выбранного BJCP-стиля;
+- расчет солей/кислоты не появляется до явного выбора source/target или ручного редактирования.
 
-- target еще не overridden пользователем;
-- target либо пустой, либо уже был `auto_style`.
-
-Практически это означает:
-
-- новый рецепт со стилем может получить target автоматически еще до явного действия пользователя;
-- если пользователь потом руками выбрал другой target, дальнейший auto-replace прекращается.
-
-Нюанс текущей реализации:
-
-- в seed есть поле `auto_select_default_profile`;
-- `getWaterTargetStyleDefault()` его читает;
-- но сам effect в `WaterSetupWizard` это поле не использует.
-
-То есть runtime сейчас auto-select-ит любой найденный `defaultProfile`, не проверяя флаг `autoSelectDefault`.
+Если пользователь открывает `Подобрать профиль`, default и alternatives для текущего стиля показываются первыми с badge `Подходит по стилю`. Выбор строки уже считается явным действием пользователя и сохраняет target.
 
 ### 7.4. Что видно в режиме `Подобрать профиль`
 
 При нажатии `Подобрать профиль`:
 
-- `targetProfileMode` переключается в `catalog`;
-- открывается target catalog picker.
+- открывается target catalog picker;
+- persisted `targetProfileMode` меняется только после выбора конкретного профиля.
 
 Внутри picker:
 
@@ -964,7 +945,7 @@ Header:
 
 | Group | Options |
 |---|---|
-| `Основные` | `Гипс`, `Хлорид кальция (дигидрат)`, `Эпсомская соль` |
+| `Основные` | `Гипс`, `Хлорид кальция`, `Эпсомская соль` |
 | `Опционально` | `Сода пищевая`, `Соль поваренная (не йодированная)` |
 | `Только для опытных сценариев` | `Мел (карбонат кальция)`, `Гашёная известь (гидроксид кальция)` |
 
@@ -972,9 +953,9 @@ UI labels:
 
 | Salt id | UI label |
 |---|---|
-| `gypsum` | `Гипс · CaSO4·2H2O` |
-| `calcium_chloride` | `Хлорид кальция (дигидрат) · CaCl2·2H2O` |
-| `epsom_salt` | `Эпсомская соль · MgSO4·7H2O` |
+| `gypsum` | `Гипс · CaSO4` |
+| `calcium_chloride` | `Хлорид кальция · CaCl2` |
+| `epsom_salt` | `Эпсомская соль · MgSO4` |
 | `baking_soda` | `Сода пищевая · NaHCO3` |
 | `table_salt` | `Соль поваренная (не йодированная) · NaCl` |
 | `chalk` | `Мел (карбонат кальция) · CaCO3` |
@@ -1029,14 +1010,9 @@ Saved source/target profiles не идут в recipe payload. Они живут 
 
 ### 15.4. Важный UX-эффект localStorage
 
-Если:
+Saved source/target profiles читаются из `localStorage` и показываются как варианты выбора.
 
-- `waterPlanMeta.setupEnabled === false`;
-- в `localStorage` уже есть saved source profiles,
-
-то на mount wizard автоматически применяет первый saved source profile.
-
-Для target такого auto-apply нет.
+Wizard не применяет первый saved source profile автоматически, если `waterPlanMeta.setupEnabled === false`. Saved profile становится persisted state только после явного выбора пользователем.
 
 ## 16. Полная расчетная модель
 
@@ -1462,7 +1438,7 @@ Thresholds:
 - historical source presets `Pilsen`, `Dublin`, `Munich` — есть в данных, не рендерятся;
 - searchable source selector helper — есть в файле, не используется;
 - `WaterSummaryCard` empty state `Вода не настроена` — рендерится в основном flow, пока `setupEnabled = false`;
-- `autoSelectDefault` в style-default seed читается, но не управляет actual auto-select effect.
+- `autoSelectDefault` в style-default seed читается, но runtime не делает actual auto-select effect.
 
 ## 30. Что пользователь может сделать от начала до конца
 

@@ -1,7 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { ZodError } from "zod";
+import { ZodError, type ZodIssue } from "zod";
 
 import {
   addCatalogInventoryItemSchema,
@@ -45,13 +45,41 @@ const parsePurchaseLinksFromFormData = (formData: FormData) => normalizeIngredie
   formData.getAll("purchaseLinks").map((value) => String(value ?? ""))
 );
 
+const translateInventoryZodIssue = (issue: ZodIssue) => {
+  const field = typeof issue.path[0] === "string" ? issue.path[0] : "";
+
+  if (issue.message === "Exactly one source is required") {
+    return "Выберите ингредиент.";
+  }
+
+  if (issue.code === "invalid_enum_value") {
+    if (field === "enteredUnit") {
+      return "Выберите корректную единицу измерения.";
+    }
+    if (field === "priceInputCurrency") {
+      return "Выберите корректную валюту.";
+    }
+    return "Выберите корректное значение.";
+  }
+
+  if (issue.code === "invalid_type" || issue.message.includes("nan")) {
+    return "Введите число.";
+  }
+
+  if (issue.code === "too_small" || issue.code === "too_big") {
+    return issue.message;
+  }
+
+  return issue.message;
+};
+
 const mapError = (error: unknown): AddIngredientResult => {
   if (error instanceof ZodError) {
     const fieldErrors: Record<string, string> = {};
     for (const issue of error.issues) {
       const key = issue.path[0];
       if (typeof key === "string" && !fieldErrors[key]) {
-        fieldErrors[key] = issue.message;
+        fieldErrors[key] = translateInventoryZodIssue(issue);
       }
     }
 
@@ -115,7 +143,8 @@ export const addCatalogIngredientAction = async (_prevState: AddIngredientResult
         : String(formData.get("priceInputCurrency") ?? formData.get("purchaseCurrency") ?? "").trim() || preferredCurrency,
       purchasedAt: parseOptionalDate(formData.get("purchasedAt") as string | null),
       freshnessDate: parseOptionalDate(formData.get("freshnessDate") as string | null),
-      notes: String(formData.get("notes") ?? "").trim() || null
+      notes: String(formData.get("notes") ?? "").trim() || null,
+      waterTreatmentConcentrationPct: String(formData.get("waterTreatmentConcentrationPct") ?? "").trim() || null
     });
 
     await addCatalogIngredientToInventory(user.id, payload, { preferredCurrency });
@@ -140,7 +169,7 @@ export const addSelectedIngredientAction = async (_prevState: AddIngredientResul
   const fermentableColorEbc = String(formData.get("fermentableColorEbc") ?? "").trim() || null;
   const fermentableExtractYieldPct = String(formData.get("fermentableExtractYieldPct") ?? "").trim() || null;
   const hopAlphaAcidPct = String(formData.get("hopAlphaAcidPct") ?? "").trim() || null;
-  const hasCatalogOverrideRequest = Boolean(
+  const hasDerivedCatalogOverrideRequest = Boolean(
     fermentableColorEbc
     || fermentableExtractYieldPct
     || hopAlphaAcidPct
@@ -188,7 +217,7 @@ export const addSelectedIngredientAction = async (_prevState: AddIngredientResul
   }
 
   if (ingredientCatalogItemId) {
-    if (!hasCatalogOverrideRequest) {
+    if (!hasDerivedCatalogOverrideRequest) {
       return addCatalogIngredientAction(_prevState, formData);
     }
 
@@ -275,6 +304,7 @@ export const addCustomIngredientAction = async (_prevState: AddIngredientResult 
       hopForm: String(formData.get("hopForm") ?? "").trim() || null,
       yeastAttenuationPct: String(formData.get("yeastAttenuationPct") ?? "").trim() || null,
       yeastForm: String(formData.get("yeastForm") ?? "").trim() || null,
+      waterTreatmentConcentrationPct: String(formData.get("waterTreatmentConcentrationPct") ?? "").trim() || null,
       defaultDisplayUnit: String(formData.get("defaultDisplayUnit") ?? "").trim() || null
     });
 
@@ -314,6 +344,7 @@ export const updateInventoryItemAction = async (payload: {
   inventoryItemId: string;
   ingredientCatalogItemId?: string | null;
   userCustomIngredientId?: string | null;
+  waterTreatmentConcentrationPct?: string | null;
   enteredQuantity: string;
   enteredUnit: string;
   priceInputMode?: string | null;
@@ -332,6 +363,8 @@ export const updateInventoryItemAction = async (payload: {
     const user = await requireUser();
     const preferredCurrency = user.preferredCurrency ?? "RUB";
     const priceInputAmountMinor = parseOptionalMoney(payload.priceInputAmount ?? payload.purchasePrice ?? payload.purchasePriceMinor ?? null);
+    const waterTreatmentConcentrationPct = String(payload.waterTreatmentConcentrationPct ?? "").trim() || null;
+
     const parsed = updateInventoryItemSchema.parse({
       ingredientCatalogItemId: payload.ingredientCatalogItemId ?? null,
       userCustomIngredientId: payload.userCustomIngredientId ?? null,
@@ -342,7 +375,8 @@ export const updateInventoryItemAction = async (payload: {
       priceInputCurrency: priceInputAmountMinor == null ? null : payload.priceInputCurrency ?? payload.purchaseCurrency ?? preferredCurrency,
       purchasedAt: parseOptionalDate(payload.purchasedAt ?? null),
       freshnessDate: parseOptionalDate(payload.freshnessDate ?? null),
-      notes: String(payload.notes ?? "").trim() || null
+      notes: String(payload.notes ?? "").trim() || null,
+      waterTreatmentConcentrationPct
     });
 
     await updateInventoryItem(user.id, payload.inventoryItemId, parsed, { preferredCurrency });

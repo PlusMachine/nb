@@ -1,7 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { ZodError } from "zod";
+import { ZodError, type ZodIssue } from "zod";
 
 import type { IngredientCategory, IngredientSuggestionItem, IngredientTechnicalData, IngredientType } from "@/features/ingredients/contracts";
 import type { EquipmentProfileSnapshot } from "@/features/equipment-profiles/contracts";
@@ -26,6 +26,11 @@ import {
 } from "@/features/recipe-images/service";
 import { exportRecipeToBeerXml, importBeerXmlToCanonicalRecipe } from "@/features/recipes/interop/beerxml";
 import { importBrewfatherJsonToCanonicalRecipe } from "@/features/recipes/interop/brewfather-json";
+import {
+  listRecipeWaterAdditivesStockStatus,
+  type RecipeWaterAdditiveStockRequirement,
+  type RecipeWaterAdditiveStockStatusDto
+} from "@/features/recipes/water-additives-service";
 import { requireUser } from "@/lib/auth";
 
 export type RecipeEditorPayload = {
@@ -72,13 +77,42 @@ export type RecipeEditorResult = {
   fieldErrors?: Record<string, string>;
 };
 
+const translateRecipeZodIssue = (issue: ZodIssue) => {
+  if (issue.message === "Exactly one source is required") {
+    return "Выберите ингредиент.";
+  }
+  if (issue.message === "Imported ingredient must not be linked to catalog or custom source") {
+    return "Импортированный ингредиент не должен быть одновременно привязан к каталогу.";
+  }
+  if (issue.message === "Category is required") {
+    return "Выберите категорию ингредиента.";
+  }
+  if (
+    issue.message === "Category conflicts with subtype/type mapping"
+    || issue.message === "Subtype conflicts with category"
+    || issue.message === "Type conflicts with category/subtype mapping"
+  ) {
+    return "Категория ингредиента не совпадает с выбранным подтипом.";
+  }
+
+  if (issue.code === "invalid_enum_value") {
+    return "Выберите корректное значение.";
+  }
+
+  if (issue.code === "invalid_type" || issue.message.includes("nan")) {
+    return "Введите число.";
+  }
+
+  return issue.message;
+};
+
 const mapRecipeEditorError = (error: unknown): RecipeEditorResult => {
   if (error instanceof ZodError) {
     const fieldErrors: Record<string, string> = {};
     for (const issue of error.issues) {
       const key = issue.path.join(".") || "form";
       if (!fieldErrors[key]) {
-        fieldErrors[key] = issue.message;
+        fieldErrors[key] = translateRecipeZodIssue(issue);
       }
     }
 
@@ -540,6 +574,22 @@ export const consumeRecipeInventoryAction = async (recipeId: string) => (
 export const releaseRecipeInventoryAction = async (recipeId: string) => (
   runRecipeInventoryAction(recipeId, releaseRecipeInventoryAllocations, "Резерв снят.")
 );
+
+export type RecipeWaterAdditivesStockResult =
+  | { ok: true; status: RecipeWaterAdditiveStockStatusDto[] }
+  | { ok: false; message: string };
+
+export const getRecipeWaterAdditivesStockAction = async (
+  requirements: Array<string | RecipeWaterAdditiveStockRequirement>
+): Promise<RecipeWaterAdditivesStockResult> => {
+  try {
+    const user = await requireUser();
+    const status = await listRecipeWaterAdditivesStockStatus(user.id, requirements);
+    return { ok: true, status };
+  } catch {
+    return { ok: false, message: "Не удалось проверить наличие водных добавок на складе." };
+  }
+};
 
 export const getRecipeStockCoverageAction = async (recipeId: string): Promise<RecipeInventoryActionResult> => {
   try {

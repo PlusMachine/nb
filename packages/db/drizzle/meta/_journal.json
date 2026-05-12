@@ -175,6 +175,12 @@
       "tag": "0028_equipment_profile_visible_fields",
       "when": 1787000000000,
       "breakpoints": true
+    },
+    {
+      "idx": 29,
+      "tag": "0029_user_inventory_properties",
+      "when": 1788000000000,
+      "breakpoints": true
     }
   ]
 }

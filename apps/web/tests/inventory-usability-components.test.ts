@@ -269,7 +269,7 @@ describe("inventory usability components", () => {
 
     expect(html).toContain("Сбраживаемые");
     expect(html).toContain("Хмель");
-    expect(html).toContain(">Пусто</span>");
+    expect(html).toContain(">0</span>");
     expect(html).toContain("disabled");
     expect(html).not.toContain("Показать закончившиеся");
   });
@@ -376,8 +376,8 @@ describe("inventory usability components", () => {
     expect(html).toContain('step="0.01"');
     expect(html).toContain('<option value="kg" selected="">kg</option>');
     expect(html).toContain("6-7 EBC");
-    expect(html).toContain("Экст-ть 80%");
-    expect(html).toContain("до 100 % засыпи");
+    expect(html).toContain("Экстр. 80%");
+    expect(html).toContain("до 100%");
     expect(html).not.toContain("80% extract");
     expect(html).toContain("linear-gradient(180deg");
     expect(html).toContain("обнулить остаток");
@@ -419,7 +419,7 @@ describe("inventory usability components", () => {
     }));
 
     expect(html).toContain("закончился");
-    expect(html).toContain("text-pink-500");
+    expect(html).toContain("text-rose-400");
     expect(html).not.toContain("обнулить остаток");
   });
 
@@ -488,6 +488,10 @@ describe("inventory usability components", () => {
         secondaryLabelRu: null,
         displayName: "Citra",
         normalizedName: "citra",
+        technicalData: {
+          type: "hop",
+          alphaAcidPctTypical: 12
+        },
         purchaseLinks: {
           count: 4,
           marketplaces: ["ozon", "wildberries", "yandex_market"]
@@ -501,7 +505,7 @@ describe("inventory usability components", () => {
       currencyRates: { RUB: 100, USD: 7900, EUR: 9170 }
     }));
 
-    expect(html).toContain(">Купить<");
+    expect(html).toContain('title="Ссылки на покупку"');
     expect(html).toContain('title="Ozon"');
     expect(html).toContain('title="Wildberries"');
     expect(html).toContain('title="Яндекс Маркет"');
@@ -598,7 +602,11 @@ describe("inventory usability components", () => {
         primaryLabelRu: "US-05",
         secondaryLabelRu: null,
         displayName: "US-05",
-        normalizedName: "us-05"
+        normalizedName: "us-05",
+        technicalData: {
+          type: "yeast",
+          form: "dry"
+        }
       }
     };
 
@@ -608,7 +616,7 @@ describe("inventory usability components", () => {
       currencyRates: { RUB: 100, USD: 7900, EUR: 9170 }
     }));
 
-    expect(html).toContain(">Добавить ссылку<");
+    expect(html).toContain("добавить ссылку на покупку");
     expect(html).not.toContain("Добавить в избранное");
     expect(html).not.toContain("Убрать из избранного");
   });
@@ -688,6 +696,76 @@ describe("inventory usability components", () => {
     expect(html).not.toContain('data-testid="inventory-editor-picker-stage"');
     expect(html).not.toContain('data-testid="ingredient-picker-quick-start"');
     expect(html).not.toContain("Начните вводить название ингредиента");
+  });
+
+  it("shows acid concentration in inventory item edit flow", () => {
+    const item: InventoryListItemDto = {
+      id: "inv-acid-1",
+      ingredientCatalogItemId: "lactic-acid",
+      userCustomIngredientId: null,
+      packageVariantId: null,
+      ingredientFamilyId: null,
+      ingredientCategory: "water_treatment",
+      ingredientSubtype: "acid",
+      ingredientDisplayNameSnapshot: "Молочная кислота",
+      ingredientDefaultDisplayUnitSnapshot: "ml",
+      ingredientMeasurementDimension: "volume",
+      enteredQuantity: 100,
+      enteredUnit: "ml",
+      normalizedQuantity: 100,
+      normalizedUnit: "ml",
+      unitDimension: "volume",
+      priceInputMode: null,
+      priceInputAmountMinor: null,
+      priceInputCurrency: null,
+      purchasePriceMinor: null,
+      purchaseCurrency: null,
+      purchaseQuantity: null,
+      purchaseQuantityUnit: null,
+      purchaseQuantityNormalized: null,
+      purchaseQuantityNormalizedUnit: null,
+      normalizedUnitCostMinorRub: null,
+      purchasedAt: null,
+      freshnessDate: null,
+      notes: null,
+      archivedAt: null,
+      createdAt: new Date("2026-01-01"),
+      updatedAt: new Date("2026-01-01"),
+      source: {
+        sourceKind: "catalog",
+        sourceId: "lactic-acid",
+        type: "water_treatment",
+        category: "water_treatment",
+        subtype: "acid",
+        familyId: null,
+        familyDisplayName: null,
+        primaryLabelRu: "Молочная кислота",
+        secondaryLabelRu: "Lactic Acid",
+        displayName: "Молочная кислота",
+        displayNameRu: "Молочная кислота",
+        displayNameEn: "Lactic Acid",
+        normalizedName: "molochnaya kislota",
+        defaultDisplayUnit: "ml",
+        allowedUnits: ["ml", "l"],
+        measurementDimension: "volume",
+        technicalData: {
+          type: "water_treatment",
+          displayFormula: "88%",
+          defaultConcentrationPct: 88,
+          unitPreferred: "ml"
+        }
+      }
+    };
+
+    const html = renderToStaticMarkup(React.createElement(InventoryItemDetailsEditor, {
+      item,
+      preferredCurrency: "RUB",
+      currencyRates: { RUB: 100, USD: 7900, EUR: 9170 },
+      initiallyOpen: true
+    }));
+
+    expect(html).toContain("Концентрация кислоты, %");
+    expect(html).toContain('value="88"');
   });
 
   it("returns the inventory editor to picker stage when selection is cleared", () => {
@@ -973,7 +1051,7 @@ describe("inventory usability components", () => {
     expect(html).toContain("Цитра");
     expect(html).toContain("Citra");
     expect(html).toContain("Yakima Chief");
-    expect(html).toContain("Альфа 12%");
+    expect(html).toContain("α 12%");
     expect(html).toContain("Гранулы");
     expect(html).toMatch(/Yakima Chief.*svg/);
   });
@@ -1034,7 +1112,7 @@ describe("inventory usability components", () => {
     expect(html).toContain("Weyermann");
     expect(html).toMatch(/Weyermann.*svg/);
     expect(html).toMatch(/Weyermann.*Жидкий солодовый экстракт/);
-    expect(html).toContain("до 100 % засыпи");
+    expect(html).toContain("до 100%");
   });
 
   it("tracks dirty state and zero-stock validity for inline editor logic", () => {

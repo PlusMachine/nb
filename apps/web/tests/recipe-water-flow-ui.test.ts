@@ -3,6 +3,12 @@ import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
 
 import {
+  getRecipeWaterSetupToggleLabel,
+  groupRecipeWaterAdditiveRows,
+  resolveRecipeWaterAcidStockConcentrationSuggestion,
+  resolveRecipeWaterAdditiveStockStatus,
+} from "../components/recipes/recipe-water-additives-section";
+import {
   applyRecipeWaterSavedSourceProfile,
   applyRecipeWaterCatalogTargetProfile,
   applyRecipeWaterSourcePreset,
@@ -11,6 +17,7 @@ import {
   getNextSavedSourceWaterProfileName,
   isRecipeWaterAutoBakingSodaEnabled,
   removeRecipeWaterManualSaltAddition,
+  resolveRecipeWaterTargetModeSelection,
   sanitizeSavedSourceWaterProfiles,
   setRecipeWaterManualSourceProfile,
   setRecipeWaterAutoBakingSodaEnabled,
@@ -78,6 +85,94 @@ const renderWaterBlock = (waterPlanMeta: RecipeWaterPlanMeta) =>
   );
 
 describe("recipe water flow UI", () => {
+  it("labels the water setup toggle according to the embedded wizard state", () => {
+    expect(getRecipeWaterSetupToggleLabel(false)).toBe("Настроить воду");
+    expect(getRecipeWaterSetupToggleLabel(true)).toBe("Скрыть настройку");
+  });
+
+  it("groups split water additive rows by water bucket instead of repeating target labels", () => {
+    const grouped = groupRecipeWaterAdditiveRows(
+      [
+        {
+          key: "mash-gypsum",
+          kind: "salt",
+          catalogIngredientId: null,
+          title: "Гипс",
+          formula: "CaSO4",
+          concentrationPct: null,
+          amountText: "2.00 г",
+          target: "mash",
+          editable: true,
+          removable: false,
+          manualSaltIndex: null,
+        },
+        {
+          key: "sparge-lactic",
+          kind: "acid",
+          catalogIngredientId: null,
+          title: "Молочная кислота",
+          formula: "88%",
+          concentrationPct: 88,
+          amountText: "1.20 мл",
+          target: "sparge",
+          editable: true,
+          removable: false,
+          manualSaltIndex: null,
+        },
+      ],
+      true,
+    );
+
+    expect(grouped.map((group) => group.label)).toEqual([
+      "Затор",
+      "Промывка",
+    ]);
+    expect(grouped[0]?.rows[0]?.formula).toBe("CaSO4");
+    expect(grouped[1]?.rows[0]?.title).toBe("Молочная кислота");
+  });
+
+  it("matches acid stock by concentration and suggests the only stocked concentration", () => {
+    const acidRow = {
+      key: "mash-lactic",
+      kind: "acid" as const,
+      catalogIngredientId: "lactic-acid",
+      title: "Молочная кислота",
+      formula: "85%",
+      concentrationPct: 85,
+      amountText: "1.20 мл",
+      target: "mash" as const,
+      editable: true,
+      removable: false,
+      manualSaltIndex: null,
+    };
+    const stock75 = {
+      catalogIngredientId: "lactic-acid",
+      inventoryItemId: "stock-75",
+      displayName: "Молочная кислота 75%",
+      availableNormalizedQuantity: 100,
+      normalizedUnit: "ml" as const,
+      concentrationPct: 75,
+    };
+    const stock85 = {
+      ...stock75,
+      inventoryItemId: "stock-85",
+      displayName: "Молочная кислота 85%",
+      concentrationPct: 85,
+    };
+
+    expect(resolveRecipeWaterAdditiveStockStatus(acidRow, [stock75])).toBeNull();
+    expect(resolveRecipeWaterAdditiveStockStatus(acidRow, [stock75, stock85])?.inventoryItemId).toBe("stock-85");
+    expect(resolveRecipeWaterAcidStockConcentrationSuggestion({
+      waterPlanMeta: {
+        ...createRecipeWaterPlanResetMeta(),
+        setupEnabled: true,
+        selectedAcid: "lactic_acid",
+        acidConcentrationPct: null,
+      },
+      statuses: [stock75],
+    })).toBe(75);
+  });
+
   it("renders the new source -> target -> split -> result flow", () => {
     const meta = withManualTargetProfile(
       ensureRecipeWaterPlanConfigured(createRecipeWaterPlanResetMeta()),
@@ -91,7 +186,6 @@ describe("recipe water flow UI", () => {
     expect(html).toContain("3. Как вносить соли");
     expect(html).toContain("4. pH и подкисление");
     expect(html).not.toContain("5. Что добавить");
-    expect(html).toContain("Добавить в воду");
     expect(html).toContain("Подобрать профиль");
     expect(html).not.toContain("Сохраненные");
     expect(html).not.toContain("Сбалансированный лагер");
@@ -106,18 +200,11 @@ describe("recipe water flow UI", () => {
     );
     expect(html).toContain("Молочная кислота");
     expect(html).toContain("Считать пищевую соду (NaHCO3) в авторасчете");
-    expect(html).toContain("Итоговые добавки");
-    expect(html.indexOf("Итоговые добавки")).toBeLessThan(
-      html.indexOf("Настройка воды"),
-    );
     expect(html).not.toContain("добавки рассчитаны");
-    expect(html).not.toContain("Осмос -&gt;");
-    expect(html).toContain("Итоговый профиль:");
     expect(html).not.toContain("Lactic Acid");
     expect(html).not.toContain("Только минерализация");
     expect(html).not.toContain("Авторасчет солей + pH");
     expect(html).not.toContain("Настроить водоподготовку?");
-    expect(html).not.toContain("Настроить воду");
     expect(html).not.toContain("Найти исходный профиль");
     expect(html).not.toContain("Примерные исторические профили");
     expect(html).not.toContain("Ничего не найдено");
@@ -153,15 +240,53 @@ describe("recipe water flow UI", () => {
     expect(result.warnings).not.toContain("source_profile_missing_or_zero");
   });
 
-  it("keeps the main water summary in setup state until target profile is selected", () => {
+  it("keeps the wizard accessible even before target profile is selected", () => {
     const meta = ensureRecipeWaterPlanConfigured(
       createRecipeWaterPlanResetMeta(),
     );
     const html = renderWaterBlock(meta);
 
-    expect(html).toContain("Выберите целевой профиль воды.");
-    expect(html).not.toContain("Итоговые добавки");
     expect(html).toContain("Настройка воды");
+    expect(html).toContain("1. Исходная вода");
+    expect(html).toContain("2. Целевой профиль");
+  });
+
+  it("shows water defaults as editable options, not as selected setup, before user action", () => {
+    const meta = createRecipeWaterPlanResetMeta();
+    const html = renderToStaticMarkup(
+      React.createElement(WaterSetupWizard, {
+        waterPlanMeta: meta,
+        waterPlanResult: buildResult(meta),
+        styleId: "21B-belgian-ipa",
+        onChange: () => undefined,
+      }),
+    );
+
+    expect(meta.setupEnabled).toBe(false);
+    expect(html).toContain("Настройка воды");
+    expect(html).toContain("1. Исходная вода");
+    expect(html).toContain("2. Целевой профиль");
+    expect(html).toContain("источник, цель, объемы и pH");
+    expect(html).not.toContain('aria-pressed="true"');
+    expect(html).not.toContain("Выбранный профиль");
+    expect(html).not.toContain("3. Как вносить соли");
+    expect(html).not.toContain("4. pH и подкисление");
+    expect(html).not.toContain("Подходит по стилю");
+  });
+
+  it("keeps target profile mode buttons mutually exclusive while catalog picker is open", () => {
+    const selection = resolveRecipeWaterTargetModeSelection({
+      hasActiveWaterSetup: true,
+      hasTargetProfile: true,
+      targetCatalogPickerOpen: true,
+      targetProfileMode: "manual",
+    });
+
+    expect(selection).toEqual({
+      saved: false,
+      catalog: true,
+      manual: false,
+    });
   });
 
   it("reset clears persisted water setup state instead of hiding stale profiles", () => {
@@ -186,6 +311,7 @@ describe("recipe water flow UI", () => {
     expect(reset.showWaterAdditivesInIngredients).toBe(false);
     expect(html).toContain("Осмос");
     expect(html).toContain("Дистиллированная вода");
+    expect(html).not.toContain('aria-pressed="true"');
     expect(html).not.toContain("Добавить в воду");
     expect(html).not.toContain("Настроить воду");
   });
@@ -250,8 +376,6 @@ describe("recipe water flow UI", () => {
 
     expect(meta.mashWaterVolumeL).toBe(13);
     expect(meta.spargeWaterVolumeL).toBe(7);
-    expect(html).toContain("В затор");
-    expect(html).toContain("В промывку");
     expect(html).toContain("Заторная вода, л");
     expect(html).toContain("Промывочная вода, л");
     expect(html.indexOf("Целевой pH затора")).toBeLessThan(
@@ -259,9 +383,6 @@ describe("recipe water flow UI", () => {
     );
     expect(html.indexOf("Подкислить промывочную воду")).toBeLessThan(
       html.indexOf("Расширенные настройки"),
-    );
-    expect(html.indexOf("Итоговые добавки")).toBeLessThan(
-      html.indexOf("Настройка воды"),
     );
   });
 
@@ -310,8 +431,7 @@ describe("recipe water flow UI", () => {
     expect(single.spargeWaterVolumeL).toBeNull();
     expect(single.spargeAcidificationEnabled).toBe(false);
     expect(single.manualSaltAdditions[0]?.target).toBe("all");
-    expect(html).toContain("Добавить в воду");
-    expect(html).toContain("Один объем");
+    expect(html).toContain("Считать одним объемом");
   });
 
   it("lets users disable mash pH calculation from the target pH field", () => {
@@ -398,7 +518,8 @@ describe("recipe water flow UI", () => {
     expect(html).toContain("Расширенные настройки");
     expect(html).toContain("Калибровка pH");
     expect(html).toContain("Гипс");
-    expect(html).toContain("CaSO4·2H2O");
+    expect(html).toContain("CaSO4");
+    expect(html).not.toContain("CaSO4·2H2O");
     expect(html).not.toContain("Gypsum");
     expect(html).toContain("Удалить");
   });
@@ -417,7 +538,7 @@ describe("recipe water flow UI", () => {
     const html = renderWaterBlock(meta);
 
     expect(html).toContain("Куда добавить соль");
-    expect(html).toContain("Вся вода");
+    expect(html).toContain("Весь объем");
     expect(html).toContain("Затор");
     expect(html).toContain("Промывка");
     expect(html).toContain('value="mash" selected=""');

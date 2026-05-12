@@ -403,6 +403,7 @@ export const userIngredients = pgTable("user_ingredients", {
   purchaseQuantityNormalized: doublePrecision("purchase_quantity_normalized"),
   purchaseQuantityNormalizedUnit: varchar("purchase_quantity_normalized_unit", { length: 32 }),
   normalizedUnitCostMinorRub: integer("normalized_unit_cost_minor_rub"),
+  properties: jsonb("properties").$type<Record<string, unknown>>().default({}).notNull(),
   purchasedAt: timestamp("purchased_at", { withTimezone: true }),
   freshnessDate: timestamp("freshness_date", { withTimezone: true }),
   notes: text("notes"),

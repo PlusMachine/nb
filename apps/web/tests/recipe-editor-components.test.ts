@@ -474,8 +474,8 @@ describe("recipe editor components", () => {
     expect(html).not.toContain("Профиль не выбран. Параметры задаются вручную.");
     expect(html).not.toContain("На основе профиля оборудования");
     expect(html).not.toContain("Значения сохраняются в рецепте");
-    expect(html).toContain("Вода");
-    expect(html).toContain("Покрытие складом");
+    expect(html).toContain("Водоподготовка");
+    expect(html).toContain("Ингредиенты со склада");
     expect(html).toContain("Другие добавки");
     expect(html).toContain("Импорт / экспорт");
     expect(html).toContain("Начать варку");

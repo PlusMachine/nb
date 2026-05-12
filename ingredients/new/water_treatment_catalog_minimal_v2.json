@@ -305,7 +305,8 @@
         "Brewing Gypsum",
         "Calcium Sulphate"
       ],
-      "formula": "CaSO4·2H2O",
+      "formula": "CaSO4",
+      "calculation_formula": "CaSO4·2H2O",
       "common_forms": [
         "powder"
       ],
@@ -547,8 +548,8 @@
       "type": "water_treatment",
       "item_kind": "chemical",
       "category": "mineral_salt",
-      "name_ru": "Хлорид кальция (дигидрат)",
-      "name_en": "Calcium Chloride (Dihydrate)",
+      "name_ru": "Хлорид кальция",
+      "name_en": "Calcium Chloride",
       "display_mode_ru": "localized_first",
       "aliases_ru": [
         "хлористый кальций",
@@ -566,7 +567,8 @@
         "Calcium Chloride Dihydrate",
         "Brewing Calcium Chloride"
       ],
-      "formula": "CaCl2·2H2O",
+      "formula": "CaCl2",
+      "calculation_formula": "CaCl2·2H2O",
       "common_forms": [
         "flakes",
         "powder",
@@ -756,7 +758,8 @@
         "Magnesium Sulphate",
         "MgSO4·7H2O"
       ],
-      "formula": "MgSO4·7H2O",
+      "formula": "MgSO4",
+      "calculation_formula": "MgSO4·7H2O",
       "common_forms": [
         "crystals",
         "powder"
@@ -1185,6 +1188,7 @@
         "Lactic Acid 80%"
       ],
       "formula": "C3H6O3",
+      "display_formula": "88%",
       "common_forms": [
         "liquid"
       ],
@@ -1192,6 +1196,7 @@
         "80%",
         "88%"
       ],
+      "default_concentration_pct": 88,
       "unit_preferred": "ml",
       "water_calc_role": [
         "lower_mash_pH",
@@ -1294,7 +1299,8 @@
         "H3PO4 75%",
         "H3PO4 85%"
       ],
-      "formula": "H3PO4 (solution)",
+      "formula": "H3PO4",
+      "display_formula": "85%",
       "common_forms": [
         "liquid"
       ],
@@ -1302,6 +1308,7 @@
         "75%",
         "85%"
       ],
+      "default_concentration_pct": 85,
       "unit_preferred": "ml",
       "water_calc_role": [
         "lower_mash_pH",

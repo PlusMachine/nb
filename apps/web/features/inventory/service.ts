@@ -44,6 +44,13 @@ import {
 } from "../ingredients/source-linkage";
 import { readCustomIngredientMetadata } from "../ingredients/custom-metadata";
 import {
+  applyInventoryWaterTreatmentConcentration,
+  formatWaterTreatmentConcentrationPct,
+  isWaterTreatmentAcidLike,
+  normalizeWaterTreatmentConcentrationPct,
+  readInventoryWaterTreatmentConcentrationPct,
+} from "../ingredients/water-treatment";
+import {
   canonicalizeConsumablePickerGroup,
   isConsumableInventoryBroadGroup,
   resolveConsumableInventoryBroadGroup,
@@ -93,6 +100,55 @@ const isRecord = (value: unknown): value is Record<string, unknown> => (
   && value !== null
   && !Array.isArray(value)
 );
+
+const normalizeInventoryProperties = (value: unknown): Record<string, unknown> => (
+  isRecord(value) ? value : {}
+);
+
+const buildWaterTreatmentConcentrationInventoryProperties = ({
+  currentProperties,
+  concentrationPct,
+  source,
+}: {
+  currentProperties?: Record<string, unknown> | null;
+  concentrationPct?: number | null;
+  source: {
+    category?: string | null;
+    subtype?: string | null;
+    itemKind?: string | null;
+    sourceCategory?: string | null;
+    groupName?: string | null;
+    displayName?: string | null;
+    nameRu?: string | null;
+    nameEn?: string | null;
+    technicalData?: IngredientTechnicalData | null;
+  };
+}) => {
+  const nextProperties = { ...(currentProperties ?? {}) };
+  delete nextProperties.waterTreatmentConcentrationPct;
+
+  const normalizedConcentrationPct = normalizeWaterTreatmentConcentrationPct(concentrationPct);
+  if (normalizedConcentrationPct != null && isWaterTreatmentAcidLike(source)) {
+    nextProperties.waterTreatmentConcentrationPct = normalizedConcentrationPct;
+  }
+
+  return nextProperties;
+};
+
+const applyInventoryPropertiesToSource = (
+  source: InventorySourceDto,
+  properties: Record<string, unknown>,
+): InventorySourceDto => {
+  const concentrationPct = readInventoryWaterTreatmentConcentrationPct(properties);
+  if (concentrationPct == null || !isWaterTreatmentAcidLike(source)) {
+    return source;
+  }
+
+  return {
+    ...source,
+    technicalData: applyInventoryWaterTreatmentConcentration(source.technicalData, properties) ?? source.technicalData,
+  };
+};
 
 const normalizeStoredCategory = (
   category?: typeof userIngredients.$inferSelect.ingredientCategory | null
@@ -339,10 +395,17 @@ const buildCustomSourceDto = (
 };
 
 const resolvePersistedInventorySource = (row: InventoryRow) => {
+  const inventoryProperties = normalizeInventoryProperties(row.inventory.properties);
+
   if (row.catalog) {
     const snapshotCategory = normalizeStoredCategory(row.inventory.ingredientCategory);
+    const source = applyInventoryPropertiesToSource(
+      buildCatalogSourceDto(row.catalog, row.packageVariant),
+      inventoryProperties
+    );
+
     return {
-      source: buildCatalogSourceDto(row.catalog, row.packageVariant),
+      source,
       snapshot: {
         ingredientCatalogItemId: row.inventory.ingredientCatalogItemId ?? null,
         userCustomIngredientId: row.inventory.userCustomIngredientId ?? null,
@@ -360,8 +423,13 @@ const resolvePersistedInventorySource = (row: InventoryRow) => {
 
   if (row.custom) {
     const snapshotCategory = normalizeStoredCategory(row.inventory.ingredientCategory);
+    const source = applyInventoryPropertiesToSource(
+      buildCustomSourceDto(row.custom),
+      inventoryProperties
+    );
+
     return {
-      source: buildCustomSourceDto(row.custom),
+      source,
       snapshot: {
         ingredientCatalogItemId: row.inventory.ingredientCatalogItemId ?? null,
         userCustomIngredientId: row.inventory.userCustomIngredientId ?? null,
@@ -395,41 +463,43 @@ const resolvePersistedInventorySource = (row: InventoryRow) => {
     measurementDimension: row.inventory.ingredientMeasurementDimension
   });
 
+  const source = applyInventoryPropertiesToSource({
+    sourceKind: row.inventory.userCustomIngredientId ? "custom" : "catalog",
+    sourceId: row.inventory.userCustomIngredientId ?? row.inventory.ingredientCatalogItemId ?? row.inventory.id,
+    type,
+    category,
+    subtype,
+    itemKind: row.inventory.ingredientSubtype ?? null,
+    familyId: row.inventory.ingredientFamilyId ?? null,
+    familyDisplayName: null,
+    primaryLabelRu,
+    secondaryLabelRu: null,
+    displayName: primaryLabelRu,
+    displayNameRu: null,
+    displayNameEn: null,
+    nameRu: null,
+    nameEn: null,
+    normalizedName: normalizeIngredientName(primaryLabelRu),
+    brand: null,
+    producer: null,
+    brandName: null,
+    manufacturer: null,
+    countryCode: null,
+    countryName: null,
+    country: null,
+    groupName: null,
+    completenessLevel: null,
+    technicalData: null,
+    defaultDisplayUnit: unitProfile.defaultUnit,
+    allowedUnits: unitProfile.allowedUnits,
+    measurementDimension: unitProfile.measurementDimension,
+    packageVariantId: row.inventory.packageVariantId ?? null,
+    packageVariantName: row.packageVariant?.productNameRu ?? row.packageVariant?.productNameEn ?? null,
+    summary: null
+  } satisfies InventorySourceDto, inventoryProperties);
+
   return {
-    source: {
-      sourceKind: row.inventory.userCustomIngredientId ? "custom" : "catalog",
-      sourceId: row.inventory.userCustomIngredientId ?? row.inventory.ingredientCatalogItemId ?? row.inventory.id,
-      type,
-      category,
-      subtype,
-      itemKind: row.inventory.ingredientSubtype ?? null,
-      familyId: row.inventory.ingredientFamilyId ?? null,
-      familyDisplayName: null,
-      primaryLabelRu,
-      secondaryLabelRu: null,
-      displayName: primaryLabelRu,
-      displayNameRu: null,
-      displayNameEn: null,
-      nameRu: null,
-      nameEn: null,
-      normalizedName: normalizeIngredientName(primaryLabelRu),
-      brand: null,
-      producer: null,
-      brandName: null,
-      manufacturer: null,
-      countryCode: null,
-      countryName: null,
-      country: null,
-      groupName: null,
-      completenessLevel: null,
-      technicalData: null,
-      defaultDisplayUnit: unitProfile.defaultUnit,
-      allowedUnits: unitProfile.allowedUnits,
-      measurementDimension: unitProfile.measurementDimension,
-      packageVariantId: row.inventory.packageVariantId ?? null,
-      packageVariantName: row.packageVariant?.productNameRu ?? row.packageVariant?.productNameEn ?? null,
-      summary: null
-    } satisfies InventorySourceDto,
+    source,
     snapshot: {
       ingredientCatalogItemId: row.inventory.ingredientCatalogItemId ?? null,
       userCustomIngredientId: row.inventory.userCustomIngredientId ?? null,
@@ -483,6 +553,7 @@ const mapInventoryRow = (row: InventoryRow): InventoryListItemDto => {
       ? parseInventoryUnit(row.inventory.purchaseQuantityNormalizedUnit)
       : null,
     normalizedUnitCostMinorRub: row.inventory.normalizedUnitCostMinorRub,
+    properties: normalizeInventoryProperties(row.inventory.properties),
     purchasedAt: row.inventory.purchasedAt,
     freshnessDate: row.inventory.freshnessDate,
     notes: row.inventory.notes,
@@ -691,8 +762,10 @@ const buildPersistedCustomIngredientValues = (
     alcoholToleranceAbvTypical: parsed.alcoholToleranceAbvTypical ?? null,
     physicalForm: parsed.physicalForm ?? null,
     concentration: parsed.concentration ?? null,
+    waterTreatmentConcentrationPct: parsed.waterTreatmentConcentrationPct ?? null,
     unitPreferred: parsed.defaultDisplayUnit ?? null
   });
+  const waterTreatmentConcentrationLabel = formatWaterTreatmentConcentrationPct(parsed.waterTreatmentConcentrationPct ?? null);
   const unitProfile = resolveCustomIngredientUnitProfile({
     type,
     category,
@@ -772,7 +845,8 @@ const buildPersistedCustomIngredientValues = (
         defaultDisplayUnit,
         allowedUnits: unitProfile.allowedUnits,
         measurementDimension: unitProfile.measurementDimension,
-        concentration: parsed.concentration ?? null,
+        concentration: parsed.concentration ?? waterTreatmentConcentrationLabel,
+        waterTreatmentConcentrationPct: parsed.waterTreatmentConcentrationPct ?? null,
         physicalForm: parsed.physicalForm ?? null,
         updatedByUserId: userId
       },
@@ -1059,6 +1133,9 @@ const buildDerivedCustomIngredientPayload = (
     alcoholToleranceAbvTypical: isYeastTechnicalData(technicalData)
       ? readFiniteNumber(technicalData.alcoholToleranceAbvTypical)
       : null,
+    physicalForm: null,
+    concentration: null,
+    waterTreatmentConcentrationPct: null,
     defaultDisplayUnit: linkage.defaultDisplayUnit,
     visibility: "private" as const
   };
@@ -1210,6 +1287,20 @@ export const addCatalogIngredientToInventory = async (
   const packageVariant = await ensureCatalogPackageVariant(catalogItem.id, parsed.packageVariantId ?? null);
   const linkage = buildCatalogIngredientLinkage(catalogItem);
   const { profile, category, subtype } = buildCatalogProfile(catalogItem);
+  const properties = buildWaterTreatmentConcentrationInventoryProperties({
+    concentrationPct: parsed.waterTreatmentConcentrationPct ?? null,
+    source: {
+      category: linkage.category,
+      subtype: linkage.subtype,
+      itemKind: catalogItem.itemKind,
+      sourceCategory: catalogItem.category,
+      groupName: catalogItem.groupName,
+      displayName: linkage.displayName,
+      nameRu: catalogItem.nameRu,
+      nameEn: catalogItem.nameEn,
+      technicalData: linkage.technicalData,
+    },
+  });
   const amount = normalizeMeasurementWithPackageVariant(
     profile,
     parsed.enteredQuantity,
@@ -1251,6 +1342,7 @@ export const addCatalogIngredientToInventory = async (
     purchaseQuantityNormalized: purchase.purchaseQuantityNormalized,
     purchaseQuantityNormalizedUnit: purchase.purchaseQuantityNormalizedUnit,
     normalizedUnitCostMinorRub: purchase.normalizedUnitCostMinorRub,
+    properties,
     purchasedAt: parsed.purchasedAt,
     freshnessDate: parsed.freshnessDate,
     notes: parsed.notes
@@ -1393,7 +1485,7 @@ export const updateInventoryItem = async (
   payload: unknown,
   context: InventoryWriteContext = {}
 ) => {
-  await ensureInventoryItem(userId, inventoryItemId);
+  const current = await ensureInventoryItem(userId, inventoryItemId);
   const parsed = updateInventoryItemSchema.parse(payload);
   ensureSourceLinkage(parsed.ingredientCatalogItemId ?? null, parsed.userCustomIngredientId ?? null);
 
@@ -1405,6 +1497,21 @@ export const updateInventoryItem = async (
     ]);
     const { profile, category, subtype } = buildCatalogProfile(catalogItem);
     const linkage = buildCatalogIngredientLinkage(catalogItem);
+    const properties = buildWaterTreatmentConcentrationInventoryProperties({
+      currentProperties: normalizeInventoryProperties(current.properties),
+      concentrationPct: parsed.waterTreatmentConcentrationPct ?? null,
+      source: {
+        category: linkage.category,
+        subtype: linkage.subtype,
+        itemKind: catalogItem.itemKind,
+        sourceCategory: catalogItem.category,
+        groupName: catalogItem.groupName,
+        displayName: linkage.displayName,
+        nameRu: catalogItem.nameRu,
+        nameEn: catalogItem.nameEn,
+        technicalData: linkage.technicalData,
+      },
+    });
     const amount = normalizeMeasurementWithPackageVariant(
       profile,
       parsed.enteredQuantity,
@@ -1444,6 +1551,7 @@ export const updateInventoryItem = async (
       purchaseQuantityNormalized: purchase.purchaseQuantityNormalized,
       purchaseQuantityNormalizedUnit: purchase.purchaseQuantityNormalizedUnit,
       normalizedUnitCostMinorRub: purchase.normalizedUnitCostMinorRub,
+      properties,
       purchasedAt: parsed.purchasedAt,
       freshnessDate: parsed.freshnessDate,
       notes: parsed.notes,
@@ -1458,6 +1566,19 @@ export const updateInventoryItem = async (
     listSystemCurrencyRates()
   ]);
   const linkage = buildCustomIngredientLinkage(customIngredient);
+  const properties = buildWaterTreatmentConcentrationInventoryProperties({
+    currentProperties: normalizeInventoryProperties(current.properties),
+    concentrationPct: parsed.waterTreatmentConcentrationPct ?? null,
+    source: {
+      category: linkage.category,
+      subtype: linkage.subtype,
+      itemKind: linkage.subtype,
+      displayName: linkage.displayName,
+      nameRu: linkage.displayNameRu,
+      nameEn: linkage.displayNameEn,
+      technicalData: linkage.technicalData,
+    },
+  });
   const profile = resolveHumanFacingInventoryUnitProfile({
     type: linkage.type,
     category: linkage.category,
@@ -1506,6 +1627,7 @@ export const updateInventoryItem = async (
     purchaseQuantityNormalized: purchase.purchaseQuantityNormalized,
     purchaseQuantityNormalizedUnit: purchase.purchaseQuantityNormalizedUnit,
     normalizedUnitCostMinorRub: purchase.normalizedUnitCostMinorRub,
+    properties,
     purchasedAt: parsed.purchasedAt,
     freshnessDate: parsed.freshnessDate,
     notes: parsed.notes,

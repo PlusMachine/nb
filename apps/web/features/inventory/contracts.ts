@@ -41,6 +41,16 @@ export const inventoryPrimaryGroupKeys = [
 ] as const;
 export type InventoryPrimaryGroupKey = (typeof inventoryPrimaryGroupKeys)[number];
 
+const numberField = () => z.number({
+  invalid_type_error: "Введите число.",
+  required_error: "Укажите значение."
+});
+
+const coerceNumberField = () => z.coerce.number({
+  invalid_type_error: "Введите число.",
+  required_error: "Укажите значение."
+});
+
 const nullablePositiveInteger = z.preprocess((value) => {
   if (value == null) {
     return null;
@@ -56,7 +66,7 @@ const nullablePositiveInteger = z.preprocess((value) => {
   }
 
   return value;
-}, z.number().int().positive().nullable().optional());
+}, numberField().int("Цена должна быть целым числом в копейках.").positive("Цена должна быть больше нуля.").nullable().optional());
 
 const nullableNumber = (schema: z.ZodNumber) => z.preprocess((value) => {
   if (value == null) {
@@ -85,7 +95,7 @@ const nullablePriceInputMode = z.preprocess((value) => {
 }, z.enum(inventoryPriceInputModes).nullable().optional());
 
 const baseInventoryFieldsObject = z.object({
-  enteredQuantity: z.coerce.number().positive(),
+  enteredQuantity: coerceNumberField().positive("Количество должно быть больше нуля."),
   enteredUnit: z.string().trim().toLowerCase().pipe(z.enum(inventoryUnits)),
   priceInputMode: nullablePriceInputMode,
   priceInputAmountMinor: nullablePositiveInteger,
@@ -99,7 +109,7 @@ const baseInventoryFieldsObject = z.object({
   }, z.enum(systemCurrencies).nullable().optional()),
   purchasedAt: z.coerce.date().optional().nullable(),
   freshnessDate: z.coerce.date().optional().nullable(),
-  notes: z.string().trim().max(2000).optional().nullable()
+  notes: z.string().trim().max(2000, "Заметка не должна быть длиннее 2000 символов.").optional().nullable()
 });
 
 const withPurchaseValidation = <T extends z.ZodTypeAny>(schema: T) => schema.superRefine((value, ctx) => {
@@ -135,10 +145,10 @@ const createUserCustomIngredientBaseSchema = z.object({
   hideSecondaryNameRu: z.coerce.boolean().default(false).optional(),
   derivedFromIngredientId: z.string().trim().max(191).optional().nullable(),
   derivedFromDisplayName: z.string().trim().max(180).optional().nullable(),
-  harvestYear: nullableNumber(z.number().int().min(1900).max(2100)),
-  fermentableColorEbc: nullableNumber(z.number().min(0).max(9999)),
-  fermentableExtractYieldPct: nullableNumber(z.number().min(0).max(100)),
-  fermentableProteinPct: nullableNumber(z.number().min(0).max(100)),
+  harvestYear: nullableNumber(numberField().int("Год урожая должен быть целым числом.").min(1900, "Год урожая не может быть раньше 1900.").max(2100, "Год урожая не может быть позже 2100.")),
+  fermentableColorEbc: nullableNumber(numberField().min(0, "Цвет EBC не может быть меньше 0.").max(9999, "Цвет EBC не может быть больше 9999.")),
+  fermentableExtractYieldPct: nullableNumber(numberField().min(0, "Экстрактивность не может быть меньше 0%.").max(100, "Экстрактивность не может быть больше 100%.")),
+  fermentableProteinPct: nullableNumber(numberField().min(0, "Белок не может быть меньше 0%.").max(100, "Белок не может быть больше 100%.")),
   maltType: z.preprocess((value) => {
     if (value == null) {
       return null;
@@ -147,9 +157,9 @@ const createUserCustomIngredientBaseSchema = z.object({
     const normalized = String(value).trim().toLowerCase();
     return normalized || null;
   }, z.enum(["base", "specialty"]).nullable().optional()),
-  fermentableMaxUsagePct: nullableNumber(z.number().min(0).max(100)),
-  hopAlphaAcidPct: nullableNumber(z.number().min(0).max(100)),
-  hopBetaAcidPct: nullableNumber(z.number().min(0).max(100)),
+  fermentableMaxUsagePct: nullableNumber(numberField().min(0, "Доля использования не может быть меньше 0%.").max(100, "Доля использования не может быть больше 100%.")),
+  hopAlphaAcidPct: nullableNumber(numberField().min(0, "Альфа-кислота не может быть меньше 0%.").max(100, "Альфа-кислота не может быть больше 100%.")),
+  hopBetaAcidPct: nullableNumber(numberField().min(0, "Бета-кислота не может быть меньше 0%.").max(100, "Бета-кислота не может быть больше 100%.")),
   hopForm: z.preprocess((value) => {
     if (value == null) {
       return null;
@@ -158,7 +168,7 @@ const createUserCustomIngredientBaseSchema = z.object({
     const normalized = String(value).trim().toLowerCase();
     return normalized || null;
   }, z.enum(["pellet", "whole_cone", "lupulin", "cryo", "standard"]).nullable().optional()),
-  yeastAttenuationPct: nullableNumber(z.number().min(0).max(100)),
+  yeastAttenuationPct: nullableNumber(numberField().min(0, "Аттенюация не может быть меньше 0%.").max(100, "Аттенюация не может быть больше 100%.")),
   yeastForm: z.preprocess((value) => {
     if (value == null) {
       return null;
@@ -168,9 +178,9 @@ const createUserCustomIngredientBaseSchema = z.object({
     return normalized || null;
   }, z.enum(customYeastForms).nullable().optional()),
   yeastFlocculation: z.string().trim().max(80).optional().nullable(),
-  yeastMinFermentationTempC: nullableNumber(z.number().min(-20).max(60)),
-  yeastMaxFermentationTempC: nullableNumber(z.number().min(-20).max(60)),
-  alcoholToleranceAbvTypical: nullableNumber(z.number().min(0).max(100)),
+  yeastMinFermentationTempC: nullableNumber(numberField().min(-20, "Температура брожения не может быть ниже -20 °C.").max(60, "Температура брожения не может быть выше 60 °C.")),
+  yeastMaxFermentationTempC: nullableNumber(numberField().min(-20, "Температура брожения не может быть ниже -20 °C.").max(60, "Температура брожения не может быть выше 60 °C.")),
+  alcoholToleranceAbvTypical: nullableNumber(numberField().min(0, "Толерантность к алкоголю не может быть меньше 0%.").max(100, "Толерантность к алкоголю не может быть больше 100%.")),
   physicalForm: z.preprocess((value) => {
     if (value == null) {
       return null;
@@ -180,6 +190,7 @@ const createUserCustomIngredientBaseSchema = z.object({
     return normalized || null;
   }, z.enum(["solid", "powder", "crystal", "liquid", "solution", "tablet"]).nullable().optional()),
   concentration: z.string().trim().max(120).optional().nullable(),
+  waterTreatmentConcentrationPct: nullableNumber(numberField().positive("Концентрация кислоты должна быть больше 0%.").max(100, "Концентрация кислоты не может быть больше 100%.")),
   defaultDisplayUnit: z.string().trim().toLowerCase().pipe(z.enum(inventoryUnits)).optional().nullable(),
   properties: z.record(z.string(), z.unknown()).default({}),
   visibility: z.enum(["private", "shared"]).default("private")
@@ -295,14 +306,16 @@ export const createUserCustomInventoryIngredientSchema = buildCreateUserCustomIn
 
 export const addCatalogInventoryItemSchema = withPurchaseValidation(baseInventoryFieldsObject.extend({
   ingredientCatalogItemId: z.string().trim().min(1),
-  packageVariantId: z.string().trim().min(1).optional().nullable()
+  packageVariantId: z.string().trim().min(1).optional().nullable(),
+  waterTreatmentConcentrationPct: nullableNumber(numberField().positive("Концентрация кислоты должна быть больше 0%.").max(100, "Концентрация кислоты не может быть больше 100%."))
 }));
 
 export const catalogInventoryTechnicalOverrideSchema = z.object({
   ingredientCatalogItemId: z.string().trim().min(1),
-  fermentableColorEbc: nullableNumber(z.number().min(0).max(9999)),
-  fermentableExtractYieldPct: nullableNumber(z.number().min(0).max(100)),
-  hopAlphaAcidPct: nullableNumber(z.number().min(0).max(100))
+  fermentableColorEbc: nullableNumber(numberField().min(0, "Цвет EBC не может быть меньше 0.").max(9999, "Цвет EBC не может быть больше 9999.")),
+  fermentableExtractYieldPct: nullableNumber(numberField().min(0, "Экстрактивность не может быть меньше 0%.").max(100, "Экстрактивность не может быть больше 100%.")),
+  hopAlphaAcidPct: nullableNumber(numberField().min(0, "Альфа-кислота не может быть меньше 0%.").max(100, "Альфа-кислота не может быть больше 100%.")),
+  waterTreatmentConcentrationPct: nullableNumber(numberField().positive("Концентрация кислоты должна быть больше 0%.").max(100, "Концентрация кислоты не может быть больше 100%."))
 });
 
 export const addCustomInventoryItemSchema = withPurchaseValidation(baseInventoryFieldsObject.extend({
@@ -318,15 +331,15 @@ export const inventorySourceLinkageSchema = z.object({
 });
 
 export const updateInventoryQuantitySchema = z.object({
-  enteredQuantity: z.coerce.number().nonnegative(),
+  enteredQuantity: coerceNumberField().nonnegative("Количество не может быть меньше нуля."),
   enteredUnit: z.string().trim().toLowerCase().pipe(z.enum(inventoryUnits))
 });
 
 export const updateInventoryItemSchema = withPurchaseValidation(baseInventoryFieldsObject.extend({
   ingredientCatalogItemId: z.string().trim().min(1).optional().nullable(),
-  userCustomIngredientId: z.string().uuid().optional().nullable()
-  ,
-  packageVariantId: z.string().trim().min(1).optional().nullable()
+  userCustomIngredientId: z.string().uuid().optional().nullable(),
+  packageVariantId: z.string().trim().min(1).optional().nullable(),
+  waterTreatmentConcentrationPct: nullableNumber(numberField().positive("Концентрация кислоты должна быть больше 0%.").max(100, "Концентрация кислоты не может быть больше 100%."))
 })).superRefine((value, ctx) => {
   const linkage = inventorySourceLinkageSchema.safeParse({
     ingredientCatalogItemId: value.ingredientCatalogItemId,
@@ -419,6 +432,7 @@ export type InventoryListItemDto = {
   purchaseQuantityNormalized?: number | null;
   purchaseQuantityNormalizedUnit?: InventoryUnit | null;
   normalizedUnitCostMinorRub?: number | null;
+  properties?: Record<string, unknown>;
   purchasedAt: Date | null;
   freshnessDate: Date | null;
   notes: string | null;

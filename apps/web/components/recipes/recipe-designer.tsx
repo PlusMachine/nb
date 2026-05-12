@@ -111,10 +111,6 @@ import {
   recipeBitternessFormulas,
   recipeFermentableUseTypes,
   recipeHopUseTypes,
-  recipeMashPhModelLabels,
-  recipeMashPhModels,
-  recipeWaterEngineLabels,
-  recipeWaterEngineModes,
   type RecipeCalculationMeta,
   type RecipeDetailDto,
   type RecipeDraftPreviewDto,
@@ -136,9 +132,14 @@ import { IngredientAddDrawer } from "@/components/recipes/ingredient-add-drawer"
 import { RecipeActionsMenu } from "@/components/recipes/recipe-actions-menu";
 import { RecipeImagesSection } from "@/components/recipes/recipe-images-section";
 import { StartBrewModal, type StartBrewResult } from "@/components/recipes/start-brew-modal";
+import { RecipeWaterAdditivesSection } from "@/components/recipes/recipe-water-additives-section";
 import { StockCoverageSummary } from "@/components/recipes/stock-coverage-summary";
 import { StockIngredientList } from "@/components/recipes/stock-ingredient-list";
-import { WaterSetupWizard } from "@/components/recipes/water-setup-wizard";
+import {
+  createRecipeWaterPlanResetMeta,
+  removeRecipeWaterManualSaltAddition,
+  WaterSetupWizard
+} from "@/components/recipes/water-setup-wizard";
 import {
   buildRecipePublicationChecklist,
   getRecipePublicationFieldErrors
@@ -154,6 +155,7 @@ import {
   type RecipeWaterPlanFermentableInput,
   type RecipeWaterPlanResult
 } from "@/features/recipes/water-plan";
+import { validateNumericInput } from "@/features/forms/numeric-validation";
 
 type Props = {
   mode: "create" | "edit";
@@ -739,17 +741,9 @@ const toOptionalNumber = (value: string) => {
   return trimmed ? Number(trimmed) : null;
 };
 
-const toPositiveNumberOrDefault = (value: number, fallback: number) => (
-  Number.isFinite(value) && value > 0 ? value : fallback
-);
-
 const normalizeSavePayload = (payload: RecipeEditorPayload): RecipeEditorPayload => ({
   ...payload,
-  batchSizeEnteredQuantity: toPositiveNumberOrDefault(payload.batchSizeEnteredQuantity, DEFAULT_BATCH_SIZE_ENTERED_QUANTITY),
-  batchSizeEnteredUnit: payload.batchSizeEnteredUnit || DEFAULT_BATCH_SIZE_ENTERED_UNIT,
-  boilTimeMinutes: Number.isInteger(payload.boilTimeMinutes) && payload.boilTimeMinutes > 0
-    ? payload.boilTimeMinutes
-    : DEFAULT_BOIL_TIME_MINUTES
+  batchSizeEnteredUnit: payload.batchSizeEnteredUnit || DEFAULT_BATCH_SIZE_ENTERED_UNIT
 });
 
 const mapFieldErrorsFromIssues = (
@@ -765,6 +759,20 @@ const mapFieldErrorsFromIssues = (
 
     if (key === "title") {
       message = "Укажите название рецепта.";
+    }
+
+    if (key === "batchSizeEnteredQuantity") {
+      message = "Объём партии должен быть больше нуля.";
+    } else if (key === "efficiency") {
+      message = "Эффективность должна быть больше 0% и не больше 100%.";
+    } else if (key === "boilTimeMinutes") {
+      message = "Время кипячения должно быть от 1 до 600 минут.";
+    } else if (key.startsWith("waterPlanMeta.")) {
+      key = "waterPlanMeta";
+    } else if (key.startsWith("processMeta.mashProfile.steps")) {
+      key = "processMeta.mashProfile.steps";
+    } else if (key.startsWith("processMeta.fermentationProfile")) {
+      key = "processMeta.fermentationProfile";
     }
 
     if (root === "ingredients" && typeof nested === "number") {
@@ -1542,6 +1550,80 @@ const isIngredientValid = (ingredient: DesignerIngredient) => {
 
   const quantity = Number(ingredient.amountEnteredQuantity);
   return Number.isFinite(quantity) && quantity > 0;
+};
+
+const getIngredientDraftFieldError = (ingredient: DesignerIngredient) => {
+  if (!ingredient.ingredientCatalogItemId && !ingredient.userCustomIngredientId && !isImportedDesignerIngredient(ingredient)) {
+    return "Выберите ингредиент.";
+  }
+
+  const quantityError = validateNumericInput(ingredient.amountEnteredQuantity, {
+    label: "Количество",
+    required: true,
+    min: 0,
+    exclusiveMin: true
+  });
+  if (quantityError) {
+    return quantityError;
+  }
+
+  const hopUseType = ingredient.category === "hop" ? getHopUseType(ingredient) : null;
+  const use = typeof ingredient.stepMeta.use === "string" ? ingredient.stepMeta.use : null;
+  if (
+    (ingredient.category === "fermentable" && use === "boil")
+    || hopUseType === "boil"
+    || hopUseType === "whirlpool"
+    || hopUseType === "dip_hop"
+    || ingredient.category === "water_treatment"
+    || ingredient.category === "consumable"
+  ) {
+    const timeError = validateNumericInput(String(ingredient.stepMeta.timeMinutes ?? ""), {
+      label: "Время",
+      min: 0,
+      max: 600,
+      integer: true
+    });
+    if (timeError) {
+      return timeError;
+    }
+  }
+
+  if (hopUseType === "dry_hop") {
+    const durationError = validateNumericInput(String(ingredient.stepMeta.durationDays ?? ""), {
+      label: "Длительность",
+      min: 0,
+      max: 365,
+      integer: true,
+      exclusiveMin: true
+    });
+    if (durationError) {
+      return durationError;
+    }
+  }
+
+  if (hopUseType === "whirlpool" || hopUseType === "dip_hop") {
+    const temperatureError = validateNumericInput(String(ingredient.stepMeta.temperatureC ?? ""), {
+      label: "Температура",
+      min: 0,
+      max: 100
+    });
+    if (temperatureError) {
+      return temperatureError;
+    }
+  }
+
+  if (ingredient.category === "yeast") {
+    const temperatureError = validateNumericInput(String(ingredient.stepMeta.fermentationTempC ?? ""), {
+      label: "Температура брожения",
+      min: -10,
+      max: 50
+    });
+    if (temperatureError) {
+      return temperatureError;
+    }
+  }
+
+  return null;
 };
 
 const clampPercent = (value: number) => Math.min(100, Math.max(0, value));
@@ -2414,19 +2496,21 @@ function RecipeBatchParametersBlock({
             <label className="space-y-1 text-[11px] font-medium uppercase tracking-wide text-zinc-500">
               Объём
               <div className="relative">
-                <input type="number" min={0.1} step={0.1} value={batchSize.quantity} onChange={(event) => setBatchSize((current) => ({ ...current, quantity: event.target.value }))} className="h-9 w-full rounded-lg border border-zinc-200 bg-white px-2.5 pr-10 text-sm tabular-nums text-zinc-900 shadow-sm focus:border-zinc-400 focus:outline-none focus:ring-2 focus:ring-zinc-200" />
+                <input type="number" min={0.1} max={10000} step={0.1} value={batchSize.quantity} onChange={(event) => setBatchSize((current) => ({ ...current, quantity: event.target.value }))} className="h-9 w-full rounded-lg border border-zinc-200 bg-white px-2.5 pr-10 text-sm tabular-nums text-zinc-900 shadow-sm focus:border-zinc-400 focus:outline-none focus:ring-2 focus:ring-zinc-200" />
                 <span className="pointer-events-none absolute inset-y-0 right-3 flex items-center text-sm font-medium text-zinc-400">
                   л
                 </span>
               </div>
+              {sectionErrors.batchSizeEnteredQuantity ? <span className="block text-xs normal-case tracking-normal text-rose-600">{sectionErrors.batchSizeEnteredQuantity}</span> : null}
             </label>
             <label className="space-y-1 text-[11px] font-medium uppercase tracking-wide text-zinc-500">
               Эффективность, %
-              <input type="number" min={1} max={100} value={efficiency} onChange={(event) => setEfficiency(event.target.value)} className="h-9 w-full rounded-lg border border-zinc-200 bg-white px-2.5 text-sm tabular-nums text-zinc-900 shadow-sm focus:border-zinc-400 focus:outline-none focus:ring-2 focus:ring-zinc-200" />
+              <input type="number" min={1} max={100} step={0.1} value={efficiency} onChange={(event) => setEfficiency(event.target.value)} className="h-9 w-full rounded-lg border border-zinc-200 bg-white px-2.5 text-sm tabular-nums text-zinc-900 shadow-sm focus:border-zinc-400 focus:outline-none focus:ring-2 focus:ring-zinc-200" />
+              {sectionErrors.efficiency ? <span className="block text-xs normal-case tracking-normal text-rose-600">{sectionErrors.efficiency}</span> : null}
             </label>
             <label className="space-y-1 text-[11px] font-medium uppercase tracking-wide text-zinc-500">
               Кипячение, мин
-              <input type="number" min={1} value={boilTimeMinutes} onChange={(event) => setBoilTimeMinutes(event.target.value)} className="h-9 w-full rounded-lg border border-zinc-200 bg-white px-2.5 text-sm tabular-nums text-zinc-900 shadow-sm focus:border-zinc-400 focus:outline-none focus:ring-2 focus:ring-zinc-200" />
+              <input type="number" min={1} max={600} step={1} value={boilTimeMinutes} onChange={(event) => setBoilTimeMinutes(event.target.value)} className="h-9 w-full rounded-lg border border-zinc-200 bg-white px-2.5 text-sm tabular-nums text-zinc-900 shadow-sm focus:border-zinc-400 focus:outline-none focus:ring-2 focus:ring-zinc-200" />
               {sectionErrors.boilTimeMinutes ? <span className="block text-xs normal-case tracking-normal text-rose-600">{sectionErrors.boilTimeMinutes}</span> : null}
             </label>
           </div>
@@ -2523,203 +2607,6 @@ function BitternessCalculationBlock({
         <span>Учитывать carryover позднего boil-хмеля в whirlpool как практическое приближение.</span>
       </label>
       <p className="mt-2 text-xs text-zinc-400">Dry hop не входит в стандартный IBU total по умолчанию.</p>
-    </details>
-  );
-}
-
-const waterPlanVolumeSourceLabels: Record<RecipeWaterPlanResult["waterVolumes"]["source"], string> = {
-  batch_size: "объем партии",
-  equipment_profile: "профиль оборудования",
-  manual_split: "разделение воды"
-};
-
-const waterPlanWarningLabels: Record<string, string> = {
-  water_split_below_batch_volume: "Сумма заторной и промывочной воды меньше объема партии.",
-  source_profile_missing_or_zero: "Исходный профиль воды не заполнен.",
-  target_profile_missing_or_zero: "Целевой профиль воды не заполнен.",
-  grain_bill_missing_for_mash_ph: "Для pH нужен зерновой состав.",
-  mash_ph_ballpark_estimate: "Mash pH — практическая оценка, калибруется по измерениям.",
-  mash_acid_model_practical_approximation: "Кислота считается практическим приближением.",
-  target_already_reached: "Целевой pH уже достигнут без кислоты.",
-  target_not_reached_within_max_acid: "Целевой pH не достигнут в заданном лимите кислоты.",
-  calcium_above_practical_range: "Ca выше практического диапазона.",
-  magnesium_above_practical_range: "Mg выше практического диапазона.",
-  sodium_above_practical_range: "Na выше практического диапазона.",
-  chloride_above_practical_range: "Cl выше практического диапазона.",
-  sulfate_above_practical_range: "SO4 выше практического диапазона.",
-  bicarbonate_above_practical_range: "HCO3 выше практического диапазона."
-};
-
-const formatWaterPlanAdditions = (items: RecipeWaterPlanResult["mashSaltAdditions"]) => (
-  items.length ? items.map((item) => `${item.label} ${item.formula} ${item.grams.toFixed(2)} г`).join(", ") : "без добавок"
-);
-
-const formatWaterProfileLine = (profile: RecipeWaterPlanResult["finalProfile"]) => (
-  `Ca ${profile.ca.toFixed(0)} · Mg ${profile.mg.toFixed(0)} · Na ${profile.na.toFixed(0)} · Cl ${profile.cl.toFixed(0)} · SO4 ${profile.so4.toFixed(0)} · HCO3 ${profile.hco3.toFixed(0)} ppm`
-);
-
-function WaterPlanBlock({
-  waterPlanMeta,
-  waterPlanResult,
-  onChange
-}: {
-  waterPlanMeta: RecipeWaterPlanMeta;
-  waterPlanResult: RecipeWaterPlanResult;
-  onChange: (next: RecipeWaterPlanMeta) => void;
-}) {
-  const source = waterPlanMeta.sourceProfile ?? { ca: 0, mg: 0, na: 0, cl: 0, so4: 0, hco3: 0, ph: null };
-  const target = waterPlanMeta.targetProfile ?? { ca: 0, mg: 0, na: 0, cl: 0, so4: 0, hco3: 0, ph: null };
-  const visibleWarnings = waterPlanResult.warnings.slice(0, 3);
-
-  const updateIon = (kind: "sourceProfile" | "targetProfile", key: keyof typeof source, value: string) => {
-    onChange({
-      ...waterPlanMeta,
-      [kind]: {
-        ...(kind === "sourceProfile" ? source : target),
-        [key]: value.trim() ? Number(value) : 0
-      }
-    });
-  };
-
-  return (
-    <details className="group rounded-2xl border border-zinc-100 bg-white p-5 shadow-sm">
-      <summary className="flex cursor-pointer list-none items-center gap-2 text-sm font-semibold text-zinc-700">
-        <div className="flex h-7 w-7 items-center justify-center rounded-md bg-sky-50">
-          <Droplets className="h-3.5 w-3.5 text-sky-600" />
-        </div>
-        Вода
-        <span className="text-xs font-normal text-zinc-400">{recipeWaterEngineLabels[waterPlanMeta.engine]}</span>
-        <ChevronRight className="ml-auto h-4 w-4 text-zinc-400 transition-transform group-open:rotate-90" />
-      </summary>
-      <div className="mt-3 grid gap-3 md:grid-cols-2">
-        <label className="text-xs text-zinc-600">
-          Схема
-          <select
-            value={waterPlanMeta.engine}
-            onChange={(event) => onChange({ ...waterPlanMeta, engine: event.target.value as RecipeWaterPlanMeta["engine"] })}
-            className="mt-1 h-10 w-full rounded-lg border border-zinc-200 bg-white px-3 text-sm text-zinc-900"
-          >
-            {recipeWaterEngineModes.map((engine) => (
-              <option key={engine} value={engine}>{recipeWaterEngineLabels[engine]}</option>
-            ))}
-          </select>
-        </label>
-        <label className="text-xs text-zinc-600">
-          pH model
-          <select
-            value={waterPlanMeta.phModel}
-            onChange={(event) => onChange({ ...waterPlanMeta, phModel: event.target.value as RecipeWaterPlanMeta["phModel"] })}
-            className="mt-1 h-10 w-full rounded-lg border border-zinc-200 bg-white px-3 text-sm text-zinc-900"
-          >
-            {recipeMashPhModels.map((model) => (
-              <option key={model} value={model}>{recipeMashPhModelLabels[model]}</option>
-            ))}
-          </select>
-        </label>
-        {waterPlanMeta.engine !== "profile_only" ? (
-          <>
-            <label className="text-xs text-zinc-600">
-              Целевой mash pH
-              <input
-                type="number"
-                min={4}
-                max={7}
-                step={0.01}
-                value={waterPlanMeta.targetMashPh ?? 5.35}
-                onChange={(event) => onChange({ ...waterPlanMeta, targetMashPh: toOptionalNumber(event.target.value) ?? 5.35 })}
-                className="mt-1 h-10 w-full rounded-lg border border-zinc-200 bg-white px-3 text-sm text-zinc-900"
-              />
-            </label>
-            <label className="text-xs text-zinc-600">
-              Кислота
-              <select
-                value={waterPlanMeta.selectedAcid ?? "lactic_acid"}
-                onChange={(event) => onChange({ ...waterPlanMeta, selectedAcid: event.target.value as RecipeWaterPlanMeta["selectedAcid"] })}
-                className="mt-1 h-10 w-full rounded-lg border border-zinc-200 bg-white px-3 text-sm text-zinc-900"
-              >
-                <option value="lactic_acid">Молочная кислота</option>
-                <option value="phosphoric_acid">Фосфорная кислота</option>
-              </select>
-            </label>
-          </>
-        ) : null}
-      </div>
-      <div className="mt-4 border-y border-zinc-100 py-3">
-        <div className="grid gap-3 md:grid-cols-4">
-          <div>
-            <div className="text-[11px] uppercase text-zinc-400">Затор</div>
-            <div className="text-sm font-semibold text-zinc-800">{waterPlanResult.waterVolumes.mashWaterL.toFixed(1)} л</div>
-          </div>
-          <div>
-            <div className="text-[11px] uppercase text-zinc-400">Промывка</div>
-            <div className="text-sm font-semibold text-zinc-800">{waterPlanResult.waterVolumes.spargeWaterL.toFixed(1)} л</div>
-          </div>
-          <div>
-            <div className="text-[11px] uppercase text-zinc-400">Всего</div>
-            <div className="text-sm font-semibold text-zinc-800">{waterPlanResult.waterVolumes.totalWaterL.toFixed(1)} л</div>
-          </div>
-          <div>
-            <div className="text-[11px] uppercase text-zinc-400">Mash pH 20°C</div>
-            <div className="text-sm font-semibold text-zinc-800">
-              {waterPlanResult.predictedMashPhAfterAcid20C != null ? waterPlanResult.predictedMashPhAfterAcid20C.toFixed(2) : "—"}
-            </div>
-          </div>
-        </div>
-        <div className="mt-3 grid gap-2 text-xs text-zinc-600 md:grid-cols-2">
-          <div>
-            <span className="font-medium text-zinc-700">В затор: </span>
-            {formatWaterPlanAdditions(waterPlanResult.mashSaltAdditions)}
-          </div>
-          <div>
-            <span className="font-medium text-zinc-700">В промывку: </span>
-            {formatWaterPlanAdditions(waterPlanResult.spargeSaltAdditions)}
-          </div>
-          {waterPlanResult.mashAcidAddition ? (
-            <div>
-              <span className="font-medium text-zinc-700">Кислота в затор: </span>
-              {waterPlanResult.mashAcidAddition.label} {waterPlanResult.mashAcidAddition.mashAcidMl.toFixed(2)} мл
-            </div>
-          ) : null}
-          <div>
-            <span className="font-medium text-zinc-700">SO4:Cl: </span>
-            {waterPlanResult.sulfateChlorideRatio ?? "—"}
-            <span className="ml-2 text-zinc-400">{waterPlanVolumeSourceLabels[waterPlanResult.waterVolumes.source]}</span>
-          </div>
-        </div>
-        <p className="mt-2 text-xs text-zinc-500">{formatWaterProfileLine(waterPlanResult.finalProfile)}</p>
-        {visibleWarnings.length ? (
-          <div className="mt-2 space-y-1 text-xs text-amber-700">
-            {visibleWarnings.map((warning) => (
-              <p key={warning}>{waterPlanWarningLabels[warning] ?? warning}</p>
-            ))}
-          </div>
-        ) : null}
-      </div>
-      <div className="mt-4 grid gap-4 lg:grid-cols-2">
-        {([
-          ["sourceProfile", "Исходная вода", source],
-          ["targetProfile", "Цель", target]
-        ] as const).map(([kind, title, profile]) => (
-          <div key={kind} className="space-y-2">
-            <h4 className="text-xs font-semibold text-zinc-600">{title}</h4>
-            <div className="grid grid-cols-3 gap-2">
-              {(["ca", "mg", "na", "cl", "so4", "hco3"] as const).map((key) => (
-                <label key={key} className="text-[11px] uppercase text-zinc-400">
-                  {key}
-                  <input
-                    type="number"
-                    min={0}
-                    value={profile[key]}
-                    onChange={(event) => updateIon(kind, key, event.target.value)}
-                    className="mt-1 h-9 w-full rounded-lg border border-zinc-200 bg-white px-2 text-sm text-zinc-900"
-                  />
-                </label>
-              ))}
-            </div>
-          </div>
-        ))}
-      </div>
-      <p className="mt-3 text-xs text-zinc-400">Подробный solver солей и кислот использует этот source/target профиль; advanced-поля остаются свернутыми.</p>
     </details>
   );
 }
@@ -2823,7 +2710,7 @@ function SectionRow({
             value={ingredient.amountEnteredQuantity}
             onChange={(event) => onQuantityChange(ingredient.localId, event.target.value)}
             className="h-7 w-[72px] rounded-md border border-zinc-200 bg-zinc-50 px-2 text-right text-sm tabular-nums text-zinc-900 focus:border-zinc-400 focus:bg-white focus:outline-none focus:ring-1 focus:ring-zinc-200"
-            min={0}
+            min={quantityStep}
             step={quantityStep}
           />
           <span className="text-xs text-zinc-500">{unitLabel}</span>
@@ -2836,6 +2723,7 @@ function SectionRow({
               onChange={(event) => onTimeChange(ingredient.localId, event.target.value)}
               className="h-7 w-[64px] rounded-md border border-zinc-200 bg-zinc-50 px-2 text-right text-sm tabular-nums text-zinc-900 focus:border-zinc-400 focus:bg-white focus:outline-none focus:ring-1 focus:ring-zinc-200"
               min={0}
+              max={600}
               step={1}
             />
             <span className="text-xs text-zinc-500">мин</span>
@@ -3103,6 +2991,9 @@ function RecipeProfiles({
                     <span className="block text-[10px] text-zinc-400">°C</span>
                     <input
                       type="number"
+                      min={0}
+                      max={100}
+                      step={0.1}
                       value={step.temperatureC}
                       onChange={(event) => onChange({
                         ...processMeta,
@@ -3117,6 +3008,9 @@ function RecipeProfiles({
                     <span className="block text-[10px] text-zinc-400">мин</span>
                     <input
                       type="number"
+                      min={1}
+                      max={600}
+                      step={1}
                       value={step.durationMinutes}
                       onChange={(event) => onChange({
                         ...processMeta,
@@ -3177,6 +3071,9 @@ function RecipeProfiles({
               Осн. температура, °C
               <input
                 type="number"
+                min={-10}
+                max={50}
+                step={0.1}
                 value={processMeta.fermentationProfile.primaryTemperatureC ?? ""}
                 onChange={(event) => onChange({
                   ...processMeta,
@@ -3192,6 +3089,9 @@ function RecipeProfiles({
               Осн. длительность, дн
               <input
                 type="number"
+                min={1}
+                max={365}
+                step={1}
                 value={processMeta.fermentationProfile.primaryDurationDays ?? ""}
                 onChange={(event) => onChange({
                   ...processMeta,
@@ -3216,6 +3116,9 @@ function RecipeProfiles({
                   <span className="text-[10px] text-zinc-400">°C</span>
                   <input
                     type="number"
+                    min={-10}
+                    max={50}
+                    step={0.1}
                     value={step.temperatureC ?? ""}
                     onChange={(event) => onChange({
                       ...processMeta,
@@ -3231,6 +3134,9 @@ function RecipeProfiles({
                   <span className="text-[10px] text-zinc-400">дни</span>
                   <input
                     type="number"
+                    min={1}
+                    max={365}
+                    step={1}
                     value={step.durationDays ?? ""}
                     onChange={(event) => onChange({
                       ...processMeta,
@@ -3303,6 +3209,9 @@ function RecipeProfiles({
                     <span className="text-[10px] text-zinc-400">°C</span>
                     <input
                       type="number"
+                      min={-10}
+                      max={50}
+                      step={0.1}
                       value={processMeta.fermentationProfile[key].temperatureC ?? ""}
                       onChange={(event) => onChange({
                         ...processMeta,
@@ -3321,6 +3230,9 @@ function RecipeProfiles({
                     <span className="text-[10px] text-zinc-400">дни</span>
                     <input
                       type="number"
+                      min={1}
+                      max={365}
+                      step={1}
                       value={processMeta.fermentationProfile[key].durationDays ?? ""}
                       onChange={(event) => onChange({
                         ...processMeta,
@@ -3900,7 +3812,7 @@ function IngredientEditor({
                 Количество
                 <input
                   type="number"
-                  min={0}
+                  min={quantityStep}
                   step={quantityStep}
                   value={draft.amountEnteredQuantity}
                   onChange={(event) => onChange({ ...draft, amountEnteredQuantity: event.target.value })}
@@ -3946,6 +3858,8 @@ function IngredientEditor({
                     <input
                       type="number"
                       min={0}
+                      max={600}
+                      step={1}
                       value={draft.stepMeta.timeMinutes ?? ""}
                       onChange={(event) => onChange({
                         ...draft,
@@ -3988,6 +3902,8 @@ function IngredientEditor({
                     <input
                       type="number"
                       min={0}
+                      max={600}
+                      step={1}
                       value={draft.stepMeta.timeMinutes ?? ""}
                       onChange={(event) => onChange({
                         ...draft,
@@ -4006,6 +3922,8 @@ function IngredientEditor({
                     <input
                       type="number"
                       min={1}
+                      max={365}
+                      step={1}
                       value={draft.stepMeta.durationDays ?? ""}
                       onChange={(event) => onChange({
                         ...draft,
@@ -4041,6 +3959,8 @@ function IngredientEditor({
                     <input
                       type="number"
                       min={0}
+                      max={100}
+                      step={0.1}
                       value={draft.stepMeta.temperatureC ?? ""}
                       onChange={(event) => onChange({
                         ...draft,
@@ -4062,6 +3982,9 @@ function IngredientEditor({
                   Основная температура брожения, °C
                   <input
                     type="number"
+                    min={-10}
+                    max={50}
+                    step={0.1}
                     value={draft.stepMeta.fermentationTempC ?? ""}
                     onChange={(event) => onChange({
                       ...draft,
@@ -4097,6 +4020,9 @@ function IngredientEditor({
                   Время, если нужно
                   <input
                     type="number"
+                    min={0}
+                    max={600}
+                    step={1}
                     value={draft.stepMeta.timeMinutes ?? ""}
                     onChange={(event) => onChange({
                       ...draft,
@@ -4619,10 +4545,31 @@ export function RecipeDesigner({
   const fermentables = getCategoryRows(ingredients, "fermentable");
   const hops = getCategoryRows(ingredients, "hop");
   const yeasts = getCategoryRows(ingredients, "yeast");
+  const waterTreatments = getCategoryRows(ingredients, "water_treatment");
   const consumables = getCategoryRows(ingredients, "consumable");
 
   const fermentableTotalKg = getFermentableWeightTotalKg(fermentables);
   const hopTotalG = getHopWeightTotalG(hops);
+  const [waterSetupOpen, setWaterSetupOpen] = useState(false);
+  const openWaterSetup = React.useCallback(() => {
+    setWaterSetupOpen(true);
+  }, []);
+  const closeWaterSetup = React.useCallback(() => {
+    setWaterSetupOpen(false);
+  }, []);
+  const computedWaterAdditiveCount = useMemo(() => {
+    if (!waterPlanMeta.setupEnabled) {
+      return 0;
+    }
+    const isSplit = waterPlanResult.waterVolumes.source === "manual_split";
+    const saltCount = isSplit
+      ? waterPlanResult.mashSaltAdditions.filter((s) => s.grams > 0).length
+        + waterPlanResult.spargeSaltAdditions.filter((s) => s.grams > 0).length
+      : waterPlanResult.totalSaltAdditions.filter((s) => s.grams > 0).length;
+    const acidCount = (waterPlanResult.mashAcidAddition?.mashAcidMl ?? 0) > 0 ? 1 : 0;
+    const spargeAcidCount = (waterPlanResult.spargeAcidAddition?.spargeAcidMl ?? 0) > 0 ? 1 : 0;
+    return saltCount + acidCount + spargeAcidCount;
+  }, [waterPlanMeta.setupEnabled, waterPlanResult]);
 
   const sectionDefinitions: Array<{
     category: IngredientCategory;
@@ -4729,6 +4676,70 @@ export function RecipeDesigner({
         empty: "Добавьте дрожжи для публикации рецепта."
       },
       {
+        category: "water_treatment",
+        title: "Водоподготовка",
+        subtitle:
+          computedWaterAdditiveCount + waterTreatments.length > 0
+            ? `${computedWaterAdditiveCount + waterTreatments.length} поз.`
+            : undefined,
+        items: waterTreatments,
+        empty: "Соли и кислоты появятся здесь, когда вы настроите воду ниже.",
+        renderItems: (items) => (
+          <div className="space-y-3">
+            <RecipeWaterAdditivesSection
+              waterPlanMeta={waterPlanMeta}
+              waterPlanResult={waterPlanResult}
+              setupOpen={waterSetupOpen}
+              onOpenSetup={openWaterSetup}
+              onCloseSetup={closeWaterSetup}
+              onResetWater={() => setWaterPlanMeta(createRecipeWaterPlanResetMeta())}
+              onRemoveManualSalt={(index) =>
+                setWaterPlanMeta((current) => removeRecipeWaterManualSaltAddition(current, index))
+              }
+              onApplyAcidConcentration={(concentrationPct) =>
+                setWaterPlanMeta((current) => ({
+                  ...current,
+                  acidConcentrationPct: concentrationPct
+                }))
+              }
+            />
+            {items.length ? (
+              <ul className="space-y-2 px-3 pb-3 sm:px-4 sm:pb-4">
+                {items.map((ingredient) => (
+                  <SectionRow
+                    key={ingredient.localId}
+                    ingredient={ingredient}
+                    onEdit={(value) => maybeOpenEditor({
+                      localId: value.localId,
+                      category: value.category,
+                      draft: { ...value },
+                      initialSignature: serializeIngredient(value),
+                      isExisting: true
+                    })}
+                    onDelete={deleteIngredient}
+                    onQuantityChange={updateIngredientQuantity}
+                    onTimeChange={updateHopTimeMinutes}
+                    onAddImportedAsCustom={addImportedIngredientAsCustom}
+                    onMapImportedSource={openImportedCatalogMatcher}
+                  />
+                ))}
+              </ul>
+            ) : null}
+            <div className="px-3 pb-3 sm:px-4 sm:pb-4">
+              <WaterSetupWizard
+                variant="embedded"
+                isOpen={waterSetupOpen}
+                onIsOpenChange={setWaterSetupOpen}
+                waterPlanMeta={waterPlanMeta}
+                waterPlanResult={waterPlanResult}
+                styleId={styleId.trim() || null}
+                onChange={setWaterPlanMeta}
+              />
+            </div>
+          </div>
+        ),
+      },
+      {
         category: "consumable",
         title: "Другие добавки",
         subtitle: consumables.length ? `${consumables.length} поз.` : undefined,
@@ -4737,6 +4748,8 @@ export function RecipeDesigner({
       }
     ];
 
+  const editorFieldError = openEditor ? getIngredientDraftFieldError(openEditor.draft) : null;
+  const editorCanSave = openEditor ? !editorFieldError : false;
   const editorPanel = openEditor ? (
     <IngredientEditor
       draft={openEditor.draft}
@@ -4746,8 +4759,8 @@ export function RecipeDesigner({
       onCancel={() => closeEditor()}
       onDelete={openEditor.localId ? () => deleteIngredient(openEditor.localId!) : undefined}
       saveLabel={openEditor.localId ? "Сохранить позицию" : "Добавить позицию"}
-      fieldError={null}
-      saveDisabled={!isIngredientValid(openEditor.draft)}
+      fieldError={editorFieldError}
+      saveDisabled={!editorCanSave}
     />
   ) : null;
 
@@ -5356,23 +5369,17 @@ export function RecipeDesigner({
         {sectionErrors["processMeta.mashProfile.steps"] ? (
           <p className="text-xs text-rose-700">{sectionErrors["processMeta.mashProfile.steps"]}</p>
         ) : null}
+        {sectionErrors["processMeta.fermentationProfile"] ? (
+          <p className="text-xs text-rose-700">{sectionErrors["processMeta.fermentationProfile"]}</p>
+        ) : null}
       </div>
 
-      <div className="space-y-4">
-        <WaterSetupWizard
-          waterPlanMeta={waterPlanMeta}
-          waterPlanResult={waterPlanResult}
-          styleId={styleId.trim() || null}
-          onChange={setWaterPlanMeta}
-        />
-
-        <StockCoverageSummary
-          coverage={stockCoverage}
-          pending={pendingSave}
-          activeRecipeId={activeRecipeId}
-          onAction={(action) => void runInventoryAction(action)}
-        />
-      </div>
+      <StockCoverageSummary
+        coverage={stockCoverage}
+        pending={pendingSave}
+        activeRecipeId={activeRecipeId}
+        onAction={(action) => void runInventoryAction(action)}
+      />
 
       <section className="space-y-4">
         <RecipeImagesSection

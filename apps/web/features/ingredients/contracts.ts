@@ -139,6 +139,11 @@ export type ConsumableTechnicalData = {
 export type WaterTreatmentTechnicalData = {
   type: "water_treatment";
   formula?: string | null;
+  displayFormula?: string | null;
+  calculationFormula?: string | null;
+  concentrationOptions?: string[];
+  concentrationPct?: number | null;
+  defaultConcentrationPct?: number | null;
   commonForms?: string[];
   unitPreferred?: string | null;
   typicalUseRu?: string | null;

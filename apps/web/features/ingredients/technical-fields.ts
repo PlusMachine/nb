@@ -1,4 +1,5 @@
 import type { IngredientTechnicalData, IngredientTechnicalFields, IngredientType } from "./contracts";
+import { normalizeWaterTreatmentConcentrationPct } from "./water-treatment";
 
 export const hopForms = ["pellet", "whole_cone", "lupulin", "cryo", "standard"] as const;
 export type HopForm = (typeof hopForms)[number];
@@ -86,6 +87,10 @@ type IngredientTechnicalSource = {
   yeastMaxFermentationTempC?: number | null;
   formula?: string | null;
   unitPreferred?: string | null;
+  displayFormula?: string | null;
+  calculationFormula?: string | null;
+  concentrationPct?: number | string | null;
+  defaultConcentrationPct?: number | string | null;
 };
 
 const isRecord = (value: unknown): value is Record<string, unknown> => (
@@ -399,6 +404,11 @@ const fromAttributes = (
   return {
     type,
     formula: readString(attributes.formula),
+    displayFormula: readString(attributes.display_formula),
+    calculationFormula: readString(attributes.calculation_formula),
+    concentrationOptions: readStringArray(attributes.concentration_options),
+    concentrationPct: normalizeWaterTreatmentConcentrationPct(attributes.concentration_pct),
+    defaultConcentrationPct: readNumber(attributes.default_concentration_pct),
     commonForms: readStringArray(attributes.common_forms),
     unitPreferred: readString(attributes.unit_preferred),
     typicalUseRu: readString(attributes.typical_use_ru),
@@ -529,6 +539,10 @@ export const extractIngredientTechnicalData = (source: IngredientTechnicalSource
     return {
       type,
       formula: readString(source.formula),
+      displayFormula: readString(source.displayFormula),
+      calculationFormula: readString(source.calculationFormula),
+      concentrationPct: normalizeWaterTreatmentConcentrationPct(source.concentrationPct),
+      defaultConcentrationPct: normalizeWaterTreatmentConcentrationPct(source.defaultConcentrationPct),
       unitPreferred: readString(source.unitPreferred)
     };
   }

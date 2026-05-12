@@ -3,6 +3,7 @@ import React from "react";
 import type { RecipeDetailDto } from "@/features/recipes/contracts";
 
 import { PublicRecipeHeader } from "./public-recipe-header";
+import { PublicRecipeWaterSection } from "./public-recipe-water-section";
 import { RecipeIngredientsSection } from "./recipe-ingredients-section";
 import { RecipeMetaSection } from "./recipe-meta-section";
 import { RecipeStatsSummary } from "./recipe-stats-summary";
@@ -24,6 +25,7 @@ export function PublicRecipePage({ recipe }: { recipe: RecipeDetailDto }) {
       <PublicRecipeHero heroImageId={recipe.heroImageId} title={recipe.title} />
       <RecipeStatsSummary recipe={recipe} />
       <RecipeIngredientsSection ingredients={recipe.ingredients} />
+      <PublicRecipeWaterSection recipe={recipe} />
       <RecipeMetaSection recipe={recipe} showPrivateNotes={false} />
     </main>
   );

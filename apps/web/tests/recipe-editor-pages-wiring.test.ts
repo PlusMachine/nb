@@ -88,7 +88,7 @@ describe("recipe editor pages wiring", () => {
     expect(mocks.listRecipeImages).toHaveBeenCalledWith("r-1", "u-1");
     expect(mocks.listEquipmentProfiles).toHaveBeenCalledWith("u-1");
     expect(html).toContain("Название рецепта");
-    expect(html).toContain("Автосохранение");
+    expect(html).toContain("Ингредиенты со склада");
   });
 
   it("ownership-safe deny on edit route", async () => {
@@ -104,7 +104,7 @@ describe("recipe editor pages wiring", () => {
     const html = renderToStaticMarkup(await NewRecipePage({ searchParams: Promise.resolve({}) }));
 
     expect(html).toContain("Название рецепта");
-    expect(html).toContain("Автосохранение");
+    expect(html).toContain("Ингредиенты со склада");
     expect(mocks.getNextDefaultRecipeTitle).toHaveBeenCalledWith("u-1");
     expect(mocks.listEquipmentProfiles).toHaveBeenCalledWith("u-1");
     expect(html).toContain("Новый рецепт 7");

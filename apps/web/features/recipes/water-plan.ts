@@ -111,12 +111,12 @@ export const recipeWaterSaltPresentation: Record<
   BrewingSaltId,
   { label: string; formula: string }
 > = {
-  gypsum: { label: "Гипс", formula: "CaSO4·2H2O" },
+  gypsum: { label: "Гипс", formula: "CaSO4" },
   calcium_chloride: {
-    label: "Хлорид кальция (дигидрат)",
-    formula: "CaCl2·2H2O",
+    label: "Хлорид кальция",
+    formula: "CaCl2",
   },
-  epsom_salt: { label: "Эпсомская соль", formula: "MgSO4·7H2O" },
+  epsom_salt: { label: "Эпсомская соль", formula: "MgSO4" },
   baking_soda: { label: "Сода пищевая", formula: "NaHCO3" },
   table_salt: { label: "Соль поваренная (не йодированная)", formula: "NaCl" },
   chalk: { label: "Мел (карбонат кальция)", formula: "CaCO3" },

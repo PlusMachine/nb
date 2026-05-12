@@ -14,5 +14,5 @@ export const updateSettingsAction = async (formData: FormData) => {
     displayName,
     preferredCurrency: resolvePreferredCurrency(formData.get("preferredCurrency"))
   });
-  redirect("/settings");
+  redirect("/profile");
 };

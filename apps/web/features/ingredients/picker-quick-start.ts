@@ -241,11 +241,19 @@ export const resolveWaterTreatmentQuickStartGroup = (source: {
     const formula = typeof source.technicalData.formula === "string"
       ? source.technicalData.formula
       : null;
+    const displayFormula = typeof source.technicalData.displayFormula === "string"
+      ? source.technicalData.displayFormula
+      : null;
+    const calculationFormula = typeof source.technicalData.calculationFormula === "string"
+      ? source.technicalData.calculationFormula
+      : null;
     candidates.push(
       ...waterCalcRole,
       ...recommendedFor,
       typicalUseRu,
-      formula
+      formula,
+      displayFormula,
+      calculationFormula
     );
   }
 

@@ -15,8 +15,7 @@ const navItems = [
   { href: "/app/equipment", label: "Оборудование" },
   { href: "/app/catalog", label: "Каталог" },
   { href: "/app/ingredients", label: "Склад" },
-  { href: "/profile", label: "Профиль" },
-  { href: "/settings", label: "Настройки" }
+  { href: "/profile", label: "Профиль" }
 ];
 
 const isActivePath = (pathname: string, href: string, exact?: boolean) => (

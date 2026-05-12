@@ -321,7 +321,9 @@ Root shape: объект с мета-полями и `items[]`.
 - `display_mode_ru`: обязательный literal `localized_first`.
 - `aliases_ru`: обязательный `string[]`.
 - `aliases_en`: обязательный `string[]`, может быть пустым.
-- `formula`: `string | undefined`, химическая формула.
+- `formula`: `string | undefined`, короткая формула для UI/поиска.
+- `display_formula`: `string | undefined`, прикладная подпись вместо формулы, например `88%` для кислоты.
+- `calculation_formula`: `string | undefined`, точная расчетная форма соли, например гидрат.
 - `common_forms`: обязательный `string[]`, текущие варианты элементов массива: `crystals`, `flakes`, `grist`, `liquid`, `pellets`, `powder`, `process`, `tablet`.
 - `unit_preferred`: `string | undefined`, значения: `% grist`, `L`, `g`, `mg`, `ml`.
 - `water_calc_role`: обязательный `string[]`, важнейшее поле для калькулятора воды. Текущие значения тегов: `acidification_minor`, `advanced_dark_beer_adjustment`, `advanced_liquor_treatment`, `advanced_profile_tuning`, `base_water`, `blank_canvas_water`, `chloramine_removal`, `chlorine_removal`, `dilution`, `enhance_fullness`, `enhance_hop_crispness`, `fine_tune_hoppy_profiles`, `grist_based_acidification`, `hypochlorite_removal`, `lower_mash_pH`, `lower_mash_pH_slightly`, `lower_sparge_pH`, `mouthfeel_adjustment`, `organic_contaminant_reduction`, `raise_alkalinity`, `raise_bicarbonate`, `raise_calcium`, `raise_chloride`, `raise_effective_bicarbonate`, `raise_magnesium`, `raise_mash_pH`, `raise_potassium`, `raise_sodium`, `raise_sulfate`, `reduce_alkalinity`, `temporary_hardness_reduction`.
@@ -338,6 +340,7 @@ Root shape: объект с мета-полями и `items[]`.
 - `typical_dose_reference`: `object | undefined`.
 - `source_basis`: обязательный `string[]`, текущие значения элементов: `BYO`, `Baltic Brewing`, `BeerSmith`, `BeerSmith community`, `Brewer's Friend`, `Brewer's Friend community`, `Brewfather`, `Bru'n Water`, `The Malt Miller`.
 - `concentration_options`: `string[] | undefined`, значения: `10%`, `25%`, `28–32%`, `37%`, `6.3% HCl + 8.6% H2SO4`, `75%`, `80%`, `85%`, `88%`, `93–98%`, `user_defined`.
+- `default_concentration_pct`: `number | undefined`, концентрация по умолчанию для расчетов/подписи кислоты.
 - `ion_contributions_ppm_per_g_per_gal`: `object | undefined`.
 - `ion_contributions_ppm_per_g_per_l`: `object | undefined`.
 
@@ -374,11 +377,11 @@ Root shape: объект с мета-полями и `items[]`.
 
 - Основные фильтры: `item_kind`, `category`, `recommendation_level`, `calculation_support`, `common_in_homebrewing`, `common_in_pro_brewing`.
 - Ролевые фильтры: `water_calc_role`.
-- Поиск/подсказки: `recommended_for`, `formula`, `aliases_*`.
+- Поиск/подсказки: `recommended_for`, `formula`, `display_formula`, `calculation_formula`, `aliases_*`.
 
 ### Что показывать на карточке
 
-- Заголовок: `name_ru`, `name_en`, `formula`.
+- Заголовок: `name_ru`, `name_en`, `display_formula ?? formula`.
 - Тип: `item_kind`, `category`.
 - Функция: `water_calc_role`, `pH_effect_direction`, `recommendation_level`.
 - Практика: `typical_use_ru`, `cautions_ru`, `storage_notes_ru`.

@@ -258,6 +258,19 @@ describe("inventory add-flow", () => {
     expect(consumableHtml).toContain("placeholder=\"Например: Five Star Chemicals\"");
   });
 
+  it("shows acid concentration in custom water treatment flow", () => {
+    const html = renderToStaticMarkup(React.createElement(CustomIngredientForm, {
+      category: "water_treatment",
+      initialSubtype: "acid",
+      preferredCurrency: "USD",
+      pending: false,
+      onSubmit: async () => undefined
+    }));
+
+    expect(html).toContain("Концентрация кислоты, %");
+    expect(html).toContain("placeholder=\"Например: 80\"");
+  });
+
   it("hides duplicate subtype selector for hop custom flow", () => {
     const html = renderToStaticMarkup(React.createElement(CustomIngredientForm, {
       category: "hop",
@@ -592,6 +605,38 @@ describe("inventory add-flow", () => {
     expect(html).toContain("Загружаем недавние...");
   });
 
+  it("shows catalog acid concentration override for stock additions", () => {
+    const html = renderToStaticMarkup(React.createElement(CatalogIngredientForm, {
+      category: "water_treatment",
+      initialSelection: {
+        id: "lactic-acid",
+        type: "water_treatment",
+        category: "water_treatment",
+        subtype: "acid",
+        displayName: "Молочная кислота",
+        primaryLabelRu: "Молочная кислота",
+        defaultUnit: "ml",
+        source: "catalog",
+        technicalData: {
+          type: "water_treatment",
+          displayFormula: "88%",
+          defaultConcentrationPct: 88,
+          unitPreferred: "ml"
+        }
+      },
+      preferredCurrency: "USD",
+      pending: false,
+      onSubmit: async () => undefined,
+      onRequestCustom: () => undefined
+    }));
+
+    expect(html).toContain('data-testid="catalog-batch-overrides"');
+    expect(html).toContain("Концентрация");
+    expect(html).toContain("88%");
+    expect(html).toContain("Концентрация кислоты, %");
+    expect(html).not.toContain("Уточнить параметры");
+  });
+
   it("uses the passed consumable quick-start context in the catalog form", () => {
     const html = renderToStaticMarkup(React.createElement(CatalogIngredientForm, {
       category: "consumable",
@@ -865,7 +910,8 @@ describe("inventory add-flow", () => {
       overrides: {
         fermentableColorEbc: "4.2",
         fermentableExtractYieldPct: "79",
-        hopAlphaAcidPct: ""
+        hopAlphaAcidPct: "",
+        waterTreatmentConcentrationPct: ""
       },
       hasTechnicalOverrides: true
     })).toEqual({
@@ -889,7 +935,8 @@ describe("inventory add-flow", () => {
       overrides: {
         fermentableColorEbc: "",
         fermentableExtractYieldPct: "",
-        hopAlphaAcidPct: "6.1"
+        hopAlphaAcidPct: "6.1",
+        waterTreatmentConcentrationPct: ""
       },
       hasTechnicalOverrides: true
     })).toEqual({
@@ -900,6 +947,29 @@ describe("inventory add-flow", () => {
         { label: "Альфа-кислота", value: "5.5% AA" }
       ],
       statusBadgeLabel: "ИЗМЕНЕННЫЙ"
+    });
+
+    expect(resolveCatalogBatchOverrideSummaryState({
+      defaults: {
+        kind: "water_treatment_acid",
+        waterTreatmentConcentrationPct: "88",
+        concentrationPct: 88
+      },
+      overrides: {
+        fermentableColorEbc: "",
+        fermentableExtractYieldPct: "",
+        hopAlphaAcidPct: "",
+        waterTreatmentConcentrationPct: "75"
+      },
+      hasTechnicalOverrides: true
+    })).toEqual({
+      currentEntries: [
+        { label: "Концентрация", value: "75%" }
+      ],
+      catalogEntries: [
+        { label: "Концентрация", value: "88%" }
+      ],
+      statusBadgeLabel: "УТОЧНЕНО"
     });
   });
 
@@ -974,6 +1044,29 @@ describe("inventory add-flow", () => {
       submitLabel: "Добавить как свой вариант",
       noticeText: "Сохранится как ваш измененный вариант ингредиента.",
       inlineHelper: "Каталог не изменится."
+    });
+
+    expect(resolveCatalogDerivedVariantPresentation({
+      selected: {
+        id: "lactic-acid",
+        type: "water_treatment",
+        category: "water_treatment",
+        subtype: "acid",
+        displayName: "Молочная кислота",
+        primaryLabelRu: "Молочная кислота",
+        defaultUnit: "ml",
+        technicalData: {
+          type: "water_treatment",
+          defaultConcentrationPct: 88
+        },
+        source: "catalog"
+      },
+      hasTechnicalOverrides: true
+    })).toEqual({
+      isDerivedVariantFlow: false,
+      submitLabel: "Добавить в запасы",
+      noticeText: null,
+      inlineHelper: null
     });
   });
 
@@ -1216,6 +1309,27 @@ describe("inventory add-flow", () => {
     });
   });
 
+  it("passes water treatment acid concentration through custom ingredient add flow", async () => {
+    const formData = new FormData();
+    formData.set("category", "water_treatment");
+    formData.set("subtype", "acid");
+    formData.set("displayName", "Молочная кислота");
+    formData.set("waterTreatmentConcentrationPct", "75");
+    formData.set("defaultDisplayUnit", "ml");
+    formData.set("enteredQuantity", "100");
+    formData.set("enteredUnit", "ml");
+
+    const result = await addCustomIngredientAction(null, formData);
+
+    expect(result.ok).toBe(true);
+    expect(mockState.createCustomCalls).toHaveLength(1);
+    expect(mockState.createCustomCalls[0]).toMatchObject({
+      category: "water_treatment",
+      subtype: "acid",
+      waterTreatmentConcentrationPct: 75
+    });
+  });
+
   it("allows quick custom creation with only name and quantity", async () => {
     const formData = new FormData();
     formData.set("category", "hop");
@@ -1302,6 +1416,29 @@ describe("inventory add-flow", () => {
     expect(mockState.addCustomCalls).toHaveLength(1);
   });
 
+  it("stores catalog acid concentration through the catalog inventory path", async () => {
+    mockState.resolveCatalogSourceMode = "custom";
+
+    const formData = new FormData();
+    formData.set("ingredientCatalogItemId", "lactic-acid");
+    formData.set("enteredQuantity", "100");
+    formData.set("enteredUnit", "ml");
+    formData.set("waterTreatmentConcentrationPct", "75");
+
+    const result = await addSelectedIngredientAction(null, formData);
+
+    expect(result.ok).toBe(true);
+    expect(mockState.resolveCatalogSourceCalls).toHaveLength(0);
+    expect(mockState.addCatalogCalls).toHaveLength(1);
+    expect(mockState.addCatalogCalls[0]).toMatchObject({
+      ingredientCatalogItemId: "lactic-acid",
+      enteredQuantity: 100,
+      enteredUnit: "ml",
+      waterTreatmentConcentrationPct: 75
+    });
+    expect(mockState.addCustomCalls).toHaveLength(0);
+  });
+
   it("updates inventory item purchase links through the selected ingredient reference and keeps the main edit payload intact", async () => {
     const result = await updateInventoryItemAction({
       inventoryItemId: "inv-1",
@@ -1338,6 +1475,33 @@ describe("inventory add-flow", () => {
           "https://rdshop.ru/catalog/pilsner",
           "https://kolba.ru/catalog/pilsner"
         ]
+      }
+    ]);
+  });
+
+  it("updates catalog acid concentration as an inventory item property", async () => {
+    mockState.resolveCatalogSourceMode = "custom";
+
+    const result = await updateInventoryItemAction({
+      inventoryItemId: "inv-acid-1",
+      ingredientCatalogItemId: "lactic-acid",
+      waterTreatmentConcentrationPct: "75",
+      enteredQuantity: "100",
+      enteredUnit: "ml"
+    });
+
+    expect(result.ok).toBe(true);
+    expect(mockState.resolveCatalogSourceCalls).toHaveLength(0);
+    expect(mockState.updateItemCalls).toEqual([
+      {
+        inventoryItemId: "inv-acid-1",
+        payload: expect.objectContaining({
+          ingredientCatalogItemId: "lactic-acid",
+          userCustomIngredientId: null,
+          waterTreatmentConcentrationPct: 75,
+          enteredQuantity: 100,
+          enteredUnit: "ml"
+        })
       }
     ]);
   });
@@ -1497,7 +1661,8 @@ describe("inventory add-flow", () => {
       overrides: {
         fermentableColorEbc: "5",
         fermentableExtractYieldPct: "81",
-        hopAlphaAcidPct: ""
+        hopAlphaAcidPct: "",
+        waterTreatmentConcentrationPct: ""
       }
     })).toBe(false);
     expect(hasCatalogIngredientTechnicalOverrides({
@@ -1505,7 +1670,8 @@ describe("inventory add-flow", () => {
       overrides: {
         fermentableColorEbc: "6.5",
         fermentableExtractYieldPct: "82",
-        hopAlphaAcidPct: ""
+        hopAlphaAcidPct: "",
+        waterTreatmentConcentrationPct: ""
       }
     })).toBe(true);
   });
@@ -1541,7 +1707,8 @@ describe("inventory add-flow", () => {
       overrides: {
         fermentableColorEbc: "3.71",
         fermentableExtractYieldPct: "83",
-        hopAlphaAcidPct: ""
+        hopAlphaAcidPct: "",
+        waterTreatmentConcentrationPct: ""
       }
     })).toBe(false);
   });
@@ -1577,9 +1744,34 @@ describe("inventory add-flow", () => {
       overrides: {
         fermentableColorEbc: "6",
         fermentableExtractYieldPct: "80",
-        hopAlphaAcidPct: ""
+        hopAlphaAcidPct: "",
+        waterTreatmentConcentrationPct: ""
       }
     })).toBe(false);
+  });
+
+  it("recognizes catalog acid concentration when itemKind is a specific acid token", () => {
+    const selected = {
+      id: "lactic-acid",
+      type: "water_treatment" as const,
+      category: "water_treatment" as const,
+      subtype: "other" as const,
+      itemKind: "lactic_acid",
+      displayName: "Молочная кислота",
+      defaultUnit: "ml" as const,
+      source: "catalog" as const,
+      technicalData: {
+        type: "water_treatment" as const,
+        defaultConcentrationPct: 88,
+        unitPreferred: "ml"
+      }
+    };
+
+    expect(resolveCatalogBatchOverrideDefaults(selected)).toMatchObject({
+      kind: "water_treatment_acid",
+      waterTreatmentConcentrationPct: "88",
+      concentrationPct: 88
+    });
   });
 
   it("defaults dry yeast catalog additions to pack units", () => {

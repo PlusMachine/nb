@@ -278,7 +278,10 @@ export function InventoryListItem({
   const waterTreatmentTechnicalData = item.source.technicalData?.type === "water_treatment"
     ? item.source.technicalData as Extract<NonNullable<typeof item.source.technicalData>, { type: "water_treatment" }>
     : null;
-  const titleFormula = waterTreatmentTechnicalData?.formula?.trim() ?? null;
+  const titleFormula =
+    waterTreatmentTechnicalData?.displayFormula?.trim() ??
+    waterTreatmentTechnicalData?.formula?.trim() ??
+    null;
   const brandLabel = resolveIngredientBrandLabel(item.source);
   const fermentableKindLabel = resolveIngredientFermentableKindLabel(item.source);
   const isGenericFermentable = item.source.category === "fermentable" && item.source.subtype === "fermentable";

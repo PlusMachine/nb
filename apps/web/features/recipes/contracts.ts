@@ -64,24 +64,29 @@ export const recipePublicationStateLabels: Record<RecipePublicationState, string
   published: "Публичный"
 };
 
+const numberField = () => z.coerce.number({
+  invalid_type_error: "Введите число.",
+  required_error: "Укажите значение."
+});
+
 const mashStepSchema = z.object({
   id: z.string().trim().min(1).max(64),
   name: z.string().trim().min(1).max(80).default("Инфузия"),
-  temperatureC: z.coerce.number().min(0).max(100),
-  durationMinutes: z.coerce.number().int().min(1).max(600)
+  temperatureC: numberField().min(0, "Температура затора не может быть ниже 0 °C.").max(100, "Температура затора не может быть выше 100 °C."),
+  durationMinutes: numberField().int("Длительность шага должна быть целым числом.").min(1, "Длительность шага должна быть не меньше 1 минуты.").max(600, "Длительность шага не может быть больше 600 минут.")
 });
 
 const fermentationStepSchema = z.object({
   id: z.string().trim().min(1).max(64),
   name: z.string().trim().min(1).max(80),
-  temperatureC: z.coerce.number().min(-10).max(50).optional().nullable(),
-  durationDays: z.coerce.number().int().min(1).max(365).optional().nullable()
+  temperatureC: numberField().min(-10, "Температура брожения не может быть ниже -10 °C.").max(50, "Температура брожения не может быть выше 50 °C.").optional().nullable(),
+  durationDays: numberField().int("Длительность брожения должна быть целым числом.").min(1, "Длительность брожения должна быть не меньше 1 дня.").max(365, "Длительность брожения не может быть больше 365 дней.").optional().nullable()
 });
 
 const optionalTemperatureStepSchema = z.object({
   enabled: z.coerce.boolean().default(false),
-  temperatureC: z.coerce.number().min(-10).max(50).optional().nullable(),
-  durationDays: z.coerce.number().int().min(1).max(365).optional().nullable()
+  temperatureC: numberField().min(-10, "Температура брожения не может быть ниже -10 °C.").max(50, "Температура брожения не может быть выше 50 °C.").optional().nullable(),
+  durationDays: numberField().int("Длительность брожения должна быть целым числом.").min(1, "Длительность брожения должна быть не меньше 1 дня.").max(365, "Длительность брожения не может быть больше 365 дней.").optional().nullable()
 });
 
 export const defaultRecipeProcessMeta = {
@@ -120,8 +125,8 @@ export const recipeProcessMetaSchema = z.object({
     steps: z.array(mashStepSchema).max(10).default(defaultRecipeProcessMeta.mashProfile.steps)
   }).default(defaultRecipeProcessMeta.mashProfile),
   fermentationProfile: z.object({
-    primaryTemperatureC: z.coerce.number().min(-10).max(50).optional().nullable().default(defaultRecipeProcessMeta.fermentationProfile.primaryTemperatureC),
-    primaryDurationDays: z.coerce.number().int().min(1).max(365).optional().nullable().default(defaultRecipeProcessMeta.fermentationProfile.primaryDurationDays),
+    primaryTemperatureC: numberField().min(-10, "Температура брожения не может быть ниже -10 °C.").max(50, "Температура брожения не может быть выше 50 °C.").optional().nullable().default(defaultRecipeProcessMeta.fermentationProfile.primaryTemperatureC),
+    primaryDurationDays: numberField().int("Длительность брожения должна быть целым числом.").min(1, "Длительность брожения должна быть не меньше 1 дня.").max(365, "Длительность брожения не может быть больше 365 дней.").optional().nullable().default(defaultRecipeProcessMeta.fermentationProfile.primaryDurationDays),
     extraSteps: z.array(fermentationStepSchema).max(10).default([]),
     coldCrash: optionalTemperatureStepSchema.default(defaultRecipeProcessMeta.fermentationProfile.coldCrash),
     conditioning: optionalTemperatureStepSchema.default(defaultRecipeProcessMeta.fermentationProfile.conditioning)
@@ -143,7 +148,7 @@ export const recipeFgAttenuationSources = ["default", "yeast", "manual"] as cons
 export type RecipeFgAttenuationSource = (typeof recipeFgAttenuationSources)[number];
 
 export const recipeFgEstimateDetailsSchema = z.object({
-  baseAttenuationPct: z.coerce.number().min(0).max(100),
+  baseAttenuationPct: numberField().min(0, "Аттенюация не может быть меньше 0%.").max(100, "Аттенюация не может быть больше 100%."),
   attenuationSource: z.enum(recipeFgAttenuationSources),
   mainMashTempC: z.coerce.number().min(0).max(100).optional().nullable(),
   mashAdjPctPoints: z.coerce.number().min(-20).max(20),
@@ -164,13 +169,13 @@ export const recipeCalculationMetaSchema = z.object({
   bitternessFormula: z.enum(recipeBitternessFormulas).default("tinseth_whirlpool_v2"),
   bitternessSettings: z.object({
     includeBoilCarryoverIntoWhirlpool: z.coerce.boolean().default(true),
-    whirlpoolUtilizationFactor: z.coerce.number().positive().max(3).default(1),
-    hopFormUtilizationFactor: z.coerce.number().positive().max(3).default(1),
+    whirlpoolUtilizationFactor: numberField().positive("Коэффициент whirlpool должен быть больше нуля.").max(3, "Коэффициент whirlpool не может быть больше 3.").default(1),
+    hopFormUtilizationFactor: numberField().positive("Коэффициент хмеля должен быть больше нуля.").max(3, "Коэффициент хмеля не может быть больше 3.").default(1),
     firstWortHopMode: z.enum(["bonus_10pct", "treat_as_20min", "treat_as_boil_start"]).default("bonus_10pct")
   }).partial().default({}),
   fgEstimateMode: z.enum(recipeFgEstimateModes).optional().nullable(),
-  manualAttenuationOverridePct: z.coerce.number().min(0).max(100).optional().nullable(),
-  manualFgOverrideValue: z.coerce.number().min(0.99).max(1.2).optional().nullable(),
+  manualAttenuationOverridePct: numberField().min(0, "Аттенюация не может быть меньше 0%.").max(100, "Аттенюация не может быть больше 100%.").optional().nullable(),
+  manualFgOverrideValue: numberField().min(0.99, "КП не может быть ниже 0.990.").max(1.2, "КП не может быть выше 1.200.").optional().nullable(),
   fgEstimateDetails: recipeFgEstimateDetailsSchema.optional().nullable()
 }).default({
   bitternessFormula: "tinseth_whirlpool_v2",
@@ -180,13 +185,13 @@ export const recipeCalculationMetaSchema = z.object({
 export type RecipeCalculationMeta = z.infer<typeof recipeCalculationMetaSchema>;
 
 const waterProfileSchema = z.object({
-  ca: z.coerce.number().min(0).default(0),
-  mg: z.coerce.number().min(0).default(0),
-  na: z.coerce.number().min(0).default(0),
-  cl: z.coerce.number().min(0).default(0),
-  so4: z.coerce.number().min(0).default(0),
-  hco3: z.coerce.number().min(0).default(0),
-  ph: z.coerce.number().min(0).max(14).optional().nullable()
+  ca: numberField().min(0, "Кальций не может быть меньше 0 ppm.").default(0),
+  mg: numberField().min(0, "Магний не может быть меньше 0 ppm.").default(0),
+  na: numberField().min(0, "Натрий не может быть меньше 0 ppm.").default(0),
+  cl: numberField().min(0, "Хлориды не могут быть меньше 0 ppm.").default(0),
+  so4: numberField().min(0, "Сульфаты не могут быть меньше 0 ppm.").default(0),
+  hco3: numberField().min(0, "Щелочность не может быть меньше 0 ppm.").default(0),
+  ph: numberField().min(0, "pH не может быть ниже 0.").max(14, "pH не может быть выше 14.").optional().nullable()
 });
 
 export const recipeWaterPlanMetaSchema = z.object({
@@ -207,30 +212,34 @@ export const recipeWaterPlanMetaSchema = z.object({
   targetProfileIsOverridden: z.coerce.boolean().optional().nullable(),
   targetProfileResolvedFromBjcpStyleKey: z.string().trim().max(120).optional().nullable(),
   targetProfile: waterProfileSchema.optional().nullable(),
+  /**
+   * @deprecated Salts and acids are always shown read-only in the recipe ingredient list now.
+   * Field is kept in the schema for backward compatibility with persisted recipes.
+   */
   showWaterAdditivesInIngredients: z.coerce.boolean().default(false),
   blendRatio: z.object({
-    tap: z.coerce.number().min(0).max(1).default(1),
-    ro: z.coerce.number().min(0).max(1).default(0),
-    distilled: z.coerce.number().min(0).max(1).default(0)
+    tap: numberField().min(0, "Доля водопроводной воды не может быть меньше 0.").max(1, "Доля водопроводной воды не может быть больше 1.").default(1),
+    ro: numberField().min(0, "Доля RO-воды не может быть меньше 0.").max(1, "Доля RO-воды не может быть больше 1.").default(0),
+    distilled: numberField().min(0, "Доля дистиллированной воды не может быть меньше 0.").max(1, "Доля дистиллированной воды не может быть больше 1.").default(0)
   }).optional().nullable(),
-  mashWaterVolumeL: z.coerce.number().min(0).optional().nullable(),
-  spargeWaterVolumeL: z.coerce.number().min(0).optional().nullable(),
-  totalWaterVolumeL: z.coerce.number().min(0).optional().nullable(),
+  mashWaterVolumeL: numberField().min(0, "Объём заторной воды не может быть меньше 0 л.").optional().nullable(),
+  spargeWaterVolumeL: numberField().min(0, "Объём промывочной воды не может быть меньше 0 л.").optional().nullable(),
+  totalWaterVolumeL: numberField().min(0, "Общий объём воды не может быть меньше 0 л.").optional().nullable(),
   allowedSalts: z.array(z.string()).optional().default([]),
   allowedAcids: z.array(z.string()).optional().default([]),
   manualSaltAdditions: z.array(z.object({
     salt: z.string(),
-    grams: z.coerce.number().min(0),
+    grams: numberField().min(0, "Количество соли не может быть меньше 0 г."),
     target: z.enum(recipeWaterManualSaltAdditionTargets).optional()
   })).optional().default([]),
-  targetMashPh: z.coerce.number().min(4).max(7).optional().nullable(),
+  targetMashPh: numberField().min(4, "Целевой pH затора не может быть ниже 4.").max(7, "Целевой pH затора не может быть выше 7.").optional().nullable(),
   spargeAcidificationEnabled: z.coerce.boolean().default(false),
-  spargeSourcePh: z.coerce.number().min(0).max(14).optional().nullable(),
-  targetSpargePh: z.coerce.number().min(4).max(7).optional().nullable(),
-  targetSpargeAlkalinity: z.coerce.number().min(0).optional().nullable(),
+  spargeSourcePh: numberField().min(0, "pH промывочной воды не может быть ниже 0.").max(14, "pH промывочной воды не может быть выше 14.").optional().nullable(),
+  targetSpargePh: numberField().min(4, "Целевой pH промывочной воды не может быть ниже 4.").max(7, "Целевой pH промывочной воды не может быть выше 7.").optional().nullable(),
+  targetSpargeAlkalinity: numberField().min(0, "Щелочность промывочной воды не может быть меньше 0.").optional().nullable(),
   selectedAcid: z.enum(["lactic_acid", "phosphoric_acid"]).optional().nullable(),
-  acidConcentrationPct: z.coerce.number().positive().max(100).optional().nullable(),
-  calibrationOffset: z.coerce.number().min(-2).max(2).optional().nullable()
+  acidConcentrationPct: numberField().positive("Концентрация кислоты должна быть больше 0%.").max(100, "Концентрация кислоты не может быть больше 100%.").optional().nullable(),
+  calibrationOffset: numberField().min(-2, "Калибровочная поправка не может быть меньше -2 pH.").max(2, "Калибровочная поправка не может быть больше 2 pH.").optional().nullable()
 }).default({
   setupEnabled: false,
   engine: "balanced_default",
@@ -299,7 +308,7 @@ export const recipeIngredientPayloadSchema = z.object({
   category: z.enum(ingredientCategories).optional(),
   subtype: z.string().trim().max(80).optional().nullable(),
   familyId: z.string().uuid().optional().nullable(),
-  amountEnteredQuantity: z.coerce.number().positive(),
+  amountEnteredQuantity: numberField().positive("Количество ингредиента должно быть больше нуля."),
   amountEnteredUnit: z.string().trim().toLowerCase().pipe(z.enum(inventoryUnits)),
   stage: z.enum(recipeIngredientStages).default("other"),
   timeOffset: z.coerce.number().int().optional().nullable(),
@@ -372,14 +381,14 @@ export const recipeIngredientPayloadSchema = z.object({
 
 const baseRecipePayloadSchema = z.object({
   publicationState: z.enum(recipePublicationStates).default("private"),
-  title: z.string().trim().min(1).max(180),
+  title: z.string().trim().min(1, "Укажите название рецепта.").max(180, "Название рецепта не должно быть длиннее 180 символов."),
   styleId: z.string().trim().max(64).optional().nullable(),
-  batchSizeEnteredQuantity: z.coerce.number().positive(),
+  batchSizeEnteredQuantity: numberField().positive("Объём партии должен быть больше нуля."),
   batchSizeEnteredUnit: z.string().trim().toLowerCase().pipe(z.enum(inventoryUnits)),
-  efficiency: z.coerce.number().positive().max(100).optional().nullable(),
-  boilTimeMinutes: z.coerce.number().int().min(1).max(600).default(60),
-  description: z.string().trim().max(6000).optional().nullable(),
-  authorNotes: z.string().trim().max(6000).optional().nullable(),
+  efficiency: numberField().positive("Эффективность должна быть больше 0%.").max(100, "Эффективность не может быть больше 100%.").optional().nullable(),
+  boilTimeMinutes: numberField().int("Время кипячения должно быть целым числом.").min(1, "Время кипячения должно быть не меньше 1 минуты.").max(600, "Время кипячения не может быть больше 600 минут.").default(60),
+  description: z.string().trim().max(6000, "Описание не должно быть длиннее 6000 символов.").optional().nullable(),
+  authorNotes: z.string().trim().max(6000, "Заметки не должны быть длиннее 6000 символов.").optional().nullable(),
   processMeta: recipeProcessMetaSchema.optional().nullable(),
   calculationMeta: recipeCalculationMetaSchema.optional().nullable(),
   draftState: z.record(z.string(), z.unknown()).optional().nullable(),

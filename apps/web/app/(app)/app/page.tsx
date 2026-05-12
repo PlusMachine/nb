@@ -10,7 +10,6 @@ export default function AppZonePage() {
         <Link href="/app/recipes">Мастер рецептов</Link>
         <Link href="/app/equipment">Оборудование</Link>
         <Link href="/profile">Профиль</Link>
-        <Link href="/settings">Настройки</Link>
       </div>
     </div>
   );

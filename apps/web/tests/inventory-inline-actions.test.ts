@@ -111,7 +111,8 @@ describe("inventory inline actions", () => {
       priceInputCurrency: null,
       purchasedAt: new Date("2026-03-01T00:00:00.000Z"),
       freshnessDate: new Date("2026-09-01T00:00:00.000Z"),
-      notes: "Свежая партия"
+      notes: "Свежая партия",
+      waterTreatmentConcentrationPct: null
     }, { preferredCurrency: "EUR" });
     expect(mocks.revalidatePath).toHaveBeenCalledWith("/app/ingredients");
   });

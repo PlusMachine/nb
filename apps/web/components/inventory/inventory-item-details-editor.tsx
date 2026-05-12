@@ -39,6 +39,10 @@ import {
   resolveFermentableQuickStartGroupLabel
 } from "@/features/ingredients/picker-quick-start";
 import { resolveIngredientDisplayNames } from "@/features/ingredients/presentation";
+import {
+  isWaterTreatmentAcidLike,
+  readWaterTreatmentConcentrationPct,
+} from "@/features/ingredients/water-treatment";
 import { resolveIngredientCategory, resolveLegacyIngredientType } from "@/features/ingredients/taxonomy";
 import type { InventoryListItemDto } from "@/features/inventory/contracts";
 import {
@@ -56,6 +60,7 @@ import {
 } from "@/features/inventory/units";
 import { convertCurrencyMinor, formatMoneyInputValueFromMinor } from "@/features/system/money";
 import type { SystemCurrency, SystemCurrencyRateMap } from "@/features/system/currency";
+import { hasValidationErrors, validateNumericInput } from "@/features/forms/numeric-validation";
 
 type Props = {
   item: InventoryListItemDto;
@@ -76,6 +81,7 @@ type FormState = {
   selectedDisplayName: string;
   ingredientCatalogItemId: string | null;
   userCustomIngredientId: string | null;
+  waterTreatmentConcentrationPct: string;
   enteredQuantity: string;
   enteredUnit: InventoryUnit;
   priceInputMode: InventoryPriceInputMode;
@@ -94,6 +100,14 @@ const formatDateInput = (value: Date | null) => {
   const month = String(value.getMonth() + 1).padStart(2, "0");
   const day = String(value.getDate()).padStart(2, "0");
   return `${year}-${month}-${day}`;
+};
+
+const formatConcentrationInputValue = (value: number | null | undefined) => {
+  if (value == null || !Number.isFinite(value)) {
+    return "";
+  }
+
+  return Number.isInteger(value) ? String(value) : String(Number(value.toFixed(2)));
 };
 
 export const resolveInventoryEditorUnitProfile = (
@@ -215,6 +229,7 @@ const createFormState = (
     selectedDisplayName: item.source.displayName,
     ingredientCatalogItemId: item.source.sourceKind === "catalog" ? item.source.sourceId : null,
     userCustomIngredientId: item.source.sourceKind === "custom" ? item.source.sourceId : null,
+    waterTreatmentConcentrationPct: formatConcentrationInputValue(readWaterTreatmentConcentrationPct(item.source.technicalData)),
     enteredQuantity: formatInventoryQuantityInputValue(displayMeasurement.quantity, displayMeasurement.unit),
     enteredUnit: displayMeasurement.unit,
     priceInputMode: item.priceInputMode ?? (displayPriceMinor != null ? "total" : "total"),
@@ -234,6 +249,39 @@ const canSubmitInventoryForm = (form: FormState) => {
   return Number.isFinite(quantity) && quantity > 0;
 };
 
+const validateInventoryEditorNumbers = ({
+  form,
+  showWaterTreatmentConcentrationField
+}: {
+  form: FormState;
+  showWaterTreatmentConcentrationField: boolean;
+}) => {
+  const errors: Record<string, string | null> = {
+    enteredQuantity: validateNumericInput(form.enteredQuantity, {
+      label: "Количество",
+      required: true,
+      min: 0,
+      exclusiveMin: true
+    }),
+    priceInputAmount: validateNumericInput(form.priceInputAmount, {
+      label: "Цена",
+      min: 0,
+      exclusiveMin: true
+    })
+  };
+
+  if (showWaterTreatmentConcentrationField) {
+    errors.waterTreatmentConcentrationPct = validateNumericInput(form.waterTreatmentConcentrationPct, {
+      label: "Концентрация кислоты",
+      min: 0,
+      max: 100,
+      exclusiveMin: true
+    });
+  }
+
+  return errors;
+};
+
 export const shouldShowInventoryEditorPickerStage = ({
   category,
   selected
@@ -249,6 +297,12 @@ export const shouldShowInventoryEditorRequiredFields = (
 export const shouldShowInventoryEditorOptionalSection = (
   selected: IngredientSuggestionItem | null
 ) => Boolean(selected);
+
+const isWaterTreatmentAcidSuggestion = (
+  selected: IngredientSuggestionItem | null
+): selected is IngredientSuggestionItem => (
+  Boolean(selected && isWaterTreatmentAcidLike(selected))
+);
 
 export const resolveInventoryEditorSelectionResetState = () => ({
   pickerValue: "",
@@ -326,6 +380,7 @@ export function InventoryItemDetailsEditor({
     urls: [],
     isLoaded: false
   });
+  const [localFieldErrors, setLocalFieldErrors] = useState<Record<string, string | null>>({});
   const [pickerFocusSignal, setPickerFocusSignal] = useState(0);
   const [result, setResult] = useState<AddIngredientResult | null>(null);
   const [isPending, startTransition] = useTransition();
@@ -360,6 +415,7 @@ export function InventoryItemDetailsEditor({
       sourceLabelStyle: "short"
     })
     : null;
+  const showWaterTreatmentConcentrationField = isWaterTreatmentAcidSuggestion(selectedSuggestion);
   const selectionCategoryValue = resolveInventoryIngredientCategoryValue({
     category: form.category,
     subtype: form.subtype,
@@ -388,6 +444,11 @@ export function InventoryItemDetailsEditor({
     subtype: form.subtype,
     initialQuickStartDataByContext
   });
+  const currentNumberErrors = validateInventoryEditorNumbers({
+    form,
+    showWaterTreatmentConcentrationField
+  });
+  const hasCurrentNumberErrors = hasValidationErrors(currentNumberErrors);
 
   useEffect(() => {
     setMounted(true);
@@ -422,6 +483,7 @@ export function InventoryItemDetailsEditor({
       isLoaded: false
     });
     setResult(null);
+    setLocalFieldErrors({});
     setEditing(initiallyOpen);
   }, [currencyRates, initiallyOpen, item, preferredCurrency]);
 
@@ -449,10 +511,21 @@ export function InventoryItemDetailsEditor({
       isLoaded: false
     });
     setResult(null);
+    setLocalFieldErrors({});
     setEditing(false);
   };
 
   const purchasePriceError = result?.fieldErrors?.priceInputAmountMinor ?? result?.fieldErrors?.purchasePriceMinor ?? result?.fieldErrors?.purchasePrice;
+
+  const buildSubmitSourcePayload = () => {
+    return {
+      ingredientCatalogItemId: form.ingredientCatalogItemId,
+      userCustomIngredientId: form.userCustomIngredientId,
+      waterTreatmentConcentrationPct: showWaterTreatmentConcentrationField
+        ? form.waterTreatmentConcentrationPct
+        : null,
+    };
+  };
 
   const openEditor = () => {
     setForm(createFormState(item, preferredCurrency, currencyRates));
@@ -490,6 +563,7 @@ export function InventoryItemDetailsEditor({
       selectedDisplayName: "",
       ingredientCatalogItemId: null,
       userCustomIngredientId: null,
+      waterTreatmentConcentrationPct: "",
       enteredUnit: resetUnitProfile.defaultUnit
     }));
     setResult(null);
@@ -548,10 +622,20 @@ export function InventoryItemDetailsEditor({
                 onSubmit={(event) => {
                   event.preventDefault();
                   startTransition(async () => {
+                    const sourcePayload = buildSubmitSourcePayload();
+                    const nextFieldErrors = validateInventoryEditorNumbers({
+                      form,
+                      showWaterTreatmentConcentrationField
+                    });
+                    setLocalFieldErrors(nextFieldErrors);
+                    if (hasValidationErrors(nextFieldErrors)) {
+                      return;
+                    }
                     const nextResult = await updateInventoryItemAction({
                       inventoryItemId: item.id,
-                      ingredientCatalogItemId: form.ingredientCatalogItemId,
-                      userCustomIngredientId: form.userCustomIngredientId,
+                      ingredientCatalogItemId: sourcePayload.ingredientCatalogItemId,
+                      userCustomIngredientId: sourcePayload.userCustomIngredientId,
+                      waterTreatmentConcentrationPct: sourcePayload.waterTreatmentConcentrationPct,
                       enteredQuantity: form.enteredQuantity,
                       enteredUnit: form.enteredUnit,
                       priceInputMode: form.priceInputMode,
@@ -597,6 +681,7 @@ export function InventoryItemDetailsEditor({
                           selectedDisplayName: "",
                           ingredientCatalogItemId: null,
                           userCustomIngredientId: null,
+                          waterTreatmentConcentrationPct: "",
                           enteredUnit: nextUnitProfile.defaultUnit
                         }));
                         setResult(null);
@@ -714,6 +799,9 @@ export function InventoryItemDetailsEditor({
                           selectedDisplayName: displayNames.primaryName,
                           ingredientCatalogItemId: selected.source === "catalog" ? selected.id : null,
                           userCustomIngredientId: selected.source === "custom" ? selected.id : null,
+                          waterTreatmentConcentrationPct: formatConcentrationInputValue(
+                            readWaterTreatmentConcentrationPct(selected.technicalData)
+                          ),
                           enteredUnit: nextUnitProfile.defaultUnit
                         }));
                         setResult(null);
@@ -757,21 +845,42 @@ export function InventoryItemDetailsEditor({
 
                 {showRequiredFields ? (
                   <section className="space-y-3 rounded-xl border border-zinc-100 bg-zinc-50/50 p-4" data-testid="inventory-editor-required-fields">
+                    {showWaterTreatmentConcentrationField ? (
+                      <label className="block text-sm font-medium text-zinc-700">Концентрация кислоты, %
+                        <input
+                          type="number"
+                          min="1"
+                          max="100"
+                          step="0.1"
+                          value={form.waterTreatmentConcentrationPct}
+                          onChange={(event) => {
+                            setForm((current) => ({ ...current, waterTreatmentConcentrationPct: event.target.value }));
+                            setLocalFieldErrors((current) => ({ ...current, waterTreatmentConcentrationPct: null }));
+                            setResult(null);
+                          }}
+                          className="mt-1.5 w-full rounded-xl border border-zinc-200 bg-white px-3.5 py-2.5 text-sm transition-colors focus:border-zinc-400 focus:outline-none focus:ring-2 focus:ring-zinc-200 sm:max-w-xs"
+                          inputMode="decimal"
+                          placeholder="Например: 80"
+                        />
+                        {(localFieldErrors.waterTreatmentConcentrationPct || currentNumberErrors.waterTreatmentConcentrationPct || result?.fieldErrors?.waterTreatmentConcentrationPct) ? <span className="mt-1 block text-xs text-red-500">{localFieldErrors.waterTreatmentConcentrationPct ?? currentNumberErrors.waterTreatmentConcentrationPct ?? result?.fieldErrors?.waterTreatmentConcentrationPct}</span> : null}
+                      </label>
+                    ) : null}
                     <div className="grid gap-3 sm:grid-cols-2">
                       <label className="block text-sm font-medium text-zinc-700">Количество *
                         <input
                           type="number"
-                          min="0"
+                          min={quantityStep}
                           step={quantityStep}
                           value={form.enteredQuantity}
                           onChange={(event) => {
                             setForm((current) => ({ ...current, enteredQuantity: event.target.value }));
+                            setLocalFieldErrors((current) => ({ ...current, enteredQuantity: null }));
                             setResult(null);
                           }}
                           className="mt-1.5 w-full rounded-xl border border-zinc-200 bg-white px-3.5 py-2.5 text-sm transition-colors focus:border-zinc-400 focus:outline-none focus:ring-2 focus:ring-zinc-200"
                           inputMode="decimal"
                         />
-                        {result?.fieldErrors?.enteredQuantity ? <span className="mt-1 block text-xs text-red-500">{result.fieldErrors.enteredQuantity}</span> : null}
+                        {(localFieldErrors.enteredQuantity || currentNumberErrors.enteredQuantity || result?.fieldErrors?.enteredQuantity) ? <span className="mt-1 block text-xs text-red-500">{localFieldErrors.enteredQuantity ?? currentNumberErrors.enteredQuantity ?? result?.fieldErrors?.enteredQuantity}</span> : null}
                       </label>
 
                       <label className="block text-sm font-medium text-zinc-700">Ед. изм. *
@@ -837,13 +946,14 @@ export function InventoryItemDetailsEditor({
                           priceInputAmount={form.priceInputAmount}
                           enteredQuantity={form.enteredQuantity}
                           enteredUnit={form.enteredUnit}
-                          fieldError={purchasePriceError}
+                          fieldError={localFieldErrors.priceInputAmount ?? currentNumberErrors.priceInputAmount ?? purchasePriceError}
                           onPriceInputModeChange={(mode) => {
                             setForm((current) => ({ ...current, priceInputMode: mode }));
                             setResult(null);
                           }}
                           onPriceInputAmountChange={(value) => {
                             setForm((current) => ({ ...current, priceInputAmount: value }));
+                            setLocalFieldErrors((current) => ({ ...current, priceInputAmount: null }));
                             setResult(null);
                           }}
                           type={selectedSuggestion?.type ?? form.type}
@@ -886,7 +996,7 @@ export function InventoryItemDetailsEditor({
                 <div className="flex gap-3 pt-2">
                   <button
                     type="submit"
-                    disabled={isPending || !canSubmitInventoryForm(form)}
+                    disabled={isPending || !canSubmitInventoryForm(form) || hasCurrentNumberErrors}
                     className="flex-1 rounded-xl bg-zinc-900 px-5 py-3 text-sm font-semibold text-white transition-all duration-150 hover:bg-zinc-800 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50 sm:flex-initial"
                   >
                     {isPending ? "Сохраняем..." : "Сохранить"}
