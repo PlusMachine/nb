@@ -73,6 +73,7 @@ describe("ingredient picker state helpers", () => {
     expect(shouldSearchIngredients({ isOpen: false, query: "Maris Otter" })).toBe(false);
     expect(shouldSearchIngredients({ isOpen: true, query: "   " })).toBe(false);
     expect(shouldSearchIngredients({ isOpen: true, query: "", hasSearchScope: true })).toBe(true);
+    expect(shouldSearchIngredients({ isOpen: true, query: "", searchOnEmptyQuery: true })).toBe(true);
   });
 
   it("shows suggestions for open lists with results or refinements", () => {
@@ -233,6 +234,13 @@ describe("ingredient picker state helpers", () => {
     })).toBe(true);
 
     expect(shouldShowIngredientLoadingState({
+      hasResolvedQuery: false,
+      isOpen: true,
+      query: "",
+      searchOnEmptyQuery: true
+    })).toBe(true);
+
+    expect(shouldShowIngredientLoadingState({
       hasResolvedQuery: true,
       isOpen: true,
       query: "pi"
@@ -246,6 +254,11 @@ describe("ingredient picker state helpers", () => {
       query: "",
       hasSearchScope: true
     })).toBe("Подбираем варианты по выбранным фильтрам...");
+
+    expect(resolveIngredientPickerLoadingLabel({
+      query: "",
+      searchOnEmptyQuery: true
+    })).toBe("Подбираем варианты...");
 
     const html = renderToStaticMarkup(React.createElement(IngredientPickerLoadingState, {
       label: "Ищем совпадения..."
@@ -1583,6 +1596,35 @@ describe("ingredient picker state helpers", () => {
     expect(html).not.toContain("aria-label=\"Очистить выбранный ингредиент\"");
   });
 
+  it("keeps water treatment formulas visible in selected catalog cards when typed summary is hidden", () => {
+    const html = renderToStaticMarkup(React.createElement(IngredientSelectionCard, {
+      item: {
+        id: "gypsum",
+        type: "water_treatment",
+        category: "water_treatment",
+        subtype: "salt",
+        displayName: "Гипс",
+        primaryLabelRu: "Гипс",
+        subtitle: "Минеральная соль",
+        technicalData: {
+          type: "water_treatment",
+          formula: "CaSO4",
+          calculationFormula: "CaSO4·2H2O",
+          unitPreferred: "g"
+        },
+        defaultUnit: "g",
+        source: "catalog"
+      },
+      hideTypedSummary: true,
+      hideSubtitle: true,
+      mergeBrandAndCountry: true
+    }));
+
+    expect(html).toContain("Гипс");
+    expect(html).toContain("CaSO4");
+    expect(html).not.toContain("Минеральная соль");
+  });
+
   it("builds picker badges for hop alpha acid and keeps hop brand below the title", () => {
     const item = {
       id: "hop-1",
@@ -1667,6 +1709,28 @@ describe("ingredient picker state helpers", () => {
       averageHex: expect.any(String),
       endHex: expect.any(String)
     });
+  });
+
+  it("renders water treatment formula badges in the picker", () => {
+    const item = buildSuggestionItem({
+      id: "gypsum",
+      type: "water_treatment",
+      category: "water_treatment",
+      subtype: "salt",
+      displayName: "Гипс",
+      primaryLabelRu: "Гипс",
+      technicalData: {
+        type: "water_treatment",
+        formula: "CaSO4",
+        calculationFormula: "CaSO4·2H2O",
+        unitPreferred: "g"
+      },
+      defaultUnit: "g"
+    });
+
+    expect(buildIngredientPickerTechnicalBadges(item).map((badge) => badge.label)).toEqual([
+      "CaSO4"
+    ]);
   });
 
   it("localizes consumable picker badges and keeps dosage hints out of row subtitles", () => {

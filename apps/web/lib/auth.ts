@@ -25,12 +25,30 @@ export const roleWeights: Record<UserRole, number> = { user: 1, editor: 2, moder
 
 export const hasRequiredRole = (current: UserRole, required: UserRole) => roleWeights[current] >= roleWeights[required];
 
+/**
+ * Удобство для разработки: если вне production задана переменная DEV_AUTH_EMAIL,
+ * любой запрос без валидной сессии трактуется как этот пользователь — чтобы не
+ * логиниться постоянно при работе над мастером рецептов и т.п.
+ *
+ * Пользователь берётся (или создаётся) в БД по email, поэтому user.id ссылается
+ * на реальную запись и рецепты сохраняются как обычно. Жёстко отключено в
+ * production: даже если переменная случайно окажется задана на проде, обхода нет.
+ */
+const devAuthEmail =
+  process.env.NODE_ENV === "production" ? undefined : process.env.DEV_AUTH_EMAIL?.trim() || undefined;
+
 export const getSessionUser = async () => {
   const token = (await cookies()).get(SESSION_COOKIE)?.value;
-  if (!token) {
-    return null;
+  if (token) {
+    const user = await getUserBySessionToken(token);
+    if (user) {
+      return user;
+    }
   }
-  return getUserBySessionToken(token);
+  if (devAuthEmail) {
+    return completeEmailSignIn({ email: devAuthEmail });
+  }
+  return null;
 };
 
 export const requireUser = async () => {

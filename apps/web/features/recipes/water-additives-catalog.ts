@@ -23,10 +23,47 @@ export const recipeWaterAcidCatalogIds: Record<BrewingAcidId, string> = {
   phosphoric_acid: "phosphoric-acid-75-85",
 };
 
+export const recipeWaterDefaultAutoSaltIds = [
+  "gypsum",
+  "calcium_chloride",
+  "epsom_salt",
+] satisfies BrewingSaltId[];
+
+export const recipeWaterManualSaltIds = [
+  ...recipeWaterDefaultAutoSaltIds,
+  "baking_soda",
+  "table_salt",
+  "chalk",
+  "slaked_lime",
+] satisfies BrewingSaltId[];
+
+export const recipeWaterSupportedAcidIds = [
+  "lactic_acid",
+  "phosphoric_acid",
+] satisfies BrewingAcidId[];
+
+export const recipeWaterAddFlowCatalogIds = [
+  ...recipeWaterManualSaltIds.map((id) => recipeWaterSaltCatalogIds[id]),
+];
+
 export const recipeWaterAdditiveCatalogIds = {
   ...recipeWaterSaltCatalogIds,
   ...recipeWaterAcidCatalogIds,
 } satisfies Record<string, string>;
+
+const recipeWaterSaltIdsByCatalogId = Object.fromEntries(
+  Object.entries(recipeWaterSaltCatalogIds).map(([saltId, catalogId]) => [
+    catalogId,
+    saltId,
+  ]),
+) as Partial<Record<string, BrewingSaltId>>;
+
+export const resolveRecipeWaterSaltIdFromCatalogId = (
+  catalogIngredientId: string | null | undefined,
+): BrewingSaltId | null =>
+  catalogIngredientId
+    ? recipeWaterSaltIdsByCatalogId[catalogIngredientId] ?? null
+    : null;
 
 export type RecipeWaterAdditiveKind = "salt" | "acid";
 

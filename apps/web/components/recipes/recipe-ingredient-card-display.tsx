@@ -20,6 +20,7 @@ import {
   formatHopFormLabel,
   resolveIngredientTechnicalDataColorRangeEbc
 } from "@/features/ingredients/technical-fields";
+import { resolveWaterTreatmentFormulaLabel } from "@/features/ingredients/water-treatment";
 import { beerColorFromSrm } from "@/features/recipes/beer-color";
 
 export type RecipeIngredientCardSource = {
@@ -46,6 +47,10 @@ export type RecipeIngredientTechnicalBadge = {
   key: string;
   label: string;
   accent?: RecipeIngredientBadgeAccent | null;
+};
+
+type BuildRecipeIngredientTechnicalBadgesOptions = {
+  includeConsumableUsageStage?: boolean;
 };
 
 const formatValue = (value: number) => (
@@ -142,7 +147,8 @@ const formatColorBadge = (technicalData: IngredientTechnicalData | null | undefi
 };
 
 export const buildRecipeIngredientTechnicalBadges = (
-  source: Pick<RecipeIngredientCardSource, "technicalData">
+  source: Pick<RecipeIngredientCardSource, "technicalData">,
+  options: BuildRecipeIngredientTechnicalBadgesOptions = {}
 ): RecipeIngredientTechnicalBadge[] => {
   const technicalData = source.technicalData;
   if (!technicalData) {
@@ -198,11 +204,14 @@ export const buildRecipeIngredientTechnicalBadges = (
   } else if (technicalData.type === "water_treatment") {
     const waterTreatment = technicalData as Extract<IngredientTechnicalData, { type: "water_treatment" }>;
     const normalizedPreferredUnit = waterTreatment.unitPreferred?.trim().toLowerCase() ?? null;
+    pushBadge(resolveWaterTreatmentFormulaLabel(waterTreatment));
     pushBadge(normalizedPreferredUnit === "g" || normalizedPreferredUnit === "ml" ? null : waterTreatment.unitPreferred);
   } else if (technicalData.type === "consumable") {
     const consumable = technicalData as Extract<IngredientTechnicalData, { type: "consumable" }>;
     pushBadge(formatConsumableFormLabel(consumable.commonForms?.[0]));
-    pushBadge(formatConsumableUsageStageLabel(consumable.usageStage?.[0]));
+    if (options.includeConsumableUsageStage !== false) {
+      pushBadge(formatConsumableUsageStageLabel(consumable.usageStage?.[0]));
+    }
   }
 
   return badges.slice(0, 5);

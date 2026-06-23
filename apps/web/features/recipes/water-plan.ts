@@ -21,6 +21,11 @@ import type {
   RecipeWaterManualSaltAdditionTarget,
   RecipeWaterPlanMeta,
 } from "./contracts";
+import {
+  starterEquipmentProfileDefaults,
+  type EquipmentProfileSnapshot,
+} from "../equipment-profiles/contracts";
+import { calculateEquipmentVolumePlan } from "../equipment-profiles/volume-plan";
 
 export type RecipeWaterPlanFermentableInput = {
   name?: string | null;
@@ -43,7 +48,14 @@ export type RecipeWaterPlanResult = {
     totalWaterL: number;
     suggestedMashWaterL: number | null;
     suggestedSpargeWaterL: number | null;
-    source: "batch_size" | "equipment_profile" | "manual_split";
+    grainAbsorptionLPerKg: number | null;
+    grainAbsorptionLossL: number | null;
+    source:
+      | "batch_size"
+      | "equipment_profile"
+      | "estimated_total_water"
+      | "manual_split"
+      | "manual_total";
   };
   sourceProfile: WaterProfile;
   targetProfile: WaterProfile | null;
@@ -378,13 +390,29 @@ const buildWarningsForFinalProfile = (profile: WaterProfile) => {
   return warnings;
 };
 
+const fallbackEquipmentProfileSnapshot = (
+  targetBatchVolumeL: number,
+  grainAbsorptionLPerKg: number | null,
+): EquipmentProfileSnapshot => ({
+  ...starterEquipmentProfileDefaults,
+  targetBatchVolumeL,
+  grainAbsorptionLPerKg:
+    grainAbsorptionLPerKg ??
+    starterEquipmentProfileDefaults.grainAbsorptionLPerKg,
+  id: null,
+  snapshotAt: "1970-01-01T00:00:00.000Z",
+});
+
 export const buildRecipeWaterPlanResult = (input: {
   waterPlanMeta: RecipeWaterPlanMeta;
   fallbackBatchVolumeL?: number | null;
+  boilTimeMinutes?: number | null;
   equipmentVolumePlan?: {
     totalWaterL: number;
     mashWaterL: number;
     spargeWaterL: number;
+    grainAbsorptionLPerKg?: number | null;
+    grainAbsorptionLossL?: number | null;
   } | null;
   grainKg: number;
   beerSrm?: number | null;
@@ -396,23 +424,66 @@ export const buildRecipeWaterPlanResult = (input: {
     input.fallbackBatchVolumeL != null
       ? Math.max(0, input.fallbackBatchVolumeL)
       : null;
+  const waterPlanGrainAbsorptionLPerKg =
+    input.waterPlanMeta.grainAbsorptionLPerKg != null &&
+    Number.isFinite(input.waterPlanMeta.grainAbsorptionLPerKg)
+      ? Math.max(0, input.waterPlanMeta.grainAbsorptionLPerKg)
+      : null;
+  const estimatedEquipmentVolumePlan =
+    !input.equipmentVolumePlan && recipeBatchVolumeL != null && recipeBatchVolumeL > 0
+      ? calculateEquipmentVolumePlan(
+          fallbackEquipmentProfileSnapshot(
+            recipeBatchVolumeL,
+            waterPlanGrainAbsorptionLPerKg,
+          ),
+          grainKg,
+          input.boilTimeMinutes ?? 60,
+        )
+      : null;
+  const resolvedSuggestedVolumePlan =
+    input.waterPlanMeta.totalWaterVolumeL == null
+      ? input.equipmentVolumePlan ?? estimatedEquipmentVolumePlan
+      : input.equipmentVolumePlan;
   const equipmentTotalWaterL =
     input.equipmentVolumePlan && Number.isFinite(input.equipmentVolumePlan.totalWaterL)
       ? Math.max(0, input.equipmentVolumePlan.totalWaterL)
       : null;
+  const estimatedTotalWaterL =
+    estimatedEquipmentVolumePlan &&
+    Number.isFinite(estimatedEquipmentVolumePlan.totalWaterL)
+      ? Math.max(0, estimatedEquipmentVolumePlan.totalWaterL)
+      : null;
   const suggestedMashWaterL =
-    input.equipmentVolumePlan && Number.isFinite(input.equipmentVolumePlan.mashWaterL)
-      ? roundTo(Math.max(0, input.equipmentVolumePlan.mashWaterL), 2)
+    resolvedSuggestedVolumePlan && Number.isFinite(resolvedSuggestedVolumePlan.mashWaterL)
+      ? roundTo(Math.max(0, resolvedSuggestedVolumePlan.mashWaterL), 2)
       : null;
   const suggestedSpargeWaterL =
-    input.equipmentVolumePlan && Number.isFinite(input.equipmentVolumePlan.spargeWaterL)
-      ? roundTo(Math.max(0, input.equipmentVolumePlan.spargeWaterL), 2)
+    resolvedSuggestedVolumePlan && Number.isFinite(resolvedSuggestedVolumePlan.spargeWaterL)
+      ? roundTo(Math.max(0, resolvedSuggestedVolumePlan.spargeWaterL), 2)
       : null;
+  const grainAbsorptionLossL =
+    resolvedSuggestedVolumePlan &&
+    resolvedSuggestedVolumePlan.grainAbsorptionLossL != null &&
+    Number.isFinite(resolvedSuggestedVolumePlan.grainAbsorptionLossL)
+      ? roundTo(Math.max(0, resolvedSuggestedVolumePlan.grainAbsorptionLossL), 2)
+      : null;
+  const grainAbsorptionLPerKg =
+    resolvedSuggestedVolumePlan &&
+    "grainAbsorptionLPerKg" in resolvedSuggestedVolumePlan &&
+    resolvedSuggestedVolumePlan.grainAbsorptionLPerKg != null &&
+    Number.isFinite(resolvedSuggestedVolumePlan.grainAbsorptionLPerKg)
+      ? roundTo(Math.max(0, resolvedSuggestedVolumePlan.grainAbsorptionLPerKg), 2)
+      : grainKg > 0 && grainAbsorptionLossL != null
+        ? roundTo(grainAbsorptionLossL / grainKg, 2)
+        : waterPlanGrainAbsorptionLPerKg ??
+          starterEquipmentProfileDefaults.grainAbsorptionLPerKg;
+  const hasManualTotal = input.waterPlanMeta.totalWaterVolumeL != null;
   const automaticTotalWaterL = roundTo(
     Math.max(
       0,
       input.waterPlanMeta.totalWaterVolumeL ??
         equipmentTotalWaterL ??
+        estimatedTotalWaterL ??
         recipeBatchVolumeL ??
         0,
     ),
@@ -453,9 +524,13 @@ export const buildRecipeWaterPlanResult = (input: {
 
   const volumeSource = hasManualSplit
     ? "manual_split"
-    : equipmentTotalWaterL != null
-      ? "equipment_profile"
-      : "batch_size";
+    : hasManualTotal
+      ? "manual_total"
+      : equipmentTotalWaterL != null
+        ? "equipment_profile"
+        : estimatedTotalWaterL != null
+          ? "estimated_total_water"
+          : "batch_size";
   const sourceProfile = normalizeProfile(
     input.waterPlanMeta.sourceProfile ?? emptyWaterProfile,
   );
@@ -463,26 +538,31 @@ export const buildRecipeWaterPlanResult = (input: {
     ? normalizeProfile(input.waterPlanMeta.targetProfile)
     : null;
 
+  const setupEnabled = input.waterPlanMeta.setupEnabled === true;
+
   if (
+    setupEnabled &&
     !hasMeaningfulIonTargets(sourceProfile) &&
     !isZeroMineralSourceProfileAllowed(input.waterPlanMeta)
   ) {
     warnings.push("source_profile_missing_or_zero");
   }
 
-  if (!hasMeaningfulIonTargets(targetProfile)) {
+  if (setupEnabled && !hasMeaningfulIonTargets(targetProfile)) {
     warnings.push("target_profile_missing_or_zero");
   }
 
   const effectiveEngine = resolveRecipeWaterEffectiveEngine(
     input.waterPlanMeta,
   );
-  const mashPhEnabled = isRecipeWaterMashPhEnabled(input.waterPlanMeta);
+  const mashPhEnabled =
+    setupEnabled && isRecipeWaterMashPhEnabled(input.waterPlanMeta);
   const manualSaltAdditions = normalizeManualSaltAdditions(
     input.waterPlanMeta.manualSaltAdditions,
   );
-  const useManualAdditions = effectiveEngine === "advanced_manual";
+  const useManualAdditions = setupEnabled && effectiveEngine === "advanced_manual";
   const solverResult =
+    setupEnabled &&
     !useManualAdditions &&
     targetProfile &&
     hasMeaningfulIonTargets(targetProfile) &&
@@ -492,6 +572,7 @@ export const buildRecipeWaterPlanResult = (input: {
           targetProfile,
           waterLiters: totalWaterL,
           allowedSalts: resolveAllowedSalts(input.waterPlanMeta),
+          preventTargetOvershoot: false,
         })
       : null;
   const saltAdditions: ScopedSaltAddition[] = useManualAdditions
@@ -550,7 +631,7 @@ export const buildRecipeWaterPlanResult = (input: {
     input.waterPlanMeta.spargeSourcePh ?? sourceProfile.ph ?? 7;
   const targetSpargePh = input.waterPlanMeta.targetSpargePh ?? 5.7;
   const spargeAcidAddition =
-    input.waterPlanMeta.spargeAcidificationEnabled && spargeWaterL > 0
+    setupEnabled && input.waterPlanMeta.spargeAcidificationEnabled && spargeWaterL > 0
       ? solveMashAcidAddition({
           unadjustedMashPh20C: spargeSourcePh,
           targetMashPh20C: targetSpargePh,
@@ -580,6 +661,8 @@ export const buildRecipeWaterPlanResult = (input: {
       totalWaterL,
       suggestedMashWaterL,
       suggestedSpargeWaterL,
+      grainAbsorptionLPerKg,
+      grainAbsorptionLossL,
       source: volumeSource,
     },
     sourceProfile,

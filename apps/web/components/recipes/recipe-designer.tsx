@@ -1,6 +1,6 @@
 "use client";
 
-import { beerStyleFixtures, convertVolume, convertWeight, evaluateStyleFit, getBeerStyleById, getBjcpArticleHrefByStyleId, getBjcpStyleDisplayName, getStyleRangeById, searchBeerStyles, srmToEbc } from "@nb/brewing-core";
+import { beerStyleFixtures, convertVolume, convertWeight, evaluateStyleFit, getBeerStyleById, getBjcpArticleHrefByStyleId, getBjcpStyleDisplayName, getStyleRangeById, searchBeerStyles, srmToEbc, type BrewingSaltId } from "@nb/brewing-core";
 import {
   CircleCheck,
   CircleAlert,
@@ -17,6 +17,7 @@ import {
   Pencil,
   Plus,
   Search,
+  SlidersHorizontal,
   Sparkles,
   StickyNote,
   Target,
@@ -50,7 +51,11 @@ import {
   type RecipeEditorResult,
   type RecipeInventoryActionResult
 } from "@/app/(app)/app/recipes/actions";
-import { IngredientPicker, IngredientSelectionCard } from "@/components/ingredients/ingredient-picker";
+import {
+  buildIngredientSearchParams,
+  IngredientPicker,
+  IngredientSelectionCard
+} from "@/components/ingredients/ingredient-picker";
 import { CustomIngredientForm, type CustomIngredientSubmitPayload } from "@/components/inventory/custom-ingredient-form";
 import {
   buildRecipeIngredientTechnicalBadges,
@@ -72,6 +77,7 @@ import { calculateEquipmentVolumePlan } from "@/features/equipment-profiles/volu
 import type {
   IngredientCategory,
   IngredientConsumableGroupRefinement,
+  IngredientSearchResult,
   IngredientSuggestionItem,
   IngredientSubtype,
   IngredientTechnicalData,
@@ -97,6 +103,7 @@ import {
   formatInventoryQuantityInputValue,
   resolveInventoryMeasurementForDisplay
 } from "@/features/inventory/display";
+import { resolveWaterTreatmentFormulaLabel } from "@/features/ingredients/water-treatment";
 import {
   getInventoryUnitInputStep,
   inventoryUnitLabels,
@@ -111,6 +118,7 @@ import {
   recipeBitternessFormulas,
   recipeFermentableUseTypes,
   recipeHopUseTypes,
+  type RecipeIngredientStage,
   type RecipeCalculationMeta,
   type RecipeDetailDto,
   type RecipeDraftPreviewDto,
@@ -121,6 +129,7 @@ import {
   type RecipeProcessMeta,
   type RecipePublicationState,
   type RecipeStockCoverageDto,
+  type RecipeWaterManualSaltAdditionTarget,
   type RecipeWaterPlanMeta
 } from "@/features/recipes/contracts";
 import { beerColorFromSrm } from "@/features/recipes/beer-color";
@@ -132,12 +141,16 @@ import { IngredientAddDrawer } from "@/components/recipes/ingredient-add-drawer"
 import { RecipeActionsMenu } from "@/components/recipes/recipe-actions-menu";
 import { RecipeImagesSection } from "@/components/recipes/recipe-images-section";
 import { StartBrewModal, type StartBrewResult } from "@/components/recipes/start-brew-modal";
-import { RecipeWaterAdditivesSection } from "@/components/recipes/recipe-water-additives-section";
+import {
+  getRecipeWaterSetupToggleLabel,
+  RecipeWaterAdditivesSection
+} from "@/components/recipes/recipe-water-additives-section";
 import { StockCoverageSummary } from "@/components/recipes/stock-coverage-summary";
 import { StockIngredientList } from "@/components/recipes/stock-ingredient-list";
 import {
   createRecipeWaterPlanResetMeta,
   removeRecipeWaterManualSaltAddition,
+  setRecipeWaterSaltCalculationMode,
   WaterSetupWizard
 } from "@/components/recipes/water-setup-wizard";
 import {
@@ -155,6 +168,11 @@ import {
   type RecipeWaterPlanFermentableInput,
   type RecipeWaterPlanResult
 } from "@/features/recipes/water-plan";
+import {
+  recipeWaterAddFlowCatalogIds,
+  recipeWaterManualSaltIds,
+  resolveRecipeWaterSaltIdFromCatalogId
+} from "@/features/recipes/water-additives-catalog";
 import { validateNumericInput } from "@/features/forms/numeric-validation";
 
 type Props = {
@@ -571,10 +589,105 @@ const recipeAdditionalHopUseTypeUiOrder = recipeHopUseTypeUiOrder.filter((useTyp
 const stageLabels: Record<DesignerIngredient["stage"], string> = {
   mash: "Затор",
   boil: "Кипячение",
-  whirlpool: "Whirlpool",
-  fermentation: "Ферментация",
+  whirlpool: "Вирпул",
+  fermentation: "Брожение",
   packaging: "Розлив",
   other: "Другое"
+};
+
+const recipeConsumableStageFallbackOrder: RecipeIngredientStage[] = [
+  "mash",
+  "boil",
+  "whirlpool",
+  "fermentation",
+  "packaging",
+  "other"
+];
+
+const normalizeRecipeConsumableUsageStageKey = (value?: string | null) => (
+  value?.trim().toLowerCase().replace(/[\s-]+/g, "_") ?? ""
+);
+
+export const mapRecipeConsumableUsageStage = (value?: string | null): RecipeIngredientStage | null => {
+  const normalized = normalizeRecipeConsumableUsageStageKey(value);
+  if (!normalized) {
+    return null;
+  }
+
+  if (normalized === "mash" || normalized.includes("затор")) return "mash";
+  if (normalized === "boil" || normalized.includes("кип")) return "boil";
+  if (
+    normalized === "flameout"
+    || normalized === "whirlpool"
+    || normalized.includes("вирпул")
+    || normalized.includes("выключ")
+  ) return "whirlpool";
+  if (
+    normalized === "primary"
+    || normalized === "secondary"
+    || normalized === "fermentation"
+    || normalized === "cold_crash"
+    || normalized === "conditioning"
+    || normalized === "post_fermentation"
+    || normalized.includes("брож")
+  ) return "fermentation";
+  if (
+    normalized === "bottling"
+    || normalized === "packaging"
+    || normalized === "finished_beer"
+    || normalized.includes("розлив")
+    || normalized.includes("упаков")
+  ) return "packaging";
+
+  return "other";
+};
+
+export const resolveRecipeConsumableStageOptions = (
+  technicalData?: IngredientTechnicalData | null
+): RecipeIngredientStage[] => {
+  if (!technicalData || technicalData.type !== "consumable") {
+    return recipeConsumableStageFallbackOrder;
+  }
+
+  const stages = new Set<RecipeIngredientStage>();
+  const usageStages = Array.isArray(technicalData.usageStage)
+    ? technicalData.usageStage
+    : [];
+
+  for (const usageStage of usageStages) {
+    const mapped = mapRecipeConsumableUsageStage(usageStage);
+    if (mapped) {
+      stages.add(mapped);
+    }
+  }
+
+  if (!stages.size) {
+    return recipeConsumableStageFallbackOrder;
+  }
+
+  const orderedStages = recipeConsumableStageFallbackOrder.filter((stage) => stages.has(stage));
+  return orderedStages.includes("other") ? orderedStages : [...orderedStages, "other"];
+};
+
+export const resolveRecipeConsumableDefaultStage = (
+  technicalData?: IngredientTechnicalData | null
+): RecipeIngredientStage => {
+  if (!technicalData || technicalData.type !== "consumable") {
+    return "other";
+  }
+
+  const usageStages = Array.isArray(technicalData.usageStage)
+    ? technicalData.usageStage
+    : [];
+
+  for (const usageStage of usageStages) {
+    const mapped = mapRecipeConsumableUsageStage(usageStage);
+    if (mapped) {
+      return mapped;
+    }
+  }
+
+  return "other";
 };
 
 const fermentableUseLabels: Record<(typeof recipeFermentableUseTypes)[number], string> = {
@@ -664,10 +777,11 @@ const cloneRecipeWaterPlanMeta = (value?: RecipeWaterPlanMeta | null): RecipeWat
   mashWaterVolumeL: value?.mashWaterVolumeL ?? null,
   spargeWaterVolumeL: value?.spargeWaterVolumeL ?? null,
   totalWaterVolumeL: value?.totalWaterVolumeL ?? null,
+  grainAbsorptionLPerKg: value?.grainAbsorptionLPerKg ?? null,
   allowedSalts: value?.allowedSalts ?? [],
   allowedAcids: value?.allowedAcids ?? [],
   manualSaltAdditions: value?.manualSaltAdditions ?? [],
-  targetMashPh: value?.targetMashPh ?? 5.35,
+  targetMashPh: value?.targetMashPh ?? null,
   spargeAcidificationEnabled: value?.spargeAcidificationEnabled ?? false,
   spargeSourcePh: value?.spargeSourcePh ?? null,
   targetSpargePh: value?.targetSpargePh ?? null,
@@ -972,15 +1086,24 @@ const createEmptyIngredient = (
 };
 
 const applySelection = (current: DesignerIngredient, item: IngredientSuggestionItem): DesignerIngredient => {
+  const nextCategory = item.category ?? current.category;
   const unitProfile = resolveHumanFacingInventoryUnitProfile({
     type: item.type,
-    category: item.category ?? current.category,
+    category: nextCategory,
     subtype: item.subtype ?? null,
     defaultDisplayUnit: item.defaultDisplayUnit ?? item.defaultUnit,
     allowedUnits: item.allowedUnits,
     measurementDimension: item.measurementDimension
   });
   const { primaryName, secondaryName } = resolveIngredientDisplayNames(item);
+  const consumableStageOptions = nextCategory === "consumable"
+    ? resolveRecipeConsumableStageOptions(item.technicalData ?? null)
+    : null;
+  const nextStage = consumableStageOptions
+    ? current.stage !== "other" && consumableStageOptions.includes(current.stage)
+      ? current.stage
+      : resolveRecipeConsumableDefaultStage(item.technicalData ?? null)
+    : current.stage;
 
   return {
     ...current,
@@ -997,7 +1120,7 @@ const applySelection = (current: DesignerIngredient, item: IngredientSuggestionI
     countryCode: item.countryCode ?? null,
     countryName: item.countryName ?? null,
     country: item.country ?? null,
-    category: item.category ?? current.category,
+    category: nextCategory,
     subtype: item.subtype ?? null,
     familyId: item.familyId ?? null,
     type: item.type,
@@ -1006,6 +1129,7 @@ const applySelection = (current: DesignerIngredient, item: IngredientSuggestionI
     allowedUnits: unitProfile.allowedUnits,
     measurementDimension: unitProfile.measurementDimension,
     amountEnteredUnit: unitProfile.defaultUnit,
+    stage: nextStage,
     inventoryIntentMode: item.inventoryItemId ? "use_stock" : item.source === "custom" ? "custom" : "catalog",
     inventorySelectionMeta: item.inventoryItemId
       ? {
@@ -2638,9 +2762,18 @@ function SectionRow({
   const isImported = isImportedDesignerIngredient(ingredient);
   const isFromStock = ingredient.inventoryIntentMode === "use_stock" || Boolean(ingredient.inventorySelectionMeta?.inventoryItemId);
   const cardSource = buildDesignerIngredientCardSource(ingredient);
-  const technicalBadges = buildRecipeIngredientTechnicalBadges(cardSource);
+  const technicalBadges = buildRecipeIngredientTechnicalBadges(cardSource, {
+    includeConsumableUsageStage: ingredient.category !== "consumable"
+  });
+  const recipeStageBadges = ingredient.category === "consumable" && ingredient.stage !== "other"
+    ? [{
+      key: `recipe-stage:${ingredient.stage}`,
+      label: stageLabels[ingredient.stage]
+    }]
+    : [];
+  const badges = [...recipeStageBadges, ...technicalBadges];
   const summaryDetails = buildSummaryDetails(ingredient);
-  const summaryFallback = technicalBadges.length ? null : (ingredient.selectedSummary || ingredient.familyDisplayName || null);
+  const summaryFallback = badges.length ? null : (ingredient.selectedSummary || ingredient.familyDisplayName || null);
 
   return (
     <li className={`relative rounded-lg border-l-[3px] bg-white px-3 py-2.5 shadow-sm ring-1 ring-zinc-100 transition-shadow hover:shadow-md ${accent}`}>
@@ -2680,8 +2813,8 @@ function SectionRow({
           </div>
           {summaryDetails ? <div className="mt-1 text-xs text-zinc-500">{summaryDetails}</div> : null}
           {summaryFallback ? <div className="mt-1 text-xs text-zinc-500">{summaryFallback}</div> : null}
-          {!summaryDetails && !summaryFallback && !technicalBadges.length ? <div className="mt-1 text-xs text-zinc-500">-</div> : null}
-          <RecipeIngredientTechnicalBadges badges={technicalBadges} className="mt-1.5" />
+          {!summaryDetails && !summaryFallback && !badges.length ? <div className="mt-1 text-xs text-zinc-500">-</div> : null}
+          <RecipeIngredientTechnicalBadges badges={badges} className="mt-1.5" />
           {isImported ? (
             <div className="mt-2 flex flex-wrap gap-2">
               <button
@@ -2729,6 +2862,96 @@ function SectionRow({
             <span className="text-xs text-zinc-500">мин</span>
           </div>
         ) : null}
+      </div>
+    </li>
+  );
+}
+
+function WaterTreatmentSectionRow({
+  ingredient,
+  onEdit,
+  onDelete,
+  onQuantityChange
+}: {
+  ingredient: DesignerIngredient;
+  onEdit: (ingredient: DesignerIngredient) => void;
+  onDelete: (localId: string) => void;
+  onQuantityChange: (localId: string, quantity: string) => void;
+}) {
+  const unitLabel = inventoryUnitLabels[ingredient.amountEnteredUnit] ?? ingredient.amountEnteredUnit;
+  const quantityStep = getInventoryUnitInputStep(ingredient.amountEnteredUnit);
+  const cardSource = buildDesignerIngredientCardSource(ingredient);
+  const formula = resolveWaterTreatmentFormulaLabel(ingredient.technicalData);
+  const badges = buildRecipeIngredientTechnicalBadges(cardSource).filter(
+    (badge) => badge.label !== formula,
+  );
+  const summaryDetails = buildSummaryDetails(ingredient);
+  const isFromStock = ingredient.inventoryIntentMode === "use_stock" || Boolean(ingredient.inventorySelectionMeta?.inventoryItemId);
+  const status = isFromStock
+    ? { label: "Со склада", className: "text-emerald-700" }
+    : ingredient.ingredientCatalogItemId
+      ? { label: "Из каталога", className: "text-zinc-500" }
+      : { label: "Добавлено вручную", className: "text-zinc-500" };
+
+  return (
+    <li className="relative rounded-lg border-l-[3px] border-l-sky-400 bg-white px-3 py-2.5 shadow-sm ring-1 ring-zinc-100">
+      <div className="absolute right-2 top-2 z-10 flex shrink-0 gap-0.5">
+        <button
+          type="button"
+          onClick={() => onEdit(ingredient)}
+          className="rounded-md p-1.5 text-zinc-400 transition-colors hover:bg-zinc-100 hover:text-zinc-700"
+          aria-label="Редактировать"
+        >
+          <Pencil className="h-3.5 w-3.5" />
+        </button>
+        <button
+          type="button"
+          onClick={() => onDelete(ingredient.localId)}
+          className="rounded-md p-1.5 text-zinc-400 transition-colors hover:bg-rose-50 hover:text-rose-600"
+          aria-label="Удалить"
+        >
+          <X className="h-3.5 w-3.5" />
+        </button>
+      </div>
+
+      <div className="flex min-w-0 items-center gap-3 pr-14">
+        <div className="min-w-0 flex-1">
+          <div className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
+            <span className="truncate text-sm font-semibold text-zinc-950">
+              {ingredient.selectedName || "Не выбран"}
+            </span>
+            {formula ? (
+              <span className="text-sm font-semibold tabular-nums text-zinc-950">
+                {formula}
+              </span>
+            ) : null}
+          </div>
+          {ingredient.selectedSecondaryName ? (
+            <div className="mt-0.5 text-xs text-zinc-500">
+              {ingredient.selectedSecondaryName}
+            </div>
+          ) : null}
+          <div className={`mt-1 text-xs ${status.className}`}>
+            {status.label}
+          </div>
+          {summaryDetails ? (
+            <div className="mt-1 text-xs text-zinc-500">{summaryDetails}</div>
+          ) : null}
+          <RecipeIngredientTechnicalBadges badges={badges} className="mt-1.5" />
+        </div>
+        <div className="shrink-0 text-right">
+          <div className="flex items-center justify-end gap-1">
+            <input
+              type="number"
+              value={ingredient.amountEnteredQuantity}
+              onChange={(event) => onQuantityChange(ingredient.localId, event.target.value)}
+              className="h-7 w-[72px] rounded-md border border-zinc-200 bg-zinc-50 px-2 text-right text-sm tabular-nums text-zinc-900 focus:border-zinc-400 focus:bg-white focus:outline-none focus:ring-1 focus:ring-zinc-200"
+              min={quantityStep}
+              step={quantityStep}
+            />
+            <span className="text-xs text-zinc-500">{unitLabel}</span>
+          </div>
+        </div>
       </div>
     </li>
   );
@@ -3373,6 +3596,10 @@ const searchStockIngredientsForRecipe = async ({
 
   const data = await response.json() as { items?: IngredientSuggestionItem[] };
   const items = data.items ?? [];
+  if (category === "water_treatment") {
+    return filterRecipeWaterAddFlowSuggestions(items);
+  }
+
   const normalizedGroup = category === "fermentable" && subtype === "fermentable"
     ? canonicalizeFermentableQuickStartGroup(group)
     : null;
@@ -3413,6 +3640,308 @@ export const buildRecipeStockIngredientSearchParams = ({
   return params;
 };
 
+const recipeWaterAddFlowCatalogIdOrder = new Map(
+  recipeWaterAddFlowCatalogIds.map((id, index) => [id, index])
+);
+const recipeWaterAddFlowCatalogIdSet = new Set(recipeWaterAddFlowCatalogIds);
+const recipeWaterManualSaltIdSet = new Set<string>(recipeWaterManualSaltIds);
+const recipeWaterAddFlowDefaultGroups = ["salt", "base"] as const;
+
+const isRecipeWaterAddFlowSuggestion = (item: IngredientSuggestionItem) => (
+  item.category === "water_treatment"
+  && item.source === "catalog"
+  && recipeWaterAddFlowCatalogIdSet.has(item.id)
+);
+
+export const filterRecipeWaterAddFlowSuggestions = (
+  items: IngredientSuggestionItem[],
+): IngredientSuggestionItem[] => {
+  const seen = new Set<string>();
+
+  return items
+    .filter(isRecipeWaterAddFlowSuggestion)
+    .filter((item) => {
+      if (seen.has(item.id)) {
+        return false;
+      }
+
+      seen.add(item.id);
+      return true;
+    })
+    .sort((left, right) => (
+      (recipeWaterAddFlowCatalogIdOrder.get(left.id) ?? Number.MAX_SAFE_INTEGER)
+      - (recipeWaterAddFlowCatalogIdOrder.get(right.id) ?? Number.MAX_SAFE_INTEGER)
+      || left.displayName.localeCompare(right.displayName, "ru")
+    ));
+};
+
+type RecipeWaterManualSaltAddition =
+  NonNullable<RecipeWaterPlanMeta["manualSaltAdditions"]>[number];
+
+type RecipeWaterAddFlowSaltIngredientInput = Pick<
+  DesignerIngredient,
+  | "amountEnteredQuantity"
+  | "amountEnteredUnit"
+  | "category"
+  | "ingredientCatalogItemId"
+>;
+
+const recipeWaterManualSaltWeightUnits = ["g", "kg", "oz", "lb"] as const;
+
+type RecipeWaterManualSaltWeightUnit =
+  (typeof recipeWaterManualSaltWeightUnits)[number];
+
+const isRecipeWaterManualSaltWeightUnit = (
+  unit: InventoryUnit,
+): unit is RecipeWaterManualSaltWeightUnit =>
+  recipeWaterManualSaltWeightUnits.includes(
+    unit as RecipeWaterManualSaltWeightUnit,
+  );
+
+const roundRecipeWaterSaltGrams = (grams: number) =>
+  Number(grams.toFixed(2));
+
+const toRecipeWaterSaltGrams = (
+  quantity: string,
+  unit: InventoryUnit,
+): number | null => {
+  const value = Number(quantity);
+  if (!Number.isFinite(value) || value <= 0) {
+    return null;
+  }
+
+  if (!isRecipeWaterManualSaltWeightUnit(unit)) {
+    return null;
+  }
+
+  const grams =
+    unit === "g" ? value : convertWeight({ value, unit }, "g").value;
+
+  return Number.isFinite(grams) && grams > 0
+    ? roundRecipeWaterSaltGrams(grams)
+    : null;
+};
+
+export const resolveRecipeWaterManualSaltAdditionFromIngredient = (
+  ingredient: RecipeWaterAddFlowSaltIngredientInput,
+): RecipeWaterManualSaltAddition | null => {
+  if (ingredient.category !== "water_treatment") {
+    return null;
+  }
+
+  const salt = resolveRecipeWaterSaltIdFromCatalogId(
+    ingredient.ingredientCatalogItemId,
+  );
+  const grams = toRecipeWaterSaltGrams(
+    ingredient.amountEnteredQuantity,
+    ingredient.amountEnteredUnit,
+  );
+
+  if (!salt || grams == null) {
+    return null;
+  }
+
+  return { salt, grams, target: "all" };
+};
+
+const normalizeRecipeWaterManualSaltAddition = (
+  addition: RecipeWaterManualSaltAddition,
+): RecipeWaterManualSaltAddition | null => {
+  if (
+    typeof addition.salt !== "string"
+    || !recipeWaterManualSaltIdSet.has(addition.salt)
+    || addition.grams <= 0
+  ) {
+    return null;
+  }
+
+  const salt = addition.salt as BrewingSaltId;
+  const target: RecipeWaterManualSaltAdditionTarget =
+    addition.target === "mash" || addition.target === "sparge"
+      ? addition.target
+      : "all";
+
+  return {
+    salt,
+    grams: roundRecipeWaterSaltGrams(addition.grams),
+    target,
+  };
+};
+
+const snapshotRecipeWaterResultSaltAdditions = (
+  waterPlanResult: RecipeWaterPlanResult,
+): RecipeWaterManualSaltAddition[] => {
+  const additions =
+    waterPlanResult.waterVolumes.source === "manual_split"
+      ? [
+          ...waterPlanResult.mashSaltAdditions.map((addition) => ({
+            salt: addition.salt,
+            grams: addition.grams,
+            target: "mash" as RecipeWaterManualSaltAdditionTarget,
+          })),
+          ...waterPlanResult.spargeSaltAdditions.map((addition) => ({
+            salt: addition.salt,
+            grams: addition.grams,
+            target: "sparge" as RecipeWaterManualSaltAdditionTarget,
+          })),
+        ]
+      : waterPlanResult.totalSaltAdditions.map((addition) => ({
+          salt: addition.salt,
+          grams: addition.grams,
+          target: addition.target,
+        }));
+
+  return additions
+    .map((addition) => normalizeRecipeWaterManualSaltAddition(addition))
+    .filter((addition): addition is RecipeWaterManualSaltAddition =>
+      addition !== null,
+    );
+};
+
+const seedRecipeWaterManualSaltAdditions = (
+  waterPlanMeta: RecipeWaterPlanMeta,
+  waterPlanResult: RecipeWaterPlanResult,
+): RecipeWaterManualSaltAddition[] => {
+  const existing = (waterPlanMeta.manualSaltAdditions ?? [])
+    .map(normalizeRecipeWaterManualSaltAddition)
+    .filter((addition): addition is RecipeWaterManualSaltAddition =>
+      addition !== null,
+    );
+
+  if (waterPlanMeta.engine === "advanced_manual") {
+    return existing;
+  }
+
+  return snapshotRecipeWaterResultSaltAdditions(waterPlanResult);
+};
+
+const mergeRecipeWaterManualSaltAddition = (
+  additions: RecipeWaterManualSaltAddition[],
+  addition: RecipeWaterManualSaltAddition,
+): RecipeWaterManualSaltAddition[] => {
+  const target = addition.target ?? "all";
+  const index = additions.findIndex(
+    (item) => item.salt === addition.salt && (item.target ?? "all") === target,
+  );
+
+  if (index < 0) {
+    return [...additions, addition];
+  }
+
+  return additions.map((item, itemIndex) =>
+    itemIndex === index
+      ? {
+          ...item,
+          grams: roundRecipeWaterSaltGrams(item.grams + addition.grams),
+          target,
+        }
+      : item,
+  );
+};
+
+export const applyRecipeWaterAddFlowSaltToWaterPlan = ({
+  waterPlanMeta,
+  waterPlanResult,
+  ingredient,
+}: {
+  waterPlanMeta: RecipeWaterPlanMeta;
+  waterPlanResult: RecipeWaterPlanResult;
+  ingredient: RecipeWaterAddFlowSaltIngredientInput;
+}): RecipeWaterPlanMeta | null => {
+  const addition = resolveRecipeWaterManualSaltAdditionFromIngredient(ingredient);
+  if (!addition) {
+    return null;
+  }
+
+  const baseAdditions = waterPlanMeta.engine === "advanced_manual"
+    ? seedRecipeWaterManualSaltAdditions(waterPlanMeta, waterPlanResult)
+    : [];
+
+  return {
+    ...waterPlanMeta,
+    setupEnabled: true,
+    engine: "advanced_manual",
+    manualSaltAdditions: mergeRecipeWaterManualSaltAddition(
+      baseAdditions,
+      addition,
+    ),
+  };
+};
+
+const fetchRecipeCatalogIngredientsForPicker = async (params: URLSearchParams, signal: AbortSignal) => {
+  const response = await fetch(`/api/ingredients/search?${params.toString()}`, { signal });
+  if (!response.ok) {
+    return [] as IngredientSuggestionItem[];
+  }
+
+  const data = await response.json() as IngredientSearchResult;
+  return data.items ?? [];
+};
+
+const searchRecipeWaterAddFlowCatalogIngredients = async ({
+  q,
+  type,
+  category,
+  subtype,
+  family,
+  group,
+  manufacturer,
+  favoritesOnly,
+  customOnly,
+  limit,
+  signal
+}: {
+  q: string;
+  type?: IngredientType;
+  category?: IngredientCategory;
+  subtype?: Extract<IngredientSubtype, "malt" | "fermentable"> | null;
+  family?: string;
+  group?: string;
+  manufacturer?: string;
+  favoritesOnly?: boolean;
+  customOnly?: boolean;
+  includeCustom?: boolean;
+  limit: number;
+  signal: AbortSignal;
+}): Promise<IngredientSuggestionItem[]> => {
+  const requestedLimit = Math.max(limit, recipeWaterAddFlowCatalogIds.length);
+  const base = {
+    q,
+    type,
+    category,
+    subtype,
+    family,
+    manufacturer,
+    favoritesOnly,
+    customOnly,
+    includeCustom: false,
+    limit: requestedLimit
+  };
+
+  if (q.trim() || group) {
+    const params = buildIngredientSearchParams({
+      ...base,
+      group
+    });
+    return filterRecipeWaterAddFlowSuggestions(
+      await fetchRecipeCatalogIngredientsForPicker(params, signal)
+    );
+  }
+
+  const groupedItems = await Promise.all(
+    recipeWaterAddFlowDefaultGroups.map((defaultGroup) => {
+      const params = buildIngredientSearchParams({
+        ...base,
+        group: defaultGroup,
+        limit: 100
+      });
+      return fetchRecipeCatalogIngredientsForPicker(params, signal);
+    })
+  );
+
+  return filterRecipeWaterAddFlowSuggestions(groupedItems.flat());
+};
+
 function IngredientEditor({
   draft,
   isExisting,
@@ -3444,9 +3973,11 @@ function IngredientEditor({
   ));
 
   const isHop = draft.category === "hop";
+  const isWaterTreatmentAddFlow = !isExisting && draft.category === "water_treatment";
   const hopUseType = getHopUseType(draft);
   const quantityStep = getInventoryUnitInputStep(draft.amountEnteredUnit);
   const sourceMode = resolveRecipeIngredientEditorSourceMode(draft.inventoryIntentMode);
+  const isWaterTreatmentCatalogMode = draft.category === "water_treatment" && sourceMode === "catalog";
   const fermentableScopeContext = resolveRecipeFermentablePickerScopeContext(fermentableScope);
   const resolvedDraftFermentableSubtype = resolveRecipeFermentableSubtype(draft.category, draft.subtype);
   const pickerSubtype = draft.category === "fermentable"
@@ -3472,7 +4003,7 @@ function IngredientEditor({
     : {
       hop: "Найти сорт или форму хмеля",
       yeast: "Найти дрожжи",
-      water_treatment: "Найти соль, кислоту или добавку для воды",
+      water_treatment: "Найти соль",
       consumable: "Найти Irish Moss, цедру, специю или другую добавку"
     }[draft.category];
   const ingredientSearchType = resolveRecipeIngredientSearchType({
@@ -3507,6 +4038,12 @@ function IngredientEditor({
         subtype: draft.subtype,
         source: sourceMode === "custom" ? "custom" : "catalog"
       });
+  const consumableStageOptions = draft.category === "consumable"
+    ? resolveRecipeConsumableStageOptions(draft.technicalData)
+    : [];
+  const visibleConsumableStageOptions = draft.category === "consumable" && !consumableStageOptions.includes(draft.stage)
+    ? [draft.stage, ...consumableStageOptions]
+    : consumableStageOptions;
 
   useEffect(() => {
     if (sourceMode === "custom") {
@@ -3588,6 +4125,7 @@ function IngredientEditor({
       }, result.item));
     }
   };
+  const canCreateCustomIngredientFromEditor = draft.category !== "water_treatment";
   const emptyCta = ({
     hasActiveFilters,
     resetFilters
@@ -3597,9 +4135,9 @@ function IngredientEditor({
   }) => (
     <div className="space-y-3">
       <p className="text-sm text-zinc-700">
-        Ничего не нашли. Попробуйте сменить категорию
-        {hasActiveFilters ? " или сбросить фильтры" : ""}
-        , либо добавьте свой ингредиент.
+        {draft.category === "water_treatment"
+          ? "Ничего не найдено"
+          : `Ничего не нашли. Попробуйте сменить категорию${hasActiveFilters ? " или сбросить фильтры" : ""}, либо добавьте свой ингредиент.`}
       </p>
       <div className="flex flex-wrap items-center gap-2">
         {hasActiveFilters ? (
@@ -3611,28 +4149,32 @@ function IngredientEditor({
             Сбросить фильтры
           </button>
         ) : null}
-        <button
-          type="button"
-          onClick={switchToCustomWithCurrentName}
-          className="inline-flex items-center rounded-md bg-zinc-950 px-3 py-2 text-sm font-medium text-white transition-colors hover:bg-zinc-800"
-        >
-          Добавить свой ингредиент
-        </button>
-        <button
-          type="button"
-          disabled={!draft.selectedName.trim()}
-          onClick={async () => {
-            const result = await proposeRecipeIngredientAction({
-              category: draft.category,
-              subtype: pickerSubtype,
-              displayName: draft.selectedName.trim()
-            });
-            setCustomMessage(result.message);
-          }}
-          className="inline-flex items-center rounded-md border border-zinc-300 bg-white px-3 py-2 text-sm font-medium text-zinc-700 transition-colors hover:border-zinc-400 hover:bg-zinc-100 hover:text-zinc-950 disabled:opacity-60"
-        >
-          Предложить в каталог
-        </button>
+        {canCreateCustomIngredientFromEditor ? (
+          <>
+            <button
+              type="button"
+              onClick={switchToCustomWithCurrentName}
+              className="inline-flex items-center rounded-md bg-zinc-950 px-3 py-2 text-sm font-medium text-white transition-colors hover:bg-zinc-800"
+            >
+              Добавить свой ингредиент
+            </button>
+            <button
+              type="button"
+              disabled={!draft.selectedName.trim()}
+              onClick={async () => {
+                const result = await proposeRecipeIngredientAction({
+                  category: draft.category,
+                  subtype: pickerSubtype,
+                  displayName: draft.selectedName.trim()
+                });
+                setCustomMessage(result.message);
+              }}
+              className="inline-flex items-center rounded-md border border-zinc-300 bg-white px-3 py-2 text-sm font-medium text-zinc-700 transition-colors hover:border-zinc-400 hover:bg-zinc-100 hover:text-zinc-950 disabled:opacity-60"
+            >
+              Предложить в каталог
+            </button>
+          </>
+        ) : null}
       </div>
       {customMessage ? <p className="text-xs text-zinc-500">{customMessage}</p> : null}
     </div>
@@ -3643,13 +4185,19 @@ function IngredientEditor({
     catalog: { label: "Из каталога", icon: <Search className="h-3.5 w-3.5" />, description: "Подобрать по каталогу" },
     custom: { label: "Свой", icon: <Sparkles className="h-3.5 w-3.5" />, description: "Создать свой" }
   };
+  const sourceModeOptions: RecipeIngredientEditorSourceMode[] =
+    draft.category === "water_treatment"
+      ? sourceMode === "custom"
+        ? ["catalog", "use_stock", "custom"]
+        : ["catalog", "use_stock"]
+      : ["use_stock", "catalog", "custom"];
 
   return (
     <div className="flex min-h-0 flex-1 flex-col">
       <div className="flex shrink-0 items-start justify-between gap-3 border-b border-zinc-100 px-4 py-3 sm:px-6 sm:py-4">
         <div className="min-w-0">
           <h3 className="truncate text-base font-semibold text-zinc-950 sm:text-lg">
-            {isExisting ? "Редактор позиции" : "Новая позиция"}
+            {isWaterTreatmentAddFlow ? "Новая соль для воды" : isExisting ? "Редактор позиции" : "Новая позиция"}
           </h3>
           <p className="mt-0.5 truncate text-xs text-zinc-500">{contextCategoryLabel}</p>
         </div>
@@ -3665,23 +4213,28 @@ function IngredientEditor({
       </div>
 
       <div className="flex-1 space-y-4 overflow-y-auto overscroll-contain px-4 py-4 sm:px-6 sm:py-5">
-        <RecipeIngredientCategoryGrid
-          value={draft.category}
-          onChange={(nextCategory) => {
-            setShowStockSearch(false);
-            setCustomMessage(null);
-            setCustomFieldErrors(undefined);
-            setFermentableScope(null);
-            onChange(applyRecipeIngredientCategoryContextChange(draft, nextCategory));
-          }}
-          legend="Категория ингредиента"
-          testId="recipe-ingredient-category-grid"
-        />
+        {isWaterTreatmentAddFlow ? null : (
+          <RecipeIngredientCategoryGrid
+            value={draft.category}
+            onChange={(nextCategory) => {
+              setShowStockSearch(false);
+              setCustomMessage(null);
+              setCustomFieldErrors(undefined);
+              setFermentableScope(null);
+              onChange(applyRecipeIngredientCategoryContextChange(draft, nextCategory));
+            }}
+            legend="Категория ингредиента"
+            testId="recipe-ingredient-category-grid"
+          />
+        )}
 
         <div>
           <span className="mb-1.5 block text-[11px] font-medium uppercase tracking-wide text-zinc-500">Источник</span>
-          <div className="grid grid-cols-3 gap-1.5 rounded-xl bg-zinc-100 p-1" data-testid="recipe-ingredient-source-switch">
-            {(["use_stock", "catalog", "custom"] as const).map((mode) => {
+          <div
+            className={`grid gap-1.5 rounded-xl bg-zinc-100 p-1 ${sourceModeOptions.length === 2 ? "grid-cols-2" : "grid-cols-3"}`}
+            data-testid="recipe-ingredient-source-switch"
+          >
+            {sourceModeOptions.map((mode) => {
               const meta = sourceModeMeta[mode];
               const active = sourceMode === mode;
               return (
@@ -3723,7 +4276,7 @@ function IngredientEditor({
                 setShowStockSearch(false);
                 onChange(clearRecipeIngredientSelection(draft));
               }}
-              hideTypedSummary={!selectedStockPreview}
+              hideTypedSummary={!selectedStockPreview || draft.category === "consumable"}
               hideSubtitle={!selectedStockPreview}
               mergeBrandAndCountry
             />
@@ -3779,12 +4332,26 @@ function IngredientEditor({
                     setShowStockSearch(false);
                     onChange(applySelection(draft, item));
                   }}
-                  searchIngredients={sourceMode === "use_stock" ? searchStockIngredientsForRecipe : undefined}
+                  searchIngredients={
+                    sourceMode === "use_stock"
+                      ? searchStockIngredientsForRecipe
+                      : isWaterTreatmentCatalogMode
+                        ? searchRecipeWaterAddFlowCatalogIngredients
+                        : undefined
+                  }
                   hydrateRecentSelectionsOnInit={sourceMode !== "use_stock"}
-                  enableQuickStart={sourceMode !== "use_stock"}
-                  allowCustomOnlyFilter={sourceMode !== "use_stock"}
+                  enableQuickStart={sourceMode !== "use_stock" && !isWaterTreatmentCatalogMode}
+                  allowCustomOnlyFilter={sourceMode !== "use_stock" && !isWaterTreatmentCatalogMode}
+                  searchOnEmptyQuery={isWaterTreatmentCatalogMode}
+                  limit={isWaterTreatmentCatalogMode ? recipeWaterAddFlowCatalogIds.length : undefined}
                   autoFocus={autoFocusPicker}
-                  placeholder={sourceMode === "use_stock" ? "Поиск по складу" : placeholder}
+                  placeholder={
+                    sourceMode === "use_stock"
+                      ? "Поиск по складу"
+                      : isWaterTreatmentCatalogMode
+                        ? "Найти соль"
+                        : placeholder
+                  }
                   emptyCta={emptyCta}
                 />
               ) : null}
@@ -4004,7 +4571,7 @@ function IngredientEditor({
               </div>
             ) : null}
 
-            {draft.category === "water_treatment" || draft.category === "consumable" ? (
+            {draft.category === "water_treatment" ? (
               <div className="grid gap-3 sm:grid-cols-2">
                 <label className="space-y-1 text-xs font-medium text-zinc-700">
                   Стадия
@@ -4016,6 +4583,53 @@ function IngredientEditor({
                     {Object.entries(stageLabels).map(([value, label]) => <option key={value} value={value}>{label}</option>)}
                   </select>
                 </label>
+                <label className="space-y-1 text-xs font-medium text-zinc-700">
+                  Время, если нужно
+                  <input
+                    type="number"
+                    min={0}
+                    max={600}
+                    step={1}
+                    value={draft.stepMeta.timeMinutes ?? ""}
+                    onChange={(event) => onChange({
+                      ...draft,
+                      timeOffset: event.target.value,
+                      stepMeta: {
+                        ...draft.stepMeta,
+                        timeMinutes: event.target.value
+                      }
+                    })}
+                    className="h-10 w-full rounded-md border border-zinc-200 bg-white px-3 text-sm text-zinc-900"
+                    placeholder="минуты"
+                  />
+                </label>
+              </div>
+            ) : null}
+
+            {draft.category === "consumable" ? (
+              <div className="grid gap-3 sm:grid-cols-2">
+                <fieldset className="space-y-1">
+                  <legend className="text-xs font-medium text-zinc-700">Стадия добавления</legend>
+                  <div className="flex flex-wrap gap-1.5" data-testid="recipe-consumable-stage-options">
+                    {visibleConsumableStageOptions.map((stage) => {
+                      const active = draft.stage === stage;
+                      return (
+                        <button
+                          key={stage}
+                          type="button"
+                          onClick={() => onChange({ ...draft, stage })}
+                          className={`rounded-md border px-2.5 py-1.5 text-xs font-medium transition-colors ${active
+                            ? "border-zinc-950 bg-zinc-950 text-white"
+                            : "border-zinc-200 bg-white text-zinc-600 hover:border-zinc-300 hover:bg-zinc-50 hover:text-zinc-900"
+                          }`}
+                          aria-pressed={active}
+                        >
+                          {stageLabels[stage]}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </fieldset>
                 <label className="space-y-1 text-xs font-medium text-zinc-700">
                   Время, если нужно
                   <input
@@ -4195,24 +4809,52 @@ export function RecipeDesigner({
       return null;
     }
 
-    return calculateEquipmentVolumePlan(
-      {
-        ...equipmentProfileSnapshot,
-        targetBatchVolumeL:
-          batchVolumeL ?? equipmentProfileSnapshot.targetBatchVolumeL,
-      },
-      fermentableWeightKg,
-      Number(boilTimeMinutes || 0),
-    );
-  }, [batchVolumeL, boilTimeMinutes, equipmentProfileSnapshot, fermentableWeightKg]);
+    const effectiveEquipmentProfile = {
+      ...equipmentProfileSnapshot,
+      targetBatchVolumeL:
+        batchVolumeL ?? equipmentProfileSnapshot.targetBatchVolumeL,
+      grainAbsorptionLPerKg:
+        waterPlanMeta.grainAbsorptionLPerKg ??
+        equipmentProfileSnapshot.grainAbsorptionLPerKg,
+    };
+
+    return {
+      ...calculateEquipmentVolumePlan(
+        effectiveEquipmentProfile,
+        fermentableWeightKg,
+        Number(boilTimeMinutes || 0),
+      ),
+      grainAbsorptionLPerKg: effectiveEquipmentProfile.grainAbsorptionLPerKg,
+    };
+  }, [
+    batchVolumeL,
+    boilTimeMinutes,
+    equipmentProfileSnapshot,
+    fermentableWeightKg,
+    waterPlanMeta.grainAbsorptionLPerKg,
+  ]);
   const waterPlanResult = useMemo(() => buildRecipeWaterPlanResult({
     waterPlanMeta,
     fallbackBatchVolumeL: batchVolumeL,
+    boilTimeMinutes: Number(boilTimeMinutes || 0),
     equipmentVolumePlan,
     grainKg: fermentableWeightKg,
     beerSrm: preview?.color ?? initialRecipe?.color ?? null,
     fermentables: getFermentablesForWaterPlan(ingredients)
-  }), [batchVolumeL, equipmentVolumePlan, fermentableWeightKg, ingredients, initialRecipe?.color, preview?.color, waterPlanMeta]);
+  }), [batchVolumeL, boilTimeMinutes, equipmentVolumePlan, fermentableWeightKg, ingredients, initialRecipe?.color, preview?.color, waterPlanMeta]);
+  const calculatedWaterPlanMeta = useMemo(
+    () => setRecipeWaterSaltCalculationMode(waterPlanMeta, "auto"),
+    [waterPlanMeta],
+  );
+  const calculatedWaterPlanResult = useMemo(() => buildRecipeWaterPlanResult({
+    waterPlanMeta: calculatedWaterPlanMeta,
+    fallbackBatchVolumeL: batchVolumeL,
+    boilTimeMinutes: Number(boilTimeMinutes || 0),
+    equipmentVolumePlan,
+    grainKg: fermentableWeightKg,
+    beerSrm: preview?.color ?? initialRecipe?.color ?? null,
+    fermentables: getFermentablesForWaterPlan(ingredients)
+  }), [batchVolumeL, boilTimeMinutes, calculatedWaterPlanMeta, equipmentVolumePlan, fermentableWeightKg, ingredients, initialRecipe?.color, preview?.color]);
   const savePayload = useMemo(() => normalizeSavePayload(payload), [payload]);
 
   const currentSignature = useMemo(() => JSON.stringify(payload), [payload]);
@@ -4394,11 +5036,18 @@ export function RecipeDesigner({
   };
 
   const openAddEditor = (category: IngredientCategory, hopUseType: RecipeHopUseType = "boil") => {
-    const draft = createEmptyIngredient(
+    const baseDraft = createEmptyIngredient(
       category,
       hopUseType,
       null
     );
+    const draft = category === "water_treatment"
+      ? {
+          ...baseDraft,
+          inventoryIntentMode: "catalog" as RecipeInventoryIntentMode,
+          inventorySelectionMeta: null,
+        }
+      : baseDraft;
     maybeOpenEditor({
       localId: null,
       category,
@@ -4410,6 +5059,23 @@ export function RecipeDesigner({
 
   const saveEditor = () => {
     if (!openEditor || !isIngredientValid(openEditor.draft)) {
+      return;
+    }
+
+    if (!openEditor.localId && openEditor.category === "water_treatment") {
+      const nextWaterPlanMeta = applyRecipeWaterAddFlowSaltToWaterPlan({
+        waterPlanMeta,
+        waterPlanResult,
+        ingredient: openEditor.draft,
+      });
+
+      if (nextWaterPlanMeta) {
+        setWaterPlanMeta(nextWaterPlanMeta);
+        setWaterSetupOpen(true);
+        setOpenEditor(null);
+        return;
+      }
+
       return;
     }
 
@@ -4551,14 +5217,52 @@ export function RecipeDesigner({
   const fermentableTotalKg = getFermentableWeightTotalKg(fermentables);
   const hopTotalG = getHopWeightTotalG(hops);
   const [waterSetupOpen, setWaterSetupOpen] = useState(false);
+  const [waterResetConfirmOpen, setWaterResetConfirmOpen] = useState(false);
   const openWaterSetup = React.useCallback(() => {
     setWaterSetupOpen(true);
   }, []);
   const closeWaterSetup = React.useCallback(() => {
     setWaterSetupOpen(false);
   }, []);
+  const resetWaterSetup = React.useCallback(() => {
+    setWaterPlanMeta(createRecipeWaterPlanResetMeta());
+    setWaterSetupOpen(false);
+  }, []);
+  const updateRecipeWaterManualSalt = React.useCallback((
+    index: number,
+    patch: Partial<{
+      grams: number;
+      target: RecipeWaterManualSaltAdditionTarget;
+    }>
+  ) => {
+    setWaterPlanMeta((current) => {
+      const next = [...(current.manualSaltAdditions ?? [])];
+      const item = next[index];
+      if (!item) {
+        return current;
+      }
+
+      next[index] = {
+        ...item,
+        ...patch,
+        grams:
+          patch.grams == null
+            ? item.grams
+            : Number.isFinite(patch.grams)
+              ? Math.max(0, patch.grams)
+              : 0
+      };
+
+      return {
+        ...current,
+        setupEnabled: true,
+        engine: "advanced_manual",
+        manualSaltAdditions: next
+      };
+    });
+  }, []);
   const computedWaterAdditiveCount = useMemo(() => {
-    if (!waterPlanMeta.setupEnabled) {
+    if (!waterPlanMeta.setupEnabled || waterPlanMeta.engine !== "advanced_manual") {
       return 0;
     }
     const isSplit = waterPlanResult.waterVolumes.source === "manual_split";
@@ -4683,16 +5387,13 @@ export function RecipeDesigner({
             ? `${computedWaterAdditiveCount + waterTreatments.length} поз.`
             : undefined,
         items: waterTreatments,
-        empty: "Соли и кислоты появятся здесь, когда вы настроите воду ниже.",
+        empty: "Нет добавок воды.",
         renderItems: (items) => (
           <div className="space-y-3">
             <RecipeWaterAdditivesSection
               waterPlanMeta={waterPlanMeta}
               waterPlanResult={waterPlanResult}
-              setupOpen={waterSetupOpen}
-              onOpenSetup={openWaterSetup}
-              onCloseSetup={closeWaterSetup}
-              onResetWater={() => setWaterPlanMeta(createRecipeWaterPlanResetMeta())}
+              onUpdateManualSalt={updateRecipeWaterManualSalt}
               onRemoveManualSalt={(index) =>
                 setWaterPlanMeta((current) => removeRecipeWaterManualSaltAddition(current, index))
               }
@@ -4702,11 +5403,12 @@ export function RecipeDesigner({
                   acidConcentrationPct: concentrationPct
                 }))
               }
+              onAddManualSalt={() => openAddEditor("water_treatment")}
             />
             {items.length ? (
               <ul className="space-y-2 px-3 pb-3 sm:px-4 sm:pb-4">
                 {items.map((ingredient) => (
-                  <SectionRow
+                  <WaterTreatmentSectionRow
                     key={ingredient.localId}
                     ingredient={ingredient}
                     onEdit={(value) => maybeOpenEditor({
@@ -4718,9 +5420,6 @@ export function RecipeDesigner({
                     })}
                     onDelete={deleteIngredient}
                     onQuantityChange={updateIngredientQuantity}
-                    onTimeChange={updateHopTimeMinutes}
-                    onAddImportedAsCustom={addImportedIngredientAsCustom}
-                    onMapImportedSource={openImportedCatalogMatcher}
                   />
                 ))}
               </ul>
@@ -4732,6 +5431,7 @@ export function RecipeDesigner({
                 onIsOpenChange={setWaterSetupOpen}
                 waterPlanMeta={waterPlanMeta}
                 waterPlanResult={waterPlanResult}
+                calculatedWaterPlanResult={calculatedWaterPlanResult}
                 styleId={styleId.trim() || null}
                 onChange={setWaterPlanMeta}
               />
@@ -4749,7 +5449,15 @@ export function RecipeDesigner({
     ];
 
   const editorFieldError = openEditor ? getIngredientDraftFieldError(openEditor.draft) : null;
-  const editorCanSave = openEditor ? !editorFieldError : false;
+  const editorCanSave = openEditor ? (
+    !editorFieldError
+    && (
+      openEditor.localId
+      ? true
+      : openEditor.category !== "water_treatment"
+      || resolveRecipeWaterManualSaltAdditionFromIngredient(openEditor.draft) !== null
+    )
+  ) : false;
   const editorPanel = openEditor ? (
     <IngredientEditor
       draft={openEditor.draft}
@@ -4758,7 +5466,7 @@ export function RecipeDesigner({
       onSave={saveEditor}
       onCancel={() => closeEditor()}
       onDelete={openEditor.localId ? () => deleteIngredient(openEditor.localId!) : undefined}
-      saveLabel={openEditor.localId ? "Сохранить позицию" : "Добавить позицию"}
+      saveLabel={openEditor.localId ? "Сохранить позицию" : openEditor.category === "water_treatment" ? "Добавить соль" : "Добавить позицию"}
       fieldError={editorFieldError}
       saveDisabled={!editorCanSave}
     />
@@ -5132,6 +5840,18 @@ export function RecipeDesigner({
 
   return (
     <div className="space-y-5">
+      <ConfirmActionDialog
+        open={waterResetConfirmOpen}
+        title="Сбросить настройку воды?"
+        description="Сбросятся источник, цель, объёмы, соли и pH. Действие нельзя отменить."
+        confirmLabel="Сбросить"
+        cancelLabel="Отмена"
+        onConfirm={() => {
+          resetWaterSetup();
+          setWaterResetConfirmOpen(false);
+        }}
+        onClose={() => setWaterResetConfirmOpen(false)}
+      />
       <section className="-mx-4 border-b border-zinc-200/70 bg-gradient-to-b from-white via-white to-zinc-50/50 px-4 py-4 sm:rounded-2xl sm:border sm:border-zinc-100 sm:bg-white sm:px-5 sm:py-5 sm:shadow-sm">
         <div className="mb-3 flex flex-wrap items-center gap-2">
           <span className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-medium ring-1 ring-inset ${visibilityChipMeta.className}`}>
@@ -5295,6 +6015,9 @@ export function RecipeDesigner({
           const iconBg = categoryIconBg[section.category];
           const itemCount = section.items.length;
           const hasError = Boolean(sectionErrors[`ingredients.${section.category}`]);
+          const isWaterTreatmentSection = section.category === "water_treatment";
+          const canAddToSection =
+            section.category !== "hop" && !isWaterTreatmentSection;
           return (
             <section key={section.category} className={`overflow-hidden rounded-2xl border ${hasError ? "border-rose-200" : "border-zinc-200/70"} bg-white shadow-[0_1px_3px_0_rgb(0_0_0_/_0.04)]`}>
               <header className="flex items-center justify-between gap-3 border-b border-zinc-100 bg-zinc-50/40 px-4 py-3 sm:px-5">
@@ -5311,14 +6034,49 @@ export function RecipeDesigner({
                   </div>
                 </div>
                 {section.category !== "hop" ? (
-                  <button
-                    type="button"
-                    onClick={() => openAddEditor(section.category)}
-                    className="inline-flex h-8 shrink-0 items-center gap-1 rounded-lg border border-zinc-200 bg-white px-2.5 text-xs font-medium text-zinc-700 shadow-sm transition-colors hover:border-zinc-300 hover:bg-zinc-50 sm:h-9 sm:px-3 sm:text-sm"
-                  >
-                    <Plus className="h-3.5 w-3.5" />
-                    <span className="hidden sm:inline">Добавить</span>
-                  </button>
+                  <div className="flex shrink-0 items-center gap-1.5">
+                    {isWaterTreatmentSection ? (
+                      <>
+                        <button
+                          type="button"
+                          onClick={waterSetupOpen ? closeWaterSetup : openWaterSetup}
+                          className="inline-flex h-8 items-center gap-1.5 rounded-lg border border-zinc-200 bg-white px-2.5 text-xs font-medium text-zinc-700 shadow-sm transition-colors hover:border-zinc-300 hover:bg-zinc-50 hover:text-zinc-900 sm:h-9 sm:px-3 sm:text-sm"
+                        >
+                          <SlidersHorizontal className="h-3.5 w-3.5" />
+                          <span className="hidden sm:inline">
+                            {getRecipeWaterSetupToggleLabel(waterSetupOpen)}
+                          </span>
+                          <span className="sm:hidden">
+                            {waterSetupOpen ? "Скрыть" : "Вода"}
+                          </span>
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setWaterResetConfirmOpen(true)}
+                          disabled={!waterPlanMeta.setupEnabled}
+                          className="inline-flex h-8 items-center rounded-lg border border-zinc-200 bg-white px-2.5 text-xs font-medium text-zinc-500 shadow-sm transition-colors hover:border-zinc-300 hover:bg-zinc-50 hover:text-zinc-800 disabled:cursor-not-allowed disabled:opacity-50 sm:h-9 sm:px-3 sm:text-sm"
+                        >
+                          <span className="hidden sm:inline">Сбросить воду</span>
+                          <span className="sm:hidden">Сброс</span>
+                        </button>
+                      </>
+                    ) : null}
+                    {canAddToSection ? (
+                      <button
+                        type="button"
+                        onClick={() => openAddEditor(section.category)}
+                        className="inline-flex h-8 items-center gap-1 rounded-lg border border-zinc-200 bg-white px-2.5 text-xs font-medium text-zinc-700 shadow-sm transition-colors hover:border-zinc-300 hover:bg-zinc-50 sm:h-9 sm:px-3 sm:text-sm"
+                      >
+                        <Plus className="h-3.5 w-3.5" />
+                        <span className="hidden sm:inline">
+                          Добавить
+                        </span>
+                        <span className="sm:hidden">
+                          Добавить
+                        </span>
+                      </button>
+                    ) : null}
+                  </div>
                 ) : null}
               </header>
 

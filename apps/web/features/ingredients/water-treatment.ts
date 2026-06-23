@@ -46,6 +46,35 @@ export const formatWaterTreatmentConcentrationPct = (
     : `${normalized.toFixed(1)}%`;
 };
 
+const readTrimmedWaterTreatmentText = (
+  ...values: unknown[]
+): string | null => {
+  for (const value of values) {
+    if (typeof value === "string") {
+      const trimmed = value.trim();
+      if (trimmed) {
+        return trimmed;
+      }
+    }
+  }
+
+  return null;
+};
+
+export const resolveWaterTreatmentFormulaLabel = (
+  technicalData: IngredientTechnicalData | null | undefined,
+): string | null => {
+  if (!technicalData || technicalData.type !== "water_treatment") {
+    return null;
+  }
+
+  return readTrimmedWaterTreatmentText(
+    technicalData.displayFormula,
+    technicalData.formula,
+    technicalData.calculationFormula,
+  );
+};
+
 export const readWaterTreatmentConcentrationPct = (
   technicalData: IngredientTechnicalData | null | undefined,
 ): number | null => {

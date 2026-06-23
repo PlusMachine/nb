@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 
+import { recipeWaterPlanMetaSchema } from "../features/recipes/contracts";
 import { buildRecipeWaterPlanResult } from "../features/recipes/water-plan";
 
 describe("recipe water plan result", () => {
@@ -57,10 +58,14 @@ describe("recipe water plan result", () => {
       },
     });
 
-    expect(result.waterVolumes.source).toBe("batch_size");
-    expect(result.waterVolumes.totalWaterL).toBe(20);
-    expect(result.waterVolumes.mashWaterL).toBe(20);
+    expect(result.waterVolumes.source).toBe("estimated_total_water");
+    expect(result.waterVolumes.totalWaterL).toBeCloseTo(28.88, 2);
+    expect(result.waterVolumes.mashWaterL).toBeCloseTo(28.88, 2);
     expect(result.waterVolumes.spargeWaterL).toBe(0);
+    expect(result.waterVolumes.suggestedMashWaterL).toBe(15);
+    expect(result.waterVolumes.suggestedSpargeWaterL).toBeCloseTo(13.88, 2);
+    expect(result.waterVolumes.grainAbsorptionLPerKg).toBe(0.8);
+    expect(result.waterVolumes.grainAbsorptionLossL).toBe(4);
     expect(result.totalSaltAdditions.length).toBeGreaterThan(0);
     expect(result.finalProfile.ca).toBeGreaterThan(20);
     expect(result.mashPhEstimate?.model).toBe("hybrid_mash_ph_v1");
@@ -70,6 +75,81 @@ describe("recipe water plan result", () => {
     expect(result.predictedMashPhAfterAcid20C).toBeLessThanOrEqual(
       result.mashPhEstimate?.predictedMashPh20C ?? 99,
     );
+  });
+
+  it("uses recipe water grain absorption override for estimated total water", () => {
+    const result = buildRecipeWaterPlanResult({
+      fallbackBatchVolumeL: 20,
+      grainKg: 5,
+      boilTimeMinutes: 60,
+      waterPlanMeta: recipeWaterPlanMetaSchema.parse({
+        setupEnabled: true,
+        sourceProfileMode: "ro_distilled",
+        sourceProfile: {
+          ca: 0,
+          mg: 0,
+          na: 0,
+          cl: 0,
+          so4: 0,
+          hco3: 0,
+          ph: null,
+        },
+        targetProfileMode: "manual",
+        targetProfile: null,
+        targetMashPh: null,
+        grainAbsorptionLPerKg: 1.1,
+      }),
+    });
+
+    expect(result.waterVolumes.source).toBe("estimated_total_water");
+    expect(result.waterVolumes.totalWaterL).toBeCloseTo(30.38, 2);
+    expect(result.waterVolumes.suggestedMashWaterL).toBe(15);
+    expect(result.waterVolumes.suggestedSpargeWaterL).toBeCloseTo(15.38, 2);
+    expect(result.waterVolumes.grainAbsorptionLPerKg).toBe(1.1);
+    expect(result.waterVolumes.grainAbsorptionLossL).toBe(5.5);
+  });
+
+  it("does not emit salts or acid while water setup is disabled", () => {
+    const result = buildRecipeWaterPlanResult({
+      fallbackBatchVolumeL: 20,
+      grainKg: 5,
+      beerSrm: 8,
+      waterPlanMeta: recipeWaterPlanMetaSchema.parse({
+        setupEnabled: false,
+        engine: "advanced_manual",
+        sourceProfileMode: "manual",
+        sourceProfile: {
+          ca: 20,
+          mg: 5,
+          na: 10,
+          cl: 20,
+          so4: 30,
+          hco3: 90,
+          ph: 7.6,
+        },
+        targetProfileMode: "manual",
+        targetProfile: {
+          ca: 80,
+          mg: 10,
+          na: 15,
+          cl: 90,
+          so4: 150,
+          hco3: 70,
+          ph: null,
+        },
+        targetMashPh: 5.35,
+        manualSaltAdditions: [{ salt: "gypsum", grams: 4, target: "all" }],
+        selectedAcid: "lactic_acid",
+        acidConcentrationPct: 88,
+      }),
+    });
+
+    expect(result.totalSaltAdditions).toEqual([]);
+    expect(result.mashSaltAdditions).toEqual([]);
+    expect(result.spargeSaltAdditions).toEqual([]);
+    expect(result.mashPhEstimate).toBeNull();
+    expect(result.mashAcidAddition).toBeNull();
+    expect(result.spargeAcidAddition).toBeNull();
   });
 
   it("uses manual mash/sparge split and skips pH when target mash pH is not set", () => {
@@ -182,6 +262,10 @@ describe("recipe water plan result", () => {
       "mash",
       "sparge",
     ]);
+    expect(result.finalProfile.ca).toBeGreaterThan(20);
+    expect(result.finalProfile.mg).toBeGreaterThan(5);
+    expect(result.finalProfile.cl).toBeGreaterThan(20);
+    expect(result.finalProfile.so4).toBeGreaterThan(30);
   });
 
   it("does not include baking soda in auto salts by default", () => {
@@ -299,7 +383,7 @@ describe("recipe water plan result", () => {
     expect(result.finalProfile.na).toBeGreaterThan(10);
     expect(result.finalProfile.hco3).toBeGreaterThan(60);
     expect(result.finalProfile.na).toBeLessThanOrEqual(80.01);
-    expect(result.finalProfile.hco3).toBeLessThanOrEqual(160.01);
+    expect(result.finalProfile.hco3).toBeGreaterThan(150);
   });
 
   it("uses equipment water requirements when an equipment volume plan is available", () => {

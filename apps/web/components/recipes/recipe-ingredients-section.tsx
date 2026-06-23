@@ -9,6 +9,7 @@ import {
   buildRecipeIngredientTechnicalBadges,
   RecipeIngredientTechnicalBadges,
   RecipeIngredientTitleBlock,
+  type RecipeIngredientTechnicalBadge,
   type RecipeIngredientCardSource
 } from "./recipe-ingredient-card-display";
 
@@ -16,7 +17,7 @@ const stageLabel: Record<RecipeDetailDto["ingredients"][number]["stage"], string
   mash: "Затирание",
   boil: "Кипячение",
   whirlpool: "Вирпул",
-  fermentation: "Ферментация",
+  fermentation: "Брожение",
   packaging: "Розлив",
   other: "Другое"
 };
@@ -138,7 +139,16 @@ export function RecipeIngredientsSection({ ingredients }: { ingredients: RecipeD
                     displayNameEn: ingredient.ingredientDisplayNameEn
                   });
                   const cardSource = buildIngredientCardSource(ingredient);
-                  const badges = buildRecipeIngredientTechnicalBadges(cardSource);
+                  const technicalBadges = buildRecipeIngredientTechnicalBadges(cardSource, {
+                    includeConsumableUsageStage: group.category !== "consumable"
+                  });
+                  const recipeStageBadges: RecipeIngredientTechnicalBadge[] = group.category === "consumable" && ingredient.stage !== "other"
+                    ? [{
+                      key: `recipe-stage:${ingredient.stage}`,
+                      label: stageLabel[ingredient.stage]
+                    }]
+                    : [];
+                  const badges = [...recipeStageBadges, ...technicalBadges];
                   const summaryFallback = badges.length ? null : ingredient.ingredientSummary;
 
                   return (

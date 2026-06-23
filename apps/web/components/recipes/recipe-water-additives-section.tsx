@@ -1,13 +1,12 @@
 "use client";
 
-import { Pencil, SlidersHorizontal, Trash2 } from "lucide-react";
+import { Plus, X } from "lucide-react";
 import React from "react";
 
 import {
   getRecipeWaterAdditivesStockAction,
   type RecipeWaterAdditivesStockResult
 } from "@/app/(app)/app/recipes/actions";
-import { ConfirmActionDialog } from "@/components/shared/confirm-action-dialog";
 import type { RecipeWaterPlanMeta } from "@/features/recipes/contracts";
 import {
   recipeWaterAcidPresentation,
@@ -27,20 +26,26 @@ import { waterTreatmentConcentrationsEqual } from "@/features/ingredients/water-
 type SaltAddition = RecipeWaterPlanResult["mashSaltAdditions"][number];
 type AcidAddition = NonNullable<RecipeWaterPlanResult["mashAcidAddition"]>;
 type SpargeAcidAddition = NonNullable<RecipeWaterPlanResult["spargeAcidAddition"]>;
-type AdditiveTarget = "all" | "mash" | "sparge";
+export type RecipeWaterAdditiveTarget = "all" | "mash" | "sparge";
+type AdditiveTarget = RecipeWaterAdditiveTarget;
+type AcidTarget = "mash" | "sparge";
+type SaltId = SaltAddition["salt"];
 
 export type RecipeWaterAdditiveRow = {
   key: string;
   kind: "salt" | "acid";
+  saltId: SaltId | null;
   catalogIngredientId: string | null;
   title: string;
   formula: string;
   concentrationPct: number | null;
   amountText: string;
+  amountValue: number | null;
   target: AdditiveTarget | null;
-  editable: boolean;
+  saltTarget: AdditiveTarget | null;
   removable: boolean;
   manualSaltIndex: number | null;
+  acidTarget: AcidTarget | null;
 };
 
 const groupLabels: Record<AdditiveTarget, string> = {
@@ -100,33 +105,6 @@ const formatStockQuantity = (status: RecipeWaterAdditiveStockStatusDto): string 
   return `${qty} ${status.normalizedUnit ?? ""}`.trim();
 };
 
-const buildSaltRow = (
-  addition: SaltAddition,
-  source: "total" | "mash" | "sparge",
-  index: number,
-  showTarget: boolean,
-): RecipeWaterAdditiveRow => {
-  const presentation = recipeWaterSaltPresentation[addition.salt as keyof typeof recipeWaterSaltPresentation];
-  const target = showTarget
-    ? (source === "mash" ? "mash" : source === "sparge" ? "sparge" : "all")
-    : null;
-
-  return {
-    key: `salt-${source}-${addition.salt}-${addition.target}-${index}`,
-    kind: "salt",
-    catalogIngredientId:
-      recipeWaterSaltCatalogIds[addition.salt as keyof typeof recipeWaterSaltCatalogIds] ?? null,
-    title: presentation?.label ?? addition.label ?? addition.salt,
-    formula: presentation?.formula ?? addition.formula ?? "",
-    concentrationPct: null,
-    amountText: formatGrams(addition.grams),
-    target,
-    editable: true,
-    removable: false,
-    manualSaltIndex: null,
-  };
-};
-
 const buildAcidRow = (
   addition: AcidAddition | SpargeAcidAddition | null,
   variant: "mash" | "sparge",
@@ -147,16 +125,19 @@ const buildAcidRow = (
   return {
     key: `acid-${variant}`,
     kind: "acid",
+    saltId: null,
     catalogIngredientId:
       recipeWaterAcidCatalogIds[acidId as keyof typeof recipeWaterAcidCatalogIds] ?? null,
     title: presentation?.label ?? addition.label ?? acidId,
     formula: formatPercent(addition.concentrationPct),
     concentrationPct: addition.concentrationPct,
     amountText: formatMl(ml),
+    amountValue: ml,
     target: showTarget ? variant : null,
-    editable: true,
-    removable: false,
+    saltTarget: null,
+    removable: true,
     manualSaltIndex: null,
+    acidTarget: variant,
   };
 };
 
@@ -178,45 +159,31 @@ const buildAdditiveRows = (
       rows.push({
         key: `manual-salt-${index}`,
         kind: "salt",
+        saltId: addition.salt as SaltId,
         catalogIngredientId:
           recipeWaterSaltCatalogIds[addition.salt as keyof typeof recipeWaterSaltCatalogIds] ?? null,
         title: presentation?.label ?? addition.salt,
         formula: presentation?.formula ?? "",
         concentrationPct: null,
         amountText: formatGrams(addition.grams),
+        amountValue: addition.grams,
         target: isSplit ? addition.target ?? "all" : null,
-        editable: true,
+        saltTarget: addition.target ?? "all",
         removable: true,
         manualSaltIndex: index,
+        acidTarget: null,
       });
     });
-  } else if (showTarget) {
-    waterPlanResult.mashSaltAdditions.forEach((addition, index) => {
-      if (addition.grams > 0) {
-        rows.push(buildSaltRow(addition, "mash", index, true));
-      }
-    });
-    waterPlanResult.spargeSaltAdditions.forEach((addition, index) => {
-      if (addition.grams > 0) {
-        rows.push(buildSaltRow(addition, "sparge", index, true));
-      }
-    });
-  } else {
-    waterPlanResult.totalSaltAdditions.forEach((addition, index) => {
-      if (addition.grams > 0) {
-        rows.push(buildSaltRow(addition, "total", index, false));
-      }
-    });
-  }
 
-  const mashAcid = buildAcidRow(waterPlanResult.mashAcidAddition, "mash", showTarget);
-  if (mashAcid) {
-    rows.push(mashAcid);
-  }
+    const mashAcid = buildAcidRow(waterPlanResult.mashAcidAddition, "mash", showTarget);
+    if (mashAcid) {
+      rows.push(mashAcid);
+    }
 
-  const spargeAcid = buildAcidRow(waterPlanResult.spargeAcidAddition, "sparge", showTarget);
-  if (spargeAcid) {
-    rows.push(spargeAcid);
+    const spargeAcid = buildAcidRow(waterPlanResult.spargeAcidAddition, "sparge", showTarget);
+    if (spargeAcid) {
+      rows.push(spargeAcid);
+    }
   }
 
   return rows;
@@ -226,6 +193,10 @@ export const groupRecipeWaterAdditiveRows = (
   rows: RecipeWaterAdditiveRow[],
   isSplit: boolean,
 ) => {
+  if (!rows.length) {
+    return [];
+  }
+
   if (!isSplit) {
     return [{ key: "single", label: null, rows }];
   }
@@ -320,6 +291,103 @@ const formatAvailableAcidConcentrations = (
     .map((pct) => formatPercent(pct)),
 )).join(", ");
 
+const resultIonKeys = ["ca", "mg", "na", "cl", "so4", "hco3"] as const;
+
+const resultIonLabels: Record<(typeof resultIonKeys)[number], string> = {
+  ca: "Ca",
+  mg: "Mg",
+  na: "Na",
+  cl: "Cl",
+  so4: "SO4",
+  hco3: "HCO3",
+};
+
+const hasMeaningfulProfile = (
+  profile: RecipeWaterPlanResult["finalProfile"] | null | undefined,
+) => Boolean(profile && resultIonKeys.some((key) => profile[key] > 0));
+
+const formatResultIonValue = (value: number) =>
+  Number.isFinite(value) ? Math.round(value).toString() : "0";
+
+const formatResultIonDelta = (
+  value: number,
+  target: number | null | undefined,
+) => {
+  if (target == null || !Number.isFinite(value) || !Number.isFinite(target)) {
+    return null;
+  }
+
+  const delta = value - target;
+  if (Math.abs(delta) < 0.5) {
+    return "0";
+  }
+
+  return `${delta > 0 ? "+" : "-"}${Math.round(Math.abs(delta))}`;
+};
+
+const shouldShowWaterResultSummary = (
+  waterPlanMeta: RecipeWaterPlanMeta,
+  rows: RecipeWaterAdditiveRow[],
+) => waterPlanMeta.setupEnabled && rows.length > 0;
+
+function WaterResultSummary({
+  waterPlanResult,
+  withDivider,
+}: {
+  waterPlanResult: RecipeWaterPlanResult;
+  withDivider: boolean;
+}) {
+  const finalProfile = waterPlanResult.finalProfile;
+  const targetProfile = waterPlanResult.targetProfile;
+  const hasTargetProfile = hasMeaningfulProfile(targetProfile);
+
+  return (
+    <section className={withDivider ? "border-t border-zinc-100 pt-3" : ""}>
+      <div className="min-w-0">
+        <h4 className="text-sm font-semibold text-zinc-950">
+          Итоговый профиль воды
+        </h4>
+      </div>
+
+      <div className="mt-3 grid grid-cols-3 gap-1.5 sm:grid-cols-6">
+        {resultIonKeys.map((key) => {
+          const value = finalProfile[key];
+          const delta = formatResultIonDelta(value, targetProfile?.[key]);
+          const isOverTarget = delta != null && delta.startsWith("+");
+          const isUnderTarget = delta != null && delta.startsWith("-");
+
+          return (
+            <div key={key} className="rounded-md bg-zinc-50 px-2 py-1.5">
+              <div className="text-[11px] font-medium uppercase text-zinc-500">
+                {resultIonLabels[key]}
+              </div>
+              <div className="mt-0.5 flex items-baseline gap-1">
+                <span className="text-sm font-semibold tabular-nums text-zinc-950">
+                  {formatResultIonValue(value)}
+                </span>
+                <span className="text-[10px] text-zinc-400">ppm</span>
+              </div>
+              {hasTargetProfile && delta != null ? (
+                <div
+                  className={`mt-0.5 text-[10px] tabular-nums ${isOverTarget
+                    ? "text-amber-700"
+                    : isUnderTarget
+                      ? "text-sky-700"
+                      : "text-emerald-700"
+                  }`}
+                  aria-label={`Отклонение от цели: ${delta} ppm`}
+                >
+                  к цели {delta}
+                </div>
+              ) : null}
+            </div>
+          );
+        })}
+      </div>
+    </section>
+  );
+}
+
 export const resolveRecipeWaterAcidStockConcentrationSuggestion = ({
   waterPlanMeta,
   statuses,
@@ -361,11 +429,12 @@ export const resolveRecipeWaterAcidStockConcentrationSuggestion = ({
 export type RecipeWaterAdditivesSectionProps = {
   waterPlanMeta: RecipeWaterPlanMeta;
   waterPlanResult: RecipeWaterPlanResult;
-  setupOpen: boolean;
-  onOpenSetup: () => void;
-  onCloseSetup: () => void;
-  onResetWater: () => void;
+  onUpdateManualSalt: (
+    index: number,
+    patch: Partial<{ grams: number; target: AdditiveTarget }>,
+  ) => void;
   onRemoveManualSalt: (index: number) => void;
+  onAddManualSalt?: () => void;
   onApplyAcidConcentration?: (concentrationPct: number) => void;
 };
 
@@ -375,14 +444,11 @@ export const getRecipeWaterSetupToggleLabel = (setupOpen: boolean) =>
 export function RecipeWaterAdditivesSection({
   waterPlanMeta,
   waterPlanResult,
-  setupOpen,
-  onOpenSetup,
-  onCloseSetup,
-  onResetWater,
+  onUpdateManualSalt,
   onRemoveManualSalt,
+  onAddManualSalt,
   onApplyAcidConcentration,
 }: RecipeWaterAdditivesSectionProps) {
-  const [resetConfirmOpen, setResetConfirmOpen] = React.useState(false);
   const isSplit = waterPlanResult.waterVolumes.source === "manual_split";
   const rows = React.useMemo(
     () => buildAdditiveRows(waterPlanMeta, waterPlanResult, isSplit),
@@ -391,6 +457,10 @@ export function RecipeWaterAdditivesSection({
   const rowGroups = React.useMemo(
     () => groupRecipeWaterAdditiveRows(rows, isSplit),
     [isSplit, rows],
+  );
+  const showResultSummary = shouldShowWaterResultSummary(
+    waterPlanMeta,
+    rows,
   );
 
   const stockRequirements = React.useMemo(() => {
@@ -458,37 +528,33 @@ export function RecipeWaterAdditivesSection({
     onApplyAcidConcentration?.(suggestedConcentrationPct);
   }, [onApplyAcidConcentration, stockStatuses, waterPlanMeta]);
 
-  if (!waterPlanMeta.setupEnabled || rows.length === 0) {
+  if (!waterPlanMeta.setupEnabled) {
     return (
-      <div className="p-4 sm:p-5">
-        <button
-          type="button"
-          onClick={setupOpen ? onCloseSetup : onOpenSetup}
-          className="flex w-full items-center justify-center gap-2 rounded-xl border border-dashed border-zinc-300 bg-zinc-50/40 px-4 py-6 text-sm text-zinc-600 transition-colors hover:border-sky-400 hover:bg-sky-50/40 hover:text-sky-700"
-        >
-          <SlidersHorizontal className="h-4 w-4" />
-          <span>{getRecipeWaterSetupToggleLabel(setupOpen)}</span>
-        </button>
+      <div className="rounded-xl border border-dashed border-zinc-200 bg-zinc-50/50 px-4 py-5 text-sm text-zinc-500">
+        Нет добавок воды
       </div>
     );
   }
 
   return (
     <div className="p-3 sm:p-4">
-      <ConfirmActionDialog
-        open={resetConfirmOpen}
-        title="Сбросить настройку воды?"
-        description="Сбросятся источник, цель, объёмы и pH. Действие нельзя отменить."
-        confirmLabel="Сбросить"
-        cancelLabel="Отмена"
-        onConfirm={() => {
-          onResetWater();
-          setResetConfirmOpen(false);
-        }}
-        onClose={() => setResetConfirmOpen(false)}
-      />
       <div className="space-y-3">
-        {rowGroups.map((group) => (
+        <div className="flex items-center justify-between gap-3">
+          <h3 className="text-sm font-semibold text-zinc-950">
+            Добавки воды
+          </h3>
+          {onAddManualSalt ? (
+            <button
+              type="button"
+              onClick={onAddManualSalt}
+              className="inline-flex h-9 shrink-0 items-center gap-1.5 rounded-lg border border-zinc-200 bg-white px-3 text-sm font-medium text-zinc-700 shadow-sm transition-colors hover:border-zinc-300 hover:bg-zinc-50 hover:text-zinc-950"
+            >
+              <Plus className="h-4 w-4" />
+              Добавить соль
+            </button>
+          ) : null}
+        </div>
+        {rowGroups.length ? rowGroups.map((group) => (
           <section key={group.key} className="space-y-2">
             {group.label ? (
               <h4 className="px-1 text-[11px] font-semibold uppercase tracking-[0.08em] text-zinc-500">
@@ -505,13 +571,38 @@ export function RecipeWaterAdditivesSection({
                 const availableAcidConcentrations = row.kind === "acid"
                   ? formatAvailableAcidConcentrations(stockStatusesForCatalogId)
                   : "";
+                const isManualSalt =
+                  row.kind === "salt" && row.manualSaltIndex != null;
+                const canEditSalt = isManualSalt;
+                const canRemoveManualSalt =
+                  row.removable && row.manualSaltIndex != null;
+                const canRemoveSalt = canRemoveManualSalt;
 
                 return (
                   <li
                     key={row.key}
                     className="relative rounded-lg border-l-[3px] border-l-sky-400 bg-white px-3 py-2.5 shadow-sm ring-1 ring-zinc-100"
                   >
-                    <div className="flex min-w-0 items-start gap-3">
+                    {canRemoveSalt ? (
+                      <div className="absolute right-2 top-2 z-10 flex shrink-0 gap-0.5">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            if (canRemoveManualSalt) {
+                              onRemoveManualSalt(row.manualSaltIndex!);
+                              return;
+                            }
+                          }}
+                          className="rounded-md p-1.5 text-zinc-400 transition-colors hover:bg-rose-50 hover:text-rose-600"
+                          aria-label={`Удалить ${row.title}`}
+                          title="Удалить"
+                        >
+                          <X className="h-3.5 w-3.5" />
+                        </button>
+                      </div>
+                    ) : null}
+
+                    <div className={`flex min-w-0 items-start gap-3 ${canRemoveSalt ? "pr-10" : ""}`}>
                       <div className="min-w-0 flex-1">
                         <div className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
                           <span className="truncate text-sm font-semibold text-zinc-950">
@@ -520,6 +611,11 @@ export function RecipeWaterAdditivesSection({
                           {row.formula ? (
                             <span className="text-sm font-semibold tabular-nums text-zinc-950">
                               {row.formula}
+                            </span>
+                          ) : null}
+                          {row.kind === "acid" ? (
+                            <span className="rounded bg-sky-50 px-1.5 py-0.5 text-[11px] font-medium text-sky-700">
+                              pH-коррекция
                             </span>
                           ) : null}
                         </div>
@@ -543,34 +639,54 @@ export function RecipeWaterAdditivesSection({
                           )}
                         </div>
                       </div>
-                      <div className="shrink-0 text-right">
-                        <div className="text-sm font-semibold tabular-nums text-zinc-950">
-                          {row.amountText}
-                        </div>
-                        <div className="mt-1.5 flex justify-end gap-1">
-                          {row.editable ? (
-                            <button
-                              type="button"
-                              onClick={onOpenSetup}
-                              className="inline-flex h-7 w-7 items-center justify-center rounded-md border border-zinc-200 text-zinc-500 transition-colors hover:bg-zinc-50 hover:text-zinc-800"
-                              aria-label={`Редактировать ${row.title}`}
-                              title="Редактировать"
-                            >
-                              <Pencil className="h-3.5 w-3.5" />
-                            </button>
-                          ) : null}
-                          {row.removable && row.manualSaltIndex != null ? (
-                            <button
-                              type="button"
-                              onClick={() => onRemoveManualSalt(row.manualSaltIndex!)}
-                              className="inline-flex h-7 w-7 items-center justify-center rounded-md border border-zinc-200 text-zinc-500 transition-colors hover:bg-zinc-50 hover:text-zinc-800"
-                              aria-label={`Удалить ${row.title}`}
-                              title="Удалить"
-                            >
-                              <Trash2 className="h-3.5 w-3.5" />
-                            </button>
-                          ) : null}
-                        </div>
+                      <div className={`shrink-0 text-right ${canRemoveSalt ? "pt-6" : ""}`}>
+                        {canEditSalt ? (
+                          <div className="flex flex-wrap items-center justify-end gap-1.5">
+                            <label className="sr-only" htmlFor={`${row.key}-grams`}>
+                              Количество {row.title}, г
+                            </label>
+                            <input
+                              id={`${row.key}-grams`}
+                              type="number"
+                              min={0}
+                              step={0.01}
+                              value={row.amountValue ?? 0}
+                              onChange={(event) => {
+                                const grams = Number(event.target.value || 0);
+                                if (isManualSalt) {
+                                  onUpdateManualSalt(row.manualSaltIndex!, { grams });
+                                  return;
+                                }
+                              }}
+                              className="h-8 w-20 rounded-md border border-zinc-200 bg-zinc-50 px-2 text-right text-sm font-semibold tabular-nums text-zinc-950 focus:border-zinc-400 focus:bg-white focus:outline-none focus:ring-1 focus:ring-zinc-200"
+                            />
+                            <span className="text-xs text-zinc-500">г</span>
+                          </div>
+                        ) : (
+                          <div className="text-sm font-semibold tabular-nums text-zinc-950">
+                            {row.amountText}
+                          </div>
+                        )}
+                        {canEditSalt && isSplit && row.target ? (
+                          <select
+                            aria-label={`Куда добавить ${row.title}`}
+                            value={row.target}
+                            onChange={(event) => {
+                              const target = event.target.value as AdditiveTarget;
+                              if (isManualSalt) {
+                                onUpdateManualSalt(row.manualSaltIndex!, { target });
+                                return;
+                              }
+                            }}
+                            className="mt-1 h-8 rounded-md border border-zinc-200 bg-white px-2 text-xs font-medium text-zinc-700"
+                          >
+                            {Object.entries(groupLabels).map(([value, label]) => (
+                              <option key={value} value={value}>
+                                {label}
+                              </option>
+                            ))}
+                          </select>
+                        ) : null}
                       </div>
                     </div>
                   </li>
@@ -578,16 +694,17 @@ export function RecipeWaterAdditivesSection({
               })}
             </ul>
           </section>
-        ))}
-      </div>
-      <div className="mt-3 flex flex-wrap items-center gap-2">
-        <button
-          type="button"
-          onClick={() => setResetConfirmOpen(true)}
-          className="inline-flex h-9 items-center rounded-lg border border-zinc-200 bg-white px-3 text-xs font-medium text-zinc-500 transition-colors hover:bg-zinc-50 hover:text-zinc-800"
-        >
-          Сбросить воду
-        </button>
+        )) : (
+          <div className="rounded-xl border border-dashed border-zinc-200 bg-zinc-50/50 px-4 py-5 text-sm text-zinc-500">
+            Нет добавок воды
+          </div>
+        )}
+        {showResultSummary ? (
+          <WaterResultSummary
+            waterPlanResult={waterPlanResult}
+            withDivider={rows.length > 0}
+          />
+        ) : null}
       </div>
     </div>
   );

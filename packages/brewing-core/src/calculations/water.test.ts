@@ -9,6 +9,7 @@ import {
   solveMashAcidAddition,
   solveWaterTargetProfile,
   sulfateChlorideRatio,
+  type BrewingSaltId,
   type WaterProfile
 } from "./water";
 
@@ -66,6 +67,29 @@ describe("water chemistry", () => {
     expect(result.finalProfile.mg).toBeLessThanOrEqual(12.01);
     expect(result.finalProfile.cl).toBeLessThanOrEqual(90.01);
     expect(result.finalProfile.so4).toBeLessThanOrEqual(150.01);
+  });
+
+  it("can optimize linked ions when a target requires some overshoot", () => {
+    const input = {
+      sourceProfile: softWater,
+      targetProfile: { ca: 55, mg: 8, na: 10, cl: 180, so4: 260, hco3: 60 },
+      waterLiters: 25,
+      allowedSalts: ["gypsum", "calcium_chloride", "epsom_salt"] satisfies BrewingSaltId[]
+    };
+
+    const strict = solveWaterTargetProfile({
+      ...input,
+      preventTargetOvershoot: true
+    });
+    const optimized = solveWaterTargetProfile({
+      ...input,
+      preventTargetOvershoot: false
+    });
+
+    expect(optimized.score).toBeLessThan(strict.score);
+    expect(optimized.finalProfile.cl).toBeGreaterThan(strict.finalProfile.cl);
+    expect(optimized.finalProfile.so4).toBeGreaterThan(strict.finalProfile.so4);
+    expect(optimized.finalProfile.ca).toBeGreaterThan(input.targetProfile.ca);
   });
 
   it("can include baking soda when explicitly allowed", () => {

@@ -220,6 +220,31 @@ describe("recipes read components", () => {
     });
   });
 
+  it("renders water treatment formulas in recipe ingredient cards", () => {
+    const badges = buildRecipeIngredientTechnicalBadges({
+      technicalData: {
+        type: "water_treatment",
+        formula: "CaSO4",
+        calculationFormula: "CaSO4·2H2O",
+        unitPreferred: "g"
+      }
+    });
+
+    expect(badges.map((badge) => badge.label)).toEqual(["CaSO4"]);
+  });
+
+  it("can suppress catalog usage badges for consumables in recipe cards", () => {
+    const badges = buildRecipeIngredientTechnicalBadges({
+      technicalData: {
+        type: "consumable",
+        commonForms: ["dried_peel"],
+        usageStage: ["boil"]
+      }
+    }, { includeConsumableUsageStage: false });
+
+    expect(badges.map((badge) => badge.label)).toEqual(["Сушеная цедра"]);
+  });
+
   it("renders public listing item with slug link", () => {
     const html = renderToStaticMarkup(React.createElement(PublicRecipeList, { recipes: [recipeDetail] }));
 

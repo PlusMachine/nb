@@ -3,6 +3,7 @@ import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
 
 import {
+  RecipeWaterAdditivesSection,
   getRecipeWaterSetupToggleLabel,
   groupRecipeWaterAdditiveRows,
   resolveRecipeWaterAcidStockConcentrationSuggestion,
@@ -21,6 +22,7 @@ import {
   sanitizeSavedSourceWaterProfiles,
   setRecipeWaterManualSourceProfile,
   setRecipeWaterAutoBakingSodaEnabled,
+  setRecipeWaterSaltCalculationMode,
   setRecipeWaterTargetMashPh,
   setRecipeWaterVolumeMode,
   WaterSetupWizard,
@@ -96,28 +98,34 @@ describe("recipe water flow UI", () => {
         {
           key: "mash-gypsum",
           kind: "salt",
+          saltId: "gypsum",
           catalogIngredientId: null,
           title: "Гипс",
           formula: "CaSO4",
           concentrationPct: null,
           amountText: "2.00 г",
+          amountValue: 2,
           target: "mash",
-          editable: true,
+          saltTarget: "mash",
           removable: false,
           manualSaltIndex: null,
+          acidTarget: null,
         },
         {
           key: "sparge-lactic",
           kind: "acid",
+          saltId: null,
           catalogIngredientId: null,
           title: "Молочная кислота",
           formula: "88%",
           concentrationPct: 88,
           amountText: "1.20 мл",
+          amountValue: 1.2,
           target: "sparge",
-          editable: true,
+          saltTarget: null,
           removable: false,
           manualSaltIndex: null,
+          acidTarget: "sparge",
         },
       ],
       true,
@@ -135,15 +143,18 @@ describe("recipe water flow UI", () => {
     const acidRow = {
       key: "mash-lactic",
       kind: "acid" as const,
+      saltId: null,
       catalogIngredientId: "lactic-acid",
       title: "Молочная кислота",
       formula: "85%",
       concentrationPct: 85,
       amountText: "1.20 мл",
+      amountValue: 1.2,
       target: "mash" as const,
-      editable: true,
+      saltTarget: null,
       removable: false,
       manualSaltIndex: null,
+      acidTarget: "mash" as const,
     };
     const stock75 = {
       catalogIngredientId: "lactic-acid",
@@ -174,25 +185,33 @@ describe("recipe water flow UI", () => {
   });
 
   it("renders the new source -> target -> split -> result flow", () => {
-    const meta = withManualTargetProfile(
-      ensureRecipeWaterPlanConfigured(createRecipeWaterPlanResetMeta()),
-    );
+    const meta = {
+      ...withManualTargetProfile(
+        ensureRecipeWaterPlanConfigured(createRecipeWaterPlanResetMeta()),
+      ),
+      targetMashPh: 5.35,
+    } satisfies RecipeWaterPlanMeta;
     const html = renderWaterBlock(meta);
 
     expect(html).toContain('<section class="rounded-2xl');
     expect(html).toContain("Настройка воды");
     expect(html).toContain("1. Исходная вода");
     expect(html).toContain("2. Целевой профиль");
-    expect(html).toContain("3. Как вносить соли");
+    expect(html).toContain("3. Объем воды");
+    expect(html).not.toContain("Редактировать исходную воду вручную");
+    expect(html).toContain("Водопоглощение дробиной, л/кг");
+    expect(html).toContain("Сейчас: 0.80 л/кг");
+    expect(html).not.toContain("Итоговый профиль воды");
     expect(html).toContain("4. pH и подкисление");
     expect(html).not.toContain("5. Что добавить");
-    expect(html).toContain("Подобрать профиль");
+    expect(html).toContain("Из каталога");
+    expect(html).toContain("Ионы вручную");
     expect(html).not.toContain("Сохраненные");
     expect(html).not.toContain("Сбалансированный лагер");
     expect(html).not.toContain("IPA, lager, blanche, стаут...");
     expect(html).toContain("Осмос");
     expect(html).toContain("Дистиллированная вода");
-    expect(html).toContain("Вручную");
+    expect(html).toContain("Ввести вручную");
     expect(html).toContain("Корректировать pH затора");
     expect(html).toContain("Целевой pH затора");
     expect(html.indexOf("Целевой pH затора")).toBeLessThan(
@@ -240,6 +259,28 @@ describe("recipe water flow UI", () => {
     expect(result.warnings).not.toContain("source_profile_missing_or_zero");
   });
 
+  it("does not enable mash pH correction just by selecting source water", () => {
+    const preset = findBuiltInSourceWaterProfile("ro_distilled");
+    expect(preset).not.toBeNull();
+
+    const meta = applyRecipeWaterSourcePreset(
+      recipeWaterPlanMetaSchema.parse({}),
+      preset!,
+    );
+    const result = buildResult(meta);
+    const html = renderWaterBlock(meta);
+
+    expect(meta.setupEnabled).toBe(true);
+    expect(meta.sourceProfileMode).toBe("ro_distilled");
+    expect(meta.targetMashPh).toBeNull();
+    expect(result.mashPhEstimate).toBeNull();
+    expect(result.mashAcidAddition).toBeNull();
+    expect(html).toContain("Корректировать pH затора");
+    expect(html).not.toContain("Целевой pH затора");
+    expect(html).not.toContain("Кислота");
+    expect(html).not.toContain("Концентрация кислоты");
+  });
+
   it("keeps the wizard accessible even before target profile is selected", () => {
     const meta = ensureRecipeWaterPlanConfigured(
       createRecipeWaterPlanResetMeta(),
@@ -269,7 +310,7 @@ describe("recipe water flow UI", () => {
     expect(html).toContain("источник, цель, объемы и pH");
     expect(html).not.toContain('aria-pressed="true"');
     expect(html).not.toContain("Выбранный профиль");
-    expect(html).not.toContain("3. Как вносить соли");
+    expect(html).not.toContain("3. Объем воды");
     expect(html).not.toContain("4. pH и подкисление");
     expect(html).not.toContain("Подходит по стилю");
   });
@@ -308,6 +349,9 @@ describe("recipe water flow UI", () => {
     expect(reset.mashWaterVolumeL).toBeNull();
     expect(reset.spargeWaterVolumeL).toBeNull();
     expect(reset.manualSaltAdditions).toEqual([]);
+    expect(reset.targetMashPh).toBeNull();
+    expect(reset.spargeAcidificationEnabled).toBe(false);
+    expect(reset.acidConcentrationPct).toBeNull();
     expect(reset.showWaterAdditivesInIngredients).toBe(false);
     expect(html).toContain("Осмос");
     expect(html).toContain("Дистиллированная вода");
@@ -446,7 +490,8 @@ describe("recipe water flow UI", () => {
     expect(result.engine).toBe("profile_only");
     expect(result.mashPhEstimate).toBeNull();
     expect(result.mashAcidAddition).toBeNull();
-    expect(html).toContain("pH затора не рассчитывается");
+    expect(html).toContain("Корректировать pH затора");
+    expect(html).not.toContain("Целевой pH затора");
     expect(html).not.toContain("Кислота");
     expect(html).not.toContain("Концентрация кислоты");
     expect(html).not.toContain("Калибровка pH");
@@ -463,9 +508,24 @@ describe("recipe water flow UI", () => {
     const html = renderWaterBlock(meta);
 
     expect(meta.spargeAcidificationEnabled).toBe(false);
-    expect(html).toContain("pH затора не рассчитывается");
+    expect(html).toContain("Корректировать pH затора");
+    expect(html).not.toContain("Целевой pH затора");
     expect(html).toContain("Подкислить промывочную воду");
     expect(html).not.toContain("Кислота");
+  });
+
+  it("hides advanced settings when the current mode has no advanced controls", () => {
+    const meta = {
+      ...setRecipeWaterTargetMashPh(
+        ensureRecipeWaterPlanConfigured(createRecipeWaterPlanResetMeta()),
+        null,
+      ),
+      engine: "advanced_manual",
+      manualSaltAdditions: [],
+    } satisfies RecipeWaterPlanMeta;
+    const html = renderWaterBlock(meta);
+
+    expect(html).not.toContain("Расширенные настройки");
   });
 
   it("allows manual salt rows to be deleted", () => {
@@ -502,11 +562,36 @@ describe("recipe water flow UI", () => {
     expect(isRecipeWaterAutoBakingSodaEnabled(disabled)).toBe(false);
   });
 
-  it("keeps advanced settings secondary while preserving manual-salt behavior", () => {
+  it("copies calculated salts into editable additives and can return to live calculation", () => {
+    const autoMeta = withManualTargetProfile(
+      ensureRecipeWaterPlanConfigured(createRecipeWaterPlanResetMeta()),
+    );
+    const autoResult = buildResult(autoMeta);
+    const manualMeta = setRecipeWaterSaltCalculationMode(
+      autoMeta,
+      "manual",
+      autoResult,
+    );
+    const autoAgainMeta = setRecipeWaterSaltCalculationMode(
+      manualMeta,
+      "auto",
+      buildResult(manualMeta),
+    );
+
+    expect(autoResult.totalSaltAdditions.length).toBeGreaterThan(0);
+    expect(manualMeta.engine).toBe("advanced_manual");
+    expect(manualMeta.manualSaltAdditions.length).toBe(
+      autoResult.totalSaltAdditions.length,
+    );
+    expect(autoAgainMeta.engine).not.toBe("advanced_manual");
+  });
+
+  it("keeps advanced settings secondary while preserving editable salt behavior", () => {
     const meta = {
       ...ensureRecipeWaterPlanConfigured(createRecipeWaterPlanResetMeta()),
       engine: "advanced_manual",
       manualSaltAdditions: [{ salt: "gypsum", grams: 2 }],
+      targetMashPh: 5.35,
       calibrationOffset: 0.05,
     } satisfies RecipeWaterPlanMeta;
     const result = buildResult(meta);
@@ -517,11 +602,120 @@ describe("recipe water flow UI", () => {
     ]);
     expect(html).toContain("Расширенные настройки");
     expect(html).toContain("Калибровка pH");
-    expect(html).toContain("Гипс");
-    expect(html).toContain("CaSO4");
+    expect(html).not.toContain("Итоговый профиль воды");
+    expect(html).not.toContain("Режим солей");
+    expect(html).not.toContain("Ручные добавки солей");
     expect(html).not.toContain("CaSO4·2H2O");
     expect(html).not.toContain("Gypsum");
-    expect(html).toContain("Удалить");
+  });
+
+  it("renders editable water salts as catalog-matched additive rows", () => {
+    const meta = {
+      ...withManualTargetProfile(
+        ensureRecipeWaterPlanConfigured(createRecipeWaterPlanResetMeta()),
+      ),
+      engine: "advanced_manual",
+      manualSaltAdditions: [
+        { salt: "calcium_chloride", grams: 3, target: "all" },
+      ],
+    } satisfies RecipeWaterPlanMeta;
+    const html = renderToStaticMarkup(
+      React.createElement(RecipeWaterAdditivesSection, {
+        waterPlanMeta: meta,
+        waterPlanResult: buildResult(meta),
+        onUpdateManualSalt: () => undefined,
+        onRemoveManualSalt: () => undefined,
+      }),
+    );
+
+    expect(html).toContain("Хлорид кальция");
+    expect(html).toContain("CaCl2");
+    expect(html).toContain("Нет на складе");
+    expect(html).toContain("Итоговый профиль воды");
+    expect(html).toContain("к цели");
+    expect(html).not.toContain("Сравнение с целью");
+    expect(html).not.toContain("RA ");
+    expect(html).not.toContain("SO4/Cl");
+    expect(html).toContain('value="3"');
+    expect(html).toContain("Удалить Хлорид кальция");
+    expect(html).not.toContain("Редактировать Хлорид кальция");
+    expect(html).not.toContain("Редактировать Молочная кислота");
+    expect(html).not.toContain("Не привязано к каталогу");
+  });
+
+  it("keeps calculated salts out of the applied plan until the user applies the calculation", () => {
+    const meta = withManualTargetProfile(
+      ensureRecipeWaterPlanConfigured(createRecipeWaterPlanResetMeta()),
+    );
+    const result = buildResult(meta);
+    const firstSalt = result.totalSaltAdditions[0];
+    if (!firstSalt) {
+      throw new Error("Expected auto salt additions");
+    }
+    const html = renderToStaticMarkup(
+      React.createElement(RecipeWaterAdditivesSection, {
+        waterPlanMeta: meta,
+        waterPlanResult: result,
+        onUpdateManualSalt: () => undefined,
+        onRemoveManualSalt: () => undefined,
+        onAddManualSalt: () => undefined,
+      }),
+    );
+
+    expect(html).toContain("Добавки воды");
+    expect(html).toContain("Нет добавок воды");
+    expect(html).not.toContain("Примененный план");
+    expect(html).not.toContain("Применен");
+    expect(html).not.toContain("Не применен");
+    expect(html).not.toContain("Итоговый профиль воды");
+    expect(html).not.toContain(`Количество ${firstSalt.label}, г`);
+    expect(html).not.toContain(`Удалить ${firstSalt.label}`);
+  });
+
+  it("shows calculated additions as a proposal inside the water setup wizard", () => {
+    const meta = {
+      ...withManualTargetProfile(
+        ensureRecipeWaterPlanConfigured(createRecipeWaterPlanResetMeta()),
+      ),
+      targetMashPh: 5.35,
+    } satisfies RecipeWaterPlanMeta;
+    const result = buildResult(meta);
+    const html = renderToStaticMarkup(
+      React.createElement(WaterSetupWizard, {
+        waterPlanMeta: meta,
+        waterPlanResult: result,
+        calculatedWaterPlanResult: result,
+        onChange: () => undefined,
+      }),
+    );
+
+    expect(result.mashAcidAddition?.mashAcidMl ?? 0).toBeGreaterThan(0);
+    expect(html).toContain("Расчет");
+    expect(html).toContain("Применить расчет");
+    expect(html).toContain("Молочная кислота");
+    expect(html).not.toContain("Удалить Молочная кислота");
+  });
+
+  it("does not show the water result summary for an empty default setup", () => {
+    const meta = {
+      ...createRecipeWaterPlanResetMeta(),
+      setupEnabled: true,
+      targetProfileMode: "manual",
+      targetProfile: null,
+      targetMashPh: null,
+      manualSaltAdditions: [],
+    } satisfies RecipeWaterPlanMeta;
+    const html = renderToStaticMarkup(
+      React.createElement(RecipeWaterAdditivesSection, {
+        waterPlanMeta: meta,
+        waterPlanResult: buildResult(meta),
+        onUpdateManualSalt: () => undefined,
+        onRemoveManualSalt: () => undefined,
+      }),
+    );
+
+    expect(html).toContain("Нет добавок воды");
+    expect(html).not.toContain("Итоговый профиль воды");
   });
 
   it("shows a target selector for manual salts in split water mode", () => {
@@ -535,9 +729,16 @@ describe("recipe water flow UI", () => {
       engine: "advanced_manual",
       manualSaltAdditions: [{ salt: "gypsum", grams: 2, target: "mash" }],
     } satisfies RecipeWaterPlanMeta;
-    const html = renderWaterBlock(meta);
+    const html = renderToStaticMarkup(
+      React.createElement(RecipeWaterAdditivesSection, {
+        waterPlanMeta: meta,
+        waterPlanResult: buildResult(meta),
+        onUpdateManualSalt: () => undefined,
+        onRemoveManualSalt: () => undefined,
+      }),
+    );
 
-    expect(html).toContain("Куда добавить соль");
+    expect(html).toContain("Куда добавить Гипс");
     expect(html).toContain("Весь объем");
     expect(html).toContain("Затор");
     expect(html).toContain("Промывка");

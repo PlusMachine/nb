@@ -15,14 +15,20 @@ import {
   buildRecipeEditorResumeHref,
   buildRecipeEditHref,
   buildRecipeWizardResumeHref,
+  applyRecipeWaterAddFlowSaltToWaterPlan,
   resolveRecipeFermentablePickerScopeContext,
   resolveRecipeIngredientForcedGroup,
   resolveRecipeIngredientEditorSourceMode,
   resolveRecipeIngredientSearchType,
+  resolveRecipeWaterManualSaltAdditionFromIngredient,
+  resolveRecipeConsumableDefaultStage,
+  resolveRecipeConsumableStageOptions,
+  filterRecipeWaterAddFlowSuggestions,
   recipeConsumableAdditiveGroup,
   recipeConsumableSubtypeOptions,
   shouldAutoFocusRecipeIngredientPicker
 } from "../components/recipes/recipe-designer";
+import { createRecipeWaterPlanResetMeta } from "../components/recipes/water-setup-wizard";
 import { RecipeIngredientsEditor } from "../components/recipes/recipe-ingredients-editor";
 import { StartBrewModal } from "../components/recipes/start-brew-modal";
 import {
@@ -34,8 +40,10 @@ import {
 } from "../components/recipes/recipe-ingredient-row";
 import { RecipeStatsPreview } from "../components/recipes/recipe-stats-preview";
 import type { EquipmentProfileDto } from "../features/equipment-profiles/contracts";
-import { defaultRecipeProcessMeta, type RecipeDetailDto } from "../features/recipes/contracts";
+import type { IngredientSuggestionItem } from "../features/ingredients/contracts";
+import { defaultRecipeProcessMeta, type RecipeDetailDto, type RecipeWaterPlanMeta } from "../features/recipes/contracts";
 import { buildRecipePublicationChecklist } from "../features/recipes/publication-validation";
+import { buildRecipeWaterPlanResult } from "../features/recipes/water-plan";
 
 vi.mock("next/navigation", () => ({
   usePathname: () => "/app/recipes/new",
@@ -327,6 +335,161 @@ describe("recipe editor components", () => {
     expect(params.get("stock")).toBe("in_stock");
   });
 
+  it("keeps recipe water add-flow suggestions limited to additives supported by the water wizard", () => {
+    const items = [
+      {
+        id: "calcium-chloride-anhydrous",
+        category: "water_treatment",
+        source: "catalog",
+        displayName: "Хлорид кальция (безводный)"
+      },
+      {
+        id: "epsom-salt",
+        category: "water_treatment",
+        source: "catalog",
+        displayName: "Эпсомская соль"
+      },
+      {
+        id: "gypsum",
+        category: "water_treatment",
+        source: "catalog",
+        displayName: "Гипс"
+      },
+      {
+        id: "potassium-metabisulfite",
+        category: "water_treatment",
+        source: "catalog",
+        displayName: "Метабисульфит калия"
+      },
+      {
+        id: "lactic-acid",
+        category: "water_treatment",
+        source: "catalog",
+        displayName: "Молочная кислота"
+      },
+      {
+        id: "lactic-acid-custom",
+        category: "water_treatment",
+        source: "custom",
+        displayName: "Своя молочная кислота"
+      }
+    ] as IngredientSuggestionItem[];
+
+    expect(filterRecipeWaterAddFlowSuggestions(items).map((item) => item.id)).toEqual([
+      "gypsum",
+      "epsom-salt"
+    ]);
+  });
+
+  it("maps recipe water add-flow salts into manual water-plan additions", () => {
+    const baseMeta = createRecipeWaterPlanResetMeta();
+    const baseResult = buildRecipeWaterPlanResult({
+      fallbackBatchVolumeL: 20,
+      grainKg: 5,
+      waterPlanMeta: baseMeta
+    });
+    const addition = resolveRecipeWaterManualSaltAdditionFromIngredient({
+      category: "water_treatment",
+      ingredientCatalogItemId: "sodium-chloride",
+      amountEnteredQuantity: "2",
+      amountEnteredUnit: "g"
+    });
+
+    expect(addition).toEqual({
+      salt: "table_salt",
+      grams: 2,
+      target: "all"
+    });
+    expect(resolveRecipeWaterManualSaltAdditionFromIngredient({
+      category: "water_treatment",
+      ingredientCatalogItemId: "lactic-acid",
+      amountEnteredQuantity: "1",
+      amountEnteredUnit: "ml"
+    })).toBeNull();
+
+    const nextMeta = applyRecipeWaterAddFlowSaltToWaterPlan({
+      waterPlanMeta: baseMeta,
+      waterPlanResult: baseResult,
+      ingredient: {
+        category: "water_treatment",
+        ingredientCatalogItemId: "sodium-chloride",
+        amountEnteredQuantity: "2",
+        amountEnteredUnit: "g"
+      }
+    });
+
+    expect(nextMeta?.setupEnabled).toBe(true);
+    expect(nextMeta?.engine).toBe("advanced_manual");
+    expect(nextMeta?.manualSaltAdditions).toEqual([
+      { salt: "table_salt", grams: 2, target: "all" }
+    ]);
+
+    const nextResult = buildRecipeWaterPlanResult({
+      fallbackBatchVolumeL: 20,
+      grainKg: 5,
+      waterPlanMeta: nextMeta!
+    });
+
+    expect(nextResult.finalProfile.na).toBeGreaterThan(baseResult.finalProfile.na);
+    expect(nextResult.finalProfile.cl).toBeGreaterThan(baseResult.finalProfile.cl);
+  });
+
+  it("shows the water salt add action without requiring a separate salt mode", () => {
+    const autoWaterPlanMeta = {
+      ...createRecipeWaterPlanResetMeta(),
+      setupEnabled: true,
+      engine: "profile_only",
+    } satisfies RecipeWaterPlanMeta;
+    const manualWaterPlanMeta = {
+      ...autoWaterPlanMeta,
+      engine: "advanced_manual",
+    } satisfies RecipeWaterPlanMeta;
+
+    const autoHtml = renderToStaticMarkup(React.createElement(RecipeDesigner, {
+      mode: "edit",
+      initialRecipe: buildRecipeDetail({ waterPlanMeta: autoWaterPlanMeta }),
+    }));
+    const manualHtml = renderToStaticMarkup(React.createElement(RecipeDesigner, {
+      mode: "edit",
+      initialRecipe: buildRecipeDetail({ waterPlanMeta: manualWaterPlanMeta }),
+    }));
+
+    expect(autoHtml).toContain("Водоподготовка");
+    expect(autoHtml).toContain("Добавить соль");
+    expect(manualHtml).toContain("Добавить соль");
+    expect(autoHtml.match(/Добавить соль/g)).toHaveLength(1);
+    expect(manualHtml.match(/Добавить соль/g)).toHaveLength(1);
+    expect(autoHtml).not.toContain("Добавить соль вручную");
+    expect(manualHtml).not.toContain("Добавить соль вручную");
+  });
+
+  it("maps recipe consumable usage stages into add-flow stage options", () => {
+    const citrusTechnicalData = {
+      type: "consumable" as const,
+      commonForms: ["dried_peel"],
+      usageStage: ["boil", "flameout", "primary", "secondary", "bottling"]
+    };
+
+    expect(resolveRecipeConsumableStageOptions(citrusTechnicalData)).toEqual([
+      "boil",
+      "whirlpool",
+      "fermentation",
+      "packaging",
+      "other"
+    ]);
+    expect(resolveRecipeConsumableDefaultStage(citrusTechnicalData)).toBe("boil");
+
+    const lauterAidTechnicalData = {
+      type: "consumable" as const,
+      commonForms: ["husk"],
+      usageStage: ["mash"]
+    };
+
+    expect(resolveRecipeConsumableStageOptions(lauterAidTechnicalData)).toEqual(["mash", "other"]);
+    expect(resolveRecipeConsumableDefaultStage(lauterAidTechnicalData)).toBe("mash");
+    expect(resolveRecipeConsumableDefaultStage(null)).toBe("other");
+  });
+
   it("keeps recipe custom consumables inside other-additive subtypes", () => {
     const html = renderToStaticMarkup(React.createElement(CustomIngredientForm, {
       mode: "recipe",
@@ -492,6 +655,47 @@ describe("recipe editor components", () => {
     expect(html).not.toContain("Зафиксировать КП вручную");
     expect(html).not.toContain("Сохранить");
     expect(html).not.toContain("Публикация");
+  });
+
+  it("renders manually added water treatments with the water-additive card style", () => {
+    const html = renderToStaticMarkup(React.createElement(RecipeDesigner, {
+      mode: "edit",
+      initialRecipe: buildRecipeDetail({
+        ingredients: [{
+          id: "ri-water",
+          recipeId: "recipe-1",
+          persistentKey: "00000000-0000-4000-8000-000000000099",
+          displayOrder: 0,
+          ingredientCatalogItemId: "gypsum",
+          userCustomIngredientId: null,
+          type: "water_treatment",
+          ingredientCategory: "water_treatment",
+          ingredientSubtype: "salt",
+          ingredientDisplayName: "Гипс",
+          ingredientTechnicalData: {
+            type: "water_treatment",
+            formula: "CaSO4",
+            calculationFormula: "CaSO4·2H2O",
+            unitPreferred: "g",
+          },
+          amountEnteredQuantity: 2,
+          amountEnteredUnit: "g",
+          amountNormalizedQuantity: 2,
+          amountNormalizedUnit: "g",
+          stage: "mash",
+          timeOffset: null,
+          stepMeta: null,
+          createdAt: new Date("2026-04-20T10:00:00Z"),
+          updatedAt: new Date("2026-04-20T10:00:00Z"),
+        }],
+      }),
+    }));
+
+    expect(html).toContain("Гипс");
+    expect(html).toContain("CaSO4");
+    expect(html).toContain("Из каталога");
+    expect(html).toContain("border-l-sky-400");
+    expect(html).not.toContain("hover:shadow-md");
   });
 
   it("marks selected BJCP styles without fixed ranges in the recipe stat tracks", () => {

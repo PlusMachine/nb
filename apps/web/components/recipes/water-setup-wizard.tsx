@@ -254,12 +254,13 @@ const createSavedSourceWaterProfileId = () => {
   return `water-profile-${Date.now()}-${Math.random().toString(36).slice(2)}`;
 };
 
-const saltCalculationModeLabels = {
-  auto: "Авторасчет солей",
-  manual: "Ручные добавки солей",
-};
+const brewfatherDefaultAutoSalts = [
+  "gypsum",
+  "calcium_chloride",
+  "epsom_salt",
+];
 
-const manualSaltAdditionTargetLabels: Record<
+const waterAdditionTargetLabels: Record<
   RecipeWaterManualSaltAdditionTarget,
   string
 > = {
@@ -267,12 +268,6 @@ const manualSaltAdditionTargetLabels: Record<
   mash: "Затор",
   sparge: "Промывка",
 };
-
-const brewfatherDefaultAutoSalts = [
-  "gypsum",
-  "calcium_chloride",
-  "epsom_salt",
-];
 
 const waterWarningLabels: Record<string, string> = {
   water_split_below_batch_volume:
@@ -310,21 +305,6 @@ const ionLabels: Record<(typeof ionKeys)[number], string> = {
   so4: "SO4",
   hco3: "HCO3",
 };
-
-const saltOptionGroups = [
-  {
-    label: "Основные",
-    options: ["gypsum", "calcium_chloride", "epsom_salt"],
-  },
-  {
-    label: "Опционально",
-    options: ["baking_soda", "table_salt"],
-  },
-  {
-    label: "Только для опытных сценариев",
-    options: ["chalk", "slaked_lime"],
-  },
-] as const;
 
 const defaultSourcePreset = () =>
   findBuiltInSourceWaterProfile("ro_distilled") ??
@@ -381,13 +361,6 @@ export const filterRecipeWaterProfiles = (
   );
 };
 
-const formatSaltOptionLabel = (
-  salt: keyof typeof recipeWaterSaltPresentation,
-) => {
-  const presentation = recipeWaterSaltPresentation[salt];
-  return `${presentation.label} · ${presentation.formula}`;
-};
-
 export const createRecipeWaterPlanResetMeta = (): RecipeWaterPlanMeta => ({
   setupEnabled: false,
   engine: "balanced_default",
@@ -411,10 +384,11 @@ export const createRecipeWaterPlanResetMeta = (): RecipeWaterPlanMeta => ({
   mashWaterVolumeL: null,
   spargeWaterVolumeL: null,
   totalWaterVolumeL: null,
+  grainAbsorptionLPerKg: null,
   allowedSalts: [],
   allowedAcids: [],
   manualSaltAdditions: [],
-  targetMashPh: 5.35,
+  targetMashPh: null,
   spargeAcidificationEnabled: false,
   spargeSourcePh: null,
   targetSpargePh: 5.7,
@@ -661,9 +635,36 @@ export const setRecipeWaterTargetMashPh = (
       : autoSaltEngineForTargetMashPh(targetMashPh),
 });
 
+type RecipeWaterManualSaltAddition =
+  NonNullable<RecipeWaterPlanMeta["manualSaltAdditions"]>[number];
+
+const snapshotRecipeWaterResultSaltAdditions = (
+  waterPlanResult: RecipeWaterPlanResult,
+): RecipeWaterManualSaltAddition[] =>
+  (waterPlanResult.waterVolumes.source === "manual_split"
+    ? [
+        ...waterPlanResult.mashSaltAdditions.map((addition) => ({
+          salt: addition.salt,
+          grams: addition.grams,
+          target: "mash" as RecipeWaterManualSaltAdditionTarget,
+        })),
+        ...waterPlanResult.spargeSaltAdditions.map((addition) => ({
+          salt: addition.salt,
+          grams: addition.grams,
+          target: "sparge" as RecipeWaterManualSaltAdditionTarget,
+        })),
+      ]
+    : waterPlanResult.totalSaltAdditions.map((addition) => ({
+        salt: addition.salt,
+        grams: addition.grams,
+        target: addition.target,
+      }))
+  ).filter((addition) => Number.isFinite(addition.grams) && addition.grams > 0);
+
 export const setRecipeWaterSaltCalculationMode = (
   waterPlanMeta: RecipeWaterPlanMeta,
   mode: "auto" | "manual",
+  waterPlanResult?: RecipeWaterPlanResult,
 ): RecipeWaterPlanMeta => ({
   ...waterPlanMeta,
   setupEnabled: true,
@@ -671,6 +672,10 @@ export const setRecipeWaterSaltCalculationMode = (
     mode === "manual"
       ? "advanced_manual"
       : autoSaltEngineForTargetMashPh(waterPlanMeta.targetMashPh),
+  manualSaltAdditions:
+    mode === "manual" && waterPlanResult
+      ? snapshotRecipeWaterResultSaltAdditions(waterPlanResult)
+      : waterPlanMeta.manualSaltAdditions ?? [],
 });
 
 export const isRecipeWaterAutoBakingSodaEnabled = (
@@ -697,6 +702,107 @@ export const removeRecipeWaterManualSaltAddition = (
     (_, itemIndex) => itemIndex !== index,
   ),
 });
+
+type RecipeWaterCalculatedAdditionRow = {
+  key: string;
+  target: RecipeWaterManualSaltAdditionTarget;
+  title: string;
+  formula: string;
+  amountText: string;
+};
+
+const formatWaterAdditionGrams = (grams: number) => {
+  if (!Number.isFinite(grams) || grams <= 0) {
+    return "0 г";
+  }
+
+  return `${grams.toFixed(grams >= 10 ? 1 : 2)} г`;
+};
+
+const formatWaterAdditionMl = (ml: number) => {
+  if (!Number.isFinite(ml) || ml <= 0) {
+    return "0 мл";
+  }
+
+  return `${ml.toFixed(ml >= 10 ? 1 : 2)} мл`;
+};
+
+const formatWaterAdditionPercent = (pct: number) => {
+  if (!Number.isFinite(pct) || pct <= 0) {
+    return "";
+  }
+
+  return Number.isInteger(pct) ? `${pct}%` : `${pct.toFixed(1)}%`;
+};
+
+const buildCalculatedSaltRows = (
+  waterPlanResult: RecipeWaterPlanResult,
+): RecipeWaterCalculatedAdditionRow[] => {
+  if (waterPlanResult.waterVolumes.source === "manual_split") {
+    return [
+      ...waterPlanResult.mashSaltAdditions.map((addition, index) => ({
+        key: `mash-${addition.salt}-${index}`,
+        target: "mash" as const,
+        title: addition.label,
+        formula: addition.formula,
+        amountText: formatWaterAdditionGrams(addition.grams),
+      })),
+      ...waterPlanResult.spargeSaltAdditions.map((addition, index) => ({
+        key: `sparge-${addition.salt}-${index}`,
+        target: "sparge" as const,
+        title: addition.label,
+        formula: addition.formula,
+        amountText: formatWaterAdditionGrams(addition.grams),
+      })),
+    ].filter((row) => !row.amountText.startsWith("0 "));
+  }
+
+  return waterPlanResult.totalSaltAdditions
+    .map((addition, index) => ({
+      key: `all-${addition.salt}-${index}`,
+      target: "all" as const,
+      title:
+        recipeWaterSaltPresentation[addition.salt]?.label ??
+        addition.label ??
+        addition.salt,
+      formula:
+        recipeWaterSaltPresentation[addition.salt]?.formula ??
+        addition.formula ??
+        "",
+      amountText: formatWaterAdditionGrams(addition.grams),
+    }))
+    .filter((row) => !row.amountText.startsWith("0 "));
+};
+
+const buildCalculatedAcidRows = (
+  waterPlanResult: RecipeWaterPlanResult,
+): RecipeWaterCalculatedAdditionRow[] => {
+  const rows: RecipeWaterCalculatedAdditionRow[] = [];
+  const mashAcid = waterPlanResult.mashAcidAddition;
+  const spargeAcid = waterPlanResult.spargeAcidAddition;
+
+  if (mashAcid && mashAcid.mashAcidMl > 0) {
+    rows.push({
+      key: "mash-acid",
+      target: "mash",
+      title: mashAcid.label,
+      formula: formatWaterAdditionPercent(mashAcid.concentrationPct),
+      amountText: formatWaterAdditionMl(mashAcid.mashAcidMl),
+    });
+  }
+
+  if (spargeAcid && spargeAcid.spargeAcidMl > 0) {
+    rows.push({
+      key: "sparge-acid",
+      target: "sparge",
+      title: spargeAcid.label,
+      formula: formatWaterAdditionPercent(spargeAcid.concentrationPct),
+      amountText: formatWaterAdditionMl(spargeAcid.spargeAcidMl),
+    });
+  }
+
+  return rows;
+};
 
 const getSelectedPresetName = (
   presetId: string | null | undefined,
@@ -986,7 +1092,8 @@ function SourceSavedWaterProfileOption({
   profiles,
   selectedId,
   selected,
-  showProfileSummary = false,
+  showProfileSummary = true,
+  savedLabel = "Сохраненный",
   onSelect,
   onDelete,
 }: {
@@ -994,6 +1101,7 @@ function SourceSavedWaterProfileOption({
   selectedId: string | null | undefined;
   selected: boolean;
   showProfileSummary?: boolean;
+  savedLabel?: string;
   onSelect: (profile: SavedSourceWaterProfile) => void;
   onDelete: (profileId: string) => void;
 }) {
@@ -1066,18 +1174,18 @@ function SourceSavedWaterProfileOption({
     return (
       <div
         ref={rootRef}
-        className={`grid ${showProfileSummary ? "min-h-12" : "h-10"} min-w-0 grid-cols-[minmax(0,1fr)_2.5rem] items-center overflow-hidden rounded-lg border ${selected && isCurrent ? "border-zinc-900 bg-zinc-900" : "border-zinc-200 bg-white"}`}
+        className={`grid h-10 min-w-0 grid-cols-[minmax(0,1fr)_2.5rem] items-center overflow-hidden rounded-lg border ${selected && isCurrent ? "border-zinc-900 bg-zinc-900" : "border-zinc-200 bg-white"}`}
       >
         <button
           type="button"
           aria-pressed={selected && isCurrent}
           onClick={() => onSelect(profile)}
-          className={`flex h-full min-w-0 ${showProfileSummary ? "flex-col items-start justify-center py-1.5" : "items-center"} px-3 text-left text-sm font-medium transition-colors ${selected && isCurrent ? "text-white" : "text-zinc-700 hover:bg-zinc-50 hover:text-zinc-950"}`}
+          className={`flex h-full min-w-0 items-center gap-2 px-3 text-left text-sm font-medium transition-colors ${selected && isCurrent ? "text-white" : "text-zinc-700 hover:bg-zinc-50 hover:text-zinc-950"}`}
         >
-          <span className="max-w-full truncate">{profile.name}</span>
+          <span className="min-w-0 flex-1 truncate">{profile.name}</span>
           {showProfileSummary ? (
-            <span className={`mt-0.5 max-w-full truncate text-[11px] font-normal ${selected && isCurrent ? "text-white/70" : "text-zinc-400"}`}>
-              {formatProfile(profile.profile)} ppm
+            <span className={`shrink-0 rounded px-1.5 py-0.5 text-[10px] font-semibold uppercase ${selected && isCurrent ? "bg-white/10 text-white/70" : "bg-zinc-100 text-zinc-500"}`}>
+              {savedLabel}
             </span>
           ) : null}
         </button>
@@ -1106,8 +1214,15 @@ function SourceSavedWaterProfileOption({
         onClick={() => setIsOpen((open) => !open)}
         className={`flex h-10 w-full cursor-pointer list-none items-center justify-between gap-2 rounded-lg border px-3 text-sm font-medium transition-colors [&::-webkit-details-marker]:hidden ${selected ? "border-zinc-900 bg-zinc-900 text-white" : "border-zinc-200 bg-white text-zinc-700 hover:border-zinc-300 hover:bg-zinc-50"}`}
       >
-        <span className="min-w-0 truncate">
-          {selectedProfile?.name ?? "Сохраненный профиль"}
+        <span className="flex min-w-0 flex-1 items-center gap-2">
+          <span className="block min-w-0 flex-1 truncate">
+            {selectedProfile?.name ?? "Сохраненный профиль"}
+          </span>
+          {showProfileSummary ? (
+            <span className={`shrink-0 rounded px-1.5 py-0.5 text-[10px] font-semibold uppercase ${selected ? "bg-white/10 text-white/70" : "bg-zinc-100 text-zinc-500"}`}>
+              {savedLabel}
+            </span>
+          ) : null}
         </span>
         <ChevronRight
           className={`h-4 w-4 shrink-0 transition-transform ${isOpen ? "rotate-90" : ""} ${selected ? "text-white/70" : "text-zinc-400"}`}
@@ -1134,7 +1249,14 @@ function SourceSavedWaterProfileOption({
                   }}
                   className={`min-w-0 px-3 py-2.5 text-left text-sm transition-colors ${isCurrent ? "bg-zinc-50 font-semibold text-zinc-950" : "text-zinc-700 hover:bg-zinc-50 hover:text-zinc-950"}`}
                 >
-                  <span className="block truncate">{profile.name}</span>
+                  <span className="flex min-w-0 items-center gap-2">
+                    <span className="block min-w-0 flex-1 truncate">{profile.name}</span>
+                    {showProfileSummary ? (
+                      <span className="shrink-0 rounded bg-zinc-100 px-1.5 py-0.5 text-[10px] font-semibold uppercase text-zinc-500">
+                        {savedLabel}
+                      </span>
+                    ) : null}
+                  </span>
                   {showProfileSummary ? (
                     <span className="mt-0.5 block truncate text-[11px] font-normal text-zinc-400">
                       {formatProfile(profile.profile)} ppm
@@ -1351,11 +1473,7 @@ function MashPhCorrectionCard({
             className="mt-1 h-11 w-full rounded-lg border border-zinc-200 bg-white px-2 text-base text-zinc-900"
           />
         </label>
-      ) : (
-        <p className="mt-2 text-xs text-zinc-500">
-          pH затора не рассчитывается.
-        </p>
-      )}
+      ) : null}
     </div>
   );
 }
@@ -1423,6 +1541,7 @@ function SpargeAcidificationCard({
 export function WaterSetupWizard({
   waterPlanMeta,
   waterPlanResult,
+  calculatedWaterPlanResult,
   styleId = null,
   onChange,
   isOpen: controlledIsOpen,
@@ -1431,6 +1550,7 @@ export function WaterSetupWizard({
 }: {
   waterPlanMeta: RecipeWaterPlanMeta;
   waterPlanResult: RecipeWaterPlanResult;
+  calculatedWaterPlanResult?: RecipeWaterPlanResult;
   styleId?: string | null;
   onChange: (next: RecipeWaterPlanMeta) => void;
   isOpen?: boolean;
@@ -1491,6 +1611,7 @@ export function WaterSetupWizard({
         : ensureRecipeWaterPlanConfigured(waterPlanMeta),
     [waterPlanMeta],
   );
+  const proposalWaterPlanResult = calculatedWaterPlanResult ?? waterPlanResult;
   const source = effectiveWaterPlanMeta.sourceProfile ?? emptyProfile;
   const target = effectiveWaterPlanMeta.targetProfile ?? emptyProfile;
   const hasActiveWaterSetup = waterPlanMeta.setupEnabled;
@@ -1502,7 +1623,13 @@ export function WaterSetupWizard({
   const acidCalculationEnabled = mashPhEnabled || spargeAcidificationEnabled;
   const saltCalculationMode =
     effectiveWaterPlanMeta.engine === "advanced_manual" ? "manual" : "auto";
+  const hasAdvancedSettings =
+    saltCalculationMode === "auto" || mashPhEnabled || acidCalculationEnabled;
   const isSplitVolume = waterPlanResult.waterVolumes.source === "manual_split";
+  const grainAbsorptionLPerKg =
+    waterPlanResult.waterVolumes.grainAbsorptionLPerKg ?? 0.8;
+  const grainAbsorptionLossL =
+    waterPlanResult.waterVolumes.grainAbsorptionLossL ?? null;
   const visibleWarnings = waterPlanResult.warnings
     .filter(
       (warning) =>
@@ -1654,6 +1781,26 @@ export function WaterSetupWizard({
     targetCatalogPickerOpen: showTargetCatalogPicker,
     targetProfileMode: effectiveWaterPlanMeta.targetProfileMode,
   });
+  const calculatedAdditionRows = React.useMemo(
+    () => [
+      ...buildCalculatedSaltRows(proposalWaterPlanResult),
+      ...buildCalculatedAcidRows(proposalWaterPlanResult),
+    ],
+    [proposalWaterPlanResult],
+  );
+  const calculatedAdditionGroups = React.useMemo(
+    () =>
+      (["all", "mash", "sparge"] as const)
+        .map((targetKey) => ({
+          key: targetKey,
+          label: waterAdditionTargetLabels[targetKey],
+          rows: calculatedAdditionRows.filter((row) => row.target === targetKey),
+        }))
+        .filter((group) => group.rows.length > 0),
+    [calculatedAdditionRows],
+  );
+  const hasCalculatedAdditions = calculatedAdditionRows.length > 0;
+  const hasAppliedWaterPlan = waterPlanMeta.engine === "advanced_manual";
 
   React.useEffect(() => {
     setSavedSourceProfiles(readStoredSavedSourceWaterProfiles());
@@ -1676,28 +1823,6 @@ export function WaterSetupWizard({
     }
   }, [savedTargetProfiles, targetProfileNameTouched]);
 
-  const updateManualSalt = (
-    index: number,
-    patch: {
-      salt?: string;
-      grams?: number;
-      target?: RecipeWaterManualSaltAdditionTarget;
-    },
-  ) => {
-    const next = [...(effectiveWaterPlanMeta.manualSaltAdditions ?? [])];
-    const current = next[index] ?? {
-      salt: "gypsum",
-      grams: 0,
-      target: "all" as RecipeWaterManualSaltAdditionTarget,
-    };
-    next[index] = { ...current, ...patch };
-    onChange({
-      ...effectiveWaterPlanMeta,
-      setupEnabled: true,
-      manualSaltAdditions: next,
-    });
-  };
-
   const updateSplitVolume = (
     key: "mashWaterVolumeL" | "spargeWaterVolumeL",
     value: string,
@@ -1707,6 +1832,14 @@ export function WaterSetupWizard({
       setupEnabled: true,
       totalWaterVolumeL: null,
       [key]: toOptionalNumber(value),
+    });
+  };
+
+  const updateGrainAbsorption = (value: string) => {
+    onChange({
+      ...effectiveWaterPlanMeta,
+      setupEnabled: true,
+      grainAbsorptionLPerKg: toOptionalNumber(value),
     });
   };
 
@@ -1920,6 +2053,8 @@ export function WaterSetupWizard({
                 );
               }}
               onDelete={handleDeleteSavedSourceProfile}
+              showProfileSummary
+              savedLabel="Сохраненный"
             />
             {selectableSourceWaterProfiles.map((preset) => (
               <SourceWaterProfileOption
@@ -1954,7 +2089,7 @@ export function WaterSetupWizard({
               }}
               className={`flex h-10 items-center justify-center rounded-lg border px-3 text-sm font-medium ${hasActiveWaterSetup && effectiveWaterPlanMeta.sourceProfileMode === "manual" ? "border-zinc-900 bg-zinc-900 text-white" : "border-zinc-200 bg-white text-zinc-700 hover:bg-zinc-50"}`}
             >
-              Вручную
+              Ввести вручную
             </button>
           </div>
 
@@ -2014,7 +2149,7 @@ export function WaterSetupWizard({
                     className="inline-flex h-8 items-center justify-center gap-1.5 rounded-lg border border-zinc-200 bg-white px-2.5 text-xs font-medium text-zinc-600 hover:bg-zinc-50 hover:text-zinc-900"
                   >
                     <Save className="h-3.5 w-3.5" />
-                    Сохранить
+                    Сохранить исходный профиль
                   </button>
                 )}
                 {sourceProfileSaveMessage ? (
@@ -2040,6 +2175,7 @@ export function WaterSetupWizard({
                 selectedId={effectiveWaterPlanMeta.targetProfileSavedId}
                 selected={targetModeSelection.saved}
                 showProfileSummary
+                savedLabel="Сохраненный"
                 onSelect={(profile) => {
                   setTargetProfileSaveMessage(null);
                   setTargetCatalogPickerOpen(false);
@@ -2055,7 +2191,7 @@ export function WaterSetupWizard({
               />
             ) : null}
             <TargetModeButton
-              label="Подобрать профиль"
+              label="Из каталога"
               selected={targetModeSelection.catalog}
               onClick={() => {
                 setTargetProfileSaveMessage(null);
@@ -2063,7 +2199,7 @@ export function WaterSetupWizard({
               }}
             />
             <TargetModeButton
-              label="Вручную"
+              label="Ионы вручную"
               selected={targetModeSelection.manual}
               onClick={() => {
                 setTargetProfileSaveMessage(null);
@@ -2179,8 +2315,7 @@ export function WaterSetupWizard({
               ) : null}
               {!targetSuggestedEntries.length && !targetVisibleCatalogResults.length ? (
                 <div className="rounded-lg border border-dashed border-zinc-200 bg-zinc-50 px-3 py-3 text-sm text-zinc-500">
-                  Ничего не найдено. Попробуйте IPA, lager, pils, witbier,
-                  stout.
+                  Ничего не найдено
                 </div>
               ) : null}
             </TargetCatalogPickerSheet>
@@ -2269,7 +2404,7 @@ export function WaterSetupWizard({
                     className="inline-flex h-8 items-center justify-center gap-1.5 rounded-lg border border-zinc-200 bg-white px-2.5 text-xs font-medium text-zinc-600 hover:bg-zinc-50 hover:text-zinc-900"
                   >
                     <Save className="h-3.5 w-3.5" />
-                    Сохранить
+                    Сохранить целевой профиль
                   </button>
                 )}
                 {targetProfileSaveMessage ? (
@@ -2287,8 +2422,29 @@ export function WaterSetupWizard({
 
             <section className="space-y-3">
               <h3 className="text-sm font-semibold text-zinc-900">
-                3. Как вносить соли
+                3. Объем воды
               </h3>
+              <label className="block text-xs font-medium text-zinc-600">
+                Водопоглощение дробиной, л/кг
+                <input
+                  type="number"
+                  min={0}
+                  max={5}
+                  step={0.05}
+                  value={effectiveWaterPlanMeta.grainAbsorptionLPerKg ?? ""}
+                  placeholder={grainAbsorptionLPerKg.toFixed(2)}
+                  onChange={(event) =>
+                    updateGrainAbsorption(event.target.value)
+                  }
+                  className="mt-1 h-11 w-full rounded-lg border border-zinc-200 bg-white px-2 text-base text-zinc-900"
+                />
+                <span className="mt-1 block text-xs font-normal text-zinc-500">
+                  Сейчас: {grainAbsorptionLPerKg.toFixed(2)} л/кг
+                  {grainAbsorptionLossL != null
+                    ? ` · ${grainAbsorptionLossL.toFixed(1)} л`
+                    : ""}
+                </span>
+              </label>
               <div className="grid gap-2 sm:grid-cols-2">
                 <button
                   type="button"
@@ -2337,7 +2493,12 @@ export function WaterSetupWizard({
                   <span
                     className={`mt-1 block text-xs ${isSplitVolume ? "text-zinc-200" : "text-zinc-500"}`}
                   >
-                    Отдельные добавки по объемам
+                    {[
+                      waterPlanResult.waterVolumes.suggestedMashWaterL,
+                      waterPlanResult.waterVolumes.suggestedSpargeWaterL,
+                    ].every((value) => value != null)
+                      ? `${waterPlanResult.waterVolumes.suggestedMashWaterL?.toFixed(1)} + ${waterPlanResult.waterVolumes.suggestedSpargeWaterL?.toFixed(1)} л`
+                      : `${waterPlanResult.waterVolumes.totalWaterL.toFixed(1)} л`}
                   </span>
                 </button>
               </div>
@@ -2423,6 +2584,73 @@ export function WaterSetupWizard({
               </div>
             </section>
 
+            <section className="space-y-3 rounded-xl border border-sky-100 bg-sky-50/40 p-3">
+              <div className="flex flex-wrap items-start justify-between gap-3">
+                <div className="min-w-0">
+                  <h3 className="text-sm font-semibold text-zinc-900">
+                    Расчет
+                  </h3>
+                </div>
+                <button
+                  type="button"
+                  disabled={!hasCalculatedAdditions}
+                  onClick={() =>
+                    onChange(
+                      setRecipeWaterSaltCalculationMode(
+                        effectiveWaterPlanMeta,
+                        "manual",
+                        proposalWaterPlanResult,
+                      ),
+                    )
+                  }
+                  className="inline-flex h-9 shrink-0 items-center justify-center rounded-lg bg-zinc-900 px-3 text-sm font-medium text-white transition-colors hover:bg-zinc-800 disabled:cursor-not-allowed disabled:bg-zinc-200 disabled:text-zinc-500"
+                >
+                  {hasAppliedWaterPlan
+                    ? "Заменить добавки"
+                    : "Применить расчет"}
+                </button>
+              </div>
+
+              {hasCalculatedAdditions ? (
+                <div className="grid gap-2">
+                  {calculatedAdditionGroups.map((group) => (
+                    <div key={group.key} className="rounded-lg bg-white p-2 ring-1 ring-sky-100">
+                      <div className="mb-1 text-[11px] font-semibold uppercase text-zinc-400">
+                        {group.label}
+                      </div>
+                      <ul className="space-y-1">
+                        {group.rows.map((row) => (
+                          <li
+                            key={row.key}
+                            className="flex items-center justify-between gap-3 text-sm"
+                          >
+                            <span className="min-w-0">
+                              <span className="font-medium text-zinc-900">
+                                {row.title}
+                              </span>
+                              {row.formula ? (
+                                <span className="ml-1 text-zinc-500">
+                                  {row.formula}
+                                </span>
+                              ) : null}
+                            </span>
+                            <span className="shrink-0 font-semibold tabular-nums text-zinc-950">
+                              {row.amountText}
+                            </span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="rounded-lg border border-dashed border-sky-200 bg-white/70 px-3 py-3 text-sm text-zinc-500">
+                  Нет рассчитанных добавок
+                </div>
+              )}
+            </section>
+
+            {hasAdvancedSettings ? (
             <details className="group rounded-xl border border-zinc-100 bg-white p-3">
               <summary className="flex cursor-pointer list-none items-center gap-2 text-sm font-semibold text-zinc-800">
                 <SlidersHorizontal className="h-4 w-4 text-zinc-400" />
@@ -2430,28 +2658,6 @@ export function WaterSetupWizard({
                 <ChevronRight className="ml-auto h-4 w-4 text-zinc-400 transition-transform group-open:rotate-90" />
               </summary>
               <div className="mt-3 grid gap-3 md:grid-cols-2">
-                <label className="text-xs font-medium text-zinc-600">
-                  Расчет солей
-                  <select
-                    value={saltCalculationMode}
-                    onChange={(event) =>
-                      onChange(
-                        setRecipeWaterSaltCalculationMode(
-                          waterPlanMeta,
-                          event.target.value as "auto" | "manual",
-                        ),
-                      )
-                    }
-                    className="mt-1 h-11 w-full rounded-lg border border-zinc-200 bg-white px-3 text-base text-zinc-900"
-                  >
-                    <option value="auto">
-                      {saltCalculationModeLabels.auto}
-                    </option>
-                    <option value="manual">
-                      {saltCalculationModeLabels.manual}
-                    </option>
-                  </select>
-                </label>
                 {saltCalculationMode === "auto" ? (
                   <label className="flex min-h-10 items-center gap-2 self-end rounded-lg border border-zinc-200 bg-zinc-50 px-3 py-2 text-sm font-medium text-zinc-700">
                     <input
@@ -2573,115 +2779,8 @@ export function WaterSetupWizard({
                   </>
                 ) : null}
               </div>
-
-              <div className="mt-4 space-y-2">
-                <div className="flex items-center justify-between gap-2">
-                  <h4 className="text-xs font-semibold text-zinc-700">
-                    Ручные добавки солей
-                  </h4>
-                  <button
-                    type="button"
-                    onClick={() =>
-                      onChange({
-                        ...waterPlanMeta,
-                        setupEnabled: true,
-                        engine: "advanced_manual",
-                        manualSaltAdditions: [
-                          ...(waterPlanMeta.manualSaltAdditions ?? []),
-                          { salt: "gypsum", grams: 0, target: "all" },
-                        ],
-                      })
-                    }
-                    className="rounded-md border border-zinc-200 px-2 py-1 text-xs text-zinc-700 hover:bg-zinc-50"
-                  >
-                    + Добавить
-                  </button>
-                </div>
-                {(waterPlanMeta.manualSaltAdditions ?? []).map(
-                  (addition, index) => (
-                    <div
-                      key={index}
-                      className={
-                        isSplitVolume
-                          ? "grid gap-2 sm:grid-cols-[1fr_130px_120px_36px]"
-                          : "grid gap-2 sm:grid-cols-[1fr_120px_36px]"
-                      }
-                    >
-                      <select
-                        value={addition.salt}
-                        onChange={(event) =>
-                          updateManualSalt(index, { salt: event.target.value })
-                        }
-                        className="h-11 rounded-lg border border-zinc-200 bg-white px-2 text-base text-zinc-900"
-                      >
-                        {saltOptionGroups.map((group) => (
-                          <optgroup key={group.label} label={group.label}>
-                            {group.options.map((value) => (
-                              <option key={value} value={value}>
-                                {formatSaltOptionLabel(value)}
-                              </option>
-                            ))}
-                          </optgroup>
-                        ))}
-                      </select>
-                      <input
-                        type="number"
-                        min={0}
-                        step={0.01}
-                        value={addition.grams}
-                        onChange={(event) =>
-                          updateManualSalt(index, {
-                            grams: Number(event.target.value || 0),
-                          })
-                        }
-                        className="h-11 rounded-lg border border-zinc-200 bg-white px-2 text-base text-zinc-900"
-                      />
-                      {isSplitVolume ? (
-                        <select
-                          aria-label="Куда добавить соль"
-                          value={addition.target ?? "all"}
-                          onChange={(event) =>
-                            updateManualSalt(index, {
-                              target: event.target
-                                .value as RecipeWaterManualSaltAdditionTarget,
-                            })
-                          }
-                          className="h-11 rounded-lg border border-zinc-200 bg-white px-2 text-base text-zinc-900"
-                        >
-                          {Object.entries(manualSaltAdditionTargetLabels).map(
-                            ([value, label]) => (
-                              <option key={value} value={value}>
-                                {label}
-                              </option>
-                            ),
-                          )}
-                        </select>
-                      ) : null}
-                      <button
-                        type="button"
-                        onClick={() =>
-                          onChange(
-                            removeRecipeWaterManualSaltAddition(
-                              waterPlanMeta,
-                              index,
-                            ),
-                          )
-                        }
-                        className="inline-flex h-9 items-center justify-center rounded-lg border border-zinc-200 text-zinc-500 hover:bg-zinc-50 hover:text-zinc-800"
-                        aria-label="Удалить ручную добавку соли"
-                        title="Удалить"
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </button>
-                    </div>
-                  ),
-                )}
-                <p className="text-xs text-zinc-500">
-                  Основной авторасчет держит простой набор солей. Chalk и slaked
-                  lime доступны только здесь.
-                </p>
-              </div>
             </details>
+            ) : null}
           </>
         ) : null}
         </div>

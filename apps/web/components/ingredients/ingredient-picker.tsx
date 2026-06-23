@@ -66,6 +66,7 @@ import {
   formatHopFormLabel,
   resolveIngredientTechnicalDataColorRangeEbc
 } from "@/features/ingredients/technical-fields";
+import { resolveWaterTreatmentFormulaLabel } from "@/features/ingredients/water-treatment";
 import { beerColorFromSrm } from "@/features/recipes/beer-color";
 
 export {
@@ -102,6 +103,7 @@ type Props = {
   includeCustom?: boolean;
   allowCustomOnlyFilter?: boolean;
   enableQuickStart?: boolean;
+  searchOnEmptyQuery?: boolean;
   proposeIngredient?: (params: {
     q: string;
     type?: IngredientType;
@@ -138,13 +140,15 @@ type IngredientPickerSearchResponse = IngredientSearchResult | IngredientSuggest
 export const shouldSearchIngredients = ({
   isOpen,
   query,
-  hasSearchScope = false
+  hasSearchScope = false,
+  searchOnEmptyQuery = false
 }: {
   isOpen: boolean;
   query: string;
   hasSearchScope?: boolean;
+  searchOnEmptyQuery?: boolean;
 }) => (
-  isOpen && (normalizeSearchText(query).length >= 2 || hasSearchScope)
+  isOpen && (normalizeSearchText(query).length >= 2 || hasSearchScope || searchOnEmptyQuery)
 );
 
 export const shouldShowIngredientSuggestions = ({
@@ -166,7 +170,8 @@ export const shouldShowIngredientEmptyState = ({
   itemsCount,
   refinementsCount = 0,
   query,
-  hasSearchScope = false
+  hasSearchScope = false,
+  searchOnEmptyQuery = false
 }: {
   hasResolvedQuery: boolean;
   isLoading: boolean;
@@ -175,9 +180,10 @@ export const shouldShowIngredientEmptyState = ({
   refinementsCount?: number;
   query: string;
   hasSearchScope?: boolean;
+  searchOnEmptyQuery?: boolean;
 }) => (
   isOpen
-  && (normalizeSearchText(query).length >= 2 || hasSearchScope)
+  && (normalizeSearchText(query).length >= 2 || hasSearchScope || searchOnEmptyQuery)
   && !isLoading
   && hasResolvedQuery
   && itemsCount === 0
@@ -188,31 +194,38 @@ export const shouldShowIngredientLoadingState = ({
   hasResolvedQuery,
   isOpen,
   query,
-  hasSearchScope = false
+  hasSearchScope = false,
+  searchOnEmptyQuery = false
 }: {
   hasResolvedQuery: boolean;
   isOpen: boolean;
   query: string;
   hasSearchScope?: boolean;
+  searchOnEmptyQuery?: boolean;
 }) => (
   shouldSearchIngredients({
     isOpen,
     query,
-    hasSearchScope
+    hasSearchScope,
+    searchOnEmptyQuery
   }) && !hasResolvedQuery
 );
 
 export const resolveIngredientPickerLoadingLabel = ({
   query,
-  hasSearchScope = false
+  hasSearchScope = false,
+  searchOnEmptyQuery = false
 }: {
   query: string;
   hasSearchScope?: boolean;
+  searchOnEmptyQuery?: boolean;
 }) => (
   normalizeSearchText(query).length > 0
     ? "Ищем совпадения..."
     : hasSearchScope
       ? "Подбираем варианты по выбранным фильтрам..."
+      : searchOnEmptyQuery
+        ? "Подбираем варианты..."
       : "Ищем ингредиенты..."
 );
 
@@ -743,6 +756,7 @@ export const buildIngredientPickerTechnicalBadges = (item: IngredientSuggestionI
   } else if (technicalData.type === "water_treatment") {
     const waterTreatment = technicalData as Extract<NonNullable<typeof technicalData>, { type: "water_treatment" }>;
     const normalizedPreferredUnit = waterTreatment.unitPreferred?.trim().toLowerCase() ?? null;
+    pushBadge(resolveWaterTreatmentFormulaLabel(waterTreatment));
     pushBadge(normalizedPreferredUnit === "g" || normalizedPreferredUnit === "ml" ? null : waterTreatment.unitPreferred);
   } else if (technicalData.type === "consumable") {
     const consumable = technicalData as Extract<NonNullable<typeof technicalData>, { type: "consumable" }>;
@@ -1082,7 +1096,7 @@ export const IngredientSelectionCard = ({
 }: IngredientSelectionCardProps) => {
   const { primaryName, secondaryName, inlineKindLabel, inlineBrand, country, subtitle, stockLabel } = resolveIngredientPickerRowContent(item);
   const typedSummary = hideTypedSummary ? null : buildIngredientTypedSummary(item);
-  const technicalBadges = hideTypedSummary ? [] : buildIngredientPickerTechnicalBadges(item);
+  const technicalBadges = buildIngredientPickerTechnicalBadges(item);
   const fallbackTypedSummary = technicalBadges.length > 0 ? null : typedSummary;
   const brandLabel = resolveIngredientBrandLabel(item);
   const ownershipBadgeLabel = resolveIngredientOwnershipBadgeLabel(item);
@@ -1946,6 +1960,7 @@ export const IngredientPicker = ({
   includeCustom = true,
   allowCustomOnlyFilter = false,
   enableQuickStart = false,
+  searchOnEmptyQuery = false,
   proposeIngredient = defaultProposeIngredient,
   searchIngredients = defaultSearchIngredients,
   loadQuickStartIngredients = defaultLoadQuickStartIngredients
@@ -2077,8 +2092,9 @@ export const IngredientPicker = ({
       || Boolean(activeQuickStartFamilyKey)
       || activeFavoritesOnly
       || activeCustomOnly
+      || searchOnEmptyQuery
     ));
-  }, [activeCustomOnly, activeFavoritesOnly, activeGroupKey, activeManufacturerKey, activeQuickStartFamilyKey, value]);
+  }, [activeCustomOnly, activeFavoritesOnly, activeGroupKey, activeManufacturerKey, activeQuickStartFamilyKey, searchOnEmptyQuery, value]);
 
   useEffect(() => {
     setActiveQuickStartFamily(null);
@@ -2154,7 +2170,20 @@ export const IngredientPicker = ({
   }, [hasHydratedRecentSelections]);
 
   useEffect(() => {
-    if (!shouldSearchIngredients({ isOpen, query: effectiveSearchQuery, hasSearchScope })) {
+    if (!searchOnEmptyQuery || normalizeSearchText(query).length > 0) {
+      return;
+    }
+
+    setIsOpen(true);
+  }, [query, searchOnEmptyQuery]);
+
+  useEffect(() => {
+    if (!shouldSearchIngredients({
+      isOpen,
+      query: effectiveSearchQuery,
+      hasSearchScope,
+      searchOnEmptyQuery
+    })) {
       setSearchResult({
         ...emptyIngredientSearchResult,
         appliedGroup,
@@ -2248,7 +2277,7 @@ export const IngredientPicker = ({
       clearTimeout(timer);
       controller.abort();
     };
-  }, [activeCustomOnly, activeFavoritesOnly, activeGroup, activeGroupKey, activeGroupValue, activeManufacturer, activeManufacturerKey, activeManufacturerLabel, activeQuickStartFamily, appliedGroup, appliedQuickStartFamily?.key, category, effectiveSearchQuery, hasSearchScope, includeCustom, isExpanded, isOpen, limit, query, searchIngredients, subtype, type]);
+  }, [activeCustomOnly, activeFavoritesOnly, activeGroup, activeGroupKey, activeGroupValue, activeManufacturer, activeManufacturerKey, activeManufacturerLabel, activeQuickStartFamily, appliedGroup, appliedQuickStartFamily?.key, category, effectiveSearchQuery, hasSearchScope, includeCustom, isExpanded, isOpen, limit, query, searchIngredients, searchOnEmptyQuery, subtype, type]);
 
   useEffect(() => {
     if (!showQuickStart || !category) {
@@ -2448,6 +2477,7 @@ export const IngredientPicker = ({
       || Boolean(manufacturerForOpen)
       || favoritesForOpen
       || customForOpen
+      || searchOnEmptyQuery
     );
     setHasResolvedQuery(false);
     setEmptyStateMessage(null);
@@ -2609,11 +2639,13 @@ export const IngredientPicker = ({
     hasResolvedQuery,
     isOpen,
     query: effectiveSearchQuery,
-    hasSearchScope
+    hasSearchScope,
+    searchOnEmptyQuery
   });
   const loadingLabel = resolveIngredientPickerLoadingLabel({
     query: effectiveSearchQuery,
-    hasSearchScope
+    hasSearchScope,
+    searchOnEmptyQuery
   });
   const showEmptyState = shouldShowIngredientEmptyState({
     hasResolvedQuery,
@@ -2622,7 +2654,8 @@ export const IngredientPicker = ({
     itemsCount: searchResult.items.length,
     refinementsCount: searchResult.refinements.length,
     query: effectiveSearchQuery,
-    hasSearchScope
+    hasSearchScope,
+    searchOnEmptyQuery
   });
   const showExpandControl = !isExpanded && (
     searchResult.hasMore
@@ -3025,6 +3058,7 @@ export const IngredientPicker = ({
               || Boolean(appliedQuickStartFamily)
               || appliedFavoritesOnly
               || appliedCustomOnly
+              || searchOnEmptyQuery
             )}
             onBlur={() => {
               if (blurTimeoutRef.current) {

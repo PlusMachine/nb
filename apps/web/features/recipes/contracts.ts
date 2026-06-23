@@ -225,6 +225,7 @@ export const recipeWaterPlanMetaSchema = z.object({
   mashWaterVolumeL: numberField().min(0, "Объём заторной воды не может быть меньше 0 л.").optional().nullable(),
   spargeWaterVolumeL: numberField().min(0, "Объём промывочной воды не может быть меньше 0 л.").optional().nullable(),
   totalWaterVolumeL: numberField().min(0, "Общий объём воды не может быть меньше 0 л.").optional().nullable(),
+  grainAbsorptionLPerKg: numberField().min(0, "Водопоглощение дробиной не может быть меньше 0 л/кг.").max(5, "Водопоглощение дробиной не может быть больше 5 л/кг.").optional().nullable(),
   allowedSalts: z.array(z.string()).optional().default([]),
   allowedAcids: z.array(z.string()).optional().default([]),
   manualSaltAdditions: z.array(z.object({
@@ -232,7 +233,7 @@ export const recipeWaterPlanMetaSchema = z.object({
     grams: numberField().min(0, "Количество соли не может быть меньше 0 г."),
     target: z.enum(recipeWaterManualSaltAdditionTargets).optional()
   })).optional().default([]),
-  targetMashPh: numberField().min(4, "Целевой pH затора не может быть ниже 4.").max(7, "Целевой pH затора не может быть выше 7.").optional().nullable(),
+  targetMashPh: numberField().min(4, "Целевой pH затора не может быть ниже 4.").max(7, "Целевой pH затора не может быть выше 7.").optional().nullable().default(null),
   spargeAcidificationEnabled: z.coerce.boolean().default(false),
   spargeSourcePh: numberField().min(0, "pH промывочной воды не может быть ниже 0.").max(14, "pH промывочной воды не может быть выше 14.").optional().nullable(),
   targetSpargePh: numberField().min(4, "Целевой pH промывочной воды не может быть ниже 4.").max(7, "Целевой pH промывочной воды не может быть выше 7.").optional().nullable(),
@@ -260,7 +261,7 @@ export const recipeWaterPlanMetaSchema = z.object({
   allowedSalts: [],
   allowedAcids: [],
   manualSaltAdditions: [],
-  targetMashPh: 5.35,
+  targetMashPh: null,
   spargeAcidificationEnabled: false,
   spargeSourcePh: null,
   targetSpargePh: 5.7,

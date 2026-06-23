@@ -5,6 +5,7 @@ import type {
   RecipeDetailDto,
   RecipeIngredientDto
 } from "@/features/recipes/contracts";
+import { calculateEquipmentVolumePlan } from "@/features/equipment-profiles/volume-plan";
 import {
   buildRecipeWaterPlanResult,
   recipeWaterAcidPresentation,
@@ -105,10 +106,34 @@ export function PublicRecipeWaterSection({ recipe }: { recipe: RecipeDetailDto }
     recipe.batchSizeNormalizedQuantity,
     recipe.batchSizeNormalizedUnit,
   );
+  const equipmentVolumePlan = recipe.equipmentProfileSnapshot
+    ? (() => {
+        const effectiveEquipmentProfile = {
+          ...recipe.equipmentProfileSnapshot,
+          targetBatchVolumeL:
+            batchVolumeL ?? recipe.equipmentProfileSnapshot.targetBatchVolumeL,
+          grainAbsorptionLPerKg:
+            waterPlanMeta.grainAbsorptionLPerKg ??
+            recipe.equipmentProfileSnapshot.grainAbsorptionLPerKg,
+        };
+
+        return {
+          ...calculateEquipmentVolumePlan(
+            effectiveEquipmentProfile,
+            grainKg,
+            recipe.boilTimeMinutes,
+          ),
+          grainAbsorptionLPerKg:
+            effectiveEquipmentProfile.grainAbsorptionLPerKg,
+        };
+      })()
+    : null;
 
   const waterPlanResult = buildRecipeWaterPlanResult({
     waterPlanMeta,
     fallbackBatchVolumeL: batchVolumeL,
+    boilTimeMinutes: recipe.boilTimeMinutes,
+    equipmentVolumePlan,
     grainKg,
     beerSrm: recipe.color ?? null,
     fermentables,
