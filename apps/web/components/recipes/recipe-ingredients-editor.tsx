@@ -52,28 +52,28 @@ const getRecipeIngredientSummaryTitle = (row: RecipeIngredientEditorRowValue) =>
 
 export function RecipeIngredientsEditor({ rows, onChange }: Props) {
   const [draftRow, setDraftRow] = useState<RecipeIngredientEditorRowValue>(() => createEmptyRow());
-  const [draftError, setDraftError] = useState<string | null>(null);
+  const [draftShowErrors, setDraftShowErrors] = useState(false);
   const [editingRowId, setEditingRowId] = useState<string | null>(null);
   const [editingRow, setEditingRow] = useState<RecipeIngredientEditorRowValue | null>(null);
-  const [editingError, setEditingError] = useState<string | null>(null);
+  const [editingShowErrors, setEditingShowErrors] = useState(false);
   const isDraftReady = !getRecipeIngredientValidationError(draftRow);
 
   const addDraftRow = () => {
     const error = getRecipeIngredientValidationError(draftRow);
     if (error) {
-      setDraftError(error);
+      setDraftShowErrors(true);
       return;
     }
 
     onChange([...rows, draftRow]);
     setDraftRow(createEmptyRow());
-    setDraftError(null);
+    setDraftShowErrors(false);
   };
 
   const startEditing = (row: RecipeIngredientEditorRowValue) => {
     setEditingRowId(row.localId);
     setEditingRow({ ...row });
-    setEditingError(null);
+    setEditingShowErrors(false);
   };
 
   const saveEditing = () => {
@@ -83,20 +83,20 @@ export function RecipeIngredientsEditor({ rows, onChange }: Props) {
 
     const error = getRecipeIngredientValidationError(editingRow);
     if (error) {
-      setEditingError(error);
+      setEditingShowErrors(true);
       return;
     }
 
     onChange(rows.map((row) => (row.localId === editingRow.localId ? editingRow : row)));
     setEditingRowId(null);
     setEditingRow(null);
-    setEditingError(null);
+    setEditingShowErrors(false);
   };
 
   const cancelEditing = () => {
     setEditingRowId(null);
     setEditingRow(null);
-    setEditingError(null);
+    setEditingShowErrors(false);
   };
 
   const removeRow = (localId: string) => {
@@ -117,34 +117,32 @@ export function RecipeIngredientsEditor({ rows, onChange }: Props) {
         value={draftRow}
         onChange={(next) => {
           setDraftRow(next);
-          setDraftError(null);
+          setDraftShowErrors(false);
         }}
         title="Новый ингредиент"
         description="1. Выберите категорию и нужную позицию из каталога. 2. Укажите количество. 3. Подтвердите добавление."
         disableAmountUntilSelected
+        showErrors={draftShowErrors}
         footer={(
-          <div className="flex flex-wrap items-start justify-between gap-2 border-t border-zinc-200 pt-3">
-            <div className="min-h-5 text-sm text-red-600">{draftError}</div>
-            <div className="flex flex-wrap gap-2">
-              <button
-                type="button"
-                onClick={() => {
-                  setDraftRow(createEmptyRow());
-                  setDraftError(null);
-                }}
-                className="rounded-md border border-zinc-300 bg-white px-3 py-2 text-sm"
-              >
-                Очистить
-              </button>
-              <button
-                type="button"
-                onClick={addDraftRow}
-                disabled={!isDraftReady}
-                className="rounded-md bg-zinc-900 px-3 py-2 text-sm font-medium text-white disabled:cursor-not-allowed disabled:opacity-50"
-              >
-                Добавить в рецепт
-              </button>
-            </div>
+          <div className="flex flex-wrap justify-end gap-2 border-t border-zinc-200 pt-3">
+            <button
+              type="button"
+              onClick={() => {
+                setDraftRow(createEmptyRow());
+                setDraftShowErrors(false);
+              }}
+              className="rounded-md border border-zinc-300 bg-white px-3 py-2 text-sm"
+            >
+              Очистить
+            </button>
+            <button
+              type="button"
+              onClick={addDraftRow}
+              disabled={!isDraftReady}
+              className="rounded-md bg-zinc-900 px-3 py-2 text-sm font-medium text-white disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              Добавить в рецепт
+            </button>
           </div>
         )}
       />
@@ -166,21 +164,21 @@ export function RecipeIngredientsEditor({ rows, onChange }: Props) {
                 value={editingRow}
                 onChange={(next) => {
                   setEditingRow(next);
-                  setEditingError(null);
+                  setEditingShowErrors(false);
                 }}
                 title={`Редактирование: ${getRecipeIngredientSummaryTitle(editingRow)}`}
                 description="Изменения попадут в рецепт после сохранения этой строки."
+                showErrors={editingShowErrors}
                 footer={(
-                  <div className="flex flex-wrap items-start justify-between gap-2 border-t border-zinc-200 pt-3">
-                    <div className="min-h-5 text-sm text-red-600">{editingError}</div>
+                  <div className="flex flex-wrap justify-between gap-2 border-t border-zinc-200 pt-3">
+                    <button
+                      type="button"
+                      onClick={() => removeRow(row.localId)}
+                      className="rounded-md border border-red-300 bg-white px-3 py-2 text-sm text-red-700"
+                    >
+                      Удалить
+                    </button>
                     <div className="flex flex-wrap gap-2">
-                      <button
-                        type="button"
-                        onClick={() => removeRow(row.localId)}
-                        className="rounded-md border border-red-300 bg-white px-3 py-2 text-sm text-red-700"
-                      >
-                        Удалить
-                      </button>
                       <button
                         type="button"
                         onClick={cancelEditing}

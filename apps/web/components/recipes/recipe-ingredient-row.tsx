@@ -185,7 +185,10 @@ type Props = {
   description?: string;
   footer?: React.ReactNode;
   disableAmountUntilSelected?: boolean;
+  showErrors?: boolean;
 };
+
+const fieldErrorClass = "border-red-300";
 
 export function RecipeIngredientRow({
   value,
@@ -193,13 +196,27 @@ export function RecipeIngredientRow({
   title,
   description,
   footer,
-  disableAmountUntilSelected = false
+  disableAmountUntilSelected = false,
+  showErrors = false
 }: Props) {
   const allowedUnits = resolveRecipeIngredientUnitProfile(value).allowedUnits;
   const hasSelectedIngredient = hasRecipeIngredientSelection(value);
   const amountFieldsDisabled = disableAmountUntilSelected && !hasSelectedIngredient;
   const quantityUnit = parseInventoryUnit(value.amountEnteredUnit) ?? parseInventoryUnit(allowedUnits[0] ?? "") ?? "g";
   const quantityStep = getInventoryUnitInputStep(quantityUnit);
+
+  const ingredientError = showErrors && !hasSelectedIngredient
+    ? "Выберите ингредиент из подсказок"
+    : null;
+
+  const quantity = Number(value.amountEnteredQuantity);
+  const amountError = showErrors && hasSelectedIngredient
+    ? (!value.amountEnteredQuantity.trim()
+        ? "Укажите количество"
+        : (!Number.isFinite(quantity) || quantity <= 0)
+          ? "Количество должно быть больше нуля"
+          : null)
+    : null;
 
   return (
     <article className="space-y-3 rounded-lg border border-zinc-200 bg-zinc-50 p-3" data-testid="recipe-ingredient-row">
@@ -234,7 +251,9 @@ export function RecipeIngredientRow({
           placeholder="Найти ингредиент"
           emptyCta={<p className="text-xs text-zinc-500">Ничего не найдено. Уточните запрос.</p>}
         />
-        {hasSelectedIngredient ? (
+        {ingredientError ? (
+          <p className="text-xs text-red-500">{ingredientError}</p>
+        ) : hasSelectedIngredient ? (
           <p className="text-xs text-zinc-600">
             Ингредиент выбран.
             {value.selectedSecondaryName ? ` ${value.selectedSecondaryName}.` : ""}
@@ -256,9 +275,10 @@ export function RecipeIngredientRow({
             disabled={amountFieldsDisabled}
             value={value.amountEnteredQuantity}
             onChange={(event) => onChange({ ...value, amountEnteredQuantity: event.target.value })}
-            className="h-10 w-full rounded-md border border-zinc-200 bg-white px-3 text-sm disabled:cursor-not-allowed disabled:bg-zinc-100 disabled:text-zinc-500"
+            className={`h-10 w-full rounded-md border bg-white px-3 text-sm disabled:cursor-not-allowed disabled:bg-zinc-100 disabled:text-zinc-500 ${amountError ? fieldErrorClass : "border-zinc-200"}`}
             placeholder={amountFieldsDisabled ? "Сначала выберите ингредиент" : undefined}
           />
+          {amountError ? <p className="text-xs text-red-500">{amountError}</p> : null}
         </div>
         <div className="space-y-1">
           <label className="text-xs font-medium text-zinc-700">Ед.</label>

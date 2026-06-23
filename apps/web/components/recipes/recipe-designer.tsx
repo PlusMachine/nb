@@ -1693,16 +1693,18 @@ const getIngredientDraftFieldError = (ingredient: DesignerIngredient) => {
 
   const hopUseType = ingredient.category === "hop" ? getHopUseType(ingredient) : null;
   const use = typeof ingredient.stepMeta.use === "string" ? ingredient.stepMeta.use : null;
+  // Для хмеля в котёл / вирпул / dip hop время задаёт горечь, поэтому оно обязательно:
+  // иначе расчёт молча подставит дефолт (время кипения рецепта или 0).
+  const hopTimeRequired = hopUseType === "boil" || hopUseType === "whirlpool" || hopUseType === "dip_hop";
   if (
     (ingredient.category === "fermentable" && use === "boil")
-    || hopUseType === "boil"
-    || hopUseType === "whirlpool"
-    || hopUseType === "dip_hop"
+    || hopTimeRequired
     || ingredient.category === "water_treatment"
     || ingredient.category === "consumable"
   ) {
     const timeError = validateNumericInput(String(ingredient.stepMeta.timeMinutes ?? ""), {
       label: "Время",
+      required: hopTimeRequired,
       min: 0,
       max: 600,
       integer: true
@@ -3950,8 +3952,7 @@ function IngredientEditor({
   onCancel,
   onDelete,
   saveLabel,
-  fieldError,
-  saveDisabled = false
+  fieldError
 }: {
   draft: DesignerIngredient;
   isExisting: boolean;
@@ -3961,13 +3962,15 @@ function IngredientEditor({
   onDelete?: () => void;
   saveLabel: string;
   fieldError?: string | null;
-  saveDisabled?: boolean;
 }) {
   const [pendingCustom, setPendingCustom] = useState(false);
   const [customMessage, setCustomMessage] = useState<string | null>(null);
   const [customFieldErrors, setCustomFieldErrors] = useState<Record<string, string> | undefined>(undefined);
   const [customDisplayName, setCustomDisplayName] = useState(draft.selectedName);
   const [showStockSearch, setShowStockSearch] = useState(false);
+  // Подсказки о незаполненных полях показываем только после попытки сохранить,
+  // чтобы свежеоткрытая форма не выглядела «сломанной» и красной.
+  const [validationRevealed, setValidationRevealed] = useState(false);
   const [fermentableScope, setFermentableScope] = useState<RecipeFermentablePickerScope | null>(() => (
     resolveRecipeFermentablePickerScopeFromIngredient(draft)
   ));
@@ -3976,6 +3979,56 @@ function IngredientEditor({
   const isWaterTreatmentAddFlow = !isExisting && draft.category === "water_treatment";
   const hopUseType = getHopUseType(draft);
   const quantityStep = getInventoryUnitInputStep(draft.amountEnteredUnit);
+  const hasIngredientSelection = Boolean(
+    draft.ingredientCatalogItemId || draft.userCustomIngredientId || isImportedDesignerIngredient(draft)
+  );
+  const quantityNum = Number(draft.amountEnteredQuantity);
+  const quantityFieldInvalid = hasIngredientSelection && (
+    !draft.amountEnteredQuantity.trim() || !Number.isFinite(quantityNum) || quantityNum <= 0
+  );
+  // Обязательные числовые поля, зависящие от типа добавления. Используем ту же
+  // проверку, что и блокировка сохранения, — чтобы подсветка и логика не расходились.
+  const hopTimeRequired = isHop && (hopUseType === "boil" || hopUseType === "whirlpool" || hopUseType === "dip_hop");
+  const hopTimeRaw = String(draft.stepMeta.timeMinutes ?? "");
+  const hopTimeError = hopTimeRequired
+    ? validateNumericInput(hopTimeRaw, { label: "Время", required: true, min: 0, max: 600, integer: true })
+    : null;
+  const hopDurationRequired = isHop && hopUseType === "dry_hop";
+  const hopDurationRaw = String(draft.stepMeta.durationDays ?? "");
+  const hopDurationError = hopDurationRequired
+    ? validateNumericInput(hopDurationRaw, { label: "Длительность", min: 0, max: 365, integer: true, exclusiveMin: true })
+    : null;
+
+  // Что подсветить после попытки сохранить. По одному сигналу за раз, сверху вниз.
+  const showIngredientHint = validationRevealed && !hasIngredientSelection;
+  const showQuantityHint = validationRevealed && quantityFieldInvalid;
+  const showHopTimeHint = validationRevealed && Boolean(hopTimeError);
+  const showHopDurationHint = validationRevealed && Boolean(hopDurationError);
+  // Нижняя строка — только для ошибок, не привязанных к подсвеченным полям выше
+  // (например, выход температуры за диапазон), иначе сообщение задвоится.
+  const showOtherError = validationRevealed
+    && Boolean(fieldError)
+    && !showIngredientHint
+    && !showQuantityHint
+    && !showHopTimeHint
+    && !showHopDurationHint;
+
+  // Обязательное и ещё пустое поле спокойно подсвечиваем рамкой, без красного.
+  const requiredBorderClass = (invalid: boolean, awaiting: boolean) =>
+    invalid ? "border-red-300" : awaiting ? "border-zinc-400" : "border-zinc-200";
+  const quantityAwaitingInput = hasIngredientSelection && !draft.amountEnteredQuantity.trim();
+  const quantityBorderClass = requiredBorderClass(showQuantityHint, quantityAwaitingInput);
+  const hopTimeBorderClass = requiredBorderClass(showHopTimeHint, hopTimeRequired && !hopTimeRaw.trim());
+  const hopDurationBorderClass = requiredBorderClass(showHopDurationHint, hopDurationRequired && !hopDurationRaw.trim());
+
+  const quantityInputRef = useRef<HTMLInputElement>(null);
+  // Как только ингредиент выбран — ставим курсор на количество (следующий обязательный шаг).
+  useEffect(() => {
+    if (hasIngredientSelection && !draft.amountEnteredQuantity.trim()) {
+      quantityInputRef.current?.focus();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [hasIngredientSelection]);
   const sourceMode = resolveRecipeIngredientEditorSourceMode(draft.inventoryIntentMode);
   const isWaterTreatmentCatalogMode = draft.category === "water_treatment" && sourceMode === "catalog";
   const fermentableScopeContext = resolveRecipeFermentablePickerScopeContext(fermentableScope);
@@ -4370,34 +4423,42 @@ function IngredientEditor({
               />
             </>
           )}
+          {showIngredientHint ? (
+            <p className="text-xs text-red-500">Выберите ингредиент из списка, чтобы продолжить.</p>
+          ) : null}
         </div>
 
         {showRecipeFields ? (
           <>
-            <div className="grid gap-3 sm:grid-cols-[1fr_160px]">
-              <label className="space-y-1 text-xs font-medium text-zinc-700">
-                Количество
+            <div className="grid items-start gap-3 sm:grid-cols-[1fr_160px]">
+              <div className="space-y-1">
+                <label className="block text-xs font-medium text-zinc-700">Количество</label>
                 <input
+                  ref={quantityInputRef}
                   type="number"
                   min={quantityStep}
                   step={quantityStep}
                   value={draft.amountEnteredQuantity}
                   onChange={(event) => onChange({ ...draft, amountEnteredQuantity: event.target.value })}
-                  className="h-10 w-full rounded-md border border-zinc-200 bg-white px-3 text-sm text-zinc-900"
+                  aria-invalid={showQuantityHint || undefined}
+                  className={`h-10 w-full rounded-md border bg-white px-3 text-sm text-zinc-900 transition-colors focus:outline-none focus:ring-2 focus:ring-zinc-900/10 ${quantityBorderClass}`}
                 />
-              </label>
-              <label className="space-y-1 text-xs font-medium text-zinc-700">
-                Ед. изм.
+                {showQuantityHint ? (
+                  <p className="text-xs text-red-500">Укажите количество больше нуля.</p>
+                ) : null}
+              </div>
+              <div className="space-y-1">
+                <label className="block text-xs font-medium text-zinc-700">Ед. изм.</label>
                 <select
                   value={draft.amountEnteredUnit}
                   onChange={(event) => onChange({ ...draft, amountEnteredUnit: event.target.value as InventoryUnit })}
-                  className="h-10 w-full rounded-md border border-zinc-200 bg-white px-3 text-sm text-zinc-900"
+                  className="h-10 w-full rounded-md border border-zinc-200 bg-white px-3 text-sm text-zinc-900 focus:outline-none focus:ring-2 focus:ring-zinc-900/10"
                 >
                   {draft.allowedUnits.map((unit) => (
                     <option key={unit} value={unit}>{inventoryUnitLabels[unit] ?? unit}</option>
                   ))}
                 </select>
-              </label>
+              </div>
             </div>
 
             {draft.category === "fermentable" ? (
@@ -4480,8 +4541,14 @@ function IngredientEditor({
                           timeMinutes: event.target.value
                         }
                       })}
-                      className="h-10 w-full rounded-md border border-zinc-200 bg-white px-3 text-sm text-zinc-900"
+                      aria-invalid={showHopTimeHint || undefined}
+                      className={`h-10 w-full rounded-md border bg-white px-3 text-sm text-zinc-900 transition-colors focus:outline-none focus:ring-2 focus:ring-zinc-900/10 ${hopTimeBorderClass}`}
                     />
+                    {showHopTimeHint ? (
+                      <p className="text-xs font-normal text-red-500">{hopTimeError}</p>
+                    ) : (
+                      <p className="text-xs font-normal text-zinc-500">Время задаёт горечь (IBU).</p>
+                    )}
                   </label>
                 ) : hopUseType === "dry_hop" ? (
                   <label className="space-y-1 text-xs font-medium text-zinc-700">
@@ -4499,8 +4566,12 @@ function IngredientEditor({
                           durationDays: event.target.value
                         }
                       })}
-                      className="h-10 w-full rounded-md border border-zinc-200 bg-white px-3 text-sm text-zinc-900"
+                      aria-invalid={showHopDurationHint || undefined}
+                      className={`h-10 w-full rounded-md border bg-white px-3 text-sm text-zinc-900 transition-colors focus:outline-none focus:ring-2 focus:ring-zinc-900/10 ${hopDurationBorderClass}`}
                     />
+                    {showHopDurationHint ? (
+                      <p className="text-xs font-normal text-red-500">{hopDurationError}</p>
+                    ) : null}
                   </label>
                 ) : (
                   <label className="space-y-1 text-xs font-medium text-zinc-700">
@@ -4536,8 +4607,10 @@ function IngredientEditor({
                           temperatureC: event.target.value
                         }
                       })}
-                      className="h-10 w-full rounded-md border border-zinc-200 bg-white px-3 text-sm text-zinc-900"
+                      placeholder="85"
+                      className="h-10 w-full rounded-md border border-zinc-200 bg-white px-3 text-sm text-zinc-900 focus:outline-none focus:ring-2 focus:ring-zinc-900/10"
                     />
+                    <p className="text-xs font-normal text-zinc-500">Если пусто — берётся 85&nbsp;°C.</p>
                   </label>
                 ) : null}
               </div>
@@ -4655,11 +4728,11 @@ function IngredientEditor({
           </>
         ) : null}
 
-        {fieldError ? (
-          <div className="flex items-center gap-2 rounded-lg bg-rose-50 px-3 py-2 text-sm text-rose-700 ring-1 ring-inset ring-rose-200">
-            <CircleAlert className="h-4 w-4 shrink-0" />
+        {showOtherError ? (
+          <p className="flex items-center gap-1.5 text-xs text-red-500">
+            <CircleAlert className="h-3.5 w-3.5 shrink-0" />
             <span>{fieldError}</span>
-          </div>
+          </p>
         ) : null}
       </div>
 
@@ -4687,9 +4760,11 @@ function IngredientEditor({
           {showRecipeFields ? (
             <button
               type="button"
-              onClick={onSave}
-              disabled={saveDisabled}
-              className="inline-flex h-10 items-center rounded-lg bg-zinc-900 px-4 text-sm font-medium text-white shadow-sm transition-colors hover:bg-zinc-800 disabled:cursor-not-allowed disabled:opacity-50"
+              onClick={() => {
+                setValidationRevealed(true);
+                onSave();
+              }}
+              className="inline-flex h-10 items-center rounded-lg bg-zinc-900 px-4 text-sm font-medium text-white shadow-sm transition-colors hover:bg-zinc-800"
             >
               {saveLabel}
             </button>
@@ -5449,15 +5524,6 @@ export function RecipeDesigner({
     ];
 
   const editorFieldError = openEditor ? getIngredientDraftFieldError(openEditor.draft) : null;
-  const editorCanSave = openEditor ? (
-    !editorFieldError
-    && (
-      openEditor.localId
-      ? true
-      : openEditor.category !== "water_treatment"
-      || resolveRecipeWaterManualSaltAdditionFromIngredient(openEditor.draft) !== null
-    )
-  ) : false;
   const editorPanel = openEditor ? (
     <IngredientEditor
       draft={openEditor.draft}
@@ -5468,7 +5534,6 @@ export function RecipeDesigner({
       onDelete={openEditor.localId ? () => deleteIngredient(openEditor.localId!) : undefined}
       saveLabel={openEditor.localId ? "Сохранить позицию" : openEditor.category === "water_treatment" ? "Добавить соль" : "Добавить позицию"}
       fieldError={editorFieldError}
-      saveDisabled={!editorCanSave}
     />
   ) : null;
 
