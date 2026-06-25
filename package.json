@@ -21,7 +21,8 @@
     "db:reset": "npm run db:reset -w @nb/db",
     "seed:dev-user": "npm run seed:dev-user -w @nb/db --",
     "set-role": "npm run set-role -w @nb/db --",
-    "seed:qa": "npm run seed:qa -w @nb/db"
+    "seed:qa": "npm run seed:qa -w @nb/db",
+    "seed:sample": "npm run seed:sample -w @nb/web --"
   },
   "devDependencies": {
     "@types/node": "^22.10.2",

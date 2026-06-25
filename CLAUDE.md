@@ -46,6 +46,7 @@ CLI-only утилиты (нет UI-кнопок и публичных эндпо
 - `npm run seed:dev-user -- --email <e> --display-name <n> --role <r> --verified true`
 - `npm run set-role -- --email <e> --role <user|editor|moderator|admin>`
 - `npm run seed:qa` — QA-юзеры (admin/moderator/editor/user) + каталог + инвентарь
+- `npm run seed:sample [-- --email <e>]` — наполняет аккаунт (по умолчанию `DEV_AUTH_EMAIL`) тестовыми данными: склад + 2 профиля оборудования + 6 рецептов разных стилей/статусов. Идемпотентно (метит данные `seedSource="sample-data"`). Скрипт: `apps/web/scripts/seed-sample-data.ts`
 
 Авторизация: кастомный `@nb/auth`, HTTP-only cookie `nb_session`. Гейты в `apps/web/lib/auth.ts` (`getSessionUser`, `requireUser`, `requireRole`) и `features/content/permissions.ts`.
 

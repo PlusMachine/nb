@@ -5,6 +5,7 @@ import type { RecipeDetailDto } from "@/features/recipes/contracts";
 
 import { PublicRecipeHeader } from "./public-recipe-header";
 import { RecipeRatingForm } from "./recipe-rating-form";
+import { RecipeMatchPanel } from "./recipe-match-panel";
 import { PublicRecipeWaterSection } from "./public-recipe-water-section";
 import { RecipeIngredientsSection } from "./recipe-ingredients-section";
 import { RecipeMetaSection } from "./recipe-meta-section";
@@ -52,6 +53,8 @@ export function PublicRecipePage({ recipe }: { recipe: RecipeDetailDto }) {
       <PublicRecipeHeader recipe={recipe} />
       <PublicRecipeHero heroImageId={recipe.heroImageId} title={recipe.title} />
       <RecipeStatsSummary recipe={recipe} />
+      {/* Персональный матчинг со складом тянется клиентом после гидрации → документ кэшируем. */}
+      <RecipeMatchPanel recipeId={recipe.id} />
       <RecipeRatingSection recipe={recipe} />
       <RecipeIngredientsSection ingredients={recipe.ingredients} />
       <PublicRecipeWaterSection recipe={recipe} />

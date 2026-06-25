@@ -669,3 +669,50 @@ export type RecipeStockCoverageDto = {
     shortLines: number;
   };
 };
+
+// Discovery-матчинг «склад ↔ рецепт» (Stage 6). Read-only, работает для любого
+// просматриваемого рецепта (свой или published), независимо от allocation-движка
+// автора. Семейный/сортовой матчинг считается на лету (см. match-service.ts).
+export type RecipeMatchLineStatus = "covered" | "substitute" | "partial" | "missing";
+
+export type RecipeMatchLineDto = {
+  recipeIngredientId: string;
+  persistentKey: string;
+  displayOrder: number;
+  ingredientDisplayName: string | null;
+  category: IngredientCategory | null;
+  status: RecipeMatchLineStatus;
+  coveragePercent: number;
+  requiredQuantityNormalized: number;
+  availableQuantityNormalized: number;
+  shortfallNormalized: number;
+  normalizedUnit: InventoryUnit | null;
+  viaSubstitute: boolean;
+};
+
+export type RecipeMatchLabel = "ready" | "almost" | "partial" | "none";
+
+export type RecipeMatchDto = {
+  recipeId: string;
+  matchPercent: number;
+  label: RecipeMatchLabel;
+  totalLines: number;
+  coveredLines: number;
+  missingCount: number;
+  lines: RecipeMatchLineDto[];
+  targetBatchVolumeL: number;
+  recipeBatchVolumeL: number;
+  scaledToInventory: boolean;
+};
+
+// Элемент списка «рецепты под ваш склад» (обратный матчинг от инвентаря).
+export type BrewableRecipeDto = {
+  recipeId: string;
+  slug: string;
+  title: string;
+  matchPercent: number;
+  label: RecipeMatchLabel;
+  totalLines: number;
+  coveredLines: number;
+  missingCount: number;
+};

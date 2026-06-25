@@ -31,6 +31,9 @@ vi.mock("../features/inventory/service", () => ({
 vi.mock("../features/system/currency-rates", () => ({
   listSystemCurrencyRates: vi.fn(async () => ({ RUB: 100, USD: 7900, EUR: 9170 }))
 }));
+vi.mock("../features/recipes/match-service", () => ({
+  findBrewableRecipesForUser: vi.fn(async () => [])
+}));
 vi.mock("../features/ingredients/catalog-service", () => ({
   getIngredientPickerQuickStartByContext: vi.fn(async () => null),
   getIngredientSuggestionByRef: vi.fn(async () => null)

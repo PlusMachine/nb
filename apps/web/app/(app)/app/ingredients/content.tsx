@@ -4,6 +4,7 @@ import { GroupedInventoryList } from "@/components/inventory/grouped-inventory-l
 import { InventoryEmptyState } from "@/components/inventory/inventory-empty-state";
 import { AddIngredientTrigger } from "@/components/inventory/add-ingredient-trigger";
 import { InventoryToolbar } from "@/components/inventory/inventory-toolbar";
+import { BrewableRecipesSection } from "@/components/recipes/brewable-recipes-section";
 import {
   buildInventoryToolbarHref,
   defaultInventorySortOption,
@@ -27,6 +28,7 @@ import {
   getIngredientSuggestionByRef
 } from "@/features/ingredients/catalog-service";
 import { listSystemCurrencyRates } from "@/features/system/currency-rates";
+import { findBrewableRecipesForUser } from "@/features/recipes/match-service";
 import { requireUser } from "@/lib/auth";
 
 type Props = {
@@ -129,6 +131,12 @@ export async function MyIngredientsContent({ searchParams }: Props = {}) {
   }
 
   const hasAnyItems = summary.totalItems > 0;
+  // Обратный матчинг «склад → рецепты» считаем только при наличии запасов,
+  // чтобы не гонять тяжёлый запрос на пустом складе. Вторичная секция — при сбое
+  // деградируем тихо, не роняя страницу склада.
+  const brewableRecipes = summary.inStockItems > 0
+    ? await findBrewableRecipesForUser({ userId: user.id, limit: 6 }).catch(() => [])
+    : [];
   const hasFilters = hasActiveInventoryFilters({
     search: rawSearch,
     category: category ?? "all",
@@ -192,6 +200,8 @@ export async function MyIngredientsContent({ searchParams }: Props = {}) {
             currencyRates={currencyRates}
           />
         )}
+
+      <BrewableRecipesSection recipes={brewableRecipes} />
     </main>
   );
 }
