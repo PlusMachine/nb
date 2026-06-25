@@ -28,6 +28,7 @@ type Props = {
   category: IngredientCategory | "all";
   subtype: "malt" | "fermentable" | null;
   sort: IngredientCatalogSortOption;
+  canManage: boolean;
   counts: {
     total: number;
     customCount: number;
@@ -147,7 +148,7 @@ const buildCreateCustomIngredientHref = (
   }
 
   const query = searchParams.toString();
-  return query ? `/app/catalog/new?${query}` : "/app/catalog/new";
+  return query ? `/catalog/new?${query}` : "/catalog/new";
 };
 
 export function IngredientCatalogToolbar({
@@ -156,6 +157,7 @@ export function IngredientCatalogToolbar({
   category,
   subtype,
   sort,
+  canManage,
   counts
 }: Props) {
   const pathname = usePathname();
@@ -317,26 +319,32 @@ export function IngredientCatalogToolbar({
                 {counts.total}
               </span>
             </Link>
-            <Link href={buildCatalogHref(pathname, { view: "mine", q: searchValue, category, subtype, sort })} className={tabClassName(view === "mine")}>
-              Пользовательские ингредиенты
-              <span className={`rounded-full px-2 py-0.5 text-[11px] ${view === "mine" ? "bg-white/15 text-white" : "bg-amber-50 text-amber-700 ring-1 ring-amber-200"}`}>
-                {counts.customCount}
-              </span>
-            </Link>
+            {canManage ? (
+              <Link href={buildCatalogHref(pathname, { view: "mine", q: searchValue, category, subtype, sort })} className={tabClassName(view === "mine")}>
+                Пользовательские ингредиенты
+                <span className={`rounded-full px-2 py-0.5 text-[11px] ${view === "mine" ? "bg-white/15 text-white" : "bg-amber-50 text-amber-700 ring-1 ring-amber-200"}`}>
+                  {counts.customCount}
+                </span>
+              </Link>
+            ) : null}
           </div>
           <p className="text-sm text-zinc-500">
-            {view === "mine"
-              ? "Пользовательские ингредиенты видны только вам и участвуют в pickers по всему приложению."
-              : `Системный каталог: ${counts.catalogCount}. Пользовательские: ${counts.customCount}.`}
+            {!canManage
+              ? `Системный каталог: ${counts.catalogCount} ингредиентов.`
+              : view === "mine"
+                ? "Пользовательские ингредиенты видны только вам и участвуют в pickers по всему приложению."
+                : `Системный каталог: ${counts.catalogCount}. Пользовательские: ${counts.customCount}.`}
           </p>
         </div>
 
-        <Link
-          href={buildCreateCustomIngredientHref({ category, subtype })}
-          className="inline-flex h-11 items-center justify-center rounded-xl bg-zinc-950 px-5 text-sm font-medium text-white"
-        >
-          Создать свой ингредиент
-        </Link>
+        {canManage ? (
+          <Link
+            href={buildCreateCustomIngredientHref({ category, subtype })}
+            className="inline-flex h-11 items-center justify-center rounded-xl bg-zinc-950 px-5 text-sm font-medium text-white"
+          >
+            Создать свой ингредиент
+          </Link>
+        ) : null}
       </div>
 
       <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 xl:grid-cols-7">

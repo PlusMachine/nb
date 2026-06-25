@@ -119,6 +119,7 @@ const buildRecipeDetail = (overrides: Partial<RecipeDetailDto> = {}): RecipeDeta
   processMeta: defaultRecipeProcessMeta,
   calculationMeta: null,
   heroImageId: null,
+  rating: null,
   ingredients: [],
   versions: [],
   ...overrides

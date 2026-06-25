@@ -1,7 +1,7 @@
 import React from "react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import { defaultRecipeProcessMeta, type RecipeDetailDto, type RecipeListItemDto } from "../features/recipes/contracts";
+import { defaultRecipeProcessMeta, type RecipeDetailDto } from "../features/recipes/contracts";
 
 const publicRecipe: RecipeDetailDto = {
   id: "r-public",
@@ -28,6 +28,7 @@ const publicRecipe: RecipeDetailDto = {
   authorNotes: "Public notes",
   processMeta: defaultRecipeProcessMeta,
   heroImageId: null,
+  rating: null,
   versions: [{ id: "r-1", versionNumber: 1, updatedAt: new Date("2026-01-02T00:00:00.000Z") }],
   createdAt: new Date("2026-01-01T00:00:00.000Z"),
   updatedAt: new Date("2026-01-02T00:00:00.000Z"),
@@ -53,36 +54,11 @@ const publicRecipe: RecipeDetailDto = {
   ]
 };
 
-const publicList: RecipeListItemDto[] = [
-  {
-    id: "r-public",
-    authorId: "u-1",
-    recipeFamilyId: "rf-1",
-    versionNumber: 1,
-    versionCount: 1,
-    publicationState: "published",
-    title: "Public IPA",
-    slug: "public-ipa",
-    styleId: null,
-    batchSizeEnteredQuantity: 20,
-    batchSizeEnteredUnit: "l",
-    batchSizeNormalizedQuantity: 20000,
-    batchSizeNormalizedUnit: "ml",
-    efficiency: 75,
-    boilTimeMinutes: 60,
-    og: 1.06,
-    fg: 1.012,
-    abv: 6.2,
-    ibu: 45,
-    color: 9.5,
-    createdAt: new Date("2026-01-01T00:00:00.000Z"),
-    updatedAt: new Date("2026-01-02T00:00:00.000Z")
-  }
-];
-
+// Детальный документ НЕ читает сессию/cookie (персональная оценка тянется клиентом
+// после гидрации) → нет мока `lib/auth`: если бы роут читал cookie, рендер упал бы
+// «cookies outside request scope». Успешный рендер здесь и есть guard кэшируемости.
 const mocks = vi.hoisted(() => ({
   getPublicRecipeBySlug: vi.fn(async () => publicRecipe),
-  listPublicRecipes: vi.fn(async () => publicList),
   notFound: vi.fn(() => {
     throw new Error("NEXT_NOT_FOUND");
   }),
@@ -92,18 +68,15 @@ const mocks = vi.hoisted(() => ({
 }));
 
 vi.mock("../features/recipes/service", () => ({
-  getPublicRecipeBySlug: mocks.getPublicRecipeBySlug,
-  listPublicRecipes: mocks.listPublicRecipes
+  getPublicRecipeBySlug: mocks.getPublicRecipeBySlug
 }));
 vi.mock("next/navigation", () => ({ notFound: mocks.notFound, redirect: mocks.redirect }));
 
 describe("public recipe pages wiring", () => {
   beforeEach(() => {
     mocks.getPublicRecipeBySlug.mockReset();
-    mocks.listPublicRecipes.mockReset();
 
     mocks.getPublicRecipeBySlug.mockResolvedValue(publicRecipe);
-    mocks.listPublicRecipes.mockResolvedValue(publicList);
 
     mocks.notFound.mockClear();
     mocks.redirect.mockClear();
@@ -134,14 +107,5 @@ describe("public recipe pages wiring", () => {
     expect(mocks.getPublicRecipeBySlug).toHaveBeenCalledWith("public-ipa");
     expect(metadata.title).toContain("Public IPA");
     expect(metadata.description).toContain("Public desc");
-  });
-
-
-  it("public listing page uses listPublicRecipes accessor", async () => {
-    const { default: PublicRecipesPage } = await import("../app/(public)/recipes/page");
-    const view = await PublicRecipesPage();
-
-    expect(mocks.listPublicRecipes).toHaveBeenCalledWith();
-    expect(view).toBeTruthy();
   });
 });

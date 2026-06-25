@@ -11,12 +11,13 @@ import {
   IngredientsPageSkeleton,
   RecipesPageSkeleton
 } from "@/components/app/section-skeletons";
+import { SiteHeader, type SiteHeaderUser } from "@/components/shared/site-header";
 
 import { AppShellNavigation } from "./app-shell-navigation";
 
 type AppShellProps = {
   children: React.ReactNode;
-  email: string;
+  user: SiteHeaderUser;
 };
 
 const pendingDisplayDelayMs = 140;
@@ -53,7 +54,7 @@ const resolvePendingSkeleton = (pathname: string) => {
     return <IngredientsPageSkeleton />;
   }
 
-  if (pathname.startsWith("/app/catalog")) {
+  if (pathname.startsWith("/catalog")) {
     return <CatalogPageSkeleton />;
   }
 
@@ -86,7 +87,7 @@ const getInternalHrefInfo = (href: string, currentPathname: string, currentSearc
   };
 };
 
-export function AppShell({ children, email }: AppShellProps) {
+export function AppShell({ children, user }: AppShellProps) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const searchParamsKey = searchParams.toString();
@@ -184,24 +185,27 @@ export function AppShell({ children, email }: AppShellProps) {
   }, [pathname, searchParamsKey]);
 
   return (
-    <div className="mx-auto max-w-6xl p-6">
-      {showProgress ? (
-        <>
-          <div className="fixed inset-x-0 top-0 z-[200] h-1 bg-zinc-200" aria-hidden="true">
-            <div className="h-full w-1/3 animate-route-progress bg-zinc-950" />
-          </div>
-          <div
-            className="fixed right-4 top-4 z-[201] inline-flex items-center gap-2 rounded-full border border-zinc-200 bg-white px-3 py-2 text-xs font-medium text-zinc-700 shadow-lg"
-            role="status"
-            aria-live="polite"
-          >
-            <Loader2 className="h-3.5 w-3.5 animate-spin" />
-            Загрузка
-          </div>
-        </>
-      ) : null}
-      <AppShellNavigation email={email} onNavigateStart={beginPendingNavigation} />
-      {pendingPathname && pendingPathname !== pathname ? resolvePendingSkeleton(pendingPathname) : children}
-    </div>
+    <>
+      <SiteHeader user={user} variant="app" />
+      <div className="mx-auto max-w-6xl p-6">
+        {showProgress ? (
+          <>
+            <div className="fixed inset-x-0 top-0 z-[200] h-1 bg-zinc-200" aria-hidden="true">
+              <div className="h-full w-1/3 animate-route-progress bg-zinc-950" />
+            </div>
+            <div
+              className="fixed right-4 top-4 z-[201] inline-flex items-center gap-2 rounded-full border border-zinc-200 bg-white px-3 py-2 text-xs font-medium text-zinc-700 shadow-lg"
+              role="status"
+              aria-live="polite"
+            >
+              <Loader2 className="h-3.5 w-3.5 animate-spin" />
+              Загрузка
+            </div>
+          </>
+        ) : null}
+        <AppShellNavigation onNavigateStart={beginPendingNavigation} />
+        {pendingPathname && pendingPathname !== pathname ? resolvePendingSkeleton(pendingPathname) : children}
+      </div>
+    </>
   );
 }

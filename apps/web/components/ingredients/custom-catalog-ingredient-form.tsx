@@ -10,7 +10,7 @@ import {
   Wheat
 } from "lucide-react";
 
-import type { CatalogCustomIngredientActionResult } from "@/app/(app)/app/catalog/actions";
+import type { CatalogCustomIngredientActionResult } from "@/app/(public)/catalog/actions";
 import type {
   IngredientCategory,
   IngredientDisplayMode
@@ -853,7 +853,7 @@ export function CustomCatalogIngredientForm({
                   const nextResult = await onDelete();
                   setResult(nextResult);
                   if (nextResult.ok) {
-                    router.push("/app/catalog?view=mine");
+                    router.push("/catalog?view=mine");
                     router.refresh();
                   }
                 });
@@ -916,7 +916,7 @@ export function CustomCatalogIngredientForm({
               });
               setResult(nextResult);
               if (nextResult.ok && nextResult.ingredientId) {
-                router.push(`/app/catalog/custom/${nextResult.ingredientId}`);
+                router.push(`/catalog/custom/${nextResult.ingredientId}`);
                 router.refresh();
               }
             });

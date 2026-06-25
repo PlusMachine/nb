@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import {
   deleteCatalogCustomIngredientAction,
   updateCatalogCustomIngredientAction
-} from "@/app/(app)/app/catalog/actions";
+} from "@/app/(public)/catalog/actions";
 import { CustomCatalogIngredientForm } from "@/components/ingredients/custom-catalog-ingredient-form";
 import { buildCustomFormInitialValueFromCustomItem } from "@/features/ingredients/custom-catalog-form-values";
 import { getUserCatalogIngredientByRef } from "@/features/ingredients/catalog-service";

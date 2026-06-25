@@ -205,7 +205,6 @@ import {
   getNextDefaultRecipeTitle,
   getPublicRecipeBySlug,
   getRecipeById,
-  listPublicRecipes,
   previewRecipeDraft,
   recomputeRecipeStats,
   updateRecipe
@@ -865,16 +864,6 @@ describe("recipe service", () => {
 
     await expect(getPublicRecipeBySlug(privateRecipe.slug)).rejects.toThrowError("FORBIDDEN");
     await expect(getPublicRecipeBySlug(draftRecipe.slug)).rejects.toThrowError("FORBIDDEN");
-  });
-
-  it("listPublicRecipes returns only published public recipes", async () => {
-    await createRecipe("u1", buildReadyPublicPayload({ title: "Public 1" }));
-    await createRecipe("u1", buildReadyPrivatePayload({ title: "Private" }));
-    await createRecipe("u1", { title: "Draft", publicationState: "draft", batchSizeEnteredQuantity: 20, batchSizeEnteredUnit: "l" });
-
-    const list = await listPublicRecipes();
-    expect(list).toHaveLength(1);
-    expect(list[0]?.title).toBe("Public 1");
   });
 
   it("private ownership rule denies non-owner read", async () => {

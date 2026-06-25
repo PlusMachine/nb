@@ -27,7 +27,7 @@ import {
   sanitizeIngredientColorValue
 } from "@/features/ingredients/technical-fields";
 import { listUserCatalogIngredients } from "@/features/ingredients/catalog-service";
-import { requireUser } from "@/lib/auth";
+import { getSessionUser } from "@/lib/auth";
 
 type Props = {
   searchParams?: Promise<Record<string, string | string[] | undefined>>;
@@ -91,7 +91,7 @@ const buildCatalogPageHref = (
   }
 
   const query = searchParams.toString();
-  return query ? `/app/catalog?${query}` : "/app/catalog";
+  return query ? `/catalog?${query}` : "/catalog";
 };
 
 const buildCreateCustomIngredientHref = (
@@ -111,13 +111,13 @@ const buildCreateCustomIngredientHref = (
   }
 
   const query = searchParams.toString();
-  return query ? `/app/catalog/new?${query}` : "/app/catalog/new";
+  return query ? `/catalog/new?${query}` : "/catalog/new";
 };
 
 const buildDetailHref = (item: UserCatalogIngredientDto) => (
   item.source === "custom"
-    ? `/app/catalog/custom/${item.id}`
-    : `/app/catalog/system/${item.id}`
+    ? `/catalog/custom/${item.id}`
+    : `/catalog/system/${item.id}`
 );
 
 const formatValue = (value: number) => value % 1 === 0 ? String(value) : value.toFixed(1).replace(/\.0$/, "");
@@ -253,16 +253,20 @@ const resolveListTypeLabel = (item: UserCatalogIngredientDto) => (
 );
 
 export async function IngredientCatalogContent({ searchParams }: Props = {}) {
-  const user = await requireUser();
+  const user = await getSessionUser();
+  const userId = user?.id ?? null;
+  const canManage = Boolean(userId);
   const resolvedSearchParams = searchParams ? await searchParams : {};
-  const view = parseView(typeof resolvedSearchParams.view === "string" ? resolvedSearchParams.view : undefined);
+  const requestedView = parseView(typeof resolvedSearchParams.view === "string" ? resolvedSearchParams.view : undefined);
+  // Вкладка «Пользовательские ингредиенты» доступна только залогиненным.
+  const view: IngredientCatalogView = canManage ? requestedView : "all";
   const q = String(resolvedSearchParams.q ?? "").trim();
   const category = parseCategory(typeof resolvedSearchParams.category === "string" ? resolvedSearchParams.category : undefined);
   const subtype = parseSubtype(typeof resolvedSearchParams.subtype === "string" ? resolvedSearchParams.subtype : undefined);
   const sort = parseSort(typeof resolvedSearchParams.sort === "string" ? resolvedSearchParams.sort : undefined);
   const page = parsePage(typeof resolvedSearchParams.page === "string" ? resolvedSearchParams.page : undefined);
 
-  const result = await listUserCatalogIngredients(user.id, {
+  const result = await listUserCatalogIngredients(userId, {
     view,
     q: q || undefined,
     category,
@@ -283,7 +287,9 @@ export async function IngredientCatalogContent({ searchParams }: Props = {}) {
         <div className="space-y-1">
           <h1 className="text-3xl font-semibold tracking-tight text-zinc-950">Каталог ингредиентов</h1>
           <p className="max-w-3xl text-sm leading-6 text-zinc-600">
-            Системный каталог и ваши пользовательские ингредиенты доступны в одном рабочем разделе.
+            {canManage
+              ? "Системный каталог и ваши пользовательские ингредиенты доступны в одном разделе."
+              : "Открытый справочник ингредиентов для домашних пивоваров: солод, хмель, дрожжи и не только."}
           </p>
         </div>
       </section>
@@ -294,6 +300,7 @@ export async function IngredientCatalogContent({ searchParams }: Props = {}) {
         category={currentCategory}
         subtype={subtype ?? null}
         sort={sort}
+        canManage={canManage}
         counts={{
           total: result.facets.catalogCount + result.facets.customCount,
           customCount: result.facets.customCount,
@@ -313,11 +320,13 @@ export async function IngredientCatalogContent({ searchParams }: Props = {}) {
               ? "Создайте свой ингредиент с нуля или сделайте свой вариант на основе системного."
               : "Попробуйте изменить запрос, фильтр категории или сортировку."}
           </p>
-          <div className="mt-5 flex justify-center">
-            <Link href={buildCreateCustomIngredientHref({ category: currentCategory, subtype: subtype ?? null })} className="rounded-xl bg-zinc-950 px-5 py-2.5 text-sm font-medium text-white">
-              Создать свой ингредиент
-            </Link>
-          </div>
+          {canManage ? (
+            <div className="mt-5 flex justify-center">
+              <Link href={buildCreateCustomIngredientHref({ category: currentCategory, subtype: subtype ?? null })} className="rounded-xl bg-zinc-950 px-5 py-2.5 text-sm font-medium text-white">
+                Создать свой ингредиент
+              </Link>
+            </div>
+          ) : null}
         </section>
       ) : (
         <>
@@ -328,7 +337,7 @@ export async function IngredientCatalogContent({ searchParams }: Props = {}) {
                   <th className="px-5 py-4 font-medium">Ингредиент</th>
                   <th className="px-5 py-4 font-medium">Тип</th>
                   <th className="px-5 py-4 font-medium">Параметры</th>
-                  <th className="px-5 py-4 font-medium">Использование</th>
+                  {canManage ? <th className="px-5 py-4 font-medium">Использование</th> : null}
                 </tr>
               </thead>
               <tbody>
@@ -361,7 +370,7 @@ export async function IngredientCatalogContent({ searchParams }: Props = {}) {
                                 label={item.isFavorite ? "Убрать из избранного" : "Добавить в избранное"}
                               />
                               <Link
-                                href={`/app/catalog/custom/${item.id}/edit`}
+                                href={`/catalog/custom/${item.id}/edit`}
                                 className="rounded-md p-1 text-zinc-400 transition-colors hover:bg-zinc-100 hover:text-zinc-700"
                                 aria-label="Редактировать"
                               >
@@ -374,7 +383,7 @@ export async function IngredientCatalogContent({ searchParams }: Props = {}) {
                                 variant="icon"
                               />
                             </div>
-                          ) : (
+                          ) : canManage ? (
                             <IngredientFavoriteToggle
                               reference={{
                                 source: item.source,
@@ -383,7 +392,7 @@ export async function IngredientCatalogContent({ searchParams }: Props = {}) {
                               initialFavorite={item.isFavorite ?? false}
                               label={item.isFavorite ? "Убрать из избранного" : "Добавить в избранное"}
                             />
-                          )}
+                          ) : null}
                         </div>
                         <div className="flex flex-wrap gap-1.5">
                           {buildSecondaryMeta(item).map((badge) => (
@@ -419,12 +428,14 @@ export async function IngredientCatalogContent({ searchParams }: Props = {}) {
                         {buildKeyStats(item).length === 0 ? <span className="text-xs text-zinc-400">Без ключевых параметров</span> : null}
                       </div>
                     </td>
-                    <td className="px-5 py-4">
-                      <div className="space-y-1 text-xs text-zinc-600">
-                        <p>Склад: {item.inventoryUsageCount}</p>
-                        <p>Рецепты: {item.recipeUsageCount}</p>
-                      </div>
-                    </td>
+                    {canManage ? (
+                      <td className="px-5 py-4">
+                        <div className="space-y-1 text-xs text-zinc-600">
+                          <p>Склад: {item.inventoryUsageCount}</p>
+                          <p>Рецепты: {item.recipeUsageCount}</p>
+                        </div>
+                      </td>
+                    ) : null}
                   </tr>
                 ))}
               </tbody>
@@ -464,7 +475,7 @@ export async function IngredientCatalogContent({ searchParams }: Props = {}) {
                         label={item.isFavorite ? "Убрать из избранного" : "Добавить в избранное"}
                       />
                       <Link
-                        href={`/app/catalog/custom/${item.id}/edit`}
+                        href={`/catalog/custom/${item.id}/edit`}
                         className="rounded-md p-1 text-zinc-400 transition-colors hover:bg-zinc-100 hover:text-zinc-700"
                         aria-label="Редактировать"
                       >
@@ -477,7 +488,7 @@ export async function IngredientCatalogContent({ searchParams }: Props = {}) {
                         variant="icon"
                       />
                     </div>
-                  ) : (
+                  ) : canManage ? (
                     <IngredientFavoriteToggle
                       reference={{
                         source: item.source,
@@ -486,7 +497,7 @@ export async function IngredientCatalogContent({ searchParams }: Props = {}) {
                       initialFavorite={item.isFavorite ?? false}
                       label={item.isFavorite ? "Убрать из избранного" : "Добавить в избранное"}
                     />
-                  )}
+                  ) : null}
                 </div>
 
                 <Link href={buildDetailHref(item)} className="mt-3 block">
@@ -522,10 +533,12 @@ export async function IngredientCatalogContent({ searchParams }: Props = {}) {
                     ))}
                   </div>
 
-                  <div className="mt-3 flex gap-4 text-xs text-zinc-500">
-                    <span>Склад: {item.inventoryUsageCount}</span>
-                    <span>Рецепты: {item.recipeUsageCount}</span>
-                  </div>
+                  {canManage ? (
+                    <div className="mt-3 flex gap-4 text-xs text-zinc-500">
+                      <span>Склад: {item.inventoryUsageCount}</span>
+                      <span>Рецепты: {item.recipeUsageCount}</span>
+                    </div>
+                  ) : null}
                 </Link>
               </article>
             ))}

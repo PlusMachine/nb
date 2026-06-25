@@ -756,9 +756,19 @@ const buildRankedItem = (
 };
 
 const applyUsageCounts = async (
-  userId: string,
+  userId: string | null,
   items: UserCatalogIngredientDto[]
 ): Promise<UserCatalogIngredientDto[]> => {
+  if (!userId) {
+    return items.map((item) => ({
+      ...item,
+      inventoryUsageCount: 0,
+      recipeUsageCount: 0,
+      inventoryInUse: false,
+      recipeInUse: false
+    }));
+  }
+
   const catalogIds = items.filter((item) => item.source === "catalog").map((item) => item.id);
   const customIds = items.filter((item) => item.source === "custom").map((item) => item.id);
 
@@ -859,14 +869,14 @@ const sortCatalogItems = (
 });
 
 const loadUnifiedCatalogItems = async (
-  userId: string,
+  userId: string | null,
   params?: { type?: string }
 ) => {
   const [catalogItems, customItems] = await Promise.all([
     loadIngredients({
       type: params?.type
     }),
-    loadCustomIngredients(userId)
+    userId ? loadCustomIngredients(userId) : Promise.resolve([])
   ]);
 
   const mappedCatalogItems = catalogItems.map(mapSystemIngredient);
@@ -874,10 +884,13 @@ const loadUnifiedCatalogItems = async (
     !params?.type || item.type === params.type
   ));
 
-  const allItems = await applyFavoriteStateToCatalogItems(userId, [
+  const combinedItems = [
     ...filteredCustomItems,
     ...mappedCatalogItems
-  ]);
+  ];
+  const allItems = userId
+    ? await applyFavoriteStateToCatalogItems(userId, combinedItems)
+    : combinedItems;
 
   return {
     catalogItems: allItems.filter((item) => item.source === "catalog"),
@@ -1622,7 +1635,7 @@ export const getIngredientSuggestionByRef = async (
 };
 
 export const listUserCatalogIngredients = async (
-  userId: string,
+  userId: string | null,
   params: CatalogListParams = {}
 ): Promise<UserCatalogListResult> => {
   const page = Math.max(1, params.page ?? 1);
@@ -1691,7 +1704,7 @@ export const listUserCatalogIngredients = async (
 };
 
 export const getUserCatalogIngredientByRef = async (
-  userId: string,
+  userId: string | null,
   source: "catalog" | "custom",
   id: string
 ): Promise<UserCatalogIngredientDto | null> => {
@@ -1700,6 +1713,9 @@ export const getUserCatalogIngredientByRef = async (
   if (source === "catalog") {
     const systemItem = await getIngredientById(id);
     item = systemItem ? mapSystemIngredient(systemItem) : null;
+  } else if (!userId) {
+    // Пользовательские (custom) ингредиенты доступны только их владельцу.
+    return null;
   } else {
     const customItem = await db.query.userCustomIngredients.findFirst({
       where: and(
@@ -1719,7 +1735,9 @@ export const getUserCatalogIngredientByRef = async (
     return null;
   }
 
-  const [favorited] = await applyFavoriteStateToCatalogItems(userId, [hydrated]);
+  const [favorited] = userId
+    ? await applyFavoriteStateToCatalogItems(userId, [hydrated])
+    : [{ ...hydrated, isFavorite: false }];
   if (!favorited) {
     return null;
   }
@@ -1736,10 +1754,12 @@ export const getUserCatalogIngredientByRef = async (
     }
   }
 
-  const purchaseLinks = await listIngredientPurchaseLinksByReference(userId, {
-    source: result.source,
-    id: result.id
-  });
+  const purchaseLinks = userId
+    ? await listIngredientPurchaseLinksByReference(userId, {
+      source: result.source,
+      id: result.id
+    })
+    : [];
 
   return {
     ...result,

@@ -30,13 +30,10 @@ import { buildInventoryCostDisplay } from "@/features/inventory/display";
 import type { SystemCurrency, SystemCurrencyRateMap } from "@/features/system/currency";
 
 import { DeleteInventoryItemButton } from "./delete-inventory-item-button";
+import { InventoryConsumeControl } from "./inventory-consume-control";
+import { InventoryInlineQuantityEditor } from "./inventory-inline-quantity-editor";
 import { InventoryItemDetailsEditor } from "./inventory-item-details-editor";
 import { InventoryPurchaseLinksTrigger } from "./inventory-purchase-links-trigger";
-import {
-  InventoryQuantityEditor,
-  inventoryFinishedActionInlineClassName,
-  inventoryFinishedActionLabel
-} from "./inventory-quantity-editor";
 
 type Props = {
   item: InventoryListItemDto;
@@ -319,8 +316,8 @@ export function InventoryListItem({
   const expired = isExpired(item.freshnessDate);
   const freshnessCritical = !expired && isFreshnessCritical(item.freshnessDate);
   const detailHref = item.source.sourceKind === "custom"
-    ? `/app/catalog/custom/${item.source.sourceId}`
-    : `/app/catalog/system/${item.source.sourceId}`;
+    ? `/catalog/custom/${item.source.sourceId}`
+    : `/catalog/system/${item.source.sourceId}`;
   const ownershipBadgeLabel = item.source.sourceKind === "custom"
     ? (item.source.derivedFromIngredientId ? "Измененный" : "Свой")
     : null;
@@ -389,24 +386,6 @@ export function InventoryListItem({
 
         {/* Actions cluster */}
         <div className="flex shrink-0 items-center gap-0.5">
-          {isEmpty ? (
-            <span className="mr-1 text-xs font-medium text-rose-400">закончился</span>
-          ) : (
-            <InventoryQuantityEditor
-              item={item}
-              hideEditor
-              renderFinishedAction={({ onClick, isPending }) => (
-                <button
-                  type="button"
-                  onClick={onClick}
-                  disabled={isPending}
-                  className={inventoryFinishedActionInlineClassName}
-                >
-                  {isPending ? "..." : inventoryFinishedActionLabel}
-                </button>
-              )}
-            />
-          )}
           <InventoryItemDetailsEditor
             item={item}
             preferredCurrency={preferredCurrency}
@@ -511,8 +490,21 @@ export function InventoryListItem({
           ) : null}
         </div>
 
-        <div className="flex shrink-0 flex-col items-end">
-          <InventoryQuantityEditor item={item} showFinishedAction={false} showEquivalentHint={false} />
+        <div className="flex shrink-0 items-center gap-2">
+          <InventoryInlineQuantityEditor item={item} />
+          <InventoryConsumeControl
+            item={item}
+            defaultMode={isEmpty ? "restock" : "consume"}
+            renderTrigger={(open) => (
+              <button
+                type="button"
+                onClick={open}
+                className="rounded-lg border border-zinc-200 bg-white px-3 py-1.5 text-xs font-medium text-zinc-600 transition-colors hover:border-zinc-300 hover:bg-zinc-50"
+              >
+                Изменить
+              </button>
+            )}
+          />
         </div>
       </div>
     </li>

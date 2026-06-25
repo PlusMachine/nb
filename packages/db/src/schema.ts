@@ -495,6 +495,14 @@ export const recipes = pgTable("recipes", {
   waterPlanMeta: jsonb("water_plan_meta").$type<Record<string, unknown>>(),
   brewPlanMeta: jsonb("brew_plan_meta").$type<Record<string, unknown>>(),
   heroImageId: uuid("hero_image_id"),
+  // Денормализованные агрегаты рейтинга (источник — recipeRatings); пересчёт в
+  // сервисной транзакции при оценке/удалении (Phase D, §3.4).
+  ratingAvg: doublePrecision("rating_avg"),
+  ratingCount: integer("rating_count").default(0).notNull(),
+  // Денормализованный агрегат сохранений (источник — recipeSaves); пересчёт в
+  // сервисной транзакции при сохранении/снятии. Используется для сортировки
+  // «Популярные» на витрине /recipes.
+  saveCount: integer("save_count").default(0).notNull(),
   createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull()
 }, (table) => ({
@@ -503,7 +511,17 @@ export const recipes = pgTable("recipes", {
   familyVersionIdx: uniqueIndex("recipes_family_version_uidx").on(table.recipeFamilyId, table.versionNumber),
   publicationStateIdx: index("recipes_publication_state_idx").on(table.publicationState),
   equipmentProfileIdx: index("recipes_equipment_profile_id_idx").on(table.equipmentProfileId),
-  slugIdx: uniqueIndex("recipes_slug_uidx").on(table.slug)
+  slugIdx: uniqueIndex("recipes_slug_uidx").on(table.slug),
+  // Публичная витрина /recipes: фильтр по стилю/семейству (WHERE styleId IN (...))
+  // и сортировки по abv/ibu/color/title/updatedAt.
+  styleIdIdx: index("recipes_style_id_idx").on(table.styleId),
+  abvIdx: index("recipes_abv_idx").on(table.abv),
+  ibuIdx: index("recipes_ibu_idx").on(table.ibu),
+  colorIdx: index("recipes_color_idx").on(table.color),
+  updatedAtIdx: index("recipes_updated_at_idx").on(table.updatedAt),
+  titleIdx: index("recipes_title_idx").on(table.title),
+  ratingAvgIdx: index("recipes_rating_avg_idx").on(table.ratingAvg),
+  saveCountIdx: index("recipes_save_count_idx").on(table.saveCount)
 }));
 
 export const recipeIngredients = pgTable("recipe_ingredients", {
@@ -570,6 +588,37 @@ export const recipeImages = pgTable("recipe_images", {
   recipeIdIdx: index("recipe_images_recipe_id_idx").on(table.recipeId),
   recipeSortOrderIdx: index("recipe_images_recipe_sort_order_idx").on(table.recipeId, table.sortOrder),
   recipeCoverIdx: index("recipe_images_recipe_cover_idx").on(table.recipeId, table.isCover)
+}));
+
+// Оценки публичных рецептов (Phase D, §3.4): одна оценка на пользователя
+// (UNIQUE recipe+user → upsert), stars 1..5 (CHECK), денормализованные агрегаты
+// rating_avg/rating_count на recipes пересчитываются транзакционно в сервисе.
+export const recipeRatings = pgTable("recipe_ratings", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  recipeId: uuid("recipe_id").notNull().references(() => recipes.id, { onDelete: "cascade" }),
+  userId: uuid("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  stars: integer("stars").notNull(),
+  body: text("body"),
+  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull()
+}, (table) => ({
+  recipeUserUidx: uniqueIndex("recipe_ratings_recipe_user_uidx").on(table.recipeId, table.userId),
+  recipeIdIdx: index("recipe_ratings_recipe_id_idx").on(table.recipeId),
+  starsCheck: check("recipe_ratings_stars_chk", sql`${table.stars} between 1 and 5`)
+}));
+
+// Сохранённые («Избранное») рецепты: одна запись на пользователя на рецепт
+// (UNIQUE recipe+user → idempotent save). Денормализованный агрегат save_count
+// на recipes пересчитывается транзакционно в сервисе.
+export const recipeSaves = pgTable("recipe_saves", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  recipeId: uuid("recipe_id").notNull().references(() => recipes.id, { onDelete: "cascade" }),
+  userId: uuid("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull()
+}, (table) => ({
+  recipeUserUidx: uniqueIndex("recipe_saves_recipe_user_uidx").on(table.recipeId, table.userId),
+  userIdx: index("recipe_saves_user_idx").on(table.userId, table.createdAt),
+  recipeIdIdx: index("recipe_saves_recipe_idx").on(table.recipeId)
 }));
 
 export const brewBatches = pgTable("brew_batches", {
@@ -756,9 +805,33 @@ export const recipesRelations = relations(recipes, ({ one, many }) => ({
   }),
   ingredients: many(recipeIngredients),
   images: many(recipeImages),
+  ratings: many(recipeRatings),
+  saves: many(recipeSaves),
   brewBatches: many(brewBatches),
   inventoryAllocations: many(recipeInventoryAllocations),
   inventoryTransactions: many(inventoryTransactions)
+}));
+
+export const recipeRatingsRelations = relations(recipeRatings, ({ one }) => ({
+  recipe: one(recipes, {
+    fields: [recipeRatings.recipeId],
+    references: [recipes.id]
+  }),
+  user: one(users, {
+    fields: [recipeRatings.userId],
+    references: [users.id]
+  })
+}));
+
+export const recipeSavesRelations = relations(recipeSaves, ({ one }) => ({
+  recipe: one(recipes, {
+    fields: [recipeSaves.recipeId],
+    references: [recipes.id]
+  }),
+  user: one(users, {
+    fields: [recipeSaves.userId],
+    references: [users.id]
+  })
 }));
 
 export const recipeIngredientsRelations = relations(recipeIngredients, ({ one, many }) => ({

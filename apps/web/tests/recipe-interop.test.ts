@@ -71,6 +71,7 @@ const sampleRecipe = {
   waterPlanMeta: null,
   brewPlanMeta: null,
   heroImageId: null,
+  rating: null,
   versions: [],
   ingredients: [
     {

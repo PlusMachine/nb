@@ -5,7 +5,7 @@ import { useState, useTransition } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { X } from "lucide-react";
 
-import { deleteCatalogCustomIngredientAction } from "@/app/(app)/app/catalog/actions";
+import { deleteCatalogCustomIngredientAction } from "@/app/(public)/catalog/actions";
 import { ConfirmActionDialog } from "@/components/shared/confirm-action-dialog";
 
 type Props = {

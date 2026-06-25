@@ -10,7 +10,6 @@ import PublicRecipesError from "../app/(public)/recipes/error";
 import { RecipeEmptyState } from "../components/recipes/recipe-empty-state";
 import { buildRecipeIngredientTechnicalBadges } from "../components/recipes/recipe-ingredient-card-display";
 import { PublicRecipePage } from "../components/recipes/public-recipe-page";
-import { PublicRecipeList } from "../components/recipes/public-recipe-list";
 import { RecipeIngredientsSection } from "../components/recipes/recipe-ingredients-section";
 import { RecipeMetaSection } from "../components/recipes/recipe-meta-section";
 import { RecipeStatsSummary } from "../components/recipes/recipe-stats-summary";
@@ -57,6 +56,7 @@ const recipeDetail: RecipeDetailDto = {
     fgRangeMax: 1.014
   },
   heroImageId: null,
+  rating: null,
   versions: [{ id: "r-1", versionNumber: 1, updatedAt: new Date("2026-01-02T00:00:00.000Z") }],
   createdAt: new Date("2026-01-01T00:00:00.000Z"),
   updatedAt: new Date("2026-01-02T00:00:00.000Z"),
@@ -243,13 +243,6 @@ describe("recipes read components", () => {
     }, { includeConsumableUsageStage: false });
 
     expect(badges.map((badge) => badge.label)).toEqual(["Сушеная цедра"]);
-  });
-
-  it("renders public listing item with slug link", () => {
-    const html = renderToStaticMarkup(React.createElement(PublicRecipeList, { recipes: [recipeDetail] }));
-
-    expect(html).toContain("/recipes/");
-    expect(html).toContain("Ключевые показатели");
   });
 
   it("renders public recipe page composition", () => {

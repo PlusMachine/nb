@@ -490,6 +490,121 @@ export type RecipeVersionOptionDto = {
   updatedAt: Date;
 };
 
+// --- Public recipe discovery (витрина /recipes) -----------------------------
+
+/**
+ * Метод варки. Сейчас НИГДЕ не персистится на рецепте (нет колонки, нет в
+ * processMeta), поэтому в Phase A фильтр по методу не применяется и в карточке
+ * method = null. Тип оставлен для совместимости и будущих фаз.
+ */
+export const recipeMethods = ["all_grain", "biab", "extract"] as const;
+export type RecipeMethod = (typeof recipeMethods)[number];
+
+export const publicRecipeSorts = [
+  "newest",
+  "abv_desc",
+  "abv_asc",
+  "ibu_desc",
+  "ibu_asc",
+  "color_asc",
+  "color_desc",
+  "name",
+  "popular", // Phase C — нет данных по клонам/просмотрам, маппится на newest
+  "rating" // Phase D — сортировка по rating_avg (NULLS LAST)
+] as const;
+export type PublicRecipeSort = (typeof publicRecipeSorts)[number];
+
+export const defaultPublicRecipePageSize = 24;
+export const maxPublicRecipePageSize = 48;
+
+export type PublicRecipeFilters = {
+  q?: string;
+  family?: string; // id семейства BJCP из getBjcpCatalogData()
+  styleCode?: string; // код/styleKey стиля BJCP
+  colorMinSrm?: number;
+  colorMaxSrm?: number;
+  abvMin?: number;
+  abvMax?: number;
+  ibuMin?: number;
+  ibuMax?: number;
+  method?: RecipeMethod[]; // парсится, но в Phase A не применяется к WHERE
+  sort: PublicRecipeSort;
+  page: number; // 1-based
+  pageSize: number;
+};
+
+export type PublicRecipeListItem = {
+  id: string;
+  slug: string;
+  name: string;
+  author: { id: string; displayName: string | null; image: string | null };
+  style: { code: string; name: string } | null;
+  og: number | null;
+  fg: number | null;
+  abv: number | null;
+  ibu: number | null;
+  colorSrm: number | null;
+  colorEbc: number | null;
+  batchSizeL: number | null;
+  method: RecipeMethod | null; // null в Phase A
+  heroImage: { thumbUrl: string; blurDataUrl: string | null } | null;
+  /**
+   * URL реальной фотографии BJCP-стиля (как на карточках `/bjcp`) для рецептов
+   * без своего фото. `null`, если стиль не указан или у него только плейсхолдер —
+   * тогда карточка падает на мягкую цветовую заливку по SRM.
+   */
+  styleImageUrl: string | null;
+  cloneCount: number; // 0 в Phase A
+  rating: { average: number; count: number } | null; // null до Phase D
+  saveCount: number; // число сохранений («Избранное») — источник для сортировки «Популярные»
+  publishedAt: string; // ISO; маппится из updatedAt (publishedAt-колонки нет)
+};
+
+export type PublicRecipeFacets = {
+  families: { id: string; name: string; count: number }[];
+  styles: { code: string; name: string; count: number }[];
+};
+
+export type PublicRecipeListResult = {
+  items: PublicRecipeListItem[];
+  total: number;
+  page: number;
+  pageSize: number;
+  facets?: PublicRecipeFacets; // опционально (Phase C)
+};
+
+// Рейтинги (Phase D, §3.4). Валидация на сервере: stars 1..5, body до 2000 симв.
+// (пустой body → null). userId НЕ входит в payload — берётся только на сервере.
+export const recipeRatingInputSchema = z.object({
+  stars: z.coerce.number().int().min(1).max(5),
+  body: z
+    .string()
+    .trim()
+    .max(2000)
+    .optional()
+    .nullable()
+    .transform((value) => (value && value.length > 0 ? value : null))
+});
+export type RecipeRatingInput = z.infer<typeof recipeRatingInputSchema>;
+
+/** Оценка текущего пользователя по рецепту (для предзаполнения формы). */
+export type RecipeRatingDto = {
+  stars: number;
+  body: string | null;
+};
+
+/** Денормализованный агрегат рейтинга рецепта. */
+export type RecipeRatingSummary = {
+  average: number;
+  count: number;
+};
+
+/** Результат toggle сохранения рецепта: новое состояние + денормализованный счётчик. */
+export type RecipeSaveSummary = {
+  saved: boolean;
+  count: number;
+};
+
 export type RecipeDetailDto = RecipeListItemDto & {
   description: string | null;
   authorNotes: string | null;
@@ -506,6 +621,7 @@ export type RecipeDetailDto = RecipeListItemDto & {
   heroImageId: string | null;
   ingredients: RecipeIngredientDto[];
   versions: RecipeVersionOptionDto[];
+  rating: { average: number; count: number } | null; // денормализованный агрегат (Phase D)
 };
 
 export type RecipeDraftPreviewDto = {

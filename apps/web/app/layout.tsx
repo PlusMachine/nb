@@ -3,6 +3,7 @@ import { Montserrat, Rubik } from "next/font/google";
 
 import "./globals.css";
 import { Providers } from "../components/providers";
+import { SiteFooter } from "@/components/shared/site-footer";
 import { getServerEnv } from "@/lib/env";
 
 const bodyFont = Rubik({
@@ -30,7 +31,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="ru" className={`${bodyFont.variable} ${displayFont.variable}`}>
       <body className="min-h-screen bg-slate-50 text-zinc-950 antialiased" style={{ fontFamily: "var(--font-sans)" }}>
-        <Providers>{children}</Providers>
+        <Providers>
+          <div className="flex min-h-screen flex-col">
+            <div className="flex-1">{children}</div>
+            <SiteFooter />
+          </div>
+        </Providers>
       </body>
     </html>
   );

@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 
-import { createCatalogCustomIngredientAction } from "@/app/(app)/app/catalog/actions";
+import { createCatalogCustomIngredientAction } from "@/app/(public)/catalog/actions";
 import {
   CustomCatalogIngredientForm,
   type CustomCatalogIngredientFormInitialValue

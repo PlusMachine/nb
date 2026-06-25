@@ -58,13 +58,13 @@ const mapCatalogCustomIngredientError = (error: unknown): CatalogCustomIngredien
 };
 
 const revalidateCatalogPaths = (ingredientId?: string) => {
-  revalidatePath("/app/catalog");
+  revalidatePath("/catalog");
   revalidatePath("/app/ingredients");
   revalidatePath("/app/recipes");
 
   if (ingredientId) {
-    revalidatePath(`/app/catalog/custom/${ingredientId}`);
-    revalidatePath(`/app/catalog/custom/${ingredientId}/edit`);
+    revalidatePath(`/catalog/custom/${ingredientId}`);
+    revalidatePath(`/catalog/custom/${ingredientId}/edit`);
   }
 };
 

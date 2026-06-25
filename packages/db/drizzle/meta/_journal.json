@@ -181,6 +181,25 @@
       "tag": "0029_user_inventory_properties",
       "when": 1788000000000,
       "breakpoints": true
+    },
+    {
+      "idx": 30,
+      "tag": "0030_public_recipes_indexes",
+      "when": 1789000000000,
+      "breakpoints": true
+    },
+    {
+      "idx": 31,
+      "tag": "0031_recipe_ratings",
+      "when": 1790000000000,
+      "breakpoints": true
+    },
+    {
+      "idx": 32,
+      "version": "7",
+      "when": 1790000000001,
+      "tag": "0032_early_blink",
+      "breakpoints": true
     }
   ]
 }

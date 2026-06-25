@@ -25,11 +25,11 @@ export type IngredientPurchaseLinkActionResult = {
 };
 
 const revalidateIngredientMetadataPaths = (reference: UserIngredientReference) => {
-  revalidatePath("/app/catalog");
+  revalidatePath("/catalog");
   revalidatePath("/app/ingredients");
   revalidatePath(reference.source === "catalog"
-    ? `/app/catalog/system/${reference.id}`
-    : `/app/catalog/custom/${reference.id}`);
+    ? `/catalog/system/${reference.id}`
+    : `/catalog/custom/${reference.id}`);
 };
 
 const mapMetadataErrorMessage = (error: unknown) => {

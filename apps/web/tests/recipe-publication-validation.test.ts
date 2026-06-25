@@ -28,7 +28,7 @@ describe("recipe publication validation", () => {
     })).toEqual({});
   });
 
-  it("requires style, description and core ingredients for published recipe", () => {
+  it("requires description and core ingredients for published recipe", () => {
     expect(getRecipePublicationFieldErrors({
       publicationState: "published",
       title: "Public IPA",
@@ -37,10 +37,20 @@ describe("recipe publication validation", () => {
       boilTimeMinutes: 60,
       ingredientCategories: ["fermentable", "hop"]
     })).toEqual({
-      styleId: "Выберите стиль BJCP.",
       description: "Добавьте описание рецепта.",
       "ingredients.yeast": "Для публичного рецепта добавьте дрожжи.",
     });
+  });
+
+  it("allows publishing a recipe without a BJCP style (beer outside style)", () => {
+    expect(getRecipePublicationFieldErrors({
+      publicationState: "published",
+      title: "Wild ale",
+      styleId: null,
+      description: "Эксперимент вне стиля",
+      boilTimeMinutes: 60,
+      ingredientCategories: ["fermentable", "hop", "yeast"]
+    })).toEqual({});
   });
 
   it("builds readiness checklist with satisfied and missing publication requirements", () => {

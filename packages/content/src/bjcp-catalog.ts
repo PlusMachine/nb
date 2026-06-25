@@ -3,6 +3,7 @@ import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
 import {
+  DEFAULT_BJCP_HERO_IMAGE_URL,
   listArticleCategories,
   listArticles,
   type CategorySummary,
@@ -241,4 +242,23 @@ const buildCatalog = async (): Promise<BjcpCatalogData> => {
 export const getBjcpCatalogData = async () => {
   cachedCatalogPromise ??= buildCatalog();
   return cachedCatalogPromise;
+};
+
+/**
+ * Карта `bjcpId -> URL реальной фотографии стиля` (как на карточках `/bjcp`).
+ * Стили, у которых есть только дефолтный плейсхолдер, в карту НЕ попадают —
+ * чтобы потребитель (например, карточка рецепта без своего фото) мог отличить
+ * настоящую фотографию стиля от заглушки и не размывал пустую картинку.
+ */
+export const getBjcpStyleHeroImageByBjcpId = async (): Promise<Map<string, string>> => {
+  const { styles } = await getBjcpCatalogData();
+  const heroImageByBjcpId = new Map<string, string>();
+
+  for (const style of styles) {
+    if (style.heroImageUrl && style.heroImageUrl !== DEFAULT_BJCP_HERO_IMAGE_URL) {
+      heroImageByBjcpId.set(style.bjcpId, style.heroImageUrl);
+    }
+  }
+
+  return heroImageByBjcpId;
 };

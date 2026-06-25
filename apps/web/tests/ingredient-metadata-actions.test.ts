@@ -73,9 +73,9 @@ describe("ingredient metadata actions", () => {
       }
     ]);
     expect(mockState.revalidated).toEqual([
-      "/app/catalog",
+      "/catalog",
       "/app/ingredients",
-      "/app/catalog/system/catalog-hop-1"
+      "/catalog/system/catalog-hop-1"
     ]);
   });
 
@@ -105,9 +105,9 @@ describe("ingredient metadata actions", () => {
       }
     ]);
     expect(mockState.revalidated).toEqual([
-      "/app/catalog",
+      "/catalog",
       "/app/ingredients",
-      "/app/catalog/custom/custom-hop-1"
+      "/catalog/custom/custom-hop-1"
     ]);
   });
 });

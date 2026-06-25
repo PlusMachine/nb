@@ -15,6 +15,7 @@ export {
 
 export {
   getBjcpCatalogData,
+  getBjcpStyleHeroImageByBjcpId,
   type BjcpCatalogData,
   type BjcpCatalogStyle,
   type BjcpUiColorHint,

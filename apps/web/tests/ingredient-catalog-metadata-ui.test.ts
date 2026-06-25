@@ -21,7 +21,8 @@ vi.mock("next/navigation", () => ({
 }));
 
 vi.mock("@/lib/auth", () => ({
-  requireUser: async () => ({ id: "user-1" })
+  requireUser: async () => ({ id: "user-1" }),
+  getSessionUser: async () => ({ id: "user-1" })
 }));
 
 vi.mock("@/features/ingredients/catalog-service", () => ({
@@ -52,8 +53,8 @@ vi.mock("@/components/shared/country-flag", () => ({
   CountryFlagLabel: ({ label }: any) => React.createElement("span", null, label)
 }));
 
-import { IngredientCatalogContent } from "../app/(app)/app/catalog/content";
-import IngredientDetailPage from "../app/(app)/app/catalog/[source]/[id]/page";
+import { IngredientCatalogContent } from "../app/(public)/catalog/content";
+import IngredientDetailPage from "../app/(public)/catalog/[source]/[id]/page";
 
 const buildCatalogItem = (overrides: Record<string, unknown> = {}) => ({
   id: "catalog-hop-1",

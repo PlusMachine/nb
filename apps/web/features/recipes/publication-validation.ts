@@ -34,7 +34,6 @@ export const publicationRequirementKeys: Record<RecipePublicationState, RecipePu
   private: ["title"],
   published: [
     "title",
-    "styleId",
     "description",
     "ingredients.fermentable",
     "ingredients.hop",
@@ -69,7 +68,6 @@ export const getRecipePublicationFieldErrors = (
   const hasFermentable = input.ingredientCategories.includes("fermentable");
   const hasHop = input.ingredientCategories.includes("hop");
   const hasYeast = input.ingredientCategories.includes("yeast");
-  const hasStyle = Boolean(input.styleId?.trim());
   const hasDescription = Boolean(input.description?.trim());
   const hasBoilTime = Number.isInteger(input.boilTimeMinutes) && (input.boilTimeMinutes ?? 0) > 0;
 
@@ -79,10 +77,6 @@ export const getRecipePublicationFieldErrors = (
 
   if (input.publicationState !== "published") {
     return fieldErrors;
-  }
-
-  if (!hasStyle) {
-    fieldErrors.styleId = "Выберите стиль BJCP.";
   }
 
   if (!hasDescription) {

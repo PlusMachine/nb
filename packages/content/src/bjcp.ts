@@ -5,7 +5,7 @@ import { fileURLToPath } from "node:url";
 const moduleDir = dirname(fileURLToPath(import.meta.url));
 const BJCP_DIR = resolve(moduleDir, "../../../ingredients/bjcp");
 const BJCP_PUBLIC_IMAGES_DIR = resolve(moduleDir, "../../../apps/web/public/images/bjcp");
-const DEFAULT_BJCP_HERO_IMAGE_URL = "/images/bjcp-placeholder.png";
+export const DEFAULT_BJCP_HERO_IMAGE_URL = "/images/bjcp-placeholder.png";
 
 const SECTION_ORDER = [
   "overall_impression",

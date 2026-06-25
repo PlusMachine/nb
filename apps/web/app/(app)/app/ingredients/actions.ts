@@ -156,7 +156,7 @@ export const addCatalogIngredientAction = async (_prevState: AddIngredientResult
     }
 
     revalidatePath("/app/ingredients");
-    revalidatePath("/app/catalog");
+    revalidatePath("/catalog");
     return { ok: true, message: "Ингредиент добавлен в запасы." };
   } catch (error) {
     return mapError(error);
@@ -209,7 +209,7 @@ export const addSelectedIngredientAction = async (_prevState: AddIngredientResul
         }, purchaseLinks);
       }
       revalidatePath("/app/ingredients");
-      revalidatePath("/app/catalog");
+      revalidatePath("/catalog");
       return { ok: true, message: "Ингредиент добавлен в запасы." };
     } catch (error) {
       return mapError(error);
@@ -265,7 +265,7 @@ export const addSelectedIngredientAction = async (_prevState: AddIngredientResul
         }, purchaseLinks);
       }
       revalidatePath("/app/ingredients");
-      revalidatePath("/app/catalog");
+      revalidatePath("/catalog");
       return { ok: true, message: "Свой вариант ингредиента добавлен в запасы." };
     } catch (error) {
       return mapError(error);
@@ -333,7 +333,7 @@ export const addCustomIngredientAction = async (_prevState: AddIngredientResult 
     }
 
     revalidatePath("/app/ingredients");
-    revalidatePath("/app/catalog");
+    revalidatePath("/catalog");
     return { ok: true, message: "Собственный ингредиент создан и добавлен в запасы." };
   } catch (error) {
     return mapError(error);

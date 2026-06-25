@@ -372,15 +372,13 @@ describe("inventory usability components", () => {
     expect(html).toContain("Pilsner Malt");
     expect(html).toContain("BESTMALZ");
     expect(html).not.toContain("Германия");
-    expect(html).toContain('value="2"');
-    expect(html).toContain('step="0.01"');
-    expect(html).toContain('<option value="kg" selected="">kg</option>');
+    expect(html).toContain("2 kg");
     expect(html).toContain("6-7 EBC");
     expect(html).toContain("Экстр. 80%");
     expect(html).toContain("до 100%");
     expect(html).not.toContain("80% extract");
     expect(html).toContain("linear-gradient(180deg");
-    expect(html).toContain("обнулить остаток");
+    expect(html).toContain("Изменить");
     expect(html).toContain('aria-label="Редактировать"');
     expect(html).toContain('aria-label="Удалить"');
   });
@@ -420,7 +418,7 @@ describe("inventory usability components", () => {
 
     expect(html).toContain("закончился");
     expect(html).toContain("text-rose-400");
-    expect(html).not.toContain("обнулить остаток");
+    expect(html).toContain("Изменить");
   });
 
   it("renders localized hop form badges instead of raw enum values", () => {
@@ -940,8 +938,9 @@ describe("inventory usability components", () => {
       currencyRates: { RUB: 100, USD: 7900, EUR: 9170 }
     }));
 
-    expect(html).toContain('<option value="pack" selected="">пачка 11g</option>');
-    expect(html).not.toContain("1 pack (11 g)");
+    expect(html).toContain("1 pack (11 g)");
+    expect(html).not.toContain("<option");
+    expect(html).toContain("Изменить");
     expect(html).toContain("Fermentis");
     expect(html).toContain("Атт. 78%");
     expect(html).toContain("18–24°C");

@@ -19,7 +19,7 @@ import {
   resolveIngredientTechnicalDataColorRangeEbc,
   sanitizeIngredientColorValue
 } from "@/features/ingredients/technical-fields";
-import { requireUser } from "@/lib/auth";
+import { getSessionUser } from "@/lib/auth";
 
 const buildActionHref = (
   pathname: "/app/ingredients" | "/app/recipes/new",
@@ -167,7 +167,9 @@ export default async function IngredientDetailPage({
 }: {
   params: Promise<{ source: string; id: string }>;
 }) {
-  const user = await requireUser();
+  const user = await getSessionUser();
+  const userId = user?.id ?? null;
+  const canManage = Boolean(userId);
   const { source, id } = await params;
   const resolvedSource = source === "custom" ? "custom" : source === "system" ? "catalog" : null;
 
@@ -175,7 +177,7 @@ export default async function IngredientDetailPage({
     notFound();
   }
 
-  const item = await getUserCatalogIngredientByRef(user.id, resolvedSource, id);
+  const item = await getUserCatalogIngredientByRef(userId, resolvedSource, id);
   if (!item) {
     notFound();
   }
@@ -196,7 +198,7 @@ export default async function IngredientDetailPage({
   return (
     <main className="space-y-6">
       <div className="flex flex-wrap items-center gap-2 text-sm text-zinc-500">
-        <Link href="/app/catalog" className="hover:text-zinc-700">Каталог ингредиентов</Link>
+        <Link href="/catalog" className="hover:text-zinc-700">Каталог ингредиентов</Link>
         <span>/</span>
         <span>{item.primaryLabelRu}</span>
       </div>
@@ -206,15 +208,17 @@ export default async function IngredientDetailPage({
           <div className="min-w-0 flex-1 space-y-5">
             <div className="flex flex-wrap items-center gap-2">
               <h1 className="text-3xl font-semibold tracking-tight text-zinc-950">{item.primaryLabelRu}</h1>
-              <IngredientFavoriteToggle
-                reference={{
-                  source: item.source,
-                  id: item.id
-                }}
-                initialFavorite={item.isFavorite ?? false}
-                size="md"
-                label={item.isFavorite ? "Убрать из избранного" : "Добавить в избранное"}
-              />
+              {canManage ? (
+                <IngredientFavoriteToggle
+                  reference={{
+                    source: item.source,
+                    id: item.id
+                  }}
+                  initialFavorite={item.isFavorite ?? false}
+                  size="md"
+                  label={item.isFavorite ? "Убрать из избранного" : "Добавить в избранное"}
+                />
+              ) : null}
               {item.source === "custom" ? (
                 <span className="rounded-full bg-amber-50 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-[0.12em] text-amber-700 ring-1 ring-amber-200">
                   СВОЙ
@@ -270,32 +274,43 @@ export default async function IngredientDetailPage({
             ) : null}
           </div>
 
-          <div className="grid gap-2 sm:grid-cols-2 xl:w-[360px]">
-            <Link href={buildActionHref("/app/ingredients", item.source, item.id)} className="inline-flex h-11 items-center justify-center rounded-xl bg-zinc-950 px-4 text-sm font-medium text-white">
-              Добавить на склад
-            </Link>
-            <Link href={buildActionHref("/app/recipes/new", item.source, item.id)} className="inline-flex h-11 items-center justify-center rounded-xl border border-zinc-200 bg-white px-4 text-sm font-medium text-zinc-700 transition-colors hover:bg-zinc-50">
-              Использовать в рецепте
-            </Link>
-            {item.source === "catalog" ? (
-              <Link href={`/app/catalog/new?derivedFrom=${item.id}`} className="inline-flex h-11 items-center justify-center rounded-xl border border-zinc-200 bg-white px-4 text-sm font-medium text-zinc-700 transition-colors hover:bg-zinc-50 sm:col-span-2">
-                Создать свой вариант
+          {canManage ? (
+            <div className="grid gap-2 sm:grid-cols-2 xl:w-[360px]">
+              <Link href={buildActionHref("/app/ingredients", item.source, item.id)} className="inline-flex h-11 items-center justify-center rounded-xl bg-zinc-950 px-4 text-sm font-medium text-white">
+                Добавить на склад
               </Link>
-            ) : (
-              <>
-                <Link href={`/app/catalog/custom/${item.id}/edit`} className="inline-flex h-11 items-center justify-center rounded-xl border border-zinc-200 bg-white px-4 text-sm font-medium text-zinc-700 transition-colors hover:bg-zinc-50">
-                  Редактировать
+              <Link href={buildActionHref("/app/recipes/new", item.source, item.id)} className="inline-flex h-11 items-center justify-center rounded-xl border border-zinc-200 bg-white px-4 text-sm font-medium text-zinc-700 transition-colors hover:bg-zinc-50">
+                Использовать в рецепте
+              </Link>
+              {item.source === "catalog" ? (
+                <Link href={`/catalog/new?derivedFrom=${item.id}`} className="inline-flex h-11 items-center justify-center rounded-xl border border-zinc-200 bg-white px-4 text-sm font-medium text-zinc-700 transition-colors hover:bg-zinc-50 sm:col-span-2">
+                  Создать свой вариант
                 </Link>
-                <DeleteCustomCatalogIngredientButton
-                  ingredientId={item.id}
-                  displayName={item.primaryLabelRu}
-                  redirectHref="/app/catalog?view=mine"
-                  label="Удалить"
-                  className="inline-flex h-11 items-center justify-center rounded-xl border border-rose-200 bg-white px-4 text-sm font-medium text-rose-700 transition-colors hover:bg-rose-50 disabled:opacity-60"
-                />
-              </>
-            )}
-          </div>
+              ) : (
+                <>
+                  <Link href={`/catalog/custom/${item.id}/edit`} className="inline-flex h-11 items-center justify-center rounded-xl border border-zinc-200 bg-white px-4 text-sm font-medium text-zinc-700 transition-colors hover:bg-zinc-50">
+                    Редактировать
+                  </Link>
+                  <DeleteCustomCatalogIngredientButton
+                    ingredientId={item.id}
+                    displayName={item.primaryLabelRu}
+                    redirectHref="/catalog?view=mine"
+                    label="Удалить"
+                    className="inline-flex h-11 items-center justify-center rounded-xl border border-rose-200 bg-white px-4 text-sm font-medium text-rose-700 transition-colors hover:bg-rose-50 disabled:opacity-60"
+                  />
+                </>
+              )}
+            </div>
+          ) : (
+            <div className="grid gap-2 xl:w-[360px]">
+              <Link href="/login" className="inline-flex h-11 items-center justify-center rounded-xl bg-zinc-950 px-4 text-sm font-medium text-white">
+                Войти, чтобы добавить
+              </Link>
+              <p className="text-xs leading-5 text-zinc-500">
+                Войдите, чтобы добавить ингредиент на склад, использовать в рецепте или создать свой вариант.
+              </p>
+            </div>
+          )}
         </div>
       </section>
 
@@ -324,34 +339,38 @@ export default async function IngredientDetailPage({
             </div>
           </section>
 
-          <section className="rounded-[28px] border border-zinc-200 bg-white p-6 shadow-sm">
-            <h2 className="text-sm font-semibold uppercase tracking-[0.12em] text-zinc-500">Использование</h2>
-            <div className="mt-4 grid gap-3 md:grid-cols-2">
-              <div className="rounded-2xl bg-zinc-50 p-4">
-                <p className="text-xs uppercase tracking-[0.12em] text-zinc-400">Мой склад</p>
-                <p className="mt-2 text-2xl font-semibold text-zinc-950">{item.inventoryUsageCount}</p>
-                <p className="mt-1 text-sm text-zinc-500">{item.inventoryInUse ? "Используется в остатках" : "Пока не используется"}</p>
+          {canManage ? (
+            <section className="rounded-[28px] border border-zinc-200 bg-white p-6 shadow-sm">
+              <h2 className="text-sm font-semibold uppercase tracking-[0.12em] text-zinc-500">Использование</h2>
+              <div className="mt-4 grid gap-3 md:grid-cols-2">
+                <div className="rounded-2xl bg-zinc-50 p-4">
+                  <p className="text-xs uppercase tracking-[0.12em] text-zinc-400">Мой склад</p>
+                  <p className="mt-2 text-2xl font-semibold text-zinc-950">{item.inventoryUsageCount}</p>
+                  <p className="mt-1 text-sm text-zinc-500">{item.inventoryInUse ? "Используется в остатках" : "Пока не используется"}</p>
+                </div>
+                <div className="rounded-2xl bg-zinc-50 p-4">
+                  <p className="text-xs uppercase tracking-[0.12em] text-zinc-400">Мои рецепты</p>
+                  <p className="mt-2 text-2xl font-semibold text-zinc-950">{item.recipeUsageCount}</p>
+                  <p className="mt-1 text-sm text-zinc-500">{item.recipeInUse ? "Уже выбран в рецептах" : "Пока не используется"}</p>
+                </div>
               </div>
-              <div className="rounded-2xl bg-zinc-50 p-4">
-                <p className="text-xs uppercase tracking-[0.12em] text-zinc-400">Мои рецепты</p>
-                <p className="mt-2 text-2xl font-semibold text-zinc-950">{item.recipeUsageCount}</p>
-                <p className="mt-1 text-sm text-zinc-500">{item.recipeInUse ? "Уже выбран в рецептах" : "Пока не используется"}</p>
-              </div>
-            </div>
-          </section>
+            </section>
+          ) : null}
 
-          <section className="rounded-[28px] border border-zinc-200 bg-white p-6 shadow-sm">
-            <h2 className="text-sm font-semibold uppercase tracking-[0.12em] text-zinc-500">Где купить</h2>
-            <div className="mt-4">
-              <IngredientPurchaseLinksEditor
-                reference={{
-                  source: item.source,
-                  id: item.id
-                }}
-                initialLinks={item.purchaseLinks}
-              />
-            </div>
-          </section>
+          {canManage ? (
+            <section className="rounded-[28px] border border-zinc-200 bg-white p-6 shadow-sm">
+              <h2 className="text-sm font-semibold uppercase tracking-[0.12em] text-zinc-500">Где купить</h2>
+              <div className="mt-4">
+                <IngredientPurchaseLinksEditor
+                  reference={{
+                    source: item.source,
+                    id: item.id
+                  }}
+                  initialLinks={item.purchaseLinks}
+                />
+              </div>
+            </section>
+          ) : null}
         </div>
       </div>
 

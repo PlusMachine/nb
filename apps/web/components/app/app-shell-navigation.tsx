@@ -5,34 +5,29 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 
 type AppShellNavigationProps = {
-  email: string;
   onNavigateStart?: (href: string) => void;
 };
 
 const navItems = [
   { href: "/app", label: "Главная", exact: true },
-  { href: "/app/recipes", label: "Рецепты" },
+  { href: "/app/recipes", label: "Мои рецепты" },
+  { href: "/app/saved", label: "Избранное" },
   { href: "/app/equipment", label: "Оборудование" },
-  { href: "/app/catalog", label: "Каталог" },
-  { href: "/app/ingredients", label: "Склад" },
-  { href: "/profile", label: "Профиль" }
+  { href: "/catalog", label: "Каталог" },
+  { href: "/app/ingredients", label: "Склад" }
 ];
 
 const isActivePath = (pathname: string, href: string, exact?: boolean) => (
   exact ? pathname === href : pathname === href || pathname.startsWith(`${href}/`)
 );
 
-export function AppShellNavigation({ email, onNavigateStart }: AppShellNavigationProps) {
+export function AppShellNavigation({ onNavigateStart }: AppShellNavigationProps) {
   const pathname = usePathname();
   const router = useRouter();
 
   return (
-    <header className="mb-5 flex flex-col gap-3 border-b border-zinc-200 pb-3 text-sm text-zinc-500 lg:flex-row lg:items-center lg:justify-between">
-      <div className="min-w-0">
-        <p className="truncate text-xs font-medium uppercase tracking-[0.14em] text-zinc-400">Рабочая зона</p>
-        <p className="truncate font-medium text-zinc-700">{email}</p>
-      </div>
-      <nav className="-mx-1 flex gap-1 overflow-x-auto pb-1 lg:mx-0 lg:pb-0" aria-label="Основная навигация">
+    <div className="mb-5 border-b border-zinc-200 pb-3">
+      <nav className="-mx-1 flex gap-1 overflow-x-auto pb-1" aria-label="Основная навигация">
         {navItems.map((item) => {
           const active = isActivePath(pathname, item.href, item.exact);
 
@@ -56,6 +51,6 @@ export function AppShellNavigation({ email, onNavigateStart }: AppShellNavigatio
           );
         })}
       </nav>
-    </header>
+    </div>
   );
 }

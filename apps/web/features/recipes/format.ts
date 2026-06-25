@@ -56,3 +56,37 @@ export const formatRelativeTimestamp = (value: Date, now = new Date()) => {
 export const formatUpdatedLabel = (value: Date, now = new Date()) => (
   `${formatRecipeTimestamp(value)} • обновлён ${formatRelativeTimestamp(value, now)}`
 );
+
+// --- Компактные форматтеры для карточки витрины /recipes --------------------
+
+const decimalFormatter = new Intl.NumberFormat("ru-RU", {
+  minimumFractionDigits: 1,
+  maximumFractionDigits: 1
+});
+
+const volumeFormatter = new Intl.NumberFormat("ru-RU", {
+  maximumFractionDigits: 1
+});
+
+/** ABV в виде `6,2 %` (RU-запятая, 1 знак). `null → "—"`. */
+export const formatAbvShort = (value: number | null) => (
+  value == null ? "—" : `${decimalFormatter.format(value)} %`
+);
+
+/** IBU как целое число. `null → "—"`. */
+export const formatIbuShort = (value: number | null) => (
+  value == null ? "—" : `${Math.round(value)}`
+);
+
+/**
+ * OG в гравитационной конвенции `1.048` (точка, 3 знака — как
+ * {@link formatGravityWithPlato}). `null → "—"`.
+ */
+export const formatOgShort = (value: number | null) => (
+  value == null ? "—" : value.toFixed(3)
+);
+
+/** Объём партии в литрах: `20 л` / `19,5 л` (RU-запятая). `null → "—"`. */
+export const formatBatchVolume = (liters: number | null) => (
+  liters == null ? "—" : `${volumeFormatter.format(liters)} л`
+);

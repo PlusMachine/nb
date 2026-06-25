@@ -451,7 +451,7 @@ export const createRecipeCustomIngredientAction = async (payload: {
       physicalForm: readCustomPhysicalFormFromTechnicalData(payload.technicalData),
       concentration: readCustomConcentrationFromTechnicalData(payload.technicalData)
     });
-    revalidatePath("/app/catalog");
+    revalidatePath("/catalog");
     const linkage = buildCustomIngredientLinkage(customIngredient);
 
     return {

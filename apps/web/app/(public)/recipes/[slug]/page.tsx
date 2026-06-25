@@ -28,6 +28,8 @@ export default async function PublicRecipeRoute({ params }: { params: Promise<{ 
 
   try {
     const recipe = await getPublicRecipeBySlug(slug);
+    // Документ НЕ читает сессию/cookie → остаётся кэшируемым (ISR/static) для анонимов.
+    // Персональная оценка тянется клиентом (recipe-rating-form) после гидрации.
     return <PublicRecipePage recipe={recipe} />;
   } catch (error) {
     if (error instanceof Error && ["NOT_FOUND", "FORBIDDEN"].includes(error.message)) {

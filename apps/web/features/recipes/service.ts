@@ -1,14 +1,25 @@
 import {
   and,
+  asc,
   count,
   db,
   desc,
   eq,
+  gte,
+  ilike,
+  inArray,
   ingredients,
+  lte,
+  or,
+  recipeImages,
   recipeIngredients,
+  recipeRatings,
+  recipeSaves,
   recipes,
+  sql,
   userBrewingSettings,
-  userCustomIngredients
+  userCustomIngredients,
+  users
 } from "@nb/db";
 import {
   calculateAbv,
@@ -16,10 +27,13 @@ import {
   calculateColor,
   calculateOg,
   evaluateStyleFit,
+  getBeerStyleById,
   getStyleRangeById,
   type HopAdditionInput,
-  roundTo
+  roundTo,
+  srmToEbc
 } from "@nb/brewing-core";
+import { getBjcpStyleHeroImageByBjcpId } from "@nb/content";
 import {
   createRecipePayloadSchema,
   defaultRecipeProcessMeta,
@@ -41,8 +55,22 @@ import {
   type RecipePublicationState,
   type RecipeWaterPlanMeta,
   type RecipeVersionOptionDto,
+  type PublicRecipeFilters,
+  type PublicRecipeListItem,
+  type PublicRecipeListResult,
+  recipeRatingInputSchema,
+  type RecipeRatingDto,
+  type RecipeRatingSummary,
+  type RecipeSaveSummary,
   updateRecipePayloadSchema
 } from "./contracts";
+import {
+  resolveFamilyStyleScopes,
+  resolvePagination,
+  resolvePublicRecipeSort,
+  resolveStyleScope,
+  type PublicRecipeSortKey
+} from "./public-recipe-query";
 import { equipmentProfileSnapshotSchema, type EquipmentProfileSnapshot } from "../equipment-profiles/contracts";
 import { getRecipePublicationFieldErrors } from "./publication-validation";
 import { calculateRecipeFgEstimate } from "./fg-estimate";
@@ -994,6 +1022,10 @@ const mapRecipeDetailDto = async (
     waterPlanMeta: parseRecipeWaterPlanMeta(recipe.waterPlanMeta as Record<string, unknown> | null | undefined),
     brewPlanMeta: (recipe.brewPlanMeta as Record<string, unknown> | null | undefined) ?? null,
     heroImageId: recipe.heroImageId,
+    rating:
+      recipe.ratingCount > 0 && recipe.ratingAvg != null
+        ? { average: roundTo(recipe.ratingAvg, 1), count: recipe.ratingCount }
+        : null,
     versions: await listRecipeVersions(recipe.authorId, recipe.recipeFamilyId),
     ingredients: await Promise.all(sortRecipeIngredientsByDisplayOrder(ingredients).map((ingredient) => hydrateRecipeIngredientDto(recipe.authorId, ingredient)))
   };
@@ -1703,14 +1735,480 @@ export const getPublicRecipeBySlug = async (slug: string): Promise<RecipeDetailD
   return await mapRecipeDetailDto(recipe, recipe.ingredients);
 };
 
-export const listPublicRecipes = async (limit = 50): Promise<RecipeListItemDto[]> => {
-  const rows = await db.query.recipes.findMany({
-    where: eq(recipes.publicationState, "published"),
-    orderBy: [desc(recipes.updatedAt)],
-    limit
+const publicRecipeSortColumns = {
+  updatedAt: recipes.updatedAt,
+  abv: recipes.abv,
+  ibu: recipes.ibu,
+  color: recipes.color,
+  title: recipes.title,
+  rating: recipes.ratingAvg,
+  saveCount: recipes.saveCount
+} satisfies Record<PublicRecipeSortKey, unknown>;
+
+type PublicRecipeRow = {
+  id: string;
+  slug: string;
+  title: string;
+  authorId: string;
+  styleId: string | null;
+  og: number | null;
+  fg: number | null;
+  abv: number | null;
+  ibu: number | null;
+  color: number | null;
+  batchSizeNormalizedQuantity: number;
+  batchSizeNormalizedUnit: string;
+  updatedAt: Date;
+  heroImageId: string | null;
+  ratingAvg: number | null;
+  ratingCount: number;
+  saveCount: number;
+  authorDisplayName: string | null;
+  authorImage: string | null;
+  heroThumbKey: string | null;
+  heroBlurDataUrl: string | null;
+};
+
+const mapPublicRecipeListItem = (
+  row: PublicRecipeRow,
+  styleHeroImageByBjcpId: Map<string, string>
+): PublicRecipeListItem => {
+  const style = getBeerStyleById(row.styleId);
+  const colorSrm = row.color;
+  const heroImage =
+    row.heroImageId && row.heroThumbKey
+      ? { thumbUrl: `/api/recipe-images/${row.heroImageId}/thumb`, blurDataUrl: row.heroBlurDataUrl ?? null }
+      : null;
+  // Фото BJCP-стиля показываем только когда у рецепта нет своего фото.
+  const styleImageUrl = !heroImage && style ? styleHeroImageByBjcpId.get(style.bjcpId) ?? null : null;
+
+  return {
+    id: row.id,
+    slug: row.slug,
+    name: row.title,
+    author: {
+      id: row.authorId,
+      displayName: row.authorDisplayName ?? null,
+      image: row.authorImage ?? null
+    },
+    style: style ? { code: style.bjcpId, name: style.nameRu ?? style.name } : null,
+    og: row.og,
+    fg: row.fg,
+    abv: row.abv,
+    ibu: row.ibu,
+    colorSrm,
+    colorEbc: colorSrm == null ? null : roundTo(srmToEbc(colorSrm), 0),
+    batchSizeL: row.batchSizeNormalizedUnit === "ml" ? roundTo(row.batchSizeNormalizedQuantity / 1000, 2) : null,
+    method: null, // не персистится на рецепте (Phase A)
+    heroImage,
+    styleImageUrl,
+    cloneCount: 0, // клоны не трекаются (Phase A)
+    // count==0 → null → карточка покажет «Новый» (Phase D §3.4).
+    rating:
+      row.ratingCount > 0 && row.ratingAvg != null
+        ? { average: roundTo(row.ratingAvg, 1), count: row.ratingCount }
+        : null,
+    saveCount: row.saveCount,
+    publishedAt: row.updatedAt.toISOString()
+  };
+};
+
+/**
+ * Публичная витрина `/recipes`: фильтрация/сортировка/пагинация целиком в SQL
+ * (Drizzle), без N+1 (автор и hero-image — join-ами, стиль — из статических
+ * фикстур). Возвращает только `published`-рецепты.
+ */
+/**
+ * Число опубликованных рецептов в каждом семействе BJCP (`familyId -> count`).
+ * Семейства без рецептов в карту НЕ попадают — фильтр прячет пустые табы.
+ * Один `GROUP BY styleId` + маппинг через {@link resolveFamilyStyleScopes}
+ * (тот же резолвинг, что и в фильтре), без изменения URL/SQL-контракта витрины.
+ */
+export const getPublicRecipeFamilyCounts = async (): Promise<Record<string, number>> => {
+  const rows = await db
+    .select({ styleId: recipes.styleId, value: count() })
+    .from(recipes)
+    .where(eq(recipes.publicationState, "published"))
+    .groupBy(recipes.styleId);
+
+  const countByStyleId = new Map<string, number>();
+  for (const row of rows) {
+    if (row.styleId) {
+      countByStyleId.set(row.styleId, Number(row.value));
+    }
+  }
+
+  const familyScopes = await resolveFamilyStyleScopes();
+  const counts: Record<string, number> = {};
+  for (const [familyId, styleIds] of familyScopes) {
+    let total = 0;
+    for (const styleId of styleIds) {
+      total += countByStyleId.get(styleId) ?? 0;
+    }
+    if (total > 0) {
+      counts[familyId] = total;
+    }
+  }
+
+  return counts;
+};
+
+export const searchPublicRecipes = async (filters: PublicRecipeFilters): Promise<PublicRecipeListResult> => {
+  const conditions = [eq(recipes.publicationState, "published")];
+
+  if (filters.q) {
+    const term = `%${filters.q}%`;
+    const match = or(ilike(recipes.title, term), ilike(users.displayName, term));
+    if (match) {
+      conditions.push(match);
+    }
+  }
+
+  const styleScope = await resolveStyleScope(filters);
+  if (styleScope) {
+    // Пустой scope (неизвестное семейство) → inArray([]) → 0 строк, без падения.
+    conditions.push(inArray(recipes.styleId, styleScope));
+  }
+
+  if (filters.colorMinSrm != null) {
+    conditions.push(gte(recipes.color, filters.colorMinSrm));
+  }
+  if (filters.colorMaxSrm != null) {
+    conditions.push(lte(recipes.color, filters.colorMaxSrm));
+  }
+  if (filters.abvMin != null) {
+    conditions.push(gte(recipes.abv, filters.abvMin));
+  }
+  if (filters.abvMax != null) {
+    conditions.push(lte(recipes.abv, filters.abvMax));
+  }
+  if (filters.ibuMin != null) {
+    conditions.push(gte(recipes.ibu, filters.ibuMin));
+  }
+  if (filters.ibuMax != null) {
+    conditions.push(lte(recipes.ibu, filters.ibuMax));
+  }
+  // filters.method не применяется в Phase A — метод нигде не хранится.
+
+  const whereClause = and(...conditions);
+
+  const { limit, offset, page, pageSize } = resolvePagination(filters.page, filters.pageSize);
+  const sortPlan = resolvePublicRecipeSort(filters.sort);
+  const sortColumn = publicRecipeSortColumns[sortPlan.key];
+  // NULLS LAST (рейтинг): рецепты без оценок уходят в конец. drizzle desc()/asc()
+  // не выражают NULLS LAST → строим порядок через sql.
+  const primaryOrder = sortPlan.nullsLast
+    ? sql`${sortColumn} ${sql.raw(sortPlan.direction)} nulls last`
+    : sortPlan.direction === "asc"
+      ? asc(sortColumn)
+      : desc(sortColumn);
+  // Вторичный ключ updatedAt desc для стабильности (кроме случая, когда он же первичный).
+  const orderBy = sortPlan.key === "updatedAt" ? [primaryOrder] : [primaryOrder, desc(recipes.updatedAt)];
+
+  const rows = await db
+    .select({
+      id: recipes.id,
+      slug: recipes.slug,
+      title: recipes.title,
+      authorId: recipes.authorId,
+      styleId: recipes.styleId,
+      og: recipes.og,
+      fg: recipes.fg,
+      abv: recipes.abv,
+      ibu: recipes.ibu,
+      color: recipes.color,
+      batchSizeNormalizedQuantity: recipes.batchSizeNormalizedQuantity,
+      batchSizeNormalizedUnit: recipes.batchSizeNormalizedUnit,
+      updatedAt: recipes.updatedAt,
+      heroImageId: recipes.heroImageId,
+      ratingAvg: recipes.ratingAvg,
+      ratingCount: recipes.ratingCount,
+      saveCount: recipes.saveCount,
+      authorDisplayName: users.displayName,
+      authorImage: users.image,
+      heroThumbKey: recipeImages.storageKeyThumb,
+      heroBlurDataUrl: recipeImages.blurDataUrl
+    })
+    .from(recipes)
+    .leftJoin(users, eq(users.id, recipes.authorId))
+    .leftJoin(recipeImages, eq(recipeImages.id, recipes.heroImageId))
+    .where(whereClause)
+    .orderBy(...orderBy)
+    .limit(limit)
+    .offset(offset);
+
+  const totalRows = await db
+    .select({ value: count() })
+    .from(recipes)
+    .leftJoin(users, eq(users.id, recipes.authorId))
+    .where(whereClause);
+  const total = totalRows[0]?.value ?? 0;
+
+  // Фото BJCP-стилей (как на `/bjcp`) для рецептов без своего фото. Карта
+  // кешируется в `@nb/content`, так что это дешёвый lookup, не N+1.
+  const styleHeroImageByBjcpId = await getBjcpStyleHeroImageByBjcpId();
+
+  return {
+    items: rows.map((row) => mapPublicRecipeListItem(row, styleHeroImageByBjcpId)),
+    total,
+    page,
+    pageSize
+  };
+};
+
+// ─── Рейтинги публичных рецептов (Phase D, §3.4) ─────────────────────────────
+// Жёсткие правила (первый write-path): userId только с сервера; нельзя оценивать
+// свой рецепт; оценивать можно только published; UNIQUE(recipe,user) → upsert;
+// агрегаты rating_avg/rating_count пересчитываются транзакционно (row-lock).
+
+type RecipeRatingMutationExecutor = Pick<typeof db, "execute" | "select" | "insert" | "update" | "delete">;
+
+/** Лочит строку рецепта на время транзакции — сериализует пересчёт агрегатов. */
+const lockRecipeForRatingMutation = async (tx: RecipeRatingMutationExecutor, recipeId: string) => {
+  await tx.execute(sql`select ${recipes.id} from ${recipes} where ${recipes.id} = ${recipeId} for update`);
+};
+
+/**
+ * Пересчитывает денормализованные rating_avg/rating_count из источника
+ * (recipe_ratings) в ТОЙ ЖЕ транзакции, что и запись — расхождение невозможно.
+ */
+const recomputeRecipeRatingAggregates = async (
+  tx: RecipeRatingMutationExecutor,
+  recipeId: string
+): Promise<RecipeRatingSummary> => {
+  const [agg] = await tx
+    .select({ average: sql<number | null>`avg(${recipeRatings.stars})`, total: count() })
+    .from(recipeRatings)
+    .where(eq(recipeRatings.recipeId, recipeId));
+
+  const ratingCount = Number(agg?.total ?? 0);
+  const ratingAvg = ratingCount > 0 && agg?.average != null ? Number(agg.average) : null;
+
+  await tx.update(recipes).set({ ratingAvg, ratingCount }).where(eq(recipes.id, recipeId));
+
+  return { average: ratingAvg == null ? 0 : roundTo(ratingAvg, 1), count: ratingCount };
+};
+
+/** Текущая оценка пользователя по рецепту (для предзаполнения формы). */
+export const getUserRecipeRating = async (userId: string, recipeId: string): Promise<RecipeRatingDto | null> => {
+  const rating = await db.query.recipeRatings.findFirst({
+    where: and(eq(recipeRatings.recipeId, recipeId), eq(recipeRatings.userId, userId)),
+    columns: { stars: true, body: true }
   });
 
-  return rows.map(mapRecipeListDto);
+  return rating ? { stars: rating.stars, body: rating.body } : null;
+};
+
+/**
+ * Состояние оценивания для текущего пользователя (UX-гард формы): может ли он
+ * оценить рецепт (published и не свой) + его текущая оценка. Доменная логика —
+ * в сервисе, не в action/компоненте. Реальный запрет — в {@link rateRecipe}.
+ */
+export const getViewerRecipeRatingState = async (
+  userId: string,
+  recipeId: string
+): Promise<{ canRate: boolean; rating: RecipeRatingDto | null }> => {
+  const recipe = await db.query.recipes.findFirst({
+    where: eq(recipes.id, recipeId),
+    columns: { authorId: true, publicationState: true }
+  });
+
+  const canRate = !!recipe && recipe.publicationState === "published" && recipe.authorId !== userId;
+  const rating = await getUserRecipeRating(userId, recipeId);
+
+  return { canRate, rating };
+};
+
+/**
+ * Создаёт или обновляет оценку (upsert по UNIQUE(recipe_id,user_id)) и
+ * пересчитывает агрегаты в той же транзакции. Бросает OWN_RECIPE при попытке
+ * оценить свой рецепт, NOT_FOUND/FORBIDDEN для несуществующего/неопубликованного.
+ */
+export const rateRecipe = async (
+  userId: string,
+  recipeId: string,
+  payload: unknown
+): Promise<RecipeRatingSummary> => {
+  const input = recipeRatingInputSchema.parse(payload);
+
+  return await db.transaction(async (tx) => {
+    // Лочим строку рецепта первой, затем читаем published/author ПОД локом —
+    // нет TOCTOU между проверкой и записью/пересчётом агрегатов.
+    await lockRecipeForRatingMutation(tx, recipeId);
+
+    const [recipe] = await tx
+      .select({ authorId: recipes.authorId, publicationState: recipes.publicationState })
+      .from(recipes)
+      .where(eq(recipes.id, recipeId))
+      .limit(1);
+
+    if (!recipe) {
+      throw new Error("NOT_FOUND");
+    }
+    if (recipe.publicationState !== "published") {
+      throw new Error("FORBIDDEN");
+    }
+    if (recipe.authorId === userId) {
+      throw new Error("OWN_RECIPE");
+    }
+
+    await tx
+      .insert(recipeRatings)
+      .values({ recipeId, userId, stars: input.stars, body: input.body })
+      .onConflictDoUpdate({
+        target: [recipeRatings.recipeId, recipeRatings.userId],
+        set: { stars: input.stars, body: input.body, updatedAt: new Date() }
+      });
+
+    return await recomputeRecipeRatingAggregates(tx, recipeId);
+  });
+};
+
+/** Удаляет оценку пользователя и пересчитывает агрегаты в той же транзакции. */
+export const deleteRecipeRating = async (userId: string, recipeId: string): Promise<RecipeRatingSummary> => {
+  return await db.transaction(async (tx) => {
+    await lockRecipeForRatingMutation(tx, recipeId);
+
+    await tx
+      .delete(recipeRatings)
+      .where(and(eq(recipeRatings.recipeId, recipeId), eq(recipeRatings.userId, userId)));
+
+    return await recomputeRecipeRatingAggregates(tx, recipeId);
+  });
+};
+
+// ─── Сохранения публичных рецептов («Избранное») ─────────────────────────────
+// Аналог рейтинга: userId только с сервера; сохранять можно только published;
+// UNIQUE(recipe,user) → idempotent; денормализованный save_count пересчитывается
+// транзакционно под row-lock рецепта (тот же лок, что и у рейтинга).
+
+/** Пересчитывает денормализованный save_count из источника (recipe_saves). */
+const recomputeRecipeSaveCount = async (
+  tx: RecipeRatingMutationExecutor,
+  recipeId: string
+): Promise<number> => {
+  const [agg] = await tx
+    .select({ total: count() })
+    .from(recipeSaves)
+    .where(eq(recipeSaves.recipeId, recipeId));
+
+  const saveCount = Number(agg?.total ?? 0);
+  await tx.update(recipes).set({ saveCount }).where(eq(recipes.id, recipeId));
+
+  return saveCount;
+};
+
+/**
+ * Сохраняет/снимает рецепт из «Избранного» текущего пользователя и пересчитывает
+ * save_count в той же транзакции. Сохранять можно только опубликованный рецепт
+ * (NOT_FOUND/FORBIDDEN иначе). Идемпотентно: повторный save не плодит строк.
+ */
+export const setRecipeSave = async (
+  userId: string,
+  recipeId: string,
+  next: boolean
+): Promise<RecipeSaveSummary> => {
+  return await db.transaction(async (tx) => {
+    await lockRecipeForRatingMutation(tx, recipeId);
+
+    const [recipe] = await tx
+      .select({ publicationState: recipes.publicationState })
+      .from(recipes)
+      .where(eq(recipes.id, recipeId))
+      .limit(1);
+
+    if (!recipe) {
+      throw new Error("NOT_FOUND");
+    }
+    if (recipe.publicationState !== "published") {
+      throw new Error("FORBIDDEN");
+    }
+
+    if (next) {
+      await tx
+        .insert(recipeSaves)
+        .values({ recipeId, userId })
+        .onConflictDoNothing({ target: [recipeSaves.recipeId, recipeSaves.userId] });
+    } else {
+      await tx
+        .delete(recipeSaves)
+        .where(and(eq(recipeSaves.recipeId, recipeId), eq(recipeSaves.userId, userId)));
+    }
+
+    const saveCount = await recomputeRecipeSaveCount(tx, recipeId);
+    return { saved: next, count: saveCount };
+  });
+};
+
+/** Сохранён ли рецепт текущим пользователем (для подсветки флажка). */
+export const getViewerRecipeSaveState = async (
+  userId: string,
+  recipeId: string
+): Promise<{ saved: boolean }> => {
+  const save = await db.query.recipeSaves.findFirst({
+    where: and(eq(recipeSaves.recipeId, recipeId), eq(recipeSaves.userId, userId)),
+    columns: { id: true }
+  });
+
+  return { saved: !!save };
+};
+
+/**
+ * Батч-проверка: какие из `recipeIds` сохранены текущим пользователем. Возвращает
+ * Set сохранённых id — витрина грузит состояние флажков одним запросом после
+ * гидрации, не де-кэшируя сам документ.
+ */
+export const getSavedRecipeIds = async (userId: string, recipeIds: string[]): Promise<Set<string>> => {
+  if (recipeIds.length === 0) {
+    return new Set();
+  }
+
+  const rows = await db
+    .select({ recipeId: recipeSaves.recipeId })
+    .from(recipeSaves)
+    .where(and(eq(recipeSaves.userId, userId), inArray(recipeSaves.recipeId, recipeIds)));
+
+  return new Set(rows.map((row) => row.recipeId));
+};
+
+/**
+ * Сохранённые пользователем рецепты («Избранное») — только published, в порядке
+ * сохранения (новые сверху). Маппинг — через тот же {@link mapPublicRecipeListItem}.
+ */
+export const listSavedRecipes = async (userId: string): Promise<PublicRecipeListItem[]> => {
+  const rows = await db
+    .select({
+      id: recipes.id,
+      slug: recipes.slug,
+      title: recipes.title,
+      authorId: recipes.authorId,
+      styleId: recipes.styleId,
+      og: recipes.og,
+      fg: recipes.fg,
+      abv: recipes.abv,
+      ibu: recipes.ibu,
+      color: recipes.color,
+      batchSizeNormalizedQuantity: recipes.batchSizeNormalizedQuantity,
+      batchSizeNormalizedUnit: recipes.batchSizeNormalizedUnit,
+      updatedAt: recipes.updatedAt,
+      heroImageId: recipes.heroImageId,
+      ratingAvg: recipes.ratingAvg,
+      ratingCount: recipes.ratingCount,
+      saveCount: recipes.saveCount,
+      authorDisplayName: users.displayName,
+      authorImage: users.image,
+      heroThumbKey: recipeImages.storageKeyThumb,
+      heroBlurDataUrl: recipeImages.blurDataUrl
+    })
+    .from(recipeSaves)
+    .innerJoin(recipes, eq(recipes.id, recipeSaves.recipeId))
+    .leftJoin(users, eq(users.id, recipes.authorId))
+    .leftJoin(recipeImages, eq(recipeImages.id, recipes.heroImageId))
+    .where(and(eq(recipeSaves.userId, userId), eq(recipes.publicationState, "published")))
+    .orderBy(desc(recipeSaves.createdAt));
+
+  const styleHeroImageByBjcpId = await getBjcpStyleHeroImageByBjcpId();
+  return rows.map((row) => mapPublicRecipeListItem(row, styleHeroImageByBjcpId));
 };
 
 export const previewRecipeDraft = async (authorId: string, payload: unknown): Promise<RecipeDraftPreviewDto> => {

@@ -22,9 +22,7 @@ export default async function ProfilePage() {
         </select>
         <button className="rounded bg-black px-3 py-2 text-white" type="submit">Сохранить</button>
       </form>
-      <form action="/api/auth/logout" method="post">
-        <button className="rounded border px-3 py-2" type="submit">Выйти</button>
-      </form>
+      <p className="text-xs text-zinc-400">Выйти из аккаунта можно через меню профиля в шапке.</p>
     </section>
   );
 }
