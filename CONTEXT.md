@@ -1,643 +1,403 @@
 # CONTEXT.md
 
-Для агентов, если страница редиректит на /login и требует логин, для тестов можно использовать логин qa.admin@localhost и raw token - видно в логах при попытке войти
+> **Канонический контекст проекта NB.** Это главный документ: что это, как устроено, что реализовано, какие инварианты и правила.
+> Читать первым. Краткая памятка для агентов — `CLAUDE.md`. Онбординг/запуск — `README.md`.
+> Глубокие технические референсы по подсистемам — в `docs/reference/` (см. раздел 16).
+>
+> **Обновлено:** 2026-06-25.
+> Если документ и код расходятся — **код важнее**; документ синхронизируй или явно отмечай расхождение.
 
-Файл синхронизирован с текущим состоянием репозитория по коду на 2026-04-06.
-Это уже не только беклог, но и описание фактической архитектуры, от которой нужно отталкиваться.
+---
 
 ## 1. Что это за проект
 
-Это web-first платформа для домашних пивоваров.
+**NB** — web-first платформа для домашних пивоваров (homebrewing). Не forum-first, не store-first.
 
-Проект по-прежнему строится вокруг практического workflow, а не вокруг форума или магазина:
+**Продуктовый workflow:**
+```
+Каталог ингредиентов / Мой каталог → Мой склад (инвентарь) → Рецепты → Public recipes → BJCP/контент
+```
 
-**Каталог ингредиентов / Мой каталог → Мой склад → Рецепты → Public recipes → BJCP / контент**
-
-Главная продуктовая ценность:
-- вести свои ингредиенты и свои пользовательские карточки ингредиентов,
-- хранить склад с нормализованными единицами,
-- собирать рецепты из структурированных ингредиентов,
-- публиковать рецепты,
-- развивать публичный BJCP / knowledge-base слой поверх доменного ядра.
-
-Это не forum-first и не store-first продукт.
-
----
-
-## 2. Главная цель текущей разработки
-
-Проект уже вышел за рамки “только foundation”.
-
-Текущая цель:
-- удерживать проект как **modular monolith**,
-- не плодить вторую архитектуру рядом с уже существующей,
-- закрепить фактический source of truth для catalog / inventory / recipes / public content,
-- следующую крупную продуктовую фазу строить как **реальный Match Engine**, а не как новый параллельный слой.
-
-Отдельная практическая цель этого файла:
-- убрать расхождение между старым планом и реальным кодом,
-- зафиксировать, что уже сделано,
-- зафиксировать, что сделано сверх старого плана,
-- зафиксировать, что еще действительно не реализовано.
+**Продуктовые цели:**
+- Вести карточки кастомных ингредиентов и личный каталог
+- Нормализовать и хранить инвентарь со стандартизованными единицами
+- Собирать рецепты из структурированных ингредиентов
+- Публиковать рецепты публично, давать сообществу discovery (фильтры, рейтинги, сохранения)
+- Развивать BJCP/knowledge-base слой поверх доменного ядра
+- В будущем: Match Engine (рецепт vs склад), Brew Session (трекинг варки)
 
 ---
 
-## 3. Архитектурная модель
+## 2. Архитектура, стек и инварианты
 
-Проект развивается как **modular monolith**.
+**Архитектура:** Modular monolith — один runtime (`apps/web`), одна БД PostgreSQL, монорепо (npm workspaces). Доменная логика — в reusable пакетах и feature-сервисах. Без микросервисов и без второй параллельной архитектуры.
 
-### Основные принципы
-- один основной runtime: `apps/web`
-- одна база данных PostgreSQL
-- один репозиторий / monorepo
-- feature/service-oriented структура
-- общая доменная логика в reusable пакетах и feature services
-- никакой лишней микросервисности
+**Стек:**
+- Next.js 15 (App Router) + React 18 + TypeScript strict
+- Tailwind CSS + shadcn-style примитивы (`@nb/ui`)
+- PostgreSQL + Drizzle ORM (`@nb/db`)
+- Tiptap (rich text), @dnd-kit (drag&drop), sharp (обработка картинок)
+- @aws-sdk/client-s3 (storage), Sentry + PostHog (наблюдаемость)
+- Vitest (тесты), Docker Compose (локальная инфра: PostgreSQL 16 + Mailpit)
 
-### Реальные модули, на которые уже опирается runtime
-- `apps/web` — основной Next.js runtime
-- `packages/db` — схема БД, миграции, seed/reset/scripts
-- `packages/auth` — auth/session/password/OAuth foundation
-- `packages/brewing-core` — расчеты, style fit, brew-steps foundation
-- `packages/content` — BJCP/content data layer
-- `packages/ui` — shared UI primitives
-- `packages/shared` — shared contracts/utils
-- `packages/search` — пока **scaffold**, не основной search runtime
+### Архитектурные инварианты (соблюдаются, нарушать нельзя)
 
-### Что сейчас считать source of truth
-- DB schema/model layer в `packages/db/src/schema.ts`
-- service layer в `apps/web/features/*`
-- contracts в `apps/web/features/*/contracts.ts`
-- reusable domain packages: `@nb/auth`, `@nb/brewing-core`, `@nb/content`
-- shared ingredient search/picker foundation:
-  - `apps/web/features/ingredients/service.ts`
-  - `apps/web/features/ingredients/catalog-service.ts`
-  - `apps/web/features/ingredients/picker-quick-start.ts`
-  - `apps/web/components/ingredients/ingredient-picker.tsx`
-  - `apps/web/app/api/ingredients/picker-quick-start/route.ts`
-
-### Важный текущий архитектурный нюанс
-- фактический runtime-каталог сейчас живет в основном на `ingredients` + `ingredient_aliases` + `ingredient_sources` + `ingredient_package_variants`
-- таблица `ingredient_catalog_items` и связанный с ней старый слой остаются в схеме как исторический / совместимый слой, но **не являются основным app-level read/write path**
-- пакет `@nb/search` подключен, но логика реального ingredient search сейчас живет не там, а в `apps/web/features/ingredients/*`
+1. **Ingredient identity** — ингредиенты это сущности (catalog или user custom), а не free-text. Для inventory и recipes нельзя использовать свободный текст как primary identity, если есть source linkage.
+2. **Единый ingredient picker / search foundation** — один `IngredientPicker` и один search flow для catalog/inventory/recipes. Не делать второй picker и второй поиск.
+3. **Entered + normalized единицы** — хранятся обе: введённое пользователем значение и каноничное нормализованное. Нормализация только на сервере, никогда на клиенте.
+4. **Ownership & permissions на сервере** — нельзя редактировать чужой inventory / custom ingredient / private recipe; admin/content-доступ не должен зависеть только от скрытых кнопок в UI.
+5. **Доменная логика в service layer** — расчёты, нормализация, access rules, publication gating, merge logic живут в `features/*` / domain-пакетах, а не в страницах/компонентах.
+6. **Public recipe access** — только через recipe service (`getPublicRecipeBySlug`, `listPublicRecipes`); slug/visibility/publication gating проверяются серверно.
+7. **Content/BJCP слой** — file-backed через `@nb/content`; не дублировать ad-hoc file parsing в page layer.
+8. **Reuse over rebuild** — расширять существующие сервисы/контракты/компоненты, а не строить параллельные слои.
 
 ### Что нельзя делать
-- писать ad-hoc DB queries прямо в page layer, если уже есть service
-- дублировать business logic в UI
-- дублировать normalization logic в клиенте
-- делать второй независимый ingredient picker или второй search flow
-- строить новые фичи на `@nb/search` scaffold, если задача не про развитие самого пакета
-- строить новый “catalog v3” рядом с текущим working catalog runtime
+- писать ad-hoc DB-запросы прямо в page/route layer, если есть сервис
+- дублировать business logic или normalization в UI
+- делать второй ingredient picker / второй search flow
+- строить новые фичи на `@nb/search` scaffold (это не основной search runtime)
+- строить «catalog v3» рядом с текущим working catalog runtime на таблицах `ingredients`
 
 ---
 
-## 4. Ключевые доменные сущности
+## 3. Раскладка монорепо, source of truth, команды
 
-### Catalog runtime
-- `ingredients`
-- `ingredient_aliases`
-- `ingredient_sources`
-- `ingredient_package_variants`
-- `proposed_ingredients`
+```
+apps/web              — основной рантайм (Next.js)
+  app/                — роуты: (public), (app), (admin), api/
+  features/*          — service layer + contracts.ts
+  components/         — UI компоненты
+  lib/                — утилиты, auth gating
+  tests/              — vitest
+packages/
+  @nb/db              — schema, миграции, seed/reset
+  @nb/auth            — session/password/OAuth/OTP/magic-link
+  @nb/brewing-core    — расчёты, style fit, brew-steps
+  @nb/content         — BJCP/контент data layer (file-backed)
+  @nb/ui              — UI-примитивы (shadcn-style)
+  @nb/shared          — env-контракты, общие утилиты
+  @nb/search          — ТОЛЬКО scaffold, не основной search runtime
+```
 
-### User-owned ingredient layer
-- `user_custom_ingredients`
-- user catalog DTO / view layer через `catalog-service`
+**Source of truth:**
+- DB-модель: `packages/db/src/schema.ts`
+- Service layer: `apps/web/features/*` + `features/*/contracts.ts`
+- Domain-пакеты: `@nb/auth`, `@nb/brewing-core`, `@nb/content`
+- Runtime-каталог живёт на таблицах `ingredients` + `ingredient_aliases` + `ingredient_sources` + `ingredient_package_variants`. Таблица `ingredient_catalog_items` — **legacy слой** в схеме, не основной read/write path.
 
-### Inventory
-- `user_ingredients`
-
-### Recipes
-- `recipes`
-- `recipe_ingredients`
-- `recipeFamilyId` + `versionNumber` как basis для versioning
-
-### Supporting/system entities
-- `system_currency_rates`
-- auth/session tables
-
-Старые термины из раннего контекста вроде `IngredientCatalogItem` по смыслу все еще полезны, но в реальном runtime им уже не всегда соответствует одноименная working-модель.
-
----
-
-## 5. Главные архитектурные инварианты
-
-## 5.1 Ingredient identity
-Ингредиенты должны быть **сущностями**, а не free-text строками.
-
-Правильный linkage:
-- catalog ingredient entity
-- или user custom ingredient entity
-
-Для inventory и recipes нельзя использовать свободный текст как primary identity, если уже есть source linkage.
+**Команды (из корня):**
+- `npm run dev` — авто `db:migrate` + `db:seed`, затем Next.js
+- `npm run build` / `lint` / `typecheck` / `test` — по всем workspace
+- `npm run db:generate | db:migrate | db:seed | db:reset`
+- `npx tsc -p apps/web/tsconfig.json --noEmit` — точечный typecheck web
+- QA: `npm run seed:dev-user -- --email <e> --role <r>`, `npm run set-role`, `npm run seed:qa`
 
 ---
 
-## 5.2 Shared ingredient picker и shared search foundation
-Если нужен поиск/выбор ингредиента, использовать существующую shared foundation:
-- `IngredientPicker`
-- `searchUserCatalogIngredients`
-- `listIngredientPickerQuickStart`
-- `getIngredientSuggestionByRef`
-- `/api/ingredients/search`
-- `/api/ingredients/picker-quick-start`
+## 4. Маршруты / страницы (что реализовано)
 
-Это включает и zero-query/preset behavior:
-- malt quick-start
-- manufacturer/group refinements
-- favorites/custom scopes
-- recent selections hydration
+### Публичные роуты `(public)` — без авторизации
 
-Нельзя:
-- делать отдельный picker для recipes
-- делать отдельный picker для inventory
-- делать отдельный search flow для catalog detail / create flows
-- делать отдельный zero-query ingredient chooser рядом с existing quick-start
+| URL | Что реализовано |
+|-----|-----------------|
+| `/` | Главная. Hero про BJCP, featured-статьи, feature-карточки, ссылки на BJCP/калькуляторы/рецепты |
+| `/calculators`, `/calculators/[slug]` | Каталог калькуляторов и конкретный калькулятор (client component, инпуты из query, static generation) |
+| `/catalog`, `/catalog/*` | **Публичный каталог ингредиентов** (список/детали/custom/new). User-only действия гейтятся для залогиненных |
+| `/articles`, `/articles/[slug]` | Legacy-редиректы на `/bjcp` и `/bjcp/[slug]` |
+| `/recipes` | Список публичных рецептов с **discovery**: фильтры (sidebar/sheet), range-слайдеры (OG/FG/ABV/IBU/SRM), style-picker, цветовая шкала, пагинация, URL-state |
+| `/recipes/[slug]` | Публичный рецепт по slug, полная инфа, рейтинг/сохранение, rich SEO-метаданные |
+| `/recipes/id/[id]` | Legacy ID-роут → редирект на slug |
+| `/bjcp`, `/bjcp/[slug]` | Каталог стилей BJCP и страница стиля/статьи, static params, SEO, related |
+| `/login` | Мультиметодная авторизация: OTP, Magic Link, Password, OAuth (Google/VK/Yandex) |
 
----
+### Авторизованные роуты `(app)` — требуют логин (`requireUser()`), обёрнуты в `AppShell`
 
-## 5.3 Entered vs normalized units
-Для inventory и recipes сохраняются:
-- введенное пользователем значение (`entered`)
-- каноническое нормализованное значение (`normalized`)
+| URL | Что реализовано |
+|-----|-----------------|
+| `/app` | Дашборд: приветствие, статы (рецепты, in-stock, всего на складе), action-карточки, утилитарные ссылки |
+| `/app/recipes` | Список своих рецептов |
+| `/app/recipes/new` | Создание/редактирование рецепта (query `recipeId`, `addSource`+`addId`) |
+| `/app/recipes/[id]` → `/edit` | Полный редактор рецепта (owned, 404 если не владелец) |
+| `/app/saved` | **Избранное** — сохранённые публичные рецепты (`listSavedRecipes`) |
+| `/app/ingredients` | Мой склад/инвентарь, фильтры, сортировка, inline-редактирование |
+| `/app/equipment` | Профили оборудования (CRUD, default, дублирование) |
+| `/profile`, `/settings` | Профиль (email/роль read-only, displayName, preferred currency); `/settings`→`/profile` |
 
-Normalization должна происходить серверно через reusable helpers/service/domain layer.
+> Примечание: каталог переехал в публичную зону (`(public)/catalog`, URL `/catalog`); в `(app)` остались user-only flows.
 
-Нельзя переносить источник истины по normalization на клиент.
+### Админ-роуты `(admin)` — требуют роль editor+ (`requireContentRole("editor")`)
 
----
+| URL | Роль | Что |
+|-----|------|-----|
+| `/admin` | editor | Навигационный хаб |
+| `/admin/articles`, `/admin/articles/new` | editor | Контент-студия BJCP + Tiptap-редактор (лаборатория, не персистит в БД) |
+| `/admin/ingredients` (+ `/new`, `/[id]`) | admin | Админ-каталог: фильтры, пагинация, статы, faceted-навигация, CRUD |
+| `/admin/ingredients/moderation` | moderator | Очередь модерации предложенных ингредиентов |
+| `/admin/ingredients/merge` | moderator | Merge дубликатов (query `sourceId`, `targetId`) |
+| `/admin/settings/currency` | admin | Курсы валют (RUB база, USD→RUB, EUR→RUB) |
 
-## 5.4 Ownership and permissions
-Ownership и роли проверяются серверно.
-
-Примеры:
-- пользователь не может редактировать чужой inventory
-- пользователь не может редактировать чужие custom ingredients
-- пользователь не может редактировать чужой private recipe
-- admin/content access не должен зависеть только от скрытых кнопок в UI
-
----
-
-## 5.5 Domain logic location
-Calculations, normalization, access rules, publication gating, merge logic и доменные проверки живут в:
-- service layer
-- domain helpers
-- reusable contracts/packages
-
-А не в page components.
+### Прочее / Layouts
+- `/ui-playground` — внутренний QA-инструмент (демо picker, showcase UI, тест PostHog/Sentry)
+- Root layout: Providers, SiteFooter, шрифты. `(public)`: SiteHeader. `(app)`: requireUser + AppShell. `(admin)`: requireContentRole("editor")
 
 ---
 
-## 5.6 Current catalog runtime
-Если работа идет с catalog / ingredients, основной runtime сегодня — это:
-- `features/ingredients/service.ts`
-- `features/ingredients/catalog-service.ts`
-- `features/ingredients/presentation.ts`
-- `features/ingredients/technical-fields.ts`
+## 5. API роуты
 
-Не строить новые фичи так, как будто главным working source of truth является `ingredient_catalog_items`, если задача не про целевую миграцию / cleanup.
+### Auth (`/api/auth/*`)
+- `POST /logout`; `POST /otp` (request|verify); `POST /magic` + `GET /magic` (callback); `POST /password` (login|signup|request-reset|reset); `GET /oauth/{google|vk|yandex}` + `/callback`
 
----
+### Ingredients (`/api/ingredients/*`) — auth
+- `GET /search` — поиск по каталогу (system+custom), множество фильтров
+- `POST /picker-quick-start` — подсказки для picker (recent + popular)
+- `POST /proposals` — предложение ингредиента в модерацию
+- `GET /custom` — кастомные ингредиенты юзера
 
-## 5.7 Public recipe layer
-Public recipe access должен идти через recipe service:
-- `getPublicRecipeBySlug`
-- `getPublicRecipeById`
-- `listPublicRecipes`
+### Recipe Images (`/api/recipe-images/*`) — Node runtime
+- `POST /upload` — 4 варианта (original/large/medium/thumb) + blur hash; лимиты 8 картинок/рецепт, 10MB/файл, 40MB/рецепт
+- `GET /[imageId]/[variant]` — отдача варианта
 
-Slug, visibility и publication gating должны проверяться серверно.
+### Inventory (`/api/inventory/*`) — auth
+- `GET /suggestions` — автокомплит по складу
 
----
-
-## 5.8 Content / BJCP layer
-BJCP/content слой сейчас file-backed через `@nb/content`.
-
-Это значит:
-- BJCP данные не живут в article CMS в БД
-- Tiptap editor сейчас foundation/lab, а не основной persistence layer
-- для BJCP/public content нельзя дублировать ad-hoc file parsing в page layer, если уже есть `@nb/content`
+### Admin (`/api/admin/*`)
+- `GET|POST /ingredients`, `GET|PATCH|DELETE /ingredients/[id]` (admin); `POST /ingredients/merge` (moderator); `GET /proposed-ingredients`, `PATCH /proposed-ingredients/[id]` (moderator)
 
 ---
 
-## 6. Текущее состояние проекта
+## 6. Аутентификация и авторизация
 
-Ниже — обновленная карта этапов и их реальный статус.
+**Файл:** `apps/web/lib/auth.ts`. Кастомный `@nb/auth`, HTTP-only cookie `nb_session`.
 
----
+| Функция | Назначение |
+|---------|-----------|
+| `getSessionUser()` | Текущая сессия из cookie + верификация. Dev-автологин если задан `DEV_AUTH_EMAIL` (вне prod) |
+| `requireUser()` | Требует логин, иначе редирект `/login` |
+| `requireRole(role)` | Требует роль (user=1, editor=2, moderator=3, admin=4) |
+| `establishSession(userId)` / `logout()` | Создать / отозвать сессию |
 
-## Stage 0 — Foundation / Infra
-### Статус: завершено
+Также `features/content/permissions.ts`: `canEditDrafts` (editor), `canModerate`/`canPublish`/`canFeatureOnHome` (moderator), `canAdminister` (admin).
 
-Уже есть:
-- monorepo / workspace setup
-- основной app runtime
-- DB layer
-- migrations
-- env/config foundation
-- base UI/system layer
-- build/test/typecheck path
-- Docker Compose для локальной infra
-- seed/reset/dev QA scripts
-- Sentry / PostHog / storage skeleton
-- sitemap foundation
+**Методы входа:** Password, OTP (6 цифр), Magic Link, OAuth (Google/VK/Yandex). TTL: сессия 30 дней, OTP 10 мин, magic link / reset 20 мин.
+
+**Dev-автологин:** `DEV_AUTH_EMAIL` в `.env` (жёстко отключён при `NODE_ENV=production`).
 
 ---
 
-## Stage 1 — Auth / Access
-### Статус: завершено и расширено
+## 7. Feature / service layer (`apps/web/features/*`)
 
-Уже есть:
-- auth foundation
-- `requireUser` / `requireRole` / `getSessionUser`
-- roles / access model (`user`, `editor`, `moderator`, `admin`)
-- protected app/admin/content routes
-- ownership-safe patterns
-- cookie sessions
-- password auth
-- OTP sign-in
-- magic link sign-in
-- password reset flow
-- OAuth providers: Google / VK / Yandex
-- profile/settings update flow
+| Feature | Назначение | Ключевое |
+|---------|-----------|----------|
+| **ingredients** | Каталог: search, ranking, admin, custom, таксономии, модерация | `service.ts`, `catalog-service.ts`, `ranking.ts`, `technical-fields.ts`, `presentation.ts`, `taxonomy.ts`, `normalization.ts`, `water-treatment.ts`, `consumables.ts`, `picker-quick-start.ts`, `user-metadata-service.ts` |
+| **inventory** | Склад: CRUD, фильтры, сортировка, цены/валюты, suggestions, consume | `service.ts`, `consume.ts`, `purchase-cost.ts`, `custom-ingredient.ts`, `display.ts`, `units.ts`, `pack.ts` |
+| **recipes** | Рецепты: CRUD, версии, расчёты, water-план, equipment, публикация, **public discovery, рейтинги, сохранения** | `service.ts`, `public-recipe-query.ts`, `recipes-url.ts`, `style-search.ts`, `range-slider.ts`, `water-plan.ts`, `water-*.ts`, `fg-estimate.ts`, `beer-color.ts`, `inventory-service.ts` (stock coverage), `publication-validation.ts`, `units.ts` |
+| **equipment / equipment-profiles** | Пресеты и конфигурация оборудования юзера | list/get/create/duplicate/setDefault/update/delete |
+| **content** | BJCP-каталог, отображение статей, role-based модерация | `bjcp-catalog.ts`, `permissions.ts` |
+| **recipe-images** | Загрузка/обработка/хранение фото (варианты + blur hash) | `service.ts`, S3-адаптер |
+| **calculators** | Каталог калькуляторов (статические определения) | `catalog.ts` |
+| **brew-batches** | Brew-сессии из рецептов (immutable snapshot) | `createBrewBatchFromRecipe`, `updateBrewBatchStatus`, `brew-plan.ts` |
+| **brew-controller** | Абстракция hardware-провайдеров (RAPT Cloud и пр.) | `rapt-cloud-provider.ts` (интерфейсы) |
+| **system** | Валюты, деньги (минорные единицы, Intl-форматирование) | `currency.ts`, `money.ts` |
 
----
+**Рейтинги/сохранения:** реализованы в `features/recipes/service.ts` + server actions (`(public)/recipes/save-actions.ts`, `(public)/recipes/[slug]/actions.ts`). Звёзды 1–5, агрегаты денормализованы на `recipes` (`rating_avg`, `rating_count`, `save_count`), пересчёт транзакционно в сервисе.
 
-## Stage 2 — Brewing Core
-### Статус: завершено и расширено
-
-Уже есть:
-- reusable brewing calculations
-- units/conversions foundation
-- OG / FG / ABV / IBU / color / scaling / priming / hydrometer helpers
-- ingredient schemas/types
-- style ranges + style-fit foundation
-- basis for recipe stats
-- brew-steps schemas/generator foundation
-
-Это уже больше, чем изначальное “только recipe stats helpers”.
+**Match Engine (рецепт vs склад)** — пока groundwork: source linkage + нормализованные количества есть, но матчинга / percent match / missing-ingredients UI ещё нет.
 
 ---
 
-## Stage 3 — Ingredient Catalog Foundation / Catalog V2
-### Статус: завершено и сильно расширено
+## 8. База данных (`packages/db/src/schema.ts`)
 
-Уже есть:
-- рабочий catalog runtime на `ingredients`
-- aliases
-- sources
-- package variants
-- technical fields для malt / hop / yeast / consumable / water treatment
-- display modes / localized labels / country/brand presentation
-- search + ranking + fuzzy-ish query handling
-- transliteration / keyboard layout swap / alias-aware search
-- shared `IngredientPicker`
-- shared zero-query malt quick-start (`brand/family/recent`)
-- admin ingredient management
-- moderation queue
-- proposed ingredient flow
-- duplicate merge flow
-- usage-aware merge with inventory/recipe relinking
-- catalog list/detail pages
-- пользовательский каталог `/app/catalog`
-- own custom ingredient cards с derivation from catalog item
+### Enums (основные)
+`userRole` (user/editor/moderator/admin), `verificationType`, `ingredientType`, `ingredientStatus` (draft/active/archived/merged), `hopForm`, `yeastType/yeastForm`, `inventoryUnitDimension` (weight/volume/count), `inventoryPriceInputMode` (total/per_display_unit), `systemCurrency` (RUB/USD/EUR), `recipePublicationState` (draft/private/published), `recipeIngredientStage`, `recipeInventoryAllocationStatus`, `inventoryTransactionType`, `brewBatchStatus`, `recipeImageStatus`.
 
-Важное расхождение со старым `CONTEXT.md`:
-- runtime уже ушел от старой простой модели `IngredientCatalogItem`
-- working source today — richer catalog stack на `ingredients`-таблицах и `catalog-service`
+### Таблицы по доменам
 
-Что еще не доведено до конца:
-- family/match-policy groundwork в runtime пока почти не используется как продуктовая фича
-- старый/новый catalog layers не сведены в одну окончательную официальную модель на уровне документации и cleanup
+**Auth/User:** `users`, `sessions`, `accounts` (OAuth), `verifications`, `authRateLimits`.
+
+**Система:** `systemCurrencyRates` (rubMinorPerUnit), `systemEvents`.
+
+**Каталог ингредиентов:** `ingredients` (основной runtime), `ingredientAliases`, `ingredientSources`, `ingredientPackageVariants`, `ingredientFamilies` (matchPolicy: exact_only/family_compatible), `ingredientCatalogItems` (**legacy**), `proposedIngredients` (очередь модерации).
+
+**Пользовательский домен:** `userCustomIngredients`, `userIngredientPreferences` (isFavorite), `userIngredientPurchaseLinks`, `userIngredients` (**инвентарь**: entered+normalized, pricing в минорных единицах + валюта, purchasedAt, freshnessDate, archivedAt), `userBrewingSettings`.
+
+**Оборудование:** `equipmentProfiles` (targetBatchVolumeL, brewhouseEfficiencyPct, evaporationRateLPerHr, grainAbsorptionLPerKg, hopUtilizationFactor, altitudeM, isDefault).
+
+**Рецепты:**
+- `recipes` — authorId, recipeFamilyId + versionNumber, publicationState, slug (UNIQUE), batchSize (entered+normalized), og/fg/abv/ibu/color, `rating_avg` / `rating_count` / `save_count` (денормализованные агрегаты), JSONB meta (processMeta/calculationMeta/waterPlanMeta/brewPlanMeta/equipmentProfileSnapshot), heroImageId
+- `recipeIngredients` — persistentKey (стабилен между версиями), source linkage, amount (entered+normalized), stage, timeOffset, stepMeta
+- `recipeImages` — storageKey по вариантам, blurDataUrl, isCover, status, soft-delete
+- `recipeRatings` — stars 1–5 (check), unique (recipeId, userId); источник для `rating_avg`/`rating_count`
+- `recipeSaves` — unique (recipeId, userId); источник для `save_count`
+
+**Brew/Allocation:** `brewBatches` (snapshot рецепта/оборудования/воды), `recipeInventoryAllocations`, `inventoryTransactions`.
+
+**Модель нормализации:** юзер вводит "500g"/"1 kg" → сервер нормализует к каноничной единице. Хранятся обе; нормализованная — для расчётов.
 
 ---
 
-## Stage 4 — Inventory / My Ingredients
-### Статус: завершено и расширено
+## 9. Доменные пакеты
 
-Уже есть:
+### @nb/brewing-core — расчёты (production-grade)
+- **gravity.ts:** `calculateOg` (points + efficiency), `calculateFg` (attenuation), `calculateAbv`
+- **ibu.ts:** 5 формул — Tinseth Classic, Tinseth Whirlpool V2, Rager, Garetz, Noonan Legacy; boil/FWH/whirlpool/dry-hop, late-boil carryover, altitude, флокуляция, hop utilization factor
+- **color.ts:** MCU → SRM (Morey) → EBC
+- **water.ts:** `solveWaterTargetProfile` (hill-climbing solver солей), `estimateMashPh` (Kolbach RA, Hybrid v1), `solveMashAcidAddition` (binary search). Соли: gypsum, calcium_chloride, epsom, table_salt, baking_soda, chalk, slaked_lime. Кислоты: lactic, phosphoric
+- **calculator-tools.ts:** конвертеры gravity/ABV/attenuation/dilution/boiloff, рефрактометр/ареометр, priming, carbonation, yeast starter, brewing water volume, hop freshness, unit converter
+- **scaling.ts:** масштабирование рецепта + пересчёт статов
+- **brew-steps/:** `generateBrewSteps`
+- **styles/:** BJCP-стили, style fitting
 
-### 4A — Inventory foundation
-- `user_custom_ingredients`
-- `user_ingredients`
-- inventory service layer
-- ownership-safe CRUD
-- server-side normalization
+### @nb/content
+BJCP-данные (file-backed, не БД): `getArticleBySlug`, `listArticles`, `listFeaturedArticles`, `listRelatedArticles`, `getBjcpCatalogData`.
 
-### 4B — Inventory read/add flows
-- `/app/ingredients`
-- summary
-- grouped list
-- empty/loading/error states
-- add CTA
-- add-from-catalog flow
-- custom ingredient flow
-- shared picker
-- shared picker quick-start in add/edit malt contexts
-- modal add flow
+### @nb/auth
+`assertRateLimit`, `getOrCreateUserByEmail`, `issueVerification`, `consumeVerification`, session-management. Password (bcrypt), OAuth, OTP, magic link.
 
-### 4C — Inventory usability
-- search
-- category/subtype filters
-- show/hide empty items
-- sort by name / quantity / updated / best before / price
-- inline quantity editing
-- detailed inline item editing
-- archive/delete/set-zero actions
-- validation / revalidation
-- suggestions API
+### @nb/ui
+Button, Card, Dialog, Input, Select, Slider, Table, Textarea, Toast (Radix). CVA + Lucide.
 
-### 4D — Inventory cost and freshness foundation
-- purchase price input
-- preferred currency
-- admin currency rates
-- normalized RUB unit cost foundation
-- purchase quantity normalization
-- freshness date editing
-- expiry / best-before indicators in UI
+### @nb/shared
+Env-контракты на Zod: `parseServerEnv`, `parseClientEnv`.
 
-Что еще реально НЕ сделано в inventory:
-- low stock thresholds / low stock alerts
-- advanced bulk actions
-- recipe-vs-inventory match blocks
-- automatic inventory deduction from brew execution
+### @nb/search
+**Только scaffold** — НЕ основной search runtime. Реальный поиск в `features/ingredients`.
 
 ---
 
-## Stage 5 — Recipes
+## 10. Компоненты (`apps/web/components/*`)
 
-### 5A — Recipe Core Foundation
-#### Статус: завершено и расширено
-
-Уже есть:
-- `recipes`
-- `recipe_ingredients`
-- recipe service layer
-- recipe status / visibility model
-- DTO/contracts
-- entered + normalized model for recipe quantities
-- stats integration via `@nb/brewing-core`
-- slug foundation
-- process meta foundation (mash / fermentation)
-- recipe family/version model
-
-### 5B — Author-side recipes
-#### Статус: завершено и расширено
-
-Уже есть:
-- `/app/recipes`
-- `/app/recipes/[id]`
-- `/app/recipes/new`
-- `/app/recipes/[id]/edit`
-- my recipes list
-- author-side read view
-- recipe editor/designer
-- ingredients editor section
-- stats preview
-- create/update flow
-- ownership-safe editing
-- draft preview
-- clone recipe
-- create new recipe version
-- create custom ingredient from recipe editor
-
-### 5C — Public Recipes foundation
-#### Статус: завершено
-
-Уже есть:
-- slug-based public URLs
-- `/recipes/[slug]`
-- public listing `/recipes`
-- internal public links by slug
-- safe legacy redirect `/recipes/id/[id] -> /recipes/[slug]`
-- server-side publication gating
-- public metadata/not-found handling
-
-Что пока еще lightweight:
-- hero image/storage UX — только foundation, без полноценного media workflow
-- public discovery/social/community layer — минимальный read-only listing, без более богатого community surface
+| Директория | Ключевые компоненты |
+|-----------|---------------------|
+| **app/** | `app-shell.tsx`, `app-shell-navigation.tsx`, `section-skeletons.tsx` |
+| **shared/** | `site-header.tsx`, `site-footer.tsx`, `confirm-action-dialog.tsx`, `country-flag.tsx` |
+| **ingredients/** | `ingredient-picker.tsx` (большой общий picker с поиском/quick-start/favorite), `admin-ingredient-form.tsx`, `custom-catalog-ingredient-form.tsx`, `ingredient-catalog-toolbar.tsx`, `duplicate-merge-form.tsx`, `moderation-queue.tsx` |
+| **inventory/** | `catalog-ingredient-form.tsx`, `custom-ingredient-form.tsx`, `inventory-item-details-editor.tsx`, `inventory-list-item.tsx`, `add-ingredient-modal.tsx`, `inventory-consume-control.tsx`, `inventory-inline-quantity-editor.tsx`, `inventory-toolbar.tsx`, `grouped-inventory-list.tsx` |
+| **recipes/** | **`recipe-designer.tsx` (крупнейший компонент, архитектурный блокер).** Редактор: `recipe-editor-page.tsx`, `recipe-ingredients-editor.tsx`, `recipe-stats-summary.tsx`, `recipe-water-additives-section.tsx`, `import-export-modal.tsx`. Public/discovery: `public-recipe-page.tsx`, `recipe-card.tsx`, `recipes-grid.tsx`, `recipes-results.tsx`, `recipes-toolbar.tsx`, `recipes-filter-sidebar.tsx`, `recipes-filter-sheet.tsx`, `recipes-filter-controls.tsx`, `recipes-range-slider.tsx`, `recipes-color-scale.tsx`, `recipe-style-picker.tsx`, `recipes-pagination.tsx`, `active-filter-chips.tsx`, `recipe-rating-form.tsx`, `recipe-save-button.tsx`, `recipe-saves-provider.tsx`, `use-recipe-query.ts` |
+| **content/** | `bjcp-catalog.tsx`, `bjcp-style-card.tsx`, `bjcp-article-page.tsx`, `rich-text-editor.tsx` (Tiptap), `article-card.tsx` |
+| **equipment/**, **calculators/** | Конфигурация оборудования, страницы калькуляторов |
 
 ---
 
-## Stage 6 — Match Engine
-### Статус: groundwork only, продуктовая фича еще не начата
+## 11. Тесты (`apps/web/tests/`, Vitest)
 
-Что уже подготовлено:
-- source linkage в inventory и recipes
-- normalized quantities/units
-- category/subtype taxonomy
-- family/match-policy hooks в schema/contracts
-- catalog/inventory/recipe models, которые можно использовать для matching
+| Домен | Покрытие |
+|-------|----------|
+| Ingredients | Service, search, ranking, taxonomy, technical fields, normalization, picker, admin/custom форма, moderation, family backfill |
+| Inventory | Service, CRUD, фильтры, price/cost, units, suggestions, inline actions, consume |
+| Recipes | Service, editor actions/components, stats, format/interop, publication, water/equipment flows, pages wiring, public query, ratings, saves, style search, range slider, recipes-url, recipe-card, filter sheet, color scale, pagination |
+| Прочее | Currency rates, BJCP stats, calculators, country flags, money display, site shell, dashboard wiring |
 
-Что еще НЕ сделано:
-- recipe vs inventory matching
-- percent match
-- missing ingredients
-- substitution / family-compatible logic в runtime
-- match blocks на recipe pages/cards
+**Пробелы:** API-роуты в основном не покрыты; пакеты `@nb/auth`/`@nb/ui`/`@nb/shared`/`@nb/search` — 0 тестов; нет e2e; `recipe-designer.tsx` — только статический рендер.
 
 ---
 
-## Stage 7 — Brew Session
-### Статус: не начато в app runtime
+## 12. Состояние по стадиям
 
-Что уже есть только как foundation:
-- `@nb/brewing-core` brew-steps generator/schemas
+| Стадия | Статус |
+|--------|--------|
+| **0 — Foundation** (монорепо, БД, миграции, Docker, Sentry/PostHog skeleton) | ✅ |
+| **1 — Auth/Access** (session, RBAC, password/OTP/magic/OAuth, ownership, profile) | ✅ |
+| **2 — Brewing Core** (OG/FG/ABV/IBU/color/scaling/priming, units, style ranges, brew-steps) | ✅ |
+| **3 — Ingredient Catalog V2** (aliases/sources/variants/тех.поля, search+ranking, picker, admin, модерация, merge, custom, публичный `/catalog`) | ✅ |
+| **4 — Inventory** (CRUD + нормализация, фильтры/сортировка, inline edit, archive, suggestions, cost/currency, freshness, consume) | ✅ |
+| **5A — Recipe Core** (recipes/recipe_ingredients, версионирование, normalized units, stats) | ✅ |
+| **5B — Author-side recipes** (редактор, clone, версии, draft preview, water/equipment meta, BeerXML/JSON import-export) | ✅ |
+| **5C — Public Recipes foundation** (slug-URL, listing, publication gating, legacy redirect, SEO) | ✅ |
+| **5D — Public discovery + social** (фильтры sidebar/sheet, range-слайдеры, style-picker, цветовая шкала, пагинация, URL-state, recipe-cards, **рейтинги** `recipe_ratings`, **сохранения** `recipe_saves` + `/app/saved`) | ✅ |
+| **6 — Match Engine** (рецепт vs склад) | ⚠️ только groundwork (source linkage + нормализация; нет матчинга/percent/missing UI) |
+| **7 — Brew Session** (исполнение варки) | ❌ только brew-steps генератор + scaffold `brew-batches`/`brew-controller`; нет полноценного UI/истории/списания склада |
+| **8 — Content/SEO** (home, BJCP, style pages, featured, sitemap, content roles, Tiptap lab) | ⚠️ частично; нет generic article CMS (см. `docs/articles-rollout-plan.md`) |
 
-Что еще НЕ сделано:
-- brew session DB model
-- guided steps/timers/confirmations
-- execution UI
-- brew history tied to recipes
-- inventory deduction после brew session
-
----
-
-## Stage 8 — Content / SEO / Acquisition
-### Статус: частично реализовано
-
-Уже есть:
-- public home page
-- отдельный public BJCP section `/bjcp`
-- BJCP style pages `/bjcp/[slug]`
-- featured content on home
-- sitemap + SEO metadata
-- related BJCP materials
-- category/family navigation for BJCP
-- content role permissions (`editor` / `moderator` / `admin`)
-- admin content area
-- Tiptap editor lab / foundation
-
-Что важно понимать:
-- полноценного generic article CMS в БД пока нет
-- `/articles/*` сейчас legacy redirect layer на BJCP
-- calculators пока не сделаны
-- broader SEO/acquisition layer пока не доведен до полноценного самостоятельного блока
+**Следующий логичный шаг:** Stage 6 — Match Engine как реальная фича (exact-match → missing list → percent match → блоки на страницах/карточках рецептов), затем family-compatible/substitutions или Stage 7. Параллельно — housekeeping: окончательно закрепить catalog runtime и не расти на двух моделях каталога.
 
 ---
 
-## 6.1 Что сделано сверх старого CONTEXT.md
+## 13. Известные проблемы (источник: `docs/improvement-recommendations.md`, 2026-06-23)
 
-Ниже — вещи, которых старая версия файла почти не отражала, но которые уже реально есть в проекте:
+**P1 — критичные:**
+1. Токены аутентификации логируются в `console.info` (`lib/auth.ts`) — риск account takeover
+2. Captcha — заглушка (всегда true): auth-эндпоинты не защищены от ботов
+3. Magic-link токен в GET-параметрах (попадает в history/proxy/Referer)
+4. N+1 запросы в recipe/inventory сервисах
+5. `recipe-designer.tsx` — 6000+ строк, бизнес-логика в компоненте → нетестируемо
+6. API-роуты и пакеты (`@nb/auth`/`@nb/ui`/`@nb/shared`) — 0 тестов; нет e2e
 
-- отдельный пользовательский catalog workspace `/app/catalog`
-- richer catalog runtime с aliases / sources / package variants / display modes / technical fields
-- money/currency layer и inventory purchase cost foundation
-- recipe versioning / clone / draft preview / process meta
-- public recipes по slug уже завершены
-- полноценный BJCP public section с sitemap/metadata
-- featured content on home
-- content-role model для editor/moderator/admin
-- Tiptap editor lab
-- brewing-core style fit и brew-steps foundation
+**P2 — важные:** нет CI-проверок (npm ci, migration drift, coverage); множество `@ts-ignore` и `any`; нет FK-индексов на created_by/submitted_by; «load all → filter in memory» в поиске; дублирование error/Zod-обработки; layer leakage (features импортят из components); `cleanupExpiredVerifications` не вызывается.
 
----
-
-## 7. Что уже считается реализованным и на что нужно опираться
-
-Если работаешь над catalog / ingredients:
-- используй `features/ingredients/service.ts`
-- используй `features/ingredients/catalog-service.ts`
-- используй existing `IngredientPicker`
-- если нужен zero-query/preset flow, расширяй existing picker quick-start, а не строй новый
-- используй existing normalization / presentation / technical-fields helpers
-- не делай новый search flow рядом с existing one
-- не считай `@nb/search` основным runtime search module
-
-Если работаешь над inventory:
-- используй existing inventory service layer
-- используй existing unit normalization model
-- используй shared picker/search
-- используй `purchase-cost` и `system/currency-rates`, если задача касается цены
-- не дублируй ownership checks
-
-Если работаешь над recipes:
-- используй existing recipe service layer
-- используй `recipes` / `recipe_ingredients` contracts
-- используй existing normalization model
-- используй `@nb/brewing-core` for stats/style fit
-- respect slug/version/publication logic server-side
-- не делай новый recipe domain в UI
-
-Если работаешь над public recipe layer:
-- используй `getPublicRecipeBySlug` / `listPublicRecipes`
-- respect status/visibility rules server-side
-- не делай ad-hoc page queries
-
-Если работаешь над BJCP/content:
-- используй `@nb/content`
-- помни, что current content layer file-backed
-- не строй новый article persistence layer “по-тихому” в page/components
+**P3 — желательные:** нет Prettier/pre-commit/ESLint-complexity; `@nb/search` — мёртвый scaffold; нет i18n (строки на русском захардкожены); a11y-пробелы; устаревшие зависимости.
 
 ---
 
-## 8. Текущий следующий логический шаг
+## 14. Правила для AI coding agent
 
-Следующий большой продуктовый шаг по проекту:
+**Перед изменениями:**
+1. Прочитай этот файл, затем посмотри реальный код. При конфликте — код важнее.
+2. Используй существующие сервисы, модели, DTO, shared-компоненты.
+3. Не строй новые фичи на `@nb/search` scaffold, если задача не про сам пакет.
+4. Не строй новые catalog flows так, будто `ingredient_catalog_items` — главный runtime, если задача не про миграцию/cleanup.
+5. В отчёте указывай: что нашёл в репозитории, на какие сущности/сервисы опираешься, что добавил, что оставил на следующий пакет.
 
-### Реализовать Stage 6 — Match Engine как реальную working-фичу
+**Хороший результат:** минимальное расширение существующей архитектуры, reuse сервисов/контрактов/компонентов, сохранение инвариантов, focused-тесты, no parallel architecture.
 
-Логичная MVP-последовательность:
-- exact match recipe ingredients vs inventory by source linkage
-- missing ingredients list
-- percent match
-- базовые match blocks на recipe pages/cards
+**Плохой результат:** второй service layer рядом со старым; второй picker/search flow; normalization на клиенте; ad-hoc DB-запросы в route/page; free-text там, где есть entity linkage; ещё одна «версия» каталога.
 
-После этого:
-- либо углублять family-compatible matching и substitutions
-- либо идти в Stage 7 — Brew Session
-
-Параллельный технический housekeeping, который тоже полезно держать в уме:
-- окончательно закрепить catalog runtime на уровне документации и cleanup
-- не продолжать расти сразу на двух моделях каталога
+**Про protected routes и QA:** многие маршруты защищены auth. Screenshot/Playwright без реальной seeded-сессии — слабый сигнал. Основной критерий для protected areas: service/action/component/page-wiring тесты + typecheck. Manual QA полезен только через реального seeded-юзера с реальной сессией и ролью.
 
 ---
 
-## 9. Правила для AI coding agent
+## 15. Локальный запуск
 
-Перед изменениями:
+```bash
+cp .env.example .env
+npm install
+docker compose up -d   # PostgreSQL 16 + Mailpit
+npm run dev            # авто migrate + seed, затем Next.js
+```
 
-1. Сначала прочитай этот файл.
-2. Потом посмотри, что реально есть в репозитории.
-3. Если этот файл и код конфликтуют, код важнее; документ либо синхронизируй, либо явно отмечай расхождение.
-4. Используй существующие сервисы, модели, DTO и shared components.
-5. Не строй новые фичи поверх `@nb/search` scaffold, если задача не про сам пакет.
-6. Не строй новые catalog flows как будто `ingredient_catalog_items` — главный working runtime, если задача не про миграцию/cleanup.
-7. В отчете всегда указывай:
-   - что уже нашел в репозитории
-   - на какие существующие сущности/сервисы опираешься
-   - что добавил
-   - что оставил на следующий пакет
+QA-сиды:
+```bash
+npm run seed:dev-user -- --email qa.admin@localhost --display-name "QA Admin" --role admin --verified true
+npm run seed:qa
+```
 
----
-
-## 10. Что считать хорошим результатом задачи
-
-Хороший результат — это:
-- минимальное расширение existing architecture
-- reuse existing services/contracts/components
-- сохранение domain invariants
-- focused tests
-- no parallel architecture
-
-Плохой результат — это:
-- новый второй service layer рядом со старым
-- новый второй picker/search flow
-- normalization на клиенте
-- ad-hoc DB queries прямо в route/page
-- free-text ingredient model там, где уже есть entity linkage
-- рост еще одной “версии” каталога рядом с текущим runtime
+- UI-playground: http://localhost:3000/ui-playground
+- Dev-автологин: `DEV_AUTH_EMAIL` в `.env` (вне prod)
 
 ---
 
-## 11. Что важно помнить про protected routes и QA
+## 16. Глубокие референсы (`docs/reference/`)
 
-Многие маршруты проекта защищены auth/access.
+Подробные технические описания подсистем (расчёты, флоу, схемы) вынесены в единый набор референсов. Индекс — `docs/reference/README.md`.
 
-Поэтому:
-- screenshot protected route без реальной session почти бесполезен
-- Playwright без seeded/authenticated flow не является сильным сигналом качества
-- для protected areas основной критерий:
-  - service tests
-  - action tests
-  - component tests
-  - page wiring tests
-  - typecheck
+| Документ | О чём |
+|----------|-------|
+| `docs/reference/recipes-editor.md` | Редактор рецептов (recipe-designer): архитектура, фичи, data model, import/export, batches, изображения |
+| `docs/reference/water.md` | Водоподготовка: flow, профили (source/target), salt/acid solver, mash pH, формулы, ограничения |
+| `docs/reference/equipment.md` | Профили оборудования: поля, defaults, volume plan, что НЕ влияет на расчёты |
+| `docs/reference/recipes-public-page.md` | Публичная страница рецептов: URL-контракт, фильтры, серверный путь, карта компонентов |
+| `docs/reference/inventory.md` | Инвентарь: data model, сервис, страница `/app/ingredients`, цены/валюты, normalization |
+| `docs/reference/ingredient-add-and-search.md` | Add-flow ингредиента и поиск в picker (ranking, normalization, per-category правила) |
+| `docs/reference/ingredient-seed-schema.md` | Структура seed-данных каталогов и критичные несовместимости полей |
 
-В репозитории уже есть заметное покрытие для:
-- ingredients
-- inventory
-- recipes
-- money/currency
-- BJCP presentation helpers
-
-Manual QA полезен только если он идет через:
-- реальный seeded user
-- реальную auth session
-- реальную роль
+Прочие документы в `docs/`:
+- `docs/improvement-recommendations.md` — аудит P1–P3 (актуальный)
+- `docs/articles-rollout-plan.md` — roadmap editorial/article CMS (Phase 1 сделан, 2–4 впереди)
 
 ---
 
-## 12. Короткое резюме для агента
+## 17. Ключевые файлы
 
-Этот проект уже строится вокруг:
-- структурированного ingredient catalog runtime,
-- user custom ingredients,
-- user inventory,
-- recipe domain с public layer,
-- BJCP/content public layer,
-- future match engine,
-- future brew execution.
-
-Главные инварианты:
-- ingredient entity, not free-text
-- shared picker/search foundation
-- entered + normalized units
-- server-side business logic
-- ownership-safe services
-- reuse current catalog/inventory/recipe/content services instead of building new layers
-
-Если сомневаешься — выбирай:
-- меньший change set
-- reuse existing code
-- server-side truth
-- domain consistency over local convenience
+| Путь | Назначение |
+|------|-----------|
+| `CONTEXT.md` | Этот файл — канонический контекст (читать первым) |
+| `CLAUDE.md` | Краткая памятка для агентов |
+| `README.md` | Онбординг / локальный запуск |
+| `docs/reference/` | Глубокие технические референсы |
+| `apps/web/lib/auth.ts` | Auth gating + dev login |
+| `apps/web/components/recipes/recipe-designer.tsx` | Крупнейший компонент (архит. блокер) |
+| `apps/web/features/ingredients/service.ts` | Каталог CRUD, search |
+| `apps/web/features/inventory/service.ts` | Сервис склада |
+| `apps/web/features/recipes/service.ts` | Рецепты CRUD, версионирование, рейтинги/сохранения |
+| `packages/db/src/schema.ts` | Вся DB-схема |
+| `packages/brewing-core/src/` | Расчёты, style fit |
+| `packages/content/src/` | BJCP/контент |

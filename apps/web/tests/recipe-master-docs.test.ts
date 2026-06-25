@@ -5,22 +5,29 @@ import { describe, expect, it } from "vitest";
 describe("recipe master docs", () => {
   it("documents the progressive FG estimate model", () => {
     const content = readFileSync(
-      new URL("../../../docs/recipe-master-current-implementation.md", import.meta.url),
+      new URL("../../../docs/reference/recipes-editor.md", import.meta.url),
       "utf8"
     );
 
-    expect(content).toContain("FG / КП: модель прогноза");
-    expect(content).toContain("FG в мастере рецептов — это прогноз");
-    expect(content).toContain("default -> mash-adjusted -> yeast-adjusted -> manual override");
-    expect(content).toContain("mash profile участвует в FG calculation");
-    expect(content).toContain("yeast attenuation влияет на FG");
-    expect(content).toContain("fermentation profile по-прежнему не используется как прямой драйвер FG");
+    // FG — прогноз, а не лабораторная величина.
+    expect(content).toContain("не лабораторная плотность");
     expect(content).toContain("practical estimate, не лабораторная модель");
-    expect(content).toContain("FG должен оставаться обычным расчетным показателем, а не отдельным центром внимания.");
-    expect(content).toContain("нет постоянного раскрытого блока `FG / КП` в шапке");
-    expect(content).toContain("advanced controls открываются только по маленькой шестеренке / info icon у FG");
+
+    // Прогрессивная модель: default -> yeast/attenuation -> manual override.
+    expect(content).toContain("default_estimate");
+    expect(content).toContain("manual_fg_override");
+    expect(content).toContain("base attenuation");
+
+    // Mash профиль участвует в FG, fermentation профиль — нет.
+    expect(content).toContain("Участвует в FG через выбор главной паузы");
+    expect(content).toContain("не используется как драйвер FG");
+
+    // FG-контролы спрятаны, а не вынесены в постоянный блок шапки.
+    expect(content).toContain("спрятаны под");
+
+    // Фото пива — object storage + silent draft creation.
     expect(content).toContain("Фото пива");
-    expect(content).toContain("object storage instead of DB blobs");
-    expect(content).toContain("silent draft creation before first upload");
+    expect(content).toContain("Object storage");
+    expect(content).toContain("silent draft creation");
   });
 });
