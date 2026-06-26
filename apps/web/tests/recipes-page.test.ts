@@ -25,6 +25,9 @@ vi.mock("next/navigation", () => ({
   useSearchParams: () => new URLSearchParams(mocks.navState.searchParams)
 }));
 
+// Пустая витрина (no-recipes) лениво читает сессию для CTA — мокаем как гостя.
+vi.mock("@/lib/auth", () => ({ getSessionUser: vi.fn(async () => null) }));
+
 import { RecipesResults } from "../components/recipes/recipes-results";
 
 const item = (overrides: Partial<PublicRecipeListItem> = {}): PublicRecipeListItem => ({
@@ -33,6 +36,7 @@ const item = (overrides: Partial<PublicRecipeListItem> = {}): PublicRecipeListIt
   name: "Hazy IPA",
   author: { id: "u-1", displayName: "Alice", image: null },
   style: { code: "21A", name: "American IPA" },
+  styleHref: "/bjcp/bjcp-21a-american-ipa",
   og: 1.048,
   fg: 1.012,
   abv: 6.2,
@@ -47,6 +51,7 @@ const item = (overrides: Partial<PublicRecipeListItem> = {}): PublicRecipeListIt
   rating: null,
   saveCount: 0,
   publishedAt: "2026-02-01T00:00:00.000Z",
+  createdAt: "2026-02-01T00:00:00.000Z",
   ...overrides
 });
 

@@ -28,6 +28,7 @@ import {
   calculateOg,
   evaluateStyleFit,
   getBeerStyleById,
+  getBjcpArticleHrefByStyleId,
   getStyleRangeById,
   type HopAdditionInput,
   roundTo,
@@ -43,6 +44,7 @@ import {
   recipeProcessMetaSchema,
   recipeWaterPlanMetaSchema,
   type RecipeCalculationMeta,
+  type RecipeCloneSourceDto,
   type RecipeDetailDto,
   type RecipeDraftPreviewDto,
   type RecipeIngredientDto,
@@ -1001,6 +1003,46 @@ const sortRecipeIngredientsByDisplayOrder = (
   return left.createdAt.getTime() - right.createdAt.getTime();
 });
 
+/**
+ * Атрибуция клона: резолвит исходный рецепт (название, slug, автор, опубликован
+ * ли) по `cloned_from_recipe_id`. Данные неперсональные → деталь остаётся
+ * кэшируемой. null, если связи нет либо источник удалён.
+ */
+const resolveRecipeCloneSource = async (
+  clonedFromRecipeId: string | null | undefined
+): Promise<RecipeCloneSourceDto | null> => {
+  if (!clonedFromRecipeId) {
+    return null;
+  }
+
+  const [row] = await db
+    .select({
+      id: recipes.id,
+      title: recipes.title,
+      slug: recipes.slug,
+      authorId: recipes.authorId,
+      authorDisplayName: users.displayName,
+      publicationState: recipes.publicationState
+    })
+    .from(recipes)
+    .leftJoin(users, eq(users.id, recipes.authorId))
+    .where(eq(recipes.id, clonedFromRecipeId))
+    .limit(1);
+
+  if (!row) {
+    return null;
+  }
+
+  return {
+    id: row.id,
+    title: row.title,
+    slug: row.slug,
+    authorId: row.authorId,
+    authorName: row.authorDisplayName ?? null,
+    isPublished: row.publicationState === "published"
+  };
+};
+
 const mapRecipeDetailDto = async (
   recipe: typeof recipes.$inferSelect,
   ingredients: Array<typeof recipeIngredients.$inferSelect>
@@ -1027,6 +1069,7 @@ const mapRecipeDetailDto = async (
         ? { average: roundTo(recipe.ratingAvg, 1), count: recipe.ratingCount }
         : null,
     versions: await listRecipeVersions(recipe.authorId, recipe.recipeFamilyId),
+    clonedFrom: await resolveRecipeCloneSource(recipe.clonedFromRecipeId),
     ingredients: await Promise.all(sortRecipeIngredientsByDisplayOrder(ingredients).map((ingredient) => hydrateRecipeIngredientDto(recipe.authorId, ingredient)))
   };
 };
@@ -1379,7 +1422,7 @@ export const recomputeRecipeStats = async (authorId: string, recipeId: string) =
 export const createRecipe = async (
   authorId: string,
   payload: unknown,
-  options?: { recipeFamilyId?: string; versionNumber?: number }
+  options?: { recipeFamilyId?: string; versionNumber?: number; clonedFromRecipeId?: string | null }
 ) => {
   const parsed = createRecipePayloadSchema.parse(normalizeCreateRecipePayloadDefaults(payload));
   const preparedIngredients = await prepareRecipeIngredientEntries(authorId, parsed.ingredients);
@@ -1430,7 +1473,8 @@ export const createRecipe = async (
         equipmentProfileSnapshot: (parsed.equipmentProfileSnapshot as Record<string, unknown> | null | undefined) ?? null,
         waterPlanMeta: nextWaterPlanMeta,
         brewPlanMeta: parsed.brewPlanMeta ?? null,
-        heroImageId: parsed.heroImageId ?? null
+        heroImageId: parsed.heroImageId ?? null,
+        clonedFromRecipeId: options?.clonedFromRecipeId ?? null
       }).returning();
       break;
     } catch (error) {
@@ -1564,41 +1608,199 @@ export const deleteRecipe = async (authorId: string, recipeId: string) => {
   return recipe;
 };
 
-export const cloneRecipe = async (authorId: string, recipeId: string) => {
-  const recipe = await getOwnedRecipeById(authorId, recipeId);
-
-  return createRecipe(authorId, {
-    title: `${recipe.title} (копия)`,
-    publicationState: "private",
-    styleId: recipe.styleId,
-    batchSizeEnteredQuantity: recipe.batchSizeEnteredQuantity,
-    batchSizeEnteredUnit: recipe.batchSizeEnteredUnit,
-    efficiency: recipe.efficiency,
-    boilTimeMinutes: recipe.boilTimeMinutes,
-    description: recipe.description,
-    authorNotes: recipe.authorNotes,
-    processMeta: recipe.processMeta,
-    calculationMeta: recipe.calculationMeta ?? null,
-    equipmentProfileId: recipe.equipmentProfileId ?? null,
-    equipmentProfileSnapshot: recipe.equipmentProfileSnapshot ?? null,
-    waterPlanMeta: recipe.waterPlanMeta ?? null,
-    ingredients: recipe.ingredients.map((ingredient) => ({
-      ingredientCatalogItemId: ingredient.ingredientCatalogItemId,
-      userCustomIngredientId: ingredient.userCustomIngredientId,
+/**
+ * Строит payload одного ингредиента для клона. По умолчанию переносит связку как
+ * есть (каталог/кастом/imported). При `remapPrivateCustomToImported` строки с
+ * приватным кастомом ЧУЖОГО автора преобразуются в imported-снимок: перенести их
+ * по FK нельзя (`ensureOwnedCustomIngredient` упадёт, а `recipe_ingredients_
+ * source_linkage_chk` запрещает чужой userCustomIngredientId), поэтому сохраняем
+ * имя/единицы/тех-данные снимком — рецепт остаётся валидным у нового владельца.
+ * Каталожные (глобальные) и уже-imported ингредиенты переносятся без изменений.
+ */
+const buildRecipeCloneIngredientPayload = (
+  ingredient: RecipeIngredientDto,
+  options: { remapPrivateCustomToImported: boolean }
+) => {
+  if (options.remapPrivateCustomToImported && ingredient.userCustomIngredientId) {
+    const category = ingredient.ingredientCategory ?? resolveIngredientCategory({ type: ingredient.type });
+    const importedIngredient: RecipeImportedIngredientSnapshot = {
+      version: 1,
+      source: "cloned-recipe",
+      name: ingredient.ingredientDisplayName ?? ingredient.ingredientDisplayNameSnapshot ?? "Ингредиент",
       type: ingredient.type,
-      category: ingredient.ingredientCategory ?? undefined,
+      category,
       subtype: ingredient.ingredientSubtype ?? null,
-      familyId: ingredient.ingredientFamilyId ?? null,
+      defaultDisplayUnit: ingredient.ingredientDefaultDisplayUnit ?? ingredient.ingredientDefaultDisplayUnitSnapshot ?? null,
+      allowedUnits: ingredient.ingredientAllowedUnits ?? null,
+      measurementDimension: ingredient.ingredientMeasurementDimension ?? ingredient.ingredientMeasurementDimensionSnapshot ?? null,
+      technicalData: ingredient.ingredientTechnicalData ?? null
+    };
+
+    return {
+      ingredientCatalogItemId: null,
+      userCustomIngredientId: null,
+      type: ingredient.type,
+      category,
+      subtype: ingredient.ingredientSubtype ?? null,
       amountEnteredQuantity: ingredient.amountEnteredQuantity,
       amountEnteredUnit: ingredient.amountEnteredUnit,
       stage: ingredient.stage,
       timeOffset: ingredient.timeOffset,
       stepMeta: ingredient.stepMeta,
-      inventoryIntentMode: ingredient.inventoryIntentMode ?? null,
-      inventorySelectionMeta: ingredient.inventorySelectionMeta ?? null,
-      externalImportMeta: ingredient.externalImportMeta ?? null
-    }))
+      inventoryIntentMode: "imported" as const,
+      externalImportMeta: { source: "cloned-recipe", importedIngredient }
+    };
+  }
+
+  return {
+    ingredientCatalogItemId: ingredient.ingredientCatalogItemId,
+    userCustomIngredientId: ingredient.userCustomIngredientId,
+    type: ingredient.type,
+    category: ingredient.ingredientCategory ?? undefined,
+    subtype: ingredient.ingredientSubtype ?? null,
+    familyId: ingredient.ingredientFamilyId ?? null,
+    amountEnteredQuantity: ingredient.amountEnteredQuantity,
+    amountEnteredUnit: ingredient.amountEnteredUnit,
+    stage: ingredient.stage,
+    timeOffset: ingredient.timeOffset,
+    stepMeta: ingredient.stepMeta,
+    inventoryIntentMode: ingredient.inventoryIntentMode ?? null,
+    inventorySelectionMeta: ingredient.inventorySelectionMeta ?? null,
+    externalImportMeta: ingredient.externalImportMeta ?? null
+  };
+};
+
+/**
+ * Пур-правило авторизации клона. Свой рецепт можно клонировать в любом статусе;
+ * чужой — только если он published. Бросает FORBIDDEN иначе. Возвращает isOwn,
+ * чтобы вызывающий выбрал загрузчик и режим ремапа кастомов.
+ */
+export const assertRecipeCloneAllowed = (input: {
+  sourceAuthorId: string;
+  sourcePublicationState: RecipePublicationState;
+  userId: string;
+}): { isOwn: boolean } => {
+  const isOwn = input.sourceAuthorId === input.userId;
+  if (!isOwn && input.sourcePublicationState !== "published") {
+    throw new Error("FORBIDDEN");
+  }
+  return { isOwn };
+};
+
+const RECIPE_TITLE_MAX_LENGTH = 180;
+
+/**
+ * Имя клонирующего для суффикса названия копии: displayName, иначе локальная часть
+ * email, иначе «копия». Берётся по userId (а не по автору источника).
+ */
+const resolveCloneAuthorLabel = async (userId: string): Promise<string> => {
+  const author = await db.query.users.findFirst({
+    where: eq(users.id, userId),
+    columns: { displayName: true, email: true }
   });
+  const displayName = author?.displayName?.trim();
+  if (displayName) {
+    return displayName;
+  }
+  const emailLocal = author?.email?.split("@")[0]?.trim();
+  return emailLocal || "копия";
+};
+
+/**
+ * Название копии: «{исходное} (копия {имя})». Гарантированно ≤ 180 символов
+ * (лимит колонки/Zod): при переполнении усекается базовая часть, суффикс сохраняется.
+ */
+export const buildCloneTitle = (baseTitle: string, authorLabel: string): string => {
+  const suffix = ` (копия ${authorLabel})`;
+  const base = baseTitle.trim();
+  if (base.length + suffix.length <= RECIPE_TITLE_MAX_LENGTH) {
+    return `${base}${suffix}`;
+  }
+  const room = Math.max(0, RECIPE_TITLE_MAX_LENGTH - suffix.length);
+  return `${base.slice(0, room).trimEnd()}${suffix}`.slice(0, RECIPE_TITLE_MAX_LENGTH);
+};
+
+/** Общий билдер payload для клона: копия как ЧЕРНОВИК (private), полные данные. */
+export const buildRecipeClonePayload = (
+  recipe: RecipeDetailDto,
+  options: { title: string; remapPrivateCustomToImported: boolean }
+) => ({
+  title: options.title,
+  publicationState: "private" as const,
+  styleId: recipe.styleId,
+  batchSizeEnteredQuantity: recipe.batchSizeEnteredQuantity,
+  batchSizeEnteredUnit: recipe.batchSizeEnteredUnit,
+  efficiency: recipe.efficiency,
+  boilTimeMinutes: recipe.boilTimeMinutes,
+  description: recipe.description,
+  authorNotes: recipe.authorNotes,
+  processMeta: recipe.processMeta,
+  calculationMeta: recipe.calculationMeta ?? null,
+  equipmentProfileId: recipe.equipmentProfileId ?? null,
+  equipmentProfileSnapshot: recipe.equipmentProfileSnapshot ?? null,
+  waterPlanMeta: recipe.waterPlanMeta ?? null,
+  ingredients: recipe.ingredients.map((ingredient) =>
+    buildRecipeCloneIngredientPayload(ingredient, {
+      remapPrivateCustomToImported: options.remapPrivateCustomToImported
+    })
+  )
+});
+
+/**
+ * Дубликат СВОЕГО рецепта (любой статус) → новый черновик-копия в моём владении.
+ * Новый recipeFamilyId (не версия). Связь clonedFrom не ставится (это свой рецепт).
+ */
+export const cloneRecipe = async (authorId: string, recipeId: string) => {
+  const recipe = await getOwnedRecipeById(authorId, recipeId);
+  const authorLabel = await resolveCloneAuthorLabel(authorId);
+
+  return createRecipe(
+    authorId,
+    buildRecipeClonePayload(recipe, {
+      title: buildCloneTitle(recipe.title, authorLabel),
+      remapPrivateCustomToImported: false
+    })
+  );
+};
+
+/**
+ * Мост «сохранённое/публичное → мои рецепты»: клонирует ЧУЖОЙ published-рецепт
+ * (или свой в любом статусе) в новый ЧЕРНОВИК (private) во владении пользователя.
+ * Проставляет clonedFromRecipeId для атрибуции. Гард: чужой можно клонировать
+ * только если он published. userId приходит из серверной сессии — не из клиента.
+ */
+export const cloneRecipeFromPublic = async (
+  userId: string,
+  sourceRecipeId: string
+): Promise<RecipeDetailDto> => {
+  const guard = await db.query.recipes.findFirst({
+    where: eq(recipes.id, sourceRecipeId),
+    columns: { authorId: true, publicationState: true }
+  });
+
+  if (!guard) {
+    throw new Error("NOT_FOUND");
+  }
+
+  const { isOwn } = assertRecipeCloneAllowed({
+    sourceAuthorId: guard.authorId,
+    sourcePublicationState: guard.publicationState,
+    userId
+  });
+
+  const source = isOwn
+    ? await getOwnedRecipeById(userId, sourceRecipeId)
+    : await getPublicRecipeById(sourceRecipeId);
+  const authorLabel = await resolveCloneAuthorLabel(userId);
+
+  return createRecipe(
+    userId,
+    buildRecipeClonePayload(source, {
+      title: buildCloneTitle(source.title, authorLabel),
+      remapPrivateCustomToImported: !isOwn
+    }),
+    { clonedFromRecipeId: sourceRecipeId }
+  );
 };
 
 export const createRecipeVersion = async (authorId: string, recipeId: string) => {
@@ -1759,6 +1961,7 @@ type PublicRecipeRow = {
   batchSizeNormalizedQuantity: number;
   batchSizeNormalizedUnit: string;
   updatedAt: Date;
+  createdAt: Date;
   heroImageId: string | null;
   ratingAvg: number | null;
   ratingCount: number;
@@ -1792,6 +1995,7 @@ const mapPublicRecipeListItem = (
       image: row.authorImage ?? null
     },
     style: style ? { code: style.bjcpId, name: style.nameRu ?? style.name } : null,
+    styleHref: getBjcpArticleHrefByStyleId(row.styleId),
     og: row.og,
     fg: row.fg,
     abv: row.abv,
@@ -1803,13 +2007,15 @@ const mapPublicRecipeListItem = (
     heroImage,
     styleImageUrl,
     cloneCount: 0, // клоны не трекаются (Phase A)
-    // count==0 → null → карточка покажет «Новый» (Phase D §3.4).
+    // Нет оценок → null. Бейдж «Новый» в карточке теперь решается по createdAt
+    // (окно NEW_RECIPE_WINDOW_DAYS), а не по отсутствию рейтинга.
     rating:
       row.ratingCount > 0 && row.ratingAvg != null
         ? { average: roundTo(row.ratingAvg, 1), count: row.ratingCount }
         : null,
     saveCount: row.saveCount,
-    publishedAt: row.updatedAt.toISOString()
+    publishedAt: row.updatedAt.toISOString(),
+    createdAt: row.createdAt.toISOString()
   };
 };
 
@@ -1920,6 +2126,7 @@ export const searchPublicRecipes = async (filters: PublicRecipeFilters): Promise
       batchSizeNormalizedQuantity: recipes.batchSizeNormalizedQuantity,
       batchSizeNormalizedUnit: recipes.batchSizeNormalizedUnit,
       updatedAt: recipes.updatedAt,
+      createdAt: recipes.createdAt,
       heroImageId: recipes.heroImageId,
       ratingAvg: recipes.ratingAvg,
       ratingCount: recipes.ratingCount,
@@ -2191,6 +2398,7 @@ export const listSavedRecipes = async (userId: string): Promise<PublicRecipeList
       batchSizeNormalizedQuantity: recipes.batchSizeNormalizedQuantity,
       batchSizeNormalizedUnit: recipes.batchSizeNormalizedUnit,
       updatedAt: recipes.updatedAt,
+      createdAt: recipes.createdAt,
       heroImageId: recipes.heroImageId,
       ratingAvg: recipes.ratingAvg,
       ratingCount: recipes.ratingCount,

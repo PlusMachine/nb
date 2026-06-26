@@ -90,3 +90,18 @@ export const formatOgShort = (value: number | null) => (
 export const formatBatchVolume = (liters: number | null) => (
   liters == null ? "—" : `${volumeFormatter.format(liters)} л`
 );
+
+/** Окно (в днях), в течение которого рецепт считается «Новым» на витрине. */
+export const NEW_RECIPE_WINDOW_DAYS = 30;
+
+/**
+ * Создан ли рецепт недавно — для бейджа «Новый» на карточке/строке витрины.
+ * `iso` — ISO-таймстамп создания (`PublicRecipeListItem.createdAt`).
+ */
+export const isRecentlyCreated = (iso: string, now: Date = new Date()): boolean => {
+  const created = new Date(iso).getTime();
+  if (Number.isNaN(created)) {
+    return false;
+  }
+  return now.getTime() - created <= NEW_RECIPE_WINDOW_DAYS * 24 * 60 * 60 * 1000;
+};

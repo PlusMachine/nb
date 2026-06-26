@@ -127,6 +127,7 @@ const baseRow = () => ({
   batchSizeNormalizedQuantity: 20000,
   batchSizeNormalizedUnit: "ml",
   updatedAt: new Date("2026-02-01T00:00:00.000Z"),
+  createdAt: new Date("2026-02-01T00:00:00.000Z"),
   heroImageId: "img-1",
   ratingAvg: null,
   ratingCount: 0,
@@ -169,6 +170,8 @@ describe("searchPublicRecipes", () => {
       blurDataUrl: "data:image/png;base64,blur"
     });
     expect(item.publishedAt).toBe("2026-02-01T00:00:00.000Z");
+    expect(item.createdAt).toBe("2026-02-01T00:00:00.000Z");
+    expect(item.styleHref).toMatch(/^\/bjcp\/bjcp-21a/);
   });
 
   it("handles null style / color / hero gracefully", async () => {
@@ -246,7 +249,7 @@ describe("searchPublicRecipes", () => {
     expect(item.rating).toEqual({ average: 4.7, count: 3 });
   });
 
-  it("keeps rating null when there are no ratings (count 0) so the card shows «Новый»", async () => {
+  it("keeps rating null when there are no ratings (count 0)", async () => {
     mockState.rows = [{ ...baseRow(), ratingAvg: null, ratingCount: 0 }];
     const item = (await searchPublicRecipes(parsePublicRecipeFilters({}))).items[0];
     expect(item.rating).toBeNull();

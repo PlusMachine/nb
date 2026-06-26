@@ -64,7 +64,7 @@ describe("calculator pages", () => {
       const html = renderToStaticMarkup(view);
 
       expect(html).toContain(calculator.title);
-      expect(html).toContain("Копировать");
+      expect(html).toContain("Сбросить");
       expect(html).toContain("Метод расчета");
       expect(html).not.toContain("Что это значит");
       expect(html).not.toContain("Что сделать дальше");

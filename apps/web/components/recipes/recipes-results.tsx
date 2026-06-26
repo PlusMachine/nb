@@ -50,13 +50,21 @@ export async function RecipesResults({
   const { items, total, page, pageSize } = await searchPublicRecipes(filters);
 
   if (total === 0) {
-    return <RecipesEmptyState variant={hasActiveFilters(filters) ? "no-results" : "no-recipes"} />;
+    const variant = hasActiveFilters(filters) ? "no-results" : "no-recipes";
+    // Авторизацию читаем лениво и только для пустой витрины (редкий случай), чтобы
+    // не тащить cookie/DB-чтение в общий путь и не связывать компонент с auth.
+    let isAuthenticated = false;
+    if (variant === "no-recipes") {
+      const { getSessionUser } = await import("@/lib/auth");
+      isAuthenticated = Boolean(await getSessionUser());
+    }
+    return <RecipesEmptyState variant={variant} isAuthenticated={isAuthenticated} />;
   }
 
   const totalPages = Math.max(1, Math.ceil(total / pageSize));
 
   return (
-    <div className="space-y-6">
+    <div id="recipes-top" className="scroll-mt-4 space-y-6">
       <p className="text-sm text-zinc-500" aria-live="polite">
         {resultsCountLabel(total)}
       </p>

@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import {
   brixToSg,
+  calibrateWcf,
   calculateAbvAlternate,
   calculateAbvAttenuation,
   calculateAbvStandard,
@@ -15,6 +16,7 @@ import {
   calculatePrimingSugar,
   calculateSpeiseKrausen,
   calculateYeastStarter,
+  classifyApparentAttenuation,
   convertBrewingUnitGroup,
   correctHydrometer,
   correctRefractometer,
@@ -69,6 +71,86 @@ describe("brewing calculator tools", () => {
 
     expect(refractometer.correctedSG).toBeGreaterThan(1);
     expect(refractometer.estimatedABV).toBeGreaterThan(4);
+  });
+
+  it("matches a reference FG for the post-fermentation cubic", () => {
+    // OB 12.4 Brix, current 6.5 Brix, WCF 1.0 (no instrument bias), Terrill cubic ("novotny" key).
+    const result = correctRefractometer({
+      mode: "post_fermentation",
+      originalBrix: 12.4,
+      currentBrix: 6.5,
+      wortCorrectionFactor: 1.0,
+      formula: "novotny"
+    });
+
+    expect(result.correctedSG).toBeCloseTo(1.013, 3);
+    expect(result.estimatedABV).toBeGreaterThan(4);
+    expect(result.attenuation).toBeGreaterThan(70);
+  });
+
+  it("treats an OG given in SG as a known gravity (no WCF), unlike a raw Brix reading", () => {
+    const wcf = 1.1;
+
+    const viaSg = correctRefractometer({
+      mode: "post_fermentation",
+      originalGravity: 1.05,
+      currentBrix: 6.5,
+      wortCorrectionFactor: wcf,
+      formula: "novotny"
+    });
+
+    // The same wort read on the refractometer would show WCF× higher Brix; dividing
+    // that raw reading back by WCF must reproduce the SG path exactly.
+    const viaBiasedBrix = correctRefractometer({
+      mode: "post_fermentation",
+      originalBrix: sgToBrix(1.05) * wcf,
+      currentBrix: 6.5,
+      wortCorrectionFactor: wcf,
+      formula: "novotny"
+    });
+
+    expect(viaSg.correctedSG).toBeCloseTo(viaBiasedBrix.correctedSG, 4);
+
+    // A raw Brix reading equal to the true Brix (no bias) IS divided by WCF, so it must
+    // NOT match the SG path — proving the WCF is skipped only for SG-typed OG input.
+    const viaUnbiasedBrix = correctRefractometer({
+      mode: "post_fermentation",
+      originalBrix: sgToBrix(1.05),
+      currentBrix: 6.5,
+      wortCorrectionFactor: wcf,
+      formula: "novotny"
+    });
+
+    expect(viaUnbiasedBrix.correctedSG).not.toBeCloseTo(viaSg.correctedSG, 4);
+  });
+
+  it("applies the WCF before fermentation and reports zero alcohol metrics", () => {
+    const result = correctRefractometer({
+      mode: "pre_fermentation",
+      currentBrix: 12,
+      wortCorrectionFactor: 1.04
+    });
+
+    expect(result.correctedBrix).toBeCloseTo(12 / 1.04, 2);
+    expect(result.correctedBrix).toBeLessThan(12);
+    expect(result.estimatedABV).toBe(0);
+    expect(result.attenuation).toBe(0);
+  });
+
+  it("calibrates WCF from a refractometer/hydrometer pair", () => {
+    // 12.5 Brix on the refractometer vs 1.048 SG on the hydrometer → ~1.05.
+    expect(calibrateWcf({ refractometerBrix: 12.5, hydrometerReading: 1.048 })).toBeCloseTo(1.05, 2);
+
+    // Saccharometer graduated in °P (≈ Brix) is divided directly.
+    expect(calibrateWcf({ refractometerBrix: 12.5, hydrometerReading: 11.9, hydrometerUnit: "Plato" })).toBeCloseTo(1.05, 2);
+
+    expect(() => calibrateWcf({ refractometerBrix: 12.5, hydrometerReading: 0 })).toThrow();
+  });
+
+  it("classifies apparent attenuation into bands", () => {
+    expect(classifyApparentAttenuation(60)).toBe("low");
+    expect(classifyApparentAttenuation(72)).toBe("normal");
+    expect(classifyApparentAttenuation(85)).toBe("high");
   });
 
   it("conserves gravity points for dilution and boiloff", () => {

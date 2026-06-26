@@ -57,16 +57,17 @@ export default async function PublicRecipesPage({ searchParams }: { searchParams
         </p>
       </section>
 
-      <RecipesToolbar />
-      <RecipesFilterSheet index={styleIndex} familyCounts={familyCounts} />
-
       <div className="grid gap-6 lg:grid-cols-[260px_1fr]">
         <RecipesFilterSidebar index={styleIndex} familyCounts={familyCounts} />
 
         <div className="min-w-0 space-y-4">
+          {/* Управление выдачей (поиск/сортировка/вид) собрано над результатами;
+              инпуты фильтров — в сайдбаре слева (мобильный sheet — ниже). */}
+          <RecipesToolbar />
+          <RecipesFilterSheet index={styleIndex} familyCounts={familyCounts} />
           <ActiveFilterChips familyOptions={familyOptions} styleOptions={styleOptions} />
 
-          <Suspense fallback={<RecipesGridSkeleton />}>
+          <Suspense fallback={<RecipesGridSkeleton view={view} />}>
             <RecipesResults filters={filters} view={view} />
           </Suspense>
         </div>

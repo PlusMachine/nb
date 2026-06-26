@@ -31,7 +31,7 @@ export default async function SavedRecipesPage() {
           </p>
         </section>
       ) : (
-        <RecipesGrid recipes={recipes} />
+        <RecipesGrid recipes={recipes} showCloneAction />
       )}
     </main>
   );

@@ -6,6 +6,7 @@ import { Bookmark } from "lucide-react";
 import { loadRecipeSaveViewerState, toggleRecipeSaveAction } from "@/app/(public)/recipes/save-actions";
 
 import { useRecipeSaves } from "./recipe-saves-provider";
+import { SavedToast } from "./saved-toast";
 
 /**
  * Кнопка «Сохранить» рецепт в «Избранное». На витрине (`variant="icon"`) — флажок
@@ -24,6 +25,7 @@ export function RecipeSaveButton({
 }) {
   const ctx = useRecipeSaves();
   const [standaloneSaved, setStandaloneSaved] = useState<boolean | null>(null);
+  const [showSavedToast, setShowSavedToast] = useState(false);
   const [isPending, startTransition] = useTransition();
 
   // Детальная страница (без провайдера): тянем своё состояние после гидрации.
@@ -73,14 +75,19 @@ export function RecipeSaveButton({
         if (result.code === "AUTH") {
           window.location.assign("/login");
         }
+        return;
+      }
+      // Явный фидбэк только при добавлении (не при снятии): куда сохранено и где найти.
+      if (next) {
+        setShowSavedToast(true);
       }
     });
   };
 
   const label = saved ? "Убрать из избранного" : "Сохранить в избранное";
 
-  if (variant === "button") {
-    return (
+  const trigger =
+    variant === "button" ? (
       <button
         type="button"
         onClick={toggle}
@@ -95,19 +102,23 @@ export function RecipeSaveButton({
         <Bookmark className={saved ? "h-4 w-4 fill-amber-500 text-amber-500" : "h-4 w-4"} aria-hidden />
         {saved ? "Сохранено" : "Сохранить"}
       </button>
+    ) : (
+      <button
+        type="button"
+        onClick={toggle}
+        disabled={isPending}
+        aria-label={label}
+        aria-pressed={saved}
+        className="absolute right-2 top-2 z-10 inline-flex h-7 w-7 items-center justify-center rounded-full bg-white/70 text-zinc-600 backdrop-blur-sm transition hover:bg-white focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 disabled:opacity-60"
+      >
+        <Bookmark className={saved ? "h-3.5 w-3.5 fill-amber-500 text-amber-500" : "h-3.5 w-3.5"} aria-hidden />
+      </button>
     );
-  }
 
   return (
-    <button
-      type="button"
-      onClick={toggle}
-      disabled={isPending}
-      aria-label={label}
-      aria-pressed={saved}
-      className="absolute right-2 top-2 z-10 inline-flex h-7 w-7 items-center justify-center rounded-full bg-white/70 text-zinc-600 backdrop-blur-sm transition hover:bg-white focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 disabled:opacity-60"
-    >
-      <Bookmark className={saved ? "h-3.5 w-3.5 fill-amber-500 text-amber-500" : "h-3.5 w-3.5"} aria-hidden />
-    </button>
+    <>
+      {trigger}
+      <SavedToast open={showSavedToast} onClose={() => setShowSavedToast(false)} />
+    </>
   );
 }

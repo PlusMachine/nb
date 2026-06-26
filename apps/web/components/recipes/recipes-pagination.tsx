@@ -36,6 +36,12 @@ export function RecipesPagination({ current, totalPages }: { current: number; to
   const hrefFor = (page: number) => buildHref({ page: String(page) }, { resetPage: false });
   const window = buildPageWindow(current, totalPages);
 
+  // Краулабельные <Link> (rel prev/next) сохраняем; `scroll={false}` гасит прыжок
+  // Next к самому верху страницы, вместо этого скроллим к началу результатов.
+  const scrollToResultsTop = () => {
+    document.getElementById("recipes-top")?.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
+
   const baseClass = "inline-flex h-9 min-w-9 items-center justify-center rounded-lg border px-3 text-sm font-medium transition";
   const idleClass = `${baseClass} border-zinc-200 bg-white text-zinc-700 hover:bg-zinc-50`;
   const mutedClass = `${baseClass} border-zinc-100 text-zinc-300`;
@@ -43,7 +49,7 @@ export function RecipesPagination({ current, totalPages }: { current: number; to
   return (
     <nav className="flex flex-wrap items-center justify-center gap-2" aria-label="Пагинация">
       {current > 1 ? (
-        <Link href={hrefFor(current - 1)} rel="prev" className={idleClass}>
+        <Link href={hrefFor(current - 1)} rel="prev" scroll={false} onClick={scrollToResultsTop} className={idleClass}>
           Назад
         </Link>
       ) : (
@@ -66,14 +72,14 @@ export function RecipesPagination({ current, totalPages }: { current: number; to
             {entry}
           </span>
         ) : (
-          <Link key={entry} href={hrefFor(entry)} className={idleClass}>
+          <Link key={entry} href={hrefFor(entry)} scroll={false} onClick={scrollToResultsTop} className={idleClass}>
             {entry}
           </Link>
         )
       )}
 
       {current < totalPages ? (
-        <Link href={hrefFor(current + 1)} rel="next" className={idleClass}>
+        <Link href={hrefFor(current + 1)} rel="next" scroll={false} onClick={scrollToResultsTop} className={idleClass}>
           Дальше
         </Link>
       ) : (

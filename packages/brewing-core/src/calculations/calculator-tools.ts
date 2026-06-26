@@ -191,6 +191,11 @@ export const calculateDilutionBoiloff = (input: {
 };
 
 export type RefractometerMode = "pre_fermentation" | "post_fermentation";
+// NOTE: these keys are historical and the community names are muddled. By coefficients
+// the "novotny" key is Sean Terrill's published cubic, and the "terrill" key is the
+// Bonham / Brewer's Friend cubic (derived from Novotný's dataset). The user-facing
+// labels are corrected in apps/web/features/calculators/definitions.ts. The keys are
+// kept stable so saved state and shared links keep working — do NOT change coefficients.
 export type RefractometerFormula = "novotny" | "terrill";
 
 export const correctRefractometer = (input: {
@@ -215,10 +220,19 @@ export const correctRefractometer = (input: {
     };
   }
 
-  const originalBrix = input.originalBrix ?? (input.originalGravity ? sgToBrix(input.originalGravity) : correctedBrix);
-  const ogBrix = originalBrix / wcf;
+  // OG handling depends on where the number came from:
+  // - originalBrix is a raw refractometer reading of the wort and carries the same
+  //   instrument bias as the current reading, so it is divided by the WCF.
+  // - originalGravity is a known/true gravity (hydrometer or recipe target), so it is
+  //   converted straight to Brix WITHOUT the WCF.
+  const ogBrix = input.originalBrix != null
+    ? input.originalBrix / wcf
+    : input.originalGravity != null
+      ? sgToBrix(input.originalGravity)
+      : correctedBrix;
   const current = correctedBrix;
   const correctedSg = input.formula === "terrill"
+    // "terrill" key → Bonham / Brewer's Friend cubic (see RefractometerFormula note)
     ? 1.001843
       - 0.002318474 * ogBrix
       - 0.000007775 * ogBrix ** 2
@@ -226,6 +240,7 @@ export const correctRefractometer = (input: {
       + 0.00574 * current
       + 0.00003344 * current ** 2
       + 0.000000086 * current ** 3
+    // "novotny" key → Sean Terrill's cubic (see RefractometerFormula note)
     : 1.0000
       - 0.0044993 * ogBrix
       + 0.011774 * current
@@ -242,6 +257,49 @@ export const correctRefractometer = (input: {
     estimatedABV: calculateAbvStandard(og, correctedSg),
     attenuation: calculateApparentAttenuation(og, correctedSg)
   };
+};
+
+/**
+ * Calibrate a personal Wort Correction Factor (WCF) for a refractometer.
+ *
+ * WCF = refractometer Brix ÷ true Brix, where the true Brix comes from a trusted
+ * hydrometer/saccharometer reading of the SAME unfermented (alcohol-free) wort.
+ * Saccharometers are commonly graduated in °P/% rather than SG, so both are accepted
+ * (°P ≈ Brix). Done once per instrument; the value is then reused for every batch.
+ */
+export const calibrateWcf = (input: {
+  refractometerBrix: number;
+  hydrometerReading: number;
+  hydrometerUnit?: CalculatorGravityUnit;
+  decimals?: number;
+}): number => {
+  const unit = input.hydrometerUnit ?? "SG";
+  const trueBrix = unit === "SG" ? sgToBrix(input.hydrometerReading) : input.hydrometerReading;
+
+  if (!Number.isFinite(input.refractometerBrix) || input.refractometerBrix <= 0 || !Number.isFinite(trueBrix) || trueBrix <= 0) {
+    throw new Error("calibrateWcf requires positive, finite refractometer and hydrometer readings");
+  }
+
+  return roundTo(input.refractometerBrix / trueBrix, input.decimals ?? 3);
+};
+
+export type ApparentAttenuationBand = "low" | "normal" | "high";
+
+/**
+ * Rough qualitative band for apparent attenuation (%): below ~65% reads as an
+ * unfinished/under-attenuated fermentation, 65–80% is typical for most ales, and
+ * above ~80% points to a dry profile (lagers, saisons, wild/brett fermentations).
+ */
+export const classifyApparentAttenuation = (attenuation: number): ApparentAttenuationBand => {
+  if (attenuation < 65) {
+    return "low";
+  }
+
+  if (attenuation > 80) {
+    return "high";
+  }
+
+  return "normal";
 };
 
 export const correctHydrometer = (input: {

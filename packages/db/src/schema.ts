@@ -503,6 +503,12 @@ export const recipes = pgTable("recipes", {
   // сервисной транзакции при сохранении/снятии. Используется для сортировки
   // «Популярные» на витрине /recipes.
   saveCount: integer("save_count").default(0).notNull(),
+  // Провенанс клона ЧУЖОГО рецепта: ссылка на исходный published-рецепт, из
+  // которого пользователь сделал свою редактируемую копию (используется для
+  // атрибуции «Адаптировано из …»). NULL для оригиналов и для дубликатов своих
+  // рецептов. Self-FK с ON DELETE SET NULL: удаление источника не каскадит на
+  // клон, лишь рвёт связь. НЕ путать с recipeFamilyId+versionNumber (версии своего).
+  clonedFromRecipeId: uuid("cloned_from_recipe_id").references((): AnyPgColumn => recipes.id, { onDelete: "set null" }),
   createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull()
 }, (table) => ({
@@ -521,7 +527,8 @@ export const recipes = pgTable("recipes", {
   updatedAtIdx: index("recipes_updated_at_idx").on(table.updatedAt),
   titleIdx: index("recipes_title_idx").on(table.title),
   ratingAvgIdx: index("recipes_rating_avg_idx").on(table.ratingAvg),
-  saveCountIdx: index("recipes_save_count_idx").on(table.saveCount)
+  saveCountIdx: index("recipes_save_count_idx").on(table.saveCount),
+  clonedFromIdx: index("recipes_cloned_from_idx").on(table.clonedFromRecipeId)
 }));
 
 export const recipeIngredients = pgTable("recipe_ingredients", {

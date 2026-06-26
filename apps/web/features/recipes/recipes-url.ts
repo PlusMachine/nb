@@ -18,7 +18,7 @@ export const recipeFilterDefaults = {
   view: "grid"
 } as const;
 
-/** Рабочие опции сортировки (popular скрыт — нет данных; rating включён в Phase D). */
+/** Рабочие опции сортировки (popular = по числу сохранений; rating — по среднему рейтингу). */
 export const recipeSortOptions: { value: PublicRecipeSort; label: string }[] = [
   { value: "newest", label: "Сначала новые" },
   { value: "popular", label: "Популярные" },

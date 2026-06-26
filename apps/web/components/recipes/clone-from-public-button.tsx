@@ -1,0 +1,73 @@
+"use client";
+
+import React, { useState } from "react";
+import { Copy } from "lucide-react";
+
+import { cloneRecipeFromPublicAction } from "@/app/(public)/recipes/[slug]/clone-actions";
+
+/**
+ * Кнопка «Клонировать» — мост «сохранённое/публичное → мои рецепты». Создаёт
+ * редактируемую копию (черновик) во владении пользователя и ведёт в редактор.
+ * `variant="button"` — на детальной странице; `variant="icon"` — оверлей на
+ * карточке (в `/app/saved`). Разлогинен → редирект на /login с возвратом.
+ */
+export function CloneFromPublicButton({
+  recipeId,
+  slug,
+  variant = "button"
+}: {
+  recipeId: string;
+  slug?: string;
+  variant?: "button" | "icon";
+}) {
+  const [pending, setPending] = useState(false);
+
+  const handleClick = (event: React.MouseEvent) => {
+    // Карточка обёрнута в ссылку — гасим переход/всплытие при клике по кнопке.
+    event.preventDefault();
+    event.stopPropagation();
+    if (pending) {
+      return;
+    }
+
+    setPending(true);
+    void cloneRecipeFromPublicAction({ recipeId }).then((result) => {
+      if (result.ok) {
+        // Переход public → app-зона (другой layout) — полная навигация уместна.
+        window.location.assign(`/app/recipes/${result.recipeId}/edit`);
+        return;
+      }
+      setPending(false);
+      if (result.code === "AUTH") {
+        const next = slug ? `/recipes/${slug}` : "/recipes";
+        window.location.assign(`/login?next=${encodeURIComponent(next)}`);
+      }
+    });
+  };
+
+  if (variant === "icon") {
+    return (
+      <button
+        type="button"
+        onClick={handleClick}
+        disabled={pending}
+        aria-label="Клонировать рецепт в «Мои рецепты»"
+        className="absolute right-2 top-11 z-10 inline-flex h-7 w-7 items-center justify-center rounded-full bg-white/70 text-zinc-600 backdrop-blur-sm transition hover:bg-white focus:outline-none focus-visible:ring-2 focus-visible:ring-zinc-400 disabled:opacity-60"
+      >
+        <Copy className="h-3.5 w-3.5" aria-hidden />
+      </button>
+    );
+  }
+
+  return (
+    <button
+      type="button"
+      onClick={handleClick}
+      disabled={pending}
+      className="inline-flex items-center gap-2 rounded-lg border border-zinc-200 bg-white px-3 py-2 text-sm font-medium text-zinc-700 transition hover:border-zinc-300 disabled:opacity-60"
+    >
+      <Copy className="h-4 w-4" aria-hidden />
+      {pending ? "Клонируем…" : "Клонировать"}
+    </button>
+  );
+}

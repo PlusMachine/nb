@@ -509,8 +509,8 @@ export const publicRecipeSorts = [
   "color_asc",
   "color_desc",
   "name",
-  "popular", // Phase C — нет данных по клонам/просмотрам, маппится на newest
-  "rating" // Phase D — сортировка по rating_avg (NULLS LAST)
+  "popular", // по числу сохранений («Избранное»): save_count desc
+  "rating" // по среднему рейтингу: rating_avg desc (NULLS LAST)
 ] as const;
 export type PublicRecipeSort = (typeof publicRecipeSorts)[number];
 
@@ -539,6 +539,7 @@ export type PublicRecipeListItem = {
   name: string;
   author: { id: string; displayName: string | null; image: string | null };
   style: { code: string; name: string } | null;
+  styleHref: string | null; // ссылка на BJCP-страницу стиля (`/bjcp/<slug>`), null если стиля нет
   og: number | null;
   fg: number | null;
   abv: number | null;
@@ -558,6 +559,7 @@ export type PublicRecipeListItem = {
   rating: { average: number; count: number } | null; // null до Phase D
   saveCount: number; // число сохранений («Избранное») — источник для сортировки «Популярные»
   publishedAt: string; // ISO; маппится из updatedAt (publishedAt-колонки нет)
+  createdAt: string; // ISO; для бейджа «Новый» (окно NEW_RECIPE_WINDOW_DAYS)
 };
 
 export type PublicRecipeFacets = {
@@ -605,6 +607,25 @@ export type RecipeSaveSummary = {
   count: number;
 };
 
+/**
+ * Атрибуция клона: исходный рецепт, из которого пользователь сделал свою копию
+ * («Адаптировано из «{title}», автор {authorName}»). `isPublished` управляет тем,
+ * показывать ли ссылку на публичную страницу источника.
+ */
+export type RecipeCloneSourceDto = {
+  id: string;
+  title: string;
+  slug: string;
+  authorId: string;
+  authorName: string | null;
+  isPublished: boolean;
+};
+
+/** Результат server-action «Клонировать» (мост публичное/сохранённое → мои рецепты). */
+export type RecipeCloneActionResult =
+  | { ok: true; recipeId: string }
+  | { ok: false; code: "AUTH" | "NOT_FOUND" | "ERROR"; message: string };
+
 export type RecipeDetailDto = RecipeListItemDto & {
   description: string | null;
   authorNotes: string | null;
@@ -622,6 +643,9 @@ export type RecipeDetailDto = RecipeListItemDto & {
   ingredients: RecipeIngredientDto[];
   versions: RecipeVersionOptionDto[];
   rating: { average: number; count: number } | null; // денормализованный агрегат (Phase D)
+  // Источник клона (если рецепт создан копированием чужого/своего published). null
+  // у оригиналов. Баннер атрибуции рендерится только когда автор источника ≠ автор копии.
+  clonedFrom?: RecipeCloneSourceDto | null;
 };
 
 export type RecipeDraftPreviewDto = {

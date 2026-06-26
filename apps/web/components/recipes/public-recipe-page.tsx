@@ -4,8 +4,10 @@ import { Star } from "lucide-react";
 import type { RecipeDetailDto } from "@/features/recipes/contracts";
 
 import { PublicRecipeHeader } from "./public-recipe-header";
+import { RecipeCloneAttribution } from "./recipe-clone-attribution";
 import { RecipeRatingForm } from "./recipe-rating-form";
 import { RecipeMatchPanel } from "./recipe-match-panel";
+import { RecipeScalePanel } from "./recipe-scale-panel";
 import { PublicRecipeWaterSection } from "./public-recipe-water-section";
 import { RecipeIngredientsSection } from "./recipe-ingredients-section";
 import { RecipeMetaSection } from "./recipe-meta-section";
@@ -51,10 +53,13 @@ export function PublicRecipePage({ recipe }: { recipe: RecipeDetailDto }) {
   return (
     <main className="space-y-4">
       <PublicRecipeHeader recipe={recipe} />
+      <RecipeCloneAttribution clonedFrom={recipe.clonedFrom} ownerAuthorId={recipe.authorId} />
       <PublicRecipeHero heroImageId={recipe.heroImageId} title={recipe.title} />
       <RecipeStatsSummary recipe={recipe} />
       {/* Персональный матчинг со складом тянется клиентом после гидрации → документ кэшируем. */}
       <RecipeMatchPanel recipeId={recipe.id} />
+      {/* Эфемерный пересчёт под объём — чистый клиент, без записи в БД. */}
+      <RecipeScalePanel recipe={recipe} />
       <RecipeRatingSection recipe={recipe} />
       <RecipeIngredientsSection ingredients={recipe.ingredients} />
       <PublicRecipeWaterSection recipe={recipe} />

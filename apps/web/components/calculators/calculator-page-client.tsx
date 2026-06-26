@@ -4,26 +4,29 @@ import Link from "next/link";
 import {
   AlertTriangle,
   ArrowLeft,
-  Check,
   ChevronRight,
-  Clipboard,
   Plus,
   RotateCcw,
-  Share2,
   Trash2
 } from "lucide-react";
 import React, { useEffect, useMemo, useState } from "react";
+
+import { calibrateWcf, sgToBrix } from "@nb/brewing-core";
 
 import { calculatorBySlug, type CalculatorSlug } from "@/features/calculators/catalog";
 import {
   calculatorStorageKey,
   calculatorDefinitionBySlug,
+  computeRefractometerView,
   initialCalculatorStateFromQuery,
-  serializeCalculatorStateToQuery,
+  refractometerOgDefault,
+  refractometerOgUnitOptions,
+  REFRACTOMETER_FORMULA_OPTIONS,
   type ArrayCalculatorField,
   type CalculatorField,
   type CalculatorResult,
   type CalculatorState,
+  type RefractometerView,
   type ScalarCalculatorField
 } from "@/features/calculators/definitions";
 
@@ -326,9 +329,366 @@ function FormulaDetails({ formula }: { formula: string }) {
           <ChevronRight className="h-4 w-4 text-zinc-500 transition-transform group-open:rotate-90" />
         </div>
         Метод расчета
+        <span className="ml-auto flex h-5 w-5 items-center justify-center rounded-full bg-zinc-200 text-[11px] font-semibold text-zinc-500">?</span>
       </summary>
       <p className="mt-3 text-sm leading-6 text-zinc-500">{formula}</p>
     </details>
+  );
+}
+
+function SegmentedControl({
+  options,
+  value,
+  onChange,
+  ariaLabel,
+  size = "md",
+  fill = true
+}: {
+  options: { value: string; label: string }[];
+  value: string;
+  onChange: (value: string) => void;
+  ariaLabel?: string;
+  size?: "md" | "sm";
+  fill?: boolean;
+}) {
+  const buttonSize = size === "md" ? "h-10 text-sm" : "h-8 text-xs";
+
+  return (
+    <div role="group" aria-label={ariaLabel} className={`${fill ? "flex" : "inline-flex"} gap-1 rounded-xl bg-zinc-100 p-1`}>
+      {options.map((option) => {
+        const active = option.value === value;
+        return (
+          <button
+            key={option.value}
+            type="button"
+            aria-pressed={active}
+            onClick={() => onChange(option.value)}
+            className={`${fill ? "flex-1" : ""} rounded-lg px-3 font-medium transition-colors ${buttonSize} ${
+              active ? "bg-white text-zinc-900 shadow-sm" : "text-zinc-500 hover:text-zinc-800"
+            }`}
+          >
+            {option.label}
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
+function RefractoNumberInput({
+  label,
+  unit,
+  helper,
+  value,
+  onChange,
+  step = 0.1,
+  min = 0
+}: {
+  label: string;
+  unit?: string;
+  helper?: string;
+  value: unknown;
+  onChange: (value: string) => void;
+  step?: number;
+  min?: number;
+}) {
+  return (
+    <label className="block min-w-0 text-xs font-medium text-zinc-600">
+      <span className="flex items-center justify-between gap-2">
+        <span>{label}</span>
+        {unit ? <span className="font-normal text-zinc-400">{unit}</span> : null}
+      </span>
+      <input
+        type="number"
+        inputMode="decimal"
+        value={String(value ?? "")}
+        min={min}
+        step={step}
+        onChange={(event) => onChange(event.target.value)}
+        className="mt-1 h-10 w-full rounded-lg border border-zinc-200 bg-white px-3 text-base tabular-nums text-zinc-900 shadow-sm focus:border-zinc-400 focus:outline-none focus:ring-2 focus:ring-zinc-200 sm:text-sm"
+      />
+      {helper ? <span className="mt-1 block text-[11px] font-normal leading-4 text-zinc-400">{helper}</span> : null}
+    </label>
+  );
+}
+
+function WcfCalibrator({ onApply }: { onApply: (wcf: number) => void }) {
+  const [refractoBrix, setRefractoBrix] = useState("");
+  const [hydroReading, setHydroReading] = useState("");
+  const [hydroUnit, setHydroUnit] = useState<"SG" | "Plato">("SG");
+
+  const refracto = Number(refractoBrix);
+  const hydro = Number(hydroReading);
+  const hasInputs = refractoBrix.trim() !== "" && hydroReading.trim() !== ""
+    && Number.isFinite(refracto) && refracto > 0 && Number.isFinite(hydro) && hydro > 0;
+
+  const trueBrix = hasInputs ? (hydroUnit === "SG" ? sgToBrix(hydro) : hydro) : null;
+  const wcf = hasInputs && trueBrix != null && trueBrix > 0
+    ? calibrateWcf({ refractometerBrix: refracto, hydrometerReading: hydro, hydrometerUnit: hydroUnit })
+    : null;
+
+  return (
+    <div className="space-y-3">
+      <div className={fieldGridClassName}>
+        <RefractoNumberInput
+          label="Рефрактометр"
+          unit="Brix"
+          value={refractoBrix}
+          step={0.1}
+          onChange={(value) => setRefractoBrix(value)}
+        />
+        <RefractoNumberInput
+          label="Ареометр / сахаромер"
+          unit={hydroUnit === "SG" ? "SG" : "°P"}
+          value={hydroReading}
+          step={hydroUnit === "SG" ? 0.001 : 0.1}
+          onChange={(value) => setHydroReading(value)}
+        />
+      </div>
+
+      <SegmentedControl
+        ariaLabel="Шкала ареометра"
+        size="sm"
+        fill={false}
+        options={[
+          { value: "SG", label: "SG" },
+          { value: "Plato", label: "°P" }
+        ]}
+        value={hydroUnit}
+        onChange={(value) => setHydroUnit(value as "SG" | "Plato")}
+      />
+
+      <div className="rounded-lg bg-zinc-50 px-3 py-2.5 text-sm tabular-nums text-zinc-600">
+        {wcf != null && trueBrix != null ? (
+          <span>{refracto} ÷ {trueBrix.toFixed(1)} Brix = <strong className="text-zinc-900">{wcf}</strong></span>
+        ) : (
+          <span className="text-xs text-zinc-400">Коэффициент = показание рефрактометра ÷ Brix по ареометру</span>
+        )}
+      </div>
+
+      <button
+        type="button"
+        disabled={wcf == null}
+        onClick={() => { if (wcf != null) { onApply(wcf); } }}
+        className="h-10 w-full rounded-lg bg-zinc-900 px-3 text-sm font-medium text-white transition-colors hover:bg-zinc-800 disabled:cursor-not-allowed disabled:bg-zinc-200 disabled:text-zinc-400"
+      >
+        Применить коэффициент
+      </button>
+      <p className="text-[11px] leading-4 text-zinc-400">
+        Делается один раз — дальше значение постоянно для твоего прибора. Замеряй по суслу до брожения (без спирта).
+      </p>
+    </div>
+  );
+}
+
+function RefractometerFieldsBlock({
+  state,
+  onChange,
+  onReset
+}: {
+  state: CalculatorState;
+  onChange: (name: string, value: unknown) => void;
+  onReset: () => void;
+}) {
+  const mode = String(state.mode ?? "post_fermentation");
+  const originalUnit = String(state.originalUnit ?? "Brix");
+  const isPost = mode === "post_fermentation";
+  const ogUnitLabel = refractometerOgUnitOptions.find((option) => option.value === originalUnit)?.label ?? originalUnit;
+
+  const coefficientField = (
+    <RefractoNumberInput
+      label="Поправочный коэффициент"
+      unit="WCF"
+      value={state.wortCorrectionFactor}
+      min={0.8}
+      step={0.01}
+      onChange={(value) => onChange("wortCorrectionFactor", value)}
+    />
+  );
+
+  return (
+    <div className="overflow-hidden rounded-2xl border border-zinc-200 bg-white shadow-sm">
+      <div className="flex items-center justify-between gap-3 border-b border-zinc-100 px-5 py-3.5">
+        <h2 className="text-sm font-semibold text-zinc-900">Замер рефрактометром</h2>
+        <button
+          type="button"
+          onClick={onReset}
+          className="inline-flex shrink-0 items-center gap-1.5 rounded-lg px-2 py-1 text-xs font-medium text-zinc-500 transition-colors hover:bg-zinc-100 hover:text-zinc-700"
+        >
+          <RotateCcw className="h-3.5 w-3.5" />
+          Сбросить
+        </button>
+      </div>
+
+      <div className="space-y-5 p-5">
+        <div className="space-y-2">
+          <SegmentedControl
+            ariaLabel="Режим"
+            options={[
+              { value: "pre_fermentation", label: "До брожения" },
+              { value: "post_fermentation", label: "Во время и после" }
+            ]}
+            value={mode}
+            onChange={(value) => onChange("mode", value)}
+          />
+          <p className="text-xs leading-5 text-zinc-500">
+            {isPost
+              ? "Спирт искажает показания рефрактометра — нужны начальная и текущая плотности."
+              : "Несброженное сусло: спирта ещё нет, нужен только поправочный коэффициент."}
+          </p>
+        </div>
+
+        <div className="space-y-4">
+          <div className="grid gap-x-4 gap-y-4 sm:grid-cols-2">
+            <RefractoNumberInput
+              label={isPost ? "Текущая плотность" : "Плотность сусла"}
+              unit="Brix"
+              value={state.currentBrix}
+              step={0.1}
+              onChange={(value) => onChange("currentBrix", value)}
+            />
+            {isPost ? (
+              <RefractoNumberInput
+                label="Начальная плотность (OG)"
+                unit={ogUnitLabel}
+                value={state.originalValue}
+                min={0}
+                step={originalUnit === "SG" ? 0.001 : 0.1}
+                onChange={(value) => onChange("originalValue", value)}
+              />
+            ) : coefficientField}
+          </div>
+
+          {isPost ? (
+            <div className="grid gap-x-4 gap-y-4 sm:grid-cols-[minmax(0,1fr)_minmax(0,1.3fr)_auto]">
+              {coefficientField}
+              <label className="block min-w-0 text-xs font-medium text-zinc-600">
+                <span>Формула пересчёта</span>
+                <select
+                  value={String(state.formula ?? "novotny")}
+                  onChange={(event) => onChange("formula", event.target.value)}
+                  className="mt-1 h-10 w-full rounded-lg border border-zinc-200 bg-white px-3 text-base text-zinc-900 shadow-sm focus:border-zinc-400 focus:outline-none focus:ring-2 focus:ring-zinc-200 sm:text-sm"
+                >
+                  {REFRACTOMETER_FORMULA_OPTIONS.map((option) => (
+                    <option key={option.value} value={option.value}>{option.label}</option>
+                  ))}
+                </select>
+              </label>
+              <div className="min-w-0">
+                <span className="block text-xs font-medium text-zinc-600">Единица OG</span>
+                <div className="mt-1">
+                  <SegmentedControl
+                    ariaLabel="Единица OG"
+                    size="sm"
+                    fill={false}
+                    options={refractometerOgUnitOptions}
+                    value={originalUnit}
+                    onChange={(nextUnit) => {
+                      onChange("originalUnit", nextUnit);
+                      onChange("originalValue", String(refractometerOgDefault(nextUnit)));
+                    }}
+                  />
+                </div>
+              </div>
+            </div>
+          ) : null}
+        </div>
+
+        <details className="group rounded-xl border border-zinc-200 bg-zinc-50/60 px-4 py-3">
+          <summary className="flex cursor-pointer list-none items-center gap-2 text-sm font-semibold text-zinc-700">
+            <div className="flex h-6 w-6 items-center justify-center rounded-md bg-white shadow-sm">
+              <ChevronRight className="h-4 w-4 text-zinc-500 transition-transform group-open:rotate-90" />
+            </div>
+            Калибровка коэффициента
+          </summary>
+          <div className="mt-4 space-y-4">
+            <p className="text-[11px] leading-4 text-zinc-500">
+              Рефрактометр откалиброван по чистой сахарозе, а в сусле есть белки и декстрины — поэтому он немного завышает. Поправочный коэффициент подгоняет прибор под твоё сусло: 1,04 — рабочее значение, но точнее измерить своё.
+            </p>
+            <WcfCalibrator onApply={(wcf) => onChange("wortCorrectionFactor", String(wcf))} />
+          </div>
+        </details>
+      </div>
+    </div>
+  );
+}
+
+function RefractometerResultPanel({ state }: { state: CalculatorState }) {
+  let view: RefractometerView;
+  try {
+    view = computeRefractometerView(state);
+  } catch {
+    return (
+      <aside className="lg:sticky lg:top-6">
+        <div className="rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm">
+          <p className="text-[11px] font-medium uppercase tracking-[0.08em] text-zinc-400">Скорректированная плотность</p>
+          <p className="mt-2 text-sm leading-5 text-zinc-500">Проверьте входные значения.</p>
+        </div>
+      </aside>
+    );
+  }
+
+  const isPost = view.mode === "post_fermentation";
+  // The big result follows the unit chosen for the OG input (post). Pre-fermentation
+  // has no unit picker, so it keeps the conventional SG as the headline.
+  const primaryUnit = isPost ? String(state.originalUnit ?? "Brix") : "SG";
+  const correctedUnits = [
+    { key: "SG", value: view.corrected.sg.toFixed(3), label: "SG" },
+    { key: "Plato", value: view.corrected.plato.toFixed(1), label: "°P" },
+    { key: "Brix", value: view.corrected.brix.toFixed(1), label: "Brix" }
+  ];
+  const primary = correctedUnits.find((unit) => unit.key === primaryUnit) ?? correctedUnits[0];
+  const secondary = correctedUnits.filter((unit) => unit.key !== primary.key);
+
+  const attenuationText = view.attenuationBand === "low"
+    ? "Ниже 65% — брожение, возможно, не завершено."
+    : view.attenuationBand === "high"
+      ? "Выше 80% — сухой профиль (лагеры, сэзоны, дикие дрожжи)."
+      : "65–80% — нормально для большинства элей.";
+
+  return (
+    <aside className="lg:sticky lg:top-6">
+      <div className="overflow-hidden rounded-2xl border border-zinc-200 bg-white shadow-sm">
+        <div className="border-b border-zinc-100 bg-gradient-to-b from-zinc-50 to-white px-5 py-5">
+          <p className="text-[11px] font-medium uppercase tracking-[0.08em] text-zinc-400">Скорректированная плотность</p>
+          <div className="mt-1.5 flex items-baseline gap-1.5">
+            <span className="text-4xl font-semibold leading-none tabular-nums text-zinc-950">{primary.value}</span>
+            <span className="text-sm font-medium text-zinc-400">{primary.label}</span>
+          </div>
+          <div className="mt-3 flex gap-2">
+            {secondary.map((unit) => (
+              <span key={unit.key} className="rounded-md bg-white px-2.5 py-1 text-xs font-medium tabular-nums text-zinc-600 ring-1 ring-zinc-200">{unit.value} {unit.label}</span>
+            ))}
+          </div>
+        </div>
+
+        {isPost ? (
+          <div className="space-y-3 p-5">
+            <dl className="grid grid-cols-2 gap-3">
+              <div className="min-w-0 rounded-xl border border-zinc-100 bg-zinc-50/70 px-3 py-2.5">
+                <dt className="truncate text-[11px] font-medium uppercase tracking-[0.08em] text-zinc-400">ABV оценка</dt>
+                <dd className="mt-1 text-lg font-semibold tabular-nums text-zinc-900">{view.estimatedABV.toFixed(1)}%</dd>
+              </div>
+              <div className={`min-w-0 rounded-xl border px-3 py-2.5 ${
+                view.attenuationBand === "normal"
+                  ? "border-emerald-100 bg-emerald-50 text-emerald-950"
+                  : "border-amber-100 bg-amber-50 text-amber-950"
+              }`}>
+                <dt className="truncate text-[11px] font-medium uppercase tracking-[0.08em] text-zinc-400">Сбраживание</dt>
+                <dd className="mt-1 text-lg font-semibold tabular-nums">{view.attenuation.toFixed(0)}%</dd>
+              </div>
+            </dl>
+            <p className="rounded-xl border border-zinc-100 bg-zinc-50/70 px-3 py-2.5 text-xs leading-5 text-zinc-600">{attenuationText}</p>
+          </div>
+        ) : (
+          <div className="p-5">
+            <p className="rounded-xl border border-zinc-100 bg-zinc-50/70 px-3 py-2.5 text-xs leading-5 text-zinc-600">
+              Спирт ещё не учитывается — это плотность несброженного сусла.
+            </p>
+          </div>
+        )}
+      </div>
+    </aside>
   );
 }
 
@@ -344,8 +704,6 @@ export function CalculatorPageClient({
     initialCalculatorStateFromQuery(definition, initialQuery)
   ));
   const [mounted, setMounted] = useState(false);
-  const [copyState, setCopyState] = useState<"idle" | "copied">("idle");
-  const [shareState, setShareState] = useState<"idle" | "copied">("idle");
 
   useEffect(() => {
     const storedState = normalizeStoredState(window.localStorage.getItem(calculatorStorageKey(definition.catalog.slug)));
@@ -378,30 +736,12 @@ export function CalculatorPageClient({
 
   const mainFields = definition.fields.filter((field) => !field.advanced);
   const advancedFields = definition.fields.filter((field) => field.advanced);
-  const showAdvanced = advancedFields.length > 0;
+  // The refractometer block renders its own advanced section (WCF + calibrator + formula),
+  // so the generic advanced panel must stay off to avoid duplicating those fields.
+  const showAdvanced = advancedFields.length > 0 && definition.catalog.slug !== "refractometer-correction";
 
   const handleFieldChange = (name: string, value: unknown) => {
     setState((current) => ({ ...current, [name]: value }));
-  };
-
-  const shareUrl = () => {
-    const params = serializeCalculatorStateToQuery(definition, state);
-    const query = params.toString();
-    const path = definition.catalog.href;
-    return `${window.location.origin}${path}${query ? `?${query}` : ""}`;
-  };
-
-  const copyResult = async () => {
-    const text = `${definition.catalog.title}: ${result.primary.label} ${result.primary.value}${result.primary.helper ? ` (${result.primary.helper})` : ""}`;
-    await navigator.clipboard?.writeText(text);
-    setCopyState("copied");
-    window.setTimeout(() => setCopyState("idle"), 1400);
-  };
-
-  const copyShareUrl = async () => {
-    await navigator.clipboard?.writeText(shareUrl());
-    setShareState("copied");
-    window.setTimeout(() => setShareState("idle"), 1400);
   };
 
   const resetState = () => {
@@ -426,67 +766,52 @@ export function CalculatorPageClient({
     label: label || href.split("/").pop()?.replaceAll("-", " ") || href
   }));
 
+  const isRefractometer = definition.catalog.slug === "refractometer-correction";
+  const gridClassName = isRefractometer
+    ? "grid gap-5 lg:grid-cols-[minmax(0,1fr)_20rem] lg:gap-6"
+    : "grid gap-4 lg:grid-cols-[minmax(0,1fr)_22rem]";
+
   return (
-    <main className="space-y-5 pb-24 pt-8">
+    <main className={`space-y-5 pb-24 pt-8 ${isRefractometer ? "mx-auto max-w-5xl" : ""}`}>
       <Link href="/calculators" className="inline-flex items-center gap-1.5 text-sm font-medium text-zinc-500 transition-colors hover:text-zinc-900">
         <ArrowLeft className="h-4 w-4" />
         Все калькуляторы
       </Link>
 
       <section className="rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm sm:p-6">
-        <div className="flex flex-wrap items-start justify-between gap-4">
-          <div className="max-w-3xl space-y-2">
-            <h1 className="text-2xl font-semibold leading-tight text-zinc-950 sm:text-3xl">{definition.catalog.title}</h1>
-            <p className="text-sm leading-6 text-zinc-600">{definition.catalog.intro}</p>
-          </div>
-          <div className="flex flex-wrap gap-2">
-            <button
-              type="button"
-              onClick={copyResult}
-              aria-label="Копировать"
-              className="inline-flex items-center gap-1.5 rounded-lg border border-zinc-200 bg-white px-3 py-2 text-xs font-medium text-zinc-600 transition-colors hover:border-zinc-300 hover:bg-zinc-50"
-            >
-              {copyState === "copied" ? <Check className="h-3.5 w-3.5" /> : <Clipboard className="h-3.5 w-3.5" />}
-              {copyState === "copied" ? "Готово" : "Копировать"}
-            </button>
-            <button
-              type="button"
-              onClick={copyShareUrl}
-              aria-label="Ссылка"
-              className="inline-flex items-center gap-1.5 rounded-lg border border-zinc-200 bg-white px-3 py-2 text-xs font-medium text-zinc-600 transition-colors hover:border-zinc-300 hover:bg-zinc-50"
-            >
-              {shareState === "copied" ? <Check className="h-3.5 w-3.5" /> : <Share2 className="h-3.5 w-3.5" />}
-              {shareState === "copied" ? "Готово" : "Ссылка"}
-            </button>
-            <button
-              type="button"
-              onClick={resetState}
-              aria-label="Сбросить"
-              className="inline-flex items-center gap-1.5 rounded-lg border border-zinc-200 bg-white px-3 py-2 text-xs font-medium text-zinc-600 transition-colors hover:border-zinc-300 hover:bg-zinc-50"
-            >
-              <RotateCcw className="h-3.5 w-3.5" />
-              Сбросить
-            </button>
-          </div>
+        <div className="max-w-3xl space-y-2">
+          <h1 className="text-2xl font-semibold leading-tight text-zinc-950 sm:text-3xl">{definition.catalog.title}</h1>
+          <p className="text-sm leading-6 text-zinc-600">{definition.catalog.intro}</p>
         </div>
       </section>
 
-      <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_22rem]">
+      <div className={gridClassName}>
         <section className="space-y-4">
-          <div className="rounded-2xl border border-zinc-200 bg-white p-4 shadow-sm">
-            <div className="mb-4">
-              <h2 className="text-base font-semibold text-zinc-950">Ввод</h2>
+          {definition.catalog.slug === "refractometer-correction" ? (
+            <RefractometerFieldsBlock state={state} onChange={handleFieldChange} onReset={resetState} />
+          ) : (
+            <div className="rounded-2xl border border-zinc-200 bg-white p-4 shadow-sm">
+              <div className="mb-3 flex justify-end">
+                <button
+                  type="button"
+                  onClick={resetState}
+                  className="inline-flex items-center gap-1.5 rounded-lg px-2 py-1 text-xs font-medium text-zinc-500 transition-colors hover:bg-zinc-100 hover:text-zinc-700"
+                >
+                  <RotateCcw className="h-3.5 w-3.5" />
+                  Сбросить
+                </button>
+              </div>
+              {definition.catalog.slug === "unit-converter" ? (
+                <UnitConverterFieldsBlock
+                  state={state}
+                  result={result}
+                  onChange={handleFieldChange}
+                />
+              ) : (
+                <FieldsBlock fields={mainFields} state={state} onChange={handleFieldChange} />
+              )}
             </div>
-            {definition.catalog.slug === "unit-converter" ? (
-              <UnitConverterFieldsBlock
-                state={state}
-                result={result}
-                onChange={handleFieldChange}
-              />
-            ) : (
-              <FieldsBlock fields={mainFields} state={state} onChange={handleFieldChange} />
-            )}
-          </div>
+          )}
 
           {showAdvanced ? (
             <details className="group rounded-2xl border border-zinc-100 bg-white p-4 shadow-sm">
@@ -503,8 +828,14 @@ export function CalculatorPageClient({
           ) : null}
         </section>
 
-        <ResultPanel result={result} />
+        {definition.catalog.slug === "refractometer-correction" ? (
+          <RefractometerResultPanel state={state} />
+        ) : (
+          <ResultPanel result={result} />
+        )}
       </div>
+
+      <FormulaDetails formula={definition.catalog.formula} />
 
       <section className="rounded-2xl border border-zinc-100 bg-white p-4 shadow-sm">
         <h2 className="text-sm font-semibold text-zinc-900">Дальше</h2>
@@ -521,8 +852,6 @@ export function CalculatorPageClient({
           ))}
         </div>
       </section>
-
-      <FormulaDetails formula={definition.catalog.formula} />
     </main>
   );
 }

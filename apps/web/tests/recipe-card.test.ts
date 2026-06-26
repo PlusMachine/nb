@@ -16,6 +16,7 @@ const baseItem = (overrides: Partial<PublicRecipeListItem> = {}): PublicRecipeLi
   name: "Hazy IPA",
   author: { id: "u-1", displayName: "Alice Brewer", image: null },
   style: { code: "21A", name: "American IPA" },
+  styleHref: "/bjcp/bjcp-21a-american-ipa",
   og: 1.048,
   fg: 1.012,
   abv: 6.2,
@@ -30,6 +31,7 @@ const baseItem = (overrides: Partial<PublicRecipeListItem> = {}): PublicRecipeLi
   rating: null,
   saveCount: 0,
   publishedAt: "2026-02-01T00:00:00.000Z",
+  createdAt: new Date().toISOString(),
   ...overrides
 });
 
@@ -82,9 +84,30 @@ describe("RecipeCard", () => {
     expect(html).not.toContain("/images/bjcp/21A");
   });
 
-  it("shows the «Новый» badge when there is no rating", () => {
+  it("shows the «Новый» badge for a recently created recipe without rating", () => {
     const html = renderToStaticMarkup(React.createElement(RecipeCard, { recipe: baseItem() }));
     expect(html).toContain("Новый");
+  });
+
+  it("does not show «Новый» for an older recipe without rating", () => {
+    const html = renderToStaticMarkup(
+      React.createElement(RecipeCard, { recipe: baseItem({ createdAt: "2020-01-01T00:00:00.000Z" }) })
+    );
+    expect(html).not.toContain("Новый");
+  });
+
+  it("links the style chip to the BJCP style page when styleHref is present", () => {
+    const html = renderToStaticMarkup(React.createElement(RecipeCard, { recipe: baseItem() }));
+    expect(html).toContain('href="/bjcp/bjcp-21a-american-ipa"');
+    expect(html).toContain("American IPA · 21A");
+  });
+
+  it("renders the style chip as plain text when styleHref is null", () => {
+    const html = renderToStaticMarkup(
+      React.createElement(RecipeCard, { recipe: baseItem({ styleHref: null }) })
+    );
+    expect(html).toContain("American IPA · 21A");
+    expect(html).not.toContain('href="/bjcp/');
   });
 
   it("shows a rating with RU-formatted average when present", () => {

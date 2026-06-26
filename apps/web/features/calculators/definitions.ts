@@ -1,4 +1,5 @@
 import {
+  brixToSg,
   calculateAbvAttenuation,
   calculateBeerColorSimple,
   calculateBitterness,
@@ -11,16 +12,22 @@ import {
   calculateSpeiseKrausen,
   calculateWaterPh,
   calculateYeastStarter,
+  classifyApparentAttenuation,
   convertBrewingUnitGroup,
   correctHydrometer,
   correctRefractometer,
   gravityToSg,
   residualCo2VolumesAtTempC,
   roundTo,
+  sgToBrix,
   sgToPlato,
+  type ApparentAttenuationBand,
   type BitternessFormula,
   type BrewingSaltId,
+  type CalculatorGravityUnit,
   type HopAdditionInput,
+  type RefractometerFormula,
+  type RefractometerMode,
   type SaltAddition
 } from "@nb/brewing-core";
 
@@ -254,6 +261,88 @@ const buildSalts = (state: CalculatorState): SaltAddition[] => {
     .filter((addition) => addition.grams > 0);
 };
 
+// ── Refractometer correction: shared input marshalling + view model ─────────────
+// The keys "novotny"/"terrill" are historical; the displayed names are the corrected
+// attribution (see RefractometerFormula in @nb/brewing-core). Keys stay stable so saved
+// state and shared links keep working; only the coefficients are authoritative.
+export const REFRACTOMETER_FORMULA_OPTIONS: CalculatorFieldOption[] = [
+  { value: "novotny", label: "Terrill (кубическая)" },
+  { value: "terrill", label: "Bonham (Brewer's Friend)" }
+];
+
+export const refractometerOgUnitOptions: CalculatorFieldOption[] = [
+  { value: "Brix", label: "Brix" },
+  { value: "SG", label: "SG" },
+  { value: "Plato", label: "°P" }
+];
+
+export const refractometerOgDefault = (unit: string): number => (unit === "SG" ? 1.05 : 12.4);
+
+type RefractometerInput = Parameters<typeof correctRefractometer>[0];
+
+// Marshal calculator state into the core input. The OG unit decides WCF routing:
+// SG is a known/true gravity (no WCF), Brix/°P are raw refractometer readings (÷ WCF).
+export const readRefractometerInput = (state: CalculatorState): {
+  input: RefractometerInput;
+  originalUnit: CalculatorGravityUnit;
+  originalValue: number;
+  ogSg: number;
+} => {
+  const mode = s(state.mode, "post_fermentation") as RefractometerMode;
+  const currentBrix = n(state.currentBrix, 6.5);
+  const wortCorrectionFactor = n(state.wortCorrectionFactor, 1.04);
+  const formula = s(state.formula, "novotny") as RefractometerFormula;
+  const originalUnit = s(state.originalUnit, "Brix") as CalculatorGravityUnit;
+  const originalValue = n(state.originalValue, refractometerOgDefault(originalUnit));
+
+  const input: RefractometerInput = { mode, currentBrix, wortCorrectionFactor, formula };
+
+  let ogSg: number;
+  if (originalUnit === "SG") {
+    input.originalGravity = originalValue;
+    ogSg = originalValue;
+  } else {
+    input.originalBrix = originalValue;
+    ogSg = brixToSg(originalValue / wortCorrectionFactor);
+  }
+
+  return { input, originalUnit, originalValue, ogSg };
+};
+
+export type RefractometerView = {
+  mode: RefractometerMode;
+  corrected: { sg: number; plato: number; brix: number };
+  estimatedABV: number;
+  attenuation: number;
+  attenuationBand: ApparentAttenuationBand | null;
+  ogSg: number;
+};
+
+export const computeRefractometerView = (state: CalculatorState): RefractometerView => {
+  const { input, ogSg } = readRefractometerInput(state);
+  const result = correctRefractometer(input);
+  // All three units describe the SAME corrected gravity, derived from corrected SG.
+  // (result.correctedBrix is the corrected *current reading*, not the final gravity in Brix.)
+  const corrected = {
+    sg: result.correctedSG,
+    plato: result.correctedPlato,
+    brix: sgToBrix(result.correctedSG)
+  };
+
+  if (input.mode === "pre_fermentation") {
+    return { mode: input.mode, corrected, estimatedABV: 0, attenuation: 0, attenuationBand: null, ogSg };
+  }
+
+  return {
+    mode: input.mode,
+    corrected,
+    estimatedABV: result.estimatedABV,
+    attenuation: result.attenuation,
+    attenuationBand: classifyApparentAttenuation(result.attenuation),
+    ogSg
+  };
+};
+
 export const calculatorDefinitions: CalculatorDefinition[] = [
   calculator("dilution-boiloff", {
     defaults: {
@@ -365,47 +454,72 @@ export const calculatorDefinitions: CalculatorDefinition[] = [
   calculator("refractometer-correction", {
     defaults: {
       mode: "post_fermentation",
-      originalGravity: 1.05,
-      originalBrix: 12.4,
       currentBrix: 6.5,
+      originalValue: 12.4,
+      originalUnit: "Brix",
       wortCorrectionFactor: 1.04,
       formula: "novotny"
     },
+    // Fields drive query (de)serialization and the localStorage allowlist. Inputs are
+    // rendered by a dedicated block (RefractometerFieldsBlock), so the labels here are a
+    // fallback only — but the list must still enumerate every persisted/shared key.
     fields: [
       selectField("mode", "Режим", [
         { value: "pre_fermentation", label: "До брожения" },
         { value: "post_fermentation", label: "Во время/после брожения" }
       ]),
-      numberField("originalGravity", "Исходная плотность", "SG", { min: 1, step: 0.001 }),
       numberField("currentBrix", "Текущий Brix", "Brix", { min: 0, step: 0.1 }),
+      numberField("originalValue", "Начальное OG", "Brix", { min: 0, step: 0.1 }),
+      selectField("originalUnit", "Единица OG", refractometerOgUnitOptions),
       numberField("wortCorrectionFactor", "WCF", undefined, { min: 0.8, step: 0.01, advanced: true }),
-      numberField("originalBrix", "Исходный Brix", "Brix", { min: 0, step: 0.1, advanced: true }),
-      selectField("formula", "Формула после брожения", [
-        { value: "novotny", label: "Novotny" },
-        { value: "terrill", label: "Terrill" }
-      ], { advanced: true })
+      selectField("formula", "Формула после брожения", REFRACTOMETER_FORMULA_OPTIONS, { advanced: true })
     ],
+    // Migrate legacy shared links (originalGravity in SG / originalBrix in raw Brix) to the
+    // unified originalValue + originalUnit model. New links already carry the new keys.
+    applyQuery: (state, params) => {
+      if (params.originalValue != null) {
+        return state;
+      }
+      if (params.originalGravity != null) {
+        return { ...state, originalValue: params.originalGravity, originalUnit: "SG" };
+      }
+      if (params.originalBrix != null) {
+        return { ...state, originalValue: params.originalBrix, originalUnit: "Brix" };
+      }
+      return state;
+    },
     calculate: (state) => {
-      const result = correctRefractometer({
-        mode: s(state.mode, "post_fermentation") as "pre_fermentation" | "post_fermentation",
-        originalGravity: n(state.originalGravity, 1.05),
-        originalBrix: n(state.originalBrix, 0) || undefined,
-        currentBrix: n(state.currentBrix, 6.5),
-        wortCorrectionFactor: n(state.wortCorrectionFactor, 1.04),
-        formula: s(state.formula, "novotny") as "novotny" | "terrill"
-      });
+      const view = computeRefractometerView(state);
+      const { corrected, ogSg, mode } = view;
+      const sg = corrected.sg.toFixed(3);
+      const plato = corrected.plato.toFixed(1);
+      const brix = corrected.brix.toFixed(1);
+
+      const stats: CalculatorResultStat[] = [
+        { label: "°P", value: `${plato} °P` },
+        { label: "Brix", value: `${brix} Brix` }
+      ];
+      const links: CalculatorResultLink[] = [];
+
+      if (mode === "post_fermentation") {
+        stats.push({ label: "ABV оценка", value: formatPercent(view.estimatedABV, 1) });
+        stats.push({
+          label: "Сбраживание",
+          value: formatPercent(view.attenuation),
+          tone: view.attenuationBand === "normal" ? "good" : "warning"
+        });
+        links.push({
+          label: "Использовать как FG в ABV",
+          href: buildCalculatorHref("abv-attenuation", { og: ogSg.toFixed(3), fg: corrected.sg.toFixed(3) })
+        });
+      }
+
+      links.push(...relatedLinks(["hydrometer-correction", "unit-converter"]));
 
       return {
-        primary: { label: "Скорр. SG", value: result.correctedSG.toFixed(3), helper: `${result.correctedPlato.toFixed(2)} °P` },
-        stats: [
-          { label: "Скорр. Brix", value: `${result.correctedBrix.toFixed(2)} Brix` },
-          { label: "ABV оценка", value: formatPercent(result.estimatedABV, 2) },
-          { label: "Сбраживание", value: formatPercent(result.attenuation) }
-        ],
-        links: [
-          { label: "Использовать как FG в ABV", href: buildCalculatorHref("abv-attenuation", { og: n(state.originalGravity, 1.05).toFixed(3), fg: result.correctedSG.toFixed(3) }) },
-          ...relatedLinks(["hydrometer-correction", "unit-converter"])
-        ]
+        primary: { label: "Скорр. плотность", value: `${sg} SG`, helper: `${plato} °P · ${brix} Brix` },
+        stats,
+        links
       };
     }
   }),

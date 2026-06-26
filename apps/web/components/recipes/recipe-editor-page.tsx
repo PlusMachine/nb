@@ -7,6 +7,7 @@ import type { IngredientSuggestionItem } from "@/features/ingredients/contracts"
 import type { RecipeImageDto } from "@/features/recipe-images/contracts";
 import type { RecipeDetailDto, RecipePublicationState, RecipeStockCoverageDto } from "@/features/recipes/contracts";
 
+import { RecipeCloneAttribution } from "./recipe-clone-attribution";
 import type { RecipeSaveStatus } from "./recipe-designer";
 import { RecipeForm } from "./recipe-form";
 
@@ -39,6 +40,11 @@ export function RecipeEditorPage({
   // Status and visibility chrome now lives inside RecipeDesigner's sticky header.
   return (
     <main>
+      {recipe?.clonedFrom && recipe.clonedFrom.authorId !== recipe.authorId ? (
+        <div className="mb-3">
+          <RecipeCloneAttribution clonedFrom={recipe.clonedFrom} ownerAuthorId={recipe.authorId} />
+        </div>
+      ) : null}
       <RecipeForm
         mode={editorMode}
         initialRecipe={recipe}

@@ -44,9 +44,9 @@ export function RecipesFilterSheet({
         type="button"
         onClick={() => setOpen(true)}
         className="inline-flex items-center gap-2 rounded-xl border border-zinc-200 bg-white px-4 py-2.5 text-sm font-medium text-zinc-700 transition hover:bg-zinc-50"
+        aria-label="Открыть фильтры"
       >
         <SlidersHorizontal className="h-4 w-4" aria-hidden />
-        Фильтры
         {activeCount > 0 ? (
           <span className="inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-zinc-950 px-1.5 text-[11px] font-semibold text-white">
             {activeCount}
@@ -67,7 +67,7 @@ export function RecipesFilterSheet({
             onClick={(event) => event.stopPropagation()}
           >
             <div className="mb-5 flex items-start justify-between gap-4">
-              <h2 className="text-xl font-semibold text-zinc-950">Фильтры</h2>
+              <h2 className="sr-only">Фильтры</h2>
               <button
                 type="button"
                 onClick={() => setOpen(false)}

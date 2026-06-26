@@ -3,28 +3,38 @@ import React from "react";
 import type { PublicRecipeListItem } from "@/features/recipes/contracts";
 
 import { RecipeCard } from "./recipe-card";
+import { RecipeListRow } from "./recipe-list-row";
 import { RecipeSavesProvider } from "./recipe-saves-provider";
 
-/** Адаптивная сетка карточек витрины `/recipes` (серверный компонент). */
+/**
+ * Витрина `/recipes` (серверный компонент). `grid` — адаптивная сетка карточек;
+ * `list` — вертикальный стек горизонтальных строк ({@link RecipeListRow}),
+ * удобный для сравнения чисел. Состояние «избранного» — общий провайдер на оба вида.
+ */
 export function RecipesGrid({
   recipes,
-  view = "grid"
+  view = "grid",
+  showCloneAction = false
 }: {
   recipes: PublicRecipeListItem[];
   view?: "grid" | "list";
+  showCloneAction?: boolean;
 }) {
-  const layout =
-    view === "list"
-      ? "grid grid-cols-1 gap-4 sm:grid-cols-2"
-      : "grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4";
-
   return (
     <RecipeSavesProvider recipeIds={recipes.map((recipe) => recipe.id)}>
-      <div className={layout}>
-        {recipes.map((recipe) => (
-          <RecipeCard key={recipe.id} recipe={recipe} />
-        ))}
-      </div>
+      {view === "list" ? (
+        <div className="flex flex-col gap-3">
+          {recipes.map((recipe) => (
+            <RecipeListRow key={recipe.id} recipe={recipe} showCloneAction={showCloneAction} />
+          ))}
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          {recipes.map((recipe) => (
+            <RecipeCard key={recipe.id} recipe={recipe} showCloneAction={showCloneAction} />
+          ))}
+        </div>
+      )}
     </RecipeSavesProvider>
   );
 }
