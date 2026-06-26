@@ -490,6 +490,33 @@ export type RecipeVersionOptionDto = {
   updatedAt: Date;
 };
 
+/**
+ * View-model карточки рецепта владельца для галереи `/app/recipes`. В отличие от
+ * «голого» {@link RecipeListItemDto}, здесь обложка (фото → картинка BJCP-стиля →
+ * заливка по SRM), название/код стиля и итог style-fit уже разрешены на сервере —
+ * клиентская галерея делает только фильтр/сортировку/переключение вида и не тащит
+ * доменные пакеты в бандл. Полностью сериализуемо (Date для `updatedAt`).
+ */
+export type OwnerRecipeCardDto = {
+  id: string;
+  slug: string;
+  title: string;
+  publicationState: RecipePublicationState;
+  versionNumber: number;
+  versionCount: number;
+  updatedAt: Date;
+  styleName: string | null;
+  styleCode: string | null;
+  styleHref: string | null;
+  og: number | null;
+  abv: number | null;
+  ibu: number | null;
+  colorSrm: number | null;
+  heroImage: { thumbUrl: string; blurDataUrl: string | null } | null;
+  styleImageUrl: string | null;
+  styleFit: "in_style" | "deviations" | null;
+};
+
 // --- Public recipe discovery (витрина /recipes) -----------------------------
 
 /**
@@ -509,7 +536,7 @@ export const publicRecipeSorts = [
   "color_asc",
   "color_desc",
   "name",
-  "popular", // по числу сохранений («Избранное»): save_count desc
+  "popular", // по числу сохранений («Избранные»): save_count desc
   "rating" // по среднему рейтингу: rating_avg desc (NULLS LAST)
 ] as const;
 export type PublicRecipeSort = (typeof publicRecipeSorts)[number];
@@ -557,7 +584,7 @@ export type PublicRecipeListItem = {
   styleImageUrl: string | null;
   cloneCount: number; // 0 в Phase A
   rating: { average: number; count: number } | null; // null до Phase D
-  saveCount: number; // число сохранений («Избранное») — источник для сортировки «Популярные»
+  saveCount: number; // число сохранений («Избранные») — источник для сортировки «Популярные»
   publishedAt: string; // ISO; маппится из updatedAt (publishedAt-колонки нет)
   createdAt: string; // ISO; для бейджа «Новый» (окно NEW_RECIPE_WINDOW_DAYS)
 };
@@ -619,6 +646,58 @@ export type RecipeCloneSourceDto = {
   authorId: string;
   authorName: string | null;
   isPublished: boolean;
+};
+
+/**
+ * Атрибуция первоисточника рецепта (для заимствованных/импортированных рецептов):
+ * ссылка на оригинал + название площадки + происхождение/автор. Хранится в
+ * `recipes.importMeta.sourceAttribution`; показывается блоком на странице рецепта.
+ * Отдельный ключ от строкового `importMeta.source` («beerxml»/«brewfather_json»),
+ * чтобы не конфликтовать с интероп-провенансом.
+ */
+export type RecipeSourceAttribution = {
+  url: string | null;
+  siteName: string | null;
+  origin: string | null;
+  author: string | null;
+};
+
+export const recipeSourceAttributionSchema = z.object({
+  url: z.string().trim().max(2048).nullish(),
+  siteName: z.string().trim().max(160).nullish(),
+  origin: z.string().trim().max(2000).nullish(),
+  author: z.string().trim().max(200).nullish()
+});
+
+/**
+ * Толерантно читает атрибуцию источника из `importMeta.sourceAttribution`.
+ * Возвращает null, если поля нет/мусор или если нет ни ссылки, ни происхождения
+ * (нечего показывать). Не бросает на чужой форме importMeta.
+ */
+export const readRecipeSourceAttribution = (
+  importMeta: Record<string, unknown> | null | undefined
+): RecipeSourceAttribution | null => {
+  if (!importMeta || typeof importMeta !== "object") {
+    return null;
+  }
+
+  const parsed = recipeSourceAttributionSchema.safeParse(
+    (importMeta as Record<string, unknown>).sourceAttribution
+  );
+  if (!parsed.success) {
+    return null;
+  }
+
+  const url = parsed.data.url?.trim() || null;
+  const siteName = parsed.data.siteName?.trim() || null;
+  const origin = parsed.data.origin?.trim() || null;
+  const author = parsed.data.author?.trim() || null;
+
+  if (!url && !origin) {
+    return null;
+  }
+
+  return { url, siteName, origin, author };
 };
 
 /** Результат server-action «Клонировать» (мост публичное/сохранённое → мои рецепты). */

@@ -4,7 +4,9 @@ import { Star } from "lucide-react";
 import type { RecipeDetailDto } from "@/features/recipes/contracts";
 
 import { PublicRecipeHeader } from "./public-recipe-header";
+import { RecipePhotoHero } from "./recipe-photo-hero";
 import { RecipeCloneAttribution } from "./recipe-clone-attribution";
+import { RecipeSourceAttribution } from "./recipe-source-attribution";
 import { RecipeRatingForm } from "./recipe-rating-form";
 import { RecipeMatchPanel } from "./recipe-match-panel";
 import { RecipeScalePanel } from "./recipe-scale-panel";
@@ -17,16 +19,6 @@ const ratingFormatter = new Intl.NumberFormat("ru-RU", {
   minimumFractionDigits: 1,
   maximumFractionDigits: 1
 });
-
-function PublicRecipeHero({ heroImageId, title }: { heroImageId: string | null; title: string }) {
-  return (
-    <section className="overflow-hidden rounded-2xl border border-zinc-100 bg-zinc-50 shadow-sm">
-      {heroImageId
-        ? <div className="p-4 text-sm text-zinc-600">Hero image: {heroImageId}</div>
-        : <div className="flex h-32 items-center justify-center px-4 text-sm text-zinc-400">Изображение для «{title}» пока не добавлено.</div>}
-    </section>
-  );
-}
 
 function RecipeRatingSection({ recipe }: { recipe: RecipeDetailDto }) {
   return (
@@ -51,19 +43,31 @@ function RecipeRatingSection({ recipe }: { recipe: RecipeDetailDto }) {
 
 export function PublicRecipePage({ recipe }: { recipe: RecipeDetailDto }) {
   return (
-    <main className="space-y-4">
+    <main className="space-y-6 pt-6">
       <PublicRecipeHeader recipe={recipe} />
-      <RecipeCloneAttribution clonedFrom={recipe.clonedFrom} ownerAuthorId={recipe.authorId} />
-      <PublicRecipeHero heroImageId={recipe.heroImageId} title={recipe.title} />
-      <RecipeStatsSummary recipe={recipe} />
-      {/* Персональный матчинг со складом тянется клиентом после гидрации → документ кэшируем. */}
-      <RecipeMatchPanel recipeId={recipe.id} />
-      {/* Эфемерный пересчёт под объём — чистый клиент, без записи в БД. */}
-      <RecipeScalePanel recipe={recipe} />
+
+      <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_340px]">
+        {/* Суть рецепта: обложка (если есть) → описание → цифры → ингредиенты → вода. */}
+        <div className="min-w-0 space-y-6">
+          {recipe.heroImageId ? <RecipePhotoHero imageId={recipe.heroImageId} title={recipe.title} /> : null}
+          <RecipeMetaSection recipe={recipe} showPrivateNotes={false} />
+          <RecipeStatsSummary recipe={recipe} />
+          <RecipeIngredientsSection ingredients={recipe.ingredients} />
+          <PublicRecipeWaterSection recipe={recipe} />
+        </div>
+
+        {/* Инструменты и провенанс — не мешают чтению рецепта, доступны в один клик. */}
+        <aside className="space-y-4 lg:sticky lg:top-6">
+          {/* Персональный матчинг со складом тянется клиентом после гидрации → документ кэшируем. */}
+          <RecipeMatchPanel recipeId={recipe.id} />
+          {/* Эфемерный пересчёт под объём — модалка, чистый клиент, без записи в БД. */}
+          <RecipeScalePanel recipe={recipe} />
+          <RecipeCloneAttribution clonedFrom={recipe.clonedFrom} ownerAuthorId={recipe.authorId} />
+          <RecipeSourceAttribution importMeta={recipe.importMeta} />
+        </aside>
+      </div>
+
       <RecipeRatingSection recipe={recipe} />
-      <RecipeIngredientsSection ingredients={recipe.ingredients} />
-      <PublicRecipeWaterSection recipe={recipe} />
-      <RecipeMetaSection recipe={recipe} showPrivateNotes={false} />
     </main>
   );
 }

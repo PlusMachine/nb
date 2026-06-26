@@ -37,7 +37,13 @@ export function RecipeCard({
 
       <div className="pointer-events-none flex h-full flex-col">
         {/* Обложка: фото рецепта → размытое фото BJCP-стиля → мягкая заливка по SRM */}
-        <RecipeThumb recipe={recipe} className="aspect-[4/3] w-full" sizes="(max-width: 768px) 100vw, 320px" />
+        <RecipeThumb
+          heroImage={recipe.heroImage}
+          styleImageUrl={recipe.styleImageUrl}
+          colorSrm={recipe.colorSrm}
+          className="aspect-[4/3] w-full"
+          sizes="(max-width: 768px) 100vw, 320px"
+        />
 
         <div className="flex flex-1 flex-col gap-2 p-4">
           <StyleChip style={recipe.style} styleHref={recipe.styleHref} />

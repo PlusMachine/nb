@@ -39,7 +39,13 @@ export function RecipeListRow({
         className="absolute inset-0 z-0 rounded-2xl focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-zinc-500"
       />
 
-      <RecipeThumb recipe={recipe} className="aspect-[4/3] w-24 shrink-0 rounded-lg sm:w-28" sizes="120px" />
+      <RecipeThumb
+        heroImage={recipe.heroImage}
+        styleImageUrl={recipe.styleImageUrl}
+        colorSrm={recipe.colorSrm}
+        className="aspect-[4/3] w-24 shrink-0 rounded-lg sm:w-28"
+        sizes="120px"
+      />
 
       <div className="pointer-events-none min-w-0 flex-1">
         <StyleChip style={recipe.style} styleHref={recipe.styleHref} />

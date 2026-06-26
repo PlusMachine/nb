@@ -2,13 +2,16 @@ import React from "react";
 import { getBeerStyleById } from "@nb/brewing-core";
 
 import { recipePublicationStateLabels, type RecipeDetailDto } from "@/features/recipes/contracts";
+import { beerColorFromSrm } from "@/features/recipes/beer-color";
 import { formatUpdatedLabel } from "@/features/recipes/format";
-
+import { BeerGlassIcon } from "./beer-glass-icon";
 import { CloneFromPublicButton } from "./clone-from-public-button";
 import { RecipeSaveButton } from "./recipe-save-button";
 
 export function PublicRecipeHeader({ recipe }: { recipe: RecipeDetailDto }) {
   const styleName = getBeerStyleById(recipe.styleId)?.name ?? null;
+  const color = recipe.color != null && Number.isFinite(recipe.color) ? beerColorFromSrm(recipe.color) : null;
+  const srmText = recipe.color != null ? recipe.color.toFixed(1).replace(/\.0$/, "") : null;
 
   return (
     <section className="rounded-2xl border border-zinc-100 bg-white p-5 shadow-sm">
@@ -31,7 +34,15 @@ export function PublicRecipeHeader({ recipe }: { recipe: RecipeDetailDto }) {
           </div>
         </div>
 
-        <div className="flex flex-wrap gap-2">
+        <div className="flex flex-wrap items-center gap-2">
+          {color && srmText ? (
+            <span className="inline-flex items-center gap-1.5 rounded-lg bg-zinc-50 px-2.5 py-1 text-xs font-medium text-zinc-600 ring-1 ring-zinc-100">
+              <BeerGlassIcon color={color.hex} size={16} className="shrink-0" />
+              <span className="tabular-nums">SRM {srmText}</span>
+              <span className="text-zinc-400">·</span>
+              <span>{color.label}</span>
+            </span>
+          ) : null}
           <span className="rounded-lg bg-zinc-50 px-2.5 py-1 text-xs font-medium tabular-nums text-zinc-600 ring-1 ring-zinc-100">
             {recipe.batchSizeEnteredQuantity} {recipe.batchSizeEnteredUnit}
           </span>

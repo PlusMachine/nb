@@ -155,7 +155,7 @@ export const resolvePublicRecipeSort = (sort: PublicRecipeSort): PublicRecipeSor
       return { key: "title", direction: "asc" };
     case "rating": // Phase D — по среднему рейтингу, без оценок в конец
       return { key: "rating", direction: "desc", nullsLast: true };
-    case "popular": // по числу сохранений («Избранное»); save_count NOT NULL → без nulls last
+    case "popular": // по числу сохранений («Избранные»); save_count NOT NULL → без nulls last
       return { key: "saveCount", direction: "desc" };
     case "newest":
     default:

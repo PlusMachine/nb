@@ -6,7 +6,7 @@ import { listSavedRecipes } from "@/features/recipes/service";
 import { requireUser } from "@/lib/auth";
 
 export const metadata = {
-  title: "Избранное"
+  title: "Избранные"
 };
 
 export default async function SavedRecipesPage() {
@@ -16,7 +16,7 @@ export default async function SavedRecipesPage() {
   return (
     <main className="space-y-6 py-8">
       <section className="space-y-2 rounded-2xl border border-zinc-200 bg-white p-6">
-        <h1 className="text-2xl font-semibold text-zinc-950 sm:text-3xl">Избранное</h1>
+        <h1 className="text-2xl font-semibold text-zinc-950 sm:text-3xl">Избранные</h1>
         <p className="text-sm text-zinc-600">Сохранённые рецепты сообщества — в порядке добавления.</p>
       </section>
 

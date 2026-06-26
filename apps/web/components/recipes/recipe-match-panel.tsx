@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
+import { ChevronDown } from "lucide-react";
 
 import { loadRecipeMatch, type RecipeMatchViewerState } from "@/app/(public)/recipes/[slug]/match-actions";
 import type { RecipeMatchDto, RecipeMatchLineStatus, RecipeMatchLabel } from "@/features/recipes/contracts";
@@ -53,20 +54,26 @@ export function RecipeMatchPanelView({ match }: { match: RecipeMatchDto }) {
         </div>
       </div>
 
-      <ul className="space-y-1">
-        {match.lines.map((line) => {
-          const meta = statusMeta[line.status];
-          return (
-            <li key={line.recipeIngredientId} className="flex items-center justify-between gap-3 text-sm">
-              <span className="min-w-0 truncate text-zinc-700">{line.ingredientDisplayName ?? "—"}</span>
-              <span className={`inline-flex shrink-0 items-center rounded-full px-2.5 py-0.5 text-[11px] font-medium ring-1 ${meta.pill}`}>
-                {meta.label}
-                {line.status === "partial" ? ` ${line.coveragePercent}%` : ""}
-              </span>
-            </li>
-          );
-        })}
-      </ul>
+      <details className="group border-t border-zinc-100 pt-3">
+        <summary className="flex cursor-pointer list-none items-center justify-between gap-2 text-xs font-medium text-zinc-500 transition hover:text-zinc-700">
+          <span>Что есть и чего не хватает</span>
+          <ChevronDown className="h-4 w-4 shrink-0 transition-transform group-open:rotate-180" aria-hidden />
+        </summary>
+        <ul className="mt-2 space-y-1">
+          {match.lines.map((line) => {
+            const meta = statusMeta[line.status];
+            return (
+              <li key={line.recipeIngredientId} className="flex items-center justify-between gap-3 text-sm">
+                <span className="min-w-0 truncate text-zinc-700">{line.ingredientDisplayName ?? "—"}</span>
+                <span className={`inline-flex shrink-0 items-center rounded-full px-2.5 py-0.5 text-[11px] font-medium ring-1 ${meta.pill}`}>
+                  {meta.label}
+                  {line.status === "partial" ? ` ${line.coveragePercent}%` : ""}
+                </span>
+              </li>
+            );
+          })}
+        </ul>
+      </details>
     </section>
   );
 }

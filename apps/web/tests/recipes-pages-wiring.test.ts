@@ -2,36 +2,31 @@ import React from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it, vi } from "vitest";
 
-import type { RecipeListItemDto } from "../features/recipes/contracts";
+import type { OwnerRecipeCardDto } from "../features/recipes/contracts";
 
-const recipeListItem: RecipeListItemDto = {
+const ownerCard: OwnerRecipeCardDto = {
   id: "r-1",
-  authorId: "u-1",
-  recipeFamilyId: "rf-1",
+  slug: "public-ipa",
+  title: "My Pils",
+  publicationState: "draft",
   versionNumber: 1,
   versionCount: 1,
-  publicationState: "draft",
-  title: "My Pils",
-  slug: "public-ipa",
-  styleId: null,
-  batchSizeEnteredQuantity: 20,
-  batchSizeEnteredUnit: "l",
-  batchSizeNormalizedQuantity: 20000,
-  batchSizeNormalizedUnit: "ml",
-  efficiency: 75,
-  boilTimeMinutes: 60,
+  updatedAt: new Date("2026-01-02T00:00:00.000Z"),
+  styleName: null,
+  styleCode: null,
+  styleHref: null,
   og: 1.048,
-  fg: 1.01,
   abv: 5,
   ibu: 28,
-  color: 7,
-  createdAt: new Date("2026-01-01T00:00:00.000Z"),
-  updatedAt: new Date("2026-01-02T00:00:00.000Z")
+  colorSrm: 7,
+  heroImage: null,
+  styleImageUrl: null,
+  styleFit: null
 };
 
 const mocks = vi.hoisted(() => ({
   requireUser: vi.fn(async () => ({ id: "u-1", email: "u1@example.com" })),
-  listRecipesForAuthor: vi.fn(async () => [recipeListItem]),
+  listAuthorRecipeCards: vi.fn(async () => [ownerCard]),
   cloneRecipeAction: vi.fn(async () => ({ ok: true, message: "ok", recipe: { id: "r-2" } })),
   push: vi.fn(),
   redirect: vi.fn((to: string) => {
@@ -43,7 +38,7 @@ const mocks = vi.hoisted(() => ({
 }));
 
 vi.mock("../lib/auth", () => ({ requireUser: mocks.requireUser }));
-vi.mock("../features/recipes/service", () => ({ listRecipesForAuthor: mocks.listRecipesForAuthor }));
+vi.mock("../features/recipes/service", () => ({ listAuthorRecipeCards: mocks.listAuthorRecipeCards }));
 vi.mock("../app/(app)/app/recipes/actions", () => ({
   deleteRecipeAction: vi.fn(async () => ({ ok: true, message: "ok" })),
   cloneRecipeAction: mocks.cloneRecipeAction
@@ -55,12 +50,12 @@ vi.mock("next/navigation", () => ({
 }));
 
 describe("recipes pages wiring", () => {
-  it("list page uses listRecipesForAuthor", async () => {
+  it("list page uses listAuthorRecipeCards", async () => {
     const { MyRecipesContent } = await import("../app/(app)/app/recipes/content");
     const view = await MyRecipesContent();
     const html = renderToStaticMarkup(view);
 
-    expect(mocks.listRecipesForAuthor).toHaveBeenCalledWith("u-1");
+    expect(mocks.listAuthorRecipeCards).toHaveBeenCalledWith("u-1");
     expect(html).toContain("Мои рецепты");
     expect(html).toContain("My Pils");
     expect(html).toContain("Приватный");
@@ -70,7 +65,7 @@ describe("recipes pages wiring", () => {
   });
 
   it("list page empty state scenario works", async () => {
-    mocks.listRecipesForAuthor.mockResolvedValueOnce([]);
+    mocks.listAuthorRecipeCards.mockResolvedValueOnce([]);
     const { MyRecipesContent } = await import("../app/(app)/app/recipes/content");
     const view = await MyRecipesContent();
     const html = renderToStaticMarkup(view);

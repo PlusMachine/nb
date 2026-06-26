@@ -157,32 +157,36 @@ export function StyleChip({
  * SRM. `className` задаёт геометрию контейнера, `sizes` — атрибут next/image.
  */
 export function RecipeThumb({
-  recipe,
+  heroImage,
+  styleImageUrl,
+  colorSrm,
   className,
   sizes
 }: {
-  recipe: PublicRecipeListItem;
+  heroImage: PublicRecipeListItem["heroImage"];
+  styleImageUrl: PublicRecipeListItem["styleImageUrl"];
+  colorSrm: PublicRecipeListItem["colorSrm"];
   className: string;
   sizes: string;
 }) {
   return (
     <div className={`relative overflow-hidden ${className}`}>
-      {recipe.heroImage ? (
+      {heroImage ? (
         <Image
-          src={recipe.heroImage.thumbUrl}
+          src={heroImage.thumbUrl}
           alt=""
           aria-hidden
           fill
           unoptimized
           sizes={sizes}
           className="object-cover"
-          placeholder={recipe.heroImage.blurDataUrl ? "blur" : "empty"}
-          blurDataURL={recipe.heroImage.blurDataUrl ?? undefined}
+          placeholder={heroImage.blurDataUrl ? "blur" : "empty"}
+          blurDataURL={heroImage.blurDataUrl ?? undefined}
         />
-      ) : recipe.styleImageUrl ? (
+      ) : styleImageUrl ? (
         <>
           <Image
-            src={recipe.styleImageUrl}
+            src={styleImageUrl}
             alt=""
             aria-hidden
             fill
@@ -192,10 +196,10 @@ export function RecipeThumb({
           />
           {/* Затемнение снизу — читаемость подписи SRM поверх любого фото. */}
           <span aria-hidden className="absolute inset-0 bg-gradient-to-t from-black/55 via-black/15 to-transparent" />
-          <RecipeColorSwatch srm={recipe.colorSrm} variant="overlay" className="absolute inset-x-0 bottom-0" />
+          <RecipeColorSwatch srm={colorSrm} variant="overlay" className="absolute inset-x-0 bottom-0" />
         </>
       ) : (
-        <RecipeColorSwatch srm={recipe.colorSrm} className="h-full w-full" />
+        <RecipeColorSwatch srm={colorSrm} className="h-full w-full" />
       )}
     </div>
   );

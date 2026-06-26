@@ -11,7 +11,7 @@ type AppShellNavigationProps = {
 const navItems = [
   { href: "/app", label: "Главная", exact: true },
   { href: "/app/recipes", label: "Мои рецепты" },
-  { href: "/app/saved", label: "Избранное" },
+  { href: "/app/saved", label: "Избранные" },
   { href: "/app/equipment", label: "Оборудование" },
   { href: "/catalog", label: "Каталог" },
   { href: "/app/ingredients", label: "Склад" }

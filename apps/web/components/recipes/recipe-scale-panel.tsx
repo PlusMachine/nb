@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
+import { Scale, X } from "lucide-react";
 
 import type { RecipeDetailDto } from "@/features/recipes/contracts";
 import { scaleRecipeToVolume } from "@/features/recipes/scale";
@@ -10,57 +11,150 @@ const factorFormatter = new Intl.NumberFormat("ru-RU", { maximumFractionDigits: 
 const amountFormatter = new Intl.NumberFormat("ru-RU", { maximumFractionDigits: 3 });
 
 /**
- * Эфемерный пересчёт рецепта под объём пользователя. Меняет ТОЛЬКО отображаемые
- * количества — без записи в БД и без создания копии (чистая `scaleRecipeToVolume`).
- * Только на публичной детальной странице рецепта.
+ * Модалка эфемерного пересчёта рецепта под объём пользователя. Меняет ТОЛЬКО
+ * отображаемые количества — без записи в БД и без копии (`scaleRecipeToVolume`).
  */
-export function RecipeScalePanel({ recipe }: { recipe: RecipeDetailDto }) {
-  const baseBatchLitres = useMemo(() => scaleRecipeToVolume(recipe, Number.NaN).baseBatchLitres, [recipe]);
-  const [input, setInput] = useState<string>(() => (baseBatchLitres > 0 ? String(baseBatchLitres) : ""));
+function RecipeScaleDialog({
+  recipe,
+  baseBatchLitres,
+  open,
+  onClose
+}: {
+  recipe: RecipeDetailDto;
+  baseBatchLitres: number;
+  open: boolean;
+  onClose: () => void;
+}) {
+  const [input, setInput] = useState<string>(() => String(baseBatchLitres));
+
+  useEffect(() => {
+    if (open) {
+      setInput(String(baseBatchLitres));
+    }
+  }, [open, baseBatchLitres]);
+
+  useEffect(() => {
+    if (!open) {
+      return undefined;
+    }
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        onClose();
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [open, onClose]);
 
   const target = Number(input.replace(",", "."));
   const view = useMemo(() => scaleRecipeToVolume(recipe, target), [recipe, target]);
+
+  if (!open) {
+    return null;
+  }
+
+  return (
+    <div
+      className="fixed inset-0 z-50 flex items-end justify-center bg-zinc-950/45 p-3 sm:items-center"
+      role="dialog"
+      aria-modal="true"
+      aria-label="Пересчитать рецепт под объём"
+      onClick={onClose}
+    >
+      <div
+        className="flex max-h-[85vh] w-full max-w-md flex-col rounded-2xl border border-zinc-200 bg-white p-5 shadow-2xl"
+        onClick={(event) => event.stopPropagation()}
+      >
+        <div className="mb-4 flex items-start justify-between gap-3">
+          <div className="flex items-start gap-3">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-zinc-100 text-zinc-600">
+              <Scale className="h-5 w-5" />
+            </div>
+            <div>
+              <h3 className="text-base font-semibold text-zinc-950">Пересчитать под объём</h3>
+              <p className="mt-1 text-sm leading-6 text-zinc-600">
+                Не меняет оригинал; чтобы сохранить — клонируйте рецепт.
+              </p>
+            </div>
+          </div>
+          <button
+            type="button"
+            onClick={onClose}
+            className="rounded-md p-1.5 text-zinc-400 transition-colors hover:bg-zinc-100 hover:text-zinc-700"
+            aria-label="Закрыть"
+          >
+            <X className="h-4 w-4" />
+          </button>
+        </div>
+
+        <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
+          <label className="flex items-center gap-2 text-sm text-zinc-600">
+            <span>Объём, л</span>
+            <input
+              type="number"
+              inputMode="decimal"
+              min={0}
+              step={0.5}
+              value={input}
+              onChange={(event) => setInput(event.target.value)}
+              className="w-24 rounded-lg border border-zinc-200 px-2 py-1 text-right tabular-nums focus:outline-none focus-visible:ring-2 focus-visible:ring-zinc-400"
+              aria-label="Целевой объём партии, литры"
+              autoFocus
+            />
+          </label>
+          <span className="text-xs text-zinc-500">
+            {view.scaled
+              ? `×${factorFormatter.format(view.factor)} от ${litresFormatter.format(view.baseBatchLitres)} л`
+              : `базовый объём — ${litresFormatter.format(view.baseBatchLitres)} л`}
+          </span>
+        </div>
+
+        <ul className="-mr-1 min-h-0 flex-1 space-y-1 overflow-y-auto pr-1">
+          {view.ingredients.map((ingredient) => (
+            <li key={ingredient.persistentKey} className="flex items-center justify-between gap-3 text-sm">
+              <span className="min-w-0 truncate text-zinc-700">{ingredient.displayName ?? "—"}</span>
+              <span className="shrink-0 font-medium tabular-nums text-zinc-900">
+                {amountFormatter.format(ingredient.amountEnteredQuantity)} {ingredient.amountEnteredUnit}
+              </span>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
+  );
+}
+
+/**
+ * Кнопка-триггер пересчёта в сайдбаре публичной страницы рецепта. Сам пересчёт
+ * показывается в модалке — это про адаптацию рецепта, а не про сам рецепт,
+ * поэтому не занимает место на первом экране.
+ */
+export function RecipeScalePanel({ recipe }: { recipe: RecipeDetailDto }) {
+  const baseBatchLitres = useMemo(() => scaleRecipeToVolume(recipe, Number.NaN).baseBatchLitres, [recipe]);
+  const [open, setOpen] = useState(false);
 
   if (recipe.ingredients.length === 0 || baseBatchLitres <= 0) {
     return null;
   }
 
   return (
-    <section className="space-y-3 rounded-2xl border border-zinc-100 bg-white p-4 shadow-sm">
-      <div className="flex flex-wrap items-center justify-between gap-2">
-        <h2 className="text-base font-semibold text-zinc-900">Пересчитать под объём</h2>
-        <label className="flex items-center gap-2 text-sm text-zinc-600">
-          <span>Объём, л</span>
-          <input
-            type="number"
-            inputMode="decimal"
-            min={0}
-            step={0.5}
-            value={input}
-            onChange={(event) => setInput(event.target.value)}
-            className="w-24 rounded-lg border border-zinc-200 px-2 py-1 text-right tabular-nums focus:outline-none focus-visible:ring-2 focus-visible:ring-zinc-400"
-            aria-label="Целевой объём партии, литры"
-          />
-        </label>
-      </div>
-
-      <p className="text-xs text-zinc-500">
-        {view.scaled
-          ? `Количества под ${litresFormatter.format(view.targetBatchLitres)} л (×${factorFormatter.format(view.factor)}). `
-          : `Базовый объём рецепта — ${litresFormatter.format(view.baseBatchLitres)} л. `}
-        Не меняет оригинал; чтобы сохранить изменения — клонируйте рецепт.
-      </p>
-
-      <ul className="space-y-1">
-        {view.ingredients.map((ingredient) => (
-          <li key={ingredient.persistentKey} className="flex items-center justify-between gap-3 text-sm">
-            <span className="min-w-0 truncate text-zinc-700">{ingredient.displayName ?? "—"}</span>
-            <span className="shrink-0 font-medium tabular-nums text-zinc-900">
-              {amountFormatter.format(ingredient.amountEnteredQuantity)} {ingredient.amountEnteredUnit}
-            </span>
-          </li>
-        ))}
-      </ul>
-    </section>
+    <>
+      <button
+        type="button"
+        onClick={() => setOpen(true)}
+        className="flex w-full items-center gap-3 rounded-2xl border border-zinc-100 bg-white px-4 py-3 text-left shadow-sm transition hover:border-zinc-200 hover:bg-zinc-50"
+      >
+        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-zinc-100 text-zinc-600">
+          <Scale className="h-4 w-4" />
+        </span>
+        <span className="min-w-0">
+          <span className="block text-sm font-semibold text-zinc-900">Пересчитать под объём</span>
+          <span className="block text-xs text-zinc-500">
+            базовый — {litresFormatter.format(baseBatchLitres)} л
+          </span>
+        </span>
+      </button>
+      <RecipeScaleDialog recipe={recipe} baseBatchLitres={baseBatchLitres} open={open} onClose={() => setOpen(false)} />
+    </>
   );
 }

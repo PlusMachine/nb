@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { Copy } from "lucide-react";
 
 import { cloneRecipeFromPublicAction } from "@/app/(public)/recipes/[slug]/clone-actions";
+import { ConfirmActionDialog } from "@/components/shared/confirm-action-dialog";
 
 /**
  * Кнопка «Клонировать» — мост «сохранённое/публичное → мои рецепты». Создаёт
@@ -21,6 +22,7 @@ export function CloneFromPublicButton({
   variant?: "button" | "icon";
 }) {
   const [pending, setPending] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
 
   const handleClick = (event: React.MouseEvent) => {
     // Карточка обёрнута в ссылку — гасим переход/всплытие при клике по кнопке.
@@ -30,6 +32,11 @@ export function CloneFromPublicButton({
       return;
     }
 
+    setShowConfirm(true);
+  };
+
+  const handleConfirm = () => {
+    setShowConfirm(false);
     setPending(true);
     void cloneRecipeFromPublicAction({ recipeId }).then((result) => {
       if (result.ok) {
@@ -45,29 +52,49 @@ export function CloneFromPublicButton({
     });
   };
 
+  const dialog = (
+    <ConfirmActionDialog
+      open={showConfirm}
+      onClose={() => setShowConfirm(false)}
+      onConfirm={handleConfirm}
+      title="Клонировать рецепт?"
+      description="Рецепт будет скопирован в ваши рецепты как черновик, который вы сможете редактировать."
+      confirmLabel="Клонировать"
+      pendingLabel="Клонируем…"
+      tone="primary"
+      pending={pending}
+    />
+  );
+
   if (variant === "icon") {
     return (
-      <button
-        type="button"
-        onClick={handleClick}
-        disabled={pending}
-        aria-label="Клонировать рецепт в «Мои рецепты»"
-        className="absolute right-2 top-11 z-10 inline-flex h-7 w-7 items-center justify-center rounded-full bg-white/70 text-zinc-600 backdrop-blur-sm transition hover:bg-white focus:outline-none focus-visible:ring-2 focus-visible:ring-zinc-400 disabled:opacity-60"
-      >
-        <Copy className="h-3.5 w-3.5" aria-hidden />
-      </button>
+      <>
+        <button
+          type="button"
+          onClick={handleClick}
+          disabled={pending}
+          aria-label="Клонировать рецепт в «Мои рецепты»"
+          className="absolute right-2 top-11 z-10 inline-flex h-7 w-7 items-center justify-center rounded-full bg-white/70 text-zinc-600 backdrop-blur-sm transition hover:bg-white focus:outline-none focus-visible:ring-2 focus-visible:ring-zinc-400 disabled:opacity-60"
+        >
+          <Copy className="h-3.5 w-3.5" aria-hidden />
+        </button>
+        {dialog}
+      </>
     );
   }
 
   return (
-    <button
-      type="button"
-      onClick={handleClick}
-      disabled={pending}
-      className="inline-flex items-center gap-2 rounded-lg border border-zinc-200 bg-white px-3 py-2 text-sm font-medium text-zinc-700 transition hover:border-zinc-300 disabled:opacity-60"
-    >
-      <Copy className="h-4 w-4" aria-hidden />
-      {pending ? "Клонируем…" : "Клонировать"}
-    </button>
+    <>
+      <button
+        type="button"
+        onClick={handleClick}
+        disabled={pending}
+        className="inline-flex items-center gap-2 rounded-lg border border-zinc-200 bg-white px-3 py-2 text-sm font-medium text-zinc-700 transition hover:border-zinc-300 disabled:opacity-60"
+      >
+        <Copy className="h-4 w-4" aria-hidden />
+        {pending ? "Клонируем…" : "Клонировать"}
+      </button>
+      {dialog}
+    </>
   );
 }

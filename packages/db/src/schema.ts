@@ -614,7 +614,7 @@ export const recipeRatings = pgTable("recipe_ratings", {
   starsCheck: check("recipe_ratings_stars_chk", sql`${table.stars} between 1 and 5`)
 }));
 
-// Сохранённые («Избранное») рецепты: одна запись на пользователя на рецепт
+// Сохранённые («Избранные») рецепты: одна запись на пользователя на рецепт
 // (UNIQUE recipe+user → idempotent save). Денормализованный агрегат save_count
 // на recipes пересчитывается транзакционно в сервисе.
 export const recipeSaves = pgTable("recipe_saves", {

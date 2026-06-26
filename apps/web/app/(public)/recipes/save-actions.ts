@@ -25,7 +25,7 @@ const mapSaveError = (error: unknown): RecipeSaveActionResult => {
 };
 
 /**
- * Сохраняет/снимает рецепт в «Избранном» текущего пользователя. userId берётся
+ * Сохраняет/снимает рецепт в «Избранных» текущего пользователя. userId берётся
  * ТОЛЬКО на сервере из сессии — клиентскому payload не доверяем.
  */
 export const toggleRecipeSaveAction = async (input: {

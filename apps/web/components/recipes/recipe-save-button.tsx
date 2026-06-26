@@ -9,7 +9,7 @@ import { useRecipeSaves } from "./recipe-saves-provider";
 import { SavedToast } from "./saved-toast";
 
 /**
- * Кнопка «Сохранить» рецепт в «Избранное». На витрине (`variant="icon"`) — флажок
+ * Кнопка «Сохранить» рецепт в «Избранные». На витрине (`variant="icon"`) — флажок
  * в углу карточки, состояние берётся из {@link RecipeSavesProvider}. На детальной
  * странице (`variant="button"`) провайдера нет — состояние грузится после гидрации
  * через server action, чтобы документ оставался кэшируемым. userId — только на сервере.
@@ -84,7 +84,7 @@ export function RecipeSaveButton({
     });
   };
 
-  const label = saved ? "Убрать из избранного" : "Сохранить в избранное";
+  const label = saved ? "Убрать из избранных" : "Сохранить в избранные";
 
   const trigger =
     variant === "button" ? (

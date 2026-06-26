@@ -49,6 +49,7 @@ import {
   type RecipeDraftPreviewDto,
   type RecipeIngredientDto,
   type RecipeListItemDto,
+  type OwnerRecipeCardDto,
   type RecipeHopUseType,
   type RecipeImportedIngredientSnapshot,
   type RecipeInventoryIntentMode,
@@ -1707,17 +1708,16 @@ const resolveCloneAuthorLabel = async (userId: string): Promise<string> => {
 };
 
 /**
- * Название копии: «{исходное} (копия {имя})». Гарантированно ≤ 180 символов
- * (лимит колонки/Zod): при переполнении усекается базовая часть, суффикс сохраняется.
+ * Название клона: исходное название + суффикс «(клон {имя клонирующего})».
+ * Если вместе с суффиксом не влезает в varchar(180) — подрезаем базовую часть,
+ * суффикс всегда сохраняется целиком.
  */
 export const buildCloneTitle = (baseTitle: string, authorLabel: string): string => {
-  const suffix = ` (копия ${authorLabel})`;
   const base = baseTitle.trim();
-  if (base.length + suffix.length <= RECIPE_TITLE_MAX_LENGTH) {
-    return `${base}${suffix}`;
-  }
+  const suffix = ` (клон ${authorLabel})`;
   const room = Math.max(0, RECIPE_TITLE_MAX_LENGTH - suffix.length);
-  return `${base.slice(0, room).trimEnd()}${suffix}`.slice(0, RECIPE_TITLE_MAX_LENGTH);
+  const trimmedBase = base.length > room ? base.slice(0, room).trimEnd() : base;
+  return `${trimmedBase}${suffix}`;
 };
 
 /** Общий билдер payload для клона: копия как ЧЕРНОВИК (private), полные данные. */
@@ -1887,6 +1887,93 @@ export const listRecipesForAuthor = async (authorId: string, query: unknown = {}
     ...mapRecipeListDto(row),
     versionCount: versionCounts.get(row.recipeFamilyId) ?? 1
   }));
+};
+
+/**
+ * Карточки рецептов владельца для галереи `/app/recipes` ({@link OwnerRecipeCardDto}).
+ * В отличие от {@link listRecipesForAuthor}, тянет hero-фото (join `recipeImages`) и
+ * разрешает на сервере обложку (фото → картинка BJCP-стиля → заливка по SRM),
+ * стиль и итог style-fit — тем же способом, что публичная витрина, чтобы карточки
+ * рабочей зоны выглядели как `/recipes`. Версии считаются одним сгруппированным
+ * запросом (без N+1).
+ */
+export const listAuthorRecipeCards = async (authorId: string): Promise<OwnerRecipeCardDto[]> => {
+  const rows = await db
+    .select({
+      id: recipes.id,
+      slug: recipes.slug,
+      title: recipes.title,
+      styleId: recipes.styleId,
+      recipeFamilyId: recipes.recipeFamilyId,
+      versionNumber: recipes.versionNumber,
+      publicationState: recipes.publicationState,
+      og: recipes.og,
+      fg: recipes.fg,
+      abv: recipes.abv,
+      ibu: recipes.ibu,
+      color: recipes.color,
+      updatedAt: recipes.updatedAt,
+      heroImageId: recipes.heroImageId,
+      heroThumbKey: recipeImages.storageKeyThumb,
+      heroBlurDataUrl: recipeImages.blurDataUrl
+    })
+    .from(recipes)
+    .leftJoin(recipeImages, eq(recipeImages.id, recipes.heroImageId))
+    .where(eq(recipes.authorId, authorId))
+    .orderBy(desc(recipes.updatedAt));
+
+  // Число версий по семейству (для бейджа vN) — один сгруппированный запрос.
+  const familyIds = [...new Set(rows.map((row) => row.recipeFamilyId))];
+  const versionCounts = new Map<string, number>();
+  if (familyIds.length > 0) {
+    const counts = await db
+      .select({ familyId: recipes.recipeFamilyId, value: count() })
+      .from(recipes)
+      .where(and(eq(recipes.authorId, authorId), inArray(recipes.recipeFamilyId, familyIds)))
+      .groupBy(recipes.recipeFamilyId);
+    for (const entry of counts) {
+      versionCounts.set(entry.familyId, entry.value);
+    }
+  }
+
+  // Карта фото BJCP-стилей (как на `/bjcp`) — дешёвый кешированный lookup, не N+1.
+  const styleHeroImageByBjcpId = await getBjcpStyleHeroImageByBjcpId();
+
+  return rows.map((row) => {
+    const style = getBeerStyleById(row.styleId);
+    const heroImage =
+      row.heroImageId && row.heroThumbKey
+        ? { thumbUrl: `/api/recipe-images/${row.heroImageId}/thumb`, blurDataUrl: row.heroBlurDataUrl ?? null }
+        : null;
+    // Фото BJCP-стиля показываем только когда у рецепта нет своего фото.
+    const styleImageUrl = !heroImage && style ? styleHeroImageByBjcpId.get(style.bjcpId) ?? null : null;
+
+    const styleRange = getStyleRangeById(row.styleId);
+    const fit =
+      styleRange && row.og != null && row.fg != null && row.abv != null && row.ibu != null && row.color != null
+        ? evaluateStyleFit(styleRange, { og: row.og, fg: row.fg, abv: row.abv, ibu: row.ibu, srm: row.color })
+        : null;
+
+    return {
+      id: row.id,
+      slug: row.slug,
+      title: row.title,
+      publicationState: row.publicationState,
+      versionNumber: row.versionNumber,
+      versionCount: versionCounts.get(row.recipeFamilyId) ?? 1,
+      updatedAt: row.updatedAt,
+      styleName: style ? style.nameRu ?? style.name : null,
+      styleCode: style ? style.bjcpId : null,
+      styleHref: getBjcpArticleHrefByStyleId(row.styleId),
+      og: row.og,
+      abv: row.abv,
+      ibu: row.ibu,
+      colorSrm: row.color,
+      heroImage,
+      styleImageUrl,
+      styleFit: fit ? (fit.overallFit ? "in_style" : "deviations") : null
+    } satisfies OwnerRecipeCardDto;
+  });
 };
 
 export const getNextDefaultRecipeTitle = async (authorId: string) => {
@@ -2284,7 +2371,7 @@ export const deleteRecipeRating = async (userId: string, recipeId: string): Prom
   });
 };
 
-// ─── Сохранения публичных рецептов («Избранное») ─────────────────────────────
+// ─── Сохранения публичных рецептов («Избранные») ─────────────────────────────
 // Аналог рейтинга: userId только с сервера; сохранять можно только published;
 // UNIQUE(recipe,user) → idempotent; денормализованный save_count пересчитывается
 // транзакционно под row-lock рецепта (тот же лок, что и у рейтинга).
@@ -2306,7 +2393,7 @@ const recomputeRecipeSaveCount = async (
 };
 
 /**
- * Сохраняет/снимает рецепт из «Избранного» текущего пользователя и пересчитывает
+ * Сохраняет/снимает рецепт из «Избранных» текущего пользователя и пересчитывает
  * save_count в той же транзакции. Сохранять можно только опубликованный рецепт
  * (NOT_FOUND/FORBIDDEN иначе). Идемпотентно: повторный save не плодит строк.
  */
@@ -2379,7 +2466,22 @@ export const getSavedRecipeIds = async (userId: string, recipeIds: string[]): Pr
 };
 
 /**
- * Сохранённые пользователем рецепты («Избранное») — только published, в порядке
+ * Число сохранённых пользователем рецептов — для бейджа «Избранные» на витрине.
+ * Считаем только published, чтобы счётчик совпадал с тем, что реально видно
+ * на `/app/saved` (см. {@link listSavedRecipes}).
+ */
+export const countSavedRecipes = async (userId: string): Promise<number> => {
+  const [row] = await db
+    .select({ value: count() })
+    .from(recipeSaves)
+    .innerJoin(recipes, eq(recipes.id, recipeSaves.recipeId))
+    .where(and(eq(recipeSaves.userId, userId), eq(recipes.publicationState, "published")));
+
+  return row?.value ?? 0;
+};
+
+/**
+ * Сохранённые пользователем рецепты («Избранные») — только published, в порядке
  * сохранения (новые сверху). Маппинг — через тот же {@link mapPublicRecipeListItem}.
  */
 export const listSavedRecipes = async (userId: string): Promise<PublicRecipeListItem[]> => {

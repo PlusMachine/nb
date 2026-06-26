@@ -7,7 +7,7 @@ import { Bookmark, X } from "lucide-react";
 
 /**
  * Эфемерное уведомление после сохранения рецепта: явно говорит, КУДА он сохранён
- * и ГДЕ его найти (рабочая зона → «Избранное»), со ссылкой. Self-contained: портал
+ * и ГДЕ его найти (рабочая зона → «Избранные»), со ссылкой. Self-contained: портал
  * в body, авто-скрытие через 5с, без глобального toast-провайдера. В SSR (open=false)
  * вообще не трогает document.
  */
@@ -34,11 +34,11 @@ export function SavedToast({ open, onClose }: { open: boolean; onClose: () => vo
         <Bookmark className="h-4 w-4 fill-amber-500 text-amber-500" aria-hidden />
       </span>
       <div className="min-w-0 space-y-1">
-        <p className="text-sm font-medium text-zinc-900">Сохранено в «Избранное»</p>
+        <p className="text-sm font-medium text-zinc-900">Сохранено в «Избранные»</p>
         <p className="text-xs text-zinc-500">
           Найти можно в рабочей зоне:{" "}
           <Link href="/app/saved" className="font-medium text-zinc-900 underline underline-offset-2">
-            Избранное
+            Избранные
           </Link>
           .
         </p>

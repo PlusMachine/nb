@@ -251,7 +251,9 @@ describe("recipes read components", () => {
     expect(html).toContain("Публичный");
     expect(html).toContain("Ключевые показатели");
     expect(html).toContain("Ингредиенты");
-    expect(html).toContain("Изображение");
+    // Пустого плейсхолдера обложки больше нет; оценки рендерятся внизу страницы.
+    expect(html).not.toContain("пока не добавлено");
+    expect(html).toContain("Оценки");
   });
 
   it("renders route-level error states", () => {
