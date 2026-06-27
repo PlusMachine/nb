@@ -1,8 +1,13 @@
-import { and, brewBatches, db, desc, eq } from "@nb/db";
+import { and, brewBatches, brewTelemetry, db, desc, eq } from "@nb/db";
 
 import { getOwnedRecipeById } from "../recipes/service";
 import { buildBrewPlanSnapshot } from "./brew-plan";
-import { brewPlanSnapshotSchema, type BrewBatchDto } from "./contracts";
+import {
+  brewPlanSnapshotSchema,
+  TELEMETRY_HISTORY_LIMIT,
+  type BrewBatchDto,
+  type TelemetryHistoryPoint
+} from "./contracts";
 
 const mapBrewBatchDto = (row: typeof brewBatches.$inferSelect): BrewBatchDto => ({
   id: row.id,
@@ -10,6 +15,7 @@ const mapBrewBatchDto = (row: typeof brewBatches.$inferSelect): BrewBatchDto => 
   recipeId: row.recipeId,
   status: row.status,
   name: row.name,
+  deviceId: row.deviceId,
   brewPlanSnapshot: brewPlanSnapshotSchema.parse(row.brewPlanSnapshot),
   recipeSnapshot: (row.recipeSnapshot as Record<string, unknown> | null | undefined) ?? null,
   equipmentProfileSnapshot: (row.equipmentProfileSnapshot as Record<string, unknown> | null | undefined) ?? null,
@@ -62,6 +68,18 @@ export const createBrewBatchFromRecipe = async (
   return mapBrewBatchDto(created);
 };
 
+/** Достать партию варки по id с проверкой владения (или null, если нет/чужая). */
+export const getBrewBatchById = async (
+  userId: string,
+  brewBatchId: string
+): Promise<BrewBatchDto | null> => {
+  const row = await db.query.brewBatches.findFirst({
+    where: and(eq(brewBatches.id, brewBatchId), eq(brewBatches.userId, userId))
+  });
+
+  return row ? mapBrewBatchDto(row) : null;
+};
+
 export const listBrewBatchesForRecipe = async (userId: string, recipeId: string) => {
   const rows = await db.query.brewBatches.findMany({
     where: and(eq(brewBatches.userId, userId), eq(brewBatches.recipeId, recipeId)),
@@ -69,6 +87,62 @@ export const listBrewBatchesForRecipe = async (userId: string, recipeId: string)
   });
 
   return rows.map(mapBrewBatchDto);
+};
+
+/**
+ * Историческая телеметрия КОНКРЕТНОЙ партии (для графиков), oldest→newest. Чистая
+ * выборка БЕЗ проверки владения — вызывающий ОБЯЗАН сначала проверить, что
+ * deviceId/brewBatchId принадлежат пользователю (через getBrewBatchById). Скоуп по
+ * (deviceId, brewBatchId) гарантирует, что детальная страница партии не подмешает
+ * телеметрию прошлой варки на том же устройстве. Ограничена TELEMETRY_HISTORY_LIMIT;
+ * покрывает обе записи строк brew_telemetry — и облачный мост, и LAN/sim-даунсэмпл
+ * из SSE-роута.
+ */
+export const getDeviceTelemetryHistory = async (
+  deviceId: string,
+  brewBatchId: string,
+  limit: number = TELEMETRY_HISTORY_LIMIT
+): Promise<TelemetryHistoryPoint[]> => {
+  const bounded = Math.min(Math.max(Math.floor(limit) || 0, 1), TELEMETRY_HISTORY_LIMIT);
+  // Берём последние N по ts (desc + limit), затем разворачиваем в oldest→newest.
+  const rows = await db
+    .select({
+      ts: brewTelemetry.ts,
+      primaryC: brewTelemetry.primaryC,
+      setpointC: brewTelemetry.setpointC,
+      heatDutyPct: brewTelemetry.heatDutyPct,
+      stage: brewTelemetry.stage
+    })
+    .from(brewTelemetry)
+    .where(and(eq(brewTelemetry.deviceId, deviceId), eq(brewTelemetry.brewBatchId, brewBatchId)))
+    .orderBy(desc(brewTelemetry.ts))
+    .limit(bounded);
+
+  return rows
+    .map((row) => ({
+      ts: row.ts.getTime(),
+      primaryC: row.primaryC,
+      setpointC: row.setpointC,
+      heatDutyPct: row.heatDutyPct,
+      stage: row.stage
+    }))
+    .reverse();
+};
+
+/**
+ * Историческая телеметрия партии (ownership-checked): резолвит партию по userId,
+ * затем тянет историю её устройства. Пусто, если партии нет/чужая/без устройства.
+ */
+export const getBrewBatchTelemetryHistory = async (
+  userId: string,
+  brewBatchId: string,
+  limit: number = TELEMETRY_HISTORY_LIMIT
+): Promise<TelemetryHistoryPoint[]> => {
+  const batch = await getBrewBatchById(userId, brewBatchId);
+  if (!batch?.deviceId) {
+    return [];
+  }
+  return getDeviceTelemetryHistory(batch.deviceId, batch.id, limit);
 };
 
 export const updateBrewBatchStatus = async (

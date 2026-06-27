@@ -11,9 +11,14 @@ export const raptCloudProvider: BrewControllerProvider = {
     "fermentation_logging",
     "brew_logging"
   ],
+  // RAPT — облачный провайдер ферментации; пуш рецепта стандартизирован на
+  // pushRecipe({ userId, brewBatchId, brewPlanSnapshot }) (бывший transferRecipe
+  // удалён вместе с RecipeTransferProvider). Реализация появится в своей фазе.
   async pushRecipe() {
     throw new Error("RAPT_PROVIDER_DISABLED");
   }
+  // readTelemetry / sendCommand / openSession / closeSession не реализованы:
+  // методы опциональны на базовом BrewControllerProvider, enabled=false.
 };
 
 export const raptTokenStorageDesign = {

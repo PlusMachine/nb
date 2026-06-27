@@ -1,0 +1,22 @@
+{
+  "name": "@nb/bridge",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Long-lived BrewForge MQTT↔DB↔WebSocket bridge (cloud realtime path). NOT a Next.js request handler — a dedicated process per PRD §D.",
+  "scripts": {
+    "dev": "tsx watch src/main.ts",
+    "start": "tsx src/main.ts",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "dependencies": {
+    "@nb/brewforge-protocol": "*",
+    "@nb/db": "*",
+    "mqtt": "^5.10.1",
+    "ws": "^8.18.0"
+  },
+  "devDependencies": {
+    "@types/ws": "^8.5.13",
+    "tsx": "^4.19.2"
+  }
+}

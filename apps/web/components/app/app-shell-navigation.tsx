@@ -13,6 +13,7 @@ const navItems = [
   { href: "/app/recipes", label: "Мои рецепты" },
   { href: "/app/saved", label: "Избранные" },
   { href: "/app/equipment", label: "Оборудование" },
+  { href: "/app/devices", label: "Устройства" },
   { href: "/catalog", label: "Каталог" },
   { href: "/app/ingredients", label: "Склад" }
 ];

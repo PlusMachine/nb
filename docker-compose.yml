@@ -25,5 +25,17 @@ services:
       - "8025:8025"
       - "1025:1025"
 
+  # BrewForge MQTT broker (cloud realtime path). Устройство (ESP32 / device-sim)
+  # и мост (apps/bridge) подключаются сюда. TLS/пароли — продакшн-follow-up
+  # (см. infra/mosquitto/mosquitto.conf).
+  mosquitto:
+    image: eclipse-mosquitto:2
+    container_name: nb-mosquitto
+    restart: unless-stopped
+    ports:
+      - "1883:1883"
+    volumes:
+      - ./infra/mosquitto/mosquitto.conf:/mosquitto/config/mosquitto.conf:ro
+
 volumes:
   pg_data:

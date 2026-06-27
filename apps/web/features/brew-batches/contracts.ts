@@ -32,6 +32,8 @@ export type BrewBatchDto = {
   recipeId: string;
   status: BrewBatchStatus;
   name: string;
+  /** Привязанный контроллер (brew_batches.device_id). NULL — варка без устройства. */
+  deviceId: string | null;
   brewPlanSnapshot: BrewPlanSnapshot;
   recipeSnapshot: Record<string, unknown> | null;
   equipmentProfileSnapshot: Record<string, unknown> | null;
@@ -44,3 +46,17 @@ export type BrewBatchDto = {
   createdAt: Date;
   updatedAt: Date;
 };
+
+// Одна точка исторической телеметрии для графиков. Узкая проекция строки
+// brew_telemetry: ts в epoch-мс (сериализуемо в client-компонент/JSON), плюс
+// «горячие» поля контура. Полный снимок (payload) для графиков не нужен.
+export type TelemetryHistoryPoint = {
+  ts: number; // epoch-миллисекунды
+  primaryC: number | null;
+  setpointC: number | null;
+  heatDutyPct: number | null;
+  stage: number | null;
+};
+
+/** Максимум исторических точек, отдаваемых на график (защита от тяжёлых выборок). */
+export const TELEMETRY_HISTORY_LIMIT = 1000;

@@ -1,5 +1,5 @@
 import { relations, sql } from "drizzle-orm";
-import { type AnyPgColumn, boolean, check, doublePrecision, index, integer, jsonb, pgEnum, pgTable, text, timestamp, uniqueIndex, uuid, varchar } from "drizzle-orm/pg-core";
+import { type AnyPgColumn, bigserial, boolean, check, doublePrecision, index, integer, jsonb, pgEnum, pgTable, real, text, timestamp, uniqueIndex, uuid, varchar } from "drizzle-orm/pg-core";
 
 export const userRoleEnum = pgEnum("user_role", ["user", "editor", "moderator", "admin"]);
 export const verificationTypeEnum = pgEnum("verification_type", ["otp", "magic_link", "password_reset"]);
@@ -42,6 +42,8 @@ export const recipeInventoryAllocationStatusEnum = pgEnum("recipe_inventory_allo
 export const inventoryTransactionTypeEnum = pgEnum("inventory_transaction_type", ["consume", "reserve", "release", "adjustment"]);
 export const brewBatchStatusEnum = pgEnum("brew_batch_status", ["planned", "brewing", "fermenting", "completed", "cancelled"]);
 export const recipeImageStatusEnum = pgEnum("recipe_image_status", ["uploading", "ready", "failed"]);
+export const brewDeviceStatusEnum = pgEnum("brew_device_status", ["online", "offline", "unknown"]);
+export const deviceCommandStatusEnum = pgEnum("device_command_status", ["queued", "sent", "acked", "failed"]);
 
 export const users = pgTable("users", {
   id: uuid("id").defaultRandom().primaryKey(),
@@ -638,7 +640,10 @@ export const brewBatches = pgTable("brew_batches", {
   recipeSnapshot: jsonb("recipe_snapshot").$type<Record<string, unknown>>(),
   equipmentProfileSnapshot: jsonb("equipment_profile_snapshot").$type<Record<string, unknown>>(),
   waterPlanSnapshot: jsonb("water_plan_snapshot").$type<Record<string, unknown>>(),
+  // Унаследованные подсказки по устройству (back-compat); реальная привязка — deviceId ниже.
   deviceHints: jsonb("device_hints").$type<Record<string, unknown>[]>().default([]).notNull(),
+  // Привязка партии к подключённому контроллеру (BrewForge и т.п.). NULL — варка без устройства.
+  deviceId: uuid("device_id").references((): AnyPgColumn => brewDevices.id, { onDelete: "set null" }),
   notes: text("notes"),
   plannedFor: timestamp("planned_for", { withTimezone: true }),
   startedAt: timestamp("started_at", { withTimezone: true }),
@@ -648,7 +653,8 @@ export const brewBatches = pgTable("brew_batches", {
 }, (table) => ({
   userIdIdx: index("brew_batches_user_id_idx").on(table.userId),
   recipeIdIdx: index("brew_batches_recipe_id_idx").on(table.recipeId),
-  statusIdx: index("brew_batches_status_idx").on(table.status)
+  statusIdx: index("brew_batches_status_idx").on(table.status),
+  deviceIdIdx: index("brew_batches_device_id_idx").on(table.deviceId)
 }));
 
 export const recipeInventoryAllocations = pgTable("recipe_inventory_allocations", {
@@ -698,6 +704,127 @@ export const inventoryTransactions = pgTable("inventory_transactions", {
   typeIdx: index("inventory_transactions_type_idx").on(table.type)
 }));
 
+// =============================================================================
+//  BrewForge: подключённые контроллеры варки (Phase 3 — devices/telemetry/cmd).
+// =============================================================================
+
+// Зарегистрированное устройство (контроллер BrewForge). tokenHash — хэш
+// per-device bearer-токена (паттерн как у sessions.token_hash; plaintext НИКОГДА
+// не хранится). hardwareId — заводской id 'bf-xxxx' (глобально уникален).
+export const brewDevices = pgTable("brew_devices", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  userId: uuid("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  providerId: text("provider_id").default("brewforge").notNull(),
+  name: text("name").notNull(),
+  hardwareId: text("hardware_id").notNull(),
+  tokenHash: text("token_hash"),
+  fw: text("fw"),
+  capabilities: jsonb("capabilities").$type<string[]>().default([]).notNull(),
+  status: brewDeviceStatusEnum("status").default("unknown").notNull(),
+  localUrl: text("local_url"),
+  mqttPrefix: text("mqtt_prefix"),
+  lastSeenAt: timestamp("last_seen_at", { withTimezone: true }),
+  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull()
+}, (table) => ({
+  userIdIdx: index("brew_devices_user_id_idx").on(table.userId),
+  hardwareIdIdx: uniqueIndex("brew_devices_hardware_id_uidx").on(table.hardwareId),
+  tokenHashIdx: uniqueIndex("brew_devices_token_hash_uidx").on(table.tokenHash)
+}));
+
+// Одноразовый код привязки (показывается на LCD/в AP устройства). Пользователь
+// сдаёт claimCode → сервис связывает устройство с юзером и выдаёт bearer-токен.
+// claimCode уникален среди активных (непогашенных) записей.
+export const devicePairingTokens = pgTable("device_pairing_tokens", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  claimCode: text("claim_code").notNull(),
+  userId: uuid("user_id").references(() => users.id, { onDelete: "cascade" }),
+  hardwareId: text("hardware_id"),
+  expiresAt: timestamp("expires_at", { withTimezone: true }).notNull(),
+  consumedAt: timestamp("consumed_at", { withTimezone: true }),
+  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull()
+}, (table) => ({
+  claimCodeActiveIdx: uniqueIndex("device_pairing_tokens_claim_code_active_uidx")
+    .on(table.claimCode)
+    .where(sql`${table.consumedAt} is null`),
+  hardwareIdIdx: index("device_pairing_tokens_hardware_id_idx").on(table.hardwareId)
+}));
+
+// Time-series телеметрии (распакованные «горячие» поля + полный снимок Telemetry
+// в payload). Держим узкой: индексы по (deviceId, ts) и (brewBatchId, ts).
+export const brewTelemetry = pgTable("brew_telemetry", {
+  id: bigserial("id", { mode: "number" }).primaryKey(),
+  deviceId: uuid("device_id").notNull().references(() => brewDevices.id, { onDelete: "cascade" }),
+  brewBatchId: uuid("brew_batch_id").references(() => brewBatches.id, { onDelete: "set null" }),
+  ts: timestamp("ts", { withTimezone: true }).notNull(),
+  seq: integer("seq").notNull(),
+  stage: integer("stage"),
+  primaryC: real("primary_c"),
+  setpointC: real("setpoint_c"),
+  heatDutyPct: integer("heat_duty_pct"),
+  payload: jsonb("payload").$type<Record<string, unknown>>().notNull()
+}, (table) => ({
+  deviceTsIdx: index("brew_telemetry_device_ts_idx").on(table.deviceId, table.ts),
+  batchTsIdx: index("brew_telemetry_batch_ts_idx").on(table.brewBatchId, table.ts),
+  // Дедуп дублей из конкурентных SSE-стримов/моста. Скоуп по (deviceId,
+  // brewBatchId, seq): seq устройства монотонен лишь в пределах одной загрузки и
+  // сбрасывается при ребуте, поэтому БЕЗ brewBatchId ранние кадры новой партии
+  // (seq 1,2,3…) коллизировали бы со строками прошлой варки и терялись. brewBatchId
+  // nullable — это ок: Postgres считает NULL различными, непривязанная телеметрия
+  // просто не дедупится. Оба инсёртера используют onConflictDoNothing по этому таргету.
+  deviceBatchSeqUidx: uniqueIndex("brew_telemetry_device_batch_seq_uidx").on(table.deviceId, table.brewBatchId, table.seq)
+}));
+
+// События брю-лога устройства (стадии, промпты, интерлоки и т.п.).
+export const brewLogEvents = pgTable("brew_log_events", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  deviceId: uuid("device_id").notNull().references(() => brewDevices.id, { onDelete: "cascade" }),
+  brewBatchId: uuid("brew_batch_id").references(() => brewBatches.id, { onDelete: "set null" }),
+  ts: timestamp("ts", { withTimezone: true }).notNull(),
+  type: text("type").notNull(),
+  payload: jsonb("payload").$type<Record<string, unknown>>().default({}).notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull()
+}, (table) => ({
+  deviceTsIdx: index("brew_log_events_device_ts_idx").on(table.deviceId, table.ts),
+  batchTsIdx: index("brew_log_events_batch_ts_idx").on(table.brewBatchId, table.ts)
+}));
+
+// Аудит команд портал→устройство. reason — причина ack/nack (AckReason).
+export const deviceCommands = pgTable("device_commands", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  deviceId: uuid("device_id").notNull().references(() => brewDevices.id, { onDelete: "cascade" }),
+  brewBatchId: uuid("brew_batch_id").references(() => brewBatches.id, { onDelete: "set null" }),
+  userId: uuid("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  type: text("type").notNull(),
+  arg: jsonb("arg").$type<Record<string, unknown>>(),
+  status: deviceCommandStatusEnum("status").default("queued").notNull(),
+  reason: text("reason"),
+  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+  ackedAt: timestamp("acked_at", { withTimezone: true })
+}, (table) => ({
+  deviceCreatedIdx: index("device_commands_device_created_idx").on(table.deviceId, table.createdAt),
+  batchIdx: index("device_commands_batch_idx").on(table.brewBatchId),
+  userIdIdx: index("device_commands_user_id_idx").on(table.userId),
+  statusIdx: index("device_commands_status_idx").on(table.status)
+}));
+
+// Бэкап/пресет настраиваемого конфига §6.3 (Phase 4.3 — облачное резервирование
+// настроек устройства). config — снимок DeviceConfig (несекретный, как отдаёт
+// /config). deviceId NULL = пресет «вообще» (не привязан к конкретному прибору).
+// БЕЗОПАСНЫЙ КЛАМПИНГ всё равно происходит на устройстве при применении.
+export const deviceProfiles = pgTable("device_profiles", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  userId: uuid("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  deviceId: uuid("device_id").references(() => brewDevices.id, { onDelete: "set null" }),
+  name: text("name").notNull(),
+  config: jsonb("config").$type<Record<string, unknown>>().notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull()
+}, (table) => ({
+  userIdIdx: index("device_profiles_user_id_idx").on(table.userId),
+  deviceIdIdx: index("device_profiles_device_id_idx").on(table.deviceId)
+}));
+
 export const usersRelations = relations(users, ({ many }) => ({
   sessions: many(sessions),
   accounts: many(accounts),
@@ -708,7 +835,11 @@ export const usersRelations = relations(users, ({ many }) => ({
   brewingSettings: many(userBrewingSettings),
   brewBatches: many(brewBatches),
   recipeInventoryAllocations: many(recipeInventoryAllocations),
-  inventoryTransactions: many(inventoryTransactions)
+  inventoryTransactions: many(inventoryTransactions),
+  brewDevices: many(brewDevices),
+  devicePairingTokens: many(devicePairingTokens),
+  deviceCommands: many(deviceCommands),
+  deviceProfiles: many(deviceProfiles)
 }));
 
 export const ingredientFamiliesRelations = relations(ingredientFamilies, ({ many }) => ({
@@ -891,7 +1022,14 @@ export const brewBatchesRelations = relations(brewBatches, ({ one, many }) => ({
     fields: [brewBatches.recipeId],
     references: [recipes.id]
   }),
-  inventoryTransactions: many(inventoryTransactions)
+  device: one(brewDevices, {
+    fields: [brewBatches.deviceId],
+    references: [brewDevices.id]
+  }),
+  inventoryTransactions: many(inventoryTransactions),
+  telemetry: many(brewTelemetry),
+  logEvents: many(brewLogEvents),
+  commands: many(deviceCommands)
 }));
 
 export const recipeInventoryAllocationsRelations = relations(recipeInventoryAllocations, ({ one }) => ({
@@ -933,5 +1071,72 @@ export const inventoryTransactionsRelations = relations(inventoryTransactions, (
   brewBatch: one(brewBatches, {
     fields: [inventoryTransactions.brewBatchId],
     references: [brewBatches.id]
+  })
+}));
+
+export const brewDevicesRelations = relations(brewDevices, ({ one, many }) => ({
+  user: one(users, {
+    fields: [brewDevices.userId],
+    references: [users.id]
+  }),
+  brewBatches: many(brewBatches),
+  telemetry: many(brewTelemetry),
+  logEvents: many(brewLogEvents),
+  commands: many(deviceCommands),
+  profiles: many(deviceProfiles)
+}));
+
+export const deviceProfilesRelations = relations(deviceProfiles, ({ one }) => ({
+  user: one(users, {
+    fields: [deviceProfiles.userId],
+    references: [users.id]
+  }),
+  device: one(brewDevices, {
+    fields: [deviceProfiles.deviceId],
+    references: [brewDevices.id]
+  })
+}));
+
+export const devicePairingTokensRelations = relations(devicePairingTokens, ({ one }) => ({
+  user: one(users, {
+    fields: [devicePairingTokens.userId],
+    references: [users.id]
+  })
+}));
+
+export const brewTelemetryRelations = relations(brewTelemetry, ({ one }) => ({
+  device: one(brewDevices, {
+    fields: [brewTelemetry.deviceId],
+    references: [brewDevices.id]
+  }),
+  brewBatch: one(brewBatches, {
+    fields: [brewTelemetry.brewBatchId],
+    references: [brewBatches.id]
+  })
+}));
+
+export const brewLogEventsRelations = relations(brewLogEvents, ({ one }) => ({
+  device: one(brewDevices, {
+    fields: [brewLogEvents.deviceId],
+    references: [brewDevices.id]
+  }),
+  brewBatch: one(brewBatches, {
+    fields: [brewLogEvents.brewBatchId],
+    references: [brewBatches.id]
+  })
+}));
+
+export const deviceCommandsRelations = relations(deviceCommands, ({ one }) => ({
+  device: one(brewDevices, {
+    fields: [deviceCommands.deviceId],
+    references: [brewDevices.id]
+  }),
+  brewBatch: one(brewBatches, {
+    fields: [deviceCommands.brewBatchId],
+    references: [brewBatches.id]
+  }),
+  user: one(users, {
+    fields: [deviceCommands.userId],
+    references: [users.id]
   })
 }));

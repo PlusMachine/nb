@@ -10,7 +10,9 @@ export default defineConfig({
   },
   test: {
     environment: "node",
-    include: ["tests/**/*.test.ts"],
+    // tests/** — основной набор; features/** — колокированные юнит-тесты без БД
+    // (brew-controller: translator + transport SSRF-гард).
+    include: ["tests/**/*.test.ts", "features/**/*.test.ts"],
     setupFiles: ["./vitest.setup.ts"]
   }
 });

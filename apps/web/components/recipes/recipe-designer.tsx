@@ -141,6 +141,7 @@ import { IngredientAddDrawer } from "@/components/recipes/ingredient-add-drawer"
 import { RecipeActionsMenu } from "@/components/recipes/recipe-actions-menu";
 import { RecipeImagesSection } from "@/components/recipes/recipe-images-section";
 import { StartBrewModal, type StartBrewResult } from "@/components/recipes/start-brew-modal";
+import { BrewOnDeviceModal } from "@/features/brew-batches/components/brew-on-device-modal";
 import {
   getRecipeWaterSetupToggleLabel,
   RecipeWaterAdditivesSection
@@ -4851,6 +4852,7 @@ export function RecipeDesigner({
   const [importExportOpen, setImportExportOpen] = useState(false);
   const [startBrewOpen, setStartBrewOpen] = useState(false);
   const [startBrewResult, setStartBrewResult] = useState<StartBrewResult>(null);
+  const [brewOnDeviceOpen, setBrewOnDeviceOpen] = useState(false);
   const pendingSaveRef = useRef(false);
   const initialSelectionAppliedRef = useRef(false);
 
@@ -5864,6 +5866,29 @@ export function RecipeDesigner({
     }
   };
 
+  // Гарантирует сохранённый рецепт и партию варки для запуска на устройстве.
+  // Переиспользует штатный путь: persistRecipe → createBrewBatchFromRecipeAction
+  // (тот же, что и в обычном «Начать варку»); привязку deviceId к партии делает
+  // openSession внутри startBrewOnDevice.
+  const ensureBrewBatchForDevice = async (): Promise<{ ok: boolean; brewBatchId: string | null; message: string }> => {
+    const saveBeforeBatchResult = await persistRecipe({ surfaceInlineResult: true });
+    if (saveBeforeBatchResult && !saveBeforeBatchResult.ok) {
+      return { ok: false, brewBatchId: null, message: saveBeforeBatchResult.message };
+    }
+
+    const recipeId = saveBeforeBatchResult?.recipe?.id ?? activeRecipeId;
+    if (!recipeId) {
+      return { ok: false, brewBatchId: null, message: "Сначала сохраните рецепт, затем запустите варку." };
+    }
+
+    const batchResult = await createBrewBatchFromRecipeAction(recipeId);
+    return {
+      ok: batchResult.ok,
+      brewBatchId: batchResult.brewBatchId ?? null,
+      message: batchResult.message
+    };
+  };
+
   const handleRecipeCreatedFromImages = React.useCallback((recipe: RecipeDetailDto) => {
     const normalizedState = normalizeEditorPublicationState(recipe.publicationState);
 
@@ -5976,6 +6001,7 @@ export function RecipeDesigner({
                 setStartBrewResult(null);
                 setStartBrewOpen(true);
               }}
+              onOpenBrewOnDevice={() => setBrewOnDeviceOpen(true)}
             />
           </div>
         </div>
@@ -6313,6 +6339,13 @@ export function RecipeDesigner({
         result={startBrewResult}
         onStart={(options) => void handleStartBrew(options)}
         onClose={() => setStartBrewOpen(false)}
+      />
+
+      <BrewOnDeviceModal
+        open={brewOnDeviceOpen}
+        pending={pendingSave}
+        ensureBrewBatch={ensureBrewBatchForDevice}
+        onClose={() => setBrewOnDeviceOpen(false)}
       />
 
       <IngredientAddDrawer open={Boolean(openEditor)} isMobile={isMobile} onClose={() => closeEditor()}>

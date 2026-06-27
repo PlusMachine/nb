@@ -19,6 +19,7 @@
     "@dnd-kit/sortable": "^10.0.0",
     "@dnd-kit/utilities": "^3.2.2",
     "@nb/auth": "*",
+    "@nb/brewforge-protocol": "*",
     "@nb/brewing-core": "*",
     "@nb/content": "*",
     "@nb/db": "*",

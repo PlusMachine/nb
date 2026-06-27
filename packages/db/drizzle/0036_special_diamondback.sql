@@ -1,0 +1,1 @@
+CREATE UNIQUE INDEX "brew_telemetry_device_batch_seq_uidx" ON "brew_telemetry" USING btree ("device_id","brew_batch_id","seq");

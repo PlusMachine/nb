@@ -7,3 +7,4 @@ export const authModule = {
 export * from "./service";
 export * from "./types";
 export * from "./providers";
+export * from "./crypto";

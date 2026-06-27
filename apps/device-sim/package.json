@@ -1,0 +1,18 @@
+{
+  "name": "@nb/device-sim",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Lightweight TS simulator of a BrewForge controller speaking the frozen @nb/brewforge-protocol (no hardware needed).",
+  "scripts": {
+    "dev": "tsx src/main.ts",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "dependencies": {
+    "@nb/brewforge-protocol": "*",
+    "ws": "^8.18.0"
+  },
+  "devDependencies": {
+    "@types/ws": "^8.5.13"
+  }
+}
