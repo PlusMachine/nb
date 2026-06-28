@@ -235,6 +235,27 @@
       "when": 1791000000004,
       "tag": "0037_glamorous_princess_powerful",
       "breakpoints": true
+    },
+    {
+      "idx": 38,
+      "version": "7",
+      "when": 1791000000005,
+      "tag": "0038_nervous_sunfire",
+      "breakpoints": true
+    },
+    {
+      "idx": 39,
+      "version": "7",
+      "when": 1791000000006,
+      "tag": "0039_goofy_selene",
+      "breakpoints": true
+    },
+    {
+      "idx": 40,
+      "version": "7",
+      "when": 1782685132611,
+      "tag": "0040_whole_silver_sable",
+      "breakpoints": true
     }
   ]
 }

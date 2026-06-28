@@ -1,12 +1,12 @@
 import crypto from "node:crypto";
-import { getOAuthProviders } from "@nb/auth";
+import { getOAuthProviders, type OAuthProviderId } from "@nb/auth";
 import { cookies } from "next/headers";
 
 import { getServerEnv } from "./env";
 
 const STATE_COOKIE_PREFIX = "nb_oauth_state_";
 
-type ProviderId = "google" | "vk" | "yandex";
+type ProviderId = OAuthProviderId;
 
 const getProvider = (providerId: ProviderId) => {
   const env = getServerEnv();

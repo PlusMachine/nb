@@ -5,7 +5,7 @@ export default async function PublicLayout({ children }: { children: React.React
   const user = await getSessionUser();
 
   return (
-    <PublicShell user={user ? { email: user.email, displayName: user.displayName } : null}>
+    <PublicShell user={user ? { email: user.email, phone: user.phone, displayName: user.displayName } : null}>
       {children}
     </PublicShell>
   );

@@ -1,7 +1,11 @@
 import type { ServerEnv } from "@nb/shared";
 
+import type { OAuthProviderId } from "./types";
+
+// Только российские сервисы единого входа (152-ФЗ / поправки 2025-2026): вход через
+// иностранные сервисы (Google/Apple) на российских сайтах запрещён.
 export type OAuthProviderConfig = {
-  id: "google" | "vk" | "yandex";
+  id: OAuthProviderId;
   authUrl: string;
   tokenUrl: string;
   userInfoUrl: string;
@@ -11,15 +15,6 @@ export type OAuthProviderConfig = {
 };
 
 export const getOAuthProviders = (env: ServerEnv): OAuthProviderConfig[] => [
-  {
-    id: "google",
-    authUrl: "https://accounts.google.com/o/oauth2/v2/auth",
-    tokenUrl: "https://oauth2.googleapis.com/token",
-    userInfoUrl: "https://openidconnect.googleapis.com/v1/userinfo",
-    scope: "openid email profile",
-    clientId: env.AUTH_GOOGLE_CLIENT_ID,
-    clientSecret: env.AUTH_GOOGLE_CLIENT_SECRET
-  },
   {
     id: "vk",
     authUrl: "https://id.vk.com/authorize",

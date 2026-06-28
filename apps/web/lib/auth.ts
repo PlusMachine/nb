@@ -1,17 +1,24 @@
 import { getServerEnv } from "./env";
+import { assertRussianEmailDomain } from "./email-policy";
+import { sendSms } from "./sms";
 
 import {
   assertRateLimit,
   completeEmailSignIn,
+  completePhoneSignIn,
+  consumePhoneVerification,
   consumeVerification,
   createSession,
   getUserBySessionToken,
+  issuePhoneVerification,
   issueVerification,
   linkOAuthAccount,
+  normalizePhone,
   revokeSession,
   setPassword,
   signInWithPassword,
   updateProfile,
+  type OAuthProviderId,
   type SupportedCurrency,
   type UserRole
 } from "@nb/auth";
@@ -68,9 +75,23 @@ export const requireRole = async (role: UserRole) => {
 };
 
 export const startEmailOtp = async (email: string) => {
+  assertRussianEmailDomain(email);
   await assertRateLimit(email.toLowerCase(), "otp", 5, 10 * 60);
   const verification = await issueVerification({ email, type: "otp" });
   console.info("[auth] OTP token", verification);
+};
+
+export const startPhoneOtp = async (phone: string) => {
+  const normalized = normalizePhone(phone);
+  await assertRateLimit(normalized, "sms_otp", 5, 10 * 60);
+  const verification = await issuePhoneVerification({ phone: normalized });
+  await sendSms({ to: verification.phone, text: `Код для входа: ${verification.rawToken}` });
+};
+
+export const verifyPhoneOtp = async (phone: string, code: string) => {
+  await consumePhoneVerification({ phone, code });
+  const user = await completePhoneSignIn({ phone });
+  await establishSession(user.id);
 };
 
 export const verifyEmailOtp = async (email: string, code: string) => {
@@ -80,6 +101,7 @@ export const verifyEmailOtp = async (email: string, code: string) => {
 };
 
 export const startMagicLink = async (email: string) => {
+  assertRussianEmailDomain(email);
   await assertRateLimit(email.toLowerCase(), "magic_link", 5, 10 * 60);
   const env = getServerEnv();
   const verification = await issueVerification({ email, type: "magic_link" });
@@ -126,6 +148,7 @@ export const passwordLogin = async (email: string, password: string) => {
 };
 
 export const passwordSignup = async (email: string, password: string) => {
+  assertRussianEmailDomain(email);
   await setPassword({ email, password });
   await passwordLogin(email, password);
 };
@@ -156,7 +179,7 @@ export const updateCurrentProfile = async ({
 };
 
 export const oauthFinalize = async (payload: {
-  provider: "google" | "vk" | "yandex";
+  provider: OAuthProviderId;
   providerAccountId: string;
   email: string;
   displayName?: string;

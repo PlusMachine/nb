@@ -567,8 +567,12 @@ export const reserveRecipeInventoryAction = async (recipeId: string) => (
   runRecipeInventoryAction(recipeId, reserveRecipeInventoryAllocations, "Ингредиенты зарезервированы.")
 );
 
-export const consumeRecipeInventoryAction = async (recipeId: string) => (
-  runRecipeInventoryAction(recipeId, consumeRecipeInventoryAllocations, "Ингредиенты списаны со склада.")
+export const consumeRecipeInventoryAction = async (recipeId: string, brewBatchId?: string) => (
+  runRecipeInventoryAction(
+    recipeId,
+    (userId, id) => consumeRecipeInventoryAllocations(userId, id, { brewBatchId: brewBatchId ?? null }),
+    "Ингредиенты списаны со склада."
+  )
 );
 
 export const releaseRecipeInventoryAction = async (recipeId: string) => (

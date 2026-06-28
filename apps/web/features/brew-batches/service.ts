@@ -2,6 +2,7 @@ import { and, asc, brewBatches, brewMeasurements, count, db, desc, eq, inArray, 
 
 import { getOwnedRecipeById } from "../recipes/service";
 import { buildBrewPlanSnapshot } from "./brew-plan";
+import { applyBrewDayStepPatch, buildBrewDaySteps, normalizeBrewDayProgress } from "./brew-day";
 import { summarizeBrewMeasurements } from "./measurements";
 import {
   activeBrewBatchStatuses,
@@ -11,6 +12,8 @@ import {
   type BrewBatchDetail,
   type BrewBatchDto,
   type BrewBatchListItem,
+  type BrewDayProgress,
+  type BrewDayStepStatePatch,
   type BrewMeasurementDto,
   type TelemetryHistoryPoint
 } from "./contracts";
@@ -32,6 +35,7 @@ const mapBrewBatchDto = (row: typeof brewBatches.$inferSelect): BrewBatchDto => 
   name: row.name,
   deviceId: row.deviceId,
   brewPlanSnapshot: brewPlanSnapshotSchema.parse(row.brewPlanSnapshot),
+  brewDayProgress: normalizeBrewDayProgress(row.brewDayProgress),
   recipeSnapshot: (row.recipeSnapshot as Record<string, unknown> | null | undefined) ?? null,
   equipmentProfileSnapshot: (row.equipmentProfileSnapshot as Record<string, unknown> | null | undefined) ?? null,
   waterPlanSnapshot: (row.waterPlanSnapshot as Record<string, unknown> | null | undefined) ?? null,
@@ -322,6 +326,58 @@ export const deleteBrewMeasurement = async (
   if (deleted.length === 0) {
     throw new Error("NOT_FOUND");
   }
+};
+
+// --- Виртуальный гид варочного дня -------------------------------------------
+
+/**
+ * Обновляет состояние одного шага гида варочного дня (отметка done / старт
+ * таймера). stepId валидируется против шагов плана — чужие ключи отклоняются,
+ * чтобы JSONB не разрастался мусором. Возвращает обновлённый прогресс.
+ */
+export const setBrewDayStepState = async (
+  userId: string,
+  brewBatchId: string,
+  stepId: string,
+  patch: BrewDayStepStatePatch
+): Promise<BrewDayProgress> => {
+  // Атомарный read-modify-write: блокируем строку партии (SELECT … FOR UPDATE),
+  // чтобы параллельные правки разных шагов не затирали друг друга (lost update).
+  return db.transaction(async (tx) => {
+    const [row] = await tx
+      .select({
+        brewPlanSnapshot: brewBatches.brewPlanSnapshot,
+        brewDayProgress: brewBatches.brewDayProgress
+      })
+      .from(brewBatches)
+      .where(and(eq(brewBatches.id, brewBatchId), eq(brewBatches.userId, userId)))
+      .for("update");
+    if (!row) {
+      throw new Error("NOT_FOUND");
+    }
+
+    const snapshot = brewPlanSnapshotSchema.parse(row.brewPlanSnapshot);
+    const stepIds = new Set(
+      buildBrewDaySteps(snapshot).flatMap((group) => group.steps.map((step) => step.id))
+    );
+    if (!stepIds.has(stepId)) {
+      throw new Error("UNKNOWN_STEP");
+    }
+
+    const now = new Date();
+    const current = normalizeBrewDayProgress(row.brewDayProgress);
+    const nextProgress = applyBrewDayStepPatch(current, stepId, patch, now.toISOString());
+
+    const [updated] = await tx.update(brewBatches).set({
+      brewDayProgress: nextProgress as unknown as Record<string, unknown>,
+      updatedAt: now
+    }).where(and(eq(brewBatches.id, brewBatchId), eq(brewBatches.userId, userId))).returning();
+    if (!updated) {
+      throw new Error("NOT_FOUND");
+    }
+
+    return normalizeBrewDayProgress(updated.brewDayProgress);
+  });
 };
 
 export const updateBrewBatchNotes = async (

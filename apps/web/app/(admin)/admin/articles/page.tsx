@@ -1,70 +1,70 @@
 import Link from "next/link";
-import { listArticleCategories, listFeaturedArticles } from "@nb/content";
+import { Plus } from "lucide-react";
 
 import { requireContentRole } from "@/features/content/permissions";
+import { listAdminContentArticles } from "@/features/content-articles/service";
+import {
+  contentArticleStatusBadgeClass,
+  contentArticleStatusLabels,
+  contentArticleTypeLabels
+} from "@/features/content-articles/contracts";
+
+const dateFmt = new Intl.DateTimeFormat("ru-RU", { day: "numeric", month: "short", year: "numeric" });
 
 export default async function AdminArticlesPage() {
-  const [user, articles, categories] = await Promise.all([
+  const [, articles] = await Promise.all([
     requireContentRole("editor"),
-    listFeaturedArticles(),
-    listArticleCategories()
+    listAdminContentArticles()
   ]);
 
   return (
     <section className="space-y-5">
       <header className="rounded-[2rem] border border-zinc-200 bg-white p-6 shadow-sm">
         <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-zinc-400">Content studio</p>
-        <h1 className="mt-2 text-3xl font-semibold text-zinc-950">BJCP и будущие статьи</h1>
+        <h1 className="mt-2 text-3xl font-semibold text-zinc-950">Статьи и обзоры</h1>
         <p className="mt-3 max-w-3xl text-sm leading-7 text-zinc-600">
-          Доступ к content studio теперь связан с текущими ролями. `editor` работает с черновиками, `moderator`
-          публикует и выбирает материалы для главной, `admin` управляет всем контентным слоем.
+          Редакторские гайды и обзоры оборудования. `editor` ведёт черновики, `moderator` публикует и выводит на
+          главную, `admin` управляет всем. BJCP-стили остаются в отдельном file-backed разделе.
         </p>
-        <div className="mt-5 grid gap-3 sm:grid-cols-3">
-          <div className="rounded-2xl border border-zinc-200 bg-zinc-50 p-4">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-zinc-500">Текущая роль</p>
-            <p className="mt-2 text-lg font-semibold text-zinc-950">{user.role}</p>
-          </div>
-          <div className="rounded-2xl border border-zinc-200 bg-zinc-50 p-4">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-zinc-500">BJCP категории</p>
-            <p className="mt-2 text-lg font-semibold text-zinc-950">{categories.length}</p>
-          </div>
-          <div className="rounded-2xl border border-zinc-200 bg-zinc-50 p-4">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-zinc-500">На главной</p>
-            <p className="mt-2 text-sm leading-6 text-zinc-700">
-              {user.capabilities.canFeatureOnHome ? "Можно выбирать featured-материалы." : "Выбор featured доступен moderator/admin."}
-            </p>
-          </div>
-        </div>
         <div className="mt-5 flex flex-wrap gap-3">
-          <Link
-            href="/admin/articles/new"
-            className="inline-flex items-center rounded-xl bg-zinc-950 px-4 py-2.5 text-sm font-medium text-white"
-          >
-            Открыть Tiptap editor
+          <Link href="/admin/articles/new" className="inline-flex items-center gap-1.5 rounded-xl bg-zinc-950 px-4 py-2.5 text-sm font-medium text-white">
+            <Plus className="h-4 w-4" aria-hidden /> Новая статья
           </Link>
-          <Link
-            href="/bjcp"
-            className="inline-flex items-center rounded-xl border border-zinc-200 bg-white px-4 py-2.5 text-sm font-medium text-zinc-700"
-          >
-            Посмотреть BJCP
+          <Link href="/bjcp" className="inline-flex items-center rounded-xl border border-zinc-200 bg-white px-4 py-2.5 text-sm font-medium text-zinc-700">
+            BJCP-стили
           </Link>
         </div>
       </header>
 
-      <section className="grid gap-4 lg:grid-cols-3">
-        {articles.map((article) => (
-          <article key={article.slug} className="rounded-[1.75rem] border border-zinc-200 bg-white p-5 shadow-sm">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-zinc-400">{article.eyebrow}</p>
-            <h2 className="mt-4 text-2xl font-semibold text-zinc-950">{article.title}</h2>
-            <p className="mt-3 text-sm leading-7 text-zinc-600">{article.description}</p>
-            <div className="mt-5 flex items-center gap-4">
-              <Link href={`/bjcp/${article.slug}`} className="text-sm font-semibold text-zinc-950">
-                Preview
+      {articles.length === 0 ? (
+        <p className="rounded-2xl border border-dashed border-zinc-200 bg-white p-8 text-center text-sm text-zinc-500">
+          Пока нет статей. Создайте первый гайд или обзор.
+        </p>
+      ) : (
+        <ul className="space-y-2">
+          {articles.map((article) => (
+            <li key={article.id}>
+              <Link
+                href={`/admin/articles/${article.id}/edit`}
+                className="flex flex-wrap items-center gap-3 rounded-2xl border border-zinc-200 bg-white p-4 shadow-sm transition hover:border-zinc-300"
+              >
+                <span className="min-w-0 flex-1">
+                  <span className="block truncate text-base font-semibold text-zinc-950">{article.title}</span>
+                  <span className="text-xs text-zinc-500">
+                    {contentArticleTypeLabels[article.type]} · {article.authorName ?? "—"} · обновлено {dateFmt.format(new Date(article.updatedAt))}
+                  </span>
+                </span>
+                {article.isFeatured ? (
+                  <span className="shrink-0 rounded-full bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-700">На главной</span>
+                ) : null}
+                <span className={`shrink-0 rounded-full px-2.5 py-1 text-xs font-medium ${contentArticleStatusBadgeClass[article.status]}`}>
+                  {contentArticleStatusLabels[article.status]}
+                </span>
               </Link>
-            </div>
-          </article>
-        ))}
-      </section>
+            </li>
+          ))}
+        </ul>
+      )}
     </section>
   );
 }

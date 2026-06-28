@@ -372,6 +372,55 @@ export const syncRecipeSelectedInventoryAllocations = async (
   return listRecipeStockCoverage(userId, recipeId);
 };
 
+/**
+ * Авто-подбор склада под ВСЕ строки рецепта по совпадению источника (каталог/
+ * кастом + единица), независимо от inventoryIntentMode. В отличие от
+ * syncRecipeSelectedInventoryAllocations (только строки use_stock), нужен для
+ * «списать на варку», когда автор не выбирал позиции в редакторе вручную.
+ * Идемпотентно: строки с активной аллокацией пропускаются; без подходящей
+ * позиции на складе — тоже. Возвращает обновлённое покрытие.
+ */
+export const autoAllocateRecipeInventoryFromStock = async (
+  userId: string,
+  recipeId: string
+): Promise<RecipeStockCoverageDto> => {
+  await ensureOwnedRecipe(userId, recipeId);
+  const [lines, blockingAllocations] = await Promise.all([
+    db.query.recipeIngredients.findMany({
+      where: eq(recipeIngredients.recipeId, recipeId)
+    }),
+    // Пропускаем строки с активной ИЛИ уже потреблённой аллокацией: consumed-строки
+    // нельзя переаллоцировать и списать повторно (иначе двойное списание склада).
+    db.query.recipeInventoryAllocations.findMany({
+      where: and(
+        eq(recipeInventoryAllocations.userId, userId),
+        eq(recipeInventoryAllocations.recipeId, recipeId),
+        inArray(recipeInventoryAllocations.status, ["allocated", "reserved", "consumed"])
+      )
+    })
+  ]);
+  const allocatedLineIds = new Set(blockingAllocations.map((allocation) => allocation.recipeIngredientId));
+
+  for (const line of lines) {
+    if (allocatedLineIds.has(line.id)) {
+      continue;
+    }
+    const inventoryItem = await findOwnedInventoryItemByRecipeLineSource(userId, line);
+    if (!inventoryItem) {
+      continue;
+    }
+    await updateRecipeLineInventorySelectionMeta(line, inventoryItem);
+    await allocateRecipeIngredientFromInventory({
+      userId,
+      recipeId,
+      recipeIngredientPersistentKey: line.persistentKey,
+      inventoryItemId: inventoryItem.id
+    });
+  }
+
+  return listRecipeStockCoverage(userId, recipeId);
+};
+
 export const reserveRecipeInventoryAllocations = async (
   userId: string,
   recipeId: string
@@ -410,7 +459,7 @@ export const releaseRecipeInventoryAllocations = async (
   return listRecipeStockCoverage(userId, recipeId);
 };
 
-const convertNormalizedQuantityToEnteredUnit = (
+export const convertNormalizedQuantityToEnteredUnit = (
   normalizedQuantity: number,
   normalizedUnit: string,
   enteredUnit: string

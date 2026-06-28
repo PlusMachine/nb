@@ -2,7 +2,7 @@ import { relations, sql } from "drizzle-orm";
 import { type AnyPgColumn, bigserial, boolean, check, doublePrecision, index, integer, jsonb, pgEnum, pgTable, real, text, timestamp, uniqueIndex, uuid, varchar } from "drizzle-orm/pg-core";
 
 export const userRoleEnum = pgEnum("user_role", ["user", "editor", "moderator", "admin"]);
-export const verificationTypeEnum = pgEnum("verification_type", ["otp", "magic_link", "password_reset"]);
+export const verificationTypeEnum = pgEnum("verification_type", ["otp", "magic_link", "password_reset", "sms_otp"]);
 export const ingredientTypeEnum = pgEnum("ingredient_type", [
   "fermentable",
   "hop",
@@ -44,11 +44,20 @@ export const brewBatchStatusEnum = pgEnum("brew_batch_status", ["planned", "brew
 export const recipeImageStatusEnum = pgEnum("recipe_image_status", ["uploading", "ready", "failed"]);
 export const brewDeviceStatusEnum = pgEnum("brew_device_status", ["online", "offline", "unknown"]);
 export const deviceCommandStatusEnum = pgEnum("device_command_status", ["queued", "sent", "acked", "failed"]);
+// Контент-CMS (Track A): редакторские статьи/гайды/обзоры в БД (BJCP остаётся
+// file-backed в @nb/content и сюда не пишется).
+export const contentArticleTypeEnum = pgEnum("content_article_type", ["guide", "review"]);
+export const contentArticleStatusEnum = pgEnum("content_article_status", ["draft", "published", "archived"]);
 
 export const users = pgTable("users", {
   id: uuid("id").defaultRandom().primaryKey(),
-  email: varchar("email", { length: 320 }).notNull(),
+  // email и phone оба nullable: телефон-only аккаунты не обязаны иметь e-mail и наоборот.
+  // В Postgres NULL'ы в unique-индексе не конфликтуют, поэтому уникальность сохраняется
+  // только для реально заданных значений.
+  email: varchar("email", { length: 320 }),
   emailVerified: boolean("email_verified").default(false).notNull(),
+  phone: varchar("phone", { length: 20 }),
+  phoneVerified: boolean("phone_verified").default(false).notNull(),
   displayName: varchar("display_name", { length: 120 }).notNull(),
   preferredCurrency: systemCurrencyEnum("preferred_currency").default("RUB").notNull(),
   image: text("image"),
@@ -57,7 +66,8 @@ export const users = pgTable("users", {
   createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull()
 }, (table) => ({
-  emailIdx: uniqueIndex("users_email_uidx").on(table.email)
+  emailIdx: uniqueIndex("users_email_uidx").on(table.email),
+  phoneIdx: uniqueIndex("users_phone_uidx").on(table.phone)
 }));
 
 export const sessions = pgTable("sessions", {
@@ -91,7 +101,9 @@ export const accounts = pgTable("accounts", {
 
 export const verifications = pgTable("verifications", {
   id: uuid("id").defaultRandom().primaryKey(),
-  email: varchar("email", { length: 320 }).notNull(),
+  // Канал идентификации: для e-mail-флоу заполнен email, для sms_otp — phone.
+  email: varchar("email", { length: 320 }),
+  phone: varchar("phone", { length: 20 }),
   type: verificationTypeEnum("type").notNull(),
   codeHash: text("code_hash").notNull(),
   expiresAt: timestamp("expires_at", { withTimezone: true }).notNull(),
@@ -100,7 +112,12 @@ export const verifications = pgTable("verifications", {
   createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull()
 }, (table) => ({
   emailIdx: index("verifications_email_idx").on(table.email, table.type),
-  tokenIdx: uniqueIndex("verifications_code_hash_uidx").on(table.codeHash)
+  phoneIdx: index("verifications_phone_idx").on(table.phone, table.type),
+  tokenIdx: uniqueIndex("verifications_code_hash_uidx").on(table.codeHash),
+  identifierPresent: check(
+    "verifications_identifier_present",
+    sql`${table.email} is not null or ${table.phone} is not null`
+  )
 }));
 
 export const authRateLimits = pgTable("auth_rate_limits", {
@@ -644,6 +661,10 @@ export const brewBatches = pgTable("brew_batches", {
   deviceHints: jsonb("device_hints").$type<Record<string, unknown>[]>().default([]).notNull(),
   // Привязка партии к подключённому контроллеру (BrewForge и т.п.). NULL — варка без устройства.
   deviceId: uuid("device_id").references((): AnyPgColumn => brewDevices.id, { onDelete: "set null" }),
+  // Прогресс виртуального «гида варочного дня» (device_id = NULL): отметки «шаг
+  // выполнен» и старты таймеров, индексированные стабильным id шага из плана.
+  // Мутабельное состояние варки (в отличие от иммутабельного brew_plan_snapshot).
+  brewDayProgress: jsonb("brew_day_progress").$type<Record<string, unknown>>().default({}).notNull(),
   notes: text("notes"),
   plannedFor: timestamp("planned_for", { withTimezone: true }),
   startedAt: timestamp("started_at", { withTimezone: true }),
@@ -1166,6 +1187,54 @@ export const deviceCommandsRelations = relations(deviceCommands, ({ one }) => ({
   }),
   user: one(users, {
     fields: [deviceCommands.userId],
+    references: [users.id]
+  })
+}));
+
+// =============================================================================
+//  Контент-CMS (Track A): редакторские статьи/гайды/обзоры в БД.
+//  BJCP-стили остаются file-backed (@nb/content) и в эту таблицу НЕ пишутся.
+//  Тело свободных статей — Tiptap JSON (bodyJson); специфика обзоров — metaJson.
+// =============================================================================
+export const contentArticles = pgTable("content_articles", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  type: contentArticleTypeEnum("type").default("guide").notNull(),
+  status: contentArticleStatusEnum("status").default("draft").notNull(),
+  slug: varchar("slug", { length: 220 }).notNull(),
+  title: varchar("title", { length: 180 }).notNull(),
+  excerpt: text("excerpt"),
+  // Tiptap ProseMirror JSON (см. components/content/rich-text-editor.tsx).
+  bodyJson: jsonb("body_json").$type<Record<string, unknown> | null>(),
+  // Структурированные поля под тип (обзор: pros/cons/verdict/specs/rating и т.п.).
+  metaJson: jsonb("meta_json").$type<Record<string, unknown>>().default({}).notNull(),
+  coverImageKey: text("cover_image_key"),
+  coverImageUrl: text("cover_image_url"),
+  seoTitle: varchar("seo_title", { length: 255 }),
+  seoDescription: text("seo_description"),
+  readingMinutes: integer("reading_minutes").default(1).notNull(),
+  isFeatured: boolean("is_featured").default(false).notNull(),
+  // SET NULL (как reviewerId и catalog created_by): удаление автора НЕ должно
+  // стирать опубликованный контент. Редакционные статьи переживают автора.
+  authorId: uuid("author_id").references(() => users.id, { onDelete: "set null" }),
+  reviewerId: uuid("reviewer_id").references(() => users.id, { onDelete: "set null" }),
+  publishedAt: timestamp("published_at", { withTimezone: true }),
+  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull()
+}, (table) => ({
+  slugUidx: uniqueIndex("content_articles_slug_uidx").on(table.slug),
+  statusPublishedIdx: index("content_articles_status_published_idx").on(table.status, table.publishedAt),
+  authorIdx: index("content_articles_author_idx").on(table.authorId),
+  featuredIdx: index("content_articles_featured_idx").on(table.isFeatured, table.publishedAt),
+  typeIdx: index("content_articles_type_idx").on(table.type)
+}));
+
+export const contentArticlesRelations = relations(contentArticles, ({ one }) => ({
+  author: one(users, {
+    fields: [contentArticles.authorId],
+    references: [users.id]
+  }),
+  reviewer: one(users, {
+    fields: [contentArticles.reviewerId],
     references: [users.id]
   })
 }));

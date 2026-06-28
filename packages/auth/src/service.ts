@@ -2,7 +2,7 @@ import { accounts, authRateLimits, db, sessions, users, verifications } from "@n
 import { and, eq, gt, sql } from "@nb/db";
 
 import { createOtpCode, createRandomToken, hashPassword, hashToken, verifyPassword } from "./crypto";
-import type { AuthUser, SupportedCurrency, UserRole } from "./types";
+import type { AuthUser, OAuthProviderId, SupportedCurrency, UserRole } from "./types";
 
 type VerificationType = "otp" | "magic_link" | "password_reset";
 
@@ -10,15 +10,38 @@ const SESSION_TTL_DAYS = 30;
 const OTP_TTL_MINUTES = 10;
 const MAGIC_TTL_MINUTES = 20;
 const RESET_TTL_MINUTES = 20;
+const SMS_OTP_TTL_MINUTES = 5;
 
 const normalizeEmail = (email: string): string => email.trim().toLowerCase();
 
 const defaultDisplayName = (email: string): string => email.split("@")[0] ?? "Brewer";
 
+const defaultDisplayNameFromPhone = (phone: string): string => `Brewer ${phone.slice(-4)}`;
+
+/**
+ * Приводит российский номер к E.164 (`+7XXXXXXXXXX`). Принимает форматы с пробелами,
+ * дефисами и скобками, ведущей `8` или `7`, либо 10 цифр без кода страны.
+ * Бросает INVALID_PHONE для всего, что не похоже на российский мобильный.
+ */
+export const normalizePhone = (raw: string): string => {
+  let digits = raw.replace(/\D/g, "");
+  if (digits.length === 11 && digits.startsWith("8")) {
+    digits = `7${digits.slice(1)}`;
+  } else if (digits.length === 10) {
+    digits = `7${digits}`;
+  }
+  if (digits.length !== 11 || !digits.startsWith("7")) {
+    throw new Error("INVALID_PHONE");
+  }
+  return `+${digits}`;
+};
+
 const mapUser = (user: typeof users.$inferSelect): AuthUser => ({
   id: user.id,
   email: user.email,
   emailVerified: user.emailVerified,
+  phone: user.phone,
+  phoneVerified: user.phoneVerified,
   displayName: user.displayName,
   preferredCurrency: (user.preferredCurrency ?? "RUB") as SupportedCurrency,
   image: user.image,
@@ -158,6 +181,69 @@ export const completeEmailSignIn = async ({ email }: { email: string }): Promise
   return mapUser(updated ?? user);
 };
 
+export const getOrCreateUserByPhone = async (phone: string): Promise<typeof users.$inferSelect> => {
+  const normalized = normalizePhone(phone);
+  const [found] = await db.select().from(users).where(eq(users.phone, normalized));
+  if (found) {
+    return found;
+  }
+
+  const [created] = await db.insert(users).values({
+    phone: normalized,
+    displayName: defaultDisplayNameFromPhone(normalized),
+    phoneVerified: false,
+    role: "user"
+  }).returning();
+
+  return created;
+};
+
+export const issuePhoneVerification = async ({ phone }: { phone: string }) => {
+  const normalized = normalizePhone(phone);
+  const raw = createOtpCode();
+  const codeHash = hashToken(raw);
+
+  await db.insert(verifications).values({
+    phone: normalized,
+    type: "sms_otp",
+    codeHash,
+    expiresAt: new Date(Date.now() + SMS_OTP_TTL_MINUTES * 60 * 1000)
+  });
+
+  return { rawToken: raw, phone: normalized, expiresInMinutes: SMS_OTP_TTL_MINUTES };
+};
+
+export const consumePhoneVerification = async ({ phone, code }: { phone: string; code: string }) => {
+  const normalized = normalizePhone(phone);
+  const codeHash = hashToken(code);
+
+  const [found] = await db.select().from(verifications).where(and(
+    eq(verifications.phone, normalized),
+    eq(verifications.type, "sms_otp"),
+    eq(verifications.codeHash, codeHash)
+  ));
+
+  if (!found) {
+    throw new Error("INVALID_TOKEN");
+  }
+
+  if (found.usedAt) {
+    throw new Error("TOKEN_USED");
+  }
+
+  if (found.expiresAt <= new Date()) {
+    throw new Error("TOKEN_EXPIRED");
+  }
+
+  await db.update(verifications).set({ usedAt: new Date(), attempts: found.attempts + 1 }).where(eq(verifications.id, found.id));
+};
+
+export const completePhoneSignIn = async ({ phone }: { phone: string }): Promise<AuthUser> => {
+  const user = await getOrCreateUserByPhone(phone);
+  const [updated] = await db.update(users).set({ phoneVerified: true, updatedAt: new Date() }).where(eq(users.id, user.id)).returning();
+  return mapUser(updated ?? user);
+};
+
 export const updateProfile = async ({
   userId,
   displayName,
@@ -183,7 +269,7 @@ export const setRole = async ({ userId, role }: { userId: string; role: UserRole
 };
 
 export const linkOAuthAccount = async ({ provider, providerAccountId, email, displayName, image, accessToken, refreshToken }: {
-  provider: "google" | "vk" | "yandex";
+  provider: OAuthProviderId;
   providerAccountId: string;
   email: string;
   displayName?: string;

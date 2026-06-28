@@ -117,7 +117,7 @@ export default async function AppZonePage() {
   ]);
 
   const now = new Date();
-  const greetingName = user.displayName?.trim() || user.email;
+  const greetingName = user.displayName?.trim() || user.email || user.phone;
 
   // Активные варки: подсказку считаем один раз и сортируем по срочности тона.
   const rankedActiveBrews = activeBrews

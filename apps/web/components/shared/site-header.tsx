@@ -5,7 +5,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { ChevronDown, LayoutGrid, LogOut, User2 } from "lucide-react";
 
-export type SiteHeaderUser = { email: string; displayName: string };
+export type SiteHeaderUser = { email: string | null; phone?: string | null; displayName: string };
 
 type SiteHeaderProps = {
   user: SiteHeaderUser | null;
@@ -16,6 +16,7 @@ type SiteHeaderProps = {
 // рабочей зоной и публичным сайтом.
 const publicLinks = [
   { href: "/catalog", label: "Каталог" },
+  { href: "/guides", label: "Гайды" },
   { href: "/bjcp", label: "Стили пива" },
   { href: "/calculators", label: "Калькуляторы" },
   { href: "/recipes", label: "Рецепты" }
@@ -116,7 +117,7 @@ function UserMenu({ user }: { user: SiteHeaderUser }) {
     };
   }, [open]);
 
-  const label = user.displayName?.trim() || user.email;
+  const label = user.displayName?.trim() || user.email || user.phone || "Профиль";
 
   const handleLogout = async () => {
     setPending(true);
@@ -152,7 +153,7 @@ function UserMenu({ user }: { user: SiteHeaderUser }) {
         >
           <div className="border-b border-zinc-100 px-3 py-2 text-xs text-zinc-500">
             <p className="truncate font-medium text-zinc-700">{user.displayName}</p>
-            <p className="truncate">{user.email}</p>
+            <p className="truncate">{user.email ?? user.phone}</p>
           </div>
           <Link
             href="/app"

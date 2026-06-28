@@ -30,7 +30,7 @@ export function AppSidebarNav({ user, onNavigate }: AppSidebarNavProps) {
     }
   };
 
-  const identity = user.displayName?.trim() || user.email;
+  const identity = user.displayName?.trim() || user.email || user.phone || "Профиль";
 
   return (
     <div className="flex h-full flex-col">

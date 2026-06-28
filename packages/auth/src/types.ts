@@ -12,8 +12,10 @@ export const roleWeight: Record<UserRole, number> = {
 
 export type AuthUser = {
   id: string;
-  email: string;
+  email: string | null;
   emailVerified: boolean;
+  phone: string | null;
+  phoneVerified: boolean;
   displayName: string;
   preferredCurrency: SupportedCurrency;
   image: string | null;
@@ -21,3 +23,5 @@ export type AuthUser = {
   createdAt: Date;
   updatedAt: Date;
 };
+
+export type OAuthProviderId = "vk" | "yandex";

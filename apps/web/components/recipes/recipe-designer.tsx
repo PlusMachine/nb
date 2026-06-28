@@ -5823,35 +5823,35 @@ export function RecipeDesigner({
 
     setPendingSave(true);
     try {
+      // Сначала создаём партию, затем (опц.) списываем склад с привязкой к
+      // brewBatchId — чтобы аудит и откат при отмене были привязаны к партии, а
+      // не оставались «висящими» рецепт-скоупными транзакциями (brewBatchId=NULL).
+      const batchResult = await createBrewBatchFromRecipeAction(recipeId);
+      if (!batchResult.ok) {
+        setStartBrewResult({ ok: false, message: batchResult.message });
+        setSaveResult({ ok: false, message: batchResult.message });
+        setSaveResultSignature(currentSignature);
+        return;
+      }
+
+      let consumeNote = "";
       if (consumeIngredients) {
-        const consumeResult = await consumeRecipeInventoryAction(recipeId);
-        if (!consumeResult.ok) {
-          setSaveResult({ ok: false, message: consumeResult.message });
-          setSaveResultSignature(currentSignature);
-          setStartBrewResult({
-            ok: false,
-            message: consumeResult.message
-          });
-          if (consumeResult.coverage) {
-            setStockCoverage(consumeResult.coverage);
-          }
-          return;
-        }
+        const consumeResult = await consumeRecipeInventoryAction(recipeId, batchResult.brewBatchId ?? undefined);
         if (consumeResult.coverage) {
           setStockCoverage(consumeResult.coverage);
         }
+        consumeNote = consumeResult.ok
+          ? " Ингредиенты списаны со склада."
+          : ` Партия создана, но списание не выполнено: ${consumeResult.message}`;
       }
 
-      const batchResult = await createBrewBatchFromRecipeAction(recipeId);
       const nextResult = {
-        ok: batchResult.ok,
-        message: batchResult.ok
-          ? "Партия создана. Пошаговый режим варки появится здесь позже, а пока рецепт сохранен как план варки."
-          : batchResult.message,
+        ok: true,
+        message: `Партия создана.${consumeNote}`,
         brewBatchId: batchResult.brewBatchId ?? null
       };
       setStartBrewResult(nextResult);
-      setSaveResult({ ok: batchResult.ok, message: batchResult.message });
+      setSaveResult({ ok: true, message: nextResult.message });
       setSaveResultSignature(currentSignature);
     } catch {
       const message = "Не удалось начать варку. Попробуйте еще раз.";

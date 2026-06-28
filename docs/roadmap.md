@@ -99,11 +99,20 @@ UI самоочевидный из IA/иконок/порядка, без поя
    шаги/паузы/тайминги (затор, кипячение, засыпи хмеля, температуры), плюс журнал
    замеров. Точка входа: «Начать варку» (`start-brew-modal`).
    - **Есть:** `brew_batch` создаётся; деталь = статус-степпер + журнал + заметки;
-     план варки уже лежит в `brewPlanSnapshot` (mashSteps / boilPlan.timedAdditions /
+     план варки лежит в `brewPlanSnapshot` (mashSteps / boilPlan.timedAdditions /
      whirlpool / fermentation), генерится `@nb/brewing-core generateBrewSteps`.
-   - **TODO (ближайший инкремент):** пошаговый «варочный день» на экране — таймеры
-     пауз/кипячения, напоминания о засыпях, отметки «шаг выполнен» — как рендер
-     `brewPlanSnapshot` живым чек-листом. Это виртуальный аналог device-дашборда.
+   - **Есть (сделано):** пошаговый «варочный день» на экране — рендер
+     `brewPlanSnapshot` живым чек-листом (`features/brew-batches/brew-day.ts` +
+     компонент `brew-day-guide.tsx`): группы затор/кипячение/вирпул/брожение,
+     таймеры пауз/кипячения (переживают reload через `timerStartedAt`), отметки
+     «шаг выполнен». Прогресс — колонка `brew_day_progress` (миграция 0038),
+     атомарное обновление через `setBrewDayStepState` (tx + `FOR UPDATE`). Секция
+     показывается только при `device_id = NULL` (виртуальный аналог device-дашборда).
+   - **Есть (сделано):** списание склада на варку — `features/brew-batches/inventory.ts`
+     (`consumeBrewBatchInventory`/`restoreBrewBatchInventory`/`getBrewBatchInventoryView`):
+     авто-подбор склада + consume активных аллокаций с привязкой к `brewBatchId`,
+     компенсирующий откат (release) при отмене варки, рецепт-скоупный гард от
+     двойного списания. Секция «Склад» на странице партии.
 
 2. **Автоматический (BrewForge).** Через собственный контроллер BrewForge (ESP32-S3;
    прошивка в соседнем репо `../brewforge`), запускается ПРЯМО с сайта nb. Точка
@@ -124,11 +133,28 @@ UI самоочевидный из IA/иконок/порядка, без поя
 
 ---
 
-## Track A — витрина/контент (позже)
+## Track A — витрина/контент
 
-- Контент-CMS по `docs/articles-rollout-plan.md` (Phase 2–4): editorial-слой,
-  BJCP как structured content, обзоры/гайды через Tiptap.
-- Главную переделать в хаб гайдов (сейчас H1 про BJCP) — точка входа витрины.
+### Сделано (Phase 2–3)
+
+- **Контент-CMS** по `docs/articles-rollout-plan.md`: таблица `content_articles`
+  (миграция 0039) + `features/content-articles` (service: CRUD, role-gating через
+  `getContentCapabilities`, slug, reading-time, публичные/админ-чтения). Типы:
+  гайд/обзор; статусы draft/published/archived. BJCP остаётся file-backed.
+- **Админ-CRUD** `/admin/articles` (список + статусы), `/admin/articles/new`,
+  `/admin/articles/[id]/edit` — Tiptap-редактор тела (`content-body-editor.tsx`),
+  publish/feature/delete по ролям (editor черновики, moderator публикует/выводит
+  на главную, admin всё). Server actions с `requireContentRole`.
+- **Публичная зона**: хаб `/guides` + страница `/guides/[slug]` (безопасный
+  рендер Tiptap JSON → React `tiptap-content.tsx` с санитайзингом ссылок, SEO
+  metadata + JSON-LD). Cache-safe (не читают сессию).
+- **Главная** переделана в хаб гайдов (продуктовый H1 + featured-гайды из CMS +
+  BJCP + точки входа), `/guides` добавлен в навигацию.
+
+### Осталось (Phase 4)
+
+- Реальный upload обложек/изображений (storage adapter вместо текстового
+  `coverImageUrl`), OG-images, canonical/robots tuning, расширение JSON-LD.
 - Обоснование порядка: контент-CMS дороже и SEO окупается с лагом, поэтому после
   рабочей петли.
 

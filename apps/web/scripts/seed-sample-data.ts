@@ -15,6 +15,7 @@
  */
 import {
   and,
+  contentArticles,
   db,
   eq,
   equipmentProfiles,
@@ -31,6 +32,8 @@ import { parseServerEnv } from "@nb/shared";
 
 import { createEquipmentProfile } from "../features/equipment-profiles/service";
 import { createRecipe } from "../features/recipes/service";
+import { estimateReadingMinutes } from "../features/content-articles/reading-time";
+import { toContentArticleSlugBase } from "../features/content-articles/slug";
 
 const SAMPLE_TAG = "sample-data";
 const DEFAULT_EMAIL = "artyom.movchan@gmail.com";
@@ -349,6 +352,73 @@ const RECIPES: RecipeSpec[] = [
 ];
 
 // ---------------------------------------------------------------------------
+// Контент-CMS: примеры опубликованных гайдов/обзоров (Track A)
+// ---------------------------------------------------------------------------
+type SeedDoc = { type: "doc"; content: Array<Record<string, unknown>> };
+
+const tiptapDoc = (blocks: Array<{ h?: string; p?: string; list?: string[] }>): SeedDoc => {
+  const content: Array<Record<string, unknown>> = [];
+  for (const block of blocks) {
+    if (block.h) {
+      content.push({ type: "heading", attrs: { level: 2 }, content: [{ type: "text", text: block.h }] });
+    } else if (block.list) {
+      content.push({
+        type: "bulletList",
+        content: block.list.map((item) => ({
+          type: "listItem",
+          content: [{ type: "paragraph", content: [{ type: "text", text: item }] }]
+        }))
+      });
+    } else {
+      content.push({ type: "paragraph", content: [{ type: "text", text: block.p ?? "" }] });
+    }
+  }
+  return { type: "doc", content };
+};
+
+const ARTICLES: Array<{ type: "guide" | "review"; title: string; excerpt: string; featured: boolean; body: SeedDoc }> = [
+  {
+    type: "guide",
+    title: "Первая варка дома: пошаговый чек-лист",
+    excerpt: "Что подготовить и в каком порядке действовать в день первой варки.",
+    featured: true,
+    body: tiptapDoc([
+      { p: "Первая варка кажется сложной, но по шагам всё управляемо. Ниже — порядок действий и на что обратить внимание." },
+      { h: "Подготовка" },
+      { list: ["Продезинфицируйте оборудование", "Отмерьте воду и соли", "Подогрейте воду для затирания"] },
+      { h: "Затирание и кипячение" },
+      { p: "Держите паузу затора при целевой температуре, затем фильтруйте и доведите сусло до кипения. Хмель вносите по таймеру до конца кипячения." },
+      { h: "Охлаждение и брожение" },
+      { p: "Быстро охладите сусло, замерьте начальную плотность (OG), внесите дрожжи и поставьте на брожение при стабильной температуре." }
+    ])
+  },
+  {
+    type: "guide",
+    title: "Контроль температуры брожения",
+    excerpt: "Почему стабильная температура важнее, чем кажется, и как её держать.",
+    featured: true,
+    body: tiptapDoc([
+      { p: "Температура брожения сильнее всего влияет на профиль готового пива: эфиры, сивушные масла, чистоту вкуса." },
+      { list: ["Эли: обычно 18–20 °C", "Лагеры: 9–13 °C", "Резкие скачки дают off-flavours"] },
+      { p: "Используйте термостат или хотя бы стабильное прохладное место; записывайте температуру в журнал варки." }
+    ])
+  },
+  {
+    type: "review",
+    title: "Обзор: автоматический контроллер BrewForge",
+    excerpt: "Как контроллер управляет варочным днём и что он снимает с пивовара.",
+    featured: false,
+    body: tiptapDoc([
+      { p: "BrewForge берёт на себя выдержку пауз, кипячение и засыпи по расписанию рецепта, освобождая пивовара от ручного тайминга." },
+      { h: "Плюсы" },
+      { list: ["Точный тайминг пауз и хмеля", "Телеметрия в реальном времени", "Запуск прямо с сайта"] },
+      { h: "Минусы" },
+      { list: ["Требуется сборка/настройка устройства", "Безопасность нагрева — на стороне прошивки"] }
+    ])
+  }
+];
+
+// ---------------------------------------------------------------------------
 // Главный сценарий
 // ---------------------------------------------------------------------------
 const main = async () => {
@@ -451,7 +521,29 @@ const main = async () => {
       `    • [${r.state.padEnd(9)}] ${r.title.padEnd(40)} OG ${r.og?.toFixed(3) ?? "—"}  IBU ${r.ibu?.toFixed(0) ?? "—"}  ABV ${r.abv?.toFixed(1) ?? "—"}%  SRM ${r.color?.toFixed(1) ?? "—"}`
     );
   }
-  console.log("\n✅  Готово. Перезагрузи /app/recipes, /app/inventory и /app/equipment.");
+  // 7) Контент-CMS: опубликованные гайды/обзоры (Track A)
+  await db.delete(contentArticles).where(and(
+    eq(contentArticles.authorId, userId),
+    sql`${contentArticles.metaJson}->>'seedSource' = ${SAMPLE_TAG}`
+  ));
+  const now = new Date();
+  const articleRows = ARTICLES.map((article) => ({
+    type: article.type,
+    status: "published" as const,
+    slug: toContentArticleSlugBase(article.title),
+    title: article.title,
+    excerpt: article.excerpt,
+    bodyJson: article.body as unknown as Record<string, unknown>,
+    metaJson: { seedSource: SAMPLE_TAG },
+    readingMinutes: estimateReadingMinutes(article.body as never),
+    isFeatured: article.featured,
+    authorId: userId,
+    publishedAt: now
+  }));
+  await db.insert(contentArticles).values(articleRows).onConflictDoNothing({ target: contentArticles.slug });
+  console.log(`📰  Контент: добавлено ${articleRows.length} статей (гайды/обзор).`);
+
+  console.log("\n✅  Готово. Перезагрузи /app/recipes, /app/inventory, /app/equipment и /guides.");
   process.exit(0);
 };
 

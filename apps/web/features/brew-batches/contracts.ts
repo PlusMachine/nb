@@ -35,6 +35,8 @@ export type BrewBatchDto = {
   /** Привязанный контроллер (brew_batches.device_id). NULL — варка без устройства. */
   deviceId: string | null;
   brewPlanSnapshot: BrewPlanSnapshot;
+  /** Прогресс виртуального гида варочного дня (отметки/таймеры по id шага). */
+  brewDayProgress: BrewDayProgress;
   recipeSnapshot: Record<string, unknown> | null;
   equipmentProfileSnapshot: Record<string, unknown> | null;
   waterPlanSnapshot: Record<string, unknown> | null;
@@ -151,4 +153,102 @@ export type BrewBatchDetail = {
   batch: BrewBatchDto;
   measurements: BrewMeasurementDto[];
   summary: BrewMeasurementSummary;
+};
+
+// --- Виртуальный гид варочного дня -------------------------------------------
+// Рендер brew_plan_snapshot живым чек-листом для варки без устройства
+// (device_id = NULL): пошаговый «варочный день» с таймерами пауз/кипячения,
+// напоминаниями о засыпях и отметками «шаг выполнен». Виртуальный аналог
+// device-дашборда. Прогресс хранится в brew_batches.brew_day_progress.
+
+export const brewDayStages = ["mash", "boil", "whirlpool", "fermentation", "packaging"] as const;
+export type BrewDayStage = (typeof brewDayStages)[number];
+
+export const brewDayStageLabels: Record<BrewDayStage, string> = {
+  mash: "Затор",
+  boil: "Кипячение",
+  whirlpool: "Вирпул",
+  fermentation: "Брожение",
+  packaging: "Розлив"
+};
+
+// timer — шаг с обратным отсчётом (пауза затора, кипячение); addition — засыпь
+// хмеля/ингредиента в конкретный момент; task — отметка без таймера.
+export type BrewDayStepKind = "timer" | "addition" | "task";
+
+export type BrewDayStep = {
+  /** Стабильный id из плана (mash:<id>, boil:add:<key> и т.п.), ключ прогресса. */
+  id: string;
+  stage: BrewDayStage;
+  kind: BrewDayStepKind;
+  title: string;
+  detail: string | null;
+  /** Длительность для timer-шагов (сек); null — нет таймера. */
+  durationSeconds: number | null;
+  temperatureC: number | null;
+};
+
+export type BrewDayStageGroup = {
+  stage: BrewDayStage;
+  label: string;
+  steps: BrewDayStep[];
+};
+
+export type BrewDayStepState = {
+  done: boolean;
+  /** ISO-момент старта таймера (для kind === "timer"); null — не запущен. */
+  timerStartedAt: string | null;
+};
+
+export type BrewDayProgress = {
+  steps: Record<string, BrewDayStepState>;
+  updatedAt: string | null;
+};
+
+export const emptyBrewDayProgress: BrewDayProgress = { steps: {}, updatedAt: null };
+
+// Патч состояния одного шага (отметка done и/или старт/сброс таймера).
+export const brewDayStepStatePatchSchema = z.object({
+  done: z.boolean().optional(),
+  timerStartedAt: z.string().datetime({ offset: true }).nullable().optional()
+}).refine((value) => value.done !== undefined || value.timerStartedAt !== undefined, {
+  message: "Пустой патч шага."
+});
+export type BrewDayStepStatePatch = z.infer<typeof brewDayStepStatePatchSchema>;
+
+// --- Списание склада на варку ------------------------------------------------
+// Партия — точка, где списание ингредиентов становится частью жизненного цикла
+// варки. Движок аллокаций/транзакций (features/recipes/inventory-service.ts)
+// переиспользуется; здесь — обёртки, привязывающие транзакции к brew_batch_id и
+// дающие откат (release) при отмене варки.
+
+export type BrewBatchInventoryConsumedLine = {
+  inventoryItemId: string;
+  ingredientDisplayName: string | null;
+  /** Нетто списано (положительное), ещё не возвращённое на склад. */
+  quantityNormalized: number;
+  normalizedUnit: string;
+};
+
+export type BrewBatchInventoryLogEntry = {
+  id: string;
+  inventoryItemId: string;
+  ingredientDisplayName: string | null;
+  type: "consume" | "reserve" | "release" | "adjustment";
+  quantityDeltaNormalized: number;
+  normalizedUnit: string;
+  createdAt: Date;
+};
+
+export type BrewBatchInventoryView = {
+  brewBatchId: string;
+  recipeId: string;
+  /** Есть незавершённое (не возвращённое) списание этой партии. */
+  hasConsumed: boolean;
+  /** Можно вернуть списанное на склад (есть нетто-списание). */
+  canRestore: boolean;
+  /** Ингредиенты рецепта уже списаны (этой или другой поверхностью) — блок повторного списания. */
+  recipeAlreadyConsumed: boolean;
+  consumed: BrewBatchInventoryConsumedLine[];
+  log: BrewBatchInventoryLogEntry[];
 };

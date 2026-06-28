@@ -10,7 +10,8 @@ export default async function ProfilePage() {
     <section className="space-y-4 rounded-lg border p-4">
       <h1 className="text-xl font-semibold">Профиль</h1>
       <div className="space-y-1 text-sm text-zinc-700">
-        <p>Email: {user.email}</p>
+        {user.email ? <p>Email: {user.email}</p> : null}
+        {user.phone ? <p>Телефон: {user.phone}</p> : null}
         <p>Role: {user.role}</p>
       </div>
       <form action={updateSettingsAction} className="space-y-2">

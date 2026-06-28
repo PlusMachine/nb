@@ -1,0 +1,1 @@
+ALTER TABLE "brew_batches" ADD COLUMN "brew_day_progress" jsonb DEFAULT '{}'::jsonb NOT NULL;

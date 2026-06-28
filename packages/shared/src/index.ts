@@ -23,8 +23,12 @@ const serverEnvSchema = z.object({
   SMTP_USER: z.preprocess(emptyStringToUndefined, z.string().optional()),
   SMTP_PASSWORD: z.preprocess(emptyStringToUndefined, z.string().optional()),
   SMTP_SECURE: z.coerce.boolean().default(false),
-  AUTH_GOOGLE_CLIENT_ID: z.preprocess(emptyStringToUndefined, z.string().optional()),
-  AUTH_GOOGLE_CLIENT_SECRET: z.preprocess(emptyStringToUndefined, z.string().optional()),
+  // SMS-авторизация (рос. номер + код). По умолчанию провайдер "log" — код пишется в
+  // консоль, реальный шлюз не нужен (dev). В production задайте провайдера и реквизиты.
+  SMS_PROVIDER: z.enum(["log", "smsc", "smsru"]).default("log"),
+  SMS_API_KEY: z.preprocess(emptyStringToUndefined, z.string().optional()),
+  SMS_LOGIN: z.preprocess(emptyStringToUndefined, z.string().optional()),
+  SMS_SENDER: z.preprocess(emptyStringToUndefined, z.string().optional()),
   AUTH_VK_CLIENT_ID: z.preprocess(emptyStringToUndefined, z.string().optional()),
   AUTH_VK_CLIENT_SECRET: z.preprocess(emptyStringToUndefined, z.string().optional()),
   AUTH_YANDEX_CLIENT_ID: z.preprocess(emptyStringToUndefined, z.string().optional()),

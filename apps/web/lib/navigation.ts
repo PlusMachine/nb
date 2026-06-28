@@ -1,6 +1,7 @@
 import type { LucideIcon } from "lucide-react";
 import {
   Beer,
+  BookOpen,
   Boxes,
   Calculator,
   Cpu,
@@ -40,6 +41,7 @@ export const appNavGroups: AppNavItem[][] = [
   ],
   [
     { href: "/catalog", label: "Каталог", icon: Library },
+    { href: "/guides", label: "Гайды", icon: BookOpen },
     { href: "/bjcp", label: "Стили", icon: Sparkles },
     { href: "/calculators", label: "Калькуляторы", icon: Calculator }
   ]
@@ -60,7 +62,7 @@ export const isNavItemActive = (pathname: string, item: AppNavItem): boolean => 
 // Справочники живут в публичной зоне (доступны без логина), но для
 // залогиненного открываются внутри сайдбара рабочей зоны — чтобы он не
 // «вылетал» из мастерской. Один контент, два хрома.
-export const referencePathPrefixes = ["/catalog", "/bjcp", "/calculators", "/recipes"];
+export const referencePathPrefixes = ["/catalog", "/guides", "/bjcp", "/calculators", "/recipes"];
 
 export const isReferencePath = (pathname: string): boolean =>
   referencePathPrefixes.some((prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`));
