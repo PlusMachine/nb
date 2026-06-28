@@ -4,7 +4,7 @@
 > Читать первым. Краткая памятка для агентов — `CLAUDE.md`. Онбординг/запуск — `README.md`.
 > Глубокие технические референсы по подсистемам — в `docs/reference/` (см. раздел 16).
 >
-> **Обновлено:** 2026-06-25.
+> **Обновлено:** 2026-06-28.
 > Если документ и код расходятся — **код важнее**; документ синхронизируй или явно отмечай расхождение.
 
 ---
@@ -18,13 +18,15 @@
 Каталог ингредиентов / Мой каталог → Мой склад (инвентарь) → Рецепты → Public recipes → BJCP/контент
 ```
 
+Две петли (источник истины по порядку — `docs/roadmap.md`): **мастерская** (рецепт → склад → Match → варка → журнал замеров → дашборд; retention) и **витрина** (публичные рецепты, BJCP, калькуляторы; acquisition).
+
 **Продуктовые цели:**
 - Вести карточки кастомных ингредиентов и личный каталог
 - Нормализовать и хранить инвентарь со стандартизованными единицами
 - Собирать рецепты из структурированных ингредиентов
 - Публиковать рецепты публично, давать сообществу discovery (фильтры, рейтинги, сохранения)
 - Развивать BJCP/knowledge-base слой поверх доменного ядра
-- В будущем: Match Engine (рецепт vs склад), Brew Session (трекинг варки)
+- Match Engine (рецепт vs склад) и Brew Session (жизненный цикл варки + журнал замеров) — **реализованы** (Track B). Текущий фронтир: виртуальный «гид варочного дня» и интеграция устройств BrewForge
 
 ---
 
@@ -47,7 +49,7 @@
 3. **Entered + normalized единицы** — хранятся обе: введённое пользователем значение и каноничное нормализованное. Нормализация только на сервере, никогда на клиенте.
 4. **Ownership & permissions на сервере** — нельзя редактировать чужой inventory / custom ingredient / private recipe; admin/content-доступ не должен зависеть только от скрытых кнопок в UI.
 5. **Доменная логика в service layer** — расчёты, нормализация, access rules, publication gating, merge logic живут в `features/*` / domain-пакетах, а не в страницах/компонентах.
-6. **Public recipe access** — только через recipe service (`getPublicRecipeBySlug`, `listPublicRecipes`); slug/visibility/publication gating проверяются серверно.
+6. **Public recipe access** — только через recipe service (`getPublicRecipeBySlug`, `searchPublicRecipes`); slug/visibility/publication gating проверяются серверно.
 7. **Content/BJCP слой** — file-backed через `@nb/content`; не дублировать ad-hoc file parsing в page layer.
 8. **Reuse over rebuild** — расширять существующие сервисы/контракты/компоненты, а не строить параллельные слои.
 
@@ -115,12 +117,16 @@ packages/
 | URL | Что реализовано |
 |-----|-----------------|
 | `/app` | Дашборд-командный центр: «Активные варки» (сорт. по срочности подсказки `resolveBrewNudge`), «Можно сварить сейчас» (свои ready-рецепты, `findBrewableOwnRecipesForUser`), статы, быстрые входы, discover. Секции count-conditional. Подробности — `docs/roadmap.md` Track B #6 |
-| `/app/recipes` | Список своих рецептов |
+| `/app/recipes` | Хаб «Рецепты» с табами Мои (`/app/recipes`) / Сохранённые (`/app/saved`) / Найти (`/recipes`); вкладка «Мои» — список своих рецептов |
 | `/app/recipes/new` | Создание/редактирование рецепта (query `recipeId`, `addSource`+`addId`) |
 | `/app/recipes/[id]` → `/edit` | Полный редактор рецепта (owned, 404 если не владелец) |
 | `/app/saved` | **Избранное** — сохранённые публичные рецепты (`listSavedRecipes`) |
 | `/app/ingredients` | Мой склад/инвентарь, фильтры, сортировка, inline-редактирование |
 | `/app/equipment` | Профили оборудования (CRUD, default, дублирование) |
+| `/app/brew-batches` | Список варок: активные (planned/brewing/fermenting) + история |
+| `/app/brew-batches/[id]` | Деталь варки — «центр управления»: статус-степпер, журнал замеров OG/FG (ABV/сбраживание vs цели), заметки; live-дашборд устройства + телеметрия секцией при `device_id` |
+| `/app/devices` | Устройства BrewForge: список, пайринг (код), статус online/offline |
+| `/app/devices/[id]/settings` | Деталь/настройки устройства (конфиг, токены, отзыв доступа) |
 | `/profile`, `/settings` | Профиль (email/роль read-only, displayName, preferred currency); `/settings`→`/profile` |
 
 > Примечание: каталог переехал в публичную зону (`(public)/catalog`, URL `/catalog`); в `(app)` остались user-only flows.
@@ -190,25 +196,27 @@ packages/
 |---------|-----------|----------|
 | **ingredients** | Каталог: search, ranking, admin, custom, таксономии, модерация | `service.ts`, `catalog-service.ts`, `ranking.ts`, `technical-fields.ts`, `presentation.ts`, `taxonomy.ts`, `normalization.ts`, `water-treatment.ts`, `consumables.ts`, `picker-quick-start.ts`, `user-metadata-service.ts` |
 | **inventory** | Склад: CRUD, фильтры, сортировка, цены/валюты, suggestions, consume | `service.ts`, `consume.ts`, `purchase-cost.ts`, `custom-ingredient.ts`, `display.ts`, `units.ts`, `pack.ts` |
-| **recipes** | Рецепты: CRUD, версии, расчёты, water-план, equipment, публикация, **public discovery, рейтинги, сохранения** | `service.ts`, `public-recipe-query.ts`, `recipes-url.ts`, `style-search.ts`, `range-slider.ts`, `water-plan.ts`, `water-*.ts`, `fg-estimate.ts`, `beer-color.ts`, `inventory-service.ts` (stock coverage), `publication-validation.ts`, `units.ts` |
+| **recipes** | Рецепты: CRUD, версии, расчёты, water-план, equipment, публикация, **public discovery, рейтинги, сохранения, Match (рецепт vs склад), клон чужого, пересчёт под объём** | `service.ts` (incl. `searchPublicRecipes`, `cloneRecipeFromPublic`), `match-service.ts` (matchLineAgainstInventory/computeRecipeMatch/computeRecipeMatchesForUser/findBrewableOwnRecipesForUser), `brewability-badge.ts` (`resolveBrewabilityBadge`), `scale.ts` (`scaleRecipeToVolume`), `public-recipe-query.ts`, `recipes-url.ts`, `style-search.ts`, `range-slider.ts`, `water-plan.ts`, `water-*.ts`, `fg-estimate.ts`, `beer-color.ts`, `inventory-service.ts` (stock coverage), `publication-validation.ts`, `units.ts` |
 | **equipment / equipment-profiles** | Пресеты и конфигурация оборудования юзера | list/get/create/duplicate/setDefault/update/delete |
 | **content** | BJCP-каталог, отображение статей, role-based модерация | `bjcp-catalog.ts`, `permissions.ts` |
 | **recipe-images** | Загрузка/обработка/хранение фото (варианты + blur hash) | `service.ts`, S3-адаптер |
 | **calculators** | Каталог калькуляторов (статические определения) | `catalog.ts` |
-| **brew-batches** | Brew-сессии из рецептов (immutable snapshot) | `createBrewBatchFromRecipe`, `updateBrewBatchStatus`, `brew-plan.ts` |
-| **brew-controller** | Абстракция hardware-провайдеров (RAPT Cloud и пр.) | `rapt-cloud-provider.ts` (интерфейсы) |
+| **brew-batches** | Жизненный цикл варки из рецепта (immutable snapshot): создание, список/деталь, статус-степпер, журнал замеров OG/FG, заметки, телеметрия; дашборд-подсказки | `service.ts` (createBrewBatchFromRecipe/listActiveBrewBatchesForUser/updateBrewBatchStatus/addBrewMeasurement/listBrewMeasurements/getBrewBatchTelemetryHistory), `brew-plan.ts` (`buildBrewPlanSnapshot`), `measurements.ts` (`summarizeBrewMeasurements`), `dashboard.ts` (`resolveBrewNudge`, `STALE_MEASUREMENT_DAYS`), `components/*`. **Списание склада (`recipeInventoryAllocations`/`inventoryTransactions`) пока НЕ подключено** |
+| **brew-controller** | Контур исполнения варки на устройстве BrewForge: провайдер + транслятор рецепта в протокол + транспорты | `brewforge-provider.ts` (активный), `translator.ts`, `transport.ts` (LAN + cloud/MQTT), `actions.ts` (`startBrewOnDeviceAction`: openSession→push→START_BREW), `contracts.ts`. `rapt-cloud-provider.ts` — выключенная заглушка |
+| **devices** | Пайринг/управление устройствами BrewForge: коды пайринга, токены, статус, конфиги | `service.ts` (createPairingCode/claimDevice/findDeviceByToken/updateDeviceStatus/revokeDevice), `profiles.ts`, `actions.ts`, `components/*` |
 | **system** | Валюты, деньги (минорные единицы, Intl-форматирование) | `currency.ts`, `money.ts` |
+| **forms** | Общие form-хелперы | `numeric-validation.ts` |
 
 **Рейтинги/сохранения:** реализованы в `features/recipes/service.ts` + server actions (`(public)/recipes/save-actions.ts`, `(public)/recipes/[slug]/actions.ts`). Звёзды 1–5, агрегаты денормализованы на `recipes` (`rating_avg`, `rating_count`, `save_count`), пересчёт транзакционно в сервисе.
 
-**Match Engine (рецепт vs склад)** — пока groundwork: source linkage + нормализованные количества есть, но матчинга / percent match / missing-ingredients UI ещё нет.
+**Match Engine (рецепт vs склад)** — реализован (`features/recipes/match-service.ts`): построчный матч против склада, доля покрытия по типам ингредиентов, недостающие/частичные позиции, дрожжи по наличию штамма (`presenceBased`), бренд-каскад через `groupKey`. Чистый `resolveBrewabilityBadge` (`brewability-badge.ts`; порог ≥70% типов И ≤2 недостающих; «можно сварить» = есть все типы). UI: `RecipeMatchBadge`/`RecipeMatchPanel`/`RecipeMatchProvider` (after-hydration, cache-safe) на карточках/публичной странице + «добавить на склад» из панели. Тесты: `recipe-match-service.test.ts`, `brewability-badge.test.ts`.
 
 ---
 
 ## 8. База данных (`packages/db/src/schema.ts`)
 
 ### Enums (основные)
-`userRole` (user/editor/moderator/admin), `verificationType`, `ingredientType`, `ingredientStatus` (draft/active/archived/merged), `hopForm`, `yeastType/yeastForm`, `inventoryUnitDimension` (weight/volume/count), `inventoryPriceInputMode` (total/per_display_unit), `systemCurrency` (RUB/USD/EUR), `recipePublicationState` (draft/private/published), `recipeIngredientStage`, `recipeInventoryAllocationStatus`, `inventoryTransactionType`, `brewBatchStatus`, `recipeImageStatus`.
+`userRole` (user/editor/moderator/admin), `verificationType`, `ingredientType`, `ingredientStatus` (draft/active/archived/merged), `hopForm`, `yeastType/yeastForm`, `inventoryUnitDimension` (weight/volume/count), `inventoryPriceInputMode` (total/per_display_unit), `systemCurrency` (RUB/USD/EUR), `recipePublicationState` (draft/private/published), `recipeIngredientStage`, `recipeInventoryAllocationStatus`, `inventoryTransactionType`, `brewBatchStatus`, `brewDeviceStatus` (online/offline/unknown), `deviceCommandStatus` (queued/sent/acked/failed), `recipeImageStatus`.
 
 ### Таблицы по доменам
 
@@ -223,13 +231,15 @@ packages/
 **Оборудование:** `equipmentProfiles` (targetBatchVolumeL, brewhouseEfficiencyPct, evaporationRateLPerHr, grainAbsorptionLPerKg, hopUtilizationFactor, altitudeM, isDefault).
 
 **Рецепты:**
-- `recipes` — authorId, recipeFamilyId + versionNumber, publicationState, slug (UNIQUE), batchSize (entered+normalized), og/fg/abv/ibu/color, `rating_avg` / `rating_count` / `save_count` (денормализованные агрегаты), JSONB meta (processMeta/calculationMeta/waterPlanMeta/brewPlanMeta/equipmentProfileSnapshot), heroImageId
+- `recipes` — authorId, recipeFamilyId + versionNumber, publicationState, slug (UNIQUE), batchSize (entered+normalized), og/fg/abv/ibu/color, `rating_avg` / `rating_count` / `save_count` (денормализованные агрегаты), JSONB meta (processMeta/calculationMeta/waterPlanMeta/brewPlanMeta/equipmentProfileSnapshot), heroImageId, `cloned_from_recipe_id` (провенанс клона чужого, self-FK ON DELETE SET NULL; не путать с recipeFamilyId+versionNumber)
 - `recipeIngredients` — persistentKey (стабилен между версиями), source linkage, amount (entered+normalized), stage, timeOffset, stepMeta
 - `recipeImages` — storageKey по вариантам, blurDataUrl, isCover, status, soft-delete
 - `recipeRatings` — stars 1–5 (check), unique (recipeId, userId); источник для `rating_avg`/`rating_count`
 - `recipeSaves` — unique (recipeId, userId); источник для `save_count`
 
-**Brew/Allocation:** `brewBatches` (snapshot рецепта/оборудования/воды), `recipeInventoryAllocations`, `inventoryTransactions`.
+**Brew/варка:** `brewBatches` (snapshot рецепта/оборудования/воды + `device_id`), `brewMeasurements` (журнал SG/OG/FG, миграция 0037). **Allocation:** `recipeInventoryAllocations`, `inventoryTransactions` — таблицы есть, но варкой пока НЕ пишутся (списание склада не подключено).
+
+**Устройства BrewForge:** `brewDevices`, `devicePairingTokens`, `brewTelemetry`, `brewLogEvents`, `deviceCommands`, `deviceProfiles` (миграции 0034–0036).
 
 **Модель нормализации:** юзер вводит "500g"/"1 kg" → сервер нормализует к каноничной единице. Хранятся обе; нормализованная — для расчётов.
 
@@ -259,6 +269,9 @@ Button, Card, Dialog, Input, Select, Slider, Table, Textarea, Toast (Radix). CVA
 ### @nb/shared
 Env-контракты на Zod: `parseServerEnv`, `parseClientEnv`.
 
+### @nb/brewforge-protocol
+Замороженный zod-контракт протокола nb ↔ контроллер BrewForge (прошивка зеркалит в cJSON). `type:module`, импорты с `.js` на `.ts` → добавлен в `transpilePackages` + `resolve.extensionAlias` в `apps/web/next.config.ts`. Транспорт/мост вне `apps/web`: `apps/bridge` (MQTT↔WS↔Postgres), симулятор устройства — `apps/device-sim`.
+
 ### @nb/search
 **Только scaffold** — НЕ основной search runtime. Реальный поиск в `features/ingredients`.
 
@@ -268,13 +281,14 @@ Env-контракты на Zod: `parseServerEnv`, `parseClientEnv`.
 
 | Директория | Ключевые компоненты |
 |-----------|---------------------|
-| **app/** | `app-shell.tsx`, `app-shell-navigation.tsx`, `section-skeletons.tsx` |
-| **shared/** | `site-header.tsx`, `site-footer.tsx`, `confirm-action-dialog.tsx`, `country-flag.tsx` |
+| **app/** | `app-shell.tsx` (+ мобильный drawer/bottom-nav), `app-sidebar-nav.tsx`, `section-skeletons.tsx` |
+| **shared/** | `site-header.tsx`, `site-footer.tsx`, `public-shell.tsx` (дуальный хром: залогиненному на витрине справочники открываются в сайдбаре), `confirm-action-dialog.tsx`, `country-flag.tsx` |
 | **ingredients/** | `ingredient-picker.tsx` (большой общий picker с поиском/quick-start/favorite), `admin-ingredient-form.tsx`, `custom-catalog-ingredient-form.tsx`, `ingredient-catalog-toolbar.tsx`, `duplicate-merge-form.tsx`, `moderation-queue.tsx` |
 | **inventory/** | `catalog-ingredient-form.tsx`, `custom-ingredient-form.tsx`, `inventory-item-details-editor.tsx`, `inventory-list-item.tsx`, `add-ingredient-modal.tsx`, `inventory-consume-control.tsx`, `inventory-inline-quantity-editor.tsx`, `inventory-toolbar.tsx`, `grouped-inventory-list.tsx` |
-| **recipes/** | **`recipe-designer.tsx` (крупнейший компонент, архитектурный блокер).** Редактор: `recipe-editor-page.tsx`, `recipe-ingredients-editor.tsx`, `recipe-stats-summary.tsx`, `recipe-water-additives-section.tsx`, `import-export-modal.tsx`. Public/discovery: `public-recipe-page.tsx`, `recipe-card.tsx`, `recipes-grid.tsx`, `recipes-results.tsx`, `recipes-toolbar.tsx`, `recipes-filter-sidebar.tsx`, `recipes-filter-sheet.tsx`, `recipes-filter-controls.tsx`, `recipes-range-slider.tsx`, `recipes-color-scale.tsx`, `recipe-style-picker.tsx`, `recipes-pagination.tsx`, `active-filter-chips.tsx`, `recipe-rating-form.tsx`, `recipe-save-button.tsx`, `recipe-saves-provider.tsx`, `use-recipe-query.ts` |
+| **recipes/** | **`recipe-designer.tsx` (крупнейший компонент, архитектурный блокер).** Редактор: `recipe-editor-page.tsx`, `recipe-ingredients-editor.tsx`, `recipe-stats-summary.tsx`, `recipe-water-additives-section.tsx`, `import-export-modal.tsx`. Public/discovery: `public-recipe-page.tsx`, `recipe-card.tsx`, `recipes-grid.tsx`, `recipes-results.tsx`, `recipes-toolbar.tsx`, `recipes-filter-sidebar.tsx`, `recipes-filter-sheet.tsx`, `recipes-filter-controls.tsx`, `recipes-range-slider.tsx`, `recipes-color-scale.tsx`, `recipe-style-picker.tsx`, `recipes-pagination.tsx`, `active-filter-chips.tsx`, `recipe-rating-form.tsx`, `recipe-save-button.tsx`, `recipe-saves-provider.tsx`, `use-recipe-query.ts`. **Match/варка-мост:** `recipe-match-badge.tsx`, `recipe-match-panel.tsx`, `recipe-match-provider.tsx`, `recipe-tabs.tsx`. **Клон/масштаб:** `clone-from-public-button.tsx`, `clone-recipe-button.tsx`, `recipe-clone-attribution.tsx`, `recipe-scale-panel.tsx`, `saved-toast.tsx` |
 | **content/** | `bjcp-catalog.tsx`, `bjcp-style-card.tsx`, `bjcp-article-page.tsx`, `rich-text-editor.tsx` (Tiptap), `article-card.tsx` |
 | **equipment/**, **calculators/** | Конфигурация оборудования, страницы калькуляторов |
+| **features/brew-batches/components/**, **features/devices/components/** | Варка: `brew-journal`, `brew-lifecycle`, `brew-notes`, `brew-on-device-modal`, `live-dashboard`, `telemetry-chart`. Устройства: `devices-manager`, `device-config-form` |
 
 ---
 
@@ -304,11 +318,12 @@ Env-контракты на Zod: `parseServerEnv`, `parseClientEnv`.
 | **5B — Author-side recipes** (редактор, clone, версии, draft preview, water/equipment meta, BeerXML/JSON import-export) | ✅ |
 | **5C — Public Recipes foundation** (slug-URL, listing, publication gating, legacy redirect, SEO) | ✅ |
 | **5D — Public discovery + social** (фильтры sidebar/sheet, range-слайдеры, style-picker, цветовая шкала, пагинация, URL-state, recipe-cards, **рейтинги** `recipe_ratings`, **сохранения** `recipe_saves` + `/app/saved`) | ✅ |
-| **6 — Match Engine** (рецепт vs склад) | ⚠️ только groundwork (source linkage + нормализация; нет матчинга/percent/missing UI) |
-| **7 — Brew Session** (исполнение варки) | ❌ только brew-steps генератор + scaffold `brew-batches`/`brew-controller`; нет полноценного UI/истории/списания склада |
-| **8 — Content/SEO** (home, BJCP, style pages, featured, sitemap, content roles, Tiptap lab) | ⚠️ частично; нет generic article CMS (см. `docs/articles-rollout-plan.md`) |
+| **6 — Match Engine** (рецепт vs склад) | ✅ `match-service.ts` + `resolveBrewabilityBadge` + badge/panel/provider UI + «добавить на склад»; тесты. Подробности — `docs/roadmap.md` Track B #2–4 |
+| **7 — Brew Session** (жизненный цикл варки) | ✅ в основном: `/app/brew-batches` список+деталь, статус-степпер, журнал замеров OG/FG (`brew_measurements`, миграция 0037), заметки, дашборд-подсказки (`resolveBrewNudge`). ⚠️ Осталось: списание склада на варке + виртуальный «гид варочного дня» (рендер `brewPlanSnapshot` живым чек-листом). См. `docs/roadmap.md` Track B #5–6 |
+| **7b — BrewForge devices** (автоматический режим варки) | ✅ построено и подключено: `@nb/brewforge-protocol`, `features/brew-controller` (BrewForge-провайдер) + `features/devices` (пайринг/токены), `/app/devices`, транспорты LAN + cloud (`apps/bridge`), симулятор `apps/device-sim`, миграции 0034–0036. Параллельный трек; прошивка/телеметрия — внешний репо `../brewforge`. Реф: `docs/brewforge-integration.md` |
+| **8 — Content/SEO** (home, BJCP, style pages, featured, sitemap, content roles, Tiptap lab) | ⚠️ Phase 1: нет generic article CMS / таблицы `content_articles`; главная всё ещё BJCP-H1 (см. `docs/articles-rollout-plan.md`) |
 
-**Следующий логичный шаг:** Stage 6 — Match Engine как реальная фича (exact-match → missing list → percent match → блоки на страницах/карточках рецептов), затем family-compatible/substitutions или Stage 7. Параллельно — housekeeping: окончательно закрепить catalog runtime и не расти на двух моделях каталога.
+**Следующий логичный шаг (источник истины по порядку — `docs/roadmap.md`):** дозакрыть Track B (мастерская) — виртуальный «гид варочного дня» (рендер `brewPlanSnapshot` живым чек-листом для `device_id = NULL`) + списание склада при варке (`recipeInventoryAllocations`/`inventoryTransactions`). Далее — Track A (контент-CMS по `docs/articles-rollout-plan.md`, Phase 2–4). Сквозной харднинг безопасности/перфа — по `docs/improvement-recommendations.md` (P1 до prod). Параллельно — housekeeping: одна модель каталога, не две.
 
 ---
 
@@ -325,6 +340,11 @@ Env-контракты на Zod: `parseServerEnv`, `parseClientEnv`.
 **P2 — важные:** нет CI-проверок (npm ci, migration drift, coverage); множество `@ts-ignore` и `any`; нет FK-индексов на created_by/submitted_by; «load all → filter in memory» в поиске; дублирование error/Zod-обработки; layer leakage (features импортят из components); `cleanupExpiredVerifications` не вызывается.
 
 **P3 — желательные:** нет Prettier/pre-commit/ESLint-complexity; `@nb/search` — мёртвый scaffold; нет i18n (строки на русском захардкожены); a11y-пробелы; устаревшие зависимости.
+
+**Доменные (не из аудита 2026-06-23):**
+- Списание склада при варке не подключено (`brew-batches/service.ts` не пишет `recipeInventoryAllocations`/`inventoryTransactions`).
+- Известные расхождения калькулятора рецептов: FG без несбраживаемых сахаров/кристального солода, IBU вирпула/first-wort, формула SRM — `docs/recipe-stats-divergence.md`. Низкий риск (числа карточек идут из источника), но блокирует доверие к калькулятору для пользовательских рецептов.
+- `@nb/brewing-core generateBrewSteps` без рантайм-потребителя в `apps/web` (snapshot строит `buildBrewPlanSnapshot`) — решить: адаптировать или удалить.
 
 ---
 
@@ -380,8 +400,12 @@ npm run seed:qa
 | `docs/reference/ingredient-seed-schema.md` | Структура seed-данных каталогов и критичные несовместимости полей |
 
 Прочие документы в `docs/`:
-- `docs/improvement-recommendations.md` — аудит P1–P3 (актуальный)
+- `docs/roadmap.md` — мастер-роадмап продукта (порядок шагов, Track B/A, режимы варки) — **источник истины по статусу/порядку работ**
+- `docs/improvement-recommendations.md` — аудит P1–P3 (актуальный, исполнено ~0%)
 - `docs/articles-rollout-plan.md` — roadmap editorial/article CMS (Phase 1 сделан, 2–4 впереди)
+- `docs/brewforge-integration.md` — интеграция устройств BrewForge (референс)
+- `docs/recipe-stats-divergence.md` — диагностика точности калькулятора рецептов
+- `docs/specs/recipes-plan-clone-scale.md` — спека «сохранить → клон чужого → пересчёт под объём» (реализована)
 
 ---
 
@@ -392,6 +416,7 @@ npm run seed:qa
 | `CONTEXT.md` | Этот файл — канонический контекст (читать первым) |
 | `CLAUDE.md` | Краткая памятка для агентов |
 | `README.md` | Онбординг / локальный запуск |
+| `docs/roadmap.md` | Мастер-роадмап (источник истины по статусу/порядку работ) |
 | `docs/reference/` | Глубокие технические референсы |
 | `apps/web/lib/auth.ts` | Auth gating + dev login |
 | `apps/web/components/recipes/recipe-designer.tsx` | Крупнейший компонент (архит. блокер) |
