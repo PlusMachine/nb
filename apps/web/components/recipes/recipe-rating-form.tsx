@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useEffect, useState, useTransition } from "react";
-import Link from "next/link";
 import { Star } from "lucide-react";
 import { Button, Textarea } from "@nb/ui";
 
@@ -11,6 +10,7 @@ import {
   rateRecipeAction,
   type RecipeRatingViewerState
 } from "@/app/(public)/recipes/[slug]/actions";
+import { redirectToLoginWithNext } from "@/lib/auth-links";
 
 const STAR_VALUES = [1, 2, 3, 4, 5] as const;
 
@@ -38,9 +38,16 @@ export function RecipeRatingFormView({
   if (!viewerState.authenticated) {
     return (
       <p className="text-sm text-zinc-600">
-        <Link href="/login" className="font-medium text-zinc-900 underline underline-offset-2">
+        <a
+          href="/login"
+          onClick={(event) => {
+            event.preventDefault();
+            redirectToLoginWithNext();
+          }}
+          className="font-medium text-zinc-900 underline underline-offset-2"
+        >
           Войдите
-        </Link>
+        </a>
         , чтобы оценить рецепт.
       </p>
     );

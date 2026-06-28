@@ -211,22 +211,29 @@
     {
       "idx": 34,
       "version": "7",
-      "when": 1782514366757,
+      "when": 1791000000001,
       "tag": "0034_cloudy_spectrum",
       "breakpoints": true
     },
     {
       "idx": 35,
       "version": "7",
-      "when": 1782519946733,
+      "when": 1791000000002,
       "tag": "0035_serious_gabe_jones",
       "breakpoints": true
     },
     {
       "idx": 36,
       "version": "7",
-      "when": 1782521120085,
+      "when": 1791000000003,
       "tag": "0036_special_diamondback",
+      "breakpoints": true
+    },
+    {
+      "idx": 37,
+      "version": "7",
+      "when": 1791000000004,
+      "tag": "0037_glamorous_princess_powerful",
       "breakpoints": true
     }
   ]

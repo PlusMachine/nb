@@ -114,7 +114,7 @@ packages/
 
 | URL | Что реализовано |
 |-----|-----------------|
-| `/app` | Дашборд: приветствие, статы (рецепты, in-stock, всего на складе), action-карточки, утилитарные ссылки |
+| `/app` | Дашборд-командный центр: «Активные варки» (сорт. по срочности подсказки `resolveBrewNudge`), «Можно сварить сейчас» (свои ready-рецепты, `findBrewableOwnRecipesForUser`), статы, быстрые входы, discover. Секции count-conditional. Подробности — `docs/roadmap.md` Track B #6 |
 | `/app/recipes` | Список своих рецептов |
 | `/app/recipes/new` | Создание/редактирование рецепта (query `recipeId`, `addSource`+`addId`) |
 | `/app/recipes/[id]` → `/edit` | Полный редактор рецепта (owned, 404 если не владелец) |

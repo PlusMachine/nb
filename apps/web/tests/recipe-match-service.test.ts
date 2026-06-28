@@ -15,6 +15,7 @@ vi.mock("../features/equipment-profiles/service", () => ({ listEquipmentProfiles
 
 import {
   computeRecipeMatch,
+  computeRecipeMatchesForUser,
   indexInventoryEntries,
   matchLineAgainstInventory,
   summarizeMatch,
@@ -22,6 +23,7 @@ import {
   type MatchLineInput
 } from "../features/recipes/match-service";
 import { resolveIngredientMatchKey, type IngredientMatchProfile } from "../features/ingredients/match-group";
+import { db, inArray } from "@nb/db";
 import { getRecipeById } from "../features/recipes/service";
 import { listInventoryForUser } from "../features/inventory/service";
 import { listEquipmentProfiles } from "../features/equipment-profiles/service";
@@ -149,6 +151,75 @@ describe("matchLineAgainstInventory — core semantics", () => {
 
     expect(result.status).toBe("missing");
   });
+
+  it("covers yeast by presence across units: recipe in packs, inventory in grams", () => {
+    // тот же штамм на складе, но нормализован в граммы (weight), а строка — в
+    // паках (count). Раньше это давало ложное «нет»; теперь покрыто по наличию.
+    const index = indexInventoryEntries([
+      entry("y-g", { ...yeastProfile("fermentis--us-05"), dimension: "weight" }, 33, "g")
+    ]);
+
+    const result = matchLineAgainstInventory(line(yeastProfile("fermentis--us-05"), 1, "pack"), index, 1);
+
+    expect(result.status).toBe("covered");
+    expect(result.coveragePercent).toBe(100);
+    expect(result.shortfallNormalized).toBe(0);
+    expect(result.viaSubstitute).toBe(false);
+  });
+
+  it("covers yeast by presence regardless of quantity (one pack is enough)", () => {
+    const index = indexInventoryEntries([
+      entry("y-1", yeastProfile("fermentis--us-05"), 1, "pack")
+    ]);
+
+    // строка требует 3 пакета, на складе 1 — для дрожжей наличие штамма = покрыто
+    const result = matchLineAgainstInventory(line(yeastProfile("fermentis--us-05"), 3, "pack"), index, 1);
+
+    expect(result.status).toBe("covered");
+    expect(result.coveragePercent).toBe(100);
+  });
+
+  it("keeps yeast missing when the strain is not on the shelf", () => {
+    const index = indexInventoryEntries([
+      entry("y-1", yeastProfile("fermentis--us-05"), 2, "pack")
+    ]);
+
+    const result = matchLineAgainstInventory(line(yeastProfile("lallemand--belle-saison"), 1, "pack"), index, 1);
+
+    expect(result.status).toBe("missing");
+    expect(result.coveragePercent).toBe(0);
+  });
+});
+
+describe("matchLineAgainstInventory — add-to-inventory suggestion", () => {
+  it("exposes the catalog id and a human add-suggestion (g→kg) for a missing malt", () => {
+    const result = matchLineAgainstInventory(line(pilsnerProfile("kursk--pilsner"), 1000, "g"), indexInventoryEntries([]), 1);
+
+    expect(result.status).toBe("missing");
+    expect(result.ingredientCatalogItemId).toBe("kursk--pilsner");
+    expect(result.userCustomIngredientId).toBeNull();
+    // нехватка 1000 г → 1 кг (человеческая единица для солода)
+    expect(result.suggestedAddUnit).toBe("kg");
+    expect(result.suggestedAddQuantity).toBe(1);
+  });
+
+  it("suggests pack quantity for a missing yeast", () => {
+    const result = matchLineAgainstInventory(line(yeastProfile("fermentis--us-05"), 2, "pack"), indexInventoryEntries([]), 1);
+
+    expect(result.status).toBe("missing");
+    expect(result.ingredientCatalogItemId).toBe("fermentis--us-05");
+    expect(result.suggestedAddUnit).toBe("pack");
+    expect(result.suggestedAddQuantity).toBe(2);
+  });
+
+  it("has no add-suggestion for a fully covered line", () => {
+    const index = indexInventoryEntries([entry("bag", pilsnerProfile("kursk--pilsner"), 9000, "g")]);
+    const result = matchLineAgainstInventory(line(pilsnerProfile("kursk--pilsner"), 5000, "g"), index, 1);
+
+    expect(result.status).toBe("covered");
+    expect(result.suggestedAddQuantity).toBeNull();
+    expect(result.suggestedAddUnit).toBeNull();
+  });
 });
 
 describe("summarizeMatch — weighted percentage", () => {
@@ -242,5 +313,139 @@ describe("computeRecipeMatch — wiring", () => {
     expect(result.lines[0].requiredQuantityNormalized).toBe(10000);
     expect(result.lines[0].status).toBe("substitute");
     expect(result.matchPercent).toBe(100);
+  });
+});
+
+describe("computeRecipeMatchesForUser — batch", () => {
+  const pilsnerInventoryItem = {
+    id: "inv-1",
+    normalizedQuantity: 12000,
+    normalizedUnit: "g",
+    unitDimension: "weight",
+    archivedAt: null,
+    ingredientCatalogItemId: "soufflet--pilsner",
+    userCustomIngredientId: null,
+    ingredientCategory: "fermentable",
+    ingredientSubtype: "malt",
+    ingredientDisplayNameSnapshot: "Pilsner Soufflet",
+    source: {
+      category: "fermentable",
+      type: "malt",
+      displayName: "Pilsner",
+      nameRu: "Пилснер",
+      nameEn: "Pilsner",
+      subtype: "malt",
+      technicalData: { type: "malt", maltType: "base", colorEbcMin: 3, colorEbcMax: 4 }
+    }
+  };
+
+  const ingredientRow = (overrides: Record<string, unknown>) => ({
+    id: "ri-x",
+    persistentKey: "ri-x-pk",
+    displayOrder: 0,
+    ingredientDisplayNameSnapshot: "Pilsner",
+    ingredientCategory: "fermentable",
+    type: "malt",
+    ingredientSubtype: "malt",
+    ingredientCatalogItemId: "kursk--pilsner",
+    userCustomIngredientId: null,
+    amountNormalizedQuantity: 5000,
+    amountNormalizedUnit: "g",
+    ...overrides
+  });
+
+  const recipeRow = (id: string, ingredients: Record<string, unknown>[]) => ({
+    id,
+    slug: `${id}-slug`,
+    title: `Recipe ${id}`,
+    batchSizeNormalizedQuantity: 20000,
+    batchSizeNormalizedUnit: "ml",
+    ingredients
+  });
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it("returns a match per requested recipe, scaled to the default volume", async () => {
+    (listInventoryForUser as Mock).mockResolvedValue([pilsnerInventoryItem]);
+    (listEquipmentProfiles as Mock).mockResolvedValue([{ targetBatchVolumeL: 40 }]);
+    (db.query.ingredients.findMany as Mock).mockResolvedValue([]);
+    (db.query.recipes.findMany as Mock).mockResolvedValue([
+      recipeRow("r-1", [ingredientRow({ id: "r1-pils", persistentKey: "r1-pils-pk" })]),
+      recipeRow("r-2", [
+        ingredientRow({ id: "r2-pils", persistentKey: "r2-pils-pk" }),
+        ingredientRow({
+          id: "r2-munich",
+          persistentKey: "r2-munich-pk",
+          displayOrder: 1,
+          ingredientDisplayNameSnapshot: "Munich",
+          ingredientCatalogItemId: "x--munich",
+          amountNormalizedQuantity: 1000
+        })
+      ])
+    ]);
+
+    const result = await computeRecipeMatchesForUser({ userId: "u-1", recipeIds: ["r-1", "r-2"] });
+
+    expect(Object.keys(result).sort()).toEqual(["r-1", "r-2"]);
+    // r-1: единственный pilsner покрыт другим брендом (substitute) → ready
+    expect(result["r-1"].missingCount).toBe(0);
+    expect(result["r-1"].matchPercent).toBe(100);
+    expect(result["r-1"].scaledToInventory).toBe(true);
+    // r-2: pilsner покрыт, munich отсутствует
+    expect(result["r-2"].totalLines).toBe(2);
+    expect(result["r-2"].coveredLines).toBe(1);
+    expect(result["r-2"].missingCount).toBe(1);
+  });
+
+  it("short-circuits to {} on empty inventory without querying recipes", async () => {
+    (listInventoryForUser as Mock).mockResolvedValue([]);
+    (listEquipmentProfiles as Mock).mockResolvedValue([]);
+
+    const result = await computeRecipeMatchesForUser({ userId: "u-1", recipeIds: ["r-1"] });
+
+    expect(result).toEqual({});
+    expect(db.query.recipes.findMany).not.toHaveBeenCalled();
+  });
+
+  it("returns {} for empty recipeIds without touching inventory/db", async () => {
+    const result = await computeRecipeMatchesForUser({ userId: "u-1", recipeIds: [] });
+
+    expect(result).toEqual({});
+    expect(listInventoryForUser).not.toHaveBeenCalled();
+    expect(db.query.recipes.findMany).not.toHaveBeenCalled();
+  });
+
+  it("omits recipes that are missing or have no ingredients", async () => {
+    (listInventoryForUser as Mock).mockResolvedValue([pilsnerInventoryItem]);
+    (listEquipmentProfiles as Mock).mockResolvedValue([]);
+    (db.query.ingredients.findMany as Mock).mockResolvedValue([]);
+    (db.query.recipes.findMany as Mock).mockResolvedValue([
+      recipeRow("r-1", [ingredientRow({ id: "r1-pils", persistentKey: "r1-pils-pk" })]),
+      recipeRow("r-empty", [])
+    ]);
+
+    const result = await computeRecipeMatchesForUser({
+      userId: "u-1",
+      recipeIds: ["r-1", "r-empty", "r-absent"]
+    });
+
+    expect(Object.keys(result)).toEqual(["r-1"]);
+  });
+
+  it("dedupes recipeIds before querying", async () => {
+    (listInventoryForUser as Mock).mockResolvedValue([pilsnerInventoryItem]);
+    (listEquipmentProfiles as Mock).mockResolvedValue([]);
+    (db.query.ingredients.findMany as Mock).mockResolvedValue([]);
+    (db.query.recipes.findMany as Mock).mockResolvedValue([
+      recipeRow("r-1", [ingredientRow({ id: "r1-pils", persistentKey: "r1-pils-pk" })])
+    ]);
+
+    const result = await computeRecipeMatchesForUser({ userId: "u-1", recipeIds: ["r-1", "r-1"] });
+
+    expect(Object.keys(result)).toEqual(["r-1"]);
+    // where собирается через inArray(recipes.id, ids) — ids должны быть дедуплицированы
+    expect(inArray).toHaveBeenCalledWith(undefined, ["r-1"]);
   });
 });

@@ -1,8 +1,9 @@
 "use client";
 
 import React, { useEffect, useRef, useState } from "react";
+import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
-import { Loader2 } from "lucide-react";
+import { Loader2, Menu, X } from "lucide-react";
 
 import {
   CatalogPageSkeleton,
@@ -11,9 +12,10 @@ import {
   IngredientsPageSkeleton,
   RecipesPageSkeleton
 } from "@/components/app/section-skeletons";
-import { SiteHeader, type SiteHeaderUser } from "@/components/shared/site-header";
+import type { SiteHeaderUser } from "@/components/shared/site-header";
+import { isNavItemActive, primaryNavItems } from "@/lib/navigation";
 
-import { AppShellNavigation } from "./app-shell-navigation";
+import { AppSidebarNav } from "./app-sidebar-nav";
 
 type AppShellProps = {
   children: React.ReactNode;
@@ -69,30 +71,13 @@ const resolvePendingSkeleton = (pathname: string) => {
   return <GenericSectionSkeleton />;
 };
 
-const getInternalHrefInfo = (href: string, currentPathname: string, currentSearchParamsKey: string) => {
-  const nextUrl = new URL(href, window.location.href);
-  if (nextUrl.origin !== window.location.origin) {
-    return null;
-  }
-
-  const nextSearchParamsKey = nextUrl.search.startsWith("?") ? nextUrl.search.slice(1) : nextUrl.search;
-
-  if (nextUrl.pathname === currentPathname && nextSearchParamsKey === currentSearchParamsKey) {
-    return null;
-  }
-
-  return {
-    pathname: nextUrl.pathname,
-    changedPathname: nextUrl.pathname !== currentPathname
-  };
-};
-
 export function AppShell({ children, user }: AppShellProps) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const searchParamsKey = searchParams.toString();
   const [pendingPathname, setPendingPathname] = useState<string | null>(null);
   const [showProgress, setShowProgress] = useState(false);
+  const [drawerOpen, setDrawerOpen] = useState(false);
   const displayTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const resetTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -108,6 +93,7 @@ export function AppShell({ children, user }: AppShellProps) {
 
     setPendingPathname(null);
     setShowProgress(false);
+    setDrawerOpen(false);
   }, [pathname, searchParamsKey]);
 
   const scheduleProgress = () => {
@@ -131,13 +117,18 @@ export function AppShell({ children, user }: AppShellProps) {
   };
 
   const beginPendingNavigation = (href: string) => {
-    const nextRoute = getInternalHrefInfo(href, pathname, searchParamsKey);
-    if (!nextRoute) {
+    const nextUrl = new URL(href, window.location.href);
+    if (nextUrl.origin !== window.location.origin) {
       return;
     }
 
-    if (nextRoute.changedPathname) {
-      setPendingPathname(nextRoute.pathname);
+    const nextSearchParamsKey = nextUrl.search.startsWith("?") ? nextUrl.search.slice(1) : nextUrl.search;
+    if (nextUrl.pathname === pathname && nextSearchParamsKey === searchParamsKey) {
+      return;
+    }
+
+    if (nextUrl.pathname !== pathname) {
+      setPendingPathname(nextUrl.pathname);
       window.scrollTo({ top: 0, behavior: "auto" });
     } else {
       setPendingPathname(null);
@@ -162,12 +153,11 @@ export function AppShell({ children, user }: AppShellProps) {
         return;
       }
 
-      const nextHref = anchor.href;
       if (!getInternalTargetPath(anchor)) {
         return;
       }
 
-      beginPendingNavigation(nextHref);
+      beginPendingNavigation(anchor.href);
     };
 
     document.addEventListener("click", handleClick, true);
@@ -185,9 +175,63 @@ export function AppShell({ children, user }: AppShellProps) {
   }, [pathname, searchParamsKey]);
 
   return (
-    <>
-      <SiteHeader user={user} variant="app" />
-      <div className="mx-auto max-w-6xl p-6">
+    <div className="lg:flex">
+      <aside className="sticky top-0 hidden h-screen w-60 shrink-0 flex-col border-r border-zinc-200 bg-white/80 px-3 py-4 backdrop-blur lg:flex">
+        <Link
+          href="/app"
+          className="mb-4 block px-3 text-lg font-semibold tracking-[0.2em] text-zinc-950"
+          style={{ fontFamily: "var(--font-display)" }}
+        >
+          NB
+        </Link>
+        <AppSidebarNav user={user} />
+      </aside>
+
+      <header className="sticky top-0 z-40 flex h-14 items-center justify-between border-b border-zinc-200 bg-white/90 px-4 backdrop-blur lg:hidden">
+        <Link
+          href="/app"
+          className="text-lg font-semibold tracking-[0.2em] text-zinc-950"
+          style={{ fontFamily: "var(--font-display)" }}
+        >
+          NB
+        </Link>
+        <button
+          type="button"
+          onClick={() => setDrawerOpen(true)}
+          aria-label="Открыть меню"
+          className="rounded-lg p-2 text-zinc-700 transition-colors hover:bg-zinc-100"
+        >
+          <Menu className="h-5 w-5" />
+        </button>
+      </header>
+
+      {drawerOpen ? (
+        <div className="fixed inset-0 z-50 lg:hidden">
+          <div className="absolute inset-0 bg-zinc-950/40" onClick={() => setDrawerOpen(false)} aria-hidden="true" />
+          <div className="absolute inset-y-0 left-0 flex w-72 max-w-[85%] flex-col bg-white px-3 py-4 shadow-xl">
+            <div className="mb-4 flex items-center justify-between px-3">
+              <Link
+                href="/app"
+                className="text-lg font-semibold tracking-[0.2em] text-zinc-950"
+                style={{ fontFamily: "var(--font-display)" }}
+              >
+                NB
+              </Link>
+              <button
+                type="button"
+                onClick={() => setDrawerOpen(false)}
+                aria-label="Закрыть меню"
+                className="rounded-lg p-2 text-zinc-700 transition-colors hover:bg-zinc-100"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+            <AppSidebarNav user={user} onNavigate={() => setDrawerOpen(false)} />
+          </div>
+        </div>
+      ) : null}
+
+      <main className="min-w-0 flex-1">
         {showProgress ? (
           <>
             <div className="fixed inset-x-0 top-0 z-[200] h-1 bg-zinc-200" aria-hidden="true">
@@ -203,9 +247,41 @@ export function AppShell({ children, user }: AppShellProps) {
             </div>
           </>
         ) : null}
-        <AppShellNavigation onNavigateStart={beginPendingNavigation} />
-        {pendingPathname && pendingPathname !== pathname ? resolvePendingSkeleton(pendingPathname) : children}
-      </div>
-    </>
+        <div className="mx-auto max-w-6xl px-4 py-6 pb-24 sm:px-6 lg:pb-10">
+          {pendingPathname && pendingPathname !== pathname ? resolvePendingSkeleton(pendingPathname) : children}
+        </div>
+      </main>
+
+      <nav
+        className="fixed inset-x-0 bottom-0 z-40 flex border-t border-zinc-200 bg-white/95 backdrop-blur lg:hidden"
+        aria-label="Быстрая навигация"
+      >
+        {primaryNavItems.map((item) => {
+          const Icon = item.icon;
+          const active = isNavItemActive(pathname, item);
+          return (
+            <Link
+              key={item.href}
+              href={item.href}
+              aria-current={active ? "page" : undefined}
+              className={`flex flex-1 flex-col items-center gap-0.5 py-2 text-[11px] font-medium transition-colors ${
+                active ? "text-zinc-950" : "text-zinc-500"
+              }`}
+            >
+              <Icon className="h-5 w-5" />
+              {item.label}
+            </Link>
+          );
+        })}
+        <button
+          type="button"
+          onClick={() => setDrawerOpen(true)}
+          className="flex flex-1 flex-col items-center gap-0.5 py-2 text-[11px] font-medium text-zinc-500"
+        >
+          <Menu className="h-5 w-5" />
+          Ещё
+        </button>
+      </nav>
+    </div>
   );
 }

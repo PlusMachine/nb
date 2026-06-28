@@ -1,13 +1,28 @@
-import { and, brewBatches, brewTelemetry, db, desc, eq } from "@nb/db";
+import { and, asc, brewBatches, brewMeasurements, count, db, desc, eq, inArray, max, brewTelemetry, recipes } from "@nb/db";
 
 import { getOwnedRecipeById } from "../recipes/service";
 import { buildBrewPlanSnapshot } from "./brew-plan";
+import { summarizeBrewMeasurements } from "./measurements";
 import {
+  activeBrewBatchStatuses,
   brewPlanSnapshotSchema,
   TELEMETRY_HISTORY_LIMIT,
+  type ActiveBrewProgressItem,
+  type BrewBatchDetail,
   type BrewBatchDto,
+  type BrewBatchListItem,
+  type BrewMeasurementDto,
   type TelemetryHistoryPoint
 } from "./contracts";
+
+const mapMeasurementDto = (row: typeof brewMeasurements.$inferSelect): BrewMeasurementDto => ({
+  id: row.id,
+  brewBatchId: row.brewBatchId,
+  gravitySg: row.gravitySg,
+  takenAt: row.takenAt,
+  note: row.note,
+  createdAt: row.createdAt
+});
 
 const mapBrewBatchDto = (row: typeof brewBatches.$inferSelect): BrewBatchDto => ({
   id: row.id,
@@ -78,6 +93,94 @@ export const getBrewBatchById = async (
   });
 
   return row ? mapBrewBatchDto(row) : null;
+};
+
+// Колонки слим-проекции списка: только то, что читает mapBrewBatchListItem.
+// Тяжёлые JSONB (equipmentProfileSnapshot/waterPlanSnapshot/deviceHints, notes) не
+// тянем; brewPlanSnapshot/recipeSnapshot нужны для фолбэка названия рецепта.
+const brewBatchListColumns = {
+  id: true,
+  name: true,
+  status: true,
+  recipeId: true,
+  deviceId: true,
+  brewPlanSnapshot: true,
+  recipeSnapshot: true,
+  plannedFor: true,
+  startedAt: true,
+  completedAt: true,
+  createdAt: true,
+  updatedAt: true
+} as const;
+
+// Слим-проекция строки варки в элемент списка (общая для списка варок и
+// дашборда): название берём из снапшота рецепта → плана → имени партии.
+const mapBrewBatchListItem = (
+  row: Pick<typeof brewBatches.$inferSelect, keyof typeof brewBatchListColumns>
+): BrewBatchListItem => {
+  const planSnapshot = row.brewPlanSnapshot as { recipe?: { title?: string } } | null;
+  const recipeSnapshot = row.recipeSnapshot as { title?: string } | null;
+  return {
+    id: row.id,
+    name: row.name,
+    status: row.status,
+    recipeId: row.recipeId,
+    recipeTitle: recipeSnapshot?.title ?? planSnapshot?.recipe?.title ?? row.name,
+    hasDevice: Boolean(row.deviceId),
+    plannedFor: row.plannedFor,
+    startedAt: row.startedAt,
+    completedAt: row.completedAt,
+    createdAt: row.createdAt,
+    updatedAt: row.updatedAt
+  };
+};
+
+/** Все варки пользователя (для раздела «Варки»), новые сверху. Слим-проекция. */
+export const listBrewBatchesForUser = async (userId: string): Promise<BrewBatchListItem[]> => {
+  const rows = await db.query.brewBatches.findMany({
+    where: eq(brewBatches.userId, userId),
+    columns: brewBatchListColumns,
+    orderBy: [desc(brewBatches.createdAt)]
+  });
+
+  return rows.map(mapBrewBatchListItem);
+};
+
+/**
+ * Активные варки (planned/brewing/fermenting) для дашборда, с агрегатами журнала
+ * замеров: последний замер и их число. Агрегат — один сгруппированный запрос по
+ * всем активным партиям (без N+1), скоупленный по userId. Новые сверху.
+ */
+export const listActiveBrewBatchesForUser = async (userId: string): Promise<ActiveBrewProgressItem[]> => {
+  const rows = await db.query.brewBatches.findMany({
+    where: and(eq(brewBatches.userId, userId), inArray(brewBatches.status, activeBrewBatchStatuses)),
+    columns: brewBatchListColumns,
+    orderBy: [desc(brewBatches.createdAt)]
+  });
+  if (rows.length === 0) {
+    return [];
+  }
+
+  const ids = rows.map((row) => row.id);
+  const aggregates = await db
+    .select({
+      brewBatchId: brewMeasurements.brewBatchId,
+      lastMeasurementAt: max(brewMeasurements.takenAt),
+      measurementCount: count()
+    })
+    .from(brewMeasurements)
+    .where(and(eq(brewMeasurements.userId, userId), inArray(brewMeasurements.brewBatchId, ids)))
+    .groupBy(brewMeasurements.brewBatchId);
+  const aggById = new Map(aggregates.map((row) => [row.brewBatchId, row]));
+
+  return rows.map((row) => {
+    const agg = aggById.get(row.id);
+    return {
+      ...mapBrewBatchListItem(row),
+      lastMeasurementAt: agg?.lastMeasurementAt ?? null,
+      measurementCount: agg?.measurementCount ?? 0
+    };
+  });
 };
 
 export const listBrewBatchesForRecipe = async (userId: string, recipeId: string) => {
@@ -163,4 +266,110 @@ export const updateBrewBatchStatus = async (
   }
 
   return mapBrewBatchDto(updated);
+};
+
+// --- Журнал замеров + заметки + цели ----------------------------------------
+
+/** Замеры партии (ownership-checked), oldest→newest. Пусто, если партии нет/чужая. */
+export const listBrewMeasurements = async (
+  userId: string,
+  brewBatchId: string
+): Promise<BrewMeasurementDto[]> => {
+  const batch = await getBrewBatchById(userId, brewBatchId);
+  if (!batch) {
+    return [];
+  }
+  const rows = await db
+    .select()
+    .from(brewMeasurements)
+    .where(and(eq(brewMeasurements.brewBatchId, brewBatchId), eq(brewMeasurements.userId, userId)))
+    .orderBy(asc(brewMeasurements.takenAt), asc(brewMeasurements.createdAt));
+  return rows.map(mapMeasurementDto);
+};
+
+export const addBrewMeasurement = async (
+  userId: string,
+  brewBatchId: string,
+  input: { gravitySg: number; takenAt?: Date | null; note?: string | null }
+): Promise<BrewMeasurementDto> => {
+  const batch = await getBrewBatchById(userId, brewBatchId);
+  if (!batch) {
+    throw new Error("NOT_FOUND");
+  }
+  const [created] = await db.insert(brewMeasurements).values({
+    userId,
+    brewBatchId,
+    gravitySg: input.gravitySg,
+    takenAt: input.takenAt ?? new Date(),
+    note: input.note?.trim() || null
+  }).returning();
+  if (!created) {
+    throw new Error("CREATE_FAILED");
+  }
+  return mapMeasurementDto(created);
+};
+
+export const deleteBrewMeasurement = async (
+  userId: string,
+  brewBatchId: string,
+  measurementId: string
+): Promise<void> => {
+  const deleted = await db.delete(brewMeasurements).where(and(
+    eq(brewMeasurements.id, measurementId),
+    eq(brewMeasurements.brewBatchId, brewBatchId),
+    eq(brewMeasurements.userId, userId)
+  )).returning();
+  if (deleted.length === 0) {
+    throw new Error("NOT_FOUND");
+  }
+};
+
+export const updateBrewBatchNotes = async (
+  userId: string,
+  brewBatchId: string,
+  notes: string | null
+): Promise<BrewBatchDto> => {
+  const [updated] = await db.update(brewBatches).set({
+    notes: notes?.trim() || null,
+    updatedAt: new Date()
+  }).where(and(eq(brewBatches.id, brewBatchId), eq(brewBatches.userId, userId))).returning();
+  if (!updated) {
+    throw new Error("NOT_FOUND");
+  }
+  return mapBrewBatchDto(updated);
+};
+
+// Цели рецепта (расчётные og/fg/abv) для сравнения с фактом. Партия каскадно
+// привязана к рецепту (recipeId, onDelete cascade), поэтому рецепт всегда есть.
+const getRecipeBrewTargets = async (
+  recipeId: string
+): Promise<{ og: number | null; fg: number | null; abv: number | null } | null> => {
+  const row = await db.query.recipes.findFirst({
+    where: eq(recipes.id, recipeId),
+    columns: { og: true, fg: true, abv: true }
+  });
+  return row ? { og: row.og, fg: row.fg, abv: row.abv } : null;
+};
+
+/** Сборка детальной страницы партии: партия + журнал + сводка (OG/FG/ABV vs цель). */
+export const getBrewBatchDetail = async (
+  userId: string,
+  brewBatchId: string
+): Promise<BrewBatchDetail | null> => {
+  const batch = await getBrewBatchById(userId, brewBatchId);
+  if (!batch) {
+    return null;
+  }
+  const [measurements, targets] = await Promise.all([
+    db.select().from(brewMeasurements)
+      .where(and(eq(brewMeasurements.brewBatchId, brewBatchId), eq(brewMeasurements.userId, userId)))
+      .orderBy(asc(brewMeasurements.takenAt), asc(brewMeasurements.createdAt))
+      .then((rows) => rows.map(mapMeasurementDto)),
+    getRecipeBrewTargets(batch.recipeId)
+  ]);
+  return {
+    batch,
+    measurements,
+    summary: summarizeBrewMeasurements(measurements, targets)
+  };
 };

@@ -657,6 +657,23 @@ export const brewBatches = pgTable("brew_batches", {
   deviceIdIdx: index("brew_batches_device_id_idx").on(table.deviceId)
 }));
 
+// Ручной журнал замеров плотности варки: показания ареометра/рефрактометра по
+// ходу брожения (в SG). OG = самый ранний замер, FG = самый поздний; ABV и
+// степень сбраживания считаются на лету (см. features/brew-batches). Отдельно от
+// brew_telemetry, которое только про устройство.
+export const brewMeasurements = pgTable("brew_measurements", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  userId: uuid("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  brewBatchId: uuid("brew_batch_id").notNull().references(() => brewBatches.id, { onDelete: "cascade" }),
+  gravitySg: doublePrecision("gravity_sg").notNull(),
+  takenAt: timestamp("taken_at", { withTimezone: true }).defaultNow().notNull(),
+  note: text("note"),
+  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull()
+}, (table) => ({
+  batchTakenIdx: index("brew_measurements_batch_taken_idx").on(table.brewBatchId, table.takenAt),
+  userIdx: index("brew_measurements_user_idx").on(table.userId)
+}));
+
 export const recipeInventoryAllocations = pgTable("recipe_inventory_allocations", {
   id: uuid("id").defaultRandom().primaryKey(),
   userId: uuid("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
@@ -1029,7 +1046,19 @@ export const brewBatchesRelations = relations(brewBatches, ({ one, many }) => ({
   inventoryTransactions: many(inventoryTransactions),
   telemetry: many(brewTelemetry),
   logEvents: many(brewLogEvents),
-  commands: many(deviceCommands)
+  commands: many(deviceCommands),
+  measurements: many(brewMeasurements)
+}));
+
+export const brewMeasurementsRelations = relations(brewMeasurements, ({ one }) => ({
+  user: one(users, {
+    fields: [brewMeasurements.userId],
+    references: [users.id]
+  }),
+  brewBatch: one(brewBatches, {
+    fields: [brewMeasurements.brewBatchId],
+    references: [brewBatches.id]
+  })
 }));
 
 export const recipeInventoryAllocationsRelations = relations(recipeInventoryAllocations, ({ one }) => ({

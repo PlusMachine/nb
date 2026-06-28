@@ -7,7 +7,7 @@ const columns: { title: string; links: FooterLink[] }[] = [
   {
     title: "Рабочая зона",
     links: [
-      { href: "/app", label: "Главная" },
+      { href: "/app", label: "Обзор" },
       { href: "/app/recipes", label: "Мои рецепты" },
       { href: "/app/ingredients", label: "Склад" },
       { href: "/catalog", label: "Каталог" }

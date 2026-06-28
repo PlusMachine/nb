@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
+import Link from "next/link";
 import { Timer, X } from "lucide-react";
 
 export type StartBrewResult = {
@@ -89,7 +90,16 @@ export function StartBrewModal({
           <button type="button" onClick={onClose} disabled={pending} className="rounded-md border border-zinc-200 bg-white px-3 py-2 text-sm text-zinc-700 disabled:opacity-50">
             {result?.ok ? "Закрыть" : "Отмена"}
           </button>
-          {result?.ok ? null : (
+          {result?.ok ? (
+            result.brewBatchId ? (
+              <Link
+                href={`/app/brew-batches/${result.brewBatchId}`}
+                className="rounded-md bg-zinc-900 px-3 py-2 text-center text-sm font-medium text-white"
+              >
+                Открыть партию
+              </Link>
+            ) : null
+          ) : (
             <button type="button" onClick={() => void onStart({ consumeIngredients })} disabled={pending} className="rounded-md bg-zinc-900 px-3 py-2 text-sm font-medium text-white disabled:opacity-50">
               {pending ? "Готовим..." : "Начать варку"}
             </button>

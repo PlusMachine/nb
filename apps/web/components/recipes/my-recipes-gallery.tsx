@@ -8,6 +8,7 @@ import { Input } from "@nb/ui";
 import type { OwnerRecipeCardDto, RecipePublicationState } from "@/features/recipes/contracts";
 
 import { OwnerRecipeCard, OwnerRecipeRow } from "./owner-recipe-card";
+import { RecipeMatchProvider } from "./recipe-match-provider";
 
 /**
  * Галерея «Мои рецепты» — клиентская обёртка над уже загруженными карточками
@@ -192,18 +193,22 @@ export function MyRecipesGallery({ recipes }: { recipes: OwnerRecipeCardDto[] })
         <p className="rounded-xl border border-dashed border-zinc-300 bg-zinc-50 p-6 text-center text-sm text-zinc-500">
           Ничего не найдено. Измените поиск или фильтр статуса.
         </p>
-      ) : view === "list" ? (
-        <div className="flex flex-col gap-3">
-          {visible.map((recipe) => (
-            <OwnerRecipeRow key={recipe.id} recipe={recipe} />
-          ))}
-        </div>
       ) : (
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-          {visible.map((recipe) => (
-            <OwnerRecipeCard key={recipe.id} recipe={recipe} />
-          ))}
-        </div>
+        <RecipeMatchProvider recipeIds={recipes.map((recipe) => recipe.id)}>
+          {view === "list" ? (
+            <div className="flex flex-col gap-3">
+              {visible.map((recipe) => (
+                <OwnerRecipeRow key={recipe.id} recipe={recipe} />
+              ))}
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+              {visible.map((recipe) => (
+                <OwnerRecipeCard key={recipe.id} recipe={recipe} />
+              ))}
+            </div>
+          )}
+        </RecipeMatchProvider>
       )}
     </div>
   );

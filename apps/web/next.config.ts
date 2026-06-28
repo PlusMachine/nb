@@ -6,7 +6,7 @@ const repoRoot = join(dirname(fileURLToPath(import.meta.url)), "../..");
 
 const nextConfig: NextConfig = {
   outputFileTracingRoot: repoRoot,
-  transpilePackages: ["@nb/ui", "@nb/shared", "@nb/db", "@nb/content"],
+  transpilePackages: ["@nb/ui", "@nb/shared", "@nb/db", "@nb/content", "@nb/brewforge-protocol"],
   async redirects() {
     // Каталог переехал из рабочей зоны в публичную: /app/catalog -> /catalog.
     return [
@@ -22,6 +22,16 @@ const nextConfig: NextConfig = {
         message: /Critical dependency: the request of a dependency is an expression/
       }
     ];
+
+    // ESM-пакеты монорепо (напр. @nb/brewforge-protocol, type:module) импортируют
+    // соседей с расширением «.js» по NodeNext-конвенции, хотя исходники — «.ts».
+    // Учим webpack резолвить .js → .ts/.tsx с фоллбэком на реальный .js (порядок
+    // важен: .ts первым; реальные .js-модули всё равно находятся последним пунктом).
+    config.resolve = config.resolve ?? {};
+    config.resolve.extensionAlias = {
+      ...(config.resolve.extensionAlias ?? {}),
+      ".js": [".ts", ".tsx", ".js"]
+    };
 
     return config;
   }

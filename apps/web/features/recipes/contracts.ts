@@ -791,6 +791,14 @@ export type RecipeMatchLineDto = {
   shortfallNormalized: number;
   normalizedUnit: InventoryUnit | null;
   viaSubstitute: boolean;
+  // Каталожная привязка строки — чтобы предложить «добавить на склад» прямо из
+  // панели матча. Для кастомных ингредиентов автора (чужой склад) — null.
+  ingredientCatalogItemId: string | null;
+  userCustomIngredientId: string | null;
+  // Предзаполнение поля «добавить на склад»: нехватка в человеческой единице
+  // (кг/г/пак). null для покрытых строк и там, где перевод не удался.
+  suggestedAddQuantity: number | null;
+  suggestedAddUnit: InventoryUnit | null;
 };
 
 export type RecipeMatchLabel = "ready" | "almost" | "partial" | "none";

@@ -4,6 +4,7 @@ import type { PublicRecipeListItem } from "@/features/recipes/contracts";
 
 import { RecipeCard } from "./recipe-card";
 import { RecipeListRow } from "./recipe-list-row";
+import { RecipeMatchProvider } from "./recipe-match-provider";
 import { RecipeSavesProvider } from "./recipe-saves-provider";
 
 /**
@@ -20,9 +21,12 @@ export function RecipesGrid({
   view?: "grid" | "list";
   showCloneAction?: boolean;
 }) {
+  const recipeIds = recipes.map((recipe) => recipe.id);
+
   return (
-    <RecipeSavesProvider recipeIds={recipes.map((recipe) => recipe.id)}>
-      {view === "list" ? (
+    <RecipeSavesProvider recipeIds={recipeIds}>
+      <RecipeMatchProvider recipeIds={recipeIds}>
+        {view === "list" ? (
         <div className="flex flex-col gap-3">
           {recipes.map((recipe) => (
             <RecipeListRow key={recipe.id} recipe={recipe} showCloneAction={showCloneAction} />
@@ -35,6 +39,7 @@ export function RecipesGrid({
           ))}
         </div>
       )}
+      </RecipeMatchProvider>
     </RecipeSavesProvider>
   );
 }

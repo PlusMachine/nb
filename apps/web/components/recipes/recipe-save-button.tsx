@@ -4,6 +4,7 @@ import React, { useEffect, useState, useTransition } from "react";
 import { Bookmark } from "lucide-react";
 
 import { loadRecipeSaveViewerState, toggleRecipeSaveAction } from "@/app/(public)/recipes/save-actions";
+import { redirectToLoginWithNext } from "@/lib/auth-links";
 
 import { useRecipeSaves } from "./recipe-saves-provider";
 import { SavedToast } from "./saved-toast";
@@ -73,7 +74,7 @@ export function RecipeSaveButton({
       if (!result.ok) {
         applyOptimistic(!next); // откат оптимистичного апдейта
         if (result.code === "AUTH") {
-          window.location.assign("/login");
+          redirectToLoginWithNext();
         }
         return;
       }

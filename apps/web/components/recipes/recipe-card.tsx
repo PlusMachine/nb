@@ -6,6 +6,7 @@ import { formatAbvShort, formatBatchVolume, formatIbuShort, formatOgShort } from
 
 import { CloneFromPublicButton } from "./clone-from-public-button";
 import { AuthorAvatar, RecipeRatingOrNew, RecipeThumb, StatCell, StyleChip } from "./recipe-card-parts";
+import { RecipeMatchBadge } from "./recipe-match-badge";
 import { RecipeSaveButton } from "./recipe-save-button";
 
 /**
@@ -68,6 +69,9 @@ export function RecipeCard({
           </div>
         </div>
       </div>
+
+      {/* Бейдж «можно сварить» — поверх обложки слева (save-флажок справа). */}
+      <RecipeMatchBadge recipeId={recipe.id} className="absolute left-2 top-2 z-10" />
 
       {/* Флажок «Сохранить» — сиблинг ссылки (нельзя вкладывать кнопку в <a>),
           абсолютно поверх обложки (z-10 в самом компоненте). */}

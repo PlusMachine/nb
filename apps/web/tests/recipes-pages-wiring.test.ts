@@ -46,6 +46,7 @@ vi.mock("../app/(app)/app/recipes/actions", () => ({
 vi.mock("next/navigation", () => ({
   redirect: mocks.redirect,
   notFound: mocks.notFound,
+  usePathname: vi.fn(() => "/app/recipes"),
   useRouter: vi.fn(() => ({ push: mocks.push }))
 }));
 
@@ -56,7 +57,7 @@ describe("recipes pages wiring", () => {
     const html = renderToStaticMarkup(view);
 
     expect(mocks.listAuthorRecipeCards).toHaveBeenCalledWith("u-1");
-    expect(html).toContain("Мои рецепты");
+    expect(html).toContain("Рецепты");
     expect(html).toContain("My Pils");
     expect(html).toContain("Приватный");
     expect(html).toContain('href="/app/recipes/r-1/edit"');

@@ -3,6 +3,8 @@
 import Link from "next/link";
 import { useMemo, useState } from "react";
 
+import { resolveSafeNextPath } from "@/lib/auth-links";
+
 const postJson = async (url: string, body: Record<string, string>) => {
   const response = await fetch(url, {
     method: "POST",
@@ -22,6 +24,13 @@ export default function LoginPage() {
   const [message, setMessage] = useState<string>("");
 
   const canContinue = useMemo(() => email.includes("@"), [email]);
+
+  // ?next= читаем в момент клика (не useSearchParams — чтобы не тянуть Suspense
+  // и не делать страницу динамической). После входа возвращаем туда, откуда пришли.
+  const redirectAfterAuth = () => {
+    const next = new URLSearchParams(window.location.search).get("next");
+    window.location.href = resolveSafeNextPath(next);
+  };
 
   return (
     <section className="mx-auto mt-14 max-w-md space-y-4 rounded-xl border p-6">
@@ -50,7 +59,7 @@ export default function LoginPage() {
             <button className="rounded bg-black px-4 text-white" onClick={async () => {
               const result = await postJson("/api/auth/otp", { action: "verify", email, code });
               if (result.ok) {
-                window.location.href = "/app";
+                redirectAfterAuth();
               } else {
                 setMessage(result.error ?? "Неверный код");
               }
@@ -73,7 +82,7 @@ export default function LoginPage() {
             <button className="rounded border p-2" onClick={async () => {
               const result = await postJson("/api/auth/password", { action: "login", email, password });
               if (result.ok) {
-                window.location.href = "/app";
+                redirectAfterAuth();
                 return;
               }
               setMessage(result.error ?? "Ошибка входа");
@@ -81,7 +90,7 @@ export default function LoginPage() {
             <button className="rounded border p-2" onClick={async () => {
               const result = await postJson("/api/auth/password", { action: "signup", email, password });
               if (result.ok) {
-                window.location.href = "/app";
+                redirectAfterAuth();
                 return;
               }
               setMessage(result.error ?? "Ошибка регистрации");
@@ -96,7 +105,7 @@ export default function LoginPage() {
             <button className="rounded border p-2" onClick={async () => {
               const result = await postJson("/api/auth/password", { action: "reset", email, token, password });
               if (result.ok) {
-                window.location.href = "/app";
+                redirectAfterAuth();
                 return;
               }
               setMessage(result.error ?? "Ошибка reset");

@@ -1859,6 +1859,14 @@ export const setRecipeIngredients = async (authorId: string, recipeId: string, i
   return getRecipeById(authorId, recipeId);
 };
 
+/** Число рецептов автора (все версии) одним индексным count — для статистики
+ *  дашборда без загрузки строк/версий. Совпадает с числом карточек в галерее
+ *  `/app/recipes` (она тоже показывает по карточке на версию). */
+export const countRecipesForAuthor = async (authorId: string): Promise<number> => {
+  const [row] = await db.select({ value: count() }).from(recipes).where(eq(recipes.authorId, authorId));
+  return row?.value ?? 0;
+};
+
 export const listRecipesForAuthor = async (authorId: string, query: unknown = {}): Promise<RecipeListItemDto[]> => {
   const parsed = listAuthorRecipesQuerySchema.parse(query);
 

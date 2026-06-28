@@ -13,6 +13,7 @@ import {
   StatCell,
   StyleChip
 } from "./recipe-card-parts";
+import { RecipeMatchBadge } from "./recipe-match-badge";
 import { RecipeSaveButton } from "./recipe-save-button";
 
 /**
@@ -55,6 +56,7 @@ export function RecipeListRow({
         <div className="mt-1.5 flex min-w-0 items-center gap-2">
           <AuthorAvatar image={recipe.author.image} displayName={recipe.author.displayName} />
           <span className="truncate text-xs text-zinc-600">{authorName}</span>
+          <RecipeMatchBadge recipeId={recipe.id} />
         </div>
       </div>
 

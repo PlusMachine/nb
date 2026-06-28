@@ -1,0 +1,97 @@
+import Link from "next/link";
+import { Cpu } from "lucide-react";
+
+import { requireUser } from "@/lib/auth";
+import { listBrewBatchesForUser } from "@/features/brew-batches/service";
+import {
+  brewBatchStatusBadgeClass,
+  brewBatchStatusLabels,
+  type BrewBatchListItem,
+  type BrewBatchStatus
+} from "@/features/brew-batches/contracts";
+
+export const metadata = {
+  title: "Варки"
+};
+
+// Активные варки сверху, завершённые/отменённые — ниже.
+const statusOrder: BrewBatchStatus[] = ["brewing", "fermenting", "planned", "completed", "cancelled"];
+
+const dateFormat = new Intl.DateTimeFormat("ru-RU", { day: "numeric", month: "short", year: "numeric" });
+
+const relevantDate = (batch: BrewBatchListItem): { label: string; value: Date } => {
+  if (batch.status === "completed" && batch.completedAt) {
+    return { label: "Завершена", value: batch.completedAt };
+  }
+  if (batch.startedAt) {
+    return { label: "Начата", value: batch.startedAt };
+  }
+  if (batch.plannedFor) {
+    return { label: "План", value: batch.plannedFor };
+  }
+  return { label: "Создана", value: batch.createdAt };
+};
+
+export default async function BrewBatchesPage() {
+  const user = await requireUser();
+  const batches = await listBrewBatchesForUser(user.id);
+
+  const sorted = [...batches].sort((a, b) => {
+    const byStatus = statusOrder.indexOf(a.status) - statusOrder.indexOf(b.status);
+    if (byStatus !== 0) {
+      return byStatus;
+    }
+    return b.createdAt.getTime() - a.createdAt.getTime();
+  });
+
+  return (
+    <main className="space-y-4">
+      <section className="flex flex-wrap items-center justify-between gap-2">
+        <h1 className="text-2xl font-semibold">Варки</h1>
+        <Link href="/app/recipes" className="text-sm font-medium text-zinc-500 transition-colors hover:text-zinc-900">
+          К рецептам
+        </Link>
+      </section>
+
+      {sorted.length === 0 ? (
+        <section className="rounded-2xl border border-dashed border-zinc-200 bg-white p-10 text-center">
+          <p className="text-sm text-zinc-600">
+            Пока нет ни одной варки. Откройте{" "}
+            <Link href="/app/recipes" className="font-medium text-zinc-900 underline underline-offset-2">
+              рецепт
+            </Link>{" "}
+            и нажмите «Начать варку».
+          </p>
+        </section>
+      ) : (
+        <ul className="space-y-2">
+          {sorted.map((batch) => {
+            const date = relevantDate(batch);
+            return (
+              <li key={batch.id}>
+                <Link
+                  href={`/app/brew-batches/${batch.id}`}
+                  className="flex items-center justify-between gap-3 rounded-xl border border-zinc-200 bg-white px-4 py-3 transition-colors hover:border-zinc-300"
+                >
+                  <div className="min-w-0">
+                    <p className="truncate font-medium text-zinc-950">{batch.name}</p>
+                    <p className="truncate text-sm text-zinc-500">{batch.recipeTitle}</p>
+                  </div>
+                  <div className="flex shrink-0 items-center gap-3">
+                    {batch.hasDevice ? <Cpu className="h-4 w-4 text-zinc-400" aria-label="С устройством" /> : null}
+                    <span className="hidden text-xs text-zinc-400 sm:inline">
+                      {date.label} {dateFormat.format(date.value)}
+                    </span>
+                    <span className={`rounded-full px-2.5 py-1 text-xs font-medium ${brewBatchStatusBadgeClass[batch.status]}`}>
+                      {brewBatchStatusLabels[batch.status]}
+                    </span>
+                  </div>
+                </Link>
+              </li>
+            );
+          })}
+        </ul>
+      )}
+    </main>
+  );
+}

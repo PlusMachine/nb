@@ -13,6 +13,7 @@ import { formatAbvShort, formatIbuShort, formatOgShort, formatRelativeTimestamp 
 
 import { ColorStatCell, StatCell, StyleChip, RecipeThumb } from "./recipe-card-parts";
 import { DeleteRecipeButton } from "./delete-recipe-button";
+import { RecipeMatchBadge } from "./recipe-match-badge";
 
 /**
  * Карточка и строка рецепта владельца для галереи `/app/recipes`. Делят визуальный
@@ -121,9 +122,12 @@ export function OwnerRecipeCard({ recipe }: { recipe: OwnerRecipeCardDto }) {
             <VersionSuffix recipe={recipe} />
           </h2>
 
-          <div className="mt-auto flex items-center justify-between gap-2 pt-1">
+          <div className="mt-auto flex flex-wrap items-center justify-between gap-2 pt-1">
             <span className="truncate text-xs text-zinc-500">обновлён {formatRelativeTimestamp(recipe.updatedAt)}</span>
-            {recipe.styleFit ? <StyleFitBadge fit={recipe.styleFit} /> : null}
+            <div className="flex items-center gap-1.5">
+              <RecipeMatchBadge recipeId={recipe.id} />
+              {recipe.styleFit ? <StyleFitBadge fit={recipe.styleFit} /> : null}
+            </div>
           </div>
 
           <div className="grid grid-cols-4 gap-2 border-t border-zinc-100 pt-3">
@@ -185,6 +189,7 @@ export function OwnerRecipeRow({ recipe }: { recipe: OwnerRecipeCardDto }) {
         </h2>
         <div className="mt-1 flex flex-wrap items-center gap-2 text-xs text-zinc-500">
           <span>обновлён {formatRelativeTimestamp(recipe.updatedAt)}</span>
+          <RecipeMatchBadge recipeId={recipe.id} />
           {recipe.styleFit ? <StyleFitBadge fit={recipe.styleFit} /> : null}
           {publicPage ? (
             <Link
