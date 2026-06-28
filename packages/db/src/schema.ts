@@ -254,62 +254,6 @@ export const ingredientPackageVariants = pgTable("ingredient_package_variants", 
   positionIdx: index("ingredient_package_variants_position_idx").on(table.ingredientId, table.position)
 }));
 
-export const ingredientCatalogItems = pgTable("ingredient_catalog_items", {
-  id: uuid("id").defaultRandom().primaryKey(),
-  type: ingredientTypeEnum("type").notNull(),
-  category: ingredientCategoryEnum("category").notNull(),
-  subtype: varchar("subtype", { length: 80 }),
-  familyId: uuid("family_id").notNull().references(() => ingredientFamilies.id, { onDelete: "restrict" }),
-  displayName: varchar("display_name", { length: 180 }).notNull(),
-  displayNameRu: varchar("display_name_ru", { length: 180 }).notNull(),
-  displayNameEn: varchar("display_name_en", { length: 180 }),
-  normalizedName: varchar("normalized_name", { length: 220 }).notNull(),
-  aliases: jsonb("aliases").$type<string[]>().default([]).notNull(),
-  searchAliasesNorm: jsonb("search_aliases_norm").$type<string[]>().default([]).notNull(),
-  searchTextNorm: text("search_text_norm").default("").notNull(),
-  brandName: varchar("brand_name", { length: 140 }),
-  manufacturer: varchar("manufacturer", { length: 140 }),
-  country: varchar("country", { length: 80 }),
-  catalogSourceDataset: varchar("catalog_source_dataset", { length: 160 }),
-  catalogSourceKey: varchar("catalog_source_key", { length: 191 }),
-  harvestYear: integer("harvest_year"),
-  description: text("description"),
-  defaultUnit: varchar("default_unit", { length: 32 }).notNull(),
-  defaultDisplayUnit: varchar("default_display_unit", { length: 32 }).notNull(),
-  allowedUnits: jsonb("allowed_units").$type<string[]>().default([]).notNull(),
-  measurementDimension: inventoryUnitDimensionEnum("measurement_dimension").notNull(),
-  completenessLevel: ingredientCompletenessLevelEnum("completeness_level").default("minimum").notNull(),
-  technicalData: jsonb("technical_data").$type<Record<string, unknown>>().default({}).notNull(),
-  fermentableColorEbc: doublePrecision("fermentable_color_ebc"),
-  fermentableExtractYieldPct: doublePrecision("fermentable_extract_yield_pct"),
-  hopAlphaAcidPct: doublePrecision("hop_alpha_acid_pct"),
-  hopForm: hopFormEnum("hop_form"),
-  hopSeason: varchar("hop_season", { length: 32 }),
-  yeastAttenuationPct: doublePrecision("yeast_attenuation_pct"),
-  yeastType: yeastTypeEnum("yeast_type"),
-  yeastForm: yeastFormEnum("yeast_form"),
-  yeastMinFermentationTempC: doublePrecision("yeast_min_fermentation_temp_c"),
-  yeastMaxFermentationTempC: doublePrecision("yeast_max_fermentation_temp_c"),
-  properties: jsonb("properties").$type<Record<string, unknown>>().default({}).notNull(),
-  status: ingredientStatusEnum("status").default("active").notNull(),
-  visibility: ingredientVisibilityEnum("visibility").default("public").notNull(),
-  mergedIntoId: uuid("merged_into_id").references((): AnyPgColumn => ingredientCatalogItems.id, { onDelete: "set null" }),
-  createdBy: uuid("created_by").references(() => users.id, { onDelete: "set null" }),
-  updatedBy: uuid("updated_by").references(() => users.id, { onDelete: "set null" }),
-  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
-  updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull()
-}, (table) => ({
-  normalizedNameIdx: index("ingredient_catalog_items_normalized_name_idx").on(table.normalizedName),
-  familyIdIdx: index("ingredient_catalog_items_family_id_idx").on(table.familyId),
-  categoryIdx: index("ingredient_catalog_items_category_idx").on(table.category),
-  subtypeIdx: index("ingredient_catalog_items_subtype_idx").on(table.subtype),
-  typeStatusIdx: index("ingredient_catalog_items_type_status_idx").on(table.type, table.status),
-  statusIdx: index("ingredient_catalog_items_status_idx").on(table.status),
-  mergedIntoIdx: index("ingredient_catalog_items_merged_into_idx").on(table.mergedIntoId),
-  uniqueNamePerTypeIdx: uniqueIndex("ingredient_catalog_items_type_name_uidx").on(table.type, table.normalizedName),
-  sourceIdentityIdx: uniqueIndex("ingredient_catalog_items_source_uidx").on(table.catalogSourceDataset, table.catalogSourceKey)
-}));
-
 export const proposedIngredients = pgTable("proposed_ingredients", {
   id: uuid("id").defaultRandom().primaryKey(),
   submittedByUserId: uuid("submitted_by_user_id").references(() => users.id, { onDelete: "set null" }),
@@ -880,10 +824,6 @@ export const usersRelations = relations(users, ({ many }) => ({
   deviceProfiles: many(deviceProfiles)
 }));
 
-export const ingredientFamiliesRelations = relations(ingredientFamilies, ({ many }) => ({
-  catalogItems: many(ingredientCatalogItems)
-}));
-
 export const ingredientsRelations = relations(ingredients, ({ many }) => ({
   aliases: many(ingredientAliases),
   sources: many(ingredientSources),
@@ -960,13 +900,6 @@ export const userBrewingSettingsRelations = relations(userBrewingSettings, ({ on
   user: one(users, {
     fields: [userBrewingSettings.userId],
     references: [users.id]
-  })
-}));
-
-export const ingredientCatalogItemsRelations = relations(ingredientCatalogItems, ({ one }) => ({
-  family: one(ingredientFamilies, {
-    fields: [ingredientCatalogItems.familyId],
-    references: [ingredientFamilies.id]
   })
 }));
 
