@@ -11,7 +11,8 @@
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "test": "TMPDIR=/tmp TEMP=/tmp TMP=/tmp vitest run",
     "seed:sample": "TMPDIR=/tmp TEMP=/tmp TMP=/tmp tsx scripts/seed-sample-data.ts",
-    "seed:public": "TMPDIR=/tmp TEMP=/tmp TMP=/tmp tsx scripts/seed-public-recipes.ts"
+    "seed:public": "TMPDIR=/tmp TEMP=/tmp TMP=/tmp tsx scripts/seed-public-recipes.ts",
+    "cleanup:verifications": "TMPDIR=/tmp TEMP=/tmp TMP=/tmp tsx scripts/cleanup-verifications.ts"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.699.0",

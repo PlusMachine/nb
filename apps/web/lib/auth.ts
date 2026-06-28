@@ -44,6 +44,18 @@ export const hasRequiredRole = (current: UserRole, required: UserRole) => roleWe
 const devAuthEmail =
   process.env.NODE_ENV === "production" ? undefined : process.env.DEV_AUTH_EMAIL?.trim() || undefined;
 
+/**
+ * Логирование секретов аутентификации (OTP-код, magic-link, ссылка сброса пароля)
+ * допустимо ТОЛЬКО вне production: в dev это единственный канал доставки (реальная
+ * отправка письма для этих flow не подключена). В production сырой токен в логах —
+ * это риск захвата аккаунта, поэтому здесь no-op.
+ */
+const logAuthSecret = (label: string, payload: unknown) => {
+  if (process.env.NODE_ENV !== "production") {
+    console.info(label, payload);
+  }
+};
+
 export const getSessionUser = async () => {
   const token = (await cookies()).get(SESSION_COOKIE)?.value;
   if (token) {
@@ -78,7 +90,7 @@ export const startEmailOtp = async (email: string) => {
   assertRussianEmailDomain(email);
   await assertRateLimit(email.toLowerCase(), "otp", 5, 10 * 60);
   const verification = await issueVerification({ email, type: "otp" });
-  console.info("[auth] OTP token", verification);
+  logAuthSecret("[auth] OTP token", verification);
 };
 
 export const startPhoneOtp = async (phone: string) => {
@@ -106,7 +118,7 @@ export const startMagicLink = async (email: string) => {
   const env = getServerEnv();
   const verification = await issueVerification({ email, type: "magic_link" });
   const link = `${env.APP_URL}/api/auth/magic/consume?email=${encodeURIComponent(verification.email)}&token=${verification.rawToken}`;
-  console.info("[auth] Magic link", { ...verification, link });
+  logAuthSecret("[auth] Magic link", { ...verification, link });
 };
 
 export const consumeMagicLink = async (email: string, token: string) => {
@@ -158,7 +170,7 @@ export const requestPasswordReset = async (email: string) => {
   const env = getServerEnv();
   const verification = await issueVerification({ email, type: "password_reset" });
   const link = `${env.APP_URL}/login?email=${encodeURIComponent(verification.email)}&flow=reset&token=${verification.rawToken}`;
-  console.info("[auth] Password reset", { ...verification, link });
+  logAuthSecret("[auth] Password reset", { ...verification, link });
 };
 
 export const resetPassword = async (email: string, token: string, password: string) => {

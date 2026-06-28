@@ -23,7 +23,8 @@
     "set-role": "npm run set-role -w @nb/db --",
     "seed:qa": "npm run seed:qa -w @nb/db",
     "seed:sample": "npm run seed:sample -w @nb/web --",
-    "seed:public": "npm run seed:public -w @nb/web"
+    "seed:public": "npm run seed:public -w @nb/web",
+    "cleanup:verifications": "npm run cleanup:verifications -w @nb/web"
   },
   "devDependencies": {
     "@types/node": "^22.10.2",
