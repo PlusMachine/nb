@@ -616,6 +616,31 @@ export const getIngredientPotentialPpg = (source: IngredientTechnicalSource, fal
   return Number((fields.fermentableExtractYieldPct * 0.46).toFixed(2));
 };
 
+/**
+ * Whether brewhouse/mash efficiency should apply to a fermentable when computing OG.
+ * Grain (malt) and unmalted grain adjuncts (`product_family === "adjunct_grain"`) are
+ * mashed → they convert at brewhouse efficiency. Extract concentrates, sugars, syrups,
+ * honey, fruit and lactose dissolve fully → ~100% (no mash efficiency). Custom
+ * "fermentable" ingredients carry no `productFamily` (the user-facing "Сбраживаемое"
+ * bucket = sugars/syrups/honey) → also ~100%. When technicalData is absent, fall back
+ * to the recipe-level type via `fallbackIsMalt`.
+ */
+export const fermentableAppliesMashEfficiency = (
+  technicalData: IngredientTechnicalData | null | undefined,
+  fallbackIsMalt = false
+): boolean => {
+  if (technicalData?.type === "malt") {
+    return true;
+  }
+  if (technicalData?.type === "fermentable") {
+    const productFamily = typeof technicalData.productFamily === "string"
+      ? technicalData.productFamily.trim().toLowerCase()
+      : null;
+    return productFamily === "adjunct_grain";
+  }
+  return fallbackIsMalt;
+};
+
 export const getIngredientColorLovibond = (source: IngredientTechnicalSource, fallback = 2) => {
   const fields = extractIngredientTechnicalFields(source);
   return fields.fermentableColorLovibond ?? fallback;

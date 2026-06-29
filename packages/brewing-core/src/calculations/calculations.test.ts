@@ -35,6 +35,57 @@ describe("gravity and abv", () => {
   });
 });
 
+describe("per-fermentable efficiency", () => {
+  it("does not apply brewhouse efficiency to extract/sugar (converts ~100%)", () => {
+    const asGrain = calculateOg({
+      fermentables: [{ id: "dme", name: "Light DME", weightKg: 3, potentialPpg: 44, colorLovibond: 4 }],
+      batchVolumeL: 20,
+      brewhouseEfficiencyPercent: 72
+    });
+    const asExtract = calculateOg({
+      fermentables: [
+        { id: "dme", name: "Light DME", weightKg: 3, potentialPpg: 44, colorLovibond: 4, appliesBrewhouseEfficiency: false }
+      ],
+      batchVolumeL: 20,
+      brewhouseEfficiencyPercent: 72
+    });
+
+    // Wrongly applying 72% efficiency understates extract OG; at ~100% it must be higher.
+    expect(asExtract).toBeGreaterThan(asGrain);
+  });
+
+  it("keeps all-grain OG identical to the legacy uniform behaviour", () => {
+    const og = calculateOg({
+      fermentables: fermentables.map((item) => ({ ...item, appliesBrewhouseEfficiency: true })),
+      batchVolumeL: 20,
+      brewhouseEfficiencyPercent: 72
+    });
+
+    expect(og).toBe(1.053);
+  });
+
+  it("adds grain (efficiency) and sugar (100%) on the correct bases", () => {
+    const mixed = calculateOg({
+      fermentables: [
+        { id: "pale", name: "Pale", weightKg: 4, potentialPpg: 37, colorLovibond: 2, appliesBrewhouseEfficiency: true },
+        { id: "sugar", name: "Table sugar", weightKg: 0.5, potentialPpg: 46, colorLovibond: 0, appliesBrewhouseEfficiency: false }
+      ],
+      batchVolumeL: 20,
+      brewhouseEfficiencyPercent: 70
+    });
+    const ifSugarAlsoLostEfficiency = calculateOg({
+      fermentables: [
+        { id: "pale", name: "Pale", weightKg: 4, potentialPpg: 37, colorLovibond: 2 },
+        { id: "sugar", name: "Table sugar", weightKg: 0.5, potentialPpg: 46, colorLovibond: 0 }
+      ],
+      batchVolumeL: 20,
+      brewhouseEfficiencyPercent: 70
+    });
+
+    expect(mixed).toBeGreaterThan(ifSugarAlsoLostEfficiency);
+  });
+});
+
 describe("IBU and color", () => {
   it("calculates Tinseth IBU", () => {
     const ibu = calculateIbuTinseth({ og: 1.059, batchVolumeL: 20, hopAdditions: hops });

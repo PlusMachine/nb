@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import {
   extractIngredientTechnicalData,
+  fermentableAppliesMashEfficiency,
   getIngredientColorLovibond
 } from "../features/ingredients/technical-fields";
 
@@ -47,5 +48,31 @@ describe("ingredient technical fields", () => {
       colorLovibond: null,
       extractPctDryBasis: 79
     });
+  });
+});
+
+describe("fermentableAppliesMashEfficiency", () => {
+  it("applies efficiency to malt (grain must be mashed)", () => {
+    expect(fermentableAppliesMashEfficiency({ type: "malt" })).toBe(true);
+  });
+
+  it("applies efficiency to unmalted grain adjuncts", () => {
+    expect(fermentableAppliesMashEfficiency({ type: "fermentable", productFamily: "adjunct_grain" })).toBe(true);
+  });
+
+  it("does not apply efficiency to extract, sugar, honey or fruit (~100%)", () => {
+    expect(fermentableAppliesMashEfficiency({ type: "fermentable", productFamily: "extract_concentrate" })).toBe(false);
+    expect(fermentableAppliesMashEfficiency({ type: "fermentable", productFamily: "sugar_syrup_honey" })).toBe(false);
+    expect(fermentableAppliesMashEfficiency({ type: "fermentable", productFamily: "fruit_vegetable" })).toBe(false);
+  });
+
+  it("treats a custom fermentable with no productFamily as ~100% (sugars/syrups/honey bucket)", () => {
+    expect(fermentableAppliesMashEfficiency({ type: "fermentable" })).toBe(false);
+  });
+
+  it("falls back to the recipe-level malt flag when technicalData is absent", () => {
+    expect(fermentableAppliesMashEfficiency(null, true)).toBe(true);
+    expect(fermentableAppliesMashEfficiency(null, false)).toBe(false);
+    expect(fermentableAppliesMashEfficiency(undefined)).toBe(false);
   });
 });

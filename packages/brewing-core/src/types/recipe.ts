@@ -4,6 +4,13 @@ export interface FermentableGrainBillItem {
   weightKg: number;
   potentialPpg: number;
   colorLovibond: number;
+  /**
+   * Whether brewhouse/mash efficiency applies to this fermentable. Grain (incl.
+   * unmalted adjuncts) must be mashed, so it converts at brewhouse efficiency.
+   * Extract/sugar/syrup/honey/fruit dissolve fully → ~100%. Omitted/undefined =
+   * applies efficiency (back-compatible with the previous uniform behaviour).
+   */
+  appliesBrewhouseEfficiency?: boolean;
 }
 
 export interface HopAdditionInput {

@@ -12,12 +12,14 @@ export interface OgInput {
 
 export const calculateOg = ({ fermentables, batchVolumeL, brewhouseEfficiencyPercent }: OgInput): number => {
   const batchGallons = batchVolumeL * L_TO_GAL;
-  const totalGravityPoints = fermentables.reduce((sum, fermentable) => {
+  const effectivePoints = fermentables.reduce((sum, fermentable) => {
     const pounds = fermentable.weightKg * KG_TO_LB;
-    return sum + pounds * fermentable.potentialPpg;
+    // Grain converts at brewhouse efficiency; extract/sugar/syrup/honey dissolve
+    // fully (~100%). Default (field omitted) keeps the legacy uniform behaviour.
+    const efficiencyPercent = fermentable.appliesBrewhouseEfficiency === false ? 100 : brewhouseEfficiencyPercent;
+    return sum + pounds * fermentable.potentialPpg * (efficiencyPercent / 100);
   }, 0);
 
-  const effectivePoints = totalGravityPoints * (brewhouseEfficiencyPercent / 100);
   const og = 1 + effectivePoints / (batchGallons * 1000);
 
   return roundTo(og, 3);

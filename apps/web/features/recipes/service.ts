@@ -86,6 +86,7 @@ import {
 import { appendSlugSuffix, toRecipeSlugBase } from "./slug";
 import {
   extractIngredientTechnicalData,
+  fermentableAppliesMashEfficiency,
   getIngredientAlphaAcidPercent,
   getIngredientColorLovibond,
   getIngredientPotentialPpg
@@ -1187,7 +1188,7 @@ const computeRecipeStatsSnapshot = (input: {
 }) => {
   const batchVolumeL = toBatchVolumeLiters(input.batchSizeNormalizedQuantity, input.batchSizeNormalizedUnit);
   const efficiency = input.efficiency ?? DEFAULT_EFFICIENCY;
-  const fermentables: Array<{ id: string; name: string; weightKg: number; potentialPpg: number; colorLovibond: number }> = [];
+  const fermentables: Array<{ id: string; name: string; weightKg: number; potentialPpg: number; colorLovibond: number; appliesBrewhouseEfficiency: boolean }> = [];
   const hops: HopAdditionInput[] = [];
 
   for (const ingredient of input.ingredients) {
@@ -1202,7 +1203,11 @@ const computeRecipeStatsSnapshot = (input: {
           name: ingredient.source.displayName,
           weightKg,
           potentialPpg: getIngredientPotentialPpg(ingredient.source.raw, 36),
-          colorLovibond: getIngredientColorLovibond(ingredient.source.raw, 2)
+          colorLovibond: getIngredientColorLovibond(ingredient.source.raw, 2),
+          appliesBrewhouseEfficiency: fermentableAppliesMashEfficiency(
+            ingredient.source.technicalData,
+            ingredient.type === "malt"
+          )
         });
       }
     }
