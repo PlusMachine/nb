@@ -124,6 +124,15 @@ UI самоочевидный из IA/иконок/порядка, без поя
      `features/devices` (пайринг/токены/конфиги), два транспорта (LAN напрямую +
      облако через `apps/bridge` MQTT↔WS↔Postgres), симулятор `@nb/device-sim`.
      Safety нагрева живёт на устройстве — портал её не ослабляет.
+   - **Есть (2026-06-29): облачный путь «варка откуда угодно».** Портал подключён к
+     облаку: `cloud-transport.ts` + `mqtt-client.ts` — для устройства БЕЗ `localUrl`
+     (или при `BREWFORGE_PREFER_CLOUD`) телеметрию читаем из `brew_telemetry` (её
+     пишет мост), команды/рецепт публикуем в брокер, ack коррелируем по `cmd.id`
+     (фикс: `device_commands.id = cmd.id`). `live-dashboard` и `startBrewOnDevice`
+     работают по обоим транспортам без изменений. `device-sim --mqtt` + прошивочный
+     лог `recipe_saved` (для cloud START_BREW по слоту). Env `BREWFORGE_MQTT_URL`.
+     Верифицировано e2e (mosquitto+мост+sim): телеметрия, Пауза/Продолжить/Пропустить,
+     cloud start-brew (DOUGH_IN). `apps/web/scripts/brewforge-cloud-*-e2e.ts`.
    - **Референсы:** интеграция со стороны nb — `docs/brewforge-integration.md`;
      полный план/протокол прошивки — `../brewforge/docs/PHASE2-4_PLAN.md`.
 

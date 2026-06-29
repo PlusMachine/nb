@@ -25,8 +25,17 @@ import type {
 } from "./contracts";
 import { brewPlanV1ToDeviceRecipe } from "./translator";
 import { lanTransport, type DeviceTransport } from "./transport";
+import { cloudTransport } from "./cloud-transport";
+import { isCloudTransportEnabled } from "./mqtt-client";
 
 type DeviceRow = typeof brewDevices.$inferSelect;
+
+/** uuid v-агностичный матч (для решения, можно ли взять cmd.id как id строки аудита). */
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+/** Переменная окружения «включена», если задана непустым не-ложным значением. */
+const isEnvEnabled = (value: string | undefined): boolean =>
+  value !== undefined && value !== "" && value !== "0" && value.toLowerCase() !== "false";
 
 /** Загрузить устройство пользователя по id (или бросить, если нет/чужое). */
 async function loadDevice(userId: string, deviceId: string): Promise<DeviceRow> {
@@ -89,8 +98,23 @@ function resolveDeviceToken(device: DeviceRow): string | undefined {
   return shared && shared.length > 0 ? shared : undefined;
 }
 
-/** Транспорт к устройству. Пока единственный путь — LAN-REST по localUrl. */
+/**
+ * Облако предпочитаем, когда у портала есть брокер (BREWFORGE_MQTT_URL/MQTT_URL) И
+ * либо у устройства нет LAN-адреса (достижимо только через брокер), либо задан
+ * BREWFORGE_PREFER_CLOUD (гнать всё через облако — напр. на cloud-деплое nb, где
+ * LAN-адрес из домашней сети пользователя сервером недостижим). Иначе — LAN-REST.
+ */
+function useCloudTransport(device: DeviceRow): boolean {
+  if (!isCloudTransportEnabled()) return false;
+  if (isEnvEnabled(process.env.BREWFORGE_PREFER_CLOUD)) return true;
+  return !device.localUrl;
+}
+
+/** Транспорт к устройству: облако (через брокер/мост) либо LAN-REST по localUrl. */
 function transportForDevice(device: DeviceRow): DeviceTransport {
+  if (useCloudTransport(device)) {
+    return cloudTransport({ id: device.id, hardwareId: device.hardwareId });
+  }
   if (!device.localUrl) throw new Error("DEVICE_NO_LOCAL_URL");
   return lanTransport(device.localUrl, resolveDeviceToken(device));
 }
@@ -126,9 +150,14 @@ const sendCommand: SendCommandFn = async ({ userId, deviceId, brewBatchId, comma
   const auditBatchId = await resolveAuditBatchId(userId, device.id, brewBatchId);
 
   // Аудит: queued. arg кладём как есть (union bf_cmd_t.arg ~ Record).
+  // id строки = cmd.id (если это валидный uuid), чтобы мост мог финализировать её
+  // по ack.ackOf (== cmd.id) для облачного пути — иначе его UPDATE ... WHERE
+  // id == ack.ackOf не матчит, и облачный ack не лёг бы в аудит. При нестандартном
+  // id команды — db-дефолт (defaultRandom); тогда финализирует только провайдер.
   const [audit] = await db
     .insert(deviceCommands)
     .values({
+      ...(UUID_RE.test(cmd.id) ? { id: cmd.id } : {}),
       deviceId: device.id,
       brewBatchId: auditBatchId,
       userId,

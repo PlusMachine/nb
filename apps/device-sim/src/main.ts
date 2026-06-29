@@ -12,6 +12,7 @@
 // =============================================================================
 import { SimDevice, type Scenario } from "./sim-device.js";
 import { startServer } from "./server.js";
+import { startMqtt, type SimMqttHandle } from "./mqtt.js";
 
 interface Args {
   port: number;
@@ -20,6 +21,8 @@ interface Args {
   tickScale: number;
   scenario: Scenario;
   fw: string;
+  /** URL MQTT-брокера для облачного режима; undefined — только REST/WS. */
+  mqttUrl: string | undefined;
 }
 
 function parseArgs(argv: string[]): Args {
@@ -42,6 +45,10 @@ function parseArgs(argv: string[]): Args {
   const scenario: Scenario =
     scenarioRaw === "mash" || scenarioRaw === "fault" ? scenarioRaw : "idle";
 
+  // --mqtt без значения → дефолтный локальный брокер; со значением → его URL.
+  const mqttRaw = map.get("mqtt");
+  const mqttUrl = mqttRaw === undefined ? undefined : mqttRaw === "true" ? "mqtt://localhost:1883" : mqttRaw;
+
   return {
     port: intArg(map.get("port"), 8080),
     deviceId: map.get("device-id") ?? "bf-sim01",
@@ -49,6 +56,7 @@ function parseArgs(argv: string[]): Args {
     tickScale: numArg(map.get("tick-scale"), 60),
     scenario,
     fw: map.get("fw") ?? "sim-0.0.0",
+    mqttUrl,
   };
 }
 
@@ -79,11 +87,17 @@ function main(): void {
   const server = startServer(device, args.port);
   const base = `http://localhost:${args.port}`;
 
+  // Облачный режим: дополнительно к REST/WS подключаемся к брокеру (как прошивка).
+  const mqttHandle: SimMqttHandle | null = args.mqttUrl
+    ? startMqtt(device, args.deviceId, args.mqttUrl)
+    : null;
+
   console.log("BrewForge device simulator");
   console.log(`  device-id : ${args.deviceId}`);
   console.log(`  fw        : ${args.fw}`);
   console.log(`  scenario  : ${args.scenario}`);
   console.log(`  tick      : ${args.tickMs} ms, scale x${args.tickScale}`);
+  console.log(`  mqtt      : ${args.mqttUrl ?? "(выкл — только REST/WS)"}`);
   console.log("");
   console.log("Endpoints:");
   console.log(`  GET  ${base}/telemetry`);
@@ -98,7 +112,8 @@ function main(): void {
   const shutdown = (): void => {
     console.log("\nОстановка...");
     device.stopTimer();
-    void server.close().then(() => process.exit(0));
+    const closeMqtt = mqttHandle ? mqttHandle.close() : Promise.resolve();
+    void Promise.allSettled([server.close(), closeMqtt]).then(() => process.exit(0));
   };
   process.on("SIGINT", shutdown);
   process.on("SIGTERM", shutdown);

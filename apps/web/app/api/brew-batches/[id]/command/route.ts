@@ -6,6 +6,27 @@ import { requireUser } from "@/lib/auth";
 import { getBrewBatchById } from "@/features/brew-batches/service";
 import { getProvider } from "@/features/brew-controller";
 
+// Коды ошибок транспорта/провайдера → человекочитаемый текст для дашборда.
+// НЕ эхоим внутренние детали (EGRESS_*/HTTP-тела/SSRF) — только общий смысл.
+function describeCommandError(message: string): string {
+  switch (message) {
+    case "CLOUD_NO_ACK":
+      return "Устройство не подтвердило команду — похоже, оно не в сети. Проверьте связь контроллера.";
+    case "CLOUD_BROKER_UNREACHABLE":
+      return "Нет связи с облачным брокером. Повторите чуть позже.";
+    case "CLOUD_UNSUPPORTED":
+      return "Эта операция по облаку пока недоступна — выполните её, находясь в одной сети с устройством.";
+    case "DEVICE_NO_LOCAL_URL":
+      return "У устройства не задан локальный адрес и облако недоступно. Допривяжите устройство или включите облачный путь.";
+    case "DEVICE_NOT_FOUND":
+      return "Устройство не найдено или не привязано к вам.";
+    case "PROVIDER_UNAVAILABLE":
+      return "Контроллер недоступен. Повторите попытку позже.";
+    default:
+      return "Не удалось отправить команду. Проверьте, что устройство в сети и доступно.";
+  }
+}
+
 // POST /api/brew-batches/:id/command — отправить команду на устройство партии.
 // Тело: { command: Command } (валидируется CommandSchema). Резолвим партию
 // (ownership) → её устройство → getProvider('brewforge').sendCommand(...).
@@ -40,6 +61,9 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
 
     return NextResponse.json({ ack });
   } catch (error) {
-    return NextResponse.json({ error: (error as Error).message }, { status: 400 });
+    const raw = error instanceof Error ? error.message : "UNKNOWN";
+    // Реальную причину — в серверный лог; наружу только безопасный текст.
+    console.error("[brew-command] сбой отправки команды:", raw);
+    return NextResponse.json({ error: describeCommandError(raw) }, { status: 400 });
   }
 }
