@@ -2445,6 +2445,8 @@ function RecipeBatchParametersBlock({
   setCalculationMeta,
   sectionErrors,
   preview,
+  recalculating,
+  previewError,
   equipmentProfiles,
   selectedEquipmentProfileId,
   onSelectEquipmentProfile,
@@ -2461,6 +2463,8 @@ function RecipeBatchParametersBlock({
   setCalculationMeta: React.Dispatch<React.SetStateAction<RecipeCalculationMeta>>;
   sectionErrors: Record<string, string>;
   preview: RecipeDraftPreviewDto | null;
+  recalculating: boolean;
+  previewError: string | null;
   equipmentProfiles: EquipmentProfileDto[];
   selectedEquipmentProfileId: string | null;
   onSelectEquipmentProfile: (profileId: string | null) => void;
@@ -2477,6 +2481,9 @@ function RecipeBatchParametersBlock({
     : "Без профиля";
   const fgSourceLabel = resolveRecipeFgSourceLabel(preview?.fgEstimateMode, preview?.fgEstimateDetails);
   const fgHelperText = resolveRecipeFgHelperText(preview?.fgEstimateMode, preview?.fg);
+  // Числа устарели, пока идёт пересчёт или превью упало с ошибкой — приглушаем,
+  // чтобы не выдавать stale-значения за достоверные (#15).
+  const metricsStale = recalculating || Boolean(previewError);
 
   const summaryItems = [
     {
@@ -2527,7 +2534,10 @@ function RecipeBatchParametersBlock({
       </div>
 
       <div className="flex flex-1 flex-col p-4">
-        <dl className="mb-4 grid grid-cols-2 gap-2 xl:grid-cols-3">
+        <dl
+          aria-busy={recalculating}
+          className={`mb-4 grid grid-cols-2 gap-2 transition-opacity xl:grid-cols-3 ${metricsStale ? "opacity-50" : ""}`}
+        >
           {summaryItems.map((item) => {
             const isColor = item.key === "color";
             const isStyle = item.key === "style";
@@ -4846,7 +4856,9 @@ export function RecipeDesigner({
   const [blockedSignature, setBlockedSignature] = useState<string | null>(null);
   const [saveResultSignature, setSaveResultSignature] = useState<string | null>(null);
   const [publishConfirmOpen, setPublishConfirmOpen] = useState(false);
+  const [publishError, setPublishError] = useState<string | null>(null);
   const [makePrivateConfirmOpen, setMakePrivateConfirmOpen] = useState(false);
+  const [makePrivateError, setMakePrivateError] = useState<string | null>(null);
   const [readinessDialogOpen, setReadinessDialogOpen] = useState(false);
   const [bitternessSettingsOpen, setBitternessSettingsOpen] = useState(false);
   const [importExportOpen, setImportExportOpen] = useState(false);
@@ -5029,8 +5041,16 @@ export function RecipeDesigner({
       return null;
     }
 
+    const trimmedTitle = payload.title.trim();
+    const draftFallbackTitle = initialTitle?.trim() || initialRecipe?.title?.trim() || "Новый рецепт";
+    // Приватный черновик не должен морозить весь автосейв из-за пустого названия:
+    // подставляем дефолтное имя для сохранения, жёсткую проверку оставляем публикации (#13).
+    const effectiveTitle = !trimmedTitle && nextPublicationState !== "published"
+      ? draftFallbackTitle
+      : payload.title;
     const nextPayload = normalizeSavePayload({
       ...payload,
+      title: effectiveTitle,
       publicationState: nextPublicationState
     });
     const nextSignature = JSON.stringify({
@@ -5047,10 +5067,25 @@ export function RecipeDesigner({
     }
 
     setPendingSave(true);
-    const result = persistMode === "create"
-      ? await createRecipeAction(nextPayload)
-      : await updateRecipeAction(activeRecipeId!, nextPayload);
-    setPendingSave(false);
+    let result: RecipeEditorResult;
+    try {
+      result = persistMode === "create"
+        ? await createRecipeAction(nextPayload)
+        : await updateRecipeAction(activeRecipeId!, nextPayload);
+    } catch {
+      // Сетевой/серверный сбой: не оставляем pendingSave залипшим (иначе все
+      // будущие автосейвы заглушены) и показываем ретраибельную ошибку (P0-1).
+      const failure: RecipeEditorResult = {
+        ok: false,
+        message: "Не удалось сохранить — проверьте соединение и повторите."
+      };
+      setBlockedSignature(null);
+      setSaveResult(failure);
+      setSaveResultSignature(surfaceInlineResult ? nextSignature : null);
+      return failure;
+    } finally {
+      setPendingSave(false);
+    }
 
     if (!result.ok && result.fieldErrors && Object.keys(result.fieldErrors).length) {
       setBlockedSignature(nextSignature);
@@ -5087,7 +5122,7 @@ export function RecipeDesigner({
     setSaveResult(result);
     setSaveResultSignature(surfaceInlineResult ? nextSignature : null);
     return result;
-  }, [activeRecipeId, onRecipeCreated, payload, persistMode, publicationState]);
+  }, [activeRecipeId, initialRecipe, initialTitle, onRecipeCreated, payload, persistMode, publicationState]);
 
   useEffect(() => {
     if (!isDirty) return;
@@ -5194,27 +5229,33 @@ export function RecipeDesigner({
     }
 
     setPendingSave(true);
-    const result = await createRecipeCustomIngredientAction({
-      category: ingredient.category,
-      subtype: ingredient.subtype,
-      displayName,
-      defaultDisplayUnit: snapshot?.defaultDisplayUnit ?? ingredient.defaultDisplayUnit,
-      technicalData: (snapshot?.technicalData ?? null) as IngredientTechnicalData | null
-    });
-    setPendingSave(false);
-    setSaveResult({ ok: result.ok, message: result.message });
-    setSaveResultSignature(currentSignature);
+    try {
+      const result = await createRecipeCustomIngredientAction({
+        category: ingredient.category,
+        subtype: ingredient.subtype,
+        displayName,
+        defaultDisplayUnit: snapshot?.defaultDisplayUnit ?? ingredient.defaultDisplayUnit,
+        technicalData: (snapshot?.technicalData ?? null) as IngredientTechnicalData | null
+      });
+      setSaveResult({ ok: result.ok, message: result.message });
+      setSaveResultSignature(currentSignature);
 
-    if (result.ok && result.item) {
-      setIngredients((current) => current.map((line) => (
-        line.localId === ingredient.localId
-          ? applySelection({
-            ...line,
-            inventoryIntentMode: "custom",
-            inventorySelectionMeta: null
-          }, result.item!)
-          : line
-      )));
+      if (result.ok && result.item) {
+        setIngredients((current) => current.map((line) => (
+          line.localId === ingredient.localId
+            ? applySelection({
+              ...line,
+              inventoryIntentMode: "custom",
+              inventorySelectionMeta: null
+            }, result.item!)
+            : line
+        )));
+      }
+    } catch {
+      setSaveResult({ ok: false, message: "Не удалось сохранить ингредиент — проверьте соединение." });
+      setSaveResultSignature(currentSignature);
+    } finally {
+      setPendingSave(false);
     }
   };
 
@@ -5540,6 +5581,7 @@ export function RecipeDesigner({
   ) : null;
 
   const handlePublishClick = () => {
+    setPublishError(null);
     if (!isPublishReady) {
       setReadinessDialogOpen(true);
       return;
@@ -5549,19 +5591,30 @@ export function RecipeDesigner({
   };
 
   const handlePublishConfirm = async () => {
+    setPublishError(null);
     const result = await persistRecipe({
       nextPublicationState: "published",
       surfaceInlineResult: false
     });
 
-    setPublishConfirmOpen(false);
-
-    if (!result?.ok && result?.fieldErrors && Object.keys(result.fieldErrors).length) {
-      setReadinessDialogOpen(true);
+    if (result?.ok) {
+      setPublishConfirmOpen(false);
+      return;
     }
+
+    if (result?.fieldErrors && Object.keys(result.fieldErrors).length) {
+      setPublishConfirmOpen(false);
+      setReadinessDialogOpen(true);
+      return;
+    }
+
+    // Не-field ошибка (сеть/сервер): оставляем диалог открытым с текстом и
+    // возможностью повторить — статус не врёт «опубликовано» (P0-2).
+    setPublishError(result?.message ?? "Не удалось опубликовать — попробуйте ещё раз.");
   };
 
   const handleMakePrivateConfirm = async () => {
+    setMakePrivateError(null);
     const result = await persistRecipe({
       nextPublicationState: "private",
       surfaceInlineResult: false
@@ -5572,11 +5625,18 @@ export function RecipeDesigner({
       return;
     }
 
-    setMakePrivateConfirmOpen(false);
+    setMakePrivateError(result?.message ?? "Не удалось изменить доступ — попробуйте ещё раз.");
   };
 
-  const handleVersionChange = (nextRecipeId: string) => {
+  const handleVersionChange = async (nextRecipeId: string) => {
     if (!nextRecipeId || nextRecipeId === activeRecipeId) {
+      return;
+    }
+
+    // Сохраняем текущие правки перед навигацией к другой версии (#14),
+    // как это делает handleCreateVersion — иначе несохранённое теряется молча.
+    const saveBeforeSwitch = await persistRecipe({ surfaceInlineResult: true });
+    if (saveBeforeSwitch && !saveBeforeSwitch.ok) {
       return;
     }
 
@@ -5596,19 +5656,25 @@ export function RecipeDesigner({
     }
 
     setPendingSave(true);
-    const result = await createRecipeVersionAction(activeRecipeId);
-    setPendingSave(false);
+    try {
+      const result = await createRecipeVersionAction(activeRecipeId);
 
-    if (!result.ok || !result.recipe) {
-      setSaveResult(result);
+      if (!result.ok || !result.recipe) {
+        setSaveResult(result);
+        setSaveResultSignature(currentSignature);
+        return;
+      }
+
+      const nextRecipe = result.recipe;
+      startTransition(() => {
+        router.push(buildRecipeEditHref(nextRecipe.id));
+      });
+    } catch {
+      setSaveResult({ ok: false, message: "Не удалось создать версию — проверьте соединение." });
       setSaveResultSignature(currentSignature);
-      return;
+    } finally {
+      setPendingSave(false);
     }
-
-    const nextRecipe = result.recipe;
-    startTransition(() => {
-      router.push(buildRecipeEditHref(nextRecipe.id));
-    });
   };
 
   const runInventoryAction = async (action: "sync" | "reserve" | "consume" | "release") => {
@@ -5630,22 +5696,28 @@ export function RecipeDesigner({
     };
 
     setPendingSave(true);
-    const result = await actionMap[action](recipeId);
-    setPendingSave(false);
-    setSaveResult({
-      ok: result.ok,
-      message: result.message
-    });
-    setSaveResultSignature(currentSignature);
+    try {
+      const result = await actionMap[action](recipeId);
+      setSaveResult({
+        ok: result.ok,
+        message: result.message
+      });
+      setSaveResultSignature(currentSignature);
 
-    if (result.coverage) {
-      setStockCoverage(result.coverage);
-      return;
-    }
+      if (result.coverage) {
+        setStockCoverage(result.coverage);
+        return;
+      }
 
-    const refreshed = await getRecipeStockCoverageAction(recipeId);
-    if (refreshed.coverage) {
-      setStockCoverage(refreshed.coverage);
+      const refreshed = await getRecipeStockCoverageAction(recipeId);
+      if (refreshed.coverage) {
+        setStockCoverage(refreshed.coverage);
+      }
+    } catch {
+      setSaveResult({ ok: false, message: "Не удалось выполнить операцию со складом — проверьте соединение." });
+      setSaveResultSignature(currentSignature);
+    } finally {
+      setPendingSave(false);
     }
   };
 
@@ -5928,6 +6000,17 @@ export function RecipeDesigner({
     ? { label: "Опубликован", icon: <Globe className="h-3.5 w-3.5" />, className: "bg-violet-50 text-violet-700 ring-violet-200" }
     : { label: "Приватный", icon: <Lock className="h-3.5 w-3.5" />, className: "bg-zinc-100 text-zinc-700 ring-zinc-200" };
 
+  // Компактные ключевые метрики для закреплённой полосы — петля «изменил → увидел»
+  // не должна теряться при прокрутке длинной формы (#18/#20).
+  const headerStyle = getBeerStyleById(styleId.trim() || "");
+  const headerMetrics: Array<{ label: string; value: string }> = [
+    { label: "НП", value: preview?.og != null ? preview.og.toFixed(3) : "—" },
+    { label: "КП", value: preview?.fg != null ? preview.fg.toFixed(3) : "—" },
+    { label: "ABV", value: preview?.abv != null ? `${preview.abv.toFixed(1)}%` : "—" },
+    { label: "IBU", value: preview?.ibu != null ? preview.ibu.toFixed(0) : "—" },
+    { label: "SRM", value: preview?.color != null ? preview.color.toFixed(1) : "—" }
+  ];
+
   return (
     <div className="space-y-5">
       <ConfirmActionDialog
@@ -5942,15 +6025,86 @@ export function RecipeDesigner({
         }}
         onClose={() => setWaterResetConfirmOpen(false)}
       />
+
+      <div className="sticky top-14 z-30 -mx-4 flex flex-wrap items-center gap-x-3 gap-y-2 border-b border-zinc-200/70 bg-white/85 px-4 py-2 backdrop-blur supports-[backdrop-filter]:bg-white/70 sm:px-5 lg:top-0">
+        <span className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-medium ring-1 ring-inset ${headerSaveStatusMeta.className}`}>
+          {headerSaveStatusMeta.icon}
+          <span className="hidden sm:inline">{headerSaveStatusMeta.label}</span>
+        </span>
+
+        <dl
+          aria-busy={recalculating}
+          className={`flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] tabular-nums text-zinc-600 transition-opacity ${recalculating || previewError ? "opacity-50" : ""}`}
+        >
+          {headerMetrics.map((metric) => (
+            <div key={metric.label} className="flex items-baseline gap-1">
+              <dt className="text-[10px] font-medium uppercase tracking-wide text-zinc-400">{metric.label}</dt>
+              <dd className="font-semibold text-zinc-800">{metric.value}</dd>
+            </div>
+          ))}
+          {headerStyle ? (
+            <span className="inline-flex items-center rounded-full bg-zinc-100 px-2 py-0.5 text-[10px] font-medium text-zinc-600 ring-1 ring-inset ring-zinc-200">
+              {headerStyle.name}
+            </span>
+          ) : null}
+        </dl>
+
+        <div className="ml-auto flex items-center gap-1.5">
+          {canManagePublication && savedVisibility === "published" && activeRecipeSlug ? (
+            <a
+              href={`/recipes/${activeRecipeSlug}`}
+              target="_blank"
+              rel="noreferrer"
+              className="inline-flex h-9 items-center gap-1.5 rounded-lg border border-zinc-200 bg-white px-3 text-xs font-medium text-zinc-700 transition-colors hover:bg-zinc-50 sm:text-sm"
+              title="Открыть публичную страницу"
+            >
+              <ExternalLink className="h-3.5 w-3.5" />
+              <span className="hidden sm:inline">Публичная</span>
+            </a>
+          ) : null}
+          {canManagePublication && savedVisibility === "private" ? (
+            <button
+              type="button"
+              onClick={handlePublishClick}
+              disabled={pendingSave}
+              className="inline-flex h-9 items-center gap-1.5 rounded-lg border border-zinc-900 bg-zinc-900 px-3 text-xs font-medium text-white transition-colors hover:bg-zinc-800 disabled:cursor-not-allowed disabled:opacity-60 sm:px-4 sm:text-sm"
+            >
+              <Globe className="h-3.5 w-3.5" />
+              Опубликовать
+            </button>
+          ) : null}
+          {canManagePublication && savedVisibility === "published" ? (
+            <button
+              type="button"
+              onClick={() => {
+                setMakePrivateError(null);
+                setMakePrivateConfirmOpen(true);
+              }}
+              disabled={pendingSave}
+              className="inline-flex h-9 items-center gap-1.5 rounded-lg border border-zinc-200 bg-white px-3 text-xs font-medium text-zinc-700 transition-colors hover:bg-zinc-50 disabled:cursor-not-allowed disabled:opacity-60 sm:text-sm"
+            >
+              <Lock className="h-3.5 w-3.5" />
+              <span className="hidden sm:inline">В&nbsp;приватные</span>
+              <span className="sm:hidden">Приватный</span>
+            </button>
+          ) : null}
+          <RecipeActionsMenu
+            pending={pendingSave}
+            onOpenImportExport={() => setImportExportOpen(true)}
+            onOpenStartBrew={() => {
+              setStartBrewResult(null);
+              setStartBrewOpen(true);
+            }}
+            onOpenBrewOnDevice={() => setBrewOnDeviceOpen(true)}
+          />
+        </div>
+      </div>
+
       <section className="-mx-4 border-b border-zinc-200/70 bg-gradient-to-b from-white via-white to-zinc-50/50 px-4 py-4 sm:rounded-2xl sm:border sm:border-zinc-100 sm:bg-white sm:px-5 sm:py-5 sm:shadow-sm">
         <div className="mb-3 flex flex-wrap items-center gap-2">
           <span className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-medium ring-1 ring-inset ${visibilityChipMeta.className}`}>
             {visibilityChipMeta.icon}
             {visibilityChipMeta.label}
-          </span>
-          <span className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-medium ring-1 ring-inset ${headerSaveStatusMeta.className}`}>
-            {headerSaveStatusMeta.icon}
-            {headerSaveStatusMeta.label}
           </span>
           {activeRecipeId ? (
             <span className="inline-flex items-center gap-1.5 rounded-full bg-zinc-100 px-2.5 py-1 text-[11px] font-medium text-zinc-700 ring-1 ring-inset ring-zinc-200">
@@ -5958,52 +6112,6 @@ export function RecipeDesigner({
               <span className="text-zinc-400">• текущая</span>
             </span>
           ) : null}
-          <div className="ml-auto flex items-center gap-1.5">
-            {canManagePublication && savedVisibility === "published" && activeRecipeSlug ? (
-              <a
-                href={`/recipes/${activeRecipeSlug}`}
-                target="_blank"
-                rel="noreferrer"
-                className="inline-flex h-9 items-center gap-1.5 rounded-lg border border-zinc-200 bg-white px-3 text-xs font-medium text-zinc-700 transition-colors hover:bg-zinc-50 sm:text-sm"
-                title="Открыть публичную страницу"
-              >
-                <ExternalLink className="h-3.5 w-3.5" />
-                <span className="hidden sm:inline">Публичная</span>
-              </a>
-            ) : null}
-            {canManagePublication && savedVisibility === "private" ? (
-              <button
-                type="button"
-                onClick={handlePublishClick}
-                disabled={pendingSave}
-                className="inline-flex h-9 items-center gap-1.5 rounded-lg border border-zinc-900 bg-zinc-900 px-3 text-xs font-medium text-white transition-colors hover:bg-zinc-800 disabled:cursor-not-allowed disabled:opacity-60 sm:px-4 sm:text-sm"
-              >
-                <Globe className="h-3.5 w-3.5" />
-                Опубликовать
-              </button>
-            ) : null}
-            {canManagePublication && savedVisibility === "published" ? (
-              <button
-                type="button"
-                onClick={() => setMakePrivateConfirmOpen(true)}
-                disabled={pendingSave}
-                className="inline-flex h-9 items-center gap-1.5 rounded-lg border border-zinc-200 bg-white px-3 text-xs font-medium text-zinc-700 transition-colors hover:bg-zinc-50 disabled:cursor-not-allowed disabled:opacity-60 sm:text-sm"
-              >
-                <Lock className="h-3.5 w-3.5" />
-                <span className="hidden sm:inline">В&nbsp;приватные</span>
-                <span className="sm:hidden">Приватный</span>
-              </button>
-            ) : null}
-            <RecipeActionsMenu
-              pending={pendingSave}
-              onOpenImportExport={() => setImportExportOpen(true)}
-              onOpenStartBrew={() => {
-                setStartBrewResult(null);
-                setStartBrewOpen(true);
-              }}
-              onOpenBrewOnDevice={() => setBrewOnDeviceOpen(true)}
-            />
-          </div>
         </div>
 
         <div className="grid gap-3 md:grid-cols-[minmax(0,1.6fr)_minmax(240px,1fr)] md:items-start">
@@ -6033,7 +6141,7 @@ export function RecipeDesigner({
                 <span className="text-zinc-500">Версия:</span>
                 <select
                   value={activeRecipeId}
-                  onChange={(event) => handleVersionChange(event.target.value)}
+                  onChange={(event) => void handleVersionChange(event.target.value)}
                   className="h-8 min-w-[96px] rounded-md border border-zinc-200 bg-white px-2 text-xs font-medium text-zinc-700 focus:border-zinc-400 focus:outline-none focus:ring-1 focus:ring-zinc-200"
                 >
                   {recipeVersions.map((version) => (
@@ -6088,6 +6196,8 @@ export function RecipeDesigner({
           setCalculationMeta={setCalculationMeta}
           sectionErrors={sectionErrors}
           preview={preview}
+          recalculating={recalculating}
+          previewError={previewError}
           equipmentProfiles={equipmentProfiles}
           selectedEquipmentProfileId={equipmentProfileId}
           onSelectEquipmentProfile={handleSelectEquipmentProfile}
@@ -6290,8 +6400,12 @@ export function RecipeDesigner({
         pendingLabel="Публикуем..."
         tone="primary"
         pending={pendingSave}
+        error={publishError}
         onConfirm={() => void handlePublishConfirm()}
-        onClose={() => setPublishConfirmOpen(false)}
+        onClose={() => {
+          setPublishConfirmOpen(false);
+          setPublishError(null);
+        }}
       />
 
       <ConfirmActionDialog
@@ -6301,8 +6415,12 @@ export function RecipeDesigner({
         confirmLabel="Сделать приватным"
         pendingLabel="Меняем доступ..."
         pending={pendingSave}
+        error={makePrivateError}
         onConfirm={() => void handleMakePrivateConfirm()}
-        onClose={() => setMakePrivateConfirmOpen(false)}
+        onClose={() => {
+          setMakePrivateConfirmOpen(false);
+          setMakePrivateError(null);
+        }}
       />
 
       <PublicationReadinessDialog

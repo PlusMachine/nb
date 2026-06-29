@@ -37,7 +37,8 @@ export function RecipeEditorPage({
     setEditorMode("edit");
   }, []);
 
-  // Status and visibility chrome now lives inside RecipeDesigner's sticky header.
+  // Статус сохранения, ключевые метрики и действия публикации/варки живут в
+  // закреплённой (sticky) полосе внутри RecipeDesigner.
   return (
     <main>
       {recipe?.clonedFrom && recipe.clonedFrom.authorId !== recipe.authorId ? (

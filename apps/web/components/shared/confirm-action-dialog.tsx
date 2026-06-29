@@ -12,6 +12,7 @@ type Props = {
   cancelLabel?: string;
   tone?: "primary" | "danger";
   pending?: boolean;
+  error?: string | null;
   onConfirm: () => void;
   onClose: () => void;
 };
@@ -25,6 +26,7 @@ export function ConfirmActionDialog({
   cancelLabel = "Отмена",
   tone = "danger",
   pending = false,
+  error = null,
   onConfirm,
   onClose
 }: Props) {
@@ -79,6 +81,15 @@ export function ConfirmActionDialog({
             <p className="text-sm leading-6 text-zinc-600">{description}</p>
           </div>
         </div>
+
+        {error ? (
+          <p
+            role="alert"
+            className="mb-4 rounded-lg bg-rose-50 px-3 py-2 text-sm text-rose-700 ring-1 ring-inset ring-rose-200"
+          >
+            {error}
+          </p>
+        ) : null}
 
         <div className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
           <button
