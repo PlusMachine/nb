@@ -89,13 +89,22 @@ export default async function PublicRecipesPage({ searchParams }: { searchParams
         </div>
       </section>
 
-      <div className="grid gap-6 lg:grid-cols-[260px_1fr]">
+      {/* Сайдбар фильтров включаем только с `xl`, а не с `lg`: у залогиненного к
+          сетке уже прижат глобальный nav-рельс приложения (w-60), и на `lg`
+          (1024–1279) рельс + сайдбар фильтров вместе съедали ширину так, что grid
+          схлопывался в одну растянутую колонку, а list-строки обрезались. В этом
+          диапазоне фильтры доступны кнопкой-sheet (ниже тулбара). */}
+      <div className="grid gap-6 xl:grid-cols-[260px_1fr]">
         <RecipesFilterSidebar index={styleIndex} familyCounts={familyCounts} />
 
         <div className="min-w-0 space-y-4">
           {/* Управление выдачей (поиск/сортировка/вид) собрано над результатами;
-              инпуты фильтров — в сайдбаре слева (мобильный sheet — ниже). */}
-          <RecipesToolbar defaultView={view} />
+              инпуты фильтров — в сайдбаре слева (мобильный/планшетный sheet — ниже).
+              Тулбар sticky: при длинной ленте поиск/сортировка/переключатель вида не
+              уезжают. `top-14` под мобильной шапкой AppShell, `lg:top-0` — где её нет. */}
+          <div className="sticky top-14 z-30 -my-1 bg-slate-50/90 py-1 backdrop-blur lg:top-0">
+            <RecipesToolbar defaultView={view} />
+          </div>
           <RecipesFilterSheet index={styleIndex} familyCounts={familyCounts} />
           <ActiveFilterChips familyOptions={familyOptions} styleOptions={styleOptions} />
 

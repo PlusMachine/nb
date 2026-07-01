@@ -247,7 +247,14 @@ export function AppShell({ children, user }: AppShellProps) {
             </div>
           </>
         ) : null}
-        <div className="mx-auto max-w-6xl px-4 py-6 pb-24 sm:px-6 lg:pb-10">
+        <div
+          className={`mx-auto px-4 py-6 pb-24 sm:px-6 lg:pb-10 ${
+            // Витрина рецептов — двухсайдбарная сетка-браузер: на ультрашироких
+            // экранах ей даём больше ширины, чтобы поместилась третья колонка карточек
+            // и справа не оставалось пустого поля. Остальные (текстовые) роуты — 6xl.
+            pathname === "/recipes" ? "max-w-6xl 2xl:max-w-[1600px]" : "max-w-6xl"
+          }`}
+        >
           {pendingPathname && pendingPathname !== pathname ? resolvePendingSkeleton(pendingPathname) : children}
         </div>
       </main>

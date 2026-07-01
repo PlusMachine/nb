@@ -4,7 +4,7 @@ import Link from "next/link";
 import { Star } from "lucide-react";
 
 import type { PublicRecipeListItem } from "@/features/recipes/contracts";
-import { NEUTRAL_SOFT_GRADIENT, beerColorFromSrm, srmToHex, srmToSoftGradient } from "@/features/recipes/beer-color";
+import { NEUTRAL_SOFT_GRADIENT, srmToHex, srmToSoftGradient } from "@/features/recipes/beer-color";
 import { isRecentlyCreated } from "@/features/recipes/format";
 
 import { RecipeColorSwatch } from "./recipe-color-swatch";
@@ -56,9 +56,18 @@ export function AuthorAvatar({ image, displayName }: { image: string | null; dis
   );
 }
 
-export function StatCell({ label, value }: { label: string; value: string }) {
+export function StatCell({
+  label,
+  value,
+  className = ""
+}: {
+  label: string;
+  value: string;
+  /** Фикс-ширина/выравнивание для list-вида, где ячейки статов стоят колонками. */
+  className?: string;
+}) {
   return (
-    <div className="min-w-0">
+    <div className={`min-w-0 ${className}`}>
       <div className="text-[11px] uppercase tracking-wider text-zinc-400">{label}</div>
       <div className="truncate text-sm font-medium tabular-nums text-zinc-900">{value}</div>
     </div>
@@ -66,11 +75,24 @@ export function StatCell({ label, value }: { label: string; value: string }) {
 }
 
 /** Ячейка цвета: SRM-число + точка реального оттенка пива. */
-export function ColorStatCell({ srm }: { srm: number | null }) {
+export function ColorStatCell({
+  srm,
+  className = "",
+  align = "start"
+}: {
+  srm: number | null;
+  /** Фикс-ширина/выравнивание для list-вида (колонки статов). */
+  className?: string;
+  align?: "start" | "end";
+}) {
   return (
-    <div className="min-w-0">
+    <div className={`min-w-0 ${className}`}>
       <div className="text-[11px] uppercase tracking-wider text-zinc-400">Цвет</div>
-      <div className="flex items-center gap-1.5 text-sm font-medium tabular-nums text-zinc-900">
+      <div
+        className={`flex items-center gap-1.5 text-sm font-medium tabular-nums text-zinc-900 ${
+          align === "end" ? "justify-end" : ""
+        }`}
+      >
         {srm == null ? (
           "—"
         ) : (
@@ -85,27 +107,6 @@ export function ColorStatCell({ srm }: { srm: number | null }) {
         )}
       </div>
     </div>
-  );
-}
-
-/**
- * Цвет пива пиллом для текстовой строки (list-вид): точка реального оттенка +
- * название. Используется там, где обложка-миниатюра слишком мала для полноценной
- * метки SRM. `null`, если SRM неизвестен.
- */
-export function ColorPip({ srm }: { srm: number | null }) {
-  if (srm == null || !Number.isFinite(srm)) {
-    return null;
-  }
-  return (
-    <span className="inline-flex min-w-0 items-center gap-1 text-xs text-zinc-600">
-      <span
-        aria-hidden
-        className="h-2.5 w-2.5 shrink-0 rounded-full ring-1 ring-inset ring-black/10"
-        style={{ backgroundColor: srmToHex(srm) }}
-      />
-      <span className="truncate">{beerColorFromSrm(srm).label}</span>
-    </span>
   );
 }
 
