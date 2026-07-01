@@ -134,7 +134,7 @@ describe("recipes read components", () => {
   });
 
   it("renders stats summary", () => {
-    const html = renderToStaticMarkup(React.createElement(RecipeStatsSummary, { recipe: recipeDetail }));
+    const html = renderToStaticMarkup(React.createElement(RecipeStatsSummary, { recipe: recipeDetail, preferredGravityUnit: "plato" }));
 
     expect(html).toContain("Ключевые показатели");
     expect(html).toContain("OG");
@@ -155,7 +155,8 @@ describe("recipes read components", () => {
           attenuationSource: "default",
           baseAttenuationPct: 75
         }
-      }
+      },
+      preferredGravityUnit: "plato"
     }));
 
     expect(html).toContain("Прогноз по умолчанию");
@@ -168,7 +169,8 @@ describe("recipes read components", () => {
       recipe: {
         ...recipeDetail,
         styleId: "american-pale-ale"
-      }
+      },
+      preferredGravityUnit: "plato"
     }));
 
     expect(html).toContain("BJCP:");

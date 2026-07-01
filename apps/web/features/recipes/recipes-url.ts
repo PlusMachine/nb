@@ -18,6 +18,12 @@ export const recipeFilterDefaults = {
   view: "grid"
 } as const;
 
+/** Презентационный вид витрины + cookie, в которой запоминаем выбор пользователя. */
+export type RecipesView = "grid" | "list";
+export const RECIPES_VIEW_COOKIE = "nb_recipes_view";
+export const parseRecipesView = (value: string | null | undefined): RecipesView | null =>
+  value === "list" ? "list" : value === "grid" ? "grid" : null;
+
 /** Рабочие опции сортировки (popular = по числу сохранений; rating — по среднему рейтингу). */
 export const recipeSortOptions: { value: PublicRecipeSort; label: string }[] = [
   { value: "newest", label: "Сначала новые" },

@@ -1,6 +1,7 @@
 import { getBjcpCatalogData } from "@nb/content";
 import { Bookmark } from "lucide-react";
 import type { Metadata } from "next";
+import { cookies } from "next/headers";
 import Link from "next/link";
 import React, { Suspense } from "react";
 
@@ -12,6 +13,7 @@ import { RecipesGridSkeleton } from "@/components/recipes/recipes-grid-skeleton"
 import { RecipesResults, type RawSearchParams } from "@/components/recipes/recipes-results";
 import { RecipesToolbar } from "@/components/recipes/recipes-toolbar";
 import { parsePublicRecipeFilters } from "@/features/recipes/public-recipe-query";
+import { RECIPES_VIEW_COOKIE, parseRecipesView } from "@/features/recipes/recipes-url";
 import { countSavedRecipes, getPublicRecipeFamilyCounts } from "@/features/recipes/service";
 import { buildRecipeStyleSearchIndex } from "@/features/recipes/style-search";
 import { getSessionUser } from "@/lib/auth";
@@ -33,7 +35,12 @@ export function generateMetadata(): Metadata {
 export default async function PublicRecipesPage({ searchParams }: { searchParams?: Promise<RawSearchParams> }) {
   const raw = (searchParams ? await searchParams : {}) as RawSearchParams;
   const filters = parsePublicRecipeFilters(raw);
-  const view = raw.view === "list" ? "list" : "grid";
+  // Вид: явный ?view выигрывает; иначе — запомненный в cookie выбор; иначе сетка.
+  const cookieStore = await cookies();
+  const view =
+    parseRecipesView(typeof raw.view === "string" ? raw.view : undefined) ??
+    parseRecipesView(cookieStore.get(RECIPES_VIEW_COOKIE)?.value) ??
+    "grid";
 
   // Слим-данные BJCP для клиентских контролов (без N+1 — один статический фетч).
   const catalog = await getBjcpCatalogData();
@@ -88,12 +95,12 @@ export default async function PublicRecipesPage({ searchParams }: { searchParams
         <div className="min-w-0 space-y-4">
           {/* Управление выдачей (поиск/сортировка/вид) собрано над результатами;
               инпуты фильтров — в сайдбаре слева (мобильный sheet — ниже). */}
-          <RecipesToolbar />
+          <RecipesToolbar defaultView={view} />
           <RecipesFilterSheet index={styleIndex} familyCounts={familyCounts} />
           <ActiveFilterChips familyOptions={familyOptions} styleOptions={styleOptions} />
 
           <Suspense fallback={<RecipesGridSkeleton view={view} />}>
-            <RecipesResults filters={filters} view={view} />
+            <RecipesResults filters={filters} view={view} preferredGravityUnit={viewer?.preferredGravityUnit} />
           </Suspense>
         </div>
       </div>

@@ -7,6 +7,7 @@ import type { IngredientSuggestionItem } from "@/features/ingredients/contracts"
 import type { RecipeImageDto } from "@/features/recipe-images/contracts";
 import type { RecipeDetailDto, RecipeStockCoverageDto } from "@/features/recipes/contracts";
 import type { RecipePublicationState } from "@/features/recipes/contracts";
+import type { PreferredGravityUnit } from "@/features/system/gravity-units";
 
 import { RecipeDesigner, type RecipeSaveStatus } from "./recipe-designer";
 
@@ -21,6 +22,7 @@ type Props = {
   onSaveStatusChange?: (status: RecipeSaveStatus) => void;
   onRecipeCreated?: (recipe: RecipeDetailDto) => void;
   onPublicationStateChange?: (state: RecipePublicationState) => void;
+  preferredGravityUnit: PreferredGravityUnit;
 };
 
 export function RecipeForm({
@@ -33,7 +35,8 @@ export function RecipeForm({
   equipmentProfiles,
   onSaveStatusChange,
   onRecipeCreated,
-  onPublicationStateChange
+  onPublicationStateChange,
+  preferredGravityUnit
 }: Props) {
   return (
     <RecipeDesigner
@@ -47,6 +50,7 @@ export function RecipeForm({
       onSaveStatusChange={onSaveStatusChange}
       onRecipeCreated={onRecipeCreated}
       onPublicationStateChange={onPublicationStateChange}
+      preferredGravityUnit={preferredGravityUnit}
     />
   );
 }

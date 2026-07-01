@@ -1,0 +1,2 @@
+CREATE TYPE "public"."preferred_gravity_unit" AS ENUM('sg', 'plato', 'brix');--> statement-breakpoint
+ALTER TABLE "users" ADD COLUMN "preferred_gravity_unit" "preferred_gravity_unit" DEFAULT 'plato' NOT NULL;

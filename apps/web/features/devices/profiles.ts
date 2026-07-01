@@ -5,7 +5,7 @@ import {
   type DeviceConfigPatch,
 } from "@nb/brewforge-protocol";
 
-import { getProvider } from "@/features/brew-controller";
+import { getProviderForDevice } from "@/features/brew-controller";
 
 import { getDeviceById } from "./service";
 
@@ -131,7 +131,7 @@ export const applyDeviceProfile = async (input: ApplyDeviceProfileInput): Promis
 
   const config = DeviceConfigPatchSchema.parse(profile.config);
 
-  const provider = getProvider("brewforge");
+  const provider = getProviderForDevice(device);
   if (!provider?.writeConfig) {
     throw new Error("PROVIDER_UNAVAILABLE");
   }

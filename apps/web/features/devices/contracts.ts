@@ -72,6 +72,53 @@ export type PairingCodeResult = {
   expiresAt: Date;
 };
 
+// =============================================================================
+//  Плитки L1 командного центра (грид пивоварен → статус → пульт).
+//  Плитка берёт LAST-KNOWN из brew_telemetry + lastSeenAt (без SSE-петли на
+//  плитку — см. docs/brewery-command-center.md §«Архитектура телеметрии»):
+//  N плиток × M клиентов не должны плодить N×M опросов слабого ESP32.
+// =============================================================================
+
+/** Последний известный срез телеметрии для плитки (raw-поля, декод — на клиенте). */
+export type DeviceTileSnapshot = {
+  /** epoch-мс последнего исторического кадра (для расчёта свежести на клиенте). */
+  ts: number;
+  stage: number | null;
+  primaryC: number | null;
+  setpointC: number | null;
+  heatDutyPct: number | null;
+  faultMask: number;
+};
+
+/** Плитка устройства для L1-грида: метаданные + last-known срез + sparkline. */
+export type DeviceTile = {
+  id: string;
+  name: string;
+  hardwareId: string;
+  status: DeviceStatus;
+  fw: string | null;
+  isDemo: boolean;
+  lastSeenAt: string | null; // ISO
+  /** Last-known срез телеметрии; null — истории ещё нет (никто не открывал пульт). */
+  snapshot: DeviceTileSnapshot | null;
+  /** Недавняя температура (oldest→newest), nulls отброшены — для sparkline. */
+  spark: number[];
+};
+
+// Пороги свежести last-known среза плитки (клиентский расчёт по snapshot.ts).
+// Телеметрия персистится даунсэмплом ~раз в 10с ТОЛЬКО пока кто-то подписан —
+// поэтому «recent» широкий, а не 6с, как онлайн-детект дашборда. Держим здесь
+// (client-safe контракт, без серверных импортов): плитка — клиентский компонент.
+export const TILE_LIVE_WITHIN_MS = 20_000;
+export const TILE_STALE_AFTER_MS = 120_000;
+
+/** Классификация свежести last-known среза плитки по возрасту, мс. */
+export function classifyTileFreshness(ageMs: number): "live" | "recent" | "stale" {
+  if (ageMs <= TILE_LIVE_WITHIN_MS) return "live";
+  if (ageMs <= TILE_STALE_AFTER_MS) return "recent";
+  return "stale";
+}
+
 /** Вход updateDeviceStatus (вызывает мост/бридж при коннекте/телеметрии). */
 export const updateDeviceStatusSchema = z.object({
   hardwareId: z.string().trim().min(1).max(128),

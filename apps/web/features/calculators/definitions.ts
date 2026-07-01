@@ -13,7 +13,6 @@ import {
   calculateWaterPh,
   calculateYeastStarter,
   classifyApparentAttenuation,
-  convertBrewingUnitGroup,
   correctHydrometer,
   correctRefractometer,
   gravityToSg,
@@ -61,6 +60,7 @@ export type ArrayCalculatorField = {
   kind: "array";
   name: string;
   label: string;
+  rowLabel?: string;
   helper?: string;
   addLabel: string;
   minRows?: number;
@@ -138,7 +138,6 @@ const formatLiters = (value: number) => `${compactNumber(value, 2)} л`;
 const formatGrams = (value: number) => `${compactNumber(value, 1)} г`;
 const formatPercent = (value: number, decimals = 1) => `${compactNumber(value, decimals)}%`;
 const formatSg = (value: number) => value.toFixed(3);
-const formatPressure = (psi: number, bar: number, kpa: number) => `${compactNumber(psi, 1)} PSI / ${compactNumber(bar, 2)} bar / ${compactNumber(kpa, 0)} kPa`;
 
 const numberField = (
   name: string,
@@ -201,19 +200,26 @@ const gravityUnitOptions = [
   { value: "Brix", label: "Brix" }
 ];
 
+// ABV намеренно без Brix: показание рефрактометра после брожения занижает крепость,
+// поэтому Brix-путь уводим в калькулятор поправки рефрактометра (он вернёт исправленный FG).
+const abvGravityUnitOptions = [
+  { value: "SG", label: "SG" },
+  { value: "Plato", label: "°P" }
+];
+
 const sugarTypeOptions = [
   { value: "dextrose", label: "Декстроза" },
   { value: "sucrose", label: "Сахароза" },
-  { value: "dme", label: "DME" },
+  { value: "dme", label: "Сухой экстракт (DME)" },
   { value: "honey", label: "Мед" }
 ];
 
 const hopUseLabels: Record<string, string> = {
   boil: "Кипячение",
-  first_wort_hop: "FWH",
-  whirlpool: "Whirlpool",
-  dry_hop: "Dry hop",
-  dip_hop: "Dip hop",
+  first_wort_hop: "Первое сусло",
+  whirlpool: "Вирпул",
+  dry_hop: "Сухое охмеление",
+  dip_hop: "Дип-хоп",
   other: "Другое"
 };
 
@@ -343,6 +349,94 @@ export const computeRefractometerView = (state: CalculatorState): RefractometerV
   };
 };
 
+// ── ABV / сбраживание: структурный вид для кастомной панели ──────────────────
+export type AbvView = {
+  ogSg: number;
+  fgSg: number;
+  abv: number;
+  abw: number;
+  attenuation: number;
+  attenuationBand: ApparentAttenuationBand | null;
+  calories: number;
+  servingSizeMl: number;
+  fgAboveOg: boolean;
+};
+
+export const computeAbvView = (state: CalculatorState): AbvView => {
+  const unit = s(state.gravityUnit, "SG") as CalculatorGravityUnit;
+  const ogSg = gravityToSg(n(state.og, 1.05), unit);
+  const fgSg = gravityToSg(n(state.fg, 1.012), unit);
+  const servingSizeMl = n(state.servingSizeMl, 500);
+  const result = calculateAbvAttenuation({
+    og: ogSg,
+    fg: fgSg,
+    formula: s(state.abvFormula, "standard") as "standard" | "alternate",
+    servingSizeMl
+  });
+  const fgAboveOg = fgSg > ogSg;
+
+  return {
+    ogSg,
+    fgSg,
+    abv: result.abv,
+    abw: result.abw,
+    attenuation: result.apparentAttenuation,
+    // Полосу считаем только для осмысленного замера: при FG > OG сбраживание отрицательное.
+    attenuationBand: fgAboveOg ? null : classifyApparentAttenuation(result.apparentAttenuation),
+    calories: result.calories,
+    servingSizeMl,
+    fgAboveOg
+  };
+};
+
+// ── Поправка ареометра по температуре: структурный вид для кастомной панели ───
+export type HydrometerView = {
+  unit: CalculatorGravityUnit;
+  rawInUnit: number;
+  correctedInUnit: number;
+  correctedSg: number;
+  correctedPlato: number;
+  correctedBrix: number;
+  deltaInUnit: number;
+  sampleTemperatureC: number;
+  calibrationTemperatureC: number;
+  tempDeltaC: number;
+  direction: "hot" | "cold" | "equal";
+};
+
+export const computeHydrometerView = (state: CalculatorState): HydrometerView => {
+  const unit = s(state.readingUnit, "SG") as CalculatorGravityUnit;
+  const reading = n(state.reading, 1.05);
+  const sampleTemperatureC = n(state.sampleTemperatureC, 30);
+  const calibrationTemperatureC = n(state.calibrationTemperatureC, 20);
+  const result = correctHydrometer({
+    reading,
+    readingUnit: unit,
+    sampleTemperatureC,
+    calibrationTemperatureC,
+    instrumentOffset: n(state.instrumentOffset, 0)
+  });
+  const correctedSg = result.correctedSG;
+  const correctedPlato = result.correctedPlato;
+  const correctedBrix = sgToBrix(correctedSg);
+  const correctedInUnit = unit === "SG" ? correctedSg : unit === "Brix" ? correctedBrix : correctedPlato;
+  const tempDeltaC = roundTo(sampleTemperatureC - calibrationTemperatureC, 1);
+
+  return {
+    unit,
+    rawInUnit: reading,
+    correctedInUnit,
+    correctedSg,
+    correctedPlato,
+    correctedBrix,
+    deltaInUnit: correctedInUnit - reading,
+    sampleTemperatureC,
+    calibrationTemperatureC,
+    tempDeltaC,
+    direction: Math.abs(tempDeltaC) < 0.5 ? "equal" : tempDeltaC > 0 ? "hot" : "cold"
+  };
+};
+
 export const calculatorDefinitions: CalculatorDefinition[] = [
   calculator("dilution-boiloff", {
     defaults: {
@@ -360,7 +454,7 @@ export const calculatorDefinitions: CalculatorDefinition[] = [
         { value: "boil_to_gravity", label: "Уварить до целевой плотности" },
         { value: "gravity_after_water", label: "Новая плотность после добавления воды" },
         { value: "gravity_after_boiloff", label: "Новая плотность после испарения" },
-        { value: "add_extract_to_gravity", label: "Добавить DME/сахар до цели" },
+        { value: "add_extract_to_gravity", label: "Добавить экстракт/сахар до цели" },
         { value: "extra_boil_time", label: "Дополнительное время кипячения" }
       ]),
       numberField("currentVolumeL", "Текущий объем", "л", { min: 0.1 }),
@@ -370,7 +464,7 @@ export const calculatorDefinitions: CalculatorDefinition[] = [
       numberField("boilOffRateLPerHour", "Испарение", "л/ч", { min: 0, advanced: true }),
       selectField("additionType", "Что добавляем", [
         { value: "water", label: "Вода" },
-        { value: "dme", label: "DME" },
+        { value: "dme", label: "Сухой экстракт" },
         { value: "sugar", label: "Сахар" }
       ], { advanced: true })
     ],
@@ -390,7 +484,7 @@ export const calculatorDefinitions: CalculatorDefinition[] = [
         : result.volumeToBoilOffL > 0
           ? { label: "Уварить", value: formatLiters(result.volumeToBoilOffL), helper: result.extraBoilTimeMinutes ? `Около ${result.extraBoilTimeMinutes} мин` : undefined }
           : extract > 0
-            ? { label: "Добавить экстракт", value: formatGrams(extract), helper: result.dmeToAddG ? "DME" : "Сахар" }
+            ? { label: "Добавить экстракт", value: formatGrams(extract), helper: result.dmeToAddG ? "Сухой экстракт" : "Сахар" }
             : { label: "Итоговая плотность", value: formatSg(result.resultingGravity), helper: `Итоговый объем ${formatLiters(result.resultingVolumeL)}` };
 
       return {
@@ -419,34 +513,31 @@ export const calculatorDefinitions: CalculatorDefinition[] = [
       servingSizeMl: 500
     },
     fields: [
-      numberField("og", "OG", undefined, { min: 0, step: 0.001 }),
-      numberField("fg", "FG", undefined, { min: 0, step: 0.001 }),
-      selectField("gravityUnit", "Единицы плотности", gravityUnitOptions),
-      selectField("abvFormula", "Формула ABV", [
+      numberField("og", "Начальная плотность (OG)", undefined, { min: 0, step: 0.001 }),
+      numberField("fg", "Конечная плотность (FG)", undefined, { min: 0, step: 0.001 }),
+      selectField("gravityUnit", "Шкала плотности", abvGravityUnitOptions),
+      selectField("abvFormula", "Формула крепости", [
         { value: "standard", label: "Стандартная" },
-        { value: "alternate", label: "Альтернативная" }
+        { value: "alternate", label: "Альтернативная (крепкое пиво)" }
       ], { advanced: true }),
       numberField("servingSizeMl", "Размер порции", "мл", { min: 1, step: 50, advanced: true })
     ],
     calculate: (state) => {
-      const unit = s(state.gravityUnit, "SG") as "SG" | "Plato" | "Brix";
-      const og = gravityToSg(n(state.og, 1.05), unit);
-      const fg = gravityToSg(n(state.fg, 1.012), unit);
-      const result = calculateAbvAttenuation({
-        og,
-        fg,
-        formula: s(state.abvFormula, "standard") as "standard" | "alternate",
-        servingSizeMl: n(state.servingSizeMl, 500)
-      });
+      const view = computeAbvView(state);
+      const attenuationTone: CalculatorResultStat["tone"] = view.fgAboveOg
+        ? "warning"
+        : view.attenuationBand === "normal"
+          ? "good"
+          : "warning";
 
       return {
-        primary: { label: "ABV", value: formatPercent(result.abv, 2), helper: `Видимое сбраживание ${formatPercent(result.apparentAttenuation)}` },
+        primary: { label: "Крепость (ABV)", value: formatPercent(view.abv, 2), helper: `ABW ${formatPercent(view.abw, 2)}` },
         stats: [
-          { label: "ABW", value: formatPercent(result.abw, 2) },
-          { label: "Сбраживание", value: formatPercent(result.apparentAttenuation) },
-          { label: "Калории", value: `${result.calories} ккал`, helper: `${compactNumber(n(state.servingSizeMl, 500), 0)} мл` },
-          { label: "OG / FG", value: `${formatSg(og)} / ${formatSg(fg)}` }
+          { label: "Видимое сбраживание", value: formatPercent(view.attenuation), tone: attenuationTone },
+          { label: "Калории", value: `${view.calories} ккал`, helper: `${compactNumber(view.servingSizeMl, 0)} мл` },
+          { label: "OG / FG", value: `${formatSg(view.ogSg)} / ${formatSg(view.fgSg)}` }
         ],
+        warnings: view.fgAboveOg ? ["Конечная плотность выше начальной — проверьте замеры."] : undefined,
         links: relatedLinks(["priming-sugar", "keg-carbonation", "refractometer-correction", "hydrometer-correction", "unit-converter"])
       };
     }
@@ -532,29 +623,32 @@ export const calculatorDefinitions: CalculatorDefinition[] = [
       instrumentOffset: 0
     },
     fields: [
-      numberField("reading", "Показание", undefined, { min: 0, step: 0.001 }),
-      selectField("readingUnit", "Единицы", gravityUnitOptions),
+      numberField("reading", "Показание ареометра", undefined, { min: 0, step: 0.001 }),
+      selectField("readingUnit", "Единицы измерения", gravityUnitOptions),
       numberField("sampleTemperatureC", "Температура пробы", "°C", { step: 0.5 }),
-      numberField("calibrationTemperatureC", "Калибровка", "°C", { step: 0.5, advanced: true }),
+      numberField("calibrationTemperatureC", "Температура калибровки", "°C", { step: 0.5, advanced: true }),
       numberField("instrumentOffset", "Поправка прибора", "SG", { step: 0.001, advanced: true })
     ],
     calculate: (state) => {
-      const result = correctHydrometer({
-        reading: n(state.reading, 1.05),
-        readingUnit: s(state.readingUnit, "SG") as "SG" | "Plato" | "Brix",
-        sampleTemperatureC: n(state.sampleTemperatureC, 30),
-        calibrationTemperatureC: n(state.calibrationTemperatureC, 20),
-        instrumentOffset: n(state.instrumentOffset, 0)
-      });
+      const view = computeHydrometerView(state);
+      const unitLabel = view.unit === "SG" ? "SG" : view.unit === "Brix" ? "Brix" : "°P";
+      const decimals = view.unit === "SG" ? 3 : 1;
+      const deltaDecimals = view.unit === "SG" ? 4 : 2;
+      const signedDelta = `${view.deltaInUnit >= 0 ? "+" : "−"}${Math.abs(view.deltaInUnit).toFixed(deltaDecimals)} ${unitLabel}`;
 
       return {
-        primary: { label: "Скорр. SG", value: result.correctedSG.toFixed(3), helper: `${result.correctedPlato.toFixed(2)} °P` },
+        primary: {
+          label: "Скорректированная плотность",
+          value: `${view.correctedInUnit.toFixed(decimals)} ${unitLabel}`,
+          helper: `Поправка ${signedDelta}`
+        },
         stats: [
-          { label: "Скорр. Plato", value: `${result.correctedPlato.toFixed(2)} °P` },
-          { label: "Поправка", value: `${(result.correctedSG - gravityToSg(n(state.reading, 1.05), s(state.readingUnit, "SG") as "SG" | "Plato" | "Brix")).toFixed(4)} SG` }
+          { label: "SG", value: view.correctedSg.toFixed(3) },
+          { label: "°P", value: `${view.correctedPlato.toFixed(1)} °P` },
+          { label: "До поправки", value: `${view.rawInUnit.toFixed(decimals)} ${unitLabel}` }
         ],
         links: [
-          { label: "Использовать как OG в ABV", href: buildCalculatorHref("abv-attenuation", { og: result.correctedSG.toFixed(3) }) },
+          { label: "Использовать как OG в ABV", href: buildCalculatorHref("abv-attenuation", { og: view.correctedSg.toFixed(3) }) },
           ...relatedLinks(["refractometer-correction", "unit-converter"])
         ]
       };
@@ -579,18 +673,19 @@ export const calculatorDefinitions: CalculatorDefinition[] = [
       return { ...state, additions: [{ ...first, alphaAcidPercent: params.aa }, ...currentRows.slice(1)] };
     },
     fields: [
-      numberField("postBoilVolumeL", "Объем после кипа", "л", { min: 0.1 }),
+      numberField("postBoilVolumeL", "Объем после кипячения", "л", { min: 0.1 }),
       numberField("wortGravity", "Плотность сусла", "SG", { min: 1, step: 0.001 }),
       selectField("formula", "Формула", [
-        { value: "tinseth_whirlpool_v2", label: "Tinseth + whirlpool" },
-        { value: "tinseth_classic", label: "Tinseth classic" },
+        { value: "tinseth_whirlpool_v2", label: "Tinseth + вирпул" },
+        { value: "tinseth_classic", label: "Tinseth (классическая)" },
         { value: "rager", label: "Rager" }
       ]),
       {
         kind: "array",
         name: "additions",
         label: "Внесения хмеля",
-        addLabel: "Добавить внесение",
+        rowLabel: "Хмель",
+        addLabel: "Добавить хмель",
         minRows: 1,
         fields: [
           numberField("amountG", "Масса", "г", { min: 0 }),
@@ -606,11 +701,11 @@ export const calculatorDefinitions: CalculatorDefinition[] = [
             { value: "pellet", label: "Гранулы" },
             { value: "leaf", label: "Листовой" }
           ]),
-          numberField("whirlpoolTemperatureC", "Темп. whirlpool", "°C", { min: 0, step: 1, advanced: true })
+          numberField("whirlpoolTemperatureC", "Темп. вирпула", "°C", { min: 0, step: 1, advanced: true })
         ]
       },
-      numberField("boilTimeMinutes", "Длительность кипа", "мин", { min: 0, step: 5, advanced: true }),
-      numberField("whirlpoolTemperatureC", "Темп. whirlpool", "°C", { min: 0, step: 1, advanced: true })
+      numberField("boilTimeMinutes", "Время кипячения", "мин", { min: 0, step: 5, advanced: true }),
+      numberField("whirlpoolTemperatureC", "Темп. вирпула", "°C", { min: 0, step: 1, advanced: true })
     ],
     calculate: (state) => {
       const additions: HopAdditionInput[] = rows(state.additions).map((row, index) => ({
@@ -663,7 +758,7 @@ export const calculatorDefinitions: CalculatorDefinition[] = [
     fields: [
       numberField("beerVolumeL", "Объем пива", "л", { min: 0.1 }),
       numberField("beerTemperatureC", "Температура пива", "°C", { step: 0.5 }),
-      numberField("targetCo2Volumes", "Целевой CO2", "vol", { min: 0, step: 0.1 }),
+      numberField("targetCo2Volumes", "Целевой CO2", "об.", { min: 0, step: 0.1 }),
       selectField("sugarType", "Тип сахара", sugarTypeOptions),
       selectField("mode", "Режим", [
         { value: "bulk", label: "Общий объем" },
@@ -684,8 +779,8 @@ export const calculatorDefinitions: CalculatorDefinition[] = [
         primary: { label: "Всего сахара", value: formatGrams(result.totalSugarGrams), helper: `${result.gramsPerLiter.toFixed(2)} г/л` },
         stats: [
           { label: "На бутылку", value: formatGrams(result.gramsPerBottle) },
-          { label: "Остаточный CO2", value: `${result.residualCo2.toFixed(2)} vol` },
-          { label: "Целевой CO2", value: `${compactNumber(n(state.targetCo2Volumes, 2.4), 1)} vol` }
+          { label: "Остаточный CO2", value: `${result.residualCo2.toFixed(2)} об.` },
+          { label: "Целевой CO2", value: `${compactNumber(n(state.targetCo2Volumes, 2.4), 1)} об.` }
         ],
         links: [
           { label: "Посчитать бутылки", href: buildCalculatorHref("bottling", { volume: n(state.beerVolumeL, 20), sugarPerLiter: result.gramsPerLiter }) },
@@ -833,7 +928,7 @@ export const calculatorDefinitions: CalculatorDefinition[] = [
           { label: "Нужно клеток", value: `${compactNumber(result.requiredCellsBillion, 0)} млрд` },
           { label: "Доступно", value: `${compactNumber(result.viableCellsBillion, 0)} млрд` },
           { label: "Жизнеспособность", value: formatPercent(result.viabilityPercent) },
-          { label: "DME на стартер", value: formatGrams(result.dmeForStarterG) },
+          { label: "Экстракт на стартер", value: formatGrams(result.dmeForStarterG) },
           { label: "°P", value: `${sgToPlato(n(state.gravity, 1.05)).toFixed(1)} °P` }
         ],
         links: relatedLinks(["abv-attenuation", "unit-converter"])
@@ -854,12 +949,12 @@ export const calculatorDefinitions: CalculatorDefinition[] = [
         { value: "spunding", label: "Шпунтование" }
       ]),
       numberField("beerTemperatureC", "Температура пива", "°C", { step: 0.5 }),
-      numberField("targetCo2Volumes", "Целевой CO2", "vol", { min: 0, step: 0.1 }),
-      selectField("pressureUnit", "Единицы", [
+      numberField("targetCo2Volumes", "Целевой CO2", "об.", { min: 0, step: 0.1 }),
+      selectField("pressureUnit", "Единицы измерения", [
         { value: "PSI", label: "PSI" },
         { value: "bar", label: "bar" },
         { value: "kPa", label: "kPa" }
-      ], { advanced: true })
+      ])
     ],
     calculate: (state) => {
       const result = calculateKegCarbonationPressure({
@@ -867,9 +962,16 @@ export const calculatorDefinitions: CalculatorDefinition[] = [
         targetCo2Volumes: n(state.targetCo2Volumes, 2.4),
         mode: s(state.mode, "carbonate") as "carbonate" | "serving" | "spunding"
       });
+      const unit = s(state.pressureUnit, "PSI") as "PSI" | "bar" | "kPa";
+      const pressureByUnit = {
+        PSI: { value: compactNumber(result.psi, 1), numeric: result.psi },
+        bar: { value: compactNumber(result.bar, 2), numeric: result.bar },
+        kPa: { value: compactNumber(result.kpa, 0), numeric: result.kpa }
+      };
+      const chosen = pressureByUnit[unit] ?? pressureByUnit.PSI;
 
       return {
-        primary: { label: "Давление", value: formatPressure(result.psi, result.bar, result.kpa), helper: "Равновесное давление при температуре пива" },
+        primary: { label: "Давление", value: `${chosen.value} ${unit}`, helper: "Равновесное давление при температуре пива" },
         stats: [
           { label: "PSI", value: compactNumber(result.psi, 1) },
           { label: "bar", value: compactNumber(result.bar, 2) },
@@ -877,7 +979,7 @@ export const calculatorDefinitions: CalculatorDefinition[] = [
         ],
         warnings: result.warnings.map((warning) => warning.replaceAll("_", " ")),
         links: [
-          { label: "Конвертер давления", href: buildCalculatorHref("unit-converter", { group: "pressure", value: result.psi, from: "PSI" }) },
+          { label: "Конвертер давления", href: buildCalculatorHref("unit-converter", { group: "pressure", value: chosen.numeric, from: unit }) },
           ...relatedLinks(["priming-sugar", "speise-krausen", "abv-attenuation"])
         ]
       };
@@ -900,15 +1002,15 @@ export const calculatorDefinitions: CalculatorDefinition[] = [
       numberField("targetFermenterVolumeL", "В ферментер", "л", { min: 0.1 }),
       numberField("grainWeightKg", "Зерно", "кг", { min: 0 }),
       numberField("mashThicknessLPerKg", "Гидромодуль", "л/кг", { min: 0, step: 0.1 }),
-      numberField("boilTimeMinutes", "Кипячение", "мин", { min: 0, step: 5 }),
+      numberField("boilTimeMinutes", "Время кипячения", "мин", { min: 0, step: 5 }),
       numberField("boilOffRateLPerHour", "Испарение", "л/ч", { min: 0, step: 0.1 }),
       numberField("grainAbsorptionLPerKg", "Впитывание зерна", "л/кг", { min: 0, step: 0.05, advanced: true }),
       numberField("kettleLossL", "Потери в котле", "л", { min: 0, advanced: true }),
       numberField("trubChillerLossL", "Осадок/чиллер", "л", { min: 0, advanced: true }),
-      numberField("coolingShrinkagePercent", "Усадка охлаждения", "%", { min: 0, advanced: true }),
+      numberField("coolingShrinkagePercent", "Усадка при охлаждении", "%", { min: 0, advanced: true }),
       selectField("methodPreset", "Метод", [
         { value: "BIAB", label: "BIAB" },
-        { value: "allInOne", label: "All-in-one система" },
+        { value: "allInOne", label: "Система All-in-one" },
         { value: "mashTunWithSparge", label: "Заторник + промывка" },
         { value: "extract", label: "Экстракт" }
       ], { advanced: true })
@@ -932,8 +1034,8 @@ export const calculatorDefinitions: CalculatorDefinition[] = [
         stats: [
           { label: "Затор", value: formatLiters(result.mashWaterL) },
           { label: "Промывка", value: formatLiters(result.spargeWaterL) },
-          { label: "До кипа", value: formatLiters(result.preBoilVolumeL) },
-          { label: "После кипа", value: formatLiters(result.postBoilHotVolumeL) },
+          { label: "До кипячения", value: formatLiters(result.preBoilVolumeL) },
+          { label: "После кипячения", value: formatLiters(result.postBoilHotVolumeL) },
           { label: "Холодный объем", value: formatLiters(result.postBoilCoolVolumeL) },
           { label: "В ферментер", value: formatLiters(result.intoFermenterVolumeL) }
         ],
@@ -957,7 +1059,8 @@ export const calculatorDefinitions: CalculatorDefinition[] = [
       {
         kind: "array",
         name: "fermentables",
-        label: "Сбраживаемые",
+        label: "Засыпь",
+        rowLabel: "Солод",
         addLabel: "Добавить солод",
         minRows: 1,
         fields: [
@@ -981,7 +1084,7 @@ export const calculatorDefinitions: CalculatorDefinition[] = [
           { label: "SRM", value: result.srm.toFixed(1) },
           { label: "EBC", value: result.ebc.toFixed(1) },
           { label: "MCU", value: result.mcu.toFixed(2) },
-          ...result.contributions.slice(0, 3).map((item, index) => ({ label: `Сбраживаемое ${index + 1}`, value: `${item.srm.toFixed(1)} SRM`, helper: `MCU ${item.mcu}` }))
+          ...result.contributions.slice(0, 3).map((item, index) => ({ label: `Солод ${index + 1}`, value: `${item.srm.toFixed(1)} SRM`, helper: `MCU ${item.mcu}` }))
         ],
         links: relatedLinks(["ibu", "water-ph", "unit-converter"])
       };
@@ -1002,7 +1105,7 @@ export const calculatorDefinitions: CalculatorDefinition[] = [
     }),
     fields: [
       numberField("beerVolumeL", "Объем пива", "л", { min: 0.1 }),
-      numberField("packagingLossL", "Потери розлива", "л", { min: 0, advanced: true }),
+      numberField("packagingLossL", "Потери при розливе", "л", { min: 0, advanced: true }),
       selectField("mode", "Режим", [
         { value: "singleSize", label: "Один размер" },
         { value: "mixed", label: "Смешанный" }
@@ -1049,14 +1152,14 @@ export const calculatorDefinitions: CalculatorDefinition[] = [
     },
     fields: [
       selectField("mode", "Режим", [
-        { value: "speise", label: "Speise" },
-        { value: "krausen", label: "Krausen" },
-        { value: "gyle", label: "Gyle" }
+        { value: "speise", label: "Шпайзе" },
+        { value: "krausen", label: "Кройцен" },
+        { value: "gyle", label: "Гайл (молодое сусло)" }
       ]),
       numberField("beerVolumeL", "Объем пива", "л", { min: 0.1 }),
-      numberField("targetCo2", "Целевой CO2", "vol", { min: 0, step: 0.1 }),
-      numberField("residualCo2", "Остаточный CO2", "vol", { min: 0, step: 0.01 }),
-      numberField("speiseGravity", "Плотность speise", "SG", { min: 1, step: 0.001 }),
+      numberField("targetCo2", "Целевой CO2", "об.", { min: 0, step: 0.1 }),
+      numberField("residualCo2", "Остаточный CO2", "об.", { min: 0, step: 0.01 }),
+      numberField("speiseGravity", "Плотность сусла", "SG", { min: 1, step: 0.001 }),
       numberField("temperatureC", "Температура", "°C", { step: 0.5, advanced: true })
     ],
     calculate: (state) => {
@@ -1074,7 +1177,7 @@ export const calculatorDefinitions: CalculatorDefinition[] = [
         stats: [
           { label: "Финальный объем", value: formatLiters(result.finalVolumeL) },
           { label: "Изменение ABV", value: formatPercent(result.approximateAbvChange, 2) },
-          { label: "Остаточный CO2", value: `${compactNumber(n(state.residualCo2, 0.86), 2)} vol` }
+          { label: "Остаточный CO2", value: `${compactNumber(n(state.residualCo2, 0.86), 2)} об.` }
         ],
         links: relatedLinks(["priming-sugar", "bottling", "keg-carbonation", "unit-converter"])
       };
@@ -1106,7 +1209,7 @@ export const calculatorDefinitions: CalculatorDefinition[] = [
         { value: "pellet", label: "Гранулы" },
         { value: "leaf", label: "Листовой" }
       ]),
-      numberField("hsi", "HSI", undefined, { min: 0, step: 0.01, advanced: true }),
+      numberField("hsi", "HSI", undefined, { min: 0, step: 0.01, advanced: true, helper: "Индекс потери альфа-кислот: чем выше, тем быстрее теряется горечь" }),
       numberField("targetAmountG", "Исходная масса", "г", { min: 0, step: 1, advanced: true })
     ],
     calculate: (state) => {
@@ -1135,67 +1238,42 @@ export const calculatorDefinitions: CalculatorDefinition[] = [
     }
   }),
   calculator("unit-converter", {
+    // Состояние — по одной паре {from, value} на каждую группу: страница показывает
+    // все мини-конвертеры сразу, каждый живёт отдельно.
     defaults: {
-      group: "gravity",
-      value: 1.05,
-      from: "SG"
+      activeGroup: "gravity",
+      gravityFrom: "SG", gravityValue: "1.05",
+      colorFrom: "SRM", colorValue: "6",
+      volumeFrom: "L", volumeValue: "20",
+      weightFrom: "kg", weightValue: "1",
+      temperatureFrom: "C", temperatureValue: "20",
+      pressureFrom: "PSI", pressureValue: "14.5",
+      concentrationFrom: "ppm", concentrationValue: "100"
     },
+    // Входящие ссылки (напр. из кеговой карбонизации) передают group/value/from —
+    // раскладываем их в per-group ключи. psi оставлен для обратной совместимости старых ссылок.
     applyQuery: (state, params) => {
-      if (params.psi) {
-        return { ...state, group: "pressure", value: params.psi, from: "PSI" };
+      const knownGroups = ["gravity", "color", "volume", "weight", "temperature", "pressure", "concentration"];
+      if (params.group && knownGroups.includes(params.group) && params.value != null) {
+        return {
+          ...state,
+          activeGroup: params.group,
+          [`${params.group}From`]: params.from ?? state[`${params.group}From`],
+          [`${params.group}Value`]: params.value
+        };
       }
-
+      if (params.psi) {
+        return { ...state, activeGroup: "pressure", pressureFrom: "PSI", pressureValue: params.psi };
+      }
       return state;
     },
-    fields: [
-      selectField("group", "Группа", [
-        { value: "gravity", label: "Плотность" },
-        { value: "color", label: "Цвет" },
-        { value: "volume", label: "Объем" },
-        { value: "weight", label: "Вес" },
-        { value: "temperature", label: "Температура" },
-        { value: "pressure", label: "Давление" },
-        { value: "concentration", label: "Концентрации" }
-      ]),
-      numberField("value", "Значение", undefined, { step: 0.001 }),
-      selectField("from", "Из", [
-        { value: "SG", label: "SG" },
-        { value: "points", label: "gravity points" },
-        { value: "Plato", label: "Plato" },
-        { value: "Brix", label: "Brix" },
-        { value: "SRM", label: "SRM" },
-        { value: "EBC", label: "EBC" },
-        { value: "Lovibond", label: "Lovibond" },
-        { value: "ml", label: "ml" },
-        { value: "L", label: "L" },
-        { value: "oz", label: "oz" },
-        { value: "qt", label: "qt" },
-        { value: "gal", label: "gal" },
-        { value: "g", label: "g" },
-        { value: "kg", label: "kg" },
-        { value: "lb", label: "lb" },
-        { value: "C", label: "°C" },
-        { value: "F", label: "°F" },
-        { value: "K", label: "K" },
-        { value: "PSI", label: "PSI" },
-        { value: "bar", label: "bar" },
-        { value: "kPa", label: "kPa" },
-        { value: "ppm", label: "ppm / mg/L" },
-        { value: "g/L", label: "g/L" }
-      ])
-    ],
-    calculate: (state) => {
-      const group = s(state.group, "gravity") as Parameters<typeof convertBrewingUnitGroup>[0];
-      const converted = convertBrewingUnitGroup(group, n(state.value, 0), s(state.from, "SG"));
-      const entries = Object.entries(converted);
-      const first = entries[0] ?? ["—", 0];
-
-      return {
-        primary: { label: first[0], value: String(first[1]), helper: `Из ${s(state.from, "SG")}` },
-        stats: entries.map(([label, value]) => ({ label, value: String(value) })),
-        links: relatedLinks(["abv-attenuation", "ibu", "water-ph", "keg-carbonation"])
-      };
-    }
+    // Рендерится собственным блоком (UnitConverterBlock), без generic-полей и правой панели.
+    fields: [],
+    calculate: () => ({
+      primary: { label: "Конвертер", value: "—" },
+      stats: [],
+      links: relatedLinks(["abv-attenuation", "ibu", "water-ph", "keg-carbonation"])
+    })
   })
 ];
 

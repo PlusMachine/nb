@@ -1,5 +1,6 @@
 import { requireUser } from "@/lib/auth";
 import { systemCurrencies } from "@/features/system/currency";
+import { gravityUnitLabels, preferredGravityUnits } from "@/features/system/gravity-units";
 
 import { updateSettingsAction } from "../settings/actions";
 
@@ -20,6 +21,12 @@ export default async function ProfilePage() {
         <label className="block text-sm">Display currency</label>
         <select name="preferredCurrency" className="w-full rounded border p-2" defaultValue={user.preferredCurrency}>
           {systemCurrencies.map((currency) => <option key={currency} value={currency}>{currency}</option>)}
+        </select>
+        <label className="block text-sm">Единица плотности</label>
+        <select name="preferredGravityUnit" className="w-full rounded border p-2" defaultValue={user.preferredGravityUnit}>
+          {preferredGravityUnits.map((unit) => (
+            <option key={unit} value={unit}>{gravityUnitLabels[unit]}</option>
+          ))}
         </select>
         <button className="rounded bg-black px-3 py-2 text-white" type="submit">Сохранить</button>
       </form>

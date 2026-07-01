@@ -1,6 +1,6 @@
 "use client";
 
-import { beerStyleFixtures, convertVolume, convertWeight, evaluateStyleFit, getBeerStyleById, getBjcpArticleHrefByStyleId, getBjcpStyleDisplayName, getStyleRangeById, searchBeerStyles, srmToEbc, type BrewingSaltId } from "@nb/brewing-core";
+import { beerStyleFixtures, convertVolume, convertWeight, evaluateStyleFit, getBeerStyleById, getBjcpArticleHrefByStyleId, getBjcpStyleDisplayName, getStyleRangeById, gravityToSg, searchBeerStyles, sgToGravityUnit, srmToEbc, type BrewingSaltId } from "@nb/brewing-core";
 import {
   CircleCheck,
   CircleAlert,
@@ -133,7 +133,8 @@ import {
   type RecipeWaterPlanMeta
 } from "@/features/recipes/contracts";
 import { beerColorFromSrm } from "@/features/recipes/beer-color";
-import { formatBrixFromSg, formatColorWithEbc, formatGravityWithPlato, formatPlatoFromSg } from "@/features/recipes/format";
+import { formatColorWithEbc } from "@/features/recipes/format";
+import { formatGravity, gravityUnitLabels, toCalculatorGravityUnit, type PreferredGravityUnit } from "@/features/system/gravity-units";
 import { BeerGlassIcon } from "@/components/recipes/beer-glass-icon";
 import { BitternessSettingsDrawer } from "@/components/recipes/bitterness-settings-drawer";
 import { ImportExportModal, type ImportExportActionResult } from "@/components/recipes/import-export-modal";
@@ -187,6 +188,7 @@ type Props = {
   onSaveStatusChange?: (status: RecipeSaveStatus) => void;
   onRecipeCreated?: (recipe: RecipeDetailDto) => void;
   onPublicationStateChange?: (state: RecipePublicationState) => void;
+  preferredGravityUnit: PreferredGravityUnit;
 };
 
 export type RecipeSaveStatus = "saved" | "saving" | "error";
@@ -2029,11 +2031,6 @@ function StyleRangeTrack({
   );
 }
 
-const formatGravityPlato = (sg: number | null) => {
-  if (sg == null) return "—";
-  return formatPlatoFromSg(sg, 1);
-};
-
 const getRangeStatus = (
   actualValue: number | null,
   styleRange: { min: number; max: number } | null
@@ -2053,11 +2050,13 @@ const getRangeStatus = (
 function RecipeStyleStatsBlock({
   preview,
   recalculating,
-  previewError
+  previewError,
+  preferredGravityUnit
 }: {
   preview: RecipeDraftPreviewDto | null;
   recalculating: boolean;
   previewError: string | null;
+  preferredGravityUnit: PreferredGravityUnit;
 }) {
   const selectedStyle = getBeerStyleById(preview?.styleId);
   const hasCalculatedMetrics = [preview?.og, preview?.fg, preview?.abv, preview?.ibu, preview?.color].some((value) => value != null);
@@ -2069,22 +2068,22 @@ function RecipeStyleStatsBlock({
   const items = [
     {
       label: "НП",
-      valueLabel: preview?.og != null ? `${preview.og.toFixed(3)} · ${formatGravityPlato(preview.og)}` : "—",
+      valueLabel: formatGravity(preview?.og ?? null, preferredGravityUnit),
       actualValue: preview?.og ?? null,
       globalRange: globalBrewingRanges.og,
       styleRange: selectedStyle?.og ?? null,
-      globalMinLabel: globalBrewingRanges.og.min.toFixed(3),
-      globalMaxLabel: globalBrewingRanges.og.max.toFixed(3),
+      globalMinLabel: formatGravity(globalBrewingRanges.og.min, preferredGravityUnit),
+      globalMaxLabel: formatGravity(globalBrewingRanges.og.max, preferredGravityUnit),
       status: getRangeStatus(preview?.og ?? null, selectedStyle?.og ?? null)
     },
     {
       label: "КП",
-      valueLabel: preview?.fg != null ? `${preview.fg.toFixed(3)} · ${formatGravityPlato(preview.fg)}` : "—",
+      valueLabel: formatGravity(preview?.fg ?? null, preferredGravityUnit),
       actualValue: preview?.fg ?? null,
       globalRange: globalBrewingRanges.fg,
       styleRange: selectedStyle?.fg ?? null,
-      globalMinLabel: globalBrewingRanges.fg.min.toFixed(3),
-      globalMaxLabel: globalBrewingRanges.fg.max.toFixed(3),
+      globalMinLabel: formatGravity(globalBrewingRanges.fg.min, preferredGravityUnit),
+      globalMaxLabel: formatGravity(globalBrewingRanges.fg.max, preferredGravityUnit),
       status: getRangeStatus(preview?.fg ?? null, selectedStyle?.fg ?? null)
     },
     {
@@ -2211,19 +2210,30 @@ const formatSignedPctPoints = (value: number) => `${value >= 0 ? "+" : ""}${valu
 function FgSettingsPopover({
   preview,
   calculationMeta,
-  onChange
+  onChange,
+  preferredGravityUnit
 }: {
   preview: RecipeDraftPreviewDto | null;
   calculationMeta: RecipeCalculationMeta;
   onChange: React.Dispatch<React.SetStateAction<RecipeCalculationMeta>>;
+  preferredGravityUnit: PreferredGravityUnit;
 }) {
+  const manualFgUnit = toCalculatorGravityUnit(preferredGravityUnit);
+  const manualFgPrecision = preferredGravityUnit === "sg" ? 3 : 1;
+  const manualFgMin = preferredGravityUnit === "sg" ? 0.99 : 0;
+  const manualFgMax = preferredGravityUnit === "sg" ? 1.2 : Math.round(sgToGravityUnit(1.2, manualFgUnit));
+  const manualFgStep = preferredGravityUnit === "sg" ? 0.001 : 0.1;
+  const sgToManualFgInput = (sg: number | null) => (
+    sg == null ? null : sgToGravityUnit(sg, manualFgUnit)
+  );
+
   const [open, setOpen] = useState(false);
   const [manualFgEnabled, setManualFgEnabled] = useState(Boolean(calculationMeta.manualFgOverrideValue != null));
   const [manualAttenuationInput, setManualAttenuationInput] = useState(
     toInputString(calculationMeta.manualAttenuationOverridePct ?? null)
   );
   const [manualFgInput, setManualFgInput] = useState(
-    toInputString(calculationMeta.manualFgOverrideValue ?? null)
+    toInputString(sgToManualFgInput(calculationMeta.manualFgOverrideValue ?? null))
   );
   const popoverRef = useRef<HTMLDivElement | null>(null);
   const triggerRef = useRef<HTMLButtonElement | null>(null);
@@ -2239,8 +2249,8 @@ function FgSettingsPopover({
   }, [calculationMeta.manualAttenuationOverridePct]);
 
   useEffect(() => {
-    setManualFgInput(toInputString(calculationMeta.manualFgOverrideValue ?? null));
-  }, [calculationMeta.manualFgOverrideValue]);
+    setManualFgInput(toInputString(sgToManualFgInput(calculationMeta.manualFgOverrideValue ?? null)));
+  }, [calculationMeta.manualFgOverrideValue, preferredGravityUnit]);
 
   useEffect(() => {
     if (!open) {
@@ -2289,11 +2299,10 @@ function FgSettingsPopover({
 
   const commitManualFg = () => {
     const parsed = toOptionalNumber(manualFgInput);
-    const nextValue = parsed == null || !Number.isFinite(parsed)
-      ? null
-      : clampNumber(parsed, 0.99, 1.2);
+    const parsedSg = parsed == null || !Number.isFinite(parsed) ? null : gravityToSg(parsed, manualFgUnit);
+    const nextValue = parsedSg == null ? null : clampNumber(parsedSg, 0.99, 1.2);
 
-    setManualFgInput(toInputString(nextValue));
+    setManualFgInput(toInputString(sgToManualFgInput(nextValue)));
     onChange((current) => ({
       ...current,
       manualFgOverrideValue: nextValue
@@ -2307,9 +2316,6 @@ function FgSettingsPopover({
     }
     setOpen(false);
   };
-  const manualFgDisplayValue = manualFgEnabled
-    ? toOptionalNumber(manualFgInput) ?? calculationMeta.manualFgOverrideValue ?? preview?.fg ?? null
-    : null;
 
   return (
     <div className="relative">
@@ -2386,7 +2392,7 @@ function FgSettingsPopover({
                     const nextEnabled = event.target.checked;
                     setManualFgEnabled(nextEnabled);
                     if (nextEnabled) {
-                      setManualFgInput(toInputString(calculationMeta.manualFgOverrideValue ?? preview?.fg ?? null));
+                      setManualFgInput(toInputString(sgToManualFgInput(calculationMeta.manualFgOverrideValue ?? preview?.fg ?? null)));
                     } else {
                       setManualFgInput("");
                       onChange((current) => ({
@@ -2402,11 +2408,14 @@ function FgSettingsPopover({
 
               {manualFgEnabled ? (
                 <div className="space-y-1">
+                  <span className="block text-[11px] font-medium text-zinc-500">
+                    Плотность ({gravityUnitLabels[preferredGravityUnit]})
+                  </span>
                   <input
                     type="number"
-                    min={0.99}
-                    max={1.2}
-                    step={0.001}
+                    min={manualFgMin}
+                    max={manualFgMax}
+                    step={manualFgStep}
                     value={manualFgInput}
                     onChange={(event) => setManualFgInput(event.target.value)}
                     onBlur={commitManualFg}
@@ -2416,13 +2425,8 @@ function FgSettingsPopover({
                       }
                     }}
                     className="h-9 w-full rounded-lg border border-zinc-200 bg-white px-2.5 text-sm tabular-nums text-zinc-900 shadow-sm"
-                    placeholder={preview?.fg != null ? preview.fg.toFixed(3) : "1.012"}
+                    placeholder={(sgToManualFgInput(preview?.fg ?? 1.012) ?? 0).toFixed(manualFgPrecision)}
                   />
-                  {manualFgDisplayValue != null ? (
-                    <span className="block text-[11px] font-normal tabular-nums text-zinc-400">
-                      {formatBrixFromSg(manualFgDisplayValue, 1)}
-                    </span>
-                  ) : null}
                 </div>
               ) : null}
             </div>
@@ -2450,7 +2454,8 @@ function RecipeBatchParametersBlock({
   equipmentProfiles,
   selectedEquipmentProfileId,
   onSelectEquipmentProfile,
-  onOpenBitternessSettings
+  onOpenBitternessSettings,
+  preferredGravityUnit
 }: {
   batchSize: { quantity: string; unit: InventoryUnit };
   setBatchSize: React.Dispatch<React.SetStateAction<{ quantity: string; unit: InventoryUnit }>>;
@@ -2469,6 +2474,7 @@ function RecipeBatchParametersBlock({
   selectedEquipmentProfileId: string | null;
   onSelectEquipmentProfile: (profileId: string | null) => void;
   onOpenBitternessSettings: () => void;
+  preferredGravityUnit: PreferredGravityUnit;
 }) {
   const colorSrmValue = preview?.color != null ? preview.color.toFixed(1) : null;
   const colorEbcValue = preview?.color != null ? srmToEbc(preview.color).toFixed(0) : null;
@@ -2493,11 +2499,11 @@ function RecipeBatchParametersBlock({
         ? { srm: colorSrmValue, ebc: colorEbcValue }
         : null
     },
-    { key: "og", label: "НП", value: formatGravityWithPlato(preview?.og ?? null) },
+    { key: "og", label: "НП", value: formatGravity(preview?.og ?? null, preferredGravityUnit) },
     {
       key: "fg",
       label: "КП",
-      value: formatGravityWithPlato(preview?.fg ?? null),
+      value: formatGravity(preview?.fg ?? null, preferredGravityUnit),
       sourceLabel: preview?.fg != null ? fgSourceLabel : null,
       helperText: preview?.fg == null ? fgHelperText : null,
       settingsControl: (
@@ -2505,6 +2511,7 @@ function RecipeBatchParametersBlock({
           preview={preview}
           calculationMeta={calculationMeta}
           onChange={setCalculationMeta}
+          preferredGravityUnit={preferredGravityUnit}
         />
       )
     },
@@ -2581,36 +2588,19 @@ function RecipeBatchParametersBlock({
                       ) : null}
                     </div>
                   </dd>
-                ) : isGravity ? (() => {
-                  const strVal = typeof item.value === "string" ? item.value : "—";
-                  const parts = strVal !== "—" ? strVal.match(/^([\d.]+)\s*\((.+)\)$/) : null;
-                  return (
-                    <dd className="mt-1 min-w-0">
-                      {parts ? (
-                        <div>
-                          <div className="text-sm font-semibold tabular-nums text-zinc-950">{parts[1]}</div>
-                          <div className="text-xs font-medium tabular-nums text-zinc-500">{parts[2]}</div>
-                          {"sourceLabel" in item && item.sourceLabel ? (
-                            <div className="mt-1 text-[11px] font-medium text-zinc-500">{item.sourceLabel}</div>
-                          ) : null}
-                          {"helperText" in item && item.helperText ? (
-                            <div className="mt-1 text-[11px] text-zinc-400">{item.helperText}</div>
-                          ) : null}
-                        </div>
-                      ) : (
-                        <div>
-                          <div className="text-sm font-semibold tabular-nums text-zinc-950">{strVal}</div>
-                          {"sourceLabel" in item && item.sourceLabel ? (
-                            <div className="mt-1 text-[11px] font-medium text-zinc-500">{item.sourceLabel}</div>
-                          ) : null}
-                          {"helperText" in item && item.helperText ? (
-                            <div className="mt-1 text-[11px] text-zinc-400">{item.helperText}</div>
-                          ) : null}
-                        </div>
-                      )}
-                    </dd>
-                  );
-                })() : (
+                ) : isGravity ? (
+                  <dd className="mt-1 min-w-0">
+                    <div className="text-sm font-semibold tabular-nums text-zinc-950">
+                      {typeof item.value === "string" ? item.value : "—"}
+                    </div>
+                    {"sourceLabel" in item && item.sourceLabel ? (
+                      <div className="mt-1 text-[11px] font-medium text-zinc-500">{item.sourceLabel}</div>
+                    ) : null}
+                    {"helperText" in item && item.helperText ? (
+                      <div className="mt-1 text-[11px] text-zinc-400">{item.helperText}</div>
+                    ) : null}
+                  </dd>
+                ) : (
                   <dd className="mt-1">
                     <div className="text-base font-semibold tabular-nums text-zinc-950">
                       {typeof item.value === "string" ? item.value : "—"}
@@ -4796,7 +4786,8 @@ export function RecipeDesigner({
   equipmentProfiles = [],
   onSaveStatusChange,
   onRecipeCreated,
-  onPublicationStateChange
+  onPublicationStateChange,
+  preferredGravityUnit
 }: Props) {
   const isMobile = useIsMobile();
   const router = useRouter();
@@ -6004,8 +5995,8 @@ export function RecipeDesigner({
   // не должна теряться при прокрутке длинной формы (#18/#20).
   const headerStyle = getBeerStyleById(styleId.trim() || "");
   const headerMetrics: Array<{ label: string; value: string }> = [
-    { label: "НП", value: preview?.og != null ? preview.og.toFixed(3) : "—" },
-    { label: "КП", value: preview?.fg != null ? preview.fg.toFixed(3) : "—" },
+    { label: "НП", value: formatGravity(preview?.og ?? null, preferredGravityUnit) },
+    { label: "КП", value: formatGravity(preview?.fg ?? null, preferredGravityUnit) },
     { label: "ABV", value: preview?.abv != null ? `${preview.abv.toFixed(1)}%` : "—" },
     { label: "IBU", value: preview?.ibu != null ? preview.ibu.toFixed(0) : "—" },
     { label: "SRM", value: preview?.color != null ? preview.color.toFixed(1) : "—" }
@@ -6202,11 +6193,13 @@ export function RecipeDesigner({
           selectedEquipmentProfileId={equipmentProfileId}
           onSelectEquipmentProfile={handleSelectEquipmentProfile}
           onOpenBitternessSettings={() => setBitternessSettingsOpen(true)}
+          preferredGravityUnit={preferredGravityUnit}
         />
         <RecipeStyleStatsBlock
           preview={preview}
           recalculating={recalculating}
           previewError={previewError}
+          preferredGravityUnit={preferredGravityUnit}
         />
       </section>
 

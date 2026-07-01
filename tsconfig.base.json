@@ -17,6 +17,8 @@
       "@nb/db/*": ["packages/db/src/*"],
       "@nb/brewing-core/*": ["packages/brewing-core/src/*"],
       "@nb/brewforge-protocol": ["packages/brewforge-protocol/src/index.ts"],
+      "@nb/brewforge-sim": ["packages/brewforge-sim/src/index.ts"],
+      "@nb/push": ["packages/push/src/index.ts"],
       "@nb/auth/*": ["packages/auth/src/*"],
       "@nb/content/*": ["packages/content/src/*"],
       "@nb/search/*": ["packages/search/src/*"]

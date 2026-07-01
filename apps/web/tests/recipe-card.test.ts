@@ -10,6 +10,10 @@ vi.mock("next/image", () => ({
 import { RecipeCard } from "../components/recipes/recipe-card";
 import type { PublicRecipeListItem } from "../features/recipes/contracts";
 
+const renderCard = (recipe: PublicRecipeListItem) => (
+  renderToStaticMarkup(React.createElement(RecipeCard, { recipe, preferredGravityUnit: "sg" }))
+);
+
 const baseItem = (overrides: Partial<PublicRecipeListItem> = {}): PublicRecipeListItem => ({
   id: "r-1",
   slug: "hazy-ipa",
@@ -37,90 +41,75 @@ const baseItem = (overrides: Partial<PublicRecipeListItem> = {}): PublicRecipeLi
 
 describe("RecipeCard", () => {
   it("links to the recipe detail page with the recipe name as accessible text", () => {
-    const html = renderToStaticMarkup(React.createElement(RecipeCard, { recipe: baseItem() }));
+    const html = renderCard(baseItem());
     expect(html).toContain('href="/recipes/hazy-ipa"');
     expect(html).toContain("Hazy IPA");
     expect(html).toContain("American IPA · 21A");
   });
 
-  it("renders a color swatch fallback (SRM + color name) when there is no hero image", () => {
-    const html = renderToStaticMarkup(React.createElement(RecipeCard, { recipe: baseItem() }));
-    expect(html).toContain("SRM 9.5");
-    expect(html).toContain("Светло-янтарный");
+  it("renders a color gradient fallback (no image) in the thumb, with SRM in the stat grid", () => {
+    const html = renderCard(baseItem());
     expect(html).not.toContain("<img");
+    // Компактная миниатюра без фото/стиля не несёт текстовую метку цвета — цвет
+    // (число + точка) теперь показывается ячейкой в статах, не поверх обложки.
+    expect(html).toContain("Цвет");
+    expect(html).toContain("9.5");
   });
 
-  it("renders the hero image when present (no color swatch)", () => {
-    const html = renderToStaticMarkup(
-      React.createElement(RecipeCard, {
-        recipe: baseItem({ heroImage: { thumbUrl: "/api/recipe-images/img-1/thumb", blurDataUrl: null } })
-      })
-    );
+  it("renders the hero image sharply, without a text overlay on the tiny thumb", () => {
+    const html = renderCard(baseItem({ heroImage: { thumbUrl: "/api/recipe-images/img-1/thumb", blurDataUrl: null } }));
     expect(html).toContain('src="/api/recipe-images/img-1/thumb"');
-    expect(html).not.toContain("SRM 9.5");
+    // Цвет всё ещё виден — ячейкой в статах, а не подписью на миниатюре.
+    expect(html).toContain("9.5");
   });
 
-  it("falls back to the blurred BJCP style photo (with SRM overlay) when there is no hero image", () => {
-    const html = renderToStaticMarkup(
-      React.createElement(RecipeCard, {
-        recipe: baseItem({ styleImageUrl: "/images/bjcp/21A%20American%20IPA.png" })
-      })
-    );
+  it("falls back to the lightly blurred BJCP style photo when there is no hero image", () => {
+    const html = renderCard(baseItem({ styleImageUrl: "/images/bjcp/21A%20American%20IPA.png" }));
     expect(html).toContain('src="/images/bjcp/21A%20American%20IPA.png"');
-    expect(html).toContain("blur"); // размытие фото стиля
-    expect(html).toContain("SRM 9.5"); // подпись-оверлей остаётся для a11y
+    expect(html).toContain("blur"); // лёгкое размытие фото стиля (не выдаём его за фото рецепта)
+    expect(html).toContain("9.5"); // цвет всё ещё виден — ячейкой в статах
   });
 
   it("prefers the recipe hero image over the BJCP style photo", () => {
-    const html = renderToStaticMarkup(
-      React.createElement(RecipeCard, {
-        recipe: baseItem({
-          heroImage: { thumbUrl: "/api/recipe-images/img-1/thumb", blurDataUrl: null },
-          styleImageUrl: "/images/bjcp/21A%20American%20IPA.png"
-        })
-      })
-    );
+    const html = renderCard(baseItem({
+      heroImage: { thumbUrl: "/api/recipe-images/img-1/thumb", blurDataUrl: null },
+      styleImageUrl: "/images/bjcp/21A%20American%20IPA.png"
+    }));
     expect(html).toContain('src="/api/recipe-images/img-1/thumb"');
     expect(html).not.toContain("/images/bjcp/21A");
   });
 
   it("shows the «Новый» badge for a recently created recipe without rating", () => {
-    const html = renderToStaticMarkup(React.createElement(RecipeCard, { recipe: baseItem() }));
+    const html = renderCard(baseItem());
     expect(html).toContain("Новый");
   });
 
   it("does not show «Новый» for an older recipe without rating", () => {
-    const html = renderToStaticMarkup(
-      React.createElement(RecipeCard, { recipe: baseItem({ createdAt: "2020-01-01T00:00:00.000Z" }) })
-    );
+    const html = renderCard(baseItem({ createdAt: "2020-01-01T00:00:00.000Z" }));
     expect(html).not.toContain("Новый");
   });
 
   it("links the style chip to the BJCP style page when styleHref is present", () => {
-    const html = renderToStaticMarkup(React.createElement(RecipeCard, { recipe: baseItem() }));
+    const html = renderCard(baseItem());
     expect(html).toContain('href="/bjcp/bjcp-21a-american-ipa"');
     expect(html).toContain("American IPA · 21A");
   });
 
   it("renders the style chip as plain text when styleHref is null", () => {
-    const html = renderToStaticMarkup(
-      React.createElement(RecipeCard, { recipe: baseItem({ styleHref: null }) })
-    );
+    const html = renderCard(baseItem({ styleHref: null }));
     expect(html).toContain("American IPA · 21A");
     expect(html).not.toContain('href="/bjcp/');
   });
 
   it("shows a rating with RU-formatted average when present", () => {
-    const html = renderToStaticMarkup(
-      React.createElement(RecipeCard, { recipe: baseItem({ rating: { average: 4.7, count: 18 } }) })
-    );
+    const html = renderCard(baseItem({ rating: { average: 4.7, count: 18 } }));
     expect(html).toContain("4,7");
     expect(html).toContain("(18)");
     expect(html).not.toContain("Новый");
   });
 
   it("formats the stat row (ABV comma, OG gravity, volume in litres)", () => {
-    const html = renderToStaticMarkup(React.createElement(RecipeCard, { recipe: baseItem() }));
+    const html = renderCard(baseItem());
     expect(html).toContain("6,2 %"); // ABV — RU comma
     expect(html).toContain("45"); // IBU
     expect(html).toContain("1.048"); // OG — gravity dot
@@ -128,11 +117,7 @@ describe("RecipeCard", () => {
   });
 
   it("renders dashes for missing numeric stats and no style badge when style is null", () => {
-    const html = renderToStaticMarkup(
-      React.createElement(RecipeCard, {
-        recipe: baseItem({ abv: null, ibu: null, og: null, batchSizeL: null, style: null })
-      })
-    );
+    const html = renderCard(baseItem({ abv: null, ibu: null, og: null, batchSizeL: null, style: null }));
     expect(html).not.toContain("·"); // style badge absent
     expect(html).toContain("—");
   });

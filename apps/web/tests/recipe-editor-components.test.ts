@@ -449,10 +449,12 @@ describe("recipe editor components", () => {
     const autoHtml = renderToStaticMarkup(React.createElement(RecipeDesigner, {
       mode: "edit",
       initialRecipe: buildRecipeDetail({ waterPlanMeta: autoWaterPlanMeta }),
+      preferredGravityUnit: "plato",
     }));
     const manualHtml = renderToStaticMarkup(React.createElement(RecipeDesigner, {
       mode: "edit",
       initialRecipe: buildRecipeDetail({ waterPlanMeta: manualWaterPlanMeta }),
+      preferredGravityUnit: "plato",
     }));
 
     expect(autoHtml).toContain("Водоподготовка");
@@ -629,7 +631,7 @@ describe("recipe editor components", () => {
   });
 
   it("designer header renders aligned field labels", () => {
-    const html = renderToStaticMarkup(React.createElement(RecipeDesigner, { mode: "create" }));
+    const html = renderToStaticMarkup(React.createElement(RecipeDesigner, { mode: "create", preferredGravityUnit: "plato" }));
 
     expect(html).toContain("Название рецепта");
     expect(html).toContain("Стиль BJCP");
@@ -690,6 +692,7 @@ describe("recipe editor components", () => {
           updatedAt: new Date("2026-04-20T10:00:00Z"),
         }],
       }),
+      preferredGravityUnit: "plato",
     }));
 
     expect(html).toContain("Гипс");
@@ -709,7 +712,8 @@ describe("recipe editor components", () => {
         abv: 5.3,
         ibu: 24,
         color: 7
-      })
+      }),
+      preferredGravityUnit: "plato"
     }));
 
     expect(html).toContain("Специальное пиво по коммерческому образцу");
@@ -729,7 +733,8 @@ describe("recipe editor components", () => {
           brewhouseEfficiencyPct: 70,
           isDefault: false
         })
-      ]
+      ],
+      preferredGravityUnit: "plato"
     }));
 
     expect(html).toContain("Клон Braumeister · Основной — 27 л · 72%");
@@ -740,7 +745,7 @@ describe("recipe editor components", () => {
   });
 
   it("opens the empty boil hop additions group by default", () => {
-    const html = renderToStaticMarkup(React.createElement(RecipeDesigner, { mode: "create" }));
+    const html = renderToStaticMarkup(React.createElement(RecipeDesigner, { mode: "create", preferredGravityUnit: "plato" }));
 
     expect(html).toContain("Добавление на кипячение");
     expect(html).toContain("Добавьте хмель на кипячение");
@@ -766,7 +771,8 @@ describe("recipe editor components", () => {
       mode: "edit",
       initialRecipe: buildRecipeDetail({
         styleId: "1A"
-      })
+      }),
+      preferredGravityUnit: "plato"
     }));
 
     expect(html).toContain("<span>Ваш рецепт и </span>");

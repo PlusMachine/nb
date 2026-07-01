@@ -6,6 +6,7 @@ import type { EquipmentProfileDto } from "@/features/equipment-profiles/contract
 import type { IngredientSuggestionItem } from "@/features/ingredients/contracts";
 import type { RecipeImageDto } from "@/features/recipe-images/contracts";
 import type { RecipeDetailDto, RecipePublicationState, RecipeStockCoverageDto } from "@/features/recipes/contracts";
+import type { PreferredGravityUnit } from "@/features/system/gravity-units";
 
 import { RecipeCloneAttribution } from "./recipe-clone-attribution";
 import type { RecipeSaveStatus } from "./recipe-designer";
@@ -18,7 +19,8 @@ export function RecipeEditorPage({
   initialIngredientSelection,
   initialStockCoverage,
   initialImages = [],
-  equipmentProfiles = []
+  equipmentProfiles = [],
+  preferredGravityUnit
 }: {
   mode: "create" | "edit";
   recipe?: RecipeDetailDto;
@@ -27,6 +29,7 @@ export function RecipeEditorPage({
   initialStockCoverage?: RecipeStockCoverageDto | null;
   initialImages?: RecipeImageDto[];
   equipmentProfiles?: EquipmentProfileDto[];
+  preferredGravityUnit: PreferredGravityUnit;
 }) {
   const [, setSaveStatus] = useState<RecipeSaveStatus>("saved");
   const [editorMode, setEditorMode] = useState<"create" | "edit">(mode);
@@ -57,6 +60,7 @@ export function RecipeEditorPage({
         onSaveStatusChange={setSaveStatus}
         onRecipeCreated={handleRecipeCreated}
         onPublicationStateChange={setPublicationState}
+        preferredGravityUnit={preferredGravityUnit}
       />
     </main>
   );

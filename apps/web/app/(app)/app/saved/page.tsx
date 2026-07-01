@@ -35,7 +35,7 @@ export default async function SavedRecipesPage() {
           </p>
         </section>
       ) : (
-        <RecipesGrid recipes={recipes} showCloneAction />
+        <RecipesGrid recipes={recipes} showCloneAction preferredGravityUnit={user.preferredGravityUnit} />
       )}
     </main>
   );

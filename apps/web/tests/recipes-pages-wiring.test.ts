@@ -25,7 +25,7 @@ const ownerCard: OwnerRecipeCardDto = {
 };
 
 const mocks = vi.hoisted(() => ({
-  requireUser: vi.fn(async () => ({ id: "u-1", email: "u1@example.com" })),
+  requireUser: vi.fn(async () => ({ id: "u-1", email: "u1@example.com", preferredGravityUnit: "plato" })),
   listAuthorRecipeCards: vi.fn(async () => [ownerCard]),
   cloneRecipeAction: vi.fn(async () => ({ ok: true, message: "ok", recipe: { id: "r-2" } })),
   push: vi.fn(),

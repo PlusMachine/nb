@@ -5,6 +5,12 @@ import { CommandSchema } from "@nb/brewforge-protocol";
 import { requireUser } from "@/lib/auth";
 import { getBrewBatchById } from "@/features/brew-batches/service";
 import { getProvider } from "@/features/brew-controller";
+import {
+  commandRequiresFreshTelemetry,
+  commandRequiresLease,
+} from "@/features/brew-controller/command-gate";
+import { readFreshTelemetry } from "@/features/brew-controller/device-telemetry-cache";
+import { holdsValidLease } from "@/features/brew-controller/control-lease";
 
 // Коды ошибок транспорта/провайдера → человекочитаемый текст для дашборда.
 // НЕ эхоим внутренние детали (EGRESS_*/HTTP-тела/SSRF) — только общий смысл.
@@ -46,10 +52,45 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
 
     const body = await request.json();
     const command = CommandSchema.parse(body?.command);
+    const sessionId = typeof body?.sessionId === "string" ? body.sessionId : "";
 
     const provider = getProvider("brewforge");
     if (!provider?.sendCommand) {
       return NextResponse.json({ error: "PROVIDER_UNAVAILABLE" }, { status: 503 });
+    }
+
+    // Hard lease-гейт (single-writer, та же граница, что и у device-роута):
+    // управляющие команды — только у держателя аренды устройства партии.
+    if (commandRequiresLease(command)) {
+      const holds = sessionId
+        ? await holdsValidLease(batch.deviceId, { userId: user.id, sessionId })
+        : false;
+      if (!holds) {
+        return NextResponse.json(
+          {
+            error:
+              "Управление устройством занято другим сеансом. Запросите перехват, чтобы взять контроль.",
+            code: "NO_CONTROL_LEASE",
+          },
+          { status: 409 },
+        );
+      }
+    }
+
+    // Серверный freshness-гейт (та же граница, что и у device-роута): опасные
+    // команды — только при свежей телеметрии. Fail-safe (ESTOP/PAUSE/…) — всегда.
+    if (commandRequiresFreshTelemetry(command)) {
+      const fresh = await readFreshTelemetry({ userId: user.id, deviceId: batch.deviceId });
+      if (!fresh) {
+        return NextResponse.json(
+          {
+            error:
+              "Нет свежей телеметрии устройства — эта команда заблокирована до восстановления связи.",
+            code: "DEVICE_STALE",
+          },
+          { status: 409 },
+        );
+      }
     }
 
     const ack = await provider.sendCommand({

@@ -3,9 +3,20 @@ import type {
   Command,
   DeviceConfig,
   DeviceConfigPatch,
+  DeviceRecipe,
   Telemetry,
 } from "@nb/brewforge-protocol";
+import type { DeviceRecipeSlot } from "./transport";
 import type { BrewPlanSnapshot } from "../brew-batches/contracts";
+
+/** id встроенного провайдера BrewForge (LAN/облако — реальное железо/симулятор). */
+export const BREWFORGE_PROVIDER_ID = "brewforge";
+/**
+ * id прод-демо провайдера: то же поведение, но транспорт — in-process SimDevice
+ * (Phase 4.5, «попробуй до покупки» БЕЗ железа и без loopback-сети). Устройства с
+ * этим providerId роутятся в simTransport (см. transportForDevice).
+ */
+export const BREWFORGE_DEMO_PROVIDER_ID = "brewforge-demo";
 
 export type BrewControllerCapability =
   | "telemetry"
@@ -58,6 +69,25 @@ export type WriteConfigInput = {
   config: DeviceConfigPatch;
 };
 
+export type ListSlotsInput = { userId: string; deviceId: string };
+
+/**
+ * Device-first push рецепта nb НА плату (Phase 4), БЕЗ создания партии варки.
+ * Полезная нагрузка — тот же замороженный снимок плана; провайдер транслирует его
+ * в нативный DeviceRecipe и пишет в целевой слот. `slot` опционален (без него —
+ * слот по умолчанию/выбор устройства). Возвращает номер слота, куда рецепт лёг.
+ */
+export type PushRecipeToDeviceInput = {
+  userId: string;
+  deviceId: string;
+  brewPlanSnapshot: BrewPlanSnapshot;
+  slot?: number;
+};
+export type PushRecipeToDeviceResult = { slot: number };
+
+/** Прочитать read-only снапшот «что лежит на плате» в слоте N. */
+export type ReadSlotSnapshotInput = { userId: string; deviceId: string; slot: number };
+
 // --- Сигнатуры методов ------------------------------------------------------
 
 export type PushRecipeFn = (input: PushRecipeInput) => Promise<PushRecipeResult>;
@@ -67,6 +97,11 @@ export type OpenSessionFn = (input: SessionInput) => Promise<void>;
 export type CloseSessionFn = (input: SessionInput) => Promise<void>;
 export type ReadConfigFn = (input: ReadConfigInput) => Promise<DeviceConfig | null>;
 export type WriteConfigFn = (input: WriteConfigInput) => Promise<DeviceConfig>;
+export type ListSlotsFn = (input: ListSlotsInput) => Promise<DeviceRecipeSlot[]>;
+export type ReadSlotSnapshotFn = (input: ReadSlotSnapshotInput) => Promise<DeviceRecipe | null>;
+export type PushRecipeToDeviceFn = (
+  input: PushRecipeToDeviceInput
+) => Promise<PushRecipeToDeviceResult>;
 
 /**
  * Базовый провайдер контроллера. Все методы ОПЦИОНАЛЬНЫ: фактическую поддержку
@@ -82,6 +117,9 @@ export type BrewControllerProvider = BrewControllerProviderDescriptor & {
   closeSession?: CloseSessionFn;
   readConfig?: ReadConfigFn;
   writeConfig?: WriteConfigFn;
+  listSlots?: ListSlotsFn;
+  readSlotSnapshot?: ReadSlotSnapshotFn;
+  pushRecipeToDevice?: PushRecipeToDeviceFn;
 };
 
 /**
@@ -97,4 +135,7 @@ export interface BrewforgeProvider extends BrewControllerProviderDescriptor {
   closeSession: CloseSessionFn;
   readConfig: ReadConfigFn;
   writeConfig: WriteConfigFn;
+  listSlots: ListSlotsFn;
+  readSlotSnapshot: ReadSlotSnapshotFn;
+  pushRecipeToDevice: PushRecipeToDeviceFn;
 }

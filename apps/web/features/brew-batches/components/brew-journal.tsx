@@ -2,6 +2,7 @@
 
 import React, { useRef, useState } from "react";
 import { Loader2, Plus, Trash2 } from "lucide-react";
+import { gravityToSg, sgToGravityUnit } from "@nb/brewing-core";
 
 import {
   addBrewMeasurementAction,
@@ -13,8 +14,13 @@ import {
   type BrewMeasurementDto,
   type BrewMeasurementSummary
 } from "@/features/brew-batches/contracts";
+import {
+  formatGravity,
+  gravityUnitLabels,
+  toCalculatorGravityUnit,
+  type PreferredGravityUnit
+} from "@/features/system/gravity-units";
 
-const fmtSg = (value: number | null) => (value == null ? "—" : value.toFixed(3));
 const fmtAbv = (value: number | null) => (value == null ? "—" : `${value.toFixed(1)}%`);
 const fmtAtt = (value: number | null) => (value == null ? "—" : `${Math.round(value)}%`);
 
@@ -34,11 +40,13 @@ function StatTile({ label, value, target }: { label: string; value: string; targ
 export function BrewJournal({
   brewBatchId,
   measurements,
-  summary
+  summary,
+  preferredGravityUnit
 }: {
   brewBatchId: string;
   measurements: BrewMeasurementDto[];
   summary: BrewMeasurementSummary;
+  preferredGravityUnit: PreferredGravityUnit;
 }) {
   const [gravity, setGravity] = useState("");
   const [takenAt, setTakenAt] = useState("");
@@ -52,13 +60,19 @@ export function BrewJournal({
 
   const target = summary.target;
   const lastIndex = measurements.length - 1;
+  const gravityUnit = toCalculatorGravityUnit(preferredGravityUnit);
+  const gravityInputMin = sgToGravityUnit(GRAVITY_SG_MIN, gravityUnit);
+  const gravityInputMax = sgToGravityUnit(GRAVITY_SG_MAX, gravityUnit);
+  const gravityInputStep = preferredGravityUnit === "sg" ? 0.001 : 0.1;
+  const fmtGravity = (value: number | null) => formatGravity(value, preferredGravityUnit);
 
   const submit = async (event: React.FormEvent) => {
     event.preventDefault();
     if (inFlight.current) {
       return;
     }
-    if (!gravity.trim()) {
+    const enteredValue = Number(gravity.replace(",", "."));
+    if (!gravity.trim() || !Number.isFinite(enteredValue)) {
       setError("Введите плотность.");
       return;
     }
@@ -67,7 +81,7 @@ export function BrewJournal({
     setError(null);
     try {
       const result = await addBrewMeasurementAction(brewBatchId, {
-        gravitySg: gravity.replace(",", "."),
+        gravitySg: String(gravityToSg(enteredValue, gravityUnit)),
         // datetime-local — наивное локальное время; переводим в абсолютный момент
         // (ISO с таймзоной браузера), иначе сервер распарсит его в своей TZ.
         takenAt: takenAt ? new Date(takenAt).toISOString() : null,
@@ -111,8 +125,8 @@ export function BrewJournal({
       <h2 className="text-base font-semibold text-zinc-900">Журнал замеров</h2>
 
       <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
-        <StatTile label="OG" value={fmtSg(summary.og)} target={target?.og != null ? fmtSg(target.og) : null} />
-        <StatTile label="FG" value={fmtSg(summary.fg)} target={target?.fg != null ? fmtSg(target.fg) : null} />
+        <StatTile label="OG" value={fmtGravity(summary.og)} target={target?.og != null ? fmtGravity(target.og) : null} />
+        <StatTile label="FG" value={fmtGravity(summary.fg)} target={target?.fg != null ? fmtGravity(target.fg) : null} />
         <StatTile label="ABV" value={fmtAbv(summary.abv)} target={target?.abv != null ? fmtAbv(target.abv) : null} />
         <StatTile label="Сбраживание" value={fmtAtt(summary.apparentAttenuation)} />
       </div>
@@ -121,18 +135,18 @@ export function BrewJournal({
       <form onSubmit={submit} className="space-y-2 rounded-xl border border-zinc-100 bg-zinc-50/60 p-3">
         <div className="flex flex-wrap items-end gap-2">
           <label className="flex flex-col gap-1">
-            <span className="text-[11px] text-zinc-500">Плотность (SG)</span>
+            <span className="text-[11px] text-zinc-500">Плотность ({gravityUnitLabels[preferredGravityUnit]})</span>
             <input
               type="number"
               inputMode="decimal"
-              step="0.001"
-              min={GRAVITY_SG_MIN}
-              max={GRAVITY_SG_MAX}
+              step={gravityInputStep}
+              min={gravityInputMin}
+              max={gravityInputMax}
               value={gravity}
               onChange={(event) => setGravity(event.target.value)}
               disabled={busy}
-              placeholder="1.012"
-              aria-label="Плотность, SG"
+              placeholder={sgToGravityUnit(1.012, gravityUnit).toString()}
+              aria-label={`Плотность, ${gravityUnitLabels[preferredGravityUnit]}`}
               className="h-9 w-28 rounded-md border border-zinc-200 px-2 text-sm text-zinc-900 focus:outline-none focus:ring-2 focus:ring-zinc-400"
             />
           </label>
@@ -184,7 +198,7 @@ export function BrewJournal({
             return (
               <li key={measurement.id} className="flex items-center gap-3 py-2">
                 <span className="w-16 shrink-0 text-base font-semibold tabular-nums text-zinc-900">
-                  {measurement.gravitySg.toFixed(3)}
+                  {fmtGravity(measurement.gravitySg)}
                 </span>
                 {tag ? (
                   <span className="shrink-0 rounded-full bg-zinc-900 px-1.5 py-0.5 text-[10px] font-semibold text-white">{tag}</span>

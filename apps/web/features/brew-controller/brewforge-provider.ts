@@ -14,19 +14,26 @@ import {
 } from "@nb/brewforge-protocol";
 
 import type {
+  BrewControllerProvider,
   BrewforgeProvider,
   CloseSessionFn,
+  ListSlotsFn,
   OpenSessionFn,
   PushRecipeFn,
+  PushRecipeToDeviceFn,
   ReadConfigFn,
+  ReadSlotSnapshotFn,
   ReadTelemetryFn,
   SendCommandFn,
   WriteConfigFn,
 } from "./contracts";
+import { BREWFORGE_DEMO_PROVIDER_ID, BREWFORGE_PROVIDER_ID } from "./contracts";
 import { brewPlanV1ToDeviceRecipe } from "./translator";
 import { lanTransport, type DeviceTransport } from "./transport";
 import { cloudTransport } from "./cloud-transport";
+import { simTransport } from "./sim-transport";
 import { isCloudTransportEnabled } from "./mqtt-client";
+import type { DeviceChannel } from "./telemetry-source";
 
 type DeviceRow = typeof brewDevices.$inferSelect;
 
@@ -104,15 +111,34 @@ function resolveDeviceToken(device: DeviceRow): string | undefined {
  * BREWFORGE_PREFER_CLOUD (гнать всё через облако — напр. на cloud-деплое nb, где
  * LAN-адрес из домашней сети пользователя сервером недостижим). Иначе — LAN-REST.
  */
-function useCloudTransport(device: DeviceRow): boolean {
+function shouldUseCloudTransport(device: { localUrl: string | null }): boolean {
   if (!isCloudTransportEnabled()) return false;
   if (isEnvEnabled(process.env.BREWFORGE_PREFER_CLOUD)) return true;
   return !device.localUrl;
 }
 
-/** Транспорт к устройству: облако (через брокер/мост) либо LAN-REST по localUrl. */
+/**
+ * Канал связи с устройством (честная индикация, Phase 6c). Зеркалит порядок веток
+ * transportForDevice (демо → облако → LAN) — источник истины для UI-бейджа «канал».
+ */
+export function deviceChannel(device: { providerId: string; localUrl: string | null }): DeviceChannel {
+  if (device.providerId === BREWFORGE_DEMO_PROVIDER_ID) return "demo";
+  if (shouldUseCloudTransport(device)) return "cloud";
+  return "lan";
+}
+
+/**
+ * Транспорт к устройству: прод-демо (in-process SimDevice), облако (через брокер/
+ * мост) либо LAN-REST по localUrl. Демо-ветка ПЕРВАЯ и не смотрит на localUrl/облако —
+ * стаб полностью локальный (Phase 4.5). Так один провайдер обслуживает и железо, и
+ * демо, а вся ownership/audit-логика ниже переиспользуется без изменений.
+ */
 function transportForDevice(device: DeviceRow): DeviceTransport {
-  if (useCloudTransport(device)) {
+  const channel = deviceChannel(device);
+  if (channel === "demo") {
+    return simTransport(device.id);
+  }
+  if (channel === "cloud") {
     return cloudTransport({ id: device.id, hardwareId: device.hardwareId });
   }
   if (!device.localUrl) throw new Error("DEVICE_NO_LOCAL_URL");
@@ -129,6 +155,24 @@ const pushRecipe: PushRecipeFn = async ({ userId, brewBatchId, brewPlanSnapshot 
   const { slot } = await transport.putRecipe(recipe);
   // externalId — номер слота, в который лёг рецепт (для последующего START_BREW).
   return { externalId: String(slot) };
+};
+
+// pushRecipeToDevice — device-first push рецепта nb в целевой слот (Phase 4), БЕЗ
+// партии варки. Резолвит устройство напрямую по deviceId (ownership-checked),
+// транслирует замороженный снимок плана в нативный DeviceRecipe и пишет в слот.
+// Привязку слот↔recipeId (device_recipe_slots) ведёт вызывающий сервис (у него
+// есть recipeId/имя); здесь — только data-plane «записать на плату».
+const pushRecipeToDevice: PushRecipeToDeviceFn = async ({
+  userId,
+  deviceId,
+  brewPlanSnapshot,
+  slot,
+}) => {
+  const device = await loadDevice(userId, deviceId);
+  const transport = transportForDevice(device);
+  const recipe = brewPlanV1ToDeviceRecipe(brewPlanSnapshot);
+  const { slot: written } = await transport.putRecipe(recipe, slot);
+  return { slot: written };
 };
 
 const readTelemetry: ReadTelemetryFn = async ({ userId, deviceId }) => {
@@ -215,6 +259,19 @@ const writeConfig: WriteConfigFn = async ({ userId, deviceId, config }) => {
   return transportForDevice(device).putConfig(parsed.data);
 };
 
+// listSlots — карта слотов устройства (ownership-checked).
+const listSlots: ListSlotsFn = async ({ userId, deviceId }) => {
+  const device = await loadDevice(userId, deviceId);
+  return transportForDevice(device).listSlots();
+};
+
+// readSlotSnapshot — read-only снапшот «что лежит на плате» в слоте (ownership-checked).
+// Не импорт в каталог nb — беднее модели рецепта nb (нет засыпи/дрожжей/воды/эффективности).
+const readSlotSnapshot: ReadSlotSnapshotFn = async ({ userId, deviceId, slot }) => {
+  const device = await loadDevice(userId, deviceId);
+  return transportForDevice(device).readSlotSnapshot(slot);
+};
+
 // openSession — привязываем партию к устройству (идемпотентно): pushRecipe затем
 // находит устройство через brew_batches.deviceId.
 const openSession: OpenSessionFn = async ({ userId, deviceId, brewBatchId }) => {
@@ -232,7 +289,7 @@ const closeSession: CloseSessionFn = async ({ userId, deviceId }) => {
 };
 
 export const brewforgeProvider: BrewforgeProvider = {
-  id: "brewforge",
+  id: BREWFORGE_PROVIDER_ID,
   label: "BrewForge",
   enabled: true,
   capabilities: [
@@ -251,4 +308,20 @@ export const brewforgeProvider: BrewforgeProvider = {
   closeSession,
   readConfig,
   writeConfig,
+  listSlots,
+  readSlotSnapshot,
+  pushRecipeToDevice,
+};
+
+/**
+ * Прод-демо провайдер (Phase 4.5): ТЕ ЖЕ методы, что у brewforgeProvider (ownership/
+ * аудит/трансляция переиспользуются), но устройства с providerId=brewforge-demo
+ * роутятся в transportForDevice → simTransport (in-process SimDevice). Отдельный
+ * дескриптор нужен лишь чтобы getProvider(device.providerId) находил провайдер по
+ * этому id (per-device dispatch). label помечает демо в списках провайдеров.
+ */
+export const brewforgeDemoProvider: BrewControllerProvider = {
+  ...brewforgeProvider,
+  id: BREWFORGE_DEMO_PROVIDER_ID,
+  label: "BrewForge (демо)",
 };

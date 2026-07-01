@@ -28,7 +28,7 @@ const recipe = {
 };
 
 const mocks = vi.hoisted(() => ({
-  requireUser: vi.fn(async () => ({ id: "u-1" })),
+  requireUser: vi.fn(async () => ({ id: "u-1", preferredGravityUnit: "plato" })),
   getOwnedRecipeById: vi.fn(async () => recipe),
   listRecipeImages: vi.fn(async () => []),
   listEquipmentProfiles: vi.fn(async () => []),

@@ -6,6 +6,7 @@ import { LayoutGrid, List, Search } from "lucide-react";
 import { Input } from "@nb/ui";
 
 import type { OwnerRecipeCardDto, RecipePublicationState } from "@/features/recipes/contracts";
+import type { PreferredGravityUnit } from "@/features/system/gravity-units";
 
 import { OwnerRecipeCard, OwnerRecipeRow } from "./owner-recipe-card";
 import { RecipeMatchProvider } from "./recipe-match-provider";
@@ -69,7 +70,13 @@ function ViewToggle({ view, onChange }: { view: ViewMode; onChange: (view: ViewM
   );
 }
 
-export function MyRecipesGallery({ recipes }: { recipes: OwnerRecipeCardDto[] }) {
+export function MyRecipesGallery({
+  recipes,
+  preferredGravityUnit
+}: {
+  recipes: OwnerRecipeCardDto[];
+  preferredGravityUnit: PreferredGravityUnit;
+}) {
   const [view, setView] = useState<ViewMode>("grid");
   const [query, setQuery] = useState("");
   const [status, setStatus] = useState<StatusFilter>("all");
@@ -198,13 +205,13 @@ export function MyRecipesGallery({ recipes }: { recipes: OwnerRecipeCardDto[] })
           {view === "list" ? (
             <div className="flex flex-col gap-3">
               {visible.map((recipe) => (
-                <OwnerRecipeRow key={recipe.id} recipe={recipe} />
+                <OwnerRecipeRow key={recipe.id} recipe={recipe} preferredGravityUnit={preferredGravityUnit} />
               ))}
             </div>
           ) : (
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
               {visible.map((recipe) => (
-                <OwnerRecipeCard key={recipe.id} recipe={recipe} />
+                <OwnerRecipeCard key={recipe.id} recipe={recipe} preferredGravityUnit={preferredGravityUnit} />
               ))}
             </div>
           )}

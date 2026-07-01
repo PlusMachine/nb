@@ -10,7 +10,7 @@
 //    --scenario   idle | mash | fault (по умолчанию idle)
 //    --fw         строка прошивки (по умолчанию sim-0.0.0)
 // =============================================================================
-import { SimDevice, type Scenario } from "./sim-device.js";
+import { SimDevice, type Scenario } from "@nb/brewforge-sim";
 import { startServer } from "./server.js";
 import { startMqtt, type SimMqttHandle } from "./mqtt.js";
 
@@ -103,7 +103,11 @@ function main(): void {
   console.log(`  GET  ${base}/telemetry`);
   console.log(`  POST ${base}/cmd`);
   console.log(`  PUT  ${base}/recipe?slot=0`);
+  console.log(`  GET  ${base}/recipe?slot=0`);
+  console.log(`  GET  ${base}/recipes`);
   console.log(`  GET  ${base}/config`);
+  console.log(`  PUT  ${base}/config`);
+  console.log(`  POST ${base}/sim/fault`);
   console.log(`  GET  ${base}/log`);
   console.log(`  GET  ${base}/events     (SSE)`);
   console.log(`  WS   ws://localhost:${args.port}/ws`);

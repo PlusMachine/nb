@@ -12,4 +12,7 @@ coverage
 .local-artifacts/
 .storage/
 apps/web/.storage/
+playwright-report/
+test-results/
+blob-report/
 *:Zone.Identifier

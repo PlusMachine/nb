@@ -4,6 +4,7 @@ import { createRandomToken, hashToken } from "@nb/auth";
 import {
   and,
   brewDevices,
+  brewTelemetry,
   db,
   desc,
   devicePairingTokens,
@@ -11,6 +12,12 @@ import {
   gt,
   isNull
 } from "@nb/db";
+
+import {
+  TELEMETRY_HISTORY_LIMIT,
+  type TelemetryHistoryPoint
+} from "@/features/brew-batches/contracts";
+import { BREWFORGE_DEMO_PROVIDER_ID } from "@/features/brew-controller/contracts";
 
 import {
   claimDeviceSchema,
@@ -68,6 +75,63 @@ const mapDeviceDto = (row: typeof brewDevices.$inferSelect): DeviceDto => ({
   updatedAt: row.updatedAt
 });
 
+const DEMO_HARDWARE_ID_PREFIX = "demo-";
+
+/**
+ * Loopback demo-симулятор (реальный device-sim в локальной сети) доступен только
+ * вне production (или под явным opt-in) — паритет с egress-гардом transport.ts
+ * (assertEgressUrlAllowed: loopback запрещён в проде без BREWFORGE_ALLOW_LOOPBACK_DEVICE).
+ * В production демо всё равно доступно — но через in-process стаб-провайдер
+ * brewforge-demo (Phase 4.5), а НЕ loopback. См. createDemoDevice.
+ */
+export const useLoopbackDemoSim = (): boolean =>
+  process.env.NODE_ENV !== "production" || isEnvEnabled(process.env.BREWFORGE_ALLOW_LOOPBACK_DEVICE);
+
+/** Демо-устройство метится hardwareId=`demo-<userId>` (и dev-loopback, и prod-стаб). */
+export const isDemoDevice = (device: { hardwareId: string }): boolean =>
+  device.hardwareId.startsWith(DEMO_HARDWARE_ID_PREFIX);
+
+/**
+ * Создать/переиспользовать демо-пивоварню. Идемпотентно на пользователя
+ * (hardwareId=`demo-<userId>`). Транспорт выбирается по среде (Phase 0 + 4.5):
+ *  - DEV (loopback разрешён): providerId=brewforge + localUrl→локальный device-sim
+ *    (полный LAN-путь, «один клик → виртуальный контроллер»);
+ *  - PROD (loopback запрещён): providerId=brewforge-demo, БЕЗ localUrl → in-process
+ *    SimDevice-стаб (simTransport) — «попробуй до покупки» без железа и без сети.
+ * Демо доступно в обеих средах (в проде — не через loopback, а через стаб).
+ */
+export const createDemoDevice = async (userId: string): Promise<DeviceDto> => {
+  const hardwareId = `${DEMO_HARDWARE_ID_PREFIX}${userId}`;
+  const loopback = useLoopbackDemoSim();
+  const localUrl = loopback
+    ? process.env.BREWFORGE_DEMO_SIM_URL?.trim() || "http://127.0.0.1:8090"
+    : null;
+  const providerId = loopback ? "brewforge" : BREWFORGE_DEMO_PROVIDER_ID;
+
+  const [device] = await db
+    .insert(brewDevices)
+    .values({
+      userId,
+      name: "Демо-пивоварня",
+      hardwareId,
+      providerId,
+      localUrl,
+      status: "online",
+      capabilities: ["telemetry", "manual_control", "recipe_push"]
+    })
+    .onConflictDoUpdate({
+      target: brewDevices.hardwareId,
+      set: { userId, providerId, localUrl, status: "online", updatedAt: new Date() },
+      setWhere: eq(brewDevices.userId, userId)
+    })
+    .returning();
+
+  if (!device) {
+    throw new Error("DEVICE_OWNED_BY_OTHER_USER");
+  }
+  return mapDeviceDto(device);
+};
+
 export const listUserDevices = async (userId: string): Promise<DeviceDto[]> => {
   const rows = await db.query.brewDevices.findMany({
     where: eq(brewDevices.userId, userId),
@@ -83,6 +147,46 @@ export const getDeviceById = async (userId: string, deviceId: string): Promise<D
   });
 
   return row ? mapDeviceDto(row) : null;
+};
+
+/**
+ * История телеметрии УСТРОЙСТВА (зона B, пульт L2) — последние N точек по всем
+ * партиям устройства (в отличие от batch-истории, скоупленной по brewBatchId).
+ * Ownership-checked: сперва сверяем владение устройством, затем тянем историю.
+ * Пусто, если устройства нет/оно чужое. oldest→newest для графика.
+ */
+export const getDeviceHistory = async (
+  userId: string,
+  deviceId: string,
+  limit: number = TELEMETRY_HISTORY_LIMIT
+): Promise<TelemetryHistoryPoint[]> => {
+  const device = await getDeviceById(userId, deviceId);
+  if (!device) {
+    return [];
+  }
+  const bounded = Math.min(Math.max(Math.floor(limit) || 0, 1), TELEMETRY_HISTORY_LIMIT);
+  const rows = await db
+    .select({
+      ts: brewTelemetry.ts,
+      primaryC: brewTelemetry.primaryC,
+      setpointC: brewTelemetry.setpointC,
+      heatDutyPct: brewTelemetry.heatDutyPct,
+      stage: brewTelemetry.stage
+    })
+    .from(brewTelemetry)
+    .where(eq(brewTelemetry.deviceId, deviceId))
+    .orderBy(desc(brewTelemetry.ts))
+    .limit(bounded);
+
+  return rows
+    .map((row) => ({
+      ts: row.ts.getTime(),
+      primaryC: row.primaryC,
+      setpointC: row.setpointC,
+      heatDutyPct: row.heatDutyPct,
+      stage: row.stage
+    }))
+    .reverse();
 };
 
 /**

@@ -1,11 +1,12 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { LayoutGrid, List, Search } from "lucide-react";
 
 import { Input } from "@nb/ui";
 
-import { recipeSortOptions } from "@/features/recipes/recipes-url";
+import { RECIPES_VIEW_COOKIE, recipeSortOptions, type RecipesView } from "@/features/recipes/recipes-url";
 
 import { useRecipeQueryNav } from "./use-recipe-query";
 
@@ -16,13 +17,28 @@ import { useRecipeQueryNav } from "./use-recipe-query";
  * Пока идёт навигация (`isPending`) — ненавязчивый индикатор «Обновляем…», чтобы
  * выдача не «моргала» скелетоном на каждый тик фильтра.
  */
-export function RecipesToolbar() {
-  const { searchParams, navigate, isPending } = useRecipeQueryNav();
+export function RecipesToolbar({ defaultView = "grid" }: { defaultView?: RecipesView }) {
+  const { searchParams, navigate, buildHref, isPending } = useRecipeQueryNav();
+  const router = useRouter();
   const urlQuery = searchParams.get("q") ?? "";
   const sort = searchParams.get("sort") ?? "newest";
-  const view = searchParams.get("view") ?? "grid";
+  const view = searchParams.get("view") ?? defaultView;
 
   const [searchValue, setSearchValue] = useState(urlQuery);
+
+  // Запоминаем выбор вида в cookie — серверная страница подставит его дефолтом при
+  // следующем заходе без явного ?view. «Сетка» вырезается из URL как дефолт, поэтому
+  // если целевой адрес не меняется (переключение на сетку из «чистого» URL при
+  // cookie=list) — форсим серверный ре-рендер, чтобы он перечитал cookie.
+  const selectView = (next: RecipesView) => {
+    document.cookie = `${RECIPES_VIEW_COOKIE}=${next}; path=/; max-age=31536000; samesite=lax`;
+    const patch: Record<string, string | null> = { view: next === "grid" ? null : "list" };
+    if (buildHref(patch, { resetPage: false }) === buildHref({}, { resetPage: false })) {
+      router.refresh();
+    } else {
+      navigate(patch, { resetPage: false });
+    }
+  };
 
   useEffect(() => {
     setSearchValue(urlQuery);
@@ -76,7 +92,7 @@ export function RecipesToolbar() {
             type="button"
             aria-label="Сеткой"
             aria-pressed={view !== "list"}
-            onClick={() => navigate({ view: null }, { resetPage: false })}
+            onClick={() => selectView("grid")}
             className={`inline-flex h-8 w-8 items-center justify-center rounded-md transition ${
               view !== "list" ? "bg-zinc-950 text-white" : "text-zinc-500 hover:bg-zinc-100"
             }`}
@@ -87,7 +103,7 @@ export function RecipesToolbar() {
             type="button"
             aria-label="Списком"
             aria-pressed={view === "list"}
-            onClick={() => navigate({ view: "list" }, { resetPage: false })}
+            onClick={() => selectView("list")}
             className={`inline-flex h-8 w-8 items-center justify-center rounded-md transition ${
               view === "list" ? "bg-zinc-950 text-white" : "text-zinc-500 hover:bg-zinc-100"
             }`}

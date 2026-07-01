@@ -2,6 +2,7 @@ import React from "react";
 
 import type { PublicRecipeFilters } from "@/features/recipes/contracts";
 import { searchPublicRecipes } from "@/features/recipes/service";
+import { defaultPreferredGravityUnit, type PreferredGravityUnit } from "@/features/system/gravity-units";
 
 import { RecipesEmptyState } from "./recipes-empty-state";
 import { RecipesGrid } from "./recipes-grid";
@@ -42,10 +43,12 @@ const resultsCountLabel = (total: number): string => {
  */
 export async function RecipesResults({
   filters,
-  view = "grid"
+  view = "grid",
+  preferredGravityUnit = defaultPreferredGravityUnit
 }: {
   filters: PublicRecipeFilters;
   view?: "grid" | "list";
+  preferredGravityUnit?: PreferredGravityUnit;
 }) {
   const { items, total, page, pageSize } = await searchPublicRecipes(filters);
 
@@ -69,7 +72,7 @@ export async function RecipesResults({
         {resultsCountLabel(total)}
       </p>
 
-      <RecipesGrid recipes={items} view={view} />
+      <RecipesGrid recipes={items} view={view} preferredGravityUnit={preferredGravityUnit} />
 
       <RecipesPagination current={page} totalPages={totalPages} />
     </div>

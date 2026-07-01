@@ -62,10 +62,15 @@ export const FAULT_BITS = {
   ESTOP:        1 << 5, // BF_FAULT_ESTOP
   WATCHDOG:     1 << 6, // BF_FAULT_WATCHDOG
   STAGE_TO:     1 << 7, // BF_FAULT_STAGE_TO
+  NO_FLOW:      1 << 8, // BF_FAULT_NO_FLOW (косвенный нагрев HERMS/RIMS: нет рециркуляции)
 } as const;
 
 export const FAULT_NAMES = Object.keys(FAULT_BITS) as (keyof typeof FAULT_BITS)[];
-export const FaultSchema = z.enum(FAULT_NAMES as [string, ...string[]]);
+// Каст в тюпл ИМЕННО union-литералов (не голого string) — иначе z.enum схлопывает
+// Fault до string, и FAULT_BITS[name] с name:Fault перестаёт тайпчекаться.
+export const FaultSchema = z.enum(
+  FAULT_NAMES as [keyof typeof FAULT_BITS, ...(keyof typeof FAULT_BITS)[]],
+);
 export type Fault = z.infer<typeof FaultSchema>;
 
 /** Разложить bf_fault_t-маску в список имён всех установленных бит. */

@@ -4,77 +4,13 @@ import React, { type CSSProperties } from "react";
 import {
   calculatorSections,
   calculators,
+  isCalculatorVerified,
   type CalculatorCatalogItem,
   type CalculatorSlug
 } from "@/features/calculators/catalog";
 
-type CalculatorCardCopy = {
-  title: string;
-  description: string;
-};
-
-const calculatorCardCopy: Record<CalculatorSlug, CalculatorCardCopy> = {
-  "abv-attenuation": {
-    title: "Крепость и сбраживание",
-    description: "ABV, ABW и степень сбраживания по OG и FG."
-  },
-  "refractometer-correction": {
-    title: "Поправка рефрактометра на алкоголь",
-    description: "Пересчет Brix/Plato после начала брожения."
-  },
-  "hydrometer-correction": {
-    title: "Поправка ареометра по температуре",
-    description: "Коррекция SG/Plato по температуре пробы."
-  },
-  "unit-converter": {
-    title: "Пивоваренный конвертер единиц",
-    description: "SG, Plato, Brix, объем, вес, температура и давление."
-  },
-  "dilution-boiloff": {
-    title: "Коррекция объема и плотности сусла",
-    description: "Разбавление, уваривание и добавка экстракта до цели."
-  },
-  ibu: {
-    title: "Горечь пива (IBU)",
-    description: "Расчет горечи по внесениям хмеля, времени и объему."
-  },
-  "brewing-water-volume": {
-    title: "Вода на варку",
-    description: "Общий объем, заторная, промывная и объем до кипа."
-  },
-  "beer-color": {
-    title: "Цвет пива (SRM / EBC)",
-    description: "Расчет цветности по засыпи и объему партии."
-  },
-  "water-ph": {
-    title: "Вода и pH затора",
-    description: "Соли, профиль воды и ориентировочный pH."
-  },
-  "yeast-starter": {
-    title: "Засев дрожжей и стартер",
-    description: "Сколько дрожжей нужно и нужен ли стартер."
-  },
-  "hop-freshness": {
-    title: "Свежесть хмеля",
-    description: "Оценка текущей альфа-кислоты после хранения."
-  },
-  "priming-sugar": {
-    title: "Карбонизация сахаром",
-    description: "Сколько сахара добавить на весь объем или на бутылку."
-  },
-  "keg-carbonation": {
-    title: "Карбонизация в кеге",
-    description: "Давление для карбонизации, подачи и шпунтования."
-  },
-  bottling: {
-    title: "Бутылки и розлив",
-    description: "Количество бутылок, смешанный розлив и остаток объема."
-  },
-  "speise-krausen": {
-    title: "Шпайзе и кройцен",
-    description: "Объем сусла или кройцена для натуральной карбонизации."
-  }
-};
+// Пометка статуса валидации — только в dev, чтобы отслеживать непроверенные калькуляторы.
+const devMode = process.env.NODE_ENV !== "production";
 
 const calculatorCardBackgrounds: Partial<Record<CalculatorSlug, string>> = {
   "abv-attenuation": "/images/calculators/2-Photoroom.png",
@@ -95,7 +31,6 @@ const calculatorCardBackgrounds: Partial<Record<CalculatorSlug, string>> = {
 };
 
 function CalculatorCard({ calculator }: { calculator: CalculatorCatalogItem }) {
-  const copy = calculatorCardCopy[calculator.slug];
   const backgroundImage = calculatorCardBackgrounds[calculator.slug];
   const style: CSSProperties | undefined = backgroundImage
     ? { backgroundImage: `url("${backgroundImage}")` }
@@ -112,12 +47,23 @@ function CalculatorCard({ calculator }: { calculator: CalculatorCatalogItem }) {
       <article className="relative flex h-full flex-col justify-between p-3.5 sm:p-4">
         <div className="max-w-[65%] space-y-0.5">
           <h3 className="text-[14px] font-semibold leading-snug text-zinc-900 sm:text-[15px]">
-            {copy.title}
+            {calculator.shortTitle}
           </h3>
           <p className="line-clamp-2 text-[12px] leading-relaxed text-zinc-500 sm:text-[13px]">
-            {copy.description}
+            {calculator.description}
           </p>
         </div>
+        {devMode ? (
+          <span
+            className={`inline-flex w-fit items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-semibold ${
+              isCalculatorVerified(calculator.slug)
+                ? "bg-emerald-100 text-emerald-700"
+                : "bg-amber-100 text-amber-700"
+            }`}
+          >
+            {isCalculatorVerified(calculator.slug) ? "✓ проверен" : "не проверен"}
+          </span>
+        ) : null}
       </article>
     </Link>
   );

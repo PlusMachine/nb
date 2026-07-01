@@ -3,7 +3,9 @@ import { Montserrat, Rubik } from "next/font/google";
 
 import "./globals.css";
 import { Providers } from "../components/providers";
+import { DevGuestBadge } from "@/components/shared/dev-guest-badge";
 import { SiteFooter } from "@/components/shared/site-footer";
+import { isDevGuestPreview } from "@/lib/auth";
 import { getServerEnv } from "@/lib/env";
 
 const bodyFont = Rubik({
@@ -27,7 +29,9 @@ export const metadata: Metadata = {
   description: "NB editorial and brewing knowledge base."
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  const devGuest = await isDevGuestPreview();
+
   return (
     <html lang="ru" className={`${bodyFont.variable} ${displayFont.variable}`}>
       <body className="min-h-screen bg-slate-50 text-zinc-950 antialiased" style={{ fontFamily: "var(--font-sans)" }}>
@@ -36,6 +40,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <div className="flex-1">{children}</div>
             <SiteFooter />
           </div>
+          <DevGuestBadge active={devGuest} />
         </Providers>
       </body>
     </html>

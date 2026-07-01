@@ -71,8 +71,8 @@ describe("clone bridge wiring", () => {
   });
 
   it("shows a clone control on a saved-recipe card only when enabled", () => {
-    const withClone = renderToStaticMarkup(React.createElement(RecipeCard, { recipe: listItem, showCloneAction: true }));
-    const withoutClone = renderToStaticMarkup(React.createElement(RecipeCard, { recipe: listItem }));
+    const withClone = renderToStaticMarkup(React.createElement(RecipeCard, { recipe: listItem, showCloneAction: true, preferredGravityUnit: "sg" }));
+    const withoutClone = renderToStaticMarkup(React.createElement(RecipeCard, { recipe: listItem, preferredGravityUnit: "sg" }));
 
     expect(withClone).toContain("Клонировать рецепт");
     expect(withoutClone).not.toContain("Клонировать рецепт");

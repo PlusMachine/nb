@@ -1,24 +1,15 @@
 import { requireUser } from "@/lib/auth";
-import { listUserDevices } from "@/features/devices/service";
-import { DevicesManager, type DeviceView } from "@/features/devices/components/devices-manager";
+import { listDeviceTiles } from "@/features/devices/tiles";
+import { DevicesManager } from "@/features/devices/components/devices-manager";
 
-// Страница управления устройствами BrewForge.
-// Серверная часть: requireUser → список устройств (ownership). Даты сериализуем
-// в ISO-строки для клиентского компонента. tokenHash сюда не попадает (его нет в DTO).
+// L1 командный центр устройств BrewForge (грид плиток → статус → пульт).
+// Серверная часть: requireUser → плитки (last-known срез + sparkline, ownership).
+// tokenHash сюда не попадает (его нет в DTO/плитке).
 export default async function DevicesPage() {
   const user = await requireUser();
-  const devices = await listUserDevices(user.id);
+  const tiles = await listDeviceTiles(user.id);
 
-  const initialDevices: DeviceView[] = devices.map((d) => ({
-    id: d.id,
-    name: d.name,
-    hardwareId: d.hardwareId,
-    fw: d.fw,
-    status: d.status,
-    localUrl: d.localUrl,
-    mqttPrefix: d.mqttPrefix,
-    lastSeenAt: d.lastSeenAt ? d.lastSeenAt.toISOString() : null
-  }));
-
-  return <DevicesManager initialDevices={initialDevices} />;
+  // Демо-пивоварня доступна всегда: в dev — loopback device-sim, в prod — in-process
+  // стаб-провайдер (Phase 4.5). Кнопку показываем всем («попробуй до покупки»).
+  return <DevicesManager initialTiles={tiles} demoAvailable />;
 }

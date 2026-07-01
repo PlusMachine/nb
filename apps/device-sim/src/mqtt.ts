@@ -14,7 +14,7 @@
 // =============================================================================
 import mqtt, { type MqttClient } from "mqtt";
 import { topics, type Telemetry } from "@nb/brewforge-protocol";
-import type { SimDevice } from "./sim-device.js";
+import type { SimDevice } from "@nb/brewforge-sim";
 
 export interface SimMqttHandle {
   client: MqttClient;

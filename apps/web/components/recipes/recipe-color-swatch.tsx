@@ -4,6 +4,7 @@ import {
   beerColorFromSrm,
   NEUTRAL_SOFT_GRADIENT,
   pickTextColorForSrm,
+  srmToHex,
   srmToSoftGradient
 } from "@/features/recipes/beer-color";
 
@@ -34,7 +35,16 @@ export function RecipeColorSwatch({
         className={`pointer-events-none flex items-end justify-between gap-2 px-3 pb-2 text-white [text-shadow:0_1px_2px_rgba(0,0,0,0.55)] ${className ?? ""}`}
       >
         <span className="text-xs font-semibold tabular-nums">{srmText}</span>
-        <span className="truncate text-[11px] font-medium opacity-95">{label}</span>
+        <span className="inline-flex min-w-0 items-center gap-1.5 text-[11px] font-medium opacity-95">
+          {hasColor ? (
+            <span
+              aria-hidden
+              className="h-2.5 w-2.5 shrink-0 rounded-full ring-1 ring-inset ring-white/50"
+              style={{ backgroundColor: srmToHex(srm) }}
+            />
+          ) : null}
+          <span className="truncate">{label}</span>
+        </span>
       </div>
     );
   }
@@ -48,7 +58,16 @@ export function RecipeColorSwatch({
       style={{ backgroundImage: background, color: textColor }}
     >
       <span className="text-xs font-semibold tabular-nums">{srmText}</span>
-      <span className="truncate text-[11px] font-medium opacity-90">{label}</span>
+      <span className="inline-flex min-w-0 items-center gap-1.5 text-[11px] font-medium opacity-90">
+        {hasColor ? (
+          <span
+            aria-hidden
+            className="h-2.5 w-2.5 shrink-0 rounded-full ring-1 ring-inset ring-black/10"
+            style={{ backgroundColor: srmToHex(srm) }}
+          />
+        ) : null}
+        <span className="truncate">{label}</span>
+      </span>
     </div>
   );
 }

@@ -17,6 +17,7 @@ import { isIP } from "node:net";
 import {
   AckSchema,
   DeviceConfigSchema,
+  DeviceRecipeSchema,
   TelemetrySchema,
   type Ack,
   type Command,
@@ -141,13 +142,20 @@ export function assertEgressUrlAllowed(rawUrl: string): void {
   }
 }
 
+/** Один слот рецепта на устройстве: номер + имя, если занят (null — пуст). */
+export type DeviceRecipeSlot = { slot: number; name: string | null };
+
 export interface DeviceTransport {
   /** Текущий снимок телеметрии, либо null, если валидной телеметрии нет. */
   getTelemetry(): Promise<Telemetry | null>;
   /** Отправить команду и вернуть Ack (в т.ч. nack — ok:false). */
   sendCommand(cmd: Command): Promise<Ack>;
-  /** Записать рецепт в записываемый слот устройства; вернуть номер слота. */
-  putRecipe(recipe: DeviceRecipe): Promise<{ slot: number }>;
+  /**
+   * Записать рецепт в слот устройства; вернуть номер слота, куда он реально лёг.
+   * `slot` — целевой слот (Phase 4, device-first push «на плату»); без него
+   * устройство пишет в слот по умолчанию (batch-путь START_BREW всегда слот 0).
+   */
+  putRecipe(recipe: DeviceRecipe, slot?: number): Promise<{ slot: number }>;
   /** Прочитать текущий НЕсекретный конфиг §6.3, либо null, если валидного нет. */
   getConfig(): Promise<DeviceConfig | null>;
   /**
@@ -155,6 +163,10 @@ export interface DeviceTransport {
    * возвращает эффективный (клампнутый) конфиг. Применяется ПОСЛЕ перезагрузки.
    */
   putConfig(cfg: DeviceConfigPatch): Promise<DeviceConfig>;
+  /** Карта слотов устройства (номер + имя рецепта, если занят). */
+  listSlots(): Promise<DeviceRecipeSlot[]>;
+  /** Read-only снапшот «что лежит на плате» в слоте, либо null если слот пуст. */
+  readSlotSnapshot(slot: number): Promise<DeviceRecipe | null>;
 }
 
 const buildHeaders = (token?: string): Record<string, string> => {
@@ -208,8 +220,13 @@ export function lanTransport(baseUrl: string, token?: string): DeviceTransport {
       return parsed.data;
     },
 
-    async putRecipe(recipe) {
-      const url = `${base}/recipe`;
+    async putRecipe(recipe, targetSlot) {
+      // Целевой слот (device-first push) — query `?slot=N`; без него прошивка/sim
+      // берёт слот по умолчанию (0). Номер отдаёт устройство в ответе (source of truth).
+      const url =
+        targetSlot === undefined
+          ? `${base}/recipe`
+          : `${base}/recipe?slot=${encodeURIComponent(String(targetSlot))}`;
       assertEgressUrlAllowed(url);
       const res = await fetch(url, {
         method: "PUT",
@@ -260,6 +277,29 @@ export function lanTransport(baseUrl: string, token?: string): DeviceTransport {
         throw new Error(`lanTransport.putConfig: невалидный config в ответе (HTTP ${res.status})`);
       }
       return parsed.data;
+    },
+
+    async listSlots() {
+      const url = `${base}/recipes`;
+      assertEgressUrlAllowed(url);
+      const res = await fetch(url, { method: "GET", headers });
+      if (!res.ok) return [];
+      const json = await res.json().catch(() => null);
+      const raw = isRecord(json) && Array.isArray(json.slots) ? json.slots : [];
+      return raw.filter(
+        (s: unknown): s is { slot: number; name: string | null } =>
+          isRecord(s) && typeof s.slot === "number" && (typeof s.name === "string" || s.name === null),
+      );
+    },
+
+    async readSlotSnapshot(slot) {
+      const url = `${base}/recipe?slot=${encodeURIComponent(String(slot))}`;
+      assertEgressUrlAllowed(url);
+      const res = await fetch(url, { method: "GET", headers });
+      if (!res.ok) return null; // 404 = слот пуст; прочие ошибки тоже трактуем как «нет снапшота»
+      const json = await res.json().catch(() => null);
+      const parsed = DeviceRecipeSchema.safeParse(json);
+      return parsed.success ? parsed.data : null;
     },
   };
 }

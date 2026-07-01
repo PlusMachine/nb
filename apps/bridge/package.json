@@ -10,8 +10,9 @@
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },
   "dependencies": {
-    "@nb/brewforge-protocol": "*",
-    "@nb/db": "*",
+    "@nb/brewforge-protocol": "workspace:*",
+    "@nb/db": "workspace:*",
+    "@nb/push": "workspace:*",
     "mqtt": "^5.10.1",
     "ws": "^8.18.0"
   },

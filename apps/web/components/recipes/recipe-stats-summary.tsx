@@ -5,7 +5,7 @@ import { CircleAlert, CircleCheck, Gauge, Palette, Percent, Zap } from "lucide-r
 import type { RecipeDetailDto, RecipeListItemDto } from "@/features/recipes/contracts";
 import { beerColorFromSrm } from "@/features/recipes/beer-color";
 import { resolveRecipeFgHelperText, resolveRecipeFgSourceLabel } from "@/features/recipes/fg-estimate";
-import { formatGravityWithPlato } from "@/features/recipes/format";
+import { formatGravity, type PreferredGravityUnit } from "@/features/system/gravity-units";
 import { BeerGlassIcon } from "@/components/recipes/beer-glass-icon";
 
 type RecipeStatsSource = Pick<RecipeListItemDto | RecipeDetailDto, "og" | "fg" | "abv" | "ibu" | "color" | "styleId">
@@ -27,10 +27,12 @@ const metricStatusLabels: Record<"in_range" | "below" | "above", string> = {
 
 export function RecipeStatsSummary({
   recipe,
-  gravityLabels = { og: "OG", fg: "FG" }
+  gravityLabels = { og: "OG", fg: "FG" },
+  preferredGravityUnit
 }: {
   recipe: RecipeStatsSource;
   gravityLabels?: { og: string; fg: string };
+  preferredGravityUnit: PreferredGravityUnit;
 }) {
   const selectedStyle = getBeerStyleById(recipe.styleId);
   const styleRange = getStyleRangeById(recipe.styleId);
@@ -49,11 +51,11 @@ export function RecipeStatsSummary({
   const fgHelperText = resolveRecipeFgHelperText(recipe.fgEstimateMode, recipe.fg);
 
   const items = [
-    { key: "OG", label: gravityLabels.og, value: formatGravityWithPlato(recipe.og), status: fit?.og.status ?? null },
+    { key: "OG", label: gravityLabels.og, value: formatGravity(recipe.og, preferredGravityUnit), status: fit?.og.status ?? null },
     {
       key: "FG",
       label: gravityLabels.fg,
-      value: formatGravityWithPlato(recipe.fg),
+      value: formatGravity(recipe.fg, preferredGravityUnit),
       status: fit?.fg.status ?? null,
       sourceLabel: recipe.fg != null ? fgSourceLabel : null,
       helperText: recipe.fg == null ? fgHelperText : null
@@ -93,11 +95,7 @@ export function RecipeStatsSummary({
           const Icon = metricIcons[stat.key];
           const colorInfo = stat.key === "Color" && recipe.color != null ? beerColorFromSrm(recipe.color) : null;
           const isColor = stat.key === "Color";
-          const isGravity = stat.key === "OG" || stat.key === "FG";
           const strValue = typeof stat.value === "string" ? stat.value : null;
-          const gravityParts = isGravity && strValue && strValue !== "—"
-            ? strValue.match(/^([\d.]+)\s*\((.+)\)$/)
-            : null;
 
           return (
             <div
@@ -121,17 +119,6 @@ export function RecipeStatsSummary({
                     </div>
                     <div className="truncate text-xs text-zinc-500">{colorInfo.label}</div>
                   </div>
-                </dd>
-              ) : gravityParts ? (
-                <dd className="mt-1.5 min-w-0">
-                  <div className="text-lg font-semibold tabular-nums text-zinc-950">{gravityParts[1]}</div>
-                  <div className="text-xs font-medium tabular-nums text-zinc-500">{gravityParts[2]}</div>
-                  {"sourceLabel" in stat && stat.sourceLabel ? (
-                    <div className="mt-1 text-[11px] font-medium text-zinc-500">{stat.sourceLabel}</div>
-                  ) : null}
-                  {"helperText" in stat && stat.helperText ? (
-                    <div className="mt-1 text-[11px] text-zinc-400">{stat.helperText}</div>
-                  ) : null}
                 </dd>
               ) : (
                 <dd className="mt-1.5">

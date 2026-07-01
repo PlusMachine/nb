@@ -8,6 +8,7 @@ import { getBrewBatchInventoryView } from "@/features/brew-batches/inventory";
 import { buildBrewDaySteps } from "@/features/brew-batches/brew-day";
 import { brewBatchStatusBadgeClass, brewBatchStatusLabels } from "@/features/brew-batches/contracts";
 import { getDeviceById } from "@/features/devices/service";
+import { deviceChannel } from "@/features/brew-controller";
 import { BrewLifecycle } from "@/features/brew-batches/components/brew-lifecycle";
 import { BrewJournal } from "@/features/brew-batches/components/brew-journal";
 import { BrewNotes } from "@/features/brew-batches/components/brew-notes";
@@ -71,7 +72,7 @@ export default async function BrewBatchDetailPage({ params }: { params: Promise<
         <BrewDayGuide brewBatchId={batch.id} groups={brewDaySteps} initialProgress={batch.brewDayProgress} />
       ) : null}
 
-      <BrewJournal brewBatchId={batch.id} measurements={measurements} summary={summary} />
+      <BrewJournal brewBatchId={batch.id} measurements={measurements} summary={summary} preferredGravityUnit={user.preferredGravityUnit} />
 
       {inventoryView ? (
         <BrewInventory brewBatchId={batch.id} view={inventoryView} status={batch.status} />
@@ -83,13 +84,13 @@ export default async function BrewBatchDetailPage({ params }: { params: Promise<
         <div className="space-y-6 border-t border-zinc-100 pt-6">
           <h2 className="text-base font-semibold text-zinc-900">Устройство</h2>
           <LiveDashboard
-            brewBatchId={batch.id}
-            batchName={batch.name}
-            recipeTitle={batch.brewPlanSnapshot.recipe.title}
-            deviceName={device?.name ?? null}
+            source={{ kind: "batch", brewBatchId: batch.id }}
+            title={batch.name}
+            subtitle={`${batch.brewPlanSnapshot.recipe.title}${device?.name ? ` · ${device.name}` : ""}`}
             hasDevice={hasDevice}
+            channel={device ? deviceChannel(device) : null}
           />
-          <TelemetryChart brewBatchId={batch.id} hasDevice={hasDevice} initial={initialHistory} />
+          <TelemetryChart source={{ kind: "batch", brewBatchId: batch.id }} hasDevice={hasDevice} initial={initialHistory} />
         </div>
       ) : null}
     </div>

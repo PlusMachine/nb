@@ -6,7 +6,10 @@ const repoRoot = join(dirname(fileURLToPath(import.meta.url)), "../..");
 
 const nextConfig: NextConfig = {
   outputFileTracingRoot: repoRoot,
-  transpilePackages: ["@nb/ui", "@nb/shared", "@nb/db", "@nb/content", "@nb/brewforge-protocol"],
+  transpilePackages: ["@nb/ui", "@nb/shared", "@nb/db", "@nb/content", "@nb/brewforge-protocol", "@nb/brewforge-sim", "@nb/push"],
+  // web-push — node-библиотека (crypto/https), только серверная: не бандлим, грузим
+  // через require в рантайме (импортируется @nb/push из серверного роута/моста).
+  serverExternalPackages: ["web-push"],
   async redirects() {
     // Каталог переехал из рабочей зоны в публичную: /app/catalog -> /catalog.
     return [

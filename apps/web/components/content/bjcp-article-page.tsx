@@ -5,7 +5,11 @@ import type { BjcpCatalogStyle, ContentArticle } from "@nb/content";
 
 import { getBjcpCardColorInfo } from "@/features/content/bjcp-card-stats";
 import { beerColorFromSrm } from "@/features/recipes/beer-color";
-import { formatPlatoFromSg } from "@/features/recipes/format";
+import { defaultPreferredGravityUnit, formatGravity, type PreferredGravityUnit } from "@/features/system/gravity-units";
+
+import { BjcpGravityPassportStats } from "./bjcp-gravity-passport-stats";
+import { PassportStatCard } from "./bjcp-passport-stat-card";
+import { StyleCommunityRecipes } from "./style-community-recipes";
 
 const mediaThemes = [
   "bg-[linear-gradient(150deg,#0f172a_0%,#1e293b_50%,#475569_100%)]",
@@ -37,9 +41,9 @@ const formatRange = (values: number[], formatter: (value: number) => string) => 
   return `${formatter(values[0]!)} - ${formatter(values[values.length - 1]!)}`;
 };
 
-const formatPlatoRange = (value: string) => {
+const formatGravityRange = (value: string, unit: PreferredGravityUnit) => {
   const numbers = parseStatNumbers(value);
-  return formatRange(numbers, (item) => formatPlatoFromSg(item, 1));
+  return formatRange(numbers, (item) => formatGravity(item, unit));
 };
 
 const formatEbcRange = (value: string) => {
@@ -59,7 +63,7 @@ const fallbackColorBandAccent: Record<ContentArticle["colorBand"], ColorAccent> 
 const emptyPassportStatLabel = "Не указывается в BJCP";
 const emptyPassportStatSupportingText = "Для этого стиля BJCP не задаёт отдельный диапазон.";
 
-type PassportStatKey = "og" | "fg" | "abv" | "ibu" | "srm";
+export type PassportStatKey = "og" | "fg" | "abv" | "ibu" | "srm";
 
 type PassportStatDefinition = {
   key: PassportStatKey;
@@ -68,16 +72,17 @@ type PassportStatDefinition = {
   supporting: (value: string) => string | null;
 };
 
-const passportStatDefinitions: PassportStatDefinition[] = [
+export const passportStatDefinitions: PassportStatDefinition[] = [
   {
     key: "og",
     label: "НП",
-    supporting: formatPlatoRange
+    // Плотность форматируется через resolvePassportStat (unit-aware), без вторичной единицы.
+    supporting: () => null
   },
   {
     key: "fg",
     label: "КП",
-    supporting: formatPlatoRange
+    supporting: () => null
   },
   {
     key: "abv",
@@ -103,7 +108,7 @@ type ColorAccent = {
   endHex: string;
 };
 
-type PassportStatItem = PassportStatDefinition & {
+export type PassportStatItem = PassportStatDefinition & {
   value: string;
   supportingText: string | null;
   isTextual: boolean;
@@ -287,18 +292,24 @@ const resolveColorAccent = (
   };
 };
 
-const resolvePassportStat = (
+export const resolvePassportStat = (
   article: ContentArticle,
   definition: PassportStatDefinition,
-  catalogStyle: BjcpCatalogStyle | null
+  catalogStyle: BjcpCatalogStyle | null,
+  preferredGravityUnit: PreferredGravityUnit = defaultPreferredGravityUnit
 ): PassportStatItem => {
   const rawValue = article.vitalStatistics[definition.key];
+  const isGravityStat = definition.key === "og" || definition.key === "fg";
 
   if (rawValue) {
     const localized = resolveLocalizedDescriptor(definition.key, rawValue);
     const isNumeric = isCompactNumericValue(rawValue);
-    const value = isNumeric ? rawValue : localized.value;
-    const supportingText = isNumeric ? definition.supporting(rawValue) : localized.supportingText;
+    const value = isNumeric
+      ? (isGravityStat ? (formatGravityRange(rawValue, preferredGravityUnit) ?? rawValue) : rawValue)
+      : localized.value;
+    const supportingText = isNumeric
+      ? (isGravityStat ? null : definition.supporting(rawValue))
+      : localized.supportingText;
 
     return {
       ...definition,
@@ -373,12 +384,13 @@ function ArticleStructuredData({ article }: { article: ContentArticle }) {
 
 export function BjcpArticlePage({
   article,
-  relatedArticles,
-  catalogStyle = null
+  catalogStyle = null,
+  siblingStyles = []
 }: {
   article: ContentArticle;
-  relatedArticles: ContentArticle[];
   catalogStyle?: BjcpCatalogStyle | null;
+  /** Другие стили той же категории (для боковой навигации «не тот стиль?»). */
+  siblingStyles?: { bjcpId: string; slug: string; title: string }[];
 }) {
   const categoryLabel = `кат. ${article.category.nameRu}`;
   const mediaTheme = resolveMediaTheme(article);
@@ -426,42 +438,11 @@ export function BjcpArticlePage({
             </div>
 
             <div className="grid auto-rows-fr gap-2.5 sm:grid-cols-2">
-              {passportStats.map((stat) => (
-                <div
-                  key={stat.key}
-                  className={`h-full min-h-[6.5rem] overflow-hidden rounded-[1.5rem] border border-zinc-200 bg-slate-50 px-4 py-3 text-zinc-900 ${stat.wide ? "sm:col-span-2" : ""}`}
-                >
-                  <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-zinc-500">{stat.label}</p>
-                  <p
-                    className={`mt-2 whitespace-pre-line break-words text-zinc-950 ${stat.isTextual
-                      ? "text-[13px] font-semibold leading-5 sm:text-sm"
-                      : "text-base font-semibold leading-tight tabular-nums sm:text-lg"
-                    }`}
-                  >
-                    {stat.value}
-                    {stat.key === "srm" && !stat.isTextual ? " SRM" : ""}
-                  </p>
-                  {stat.supportingText ? (
-                    <p
-                      className={`mt-1.5 whitespace-pre-line break-words text-[11px] font-medium text-zinc-500 ${stat.isTextual ? "" : "tabular-nums"}`}
-                    >
-                      {stat.supportingText}
-                    </p>
-                  ) : (
-                    <p className="mt-1.5 text-xs font-medium text-transparent">.</p>
-                  )}
-                  {stat.accent ? (
-                    <div className="mt-3 h-2 overflow-hidden rounded-full bg-zinc-200/80 shadow-[inset_0_1px_2px_rgba(15,23,42,0.16)]">
-                      <div
-                        className="h-full rounded-full"
-                        style={{
-                          backgroundImage: `linear-gradient(90deg, ${stat.accent.startHex} 0%, ${stat.accent.averageHex} 52%, ${stat.accent.endHex} 100%)`
-                        }}
-                      />
-                    </div>
-                  ) : null}
-                </div>
-              ))}
+              {/* НП/КП — единица плотности догружается на клиенте (страница SSG). */}
+              <BjcpGravityPassportStats article={article} catalogStyle={catalogStyle} />
+              {passportStats
+                .filter((stat) => stat.key !== "og" && stat.key !== "fg")
+                .map((stat) => <PassportStatCard key={stat.key} stat={stat} />)}
             </div>
           </div>
 
@@ -529,32 +510,34 @@ export function BjcpArticlePage({
         </section>
       </article>
 
-      {relatedArticles.length ? (
-        <section className="space-y-5">
+      <StyleCommunityRecipes styleTitle={article.title} styleCode={article.bjcpId} />
+
+      {siblingStyles.length ? (
+        <section className="space-y-4">
           <div className="flex items-end justify-between gap-4">
             <div>
-              <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-zinc-500">Ещё по теме</p>
-              <h2 className="mt-2 text-3xl font-semibold text-zinc-950" style={{ fontFamily: "var(--font-display)" }}>
-                Другие стили из кат. {article.category.id}
+              <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-zinc-500">Ещё в категории</p>
+              <h2 className="mt-2 text-2xl font-semibold text-zinc-950" style={{ fontFamily: "var(--font-display)" }}>
+                Другие стили категории «{article.category.nameRu}»
               </h2>
             </div>
-            <Link href="/bjcp" className="text-sm font-semibold text-zinc-950">
-              Весь BJCP
+            <Link href="/bjcp" className="shrink-0 text-sm font-semibold text-zinc-950 hover:text-zinc-700">
+              Весь BJCP →
             </Link>
           </div>
 
-          <div className="grid gap-4 lg:grid-cols-3">
-            {relatedArticles.map((related) => (
+          {/* Боковой переход по соседним стилям: если человек открыл не тот стиль
+              (напр. овсяный стаут вместо нужного), он быстро уходит к правильному,
+              а не покидает сайт. */}
+          <div className="flex flex-wrap gap-2">
+            {siblingStyles.map((sibling) => (
               <Link
-                key={related.slug}
-                href={`/bjcp/${related.slug}`}
-                className="rounded-[2rem] border border-zinc-200 bg-white p-5 shadow-[0_26px_80px_-62px_rgba(15,23,42,0.4)] transition hover:-translate-y-1"
+                key={sibling.slug}
+                href={`/bjcp/${sibling.slug}`}
+                className="inline-flex items-center gap-2 rounded-full border border-zinc-200 bg-white px-4 py-2 text-sm shadow-sm transition hover:-translate-y-0.5 hover:border-zinc-300"
               >
-                <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-zinc-500">{related.eyebrow}</p>
-                <h3 className="mt-4 text-2xl font-semibold text-zinc-950" style={{ fontFamily: "var(--font-display)" }}>
-                  {related.title}
-                </h3>
-                <p className="mt-3 text-sm leading-7 text-zinc-600">{related.description}</p>
+                <span className="font-semibold text-zinc-950">{sibling.bjcpId}</span>
+                <span className="text-zinc-600">{sibling.title}</span>
               </Link>
             ))}
           </div>

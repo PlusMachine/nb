@@ -32,6 +32,8 @@ import {
   resolveActiveBatchId,
   resolveDeviceByHardwareId,
 } from "./db.js";
+import { dispatchPushForTelemetry } from "./notify.js";
+import { runCloudDeadman } from "./cloud-deadman.js";
 
 const DEFAULT_MQTT_URL = "mqtt://localhost:1883";
 
@@ -39,6 +41,12 @@ const DEFAULT_MQTT_URL = "mqtt://localhost:1883";
 export interface MqttHooks {
   onTelemetry?: (hardwareId: string, telemetry: Telemetry) => void;
   onAck?: (hardwareId: string, ack: Ack) => void;
+}
+
+/** Контекст обработчиков сообщений: хуки фан-аута + publish (cloud-плечо dead-man). */
+interface HandlerCtx {
+  hooks: MqttHooks;
+  publish: (hardwareId: string, command: Command) => Promise<void>;
 }
 
 export interface MqttBridge {
@@ -93,14 +101,6 @@ export function startMqtt(opts: { url?: string; hooks?: MqttHooks }): MqttBridge
   client.on("error", (err) => console.error("[mqtt] ошибка:", err.message));
   client.on("close", () => console.warn("[mqtt] соединение закрыто"));
 
-  client.on("message", (topic, raw) => {
-    // Никогда не даём обработчику уронить процесс.
-    handleMessage(topic, raw, hooks).catch((err: unknown) => {
-      const msg = err instanceof Error ? err.message : String(err);
-      console.error(`[mqtt] сбой обработки ${topic}:`, msg);
-    });
-  });
-
   const publishCommand: MqttBridge["publishCommand"] = (hardwareId, command) =>
     new Promise<void>((resolve, reject) => {
       const topic = `brewforge/${hardwareId}/cmd`;
@@ -109,6 +109,17 @@ export function startMqtt(opts: { url?: string; hooks?: MqttHooks }): MqttBridge
         else resolve();
       });
     });
+
+  // Контекст обработчиков: хуки фан-аута + publish (нужен cloud-плечу dead-man).
+  const ctx: HandlerCtx = { hooks, publish: publishCommand };
+
+  client.on("message", (topic, raw) => {
+    // Никогда не даём обработчику уронить процесс.
+    handleMessage(topic, raw, ctx).catch((err: unknown) => {
+      const msg = err instanceof Error ? err.message : String(err);
+      console.error(`[mqtt] сбой обработки ${topic}:`, msg);
+    });
+  });
 
   const close = (): Promise<void> =>
     new Promise<void>((resolve) => client.end(false, {}, () => resolve()));
@@ -121,7 +132,7 @@ export function startMqtt(opts: { url?: string; hooks?: MqttHooks }): MqttBridge
   };
 }
 
-async function handleMessage(topic: string, raw: Buffer, hooks: MqttHooks): Promise<void> {
+async function handleMessage(topic: string, raw: Buffer, ctx: HandlerCtx): Promise<void> {
   const parsed = parseTopic(topic);
   if (!parsed) return;
   const { deviceId, suffix } = parsed;
@@ -142,11 +153,11 @@ async function handleMessage(topic: string, raw: Buffer, hooks: MqttHooks): Prom
 
   switch (suffix) {
     case "telemetry":
-      return handleTelemetry(deviceId, json, hooks);
+      return handleTelemetry(deviceId, json, ctx);
     case "status":
       return handleStatus(deviceId, json);
     case "cmd/ack":
-      return handleAck(deviceId, json, hooks);
+      return handleAck(deviceId, json, ctx.hooks);
     case "log":
       return handleLog(deviceId, json);
     default:
@@ -154,7 +165,7 @@ async function handleMessage(topic: string, raw: Buffer, hooks: MqttHooks): Prom
   }
 }
 
-async function handleTelemetry(deviceId: string, json: unknown, hooks: MqttHooks): Promise<void> {
+async function handleTelemetry(deviceId: string, json: unknown, ctx: HandlerCtx): Promise<void> {
   const result = TelemetrySchema.safeParse(json);
   if (!result.success) {
     console.warn(`[mqtt] невалидная телеметрия ${deviceId}: ${result.error.issues[0]?.message}`);
@@ -190,7 +201,13 @@ async function handleTelemetry(deviceId: string, json: unknown, hooks: MqttHooks
     payload: t as unknown as Record<string, unknown>,
   }).onConflictDoNothing({ target: [brewTelemetry.deviceId, brewTelemetry.brewBatchId, brewTelemetry.seq] });
 
-  hooks.onTelemetry?.(deviceId, t);
+  // Web-push по фронтам (новый промпт / авария) владельцу устройства (Phase 6a).
+  await dispatchPushForTelemetry(device, t);
+
+  // Cloud-плечо dead-man (Phase 6b): брошенный ручной нагрев → пуш (+ опц. EXIT_MANUAL).
+  await runCloudDeadman(device, t, ctx.publish);
+
+  ctx.hooks.onTelemetry?.(deviceId, t);
 }
 
 async function handleStatus(deviceId: string, json: unknown): Promise<void> {

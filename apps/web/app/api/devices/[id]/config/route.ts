@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 import { DeviceConfigPatchSchema } from "@nb/brewforge-protocol";
 
 import { requireUser } from "@/lib/auth";
-import { getProvider } from "@/features/brew-controller";
+import { getProviderForDevice } from "@/features/brew-controller";
 import { getDeviceById } from "@/features/devices/service";
 import { mapDeviceError } from "@/features/devices/errors";
 
@@ -28,7 +28,7 @@ export async function GET(_request: Request, { params }: { params: Promise<{ id:
       return NextResponse.json({ error: "NOT_FOUND" }, { status: 404 });
     }
 
-    const provider = getProvider("brewforge");
+    const provider = getProviderForDevice(device);
     if (!provider?.readConfig) {
       return NextResponse.json({ error: "PROVIDER_UNAVAILABLE" }, { status: 503 });
     }
@@ -57,7 +57,7 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
       return NextResponse.json({ error: "NOT_FOUND" }, { status: 404 });
     }
 
-    const provider = getProvider("brewforge");
+    const provider = getProviderForDevice(device);
     if (!provider?.writeConfig) {
       return NextResponse.json({ error: "PROVIDER_UNAVAILABLE" }, { status: 503 });
     }

@@ -2263,6 +2263,26 @@ export const searchPublicRecipes = async (filters: PublicRecipeFilters): Promise
   };
 };
 
+/**
+ * Топ публичных рецептов сообщества в конкретном BJCP-стиле — для блока «Что
+ * варят в стиле» на странице стиля `/bjcp/[slug]`. Сортировка по популярности
+ * (число сохранений). `total` — сколько всего опубликованных рецептов в стиле
+ * (для ссылки «Все рецепты в стиле» и решения, показывать ли её).
+ *
+ * @param styleCode — BJCP-код стиля (`article.bjcpId`, напр. "1A"); тот же ключ,
+ *   что и фильтр `?style=` на витрине `/recipes` (см. resolveStyleScope).
+ */
+export const listPublicRecipesForStyle = async (
+  styleCode: string,
+  limit = 6
+): Promise<PublicRecipeListResult> =>
+  searchPublicRecipes({
+    styleCode,
+    sort: "popular",
+    page: 1,
+    pageSize: limit
+  });
+
 // ─── Рейтинги публичных рецептов (Phase D, §3.4) ─────────────────────────────
 // Жёсткие правила (первый write-path): userId только с сервера; нельзя оценивать
 // свой рецепт; оценивать можно только published; UNIQUE(recipe,user) → upsert;

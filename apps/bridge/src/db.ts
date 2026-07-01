@@ -16,6 +16,7 @@ import {
   brewDevices,
   db,
   desc,
+  deviceControlLeases,
   eq,
   inArray,
   pool,
@@ -28,6 +29,7 @@ export interface DeviceRow {
   id: string;
   userId: string;
   hardwareId: string;
+  name: string;
 }
 
 /**
@@ -43,6 +45,7 @@ export async function resolveDeviceByHardwareId(
       id: brewDevices.id,
       userId: brewDevices.userId,
       hardwareId: brewDevices.hardwareId,
+      name: brewDevices.name,
     })
     .from(brewDevices)
     .where(eq(brewDevices.hardwareId, hardwareId))
@@ -72,6 +75,26 @@ export async function resolveActiveBatchId(
     .orderBy(desc(brewBatches.startedAt))
     .limit(1);
   return row?.id ?? null;
+}
+
+/** Состояние control-lease устройства (для cloud-плеча dead-man, Phase 6b). */
+export type LeaseState = "none" | "valid" | "expired";
+
+/**
+ * Есть ли активная аренда управления устройством.
+ *  - "none"    — строки нет (портал устройством не управлял / отпустил чисто);
+ *  - "valid"   — аренда не истекла (оператор на связи, heartbeat идёт);
+ *  - "expired" — строка есть, но expiresAt в прошлом (портал управлял и пропал).
+ * «expired» — сигнал «управляющий сеанс потерян» для cloud-плеча dead-man.
+ */
+export async function getLeaseStateForDevice(deviceId: string): Promise<LeaseState> {
+  const [row] = await db
+    .select({ expiresAt: deviceControlLeases.expiresAt })
+    .from(deviceControlLeases)
+    .where(eq(deviceControlLeases.deviceId, deviceId))
+    .limit(1);
+  if (!row) return "none";
+  return row.expiresAt.getTime() > Date.now() ? "valid" : "expired";
 }
 
 /** Корректное закрытие пула при graceful shutdown. */

@@ -735,10 +735,13 @@ export const convertBrewingUnitGroup = (group: UnitConverterGroup, value: number
     };
   }
 
+  // ppm и mg/L численно равны; g/L отличается в 1000 раз. Учитываем исходную единицу,
+  // иначе ввод в g/L трактуется как ppm (5 г/л → 5 ppm вместо 5000).
+  const ppm = from === "g/L" ? value * 1000 : value;
   return {
-    ppm: roundTo(value, 3),
-    "mg/L": roundTo(value, 3),
-    "g/L": roundTo(value / 1000, 4)
+    ppm: roundTo(ppm, 3),
+    "mg/L": roundTo(ppm, 3),
+    "g/L": roundTo(ppm / 1000, 4)
   };
 };
 

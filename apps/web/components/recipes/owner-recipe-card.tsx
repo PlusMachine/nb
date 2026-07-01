@@ -9,7 +9,8 @@ import {
   type OwnerRecipeCardDto,
   type RecipePublicationState
 } from "@/features/recipes/contracts";
-import { formatAbvShort, formatIbuShort, formatOgShort, formatRelativeTimestamp } from "@/features/recipes/format";
+import { formatAbvShort, formatIbuShort, formatRelativeTimestamp } from "@/features/recipes/format";
+import { formatGravity, type PreferredGravityUnit } from "@/features/system/gravity-units";
 
 import { ColorStatCell, StatCell, StyleChip, RecipeThumb } from "./recipe-card-parts";
 import { DeleteRecipeButton } from "./delete-recipe-button";
@@ -88,7 +89,7 @@ function VersionSuffix({ recipe }: { recipe: OwnerRecipeCardDto }) {
 }
 
 /** Grid-карточка владельца. */
-export function OwnerRecipeCard({ recipe }: { recipe: OwnerRecipeCardDto }) {
+export function OwnerRecipeCard({ recipe, preferredGravityUnit }: { recipe: OwnerRecipeCardDto; preferredGravityUnit: PreferredGravityUnit }) {
   const editHref = `/app/recipes/${recipe.id}/edit`;
   const publicPage = publicHref(recipe);
 
@@ -133,7 +134,7 @@ export function OwnerRecipeCard({ recipe }: { recipe: OwnerRecipeCardDto }) {
           <div className="grid grid-cols-4 gap-2 border-t border-zinc-100 pt-3">
             <StatCell label="ABV" value={formatAbvShort(recipe.abv)} />
             <StatCell label="IBU" value={formatIbuShort(recipe.ibu)} />
-            <StatCell label="OG" value={formatOgShort(recipe.og)} />
+            <StatCell label="OG" value={formatGravity(recipe.og, preferredGravityUnit)} />
             <ColorStatCell srm={recipe.colorSrm} />
           </div>
 
@@ -158,7 +159,7 @@ export function OwnerRecipeCard({ recipe }: { recipe: OwnerRecipeCardDto }) {
 }
 
 /** List-строка владельца (горизонтальная, числа в колонках на ≥sm). */
-export function OwnerRecipeRow({ recipe }: { recipe: OwnerRecipeCardDto }) {
+export function OwnerRecipeRow({ recipe, preferredGravityUnit }: { recipe: OwnerRecipeCardDto; preferredGravityUnit: PreferredGravityUnit }) {
   const editHref = `/app/recipes/${recipe.id}/edit`;
   const publicPage = publicHref(recipe);
 
@@ -207,7 +208,7 @@ export function OwnerRecipeRow({ recipe }: { recipe: OwnerRecipeCardDto }) {
       <div className="pointer-events-none hidden shrink-0 items-center gap-5 sm:flex">
         <StatCell label="ABV" value={formatAbvShort(recipe.abv)} />
         <StatCell label="IBU" value={formatIbuShort(recipe.ibu)} />
-        <StatCell label="OG" value={formatOgShort(recipe.og)} />
+        <StatCell label="OG" value={formatGravity(recipe.og, preferredGravityUnit)} />
         <ColorStatCell srm={recipe.colorSrm} />
       </div>
 

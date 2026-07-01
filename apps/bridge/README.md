@@ -38,9 +38,13 @@ npm run dev -w @nb/device-sim
 
 | Переменная        | Default                  | Назначение                         |
 | ----------------- | ------------------------ | ---------------------------------- |
-| `MQTT_URL`        | `mqtt://localhost:1883`  | URL брокера Mosquitto               |
-| `BRIDGE_WS_PORT`  | `8090`                   | Порт WS-сервера для браузера/портала|
-| `DATABASE_URL`    | локальный docker Postgres| Postgres (читается `@nb/db`)        |
+| `MQTT_URL`         | `mqtt://localhost:1883`  | URL брокера Mosquitto               |
+| `BRIDGE_WS_PORT`   | `8090`                   | Порт WS-сервера для браузера/портала|
+| `DATABASE_URL`     | локальный docker Postgres| Postgres (читается `@nb/db`)        |
+| `VAPID_PUBLIC_KEY` | —                        | Web-push (Phase 6): пусто = пуши off |
+| `VAPID_PRIVATE_KEY`| —                        | Web-push приватный ключ (секрет)     |
+| `VAPID_SUBJECT`    | `mailto:admin@localhost` | Web-push subject (mailto:/URL)       |
+| `BREWFORGE_CLOUD_DEADMAN_STOP` | — (off)      | Phase 6b: автономный EXIT_MANUAL (opt-in) |
 
 ## Топик → DB маппинг (MQTT)
 
@@ -56,6 +60,19 @@ npm run dev -w @nb/device-sim
 Невалидные payload-ы **отбрасываются** — процесс никогда не падает (всё в
 try/catch, ошибки логируются). Аутентификация **устройств** — на брокере
 (per-device bearer); мост доверяет топикам, прошедшим аутентификацию брокера.
+
+**Web-push (Phase 6):** на каждом кадре `telemetry` мост выделяет фронты
+(`detectTelemetryEdges`: новый промпт / вновь поднятая авария) и шлёт пуш владельцу
+через `@nb/push` (`src/notify.ts`). Память фронтов — in-memory по устройству; первый
+кадр только сидирует (анти-спам при рестарте). Один инстанс моста ⇒ память корректна
+(мульти-инстанс — вынести состояние в БД). Пуши идут, даже когда портал закрыт.
+
+**Cloud-плечо dead-man (Phase 6b, `src/cloud-deadman.ts`):** ВТОРИЧНАЯ сеть
+безопасности (первичная — firmware dead-man на плате). Если телеметрия показывает
+ручной нагрев (`isManualHeatActive`), а control-lease устройства **истёк** (портал
+управлял и пропал), мост шлёт пуш «проверьте пивоварню». При
+`BREWFORGE_CLOUD_DEADMAN_STOP` дополнительно публикует `EXIT_MANUAL` (автономная
+актуация из облака — off по умолчанию, риск ложного срабатывания при обрыве связи).
 
 ## WS-контракт и модель auth/ownership
 

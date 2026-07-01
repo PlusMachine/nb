@@ -29,7 +29,7 @@ export function RecipeMatchBadge({ recipeId, className }: { recipeId: string; cl
   }
 
   const base =
-    "pointer-events-none inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium ring-1";
+    "pointer-events-none inline-flex shrink-0 items-center gap-1 whitespace-nowrap rounded-full px-2 py-0.5 text-xs font-medium ring-1";
 
   if (badge.tier === "ready") {
     const tone = badge.qtyShort
@@ -47,9 +47,12 @@ export function RecipeMatchBadge({ recipeId, className }: { recipeId: string; cl
   }
 
   return (
-    <span className={`${base} bg-amber-50 text-amber-700 ring-amber-200 ${className ?? ""}`}>
+    <span
+      className={`${base} bg-amber-50 text-amber-700 ring-amber-200 ${className ?? ""}`}
+      title={`Не хватает ${badge.missing} ${badge.missing === 1 ? "ингредиента" : "ингредиентов"}`}
+    >
       <CircleAlert className="h-3.5 w-3.5" aria-hidden />
-      Почти · не хватает {badge.missing}
+      Почти · {badge.missing}
     </span>
   );
 }

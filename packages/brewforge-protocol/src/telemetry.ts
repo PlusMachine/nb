@@ -7,7 +7,6 @@ import { z } from "zod";
 import {
   PROTOCOL_SCHEMA_VERSION,
   StageSchema,
-  FaultSchema,
 } from "./enums.js";
 
 /** Одно показание датчика: bf_brew_state_t.temp_c[i] / temp_valid[i]. */
@@ -38,8 +37,11 @@ export const TelemetrySchema = z.object({
   stage: z.number().int(),          // числовое значение bf_stage_t
   stageName: StageSchema,           // машинное имя (bf_stage_name())
   pausedFrom: z.number().int(),     // bf_stage_t куда вернуться из PAUSED
-  faultMask: z.number().int(),      // битовая маска bf_fault_t
-  faults: z.array(FaultSchema),     // декодированный список всех установленных бит
+  faultMask: z.number().int(),      // битовая маска bf_fault_t — АВТОРИТЕТНЫЙ источник
+  // Информационный список кодов от устройства. Намеренно z.string(), а НЕ z.enum:
+  // авторитет — faultMask (UI декодирует через decodeFaults), а один незнакомый/новый
+  // код от прошивки не должен ронять весь кадр телеметрии (иначе дашборд гаснет в offline).
+  faults: z.array(z.string()),
   heatingPermitted: z.boolean(),    // интерлоки разрешают нагрев
 
   // --- датчики ---

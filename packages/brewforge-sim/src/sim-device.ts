@@ -14,11 +14,15 @@ import {
   HEAT_MODE_NUM,
   PROMPT_NUM,
   FAULT_BITS,
+  FAULT_NAMES,
   stageName,
   decodeFaults,
   CommandSchema,
   DeviceRecipeSchema,
   TelemetrySchema,
+  DeviceConfigSchema,
+  DeviceConfigPatchSchema,
+  CONFIG_FIELD_RANGES,
   type Stage,
   type HeatMode,
   type Prompt,
@@ -27,6 +31,10 @@ import {
   type Ack,
   type AckReason,
   type DeviceRecipe,
+  type Fault,
+  type DeviceConfig,
+  type DeviceConfigPatch,
+  type ConfigFieldKey,
 } from "@nb/brewforge-protocol";
 
 // ----------------------------- Конфигурация --------------------------------
@@ -69,8 +77,134 @@ interface PlanStep {
 }
 
 const AMBIENT_C = 20;
+// Тепловая модель демо (на «варочную» секунду): dT/dt = K_HEAT·duty − K_LOSS·(T−amb).
+// Связывает мощность (heatDutyPct) с реальным нагревом — инерция, недогрев, overshoot,
+// плато кипения, охлаждение. Раньше темп «волшебно» тянулась к уставке мимо мощности.
+const K_HEAT = 0.05; // полный нагрев при duty=100%, °C/варочную-сек
+const K_LOSS = 0.0004; // ньютоновские потери к окружающей
+const K_COOL = 0.02; // активное охлаждение (стадия COOLING)
+const BOIL_PLATEAU_C = 100; // плато кипения: лишняя мощность идёт в пар, не в температуру
+// Sim dead-man (паритет безопасности с firmware-контрактом, §docs/brewery-command-center.md):
+// ручной нагрев гаснет на «плате» при потере heartbeat командного источника и по max-длительности.
+// Для Phase 0 любой принятый command = heartbeat; выделенная heartbeat-команда — Phase 3 с прошивкой.
+const MANUAL_HEAT_TTL_MS = 45_000; // нет команд >45с в Manual с нагревом → нагрев OFF
+const MANUAL_HEAT_MAX_MS = 30 * 60_000; // суммарно >30 мин MANUAL_HEAT → авто-OFF + выход
+// Ленивое (pull-driven) продвижение sim в веб-рантайме БЕЗ фонового таймера
+// (advanceToNow): разовый catch-up ограничен, чтобы после простоя (никто не смотрел)
+// варка не «телепортировалась» на часы вперёд. Реальный опрос идёт чаще этого порога.
+const MAX_CATCHUP_MS = 5_000;
 const clamp = (v: number, lo: number, hi: number): number =>
   v < lo ? lo : v > hi ? hi : v;
+
+// ----------------------------- Конфиг §6.3 (round-trip) ---------------------
+// Дефолт = точный JSON прошивки (см. packages/brewforge-protocol/src/config.test.ts,
+// BF_MAX_SENSORS=5), чтобы sim был неотличим от платы по форме и стартовым значениям.
+const DEFAULT_DEVICE_CONFIG: DeviceConfig = DeviceConfigSchema.parse({
+  units: 0,
+  pid: { kp: 100, ki: 0.4, kd: 100, sampleMs: 3000, windowMs: 5000, pidStartBandC: 2, ponMeasurement: false },
+  pump: { cycleMin: 10, restMin: 1, stopTempC: 92, primeCycles: 2, paddleMode: false, heatDuringRest: false },
+  boil: { tempC: 100, heatPct: 70 },
+  safety: { overshootCutC: 5, absMaxC: 105, maxDtPerSec: 2, sensorFaultCycles: 3, stageTimeoutMin: 120 },
+  filterBeta: 1.0,
+  interHeaterDelayMs: 10,
+  buzzer: true,
+  spargeHeating: false,
+  iodineTest: true,
+  removeMaltPrompt: true,
+  sensorCal: [
+    { scale: 1, offset: 0 },
+    { scale: 1, offset: 0 },
+    { scale: 1, offset: 0 },
+    { scale: 1, offset: 0 },
+    { scale: 1, offset: 0 },
+  ],
+});
+
+/** Клампит числовое поле в диапазон CONFIG_FIELD_RANGES (паритет с bf_config_parse_json_clamped). */
+const clampField = (path: ConfigFieldKey, v: number): number => {
+  const desc = CONFIG_FIELD_RANGES[path];
+  return desc.kind === "number" ? clamp(v, desc.min, desc.max) : v;
+};
+
+/**
+ * Слить патч §6.3 в текущий конфиг: присутствующие поля клампятся в безопасный
+ * диапазон (как bf_config_parse_json_clamped на устройстве), отсутствующие —
+ * не трогаются. sensorCal — патч по индексу (короче массива — трогает только
+ * указанные элементы).
+ */
+function mergeDeviceConfig(cur: DeviceConfig, patch: DeviceConfigPatch): DeviceConfig {
+  const next: DeviceConfig = { ...cur };
+
+  if (patch.units !== undefined) next.units = patch.units;
+
+  if (patch.pid) {
+    next.pid = { ...cur.pid, ...patch.pid };
+    if (patch.pid.kp !== undefined) next.pid.kp = clampField("pid.kp", patch.pid.kp);
+    if (patch.pid.ki !== undefined) next.pid.ki = clampField("pid.ki", patch.pid.ki);
+    if (patch.pid.kd !== undefined) next.pid.kd = clampField("pid.kd", patch.pid.kd);
+    if (patch.pid.sampleMs !== undefined) next.pid.sampleMs = clampField("pid.sampleMs", patch.pid.sampleMs);
+    if (patch.pid.windowMs !== undefined) next.pid.windowMs = clampField("pid.windowMs", patch.pid.windowMs);
+    if (patch.pid.pidStartBandC !== undefined) {
+      next.pid.pidStartBandC = clampField("pid.pidStartBandC", patch.pid.pidStartBandC);
+    }
+  }
+
+  if (patch.pump) {
+    next.pump = { ...cur.pump, ...patch.pump };
+    if (patch.pump.cycleMin !== undefined) next.pump.cycleMin = clampField("pump.cycleMin", patch.pump.cycleMin);
+    if (patch.pump.restMin !== undefined) next.pump.restMin = clampField("pump.restMin", patch.pump.restMin);
+    if (patch.pump.stopTempC !== undefined) next.pump.stopTempC = clampField("pump.stopTempC", patch.pump.stopTempC);
+    if (patch.pump.primeCycles !== undefined) {
+      next.pump.primeCycles = clampField("pump.primeCycles", patch.pump.primeCycles);
+    }
+  }
+
+  if (patch.boil) {
+    next.boil = { ...cur.boil, ...patch.boil };
+    if (patch.boil.tempC !== undefined) next.boil.tempC = clampField("boil.tempC", patch.boil.tempC);
+    if (patch.boil.heatPct !== undefined) next.boil.heatPct = clampField("boil.heatPct", patch.boil.heatPct);
+  }
+
+  if (patch.safety) {
+    next.safety = { ...cur.safety, ...patch.safety };
+    if (patch.safety.overshootCutC !== undefined) {
+      next.safety.overshootCutC = clampField("safety.overshootCutC", patch.safety.overshootCutC);
+    }
+    if (patch.safety.absMaxC !== undefined) next.safety.absMaxC = clampField("safety.absMaxC", patch.safety.absMaxC);
+    if (patch.safety.maxDtPerSec !== undefined) {
+      next.safety.maxDtPerSec = clampField("safety.maxDtPerSec", patch.safety.maxDtPerSec);
+    }
+    if (patch.safety.sensorFaultCycles !== undefined) {
+      next.safety.sensorFaultCycles = clampField("safety.sensorFaultCycles", patch.safety.sensorFaultCycles);
+    }
+    if (patch.safety.stageTimeoutMin !== undefined) {
+      next.safety.stageTimeoutMin = clampField("safety.stageTimeoutMin", patch.safety.stageTimeoutMin);
+    }
+  }
+
+  if (patch.filterBeta !== undefined) next.filterBeta = clampField("filterBeta", patch.filterBeta);
+  if (patch.interHeaterDelayMs !== undefined) {
+    next.interHeaterDelayMs = clampField("interHeaterDelayMs", patch.interHeaterDelayMs);
+  }
+  if (patch.buzzer !== undefined) next.buzzer = patch.buzzer;
+  if (patch.spargeHeating !== undefined) next.spargeHeating = patch.spargeHeating;
+  if (patch.iodineTest !== undefined) next.iodineTest = patch.iodineTest;
+  if (patch.removeMaltPrompt !== undefined) next.removeMaltPrompt = patch.removeMaltPrompt;
+
+  if (patch.sensorCal) {
+    next.sensorCal = cur.sensorCal.map((sensor, i) => {
+      const p = patch.sensorCal?.[i];
+      if (!p) return sensor;
+      return {
+        ...sensor,
+        scale: p.scale !== undefined ? clampField("sensorCal.scale", p.scale) : sensor.scale,
+        offset: p.offset !== undefined ? clampField("sensorCal.offset", p.offset) : sensor.offset,
+      };
+    });
+  }
+
+  return next;
+}
 
 // ----------------------------- Встроенный рецепт ---------------------------
 // Валидный DeviceRecipe для слота 0 (демо «American Pale Ale»).
@@ -138,6 +272,13 @@ export class SimDevice {
   private manualPwm = 0;
   private manualSetpoint = 65;
 
+  // --- конфиг §6.3 (настраиваемый, несекретный; round-trip GET/PUT /config) ---
+  private deviceConfig: DeviceConfig = structuredClone(DEFAULT_DEVICE_CONFIG);
+
+  // --- sim dead-man (паритет с firmware safety-контрактом) ---
+  private lastCmdAt = Date.now(); // последний принятый command = heartbeat
+  private manualHeatSince = 0; // когда включён MANUAL-нагрев (0 = выкл)
+
   // --- план варки ---
   private plan: PlanStep[] = [];
   private stepIdx = 0;
@@ -148,6 +289,10 @@ export class SimDevice {
   private readonly log: LogEntry[] = [];
   private readonly listeners = new Set<TelemetryListener>();
   private timer: ReturnType<typeof setInterval> | null = null;
+
+  // --- ленивое продвижение (веб-встраивание без setInterval) ---
+  private pendingMs = 0; // накопитель дробного реального времени между advanceToNow
+  private lastRealAt = Date.now(); // метка последнего продвижения (wall-clock, мс)
 
   constructor(cfg: SimConfig) {
     this.cfg = cfg;
@@ -165,6 +310,28 @@ export class SimDevice {
   stopTimer(): void {
     if (this.timer) clearInterval(this.timer);
     this.timer = null;
+  }
+
+  /**
+   * Ленивое продвижение симуляции по реальному времени — для встраивания в
+   * pull-рантайм (веб-стаб демо) БЕЗ фонового setInterval. Догоняет прошедшее
+   * время целыми тиками (dt = cfg.tickMs), копит дробный остаток. Разовый catch-up
+   * ограничен MAX_CATCHUP_MS: после долгого простоя (никто не смотрел) варка не
+   * «прыгает» на часы вперёд — при этом dead-man остаётся корректным (сверяет
+   * реальные Date.now() с lastCmdAt при первом же тике). Вызывать перед snapshot()/
+   * handleCommand(), чтобы состояние было актуальным на момент обращения.
+   */
+  advanceToNow(nowMs = Date.now()): void {
+    const elapsed = clamp(nowMs - this.lastRealAt, 0, MAX_CATCHUP_MS);
+    this.lastRealAt = nowMs;
+    this.pendingMs += elapsed;
+    const step = this.cfg.tickMs > 0 ? this.cfg.tickMs : 1000;
+    let guard = 0;
+    while (this.pendingMs >= step && guard < 10_000) {
+      this.tick();
+      this.pendingMs -= step;
+      guard++;
+    }
   }
 
   onTelemetry(fn: TelemetryListener): () => void {
@@ -192,8 +359,39 @@ export class SimDevice {
       tickScale: this.cfg.tickScale,
       scenario: this.cfg.scenario,
       schema: PROTOCOL_SCHEMA_VERSION,
-      slots: this.slots.map((r, i) => ({ slot: i, name: r ? r.name : null })),
+      slots: this.listSlots(),
     };
+  }
+
+  /** Карта слотов (номер + имя рецепта, если занят) — для listSlots провайдера. */
+  listSlots(): { slot: number; name: string | null }[] {
+    return this.slots.map((r, i) => ({ slot: i, name: r ? r.name : null }));
+  }
+
+  /** Read-only снапшот рецепта слота («что лежит на плате»), либо null если слот пуст. */
+  readSlot(slot: number): DeviceRecipe | null {
+    if (slot < 0 || slot >= this.slots.length) {
+      throw new Error(`Слот вне диапазона 0..${this.slots.length - 1}`);
+    }
+    return this.slots[slot] ?? null;
+  }
+
+  // ----------------------------- конфиг §6.3 --------------------------------
+  /** Прочитать текущий эффективный (клампнутый) конфиг устройства. */
+  readConfig(): DeviceConfig {
+    return this.deviceConfig;
+  }
+
+  /**
+   * Записать патч конфига §6.3: сливает присутствующие поля в текущий конфиг,
+   * клампит по CONFIG_FIELD_RANGES (паритет с bf_config_parse_json_clamped на
+   * устройстве) и возвращает эффективный конфиг. Бросает ZodError при невалидной форме.
+   */
+  writeConfig(raw: unknown): DeviceConfig {
+    const patch = DeviceConfigPatchSchema.parse(raw); // бросит ZodError при невалидности
+    this.deviceConfig = mergeDeviceConfig(this.deviceConfig, patch);
+    this.addLog("info", "Конфиг обновлён (§6.3)");
+    return this.deviceConfig;
   }
 
   // ----------------------------- приём рецепта -----------------------------
@@ -220,6 +418,7 @@ export class SimDevice {
       return this.ack(id, false, "VALIDATION");
     }
     const cmd = parsed.data;
+    this.lastCmdAt = Date.now(); // любой принятый command = heartbeat для dead-man
     const reason = this.apply(cmd);
     return this.ack(cmd.id, reason === "OK", reason);
   }
@@ -288,6 +487,7 @@ export class SimDevice {
         this.heatMode = "MANUAL_PWM";
         this.setpointC = this.manualSetpoint;
         this.heatDutyPct = this.manualPwm;
+        this.manualHeatSince = this.manualPwm > 0 ? Date.now() : 0;
         return "OK";
       }
       case "EXIT_MANUAL": {
@@ -309,6 +509,7 @@ export class SimDevice {
         const on = cmd.arg?.b ?? false;
         this.heatMode = on ? "MANUAL_PWM" : "OFF";
         if (!on) this.heatDutyPct = 0;
+        this.manualHeatSince = on ? Date.now() : 0;
         return "OK";
       }
       case "MANUAL_PUMP": {
@@ -552,6 +753,25 @@ export class SimDevice {
     this.addLog("info", status);
   }
 
+  // ----------------------------- демо: инжект аварий -----------------------
+  // Dev/demo-only capability симулятора (НЕ часть протокола прошивки — реальная
+  // плата не умеет «притвориться» аварией). Нужна для тестирования AlarmsPanel/
+  // UX аварий без физического обрыва датчика/перегрева. См. docs/brewery-command-center.md.
+  /** Список имён аварий, доступных для демо-инжекта (см. FAULT_BITS). */
+  static readonly injectableFaults: readonly Fault[] = FAULT_NAMES;
+
+  /** Поднять произвольную аварию по имени — как раскодированный faultMask, так и переход в FAULT. */
+  injectFault(name: Fault): void {
+    this.raiseFault(FAULT_BITS[name], `Инжект аварии (демо): ${name}`);
+  }
+
+  /** Сбросить все аварии (в т.ч. инжектированные) — как реальная команда CLEAR_FAULT. */
+  clearFaults(): void {
+    if (this.faultMask === 0) return;
+    this.faultMask = 0;
+    this.reset("Аварии сброшены (демо)");
+  }
+
   private raiseFault(bit: number, status: string): void {
     this.faultMask |= bit;
     this.stage = "FAULT";
@@ -582,31 +802,56 @@ export class SimDevice {
       }
     }
 
-    this.updateThermal(dtReal);
-    this.updateOutputs();
+    this.applyDeadMan(); // sim dead-man: гасим брошенный ручной нагрев ДО расчёта мощности
+    this.updateOutputs(); // мощность (duty) из режима/PID
+    this.updateThermal(dtReal); // физика нагрева от duty
     this.emit();
   }
 
-  /** Простая тепловая модель: температура тянется к целевой. */
-  private updateThermal(dtReal: number): void {
-    const heatingFault = this.faultMask !== 0;
-    let target: number;
-    if (this.stage === "COOLING") {
-      target = this.setpointC; // охлаждаемся к целевой
-    } else if (this.stage === "IDLE" || this.stage === "DONE" || heatingFault) {
-      target = AMBIENT_C; // дрейф к окружающей
-    } else if (this.heatMode === "OFF") {
-      target = AMBIENT_C;
-    } else {
-      target = this.setpointC;
-    }
+  /** Sim dead-man: ручной нагрев на «плате» гаснет при потере heartbeat командного
+   *  источника (нет команд >TTL) и по max-длительности MANUAL_HEAT — паритет с
+   *  firmware-контрактом (безопасность «варки откуда угодно» не зависит от облака). */
+  private applyDeadMan(): void {
+    if (this.stage !== "MANUAL" || this.heatMode === "OFF" || this.manualHeatSince === 0) return;
+    const now = Date.now();
+    const stale = now - this.lastCmdAt > MANUAL_HEAT_TTL_MS;
+    const tooLong = now - this.manualHeatSince > MANUAL_HEAT_MAX_MS;
+    if (!stale && !tooLong) return;
+    this.heatMode = "OFF";
+    this.heatDutyPct = 0;
+    this.heatOn = false;
+    this.manualHeatSince = 0;
+    this.addLog(
+      "warn",
+      stale
+        ? "Dead-man: потерян heartbeat командного источника — ручной нагрев ВЫКЛ"
+        : "Dead-man: превышено макс. время ручного нагрева — ВЫКЛ + выход из ручного",
+    );
+    if (tooLong) this.reset("Dead-man: авто-выход из ручного режима");
+  }
 
-    const err = target - this.primaryC;
-    // скорость сходимости масштабируем ускорением, но ограничиваем
-    const k = clamp(0.05 * this.cfg.tickScale * dtReal, 0, 0.9);
-    this.primaryC += err * k;
-    // чуть шума
-    this.primaryC += (Math.random() - 0.5) * 0.05;
+  /** Физическая тепловая модель: dT/dt = K_HEAT·duty − K_LOSS·(T−amb), с плато
+   *  кипения и активным охлаждением. Нагрев реально следует за мощностью (heatDutyPct):
+   *  инерция, недогрев при малом duty, overshoot, плато при кипении. */
+  private updateThermal(dtReal: number): void {
+    const dtBrew = this.cfg.tickScale * dtReal; // «варочных» секунд за тик
+    const fault = this.faultMask !== 0;
+
+    if (this.stage === "COOLING") {
+      // активное охлаждение (чиллер) к целевой — быстрее пассивных потерь
+      const k = clamp(K_COOL * dtBrew, 0, 0.5);
+      this.primaryC += (this.setpointC - this.primaryC) * k;
+    } else {
+      const duty = !fault && this.heatOn ? this.heatDutyPct / 100 : 0;
+      let dT = (K_HEAT * duty - K_LOSS * (this.primaryC - AMBIENT_C)) * dtBrew;
+      // плато кипения: у точки кипения лишняя мощность испаряет воду, а не греет
+      if (duty > 0 && this.primaryC >= BOIL_PLATEAU_C - 0.5) {
+        dT = Math.min(dT, BOIL_PLATEAU_C - this.primaryC);
+      }
+      dT = clamp(dT, -8, 8); // устойчивость Эйлера при большом tickScale
+      this.primaryC += dT;
+    }
+    this.primaryC += (Math.random() - 0.5) * 0.03; // лёгкий шум датчика
     this.primaryC = clamp(this.primaryC, -5, 130);
   }
 

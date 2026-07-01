@@ -12,7 +12,8 @@
     "test": "vitest run --passWithNoTests"
   },
   "dependencies": {
-    "@nb/db": "*"
+    "@nb/db": "workspace:*",
+    "@nb/shared": "workspace:*"
   },
   "devDependencies": {
     "vitest": "^4.0.18"

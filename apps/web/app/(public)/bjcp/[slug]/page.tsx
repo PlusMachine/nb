@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { getArticleBySlug, getBjcpCatalogData, listArticles, listRelatedArticles } from "@nb/content";
+import { getArticleBySlug, getBjcpCatalogData, listArticles } from "@nb/content";
 import { notFound } from "next/navigation";
 
 import { BjcpArticlePage } from "@/components/content/bjcp-article-page";
@@ -56,11 +56,15 @@ export default async function BjcpStylePage({ params }: { params: Promise<{ slug
     notFound();
   }
 
-  const [relatedArticles, catalog] = await Promise.all([
-    listRelatedArticles(article, 3),
-    getBjcpCatalogData()
-  ]);
+  const catalog = await getBjcpCatalogData();
   const catalogStyle = catalog.styles.find((style) => style.bjcpId === article.bjcpId) ?? null;
+  // Соседние стили категории — для боковой навигации «не тот стиль?». Берём из
+  // уже загруженного каталога (файловый контент), без обращения к БД, чтобы
+  // страница осталась статической (SSG).
+  const siblingStyles = catalog.styles
+    .filter((style) => style.categoryId === article.category.id && style.bjcpId !== article.bjcpId)
+    .sort((a, b) => a.bjcpId.localeCompare(b.bjcpId, "en", { numeric: true }))
+    .map((style) => ({ bjcpId: style.bjcpId, slug: style.slug, title: style.title }));
 
-  return <BjcpArticlePage article={article} relatedArticles={relatedArticles} catalogStyle={catalogStyle} />;
+  return <BjcpArticlePage article={article} catalogStyle={catalogStyle} siblingStyles={siblingStyles} />;
 }

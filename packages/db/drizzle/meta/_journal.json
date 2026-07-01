@@ -263,6 +263,34 @@
       "when": 1791000000008,
       "tag": "0041_premium_whirlwind",
       "breakpoints": true
+    },
+    {
+      "idx": 42,
+      "version": "7",
+      "when": 1791000000009,
+      "tag": "0042_huge_captain_america",
+      "breakpoints": true
+    },
+    {
+      "idx": 43,
+      "version": "7",
+      "when": 1791000000010,
+      "tag": "0043_concerned_nightshade",
+      "breakpoints": true
+    },
+    {
+      "idx": 44,
+      "version": "7",
+      "when": 1782896373102,
+      "tag": "0044_same_scarlet_witch",
+      "breakpoints": true
+    },
+    {
+      "idx": 45,
+      "version": "7",
+      "when": 1791000000011,
+      "tag": "0045_nifty_edwin_jarvis",
+      "breakpoints": true
     }
   ]
 }

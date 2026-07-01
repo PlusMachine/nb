@@ -26,6 +26,7 @@ export default async function EditRecipePage({ params }: { params: Promise<{ id:
         initialStockCoverage={stockCoverage}
         initialImages={initialImages}
         equipmentProfiles={equipmentProfiles}
+        preferredGravityUnit={user.preferredGravityUnit}
       />
     );
   } catch (error) {

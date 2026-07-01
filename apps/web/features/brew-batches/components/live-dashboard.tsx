@@ -2,34 +2,47 @@
 
 // =============================================================================
 //  features/brew-batches/components/live-dashboard.tsx
-//  Живой дашборд варки: открывает EventSource на SSE-стрим телеметрии партии
-//  (/api/brew-batches/[id]/telemetry), рендерит снимок bf_brew_state_t и шлёт
-//  команды/ответы на промпты через POST /api/brew-batches/[id]/command.
+//  Живой дашборд — TRANSPORT-АГНОСТИЧНЫЙ (зона A «варка партии» и зона B «пульт
+//  устройства» отличаются лишь источником: batchId vs deviceId — см.
+//  telemetry-source.ts). Открывает EventSource на SSE-стрим телеметрии, рендерит
+//  снимок bf_brew_state_t и шлёт команды/ответы на промпты POST'ом на /command.
 //
 //  ВАЖНО: интерлоки и нагрев — прерогатива устройства. Кнопки портала
 //  совещательные (advisory): устройство вправе их отклонить (nack/REJECTED_*).
-//  При отсутствии/устаревании телеметрии (offline/stale) управление блокируется.
+//  При отсутствии/устаревании телеметрии (offline/stale) управление блокируется
+//  в UI, а опасные команды дополнительно гейтятся на сервере (freshness-гейт).
 // =============================================================================
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { OctagonX, Cloud, Wifi } from "lucide-react";
 
 import {
   TelemetrySchema,
-  decodeFaults,
   promptName,
   cmdAck,
   cmdPause,
   cmdResume,
   cmdSkipStage,
+  cmdStop,
   cmdEstop,
+  cmdClearFault,
   type Telemetry,
   type Command,
-  type Ack,
+  type Stage,
   type Prompt,
   type PromptAns
 } from "@nb/brewforge-protocol";
 import { Button } from "@nb/ui";
 
 import { ConfirmActionDialog } from "@/components/shared/confirm-action-dialog";
+import { telemetryEndpoints, type TelemetrySource, type DeviceChannel } from "@/features/brew-controller/telemetry-source";
+import { useDeviceCommand } from "@/features/brew-controller/use-device-command";
+import { TransportBar } from "@/features/brew-controller/components/transport-bar";
+import { ControlLeaseBadge } from "@/features/brew-controller/components/control-lease-badge";
+import { HoldToConfirmButton } from "@/features/brew-controller/components/hold-to-confirm-button";
+import { ControlToast } from "@/features/brew-controller/components/control-toast";
+import { AlarmsPanel } from "@/features/brew-controller/components/alarms-panel";
+import { ManualControlCard } from "@/features/brew-controller/components/manual-control-card";
+import { StageTimeline } from "@/features/brew-controller/components/stage-timeline";
 
 // Сколько секунд без свежего кадра считаем телеметрию устаревшей (poll ~1.5 с).
 const STALE_AFTER_MS = 6000;
@@ -88,14 +101,28 @@ function fmtTemp(c: number): string {
 }
 
 type Props = {
-  brewBatchId: string;
-  batchName: string;
-  recipeTitle: string;
-  deviceName: string | null;
+  /** Источник телеметрии: партия (зона A) или устройство напрямую (зона B). */
+  source: TelemetrySource;
+  /** Заголовок дашборда (имя партии или устройства). */
+  title: string;
+  /** Подзаголовок (рецепт·устройство или hardwareId·прошивка). */
+  subtitle?: string | null;
+  /** Есть ли за источником устройство (для партии — привязан ли контроллер). */
   hasDevice: boolean;
+  /** Канал связи с устройством (честная индикация LAN/облако, Phase 6c). */
+  channel?: DeviceChannel | null;
 };
 
-export function LiveDashboard({ brewBatchId, batchName, recipeTitle, deviceName, hasDevice }: Props) {
+export function LiveDashboard({ source, title, subtitle, hasDevice, channel }: Props) {
+  // Эндпоинты стрима/команд/аренды строятся из источника — контракт роутов в одном месте.
+  const endpoints = telemetryEndpoints(source);
+  const streamUrl = endpoints.stream;
+
+  // Управление устройством: control-lease (acquire+heartbeat), отправка команд с
+  // sessionId, optimistic/in-flight и отложенный undo (SKIP). Аренда — на устройство.
+  const { lease, controlsHeld, pending, send, requestTakeover, release, scheduleUndoable, undo } =
+    useDeviceCommand({ commandUrl: endpoints.command, leaseUrl: endpoints.lease, enabled: hasDevice });
+
   const [telemetry, setTelemetry] = useState<Telemetry | null>(null);
   const [conn, setConn] = useState<ConnState>("connecting");
   const [lastError, setLastError] = useState<string | null>(null);
@@ -104,7 +131,6 @@ export function LiveDashboard({ brewBatchId, batchName, recipeTitle, deviceName,
   const [now, setNow] = useState<number>(() => Date.now());
 
   const [confirm, setConfirm] = useState<ConfirmState>(null);
-  const [pending, setPending] = useState(false);
   const [actionMsg, setActionMsg] = useState<string | null>(null);
 
   // Локальный тикер раз в секунду: плавный обратный отсчёт + детект устаревания.
@@ -122,13 +148,13 @@ export function LiveDashboard({ brewBatchId, batchName, recipeTitle, deviceName,
       return;
     }
 
-    const source = new EventSource(`/api/brew-batches/${brewBatchId}/telemetry`);
+    const es = new EventSource(streamUrl);
 
-    source.onopen = () => {
+    es.onopen = () => {
       setConn((prev) => (prev === "online" ? prev : "connecting"));
     };
 
-    source.onmessage = (event) => {
+    es.onmessage = (event) => {
       try {
         const parsed = TelemetrySchema.safeParse(JSON.parse(event.data));
         if (parsed.success) {
@@ -142,13 +168,13 @@ export function LiveDashboard({ brewBatchId, batchName, recipeTitle, deviceName,
       }
     };
 
-    source.addEventListener("offline", () => {
+    es.addEventListener("offline", () => {
       setConn("offline");
     });
 
     // Кастомный server-sent «error» приходит сюда же, что и сетевые ошибки
     // EventSource: серверный кадр имеет .data, сетевой — нет.
-    source.addEventListener("error", (event) => {
+    es.addEventListener("error", (event) => {
       const data = (event as MessageEvent).data;
       if (typeof data === "string" && data.length > 0) {
         try {
@@ -164,64 +190,56 @@ export function LiveDashboard({ brewBatchId, batchName, recipeTitle, deviceName,
       }
     });
 
-    return () => source.close();
-  }, [brewBatchId, hasDevice]);
+    return () => es.close();
+  }, [streamUrl, hasDevice]);
 
   const sinceFrameMs = lastFrameAt === null ? Infinity : now - lastFrameAt;
   const isStale = telemetry !== null && sinceFrameMs > STALE_AFTER_MS;
   const isLive = conn === "online" && telemetry !== null && !isStale;
-  const controlsDisabled = !isLive || pending;
+  // Рутинное управление (Пауза/Продолжить/Пропустить/ответ на промпт) требует
+  // аренды (single-writer) И живой телеметрии. ESTOP/Стоп — fail-safe, отдельно.
+  const controlsDisabled = !isLive || pending || !controlsHeld;
 
   // Плавный локальный обратный отсчёт оставшегося времени стадии.
   const remaining = telemetry
     ? Math.max(0, telemetry.stageRemainingSec - Math.floor(Math.max(0, sinceFrameMs) / 1000))
     : 0;
 
-  const faults = telemetry ? decodeFaults(telemetry.faultMask) : [];
-  const hasFaults = faults.length > 0;
-
   const activePrompt: Prompt | null =
     telemetry && telemetry.prompt !== 0 ? promptName(telemetry.prompt) : null;
 
-  const postCommand = useCallback(
-    async (command: Command): Promise<Ack | null> => {
-      setPending(true);
+  // Машинное имя стадии для conditional visibility TransportBar.
+  const stage: Stage | null = telemetry ? telemetry.stageName : null;
+
+  // Отправка команды + краткий фидбек (успех / nack / причина гейта: DEVICE_STALE,
+  // NO_CONTROL_LEASE, REMOTE_DISABLED…). Источник истины по состоянию — телеметрия.
+  const run = useCallback(
+    async (command: Command) => {
       setActionMsg(null);
-      try {
-        const res = await fetch(`/api/brew-batches/${brewBatchId}/command`, {
-          method: "POST",
-          headers: { "content-type": "application/json" },
-          body: JSON.stringify({ command })
-        });
-        const body = (await res.json()) as { ack?: Ack; error?: string };
-        if (!res.ok || body.error) {
-          setActionMsg(`Ошибка: ${body.error ?? res.statusText}`);
-          return null;
-        }
-        const ack = body.ack ?? null;
-        if (ack && !ack.ok) {
-          setActionMsg(`Устройство отклонило команду: ${ack.reason}`);
-        } else if (ack) {
-          setActionMsg("Команда принята устройством");
-        }
-        return ack;
-      } catch (error) {
-        setActionMsg(`Ошибка сети: ${(error as Error).message}`);
-        return null;
-      } finally {
-        setPending(false);
-      }
+      const r = await send(command);
+      setActionMsg(r.ok ? "Команда принята устройством" : r.error ?? "Не удалось выполнить команду");
+      return r;
     },
-    [brewBatchId]
+    [send]
   );
 
   const answerPrompt = useCallback(
-    async (ans: PromptAns) => {
+    (ans: PromptAns) => {
       if (!telemetry) return;
-      await postCommand(cmdAck(ans, telemetry.promptSeq));
+      void run(cmdAck(ans, telemetry.promptSeq));
     },
-    [postCommand, telemetry]
+    [run, telemetry]
   );
+
+  // SKIP_STAGE — один тап + окно undo (отложенная отправка): хук шлёт команду
+  // через ~5с, «Отменить» в тосте останавливает отправку.
+  const skipStage = useCallback(() => {
+    setActionMsg(null);
+    scheduleUndoable(cmdSkipStage(), {
+      label: "Стадия пропущена",
+      onResult: (r) => setActionMsg(r.ok ? "Стадия пропущена" : r.error ?? "Не удалось пропустить стадию")
+    });
+  }, [scheduleUndoable]);
 
   const requestConfirm = useCallback((state: NonNullable<ConfirmState>) => {
     setConfirm(state);
@@ -229,9 +247,9 @@ export function LiveDashboard({ brewBatchId, batchName, recipeTitle, deviceName,
 
   const runConfirmed = useCallback(async () => {
     if (!confirm) return;
-    const run = confirm.run;
+    const runFn = confirm.run;
     setConfirm(null);
-    await run();
+    await runFn();
   }, [confirm]);
 
   const connBadge = useMemo(() => {
@@ -251,17 +269,24 @@ export function LiveDashboard({ brewBatchId, batchName, recipeTitle, deviceName,
             className="text-2xl font-semibold text-zinc-950 sm:text-3xl"
             style={{ fontFamily: "var(--font-display)" }}
           >
-            {batchName}
+            {title}
           </h1>
-          <p className="text-sm text-zinc-500">
-            {recipeTitle}
-            {deviceName ? ` · ${deviceName}` : ""}
-          </p>
+          {subtitle ? <p className="text-sm text-zinc-500">{subtitle}</p> : null}
         </div>
-        <span className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-medium ${connBadge.cls}`}>
-          <span className="h-1.5 w-1.5 rounded-full bg-current" />
-          {connBadge.label}
-        </span>
+        <div className="flex flex-wrap items-center gap-2">
+          <ControlLeaseBadge
+            lease={lease}
+            hasDevice={hasDevice}
+            onRequestTakeover={() => void requestTakeover()}
+            onRelease={() => void release()}
+            pending={pending}
+          />
+          {hasDevice ? <ChannelBadge channel={channel} /> : null}
+          <span className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-medium ${connBadge.cls}`}>
+            <span className="h-1.5 w-1.5 rounded-full bg-current" />
+            {connBadge.label}
+          </span>
+        </div>
       </header>
 
       {!hasDevice ? (
@@ -270,22 +295,13 @@ export function LiveDashboard({ brewBatchId, batchName, recipeTitle, deviceName,
         </div>
       ) : null}
 
-      {/* Аварии — самым верхом и максимально заметно. */}
-      {hasFaults ? (
-        <div className="rounded-2xl border-2 border-red-300 bg-red-50 p-5 shadow-sm">
-          <p className="text-sm font-semibold uppercase tracking-wide text-red-700">Аварии устройства</p>
-          <div className="mt-2 flex flex-wrap gap-2">
-            {faults.map((f) => (
-              <span key={f} className="rounded-md bg-red-600 px-2.5 py-1 text-xs font-semibold text-white">
-                {f}
-              </span>
-            ))}
-          </div>
-          <p className="mt-3 text-xs text-red-700">
-            Нагрев заблокирован устройством до снятия аварии. Управляйте безопасностью на самом контроллере.
-          </p>
-        </div>
-      ) : null}
+      {/* Аварии (ISA-18.2): приоритет, «что + что делать», acknowledge, сброс. */}
+      <AlarmsPanel
+        faultMask={telemetry?.faultMask ?? 0}
+        hasDevice={hasDevice}
+        onClear={() => void run(cmdClearFault())}
+        clearDisabled={pending || !isLive}
+      />
 
       {/* Промпт — требует ответа оператора. */}
       {activePrompt ? (
@@ -297,15 +313,23 @@ export function LiveDashboard({ brewBatchId, batchName, recipeTitle, deviceName,
             {PROMPT_OPTIONS[activePrompt].map((opt) => (
               <Button
                 key={opt.ans}
-                onClick={() => void answerPrompt(opt.ans)}
-                disabled={pending || !isLive}
+                onClick={() => answerPrompt(opt.ans)}
+                disabled={controlsDisabled}
               >
                 {opt.label}
               </Button>
             ))}
           </div>
+          {!controlsHeld ? (
+            <p className="mt-2 text-xs text-amber-700">
+              Ответить на запрос может только сеанс, который управляет устройством.
+            </p>
+          ) : null}
         </div>
       ) : null}
+
+      {/* Ход варки: интерактивная полоса макро-стадий (пройдено/идёт/впереди). */}
+      <StageTimeline telemetry={telemetry} hasDevice={hasDevice} />
 
       {/* Главный блок: температура vs уставка. */}
       <div className="grid gap-4 lg:grid-cols-3">
@@ -381,82 +405,64 @@ export function LiveDashboard({ brewBatchId, batchName, recipeTitle, deviceName,
         )}
       </div>
 
-      {/* Совещательное управление. Авторитет — у интерлоков устройства. */}
+      {/* Ручной режим (RAPT-style): уставка/мощность/нагрев/насос. Эксклюзивно
+          через control-lease; опасное гейтится сервером и dead-man'ом платы. */}
+      <ManualControlCard
+        telemetry={telemetry}
+        hasDevice={hasDevice}
+        controlsHeld={controlsHeld}
+        isLive={isLive}
+        pending={pending}
+        send={send}
+      />
+
+      {/* Совещательное управление. Авторитет — у интерлоков устройства. Рутина —
+          один тап (без модалок); опасное — hold-to-confirm/двухшаг; всё гейтится
+          сервером (аренда + свежесть). */}
       <div className="rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm">
         <div className="flex items-center justify-between">
           <p className="text-sm font-semibold text-zinc-900">Управление</p>
           <span className="text-xs text-zinc-400">совещательное · решает устройство</span>
         </div>
-        <div className="mt-3 flex flex-wrap gap-2">
-          <Button
-            variant="outline"
-            disabled={controlsDisabled}
-            onClick={() =>
+
+        {/* TransportBar: рутина в один тап (conditional visibility по стадии). */}
+        <div className="mt-3">
+          <TransportBar
+            stageName={stage}
+            controlsHeld={controlsHeld}
+            isLive={isLive}
+            pending={pending}
+            onPause={() => void run(cmdPause())}
+            onResume={() => void run(cmdResume())}
+            onSkip={skipStage}
+            onStop={() =>
               requestConfirm({
-                title: "Поставить варку на паузу?",
-                description: "Устройство приостановит текущую стадию. Нагрев останется под управлением интерлоков.",
-                confirmLabel: "Пауза",
-                tone: "primary",
-                run: async () => {
-                  await postCommand(cmdPause());
-                }
-              })
-            }
-          >
-            Пауза
-          </Button>
-          <Button
-            variant="outline"
-            disabled={controlsDisabled}
-            onClick={() =>
-              requestConfirm({
-                title: "Возобновить варку?",
-                description: "Устройство продолжит варку со стадии, на которой была пауза.",
-                confirmLabel: "Возобновить",
-                tone: "primary",
-                run: async () => {
-                  await postCommand(cmdResume());
-                }
-              })
-            }
-          >
-            Продолжить
-          </Button>
-          <Button
-            variant="outline"
-            disabled={controlsDisabled}
-            onClick={() =>
-              requestConfirm({
-                title: "Пропустить текущую стадию?",
-                description: "Устройство немедленно перейдёт к следующей стадии. Действие необратимо.",
-                confirmLabel: "Пропустить стадию",
-                tone: "danger",
-                run: async () => {
-                  await postCommand(cmdSkipStage());
-                }
-              })
-            }
-          >
-            Пропустить стадию
-          </Button>
-          <Button
-            className="bg-red-600 hover:bg-red-700"
-            disabled={pending || !hasDevice}
-            onClick={() =>
-              requestConfirm({
-                title: "Аварийный останов (E-STOP)?",
+                title: "Остановить варку?",
                 description:
-                  "Команда немедленного аварийного останова: устройство выключит нагрев и выходы. Используйте при опасности.",
-                confirmLabel: "E-STOP",
+                  "Плавная остановка: устройство завершит варку и выключит нагрев. Действие необратимо.",
+                confirmLabel: "Остановить",
                 tone: "danger",
                 run: async () => {
-                  await postCommand(cmdEstop());
+                  await run(cmdStop());
                 }
               })
             }
-          >
-            E-STOP
-          </Button>
+          />
+        </div>
+
+        {/* Аварийный останов — всегда доступен (fail-safe), hold-to-confirm. */}
+        <div className="mt-4 flex flex-wrap items-center gap-3 border-t border-zinc-100 pt-4">
+          <HoldToConfirmButton
+            label="Аварийный останов"
+            holdingLabel="Держите для E-STOP…"
+            disabled={pending || !hasDevice}
+            onConfirm={() => void run(cmdEstop())}
+            icon={<OctagonX className="h-4 w-4" aria-hidden />}
+          />
+          <span className="text-xs text-zinc-500">
+            Программная кнопка ≠ аппаратный E-stop. Реальная защита — интерлоки и
+            watchdog на плате.
+          </span>
         </div>
 
         {actionMsg ? <p className="mt-3 text-sm text-zinc-600">{actionMsg}</p> : null}
@@ -465,7 +471,12 @@ export function LiveDashboard({ brewBatchId, batchName, recipeTitle, deviceName,
         ) : null}
         {(isStale || conn === "offline") && hasDevice ? (
           <p className="mt-1 text-sm text-amber-700">
-            Нет свежей телеметрии — управление заблокировано до восстановления связи.
+            Нет свежей телеметрии — рутинное управление заблокировано до восстановления связи.
+          </p>
+        ) : null}
+        {isLive && !controlsHeld && lease?.held ? (
+          <p className="mt-1 text-sm text-amber-700">
+            Управляет другой сеанс — запросите перехват, чтобы взять контроль.
           </p>
         ) : null}
       </div>
@@ -480,6 +491,9 @@ export function LiveDashboard({ brewBatchId, batchName, recipeTitle, deviceName,
         onConfirm={() => void runConfirmed()}
         onClose={() => setConfirm(null)}
       />
+
+      {/* Undo-тост для отложенного SKIP_STAGE. */}
+      <ControlToast undo={undo} />
     </div>
   );
 }
@@ -501,6 +515,22 @@ function Pill({ on }: { on: boolean }) {
       }`}
     >
       {on ? "ВКЛ" : "ВЫКЛ"}
+    </span>
+  );
+}
+
+// Честная индикация канала связи (Phase 6c): LAN — прямой (низкая латентность),
+// облако — через мост (зависит от интернета). Демо и неизвестный канал не мозолят.
+function ChannelBadge({ channel }: { channel?: DeviceChannel | null }) {
+  if (channel !== "lan" && channel !== "cloud") return null;
+  const isCloud = channel === "cloud";
+  return (
+    <span
+      className="inline-flex items-center gap-1.5 rounded-full bg-zinc-100 px-3 py-1 text-xs font-medium text-zinc-600"
+      title={isCloud ? "Через мост (облако) — зависит от интернета" : "Прямой канал (LAN)"}
+    >
+      {isCloud ? <Cloud className="h-3.5 w-3.5" aria-hidden /> : <Wifi className="h-3.5 w-3.5" aria-hidden />}
+      {isCloud ? "Облако" : "LAN"}
     </span>
   );
 }

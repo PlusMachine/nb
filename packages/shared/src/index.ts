@@ -33,7 +33,11 @@ const serverEnvSchema = z.object({
   AUTH_VK_CLIENT_SECRET: z.preprocess(emptyStringToUndefined, z.string().optional()),
   AUTH_YANDEX_CLIENT_ID: z.preprocess(emptyStringToUndefined, z.string().optional()),
   AUTH_YANDEX_CLIENT_SECRET: z.preprocess(emptyStringToUndefined, z.string().optional()),
-  AUTH_CAPTCHA_SECRET: z.preprocess(emptyStringToUndefined, z.string().optional())
+  AUTH_CAPTCHA_SECRET: z.preprocess(emptyStringToUndefined, z.string().optional()),
+  // Web-push (Phase 6). Пусто = пуши выключены. Приватный ключ — секрет (сервер/мост).
+  VAPID_PUBLIC_KEY: z.preprocess(emptyStringToUndefined, z.string().optional()),
+  VAPID_PRIVATE_KEY: z.preprocess(emptyStringToUndefined, z.string().optional()),
+  VAPID_SUBJECT: z.preprocess(emptyStringToUndefined, z.string().optional())
 });
 
 const clientEnvSchema = z.object({

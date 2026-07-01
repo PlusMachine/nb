@@ -36,6 +36,7 @@ export default async function NewRecipePage({
           initialStockCoverage={stockCoverage}
           initialImages={initialImages}
           equipmentProfiles={equipmentProfiles}
+          preferredGravityUnit={user.preferredGravityUnit}
         />
       );
     } catch (error) {
@@ -60,6 +61,7 @@ export default async function NewRecipePage({
       initialTitle={initialTitle}
       initialIngredientSelection={initialIngredientSelection}
       equipmentProfiles={equipmentProfiles}
+      preferredGravityUnit={user.preferredGravityUnit}
     />
   );
 }

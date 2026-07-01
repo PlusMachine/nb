@@ -126,7 +126,6 @@ describe("BJCP catalog card stats", () => {
     const html = renderToStaticMarkup(
       React.createElement(BjcpArticlePage, {
         article: article!,
-        relatedArticles: [],
         catalogStyle: style!
       })
     );

@@ -2,7 +2,7 @@ import { accounts, authRateLimits, db, sessions, users, verifications } from "@n
 import { and, eq, gt, sql } from "@nb/db";
 
 import { createOtpCode, createRandomToken, hashPassword, hashToken, verifyPassword } from "./crypto";
-import type { AuthUser, OAuthProviderId, SupportedCurrency, UserRole } from "./types";
+import type { AuthUser, OAuthProviderId, PreferredGravityUnit, SupportedCurrency, UserRole } from "./types";
 
 type VerificationType = "otp" | "magic_link" | "password_reset";
 
@@ -44,6 +44,7 @@ const mapUser = (user: typeof users.$inferSelect): AuthUser => ({
   phoneVerified: user.phoneVerified,
   displayName: user.displayName,
   preferredCurrency: (user.preferredCurrency ?? "RUB") as SupportedCurrency,
+  preferredGravityUnit: (user.preferredGravityUnit ?? "plato") as PreferredGravityUnit,
   image: user.image,
   role: user.role,
   createdAt: user.createdAt,
@@ -247,15 +248,18 @@ export const completePhoneSignIn = async ({ phone }: { phone: string }): Promise
 export const updateProfile = async ({
   userId,
   displayName,
-  preferredCurrency
+  preferredCurrency,
+  preferredGravityUnit
 }: {
   userId: string;
   displayName: string;
   preferredCurrency: SupportedCurrency;
+  preferredGravityUnit: PreferredGravityUnit;
 }): Promise<AuthUser> => {
   const [updated] = await db.update(users).set({
     displayName,
     preferredCurrency,
+    preferredGravityUnit,
     updatedAt: new Date()
   }).where(eq(users.id, userId)).returning();
   if (!updated) {

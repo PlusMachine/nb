@@ -117,4 +117,23 @@ describe("lanTransport.putRecipe", () => {
     expect(message).toMatch(/500/);
     expect(message).not.toMatch(/SECRET_INTERNAL_DETAIL/);
   });
+
+  it("адресует целевой слот через ?slot=N (device-first push), без слота — базовый URL", async () => {
+    const urls: string[] = [];
+    const fetchMock = vi.fn(async (url: string) => {
+      urls.push(url);
+      return { ok: true, status: 200, json: async () => ({ slot: 3 }) };
+    });
+    vi.stubGlobal("fetch", fetchMock);
+
+    const transport = lanTransport("http://192.168.1.50");
+    // без слота — прошивка берёт слот по умолчанию (batch-путь START_BREW): без query
+    const a = await transport.putRecipe({} as never);
+    expect(a).toEqual({ slot: 3 });
+    expect(urls[0]).toBe("http://192.168.1.50/recipe");
+
+    // с целевым слотом — device-first push «на плату»
+    await transport.putRecipe({} as never, 3);
+    expect(urls[1]).toBe("http://192.168.1.50/recipe?slot=3");
+  });
 });

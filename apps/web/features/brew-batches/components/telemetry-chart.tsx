@@ -2,16 +2,23 @@
 
 // =============================================================================
 //  features/brew-batches/components/telemetry-chart.tsx
-//  Исторический график телеметрии варки: температура (primaryC) vs уставка
-//  (setpointC) и скважность нагрева (%) во времени. Без сторонних библиотек —
-//  лёгкий SVG (responsive viewBox). Принимает серверно-загруженную начальную
-//  историю и подтягивает свежие точки с /history, пока открыт экран.
+//  Исторический HMI-график телеметрии варки: температура (primaryC) vs уставка
+//  (setpointC) по левой оси и скважность нагрева (%) по ОТДЕЛЬНОЙ правой оси, во
+//  времени. Вертикальные аннотации событий (смена стадии / авария) с подписями.
+//  Палитра по High-Performance HMI / ISA-101: нейтральный фон, цвет — только для
+//  аномалий (авария) и ключевых линий (уставка/факт). Без сторонних библиотек —
+//  лёгкий SVG (responsive viewBox) + HTML-подписи-оверлей (чёткие, не тянутся).
+//
+//  Принимает серверно-загруженную начальную историю и подтягивает свежие точки с
+//  /history, пока открыт экран (transport-агностично: batch|device).
 // =============================================================================
 import { useEffect, useMemo, useState } from "react";
 
 import { stageName } from "@nb/brewforge-protocol";
 
 import type { TelemetryHistoryPoint } from "@/features/brew-batches/contracts";
+import { telemetryEndpoints, type TelemetrySource } from "@/features/brew-controller/telemetry-source";
+import { deriveStageTransitions } from "@/features/brew-controller/telemetry-annotations";
 
 // Геометрия viewBox (масштабируется по ширине контейнера).
 const VB_W = 800;
@@ -26,20 +33,13 @@ const PLOT_H = VB_H - PAD_T - PAD_B;
 // Период подтягивания свежей истории, мс.
 const REFRESH_MS = 15_000;
 
-// Палитра фоновых полос стадий (по модулю числа стадии).
-const STAGE_BAND_FILLS = [
-  "#eef2ff",
-  "#ecfdf5",
-  "#fef3c7",
-  "#fae8ff",
-  "#e0f2fe",
-  "#fee2e2",
-  "#f0fdf4",
-  "#f5f3ff"
-];
+// Минимальный зазор между подписями событий (в единицах viewBox) — против
+// наложения меток при частых сменах стадий. Авария подписывается всегда.
+const LABEL_MIN_GAP = 64;
 
 type Props = {
-  brewBatchId: string;
+  /** Источник истории: партия (зона A) или устройство напрямую (зона B). */
+  source: TelemetrySource;
   hasDevice: boolean;
   initial: TelemetryHistoryPoint[];
 };
@@ -69,20 +69,23 @@ function niceTempBounds(points: TelemetryHistoryPoint[]): Bounds {
 
 function fmtTime(ts: number): string {
   const d = new Date(ts);
-  return d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+  // Явная локаль + hour12:false — иначе пустая локаль ([]) даёт разный формат на
+  // сервере (24ч) и в браузере (en-US 12ч «11:15 PM») → hydration mismatch.
+  return d.toLocaleTimeString("ru-RU", { hour: "2-digit", minute: "2-digit", hour12: false });
 }
 
-export function TelemetryChart({ brewBatchId, hasDevice, initial }: Props) {
+export function TelemetryChart({ source, hasDevice, initial }: Props) {
   const [points, setPoints] = useState<TelemetryHistoryPoint[]>(initial);
+  const historyUrl = telemetryEndpoints(source).history;
 
-  // Периодически подтягиваем свежую историю (партия может вариться прямо сейчас).
+  // Периодически подтягиваем свежую историю (варка/устройство активны прямо сейчас).
   useEffect(() => {
     if (!hasDevice) return;
     let cancelled = false;
 
     const load = async () => {
       try {
-        const res = await fetch(`/api/brew-batches/${brewBatchId}/telemetry/history`, {
+        const res = await fetch(historyUrl, {
           cache: "no-store"
         });
         if (!res.ok) return;
@@ -100,7 +103,7 @@ export function TelemetryChart({ brewBatchId, hasDevice, initial }: Props) {
       cancelled = true;
       window.clearInterval(id);
     };
-  }, [brewBatchId, hasDevice]);
+  }, [historyUrl, hasDevice]);
 
   const geom = useMemo(() => {
     if (points.length === 0) return null;
@@ -132,7 +135,8 @@ export function TelemetryChart({ brewBatchId, hasDevice, initial }: Props) {
       return d.trim();
     };
 
-    // Полосы стадий: группируем подряд идущие точки с одинаковым stage.
+    // Полосы стадий: группируем подряд идущие точки с одинаковым stage. Палитра
+    // нейтральная (HMI): чередование серых оттенков; авария — единственный цвет.
     type Band = { stage: number; x0: number; x1: number };
     const bands: Band[] = [];
     let cur: Band | null = null;
@@ -150,11 +154,22 @@ export function TelemetryChart({ brewBatchId, hasDevice, initial }: Props) {
       }
     }
 
-    // Подписи по оси температур (3 деления).
+    // Подписи по оси температур слева (3 деления) и оси нагрева справа (0/50/100%).
     const tempTicks = [temp.min, (temp.min + temp.max) / 2, temp.max].map((v) => ({
       v,
       y: yTemp(v)
     }));
+    const dutyTicks = [0, 50, 100].map((v) => ({ v, y: yDuty(v) }));
+
+    // Событийные аннотации (смены стадий/аварии) с деклаттером подписей.
+    const transitions = deriveStageTransitions(points);
+    let lastLabelX = -Infinity;
+    const annotations = transitions.map((t) => {
+      const ax = x(t.ts);
+      const showLabel = t.isFault || ax - lastLabelX >= LABEL_MIN_GAP;
+      if (showLabel) lastLabelX = ax;
+      return { x: ax, isFault: t.isFault, label: t.label, showLabel };
+    });
 
     return {
       tMin,
@@ -163,7 +178,9 @@ export function TelemetryChart({ brewBatchId, hasDevice, initial }: Props) {
       setpointPath: linePath((p) => p.setpointC, yTemp),
       dutyPath: linePath((p) => p.heatDutyPct, yDuty),
       bands,
-      tempTicks
+      tempTicks,
+      dutyTicks,
+      annotations
     };
   }, [points]);
 
@@ -179,6 +196,7 @@ export function TelemetryChart({ brewBatchId, hasDevice, initial }: Props) {
           <Legend color="#0f766e" label="Температура" />
           <Legend color="#d97706" label="Уставка" dashed />
           <Legend color="#94a3b8" label="Нагрев, %" />
+          <EventLegend />
         </div>
       </div>
 
@@ -188,71 +206,117 @@ export function TelemetryChart({ brewBatchId, hasDevice, initial }: Props) {
         </div>
       ) : (
         <div className="mt-4">
-          <svg
-            viewBox={`0 0 ${VB_W} ${VB_H}`}
-            className="h-auto w-full"
-            role="img"
-            aria-label="График температуры и скважности нагрева во времени"
-            preserveAspectRatio="none"
-          >
-            {/* Полосы стадий (фон). */}
-            {geom.bands.map((b, i) => (
-              <rect
-                key={`${b.stage}-${i}`}
-                x={b.x0}
-                y={PAD_T}
-                width={Math.max(0, b.x1 - b.x0)}
-                height={PLOT_H}
-                fill={STAGE_BAND_FILLS[((b.stage % STAGE_BAND_FILLS.length) + STAGE_BAND_FILLS.length) % STAGE_BAND_FILLS.length]}
-                opacity={0.7}
-              />
-            ))}
-
-            {/* Сетка/ось температур. */}
-            {geom.tempTicks.map((t, i) => (
-              <g key={`tick-${i}`}>
-                <line
-                  x1={PAD_L}
-                  x2={VB_W - PAD_R}
-                  y1={t.y}
-                  y2={t.y}
-                  stroke="#e4e4e7"
-                  strokeWidth={1}
+          {/* Контейнер для SVG + HTML-подписей событий (позиционируются в %). */}
+          <div className="relative">
+            <svg
+              viewBox={`0 0 ${VB_W} ${VB_H}`}
+              className="h-auto w-full"
+              role="img"
+              aria-label="График температуры, уставки и скважности нагрева во времени с отметками стадий"
+              preserveAspectRatio="none"
+            >
+              {/* Полосы стадий (фон, нейтральные; авария — светло-красная). */}
+              {geom.bands.map((b, i) => (
+                <rect
+                  key={`${b.stage}-${i}`}
+                  x={b.x0}
+                  y={PAD_T}
+                  width={Math.max(0, b.x1 - b.x0)}
+                  height={PLOT_H}
+                  fill={isFaultStage(b.stage) ? "#fef2f2" : i % 2 === 0 ? "#fafafa" : "#f4f4f5"}
                 />
-                <text x={PAD_L - 6} y={t.y + 3} textAnchor="end" fontSize={11} fill="#71717a">
-                  {t.v.toFixed(0)}
+              ))}
+
+              {/* Сетка/ось температур (слева). */}
+              {geom.tempTicks.map((t, i) => (
+                <g key={`tick-${i}`}>
+                  <line
+                    x1={PAD_L}
+                    x2={VB_W - PAD_R}
+                    y1={t.y}
+                    y2={t.y}
+                    stroke="#e4e4e7"
+                    strokeWidth={1}
+                  />
+                  <text x={PAD_L - 6} y={t.y + 3} textAnchor="end" fontSize={11} fill="#71717a">
+                    {t.v.toFixed(0)}
+                  </text>
+                </g>
+              ))}
+
+              {/* Вторая ось (справа): скважность нагрева 0..100%. */}
+              {geom.dutyTicks.map((t, i) => (
+                <text
+                  key={`duty-${i}`}
+                  x={VB_W - PAD_R + 6}
+                  y={t.y + 3}
+                  textAnchor="start"
+                  fontSize={11}
+                  fill="#94a3b8"
+                >
+                  {t.v === 100 ? "100%" : t.v}
                 </text>
-              </g>
-            ))}
+              ))}
 
-            {/* Скважность нагрева (вторичная, светлая линия 0..100%). */}
-            <path d={geom.dutyPath} fill="none" stroke="#94a3b8" strokeWidth={1.5} opacity={0.8} />
+              {/* Вертикальные аннотации событий (смена стадии / авария). */}
+              {geom.annotations.map((a, i) => (
+                <line
+                  key={`ann-${i}`}
+                  x1={a.x}
+                  x2={a.x}
+                  y1={PAD_T}
+                  y2={PAD_T + PLOT_H}
+                  stroke={a.isFault ? "#dc2626" : "#d4d4d8"}
+                  strokeWidth={a.isFault ? 1.5 : 1}
+                  strokeDasharray="3 3"
+                />
+              ))}
 
-            {/* Уставка (пунктир) и фактическая температура. */}
-            <path
-              d={geom.setpointPath}
-              fill="none"
-              stroke="#d97706"
-              strokeWidth={2}
-              strokeDasharray="5 4"
-            />
-            <path
-              d={geom.primaryPath}
-              fill="none"
-              stroke="#0f766e"
-              strokeWidth={2}
-              strokeLinejoin="round"
-              strokeLinecap="round"
-            />
+              {/* Скважность нагрева (вторичная, светлая линия по правой оси). */}
+              <path d={geom.dutyPath} fill="none" stroke="#94a3b8" strokeWidth={1.5} opacity={0.85} />
 
-            {/* Подписи времени (слева/справа). */}
-            <text x={PAD_L} y={VB_H - 8} textAnchor="start" fontSize={11} fill="#71717a">
-              {fmtTime(geom.tMin)}
-            </text>
-            <text x={VB_W - PAD_R} y={VB_H - 8} textAnchor="end" fontSize={11} fill="#71717a">
-              {fmtTime(geom.tMax)}
-            </text>
-          </svg>
+              {/* Уставка (пунктир) и фактическая температура. */}
+              <path
+                d={geom.setpointPath}
+                fill="none"
+                stroke="#d97706"
+                strokeWidth={2}
+                strokeDasharray="5 4"
+              />
+              <path
+                d={geom.primaryPath}
+                fill="none"
+                stroke="#0f766e"
+                strokeWidth={2}
+                strokeLinejoin="round"
+                strokeLinecap="round"
+              />
+
+              {/* Подписи времени (слева/справа). */}
+              <text x={PAD_L} y={VB_H - 8} textAnchor="start" fontSize={11} fill="#71717a">
+                {fmtTime(geom.tMin)}
+              </text>
+              <text x={VB_W - PAD_R} y={VB_H - 8} textAnchor="end" fontSize={11} fill="#71717a">
+                {fmtTime(geom.tMax)}
+              </text>
+            </svg>
+
+            {/* HTML-подписи событий поверх графика: чёткие (не тянутся вместе с
+                viewBox), позиционируются в % по оси X. */}
+            {geom.annotations
+              .filter((a) => a.showLabel)
+              .map((a, i) => (
+                <span
+                  key={`lbl-${i}`}
+                  className={`pointer-events-none absolute top-0 -translate-x-1/2 whitespace-nowrap rounded px-1 text-[10px] font-medium ${
+                    a.isFault ? "bg-red-600 text-white" : "bg-zinc-100 text-zinc-600"
+                  }`}
+                  style={{ left: `${(a.x / VB_W) * 100}%` }}
+                >
+                  {a.label}
+                </span>
+              ))}
+          </div>
 
           {/* Подписи стадий под графиком (компактные чипы). */}
           <div className="mt-3 flex flex-wrap gap-1.5">
@@ -279,6 +343,14 @@ function dedupeStages(bands: { stage: number }[]): number[] {
   return seen;
 }
 
+function isFaultStage(stage: number): boolean {
+  try {
+    return stageName(stage) === "FAULT";
+  } catch {
+    return false;
+  }
+}
+
 function safeStageLabel(stage: number): string {
   try {
     return stageName(stage);
@@ -302,6 +374,17 @@ function Legend({ color, label, dashed }: { color: string; label: string; dashed
         />
       </svg>
       {label}
+    </span>
+  );
+}
+
+function EventLegend() {
+  return (
+    <span className="inline-flex items-center gap-1.5">
+      <svg width={8} height={10} aria-hidden>
+        <line x1={4} y1={0} x2={4} y2={10} stroke="#a1a1aa" strokeWidth={1.5} strokeDasharray="3 3" />
+      </svg>
+      Событие
     </span>
   );
 }

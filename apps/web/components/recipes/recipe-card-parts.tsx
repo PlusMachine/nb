@@ -4,7 +4,7 @@ import Link from "next/link";
 import { Star } from "lucide-react";
 
 import type { PublicRecipeListItem } from "@/features/recipes/contracts";
-import { srmToHex } from "@/features/recipes/beer-color";
+import { NEUTRAL_SOFT_GRADIENT, beerColorFromSrm, srmToHex, srmToSoftGradient } from "@/features/recipes/beer-color";
 import { isRecentlyCreated } from "@/features/recipes/format";
 
 import { RecipeColorSwatch } from "./recipe-color-swatch";
@@ -89,18 +89,54 @@ export function ColorStatCell({ srm }: { srm: number | null }) {
 }
 
 /**
+ * Цвет пива пиллом для текстовой строки (list-вид): точка реального оттенка +
+ * название. Используется там, где обложка-миниатюра слишком мала для полноценной
+ * метки SRM. `null`, если SRM неизвестен.
+ */
+export function ColorPip({ srm }: { srm: number | null }) {
+  if (srm == null || !Number.isFinite(srm)) {
+    return null;
+  }
+  return (
+    <span className="inline-flex min-w-0 items-center gap-1 text-xs text-zinc-600">
+      <span
+        aria-hidden
+        className="h-2.5 w-2.5 shrink-0 rounded-full ring-1 ring-inset ring-black/10"
+        style={{ backgroundColor: srmToHex(srm) }}
+      />
+      <span className="truncate">{beerColorFromSrm(srm).label}</span>
+    </span>
+  );
+}
+
+/**
  * Рейтинг рецепта, иначе бейдж «Новый» для недавно созданных, иначе ничего.
  * «Новый» решается по дате создания ({@link isRecentlyCreated}), а не по
  * отсутствию оценок.
  */
 export function RecipeRatingOrNew({
   rating,
-  createdAt
+  createdAt,
+  variant = "inline"
 }: {
   rating: PublicRecipeListItem["rating"];
   createdAt: string;
+  /**
+   * `inline` — текстовый рейтинг в строке (list-вид / тело карточки).
+   * `overlay` — сплошной пилл с фоном, читаемый поверх обложки (grid-карточка).
+   */
+  variant?: "inline" | "overlay";
 }) {
   if (rating) {
+    if (variant === "overlay") {
+      return (
+        <span className="inline-flex shrink-0 items-center gap-1 rounded-full bg-white/90 px-2 py-0.5 text-xs font-semibold text-zinc-900 shadow-sm ring-1 ring-black/5 backdrop-blur-sm">
+          <Star className="h-3.5 w-3.5 fill-amber-500 text-amber-500" aria-hidden />
+          {ratingFormatter.format(rating.average)}
+          <span className="font-normal text-zinc-500">({rating.count})</span>
+        </span>
+      );
+    }
     return (
       <span className="inline-flex shrink-0 items-center gap-1 text-xs font-medium text-amber-600">
         <Star className="h-3.5 w-3.5 fill-amber-500 text-amber-500" aria-hidden />
@@ -110,6 +146,13 @@ export function RecipeRatingOrNew({
     );
   }
   if (isRecentlyCreated(createdAt)) {
+    if (variant === "overlay") {
+      return (
+        <span className="inline-flex shrink-0 items-center rounded-full bg-emerald-500 px-2 py-0.5 text-[11px] font-semibold text-white shadow-sm">
+          Новый
+        </span>
+      );
+    }
     return (
       <span className="inline-flex shrink-0 items-center rounded-full bg-emerald-100 px-2 py-0.5 text-[11px] font-medium text-emerald-800">
         Новый
@@ -153,24 +196,34 @@ export function StyleChip({
 }
 
 /**
- * Обложка рецепта: фото рецепта → размытое фото BJCP-стиля → мягкая заливка по
- * SRM. `className` задаёт геометрию контейнера, `sizes` — атрибут next/image.
+ * Обложка рецепта: фото рецепта (резко) → фото BJCP-стиля (лёгкий блюр — не
+ * выдаём общую стоковую картинку за фото самого рецепта, но и не тратим место
+ * на пустое пятно) → мягкая заливка по SRM (редкий случай — рецепт вовсе без
+ * стиля). `className` задаёт геометрию контейнера, `sizes` — атрибут next/image.
  */
 export function RecipeThumb({
   heroImage,
   styleImageUrl,
   colorSrm,
   className,
-  sizes
+  sizes,
+  sharpenStyleOnHover = false,
+  showColorMarker = true
 }: {
   heroImage: PublicRecipeListItem["heroImage"];
   styleImageUrl: PublicRecipeListItem["styleImageUrl"];
   colorSrm: PublicRecipeListItem["colorSrm"];
   className: string;
   sizes: string;
+  /** list-вид (вариант B): размытое фото стиля резчеет на ховере (только мышь). */
+  sharpenStyleOnHover?: boolean;
+  /** Метка цвета снизу. Выкл для крошечных миниатюр списка (цвет там — пиллом в тексте). */
+  showColorMarker?: boolean;
 }) {
   return (
     <div className={`relative overflow-hidden ${className}`}>
+      {/* Фоновый слой: фото рецепта (резко, с лёгким зумом на ховере) → фото стиля
+          (мягкий блюр-бэкдроп) → заливка-градиент по SRM. */}
       {heroImage ? (
         <Image
           src={heroImage.thumbUrl}
@@ -179,28 +232,44 @@ export function RecipeThumb({
           fill
           unoptimized
           sizes={sizes}
-          className="object-cover"
+          className="object-cover transition-transform duration-500 group-hover:scale-105"
           placeholder={heroImage.blurDataUrl ? "blur" : "empty"}
           blurDataURL={heroImage.blurDataUrl ?? undefined}
         />
       ) : styleImageUrl ? (
+        <Image
+          src={styleImageUrl}
+          alt=""
+          aria-hidden
+          fill
+          unoptimized
+          sizes={sizes}
+          className={`scale-105 object-cover blur-[2px] transition duration-300 ${
+            sharpenStyleOnHover ? "[@media(hover:hover)]:group-hover:scale-100 [@media(hover:hover)]:group-hover:blur-0" : ""
+          }`}
+        />
+      ) : (
+        <span
+          aria-hidden
+          className="absolute inset-0"
+          style={{
+            backgroundImage:
+              colorSrm != null && Number.isFinite(colorSrm) ? srmToSoftGradient(colorSrm) : NEUTRAL_SOFT_GRADIENT
+          }}
+        />
+      )}
+
+      {/* Затемнение + метка цвета (SRM + оттенок) — ОДНА, одинаково снизу для всех
+          типов обложки. Фикс рассинхрона: раньше fill-вариант (без фото) центрировался,
+          а overlay прижимался книзу, отчего карточки вроде Gose «разъезжались».
+          На крошечных миниатюрах списка метку отключаем (showColorMarker=false) —
+          цвет там показывается пиллом в тексте строки. */}
+      {showColorMarker ? (
         <>
-          <Image
-            src={styleImageUrl}
-            alt=""
-            aria-hidden
-            fill
-            unoptimized
-            sizes={sizes}
-            className="scale-110 object-cover blur-[6px]"
-          />
-          {/* Затемнение снизу — читаемость подписи SRM поверх любого фото. */}
-          <span aria-hidden className="absolute inset-0 bg-gradient-to-t from-black/55 via-black/15 to-transparent" />
+          <span aria-hidden className="absolute inset-0 bg-gradient-to-t from-black/55 via-black/10 to-transparent" />
           <RecipeColorSwatch srm={colorSrm} variant="overlay" className="absolute inset-x-0 bottom-0" />
         </>
-      ) : (
-        <RecipeColorSwatch srm={colorSrm} className="h-full w-full" />
-      )}
+      ) : null}
     </div>
   );
 }

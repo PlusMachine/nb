@@ -1,4 +1,4 @@
-import { sgToPlato, srmToEbc } from "@nb/brewing-core";
+import { srmToEbc } from "@nb/brewing-core";
 
 const dateTimeFormatter = new Intl.DateTimeFormat("ru-RU", {
   day: "2-digit",
@@ -11,20 +11,6 @@ const dateTimeFormatter = new Intl.DateTimeFormat("ru-RU", {
 const relativeFormatter = new Intl.RelativeTimeFormat("ru-RU", { numeric: "auto" });
 
 const formatNumber = (value: number, precision = 1) => value.toFixed(precision).replace(/\.0$/, "");
-
-export const formatPlatoFromSg = (value: number, precision = 1) => (
-  `${Math.max(0, sgToPlato(value, precision)).toFixed(precision)} °P`
-);
-
-export const formatBrixFromSg = (value: number, precision = 1) => (
-  `${Math.max(0, sgToPlato(value, precision)).toFixed(precision)} °Bx`
-);
-
-export const formatGravityWithPlato = (value: number | null) => (
-  value == null
-    ? "—"
-    : `${value.toFixed(3)} (${formatPlatoFromSg(value, 1)})`
-);
 
 export const formatColorWithEbc = (value: number | null) => (
   value == null
@@ -78,13 +64,6 @@ export const formatIbuShort = (value: number | null) => (
   value == null ? "—" : `${Math.round(value)}`
 );
 
-/**
- * OG в гравитационной конвенции `1.048` (точка, 3 знака — как
- * {@link formatGravityWithPlato}). `null → "—"`.
- */
-export const formatOgShort = (value: number | null) => (
-  value == null ? "—" : value.toFixed(3)
-);
 
 /** Объём партии в литрах: `20 л` / `19,5 л` (RU-запятая). `null → "—"`. */
 export const formatBatchVolume = (liters: number | null) => (

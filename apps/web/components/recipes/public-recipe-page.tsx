@@ -13,7 +13,7 @@ import { RecipeScalePanel } from "./recipe-scale-panel";
 import { PublicRecipeWaterSection } from "./public-recipe-water-section";
 import { RecipeIngredientsSection } from "./recipe-ingredients-section";
 import { RecipeMetaSection } from "./recipe-meta-section";
-import { RecipeStatsSummary } from "./recipe-stats-summary";
+import { RecipeStatsSummaryViewer } from "./recipe-stats-summary-viewer";
 
 const ratingFormatter = new Intl.NumberFormat("ru-RU", {
   minimumFractionDigits: 1,
@@ -51,7 +51,7 @@ export function PublicRecipePage({ recipe }: { recipe: RecipeDetailDto }) {
         <div className="min-w-0 space-y-6">
           {recipe.heroImageId ? <RecipePhotoHero imageId={recipe.heroImageId} title={recipe.title} /> : null}
           <RecipeMetaSection recipe={recipe} showPrivateNotes={false} />
-          <RecipeStatsSummary recipe={recipe} />
+          <RecipeStatsSummaryViewer recipe={recipe} />
           <RecipeIngredientsSection ingredients={recipe.ingredients} />
           <PublicRecipeWaterSection recipe={recipe} />
         </div>

@@ -73,7 +73,10 @@ export function cloudTransport(device: CloudDeviceRef): DeviceTransport {
       return ack;
     },
 
-    async putRecipe(recipe: DeviceRecipe): Promise<{ slot: number }> {
+    async putRecipe(recipe: DeviceRecipe, _slot?: number): Promise<{ slot: number }> {
+      // Целевой слот по облаку не адресуется: прошивка сама выбирает записываемый
+      // слот и рапортует его номер в .../log. `_slot` игнорируем — привязка nb
+      // делается к ВЕРНУВШЕМУСЯ слоту (source of truth), а не к запрошенному.
       // Публикуем рецепт в брокер; прошивка сохраняет его в записываемый слот и
       // логирует «recipe_saved»+slot в .../log → мост пишет это в brew_log_events.
       // Дочитываем номер слота оттуда (нужен для последующего START_BREW(slot)).
@@ -103,6 +106,14 @@ export function cloudTransport(device: CloudDeviceRef): DeviceTransport {
     },
 
     async putConfig(_config: DeviceConfigPatch): Promise<DeviceConfig> {
+      throw new Error("CLOUD_UNSUPPORTED");
+    },
+
+    async listSlots() {
+      throw new Error("CLOUD_UNSUPPORTED");
+    },
+
+    async readSlotSnapshot(_slot: number): Promise<DeviceRecipe | null> {
       throw new Error("CLOUD_UNSUPPORTED");
     },
   };

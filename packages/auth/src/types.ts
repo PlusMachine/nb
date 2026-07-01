@@ -2,6 +2,7 @@ export const ROLES = ["user", "editor", "moderator", "admin"] as const;
 
 export type UserRole = (typeof ROLES)[number];
 export type SupportedCurrency = "RUB" | "USD" | "EUR";
+export type PreferredGravityUnit = "sg" | "plato" | "brix";
 
 export const roleWeight: Record<UserRole, number> = {
   user: 1,
@@ -18,6 +19,7 @@ export type AuthUser = {
   phoneVerified: boolean;
   displayName: string;
   preferredCurrency: SupportedCurrency;
+  preferredGravityUnit: PreferredGravityUnit;
   image: string | null;
   role: UserRole;
   createdAt: Date;

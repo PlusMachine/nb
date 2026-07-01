@@ -6,8 +6,12 @@
 //  REST:
 //    GET  /telemetry  → текущий снимок Telemetry
 //    POST /cmd        → принять Command, вернуть Ack
-//    PUT  /recipe     → записать DeviceRecipe (?slot=N), вернуть { slot }
-//    GET  /config     → конфиг симулятора + карта слотов
+//    PUT  /recipe?slot=N   → записать DeviceRecipe, вернуть { slot }
+//    GET  /recipe?slot=N   → прочитать DeviceRecipe слота (readSlotSnapshot), 404 если пуст
+//    GET  /recipes         → карта слотов [{ slot, name }] (listSlots)
+//    GET  /config     → { …сеть/отладка, config: DeviceConfig }  (§6.3, несекретный)
+//    PUT  /config     → патч DeviceConfig (клампится), вернуть эффективный { config }
+//    POST /sim/fault  → dev/demo-only: инжект/сброс аварии { fault?, action: "raise"|"clear" }
 //    GET  /log        → последние события брю-лога
 //    GET  /events     → SSE-поток телеметрии (без зависимостей)
 //    GET  /health     → { ok: true }
@@ -16,8 +20,8 @@
 // =============================================================================
 import http from "node:http";
 import { WebSocketServer, type WebSocket } from "ws";
-import { topics } from "@nb/brewforge-protocol";
-import type { SimDevice } from "./sim-device.js";
+import { topics, FAULT_BITS, FAULT_NAMES, type Fault } from "@nb/brewforge-protocol";
+import type { SimDevice } from "@nb/brewforge-sim";
 
 export interface ServerHandle {
   http: http.Server;
@@ -26,6 +30,9 @@ export interface ServerHandle {
 }
 
 const JSON_HEADERS = { "content-type": "application/json; charset=utf-8" };
+
+const isRecord = (value: unknown): value is Record<string, unknown> =>
+  typeof value === "object" && value !== null && !Array.isArray(value);
 
 function sendJson(res: http.ServerResponse, status: number, body: unknown): void {
   const data = JSON.stringify(body);
@@ -114,7 +121,19 @@ async function handleRequest(
   // --- GET /config ---
   if (method === "GET" && path === "/config") {
     const cfg = device.config();
-    sendJson(res, 200, { ...cfg, topics: topics(cfg.deviceId) });
+    sendJson(res, 200, { ...cfg, topics: topics(cfg.deviceId), config: device.readConfig() });
+    return;
+  }
+
+  // --- PUT /config (патч §6.3: сливается + клампится, возвращает эффективный) ---
+  if (method === "PUT" && path === "/config") {
+    const body = await readBody(req);
+    try {
+      const effective = device.writeConfig(body);
+      sendJson(res, 200, { config: effective });
+    } catch (err) {
+      sendJson(res, 422, { error: err instanceof Error ? err.message : String(err) });
+    }
     return;
   }
 
@@ -152,6 +171,52 @@ async function handleRequest(
       sendJson(res, 200, { slot: written });
     } catch (err) {
       sendJson(res, 422, { error: err instanceof Error ? err.message : String(err) });
+    }
+    return;
+  }
+
+  // --- POST /sim/fault (dev/demo-only: инжект/сброс аварии) ---
+  if (method === "POST" && path === "/sim/fault") {
+    const body = await readBody(req);
+    const action = isRecord(body) ? body.action : undefined;
+    if (action === "clear") {
+      device.clearFaults();
+      sendJson(res, 200, { ok: true, faultMask: device.snapshot().faultMask });
+      return;
+    }
+    const faultRaw = isRecord(body) ? body.fault : undefined;
+    if (typeof faultRaw !== "string" || !(faultRaw in FAULT_BITS)) {
+      sendJson(res, 400, { error: `fault должен быть одним из: ${FAULT_NAMES.join(", ")}` });
+      return;
+    }
+    device.injectFault(faultRaw as Fault);
+    sendJson(res, 200, { ok: true, faultMask: device.snapshot().faultMask });
+    return;
+  }
+
+  // --- GET /recipes (карта слотов, listSlots) ---
+  if (method === "GET" && path === "/recipes") {
+    sendJson(res, 200, { slots: device.listSlots() });
+    return;
+  }
+
+  // --- GET /recipe?slot=N (read-only снапшот слота, readSlotSnapshot) ---
+  if (method === "GET" && path === "/recipe") {
+    const slotParam = url.searchParams.get("slot");
+    const slot = slotParam === null ? 0 : Number.parseInt(slotParam, 10);
+    if (Number.isNaN(slot)) {
+      sendJson(res, 400, { error: "slot должен быть числом" });
+      return;
+    }
+    try {
+      const recipe = device.readSlot(slot);
+      if (!recipe) {
+        sendJson(res, 404, { error: `слот ${slot} пуст` });
+        return;
+      }
+      sendJson(res, 200, recipe);
+    } catch (err) {
+      sendJson(res, 400, { error: err instanceof Error ? err.message : String(err) });
     }
     return;
   }

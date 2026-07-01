@@ -36,6 +36,7 @@ export const yeastFormEnum = pgEnum("yeast_form", ["dry", "liquid"]);
 export const inventoryUnitDimensionEnum = pgEnum("inventory_unit_dimension", ["weight", "volume", "count"]);
 export const inventoryPriceInputModeEnum = pgEnum("inventory_price_input_mode", ["total", "per_display_unit"]);
 export const systemCurrencyEnum = pgEnum("system_currency", ["RUB", "USD", "EUR"]);
+export const preferredGravityUnitEnum = pgEnum("preferred_gravity_unit", ["sg", "plato", "brix"]);
 export const recipePublicationStateEnum = pgEnum("recipe_publication_state", ["draft", "private", "published"]);
 export const recipeIngredientStageEnum = pgEnum("recipe_ingredient_stage", ["mash", "boil", "whirlpool", "fermentation", "packaging", "other"]);
 export const recipeInventoryAllocationStatusEnum = pgEnum("recipe_inventory_allocation_status", ["allocated", "reserved", "released", "consumed"]);
@@ -60,6 +61,7 @@ export const users = pgTable("users", {
   phoneVerified: boolean("phone_verified").default(false).notNull(),
   displayName: varchar("display_name", { length: 120 }).notNull(),
   preferredCurrency: systemCurrencyEnum("preferred_currency").default("RUB").notNull(),
+  preferredGravityUnit: preferredGravityUnitEnum("preferred_gravity_unit").default("plato").notNull(),
   image: text("image"),
   role: userRoleEnum("role").default("user").notNull(),
   passwordHash: text("password_hash"),
@@ -714,6 +716,26 @@ export const brewDevices = pgTable("brew_devices", {
   tokenHashIdx: uniqueIndex("brew_devices_token_hash_uidx").on(table.tokenHash)
 }));
 
+// Web-push подписки браузеров пользователя (Phase 6). Подписка — на ПОЛЬЗОВАТЕЛЯ
+// (владелец получает пуши по всем своим пивоварням: промпты «засыпь/промывка» и
+// аварии, когда вкладка свёрнута / телефон вне дома). Отправляет always-on мост.
+// endpoint (URL push-сервиса) уникален на браузер → upsert по нему; мёртвые
+// подписки (404/410) сервис отправки вычищает.
+export const pushSubscriptions = pgTable("push_subscriptions", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  userId: uuid("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  endpoint: text("endpoint").notNull(),
+  p256dh: text("p256dh").notNull(),
+  auth: text("auth").notNull(),
+  userAgent: text("user_agent"),
+  failureCount: integer("failure_count").default(0).notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull()
+}, (table) => ({
+  endpointIdx: uniqueIndex("push_subscriptions_endpoint_uidx").on(table.endpoint),
+  userIdIdx: index("push_subscriptions_user_id_idx").on(table.userId)
+}));
+
 // Одноразовый код привязки (показывается на LCD/в AP устройства). Пользователь
 // сдаёт claimCode → сервис связывает устройство с юзером и выдаёт bearer-токен.
 // claimCode уникален среди активных (непогашенных) записей.
@@ -805,6 +827,49 @@ export const deviceProfiles = pgTable("device_profiles", {
 }, (table) => ({
   userIdIdx: index("device_profiles_user_id_idx").on(table.userId),
   deviceIdIdx: index("device_profiles_device_id_idx").on(table.deviceId)
+}));
+
+// Single-writer control-lease: одно активное УПРАВЛЯЮЩЕЕ соединение на устройство
+// (Phase 2). deviceId — первичный ключ (ровно одна аренда на устройство). Держатель
+// = (holderUserId, holderSessionId): sessionId различает вкладки/приборы ОДНОГО юзера
+// (телефон vs планшет), закрывая last-write-wins. Аренда валидна, пока expiresAt >
+// now; тот же heartbeat, что продлевает её, кормит firmware dead-man (Phase 3/6).
+// takeoverBy* — «Запросить перехват»: кооперативная передача (держатель видит запрос
+// и отдаёт; если оффлайн — аренда истекает по TTL и запросивший берёт сам).
+export const deviceControlLeases = pgTable("device_control_leases", {
+  deviceId: uuid("device_id").primaryKey().references(() => brewDevices.id, { onDelete: "cascade" }),
+  holderUserId: uuid("holder_user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  holderSessionId: text("holder_session_id").notNull(),
+  acquiredAt: timestamp("acquired_at", { withTimezone: true }).defaultNow().notNull(),
+  heartbeatAt: timestamp("heartbeat_at", { withTimezone: true }).defaultNow().notNull(),
+  expiresAt: timestamp("expires_at", { withTimezone: true }).notNull(),
+  takeoverByUserId: uuid("takeover_by_user_id").references(() => users.id, { onDelete: "set null" }),
+  takeoverBySessionId: text("takeover_by_session_id"),
+  takeoverAt: timestamp("takeover_at", { withTimezone: true })
+}, (table) => ({
+  holderUserIdIdx: index("device_control_leases_holder_user_id_idx").on(table.holderUserId)
+}));
+
+// Привязка слота устройства к исходному рецепту nb (Phase 4 — рецепты «на борту»).
+// Реализует решение дизайна «слот↔recipeId» (двусторонний обмен через привязку, а
+// НЕ реверс-маппинг DeviceRecipe→каталог, который беднее модели nb). Одна привязка
+// на (deviceId, slot). recipeId — источник (ON DELETE SET NULL: если рецепт удалён,
+// привязка осиротеет, но recipeName сохранит человекочитаемое имя пуша). recipeName
+// денормализован на момент записи — переживает удаление/переименование рецепта.
+export const deviceRecipeSlots = pgTable("device_recipe_slots", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  deviceId: uuid("device_id").notNull().references(() => brewDevices.id, { onDelete: "cascade" }),
+  userId: uuid("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  slot: integer("slot").notNull(),
+  recipeId: uuid("recipe_id").references(() => recipes.id, { onDelete: "set null" }),
+  recipeName: text("recipe_name").notNull(),
+  pushedAt: timestamp("pushed_at", { withTimezone: true }).defaultNow().notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull()
+}, (table) => ({
+  deviceSlotUidx: uniqueIndex("device_recipe_slots_device_slot_uidx").on(table.deviceId, table.slot),
+  deviceIdIdx: index("device_recipe_slots_device_id_idx").on(table.deviceId),
+  recipeIdIdx: index("device_recipe_slots_recipe_id_idx").on(table.recipeId)
 }));
 
 export const usersRelations = relations(users, ({ many }) => ({
@@ -1066,7 +1131,35 @@ export const brewDevicesRelations = relations(brewDevices, ({ one, many }) => ({
   telemetry: many(brewTelemetry),
   logEvents: many(brewLogEvents),
   commands: many(deviceCommands),
-  profiles: many(deviceProfiles)
+  profiles: many(deviceProfiles),
+  controlLease: one(deviceControlLeases),
+  recipeSlots: many(deviceRecipeSlots)
+}));
+
+export const deviceControlLeasesRelations = relations(deviceControlLeases, ({ one }) => ({
+  device: one(brewDevices, {
+    fields: [deviceControlLeases.deviceId],
+    references: [brewDevices.id]
+  }),
+  holder: one(users, {
+    fields: [deviceControlLeases.holderUserId],
+    references: [users.id]
+  })
+}));
+
+export const deviceRecipeSlotsRelations = relations(deviceRecipeSlots, ({ one }) => ({
+  device: one(brewDevices, {
+    fields: [deviceRecipeSlots.deviceId],
+    references: [brewDevices.id]
+  }),
+  user: one(users, {
+    fields: [deviceRecipeSlots.userId],
+    references: [users.id]
+  }),
+  recipe: one(recipes, {
+    fields: [deviceRecipeSlots.recipeId],
+    references: [recipes.id]
+  })
 }));
 
 export const deviceProfilesRelations = relations(deviceProfiles, ({ one }) => ({

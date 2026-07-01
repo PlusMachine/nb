@@ -19,6 +19,7 @@ import {
   signInWithPassword,
   updateProfile,
   type OAuthProviderId,
+  type PreferredGravityUnit,
   type SupportedCurrency,
   type UserRole
 } from "@nb/auth";
@@ -27,6 +28,15 @@ import { redirect } from "next/navigation";
 
 
 const SESSION_COOKIE = "nb_session";
+
+/**
+ * Dev-only «гостевой просмотр». Когда включён автологин (DEV_AUTH_EMAIL), просто
+ * удалить сессию недостаточно: следующий же запрос снова авторизует разработчика.
+ * Эта cookie сообщает getSessionUser «я намеренно вышел» — автологин пропускается
+ * и приложение выглядит так, как его видит незалогиненный пользователь. В
+ * production не используется (автологина там нет, ставить её нечему).
+ */
+const DEV_GUEST_COOKIE = "nb_dev_guest";
 
 export const roleWeights: Record<UserRole, number> = { user: 1, editor: 2, moderator: 3, admin: 4 };
 
@@ -44,6 +54,9 @@ export const hasRequiredRole = (current: UserRole, required: UserRole) => roleWe
 const devAuthEmail =
   process.env.NODE_ENV === "production" ? undefined : process.env.DEV_AUTH_EMAIL?.trim() || undefined;
 
+/** Активен ли dev-автологин (вне production и задан DEV_AUTH_EMAIL). */
+export const isDevAutoAuthEnabled = Boolean(devAuthEmail);
+
 /**
  * Логирование секретов аутентификации (OTP-код, magic-link, ссылка сброса пароля)
  * допустимо ТОЛЬКО вне production: в dev это единственный канал доставки (реальная
@@ -57,17 +70,32 @@ const logAuthSecret = (label: string, payload: unknown) => {
 };
 
 export const getSessionUser = async () => {
-  const token = (await cookies()).get(SESSION_COOKIE)?.value;
+  const cookieStore = await cookies();
+  const token = cookieStore.get(SESSION_COOKIE)?.value;
   if (token) {
     const user = await getUserBySessionToken(token);
     if (user) {
       return user;
     }
   }
-  if (devAuthEmail) {
+  // Гостевой просмотр в dev: автологин намеренно отключён до возврата в аккаунт.
+  if (devAuthEmail && !cookieStore.get(DEV_GUEST_COOKIE)) {
     return completeEmailSignIn({ email: devAuthEmail });
   }
   return null;
+};
+
+/** Просматривает ли разработчик приложение как аноним (dev-гостевой просмотр). */
+export const isDevGuestPreview = async () => {
+  if (!devAuthEmail) {
+    return false;
+  }
+  return Boolean((await cookies()).get(DEV_GUEST_COOKIE)?.value);
+};
+
+/** Выход из гостевого просмотра — вернуться в dev-аккаунт DEV_AUTH_EMAIL. */
+export const exitDevGuestPreview = async () => {
+  (await cookies()).delete(DEV_GUEST_COOKIE);
 };
 
 export const requireUser = async () => {
@@ -149,6 +177,9 @@ export const establishSession = async (userId: string) => {
     path: "/",
     expires: expiresAt
   });
+
+  // Реальный вход отменяет dev-гостевой просмотр, если он был активен.
+  cookieStore.delete(DEV_GUEST_COOKIE);
 };
 
 export const logout = async () => {
@@ -158,6 +189,17 @@ export const logout = async () => {
     await revokeSession(token);
   }
   cookieStore.delete(SESSION_COOKIE);
+
+  // В dev с автологином простое удаление сессии не «выходит»: следующий запрос
+  // снова авторизует разработчика. Ставим guest-cookie, чтобы выход прилип и
+  // приложение показало анонимный вид. Снимается реальным логином или из баннера.
+  if (devAuthEmail) {
+    cookieStore.set(DEV_GUEST_COOKIE, "1", {
+      httpOnly: true,
+      sameSite: "lax",
+      path: "/"
+    });
+  }
 };
 
 export const passwordLogin = async (email: string, password: string) => {
@@ -187,13 +229,15 @@ export const resetPassword = async (email: string, token: string, password: stri
 
 export const updateCurrentProfile = async ({
   displayName,
-  preferredCurrency
+  preferredCurrency,
+  preferredGravityUnit
 }: {
   displayName: string;
   preferredCurrency: SupportedCurrency;
+  preferredGravityUnit: PreferredGravityUnit;
 }) => {
   const user = await requireUser();
-  return updateProfile({ userId: user.id, displayName, preferredCurrency });
+  return updateProfile({ userId: user.id, displayName, preferredCurrency, preferredGravityUnit });
 };
 
 export const oauthFinalize = async (payload: {
