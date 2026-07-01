@@ -5,7 +5,7 @@ type FooterLink = { href: string; label: string };
 
 const columns: { title: string; links: FooterLink[] }[] = [
   {
-    title: "Рабочая зона",
+    title: "Мастерская",
     links: [
       { href: "/app", label: "Обзор" },
       { href: "/app/recipes", label: "Мои рецепты" },

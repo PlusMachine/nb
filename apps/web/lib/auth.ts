@@ -73,7 +73,13 @@ export const getSessionUser = async () => {
 export const requireUser = async () => {
   const user = await getSessionUser();
   if (!user) {
-    redirect("/login");
+    // Возвращаем пользователя туда, куда он шёл: путь берём из заголовка,
+    // который проставляет middleware (safe-проверка на login-стороне).
+    const pathname = (await headers()).get("x-pathname");
+    const next = pathname && pathname.startsWith("/") && !pathname.startsWith("//")
+      ? `?next=${encodeURIComponent(pathname)}`
+      : "";
+    redirect(`/login${next}`);
   }
   return user;
 };

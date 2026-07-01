@@ -1,19 +1,34 @@
 import Link from "next/link";
-import { BookOpen, Calculator, Clock, FlaskConical, Sparkles } from "lucide-react";
+import { redirect } from "next/navigation";
+import { Beer, BookOpen, Boxes, Calculator, ClipboardList, Clock, FlaskConical, Sparkles } from "lucide-react";
 import { listFeaturedArticles } from "@nb/content";
 
 import { ArticleCard } from "@/components/content/article-card";
+import { getSessionUser } from "@/lib/auth";
 import { listFeaturedContentArticles } from "@/features/content-articles/service";
 import { contentArticleTypeLabels } from "@/features/content-articles/contracts";
 
+// Рабочая петля мастерской — шаги читаются порядком и иконками, без пояснений.
+const loopSteps = [
+  { label: "Склад", icon: Boxes },
+  { label: "Рецепт", icon: FlaskConical },
+  { label: "Варка", icon: Beer },
+  { label: "Журнал", icon: ClipboardList }
+];
+
 const entryTiles = [
   { href: "/guides", label: "Гайды", icon: BookOpen },
-  { href: "/recipes", label: "Рецепты", icon: FlaskConical },
   { href: "/bjcp", label: "Стили BJCP", icon: Sparkles },
   { href: "/calculators", label: "Калькуляторы", icon: Calculator }
 ];
 
 export default async function HomePage() {
+  // Залогиненному главная не нужна — его дом это мастерская (единый app-хром).
+  const user = await getSessionUser();
+  if (user) {
+    redirect("/app");
+  }
+
   const [featuredGuides, featuredArticles] = await Promise.all([
     listFeaturedContentArticles(3),
     listFeaturedArticles()
@@ -25,22 +40,22 @@ export default async function HomePage() {
         <div className="space-y-6">
           <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-zinc-500">Домашнее пивоварение</p>
           <h1 className="max-w-4xl text-balance text-4xl font-semibold leading-[0.98] text-zinc-950 sm:text-5xl lg:text-6xl" style={{ fontFamily: "var(--font-display)" }}>
-            Гайды, рецепты и инструменты для домашней варки
+            Свари своё пиво — от рецепта до розлива
           </h1>
           <p className="max-w-2xl text-pretty text-lg leading-8 text-zinc-600">
-            Пошаговые материалы, разборы стилей BJCP, калькуляторы и сообщество рецептов — от первого затора до розлива.
+            Соберите рецепт из своего склада, сварите по пошаговому плану и ведите журнал варок. Гайды, стили BJCP и калькуляторы — рядом, когда нужны.
           </p>
           <div className="flex flex-wrap gap-3">
-            <Link href="/guides" className="inline-flex items-center rounded-full bg-zinc-950 px-5 py-3 text-sm font-semibold text-white">
-              Читать гайды
+            <Link href="/login?next=/app/recipes/new" className="inline-flex items-center rounded-full bg-zinc-950 px-5 py-3 text-sm font-semibold text-white">
+              Собрать рецепт
             </Link>
-            <Link href="/recipes" className="inline-flex items-center rounded-full border border-zinc-200 bg-white px-5 py-3 text-sm font-semibold text-zinc-800">
-              Рецепты сообщества
+            <Link href="/guides" className="inline-flex items-center rounded-full border border-zinc-200 bg-white px-5 py-3 text-sm font-semibold text-zinc-800">
+              Читать гайды
             </Link>
           </div>
         </div>
 
-        <div className="mt-10 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="mt-10 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
           {entryTiles.map((tile) => (
             <Link
               key={tile.href}
@@ -53,6 +68,34 @@ export default async function HomePage() {
               <span className="text-base font-semibold text-zinc-950">{tile.label}</span>
             </Link>
           ))}
+        </div>
+      </section>
+
+      <section className="space-y-5">
+        <div className="flex items-end justify-between gap-4">
+          <h2 className="text-3xl font-semibold text-zinc-950" style={{ fontFamily: "var(--font-display)" }}>
+            Как работает мастерская
+          </h2>
+          <Link href="/login?next=/app/recipes/new" className="text-sm font-semibold text-zinc-950">Начать</Link>
+        </div>
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          {loopSteps.map((step, index) => {
+            const Icon = step.icon;
+            return (
+              <div
+                key={step.label}
+                className="flex items-center gap-3 rounded-2xl border border-zinc-200 bg-white p-4 shadow-sm"
+              >
+                <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-zinc-900 text-white">
+                  <Icon className="h-5 w-5" aria-hidden />
+                </span>
+                <span className="flex items-baseline gap-2">
+                  <span className="text-xs font-semibold tabular-nums text-zinc-400">{index + 1}</span>
+                  <span className="text-base font-semibold text-zinc-950">{step.label}</span>
+                </span>
+              </div>
+            );
+          })}
         </div>
       </section>
 

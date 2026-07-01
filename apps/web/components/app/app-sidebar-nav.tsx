@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { Globe, LogOut } from "lucide-react";
+import { LogOut, Shield } from "lucide-react";
 
 import { appNavGroups, isNavItemActive } from "@/lib/navigation";
 import type { SiteHeaderUser } from "@/components/shared/site-header";
@@ -65,14 +65,16 @@ export function AppSidebarNav({ user, onNavigate }: AppSidebarNavProps) {
       </nav>
 
       <div className="mt-2 space-y-1 border-t border-zinc-200/70 pt-2">
-        <Link
-          href="/"
-          onClick={() => onNavigate?.()}
-          className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-zinc-600 transition-colors hover:bg-zinc-100 hover:text-zinc-950"
-        >
-          <Globe className="h-4 w-4 shrink-0" />
-          На сайт
-        </Link>
+        {user.isStaff ? (
+          <Link
+            href="/admin"
+            onClick={() => onNavigate?.()}
+            className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-zinc-600 transition-colors hover:bg-zinc-100 hover:text-zinc-950"
+          >
+            <Shield className="h-4 w-4 shrink-0" />
+            Админка
+          </Link>
+        ) : null}
         <Link
           href="/profile"
           onClick={() => onNavigate?.()}

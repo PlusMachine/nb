@@ -59,14 +59,6 @@ export const isNavItemActive = (pathname: string, item: AppNavItem): boolean => 
   return (item.match ?? []).some((href) => matches(href));
 };
 
-// Справочники живут в публичной зоне (доступны без логина), но для
-// залогиненного открываются внутри сайдбара рабочей зоны — чтобы он не
-// «вылетал» из мастерской. Один контент, два хрома.
-export const referencePathPrefixes = ["/catalog", "/guides", "/bjcp", "/calculators", "/recipes"];
-
-export const isReferencePath = (pathname: string): boolean =>
-  referencePathPrefixes.some((prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`));
-
 export type RecipeTab = { href: string; label: string; exact?: boolean };
 
 // Хаб «Рецепты»: один пункт меню, три поверхности. «Найти» — публичная

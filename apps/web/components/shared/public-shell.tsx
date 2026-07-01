@@ -5,20 +5,19 @@ import { usePathname } from "next/navigation";
 
 import { AppShell } from "@/components/app/app-shell";
 import { SiteHeader, type SiteHeaderUser } from "@/components/shared/site-header";
-import { isReferencePath } from "@/lib/navigation";
 
 type PublicShellProps = {
   user: SiteHeaderUser | null;
   children: React.ReactNode;
 };
 
-// Выбирает хром для публичных роутов: залогиненному на справочниках
-// (каталог / стили / калькуляторы / рецепты сообщества) — сайдбар рабочей
-// зоны; всем остальным (главная, логин, статьи) и анонимам — публичная шапка.
+// Выбирает хром для публичных роутов (app-first): залогиненному — сайдбар
+// рабочей зоны на всех публичных страницах, чтобы навигация не «прыгала»;
+// исключение — /login (форма входа под публичной шапкой). Анонимам — шапка.
 export function PublicShell({ user, children }: PublicShellProps) {
   const pathname = usePathname();
 
-  if (user && isReferencePath(pathname)) {
+  if (user && pathname !== "/login") {
     return <AppShell user={user}>{children}</AppShell>;
   }
 
