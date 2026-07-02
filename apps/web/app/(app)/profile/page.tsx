@@ -1,36 +1,67 @@
+import { Button } from "@nb/ui";
+
+import { NotificationOptIn } from "@/features/notifications/components/notification-opt-in";
 import { requireUser } from "@/lib/auth";
 import { systemCurrencies } from "@/features/system/currency";
 import { gravityUnitLabels, preferredGravityUnits } from "@/features/system/gravity-units";
 
 import { updateSettingsAction } from "../settings/actions";
 
+const inputClassName = "mt-1 h-11 w-full rounded-xl border border-zinc-200 bg-white px-3 text-sm";
+
 export default async function ProfilePage() {
   const user = await requireUser();
 
   return (
-    <section className="space-y-4 rounded-lg border p-4">
-      <h1 className="text-xl font-semibold">Профиль</h1>
-      <div className="space-y-1 text-sm text-zinc-700">
-        {user.email ? <p>Email: {user.email}</p> : null}
-        {user.phone ? <p>Телефон: {user.phone}</p> : null}
-        <p>Role: {user.role}</p>
-      </div>
-      <form action={updateSettingsAction} className="space-y-2">
-        <label className="block text-sm">Display name</label>
-        <input name="displayName" className="w-full rounded border p-2" defaultValue={user.displayName} />
-        <label className="block text-sm">Display currency</label>
-        <select name="preferredCurrency" className="w-full rounded border p-2" defaultValue={user.preferredCurrency}>
-          {systemCurrencies.map((currency) => <option key={currency} value={currency}>{currency}</option>)}
-        </select>
-        <label className="block text-sm">Единица плотности</label>
-        <select name="preferredGravityUnit" className="w-full rounded border p-2" defaultValue={user.preferredGravityUnit}>
-          {preferredGravityUnits.map((unit) => (
-            <option key={unit} value={unit}>{gravityUnitLabels[unit]}</option>
-          ))}
-        </select>
-        <button className="rounded bg-black px-3 py-2 text-white" type="submit">Сохранить</button>
-      </form>
+    <div className="space-y-6">
+      <section className="space-y-1">
+        <h1 className="text-2xl font-semibold text-zinc-950 sm:text-3xl" style={{ fontFamily: "var(--font-display)" }}>
+          Профиль
+        </h1>
+      </section>
+
+      <section className="rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm">
+        <div className="space-y-1 text-sm text-zinc-600">
+          {user.email ? <p>{user.email}</p> : null}
+          {user.phone ? <p>{user.phone}</p> : null}
+          <p className="text-xs uppercase tracking-[0.12em] text-zinc-400">Роль: {user.role}</p>
+        </div>
+      </section>
+
+      <section className="rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm">
+        <h2 className="text-sm font-semibold uppercase tracking-[0.12em] text-zinc-500">Настройки</h2>
+        <form action={updateSettingsAction} className="mt-4 space-y-4">
+          <label className="block text-sm">
+            <span className="font-medium text-zinc-700">Имя</span>
+            <input name="displayName" defaultValue={user.displayName} className={inputClassName} />
+          </label>
+
+          <label className="block text-sm">
+            <span className="font-medium text-zinc-700">Валюта</span>
+            <select name="preferredCurrency" defaultValue={user.preferredCurrency} className={inputClassName}>
+              {systemCurrencies.map((currency) => <option key={currency} value={currency}>{currency}</option>)}
+            </select>
+          </label>
+
+          <label className="block text-sm">
+            <span className="font-medium text-zinc-700">Единица плотности</span>
+            <select name="preferredGravityUnit" defaultValue={user.preferredGravityUnit} className={inputClassName}>
+              {preferredGravityUnits.map((unit) => (
+                <option key={unit} value={unit}>{gravityUnitLabels[unit]}</option>
+              ))}
+            </select>
+          </label>
+
+          <Button type="submit">Сохранить</Button>
+        </form>
+      </section>
+
+      <section className="space-y-3">
+        <h2 className="text-sm font-semibold uppercase tracking-[0.12em] text-zinc-500">Уведомления</h2>
+        <NotificationOptIn />
+      </section>
+
       <p className="text-xs text-zinc-400">Выйти из аккаунта можно через меню профиля в шапке.</p>
-    </section>
+    </div>
   );
 }

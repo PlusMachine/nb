@@ -4,6 +4,7 @@ import React from "react";
 import { useState } from "react";
 import { Plus } from "lucide-react";
 
+import { Button } from "@nb/ui";
 import type {
   IngredientCategory,
   IngredientPickerQuickStartResultByContext,
@@ -41,14 +42,15 @@ export function AddIngredientTrigger({
 
   return (
     <>
-      <button
+      <Button
         type="button"
+        size="md"
         onClick={() => setOpen(true)}
-        className={`${fullWidth ? "w-full justify-center" : ""} inline-flex items-center gap-2 rounded-xl bg-zinc-900 px-5 py-3 text-sm font-semibold text-white shadow-sm transition-all duration-150 hover:bg-zinc-800 hover:shadow-md active:scale-[0.97] ${className ?? ""}`.trim()}
+        className={`${fullWidth ? "w-full justify-center" : ""} ${className ?? ""}`.trim()}
       >
         <Plus className="h-4 w-4" strokeWidth={2.5} />
         Добавить ингредиент
-      </button>
+      </Button>
       <AddIngredientModal
         open={open}
         onClose={() => setOpen(false)}

@@ -33,7 +33,11 @@ export function DeleteInventoryItemButton({ inventoryItemId, displayName, render
             {isPending ? "Удаляем..." : "Удалить ингредиент"}
           </button>
         )}
-      {feedback ? <p className={`text-xs ${feedback.ok ? "text-emerald-700" : "text-red-600"}`}>{feedback.message}</p> : null}
+      {feedback ? (
+        <p role={feedback.ok ? "status" : "alert"} className={`text-xs ${feedback.ok ? "text-emerald-700" : "text-red-600"}`}>
+          {feedback.message}
+        </p>
+      ) : null}
       <ConfirmActionDialog
         open={open}
         title="Удалить ингредиент?"

@@ -80,4 +80,25 @@ describe("App dashboard", () => {
     expect(html).toContain("Можно сварить");
     expect(html).toContain('href="/app/recipes/r-9/edit"');
   });
+
+  it("greets a first-time user with an explicit catalog->inventory->recipe path instead of stats", async () => {
+    mocks.countRecipesForAuthor.mockResolvedValueOnce(0);
+    mocks.getInventorySummaries.mockResolvedValueOnce({ totalItems: 0, inStockItems: 0, emptyItems: 0 });
+    mocks.listActiveBrewBatchesForUser.mockResolvedValueOnce([]);
+    mocks.findBrewableOwnRecipesForUser.mockResolvedValueOnce([]);
+
+    const html = renderToStaticMarkup(await AppZonePage());
+
+    expect(html).toContain("Добро пожаловать, Brewer");
+    expect(html).not.toContain("С возвращением");
+    // zero stats carry no value for a brand-new account
+    expect(html).not.toContain("Всего позиций");
+
+    const catalogIndex = html.indexOf('href="/catalog"');
+    const inventoryIndex = html.indexOf('href="/app/ingredients"');
+    const recipeIndex = html.indexOf('href="/app/recipes/new"');
+    expect(catalogIndex).toBeGreaterThan(-1);
+    expect(catalogIndex).toBeLessThan(inventoryIndex);
+    expect(inventoryIndex).toBeLessThan(recipeIndex);
+  });
 });

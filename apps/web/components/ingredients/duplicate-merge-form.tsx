@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 
+import { Button } from "@nb/ui";
 import { IngredientPicker } from "@/components/ingredients/ingredient-picker";
 import { resolveIngredientPrimaryDisplayName } from "@/features/ingredients/presentation";
 
@@ -76,13 +77,13 @@ export const DuplicateMergeForm = ({ initialSource = null, initialTarget = null 
       />
 
       {source && target && source === target ? (
-        <p className="text-sm text-rose-600">Source и target не могут быть одной и той же карточкой.</p>
+        <p role="alert" className="text-sm text-rose-600">Source и target не могут быть одной и той же карточкой.</p>
       ) : null}
 
-      {error ? <p className="text-sm text-rose-600">{error}</p> : null}
+      {error ? <p role="alert" className="text-sm text-rose-600">{error}</p> : null}
 
-      <button
-        className="rounded-xl bg-zinc-950 px-4 py-2.5 text-sm font-medium text-white disabled:cursor-not-allowed disabled:bg-zinc-300"
+      <Button
+        size="md"
         onClick={async () => {
           if (isInvalidSelection) {
             return;
@@ -113,7 +114,7 @@ export const DuplicateMergeForm = ({ initialSource = null, initialTarget = null 
         disabled={isInvalidSelection || isSubmitting}
       >
         {isSubmitting ? "Сливаем..." : "Объединить"}
-      </button>
+      </Button>
     </section>
   );
 };

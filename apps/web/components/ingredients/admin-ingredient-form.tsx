@@ -2,6 +2,8 @@
 
 import { useMemo, useState } from "react";
 
+import { Button } from "@nb/ui";
+
 import type {
   IngredientAliasDto,
   IngredientCatalogItemDto,
@@ -356,7 +358,7 @@ export const AdminIngredientForm = ({ initial }: { initial?: IngredientFormValue
         <p className="text-sm text-zinc-600">
           Форма работает с новой моделью `ingredients`, а aliases/sources/package variants редактируются как source-of-truth.
         </p>
-        {error ? <p className="text-sm text-red-600">{error}</p> : null}
+        {error ? <p role="alert" className="text-sm text-red-600">{error}</p> : null}
       </header>
 
       <section className={sectionClassName}>
@@ -568,9 +570,9 @@ export const AdminIngredientForm = ({ initial }: { initial?: IngredientFormValue
       </section>
 
       <div className="flex gap-3">
-        <button type="submit" className="rounded-lg bg-zinc-950 px-4 py-2 text-sm font-medium text-white">
+        <Button type="submit" size="md">
           {initial?.id ? "Save ingredient" : "Create ingredient"}
-        </button>
+        </Button>
         <a href="/admin/ingredients" className="rounded-lg border border-zinc-300 px-4 py-2 text-sm text-zinc-700">
           Cancel
         </a>

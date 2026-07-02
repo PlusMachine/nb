@@ -2,10 +2,11 @@
 
 import React from "react";
 import { useEffect, useRef, useState } from "react";
-import { createPortal } from "react-dom";
 import { useRouter } from "next/navigation";
+import { Dialog, DialogCloseButton, DialogHeader } from "@nb/ui";
 
 import { addCustomIngredientAction, addSelectedIngredientAction, type AddIngredientResult } from "@/app/(app)/app/ingredients/actions";
+import { ConfirmActionDialog } from "@/components/shared/confirm-action-dialog";
 import type {
   IngredientCategory,
   IngredientPickerQuickStartResultByContext,
@@ -76,14 +77,6 @@ export const applyAddIngredientSuccessEffects = (
   onClose();
   refresh();
 };
-
-export const shouldCloseAddIngredientModalFromBackdropInteraction = ({
-  pointerDownStartedOnBackdrop,
-  clickFinishedOnBackdrop
-}: {
-  pointerDownStartedOnBackdrop: boolean;
-  clickFinishedOnBackdrop: boolean;
-}) => pointerDownStartedOnBackdrop && clickFinishedOnBackdrop;
 
 export const applyAddIngredientImmediateControlAction = ({
   event,
@@ -253,16 +246,34 @@ export const resolveAddIngredientStartContext = ({
   };
 };
 
-export function AddIngredientModal({
-  open,
-  onClose,
+type BodyProps = {
+  preferredCurrency?: SystemCurrency;
+  initialSelection?: IngredientSuggestionItem | null;
+  initialCategory?: IngredientCategory | null;
+  initialSubtype?: Extract<IngredientSubtype, "malt" | "fermentable"> | null;
+  initialGroup?: string | null;
+  initialQuickStartDataByContext?: IngredientPickerQuickStartResultByContext | null;
+  onClose: () => void;
+  /** Не сохранённые данные — для guard'а Dialog-обёртки (закрыть без подтверждения?). */
+  onDirtyChange?: (dirty: boolean) => void;
+};
+
+/**
+ * Содержимое add-ingredient флоу: сетка категорий, переключатель каталог/свой,
+ * форма выбора/создания ингредиента. Вынесено из {@link AddIngredientModal}, чтобы
+ * тестироваться напрямую через renderToStaticMarkup — Radix Dialog Portal рендерится
+ * только на клиенте после монтирования и недоступен в SSR-рендере тестов.
+ */
+export function AddIngredientModalBody({
   preferredCurrency = "RUB",
   initialSelection = null,
   initialCategory = null,
   initialSubtype = null,
   initialGroup = null,
-  initialQuickStartDataByContext = null
-}: Props) {
+  initialQuickStartDataByContext = null,
+  onClose,
+  onDirtyChange
+}: BodyProps) {
   const router = useRouter();
   const [catalogCategory, setCatalogCategory] = useState<IngredientCategory | null>(() => resolveAddIngredientStartContext({
     initialSelection,
@@ -310,61 +321,12 @@ export function AddIngredientModal({
   const [result, setResult] = useState<AddIngredientResult | null>(null);
   const [pending, setPending] = useState(false);
   const [selectedIngredient, setSelectedIngredient] = useState<IngredientSuggestionItem | null>(initialSelection);
-  const backdropPointerDownStartedRef = useRef(false);
-  const [mounted, setMounted] = useState(false);
+  const [catalogFormDirty, setCatalogFormDirty] = useState(false);
+  const [customFormDirty, setCustomFormDirty] = useState(false);
 
   useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  useEffect(() => {
-    if (!open) {
-      return;
-    }
-
-    const handleEscape = (event: KeyboardEvent) => {
-      if (event.key === "Escape") {
-        event.preventDefault();
-        onClose();
-      }
-    };
-
-    document.addEventListener("keydown", handleEscape);
-    document.body.style.overflow = "hidden";
-    return () => {
-      document.removeEventListener("keydown", handleEscape);
-      document.body.style.overflow = "";
-    };
-  }, [open, onClose]);
-
-  useEffect(() => {
-    if (!open) {
-      return;
-    }
-
-    const startContext = resolveAddIngredientStartContext({
-      initialSelection,
-      initialCategory,
-      initialSubtype,
-      initialGroup,
-      rememberedCategoryValue: readStoredAddIngredientCategoryValue()
-    });
-
-    setCatalogCategory(startContext.category);
-    setCatalogSubtype(startContext.subtype);
-    setCatalogGroup(startContext.group);
-    setCustomCategory(startContext.category);
-    setCustomSubtype(startContext.subtype);
-    setCustomGroup(startContext.group);
-    setMode("catalog");
-    setSelectedIngredient(initialSelection);
-    setResult(null);
-    setPending(false);
-  }, [initialCategory, initialGroup, initialSelection, initialSubtype, open]);
-
-  if (!open) {
-    return null;
-  }
+    onDirtyChange?.(mode === "catalog" ? catalogFormDirty : customFormDirty);
+  }, [onDirtyChange, mode, catalogFormDirty, customFormDirty]);
 
   const selectedCategoryValue: InventoryIngredientCategoryValue | null = mode === "catalog"
     ? resolveInventoryIngredientCategoryValue({ category: catalogCategory, subtype: catalogSubtype, group: catalogGroup })
@@ -429,166 +391,190 @@ export function AddIngredientModal({
     ? resolveInventoryIngredientContextSummaryFromSuggestion(selectedIngredient)
     : null;
 
-  const modalContent = (
-    <div
-      className="animate-modal-backdrop fixed inset-0 z-[100] flex items-end justify-center bg-zinc-950/50 backdrop-blur-[2px] sm:items-center sm:p-4"
-      role="dialog"
-      aria-modal="true"
-      aria-label="Добавить ингредиент"
-      onPointerDown={(event) => {
-        backdropPointerDownStartedRef.current = event.target === event.currentTarget;
-      }}
-      onClick={(event) => {
-        if (shouldCloseAddIngredientModalFromBackdropInteraction({
-          pointerDownStartedOnBackdrop: backdropPointerDownStartedRef.current,
-          clickFinishedOnBackdrop: event.target === event.currentTarget
-        })) {
-          onClose();
-        }
+  return (
+    <div className="space-y-4" data-testid="add-ingredient-modal">
+      {showSelectionStageChrome ? (
+        <>
+          <InventoryIngredientCategoryGrid
+            value={selectedCategoryValue}
+            onChange={handleCategoryChange}
+            testId="add-ingredient-category-grid"
+          />
 
-        backdropPointerDownStartedRef.current = false;
-      }}
-    >
-      <div className="animate-modal-content relative z-[101] max-h-[94vh] w-full overflow-y-auto rounded-t-2xl bg-white shadow-2xl ring-1 ring-black/[0.06] sm:max-w-2xl sm:rounded-2xl" data-testid="add-ingredient-modal">
-        <div className="sticky top-0 z-10 flex items-center justify-between border-b border-zinc-100 bg-white/95 px-5 py-4 backdrop-blur-sm sm:rounded-t-2xl">
-          <h2 className="text-base font-semibold text-zinc-900">Добавить ингредиент</h2>
-          <button
-            type="button"
-            onClick={onClose}
-            className="flex h-8 w-8 items-center justify-center rounded-lg text-zinc-400 transition-colors hover:bg-zinc-100 hover:text-zinc-600"
-            aria-label="Закрыть"
-          >
-            <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
-          </button>
-        </div>
+          <div className="grid grid-cols-2 gap-1 rounded-xl bg-zinc-100 p-1 text-sm" data-testid="add-ingredient-mode-switch">
+            <button
+              type="button"
+              onPointerDown={(event) => applyAddIngredientImmediateControlAction({
+                event,
+                action: () => setMode("catalog")
+              })}
+              onClick={(event) => {
+                if (!shouldApplyAddIngredientControlActionOnClick({ detail: event.detail })) {
+                  return;
+                }
 
-        <div className="p-5">
+                setMode("catalog");
+              }}
+              className={`rounded-lg px-3 py-2 font-medium transition-all duration-150 ${mode === "catalog" ? "bg-white text-zinc-900 shadow-sm" : "text-zinc-500 hover:text-zinc-700"}`}
+            >
+              Из каталога
+            </button>
+            <button
+              type="button"
+              onPointerDown={(event) => applyAddIngredientImmediateControlAction({
+                event,
+                action: () => setMode("custom")
+              })}
+              onClick={(event) => {
+                if (!shouldApplyAddIngredientControlActionOnClick({ detail: event.detail })) {
+                  return;
+                }
 
-        <div className="space-y-4">
-          {showSelectionStageChrome ? (
-            <>
-              <InventoryIngredientCategoryGrid
-                value={selectedCategoryValue}
-                onChange={handleCategoryChange}
-                testId="add-ingredient-category-grid"
-              />
-
-              <div className="grid grid-cols-2 gap-1 rounded-xl bg-zinc-100 p-1 text-sm" data-testid="add-ingredient-mode-switch">
-                <button
-                  type="button"
-                  onPointerDown={(event) => applyAddIngredientImmediateControlAction({
-                    event,
-                    action: () => setMode("catalog")
-                  })}
-                  onClick={(event) => {
-                    if (!shouldApplyAddIngredientControlActionOnClick({ detail: event.detail })) {
-                      return;
-                    }
-
-                    setMode("catalog");
-                  }}
-                  className={`rounded-lg px-3 py-2 font-medium transition-all duration-150 ${mode === "catalog" ? "bg-white text-zinc-900 shadow-sm" : "text-zinc-500 hover:text-zinc-700"}`}
-                >
-                  Из каталога
-                </button>
-                <button
-                  type="button"
-                  onPointerDown={(event) => applyAddIngredientImmediateControlAction({
-                    event,
-                    action: () => setMode("custom")
-                  })}
-                  onClick={(event) => {
-                    if (!shouldApplyAddIngredientControlActionOnClick({ detail: event.detail })) {
-                      return;
-                    }
-
-                    setMode("custom");
-                  }}
-                  className={`rounded-lg px-3 py-2 font-medium transition-all duration-150 ${mode === "custom" ? "bg-white text-zinc-900 shadow-sm" : "text-zinc-500 hover:text-zinc-700"}`}
-                >
-                  Добавить свой
-                </button>
-              </div>
-            </>
-          ) : null}
-
-          {result && <p className={`text-sm ${result.ok ? "text-green-700" : "text-red-600"}`}>{result.message}</p>}
-
-          {selectedIngredientContextSummary ? (
-            <InventoryIngredientContextSummary
-              summary={selectedIngredientContextSummary}
-              testId="add-ingredient-context-summary"
-            />
-          ) : null}
-
-          <div>
-            {mode === "catalog" && catalogCategory ? (
-              <CatalogIngredientForm
-                category={catalogCategory}
-                subtype={catalogSubtype}
-                initialQuickStartData={initialQuickStartData}
-                forcedGroup={catalogGroup}
-                preferredCurrency={preferredCurrency}
-                pending={pending}
-                autoFocus
-                initialSelection={initialSelection}
-                fieldErrors={result?.fieldErrors}
-                selectionActionLabel="Изменить выбор"
-                onSubtypeChange={setCatalogSubtype}
-                onGroupChange={setCatalogGroup}
-                onSelectedIngredientChange={setSelectedIngredient}
-                onRequestCustom={() => {
-                  setSelectedIngredient(null);
-                  setMode("custom");
-                }}
-                onSubmit={async (payload) => {
-                  setPending(true);
-                  const formData = new FormData();
-                  appendPayloadToFormData(formData, payload);
-                  const nextResult = await addSelectedIngredientAction(null, formData);
-                  setPending(false);
-                  handleSuccess(nextResult);
-                }}
-              />
-            ) : null}
-
-            {mode === "custom" && customCategory ? (
-              <CustomIngredientPanel
-                category={customCategory}
-                initialSubtype={customSubtype}
-                preferredCurrency={preferredCurrency}
-                pending={pending}
-                fieldErrors={result?.fieldErrors}
-                onSubmitCreate={async (payload) => {
-                  setPending(true);
-                  const formData = new FormData();
-                  appendPayloadToFormData(formData, payload);
-                  const nextResult = await addCustomIngredientAction(null, formData);
-                  setPending(false);
-                  handleSuccess(nextResult);
-                }}
-              />
-            ) : null}
-
-            {((mode === "catalog" && !catalogCategory) || (mode === "custom" && !customCategory)) ? (
-              <div className="flex h-full min-h-[18rem] items-center justify-center rounded-xl border border-dashed border-zinc-200 bg-zinc-50/50 px-4 text-center text-sm text-zinc-500">
-                Выберите категорию, и после этого появится {mode === "catalog" ? "поиск" : "форма создания своего ингредиента"}.
-              </div>
-            ) : null}
+                setMode("custom");
+              }}
+              className={`rounded-lg px-3 py-2 font-medium transition-all duration-150 ${mode === "custom" ? "bg-white text-zinc-900 shadow-sm" : "text-zinc-500 hover:text-zinc-700"}`}
+            >
+              Добавить свой
+            </button>
           </div>
-        </div>
-        </div>
+        </>
+      ) : null}
+
+      {result && (
+        <p role={result.ok ? "status" : "alert"} className={`text-sm ${result.ok ? "text-green-700" : "text-red-600"}`}>
+          {result.message}
+        </p>
+      )}
+
+      {selectedIngredientContextSummary ? (
+        <InventoryIngredientContextSummary
+          summary={selectedIngredientContextSummary}
+          testId="add-ingredient-context-summary"
+        />
+      ) : null}
+
+      <div>
+        {mode === "catalog" && catalogCategory ? (
+          <CatalogIngredientForm
+            category={catalogCategory}
+            subtype={catalogSubtype}
+            initialQuickStartData={initialQuickStartData}
+            forcedGroup={catalogGroup}
+            preferredCurrency={preferredCurrency}
+            pending={pending}
+            autoFocus
+            initialSelection={initialSelection}
+            fieldErrors={result?.fieldErrors}
+            selectionActionLabel="Изменить выбор"
+            onSubtypeChange={setCatalogSubtype}
+            onGroupChange={setCatalogGroup}
+            onSelectedIngredientChange={setSelectedIngredient}
+            onDirtyChange={setCatalogFormDirty}
+            onRequestCustom={() => {
+              setSelectedIngredient(null);
+              setMode("custom");
+            }}
+            onSubmit={async (payload) => {
+              setPending(true);
+              const formData = new FormData();
+              appendPayloadToFormData(formData, payload);
+              const nextResult = await addSelectedIngredientAction(null, formData);
+              setPending(false);
+              handleSuccess(nextResult);
+            }}
+          />
+        ) : null}
+
+        {mode === "custom" && customCategory ? (
+          <CustomIngredientPanel
+            category={customCategory}
+            initialSubtype={customSubtype}
+            preferredCurrency={preferredCurrency}
+            pending={pending}
+            fieldErrors={result?.fieldErrors}
+            onDirtyChange={setCustomFormDirty}
+            onSubmitCreate={async (payload) => {
+              setPending(true);
+              const formData = new FormData();
+              appendPayloadToFormData(formData, payload);
+              const nextResult = await addCustomIngredientAction(null, formData);
+              setPending(false);
+              handleSuccess(nextResult);
+            }}
+          />
+        ) : null}
+
+        {((mode === "catalog" && !catalogCategory) || (mode === "custom" && !customCategory)) ? (
+          <div className="flex h-full min-h-[18rem] items-center justify-center rounded-xl border border-dashed border-zinc-200 bg-zinc-50/50 px-4 text-center text-sm text-zinc-500">
+            Выберите категорию, и после этого появится {mode === "catalog" ? "поиск" : "форма создания своего ингредиента"}.
+          </div>
+        ) : null}
       </div>
     </div>
   );
+}
 
-  if (typeof window === "undefined") {
-    return modalContent;
-  }
+export function AddIngredientModal({
+  open,
+  onClose,
+  preferredCurrency,
+  initialSelection,
+  initialCategory,
+  initialSubtype,
+  initialGroup,
+  initialQuickStartDataByContext
+}: Props) {
+  const dirtyRef = useRef(false);
+  const [closeConfirmOpen, setCloseConfirmOpen] = useState(false);
 
-  if (!mounted) {
-    return null;
-  }
+  return (
+    <>
+      <Dialog
+        open={open}
+        onOpenChange={(next) => {
+          if (!next) {
+            onClose();
+          }
+        }}
+        title="Добавить ингредиент"
+        size="lg"
+        guard={{
+          isDirty: () => dirtyRef.current,
+          onGuardedClose: () => setCloseConfirmOpen(true)
+        }}
+      >
+        <DialogHeader>
+          <h2 className="text-base font-semibold text-zinc-900">Добавить ингредиент</h2>
+          <DialogCloseButton />
+        </DialogHeader>
+        <div className="p-5">
+          <AddIngredientModalBody
+            preferredCurrency={preferredCurrency}
+            initialSelection={initialSelection}
+            initialCategory={initialCategory}
+            initialSubtype={initialSubtype}
+            initialGroup={initialGroup}
+            initialQuickStartDataByContext={initialQuickStartDataByContext}
+            onClose={onClose}
+            onDirtyChange={(dirty) => {
+              dirtyRef.current = dirty;
+            }}
+          />
+        </div>
+      </Dialog>
 
-  return createPortal(modalContent, document.body);
+      <ConfirmActionDialog
+        open={closeConfirmOpen}
+        title="Закрыть без сохранения?"
+        description="Введённые данные будут потеряны."
+        confirmLabel="Закрыть"
+        tone="danger"
+        onConfirm={() => {
+          setCloseConfirmOpen(false);
+          onClose();
+        }}
+        onClose={() => setCloseConfirmOpen(false)}
+      />
+    </>
+  );
 }

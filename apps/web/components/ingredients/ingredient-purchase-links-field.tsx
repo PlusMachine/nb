@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { Pencil, Plus, Trash2 } from "lucide-react";
+import { Button } from "@nb/ui";
 import { listIngredientPurchaseLinksAction } from "@/app/(app)/app/ingredients/metadata-actions";
 import type { UserIngredientReference } from "@/features/ingredients/contracts";
 import {
@@ -242,20 +243,12 @@ export function IngredientPurchaseLinksField({
                     </div>
                   ) : null}
                   <div className="flex flex-wrap gap-2">
-                    <button
-                      type="button"
-                      onClick={saveDraft}
-                      className="rounded-xl bg-zinc-900 px-3 py-2 text-sm font-medium text-white"
-                    >
+                    <Button type="button" size="sm" onClick={saveDraft}>
                       Готово
-                    </button>
-                    <button
-                      type="button"
-                      onClick={cancelDraft}
-                      className="rounded-xl border border-zinc-200 px-3 py-2 text-sm font-medium text-zinc-700"
-                    >
+                    </Button>
+                    <Button type="button" variant="outline" size="sm" onClick={cancelDraft}>
                       Отмена
-                    </button>
+                    </Button>
                   </div>
                 </div>
               );
@@ -328,27 +321,21 @@ export function IngredientPurchaseLinksField({
             </div>
           ) : null}
           <div className="flex flex-wrap gap-2">
-            <button
-              type="button"
-              onClick={saveDraft}
-              className="rounded-xl bg-zinc-900 px-3 py-2 text-sm font-medium text-white"
-            >
+            <Button type="button" size="sm" onClick={saveDraft}>
               Готово
-            </button>
-            <button
-              type="button"
-              onClick={cancelDraft}
-              className="rounded-xl border border-zinc-200 px-3 py-2 text-sm font-medium text-zinc-700"
-            >
+            </Button>
+            <Button type="button" variant="outline" size="sm" onClick={cancelDraft}>
               Отмена
-            </button>
+            </Button>
           </div>
         </div>
       ) : null}
 
       {!isLoading && draft == null ? (
-        <button
+        <Button
           type="button"
+          variant="outline"
+          size="sm"
           onClick={() => {
             setDraft({
               mode: "new",
@@ -356,15 +343,14 @@ export function IngredientPurchaseLinksField({
             });
             setDraftError(null);
           }}
-          className="inline-flex items-center gap-2 rounded-xl border border-zinc-200 bg-white px-3 py-2 text-sm font-medium text-zinc-700 transition-colors hover:bg-zinc-100"
         >
           <Plus className="h-4 w-4" />
           Добавить ссылку
-        </button>
+        </Button>
       ) : null}
 
-      {draftError ? <p className="text-sm text-red-600">{draftError}</p> : null}
-      {message ? <p className="text-sm text-red-600">{message}</p> : null}
+      {draftError ? <p role="alert" className="text-sm text-red-600">{draftError}</p> : null}
+      {message ? <p role="alert" className="text-sm text-red-600">{message}</p> : null}
     </section>
   );
 }

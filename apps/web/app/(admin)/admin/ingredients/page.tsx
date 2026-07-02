@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { ArrowRightLeft, Plus, ShieldAlert } from "lucide-react";
 
+import { Button } from "@nb/ui";
 import { DeleteCatalogIngredientButton } from "@/components/ingredients/delete-catalog-ingredient-button";
 import { CountryFlagLabel } from "@/components/shared/country-flag";
 import {
@@ -348,9 +349,9 @@ export default async function AdminIngredientsPage({ searchParams }: Props) {
             ))}
           </select>
           <div className="flex gap-2">
-            <button className="h-11 rounded-xl bg-zinc-950 px-4 text-sm font-medium text-white" type="submit">
+            <Button type="submit" size="md">
               Применить
-            </button>
+            </Button>
             <Link
               href="/admin/ingredients"
               className="inline-flex h-11 items-center rounded-xl border border-zinc-200 px-4 text-sm text-zinc-600"

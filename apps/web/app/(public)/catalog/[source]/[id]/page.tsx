@@ -7,6 +7,7 @@ import { IngredientFavoriteToggle } from "@/components/ingredients/ingredient-fa
 import { IngredientPurchaseLinksEditor } from "@/components/ingredients/ingredient-purchase-links-manager";
 import { CountryFlagLabel } from "@/components/shared/country-flag";
 import { getUserCatalogIngredientByRef } from "@/features/ingredients/catalog-service";
+import { buildIngredientCatalogActionHref } from "@/features/ingredients/catalog-links";
 import type { IngredientTechnicalData } from "@/features/ingredients/contracts";
 import {
   formatIngredientSubtypeLabel,
@@ -20,12 +21,6 @@ import {
   sanitizeIngredientColorValue
 } from "@/features/ingredients/technical-fields";
 import { getSessionUser } from "@/lib/auth";
-
-const buildActionHref = (
-  pathname: "/app/ingredients" | "/app/recipes/new",
-  source: "catalog" | "custom",
-  id: string
-) => `${pathname}?addSource=${source}&addId=${id}`;
 
 const formatValue = (value: number) => value % 1 === 0 ? String(value) : value.toFixed(1).replace(/\.0$/, "");
 
@@ -276,10 +271,10 @@ export default async function IngredientDetailPage({
 
           {canManage ? (
             <div className="grid gap-2 sm:grid-cols-2 xl:w-[360px]">
-              <Link href={buildActionHref("/app/ingredients", item.source, item.id)} className="inline-flex h-11 items-center justify-center rounded-xl bg-zinc-950 px-4 text-sm font-medium text-white">
+              <Link href={buildIngredientCatalogActionHref("/app/ingredients", item.source, item.id)} className="inline-flex h-11 items-center justify-center rounded-xl bg-zinc-950 px-4 text-sm font-medium text-white">
                 Добавить на склад
               </Link>
-              <Link href={buildActionHref("/app/recipes/new", item.source, item.id)} className="inline-flex h-11 items-center justify-center rounded-xl border border-zinc-200 bg-white px-4 text-sm font-medium text-zinc-700 transition-colors hover:bg-zinc-50">
+              <Link href={buildIngredientCatalogActionHref("/app/recipes/new", item.source, item.id)} className="inline-flex h-11 items-center justify-center rounded-xl border border-zinc-200 bg-white px-4 text-sm font-medium text-zinc-700 transition-colors hover:bg-zinc-50">
                 Использовать в рецепте
               </Link>
               {item.source === "catalog" ? (
@@ -303,7 +298,7 @@ export default async function IngredientDetailPage({
             </div>
           ) : (
             <div className="grid gap-2 xl:w-[360px]">
-              <Link href="/login" className="inline-flex h-11 items-center justify-center rounded-xl bg-zinc-950 px-4 text-sm font-medium text-white">
+              <Link href={`/login?next=${encodeURIComponent(`/catalog/${source}/${id}`)}`} className="inline-flex h-11 items-center justify-center rounded-xl bg-zinc-950 px-4 text-sm font-medium text-white">
                 Войти, чтобы добавить
               </Link>
               <p className="text-xs leading-5 text-zinc-500">

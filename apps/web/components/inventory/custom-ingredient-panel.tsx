@@ -17,6 +17,8 @@ type Props = {
   pending: boolean;
   fieldErrors?: Record<string, string>;
   onSubmitCreate: (payload: CustomIngredientSubmitPayload) => Promise<void>;
+  /** Не сохранённые данные — для guard'а модалки-обёртки (закрыть без подтверждения?). */
+  onDirtyChange?: (dirty: boolean) => void;
 };
 
 export function CustomIngredientPanel({
@@ -25,7 +27,8 @@ export function CustomIngredientPanel({
   preferredCurrency,
   pending,
   fieldErrors,
-  onSubmitCreate
+  onSubmitCreate,
+  onDirtyChange
 }: Props) {
   return (
     <div data-testid="custom-ingredient-create-panel">
@@ -36,6 +39,7 @@ export function CustomIngredientPanel({
         pending={pending}
         fieldErrors={fieldErrors}
         onSubmit={onSubmitCreate}
+        onDirtyChange={onDirtyChange}
       />
     </div>
   );

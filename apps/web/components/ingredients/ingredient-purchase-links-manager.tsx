@@ -2,8 +2,8 @@
 
 import React from "react";
 import { useEffect, useMemo, useState, useTransition } from "react";
-import { createPortal } from "react-dom";
-import { ExternalLink, Pencil, Plus, Trash2, X } from "lucide-react";
+import { ExternalLink, Pencil, Plus, Trash2 } from "lucide-react";
+import { Button, Dialog, DialogCloseButton } from "@nb/ui";
 import {
   createIngredientPurchaseLinkAction,
   deleteIngredientPurchaseLinkAction,
@@ -371,21 +371,12 @@ export function IngredientPurchaseLinksEditor({
                     </div>
                   ) : null}
                   <div className="flex flex-wrap gap-2">
-                    <button
-                      type="button"
-                      onClick={saveDraft}
-                      disabled={isPending}
-                      className="rounded-xl bg-zinc-900 px-3 py-2 text-sm font-medium text-white disabled:opacity-60"
-                    >
+                    <Button type="button" size="sm" onClick={saveDraft} disabled={isPending}>
                       {isPending ? "Сохраняем..." : "Сохранить"}
-                    </button>
-                    <button
-                      type="button"
-                      onClick={cancelEdit}
-                      className="rounded-xl border border-zinc-200 px-3 py-2 text-sm font-medium text-zinc-700"
-                    >
+                    </Button>
+                    <Button type="button" variant="outline" size="sm" onClick={cancelEdit}>
                       Отмена
-                    </button>
+                    </Button>
                   </div>
                 </div>
               );
@@ -453,21 +444,12 @@ export function IngredientPurchaseLinksEditor({
             </div>
           ) : null}
           <div className="flex flex-wrap gap-2">
-            <button
-              type="button"
-              onClick={saveDraft}
-              disabled={isPending}
-              className="rounded-xl bg-zinc-900 px-3 py-2 text-sm font-medium text-white disabled:opacity-60"
-            >
+            <Button type="button" size="sm" onClick={saveDraft} disabled={isPending}>
               {isPending ? "Сохраняем..." : "Добавить"}
-            </button>
-            <button
-              type="button"
-              onClick={cancelEdit}
-              className="rounded-xl border border-zinc-200 px-3 py-2 text-sm font-medium text-zinc-700"
-            >
+            </Button>
+            <Button type="button" variant="outline" size="sm" onClick={cancelEdit}>
               Отмена
-            </button>
+            </Button>
           </div>
         </div>
       ) : null}
@@ -483,7 +465,7 @@ export function IngredientPurchaseLinksEditor({
         </button>
       ) : null}
 
-      {message ? <p className="text-sm text-red-600">{message}</p> : null}
+      {message ? <p role="alert" className="text-sm text-red-600">{message}</p> : null}
     </div>
   );
 }
@@ -505,77 +487,30 @@ export function IngredientPurchaseLinksDialog({
   autoStartCreateWhenEmpty = false,
   title = "Ссылки на покупку"
 }: IngredientPurchaseLinksDialogProps) {
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  useEffect(() => {
-    if (!open) {
-      return undefined;
-    }
-
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") {
-        onClose();
-      }
-    };
-
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [open, onClose]);
-
-  if (!open) {
-    return null;
-  }
-
-  const content = (
-    <div
-      className="fixed inset-0 z-50 flex items-end justify-center bg-zinc-950/45 p-3 sm:items-center"
-      role="dialog"
-      aria-modal="true"
-      aria-label={title}
-      onClick={onClose}
+  return (
+    <Dialog
+      open={open}
+      onOpenChange={(next) => {
+        if (!next) onClose();
+      }}
+      title={title}
+      hideTitle
+      size="lg"
     >
-      <div
-        className="max-h-[90vh] w-full overflow-y-auto rounded-[2rem] bg-white p-5 shadow-2xl sm:max-w-xl"
-        onClick={(event) => event.stopPropagation()}
-      >
-        <div className="flex items-start justify-between gap-4">
-          <div>
-            <h2 className="text-2xl font-semibold text-zinc-950">{title}</h2>
-          </div>
-          <button
-            type="button"
-            onClick={onClose}
-            className="rounded-full border border-zinc-200 bg-white p-2 text-zinc-500 transition hover:border-zinc-300 hover:text-zinc-950"
-            aria-label="Закрыть ссылки на покупку"
-          >
-            <X className="h-4 w-4" />
-          </button>
+      <div className="p-5">
+        <div className="mb-6 flex items-start justify-between gap-4">
+          <h2 className="text-2xl font-semibold text-zinc-950">{title}</h2>
+          <DialogCloseButton aria-label="Закрыть ссылки на покупку" />
         </div>
 
-        <div className="mt-6">
-          <IngredientPurchaseLinksEditor
-            reference={reference}
-            initialLinks={initialLinks}
-            enabled={open}
-            autoStartCreateWhenEmpty={autoStartCreateWhenEmpty}
-            onRequestClose={onClose}
-          />
-        </div>
+        <IngredientPurchaseLinksEditor
+          reference={reference}
+          initialLinks={initialLinks}
+          enabled={open}
+          autoStartCreateWhenEmpty={autoStartCreateWhenEmpty}
+          onRequestClose={onClose}
+        />
       </div>
-    </div>
+    </Dialog>
   );
-
-  if (typeof window === "undefined") {
-    return content;
-  }
-
-  if (!mounted) {
-    return null;
-  }
-
-  return createPortal(content, document.body);
 }

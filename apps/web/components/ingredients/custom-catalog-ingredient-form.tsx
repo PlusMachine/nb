@@ -10,6 +10,7 @@ import {
   Wheat
 } from "lucide-react";
 
+import { Button } from "@nb/ui";
 import type { CatalogCustomIngredientActionResult } from "@/app/(public)/catalog/actions";
 import type {
   IngredientCategory,
@@ -509,7 +510,10 @@ export function CustomCatalogIngredientForm({
       ) : null}
 
       {result ? (
-        <div className={`rounded-2xl px-4 py-3 text-sm ${result.ok ? "bg-emerald-50 text-emerald-800" : "bg-rose-50 text-rose-700"}`}>
+        <div
+          role={result.ok ? "status" : "alert"}
+          className={`rounded-2xl px-4 py-3 text-sm ${result.ok ? "bg-emerald-50 text-emerald-800" : "bg-rose-50 text-rose-700"}`}
+        >
           {result.message}
         </div>
       ) : null}
@@ -845,8 +849,10 @@ export function CustomCatalogIngredientForm({
       <div className="flex flex-wrap items-center justify-between gap-3 border-t border-zinc-200 pt-5">
         <div className="flex flex-wrap gap-2">
           {onDelete ? (
-            <button
+            <Button
               type="button"
+              variant="dangerOutline"
+              size="md"
               disabled={isPending}
               onClick={() => {
                 startTransition(async () => {
@@ -858,22 +864,18 @@ export function CustomCatalogIngredientForm({
                   }
                 });
               }}
-              className="rounded-xl border border-rose-200 bg-white px-4 py-2.5 text-sm font-medium text-rose-700 disabled:opacity-60"
             >
               Удалить
-            </button>
+            </Button>
           ) : null}
-          <button
-            type="button"
-            onClick={() => router.back()}
-            className="rounded-xl border border-zinc-200 bg-white px-4 py-2.5 text-sm font-medium text-zinc-700"
-          >
+          <Button type="button" variant="outline" size="md" onClick={() => router.back()}>
             Назад
-          </button>
+          </Button>
         </div>
 
-        <button
+        <Button
           type="button"
+          size="md"
           disabled={isPending}
           onClick={() => {
             startTransition(async () => {
@@ -921,10 +923,9 @@ export function CustomCatalogIngredientForm({
               }
             });
           }}
-          className="rounded-xl bg-zinc-950 px-5 py-2.5 text-sm font-medium text-white disabled:opacity-60"
         >
           {isPending ? "Сохраняем..." : submitLabel}
-        </button>
+        </Button>
       </div>
     </div>
   );

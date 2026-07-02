@@ -100,6 +100,46 @@ type Props = {
   onSelectedIngredientChange?: (selected: IngredientSuggestionItem | null) => void;
   onSubtypeChange?: (subtype: Extract<IngredientSubtype, "malt" | "fermentable">) => void;
   onGroupChange?: (group: string | null) => void;
+  /** Не сохранённые данные — для guard'а модалки-обёртки (закрыть без подтверждения?). */
+  onDirtyChange?: (dirty: boolean) => void;
+};
+
+/**
+ * "Грязна" ли форма (для guard'а обёртки-модалки): выбран ингредиент, введён поисковый
+ * текст, указано количество, либо тронуты необязательные поля/ссылки на покупку.
+ */
+export const isCatalogIngredientFormDirty = ({
+  selected,
+  pickerValue,
+  enteredQuantity,
+  optionalTouched,
+  priceInputAmount,
+  purchasedAt,
+  freshnessDate,
+  notes,
+  purchaseLinksCount
+}: {
+  selected: IngredientSuggestionItem | null;
+  pickerValue: string;
+  enteredQuantity: string;
+  optionalTouched: boolean;
+  priceInputAmount: string;
+  purchasedAt: string;
+  freshnessDate: string;
+  notes: string;
+  purchaseLinksCount: number;
+}) => {
+  if (selected) {
+    return true;
+  }
+
+  if (pickerValue.trim() || enteredQuantity.trim()) {
+    return true;
+  }
+
+  return optionalTouched && Boolean(
+    priceInputAmount.trim() || purchasedAt.trim() || freshnessDate.trim() || notes.trim() || purchaseLinksCount > 0
+  );
 };
 
 const createInitialCommonFields = (category?: IngredientCategory): InventoryCommonFields => {
@@ -717,7 +757,8 @@ export function CatalogIngredientForm({
   onSelectionCleared,
   onSelectedIngredientChange,
   onSubtypeChange,
-  onGroupChange
+  onGroupChange,
+  onDirtyChange
 }: Props) {
   const [selected, setSelected] = useState<IngredientSuggestionItem | null>(() => resolveInitialSelectionForContext({
     category,
@@ -809,6 +850,31 @@ export function CatalogIngredientForm({
   useEffect(() => {
     pickerValueRef.current = pickerValue;
   }, [pickerValue]);
+
+  useEffect(() => {
+    onDirtyChange?.(isCatalogIngredientFormDirty({
+      selected,
+      pickerValue,
+      enteredQuantity: fields.enteredQuantity,
+      optionalTouched,
+      priceInputAmount: fields.priceInputAmount,
+      purchasedAt: fields.purchasedAt,
+      freshnessDate: fields.freshnessDate,
+      notes: fields.notes,
+      purchaseLinksCount: purchaseLinksState.urls.length
+    }));
+  }, [
+    onDirtyChange,
+    selected,
+    pickerValue,
+    fields.enteredQuantity,
+    optionalTouched,
+    fields.priceInputAmount,
+    fields.purchasedAt,
+    fields.freshnessDate,
+    fields.notes,
+    purchaseLinksState.urls.length
+  ]);
 
   useEffect(() => {
     const resolvedSelection = resolveInitialSelectionForContext({

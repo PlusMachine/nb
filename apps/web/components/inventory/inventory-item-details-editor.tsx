@@ -2,8 +2,8 @@
 
 import React from "react";
 import { useEffect, useMemo, useState, useTransition } from "react";
-import { createPortal } from "react-dom";
 
+import { Button, Dialog, DialogCloseButton, DialogHeader } from "@nb/ui";
 import { updateInventoryItemAction, type AddIngredientResult } from "@/app/(app)/app/ingredients/actions";
 import { IngredientPicker, IngredientSelectionCard } from "@/components/ingredients/ingredient-picker";
 import { IngredientPurchaseLinksField } from "@/components/ingredients/ingredient-purchase-links-field";
@@ -187,7 +187,7 @@ const resolveInventoryEditorConsumableBroadGroup = (group?: string | null) => {
     });
 };
 
-const createFormState = (
+export const createFormState = (
   item: InventoryListItemDto,
   preferredCurrency: SystemCurrency,
   currencyRates: SystemCurrencyRateMap
@@ -298,7 +298,7 @@ export const shouldShowInventoryEditorOptionalSection = (
   selected: IngredientSuggestionItem | null
 ) => Boolean(selected);
 
-const isWaterTreatmentAcidSuggestion = (
+export const isWaterTreatmentAcidSuggestion = (
   selected: IngredientSuggestionItem | null
 ): selected is IngredientSuggestionItem => (
   Boolean(selected && isWaterTreatmentAcidLike(selected))
@@ -384,8 +384,6 @@ export function InventoryItemDetailsEditor({
   const [pickerFocusSignal, setPickerFocusSignal] = useState(0);
   const [result, setResult] = useState<AddIngredientResult | null>(null);
   const [isPending, startTransition] = useTransition();
-  const [mounted, setMounted] = useState(false);
-  const backdropPointerDownStartedRef = React.useRef(false);
   const unitProfile = useMemo(
     () => resolveInventoryEditorUnitProfile(form, item.source, selectedSuggestion),
     [form, item.source, selectedSuggestion]
@@ -449,30 +447,6 @@ export function InventoryItemDetailsEditor({
     showWaterTreatmentConcentrationField
   });
   const hasCurrentNumberErrors = hasValidationErrors(currentNumberErrors);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  useEffect(() => {
-    if (!editing) {
-      return;
-    }
-
-    const handleEscape = (event: KeyboardEvent) => {
-      if (event.key === "Escape") {
-        event.preventDefault();
-        resetForm();
-      }
-    };
-
-    document.addEventListener("keydown", handleEscape);
-    document.body.style.overflow = "hidden";
-    return () => {
-      document.removeEventListener("keydown", handleEscape);
-      document.body.style.overflow = "";
-    };
-  }, [editing]);
 
   useEffect(() => {
     setForm(createFormState(item, preferredCurrency, currencyRates));
@@ -582,40 +556,27 @@ export function InventoryItemDetailsEditor({
             Редактировать карточку
           </button>
         )}
-      {result && !editing ? <p className={`text-xs ${result.ok ? "text-emerald-700" : "text-red-600"}`}>{result.message}</p> : null}
+      {result && !editing ? (
+        <p role={result.ok ? "status" : "alert"} className={`text-xs ${result.ok ? "text-emerald-700" : "text-red-600"}`}>
+          {result.message}
+        </p>
+      ) : null}
 
-      {editing ? (() => {
-        const modalContent = (
-          <div
-            className="animate-modal-backdrop fixed inset-0 z-[100] flex items-end justify-center bg-zinc-950/50 backdrop-blur-[2px] sm:items-center sm:p-4"
-            role="dialog"
-            aria-modal="true"
-            aria-label={`Редактировать ингредиент на складе: ${item.source.displayName}`}
-            onPointerDown={(event) => {
-              backdropPointerDownStartedRef.current = event.target === event.currentTarget;
-            }}
-            onClick={(event) => {
-              if (backdropPointerDownStartedRef.current && event.target === event.currentTarget) {
-                resetForm();
-              }
+      <Dialog
+        open={editing}
+        onOpenChange={(next) => {
+          if (!next) resetForm();
+        }}
+        title={`Редактировать ингредиент на складе: ${item.source.displayName}`}
+        hideTitle
+        size="lg"
+      >
+        <DialogHeader>
+          <h2 className="text-base font-semibold text-zinc-900">Редактировать ингредиент</h2>
+          <DialogCloseButton />
+        </DialogHeader>
 
-              backdropPointerDownStartedRef.current = false;
-            }}
-          >
-            <div className="animate-modal-content relative z-[101] max-h-[94vh] w-full overflow-y-auto rounded-t-2xl bg-white shadow-2xl ring-1 ring-black/[0.06] sm:max-w-2xl sm:rounded-2xl">
-              <div className="sticky top-0 z-10 flex items-center justify-between border-b border-zinc-100 bg-white/95 px-5 py-4 backdrop-blur-sm sm:rounded-t-2xl">
-                <h2 className="text-base font-semibold text-zinc-900">Редактировать ингредиент</h2>
-                <button
-                  type="button"
-                  onClick={resetForm}
-                  className="flex h-8 w-8 items-center justify-center rounded-lg text-zinc-400 transition-colors hover:bg-zinc-100 hover:text-zinc-600"
-                  aria-label="Закрыть"
-                >
-                  <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
-                </button>
-              </div>
-
-              <div className="p-5">
+        <div className="p-5">
 
               <form
                 className="space-y-4"
@@ -991,40 +952,24 @@ export function InventoryItemDetailsEditor({
                   </section>
                 ) : null}
 
-                {result && !result.ok ? <p className="text-xs text-red-600">{result.message}</p> : null}
+                {result && !result.ok ? <p role="alert" className="text-xs text-red-600">{result.message}</p> : null}
 
                 <div className="flex gap-3 pt-2">
-                  <button
+                  <Button
                     type="submit"
+                    size="md"
+                    className="flex-1 sm:flex-initial"
                     disabled={isPending || !canSubmitInventoryForm(form) || hasCurrentNumberErrors}
-                    className="flex-1 rounded-xl bg-zinc-900 px-5 py-3 text-sm font-semibold text-white transition-all duration-150 hover:bg-zinc-800 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50 sm:flex-initial"
                   >
                     {isPending ? "Сохраняем..." : "Сохранить"}
-                  </button>
-                  <button
-                    type="button"
-                    onClick={resetForm}
-                    className="rounded-xl border border-zinc-200 px-5 py-3 text-sm font-medium text-zinc-500 transition-all duration-150 hover:bg-zinc-50"
-                  >
+                  </Button>
+                  <Button type="button" variant="outline" size="md" onClick={resetForm}>
                     Отмена
-                  </button>
+                  </Button>
                 </div>
               </form>
-              </div>
-            </div>
-          </div>
-        );
-
-        if (typeof window === "undefined") {
-          return modalContent;
-        }
-
-        if (!mounted) {
-          return null;
-        }
-
-        return createPortal(modalContent, document.body);
-      })() : null}
+        </div>
+      </Dialog>
     </>
   );
 }

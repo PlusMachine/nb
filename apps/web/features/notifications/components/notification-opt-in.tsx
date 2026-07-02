@@ -73,7 +73,7 @@ export function NotificationOptIn() {
         <p className="mt-1 text-xs text-zinc-500">
           Пуш на телефон о засыпи, промывке и авариях — даже когда вкладка свёрнута.
         </p>
-        {error ? <p className="mt-1 text-xs text-red-600">{error}</p> : null}
+        {error ? <p role="alert" className="mt-1 text-xs text-red-600">{error}</p> : null}
       </div>
       <Button onClick={() => void enable()} disabled={busy}>
         {busy ? "Включаем…" : "Включить уведомления"}

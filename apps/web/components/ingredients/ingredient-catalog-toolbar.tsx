@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useCallback, useEffect, useMemo, useRef, useState, useTransition } from "react";
+import React, { useCallback, useMemo, useTransition } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import {
@@ -14,6 +14,7 @@ import {
   Wheat
 } from "lucide-react";
 
+import { DropdownMenu, type DropdownMenuItem } from "@nb/ui";
 import type {
   IngredientCatalogSortOption,
   IngredientCatalogView,
@@ -21,6 +22,7 @@ import type {
 } from "@/features/ingredients/contracts";
 import { ingredientCatalogSortOptions } from "@/features/ingredients/contracts";
 import { ingredientCategoryLabels } from "@/features/ingredients/presentation";
+import { useDebouncedUrlSearch } from "@/components/shared/use-debounced-url-search";
 
 type Props = {
   view: IngredientCatalogView;
@@ -163,18 +165,6 @@ export function IngredientCatalogToolbar({
   const pathname = usePathname();
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
-  const [searchValue, setSearchValue] = useState(q);
-  const [isSearchFocused, setIsSearchFocused] = useState(false);
-  const [sortOpen, setSortOpen] = useState(false);
-  const sortRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (isSearchFocused) {
-      return;
-    }
-
-    setSearchValue(q);
-  }, [isSearchFocused, q]);
 
   const currentHref = useMemo(() => buildCatalogHref(pathname, {
     view,
@@ -194,40 +184,21 @@ export function IngredientCatalogToolbar({
     });
   }, [currentHref, router]);
 
-  useEffect(() => {
-    const trimmedLocalSearch = searchValue.trim();
-    const trimmedServerSearch = q.trim();
-    if (trimmedLocalSearch === trimmedServerSearch) {
-      return;
-    }
+  const buildSearchHref = useCallback((nextQ: string) => buildCatalogHref(pathname, {
+    view,
+    q: nextQ,
+    category,
+    subtype,
+    sort
+  }), [category, pathname, sort, subtype, view]);
 
-    const timer = window.setTimeout(() => {
-      replaceHref(buildCatalogHref(pathname, {
-        view,
-        q: trimmedLocalSearch,
-        category,
-        subtype,
-        sort
-      }));
-    }, searchDebounceMs);
-
-    return () => window.clearTimeout(timer);
-  }, [category, pathname, q, replaceHref, searchValue, sort, subtype, view]);
-
-  useEffect(() => {
-    if (!sortOpen) {
-      return;
-    }
-
-    const handleClickOutside = (event: MouseEvent) => {
-      if (sortRef.current && !sortRef.current.contains(event.target as Node)) {
-        setSortOpen(false);
-      }
-    };
-
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, [sortOpen]);
+  const {
+    inputValue: searchValue,
+    setInputValue: setSearchValue,
+    isPending: isSearchPending,
+    onFocus: handleSearchFocus,
+    onBlur: handleSearchBlur
+  } = useDebouncedUrlSearch({ value: q, buildHref: buildSearchHref, debounceMs: searchDebounceMs });
 
   const replaceWith = (next: {
     view?: IngredientCatalogView;
@@ -399,50 +370,40 @@ export function IngredientCatalogToolbar({
           <input
             value={searchValue}
             onChange={(event) => setSearchValue(event.target.value)}
-            onFocus={() => setIsSearchFocused(true)}
-            onBlur={() => setIsSearchFocused(false)}
+            onFocus={handleSearchFocus}
+            onBlur={handleSearchBlur}
             className="mt-1 h-11 w-full rounded-xl border border-zinc-200 bg-zinc-50 px-3 text-sm"
             placeholder="Название, алиас, бренд, код"
           />
         </label>
 
         <div className="flex items-end justify-between gap-2">
-          <div ref={sortRef} className="relative flex-1">
+          <div className="flex-1">
             <div className="mb-1 text-sm">Сортировка</div>
-            <button
-              type="button"
-              onClick={() => setSortOpen((current) => !current)}
-              className={`flex h-11 w-full items-center justify-between rounded-xl border px-3 text-sm transition-colors ${sort !== defaultCatalogSortOption
-                ? "border-blue-200 bg-blue-50 text-blue-800"
-                : "border-zinc-200 bg-zinc-50 text-zinc-700 hover:border-zinc-300 hover:bg-white"
-                }`}
-            >
-              <span className="inline-flex items-center gap-2">
-                <ArrowUpDown className="h-4 w-4" />
-                {sortLabels[sort]}
-              </span>
-              {sort !== defaultCatalogSortOption ? <Check className="h-4 w-4" /> : null}
-            </button>
-
-            {sortOpen ? (
-              <div className="absolute right-0 z-20 mt-1 w-full rounded-xl border border-zinc-200 bg-white py-1 shadow-lg">
-                {ingredientCatalogSortOptions.map((option) => (
-                  <button
-                    key={option}
-                    type="button"
-                    onClick={() => {
-                      replaceWith({ sort: option });
-                      setSortOpen(false);
-                    }}
-                    className={`flex w-full items-center justify-between px-3 py-2 text-left text-sm transition-colors hover:bg-zinc-50 ${option === sort ? "font-medium text-zinc-950" : "text-zinc-600"
-                      }`}
-                  >
-                    {sortLabels[option]}
-                    {option === sort ? <Check className="h-3.5 w-3.5 text-blue-600" /> : null}
-                  </button>
-                ))}
-              </div>
-            ) : null}
+            <DropdownMenu
+              trigger={
+                <button
+                  type="button"
+                  className={`flex h-11 w-full items-center justify-between rounded-xl border px-3 text-sm transition-colors ${sort !== defaultCatalogSortOption
+                    ? "border-blue-200 bg-blue-50 text-blue-800"
+                    : "border-zinc-200 bg-zinc-50 text-zinc-700 hover:border-zinc-300 hover:bg-white"
+                    }`}
+                >
+                  <span className="inline-flex items-center gap-2">
+                    <ArrowUpDown className="h-4 w-4" />
+                    {sortLabels[sort]}
+                  </span>
+                  {sort !== defaultCatalogSortOption ? <Check className="h-4 w-4" /> : null}
+                </button>
+              }
+              items={ingredientCatalogSortOptions.map((option): DropdownMenuItem => ({
+                key: option,
+                label: sortLabels[option],
+                icon: option === sort ? <Check className="h-3.5 w-3.5 text-blue-600" /> : undefined,
+                onSelect: () => replaceWith({ sort: option })
+              }))}
+              aria-label="Сортировка"
+            />
           </div>
 
           {hasFilters ? (
@@ -467,7 +428,7 @@ export function IngredientCatalogToolbar({
         </div>
       </div>
 
-      {isPending ? <p className="text-xs text-zinc-400">Обновляем каталог…</p> : null}
+      {isPending || isSearchPending ? <p className="text-xs text-zinc-400">Обновляем каталог…</p> : null}
     </section>
   );
 }

@@ -72,6 +72,72 @@ type Props = {
   fieldErrors?: Record<string, string>;
   onDisplayNameChange?: (value: string) => void;
   onSubmit: (payload: CustomIngredientSubmitPayload) => Promise<void>;
+  /** Не сохранённые данные — для guard'а модалки-обёртки (закрыть без подтверждения?). */
+  onDirtyChange?: (dirty: boolean) => void;
+};
+
+/**
+ * "Грязна" ли форма (для guard'а обёртки-модалки): имя/параметры/количество отличаются
+ * от начальных, либо тронуты необязательные поля.
+ */
+export const isCustomIngredientFormDirty = ({
+  initialDisplayName,
+  displayName,
+  brand,
+  country,
+  harvestYear,
+  fermentableColorEbc,
+  fermentableExtractYieldPct,
+  hopAlphaAcidPct,
+  yeastAttenuationPct,
+  waterTreatmentConcentrationPct,
+  enteredQuantity,
+  optionalTouched,
+  priceInputAmount,
+  purchasedAt,
+  freshnessDate,
+  notes,
+  purchaseLinksCount
+}: {
+  initialDisplayName: string;
+  displayName: string;
+  brand: string;
+  country: string;
+  harvestYear: string;
+  fermentableColorEbc: string;
+  fermentableExtractYieldPct: string;
+  hopAlphaAcidPct: string;
+  yeastAttenuationPct: string;
+  waterTreatmentConcentrationPct: string;
+  enteredQuantity: string;
+  optionalTouched: boolean;
+  priceInputAmount: string;
+  purchasedAt: string;
+  freshnessDate: string;
+  notes: string;
+  purchaseLinksCount: number;
+}) => {
+  if (displayName.trim() !== initialDisplayName.trim()) {
+    return true;
+  }
+
+  if (
+    brand.trim()
+    || country.trim()
+    || harvestYear.trim()
+    || fermentableColorEbc.trim()
+    || fermentableExtractYieldPct.trim()
+    || hopAlphaAcidPct.trim()
+    || yeastAttenuationPct.trim()
+    || waterTreatmentConcentrationPct.trim()
+    || enteredQuantity.trim()
+  ) {
+    return true;
+  }
+
+  return optionalTouched && Boolean(
+    priceInputAmount.trim() || purchasedAt.trim() || freshnessDate.trim() || notes.trim() || purchaseLinksCount > 0
+  );
 };
 
 const parseOptionalNumber = (value: string) => {
@@ -206,7 +272,8 @@ export function CustomIngredientForm({
   submitLabel,
   fieldErrors,
   onDisplayNameChange,
-  onSubmit
+  onSubmit,
+  onDirtyChange
 }: Props) {
   const initialOptionalFields = createInitialInventoryOptionalFields();
   const baseSubtypeOptions: readonly IngredientSubtype[] = !shouldShowCustomIngredientSubtypeField(category)
@@ -397,6 +464,47 @@ export function CustomIngredientForm({
   useEffect(() => {
     onDisplayNameChange?.(displayName);
   }, [displayName, onDisplayNameChange]);
+
+  useEffect(() => {
+    onDirtyChange?.(isCustomIngredientFormDirty({
+      initialDisplayName,
+      displayName,
+      brand,
+      country,
+      harvestYear,
+      fermentableColorEbc,
+      fermentableExtractYieldPct,
+      hopAlphaAcidPct,
+      yeastAttenuationPct,
+      waterTreatmentConcentrationPct,
+      enteredQuantity,
+      optionalTouched,
+      priceInputAmount,
+      purchasedAt,
+      freshnessDate,
+      notes,
+      purchaseLinksCount: purchaseLinksState.urls.length
+    }));
+  }, [
+    onDirtyChange,
+    initialDisplayName,
+    displayName,
+    brand,
+    country,
+    harvestYear,
+    fermentableColorEbc,
+    fermentableExtractYieldPct,
+    hopAlphaAcidPct,
+    yeastAttenuationPct,
+    waterTreatmentConcentrationPct,
+    enteredQuantity,
+    optionalTouched,
+    priceInputAmount,
+    purchasedAt,
+    freshnessDate,
+    notes,
+    purchaseLinksState.urls.length
+  ]);
 
   useEffect(() => {
     if (!unitProfile.allowedUnits.includes(enteredUnit)) {

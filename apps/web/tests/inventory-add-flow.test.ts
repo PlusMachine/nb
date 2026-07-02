@@ -106,19 +106,19 @@ import {
 import { IngredientCategorySelector } from "../components/ingredients/ingredient-category-selector";
 import { buildIngredientSearchParams } from "../components/ingredients/ingredient-picker";
 import {
-  AddIngredientModal,
+  AddIngredientModalBody,
   applyAddIngredientImmediateControlAction,
   applyAddIngredientSuccessEffects,
   resolveAddIngredientStartCategoryValue,
   resolveAddIngredientStartContext,
-  shouldApplyAddIngredientControlActionOnClick,
-  shouldCloseAddIngredientModalFromBackdropInteraction
+  shouldApplyAddIngredientControlActionOnClick
 } from "../components/inventory/add-ingredient-modal";
 import { AddIngredientTrigger } from "../components/inventory/add-ingredient-trigger";
 import {
   buildCatalogIngredientPayload,
   CatalogIngredientForm,
   hasCatalogIngredientTechnicalOverrides,
+  isCatalogIngredientFormDirty,
   resolveCatalogDerivedVariantPresentation,
   resolveCatalogBatchOverrideSummaryState,
   resolveCatalogPickerContextChange,
@@ -131,7 +131,11 @@ import {
   shouldShowCatalogRequiredInventoryBlock
 } from "../components/inventory/catalog-ingredient-form";
 import { CustomIngredientPanel } from "../components/inventory/custom-ingredient-panel";
-import { CustomIngredientForm, getCustomIngredientSubtypeOptions } from "../components/inventory/custom-ingredient-form";
+import {
+  CustomIngredientForm,
+  getCustomIngredientSubtypeOptions,
+  isCustomIngredientFormDirty
+} from "../components/inventory/custom-ingredient-form";
 import { getTodayDateInputValue } from "../components/inventory/date-input";
 import {
   createInitialInventoryOptionalFields,
@@ -158,12 +162,13 @@ describe("inventory add-flow", () => {
   });
 
   it("renders add flow in selection stage before an ingredient is chosen", () => {
-    const html = renderToStaticMarkup(React.createElement(AddIngredientModal, {
-      open: true,
+    // AddIngredientModal оборачивает это содержимое в @nb/ui Dialog (Radix Portal
+    // рендерится только на клиенте после монтирования), поэтому проверяем внутренний
+    // AddIngredientModalBody напрямую.
+    const html = renderToStaticMarkup(React.createElement(AddIngredientModalBody, {
       onClose: () => undefined
     }));
 
-    expect(html).toContain("Добавить ингредиент");
     expect(html).toContain('data-testid="add-ingredient-category-grid"');
     expect(html).toContain('data-testid="add-ingredient-mode-switch"');
     expect(html).toContain("Добавить свой");
@@ -326,7 +331,7 @@ describe("inventory add-flow", () => {
   });
 
   it("keeps optional catalog details hidden until the user reaches them", () => {
-    const html = renderToStaticMarkup(React.createElement(AddIngredientModal, { open: true, onClose: () => undefined }));
+    const html = renderToStaticMarkup(React.createElement(AddIngredientModalBody, { onClose: () => undefined }));
     expect(html).not.toContain(`value="${getTodayDateInputValue()}"`);
     expect(html).not.toContain('aria-label="Очистить дату покупки"');
     expect(html).not.toContain("Дополнительные данные (необязательно)");
@@ -343,8 +348,7 @@ describe("inventory add-flow", () => {
   });
 
   it("renders add flow in selected state with compact context and without selection chrome", () => {
-    const html = renderToStaticMarkup(React.createElement(AddIngredientModal, {
-      open: true,
+    const html = renderToStaticMarkup(React.createElement(AddIngredientModalBody, {
       onClose: () => undefined,
       initialCategory: "fermentable",
       initialSubtype: "malt",
@@ -406,8 +410,7 @@ describe("inventory add-flow", () => {
   });
 
   it("shows picker when category is selected but no ingredient is selected", () => {
-    const html = renderToStaticMarkup(React.createElement(AddIngredientModal, {
-      open: true,
+    const html = renderToStaticMarkup(React.createElement(AddIngredientModalBody, {
       onClose: () => undefined,
       initialCategory: "hop"
     }));
@@ -881,6 +884,71 @@ describe("inventory add-flow", () => {
     expect(shouldShowCatalogOptionalSection(null)).toBe(false);
   });
 
+  it("treats the catalog add form as dirty only once the user has entered something", () => {
+    const emptyState = {
+      selected: null,
+      pickerValue: "",
+      enteredQuantity: "",
+      optionalTouched: false,
+      priceInputAmount: "",
+      purchasedAt: "",
+      freshnessDate: "",
+      notes: "",
+      purchaseLinksCount: 0
+    };
+
+    expect(isCatalogIngredientFormDirty(emptyState)).toBe(false);
+    expect(isCatalogIngredientFormDirty({ ...emptyState, pickerValue: "Цитра" })).toBe(true);
+    expect(isCatalogIngredientFormDirty({ ...emptyState, enteredQuantity: "100" })).toBe(true);
+    expect(isCatalogIngredientFormDirty({
+      ...emptyState,
+      selected: {
+        id: "hop-1",
+        type: "hop",
+        category: "hop",
+        displayName: "Citra",
+        primaryLabelRu: "Citra",
+        defaultUnit: "g",
+        source: "catalog"
+      }
+    })).toBe(true);
+    // Необязательные поля не в счёт, пока пользователь не раскрыл секцию.
+    expect(isCatalogIngredientFormDirty({ ...emptyState, notes: "заметка", optionalTouched: false })).toBe(false);
+    expect(isCatalogIngredientFormDirty({ ...emptyState, notes: "заметка", optionalTouched: true })).toBe(true);
+    expect(isCatalogIngredientFormDirty({ ...emptyState, purchaseLinksCount: 1, optionalTouched: true })).toBe(true);
+  });
+
+  it("treats the custom add form as dirty only once it diverges from its initial values", () => {
+    const emptyState = {
+      initialDisplayName: "",
+      displayName: "",
+      brand: "",
+      country: "",
+      harvestYear: "",
+      fermentableColorEbc: "",
+      fermentableExtractYieldPct: "",
+      hopAlphaAcidPct: "",
+      yeastAttenuationPct: "",
+      waterTreatmentConcentrationPct: "",
+      enteredQuantity: "",
+      optionalTouched: false,
+      priceInputAmount: "",
+      purchasedAt: "",
+      freshnessDate: "",
+      notes: "",
+      purchaseLinksCount: 0
+    };
+
+    expect(isCustomIngredientFormDirty(emptyState)).toBe(false);
+    // Предзаполненное имя (например, из поиска) не само по себе не "грязное".
+    expect(isCustomIngredientFormDirty({ ...emptyState, initialDisplayName: "Citra", displayName: "Citra" })).toBe(false);
+    expect(isCustomIngredientFormDirty({ ...emptyState, initialDisplayName: "Citra", displayName: "Citra Cryo" })).toBe(true);
+    expect(isCustomIngredientFormDirty({ ...emptyState, brand: "Yakima Chief" })).toBe(true);
+    expect(isCustomIngredientFormDirty({ ...emptyState, enteredQuantity: "100" })).toBe(true);
+    expect(isCustomIngredientFormDirty({ ...emptyState, notes: "заметка", optionalTouched: false })).toBe(false);
+    expect(isCustomIngredientFormDirty({ ...emptyState, notes: "заметка", optionalTouched: true })).toBe(true);
+  });
+
   it("starts deep-linked selection in selected state with the picker hidden", () => {
     expect(shouldShowCatalogPickerStage({
       category: "fermentable",
@@ -1068,23 +1136,6 @@ describe("inventory add-flow", () => {
       noticeText: null,
       inlineHelper: null
     });
-  });
-
-  it("closes the modal only when the pointer sequence both starts and ends on the backdrop", () => {
-    expect(shouldCloseAddIngredientModalFromBackdropInteraction({
-      pointerDownStartedOnBackdrop: true,
-      clickFinishedOnBackdrop: true
-    })).toBe(true);
-
-    expect(shouldCloseAddIngredientModalFromBackdropInteraction({
-      pointerDownStartedOnBackdrop: false,
-      clickFinishedOnBackdrop: true
-    })).toBe(false);
-
-    expect(shouldCloseAddIngredientModalFromBackdropInteraction({
-      pointerDownStartedOnBackdrop: true,
-      clickFinishedOnBackdrop: false
-    })).toBe(false);
   });
 
   it("commits segmented/category control actions on pointerdown and leaves click for keyboard activation", () => {

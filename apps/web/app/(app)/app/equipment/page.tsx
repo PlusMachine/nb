@@ -1,7 +1,8 @@
 import React from "react";
 import Link from "next/link";
-import { Copy, Pencil, Plus, Star, Trash2, X } from "lucide-react";
+import { Copy, Pencil, Plus, Star, X } from "lucide-react";
 
+import { Button } from "@nb/ui";
 import {
   type EquipmentProfileDto,
   type EquipmentProfilePayload
@@ -11,9 +12,9 @@ import { buildNextEquipmentProfileName, buildStarterEquipmentProfileDefaults } f
 import { listEquipmentProfiles } from "@/features/equipment-profiles/service";
 import { requireUser } from "@/lib/auth";
 
+import { DeleteEquipmentProfileButton } from "./delete-equipment-profile-button";
 import {
   createEquipmentProfileAction,
-  deleteEquipmentProfileAction,
   duplicateEquipmentProfileAction,
   setDefaultEquipmentProfileAction,
   updateEquipmentProfileAction
@@ -36,9 +37,9 @@ function EquipmentProfileForm({
     <form action={action} className="space-y-4">
       <EquipmentProfileFormFields profile={profile} />
       <div className="flex flex-wrap items-center gap-2 border-t border-zinc-100 pt-4">
-        <button type="submit" className="inline-flex items-center gap-1.5 rounded-md bg-zinc-900 px-3 py-2 text-sm font-medium text-white">
+        <Button type="submit" size="sm">
           {mode === "create" ? "Создать профиль" : "Сохранить профиль"}
-        </button>
+        </Button>
         <Link href="/app/equipment" className="inline-flex items-center gap-1.5 rounded-md border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-700">
           <X className="h-3.5 w-3.5" aria-hidden="true" />
           Отменить
@@ -143,12 +144,7 @@ function EquipmentProfileCard({
               </button>
             </form>
           ) : null}
-          <form action={deleteEquipmentProfileAction.bind(null, profile.id)}>
-            <button type="submit" className="inline-flex items-center gap-1.5 rounded-md border border-rose-200 bg-white px-3 py-2 text-xs font-medium text-rose-700 hover:bg-rose-50">
-              <Trash2 className="h-3.5 w-3.5" aria-hidden="true" />
-              Удалить
-            </button>
-          </form>
+          <DeleteEquipmentProfileButton profileId={profile.id} profileName={profile.name} />
         </div>
       </div>
 

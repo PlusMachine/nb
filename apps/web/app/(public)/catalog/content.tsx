@@ -1,6 +1,6 @@
 import React from "react";
 import Link from "next/link";
-import { Pencil } from "lucide-react";
+import { Boxes, Pencil } from "lucide-react";
 
 import { DeleteCustomCatalogIngredientButton } from "@/components/ingredients/delete-custom-catalog-ingredient-button";
 import { IngredientFavoriteToggle } from "@/components/ingredients/ingredient-favorite-toggle";
@@ -27,6 +27,7 @@ import {
   sanitizeIngredientColorValue
 } from "@/features/ingredients/technical-fields";
 import { listUserCatalogIngredients } from "@/features/ingredients/catalog-service";
+import { buildIngredientCatalogActionHref } from "@/features/ingredients/catalog-links";
 import { getSessionUser } from "@/lib/auth";
 
 type Props = {
@@ -118,6 +119,16 @@ const buildDetailHref = (item: UserCatalogIngredientDto) => (
   item.source === "custom"
     ? `/catalog/custom/${item.id}`
     : `/catalog/system/${item.id}`
+);
+
+const AddToInventoryAction = ({ item }: { item: UserCatalogIngredientDto }) => (
+  <Link
+    href={buildIngredientCatalogActionHref("/app/ingredients", item.source, item.id)}
+    className="rounded-md p-1 text-zinc-400 transition-colors hover:bg-zinc-100 hover:text-zinc-700"
+    aria-label="На склад"
+  >
+    <Boxes className="h-4 w-4" />
+  </Link>
 );
 
 const formatValue = (value: number) => value % 1 === 0 ? String(value) : value.toFixed(1).replace(/\.0$/, "");
@@ -369,6 +380,7 @@ export async function IngredientCatalogContent({ searchParams }: Props = {}) {
                                 initialFavorite={item.isFavorite ?? false}
                                 label={item.isFavorite ? "Убрать из избранного" : "Добавить в избранное"}
                               />
+                              <AddToInventoryAction item={item} />
                               <Link
                                 href={`/catalog/custom/${item.id}/edit`}
                                 className="rounded-md p-1 text-zinc-400 transition-colors hover:bg-zinc-100 hover:text-zinc-700"
@@ -384,14 +396,17 @@ export async function IngredientCatalogContent({ searchParams }: Props = {}) {
                               />
                             </div>
                           ) : canManage ? (
-                            <IngredientFavoriteToggle
-                              reference={{
-                                source: item.source,
-                                id: item.id
-                              }}
-                              initialFavorite={item.isFavorite ?? false}
-                              label={item.isFavorite ? "Убрать из избранного" : "Добавить в избранное"}
-                            />
+                            <div className="flex items-center gap-1">
+                              <IngredientFavoriteToggle
+                                reference={{
+                                  source: item.source,
+                                  id: item.id
+                                }}
+                                initialFavorite={item.isFavorite ?? false}
+                                label={item.isFavorite ? "Убрать из избранного" : "Добавить в избранное"}
+                              />
+                              <AddToInventoryAction item={item} />
+                            </div>
                           ) : null}
                         </div>
                         <div className="flex flex-wrap gap-1.5">
@@ -474,6 +489,7 @@ export async function IngredientCatalogContent({ searchParams }: Props = {}) {
                         initialFavorite={item.isFavorite ?? false}
                         label={item.isFavorite ? "Убрать из избранного" : "Добавить в избранное"}
                       />
+                      <AddToInventoryAction item={item} />
                       <Link
                         href={`/catalog/custom/${item.id}/edit`}
                         className="rounded-md p-1 text-zinc-400 transition-colors hover:bg-zinc-100 hover:text-zinc-700"
@@ -489,14 +505,17 @@ export async function IngredientCatalogContent({ searchParams }: Props = {}) {
                       />
                     </div>
                   ) : canManage ? (
-                    <IngredientFavoriteToggle
-                      reference={{
-                        source: item.source,
-                        id: item.id
-                      }}
-                      initialFavorite={item.isFavorite ?? false}
-                      label={item.isFavorite ? "Убрать из избранного" : "Добавить в избранное"}
-                    />
+                    <div className="flex items-center gap-1">
+                      <IngredientFavoriteToggle
+                        reference={{
+                          source: item.source,
+                          id: item.id
+                        }}
+                        initialFavorite={item.isFavorite ?? false}
+                        label={item.isFavorite ? "Убрать из избранного" : "Добавить в избранное"}
+                      />
+                      <AddToInventoryAction item={item} />
+                    </div>
                   ) : null}
                 </div>
 

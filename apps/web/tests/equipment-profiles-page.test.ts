@@ -50,12 +50,16 @@ const mocks = vi.hoisted(() => ({
   revalidatePath: vi.fn(),
   redirect: vi.fn((to: string) => {
     throw new Error(`NEXT_REDIRECT:${to}`);
-  })
+  }),
+  routerRefresh: vi.fn()
 }));
 
 vi.mock("../lib/auth", () => ({ requireUser: mocks.requireUser }));
 vi.mock("next/cache", () => ({ revalidatePath: mocks.revalidatePath }));
-vi.mock("next/navigation", () => ({ redirect: mocks.redirect }));
+vi.mock("next/navigation", () => ({
+  redirect: mocks.redirect,
+  useRouter: () => ({ push: () => undefined, replace: () => undefined, refresh: mocks.routerRefresh })
+}));
 vi.mock("../features/equipment-profiles/service", () => ({
   listEquipmentProfiles: mocks.listEquipmentProfiles,
   getEquipmentProfile: mocks.getEquipmentProfile,
@@ -249,11 +253,15 @@ describe("equipment profiles page", () => {
   it("deletes equipment profile from the card action", async () => {
     const { deleteEquipmentProfileAction } = await import("../app/(app)/app/equipment/actions");
 
-    await expect(deleteEquipmentProfileAction(equipmentProfile.id)).rejects.toThrow("NEXT_REDIRECT:/app/equipment");
+    await expect(deleteEquipmentProfileAction(equipmentProfile.id)).resolves.toEqual({
+      ok: true,
+      message: expect.any(String)
+    });
     expect(mocks.deleteEquipmentProfile).toHaveBeenCalledWith(
       "00000000-0000-4000-8000-000000000002",
       equipmentProfile.id
     );
+    expect(mocks.revalidatePath).toHaveBeenCalledWith("/app/equipment");
   });
 
   it("duplicates equipment profile from the card action", async () => {

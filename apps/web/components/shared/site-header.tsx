@@ -5,6 +5,8 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { ChevronDown, LayoutGrid, LogOut, Menu, User2, X } from "lucide-react";
 
+import { DropdownMenu, type DropdownMenuItem } from "@nb/ui";
+
 export type SiteHeaderUser = {
   email: string | null;
   phone?: string | null;
@@ -164,100 +166,66 @@ export function SiteHeader({ user, variant = "public" }: SiteHeaderProps) {
 
 function UserMenu({ user }: { user: SiteHeaderUser }) {
   const router = useRouter();
-  const [open, setOpen] = useState(false);
   const [pending, setPending] = useState(false);
-  const containerRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (!open) {
-      return;
-    }
-    const handlePointerDown = (event: MouseEvent) => {
-      if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
-        setOpen(false);
-      }
-    };
-    const handleKey = (event: KeyboardEvent) => {
-      if (event.key === "Escape") {
-        setOpen(false);
-      }
-    };
-    document.addEventListener("mousedown", handlePointerDown);
-    document.addEventListener("keydown", handleKey);
-    return () => {
-      document.removeEventListener("mousedown", handlePointerDown);
-      document.removeEventListener("keydown", handleKey);
-    };
-  }, [open]);
+  const logoutFormRef = useRef<HTMLFormElement>(null);
 
   const label = user.displayName?.trim() || user.email || user.phone || "Профиль";
 
-  const handleLogout = async () => {
-    setPending(true);
-    try {
-      await fetch("/api/auth/logout", { method: "POST" });
-    } finally {
-      setOpen(false);
-      router.push("/");
-      router.refresh();
+  const items: DropdownMenuItem[] = [
+    {
+      key: "workshop",
+      label: "Мастерская",
+      icon: <LayoutGrid className="h-4 w-4 text-zinc-400" />,
+      onSelect: () => router.push("/app")
+    },
+    {
+      key: "profile",
+      label: "Профиль",
+      icon: <User2 className="h-4 w-4 text-zinc-400" />,
+      onSelect: () => router.push("/profile")
+    },
+    {
+      key: "logout",
+      label: pending ? "Выходим…" : "Выйти",
+      icon: <LogOut className="h-4 w-4 text-zinc-400" />,
+      disabled: pending,
+      onSelect: () => logoutFormRef.current?.requestSubmit()
     }
-  };
+  ];
 
   return (
-    <div className="relative" ref={containerRef}>
-      <button
-        type="button"
-        onClick={() => setOpen((value) => !value)}
-        className="flex items-center gap-2 rounded-full border border-zinc-200 bg-white px-2.5 py-1.5 text-sm font-medium text-zinc-700 transition-colors hover:bg-zinc-50"
-        aria-haspopup="menu"
-        aria-expanded={open}
-      >
-        <span className="grid h-6 w-6 place-items-center rounded-full bg-zinc-900 text-[11px] font-semibold uppercase text-white">
-          {label.slice(0, 1)}
-        </span>
-        <span className="max-w-[9rem] truncate">{label}</span>
-        <ChevronDown className="h-3.5 w-3.5 text-zinc-400" />
-      </button>
-
-      {open ? (
-        <div
-          role="menu"
-          className="absolute right-0 z-50 mt-2 w-56 overflow-hidden rounded-xl border border-zinc-200 bg-white py-1 shadow-lg"
-        >
-          <div className="border-b border-zinc-100 px-3 py-2 text-xs text-zinc-500">
-            <p className="truncate font-medium text-zinc-700">{user.displayName}</p>
-            <p className="truncate">{user.email ?? user.phone}</p>
-          </div>
-          <Link
-            href="/app"
-            role="menuitem"
-            onClick={() => setOpen(false)}
-            className="flex items-center gap-2 px-3 py-2 text-sm text-zinc-700 transition-colors hover:bg-zinc-50"
-          >
-            <LayoutGrid className="h-4 w-4 text-zinc-400" />
-            Мастерская
-          </Link>
-          <Link
-            href="/profile"
-            role="menuitem"
-            onClick={() => setOpen(false)}
-            className="flex items-center gap-2 px-3 py-2 text-sm text-zinc-700 transition-colors hover:bg-zinc-50"
-          >
-            <User2 className="h-4 w-4 text-zinc-400" />
-            Профиль
-          </Link>
+    <>
+      <form
+        ref={logoutFormRef}
+        className="hidden"
+        onSubmit={async (event) => {
+          event.preventDefault();
+          setPending(true);
+          try {
+            await fetch("/api/auth/logout", { method: "POST" });
+          } finally {
+            router.push("/");
+            router.refresh();
+          }
+        }}
+      />
+      <DropdownMenu
+        trigger={
           <button
             type="button"
-            role="menuitem"
-            disabled={pending}
-            onClick={handleLogout}
-            className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm text-zinc-700 transition-colors hover:bg-zinc-50 disabled:opacity-60"
+            className="flex items-center gap-2 rounded-full border border-zinc-200 bg-white px-2.5 py-1.5 text-sm font-medium text-zinc-700 transition-colors hover:bg-zinc-50"
           >
-            <LogOut className="h-4 w-4 text-zinc-400" />
-            {pending ? "Выходим…" : "Выйти"}
+            <span className="grid h-6 w-6 place-items-center rounded-full bg-zinc-900 text-[11px] font-semibold uppercase text-white">
+              {label.slice(0, 1)}
+            </span>
+            <span className="max-w-[9rem] truncate">{label}</span>
+            <ChevronDown className="h-3.5 w-3.5 text-zinc-400" />
           </button>
-        </div>
-      ) : null}
-    </div>
+        }
+        items={items}
+        align="end"
+        aria-label={`Меню пользователя: ${label}`}
+      />
+    </>
   );
 }

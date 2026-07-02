@@ -49,7 +49,11 @@ export function DeleteCustomCatalogIngredientButton({
           : (isPending ? "Удаляем..." : label)}
       </button>
 
-      {feedback ? <p className={`text-xs ${feedback.ok ? "text-emerald-700" : "text-rose-600"}`}>{feedback.message}</p> : null}
+      {feedback ? (
+        <p role={feedback.ok ? "status" : "alert"} className={`text-xs ${feedback.ok ? "text-emerald-700" : "text-rose-600"}`}>
+          {feedback.message}
+        </p>
+      ) : null}
 
       <ConfirmActionDialog
         open={open}

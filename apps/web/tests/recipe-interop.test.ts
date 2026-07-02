@@ -356,5 +356,63 @@ describe("recipe interop and brew plan foundation", () => {
       linePersistentKey: "00000000-0000-4000-8000-000000000112",
       stage: "whirlpool"
     });
+    // Единственный fermentation-ингредиент образца — дрожжи US-05: питчинг уже
+    // покрыт шагом "Поставить на брожение", отдельной addition-строки для него
+    // в dryHopPlan быть не должно.
+    expect(snapshot.dryHopPlan).toEqual([]);
+  });
+
+  it("collects non-yeast fermentation-stage ingredients (dry hop and others) into dryHopPlan", () => {
+    const withDryHop: RecipeDetailDto = {
+      ...sampleRecipe,
+      ingredients: [
+        ...sampleRecipe.ingredients,
+        {
+          id: "00000000-0000-4000-8000-000000000014",
+          recipeId: sampleRecipe.id,
+          persistentKey: "00000000-0000-4000-8000-000000000114",
+          displayOrder: 3,
+          ingredientCatalogItemId: "hop-2",
+          userCustomIngredientId: null,
+          type: "hop",
+          ingredientCategory: "hop",
+          ingredientSubtype: "hop",
+          ingredientFamilyId: null,
+          ingredientDisplayName: "Citra",
+          ingredientDisplayNameRu: null,
+          ingredientDisplayNameEn: "Citra",
+          ingredientDisplayNameSnapshot: "Citra",
+          ingredientFamilyDisplayName: null,
+          ingredientSummary: null,
+          ingredientDefaultDisplayUnit: "g",
+          ingredientDefaultDisplayUnitSnapshot: "g",
+          ingredientAllowedUnits: ["g", "kg", "oz", "lb"],
+          ingredientMeasurementDimension: "weight",
+          ingredientMeasurementDimensionSnapshot: "weight",
+          ingredientTechnicalData: { type: "hop", alphaAcidPctTypical: 12, hopForm: "pellet" },
+          amountEnteredQuantity: 60,
+          amountEnteredUnit: "g",
+          amountNormalizedQuantity: 60,
+          amountNormalizedUnit: "g",
+          stage: "fermentation",
+          timeOffset: null,
+          stepMeta: { useType: "dry_hop", durationDays: 4 },
+          inventoryIntentMode: "catalog",
+          inventorySelectionMeta: null,
+          externalImportMeta: null,
+          createdAt: new Date("2026-01-01T00:00:00.000Z"),
+          updatedAt: new Date("2026-01-01T00:00:00.000Z")
+        }
+      ]
+    };
+
+    const snapshot = buildBrewPlanSnapshot(withDryHop);
+    expect(snapshot.dryHopPlan).toHaveLength(1);
+    expect(snapshot.dryHopPlan[0]).toMatchObject({
+      linePersistentKey: "00000000-0000-4000-8000-000000000114",
+      name: "Citra",
+      category: "hop",
+      stage: "fermentation"
+    });
   });
 });

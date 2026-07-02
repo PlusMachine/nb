@@ -264,8 +264,12 @@ export function InventoryQuantityEditor({
           </button>
         )
       ) : null}
-      {quantityError ? <p className="text-xs text-red-600">{quantityError}</p> : null}
-      {feedback ? <p className={`text-xs ${feedback.ok ? "text-emerald-700" : "text-red-600"}`}>{feedback.message}</p> : null}
+      {quantityError ? <p role="alert" className="text-xs text-red-600">{quantityError}</p> : null}
+      {feedback ? (
+        <p role={feedback.ok ? "status" : "alert"} className={`text-xs ${feedback.ok ? "text-emerald-700" : "text-red-600"}`}>
+          {feedback.message}
+        </p>
+      ) : null}
     </form>
   );
 }

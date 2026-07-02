@@ -5,7 +5,9 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Eye, Loader2, Save, Star, Trash2 } from "lucide-react";
 
+import { Button } from "@nb/ui";
 import { ContentBodyEditor } from "@/components/content/content-body-editor";
+import { ConfirmActionDialog } from "@/components/shared/confirm-action-dialog";
 import {
   createContentArticleAction,
   deleteContentArticleAction,
@@ -45,6 +47,7 @@ export function ArticleEditorForm({
 
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState<{ ok: boolean; text: string } | null>(null);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const inFlight = useRef(false);
 
   const buildPayload = () => ({
@@ -153,10 +156,10 @@ export function ArticleEditorForm({
         ) : null}
 
         <div className="flex items-center gap-2">
-          <button type="submit" disabled={busy} className="inline-flex h-10 items-center gap-1.5 rounded-lg bg-zinc-900 px-4 text-sm font-medium text-white transition hover:bg-zinc-800 disabled:opacity-60">
+          <Button type="submit" size="md" disabled={busy}>
             {busy ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden /> : <Save className="h-4 w-4" aria-hidden />}
             {article ? "Сохранить" : "Создать черновик"}
-          </button>
+          </Button>
         </div>
       </form>
 
@@ -173,23 +176,44 @@ export function ArticleEditorForm({
               </Link>
             ) : null}
             {capabilities.canPublish ? (
-              <button type="button" disabled={busy} onClick={() => run(() => setContentArticlePublicationAction(article.id, !isPublished), () => router.refresh())} className="inline-flex h-9 items-center gap-1.5 rounded-lg border border-zinc-200 px-3 text-sm font-medium text-zinc-700 transition hover:bg-zinc-50 disabled:opacity-60">
+              <Button type="button" variant="outline" size="sm" disabled={busy} onClick={() => run(() => setContentArticlePublicationAction(article.id, !isPublished), () => router.refresh())}>
                 {isPublished ? "Снять с публикации" : "Опубликовать"}
-              </button>
+              </Button>
             ) : null}
             {capabilities.canFeatureOnHome ? (
-              <button type="button" disabled={busy} onClick={() => run(() => setContentArticleFeaturedAction(article.id, !article.isFeatured), () => router.refresh())} className="inline-flex h-9 items-center gap-1.5 rounded-lg border border-zinc-200 px-3 text-sm font-medium text-zinc-700 transition hover:bg-zinc-50 disabled:opacity-60">
+              <Button type="button" variant="outline" size="sm" disabled={busy} onClick={() => run(() => setContentArticleFeaturedAction(article.id, !article.isFeatured), () => router.refresh())}>
                 <Star className={`h-4 w-4 ${article.isFeatured ? "fill-amber-400 text-amber-500" : ""}`} aria-hidden />
                 {article.isFeatured ? "Убрать с главной" : "На главную"}
-              </button>
+              </Button>
             ) : null}
             {capabilities.canDelete ? (
-              <button type="button" disabled={busy} onClick={() => { if (window.confirm("Удалить статью безвозвратно?")) { void run(() => deleteContentArticleAction(article.id), () => router.push("/admin/articles")); } }} className="inline-flex h-9 items-center gap-1.5 rounded-lg border border-rose-200 px-3 text-sm font-medium text-rose-600 transition hover:bg-rose-50 disabled:opacity-60">
+              <Button type="button" variant="dangerOutline" size="sm" disabled={busy} onClick={() => setDeleteDialogOpen(true)}>
                 <Trash2 className="h-4 w-4" aria-hidden /> Удалить
-              </button>
+              </Button>
             ) : null}
           </div>
         </div>
+      ) : null}
+
+      {article && capabilities.canDelete ? (
+        <ConfirmActionDialog
+          open={deleteDialogOpen}
+          title="Удалить статью?"
+          description="Статья будет удалена без возможности восстановления."
+          confirmLabel="Удалить статью"
+          pending={busy}
+          error={message && !message.ok ? message.text : null}
+          onClose={() => setDeleteDialogOpen(false)}
+          onConfirm={() => {
+            void run(
+              () => deleteContentArticleAction(article.id),
+              () => {
+                setDeleteDialogOpen(false);
+                router.push("/admin/articles");
+              }
+            );
+          }}
+        />
       ) : null}
     </div>
   );

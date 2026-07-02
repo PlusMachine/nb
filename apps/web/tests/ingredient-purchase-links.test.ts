@@ -15,7 +15,7 @@ import {
   saveIngredientPurchaseLinkRow
 } from "../components/ingredients/ingredient-purchase-links-field";
 import {
-  IngredientPurchaseLinksDialog,
+  IngredientPurchaseLinksEditor,
   resolveIngredientPurchaseLinkInitialEditingId,
   shouldCloseIngredientPurchaseLinksOnCancel
 } from "../components/ingredients/ingredient-purchase-links-manager";
@@ -88,9 +88,10 @@ describe("ingredient purchase links", () => {
   });
 
   it("renders purchase links inside an editable sheet surface instead of raw URLs", () => {
-    const html = renderToStaticMarkup(React.createElement(IngredientPurchaseLinksDialog, {
-      open: true,
-      onClose: () => undefined,
+    // IngredientPurchaseLinksDialog оборачивает этот контент в @nb/ui Dialog
+    // (Radix Portal — рендерится только на клиенте после mount), поэтому сам
+    // список ссылок проверяем через IngredientPurchaseLinksEditor напрямую.
+    const html = renderToStaticMarkup(React.createElement(IngredientPurchaseLinksEditor, {
       reference: {
         source: "catalog",
         id: "cat-hop-1"
@@ -111,8 +112,6 @@ describe("ingredient purchase links", () => {
       ]
     }));
 
-    expect(html).toContain('role="dialog"');
-    expect(html).toContain("Ссылки на покупку");
     expect(html).toContain("Ozon");
     expect(html).toContain("ozon.ru");
     expect(html).toContain("Колба");
@@ -155,9 +154,7 @@ describe("ingredient purchase links", () => {
   });
 
   it("opens straight into link input when empty-state auto-create is enabled", () => {
-    const html = renderToStaticMarkup(React.createElement(IngredientPurchaseLinksDialog, {
-      open: true,
-      onClose: () => undefined,
+    const html = renderToStaticMarkup(React.createElement(IngredientPurchaseLinksEditor, {
       reference: {
         source: "catalog",
         id: "cat-hop-empty"

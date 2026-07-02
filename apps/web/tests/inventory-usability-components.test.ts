@@ -33,6 +33,9 @@ import {
 } from "../components/inventory/inventory-ingredient-category-grid";
 import {
   InventoryItemDetailsEditor,
+  createFormState,
+  isWaterTreatmentAcidSuggestion,
+  resolveInventoryEditorInitialSelection,
   resolveInventoryEditorQuickStartData,
   resolveInventoryEditorSelectionResetState,
   resolveInventoryEditorSelectionResetTaxonomy,
@@ -40,6 +43,7 @@ import {
   shouldShowInventoryEditorPickerStage,
   shouldShowInventoryEditorRequiredFields
 } from "../components/inventory/inventory-item-details-editor";
+import { resolveInventoryIngredientContextSummaryFromSuggestion } from "../components/inventory/inventory-ingredient-context-summary";
 import {
   canMarkInventoryItemFinished,
   isInventoryQuantityDraftDirty,
@@ -673,27 +677,29 @@ describe("inventory usability components", () => {
       }
     };
 
+    // InventoryItemDetailsEditor теперь оборачивает форму в @nb/ui Dialog
+    // (Radix Portal рендерится только после монтирования на клиенте, поэтому
+    // открытое состояние недоступно через renderToStaticMarkup) — проверяем
+    // те же решения о стадии редактора через его чистые предикаты/селекторы.
     const html = renderToStaticMarkup(React.createElement(InventoryItemDetailsEditor, {
       item,
       preferredCurrency: "RUB",
-      currencyRates: { RUB: 100, USD: 7900, EUR: 9170 },
-      initiallyOpen: true
+      currencyRates: { RUB: 100, USD: 7900, EUR: 9170 }
     }));
 
-    expect(html).toContain("Редактировать ингредиент на складе");
-    expect(html).toContain('data-testid="inventory-editor-selection-stage"');
-    expect(html).toContain('data-testid="inventory-editor-context-summary"');
-    expect(html).toContain("Солод · Каталог");
-    expect(html).toContain("Пилснер");
-    expect(html).toContain("Заменить ингредиент");
-    expect(html).toContain('data-testid="inventory-editor-required-fields"');
-    expect(html).toContain("Количество *");
-    expect(html).toContain("Ед. изм. *");
-    expect(html).toContain('data-testid="inventory-editor-optional-disclosure"');
-    expect(html).not.toContain('data-testid="inventory-editor-selection-controls"');
-    expect(html).not.toContain('data-testid="inventory-editor-picker-stage"');
-    expect(html).not.toContain('data-testid="ingredient-picker-quick-start"');
-    expect(html).not.toContain("Начните вводить название ингредиента");
+    expect(html).toContain("Редактировать карточку");
+
+    const selectedSuggestion = resolveInventoryEditorInitialSelection(item.source, item.enteredUnit);
+    expect(selectedSuggestion.displayName).toBe("Пилснер");
+    expect(shouldShowInventoryEditorPickerStage({
+      category: item.source.category,
+      selected: selectedSuggestion
+    })).toBe(false);
+    expect(shouldShowInventoryEditorRequiredFields(selectedSuggestion)).toBe(true);
+    expect(shouldShowInventoryEditorOptionalSection(selectedSuggestion)).toBe(true);
+    expect(resolveInventoryIngredientContextSummaryFromSuggestion(selectedSuggestion, {
+      sourceLabelStyle: "short"
+    })).toBe("Солод · Каталог");
   });
 
   it("shows acid concentration in inventory item edit flow", () => {
@@ -755,15 +761,22 @@ describe("inventory usability components", () => {
       }
     };
 
+    // Как и выше: открытое состояние диалога недоступно через
+    // renderToStaticMarkup после перехода на @nb/ui Dialog, поэтому проверяем
+    // выбор поля концентрации и предзаполненное значение напрямую.
     const html = renderToStaticMarkup(React.createElement(InventoryItemDetailsEditor, {
       item,
       preferredCurrency: "RUB",
-      currencyRates: { RUB: 100, USD: 7900, EUR: 9170 },
-      initiallyOpen: true
+      currencyRates: { RUB: 100, USD: 7900, EUR: 9170 }
     }));
 
-    expect(html).toContain("Концентрация кислоты, %");
-    expect(html).toContain('value="88"');
+    expect(html).toContain("Редактировать карточку");
+
+    const selectedSuggestion = resolveInventoryEditorInitialSelection(item.source, item.enteredUnit);
+    expect(isWaterTreatmentAcidSuggestion(selectedSuggestion)).toBe(true);
+
+    const form = createFormState(item, "RUB", { RUB: 100, USD: 7900, EUR: 9170 });
+    expect(form.waterTreatmentConcentrationPct).toBe("88");
   });
 
   it("returns the inventory editor to picker stage when selection is cleared", () => {

@@ -20,6 +20,7 @@ import {
 import React, { useEffect, useMemo, useState } from "react";
 
 import { calibrateWcf, convertBrewingUnitGroup, gravityToSg, sgToBrix, sgToPlato } from "@nb/brewing-core";
+import { Button } from "@nb/ui";
 
 import { calculatorBySlug, isCalculatorVerified, type CalculatorSlug } from "@/features/calculators/catalog";
 import {
@@ -598,14 +599,15 @@ function WcfCalibrator({ onApply }: { onApply: (wcf: number) => void }) {
         )}
       </div>
 
-      <button
+      <Button
         type="button"
+        size="md"
         disabled={wcf == null}
         onClick={() => { if (wcf != null) { onApply(wcf); } }}
-        className="h-10 w-full rounded-lg bg-zinc-900 px-3 text-sm font-medium text-white transition-colors hover:bg-zinc-800 disabled:cursor-not-allowed disabled:bg-zinc-200 disabled:text-zinc-400"
+        className="w-full"
       >
         Применить коэффициент
-      </button>
+      </Button>
       <p className="text-[11px] leading-4 text-zinc-400">
         Делается один раз — дальше значение постоянно для твоего прибора. Замеряй по суслу до брожения (без спирта).
       </p>

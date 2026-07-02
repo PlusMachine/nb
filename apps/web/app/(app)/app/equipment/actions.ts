@@ -57,11 +57,20 @@ export const updateEquipmentProfileAction = async (profileId: string, formData: 
   redirect("/app/equipment");
 };
 
-export const deleteEquipmentProfileAction = async (profileId: string) => {
-  const user = await requireUser();
-  await deleteEquipmentProfile(user.id, profileId);
-  refreshEquipmentPaths();
-  redirect("/app/equipment");
+export const deleteEquipmentProfileAction = async (profileId: string): Promise<{ ok: boolean; message: string }> => {
+  try {
+    const user = await requireUser();
+    await deleteEquipmentProfile(user.id, profileId);
+    refreshEquipmentPaths();
+
+    return { ok: true, message: "Профиль оборудования удален." };
+  } catch (error) {
+    if (error instanceof Error && error.message === "NOT_FOUND") {
+      return { ok: false, message: "Профиль не найден или уже удален." };
+    }
+
+    return { ok: false, message: "Не удалось удалить профиль оборудования. Попробуйте еще раз." };
+  }
 };
 
 export const duplicateEquipmentProfileAction = async (profileId: string) => {

@@ -1,7 +1,8 @@
 "use client";
 
 import React from "react";
-import { useEffect } from "react";
+
+import { Button, Dialog, DialogFooter } from "@nb/ui";
 
 type Props = {
   open: boolean;
@@ -30,49 +31,25 @@ export function ConfirmActionDialog({
   onConfirm,
   onClose
 }: Props) {
-  useEffect(() => {
-    if (!open) {
-      return undefined;
-    }
-
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape" && !pending) {
-        onClose();
-      }
-    };
-
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [open, pending, onClose]);
-
-  if (!open) {
-    return null;
-  }
-
   const iconClassName = tone === "primary"
     ? "bg-emerald-50 text-emerald-700"
     : "bg-red-50 text-red-700";
-  const confirmButtonClassName = tone === "primary"
-    ? "bg-emerald-600 hover:bg-emerald-700"
-    : "bg-red-600 hover:bg-red-700";
 
   return (
-    <div
-      className="fixed inset-0 z-50 flex items-end justify-center bg-zinc-950/45 p-3 sm:items-center"
-      role="dialog"
-      aria-modal="true"
-      aria-label={title}
-      onClick={() => {
-        if (!pending) {
+    <Dialog
+      open={open}
+      onOpenChange={(next) => {
+        if (!next) {
           onClose();
         }
       }}
+      title={title}
+      hideTitle
+      size="md"
+      guard={{ isDirty: () => pending, onGuardedClose: () => {} }}
     >
-      <div
-        className="w-full max-w-md rounded-2xl border border-zinc-200 bg-white p-5 shadow-2xl"
-        onClick={(event) => event.stopPropagation()}
-      >
-        <div className="mb-4 flex items-start gap-3">
+      <div className="p-5">
+        <div className="flex items-start gap-3">
           <div className={`mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-full ${iconClassName}`}>
             <span className="text-lg font-semibold">!</span>
           </div>
@@ -85,31 +62,21 @@ export function ConfirmActionDialog({
         {error ? (
           <p
             role="alert"
-            className="mb-4 rounded-lg bg-rose-50 px-3 py-2 text-sm text-rose-700 ring-1 ring-inset ring-rose-200"
+            className="mt-4 rounded-lg bg-rose-50 px-3 py-2 text-sm text-rose-700 ring-1 ring-inset ring-rose-200"
           >
             {error}
           </p>
         ) : null}
-
-        <div className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
-          <button
-            type="button"
-            onClick={onClose}
-            disabled={pending}
-            className="rounded-xl border border-zinc-200 px-4 py-2 text-sm font-medium text-zinc-700 transition-colors hover:bg-zinc-100 disabled:opacity-60"
-          >
-            {cancelLabel}
-          </button>
-          <button
-            type="button"
-            onClick={onConfirm}
-            disabled={pending}
-            className={`rounded-xl px-4 py-2 text-sm font-medium text-white transition-colors disabled:opacity-60 ${confirmButtonClassName}`}
-          >
-            {pending ? (pendingLabel ?? `${confirmLabel}...`) : confirmLabel}
-          </button>
-        </div>
       </div>
-    </div>
+
+      <DialogFooter>
+        <Button type="button" variant="outline" onClick={onClose} disabled={pending}>
+          {cancelLabel}
+        </Button>
+        <Button type="button" variant={tone} onClick={onConfirm} disabled={pending}>
+          {pending ? (pendingLabel ?? `${confirmLabel}...`) : confirmLabel}
+        </Button>
+      </DialogFooter>
+    </Dialog>
   );
 }

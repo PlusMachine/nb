@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useCallback, useEffect, useMemo, useRef, useState, useTransition } from "react";
+import React, { useCallback, useMemo, useTransition } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import {
   ArrowUpDown,
@@ -15,6 +15,7 @@ import {
   Wheat
 } from "lucide-react";
 
+import { DropdownMenu, type DropdownMenuItem } from "@nb/ui";
 import type { IngredientCategory } from "@/features/ingredients/contracts";
 import {
   consumableInventoryAdditiveGroups,
@@ -40,6 +41,7 @@ import {
 } from "@/features/inventory/page-model";
 import type { InventorySortOption } from "@/features/inventory/contracts";
 import type { InventorySummaryDto } from "@/features/inventory/contracts";
+import { useDebouncedUrlSearch } from "@/components/shared/use-debounced-url-search";
 
 import { InventorySearchInput } from "./inventory-search-input";
 
@@ -154,13 +156,6 @@ export function InventoryToolbar({
   const pathname = usePathname();
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
-  const [searchValue, setSearchValue] = useState(search);
-  const [sortOpen, setSortOpen] = useState(false);
-  const sortRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    setSearchValue(search);
-  }, [search]);
 
   const currentHref = useMemo(() => buildInventoryToolbarHref(pathname, {
     search,
@@ -181,43 +176,20 @@ export function InventoryToolbar({
     });
   }, [currentHref, router]);
 
-  useEffect(() => {
-    const trimmedLocalSearch = searchValue.trim();
-    const trimmedServerSearch = search.trim();
-    if (trimmedLocalSearch === trimmedServerSearch) {
-      return;
-    }
+  const buildSearchHref = useCallback((nextSearch: string) => buildInventoryToolbarHref(pathname, {
+    search: nextSearch,
+    category,
+    subtype,
+    group,
+    showFinished,
+    sort
+  }), [category, group, pathname, showFinished, sort, subtype]);
 
-    const timer = window.setTimeout(() => {
-      replaceHref(buildInventoryToolbarHref(pathname, {
-        search: trimmedLocalSearch,
-        category,
-        subtype,
-        group,
-        showFinished,
-        sort
-      }));
-    }, searchDebounceMs);
-
-    return () => {
-      window.clearTimeout(timer);
-    };
-  }, [category, group, pathname, replaceHref, search, searchValue, showFinished, sort, subtype]);
-
-  useEffect(() => {
-    if (!sortOpen) {
-      return;
-    }
-
-    const handleClickOutside = (event: MouseEvent) => {
-      if (sortRef.current && !sortRef.current.contains(event.target as Node)) {
-        setSortOpen(false);
-      }
-    };
-
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, [sortOpen]);
+  const {
+    inputValue: searchValue,
+    setInputValue: setSearchValue,
+    isPending: isSearchPending
+  } = useDebouncedUrlSearch({ value: search, buildHref: buildSearchHref, debounceMs: searchDebounceMs });
 
   const hasFilters = hasActiveInventoryFilters({
     search: searchValue,
@@ -484,49 +456,37 @@ export function InventoryToolbar({
             </button>
           ) : null}
 
-          <div ref={sortRef} className="relative">
-            <button
-              type="button"
-              onClick={() => setSortOpen(!sortOpen)}
-              title="Сортировка"
-              className={`flex items-center gap-1.5 rounded-lg border px-3 py-2 text-xs font-medium transition-all duration-150 ${
-                sort !== defaultInventorySortOption
-                  ? "border-blue-200 bg-blue-50 text-blue-800 shadow-sm"
-                  : "border-zinc-200 bg-white text-zinc-500 hover:border-zinc-300 hover:bg-zinc-50"
-              }`}
-            >
-              <ArrowUpDown className="h-3.5 w-3.5" />
-              <span className="hidden sm:inline">{inventorySortLabels[sort]}</span>
-            </button>
-
-            {sortOpen ? (
-              <div className="absolute right-0 z-20 mt-1.5 w-52 rounded-xl border border-zinc-200 bg-white py-1 shadow-xl ring-1 ring-black/[0.04]">
-                {Object.entries(inventorySortLabels).map(([value, label]) => (
-                  <button
-                    key={value}
-                    type="button"
-                    onClick={() => {
-                      replaceHref(buildInventoryToolbarHref(pathname, {
-                        search: searchValue,
-                        category,
-                        subtype,
-                        group,
-                        showFinished,
-                        sort: value as InventorySortOption
-                      }));
-                      setSortOpen(false);
-                    }}
-                    className={`flex w-full items-center justify-between px-3.5 py-2.5 text-left text-sm transition-colors hover:bg-zinc-50 ${
-                      value === sort ? "font-medium text-zinc-950" : "text-zinc-600"
-                    }`}
-                  >
-                    {label}
-                    {value === sort ? <Check className="h-4 w-4 text-blue-600" /> : null}
-                  </button>
-                ))}
-              </div>
-            ) : null}
-          </div>
+          <DropdownMenu
+            trigger={
+              <button
+                type="button"
+                title="Сортировка"
+                className={`flex items-center gap-1.5 rounded-lg border px-3 py-2 text-xs font-medium transition-all duration-150 ${
+                  sort !== defaultInventorySortOption
+                    ? "border-blue-200 bg-blue-50 text-blue-800 shadow-sm"
+                    : "border-zinc-200 bg-white text-zinc-500 hover:border-zinc-300 hover:bg-zinc-50"
+                }`}
+              >
+                <ArrowUpDown className="h-3.5 w-3.5" />
+                <span className="hidden sm:inline">{inventorySortLabels[sort]}</span>
+              </button>
+            }
+            items={Object.entries(inventorySortLabels).map(([value, label]): DropdownMenuItem => ({
+              key: value,
+              label,
+              icon: value === sort ? <Check className="h-4 w-4 text-blue-600" /> : undefined,
+              onSelect: () => replaceHref(buildInventoryToolbarHref(pathname, {
+                search: searchValue,
+                category,
+                subtype,
+                group,
+                showFinished,
+                sort: value as InventorySortOption
+              }))
+            }))}
+            align="end"
+            aria-label="Сортировка"
+          />
 
           {hasFilters ? (
             <button
@@ -552,7 +512,7 @@ export function InventoryToolbar({
         </div>
       </div>
 
-      {isPending ? (
+      {isPending || isSearchPending ? (
         <div className="flex items-center gap-2 text-xs text-zinc-400">
           <div className="h-3 w-3 animate-spin rounded-full border-2 border-zinc-300 border-t-zinc-600" />
           Обновляем список…
