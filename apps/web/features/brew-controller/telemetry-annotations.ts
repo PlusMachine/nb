@@ -2,7 +2,7 @@
 //  features/brew-controller/telemetry-annotations.ts
 //  Чистое ядро событийных аннотаций графика телеметрии: из последовательности
 //  исторических точек выделяет СМЕНЫ СТАДИЙ (вертикальные метки «засыпь / кипение
-//  / хмелестояние / авария …»). Без React/DOM — тестируется юнитами.
+//  / вирпул /авария …»). Без React/DOM — тестируется юнитами.
 //
 //  Авторитет — поле stage (bf_stage_t). Метка ставится только на фронте (реальная
 //  смена стадии), а не на каждом кадре: MASH_STEP держится через все паузы затора
@@ -34,7 +34,7 @@ const STAGE_SHORT_LABEL: Record<number, string> = {
   [STAGE_NUM.PROMPT_REMOVE_MALT]: "Убрать солод",
   [STAGE_NUM.BOIL_RAMP]: "Разогрев",
   [STAGE_NUM.BOILING]: "Кипение",
-  [STAGE_NUM.HOP_STAND]: "Хмелестояние",
+  [STAGE_NUM.HOP_STAND]: "Вирпул",
   [STAGE_NUM.COOLING]: "Охлаждение",
   [STAGE_NUM.DONE]: "Готово",
   [STAGE_NUM.PAUSED]: "Пауза",

@@ -15,7 +15,6 @@ import { BrewNotes } from "@/features/brew-batches/components/brew-notes";
 import { BrewDayGuide } from "@/features/brew-batches/components/brew-day-guide";
 import { BrewInventory } from "@/features/brew-batches/components/brew-inventory";
 import { LiveDashboard } from "@/features/brew-batches/components/live-dashboard";
-import { TelemetryChart } from "@/features/brew-batches/components/telemetry-chart";
 
 const dateFmt = new Intl.DateTimeFormat("ru-RU", { day: "numeric", month: "long", year: "numeric" });
 const fmtDate = (value: Date | null) => (value ? dateFmt.format(new Date(value)) : null);
@@ -44,6 +43,12 @@ export default async function BrewBatchDetailPage({ params }: { params: Promise<
   const completed = fmtDate(batch.completedAt);
   const planned = fmtDate(batch.plannedFor);
 
+  // Атрибуция источника: партию можно сварить из чужого рецепта без клона —
+  // тогда честно указываем автора (по снапшоту, переживает удаление источника).
+  const recipeSnapshot = batch.recipeSnapshot as { authorId?: string | null; authorName?: string | null } | null;
+  const sourceAuthorName = recipeSnapshot?.authorName ?? null;
+  const isForeignRecipe = Boolean(recipeSnapshot?.authorId && recipeSnapshot.authorId !== batch.userId);
+
   return (
     <div className="space-y-6">
       <div>
@@ -62,6 +67,7 @@ export default async function BrewBatchDetailPage({ params }: { params: Promise<
         </div>
         <p className="text-sm text-zinc-500">
           {batch.brewPlanSnapshot.recipe.title}
+          {isForeignRecipe && sourceAuthorName ? <span className="text-zinc-400"> · автор {sourceAuthorName}</span> : null}
           {completed ? ` · завершена ${completed}` : started ? ` · начата ${started}` : planned ? ` · запланирована на ${planned}` : ""}
         </p>
       </header>
@@ -85,12 +91,11 @@ export default async function BrewBatchDetailPage({ params }: { params: Promise<
           <h2 className="text-base font-semibold text-zinc-900">Устройство</h2>
           <LiveDashboard
             source={{ kind: "batch", brewBatchId: batch.id }}
-            title={batch.name}
-            subtitle={`${batch.brewPlanSnapshot.recipe.title}${device?.name ? ` · ${device.name}` : ""}`}
+            subtitle={device?.name ?? null}
             hasDevice={hasDevice}
             channel={device ? deviceChannel(device) : null}
+            initialHistory={initialHistory}
           />
-          <TelemetryChart source={{ kind: "batch", brewBatchId: batch.id }} hasDevice={hasDevice} initial={initialHistory} />
         </div>
       ) : null}
     </div>

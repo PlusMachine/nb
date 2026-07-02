@@ -1,5 +1,6 @@
-import { and, db, eq, inArray, ingredients, recipeIngredients, recipes } from "@nb/db";
-import { roundTo } from "@nb/brewing-core";
+import { and, db, eq, inArray, ingredients, recipeImages, recipeIngredients, recipes } from "@nb/db";
+import { getBeerStyleById, getBjcpArticleHrefByStyleId, roundTo } from "@nb/brewing-core";
+import { getBjcpStyleHeroImageByBjcpId } from "@nb/content";
 
 import {
   resolveIngredientMatchKey,
@@ -526,6 +527,60 @@ const computeMatchForRecipeRow = (
   });
 };
 
+// Отранжированные строки матча → BrewableRecipeDto с презентацией карточки в
+// языке витрины /recipes: обложка (фото рецепта → фото BJCP-стиля → заливка по
+// SRM), стиль и ссылка на BJCP — тем же способом, что listAuthorRecipeCards.
+// Hero-фото тянем ОДНИМ батч-запросом по уже отобранным (top-N) рецептам, а не
+// по всему пулу кандидатов, — так это не превращается в N+1 и не грузит фото
+// того, что не покажем.
+const toBrewableRecipeDtos = async (
+  entries: { recipe: CandidateRecipeRow; summary: RecipeMatchDto }[]
+): Promise<BrewableRecipeDto[]> => {
+  const heroImageIds = [...new Set(
+    entries.map((entry) => entry.recipe.heroImageId).filter((id): id is string => Boolean(id))
+  )];
+  const heroRows = heroImageIds.length
+    ? await db
+        .select({ id: recipeImages.id, thumbKey: recipeImages.storageKeyThumb, blurDataUrl: recipeImages.blurDataUrl })
+        .from(recipeImages)
+        .where(inArray(recipeImages.id, heroImageIds))
+    : [];
+  const heroById = new Map(heroRows.map((row) => [row.id, row]));
+  const styleHeroImageByBjcpId = await getBjcpStyleHeroImageByBjcpId();
+
+  return entries.map(({ recipe, summary }) => {
+    const style = getBeerStyleById(recipe.styleId);
+    const heroRow = recipe.heroImageId ? heroById.get(recipe.heroImageId) : undefined;
+    const heroImage =
+      heroRow?.thumbKey
+        ? { thumbUrl: `/api/recipe-images/${recipe.heroImageId}/thumb`, blurDataUrl: heroRow.blurDataUrl ?? null }
+        : null;
+    // Фото BJCP-стиля показываем только когда у рецепта нет своего фото.
+    const styleImageUrl = !heroImage && style ? styleHeroImageByBjcpId.get(style.bjcpId) ?? null : null;
+
+    return {
+      recipeId: recipe.id,
+      slug: recipe.slug,
+      title: recipe.title,
+      matchPercent: summary.matchPercent,
+      label: summary.label,
+      totalLines: summary.totalLines,
+      coveredLines: summary.coveredLines,
+      missingCount: summary.missingCount,
+      missingNames: summary.lines
+        .filter((line) => line.status === "missing")
+        .map((line) => line.ingredientDisplayName)
+        .filter((name): name is string => Boolean(name)),
+      styleName: style ? style.nameRu ?? style.name : null,
+      styleCode: style ? style.bjcpId : null,
+      styleHref: getBjcpArticleHrefByStyleId(recipe.styleId),
+      colorSrm: recipe.color,
+      heroImage,
+      styleImageUrl
+    } satisfies BrewableRecipeDto;
+  });
+};
+
 export const findBrewableRecipesForUser = async (input: {
   userId: string;
   targetBatchVolumeL?: number | null;
@@ -556,30 +611,20 @@ export const findBrewableRecipesForUser = async (input: {
 
   const catalogById = await loadCatalogForRecipes(candidates);
 
-  const matches = candidates
+  const ranked = candidates
     .filter((recipe) => recipe.ingredients.length > 0)
     .map((recipe) => {
       const volume = resolveMatchFactor(recipe, {
         targetBatchVolumeL: input.targetBatchVolumeL,
         defaultBatchVolumeL
       });
-      const summary = computeMatchForRecipeRow(recipe, index, catalogById, volume);
-      return {
-        recipeId: recipe.id,
-        slug: recipe.slug,
-        title: recipe.title,
-        matchPercent: summary.matchPercent,
-        label: summary.label,
-        totalLines: summary.totalLines,
-        coveredLines: summary.coveredLines,
-        missingCount: summary.missingCount
-      } satisfies BrewableRecipeDto;
+      return { recipe, summary: computeMatchForRecipeRow(recipe, index, catalogById, volume) };
     })
-    .filter((recipe) => recipe.matchPercent >= minMatchPercent)
-    .sort((a, b) => b.matchPercent - a.matchPercent || b.coveredLines - a.coveredLines)
+    .filter(({ summary }) => summary.matchPercent >= minMatchPercent)
+    .sort((a, b) => b.summary.matchPercent - a.summary.matchPercent || b.summary.coveredLines - a.summary.coveredLines)
     .slice(0, limit);
 
-  return matches;
+  return toBrewableRecipeDtos(ranked);
 };
 
 // --- публичный API: свои рецепты, которые можно сварить прямо сейчас (дашборд) ---
@@ -627,7 +672,7 @@ export const findBrewableOwnRecipesForUser = async (input: {
 
   const catalogById = await loadCatalogForRecipes(candidates);
 
-  return candidates
+  const ranked = candidates
     .map((recipe) => {
       const volume = resolveMatchFactor(recipe, {
         targetBatchVolumeL: input.targetBatchVolumeL,
@@ -637,17 +682,9 @@ export const findBrewableOwnRecipesForUser = async (input: {
     })
     .filter(({ summary }) => resolveBrewabilityBadge(summary).tier === "ready")
     .sort((a, b) => b.summary.matchPercent - a.summary.matchPercent || b.summary.coveredLines - a.summary.coveredLines)
-    .slice(0, limit)
-    .map(({ recipe, summary }) => ({
-      recipeId: recipe.id,
-      slug: recipe.slug,
-      title: recipe.title,
-      matchPercent: summary.matchPercent,
-      label: summary.label,
-      totalLines: summary.totalLines,
-      coveredLines: summary.coveredLines,
-      missingCount: summary.missingCount
-    } satisfies BrewableRecipeDto));
+    .slice(0, limit);
+
+  return toBrewableRecipeDtos(ranked);
 };
 
 // --- публичный API: батч матча для заданных рецептов (для бейджей на карточках) ---

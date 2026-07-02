@@ -15,11 +15,10 @@
 //     оператор / закрыл вкладку → keepalive прекращается → нагрев OFF на плате.
 // =============================================================================
 import { useCallback, useEffect, useRef, useState } from "react";
-import { Flame, Power, Waves } from "lucide-react";
+import { Flame, Waves } from "lucide-react";
 
-import { SliderScaffold } from "@nb/ui";
+import { SliderScaffold, Button } from "@nb/ui";
 import {
-  cmdEnterManual,
   cmdExitManual,
   cmdManualSetpoint,
   cmdManualPwm,
@@ -50,9 +49,6 @@ type Props = {
 
 export function ManualControlCard({ telemetry, hasDevice, controlsHeld, isLive, pending, send }: Props) {
   const inManual = telemetry?.stageName === "MANUAL";
-  const running =
-    telemetry != null &&
-    !["IDLE", "DONE", "FAULT", "MANUAL"].includes(telemetry.stageName);
   // heatMode: 0=OFF; в ручном нагрев «включён», когда heatMode !== OFF.
   const heatEnabled = (telemetry?.heatMode ?? 0) !== 0;
   const pumpOn = telemetry?.pumpOn ?? false;
@@ -112,48 +108,23 @@ export function ManualControlCard({ telemetry, hasDevice, controlsHeld, isLive, 
   );
 
   if (!hasDevice) return null;
-
-  // --- вне ручного режима: вход -------------------------------------------
-  if (!inManual) {
-    return (
-      <section className="rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm">
-        <p className="text-sm font-semibold text-zinc-900">Ручной режим</p>
-        <p className="mt-1 text-sm text-zinc-500">
-          Прямое управление уставкой, мощностью и насосом. Эксклюзивно — управляет один сеанс.
-        </p>
-        {running ? (
-          <p className="mt-2 text-xs text-amber-700">Вход в ручной режим прервёт текущую варку.</p>
-        ) : null}
-        <button
-          type="button"
-          disabled={controlsDisabled}
-          onClick={() => void runFeedback(cmdEnterManual(), "Ручной режим включён")}
-          className="mt-3 inline-flex min-h-[44px] items-center gap-1.5 rounded-md border border-zinc-200 bg-white px-4 py-2 text-sm font-medium text-zinc-800 hover:bg-zinc-50 disabled:opacity-50"
-        >
-          <Power className="h-4 w-4" aria-hidden />
-          Войти в ручной режим
-        </button>
-        {msg ? <p className="mt-2 text-sm text-zinc-600">{msg}</p> : null}
-        {!controlsHeld && isLive ? (
-          <p className="mt-2 text-xs text-amber-700">Управляет другой сеанс — запросите перехват.</p>
-        ) : null}
-      </section>
-    );
-  }
+  // Ручной — по состоянию (§9): карта показывается ТОЛЬКО когда плата в MANUAL.
+  // Вход в ручной — из блока простоя «Пивоварня свободна» пульта L2, не отсюда.
+  if (!inManual) return null;
 
   // --- в ручном режиме -----------------------------------------------------
   return (
     <section className="rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm">
       <div className="flex flex-wrap items-center justify-between gap-2">
         <p className="text-sm font-semibold text-zinc-900">Ручной режим</p>
-        <button
-          type="button"
+        <Button
+          variant="outline"
+          size="sm"
           disabled={controlsDisabled}
           onClick={() => void runFeedback(cmdExitManual(), "Выход из ручного режима")}
-          className="rounded-md border border-zinc-200 px-3 py-1.5 text-xs font-medium text-zinc-700 hover:bg-zinc-50 disabled:opacity-50"
         >
           Выйти из ручного
-        </button>
+        </Button>
       </div>
 
       {/* Target (уставка). */}
@@ -211,18 +182,18 @@ export function ManualControlCard({ telemetry, hasDevice, controlsHeld, isLive, 
       {/* Тогглы: нагрев (hold-to-confirm вкл) + насос. */}
       <div className="mt-5 flex flex-wrap items-center gap-3 border-t border-zinc-100 pt-4">
         {heatEnabled ? (
-          <button
-            type="button"
+          <Button
+            variant="dangerOutline"
+            size="md"
             disabled={controlsDisabled}
             onClick={() => {
               setPendingHeat(false);
               void runFeedback(cmdManualHeat(false), "Нагрев выключен");
             }}
-            className="inline-flex min-h-[44px] items-center gap-1.5 rounded-md border border-red-200 bg-white px-4 py-2 text-sm font-medium text-red-700 hover:bg-red-50 disabled:opacity-50"
           >
             <Flame className="h-4 w-4" aria-hidden />
             Выключить нагрев
-          </button>
+          </Button>
         ) : (
           <HoldToConfirmButton
             label="Включить нагрев"
@@ -236,17 +207,15 @@ export function ManualControlCard({ telemetry, hasDevice, controlsHeld, isLive, 
           />
         )}
 
-        <button
-          type="button"
+        <Button
+          variant={pumpOn ? "primary" : "outline"}
+          size="md"
           disabled={controlsDisabled}
           onClick={() => void runFeedback(cmdManualPump(!pumpOn), pumpOn ? "Насос выключен" : "Насос включён")}
-          className={`inline-flex min-h-[44px] items-center gap-1.5 rounded-md border px-4 py-2 text-sm font-medium disabled:opacity-50 ${
-            pumpOn ? "border-emerald-200 bg-emerald-50 text-emerald-800" : "border-zinc-200 bg-white text-zinc-700 hover:bg-zinc-50"
-          }`}
         >
           <Waves className="h-4 w-4" aria-hidden />
           {pumpOn ? "Насос: ВКЛ" : "Насос: ВЫКЛ"}
-        </button>
+        </Button>
 
         {/* Живой статус нагрева: «применяется…» до подтверждения телеметрией. */}
         <span className="text-xs text-zinc-500">

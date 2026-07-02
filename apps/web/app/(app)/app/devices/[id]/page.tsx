@@ -1,6 +1,4 @@
-import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ChevronLeft } from "lucide-react";
 
 import { requireUser } from "@/lib/auth";
 import { getDeviceById, getDeviceHistory, isDemoDevice } from "@/features/devices/service";
@@ -42,22 +40,10 @@ export default async function DeviceConsolePage({ params }: { params: Promise<{ 
   };
 
   return (
-    <div className="space-y-6">
-      <div>
-        <Link
-          href="/app/devices"
-          className="inline-flex items-center gap-1 text-sm text-zinc-500 transition hover:text-zinc-800"
-        >
-          <ChevronLeft className="h-4 w-4" aria-hidden />
-          Все устройства
-        </Link>
-      </div>
-
-      <DeviceConsole
-        device={view}
-        initialHistory={initialHistory}
-        pushableRecipes={pushableRecipes}
-      />
-    </div>
+    <DeviceConsole
+      device={view}
+      initialHistory={initialHistory}
+      pushableRecipes={pushableRecipes}
+    />
   );
 }

@@ -2,7 +2,7 @@
 //  features/brew-controller/stage-timeline.ts
 //  Чистое ядро StageTimeline (интерактивная полоса стадий, зоны A/B). Сворачивает
 //  16 значений bf_stage_t в 5 макро-стадий «варочного дня» (Затор → Кипячение →
-//  Хмелестояние → Охлаждение → Готово) и вычисляет: какие пройдены, какая идёт
+//  Вирпул → Охлаждение → Готово) и вычисляет: какие пройдены, какая идёт
 //  сейчас и с какой долей заполнения, плюс overlay-состояния вне линейного
 //  прогресса (IDLE / отложенный старт / ПАУЗА / РУЧНОЙ / АВАРИЯ).
 //
@@ -21,7 +21,7 @@ export const MACRO_STAGE_ORDER: MacroStage[] = ["mash", "boil", "hop_stand", "co
 export const MACRO_STAGE_LABELS: Record<MacroStage, string> = {
   mash: "Затор",
   boil: "Кипячение",
-  hop_stand: "Хмелестояние",
+  hop_stand: "Вирпул",
   cooling: "Охлаждение",
   done: "Готово",
 };
@@ -30,7 +30,7 @@ export const MACRO_STAGE_LABELS: Record<MacroStage, string> = {
 export const MACRO_STAGE_MEMBERS: Record<MacroStage, string> = {
   mash: "Засыпь, паузы затора, мэшаут, промывка",
   boil: "Выход на кипение и кипячение",
-  hop_stand: "Хмелестояние / вирпул",
+  hop_stand: "Вирпул / хопстенд",
   cooling: "Охлаждение до температуры внесения дрожжей",
   done: "Варка завершена",
 };

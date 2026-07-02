@@ -29,7 +29,8 @@ export type BrewPlanSnapshot = z.infer<typeof brewPlanSnapshotSchema>;
 export type BrewBatchDto = {
   id: string;
   userId: string;
-  recipeId: string;
+  /** Исходный рецепт, если он ещё существует. NULL — источник удалён/скрыт; тогда варку ведёт снапшот. */
+  recipeId: string | null;
   status: BrewBatchStatus;
   name: string;
   /** Привязанный контроллер (brew_batches.device_id). NULL — варка без устройства. */
@@ -49,13 +50,40 @@ export type BrewBatchDto = {
   updatedAt: Date;
 };
 
+/**
+ * Снапшот рецепта в партии — самодостаточный слепок на старте варки: переживает
+ * удаление/правку/анпаблиш исходного рецепта (в т.ч. чужого при варке без клона).
+ * Помимо состава несёт таргеты (og/fg/abv) для сравнения план↔факт, когда живого
+ * рецепта уже нет, и атрибуцию автора для «по рецепту X от Y».
+ */
+export type BrewRecipeSnapshotLine = {
+  persistentKey: string;
+  displayName: string | null;
+  amount: number | null;
+  unit: string | null;
+  stage: string | null;
+  timeOffset: number | null;
+};
+
+export type BrewRecipeSnapshot = {
+  id: string;
+  title: string;
+  versionNumber: number;
+  og: number | null;
+  fg: number | null;
+  abv: number | null;
+  authorId: string | null;
+  authorName: string | null;
+  ingredients: BrewRecipeSnapshotLine[];
+};
+
 // Слим-проекция для списка варок: только то, что нужно карточке в списке,
 // без тяжёлых снапшотов плана/рецепта.
 export type BrewBatchListItem = {
   id: string;
   name: string;
   status: BrewBatchStatus;
-  recipeId: string;
+  recipeId: string | null;
   recipeTitle: string;
   hasDevice: boolean;
   plannedFor: Date | null;
@@ -242,7 +270,7 @@ export type BrewBatchInventoryLogEntry = {
 
 export type BrewBatchInventoryView = {
   brewBatchId: string;
-  recipeId: string;
+  recipeId: string | null;
   /** Есть незавершённое (не возвращённое) списание этой партии. */
   hasConsumed: boolean;
   /** Можно вернуть списанное на склад (есть нетто-списание). */

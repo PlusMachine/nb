@@ -1,6 +1,6 @@
-import { and, asc, brewBatches, brewMeasurements, count, db, desc, eq, inArray, max, brewTelemetry, recipes } from "@nb/db";
+import { and, asc, brewBatches, brewMeasurements, count, db, desc, eq, inArray, max, brewTelemetry, recipes, users } from "@nb/db";
 
-import { getOwnedRecipeById } from "../recipes/service";
+import { getRecipeById } from "../recipes/service";
 import { buildBrewPlanSnapshot } from "./brew-plan";
 import { applyBrewDayStepPatch, buildBrewDaySteps, normalizeBrewDayProgress } from "./brew-day";
 import { summarizeBrewMeasurements } from "./measurements";
@@ -53,7 +53,12 @@ export const createBrewBatchFromRecipe = async (
   recipeId: string,
   input: { name?: string | null; plannedFor?: Date | null } = {}
 ) => {
-  const recipe = await getOwnedRecipeById(userId, recipeId);
+  // Доступный рецепт: свой (любой статус) ИЛИ чужой published — БЕЗ клонирования.
+  const recipe = await getRecipeById(userId, recipeId);
+  const author = await db.query.users.findFirst({
+    where: eq(users.id, recipe.authorId),
+    columns: { displayName: true }
+  });
   const brewPlanSnapshot = buildBrewPlanSnapshot(recipe);
   const [created] = await db.insert(brewBatches).values({
     userId,
@@ -61,10 +66,17 @@ export const createBrewBatchFromRecipe = async (
     status: "planned",
     name: input.name?.trim() || `${recipe.title} brew`,
     brewPlanSnapshot,
+    // Самодостаточный слепок: таргеты og/fg/abv (сравнение план↔факт без живого
+    // рецепта) + атрибуция автора («по рецепту X от Y», в т.ч. для чужого).
     recipeSnapshot: {
       id: recipe.id,
       title: recipe.title,
       versionNumber: recipe.versionNumber,
+      og: recipe.og,
+      fg: recipe.fg,
+      abv: recipe.abv,
+      authorId: recipe.authorId,
+      authorName: author?.displayName ?? null,
       ingredients: recipe.ingredients.map((ingredient) => ({
         persistentKey: ingredient.persistentKey,
         displayName: ingredient.ingredientDisplayName ?? ingredient.ingredientDisplayNameSnapshot ?? null,
@@ -395,16 +407,26 @@ export const updateBrewBatchNotes = async (
   return mapBrewBatchDto(updated);
 };
 
-// Цели рецепта (расчётные og/fg/abv) для сравнения с фактом. Партия каскадно
-// привязана к рецепту (recipeId, onDelete cascade), поэтому рецепт всегда есть.
+// Цели рецепта (расчётные og/fg/abv) для сравнения с фактом. Берём из ЖИВОГО
+// рецепта, а если его уже нет (recipeId=NULL после удаления/анпаблиша источника
+// при варке без клона) — из снапшота партии: он самодостаточен.
 const getRecipeBrewTargets = async (
-  recipeId: string
+  batch: Pick<BrewBatchDto, "recipeId" | "recipeSnapshot">
 ): Promise<{ og: number | null; fg: number | null; abv: number | null } | null> => {
-  const row = await db.query.recipes.findFirst({
-    where: eq(recipes.id, recipeId),
-    columns: { og: true, fg: true, abv: true }
-  });
-  return row ? { og: row.og, fg: row.fg, abv: row.abv } : null;
+  if (batch.recipeId) {
+    const row = await db.query.recipes.findFirst({
+      where: eq(recipes.id, batch.recipeId),
+      columns: { og: true, fg: true, abv: true }
+    });
+    if (row) {
+      return { og: row.og, fg: row.fg, abv: row.abv };
+    }
+  }
+  const snapshot = batch.recipeSnapshot as { og?: number | null; fg?: number | null; abv?: number | null } | null;
+  if (snapshot && (snapshot.og != null || snapshot.fg != null || snapshot.abv != null)) {
+    return { og: snapshot.og ?? null, fg: snapshot.fg ?? null, abv: snapshot.abv ?? null };
+  }
+  return null;
 };
 
 /** Сборка детальной страницы партии: партия + журнал + сводка (OG/FG/ABV vs цель). */
@@ -421,7 +443,7 @@ export const getBrewBatchDetail = async (
       .where(and(eq(brewMeasurements.brewBatchId, brewBatchId), eq(brewMeasurements.userId, userId)))
       .orderBy(asc(brewMeasurements.takenAt), asc(brewMeasurements.createdAt))
       .then((rows) => rows.map(mapMeasurementDto)),
-    getRecipeBrewTargets(batch.recipeId)
+    getRecipeBrewTargets(batch)
   ]);
   return {
     batch,

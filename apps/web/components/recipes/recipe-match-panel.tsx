@@ -17,7 +17,7 @@ const statusMeta: Record<RecipeMatchLineStatus, { label: string; pill: string }>
 };
 
 const labelMeta: Record<RecipeMatchLabel, { text: string; accent: string }> = {
-  ready: { text: "Можно сварить из вашего склада", accent: "text-emerald-700" },
+  ready: { text: "Можно сварить из ваших запасов", accent: "text-emerald-700" },
   almost: { text: "Почти всё есть на складе", accent: "text-emerald-700" },
   partial: { text: "Часть ингредиентов уже есть", accent: "text-amber-700" },
   none: { text: "Подходящих ингредиентов на складе нет", accent: "text-zinc-500" }

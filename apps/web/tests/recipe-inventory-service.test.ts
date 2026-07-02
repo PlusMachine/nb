@@ -66,7 +66,11 @@ vi.mock("@nb/db", () => {
         findFirst: async (arg: any) => {
           const id = getEqValue(arg?.where, "id");
           const authorId = getEqValue(arg?.where, "authorId");
-          return mockState.recipes.find((recipe) => recipe.id === id && recipe.authorId === authorId) ?? null;
+          // ensureBrewableRecipe фильтрует только по id (доступ = свой/published);
+          // ensureOwnedRecipe — по id+authorId. Поддерживаем оба.
+          return mockState.recipes.find(
+            (recipe) => recipe.id === id && (authorId === undefined || recipe.authorId === authorId)
+          ) ?? null;
         }
       },
       recipeIngredients: {

@@ -2,7 +2,7 @@
 
 import React from "react";
 import Link from "next/link";
-import { CircleAlert, CircleCheck, ExternalLink, X } from "lucide-react";
+import { CircleCheck, ExternalLink, X } from "lucide-react";
 
 import {
   recipePublicationStateLabels,
@@ -39,14 +39,16 @@ function OwnerStatusBadge({ state }: { state: RecipePublicationState }) {
 
 function StyleFitBadge({ fit }: { fit: "in_style" | "deviations" }) {
   const ok = fit === "in_style";
+  // «Вне стиля» — факт, не ошибка: нейтральный серый и без тревожной иконки, чтобы
+  // не читалось как предупреждение. «В стиле» остаётся позитивным (зелёный + галочка).
   return (
     <span
-      className={`inline-flex shrink-0 items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-medium ${
-        ok ? "bg-emerald-50 text-emerald-700 ring-1 ring-emerald-200" : "bg-amber-50 text-amber-700 ring-1 ring-amber-200"
+      className={`inline-flex shrink-0 items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-medium ring-1 ${
+        ok ? "bg-emerald-50 text-emerald-700 ring-emerald-200" : "bg-zinc-100 text-zinc-600 ring-zinc-200"
       }`}
     >
-      {ok ? <CircleCheck className="h-3 w-3" aria-hidden /> : <CircleAlert className="h-3 w-3" aria-hidden />}
-      {ok ? "В стиле" : "Отклонения"}
+      {ok ? <CircleCheck className="h-3 w-3" aria-hidden /> : null}
+      {ok ? "В стиле" : "Вне стиля"}
     </span>
   );
 }

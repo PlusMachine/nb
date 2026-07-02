@@ -8,9 +8,12 @@ import { resolveBrewabilityBadge } from "@/features/recipes/brewability-badge";
 import { useRecipeMatches } from "./recipe-match-provider";
 
 /**
- * Бейдж «можно сварить» на карточке рецепта. Берёт матч из RecipeMatchProvider
+ * Бейдж готовности рецепта по складу пользователя. Берёт матч из RecipeMatchProvider
  * (после гидрации); для анонима / пустого склада / слабого совпадения ничего не
- * рендерит. Семантика — в resolveBrewabilityBadge (по типам ингредиентов).
+ * рендерит. Семантика — в resolveBrewabilityBadge (по типам ингредиентов). Градация
+ * на корне «хватать»: «Хватает всего» (все типы есть, количества достаточно) —
+ * зелёный; «Почти хватает» (типы есть, но количества под партию местами мало) —
+ * салатовый; «Не хватает N» (не достаёт 1–2 позиций) — жёлтый.
  */
 export function RecipeMatchBadge({ recipeId, className }: { recipeId: string; className?: string }) {
   const ctx = useRecipeMatches();
@@ -38,10 +41,10 @@ export function RecipeMatchBadge({ recipeId, className }: { recipeId: string; cl
     return (
       <span
         className={`${base} ${tone} ${className ?? ""}`}
-        title={badge.qtyShort ? "Ингредиенты есть, количества может не хватить" : undefined}
+        title={badge.qtyShort ? "Все ингредиенты есть, но количества под партию может не хватить" : undefined}
       >
         <CircleCheck className="h-3.5 w-3.5" aria-hidden />
-        Можно сварить
+        {badge.qtyShort ? "Почти хватает" : "Хватает всего"}
       </span>
     );
   }
@@ -52,7 +55,7 @@ export function RecipeMatchBadge({ recipeId, className }: { recipeId: string; cl
       title={`Не хватает ${badge.missing} ${badge.missing === 1 ? "ингредиента" : "ингредиентов"}`}
     >
       <CircleAlert className="h-3.5 w-3.5" aria-hidden />
-      Почти · {badge.missing}
+      Не хватает {badge.missing}
     </span>
   );
 }

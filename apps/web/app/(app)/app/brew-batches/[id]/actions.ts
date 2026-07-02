@@ -176,6 +176,9 @@ export const consumeBrewBatchInventoryAction = async (
     if (error instanceof Error && error.message === "INVALID_STATUS") {
       return { ok: false, message: "Списание доступно только для активной варки." };
     }
+    if (error instanceof Error && error.message === "RECIPE_UNAVAILABLE") {
+      return { ok: false, message: "Рецепт-источник больше недоступен — авто-списание невозможно." };
+    }
     if (error instanceof Error && error.message === "INSUFFICIENT_STOCK") {
       return { ok: false, message: "Недостаточно остатков на складе для списания." };
     }

@@ -95,11 +95,13 @@ const loadInventoryNames = async (userId: string, itemIds: string[]) => {
 const buildView = async (
   userId: string,
   brewBatchId: string,
-  recipeId: string
+  recipeId: string | null
 ): Promise<BrewBatchInventoryView> => {
   const [transactions, recipeConsumed] = await Promise.all([
     loadBatchTransactions(userId, brewBatchId),
-    recipeHasConsumedAllocations(userId, recipeId)
+    // Рецепт-скоупная защита от двойного списания неприменима, если источник
+    // удалён (recipeId=NULL) — журнал этой партии тогда самодостаточен.
+    recipeId ? recipeHasConsumedAllocations(userId, recipeId) : Promise.resolve(false)
   ]);
   const net = netByInventoryItem(transactions);
   const itemIds = [...new Set(transactions.map((txn) => txn.inventoryItemId))];
@@ -168,6 +170,12 @@ export const consumeBrewBatchInventory = async (
   }
   if (batch.status === "cancelled" || batch.status === "completed") {
     throw new Error("INVALID_STATUS");
+  }
+  // Списание тянет состав из рецепта-источника. Если его больше нет (варка без
+  // клона, источник удалён/скрыт) — авто-списание невозможно; варочный день/
+  // журнал при этом продолжают работать от снапшота.
+  if (!batch.recipeId) {
+    throw new Error("RECIPE_UNAVAILABLE");
   }
   if (await recipeHasConsumedAllocations(userId, batch.recipeId)) {
     throw new Error("ALREADY_CONSUMED");

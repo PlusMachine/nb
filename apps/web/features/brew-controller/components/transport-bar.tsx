@@ -5,10 +5,11 @@
 //  Пропустить/Стоп). Рутина в один тап, без модалок (кроме graceful STOP —
 //  двухшаг у родителя). Conditional visibility (Home Assistant): показываем лишь
 //  релевантные контролы вместо disabled-кладбища. Управление активно только у
-//  держателя аренды и при живой телеметрии.
+//  держателя аренды и при живой телеметрии. Кнопки — единая система @nb/ui.
 // =============================================================================
 import { Pause, Play, SkipForward, Square } from "lucide-react";
 
+import { Button } from "@nb/ui";
 import type { Stage } from "@nb/brewforge-protocol";
 
 // Стадии, в которых варка НЕ идёт (нет транспортных действий).
@@ -54,57 +55,28 @@ export function TransportBar({
   return (
     <div className="flex flex-wrap items-center gap-2">
       {isPaused ? (
-        <TransportButton onClick={onResume} disabled={disabled} tone="primary">
+        <Button variant="primary" size="md" onClick={onResume} disabled={disabled}>
           <Play className="h-4 w-4" aria-hidden />
           Продолжить
-        </TransportButton>
+        </Button>
       ) : (
-        <TransportButton onClick={onPause} disabled={disabled}>
+        <Button variant="outline" size="md" onClick={onPause} disabled={disabled}>
           <Pause className="h-4 w-4" aria-hidden />
           Пауза
-        </TransportButton>
+        </Button>
       )}
 
       {!isPaused ? (
-        <TransportButton onClick={onSkip} disabled={disabled}>
+        <Button variant="outline" size="md" onClick={onSkip} disabled={disabled}>
           <SkipForward className="h-4 w-4" aria-hidden />
-          Пропустить стадию
-        </TransportButton>
+          Далее
+        </Button>
       ) : null}
 
-      <TransportButton onClick={onStop} disabled={stopDisabled} tone="danger">
+      <Button variant="dangerOutline" size="md" onClick={onStop} disabled={stopDisabled}>
         <Square className="h-4 w-4" aria-hidden />
         Стоп
-      </TransportButton>
+      </Button>
     </div>
-  );
-}
-
-function TransportButton({
-  children,
-  onClick,
-  disabled,
-  tone = "default",
-}: {
-  children: React.ReactNode;
-  onClick: () => void;
-  disabled: boolean;
-  tone?: "default" | "primary" | "danger";
-}) {
-  const toneCls =
-    tone === "primary"
-      ? "bg-emerald-600 text-white hover:bg-emerald-700"
-      : tone === "danger"
-        ? "border border-red-200 bg-white text-red-700 hover:bg-red-50"
-        : "border border-zinc-200 bg-white text-zinc-700 hover:bg-zinc-50";
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      disabled={disabled}
-      className={`inline-flex min-h-[44px] items-center gap-1.5 rounded-md px-4 py-2 text-sm font-medium transition-colors disabled:opacity-50 ${toneCls}`}
-    >
-      {children}
-    </button>
   );
 }

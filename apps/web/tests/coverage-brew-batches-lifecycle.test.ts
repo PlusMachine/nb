@@ -40,6 +40,7 @@ const { tableRefs, store, ids, fixtures } = vi.hoisted(() => {
       recipeInventoryAllocations: ref("recipeInventoryAllocations", ["id", "userId", "recipeId", "status"]),
       userIngredients: ref("userIngredients", ["id", "userId"]),
       recipes: ref("recipes", ["id", "authorId"]),
+      users: ref("users", ["id"]),
       brewTelemetry: ref("brewTelemetry", ["deviceId", "brewBatchId", "ts"])
     },
     store: {
@@ -49,6 +50,7 @@ const { tableRefs, store, ids, fixtures } = vi.hoisted(() => {
       recipeInventoryAllocations: [] as any[],
       userIngredients: [] as any[],
       recipes: [] as any[],
+      users: [] as any[],
       brewTelemetry: [] as any[]
     },
     ids: { counter: 0 },
@@ -297,7 +299,8 @@ vi.mock("@nb/db", () => {
         findFirst: findFirst("recipeInventoryAllocations"),
         findMany: findMany("recipeInventoryAllocations")
       },
-      userIngredients: { findFirst: findFirst("userIngredients"), findMany: findMany("userIngredients") }
+      userIngredients: { findFirst: findFirst("userIngredients"), findMany: findMany("userIngredients") },
+      users: { findFirst: findFirst("users"), findMany: findMany("users") }
     },
     select: (projection?: any) => makeSelectBuilder(projection),
     insert,
@@ -321,6 +324,7 @@ vi.mock("@nb/db", () => {
     recipeInventoryAllocations: tableRefs.recipeInventoryAllocations,
     userIngredients: tableRefs.userIngredients,
     recipes: tableRefs.recipes,
+    users: tableRefs.users,
     brewTelemetry: tableRefs.brewTelemetry
   };
 });
@@ -331,6 +335,17 @@ vi.mock("@/features/recipes/service", () => ({
     const found = fixtures.recipeDetails.find((r: any) => r.id === recipeId && r.__authorId === authorId);
     if (!found) {
       throw new Error("NOT_FOUND");
+    }
+    return found;
+  },
+  // Доступный рецепт: свой (любой статус) ИЛИ чужой published — для варки без клона.
+  getRecipeById: async (viewerId: string, recipeId: string) => {
+    const found = fixtures.recipeDetails.find((r: any) => r.id === recipeId);
+    if (!found) {
+      throw new Error("NOT_FOUND");
+    }
+    if (found.__authorId !== viewerId && found.publicationState !== "published") {
+      throw new Error("FORBIDDEN");
     }
     return found;
   }
@@ -408,11 +423,16 @@ import {
 
 // --- Фикстуры ----------------------------------------------------------------
 
-const makeRecipeDetail = (id: string, authorId: string) => ({
+const makeRecipeDetail = (id: string, authorId: string, publicationState = "private") => ({
   __authorId: authorId,
   id,
+  authorId,
+  publicationState,
   title: "Тестовый IPA",
   versionNumber: 1,
+  og: 1.052,
+  fg: 1.012,
+  abv: 5.2,
   batchSizeNormalizedQuantity: 20,
   batchSizeNormalizedUnit: "l",
   boilTimeMinutes: 60,
@@ -506,6 +526,7 @@ beforeEach(() => {
     }
   ];
   store.brewTelemetry = [];
+  store.users = [{ id: USER_ID, displayName: "Пивовар" }];
   fixtures.recipeDetails = [makeRecipeDetail(RECIPE_ID, USER_ID)];
   fixtures.consumePlan = [{ inventoryItemId: ITEM_ID, quantity: 50, unit: "g" }];
 });
@@ -536,9 +557,25 @@ describe("createBrewBatchFromRecipe", () => {
     expect(batch.name).toBe("Моя варка");
   });
 
-  it("отказывает не-владельцу рецепта (NOT_FOUND из гейта рецепта)", async () => {
-    await expect(createBrewBatchFromRecipe(OTHER_USER, RECIPE_ID)).rejects.toThrow("NOT_FOUND");
+  it("отказывает не-владельцу НЕпубличного рецепта (FORBIDDEN из гейта доступа)", async () => {
+    await expect(createBrewBatchFromRecipe(OTHER_USER, RECIPE_ID)).rejects.toThrow("FORBIDDEN");
     expect(store.brewBatches).toHaveLength(0);
+  });
+
+  it("варит чужой ОПУБЛИКОВАННЫЙ рецепт без клона: партия во владении варщика + атрибуция автора в снапшоте", async () => {
+    const PUBLIC_RECIPE = uuid(4);
+    fixtures.recipeDetails.push(makeRecipeDetail(PUBLIC_RECIPE, OTHER_USER, "published"));
+    store.users.push({ id: OTHER_USER, displayName: "Автор" });
+
+    const batch = await createBrewBatchFromRecipe(USER_ID, PUBLIC_RECIPE);
+
+    expect(batch.userId).toBe(USER_ID);
+    expect(batch.recipeId).toBe(PUBLIC_RECIPE);
+    expect((batch.recipeSnapshot as any)?.authorId).toBe(OTHER_USER);
+    expect((batch.recipeSnapshot as any)?.authorName).toBe("Автор");
+    // Таргеты og/fg/abv осели в снапшоте — сводка партии переживёт удаление источника.
+    expect((batch.recipeSnapshot as any)?.og).toBe(1.052);
+    expect(store.brewBatches).toHaveLength(1);
   });
 });
 

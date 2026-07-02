@@ -46,6 +46,6 @@ describe("deriveStageTransitions", () => {
 
   it("stageShortLabel даёт запасную подпись для незнакомой стадии", () => {
     expect(stageShortLabel(999)).toBe("#999");
-    expect(stageShortLabel(STAGE_NUM.HOP_STAND)).toBe("Хмелестояние");
+    expect(stageShortLabel(STAGE_NUM.HOP_STAND)).toBe("Вирпул");
   });
 });

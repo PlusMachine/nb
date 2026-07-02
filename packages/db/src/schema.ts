@@ -596,7 +596,11 @@ export const recipeSaves = pgTable("recipe_saves", {
 export const brewBatches = pgTable("brew_batches", {
   id: uuid("id").defaultRandom().primaryKey(),
   userId: uuid("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
-  recipeId: uuid("recipe_id").notNull().references(() => recipes.id, { onDelete: "cascade" }),
+  // Nullable + set null (не cascade): партию можно сварить из ЛЮБОГО доступного
+  // рецепта (своего или чужого published) без клонирования; источник истины для
+  // варочного дня — снапшоты ниже, поэтому партия переживает удаление/анпаблиш
+  // исходного рецепта (recipeId → NULL, снапшот остаётся).
+  recipeId: uuid("recipe_id").references(() => recipes.id, { onDelete: "set null" }),
   status: brewBatchStatusEnum("status").default("planned").notNull(),
   name: varchar("name", { length: 180 }).notNull(),
   brewPlanSnapshot: jsonb("brew_plan_snapshot").$type<Record<string, unknown>>().default({}).notNull(),

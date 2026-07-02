@@ -817,6 +817,9 @@ export type RecipeMatchDto = {
 };
 
 // Элемент списка «рецепты под ваш склад» (обратный матчинг от инвентаря).
+// Помимо матч-метрик несёт презентационные поля обложки/стиля — те же, что у
+// карточек витрины /recipes ({@link PublicRecipeListItem}/{@link OwnerRecipeCardDto}),
+// чтобы карточки на «Моём складе» говорили на одном визуальном языке с витриной.
 export type BrewableRecipeDto = {
   recipeId: string;
   slug: string;
@@ -826,4 +829,13 @@ export type BrewableRecipeDto = {
   totalLines: number;
   coveredLines: number;
   missingCount: number;
+  // Названия недостающих строк (status "missing"), в порядке рецепта — чтобы
+  // карточка кратко перечисляла, чего именно не хватает, а не только число.
+  missingNames: string[];
+  styleName: string | null;
+  styleCode: string | null;
+  styleHref: string | null;
+  colorSrm: number | null;
+  heroImage: { thumbUrl: string; blurDataUrl: string | null } | null;
+  styleImageUrl: string | null;
 };

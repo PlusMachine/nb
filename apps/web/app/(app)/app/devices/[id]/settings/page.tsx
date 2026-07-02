@@ -36,21 +36,24 @@ export default async function DeviceSettingsPage({
     updatedAt: p.updatedAt.toISOString()
   }));
 
-  const rows: { label: string; value: string }[] = [
+  const essentials: { label: string; value: string }[] = [
     { label: "Имя", value: device.name },
-    { label: "Hardware ID", value: device.hardwareId },
-    { label: "Провайдер", value: device.providerId },
     { label: "Статус", value: device.status },
     { label: "Прошивка", value: device.fw ?? "—" },
+    {
+      label: "Последняя связь",
+      value: device.lastSeenAt ? device.lastSeenAt.toLocaleString() : "—"
+    }
+  ];
+  // Пламбинг (§9) — свёрнут в «Тех. детали», чтобы не мозолить в основном виде.
+  const techDetails: { label: string; value: string }[] = [
+    { label: "Hardware ID", value: device.hardwareId },
+    { label: "Провайдер", value: device.providerId },
     { label: "Локальный адрес", value: device.localUrl ?? "—" },
     { label: "MQTT-префикс", value: device.mqttPrefix ?? "—" },
     {
       label: "Возможности",
       value: device.capabilities.length > 0 ? device.capabilities.join(", ") : "—"
-    },
-    {
-      label: "Последняя связь",
-      value: device.lastSeenAt ? device.lastSeenAt.toLocaleString() : "—"
     },
     { label: "Привязано", value: device.createdAt.toLocaleString() }
   ];
@@ -71,13 +74,26 @@ export default async function DeviceSettingsPage({
 
       <Card className="p-5">
         <dl className="grid gap-x-8 gap-y-2 text-sm sm:grid-cols-2">
-          {rows.map((row) => (
+          {essentials.map((row) => (
             <div key={row.label} className="flex items-center justify-between gap-3">
               <dt className="text-zinc-500">{row.label}</dt>
               <dd className="font-medium text-zinc-900">{row.value}</dd>
             </div>
           ))}
         </dl>
+        <details className="mt-4 border-t border-zinc-100 pt-4">
+          <summary className="cursor-pointer select-none text-sm font-medium text-zinc-700 hover:text-zinc-900">
+            Тех. детали
+          </summary>
+          <dl className="mt-3 grid gap-x-8 gap-y-2 text-sm sm:grid-cols-2">
+            {techDetails.map((row) => (
+              <div key={row.label} className="flex items-center justify-between gap-3">
+                <dt className="text-zinc-500">{row.label}</dt>
+                <dd className="font-medium text-zinc-900">{row.value}</dd>
+              </div>
+            ))}
+          </dl>
+        </details>
       </Card>
 
       <DeviceConfigForm

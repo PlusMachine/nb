@@ -32,6 +32,27 @@ const ensureOwnedRecipe = async (userId: string, recipeId: string) => {
   return recipe;
 };
 
+// Рецепт, из которого МОЖНО списывать склад на варку: свой (любой статус) ИЛИ
+// чужой published — чтобы варить без клонирования. Ownership не требует, но
+// вызывающий обязан НЕ мутировать поля чужого рецепта (см. autoAllocate: selection-
+// meta пишем только своему). Возвращает authorId для проверки «свой ли рецепт».
+const ensureBrewableRecipe = async (userId: string, recipeId: string) => {
+  const recipe = await db.query.recipes.findFirst({
+    where: eq(recipes.id, recipeId),
+    columns: { id: true, authorId: true, publicationState: true }
+  });
+
+  if (!recipe) {
+    throw new Error("NOT_FOUND");
+  }
+
+  if (recipe.authorId !== userId && recipe.publicationState !== "published") {
+    throw new Error("FORBIDDEN");
+  }
+
+  return recipe;
+};
+
 const ensureOwnedInventoryItem = async (userId: string, inventoryItemId: string) => {
   const item = await db.query.userIngredients.findFirst({
     where: and(eq(userIngredients.id, inventoryItemId), eq(userIngredients.userId, userId))
@@ -292,7 +313,7 @@ export const allocateRecipeIngredientFromInventory = async (input: {
   recipeIngredientPersistentKey: string;
   inventoryItemId: string;
 }) => {
-  await ensureOwnedRecipe(input.userId, input.recipeId);
+  await ensureBrewableRecipe(input.userId, input.recipeId);
   const [line, inventoryItem] = await Promise.all([
     db.query.recipeIngredients.findFirst({
       where: and(
@@ -384,7 +405,8 @@ export const autoAllocateRecipeInventoryFromStock = async (
   userId: string,
   recipeId: string
 ): Promise<RecipeStockCoverageDto> => {
-  await ensureOwnedRecipe(userId, recipeId);
+  const recipe = await ensureBrewableRecipe(userId, recipeId);
+  const isOwnRecipe = recipe.authorId === userId;
   const [lines, blockingAllocations] = await Promise.all([
     db.query.recipeIngredients.findMany({
       where: eq(recipeIngredients.recipeId, recipeId)
@@ -409,7 +431,12 @@ export const autoAllocateRecipeInventoryFromStock = async (
     if (!inventoryItem) {
       continue;
     }
-    await updateRecipeLineInventorySelectionMeta(line, inventoryItem);
+    // Selection-meta — UX-подсказка редактора «какая позиция склада закрывает
+    // строку». Пишем ТОЛЬКО в свой рецепт: варка чужого не должна мутировать его
+    // строки/updatedAt (и порядок в витрине). Аллокация — user-scoped, её пишем всегда.
+    if (isOwnRecipe) {
+      await updateRecipeLineInventorySelectionMeta(line, inventoryItem);
+    }
     await allocateRecipeIngredientFromInventory({
       userId,
       recipeId,
@@ -425,7 +452,7 @@ export const reserveRecipeInventoryAllocations = async (
   userId: string,
   recipeId: string
 ): Promise<RecipeStockCoverageDto> => {
-  await ensureOwnedRecipe(userId, recipeId);
+  await ensureBrewableRecipe(userId, recipeId);
   const now = new Date();
   await db.update(recipeInventoryAllocations).set({
     status: "reserved",
@@ -444,7 +471,7 @@ export const releaseRecipeInventoryAllocations = async (
   userId: string,
   recipeId: string
 ): Promise<RecipeStockCoverageDto> => {
-  await ensureOwnedRecipe(userId, recipeId);
+  await ensureBrewableRecipe(userId, recipeId);
   const now = new Date();
   await db.update(recipeInventoryAllocations).set({
     status: "released",
@@ -484,7 +511,7 @@ export const consumeRecipeInventoryAllocations = async (
   recipeId: string,
   options: { brewBatchId?: string | null } = {}
 ): Promise<RecipeStockCoverageDto> => {
-  await ensureOwnedRecipe(userId, recipeId);
+  await ensureBrewableRecipe(userId, recipeId);
   const allocations = await db.query.recipeInventoryAllocations.findMany({
     where: and(
       eq(recipeInventoryAllocations.userId, userId),

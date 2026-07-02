@@ -2,20 +2,23 @@
 
 // =============================================================================
 //  features/brew-controller/components/onboard-recipes-panel.tsx
-//  Вкладка «Рецепты на борту» пульта устройства (Phase 4). Две функции:
-//    1. Read-only «что на плате» — список слотов (GET /api/devices/:id/recipes),
-//       по клику — снапшот слота (GET .../recipes/:slot) нативного DeviceRecipe.
-//    2. Push НА плату — записать nb-рецепт в целевой слот (POST .../recipes) с
-//       привязкой слот↔recipeId; занятый слот перезаписываем через двухшаг.
+//  «Рецепты пивоварни» — что загружено на устройство + загрузка рецепта (Phase 4,
+//  редизайн L2 §8). Две функции:
+//    1. Просмотр загруженных рецептов (GET /api/devices/:id/recipes) + снапшот
+//       нативного DeviceRecipe по клику (GET .../recipes/:slot).
+//    2. Загрузка nb-рецепта на пивоварню (POST .../recipes) с привязкой к рецепту.
 //
-//  ЧЕСТНОСТЬ (решение дизайна §5): снапшот — это просмотр «что на плате», НЕ импорт
-//  в каталог nb (DeviceRecipe беднее модели рецепта: нет засыпи/дрожжей/воды/
-//  эффективности). Кнопки «импортировать чужой слот» здесь намеренно нет.
+//  БЕЗ «слотов» в UI (§8): номера слотов — деталь прошивки, наружу не торчат.
+//  Пользователь грузит рецепт (свободное место занимается автоматически) или
+//  заменяет уже загруженный — по НАЗВАНИЮ, не по номеру слота. Основной путь
+//  «сварить рецепт» — из витрины/мастерской (§7); эта панель вторична.
 //
-//  По облаку перечень/чтение слотов недоступны (транспорт → 501 CLOUD_UNSUPPORTED) —
-//  показываем понятное объяснение вместо пустого списка.
+//  ЧЕСТНОСТЬ (§5): снапшот — просмотр «что на плате», НЕ импорт в каталог nb
+//  (DeviceRecipe беднее модели рецепта). По облаку перечень недоступен
+//  (CLOUD_UNSUPPORTED) — показываем объяснение; загрузка по облаку работает
+//  (прошивка сама выбирает место).
 // =============================================================================
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
 import type { DeviceRecipe } from "@nb/brewforge-protocol";
 import { Button } from "@nb/ui";
@@ -27,15 +30,15 @@ import type {
 
 type Props = {
   deviceId: string;
-  /** Рецепты пользователя для пикера «записать на плату» (SSR, лёгкий DTO). */
+  /** Рецепты пользователя для пикера загрузки (SSR, лёгкий DTO). */
   pushableRecipes: PushableRecipeDto[];
 };
 
 const ERROR_TEXT: Record<string, string> = {
   NOT_FOUND: "Устройство или рецепт не найдены",
   PROVIDER_UNAVAILABLE: "Операции с рецептами недоступны для этого устройства",
-  INVALID_REQUEST: "Проверьте выбранный рецепт и слот",
-  INVALID_SLOT: "Некорректный слот",
+  INVALID_REQUEST: "Проверьте выбранный рецепт",
+  INVALID_SLOT: "Некорректное место на пивоварне",
   INTERNAL_ERROR: "Внутренняя ошибка. Попробуйте позже"
 };
 
@@ -48,7 +51,12 @@ function fmtDateTime(iso: string | null): string {
   return Number.isNaN(d.getTime()) ? "—" : d.toLocaleString("ru-RU");
 }
 
-/** Кэш снапшота слота: undefined — не грузили, null — пуст, "loading"/error — статус. */
+/** Имя загруженного рецепта на плате (название с платы или привязки nb). */
+function loadedName(s: OnboardSlotDto): string {
+  return s.onboardName ?? s.boundRecipeName ?? "Рецепт";
+}
+
+/** Кэш снапшота: undefined — не грузили, null — пуст, "loading"/error — статус. */
 type SnapshotState = DeviceRecipe | null | "loading" | "error";
 
 export function OnboardRecipesPanel({ deviceId, pushableRecipes }: Props) {
@@ -60,13 +68,13 @@ export function OnboardRecipesPanel({ deviceId, pushableRecipes }: Props) {
   const [snapshots, setSnapshots] = useState<Record<number, SnapshotState>>({});
   const [expanded, setExpanded] = useState<number | null>(null);
 
-  // Форма пуша.
+  // Форма загрузки. Место (слот) не выбирается пользователем — вычисляется; когда
+  // пивоварня заполнена, выбирается заменяемый рецепт по НАЗВАНИЮ (replaceSlot).
   const [recipeId, setRecipeId] = useState<string>(pushableRecipes[0]?.id ?? "");
-  const [targetSlot, setTargetSlot] = useState<number>(0);
+  const [replaceSlot, setReplaceSlot] = useState<number | null>(null);
   const [pushing, setPushing] = useState(false);
   const [pushError, setPushError] = useState<string | null>(null);
   const [pushOk, setPushOk] = useState<string | null>(null);
-  const [confirmOverwrite, setConfirmOverwrite] = useState(false);
 
   const base = `/api/devices/${deviceId}/recipes`;
 
@@ -82,7 +90,7 @@ export function OnboardRecipesPanel({ deviceId, pushableRecipes }: Props) {
         code?: string;
       };
       if (res.status === 501 && body.code === "CLOUD_UNSUPPORTED") {
-        setUnsupported(body.error ?? "Недоступно по облаку");
+        setUnsupported(body.error ?? "Список рецептов пивоварни недоступен по облаку");
         setSlots(null);
         return;
       }
@@ -92,7 +100,7 @@ export function OnboardRecipesPanel({ deviceId, pushableRecipes }: Props) {
       }
       setSlots(body.slots);
     } catch {
-      setLoadError("Не удалось загрузить рецепты на борту — проверьте связь с устройством");
+      setLoadError("Не удалось загрузить рецепты пивоварни — проверьте связь с устройством");
     } finally {
       setLoading(false);
     }
@@ -122,156 +130,147 @@ export function OnboardRecipesPanel({ deviceId, pushableRecipes }: Props) {
     [base, expanded, snapshots]
   );
 
-  const doPush = useCallback(async () => {
-    if (!recipeId) return;
-    setPushing(true);
-    setPushError(null);
-    setPushOk(null);
-    setConfirmOverwrite(false);
-    try {
-      const res = await fetch(base, {
-        method: "POST",
-        headers: { "content-type": "application/json" },
-        body: JSON.stringify({ recipeId, slot: targetSlot })
-      });
-      const body = (await res.json().catch(() => ({}))) as {
-        slot?: number;
-        boundRecipeName?: string;
-        error?: string;
-        code?: string;
-      };
-      if (res.status === 501 && body.code === "CLOUD_UNSUPPORTED") {
-        setPushError(body.error ?? "Недоступно по облаку");
-        return;
-      }
-      if (!res.ok || typeof body.slot !== "number") {
-        setPushError(errText(body.error));
-        return;
-      }
-      setPushOk(`«${body.boundRecipeName ?? "Рецепт"}» записан в слот ${body.slot}.`);
-      // Снапшот слота устарел — сбрасываем кэш и перечитываем список.
-      setSnapshots((s) => {
-        const next = { ...s };
-        delete next[body.slot as number];
-        return next;
-      });
-      await loadSlots();
-    } catch {
-      setPushError("Не удалось записать рецепт — проверьте, что устройство в сети");
-    } finally {
-      setPushing(false);
-    }
-  }, [base, recipeId, targetSlot, loadSlots]);
+  // Что загружено / где свободно / заполнена ли пивоварня. Место (слот) — деталь
+  // реализации: занимаем первое свободное; если мест нет — заменяем выбранный.
+  // useMemo: стабильные ссылки для зависимостей onLoadClick (иначе — каждый рендер).
+  const { loaded, firstEmpty, capacity, isFull } = useMemo(() => {
+    const loaded = slots ? slots.filter((s) => s.occupied) : [];
+    const firstEmpty = slots ? slots.find((s) => !s.occupied) ?? null : null;
+    return {
+      loaded,
+      firstEmpty,
+      capacity: slots?.length ?? null,
+      isFull: slots != null && slots.length > 0 && firstEmpty === null
+    };
+  }, [slots]);
 
-  const onPushClick = useCallback(() => {
-    const slot = slots?.find((s) => s.slot === targetSlot);
-    if (slot?.occupied && !confirmOverwrite) {
-      setConfirmOverwrite(true);
+  const doPush = useCallback(
+    async (slot: number, replacedName?: string | null) => {
+      if (!recipeId) return;
+      setPushing(true);
+      setPushError(null);
+      setPushOk(null);
+      try {
+        const res = await fetch(base, {
+          method: "POST",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify({ recipeId, slot })
+        });
+        const body = (await res.json().catch(() => ({}))) as {
+          slot?: number;
+          boundRecipeName?: string;
+          error?: string;
+          code?: string;
+        };
+        if (res.status === 501 && body.code === "CLOUD_UNSUPPORTED") {
+          setPushError(body.error ?? "Недоступно по облаку");
+          return;
+        }
+        if (!res.ok || typeof body.slot !== "number") {
+          setPushError(errText(body.error));
+          return;
+        }
+        const name = body.boundRecipeName ?? "Рецепт";
+        setPushOk(
+          replacedName ? `«${name}» заменил «${replacedName}» на пивоварне.` : `«${name}» загружен на пивоварню.`
+        );
+        setReplaceSlot(null);
+        setSnapshots((s) => {
+          const next = { ...s };
+          delete next[body.slot as number];
+          return next;
+        });
+        await loadSlots();
+      } catch {
+        setPushError("Не удалось загрузить рецепт — проверьте, что устройство в сети");
+      } finally {
+        setPushing(false);
+      }
+    },
+    [base, recipeId, loadSlots]
+  );
+
+  const onLoadClick = useCallback(() => {
+    if (isFull) {
+      if (replaceSlot === null) return;
+      const target = loaded.find((s) => s.slot === replaceSlot);
+      void doPush(replaceSlot, target ? loadedName(target) : null);
       return;
     }
-    void doPush();
-  }, [slots, targetSlot, confirmOverwrite, doPush]);
-
-  // Диапазон слотов для пикера: из ответа устройства (иначе дефолтные 0..7).
-  const slotOptions = slots ? slots.map((s) => s.slot) : [0, 1, 2, 3, 4, 5, 6, 7];
-  const targetSlotInfo = slots?.find((s) => s.slot === targetSlot);
+    // Есть свободное место (или список недоступен по облаку → место 0, прошивка сама выберет).
+    void doPush(firstEmpty?.slot ?? 0);
+  }, [isFull, replaceSlot, loaded, firstEmpty, doPush]);
 
   return (
     <div className="space-y-6">
-      {/* --- Push НА плату --------------------------------------------------- */}
+      {/* --- Загрузить рецепт ----------------------------------------------- */}
       <section className="rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm">
-        <h3 className="text-sm font-semibold text-zinc-900">Записать рецепт на плату</h3>
+        <h3 className="text-sm font-semibold text-zinc-900">Загрузить рецепт</h3>
         <p className="mt-1 text-xs text-zinc-500">
-          Пуш рецепта из ваших в выбранный слот устройства. Нагрев это не запускает — рецепт просто
-          ложится в слот; запустить варку можно из мастера рецептов или на устройстве.
+          Рецепт ляжет на пивоварню — нагрев это не запускает. Начать варку можно из мастера рецептов
+          или на устройстве.
         </p>
 
         {pushableRecipes.length === 0 ? (
           <p className="mt-4 text-sm text-zinc-500">
-            У вас пока нет рецептов. Создайте рецепт, чтобы отправить его на плату.
+            У вас пока нет рецептов. Создайте рецепт, чтобы загрузить его на пивоварню.
           </p>
         ) : (
           <div className="mt-4 space-y-3">
-            <div className="flex flex-col gap-3 sm:flex-row sm:items-end">
-              <label className="flex-1 text-xs font-medium text-zinc-600">
-                Рецепт
+            <label className="block text-xs font-medium text-zinc-600">
+              Рецепт
+              <select
+                value={recipeId}
+                onChange={(e) => {
+                  setRecipeId(e.target.value);
+                  setPushOk(null);
+                }}
+                className="mt-1 w-full rounded-md border border-zinc-200 bg-white px-3 py-2 text-sm text-zinc-900"
+              >
+                {pushableRecipes.map((r) => (
+                  <option key={r.id} value={r.id}>
+                    {r.title}
+                    {r.versionNumber > 1 ? ` · v${r.versionNumber}` : ""}
+                    {r.abv != null ? ` · ${r.abv.toFixed(1)}%` : ""}
+                  </option>
+                ))}
+              </select>
+            </label>
+
+            {capacity != null ? (
+              <p className="text-xs text-zinc-500">
+                Загружено {loaded.length} из {capacity}.
+              </p>
+            ) : null}
+
+            {isFull ? (
+              <label className="block text-xs font-medium text-zinc-600">
+                Пивоварня заполнена — что заменить
                 <select
-                  value={recipeId}
+                  value={replaceSlot ?? ""}
                   onChange={(e) => {
-                    setRecipeId(e.target.value);
-                    setConfirmOverwrite(false);
+                    setReplaceSlot(e.target.value === "" ? null : Number(e.target.value));
                     setPushOk(null);
                   }}
                   className="mt-1 w-full rounded-md border border-zinc-200 bg-white px-3 py-2 text-sm text-zinc-900"
                 >
-                  {pushableRecipes.map((r) => (
-                    <option key={r.id} value={r.id}>
-                      {r.title}
-                      {r.versionNumber > 1 ? ` · v${r.versionNumber}` : ""}
-                      {r.abv != null ? ` · ${r.abv.toFixed(1)}%` : ""}
+                  <option value="">Выберите рецепт для замены…</option>
+                  {loaded.map((s) => (
+                    <option key={s.slot} value={s.slot}>
+                      {loadedName(s)}
                     </option>
                   ))}
                 </select>
               </label>
+            ) : null}
 
-              <label className="text-xs font-medium text-zinc-600 sm:w-40">
-                Слот
-                <select
-                  value={targetSlot}
-                  onChange={(e) => {
-                    setTargetSlot(Number(e.target.value));
-                    setConfirmOverwrite(false);
-                    setPushOk(null);
-                  }}
-                  className="mt-1 w-full rounded-md border border-zinc-200 bg-white px-3 py-2 text-sm text-zinc-900"
-                >
-                  {slotOptions.map((n) => {
-                    const info = slots?.find((s) => s.slot === n);
-                    return (
-                      <option key={n} value={n}>
-                        Слот {n}
-                        {info?.occupied ? ` · занят${info.onboardName ? `: ${info.onboardName}` : ""}` : " · пуст"}
-                      </option>
-                    );
-                  })}
-                </select>
-              </label>
-            </div>
-
-            {confirmOverwrite ? (
-              <div className="flex flex-wrap items-center gap-3 rounded-md border border-amber-300 bg-amber-50 px-3 py-2">
-                <span className="text-xs text-amber-800">
-                  Слот {targetSlot}
-                  {targetSlotInfo?.onboardName ? ` занят рецептом «${targetSlotInfo.onboardName}»` : " занят"}.
-                  Перезаписать?
-                </span>
-                <div className="ml-auto flex gap-2">
-                  <Button
-                    variant="outline"
-                    className="px-3 py-1.5 text-xs"
-                    onClick={() => setConfirmOverwrite(false)}
-                    disabled={pushing}
-                  >
-                    Отмена
-                  </Button>
-                  <Button
-                    className="px-3 py-1.5 text-xs"
-                    onClick={() => void doPush()}
-                    disabled={pushing}
-                  >
-                    Перезаписать
-                  </Button>
-                </div>
-              </div>
-            ) : (
-              <Button
-                className="px-4 py-2 text-sm"
-                onClick={onPushClick}
-                disabled={pushing || !recipeId}
-              >
-                {pushing ? "Запись…" : `Записать в слот ${targetSlot}`}
-              </Button>
-            )}
+            <Button
+              size="md"
+              onClick={onLoadClick}
+              disabled={pushing || !recipeId || (isFull && replaceSlot === null)}
+            >
+              {pushing ? "Загрузка…" : isFull ? "Заменить" : "Загрузить"}
+            </Button>
 
             {pushError ? <p className="text-sm text-rose-600">{pushError}</p> : null}
             {pushOk ? <p className="text-sm text-emerald-600">{pushOk}</p> : null}
@@ -279,10 +278,10 @@ export function OnboardRecipesPanel({ deviceId, pushableRecipes }: Props) {
         )}
       </section>
 
-      {/* --- Что на плате (слоты) ------------------------------------------- */}
+      {/* --- На пивоварне (загруженные рецепты, без номеров слотов) ---------- */}
       <section className="rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm">
         <div className="flex items-center justify-between">
-          <h3 className="text-sm font-semibold text-zinc-900">Что на плате</h3>
+          <h3 className="text-sm font-semibold text-zinc-900">На пивоварне</h3>
           <button
             type="button"
             onClick={() => void loadSlots()}
@@ -294,44 +293,35 @@ export function OnboardRecipesPanel({ deviceId, pushableRecipes }: Props) {
         </div>
 
         {loading ? (
-          <p className="mt-4 text-sm text-zinc-500">Загрузка слотов…</p>
+          <p className="mt-4 text-sm text-zinc-500">Загрузка…</p>
         ) : unsupported ? (
           <p className="mt-4 text-sm text-zinc-500">{unsupported}</p>
         ) : loadError ? (
           <p className="mt-4 text-sm text-rose-600">{loadError}</p>
-        ) : slots && slots.length > 0 ? (
+        ) : loaded.length > 0 ? (
           <ul className="mt-4 divide-y divide-zinc-100">
-            {slots.map((s) => (
+            {loaded.map((s) => (
               <li key={s.slot} className="py-3">
                 <div className="flex items-start justify-between gap-3">
                   <div className="min-w-0">
-                    <div className="flex items-center gap-2">
-                      <span className="inline-flex h-6 min-w-6 items-center justify-center rounded bg-zinc-100 px-1.5 text-xs font-medium text-zinc-700">
-                        {s.slot}
-                      </span>
-                      <span className="truncate text-sm font-medium text-zinc-900">
-                        {s.onboardName ?? <span className="text-zinc-400">пусто</span>}
-                      </span>
-                    </div>
+                    <span className="truncate text-sm font-medium text-zinc-900">{loadedName(s)}</span>
                     <p className="mt-1 text-xs text-zinc-500">
                       {s.boundRecipeId ? (
-                        <>Источник nb: {s.boundRecipeName} · записан {fmtDateTime(s.pushedAt)}</>
+                        <>Из ваших рецептов · загружен {fmtDateTime(s.pushedAt)}</>
                       ) : s.boundRecipeName ? (
-                        <>Источник nb удалён (был: {s.boundRecipeName})</>
+                        <>Исходный рецепт удалён (был: {s.boundRecipeName})</>
                       ) : (
-                        <>Без привязки к рецепту nb</>
+                        <>Без привязки к вашему рецепту</>
                       )}
                     </p>
                   </div>
-                  {s.occupied ? (
-                    <button
-                      type="button"
-                      onClick={() => void toggleSnapshot(s.slot)}
-                      className="shrink-0 rounded-md border border-zinc-200 px-2.5 py-1 text-xs font-medium text-zinc-700 hover:bg-zinc-50"
-                    >
-                      {expanded === s.slot ? "Скрыть" : "Показать"}
-                    </button>
-                  ) : null}
+                  <button
+                    type="button"
+                    onClick={() => void toggleSnapshot(s.slot)}
+                    className="shrink-0 rounded-md border border-zinc-200 px-2.5 py-1 text-xs font-medium text-zinc-700 hover:bg-zinc-50"
+                  >
+                    {expanded === s.slot ? "Скрыть" : "Показать"}
+                  </button>
                 </div>
 
                 {expanded === s.slot ? (
@@ -343,7 +333,7 @@ export function OnboardRecipesPanel({ deviceId, pushableRecipes }: Props) {
             ))}
           </ul>
         ) : (
-          <p className="mt-4 text-sm text-zinc-500">На устройстве нет слотов.</p>
+          <p className="mt-4 text-sm text-zinc-500">На пивоварне пока нет загруженных рецептов.</p>
         )}
       </section>
     </div>
@@ -357,10 +347,10 @@ function SnapshotView({ state }: { state: SnapshotState }) {
     return <p className="text-xs text-zinc-500">Чтение рецепта с платы…</p>;
   }
   if (state === "error") {
-    return <p className="text-xs text-rose-600">Не удалось прочитать слот.</p>;
+    return <p className="text-xs text-rose-600">Не удалось прочитать рецепт.</p>;
   }
   if (state === null) {
-    return <p className="text-xs text-zinc-500">Слот пуст.</p>;
+    return <p className="text-xs text-zinc-500">Пусто.</p>;
   }
 
   const recipe = state;
@@ -408,7 +398,7 @@ function SnapshotView({ state }: { state: SnapshotState }) {
 
       {recipe.hopStand.length > 0 ? (
         <div>
-          <div className="font-medium text-zinc-600">Хмелестояние</div>
+          <div className="font-medium text-zinc-600">Вирпул</div>
           <ul className="mt-1 space-y-0.5">
             {recipe.hopStand.map((hs, i) => (
               <li key={i} className="tabular-nums text-zinc-500">

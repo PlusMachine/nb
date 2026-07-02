@@ -3,7 +3,7 @@
   "private": true,
   "packageManager": "pnpm@9.15.9",
   "scripts": {
-    "dev": "pnpm run dev:prepare && pnpm -F @nb/web run dev",
+    "dev": "trap 'exit 0' INT TERM HUP; pnpm run dev:prepare && pnpm -F @nb/web run dev",
     "dev:prepare": "pnpm run content:sync-images && pnpm run db:migrate && pnpm run db:seed",
     "dev:sim": "pnpm -F @nb/device-sim run dev -- --port 8090 --device-id bf-demo",
     "build": "pnpm -r run build",
