@@ -49,7 +49,6 @@ import type {
 import { type InventoryUnit } from "@/features/inventory/units";
 import {
   defaultRecipeProcessMeta,
-  type RecipeCalculationMeta,
   type RecipeDetailDto,
   type RecipeDraftPreviewDto,
   type RecipeProcessMeta,
@@ -127,6 +126,7 @@ import { RecipeProfiles } from "./recipe-profiles";
 import { IngredientEditor } from "./ingredient-editor";
 import { useRecipeIngredients } from "./hooks/use-recipe-ingredients";
 import { useRecipeWaterPlan } from "./hooks/use-recipe-water-plan";
+import { useRecipeCalculationMeta } from "./hooks/use-recipe-calculation-meta";
 
 type Props = {
   mode: "create" | "edit";
@@ -187,7 +187,7 @@ export function RecipeDesigner({
     : String(initialDefaultEquipmentProfile?.brewhouseEfficiencyPct ?? 75));
   const [boilTimeMinutes, setBoilTimeMinutes] = useState(initialRecipe?.boilTimeMinutes != null ? String(initialRecipe.boilTimeMinutes) : "60");
   const [processMeta, setProcessMeta] = useState<RecipeProcessMeta>(() => cloneRecipeProcessMeta(initialRecipe?.processMeta ?? defaultRecipeProcessMeta));
-  const [calculationMeta, setCalculationMeta] = useState<RecipeCalculationMeta>(() => cloneRecipeCalculationMeta(initialRecipe?.calculationMeta ?? null));
+  const { calculationMeta, setCalculationMeta } = useRecipeCalculationMeta({ initialRecipe });
   const {
     waterPlanMeta,
     setWaterPlanMeta,
