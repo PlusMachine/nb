@@ -1,6 +1,7 @@
 import React from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import { ToastProvider } from "@nb/ui";
 
 import type { PublicRecipeListItem, PublicRecipeListResult } from "../features/recipes/contracts";
 import { parsePublicRecipeFilters } from "../features/recipes/public-recipe-query";
@@ -74,7 +75,8 @@ describe("/recipes results", () => {
     const filters = parsePublicRecipeFilters({ sort: "abv_desc", abvMin: "6" });
 
     const el = await RecipesResults({ filters });
-    const html = renderToStaticMarkup(el);
+    // RecipeSaveButton внутри карточек рендерится через useToast() — нужен ToastProvider.
+    const html = renderToStaticMarkup(React.createElement(ToastProvider, null, el));
 
     expect(mocks.searchPublicRecipes).toHaveBeenCalledWith(filters);
     expect(html).toContain("Найдено 1 рецепт");
@@ -88,7 +90,8 @@ describe("/recipes results", () => {
     const filters = parsePublicRecipeFilters({ sort: "abv_desc" });
 
     const el = await RecipesResults({ filters });
-    const html = renderToStaticMarkup(el);
+    // RecipeSaveButton внутри карточек рендерится через useToast() — нужен ToastProvider.
+    const html = renderToStaticMarkup(React.createElement(ToastProvider, null, el));
 
     expect(html).toContain('aria-label="Пагинация"');
     expect(html).toContain('href="/recipes?sort=abv_desc&amp;page=2"');
@@ -99,7 +102,8 @@ describe("/recipes results", () => {
     const filters = parsePublicRecipeFilters({});
 
     const el = await RecipesResults({ filters });
-    const html = renderToStaticMarkup(el);
+    // RecipeSaveButton внутри карточек рендерится через useToast() — нужен ToastProvider.
+    const html = renderToStaticMarkup(React.createElement(ToastProvider, null, el));
 
     expect(html).toContain("Публичных рецептов пока нет");
   });
@@ -109,7 +113,8 @@ describe("/recipes results", () => {
     const filters = parsePublicRecipeFilters({ q: "zzz" });
 
     const el = await RecipesResults({ filters });
-    const html = renderToStaticMarkup(el);
+    // RecipeSaveButton внутри карточек рендерится через useToast() — нужен ToastProvider.
+    const html = renderToStaticMarkup(React.createElement(ToastProvider, null, el));
 
     expect(html).toContain("Ничего не найдено");
   });

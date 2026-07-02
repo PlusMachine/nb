@@ -30,7 +30,7 @@ export function PublicRecipeHeader({ recipe }: { recipe: RecipeDetailDto }) {
         <div className="flex flex-wrap items-start justify-between gap-3">
           <h1 className="text-2xl font-bold tracking-tight text-zinc-950 sm:text-3xl">{recipe.title}</h1>
           <div className="flex flex-wrap items-center gap-2">
-            <BrewRecipeButton recipeId={recipe.id} slug={recipe.slug} />
+            <BrewRecipeButton recipeId={recipe.id} slug={recipe.slug} recipeTitle={recipe.title} />
             <CloneFromPublicButton recipeId={recipe.id} slug={recipe.slug} variant="button" />
             <RecipeSaveButton recipeId={recipe.id} slug={recipe.slug} variant="button" />
           </div>

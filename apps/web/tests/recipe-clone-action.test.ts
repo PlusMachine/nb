@@ -37,7 +37,26 @@ describe("cloneRecipeFromPublicAction", () => {
     // even if a client tried to inject userId, the action ignores it
     await cloneRecipeFromPublicAction({ recipeId: RECIPE_ID, userId: "attacker" } as never);
 
-    expect(mocks.cloneRecipeFromPublic).toHaveBeenCalledWith("server-user", RECIPE_ID);
+    expect(mocks.cloneRecipeFromPublic).toHaveBeenCalledWith("server-user", RECIPE_ID, { targetBatchVolumeLitres: null });
+  });
+
+  it("passes a valid targetBatchVolumeLitres through to the service (clone-at-volume, #6b)", async () => {
+    mocks.getSessionUser.mockResolvedValue({ id: "u-1" });
+    mocks.cloneRecipeFromPublic.mockResolvedValue({ id: "new-recipe" });
+
+    await cloneRecipeFromPublicAction({ recipeId: RECIPE_ID, targetBatchVolumeLitres: 30 });
+
+    expect(mocks.cloneRecipeFromPublic).toHaveBeenCalledWith("u-1", RECIPE_ID, { targetBatchVolumeLitres: 30 });
+  });
+
+  it("drops a non-positive targetBatchVolumeLitres instead of forwarding garbage", async () => {
+    mocks.getSessionUser.mockResolvedValue({ id: "u-1" });
+    mocks.cloneRecipeFromPublic.mockResolvedValue({ id: "new-recipe" });
+
+    const result = await cloneRecipeFromPublicAction({ recipeId: RECIPE_ID, targetBatchVolumeLitres: -5 });
+
+    expect(result).toEqual({ ok: false, code: "NOT_FOUND", message: expect.any(String) });
+    expect(mocks.cloneRecipeFromPublic).not.toHaveBeenCalled();
   });
 
   it("clones and revalidates the workspace listing on success", async () => {

@@ -1,8 +1,10 @@
 "use client";
 
 import React, { useEffect, useMemo, useState } from "react";
-import { FileText, X } from "lucide-react";
+import { FileText } from "lucide-react";
+import { Button, Dialog, DialogCloseButton, DialogHeader } from "@nb/ui";
 
+import { ConfirmActionDialog } from "@/components/shared/confirm-action-dialog";
 import { importBeerXmlToCanonicalRecipe } from "@/features/recipes/interop/beerxml";
 import { importBrewfatherJsonToCanonicalRecipe } from "@/features/recipes/interop/brewfather-json";
 import type { CanonicalRecipe } from "@/features/recipes/interop/canonical";
@@ -228,6 +230,19 @@ function ImportSummaryCard({ result }: { result: ImportRecipeSummaryResult | nul
   );
 }
 
+/**
+ * "Грязна" ли форма (для guard'а Dialog): есть непустой введённый/загруженный текст
+ * импорта, а импорт ещё не завершился успехом (успех = данные уже применены,
+ * терять нечего).
+ */
+export const isImportExportModalDirty = ({
+  importText,
+  statusTone
+}: {
+  importText: string;
+  statusTone: ImportExportStatus["tone"] | null;
+}) => Boolean(importText.trim()) && statusTone !== "success";
+
 export function ImportExportModal({
   open,
   pending,
@@ -259,21 +274,13 @@ export function ImportExportModal({
   const [format, setFormat] = useState<ImportFormat>("beerxml");
   const [localPending, setLocalPending] = useState(false);
   const [status, setStatus] = useState<ImportExportStatus | null>(null);
+  const [closeConfirmOpen, setCloseConfirmOpen] = useState(false);
 
   useEffect(() => {
     if (open) {
       setStatus(null);
     }
   }, [open]);
-
-  useEffect(() => {
-    if (!open) return undefined;
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") onClose();
-    };
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [open, onClose]);
 
   useEffect(() => {
     if (mode === "export" && format !== "beerxml") {
@@ -293,8 +300,7 @@ export function ImportExportModal({
   const fileAccept = format === "beerxml"
     ? ".xml,.beerxml,application/xml,text/xml"
     : ".json,application/json";
-
-  if (!open) return null;
+  const dirty = isImportExportModalDirty({ importText, statusTone: status?.tone ?? null });
 
   const handleFile = (file: File | null) => {
     if (!file) return;
@@ -407,9 +413,23 @@ export function ImportExportModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end justify-center bg-zinc-950/45 p-3 sm:items-center" role="dialog" aria-modal="true" aria-label="Импорт и экспорт рецепта" onClick={onClose}>
-      <div className="max-h-[92vh] w-full max-w-2xl overflow-y-auto rounded-lg border border-zinc-200 bg-white p-5 shadow-2xl" onClick={(event) => event.stopPropagation()}>
-        <div className="mb-4 flex items-start justify-between gap-3">
+    <>
+      <Dialog
+        open={open}
+        onOpenChange={(next) => {
+          if (!next) {
+            onClose();
+          }
+        }}
+        title="Импорт / экспорт"
+        hideTitle
+        size="lg"
+        guard={{
+          isDirty: () => dirty,
+          onGuardedClose: () => setCloseConfirmOpen(true)
+        }}
+      >
+        <DialogHeader>
           <div className="flex items-start gap-3">
             <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-zinc-100 text-zinc-700">
               <FileText className="h-5 w-5" />
@@ -418,12 +438,10 @@ export function ImportExportModal({
               <h3 className="text-base font-semibold text-zinc-950">Импорт / экспорт</h3>
             </div>
           </div>
-          <button type="button" onClick={onClose} className="rounded-md p-1.5 text-zinc-400 hover:bg-zinc-100 hover:text-zinc-700">
-            <X className="h-4 w-4" />
-          </button>
-        </div>
+          <DialogCloseButton />
+        </DialogHeader>
 
-        <div className="space-y-4">
+        <div className="space-y-4 p-5">
           <section className="space-y-2">
             <h4 className="text-sm font-semibold text-zinc-900">1. Что хотите сделать?</h4>
             <div className="grid gap-2 sm:grid-cols-2">
@@ -464,26 +482,26 @@ export function ImportExportModal({
                 placeholder={format === "beerxml" ? "<RECIPES>...</RECIPES>" : "{\"name\":\"Recipe\"}"}
               />
               <ImportSummaryCard result={importSummary} />
-              <button
+              <Button
                 type="button"
+                size="sm"
                 disabled={busy || !importText.trim()}
                 onClick={() => void handleImport()}
-                className="rounded-md bg-zinc-900 px-3 py-2 text-sm font-medium text-white disabled:opacity-50"
               >
                 {busy ? "Импортируем..." : "Импортировать"}
-              </button>
+              </Button>
             </section>
           ) : (
             <section className="space-y-2">
               <h4 className="text-sm font-semibold text-zinc-900">2. Экспорт BeerXML</h4>
-              <button
+              <Button
                 type="button"
+                size="sm"
                 disabled={!activeRecipeId || busy}
                 onClick={() => void handleExport()}
-                className="rounded-md bg-zinc-900 px-3 py-2 text-sm font-medium text-white disabled:opacity-50"
               >
                 {busy ? "Экспортируем..." : "Экспортировать BeerXML"}
-              </button>
+              </Button>
               <textarea
                 value={beerXmlExport}
                 readOnly
@@ -510,7 +528,20 @@ export function ImportExportModal({
             </section>
           )}
         </div>
-      </div>
-    </div>
+      </Dialog>
+
+      <ConfirmActionDialog
+        open={closeConfirmOpen}
+        title="Закрыть без сохранения?"
+        description="Введённые данные будут потеряны."
+        confirmLabel="Закрыть"
+        tone="danger"
+        onConfirm={() => {
+          setCloseConfirmOpen(false);
+          onClose();
+        }}
+        onClose={() => setCloseConfirmOpen(false)}
+      />
+    </>
   );
 }

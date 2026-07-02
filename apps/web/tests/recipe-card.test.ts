@@ -1,17 +1,23 @@
 import React from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it, vi } from "vitest";
+import { ToastProvider } from "@nb/ui";
 
 vi.mock("next/image", () => ({
   default: (props: Record<string, unknown>) =>
     React.createElement("img", { src: props.src as string, alt: (props.alt as string) ?? "" })
 }));
 
+// RecipeSaveButton (внутри карточки) использует useRouter()/useToast() — нужны роутер и провайдер.
+vi.mock("next/navigation", () => ({
+  useRouter: () => ({ push: () => undefined })
+}));
+
 import { RecipeCard } from "../components/recipes/recipe-card";
 import type { PublicRecipeListItem } from "../features/recipes/contracts";
 
 const renderCard = (recipe: PublicRecipeListItem) => (
-  renderToStaticMarkup(React.createElement(RecipeCard, { recipe, preferredGravityUnit: "sg" }))
+  renderToStaticMarkup(React.createElement(ToastProvider, null, React.createElement(RecipeCard, { recipe, preferredGravityUnit: "sg" })))
 );
 
 const baseItem = (overrides: Partial<PublicRecipeListItem> = {}): PublicRecipeListItem => ({

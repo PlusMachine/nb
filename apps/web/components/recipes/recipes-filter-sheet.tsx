@@ -1,8 +1,9 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
-import { SlidersHorizontal, X } from "lucide-react";
+import React, { useState } from "react";
+import { SlidersHorizontal } from "lucide-react";
 
+import { Button, Sheet } from "@nb/ui";
 import { countActiveRecipeFilters } from "@/features/recipes/recipes-url";
 import type { RecipeStyleSearchIndex } from "@/features/recipes/style-search";
 
@@ -10,9 +11,8 @@ import { RecipesFilterControls } from "./recipes-filter-controls";
 import { useRecipeQueryNav } from "./use-recipe-query";
 
 /**
- * Мобильный bottom-sheet фильтров (по паттерну `bjcp-filter-sheet.tsx`): ручной
- * `role="dialog"`, Escape и overlay-close. Сам рендерит триггер-кнопку с бейджем
- * числа активных фильтров. Состояние open — локальное (UI-only, не в URL).
+ * Мобильный bottom-sheet фильтров. Сам рендерит триггер-кнопку с бейджем числа
+ * активных фильтров. Состояние open — локальное (UI-only, не в URL).
  */
 export function RecipesFilterSheet({
   index,
@@ -25,25 +25,13 @@ export function RecipesFilterSheet({
   const [open, setOpen] = useState(false);
   const activeCount = countActiveRecipeFilters(new URLSearchParams(searchParams.toString()));
 
-  useEffect(() => {
-    if (!open) {
-      return undefined;
-    }
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") {
-        setOpen(false);
-      }
-    };
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [open]);
-
   return (
     <div className="xl:hidden">
-      <button
+      <Button
         type="button"
+        variant="outline"
+        size="sm"
         onClick={() => setOpen(true)}
-        className="inline-flex items-center gap-2 rounded-xl border border-zinc-200 bg-white px-4 py-2.5 text-sm font-medium text-zinc-700 transition hover:bg-zinc-50"
         aria-label="Открыть фильтры"
       >
         <SlidersHorizontal className="h-4 w-4" aria-hidden />
@@ -52,44 +40,15 @@ export function RecipesFilterSheet({
             {activeCount}
           </span>
         ) : null}
-      </button>
+      </Button>
 
-      {open ? (
-        <div
-          className="fixed inset-0 z-50 flex items-end justify-center bg-zinc-950/45 p-3"
-          role="dialog"
-          aria-modal="true"
-          aria-label="Фильтры рецептов"
-          onClick={() => setOpen(false)}
-        >
-          <div
-            className="max-h-[90vh] w-full overflow-y-auto rounded-[2rem] bg-white p-5 shadow-2xl"
-            onClick={(event) => event.stopPropagation()}
-          >
-            <div className="mb-5 flex items-start justify-between gap-4">
-              <h2 className="sr-only">Фильтры</h2>
-              <button
-                type="button"
-                onClick={() => setOpen(false)}
-                className="rounded-full border border-zinc-200 bg-white p-2 text-zinc-500 transition hover:border-zinc-300 hover:text-zinc-950"
-                aria-label="Закрыть фильтры"
-              >
-                <X className="h-4 w-4" />
-              </button>
-            </div>
+      <Sheet open={open} onOpenChange={setOpen} title="Фильтры" side="bottom">
+        <RecipesFilterControls index={index} familyCounts={familyCounts} />
 
-            <RecipesFilterControls index={index} familyCounts={familyCounts} />
-
-            <button
-              type="button"
-              onClick={() => setOpen(false)}
-              className="mt-6 w-full rounded-xl bg-zinc-950 px-4 py-2.5 text-sm font-medium text-white transition hover:bg-zinc-800"
-            >
-              Показать результаты
-            </button>
-          </div>
-        </div>
-      ) : null}
+        <Button type="button" size="md" className="mt-6 w-full" onClick={() => setOpen(false)}>
+          Показать результаты
+        </Button>
+      </Sheet>
     </div>
   );
 }

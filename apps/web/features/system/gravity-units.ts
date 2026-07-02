@@ -48,3 +48,28 @@ export const formatGravity = (
   const converted = Math.max(0, sgToGravityUnit(value, toCalculatorGravityUnit(unit)));
   return `${converted.toFixed(precision ?? 1)} ${gravityUnitLabels[unit]}`;
 };
+
+/**
+ * Диапазон плотности («мин–макс») в предпочитаемой единице — единица не дублируется
+ * (один суффикс на пару чисел), как и в `formatGravity`. Возвращает null, если хотя
+ * бы одна из границ не задана — рядом с точечным значением диапазон тогда просто не
+ * показывается.
+ */
+export const formatGravityRange = (
+  min: number | null,
+  max: number | null,
+  unit: PreferredGravityUnit,
+  precision?: number
+): string | null => {
+  if (min == null || max == null) {
+    return null;
+  }
+
+  if (unit === "sg") {
+    return `${min.toFixed(precision ?? 3)}–${max.toFixed(precision ?? 3)}`;
+  }
+
+  const convertedMin = Math.max(0, sgToGravityUnit(min, toCalculatorGravityUnit(unit)));
+  const convertedMax = Math.max(0, sgToGravityUnit(max, toCalculatorGravityUnit(unit)));
+  return `${convertedMin.toFixed(precision ?? 1)}–${convertedMax.toFixed(precision ?? 1)} ${gravityUnitLabels[unit]}`;
+};

@@ -139,7 +139,7 @@ export function RecipeRatingFormView({
       </div>
 
       {message ? (
-        <p className={message.kind === "ok" ? "text-sm text-emerald-700" : "text-sm text-red-600"}>
+        <p role={message.kind === "ok" ? "status" : "alert"} className={message.kind === "ok" ? "text-sm text-emerald-700" : "text-sm text-red-600"}>
           {message.text}
         </p>
       ) : null}

@@ -1,8 +1,10 @@
 "use client";
 
 import React, { useEffect, useMemo, useState } from "react";
-import { Scale, X } from "lucide-react";
+import { Scale } from "lucide-react";
 
+import { Dialog, DialogCloseButton } from "@nb/ui";
+import { cloneRecipeFromPublicAction } from "@/app/(public)/recipes/[slug]/clone-actions";
 import type { RecipeDetailDto } from "@/features/recipes/contracts";
 import { scaleRecipeToVolume } from "@/features/recipes/scale";
 
@@ -26,45 +28,54 @@ function RecipeScaleDialog({
   onClose: () => void;
 }) {
   const [input, setInput] = useState<string>(() => String(baseBatchLitres));
+  const [cloning, setCloning] = useState(false);
 
   useEffect(() => {
     if (open) {
       setInput(String(baseBatchLitres));
+      setCloning(false);
     }
   }, [open, baseBatchLitres]);
-
-  useEffect(() => {
-    if (!open) {
-      return undefined;
-    }
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") {
-        onClose();
-      }
-    };
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [open, onClose]);
 
   const target = Number(input.replace(",", "."));
   const view = useMemo(() => scaleRecipeToVolume(recipe, target), [recipe, target]);
 
-  if (!open) {
-    return null;
-  }
+  // Клонировать сразу в пересчитанном объёме — не только посмотреть, но и забрать
+  // себе без ручной правки после (сервис принимает targetBatchVolumeLitres — см.
+  // features/recipes/service.ts, cloneRecipeFromPublic).
+  const handleCloneAtVolume = () => {
+    if (cloning) {
+      return;
+    }
+
+    setCloning(true);
+    void cloneRecipeFromPublicAction({
+      recipeId: recipe.id,
+      targetBatchVolumeLitres: view.targetBatchLitres
+    }).then((result) => {
+      if (result.ok) {
+        window.location.assign(`/app/recipes/${result.recipeId}/edit`);
+        return;
+      }
+
+      setCloning(false);
+      if (result.code === "AUTH") {
+        window.location.assign(`/login?next=${encodeURIComponent(`/recipes/${recipe.slug}`)}`);
+      }
+    });
+  };
 
   return (
-    <div
-      className="fixed inset-0 z-50 flex items-end justify-center bg-zinc-950/45 p-3 sm:items-center"
-      role="dialog"
-      aria-modal="true"
-      aria-label="Пересчитать рецепт под объём"
-      onClick={onClose}
+    <Dialog
+      open={open}
+      onOpenChange={(next) => {
+        if (!next) onClose();
+      }}
+      title="Пересчитать рецепт под объём"
+      hideTitle
+      size="md"
     >
-      <div
-        className="flex max-h-[85vh] w-full max-w-md flex-col rounded-2xl border border-zinc-200 bg-white p-5 shadow-2xl"
-        onClick={(event) => event.stopPropagation()}
-      >
+      <div className="flex max-h-[85vh] flex-col p-5">
         <div className="mb-4 flex items-start justify-between gap-3">
           <div className="flex items-start gap-3">
             <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-zinc-100 text-zinc-600">
@@ -77,14 +88,7 @@ function RecipeScaleDialog({
               </p>
             </div>
           </div>
-          <button
-            type="button"
-            onClick={onClose}
-            className="rounded-md p-1.5 text-zinc-400 transition-colors hover:bg-zinc-100 hover:text-zinc-700"
-            aria-label="Закрыть"
-          >
-            <X className="h-4 w-4" />
-          </button>
+          <DialogCloseButton />
         </div>
 
         <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
@@ -119,8 +123,21 @@ function RecipeScaleDialog({
             </li>
           ))}
         </ul>
+
+        {view.scaled ? (
+          <div className="mt-3 border-t border-zinc-100 pt-3">
+            <button
+              type="button"
+              onClick={handleCloneAtVolume}
+              disabled={cloning}
+              className="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-zinc-900 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-zinc-800 disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              {cloning ? "Клонируем…" : `Клонировать в этом объёме (${litresFormatter.format(view.targetBatchLitres)} л)`}
+            </button>
+          </div>
+        ) : null}
       </div>
-    </div>
+    </Dialog>
   );
 }
 

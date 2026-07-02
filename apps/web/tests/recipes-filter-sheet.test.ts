@@ -48,9 +48,9 @@ describe("RecipesFilterControls", () => {
 });
 
 describe("RecipesFilterSheet trigger", () => {
-  it("renders the Фильтры trigger with no badge when no filters are active", () => {
+  it("renders the closed trigger with an accessible label and no dialog markup", () => {
     const html = renderToStaticMarkup(React.createElement(RecipesFilterSheet, { index, familyCounts }));
-    expect(html).toContain("Фильтры");
+    expect(html).toContain('aria-label="Открыть фильтры"');
     // Закрытый sheet не рендерит диалог.
     expect(html).not.toContain('role="dialog"');
   });

@@ -1,6 +1,12 @@
 import React from "react";
 import { renderToStaticMarkup } from "react-dom/server";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
+import { ToastProvider } from "@nb/ui";
+
+// RecipeSaveButton (внутри карточки/шапки) использует useRouter()/useToast() — нужны роутер и провайдер.
+vi.mock("next/navigation", () => ({
+  useRouter: () => ({ push: () => undefined })
+}));
 
 import { defaultRecipeProcessMeta, type PublicRecipeListItem, type RecipeDetailDto } from "../features/recipes/contracts";
 import { RecipeCloneAttribution } from "../components/recipes/recipe-clone-attribution";
@@ -66,13 +72,19 @@ const detail: RecipeDetailDto = {
 
 describe("clone bridge wiring", () => {
   it("shows the «Клонировать» button on the public recipe detail header", () => {
-    const html = renderToStaticMarkup(React.createElement(PublicRecipeHeader, { recipe: detail }));
+    const html = renderToStaticMarkup(
+      React.createElement(ToastProvider, null, React.createElement(PublicRecipeHeader, { recipe: detail }))
+    );
     expect(html).toContain("Клонировать");
   });
 
   it("shows a clone control on a saved-recipe card only when enabled", () => {
-    const withClone = renderToStaticMarkup(React.createElement(RecipeCard, { recipe: listItem, showCloneAction: true, preferredGravityUnit: "sg" }));
-    const withoutClone = renderToStaticMarkup(React.createElement(RecipeCard, { recipe: listItem, preferredGravityUnit: "sg" }));
+    const withClone = renderToStaticMarkup(
+      React.createElement(ToastProvider, null, React.createElement(RecipeCard, { recipe: listItem, showCloneAction: true, preferredGravityUnit: "sg" }))
+    );
+    const withoutClone = renderToStaticMarkup(
+      React.createElement(ToastProvider, null, React.createElement(RecipeCard, { recipe: listItem, preferredGravityUnit: "sg" }))
+    );
 
     expect(withClone).toContain("Клонировать рецепт");
     expect(withoutClone).not.toContain("Клонировать рецепт");

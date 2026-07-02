@@ -7,7 +7,7 @@ import { describe, expect, it, vi } from "vitest";
 import NewRecipePage from "../app/(app)/app/recipes/new/page";
 import EditRecipePage from "../app/(app)/app/recipes/[id]/edit/page";
 import { RecipeEditorErrorState } from "../components/recipes/recipe-editor-error-state";
-import { buildImportRecipeSummary } from "../components/recipes/import-export-modal";
+import { buildImportRecipeSummary, isImportExportModalDirty } from "../components/recipes/import-export-modal";
 import { CustomIngredientForm } from "../components/inventory/custom-ingredient-form";
 import {
   RecipeDesigner,
@@ -26,11 +26,11 @@ import {
   filterRecipeWaterAddFlowSuggestions,
   recipeConsumableAdditiveGroup,
   recipeConsumableSubtypeOptions,
-  shouldAutoFocusRecipeIngredientPicker
+  shouldAutoFocusRecipeIngredientPicker,
+  shouldShowRescaleToVolumeAction
 } from "../components/recipes/recipe-designer";
 import { createRecipeWaterPlanResetMeta } from "../components/recipes/water-setup-wizard";
 import { RecipeIngredientsEditor } from "../components/recipes/recipe-ingredients-editor";
-import { StartBrewModal } from "../components/recipes/start-brew-modal";
 import {
   applyRecipeIngredientCategoryChange,
   applyRecipeIngredientSelection,
@@ -44,6 +44,7 @@ import type { IngredientSuggestionItem } from "../features/ingredients/contracts
 import { defaultRecipeProcessMeta, type RecipeDetailDto, type RecipeWaterPlanMeta } from "../features/recipes/contracts";
 import { buildRecipePublicationChecklist } from "../features/recipes/publication-validation";
 import { buildRecipeWaterPlanResult } from "../features/recipes/water-plan";
+import { formatGravityRange } from "../features/system/gravity-units";
 
 vi.mock("next/navigation", () => ({
   usePathname: () => "/app/recipes/new",
@@ -160,6 +161,15 @@ describe("recipe editor components", () => {
       expect(result.summary.ingredientBreakdown).toContain("хмель");
       expect(result.summary.parameters).toContain("л");
     }
+  });
+
+  it("treats import/export modal as dirty only with unfinished pasted/loaded text", () => {
+    expect(isImportExportModalDirty({ importText: "", statusTone: null })).toBe(false);
+    expect(isImportExportModalDirty({ importText: "   ", statusTone: null })).toBe(false);
+    expect(isImportExportModalDirty({ importText: "<RECIPES></RECIPES>", statusTone: null })).toBe(true);
+    expect(isImportExportModalDirty({ importText: "<RECIPES></RECIPES>", statusTone: "error" })).toBe(true);
+    expect(isImportExportModalDirty({ importText: "<RECIPES></RECIPES>", statusTone: "pending" })).toBe(true);
+    expect(isImportExportModalDirty({ importText: "<RECIPES></RECIPES>", statusTone: "success" })).toBe(false);
   });
 
   it("ingredient row renders", () => {
@@ -610,26 +620,6 @@ describe("recipe editor components", () => {
     expect(html).toContain("Ошибка валидации");
   });
 
-  it("start brew modal renders a visible success state", () => {
-    const html = renderToStaticMarkup(
-      React.createElement(StartBrewModal, {
-        open: true,
-        pending: false,
-        result: {
-          ok: true,
-          message: "Партия создана. Пошаговый режим варки появится здесь позже.",
-          brewBatchId: "batch-1"
-        },
-        onStart: () => undefined,
-        onClose: () => undefined
-      })
-    );
-
-    expect(html).toContain("Партия добавлена в план варки.");
-    expect(html).toContain("Закрыть");
-    expect(html).not.toContain("Списать ингредиенты со склада");
-  });
-
   it("designer header renders aligned field labels", () => {
     const html = renderToStaticMarkup(React.createElement(RecipeDesigner, { mode: "create", preferredGravityUnit: "plato" }));
 
@@ -644,7 +634,7 @@ describe("recipe editor components", () => {
     expect(html).toContain("Ингредиенты со склада");
     expect(html).toContain("Другие добавки");
     expect(html).toContain("Импорт / экспорт");
-    expect(html).toContain("Начать варку");
+    expect(html).toContain("Сварить");
     expect(html).toContain("Mash Profile");
     expect(html).toContain("aria-label=\"Открыть настройки КП\"");
     expect(html).toContain("(0)");
@@ -719,6 +709,37 @@ describe("recipe editor components", () => {
     expect(html).toContain("Специальное пиво по коммерческому образцу");
     expect(html).toContain("Диапазоны BJCP не указаны");
     expect(html).toContain("Диапазон не указан в BJCP");
+  });
+
+  it("shows the FG range next to the point estimate in the sticky metrics header (#16/17)", () => {
+    const html = renderToStaticMarkup(React.createElement(RecipeDesigner, {
+      mode: "edit",
+      initialRecipe: buildRecipeDetail({
+        fg: 1.012,
+        fgEstimateMode: "yeast_estimate",
+        fgEstimateDetails: {
+          baseAttenuationPct: 75,
+          attenuationSource: "yeast",
+          mainMashTempC: 66,
+          mashAdjPctPoints: 0.5,
+          simpleSugarSharePct: 0,
+          crystalDextrinSharePct: 0,
+          lactoseSharePct: 0,
+          simpleSugarAdj: 0,
+          crystalDextrinAdj: 0,
+          lactoseAdj: 0,
+          effectiveAttenuationPct: 75.5,
+          fgRangeMin: 1.009,
+          fgRangeMax: 1.014
+        }
+      }),
+      preferredGravityUnit: "plato"
+    }));
+
+    // Диапазон форматируется той же formatGravityRange, что и в шапке — не хардкодим число.
+    const expectedRange = formatGravityRange(1.009, 1.014, "plato");
+    expect(expectedRange).not.toBeNull();
+    expect(html).toContain(`(${expectedRange})`);
   });
 
   it("uses the default equipment profile as the initial profile for a new recipe", () => {
@@ -806,6 +827,49 @@ describe("recipe editor components", () => {
       isSatisfied: false,
       statusLabel: "Не добавлено"
     });
+  });
+
+  it("shows the rescale-to-volume action only when saved and current volumes actually diverge (#6)", () => {
+    expect(shouldShowRescaleToVolumeAction({
+      savedBatchVolumeL: 20,
+      currentBatchVolumeL: 30,
+      ingredientCount: 3
+    })).toBe(true);
+
+    // Nothing saved yet (still loading/new recipe) — no baseline to diff against.
+    expect(shouldShowRescaleToVolumeAction({
+      savedBatchVolumeL: null,
+      currentBatchVolumeL: 30,
+      ingredientCount: 3
+    })).toBe(false);
+
+    // Same volume as last save — nothing to rescale.
+    expect(shouldShowRescaleToVolumeAction({
+      savedBatchVolumeL: 20,
+      currentBatchVolumeL: 20,
+      ingredientCount: 3
+    })).toBe(false);
+
+    // Tiny float noise from unit conversion shouldn't flip the action on.
+    expect(shouldShowRescaleToVolumeAction({
+      savedBatchVolumeL: 20,
+      currentBatchVolumeL: 20.0001,
+      ingredientCount: 3
+    })).toBe(false);
+
+    // No ingredients yet — nothing to scale, by default quantities stay untouched.
+    expect(shouldShowRescaleToVolumeAction({
+      savedBatchVolumeL: 20,
+      currentBatchVolumeL: 30,
+      ingredientCount: 0
+    })).toBe(false);
+
+    // Volume field currently empty/invalid — nothing to compare against.
+    expect(shouldShowRescaleToVolumeAction({
+      savedBatchVolumeL: 20,
+      currentBatchVolumeL: null,
+      ingredientCount: 3
+    })).toBe(false);
   });
 
   it("create and edit pages are importable", () => {

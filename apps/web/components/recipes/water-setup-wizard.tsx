@@ -1,7 +1,8 @@
 "use client";
 
-import { ChevronRight, Save, Search, SlidersHorizontal, Trash2, X } from "lucide-react";
+import { ChevronRight, Save, Search, SlidersHorizontal, Trash2 } from "lucide-react";
 import React from "react";
+import { Dialog, DialogCloseButton, DialogHeader } from "@nb/ui";
 
 import { ConfirmActionDialog } from "@/components/shared/confirm-action-dialog";
 
@@ -819,32 +820,6 @@ function TargetCatalogPickerSheet({
   onClose: () => void;
   children: React.ReactNode;
 }) {
-  React.useEffect(() => {
-    if (!isMobile) {
-      return;
-    }
-
-    const originalOverflow = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-    return () => {
-      document.body.style.overflow = originalOverflow;
-    };
-  }, [isMobile]);
-
-  React.useEffect(() => {
-    if (!isMobile) {
-      return;
-    }
-
-    const onKey = (event: KeyboardEvent) => {
-      if (event.key === "Escape") {
-        onClose();
-      }
-    };
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, [isMobile, onClose]);
-
   if (!isMobile) {
     return (
       <div className="space-y-3 rounded-xl border border-zinc-200 bg-white p-3">
@@ -854,37 +829,25 @@ function TargetCatalogPickerSheet({
   }
 
   return (
-    <div
-      className="fixed inset-0 z-[80] flex flex-col bg-zinc-950/45"
-      role="dialog"
-      aria-modal="true"
-      aria-label="Выбор целевого профиля воды"
-      onClick={(event) => {
-        if (event.target === event.currentTarget) {
+    <Dialog
+      open
+      onOpenChange={(next) => {
+        if (!next) {
           onClose();
         }
       }}
+      title="Выбор целевого профиля воды"
+      hideTitle
+      size="sheet"
     >
-      <div className="mt-auto flex max-h-[92vh] flex-col rounded-t-2xl bg-white shadow-2xl">
-        <div className="pointer-events-none flex shrink-0 justify-center pt-2 pb-1" aria-hidden>
-          <span className="h-1 w-10 rounded-full bg-zinc-300" />
-        </div>
-        <div className="flex shrink-0 items-center justify-between gap-2 px-4 pb-3">
-          <h3 className="text-base font-semibold text-zinc-900">Целевой профиль</h3>
-          <button
-            type="button"
-            onClick={onClose}
-            className="inline-flex h-9 w-9 items-center justify-center rounded-lg text-zinc-500 hover:bg-zinc-100 hover:text-zinc-900"
-            aria-label="Закрыть"
-          >
-            <X className="h-5 w-5" />
-          </button>
-        </div>
-        <div className="flex-1 space-y-3 overflow-y-auto px-4 pb-6">
-          {children}
-        </div>
+      <DialogHeader>
+        <h3 className="text-base font-semibold text-zinc-900">Целевой профиль</h3>
+        <DialogCloseButton />
+      </DialogHeader>
+      <div className="space-y-3 px-4 pb-6 pt-3">
+        {children}
       </div>
-    </div>
+    </Dialog>
   );
 }
 

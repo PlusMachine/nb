@@ -1,8 +1,9 @@
 "use client";
 
-import React, { useEffect, useMemo } from "react";
-import { AlertTriangle, CheckCircle2, Loader2, PackageMinus, RefreshCw, X } from "lucide-react";
+import React, { useMemo } from "react";
+import { AlertTriangle, CheckCircle2, Loader2, PackageMinus, RefreshCw } from "lucide-react";
 
+import { Dialog, DialogCloseButton } from "@nb/ui";
 import { formatInventoryQuantityInputValue } from "@/features/inventory/display";
 import { inventoryUnitShortLabels } from "@/features/inventory/units";
 import type { RecipeStockCoverageDto, RecipeStockCoverageLineDto } from "@/features/recipes/contracts";
@@ -154,25 +155,6 @@ export function StockConsumeDialog({
 }) {
   const readiness = useMemo(() => getStockCoverageReadiness(coverage), [coverage]);
 
-  useEffect(() => {
-    if (!open) {
-      return undefined;
-    }
-
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape" && !pending) {
-        onClose();
-      }
-    };
-
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [open, onClose, pending]);
-
-  if (!open) {
-    return null;
-  }
-
   const missingText = [
     readiness.shortLines.length ? `не хватает ${readiness.shortLines.length}` : null,
     readiness.unselectedLines.length ? `не выбрано ${readiness.unselectedLines.length}` : null
@@ -187,21 +169,17 @@ export function StockConsumeDialog({
         : "Списание недоступно для текущей сводки.";
 
   return (
-    <div
-      className="fixed inset-0 z-50 flex items-end justify-center bg-zinc-950/45 p-3 sm:items-center"
-      role="dialog"
-      aria-modal="true"
-      aria-label="Списать ингредиенты со склада"
-      onClick={() => {
-        if (!pending) {
-          onClose();
-        }
+    <Dialog
+      open={open}
+      onOpenChange={(next) => {
+        if (!next) onClose();
       }}
+      title="Списать ингредиенты со склада"
+      hideTitle
+      size="lg"
+      guard={{ isDirty: () => pending, onGuardedClose: () => {} }}
     >
-      <div
-        className="w-full max-w-2xl rounded-2xl border border-zinc-200 bg-white p-5 shadow-2xl"
-        onClick={(event) => event.stopPropagation()}
-      >
+      <div className="p-5">
         <div className="mb-4 flex items-start justify-between gap-3">
           <div className="flex items-start gap-3">
             <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-emerald-50 text-emerald-600">
@@ -214,14 +192,7 @@ export function StockConsumeDialog({
               </p>
             </div>
           </div>
-          <button
-            type="button"
-            onClick={onClose}
-            disabled={pending}
-            className="rounded-md p-1.5 text-zinc-400 transition-colors hover:bg-zinc-100 hover:text-zinc-700 disabled:opacity-50"
-          >
-            <X className="h-4 w-4" />
-          </button>
+          <DialogCloseButton />
         </div>
 
         {message ? (
@@ -301,6 +272,6 @@ export function StockConsumeDialog({
           </button>
         </div>
       </div>
-    </div>
+    </Dialog>
   );
 }

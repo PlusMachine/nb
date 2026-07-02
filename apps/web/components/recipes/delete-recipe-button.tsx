@@ -31,7 +31,11 @@ export function DeleteRecipeButton({ recipeId, title, renderTrigger }: Props) {
   return (
     <div className="space-y-1">
       {renderTrigger ? renderTrigger(() => setOpen(true), isPending) : defaultTrigger}
-      {feedback ? <p className={`text-xs ${feedback.ok ? "text-emerald-700" : "text-red-600"}`}>{feedback.message}</p> : null}
+      {feedback ? (
+        <p role={feedback.ok ? "status" : "alert"} className={`text-xs ${feedback.ok ? "text-emerald-700" : "text-red-600"}`}>
+          {feedback.message}
+        </p>
+      ) : null}
       <ConfirmActionDialog
         open={open}
         title="Удалить рецепт?"

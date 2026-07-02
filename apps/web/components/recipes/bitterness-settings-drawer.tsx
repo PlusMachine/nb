@@ -1,8 +1,9 @@
 "use client";
 
-import React, { useEffect } from "react";
-import { Settings, X } from "lucide-react";
+import React from "react";
+import { Settings } from "lucide-react";
 
+import { Dialog, DialogCloseButton } from "@nb/ui";
 import {
   recipeBitternessFormulaLabels,
   recipeBitternessFormulas,
@@ -20,22 +21,19 @@ export function BitternessSettingsDrawer({
   onChange: (next: RecipeCalculationMeta) => void;
   onClose: () => void;
 }) {
-  useEffect(() => {
-    if (!open) return undefined;
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") onClose();
-    };
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [open, onClose]);
-
-  if (!open) return null;
-
   const whirlpoolEnabled = calculationMeta.bitternessFormula === "tinseth_whirlpool_v2";
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end justify-center bg-zinc-950/45 p-3 sm:items-center" role="dialog" aria-modal="true" aria-label="Настройки расчета горечи" onClick={onClose}>
-      <div className="w-full max-w-lg rounded-2xl border border-zinc-200 bg-white p-5 shadow-2xl" onClick={(event) => event.stopPropagation()}>
+    <Dialog
+      open={open}
+      onOpenChange={(next) => {
+        if (!next) onClose();
+      }}
+      title="Настройки расчета горечи"
+      hideTitle
+      size="lg"
+    >
+      <div className="p-5">
         <div className="mb-4 flex items-start justify-between gap-3">
           <div className="flex items-start gap-3">
             <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-zinc-100 text-zinc-700">
@@ -46,9 +44,7 @@ export function BitternessSettingsDrawer({
               <p className="mt-1 text-sm leading-6 text-zinc-600">По умолчанию используется Tinseth с учетом whirlpool и плотности на момент добавления.</p>
             </div>
           </div>
-          <button type="button" onClick={onClose} className="rounded-md p-1.5 text-zinc-400 hover:bg-zinc-100 hover:text-zinc-700">
-            <X className="h-4 w-4" />
-          </button>
+          <DialogCloseButton />
         </div>
 
         <div className="space-y-3">
@@ -125,6 +121,6 @@ export function BitternessSettingsDrawer({
           <p className="rounded-lg bg-zinc-50 px-3 py-2 text-xs leading-5 text-zinc-500">Dry hop по умолчанию не входит в стандартный IBU total, но может менять воспринимаемую горечь.</p>
         </div>
       </div>
-    </div>
+    </Dialog>
   );
 }

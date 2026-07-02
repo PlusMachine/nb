@@ -1,12 +1,13 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { LayoutGrid, List, Search } from "lucide-react";
 
 import { Input } from "@nb/ui";
 
 import { RECIPES_VIEW_COOKIE, recipeSortOptions, type RecipesView } from "@/features/recipes/recipes-url";
+import { useDebouncedUrlSearch } from "@/components/shared/use-debounced-url-search";
 
 import { useRecipeQueryNav } from "./use-recipe-query";
 
@@ -24,8 +25,6 @@ export function RecipesToolbar({ defaultView = "grid" }: { defaultView?: Recipes
   const sort = searchParams.get("sort") ?? "newest";
   const view = searchParams.get("view") ?? defaultView;
 
-  const [searchValue, setSearchValue] = useState(urlQuery);
-
   // Запоминаем выбор вида в cookie — серверная страница подставит его дефолтом при
   // следующем заходе без явного ?view. «Сетка» вырезается из URL как дефолт, поэтому
   // если целевой адрес не меняется (переключение на сетку из «чистого» URL при
@@ -40,20 +39,16 @@ export function RecipesToolbar({ defaultView = "grid" }: { defaultView?: Recipes
     }
   };
 
-  useEffect(() => {
-    setSearchValue(urlQuery);
-  }, [urlQuery]);
+  const buildSearchHref = useCallback(
+    (nextQuery: string) => buildHref({ q: nextQuery || null }),
+    [buildHref]
+  );
 
-  useEffect(() => {
-    const trimmed = searchValue.trim();
-    if (trimmed === urlQuery.trim()) {
-      return;
-    }
-    const timer = window.setTimeout(() => {
-      navigate({ q: trimmed || null }, undefined, "replace");
-    }, 250);
-    return () => window.clearTimeout(timer);
-  }, [navigate, searchValue, urlQuery]);
+  const {
+    inputValue: searchValue,
+    setInputValue: setSearchValue,
+    isPending: isSearchPending
+  } = useDebouncedUrlSearch({ value: urlQuery, buildHref: buildSearchHref });
 
   return (
     <div className="space-y-1.5">
@@ -115,7 +110,7 @@ export function RecipesToolbar({ defaultView = "grid" }: { defaultView?: Recipes
 
       {/* Постоянная строка фиксированной высоты — индикатор не двигает раскладку. */}
       <p className="h-4 text-xs text-zinc-400" aria-live="polite">
-        {isPending ? "Обновляем…" : ""}
+        {isPending || isSearchPending ? "Обновляем…" : ""}
       </p>
     </div>
   );

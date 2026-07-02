@@ -2,12 +2,13 @@
 
 import React, { useEffect, useState, useTransition } from "react";
 import { Bookmark } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useToast } from "@nb/ui";
 
 import { loadRecipeSaveViewerState, toggleRecipeSaveAction } from "@/app/(public)/recipes/save-actions";
 import { redirectToLoginWithNext } from "@/lib/auth-links";
 
 import { useRecipeSaves } from "./recipe-saves-provider";
-import { SavedToast } from "./saved-toast";
 
 /**
  * Кнопка «Сохранить» рецепт в «Избранные». На витрине (`variant="icon"`) — флажок
@@ -25,8 +26,9 @@ export function RecipeSaveButton({
   variant?: "icon" | "button";
 }) {
   const ctx = useRecipeSaves();
+  const router = useRouter();
+  const { show } = useToast();
   const [standaloneSaved, setStandaloneSaved] = useState<boolean | null>(null);
-  const [showSavedToast, setShowSavedToast] = useState(false);
   const [isPending, startTransition] = useTransition();
 
   // Детальная страница (без провайдера): тянем своё состояние после гидрации.
@@ -80,7 +82,10 @@ export function RecipeSaveButton({
       }
       // Явный фидбэк только при добавлении (не при снятии): куда сохранено и где найти.
       if (next) {
-        setShowSavedToast(true);
+        show({
+          title: "Сохранено в «Избранные»",
+          action: { label: "Избранные", onClick: () => router.push("/app/saved") }
+        });
       }
     });
   };
@@ -116,10 +121,5 @@ export function RecipeSaveButton({
       </button>
     );
 
-  return (
-    <>
-      {trigger}
-      <SavedToast open={showSavedToast} onClose={() => setShowSavedToast(false)} />
-    </>
-  );
+  return trigger;
 }

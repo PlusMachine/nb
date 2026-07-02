@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useCallback, useEffect, useState } from "react";
-import Link from "next/link";
 import { Check, ChevronDown, Loader2, Plus, X } from "lucide-react";
 
 import { addRecipeIngredientToInventory, loadRecipeMatch, type RecipeMatchViewerState } from "@/app/(public)/recipes/[slug]/match-actions";
@@ -253,9 +252,13 @@ export function RecipeMatchPanel({ recipeId }: { recipeId: string }) {
   if (!state.authenticated) {
     return (
       <section className="rounded-2xl border border-zinc-100 bg-white p-4 text-sm text-zinc-600 shadow-sm">
-        <Link href="/login" className="font-medium text-zinc-900 underline underline-offset-2">
+        <button
+          type="button"
+          onClick={() => redirectToLoginWithNext()}
+          className="font-medium text-zinc-900 underline underline-offset-2"
+        >
           Войдите
-        </Link>
+        </button>
         , чтобы увидеть, сколько ингредиентов для этого рецепта есть на вашем складе.
       </section>
     );

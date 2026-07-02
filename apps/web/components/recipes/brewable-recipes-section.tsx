@@ -78,7 +78,7 @@ function BrewableRecipeCard({ recipe }: { recipe: BrewableRecipeDto }) {
               <CircleCheck className="h-4 w-4" aria-hidden />
               Хватает всего
             </span>
-            <BrewFromStockButton recipeId={recipe.recipeId} slug={recipe.slug} />
+            <BrewFromStockButton recipeId={recipe.recipeId} slug={recipe.slug} recipeTitle={recipe.title} />
           </div>
         ) : (
           <div className="grid grid-cols-[auto_1fr] gap-4 rounded-xl bg-zinc-50 p-2.5">

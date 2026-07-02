@@ -1,6 +1,12 @@
 import React from "react";
 import { renderToStaticMarkup } from "react-dom/server";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
+import { ToastProvider } from "@nb/ui";
+
+// PublicRecipePage → PublicRecipeHeader → RecipeSaveButton использует useRouter()/useToast().
+vi.mock("next/navigation", () => ({
+  useRouter: () => ({ push: () => undefined })
+}));
 
 import RecipesError from "../app/(app)/app/recipes/error";
 import RecipeDetailError from "../app/(app)/app/recipes/[id]/error";
@@ -248,7 +254,9 @@ describe("recipes read components", () => {
   });
 
   it("renders public recipe page composition", () => {
-    const html = renderToStaticMarkup(React.createElement(PublicRecipePage, { recipe: recipeDetail }));
+    const html = renderToStaticMarkup(
+      React.createElement(ToastProvider, null, React.createElement(PublicRecipePage, { recipe: recipeDetail }))
+    );
 
     expect(html).toContain("Публичный");
     expect(html).toContain("Ключевые показатели");

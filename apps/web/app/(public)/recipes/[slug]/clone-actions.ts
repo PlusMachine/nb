@@ -7,7 +7,12 @@ import type { RecipeCloneActionResult } from "@/features/recipes/contracts";
 import { cloneRecipeFromPublic } from "@/features/recipes/service";
 import { getSessionUser } from "@/lib/auth";
 
-const cloneInputSchema = z.object({ recipeId: z.string().uuid() });
+const cloneInputSchema = z.object({
+  recipeId: z.string().uuid(),
+  // Опционально: целевой объём партии (л) из предпросмотра «Пересчитать под объём»
+  // (RecipeScalePanel) — клон сразу заводится в этом объёме, без ручной правки после.
+  targetBatchVolumeLitres: z.coerce.number().positive().max(1000).optional().nullable()
+});
 
 const mapCloneError = (error: unknown): RecipeCloneActionResult => {
   if (error instanceof Error && (error.message === "NOT_FOUND" || error.message === "FORBIDDEN")) {
@@ -24,6 +29,7 @@ const mapCloneError = (error: unknown): RecipeCloneActionResult => {
  */
 export const cloneRecipeFromPublicAction = async (input: {
   recipeId: string;
+  targetBatchVolumeLitres?: number | null;
 }): Promise<RecipeCloneActionResult> => {
   const user = await getSessionUser();
   if (!user) {
@@ -36,7 +42,9 @@ export const cloneRecipeFromPublicAction = async (input: {
   }
 
   try {
-    const recipe = await cloneRecipeFromPublic(user.id, parsed.data.recipeId);
+    const recipe = await cloneRecipeFromPublic(user.id, parsed.data.recipeId, {
+      targetBatchVolumeLitres: parsed.data.targetBatchVolumeLitres ?? null
+    });
     revalidatePath("/app/recipes");
     return { ok: true, recipeId: recipe.id };
   } catch (error) {

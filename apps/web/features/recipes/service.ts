@@ -77,6 +77,7 @@ import {
 import { equipmentProfileSnapshotSchema, type EquipmentProfileSnapshot } from "../equipment-profiles/contracts";
 import { getRecipePublicationFieldErrors } from "./publication-validation";
 import { calculateRecipeFgEstimate } from "./fg-estimate";
+import { scaleRecipeToVolume } from "./scale";
 import {
   normalizeRecipeBatchSize,
   normalizeRecipeIngredientAmountWithSource,
@@ -1769,14 +1770,51 @@ export const cloneRecipe = async (authorId: string, recipeId: string) => {
 };
 
 /**
+ * Точечная поддержка «клонировать в другом объёме» (этап 6b, #6). Если передан
+ * валидный targetBatchVolumeLitres — отдаёт эфемерно пересчитанную (scaleRecipeToVolume,
+ * чистая функция) копию рецепта: батч и количества ингредиентов, сопоставленные по
+ * persistentKey. Ничего не пишет в БД сама — только готовит вход для buildRecipeClonePayload.
+ * Без параметра или при factor=1 — рецепт без изменений (клон в исходном объёме).
+ */
+const applyCloneTargetVolume = (
+  recipe: RecipeDetailDto,
+  targetBatchVolumeLitres: number | null | undefined
+): RecipeDetailDto => {
+  if (targetBatchVolumeLitres == null || !Number.isFinite(targetBatchVolumeLitres) || targetBatchVolumeLitres <= 0) {
+    return recipe;
+  }
+
+  const scaled = scaleRecipeToVolume(recipe, targetBatchVolumeLitres);
+  if (!scaled.scaled) {
+    return recipe;
+  }
+
+  const scaledByKey = new Map(scaled.ingredients.map((item) => [item.persistentKey, item]));
+  return {
+    ...recipe,
+    batchSizeEnteredQuantity: scaled.batchSizeEnteredQuantity,
+    ingredients: recipe.ingredients.map((ingredient) => {
+      const scaledIngredient = scaledByKey.get(ingredient.persistentKey);
+      return scaledIngredient
+        ? { ...ingredient, amountEnteredQuantity: scaledIngredient.amountEnteredQuantity }
+        : ingredient;
+    })
+  };
+};
+
+/**
  * Мост «сохранённое/публичное → мои рецепты»: клонирует ЧУЖОЙ published-рецепт
  * (или свой в любом статусе) в новый ЧЕРНОВИК (private) во владении пользователя.
  * Проставляет clonedFromRecipeId для атрибуции. Гард: чужой можно клонировать
  * только если он published. userId приходит из серверной сессии — не из клиента.
+ * targetBatchVolumeLitres — опциональный целевой объём (см. applyCloneTargetVolume):
+ * мост с эфемерным пересчётом на публичной странице (`RecipeScalePanel`) — клон
+ * сразу заводится в объёме, который пользователь выбрал для предпросмотра.
  */
 export const cloneRecipeFromPublic = async (
   userId: string,
-  sourceRecipeId: string
+  sourceRecipeId: string,
+  options?: { targetBatchVolumeLitres?: number | null }
 ): Promise<RecipeDetailDto> => {
   const guard = await db.query.recipes.findFirst({
     where: eq(recipes.id, sourceRecipeId),
@@ -1797,10 +1835,11 @@ export const cloneRecipeFromPublic = async (
     ? await getOwnedRecipeById(userId, sourceRecipeId)
     : await getPublicRecipeById(sourceRecipeId);
   const authorLabel = await resolveCloneAuthorLabel(userId);
+  const scaledSource = applyCloneTargetVolume(source, options?.targetBatchVolumeLitres);
 
   return createRecipe(
     userId,
-    buildRecipeClonePayload(source, {
+    buildRecipeClonePayload(scaledSource, {
       title: buildCloneTitle(source.title, authorLabel),
       remapPrivateCustomToImported: !isOwn
     }),
