@@ -17,10 +17,10 @@ read-only тупиком; `cloneRecipe` умел копировать тольк
 
 `recipe_saves` + `setRecipeSave` + `toggleRecipeSaveAction` + `listSavedRecipes` +
 `/app/saved` — без изменений. Добавлены: **мост** «Клонировать» на карточке
-`/app/saved` и **явный фидбэк сохранения** — эфемерный тост `SavedToast`
-(«Сохранено в «Избранное»» + ссылка на `/app/saved`, авто-скрытие 5с, портал в
-body, без глобального провайдера), триггерится в `RecipeSaveButton` при добавлении
-(не при снятии).
+`/app/saved` и **явный фидбэк сохранения** — тост через `useToast`
+(`ToastProvider` из `@nb/ui`, смонтирован в `components/providers.tsx`) с текстом
+«Сохранено в «Избранное»» + ссылкой на `/app/saved`, триггерится в
+`RecipeSaveButton` при добавлении (не при снятии).
 
 ## Часть 2 — Клон чужого рецепта
 

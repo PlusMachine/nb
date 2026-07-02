@@ -56,3 +56,11 @@ CLI-only утилиты (нет UI-кнопок и публичных эндпо
 - TypeScript strict; стиль файла подгонять под окружающий код.
 - Новую доменную логику класть в `features/*` или соответствующий `@nb/*` пакет, а не в компоненты.
 - Перед завершением правок — `npm run typecheck` (или точечный tsc по затронутому workspace).
+
+## Конвенции UI
+- Модалки — только через `Dialog`/`Sheet` из `@nb/ui` (Radix-based, focus-trap, scroll-lock); самописных `fixed inset-0` модалок не заводить.
+- Меню — через `DropdownMenu` из `@nb/ui`.
+- Тосты — через `useToast` (`@nb/ui`), провайдер уже смонтирован в `apps/web/components/providers.tsx`.
+- Паттерн «добавление сущности»: модалка — когда выбор из большого набора вариантов; инлайн по URL-параметру (`?mode=create` и т.п.) — когда сущностей мало; отдельная страница — когда это многосекционная форма.
+- Деструктивные действия — через `ConfirmActionDialog` (`components/shared/confirm-action-dialog.tsx`), не голый `window.confirm` и не form-submit без подтверждения.
+- Числовые поля ввода — через `NumericInput` (`apps/web/components/shared/numeric-input.tsx`).

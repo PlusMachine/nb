@@ -139,7 +139,7 @@ sessionStorage, acquire+heartbeat-loop 15с, release при уходе чере�
 дружелюбный разбор 409, отложенный undo для SKIP). Компоненты: **TransportBar** (медиаплеер
 Пауза/Продолжить/Пропустить/Стоп, conditional visibility по стадии), **ControlLeaseBadge** (Вы
 управляете / управляет другой + Запросить перехват / вам прислали запрос → Передать),
-**HoldToConfirmButton** (ESTOP press&hold), **ControlToast** (undo). `LiveDashboard` (общий A/B):
+**HoldToConfirmButton** (ESTOP press&hold), undo-тост через `useToast` (`@nb/ui`). `LiveDashboard` (общий A/B):
 сняты модалки с Пауза/Продолжить (один тап), SKIP — один тап + undo-тост, graceful STOP — двухшаг,
 ESTOP — hold-to-confirm; рутина активна лишь у держателя аренды. Проверено HTTP-smoke на живом
 device-sim: две сессии одного юзера → single-writer (A держит, B read-only), 409 `NO_CONTROL_LEASE`

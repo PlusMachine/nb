@@ -97,7 +97,7 @@ UI самоочевидный из IA/иконок/порядка, без поя
 1. **Виртуальный (ручной).** Без устройства (`device_id = NULL`). Человек сам
    управляет своим оборудованием, портал — гид и контроль: на экране показываются
    шаги/паузы/тайминги (затор, кипячение, засыпи хмеля, температуры), плюс журнал
-   замеров. Точка входа: «Начать варку» (`start-brew-modal`).
+   замеров. Точка входа: «Сварить» (`BrewPickerDialog`) → виртуальная партия.
    - **Есть:** `brew_batch` создаётся; деталь = статус-степпер + журнал + заметки;
      план варки лежит в `brewPlanSnapshot` (mashSteps / boilPlan.timedAdditions /
      whirlpool / fermentation), генерится `@nb/brewing-core generateBrewSteps`.
@@ -116,7 +116,8 @@ UI самоочевидный из IA/иконок/порядка, без поя
 
 2. **Автоматический (BrewForge).** Через собственный контроллер BrewForge (ESP32-S3;
    прошивка в соседнем репо `../brewforge`), запускается ПРЯМО с сайта nb. Точка
-   входа: «Варить на устройстве» (`brew-on-device-modal` → `startBrewOnDeviceAction`:
+   входа: та же «Сварить» (`BrewPickerDialog`) → выбор устройства (`device-picker-list.tsx` /
+   `brew-recipe-on-device-picker.tsx`) → `startBrewOnDeviceAction`:
    openSession → push рецепта → START_BREW; статус `brewing`, привязка `device_id`).
    Деталь варки показывает live-дашборд и график телеметрии (секция при `device_id`).
    - **Есть:** контракт `@nb/brewforge-protocol` (zod, заморожен; прошивка зеркалит

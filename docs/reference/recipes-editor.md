@@ -36,7 +36,7 @@ RecipeEditorPage (recipe-editor-page.tsx)   — server/page wrapper, держи�
 - `ingredient-add-drawer.tsx`, `stock-ingredient-list.tsx` — drawer добавления ингредиента и список склада.
 - `stock-coverage-summary.tsx` — компактная сводка покрытия складом.
 - `import-export-modal.tsx` — modal wizard для BeerXML/Brewfather import/export.
-- `start-brew-modal.tsx` — modal для создания партии.
+- `brew-picker-dialog.tsx` (`components/recipes/`) — единая точка входа «Сварить»: виртуальная партия (без клона рецепта) либо выбор устройства BrewForge (`features/devices/components/device-picker-list.tsx`, `brew-recipe-on-device-picker.tsx`).
 - `recipe-images-section.tsx` — редактор `Фото пива`.
 
 ### Информационная ось страницы
@@ -284,7 +284,7 @@ Export mapping:
 
 ## 10. Старт варки (batches)
 
-Header action `Начать варку` открывает `StartBrewModal`. Flow: выбор `Пока не списывать` / `Списать ингредиенты со склада` → сохранение рецепта → (опц.) confirmed consume → `createBrewBatchFromRecipeAction(recipeId)`.
+Header action `Начать варку` открывает единую точку входа `BrewPickerDialog` (`components/recipes/brew-picker-dialog.tsx`): виртуальная партия без клонирования рецепта либо выбор устройства для варки на BrewForge (`device-picker-list.tsx` / `brew-recipe-on-device-picker.tsx` → `features/brew-controller/brew-recipe-flow.ts`). Для виртуальной партии — сохранение рецепта → `createBrewBatchFromRecipeAction(recipeId)`.
 
 `createBrewBatchFromRecipe` (`features/brew-batches/service.ts`) создаёт batch со `status = "planned"` и snapshot `buildBrewPlanSnapshot(recipe)`.
 
