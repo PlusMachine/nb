@@ -14,12 +14,11 @@ import {
   SlidersHorizontal,
   StickyNote
 } from "lucide-react";
-import React, { startTransition, useEffect, useMemo, useRef, useState } from "react";
+import React, { startTransition, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 
 import {
   createRecipeCustomIngredientAction,
-  createRecipeAction,
   createRecipeVersionAction,
   consumeRecipeInventoryAction,
   exportRecipeBeerXmlAction,
@@ -30,7 +29,6 @@ import {
   releaseRecipeInventoryAction,
   reserveRecipeInventoryAction,
   syncRecipeInventoryAllocationsAction,
-  updateRecipeAction,
   type RecipeEditorPayload,
   type RecipeEditorResult,
   type RecipeInventoryActionResult
@@ -91,7 +89,6 @@ import {
   buildEquipmentProfileSnapshotFromDto,
   formatEquipmentProfileRecipeValue,
   normalizeSavePayload,
-  buildAutosaveBlockedResult,
   normalizeEditorPublicationState,
   applySelection,
   serializeIngredient,
@@ -128,6 +125,7 @@ import { useRecipeIngredients } from "./hooks/use-recipe-ingredients";
 import { useRecipeWaterPlan } from "./hooks/use-recipe-water-plan";
 import { useRecipeCalculationMeta } from "./hooks/use-recipe-calculation-meta";
 import { useRecipePublicationState } from "./hooks/use-recipe-publication-state";
+import { useRecipeAutosave, type RecipeSaveStatus } from "./hooks/use-recipe-autosave";
 
 type Props = {
   mode: "create" | "edit";
@@ -143,7 +141,7 @@ type Props = {
   preferredGravityUnit: PreferredGravityUnit;
 };
 
-export type RecipeSaveStatus = "saved" | "saving" | "error";
+export type { RecipeSaveStatus };
 
 export function RecipeDesigner({
   mode,
@@ -166,10 +164,6 @@ export function RecipeDesigner({
     ? equipmentProfiles.find((profile) => profile.id === initialRecipe.equipmentProfileId) ?? null
     : null;
   const initialSelectedEquipmentProfile = initialRecipe ? initialSavedEquipmentProfile : initialDefaultEquipmentProfile;
-  const [activeRecipeId, setActiveRecipeId] = useState(initialRecipe?.id ?? null);
-  const [activeRecipeSlug, setActiveRecipeSlug] = useState(initialRecipe?.slug ?? null);
-  const [activeVersionNumber, setActiveVersionNumber] = useState(initialRecipe?.versionNumber ?? 1);
-  const [recipeVersions, setRecipeVersions] = useState(initialRecipe?.versions ?? []);
   const [title, setTitle] = useState(initialRecipe?.title ?? initialTitle ?? "");
   const [styleId, setStyleId] = useState(initialRecipe?.styleId ?? "");
   const [description, setDescription] = useState(initialRecipe?.description ?? "");
@@ -244,19 +238,14 @@ export function RecipeDesigner({
   const [beerXmlExport, setBeerXmlExport] = useState("");
   const [beerXmlImport, setBeerXmlImport] = useState("");
   const [brewfatherJsonImport, setBrewfatherJsonImport] = useState("");
-  const [saveResult, setSaveResult] = useState<RecipeEditorResult | null>(null);
   const [preview, setPreview] = useState<RecipeDraftPreviewDto | null>(buildInitialPreview(initialRecipe));
   const [previewError, setPreviewError] = useState<string | null>(null);
   const [recalculating, setRecalculating] = useState(false);
-  const [pendingSave, setPendingSave] = useState(false);
-  const [blockedSignature, setBlockedSignature] = useState<string | null>(null);
-  const [saveResultSignature, setSaveResultSignature] = useState<string | null>(null);
   const [bitternessSettingsOpen, setBitternessSettingsOpen] = useState(false);
   const [stockConsumeDialogOpen, setStockConsumeDialogOpen] = useState(false);
   const [importExportOpen, setImportExportOpen] = useState(false);
   const [brewPickerOpen, setBrewPickerOpen] = useState(false);
   const [brewPickerRecipeId, setBrewPickerRecipeId] = useState<string | null>(null);
-  const pendingSaveRef = useRef(false);
 
   const payload = useMemo<RecipeEditorPayload>(() => ({
     title,
@@ -337,37 +326,45 @@ export function RecipeDesigner({
   const savePayload = useMemo(() => normalizeSavePayload(payload), [payload]);
 
   const currentSignature = useMemo(() => JSON.stringify(payload), [payload]);
-  const [savedSignature, setSavedSignature] = useState(currentSignature);
-  // Объём партии на момент последнего сохранения — база для инлайн-действия
-  // «Пересчитать под объём» (#6): показываем его только когда текущий объём
-  // разошёлся с уже сохранённым, а не с тем, что было при открытии страницы.
-  const [savedBatchVolumeL, setSavedBatchVolumeL] = useState<number | null>(batchVolumeL);
-  const isDirty = currentSignature !== savedSignature;
-  const hasCurrentSaveError = saveResultSignature === currentSignature && Boolean(saveResult && !saveResult.ok);
-  const saveStatus: RecipeSaveStatus = hasCurrentSaveError ? "error" : (pendingSave || isDirty ? "saving" : "saved");
-  const persistMode: "create" | "edit" = activeRecipeId ? "edit" : mode;
-
-  useEffect(() => {
-    onSaveStatusChange?.(saveStatus);
-  }, [onSaveStatusChange, saveStatus]);
-
-  useEffect(() => {
-    pendingSaveRef.current = pendingSave;
-  }, [pendingSave]);
-
-  useEffect(() => {
-    if (typeof window === "undefined" || (!isDirty && !pendingSave)) {
-      return undefined;
-    }
-
-    const handleBeforeUnload = (event: BeforeUnloadEvent) => {
-      event.preventDefault();
-      event.returnValue = "";
-    };
-
-    window.addEventListener("beforeunload", handleBeforeUnload);
-    return () => window.removeEventListener("beforeunload", handleBeforeUnload);
-  }, [isDirty, pendingSave]);
+  const {
+    activeRecipeId,
+    setActiveRecipeId,
+    activeRecipeSlug,
+    setActiveRecipeSlug,
+    activeVersionNumber,
+    setActiveVersionNumber,
+    recipeVersions,
+    setRecipeVersions,
+    saveResult,
+    setSaveResult,
+    saveResultSignature,
+    setSaveResultSignature,
+    blockedSignature,
+    setBlockedSignature,
+    pendingSave,
+    setPendingSave,
+    savedSignature,
+    setSavedSignature,
+    savedBatchVolumeL,
+    setSavedBatchVolumeL,
+    isDirty,
+    saveStatus,
+    visibleSaveResult,
+    hasRetriableSaveError,
+    persistRecipe
+  } = useRecipeAutosave({
+    mode,
+    initialRecipe,
+    initialTitle,
+    onRecipeCreated,
+    onSaveStatusChange,
+    payload,
+    currentSignature,
+    batchVolumeL,
+    publicationState,
+    setPublicationState,
+    setSavedPublicationState
+  });
 
   useEffect(() => {
     let cancelled = false;
@@ -394,112 +391,6 @@ export function RecipeDesigner({
       window.clearTimeout(timer);
     };
   }, [savePayload]);
-
-  const persistRecipe = React.useCallback(async ({
-    nextPublicationState = publicationState,
-    surfaceInlineResult = true
-  }: {
-    nextPublicationState?: RecipePublicationState;
-    surfaceInlineResult?: boolean;
-  } = {}) => {
-    if (pendingSaveRef.current) {
-      return null;
-    }
-
-    const trimmedTitle = payload.title.trim();
-    const draftFallbackTitle = initialTitle?.trim() || initialRecipe?.title?.trim() || "Новый рецепт";
-    // Приватный черновик не должен морозить весь автосейв из-за пустого названия:
-    // подставляем дефолтное имя для сохранения, жёсткую проверку оставляем публикации (#13).
-    const effectiveTitle = !trimmedTitle && nextPublicationState !== "published"
-      ? draftFallbackTitle
-      : payload.title;
-    const nextPayload = normalizeSavePayload({
-      ...payload,
-      title: effectiveTitle,
-      publicationState: nextPublicationState
-    });
-    const nextSignature = JSON.stringify({
-      ...payload,
-      publicationState: nextPublicationState
-    });
-    const nextBlockedSaveResult = buildAutosaveBlockedResult(nextPayload);
-
-    if (nextBlockedSaveResult) {
-      setSaveResult(nextBlockedSaveResult);
-      setSaveResultSignature(surfaceInlineResult ? nextSignature : null);
-      setBlockedSignature(nextSignature);
-      return nextBlockedSaveResult;
-    }
-
-    setPendingSave(true);
-    let result: RecipeEditorResult;
-    try {
-      result = persistMode === "create"
-        ? await createRecipeAction(nextPayload)
-        : await updateRecipeAction(activeRecipeId!, nextPayload);
-    } catch {
-      // Сетевой/серверный сбой: не оставляем pendingSave залипшим (иначе все
-      // будущие автосейвы заглушены) и показываем ретраибельную ошибку (P0-1).
-      const failure: RecipeEditorResult = {
-        ok: false,
-        message: "Не удалось сохранить — проверьте соединение и повторите."
-      };
-      setBlockedSignature(null);
-      setSaveResult(failure);
-      setSaveResultSignature(surfaceInlineResult ? nextSignature : null);
-      return failure;
-    } finally {
-      setPendingSave(false);
-    }
-
-    if (!result.ok && result.fieldErrors && Object.keys(result.fieldErrors).length) {
-      setBlockedSignature(nextSignature);
-    } else {
-      setBlockedSignature(null);
-    }
-
-    if (result.ok && result.recipe) {
-      const savedRecipe = result.recipe;
-      const normalizedState = normalizeEditorPublicationState(savedRecipe.publicationState);
-      const completedSignature = JSON.stringify({
-        ...payload,
-        publicationState: normalizedState
-      });
-
-      setPublicationState(normalizedState);
-      setSavedPublicationState(normalizedState);
-      setSavedSignature(completedSignature);
-      setSavedBatchVolumeL(getBatchVolumeLiters(String(savedRecipe.batchSizeEnteredQuantity), savedRecipe.batchSizeEnteredUnit));
-      setSaveResult(result);
-      setSaveResultSignature(completedSignature);
-      setActiveRecipeSlug(savedRecipe.slug);
-      setActiveVersionNumber(savedRecipe.versionNumber);
-      setRecipeVersions(savedRecipe.versions);
-
-      if (!activeRecipeId) {
-        setActiveRecipeId(savedRecipe.id);
-        onRecipeCreated?.(savedRecipe);
-        replaceRecipeEditorUrl(savedRecipe.id);
-      }
-
-      return result;
-    }
-
-    setSaveResult(result);
-    setSaveResultSignature(surfaceInlineResult ? nextSignature : null);
-    return result;
-  }, [activeRecipeId, initialRecipe, initialTitle, onRecipeCreated, payload, persistMode, publicationState]);
-
-  useEffect(() => {
-    if (!isDirty) return;
-    if (blockedSignature === currentSignature) return;
-    let cancelled = false;
-    const autoSaveTimer = window.setTimeout(async () => {
-      if (cancelled || pendingSaveRef.current) return;
-      await persistRecipe();
-    }, 1500);
-    return () => { cancelled = true; window.clearTimeout(autoSaveTimer); };
-  }, [blockedSignature, currentSignature, isDirty, persistRecipe]);
 
   const saveEditor = () => {
     if (!openEditor || !isIngredientValid(openEditor.draft)) {
@@ -620,13 +511,7 @@ export function RecipeDesigner({
     }));
   }, [batchVolumeL, ingredients, savedBatchVolumeL]);
 
-  const visibleSaveResult = saveResultSignature === currentSignature ? saveResult : null;
   const sectionErrors = visibleSaveResult?.fieldErrors ?? {};
-  const hasRetriableSaveError = Boolean(
-    visibleSaveResult
-    && !visibleSaveResult.ok
-    && (!visibleSaveResult.fieldErrors || !Object.keys(visibleSaveResult.fieldErrors).length)
-  );
   const publicationValidationContext = {
     title,
     styleId: styleId.trim() || null,
