@@ -46,15 +46,12 @@ import type {
   IngredientSuggestionItem,
   IngredientTechnicalData
 } from "@/features/ingredients/contracts";
-import { resolveIngredientCategory } from "@/features/ingredients/taxonomy";
 import { type InventoryUnit } from "@/features/inventory/units";
 import {
   defaultRecipeProcessMeta,
   type RecipeCalculationMeta,
   type RecipeDetailDto,
   type RecipeDraftPreviewDto,
-  type RecipeHopUseType,
-  type RecipeInventoryIntentMode,
   type RecipeProcessMeta,
   type RecipePublicationState,
   type RecipeStockCoverageDto,
@@ -101,8 +98,6 @@ import {
   normalizeSavePayload,
   buildAutosaveBlockedResult,
   normalizeEditorPublicationState,
-  resolveRecipeFermentableSubtype,
-  createEmptyIngredient,
   applySelection,
   serializeIngredient,
   getHopUseType,
@@ -134,6 +129,7 @@ import { RecipeBatchParametersBlock } from "./recipe-batch-parameters-block";
 import { SectionRow, WaterTreatmentSectionRow } from "./section-row";
 import { RecipeProfiles } from "./recipe-profiles";
 import { IngredientEditor } from "./ingredient-editor";
+import { useRecipeIngredients } from "./hooks/use-recipe-ingredients";
 
 type Props = {
   mode: "create" | "edit";
@@ -207,12 +203,23 @@ export function RecipeDesigner({
       )
       : (initialDefaultEquipmentProfile ? buildEquipmentProfileSnapshotFromDto(initialDefaultEquipmentProfile) : null)
   ));
-  const [ingredients, setIngredients] = useState<DesignerIngredient[]>(initialRecipe?.ingredients.map(toDesignerIngredient) ?? []);
+  const {
+    ingredients,
+    setIngredients,
+    openEditor,
+    setOpenEditor,
+    maybeOpenEditor,
+    closeEditor,
+    openAddEditor,
+    deleteIngredient,
+    openImportedCatalogMatcher,
+    updateIngredientQuantity,
+    updateHopTimeMinutes
+  } = useRecipeIngredients({ initialRecipe, initialIngredientSelection });
   const [stockCoverage, setStockCoverage] = useState<RecipeStockCoverageDto | null>(initialStockCoverage);
   const [beerXmlExport, setBeerXmlExport] = useState("");
   const [beerXmlImport, setBeerXmlImport] = useState("");
   const [brewfatherJsonImport, setBrewfatherJsonImport] = useState("");
-  const [openEditor, setOpenEditor] = useState<OpenEditorState | null>(null);
   const [saveResult, setSaveResult] = useState<RecipeEditorResult | null>(null);
   const [preview, setPreview] = useState<RecipeDraftPreviewDto | null>(buildInitialPreview(initialRecipe));
   const [previewError, setPreviewError] = useState<string | null>(null);
@@ -231,7 +238,6 @@ export function RecipeDesigner({
   const [brewPickerOpen, setBrewPickerOpen] = useState(false);
   const [brewPickerRecipeId, setBrewPickerRecipeId] = useState<string | null>(null);
   const pendingSaveRef = useRef(false);
-  const initialSelectionAppliedRef = useRef(false);
 
   const payload = useMemo<RecipeEditorPayload>(() => ({
     title,
@@ -325,31 +331,6 @@ export function RecipeDesigner({
   useEffect(() => {
     onSaveStatusChange?.(saveStatus);
   }, [onSaveStatusChange, saveStatus]);
-
-  useEffect(() => {
-    if (initialSelectionAppliedRef.current || !initialIngredientSelection || initialRecipe) {
-      return;
-    }
-
-    const selectionCategory = initialIngredientSelection.category
-      ?? resolveIngredientCategory({ type: initialIngredientSelection.type });
-    const draft = applySelection(
-      createEmptyIngredient(
-        selectionCategory,
-        "boil",
-        resolveRecipeFermentableSubtype(selectionCategory, initialIngredientSelection.subtype ?? null)
-      ),
-      initialIngredientSelection
-    );
-    initialSelectionAppliedRef.current = true;
-    setOpenEditor({
-      localId: null,
-      category: selectionCategory,
-      draft,
-      initialSignature: serializeIngredient(draft),
-      isExisting: false
-    });
-  }, [initialIngredientSelection, initialRecipe]);
 
   useEffect(() => {
     onPublicationStateChange?.(savedPublicationState);
@@ -505,40 +486,6 @@ export function RecipeDesigner({
     return () => { cancelled = true; window.clearTimeout(autoSaveTimer); };
   }, [blockedSignature, currentSignature, isDirty, persistRecipe]);
 
-  const maybeOpenEditor = (next: OpenEditorState) => {
-    setOpenEditor(next);
-  };
-
-  const closeEditor = () => {
-    if (!openEditor) {
-      return;
-    }
-
-    setOpenEditor(null);
-  };
-
-  const openAddEditor = (category: IngredientCategory, hopUseType: RecipeHopUseType = "boil") => {
-    const baseDraft = createEmptyIngredient(
-      category,
-      hopUseType,
-      null
-    );
-    const draft = category === "water_treatment"
-      ? {
-          ...baseDraft,
-          inventoryIntentMode: "catalog" as RecipeInventoryIntentMode,
-          inventorySelectionMeta: null,
-        }
-      : baseDraft;
-    maybeOpenEditor({
-      localId: null,
-      category,
-      draft,
-      initialSignature: serializeIngredient(draft),
-      isExisting: false
-    });
-  };
-
   const saveEditor = () => {
     if (!openEditor || !isIngredientValid(openEditor.draft)) {
       return;
@@ -567,28 +514,6 @@ export function RecipeDesigner({
       setIngredients((current) => [...current, openEditor.draft]);
     }
     setOpenEditor(null);
-  };
-
-  const deleteIngredient = (localId: string) => {
-    setIngredients((current) => current.filter((ingredient) => ingredient.localId !== localId));
-    if (openEditor?.localId === localId) {
-      setOpenEditor(null);
-    }
-  };
-
-  const openImportedCatalogMatcher = (ingredient: DesignerIngredient) => {
-    const draft = {
-      ...ingredient,
-      inventoryIntentMode: "catalog" as RecipeInventoryIntentMode,
-      inventorySelectionMeta: null
-    };
-    maybeOpenEditor({
-      localId: ingredient.localId,
-      category: ingredient.category,
-      draft,
-      initialSignature: serializeIngredient(draft),
-      isExisting: true
-    });
   };
 
   const addImportedIngredientAsCustom = async (ingredient: DesignerIngredient) => {
@@ -627,31 +552,6 @@ export function RecipeDesigner({
     } finally {
       setPendingSave(false);
     }
-  };
-
-  const updateIngredientQuantity = (localId: string, quantity: string) => {
-    setIngredients((current) =>
-      current.map((ingredient) => ingredient.localId === localId ? { ...ingredient, amountEnteredQuantity: quantity } : ingredient)
-    );
-  };
-
-  const updateHopTimeMinutes = (localId: string, timeMinutes: string) => {
-    setIngredients((current) =>
-      current.map((ingredient) => {
-        if (ingredient.localId !== localId || ingredient.category !== "hop") {
-          return ingredient;
-        }
-
-        return {
-          ...ingredient,
-          timeOffset: timeMinutes,
-          stepMeta: {
-            ...ingredient.stepMeta,
-            timeMinutes
-          }
-        };
-      })
-    );
   };
 
   const handleSelectEquipmentProfile = React.useCallback((profileId: string | null) => {
