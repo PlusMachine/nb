@@ -54,9 +54,7 @@ import {
   type RecipeDraftPreviewDto,
   type RecipeProcessMeta,
   type RecipePublicationState,
-  type RecipeStockCoverageDto,
-  type RecipeWaterManualSaltAdditionTarget,
-  type RecipeWaterPlanMeta
+  type RecipeStockCoverageDto
 } from "@/features/recipes/contracts";
 import { formatGravity, formatGravityRange, type PreferredGravityUnit } from "@/features/system/gravity-units";
 import { BitternessSettingsDrawer } from "@/components/recipes/bitterness-settings-drawer";
@@ -72,8 +70,6 @@ import {
 } from "@/components/recipes/recipe-water-additives-section";
 import { StockCoverageSummary, StockConsumeDialog } from "@/components/recipes/stock-coverage-summary";
 import {
-  createRecipeWaterPlanResetMeta,
-  removeRecipeWaterManualSaltAddition,
   setRecipeWaterSaltCalculationMode,
   WaterSetupWizard
 } from "@/components/recipes/water-setup-wizard";
@@ -130,6 +126,7 @@ import { SectionRow, WaterTreatmentSectionRow } from "./section-row";
 import { RecipeProfiles } from "./recipe-profiles";
 import { IngredientEditor } from "./ingredient-editor";
 import { useRecipeIngredients } from "./hooks/use-recipe-ingredients";
+import { useRecipeWaterPlan } from "./hooks/use-recipe-water-plan";
 
 type Props = {
   mode: "create" | "edit";
@@ -191,7 +188,20 @@ export function RecipeDesigner({
   const [boilTimeMinutes, setBoilTimeMinutes] = useState(initialRecipe?.boilTimeMinutes != null ? String(initialRecipe.boilTimeMinutes) : "60");
   const [processMeta, setProcessMeta] = useState<RecipeProcessMeta>(() => cloneRecipeProcessMeta(initialRecipe?.processMeta ?? defaultRecipeProcessMeta));
   const [calculationMeta, setCalculationMeta] = useState<RecipeCalculationMeta>(() => cloneRecipeCalculationMeta(initialRecipe?.calculationMeta ?? null));
-  const [waterPlanMeta, setWaterPlanMeta] = useState<RecipeWaterPlanMeta>(() => cloneRecipeWaterPlanMeta(initialRecipe?.waterPlanMeta ?? null));
+  const {
+    waterPlanMeta,
+    setWaterPlanMeta,
+    waterSetupOpen,
+    setWaterSetupOpen,
+    waterResetConfirmOpen,
+    setWaterResetConfirmOpen,
+    openWaterSetup,
+    closeWaterSetup,
+    resetWaterSetup,
+    updateRecipeWaterManualSalt,
+    removeManualSaltAddition,
+    applyAcidConcentration
+  } = useRecipeWaterPlan({ initialRecipe });
   const [equipmentProfileId, setEquipmentProfileId] = useState<string | null>(initialSelectedEquipmentProfile?.id ?? null);
   const [equipmentProfileSnapshot, setEquipmentProfileSnapshot] = useState<EquipmentProfileSnapshot | null>(() => (
     initialRecipe
@@ -634,51 +644,6 @@ export function RecipeDesigner({
 
   const fermentableTotalKg = getFermentableWeightTotalKg(fermentables);
   const hopTotalG = getHopWeightTotalG(hops);
-  const [waterSetupOpen, setWaterSetupOpen] = useState(false);
-  const [waterResetConfirmOpen, setWaterResetConfirmOpen] = useState(false);
-  const openWaterSetup = React.useCallback(() => {
-    setWaterSetupOpen(true);
-  }, []);
-  const closeWaterSetup = React.useCallback(() => {
-    setWaterSetupOpen(false);
-  }, []);
-  const resetWaterSetup = React.useCallback(() => {
-    setWaterPlanMeta(createRecipeWaterPlanResetMeta());
-    setWaterSetupOpen(false);
-  }, []);
-  const updateRecipeWaterManualSalt = React.useCallback((
-    index: number,
-    patch: Partial<{
-      grams: number;
-      target: RecipeWaterManualSaltAdditionTarget;
-    }>
-  ) => {
-    setWaterPlanMeta((current) => {
-      const next = [...(current.manualSaltAdditions ?? [])];
-      const item = next[index];
-      if (!item) {
-        return current;
-      }
-
-      next[index] = {
-        ...item,
-        ...patch,
-        grams:
-          patch.grams == null
-            ? item.grams
-            : Number.isFinite(patch.grams)
-              ? Math.max(0, patch.grams)
-              : 0
-      };
-
-      return {
-        ...current,
-        setupEnabled: true,
-        engine: "advanced_manual",
-        manualSaltAdditions: next
-      };
-    });
-  }, []);
   const computedWaterAdditiveCount = useMemo(() => {
     if (!waterPlanMeta.setupEnabled || waterPlanMeta.engine !== "advanced_manual") {
       return 0;
@@ -812,15 +777,8 @@ export function RecipeDesigner({
               waterPlanMeta={waterPlanMeta}
               waterPlanResult={waterPlanResult}
               onUpdateManualSalt={updateRecipeWaterManualSalt}
-              onRemoveManualSalt={(index) =>
-                setWaterPlanMeta((current) => removeRecipeWaterManualSaltAddition(current, index))
-              }
-              onApplyAcidConcentration={(concentrationPct) =>
-                setWaterPlanMeta((current) => ({
-                  ...current,
-                  acidConcentrationPct: concentrationPct
-                }))
-              }
+              onRemoveManualSalt={removeManualSaltAddition}
+              onApplyAcidConcentration={applyAcidConcentration}
               onAddManualSalt={() => openAddEditor("water_treatment")}
             />
             {items.length ? (
