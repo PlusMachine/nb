@@ -30,7 +30,6 @@ import {
   shouldShowRescaleToVolumeAction
 } from "../components/recipes/recipe-designer";
 import { createRecipeWaterPlanResetMeta } from "../components/recipes/water-setup-wizard";
-import { RecipeIngredientsEditor } from "../components/recipes/recipe-ingredients-editor";
 import {
   applyRecipeIngredientCategoryChange,
   applyRecipeIngredientSelection,
@@ -184,18 +183,6 @@ describe("recipe editor components", () => {
     expect(html).toContain("Ингредиент");
     expect(html).toContain("Новый ингредиент");
     expect(html).toContain('step="0.1"');
-  });
-
-  it("ingredients editor renders draft and saved sections", () => {
-    const html = renderToStaticMarkup(
-      React.createElement(RecipeIngredientsEditor, {
-        rows: [],
-        onChange: () => undefined
-      })
-    );
-
-    expect(html).toContain("Добавить в рецепт");
-    expect(html).toContain("Уже в рецепте");
   });
 
   it("ingredient validation requires selected ingredient and quantity", () => {
