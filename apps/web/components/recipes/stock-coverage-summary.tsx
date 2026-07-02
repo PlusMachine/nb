@@ -3,7 +3,7 @@
 import React, { useMemo } from "react";
 import { AlertTriangle, CheckCircle2, Loader2, PackageMinus, RefreshCw } from "lucide-react";
 
-import { Dialog, DialogCloseButton } from "@nb/ui";
+import { Button, Dialog, DialogCloseButton } from "@nb/ui";
 import { formatInventoryQuantityInputValue } from "@/features/inventory/display";
 import { inventoryUnitShortLabels } from "@/features/inventory/units";
 import type { RecipeStockCoverageDto, RecipeStockCoverageLineDto } from "@/features/recipes/contracts";
@@ -114,24 +114,25 @@ export function StockCoverageSummary({
           </div>
         </div>
         <div className="flex flex-wrap gap-2">
-          <button
+          <Button
             type="button"
+            variant="outline"
+            size="sm"
             disabled={!hasRecipe || pending}
             onClick={() => onAction("sync")}
-            className="inline-flex h-9 items-center gap-1.5 rounded-lg border border-zinc-200 bg-white px-3 text-xs font-medium text-zinc-700 transition-colors hover:bg-zinc-50 disabled:cursor-not-allowed disabled:opacity-50"
           >
             {pending ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <RefreshCw className="h-3.5 w-3.5" />}
             Обновить наличие
-          </button>
-          <button
+          </Button>
+          <Button
             type="button"
+            size="sm"
             disabled={!hasRecipe || pending || readiness.totalLines === 0}
             onClick={() => onAction("consume")}
-            className="inline-flex h-9 items-center gap-1.5 rounded-lg border border-zinc-900 bg-zinc-900 px-3 text-xs font-medium text-white transition-colors hover:bg-zinc-800 disabled:cursor-not-allowed disabled:opacity-50"
           >
             <PackageMinus className="h-3.5 w-3.5" />
             Списать со склада
-          </button>
+          </Button>
         </div>
       </div>
     </section>
@@ -253,23 +254,24 @@ export function StockConsumeDialog({
         </div>
 
         <div className="mt-5 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
-          <button
+          <Button
             type="button"
+            variant="outline"
+            size="md"
             onClick={onClose}
             disabled={pending}
-            className="rounded-lg border border-zinc-200 bg-white px-4 py-2 text-sm font-medium text-zinc-700 transition-colors hover:bg-zinc-100 disabled:opacity-60"
           >
             Отмена
-          </button>
-          <button
+          </Button>
+          <Button
             type="button"
+            size="md"
             onClick={onConfirm}
             disabled={pending || !readiness.canConsume}
-            className="inline-flex items-center justify-center gap-2 rounded-lg bg-zinc-900 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-zinc-800 disabled:cursor-not-allowed disabled:opacity-60"
           >
             {pending ? <Loader2 className="h-4 w-4 animate-spin" /> : <PackageMinus className="h-4 w-4" />}
             {pending ? "Списываем..." : "Списать со склада"}
-          </button>
+          </Button>
         </div>
       </div>
     </Dialog>

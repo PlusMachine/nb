@@ -2,7 +2,7 @@
 
 import { ChevronRight, Save, Search, SlidersHorizontal, Trash2 } from "lucide-react";
 import React from "react";
-import { Dialog, DialogCloseButton, DialogHeader } from "@nb/ui";
+import { Button, Dialog, DialogCloseButton, DialogHeader } from "@nb/ui";
 
 import { ConfirmActionDialog } from "@/components/shared/confirm-action-dialog";
 
@@ -1921,13 +1921,14 @@ export function WaterSetupWizard({
             </div>
           </div>
           {waterPlanMeta.setupEnabled ? (
-            <button
+            <Button
               type="button"
+              variant="outline"
+              size="sm"
               onClick={() => setResetConfirmOpen(true)}
-              className="rounded-md border border-zinc-200 bg-white px-2.5 py-1.5 text-xs font-medium text-zinc-500 hover:bg-zinc-50 hover:text-zinc-800"
             >
               Сбросить воду
-            </button>
+            </Button>
           ) : null}
         </div>
       )}
@@ -2087,33 +2088,35 @@ export function WaterSetupWizard({
                       className="h-8 w-52 rounded-lg border border-zinc-200 bg-white px-2 text-sm text-zinc-900"
                       placeholder={getNextSavedSourceWaterProfileName(savedSourceProfiles)}
                     />
-                    <button
+                    <Button
                       type="button"
+                      size="sm"
                       onClick={handleSaveManualSourceProfile}
-                      className="inline-flex h-8 items-center justify-center rounded-lg bg-zinc-900 px-3 text-xs font-medium text-white hover:bg-zinc-800"
                     >
                       ОК
-                    </button>
-                    <button
+                    </Button>
+                    <Button
                       type="button"
+                      variant="ghost"
+                      size="sm"
                       onClick={() => setManualProfileSaveOpen(false)}
-                      className="h-8 rounded-lg px-2 text-xs font-medium text-zinc-500 hover:bg-white hover:text-zinc-800"
                     >
                       Отмена
-                    </button>
+                    </Button>
                   </>
                 ) : (
-                  <button
+                  <Button
                     type="button"
+                    variant="outline"
+                    size="sm"
                     onClick={() => {
                       setSourceProfileSaveMessage(null);
                       setManualProfileSaveOpen(true);
                     }}
-                    className="inline-flex h-8 items-center justify-center gap-1.5 rounded-lg border border-zinc-200 bg-white px-2.5 text-xs font-medium text-zinc-600 hover:bg-zinc-50 hover:text-zinc-900"
                   >
                     <Save className="h-3.5 w-3.5" />
                     Сохранить исходный профиль
-                  </button>
+                  </Button>
                 )}
                 {sourceProfileSaveMessage ? (
                   <span className="text-xs text-emerald-700">
@@ -2266,15 +2269,16 @@ export function WaterSetupWizard({
                 ))}
               </div>
               {canShowMoreTargetProfiles ? (
-                <button
+                <Button
                   type="button"
+                  variant="outline"
+                  size="sm"
                   onClick={() => setShowAllTargetProfiles(true)}
-                  className="inline-flex h-9 items-center justify-center rounded-lg border border-zinc-200 bg-white px-3 text-sm font-medium text-zinc-600 hover:bg-zinc-50 hover:text-zinc-950"
                 >
                   {targetQueryTrimmed
                     ? `Показать все результаты (${targetCatalogTotalResults})`
                     : `Показать все профили (${targetCatalogTotalResults})`}
-                </button>
+                </Button>
               ) : null}
               {!targetSuggestedEntries.length && !targetVisibleCatalogResults.length ? (
                 <div className="rounded-lg border border-dashed border-zinc-200 bg-zinc-50 px-3 py-3 text-sm text-zinc-500">
@@ -2342,33 +2346,35 @@ export function WaterSetupWizard({
                       className="h-8 w-52 rounded-lg border border-zinc-200 bg-white px-2 text-sm text-zinc-900"
                       placeholder={getNextSavedTargetWaterProfileName(savedTargetProfiles)}
                     />
-                    <button
+                    <Button
                       type="button"
+                      size="sm"
                       onClick={handleSaveManualTargetProfile}
-                      className="inline-flex h-8 items-center justify-center rounded-lg bg-zinc-900 px-3 text-xs font-medium text-white hover:bg-zinc-800"
                     >
                       ОК
-                    </button>
-                    <button
+                    </Button>
+                    <Button
                       type="button"
+                      variant="ghost"
+                      size="sm"
                       onClick={() => setTargetProfileSaveOpen(false)}
-                      className="h-8 rounded-lg px-2 text-xs font-medium text-zinc-500 hover:bg-white hover:text-zinc-800"
                     >
                       Отмена
-                    </button>
+                    </Button>
                   </>
                 ) : (
-                  <button
+                  <Button
                     type="button"
+                    variant="outline"
+                    size="sm"
                     onClick={() => {
                       setTargetProfileSaveMessage(null);
                       setTargetProfileSaveOpen(true);
                     }}
-                    className="inline-flex h-8 items-center justify-center gap-1.5 rounded-lg border border-zinc-200 bg-white px-2.5 text-xs font-medium text-zinc-600 hover:bg-zinc-50 hover:text-zinc-900"
                   >
                     <Save className="h-3.5 w-3.5" />
                     Сохранить целевой профиль
-                  </button>
+                  </Button>
                 )}
                 {targetProfileSaveMessage ? (
                   <span className="text-xs text-emerald-700">
@@ -2554,8 +2560,9 @@ export function WaterSetupWizard({
                     Расчет
                   </h3>
                 </div>
-                <button
+                <Button
                   type="button"
+                  size="md"
                   disabled={!hasCalculatedAdditions}
                   onClick={() =>
                     onChange(
@@ -2566,12 +2573,11 @@ export function WaterSetupWizard({
                       ),
                     )
                   }
-                  className="inline-flex h-9 shrink-0 items-center justify-center rounded-lg bg-zinc-900 px-3 text-sm font-medium text-white transition-colors hover:bg-zinc-800 disabled:cursor-not-allowed disabled:bg-zinc-200 disabled:text-zinc-500"
                 >
                   {hasAppliedWaterPlan
                     ? "Заменить добавки"
                     : "Применить расчет"}
-                </button>
+                </Button>
               </div>
 
               {hasCalculatedAdditions ? (
