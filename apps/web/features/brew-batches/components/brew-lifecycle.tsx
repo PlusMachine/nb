@@ -3,6 +3,7 @@
 import React, { useRef, useState } from "react";
 import { ArrowRight, Check, Loader2 } from "lucide-react";
 
+import { Button } from "@nb/ui";
 import { setBrewBatchStatusAction } from "@/app/(app)/app/brew-batches/[id]/actions";
 import { brewBatchStatusLabels, type BrewBatchStatus } from "@/features/brew-batches/contracts";
 
@@ -80,35 +81,27 @@ export function BrewLifecycle({ brewBatchId, status }: { brewBatchId: string; st
 
       <div className="flex flex-wrap items-center gap-2">
         {next ? (
-          <button
-            type="button"
-            onClick={() => apply(next)}
-            disabled={busy}
-            className="inline-flex items-center gap-1.5 rounded-lg bg-zinc-900 px-3.5 py-2 text-sm font-medium text-white transition hover:bg-zinc-800 disabled:opacity-60"
-          >
+          <Button type="button" size="md" onClick={() => apply(next)} disabled={busy}>
             {nextLabel[status]}
             <ArrowRight className="h-4 w-4" aria-hidden />
-          </button>
+          </Button>
         ) : null}
 
         {cancelled ? (
-          <button
-            type="button"
-            onClick={() => apply("planned")}
-            disabled={busy}
-            className="inline-flex items-center rounded-lg border border-zinc-200 px-3.5 py-2 text-sm font-medium text-zinc-700 transition hover:bg-zinc-50 disabled:opacity-60"
-          >
+          <Button type="button" variant="outline" size="sm" onClick={() => apply("planned")} disabled={busy}>
             Вернуть в план
-          </button>
+          </Button>
         ) : status !== "completed" ? (
-          <button
+          <Button
             type="button"
+            variant="ghost"
+            size="sm"
             onClick={() => apply("cancelled")}
             disabled={busy}
-            className="inline-flex items-center rounded-lg px-3 py-2 text-sm font-medium text-zinc-500 transition hover:bg-zinc-50 hover:text-rose-600 disabled:opacity-60"
+            className="text-zinc-500 hover:text-rose-600"
           >
             Отменить варку
-          </button>
+          </Button>
         ) : null}
       </div>
 

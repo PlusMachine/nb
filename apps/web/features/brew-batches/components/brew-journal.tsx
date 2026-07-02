@@ -3,6 +3,7 @@
 import React, { useRef, useState } from "react";
 import { Loader2, Plus, Trash2 } from "lucide-react";
 import { gravityToSg, sgToGravityUnit } from "@nb/brewing-core";
+import { Button } from "@nb/ui";
 
 import {
   addBrewMeasurementAction,
@@ -41,12 +42,15 @@ export function BrewJournal({
   brewBatchId,
   measurements,
   summary,
-  preferredGravityUnit
+  preferredGravityUnit,
+  hideStats = false
 }: {
   brewBatchId: string;
   measurements: BrewMeasurementDto[];
   summary: BrewMeasurementSummary;
   preferredGravityUnit: PreferredGravityUnit;
+  /** Скрыть плитки OG/FG/ABV/сбраживание — уже показаны карточкой «Итог варки». */
+  hideStats?: boolean;
 }) {
   const [gravity, setGravity] = useState("");
   const [takenAt, setTakenAt] = useState("");
@@ -124,12 +128,14 @@ export function BrewJournal({
     <section className="space-y-4 rounded-2xl border border-zinc-100 bg-white p-4 shadow-sm">
       <h2 className="text-base font-semibold text-zinc-900">Журнал замеров</h2>
 
-      <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
-        <StatTile label="OG" value={fmtGravity(summary.og)} target={target?.og != null ? fmtGravity(target.og) : null} />
-        <StatTile label="FG" value={fmtGravity(summary.fg)} target={target?.fg != null ? fmtGravity(target.fg) : null} />
-        <StatTile label="ABV" value={fmtAbv(summary.abv)} target={target?.abv != null ? fmtAbv(target.abv) : null} />
-        <StatTile label="Сбраживание" value={fmtAtt(summary.apparentAttenuation)} />
-      </div>
+      {!hideStats ? (
+        <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+          <StatTile label="OG" value={fmtGravity(summary.og)} target={target?.og != null ? fmtGravity(target.og) : null} />
+          <StatTile label="FG" value={fmtGravity(summary.fg)} target={target?.fg != null ? fmtGravity(target.fg) : null} />
+          <StatTile label="ABV" value={fmtAbv(summary.abv)} target={target?.abv != null ? fmtAbv(target.abv) : null} />
+          <StatTile label="Сбраживание" value={fmtAtt(summary.apparentAttenuation)} />
+        </div>
+      ) : null}
 
       {/* Форма добавления замера */}
       <form onSubmit={submit} className="space-y-2 rounded-xl border border-zinc-100 bg-zinc-50/60 p-3">
@@ -174,14 +180,10 @@ export function BrewJournal({
               className="h-9 w-full rounded-md border border-zinc-200 px-2 text-sm text-zinc-900 focus:outline-none focus:ring-2 focus:ring-zinc-400"
             />
           </label>
-          <button
-            type="submit"
-            disabled={busy}
-            className="inline-flex h-9 items-center gap-1.5 rounded-md bg-zinc-900 px-3.5 text-sm font-medium text-white transition hover:bg-zinc-800 disabled:opacity-60"
-          >
+          <Button type="submit" size="sm" disabled={busy}>
             {busy && !deletingId ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden /> : <Plus className="h-4 w-4" aria-hidden />}
             Добавить
-          </button>
+          </Button>
         </div>
         {error ? <p role="alert" className="text-xs text-rose-600">{error}</p> : null}
       </form>

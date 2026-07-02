@@ -3,10 +3,16 @@
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 
-import { createBrewBatchFromRecipe } from "@/features/brew-batches/service";
+import { consumeBrewBatchInventory } from "@/features/brew-batches/inventory";
+import { createBrewBatchFromRecipe, updateBrewBatchStatus } from "@/features/brew-batches/service";
 import { getSessionUser } from "@/lib/auth";
 
-const brewInputSchema = z.object({ recipeId: z.string().uuid() });
+const brewInputSchema = z.object({
+  recipeId: z.string().uuid(),
+  /** «Сварить самому» (виртуальная ветка единого входа «Сварить») — списать
+   *  ингредиенты со склада ТЕКУЩЕГО пользователя сразу при старте. */
+  consumeIngredients: z.boolean().optional()
+});
 
 export type StartBrewFromRecipeResult =
   | { ok: true; brewBatchId: string }
@@ -17,9 +23,17 @@ export type StartBrewFromRecipeResult =
  * владении текущего пользователя из снапшота рецепта (своего любого статуса или
  * чужого published). В «Мои рецепты» ничего не копируется. userId берётся ТОЛЬКО
  * из серверной сессии — клиентскому payload не доверяем (в сигнатуре userId нет).
+ *
+ * Единый вход «Сварить», виртуальная ветка («Сварить самому»): клик реально
+ * ЗАПУСКАЕТ варку, а не оставляет партию висеть в 'planned' без сигнала — статус
+ * переводим в 'brewing' сразу же (решение владельца продукта). Опционально
+ * списывает ингредиенты рецепта со склада — списание best-effort: если оно не
+ * удалось (например, рецепт уже списан где-то ещё), варка всё равно считается
+ * начатой — склад можно поправить вручную со страницы партии.
  */
 export const startBrewFromRecipeAction = async (input: {
   recipeId: string;
+  consumeIngredients?: boolean;
 }): Promise<StartBrewFromRecipeResult> => {
   const user = await getSessionUser();
   if (!user) {
@@ -33,6 +47,17 @@ export const startBrewFromRecipeAction = async (input: {
 
   try {
     const batch = await createBrewBatchFromRecipe(user.id, parsed.data.recipeId);
+    await updateBrewBatchStatus(user.id, batch.id, "brewing");
+
+    if (parsed.data.consumeIngredients) {
+      try {
+        await consumeBrewBatchInventory(user.id, batch.id);
+      } catch {
+        // Best-effort: варка уже идёт, списание можно повторить вручную со
+        // страницы партии — не откатываем старт и не показываем это как отказ.
+      }
+    }
+
     revalidatePath("/app/brew-batches");
     return { ok: true, brewBatchId: batch.id };
   } catch (error) {

@@ -272,8 +272,8 @@ export function OnboardRecipesPanel({ deviceId, pushableRecipes }: Props) {
               {pushing ? "Загрузка…" : isFull ? "Заменить" : "Загрузить"}
             </Button>
 
-            {pushError ? <p className="text-sm text-rose-600">{pushError}</p> : null}
-            {pushOk ? <p className="text-sm text-emerald-600">{pushOk}</p> : null}
+            {pushError ? <p role="alert" className="text-sm text-rose-600">{pushError}</p> : null}
+            {pushOk ? <p role="status" className="text-sm text-emerald-600">{pushOk}</p> : null}
           </div>
         )}
       </section>
@@ -297,7 +297,7 @@ export function OnboardRecipesPanel({ deviceId, pushableRecipes }: Props) {
         ) : unsupported ? (
           <p className="mt-4 text-sm text-zinc-500">{unsupported}</p>
         ) : loadError ? (
-          <p className="mt-4 text-sm text-rose-600">{loadError}</p>
+          <p role="alert" className="mt-4 text-sm text-rose-600">{loadError}</p>
         ) : loaded.length > 0 ? (
           <ul className="mt-4 divide-y divide-zinc-100">
             {loaded.map((s) => (
@@ -347,7 +347,7 @@ function SnapshotView({ state }: { state: SnapshotState }) {
     return <p className="text-xs text-zinc-500">Чтение рецепта с платы…</p>;
   }
   if (state === "error") {
-    return <p className="text-xs text-rose-600">Не удалось прочитать рецепт.</p>;
+    return <p role="alert" className="text-xs text-rose-600">Не удалось прочитать рецепт.</p>;
   }
   if (state === null) {
     return <p className="text-xs text-zinc-500">Пусто.</p>;

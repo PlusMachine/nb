@@ -13,7 +13,7 @@
 //  интерлоков устройства (кнопки совещательные), опасное гейтится сервером.
 // =============================================================================
 import { useCallback, useState } from "react";
-import { Power } from "lucide-react";
+import { Beer, Power } from "lucide-react";
 
 import {
   promptName,
@@ -40,7 +40,6 @@ import type { useDeviceCommand } from "@/features/brew-controller/use-device-com
 import type { TelemetryStream } from "@/features/brew-controller/use-telemetry-stream";
 import { ChannelBadge } from "@/features/brew-controller/components/channel-badge";
 import { ControlLeaseBadge } from "@/features/brew-controller/components/control-lease-badge";
-import { ControlToast } from "@/features/brew-controller/components/control-toast";
 import { AlarmsPanel } from "@/features/brew-controller/components/alarms-panel";
 import { ManualControlCard } from "@/features/brew-controller/components/manual-control-card";
 import { StageTimeline } from "@/features/brew-controller/components/stage-timeline";
@@ -49,6 +48,8 @@ import { MonitorHero } from "@/features/brew-controller/components/monitor-hero"
 import { StatusStrip } from "@/features/brew-controller/components/status-strip";
 import { ControlDock } from "@/features/brew-controller/components/control-dock";
 import { deriveDeviceMode } from "@/features/brew-controller/device-mode";
+import { BrewRecipeOnDevicePicker } from "@/features/devices/components/brew-recipe-on-device-picker";
+import type { PushableRecipeDto } from "@/features/devices/onboard-recipes-contracts";
 
 type ConfirmState = {
   title: string;
@@ -112,6 +113,12 @@ type Props = {
   showInlineHeader?: boolean;
   /** Липкий док управления снизу (thumb-zone) на мобиле — пульт L2 (§5–6). */
   stickyDock?: boolean;
+  /** Имя устройства — для текста подтверждения нагрева в пикере «Сварить рецепт…»
+   *  (W5, только зона B — пульт устройства, source.kind==="device"). */
+  deviceName?: string | null;
+  /** Рецепты пользователя для вкладки «Мои рецепты» пикера «Сварить рецепт…»
+   *  (W5). Не нужны в зоне A (варка партии уже привязана к рецепту). */
+  pushableRecipes?: PushableRecipeDto[];
 };
 
 export function LiveDashboardView({
@@ -124,13 +131,20 @@ export function LiveDashboardView({
   title,
   subtitle,
   showInlineHeader = true,
-  stickyDock = false
+  stickyDock = false,
+  deviceName,
+  pushableRecipes = []
 }: Props) {
   const { telemetry, conn, isStale, isLive, lastError, remaining } = stream;
-  const { lease, controlsHeld, pending, send, requestTakeover, release, scheduleUndoable, undo } = command;
+  const { lease, controlsHeld, pending, send, requestTakeover, release, scheduleUndoable } = command;
 
   const [confirm, setConfirm] = useState<ConfirmState>(null);
   const [actionMsg, setActionMsg] = useState<string | null>(null);
+  const [recipePickerOpen, setRecipePickerOpen] = useState(false);
+
+  // «Сварить рецепт…» (W5, §7) доступна только на пульте устройства (зона B) —
+  // в зоне A (варка партии) устройство известно лишь косвенно через партию.
+  const idleDeviceId = source.kind === "device" ? source.deviceId : null;
 
   // Рутинное управление (Пауза/Продолжить/Пропустить/ответ на промпт) требует
   // аренды (single-writer) И живой телеметрии. ESTOP/Стоп — fail-safe, отдельно.
@@ -229,12 +243,18 @@ export function LiveDashboardView({
         clearDisabled={pending || !isLive}
       />
 
-      {/* Простой: пивоварня свободна — точка входа. «Сварить рецепт» — W5 (§7);
-          сейчас доступен вход в ручной режим (§6). */}
+      {/* Простой: пивоварня свободна — точка входа. «Сварить рецепт…» (W5, §7)
+          запускает варку прямо с пульта; «Ручной режим» — вход без рецепта (§6). */}
       {mode === "idle" ? (
         <div className="rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm">
           <p className="text-base font-semibold text-zinc-900">Пивоварня свободна</p>
-          <div className="mt-3">
+          <div className="mt-3 flex flex-wrap gap-2">
+            {idleDeviceId ? (
+              <Button variant="primary" size="md" onClick={() => setRecipePickerOpen(true)}>
+                <Beer className="h-4 w-4" aria-hidden />
+                Сварить рецепт…
+              </Button>
+            ) : null}
             <Button
               variant="outline"
               size="md"
@@ -360,8 +380,16 @@ export function LiveDashboardView({
         onClose={() => setConfirm(null)}
       />
 
-      {/* Undo-тост для отложенного SKIP_STAGE. */}
-      <ControlToast undo={undo} />
+      {/* «Сварить рецепт…» с пульта простаивающего устройства (W5, §7). */}
+      {idleDeviceId ? (
+        <BrewRecipeOnDevicePicker
+          open={recipePickerOpen}
+          onOpenChange={setRecipePickerOpen}
+          deviceId={idleDeviceId}
+          deviceName={deviceName}
+          pushableRecipes={pushableRecipes}
+        />
+      ) : null}
     </div>
   );
 }

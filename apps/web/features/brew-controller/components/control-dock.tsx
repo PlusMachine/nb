@@ -87,7 +87,7 @@ export function ControlDock({
       </div>
 
       {actionMsg ? <p className="mt-3 text-sm text-zinc-600">{actionMsg}</p> : null}
-      {transportError ? <p className="mt-1 text-sm text-red-600">Телеметрия: {transportError}</p> : null}
+      {transportError ? <p role="alert" className="mt-1 text-sm text-red-600">Телеметрия: {transportError}</p> : null}
       {noFreshTelemetry ? (
         <p className="mt-1 text-sm text-amber-700">
           Нет свежей телеметрии — рутинное управление заблокировано до восстановления связи.

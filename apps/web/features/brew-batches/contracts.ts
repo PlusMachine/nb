@@ -19,8 +19,16 @@ export const brewPlanSnapshotSchema = z.object({
     timedAdditions: z.array(z.record(z.string(), z.unknown()))
   }),
   whirlpoolPlan: z.array(z.record(z.string(), z.unknown())),
+  // Внесения на стадии брожения (сухой хмель и прочие fermentation-добавки, кроме
+  // дрожжей — те уже покрыты шагом «Поставить на брожение»). default([]) — старые
+  // снапшоты без этого поля парсятся как пустой план, без поломки гида.
+  dryHopPlan: z.array(z.record(z.string(), z.unknown())).default([]),
   fermentationPlan: z.record(z.string(), z.unknown()).nullable(),
   packagingPlan: z.record(z.string(), z.unknown()).nullable(),
+  // Ингредиенты рецепта со stage="packaging" (прайминг-сахар и т.п.) — отдельно от
+  // packagingPlan (это настройки метода/карбонизации, не строки состава). default([]) —
+  // как и dryHopPlan, старые снапшоты без поля парсятся как пустой список, без поломки гида.
+  packagingAdditions: z.array(z.record(z.string(), z.unknown())).default([]),
   deviceHints: z.array(z.record(z.string(), z.unknown()))
 });
 

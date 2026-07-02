@@ -6,7 +6,7 @@ import {
   normalizeBrewDayProgress,
   summarizeBrewDayProgress
 } from "@/features/brew-batches/brew-day";
-import type { BrewPlanSnapshot } from "@/features/brew-batches/contracts";
+import { brewPlanSnapshotSchema, type BrewPlanSnapshot } from "@/features/brew-batches/contracts";
 
 const makeSnapshot = (overrides: Partial<BrewPlanSnapshot> = {}): BrewPlanSnapshot => ({
   version: "brew_plan_v1",
@@ -27,8 +27,10 @@ const makeSnapshot = (overrides: Partial<BrewPlanSnapshot> = {}): BrewPlanSnapsh
   whirlpoolPlan: [
     { linePersistentKey: "w1", name: "Citra", category: "hop", stage: "whirlpool", timeOffsetMinutes: null, amount: { quantity: 40, unit: "g" }, stepMeta: { temperatureC: 80, timeMinutes: 20 } }
   ],
+  dryHopPlan: [],
   fermentationPlan: { primaryTemperatureC: 19, primaryDurationDays: 14 },
   packagingPlan: null,
+  packagingAdditions: [],
   deviceHints: [],
   ...overrides
 });
@@ -79,6 +81,144 @@ describe("buildBrewDaySteps", () => {
     expect(ferment.steps[0].detail).toContain("14 дн.");
   });
 
+  it("adds dryHopPlan entries to the fermentation group after the primary task, with amount/days", () => {
+    const groups = buildBrewDaySteps(makeSnapshot({
+      dryHopPlan: [
+        { linePersistentKey: "dh1", name: "Mosaic", category: "hop", stage: "fermentation", timeOffsetMinutes: null, amount: { quantity: 60, unit: "g" }, stepMeta: { useType: "dry_hop", durationDays: 4 } },
+        { linePersistentKey: "dh2", name: "Дубовые чипсы", category: "other", stage: "fermentation", timeOffsetMinutes: null, amount: { quantity: 20, unit: "g" }, stepMeta: null }
+      ]
+    }));
+    const fermentation = groups.find((group) => group.stage === "fermentation")!;
+    expect(fermentation.steps[0].id).toBe("ferment:primary");
+    expect(fermentation.steps[1]).toMatchObject({ id: "ferment:add:dh1", kind: "addition", title: "Внести на брожении: Mosaic" });
+    expect(fermentation.steps[1].detail).toContain("60 g");
+    expect(fermentation.steps[1].detail).toContain("4 дн.");
+    // Не-хмелевая fermentation-добавка тоже долетает до гида.
+    expect(fermentation.steps[2]).toMatchObject({ id: "ferment:add:dh2", kind: "addition", title: "Внести на брожении: Дубовые чипсы" });
+  });
+
+  it("tolerates a legacy snapshot with no dryHopPlan key at all (pre-migration data)", () => {
+    const legacy = makeSnapshot();
+    delete (legacy as Record<string, unknown>).dryHopPlan;
+    expect(() => buildBrewDaySteps(legacy)).not.toThrow();
+    const fermentation = buildBrewDaySteps(legacy).find((group) => group.stage === "fermentation")!;
+    expect(fermentation.steps).toHaveLength(1);
+    expect(fermentation.steps[0].id).toBe("ferment:primary");
+  });
+
+  it("adds cold crash / conditioning steps only when explicitly enabled in the fermentation profile", () => {
+    const enabled = buildBrewDaySteps(makeSnapshot({
+      fermentationPlan: {
+        primaryTemperatureC: 19,
+        primaryDurationDays: 14,
+        coldCrash: { enabled: true, temperatureC: 2, durationDays: 2 },
+        conditioning: { enabled: true, temperatureC: 12, durationDays: 14 }
+      }
+    })).find((group) => group.stage === "fermentation")!;
+    const coldCrash = enabled.steps.find((step) => step.id === "ferment:cold_crash");
+    const conditioning = enabled.steps.find((step) => step.id === "ferment:conditioning");
+    expect(coldCrash).toMatchObject({ kind: "task", title: "Cold crash", temperatureC: 2 });
+    expect(coldCrash?.detail).toBe("2 °C · 2 дн.");
+    expect(conditioning).toMatchObject({ kind: "task", title: "Conditioning", temperatureC: 12 });
+    expect(conditioning?.detail).toBe("12 °C · 14 дн.");
+
+    const disabled = buildBrewDaySteps(makeSnapshot({
+      fermentationPlan: {
+        primaryTemperatureC: 19,
+        primaryDurationDays: 14,
+        coldCrash: { enabled: false, temperatureC: 2, durationDays: 2 },
+        conditioning: { enabled: false, temperatureC: 12, durationDays: 14 }
+      }
+    })).find((group) => group.stage === "fermentation")!;
+    expect(disabled.steps.some((step) => step.id === "ferment:cold_crash")).toBe(false);
+    expect(disabled.steps.some((step) => step.id === "ferment:conditioning")).toBe(false);
+  });
+
+  it("renders no packaging group when packagingPlan is null", () => {
+    const groups = buildBrewDaySteps(makeSnapshot());
+    expect(groups.some((group) => group.stage === "packaging")).toBe(false);
+  });
+
+  it("renders packaging/carbonation steps from packagingPlan fields", () => {
+    const groups = buildBrewDaySteps(makeSnapshot({
+      packagingPlan: {
+        method: "bottle",
+        notes: "Дать отдохнуть 3 дня перед розливом",
+        targetCo2Volumes: 2.4,
+        primingSugarType: "Декстроза",
+        primingSugarGrams: 120
+      }
+    }));
+    const packaging = groups.find((group) => group.stage === "packaging")!;
+    expect(packaging).toBeDefined();
+    expect(packaging.steps[0]).toMatchObject({ id: "packaging:method", kind: "task", title: "Розлив в бутылки" });
+    expect(packaging.steps[0].detail).toContain("Дать отдохнуть");
+    expect(packaging.steps[1]).toMatchObject({ id: "packaging:carbonation", kind: "task", title: "Карбонизация" });
+    expect(packaging.steps[1].detail).toContain("2.4 об. CO2");
+    expect(packaging.steps[1].detail).toContain("120 г");
+    expect(packaging.steps[1].detail).toContain("Декстроза");
+  });
+
+  it("adds packagingAdditions entries (priming sugar) to the packaging group", () => {
+    const groups = buildBrewDaySteps(makeSnapshot({
+      packagingAdditions: [
+        { linePersistentKey: "p1", name: "Декстроза", category: "consumable", stage: "packaging", timeOffsetMinutes: null, amount: { quantity: 120, unit: "g" }, stepMeta: null }
+      ]
+    }));
+    const packaging = groups.find((group) => group.stage === "packaging")!;
+    expect(packaging).toBeDefined();
+    expect(packaging.steps[0]).toMatchObject({ id: "packaging:add:p1", kind: "addition", title: "Внести при розливе: Декстроза" });
+    expect(packaging.steps[0].detail).toContain("120 g");
+  });
+
+  it("renders both packagingPlan settings and packagingAdditions ingredient lines together", () => {
+    const groups = buildBrewDaySteps(makeSnapshot({
+      packagingPlan: { method: "keg" },
+      packagingAdditions: [
+        { linePersistentKey: "p1", name: "Декстроза", category: "consumable", stage: "packaging", timeOffsetMinutes: null, amount: { quantity: 120, unit: "g" }, stepMeta: null }
+      ]
+    }));
+    const packaging = groups.find((group) => group.stage === "packaging")!;
+    expect(packaging.steps.map((step) => step.id)).toEqual(["packaging:method", "packaging:add:p1"]);
+  });
+
+  it("tolerates a legacy snapshot with no packagingAdditions key at all (pre-migration data)", () => {
+    const legacy = makeSnapshot();
+    delete (legacy as Record<string, unknown>).packagingAdditions;
+    expect(() => buildBrewDaySteps(legacy)).not.toThrow();
+    expect(buildBrewDaySteps(legacy).some((group) => group.stage === "packaging")).toBe(false);
+  });
+
+  it("renders custom fermentation extraSteps (e.g. diacetyl rest) between the primary task and cold crash", () => {
+    const groups = buildBrewDaySteps(makeSnapshot({
+      fermentationPlan: {
+        primaryTemperatureC: 19,
+        primaryDurationDays: 14,
+        extraSteps: [
+          { id: "diacetyl", name: "Diacetyl rest", temperatureC: 20, durationDays: 2 }
+        ],
+        coldCrash: { enabled: true, temperatureC: 2, durationDays: 2 }
+      }
+    }));
+    const fermentation = groups.find((group) => group.stage === "fermentation")!;
+    expect(fermentation.steps.map((step) => step.id)).toEqual(["ferment:primary", "ferment:extra:diacetyl", "ferment:cold_crash"]);
+    expect(fermentation.steps[1]).toMatchObject({ kind: "task", title: "Diacetyl rest", temperatureC: 20 });
+    expect(fermentation.steps[1].detail).toContain("20 °C");
+    expect(fermentation.steps[1].detail).toContain("2 дн.");
+  });
+
+  it("skips empty custom fermentation extraSteps with neither temperature nor duration set", () => {
+    const groups = buildBrewDaySteps(makeSnapshot({
+      fermentationPlan: {
+        primaryTemperatureC: 19,
+        primaryDurationDays: 14,
+        extraSteps: [{ id: "empty", name: "Пустой шаг", temperatureC: null, durationDays: null }]
+      }
+    }));
+    const fermentation = groups.find((group) => group.stage === "fermentation")!;
+    expect(fermentation.steps.some((step) => step.id === "ferment:extra:empty")).toBe(false);
+  });
+
   it("places mash-stage additions under the mash group", () => {
     const snapshot = makeSnapshot({
       boilPlan: {
@@ -113,6 +253,27 @@ describe("buildBrewDaySteps", () => {
     // No duration → task, not timer; falls back to "Пауза 1".
     expect(mash.steps[0]).toMatchObject({ kind: "task", durationSeconds: null });
     expect(mash.steps[0].title).toContain("Пауза");
+  });
+});
+
+describe("brewPlanSnapshotSchema backward compatibility", () => {
+  it("parses a pre-dryHopPlan snapshot row from the DB, defaulting dryHopPlan to []", () => {
+    const legacyRow = makeSnapshot();
+    delete (legacyRow as Record<string, unknown>).dryHopPlan;
+
+    const parsed = brewPlanSnapshotSchema.parse(legacyRow);
+    expect(parsed.dryHopPlan).toEqual([]);
+    // И построение шагов из уже распарсенного (реальный путь service.ts) не падает.
+    expect(() => buildBrewDaySteps(parsed)).not.toThrow();
+  });
+
+  it("parses a pre-packagingAdditions snapshot row from the DB, defaulting packagingAdditions to []", () => {
+    const legacyRow = makeSnapshot();
+    delete (legacyRow as Record<string, unknown>).packagingAdditions;
+
+    const parsed = brewPlanSnapshotSchema.parse(legacyRow);
+    expect(parsed.packagingAdditions).toEqual([]);
+    expect(() => buildBrewDaySteps(parsed)).not.toThrow();
   });
 });
 

@@ -3,6 +3,7 @@
 import React, { useRef, useState } from "react";
 import { Loader2, PackageMinus, Undo2 } from "lucide-react";
 
+import { Button } from "@nb/ui";
 import {
   consumeBrewBatchInventoryAction,
   restoreBrewBatchInventoryAction
@@ -103,27 +104,28 @@ export function BrewInventory({
 
       <div className="flex flex-wrap gap-2">
         {canConsume ? (
-          <button
+          <Button
             type="button"
+            size="sm"
             onClick={() => run(() => consumeBrewBatchInventoryAction(brewBatchId))}
             disabled={busy}
-            className="inline-flex h-9 items-center gap-1.5 rounded-md bg-zinc-900 px-3.5 text-sm font-medium text-white transition hover:bg-zinc-800 disabled:opacity-60"
           >
             {busy ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden /> : <PackageMinus className="h-4 w-4" aria-hidden />}
             Списать со склада
-          </button>
+          </Button>
         ) : null}
 
         {view.canRestore ? (
-          <button
+          <Button
             type="button"
+            variant="outline"
+            size="sm"
             onClick={() => run(() => restoreBrewBatchInventoryAction(brewBatchId))}
             disabled={busy}
-            className="inline-flex h-9 items-center gap-1.5 rounded-md border border-zinc-200 bg-white px-3.5 text-sm font-medium text-zinc-700 transition hover:bg-zinc-50 disabled:opacity-60"
           >
             {busy ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden /> : <Undo2 className="h-4 w-4" aria-hidden />}
             Вернуть на склад
-          </button>
+          </Button>
         ) : null}
       </div>
     </section>

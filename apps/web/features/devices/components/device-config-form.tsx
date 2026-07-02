@@ -431,12 +431,12 @@ export function DeviceConfigForm({ deviceId, deviceName, initialProfiles }: Prop
               <span className="text-xs text-zinc-400">Нет несохранённых изменений</span>
             ) : null}
             {saveOk ? (
-              <span className="text-sm text-emerald-700">
+              <span role="status" className="text-sm text-emerald-700">
                 Отправлено. Значения обновлены до эффективных (зажатых прошивкой); применятся после
                 перезагрузки.
               </span>
             ) : null}
-            {saveError ? <span className="text-sm text-red-600">{saveError}</span> : null}
+            {saveError ? <span role="alert" className="text-sm text-red-600">{saveError}</span> : null}
           </Card>
         </>
       ) : null}
@@ -472,8 +472,8 @@ export function DeviceConfigForm({ deviceId, deviceName, initialProfiles }: Prop
             Сохранить можно только при доступном конфиге устройства.
           </p>
         ) : null}
-        {profileOk ? <p className="mt-3 text-sm text-emerald-700">{profileOk}</p> : null}
-        {profileError ? <p className="mt-3 text-sm text-red-600">{profileError}</p> : null}
+        {profileOk ? <p role="status" className="mt-3 text-sm text-emerald-700">{profileOk}</p> : null}
+        {profileError ? <p role="alert" className="mt-3 text-sm text-red-600">{profileError}</p> : null}
 
         <div className="mt-4 space-y-2">
           {profiles.length === 0 ? (

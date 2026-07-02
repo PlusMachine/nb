@@ -6,10 +6,13 @@ import { requireUser } from "@/lib/auth";
 import { getBrewBatchDetail, getDeviceTelemetryHistory } from "@/features/brew-batches/service";
 import { getBrewBatchInventoryView } from "@/features/brew-batches/inventory";
 import { buildBrewDaySteps } from "@/features/brew-batches/brew-day";
+import { resolveBrewCompletionRatingSlug } from "@/features/brew-batches/completion";
 import { brewBatchStatusBadgeClass, brewBatchStatusLabels } from "@/features/brew-batches/contracts";
 import { getDeviceById } from "@/features/devices/service";
 import { deviceChannel } from "@/features/brew-controller";
+import { getRecipeById } from "@/features/recipes/service";
 import { BrewLifecycle } from "@/features/brew-batches/components/brew-lifecycle";
+import { BrewCompletionSummary } from "@/features/brew-batches/components/brew-completion-summary";
 import { BrewJournal } from "@/features/brew-batches/components/brew-journal";
 import { BrewNotes } from "@/features/brew-batches/components/brew-notes";
 import { BrewDayGuide } from "@/features/brew-batches/components/brew-day-guide";
@@ -33,11 +36,35 @@ export default async function BrewBatchDetailPage({ params }: { params: Promise<
 
   const { batch, measurements, summary } = detail;
   const hasDevice = Boolean(batch.deviceId);
+  const isCompleted = batch.status === "completed";
   const device = batch.deviceId ? await getDeviceById(user.id, batch.deviceId) : null;
   const initialHistory = batch.deviceId ? await getDeviceTelemetryHistory(batch.deviceId, batch.id) : [];
   const inventoryView = await getBrewBatchInventoryView(user.id, batch.id);
-  // Виртуальный гид варочного дня — для варки без устройства (device-дашборд иначе).
-  const brewDaySteps = hasDevice ? [] : buildBrewDaySteps(batch.brewPlanSnapshot);
+  // Виртуальный гид варочного дня — для варки без устройства (device-дашборд иначе)
+  // и пока варка не завершена (после completed это уже история, не инструкция).
+  const brewDaySteps = hasDevice || isCompleted ? [] : buildBrewDaySteps(batch.brewPlanSnapshot);
+
+  // Оценка исходного рецепта в итоге варки: свежий запрос (не снапшот) — рецепт
+  // мог с момента варки уйти в приват/удалиться. NOT_FOUND/FORBIDDEN → просто не
+  // показываем блок, страницу не роняем.
+  let ratingTarget: { recipeId: string; slug: string } | null = null;
+  if (isCompleted && batch.recipeId) {
+    try {
+      const sourceRecipe = await getRecipeById(user.id, batch.recipeId);
+      const slug = resolveBrewCompletionRatingSlug(batch.status, user.id, {
+        authorId: sourceRecipe.authorId,
+        publicationState: sourceRecipe.publicationState,
+        slug: sourceRecipe.slug
+      });
+      if (slug) {
+        ratingTarget = { recipeId: sourceRecipe.id, slug };
+      }
+    } catch (error) {
+      if (!(error instanceof Error) || (error.message !== "NOT_FOUND" && error.message !== "FORBIDDEN")) {
+        throw error;
+      }
+    }
+  }
 
   const started = fmtDate(batch.startedAt);
   const completed = fmtDate(batch.completedAt);
@@ -74,17 +101,32 @@ export default async function BrewBatchDetailPage({ params }: { params: Promise<
 
       <BrewLifecycle brewBatchId={batch.id} status={batch.status} />
 
+      {isCompleted ? (
+        <BrewCompletionSummary
+          summary={summary}
+          preferredGravityUnit={user.preferredGravityUnit}
+          batchVolumeL={batch.brewPlanSnapshot.recipe.batchSizeL}
+          ratingTarget={ratingTarget}
+        />
+      ) : null}
+
       {!hasDevice && brewDaySteps.length > 0 ? (
         <BrewDayGuide brewBatchId={batch.id} groups={brewDaySteps} initialProgress={batch.brewDayProgress} />
       ) : null}
 
-      <BrewJournal brewBatchId={batch.id} measurements={measurements} summary={summary} preferredGravityUnit={user.preferredGravityUnit} />
+      <BrewJournal
+        brewBatchId={batch.id}
+        measurements={measurements}
+        summary={summary}
+        preferredGravityUnit={user.preferredGravityUnit}
+        hideStats={isCompleted}
+      />
 
       {inventoryView ? (
         <BrewInventory brewBatchId={batch.id} view={inventoryView} status={batch.status} />
       ) : null}
 
-      <BrewNotes brewBatchId={batch.id} notes={batch.notes} />
+      <BrewNotes brewBatchId={batch.id} notes={batch.notes} completed={isCompleted} />
 
       {hasDevice ? (
         <div className="space-y-6 border-t border-zinc-100 pt-6">

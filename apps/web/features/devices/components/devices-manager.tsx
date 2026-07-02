@@ -12,34 +12,19 @@
 //  один раз; на сервер/в логи он не уходит. Никогда не рендерим tokenHash.
 // =============================================================================
 import { useCallback, useEffect, useState } from "react";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
 import { Button, Card, Input } from "@nb/ui";
 
 import { ConfirmActionDialog } from "@/components/shared/confirm-action-dialog";
 import { DeviceTile } from "@/features/devices/components/device-tile";
 import { NotificationOptIn } from "@/features/notifications/components/notification-opt-in";
+import { devicePairingErrorText } from "@/features/devices/pairing-error-text";
 import type { DeviceTile as DeviceTileData } from "@/features/devices/contracts";
 
 // Период health-опроса грида (last-known, не живой стрим) и тик «N назад».
 const TILES_POLL_MS = 15_000;
 const NOW_TICK_MS = 5_000;
-
-// Перевод доменных кодов ошибок (errors.ts) в человекочитаемый текст.
-const ERROR_TEXT: Record<string, string> = {
-  INVALID_REQUEST: "Проверьте введённые данные",
-  INVALID_CLAIM_CODE: "Неверный или просроченный код привязки",
-  CLAIM_CODE_REQUIRED: "Нужен код привязки (показан на экране устройства)",
-  CLAIM_CODE_OR_HARDWARE_ID_REQUIRED: "Укажите код привязки",
-  HARDWARE_ID_REQUIRED: "Не удалось определить устройство",
-  CLAIM_CODE_OWNED_BY_OTHER_USER: "Этот код выпущен для другого аккаунта",
-  CLAIM_CODE_ALREADY_CONSUMED: "Код уже использован",
-  DEVICE_OWNED_BY_OTHER_USER: "Устройство уже привязано к другому аккаунту",
-  NOT_FOUND: "Устройство не найдено",
-  INTERNAL_ERROR: "Внутренняя ошибка. Попробуйте позже"
-};
-
-const errText = (code: string | undefined): string =>
-  (code && ERROR_TEXT[code]) || "Не удалось выполнить операцию";
 
 type Props = {
   initialTiles: DeviceTileData[];
@@ -48,13 +33,27 @@ type Props = {
 };
 
 export function DevicesManager({ initialTiles, demoAvailable }: Props) {
+  const pathname = usePathname();
+  const router = useRouter();
+  const searchParams = useSearchParams();
   const [tiles, setTiles] = useState<DeviceTileData[]>(initialTiles);
   const [nowMs, setNowMs] = useState<number>(() => Date.now());
   const [creatingDemo, setCreatingDemo] = useState(false);
   const [demoError, setDemoError] = useState<string | null>(null);
 
-  // Привязка (свёрнута по умолчанию — грид плиток герой L1).
-  const [showPair, setShowPair] = useState(false);
+  // Привязка (свёрнута по умолчанию — грид плиток герой L1). Состояние — в URL
+  // (?pair=1), чтобы ссылка на форму привязки была шарабельна и переживала reload.
+  const showPair = searchParams.get("pair") === "1";
+  const togglePair = useCallback(() => {
+    const params = new URLSearchParams(searchParams.toString());
+    if (showPair) {
+      params.delete("pair");
+    } else {
+      params.set("pair", "1");
+    }
+    const query = params.toString();
+    router.replace(query ? `${pathname}?${query}` : pathname, { scroll: false });
+  }, [pathname, router, searchParams, showPair]);
   const [claimCode, setClaimCode] = useState("");
   const [name, setName] = useState("");
   const [localUrl, setLocalUrl] = useState("");
@@ -112,7 +111,7 @@ export function DevicesManager({ initialTiles, demoAvailable }: Props) {
         });
         const body = (await res.json()) as { token?: string; error?: string };
         if (!res.ok || body.error || !body.token) {
-          setPairError(errText(body.error));
+          setPairError(devicePairingErrorText(body.error));
           return;
         }
         // Токен показываем РОВНО один раз; чистим поля формы.
@@ -155,7 +154,7 @@ export function DevicesManager({ initialTiles, demoAvailable }: Props) {
       const res = await fetch("/api/devices/demo", { method: "POST" });
       const body = (await res.json()) as { error?: string };
       if (!res.ok || body.error) {
-        setDemoError(errText(body.error));
+        setDemoError(devicePairingErrorText(body.error));
         return;
       }
       await refresh();
@@ -196,10 +195,10 @@ export function DevicesManager({ initialTiles, demoAvailable }: Props) {
               <Button variant="outline" onClick={() => void createDemo()} disabled={creatingDemo}>
                 {creatingDemo ? "Создаём…" : "Демо-пивоварня"}
               </Button>
-              {demoError ? <p className="text-xs text-red-600">{demoError}</p> : null}
+              {demoError ? <p role="alert" className="text-xs text-red-600">{demoError}</p> : null}
             </div>
           ) : null}
-          <Button variant="outline" onClick={() => setShowPair((v) => !v)}>
+          <Button variant="outline" onClick={togglePair}>
             {showPair ? "Скрыть" : "Привязать устройство"}
           </Button>
         </div>
@@ -249,11 +248,11 @@ export function DevicesManager({ initialTiles, demoAvailable }: Props) {
             </div>
           </form>
 
-          {pairError ? <p className="mt-3 text-sm text-red-600">{pairError}</p> : null}
+          {pairError ? <p role="alert" className="mt-3 text-sm text-red-600">{pairError}</p> : null}
 
           {/* Одноразовый токен. */}
           {issuedToken ? (
-            <div className="mt-4 rounded-xl border-2 border-emerald-300 bg-emerald-50 p-4">
+            <div role="status" className="mt-4 rounded-xl border-2 border-emerald-300 bg-emerald-50 p-4">
               <p className="text-sm font-semibold text-emerald-900">Устройство привязано</p>
               <p className="mt-1 text-xs text-emerald-800">
                 Скопируйте этот токен и пропишите его на устройстве. Он показывается{" "}

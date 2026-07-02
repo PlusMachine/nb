@@ -51,6 +51,12 @@ const fmtDuration = (minutes: number | null): string | null => {
   return rest ? `${hours} ч ${rest} мин` : `${hours} ч`;
 };
 
+// Длительности брожения/выдержки — в днях, а не в минутах (в отличие от затора и
+// кипячения), поэтому таймером их не делаем (см. fmtDuration) — только подпись.
+const fmtDays = (days: number | null): string | null => (
+  days == null || days <= 0 ? null : `${Math.round(days)} дн.`
+);
+
 const fmtAmount = (record: Record<string, unknown>): string | null => {
   const amount = record.amount;
   if (!isRecord(amount)) {
@@ -102,6 +108,13 @@ const readWhirlpoolStand = (record: Record<string, unknown>): { tempC: number | 
   };
 };
 
+// Сколько дней стоит внесение на брожении (сухой хмель и т.п.) — как в редакторе
+// рецепта (recipe-designer хранит это в stepMeta.durationDays для useType dry_hop).
+const readFermentationDurationDays = (record: Record<string, unknown>): number | null => {
+  const stepMeta = isRecord(record.stepMeta) ? record.stepMeta : {};
+  return readNumber(stepMeta, "durationDays");
+};
+
 const additionKey = (record: Record<string, unknown>, fallbackIndex: number): string => (
   readString(record, "linePersistentKey", "id") ?? `idx-${fallbackIndex}`
 );
@@ -112,7 +125,7 @@ const additionName = (record: Record<string, unknown>): string => (
 
 /**
  * Строит сгруппированный по этапам чек-лист варочного дня из снапшота плана.
- * Этапы и порядок: затор → кипячение → вирпул → брожение. Пустые группы
+ * Этапы и порядок: затор → кипячение → вирпул → брожение → розлив. Пустые группы
  * отбрасываются. id шагов стабильны между рендерами (ключ прогресса).
  */
 export const buildBrewDaySteps = (snapshot: BrewPlanSnapshot): BrewDayStageGroup[] => {
@@ -240,6 +253,149 @@ export const buildBrewDaySteps = (snapshot: BrewPlanSnapshot): BrewDayStageGroup
     }
   }
 
+  // Внесения на брожении (сухой хмель и др.) — после старта брожения. Длительность
+  // в днях, не в минутах, поэтому это "addition"-шаг, а не таймер (как во вкладке
+  // рецепта: `${durationDays} дн` рядом с названием).
+  (snapshot.dryHopPlan ?? []).forEach((raw, index) => {
+    if (!isRecord(raw)) {
+      return;
+    }
+    fermentation.push({
+      id: `ferment:add:${additionKey(raw, index)}`,
+      stage: "fermentation",
+      kind: "addition",
+      title: `Внести на брожении: ${additionName(raw)}`,
+      detail: joinDetail(fmtAmount(raw), fmtDays(readFermentationDurationDays(raw))),
+      durationSeconds: null,
+      temperatureC: null
+    });
+  });
+
+  // Кастомные шаги брожения (diacetyl rest и т.п.) — из processMeta.fermentationProfile.
+  // Темпорально они относятся к концу первичного брожения (ещё «тёплая» стадия),
+  // поэтому рендерятся до cold crash/conditioning, а не после них.
+  if (isRecord(ferment) && Array.isArray(ferment.extraSteps)) {
+    ferment.extraSteps.forEach((raw, index) => {
+      if (!isRecord(raw)) {
+        return;
+      }
+      const tempC = readNumber(raw, "temperatureC");
+      const days = readNumber(raw, "durationDays");
+      if (tempC == null && days == null) {
+        return;
+      }
+      const id = readString(raw, "id") ?? `idx-${index}`;
+      fermentation.push({
+        id: `ferment:extra:${id}`,
+        stage: "fermentation",
+        kind: "task",
+        title: readString(raw, "name") ?? `Шаг ${index + 1}`,
+        detail: joinDetail(fmtTemp(tempC), fmtDays(days)),
+        durationSeconds: null,
+        temperatureC: tempC
+      });
+    });
+  }
+
+  // Cold crash / conditioning — из processMeta.fermentationProfile рецепта, только
+  // если явно включены (enabled). Длительность в днях — task, не timer (как и
+  // основное брожение выше): многодневный обратный отсчёт неюзабелен как таймер.
+  if (isRecord(ferment)) {
+    const coldCrash = isRecord(ferment.coldCrash) ? ferment.coldCrash : null;
+    if (coldCrash && coldCrash.enabled === true) {
+      const tempC = readNumber(coldCrash, "temperatureC");
+      const days = readNumber(coldCrash, "durationDays");
+      fermentation.push({
+        id: "ferment:cold_crash",
+        stage: "fermentation",
+        kind: "task",
+        title: "Cold crash",
+        detail: joinDetail(fmtTemp(tempC), fmtDays(days)),
+        durationSeconds: null,
+        temperatureC: tempC
+      });
+    }
+
+    const conditioning = isRecord(ferment.conditioning) ? ferment.conditioning : null;
+    if (conditioning && conditioning.enabled === true) {
+      const tempC = readNumber(conditioning, "temperatureC");
+      const days = readNumber(conditioning, "durationDays");
+      fermentation.push({
+        id: "ferment:conditioning",
+        stage: "fermentation",
+        kind: "task",
+        title: "Conditioning",
+        detail: joinDetail(fmtTemp(tempC), fmtDays(days)),
+        durationSeconds: null,
+        temperatureC: tempC
+      });
+    }
+  }
+
+  // --- Розлив: настройки упаковки/карбонизации рецепта, если заданы. Пока ни
+  // одна поверхность редактора не пишет packagingPlan (нет "packaging-визарда") —
+  // рендерим по фактическим полям на будущее, без жёсткой обязательной формы.
+  const packaging: BrewDayStep[] = [];
+  const packagingPlan = snapshot.packagingPlan;
+  if (isRecord(packagingPlan)) {
+    const methodRaw = readString(packagingPlan, "method", "packagingMethod");
+    const methodLabel = methodRaw === "keg" || methodRaw === "kegging"
+      ? "Розлив в кег"
+      : methodRaw === "bottle" || methodRaw === "bottling"
+        ? "Розлив в бутылки"
+        : methodRaw
+          ? "Розлив"
+          : null;
+    const notes = readString(packagingPlan, "notes", "instructions");
+    if (methodLabel || notes) {
+      packaging.push({
+        id: "packaging:method",
+        stage: "packaging",
+        kind: "task",
+        title: methodLabel ?? "Розлив",
+        detail: notes,
+        durationSeconds: null,
+        temperatureC: null
+      });
+    }
+
+    const co2Volumes = readNumber(packagingPlan, "targetCo2Volumes", "co2Volumes", "carbonationVolumes");
+    const sugarName = readString(packagingPlan, "primingSugarType", "primingSugarName", "sugarType");
+    const sugarGrams = readNumber(packagingPlan, "primingSugarGrams", "primingSugarAmount", "sugarGrams");
+    if (co2Volumes != null || sugarName != null || sugarGrams != null) {
+      const sugarDetail = joinDetail(
+        sugarGrams != null ? `${Number(sugarGrams.toFixed(1))} г` : null,
+        sugarName
+      );
+      packaging.push({
+        id: "packaging:carbonation",
+        stage: "packaging",
+        kind: "task",
+        title: "Карбонизация",
+        detail: joinDetail(co2Volumes != null ? `${co2Volumes} об. CO2` : null, sugarDetail),
+        durationSeconds: null,
+        temperatureC: null
+      });
+    }
+  }
+
+  // Позиции рецепта на розливе (прайминг-сахар и т.п.) — из ingredients со
+  // stage="packaging" (не из packagingPlan выше: это настройки, не строки состава).
+  (snapshot.packagingAdditions ?? []).forEach((raw, index) => {
+    if (!isRecord(raw)) {
+      return;
+    }
+    packaging.push({
+      id: `packaging:add:${additionKey(raw, index)}`,
+      stage: "packaging",
+      kind: "addition",
+      title: `Внести при розливе: ${additionName(raw)}`,
+      detail: fmtAmount(raw),
+      durationSeconds: null,
+      temperatureC: null
+    });
+  });
+
   const groups: BrewDayStageGroup[] = [];
   const pushGroup = (stage: BrewDayStage, steps: BrewDayStep[]) => {
     if (steps.length) {
@@ -250,6 +406,7 @@ export const buildBrewDaySteps = (snapshot: BrewPlanSnapshot): BrewDayStageGroup
   pushGroup("boil", boil);
   pushGroup("whirlpool", whirlpool);
   pushGroup("fermentation", fermentation);
+  pushGroup("packaging", packaging);
   return groups;
 };
 

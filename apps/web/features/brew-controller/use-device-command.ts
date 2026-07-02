@@ -13,6 +13,8 @@
 // =============================================================================
 import { useCallback, useEffect, useRef, useState } from "react";
 
+import { useToast } from "@nb/ui";
+
 import type { Ack, Command } from "@nb/brewforge-protocol";
 import type { LeaseStatus } from "./control-lease";
 
@@ -72,6 +74,7 @@ export function useDeviceCommand({ commandUrl, leaseUrl, enabled }: Options) {
   const [lease, setLease] = useState<LeaseStatus | null>(null);
   const [pending, setPending] = useState(false);
   const [undo, setUndo] = useState<PendingUndo | null>(null);
+  const { show } = useToast();
 
   const undoTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -185,6 +188,23 @@ export function useDeviceCommand({ commandUrl, leaseUrl, enabled }: Options) {
   );
 
   useEffect(() => () => clearUndoTimer(), [clearUndoTimer]);
+
+  // Тост с окном undo живёт ровно пока активна отложенная команда: durationMs=Infinity
+  // (не закрывается сам), а исчезновение `undo` (commit/cancel/новая отложенная команда)
+  // императивно закрывает предыдущий тост через cleanup-функцию эффекта.
+  useEffect(() => {
+    if (!undo) {
+      return undefined;
+    }
+
+    const toast = show({
+      title: undo.label,
+      action: { label: "Отменить", onClick: undo.cancel },
+      durationMs: Infinity,
+    });
+
+    return () => toast.dismiss();
+  }, [undo, show]);
 
   return {
     sessionId,

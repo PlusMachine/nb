@@ -19,6 +19,7 @@ import { getBrewBatchById, updateBrewBatchStatus } from "@/features/brew-batches
 import type { BrewBatchStatus } from "@/features/brew-batches/contracts";
 
 import { getProvider } from "./index";
+import { describeStartBrewError, describeStartBrewNack } from "./messages";
 
 /** Гейт владения: сессия должна совпадать с заявленным userId. */
 async function assertOwner(userId: string): Promise<void> {
@@ -180,44 +181,6 @@ export async function stopBrewOnDevice(input: {
   await updateBrewBatchStatus(userId, brewBatchId, input.status ?? "planned");
 
   return { ok: ack.ok, ack };
-}
-
-/** Приводит коды ошибок старта варки к человекочитаемым сообщениям для UI.
- *  НЕ эхоит транспортные/SSRF-детали (EGRESS_*, HTTP-тела) — только общий текст. */
-function describeStartBrewError(error: unknown): string {
-  const code = error instanceof Error ? error.message : "";
-  switch (code) {
-    case "FORBIDDEN":
-      return "Недостаточно прав для запуска варки на этом устройстве.";
-    case "BREW_BATCH_NOT_FOUND":
-      return "Партия варки не найдена.";
-    case "DEVICE_NOT_FOUND":
-      return "Устройство не найдено или не привязано к вам.";
-    case "DEVICE_NO_LOCAL_URL":
-      return "У устройства не задан локальный адрес (localUrl). Допривяжите устройство по адресу в сети.";
-    case "PROVIDER_UNAVAILABLE":
-      return "Контроллер недоступен. Повторите попытку позже.";
-    default:
-      // В т.ч. EGRESS_* (SSRF-гард) и сетевые ошибки — наружу общий текст,
-      // без адреса/детали (детали — в серверный лог транспорта).
-      return "Не удалось запустить варку. Проверьте, что устройство в сети и доступно.";
-  }
-}
-
-/** Честное сообщение для nack-причин START_BREW (нагрев НЕ запущен). */
-function describeStartBrewNack(reason: AckReason | null): string {
-  switch (reason) {
-    case "REJECTED_INTERLOCK":
-      return "Устройство отклонило запуск: активен интерлок безопасности (датчик/перегрев/поплавок/E-stop). Устраните причину и повторите.";
-    case "RATE_LIMITED":
-      return "Слишком частые команды устройству. Повторите чуть позже.";
-    case "QUEUE_FULL":
-      return "Очередь команд устройства переполнена. Повторите позже.";
-    case "VALIDATION":
-      return "Устройство отклонило рецепт/команду (валидация). Проверьте рецепт и повторите.";
-    default:
-      return "Устройство не запустило варку. Проверьте состояние контроллера.";
-  }
 }
 
 /** Результат клиентского экшена старта. heatingStarted — реально ли пошёл нагрев. */

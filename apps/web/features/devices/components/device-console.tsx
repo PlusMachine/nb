@@ -110,6 +110,8 @@ export function DeviceConsole({ device, initialHistory, pushableRecipes }: Props
           channel={device.channel}
           showInlineHeader={false}
           stickyDock
+          deviceName={device.name}
+          pushableRecipes={pushableRecipes}
         />
       )}
     </div>

@@ -46,6 +46,18 @@ export const buildBrewPlanSnapshot = (recipe: RecipeDetailDto): BrewPlanSnapshot
   const whirlpoolPlan = recipe.ingredients
     .filter((ingredient) => readHopUseType(ingredient) === "whirlpool" || readHopUseType(ingredient) === "dip_hop")
     .map(buildTimedAddition);
+  // Сухой хмель и другие внесения на брожении: стадия fermentation целиком, кроме
+  // дрожжей (питчинг дрожжей уже покрыт шагом «Поставить на брожение» — отдельный
+  // шаг для него был бы дублем). Не хмель ли это — не важно: category сохраняется
+  // в записи для рендера (см. buildTimedAddition), гид размечает единообразно.
+  const dryHopPlan = recipe.ingredients
+    .filter((ingredient) => ingredient.stage === "fermentation" && ingredient.ingredientCategory !== "yeast")
+    .map(buildTimedAddition);
+  // Позиции рецепта на розливе (прайминг-сахар и т.п.) — раньше вообще не попадали
+  // в снапшот варки (только настройки packagingPlan, не строки состава). См. #6c.
+  const packagingAdditions = recipe.ingredients
+    .filter((ingredient) => ingredient.stage === "packaging")
+    .map(buildTimedAddition);
 
   return {
     version: "brew_plan_v1",
@@ -65,10 +77,12 @@ export const buildBrewPlanSnapshot = (recipe: RecipeDetailDto): BrewPlanSnapshot
       timedAdditions
     },
     whirlpoolPlan,
+    dryHopPlan,
     fermentationPlan: recipe.processMeta.fermentationProfile as unknown as Record<string, unknown>,
     packagingPlan: recipe.brewPlanMeta?.packagingPlan && isRecord(recipe.brewPlanMeta.packagingPlan)
       ? recipe.brewPlanMeta.packagingPlan
       : null,
+    packagingAdditions,
     deviceHints: []
   };
 };
