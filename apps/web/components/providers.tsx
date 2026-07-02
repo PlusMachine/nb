@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
+import { ToastProvider } from "@nb/ui";
 import { initAnalytics } from "../lib/analytics";
 
 const shouldAutoSelectNumberInput = (target: EventTarget | null): target is HTMLInputElement => {
@@ -76,5 +77,5 @@ export function Providers({ children }: { children: React.ReactNode }) {
     };
   }, []);
 
-  return <>{children}</>;
+  return <ToastProvider>{children}</ToastProvider>;
 }
