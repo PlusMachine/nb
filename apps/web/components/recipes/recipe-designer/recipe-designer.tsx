@@ -127,6 +127,7 @@ import { IngredientEditor } from "./ingredient-editor";
 import { useRecipeIngredients } from "./hooks/use-recipe-ingredients";
 import { useRecipeWaterPlan } from "./hooks/use-recipe-water-plan";
 import { useRecipeCalculationMeta } from "./hooks/use-recipe-calculation-meta";
+import { useRecipePublicationState } from "./hooks/use-recipe-publication-state";
 
 type Props = {
   mode: "create" | "edit";
@@ -158,7 +159,6 @@ export function RecipeDesigner({
   preferredGravityUnit
 }: Props) {
   const router = useRouter();
-  const initialPublicationState = normalizeEditorPublicationState(initialRecipe?.publicationState);
   const initialDefaultEquipmentProfile = initialRecipe
     ? null
     : equipmentProfiles.find((profile) => profile.isDefault) ?? equipmentProfiles[0] ?? null;
@@ -174,8 +174,22 @@ export function RecipeDesigner({
   const [styleId, setStyleId] = useState(initialRecipe?.styleId ?? "");
   const [description, setDescription] = useState(initialRecipe?.description ?? "");
   const [authorNotes, setAuthorNotes] = useState(initialRecipe?.authorNotes ?? "");
-  const [publicationState, setPublicationState] = useState<RecipePublicationState>(initialPublicationState);
-  const [savedPublicationState, setSavedPublicationState] = useState<RecipePublicationState>(initialPublicationState);
+  const {
+    publicationState,
+    setPublicationState,
+    savedPublicationState,
+    setSavedPublicationState,
+    publishConfirmOpen,
+    setPublishConfirmOpen,
+    publishError,
+    setPublishError,
+    makePrivateConfirmOpen,
+    setMakePrivateConfirmOpen,
+    makePrivateError,
+    setMakePrivateError,
+    readinessDialogOpen,
+    setReadinessDialogOpen
+  } = useRecipePublicationState({ initialRecipe, onPublicationStateChange });
   const [batchSize, setBatchSize] = useState({
     quantity: initialRecipe
       ? String(initialRecipe.batchSizeEnteredQuantity)
@@ -237,11 +251,6 @@ export function RecipeDesigner({
   const [pendingSave, setPendingSave] = useState(false);
   const [blockedSignature, setBlockedSignature] = useState<string | null>(null);
   const [saveResultSignature, setSaveResultSignature] = useState<string | null>(null);
-  const [publishConfirmOpen, setPublishConfirmOpen] = useState(false);
-  const [publishError, setPublishError] = useState<string | null>(null);
-  const [makePrivateConfirmOpen, setMakePrivateConfirmOpen] = useState(false);
-  const [makePrivateError, setMakePrivateError] = useState<string | null>(null);
-  const [readinessDialogOpen, setReadinessDialogOpen] = useState(false);
   const [bitternessSettingsOpen, setBitternessSettingsOpen] = useState(false);
   const [stockConsumeDialogOpen, setStockConsumeDialogOpen] = useState(false);
   const [importExportOpen, setImportExportOpen] = useState(false);
@@ -341,10 +350,6 @@ export function RecipeDesigner({
   useEffect(() => {
     onSaveStatusChange?.(saveStatus);
   }, [onSaveStatusChange, saveStatus]);
-
-  useEffect(() => {
-    onPublicationStateChange?.(savedPublicationState);
-  }, [onPublicationStateChange, savedPublicationState]);
 
   useEffect(() => {
     pendingSaveRef.current = pendingSave;
