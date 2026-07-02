@@ -683,7 +683,7 @@ export function IngredientEditor({
                   </label>
                 ) : (
                   <label className="space-y-1 text-xs font-medium text-zinc-700">
-                    Stage label
+                    Этап добавления
                     <input
                       value={draft.stepMeta.stageLabel ?? ""}
                       onChange={(event) => onChange({
@@ -694,7 +694,7 @@ export function IngredientEditor({
                         }
                       })}
                       className="h-10 w-full rounded-md border border-zinc-200 bg-white px-3 text-sm text-zinc-900"
-                      placeholder="Например, first wort"
+                      placeholder="Например, первое сусло"
                     />
                   </label>
                 )}

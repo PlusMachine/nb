@@ -1,8 +1,9 @@
 "use client";
 
-import { ChevronRight, Thermometer, Timer } from "lucide-react";
+import { ChevronRight, Thermometer, Timer, X } from "lucide-react";
 import React from "react";
 
+import { NumericInput } from "@/components/shared/numeric-input";
 import { type RecipeProcessMeta } from "@/features/recipes/contracts";
 import { validateNumericInput } from "@/features/forms/numeric-validation";
 
@@ -22,7 +23,7 @@ export function RecipeProfiles({
           <div className="flex h-7 w-7 items-center justify-center rounded-md bg-orange-50">
             <Thermometer className="h-3.5 w-3.5 text-orange-500" />
           </div>
-          Mash Profile
+          Затирание
           <span className="ml-1 text-xs font-normal text-zinc-400">({processMeta.mashProfile.steps.length})</span>
         </div>
         <div className="space-y-2">
@@ -49,12 +50,11 @@ export function RecipeProfiles({
                 <div className="ml-auto flex shrink-0 items-end gap-2">
                   <label className="space-y-0.5 text-right">
                     <span className="block text-[10px] text-zinc-400">°C</span>
-                    <input
-                      type="number"
+                    <NumericInput
                       min={0}
                       max={100}
                       step={0.1}
-                      value={Number.isFinite(step.temperatureC) ? step.temperatureC : ""}
+                      value={Number.isFinite(step.temperatureC) ? String(step.temperatureC) : ""}
                       onChange={(event) => onChange({
                         ...processMeta,
                         mashProfile: {
@@ -67,12 +67,12 @@ export function RecipeProfiles({
                   </label>
                   <label className="space-y-0.5 text-right">
                     <span className="block text-[10px] text-zinc-400">мин</span>
-                    <input
-                      type="number"
+                    <NumericInput
+                      integer
                       min={1}
                       max={600}
                       step={1}
-                      value={Number.isFinite(step.durationMinutes) ? step.durationMinutes : ""}
+                      value={Number.isFinite(step.durationMinutes) ? String(step.durationMinutes) : ""}
                       onChange={(event) => onChange({
                         ...processMeta,
                         mashProfile: {
@@ -92,9 +92,10 @@ export function RecipeProfiles({
                       steps: processMeta.mashProfile.steps.filter((candidate) => candidate.id !== step.id)
                     }
                   })}
-                  className="rounded-md p-1.5 text-zinc-400 transition-colors hover:bg-rose-50 hover:text-rose-600"
+                  className="rounded-md p-2 text-zinc-400 transition-colors hover:bg-rose-50 hover:text-rose-600"
+                  aria-label="Удалить шаг"
                 >
-                  <span className="text-xs font-medium">✕</span>
+                  <X className="h-4 w-4" />
                 </button>
               </div>
             </div>
@@ -125,19 +126,18 @@ export function RecipeProfiles({
           <div className="flex h-7 w-7 items-center justify-center rounded-md bg-sky-50">
             <Timer className="h-3.5 w-3.5 text-sky-500" />
           </div>
-          Fermentation Profile
+          Брожение
           <ChevronRight className="ml-auto h-4 w-4 text-zinc-400 transition-transform group-open:rotate-90" />
         </summary>
         <div className="mt-4 space-y-4">
           <div className="grid gap-3 sm:grid-cols-2">
             <label className="space-y-1 text-[11px] font-medium text-zinc-500">
               Осн. температура, °C
-              <input
-                type="number"
+              <NumericInput
                 min={-10}
                 max={50}
                 step={0.1}
-                value={processMeta.fermentationProfile.primaryTemperatureC ?? ""}
+                value={processMeta.fermentationProfile.primaryTemperatureC != null ? String(processMeta.fermentationProfile.primaryTemperatureC) : ""}
                 onChange={(event) => onChange({
                   ...processMeta,
                   fermentationProfile: {
@@ -150,12 +150,12 @@ export function RecipeProfiles({
             </label>
             <label className="space-y-1 text-[11px] font-medium text-zinc-500">
               Осн. длительность, дн
-              <input
-                type="number"
+              <NumericInput
+                integer
                 min={1}
                 max={365}
                 step={1}
-                value={processMeta.fermentationProfile.primaryDurationDays ?? ""}
+                value={processMeta.fermentationProfile.primaryDurationDays != null ? String(processMeta.fermentationProfile.primaryDurationDays) : ""}
                 onChange={(event) => onChange({
                   ...processMeta,
                   fermentationProfile: {
@@ -177,12 +177,11 @@ export function RecipeProfiles({
                 </div>
                 <div className="space-y-0.5">
                   <span className="text-[10px] text-zinc-400">°C</span>
-                  <input
-                    type="number"
+                  <NumericInput
                     min={-10}
                     max={50}
                     step={0.1}
-                    value={step.temperatureC ?? ""}
+                    value={step.temperatureC != null ? String(step.temperatureC) : ""}
                     onChange={(event) => onChange({
                       ...processMeta,
                       fermentationProfile: {
@@ -195,12 +194,12 @@ export function RecipeProfiles({
                 </div>
                 <div className="space-y-0.5">
                   <span className="text-[10px] text-zinc-400">дни</span>
-                  <input
-                    type="number"
+                  <NumericInput
+                    integer
                     min={1}
                     max={365}
                     step={1}
-                    value={step.durationDays ?? ""}
+                    value={step.durationDays != null ? String(step.durationDays) : ""}
                     onChange={(event) => onChange({
                       ...processMeta,
                       fermentationProfile: {
@@ -220,9 +219,10 @@ export function RecipeProfiles({
                       extraSteps: processMeta.fermentationProfile.extraSteps.filter((candidate) => candidate.id !== step.id)
                     }
                   })}
-                  className="self-end rounded-md p-1.5 text-zinc-400 transition-colors hover:bg-rose-50 hover:text-rose-600"
+                  className="self-end rounded-md p-2 text-zinc-400 transition-colors hover:bg-rose-50 hover:text-rose-600"
+                  aria-label="Удалить шаг"
                 >
-                  <span className="text-xs">✕</span>
+                  <X className="h-4 w-4" />
                 </button>
               </div>
             ))}
@@ -265,17 +265,16 @@ export function RecipeProfiles({
                     })}
                     className="rounded"
                   />
-                  {key === "coldCrash" ? "Cold crash" : "Conditioning"}
+                  {key === "coldCrash" ? "Колд-краш" : "Выдержка"}
                 </label>
                 <div className="mt-2.5 grid gap-2 sm:grid-cols-2">
                   <div className="space-y-0.5">
                     <span className="text-[10px] text-zinc-400">°C</span>
-                    <input
-                      type="number"
+                    <NumericInput
                       min={-10}
                       max={50}
                       step={0.1}
-                      value={processMeta.fermentationProfile[key].temperatureC ?? ""}
+                      value={processMeta.fermentationProfile[key].temperatureC != null ? String(processMeta.fermentationProfile[key].temperatureC) : ""}
                       onChange={(event) => onChange({
                         ...processMeta,
                         fermentationProfile: {
@@ -291,12 +290,12 @@ export function RecipeProfiles({
                   </div>
                   <div className="space-y-0.5">
                     <span className="text-[10px] text-zinc-400">дни</span>
-                    <input
-                      type="number"
+                    <NumericInput
+                      integer
                       min={1}
                       max={365}
                       step={1}
-                      value={processMeta.fermentationProfile[key].durationDays ?? ""}
+                      value={processMeta.fermentationProfile[key].durationDays != null ? String(processMeta.fermentationProfile[key].durationDays) : ""}
                       onChange={(event) => onChange({
                         ...processMeta,
                         fermentationProfile: {

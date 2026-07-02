@@ -27,15 +27,18 @@ import {
 // часть состояния списка ингредиентов как такового.
 export function useRecipeIngredients({
   initialRecipe,
-  initialIngredientSelection = null
+  initialIngredientSelection = null,
+  onIngredientDeleted
 }: {
   initialRecipe?: RecipeDetailDto;
   initialIngredientSelection?: IngredientSuggestionItem | null;
+  onIngredientDeleted?: (payload: { ingredient: DesignerIngredient; index: number }) => void;
 }) {
   const [ingredients, setIngredients] = useState<DesignerIngredient[]>(
     initialRecipe?.ingredients.map(toDesignerIngredient) ?? []
   );
   const [openEditor, setOpenEditor] = useState<OpenEditorState | null>(null);
+  const [closeConfirmOpen, setCloseConfirmOpen] = useState(false);
   const initialSelectionAppliedRef = useRef(false);
 
   useEffect(() => {
@@ -75,6 +78,31 @@ export function useRecipeIngredients({
     setOpenEditor(null);
   };
 
+  // Пользовательские пути закрытия (Escape / клик мимо / «Отмена» / крестик)
+  // идут через этот guard, а не через closeEditor напрямую: несохранённый
+  // драфт не должен теряться молча.
+  const requestCloseEditor = () => {
+    if (!openEditor) {
+      return;
+    }
+
+    if (serializeIngredient(openEditor.draft) !== openEditor.initialSignature) {
+      setCloseConfirmOpen(true);
+      return;
+    }
+
+    setOpenEditor(null);
+  };
+
+  const confirmCloseEditor = () => {
+    setOpenEditor(null);
+    setCloseConfirmOpen(false);
+  };
+
+  const cancelCloseEditor = () => {
+    setCloseConfirmOpen(false);
+  };
+
   const openAddEditor = (category: IngredientCategory, hopUseType: RecipeHopUseType = "boil") => {
     const baseDraft = createEmptyIngredient(
       category,
@@ -98,10 +126,26 @@ export function useRecipeIngredients({
   };
 
   const deleteIngredient = (localId: string) => {
-    setIngredients((current) => current.filter((ingredient) => ingredient.localId !== localId));
+    const index = ingredients.findIndex((ingredient) => ingredient.localId === localId);
+    if (index === -1) {
+      return;
+    }
+
+    const ingredient = ingredients[index];
+    setIngredients((current) => current.filter((item) => item.localId !== localId));
     if (openEditor?.localId === localId) {
       setOpenEditor(null);
     }
+    onIngredientDeleted?.({ ingredient, index });
+  };
+
+  // Undo для deleteIngredient: вставляет ту же позицию обратно на её прежнее
+  // место (или в конец, если список с тех пор укоротился).
+  const restoreIngredient = (ingredient: DesignerIngredient, index: number) => {
+    setIngredients((current) => {
+      const insertAt = Math.min(index, current.length);
+      return [...current.slice(0, insertAt), ingredient, ...current.slice(insertAt)];
+    });
   };
 
   const openImportedCatalogMatcher = (ingredient: DesignerIngredient) => {
@@ -151,8 +195,13 @@ export function useRecipeIngredients({
     setOpenEditor,
     maybeOpenEditor,
     closeEditor,
+    closeConfirmOpen,
+    requestCloseEditor,
+    confirmCloseEditor,
+    cancelCloseEditor,
     openAddEditor,
     deleteIngredient,
+    restoreIngredient,
     openImportedCatalogMatcher,
     updateIngredientQuantity,
     updateHopTimeMinutes

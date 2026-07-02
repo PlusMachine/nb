@@ -2,6 +2,13 @@ import React from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it, vi } from "vitest";
 
+import { ToastProvider } from "@nb/ui";
+
+// Роуты рендерят RecipeDesigner, который вызывает useToast на верхнем уровне
+// (undo-тост удаления позиции) — статический рендер обязан идти внутри ToastProvider.
+const renderPageMarkup = (view: React.ReactElement) =>
+  renderToStaticMarkup(React.createElement(ToastProvider, null, view));
+
 const recipe = {
   id: "r-1",
   authorId: "u-1",
@@ -82,7 +89,7 @@ describe("recipe editor pages wiring", () => {
   it("edit form renders from owner-safe service", async () => {
     const { default: EditRecipePage } = await import("../app/(app)/app/recipes/[id]/edit/page");
     const view = await EditRecipePage({ params: Promise.resolve({ id: "r-1" }) });
-    const html = renderToStaticMarkup(view);
+    const html = renderPageMarkup(view);
 
     expect(mocks.getOwnedRecipeById).toHaveBeenCalledWith("u-1", "r-1");
     expect(mocks.listRecipeImages).toHaveBeenCalledWith("r-1", "u-1");
@@ -101,7 +108,7 @@ describe("recipe editor pages wiring", () => {
 
   it("new form route renders", async () => {
     const { default: NewRecipePage } = await import("../app/(app)/app/recipes/new/page");
-    const html = renderToStaticMarkup(await NewRecipePage({ searchParams: Promise.resolve({}) }));
+    const html = renderPageMarkup(await NewRecipePage({ searchParams: Promise.resolve({}) }));
 
     expect(html).toContain("Название рецепта");
     expect(html).toContain("Ингредиенты со склада");
@@ -113,7 +120,7 @@ describe("recipe editor pages wiring", () => {
   it("new route resumes an autosaved recipe without redirecting", async () => {
     const { default: NewRecipePage } = await import("../app/(app)/app/recipes/new/page");
 
-    const html = renderToStaticMarkup(await NewRecipePage({
+    const html = renderPageMarkup(await NewRecipePage({
       searchParams: Promise.resolve({ recipeId: "r-1" })
     }));
 

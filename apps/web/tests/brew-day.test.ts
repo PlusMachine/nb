@@ -117,9 +117,9 @@ describe("buildBrewDaySteps", () => {
     })).find((group) => group.stage === "fermentation")!;
     const coldCrash = enabled.steps.find((step) => step.id === "ferment:cold_crash");
     const conditioning = enabled.steps.find((step) => step.id === "ferment:conditioning");
-    expect(coldCrash).toMatchObject({ kind: "task", title: "Cold crash", temperatureC: 2 });
+    expect(coldCrash).toMatchObject({ kind: "task", title: "Колд-краш", temperatureC: 2 });
     expect(coldCrash?.detail).toBe("2 °C · 2 дн.");
-    expect(conditioning).toMatchObject({ kind: "task", title: "Conditioning", temperatureC: 12 });
+    expect(conditioning).toMatchObject({ kind: "task", title: "Выдержка", temperatureC: 12 });
     expect(conditioning?.detail).toBe("12 °C · 14 дн.");
 
     const disabled = buildBrewDaySteps(makeSnapshot({

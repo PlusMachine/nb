@@ -309,7 +309,7 @@ export const buildBrewDaySteps = (snapshot: BrewPlanSnapshot): BrewDayStageGroup
         id: "ferment:cold_crash",
         stage: "fermentation",
         kind: "task",
-        title: "Cold crash",
+        title: "Колд-краш",
         detail: joinDetail(fmtTemp(tempC), fmtDays(days)),
         durationSeconds: null,
         temperatureC: tempC
@@ -324,7 +324,7 @@ export const buildBrewDaySteps = (snapshot: BrewPlanSnapshot): BrewDayStageGroup
         id: "ferment:conditioning",
         stage: "fermentation",
         kind: "task",
-        title: "Conditioning",
+        title: "Выдержка",
         detail: joinDetail(fmtTemp(tempC), fmtDays(days)),
         durationSeconds: null,
         temperatureC: tempC

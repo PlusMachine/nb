@@ -1,9 +1,11 @@
 "use client";
 
 import { getBeerStyleById } from "@nb/brewing-core";
+import { useToast } from "@nb/ui";
 import {
   CircleCheck,
   CircleAlert,
+  CircleDashed,
   ChevronRight,
   ExternalLink,
   FileText,
@@ -14,7 +16,7 @@ import {
   SlidersHorizontal,
   StickyNote
 } from "lucide-react";
-import React, { startTransition, useEffect, useMemo, useState } from "react";
+import React, { startTransition, useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 
 import {
@@ -97,6 +99,7 @@ import {
   toDesignerIngredient,
   buildInitialPreview,
   buildEditorPayloadFromRecipe,
+  createLocalId,
   categoryIcons,
   categoryIconBg,
   getCategoryRows,
@@ -193,7 +196,21 @@ export function RecipeDesigner({
     ? String(initialRecipe.efficiency)
     : String(initialDefaultEquipmentProfile?.brewhouseEfficiencyPct ?? 75));
   const [boilTimeMinutes, setBoilTimeMinutes] = useState(initialRecipe?.boilTimeMinutes != null ? String(initialRecipe.boilTimeMinutes) : "60");
-  const [processMeta, setProcessMeta] = useState<RecipeProcessMeta>(() => cloneRecipeProcessMeta(initialRecipe?.processMeta ?? defaultRecipeProcessMeta));
+  const [processMeta, setProcessMeta] = useState<RecipeProcessMeta>(() => {
+    const cloned = cloneRecipeProcessMeta(initialRecipe?.processMeta ?? defaultRecipeProcessMeta);
+    // Новый рецепт не должен стартовать с пустого Mash Profile «(0)» —
+    // подкладываем один осмысленный шаг затирания по умолчанию. Режим
+    // редактирования существующего рецепта не трогаем.
+    if (!initialRecipe && cloned.mashProfile.steps.length === 0) {
+      cloned.mashProfile.steps.push({
+        id: createLocalId(),
+        name: "Шаг 1",
+        temperatureC: 66,
+        durationMinutes: 60
+      });
+    }
+    return cloned;
+  });
   const { calculationMeta, setCalculationMeta } = useRecipeCalculationMeta({ initialRecipe });
   const {
     waterPlanMeta,
@@ -220,19 +237,48 @@ export function RecipeDesigner({
       )
       : (initialDefaultEquipmentProfile ? buildEquipmentProfileSnapshotFromDto(initialDefaultEquipmentProfile) : null)
   ));
+  // Вызываем useToast до useRecipeIngredients: колбэк onIngredientDeleted,
+  // передаваемый в хук ниже, использует `show`.
+  const { show } = useToast();
+  // restoreIngredient возвращается тем же вызовом useRecipeIngredients, которому
+  // передаётся onIngredientDeleted — колбэк не может сослаться на неё напрямую.
+  // Держим последнюю версию в ref и читаем её из onClick тоста (клик всегда
+  // происходит уже после коммита хука, ref к этому моменту актуален).
+  const restoreIngredientRef = useRef<(ingredient: DesignerIngredient, index: number) => void>(() => {});
   const {
     ingredients,
     setIngredients,
     openEditor,
     setOpenEditor,
     maybeOpenEditor,
-    closeEditor,
+    closeConfirmOpen,
+    requestCloseEditor,
+    confirmCloseEditor,
+    cancelCloseEditor,
     openAddEditor,
     deleteIngredient,
+    restoreIngredient,
     openImportedCatalogMatcher,
     updateIngredientQuantity,
     updateHopTimeMinutes
-  } = useRecipeIngredients({ initialRecipe, initialIngredientSelection });
+  } = useRecipeIngredients({
+    initialRecipe,
+    initialIngredientSelection,
+    onIngredientDeleted: ({ ingredient, index }) => {
+      show({
+        title: "Позиция удалена",
+        description: ingredient.selectedName || undefined,
+        action: {
+          label: "Вернуть",
+          onClick: () => restoreIngredientRef.current(ingredient, index)
+        }
+      });
+    }
+  });
+
+  useEffect(() => {
+    restoreIngredientRef.current = restoreIngredient;
+  }, [restoreIngredient]);
   const [stockCoverage, setStockCoverage] = useState<RecipeStockCoverageDto | null>(initialStockCoverage);
   const [beerXmlExport, setBeerXmlExport] = useState("");
   const [beerXmlImport, setBeerXmlImport] = useState("");
@@ -405,6 +451,12 @@ export function RecipeDesigner({
         return;
       }
 
+      // Позиция не резолвится в известную соль водного плана (кастом со склада,
+      // немаппящийся каталожный id, неконвертируемая единица) — легаси-путь:
+      // добавляем обычной позицией рецепта, она уже корректно отрисовывается
+      // через WaterTreatmentSectionRow и попадает в payload.
+      setIngredients((current) => [...current, openEditor.draft]);
+      setOpenEditor(null);
       return;
     }
 
@@ -413,6 +465,24 @@ export function RecipeDesigner({
     } else {
       setIngredients((current) => [...current, openEditor.draft]);
     }
+
+    // brew-day.ts (гид варки) читает целевую температуру брожения только из
+    // processMeta.fermentationProfile.primaryTemperatureC — stepMeta.fermentationTempC
+    // дрожжей сам по себе никуда не попадает, синкаем при сохранении позиции.
+    if (openEditor.category === "yeast") {
+      const fermentationTempCInput = openEditor.draft.stepMeta.fermentationTempC ?? "";
+      const fermentationTempC = Number(fermentationTempCInput.trim());
+      if (fermentationTempCInput.trim() && Number.isFinite(fermentationTempC)) {
+        setProcessMeta((current) => ({
+          ...current,
+          fermentationProfile: {
+            ...current.fermentationProfile,
+            primaryTemperatureC: fermentationTempC
+          }
+        }));
+      }
+    }
+
     setOpenEditor(null);
   };
 
@@ -715,7 +785,7 @@ export function RecipeDesigner({
       isExisting={openEditor.isExisting}
       onChange={(next) => setOpenEditor((current) => current ? { ...current, draft: next } : current)}
       onSave={saveEditor}
-      onCancel={() => closeEditor()}
+      onCancel={() => requestCloseEditor()}
       onDelete={openEditor.localId ? () => deleteIngredient(openEditor.localId!) : undefined}
       saveLabel={openEditor.localId ? "Сохранить позицию" : openEditor.category === "water_treatment" ? "Добавить соль" : "Добавить позицию"}
       fieldError={editorFieldError}
@@ -1052,11 +1122,17 @@ export function RecipeDesigner({
         icon: <CircleAlert className="h-3.5 w-3.5" />,
         className: "bg-rose-50 text-rose-700 ring-rose-200"
       }
-      : {
-        label: "Сохранено",
-        icon: <CircleCheck className="h-3.5 w-3.5" />,
-        className: "bg-emerald-50 text-emerald-700 ring-emerald-200"
-      };
+      : saveStatus === "saved" && !activeRecipeId
+        ? {
+          label: "Черновик",
+          icon: <CircleDashed className="h-3.5 w-3.5" />,
+          className: "bg-zinc-100 text-zinc-600 ring-zinc-200"
+        }
+        : {
+          label: "Сохранено",
+          icon: <CircleCheck className="h-3.5 w-3.5" />,
+          className: "bg-emerald-50 text-emerald-700 ring-emerald-200"
+        };
 
   const visibilityChipMeta = savedVisibility === "published"
     ? { label: "Опубликован", icon: <Globe className="h-3.5 w-3.5" />, className: "bg-violet-50 text-violet-700 ring-violet-200" }
@@ -1556,9 +1632,19 @@ export function RecipeDesigner({
         />
       ) : null}
 
-      <IngredientAddDrawer open={Boolean(openEditor)} onClose={() => closeEditor()}>
+      <IngredientAddDrawer open={Boolean(openEditor)} onClose={() => requestCloseEditor()}>
         {editorPanel}
       </IngredientAddDrawer>
+
+      <ConfirmActionDialog
+        open={closeConfirmOpen}
+        title="Закрыть без сохранения?"
+        description="Изменения в этой позиции не сохранятся."
+        confirmLabel="Закрыть"
+        cancelLabel="Вернуться"
+        onConfirm={confirmCloseEditor}
+        onClose={cancelCloseEditor}
+      />
     </div>
   );
 }

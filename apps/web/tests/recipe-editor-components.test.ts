@@ -4,6 +4,8 @@ import React from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it, vi } from "vitest";
 
+import { ToastProvider } from "@nb/ui";
+
 import NewRecipePage from "../app/(app)/app/recipes/new/page";
 import EditRecipePage from "../app/(app)/app/recipes/[id]/edit/page";
 import { RecipeEditorErrorState } from "../components/recipes/recipe-editor-error-state";
@@ -147,6 +149,11 @@ const buildEquipmentProfile = (overrides: Partial<EquipmentProfileDto> = {}): Eq
   updatedAt: new Date("2026-04-20T10:00:00Z"),
   ...overrides
 });
+
+// RecipeDesigner вызывает useToast на верхнем уровне (undo-тост удаления позиции),
+// поэтому статический рендер обязан идти внутри ToastProvider из @nb/ui.
+const renderDesignerMarkup = (props: React.ComponentProps<typeof RecipeDesigner>) =>
+  renderToStaticMarkup(React.createElement(ToastProvider, null, React.createElement(RecipeDesigner, props)));
 
 describe("recipe editor components", () => {
   it("builds import summary from BeerXML content", () => {
@@ -443,16 +450,16 @@ describe("recipe editor components", () => {
       engine: "advanced_manual",
     } satisfies RecipeWaterPlanMeta;
 
-    const autoHtml = renderToStaticMarkup(React.createElement(RecipeDesigner, {
+    const autoHtml = renderDesignerMarkup({
       mode: "edit",
       initialRecipe: buildRecipeDetail({ waterPlanMeta: autoWaterPlanMeta }),
       preferredGravityUnit: "plato",
-    }));
-    const manualHtml = renderToStaticMarkup(React.createElement(RecipeDesigner, {
+    });
+    const manualHtml = renderDesignerMarkup({
       mode: "edit",
       initialRecipe: buildRecipeDetail({ waterPlanMeta: manualWaterPlanMeta }),
       preferredGravityUnit: "plato",
-    }));
+    });
 
     expect(autoHtml).toContain("Водоподготовка");
     expect(autoHtml).toContain("Добавить соль");
@@ -608,7 +615,7 @@ describe("recipe editor components", () => {
   });
 
   it("designer header renders aligned field labels", () => {
-    const html = renderToStaticMarkup(React.createElement(RecipeDesigner, { mode: "create", preferredGravityUnit: "plato" }));
+    const html = renderDesignerMarkup({ mode: "create", preferredGravityUnit: "plato" });
 
     expect(html).toContain("Название рецепта");
     expect(html).toContain("Стиль BJCP");
@@ -622,9 +629,11 @@ describe("recipe editor components", () => {
     expect(html).toContain("Другие добавки");
     expect(html).toContain("Импорт / экспорт");
     expect(html).toContain("Сварить");
-    expect(html).toContain("Mash Profile");
+    expect(html).toContain("Затирание");
     expect(html).toContain("aria-label=\"Открыть настройки КП\"");
-    expect(html).toContain("(0)");
+    // Новый рецепт стартует с одним дефолтным шагом затирания (66 °C / 60 мин).
+    expect(html).toContain("(1)");
+    expect(html).toContain('value="66"');
     expect(html).not.toContain('value="67"');
     expect(html).not.toContain("Equipment profile");
     expect(html).not.toContain("Brew mode");
@@ -638,7 +647,7 @@ describe("recipe editor components", () => {
   });
 
   it("renders manually added water treatments with the water-additive card style", () => {
-    const html = renderToStaticMarkup(React.createElement(RecipeDesigner, {
+    const html = renderDesignerMarkup({
       mode: "edit",
       initialRecipe: buildRecipeDetail({
         ingredients: [{
@@ -670,7 +679,7 @@ describe("recipe editor components", () => {
         }],
       }),
       preferredGravityUnit: "plato",
-    }));
+    });
 
     expect(html).toContain("Гипс");
     expect(html).toContain("CaSO4");
@@ -680,7 +689,7 @@ describe("recipe editor components", () => {
   });
 
   it("marks selected BJCP styles without fixed ranges in the recipe stat tracks", () => {
-    const html = renderToStaticMarkup(React.createElement(RecipeDesigner, {
+    const html = renderDesignerMarkup({
       mode: "edit",
       initialRecipe: buildRecipeDetail({
         styleId: "34A",
@@ -691,7 +700,7 @@ describe("recipe editor components", () => {
         color: 7
       }),
       preferredGravityUnit: "plato"
-    }));
+    });
 
     expect(html).toContain("Специальное пиво по коммерческому образцу");
     expect(html).toContain("Диапазоны BJCP не указаны");
@@ -699,7 +708,7 @@ describe("recipe editor components", () => {
   });
 
   it("shows the FG range next to the point estimate in the sticky metrics header (#16/17)", () => {
-    const html = renderToStaticMarkup(React.createElement(RecipeDesigner, {
+    const html = renderDesignerMarkup({
       mode: "edit",
       initialRecipe: buildRecipeDetail({
         fg: 1.012,
@@ -721,7 +730,7 @@ describe("recipe editor components", () => {
         }
       }),
       preferredGravityUnit: "plato"
-    }));
+    });
 
     // Диапазон форматируется той же formatGravityRange, что и в шапке — не хардкодим число.
     const expectedRange = formatGravityRange(1.009, 1.014, "plato");
@@ -730,7 +739,7 @@ describe("recipe editor components", () => {
   });
 
   it("uses the default equipment profile as the initial profile for a new recipe", () => {
-    const html = renderToStaticMarkup(React.createElement(RecipeDesigner, {
+    const html = renderDesignerMarkup({
       mode: "create",
       equipmentProfiles: [
         buildEquipmentProfile(),
@@ -743,7 +752,7 @@ describe("recipe editor components", () => {
         })
       ],
       preferredGravityUnit: "plato"
-    }));
+    });
 
     expect(html).toContain("Клон Braumeister · Основной — 27 л · 72%");
     expect(html).toContain("HERMS");
@@ -753,15 +762,15 @@ describe("recipe editor components", () => {
   });
 
   it("opens the empty boil hop additions group by default", () => {
-    const html = renderToStaticMarkup(React.createElement(RecipeDesigner, { mode: "create", preferredGravityUnit: "plato" }));
+    const html = renderDesignerMarkup({ mode: "create", preferredGravityUnit: "plato" });
 
     expect(html).toContain("Добавление на кипячение");
     expect(html).toContain("Добавьте хмель на кипячение");
     expect(html).toContain("Другие типы охмеления");
-    expect(html.indexOf("Сухое охмеление")).toBeLessThan(html.indexOf("Whirlpool / Hopstand"));
-    expect(html.indexOf("Whirlpool / Hopstand")).toBeLessThan(html.indexOf("Dip Hopping"));
-    expect(html.indexOf("Dip Hopping")).toBeLessThan(html.indexOf("First Wort Hop"));
-    expect(html.indexOf("First Wort Hop")).toBeLessThan(html.indexOf("Другое"));
+    expect(html.indexOf("Сухое охмеление")).toBeLessThan(html.indexOf("Вирпул / хопстенд"));
+    expect(html.indexOf("Вирпул / хопстенд")).toBeLessThan(html.indexOf("Дип-хоп"));
+    expect(html.indexOf("Дип-хоп")).toBeLessThan(html.indexOf("Первое сусло (FWH)"));
+    expect(html.indexOf("Первое сусло (FWH)")).toBeLessThan(html.indexOf("Другое"));
   });
 
   it("builds canonical edit href for saved recipes", () => {
@@ -775,13 +784,13 @@ describe("recipe editor components", () => {
   });
 
   it("shows the selected BJCP style as a native link in the stats heading", () => {
-    const html = renderToStaticMarkup(React.createElement(RecipeDesigner, {
+    const html = renderDesignerMarkup({
       mode: "edit",
       initialRecipe: buildRecipeDetail({
         styleId: "1A"
       }),
       preferredGravityUnit: "plato"
-    }));
+    });
 
     expect(html).toContain("<span>Ваш рецепт и </span>");
     expect(html).toContain('href="/bjcp/bjcp-1a-american-light-lager"');

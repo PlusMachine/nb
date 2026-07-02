@@ -306,10 +306,10 @@ export type OpenEditorState = {
 
 export const hopUseTypeLabels: Record<RecipeHopUseType, string> = {
   boil: "Кипячение",
-  first_wort_hop: "First Wort Hop",
-  whirlpool: "Whirlpool / Hopstand",
+  first_wort_hop: "Первое сусло (FWH)",
+  whirlpool: "Вирпул / хопстенд",
   dry_hop: "Сухое охмеление",
-  dip_hop: "Dip Hopping",
+  dip_hop: "Дип-хоп",
   other: "Другое"
 };
 
