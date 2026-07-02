@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import Link from "next/link";
 
 import { Button } from "@nb/ui";
 
@@ -573,9 +574,9 @@ export const AdminIngredientForm = ({ initial }: { initial?: IngredientFormValue
         <Button type="submit" size="md">
           {initial?.id ? "Save ingredient" : "Create ingredient"}
         </Button>
-        <a href="/admin/ingredients" className="rounded-lg border border-zinc-300 px-4 py-2 text-sm text-zinc-700">
+        <Link href="/admin/ingredients" className="rounded-lg border border-zinc-300 px-4 py-2 text-sm text-zinc-700">
           Cancel
-        </a>
+        </Link>
       </div>
     </form>
   );

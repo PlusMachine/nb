@@ -112,8 +112,7 @@ import {
   isIngredientValid,
   getIngredientDraftFieldError,
   applyRecipeWaterAddFlowSaltToWaterPlan,
-  type DesignerIngredient,
-  type OpenEditorState
+  type DesignerIngredient
 } from "./helpers";
 import { StylePicker } from "./style-picker";
 import { RecipeStyleStatsBlock } from "./recipe-style-stats-block";
@@ -335,19 +334,14 @@ export function RecipeDesigner({
     setActiveVersionNumber,
     recipeVersions,
     setRecipeVersions,
-    saveResult,
     setSaveResult,
-    saveResultSignature,
     setSaveResultSignature,
-    blockedSignature,
     setBlockedSignature,
     pendingSave,
     setPendingSave,
-    savedSignature,
     setSavedSignature,
     savedBatchVolumeL,
     setSavedBatchVolumeL,
-    isDirty,
     saveStatus,
     visibleSaveResult,
     hasRetriableSaveError,
