@@ -7,6 +7,7 @@ import { requireUser } from "@/lib/auth";
 import { getDeviceById } from "@/features/devices/service";
 import { listDeviceProfiles } from "@/features/devices/profiles";
 import { DeviceConfigForm } from "@/features/devices/components/device-config-form";
+import { DeviceLogSyncCard } from "@/features/devices/components/device-log-sync-card";
 import type { DeviceProfileView } from "@/features/devices/actions";
 
 // Страница настроек/деталей устройства BrewForge (ownership-checked).
@@ -101,6 +102,8 @@ export default async function DeviceSettingsPage({
         deviceName={device.name}
         initialProfiles={initialProfiles}
       />
+
+      <DeviceLogSyncCard deviceId={device.id} />
     </div>
   );
 }

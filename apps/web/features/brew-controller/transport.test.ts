@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-import { assertEgressUrlAllowed, lanTransport } from "./transport";
+import { assertEgressUrlAllowed, lanTransport, pairDeviceOverLan } from "./transport";
 
 // =============================================================================
 //  Юнит-тесты SSRF-егресс-гарда и «не-протекания» тела ответа в ошибке putRecipe.
@@ -122,12 +122,13 @@ describe("lanTransport.putRecipe", () => {
     const urls: string[] = [];
     const fetchMock = vi.fn(async (url: string) => {
       urls.push(url);
-      return { ok: true, status: 200, json: async () => ({ slot: 3 }) };
+      // Точная форма успешного ответа прошивки (bf_comms.c h_recipe): {"ok":true,"slot":N}.
+      return { ok: true, status: 200, json: async () => ({ ok: true, slot: 3 }) };
     });
     vi.stubGlobal("fetch", fetchMock);
 
     const transport = lanTransport("http://192.168.1.50");
-    // без слота — прошивка берёт слот по умолчанию (batch-путь START_BREW): без query
+    // без слота — прошивка автовыбирает первый свободный записываемый слот: без query
     const a = await transport.putRecipe({} as never);
     expect(a).toEqual({ slot: 3 });
     expect(urls[0]).toBe("http://192.168.1.50/recipe");
@@ -135,5 +136,148 @@ describe("lanTransport.putRecipe", () => {
     // с целевым слотом — device-first push «на плату»
     await transport.putRecipe({} as never, 3);
     expect(urls[1]).toBe("http://192.168.1.50/recipe?slot=3");
+  });
+
+  it("устройство отклоняет рецепт с HTTP 200 (ok:false, без slot) — putRecipe ДОЛЖЕН бросить, не вернуть slot:0", async () => {
+    // Сверка контракта (пакет 4-B): реальная прошивка (h_recipe) НЕ ставит статус
+    // ошибки на отказ (нет свободного слота / невалидный ?slot=) — 200 OK с телом
+    // {"ok":false,"error":N}. Раньше putRecipe тихо читал отсутствующий json.slot
+    // как 0 — а слот 0 на реальном железе ВСТРОЕННЫЙ ROM-рецепт (см. transport.ts).
+    const fetchMock = vi.fn(async () => ({
+      ok: true,
+      status: 200,
+      json: async () => ({ ok: false, error: -101 }),
+    }));
+    vi.stubGlobal("fetch", fetchMock);
+
+    const transport = lanTransport("http://192.168.1.50");
+    await expect(transport.putRecipe({} as never)).rejects.toThrow(/отклонило/);
+  });
+});
+
+describe("lanTransport.listLogs / readLog (P3)", () => {
+  beforeEach(() => {
+    vi.stubEnv("NODE_ENV", "development");
+    vi.stubEnv("BREWFORGE_LAN_TRANSPORT_DISABLED", "");
+  });
+
+  afterEach(() => {
+    vi.unstubAllEnvs();
+    vi.unstubAllGlobals();
+  });
+
+  it("listLogs разбирает точный ответ bf_log_list (голый массив)", async () => {
+    const fetchMock = vi.fn(async () => ({
+      ok: true,
+      status: 200,
+      json: async () => [
+        { name: "brew-1719499990.jsonl", startTs: 1719499990, sizeBytes: 4096, recipeName: "IPA" },
+      ],
+    }));
+    vi.stubGlobal("fetch", fetchMock);
+
+    const transport = lanTransport("http://192.168.1.50");
+    const files = await transport.listLogs?.();
+    expect(files).toEqual([
+      { name: "brew-1719499990.jsonl", startTs: 1719499990, sizeBytes: 4096, recipeName: "IPA" },
+    ]);
+  });
+
+  it("listLogs на сетевой ошибке/404 отдаёт пустой список, не бросает", async () => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async () => ({ ok: false, status: 500 })),
+    );
+    const transport = lanTransport("http://192.168.1.50");
+    expect(await transport.listLogs?.()).toEqual([]);
+  });
+
+  it("readLog запрашивает ?name= и отдаёт сырой текст .jsonl", async () => {
+    const urls: string[] = [];
+    const jsonl = '{"t":"s","ts":1,"up":1,"st":5,"sp":67,"tp":66,"hd":80,"ho":true,"pu":true,"fm":0}\n';
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async (url: string) => {
+        urls.push(url);
+        return { ok: true, status: 200, text: async () => jsonl };
+      }),
+    );
+    const transport = lanTransport("http://192.168.1.50");
+    const content = await transport.readLog?.("brew-1719499990.jsonl");
+    expect(content).toBe(jsonl);
+    expect(urls[0]).toBe("http://192.168.1.50/log?name=brew-1719499990.jsonl");
+  });
+
+  it("readLog на 404 отдаёт null (файл вытеснен ретеншном/не существует)", async () => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async () => ({ ok: false, status: 404 })),
+    );
+    const transport = lanTransport("http://192.168.1.50");
+    expect(await transport.readLog?.("nope.jsonl")).toBeNull();
+  });
+});
+
+describe("pairDeviceOverLan (P4)", () => {
+  beforeEach(() => {
+    vi.stubEnv("NODE_ENV", "development");
+    vi.stubEnv("BREWFORGE_LAN_TRANSPORT_DISABLED", "");
+  });
+
+  afterEach(() => {
+    vi.unstubAllEnvs();
+    vi.unstubAllGlobals();
+  });
+
+  it("happy path: POST /pair {token} → {ok:true}", async () => {
+    const calls: { url: string; body: unknown }[] = [];
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async (url: string, init: { body?: string }) => {
+        calls.push({ url, body: init?.body ? JSON.parse(init.body) : null });
+        return { ok: true, status: 200, json: async () => ({ ok: true }) };
+      }),
+    );
+
+    const result = await pairDeviceOverLan("http://192.168.1.50", "bfd_abc123");
+    expect(result).toEqual({ ok: true });
+    expect(calls[0]?.url).toBe("http://192.168.1.50/pair");
+    expect(calls[0]?.body).toEqual({ token: "bfd_abc123" });
+  });
+
+  it("409 ALREADY_PAIRED — устройство уже сопряжено (кем-то ещё/этим же владельцем ранее)", async () => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async () => ({ ok: false, status: 409, json: async () => ({ ok: false, reason: "ALREADY_PAIRED" }) })),
+    );
+    const result = await pairDeviceOverLan("http://192.168.1.50", "bfd_abc123");
+    expect(result).toEqual({ ok: false, reason: "ALREADY_PAIRED" });
+  });
+
+  it("сетевая ошибка (устройство offline/недостижимо) → UNREACHABLE, не бросает", async () => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async () => {
+        throw new Error("ECONNREFUSED");
+      }),
+    );
+    const result = await pairDeviceOverLan("http://192.168.1.50", "bfd_abc123");
+    expect(result).toEqual({ ok: false, reason: "UNREACHABLE" });
+  });
+
+  it("SSRF-гард применяется к /pair (публичный хост блокируется) — тоже UNREACHABLE, не бросает наружу", async () => {
+    // pairDeviceOverLan оборачивает assertEgressUrlAllowed в try/catch — вызывающий
+    // (claimDevice) не должен падать 500 на «пользователь ввёл странный localUrl».
+    const result = await pairDeviceOverLan("http://example.com", "bfd_abc123");
+    expect(result).toEqual({ ok: false, reason: "UNREACHABLE" });
+  });
+
+  it("устройство отклонило (не 409, не 2xx) → REJECTED", async () => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async () => ({ ok: false, status: 400, json: async () => ({ ok: false, reason: "BAD_TOKEN" }) })),
+    );
+    const result = await pairDeviceOverLan("http://192.168.1.50", "bfd_abc123");
+    expect(result).toEqual({ ok: false, reason: "REJECTED" });
   });
 });

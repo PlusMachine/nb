@@ -11,3 +11,4 @@ export * from "./recipe.js";
 export * from "./config.js";
 export * from "./topics.js";
 export * from "./notify.js";
+export * from "./log.js";

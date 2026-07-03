@@ -20,34 +20,53 @@ describe("simTransport", () => {
     expect(tele?.schema).toBe(1);
   });
 
-  it("слоты: демо-рецепт в слоте 0, пустые слоты — null-имя", async () => {
+  it("слоты: listSlots отдаёт ТОЛЬКО записываемый диапазон 6..25 (паритет с прошивкой, D1)", async () => {
     const t = simTransport("sim-t-2");
     const slots = await t.listSlots();
-    expect(slots).toHaveLength(8);
-    expect(slots[0]).toEqual({ slot: 0, name: "Demo Pale Ale" });
-    expect(slots[1]?.name).toBeNull();
+    // BF_MAX_RECIPES=26, 6 встроенных (0..5) + 20 записываемых (6..25).
+    expect(slots).toHaveLength(20);
+    expect(slots[0]).toEqual({ slot: 6, name: null });
+    expect(slots.every((s) => s.slot >= 6 && s.slot <= 25)).toBe(true);
   });
 
-  it("readSlotSnapshot: занятый → рецепт, пустой → null, вне диапазона → null", async () => {
+  it("readSlotSnapshot: читает ЛЮБОЙ слот (в т.ч. встроенный 0), пустой → null, вне диапазона → null", async () => {
     const t = simTransport("sim-t-3");
     const s0 = await t.readSlotSnapshot(0);
-    expect(s0?.name).toBe("Demo Pale Ale");
-    expect(await t.readSlotSnapshot(5)).toBeNull(); // пустой слот
-    expect(await t.readSlotSnapshot(99)).toBeNull(); // вне диапазона (поймано)
+    expect(s0?.name).toBe("Demo Pale Ale"); // слот 0 — «встроенный» демо-рецепт
+    expect(await t.readSlotSnapshot(6)).toBeNull(); // пустой записываемый слот
+    expect(await t.readSlotSnapshot(99)).toBeNull(); // вне диапазона 0..25 (поймано)
   });
 
-  it("putRecipe в целевой слот → снапшот и listSlots обновляются", async () => {
-    const t = simTransport("sim-t-4");
+  it("putRecipe БЕЗ slot — автовыбор первого свободного ЗАПИСЫВАЕМОГО слота (не 0 — паритет с pick_recipe_slot)", async () => {
+    const t = simTransport("sim-t-4a");
     const demo = await t.readSlotSnapshot(0);
     expect(demo).not.toBeNull();
 
-    const { slot } = await t.putRecipe(demo!, 3);
-    expect(slot).toBe(3);
+    const { slot } = await t.putRecipe(demo!);
+    expect(slot).toBe(6); // первый свободный в диапазоне 6..25
 
-    const s3 = await t.readSlotSnapshot(3);
-    expect(s3?.name).toBe("Demo Pale Ale");
+    const s6 = await t.readSlotSnapshot(6);
+    expect(s6?.name).toBe("Demo Pale Ale");
+  });
+
+  it("putRecipe в явный целевой слот → снапшот и listSlots обновляются", async () => {
+    const t = simTransport("sim-t-4b");
+    const demo = await t.readSlotSnapshot(0);
+    expect(demo).not.toBeNull();
+
+    const { slot } = await t.putRecipe(demo!, 8);
+    expect(slot).toBe(8);
+
+    const s8 = await t.readSlotSnapshot(8);
+    expect(s8?.name).toBe("Demo Pale Ale");
     const slots = await t.listSlots();
-    expect(slots[3]).toEqual({ slot: 3, name: "Demo Pale Ale" });
+    expect(slots.find((s) => s.slot === 8)).toEqual({ slot: 8, name: "Demo Pale Ale" });
+  });
+
+  it("putRecipe в НЕзаписываемый слот (встроенный 0..5) — отклоняется (паритет с BF_PROTO_ERR_BAD_SLOT)", async () => {
+    const t = simTransport("sim-t-4c");
+    const demo = await t.readSlotSnapshot(0);
+    await expect(t.putRecipe(demo!, 3)).rejects.toThrow();
   });
 
   it("sendCommand: SELECT_RECIPE подтверждается Ack ok", async () => {

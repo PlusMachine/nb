@@ -422,6 +422,9 @@ export type InventoryListItemDto = {
   normalizedQuantity: number;
   normalizedUnit: InventoryUnit;
   unitDimension: InventoryUnitDimension;
+  // Сумма активных аллокаций (allocated + reserved) под рецепты в нормализованной
+  // единице позиции. Часть остатка, которая уже «занята» под варку и ещё не списана.
+  reservedQuantityNormalized?: number | null;
   priceInputMode?: InventoryPriceInputMode | null;
   priceInputAmountMinor?: number | null;
   priceInputCurrency?: SystemCurrency | null;

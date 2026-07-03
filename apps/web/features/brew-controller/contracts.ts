@@ -3,6 +3,7 @@ import type {
   Command,
   DeviceConfig,
   DeviceConfigPatch,
+  DeviceLogFileMeta,
   DeviceRecipe,
   Telemetry,
 } from "@nb/brewforge-protocol";
@@ -88,6 +89,12 @@ export type PushRecipeToDeviceResult = { slot: number };
 /** Прочитать read-only снапшот «что лежит на плате» в слоте N. */
 export type ReadSlotSnapshotInput = { userId: string; deviceId: string; slot: number };
 
+/** P3 (офлайн-журнал): список файлов на устройстве (GET /log, LAN-only). */
+export type ListLogsInput = { userId: string; deviceId: string };
+
+/** P3: скачать конкретный файл журнала (.jsonl) целиком (GET /log?name=, LAN-only). */
+export type ReadLogInput = { userId: string; deviceId: string; name: string };
+
 // --- Сигнатуры методов ------------------------------------------------------
 
 export type PushRecipeFn = (input: PushRecipeInput) => Promise<PushRecipeResult>;
@@ -102,6 +109,9 @@ export type ReadSlotSnapshotFn = (input: ReadSlotSnapshotInput) => Promise<Devic
 export type PushRecipeToDeviceFn = (
   input: PushRecipeToDeviceInput
 ) => Promise<PushRecipeToDeviceResult>;
+export type ListLogsFn = (input: ListLogsInput) => Promise<DeviceLogFileMeta[]>;
+/** null — файла нет на устройстве (404) ИЛИ он был вытеснен ретеншном между list/read. */
+export type ReadLogFn = (input: ReadLogInput) => Promise<string | null>;
 
 /**
  * Базовый провайдер контроллера. Все методы ОПЦИОНАЛЬНЫ: фактическую поддержку
@@ -120,6 +130,9 @@ export type BrewControllerProvider = BrewControllerProviderDescriptor & {
   listSlots?: ListSlotsFn;
   readSlotSnapshot?: ReadSlotSnapshotFn;
   pushRecipeToDevice?: PushRecipeToDeviceFn;
+  /** P3, LAN-only (офлайн-журнал варки, bf_log.c) — облачный/демо-транспорт его не отдаёт. */
+  listLogs?: ListLogsFn;
+  readLog?: ReadLogFn;
 };
 
 /**
@@ -138,4 +151,7 @@ export interface BrewforgeProvider extends BrewControllerProviderDescriptor {
   listSlots: ListSlotsFn;
   readSlotSnapshot: ReadSlotSnapshotFn;
   pushRecipeToDevice: PushRecipeToDeviceFn;
+  /** P3: LAN-only (облачный/демо-транспорт не поддерживает — см. transport.ts DeviceTransport). */
+  listLogs?: ListLogsFn;
+  readLog?: ReadLogFn;
 }

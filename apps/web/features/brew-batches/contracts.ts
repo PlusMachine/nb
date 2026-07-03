@@ -29,6 +29,22 @@ export const brewPlanSnapshotSchema = z.object({
   // packagingPlan (это настройки метода/карбонизации, не строки состава). default([]) —
   // как и dryHopPlan, старые снапшоты без поля парсятся как пустой список, без поломки гида.
   packagingAdditions: z.array(z.record(z.string(), z.unknown())).default([]),
+  // Суммарная засыпь солода, кг — для шага гида «Засыпьте солод». default(null) —
+  // как и dryHopPlan/packagingAdditions, старые снапшоты без поля парсятся как
+  // null, гид деградирует мягко (шаг рендерится без detail).
+  grainBillTotalKg: z.number().nullable().optional().default(null),
+  // Прекомпьют водного движка на момент старта варки (соли/кислоты затора и
+  // промывки + целевой pH) — считать движок заново на каждый рендер гида дорого
+  // и бессмысленно, снапшот и так иммутабелен. default(null) — как и
+  // dryHopPlan/grainBillTotalKg: старые снапшоты без поля и рецепты без
+  // включённой водоподготовки парсятся как null, гид молча пропускает шаги воды.
+  waterSchedule: z.object({
+    mashSalts: z.array(z.object({ label: z.string(), grams: z.number() })),
+    spargeSalts: z.array(z.object({ label: z.string(), grams: z.number() })),
+    mashAcid: z.object({ label: z.string(), ml: z.number() }).nullable(),
+    spargeAcid: z.object({ label: z.string(), ml: z.number() }).nullable(),
+    targetMashPh: z.number().nullable()
+  }).nullable().optional().default(null),
   deviceHints: z.array(z.record(z.string(), z.unknown()))
 });
 
@@ -197,15 +213,48 @@ export type BrewBatchDetail = {
 // напоминаниями о засыпях и отметками «шаг выполнен». Виртуальный аналог
 // device-дашборда. Прогресс хранится в brew_batches.brew_day_progress.
 
-export const brewDayStages = ["mash", "boil", "whirlpool", "fermentation", "packaging"] as const;
+export const brewDayStages = ["mash", "boil", "whirlpool", "chill", "fermentation", "packaging"] as const;
 export type BrewDayStage = (typeof brewDayStages)[number];
 
 export const brewDayStageLabels: Record<BrewDayStage, string> = {
   mash: "Затор",
   boil: "Кипячение",
   whirlpool: "Вирпул",
+  chill: "Охлаждение",
   fermentation: "Брожение",
   packaging: "Розлив"
+};
+
+// «Акт» страницы партии = машина состояний по статусу варки. Раскладка страницы
+// ветвится по акту: показываем релевантный акт целиком, остальное свёрнуто/скрыто.
+// prep — подготовка (planned), brewday — варочный день (brewing), fermentation —
+// брожение+розлив (fermenting), done — итог (completed), archived — отмена (cancelled).
+export const brewDayActs = ["prep", "brewday", "fermentation", "done", "archived"] as const;
+export type BrewDayAct = (typeof brewDayActs)[number];
+
+// Курсор гида: «текущий» и «следующий» шаг акта (первый/второй не-done), плюс
+// признак завершённости акта (для показа CTA перехода в следующий статус).
+export type BrewDayCursor = {
+  current: BrewDayStep | null;
+  next: BrewDayStep | null;
+  actComplete: boolean;
+  doneCount: number;
+  total: number;
+};
+
+// Сводка плана варочного дня для акта «Подготовка»: этапы с числом шагов и суммой
+// таймеров + общие итоги. Чистая проекция построенных групп, без прогресса.
+export type BrewDayStagePlan = {
+  stage: BrewDayStage;
+  label: string;
+  stepCount: number;
+  timerSeconds: number;
+};
+
+export type BrewDayPlanSummary = {
+  stages: BrewDayStagePlan[];
+  totalSteps: number;
+  totalTimerSeconds: number;
 };
 
 // timer — шаг с обратным отсчётом (пауза затора, кипячение); addition — засыпь
@@ -222,6 +271,9 @@ export type BrewDayStep = {
   /** Длительность для timer-шагов (сек); null — нет таймера. */
   durationSeconds: number | null;
   temperatureC: number | null;
+  /** Для засыпей кипячения: за сколько секунд до конца вносить (для живого
+   *  обратного отсчёта от таймера кипячения). null — не привязано к кипячению. */
+  boilSecondsBeforeEnd?: number | null;
 };
 
 export type BrewDayStageGroup = {

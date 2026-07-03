@@ -47,7 +47,7 @@ export function BrewNotes({
   };
 
   return (
-    <section className="space-y-2 rounded-2xl border border-zinc-100 bg-white p-4 shadow-sm">
+    <section id="brew-notes" className="space-y-2 rounded-2xl border border-zinc-100 bg-white p-4 shadow-sm">
       <h2 className="text-base font-semibold text-zinc-900">{completed ? "Дегустационные заметки" : "Заметки"}</h2>
       <textarea
         value={value}

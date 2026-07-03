@@ -243,8 +243,21 @@ function defaultRecipe(): DeviceRecipe {
 export class SimDevice {
   readonly cfg: SimConfig;
 
-  // --- слоты рецептов (0..7) ---
-  private readonly slots: (DeviceRecipe | null)[] = new Array(8).fill(null);
+  // --- слоты рецептов (сверка контракта, пакет 4-B): BF_MAX_RECIPES=26 на
+  // реальном железе — слоты 0..BUILTIN_SLOT_COUNT-1 «встроенные» (ROM, read-only,
+  // никогда не выбираются автовыбором/не перезаписываются адресным пушем), слоты
+  // BUILTIN_SLOT_COUNT..25 — записываемые (NVS). Симулятор не хранит все 6 ROM-
+  // рецептов (только демо в слоте 0, см. defaultRecipe) — это осознанное упрощение
+  // (сим — не полная копия прошивки), но ГРАНИЦА диапазонов воспроизведена точно,
+  // т.к. именно она определяет поведение listSlots/putRecipe(без slot)/?slot=. ---
+  private static readonly BUILTIN_SLOT_COUNT = 6; // bf_recipes_count()
+  private static readonly MAX_RECIPES = 26; // BF_MAX_RECIPES
+  private readonly slots: (DeviceRecipe | null)[] = new Array(SimDevice.MAX_RECIPES).fill(null);
+
+  // --- pairing/MQTT (пакет 4-B, D5/D6 паритет): в памяти, без NVS-персиста — сим
+  // эфемерен по конструкции (перезапуск = чистое состояние, как «заводской сброс»). ---
+  private deviceToken: string | null = null; // паритет с bf_net_cfg_t.device_token
+  private mqttUri = ""; // паритет с bf_net_cfg_t.mqtt_uri ("" = MQTT выключен)
 
   // --- изменяемое состояние ---
   private seq = 0;
@@ -363,17 +376,85 @@ export class SimDevice {
     };
   }
 
-  /** Карта слотов (номер + имя рецепта, если занят) — для listSlots провайдера. */
+  /**
+   * Карта ЗАПИСЫВАЕМЫХ слотов (номер + имя рецепта, если занят) — для listSlots
+   * провайдера / GET /recipes. Паритет с прошивкой (D1, bf_comms.c h_recipes):
+   * встроенные ROM-слоты (0..BUILTIN_SLOT_COUNT-1) сюда НЕ входят — это read-only
+   * библиотека, не адресуемые push-слоты «рецептов на борту».
+   */
   listSlots(): { slot: number; name: string | null }[] {
-    return this.slots.map((r, i) => ({ slot: i, name: r ? r.name : null }));
+    const out: { slot: number; name: string | null }[] = [];
+    for (let i = SimDevice.BUILTIN_SLOT_COUNT; i < this.slots.length; i++) {
+      out.push({ slot: i, name: this.slots[i] ? this.slots[i]!.name : null });
+    }
+    return out;
   }
 
-  /** Read-only снапшот рецепта слота («что лежит на плате»), либо null если слот пуст. */
+  /**
+   * Read-only снапшот рецепта слота («что лежит на плате»), либо null если слот
+   * пуст. В отличие от listSlots — читает ЛЮБОЙ слот 0..25 (паритет с GET
+   * /recipe?slot=N на прошивке, который тоже не ограничен записываемым диапазоном).
+   */
   readSlot(slot: number): DeviceRecipe | null {
     if (slot < 0 || slot >= this.slots.length) {
       throw new Error(`Слот вне диапазона 0..${this.slots.length - 1}`);
     }
     return this.slots[slot] ?? null;
+  }
+
+  /** true, если slot — в ЗАПИСЫВАЕМОМ диапазоне (паритет с recipe_slot_writable в bf_proto.c). */
+  private isWritableSlot(slot: number): boolean {
+    return slot >= SimDevice.BUILTIN_SLOT_COUNT && slot < this.slots.length;
+  }
+
+  /** Первый свободный записываемый слот, либо undefined (весь диапазон занят). Паритет с pick_recipe_slot(). */
+  private firstFreeWritableSlot(): number | undefined {
+    for (let i = SimDevice.BUILTIN_SLOT_COUNT; i < this.slots.length; i++) {
+      if (!this.slots[i]) return i;
+    }
+    return undefined;
+  }
+
+  // ----------------------------- pairing/MQTT (D5/D6) -----------------------
+  /** true — уже «сопряжено» (device_token задан). Паритет с bf_comms_paired(). */
+  isPaired(): boolean {
+    return this.deviceToken !== null;
+  }
+
+  /**
+   * POST /pair — паритет с h_pair (bf_comms.c): принимает токен ТОЛЬКО пока не
+   * сопряжено; формат — префикс "bfd_" + разумная минимальная длина (паритет с
+   * bf_proto_pair_token_valid, BF_PAIR_TOKEN_MIN_LEN=16). Уже сопряжённое — 409-
+   * образная ошибка (см. server.ts): разрыв только через unpair() (dev-утилита,
+   * паритет с bf_comms_unpair — на реальном железе доступно ТОЛЬКО локально с экрана).
+   */
+  pair(token: unknown): { ok: true } | { ok: false; reason: "BAD_TOKEN" | "ALREADY_PAIRED" } {
+    if (this.deviceToken !== null) return { ok: false, reason: "ALREADY_PAIRED" };
+    if (typeof token !== "string" || !token.startsWith("bfd_") || token.length < 16) {
+      return { ok: false, reason: "BAD_TOKEN" };
+    }
+    this.deviceToken = token;
+    this.addLog("info", "Устройство сопряжено (POST /pair)");
+    return { ok: true };
+  }
+
+  /** Dev-утилита: разорвать сопряжение (паритет с локальным bf_comms_unpair, нет сетевого эквивалента на реальном железе). */
+  unpair(): void {
+    this.deviceToken = null;
+  }
+
+  /**
+   * POST /mqtt {"uri":"mqtt(s)://..."|""} — паритет с h_mqtt_set (bf_comms.c):
+   * пусто = MQTT явно выключен (валидно), иначе схема ровно mqtt:// или mqtts://.
+   */
+  setMqttUri(uri: unknown): { ok: true } | { ok: false; reason: "BAD_URI" } {
+    if (typeof uri !== "string") return { ok: false, reason: "BAD_URI" };
+    if (uri !== "" && !uri.startsWith("mqtt://") && !uri.startsWith("mqtts://")) {
+      return { ok: false, reason: "BAD_URI" };
+    }
+    this.mqttUri = uri;
+    this.addLog("info", `mqtt_uri обновлён (sim): ${uri || "(выкл)"}`);
+    return { ok: true };
   }
 
   // ----------------------------- конфиг §6.3 --------------------------------
@@ -395,15 +476,35 @@ export class SimDevice {
   }
 
   // ----------------------------- приём рецепта -----------------------------
-  /** Записать рецепт в слот. Возвращает индекс слота или бросает при невалидности. */
-  putRecipe(raw: unknown, slot = 0): number {
+  /**
+   * Записать рецепт в слот. Возвращает индекс слота или бросает при невалидности.
+   * БЕЗ `slot` — автовыбор первого свободного ЗАПИСЫВАЕМОГО слота (паритет с
+   * pick_recipe_slot() прошивки: диапазон 6..25, НЕ 0 — слот 0 «встроенный»).
+   * С явным `slot` — тот же записываемый диапазон, лежащий вне него слот (в т.ч.
+   * 0..5, «встроенные») отклоняется — паритет с BF_PROTO_ERR_BAD_SLOT (D2).
+   */
+  putRecipe(raw: unknown, slot?: number): number {
     const recipe = DeviceRecipeSchema.parse(raw); // бросит ZodError при невалидности
-    if (slot < 0 || slot >= this.slots.length) {
-      throw new Error(`Слот вне диапазона 0..${this.slots.length - 1}`);
+    let target: number;
+    if (slot === undefined) {
+      const free = this.firstFreeWritableSlot();
+      if (free === undefined) {
+        throw new Error(
+          `Нет свободных слотов (${SimDevice.BUILTIN_SLOT_COUNT}..${this.slots.length - 1} заняты)`,
+        );
+      }
+      target = free;
+    } else {
+      if (!this.isWritableSlot(slot)) {
+        throw new Error(
+          `Слот ${slot} вне записываемого диапазона ${SimDevice.BUILTIN_SLOT_COUNT}..${this.slots.length - 1}`,
+        );
+      }
+      target = slot;
     }
-    this.slots[slot] = recipe;
-    this.addLog("info", `Рецепт «${recipe.name}» записан в слот ${slot}`);
-    return slot;
+    this.slots[target] = recipe;
+    this.addLog("info", `Рецепт «${recipe.name}» записан в слот ${target}`);
+    return target;
   }
 
   // ----------------------------- приём команды -----------------------------

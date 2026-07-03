@@ -22,6 +22,30 @@ export function StatusStrip({ telemetry }: Props) {
         <Row label="Кипение" value={telemetry ? `${telemetry.boilPct}%` : "—"} />
         <Row label="Насос" value={<Pill on={telemetry?.pumpOn ?? false} />} />
         <Row label="Нагрев промывки" value={<Pill on={telemetry?.spargeHeatOn ?? false} />} />
+        {/* v6/v9/v10 (пакет 4-B, P1): показываем ТОЛЬКО когда поле реально присутствует
+            в кадре — на приборах без 2-го насоса/клапана/охлаждения/HERMS-RIMS оно
+            undefined (не false), строку не рисуем, чтобы не мозолить нерелевантным «ВЫКЛ». */}
+        {telemetry?.pump2On !== undefined ? (
+          <Row label="Насос 2" value={<Pill on={telemetry.pump2On} />} />
+        ) : null}
+        {telemetry?.valveOn !== undefined ? (
+          <Row label="Клапан" value={<Pill on={telemetry.valveOn} />} />
+        ) : null}
+        {telemetry?.coolOn !== undefined ? (
+          <Row label="Охлаждение" value={<Pill on={telemetry.coolOn} />} />
+        ) : null}
+        {telemetry?.indirectActive !== undefined ? (
+          <Row
+            label="Косвенный нагрев (HERMS/RIMS)"
+            value={
+              telemetry.indirectActive && telemetry.hxTempC !== undefined ? (
+                <span className="tabular-nums">{telemetry.hxTempC.toFixed(1)}°C</span>
+              ) : (
+                <Pill on={telemetry.indirectActive} />
+              )
+            }
+          />
+        ) : null}
         <Row
           label="Нагрев разрешён"
           value={

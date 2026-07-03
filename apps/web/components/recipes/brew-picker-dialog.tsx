@@ -3,12 +3,13 @@
 // =============================================================================
 //  components/recipes/brew-picker-dialog.tsx
 //  Единый вход «Сварить»: два равноправных режима — «Сварить самому»
-//  (виртуальный гид варочного дня) и «Сварить на автоматике» (BrewForge). Клик
-//  реально ЗАПУСКАЕТ варку (не оставляет запись в 'planned' без сигнала) —
-//  партия сразу переходит в 'brewing' (виртуальная ветка) либо получает этот
-//  статус по факту ack устройства (автоматика). Один диалог для публичной
-//  витрины, дашборда и редактора рецептов — принимает только recipeId, без
-//  привязки к зоне (маршрут после успеха всегда — /app/brew-batches/:id).
+//  (виртуальный гид варочного дня) и «Сварить на автоматике» (BrewForge).
+//  Виртуальная ветка создаёт партию в статусе 'planned' и ведёт в акт
+//  «Подготовка» — сам варочный день запускается уже там; device-ветка получает
+//  статус 'brewing' по факту ack устройства (без изменений). Один диалог для
+//  публичной витрины, дашборда и редактора рецептов — принимает только
+//  recipeId, без привязки к зоне (маршрут после успеха всегда —
+//  /app/brew-batches/:id).
 //
 //  Экран выбора режима показывается ТОЛЬКО если у пользователя есть хотя бы
 //  одно привязанное устройство (лениво проверяется при открытии) — иначе сразу
@@ -93,8 +94,21 @@ export function BrewPickerDialog({ open, onOpenChange, recipeId, slug, recipeTit
     try {
       const result = await startBrewFromRecipeAction({ recipeId, consumeIngredients });
       if (result.ok) {
+        // Фидбэк списания довозим query-параметрами — страница партии покажет
+        // тост (см. brew-stock-notice.tsx). Параметры добавляем, только если
+        // списание вообще запрашивалось (иначе про склад на странице ни слова).
+        const params = new URLSearchParams();
+        if (result.consume) {
+          if (result.consume.ok) {
+            params.set("stock", "consumed");
+            params.set("items", String(result.consume.itemCount));
+          } else {
+            params.set("stock", result.consume.code);
+          }
+        }
+        const query = params.toString();
         // Может пересекать зоны (публичная витрина → app) — полная навигация уместна.
-        window.location.assign(`/app/brew-batches/${result.brewBatchId}`);
+        window.location.assign(`/app/brew-batches/${result.brewBatchId}${query ? `?${query}` : ""}`);
         return;
       }
       if (result.code === "AUTH" && slug) {
@@ -157,7 +171,7 @@ export function BrewPickerDialog({ open, onOpenChange, recipeId, slug, recipeTit
             <p className="mt-1 text-sm leading-6 text-zinc-600">
               {screen === "gate" ? "Проверяем ваши устройства…" : null}
               {screen === "mode" ? "Выберите, как варить." : null}
-              {screen === "virtual" ? "Гид варочного дня: паузы и таймеры на экране." : null}
+              {screen === "virtual" ? "Партия появится в подготовке — старт варочного дня там." : null}
               {screen === "device-pick" ? "Выберите устройство BrewForge." : null}
               {screen === "device-confirm" ? "Подтвердите запуск нагрева." : null}
             </p>
@@ -221,12 +235,7 @@ export function BrewPickerDialog({ open, onOpenChange, recipeId, slug, recipeTit
               onChange={(event) => setConsumeIngredients(event.target.checked)}
               className="mt-1"
             />
-            <span>
-              <span className="block text-sm font-semibold text-zinc-900">Списать ингредиенты со склада</span>
-              <span className="text-xs leading-5 text-zinc-500">
-                Списание будет выполнено только после нажатия кнопки ниже.
-              </span>
-            </span>
+            <span className="block text-sm font-semibold text-zinc-900">Списать ингредиенты со склада</span>
           </label>
           {error ? (
             <div className="rounded-lg border border-rose-200 bg-rose-50 px-3 py-3 text-sm text-rose-900" role="alert">
@@ -293,7 +302,7 @@ export function BrewPickerDialog({ open, onOpenChange, recipeId, slug, recipeTit
             {hasDeviceChoice ? "Назад" : "Отмена"}
           </Button>
           <Button variant="primary" onClick={() => void handleConfirmVirtual()} disabled={submitting}>
-            {submitting ? "Готовим…" : "Сварить"}
+            {submitting ? "Создаём…" : "Создать варку"}
           </Button>
         </DialogFooter>
       ) : null}

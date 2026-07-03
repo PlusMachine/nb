@@ -16,14 +16,13 @@ const buttonVariants = cva(
         danger: "bg-red-600 text-white hover:bg-red-700 focus-visible:ring-red-500/40",
         dangerOutline: "border border-red-200 bg-white text-red-700 hover:bg-red-50"
       },
-      // Размер задаёт паддинги/тач-таргет. Без размера по умолчанию — существующие
-      // кнопки (без size) остаются как были; тач-цель (≥44px) — где size задан явно.
+      // Размер задаёт паддинги/тач-таргет.
       size: {
         sm: "min-h-[36px] px-3 py-1.5 text-xs",
         md: "min-h-[44px] px-4 py-2 text-sm"
       }
     },
-    defaultVariants: { variant: "default" }
+    defaultVariants: { variant: "default", size: "md" }
   }
 );
 

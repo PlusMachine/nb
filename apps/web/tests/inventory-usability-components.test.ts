@@ -49,7 +49,7 @@ import {
   isInventoryQuantityDraftDirty,
   isInventoryQuantityValueValid
 } from "../components/inventory/inventory-quantity-editor";
-import { InventorySearchInput, buildInventorySuggestionParams } from "../components/inventory/inventory-search-input";
+import { InventorySearchInput } from "../components/inventory/inventory-search-input";
 import { InventoryToolbar, shouldShowInventorySearchInput } from "../components/inventory/inventory-toolbar";
 import type { InventoryListItemDto } from "../features/inventory/contracts";
 import { getInventoryUnitInputStep, getInventoryUnitQuantityPrecision } from "../features/inventory/units";
@@ -163,25 +163,27 @@ describe("inventory usability components", () => {
     expect(consumableHtml).toContain("Газы");
   });
 
+  const toolbarSummaryFixture = () => createInventorySummary({
+    totalItems: 10,
+    inStockItems: 8,
+    emptyItems: 2,
+    byCategory: { fermentable: 3, hop: 4, yeast: 2, consumable: 1, water_treatment: 0 },
+    inStockByCategory: { fermentable: 2, hop: 1, yeast: 2, consumable: 1, water_treatment: 0 },
+    byPrimaryGroup: { fermentable: 3, hop: 4, yeast: 2, water_treatment: 0, consumable_supply: 1, consumable_additive: 0 },
+    inStockByPrimaryGroup: { fermentable: 2, hop: 1, yeast: 2, water_treatment: 0, consumable_supply: 1, consumable_additive: 0 },
+    byFermentableSubtype: { malt: 2, fermentable: 1 },
+    inStockByFermentableSubtype: { malt: 1, fermentable: 1 }
+  });
+
   it("renders toolbar controls without submit-era archive UX", () => {
     const html = renderToStaticMarkup(React.createElement(InventoryToolbar, {
-      search: "citra",
+      search: "",
       category: "hop",
       subtype: null,
       group: null,
       showFinished: true,
       sort: "name",
-      summary: createInventorySummary({
-        totalItems: 10,
-        inStockItems: 8,
-        emptyItems: 2,
-        byCategory: { fermentable: 3, hop: 4, yeast: 2, consumable: 1, water_treatment: 0 },
-        inStockByCategory: { fermentable: 2, hop: 1, yeast: 2, consumable: 1, water_treatment: 0 },
-        byPrimaryGroup: { fermentable: 3, hop: 4, yeast: 2, water_treatment: 0, consumable_supply: 1, consumable_additive: 0 },
-        inStockByPrimaryGroup: { fermentable: 2, hop: 1, yeast: 2, water_treatment: 0, consumable_supply: 1, consumable_additive: 0 },
-        byFermentableSubtype: { malt: 2, fermentable: 1 },
-        inStockByFermentableSubtype: { malt: 1, fermentable: 1 }
-      })
+      summary: toolbarSummaryFixture()
     }));
 
     expect(html).toContain("Фильтры по запасам");
@@ -193,6 +195,23 @@ describe("inventory usability components", () => {
     expect(html).toMatch(/Хмель<\/span><span[^>]*>4<\/span>/);
     expect(html).not.toContain("Применить");
     expect(html).not.toContain("Остаток");
+  });
+
+  it("hides category counts while a text search is active", () => {
+    const withSearch = renderToStaticMarkup(React.createElement(InventoryToolbar, {
+      search: "citra",
+      category: "hop",
+      subtype: null,
+      group: null,
+      showFinished: true,
+      sort: "name",
+      summary: toolbarSummaryFixture()
+    }));
+
+    // Счётчики по категориям не учитывают текстовый запрос → при активном поиске
+    // их прячем, чтобы не расходиться с числами в заголовках групп (пункт 8 аудита).
+    expect(withSearch).toContain("Хмель");
+    expect(withSearch).not.toMatch(/Хмель<\/span><span[^>]*>4<\/span>/);
   });
 
   it("uses in-stock counts on category tiles until empty items are revealed", () => {
@@ -295,22 +314,12 @@ describe("inventory usability components", () => {
 
     expect(resolveInventoryShowFinished(true, { emptyItems: 0 })).toBe(false);
     expect(resolveInventoryShowFinished(true, { emptyItems: 2 })).toBe(true);
-
-    expect(buildInventorySuggestionParams({
-      q: "malt",
-      category: "fermentable",
-      showFinished: true,
-      limit: 8
-    }).toString()).toBe("q=malt&limit=8&category=fermentable&finished=true");
   });
 
   it("renders standalone search input without legacy category/archive controls", () => {
     const html = renderToStaticMarkup(React.createElement(InventorySearchInput, {
       value: "malt",
-      category: "all",
-      showFinished: false,
-      onValueChange: () => undefined,
-      onSuggestionSelect: () => undefined
+      onValueChange: () => undefined
     }));
 
     expect(html).toContain("Поиск ингредиентов...");

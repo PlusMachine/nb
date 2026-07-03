@@ -800,7 +800,7 @@ export const createEmptyIngredient = (
     measurementDimension: unitProfile.measurementDimension,
     amountEnteredQuantity: "",
     amountEnteredUnit: unitProfile.defaultUnit,
-    stage: category === "yeast" ? "fermentation" : "other",
+    stage: category === "yeast" ? "fermentation" : category === "water_treatment" ? "mash" : "other",
     timeOffset: "",
     stepMeta: {},
     inventoryIntentMode: "use_stock",

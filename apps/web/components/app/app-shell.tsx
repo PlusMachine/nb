@@ -260,7 +260,7 @@ export function AppShell({ children, user }: AppShellProps) {
       </main>
 
       <nav
-        className="fixed inset-x-0 bottom-0 z-40 flex border-t border-zinc-200 bg-white/95 backdrop-blur lg:hidden"
+        className="fixed inset-x-0 bottom-0 z-40 flex h-14 border-t border-zinc-200 bg-white/95 backdrop-blur lg:hidden"
         aria-label="Быстрая навигация"
       >
         {primaryNavItems.map((item) => {
@@ -271,7 +271,7 @@ export function AppShell({ children, user }: AppShellProps) {
               key={item.href}
               href={item.href}
               aria-current={active ? "page" : undefined}
-              className={`flex flex-1 flex-col items-center gap-0.5 py-2 text-[11px] font-medium transition-colors ${
+              className={`flex flex-1 flex-col items-center justify-center gap-0.5 text-[11px] font-medium transition-colors ${
                 active ? "text-zinc-950" : "text-zinc-500"
               }`}
             >
@@ -283,7 +283,7 @@ export function AppShell({ children, user }: AppShellProps) {
         <button
           type="button"
           onClick={() => setDrawerOpen(true)}
-          className="flex flex-1 flex-col items-center gap-0.5 py-2 text-[11px] font-medium text-zinc-500"
+          className="flex flex-1 flex-col items-center justify-center gap-0.5 text-[11px] font-medium text-zinc-500"
         >
           <Menu className="h-5 w-5" />
           Ещё

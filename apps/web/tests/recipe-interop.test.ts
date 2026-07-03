@@ -415,4 +415,44 @@ describe("recipe interop and brew plan foundation", () => {
       stage: "fermentation"
     });
   });
+
+  it("computes waterSchedule from the recipe's water engine when water setup is enabled", () => {
+    const withWater: RecipeDetailDto = {
+      ...sampleRecipe,
+      waterPlanMeta: {
+        setupEnabled: true,
+        engine: "balanced_default",
+        phModel: "hybrid_mash_ph_v1",
+        sourceProfileMode: "manual",
+        sourceProfile: { ca: 5, mg: 2, na: 5, cl: 10, so4: 10, hco3: 20, ph: null },
+        targetProfileMode: "manual",
+        targetProfile: { ca: 100, mg: 10, na: 10, cl: 60, so4: 150, hco3: 40, ph: null },
+        showWaterAdditivesInIngredients: false,
+        allowedSalts: [],
+        allowedAcids: [],
+        manualSaltAdditions: [],
+        targetMashPh: 5.4,
+        spargeAcidificationEnabled: false,
+        selectedAcid: "lactic_acid"
+      }
+    };
+
+    const snapshot = buildBrewPlanSnapshot(withWater);
+    expect(snapshot.waterSchedule).not.toBeNull();
+    expect(snapshot.waterSchedule?.targetMashPh).toBe(5.4);
+    expect(snapshot.waterSchedule?.mashSalts.length).toBeGreaterThan(0);
+    for (const salt of snapshot.waterSchedule?.mashSalts ?? []) {
+      expect(salt.grams).toBeGreaterThan(0);
+      expect(typeof salt.label).toBe("string");
+    }
+    // Целевой профиль требует больше сульфата/хлорида, чем в исходной воде — движок
+    // должен насчитать кислоту, чтобы удержать pH затора у цели 5.4.
+    expect(snapshot.waterSchedule?.mashAcid).not.toBeNull();
+    expect(snapshot.waterSchedule?.mashAcid?.ml).toBeGreaterThan(0);
+  });
+
+  it("leaves waterSchedule null when the recipe has no water setup enabled", () => {
+    const snapshot = buildBrewPlanSnapshot(sampleRecipe);
+    expect(snapshot.waterSchedule).toBeNull();
+  });
 });

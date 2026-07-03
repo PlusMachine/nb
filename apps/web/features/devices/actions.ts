@@ -21,6 +21,7 @@ import {
   saveDeviceProfile,
   type DeviceProfileDto
 } from "./profiles";
+import { syncDeviceLog, type LogSyncSummary } from "./log-sync";
 
 /** Сериализованный профиль для клиента (даты — ISO-строки). */
 export type DeviceProfileView = {
@@ -77,5 +78,26 @@ export async function applyProfileAction(input: {
     userId: user.id,
     profileId: input.profileId,
     deviceId: input.deviceId
+  });
+}
+
+/**
+ * Синхронизировать офлайн-журнал варки с устройства (P3, пакет 4-B): забирает
+ * .jsonl-файлы по LAN (GET /log[?name=]) и заливает НОВЫЕ строки в
+ * brew_telemetry/brew_log_events. LAN-only — бросит LOG_SYNC_UNSUPPORTED для
+ * облачных/демо-устройств (см. log-sync.ts). Ручной триггер (кнопка на странице
+ * устройства); автотриггер по «device online» не реализован в этом пакете —
+ * см. отчёт (нет серверного события «устройство появилось в сети» на стороне
+ * apps/web, только LAN-поллинг конкретной открытой вкладки).
+ */
+export async function syncDeviceLogAction(input: {
+  deviceId: string;
+  brewBatchId?: string | null;
+}): Promise<LogSyncSummary> {
+  const user = await requireUser();
+  return syncDeviceLog({
+    userId: user.id,
+    deviceId: input.deviceId,
+    brewBatchId: input.brewBatchId ?? null
   });
 }

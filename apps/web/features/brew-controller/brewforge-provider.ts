@@ -4,24 +4,30 @@
 //  Достаёт строку устройства из @nb/db, выбирает LAN-транспорт (device.localUrl
 //  + per-device токен), переводит снимок плана в нативный рецепт и пушит его,
 //  читает телеметрию, отправляет команды (с аудитом в device_commands) и ведёт
-//  хуки сессии. Открытый токен НЕ храним и НЕ логируем (в БД только token_hash).
+//  хуки сессии. Открытый (plaintext) токен НЕ логируем; в БД — tokenHash (сверка)
+//  + tokenEncrypted (обратимо, нужен для LAN Bearer — см. resolveDeviceToken).
 // =============================================================================
 import { and, brewBatches, brewDevices, db, deviceCommands, eq } from "@nb/db";
 import {
   CommandSchema,
   DeviceConfigPatchSchema,
   type Command,
+  type DeviceLogFileMeta,
 } from "@nb/brewforge-protocol";
+
+import { decryptDeviceToken } from "@/lib/device-token-crypto";
 
 import type {
   BrewControllerProvider,
   BrewforgeProvider,
   CloseSessionFn,
+  ListLogsFn,
   ListSlotsFn,
   OpenSessionFn,
   PushRecipeFn,
   PushRecipeToDeviceFn,
   ReadConfigFn,
+  ReadLogFn,
   ReadSlotSnapshotFn,
   ReadTelemetryFn,
   SendCommandFn,
@@ -93,12 +99,25 @@ async function loadBatchDeviceId(userId: string, brewBatchId: string): Promise<s
 }
 
 /**
- * Открытый per-device токен для LAN-аутентификации. В БД лежит ТОЛЬКО хэш
- * (token_hash) — открытый токен сюда не пишем и не логируем. Берём из защищённого
- * источника (env-секрет на устройство, затем общий dev-фолбэк).
- * TODO: подключить реальное хранилище секретов вместо env.
+ * Открытый per-device токен для LAN-аутентификации (Authorization: Bearer к
+ * устройству — портал сам предъявляет тот же токен, что выдал claimDevice).
+ *
+ * Пакет 4-B (P4, закрывает TODO/находку аудита comms-portal.md): источник —
+ * `brewDevices.tokenEncrypted` (обратимое AES-256-GCM, lib/device-token-crypto.ts;
+ * записывается claimDevice при пейринге). tokenHash в БД для ЭТОЙ цели непригоден —
+ * это односторонний хэш, из него plaintext не восстановить. Фолбэк на env
+ * (BREWFORGE_DEVICE_TOKEN[_<id>]) остаётся ради обратной совместимости:
+ *  - устройства, привязанные ДО появления шифрования (tokenEncrypted ещё NULL);
+ *  - dev-стенды без настроенного BREWFORGE_DEVICE_TOKEN_ENC_KEY (шифрование тогда
+ *    не срабатывает при клейме — encryptDeviceToken возвращает null, см. service.ts).
  */
 function resolveDeviceToken(device: DeviceRow): string | undefined {
+  if (device.tokenEncrypted) {
+    const decrypted = decryptDeviceToken(device.tokenEncrypted);
+    if (decrypted) return decrypted;
+    // Битое значение/ключ шифрования сменился — падаем на env-фолбэк ниже, а не
+    // бросаем: устройство просто временно недостижимо по LAN, не 500 на ровном месте.
+  }
   const perDevice = process.env[`BREWFORGE_DEVICE_TOKEN_${device.id}`];
   if (perDevice && perDevice.length > 0) return perDevice;
   const shared = process.env.BREWFORGE_DEVICE_TOKEN;
@@ -272,6 +291,25 @@ const readSlotSnapshot: ReadSlotSnapshotFn = async ({ userId, deviceId, slot }) 
   return transportForDevice(device).readSlotSnapshot(slot);
 };
 
+// listLogs/readLog — P3 (офлайн-журнал варки, bf_log.c). LAN-only: cloudTransport/
+// simTransport не реализуют эти методы DeviceTransport (см. transport.ts) — на
+// облачном/демо-устройстве бросаем понятную доменную ошибку, а не молча пустой список
+// (вызывающий, features/devices/log-sync.ts, различает «нечего синхронизировать» от
+// «сам механизм недоступен для этого устройства»).
+const listLogs: ListLogsFn = async ({ userId, deviceId }) => {
+  const device = await loadDevice(userId, deviceId);
+  const transport = transportForDevice(device);
+  if (!transport.listLogs) throw new Error("LOG_SYNC_UNSUPPORTED");
+  return transport.listLogs();
+};
+
+const readLog: ReadLogFn = async ({ userId, deviceId, name }) => {
+  const device = await loadDevice(userId, deviceId);
+  const transport = transportForDevice(device);
+  if (!transport.readLog) throw new Error("LOG_SYNC_UNSUPPORTED");
+  return transport.readLog(name);
+};
+
 // openSession — привязываем партию к устройству (идемпотентно): pushRecipe затем
 // находит устройство через brew_batches.deviceId.
 const openSession: OpenSessionFn = async ({ userId, deviceId, brewBatchId }) => {
@@ -311,6 +349,8 @@ export const brewforgeProvider: BrewforgeProvider = {
   listSlots,
   readSlotSnapshot,
   pushRecipeToDevice,
+  listLogs,
+  readLog,
 };
 
 /**

@@ -39,6 +39,7 @@ export function StylePicker({
       </label>
       <Popover
         align="start"
+        contentClassName="max-w-md"
         onOpenChange={(open) => {
           if (open) {
             requestAnimationFrame(() => searchInputRef.current?.focus({ preventScroll: true }));

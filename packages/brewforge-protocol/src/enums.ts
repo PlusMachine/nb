@@ -34,6 +34,15 @@ export const STAGE_NAMES = [
   "PAUSED",            // 14 BF_STAGE_PAUSED
   "MANUAL",            // 15 BF_STAGE_MANUAL
   "FAULT",             // 16 BF_STAGE_FAULT
+  // --- Пакет 4-B (сверка контракта): найдены в bf_types.h, отсутствовали здесь —
+  // stageName из телеметрии в этих стадиях падал бы на StageSchema.parse (Zod
+  // enum), т.е. ВСЯ телеметрия дистилляции/ферментации не проходила бы валидацию
+  // (не «лишнее поле молча режется», а полный отказ кадра — хуже, чем P1-находки). ---
+  "DISTILL_PREHEAT",   // 17 BF_STAGE_DISTILL_PREHEAT (Фаза 4: дистилляция)
+  "DISTILL_HEADS",     // 18 BF_STAGE_DISTILL_HEADS
+  "DISTILL_HEARTS",    // 19 BF_STAGE_DISTILL_HEARTS
+  "DISTILL_TAILS",     // 20 BF_STAGE_DISTILL_TAILS
+  "FERMENT",           // 21 BF_STAGE_FERMENT (Фаза 4.2: ферментация)
 ] as const;
 
 export const StageSchema = z.enum(STAGE_NAMES);
@@ -129,6 +138,11 @@ export const HEAT_MODE_NAMES = [
   "PID",        // 1 BF_HEAT_PID
   "BOIL",       // 2 BF_HEAT_BOIL
   "MANUAL_PWM", // 3 BF_HEAT_MANUAL_PWM
+  // config v10 (HERMS/RIMS, пакет 4-B): process подменяет ими BF_HEAT_PID ТОЛЬКО в
+  // стадиях затирания, когда bf_config_t.heat_method != Off. heatMode в телеметрии —
+  // z.number() (не enum), падения парсинга не было; добавлены для heatModeName().
+  "HERMS",      // 4 BF_HEAT_HERMS
+  "RIMS",       // 5 BF_HEAT_RIMS
 ] as const;
 
 export const HeatModeSchema = z.enum(HEAT_MODE_NAMES);
@@ -147,29 +161,44 @@ export function heatModeName(value: number): HeatMode {
 // ----------------------------- Тип команды (bf_cmd_type_t) -----------------
 // Числовое значение включает BF_CMD_NONE=0 (для кросс-проверки прошивки);
 // CommandTypeSchema исключает NONE — оно не передаётся по проводу.
+// ⚠ Пакет 4-B: значения ниже сверены заново с components/common/include/bf_types.h —
+// BF_CMD_START_DELAYED вставлен в enum СРАЗУ ПОСЛЕ START_BREW (=2), что сдвигает
+// ВСЕ последующие значения на +1 относительно прежней (устаревшей) таблицы здесь.
+// На САМ провод это не влияет (`type` уходит СТРОКОЙ, cmd_lookup в bf_proto.c
+// сравнивает по имени, не по числу) — эти числа чисто справочные для кросс-сверки
+// с прошивкой человеком/тестом. Не все значения enum — сетевые: локальные-только
+// команды (SET_BINDING/RESET_BINDINGS/SET_SENSOR_STAGE/SET_INPUT_PIN/SIM_*/
+// START_DISTILL/START_FERMENT/SET_HX_SENSOR/SET_APP_MODE — bf_types.h §"config-model"
+// и §"Фаза 4") сюда намеренно не включены — см. PHASE2-4_PLAN.md §2.4 «Локальные-
+// только команды», их портал никогда не отправляет.
 export const CMD_TYPE_NUM = {
   NONE:            0,  // BF_CMD_NONE
-  START_BREW:      1,  // BF_CMD_START_BREW       (arg.i = слот рецепта 0..7)
-  PAUSE:           2,  // BF_CMD_PAUSE
-  RESUME:          3,  // BF_CMD_RESUME
-  STOP:            4,  // BF_CMD_STOP
-  ACK_PROMPT:      5,  // BF_CMD_ACK_PROMPT       (arg.ans)
-  SKIP_STAGE:      6,  // BF_CMD_SKIP_STAGE
-  SELECT_RECIPE:   7,  // BF_CMD_SELECT_RECIPE    (arg.i)
-  ENTER_MANUAL:    8,  // BF_CMD_ENTER_MANUAL
-  EXIT_MANUAL:     9,  // BF_CMD_EXIT_MANUAL
-  MANUAL_SETPOINT: 10, // BF_CMD_MANUAL_SETPOINT  (arg.f °C)
-  MANUAL_PWM:      11, // BF_CMD_MANUAL_PWM       (arg.i %)
-  MANUAL_HEAT:     12, // BF_CMD_MANUAL_HEAT      (arg.b)
-  MANUAL_PUMP:     13, // BF_CMD_MANUAL_PUMP      (arg.b)
-  START_AUTOTUNE:  14, // BF_CMD_START_AUTOTUNE
-  ESTOP:           15, // BF_CMD_ESTOP
-  CLEAR_FAULT:     16, // BF_CMD_CLEAR_FAULT
-  SAVE_SETTINGS:   17, // BF_CMD_SAVE_SETTINGS
+  START_BREW:      1,  // BF_CMD_START_BREW       (arg.i = слот рецепта 0..25)
+  START_DELAYED:   2,  // BF_CMD_START_DELAYED    (arg.i = задержка старта, минут)
+  PAUSE:           3,  // BF_CMD_PAUSE
+  RESUME:          4,  // BF_CMD_RESUME
+  STOP:            5,  // BF_CMD_STOP
+  ACK_PROMPT:      6,  // BF_CMD_ACK_PROMPT       (arg.ans)
+  SKIP_STAGE:      7,  // BF_CMD_SKIP_STAGE
+  SELECT_RECIPE:   8,  // BF_CMD_SELECT_RECIPE    (arg.i)
+  ENTER_MANUAL:    9,  // BF_CMD_ENTER_MANUAL
+  EXIT_MANUAL:     10, // BF_CMD_EXIT_MANUAL
+  MANUAL_SETPOINT: 11, // BF_CMD_MANUAL_SETPOINT  (arg.f °C)
+  MANUAL_PWM:      12, // BF_CMD_MANUAL_PWM       (arg.i %)
+  MANUAL_HEAT:     13, // BF_CMD_MANUAL_HEAT      (arg.b)
+  MANUAL_PUMP:     14, // BF_CMD_MANUAL_PUMP      (arg.b)
+  START_AUTOTUNE:  15, // BF_CMD_START_AUTOTUNE
+  ESTOP:           16, // BF_CMD_ESTOP
+  CLEAR_FAULT:     17, // BF_CMD_CLEAR_FAULT
+  SAVE_SETTINGS:   18, // BF_CMD_SAVE_SETTINGS
+  // 19..32 — локальные-только команды (не в этом списке, см. комментарий выше).
+  ACK_HOP:         33,  // BF_CMD_ACK_HOP (arg.i = индекс хмеля) — добавлена в CMD_MAP
+                         // пакетом 4-A прошивки; единственная сетевая из «новых» команд.
 } as const;
 
 export const COMMAND_TYPE_NAMES = [
   "START_BREW",
+  "START_DELAYED",
   "SELECT_RECIPE",
   "PAUSE",
   "RESUME",
@@ -186,6 +215,7 @@ export const COMMAND_TYPE_NAMES = [
   "ESTOP",
   "CLEAR_FAULT",
   "SAVE_SETTINGS",
+  "ACK_HOP",
 ] as const;
 
 export const CommandTypeSchema = z.enum(COMMAND_TYPE_NAMES);

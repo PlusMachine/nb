@@ -7,11 +7,19 @@ import type { SystemCurrency, SystemCurrencyRateMap } from "@/features/system/cu
 
 import { InventoryListItem } from "./inventory-list-item";
 
+export type InventorySortEmphasis = "price" | "best_before" | null;
+
 type Props = {
   items: InventoryListItemDto[];
   preferredCurrency: SystemCurrency;
   currencyRates: SystemCurrencyRateMap;
   initialQuickStartDataByContext?: IngredientPickerQuickStartResultByContext | null;
+  /**
+   * Плоский список без категорийных заголовков — для сквозных сортировок
+   * (цена/срок), где группировка по категориям маскирует глобальный порядок.
+   */
+  layout?: "grouped" | "flat";
+  sortEmphasis?: InventorySortEmphasis;
 };
 
 const groupIcons = {
@@ -45,8 +53,29 @@ export function GroupedInventoryList({
   items,
   preferredCurrency,
   currencyRates,
-  initialQuickStartDataByContext = null
+  initialQuickStartDataByContext = null,
+  layout = "grouped",
+  sortEmphasis = null
 }: Props) {
+  if (layout === "flat") {
+    return (
+      <section aria-label="Список ингредиентов">
+        <ul className="space-y-2">
+          {items.map((item) => (
+            <InventoryListItem
+              key={item.id}
+              item={item}
+              preferredCurrency={preferredCurrency}
+              currencyRates={currencyRates}
+              initialQuickStartDataByContext={initialQuickStartDataByContext}
+              sortEmphasis={sortEmphasis}
+            />
+          ))}
+        </ul>
+      </section>
+    );
+  }
+
   const groups = groupInventoryItems(items);
 
   return (

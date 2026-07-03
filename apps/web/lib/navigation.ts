@@ -8,6 +8,7 @@ import {
   FlaskConical,
   LayoutGrid,
   Library,
+  ShoppingCart,
   Sparkles,
   Wrench
 } from "lucide-react";
@@ -33,7 +34,8 @@ export const appNavGroups: AppNavItem[][] = [
     { href: "/app", label: "Обзор", icon: LayoutGrid, exact: true, primary: true },
     { href: "/app/recipes", label: "Рецепты", icon: FlaskConical, primary: true, match: ["/app/saved", "/recipes"] },
     { href: "/app/ingredients", label: "Склад", icon: Boxes, primary: true },
-    { href: "/app/brew-batches", label: "Варки", icon: Beer, primary: true }
+    { href: "/app/brew-batches", label: "Варки", icon: Beer, primary: true },
+    { href: "/app/shopping", label: "Список покупок", icon: ShoppingCart }
   ],
   [
     { href: "/app/equipment", label: "Оборудование", icon: Wrench },

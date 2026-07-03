@@ -18,6 +18,8 @@ import {
   type TelemetryHistoryPoint
 } from "@/features/brew-batches/contracts";
 import { BREWFORGE_DEMO_PROVIDER_ID } from "@/features/brew-controller/contracts";
+import { pairDeviceOverLan } from "@/features/brew-controller/transport";
+import { encryptDeviceToken } from "@/lib/device-token-crypto";
 
 import {
   claimDeviceSchema,
@@ -26,6 +28,7 @@ import {
   type CreatePairingCodeInput,
   type DeviceDto,
   type PairingCodeResult,
+  type PairingDeliveryStatus,
   type UpdateDeviceStatusInput
 } from "./contracts";
 
@@ -49,10 +52,16 @@ const isEnvEnabled = (value: string | undefined): boolean =>
 
 const defaultDeviceName = (hardwareId: string): string => `BrewForge ${hardwareId}`;
 
-/** Сгенерировать per-device bearer-токен и его хэш для хранения. */
-const generateDeviceToken = (): { rawToken: string; tokenHash: string } => {
+/**
+ * Сгенерировать per-device bearer-токен + его хэш (для сверки, findDeviceByToken)
+ * и ОБРАТИМО зашифрованную форму (для повторного использования порталом как
+ * Bearer к устройству по LAN — см. lib/device-token-crypto.ts). tokenEncrypted
+ * может быть null, если BREWFORGE_DEVICE_TOKEN_ENC_KEY не настроен — тогда LAN-
+ * bearer резолвится из env-фолбэка (resolveDeviceToken в brewforge-provider.ts).
+ */
+const generateDeviceToken = (): { rawToken: string; tokenHash: string; tokenEncrypted: string | null } => {
   const rawToken = `${DEVICE_TOKEN_PREFIX}${createRandomToken(32)}`;
-  return { rawToken, tokenHash: hashToken(rawToken) };
+  return { rawToken, tokenHash: hashToken(rawToken), tokenEncrypted: encryptDeviceToken(rawToken) };
 };
 
 /** Короткий человекочитаемый claim-код (показывается на LCD/в AP устройства). */
@@ -226,7 +235,11 @@ export const createPairingCode = async (
  *    предикат владения в WHERE (setWhere userId), поэтому конкурентные клеймы не
  *    могут оба «выиграть».
  *
- * Возвращает DTO + plaintext-токен ОДИН раз. В БД пишется только tokenHash.
+ * Возвращает DTO + plaintext-токен ОДИН раз. В БД пишется tokenHash (сверка) +
+ * tokenEncrypted (обратимо, для LAN bearer-auth — см. lib/device-token-crypto.ts),
+ * НИКОГДА plaintext. При наличии localUrl СРАЗУ же best-effort пытается доставить
+ * токен устройству по LAN (POST /pair, P4) — итог в `pairing` результата; неудача
+ * доставки НЕ откатывает сам клейм (см. deliverPairingToken).
  */
 export const claimDevice = async (input: ClaimDeviceInput): Promise<ClaimDeviceResult> => {
   const { userId } = input;
@@ -242,7 +255,7 @@ export const claimDevice = async (input: ClaimDeviceInput): Promise<ClaimDeviceR
     throw new Error("CLAIM_CODE_REQUIRED");
   }
 
-  return db.transaction(async (tx) => {
+  const claimed = await db.transaction(async (tx) => {
     const now = new Date();
     let hardwareId = parsed.hardwareId ?? null;
 
@@ -303,7 +316,7 @@ export const claimDevice = async (input: ClaimDeviceInput): Promise<ClaimDeviceR
       throw new Error("DEVICE_OWNED_BY_OTHER_USER");
     }
 
-    const { rawToken, tokenHash } = generateDeviceToken();
+    const { rawToken, tokenHash, tokenEncrypted } = generateDeviceToken();
     const name = parsed.name?.trim() || existing?.name || defaultDeviceName(hardwareId);
     const localUrl = parsed.localUrl ?? existing?.localUrl ?? null;
 
@@ -312,10 +325,10 @@ export const claimDevice = async (input: ClaimDeviceInput): Promise<ClaimDeviceR
     // Конкурентные клеймы нового устройства сериализует уникальный индекс hardwareId.
     const [device] = await tx
       .insert(brewDevices)
-      .values({ userId, name, hardwareId, tokenHash, localUrl })
+      .values({ userId, name, hardwareId, tokenHash, tokenEncrypted, localUrl })
       .onConflictDoUpdate({
         target: brewDevices.hardwareId,
-        set: { userId, name, tokenHash, localUrl, updatedAt: now },
+        set: { userId, name, tokenHash, tokenEncrypted, localUrl, updatedAt: now },
         setWhere: eq(brewDevices.userId, userId)
       })
       .returning();
@@ -327,7 +340,39 @@ export const claimDevice = async (input: ClaimDeviceInput): Promise<ClaimDeviceR
     // ВНИМАНИЕ: rawToken отдаётся ровно здесь и нигде не логируется/не сохраняется.
     return { device: mapDeviceDto(device), token: rawToken };
   });
+
+  // --- P4: доставка токена НА устройство по LAN (POST {localUrl}/pair). -------
+  // СОЗНАТЕЛЬНО ВНЕ транзакции БД выше: сетевой запрос к устройству не должен
+  // держать открытой транзакцию/локи Postgres. Устройство+токен УЖЕ созданы
+  // независимо от исхода доставки — неудача здесь НЕ откатывает claimDevice
+  // (токен всё равно возвращён пользователю один раз и может быть введён вручную
+  // через /provision или повторный /pair, когда устройство станет достижимо).
+  const pairing = await deliverPairingToken(claimed.device.localUrl, claimed.token);
+  return { ...claimed, pairing };
 };
+
+/**
+ * Доставить только что выданный pairing-токен устройству по его LAN-адресу
+ * (best-effort; ошибки НЕ бросаются наружу — см. вызывающий claimDevice).
+ *  - нет localUrl (облачный/ещё не в сети клейм) → NO_LOCAL_URL, это НЕ ошибка;
+ *  - устройство уже сопряжено (409 ALREADY_PAIRED) → сообщение для UI: сброс
+ *    привязки — ТОЛЬКО локально на плате (Setup → «Удалённо»), сетевого пути нет;
+ *  - сеть недоступна/устройство offline → UNREACHABLE (пользователь донесёт
+ *    токен вручную, когда устройство появится в сети).
+ */
+async function deliverPairingToken(
+  localUrl: string | null,
+  rawToken: string
+): Promise<PairingDeliveryStatus> {
+  if (!localUrl) {
+    return { delivered: false, reason: "NO_LOCAL_URL" };
+  }
+  const result = await pairDeviceOverLan(localUrl, rawToken);
+  if (result.ok) {
+    return { delivered: true };
+  }
+  return { delivered: false, reason: result.reason };
+}
 
 /**
  * Найти устройство по предъявленному bearer-токену (точка проверки токена).
@@ -378,13 +423,20 @@ export const updateDeviceStatus = async (input: UpdateDeviceStatusInput): Promis
 };
 
 /**
- * Отозвать доступ устройства: обнуляем tokenHash (устройство больше не сможет
- * аутентифицироваться) и помечаем offline. История телеметрии сохраняется.
+ * Отозвать доступ устройства НА ПОРТАЛЕ: обнуляем tokenHash/tokenEncrypted
+ * (устройство больше не сможет аутентифицироваться К порталу/мосту, а портал
+ * больше не сможет предъявить bearer УСТРОЙСТВУ по LAN) и помечаем offline.
+ * История телеметрии сохраняется. ⚠ Это НЕ трогает device_token НА САМОЙ плате —
+ * та половина сопряжения рвётся ТОЛЬКО локально (Setup → «Удалённо» → «Отвязать
+ * устройство», bf_comms_unpair) — см. комментарий в pairDeviceOverLan/CLAUDE.md.
+ * После revokeDevice портал не сможет управлять устройством, ПОКА пользователь
+ * не привяжет его заново (новый claimCode + POST /pair — устройство своей стороны
+ * сопряжения не помнит, если только не был выполнен и локальный разрыв тоже).
  */
 export const revokeDevice = async (userId: string, deviceId: string): Promise<DeviceDto> => {
   const [updated] = await db
     .update(brewDevices)
-    .set({ tokenHash: null, status: "offline", updatedAt: new Date() })
+    .set({ tokenHash: null, tokenEncrypted: null, status: "offline", updatedAt: new Date() })
     .where(and(eq(brewDevices.id, deviceId), eq(brewDevices.userId, userId)))
     .returning();
 

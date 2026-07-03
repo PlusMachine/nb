@@ -43,7 +43,8 @@ export function BrewJournal({
   measurements,
   summary,
   preferredGravityUnit,
-  hideStats = false
+  hideStats = false,
+  title = "Журнал замеров"
 }: {
   brewBatchId: string;
   measurements: BrewMeasurementDto[];
@@ -51,6 +52,8 @@ export function BrewJournal({
   preferredGravityUnit: PreferredGravityUnit;
   /** Скрыть плитки OG/FG/ABV/сбраживание — уже показаны карточкой «Итог варки». */
   hideStats?: boolean;
+  /** Контекстный заголовок секции (OG на варочном дне, FG на брожении). */
+  title?: string;
 }) {
   const [gravity, setGravity] = useState("");
   const [takenAt, setTakenAt] = useState("");
@@ -125,10 +128,12 @@ export function BrewJournal({
   };
 
   return (
-    <section className="space-y-4 rounded-2xl border border-zinc-100 bg-white p-4 shadow-sm">
-      <h2 className="text-base font-semibold text-zinc-900">Журнал замеров</h2>
+    <section id="brew-journal" className="space-y-4 rounded-2xl border border-zinc-100 bg-white p-4 shadow-sm">
+      <h2 className="text-base font-semibold text-zinc-900">{title}</h2>
 
-      {!hideStats ? (
+      {/* Плитки OG/FG/ABV — только когда есть замеры: до первого замера прочерки
+          «—» лишь создают шум (нечего показывать, ничего ещё не произошло). */}
+      {!hideStats && measurements.length > 0 ? (
         <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
           <StatTile label="OG" value={fmtGravity(summary.og)} target={target?.og != null ? fmtGravity(target.og) : null} />
           <StatTile label="FG" value={fmtGravity(summary.fg)} target={target?.fg != null ? fmtGravity(target.fg) : null} />

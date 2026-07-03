@@ -275,7 +275,7 @@ export function InventoryConsumeControl({ item, onAction, defaultMode = "consume
           onClick={openSheet}
           className="rounded-lg border border-zinc-200 bg-white px-3 py-1.5 text-xs font-medium text-zinc-600 transition-colors hover:border-zinc-300 hover:bg-zinc-50"
         >
-          Изменить
+          {defaultMode === "restock" ? "Пополнить" : "Списать"}
         </button>
       )}
       {sheet}

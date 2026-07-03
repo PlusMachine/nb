@@ -2,10 +2,12 @@ import {
   and,
   db,
   eq,
+  inArray,
   ingredientPackageVariants,
   ingredients,
   isNull,
   recipeIngredients,
+  recipeInventoryAllocations,
   sql,
   userCustomIngredients,
   userIngredients
@@ -583,6 +585,57 @@ const applyPurchaseLinkSummariesToInventoryItems = async (
       }
     }
   }));
+};
+
+// Активные аллокации (allocated + reserved) держат остаток под рецепты, но не
+// списывают его. Суммируем их по позиции склада, чтобы карточка честно показала
+// «сколько уже занято» и не дала списать зарезервированное дважды.
+const activeInventoryAllocationStatuses = ["allocated", "reserved"] as const;
+
+const applyInventoryReservationsToItems = async (
+  userId: string,
+  items: InventoryListItemDto[]
+): Promise<InventoryListItemDto[]> => {
+  if (items.length === 0) {
+    return items;
+  }
+
+  const rows = await db
+    .select({
+      inventoryItemId: recipeInventoryAllocations.inventoryItemId,
+      normalizedUnit: recipeInventoryAllocations.allocatedNormalizedUnit,
+      reserved: sql<number>`sum(${recipeInventoryAllocations.allocatedQuantityNormalized})`
+    })
+    .from(recipeInventoryAllocations)
+    .where(and(
+      eq(recipeInventoryAllocations.userId, userId),
+      inArray(recipeInventoryAllocations.inventoryItemId, items.map((item) => item.id)),
+      inArray(recipeInventoryAllocations.status, [...activeInventoryAllocationStatuses])
+    ))
+    .groupBy(recipeInventoryAllocations.inventoryItemId, recipeInventoryAllocations.allocatedNormalizedUnit);
+
+  if (rows.length === 0) {
+    return items;
+  }
+
+  const reservedByItem = new Map<string, { unit: string; quantity: number }>();
+  for (const row of rows) {
+    reservedByItem.set(row.inventoryItemId, {
+      unit: row.normalizedUnit,
+      quantity: Number(row.reserved)
+    });
+  }
+
+  return items.map((item) => {
+    const reserved = reservedByItem.get(item.id);
+    // Показываем резерв только если единица нормализации совпадает с позицией:
+    // вес→g и объём→ml всегда совпадут, count-случай (pack/item) — по совпадению.
+    if (!reserved || reserved.unit !== item.normalizedUnit || reserved.quantity <= 0) {
+      return item;
+    }
+
+    return { ...item, reservedQuantityNormalized: Number(reserved.quantity.toFixed(3)) };
+  });
 };
 
 const ensureCatalogIngredientExists = async (ingredientCatalogItemId: string) => {
@@ -1714,7 +1767,8 @@ export const listInventoryForUser = async (userId: string, query: unknown = {}) 
     return left.source.primaryLabelRu.localeCompare(right.source.primaryLabelRu, "ru");
   });
 
-  return applyPurchaseLinkSummariesToInventoryItems(userId, items);
+  const withPurchaseLinks = await applyPurchaseLinkSummariesToInventoryItems(userId, items);
+  return applyInventoryReservationsToItems(userId, withPurchaseLinks);
 };
 
 export const searchInventorySuggestions = async (

@@ -2,8 +2,14 @@ import { describe, expect, it } from "vitest";
 
 import {
   applyBrewDayStepPatch,
+  brewDayActForStatus,
   buildBrewDaySteps,
+  groupsForAct,
   normalizeBrewDayProgress,
+  resolveBrewDayCursor,
+  resolveLastDoneStep,
+  stageToAct,
+  summarizeBrewDayPlan,
   summarizeBrewDayProgress
 } from "@/features/brew-batches/brew-day";
 import { brewPlanSnapshotSchema, type BrewPlanSnapshot } from "@/features/brew-batches/contracts";
@@ -31,6 +37,8 @@ const makeSnapshot = (overrides: Partial<BrewPlanSnapshot> = {}): BrewPlanSnapsh
   fermentationPlan: { primaryTemperatureC: 19, primaryDurationDays: 14 },
   packagingPlan: null,
   packagingAdditions: [],
+  grainBillTotalKg: null,
+  waterSchedule: null,
   deviceHints: [],
   ...overrides
 });
@@ -38,21 +46,49 @@ const makeSnapshot = (overrides: Partial<BrewPlanSnapshot> = {}): BrewPlanSnapsh
 describe("buildBrewDaySteps", () => {
   it("groups steps by stage in canonical order", () => {
     const groups = buildBrewDaySteps(makeSnapshot());
-    expect(groups.map((group) => group.stage)).toEqual(["mash", "boil", "whirlpool", "fermentation"]);
+    expect(groups.map((group) => group.stage)).toEqual(["mash", "boil", "whirlpool", "chill", "fermentation"]);
+  });
+
+  it("emits a synthetic chill step targeting the pitch temperature", () => {
+    const chill = buildBrewDaySteps(makeSnapshot()).find((group) => group.stage === "chill")!;
+    expect(chill.steps).toHaveLength(1);
+    expect(chill.steps[0]).toMatchObject({ id: "chill:target", kind: "task", title: "Охладите сусло", temperatureC: 19 });
+    expect(chill.steps[0].detail).toBe("до 19 °C");
+  });
+
+  it("falls back to a generic chill label when no pitch temperature is known", () => {
+    const chill = buildBrewDaySteps(makeSnapshot({ fermentationPlan: null })).find((group) => group.stage === "chill")!;
+    expect(chill.steps[0].detail).toBe("до температуры внесения дрожжей");
+  });
+
+  it("omits the chill group when nothing was heated (no boil / no whirlpool)", () => {
+    const groups = buildBrewDaySteps(makeSnapshot({
+      boilPlan: { boilTimeMinutes: 0, timedAdditions: [] },
+      whirlpoolPlan: []
+    }));
+    expect(groups.some((group) => group.stage === "chill")).toBe(false);
+  });
+
+  it("tags boil additions with seconds-before-end for the live countdown", () => {
+    const boil = buildBrewDaySteps(makeSnapshot()).find((group) => group.stage === "boil")!;
+    // Magnum @60 → 3600s before end; Cascade @10 → 600s.
+    expect(boil.steps.find((step) => step.id === "boil:add:h1")?.boilSecondsBeforeEnd).toBe(3600);
+    expect(boil.steps.find((step) => step.id === "boil:add:h2")?.boilSecondsBeforeEnd).toBe(600);
   });
 
   it("emits mash rests as timer steps with stable ids and seconds", () => {
     const groups = buildBrewDaySteps(makeSnapshot());
     const mash = groups.find((group) => group.stage === "mash")!;
-    expect(mash.steps[0]).toMatchObject({
+    const rest = mash.steps.find((step) => step.id === "mash:m1")!;
+    expect(rest).toMatchObject({
       id: "mash:m1",
       kind: "timer",
       title: "Затирание",
       durationSeconds: 3600,
       temperatureC: 66
     });
-    expect(mash.steps[0].detail).toContain("66 °C");
-    expect(mash.steps[0].detail).toContain("1 ч");
+    expect(rest.detail).toContain("66 °C");
+    expect(rest.detail).toContain("1 ч");
   });
 
   it("orders boil additions earliest-first (largest minutes-before-end first) and adds a boil timer", () => {
@@ -250,9 +286,154 @@ describe("buildBrewDaySteps", () => {
     });
     const groups = buildBrewDaySteps(snapshot);
     const mash = groups.find((group) => group.stage === "mash")!;
-    // No duration → task, not timer; falls back to "Пауза 1".
-    expect(mash.steps[0]).toMatchObject({ kind: "task", durationSeconds: null });
-    expect(mash.steps[0].title).toContain("Пауза");
+    // No duration → task, not timer; falls back to "Пауза 1" (id "idx-0", since
+    // the weakly-typed step has no "id" field).
+    const rest = mash.steps.find((step) => step.id === "mash:idx-0")!;
+    expect(rest).toMatchObject({ kind: "task", durationSeconds: null });
+    expect(rest.title).toContain("Пауза");
+  });
+});
+
+describe("mash prep steps (strike / dough-in / lauter)", () => {
+  it("adds strike, dough-in and lauter around the mash rests, in order, when mash pauses exist", () => {
+    const groups = buildBrewDaySteps(makeSnapshot({
+      waterPlanMeta: { mashWaterVolumeL: 18, spargeWaterVolumeL: 12 },
+      grainBillTotalKg: 5.2
+    }));
+    const mash = groups.find((group) => group.stage === "mash")!;
+    expect(mash.steps.map((step) => step.id)).toEqual(["mash:strike", "mash:dough-in", "mash:m1", "mash:m2", "mash:lauter"]);
+
+    const strike = mash.steps[0];
+    expect(strike).toMatchObject({ kind: "task", title: "Нагрейте воду", temperatureC: 70 });
+    expect(strike.detail).toBe("18 л · до ≈70 °C");
+
+    const doughIn = mash.steps[1];
+    expect(doughIn).toMatchObject({ kind: "task", title: "Засыпьте солод" });
+    expect(doughIn.detail).toBe("5.2 кг");
+
+    const lauter = mash.steps[4];
+    expect(lauter).toMatchObject({ kind: "task", title: "Промывка и фильтрация" });
+    expect(lauter.detail).toBe("промывочная вода 12 л");
+  });
+
+  it("sets the strike temperature to the first mash pause temperature + STRIKE_TEMP_OFFSET_C (4 °C)", () => {
+    const groups = buildBrewDaySteps(makeSnapshot({
+      mashSteps: [{ id: "single", name: "Затирание", targetTemperatureC: 63, durationMinutes: 45 }]
+    }));
+    const mash = groups.find((group) => group.stage === "mash")!;
+    const strike = mash.steps.find((step) => step.id === "mash:strike")!;
+    expect(strike.temperatureC).toBe(67);
+    expect(strike.detail).toBe("до ≈67 °C");
+  });
+
+  it("renders dough-in/lauter with null detail when grain weight / water plan data is unknown", () => {
+    const groups = buildBrewDaySteps(makeSnapshot());
+    const mash = groups.find((group) => group.stage === "mash")!;
+    expect(mash.steps.find((step) => step.id === "mash:dough-in")?.detail).toBeNull();
+    expect(mash.steps.find((step) => step.id === "mash:lauter")?.detail).toBeNull();
+  });
+
+  it("renders the strike step with null detail when neither volume nor first-pause temperature is known", () => {
+    const groups = buildBrewDaySteps(makeSnapshot({
+      mashSteps: [{ id: "m1", name: "Пауза" }]
+    }));
+    const mash = groups.find((group) => group.stage === "mash")!;
+    const strike = mash.steps.find((step) => step.id === "mash:strike")!;
+    expect(strike.detail).toBeNull();
+    expect(strike.temperatureC).toBeNull();
+  });
+
+  it("omits strike/dough-in/lauter (and the whole mash group) when there are no mash pauses (extract recipes)", () => {
+    const groups = buildBrewDaySteps(makeSnapshot({ mashSteps: [] }));
+    expect(groups.some((group) => group.stage === "mash")).toBe(false);
+  });
+});
+
+describe("water schedule steps (salts / acid / pH, from the precomputed water engine)", () => {
+  const waterSchedule = {
+    mashSalts: [{ label: "Гипс", grams: 1.2 }, { label: "Хлорид кальция", grams: 0.8 }],
+    spargeSalts: [{ label: "Гипс", grams: 0.4 }],
+    mashAcid: { label: "Молочная кислота", ml: 2.5 },
+    spargeAcid: { label: "Молочная кислота", ml: 1 },
+    targetMashPh: 5.4
+  };
+
+  it("inserts water-salts/acid/pH-check/sparge-water steps in the right order around strike/dough-in/lauter", () => {
+    const groups = buildBrewDaySteps(makeSnapshot({ waterSchedule }));
+    const mash = groups.find((group) => group.stage === "mash")!;
+    expect(mash.steps.map((step) => step.id)).toEqual([
+      "mash:strike",
+      "mash:water-salts",
+      "mash:acid",
+      "mash:dough-in",
+      "mash:ph-check",
+      "mash:m1",
+      "mash:m2",
+      "mash:sparge-water",
+      "mash:lauter"
+    ]);
+  });
+
+  it("formats the water-salts step detail by joining label+grams with the standard separator", () => {
+    const groups = buildBrewDaySteps(makeSnapshot({ waterSchedule }));
+    const mash = groups.find((group) => group.stage === "mash")!;
+    const step = mash.steps.find((s) => s.id === "mash:water-salts")!;
+    expect(step).toMatchObject({ kind: "addition", title: "Внесите соли в воду" });
+    expect(step.detail).toBe("Гипс 1.2 г · Хлорид кальция 0.8 г");
+  });
+
+  it("formats the mash-acid step detail with label and ml", () => {
+    const groups = buildBrewDaySteps(makeSnapshot({ waterSchedule }));
+    const mash = groups.find((group) => group.stage === "mash")!;
+    const step = mash.steps.find((s) => s.id === "mash:acid")!;
+    expect(step).toMatchObject({ kind: "addition", title: "Подкислите затор" });
+    expect(step.detail).toBe("Молочная кислота 2.5 мл");
+  });
+
+  it("renders the pH-check task with the target pH in the detail", () => {
+    const groups = buildBrewDaySteps(makeSnapshot({ waterSchedule }));
+    const mash = groups.find((group) => group.stage === "mash")!;
+    const step = mash.steps.find((s) => s.id === "mash:ph-check")!;
+    expect(step).toMatchObject({ kind: "task", title: "Проверьте pH затора" });
+    expect(step.detail).toBe("цель 5.4");
+  });
+
+  it("renders the pH-check task even when targetMashPh is null (waterSchedule still present)", () => {
+    const groups = buildBrewDaySteps(makeSnapshot({ waterSchedule: { ...waterSchedule, targetMashPh: null } }));
+    const mash = groups.find((group) => group.stage === "mash")!;
+    const step = mash.steps.find((s) => s.id === "mash:ph-check")!;
+    expect(step).toBeDefined();
+    expect(step.detail).toBeNull();
+  });
+
+  it("combines sparge salts and sparge acid in the sparge-water step detail", () => {
+    const groups = buildBrewDaySteps(makeSnapshot({ waterSchedule }));
+    const mash = groups.find((group) => group.stage === "mash")!;
+    const step = mash.steps.find((s) => s.id === "mash:sparge-water")!;
+    expect(step).toMatchObject({ kind: "addition", title: "Подготовьте промывочную воду" });
+    expect(step.detail).toBe("Гипс 0.4 г · Молочная кислота 1 мл");
+  });
+
+  it("omits mash:water-salts/mash:acid/mash:sparge-water when their part of the schedule is empty, but keeps ph-check", () => {
+    const groups = buildBrewDaySteps(makeSnapshot({
+      waterSchedule: { mashSalts: [], spargeSalts: [], mashAcid: null, spargeAcid: null, targetMashPh: null }
+    }));
+    const mash = groups.find((group) => group.stage === "mash")!;
+    expect(mash.steps.some((step) => step.id === "mash:water-salts")).toBe(false);
+    expect(mash.steps.some((step) => step.id === "mash:acid")).toBe(false);
+    expect(mash.steps.some((step) => step.id === "mash:sparge-water")).toBe(false);
+    expect(mash.steps.some((step) => step.id === "mash:ph-check")).toBe(true);
+  });
+
+  it("renders no water-schedule steps at all when waterSchedule is null", () => {
+    const groups = buildBrewDaySteps(makeSnapshot());
+    const mash = groups.find((group) => group.stage === "mash")!;
+    expect(mash.steps.map((step) => step.id)).toEqual(["mash:strike", "mash:dough-in", "mash:m1", "mash:m2", "mash:lauter"]);
+  });
+
+  it("does not render water-schedule steps when there are no mash pauses at all (extract recipes)", () => {
+    const groups = buildBrewDaySteps(makeSnapshot({ mashSteps: [], waterSchedule }));
+    expect(groups.some((group) => group.stage === "mash")).toBe(false);
   });
 });
 
@@ -274,6 +455,126 @@ describe("brewPlanSnapshotSchema backward compatibility", () => {
     const parsed = brewPlanSnapshotSchema.parse(legacyRow);
     expect(parsed.packagingAdditions).toEqual([]);
     expect(() => buildBrewDaySteps(parsed)).not.toThrow();
+  });
+
+  it("parses a pre-grainBillTotalKg snapshot row from the DB, defaulting grainBillTotalKg to null", () => {
+    const legacyRow = makeSnapshot();
+    delete (legacyRow as Record<string, unknown>).grainBillTotalKg;
+
+    const parsed = brewPlanSnapshotSchema.parse(legacyRow);
+    expect(parsed.grainBillTotalKg).toBeNull();
+    // Деградация мягкая: шаг «Засыпьте солод» рендерится с пустым detail, гид не падает.
+    expect(() => buildBrewDaySteps(parsed)).not.toThrow();
+  });
+
+  it("parses a pre-waterSchedule snapshot row from the DB, defaulting waterSchedule to null", () => {
+    const legacyRow = makeSnapshot();
+    delete (legacyRow as Record<string, unknown>).waterSchedule;
+
+    const parsed = brewPlanSnapshotSchema.parse(legacyRow);
+    expect(parsed.waterSchedule).toBeNull();
+    // Гид молча пропускает шаги воды — не падает и не рисует пустые/частичные шаги.
+    const groups = buildBrewDaySteps(parsed);
+    const mash = groups.find((group) => group.stage === "mash")!;
+    expect(mash.steps.some((step) => step.id.startsWith("mash:water-salts") || step.id === "mash:acid" || step.id === "mash:ph-check" || step.id === "mash:sparge-water")).toBe(false);
+  });
+});
+
+describe("brew-day acts / cursor", () => {
+  it("maps each batch status to its act", () => {
+    expect(brewDayActForStatus("planned")).toBe("prep");
+    expect(brewDayActForStatus("brewing")).toBe("brewday");
+    expect(brewDayActForStatus("fermenting")).toBe("fermentation");
+    expect(brewDayActForStatus("completed")).toBe("done");
+    expect(brewDayActForStatus("cancelled")).toBe("archived");
+  });
+
+  it("maps stages to acts (mash…chill → brewday, fermentation/packaging → fermentation)", () => {
+    expect(stageToAct("mash")).toBe("brewday");
+    expect(stageToAct("chill")).toBe("brewday");
+    expect(stageToAct("fermentation")).toBe("fermentation");
+    expect(stageToAct("packaging")).toBe("fermentation");
+  });
+
+  it("scopes groups to the brewday act (excludes fermentation/packaging)", () => {
+    const groups = buildBrewDaySteps(makeSnapshot({
+      packagingAdditions: [{ linePersistentKey: "p1", name: "Декстроза", category: "consumable", stage: "packaging", timeOffsetMinutes: null, amount: { quantity: 120, unit: "g" }, stepMeta: null }]
+    }));
+    expect(groupsForAct(groups, "brewday").map((group) => group.stage)).toEqual(["mash", "boil", "whirlpool", "chill"]);
+    expect(groupsForAct(groups, "fermentation").map((group) => group.stage)).toEqual(["fermentation", "packaging"]);
+  });
+
+  it("resolves the cursor to the first/second undone step of the act", () => {
+    const groups = buildBrewDaySteps(makeSnapshot());
+    const mash = groups.find((group) => group.stage === "mash")!;
+    // Mark the whole mash group done (prep + rests + lauter) → cursor should land on the boil timer.
+    const progress = {
+      steps: Object.fromEntries(mash.steps.map((step) => [step.id, { done: true, timerStartedAt: null }])),
+      updatedAt: null
+    };
+    const cursor = resolveBrewDayCursor(groups, progress, "brewday");
+    expect(cursor.current?.id).toBe("boil:timer");
+    expect(cursor.next?.id).toBe("boil:add:h1");
+    expect(cursor.actComplete).toBe(false);
+    expect(cursor.doneCount).toBe(mash.steps.length);
+  });
+
+  it("flags actComplete when every step of the act is done", () => {
+    const groups = buildBrewDaySteps(makeSnapshot());
+    const steps = groupsForAct(groups, "brewday").flatMap((group) => group.steps);
+    const progress = {
+      steps: Object.fromEntries(steps.map((step) => [step.id, { done: true, timerStartedAt: null }])),
+      updatedAt: null
+    };
+    const cursor = resolveBrewDayCursor(groups, progress, "brewday");
+    expect(cursor.current).toBeNull();
+    expect(cursor.actComplete).toBe(true);
+    expect(cursor.doneCount).toBe(cursor.total);
+  });
+
+  it("summarizes the plan with per-stage step counts and timer totals", () => {
+    const summary = summarizeBrewDayPlan(buildBrewDaySteps(makeSnapshot()));
+    const mash = summary.stages.find((stage) => stage.stage === "mash")!;
+    // 2 mash rests + strike/dough-in/lauter prep steps.
+    expect(mash.stepCount).toBe(5);
+    // 60 + 10 min of mash rests (strike/dough-in/lauter are task steps, no timer).
+    expect(mash.timerSeconds).toBe(4200);
+    // mash rests (4200) + boil timer (3600) + whirlpool stand (1200).
+    expect(summary.totalTimerSeconds).toBe(9000);
+    expect(summary.totalSteps).toBeGreaterThanOrEqual(7);
+  });
+});
+
+describe("resolveLastDoneStep", () => {
+  it("returns null when nothing is done yet", () => {
+    const groups = buildBrewDaySteps(makeSnapshot());
+    const progress = { steps: {}, updatedAt: null };
+    expect(resolveLastDoneStep(groups, progress, "brewday")).toBeNull();
+  });
+
+  it("returns the last done step in traversal order, not marking order", () => {
+    const groups = buildBrewDaySteps(makeSnapshot());
+    // Mark boil:timer done *before* mash:m1 in the progress object — traversal
+    // order (mash → boil) must still win over insertion order.
+    const progress = {
+      steps: {
+        "boil:timer": { done: true, timerStartedAt: null },
+        "mash:m1": { done: true, timerStartedAt: null }
+      },
+      updatedAt: null
+    };
+    expect(resolveLastDoneStep(groups, progress, "brewday")?.id).toBe("boil:timer");
+  });
+
+  it("ignores done steps that belong to a different act", () => {
+    const groups = buildBrewDaySteps(makeSnapshot());
+    // Only the fermentation step is done — irrelevant to the "brewday" act.
+    const progress = {
+      steps: { "ferment:primary": { done: true, timerStartedAt: null } },
+      updatedAt: null
+    };
+    expect(resolveLastDoneStep(groups, progress, "brewday")).toBeNull();
+    expect(resolveLastDoneStep(groups, progress, "fermentation")?.id).toBe("ferment:primary");
   });
 });
 

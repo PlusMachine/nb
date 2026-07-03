@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import { z } from "zod";
 
 import { consumeBrewBatchInventory } from "@/features/brew-batches/inventory";
-import { createBrewBatchFromRecipe, updateBrewBatchStatus } from "@/features/brew-batches/service";
+import { createBrewBatchFromRecipe } from "@/features/brew-batches/service";
 import { getSessionUser } from "@/lib/auth";
 
 const brewInputSchema = z.object({
@@ -14,9 +14,20 @@ const brewInputSchema = z.object({
   consumeIngredients: z.boolean().optional()
 });
 
+/** Итог опционального списания склада — доезжает до диалога честно, без глотания ошибок. */
+export type StartBrewConsumeResult =
+  | { ok: true; itemCount: number }
+  | { ok: false; code: "already_consumed" | "insufficient_stock" | "recipe_unavailable" | "error" };
+
 export type StartBrewFromRecipeResult =
-  | { ok: true; brewBatchId: string }
+  | { ok: true; brewBatchId: string; consume?: StartBrewConsumeResult }
   | { ok: false; code: "AUTH" | "NOT_FOUND" | "ERROR"; message: string };
+
+const consumeErrorCodeByMessage: Record<string, StartBrewConsumeResult & { ok: false }> = {
+  ALREADY_CONSUMED: { ok: false, code: "already_consumed" },
+  INSUFFICIENT_STOCK: { ok: false, code: "insufficient_stock" },
+  RECIPE_UNAVAILABLE: { ok: false, code: "recipe_unavailable" }
+};
 
 /**
  * Мост «любой доступный рецепт → варка» БЕЗ клонирования: создаёт партию варки во
@@ -24,12 +35,14 @@ export type StartBrewFromRecipeResult =
  * чужого published). В «Мои рецепты» ничего не копируется. userId берётся ТОЛЬКО
  * из серверной сессии — клиентскому payload не доверяем (в сигнатуре userId нет).
  *
- * Единый вход «Сварить», виртуальная ветка («Сварить самому»): клик реально
- * ЗАПУСКАЕТ варку, а не оставляет партию висеть в 'planned' без сигнала — статус
- * переводим в 'brewing' сразу же (решение владельца продукта). Опционально
- * списывает ингредиенты рецепта со склада — списание best-effort: если оно не
- * удалось (например, рецепт уже списан где-то ещё), варка всё равно считается
- * начатой — склад можно поправить вручную со страницы партии.
+ * Единый вход «Сварить», виртуальная ветка («Сварить самому»): создаёт партию в
+ * статусе 'planned' и ведёт в акт «Подготовка» — сам варочный день пользователь
+ * запускает там (кнопка «Начать варочный день»), клик в диалоге варку не
+ * запускает (решение аудита №2 от 2026-07-03, отменяет прежнее «переводим в
+ * 'brewing' сразу же»). Опционально списывает ингредиенты рецепта со склада —
+ * результат списания возвращается отдельным полем `consume`, не проглатывается:
+ * партия при этом создаётся в любом случае, а провал списания — честная ошибка,
+ * которую диалог доносит до страницы партии тостом.
  */
 export const startBrewFromRecipeAction = async (input: {
   recipeId: string;
@@ -47,19 +60,20 @@ export const startBrewFromRecipeAction = async (input: {
 
   try {
     const batch = await createBrewBatchFromRecipe(user.id, parsed.data.recipeId);
-    await updateBrewBatchStatus(user.id, batch.id, "brewing");
 
+    let consume: StartBrewConsumeResult | undefined;
     if (parsed.data.consumeIngredients) {
       try {
-        await consumeBrewBatchInventory(user.id, batch.id);
-      } catch {
-        // Best-effort: варка уже идёт, списание можно повторить вручную со
-        // страницы партии — не откатываем старт и не показываем это как отказ.
+        const view = await consumeBrewBatchInventory(user.id, batch.id);
+        consume = { ok: true, itemCount: view.consumed.length };
+      } catch (error) {
+        const message = error instanceof Error ? error.message : "";
+        consume = consumeErrorCodeByMessage[message] ?? { ok: false, code: "error" };
       }
     }
 
     revalidatePath("/app/brew-batches");
-    return { ok: true, brewBatchId: batch.id };
+    return { ok: true, brewBatchId: batch.id, consume };
   } catch (error) {
     if (error instanceof Error && (error.message === "NOT_FOUND" || error.message === "FORBIDDEN")) {
       return { ok: false, code: "NOT_FOUND", message: "Рецепт не найден или недоступен для варки." };

@@ -7,6 +7,7 @@ import {
   Archive,
   Calendar,
   Clock,
+  Lock,
   MoreHorizontal,
   ShoppingCart,
   Tag
@@ -26,7 +27,8 @@ import {
 } from "@/features/ingredients/consumables";
 import { formatHopFormLabel, resolveIngredientTechnicalDataColorRangeEbc } from "@/features/ingredients/technical-fields";
 import { beerColorFromSrm } from "@/features/recipes/beer-color";
-import { buildInventoryCostDisplay } from "@/features/inventory/display";
+import { buildInventoryDisplayInput } from "@/features/inventory/consume";
+import { buildInventoryCostDisplay, formatInventoryQuantityForDisplay } from "@/features/inventory/display";
 import type { SystemCurrency, SystemCurrencyRateMap } from "@/features/system/currency";
 
 import { DeleteInventoryItemButton } from "./delete-inventory-item-button";
@@ -40,6 +42,8 @@ type Props = {
   preferredCurrency: SystemCurrency;
   currencyRates: SystemCurrencyRateMap;
   initialQuickStartDataByContext?: IngredientPickerQuickStartResultByContext | null;
+  /** Активная сквозная сортировка — выводим и подсвечиваем соответствующее поле. */
+  sortEmphasis?: "price" | "best_before" | null;
 };
 
 const formatValue = (value: number) => (
@@ -268,7 +272,8 @@ export function InventoryListItem({
   item,
   preferredCurrency,
   currencyRates,
-  initialQuickStartDataByContext = null
+  initialQuickStartDataByContext = null,
+  sortEmphasis = null
 }: Props) {
   const badges = buildTechnicalBadges(item);
   const { primaryName, secondaryName } = resolveIngredientDisplayNames(item.source);
@@ -329,11 +334,37 @@ export function InventoryListItem({
       : freshnessCritical
         ? "border-amber-200"
         : "border-zinc-200";
+  const statusTitle = !isEmpty && expired
+    ? "Срок годности истёк"
+    : !isEmpty && freshnessCritical
+      ? "Скоро истекает срок годности"
+      : undefined;
 
-  const hasMetadata = Boolean(costSummary.totalPrice || costSummary.unitPrice || item.purchasedAt || item.freshnessDate);
+  const hasPriceValue = Boolean(costSummary.totalPrice || costSummary.unitPrice);
+  const emphasizePrice = sortEmphasis === "price";
+  const emphasizeFreshness = sortEmphasis === "best_before";
+  const showPricePlaceholder = emphasizePrice && !hasPriceValue;
+  const showFreshnessPlaceholder = emphasizeFreshness && !item.freshnessDate;
+
+  const reservedNormalized = item.reservedQuantityNormalized ?? 0;
+  const hasReserved = !isEmpty && reservedNormalized > 0;
+  const reservedExceedsStock = hasReserved && reservedNormalized >= item.normalizedQuantity;
+  const reservedLabel = hasReserved
+    ? formatInventoryQuantityForDisplay({
+        ...buildInventoryDisplayInput(item),
+        enteredQuantity: reservedNormalized,
+        enteredUnit: item.normalizedUnit,
+        normalizedQuantity: reservedNormalized
+      })
+    : null;
+
+  const hasMetadata = Boolean(costSummary.totalPrice || costSummary.unitPrice || item.purchasedAt || item.freshnessDate)
+    || showPricePlaceholder
+    || showFreshnessPlaceholder
+    || hasReserved;
 
   return (
-    <li className={`group relative rounded-2xl border bg-white p-4 shadow-sm transition-all duration-200 hover:shadow-md sm:p-5 ${statusBorderColor} ${isEmpty ? "opacity-60" : ""}`}>
+    <li title={statusTitle} className={`group relative rounded-2xl border bg-white p-4 shadow-sm transition-all duration-200 hover:shadow-md sm:p-5 ${statusBorderColor} ${isEmpty ? "opacity-60" : ""}`}>
       {/* Top row: title + actions */}
       <div className="flex items-start gap-3">
         <div className="min-w-0 flex-1">
@@ -397,6 +428,7 @@ export function InventoryListItem({
                 onClick={onClick}
                 className="inline-flex h-8 w-8 items-center justify-center rounded-lg text-zinc-300 transition-colors hover:bg-zinc-100 hover:text-zinc-600"
                 aria-label="Редактировать"
+                title="Редактировать"
               >
                 <MoreHorizontal className="h-4 w-4" />
               </button>
@@ -458,16 +490,33 @@ export function InventoryListItem({
 
           {hasMetadata ? (
             <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-zinc-400">
+              {reservedLabel ? (
+                <span
+                  className="inline-flex items-center gap-1 font-medium text-amber-600"
+                  title={reservedExceedsStock
+                    ? `Под рецепты зарезервировано ${reservedLabel} — не меньше, чем сейчас на складе. Ещё не списано.`
+                    : `Зарезервировано под рецепты: ${reservedLabel}. Ещё не списано со склада.`}
+                >
+                  <Lock className="h-3 w-3" />
+                  Резерв {reservedLabel}
+                </span>
+              ) : null}
               {costSummary.totalPrice ? (
-                <span className="inline-flex items-center gap-1">
+                <span className={`inline-flex items-center gap-1 ${emphasizePrice ? "font-medium text-zinc-700" : ""}`}>
                   <ShoppingCart className="h-3 w-3" />
                   {costSummary.totalPrice}
                 </span>
               ) : null}
               {costSummary.unitPrice ? (
-                <span className="inline-flex items-center gap-1">
+                <span className={`inline-flex items-center gap-1 ${emphasizePrice ? "font-medium text-zinc-700" : ""}`}>
                   <Tag className="h-3 w-3" />
                   {costSummary.unitPrice}
+                </span>
+              ) : null}
+              {showPricePlaceholder ? (
+                <span className="inline-flex items-center gap-1 italic text-zinc-300">
+                  <Tag className="h-3 w-3" />
+                  Цена не указана
                 </span>
               ) : null}
               {item.purchasedAt ? (
@@ -477,9 +526,15 @@ export function InventoryListItem({
                 </span>
               ) : null}
               {item.freshnessDate ? (
-                <span className={`inline-flex items-center gap-1 ${expired ? "font-medium text-red-500" : freshnessCritical ? "font-medium text-amber-500" : ""}`}>
+                <span className={`inline-flex items-center gap-1 ${expired ? "font-medium text-red-500" : freshnessCritical ? "font-medium text-amber-500" : emphasizeFreshness ? "font-medium text-zinc-700" : ""}`}>
                   {expired || freshnessCritical ? <AlertTriangle className="h-3 w-3" /> : <Clock className="h-3 w-3" />}
                   {expired ? "Просрочен" : "до"} {item.freshnessDate.toLocaleDateString("ru-RU")}
+                </span>
+              ) : null}
+              {showFreshnessPlaceholder ? (
+                <span className="inline-flex items-center gap-1 italic text-zinc-300">
+                  <Clock className="h-3 w-3" />
+                  Срок не указан
                 </span>
               ) : null}
             </div>
@@ -501,7 +556,7 @@ export function InventoryListItem({
                 onClick={open}
                 className="rounded-lg border border-zinc-200 bg-white px-3 py-1.5 text-xs font-medium text-zinc-600 transition-colors hover:border-zinc-300 hover:bg-zinc-50"
               >
-                Изменить
+                {isEmpty ? "Пополнить" : "Списать"}
               </button>
             )}
           />

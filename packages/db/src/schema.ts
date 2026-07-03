@@ -653,6 +653,13 @@ export const recipeInventoryAllocations = pgTable("recipe_inventory_allocations"
   recipeIngredientPersistentKey: uuid("recipe_ingredient_persistent_key").notNull(),
   inventoryItemId: uuid("inventory_item_id").notNull().references(() => userIngredients.id, { onDelete: "restrict" }),
   status: recipeInventoryAllocationStatusEnum("status").default("allocated").notNull(),
+  // Партия-потребитель consumed-аллокации: списание на варку (brew-batches/
+  // inventory.ts) привязывает сюда brewBatchId, чтобы завершение/отмена ОДНОЙ
+  // партии не блокировало навсегда повторную варку того же рецепта другой
+  // партией (см. docs/brew-day-assistant-audit-round2.md, П2). NULL — списание
+  // вне партии (из редактора рецепта) или легаси-запись до этой миграции;
+  // консервативно продолжает блокировать реюз рецепта.
+  brewBatchId: uuid("brew_batch_id").references(() => brewBatches.id, { onDelete: "set null" }),
   allocatedQuantityNormalized: doublePrecision("allocated_quantity_normalized").notNull(),
   allocatedNormalizedUnit: varchar("allocated_normalized_unit", { length: 32 }).notNull(),
   allocationMeta: jsonb("allocation_meta").$type<Record<string, unknown>>().default({}).notNull(),
@@ -667,7 +674,8 @@ export const recipeInventoryAllocations = pgTable("recipe_inventory_allocations"
   recipeIngredientIdx: index("recipe_inventory_allocations_recipe_ingredient_idx").on(table.recipeIngredientId),
   persistentKeyIdx: index("recipe_inventory_allocations_persistent_key_idx").on(table.recipeId, table.recipeIngredientPersistentKey),
   inventoryItemIdx: index("recipe_inventory_allocations_inventory_item_idx").on(table.inventoryItemId),
-  statusIdx: index("recipe_inventory_allocations_status_idx").on(table.status)
+  statusIdx: index("recipe_inventory_allocations_status_idx").on(table.status),
+  brewBatchIdIdx: index("recipe_inventory_allocations_brew_batch_id_idx").on(table.brewBatchId)
 }));
 
 export const inventoryTransactions = pgTable("inventory_transactions", {
@@ -697,8 +705,15 @@ export const inventoryTransactions = pgTable("inventory_transactions", {
 // =============================================================================
 
 // Зарегистрированное устройство (контроллер BrewForge). tokenHash — хэш
-// per-device bearer-токена (паттерн как у sessions.token_hash; plaintext НИКОГДА
-// не хранится). hardwareId — заводской id 'bf-xxxx' (глобально уникален).
+// per-device bearer-токена (паттерн как у sessions.token_hash; используется для
+// СВЕРКИ, когда устройство/мост предъявляет токен порталу). tokenEncrypted —
+// пакет 4-B (P4): тот же токен, но ОБРАТИМО зашифрованный (AES-256-GCM,
+// lib/device-token-crypto.ts) — нужен, чтобы портал МОГ САМ предъявить токен
+// устройству как Authorization: Bearer при LAN-запросах (resolveDeviceToken);
+// hashToken для этого непригоден (односторонний). NULL, если ключ шифрования
+// (BREWFORGE_DEVICE_TOKEN_ENC_KEY) не был настроен на момент claimDevice — тогда
+// resolveDeviceToken откатывается на env-фолбэк. hardwareId — заводской id
+// 'bf-xxxx' (глобально уникален).
 export const brewDevices = pgTable("brew_devices", {
   id: uuid("id").defaultRandom().primaryKey(),
   userId: uuid("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
@@ -706,6 +721,7 @@ export const brewDevices = pgTable("brew_devices", {
   name: text("name").notNull(),
   hardwareId: text("hardware_id").notNull(),
   tokenHash: text("token_hash"),
+  tokenEncrypted: text("token_encrypted"),
   fw: text("fw"),
   capabilities: jsonb("capabilities").$type<string[]>().default([]).notNull(),
   status: brewDeviceStatusEnum("status").default("unknown").notNull(),
@@ -795,6 +811,31 @@ export const brewLogEvents = pgTable("brew_log_events", {
 }, (table) => ({
   deviceTsIdx: index("brew_log_events_device_ts_idx").on(table.deviceId, table.ts),
   batchTsIdx: index("brew_log_events_batch_ts_idx").on(table.brewBatchId, table.ts)
+}));
+
+// Пакет 4-B (P3) — реестр УЖЕ ДОГРУЖЕННЫХ офлайн-журналов варки (bf_log.c,
+// GET /log[?name=] на устройстве). Один журнал = один файл .jsonl = одна варка.
+// Идемпотентность синхронизации: (deviceId, name) уникальны; sizeBytes хранится,
+// чтобы отличить «уже полностью догружен» (тот же размер — файл закрыт, варка
+// завершилась) от «файл ещё растёт» (варка идёт, размер вырос с прошлой
+// синхронизации — файл дочитывается заново; строки внутри дедуплицируются
+// детерминированными id при вставке в brew_telemetry/brew_log_events, см.
+// features/devices/log-sync.ts). samples/eventsImported — для диагностики UI
+// («догружено N точек»), не участвуют в решении «скипнуть файл».
+export const deviceLogFiles = pgTable("device_log_files", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  deviceId: uuid("device_id").notNull().references(() => brewDevices.id, { onDelete: "cascade" }),
+  brewBatchId: uuid("brew_batch_id").references(() => brewBatches.id, { onDelete: "set null" }),
+  name: text("name").notNull(),
+  sizeBytes: integer("size_bytes").notNull(),
+  samplesImported: integer("samples_imported").default(0).notNull(),
+  eventsImported: integer("events_imported").default(0).notNull(),
+  malformedLines: integer("malformed_lines").default(0).notNull(),
+  importedAt: timestamp("imported_at", { withTimezone: true }).defaultNow().notNull(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull()
+}, (table) => ({
+  deviceNameUidx: uniqueIndex("device_log_files_device_name_uidx").on(table.deviceId, table.name),
+  deviceIdx: index("device_log_files_device_idx").on(table.deviceId)
 }));
 
 // Аудит команд портал→устройство. reason — причина ack/nack (AckReason).
@@ -1137,7 +1178,8 @@ export const brewDevicesRelations = relations(brewDevices, ({ one, many }) => ({
   commands: many(deviceCommands),
   profiles: many(deviceProfiles),
   controlLease: one(deviceControlLeases),
-  recipeSlots: many(deviceRecipeSlots)
+  recipeSlots: many(deviceRecipeSlots),
+  logFiles: many(deviceLogFiles)
 }));
 
 export const deviceControlLeasesRelations = relations(deviceControlLeases, ({ one }) => ({
@@ -1202,6 +1244,17 @@ export const brewLogEventsRelations = relations(brewLogEvents, ({ one }) => ({
   }),
   brewBatch: one(brewBatches, {
     fields: [brewLogEvents.brewBatchId],
+    references: [brewBatches.id]
+  })
+}));
+
+export const deviceLogFilesRelations = relations(deviceLogFiles, ({ one }) => ({
+  device: one(brewDevices, {
+    fields: [deviceLogFiles.deviceId],
+    references: [brewDevices.id]
+  }),
+  brewBatch: one(brewBatches, {
+    fields: [deviceLogFiles.brewBatchId],
     references: [brewBatches.id]
   })
 }));

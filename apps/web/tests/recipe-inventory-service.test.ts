@@ -21,7 +21,8 @@ const { tableRefs, mockState } = vi.hoisted(() => ({
       userId: "userId",
       ingredientCatalogItemId: "ingredientCatalogItemId",
       userCustomIngredientId: "userCustomIngredientId"
-    }
+    },
+    brewBatches: { name: "brew_batches", id: "id", status: "status" }
   },
   mockState: {
     idCounter: 0,
@@ -29,7 +30,8 @@ const { tableRefs, mockState } = vi.hoisted(() => ({
     lines: [] as any[],
     inventory: [] as any[],
     allocations: [] as any[],
-    transactions: [] as any[]
+    transactions: [] as any[],
+    brewBatches: [] as any[]
   }
 }));
 
@@ -110,6 +112,12 @@ vi.mock("@nb/db", () => {
           const userId = getEqValue(arg?.where, "userId");
           return mockState.inventory.find((item) => item.id === id && item.userId === userId) ?? null;
         }
+      },
+      brewBatches: {
+        findMany: async (arg: any) => {
+          const ids = getInArrayValue(arg?.where, "id");
+          return mockState.brewBatches.filter((batch) => !ids || ids.includes(batch.id));
+        }
       }
     },
     insert: (table: { name: string }) => ({
@@ -182,12 +190,15 @@ vi.mock("@nb/db", () => {
     recipeIngredients: tableRefs.recipeIngredients,
     recipeInventoryAllocations: tableRefs.recipeInventoryAllocations,
     recipes: tableRefs.recipes,
-    userIngredients: tableRefs.userIngredients
+    userIngredients: tableRefs.userIngredients,
+    brewBatches: tableRefs.brewBatches
   };
 });
 
 import {
+  autoAllocateRecipeInventoryFromStock,
   consumeRecipeInventoryAllocations,
+  hasBlockingConsumedAllocations,
   listRecipeStockCoverage,
   syncRecipeSelectedInventoryAllocations
 } from "../features/recipes/inventory-service";
@@ -195,6 +206,7 @@ import {
 describe("recipe inventory allocation service", () => {
   beforeEach(() => {
     mockState.idCounter = 0;
+    mockState.brewBatches = [];
     mockState.recipes = [{ id: uuid(1), authorId: uuid(2), title: "Recipe" }];
     mockState.lines = [{
       id: uuid(11),
@@ -328,5 +340,85 @@ describe("recipe inventory allocation service", () => {
       shortLines: 0
     });
     expect(coverage.lines[0]?.status).toBe("unselected");
+  });
+
+  // Batch-aware реюз рецепта (docs/brew-day-assistant-audit-round2.md, П2): consumed-
+  // аллокация завершённой/отменённой партии больше не должна навсегда запирать
+  // рецепт от повторной варки — в отличие от аллокации активной партии или
+  // легаси-записи без brewBatchId (обе продолжают блокировать).
+  describe("batch-aware блокировка реюза рецепта", () => {
+    const seedConsumedAllocation = (brewBatchId: string | null) => {
+      mockState.allocations = [{
+        id: uuid(201),
+        userId: uuid(2),
+        recipeId: uuid(1),
+        recipeIngredientId: uuid(11),
+        recipeIngredientPersistentKey: uuid(111),
+        inventoryItemId: uuid(21),
+        status: "consumed",
+        brewBatchId,
+        allocatedQuantityNormalized: 50,
+        allocatedNormalizedUnit: "g",
+        updatedAt: new Date("2026-01-01T00:00:00.000Z")
+      }];
+    };
+
+    it("consumed-аллокация ЗАВЕРШЁННОЙ партии не блокирует hasBlockingConsumedAllocations", async () => {
+      const batchId = uuid(301);
+      mockState.brewBatches = [{ id: batchId, status: "completed" }];
+      seedConsumedAllocation(batchId);
+
+      expect(await hasBlockingConsumedAllocations(uuid(2), uuid(1))).toBe(false);
+    });
+
+    it("consumed-аллокация АКТИВНОЙ партии (brewing) продолжает блокировать", async () => {
+      const batchId = uuid(302);
+      mockState.brewBatches = [{ id: batchId, status: "brewing" }];
+      seedConsumedAllocation(batchId);
+
+      expect(await hasBlockingConsumedAllocations(uuid(2), uuid(1))).toBe(true);
+    });
+
+    it("consumed-аллокация БЕЗ партии (NULL — редактор рецепта/легаси) продолжает блокировать", async () => {
+      seedConsumedAllocation(null);
+
+      expect(await hasBlockingConsumedAllocations(uuid(2), uuid(1))).toBe(true);
+    });
+
+    it("autoAllocateRecipeInventoryFromStock переаллоцирует строку поверх consumed-аллокации завершённой партии", async () => {
+      const batchId = uuid(303);
+      mockState.brewBatches = [{ id: batchId, status: "completed" }];
+      seedConsumedAllocation(batchId);
+
+      const coverage = await autoAllocateRecipeInventoryFromStock(uuid(2), uuid(1));
+
+      const newAllocations = mockState.allocations.filter((a) => a.status === "allocated");
+      expect(newAllocations).toHaveLength(1);
+      expect(coverage.lines[0]).toMatchObject({ status: "covered", inventoryItemId: uuid(21) });
+    });
+
+    it("autoAllocateRecipeInventoryFromStock НЕ трогает строку, если consumed-аллокация принадлежит активной партии", async () => {
+      const batchId = uuid(304);
+      mockState.brewBatches = [{ id: batchId, status: "fermenting" }];
+      seedConsumedAllocation(batchId);
+
+      const coverage = await autoAllocateRecipeInventoryFromStock(uuid(2), uuid(1));
+
+      expect(mockState.allocations.filter((a) => a.status === "allocated")).toHaveLength(0);
+      expect(coverage.lines[0]?.status).toBe("consumed");
+    });
+
+    it("listRecipeStockCoverage не показывает consumed завершённой партии как текущее покрытие", async () => {
+      const batchId = uuid(305);
+      mockState.brewBatches = [{ id: batchId, status: "completed" }];
+      seedConsumedAllocation(batchId);
+
+      const coverage = await listRecipeStockCoverage(uuid(2), uuid(1));
+
+      // Аллокация исключена из проекции: строка снова читается как невыбранная,
+      // а не как "уже списанная" — запас потрачен первой варкой, но повторная
+      // варка не заблокирована.
+      expect(coverage.lines[0]).toMatchObject({ status: "unselected", allocationId: null });
+    });
   });
 });

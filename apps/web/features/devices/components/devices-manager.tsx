@@ -19,8 +19,8 @@ import { Button, Card, Input } from "@nb/ui";
 import { ConfirmActionDialog } from "@/components/shared/confirm-action-dialog";
 import { DeviceTile } from "@/features/devices/components/device-tile";
 import { NotificationOptIn } from "@/features/notifications/components/notification-opt-in";
-import { devicePairingErrorText } from "@/features/devices/pairing-error-text";
-import type { DeviceTile as DeviceTileData } from "@/features/devices/contracts";
+import { devicePairingErrorText, pairingDeliveryReasonText } from "@/features/devices/pairing-error-text";
+import type { DeviceTile as DeviceTileData, PairingDeliveryStatus } from "@/features/devices/contracts";
 
 // Период health-опроса грида (last-known, не живой стрим) и тик «N назад».
 const TILES_POLL_MS = 15_000;
@@ -62,6 +62,8 @@ export function DevicesManager({ initialTiles, demoAvailable }: Props) {
   // Одноразовый токен, показанный после успешной привязки.
   const [issuedToken, setIssuedToken] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
+  // Итог автодоставки токена устройству по LAN (P4) — сопровождает issuedToken.
+  const [pairingStatus, setPairingStatus] = useState<PairingDeliveryStatus | null>(null);
 
   // Отзыв.
   const [revokeTarget, setRevokeTarget] = useState<DeviceTileData | null>(null);
@@ -97,6 +99,7 @@ export function DevicesManager({ initialTiles, demoAvailable }: Props) {
       setPairing(true);
       setPairError(null);
       setIssuedToken(null);
+      setPairingStatus(null);
       setCopied(false);
       try {
         const payload: Record<string, string> = {};
@@ -109,13 +112,18 @@ export function DevicesManager({ initialTiles, demoAvailable }: Props) {
           headers: { "content-type": "application/json" },
           body: JSON.stringify(payload)
         });
-        const body = (await res.json()) as { token?: string; error?: string };
+        const body = (await res.json()) as {
+          token?: string;
+          error?: string;
+          pairing?: PairingDeliveryStatus;
+        };
         if (!res.ok || body.error || !body.token) {
           setPairError(devicePairingErrorText(body.error));
           return;
         }
         // Токен показываем РОВНО один раз; чистим поля формы.
         setIssuedToken(body.token);
+        setPairingStatus(body.pairing ?? null);
         setClaimCode("");
         setName("");
         setLocalUrl("");
@@ -254,10 +262,16 @@ export function DevicesManager({ initialTiles, demoAvailable }: Props) {
           {issuedToken ? (
             <div role="status" className="mt-4 rounded-xl border-2 border-emerald-300 bg-emerald-50 p-4">
               <p className="text-sm font-semibold text-emerald-900">Устройство привязано</p>
-              <p className="mt-1 text-xs text-emerald-800">
-                Скопируйте этот токен и пропишите его на устройстве. Он показывается{" "}
-                <strong>один раз</strong> и не хранится на сервере.
-              </p>
+              {pairingStatus?.delivered ? (
+                <p className="mt-1 text-xs text-emerald-800">
+                  Токен уже доставлен устройству по локальной сети — можно управлять сразу.
+                </p>
+              ) : (
+                <p className="mt-1 text-xs text-emerald-800">
+                  Скопируйте этот токен и пропишите его на устройстве. Он показывается{" "}
+                  <strong>один раз</strong> и не хранится на сервере.
+                </p>
+              )}
               <div className="mt-3 flex flex-wrap items-center gap-2">
                 <code className="break-all rounded-md bg-white px-3 py-2 text-xs text-zinc-900 ring-1 ring-emerald-200">
                   {issuedToken}
@@ -269,6 +283,11 @@ export function DevicesManager({ initialTiles, demoAvailable }: Props) {
                   Скрыть
                 </Button>
               </div>
+              {/* Итог автодоставки токена (P4) — только если НЕ доставлен: деливеред-путь
+                  уже описан выше, тут нужен только «что делать», если авто не сработало. */}
+              {pairingStatus && !pairingStatus.delivered ? (
+                <p className="mt-3 text-xs text-amber-800">{pairingDeliveryReasonText(pairingStatus.reason)}</p>
+              ) : null}
             </div>
           ) : null}
         </Card>

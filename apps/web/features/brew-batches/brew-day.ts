@@ -1,6 +1,10 @@
 import {
   brewDayStageLabels,
   emptyBrewDayProgress,
+  type BrewBatchStatus,
+  type BrewDayAct,
+  type BrewDayCursor,
+  type BrewDayPlanSummary,
   type BrewDayProgress,
   type BrewDayStage,
   type BrewDayStageGroup,
@@ -38,6 +42,10 @@ const readNumber = (record: Record<string, unknown>, ...keys: string[]): number 
 };
 
 const fmtTemp = (tempC: number | null): string | null => (tempC == null ? null : `${tempC} °C`);
+
+const fmtLiters = (liters: number | null): string | null => (
+  liters == null ? null : `${Number(liters.toFixed(2))} л`
+);
 
 const fmtDuration = (minutes: number | null): string | null => {
   if (minutes == null || minutes <= 0) {
@@ -123,6 +131,17 @@ const additionName = (record: Record<string, unknown>): string => (
   readString(record, "name") ?? "Ингредиент"
 );
 
+// Грубая поправка температуры воды для затирания: вода остывает при засыпи
+// солода, поэтому греть нужно чуть выше целевой температуры первой паузы. Точный
+// расчёт зависит от гидромодуля и материала оборудования — для гида-ориентира
+// достаточно фиксированной поправки.
+const STRIKE_TEMP_OFFSET_C = 4;
+
+// Аккуратное число для веса засыпи: без хвостовых нулей (как fmtAmount выше).
+const fmtGrainKg = (kg: number | null): string | null => (
+  kg == null ? null : `${Number(kg.toFixed(3))} кг`
+);
+
 /**
  * Строит сгруппированный по этапам чек-лист варочного дня из снапшота плана.
  * Этапы и порядок: затор → кипячение → вирпул → брожение → розлив. Пустые группы
@@ -132,9 +151,97 @@ export const buildBrewDaySteps = (snapshot: BrewPlanSnapshot): BrewDayStageGroup
   const mash: BrewDayStep[] = [];
   const boil: BrewDayStep[] = [];
   const whirlpool: BrewDayStep[] = [];
+  const chill: BrewDayStep[] = [];
   const fermentation: BrewDayStep[] = [];
 
-  // --- Затор: паузы (таймеры) + засыпи стадии mash ---
+  // Прекомпьют водного движка (см. buildBrewPlanSnapshot/buildWaterSchedule) —
+  // соли/кислоты затора и промывки + целевой pH затора. null для старых
+  // снапшотов и рецептов без включённой водоподготовки: шаги воды просто не
+  // рендерятся, без поломки остального гида.
+  const waterSchedule = snapshot.waterSchedule;
+
+  // Дозы соли/кислоты одной строкой для detail шага, в формате «Гипс 1.2 г».
+  const fmtDoseLine = (label: string, amount: number, unitLabel: string): string => `${label} ${amount} ${unitLabel}`;
+
+  // --- Затор: подготовка (нагрев воды + засыпь) → паузы (таймеры) + засыпи стадии
+  // mash → промывка/фильтрация. Подготовительные и завершающие шаги рендерятся,
+  // только когда в снапшоте есть mash-паузы: экстрактным рецептам без затора
+  // нечего греть/засыпать/промывать.
+  if (snapshot.mashSteps.length > 0) {
+    const firstMashRaw = snapshot.mashSteps[0];
+    const firstPauseTempC = isRecord(firstMashRaw)
+      ? readNumber(firstMashRaw, "targetTemperatureC", "temperatureC", "tempC")
+      : null;
+    const waterPlanMeta = isRecord(snapshot.waterPlanMeta) ? snapshot.waterPlanMeta : null;
+    const mashWaterVolumeL = waterPlanMeta ? readNumber(waterPlanMeta, "mashWaterVolumeL") : null;
+    const strikeTempC = firstPauseTempC != null ? firstPauseTempC + STRIKE_TEMP_OFFSET_C : null;
+
+    // id "mash:strike"/"mash:dough-in" синтетические — не коллидируют с id пауз
+    // (`mash:<id>` из snapshot.mashSteps, приходят из recipe-designer и не несут
+    // служебных слов strike/dough-in/lauter).
+    mash.push({
+      id: "mash:strike",
+      stage: "mash",
+      kind: "task",
+      title: "Нагрейте воду",
+      detail: joinDetail(fmtLiters(mashWaterVolumeL), strikeTempC != null ? `до ≈${Math.round(strikeTempC)} °C` : null),
+      durationSeconds: null,
+      temperatureC: strikeTempC
+    });
+
+    // Соли/кислота затора — до засыпи солода: их вносят в заторную воду ещё до
+    // дробины (см. buildWaterSchedule в brew-plan.ts).
+    if (waterSchedule && waterSchedule.mashSalts.length > 0) {
+      mash.push({
+        id: "mash:water-salts",
+        stage: "mash",
+        kind: "addition",
+        title: "Внесите соли в воду",
+        detail: waterSchedule.mashSalts.map((salt) => fmtDoseLine(salt.label, salt.grams, "г")).join(" · "),
+        durationSeconds: null,
+        temperatureC: null
+      });
+    }
+
+    if (waterSchedule && waterSchedule.mashAcid) {
+      mash.push({
+        id: "mash:acid",
+        stage: "mash",
+        kind: "addition",
+        title: "Подкислите затор",
+        detail: fmtDoseLine(waterSchedule.mashAcid.label, waterSchedule.mashAcid.ml, "мл"),
+        durationSeconds: null,
+        temperatureC: null
+      });
+    }
+
+    mash.push({
+      id: "mash:dough-in",
+      stage: "mash",
+      kind: "task",
+      title: "Засыпьте солод",
+      detail: fmtGrainKg(snapshot.grainBillTotalKg),
+      durationSeconds: null,
+      temperatureC: null
+    });
+
+    // Проверка pH затора — после засыпи солода (только тогда pH затора вообще
+    // существует), рендерится всегда при наличии прекомпьюта воды, даже если
+    // солей/кислоты вносить не нужно (профиль воды и так в норме).
+    if (waterSchedule) {
+      mash.push({
+        id: "mash:ph-check",
+        stage: "mash",
+        kind: "task",
+        title: "Проверьте pH затора",
+        detail: waterSchedule.targetMashPh != null ? `цель ${waterSchedule.targetMashPh}` : null,
+        durationSeconds: null,
+        temperatureC: null
+      });
+    }
+  }
+
+  // Паузы затора (таймеры).
   snapshot.mashSteps.forEach((raw, index) => {
     if (!isRecord(raw)) {
       return;
@@ -170,6 +277,43 @@ export const buildBrewDaySteps = (snapshot: BrewPlanSnapshot): BrewDayStageGroup
     });
   });
 
+  // Промывка/фильтрация — последний шаг группы затора (id "mash:lauter", см.
+  // комментарий выше про отсутствие коллизий с id пауз).
+  if (snapshot.mashSteps.length > 0) {
+    const waterPlanMeta = isRecord(snapshot.waterPlanMeta) ? snapshot.waterPlanMeta : null;
+    const spargeWaterVolumeL = waterPlanMeta ? readNumber(waterPlanMeta, "spargeWaterVolumeL") : null;
+
+    // Соли/кислота промывочной воды — готовятся перед промывкой, а не в момент
+    // самой промывки.
+    if (waterSchedule && (waterSchedule.spargeSalts.length > 0 || waterSchedule.spargeAcid)) {
+      const spargeDetail = joinDetail(
+        waterSchedule.spargeSalts.length > 0
+          ? waterSchedule.spargeSalts.map((salt) => fmtDoseLine(salt.label, salt.grams, "г")).join(" · ")
+          : null,
+        waterSchedule.spargeAcid ? fmtDoseLine(waterSchedule.spargeAcid.label, waterSchedule.spargeAcid.ml, "мл") : null
+      );
+      mash.push({
+        id: "mash:sparge-water",
+        stage: "mash",
+        kind: "addition",
+        title: "Подготовьте промывочную воду",
+        detail: spargeDetail,
+        durationSeconds: null,
+        temperatureC: null
+      });
+    }
+
+    mash.push({
+      id: "mash:lauter",
+      stage: "mash",
+      kind: "task",
+      title: "Промывка и фильтрация",
+      detail: spargeWaterVolumeL != null ? `промывочная вода ${Number(spargeWaterVolumeL.toFixed(2))} л` : null,
+      durationSeconds: null,
+      temperatureC: null
+    });
+  }
+
   // --- Кипячение: таймер кипячения + засыпи по времени до конца ---
   const boilTimeMin = snapshot.boilPlan.boilTimeMinutes;
   if (boilTimeMin && boilTimeMin > 0) {
@@ -201,7 +345,10 @@ export const buildBrewDaySteps = (snapshot: BrewPlanSnapshot): BrewDayStageGroup
           title: `Внести: ${additionName(record)}`,
           detail: joinDetail(fmtAmount(record), fmtBoilTiming(timing)),
           durationSeconds: null,
-          temperatureC: null
+          temperatureC: null,
+          // Момент засыпи «за N мин до конца» — в секундах для живого отсчёта от
+          // таймера кипячения. null (нет тайминга) → «в конце», считаем 0.
+          boilSecondsBeforeEnd: timing != null ? Math.max(0, Math.round(timing * 60)) : 0
         }
       };
     });
@@ -231,8 +378,24 @@ export const buildBrewDaySteps = (snapshot: BrewPlanSnapshot): BrewDayStageGroup
     });
   });
 
-  // --- Брожение: одна отметка с целевой температурой/длительностью ---
+  // --- Охлаждение: синтетический шаг между вирпулом и брожением. Появляется
+  // только если было тепло (кипячение/вирпул) — иначе охлаждать нечего. Цель —
+  // температура внесения дрожжей из плана брожения (если задана).
   const ferment = snapshot.fermentationPlan;
+  if (boil.length > 0 || whirlpool.length > 0) {
+    const pitchTempC = isRecord(ferment) ? readNumber(ferment, "primaryTemperatureC") : null;
+    chill.push({
+      id: "chill:target",
+      stage: "chill",
+      kind: "task",
+      title: "Охладите сусло",
+      detail: pitchTempC != null ? `до ${pitchTempC} °C` : "до температуры внесения дрожжей",
+      durationSeconds: null,
+      temperatureC: pitchTempC
+    });
+  }
+
+  // --- Брожение: одна отметка с целевой температурой/длительностью ---
   if (isRecord(ferment)) {
     const tempC = readNumber(ferment, "primaryTemperatureC");
     const days = readNumber(ferment, "primaryDurationDays");
@@ -405,9 +568,118 @@ export const buildBrewDaySteps = (snapshot: BrewPlanSnapshot): BrewDayStageGroup
   pushGroup("mash", mash);
   pushGroup("boil", boil);
   pushGroup("whirlpool", whirlpool);
+  pushGroup("chill", chill);
   pushGroup("fermentation", fermentation);
   pushGroup("packaging", packaging);
   return groups;
+};
+
+// --- Акты и курсор гида ------------------------------------------------------
+// Страница партии — машина состояний: статус варки задаёт «акт», акт задаёт, какие
+// этапы гида показываются как «сейчас». Чистые хелперы (без БД/React/времени).
+
+/** Акт страницы по статусу партии. */
+export const brewDayActForStatus = (status: BrewBatchStatus): BrewDayAct => {
+  switch (status) {
+    case "planned":
+      return "prep";
+    case "brewing":
+      return "brewday";
+    case "fermenting":
+      return "fermentation";
+    case "completed":
+      return "done";
+    case "cancelled":
+      return "archived";
+  }
+};
+
+// К какому акту относится этап гида. Затор→охлаждение — варочный день; брожение и
+// розлив — акт брожения. done/archived/prep рендерят гид целиком (read-only/превью).
+const STAGE_ACT: Record<BrewDayStage, "brewday" | "fermentation"> = {
+  mash: "brewday",
+  boil: "brewday",
+  whirlpool: "brewday",
+  chill: "brewday",
+  fermentation: "fermentation",
+  packaging: "fermentation"
+};
+
+export const stageToAct = (stage: BrewDayStage): "brewday" | "fermentation" => STAGE_ACT[stage];
+
+/** Этапы гида, относящиеся к акту (в каноническом порядке). */
+export const groupsForAct = (
+  groups: BrewDayStageGroup[],
+  act: "brewday" | "fermentation"
+): BrewDayStageGroup[] => groups.filter((group) => stageToAct(group.stage) === act);
+
+/**
+ * Курсор акта: первый не-done шаг = «сейчас», второй = «следующий». actComplete —
+ * все шаги акта отмечены (сигнал показать CTA перехода в следующий статус).
+ */
+export const resolveBrewDayCursor = (
+  groups: BrewDayStageGroup[],
+  progress: BrewDayProgress,
+  act: "brewday" | "fermentation"
+): BrewDayCursor => {
+  const steps = groupsForAct(groups, act).flatMap((group) => group.steps);
+  let current: BrewDayStep | null = null;
+  let next: BrewDayStep | null = null;
+  let doneCount = 0;
+  for (const step of steps) {
+    if (progress.steps[step.id]?.done) {
+      doneCount += 1;
+      continue;
+    }
+    if (!current) {
+      current = step;
+    } else if (!next) {
+      next = step;
+    }
+  }
+  return {
+    current,
+    next,
+    actComplete: steps.length > 0 && doneCount === steps.length,
+    doneCount,
+    total: steps.length
+  };
+};
+
+/**
+ * Последний отмеченный (done) шаг акта — кандидат для отката «Вернуть шаг».
+ * Идём в порядке обхода групп акта (как в resolveBrewDayCursor), а не по времени
+ * отметки: так откат предсказуемо снимает именно шаг, идущий перед курсором.
+ * null — в акте ещё нет ни одного done-шага.
+ */
+export const resolveLastDoneStep = (
+  groups: BrewDayStageGroup[],
+  progress: BrewDayProgress,
+  act: "brewday" | "fermentation"
+): BrewDayStep | null => {
+  const steps = groupsForAct(groups, act).flatMap((group) => group.steps);
+  let last: BrewDayStep | null = null;
+  for (const step of steps) {
+    if (progress.steps[step.id]?.done) {
+      last = step;
+    }
+  }
+  return last;
+};
+
+/** Сводка плана варочного дня для акта подготовки (этапы + таймеры + итоги). */
+export const summarizeBrewDayPlan = (groups: BrewDayStageGroup[]): BrewDayPlanSummary => {
+  const stages = groups.map((group) => ({
+    stage: group.stage,
+    label: group.label,
+    stepCount: group.steps.length,
+    timerSeconds: group.steps.reduce((sum, step) => sum + (step.durationSeconds ?? 0), 0)
+  }));
+  return {
+    stages,
+    totalSteps: stages.reduce((sum, stage) => sum + stage.stepCount, 0),
+    totalTimerSeconds: stages.reduce((sum, stage) => sum + stage.timerSeconds, 0)
+  };
 };
 
 const defaultStepState = (): BrewDayStepState => ({ done: false, timerStartedAt: null });

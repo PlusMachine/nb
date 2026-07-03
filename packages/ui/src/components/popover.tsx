@@ -16,9 +16,11 @@ type PopoverProps = {
   side?: PopoverSide;
   /** Для commit-on-close потребителей (применить значение при закрытии). */
   onOpenChange?: (open: boolean) => void;
+  /** Переопределить ширину контента, если он шире дефолтного max-w-sm. */
+  contentClassName?: string;
 };
 
-export function Popover({ trigger, children, align = "center", side = "bottom", onOpenChange }: PopoverProps) {
+export function Popover({ trigger, children, align = "center", side = "bottom", onOpenChange, contentClassName }: PopoverProps) {
   const [open, setOpenState] = React.useState(false);
 
   const setOpen = React.useCallback(
@@ -41,7 +43,8 @@ export function Popover({ trigger, children, align = "center", side = "bottom", 
           sideOffset={8}
           collisionPadding={8}
           className={cn(
-            "z-[110] w-max max-w-sm rounded-xl border border-zinc-200 bg-white p-3 text-sm text-zinc-900 shadow-lg outline-none"
+            "z-[110] w-max max-w-sm rounded-xl border border-zinc-200 bg-white p-3 text-sm text-zinc-900 shadow-lg outline-none",
+            contentClassName
           )}
         >
           {typeof children === "function" ? children({ close }) : children}

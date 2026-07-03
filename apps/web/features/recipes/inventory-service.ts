@@ -1,5 +1,6 @@
 import {
   and,
+  brewBatches,
   db,
   eq,
   inArray,
@@ -19,6 +20,71 @@ import { parseInventoryUnit, type InventoryUnit } from "../inventory/units";
 
 const activeAllocationStatuses = ["allocated", "reserved"] as const;
 const visibleAllocationStatuses = ["allocated", "reserved", "consumed", "released"] as const;
+
+// Статусы партии, которые считаются «в работе» — их consumed-аллокации продолжают
+// запирать рецепт от повторного списания/переаллокации. Дублируем локально
+// activeBrewBatchStatuses из features/brew-batches/contracts.ts вместо импорта:
+// features/brew-batches уже импортирует движок аллокаций отсюда (см. inventory.ts
+// там), обратный импорт создал бы циклическую зависимость между фичами. Источник
+// истины для списка статусов — features/brew-batches/contracts.ts.
+const activeConsumingBrewBatchStatuses = ["planned", "brewing", "fermenting"] as const;
+
+/**
+ * Из списка consumed-аллокаций возвращает только те, что ДЕЙСТВИТЕЛЬНО запирают
+ * рецепт от повторного списания/переаллокации (см. docs/brew-day-assistant-audit-
+ * round2.md, П2): без привязки к партии (brewBatchId=NULL — списание из редактора
+ * рецепта или легаси-запись до миграции 0047) — блокирует консервативно; с
+ * привязкой — блокирует, только если партия ещё в активном статусе
+ * (planned/brewing/fermenting). Партии в completed/cancelled запасы реально
+ * потратили, но реюз рецепта для новой варки больше не блокируют.
+ */
+const filterBlockingConsumedAllocations = async <T extends { brewBatchId: string | null }>(
+  allocations: T[]
+): Promise<T[]> => {
+  const batchIds = [...new Set(
+    allocations.map((allocation) => allocation.brewBatchId).filter((id): id is string => Boolean(id))
+  )];
+
+  if (batchIds.length === 0) {
+    return allocations.filter((allocation) => !allocation.brewBatchId);
+  }
+
+  const batches = await db.query.brewBatches.findMany({
+    where: inArray(brewBatches.id, batchIds),
+    columns: { id: true, status: true }
+  });
+  const activeBatchIds = new Set(
+    batches
+      .filter((batch) => (activeConsumingBrewBatchStatuses as readonly string[]).includes(batch.status))
+      .map((batch) => batch.id)
+  );
+
+  return allocations.filter((allocation) => !allocation.brewBatchId || activeBatchIds.has(allocation.brewBatchId));
+};
+
+/**
+ * Есть ли у рецепта consumed-аллокации, которые реально блокируют повторное
+ * списание (см. filterBlockingConsumedAllocations). Используется и из редактора
+ * рецепта, и из features/brew-batches (consumeBrewBatchInventory) — единая
+ * batch-aware замена прежней «рецепт списан навсегда» проверки.
+ */
+export const hasBlockingConsumedAllocations = async (userId: string, recipeId: string): Promise<boolean> => {
+  const consumed = await db.query.recipeInventoryAllocations.findMany({
+    where: and(
+      eq(recipeInventoryAllocations.userId, userId),
+      eq(recipeInventoryAllocations.recipeId, recipeId),
+      eq(recipeInventoryAllocations.status, "consumed")
+    ),
+    columns: { id: true, brewBatchId: true }
+  });
+
+  if (consumed.length === 0) {
+    return false;
+  }
+
+  const blocking = await filterBlockingConsumedAllocations(consumed);
+  return blocking.length > 0;
+};
 
 const ensureOwnedRecipe = async (userId: string, recipeId: string) => {
   const recipe = await db.query.recipes.findFirst({
@@ -231,7 +297,7 @@ export const listRecipeStockCoverage = async (
   recipeId: string
 ): Promise<RecipeStockCoverageDto> => {
   await ensureOwnedRecipe(userId, recipeId);
-  const [lines, allocations] = await Promise.all([
+  const [lines, rawAllocations] = await Promise.all([
     db.query.recipeIngredients.findMany({
       where: eq(recipeIngredients.recipeId, recipeId)
     }),
@@ -243,6 +309,14 @@ export const listRecipeStockCoverage = async (
       )
     })
   ]);
+  // Consumed-аллокации завершённых/отменённых партий больше не отражают текущее
+  // покрытие рецепта (запас реально потрачен, но реюз рецепта для новой варки уже
+  // не заблокирован) — выкидываем их из проекции, чтобы строка не «зависала» в
+  // статусе consumed после того, как варка закрыта.
+  const nonConsumed = rawAllocations.filter((allocation) => allocation.status !== "consumed");
+  const consumedOnly = rawAllocations.filter((allocation) => allocation.status === "consumed");
+  const blockingConsumed = await filterBlockingConsumedAllocations(consumedOnly);
+  const allocations = [...nonConsumed, ...blockingConsumed];
   const inventoryIds = [...new Set(allocations.map((allocation) => allocation.inventoryItemId))];
   const inventoryRows = inventoryIds.length
     ? await db.query.userIngredients.findMany({
@@ -407,12 +481,13 @@ export const autoAllocateRecipeInventoryFromStock = async (
 ): Promise<RecipeStockCoverageDto> => {
   const recipe = await ensureBrewableRecipe(userId, recipeId);
   const isOwnRecipe = recipe.authorId === userId;
-  const [lines, blockingAllocations] = await Promise.all([
+  const [lines, candidateAllocations] = await Promise.all([
     db.query.recipeIngredients.findMany({
       where: eq(recipeIngredients.recipeId, recipeId)
     }),
     // Пропускаем строки с активной ИЛИ уже потреблённой аллокацией: consumed-строки
     // нельзя переаллоцировать и списать повторно (иначе двойное списание склада).
+    // Consumed-строки завершённых/отменённых партий — исключение (см. ниже).
     db.query.recipeInventoryAllocations.findMany({
       where: and(
         eq(recipeInventoryAllocations.userId, userId),
@@ -421,6 +496,10 @@ export const autoAllocateRecipeInventoryFromStock = async (
       )
     })
   ]);
+  const nonConsumedAllocations = candidateAllocations.filter((allocation) => allocation.status !== "consumed");
+  const consumedAllocations = candidateAllocations.filter((allocation) => allocation.status === "consumed");
+  const blockingConsumedAllocations = await filterBlockingConsumedAllocations(consumedAllocations);
+  const blockingAllocations = [...nonConsumedAllocations, ...blockingConsumedAllocations];
   const allocatedLineIds = new Set(blockingAllocations.map((allocation) => allocation.recipeIngredientId));
 
   for (const line of lines) {
@@ -576,6 +655,9 @@ export const consumeRecipeInventoryAllocations = async (
 
       await tx.update(recipeInventoryAllocations).set({
         status: "consumed",
+        // Партия-потребитель: без неё завершение/отмена ЛЮБОЙ будущей партии не
+        // сможет отличить эту аллокацию от чужой при batch-aware проверке блокировки.
+        brewBatchId: options.brewBatchId ?? null,
         consumedAt: now,
         updatedAt: now
       }).where(eq(recipeInventoryAllocations.id, allocation.id));

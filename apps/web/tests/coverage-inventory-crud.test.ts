@@ -11,6 +11,14 @@ const { tableRefs, mockState } = vi.hoisted(() => ({
   tableRefs: {
     ingredients: { name: "ingredients", id: "id", isActive: "isActive", type: "type" },
     ingredientPackageVariants: { name: "ingredientPackageVariants", id: "id", ingredientId: "ingredientId" },
+    recipeInventoryAllocations: {
+      name: "recipeInventoryAllocations",
+      userId: "userId",
+      inventoryItemId: "inventoryItemId",
+      status: "status",
+      allocatedNormalizedUnit: "allocatedNormalizedUnit",
+      allocatedQuantityNormalized: "allocatedQuantityNormalized"
+    },
     userCustomIngredients: { name: "userCustomIngredients", id: "id", userId: "userId", type: "type", displayName: "displayName", normalizedName: "normalizedName" },
     userIngredients: {
       name: "userIngredients",
@@ -114,11 +122,22 @@ vi.mock("@nb/db", () => {
           where: async (_w: unknown) => mockState.selectRows
         };
 
-        return "inventory" in shape
-          ? joined
-          : {
-            where: async (_w: unknown) => mockState.selectRows
+        if ("inventory" in shape) {
+          return joined;
+        }
+
+        // Агрегация резервов: where().groupBy() → без резервов по умолчанию.
+        if ("reserved" in shape) {
+          return {
+            where: (_w: unknown) => ({
+              groupBy: async (..._cols: unknown[]) => []
+            })
           };
+        }
+
+        return {
+          where: async (_w: unknown) => mockState.selectRows
+        };
       }
     })
   };
@@ -128,10 +147,12 @@ vi.mock("@nb/db", () => {
     and: (...args: unknown[]) => args,
     asc: (v: unknown) => v,
     eq: (...args: unknown[]) => args,
+    inArray: (...args: unknown[]) => args,
     isNull: (v: unknown) => v,
     sql: (..._args: unknown[]) => ({}) as never,
     ingredientPackageVariants: tableRefs.ingredientPackageVariants,
     ingredients: tableRefs.ingredients,
+    recipeInventoryAllocations: tableRefs.recipeInventoryAllocations,
     userCustomIngredients: tableRefs.userCustomIngredients,
     userIngredients: tableRefs.userIngredients
   };

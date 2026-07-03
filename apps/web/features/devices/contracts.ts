@@ -53,11 +53,27 @@ export const claimDeviceSchema = z
   });
 export type ClaimDeviceInput = z.infer<typeof claimDeviceSchema> & { userId: string };
 
+/**
+ * Итог попытки АВТОМАТИЧЕСКИ доставить токен устройству по LAN сразу при клейме
+ * (P4, POST {localUrl}/pair). Не влияет на успех claimDevice самого по себе —
+ * устройство/токен уже созданы в БД независимо от того, удалось ли достучаться.
+ *  - delivered:true            — устройство приняло токен, сопряжение завершено.
+ *  - "NO_LOCAL_URL"            — localUrl не указан при клейме (доставить нечем).
+ *  - "ALREADY_PAIRED"          — устройство уже сопряжено (см. текст в pairing-error-text.ts).
+ *  - "UNREACHABLE"             — сеть/устройство недоступны (offline, не в этой LAN).
+ *  - "REJECTED"                — устройство ответило отказом (битый токен/иной сбой).
+ */
+export type PairingDeliveryStatus =
+  | { delivered: true }
+  | { delivered: false; reason: "NO_LOCAL_URL" | "ALREADY_PAIRED" | "UNREACHABLE" | "REJECTED" };
+
 /** Результат пэйринга: DTO устройства + plaintext-токен (отдаётся ОДИН раз). */
 export type ClaimDeviceResult = {
   device: DeviceDto;
-  /** Plaintext bearer-токен. Доставить устройству; на сервере хранится только хэш. */
+  /** Plaintext bearer-токен. Доставить устройству; на сервере хранится только хэш/шифротекст. */
   token: string;
+  /** Итог попытки автодоставки токена устройству по LAN (см. PairingDeliveryStatus). */
+  pairing: PairingDeliveryStatus;
 };
 
 /** Вход createPairingCode (облачный поток выпуска одноразового кода). */

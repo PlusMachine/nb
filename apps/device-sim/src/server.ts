@@ -6,11 +6,14 @@
 //  REST:
 //    GET  /telemetry  → текущий снимок Telemetry
 //    POST /cmd        → принять Command, вернуть Ack
-//    PUT  /recipe?slot=N   → записать DeviceRecipe, вернуть { slot }
+//    PUT  /recipe[?slot=N] → записать DeviceRecipe (без slot — автовыбор 6..25,
+//                            паритет с pick_recipe_slot), вернуть { slot }
 //    GET  /recipe?slot=N   → прочитать DeviceRecipe слота (readSlotSnapshot), 404 если пуст
-//    GET  /recipes         → карта слотов [{ slot, name }] (listSlots)
+//    GET  /recipes         → карта ЗАПИСЫВАЕМЫХ слотов (6..25) [{ slot, name }] (listSlots)
 //    GET  /config     → { …сеть/отладка, config: DeviceConfig }  (§6.3, несекретный)
 //    PUT  /config     → патч DeviceConfig (клампится), вернуть эффективный { config }
+//    POST /pair       → { token } — пейринг (D5), ТОЛЬКО пока не сопряжено; 409 иначе
+//    POST /mqtt       → { uri } — runtime-сеттер MQTT-брокера (D6); "" = выключить
 //    POST /sim/fault  → dev/demo-only: инжект/сброс аварии { fault?, action: "raise"|"clear" }
 //    GET  /log        → последние события брю-лога
 //    GET  /events     → SSE-поток телеметрии (без зависимостей)
@@ -140,6 +143,40 @@ async function handleRequest(
   // --- GET /log ---
   if (method === "GET" && path === "/log") {
     sendJson(res, 200, { entries: device.getLog() });
+    return;
+  }
+
+  // --- POST /pair {"token":"bfd_..."} (D5) — паритет с h_pair (bf_comms.c):
+  // принимается ТОЛЬКО пока не сопряжено; уже сопряжённое → 409 ALREADY_PAIRED
+  // (на реальном железе разрыв — только локально с экрана устройства; здесь, раз
+  // сим — dev-инструмент, POST /pair/unpair недоступен по сети намеренно так же). ---
+  if (method === "POST" && path === "/pair") {
+    const body = await readBody(req);
+    const token = isRecord(body) ? body.token : undefined;
+    const result = device.pair(token);
+    if (!result.ok && result.reason === "ALREADY_PAIRED") {
+      sendJson(res, 409, { ok: false, reason: "ALREADY_PAIRED" });
+      return;
+    }
+    if (!result.ok) {
+      sendJson(res, 400, { ok: false, reason: result.reason });
+      return;
+    }
+    sendJson(res, 200, { ok: true });
+    return;
+  }
+
+  // --- POST /mqtt {"uri":"mqtt(s)://..."|""} (D6) — runtime-сеттер брокера,
+  // паритет с h_mqtt_set (bf_comms.c). "" — явно выключить MQTT (валидно). ---
+  if (method === "POST" && path === "/mqtt") {
+    const body = await readBody(req);
+    const uri = isRecord(body) ? body.uri : undefined;
+    const result = device.setMqttUri(uri);
+    if (!result.ok) {
+      sendJson(res, 400, { ok: false, reason: result.reason });
+      return;
+    }
+    sendJson(res, 200, { ok: true, applyOnReboot: true });
     return;
   }
 

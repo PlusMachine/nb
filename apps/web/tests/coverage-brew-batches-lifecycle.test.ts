@@ -37,7 +37,7 @@ const { tableRefs, store, ids, fixtures } = vi.hoisted(() => {
       inventoryTransactions: ref("inventoryTransactions", [
         "id", "userId", "brewBatchId", "inventoryItemId", "type", "normalizedUnit", "createdAt"
       ]),
-      recipeInventoryAllocations: ref("recipeInventoryAllocations", ["id", "userId", "recipeId", "status"]),
+      recipeInventoryAllocations: ref("recipeInventoryAllocations", ["id", "userId", "recipeId", "status", "brewBatchId"]),
       userIngredients: ref("userIngredients", ["id", "userId"]),
       recipes: ref("recipes", ["id", "authorId"]),
       users: ref("users", ["id"]),
@@ -372,7 +372,11 @@ vi.mock("@/features/recipes/inventory-service", () => ({
         userId,
         recipeId,
         inventoryItemId: item.id,
-        status: "consumed"
+        status: "consumed",
+        // Партия-потребитель — batch-aware блокировка реюза рецепта (см.
+        // hasBlockingConsumedAllocations ниже) и прямой путь restoreBrewBatchInventory
+        // читают именно это поле, а не только легаси-мету транзакции.
+        brewBatchId: opts?.brewBatchId ?? null
       });
       store.inventoryTransactions.push({
         id: uuid(4000 + ++ids.counter),
@@ -393,7 +397,25 @@ vi.mock("@/features/recipes/inventory-service", () => ({
     }
   },
   convertNormalizedQuantityToEnteredUnit: (quantity: number, fromUnit: string, toUnit: string) =>
-    fromUnit === toUnit ? quantity : null
+    fromUnit === toUnit ? quantity : null,
+  // Batch-aware реализация для мока: consumed-аллокация блокирует реюз рецепта,
+  // только если у неё нет brewBatchId (легаси/вне партии) ИЛИ её партия ещё в
+  // активном статусе (planned/brewing/fermenting) — зеркалит реальную логику в
+  // features/recipes/inventory-service.ts (см. docs/brew-day-assistant-audit-
+  // round2.md, П2).
+  hasBlockingConsumedAllocations: async (userId: string, recipeId: string) => {
+    const activeBrewBatchStatuses = ["planned", "brewing", "fermenting"];
+    const consumed = store.recipeInventoryAllocations.filter(
+      (a: any) => a.userId === userId && a.recipeId === recipeId && a.status === "consumed"
+    );
+    return consumed.some((a: any) => {
+      if (!a.brewBatchId) {
+        return true;
+      }
+      const batch = store.brewBatches.find((b: any) => b.id === a.brewBatchId);
+      return !batch || activeBrewBatchStatuses.includes(batch.status);
+    });
+  }
 }));
 
 import {
@@ -864,6 +886,29 @@ describe("инвентарь варки: consume / restore", () => {
   it("restore для чужой партии даёт NOT_FOUND", async () => {
     const seeded = seedBatch({ status: "brewing" });
     await expect(restoreBrewBatchInventory(OTHER_USER, seeded.id)).rejects.toThrow("NOT_FOUND");
+  });
+
+  // Регресс П2 (docs/brew-day-assistant-audit-round2.md): без batch-aware защиты
+  // рецепт был варибелен ровно один раз навсегда — завершение первой партии
+  // никогда не освобождало её consumed-аллокации, поэтому вторая партия того же
+  // рецепта не могла списать даже новую закупку ингредиента.
+  it("завершение ПЕРВОЙ партии не блокирует списание ВТОРОЙ партии того же рецепта (новая закупка)", async () => {
+    const first = seedBatch({ status: "brewing" });
+    await consumeBrewBatchInventory(USER_ID, first.id);
+    expect(store.userIngredients[0].normalizedQuantity).toBe(50);
+
+    await updateBrewBatchStatus(USER_ID, first.id, "fermenting");
+    await updateBrewBatchStatus(USER_ID, first.id, "completed");
+
+    // Новая закупка того же ингредиента перед второй варкой.
+    store.userIngredients[0].normalizedQuantity = 100;
+    store.userIngredients[0].enteredQuantity = 100;
+
+    const second = seedBatch({ status: "brewing" });
+    const view = await consumeBrewBatchInventory(USER_ID, second.id);
+
+    expect(view.hasConsumed).toBe(true);
+    expect(store.userIngredients[0].normalizedQuantity).toBe(50);
   });
 });
 

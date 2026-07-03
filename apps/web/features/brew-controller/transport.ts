@@ -5,11 +5,18 @@
 //  заглушка-TODO до появления брокера/моста (Phase 3).
 //
 //  Контракт LAN-REST зеркалит apps/device-sim и прошивку:
-//    GET  {base}/telemetry  → Telemetry
-//    POST {base}/cmd        → тело-Ack (HTTP 200 при ok, 422 при nack)
-//    PUT  {base}/recipe     → { slot: number }
-//    GET  {base}/config     → { …сеть, config: DeviceConfig }   (§6.3, несекретный)
-//    PUT  {base}/config     → { …, config: DeviceConfig }       (клампит+персистит)
+//    GET  {base}/telemetry     → Telemetry
+//    POST {base}/cmd           → тело-Ack (HTTP 200 всегда; ok:false = nack)
+//    PUT  {base}/recipe[?slot] → {"ok":true,"slot":N} ИЛИ {"ok":false,"error":N}
+//                                 (⚠ ПРОШИВКА отдаёт HTTP 200 в ОБОИХ случаях —
+//                                 см. putRecipe ниже, статус НЕ индикатор успеха)
+//    GET  {base}/recipes       → { slots:[{slot,name}] }        (только 6..25)
+//    GET  {base}/recipe?slot=N → DeviceRecipe напрямую (без обёртки), 404 если пусто
+//    GET  {base}/config        → { …сеть, config: DeviceConfig } (§6.3, несекретный)
+//    PUT  {base}/config        → { …, config: DeviceConfig }     (клампит+персистит)
+//    GET  {base}/log           → DeviceLogFileMeta[]             (P3, офлайн-журнал)
+//    GET  {base}/log?name=X    → сырой .jsonl
+//    POST {base}/pair          → см. pairDeviceOverLan ниже (P4)
 //  Авторизация — заголовок `Authorization: Bearer <token>` (для LAN опционален).
 // =============================================================================
 import { isIP } from "node:net";
@@ -17,12 +24,14 @@ import { isIP } from "node:net";
 import {
   AckSchema,
   DeviceConfigSchema,
+  DeviceLogFileListSchema,
   DeviceRecipeSchema,
   TelemetrySchema,
   type Ack,
   type Command,
   type DeviceConfig,
   type DeviceConfigPatch,
+  type DeviceLogFileMeta,
   type DeviceRecipe,
   type Telemetry,
 } from "@nb/brewforge-protocol";
@@ -153,7 +162,8 @@ export interface DeviceTransport {
   /**
    * Записать рецепт в слот устройства; вернуть номер слота, куда он реально лёг.
    * `slot` — целевой слот (Phase 4, device-first push «на плату»); без него
-   * устройство пишет в слот по умолчанию (batch-путь START_BREW всегда слот 0).
+   * устройство САМО автовыбирает первый свободный записываемый слот (прошивка:
+   * 6..25, `pick_recipe_slot()`; НЕ 0 — слот 0 на реальном железе ROM-встроенный).
    */
   putRecipe(recipe: DeviceRecipe, slot?: number): Promise<{ slot: number }>;
   /** Прочитать текущий НЕсекретный конфиг §6.3, либо null, если валидного нет. */
@@ -167,6 +177,16 @@ export interface DeviceTransport {
   listSlots(): Promise<DeviceRecipeSlot[]>;
   /** Read-only снапшот «что лежит на плате» в слоте, либо null если слот пуст. */
   readSlotSnapshot(slot: number): Promise<DeviceRecipe | null>;
+  /**
+   * P3 (офлайн-журнал варки, bf_log.c): список файлов на устройстве. ОПЦИОНАЛЬНО —
+   * журнал живёт на SPIFFS устройства, доступен только по LAN (GET /log); облачный
+   * (MQTT) транспорт и in-process демо его не реализуют (см. cloud-transport.ts/
+   * sim-transport.ts) — методов нет ⇒ вызывающий (log-sync.ts) должен явно
+   * проверять наличие перед вызовом, а не полагаться на throw.
+   */
+  listLogs?(): Promise<DeviceLogFileMeta[]>;
+  /** P3: скачать конкретный файл журнала (.jsonl) целиком; null, если файла нет (404). */
+  readLog?(name: string): Promise<string | null>;
 }
 
 const buildHeaders = (token?: string): Record<string, string> => {
@@ -221,8 +241,9 @@ export function lanTransport(baseUrl: string, token?: string): DeviceTransport {
     },
 
     async putRecipe(recipe, targetSlot) {
-      // Целевой слот (device-first push) — query `?slot=N`; без него прошивка/sim
-      // берёт слот по умолчанию (0). Номер отдаёт устройство в ответе (source of truth).
+      // Целевой слот (device-first push) — query `?slot=N`; без него прошивка
+      // автовыбирает первый свободный записываемый слот (6..25). Номер отдаёт
+      // устройство в ответе (source of truth).
       const url =
         targetSlot === undefined
           ? `${base}/recipe`
@@ -238,9 +259,21 @@ export function lanTransport(baseUrl: string, token?: string): DeviceTransport {
         // ответов и port-scan-оракул. Оставляем только статус.
         throw new Error(`lanTransport.putRecipe: HTTP ${res.status}`);
       }
-      const json = (await res.json().catch(() => null)) as { slot?: unknown } | null;
-      const slot = typeof json?.slot === "number" ? json.slot : 0;
-      return { slot };
+      // ⚠ Сверка контракта (пакет 4-B): реальная прошивка (h_recipe, bf_comms.c)
+      // возвращает HTTP 200 даже для ОТКЛОНЁННОГО рецепта — {"ok":false,"error":N}
+      // БЕЗ поля slot (нет свободного слота / невалидный явный ?slot=). Раньше
+      // отсутствующий json.slot тихо читался как 0 — а слот 0 на реальном железе
+      // это ВСТРОЕННЫЙ ROM-рецепт: последующий START_BREW(0) запустил бы совсем не
+      // тот рецепт, который пытались запушить. Поэтому статус 2xx — необходимое, но
+      // НЕ достаточное условие успеха; смотрим ещё и body.ok/typeof slot==="number".
+      const json = (await res.json().catch(() => null)) as
+        | { ok?: unknown; slot?: unknown; error?: unknown }
+        | null;
+      if (!json || json.ok !== true || typeof json.slot !== "number") {
+        const code = isRecord(json) && typeof json.error === "number" ? ` (код ${json.error})` : "";
+        throw new Error(`lanTransport.putRecipe: устройство отклонило рецепт${code}`);
+      }
+      return { slot: json.slot };
     },
 
     async getConfig() {
@@ -301,7 +334,67 @@ export function lanTransport(baseUrl: string, token?: string): DeviceTransport {
       const parsed = DeviceRecipeSchema.safeParse(json);
       return parsed.success ? parsed.data : null;
     },
+
+    async listLogs() {
+      const url = `${base}/log`;
+      assertEgressUrlAllowed(url);
+      const res = await fetch(url, { method: "GET", headers });
+      if (!res.ok) return [];
+      const json = await res.json().catch(() => null);
+      const parsed = DeviceLogFileListSchema.safeParse(json);
+      return parsed.success ? parsed.data : [];
+    },
+
+    async readLog(name) {
+      const url = `${base}/log?name=${encodeURIComponent(name)}`;
+      assertEgressUrlAllowed(url);
+      const res = await fetch(url, { method: "GET", headers });
+      if (!res.ok) return null; // 404 = файла нет (мог быть вытеснен ретеншном между list/read)
+      return res.text();
+    },
   };
+}
+
+// =============================================================================
+//  Pairing (P4/D5): доставка portal-токена НА устройство по LAN.
+//  POST {base}/pair {"token": "bfd_..."} — принимается ТОЛЬКО пока устройство ещё
+//  не сопряжено (device_token пуст на плате); проверка формата/владения ownership
+//  уже произошла на портале (claimCode — секрет claimDevice). 409 ALREADY_PAIRED —
+//  устройство уже сопряжено с (возможно, тем же) владельцем; разорвать сопряжение
+//  можно ТОЛЬКО локально на самой плате (Setup → «Удалённо» → «Отвязать
+//  устройство») — сетевого пути на unpair нет и не будет (CLAUDE.md).
+// =============================================================================
+export type PairDeviceResult =
+  | { ok: true }
+  | { ok: false; reason: "ALREADY_PAIRED" | "REJECTED" | "UNREACHABLE" };
+
+/**
+ * Доставить pairing-токен устройству по его LAN-адресу. Отдельная функция (не
+ * метод DeviceTransport): пейринг — одноразовая операция ДО того, как токен
+ * вообще можно использовать как Bearer, поэтому вызывается с «голым» baseUrl,
+ * без готового транспорта/токена.
+ */
+export async function pairDeviceOverLan(baseUrl: string, rawToken: string): Promise<PairDeviceResult> {
+  const base = baseUrl.replace(/\/+$/, "");
+  const url = `${base}/pair`;
+  try {
+    assertEgressUrlAllowed(url);
+    const res = await fetch(url, {
+      method: "POST",
+      headers: { "content-type": "application/json", accept: "application/json" },
+      body: JSON.stringify({ token: rawToken }),
+    });
+    if (res.status === 409) return { ok: false, reason: "ALREADY_PAIRED" };
+    if (!res.ok) return { ok: false, reason: "REJECTED" };
+    const json = await res.json().catch(() => null);
+    if (isRecord(json) && json.ok === true) return { ok: true };
+    return { ok: false, reason: "REJECTED" };
+  } catch {
+    // Сеть недоступна / SSRF-гард заблокировал / устройство не отвечает — не
+    // фатально для claimDevice: токен всё равно выдан пользователю один раз,
+    // доставить можно вручную (провижининг-форма/повторный клейм).
+    return { ok: false, reason: "UNREACHABLE" };
+  }
 }
 
 /**

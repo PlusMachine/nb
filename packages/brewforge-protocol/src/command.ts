@@ -62,6 +62,11 @@ function makeCommand(type: CommandType, arg?: CommandArg, auth?: string): Comman
 export const cmdStartBrew = (slot: number, auth?: string): Command =>
   makeCommand("START_BREW", { i: slot }, auth);
 
+/** BF_CMD_START_DELAYED — отложенный старт: arg.i = задержка в минутах. Греющая
+ *  команда (гейтится opt-in'ом remote_control_enabled, как START_BREW/RESUME). */
+export const cmdStartDelayed = (delayMinutes: number, auth?: string): Command =>
+  makeCommand("START_DELAYED", { i: delayMinutes }, auth);
+
 export const cmdSelectRecipe = (slot: number, auth?: string): Command =>
   makeCommand("SELECT_RECIPE", { i: slot }, auth);
 
@@ -95,3 +100,8 @@ export const cmdClearFault = (auth?: string): Command =>
   makeCommand("CLEAR_FAULT", undefined, auth);
 export const cmdSaveSettings = (auth?: string): Command =>
   makeCommand("SAVE_SETTINGS", undefined, auth);
+
+/** BF_CMD_ACK_HOP — подтвердить внесение хмеля удалённо («Гид по хмелю»,
+ *  arg.i = индекс хмеля 0..BF_MAX_HOPS-1). Не «греющая» — без gate/rate-limit. */
+export const cmdAckHop = (hopIndex: number, auth?: string): Command =>
+  makeCommand("ACK_HOP", { i: hopIndex }, auth);

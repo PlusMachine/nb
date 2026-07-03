@@ -298,6 +298,20 @@
       "when": 1791000000012,
       "tag": "0046_dear_george_stacy",
       "breakpoints": true
+    },
+    {
+      "idx": 47,
+      "version": "7",
+      "when": 1791000000013,
+      "tag": "0047_complete_dust",
+      "breakpoints": true
+    },
+    {
+      "idx": 48,
+      "version": "7",
+      "when": 1791000000014,
+      "tag": "0048_brewforge_token_enc_and_log_sync",
+      "breakpoints": true
     }
   ]
 }

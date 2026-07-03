@@ -2,6 +2,18 @@
 //  @nb/brewforge-protocol — telemetry.ts
 //  Снимок bf_brew_state_t + конверт (deviceId/fw/ts/seq/uptime/promptSeq).
 //  Топик: brewforge/<deviceId>/telemetry (QoS0, retained, ~1 Гц).
+//
+//  ⚠ НАХОДКА пакета 4-B (сверка с components/comms/bf_proto.c/bf_state.h): поля
+//  `hops_acked`/`eta_remaining_min` УЖЕ считает process (components/process/
+//  bf_process.c:1131,1135, публикуются в bf_brew_state_t) — ЧЕК-ЛИСТ хмеля §3.2 и
+//  ETA варки §C реализованы на устройстве. Но bf_proto_telemetry_json их пока НЕ
+//  сериализует в JSON (grep по bf_proto.c — ни "hopsAcked", ни "etaRemainingMin" не
+//  встречаются) — это пробел ПРОШИВКИ (вне scope портального пакета, read-only).
+//  Здесь их сознательно НЕ добавляем как optional-«заглушку под будущее»: схема
+//  должна отражать ФАКТИЧЕСКИЙ провод, а не то, что «скоро появится» — иначе UI-код
+//  начнёт молча получать `undefined` и решит, что это «нет данных», хотя на самом
+//  деле устройство просто не отправляет уже готовое значение. Добавить оба поля
+//  сюда СИНХРОННО с починкой bf_proto_telemetry_json — отдельный тикет прошивки.
 // =============================================================================
 import { z } from "zod";
 import {
@@ -55,6 +67,19 @@ export const TelemetrySchema = z.object({
   heatOn: z.boolean(),              // мгновенное состояние основного SSR
   spargeHeatOn: z.boolean(),
   pumpOn: z.boolean(),
+  // --- P1 (пакет 4-B): bf_proto_telemetry_json шлёт эти поля давно (v6/v9/v10),
+  // схема их молча резала (Zod по умолчанию отбрасывает незнакомые поля из
+  // z.object) — 2-й насос/клапан/охлаждение ферментации/косвенный нагрев были
+  // физически невозможны для показа на дашборде. optional (не .default()), чтобы
+  // undefined однозначно читался как «прошивка старее пакета 4-A / поле не
+  // прислано», а не «выключено» — UI отличает «нет данных» от «false». Имена и
+  // условие отправки сверены 1:1 по bf_proto.c (bf_proto_telemetry_json).
+  pump2On: z.boolean().optional(),        // v6: второй насос (роль PUMP2)
+  valveOn: z.boolean().optional(),        // v6: клапан (роль VALVE; флегма при дистилляции)
+  coolOn: z.boolean().optional(),         // v9: охлаждение (роль COOLER, ферментация)
+  indirectActive: z.boolean().optional(), // v10: текущая стадия греет косвенно (HERMS/RIMS)
+  hxTempC: z.number().optional(),         // v10: темп. HLT/трубы; ПРИСУТСТВУЕТ, только когда
+                                           // hx_valid на устройстве (иначе поле опущено целиком)
   boilPct: z.number().int(),        // отображаемая скважность кипения
 
   // --- таймеры / индексы ---
@@ -67,7 +92,18 @@ export const TelemetrySchema = z.object({
   // --- промпты ---
   prompt: z.number().int(),         // числовое значение bf_prompt_t
   promptSeq: z.number().int(),      // инкремент при смене промпта (идемпотентный ack)
-  nextHopAlert: z.boolean(),
+  nextHopAlert: z.boolean(),        // «мигающий» алёрт — сохранён для обратной совместимости
+
+  // --- §1.6 (пакет 4-B): структурный список внесений хмеля вместо lossy-алёрта
+  // выше + «нужно действие оператора» (сейчас — только «смените тару» дистилляции).
+  // Тоже давно шлются прошивкой (bf_proto.c), тоже optional по той же причине. ---
+  nextHopName: z.string().optional(),  // имя ближайшего ещё НЕ внесённого хмеля ("" = нет)
+  nextHopG: z.number().int().optional(),   // его навеска, г
+  hopsAlerted: z.number().int().optional(), // битовая маска: для каких хмелей алёрт сработал
+  actionReady: z.boolean().optional(), // требуется действие оператора (напр. дистилляция)
+  coolLockS: z.number().int().optional(), // анти-короткий-цикл компрессора (ферментация), сек
+  hopsAcked: z.number().int().optional(), // маска ПОДТВЕРЖДЁННЫХ внесений (ACK_HOP)
+  etaRemainingMin: z.number().int().optional(), // «до конца варки ~», мин (оценка снизу)
 
   // --- рецепт / статус ---
   activeRecipe: z.number().int(),   // bf_brew_state_t.active_recipe (−1 = нет)

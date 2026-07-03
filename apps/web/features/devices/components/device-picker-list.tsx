@@ -14,7 +14,8 @@ import React, { useEffect, useState } from "react";
 import { Loader2, Plus, RefreshCw } from "lucide-react";
 
 import { Button } from "@nb/ui";
-import { devicePairingErrorText } from "@/features/devices/pairing-error-text";
+import { devicePairingErrorText, pairingDeliveryReasonText } from "@/features/devices/pairing-error-text";
+import type { PairingDeliveryStatus } from "@/features/devices/contracts";
 
 /** Клиентская проекция DeviceDto: после JSON даты приходят строками. */
 export type PickerDevice = {
@@ -68,6 +69,7 @@ export function DevicePickerList({
   const [pairing, setPairing] = useState(false);
   const [pairError, setPairError] = useState<string | null>(null);
   const [issuedToken, setIssuedToken] = useState<string | null>(null);
+  const [pairingStatus, setPairingStatus] = useState<PairingDeliveryStatus | null>(null);
 
   // Список догрузился пустым (нет привязанных устройств) — сразу форма привязки.
   useEffect(() => {
@@ -91,13 +93,20 @@ export function DevicePickerList({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(body)
       });
-      const data = (await res.json()) as { device?: PickerDevice; token?: string; error?: string };
+      const data = (await res.json()) as {
+        device?: PickerDevice;
+        token?: string;
+        error?: string;
+        pairing?: PairingDeliveryStatus;
+      };
       if (!res.ok || !data.device) {
         setPairError(devicePairingErrorText(data.error));
         return;
       }
-      // Plaintext-токен показываем один раз — его нужно прошить в устройство.
+      // Plaintext-токен показываем один раз — его нужно прошить в устройство
+      // (если не доставлен автоматически по LAN, см. pairingStatus, пакет 4-B).
       setIssuedToken(data.token ?? null);
+      setPairingStatus(data.pairing ?? null);
       onDeviceAdded(data.device, data.token ?? null);
       onSelect(data.device.id);
       setView("list");
@@ -138,12 +147,21 @@ export function DevicePickerList({
       {issuedToken ? (
         <div className="rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-3 text-sm text-emerald-950" role="status">
           <p className="font-semibold">Устройство привязано.</p>
-          <p className="mt-1 text-xs leading-5 text-emerald-800">
-            Сохраните токен и пропишите его в устройстве — он показывается один раз и нигде не хранится в открытом виде.
-          </p>
+          {pairingStatus?.delivered ? (
+            <p className="mt-1 text-xs leading-5 text-emerald-800">
+              Токен уже доставлен устройству по локальной сети — можно управлять сразу.
+            </p>
+          ) : (
+            <p className="mt-1 text-xs leading-5 text-emerald-800">
+              Сохраните токен и пропишите его в устройстве — он показывается один раз и нигде не хранится в открытом виде.
+            </p>
+          )}
           <code className="mt-2 block break-all rounded-md border border-emerald-200 bg-white px-2 py-1.5 font-mono text-xs text-emerald-900">
             {issuedToken}
           </code>
+          {pairingStatus && !pairingStatus.delivered ? (
+            <p className="mt-2 text-xs leading-5 text-amber-800">{pairingDeliveryReasonText(pairingStatus.reason)}</p>
+          ) : null}
         </div>
       ) : null}
 

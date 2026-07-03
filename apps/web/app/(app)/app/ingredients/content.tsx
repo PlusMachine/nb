@@ -1,4 +1,5 @@
 import React from "react";
+import Link from "next/link";
 import { redirect } from "next/navigation";
 import { GroupedInventoryList } from "@/components/inventory/grouped-inventory-list";
 import { InventoryEmptyState } from "@/components/inventory/inventory-empty-state";
@@ -131,10 +132,14 @@ export async function MyIngredientsContent({ searchParams }: Props = {}) {
   }
 
   const hasAnyItems = summary.totalItems > 0;
+  // Суженный вид (поиск/категория/подгруппа) — пользователь ищет конкретную
+  // позицию; секция «Можно сварить» про весь склад, поэтому под отфильтрованным
+  // списком она только мешает — и заодно не гоняем под неё тяжёлый запрос.
+  const isNarrowedView = Boolean(rawSearch) || category != null || subtype != null || Boolean(group);
   // Обратный матчинг «склад → рецепты» считаем только при наличии запасов,
   // чтобы не гонять тяжёлый запрос на пустом складе. Вторичная секция — при сбое
   // деградируем тихо, не роняя страницу склада.
-  const brewableRecipes = summary.inStockItems > 0
+  const brewableRecipes = !isNarrowedView && summary.inStockItems > 0
     ? await findBrewableRecipesForUser({ userId: user.id, limit: 6 }).catch(() => [])
     : [];
   const hasFilters = hasActiveInventoryFilters({
@@ -145,6 +150,50 @@ export async function MyIngredientsContent({ searchParams }: Props = {}) {
     showFinished,
     sort
   });
+  const finishedHref = buildInventoryToolbarHref("/app/ingredients", {
+    search: rawSearch,
+    category: category ?? "all",
+    subtype: subtype ?? null,
+    group: group ?? null,
+    showFinished: true,
+    sort
+  });
+
+  const inventoryList = items.length === 0 ? (
+    <InventoryEmptyState
+      hasAnyItems={hasAnyItems}
+      hasFilters={hasFilters}
+      search={rawSearch}
+      category={category}
+      subtype={subtype ?? null}
+      group={group ?? null}
+      showFinished={showFinished}
+    />
+  ) : (
+    <GroupedInventoryList
+      items={items}
+      preferredCurrency={user.preferredCurrency}
+      currencyRates={currencyRates}
+      layout={sort === "price" || sort === "best_before" ? "flat" : "grouped"}
+      sortEmphasis={sort === "price" ? "price" : sort === "best_before" ? "best_before" : null}
+    />
+  );
+
+  // «Можно сварить» — главный мотиватор страницы. На десктопе выносим в правый
+  // sticky-rail (виден без скролла, заполняет пустое место рядом с узкими
+  // карточками); на мобиле секция стекается под список (+ якорь в шапке). Без
+  // подходящих рецептов rail не занимает место — список во всю ширину.
+  const inventoryBody = brewableRecipes.length > 0 ? (
+    <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_20rem] lg:items-start">
+      <div className="min-w-0">{inventoryList}</div>
+      <aside className="lg:sticky lg:top-4">
+        <BrewableRecipesSection recipes={brewableRecipes} />
+      </aside>
+    </div>
+  ) : (
+    inventoryList
+  );
+
   return (
     <main className="space-y-5">
       <section className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
@@ -152,7 +201,35 @@ export async function MyIngredientsContent({ searchParams }: Props = {}) {
           <h1 className="text-xl font-bold tracking-tight text-zinc-900 sm:text-2xl">Мой склад</h1>
           {hasAnyItems ? (
             <p className="text-sm text-zinc-400">
-              {summary.inStockItems} в наличии{summary.emptyItems > 0 ? ` · ${summary.emptyItems} закончились` : ""}
+              {summary.inStockItems} в наличии
+              {summary.emptyItems > 0 ? (
+                showFinished ? (
+                  <> · {summary.emptyItems} закончились</>
+                ) : (
+                  <>
+                    {" · "}
+                    <Link
+                      href={finishedHref}
+                      className="underline decoration-dotted underline-offset-2 transition-colors hover:text-zinc-600"
+                    >
+                      {summary.emptyItems} закончились
+                    </Link>
+                  </>
+                )
+              ) : null}
+              {/* На мобиле секция «Можно сварить» уходит в самый низ — даём якорь
+                  прямо в шапке. На десктопе она в правом rail, якорь не нужен. */}
+              {brewableRecipes.length > 0 ? (
+                <>
+                  {" · "}
+                  <a
+                    href="#brewable"
+                    className="underline decoration-dotted underline-offset-2 transition-colors hover:text-zinc-600 lg:hidden"
+                  >
+                    можно сварить: {brewableRecipes.length}
+                  </a>
+                </>
+              ) : null}
             </p>
           ) : null}
         </div>
@@ -181,27 +258,7 @@ export async function MyIngredientsContent({ searchParams }: Props = {}) {
         visibleItemCount={items.length}
       />
 
-      {items.length === 0
-        ? (
-          <InventoryEmptyState
-            hasAnyItems={hasAnyItems}
-            hasFilters={hasFilters}
-            search={rawSearch}
-            category={category}
-            subtype={subtype ?? null}
-            group={group ?? null}
-            showFinished={showFinished}
-          />
-        )
-        : (
-          <GroupedInventoryList
-            items={items}
-            preferredCurrency={user.preferredCurrency}
-            currencyRates={currencyRates}
-          />
-        )}
-
-      <BrewableRecipesSection recipes={brewableRecipes} />
+      {inventoryBody}
     </main>
   );
 }

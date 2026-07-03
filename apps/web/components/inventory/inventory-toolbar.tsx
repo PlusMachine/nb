@@ -209,6 +209,10 @@ export function InventoryToolbar({
   const activeConsumableBroadGroup = category === "consumable"
     ? resolveConsumableToolbarBroadGroup(group)
     : null;
+  // При активном поиске счётчики по категориям не учитывают запрос и потому
+  // расходятся с реальными числами в заголовках групп — прячем их, чтобы не
+  // показывать неверные цифры (правда живёт в заголовке группы).
+  const showCategoryCounts = !search.trim();
 
   const handlePrimaryFilterClick = (nextKey: PrimaryButtonKey) => {
     const isActive = (
@@ -327,7 +331,7 @@ export function InventoryToolbar({
 
   return (
     <section className="space-y-3" aria-label="Фильтры по запасам">
-      <div className="grid grid-cols-3 gap-2 sm:grid-cols-6">
+      <div className="grid grid-cols-2 gap-2 sm:grid-cols-6">
         {primaryButtons.map((button) => {
           const meta = categoryMeta[button.key];
           const Icon = meta.icon;
@@ -349,15 +353,17 @@ export function InventoryToolbar({
             >
               <Icon className={`h-4 w-4 shrink-0 ${isDisabled ? "text-zinc-300" : button.active ? "text-current" : ""}`} />
               <span className="truncate">{button.label}</span>
-              <span className={`hidden shrink-0 rounded-full px-1.5 py-0.5 text-center text-[11px] font-semibold leading-none sm:block ${
-                isDisabled
-                  ? "bg-zinc-100 text-zinc-400"
-                  : button.active
-                    ? "bg-white/70 text-current"
-                    : "bg-zinc-100 text-zinc-500"
-              }`}>
-                {button.count}
-              </span>
+              {showCategoryCounts ? (
+                <span className={`shrink-0 rounded-full px-1.5 py-0.5 text-center text-[11px] font-semibold leading-none ${
+                  isDisabled
+                    ? "bg-zinc-100 text-zinc-400"
+                    : button.active
+                      ? "bg-white/70 text-current"
+                      : "bg-zinc-100 text-zinc-500"
+                }`}>
+                  {button.count}
+                </span>
+              ) : null}
             </button>
           );
         })}
@@ -410,22 +416,7 @@ export function InventoryToolbar({
           <div className="min-w-0 flex-1">
             <InventorySearchInput
               value={searchValue}
-              category={category}
-              subtype={subtype}
-              group={group}
-              showFinished={showFinished}
               onValueChange={setSearchValue}
-              onSuggestionSelect={(value) => {
-                setSearchValue(value);
-                replaceHref(buildInventoryToolbarHref(pathname, {
-                  search: value,
-                  category,
-                  subtype,
-                  group,
-                  showFinished,
-                  sort
-                }));
-              }}
             />
           </div>
         ) : null}

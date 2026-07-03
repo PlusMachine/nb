@@ -1,95 +1,59 @@
 "use client";
 
-import React from "react";
-
-import { IngredientPicker } from "@/components/ingredients/ingredient-picker";
-import type {
-  IngredientCategory,
-  IngredientSuggestionItem,
-  IngredientSubtype
-} from "@/features/ingredients/contracts";
+import React, { useRef } from "react";
+import { Search, X } from "lucide-react";
 
 type Props = {
   value: string;
-  category: IngredientCategory | "all";
-  subtype?: Extract<IngredientSubtype, "malt" | "fermentable"> | null;
-  group?: string | null;
-  showFinished: boolean;
   onValueChange: (value: string) => void;
-  onSuggestionSelect: (value: string, item: IngredientSuggestionItem) => void;
+  placeholder?: string;
 };
 
-export const buildInventorySuggestionParams = ({
-  q,
-  category,
-  subtype,
-  group,
-  showFinished,
-  limit
-}: {
-  q: string;
-  category?: IngredientCategory;
-  subtype?: Extract<IngredientSubtype, "malt" | "fermentable"> | null;
-  group?: string | null;
-  showFinished: boolean;
-  limit: number;
-}) => {
-  const params = new URLSearchParams({ q: q.trim(), limit: String(limit) });
-  if (category) {
-    params.set("category", category);
-  }
-  if (subtype) {
-    params.set("subtype", subtype);
-  }
-  if (group) {
-    params.set("group", group);
-  }
-  if (showFinished) {
-    params.set("finished", "true");
-  }
-
-  return params;
-};
-
+/**
+ * Поиск по складу — обычная строка с живой фильтрацией списка под ней.
+ * Намеренно НЕ используем IngredientPicker с async-дропдауном: список ниже уже
+ * и есть результат запроса, а всплывающие подсказки лишь дублировали бы его
+ * и перекрывали. Дебаунс и запись в URL — на стороне тулбара (useDebouncedUrlSearch).
+ */
 export function InventorySearchInput({
   value,
-  category,
-  subtype = null,
-  group = null,
-  showFinished,
   onValueChange,
-  onSuggestionSelect
+  placeholder = "Поиск ингредиентов..."
 }: Props) {
-  const effectiveCategory = category === "all" ? undefined : category;
+  const inputRef = useRef<HTMLInputElement>(null);
 
   return (
-    <IngredientPicker
-      value={value}
-      category={effectiveCategory}
-      onValueChange={onValueChange}
-      onSelect={(item) => {
-        onValueChange(item.displayName);
-        onSuggestionSelect(item.displayName, item);
-      }}
-      placeholder="Поиск ингредиентов..."
-      emptyCta={<p className="text-xs text-zinc-500">В текущем списке ничего не найдено. Попробуйте другой запрос или поменяйте фильтры.</p>}
-      searchIngredients={async ({ q, category: nextCategory, limit, signal }) => {
-        const params = buildInventorySuggestionParams({
-          q,
-          category: nextCategory,
-          subtype,
-          group,
-          showFinished,
-          limit
-        });
-        const response = await fetch(`/api/inventory/suggestions?${params.toString()}`, { signal });
-        if (!response.ok) {
-          return [];
-        }
-
-        const data = await response.json() as { items: IngredientSuggestionItem[] };
-        return data.items;
-      }}
-    />
+    <div className="relative">
+      <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-400" />
+      <input
+        ref={inputRef}
+        type="text"
+        value={value}
+        onChange={(event) => onValueChange(event.target.value)}
+        onKeyDown={(event) => {
+          if (event.key === "Escape" && value) {
+            event.preventDefault();
+            onValueChange("");
+          }
+        }}
+        placeholder={placeholder}
+        aria-label="Поиск по складу"
+        autoComplete="off"
+        className="w-full rounded-lg border border-zinc-200 bg-white py-2 pl-9 pr-9 text-sm text-zinc-900 placeholder:text-zinc-400 transition-colors focus:border-zinc-400 focus:outline-none focus:ring-2 focus:ring-zinc-200"
+      />
+      {value ? (
+        <button
+          type="button"
+          onClick={() => {
+            onValueChange("");
+            inputRef.current?.focus();
+          }}
+          aria-label="Очистить поиск"
+          className="absolute right-2 top-1/2 flex h-6 w-6 -translate-y-1/2 items-center justify-center rounded-md text-zinc-400 transition-colors hover:bg-zinc-100 hover:text-zinc-600"
+        >
+          <X className="h-4 w-4" />
+        </button>
+      ) : null}
+    </div>
   );
 }

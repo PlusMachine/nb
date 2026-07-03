@@ -537,6 +537,7 @@ export function AddIngredientModal({
           }
         }}
         title="Добавить ингредиент"
+        hideTitle
         size="lg"
         guard={{
           isDirty: () => dirtyRef.current,

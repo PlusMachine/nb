@@ -70,7 +70,12 @@ export function simTransport(deviceId: string): DeviceTransport {
     },
 
     async putRecipe(recipe: DeviceRecipe, slot?: number): Promise<{ slot: number }> {
-      const written = advanced(deviceId).putRecipe(recipe, slot ?? 0);
+      // БЕЗ явного slot — SimDevice сам автовыбирает первый свободный ЗАПИСЫВАЕМЫЙ
+      // слот (паритет с pick_recipe_slot() прошивки, слоты 0..5 — ROM-«встроенные»,
+      // писать в них нельзя даже дефолтом). Раньше здесь стоял `slot ?? 0`, что на
+      // демо тихо перезаписывало слот 0 при каждом «Старт варки» — расхождение с
+      // реальным железом (сверка контракта, пакет 4-B).
+      const written = advanced(deviceId).putRecipe(recipe, slot);
       return { slot: written };
     },
 

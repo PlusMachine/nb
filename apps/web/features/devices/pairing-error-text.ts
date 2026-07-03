@@ -33,3 +33,25 @@ const DEFAULT_PAIRING_ERROR_TEXT = "Не удалось привязать ус�
 export function devicePairingErrorText(code?: string | null): string {
   return (code && PAIRING_ERROR_TEXT[code]) || DEFAULT_PAIRING_ERROR_TEXT;
 }
+
+// =============================================================================
+//  Тексты ИТОГА автодоставки токена устройству (P4, пакет 4-B) — ОТДЕЛЬНЫЙ
+//  домен от PAIRING_ERROR_TEXT выше: claimDevice САМ по себе уже успешен (код/
+//  устройство/токен созданы), это лишь статус попытки POST {localUrl}/pair.
+//  Соответствует PairingDeliveryStatus.reason из features/devices/contracts.ts.
+// =============================================================================
+export const PAIRING_DELIVERY_REASON_TEXT: Record<string, string> = {
+  NO_LOCAL_URL: "Токен выдан. Локальный адрес устройства не указан — введите токен на устройстве вручную.",
+  ALREADY_PAIRED:
+    "Устройство уже сопряжено — сбросьте привязку на самом устройстве: Настройки → Удалённо.",
+  UNREACHABLE:
+    "Токен выдан, но устройство сейчас недоступно по сети. Введите его на устройстве вручную, когда оно будет в сети.",
+  REJECTED: "Устройство отклонило токен. Введите его на устройстве вручную."
+};
+
+const DEFAULT_PAIRING_DELIVERY_TEXT = "Не удалось автоматически доставить токен устройству. Введите его вручную.";
+
+/** Переводит `pairing.reason` (ClaimDeviceResult.pairing) в текст для UI. */
+export function pairingDeliveryReasonText(reason?: string | null): string {
+  return (reason && PAIRING_DELIVERY_REASON_TEXT[reason]) || DEFAULT_PAIRING_DELIVERY_TEXT;
+}

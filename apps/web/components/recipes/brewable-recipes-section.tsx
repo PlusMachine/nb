@@ -102,15 +102,21 @@ export function BrewableRecipesSection({ recipes }: { recipes: BrewableRecipeDto
   }
 
   return (
-    <section className="space-y-3">
+    // id/scroll-mt — цель для якоря «можно сварить» в шапке на мобиле.
+    // sm:grid-cols-2 lg:grid-cols-1 — две карточки в ряд на планшете, но одна
+    // колонка внутри узкого правого rail на десктопе.
+    <section id="brewable" className="scroll-mt-4 space-y-3">
       <div className="flex items-center gap-2">
         <div className="flex h-6 w-6 items-center justify-center rounded-md bg-amber-50 text-amber-600">
           <Beer className="h-3.5 w-3.5" />
         </div>
         <h2 className="text-base font-semibold text-zinc-900">Можно сварить из ваших запасов</h2>
+        <span className="rounded-full bg-zinc-100 px-2 py-0.5 text-xs font-medium tabular-nums text-zinc-400">
+          {recipes.length}
+        </span>
       </div>
 
-      <ul className="grid gap-3 sm:grid-cols-2">
+      <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-1">
         {recipes.map((recipe) => (
           <li key={recipe.recipeId}>
             <BrewableRecipeCard recipe={recipe} />
