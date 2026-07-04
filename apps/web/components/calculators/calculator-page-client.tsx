@@ -22,6 +22,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import { calibrateWcf, convertBrewingUnitGroup, gravityToSg, sgToBrix, sgToPlato } from "@nb/brewing-core";
 import { Button } from "@nb/ui";
 
+import { RelatedLinksSection } from "@/components/shared/related-links-section";
 import { calculatorBySlug, isCalculatorVerified, type CalculatorSlug } from "@/features/calculators/catalog";
 import {
   calculatorStorageKey,
@@ -413,7 +414,7 @@ function ResultPanel({
   result: CalculatorResult;
 }) {
   return (
-    <aside className="space-y-3 rounded-2xl border border-zinc-200 bg-white p-4 shadow-sm lg:sticky lg:top-4">
+    <aside className="space-y-3 rounded-2xl border border-zinc-200 bg-white p-4 shadow-sm lg:sticky lg:top-[calc(var(--chrome-top)+1rem)]">
       <div className="rounded-xl bg-zinc-50 p-4">
         <p className="text-[11px] font-medium uppercase tracking-[0.08em] text-zinc-400">{result.primary.label}</p>
         <p className="mt-1 break-words text-3xl font-semibold leading-tight tabular-nums text-zinc-950">{result.primary.value}</p>
@@ -754,7 +755,7 @@ function RefractometerResultPanel({ state }: { state: CalculatorState }) {
     view = computeRefractometerView(state);
   } catch {
     return (
-      <aside className="lg:sticky lg:top-6">
+      <aside className="lg:sticky lg:top-[calc(var(--chrome-top)+1.5rem)]">
         <div className="rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm">
           <p className="text-[11px] font-medium uppercase tracking-[0.08em] text-zinc-400">Скорректированная плотность</p>
           <p className="mt-2 text-sm leading-5 text-zinc-500">Проверьте входные значения.</p>
@@ -782,7 +783,7 @@ function RefractometerResultPanel({ state }: { state: CalculatorState }) {
       : "65–80% — нормально для большинства элей.";
 
   return (
-    <aside className="lg:sticky lg:top-6">
+    <aside className="lg:sticky lg:top-[calc(var(--chrome-top)+1.5rem)]">
       <div className="overflow-hidden rounded-2xl border border-zinc-200 bg-white shadow-sm">
         <div className="border-b border-zinc-100 bg-gradient-to-b from-zinc-50 to-white px-5 py-5">
           <p className="text-[11px] font-medium uppercase tracking-[0.08em] text-zinc-400">Скорректированная плотность</p>
@@ -958,7 +959,7 @@ function AbvResultPanel({ state }: { state: CalculatorState }) {
     view = computeAbvView(state);
   } catch {
     return (
-      <aside className="lg:sticky lg:top-6">
+      <aside className="lg:sticky lg:top-[calc(var(--chrome-top)+1.5rem)]">
         <div className="rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm">
           <p className="text-[11px] font-medium uppercase tracking-[0.08em] text-zinc-400">Крепость</p>
           <p className="mt-2 text-sm leading-5 text-zinc-500">Проверьте входные значения.</p>
@@ -974,7 +975,7 @@ function AbvResultPanel({ state }: { state: CalculatorState }) {
       : "65–80% — нормально для большинства элей.";
 
   return (
-    <aside className="lg:sticky lg:top-6">
+    <aside className="lg:sticky lg:top-[calc(var(--chrome-top)+1.5rem)]">
       <div className="overflow-hidden rounded-2xl border border-zinc-200 bg-white shadow-sm">
         <div className="border-b border-zinc-100 bg-gradient-to-b from-zinc-50 to-white px-5 py-5">
           <p className="text-[11px] font-medium uppercase tracking-[0.08em] text-zinc-400">Крепость</p>
@@ -1130,7 +1131,7 @@ function HydrometerResultPanel({ state }: { state: CalculatorState }) {
     view = computeHydrometerView(state);
   } catch {
     return (
-      <aside className="lg:sticky lg:top-6">
+      <aside className="lg:sticky lg:top-[calc(var(--chrome-top)+1.5rem)]">
         <div className="rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm">
           <p className="text-[11px] font-medium uppercase tracking-[0.08em] text-zinc-400">Скорректированная плотность</p>
           <p className="mt-2 text-sm leading-5 text-zinc-500">Проверьте входные значения.</p>
@@ -1155,7 +1156,7 @@ function HydrometerResultPanel({ state }: { state: CalculatorState }) {
       : "Проба у температуры калибровки — поправка минимальна.";
 
   return (
-    <aside className="lg:sticky lg:top-6">
+    <aside className="lg:sticky lg:top-[calc(var(--chrome-top)+1.5rem)]">
       <div className="overflow-hidden rounded-2xl border border-zinc-200 bg-white shadow-sm">
         <div className="border-b border-zinc-100 bg-gradient-to-b from-zinc-50 to-white px-5 py-5">
           <p className="text-[11px] font-medium uppercase tracking-[0.08em] text-zinc-400">Скорректированная плотность</p>
@@ -1293,6 +1294,8 @@ export function CalculatorPageClient({
     href,
     label: label || href.split("/").pop()?.replaceAll("-", " ") || href
   }));
+  // Внешние назначения (вне /calculators) идут после калькуляторных ссылок.
+  const nextLinks = [...links, ...(definition.catalog.related ?? [])];
 
   const gridClassName = isRefractometer
     ? "grid gap-5 lg:grid-cols-[minmax(0,1fr)_20rem] lg:gap-6"
@@ -1379,21 +1382,7 @@ export function CalculatorPageClient({
 
       <FormulaDetails formula={definition.catalog.formula} />
 
-      <section className="rounded-2xl border border-zinc-100 bg-white p-4 shadow-sm">
-        <h2 className="text-sm font-semibold text-zinc-900">Дальше</h2>
-        <div className="mt-3 flex flex-wrap gap-2">
-          {links.map((link) => (
-            <Link
-              key={link.href}
-              href={link.href}
-              className="inline-flex items-center gap-1.5 rounded-lg border border-zinc-200 bg-white px-3 py-2 text-xs font-medium text-zinc-600 transition-colors hover:border-zinc-300 hover:bg-zinc-50"
-            >
-              {link.label}
-              <ChevronRight className="h-3.5 w-3.5" />
-            </Link>
-          ))}
-        </div>
-      </section>
+      <RelatedLinksSection links={nextLinks} />
     </main>
   );
 }

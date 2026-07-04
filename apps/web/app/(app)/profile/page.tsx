@@ -60,8 +60,6 @@ export default async function ProfilePage() {
         <h2 className="text-sm font-semibold uppercase tracking-[0.12em] text-zinc-500">Уведомления</h2>
         <NotificationOptIn />
       </section>
-
-      <p className="text-xs text-zinc-400">Выйти из аккаунта можно через меню профиля в шапке.</p>
     </div>
   );
 }

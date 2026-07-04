@@ -1,26 +1,33 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { Beer, BookOpen, Boxes, Calculator, ClipboardList, Clock, FlaskConical, Sparkles } from "lucide-react";
-import { listFeaturedArticles } from "@nb/content";
+import { ArrowRight, Clock } from "lucide-react";
+import { getBjcpCatalogData } from "@nb/content";
 
-import { ArticleCard } from "@/components/content/article-card";
+import { HomeBrewforge } from "@/components/home/home-brewforge";
+import { HomeCalculators } from "@/components/home/home-calculators";
+import { HomeInventory } from "@/components/home/home-inventory";
+import { HomeLoop } from "@/components/home/home-loop";
+import { HomeStyleVitals } from "@/components/home/home-style-vitals";
+import { RecipesGrid } from "@/components/recipes/recipes-grid";
 import { getSessionUser } from "@/lib/auth";
+import { srmToHex } from "@/features/recipes/beer-color";
+import { buildHeroStyleVitals } from "@/features/home/style-vitals";
+import { parsePublicRecipeFilters } from "@/features/recipes/public-recipe-query";
+import { getPublicRecipeFamilyCounts, searchPublicRecipes } from "@/features/recipes/service";
 import { listFeaturedContentArticles } from "@/features/content-articles/service";
 import { contentArticleTypeLabels } from "@/features/content-articles/contracts";
 
-// Рабочая петля мастерской — шаги читаются порядком и иконками, без пояснений.
-const loopSteps = [
-  { label: "Склад", icon: Boxes },
-  { label: "Рецепт", icon: FlaskConical },
-  { label: "Варка", icon: Beer },
-  { label: "Журнал", icon: ClipboardList }
-];
+// Спектр стилей BJCP для баннера — из той же SRM-палитры, что и весь сайт
+// (srmToHex по опорным SRM), а не отдельный набор хексов.
+const BJCP_SPECTRUM = `linear-gradient(90deg, ${[1, 2, 3, 5, 7, 10, 13, 16, 20, 26, 34, 45]
+  .map((srm, index, list) => `${srmToHex(srm)} ${Math.round((index / (list.length - 1)) * 100)}%`)
+  .join(", ")})`;
 
-const entryTiles = [
-  { href: "/guides", label: "Гайды", icon: BookOpen },
-  { href: "/bjcp", label: "Стили BJCP", icon: Sparkles },
-  { href: "/calculators", label: "Калькуляторы", icon: Calculator }
-];
+export const metadata: Metadata = {
+  description:
+    "Соберите рецепт, сверьте со складом и сварите по шагам. Рецепты сообщества, стили BJCP, калькуляторы пивовара и наша автоматика BrewForge."
+};
 
 export default async function HomePage() {
   // Залогиненному главная не нужна — его дом это мастерская (единый app-хром).
@@ -29,84 +36,81 @@ export default async function HomePage() {
     redirect("/app");
   }
 
-  const [featuredGuides, featuredArticles] = await Promise.all([
+  const [featuredGuides, bjcpCatalog, familyCounts, latestRecipes] = await Promise.all([
     listFeaturedContentArticles(3),
-    listFeaturedArticles()
+    getBjcpCatalogData(),
+    getPublicRecipeFamilyCounts(),
+    searchPublicRecipes({ ...parsePublicRecipeFilters({}), sort: "newest", page: 1, pageSize: 3 })
   ]);
+  const heroStyles = buildHeroStyleVitals(bjcpCatalog.styles);
+  const bjcpStyleCount = bjcpCatalog.styles.length;
+  // Семейства стилей с рецептами на витрине — тот же контракт, что табы фильтра
+  // /recipes (?family=), пустые скрываются (как и там).
+  const recipeFamilies = [...bjcpCatalog.families]
+    .sort((left, right) => left.sortOrder - right.sortOrder)
+    .map((family) => ({ id: family.id, name: family.nameRu, count: familyCounts[family.id] ?? 0 }))
+    .filter((family) => family.count > 0);
 
+  // Порядок секций: свежий контент (рецепты, гайды) → продуктовая история
+  // (мастерская, склад, BrewForge) → инструменты → финальный CTA.
   return (
     <main className="space-y-16 pb-24 pt-8">
       <section className="overflow-hidden rounded-[2.75rem] border border-white/80 bg-white/90 px-6 py-10 shadow-[0_45px_120px_-70px_rgba(15,23,42,0.45)] backdrop-blur sm:px-8 lg:px-10">
-        <div className="space-y-6">
-          <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-zinc-500">Домашнее пивоварение</p>
-          <h1 className="max-w-4xl text-balance text-4xl font-semibold leading-[0.98] text-zinc-950 sm:text-5xl lg:text-6xl" style={{ fontFamily: "var(--font-display)" }}>
-            Свари своё пиво — от рецепта до розлива
-          </h1>
-          <p className="max-w-2xl text-pretty text-lg leading-8 text-zinc-600">
-            Соберите рецепт из своего склада, сварите по пошаговому плану и ведите журнал варок. Гайды, стили BJCP и калькуляторы — рядом, когда нужны.
-          </p>
-          <div className="flex flex-wrap gap-3">
-            <Link href="/login?next=/app/recipes/new" className="inline-flex items-center rounded-full bg-zinc-950 px-5 py-3 text-sm font-semibold text-white">
-              Собрать рецепт
-            </Link>
-            <Link href="/guides" className="inline-flex items-center rounded-full border border-zinc-200 bg-white px-5 py-3 text-sm font-semibold text-zinc-800">
-              Читать гайды
-            </Link>
+        <div className="grid items-center gap-8 lg:grid-cols-[1.15fr_1fr] lg:gap-12">
+          <div className="space-y-6">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-zinc-500">Домашнее пивоварение</p>
+            <h1 className="max-w-2xl text-balance text-4xl font-semibold leading-[0.98] text-zinc-950 sm:text-5xl lg:text-6xl" style={{ fontFamily: "var(--font-display)" }}>
+              Свари своё пиво — от рецепта до розлива
+            </h1>
+            <p className="max-w-xl text-pretty text-lg leading-8 text-zinc-600">
+              Соберите рецепт — редактор посчитает плотность, горечь и цвет на лету. Сверьте со складом, сварите по шагам и следите за брожением.
+            </p>
+            <div className="flex flex-wrap gap-3">
+              <Link href="/login?next=/app/recipes/new" className="inline-flex items-center rounded-full bg-zinc-950 px-5 py-3 text-sm font-semibold text-white transition-colors hover:bg-zinc-800">
+                Собрать рецепт
+              </Link>
+              <Link href="/recipes" className="inline-flex items-center rounded-full border border-zinc-200 bg-white px-5 py-3 text-sm font-semibold text-zinc-800 transition-colors hover:border-zinc-300">
+                Смотреть рецепты
+              </Link>
+            </div>
           </div>
-        </div>
 
-        <div className="mt-10 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-          {entryTiles.map((tile) => (
-            <Link
-              key={tile.href}
-              href={tile.href}
-              className="flex items-center gap-3 rounded-2xl border border-zinc-200 bg-slate-50 p-4 transition hover:border-zinc-300 hover:bg-white"
-            >
-              <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-white text-zinc-700 shadow-sm">
-                <tile.icon className="h-5 w-5" aria-hidden />
-              </span>
-              <span className="text-base font-semibold text-zinc-950">{tile.label}</span>
-            </Link>
-          ))}
+          {heroStyles.length ? <HomeStyleVitals styles={heroStyles} /> : null}
         </div>
       </section>
 
       <section className="space-y-5">
         <div className="flex items-end justify-between gap-4">
           <h2 className="text-3xl font-semibold text-zinc-950" style={{ fontFamily: "var(--font-display)" }}>
-            Как работает мастерская
+            Рецепты сообщества
           </h2>
-          <Link href="/login?next=/app/recipes/new" className="text-sm font-semibold text-zinc-950">Начать</Link>
+          <Link href="/recipes" className="text-sm font-semibold text-zinc-950">Все рецепты</Link>
         </div>
-        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-          {loopSteps.map((step, index) => {
-            const Icon = step.icon;
-            return (
-              <div
-                key={step.label}
-                className="flex items-center gap-3 rounded-2xl border border-zinc-200 bg-white p-4 shadow-sm"
+        {recipeFamilies.length ? (
+          <div className="flex flex-wrap gap-2">
+            {recipeFamilies.map((family) => (
+              <Link
+                key={family.id}
+                href={`/recipes?family=${encodeURIComponent(family.id)}`}
+                className="inline-flex items-center gap-1.5 rounded-full border border-zinc-200 bg-white px-4 py-2 text-sm font-medium text-zinc-700 transition-colors hover:border-zinc-300 hover:bg-zinc-50"
               >
-                <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-zinc-900 text-white">
-                  <Icon className="h-5 w-5" aria-hidden />
-                </span>
-                <span className="flex items-baseline gap-2">
-                  <span className="text-xs font-semibold tabular-nums text-zinc-400">{index + 1}</span>
-                  <span className="text-base font-semibold text-zinc-950">{step.label}</span>
-                </span>
-              </div>
-            );
-          })}
-        </div>
+                {family.name}
+                <span className="text-xs tabular-nums text-zinc-400">{family.count}</span>
+              </Link>
+            ))}
+          </div>
+        ) : null}
+        {latestRecipes.items.length ? <RecipesGrid recipes={latestRecipes.items} /> : null}
       </section>
 
-      {featuredGuides.length ? (
-        <section className="space-y-5">
-          <div className="flex items-end justify-between gap-4">
-            <h2 className="text-3xl font-semibold text-zinc-950" style={{ fontFamily: "var(--font-display)" }}>
-              Гайды и обзоры
-            </h2>
-            <Link href="/guides" className="text-sm font-semibold text-zinc-950">Все гайды</Link>
-          </div>
+      <section className="space-y-5">
+        <div className="flex items-end justify-between gap-4">
+          <h2 className="text-3xl font-semibold text-zinc-950" style={{ fontFamily: "var(--font-display)" }}>
+            Разобраться
+          </h2>
+          <Link href="/guides" className="text-sm font-semibold text-zinc-950">Все гайды</Link>
+        </div>
+        {featuredGuides.length ? (
           <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {featuredGuides.map((guide) => (
               <Link
@@ -131,24 +135,71 @@ export default async function HomePage() {
               </Link>
             ))}
           </div>
-        </section>
-      ) : null}
+        ) : null}
 
-      {featuredArticles.length ? (
-        <section className="space-y-5">
-          <div className="flex items-end justify-between gap-4">
-            <h2 className="text-3xl font-semibold text-zinc-950" style={{ fontFamily: "var(--font-display)" }}>
-              Стили BJCP
-            </h2>
-            <Link href="/bjcp" className="text-sm font-semibold text-zinc-950">Весь раздел</Link>
+        <Link
+          href="/bjcp"
+          className="group block overflow-hidden rounded-[1.25rem] border border-zinc-200 bg-white shadow-sm transition hover:border-zinc-300 hover:shadow-md"
+        >
+          <div className="h-3.5" style={{ background: BJCP_SPECTRUM }} aria-hidden />
+          <div className="flex flex-wrap items-center justify-between gap-4 px-5 py-4 sm:px-6">
+            <div>
+              <div className="text-[17px] font-semibold text-zinc-950" style={{ fontFamily: "var(--font-display)" }}>
+                Стили пива — справочник BJCP 2021
+              </div>
+              <p className="mt-1 text-sm text-zinc-600">
+                {bjcpStyleCount} стилей: от чешского пилснера до имперского стаута
+              </p>
+            </div>
+            <span className="inline-flex items-center rounded-full border border-zinc-200 bg-white px-4 py-2 text-sm font-semibold text-zinc-800 transition-colors group-hover:border-zinc-300">
+              Открыть справочник
+            </span>
           </div>
-          <div className="grid gap-5 lg:grid-cols-3">
-            {featuredArticles.slice(0, 3).map((article, index) => (
-              <ArticleCard key={article.slug} article={article} featured={index === 0} />
-            ))}
-          </div>
-        </section>
-      ) : null}
+        </Link>
+      </section>
+
+      <section className="space-y-5">
+        <div className="flex items-end justify-between gap-4">
+          <h2 className="text-3xl font-semibold text-zinc-950" style={{ fontFamily: "var(--font-display)" }}>
+            Как работает мастерская
+          </h2>
+          <Link href="/login?next=/app/recipes/new" className="text-sm font-semibold text-zinc-950">Начать</Link>
+        </div>
+        <HomeLoop />
+      </section>
+
+      <HomeInventory />
+
+      <HomeBrewforge />
+
+      <HomeCalculators />
+
+      <section className="grid gap-4 sm:grid-cols-2">
+        <Link
+          href="/login?next=/app/recipes/new"
+          className="group flex flex-col gap-2 rounded-[1.25rem] border border-zinc-200 bg-white p-6 transition hover:-translate-y-0.5 hover:border-zinc-300 hover:shadow-md"
+        >
+          <span className="flex items-center gap-2 text-xl font-semibold text-zinc-950" style={{ fontFamily: "var(--font-display)" }}>
+            Начать с рецепта
+            <ArrowRight className="ml-auto h-5 w-5 text-zinc-300 transition group-hover:translate-x-1 group-hover:text-zinc-600" aria-hidden />
+          </span>
+          <span className="max-w-[44ch] text-sm text-zinc-600">
+            Соберите засыпь и охмеление — редактор посчитает OG, IBU и цвет на лету
+          </span>
+        </Link>
+        <Link
+          href="/login?next=/app/ingredients"
+          className="group flex flex-col gap-2 rounded-[1.25rem] border border-zinc-200 bg-white p-6 transition hover:-translate-y-0.5 hover:border-zinc-300 hover:shadow-md"
+        >
+          <span className="flex items-center gap-2 text-xl font-semibold text-zinc-950" style={{ fontFamily: "var(--font-display)" }}>
+            Начать со склада
+            <ArrowRight className="ml-auto h-5 w-5 text-zinc-300 transition group-hover:translate-x-1 group-hover:text-zinc-600" aria-hidden />
+          </span>
+          <span className="max-w-[44ch] text-sm text-zinc-600">
+            Занесите запасы — сайт покажет, какие рецепты можно сварить уже сегодня
+          </span>
+        </Link>
+      </section>
     </main>
   );
 }

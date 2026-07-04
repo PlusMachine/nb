@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import { TelemetrySchema } from "./telemetry";
-import { stageName } from "./enums";
+import { stageName, appModeName } from "./enums";
 
 // =============================================================================
 //  Юнит-тесты TelemetrySchema — пакет 4-B (P1 аудита comms-portal.md):
@@ -10,7 +10,9 @@ import { stageName } from "./enums";
 //      проходит — старые прошивки не должны ронять парсинг (см. комментарий
 //      в telemetry.ts: optional, не .default());
 //   3) стадии дистилляции/ферментации (bf_stage_t 17..21) не проходили StageSchema
-//      до пакета 4-B — это была полная порча кадра телеметрии, не «лишнее поле».
+//      до пакета 4-B — это была полная порча кадра телеметрии, не «лишнее поле»;
+//   4) H0: appMode (bf_app_mode_t) присутствует/отсутствует — старая прошивка
+//      (до v11) его не шлёт, кадр всё равно валиден.
 // =============================================================================
 
 /** Минимальный конверт + обязательные поля — общий каркас для обоих кадров. */
@@ -90,6 +92,29 @@ describe("TelemetrySchema", () => {
   it("незнакомое ЛИШНЕЕ поле в кадре молча отбрасывается (Zod z.object по умолчанию), не роняет парсинг", () => {
     const parsed = TelemetrySchema.parse({ ...baseFrame, someFutureField: 42 });
     expect(parsed).not.toHaveProperty("someFutureField");
+  });
+
+  it("принимает appMode (H0: bf_app_mode_t) вместе с остальным кадром", () => {
+    const parsed = TelemetrySchema.parse({ ...baseFrame, appMode: 1 });
+    expect(parsed.appMode).toBe(1);
+    expect(appModeName(parsed.appMode!)).toBe("distill");
+  });
+
+  it("СТАРЫЙ кадр без appMode (прошивка до v11) по-прежнему валиден", () => {
+    const parsed = TelemetrySchema.parse(baseFrame);
+    expect(parsed.appMode).toBeUndefined();
+  });
+
+  it.each([
+    [0, "brew"],
+    [1, "distill"],
+    [2, "ferment"],
+  ] as const)("appModeName(%i) === %s", (num, name) => {
+    expect(appModeName(num)).toBe(name);
+  });
+
+  it("appModeName бросает на неизвестном значении", () => {
+    expect(() => appModeName(99)).toThrow();
   });
 
   it.each([

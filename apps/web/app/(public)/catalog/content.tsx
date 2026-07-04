@@ -292,9 +292,6 @@ export async function IngredientCatalogContent({ searchParams }: Props = {}) {
   return (
     <main className="space-y-6">
       <section className="space-y-2">
-        <div className="inline-flex items-center rounded-full bg-zinc-100 px-3 py-1 text-xs font-medium uppercase tracking-[0.16em] text-zinc-500">
-          Каталог ингредиентов
-        </div>
         <div className="space-y-1">
           <h1 className="text-3xl font-semibold tracking-tight text-zinc-950">Каталог ингредиентов</h1>
           <p className="max-w-3xl text-sm leading-6 text-zinc-600">

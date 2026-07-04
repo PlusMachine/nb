@@ -37,6 +37,9 @@ export type CalculatorCatalogItem = {
   accentClassName: string;
   href: string;
   relatedSlugs: CalculatorSlug[];
+  // Ссылки за пределы /calculators — куда вести дальше по знаниевому контуру
+  // (рецепты, стили, гайды). Не заполняем, если внешнего назначения нет.
+  related?: { href: string; label: string }[];
   formula: string;
   assumptions: string[];
   commonMistakes: string[];
@@ -120,6 +123,7 @@ export const calculators: CalculatorCatalogItem[] = [
     accentClassName: "border-l-amber-400",
     href: "/calculators/abv-attenuation",
     relatedSlugs: ["hydrometer-correction", "refractometer-correction", "priming-sugar", "keg-carbonation", "unit-converter"],
+    related: [{ href: "/recipes", label: "Рецепты сообщества" }],
     formula: "ABV ≈ (OG − FG) × 131,25. Альтернативная формула точнее для крепкого пива — вносит поправку на плотность спирта.",
     assumptions: sharedAssumptions,
     commonMistakes: ["Смешали Plato/Brix и SG без конвертации.", "Взяли FG с рефрактометра без алкогольной коррекции."],
@@ -140,6 +144,7 @@ export const calculators: CalculatorCatalogItem[] = [
     accentClassName: "border-l-sky-400",
     href: "/calculators/refractometer-correction",
     relatedSlugs: ["abv-attenuation", "hydrometer-correction", "unit-converter"],
+    related: [{ href: "/recipes", label: "Рецепты сообщества" }],
     formula: "До брожения показание просто делится на WCF и переводится в плотность. После старта брожения спирт искажает преломление, поэтому реальную плотность оценивает эмпирическая формула (Terrill или Bonham) — по начальному и текущему показанию. WCF — индивидуальная поправка прибора; её можно измерить встроенным калибратором по суслу до брожения.",
     assumptions: [...sharedAssumptions, "WCF по умолчанию 1.04; точнее — откалибровать под свой прибор встроенным калькулятором WCF (один раз по суслу до брожения)."],
     commonMistakes: ["Берут плотность с рефрактометра после начала брожения без поправки на спирт.", "Не вводят начальную плотность (OG), без неё поправку на спирт посчитать нельзя."],
@@ -160,6 +165,7 @@ export const calculators: CalculatorCatalogItem[] = [
     accentClassName: "border-l-blue-400",
     href: "/calculators/hydrometer-correction",
     relatedSlugs: ["abv-attenuation", "refractometer-correction", "unit-converter"],
+    related: [{ href: "/recipes", label: "Рецепты сообщества" }],
     formula: "Скорректированная плотность = показание × f(темп. пробы) / f(темп. калибровки) + поправка прибора.",
     assumptions: sharedAssumptions,
     commonMistakes: ["Считывают показание до стабилизации ареометра.", "Не учитывают калибровку 20°C или 15.6°C."],
@@ -180,6 +186,7 @@ export const calculators: CalculatorCatalogItem[] = [
     accentClassName: "border-l-orange-400",
     href: "/calculators/dilution-boiloff",
     relatedSlugs: ["abv-attenuation", "ibu", "brewing-water-volume", "unit-converter"],
+    related: [{ href: "/recipes", label: "Рецепты сообщества" }],
     formula: "Сохранение единиц плотности: V₁ × П₁ = V₂ × П₂ (объем × плотность остаются в балансе).",
     assumptions: [...sharedAssumptions, "Добавление DME/сахара использует типовые PPG: DME 44, сахар 46."],
     commonMistakes: ["Сравнивают горячий объем с холодным без поправки на shrinkage.", "Используют некорректированный ареометрический замер."],
@@ -200,6 +207,7 @@ export const calculators: CalculatorCatalogItem[] = [
     accentClassName: "border-l-emerald-400",
     href: "/calculators/ibu",
     relatedSlugs: ["hop-freshness", "dilution-boiloff", "beer-color", "unit-converter"],
+    related: [{ href: "/recipes", label: "Рецепты сообщества" }],
     formula: "Tinseth: усвоение = фактор плотности × фактор времени кипячения; IBU — оценка изомеризованных альфа-кислот в мг/л.",
     assumptions: [...sharedAssumptions, "Whirlpool IBU остается приближением и зависит от температуры/времени."],
     commonMistakes: ["Включают dry hop в стандартный IBU total.", "Не меняют AA% для старого хмеля."],
@@ -220,6 +228,7 @@ export const calculators: CalculatorCatalogItem[] = [
     accentClassName: "border-l-cyan-400",
     href: "/calculators/brewing-water-volume",
     relatedSlugs: ["water-ph", "dilution-boiloff", "ibu", "unit-converter"],
+    related: [{ href: "/recipes", label: "Рецепты сообщества" }],
     formula: "Всего воды = объем до кипа + впитывание зерном + потери в котле; объем до кипа = горячий объем после кипа + испарение.",
     assumptions: [...sharedAssumptions, "Cooling shrinkage по умолчанию 4%."],
     commonMistakes: ["Забывают trub/chiller loss.", "Смешивают target fermenter volume и post-boil volume."],
@@ -240,6 +249,7 @@ export const calculators: CalculatorCatalogItem[] = [
     accentClassName: "border-l-sky-400",
     href: "/calculators/water-ph",
     relatedSlugs: ["brewing-water-volume", "unit-converter", "beer-color"],
+    related: [{ href: "/recipes", label: "Рецепты сообщества" }],
     formula: "Щелочность (как CaCO₃) = HCO₃ × 50 / 61; итоговый профиль воды складывается из добавок солей в ppm.",
     assumptions: [...sharedAssumptions, "Mash pH является ballpark estimate, не лабораторной моделью."],
     commonMistakes: ["Вводят alkalinity вместо HCO3.", "Не разделяют объем заторной и промывочной воды."],
@@ -260,6 +270,7 @@ export const calculators: CalculatorCatalogItem[] = [
     accentClassName: "border-l-violet-400",
     href: "/calculators/yeast-starter",
     relatedSlugs: ["abv-attenuation", "unit-converter"],
+    related: [{ href: "/recipes", label: "Рецепты сообщества" }],
     formula: "Нужно клеток = объем (мл) × Plato × норма засева, где эль = 0,75, лагер = 1,5, гибрид = 1,0 млн клеток/мл/°P.",
     assumptions: [...sharedAssumptions, "Жизнеспособность по дате является оценкой, производители отличаются."],
     commonMistakes: ["Считают один пакет достаточным для лагера на 20 л.", "Не учитывают возраст жидких дрожжей."],
@@ -280,6 +291,7 @@ export const calculators: CalculatorCatalogItem[] = [
     accentClassName: "border-l-rose-400",
     href: "/calculators/priming-sugar",
     relatedSlugs: ["bottling", "speise-krausen", "keg-carbonation", "abv-attenuation"],
+    related: [{ href: "/bjcp", label: "Стили пива" }],
     formula: "Остаточный CO₂ = 3,0378 − 0,050062 × T + 0,00026555 × T², где T — температура пива в °F.",
     assumptions: [...sharedAssumptions, "Температура берется как максимальная температура пива после брожения."],
     commonMistakes: ["Берут текущую холодную температуру вместо температуры после брожения.", "Не учитывают потери при розливе."],
@@ -300,6 +312,7 @@ export const calculators: CalculatorCatalogItem[] = [
     accentClassName: "border-l-lime-400",
     href: "/calculators/keg-carbonation",
     relatedSlugs: ["priming-sugar", "speise-krausen", "unit-converter", "abv-attenuation"],
+    related: [{ href: "/bjcp", label: "Стили пива" }],
     formula: "Давление CO₂ по полиному от температуры пива (°F) и целевого уровня карбонизации.",
     assumptions: [...sharedAssumptions, "Serving pressure также зависит от длины/диаметра линии и высоты подъема."],
     commonMistakes: ["Ставят одно давление для карбонизации и розлива без баланса линии.", "Не учитывают температуру пива."],
@@ -340,6 +353,7 @@ export const calculators: CalculatorCatalogItem[] = [
     accentClassName: "border-l-amber-400",
     href: "/calculators/speise-krausen",
     relatedSlugs: ["priming-sugar", "bottling", "keg-carbonation", "unit-converter"],
+    related: [{ href: "/bjcp", label: "Стили пива" }],
     formula: "Нужный CO₂ пересчитывается в объем сусла по его плотности с поправкой на реальную сбраживаемость.",
     assumptions: [...sharedAssumptions, "Расчет приблизительный: реальная ферментируемость speise/krausen отличается."],
     commonMistakes: ["Не учитывают уже растворенный CO2.", "Используют сусло неизвестной плотности."],
@@ -360,6 +374,7 @@ export const calculators: CalculatorCatalogItem[] = [
     accentClassName: "border-l-yellow-500",
     href: "/calculators/beer-color",
     relatedSlugs: ["ibu", "water-ph", "unit-converter"],
+    related: [{ href: "/bjcp", label: "Стили пива" }],
     formula: "MCU = сумма(вес в фунтах × цвет в Lovibond) / объем в галлонах; SRM = 1,4922 × MCU^0,6859; EBC = SRM × 1,97.",
     assumptions: sharedAssumptions,
     commonMistakes: ["Вводят EBC как Lovibond.", "Не учитывают реальные цвета конкретного солода."],

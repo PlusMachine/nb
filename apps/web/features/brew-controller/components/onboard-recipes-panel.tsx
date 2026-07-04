@@ -207,7 +207,7 @@ export function OnboardRecipesPanel({ deviceId, pushableRecipes }: Props) {
       <section className="rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm">
         <h3 className="text-sm font-semibold text-zinc-900">Загрузить рецепт</h3>
         <p className="mt-1 text-xs text-zinc-500">
-          Рецепт ляжет на пивоварню — нагрев это не запускает. Начать варку можно из мастера рецептов
+          Рецепт ляжет на пивоварню — нагрев это не запускает. Сварить можно из мастера рецептов
           или на устройстве.
         </p>
 

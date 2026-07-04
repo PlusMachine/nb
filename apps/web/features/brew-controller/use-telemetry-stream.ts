@@ -30,6 +30,10 @@ export type TelemetryStream = {
   lastError: string | null;
   /** Плавный локальный обратный отсчёт оставшегося времени текущей стадии (сек). */
   remaining: number;
+  /** Момент последнего валидного кадра («настенные» часы клиента) — для
+   *  офлайн-баннера киоска («данные устарели N назад», §9/§12.1). null — кадра
+   *  не было ни разу с открытия подписки. */
+  lastFrameAt: number | null;
 };
 
 /**
@@ -112,5 +116,5 @@ export function useTelemetryStream(source: TelemetrySource, hasDevice: boolean):
     ? Math.max(0, telemetry.stageRemainingSec - Math.floor(Math.max(0, sinceFrameMs) / 1000))
     : 0;
 
-  return { telemetry, conn, isStale, isLive, lastError, remaining };
+  return { telemetry, conn, isStale, isLive, lastError, remaining, lastFrameAt };
 }

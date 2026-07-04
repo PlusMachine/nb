@@ -18,6 +18,13 @@ const defaultDisplayName = (email: string): string => email.split("@")[0] ?? "Br
 
 const defaultDisplayNameFromPhone = (phone: string): string => `Brewer ${phone.slice(-4)}`;
 
+// Фиксация согласия на обработку ПДн (152-ФЗ): момент и версия правовых документов.
+// Проставляется ТОЛЬКО при создании нового пользователя (регистрации).
+export type ConsentInput = { version: string; acceptedAt?: Date };
+
+const consentColumns = (consent?: ConsentInput) =>
+  consent ? { consentAcceptedAt: consent.acceptedAt ?? new Date(), consentVersion: consent.version } : {};
+
 /**
  * Приводит российский номер к E.164 (`+7XXXXXXXXXX`). Принимает форматы с пробелами,
  * дефисами и скобками, ведущей `8` или `7`, либо 10 цифр без кода страны.
@@ -70,7 +77,10 @@ export const assertRateLimit = async (key: string, action: string, limit: number
   await db.update(authRateLimits).set({ count: row.count + 1, updatedAt: now }).where(eq(authRateLimits.id, row.id));
 };
 
-export const getOrCreateUserByEmail = async (email: string): Promise<typeof users.$inferSelect> => {
+export const getOrCreateUserByEmail = async (
+  email: string,
+  consent?: ConsentInput
+): Promise<typeof users.$inferSelect> => {
   const normalized = normalizeEmail(email);
   const [found] = await db.select().from(users).where(eq(users.email, normalized));
   if (found) {
@@ -81,7 +91,8 @@ export const getOrCreateUserByEmail = async (email: string): Promise<typeof user
     email: normalized,
     displayName: defaultDisplayName(normalized),
     emailVerified: false,
-    role: "user"
+    role: "user",
+    ...consentColumns(consent)
   }).returning();
 
   return created;
@@ -155,8 +166,16 @@ export const revokeSession = async (rawToken: string): Promise<void> => {
   await db.delete(sessions).where(eq(sessions.tokenHash, hashToken(rawToken)));
 };
 
-export const setPassword = async ({ email, password }: { email: string; password: string }) => {
-  const user = await getOrCreateUserByEmail(email);
+export const setPassword = async ({
+  email,
+  password,
+  consent
+}: {
+  email: string;
+  password: string;
+  consent?: ConsentInput;
+}) => {
+  const user = await getOrCreateUserByEmail(email, consent);
   await db.update(users).set({ passwordHash: await hashPassword(password), updatedAt: new Date() }).where(eq(users.id, user.id));
   return mapUser(user);
 };
@@ -176,13 +195,22 @@ export const signInWithPassword = async ({ email, password }: { email: string; p
   return mapUser(user);
 };
 
-export const completeEmailSignIn = async ({ email }: { email: string }): Promise<AuthUser> => {
-  const user = await getOrCreateUserByEmail(email);
+export const completeEmailSignIn = async ({
+  email,
+  consent
+}: {
+  email: string;
+  consent?: ConsentInput;
+}): Promise<AuthUser> => {
+  const user = await getOrCreateUserByEmail(email, consent);
   const [updated] = await db.update(users).set({ emailVerified: true, updatedAt: new Date() }).where(eq(users.id, user.id)).returning();
   return mapUser(updated ?? user);
 };
 
-export const getOrCreateUserByPhone = async (phone: string): Promise<typeof users.$inferSelect> => {
+export const getOrCreateUserByPhone = async (
+  phone: string,
+  consent?: ConsentInput
+): Promise<typeof users.$inferSelect> => {
   const normalized = normalizePhone(phone);
   const [found] = await db.select().from(users).where(eq(users.phone, normalized));
   if (found) {
@@ -193,7 +221,8 @@ export const getOrCreateUserByPhone = async (phone: string): Promise<typeof user
     phone: normalized,
     displayName: defaultDisplayNameFromPhone(normalized),
     phoneVerified: false,
-    role: "user"
+    role: "user",
+    ...consentColumns(consent)
   }).returning();
 
   return created;
@@ -239,8 +268,14 @@ export const consumePhoneVerification = async ({ phone, code }: { phone: string;
   await db.update(verifications).set({ usedAt: new Date(), attempts: found.attempts + 1 }).where(eq(verifications.id, found.id));
 };
 
-export const completePhoneSignIn = async ({ phone }: { phone: string }): Promise<AuthUser> => {
-  const user = await getOrCreateUserByPhone(phone);
+export const completePhoneSignIn = async ({
+  phone,
+  consent
+}: {
+  phone: string;
+  consent?: ConsentInput;
+}): Promise<AuthUser> => {
+  const user = await getOrCreateUserByPhone(phone, consent);
   const [updated] = await db.update(users).set({ phoneVerified: true, updatedAt: new Date() }).where(eq(users.id, user.id)).returning();
   return mapUser(updated ?? user);
 };
@@ -272,7 +307,7 @@ export const setRole = async ({ userId, role }: { userId: string; role: UserRole
   await db.update(users).set({ role, updatedAt: new Date() }).where(eq(users.id, userId));
 };
 
-export const linkOAuthAccount = async ({ provider, providerAccountId, email, displayName, image, accessToken, refreshToken }: {
+export const linkOAuthAccount = async ({ provider, providerAccountId, email, displayName, image, accessToken, refreshToken, consent }: {
   provider: OAuthProviderId;
   providerAccountId: string;
   email: string;
@@ -280,6 +315,7 @@ export const linkOAuthAccount = async ({ provider, providerAccountId, email, dis
   image?: string;
   accessToken?: string;
   refreshToken?: string;
+  consent?: ConsentInput;
 }) => {
   const normalized = normalizeEmail(email);
 
@@ -300,7 +336,8 @@ export const linkOAuthAccount = async ({ provider, providerAccountId, email, dis
       emailVerified: true,
       displayName: displayName?.trim() || defaultDisplayName(normalized),
       image: image ?? null,
-      role: "user"
+      role: "user",
+      ...consentColumns(consent)
     }).returning();
   }
 

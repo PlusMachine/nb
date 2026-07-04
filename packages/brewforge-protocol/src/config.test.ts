@@ -76,6 +76,116 @@ describe("DeviceConfigPatchSchema", () => {
   });
 });
 
+// Точный ferment{}/distill{} JSON, который прошивка отдаёт под "config" (v9/v7-8,
+// bf_config_to_cjson) + appMode (v11). steps — ВСЕГДА BF_MAX_FERMENT_STEPS=6 элементов
+// (прошивка сериализует весь массив независимо от nSteps).
+const fermentConfig = {
+  hysteresisC: 0.5,
+  compMinOffS: 180,
+  compMinOnS: 120,
+  heatEnabled: true,
+  nSteps: 3,
+  steps: [
+    { tempC: 20, hours: 168 },
+    { tempC: 21, hours: 48 },
+    { tempC: 3, hours: 0 },
+    { tempC: 18, hours: 0 },
+    { tempC: 18, hours: 0 },
+    { tempC: 18, hours: 0 },
+  ],
+};
+
+const distillConfig = {
+  headsPct: 40,
+  heartsPct: 70,
+  tailsPct: 50,
+  tHeadsC: 60,
+  tHeartsC: 78,
+  tTailsC: 82,
+  tEndC: 96,
+  headsReflux: 6,
+  heartsReflux: 3,
+  tailsReflux: 2,
+  refluxWindowS: 30,
+};
+
+describe("DeviceConfigSchema — ferment/distill/appMode (§13)", () => {
+  it("round-trip'ит конфиг с ferment{}/distill{}/appMode без потерь", () => {
+    const withModes = { ...firmwareConfig, ferment: fermentConfig, distill: distillConfig, appMode: 2 };
+    const parsed = DeviceConfigSchema.parse(withModes);
+    expect(parsed).toEqual(withModes);
+    expect(parsed.ferment?.steps).toHaveLength(6);
+    expect(parsed.appMode).toBe(2);
+  });
+
+  it("конфиг БЕЗ ferment/distill/appMode всё ещё валиден (старая прошивка)", () => {
+    const parsed = DeviceConfigSchema.parse(firmwareConfig);
+    expect(parsed.ferment).toBeUndefined();
+    expect(parsed.distill).toBeUndefined();
+    expect(parsed.appMode).toBeUndefined();
+  });
+
+  it("отклоняет ferment.steps длиннее 6 ступеней", () => {
+    const tooMany = {
+      ...firmwareConfig,
+      ferment: { ...fermentConfig, steps: [...fermentConfig.steps, { tempC: 18, hours: 0 }] },
+    };
+    expect(DeviceConfigSchema.safeParse(tooMany).success).toBe(false);
+  });
+
+  it("применяет клампы (min/max) полей ferment/distill/appMode", () => {
+    // ferment: гистерезис вне [0.1, 5], nSteps вне [1, 6], ступень tempC вне [-2, 40]
+    expect(
+      DeviceConfigSchema.safeParse({ ...firmwareConfig, ferment: { ...fermentConfig, hysteresisC: 10 } }).success,
+    ).toBe(false);
+    expect(
+      DeviceConfigSchema.safeParse({ ...firmwareConfig, ferment: { ...fermentConfig, nSteps: 0 } }).success,
+    ).toBe(false);
+    expect(
+      DeviceConfigSchema.safeParse({ ...firmwareConfig, ferment: { ...fermentConfig, nSteps: 7 } }).success,
+    ).toBe(false);
+    expect(
+      DeviceConfigSchema.safeParse({
+        ...firmwareConfig,
+        ferment: { ...fermentConfig, steps: [{ tempC: 41, hours: 0 }, ...fermentConfig.steps.slice(1)] },
+      }).success,
+    ).toBe(false);
+
+    // distill: пороги вне [30, 110], проценты вне [0, 100]
+    expect(
+      DeviceConfigSchema.safeParse({ ...firmwareConfig, distill: { ...distillConfig, tHeadsC: 200 } }).success,
+    ).toBe(false);
+    expect(
+      DeviceConfigSchema.safeParse({ ...firmwareConfig, distill: { ...distillConfig, headsPct: 150 } }).success,
+    ).toBe(false);
+
+    // appMode: bf_app_mode_t только {0,1,2}
+    expect(DeviceConfigSchema.safeParse({ ...firmwareConfig, appMode: 3 }).success).toBe(false);
+    expect(DeviceConfigSchema.safeParse({ ...firmwareConfig, appMode: -1 }).success).toBe(false);
+    expect(DeviceConfigSchema.safeParse({ ...firmwareConfig, appMode: 0 }).success).toBe(true);
+  });
+});
+
+describe("DeviceConfigPatchSchema — ferment/distill/appMode", () => {
+  it("принимает частичный ferment-патч (одна ступень/одно поле контура)", () => {
+    expect(DeviceConfigPatchSchema.safeParse({ ferment: { hysteresisC: 1 } }).success).toBe(true);
+    expect(
+      DeviceConfigPatchSchema.safeParse({ ferment: { steps: [{ tempC: 19 }] } }).success,
+    ).toBe(true);
+    expect(DeviceConfigPatchSchema.safeParse({ distill: { tHeadsC: 62 } }).success).toBe(true);
+    expect(DeviceConfigPatchSchema.safeParse({ appMode: 1 }).success).toBe(true);
+  });
+
+  it("всё ещё отклоняет патч со ступенями сверх 6 или вне диапазона", () => {
+    expect(
+      DeviceConfigPatchSchema.safeParse({
+        ferment: { steps: Array.from({ length: 7 }, () => ({ tempC: 18 })) },
+      }).success,
+    ).toBe(false);
+    expect(DeviceConfigPatchSchema.safeParse({ appMode: 5 }).success).toBe(false);
+  });
+});
+
 describe("CONFIG_FIELD_RANGES", () => {
   it("несёт корректные диапазоны для числовых полей и опции для enum/bool", () => {
     const sample = CONFIG_FIELD_RANGES["pid.sampleMs"];

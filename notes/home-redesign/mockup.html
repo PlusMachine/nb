@@ -1,0 +1,867 @@
+<!doctype html>
+<html lang="ru">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NB — концепт главной страницы</title>
+<style>
+  :root {
+    color-scheme: light;
+    --bg: #f4f4f6;
+    --card: #ffffff;
+    --line: #e4e4e7;
+    --line-soft: #ececef;
+    --ink: #09090b;
+    --ink2: #52525b;
+    --ink3: #a1a1aa;
+    --accent: #d97706;
+    --accent-soft: #fef3e2;
+    --pult: #141417;
+    --pult-card: #1d1d22;
+    --pult-line: rgba(255,255,255,0.09);
+    --pult-ink: #f4f4f5;
+    --pult-ink2: #9d9da6;
+    --ease: cubic-bezier(0.16, 1, 0.3, 1);
+    --font-display: Montserrat, "Segoe UI", -apple-system, "Helvetica Neue", Arial, sans-serif;
+    --font-body: Rubik, "Segoe UI", -apple-system, "Helvetica Neue", Arial, sans-serif;
+  }
+  * { margin: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--font-body);
+    font-size: 16px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: inherit; text-decoration: none; }
+  a:focus-visible, button:focus-visible, input:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+    border-radius: 8px;
+  }
+  .wrap { max-width: 1120px; margin: 0 auto; padding: 0 24px; }
+  .num { font-variant-numeric: tabular-nums; }
+
+  /* ---------- служебная плашка макета ---------- */
+  .concept-ribbon {
+    text-align: center;
+    font-size: 12px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink3);
+    padding: 10px 24px 0;
+  }
+
+  /* ---------- шапка ---------- */
+  header.site {
+    border-bottom: 1px solid var(--line-soft);
+    background: rgba(255,255,255,0.82);
+    backdrop-filter: blur(8px);
+    position: sticky; top: 0; z-index: 40;
+    margin-top: 10px;
+  }
+  .site-inner { display: flex; align-items: center; justify-content: space-between; gap: 24px; padding: 14px 24px; max-width: 1120px; margin: 0 auto; }
+  .logo { font-family: var(--font-display); font-weight: 700; font-size: 19px; letter-spacing: 0.2em; }
+  nav.main { display: flex; gap: 2px; }
+  nav.main a {
+    font-size: 14px; font-weight: 500; color: var(--ink2);
+    padding: 7px 12px; border-radius: 10px; transition: background .15s, color .15s;
+  }
+  nav.main a:hover { background: #f1f1f3; color: var(--ink); }
+  .btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    border-radius: 999px; font-weight: 600; font-size: 14px;
+    padding: 10px 20px; border: 1px solid transparent;
+    cursor: pointer; transition: background .15s, border-color .15s, transform .15s var(--ease);
+    font-family: var(--font-body);
+  }
+  .btn-dark { background: var(--ink); color: #fff; }
+  .btn-dark:hover { background: #27272a; }
+  .btn-ghost { background: #fff; color: var(--ink); border-color: var(--line); }
+  .btn-ghost:hover { border-color: #cfcfd4; }
+  @media (max-width: 760px) { nav.main { display: none; } }
+
+  /* ---------- секции ---------- */
+  main { padding-bottom: 96px; }
+  section.block { margin-top: 72px; }
+  .sec-head { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; margin-bottom: 20px; }
+  .sec-head h2 { font-family: var(--font-display); font-weight: 700; font-size: clamp(24px, 3.2vw, 30px); letter-spacing: -0.01em; text-wrap: balance; }
+  .sec-head .more { font-size: 14px; font-weight: 600; white-space: nowrap; color: var(--ink); border-bottom: 1px solid var(--line); padding-bottom: 1px; }
+  .sec-head .more:hover { border-color: var(--ink); }
+
+  /* ---------- hero ---------- */
+  .hero {
+    margin-top: 28px;
+    background: var(--card);
+    border: 1px solid rgba(255,255,255,0.9);
+    border-radius: 40px;
+    box-shadow: 0 45px 120px -70px rgba(15,23,42,0.45);
+    padding: clamp(28px, 4.5vw, 56px);
+    display: grid;
+    grid-template-columns: 1.15fr 1fr;
+    gap: clamp(24px, 4vw, 56px);
+    align-items: center;
+  }
+  @media (max-width: 880px) { .hero { grid-template-columns: 1fr; } }
+  .eyebrow {
+    font-size: 11px; font-weight: 600; letter-spacing: 0.22em; text-transform: uppercase; color: var(--ink3);
+  }
+  .hero h1 {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: clamp(34px, 5vw, 56px);
+    line-height: 1.02;
+    letter-spacing: -0.015em;
+    margin-top: 18px;
+    text-wrap: balance;
+  }
+  .hero .sub {
+    margin-top: 18px;
+    font-size: 17px;
+    line-height: 1.65;
+    color: var(--ink2);
+    max-width: 46ch;
+    text-wrap: pretty;
+  }
+  .hero .cta { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 26px; }
+
+  /* витальная панель стиля */
+  .vital {
+    background: #fafafa;
+    border: 1px solid var(--line);
+    border-radius: 24px;
+    padding: 22px;
+  }
+  .vital-top { display: flex; gap: 20px; align-items: center; }
+  .glass-slot { flex: 0 0 auto; display: grid; place-items: center; width: 108px; }
+  .vital-meta { min-width: 0; flex: 1; }
+  .vital-code {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 11px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink3);
+  }
+  .vital-name { font-family: var(--font-display); font-weight: 700; font-size: 20px; margin-top: 4px; }
+  .vital-color-label { font-size: 13px; color: var(--ink2); margin-top: 4px; }
+  .vital-stats {
+    margin-top: 18px;
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px;
+  }
+  .vstat { background: #fff; border: 1px solid var(--line-soft); border-radius: 14px; padding: 10px 8px; text-align: center; }
+  .vstat .l { font-size: 10px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink3); }
+  .vstat .v { font-size: 14px; font-weight: 600; margin-top: 3px; white-space: nowrap; }
+  .style-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 18px; }
+  .style-chips button {
+    display: inline-flex; align-items: center; gap: 7px;
+    border: 1px solid var(--line); background: #fff; color: var(--ink2);
+    border-radius: 999px; padding: 7px 13px; font-size: 13px; font-weight: 500;
+    cursor: pointer; font-family: var(--font-body);
+    transition: border-color .15s, color .15s, background .15s;
+  }
+  .style-chips button .dot { width: 10px; height: 10px; border-radius: 50%; border: 1px solid rgba(0,0,0,0.12); }
+  .style-chips button:hover { border-color: #cfcfd4; color: var(--ink); }
+  .style-chips button[aria-pressed="true"] { background: var(--ink); border-color: var(--ink); color: #fff; }
+  .vital-foot { margin-top: 14px; font-size: 12px; color: var(--ink3); }
+  .vital-foot a { color: var(--ink2); border-bottom: 1px solid var(--line); }
+  svg.glass stop { transition: stop-color .5s var(--ease); }
+  .fade { transition: opacity .25s; }
+  .fade.out { opacity: 0; }
+
+  /* ---------- цветовая полоса ---------- */
+  .color-band { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; }
+  .color-band a {
+    border-radius: 14px; overflow: hidden; position: relative;
+    border: 1px solid rgba(0,0,0,0.06);
+    transition: transform .2s var(--ease), box-shadow .2s;
+  }
+  .color-band a:hover { transform: translateY(-3px); box-shadow: 0 12px 24px -14px rgba(15,23,42,0.4); }
+  .color-band .swatch { height: 56px; }
+  .color-band .cap {
+    display: flex; justify-content: space-between; align-items: baseline; gap: 6px;
+    background: #fff; padding: 8px 10px; font-size: 12.5px; font-weight: 600;
+  }
+  .color-band .cap .cnt { color: var(--ink3); font-weight: 500; }
+  @media (max-width: 880px) {
+    .color-band { grid-template-columns: repeat(4, 1fr); }
+    .color-band a:nth-child(n+5) { display: none; }
+  }
+
+  /* ---------- карточки рецептов ---------- */
+  .cards3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  @media (max-width: 880px) { .cards3 { grid-template-columns: 1fr; } }
+  .rcard {
+    background: var(--card); border: 1px solid var(--line); border-radius: 18px;
+    padding: 16px; display: flex; flex-direction: column; gap: 12px;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+    transition: border-color .15s, box-shadow .2s;
+  }
+  .rcard:hover { border-color: #cfcfd4; box-shadow: 0 10px 26px -18px rgba(15,23,42,0.35); }
+  .rcard-top { display: flex; gap: 12px; align-items: flex-start; }
+  .rthumb { width: 64px; height: 64px; border-radius: 14px; flex: 0 0 auto; box-shadow: inset 0 0 0 1px rgba(0,0,0,0.05); }
+  .rmeta { min-width: 0; flex: 1; }
+  .rrow { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+  .chip {
+    font-size: 11px; font-weight: 600; padding: 3px 9px; border-radius: 999px;
+    background: #f4f4f5; color: var(--ink2); white-space: nowrap;
+  }
+  .rating { font-size: 12px; font-weight: 600; color: var(--accent); white-space: nowrap; }
+  .rname { font-size: 16px; font-weight: 600; line-height: 1.35; margin-top: 5px; }
+  .rstats {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px;
+    background: #fafafa; border-radius: 12px; padding: 10px;
+  }
+  .rstat { text-align: center; }
+  .rstat .l { font-size: 10px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink3); }
+  .rstat .v { font-size: 13px; font-weight: 600; margin-top: 2px; display: flex; justify-content: center; align-items: center; gap: 5px; }
+  .rstat .sw { width: 14px; height: 14px; border-radius: 5px; border: 1px solid rgba(0,0,0,0.1); }
+  .rfoot { display: flex; justify-content: space-between; align-items: center; margin-top: auto; font-size: 12.5px; color: var(--ink2); }
+  .ravatar {
+    width: 22px; height: 22px; border-radius: 50%; background: var(--ink); color: #fff;
+    display: inline-grid; place-items: center; font-size: 10px; font-weight: 700; margin-right: 7px;
+  }
+  .rvol { color: var(--ink3); }
+
+  /* ---------- раскадровка петли ---------- */
+  .loop {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px;
+  }
+  @media (max-width: 880px) {
+    .loop { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; padding-bottom: 8px; margin: 0 -24px; padding-left: 24px; padding-right: 24px; }
+    .loop > div { flex: 0 0 78%; scroll-snap-align: start; }
+  }
+  .frame {
+    background: var(--card); border: 1px solid var(--line); border-radius: 18px;
+    padding: 16px; display: flex; flex-direction: column; gap: 12px;
+  }
+  .frame-h { display: flex; align-items: baseline; gap: 9px; }
+  .frame-h .n { font-size: 12px; font-weight: 700; color: var(--ink3); font-variant-numeric: tabular-nums; }
+  .frame-h .t { font-family: var(--font-display); font-weight: 700; font-size: 17px; }
+  .ui-frag {
+    background: #fafafa; border: 1px solid var(--line-soft); border-radius: 12px;
+    padding: 11px 12px; font-size: 13px; display: flex; flex-direction: column; gap: 8px;
+  }
+  .frag-row { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; }
+  .frag-row .k { color: var(--ink2); min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .frag-row .q { font-weight: 600; white-space: nowrap; }
+  .meter { height: 4px; border-radius: 2px; background: #e9e9ec; overflow: hidden; }
+  .meter i { display: block; height: 100%; border-radius: 2px; background: var(--accent); }
+  .ok { color: #15803d; font-weight: 600; }
+  .frag-note { font-size: 12px; color: var(--ink3); }
+  .timerline { display: flex; align-items: center; gap: 8px; font-weight: 600; }
+  .timerline .tick { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); flex: 0 0 auto; }
+
+  /* ---------- BrewForge пульт ---------- */
+  .pult {
+    background: var(--pult); color: var(--pult-ink);
+    border-radius: 32px; padding: clamp(24px, 3.5vw, 44px);
+    display: grid; grid-template-columns: 0.9fr 1.1fr; gap: clamp(24px, 3.5vw, 48px);
+    align-items: center;
+  }
+  @media (max-width: 880px) { .pult { grid-template-columns: 1fr; } }
+  .pult .eyebrow { color: #6f6f78; }
+  .pult h2 { font-family: var(--font-display); font-weight: 700; font-size: clamp(24px, 3vw, 32px); margin-top: 14px; line-height: 1.15; text-wrap: balance; }
+  .pult .modes { margin-top: 22px; display: flex; flex-direction: column; gap: 12px; }
+  .mode { display: flex; gap: 12px; align-items: flex-start; }
+  .mode .mk {
+    flex: 0 0 auto; width: 34px; height: 34px; border-radius: 10px;
+    background: var(--pult-card); border: 1px solid var(--pult-line);
+    display: grid; place-items: center; font-size: 15px;
+  }
+  .mode .mt { font-weight: 600; font-size: 15px; }
+  .mode .md { font-size: 13.5px; color: var(--pult-ink2); margin-top: 2px; max-width: 42ch; }
+  .pult .cta { margin-top: 26px; }
+  .btn-amber { background: var(--accent); color: #fff; }
+  .btn-amber:hover { background: #c2680a; }
+
+  .panel {
+    background: var(--pult-card); border: 1px solid var(--pult-line);
+    border-radius: 20px; padding: 20px;
+  }
+  .panel-h { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+  .panel-h .ph-t { font-size: 13px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--pult-ink2); }
+  .pill-live {
+    display: inline-flex; align-items: center; gap: 7px;
+    font-size: 12px; font-weight: 600; color: #4ade80;
+    background: rgba(74,222,128,0.08); border: 1px solid rgba(74,222,128,0.25);
+    padding: 4px 11px; border-radius: 999px;
+  }
+  .pill-live .d { width: 7px; height: 7px; border-radius: 50%; background: #4ade80; }
+  @media (prefers-reduced-motion: no-preference) {
+    .pill-live .d { animation: pulse 1.6s infinite; }
+    @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.35; } }
+  }
+  .telemetry { display: flex; align-items: baseline; gap: 14px; margin-top: 16px; flex-wrap: wrap; }
+  .temp-now { font-family: var(--font-display); font-weight: 800; font-size: 44px; letter-spacing: -0.02em; line-height: 1; }
+  .temp-goal { font-size: 14px; color: var(--pult-ink2); }
+  .step-line { margin-top: 6px; font-size: 14px; color: var(--pult-ink2); }
+  .step-line b { color: var(--pult-ink); font-weight: 600; }
+  .chart-wrap { margin-top: 18px; overflow-x: auto; }
+  .chart-cap { font-size: 11.5px; color: var(--pult-ink2); margin-top: 8px; display: flex; justify-content: space-between; }
+
+  /* ---------- калькулятор ---------- */
+  .calc-grid { display: grid; grid-template-columns: 1fr 1.2fr; gap: 16px; align-items: stretch; }
+  @media (max-width: 880px) { .calc-grid { grid-template-columns: 1fr; } }
+  .calc-card {
+    background: var(--card); border: 1px solid var(--line); border-radius: 20px; padding: 22px;
+    display: flex; flex-direction: column; gap: 16px;
+  }
+  .calc-card h3 { font-family: var(--font-display); font-weight: 700; font-size: 18px; }
+  .calc-fields { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .field label { display: block; font-size: 12px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink3); margin-bottom: 6px; }
+  .field .in {
+    display: flex; align-items: center; gap: 8px;
+    border: 1px solid var(--line); border-radius: 12px; background: #fff; padding: 0 12px;
+  }
+  .field input {
+    width: 100%; border: 0; padding: 11px 0; font-size: 16px; font-weight: 600;
+    font-family: var(--font-body); font-variant-numeric: tabular-nums; background: transparent; color: var(--ink);
+  }
+  .field input:focus { outline: none; }
+  .field .unit { font-size: 13px; color: var(--ink3); white-space: nowrap; }
+  .calc-out { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .out-tile { background: #fafafa; border: 1px solid var(--line-soft); border-radius: 14px; padding: 14px; }
+  .out-tile .l { font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink3); }
+  .out-tile .v { font-family: var(--font-display); font-weight: 800; font-size: 26px; margin-top: 4px; }
+  .calc-note { font-size: 12px; color: var(--ink3); }
+  .calc-links { background: var(--card); border: 1px solid var(--line); border-radius: 20px; padding: 22px; display: flex; flex-direction: column; }
+  .calc-links h3 { font-family: var(--font-display); font-weight: 700; font-size: 18px; margin-bottom: 14px; }
+  .calc-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+  .calc-chips a {
+    font-size: 13.5px; font-weight: 500; color: var(--ink2);
+    border: 1px solid var(--line); border-radius: 999px; padding: 8px 14px; background: #fff;
+    transition: border-color .15s, color .15s;
+  }
+  .calc-chips a:hover { border-color: #cfcfd4; color: var(--ink); }
+  .calc-links .more { margin-top: auto; padding-top: 16px; font-size: 14px; font-weight: 600; }
+
+  /* ---------- разобраться ---------- */
+  .gcard { background: var(--card); border: 1px solid var(--line); border-radius: 18px; overflow: hidden; display: flex; flex-direction: column; transition: border-color .15s, box-shadow .2s; }
+  .gcard:hover { border-color: #cfcfd4; box-shadow: 0 10px 26px -18px rgba(15,23,42,0.35); }
+  .gcover { height: 120px; }
+  .gbody { padding: 16px; display: flex; flex-direction: column; gap: 7px; flex: 1; }
+  .gtype { font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); }
+  .gtitle { font-size: 16.5px; font-weight: 600; line-height: 1.35; }
+  .gmin { margin-top: auto; padding-top: 8px; font-size: 12px; color: var(--ink3); }
+
+  .bjcp-banner {
+    margin-top: 16px; border-radius: 20px; overflow: hidden;
+    border: 1px solid var(--line); background: var(--card);
+    display: flex; flex-direction: column;
+  }
+  .spectrum { height: 14px; background: linear-gradient(90deg, #F3F993, #FFD878 12%, #FFBF42 26%, #F8A600 40%, #E58500 52%, #CF6900 63%, #BB5100 72%, #A63E00 80%, #8B2E00 87%, #6F1A07 93%, #1A0F0B); }
+  .bjcp-body { display: flex; justify-content: space-between; align-items: center; gap: 16px; padding: 18px 22px; flex-wrap: wrap; }
+  .bjcp-body .t { font-family: var(--font-display); font-weight: 700; font-size: 18px; }
+  .bjcp-body .d { font-size: 14px; color: var(--ink2); margin-top: 3px; }
+
+  /* ---------- финальные входы ---------- */
+  .fork { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  @media (max-width: 760px) { .fork { grid-template-columns: 1fr; } }
+  .fork a {
+    background: var(--card); border: 1px solid var(--line); border-radius: 20px;
+    padding: 26px; display: flex; flex-direction: column; gap: 8px;
+    transition: border-color .15s, box-shadow .2s, transform .2s var(--ease);
+  }
+  .fork a:hover { border-color: #cfcfd4; box-shadow: 0 16px 36px -24px rgba(15,23,42,0.4); transform: translateY(-2px); }
+  .fork .ft { font-family: var(--font-display); font-weight: 700; font-size: 21px; display: flex; align-items: center; gap: 10px; }
+  .fork .ft .arr { margin-left: auto; color: var(--ink3); font-weight: 400; transition: transform .2s var(--ease), color .15s; }
+  .fork a:hover .ft .arr { transform: translateX(4px); color: var(--ink); }
+  .fork .fd { font-size: 14.5px; color: var(--ink2); max-width: 44ch; }
+  .auth-note { text-align: center; font-size: 13px; color: var(--ink3); margin-top: 18px; }
+
+  /* ---------- футер ---------- */
+  footer.site {
+    border-top: 1px solid var(--line-soft); margin-top: 96px; padding: 28px 24px;
+  }
+  .foot-inner { max-width: 1120px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap; font-size: 13.5px; color: var(--ink3); }
+  .foot-inner nav { display: flex; gap: 16px; flex-wrap: wrap; }
+  .foot-inner nav a { color: var(--ink2); }
+  .foot-inner nav a:hover { color: var(--ink); }
+
+  /* ---------- пометки дизайнера ---------- */
+  .note {
+    display: none;
+    margin: 0 0 14px;
+    padding: 10px 14px;
+    border: 1.5px dashed #f0b25f;
+    background: var(--accent-soft);
+    border-radius: 12px;
+    font-size: 13.5px; color: #7c3f0b; line-height: 1.5;
+    max-width: 72ch;
+  }
+  .note b { font-weight: 700; }
+  body.show-notes .note { display: block; }
+  .notes-toggle {
+    position: fixed; right: 20px; bottom: 20px; z-index: 50;
+    background: var(--ink); color: #fff; border: 0; border-radius: 999px;
+    padding: 11px 18px; font-size: 13.5px; font-weight: 600; font-family: var(--font-body);
+    cursor: pointer; box-shadow: 0 12px 30px -12px rgba(0,0,0,0.5);
+  }
+  body.show-notes .notes-toggle { background: var(--accent); }
+</style>
+
+<div class="concept-ribbon">Концепт главной страницы · интерактивный макет</div>
+
+<header class="site">
+  <div class="site-inner">
+    <div style="display:flex; align-items:center; gap:28px;">
+      <a class="logo" href="#">NB</a>
+      <nav class="main" aria-label="Разделы сайта">
+        <a href="#">Каталог</a>
+        <a href="#">Гайды</a>
+        <a href="#">Стили пива</a>
+        <a href="#">Калькуляторы</a>
+        <a href="#">Рецепты</a>
+      </nav>
+    </div>
+    <a class="btn btn-dark" href="#" style="padding:8px 18px;">Войти</a>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <!-- ======================= HERO ======================= -->
+  <div class="note" style="margin-top:28px;"><b>1 · Hero.</b> Не иллюстрация, а продукт в первые пять секунд: панель справа — реальные витальные статистики BJCP 2021, стакан красится настоящей SRM-палитрой из кода продукта. Переключение стилей — первое «потрогать» без регистрации.</div>
+  <section class="hero">
+    <div>
+      <p class="eyebrow">Домашнее пивоварение</p>
+      <h1>Свари своё пиво — от рецепта до розлива</h1>
+      <p class="sub">Соберите рецепт — редактор посчитает плотность, горечь и цвет на лету. Сверьте со складом, сварите по шагам и ведите журнал партий.</p>
+      <div class="cta">
+        <a class="btn btn-dark" href="#">Собрать рецепт</a>
+        <a class="btn btn-ghost" href="#">Смотреть рецепты</a>
+      </div>
+    </div>
+
+    <div class="vital">
+      <div class="vital-top">
+        <div class="glass-slot">
+          <svg class="glass" width="86" height="120" viewBox="0 0 20 28" fill="none" aria-hidden="true">
+            <defs>
+              <linearGradient id="beerFill" x1="10" y1="6" x2="10" y2="26" gradientUnits="userSpaceOnUse">
+                <stop id="stopA" offset="0%" stop-color="#FFD98B"></stop>
+                <stop id="stopB" offset="55%" stop-color="#FFCA5A"></stop>
+                <stop id="stopC" offset="100%" stop-color="#D6A94B"></stop>
+              </linearGradient>
+            </defs>
+            <path d="M5 8 L4 21.5 Q4 26 10 26 Q16 26 16 21.5 L15 8 Z" fill="url(#beerFill)"></path>
+            <path d="M5 8 Q7.5 5.8 10 8 Q12.5 5.8 15 8 Z" fill="rgba(255,255,255,0.55)"></path>
+            <path d="M4.5 5.5 L3.5 22 Q3.5 27 10 27 Q16.5 27 16.5 22 L15.5 5.5" stroke="#3f3f46" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"></path>
+            <line x1="4.5" y1="5.5" x2="15.5" y2="5.5" stroke="#3f3f46" stroke-width="1.4" stroke-linecap="round"></line>
+          </svg>
+        </div>
+        <div class="vital-meta fade" id="vitalMeta">
+          <span class="vital-code">BJCP 2021 · <span id="vCode">4A</span></span>
+          <div class="vital-name" id="vName">Мюнхенский хеллес</div>
+          <div class="vital-color-label" id="vColorLabel">Светло-золотистый</div>
+        </div>
+      </div>
+      <div class="vital-stats fade" id="vitalStats">
+        <div class="vstat"><div class="l">OG</div><div class="v num" id="vOg">11,0–11,9 °P</div></div>
+        <div class="vstat"><div class="l">IBU</div><div class="v num" id="vIbu">16–22</div></div>
+        <div class="vstat"><div class="l">ABV</div><div class="v num" id="vAbv">4,7–5,4 %</div></div>
+        <div class="vstat"><div class="l">Цвет</div><div class="v num" id="vEbc">6–10 EBC</div></div>
+      </div>
+      <div class="style-chips" id="styleChips" role="group" aria-label="Выбор стиля"></div>
+      <div class="vital-foot">Диапазоны — из справочника <a href="#">стилей BJCP</a></div>
+    </div>
+  </section>
+
+  <!-- ======================= РЕЦЕПТЫ + ЦВЕТ ======================= -->
+  <section class="block">
+    <div class="note"><b>2 · Цветовая полоса.</b> Сигнатурный элемент витрины: пиво выбирают глазами. Семь SRM-сегментов уже существуют в продукте как фильтр <code>/recipes?color=…</code> — здесь они становятся навигацией с витрины. Счётчики — живые.</div>
+    <div class="sec-head">
+      <h2>Рецепты сообщества</h2>
+      <a class="more" href="#">Все рецепты</a>
+    </div>
+    <div class="color-band" id="colorBand" aria-label="Рецепты по цвету пива"></div>
+
+    <div class="note" style="margin-top:20px;"><b>3 · Карточки.</b> Те же карточки, что на витрине <code>/recipes</code>, без адаптаций: обложка по SRM, чип стиля, рейтинг, четыре параметра. Реальный контент — лучшее доказательство, что здесь варят.</div>
+    <div class="cards3" style="margin-top:16px;" id="recipeCards"></div>
+  </section>
+
+  <!-- ======================= ПЕТЛЯ ======================= -->
+  <section class="block">
+    <div class="note"><b>4 · Петля мастерской.</b> Вместо четырёх иконок — четыре фрагмента настоящего интерфейса: строка склада, стат-панель рецепта, шаг варочного дня, замер в журнале. Порядок и есть объяснение — подписи не нужны.</div>
+    <div class="sec-head">
+      <h2>Как работает мастерская</h2>
+      <a class="more" href="#">Начать</a>
+    </div>
+    <div class="loop">
+      <div class="frame">
+        <div class="frame-h"><span class="n">1</span><span class="t">Склад</span></div>
+        <div class="ui-frag">
+          <div class="frag-row"><span class="k">Солод пилснер · Weyermann</span><span class="q num">4,2 кг</span></div>
+          <div class="meter"><i style="width:62%"></i></div>
+          <div class="frag-row"><span class="k">Хмель Saaz · 3,4 % АК</span><span class="q num">180 г</span></div>
+          <div class="meter"><i style="width:34%"></i></div>
+        </div>
+        <div class="frag-note">Остатки, свежесть и цены — по каждой позиции</div>
+      </div>
+      <div class="frame">
+        <div class="frame-h"><span class="n">2</span><span class="t">Рецепт</span></div>
+        <div class="ui-frag">
+          <div class="frag-row"><span class="k">OG</span><span class="q num">12,5 °P</span></div>
+          <div class="frag-row"><span class="k">IBU · Цвет</span><span class="q num">38 · 12 EBC</span></div>
+          <div class="frag-row"><span class="k">Стиль 21A</span><span class="ok">попадание ✓</span></div>
+        </div>
+        <div class="frag-note">Статистика пересчитывается при каждой правке засыпи</div>
+      </div>
+      <div class="frame">
+        <div class="frame-h"><span class="n">3</span><span class="t">Варка</span></div>
+        <div class="ui-frag">
+          <div class="frag-row"><span class="k">Кипячение</span><span class="q num">60 мин</span></div>
+          <div class="meter"><i style="width:78%"></i></div>
+          <div class="timerline"><span class="tick"></span><span class="num">Через 12:30 — внести Citra, 30 г</span></div>
+        </div>
+        <div class="frag-note">План дня собирается из рецепта автоматически</div>
+      </div>
+      <div class="frame">
+        <div class="frame-h"><span class="n">4</span><span class="t">Журнал</span></div>
+        <div class="ui-frag">
+          <div class="frag-row"><span class="k">Партия №14 · брожение</span><span class="q num">день 5</span></div>
+          <div class="frag-row"><span class="k">Замер плотности</span><span class="q num">6,2 °P</span></div>
+          <div class="frag-row"><span class="k">Списание склада</span><span class="ok">выполнено</span></div>
+        </div>
+        <div class="frag-note">Снапшот рецепта хранится вместе с партией</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======================= BREWFORGE ======================= -->
+  <section class="block">
+    <div class="note"><b>5 · BrewForge.</b> Флагманское отличие от «ещё одного каталога рецептов» — сейчас его на главной нет вообще. Единственный тёмный блок страницы: пульт. Телеметрия в макете — реальный формат данных контроллера (паузы затирания, цель/факт).</div>
+    <section class="pult">
+      <div>
+        <p class="eyebrow">BrewForge</p>
+        <h2>Варочный день — с помощником или на автомате</h2>
+        <div class="modes">
+          <div class="mode">
+            <span class="mk" aria-hidden="true">☑</span>
+            <div>
+              <div class="mt">Помощник</div>
+              <div class="md">Пошаговый план варки с таймерами на экране — отмечайте шаги по ходу дня</div>
+            </div>
+          </div>
+          <div class="mode">
+            <span class="mk" aria-hidden="true">⚙</span>
+            <div>
+              <div class="mt">Автомат</div>
+              <div class="md">Контроллер BrewForge ведёт варку по рецепту: нагрев, паузы затирания, таймеры хмеля</div>
+            </div>
+          </div>
+        </div>
+        <div class="cta">
+          <a class="btn btn-amber" href="#">Как устроена автоматика</a>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="panel-h">
+          <span class="ph-t">Затирание · пауза 2 из 3</span>
+          <span class="pill-live"><span class="d"></span>связь</span>
+        </div>
+        <div class="telemetry">
+          <span class="temp-now num">66,8 °C</span>
+          <span class="temp-goal num">цель 67,0 °C · осталось 18 мин</span>
+        </div>
+        <p class="step-line">Дальше: <b class="num">осахаривание 72 °C</b> → кипячение <span class="num">60 мин</span></p>
+        <div class="chart-wrap">
+          <svg id="mashChart" width="100%" height="150" viewBox="0 0 560 150" preserveAspectRatio="none" role="img" aria-label="График температуры затора: подъём с 45 до 67 градусов за 38 минут"></svg>
+        </div>
+        <div class="chart-cap num"><span>температура затора, °C</span><span>последние 40 мин</span></div>
+      </div>
+    </section>
+  </section>
+
+  <!-- ======================= КАЛЬКУЛЯТОР ======================= -->
+  <section class="block">
+    <div class="note"><b>6 · Калькулятор.</b> Ценность до регистрации: считает прямо на главной (формулы — из <code>@nb/brewing-core</code>). Чипы справа — реальные быстрые запросы из каталога калькуляторов, это и SEO-вход.</div>
+    <div class="sec-head">
+      <h2>Посчитать — без регистрации</h2>
+      <a class="more" href="#">Все 15 калькуляторов</a>
+    </div>
+    <div class="calc-grid">
+      <div class="calc-card">
+        <h3>Крепость и сбраживание</h3>
+        <div class="calc-fields">
+          <div class="field">
+            <label for="ogIn">Начальная OG</label>
+            <div class="in"><input id="ogIn" type="number" inputmode="decimal" step="0.1" value="12.5"><span class="unit">°P</span></div>
+          </div>
+          <div class="field">
+            <label for="fgIn">Конечная FG</label>
+            <div class="in"><input id="fgIn" type="number" inputmode="decimal" step="0.1" value="3.0"><span class="unit">°P</span></div>
+          </div>
+        </div>
+        <div class="calc-out">
+          <div class="out-tile"><div class="l">Крепость</div><div class="v num" id="abvOut">5,1 об.%</div></div>
+          <div class="out-tile"><div class="l">Аттенюация видимая</div><div class="v num" id="attOut">76 %</div></div>
+        </div>
+        <p class="calc-note">Плотность — в °P, как в замерах ареометром; переключение на SG — в настройках</p>
+      </div>
+      <div class="calc-links">
+        <h3>Частые расчёты</h3>
+        <div class="calc-chips">
+          <a href="#">Поправка рефрактометра</a>
+          <a href="#">Поправка ареометра</a>
+          <a href="#">IBU</a>
+          <a href="#">Вода и pH</a>
+          <a href="#">Карбонизация сахаром</a>
+          <a href="#">Давление в кеге</a>
+          <a href="#">Сколько воды на варку?</a>
+          <a href="#">Разбавить сусло</a>
+        </div>
+        <a class="more" href="#">Каталог калькуляторов →</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======================= РАЗОБРАТЬСЯ ======================= -->
+  <section class="block">
+    <div class="note"><b>7 · Контентный слой.</b> Гайды остаются (SEO-вход), но BJCP подаётся не абстрактными карточками статей, а спектром — тем же визуальным языком цвета, что и весь сайт.</div>
+    <div class="sec-head">
+      <h2>Разобраться</h2>
+      <a class="more" href="#">Все гайды</a>
+    </div>
+    <div class="cards3">
+      <a class="gcard" href="#">
+        <div class="gcover" style="background: linear-gradient(150deg, #ffe9c4, #f8a600 120%);"></div>
+        <div class="gbody">
+          <span class="gtype">Гайд</span>
+          <span class="gtitle">Первая варка: план дня по часам</span>
+          <span class="gmin">12 мин</span>
+        </div>
+      </a>
+      <a class="gcard" href="#">
+        <div class="gcover" style="background: linear-gradient(150deg, #dbeafe, #93c5fd 120%);"></div>
+        <div class="gbody">
+          <span class="gtype">Гайд</span>
+          <span class="gtitle">Вода для пивовара: с чего начать</span>
+          <span class="gmin">9 мин</span>
+        </div>
+      </a>
+      <a class="gcard" href="#">
+        <div class="gcover" style="background: linear-gradient(150deg, #dcfce7, #86efac 120%);"></div>
+        <div class="gbody">
+          <span class="gtype">Гайд</span>
+          <span class="gtitle">Сухое охмеление без окисления</span>
+          <span class="gmin">7 мин</span>
+        </div>
+      </a>
+    </div>
+    <a class="bjcp-banner" href="#">
+      <div class="spectrum" aria-hidden="true"></div>
+      <div class="bjcp-body">
+        <div>
+          <div class="t">Стили пива — справочник BJCP 2021</div>
+          <div class="d">Больше 120 стилей: от чешского пилснера до имперского стаута</div>
+        </div>
+        <span class="btn btn-ghost">Открыть справочник</span>
+      </div>
+    </a>
+  </section>
+
+  <!-- ======================= ДВА ВХОДА ======================= -->
+  <section class="block">
+    <div class="note"><b>8 · Два входа.</b> Финал — не «Зарегистрируйтесь», а развилка по реальным ментальным моделям пивовара: «у меня идея» и «у меня запасы». Обе ведут в <code>/login?next=…</code> — прогрессивная регистрация уже канон продукта.</div>
+    <div class="fork">
+      <a href="#">
+        <span class="ft">Начать с рецепта <span class="arr">→</span></span>
+        <span class="fd">Соберите засыпь и охмеление — редактор посчитает OG, IBU и цвет на лету</span>
+      </a>
+      <a href="#">
+        <span class="ft">Начать со склада <span class="arr">→</span></span>
+        <span class="fd">Занесите запасы — сайт покажет, какие рецепты можно сварить уже сегодня</span>
+      </a>
+    </div>
+    <p class="auth-note">Вход по номеру телефона — аккаунт создаётся при первом входе</p>
+  </section>
+
+</main>
+
+<footer class="site">
+  <div class="foot-inner">
+    <span class="logo" style="font-size:15px;">NB</span>
+    <nav aria-label="Разделы сайта">
+      <a href="#">Каталог</a>
+      <a href="#">Гайды</a>
+      <a href="#">Стили пива</a>
+      <a href="#">Калькуляторы</a>
+      <a href="#">Рецепты</a>
+    </nav>
+    <span>© NB</span>
+  </div>
+</footer>
+
+<button class="notes-toggle" id="notesToggle" type="button" aria-pressed="false">Пометки дизайнера</button>
+
+<script>
+/* ---------- SRM-палитра (из features/recipes/beer-color.ts) ---------- */
+var SRM_MAP = [
+  [2, "#F3F993", "Светло-соломенный"], [3, "#FFD878", "Соломенный"], [4, "#FFCA5A", "Светло-золотистый"],
+  [6, "#FFBF42", "Золотистый"], [9, "#F8A600", "Насыщенно-золотистый"], [12, "#E58500", "Светло-янтарный"],
+  [15, "#CF6900", "Янтарный"], [18, "#BB5100", "Тёмно-янтарный"], [22, "#A63E00", "Янтарно-коричневый"],
+  [27, "#8B2E00", "Коричневый"], [33, "#6F1A07", "Тёмно-коричневый"], [40, "#3B0F0A", "Тёмно-коричневый"]
+];
+function beerColor(srm) {
+  for (var i = 0; i < SRM_MAP.length; i++) { if (srm < SRM_MAP[i][0]) return { hex: SRM_MAP[i][1], label: SRM_MAP[i][2] }; }
+  return { hex: "#1A0F0B", label: "Чёрный" };
+}
+function hexToRgb(hex) { var v = parseInt(hex.slice(1), 16); return [(v >> 16) & 255, (v >> 8) & 255, v & 255]; }
+function mix(hex, target, amount) {
+  var rgb = hexToRgb(hex);
+  var out = rgb.map(function (c, i) { return Math.round(c + (target[i] - c) * amount); });
+  return "rgb(" + out.join(",") + ")";
+}
+function softGradient(srm) {
+  var base = beerColor(srm).hex;
+  return "linear-gradient(150deg, " + mix(base, [255,255,255], 0.3) + " 0%, " + base + " 55%, " + mix(base, [0,0,0], 0.16) + " 100%)";
+}
+
+/* ---------- hero: витальные статистики BJCP 2021 ---------- */
+var STYLES = [
+  { chip: "Хеллес", code: "4A", name: "Мюнхенский хеллес", og: "11,0–11,9 °P", ibu: "16–22", abv: "4,7–5,4 %", ebc: "6–10 EBC", srm: 4 },
+  { chip: "Чешский пилснер", code: "3B", name: "Чешский пилснер", og: "11,0–14,7 °P", ibu: "30–45", abv: "4,2–5,8 %", ebc: "7–12 EBC", srm: 4.8 },
+  { chip: "Вайсбир", code: "10A", name: "Вайсбир", og: "11,0–13,1 °P", ibu: "8–15", abv: "4,3–5,6 %", ebc: "4–12 EBC", srm: 4 },
+  { chip: "Американский IPA", code: "21A", name: "Американский IPA", og: "13,8–17,1 °P", ibu: "40–70", abv: "5,5–7,5 %", ebc: "12–28 EBC", srm: 10 },
+  { chip: "Дункельвайцен", code: "10B", name: "Дункельвайцен", og: "11,0–14,0 °P", ibu: "10–18", abv: "4,3–5,6 %", ebc: "28–45 EBC", srm: 18 },
+  { chip: "Ирландский стаут", code: "15B", name: "Ирландский стаут", og: "9,1–11,0 °P", ibu: "25–45", abv: "3,8–5,0 %", ebc: "49–79 EBC", srm: 32 }
+];
+var chipsWrap = document.getElementById("styleChips");
+var currentStyle = 0;
+function renderStyle(i) {
+  var s = STYLES[i];
+  var meta = document.getElementById("vitalMeta");
+  var stats = document.getElementById("vitalStats");
+  meta.classList.add("out"); stats.classList.add("out");
+  setTimeout(function () {
+    document.getElementById("vCode").textContent = s.code;
+    document.getElementById("vName").textContent = s.name;
+    document.getElementById("vColorLabel").textContent = beerColor(s.srm).label;
+    document.getElementById("vOg").textContent = s.og;
+    document.getElementById("vIbu").textContent = s.ibu;
+    document.getElementById("vAbv").textContent = s.abv;
+    document.getElementById("vEbc").textContent = s.ebc;
+    meta.classList.remove("out"); stats.classList.remove("out");
+  }, 180);
+  var base = beerColor(s.srm).hex;
+  document.getElementById("stopA").style.stopColor = mix(base, [255,255,255], 0.3);
+  document.getElementById("stopB").style.stopColor = base;
+  document.getElementById("stopC").style.stopColor = mix(base, [0,0,0], 0.16);
+  var buttons = chipsWrap.querySelectorAll("button");
+  buttons.forEach(function (b, j) { b.setAttribute("aria-pressed", j === i ? "true" : "false"); });
+  currentStyle = i;
+}
+STYLES.forEach(function (s, i) {
+  var b = document.createElement("button");
+  b.type = "button";
+  b.setAttribute("aria-pressed", i === 0 ? "true" : "false");
+  b.innerHTML = '<span class="dot" style="background:' + beerColor(s.srm).hex + '"></span>' + s.chip;
+  b.addEventListener("click", function () { if (currentStyle !== i) renderStyle(i); });
+  chipsWrap.appendChild(b);
+});
+renderStyle(0);
+
+/* ---------- цветовая полоса (srmColorBands из продукта) ---------- */
+var BANDS = [
+  { label: "Соломенный", srm: 2, count: 14 }, { label: "Золотистый", srm: 4.5, count: 31 },
+  { label: "Янтарный", srm: 7.5, count: 22 }, { label: "Медный", srm: 11.5, count: 17 },
+  { label: "Коричневый", srm: 17, count: 12 }, { label: "Тёмный", srm: 25, count: 9 },
+  { label: "Чёрный", srm: 35, count: 11 }
+];
+var bandWrap = document.getElementById("colorBand");
+BANDS.forEach(function (b) {
+  var a = document.createElement("a");
+  a.href = "#";
+  a.innerHTML = '<div class="swatch" style="background:' + softGradient(b.srm) + '"></div>' +
+    '<div class="cap"><span>' + b.label + '</span><span class="cnt num">' + b.count + '</span></div>';
+  bandWrap.appendChild(a);
+});
+
+/* ---------- карточки рецептов ---------- */
+var RECIPES = [
+  { name: "Мюнхенский хеллес на декокции", style: "4A · Хеллес", rating: "★ 4,8", srm: 4, abv: "5,0 %", ibu: "18", og: "11,5 °P", vol: "25 л", author: "Дмитрий К." },
+  { name: "АПА на Citra и Mosaic", style: "18B · Американский пейл-эль", rating: "★ 4,6", srm: 7, abv: "5,4 %", ibu: "38", og: "13,0 °P", vol: "20 л", author: "Sergey B." },
+  { name: "Овсяный стаут к зиме", style: "16B · Овсяный стаут", rating: "новый", srm: 32, abv: "4,8 %", ibu: "30", og: "12,4 °P", vol: "30 л", author: "Анна М." }
+];
+var cardsWrap = document.getElementById("recipeCards");
+RECIPES.forEach(function (r) {
+  var col = beerColor(r.srm);
+  var card = document.createElement("a");
+  card.className = "rcard";
+  card.href = "#";
+  card.innerHTML =
+    '<div class="rcard-top">' +
+      '<div class="rthumb" style="background:' + softGradient(r.srm) + '"></div>' +
+      '<div class="rmeta">' +
+        '<div class="rrow"><span class="chip">' + r.style + '</span><span class="rating num">' + r.rating + '</span></div>' +
+        '<div class="rname">' + r.name + '</div>' +
+      '</div>' +
+    '</div>' +
+    '<div class="rstats">' +
+      '<div class="rstat"><div class="l">ABV</div><div class="v num">' + r.abv + '</div></div>' +
+      '<div class="rstat"><div class="l">IBU</div><div class="v num">' + r.ibu + '</div></div>' +
+      '<div class="rstat"><div class="l">OG</div><div class="v num">' + r.og + '</div></div>' +
+      '<div class="rstat"><div class="l">Цвет</div><div class="v"><span class="sw" style="background:' + col.hex + '"></span></div></div>' +
+    '</div>' +
+    '<div class="rfoot"><span><span class="ravatar">' + r.author.slice(0, 1) + '</span>' + r.author + '</span><span class="rvol num">' + r.vol + '</span></div>';
+  cardsWrap.appendChild(card);
+});
+
+/* ---------- график затирания ---------- */
+(function drawMash() {
+  var svg = document.getElementById("mashChart");
+  var W = 560, H = 150, padL = 34, padR = 14, padT = 12, padB = 22;
+  var x0 = padL, x1 = W - padR, y0 = H - padB, y1 = padT;
+  var tMin = 0, tMax = 40, cMin = 40, cMax = 80;
+  function X(t) { return x0 + (t - tMin) / (tMax - tMin) * (x1 - x0); }
+  function Y(c) { return y0 - (c - cMin) / (cMax - cMin) * (y0 - y1); }
+  var data = [[0, 45], [4, 50.5], [6, 52], [10, 52], [14, 52.2], [18, 57], [24, 62.5], [30, 65.8], [34, 66.5], [38, 66.8]];
+  var parts = [];
+  // сетка + подписи оси Y
+  [50, 60, 70].forEach(function (c) {
+    parts.push('<line x1="' + x0 + '" y1="' + Y(c) + '" x2="' + x1 + '" y2="' + Y(c) + '" stroke="rgba(255,255,255,0.07)" stroke-width="1"/>');
+    parts.push('<text x="' + (x0 - 8) + '" y="' + (Y(c) + 3.5) + '" text-anchor="end" font-size="10" fill="#8b8b94" font-family="inherit">' + c + '</text>');
+  });
+  // подписи оси X
+  [0, 10, 20, 30, 40].forEach(function (t) {
+    parts.push('<text x="' + X(t) + '" y="' + (H - 6) + '" text-anchor="middle" font-size="10" fill="#8b8b94">' + t + '</text>');
+  });
+  // цель 67 °C — пунктир
+  parts.push('<line x1="' + x0 + '" y1="' + Y(67) + '" x2="' + x1 + '" y2="' + Y(67) + '" stroke="#71717a" stroke-width="1.5" stroke-dasharray="5 5"/>');
+  parts.push('<text x="' + x1 + '" y="' + (Y(67) - 6) + '" text-anchor="end" font-size="10.5" fill="#a1a1aa">цель 67,0</text>');
+  // линия температуры
+  var pts = data.map(function (d) { return X(d[0]).toFixed(1) + "," + Y(d[1]).toFixed(1); }).join(" ");
+  parts.push('<polyline points="' + pts + '" fill="none" stroke="#fbbf24" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>');
+  // текущая точка
+  var last = data[data.length - 1];
+  parts.push('<circle cx="' + X(last[0]) + '" cy="' + Y(last[1]) + '" r="4" fill="#fbbf24" stroke="#1d1d22" stroke-width="2"/>');
+  svg.innerHTML = parts.join("");
+})();
+
+/* ---------- калькулятор ABV (формулы @nb/brewing-core) ---------- */
+function platoToSg(p) { return 1 + p / (258.6 - (p / 258.2) * 227.1); }
+function fmtRu(n, digits) { return n.toFixed(digits).replace(".", ","); }
+function recalc() {
+  var og = parseFloat(document.getElementById("ogIn").value);
+  var fg = parseFloat(document.getElementById("fgIn").value);
+  var abvOut = document.getElementById("abvOut");
+  var attOut = document.getElementById("attOut");
+  if (!isFinite(og) || !isFinite(fg) || og <= 0 || fg < 0 || fg >= og) {
+    abvOut.textContent = "—"; attOut.textContent = "—"; return;
+  }
+  var abv = (platoToSg(og) - platoToSg(fg)) * 131.25;
+  var att = (og - fg) / og * 100;
+  abvOut.textContent = fmtRu(abv, 1) + " об.%";
+  attOut.textContent = Math.round(att) + " %";
+}
+document.getElementById("ogIn").addEventListener("input", recalc);
+document.getElementById("fgIn").addEventListener("input", recalc);
+recalc();
+
+/* ---------- пометки дизайнера ---------- */
+var toggle = document.getElementById("notesToggle");
+toggle.addEventListener("click", function () {
+  var on = document.body.classList.toggle("show-notes");
+  toggle.setAttribute("aria-pressed", on ? "true" : "false");
+  toggle.textContent = on ? "Скрыть пометки" : "Пометки дизайнера";
+});
+</script>

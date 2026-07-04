@@ -1540,7 +1540,7 @@ export const getMetricStatusAppearance = (status: "in_range" | "below" | "above"
   if (status === "in_range") {
     return {
       label: "В стиле",
-      badgeClassName: "bg-emerald-50 text-emerald-700 ring-1 ring-emerald-200",
+      badgeClassName: "text-emerald-600",
       needleClassName: "bg-emerald-500",
       needleDotClassName: "bg-emerald-500 ring-2 ring-white shadow"
     };
@@ -1549,7 +1549,7 @@ export const getMetricStatusAppearance = (status: "in_range" | "below" | "above"
   if (status === "below") {
     return {
       label: "Ниже",
-      badgeClassName: "bg-zinc-100 text-zinc-600 ring-1 ring-zinc-200",
+      badgeClassName: "text-zinc-500",
       needleClassName: "bg-zinc-400",
       needleDotClassName: "bg-zinc-500 ring-2 ring-white shadow"
     };
@@ -1558,7 +1558,7 @@ export const getMetricStatusAppearance = (status: "in_range" | "below" | "above"
   if (status === "above") {
     return {
       label: "Выше",
-      badgeClassName: "bg-zinc-100 text-zinc-600 ring-1 ring-zinc-200",
+      badgeClassName: "text-zinc-500",
       needleClassName: "bg-zinc-400",
       needleDotClassName: "bg-zinc-500 ring-2 ring-white shadow"
     };
@@ -1567,7 +1567,7 @@ export const getMetricStatusAppearance = (status: "in_range" | "below" | "above"
   if (status === "no_style") {
     return {
       label: "—",
-      badgeClassName: "bg-sky-50 text-sky-500 ring-1 ring-sky-200",
+      badgeClassName: "text-zinc-400",
       needleClassName: "bg-sky-400",
       needleDotClassName: "bg-sky-400 ring-2 ring-white shadow"
     };
@@ -1575,7 +1575,7 @@ export const getMetricStatusAppearance = (status: "in_range" | "below" | "above"
 
   return {
     label: "—",
-    badgeClassName: "bg-zinc-50 text-zinc-500 ring-1 ring-zinc-200",
+    badgeClassName: "text-zinc-400",
     needleClassName: "bg-zinc-400",
     needleDotClassName: "bg-zinc-400 ring-2 ring-white shadow"
   };

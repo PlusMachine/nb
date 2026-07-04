@@ -37,12 +37,7 @@ export function InventoryEmptyState({
         <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-zinc-50">
           <PackageOpen className="h-8 w-8 text-zinc-300" />
         </div>
-        <div className="space-y-2">
-          <h2 className="text-lg font-semibold text-zinc-800">Пока нет ингредиентов</h2>
-          <p className="mx-auto max-w-xs text-sm leading-relaxed text-zinc-400">
-            Здесь будут ваши запасы солода, хмеля, дрожжей и других ингредиентов для варки.
-          </p>
-        </div>
+        <h2 className="text-lg font-semibold text-zinc-800">Пока нет ингредиентов</h2>
         <AddIngredientTrigger initialQuickStartDataByContext={initialQuickStartDataByContext} />
       </section>
     );

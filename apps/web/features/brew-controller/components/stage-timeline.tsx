@@ -15,6 +15,7 @@ import { Pause, Hand, OctagonX, Clock } from "lucide-react";
 
 import type { Telemetry } from "@nb/brewforge-protocol";
 
+import { deriveAppMode } from "@/features/brew-controller/device-mode";
 import {
   MACRO_STAGE_MEMBERS,
   stageTimelineFromTelemetry,
@@ -35,15 +36,52 @@ const STATE_LABEL: Record<TimelineSegment["state"], string> = {
 };
 
 // Overlay-баннер: иконка + текст + палитра (цвет — только для нештатных состояний).
+// Текст режимозависим (§5) — прибор мультирежимный, «варка» на дистилляции была
+// бы враньём; label здесь пара {brew, distill} по образцу SECTION_TITLE ниже.
+// Тексты без слова «варка» (delayed_start/manual) одинаковы для любого режима.
 const OVERLAY_BANNER: Record<
   Exclude<TimelineOverlay, "none">,
-  { label: string; cls: string; Icon: typeof Pause }
+  { label: Record<"brew" | "distill", string>; cls: string; Icon: typeof Pause }
 > = {
-  idle: { label: "Ожидание запуска варки", cls: "bg-zinc-100 text-zinc-600", Icon: Clock },
-  delayed_start: { label: "Отложенный старт", cls: "bg-zinc-100 text-zinc-600", Icon: Clock },
-  paused: { label: "Пауза — варка приостановлена", cls: "bg-amber-100 text-amber-800", Icon: Pause },
-  manual: { label: "Ручной режим — прямое управление контуром", cls: "bg-indigo-100 text-indigo-800", Icon: Hand },
-  fault: { label: "Авария — варка остановлена интерлоком", cls: "bg-red-100 text-red-800", Icon: OctagonX },
+  idle: {
+    label: { brew: "Ожидание запуска варки", distill: "Ожидание запуска перегона" },
+    cls: "bg-zinc-100 text-zinc-600",
+    Icon: Clock,
+  },
+  delayed_start: {
+    label: { brew: "Отложенный старт", distill: "Отложенный старт" },
+    cls: "bg-zinc-100 text-zinc-600",
+    Icon: Clock,
+  },
+  paused: {
+    label: { brew: "Пауза — варка приостановлена", distill: "Пауза — перегон приостановлен" },
+    cls: "bg-amber-100 text-amber-800",
+    Icon: Pause,
+  },
+  manual: {
+    label: {
+      brew: "Ручной режим — прямое управление контуром",
+      distill: "Ручной режим — прямое управление контуром",
+    },
+    cls: "bg-indigo-100 text-indigo-800",
+    Icon: Hand,
+  },
+  fault: {
+    label: { brew: "Авария — варка остановлена интерлоком", distill: "Авария — перегон остановлен интерлоком" },
+    cls: "bg-red-100 text-red-800",
+    Icon: OctagonX,
+  },
+};
+
+// Заголовок секции и подпись полосы по режиму прибора (§5) — сама полоса уже
+// строится из модели (segments), здесь только рамочный текст вокруг неё.
+const SECTION_TITLE: Record<"brew" | "distill", string> = {
+  brew: "Ход варки",
+  distill: "Ход перегона",
+};
+const SEGMENTS_ARIA_LABEL: Record<"brew" | "distill", string> = {
+  brew: "Стадии варки",
+  distill: "Стадии перегона",
 };
 
 export function StageTimeline({ telemetry, hasDevice }: Props) {
@@ -52,13 +90,16 @@ export function StageTimeline({ telemetry, hasDevice }: Props) {
 
   if (!hasDevice || !timeline) return null;
 
+  // FERMENT уже отфильтрован (timeline === null); здесь только brew/distill.
+  const appMode = deriveAppMode(telemetry) === "distill" ? "distill" : "brew";
+
   const overlayBanner = timeline.overlay !== "none" ? OVERLAY_BANNER[timeline.overlay] : null;
   const selectedSegment = selected ? timeline.segments.find((s) => s.macro === selected) ?? null : null;
 
   return (
     <section className="rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm">
       <div className="flex flex-wrap items-center justify-between gap-2">
-        <h2 className="text-sm font-semibold text-zinc-900">Ход варки</h2>
+        <h2 className="text-sm font-semibold text-zinc-900">{SECTION_TITLE[appMode]}</h2>
         <div className="flex items-center gap-2 text-sm">
           <span className="font-semibold text-zinc-900">{timeline.currentLabel || "—"}</span>
           {timeline.substepLabel ? (
@@ -72,12 +113,12 @@ export function StageTimeline({ telemetry, hasDevice }: Props) {
       {overlayBanner ? (
         <p className={`mt-3 inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-medium ${overlayBanner.cls}`}>
           <overlayBanner.Icon className="h-3.5 w-3.5" aria-hidden />
-          {overlayBanner.label}
+          {overlayBanner.label[appMode]}
         </p>
       ) : null}
 
       {/* Полоса стадий. Сегменты — кнопки: клик раскрывает состав/статус. */}
-      <ol className="mt-4 flex items-stretch gap-1.5" aria-label="Стадии варки">
+      <ol className="mt-4 flex items-stretch gap-1.5" aria-label={SEGMENTS_ARIA_LABEL[appMode]}>
         {timeline.segments.map((segment) => (
           <li key={segment.macro} className="min-w-0 flex-1">
             <SegmentBar

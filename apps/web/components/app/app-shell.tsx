@@ -3,8 +3,9 @@
 import React, { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
-import { Loader2, Menu, X } from "lucide-react";
+import { Loader2, Menu } from "lucide-react";
 
+import { Sheet } from "@nb/ui";
 import {
   CatalogPageSkeleton,
   EquipmentPageSkeleton,
@@ -138,6 +139,23 @@ export function AppShell({ children, user }: AppShellProps) {
   };
 
   useEffect(() => {
+    // Drawer — портированный Sheet, поэтому классы lg:hidden на нём не действуют:
+    // при пересечении брейкпоинта (ресайз/поворот) закрываем его вручную, иначе
+    // мобильный drawer останется висеть поверх десктопного сайдбара.
+    const desktopQuery = window.matchMedia("(min-width: 1024px)");
+    const handleBreakpointChange = (event: MediaQueryListEvent) => {
+      if (event.matches) {
+        setDrawerOpen(false);
+      }
+    };
+
+    desktopQuery.addEventListener("change", handleBreakpointChange);
+    return () => {
+      desktopQuery.removeEventListener("change", handleBreakpointChange);
+    };
+  }, []);
+
+  useEffect(() => {
     const handleClick = (event: MouseEvent) => {
       if (event.defaultPrevented || isModifiedClick(event)) {
         return;
@@ -175,7 +193,7 @@ export function AppShell({ children, user }: AppShellProps) {
   }, [pathname, searchParamsKey]);
 
   return (
-    <div className="lg:flex">
+    <div className="[--chrome-top:3.5rem] lg:flex lg:[--chrome-top:0px]">
       <aside className="sticky top-0 hidden h-screen w-60 shrink-0 flex-col border-r border-zinc-200 bg-white/80 px-3 py-4 backdrop-blur lg:flex">
         <Link
           href="/app"
@@ -205,31 +223,26 @@ export function AppShell({ children, user }: AppShellProps) {
         </button>
       </header>
 
-      {drawerOpen ? (
-        <div className="fixed inset-0 z-50 lg:hidden">
-          <div className="absolute inset-0 bg-zinc-950/40" onClick={() => setDrawerOpen(false)} aria-hidden="true" />
-          <div className="absolute inset-y-0 left-0 flex w-72 max-w-[85%] flex-col bg-white px-3 py-4 shadow-xl">
-            <div className="mb-4 flex items-center justify-between px-3">
-              <Link
-                href="/app"
-                className="text-lg font-semibold tracking-[0.2em] text-zinc-950"
-                style={{ fontFamily: "var(--font-display)" }}
-              >
-                NB
-              </Link>
-              <button
-                type="button"
-                onClick={() => setDrawerOpen(false)}
-                aria-label="Закрыть меню"
-                className="rounded-lg p-2 text-zinc-700 transition-colors hover:bg-zinc-100"
-              >
-                <X className="h-5 w-5" />
-              </button>
-            </div>
-            <AppSidebarNav user={user} onNavigate={() => setDrawerOpen(false)} />
-          </div>
-        </div>
-      ) : null}
+      {/* Portal Sheet — lg:hidden не сработает на портированном контенте, поэтому
+          открытие гейтится состоянием drawerOpen, которое взводят только
+          мобильные триггеры (кнопка в шапке и «Ещё» в нижней навигации). */}
+      <Sheet
+        open={drawerOpen}
+        onOpenChange={setDrawerOpen}
+        side="left"
+        title={
+          <Link
+            href="/app"
+            onClick={() => setDrawerOpen(false)}
+            className="text-lg font-semibold tracking-[0.2em] text-zinc-950"
+            style={{ fontFamily: "var(--font-display)" }}
+          >
+            NB
+          </Link>
+        }
+      >
+        <AppSidebarNav user={user} onNavigate={() => setDrawerOpen(false)} />
+      </Sheet>
 
       <main className="min-w-0 flex-1">
         {showProgress ? (

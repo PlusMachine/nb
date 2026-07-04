@@ -1,36 +1,11 @@
 import React from "react";
 import Link from "next/link";
 
-type FooterLink = { href: string; label: string };
-
-const columns: { title: string; links: FooterLink[] }[] = [
-  {
-    title: "Мастерская",
-    links: [
-      { href: "/app", label: "Обзор" },
-      { href: "/app/recipes", label: "Мои рецепты" },
-      { href: "/app/ingredients", label: "Склад" },
-      { href: "/catalog", label: "Каталог" }
-    ]
-  },
-  {
-    title: "Знания",
-    links: [
-      { href: "/bjcp", label: "Стили пива" },
-      { href: "/calculators", label: "Калькуляторы" },
-      { href: "/recipes", label: "Публичные рецепты" }
-    ]
-  },
-  {
-    title: "Аккаунт",
-    links: [
-      { href: "/login", label: "Войти" },
-      { href: "/profile", label: "Профиль" }
-    ]
-  }
-];
+import { legalLinks, publicLinks } from "@/lib/navigation";
 
 export function SiteFooter() {
+  const year = new Date().getFullYear();
+
   return (
     <footer className="mt-16 border-t border-zinc-200 bg-white/60">
       <div className="mx-auto grid max-w-7xl gap-8 px-6 py-10 sm:grid-cols-2 lg:grid-cols-4">
@@ -44,24 +19,49 @@ export function SiteFooter() {
           <p className="max-w-xs text-sm leading-6 text-zinc-500">
             Платформа для домашних пивоваров: каталог ингредиентов, склад, рецепты и BJCP в одном месте.
           </p>
+          <p className="max-w-xs text-xs leading-5 text-zinc-400">
+            18+ · Материалы носят информационный характер. Чрезмерное употребление алкоголя вредит вашему здоровью.
+          </p>
         </div>
-        {columns.map((column) => (
-          <div key={column.title} className="space-y-3">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-zinc-400">{column.title}</p>
-            <ul className="space-y-2 text-sm">
-              {column.links.map((link) => (
-                <li key={link.href}>
-                  <Link href={link.href} className="text-zinc-600 transition-colors hover:text-zinc-950">
-                    {link.label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-        ))}
+        <div className="space-y-3">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-zinc-400">Разделы</p>
+          <ul className="space-y-2 text-sm">
+            {publicLinks.map((link) => (
+              <li key={link.href}>
+                <Link href={link.href} className="text-zinc-600 transition-colors hover:text-zinc-950">
+                  {link.label}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </div>
+        <div className="space-y-3">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-zinc-400">Правовая информация</p>
+          <ul className="space-y-2 text-sm">
+            {legalLinks.map((link) => (
+              <li key={link.href}>
+                <Link href={link.href} className="text-zinc-600 transition-colors hover:text-zinc-950">
+                  {link.label}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </div>
+        <div className="space-y-3">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-zinc-400">Аккаунт</p>
+          <ul className="space-y-2 text-sm">
+            <li>
+              <Link href="/login" className="text-zinc-600 transition-colors hover:text-zinc-950">
+                Войти
+              </Link>
+            </li>
+          </ul>
+        </div>
       </div>
       <div className="border-t border-zinc-100">
-        <p className="mx-auto max-w-7xl px-6 py-4 text-xs text-zinc-400">© NB — knowledge base &amp; brewing workspace</p>
+        <p className="mx-auto max-w-7xl px-6 py-4 text-xs text-zinc-400">
+          © {year} NB — платформа для домашних пивоваров
+        </p>
       </div>
     </footer>
   );

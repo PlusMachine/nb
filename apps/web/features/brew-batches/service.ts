@@ -1,4 +1,4 @@
-import { and, asc, brewBatches, brewMeasurements, count, db, desc, eq, inArray, max, brewTelemetry, recipes, users } from "@nb/db";
+import { and, asc, brewBatches, brewMeasurements, count, db, desc, eq, gte, inArray, max, sql, brewTelemetry, recipes, users } from "@nb/db";
 
 import { getRecipeById } from "../recipes/service";
 import { buildBrewPlanSnapshot } from "./brew-plan";
@@ -7,6 +7,7 @@ import { summarizeBrewMeasurements } from "./measurements";
 import {
   activeBrewBatchStatuses,
   brewPlanSnapshotSchema,
+  FERMENT_HISTORY_LIMIT,
   TELEMETRY_HISTORY_LIMIT,
   type ActiveBrewProgressItem,
   type BrewBatchDetail,
@@ -27,7 +28,10 @@ const mapMeasurementDto = (row: typeof brewMeasurements.$inferSelect): BrewMeasu
   createdAt: row.createdAt
 });
 
-const mapBrewBatchDto = (row: typeof brewBatches.$inferSelect): BrewBatchDto => ({
+// Экспортирован для features/devices/fermenter-binding.ts (§8.4): привязка
+// прибора-ферментера пишет brew_batches.deviceId и возвращает DTO без лишнего
+// круговорота через getBrewBatchById — маппинг переиспользуется как есть.
+export const mapBrewBatchDto = (row: typeof brewBatches.$inferSelect): BrewBatchDto => ({
   id: row.id,
   userId: row.userId,
   recipeId: row.recipeId,
@@ -162,6 +166,12 @@ export const listBrewBatchesForUser = async (userId: string): Promise<BrewBatchL
   return rows.map(mapBrewBatchListItem);
 };
 
+/** Число варок пользователя (все статусы) одним индексным count — для стат-плитки дашборда. */
+export const countBrewBatchesForUser = async (userId: string): Promise<number> => {
+  const [row] = await db.select({ value: count() }).from(brewBatches).where(eq(brewBatches.userId, userId));
+  return row?.value ?? 0;
+};
+
 /**
  * Активные варки (planned/brewing/fermenting) для дашборда, с агрегатами журнала
  * замеров: последний замер и их число. Агрегат — один сгруппированный запрос по
@@ -216,24 +226,44 @@ export const listBrewBatchesForRecipe = async (userId: string, recipeId: string)
  * телеметрию прошлой варки на том же устройстве. Ограничена TELEMETRY_HISTORY_LIMIT;
  * покрывает обе записи строк brew_telemetry — и облачный мост, и LAN/sim-даунсэмпл
  * из SSE-роута.
+ *
+ * `windowDays` (§14, зеркалит getDeviceHistory в features/devices/service.ts):
+ * график «план vs факт» ферментации (§8.4) живёт неделями, а мост персистит
+ * FERMENT раз в 300 с (persist-gate.ts) — варочный лимит в 1000 точек укладывается
+ * в ~3.5 суток. Передан `windowDays` → берём окно по времени с более широким
+ * потолком (FERMENT_HISTORY_LIMIT); варочные вызовы (без windowDays) не меняются.
  */
 export const getDeviceTelemetryHistory = async (
   deviceId: string,
   brewBatchId: string,
-  limit: number = TELEMETRY_HISTORY_LIMIT
+  limit: number = TELEMETRY_HISTORY_LIMIT,
+  windowDays?: number
 ): Promise<TelemetryHistoryPoint[]> => {
-  const bounded = Math.min(Math.max(Math.floor(limit) || 0, 1), TELEMETRY_HISTORY_LIMIT);
+  const hasWindow = typeof windowDays === "number" && windowDays > 0;
+  const cap = hasWindow ? FERMENT_HISTORY_LIMIT : TELEMETRY_HISTORY_LIMIT;
+  const bounded = Math.min(Math.max(Math.floor(limit) || 0, 1), cap);
+
+  const conditions = [eq(brewTelemetry.deviceId, deviceId), eq(brewTelemetry.brewBatchId, brewBatchId)];
+  if (hasWindow) {
+    conditions.push(gte(brewTelemetry.ts, new Date(Date.now() - windowDays! * 86_400_000)));
+  }
+
   // Берём последние N по ts (desc + limit), затем разворачиваем в oldest→newest.
+  // appMode достаём из payload JSON (не отдельной колонкой) — тот же приём, что
+  // listFermenterCandidates (features/devices/fermenter-binding.ts): нужен, чтобы
+  // «Бродит в приборе» на акте «Брожение» (§8.4) знал по ПОСЛЕДНЕЙ точке этой же
+  // выборки, ещё ли прибор в режиме ферментации, не гоняя отдельный запрос.
   const rows = await db
     .select({
       ts: brewTelemetry.ts,
       primaryC: brewTelemetry.primaryC,
       setpointC: brewTelemetry.setpointC,
       heatDutyPct: brewTelemetry.heatDutyPct,
-      stage: brewTelemetry.stage
+      stage: brewTelemetry.stage,
+      appMode: sql<number | null>`(${brewTelemetry.payload} ->> 'appMode')::int`
     })
     .from(brewTelemetry)
-    .where(and(eq(brewTelemetry.deviceId, deviceId), eq(brewTelemetry.brewBatchId, brewBatchId)))
+    .where(and(...conditions))
     .orderBy(desc(brewTelemetry.ts))
     .limit(bounded);
 
@@ -243,7 +273,8 @@ export const getDeviceTelemetryHistory = async (
       primaryC: row.primaryC,
       setpointC: row.setpointC,
       heatDutyPct: row.heatDutyPct,
-      stage: row.stage
+      stage: row.stage,
+      appMode: row.appMode
     }))
     .reverse();
 };

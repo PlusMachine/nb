@@ -65,7 +65,7 @@ describe("calculator pages", () => {
 
       expect(html).toContain(calculator.title);
       expect(html).toContain("Сбросить");
-      expect(html).toContain("Метод расчета");
+      expect(html).toContain("Как считаем?");
       expect(html).not.toContain("Что это значит");
       expect(html).not.toContain("Что сделать дальше");
       expect(html).not.toContain("Формула и допущения");

@@ -3,6 +3,8 @@
 //  Подключение к брокеру и приём топиков устройств. Источник истины топиков —
 //  @nb/brewforge-protocol/topics. Подписки (wildcard `+` = deviceId/hardwareId):
 //    brewforge/+/telemetry   → upsert статуса устройства + lean-строка brew_telemetry
+//                              (даунсэмпл персиста §14 — см. persist-gate.ts;
+//                              живость устройства и пуш-детекторы видят КАЖДЫЙ кадр)
 //    brewforge/+/status      → brew_devices.status (online/offline)
 //    brewforge/+/cmd/ack     → апдейт строки device_commands (acked/failed + reason)
 //    brewforge/+/log         → insert brew_log_events
@@ -33,7 +35,9 @@ import {
   resolveDeviceByHardwareId,
 } from "./db.js";
 import { dispatchPushForTelemetry } from "./notify.js";
+import { gatePersist } from "./persist-gate.js";
 import { runCloudDeadman } from "./cloud-deadman.js";
+import { trackFermentFrame } from "./watchdog.js";
 
 const DEFAULT_MQTT_URL = "mqtt://localhost:1883";
 
@@ -186,26 +190,39 @@ async function handleTelemetry(deviceId: string, json: unknown, ctx: HandlerCtx)
 
   const brewBatchId = await resolveActiveBatchId(device.id);
 
-  // Lean-строка time-series: горячие поля распакованы, полный снимок — в payload.
-  // Идемпотентно по (deviceId, brewBatchId, seq): дубли от конкурентных стримов/
-  // моста тихо отбрасываются (тот же кадр не пишем дважды).
-  await db.insert(brewTelemetry).values({
-    deviceId: device.id,
-    brewBatchId: brewBatchId ?? null,
-    ts: tsToDate(t.ts),
-    seq: t.seq,
-    stage: t.stage,
-    primaryC: t.primary.valid ? t.primary.c : null,
-    setpointC: t.setpointC,
-    heatDutyPct: t.heatDutyPct,
-    payload: t as unknown as Record<string, unknown>,
-  }).onConflictDoNothing({ target: [brewTelemetry.deviceId, brewTelemetry.brewBatchId, brewTelemetry.seq] });
+  // Режимный даунсэмпл персиста (§14): FERMENT — раз в 300с, иначе — раз в 10с;
+  // смена стадии/новая авария пишутся немедленно вне гейта (границы процессов не
+  // теряются). Гейт решает ТОЛЬКО эту INSERT — живость устройства выше и
+  // пуш-детекторы ниже уже отработали по КАЖДОМУ кадру, не глядя на гейт.
+  if (gatePersist(device.id, { nowMs: now.getTime(), stage: t.stage, faultMask: t.faultMask })) {
+    // Lean-строка time-series: горячие поля распакованы, полный снимок — в payload.
+    // Идемпотентно по (deviceId, brewBatchId, seq): дубли от конкурентных стримов/
+    // моста тихо отбрасываются (тот же кадр не пишем дважды).
+    await db.insert(brewTelemetry).values({
+      deviceId: device.id,
+      brewBatchId: brewBatchId ?? null,
+      ts: tsToDate(t.ts),
+      seq: t.seq,
+      stage: t.stage,
+      primaryC: t.primary.valid ? t.primary.c : null,
+      setpointC: t.setpointC,
+      heatDutyPct: t.heatDutyPct,
+      payload: t as unknown as Record<string, unknown>,
+    }).onConflictDoNothing({ target: [brewTelemetry.deviceId, brewTelemetry.brewBatchId, brewTelemetry.seq] });
+  }
 
-  // Web-push по фронтам (новый промпт / авария) владельцу устройства (Phase 6a).
-  await dispatchPushForTelemetry(device, t);
+  // Web-push по фронтам (новый промпт / авария / H3: отклонение уставки и конец
+  // ступени в ферментации) владельцу устройства (Phase 6a). now — монотонное
+  // время моста, а не device ts/SNTP (окно отклонения ферментации §12.2).
+  await dispatchPushForTelemetry(device, t, now.getTime());
 
   // Cloud-плечо dead-man (Phase 6b): брошенный ручной нагрев → пуш (+ опц. EXIT_MANUAL).
   await runCloudDeadman(device, t, ctx.publish);
+
+  // Офлайн-watchdog ферментации (H3, §12.2/§14): фиксируем last-known режим и
+  // время кадра на КАЖДОМ кадре (не глядя на гейт персиста) — периодическая
+  // проверка в main.ts читает эту память, в БД для неё не лезет.
+  trackFermentFrame(device, t, now.getTime());
 
   ctx.hooks.onTelemetry?.(deviceId, t);
 }

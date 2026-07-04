@@ -153,10 +153,26 @@ export type TelemetryHistoryPoint = {
   setpointC: number | null;
   heatDutyPct: number | null;
   stage: number | null;
+  // Режим прибора в этом кадре (bf_app_mode_t), извлечён из payload JSON.
+  // Опционален: заполняется getDeviceTelemetryHistory (зона A, §8.4 — нужен
+  // для «прибор сейчас в режиме ферментации?», isFermenterModeRow); соседний
+  // getDeviceHistory (зона B, features/devices/service.ts) его не выбирает —
+  // пульту appMode для истории не нужен, там режим смотрят по живой телеметрии.
+  appMode?: number | null;
 };
 
 /** Максимум исторических точек, отдаваемых на график (защита от тяжёлых выборок). */
 export const TELEMETRY_HISTORY_LIMIT = 1000;
+
+/**
+ * Ферментация (§14 docs/brewforge-web-hmi.md): недельный процесс, мост персистит
+ * FERMENT раз в 300 с (persist-gate.ts) — TELEMETRY_HISTORY_LIMIT точек хватает
+ * лишь на ~3.5 суток. Окно по умолчанию покрывает типичное брожение + холодную
+ * выдержку с запасом; потолок точек — 60 дней при 5-минутном шаге (с запасом на
+ * периоды до режимного даунсэмпла), защита от тяжёлой выборки на аномально долгом брожении.
+ */
+export const FERMENT_HISTORY_WINDOW_DAYS = 60;
+export const FERMENT_HISTORY_LIMIT = 20_000;
 
 // --- Журнал замеров плотности -------------------------------------------------
 

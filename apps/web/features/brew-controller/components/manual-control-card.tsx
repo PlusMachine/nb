@@ -15,7 +15,7 @@
 //     оператор / закрыл вкладку → keepalive прекращается → нагрев OFF на плате.
 // =============================================================================
 import { useCallback, useEffect, useRef, useState } from "react";
-import { Flame, Waves } from "lucide-react";
+import { Droplet, Flame, Snowflake, Waves } from "lucide-react";
 
 import { SliderScaffold, Button } from "@nb/ui";
 import {
@@ -24,6 +24,9 @@ import {
   cmdManualPwm,
   cmdManualHeat,
   cmdManualPump,
+  cmdManualPump2,
+  cmdManualValve,
+  cmdManualCool,
   type Command,
   type Telemetry,
 } from "@nb/brewforge-protocol";
@@ -53,6 +56,11 @@ export function ManualControlCard({ telemetry, hasDevice, controlsHeld, isLive, 
   const heatEnabled = (telemetry?.heatMode ?? 0) !== 0;
   const pumpOn = telemetry?.pumpOn ?? false;
   const heatOn = telemetry?.heatOn ?? false;
+  // Насос2/клапан/охлаждение — видимость по паттерну StatusStrip: поле телеметрии
+  // отсутствует (роль не назначена на устройстве) → контрола нет вообще.
+  const pump2On = telemetry?.pump2On;
+  const valveOn = telemetry?.valveOn;
+  const coolOn = telemetry?.coolOn;
   const deviceDuty = telemetry?.heatDutyPct ?? 0;
   const deviceSetpoint = telemetry?.setpointC ?? 65;
 
@@ -216,6 +224,50 @@ export function ManualControlCard({ telemetry, hasDevice, controlsHeld, isLive, 
           <Waves className="h-4 w-4" aria-hidden />
           {pumpOn ? "Насос: ВКЛ" : "Насос: ВЫКЛ"}
         </Button>
+
+        {/* Насос 2/клапан/охлаждение — только если роль назначена на устройстве
+            (соответствующее поле телеметрии присутствует). */}
+        {pump2On !== undefined ? (
+          <Button
+            variant={pump2On ? "primary" : "outline"}
+            size="md"
+            disabled={controlsDisabled}
+            onClick={() =>
+              void runFeedback(cmdManualPump2(!pump2On), pump2On ? "Насос 2 выключен" : "Насос 2 включён")
+            }
+          >
+            <Waves className="h-4 w-4" aria-hidden />
+            {pump2On ? "Насос 2: ВКЛ" : "Насос 2: ВЫКЛ"}
+          </Button>
+        ) : null}
+
+        {valveOn !== undefined ? (
+          <Button
+            variant={valveOn ? "primary" : "outline"}
+            size="md"
+            disabled={controlsDisabled}
+            onClick={() =>
+              void runFeedback(cmdManualValve(!valveOn), valveOn ? "Клапан выключен" : "Клапан включён")
+            }
+          >
+            <Droplet className="h-4 w-4" aria-hidden />
+            {valveOn ? "Клапан: ВКЛ" : "Клапан: ВЫКЛ"}
+          </Button>
+        ) : null}
+
+        {coolOn !== undefined ? (
+          <Button
+            variant={coolOn ? "primary" : "outline"}
+            size="md"
+            disabled={controlsDisabled}
+            onClick={() =>
+              void runFeedback(cmdManualCool(!coolOn), coolOn ? "Охлаждение выключено" : "Охлаждение включено")
+            }
+          >
+            <Snowflake className="h-4 w-4" aria-hidden />
+            {coolOn ? "Охлаждение: ВКЛ" : "Охлаждение: ВЫКЛ"}
+          </Button>
+        ) : null}
 
         {/* Живой статус нагрева: «применяется…» до подтверждения телеметрией. */}
         <span className="text-xs text-zinc-500">

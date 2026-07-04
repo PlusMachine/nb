@@ -9,17 +9,17 @@ import {
   Cpu,
   FlaskConical,
   Library,
-  Plus,
   Sparkles
 } from "lucide-react";
 
 import { requireUser } from "@/lib/auth";
-import { countRecipesForAuthor } from "@/features/recipes/service";
+import { countRecipesForAuthor, listAuthorRecipeCards } from "@/features/recipes/service";
 import { findBrewableOwnRecipesForUser } from "@/features/recipes/match-service";
-import type { BrewableRecipeDto } from "@/features/recipes/contracts";
+import type { BrewableRecipeDto, OwnerRecipeCardDto } from "@/features/recipes/contracts";
+import { formatRelativeTimestamp } from "@/features/recipes/format";
 import { resolveBrewabilityBadge } from "@/features/recipes/brewability-badge";
 import { getInventorySummaries } from "@/features/inventory/service";
-import { listActiveBrewBatchesForUser } from "@/features/brew-batches/service";
+import { countBrewBatchesForUser, listActiveBrewBatchesForUser } from "@/features/brew-batches/service";
 import {
   brewBatchStatusBadgeClass,
   brewBatchStatusLabels,
@@ -103,6 +103,21 @@ function BrewableNowCard({ recipe }: { recipe: BrewableRecipeDto }) {
   );
 }
 
+function RecentRecipeCard({ recipe }: { recipe: OwnerRecipeCardDto }) {
+  return (
+    <Link
+      href={`/app/recipes/${recipe.id}/edit`}
+      className="group flex flex-col gap-1 rounded-2xl border border-zinc-200 bg-white p-4 shadow-sm transition-colors hover:border-zinc-300"
+    >
+      <p className="truncate font-semibold text-zinc-950 group-hover:text-zinc-700">{recipe.title}</p>
+      <p className="truncate text-sm text-zinc-500">
+        {recipe.styleName ? `${recipe.styleName} · ` : ""}
+        обновлён {formatRelativeTimestamp(recipe.updatedAt)}
+      </p>
+    </Link>
+  );
+}
+
 function SectionHeader({ title, action }: { title: string; action?: { href: string; label: string } }) {
   return (
     <div className="flex items-center justify-between">
@@ -118,11 +133,12 @@ function SectionHeader({ title, action }: { title: string; action?: { href: stri
 
 export default async function AppZonePage() {
   const user = await requireUser();
-  const [recipeCount, inventory, activeBrews, brewable] = await Promise.all([
+  const [recipeCount, inventory, activeBrews, brewable, brewBatchCount] = await Promise.all([
     countRecipesForAuthor(user.id),
     getInventorySummaries(user.id),
     listActiveBrewBatchesForUser(user.id),
-    findBrewableOwnRecipesForUser({ userId: user.id })
+    findBrewableOwnRecipesForUser({ userId: user.id }),
+    countBrewBatchesForUser(user.id)
   ]);
 
   const now = new Date();
@@ -142,10 +158,15 @@ export default async function AppZonePage() {
       return byTone !== 0 ? byTone : b.batch.createdAt.getTime() - a.batch.createdAt.getTime();
     });
 
+  // Регуляр без активных варок — дашборд иначе почти пуст: подмешиваем последние
+  // рецепты. Сервис не дёргаем, если секция всё равно не покажется.
+  const showRecentRecipes = !isNewUser && activeBrews.length === 0;
+  const recentRecipes = showRecentRecipes ? (await listAuthorRecipeCards(user.id)).slice(0, 3) : [];
+
   const stats = [
     { label: "Рецептов", value: recipeCount, href: "/app/recipes" },
     { label: "В наличии", value: inventory.inStockItems, href: "/app/ingredients" },
-    { label: "Всего позиций", value: inventory.totalItems, href: "/app/ingredients" }
+    { label: "Варки", value: brewBatchCount, href: "/app/brew-batches" }
   ];
 
   const primaryActions = [
@@ -165,7 +186,7 @@ export default async function AppZonePage() {
   const discoverLinks = [
     { href: "/bjcp", title: "Стили пива", icon: Sparkles },
     { href: "/calculators", title: "Калькуляторы", icon: Calculator },
-    { href: "/recipes", title: "Публичные рецепты", icon: FlaskConical }
+    { href: "/recipes", title: "Рецепты сообщества", icon: FlaskConical }
   ];
 
   return (
@@ -198,6 +219,17 @@ export default async function AppZonePage() {
         </section>
       ) : null}
 
+      {recentRecipes.length > 0 ? (
+        <section className="space-y-3">
+          <SectionHeader title="Последние рецепты" action={{ href: "/app/recipes", label: "Все рецепты" }} />
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            {recentRecipes.map((recipe) => (
+              <RecentRecipeCard key={recipe.id} recipe={recipe} />
+            ))}
+          </div>
+        </section>
+      ) : null}
+
       {isNewUser ? null : (
         <section className="grid gap-3 sm:grid-cols-3">
           {stats.map((stat) => (
@@ -214,7 +246,7 @@ export default async function AppZonePage() {
       )}
 
       <section className="space-y-3">
-        <h2 className="text-sm font-semibold text-zinc-900">С чего начать</h2>
+        {isNewUser ? <h2 className="text-sm font-semibold text-zinc-900">С чего начать</h2> : null}
         <div className="grid gap-3 sm:grid-cols-3">
           {(isNewUser ? onboardingSteps : primaryActions).map((action, index) => {
             const Icon = action.icon;
@@ -243,12 +275,7 @@ export default async function AppZonePage() {
       </section>
 
       <section className="space-y-3">
-        <div className="flex items-center justify-between">
-          <h2 className="text-sm font-semibold text-zinc-900">Полезное рядом</h2>
-          <Link href="/app/recipes/new" className="inline-flex items-center gap-1.5 text-sm font-medium text-zinc-600 hover:text-zinc-950">
-            <Plus className="h-4 w-4" /> Новый рецепт
-          </Link>
-        </div>
+        <SectionHeader title="Полезное рядом" />
         <div className="grid gap-3 sm:grid-cols-3">
           {discoverLinks.map((link) => {
             const Icon = link.icon;

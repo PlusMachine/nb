@@ -4,6 +4,7 @@ import React from "react";
 import { usePathname } from "next/navigation";
 
 import { AppShell } from "@/components/app/app-shell";
+import { SiteFooter } from "@/components/shared/site-footer";
 import { SiteHeader, type SiteHeaderUser } from "@/components/shared/site-header";
 
 type PublicShellProps = {
@@ -22,9 +23,10 @@ export function PublicShell({ user, children }: PublicShellProps) {
   }
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen [--chrome-top:3.5rem]">
       <SiteHeader user={user} variant="public" />
       <div className="mx-auto max-w-7xl px-6 pb-12">{children}</div>
+      <SiteFooter />
     </div>
   );
 }

@@ -8,24 +8,17 @@
 import { db, sql } from "@nb/db";
 
 import { listUserDevices, isDemoDevice } from "./service";
+import { emptySnapshot, snapshotFromRow, type TileRow } from "./tile-snapshot";
 import type { DeviceTile, DeviceTileSnapshot } from "./contracts";
 
 // Сколько последних точек на устройство тянуть для sparkline (и last-known — первая).
 const SPARK_POINTS = 48;
 
-// Строка оконного запроса (snake_case алиасы). ВАЖНО: сырой db.execute (drizzle+
-// node-postgres) отдаёт timestamptz СТРОКОЙ (в отличие от query-builder, который
-// маппит колонку в Date). Поэтому epoch-мс считаем прямо в SQL как double precision
-// (число), а не парсим строку в JS. Реалы/инты приходят числами.
-type TileRow = {
-  device_id: string;
-  ts_ms: number;
-  stage: number | null;
-  primary_c: number | null;
-  setpoint_c: number | null;
-  heat_duty_pct: number | null;
-  fault_mask: number | null;
-};
+// Строка оконного запроса (snake_case алиасы) — тип и маппинг row→снапшот см.
+// tile-snapshot.ts. ВАЖНО: сырой db.execute (drizzle+node-postgres) отдаёт
+// timestamptz СТРОКОЙ (в отличие от query-builder, который маппит колонку в
+// Date). Поэтому epoch-мс считаем прямо в SQL как double precision (число), а
+// не парсим строку в JS. Реалы/инты приходят числами.
 
 /**
  * Плитки командного центра для всех устройств пользователя. Ownership — через
@@ -48,7 +41,9 @@ export async function listDeviceTiles(userId: string): Promise<DeviceTile[]> {
     SELECT device_id,
            (extract(epoch from ts) * 1000)::double precision AS ts_ms,
            stage, primary_c, setpoint_c, heat_duty_pct,
-           (payload ->> 'faultMask')::int AS fault_mask
+           (payload ->> 'faultMask')::int AS fault_mask,
+           (payload ->> 'appMode')::int AS app_mode,
+           (payload ->> 'pausedFrom')::int AS paused_from
     FROM (
       SELECT device_id, ts, stage, primary_c, setpoint_c, heat_duty_pct, payload,
              row_number() OVER (PARTITION BY device_id ORDER BY ts DESC) AS rn
@@ -72,14 +67,7 @@ export async function listDeviceTiles(userId: string): Promise<DeviceTile[]> {
       entry.spark.push(row.primary_c);
     }
     // Последняя (свежайшая) строка в asc-порядке — last-known срез.
-    entry.snapshot = {
-      ts: Math.round(row.ts_ms),
-      stage: row.stage,
-      primaryC: row.primary_c,
-      setpointC: row.setpoint_c,
-      heatDutyPct: row.heat_duty_pct,
-      faultMask: row.fault_mask ?? 0,
-    };
+    entry.snapshot = snapshotFromRow(row);
   }
 
   return devices.map((d) => {
@@ -96,8 +84,4 @@ export async function listDeviceTiles(userId: string): Promise<DeviceTile[]> {
       spark: entry?.spark ?? [],
     };
   });
-}
-
-function emptySnapshot(): DeviceTileSnapshot {
-  return { ts: 0, stage: null, primaryC: null, setpointC: null, heatDutyPct: null, faultMask: 0 };
 }

@@ -8,6 +8,17 @@ const serverEnvSchema = z.object({
   APP_URL: z.string().url().default("http://localhost:3000"),
   AUTH_SECRET: z.string().min(32).default("dev-only-auth-secret-change-me-123456"),
   AUTH_FROM_EMAIL: z.string().email().default("no-reply@localhost.dev"),
+  // Реквизиты оператора персональных данных (152-ФЗ) — для правовых страниц и футера.
+  // Заполняются перед публикацией; в dev пустые значения допустимы (страницы покажут
+  // явные плейсхолдеры вместо реальных данных). Для физлица достаточно OPERATOR_NAME
+  // (ФИО) + OPERATOR_EMAIL; ИНН/ОГРН/адрес нужны для самозанятого/ИП/ООО.
+  SITE_NAME: z.string().min(1).default("NB"),
+  OPERATOR_TYPE: z.enum(["individual", "self_employed", "ip", "ooo"]).default("individual"),
+  OPERATOR_NAME: z.preprocess(emptyStringToUndefined, z.string().optional()),
+  OPERATOR_EMAIL: z.preprocess(emptyStringToUndefined, z.string().email().optional()),
+  OPERATOR_INN: z.preprocess(emptyStringToUndefined, z.string().optional()),
+  OPERATOR_OGRN: z.preprocess(emptyStringToUndefined, z.string().optional()),
+  OPERATOR_ADDRESS: z.preprocess(emptyStringToUndefined, z.string().optional()),
   SENTRY_DSN: z.preprocess(emptyStringToUndefined, z.string().optional()),
   POSTHOG_KEY: z.preprocess(emptyStringToUndefined, z.string().optional()),
   POSTHOG_HOST: z.string().url().default("https://app.posthog.com"),

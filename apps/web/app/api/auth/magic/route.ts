@@ -11,6 +11,10 @@ export async function POST(request: Request) {
   }
 
   try {
+    // Согласие на обработку ПДн (152-ФЗ) обязательно до отправки ссылки на e-mail.
+    if (body.consent !== true) {
+      return NextResponse.json({ error: "consent_required" }, { status: 400 });
+    }
     await startMagicLink(String(body.email ?? ""));
     return NextResponse.json({ ok: true });
   } catch (error) {

@@ -202,7 +202,7 @@ export function RecipeBatchParametersBlock({
         </dl>
 
         <div className="mt-auto border-t border-zinc-100 pt-3">
-          <div className="grid gap-3 sm:grid-cols-3 sm:items-end">
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4 sm:items-end">
             <label className="space-y-1 text-[11px] font-medium uppercase tracking-wide text-zinc-500">
               Объём
               <div className="relative">
@@ -232,9 +232,6 @@ export function RecipeBatchParametersBlock({
               <NumericInput integer min={1} max={600} step={1} value={boilTimeMinutes} onChange={(event) => setBoilTimeMinutes(event.target.value)} className="h-9 w-full rounded-lg border border-zinc-200 bg-white px-2.5 text-sm tabular-nums text-zinc-900 shadow-sm focus:border-zinc-400 focus:outline-none focus:ring-2 focus:ring-zinc-200" />
               {sectionErrors.boilTimeMinutes ? <span className="block text-xs normal-case tracking-normal text-rose-600">{sectionErrors.boilTimeMinutes}</span> : null}
             </label>
-          </div>
-
-          <div className="mt-3 border-t border-zinc-100 pt-3">
             <label className="space-y-1 text-[11px] font-medium uppercase tracking-wide text-zinc-500">
               Оборудование
               <select

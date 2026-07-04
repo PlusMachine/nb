@@ -13,6 +13,7 @@ import {
   STAGE_NUM,
   HEAT_MODE_NUM,
   PROMPT_NUM,
+  APP_MODE_NUM,
   FAULT_BITS,
   FAULT_NAMES,
   stageName,
@@ -35,6 +36,9 @@ import {
   type DeviceConfig,
   type DeviceConfigPatch,
   type ConfigFieldKey,
+  type AppMode,
+  type FermentConfig,
+  type DistillConfig,
 } from "@nb/brewforge-protocol";
 
 // ----------------------------- Конфигурация --------------------------------
@@ -49,7 +53,7 @@ export interface SimConfig {
   scenario: Scenario;
 }
 
-export type Scenario = "idle" | "mash" | "fault";
+export type Scenario = "idle" | "mash" | "fault" | "ferment" | "distill";
 
 export interface LogEntry {
   ts: number;
@@ -96,6 +100,73 @@ const MAX_CATCHUP_MS = 5_000;
 const clamp = (v: number, lo: number, hi: number): number =>
   v < lo ? lo : v > hi ? hi : v;
 
+// ----------------------------- ferment{} — профиль брожения (§8, §13) ------
+// FermentConfigSchema/FermentStepSchema уже типизированы в @nb/brewforge-protocol
+// (config.ts) — deviceConfig.ferment: FermentConfig | undefined, клампы диапазонов
+// (hysteresisC∈[0.1,5], nSteps∈[1,6], steps[].tempC∈[-2,40] и т.д.) уже встроены в
+// сам Zod-схему (не в CONFIG_FIELD_RANGES, как pid/pump/…) — DeviceConfigPatchSchema.
+// parse() в writeConfig() отклонит невалидный патч ДО mergeDeviceConfig, отдельный
+// clampField для ferment.* здесь не нужен. steps — ВСЕГДА 6 слотов (bf_proto.c
+// сериализует весь массив независимо от nSteps); nSteps выбирает, сколько первых
+// слотов активны — см. activeFermentSteps().
+const DEFAULT_FERMENT_CONFIG: FermentConfig = {
+  hysteresisC: 0.5,
+  compMinOffS: 300,
+  compMinOnS: 60,
+  heatEnabled: true,
+  nSteps: 3,
+  steps: [
+    { tempC: 18, hours: 168 }, // главное брожение — 7 дн
+    { tempC: 20, hours: 48 }, // диацетильная пауза — 2 дн
+    { tempC: 2, hours: 0 }, // холодная выдержка — держать до ручного перехода
+    { tempC: 2, hours: 0 }, // неактивные слоты (nSteps=3) — заполнитель
+    { tempC: 2, hours: 0 },
+    { tempC: 2, hours: 0 },
+  ],
+};
+
+/** Текущий эффективный ferment{} (или дефолт, если ключ ещё не установлен). */
+function fermentConfig(cfg: DeviceConfig): FermentConfig {
+  return cfg.ferment ?? DEFAULT_FERMENT_CONFIG;
+}
+
+/** Первые nSteps слотов ferment.steps — актуальный план ступеней брожения. */
+function activeFermentSteps(ferment: FermentConfig): FermentConfig["steps"] {
+  const n = clamp(Math.round(ferment.nSteps), 0, ferment.steps.length);
+  return ferment.steps.slice(0, n);
+}
+
+// ----------------------------- distill{} — профиль дистилляции (§7, §13) ---
+// DistillConfigSchema уже типизирован в @nb/brewforge-protocol (config.ts):
+// диапазоны (headsPct/heartsPct/tailsPct∈[0,100], t*C∈[30,110], *Reflux∈[0,30],
+// refluxWindowS∈[5,300]) встроены в саму Zod-схему (как и ferment{} — см.
+// комментарий у DEFAULT_FERMENT_CONFIG), отдельный clampField здесь не нужен.
+// Дефолты — типичный профиль кубового аппарата с дефлегматором: преднагрев
+// полной мощностью до tHeadsC (начало отбора голов), дальше фиксированная (НЕ
+// PID) скважность по фракции, авто-стоп по tEndC — паритет с защитой от
+// сухого хода bf_process.c:1046-1049. headsReflux/heartsReflux/tailsReflux/
+// refluxWindowS лежат в конфиге для round-trip и будущего пакета (реальная
+// прошивка ШИМит клапан отбора этим окном — v1 сима упрощает до valveOn=bool,
+// см. updateDistillControl).
+const DEFAULT_DISTILL_CONFIG: DistillConfig = {
+  headsPct: 40, // головы — щадящая медленная отгонка
+  heartsPct: 65, // тело — основной отбор
+  tailsPct: 75, // хвосты — гоним быстрее, качество продукта уже не критично
+  tHeadsC: 78, // ≈ точка кипения этанольно-водной смеси — старт отбора голов
+  tHeartsC: 82, // головы почти сошли — переход на тело
+  tTailsC: 90, // крепость упала — переход на хвосты
+  tEndC: 98, // почти вода — авто-стоп (защита от сухого хода)
+  headsReflux: 5, // выше флегма — тщательнее отсекаем голову
+  heartsReflux: 3,
+  tailsReflux: 1, // ниже флегма — хвосты гоним быстрее
+  refluxWindowS: 30,
+};
+
+/** Текущий эффективный distill{} (или дефолт, если ключ ещё не установлен). */
+function distillConfig(cfg: DeviceConfig): DistillConfig {
+  return cfg.distill ?? DEFAULT_DISTILL_CONFIG;
+}
+
 // ----------------------------- Конфиг §6.3 (round-trip) ---------------------
 // Дефолт = точный JSON прошивки (см. packages/brewforge-protocol/src/config.test.ts,
 // BF_MAX_SENSORS=5), чтобы sim был неотличим от платы по форме и стартовым значениям.
@@ -118,6 +189,8 @@ const DEFAULT_DEVICE_CONFIG: DeviceConfig = DeviceConfigSchema.parse({
     { scale: 1, offset: 0 },
     { scale: 1, offset: 0 },
   ],
+  ferment: DEFAULT_FERMENT_CONFIG,
+  distill: DEFAULT_DISTILL_CONFIG,
 });
 
 /** Клампит числовое поле в диапазон CONFIG_FIELD_RANGES (паритет с bf_config_parse_json_clamped). */
@@ -203,6 +276,33 @@ function mergeDeviceConfig(cur: DeviceConfig, patch: DeviceConfigPatch): DeviceC
     });
   }
 
+  // ferment{} — скалярные поля сливаются как pid/pump/boil выше (клампы уже в
+  // самой Zod-схеме FermentConfigSchema — см. комментарий у DEFAULT_FERMENT_CONFIG,
+  // отдельный clampField не нужен). steps — патч ПО ИНДЕКСУ (паритет с sensorCal):
+  // короче массива/пропуски трогают только указанные слоты, длина остаётся 6.
+  if (patch.ferment) {
+    const pf = patch.ferment;
+    const curFerment = fermentConfig(cur);
+    const mergedFerment: FermentConfig = { ...curFerment, ...pf, steps: curFerment.steps };
+    if (pf.steps) {
+      mergedFerment.steps = curFerment.steps.map((s, i) => {
+        const p = pf.steps?.[i];
+        if (!p) return s;
+        return {
+          tempC: p.tempC ?? s.tempC,
+          hours: p.hours ?? s.hours,
+        };
+      });
+    }
+    next.ferment = mergedFerment;
+  }
+
+  // distill{} — скалярные поля, клампы уже в самой Zod-схеме DistillConfigSchema
+  // (см. комментарий у DEFAULT_DISTILL_CONFIG) — простой merge, паритет с ferment{}.
+  if (patch.distill) {
+    next.distill = { ...distillConfig(cur), ...patch.distill };
+  }
+
   return next;
 }
 
@@ -268,6 +368,11 @@ export class SimDevice {
   private pausedFrom: Stage = "IDLE";
   private faultMask = 0;
 
+  // Режим прибора (bf_app_mode_t) — фиксируется сценарием на весь срок жизни
+  // инстанса (§2 спеки: смена режима — только на устройстве/пересборкой,
+  // сеть его не переключает; наш командный switch и не содержит SET_APP_MODE).
+  private appMode: AppMode = "brew";
+
   private setpointC = 0;
   private heatMode: HeatMode = "OFF";
   private heatDutyPct = 0;
@@ -275,6 +380,14 @@ export class SimDevice {
   private spargeHeatOn = false;
   private pumpOn = false;
   private boilPct = 0;
+
+  // --- ферментация (§8, только когда appMode==="ferment") ---
+  private coolOn = false; // охлаждение (роль COOLER) — компрессор/чиллер камеры
+  private coolLockRemainingSec = 0; // анти-короткий-цикл: «варочные» секунды до разрешения coolOn
+
+  // --- дистилляция (§7, только когда appMode==="distill") ---
+  private valveOn = false; // клапан отбора (флегма) — открыт во время HEADS/HEARTS/TAILS
+  private distillReady = false; // «пора сменить приёмную ёмкость» — паритет distill_ready прошивки
 
   private primaryC = AMBIENT_C;
 
@@ -548,6 +661,7 @@ export class SimDevice {
         this.pausedFrom = this.stage;
         this.stage = "PAUSED";
         this.heatMode = "OFF";
+        this.coolOn = false; // компрессор гасим сразу же, не дожидаясь следующего тика
         this.statusLine = "Пауза";
         this.addLog("info", "Пауза");
         return "OK";
@@ -651,6 +765,121 @@ export class SimDevice {
     this.faultMask = 0;
     this.enterStep();
     this.addLog("info", `Старт варки «${recipe.name}» (слот ${slot})`);
+  }
+
+  /**
+   * Собрать план FERMENT из активных ступеней ferment.steps (§8, §13): каждая
+   * ступень — PlanStep с durationSec = hours×3600 (0 = бессрочно, держим до
+   * SKIP_STAGE/портала — уже поддержано общей FSM: таймер не срабатывает на
+   * durationSec=0). mashStepIndex зеркалит индекс ступени брожения (§13-№6:
+   * «переиспользуется ли mashStepIndex» — да). Плюс завершающий DONE-шаг —
+   * тем же приёмом, что и buildPlan(), это даёт SKIP_STAGE «последняя →
+   * DONE» и isBrewing()===false на DONE бесплатно, без отдельной ветки.
+   */
+  private beginFerment(): void {
+    const ferment = fermentConfig(this.deviceConfig);
+    const steps = activeFermentSteps(ferment);
+    this.plan = steps.map(
+      (s, i): PlanStep => ({
+        stage: "FERMENT",
+        durationSec: s.hours * 3600,
+        setpointC: s.tempC,
+        heatMode: "OFF", // пересчитывается каждый тик в updateFermentControl
+        pump: false,
+        mashStepIndex: i,
+        hopStandIndex: -1,
+        status: `Брожение · ступень ${i + 1} из ${steps.length} · ${s.tempC}°C`,
+      }),
+    );
+    this.plan.push({
+      stage: "DONE",
+      durationSec: 0,
+      setpointC: AMBIENT_C,
+      heatMode: "OFF",
+      pump: false,
+      mashStepIndex: -1,
+      hopStandIndex: -1,
+      status: "Ферментация завершена",
+    });
+    this.stepIdx = 0;
+    this.stageElapsed = 0;
+    this.faultMask = 0;
+    this.coolOn = false;
+    this.coolLockRemainingSec = 0;
+    this.enterStep();
+    this.addLog("info", `Старт ферментации: ${steps.length} ступеней`);
+  }
+
+  /**
+   * Собрать план DISTILL (§7, §13): PREHEAT→HEADS→HEARTS→TAILS→DONE, все шаги
+   * durationSec=0 — переходы НЕ по таймеру (в отличие от FERMENT), а по порогу
+   * температуры/SKIP_STAGE (updateDistillControl + общий обработчик SKIP_STAGE
+   * уже делает advanceStep() для любой isBrewing()-стадии — паритет с
+   * bf_process.c:607-619, где SKIP_STAGE продвигает срез без гейтов). setpointC
+   * каждого шага — информационный (реально читается ЖИВЫМ из distill{} конфига
+   * в updateDistillControl каждый тик, как ferment.steps[i].tempC у брожения).
+   */
+  private beginDistill(): void {
+    const d = distillConfig(this.deviceConfig);
+    this.plan = [
+      {
+        stage: "DISTILL_PREHEAT",
+        durationSec: 0,
+        setpointC: d.tHeadsC,
+        heatMode: "OFF", // пересчитывается каждый тик в updateDistillControl
+        pump: false,
+        mashStepIndex: -1,
+        hopStandIndex: -1,
+        status: "Преднагрев — полная мощность до старта отбора голов",
+      },
+      {
+        stage: "DISTILL_HEADS",
+        durationSec: 0,
+        setpointC: d.tHeartsC,
+        heatMode: "OFF",
+        pump: false,
+        mashStepIndex: -1,
+        hopStandIndex: -1,
+        status: "Отбор голов",
+      },
+      {
+        stage: "DISTILL_HEARTS",
+        durationSec: 0,
+        setpointC: d.tTailsC,
+        heatMode: "OFF",
+        pump: false,
+        mashStepIndex: -1,
+        hopStandIndex: -1,
+        status: "Отбор тела",
+      },
+      {
+        stage: "DISTILL_TAILS",
+        durationSec: 0,
+        setpointC: d.tEndC,
+        heatMode: "OFF",
+        pump: false,
+        mashStepIndex: -1,
+        hopStandIndex: -1,
+        status: "Отбор хвостов",
+      },
+      {
+        stage: "DONE",
+        durationSec: 0,
+        setpointC: AMBIENT_C,
+        heatMode: "OFF",
+        pump: false,
+        mashStepIndex: -1,
+        hopStandIndex: -1,
+        status: "Дистилляция завершена",
+      },
+    ];
+    this.stepIdx = 0;
+    this.stageElapsed = 0;
+    this.faultMask = 0;
+    this.valveOn = false;
+    this.distillReady = false;
+    this.enterStep();
+    this.addLog("info", "Старт дистилляции: преднагрев");
   }
 
   /** Собрать линейный план FSM из рецепта (упрощённо относительно §3). */
@@ -794,6 +1023,11 @@ export class SimDevice {
     this.stageElapsed = 0;
     this.statusLine = step.status;
     this.applyStepOutputs(step);
+    // «Пора сменить ёмкость» гасится на КАЖДОМ переходе стадии — паритет с
+    // go() прошивки (bf_process.c: `s_ctx.distill_ready = false;` в go(),
+    // безусловно, а не по локальной кнопке/таймеру). Вне distill-сценария
+    // поле просто не эмитится в телеметрию — сброс здесь безвреден.
+    this.distillReady = false;
 
     if (step.prompt) {
       // поднимаем новый промпт: бампим promptSeq, ждём ACK
@@ -847,6 +1081,10 @@ export class SimDevice {
     this.spargeHeatOn = false;
     this.pumpOn = false;
     this.boilPct = 0;
+    this.coolOn = false;
+    this.coolLockRemainingSec = 0;
+    this.valveOn = false;
+    this.distillReady = false;
     this.waitingAck = false;
     this.activePrompt = "NONE";
     this.setpointC = 0;
@@ -882,6 +1120,9 @@ export class SimDevice {
     this.spargeHeatOn = false;
     this.pumpOn = false;
     this.boilPct = 0;
+    this.coolOn = false; // компрессор гасим сразу — tick() перестаёт звать updateFermentControl (stage≠FERMENT)
+    this.valveOn = false; // клапан отбора гасим сразу — tick() перестаёт звать updateDistillControl (stage≠DISTILL_*)
+    this.distillReady = false;
     this.waitingAck = false;
     this.activePrompt = "NONE";
     this.statusLine = status;
@@ -892,10 +1133,10 @@ export class SimDevice {
   private tick(): void {
     const dtReal = this.cfg.tickMs / 1000;
     this.uptimeSec += dtReal;
+    const dtBrew = this.cfg.tickScale * dtReal; // «варочных» секунд за тик (общие часы шага И ферментации)
 
     const running = this.isBrewing();
     if (running && !this.waitingAck) {
-      const dtBrew = this.cfg.tickScale * dtReal;
       this.stageElapsed += dtBrew;
       const step = this.plan[this.stepIdx];
       if (step && step.durationSec > 0 && this.stageElapsed >= step.durationSec) {
@@ -904,9 +1145,25 @@ export class SimDevice {
     }
 
     this.applyDeadMan(); // sim dead-man: гасим брошенный ручной нагрев ДО расчёта мощности
-    this.updateOutputs(); // мощность (duty) из режима/PID
+    if (this.stage === "FERMENT") {
+      this.updateFermentControl(dtBrew); // гистерезис компрессора/нагрева + анти-короткий-цикл
+    } else if (this.isDistillStage()) {
+      this.updateDistillControl(); // фиксированная скважность по фракции + пороги переходов
+    } else {
+      this.updateOutputs(); // мощность (duty) из режима/PID
+    }
     this.updateThermal(dtReal); // физика нагрева от duty
     this.emit();
+  }
+
+  /** true — текущая стадия одна из DISTILL_PREHEAT/HEADS/HEARTS/TAILS (§7). */
+  private isDistillStage(): boolean {
+    return (
+      this.stage === "DISTILL_PREHEAT" ||
+      this.stage === "DISTILL_HEADS" ||
+      this.stage === "DISTILL_HEARTS" ||
+      this.stage === "DISTILL_TAILS"
+    );
   }
 
   /** Sim dead-man: ручной нагрев на «плате» гаснет при потере heartbeat командного
@@ -938,8 +1195,8 @@ export class SimDevice {
     const dtBrew = this.cfg.tickScale * dtReal; // «варочных» секунд за тик
     const fault = this.faultMask !== 0;
 
-    if (this.stage === "COOLING") {
-      // активное охлаждение (чиллер) к целевой — быстрее пассивных потерь
+    if (this.stage === "COOLING" || (this.stage === "FERMENT" && !fault && this.coolOn)) {
+      // активное охлаждение к целевой (варка: чиллер после кипячения; ферментация: компрессор камеры)
       const k = clamp(K_COOL * dtBrew, 0, 0.5);
       this.primaryC += (this.setpointC - this.primaryC) * k;
     } else {
@@ -957,6 +1214,9 @@ export class SimDevice {
   }
 
   private updateOutputs(): void {
+    this.coolOn = false; // компрессор только в FERMENT (updateFermentControl) — везде иначе форс-выкл
+    this.valveOn = false; // клапан отбора только в DISTILL_* (updateDistillControl) — везде иначе форс-выкл
+
     const permitted = this.faultMask === 0;
 
     if (!permitted) {
@@ -988,6 +1248,157 @@ export class SimDevice {
     this.boilPct = boilStage ? 85 : 0;
   }
 
+  /**
+   * Управление ферментацией (§8 спеки): простой bang-bang вокруг уставки
+   * текущей ступени (steps[i].tempC), решение КАЖДЫЙ тик, без «залипания»
+   * внутри полосы — выше setpoint+hysteresisC включаем компрессор, ниже
+   * setpoint−hysteresisC включаем нагрев (если heatEnabled), иначе оба
+   * выключены. Анти-короткий-цикл компрессора: после выключения coolOn
+   * не включать его compMinOffS «варочных» секунд — coolLockRemainingSec
+   * отсчитывает остаток (coolLockS в телеметрии, только appMode="ferment").
+   */
+  private updateFermentControl(dtBrewSec: number): void {
+    const ferment = fermentConfig(this.deviceConfig);
+    const step = this.plan[this.stepIdx];
+    // §13: «правка уставки текущей ступени = PUT /config (ferment.steps[i].tempC),
+    // НЕ MANUAL_SETPOINT» — уставка читается из ЖИВОГО конфига по индексу текущей
+    // ступени (не из замороженного PlanStep.setpointC), чтобы PUT /config применялся
+    // немедленно, без ре-старта ферментации. Остальная форма шага (длительность —
+    // §13 хранит только tempC/hours, длительность и так замороженный durationSec)
+    // берётся из плана, как и раньше.
+    this.setpointC = ferment.steps[this.stepIdx]?.tempC ?? step?.setpointC ?? this.setpointC;
+
+    if (this.coolLockRemainingSec > 0) {
+      this.coolLockRemainingSec = Math.max(0, this.coolLockRemainingSec - dtBrewSec);
+    }
+
+    if (this.faultMask !== 0) {
+      this.coolOn = false;
+      this.heatOn = false;
+      this.heatDutyPct = 0;
+      this.heatMode = "OFF";
+      this.pumpOn = false;
+      this.boilPct = 0;
+      return;
+    }
+
+    const diff = this.primaryC - this.setpointC;
+    const wantCool = diff > ferment.hysteresisC;
+    const wantHeat = diff < -ferment.hysteresisC && ferment.heatEnabled;
+
+    if (wantCool) {
+      if (this.coolLockRemainingSec <= 0) this.coolOn = true; // ещё заблокирован — остаётся выключен
+    } else if (this.coolOn) {
+      this.coolOn = false;
+      this.coolLockRemainingSec = ferment.compMinOffS;
+    }
+
+    this.heatOn = wantHeat && !this.coolOn;
+    this.heatDutyPct = this.heatOn ? 100 : 0;
+    this.heatMode = this.heatOn ? "MANUAL_PWM" : "OFF"; // простое реле, не PID/BOIL-закон
+    this.pumpOn = false;
+    this.boilPct = 0;
+  }
+
+  /**
+   * Управление дистилляцией (§7 спеки, паритет с bf_process.c:1014-1050):
+   * преднагрев полной мощностью (BF_HEAT_BOIL-аналог) до distill.tHeadsC —
+   * ЭТО порог, а не таймер; дальше по фракции — фиксированная (НЕ PID)
+   * скважность headsPct/heartsPct/tailsPct. Клапан отбора (valveOn) открыт
+   * всё время HEADS/HEARTS/TAILS — упрощение относительно реальной прошивки
+   * (та ещё и ШИМит клапан в окне distill.refluxWindowS долей
+   * reflux_takeoff_pct=100/(R+1) — флегмовый цикл вне рамок этой итерации,
+   * headsReflux/heartsReflux/tailsReflux/refluxWindowS в конфиге — задел).
+   *
+   * Пороги/скважность читаются из ЖИВОГО distill{} конфига каждый тик (как
+   * ferment.steps[i].tempC у брожения) — PUT /config применяется немедленно.
+   *
+   * Порядок здесь важен: сначала проверяем автопереходы и взводим actionReady
+   * ПО ТЕКУЩЕЙ (ещё не изменившейся) стадии, потом считаем выходы по итоговой
+   * this.stage — так кадр телеметрии этого же тика уже отражает новую стадию
+   * без «лага» на один тик.
+   *
+   * actionReady («пора сменить приёмную ёмкость», distill_ready на устройстве):
+   * взводится РОВНО ОДИН РАЗ за фракцию при первом достижении температуры
+   * следующего среза внутри HEADS/HEARTS (!distillReady-гейт — паритет с
+   * bf_process.c:1028/1037), СБРАСЫВАЕТСЯ переходом стадии — см. enterStep().
+   * Прошивка гасит его НА КАЖДОЙ смене стадии внутри go(), НЕ по локальной
+   * кнопке и НЕ по таймеру (сверено grep'ом по bf_process.c/bf_proto.c — там
+   * нет отдельной команды ACK для action_ready) — воспроизведено 1:1, поэтому
+   * здесь снятие ТОЖЕ идёт через переход стадии (SKIP_STAGE), а не таймер.
+   * TAILS флаг не поднимает — переход TAILS→DONE у tEndC полностью
+   * автоматический (защита от сухого хода), подтверждение оператора не нужно.
+   */
+  private updateDistillControl(): void {
+    const distill = distillConfig(this.deviceConfig);
+
+    if (this.faultMask !== 0) {
+      this.heatDutyPct = 0;
+      this.heatOn = false;
+      this.valveOn = false;
+      this.pumpOn = false;
+      this.boilPct = 0;
+      return;
+    }
+
+    // 1) автопереходы по порогу температуры (см. комментарий выше про порядок)
+    if (this.stage === "DISTILL_PREHEAT" && this.primaryC >= distill.tHeadsC) {
+      this.advanceStep("Порог tHeadsC достигнут — старт отбора голов");
+    } else if (this.stage === "DISTILL_TAILS" && this.primaryC >= distill.tEndC) {
+      this.advanceStep("Порог tEndC достигнут — авто-стоп (защита от сухого хода)");
+    }
+
+    // 2) actionReady — «пора сменить ёмкость», взводится один раз за фракцию
+    if (this.stage === "DISTILL_HEADS" && !this.distillReady && this.primaryC >= distill.tHeartsC) {
+      this.distillReady = true;
+      this.addLog("info", "Готово к смене приёмной ёмкости: головы → тело (tHeartsC)");
+    } else if (this.stage === "DISTILL_HEARTS" && !this.distillReady && this.primaryC >= distill.tTailsC) {
+      this.distillReady = true;
+      this.addLog("info", "Готово к смене приёмной ёмкости: тело → хвосты (tTailsC)");
+    }
+
+    // 3) выходы по ИТОГОВОЙ (уже актуальной после п.1) стадии
+    switch (this.stage) {
+      case "DISTILL_PREHEAT":
+        this.setpointC = distill.tHeadsC;
+        this.heatMode = "BOIL";
+        this.heatDutyPct = 100;
+        this.heatOn = true;
+        this.valveOn = false; // отбор ещё не идёт
+        break;
+      case "DISTILL_HEADS":
+        this.setpointC = distill.tHeartsC;
+        this.heatMode = "MANUAL_PWM";
+        this.heatDutyPct = distill.headsPct;
+        this.heatOn = this.heatDutyPct > 0;
+        this.valveOn = true;
+        break;
+      case "DISTILL_HEARTS":
+        this.setpointC = distill.tTailsC;
+        this.heatMode = "MANUAL_PWM";
+        this.heatDutyPct = distill.heartsPct;
+        this.heatOn = this.heatDutyPct > 0;
+        this.valveOn = true;
+        break;
+      case "DISTILL_TAILS":
+        this.setpointC = distill.tEndC;
+        this.heatMode = "MANUAL_PWM";
+        this.heatDutyPct = distill.tailsPct;
+        this.heatOn = this.heatDutyPct > 0;
+        this.valveOn = true;
+        break;
+      default:
+        // TAILS→DONE только что случился в п.1 — гасим нагрев/клапан немедленно
+        this.heatMode = "OFF";
+        this.heatDutyPct = 0;
+        this.heatOn = false;
+        this.valveOn = false;
+    }
+
+    this.pumpOn = false; // pot still — насос не задействован (паритет с комментарием прошивки)
+    this.boilPct = 0;
+  }
+
   // ----------------------------- телеметрия --------------------------------
   private buildTelemetry(): Telemetry {
     const step = this.plan[this.stepIdx];
@@ -996,14 +1407,35 @@ export class SimDevice {
         ? Math.max(0, Math.round(step.durationSec - this.stageElapsed))
         : 0;
 
+    // §13-№6: в FERMENT mashStepIndex/nMashSteps зеркалят индекс/число ступеней
+    // брожения (тот же PlanStep-приём, что и mashStepIndex варки — переиспользуем
+    // поле, отдельного не заводим). this.plan.length−1 — минус завершающий DONE.
     const nMashSteps =
-      this.activeRecipe >= 0 && this.slots[this.activeRecipe]
-        ? this.slots[this.activeRecipe]!.mash.steps.length
-        : 0;
+      this.stage === "FERMENT"
+        ? Math.max(0, this.plan.length - 1)
+        : this.activeRecipe >= 0 && this.slots[this.activeRecipe]
+          ? this.slots[this.activeRecipe]!.mash.steps.length
+          : 0;
 
     const sensor0 = round1(this.primaryC);
     const sensor1 = round1(this.primaryC - 1.5);
     const sensorsValid = (this.faultMask & FAULT_BITS.SENSOR) === 0;
+
+    // coolOn/coolLockS — ТОЛЬКО в ferment-сценарии (§13/telemetry.ts: "роль COOLER,
+    // ферментация"), паттерн опциональных полей "поле отсутствует = undefined":
+    // ключи не включаются в объект вовсе (не set:undefined), как остальные
+    // optional-поля этой телеметрии (pump2On/valveOn/hxTempC/…) при отсутствии роли.
+    const fermentFields =
+      this.appMode === "ferment"
+        ? { coolOn: this.coolOn, coolLockS: Math.max(0, Math.round(this.coolLockRemainingSec)) }
+        : {};
+
+    // valveOn/actionReady — ТОЛЬКО в distill-сценарии (§7/§13, паттерн опциональных
+    // полей "поле отсутствует = undefined", паритет с fermentFields выше).
+    const distillFields =
+      this.appMode === "distill"
+        ? { valveOn: this.valveOn, actionReady: this.distillReady }
+        : {};
 
     return {
       schema: PROTOCOL_SCHEMA_VERSION,
@@ -1015,6 +1447,10 @@ export class SimDevice {
 
       stage: STAGE_NUM[this.stage],
       stageName: stageName(STAGE_NUM[this.stage]),
+      // §2/§13: appMode — режим прибора, фиксируется сценарием (applyScenario), НЕ
+      // выводится из текущей стадии — на DONE/IDLE/FAULT стадия сама режим не
+      // определяет, авторитет там переходит к appMode (см. комментарий в enums.ts).
+      appMode: APP_MODE_NUM[this.appMode],
       pausedFrom: STAGE_NUM[this.pausedFrom],
       faultMask: this.faultMask,
       faults: decodeFaults(this.faultMask),
@@ -1033,6 +1469,8 @@ export class SimDevice {
       spargeHeatOn: this.spargeHeatOn,
       pumpOn: this.pumpOn,
       boilPct: this.boilPct,
+      ...fermentFields,
+      ...distillFields,
 
       stageRemainingSec: remaining,
       stageElapsedSec: Math.round(this.stageElapsed),
@@ -1081,9 +1519,11 @@ export class SimDevice {
   private applyScenario(s: Scenario): void {
     switch (s) {
       case "idle":
+        this.appMode = "brew";
         this.statusLine = "Готов";
         break;
       case "mash": {
+        this.appMode = "brew";
         const recipe = this.slots[0]!;
         this.beginBrew(0, recipe);
         // перескочим к первому шагу затирания (минуем dough-in и промпт)
@@ -1097,7 +1537,20 @@ export class SimDevice {
         break;
       }
       case "fault":
+        this.appMode = "brew";
         this.raiseFault(FAULT_BITS.SENSOR, "Отказ датчика (сценарий fault)");
+        break;
+      case "ferment":
+        // H3: appMode фиксируется сценарием и не переключается по протоколу (§2) —
+        // портал зеркалит режим прибора, а не выбирает его.
+        this.appMode = "ferment";
+        this.beginFerment();
+        break;
+      case "distill":
+        // H2: appMode фиксируется сценарием и не переключается по протоколу (§2) —
+        // портал зеркалит режим прибора, а не выбирает его (паритет с ferment выше).
+        this.appMode = "distill";
+        this.beginDistill();
         break;
     }
   }

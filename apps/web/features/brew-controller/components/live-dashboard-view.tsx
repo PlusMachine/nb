@@ -11,6 +11,12 @@
 //  сверху) → профиль-полоса стадий → ряд «статус | управление» → ручной/датчики.
 //  Оркестрация «команда → фидбек» и conditional visibility — здесь; авторитет у
 //  интерлоков устройства (кнопки совещательные), опасное гейтится сервером.
+//
+//  variant="kiosk" (веб-HMI §9): тот же поток команд/аренды, другая раскладка —
+//  герой крупнее, «Датчики» скрыты, транспорт(ControlDock) липнет к низу киоск-
+//  скролла, ≥lg — две колонки (герой+график+стадии | контур+управление). Владеет
+//  композицией KioskShell (device-console.tsx), variant лишь переключает вид.
+//  variant="page" (по умолчанию) — пиксель-в-пиксель как раньше.
 // =============================================================================
 import { useCallback, useState } from "react";
 import { Beer, Power } from "lucide-react";
@@ -47,7 +53,7 @@ import { StatusPill } from "@/features/brew-controller/components/status-pill";
 import { MonitorHero } from "@/features/brew-controller/components/monitor-hero";
 import { StatusStrip } from "@/features/brew-controller/components/status-strip";
 import { ControlDock } from "@/features/brew-controller/components/control-dock";
-import { deriveDeviceMode } from "@/features/brew-controller/device-mode";
+import { deriveAppMode, deriveDeviceMode } from "@/features/brew-controller/device-mode";
 import { BrewRecipeOnDevicePicker } from "@/features/devices/components/brew-recipe-on-device-picker";
 import type { PushableRecipeDto } from "@/features/devices/onboard-recipes-contracts";
 
@@ -119,6 +125,8 @@ type Props = {
   /** Рецепты пользователя для вкладки «Мои рецепты» пикера «Сварить рецепт…»
    *  (W5). Не нужны в зоне A (варка партии уже привязана к рецепту). */
   pushableRecipes?: PushableRecipeDto[];
+  /** "kiosk" — раскладка «веб как экран прибора» (§9), см. баннер файла. */
+  variant?: "page" | "kiosk";
 };
 
 export function LiveDashboardView({
@@ -133,7 +141,8 @@ export function LiveDashboardView({
   showInlineHeader = true,
   stickyDock = false,
   deviceName,
-  pushableRecipes = []
+  pushableRecipes = [],
+  variant = "page"
 }: Props) {
   const { telemetry, conn, isStale, isLive, lastError, remaining } = stream;
   const { lease, controlsHeld, pending, send, requestTakeover, release, scheduleUndoable } = command;
@@ -158,6 +167,8 @@ export function LiveDashboardView({
 
   // Режим устройства (зеркало платы, §1.2/§6) — для лёгкого ветвления UI.
   const mode = deriveDeviceMode(telemetry, isLive);
+  // Режим прибора (что варит/гонит/бродит, §5) — карточка простоя режимная (§12.1).
+  const appMode = deriveAppMode(telemetry);
 
   // Отправка команды + краткий фидбек (успех / nack / причина гейта: DEVICE_STALE,
   // NO_CONTROL_LEASE, REMOTE_DISABLED…). Источник истины по состоянию — телеметрия.
@@ -243,13 +254,20 @@ export function LiveDashboardView({
         clearDisabled={pending || !isLive}
       />
 
-      {/* Простой: пивоварня свободна — точка входа. «Сварить рецепт…» (W5, §7)
-          запускает варку прямо с пульта; «Ручной режим» — вход без рецепта (§6). */}
+      {/* Простой — точка входа, режимная (§12.1). «Сварить рецепт…» (W5, §7) есть
+          только у варки — запускает варку прямо с пульта; у дистилляции старт живёт
+          на самом устройстве (кнопки нет — не disabled, невозможное отсутствует), у
+          ферментации профиль брожения привезёт H3. «Ручной режим» — общий вход. */}
       {mode === "idle" ? (
         <div className="rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm">
-          <p className="text-base font-semibold text-zinc-900">Пивоварня свободна</p>
+          <p className="text-base font-semibold text-zinc-900">
+            {appMode === "brew" ? "Пивоварня свободна" : "Прибор свободен"}
+          </p>
+          {appMode === "distill" ? (
+            <p className="mt-1 text-sm text-zinc-500">Старт дистилляции — на устройстве</p>
+          ) : null}
           <div className="mt-3 flex flex-wrap gap-2">
-            {idleDeviceId ? (
+            {idleDeviceId && appMode === "brew" ? (
               <Button variant="primary" size="md" onClick={() => setRecipePickerOpen(true)}>
                 <Beer className="h-4 w-4" aria-hidden />
                 Сварить рецепт…
@@ -273,7 +291,6 @@ export function LiveDashboardView({
         <div className="rounded-2xl border-2 border-amber-300 bg-amber-50 p-5 shadow-sm">
           <p className="text-sm font-semibold uppercase tracking-wide text-amber-800">Запрос устройства</p>
           <p className="mt-1 text-lg font-semibold text-zinc-950">{PROMPT_TITLES[activePrompt]}</p>
-          <p className="text-xs text-amber-700">{activePrompt}</p>
           <div className="mt-3 flex flex-wrap gap-2">
             {PROMPT_OPTIONS[activePrompt].map((opt) => (
               <Button key={opt.ans} onClick={() => answerPrompt(opt.ans)} disabled={controlsDisabled}>
@@ -289,85 +306,132 @@ export function LiveDashboardView({
         </div>
       ) : null}
 
-      {/* Герой (§5): крупный отсчёт + живой график сверху (анти-RAPT: график не
-          закопан внизу, а рядом с текущим состоянием). */}
-      <div className="space-y-3">
-        <MonitorHero telemetry={telemetry} remaining={remaining} />
-        <TelemetryChart source={source} hasDevice={hasDevice} initial={initialHistory} />
-      </div>
+      {(() => {
+        const isKiosk = variant === "kiosk";
 
-      {/* Профиль-полоса: макро-стадии (Затор → Кипячение → Вирпул → Охлаждение → Готово). */}
-      <StageTimeline telemetry={telemetry} hasDevice={hasDevice} />
+        // Совещательное управление (транспорт). Страница: липкий док снизу на
+        // мобиле (thumb-zone, над нижней навигацией оболочки), в потоке на
+        // десктопе. Киоск: липнет к низу СВОЕГО скролла на всех брейкпоинтах —
+        // сайтовой нижней навигации в киоске нет (§9, «зона пальца»).
+        const dockClassName = isKiosk
+          ? "sticky bottom-0 z-10"
+          : stickyDock
+            ? "sticky bottom-16 z-10 lg:static lg:bottom-auto"
+            : undefined;
 
-      {/* Статус «с одного взгляда». */}
-      <StatusStrip telemetry={telemetry} />
+        const controlDock = (
+          <ControlDock
+            stageName={stage}
+            hasDevice={hasDevice}
+            controlsHeld={controlsHeld}
+            isLive={isLive}
+            pending={pending}
+            onPause={() => void run(cmdPause())}
+            onResume={() => void run(cmdResume())}
+            onSkip={skipStage}
+            onStop={() =>
+              requestConfirm({
+                title: "Остановить варку?",
+                description:
+                  "Плавная остановка: устройство завершит варку и выключит нагрев. Действие необратимо.",
+                confirmLabel: "Остановить",
+                tone: "danger",
+                run: async () => {
+                  await run(cmdStop());
+                }
+              })
+            }
+            onEstop={() => void run(cmdEstop())}
+            actionMsg={actionMsg}
+            transportError={lastError && conn === "error" ? lastError : null}
+            noFreshTelemetry={(isStale || conn === "offline") && hasDevice}
+            otherSessionHolds={isLive && !controlsHeld && Boolean(lease?.held)}
+          />
+        );
 
-      {/* Совещательное управление: на мобиле — липкий док снизу (thumb-zone, §5–6,
-          над нижней навигацией оболочки), на десктопе — в потоке. Ниже есть контент
-          (ручной/датчики), поэтому sticky-bottom реально прилипает. */}
-      <div className={stickyDock ? "sticky bottom-16 z-10 lg:static lg:bottom-auto" : undefined}>
-        <ControlDock
-          stageName={stage}
-          hasDevice={hasDevice}
-          controlsHeld={controlsHeld}
-          isLive={isLive}
-          pending={pending}
-          onPause={() => void run(cmdPause())}
-          onResume={() => void run(cmdResume())}
-          onSkip={skipStage}
-          onStop={() =>
-            requestConfirm({
-              title: "Остановить варку?",
-              description:
-                "Плавная остановка: устройство завершит варку и выключит нагрев. Действие необратимо.",
-              confirmLabel: "Остановить",
-              tone: "danger",
-              run: async () => {
-                await run(cmdStop());
-              }
-            })
-          }
-          onEstop={() => void run(cmdEstop())}
-          actionMsg={actionMsg}
-          transportError={lastError && conn === "error" ? lastError : null}
-          noFreshTelemetry={(isStale || conn === "offline") && hasDevice}
-          otherSessionHolds={isLive && !controlsHeld && Boolean(lease?.held)}
-        />
-      </div>
+        // Ручной режим (RAPT-style): уставка/мощность/нагрев/насос — по
+        // состоянию «ручной» (карта сама решает — рендерит null вне MANUAL, §9
+        // проверено: показывать только в ручном режиме верно для обоих вариантов).
+        // Эксклюзивно через control-lease; опасное гейтится сервером и dead-man'ом платы.
+        const manualControlCard = (
+          <ManualControlCard
+            telemetry={telemetry}
+            hasDevice={hasDevice}
+            controlsHeld={controlsHeld}
+            isLive={isLive}
+            pending={pending}
+            send={send}
+          />
+        );
 
-      {/* Ручной режим (RAPT-style): уставка/мощность/нагрев/насос — по состоянию
-          «ручной» (внутренняя conditional visibility). Эксклюзивно через
-          control-lease; опасное гейтится сервером и dead-man'ом платы. */}
-      <ManualControlCard
-        telemetry={telemetry}
-        hasDevice={hasDevice}
-        controlsHeld={controlsHeld}
-        isLive={isLive}
-        pending={pending}
-        send={send}
-      />
-
-      {/* Датчики (деталь). */}
-      <div className="rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm">
-        <p className="text-sm font-semibold text-zinc-900">Датчики</p>
-        {telemetry && telemetry.sensors.length > 0 ? (
-          <div className="mt-3 grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
-            {telemetry.sensors.map((s) => (
-              <div
-                key={s.i}
-                className="flex items-center justify-between rounded-lg border border-zinc-100 bg-zinc-50 px-3 py-2 text-sm"
-              >
-                <span className="text-zinc-500">Датчик {s.i}</span>
-                <span className={`tabular-nums font-medium ${s.valid ? "text-zinc-900" : "text-red-600"}`}>
-                  {s.valid ? fmtTemp(s.c) : "нет данных"}
-                </span>
+        if (isKiosk) {
+          return (
+            <>
+              {/* Киоск (§9): герой крупнее + справа «контур» и «управление» —
+                  раскладка ≥lg в две колонки, на телефоне одна колонка (grid).
+                  items-stretch (по умолчанию): правая колонка растягивается до
+                  высоты левой, чтобы ControlDock реально «прилипал» ко дну
+                  своей колонки (sticky bottom-0), а не жался наверху без места. */}
+              <div className="grid gap-4 lg:grid-cols-[3fr_2fr]">
+                <div className="space-y-4">
+                  <MonitorHero telemetry={telemetry} remaining={remaining} size="kiosk" />
+                  <TelemetryChart source={source} hasDevice={hasDevice} initial={initialHistory} />
+                  <StageTimeline telemetry={telemetry} hasDevice={hasDevice} />
+                </div>
+                <div className="space-y-4">
+                  <StatusStrip telemetry={telemetry} />
+                  <div className={dockClassName}>{controlDock}</div>
+                </div>
               </div>
-            ))}
-          </div>
-        ) : (
-          <p className="mt-2 text-sm text-zinc-500">—</p>
-        )}
-      </div>
+              {manualControlCard}
+              {/* «Датчики» скрыты в киоске (§9: состав — герой/стадии/контур/транспорт/аварии). */}
+            </>
+          );
+        }
+
+        return (
+          <>
+            {/* Герой (§5): крупный отсчёт + живой график сверху (анти-RAPT: график
+                не закопан внизу, а рядом с текущим состоянием). */}
+            <div className="space-y-3">
+              <MonitorHero telemetry={telemetry} remaining={remaining} />
+              <TelemetryChart source={source} hasDevice={hasDevice} initial={initialHistory} />
+            </div>
+
+            {/* Профиль-полоса: макро-стадии (Затор → Кипячение → Вирпул → Охлаждение → Готово). */}
+            <StageTimeline telemetry={telemetry} hasDevice={hasDevice} />
+
+            {/* Статус «с одного взгляда». */}
+            <StatusStrip telemetry={telemetry} />
+
+            <div className={dockClassName}>{controlDock}</div>
+
+            {manualControlCard}
+
+            {/* Датчики (деталь). */}
+            <div className="rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm">
+              <p className="text-sm font-semibold text-zinc-900">Датчики</p>
+              {telemetry && telemetry.sensors.length > 0 ? (
+                <div className="mt-3 grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+                  {telemetry.sensors.map((s) => (
+                    <div
+                      key={s.i}
+                      className="flex items-center justify-between rounded-lg border border-zinc-100 bg-zinc-50 px-3 py-2 text-sm"
+                    >
+                      <span className="text-zinc-500">Датчик {s.i}</span>
+                      <span className={`tabular-nums font-medium ${s.valid ? "text-zinc-900" : "text-red-600"}`}>
+                        {s.valid ? fmtTemp(s.c) : "нет данных"}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="mt-2 text-sm text-zinc-500">—</p>
+              )}
+            </div>
+          </>
+        );
+      })()}
 
       <ConfirmActionDialog
         open={confirm !== null}

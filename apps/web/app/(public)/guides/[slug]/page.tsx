@@ -6,7 +6,9 @@ import { ChevronLeft, Clock } from "lucide-react";
 
 import { getPublishedContentArticleBySlug } from "@/features/content-articles/service";
 import { contentArticleTypeLabels } from "@/features/content-articles/contracts";
+import { getRelatedLinksForArticle } from "@/features/content-articles/related-links";
 import { TiptapContent } from "@/components/content/tiptap-content";
+import { RelatedLinksSection } from "@/components/shared/related-links-section";
 
 const dateFmt = new Intl.DateTimeFormat("ru-RU", { day: "numeric", month: "long", year: "numeric" });
 
@@ -83,6 +85,8 @@ export default async function GuideArticlePage({ params }: { params: Promise<{ s
       ) : null}
 
       <TiptapContent doc={article.bodyJson} />
+
+      <RelatedLinksSection links={getRelatedLinksForArticle(article.slug)} />
     </article>
   );
 }

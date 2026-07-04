@@ -1,5 +1,6 @@
 import React from "react";
-import { Star } from "lucide-react";
+import Link from "next/link";
+import { ChevronLeft, Star } from "lucide-react";
 
 import type { RecipeDetailDto } from "@/features/recipes/contracts";
 
@@ -44,6 +45,10 @@ function RecipeRatingSection({ recipe }: { recipe: RecipeDetailDto }) {
 export function PublicRecipePage({ recipe }: { recipe: RecipeDetailDto }) {
   return (
     <main className="space-y-6 pt-6">
+      <Link href="/recipes" className="inline-flex items-center gap-1 text-sm text-zinc-500 transition hover:text-zinc-800">
+        <ChevronLeft className="h-4 w-4" aria-hidden /> Рецепты
+      </Link>
+
       <PublicRecipeHeader recipe={recipe} />
 
       <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_340px]">
@@ -57,7 +62,7 @@ export function PublicRecipePage({ recipe }: { recipe: RecipeDetailDto }) {
         </div>
 
         {/* Инструменты и провенанс — не мешают чтению рецепта, доступны в один клик. */}
-        <aside className="space-y-4 lg:sticky lg:top-6">
+        <aside className="space-y-4 lg:sticky lg:top-[calc(var(--chrome-top)+1.5rem)]">
           {/* Персональный матчинг со складом тянется клиентом после гидрации → документ кэшируем. */}
           <RecipeMatchPanel recipeId={recipe.id} />
           {/* Эфемерный пересчёт под объём — модалка, чистый клиент, без записи в БД. */}

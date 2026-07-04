@@ -152,7 +152,7 @@ export function RecipeStyleStatsBlock({
           const appearance = hasSelectedStyle && !missingStyleRange ? getMetricStatusAppearance(item.status) : getMetricStatusAppearance("no_style");
 
           return (
-            <div key={item.label} className="group grid items-center gap-x-2 rounded-lg px-1 py-1 transition-colors hover:bg-zinc-50 sm:grid-cols-[46px_minmax(0,1fr)_60px]">
+            <div key={item.label} className="group grid items-center gap-x-2 rounded-lg px-1 py-1 transition-colors hover:bg-zinc-50 sm:grid-cols-[46px_minmax(0,1fr)_44px]">
               <div className="flex items-center gap-1 text-[11px] font-bold uppercase tracking-wider text-zinc-400">
                 <span>{item.label}</span>
               </div>
@@ -172,7 +172,7 @@ export function RecipeStyleStatsBlock({
                 </div>
               </div>
               <div className="flex justify-end">
-                <span className={`inline-flex w-[60px] justify-center rounded-full px-1.5 py-0.5 text-[10px] font-medium ${appearance.badgeClassName}`}>
+                <span className={`whitespace-nowrap text-[10px] font-medium ${appearance.badgeClassName}`}>
                   {appearance.label}
                 </span>
               </div>

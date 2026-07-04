@@ -40,6 +40,15 @@ const STAGE_SHORT_LABEL: Record<number, string> = {
   [STAGE_NUM.PAUSED]: "Пауза",
   [STAGE_NUM.MANUAL]: "Ручной режим",
   [STAGE_NUM.FAULT]: "Авария",
+  // Дистилляция (H2, §7): полоса фракций на живом графике куба (TelemetryChart
+  // переиспользуется как есть) — метки совпадают со SECTION полосы фракций
+  // (stage-timeline MACRO_STAGE_LABELS), а не с полным STAGE_LABELS («Отбор
+  // тела» — длиннее, чем нужно для компактной метки на графике).
+  [STAGE_NUM.DISTILL_PREHEAT]: "Разогрев",
+  [STAGE_NUM.DISTILL_HEADS]: "Головы",
+  [STAGE_NUM.DISTILL_HEARTS]: "Тело",
+  [STAGE_NUM.DISTILL_TAILS]: "Хвосты",
+  [STAGE_NUM.FERMENT]: "Ферментация",
 };
 
 /** Компактная подпись стадии по числовому значению bf_stage_t. */

@@ -158,6 +158,31 @@ export function heatModeName(value: number): HeatMode {
   return name;
 }
 
+// ----------------------------- Режим прибора (bf_app_mode_t) ---------------
+// Порядок === числовому значению bf_app_mode_t (BF_APP_MODE_BREW = 0 … FERMENT).
+// Это UI-слой (v11 прошивки): контур/интерлоки едины для всех режимов, appMode
+// лишь подсказывает, какую «зону» рисовать. Авторитет режима в running-стадиях —
+// сама стадия (17..20 DISTILL_*, 21 FERMENT из STAGE_NAMES); appMode решает
+// только в IDLE, когда по stage режим ещё не определить.
+export const APP_MODE_NAMES = [
+  "brew",    // 0 BF_APP_MODE_BREW (дефолт)
+  "distill", // 1 BF_APP_MODE_DISTILL
+  "ferment", // 2 BF_APP_MODE_FERMENT
+] as const;
+
+export const AppModeSchema = z.enum(APP_MODE_NAMES);
+export type AppMode = z.infer<typeof AppModeSchema>;
+
+export const APP_MODE_NUM: Record<AppMode, number> = Object.fromEntries(
+  APP_MODE_NAMES.map((name, i) => [name, i]),
+) as Record<AppMode, number>;
+
+export function appModeName(value: number): AppMode {
+  const name = APP_MODE_NAMES[value];
+  if (name === undefined) throw new Error(`Unknown bf_app_mode_t value: ${value}`);
+  return name;
+}
+
 // ----------------------------- Тип команды (bf_cmd_type_t) -----------------
 // Числовое значение включает BF_CMD_NONE=0 (для кросс-проверки прошивки);
 // CommandTypeSchema исключает NONE — оно не передаётся по проводу.
@@ -171,6 +196,15 @@ export function heatModeName(value: number): HeatMode {
 // START_DISTILL/START_FERMENT/SET_HX_SENSOR/SET_APP_MODE — bf_types.h §"config-model"
 // и §"Фаза 4") сюда намеренно не включены — см. PHASE2-4_PLAN.md §2.4 «Локальные-
 // только команды», их портал никогда не отправляет.
+// ⚠ Пакет №2 §13: MANUAL_PUMP2/MANUAL_VALVE/MANUAL_COOL (Этап 6-A прошивки) вставлены
+// в enum СРАЗУ ПОСЛЕ MANUAL_PUMP (=14), сдвигая START_AUTOTUNE..ACK_HOP на +3; следом
+// FORCE_PUMP/FORCE_PUMP2/FORCE_VALVE (Этап 6-D) дописаны В КОНЕЦ enum. И то, и то —
+// сетевые команды (есть в CMD_MAP bf_proto.c), но с разной гейтовкой в process:
+//  MANUAL_PUMP2/VALVE/COOL — принимаются ТОЛЬКО в BF_STAGE_MANUAL (сбрасываются
+//    при входе/выходе из ручного режима, как MANUAL_PUMP);
+//  FORCE_PUMP/PUMP2/VALVE — принимаются в ЛЮБОЙ стадии, КРОМЕ BF_STAGE_FAULT
+//    (латч поверх автологики; портал команды не строит — билдеры в command.ts
+//    только для кросс-проверки/будущего H4, UI на них не выводить, см. TASK §13).
 export const CMD_TYPE_NUM = {
   NONE:            0,  // BF_CMD_NONE
   START_BREW:      1,  // BF_CMD_START_BREW       (arg.i = слот рецепта 0..25)
@@ -187,13 +221,19 @@ export const CMD_TYPE_NUM = {
   MANUAL_PWM:      12, // BF_CMD_MANUAL_PWM       (arg.i %)
   MANUAL_HEAT:     13, // BF_CMD_MANUAL_HEAT      (arg.b)
   MANUAL_PUMP:     14, // BF_CMD_MANUAL_PUMP      (arg.b)
-  START_AUTOTUNE:  15, // BF_CMD_START_AUTOTUNE
-  ESTOP:           16, // BF_CMD_ESTOP
-  CLEAR_FAULT:     17, // BF_CMD_CLEAR_FAULT
-  SAVE_SETTINGS:   18, // BF_CMD_SAVE_SETTINGS
-  // 19..32 — локальные-только команды (не в этом списке, см. комментарий выше).
-  ACK_HOP:         33,  // BF_CMD_ACK_HOP (arg.i = индекс хмеля) — добавлена в CMD_MAP
-                         // пакетом 4-A прошивки; единственная сетевая из «новых» команд.
+  MANUAL_PUMP2:    15, // BF_CMD_MANUAL_PUMP2     (arg.b) — только BF_STAGE_MANUAL
+  MANUAL_VALVE:    16, // BF_CMD_MANUAL_VALVE     (arg.b) — только BF_STAGE_MANUAL
+  MANUAL_COOL:     17, // BF_CMD_MANUAL_COOL      (arg.b) — только BF_STAGE_MANUAL
+  START_AUTOTUNE:  18, // BF_CMD_START_AUTOTUNE
+  ESTOP:           19, // BF_CMD_ESTOP
+  CLEAR_FAULT:     20, // BF_CMD_CLEAR_FAULT
+  SAVE_SETTINGS:   21, // BF_CMD_SAVE_SETTINGS
+  // 22..35 — локальные-только команды (не в этом списке, см. комментарий выше).
+  ACK_HOP:         36, // BF_CMD_ACK_HOP (arg.i = индекс хмеля) — добавлена в CMD_MAP
+                        // пакетом 4-A прошивки; единственная сетевая из «старых» новых.
+  FORCE_PUMP:      37, // BF_CMD_FORCE_PUMP  (arg.b) — любая стадия, кроме FAULT
+  FORCE_PUMP2:     38, // BF_CMD_FORCE_PUMP2 (arg.b) — любая стадия, кроме FAULT
+  FORCE_VALVE:     39, // BF_CMD_FORCE_VALVE (arg.b) — любая стадия, кроме FAULT
 } as const;
 
 export const COMMAND_TYPE_NAMES = [
@@ -211,11 +251,17 @@ export const COMMAND_TYPE_NAMES = [
   "MANUAL_PWM",
   "MANUAL_HEAT",
   "MANUAL_PUMP",
+  "MANUAL_PUMP2",
+  "MANUAL_VALVE",
+  "MANUAL_COOL",
   "START_AUTOTUNE",
   "ESTOP",
   "CLEAR_FAULT",
   "SAVE_SETTINGS",
   "ACK_HOP",
+  "FORCE_PUMP",
+  "FORCE_PUMP2",
+  "FORCE_VALVE",
 ] as const;
 
 export const CommandTypeSchema = z.enum(COMMAND_TYPE_NAMES);

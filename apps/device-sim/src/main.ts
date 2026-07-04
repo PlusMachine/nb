@@ -7,7 +7,7 @@
 //    --device-id  идентификатор устройства (по умолчанию bf-sim01)
 //    --tick-ms    интервал реального тика, мс (по умолчанию 1000)
 //    --tick-scale ускорение варочного времени, сек/сек (по умолчанию 60)
-//    --scenario   idle | mash | fault (по умолчанию idle)
+//    --scenario   idle | mash | fault | ferment | distill (по умолчанию idle)
 //    --fw         строка прошивки (по умолчанию sim-0.0.0)
 // =============================================================================
 import { SimDevice, type Scenario } from "@nb/brewforge-sim";
@@ -43,7 +43,9 @@ function parseArgs(argv: string[]): Args {
 
   const scenarioRaw = map.get("scenario") ?? "idle";
   const scenario: Scenario =
-    scenarioRaw === "mash" || scenarioRaw === "fault" ? scenarioRaw : "idle";
+    scenarioRaw === "mash" || scenarioRaw === "fault" || scenarioRaw === "ferment" || scenarioRaw === "distill"
+      ? scenarioRaw
+      : "idle";
 
   // --mqtt без значения → дефолтный локальный брокер; со значением → его URL.
   const mqttRaw = map.get("mqtt");

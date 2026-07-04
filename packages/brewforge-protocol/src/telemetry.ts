@@ -48,6 +48,11 @@ export const TelemetrySchema = z.object({
   // --- стадия / интерлоки (bf_brew_state_t) ---
   stage: z.number().int(),          // числовое значение bf_stage_t
   stageName: StageSchema,           // машинное имя (bf_stage_name())
+  // H0 (пакет 4-B): bf_app_mode_t — UI-режим прибора (0 brew/1 distill/2 ferment).
+  // optional, потому что старая прошивка (до v11) поле не шлёт вообще. Авторитет
+  // режима в running-стадиях — сама stage (17..20 DISTILL_*, 21 FERMENT из
+  // STAGE_NAMES); appMode решает ТОЛЬКО в IDLE, где по stage режим не определить.
+  appMode: z.number().int().optional(), // числовое значение bf_app_mode_t
   pausedFrom: z.number().int(),     // bf_stage_t куда вернуться из PAUSED
   faultMask: z.number().int(),      // битовая маска bf_fault_t — АВТОРИТЕТНЫЙ источник
   // Информационный список кодов от устройства. Намеренно z.string(), а НЕ z.enum:

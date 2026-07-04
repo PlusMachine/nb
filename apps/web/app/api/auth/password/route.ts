@@ -16,7 +16,11 @@ export async function POST(request: Request) {
         await passwordLogin(String(body.email ?? ""), String(body.password ?? ""));
         return NextResponse.json({ ok: true });
       case "signup":
-        await passwordSignup(String(body.email ?? ""), String(body.password ?? ""));
+        // Согласие на обработку ПДн (152-ФЗ) обязательно при создании аккаунта.
+        if (body.consent !== true) {
+          return NextResponse.json({ error: "consent_required" }, { status: 400 });
+        }
+        await passwordSignup(String(body.email ?? ""), String(body.password ?? ""), true);
         return NextResponse.json({ ok: true });
       case "request-reset":
         await requestPasswordReset(String(body.email ?? ""));

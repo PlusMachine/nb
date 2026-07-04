@@ -1,10 +1,17 @@
 // =============================================================================
 //  features/brew-controller/stage-timeline.ts
 //  Чистое ядро StageTimeline (интерактивная полоса стадий, зоны A/B). Сворачивает
-//  16 значений bf_stage_t в 5 макро-стадий «варочного дня» (Затор → Кипячение →
-//  Вирпул → Охлаждение → Готово) и вычисляет: какие пройдены, какая идёт
-//  сейчас и с какой долей заполнения, плюс overlay-состояния вне линейного
-//  прогресса (IDLE / отложенный старт / ПАУЗА / РУЧНОЙ / АВАРИЯ).
+//  bf_stage_t в 5 макро-стадий полосы прогресса и вычисляет: какие пройдены,
+//  какая идёт сейчас и с какой долей заполнения, плюс overlay-состояния вне
+//  линейного прогресса (IDLE / отложенный старт / ПАУЗА / РУЧНОЙ / АВАРИЯ).
+//
+//  Веб-HMI §5/§7/§8 (пакет H0): прибор мультирежимный — карта макро-стадий
+//  зависит от appMode прибора (deriveAppMode из device-mode.ts):
+//   - brew    — Затор → Кипячение → Вирпул → Охлаждение → Готово (как было);
+//   - distill — Разогрев → Головы → Тело → Хвосты → Готово (стадии 17–20 + DONE);
+//   - ferment — недельный процесс, полосы стадий нет вообще (см.
+//               stageTimelineFromTelemetry) — свой профиль-блок привезёт H3.
+//  Варочное поведение и его тесты — БЕЗ изменений.
 //
 //  Без React/DOM-зависимостей — тестируется юнитами, переиспользуется компонентом.
 //  Источник значений стадий — @nb/brewforge-protocol (STAGE_NUM), без магических
@@ -12,11 +19,39 @@
 // =============================================================================
 import { STAGE_NUM, type Stage, type Telemetry } from "@nb/brewforge-protocol";
 
-/** Макро-стадия варочного дня (укрупнение bf_stage_t для полосы прогресса). */
-export type MacroStage = "mash" | "boil" | "hop_stand" | "cooling" | "done";
+import { deriveAppMode, type AppMode } from "./device-mode";
 
-/** Линейный порядок макро-стадий (индекс = позиция на полосе). */
+/** Режимы, у которых вообще есть линейная полоса стадий (ferment — нет, §8). */
+export type StageTimelineMode = Extract<AppMode, "brew" | "distill">;
+
+/** Макро-стадия полосы прогресса (укрупнение bf_stage_t), варка + дистилляция. */
+export type MacroStage =
+  | "mash"
+  | "boil"
+  | "hop_stand"
+  | "cooling"
+  | "done"
+  | "distill_preheat"
+  | "heads"
+  | "hearts"
+  | "tails"
+  | "distill_done";
+
+/** Линейный порядок макро-стадий варки (индекс = позиция на полосе). */
 export const MACRO_STAGE_ORDER: MacroStage[] = ["mash", "boil", "hop_stand", "cooling", "done"];
+
+/** Линейный порядок макро-стадий дистилляции (полоса фракций, §7). */
+export const DISTILL_MACRO_STAGE_ORDER: MacroStage[] = [
+  "distill_preheat",
+  "heads",
+  "hearts",
+  "tails",
+  "distill_done",
+];
+
+function macroStageOrderFor(mode: StageTimelineMode): MacroStage[] {
+  return mode === "distill" ? DISTILL_MACRO_STAGE_ORDER : MACRO_STAGE_ORDER;
+}
 
 export const MACRO_STAGE_LABELS: Record<MacroStage, string> = {
   mash: "Затор",
@@ -24,6 +59,11 @@ export const MACRO_STAGE_LABELS: Record<MacroStage, string> = {
   hop_stand: "Вирпул",
   cooling: "Охлаждение",
   done: "Готово",
+  distill_preheat: "Разогрев",
+  heads: "Головы",
+  hearts: "Тело",
+  tails: "Хвосты",
+  distill_done: "Готово",
 };
 
 /** Стадии, которые входят в каждую макро-стадию (для интерактивной подсказки). */
@@ -33,6 +73,11 @@ export const MACRO_STAGE_MEMBERS: Record<MacroStage, string> = {
   hop_stand: "Вирпул / хопстенд",
   cooling: "Охлаждение до температуры внесения дрожжей",
   done: "Варка завершена",
+  distill_preheat: "Полная мощность до порога голов",
+  heads: "Отбор голов",
+  hearts: "Отбор тела",
+  tails: "Отбор хвостов, авто-стоп у конечной температуры",
+  distill_done: "Перегон завершён",
 };
 
 /** Overlay-состояние вне линейного прогресса варки. */
@@ -57,7 +102,7 @@ export type StageTimeline = {
   substepLabel: string | null;
 };
 
-/** Числовое значение bf_stage_t → макро-стадия. Стадии вне карты — overlay. */
+/** Числовое значение bf_stage_t → макро-стадия варки. Стадии вне карты — overlay. */
 const MACRO_BY_STAGE: Record<number, MacroStage> = {
   [STAGE_NUM.PROMPT_SPARGE]: "mash",
   [STAGE_NUM.DOUGH_IN]: "mash",
@@ -72,6 +117,19 @@ const MACRO_BY_STAGE: Record<number, MacroStage> = {
   [STAGE_NUM.COOLING]: "cooling",
   [STAGE_NUM.DONE]: "done",
 };
+
+/** Числовое значение bf_stage_t → макро-стадия дистилляции (полоса фракций, §7). */
+const DISTILL_MACRO_BY_STAGE: Record<number, MacroStage> = {
+  [STAGE_NUM.DISTILL_PREHEAT]: "distill_preheat",
+  [STAGE_NUM.DISTILL_HEADS]: "heads",
+  [STAGE_NUM.DISTILL_HEARTS]: "hearts",
+  [STAGE_NUM.DISTILL_TAILS]: "tails",
+  [STAGE_NUM.DONE]: "distill_done",
+};
+
+function macroByStageFor(mode: StageTimelineMode): Record<number, MacroStage> {
+  return mode === "distill" ? DISTILL_MACRO_BY_STAGE : MACRO_BY_STAGE;
+}
 
 /** Узкий вход из телеметрии — только поля, влияющие на полосу (легко тестировать). */
 export type StageTimelineInput = {
@@ -104,7 +162,10 @@ function macroProgress(macro: MacroStage, input: StageTimelineInput): number | n
     const idx = Math.max(0, Math.min(input.mashStepIndex, input.nMashSteps - 1));
     return clamp01((idx + stepFrac) / input.nMashSteps);
   }
-  if (macro === "done") return 1;
+  // Финальная стадия (варки или перегона) всегда полностью залита.
+  if (macro === "done" || macro === "distill_done") return 1;
+  // Распределительные стадии дистилляции (разогрев/головы/тело/хвосты) прогрессируют
+  // по таймеру стадии — так же, как boil/hop_stand/cooling у варки.
   return timeFrac;
 }
 
@@ -119,15 +180,21 @@ function substepLabel(input: StageTimelineInput): string | null {
 /**
  * Собрать модель полосы стадий из среза телеметрии. Возвращает 5 сегментов
  * (done/current/future) + overlay-состояние и подписи. Чистая функция.
+ *
+ * `mode` выбирает карту макро-стадий (§5/§7): по умолчанию "brew" (старые
+ * колл-сайты и тесты не меняются), "distill" — полоса фракций. Для "ferment"
+ * полосы стадий нет вообще — сюда её не зовут, см. stageTimelineFromTelemetry.
  */
-export function computeStageTimeline(input: StageTimelineInput): StageTimeline {
+export function computeStageTimeline(input: StageTimelineInput, mode: StageTimelineMode = "brew"): StageTimeline {
   const { stage, pausedFrom } = input;
+  const macroByStage = macroByStageFor(mode);
+  const macroStageOrder = macroStageOrderFor(mode);
 
   // Overlay-состояния вне линейного прогресса. PAUSED/FAULT позиционируем по
   // pausedFrom (куда вернётся FSM), чтобы полоса не «сбрасывалась» на паузе/аварии.
   let overlay: TimelineOverlay = "none";
-  let currentMacro: MacroStage | null = MACRO_BY_STAGE[stage] ?? null;
-  let currentLabel = MACRO_BY_STAGE[stage] ? MACRO_STAGE_LABELS[MACRO_BY_STAGE[stage]] : "";
+  let currentMacro: MacroStage | null = macroByStage[stage] ?? null;
+  let currentLabel = macroByStage[stage] ? MACRO_STAGE_LABELS[macroByStage[stage]] : "";
 
   if (stage === STAGE_NUM.IDLE) {
     overlay = "idle";
@@ -143,17 +210,17 @@ export function computeStageTimeline(input: StageTimelineInput): StageTimeline {
     currentLabel = "Ручной режим";
   } else if (stage === STAGE_NUM.PAUSED) {
     overlay = "paused";
-    currentMacro = MACRO_BY_STAGE[pausedFrom] ?? null;
+    currentMacro = macroByStage[pausedFrom] ?? null;
     currentLabel = "Пауза";
   } else if (stage === STAGE_NUM.FAULT) {
     overlay = "fault";
-    currentMacro = MACRO_BY_STAGE[pausedFrom] ?? null;
+    currentMacro = macroByStage[pausedFrom] ?? null;
     currentLabel = "Авария";
   }
 
-  const currentIndex = currentMacro ? MACRO_STAGE_ORDER.indexOf(currentMacro) : -1;
+  const currentIndex = currentMacro ? macroStageOrder.indexOf(currentMacro) : -1;
 
-  const segments: TimelineSegment[] = MACRO_STAGE_ORDER.map((macro, index) => {
+  const segments: TimelineSegment[] = macroStageOrder.map((macro, index) => {
     let state: TimelineSegmentState = "future";
     if (currentIndex >= 0) {
       if (index < currentIndex) state = "done";
@@ -178,17 +245,26 @@ export function computeStageTimeline(input: StageTimelineInput): StageTimeline {
   };
 }
 
-/** Обёртка: модель полосы из полной телеметрии (или пустой прогресс, если нет кадра). */
+/**
+ * Обёртка: модель полосы из полной телеметрии (или пустой прогресс, если нет
+ * кадра). Режим карты — из deriveAppMode: FERMENT — недельный процесс без
+ * линейной полосы стадий (§8, свой профиль-блок привезёт H3) — null.
+ */
 export function stageTimelineFromTelemetry(telemetry: Telemetry | null): StageTimeline | null {
   if (!telemetry) return null;
-  return computeStageTimeline({
-    stage: telemetry.stage,
-    pausedFrom: telemetry.pausedFrom,
-    stageElapsedSec: telemetry.stageElapsedSec,
-    stageRemainingSec: telemetry.stageRemainingSec,
-    mashStepIndex: telemetry.mashStepIndex,
-    nMashSteps: telemetry.nMashSteps,
-  });
+  const appMode = deriveAppMode(telemetry) ?? "brew";
+  if (appMode === "ferment") return null;
+  return computeStageTimeline(
+    {
+      stage: telemetry.stage,
+      pausedFrom: telemetry.pausedFrom,
+      stageElapsedSec: telemetry.stageElapsedSec,
+      stageRemainingSec: telemetry.stageRemainingSec,
+      mashStepIndex: telemetry.mashStepIndex,
+      nMashSteps: telemetry.nMashSteps,
+    },
+    appMode,
+  );
 }
 
 /** Текущая макро-стадия из телеметрии (для подписи вне компонента), либо null. */

@@ -1,5 +1,6 @@
 import { getServerEnv } from "./env";
 import { assertRussianEmailDomain } from "./email-policy";
+import { LEGAL_DOC_VERSION } from "./legal-meta";
 import { sendSms } from "./sms";
 
 import {
@@ -37,6 +38,10 @@ const SESSION_COOKIE = "nb_session";
  * production не используется (автологина там нет, ставить её нечему).
  */
 const DEV_GUEST_COOKIE = "nb_dev_guest";
+
+// Согласие на обработку ПДн (152-ФЗ): фиксируем момент и версию правовых документов
+// в БД при создании аккаунта. `accepted` приходит с формы входа/регистрации.
+const consentInput = (accepted?: boolean) => (accepted ? { version: LEGAL_DOC_VERSION } : undefined);
 
 export const roleWeights: Record<UserRole, number> = { user: 1, editor: 2, moderator: 3, admin: 4 };
 
@@ -134,15 +139,15 @@ export const startPhoneOtp = async (phone: string) => {
   await sendSms({ to: verification.phone, text: `Код для входа: ${verification.rawToken}` });
 };
 
-export const verifyPhoneOtp = async (phone: string, code: string) => {
+export const verifyPhoneOtp = async (phone: string, code: string, consent?: boolean) => {
   await consumePhoneVerification({ phone, code });
-  const user = await completePhoneSignIn({ phone });
+  const user = await completePhoneSignIn({ phone, consent: consentInput(consent) });
   await establishSession(user.id);
 };
 
-export const verifyEmailOtp = async (email: string, code: string) => {
+export const verifyEmailOtp = async (email: string, code: string, consent?: boolean) => {
   await consumeVerification({ email, token: code, type: "otp" });
-  const user = await completeEmailSignIn({ email });
+  const user = await completeEmailSignIn({ email, consent: consentInput(consent) });
   await establishSession(user.id);
 };
 
@@ -157,7 +162,9 @@ export const startMagicLink = async (email: string) => {
 
 export const consumeMagicLink = async (email: string, token: string) => {
   await consumeVerification({ email, token, type: "magic_link" });
-  const user = await completeEmailSignIn({ email });
+  // Согласие было получено и проверено на шаге запроса ссылки (startMagicLink),
+  // поэтому при создании аккаунта фиксируем его текущей версией.
+  const user = await completeEmailSignIn({ email, consent: consentInput(true) });
   await establishSession(user.id);
 };
 
@@ -207,9 +214,9 @@ export const passwordLogin = async (email: string, password: string) => {
   await establishSession(user.id);
 };
 
-export const passwordSignup = async (email: string, password: string) => {
+export const passwordSignup = async (email: string, password: string, consent?: boolean) => {
   assertRussianEmailDomain(email);
-  await setPassword({ email, password });
+  await setPassword({ email, password, consent: consentInput(consent) });
   await passwordLogin(email, password);
 };
 
@@ -240,16 +247,19 @@ export const updateCurrentProfile = async ({
   return updateProfile({ userId: user.id, displayName, preferredCurrency, preferredGravityUnit });
 };
 
-export const oauthFinalize = async (payload: {
-  provider: OAuthProviderId;
-  providerAccountId: string;
-  email: string;
-  displayName?: string;
-  image?: string;
-  accessToken?: string;
-  refreshToken?: string;
-}) => {
-  const user = await linkOAuthAccount(payload);
+export const oauthFinalize = async (
+  payload: {
+    provider: OAuthProviderId;
+    providerAccountId: string;
+    email: string;
+    displayName?: string;
+    image?: string;
+    accessToken?: string;
+    refreshToken?: string;
+  },
+  consent?: boolean
+) => {
+  const user = await linkOAuthAccount({ ...payload, consent: consentInput(consent) });
   await establishSession(user.id);
   return user;
 };

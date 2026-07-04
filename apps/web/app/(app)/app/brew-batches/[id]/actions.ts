@@ -23,6 +23,8 @@ import {
   type BrewBatchStatus,
   type BrewDayProgress
 } from "@/features/brew-batches/contracts";
+import { bindBatchFermenter } from "@/features/devices/fermenter-binding";
+import { bindBatchFermenterSchema } from "@/features/devices/contracts";
 
 export type BrewActionResult = { ok: boolean; message: string };
 export type BrewDayProgressResult = BrewActionResult & { progress?: BrewDayProgress };
@@ -186,6 +188,40 @@ export const consumeBrewBatchInventoryAction = async (
       return { ok: false, message: "Варка не найдена." };
     }
     return { ok: false, message: "Не удалось списать ингредиенты." };
+  }
+};
+
+// --- Привязка прибора-ферментера (§8.4) --------------------------------------
+
+/**
+ * Привязать/отвязать прибор-ферментер к бродящей партии — акт «Брожение».
+ * deviceId=null — явная отвязка (граничный случай §8.4: прибор больше не в
+ * режиме ферментации; данные истории остаются, привязка снимается вручную).
+ */
+export const bindBatchFermenterAction = async (
+  brewBatchId: string,
+  deviceId: string | null
+): Promise<BrewActionResult> => {
+  try {
+    const user = await requireUser();
+    const parsed = bindBatchFermenterSchema.parse({ deviceId });
+    await bindBatchFermenter(user.id, brewBatchId, parsed.deviceId);
+    revalidateBatch(brewBatchId);
+    return { ok: true, message: parsed.deviceId ? "Прибор привязан." : "Прибор отвязан." };
+  } catch (error) {
+    if (error instanceof ZodError) {
+      return { ok: false, message: firstZodMessage(error) };
+    }
+    if (error instanceof Error && error.message === "BREW_BATCH_NOT_FOUND") {
+      return { ok: false, message: "Варка не найдена." };
+    }
+    if (error instanceof Error && error.message === "BATCH_NOT_FERMENTING") {
+      return { ok: false, message: "Привязать прибор можно только во время брожения." };
+    }
+    if (error instanceof Error && error.message === "DEVICE_NOT_FOUND") {
+      return { ok: false, message: "Прибор не найден." };
+    }
+    return { ok: false, message: "Не удалось обновить привязку." };
   }
 };
 

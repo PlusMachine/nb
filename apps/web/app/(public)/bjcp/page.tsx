@@ -5,7 +5,7 @@ import { getBjcpCatalogData } from "@nb/content";
 import { BjcpCatalog } from "@/components/content/bjcp-catalog";
 
 export const metadata: Metadata = {
-  title: "BJCP справочник",
+  title: "BJCP справочник стилей",
   description: "Поиск по стилям BJCP, режим семейной навигации для обычного пользователя и строгий просмотр по официальным категориям BJCP 2021."
 };
 

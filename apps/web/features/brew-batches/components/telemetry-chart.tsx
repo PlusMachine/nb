@@ -19,6 +19,7 @@ import { stageName } from "@nb/brewforge-protocol";
 import type { TelemetryHistoryPoint } from "@/features/brew-batches/contracts";
 import { telemetryEndpoints, type TelemetrySource } from "@/features/brew-controller/telemetry-source";
 import { deriveStageTransitions } from "@/features/brew-controller/telemetry-annotations";
+import { stageLabel } from "@/features/brew-controller/stage-labels";
 
 // Геометрия viewBox (масштабируется по ширине контейнера).
 const VB_W = 800;
@@ -353,7 +354,7 @@ function isFaultStage(stage: number): boolean {
 
 function safeStageLabel(stage: number): string {
   try {
-    return stageName(stage);
+    return stageLabel(stageName(stage));
   } catch {
     return `STAGE_${stage}`;
   }

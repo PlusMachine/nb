@@ -75,6 +75,20 @@ export function srmToSoftGradient(srm: number): string {
   return `linear-gradient(150deg, ${light} 0%, ${base} 55%, ${deep} 100%)`;
 }
 
+/**
+ * Две конечные точки мягкой заливки по SRM для вертикального градиента бокала
+ * ({@link BeerGlassIcon}, пропы `gradientFrom`/`gradientTo`): `from` — светлый верх
+ * (0.3 к белому), `to` — тёмный низ (0.16 к чёрному). Те же коэффициенты, что и в
+ * {@link srmToSoftGradient} — одна точка истины, без утечки `mixHex`/`WHITE`/`BLACK`.
+ */
+export function srmToGlassStops(srm: number): { from: string; to: string } {
+  const base = srmToHex(srm);
+  return {
+    from: mixHex(base, WHITE, 0.3),
+    to: mixHex(base, BLACK, 0.16)
+  };
+}
+
 /** Нейтральная мягкая заливка для рецептов без указанного цвета. */
 export const NEUTRAL_SOFT_GRADIENT = "linear-gradient(150deg, #f5f5f4 0%, #e7e5e4 60%, #d6d3d1 100%)";
 

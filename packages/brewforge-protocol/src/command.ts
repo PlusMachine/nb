@@ -93,6 +93,37 @@ export const cmdManualHeat = (on: boolean, auth?: string): Command =>
 export const cmdManualPump = (on: boolean, auth?: string): Command =>
   makeCommand("MANUAL_PUMP", { b: on }, auth);
 
+/** BF_CMD_MANUAL_PUMP2 — ручной насос2 вкл/выкл. Гейтится прошивкой: принимается
+ *  ТОЛЬКО в BF_STAGE_MANUAL (process сбрасывает форс при входе/выходе из ручного
+ *  режима, как MANUAL_PUMP). Не «греющая» команда — без keepalive/hold-to-confirm. */
+export const cmdManualPump2 = (on: boolean, auth?: string): Command =>
+  makeCommand("MANUAL_PUMP2", { b: on }, auth);
+
+/** BF_CMD_MANUAL_VALVE — ручной клапан вкл/выкл (при дистилляции — клапан отбора/
+ *  флегма). Гейтится прошивкой: только BF_STAGE_MANUAL, см. cmdManualPump2. */
+export const cmdManualValve = (on: boolean, auth?: string): Command =>
+  makeCommand("MANUAL_VALVE", { b: on }, auth);
+
+/** BF_CMD_MANUAL_COOL — ручное охлаждение вкл/выкл (компрессорная защита остаётся
+ *  в control на плате). Гейтится прошивкой: только BF_STAGE_MANUAL, см. cmdManualPump2. */
+export const cmdManualCool = (on: boolean, auth?: string): Command =>
+  makeCommand("MANUAL_COOL", { b: on }, auth);
+
+/** BF_CMD_FORCE_PUMP — «дашборд-форс» насоса1: OR поверх автологики/MANUAL из ЛЮБОЙ
+ *  стадии, КРОМЕ BF_STAGE_FAULT (там игнорируется). Латч — держится до явного
+ *  FORCE_PUMP(false), BF_CMD_STOP или фолта. UI на неё пока НЕ строим (см. TASK §13,
+ *  полировка H4) — билдер только для будущего использования и кросс-проверки. */
+export const cmdForcePump = (on: boolean, auth?: string): Command =>
+  makeCommand("FORCE_PUMP", { b: on }, auth);
+
+/** BF_CMD_FORCE_PUMP2 — «дашборд-форс» насоса2, см. cmdForcePump. */
+export const cmdForcePump2 = (on: boolean, auth?: string): Command =>
+  makeCommand("FORCE_PUMP2", { b: on }, auth);
+
+/** BF_CMD_FORCE_VALVE — «дашборд-форс» клапана, см. cmdForcePump. */
+export const cmdForceValve = (on: boolean, auth?: string): Command =>
+  makeCommand("FORCE_VALVE", { b: on }, auth);
+
 export const cmdStartAutotune = (auth?: string): Command =>
   makeCommand("START_AUTOTUNE", undefined, auth);
 export const cmdEstop = (auth?: string): Command => makeCommand("ESTOP", undefined, auth);

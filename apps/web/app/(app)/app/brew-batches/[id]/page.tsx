@@ -9,20 +9,31 @@ import { getBrewBatchInventoryView } from "@/features/brew-batches/inventory";
 import { brewDayActForStatus, buildBrewDaySteps, summarizeBrewDayPlan } from "@/features/brew-batches/brew-day";
 import { resolveBrewNudge } from "@/features/brew-batches/dashboard";
 import { resolveBrewCompletionRatingSlug } from "@/features/brew-batches/completion";
-import { brewBatchStatusBadgeClass, brewBatchStatusLabels } from "@/features/brew-batches/contracts";
+import {
+  brewBatchStatusBadgeClass,
+  brewBatchStatusLabels,
+  FERMENT_HISTORY_LIMIT,
+  FERMENT_HISTORY_WINDOW_DAYS
+} from "@/features/brew-batches/contracts";
 import { getDeviceById } from "@/features/devices/service";
+import { listFermenterCandidates } from "@/features/devices/fermenter-binding";
 import { deviceChannel } from "@/features/brew-controller";
+import { mapFermentationPlanToDeviceSteps } from "@/features/brew-controller/ferment-profile";
 import { getRecipeById } from "@/features/recipes/service";
 import { formatGravity } from "@/features/system/gravity-units";
+import { formatRelativeTimestamp } from "@/features/recipes/format";
+import { resolveFermenterBindingStatus } from "@/features/brew-batches/fermenter-status";
 import { BrewCompletionSummary } from "@/features/brew-batches/components/brew-completion-summary";
 import { BrewJournal } from "@/features/brew-batches/components/brew-journal";
 import { BrewNotes } from "@/features/brew-batches/components/brew-notes";
 import { BrewInventory } from "@/features/brew-batches/components/brew-inventory";
 import { LiveDashboard } from "@/features/brew-batches/components/live-dashboard";
+import { FermentHistoryChart } from "@/features/brew-controller/components/ferment-history-chart";
 import { BatchMenu } from "@/features/brew-batches/components/batch-menu";
 import { BrewPrepCard } from "@/features/brew-batches/components/brew-prep-card";
 import { BrewDayBoard } from "@/features/brew-batches/components/brew-day-board";
 import { FermentationBoard } from "@/features/brew-batches/components/fermentation-board";
+import { FermenterPanel } from "@/features/brew-batches/components/fermenter-panel";
 import { BrewHistoryGuide } from "@/features/brew-batches/components/brew-history-guide";
 import { BrewQuickDock } from "@/features/brew-batches/components/brew-quick-dock";
 import { BrewStockNotice } from "@/features/brew-batches/components/brew-stock-notice";
@@ -54,12 +65,26 @@ export default async function BrewBatchDetailPage({ params }: { params: Promise<
   const hasDevice = Boolean(batch.deviceId);
   const act = brewDayActForStatus(batch.status);
   const device = batch.deviceId ? await getDeviceById(user.id, batch.deviceId) : null;
-  const initialHistory = batch.deviceId ? await getDeviceTelemetryHistory(batch.deviceId, batch.id) : [];
+  // Акт «Брожение» живёт неделями — просим окно по дням (§14), а не варочный лимит
+  // «последние 1000 точек» (~3.5 суток при 5-минутном FERMENT-даунсэмпле, обрежет
+  // график «план vs факт» на середине брожения). Остальные акты — как раньше.
+  const initialHistory = batch.deviceId
+    ? await getDeviceTelemetryHistory(
+        batch.deviceId,
+        batch.id,
+        act === "fermentation" ? FERMENT_HISTORY_LIMIT : undefined,
+        act === "fermentation" ? FERMENT_HISTORY_WINDOW_DAYS : undefined
+      )
+    : [];
   const inventoryView = await getBrewBatchInventoryView(user.id, batch.id);
 
-  // Гид варочного дня строим для варки без устройства во всех актах (в done/archived —
-  // read-only история). При устройстве герой — device-дашборд, гид не нужен.
-  const brewDaySteps = hasDevice ? [] : buildBrewDaySteps(batch.brewPlanSnapshot);
+  // Гид варочного дня строим для варки без устройства (в done/archived — read-only
+  // история) — при устройстве герой варочного дня/итога это device-дашборд, гид не
+  // нужен. Акт «Брожение» — ИСКЛЮЧЕНИЕ: чек-лист шагов брожения/розлива нужен ВСЕГДА
+  // (паритет автомат/ручной, §8.4) — batch.deviceId там может быть варочным
+  // контроллером (openSession не чистит его после варки) или прибором-ферментером,
+  // FermentationBoard не подменяется device-дашбордом ни в одном из этих случаев.
+  const brewDaySteps = hasDevice && act !== "fermentation" ? [] : buildBrewDaySteps(batch.brewPlanSnapshot);
   const planSummary = summarizeBrewDayPlan(brewDaySteps);
 
   const target = summary.target;
@@ -113,6 +138,27 @@ export default async function BrewBatchDetailPage({ params }: { params: Promise<
       )
     : null;
 
+  // Связка с прибором-ферментером (§8.4): состояние решаем по LAST-KNOWN кадру
+  // initialHistory (уже загружен выше для графика), НЕ по живой SSE-подписке —
+  // страница партии не должна держать подписку на прибор неделями брожения.
+  // Кандидатов на привязку тянем, только когда пикер реально может понадобиться
+  // (без прибора либо прибор больше не в ferment-режиме) — не гоняем запрос зря.
+  const fermenterStatus = act === "fermentation" ? resolveFermenterBindingStatus(batch.deviceId, initialHistory) : null;
+  const fermenterCandidates =
+    fermenterStatus && (fermenterStatus.kind === "unbound" || fermenterStatus.kind === "mode-mismatch")
+      ? await listFermenterCandidates(user.id)
+      : [];
+  const fermenterFreshnessLabel =
+    fermenterStatus && (fermenterStatus.kind === "fermenting" || fermenterStatus.kind === "mode-mismatch")
+      ? formatRelativeTimestamp(new Date(fermenterStatus.point.ts))
+      : null;
+  // Линия «план» графика брожения — из плана РЕЦЕПТА (fermentPlan, не живого
+  // конфига прибора): та же логика, что грузит ступени в прибор (§13), но здесь
+  // read-only и без обращения к устройству — план не обязан совпадать с тем, что
+  // сейчас в приборе (владелец мог поправить уставку вручную), это ожидаемо.
+  const fermentPlanMapping = act === "fermentation" ? mapFermentationPlanToDeviceSteps(fermentPlan) : null;
+  const fermentPlanSteps = fermentPlanMapping?.ok ? fermentPlanMapping.steps : [];
+
   const started = fmtDate(batch.startedAt);
   const completed = fmtDate(batch.completedAt);
   const planned = fmtDate(batch.plannedFor);
@@ -154,8 +200,12 @@ export default async function BrewBatchDetailPage({ params }: { params: Promise<
         <BatchMenu brewBatchId={batch.id} status={batch.status} />
       </header>
 
-      {hasDevice ? (
-        // Device-путь: герой — живой дашборд контроллера. Акты пульта — отдельная фаза.
+      {hasDevice && act !== "fermentation" ? (
+        // Device-путь: герой — живой дашборд контроллера. Акт «Брожение» сюда НЕ
+        // попадает намеренно (см. ветку act === "fermentation" ниже): batch.deviceId
+        // может всё ещё указывать на варочный контроллер (openSession его не чистит),
+        // а брожению нужен last-known срез + опциональная привязка ИМЕННО прибора-
+        // ферментера (§8.4), не живой SSE-дашборд варочного дня.
         <>
           {act === "done" ? (
             <BrewCompletionSummary
@@ -215,6 +265,24 @@ export default async function BrewBatchDetailPage({ params }: { params: Promise<
             targetTempLabel={targetTempLabel}
             nudge={nudge}
           />
+          {fermenterStatus ? (
+            <FermenterPanel
+              brewBatchId={batch.id}
+              status={fermenterStatus}
+              deviceName={device?.name ?? null}
+              candidates={fermenterCandidates}
+              freshnessLabel={fermenterFreshnessLabel}
+            />
+          ) : null}
+          {fermenterStatus && fermenterStatus.kind !== "unbound" ? (
+            <FermentHistoryChart
+              source={{ kind: "batch", brewBatchId: batch.id }}
+              hasDevice
+              initial={initialHistory}
+              planSteps={fermentPlanSteps}
+              windowDays={FERMENT_HISTORY_WINDOW_DAYS}
+            />
+          ) : null}
           <BrewJournal
             brewBatchId={batch.id}
             measurements={measurements}

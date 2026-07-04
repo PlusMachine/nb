@@ -11,7 +11,7 @@ import { redirectToLoginWithNext } from "@/lib/auth-links";
 import { useRecipeSaves } from "./recipe-saves-provider";
 
 /**
- * Кнопка «Сохранить» рецепт в «Избранные». На витрине (`variant="icon"`) — флажок
+ * Кнопка «Сохранить» рецепт в «Сохранённые». На витрине (`variant="icon"`) — флажок
  * в углу карточки, состояние берётся из {@link RecipeSavesProvider}. На детальной
  * странице (`variant="button"`) провайдера нет — состояние грузится после гидрации
  * через server action, чтобы документ оставался кэшируемым. userId — только на сервере.
@@ -83,14 +83,14 @@ export function RecipeSaveButton({
       // Явный фидбэк только при добавлении (не при снятии): куда сохранено и где найти.
       if (next) {
         show({
-          title: "Сохранено в «Избранные»",
-          action: { label: "Избранные", onClick: () => router.push("/app/saved") }
+          title: "Сохранено",
+          action: { label: "Сохранённые", onClick: () => router.push("/app/saved") }
         });
       }
     });
   };
 
-  const label = saved ? "Убрать из избранных" : "Сохранить в избранные";
+  const label = saved ? "Убрать из сохранённых" : "Добавить в сохранённые";
 
   const trigger =
     variant === "button" ? (

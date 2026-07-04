@@ -14,7 +14,8 @@ import { AlertOctagon } from "lucide-react";
 
 import { Button } from "@nb/ui";
 
-import { stageShortLabel } from "@/features/brew-controller/telemetry-annotations";
+import { stageLabelForValue } from "@/features/brew-controller/stage-labels";
+import { deriveTileBadge } from "@/features/brew-controller/device-mode";
 import { summarizeFaults, type FaultPriority } from "@/features/brew-controller/faults";
 import {
   classifyTileFreshness,
@@ -57,6 +58,7 @@ export function DeviceTile({ tile, nowMs, onRevoke }: Props) {
   const freshness = Number.isFinite(ageMs) ? classifyTileFreshness(ageMs) : "stale";
   const stale = freshness === "stale";
   const hasData = Boolean(snap) && snap!.ts > 0;
+  const modeBadge = deriveTileBadge(snap?.stage ?? null, snap?.pausedFrom ?? null);
 
   // HMI: числовые значения гасим при устаревании (last-known, но «не живо»).
   const valueTone = stale ? "text-zinc-400" : "text-zinc-950";
@@ -80,8 +82,15 @@ export function DeviceTile({ tile, nowMs, onRevoke }: Props) {
           </div>
           <p className="truncate font-mono text-[11px] text-zinc-400">{tile.hardwareId}</p>
         </div>
-        <span className="inline-flex shrink-0 items-center gap-1.5 text-xs text-zinc-500">
-          <span className={`h-2 w-2 rounded-full ${STATUS_DOT[tile.status]}`} />
+        <span className="inline-flex shrink-0 items-center gap-2">
+          {modeBadge ? (
+            <span className="inline-flex items-center rounded-full bg-zinc-100 px-2 py-0.5 text-[11px] font-medium text-zinc-600">
+              {modeBadge}
+            </span>
+          ) : null}
+          <span className="inline-flex items-center gap-1.5 text-xs text-zinc-500">
+            <span className={`h-2 w-2 rounded-full ${STATUS_DOT[tile.status]}`} />
+          </span>
         </span>
       </div>
 
@@ -106,7 +115,7 @@ export function DeviceTile({ tile, nowMs, onRevoke }: Props) {
           </div>
           <div className="text-right">
             <p className="text-sm font-medium text-zinc-700">
-              {snap!.stage !== null ? stageShortLabel(snap!.stage) : "—"}
+              {snap!.stage !== null ? stageLabelForValue(snap!.stage) : "—"}
             </p>
             <p className="mt-0.5 text-xs text-zinc-500 tabular-nums">
               нагрев {snap!.heatDutyPct !== null ? `${snap!.heatDutyPct}%` : "—"}

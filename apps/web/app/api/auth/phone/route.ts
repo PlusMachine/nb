@@ -13,12 +13,17 @@ export async function POST(request: Request) {
 
   try {
     if (action === "request") {
+      // Согласие на обработку ПДн (152-ФЗ) обязательно ДО первой обработки номера:
+      // на этом шаге телефон сохраняется и на него уходит SMS.
+      if (body.consent !== true) {
+        return NextResponse.json({ error: "consent_required" }, { status: 400 });
+      }
       await startPhoneOtp(String(body.phone ?? ""));
       return NextResponse.json({ ok: true });
     }
 
     if (action === "verify") {
-      await verifyPhoneOtp(String(body.phone ?? ""), String(body.code ?? ""));
+      await verifyPhoneOtp(String(body.phone ?? ""), String(body.code ?? ""), body.consent === true);
       return NextResponse.json({ ok: true });
     }
 

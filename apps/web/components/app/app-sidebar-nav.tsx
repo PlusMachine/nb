@@ -31,6 +31,7 @@ export function AppSidebarNav({ user, onNavigate }: AppSidebarNavProps) {
   };
 
   const identity = user.displayName?.trim() || user.email || user.phone || "Профиль";
+  const profileActive = pathname === "/profile" || pathname.startsWith("/profile/");
 
   return (
     <div className="flex h-full flex-col">
@@ -78,9 +79,18 @@ export function AppSidebarNav({ user, onNavigate }: AppSidebarNavProps) {
         <Link
           href="/profile"
           onClick={() => onNavigate?.()}
-          className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-zinc-700 transition-colors hover:bg-zinc-100"
+          aria-current={profileActive ? "page" : undefined}
+          className={`flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
+            profileActive
+              ? "bg-zinc-900 text-white"
+              : "text-zinc-700 hover:bg-zinc-100"
+          }`}
         >
-          <span className="grid h-6 w-6 shrink-0 place-items-center rounded-full bg-zinc-900 text-[11px] font-semibold uppercase text-white">
+          <span
+            className={`grid h-6 w-6 shrink-0 place-items-center rounded-full text-[11px] font-semibold uppercase ${
+              profileActive ? "bg-white/15 text-white" : "bg-zinc-900 text-white"
+            }`}
+          >
             {identity.slice(0, 1)}
           </span>
           <span className="truncate">{identity}</span>
@@ -94,6 +104,14 @@ export function AppSidebarNav({ user, onNavigate }: AppSidebarNavProps) {
           <LogOut className="h-4 w-4 shrink-0" />
           {loggingOut ? "Выходим…" : "Выйти"}
         </button>
+
+        {/* В рабочей зоне нет футера — правовые ссылки и отметка 18+ живут здесь. */}
+        <div className="px-3 pt-2 text-[11px] leading-5 text-zinc-400">
+          <Link href="/legal" onClick={() => onNavigate?.()} className="transition-colors hover:text-zinc-600">
+            Правовые документы
+          </Link>
+          <p className="mt-1">18+ · Употребление алкоголя вредит здоровью</p>
+        </div>
       </div>
     </div>
   );

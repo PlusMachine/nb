@@ -17,7 +17,7 @@ export default async function SavedRecipesPage() {
   return (
     <main className="space-y-4">
       <section className="flex flex-wrap items-center justify-between gap-2">
-        <h1 className="text-2xl font-semibold">Рецепты</h1>
+        <h1 className="text-2xl font-semibold">Сохранённые</h1>
         <Link href="/app/recipes/new" className="rounded-md bg-zinc-900 px-3 py-2 text-sm font-medium text-white">
           Создать рецепт
         </Link>
@@ -27,11 +27,11 @@ export default async function SavedRecipesPage() {
       {recipes.length === 0 ? (
         <section className="rounded-2xl border border-dashed border-zinc-200 bg-white p-10 text-center">
           <p className="text-sm text-zinc-600">
-            Здесь пока пусто. Открой{" "}
+            Здесь пока пусто. Откройте{" "}
             <Link href="/recipes" className="font-medium text-zinc-900 underline underline-offset-2">
               рецепты сообщества
             </Link>{" "}
-            и сохрани понравившиеся.
+            и сохраните понравившиеся.
           </p>
         </section>
       ) : (

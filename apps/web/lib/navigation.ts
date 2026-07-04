@@ -15,8 +15,8 @@ import {
 
 // Единый источник навигации рабочей зоны. Группы разделяются визуально
 // (отступ/линия), без текстовых заголовков: порядок и иконки читаются сами.
-// Из этого же конфига позже собираются футер и быстрые ссылки, чтобы
-// группировки не расходились между поверхностями.
+// publicLinks ниже — отдельный источник для витринных поверхностей (хедер,
+// футер), чтобы порядок разделов не расходился между ними.
 
 export type AppNavItem = {
   href: string;
@@ -39,18 +39,37 @@ export const appNavGroups: AppNavItem[][] = [
   ],
   [
     { href: "/app/equipment", label: "Оборудование", icon: Wrench },
-    { href: "/app/devices", label: "Устройства", icon: Cpu }
+    { href: "/app/devices", label: "BrewForge", icon: Cpu }
   ],
   [
     { href: "/catalog", label: "Каталог", icon: Library },
     { href: "/guides", label: "Гайды", icon: BookOpen },
-    { href: "/bjcp", label: "Стили", icon: Sparkles },
+    { href: "/bjcp", label: "Стили пива", icon: Sparkles },
     { href: "/calculators", label: "Калькуляторы", icon: Calculator }
   ]
 ];
 
 export const appNavItems = appNavGroups.flat();
 export const primaryNavItems = appNavItems.filter((item) => item.primary);
+
+// Витринные разделы в порядке приоритетов посетителя: используются
+// хедером (переключение зон) и футером публичной зоны.
+export const publicLinks: { href: string; label: string }[] = [
+  { href: "/recipes", label: "Рецепты" },
+  { href: "/bjcp", label: "Стили пива" },
+  { href: "/calculators", label: "Калькуляторы" },
+  { href: "/guides", label: "Гайды" },
+  { href: "/catalog", label: "Каталог" }
+];
+
+// Правовые документы (152-ФЗ + cookie). Единый источник для футера и сайдбара
+// рабочей зоны, чтобы состав и порядок ссылок не расходились между зонами.
+export const legalLinks: { href: string; label: string }[] = [
+  { href: "/legal/terms", label: "Пользовательское соглашение" },
+  { href: "/legal/privacy", label: "Политика обработки ПДн" },
+  { href: "/legal/consent", label: "Согласие на обработку ПДн" },
+  { href: "/legal/cookies", label: "Использование cookie" }
+];
 
 export const isNavItemActive = (pathname: string, item: AppNavItem): boolean => {
   const matches = (href: string, exact?: boolean) =>

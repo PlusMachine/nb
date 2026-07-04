@@ -4,7 +4,6 @@ import { Montserrat, Rubik } from "next/font/google";
 import "./globals.css";
 import { Providers } from "../components/providers";
 import { DevGuestBadge } from "@/components/shared/dev-guest-badge";
-import { SiteFooter } from "@/components/shared/site-footer";
 import { isDevGuestPreview } from "@/lib/auth";
 import { getServerEnv } from "@/lib/env";
 
@@ -26,7 +25,8 @@ export const metadata: Metadata = {
     default: "NB",
     template: "%s · NB"
   },
-  description: "NB editorial and brewing knowledge base."
+  description:
+    "Платформа для домашних пивоваров: каталог ингредиентов, склад, рецепты, расчёты и справочник стилей BJCP."
 };
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
@@ -38,7 +38,6 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <Providers>
           <div className="flex min-h-screen flex-col">
             <div className="flex-1">{children}</div>
-            <SiteFooter />
           </div>
           <DevGuestBadge active={devGuest} />
         </Providers>

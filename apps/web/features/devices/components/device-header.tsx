@@ -8,7 +8,7 @@
 //  статуса. Живой статус/аренду получает пропсами от владельца подписки.
 // =============================================================================
 import Link from "next/link";
-import { ChevronLeft, Settings } from "lucide-react";
+import { ChevronLeft, Maximize2, Settings } from "lucide-react";
 
 import type { DeviceChannel } from "@/features/brew-controller/telemetry-source";
 import type { TelemetryStream } from "@/features/brew-controller/use-telemetry-stream";
@@ -16,6 +16,7 @@ import type { useDeviceCommand } from "@/features/brew-controller/use-device-com
 import { StatusPill } from "@/features/brew-controller/components/status-pill";
 import { ChannelBadge } from "@/features/brew-controller/components/channel-badge";
 import { ControlLeaseBadge } from "@/features/brew-controller/components/control-lease-badge";
+import { APP_MODE_LABELS, deriveAppMode } from "@/features/brew-controller/device-mode";
 
 type Props = {
   deviceName: string;
@@ -27,6 +28,8 @@ type Props = {
   stream: TelemetryStream;
   /** Аренда управления (для ControlLeaseBadge). */
   command: ReturnType<typeof useDeviceCommand>;
+  /** Клик по ⛶ → войти в киоск (§9). Не передан — кнопки нет. */
+  onKioskEnter?: () => void;
 };
 
 export function DeviceHeader({
@@ -36,19 +39,24 @@ export function DeviceHeader({
   backHref,
   settingsHref,
   stream,
-  command
+  command,
+  onKioskEnter
 }: Props) {
+  // Бейдж режима (§5): нет телеметрии → appMode null → бейджа нет, пульт не
+  // притворяется, что знает, что варит/гонит/бродит прибор.
+  const appMode = deriveAppMode(stream.telemetry);
+
   return (
-    // Липнет под мобильной шапкой оболочки (h-14, sticky top-0 z-40); на десктопе
-    // верхней панели нет — контент скроллится под окном, поэтому top-0.
-    <header className="sticky top-14 z-20 border-b border-zinc-200 bg-white/90 py-3 backdrop-blur lg:top-0">
+    // Липнет под шапкой оболочки: офсет берём из --chrome-top (задаётся AppShell),
+    // а не захардкоженного top-14/lg:top-0, чтобы не уезжать под хедер.
+    <header className="sticky top-[var(--chrome-top)] z-20 border-b border-zinc-200 bg-white/90 py-3 backdrop-blur">
       <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
         <Link
           href={backHref}
           className="inline-flex items-center gap-1 text-sm text-zinc-500 transition hover:text-zinc-800"
         >
           <ChevronLeft className="h-4 w-4" aria-hidden />
-          <span className="hidden sm:inline">Устройства</span>
+          <span className="hidden sm:inline">BrewForge</span>
         </Link>
         <h1
           className="text-lg font-semibold text-zinc-950 sm:text-xl"
@@ -61,6 +69,11 @@ export function DeviceHeader({
             Демо
           </span>
         ) : null}
+        {appMode ? (
+          <span className="inline-flex items-center rounded-full bg-zinc-100 px-3 py-1 text-xs font-medium text-zinc-600">
+            {APP_MODE_LABELS[appMode]}
+          </span>
+        ) : null}
         <StatusPill hasDevice conn={stream.conn} isStale={stream.isStale} />
         <ChannelBadge channel={channel} />
         <div className="ml-auto flex items-center gap-2">
@@ -71,6 +84,16 @@ export function DeviceHeader({
             onRelease={() => void command.release()}
             pending={command.pending}
           />
+          {onKioskEnter ? (
+            <button
+              type="button"
+              onClick={onKioskEnter}
+              aria-label="Киоск"
+              className="inline-flex h-9 w-9 items-center justify-center rounded-md border border-zinc-200 text-zinc-600 transition hover:bg-zinc-50 hover:text-zinc-900"
+            >
+              <Maximize2 className="h-4 w-4" aria-hidden />
+            </button>
+          ) : null}
           <Link
             href={settingsHref}
             aria-label="Настройки"

@@ -30,7 +30,7 @@ const calculatorCardBackgrounds: Partial<Record<CalculatorSlug, string>> = {
   "speise-krausen": "/images/calculators/17-Photoroom.png"
 };
 
-function CalculatorCard({ calculator }: { calculator: CalculatorCatalogItem }) {
+export function CalculatorCard({ calculator }: { calculator: CalculatorCatalogItem }) {
   const backgroundImage = calculatorCardBackgrounds[calculator.slug];
   const style: CSSProperties | undefined = backgroundImage
     ? { backgroundImage: `url("${backgroundImage}")` }

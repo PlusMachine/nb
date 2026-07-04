@@ -15,6 +15,7 @@
 import { startMqtt } from "./mqtt.js";
 import { startWsServer } from "./ws.js";
 import { closeDb } from "./db.js";
+import { runFermentWatchdog } from "./watchdog.js";
 
 const MQTT_URL = process.env.MQTT_URL ?? "mqtt://localhost:1883";
 const WS_PORT = Number.parseInt(process.env.BRIDGE_WS_PORT ?? "8090", 10) || 8090;
@@ -44,6 +45,16 @@ function main(): void {
   }, 30_000);
   health.unref();
 
+  // Офлайн-watchdog ферментации (H3, §12.2/§14): раз в 5 мин — приборы,
+  // чей last-known режим ферментация и кто молчит > 30 мин, получают пуш.
+  // Проверка по in-memory состоянию (trackFermentFrame в mqtt.ts), БД не сканирует.
+  const watchdog = setInterval(() => {
+    runFermentWatchdog().catch((err: unknown) => {
+      console.error("[bridge] сбой офлайн-watchdog ферментации:", err instanceof Error ? err.message : String(err));
+    });
+  }, 5 * 60_000);
+  watchdog.unref();
+
   // Graceful shutdown.
   let shuttingDown = false;
   const shutdown = (signal: string): void => {
@@ -51,6 +62,7 @@ function main(): void {
     shuttingDown = true;
     console.log(`[bridge] получен ${signal}, завершение…`);
     clearInterval(health);
+    clearInterval(watchdog);
     void (async () => {
       try {
         await ws.close();

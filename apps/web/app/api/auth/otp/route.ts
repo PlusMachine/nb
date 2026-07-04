@@ -13,12 +13,17 @@ export async function POST(request: Request) {
 
   try {
     if (action === "request") {
+      // Согласие на обработку ПДн (152-ФЗ) обязательно ДО первой обработки e-mail:
+      // на этом шаге адрес сохраняется и на него уходит код.
+      if (body.consent !== true) {
+        return NextResponse.json({ error: "consent_required" }, { status: 400 });
+      }
       await startEmailOtp(String(body.email ?? ""));
       return NextResponse.json({ ok: true });
     }
 
     if (action === "verify") {
-      await verifyEmailOtp(String(body.email ?? ""), String(body.code ?? ""));
+      await verifyEmailOtp(String(body.email ?? ""), String(body.code ?? ""), body.consent === true);
       return NextResponse.json({ ok: true });
     }
 

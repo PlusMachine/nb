@@ -6,6 +6,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { ChevronDown, LayoutGrid, LogOut, Menu, User2, X } from "lucide-react";
 
 import { DropdownMenu, type DropdownMenuItem } from "@nb/ui";
+import { publicLinks } from "@/lib/navigation";
 
 export type SiteHeaderUser = {
   email: string | null;
@@ -19,16 +20,6 @@ type SiteHeaderProps = {
   user: SiteHeaderUser | null;
   variant?: "public" | "app";
 };
-
-// Публичные/знаниевые разделы, доступные из любой зоны — общий мост между
-// рабочей зоной и публичным сайтом.
-const publicLinks = [
-  { href: "/catalog", label: "Каталог" },
-  { href: "/guides", label: "Гайды" },
-  { href: "/bjcp", label: "Стили пива" },
-  { href: "/calculators", label: "Калькуляторы" },
-  { href: "/recipes", label: "Рецепты" }
-];
 
 const isActivePath = (pathname: string, href: string) => (
   pathname === href || pathname.startsWith(`${href}/`)
@@ -68,10 +59,10 @@ export function SiteHeader({ user, variant = "public" }: SiteHeaderProps) {
   }, [mobileOpen]);
 
   return (
-    <header className="border-b border-zinc-200/70 bg-white/80 backdrop-blur">
+    <header className="sticky top-0 z-40 border-b border-zinc-200/70 bg-white/80 backdrop-blur">
       <div
         ref={containerRef}
-        className="relative mx-auto flex max-w-7xl items-center justify-between gap-x-6 px-6 py-4"
+        className="relative mx-auto flex h-14 max-w-7xl items-center justify-between gap-x-6 px-6"
       >
         <div className="flex items-center gap-x-6">
           <Link

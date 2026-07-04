@@ -10,10 +10,13 @@ import {
   devicePairingTokens,
   eq,
   gt,
-  isNull
+  gte,
+  isNull,
+  sql
 } from "@nb/db";
 
 import {
+  FERMENT_HISTORY_LIMIT,
   TELEMETRY_HISTORY_LIMIT,
   type TelemetryHistoryPoint
 } from "@/features/brew-batches/contracts";
@@ -31,6 +34,7 @@ import {
   type PairingDeliveryStatus,
   type UpdateDeviceStatusInput
 } from "./contracts";
+import { isFermenterModeRow } from "./fermenter-binding-core";
 
 // =============================================================================
 //  Сервис управления устройствами BrewForge и пэйринга (claim-code → bearer).
@@ -163,17 +167,33 @@ export const getDeviceById = async (userId: string, deviceId: string): Promise<D
  * партиям устройства (в отличие от batch-истории, скоупленной по brewBatchId).
  * Ownership-checked: сперва сверяем владение устройством, затем тянем историю.
  * Пусто, если устройства нет/оно чужое. oldest→newest для графика.
+ *
+ * `windowDays` (§14): график «план vs факт» ферментации живёт неделями, а мост
+ * персистит FERMENT раз в 300 с (persist-gate.ts) — варочный лимит в 1000 точек
+ * укладывается в ~3.5 суток и режет историю на середине брожения. Передан
+ * `windowDays` → берём окно по времени (`ts >= now − windowDays`) с более
+ * широким потолком (FERMENT_HISTORY_LIMIT); варочные/дистилляционные вызовы
+ * (без windowDays) ведут себя ровно как раньше — «последние N точек».
  */
 export const getDeviceHistory = async (
   userId: string,
   deviceId: string,
-  limit: number = TELEMETRY_HISTORY_LIMIT
+  limit: number = TELEMETRY_HISTORY_LIMIT,
+  windowDays?: number
 ): Promise<TelemetryHistoryPoint[]> => {
   const device = await getDeviceById(userId, deviceId);
   if (!device) {
     return [];
   }
-  const bounded = Math.min(Math.max(Math.floor(limit) || 0, 1), TELEMETRY_HISTORY_LIMIT);
+  const hasWindow = typeof windowDays === "number" && windowDays > 0;
+  const cap = hasWindow ? FERMENT_HISTORY_LIMIT : TELEMETRY_HISTORY_LIMIT;
+  const bounded = Math.min(Math.max(Math.floor(limit) || 0, 1), cap);
+
+  const conditions = [eq(brewTelemetry.deviceId, deviceId)];
+  if (hasWindow) {
+    conditions.push(gte(brewTelemetry.ts, new Date(Date.now() - windowDays! * 86_400_000)));
+  }
+
   const rows = await db
     .select({
       ts: brewTelemetry.ts,
@@ -183,7 +203,7 @@ export const getDeviceHistory = async (
       stage: brewTelemetry.stage
     })
     .from(brewTelemetry)
-    .where(eq(brewTelemetry.deviceId, deviceId))
+    .where(and(...conditions))
     .orderBy(desc(brewTelemetry.ts))
     .limit(bounded);
 
@@ -196,6 +216,32 @@ export const getDeviceHistory = async (
       stage: row.stage
     }))
     .reverse();
+};
+
+/**
+ * Last-known режим устройства (appMode/stage последнего кадра телеметрии) — для
+ * решения «какое окно истории грузить на пульт L2» (§14: ferment vs варка/
+ * дистилляция) БЕЗ живой SSE-подписки (серверный рендер page.tsx её не имеет).
+ * Тот же приём одного last-known среза, что listFermenterCandidates
+ * (fermenter-binding.ts), но для одного deviceId. Ownership-checked. null —
+ * истории ещё нет (устройство ни разу не присылало телеметрию).
+ */
+export const getLastKnownDeviceMode = async (
+  userId: string,
+  deviceId: string
+): Promise<{ appMode: number | null; stage: number | null } | null> => {
+  const device = await getDeviceById(userId, deviceId);
+  if (!device) return null;
+
+  const result = await db.execute(sql`
+    SELECT stage, (payload ->> 'appMode')::int AS app_mode
+    FROM brew_telemetry
+    WHERE device_id = ${deviceId}
+    ORDER BY ts DESC
+    LIMIT 1
+  `);
+  const row = (result as unknown as { rows: { stage: number | null; app_mode: number | null }[] }).rows?.[0];
+  return row ? { appMode: row.app_mode, stage: row.stage } : null;
 };
 
 /**

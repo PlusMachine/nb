@@ -5,7 +5,7 @@
 //  уведомлений — самостоятельная терсовая копия (короче панели аварий; состояние
 //  варки чувствительно — не раздуваем тело пуша).
 // =============================================================================
-import type { Fault, Prompt, TelemetryEdge } from "@nb/brewforge-protocol";
+import { STAGE_NUM, type Fault, type Prompt, type TelemetryEdge } from "@nb/brewforge-protocol";
 
 /** Payload, который service worker покажет как Notification (JSON в теле пуша). */
 export type PushPayload = {
@@ -41,8 +41,38 @@ const FAULT_TEXT: Record<Fault, string> = {
   NO_FLOW: "нет рециркуляции",
 };
 
+// Дистилляция (H2, §12.2): локальный словарь фракций для тела пуша — детектор
+// (@nb/brewforge-protocol) намеренно отдаёт только числовые bf_stage_t
+// (fromStage/toStage), не подписи (словарь всех 22 стадий — stage-labels.ts в
+// apps/web, сюда его тащить незачем: нужны только 4 термина перегона).
+// «Разогрев» ничего не отбирает — у него своя, безобъектная формулировка.
+const DISTILL_FRACTION_DONE_TEXT: Partial<Record<number, string>> = {
+  [STAGE_NUM.DISTILL_PREHEAT]: "Разогрев завершён",
+  [STAGE_NUM.DISTILL_HEADS]: "Головы отобраны",
+  [STAGE_NUM.DISTILL_HEARTS]: "Тело отобрано",
+  [STAGE_NUM.DISTILL_TAILS]: "Хвосты отобраны",
+};
+
+const DISTILL_FRACTION_START_TEXT: Partial<Record<number, string>> = {
+  [STAGE_NUM.DISTILL_HEADS]: "начат отбор голов",
+  [STAGE_NUM.DISTILL_HEARTS]: "начат отбор тела",
+  [STAGE_NUM.DISTILL_TAILS]: "начат отбор хвостов",
+};
+
+/** Тело пуша «фракция завершена» по паре bf_stage_t (fromStage/toStage). */
+function distillFractionText(fromStage: number, toStage: number): string {
+  const done = DISTILL_FRACTION_DONE_TEXT[fromStage] ?? "Фракция завершена";
+  const start = toStage === STAGE_NUM.DONE ? "перегон завершён" : DISTILL_FRACTION_START_TEXT[toStage];
+  return `${done} — ${start ?? "начат отбор следующей фракции"}`;
+}
+
 /** Контекст устройства для заголовка/диплинка уведомления. */
 export type NotificationContext = { deviceId: string; deviceName: string };
+
+// °C с одним знаком после запятой, единообразно для тела пуша ("18.0°", "20.3°").
+function fmtC(value: number): string {
+  return `${value.toFixed(1)}°`;
+}
 
 /** Построить payload web-push из события-фронта телеметрии. Чистая функция. */
 export function notificationFor(edge: TelemetryEdge, ctx: NotificationContext): PushPayload {
@@ -55,12 +85,62 @@ export function notificationFor(edge: TelemetryEdge, ctx: NotificationContext): 
       url,
     };
   }
-  const labels = edge.faults.map((f) => FAULT_TEXT[f] ?? f).join(", ");
+  if (edge.kind === "fault") {
+    const labels = edge.faults.map((f) => FAULT_TEXT[f] ?? f).join(", ");
+    return {
+      title: `⚠ ${ctx.deviceName}`,
+      body: `Авария: ${labels}`,
+      tag: `${ctx.deviceId}:fault`,
+      url,
+    };
+  }
+  if (edge.kind === "ferment-deviation") {
+    return {
+      title: ctx.deviceName,
+      body: `Отклонение от уставки: ${fmtC(edge.primaryC)} при уставке ${fmtC(edge.setpointC)}`,
+      tag: `${ctx.deviceId}:ferment-deviation`,
+      url,
+    };
+  }
+  if (edge.kind === "ferment-step-done") {
+    // Имена ступеней в приборе не хранятся (§13) — текст без названия шага,
+    // только новая уставка (то, что реально известно устройству).
+    return {
+      title: ctx.deviceName,
+      body: `Ступень брожения завершена — держит ${fmtC(edge.setpointC)}`,
+      tag: `${ctx.deviceId}:ferment-step`,
+      url,
+    };
+  }
+  if (edge.kind === "distill-action-ready") {
+    return {
+      title: ctx.deviceName,
+      body: "Смените приёмную ёмкость",
+      tag: `${ctx.deviceId}:distill-action-ready`,
+      url,
+    };
+  }
+  // "distill-fraction-done": одна фракция отобрана, начат отбор следующей
+  // (или, для TAILS→DONE, перегон завершён целиком).
+  return {
+    title: ctx.deviceName,
+    body: distillFractionText(edge.fromStage, edge.toStage),
+    tag: `${ctx.deviceId}:distill-fraction`,
+    url,
+  };
+}
+
+/**
+ * Уведомление офлайн-watchdog ферментации (§12.2/§14): прибор в режиме
+ * ферментации молчит дольше порога — на недельном процессе это ЧП, не «клиент
+ * закрыл вкладку». minutes — из checkFermentWatchdog (@nb/brewforge-protocol).
+ */
+export function fermentWatchdogNotification(ctx: NotificationContext, minutes: number): PushPayload {
   return {
     title: `⚠ ${ctx.deviceName}`,
-    body: `Авария: ${labels}`,
-    tag: `${ctx.deviceId}:fault`,
-    url,
+    body: `Прибор молчит ${minutes} мин`,
+    tag: `${ctx.deviceId}:ferment-watchdog`,
+    url: `/app/devices/${ctx.deviceId}`,
   };
 }
 

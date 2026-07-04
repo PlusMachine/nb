@@ -191,11 +191,8 @@ export function DevicesManager({ initialTiles, demoAvailable }: Props) {
             className="text-2xl font-semibold text-zinc-950 sm:text-3xl"
             style={{ fontFamily: "var(--font-display)" }}
           >
-            Устройства
+            BrewForge
           </h1>
-          <p className="text-sm text-zinc-500">
-            Командный центр: пивоварни BrewForge, привязанные к вашему аккаунту.
-          </p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
           {demoAvailable ? (

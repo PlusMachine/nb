@@ -32,16 +32,24 @@ const brewableRecipe = {
 const mocks = vi.hoisted(() => ({
   requireUser: vi.fn(async () => ({ id: "u-1", email: "brewer@example.com", displayName: "Brewer" })),
   countRecipesForAuthor: vi.fn(async () => 3),
+  listAuthorRecipeCards: vi.fn(async () => []),
   getInventorySummaries: vi.fn(async () => ({ totalItems: 5, inStockItems: 3, emptyItems: 2 })),
   listActiveBrewBatchesForUser: vi.fn(async () => [activeBrew]),
+  countBrewBatchesForUser: vi.fn(async () => 4),
   findBrewableOwnRecipesForUser: vi.fn(async () => [brewableRecipe])
 }));
 
 vi.mock("../lib/auth", () => ({ requireUser: mocks.requireUser }));
-vi.mock("../features/recipes/service", () => ({ countRecipesForAuthor: mocks.countRecipesForAuthor }));
+vi.mock("../features/recipes/service", () => ({
+  countRecipesForAuthor: mocks.countRecipesForAuthor,
+  listAuthorRecipeCards: mocks.listAuthorRecipeCards
+}));
 vi.mock("../features/recipes/match-service", () => ({ findBrewableOwnRecipesForUser: mocks.findBrewableOwnRecipesForUser }));
 vi.mock("../features/inventory/service", () => ({ getInventorySummaries: mocks.getInventorySummaries }));
-vi.mock("../features/brew-batches/service", () => ({ listActiveBrewBatchesForUser: mocks.listActiveBrewBatchesForUser }));
+vi.mock("../features/brew-batches/service", () => ({
+  listActiveBrewBatchesForUser: mocks.listActiveBrewBatchesForUser,
+  countBrewBatchesForUser: mocks.countBrewBatchesForUser
+}));
 
 import AppZonePage from "../app/(app)/app/page";
 
@@ -60,6 +68,10 @@ describe("App dashboard", () => {
     expect(html).toContain('href="/calculators"');
     // recipe count comes from the cheap scoped count, not a full row load
     expect(mocks.countRecipesForAuthor).toHaveBeenCalledWith("u-1");
+    // brew count tile is wired to its own scoped count, not derived from the active-brews list
+    expect(mocks.countBrewBatchesForUser).toHaveBeenCalledWith("u-1");
+    expect(html).toContain('href="/app/brew-batches"');
+    expect(html).toMatch(/>4<\/p>\s*<p class="mt-1 text-sm text-zinc-500">Варки</);
   });
 
   it("surfaces active brews with a next-step nudge", async () => {

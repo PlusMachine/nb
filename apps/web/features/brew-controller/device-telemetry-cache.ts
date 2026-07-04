@@ -13,15 +13,18 @@
 //  кеш будет per-instance (приемлемая деградация: просто больше опросов).
 //
 //  Персист истории: хаб пишет даунсэмпл в brew_telemetry (deviceId + активная
-//  brewing-партия устройства, если есть) — ровно один писатель на устройство,
-//  без дублей из конкурентных стримов.
+//  партия устройства в статусе brewing ИЛИ fermenting, если есть) — ровно один
+//  писатель на устройство, без дублей из конкурентных стримов. Бродящая партия
+//  (fermenting) привязана к прибору-ферментеру (§8.4) — её кадры должны получать
+//  brewBatchId наравне с варкой, иначе график «план vs факт» брожения (§14) не
+//  сможет скопить историю по batch-скоупу.
 //
 //  Владелец опроса: readTelemetry провайдера — ownership-checked (loadDevice по
 //  userId). Устройство принадлежит одному пользователю, а до подписки роут уже
 //  проверил владение (getDeviceById), поэтому userId всех подписчиков совпадает —
 //  хаб берёт его для опроса.
 // =============================================================================
-import { and, brewBatches, brewTelemetry, db, desc, eq } from "@nb/db";
+import { and, brewBatches, brewTelemetry, db, desc, eq, inArray } from "@nb/db";
 import type { Telemetry } from "@nb/brewforge-protocol";
 
 import { getProvider } from "./index";
@@ -68,7 +71,11 @@ interface Hub {
 
 const hubs = new Map<string, Hub>();
 
-/** Активная (brewing) партия устройства для персиста истории, либо null. Кешируется. */
+// Партия считается «активной» для привязки персиста в этих статусах — варка
+// (brewing) и брожение (fermenting, §8.4: прибор-ферментер привязан к партии).
+const ACTIVE_BATCH_STATUSES = ["brewing", "fermenting"] as const;
+
+/** Активная (brewing/fermenting) партия устройства для персиста истории, либо null. Кешируется. */
 async function resolveActiveBatchId(hub: Hub): Promise<string | null> {
   const nowMs = Date.now();
   if (nowMs - hub.activeBatchAt < ACTIVE_BATCH_TTL_MS) {
@@ -79,7 +86,7 @@ async function resolveActiveBatchId(hub: Hub): Promise<string | null> {
     const [row] = await db
       .select({ id: brewBatches.id })
       .from(brewBatches)
-      .where(and(eq(brewBatches.deviceId, hub.deviceId), eq(brewBatches.status, "brewing")))
+      .where(and(eq(brewBatches.deviceId, hub.deviceId), inArray(brewBatches.status, [...ACTIVE_BATCH_STATUSES])))
       .orderBy(desc(brewBatches.updatedAt))
       .limit(1);
     hub.activeBatchId = row?.id ?? null;

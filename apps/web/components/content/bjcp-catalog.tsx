@@ -423,7 +423,7 @@ export function BjcpCatalog({ catalog }: Props) {
         </nav>
 
         <h1 className="text-3xl font-semibold text-zinc-950 sm:text-4xl" style={{ fontFamily: "var(--font-display)" }}>
-          Справочник BJCP
+          BJCP справочник стилей
         </h1>
 
         <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center">

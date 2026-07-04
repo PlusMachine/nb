@@ -1,5 +1,6 @@
 import React from "react";
-import { getBeerStyleById } from "@nb/brewing-core";
+import Link from "next/link";
+import { getBeerStyleById, getBjcpArticleHrefByStyleId } from "@nb/brewing-core";
 
 import { recipePublicationStateLabels, type RecipeDetailDto } from "@/features/recipes/contracts";
 import { beerColorFromSrm } from "@/features/recipes/beer-color";
@@ -11,6 +12,7 @@ import { RecipeSaveButton } from "./recipe-save-button";
 
 export function PublicRecipeHeader({ recipe }: { recipe: RecipeDetailDto }) {
   const styleName = getBeerStyleById(recipe.styleId)?.name ?? null;
+  const styleHref = getBjcpArticleHrefByStyleId(recipe.styleId);
   const color = recipe.color != null && Number.isFinite(recipe.color) ? beerColorFromSrm(recipe.color) : null;
   const srmText = recipe.color != null ? recipe.color.toFixed(1).replace(/\.0$/, "") : null;
 
@@ -20,9 +22,18 @@ export function PublicRecipeHeader({ recipe }: { recipe: RecipeDetailDto }) {
         <div className="flex flex-wrap items-center gap-2">
           <span className="rounded-full bg-emerald-50 px-2.5 py-0.5 text-xs font-medium text-emerald-700 ring-1 ring-emerald-200">{recipePublicationStateLabels[recipe.publicationState]}</span>
           {styleName ? (
-            <span className="rounded-full bg-violet-50 px-2.5 py-0.5 text-xs font-medium text-violet-700 ring-1 ring-violet-200">
-              {styleName}
-            </span>
+            styleHref ? (
+              <Link
+                href={styleHref}
+                className="rounded-full bg-violet-50 px-2.5 py-0.5 text-xs font-medium text-violet-700 ring-1 ring-violet-200 transition hover:bg-violet-100 hover:text-violet-900"
+              >
+                {styleName}
+              </Link>
+            ) : (
+              <span className="rounded-full bg-violet-50 px-2.5 py-0.5 text-xs font-medium text-violet-700 ring-1 ring-violet-200">
+                {styleName}
+              </span>
+            )
           ) : null}
           <span className="text-xs text-zinc-400">{formatUpdatedLabel(recipe.updatedAt)}</span>
         </div>

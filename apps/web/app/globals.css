@@ -4,6 +4,61 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Правовые страницы (/legal/*): единая типографика длинных документов, чтобы не
+   развешивать классы на каждый элемент. Совпадает по духу с рендером статей
+   (tiptap-content.tsx): zinc-700 текст, крупные полужирные заголовки, списки. */
+.nb-legal {
+  color: #3f3f46;
+}
+.nb-legal > *:first-child {
+  margin-top: 0;
+}
+.nb-legal h2 {
+  margin-top: 2.25rem;
+  font-family: var(--font-display);
+  font-size: 1.35rem;
+  line-height: 1.9rem;
+  font-weight: 600;
+  color: #09090b;
+}
+.nb-legal h3 {
+  margin-top: 1.5rem;
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: #18181b;
+}
+.nb-legal p {
+  margin-top: 0.75rem;
+  line-height: 1.75rem;
+}
+.nb-legal ul,
+.nb-legal ol {
+  margin-top: 0.75rem;
+  padding-left: 1.5rem;
+}
+.nb-legal ul {
+  list-style: disc;
+}
+.nb-legal ol {
+  list-style: decimal;
+}
+.nb-legal li {
+  margin-top: 0.375rem;
+  line-height: 1.7rem;
+}
+.nb-legal li::marker {
+  color: #a1a1aa;
+}
+.nb-legal a {
+  color: #0369a1;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+.nb-legal strong {
+  color: #18181b;
+  font-weight: 600;
+}
+
 :root {
   color-scheme: light;
   --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
@@ -45,6 +100,11 @@ body {
   to { transform: translateY(0); }
 }
 
+@keyframes modal-sheet-left-in {
+  from { transform: translateX(-100%); }
+  to { transform: translateX(0); }
+}
+
 @keyframes route-progress-slide {
   0% { transform: translateX(-100%); }
   55% { transform: translateX(70%); }
@@ -63,6 +123,10 @@ body {
   animation: modal-sheet-up 0.3s var(--ease-out-expo) both;
 }
 
+.animate-modal-sheet-left {
+  animation: modal-sheet-left-in 0.3s var(--ease-out-expo) both;
+}
+
 .animate-route-progress {
   animation: route-progress-slide 1.1s var(--ease-out-quart) infinite;
 }
@@ -72,5 +136,30 @@ body {
     animation: modal-sheet-up 0.3s var(--ease-out-expo) both;
     border-bottom-left-radius: 0;
     border-bottom-right-radius: 0;
+  }
+}
+
+/* Hero главной: заливка бокала перетекает при смене стиля, цифры — быстрый
+   кросс-фейд (перемонтируются по key). Оба эффекта — только когда движение не
+   ограничено пользователем. */
+@keyframes home-vital-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes home-live-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .home-glass-fill stop {
+    transition: stop-color 0.5s var(--ease-out-expo);
+  }
+  .home-vital-fade {
+    animation: home-vital-in 0.25s var(--ease-out-quart) both;
+  }
+  .home-live-dot {
+    animation: home-live-pulse 1.6s ease-in-out infinite;
   }
 }

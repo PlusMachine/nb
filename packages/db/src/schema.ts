@@ -65,6 +65,11 @@ export const users = pgTable("users", {
   image: text("image"),
   role: userRoleEnum("role").default("user").notNull(),
   passwordHash: text("password_hash"),
+  // Фиксация согласия на обработку ПДн (152-ФЗ): момент и версия правовых документов,
+  // под которой пользователь дал согласие при регистрации. NULL — согласие не
+  // фиксировалось (например, dev-автологин или аккаунт до внедрения фиксации).
+  consentAcceptedAt: timestamp("consent_accepted_at", { withTimezone: true }),
+  consentVersion: varchar("consent_version", { length: 32 }),
   createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull()
 }, (table) => ({

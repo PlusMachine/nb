@@ -60,7 +60,7 @@ export default async function BrewBatchesPage() {
             <Link href="/app/recipes" className="font-medium text-zinc-900 underline underline-offset-2">
               рецепт
             </Link>{" "}
-            и нажмите «Начать варку».
+            и нажмите «Сварить».
           </p>
         </section>
       ) : (

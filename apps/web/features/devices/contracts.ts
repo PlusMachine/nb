@@ -104,6 +104,10 @@ export type DeviceTileSnapshot = {
   setpointC: number | null;
   heatDutyPct: number | null;
   faultMask: number;
+  /** bf_app_mode_t из payload телеметрии (§14); null — старая прошивка/пустая история. */
+  appMode: number | null;
+  /** bf_stage_t, из которой ушли в PAUSED/FAULT — для честного бейджа плитки на паузе/аварии (§4.2). */
+  pausedFrom: number | null;
 };
 
 /** Плитка устройства для L1-грида: метаданные + last-known срез + sparkline. */
@@ -134,6 +138,28 @@ export function classifyTileFreshness(ageMs: number): "live" | "recent" | "stale
   if (ageMs <= TILE_STALE_AFTER_MS) return "recent";
   return "stale";
 }
+
+// =============================================================================
+//  Связка «партия ↔ прибор-ферментер» (§8.4 docs/brewforge-web-hmi.md). Привязка
+//  задаётся с партии (акт «Брожение»), не с пульта — портал лишь предлагает
+//  приборы, чей last-known режим сейчас ферментация. См. features/devices/
+//  fermenter-binding.ts.
+// =============================================================================
+
+/** Прибор-кандидат в пикер «бродит в приборе …» на акте «Брожение» партии. */
+export type FermenterCandidate = {
+  id: string;
+  name: string;
+  hardwareId: string;
+  status: DeviceStatus;
+  lastSeenAt: string | null; // ISO
+};
+
+/** Вход bindBatchFermenter — привязка/отвязка прибора-ферментера к партии. */
+export const bindBatchFermenterSchema = z.object({
+  deviceId: z.string().uuid().nullable()
+});
+export type BindBatchFermenterInput = z.infer<typeof bindBatchFermenterSchema>;
 
 /** Вход updateDeviceStatus (вызывает мост/бридж при коннекте/телеметрии). */
 export const updateDeviceStatusSchema = z.object({

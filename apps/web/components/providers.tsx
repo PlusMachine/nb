@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 import { ToastProvider } from "@nb/ui";
-import { initAnalytics } from "../lib/analytics";
+import { ConsentProvider } from "@/components/legal/consent-provider";
 
 const shouldAutoSelectNumberInput = (target: EventTarget | null): target is HTMLInputElement => {
   if (!(target instanceof HTMLInputElement)) {
@@ -29,10 +29,6 @@ const selectFocusedNumberInput = (input: HTMLInputElement) => {
 };
 
 export function Providers({ children }: { children: React.ReactNode }) {
-  useEffect(() => {
-    initAnalytics();
-  }, []);
-
   useEffect(() => {
     let selectedOnFocus: HTMLInputElement | null = null;
 
@@ -77,5 +73,9 @@ export function Providers({ children }: { children: React.ReactNode }) {
     };
   }, []);
 
-  return <ToastProvider>{children}</ToastProvider>;
+  return (
+    <ToastProvider>
+      <ConsentProvider>{children}</ConsentProvider>
+    </ToastProvider>
+  );
 }
