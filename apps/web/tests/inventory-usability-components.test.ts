@@ -472,7 +472,7 @@ describe("inventory usability components", () => {
       currencyRates: { RUB: 100, USD: 7900, EUR: 9170 }
     }));
 
-    expect(html).toContain("Гранулы");
+    expect(html).toContain("гранулы T-90");
     expect(html).not.toContain("standard");
   });
 

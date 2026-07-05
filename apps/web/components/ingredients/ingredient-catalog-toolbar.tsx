@@ -2,13 +2,15 @@
 
 import React, { useCallback, useEffect, useMemo, useTransition } from "react";
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import {
   ArrowUpDown,
   Check,
   Droplets,
   FlaskConical,
   Hop,
+  Loader2,
+  Plus,
   RotateCcw,
   Package,
   Wheat
@@ -20,7 +22,6 @@ import type {
   IngredientCatalogView,
   IngredientCategory
 } from "@/features/ingredients/contracts";
-import { ingredientCatalogSortOptions } from "@/features/ingredients/contracts";
 import { ingredientCategoryLabels } from "@/features/ingredients/presentation";
 import { useDebouncedUrlSearch } from "@/components/shared/use-debounced-url-search";
 
@@ -31,6 +32,10 @@ type Props = {
   subtype: "malt" | "fermentable" | null;
   sort: IngredientCatalogSortOption;
   canManage: boolean;
+  // Базовый путь для query-URL (поиск/сортировка/сброс/табы): всегда "/catalog",
+  // а не usePathname() — иначе на категорийном лендинге (/catalog/hops) эти
+  // контролы строили бы неверный путь вида "/catalog/hops?category=hop".
+  queryBasePath: string;
   counts: {
     total: number;
     customCount: number;
@@ -47,7 +52,10 @@ const sortLabels: Record<IngredientCatalogSortOption, string> = {
   name: "По названию",
   updated: "По обновлению",
   category: "По категории",
-  brand: "По бренду"
+  brand: "По бренду",
+  alpha: "По альфа-кислоте",
+  color: "По цвету (EBC)",
+  attenuation: "По аттенюации"
 };
 
 const defaultCatalogSortOption: IngredientCatalogSortOption = "name";
@@ -95,6 +103,17 @@ const categoryMeta: Record<IngredientCategory, {
     activeBg: "bg-zinc-100",
     activeRing: "ring-zinc-300"
   }
+};
+
+// Path-урлы категорийных лендингов (features/ingredients/seo.ts, catalogCategoryLandings).
+// Ключи совпадают с button.key в primaryButtons ниже.
+const categoryLandingPaths: Record<"malt" | "fermentable" | "hop" | "yeast" | "water_treatment" | "consumable", string> = {
+  malt: "/catalog/malts",
+  fermentable: "/catalog/fermentables",
+  hop: "/catalog/hops",
+  yeast: "/catalog/yeast",
+  water_treatment: "/catalog/water",
+  consumable: "/catalog/consumables"
 };
 
 const buildCatalogHref = (
@@ -153,6 +172,25 @@ const buildCreateCustomIngredientHref = (
   return query ? `/catalog/new?${query}` : "/catalog/new";
 };
 
+// Параметрические сортировки имеют смысл только при соответствующей активной
+// категории — если целевая категория pill'а не поддерживает текущую
+// параметрическую сортировку, ссылка сбрасывает sort на дефолт (этап 3.4/3.5).
+const isSortValidForCategory = (value: IngredientCatalogSortOption, targetCategory: IngredientCategory | "all") => {
+  if (value === "alpha") {
+    return targetCategory === "hop";
+  }
+
+  if (value === "color") {
+    return targetCategory === "fermentable";
+  }
+
+  if (value === "attenuation") {
+    return targetCategory === "yeast";
+  }
+
+  return true;
+};
+
 export function IngredientCatalogToolbar({
   view,
   q,
@@ -160,19 +198,19 @@ export function IngredientCatalogToolbar({
   subtype,
   sort,
   canManage,
+  queryBasePath,
   counts
 }: Props) {
-  const pathname = usePathname();
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
 
-  const currentHref = useMemo(() => buildCatalogHref(pathname, {
+  const currentHref = useMemo(() => buildCatalogHref(queryBasePath, {
     view,
     q,
     category,
     subtype,
     sort
-  }), [category, pathname, q, sort, subtype, view]);
+  }), [category, queryBasePath, q, sort, subtype, view]);
 
   const replaceHref = useCallback((href: string) => {
     if (href === currentHref) {
@@ -184,13 +222,13 @@ export function IngredientCatalogToolbar({
     });
   }, [currentHref, router]);
 
-  const buildSearchHref = useCallback((nextQ: string) => buildCatalogHref(pathname, {
+  const buildSearchHref = useCallback((nextQ: string) => buildCatalogHref(queryBasePath, {
     view,
     q: nextQ,
     category,
     subtype,
     sort
-  }), [category, pathname, sort, subtype, view]);
+  }), [category, queryBasePath, sort, subtype, view]);
 
   const {
     inputValue: searchValue,
@@ -222,7 +260,7 @@ export function IngredientCatalogToolbar({
     subtype?: "malt" | "fermentable" | null;
     sort?: IngredientCatalogSortOption;
   }) => {
-    replaceHref(buildCatalogHref(pathname, {
+    replaceHref(buildCatalogHref(queryBasePath, {
       view: next.view ?? view,
       q: searchValue,
       category: next.category ?? category,
@@ -231,220 +269,254 @@ export function IngredientCatalogToolbar({
     }));
   };
 
-  const tabClassName = (active: boolean) => (
-    `inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-medium transition ${active
-      ? "bg-zinc-950 text-white"
-      : "bg-white text-zinc-600 ring-1 ring-zinc-200 hover:bg-zinc-50"
-    }`
-  );
+  // Ссылки pill'ов категорий ведут на path-лендинги (/catalog/hops и т.п.), а не
+  // строят query здесь — только q/sort/view цепляются как query-параметры, чтобы
+  // активный поиск/сортировка/«Мои» не терялись при переходе между категориями.
+  const buildLandingHref = (
+    path: string,
+    overrides?: { view?: IngredientCatalogView; targetCategory?: IngredientCategory | "all" }
+  ) => {
+    const landingSearchParams = new URLSearchParams();
+    const nextView = overrides?.view ?? view;
+    if (nextView !== "all") {
+      landingSearchParams.set("view", nextView);
+    }
+    if (searchValue.trim()) {
+      landingSearchParams.set("q", searchValue.trim());
+    }
+    const targetCategory = overrides?.targetCategory ?? category;
+    const nextSort = isSortValidForCategory(sort, targetCategory) ? sort : defaultCatalogSortOption;
+    if (nextSort !== defaultCatalogSortOption) {
+      landingSearchParams.set("sort", nextSort);
+    }
+    const query = landingSearchParams.toString();
+    return query ? `${path}?${query}` : path;
+  };
+
   const hasFilters = Boolean(searchValue.trim()) || category !== "all" || subtype !== null || sort !== defaultCatalogSortOption;
+
   const primaryButtons = [
     {
       key: "malt",
       label: "Солод",
+      category: "fermentable",
       count: counts.byFermentableSubtype.malt,
       active: category === "fermentable" && subtype === "malt",
-      meta: categoryMeta.fermentable,
-      onClick: () => replaceWith({
-        category: category === "fermentable" && subtype === "malt" ? "all" : "fermentable",
-        subtype: category === "fermentable" && subtype === "malt" ? null : "malt"
-      })
+      meta: categoryMeta.fermentable
     },
     {
       key: "fermentable",
       label: "Сбраживаемое сырье",
+      category: "fermentable",
       count: counts.byFermentableSubtype.fermentable,
       active: category === "fermentable" && subtype === "fermentable",
-      meta: categoryMeta.fermentable,
-      onClick: () => replaceWith({
-        category: category === "fermentable" && subtype === "fermentable" ? "all" : "fermentable",
-        subtype: category === "fermentable" && subtype === "fermentable" ? null : "fermentable"
-      })
+      meta: categoryMeta.fermentable
     },
     {
       key: "hop",
       label: ingredientCategoryLabels.hop,
+      category: "hop",
       count: counts.byCategory.hop,
       active: category === "hop" && subtype === null,
-      meta: categoryMeta.hop,
-      onClick: () => replaceWith({ category: category === "hop" ? "all" : "hop", subtype: null })
+      meta: categoryMeta.hop
     },
     {
       key: "yeast",
       label: ingredientCategoryLabels.yeast,
+      category: "yeast",
       count: counts.byCategory.yeast,
       active: category === "yeast" && subtype === null,
-      meta: categoryMeta.yeast,
-      onClick: () => replaceWith({ category: category === "yeast" ? "all" : "yeast", subtype: null })
+      meta: categoryMeta.yeast
     },
     {
       key: "water_treatment",
       label: ingredientCategoryLabels.water_treatment,
+      category: "water_treatment",
       count: counts.byCategory.water_treatment,
       active: category === "water_treatment" && subtype === null,
-      meta: categoryMeta.water_treatment,
-      onClick: () => replaceWith({ category: category === "water_treatment" ? "all" : "water_treatment", subtype: null })
+      meta: categoryMeta.water_treatment
     },
     {
       key: "consumable",
       label: ingredientCategoryLabels.consumable,
+      category: "consumable",
       count: counts.byCategory.consumable,
       active: category === "consumable" && subtype === null,
-      meta: categoryMeta.consumable,
-      onClick: () => replaceWith({ category: category === "consumable" ? "all" : "consumable", subtype: null })
+      meta: categoryMeta.consumable
     }
   ] as const;
 
+  // Путь текущей активной категории — нужен, чтобы pill «Мои» переключал view,
+  // сохраняя категорию (а не сбрасывал её на «Все»).
+  const activeButton = primaryButtons.find((button) => button.active) ?? null;
+  const currentLandingPath = activeButton ? categoryLandingPaths[activeButton.key] : "/catalog";
+
+  // Список сортировок зависит от роли и активной категории: «По обновлению» —
+  // только залогиненным, параметрическая сортировка — только при подходящей
+  // категории (этап 3.5).
+  const sortOptionsForCategory = useMemo(() => {
+    const options: IngredientCatalogSortOption[] = ["name"];
+    if (canManage) {
+      options.push("updated");
+    }
+    options.push("category", "brand");
+    if (category === "hop") {
+      options.push("alpha");
+    } else if (category === "fermentable") {
+      options.push("color");
+    } else if (category === "yeast") {
+      options.push("attenuation");
+    }
+    return options;
+  }, [canManage, category]);
+
+  const pillClassName = (active: boolean, activeClasses: string) => (
+    `inline-flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full border px-3 py-2 text-sm font-medium transition-colors ${active
+      ? activeClasses
+      : "border-zinc-200 bg-white text-zinc-600 hover:border-zinc-300 hover:bg-zinc-50"
+    }`
+  );
+
   return (
-    <section className="space-y-4 rounded-[28px] border border-zinc-200 bg-white p-5 shadow-sm">
-      <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
-        <div className="space-y-2">
-          <div className="flex flex-wrap gap-2">
-            <Link href={buildCatalogHref(pathname, { view: "all", q: searchValue, category, subtype, sort })} className={tabClassName(view === "all")}>
-              Все ингредиенты
-              <span className={`rounded-full px-2 py-0.5 text-[11px] ${view === "all" ? "bg-white/15 text-white" : "bg-zinc-100 text-zinc-500"}`}>
-                {counts.total}
-              </span>
-            </Link>
-            {canManage ? (
-              <Link href={buildCatalogHref(pathname, { view: "mine", q: searchValue, category, subtype, sort })} className={tabClassName(view === "mine")}>
-                Пользовательские ингредиенты
-                <span className={`rounded-full px-2 py-0.5 text-[11px] ${view === "mine" ? "bg-white/15 text-white" : "bg-amber-50 text-amber-700 ring-1 ring-amber-200"}`}>
-                  {counts.customCount}
-                </span>
-              </Link>
-            ) : null}
-          </div>
-          <p className="text-sm text-zinc-500">
-            {!canManage
-              ? `Системный каталог: ${counts.catalogCount} ингредиентов.`
-              : view === "mine"
-                ? "Пользовательские ингредиенты видны только вам и участвуют в pickers по всему приложению."
-                : `Системный каталог: ${counts.catalogCount}. Пользовательские: ${counts.customCount}.`}
-          </p>
-        </div>
-
-        {canManage ? (
-          <Link
-            href={buildCreateCustomIngredientHref({ category, subtype })}
-            className="inline-flex h-11 items-center justify-center rounded-xl bg-zinc-950 px-5 text-sm font-medium text-white"
-          >
-            Создать свой ингредиент
-          </Link>
-        ) : null}
-      </div>
-
-      <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 xl:grid-cols-7">
-        <button
-          type="button"
-          onClick={() => replaceWith({ category: "all", subtype: null })}
-          className={`group relative flex flex-col items-center gap-1.5 rounded-xl border px-3 py-3 text-center transition-all ${category === "all"
-            ? "border-transparent bg-zinc-950 text-white ring-2 ring-zinc-300 shadow-sm"
-            : "border-zinc-200 bg-white text-zinc-700 hover:border-zinc-300 hover:shadow-sm"
-            }`}
-        >
-          <span className={`text-xs font-semibold leading-tight ${category === "all" ? "text-white" : "text-zinc-700"}`}>
-            Все категории
-          </span>
-          <span className={`text-[11px] font-medium tabular-nums ${category === "all" ? "text-zinc-200" : "text-zinc-400"}`}>
-            {counts.total}
-          </span>
-        </button>
-
-        {primaryButtons.map((button) => {
-          const Icon = button.meta.icon;
-          const isDisabled = button.count === 0 && !button.active;
-
-          return (
-            <button
-              key={button.key}
-              type="button"
-              disabled={isDisabled}
-              onClick={button.onClick}
-              className={`group relative flex flex-col items-center gap-1.5 rounded-xl border px-3 py-3 text-center transition-all ${isDisabled
-                ? "cursor-not-allowed border-zinc-100 bg-zinc-50 text-zinc-300 opacity-60"
-                : button.active
-                  ? `${button.meta.activeBg} ${button.meta.activeRing} border-transparent ring-2 shadow-sm`
-                  : "border-zinc-200 bg-white hover:border-zinc-300 hover:shadow-sm"
-                }`}
-            >
-              <Icon className={`h-6 w-6 ${isDisabled ? "text-zinc-300" : button.active ? button.meta.activeColor : button.meta.color} transition-colors`} />
-              <span className={`text-xs font-semibold leading-tight ${isDisabled ? "text-zinc-400" : button.active ? button.meta.activeColor : "text-zinc-700"}`}>
-                {button.label}
-              </span>
-              <span className={`text-[11px] font-medium tabular-nums ${isDisabled ? "text-zinc-400" : button.active ? button.meta.activeColor : "text-zinc-400"}`}>
-                {button.count}
-              </span>
-            </button>
-          );
-        })}
-      </div>
-
-      <div className="grid gap-3 lg:grid-cols-[minmax(0,1fr)_220px]">
-        <label className="block text-sm">
-          Поиск
+    <section className="space-y-3 rounded-[28px] border border-zinc-200 bg-white p-5 shadow-sm">
+      <div className="flex items-center gap-2">
+        <div className="relative min-w-0 flex-1">
           <input
             value={searchValue}
             onChange={(event) => setSearchValue(event.target.value)}
             onFocus={handleSearchFocus}
             onBlur={handleSearchBlur}
-            className="mt-1 h-11 w-full rounded-xl border border-zinc-200 bg-zinc-50 px-3 text-sm"
-            placeholder="Название, алиас, бренд, код"
+            className="h-11 w-full rounded-xl border border-zinc-200 bg-zinc-50 px-4 pr-10 text-sm"
+            placeholder="Поиск по каталогу"
           />
-        </label>
+          {/* Индикатор обновления внутри поля: отдельная строка текста меняла
+              высоту тулбара на каждый ввод (28px layout shift). */}
+          {isPending || isSearchPending ? (
+            <span role="status" className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400">
+              <Loader2 className="h-4 w-4 animate-spin" />
+              <span className="sr-only">Обновляем каталог…</span>
+            </span>
+          ) : null}
+        </div>
 
-        <div className="flex items-end justify-between gap-2">
-          <div className="flex-1">
-            <div className="mb-1 text-sm">Сортировка</div>
-            <DropdownMenu
-              trigger={
-                <button
-                  type="button"
-                  className={`flex h-11 w-full items-center justify-between rounded-xl border px-3 text-sm transition-colors ${sort !== defaultCatalogSortOption
-                    ? "border-blue-200 bg-blue-50 text-blue-800"
-                    : "border-zinc-200 bg-zinc-50 text-zinc-700 hover:border-zinc-300 hover:bg-white"
-                    }`}
-                >
-                  <span className="inline-flex items-center gap-2">
-                    <ArrowUpDown className="h-4 w-4" />
-                    {sortLabels[sort]}
-                  </span>
-                  {sort !== defaultCatalogSortOption ? <Check className="h-4 w-4" /> : null}
-                </button>
-              }
-              items={ingredientCatalogSortOptions.map((option): DropdownMenuItem => ({
-                key: option,
-                label: sortLabels[option],
-                icon: option === sort ? <Check className="h-3.5 w-3.5 text-blue-600" /> : undefined,
-                onSelect: () => replaceWith({ sort: option })
-              }))}
-              aria-label="Сортировка"
-            />
-          </div>
-
-          {hasFilters ? (
+        <DropdownMenu
+          trigger={
             <button
               type="button"
-              onClick={() => {
-                setSearchValue("");
-                replaceHref(buildCatalogHref(pathname, {
-                  view,
-                  q: "",
-                  category: "all",
-                  subtype: null,
-                  sort: defaultCatalogSortOption
-                }));
-              }}
-              className="mb-0.5 inline-flex h-11 items-center gap-2 rounded-xl border border-zinc-200 bg-white px-3 text-xs font-medium text-zinc-600 transition-colors hover:border-zinc-300 hover:bg-zinc-50"
+              aria-label="Сортировка"
+              className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border transition-colors ${sort !== defaultCatalogSortOption
+                ? "border-blue-200 bg-blue-50 text-blue-700"
+                : "border-zinc-200 bg-zinc-50 text-zinc-600 hover:border-zinc-300 hover:bg-white"
+              }`}
             >
-              <RotateCcw className="h-3.5 w-3.5" />
-              <span className="hidden sm:inline">Сбросить</span>
+              <ArrowUpDown className="h-4 w-4" />
             </button>
+          }
+          items={sortOptionsForCategory.map((option): DropdownMenuItem => ({
+            key: option,
+            label: sortLabels[option],
+            icon: option === sort ? <Check className="h-3.5 w-3.5 text-blue-600" /> : undefined,
+            onSelect: () => replaceWith({ sort: option })
+          }))}
+          aria-label="Сортировка"
+        />
+
+        <button
+          type="button"
+          disabled={!hasFilters}
+          aria-disabled={!hasFilters}
+          aria-label="Сбросить"
+          onClick={() => {
+            setSearchValue("");
+            replaceHref(buildCatalogHref(queryBasePath, {
+              view,
+              q: "",
+              category: "all",
+              subtype: null,
+              sort: defaultCatalogSortOption
+            }));
+          }}
+          className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border transition-colors ${hasFilters
+            ? "border-zinc-200 bg-white text-zinc-600 hover:border-zinc-300 hover:bg-zinc-50"
+            : "cursor-not-allowed border-zinc-100 bg-zinc-50 text-zinc-300"
+          }`}
+        >
+          <RotateCcw className="h-4 w-4" />
+        </button>
+
+        {canManage ? (
+          <Link
+            href={buildCreateCustomIngredientHref({ category, subtype })}
+            className="inline-flex h-11 shrink-0 items-center gap-1.5 rounded-xl border border-zinc-300 px-3 text-sm font-medium text-zinc-700 transition-colors hover:bg-zinc-50"
+          >
+            <Plus className="h-4 w-4" />
+            <span className="hidden sm:inline">Создать свой</span>
+          </Link>
+        ) : null}
+      </div>
+
+      {/* На мобиле ряд pills скроллится горизонтально; на lg+ переносится,
+          иначе хвост ряда (Расходники, Мои) уезжает за край без скроллбара. */}
+      <div className="-mx-5 overflow-x-auto px-5 scrollbar-none lg:mx-0 lg:overflow-visible lg:px-0">
+        <div className="flex gap-2 lg:flex-wrap">
+          <Link
+            href={buildLandingHref("/catalog", { targetCategory: "all" })}
+            className={pillClassName(category === "all", "border-transparent bg-zinc-950 text-white")}
+          >
+            Все
+            <span className="tabular-nums text-zinc-400">{counts.total}</span>
+          </Link>
+
+          {primaryButtons.map((button) => {
+            const Icon = button.meta.icon;
+            const isEmpty = button.count === 0 && !button.active;
+
+            if (isEmpty) {
+              return (
+                <span
+                  key={button.key}
+                  aria-disabled="true"
+                  className="inline-flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full border border-zinc-100 bg-zinc-50 px-3 py-2 text-sm text-zinc-300"
+                >
+                  <Icon className="h-4 w-4" />
+                  {button.label}
+                  <span className="tabular-nums">{button.count}</span>
+                </span>
+              );
+            }
+
+            const targetHref = button.active
+              ? buildLandingHref("/catalog", { targetCategory: "all" })
+              : buildLandingHref(categoryLandingPaths[button.key], { targetCategory: button.category });
+
+            return (
+              <Link
+                key={button.key}
+                href={targetHref}
+                className={pillClassName(button.active, `${button.meta.activeBg} ${button.meta.activeRing} border-transparent ring-1 ${button.meta.activeColor}`)}
+              >
+                <Icon className={`h-4 w-4 ${button.active ? button.meta.activeColor : button.meta.color}`} />
+                {button.label}
+                <span className={`tabular-nums ${button.active ? `${button.meta.activeColor} opacity-70` : "text-zinc-400"}`}>
+                  {button.count}
+                </span>
+              </Link>
+            );
+          })}
+
+          {canManage ? (
+            <Link
+              href={view === "mine"
+                ? buildLandingHref(currentLandingPath, { view: "all" })
+                : buildLandingHref(currentLandingPath, { view: "mine" })}
+              className={pillClassName(view === "mine", "border-transparent bg-zinc-950 text-white")}
+            >
+              Мои
+              <span className="tabular-nums text-zinc-400">{counts.customCount}</span>
+            </Link>
           ) : null}
         </div>
       </div>
-
-      {isPending || isSearchPending ? <p className="text-xs text-zinc-400">Обновляем каталог…</p> : null}
     </section>
   );
 }

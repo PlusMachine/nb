@@ -2,30 +2,16 @@
 
 import React, { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
-import { ChevronDown, LayoutGrid, LogOut, Menu, User2, X } from "lucide-react";
+import { usePathname } from "next/navigation";
+import { Menu, X } from "lucide-react";
 
-import { DropdownMenu, type DropdownMenuItem } from "@nb/ui";
 import { publicLinks } from "@/lib/navigation";
-
-export type SiteHeaderUser = {
-  email: string | null;
-  phone?: string | null;
-  displayName: string;
-  // editor+ — показывает мост в админку (вычисляется на сервере, не тащим роли в клиент)
-  isStaff?: boolean;
-};
-
-type SiteHeaderProps = {
-  user: SiteHeaderUser | null;
-  variant?: "public" | "app";
-};
 
 const isActivePath = (pathname: string, href: string) => (
   pathname === href || pathname.startsWith(`${href}/`)
 );
 
-export function SiteHeader({ user, variant = "public" }: SiteHeaderProps) {
+export function SiteHeader() {
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -94,27 +80,12 @@ export function SiteHeader({ user, variant = "public" }: SiteHeaderProps) {
         </div>
 
         <div className="flex items-center gap-2">
-          {user ? (
-            <>
-              {variant === "public" ? (
-                <Link
-                  href="/app"
-                  className="hidden items-center gap-1.5 rounded-full bg-zinc-950 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-zinc-800 sm:inline-flex"
-                >
-                  <LayoutGrid className="h-3.5 w-3.5" />
-                  Мастерская
-                </Link>
-              ) : null}
-              <UserMenu user={user} />
-            </>
-          ) : (
-            <Link
-              href="/login"
-              className="inline-flex items-center rounded-full bg-zinc-950 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-zinc-800"
-            >
-              Войти
-            </Link>
-          )}
+          <Link
+            href="/login"
+            className="inline-flex items-center rounded-full bg-zinc-950 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-zinc-800"
+          >
+            Войти
+          </Link>
           <button
             type="button"
             onClick={() => setMobileOpen((value) => !value)}
@@ -152,71 +123,5 @@ export function SiteHeader({ user, variant = "public" }: SiteHeaderProps) {
         ) : null}
       </div>
     </header>
-  );
-}
-
-function UserMenu({ user }: { user: SiteHeaderUser }) {
-  const router = useRouter();
-  const [pending, setPending] = useState(false);
-  const logoutFormRef = useRef<HTMLFormElement>(null);
-
-  const label = user.displayName?.trim() || user.email || user.phone || "Профиль";
-
-  const items: DropdownMenuItem[] = [
-    {
-      key: "workshop",
-      label: "Мастерская",
-      icon: <LayoutGrid className="h-4 w-4 text-zinc-400" />,
-      onSelect: () => router.push("/app")
-    },
-    {
-      key: "profile",
-      label: "Профиль",
-      icon: <User2 className="h-4 w-4 text-zinc-400" />,
-      onSelect: () => router.push("/profile")
-    },
-    {
-      key: "logout",
-      label: pending ? "Выходим…" : "Выйти",
-      icon: <LogOut className="h-4 w-4 text-zinc-400" />,
-      disabled: pending,
-      onSelect: () => logoutFormRef.current?.requestSubmit()
-    }
-  ];
-
-  return (
-    <>
-      <form
-        ref={logoutFormRef}
-        className="hidden"
-        onSubmit={async (event) => {
-          event.preventDefault();
-          setPending(true);
-          try {
-            await fetch("/api/auth/logout", { method: "POST" });
-          } finally {
-            router.push("/");
-            router.refresh();
-          }
-        }}
-      />
-      <DropdownMenu
-        trigger={
-          <button
-            type="button"
-            className="flex items-center gap-2 rounded-full border border-zinc-200 bg-white px-2.5 py-1.5 text-sm font-medium text-zinc-700 transition-colors hover:bg-zinc-50"
-          >
-            <span className="grid h-6 w-6 place-items-center rounded-full bg-zinc-900 text-[11px] font-semibold uppercase text-white">
-              {label.slice(0, 1)}
-            </span>
-            <span className="max-w-[9rem] truncate">{label}</span>
-            <ChevronDown className="h-3.5 w-3.5 text-zinc-400" />
-          </button>
-        }
-        items={items}
-        align="end"
-        aria-label={`Меню пользователя: ${label}`}
-      />
-    </>
   );
 }

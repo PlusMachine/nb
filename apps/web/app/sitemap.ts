@@ -1,11 +1,16 @@
 import type { MetadataRoute } from "next";
 import { listArticles } from "@nb/content";
 
+import { catalogCategoryLandings } from "@/features/ingredients/seo";
+import { listCatalogSitemapEntries } from "@/features/ingredients/service";
 import { getServerEnv } from "@/lib/env";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const { APP_URL } = getServerEnv();
-  const articles = await listArticles();
+  const [articles, catalogEntries] = await Promise.all([
+    listArticles(),
+    listCatalogSitemapEntries()
+  ]);
   const now = new Date();
 
   // Публичные витринные разделы и правовые страницы.
@@ -31,6 +36,17 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...articles.map((article) => ({
       url: `${APP_URL}/bjcp/${article.slug}`,
       lastModified: new Date(article.updatedAt)
+    })),
+    // Категорийные лендинги каталога (см. features/ingredients/seo.ts).
+    ...catalogCategoryLandings.map((landing) => ({
+      url: `${APP_URL}/catalog/${landing.slug}`,
+      lastModified: now
+    })),
+    // Деталки системных ингредиентов. Кастомные (пользовательские) в sitemap
+    // не попадают никогда — их вообще нет в таблице ingredients.
+    ...catalogEntries.map((entry) => ({
+      url: `${APP_URL}/catalog/system/${entry.id}`,
+      lastModified: entry.updatedAt
     }))
   ];
 }

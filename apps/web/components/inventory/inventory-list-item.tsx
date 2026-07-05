@@ -26,7 +26,11 @@ import {
   formatConsumableUsageStageLabel
 } from "@/features/ingredients/consumables";
 import { formatHopFormLabel, resolveIngredientTechnicalDataColorRangeEbc } from "@/features/ingredients/technical-fields";
-import { beerColorFromSrm } from "@/features/recipes/beer-color";
+import {
+  IngredientColorAccentStripe,
+  resolveIngredientColorAccent,
+  type IngredientColorAccent
+} from "@/components/ingredients/ingredient-color-swatch";
 import { buildInventoryDisplayInput } from "@/features/inventory/consume";
 import { buildInventoryCostDisplay, formatInventoryQuantityForDisplay } from "@/features/inventory/display";
 import type { SystemCurrency, SystemCurrencyRateMap } from "@/features/system/currency";
@@ -50,38 +54,15 @@ const formatValue = (value: number) => (
   value % 1 === 0 ? String(value) : value.toFixed(1).replace(/\.0$/, "")
 );
 
-const ebcToSrm = (value: number) => value / 1.97;
-
-type InventoryBadgeAccent = {
-  startHex: string;
-  averageHex: string;
-  endHex: string;
-};
-
-const resolveMaltColorBadgeAccent = (item: InventoryListItemDto): InventoryBadgeAccent | null => {
+// Цветной акцент показываем только для настоящего солода (malt), не для
+// сброженного сырья без диапазона EBC — так было и раньше.
+const resolveMaltColorBadgeAccent = (item: InventoryListItemDto): IngredientColorAccent | null => {
   const technicalData = item.source.technicalData;
   if (!technicalData || technicalData.type !== "malt") {
     return null;
   }
 
-  const range = resolveIngredientTechnicalDataColorRangeEbc(technicalData);
-  const startEbc = range?.min ?? null;
-  const endEbc = range?.max ?? null;
-
-  if (startEbc == null || endEbc == null) {
-    return null;
-  }
-
-  const averageEbc = range?.average ?? ((startEbc + endEbc) / 2);
-  const start = beerColorFromSrm(ebcToSrm(startEbc));
-  const average = beerColorFromSrm(ebcToSrm(averageEbc));
-  const end = beerColorFromSrm(ebcToSrm(endEbc));
-
-  return {
-    startHex: start.hex,
-    averageHex: average.hex,
-    endHex: end.hex
-  };
+  return resolveIngredientColorAccent(technicalData);
 };
 
 const formatColorBadge = (item: InventoryListItemDto) => {
@@ -110,7 +91,7 @@ const formatColorBadge = (item: InventoryListItemDto) => {
 type InventoryBadge = {
   key: string;
   label: string;
-  accent?: InventoryBadgeAccent | null;
+  accent?: IngredientColorAccent | null;
 };
 
 const buildTypedBadges = (item: InventoryListItemDto) => {
@@ -126,7 +107,7 @@ const buildTypedBadges = (item: InventoryListItemDto) => {
       hop.alphaAcidPctTypical != null ? { label: `α ${formatValue(hop.alphaAcidPctTypical)}%` } : null,
       hopFormLabel ? { label: hopFormLabel } : null,
       item.source.harvestYear != null ? { label: `${item.source.harvestYear}` } : null
-    ].filter((badge): badge is { label: string; accent?: InventoryBadgeAccent | null } => Boolean(badge));
+    ].filter((badge): badge is { label: string; accent?: IngredientColorAccent | null } => Boolean(badge));
   }
 
   if (technicalData.type === "malt" || technicalData.type === "fermentable") {
@@ -141,7 +122,7 @@ const buildTypedBadges = (item: InventoryListItemDto) => {
         : fermentable.type === "fermentable" && fermentable.recommendedMaxPct != null
           ? { label: `до ${formatValue(fermentable.recommendedMaxPct)}%` }
           : null
-    ].filter((badge): badge is { label: string; accent?: InventoryBadgeAccent | null } => Boolean(badge));
+    ].filter((badge): badge is { label: string; accent?: IngredientColorAccent | null } => Boolean(badge));
   }
 
   if (technicalData.type === "yeast") {
@@ -152,7 +133,7 @@ const buildTypedBadges = (item: InventoryListItemDto) => {
       yeast.fermentationTempCMin != null && yeast.fermentationTempCMax != null
         ? { label: `${formatValue(yeast.fermentationTempCMin)}–${formatValue(yeast.fermentationTempCMax)}°C` }
         : null
-    ].filter((badge): badge is { label: string; accent?: InventoryBadgeAccent | null } => Boolean(badge));
+    ].filter((badge): badge is { label: string; accent?: IngredientColorAccent | null } => Boolean(badge));
   }
 
   if (technicalData.type === "water_treatment") {
@@ -164,7 +145,7 @@ const buildTypedBadges = (item: InventoryListItemDto) => {
 
     return [
       preferredUnit ? { label: preferredUnit } : null
-    ].filter((badge): badge is { label: string; accent?: InventoryBadgeAccent | null } => Boolean(badge));
+    ].filter((badge): badge is { label: string; accent?: IngredientColorAccent | null } => Boolean(badge));
   }
 
   if (technicalData.type === "consumable") {
@@ -174,7 +155,7 @@ const buildTypedBadges = (item: InventoryListItemDto) => {
     return [
       formLabel ? { label: formLabel } : null,
       usageStageLabel ? { label: usageStageLabel } : null
-    ].filter((badge): badge is { label: string; accent?: InventoryBadgeAccent | null } => Boolean(badge));
+    ].filter((badge): badge is { label: string; accent?: IngredientColorAccent | null } => Boolean(badge));
   }
 
   return [];
@@ -184,7 +165,7 @@ const buildTechnicalBadges = (item: InventoryListItemDto) => {
   const badges: InventoryBadge[] = [];
   const seen = new Set<string>();
 
-  const pushBadge = (badge?: { label?: string | null; accent?: InventoryBadgeAccent | null } | null) => {
+  const pushBadge = (badge?: { label?: string | null; accent?: IngredientColorAccent | null } | null) => {
     const trimmed = badge?.label?.trim();
     if (!trimmed) {
       return;
@@ -468,13 +449,7 @@ export function InventoryListItem({
                 >
                   {badge.label}
                   {badge.accent ? (
-                    <span
-                      aria-hidden="true"
-                      className="absolute inset-y-0 left-0 w-[3px]"
-                      style={{
-                        backgroundImage: `linear-gradient(180deg, ${badge.accent.startHex} 0%, ${badge.accent.averageHex} 52%, ${badge.accent.endHex} 100%)`
-                      }}
-                    />
+                    <IngredientColorAccentStripe accent={badge.accent} widthClassName="w-[3px]" />
                   ) : null}
                 </span>
               ))}

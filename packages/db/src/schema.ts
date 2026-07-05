@@ -177,6 +177,7 @@ export const ingredients = pgTable("ingredients", {
   type: text("type").notNull(),
   nameRu: text("name_ru"),
   nameEn: text("name_en"),
+  descriptionRu: text("description_ru"),
   displayModeRu: text("display_mode_ru").default("auto").notNull(),
   displayNameOverrideRu: text("display_name_override_ru"),
   secondaryNameOverrideRu: text("secondary_name_override_ru"),

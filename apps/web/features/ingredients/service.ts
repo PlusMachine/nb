@@ -182,6 +182,7 @@ const mapIngredientRow = (row: IngredientWithRelations): IngredientCatalogItemDt
     displayNameEn: row.nameEn,
     nameRu: row.nameRu,
     nameEn: row.nameEn,
+    descriptionRu: row.descriptionRu,
     displayModeRu: row.displayModeRu as "auto" | "localized_first" | "source_first",
     displayNameOverrideRu: row.displayNameOverrideRu,
     secondaryNameOverrideRu: row.secondaryNameOverrideRu,
@@ -309,11 +310,15 @@ const toSuggestionItem = (
   ...extras
 });
 
-export const loadIngredients = async (params?: {
+type LoadIngredientsParams = {
   includeInactive?: boolean;
   type?: string;
   category?: string;
-}): Promise<IngredientCatalogItemDto[]> => {
+};
+
+const loadIngredientsUncached = async (
+  params?: LoadIngredientsParams
+): Promise<IngredientCatalogItemDto[]> => {
   const rows = await db.query.ingredients.findMany({
     where: and(
       params?.includeInactive ? undefined : eq(ingredients.isActive, true),
@@ -331,6 +336,76 @@ export const loadIngredients = async (params?: {
     .map((row) => mapIngredientRow(row as IngredientWithRelations))
     .filter((row) => params?.category ? row.category === params.category : true);
 };
+
+type CachedCatalogEntry = {
+  items: IngredientCatalogItemDto[];
+  loadedAt: number;
+};
+
+// Процессный in-memory TTL-кэш анонимной части каталога (без includeInactive —
+// тот путь админский, listCatalogIngredients, всегда идёт напрямую в БД).
+// Раньше здесь был unstable_cache, но полный каталог сериализуется в ~3.78MB,
+// а Next data cache жёстко режет записи больше 2MB — кэш молча переставал
+// работать («Failed to set Next.js data cache ... items over 2MB can not be
+// cached»), плюс JSON-сериализация превращала createdAt/updatedAt в строки.
+// Здесь сериализации нет — Date остаются Date, значения хранятся как есть.
+//
+// Кэш процессный: инвалидация (invalidateIngredientsCatalogCache) чистит
+// только текущий процесс — при деплое с несколькими Node-инстансами остальные
+// держат старые данные до истечения TTL. Это ограничение, а не гарантия
+// строгой консистентности; сейчас деплой однопроцессный.
+//
+// Кто читает через loadIngredients(): страницы каталога и деталки
+// (loadUnifiedCatalogItems в catalog-service.ts), блоки «Похожие
+// ингредиенты» / «Другие ингредиенты {бренд}» (listSimilarCatalogIngredients,
+// listSameBrandCatalogIngredients) и поиск (searchCatalogItems /
+// searchIngredientSuggestions).
+const CATALOG_CACHE_TTL_MS = 5 * 60 * 1000;
+const catalogCache = new Map<string, CachedCatalogEntry>();
+
+const buildCatalogCacheKey = (params: { type?: string; category?: string }) => (
+  JSON.stringify({ type: params.type ?? null, category: params.category ?? null })
+);
+
+export const invalidateIngredientsCatalogCache = () => {
+  catalogCache.clear();
+};
+
+export const loadIngredients = async (
+  params?: LoadIngredientsParams
+): Promise<IngredientCatalogItemDto[]> => {
+  if (params?.includeInactive) {
+    return loadIngredientsUncached(params);
+  }
+
+  const cacheParams = { type: params?.type, category: params?.category };
+
+  // Vitest мокает db на каждый тест независимо — процессный кэш пережил бы
+  // мок предыдущего теста и отдал бы чужие данные следующему.
+  if (process.env.VITEST) {
+    return loadIngredientsUncached(cacheParams);
+  }
+
+  const cacheKey = buildCatalogCacheKey(cacheParams);
+  const cached = catalogCache.get(cacheKey);
+  if (cached && Date.now() - cached.loadedAt < CATALOG_CACHE_TTL_MS) {
+    return cached.items.slice();
+  }
+
+  const items = await loadIngredientsUncached(cacheParams);
+  catalogCache.set(cacheKey, { items, loadedAt: Date.now() });
+  return items.slice();
+};
+
+// Лёгкая выборка для sitemap.ts — только id+updatedAt активных системных
+// ингредиентов, без relations (aliases/sources/packageVariants) и без
+// полного маппинга DTO, который loadIngredients() делает для каждой строки.
+export const listCatalogSitemapEntries = async (): Promise<Array<{ id: string; updatedAt: Date }>> => (
+  db.select({
+    id: ingredients.id,
+    updatedAt: ingredients.updatedAt
+  }).from(ingredients).where(eq(ingredients.isActive, true))
+);
 
 const getIngredientRow = async (id: string): Promise<IngredientCatalogItemDto | null> => {
   const row = await db.query.ingredients.findFirst({
@@ -434,6 +509,7 @@ const toStatusFacets = (items: IngredientCatalogItemDto[]) => {
       type: item.type,
       nameRu: item.nameRu,
       nameEn: item.nameEn,
+      descriptionRu: item.descriptionRu,
       displayModeRu: item.displayModeRu,
       displayNameOverrideRu: item.displayNameOverrideRu,
       secondaryNameOverrideRu: item.secondaryNameOverrideRu,
@@ -527,6 +603,7 @@ const buildIngredientValues = (payload: z.infer<typeof ingredientUpsertSchema>) 
   type: payload.type,
   nameRu: payload.nameRu,
   nameEn: payload.nameEn,
+  descriptionRu: payload.descriptionRu ?? null,
   displayModeRu: payload.displayModeRu,
   displayNameOverrideRu: payload.displayNameOverrideRu,
   secondaryNameOverrideRu: payload.secondaryNameOverrideRu,
@@ -576,6 +653,7 @@ export const listCatalogIngredients = async (params: CatalogListParams) => {
       type: item.type,
       nameRu: item.nameRu,
       nameEn: item.nameEn,
+      descriptionRu: item.descriptionRu,
       displayModeRu: item.displayModeRu,
       displayNameOverrideRu: item.displayNameOverrideRu,
       secondaryNameOverrideRu: item.secondaryNameOverrideRu,
@@ -671,6 +749,7 @@ const toUpsertPayload = (item: IngredientCatalogItemDto): z.infer<typeof ingredi
   itemKind: item.itemKind,
   nameRu: item.nameRu,
   nameEn: item.nameEn,
+  descriptionRu: item.descriptionRu,
   displayModeRu: item.displayModeRu,
   displayNameOverrideRu: item.displayNameOverrideRu,
   secondaryNameOverrideRu: item.secondaryNameOverrideRu,

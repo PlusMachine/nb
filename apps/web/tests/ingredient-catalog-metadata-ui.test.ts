@@ -4,8 +4,24 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const mockState = vi.hoisted(() => ({
   listResult: null as any,
-  detailItem: null as any
+  detailItem: null as any,
+  similarItems: [] as any[],
+  brandItems: [] as any[],
+  recipesResult: { total: 0, items: [] } as any
 }));
+
+// React 18 (используемый в vitest/node) не экспортирует `cache` — это API
+// React-канала, который Next.js полифиллит собственной сборкой React только
+// внутри своего рантайма. [source]/[id]/page.tsx использует `cache` для дедупа
+// generateMetadata/страницы — под простым node-рендером в тестах его нужно
+// подменить identity-обёрткой, иначе импорт страницы падает на этапе загрузки модуля.
+vi.mock("react", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("react")>();
+  return {
+    ...actual,
+    cache: actual.cache ?? (<T extends (...args: any[]) => any>(fn: T) => fn)
+  };
+});
 
 vi.mock("next/link", () => ({
   default: ({ href, children, ...props }: any) => React.createElement("a", {
@@ -27,7 +43,17 @@ vi.mock("@/lib/auth", () => ({
 
 vi.mock("@/features/ingredients/catalog-service", () => ({
   listUserCatalogIngredients: async () => mockState.listResult,
-  getUserCatalogIngredientByRef: async () => mockState.detailItem
+  getUserCatalogIngredientByRef: async () => mockState.detailItem,
+  listSimilarCatalogIngredients: async () => mockState.similarItems,
+  listSameBrandCatalogIngredients: async () => mockState.brandItems
+}));
+
+vi.mock("@/features/recipes/service", () => ({
+  listPublicRecipesForIngredient: async () => mockState.recipesResult
+}));
+
+vi.mock("@/components/recipes/recipes-grid", () => ({
+  RecipesGrid: ({ recipes }: any) => React.createElement("div", null, `recipes-grid:${recipes?.length ?? 0}`)
 }));
 
 vi.mock("@/components/ingredients/ingredient-favorite-toggle", () => ({
@@ -146,6 +172,9 @@ describe("ingredient catalog metadata ui", () => {
       }
     };
     mockState.detailItem = null;
+    mockState.similarItems = [];
+    mockState.brandItems = [];
+    mockState.recipesResult = { total: 0, items: [] };
   });
 
   it("renders favorite toggles in the catalog list without introducing a text badge", async () => {
@@ -200,6 +229,37 @@ describe("ingredient catalog metadata ui", () => {
     expect(html).toContain("purchase-links:1");
   });
 
+  it("shows the Описание section first when descriptionRu is set, split into paragraphs", async () => {
+    mockState.detailItem = buildCatalogItem({
+      descriptionRu: "Цитра — американский ароматный хмель с яркими нотами цитрусовых.\n\nХорошо подходит для позднего внесения и сухого охмеления."
+    });
+
+    const html = renderToStaticMarkup(await IngredientDetailPage({
+      params: Promise.resolve({
+        source: "system",
+        id: "catalog-hop-1"
+      })
+    }));
+
+    expect(html).toContain("Описание");
+    expect(html).toContain("Цитра — американский ароматный хмель с яркими нотами цитрусовых.");
+    expect(html).toContain("Хорошо подходит для позднего внесения и сухого охмеления.");
+    expect(html.indexOf("Описание")).toBeLessThan(html.indexOf("Параметры"));
+  });
+
+  it("omits the Описание section entirely when descriptionRu is empty", async () => {
+    mockState.detailItem = buildCatalogItem({ descriptionRu: null });
+
+    const html = renderToStaticMarkup(await IngredientDetailPage({
+      params: Promise.resolve({
+        source: "system",
+        id: "catalog-hop-1"
+      })
+    }));
+
+    expect(html).not.toContain(">Описание<");
+  });
+
   it("shows producer as the brand label for fermentables on the detail page", async () => {
     mockState.detailItem = buildCatalogItem({
       id: "catalog-fermentable-1",
@@ -235,5 +295,175 @@ describe("ingredient catalog metadata ui", () => {
 
     expect(html).toContain("Weyermann");
     expect(html).toContain("Бренд");
+  });
+
+  it("drops the Тип/Использование columns from the catalog list table", async () => {
+    mockState.listResult = {
+      ...mockState.listResult,
+      items: [buildCatalogItem()],
+      total: 1,
+      facets: {
+        ...mockState.listResult.facets,
+        catalogCount: 1
+      }
+    };
+
+    const html = renderToStaticMarkup(await IngredientCatalogContent({
+      searchParams: Promise.resolve({})
+    }));
+
+    expect(html).toContain("Параметры");
+    expect(html).not.toContain(">Тип<");
+    expect(html).not.toContain("Использование");
+  });
+
+  it("shows a hop-form badge near the name only for non-standard forms and translates the form in parameters", async () => {
+    mockState.listResult = {
+      ...mockState.listResult,
+      items: [
+        buildCatalogItem({
+          id: "hop-standard",
+          hopForm: "standard",
+          technicalData: { type: "hop", alphaAcidPctTypical: 12.5, hopForm: "standard" }
+        }),
+        buildCatalogItem({
+          id: "hop-cryo",
+          primaryLabelRu: "Citra Cryo",
+          hopForm: "cryo",
+          technicalData: { type: "hop", alphaAcidPctTypical: 15, hopForm: "cryo" }
+        })
+      ],
+      total: 2,
+      facets: {
+        ...mockState.listResult.facets,
+        catalogCount: 2
+      }
+    };
+
+    const html = renderToStaticMarkup(await IngredientCatalogContent({
+      searchParams: Promise.resolve({})
+    }));
+
+    expect(html).toContain("гранулы T-90");
+    expect(html).toContain("крио");
+    expect(html).not.toContain(">standard<");
+    expect(html).not.toContain(">cryo<");
+  });
+
+  it("shows usage badges near the name only when inventory/recipe counts are positive", async () => {
+    mockState.listResult = {
+      ...mockState.listResult,
+      items: [
+        buildCatalogItem({ id: "used", inventoryUsageCount: 2, recipeUsageCount: 3 }),
+        buildCatalogItem({ id: "unused", inventoryUsageCount: 0, recipeUsageCount: 0 })
+      ],
+      total: 2,
+      facets: {
+        ...mockState.listResult.facets,
+        catalogCount: 2
+      }
+    };
+
+    const html = renderToStaticMarkup(await IngredientCatalogContent({
+      searchParams: Promise.resolve({})
+    }));
+
+    // Разметка рендерится дважды (desktop-таблица + mobile-карточки, переключение через CSS) —
+    // бейдж «использован» должен встретиться по разу в каждой, «не использован» — ни разу.
+    expect(html.match(/На складе/g) ?? []).toHaveLength(2);
+    expect(html.match(/В рецептах 3/g) ?? []).toHaveLength(2);
+  });
+
+  it("shows a malt subtype badge, a color swatch and full parameter labels", async () => {
+    mockState.listResult = {
+      ...mockState.listResult,
+      items: [
+        buildCatalogItem({
+          id: "malt-1",
+          type: "malt",
+          category: "fermentable",
+          subtype: "malt",
+          primaryLabelRu: "Пилснер солод",
+          technicalData: { type: "malt", extractPctDryBasis: 80, colorEbcMin: 3, colorEbcMax: 4 },
+          fermentableExtractYieldPct: 80,
+          fermentableColorLovibond: 2
+        })
+      ],
+      total: 1,
+      facets: {
+        ...mockState.listResult.facets,
+        catalogCount: 1
+      }
+    };
+
+    const html = renderToStaticMarkup(await IngredientCatalogContent({
+      searchParams: Promise.resolve({})
+    }));
+
+    expect(html).toContain("Солод");
+    expect(html).toContain("Экстракт 80%");
+    expect(html).not.toContain("Экст-ть");
+    expect(html).toContain("linear-gradient(180deg");
+  });
+
+  it("translates yeast flocculation and attenuation and shows the yeast-form badge near the name", async () => {
+    mockState.listResult = {
+      ...mockState.listResult,
+      items: [
+        buildCatalogItem({
+          id: "yeast-1",
+          type: "yeast",
+          category: "yeast",
+          subtype: "yeast",
+          primaryLabelRu: "US-05",
+          technicalData: { type: "yeast", attenuationPctTypical: 78, flocculation: "very high", form: "dry" },
+          yeastAttenuationPct: 78,
+          yeastForm: "dry"
+        })
+      ],
+      total: 1,
+      facets: {
+        ...mockState.listResult.facets,
+        catalogCount: 1
+      }
+    };
+
+    const html = renderToStaticMarkup(await IngredientCatalogContent({
+      searchParams: Promise.resolve({})
+    }));
+
+    expect(html).toContain("Аттенюация 78%");
+    expect(html).toContain("Флокуляция очень высокая");
+    expect(html).toContain("сухие");
+    expect(html).not.toContain("Атт.");
+  });
+
+  it("carries the consumable subtype into parameters now that the Тип column is gone", async () => {
+    mockState.listResult = {
+      ...mockState.listResult,
+      items: [
+        buildCatalogItem({
+          id: "consumable-1",
+          type: "consumable",
+          category: "consumable",
+          subtype: "sanitizer",
+          primaryLabelRu: "Star San",
+          hopForm: null,
+          technicalData: { type: "consumable", commonForms: ["liquid"] },
+          unitPreferred: "ml"
+        })
+      ],
+      total: 1,
+      facets: {
+        ...mockState.listResult.facets,
+        catalogCount: 1
+      }
+    };
+
+    const html = renderToStaticMarkup(await IngredientCatalogContent({
+      searchParams: Promise.resolve({})
+    }));
+
+    expect(html).toContain("санитайзер");
   });
 });

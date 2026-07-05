@@ -89,3 +89,58 @@ export const recipeTabs: RecipeTab[] = [
   { href: "/app/saved", label: "Сохранённые" },
   { href: "/recipes", label: "Найти" }
 ];
+
+// Пользователь для app-хрома (сайдбар рабочей зоны). Живёт здесь, а не в
+// site-header: используется несколькими оболочками, а сама шапка теперь
+// анонимная и пользователя не принимает.
+export type AppChromeUser = {
+  email: string | null;
+  phone?: string | null;
+  displayName: string;
+  // editor+ — показывает мост в админку (вычисляется на сервере)
+  isStaff?: boolean;
+};
+
+// Роуты, чей контент-браузер требует доп. ширину на ультрашироких экранах
+// (третья колонка карточек на 2xl). Держим список здесь, рядом с навигацией;
+// если исключений станет больше 2–3 — переносим «желаемую ширину» в сами страницы.
+export const isWideContentRoute = (pathname: string): boolean =>
+  pathname === "/recipes";
+
+// Витринные (публичные) поверхности — доступны без логина. Логаут на такой
+// странице должен оставить пользователя на месте (сервер перерисует хром на
+// анонимный), а не кидать на /. Источник правды — состав группы app/(public).
+const publicPathPrefixes = [
+  "/recipes",
+  "/bjcp",
+  "/calculators",
+  "/guides",
+  "/catalog",
+  "/articles",
+  "/brewforge",
+  "/legal"
+];
+
+export const isPublicPath = (pathname: string): boolean =>
+  pathname === "/" ||
+  publicPathPrefixes.some((prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`));
+
+// Пути рабочей зоны — рендерятся компактнее (6xl). Всё остальное (витрина,
+// контент, /login, главная) — по витринной ширине (7xl), чтобы публичная
+// страница выглядела одинаково залогиненному и анониму, а не сжималась в
+// сайдбарной раскладке мастерской.
+const appZonePrefixes = ["/app", "/profile", "/settings"];
+
+// Единый источник ширины контейнера контента для ОБЕИХ оболочек (AppShell и
+// PublicShell). Один роут → один класс, независимо от логина: витринные страницы
+// не должны менять ширину при входе. /recipes-браузер на ультрашироких тянется
+// под третью колонку карточек.
+export const resolveContentWidthClass = (pathname: string): string => {
+  if (isWideContentRoute(pathname)) {
+    return "max-w-7xl 2xl:max-w-[1600px]";
+  }
+  const inAppZone = appZonePrefixes.some(
+    (prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`)
+  );
+  return inAppZone ? "max-w-6xl" : "max-w-7xl";
+};

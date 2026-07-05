@@ -280,6 +280,7 @@ export const AdminIngredientForm = ({ initial }: { initial?: IngredientFormValue
             itemKind: selectedSubtype,
             nameRu: readOptionalText(formData, "nameRu"),
             nameEn: readOptionalText(formData, "nameEn"),
+            descriptionRu: readOptionalText(formData, "descriptionRu"),
             displayModeRu: String(formData.get("displayModeRu") ?? "auto"),
             displayNameOverrideRu: readOptionalText(formData, "displayNameOverrideRu"),
             secondaryNameOverrideRu: readOptionalText(formData, "secondaryNameOverrideRu"),
@@ -441,6 +442,15 @@ export const AdminIngredientForm = ({ initial }: { initial?: IngredientFormValue
             Hide secondary name
           </label>
         </div>
+        <label className="block text-sm">
+          Описание
+          <textarea
+            name="descriptionRu"
+            defaultValue={initial?.descriptionRu ?? ""}
+            rows={8}
+            className={`${inputClassName} font-sans text-sm`}
+          />
+        </label>
       </section>
 
       <section className={sectionClassName}>

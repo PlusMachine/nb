@@ -40,7 +40,7 @@ import {
   ingredientSearchQuerySchema
 } from "./contracts";
 import { ingredientSearchSimpleModeThreshold } from "./contracts";
-import { sortRankedCatalogItems } from "./catalog-ranking";
+import { filterRankedCatalogNoise, sortRankedCatalogItems } from "./catalog-ranking";
 import { readCustomIngredientMetadata } from "./custom-metadata";
 import { normalizeSearchText } from "./normalization";
 import {
@@ -80,7 +80,8 @@ import {
 import { loadIngredients, getIngredientById } from "./service";
 import {
   extractIngredientTechnicalData,
-  extractIngredientTechnicalFields
+  extractIngredientTechnicalFields,
+  resolveIngredientTechnicalDataColorRangeEbc
 } from "./technical-fields";
 import {
   resolveIngredientCategory,
@@ -235,6 +236,7 @@ const mapCustomIngredient = (
     displayNameEn: metadata.nameEn,
     nameRu: metadata.nameRu,
     nameEn: metadata.nameEn,
+    descriptionRu: null,
     displayModeRu: metadata.displayModeRu,
     displayNameOverrideRu: metadata.displayNameOverrideRu,
     secondaryNameOverrideRu: metadata.secondaryNameOverrideRu,
@@ -846,6 +848,58 @@ const applyUsageCounts = async (
   });
 };
 
+// Числовое сравнение по возрастанию для параметрических сортировок (альфа/цвет/
+// аттенюация): элементы без значения всегда уходят в конец, независимо от того,
+// какая сторона сравнения null.
+const compareNullableNumericAscending = (
+  left: number | null | undefined,
+  right: number | null | undefined
+) => {
+  const hasLeft = typeof left === "number" && Number.isFinite(left);
+  const hasRight = typeof right === "number" && Number.isFinite(right);
+
+  if (!hasLeft && !hasRight) {
+    return 0;
+  }
+
+  if (!hasLeft) {
+    return 1;
+  }
+
+  if (!hasRight) {
+    return -1;
+  }
+
+  return left - right;
+};
+
+const resolveCatalogColorEbc = (item: UserCatalogIngredientDto): number | null => {
+  const range = resolveIngredientTechnicalDataColorRangeEbc(item.technicalData);
+  if (range) {
+    return range.average;
+  }
+
+  return typeof item.fermentableColorLovibond === "number"
+    ? item.fermentableColorLovibond * 1.97
+    : null;
+};
+
+// Параметрические сортировки (3.5) применяются только при активной категории,
+// которой они соответствуют семантически — иначе сортировка молча падает на "name".
+const catalogSortCategoryRequirement: Partial<Record<IngredientCatalogSortOption, IngredientCategory>> = {
+  alpha: "hop",
+  color: "fermentable",
+  attenuation: "yeast"
+};
+
+const resolveCatalogSortOptionForCategory = (
+  sort: IngredientCatalogSortOption,
+  category?: IngredientCategory
+): IngredientCatalogSortOption => {
+  const requiredCategory = catalogSortCategoryRequirement[sort];
+  return requiredCategory && requiredCategory !== category ? "name" : sort;
+};
+
 const sortCatalogItems = (
   items: UserCatalogIngredientDto[],
   sort: IngredientCatalogSortOption
@@ -862,6 +916,21 @@ const sortCatalogItems = (
 
   if (sort === "brand") {
     return (left.brand ?? left.producer ?? "").localeCompare(right.brand ?? right.producer ?? "", "ru")
+      || left.primaryLabelRu.localeCompare(right.primaryLabelRu, "ru");
+  }
+
+  if (sort === "alpha") {
+    return compareNullableNumericAscending(left.hopAlphaAcidPct, right.hopAlphaAcidPct)
+      || left.primaryLabelRu.localeCompare(right.primaryLabelRu, "ru");
+  }
+
+  if (sort === "color") {
+    return compareNullableNumericAscending(resolveCatalogColorEbc(left), resolveCatalogColorEbc(right))
+      || left.primaryLabelRu.localeCompare(right.primaryLabelRu, "ru");
+  }
+
+  if (sort === "attenuation") {
+    return compareNullableNumericAscending(left.yeastAttenuationPct, right.yeastAttenuationPct)
       || left.primaryLabelRu.localeCompare(right.primaryLabelRu, "ru");
   }
 
@@ -1547,6 +1616,14 @@ export const searchUserCatalogIngredients = async (
   const rankingQuery = normalizedQuery.length > 0
     ? query.q
     : (familyScope?.presetQuery ?? "");
+  // Примечание (2.1): здесь, в отличие от listUserCatalogIngredients, шумный
+  // token-scatter/fuzzy хвост НЕ обрезается filterRankedCatalogNoise. Для
+  // расходников (buildConsumableRank) совпадение по searchPriorityTermsEn/Ru,
+  // не входящим в имя, приходит именно через tier 8 (token-scatter) в
+  // buildFallbackRank — единственный способ найти товар по маркетинговому
+  // названию. Обрезка здесь молча ломает такие пикер-сценарии (см.
+  // тест "uses manufacturer refinements as a secondary layer inside a
+  // selected consumable group" в user-catalog-ingredient-search.test.ts).
   const rankedItems = rankingQuery
     ? (() => {
       const brandMarketCounts = buildBrandMarketCountMap(favoriteScopedItems);
@@ -1640,9 +1717,10 @@ export const listUserCatalogIngredients = async (
 ): Promise<UserCatalogListResult> => {
   const page = Math.max(1, params.page ?? 1);
   const pageSize = Math.max(1, Math.min(100, params.pageSize ?? 20));
-  const sort = ingredientCatalogSortOptions.includes(params.sort as IngredientCatalogSortOption)
+  const requestedSort = ingredientCatalogSortOptions.includes(params.sort as IngredientCatalogSortOption)
     ? params.sort as IngredientCatalogSortOption
     : "name";
+  const sort = resolveCatalogSortOptionForCategory(requestedSort, params.category);
   const view = params.view === "mine" ? "mine" : "all";
   const { catalogItems, customItems, allItems } = await loadUnifiedCatalogItems(userId);
 
@@ -1651,10 +1729,10 @@ export const listUserCatalogIngredients = async (
       ? (() => {
         const brandMarketCounts = buildBrandMarketCountMap(items);
 
-        return items
+        return filterRankedCatalogNoise(items
           .map((item) => buildRankedItem(item, params.q ?? "", brandMarketCounts))
           .filter((item): item is RankedCatalogItem => item !== null)
-          .sort(sortRankedCatalogItems)
+          .sort(sortRankedCatalogItems))
           .map(({ item }) => item);
       })()
       : sortCatalogItems(items, sort)
@@ -1765,4 +1843,125 @@ export const getUserCatalogIngredientByRef = async (
     ...result,
     purchaseLinks
   };
+};
+
+// ─── 5.4: блоки перелинковки детальной страницы каталога (SEO + ценность
+// анониму) — «Похожие ингредиенты» и «Другие ингредиенты {бренд}». Оба блока
+// публичные: без userId, без персонализации (изб.ранное/usage-counts не
+// подмешиваются) — источник данных строго кэшируемый loadIngredients().
+
+const resolveSimilarityGroupKey = (
+  category: IngredientCategory,
+  candidate: UserCatalogIngredientDto
+): string | null => {
+  if (category === "yeast") {
+    const technicalData = candidate.technicalData;
+    const yeastFamily = technicalData?.type === "yeast"
+      ? (technicalData as Extract<typeof technicalData, { type: "yeast" }>).yeastFamily ?? null
+      : null;
+    return yeastFamily ?? candidate.subtype ?? null;
+  }
+
+  if (category === "fermentable" || category === "water_treatment" || category === "consumable") {
+    return candidate.subtype ?? null;
+  }
+
+  // hop: категория уже отфильтрована выше, отдельная группировка не нужна —
+  // сорт хмеля различается только числовой близостью по альфа-кислоте.
+  return null;
+};
+
+const resolveSimilarityNumericValue = (
+  category: IngredientCategory,
+  candidate: UserCatalogIngredientDto
+): number | null => {
+  if (category === "hop") {
+    return typeof candidate.hopAlphaAcidPct === "number" ? candidate.hopAlphaAcidPct : null;
+  }
+
+  if (category === "fermentable") {
+    return resolveCatalogColorEbc(candidate);
+  }
+
+  if (category === "yeast") {
+    return typeof candidate.yeastAttenuationPct === "number" ? candidate.yeastAttenuationPct : null;
+  }
+
+  return null;
+};
+
+// Сравнение «похожести» с эталоном (reference): сперва группа (тот же
+// subtype/сорт дрожжей, если она известна у эталона), затем близость по
+// числовому параметру категории (без значения на любой из сторон — в конец),
+// и в конце алфавит по русскому имени.
+const compareSimilarCatalogCandidates = (
+  reference: UserCatalogIngredientDto,
+  left: UserCatalogIngredientDto,
+  right: UserCatalogIngredientDto
+) => {
+  const category = reference.category;
+  const referenceGroupKey = resolveSimilarityGroupKey(category, reference);
+  const groupRank = (candidate: UserCatalogIngredientDto) => (
+    referenceGroupKey && resolveSimilarityGroupKey(category, candidate) === referenceGroupKey ? 0 : 1
+  );
+  const referenceValue = resolveSimilarityNumericValue(category, reference);
+  const distanceFromReference = (candidate: UserCatalogIngredientDto) => {
+    const candidateValue = resolveSimilarityNumericValue(category, candidate);
+    return referenceValue == null || candidateValue == null
+      ? Number.POSITIVE_INFINITY
+      : Math.abs(referenceValue - candidateValue);
+  };
+
+  return groupRank(left) - groupRank(right)
+    || distanceFromReference(left) - distanceFromReference(right)
+    || left.primaryLabelRu.localeCompare(right.primaryLabelRu, "ru");
+};
+
+/**
+ * «Похожие ингредиенты» на детальной странице каталога (план, этап 5.4).
+ * Только системные активные ингредиенты той же категории — никакой
+ * персонализации. Близость: hop — альфа-кислота, fermentable — тот же
+ * subtype + цвет EBC, yeast — тот же yeastFamily/подтип + аттенюация,
+ * water_treatment/consumable — тот же subtype; при отсутствии значения
+ * элемент уходит в конец, финальный тай-брейкер — алфавит.
+ */
+export const listSimilarCatalogIngredients = async (
+  item: UserCatalogIngredientDto,
+  limit = 6
+): Promise<UserCatalogIngredientDto[]> => {
+  const catalogItems = await loadIngredients({ category: item.category });
+
+  return catalogItems
+    .map(mapSystemIngredient)
+    .filter((candidate) => candidate.id !== item.id)
+    .sort((left, right) => compareSimilarCatalogCandidates(item, left, right))
+    .slice(0, limit);
+};
+
+/**
+ * «Другие ингредиенты {бренд}» на детальной странице каталога (план, этап
+ * 5.4). Любые категории, только системные активные; бренд сравнивается через
+ * {@link resolveIngredientBrandLabel} (brand → producer → brandName →
+ * manufacturer), без учёта регистра. Без бренда у эталона — пустой список.
+ */
+export const listSameBrandCatalogIngredients = async (
+  item: UserCatalogIngredientDto,
+  limit = 5
+): Promise<UserCatalogIngredientDto[]> => {
+  const brand = resolveIngredientBrandLabel(item);
+  if (!brand) {
+    return [];
+  }
+
+  const normalizedBrand = normalizeSearchText(brand);
+  const catalogItems = await loadIngredients();
+
+  return catalogItems
+    .map(mapSystemIngredient)
+    .filter((candidate) => (
+      candidate.id !== item.id
+      && normalizeSearchText(resolveIngredientBrandLabel(candidate) ?? "") === normalizedBrand
+    ))
+    .sort((left, right) => left.primaryLabelRu.localeCompare(right.primaryLabelRu, "ru"))
+    .slice(0, limit);
 };

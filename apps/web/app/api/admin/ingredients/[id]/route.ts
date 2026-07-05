@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 
-import { deleteIngredient, getIngredientById, updateIngredient } from "@/features/ingredients/service";
+import { invalidateIngredientsCatalogCache, deleteIngredient, getIngredientById, updateIngredient } from "@/features/ingredients/service";
 import { requireCatalogRole } from "@/features/ingredients/permissions";
 
 export async function GET(_request: Request, { params }: { params: Promise<{ id: string }> }) {
@@ -27,6 +27,7 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
     if (!item) {
       return NextResponse.json({ error: "NOT_FOUND" }, { status: 404 });
     }
+    invalidateIngredientsCatalogCache();
     return NextResponse.json(item);
   } catch (error) {
     const status = (error as Error).message === "FORBIDDEN" ? 403 : 400;
@@ -42,6 +43,7 @@ export async function DELETE(_request: Request, { params }: { params: Promise<{ 
     if (!result) {
       return NextResponse.json({ error: "NOT_FOUND" }, { status: 404 });
     }
+    invalidateIngredientsCatalogCache();
     return NextResponse.json(result);
   } catch (error) {
     const status = (error as Error).message === "FORBIDDEN" ? 403 : 400;

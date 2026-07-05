@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 
-import { listCatalogIngredients, createIngredient } from "@/features/ingredients/service";
+import { invalidateIngredientsCatalogCache, listCatalogIngredients, createIngredient } from "@/features/ingredients/service";
 import { requireCatalogRole } from "@/features/ingredients/permissions";
 
 export async function GET(request: Request) {
@@ -28,6 +28,7 @@ export async function POST(request: Request) {
     const user = await requireCatalogRole("admin");
     const body = await request.json();
     const item = await createIngredient(body, user.id);
+    invalidateIngredientsCatalogCache();
     return NextResponse.json(item, { status: 201 });
   } catch (error) {
     const status = (error as Error).message === "FORBIDDEN" ? 403 : 400;

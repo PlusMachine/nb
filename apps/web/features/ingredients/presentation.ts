@@ -1,8 +1,24 @@
 import type { IngredientDisplayMode, IngredientTechnicalData } from "./contracts";
 import { formatConsumableFormLabel } from "./consumables";
+import { inventoryUnitShortLabels } from "../inventory/units";
 import { normalizeSearchText } from "./normalization";
 import { formatHopFormLabel, resolveIngredientTechnicalDataColorRangeEbc } from "./technical-fields";
 import type { IngredientCategory, IngredientSubtype, LegacyIngredientType as IngredientType } from "./taxonomy";
+
+// Единый публичный API enum-лейблов каталога (этап 4.2): переиспользуем
+// таблицы из technical-fields.ts/consumables.ts, а не заводим отдельные копии.
+export { formatHopFormLabel } from "./technical-fields";
+export { formatConsumableFormLabel } from "./consumables";
+
+/** Единица измерения ингредиента (г/кг/шт и т.п.) — по словарю склада, единому для всего приложения. */
+export const resolveIngredientUnitLabel = (value?: string | null): string | null => {
+  const trimmed = value?.trim();
+  if (!trimmed) {
+    return null;
+  }
+
+  return (inventoryUnitShortLabels as Record<string, string>)[trimmed.toLowerCase()] ?? trimmed;
+};
 
 type IngredientPresentationSource = {
   category?: IngredientCategory | null;
@@ -588,6 +604,58 @@ export const formatIngredientSubtypeLabel = (
   }
 
   return subtypeLabels[subtype] ?? subtype.replaceAll("_", " ");
+};
+
+const yeastFlocculationLabelsRu: Record<string, string> = {
+  low: "низкая",
+  medium: "средняя",
+  high: "высокая",
+  "very high": "очень высокая",
+  "very-high": "очень высокая",
+  "low-medium": "низкая-средняя",
+  "medium-low": "низкая-средняя",
+  "medium-high": "средняя-высокая",
+  "high-medium": "средняя-высокая"
+};
+
+export const resolveYeastFlocculationLabelRu = (value?: string | null): string | null => {
+  if (!value) {
+    return null;
+  }
+
+  const normalized = value.trim().toLowerCase();
+  return yeastFlocculationLabelsRu[normalized] ?? normalized;
+};
+
+const yeastFormLabelsRu: Record<string, string> = {
+  dry: "сухие",
+  liquid: "жидкие",
+  slurry: "суспензия",
+  culture: "культура"
+};
+
+/** Форма дрожжей для бейджа рядом с названием в каталоге (сухие/жидкие и т.п.). */
+export const resolveYeastFormLabelRu = (value?: string | null): string | null => {
+  if (!value) {
+    return null;
+  }
+
+  const normalized = value.trim().toLowerCase();
+  return yeastFormLabelsRu[normalized] ?? normalized.replaceAll("_", " ");
+};
+
+// Стандартная форма хмеля (T-90 гранулы) — подавляющее большинство каталога,
+// бейдж у названия показываем только для нестандартных форм.
+const standardHopForms = new Set(["standard", "pellet"]);
+
+/** Форма хмеля для бейджа рядом с названием — только для нестандартных форм (крио, лупулиновый концентрат…). */
+export const resolveHopFormBadgeLabel = (value?: string | null): string | null => {
+  const normalized = value?.trim().toLowerCase();
+  if (!normalized || standardHopForms.has(normalized)) {
+    return null;
+  }
+
+  return formatHopFormLabel(normalized);
 };
 
 export const resolveIngredientFamilyDisplayName = (

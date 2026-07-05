@@ -67,7 +67,11 @@ import {
   resolveIngredientTechnicalDataColorRangeEbc
 } from "@/features/ingredients/technical-fields";
 import { resolveWaterTreatmentFormulaLabel } from "@/features/ingredients/water-treatment";
-import { beerColorFromSrm } from "@/features/recipes/beer-color";
+import {
+  IngredientColorAccentStripe,
+  resolveIngredientColorAccent,
+  type IngredientColorAccent
+} from "@/components/ingredients/ingredient-color-swatch";
 
 export {
   buildIngredientPickerQuickStartFamilySearchValue,
@@ -634,45 +638,15 @@ const readBadgeNumber = (...values: Array<number | null | undefined>) => {
   return null;
 };
 
-const ebcToSrm = (value: number) => value / 1.97;
-
-type IngredientPickerBadgeAccent = {
-  startHex: string;
-  averageHex: string;
-  endHex: string;
-};
-
 export type IngredientPickerTechnicalBadge = {
   key: string;
   label: string;
-  accent?: IngredientPickerBadgeAccent | null;
+  accent?: IngredientColorAccent | null;
 };
 
-const resolveColorBadgeAccent = (item: Pick<IngredientSuggestionItem, "technicalData">): IngredientPickerBadgeAccent | null => {
-  const technicalData = item.technicalData;
-  if (!technicalData || (technicalData.type !== "malt" && technicalData.type !== "fermentable")) {
-    return null;
-  }
-
-  const range = resolveIngredientTechnicalDataColorRangeEbc(technicalData);
-  const startEbc = range?.min ?? null;
-  const endEbc = range?.max ?? null;
-
-  if (startEbc == null || endEbc == null) {
-    return null;
-  }
-
-  const averageEbc = range?.average ?? ((startEbc + endEbc) / 2);
-  const start = beerColorFromSrm(ebcToSrm(startEbc));
-  const average = beerColorFromSrm(ebcToSrm(averageEbc));
-  const end = beerColorFromSrm(ebcToSrm(endEbc));
-
-  return {
-    startHex: start.hex,
-    averageHex: average.hex,
-    endHex: end.hex
-  };
-};
+const resolveColorBadgeAccent = (item: Pick<IngredientSuggestionItem, "technicalData">): IngredientColorAccent | null => (
+  resolveIngredientColorAccent(item.technicalData)
+);
 
 const formatColorBadge = (item: Pick<IngredientSuggestionItem, "technicalData">) => {
   const technicalData = item.technicalData;
@@ -702,7 +676,7 @@ export const buildIngredientPickerTechnicalBadges = (item: IngredientSuggestionI
 
   const badges: IngredientPickerTechnicalBadge[] = [];
   const seen = new Set<string>();
-  const pushBadge = (label?: string | null, accent?: IngredientPickerBadgeAccent | null) => {
+  const pushBadge = (label?: string | null, accent?: IngredientColorAccent | null) => {
     const trimmed = label?.trim();
     if (!trimmed) {
       return;
@@ -890,15 +864,7 @@ export const IngredientPickerTechnicalBadges = ({
           }`}
         >
           {badge.label}
-          {badge.accent ? (
-            <span
-              aria-hidden="true"
-              className="absolute inset-y-0 left-0 w-[4px]"
-              style={{
-                backgroundImage: `linear-gradient(180deg, ${badge.accent.startHex} 0%, ${badge.accent.averageHex} 52%, ${badge.accent.endHex} 100%)`
-              }}
-            />
-          ) : null}
+          {badge.accent ? <IngredientColorAccentStripe accent={badge.accent} /> : null}
         </span>
       ))}
       {stockLabel ? (

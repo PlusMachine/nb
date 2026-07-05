@@ -13,14 +13,13 @@ import {
   IngredientsPageSkeleton,
   RecipesPageSkeleton
 } from "@/components/app/section-skeletons";
-import type { SiteHeaderUser } from "@/components/shared/site-header";
-import { isNavItemActive, primaryNavItems } from "@/lib/navigation";
+import { isNavItemActive, primaryNavItems, resolveContentWidthClass, type AppChromeUser } from "@/lib/navigation";
 
 import { AppSidebarNav } from "./app-sidebar-nav";
 
 type AppShellProps = {
   children: React.ReactNode;
-  user: SiteHeaderUser;
+  user: AppChromeUser;
 };
 
 const pendingDisplayDelayMs = 140;
@@ -260,14 +259,7 @@ export function AppShell({ children, user }: AppShellProps) {
             </div>
           </>
         ) : null}
-        <div
-          className={`mx-auto px-4 py-6 pb-24 sm:px-6 lg:pb-10 ${
-            // Витрина рецептов — двухсайдбарная сетка-браузер: на ультрашироких
-            // экранах ей даём больше ширины, чтобы поместилась третья колонка карточек
-            // и справа не оставалось пустого поля. Остальные (текстовые) роуты — 6xl.
-            pathname === "/recipes" ? "max-w-6xl 2xl:max-w-[1600px]" : "max-w-6xl"
-          }`}
-        >
+        <div className={`mx-auto px-4 py-6 pb-24 sm:px-6 lg:pb-10 ${resolveContentWidthClass(pathname)}`}>
           {pendingPathname && pendingPathname !== pathname ? resolvePendingSkeleton(pendingPathname) : children}
         </div>
       </main>

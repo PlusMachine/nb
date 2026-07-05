@@ -108,6 +108,7 @@ const buildIngredientRow = (overrides: Record<string, unknown> = {}) => ({
   type: "malt",
   nameRu: "Пилснер",
   nameEn: "Pilsner Malt",
+  descriptionRu: null,
   displayModeRu: "localized_first",
   displayNameOverrideRu: null,
   secondaryNameOverrideRu: null,
@@ -373,7 +374,7 @@ describe("каталог: листинг пользовательского ка
 });
 
 describe("каталог: деталь ингредиента по ref", () => {
-  const detailRow = () => buildIngredientRow({
+  const detailRow = (overrides: Record<string, unknown> = {}) => buildIngredientRow({
     id: "detail-cat",
     type: "consumable",
     nameRu: "Звёздный санитайзер",
@@ -391,7 +392,8 @@ describe("каталог: деталь ингредиента по ref", () => {
     packageVariants: [
       buildVariantRow({ id: "pv-1", ingredientId: "detail-cat", brand: "v1", position: 1 }),
       buildVariantRow({ id: "pv-0", ingredientId: "detail-cat", brand: "v0", position: 0 })
-    ]
+    ],
+    ...overrides
   });
 
   it("каталожный ref агрегирует и упорядочивает алиасы/источники/фасовки и прикладывает purchaseLinks", async () => {
@@ -406,6 +408,26 @@ describe("каталог: деталь ингредиента по ref", () => {
     expect(item?.sources.map((source) => source.label)).toEqual(["s0", "s1", "s2"]);
     expect(item?.packageVariants.map((variant) => variant.brand)).toEqual(["v0", "v1"]);
     expect(item?.purchaseLinks).toHaveLength(1);
+  });
+
+  it("descriptionRu системного ингредиента доходит до DTO деталки без потерь", async () => {
+    mockState.ingredientRows = [
+      detailRow({ descriptionRu: "Первый абзац описания.\n\nВторой абзац." })
+    ];
+
+    const item = await getUserCatalogIngredientByRef("user-1", "catalog", "detail-cat");
+
+    expect(item?.descriptionRu).toBe("Первый абзац описания.\n\nВторой абзац.");
+  });
+
+  it("у пользовательских (custom) ингредиентов descriptionRu всегда null", async () => {
+    mockState.customRows = [
+      buildCustomRow({ id: "owned-custom", userId: "user-1", displayName: "Мой солод" })
+    ];
+
+    const item = await getUserCatalogIngredientByRef("user-1", "custom", "owned-custom");
+
+    expect(item?.descriptionRu).toBeNull();
   });
 
   it("неизвестный каталожный ref возвращает null", async () => {

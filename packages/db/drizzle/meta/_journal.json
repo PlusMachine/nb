@@ -347,6 +347,13 @@
       "when": 1791000000019,
       "tag": "0053_massive_beast",
       "breakpoints": true
+    },
+    {
+      "idx": 54,
+      "version": "7",
+      "when": 1791000000020,
+      "tag": "0054_burly_vermin",
+      "breakpoints": true
     }
   ]
 }

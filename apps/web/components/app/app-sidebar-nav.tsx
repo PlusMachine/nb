@@ -5,11 +5,10 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { LogOut, Shield } from "lucide-react";
 
-import { appNavGroups, isNavItemActive } from "@/lib/navigation";
-import type { SiteHeaderUser } from "@/components/shared/site-header";
+import { appNavGroups, isNavItemActive, isPublicPath, type AppChromeUser } from "@/lib/navigation";
 
 type AppSidebarNavProps = {
-  user: SiteHeaderUser;
+  user: AppChromeUser;
   // вызывается при клике по ссылке (мобильный drawer закрывается)
   onNavigate?: () => void;
 };
@@ -25,8 +24,15 @@ export function AppSidebarNav({ user, onNavigate }: AppSidebarNavProps) {
       await fetch("/api/auth/logout", { method: "POST" });
     } finally {
       onNavigate?.();
-      router.push("/");
-      router.refresh();
+      // На витринной странице остаёмся на месте: сервер перерисует хром на
+      // анонимный (публичная шапка вместо сайдбара). Уводим на / только из
+      // страниц рабочей зоны, которых у анонима нет.
+      if (isPublicPath(pathname)) {
+        router.refresh();
+      } else {
+        router.push("/");
+        router.refresh();
+      }
     }
   };
 

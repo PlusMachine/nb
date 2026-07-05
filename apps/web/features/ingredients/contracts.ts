@@ -204,6 +204,18 @@ const nullableNumberField = () => z.preprocess((value) => {
 
 const optionalString = (max: number) => z.string().trim().max(max).optional().nullable();
 
+// В отличие от optionalString — пустая строка (после trim) нормализуется в null,
+// а не остаётся "". Нужно для descriptionRu: очистка поля в форме должна убирать
+// секцию «Описание» на деталке, а не оставлять пустой абзац.
+const optionalTextField = (max: number) => z.preprocess((value) => {
+  if (typeof value !== "string") {
+    return value;
+  }
+
+  const trimmed = value.trim();
+  return trimmed.length ? trimmed : null;
+}, z.string().max(max).nullable().optional());
+
 const ingredientAliasInputSchema = z.object({
   id: z.string().optional(),
   locale: z.enum(ingredientAliasLocales),
@@ -314,6 +326,7 @@ export const ingredientUpsertSchema = z.object({
   itemKind: optionalString(120),
   nameRu: optionalString(240),
   nameEn: optionalString(240),
+  descriptionRu: optionalTextField(6000),
   displayModeRu: z.enum(ingredientDisplayModes).default("auto"),
   displayNameOverrideRu: optionalString(240),
   secondaryNameOverrideRu: optionalString(240),
@@ -406,6 +419,7 @@ export type IngredientCatalogItemDto = IngredientTechnicalFields & {
   displayNameEn: string | null;
   nameRu: string | null;
   nameEn: string | null;
+  descriptionRu: string | null;
   displayModeRu: IngredientDisplayMode;
   displayNameOverrideRu: string | null;
   secondaryNameOverrideRu: string | null;
@@ -586,7 +600,7 @@ export type IngredientPickerQuickStartResultBySubtype = Pick<
 export const ingredientCatalogViews = ["all", "mine"] as const;
 export type IngredientCatalogView = (typeof ingredientCatalogViews)[number];
 
-export const ingredientCatalogSortOptions = ["name", "updated", "category", "brand"] as const;
+export const ingredientCatalogSortOptions = ["name", "updated", "category", "brand", "alpha", "color", "attenuation"] as const;
 export type IngredientCatalogSortOption = (typeof ingredientCatalogSortOptions)[number];
 
 export type UserCatalogIngredientDto = IngredientTechnicalFields & {
@@ -603,6 +617,7 @@ export type UserCatalogIngredientDto = IngredientTechnicalFields & {
   displayNameEn: string | null;
   nameRu: string | null;
   nameEn: string | null;
+  descriptionRu: string | null;
   displayModeRu: IngredientDisplayMode;
   displayNameOverrideRu: string | null;
   secondaryNameOverrideRu: string | null;

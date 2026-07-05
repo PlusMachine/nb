@@ -21,7 +21,11 @@ import {
   resolveIngredientTechnicalDataColorRangeEbc
 } from "@/features/ingredients/technical-fields";
 import { resolveWaterTreatmentFormulaLabel } from "@/features/ingredients/water-treatment";
-import { beerColorFromSrm } from "@/features/recipes/beer-color";
+import {
+  IngredientColorAccentStripe,
+  resolveIngredientColorAccent,
+  type IngredientColorAccent
+} from "@/components/ingredients/ingredient-color-swatch";
 
 export type RecipeIngredientCardSource = {
   type?: IngredientType | null;
@@ -37,16 +41,10 @@ export type RecipeIngredientCardSource = {
   technicalData?: IngredientTechnicalData | null;
 };
 
-type RecipeIngredientBadgeAccent = {
-  startHex: string;
-  averageHex: string;
-  endHex: string;
-};
-
 export type RecipeIngredientTechnicalBadge = {
   key: string;
   label: string;
-  accent?: RecipeIngredientBadgeAccent | null;
+  accent?: IngredientColorAccent | null;
 };
 
 type BuildRecipeIngredientTechnicalBadgesOptions = {
@@ -101,31 +99,9 @@ const formatPercentRange = ({
   return null;
 };
 
-const ebcToSrm = (value: number) => value / 1.97;
-
-const resolveColorBadgeAccent = (technicalData: IngredientTechnicalData | null | undefined): RecipeIngredientBadgeAccent | null => {
-  if (!technicalData || (technicalData.type !== "malt" && technicalData.type !== "fermentable")) {
-    return null;
-  }
-
-  const range = resolveIngredientTechnicalDataColorRangeEbc(technicalData);
-  const startEbc = range?.min ?? null;
-  const endEbc = range?.max ?? null;
-  if (startEbc == null || endEbc == null) {
-    return null;
-  }
-
-  const averageEbc = range?.average ?? ((startEbc + endEbc) / 2);
-  const start = beerColorFromSrm(ebcToSrm(startEbc));
-  const average = beerColorFromSrm(ebcToSrm(averageEbc));
-  const end = beerColorFromSrm(ebcToSrm(endEbc));
-
-  return {
-    startHex: start.hex,
-    averageHex: average.hex,
-    endHex: end.hex
-  };
-};
+const resolveColorBadgeAccent = (technicalData: IngredientTechnicalData | null | undefined): IngredientColorAccent | null => (
+  resolveIngredientColorAccent(technicalData)
+);
 
 const formatColorBadge = (technicalData: IngredientTechnicalData | null | undefined) => {
   if (!technicalData || (technicalData.type !== "malt" && technicalData.type !== "fermentable")) {
@@ -157,7 +133,7 @@ export const buildRecipeIngredientTechnicalBadges = (
 
   const badges: RecipeIngredientTechnicalBadge[] = [];
   const seen = new Set<string>();
-  const pushBadge = (label?: string | null, accent?: RecipeIngredientBadgeAccent | null) => {
+  const pushBadge = (label?: string | null, accent?: IngredientColorAccent | null) => {
     const trimmed = label?.trim();
     if (!trimmed) {
       return;
@@ -239,15 +215,7 @@ export const RecipeIngredientTechnicalBadges = ({
           }`}
         >
           {badge.label}
-          {badge.accent ? (
-            <span
-              aria-hidden="true"
-              className="absolute inset-y-0 left-0 w-[4px]"
-              style={{
-                backgroundImage: `linear-gradient(180deg, ${badge.accent.startHex} 0%, ${badge.accent.averageHex} 52%, ${badge.accent.endHex} 100%)`
-              }}
-            />
-          ) : null}
+          {badge.accent ? <IngredientColorAccentStripe accent={badge.accent} /> : null}
         </span>
       ))}
     </div>

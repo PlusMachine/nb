@@ -14,7 +14,7 @@ import { publicLinks } from "../lib/navigation";
 describe("SiteHeader", () => {
   it("guest sees login and public sections, no identity", () => {
     const html = renderToStaticMarkup(
-      React.createElement(SiteHeader, { user: null, variant: "public" })
+      React.createElement(SiteHeader, {})
     );
 
     expect(html).toContain('href="/login"');
@@ -24,17 +24,13 @@ describe("SiteHeader", () => {
     expect(html).toContain('href="/recipes"');
   });
 
-  it("authenticated user sees identity and an app bridge, but no login", () => {
+  it("guest chrome has no app bridge or identity", () => {
     const html = renderToStaticMarkup(
-      React.createElement(SiteHeader, {
-        user: { email: "brewer@example.com", displayName: "Brewer" },
-        variant: "public"
-      })
+      React.createElement(SiteHeader, {})
     );
 
-    expect(html).toContain("Brewer");
-    expect(html).toContain('href="/app"');
-    expect(html).not.toContain('href="/login"');
+    expect(html).not.toContain('href="/app"');
+    expect(html).not.toContain('href="/profile"');
   });
 });
 

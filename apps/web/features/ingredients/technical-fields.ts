@@ -6,14 +6,14 @@ export type HopForm = (typeof hopForms)[number];
 
 const hopFormDisplayLabels: Record<string, string> = {
   pellet: "Гранулы",
-  standard: "Гранулы",
+  standard: "гранулы T-90",
   whole_cone: "Шишковой",
   cone: "Шишковой",
   leaf: "Шишковой",
-  cryo: "Крио",
-  lupulin: "Люпулин",
-  lupulin_concentrate: "Люпулин",
-  lupomax: "LUPOMAX"
+  cryo: "крио",
+  lupulin: "люпулин",
+  lupulin_concentrate: "лупулиновый концентрат",
+  lupomax: "Lupomax"
 };
 
 export const yeastFlocculationLevels = ["low", "medium", "high"] as const;

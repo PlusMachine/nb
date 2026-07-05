@@ -5,10 +5,11 @@ import { usePathname } from "next/navigation";
 
 import { AppShell } from "@/components/app/app-shell";
 import { SiteFooter } from "@/components/shared/site-footer";
-import { SiteHeader, type SiteHeaderUser } from "@/components/shared/site-header";
+import { SiteHeader } from "@/components/shared/site-header";
+import { resolveContentWidthClass, type AppChromeUser } from "@/lib/navigation";
 
 type PublicShellProps = {
-  user: SiteHeaderUser | null;
+  user: AppChromeUser | null;
   children: React.ReactNode;
 };
 
@@ -24,8 +25,8 @@ export function PublicShell({ user, children }: PublicShellProps) {
 
   return (
     <div className="min-h-screen [--chrome-top:3.5rem]">
-      <SiteHeader user={user} variant="public" />
-      <div className="mx-auto max-w-7xl px-6 pb-12">{children}</div>
+      <SiteHeader />
+      <div className={`mx-auto px-6 pb-12 ${resolveContentWidthClass(pathname)}`}>{children}</div>
       <SiteFooter />
     </div>
   );

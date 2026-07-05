@@ -2350,6 +2350,79 @@ export const listPublicRecipesForStyle = async (
     pageSize: limit
   });
 
+/**
+ * «Рецепты с этим ингредиентом» — блок детальной страницы каталога
+ * (notes/catalog-refactor-plan.md, этап 5.4). Связь строго через
+ * `recipeIngredients.ingredientCatalogItemId` (не по снапшот-имени — после
+ * мерджа/переименования системного ингредиента снапшот может разойтись с
+ * актуальным названием). `total` — все published-рецепты с этим ингредиентом,
+ * `items` — top-`limit` самых свежих по `updatedAt`. Отдельная узкая функция
+ * (по образцу {@link listPublicRecipesForStyle}), а не расширение
+ * `PublicRecipeFilters` — чтобы не трогать общий путь `searchPublicRecipes`.
+ */
+export const listPublicRecipesForIngredient = async (
+  ingredientCatalogItemId: string,
+  limit = 5
+): Promise<{ total: number; items: PublicRecipeListItem[] }> => {
+  const linkedRows = await db
+    .select({ recipeId: recipeIngredients.recipeId })
+    .from(recipeIngredients)
+    .where(eq(recipeIngredients.ingredientCatalogItemId, ingredientCatalogItemId));
+  const recipeIds = Array.from(new Set(linkedRows.map((row) => row.recipeId)));
+
+  if (recipeIds.length === 0) {
+    return { total: 0, items: [] };
+  }
+
+  const whereClause = and(eq(recipes.publicationState, "published"), inArray(recipes.id, recipeIds));
+
+  const totalRows = await db
+    .select({ value: count() })
+    .from(recipes)
+    .where(whereClause);
+  const total = totalRows[0]?.value ?? 0;
+
+  const rows = await db
+    .select({
+      id: recipes.id,
+      slug: recipes.slug,
+      title: recipes.title,
+      authorId: recipes.authorId,
+      styleId: recipes.styleId,
+      og: recipes.og,
+      fg: recipes.fg,
+      abv: recipes.abv,
+      ibu: recipes.ibu,
+      color: recipes.color,
+      batchSizeNormalizedQuantity: recipes.batchSizeNormalizedQuantity,
+      batchSizeNormalizedUnit: recipes.batchSizeNormalizedUnit,
+      updatedAt: recipes.updatedAt,
+      createdAt: recipes.createdAt,
+      heroImageId: recipes.heroImageId,
+      ratingAvg: recipes.ratingAvg,
+      ratingCount: recipes.ratingCount,
+      saveCount: recipes.saveCount,
+      featuredAt: recipes.featuredAt,
+      authorDisplayName: users.displayName,
+      authorImage: users.image,
+      heroThumbKey: recipeImages.storageKeyThumb,
+      heroBlurDataUrl: recipeImages.blurDataUrl
+    })
+    .from(recipes)
+    .leftJoin(users, eq(users.id, recipes.authorId))
+    .leftJoin(recipeImages, eq(recipeImages.id, recipes.heroImageId))
+    .where(whereClause)
+    .orderBy(desc(recipes.updatedAt))
+    .limit(limit);
+
+  const styleHeroImageByBjcpId = await getBjcpStyleHeroImageByBjcpId();
+
+  return {
+    total,
+    items: rows.map((row) => mapPublicRecipeListItem(row, styleHeroImageByBjcpId))
+  };
+};
+
 // ─── Рейтинги публичных рецептов (Phase D, §3.4) ─────────────────────────────
 // Жёсткие правила (первый write-path): userId только с сервера; нельзя оценивать
 // свой рецепт; оценивать можно только published; UNIQUE(recipe,user) → upsert;
