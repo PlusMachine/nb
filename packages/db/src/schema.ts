@@ -469,10 +469,20 @@ export const recipes = pgTable("recipes", {
   // сервисной транзакции при оценке/удалении (Phase D, §3.4).
   ratingAvg: doublePrecision("rating_avg"),
   ratingCount: integer("rating_count").default(0).notNull(),
+  // Байесовский скор рейтинга (IMDb-формула) — ТОЛЬКО для сортировки «По рейтингу»,
+  // наружу не показывается (пользователь видит честный ratingAvg). Считается из
+  // ratingAvg/ratingCount в той же транзакции; NULL при отсутствии оценок. Гасит
+  // патологию «одна оценка 5.0 выше 4.8 при 120 оценках». См. features/recipes/rating-score.ts.
+  ratingBayes: doublePrecision("rating_bayes"),
   // Денормализованный агрегат сохранений (источник — recipeSaves); пересчёт в
   // сервисной транзакции при сохранении/снятии. Используется для сортировки
   // «Популярные» на витрине /recipes.
   saveCount: integer("save_count").default(0).notNull(),
+  // «Выбор редакции»: когда рецепт отмечен куратором (роль editor+). NULL = не
+  // отмечен. Timestamp (а не boolean) даёт бесплатную сортировку «сначала недавно
+  // отмеченные». Это КУРАТОРСКАЯ МЕТКА, а не буст ранжирования — на сортировку
+  // витрины не влияет. Замена соц-доказательству на холодном старте.
+  featuredAt: timestamp("featured_at", { withTimezone: true }),
   // Провенанс клона ЧУЖОГО рецепта: ссылка на исходный published-рецепт, из
   // которого пользователь сделал свою редактируемую копию (используется для
   // атрибуции «Адаптировано из …»). NULL для оригиналов и для дубликатов своих
@@ -497,7 +507,9 @@ export const recipes = pgTable("recipes", {
   updatedAtIdx: index("recipes_updated_at_idx").on(table.updatedAt),
   titleIdx: index("recipes_title_idx").on(table.title),
   ratingAvgIdx: index("recipes_rating_avg_idx").on(table.ratingAvg),
+  ratingBayesIdx: index("recipes_rating_bayes_idx").on(table.ratingBayes),
   saveCountIdx: index("recipes_save_count_idx").on(table.saveCount),
+  featuredAtIdx: index("recipes_featured_at_idx").on(table.featuredAt),
   clonedFromIdx: index("recipes_cloned_from_idx").on(table.clonedFromRecipeId)
 }));
 
@@ -624,18 +636,29 @@ export const brewBatches = pgTable("brew_batches", {
   plannedFor: timestamp("planned_for", { withTimezone: true }),
   startedAt: timestamp("started_at", { withTimezone: true }),
   completedAt: timestamp("completed_at", { withTimezone: true }),
+  // Ключ идемпотентности создания партии: генерируется клиентом один раз на
+  // «намерение сварить» (открытие диалога «Сварить»). Повторный сабмит того же
+  // намерения (двойной клик, ретрай, гонка вкладок) ловит ON CONFLICT и
+  // возвращает УЖЕ созданную партию, а не плодит дубли. NULL — намеренно
+  // допускаем много (dev-скрипты, старые записи, каллеры без ключа): в Postgres
+  // NULL в unique-индексе не конфликтует, поэтому осознанная повторная варка
+  // (новое открытие диалога → новый ключ) по-прежнему создаёт отдельную партию.
+  idempotencyKey: uuid("idempotency_key"),
   createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull()
 }, (table) => ({
   userIdIdx: index("brew_batches_user_id_idx").on(table.userId),
   recipeIdIdx: index("brew_batches_recipe_id_idx").on(table.recipeId),
   statusIdx: index("brew_batches_status_idx").on(table.status),
-  deviceIdIdx: index("brew_batches_device_id_idx").on(table.deviceId)
+  deviceIdIdx: index("brew_batches_device_id_idx").on(table.deviceId),
+  userIdempotencyUidx: uniqueIndex("brew_batches_user_idempotency_uidx").on(table.userId, table.idempotencyKey)
 }));
 
 // Ручной журнал замеров плотности варки: показания ареометра/рефрактометра по
-// ходу брожения (в SG). OG = самый ранний замер, FG = самый поздний; ABV и
-// степень сбраживания считаются на лету (см. features/brew-batches). Отдельно от
+// ходу брожения (в SG). OG = самый ранний замер; FG отмечается явно флагом
+// isFinal (не «самый поздний»: во время брожения замеров много, а итоговый один).
+// ABV и степень сбраживания считаются на лету (см. features/brew-batches).
+// Инвариант «один финальный замер на партию» держит сервис. Отдельно от
 // brew_telemetry, которое только про устройство.
 export const brewMeasurements = pgTable("brew_measurements", {
   id: uuid("id").defaultRandom().primaryKey(),
@@ -643,6 +666,7 @@ export const brewMeasurements = pgTable("brew_measurements", {
   brewBatchId: uuid("brew_batch_id").notNull().references(() => brewBatches.id, { onDelete: "cascade" }),
   gravitySg: doublePrecision("gravity_sg").notNull(),
   takenAt: timestamp("taken_at", { withTimezone: true }).defaultNow().notNull(),
+  isFinal: boolean("is_final").default(false).notNull(),
   note: text("note"),
   createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull()
 }, (table) => ({

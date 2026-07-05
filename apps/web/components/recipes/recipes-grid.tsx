@@ -36,15 +36,19 @@ export function RecipesGrid({
           ))}
         </div>
       ) : (
-        // auto-fit/minmax, а не фиксированные breakpoint-колонки: число колонок считает
+        // auto-fill/minmax, а не фиксированные breakpoint-колонки: число колонок считает
         // браузер по реально доступной ширине контейнера, а не по ширине вьюпорта — это
         // важно, потому что ширину сетки режут сразу два сайдбара (nav-рельс приложения
         // + сайдбар фильтров на `xl+`). Минимум 320px держит карточку читаемой: две
         // колонки на обычных десктопах, третья — только на ультрашироких, где AppShell
         // расширяет контент витрины (см. app-shell). На `lg` (1024–1279) сайдбар фильтров
         // убран в sheet, так что сетке достаётся полная ширина и она даёт две колонки,
-        // а не одну растянутую.
-        <div className="grid grid-cols-[repeat(auto-fit,minmax(320px,1fr))] gap-5">
+        // а не одну растянутую. Именно auto-fill, а не auto-fit: auto-fit схлопывает пустые
+        // треки, и единственная карточка (частый случай на странице стиля / при 1 результате
+        // поиска) растягивается на всю ширину; auto-fill сохраняет треки, и одиночная
+        // карточка остаётся шириной колонки. Скелетон (recipes-grid-skeleton) обязан
+        // повторять эту же раскладку — иначе CLS при загрузке.
+        <div className="grid grid-cols-[repeat(auto-fill,minmax(320px,1fr))] gap-5">
           {recipes.map((recipe) => (
             <RecipeCard key={recipe.id} recipe={recipe} showCloneAction={showCloneAction} preferredGravityUnit={preferredGravityUnit} />
           ))}

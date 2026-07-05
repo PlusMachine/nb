@@ -8,6 +8,7 @@ import {
   addBrewMeasurement,
   deleteBrewMeasurement,
   setBrewDayStepState,
+  setBrewMeasurementFinal,
   updateBrewBatchNotes,
   updateBrewBatchStatus
 } from "@/features/brew-batches/service";
@@ -73,22 +74,24 @@ export const setBrewBatchStatusAction = async (
 
 export const addBrewMeasurementAction = async (
   brewBatchId: string,
-  input: { gravitySg: string | number; takenAt?: string | null; note?: string | null }
+  input: { gravitySg: string | number; takenAt?: string | null; note?: string | null; isFinal?: boolean }
 ): Promise<BrewActionResult> => {
   try {
     const user = await requireUser();
     const parsed = addBrewMeasurementSchema.parse({
       gravitySg: input.gravitySg,
       takenAt: input.takenAt?.trim() ? input.takenAt : undefined,
-      note: input.note?.trim() || null
+      note: input.note?.trim() || null,
+      isFinal: input.isFinal ?? false
     });
     await addBrewMeasurement(user.id, brewBatchId, {
       gravitySg: parsed.gravitySg,
       takenAt: parsed.takenAt ?? null,
-      note: parsed.note ?? null
+      note: parsed.note ?? null,
+      isFinal: parsed.isFinal ?? false
     });
     revalidateBatch(brewBatchId);
-    return { ok: true, message: "Замер добавлен." };
+    return { ok: true, message: parsed.isFinal ? "Финальный замер (FG) добавлен." : "Замер добавлен." };
   } catch (error) {
     if (error instanceof ZodError) {
       return { ok: false, message: firstZodMessage(error) };
@@ -114,6 +117,24 @@ export const deleteBrewMeasurementAction = async (
       return { ok: false, message: "Замер не найден." };
     }
     return { ok: false, message: "Не удалось удалить замер." };
+  }
+};
+
+export const setBrewMeasurementFinalAction = async (
+  brewBatchId: string,
+  measurementId: string,
+  isFinal: boolean
+): Promise<BrewActionResult> => {
+  try {
+    const user = await requireUser();
+    await setBrewMeasurementFinal(user.id, brewBatchId, measurementId, isFinal);
+    revalidateBatch(brewBatchId);
+    return { ok: true, message: isFinal ? "Замер отмечен как финальный (FG)." : "Отметка FG снята." };
+  } catch (error) {
+    if (error instanceof Error && error.message === "NOT_FOUND") {
+      return { ok: false, message: "Замер не найден." };
+    }
+    return { ok: false, message: "Не удалось изменить отметку." };
   }
 };
 

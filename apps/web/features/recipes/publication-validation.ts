@@ -3,7 +3,6 @@ import type { RecipePublicationState } from "./contracts";
 
 export type RecipePublicationRequirementKey =
   | "title"
-  | "styleId"
   | "description"
   | "ingredients.fermentable"
   | "ingredients.hop"
@@ -13,7 +12,6 @@ export type RecipePublicationRequirementKey =
 type RecipePublicationValidationInput = {
   publicationState: RecipePublicationState;
   title: string;
-  styleId?: string | null;
   description?: string | null;
   boilTimeMinutes?: number | null;
   ingredientCategories: Array<IngredientCategory | null | undefined>;
@@ -21,7 +19,6 @@ type RecipePublicationValidationInput = {
 
 export const publicationRequirementLabels: Record<RecipePublicationRequirementKey, string> = {
   title: "Название рецепта",
-  styleId: "Стиль BJCP",
   description: "Описание рецепта",
   "ingredients.fermentable": "Хотя бы одно сбраживаемое",
   "ingredients.hop": "Хотя бы один хмель",

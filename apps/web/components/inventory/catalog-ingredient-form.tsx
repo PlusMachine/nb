@@ -90,6 +90,10 @@ type Props = {
   pending: boolean;
   autoFocus?: boolean;
   initialSelection?: IngredientSuggestionItem | null;
+  /** Дефицит из списка покупок (UX-находка #20): предзаполнить количество/единицу.
+   *  Применяется один раз при монтировании и только если единица допустима. */
+  initialQuantity?: string | null;
+  initialUnit?: string | null;
   fieldErrors?: Record<string, string>;
   hidePicker?: boolean;
   selectionActionLabel?: string;
@@ -748,6 +752,8 @@ export function CatalogIngredientForm({
   pending,
   autoFocus = false,
   initialSelection = null,
+  initialQuantity = null,
+  initialUnit = null,
   fieldErrors,
   hidePicker = false,
   selectionActionLabel = "Изменить ингредиент",
@@ -973,6 +979,26 @@ export function CatalogIngredientForm({
     }));
   }, [category, initialSelection, subtype]);
 
+  // Дефицит из списка покупок (UX-находка #20): один раз при монтировании (после
+  // mount-эффектов сброса выше, поэтому объявлен ПОСЛЕ них) подставляем количество
+  // и единицу. Гард по ref — не переприменяем при смене контекста пользователем;
+  // гард по allowedUnits — не подставляем число в единицу, которой у ингредиента
+  // нет (иначе величина исказилась бы: 500 г → 500 пачек).
+  const initialAmountAppliedRef = useRef(false);
+  useEffect(() => {
+    if (initialAmountAppliedRef.current) return;
+    const quantity = (initialQuantity ?? "").trim();
+    if (!quantity || !initialUnit) return;
+    initialAmountAppliedRef.current = true;
+    const profile = resolveCatalogIngredientUnitProfile(category, selectedRef.current);
+    if (!profile.allowedUnits?.includes(initialUnit as InventoryUnit)) return;
+    setFields((current) => ({
+      ...current,
+      enteredQuantity: quantity,
+      enteredUnit: initialUnit as InventoryUnit
+    }));
+  }, [category, initialQuantity, initialUnit]);
+
   useEffect(() => {
     const hasOptionalErrors = Boolean(
       fieldErrors?.priceInputAmountMinor
@@ -1019,6 +1045,9 @@ export function CatalogIngredientForm({
     const resetProfile = resolveCatalogIngredientUnitProfile(category, null);
     setFields((current) => ({
       ...current,
+      // Смена ингредиента обнуляет и количество: иначе предзаполненный из списка
+      // покупок дефицит ингредиента A утёк бы в ингредиент B в его единице (#20-ревью).
+      enteredQuantity: "",
       enteredUnit: resetProfile.defaultUnit
     }));
 
@@ -1162,6 +1191,9 @@ export function CatalogIngredientForm({
               setFields((current) => {
                 return {
                   ...current,
+                  // Выбор другого ингредиента обнуляет количество — не переносим
+                  // предзаполненный дефицит на чужую позицию/единицу (#20-ревью).
+                  enteredQuantity: "",
                   enteredUnit: nextUnitProfile.defaultUnit
                 };
               });

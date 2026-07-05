@@ -3,25 +3,22 @@
 import React from "react";
 import Link from "next/link";
 
-import type { PublicRecipeListItem } from "@/features/recipes/contracts";
 import { RecipesGrid } from "@/components/recipes/recipes-grid";
 import { RecipesGridSkeleton } from "@/components/recipes/recipes-grid-skeleton";
 
+import { STYLE_RECIPES_LIMIT, useStyleRecipes } from "./style-recipes-provider";
+
 /**
- * Блок «Что варят в стиле» на странице BJCP-стиля (`/bjcp/[slug]`) — заменяет
- * прежний блок «Другие стили из категории» живым UGC: публичными рецептами
- * сообщества в этом стиле, отсортированными по популярности.
+ * Блок «Рецепты в стиле» на странице BJCP-стиля (`/bjcp/[slug]`) — живой UGC:
+ * публичные рецепты сообщества в этом стиле, отсортированные по популярности.
  *
- * Дата-остров: страница стиля остаётся статической (SSG, без БД на билде), а
- * рецепты подгружаются в рантайме через `/api/recipes/by-style`. Пока грузится —
- * скелетон; пусто → приглашение собрать первый рецепт; есть → сетка карточек +
- * ссылка на витрину `/recipes` с уже применённым фильтром стиля.
+ * Данные берёт из общего {@link StyleRecipesProvider} (один запрос к
+ * `/api/recipes/by-style` на всю страницу — его же читают hero-чип и лента якорей).
+ * Пока грузится — скелетон; пусто → приглашение создать первый рецепт; есть → сетка
+ * карточек + ссылка на витрину `/recipes` с уже применённым фильтром стиля.
+ *
+ * `id="style-recipes"` — цель якоря из hero-чипа и ленты якорей лонгрида.
  */
-
-const RECIPE_LIMIT = 6;
-
-type Status = "loading" | "ready" | "empty" | "error";
-
 export function StyleCommunityRecipes({
   styleTitle,
   styleCode
@@ -29,82 +26,50 @@ export function StyleCommunityRecipes({
   styleTitle: string;
   styleCode: string;
 }) {
-  const [status, setStatus] = React.useState<Status>("loading");
-  const [recipes, setRecipes] = React.useState<PublicRecipeListItem[]>([]);
-  const [total, setTotal] = React.useState(0);
+  const data = useStyleRecipes();
 
-  React.useEffect(() => {
-    let cancelled = false;
-    setStatus("loading");
-
-    const url = `/api/recipes/by-style?style=${encodeURIComponent(styleCode)}&limit=${RECIPE_LIMIT}`;
-    fetch(url)
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error(`by-style ${response.status}`);
-        }
-        return response.json() as Promise<{ items: PublicRecipeListItem[]; total: number }>;
-      })
-      .then((data) => {
-        if (cancelled) return;
-        setRecipes(data.items);
-        setTotal(data.total);
-        setStatus(data.items.length ? "ready" : "empty");
-      })
-      .catch(() => {
-        if (!cancelled) setStatus("error");
-      });
-
-    return () => {
-      cancelled = true;
-    };
-  }, [styleCode]);
-
-  // Ошибку не выдаём за «пусто» (это ввело бы в заблуждение) — просто прячем блок.
-  if (status === "error") {
+  // Провайдер всегда есть на странице стиля. Ошибку не выдаём за «пусто» (это ввело бы
+  // в заблуждение) — просто прячем блок.
+  if (!data || data.status === "error") {
     return null;
   }
 
+  const { status, items } = data;
   const allHref = `/recipes?style=${encodeURIComponent(styleCode)}&sort=popular`;
-  const hasMore = total > recipes.length;
+  const createHref = `/app/recipes/new?style=${encodeURIComponent(styleCode)}`;
 
   return (
-    <section className="space-y-5">
-      <div className="flex items-end justify-between gap-4">
+    <section id="style-recipes" className="scroll-mt-24 space-y-5">
+      <div className="flex flex-col items-start gap-2 sm:flex-row sm:items-end sm:justify-between sm:gap-4">
         <div>
           <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-zinc-500">
-            Рецепты сообщества
+            Сообщество
           </p>
           <h2 className="mt-2 text-3xl font-semibold text-zinc-950" style={{ fontFamily: "var(--font-display)" }}>
-            Что варят в стиле «{styleTitle}»
+            Рецепты в стиле «{styleTitle}»
           </h2>
         </div>
         {status === "ready" ? (
-          <Link href={allHref} className="shrink-0 text-sm font-semibold text-zinc-950 hover:text-zinc-700">
-            {hasMore ? `Все рецепты (${total})` : "Открыть в поиске"} →
+          <Link href={allHref} className="sm:shrink-0 text-sm font-semibold text-zinc-950 hover:text-zinc-700">
+            Все рецепты стиля <span aria-hidden="true">→</span>
           </Link>
         ) : null}
       </div>
 
-      {status === "loading" ? <RecipesGridSkeleton count={RECIPE_LIMIT} view="grid" /> : null}
+      {status === "loading" ? <RecipesGridSkeleton count={STYLE_RECIPES_LIMIT} view="grid" /> : null}
 
-      {status === "ready" ? <RecipesGrid recipes={recipes} view="grid" /> : null}
+      {status === "ready" ? <RecipesGrid recipes={items} view="grid" /> : null}
 
       {status === "empty" ? (
         <div className="flex flex-col items-start gap-4 rounded-[2rem] border border-dashed border-zinc-300 bg-white p-8 shadow-[0_26px_80px_-62px_rgba(15,23,42,0.4)]">
-          <div className="space-y-2">
-            <h3 className="text-2xl font-semibold text-zinc-950" style={{ fontFamily: "var(--font-display)" }}>
-              В этом стиле пока нет рецептов сообщества
-            </h3>
-            <p className="max-w-xl text-pretty text-sm leading-7 text-zinc-600">
-              Соберите первый рецепт «{styleTitle}» — он появится здесь и поможет другим пивоварам сварить этот стиль.
-            </p>
-          </div>
+          <h3 className="text-2xl font-semibold text-zinc-950" style={{ fontFamily: "var(--font-display)" }}>
+            В этом стиле пока нет рецептов сообщества
+          </h3>
           <Link
-            href="/app/recipes/new"
+            href={createHref}
             className="inline-flex items-center gap-2 rounded-full bg-zinc-950 px-5 py-3 text-sm font-semibold text-white transition hover:bg-zinc-800"
           >
-            Создать рецепт →
+            Создать рецепт <span aria-hidden="true">→</span>
           </Link>
         </div>
       ) : null}

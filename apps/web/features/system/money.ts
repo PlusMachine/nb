@@ -13,6 +13,17 @@ const currencyLocales: Record<SystemCurrency, string> = {
   EUR: "en-US"
 };
 
+// Символ валюты для плейсхолдеров/подписей, где Intl-форматирование суммы не
+// применяется (иначе на экране торчит код «RUB» вместо ₽ — UX-находка #13).
+const currencySymbols: Record<SystemCurrency, string> = {
+  RUB: "₽",
+  USD: "$",
+  EUR: "€"
+};
+
+export const currencySymbol = (currency: unknown): string =>
+  currencySymbols[resolvePreferredCurrency(currency)];
+
 const normalizeMoneyInput = (value: unknown): string => (
   String(value ?? "")
     .trim()

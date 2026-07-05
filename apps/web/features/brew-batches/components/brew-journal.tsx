@@ -1,13 +1,14 @@
 "use client";
 
 import React, { useRef, useState } from "react";
-import { Loader2, Plus, Trash2 } from "lucide-react";
+import { Flag, Loader2, Plus, Trash2 } from "lucide-react";
 import { gravityToSg, sgToGravityUnit } from "@nb/brewing-core";
 import { Button } from "@nb/ui";
 
 import {
   addBrewMeasurementAction,
-  deleteBrewMeasurementAction
+  deleteBrewMeasurementAction,
+  setBrewMeasurementFinalAction
 } from "@/app/(app)/app/brew-batches/[id]/actions";
 import {
   GRAVITY_SG_MAX,
@@ -58,19 +59,19 @@ export function BrewJournal({
   const [gravity, setGravity] = useState("");
   const [takenAt, setTakenAt] = useState("");
   const [note, setNote] = useState("");
+  const [markFinal, setMarkFinal] = useState(false);
   const [error, setError] = useState<string | null>(null);
   // React 18: useTransition.isPending не держится на await серверного экшена,
   // поэтому ведём явный busy-флаг + ref-гард от повторного сабмита.
   const [busy, setBusy] = useState(false);
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [togglingId, setTogglingId] = useState<string | null>(null);
   const inFlight = useRef(false);
 
   const target = summary.target;
-  const lastIndex = measurements.length - 1;
   const gravityUnit = toCalculatorGravityUnit(preferredGravityUnit);
   const gravityInputMin = sgToGravityUnit(GRAVITY_SG_MIN, gravityUnit);
   const gravityInputMax = sgToGravityUnit(GRAVITY_SG_MAX, gravityUnit);
-  const gravityInputStep = preferredGravityUnit === "sg" ? 0.001 : 0.1;
   const fmtGravity = (value: number | null) => formatGravity(value, preferredGravityUnit);
 
   const submit = async (event: React.FormEvent) => {
@@ -92,7 +93,8 @@ export function BrewJournal({
         // datetime-local — наивное локальное время; переводим в абсолютный момент
         // (ISO с таймзоной браузера), иначе сервер распарсит его в своей TZ.
         takenAt: takenAt ? new Date(takenAt).toISOString() : null,
-        note: note || null
+        note: note || null,
+        isFinal: markFinal
       });
       if (!result.ok) {
         setError(result.message);
@@ -101,6 +103,7 @@ export function BrewJournal({
       setGravity("");
       setTakenAt("");
       setNote("");
+      setMarkFinal(false);
     } finally {
       inFlight.current = false;
       setBusy(false);
@@ -127,6 +130,26 @@ export function BrewJournal({
     }
   };
 
+  const toggleFinal = async (id: string, next: boolean) => {
+    if (inFlight.current) {
+      return;
+    }
+    inFlight.current = true;
+    setBusy(true);
+    setTogglingId(id);
+    setError(null);
+    try {
+      const result = await setBrewMeasurementFinalAction(brewBatchId, id, next);
+      if (!result.ok) {
+        setError(result.message);
+      }
+    } finally {
+      inFlight.current = false;
+      setBusy(false);
+      setTogglingId(null);
+    }
+  };
+
   return (
     <section id="brew-journal" className="space-y-4 rounded-2xl border border-zinc-100 bg-white p-4 shadow-sm">
       <h2 className="text-base font-semibold text-zinc-900">{title}</h2>
@@ -150,7 +173,7 @@ export function BrewJournal({
             <input
               type="number"
               inputMode="decimal"
-              step={gravityInputStep}
+              step="any"
               min={gravityInputMin}
               max={gravityInputMax}
               value={gravity}
@@ -186,10 +209,20 @@ export function BrewJournal({
             />
           </label>
           <Button type="submit" size="sm" disabled={busy}>
-            {busy && !deletingId ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden /> : <Plus className="h-4 w-4" aria-hidden />}
+            {busy && !deletingId && !togglingId ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden /> : <Plus className="h-4 w-4" aria-hidden />}
             Добавить
           </Button>
         </div>
+        <label className="flex w-fit items-center gap-2 text-xs text-zinc-600">
+          <input
+            type="checkbox"
+            checked={markFinal}
+            onChange={(event) => setMarkFinal(event.target.checked)}
+            disabled={busy}
+            className="h-3.5 w-3.5 rounded border-zinc-300 text-zinc-900 focus:ring-zinc-400"
+          />
+          Это финальный замер (FG)
+        </label>
         {error ? <p role="alert" className="text-xs text-rose-600">{error}</p> : null}
       </form>
 
@@ -201,7 +234,7 @@ export function BrewJournal({
       ) : (
         <ul className="divide-y divide-zinc-100">
           {measurements.map((measurement, index) => {
-            const tag = index === 0 ? "OG" : index === lastIndex && measurements.length > 1 ? "FG" : null;
+            const tag = measurement.isFinal ? "FG" : index === 0 ? "OG" : null;
             return (
               <li key={measurement.id} className="flex items-center gap-3 py-2">
                 <span className="w-16 shrink-0 text-base font-semibold tabular-nums text-zinc-900">
@@ -214,6 +247,16 @@ export function BrewJournal({
                     (SSR-рендер клиентского компонента идёт в TZ сервера). */}
                 <span suppressHydrationWarning className="shrink-0 text-xs text-zinc-500">{fmtDate(measurement.takenAt)}</span>
                 {measurement.note ? <span className="min-w-0 flex-1 truncate text-sm text-zinc-600">{measurement.note}</span> : <span className="flex-1" />}
+                <button
+                  type="button"
+                  onClick={() => toggleFinal(measurement.id, !measurement.isFinal)}
+                  disabled={busy}
+                  aria-label={measurement.isFinal ? "Снять отметку FG" : "Отметить финальным (FG)"}
+                  title={measurement.isFinal ? "Снять отметку FG" : "Отметить финальным (FG)"}
+                  className={`inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-md transition disabled:opacity-60 ${measurement.isFinal ? "text-amber-600 hover:bg-amber-50" : "text-zinc-300 hover:bg-zinc-50 hover:text-zinc-500"}`}
+                >
+                  {togglingId === measurement.id ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden /> : <Flag className={`h-4 w-4 ${measurement.isFinal ? "fill-amber-500" : ""}`} aria-hidden />}
+                </button>
                 <button
                   type="button"
                   onClick={() => remove(measurement.id)}

@@ -1,13 +1,18 @@
 import {
   and,
+  brewBatches,
   db,
+  desc,
   eq,
   inArray,
+  ingredientAliases,
   ingredientPackageVariants,
   ingredients,
+  inventoryTransactions,
   isNull,
   recipeIngredients,
   recipeInventoryAllocations,
+  recipes,
   sql,
   userCustomIngredients,
   userIngredients
@@ -22,6 +27,7 @@ import {
   createUserCustomInventoryIngredientSchema,
   inventorySourceLinkageSchema,
   inventoryListQuerySchema,
+  type InventoryItemMovementDto,
   type InventoryListItemDto,
   type InventorySourceDto,
   type InventorySummaryDto,
@@ -245,7 +251,21 @@ const buildInventorySearchWhere = (search: string) => {
   }
 
   const term = `%${search}%`;
-  return sql<boolean>`coalesce(${userIngredients.ingredientDisplayNameSnapshot}, ${ingredients.nameRu}, ${ingredients.nameEn}, ${userCustomIngredients.displayName}) ilike ${term}`;
+  return sql<boolean>`(
+    ${userIngredients.ingredientDisplayNameSnapshot} ilike ${term}
+    or ${ingredients.nameRu} ilike ${term}
+    or ${ingredients.nameEn} ilike ${term}
+    or ${ingredients.brand} ilike ${term}
+    or ${ingredients.producer} ilike ${term}
+    or ${userCustomIngredients.displayName} ilike ${term}
+    or ${userCustomIngredients.manufacturer} ilike ${term}
+    or exists (
+      select 1 from ${ingredientAliases}
+      where ${ingredientAliases.ingredientId} = ${userIngredients.ingredientCatalogItemId}
+        and ${ingredientAliases.isEnabled}
+        and ${ingredientAliases.alias} ilike ${term}
+    )
+  )`;
 };
 
 const buildLiveInventoryLinkage = (
@@ -1511,25 +1531,142 @@ export const updateInventoryQuantity = async (userId: string, inventoryItemId: s
     source.source.technicalData ?? null
   );
 
-  const [updated] = await db.update(userIngredients).set({
-    enteredQuantity: amount.enteredQuantity,
-    enteredUnit: amount.enteredUnit,
-    normalizedQuantity: amount.normalizedQuantity,
-    normalizedUnit: amount.normalizedUnit,
-    unitDimension: amount.unitDimension,
-    updatedAt: new Date()
-  }).where(eq(userIngredients.id, current.id)).returning();
+  const updated = await db.transaction(async (tx) => {
+    // Текущий остаток читаем ПОД блокировкой строки внутри транзакции — иначе при
+    // параллельной правке той же позиции (напр. списание варкой) before/delta
+    // журнала разъедутся с фактической записью (#19-ревью, TOCTOU/lost-update).
+    const [locked] = await tx
+      .select({
+        normalizedQuantity: userIngredients.normalizedQuantity,
+        normalizedUnit: userIngredients.normalizedUnit
+      })
+      .from(userIngredients)
+      .where(eq(userIngredients.id, current.id))
+      .for("update");
+    const beforeNormalized = locked?.normalizedQuantity ?? current.normalizedQuantity;
+    const beforeUnit = locked?.normalizedUnit ?? current.normalizedUnit;
+
+    const [row2] = await tx.update(userIngredients).set({
+      enteredQuantity: amount.enteredQuantity,
+      enteredUnit: amount.enteredUnit,
+      normalizedQuantity: amount.normalizedQuantity,
+      normalizedUnit: amount.normalizedUnit,
+      unitDimension: amount.unitDimension,
+      updatedAt: new Date()
+    }).where(eq(userIngredients.id, current.id)).returning();
+
+    // Журнал движений склада (UX-находка #19): ручное пополнение/списание пишем
+    // как «поправку» со знаком дельты. Только при неизменной нормализованной
+    // единице (иначе before/after несопоставимы) и ненулевой дельте.
+    const delta = amount.normalizedQuantity - beforeNormalized;
+    if (delta !== 0 && beforeUnit === amount.normalizedUnit) {
+      await tx.insert(inventoryTransactions).values({
+        userId,
+        inventoryItemId: current.id,
+        type: "adjustment",
+        quantityDeltaNormalized: delta,
+        normalizedUnit: amount.normalizedUnit,
+        quantityBeforeNormalized: beforeNormalized,
+        quantityAfterNormalized: amount.normalizedQuantity,
+        transactionMeta: { source: "manual", direction: delta > 0 ? "restock" : "consume" }
+      });
+    }
+    return row2;
+  });
 
   return updated;
 };
 
 export const setInventoryItemQuantityToZero = async (userId: string, inventoryItemId: string) => {
+  const current = await ensureInventoryItem(userId, inventoryItemId);
+  await db.transaction(async (tx) => {
+    // Остаток читаем под блокировкой строки (тот же TOCTOU-мотив, что в
+    // updateInventoryQuantity, #19-ревью).
+    const [locked] = await tx
+      .select({
+        normalizedQuantity: userIngredients.normalizedQuantity,
+        normalizedUnit: userIngredients.normalizedUnit
+      })
+      .from(userIngredients)
+      .where(eq(userIngredients.id, inventoryItemId))
+      .for("update");
+    const beforeNormalized = locked?.normalizedQuantity ?? current.normalizedQuantity;
+    const beforeUnit = locked?.normalizedUnit ?? current.normalizedUnit;
+
+    await tx.update(userIngredients).set({
+      enteredQuantity: 0,
+      normalizedQuantity: 0,
+      updatedAt: new Date()
+    }).where(eq(userIngredients.id, inventoryItemId));
+
+    // «Списать всё» → движение-поправка на весь остаток (UX-находка #19).
+    if (beforeNormalized > 0) {
+      await tx.insert(inventoryTransactions).values({
+        userId,
+        inventoryItemId: current.id,
+        type: "adjustment",
+        quantityDeltaNormalized: -beforeNormalized,
+        normalizedUnit: beforeUnit,
+        quantityBeforeNormalized: beforeNormalized,
+        quantityAfterNormalized: 0,
+        transactionMeta: { source: "manual", direction: "consume" }
+      });
+    }
+  });
+};
+
+/**
+ * Журнал движений по позиции склада (UX-находка #19): когда/сколько/по какой варке.
+ * Собирает из inventory_transactions с привязкой к варке/рецепту. Ownership — через
+ * ensureInventoryItem. Возвращает свежие сверху (до 50 записей).
+ */
+export const listInventoryItemMovements = async (
+  userId: string,
+  inventoryItemId: string
+): Promise<InventoryItemMovementDto[]> => {
   await ensureInventoryItem(userId, inventoryItemId);
-  await db.update(userIngredients).set({
-    enteredQuantity: 0,
-    normalizedQuantity: 0,
-    updatedAt: new Date()
-  }).where(eq(userIngredients.id, inventoryItemId));
+
+  const rows = await db
+    .select({
+      id: inventoryTransactions.id,
+      type: inventoryTransactions.type,
+      quantityDeltaNormalized: inventoryTransactions.quantityDeltaNormalized,
+      normalizedUnit: inventoryTransactions.normalizedUnit,
+      quantityAfterNormalized: inventoryTransactions.quantityAfterNormalized,
+      createdAt: inventoryTransactions.createdAt,
+      transactionMeta: inventoryTransactions.transactionMeta,
+      brewBatchId: inventoryTransactions.brewBatchId,
+      brewBatchName: brewBatches.name,
+      recipeTitle: recipes.title
+    })
+    .from(inventoryTransactions)
+    .leftJoin(brewBatches, eq(inventoryTransactions.brewBatchId, brewBatches.id))
+    .leftJoin(recipes, eq(inventoryTransactions.recipeId, recipes.id))
+    .where(
+      and(
+        eq(inventoryTransactions.userId, userId),
+        eq(inventoryTransactions.inventoryItemId, inventoryItemId)
+      )
+    )
+    .orderBy(desc(inventoryTransactions.createdAt))
+    .limit(50);
+
+  return rows.map((row) => {
+    const meta = (row.transactionMeta ?? {}) as Record<string, unknown>;
+    const direction = meta.direction === "restock" || meta.direction === "consume" ? meta.direction : null;
+    return {
+      id: row.id,
+      type: row.type,
+      quantityDeltaNormalized: row.quantityDeltaNormalized,
+      normalizedUnit: row.normalizedUnit,
+      quantityAfterNormalized: row.quantityAfterNormalized,
+      createdAt: row.createdAt.toISOString(),
+      direction,
+      brewBatchId: row.brewBatchId,
+      brewBatchName: row.brewBatchName ?? null,
+      recipeTitle: row.recipeTitle ?? null
+    };
+  });
 };
 
 export const updateInventoryItem = async (

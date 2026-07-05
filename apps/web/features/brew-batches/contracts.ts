@@ -182,6 +182,8 @@ export type BrewMeasurementDto = {
   brewBatchId: string;
   gravitySg: number;
   takenAt: Date;
+  /** Явная отметка «это итоговая FG». Один финальный замер на партию (держит сервис). */
+  isFinal: boolean;
   note: string | null;
   createdAt: Date;
 };
@@ -201,13 +203,14 @@ export const addBrewMeasurementSchema = z.object({
     .date()
     .refine((value) => value.getTime() <= Date.now() + 60_000, "Дата замера не может быть в будущем.")
     .optional(),
-  note: z.string().trim().max(500, "Заметка не длиннее 500 символов.").nullable().optional()
+  note: z.string().trim().max(500, "Заметка не длиннее 500 символов.").nullable().optional(),
+  isFinal: z.boolean().optional()
 });
 
 export type AddBrewMeasurementInput = z.infer<typeof addBrewMeasurementSchema>;
 
-/** Сводка по журналу: OG (первый замер), FG (последний), расчётные ABV и
- *  кажущееся сбраживание, плюс цели рецепта для сравнения. */
+/** Сводка по журналу: OG (первый замер), FG (замер с отметкой isFinal), расчётные
+ *  ABV и кажущееся сбраживание, плюс цели рецепта для сравнения. */
 export type BrewMeasurementSummary = {
   og: number | null;
   fg: number | null;

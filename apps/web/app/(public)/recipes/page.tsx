@@ -13,7 +13,7 @@ import { RecipesResults, type RawSearchParams } from "@/components/recipes/recip
 import { RecipesToolbar } from "@/components/recipes/recipes-toolbar";
 import { parsePublicRecipeFilters } from "@/features/recipes/public-recipe-query";
 import { RECIPES_VIEW_COOKIE, parseRecipesView } from "@/features/recipes/recipes-url";
-import { getPublicRecipeFamilyCounts } from "@/features/recipes/service";
+import { getPublicRecipeFamilyCounts, getPublicRecipeSortAvailability } from "@/features/recipes/service";
 import { buildRecipeStyleSearchIndex } from "@/features/recipes/style-search";
 import { getSessionUser } from "@/lib/auth";
 import { getServerEnv } from "@/lib/env";
@@ -47,6 +47,8 @@ export default async function PublicRecipesPage({ searchParams }: { searchParams
   const styleIndex = buildRecipeStyleSearchIndex(catalog);
   // Число рецептов на витрине в каждом семействе (пустые семейства скрываются).
   const familyCounts = await getPublicRecipeFamilyCounts();
+  // Наличие данных для сортов «По рейтингу»/«Популярные» (count-conditional показ).
+  const sortAvailability = await getPublicRecipeSortAvailability();
   // Залогиненному показываем хаб-табы (Мои / Сохранённые / Найти); гостю — нет.
   const viewer = await getSessionUser();
   // Лёгкие опции для лейблов активных чипов (резолв id/code → название).
@@ -87,7 +89,7 @@ export default async function PublicRecipesPage({ searchParams }: { searchParams
               уезжают. Оффсет — под текущий хром (`--chrome-top`: мобильная шапка
               AppShell/публичный хедер или 0, где хрома над контентом нет). */}
           <div className="sticky top-[var(--chrome-top)] z-30 -my-1 bg-slate-50/90 py-1 backdrop-blur">
-            <RecipesToolbar defaultView={view} />
+            <RecipesToolbar defaultView={view} sortAvailability={sortAvailability} />
           </div>
           <RecipesFilterSheet index={styleIndex} familyCounts={familyCounts} />
           <ActiveFilterChips familyOptions={familyOptions} styleOptions={styleOptions} />

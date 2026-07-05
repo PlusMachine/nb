@@ -560,6 +560,10 @@ export default function LoginPage() {
         </div>
       )}
 
+      {/* Статус («Код отправлен…», ошибки) — сразу под активной формой, а не в самом
+          низу карточки под соцвходом и за cookie-баннером (UX-находка #12). */}
+      <StatusLine status={status} />
+
       <div className="grid grid-cols-2 gap-2 border-t border-zinc-200 pt-4">
         <Link
           href="/api/auth/oauth/vk"
@@ -582,8 +586,6 @@ export default function LoginPage() {
           Яндекс ID
         </Link>
       </div>
-
-      <StatusLine status={status} />
     </Card>
   );
 }

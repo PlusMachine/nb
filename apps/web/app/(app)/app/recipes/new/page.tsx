@@ -1,5 +1,6 @@
 import React from "react";
 import { notFound } from "next/navigation";
+import { getBeerStyleById } from "@nb/brewing-core";
 
 import { RecipeEditorPage } from "@/components/recipes/recipe-editor-page";
 import { listEquipmentProfiles } from "@/features/equipment-profiles/service";
@@ -12,13 +13,18 @@ import { requireUser } from "@/lib/auth";
 export default async function NewRecipePage({
   searchParams
 }: {
-  searchParams?: Promise<{ recipeId?: string; addSource?: string; addId?: string }>;
+  searchParams?: Promise<{ recipeId?: string; addSource?: string; addId?: string; style?: string }>;
 }) {
   const user = await requireUser();
   const resolvedSearchParams = searchParams ? await searchParams : undefined;
   const recipeId = resolvedSearchParams?.recipeId?.trim();
   const addSource = resolvedSearchParams?.addSource?.trim();
   const addId = resolvedSearchParams?.addId?.trim();
+  // Предзаполнение стиля со страницы BJCP-стиля: параметр — bjcpId (напр. `24A`).
+  // getBeerStyleById резолвит его в фикстуру; берём её id (в БД styleId = fixture id).
+  // Если не резолвится (мусорный параметр) — просто не предзаполняем.
+  const styleParam = resolvedSearchParams?.style?.trim();
+  const initialStyleId = styleParam ? getBeerStyleById(styleParam)?.id : undefined;
 
   if (recipeId) {
     try {
@@ -59,6 +65,7 @@ export default async function NewRecipePage({
     <RecipeEditorPage
       mode="create"
       initialTitle={initialTitle}
+      initialStyleId={initialStyleId}
       initialIngredientSelection={initialIngredientSelection}
       equipmentProfiles={equipmentProfiles}
       preferredGravityUnit={user.preferredGravityUnit}

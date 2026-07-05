@@ -1,4 +1,9 @@
-import type { PublicRecipeSort } from "./contracts";
+import {
+  MIN_RATED_RECIPES_FOR_SORT,
+  MIN_SAVED_RECIPES_FOR_SORT,
+  type PublicRecipeSort,
+  type PublicRecipeSortAvailability
+} from "./contracts";
 
 /**
  * Клиент-безопасные (без БД/каталога/фикстур) хелперы для URL-driven контролов
@@ -37,6 +42,35 @@ export const recipeSortOptions: { value: PublicRecipeSort; label: string }[] = [
   { value: "color_desc", label: "Темнее" },
   { value: "name", label: "По алфавиту" }
 ];
+
+/**
+ * Отфильтровывает опции сортировки под наличие данных (count-conditional): пока
+ * оценённых/сохранённых рецептов меньше порога, «По рейтингу»/«Популярные» не
+ * показываем — на холодном старте они дали бы пустой/случайный порядок.
+ *
+ * `activeSort` всегда остаётся в списке, даже если подпороговый: пользователь мог
+ * прийти по прямой ссылке (`?sort=rating` со страницы стиля), и селект не должен
+ * показывать «пустой» выбор. URL-парсер (`parseSort`) пороги не проверяет —
+ * ссылки работают независимо от витрины.
+ */
+export const resolveVisibleSortOptions = (
+  availability: PublicRecipeSortAvailability,
+  activeSort: PublicRecipeSort
+): { value: PublicRecipeSort; label: string }[] => {
+  const gatedOut = (value: PublicRecipeSort): boolean => {
+    if (value === activeSort) {
+      return false;
+    }
+    if (value === "rating") {
+      return availability.ratedRecipes < MIN_RATED_RECIPES_FOR_SORT;
+    }
+    if (value === "popular") {
+      return availability.savedRecipes < MIN_SAVED_RECIPES_FOR_SORT;
+    }
+    return false;
+  };
+  return recipeSortOptions.filter((option) => !gatedOut(option.value));
+};
 
 type QueryPatch = Record<string, string | null>;
 

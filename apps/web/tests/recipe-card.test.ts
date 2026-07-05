@@ -39,6 +39,7 @@ const baseItem = (overrides: Partial<PublicRecipeListItem> = {}): PublicRecipeLi
   styleImageUrl: null,
   cloneCount: 0,
   rating: null,
+  featured: false,
   saveCount: 0,
   publishedAt: "2026-02-01T00:00:00.000Z",
   createdAt: new Date().toISOString(),

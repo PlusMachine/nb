@@ -541,6 +541,22 @@ export const publicRecipeSorts = [
 ] as const;
 export type PublicRecipeSort = (typeof publicRecipeSorts)[number];
 
+/**
+ * Пороги для count-conditional показа сортов в тулбаре витрины. Пока оценённых /
+ * сохранённых рецептов меньше порога, соответствующая опция сортировки не
+ * выставляется — на холодном старте «По рейтингу» / «Популярные» дали бы
+ * бессмысленный/пустой порядок. URL-контракт независим: `?sort=rating|popular`
+ * валиден всегда.
+ */
+export const MIN_RATED_RECIPES_FOR_SORT = 5;
+export const MIN_SAVED_RECIPES_FOR_SORT = 5;
+
+/** Сколько опубликованных рецептов реально оценено / сохранено (для гейтинга сортов). */
+export type PublicRecipeSortAvailability = {
+  ratedRecipes: number;
+  savedRecipes: number;
+};
+
 export const defaultPublicRecipePageSize = 24;
 export const maxPublicRecipePageSize = 48;
 
@@ -584,6 +600,7 @@ export type PublicRecipeListItem = {
   styleImageUrl: string | null;
   cloneCount: number; // 0 в Phase A
   rating: { average: number; count: number } | null; // null до Phase D
+  featured: boolean; // «Выбор редакции» — кураторская метка (не буст ранжирования)
   saveCount: number; // число сохранений («Избранные») — источник для сортировки «Популярные»
   publishedAt: string; // ISO; маппится из updatedAt (publishedAt-колонки нет)
   createdAt: string; // ISO; для бейджа «Новый» (окно NEW_RECIPE_WINDOW_DAYS)

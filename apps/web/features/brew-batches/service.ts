@@ -24,6 +24,7 @@ const mapMeasurementDto = (row: typeof brewMeasurements.$inferSelect): BrewMeasu
   brewBatchId: row.brewBatchId,
   gravitySg: row.gravitySg,
   takenAt: row.takenAt,
+  isFinal: row.isFinal,
   note: row.note,
   createdAt: row.createdAt
 });
@@ -55,7 +56,7 @@ export const mapBrewBatchDto = (row: typeof brewBatches.$inferSelect): BrewBatch
 export const createBrewBatchFromRecipe = async (
   userId: string,
   recipeId: string,
-  input: { name?: string | null; plannedFor?: Date | null } = {}
+  input: { name?: string | null; plannedFor?: Date | null; idempotencyKey?: string | null } = {}
 ) => {
   // Доступный рецепт: свой (любой статус) ИЛИ чужой published — БЕЗ клонирования.
   const recipe = await getRecipeById(userId, recipeId);
@@ -64,10 +65,16 @@ export const createBrewBatchFromRecipe = async (
     columns: { displayName: true }
   });
   const brewPlanSnapshot = buildBrewPlanSnapshot(recipe);
-  const [created] = await db.insert(brewBatches).values({
+  // Идемпотентность создания (см. schema.ts brew_batches.idempotencyKey): один
+  // «намерение сварить» = один ключ; двойной клик/ретрай/гонка вкладок ловится
+  // unique-индексом (user_id, idempotency_key) и возвращает уже созданную партию
+  // вместо второй. Без ключа — прежнее поведение (каждый вызов = новая партия).
+  const idempotencyKey = input.idempotencyKey?.trim() || null;
+  const insert = db.insert(brewBatches).values({
     userId,
     recipeId: recipe.id,
     status: "planned",
+    idempotencyKey,
     name: input.name?.trim() || `${recipe.title} brew`,
     brewPlanSnapshot,
     // Самодостаточный слепок: таргеты og/fg/abv (сравнение план↔факт без живого
@@ -94,13 +101,29 @@ export const createBrewBatchFromRecipe = async (
     waterPlanSnapshot: recipe.waterPlanMeta ?? null,
     deviceHints: brewPlanSnapshot.deviceHints,
     plannedFor: input.plannedFor ?? null
-  }).returning();
+  });
 
-  if (!created) {
-    throw new Error("CREATE_FAILED");
+  // Конфликт по (user_id, idempotency_key) означает: параллельный/повторный
+  // запрос уже создал эту партию → вставку глотаем (DO NOTHING, returning пуст)
+  // и возвращаем существующую по ключу. Без ключа — обычная вставка.
+  const [created] = idempotencyKey
+    ? await insert.onConflictDoNothing({ target: [brewBatches.userId, brewBatches.idempotencyKey] }).returning()
+    : await insert.returning();
+
+  if (created) {
+    return mapBrewBatchDto(created);
   }
 
-  return mapBrewBatchDto(created);
+  if (idempotencyKey) {
+    const existing = await db.query.brewBatches.findFirst({
+      where: and(eq(brewBatches.userId, userId), eq(brewBatches.idempotencyKey, idempotencyKey))
+    });
+    if (existing) {
+      return mapBrewBatchDto(existing);
+    }
+  }
+
+  throw new Error("CREATE_FAILED");
 };
 
 /** Достать партию варки по id с проверкой владения (или null, если нет/чужая). */
@@ -337,23 +360,78 @@ export const listBrewMeasurements = async (
 export const addBrewMeasurement = async (
   userId: string,
   brewBatchId: string,
-  input: { gravitySg: number; takenAt?: Date | null; note?: string | null }
+  input: { gravitySg: number; takenAt?: Date | null; note?: string | null; isFinal?: boolean }
 ): Promise<BrewMeasurementDto> => {
   const batch = await getBrewBatchById(userId, brewBatchId);
   if (!batch) {
     throw new Error("NOT_FOUND");
   }
-  const [created] = await db.insert(brewMeasurements).values({
-    userId,
-    brewBatchId,
-    gravitySg: input.gravitySg,
-    takenAt: input.takenAt ?? new Date(),
-    note: input.note?.trim() || null
-  }).returning();
+  // Инвариант «один финальный замер на партию»: если новый помечен финальным,
+  // снимаем флаг с прежнего в той же транзакции.
+  const created = await db.transaction(async (tx) => {
+    if (input.isFinal) {
+      await tx.update(brewMeasurements)
+        .set({ isFinal: false })
+        .where(and(
+          eq(brewMeasurements.brewBatchId, brewBatchId),
+          eq(brewMeasurements.userId, userId),
+          eq(brewMeasurements.isFinal, true)
+        ));
+    }
+    const [row] = await tx.insert(brewMeasurements).values({
+      userId,
+      brewBatchId,
+      gravitySg: input.gravitySg,
+      takenAt: input.takenAt ?? new Date(),
+      isFinal: input.isFinal ?? false,
+      note: input.note?.trim() || null
+    }).returning();
+    return row;
+  });
   if (!created) {
     throw new Error("CREATE_FAILED");
   }
   return mapMeasurementDto(created);
+};
+
+/**
+ * Помечает/снимает у замера флаг «итоговая FG». При установке снимает флаг с
+ * прежнего финального в той же транзакции (инвариант «один FG на партию»).
+ */
+export const setBrewMeasurementFinal = async (
+  userId: string,
+  brewBatchId: string,
+  measurementId: string,
+  isFinal: boolean
+): Promise<BrewMeasurementDto> => {
+  const batch = await getBrewBatchById(userId, brewBatchId);
+  if (!batch) {
+    throw new Error("NOT_FOUND");
+  }
+  const updated = await db.transaction(async (tx) => {
+    if (isFinal) {
+      await tx.update(brewMeasurements)
+        .set({ isFinal: false })
+        .where(and(
+          eq(brewMeasurements.brewBatchId, brewBatchId),
+          eq(brewMeasurements.userId, userId),
+          eq(brewMeasurements.isFinal, true)
+        ));
+    }
+    const [row] = await tx.update(brewMeasurements)
+      .set({ isFinal })
+      .where(and(
+        eq(brewMeasurements.id, measurementId),
+        eq(brewMeasurements.brewBatchId, brewBatchId),
+        eq(brewMeasurements.userId, userId)
+      ))
+      .returning();
+    return row;
+  });
+  if (!updated) {
+    throw new Error("NOT_FOUND");
+  }
+  return mapMeasurementDto(updated);
 };
 
 export const deleteBrewMeasurement = async (

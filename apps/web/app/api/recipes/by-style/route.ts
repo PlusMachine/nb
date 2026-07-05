@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 import { listPublicRecipesForStyle } from "@/features/recipes/service";
 
 // Публичный read-only эндпоинт: топ опубликованных рецептов сообщества в BJCP-стиле.
-// Питает дата-остров «Что варят в стиле» на статической странице `/bjcp/[slug]`
+// Питает дата-остров «Рецепты в стиле „…“» на статической странице `/bjcp/[slug]`
 // (сама страница остаётся SSG и не трогает БД на билде — данные тянутся тут, в
 // рантайме). Отдаёт только published-рецепты (см. searchPublicRecipes).
 //

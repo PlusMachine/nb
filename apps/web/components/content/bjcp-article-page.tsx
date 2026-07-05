@@ -1,5 +1,6 @@
 import React from "react";
 import Link from "next/link";
+import { ExternalLink } from "lucide-react";
 import { srmToEbc } from "@nb/brewing-core";
 import type { BjcpCatalogStyle, ContentArticle } from "@nb/content";
 
@@ -10,6 +11,8 @@ import { defaultPreferredGravityUnit, formatGravity, type PreferredGravityUnit }
 import { BjcpGravityPassportStats } from "./bjcp-gravity-passport-stats";
 import { PassportStatCard } from "./bjcp-passport-stat-card";
 import { StyleCommunityRecipes } from "./style-community-recipes";
+import { StyleRecipesHeroChip, StyleRecipesTocEntry } from "./style-recipes-chip";
+import { StyleRecipesProvider } from "./style-recipes-provider";
 
 const mediaThemes = [
   "bg-[linear-gradient(150deg,#0f172a_0%,#1e293b_50%,#475569_100%)]",
@@ -404,6 +407,7 @@ export function BjcpArticlePage({
   const passportStats = passportStatDefinitions.map((definition) => resolvePassportStat(article, definition, catalogStyle));
 
   return (
+    <StyleRecipesProvider styleCode={article.bjcpId}>
     <main className="space-y-14 pb-24 pt-8">
       <ArticleStructuredData article={article} />
 
@@ -415,13 +419,24 @@ export function BjcpArticlePage({
             </Link>
           </li>
           <li aria-hidden="true">/</li>
-          <li className="text-zinc-700">{categoryLabel}</li>
+          <li>
+            {/* Ссылка на каталог, раскрытый на этой категории. Обязательно
+                `view=bjcp&category=` — дефолтный вид каталога `families`, а фильтр по
+                категории и аккордеон работают только в bjcp-виде (см. parseBjcpCatalogState
+                / applyCatalogScope в features/content/bjcp-catalog.ts). */}
+            <Link
+              href={`/bjcp?view=bjcp&category=${encodeURIComponent(article.category.id)}`}
+              className="text-zinc-700 transition hover:text-zinc-950"
+            >
+              {categoryLabel}
+            </Link>
+          </li>
         </ol>
       </nav>
 
       <section className="overflow-hidden rounded-[2.5rem] border border-white/80 bg-white/90 shadow-[0_50px_120px_-78px_rgba(15,23,42,0.42)] backdrop-blur">
         <div className="grid gap-0 lg:grid-cols-[minmax(0,0.9fr)_minmax(24rem,1.1fr)]">
-          <div className="space-y-7 px-6 py-8 sm:px-8 sm:py-10 lg:px-10 lg:py-12">
+          <div className="min-w-0 space-y-7 px-6 py-8 sm:px-8 sm:py-10 lg:px-10 lg:py-12">
             <div className="space-y-4">
               <p className="text-sm font-semibold uppercase tracking-[0.22em] text-zinc-500">
                 {article.bjcpHeading}
@@ -432,10 +447,14 @@ export function BjcpArticlePage({
               >
                 {article.title}
               </h1>
-              <p className="max-w-3xl text-pretty text-lg leading-8 text-zinc-600">
+              <p className="max-w-3xl text-pretty text-base leading-7 text-zinc-600 sm:text-lg sm:leading-8">
                 {article.description}
               </p>
             </div>
+
+            {/* Сигнал о наличии рецептов на первом экране (вариант A — над паспортом).
+                Резерв высоты и схлопывание при ошибке/пустом состоянии — внутри самого чипа. */}
+            <StyleRecipesHeroChip styleCode={article.bjcpId} />
 
             <div className="grid auto-rows-fr gap-2.5 sm:grid-cols-2">
               {/* НП/КП — единица плотности догружается на клиенте (страница SSG). */}
@@ -467,18 +486,30 @@ export function BjcpArticlePage({
       </section>
 
       <article className="mx-auto max-w-3xl">
-        <div className="flex flex-wrap gap-3">
-          <span className="rounded-full border border-zinc-200 bg-white px-4 py-2 text-sm font-medium text-zinc-700">
-            {article.readingMinutes} мин чтения
-          </span>
-        </div>
+        <p className="text-sm text-zinc-500">{article.readingMinutes} мин чтения</p>
+
+        {/* Лёгкая лента якорей по секциям лонгрида + пункт «Рецепты (N)»: читатель
+            прыгает к нужному разделу или к рецептам, не докручивая всю статью. Без
+            scroll-spy — простые якорные ссылки. */}
+        <nav aria-label="Разделы статьи" className="mt-3 flex flex-wrap gap-2">
+          {article.sections.map((section) => (
+            <a
+              key={section.id}
+              href={`#${section.id}`}
+              className="rounded-full border border-zinc-200 bg-white px-4 py-2 text-sm font-medium text-zinc-700 transition hover:border-zinc-300 hover:text-zinc-950"
+            >
+              {section.label}
+            </a>
+          ))}
+          <StyleRecipesTocEntry />
+        </nav>
 
         <div className="mt-10 space-y-10">
           {article.sections.map((section) => (
             <section
               id={section.id}
               key={section.id}
-              className="space-y-4 border-b border-zinc-200/80 pb-10 last:border-b-0 last:pb-0"
+              className="scroll-mt-24 space-y-4 border-b border-zinc-200/80 pb-10 last:border-b-0 last:pb-0"
             >
               <h2 className="text-3xl font-semibold tracking-[-0.02em] text-zinc-950" style={{ fontFamily: "var(--font-display)" }}>
                 {section.label}
@@ -487,42 +518,36 @@ export function BjcpArticlePage({
             </section>
           ))}
         </div>
-        <section className="mt-12 rounded-[2rem] border border-zinc-200 bg-white p-6 shadow-[0_26px_80px_-62px_rgba(15,23,42,0.4)]">
-          <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-zinc-500">Источник</p>
-          <div className="mt-4 grid gap-4 sm:grid-cols-2">
-            <div>
-              <p className="text-sm font-semibold text-zinc-950">Документ</p>
-              <p className="mt-1 text-sm leading-7 text-zinc-600">{article.source.document ?? "BJCP 2021"}</p>
-            </div>
-            <div>
-              <p className="text-sm font-semibold text-zinc-950">Файл</p>
-              <p className="mt-1 text-sm leading-7 text-zinc-600">{article.source.fileName ?? "n/a"}</p>
-            </div>
-            <div>
-              <p className="text-sm font-semibold text-zinc-950">Язык</p>
-              <p className="mt-1 text-sm leading-7 text-zinc-600">{article.source.language ?? "ru"}</p>
-            </div>
-            <div>
-              <p className="text-sm font-semibold text-zinc-950">Категория</p>
-              <p className="mt-1 text-sm leading-7 text-zinc-600">{categoryLabel}</p>
-            </div>
-          </div>
-        </section>
+        {/* Атрибуция первоисточника обязательна по условиям использования гайдлайнов
+            BJCP. Компактная строка вместо прежней карточки на 4 поля (файл часто «n/a»,
+            язык очевиден, категория дублирует breadcrumb). rel=nofollow для внешней ссылки. */}
+        <p className="mt-12 text-sm text-zinc-500">
+          Источник:{" "}
+          <a
+            href="https://www.bjcp.org/style/2021/"
+            target="_blank"
+            rel="nofollow noopener noreferrer"
+            className="inline-flex items-center gap-1 font-medium text-zinc-800 underline underline-offset-2 hover:text-zinc-950"
+          >
+            {article.source.document ?? "BJCP 2021 Beer Style Guidelines"}
+            <ExternalLink className="h-3.5 w-3.5 text-zinc-400" aria-hidden="true" />
+          </a>
+        </p>
       </article>
 
       <StyleCommunityRecipes styleTitle={article.title} styleCode={article.bjcpId} />
 
       {siblingStyles.length ? (
         <section className="space-y-4">
-          <div className="flex items-end justify-between gap-4">
+          <div className="flex flex-col items-start gap-2 sm:flex-row sm:items-end sm:justify-between sm:gap-4">
             <div>
               <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-zinc-500">Ещё в категории</p>
               <h2 className="mt-2 text-2xl font-semibold text-zinc-950" style={{ fontFamily: "var(--font-display)" }}>
                 Другие стили категории «{article.category.nameRu}»
               </h2>
             </div>
-            <Link href="/bjcp" className="shrink-0 text-sm font-semibold text-zinc-950 hover:text-zinc-700">
-              Весь BJCP →
+            <Link href="/bjcp" className="sm:shrink-0 text-sm font-semibold text-zinc-950 hover:text-zinc-700">
+              Весь BJCP <span aria-hidden="true">→</span>
             </Link>
           </div>
 
@@ -544,5 +569,6 @@ export function BjcpArticlePage({
         </section>
       ) : null}
     </main>
+    </StyleRecipesProvider>
   );
 }

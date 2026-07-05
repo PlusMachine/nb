@@ -32,6 +32,7 @@ const listItem: PublicRecipeListItem = {
   styleImageUrl: null,
   cloneCount: 0,
   rating: null,
+  featured: false,
   saveCount: 3,
   publishedAt: "2026-01-02T00:00:00.000Z",
   styleHref: null,

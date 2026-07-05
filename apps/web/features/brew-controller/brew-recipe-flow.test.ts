@@ -41,7 +41,12 @@ describe("startBrewOnDeviceFromRecipeAction", () => {
       reason: null
     });
 
-    const result = await startBrewOnDeviceFromRecipeAction({ recipeId: RECIPE_ID, deviceId: DEVICE_ID });
+    const IDEMPOTENCY_KEY = "00000000-0000-4000-8000-0000000000ff";
+    const result = await startBrewOnDeviceFromRecipeAction({
+      recipeId: RECIPE_ID,
+      deviceId: DEVICE_ID,
+      idempotencyKey: IDEMPOTENCY_KEY
+    });
 
     expect(result).toEqual({
       ok: true,
@@ -50,7 +55,10 @@ describe("startBrewOnDeviceFromRecipeAction", () => {
       message: "Рецепт отправлен, варка запущена.",
       reason: null
     });
-    expect(mocks.createBrewBatchFromRecipe).toHaveBeenCalledWith(USER_ID, RECIPE_ID);
+    // Ключ идемпотентности проброшен в доменный create (двойной клик → одна партия).
+    expect(mocks.createBrewBatchFromRecipe).toHaveBeenCalledWith(USER_ID, RECIPE_ID, {
+      idempotencyKey: IDEMPOTENCY_KEY
+    });
     expect(mocks.startBrewOnDevice).toHaveBeenCalledWith({
       userId: USER_ID,
       brewBatchId: "batch-1",

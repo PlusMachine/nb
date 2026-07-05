@@ -6,7 +6,7 @@ import { formatAbvShort, formatBatchVolume, formatIbuShort } from "@/features/re
 import { formatGravity, type PreferredGravityUnit } from "@/features/system/gravity-units";
 
 import { CloneFromPublicButton } from "./clone-from-public-button";
-import { AuthorAvatar, ColorStatCell, RecipeRatingOrNew, RecipeThumb, StatCell, StyleChip } from "./recipe-card-parts";
+import { AuthorAvatar, ColorStatCell, FeaturedBadge, RecipeRatingOrNew, RecipeThumb, StatCell, StyleChip } from "./recipe-card-parts";
 import { RecipeMatchBadge } from "./recipe-match-badge";
 import { RecipeSaveButton } from "./recipe-save-button";
 
@@ -66,6 +66,7 @@ export function RecipeCard({
                 match-бейдж вместе не влезают в одну строку — раньше это либо резало чип
                 до одной буквы, либо выталкивало бейдж за край карточки. */}
             <div className="flex flex-wrap items-center gap-1.5 pr-8">
+              {recipe.featured ? <FeaturedBadge /> : null}
               <StyleChip style={recipe.style} styleHref={recipe.styleHref} className="min-w-0 truncate" />
               <span className="shrink-0">
                 <RecipeRatingOrNew rating={recipe.rating} createdAt={recipe.createdAt} />

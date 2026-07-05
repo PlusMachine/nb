@@ -147,4 +147,29 @@ describe("scaleRecipeToVolume", () => {
     expect(view.factor).toBe(1);
     expect(view.ingredients[0].amountEnteredQuantity).toBe(5);
   });
+
+  it("rounds entered amounts to practical per-unit precision (no raw 3-decimal noise)", () => {
+    // База 30 л → 25 л, factor 0.8333… — раньше давало 4.167 kg / 41.667 g.
+    const view = scaleRecipeToVolume(
+      buildRecipe({ batchSizeEnteredQuantity: 30, batchSizeNormalizedQuantity: 30000 }),
+      25
+    );
+    expect(view.factor).toBeCloseTo(0.8333, 3);
+    const [grain, hop] = view.ingredients;
+    expect(grain.amountEnteredQuantity).toBe(4.17); // 5 kg → 2 знака, не 4.16667
+    expect(hop.amountEnteredQuantity).toBe(41.7); // 50 g → 1 знак, не 41.6667
+    expect(view.batchSizeEnteredQuantity).toBe(25); // 30 л → 2 знака
+  });
+
+  it("scaling down a single pack keeps a fraction (never rounds to 0)", () => {
+    const base = buildRecipe({ batchSizeEnteredQuantity: 30, batchSizeNormalizedQuantity: 30000 });
+    const withPack = buildRecipe({
+      batchSizeEnteredQuantity: 30,
+      batchSizeNormalizedQuantity: 30000,
+      ingredients: [{ ...base.ingredients[1]!, amountEnteredQuantity: 1, amountEnteredUnit: "pack", amountNormalizedQuantity: 11 }]
+    });
+    const view = scaleRecipeToVolume(withPack, 9); // factor 0.3
+    // При точности штучных 0 округлилось бы до 0 (пропажа ингредиента) — держим 2 знака.
+    expect(view.ingredients[0]!.amountEnteredQuantity).toBe(0.3);
+  });
 });

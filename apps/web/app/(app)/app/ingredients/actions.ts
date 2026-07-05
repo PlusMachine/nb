@@ -8,13 +8,15 @@ import {
   addCustomInventoryItemSchema,
   createUserCustomInventoryIngredientSchema,
   updateInventoryItemSchema,
-  updateInventoryQuantitySchema
+  updateInventoryQuantitySchema,
+  type InventoryItemMovementDto
 } from "@/features/inventory/contracts";
 import {
   addCatalogIngredientToInventory,
   addCustomIngredientToInventory,
   createUserCustomInventoryIngredient,
   deleteInventoryItem,
+  listInventoryItemMovements,
   resolveCatalogInventoryAdditionSource,
   setInventoryItemQuantityToZero,
   updateInventoryItem,
@@ -465,6 +467,20 @@ export const deleteInventoryItemAction = async (inventoryItemId: string): Promis
     }
 
     return { ok: false, message: "Не удалось удалить ингредиент. Попробуйте еще раз." };
+  }
+};
+
+// Журнал движений по позиции склада — тянется клиентом при открытии деталей
+// позиции (UX-находка #19). Ownership проверяет сервис (ensureInventoryItem).
+export const getInventoryItemMovementsAction = async (
+  inventoryItemId: string
+): Promise<{ ok: true; movements: InventoryItemMovementDto[] } | { ok: false; message: string }> => {
+  const user = await requireUser();
+  try {
+    const movements = await listInventoryItemMovements(user.id, inventoryItemId);
+    return { ok: true, movements };
+  } catch {
+    return { ok: false, message: "Не удалось загрузить журнал движений." };
   }
 };
 

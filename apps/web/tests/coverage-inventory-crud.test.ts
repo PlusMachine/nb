@@ -91,6 +91,8 @@ vi.mock("@nb/db", () => {
       userCustomIngredients: { findFirst: (arg: unknown) => mockState.customFindFirst(arg) },
       userIngredients: { findFirst: (arg: unknown) => mockState.inventoryFindFirst(arg) }
     },
+    // Транзакция для журнала движений (#19): выполняем колбэк с тем же мок-db как tx.
+    transaction: async (fn: (tx: unknown) => unknown) => fn(db),
     insert: (table: { name: string }) => ({
       values: (values: Record<string, unknown>) => ({
         returning: async () => {
@@ -124,6 +126,15 @@ vi.mock("@nb/db", () => {
 
         if ("inventory" in shape) {
           return joined;
+        }
+
+        // Lock-read остатка (SELECT … FOR UPDATE) для журнала движений (#19).
+        if ("normalizedQuantity" in shape) {
+          return {
+            where: (_w: unknown) => ({
+              for: async (_mode?: unknown) => [] as unknown[]
+            })
+          };
         }
 
         // Агрегация резервов: where().groupBy() → без резервов по умолчанию.

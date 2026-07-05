@@ -106,16 +106,16 @@ export const isDemoDevice = (device: { hardwareId: string }): boolean =>
 
 /**
  * Создать/переиспользовать демо-пивоварню. Идемпотентно на пользователя
- * (hardwareId=`demo-<userId>`). Транспорт выбирается по среде (Phase 0 + 4.5):
- *  - DEV (loopback разрешён): providerId=brewforge + localUrl→локальный device-sim
- *    (полный LAN-путь, «один клик → виртуальный контроллер»);
- *  - PROD (loopback запрещён): providerId=brewforge-demo, БЕЗ localUrl → in-process
- *    SimDevice-стаб (simTransport) — «попробуй до покупки» без железа и без сети.
- * Демо доступно в обеих средах (в проде — не через loopback, а через стаб).
+ * (hardwareId=`demo-<userId>`). Транспорт по умолчанию — in-process SimDevice-стаб
+ * (providerId=brewforge-demo, БЕЗ localUrl): «попробуй до покупки» работает и в
+ * проде, и в dev БЕЗ внешнего device-sim (его нет в `npm run dev` — только ручной
+ * `pnpm run dev:sim`), поэтому демо «варит» из коробки везде (UX-находка #16).
+ * Реальный LAN-путь через локальный device-sim (providerId=brewforge + localUrl)
+ * остаётся для разработчиков под ЯВНЫМ BREWFORGE_ALLOW_LOOPBACK_DEVICE.
  */
 export const createDemoDevice = async (userId: string): Promise<DeviceDto> => {
   const hardwareId = `${DEMO_HARDWARE_ID_PREFIX}${userId}`;
-  const loopback = useLoopbackDemoSim();
+  const loopback = isEnvEnabled(process.env.BREWFORGE_ALLOW_LOOPBACK_DEVICE);
   const localUrl = loopback
     ? process.env.BREWFORGE_DEMO_SIM_URL?.trim() || "http://127.0.0.1:8090"
     : null;
@@ -456,6 +456,22 @@ export const findDeviceByToken = async (rawToken: string): Promise<DeviceDto | n
  * (НЕ из тела HTTP-запроса/произвольного ввода). Никогда не вызывать с hardwareId
  * из недоверенного запроса — иначе одно устройство сможет менять статус другого.
  */
+/**
+ * Время самого свежего сохранённого кадра телеметрии устройства (мс epoch) или
+ * null. Дёшево: один проход по индексу (device_id, ts). Нужен статичным
+ * поверхностям (настройки), чтобы считать «связь» из того же источника, что и
+ * список плиток, а не расходиться с ним (UX-находка #14).
+ */
+export const getLatestTelemetryAtMs = async (deviceId: string): Promise<number | null> => {
+  const [row] = await db
+    .select({ ts: brewTelemetry.ts })
+    .from(brewTelemetry)
+    .where(eq(brewTelemetry.deviceId, deviceId))
+    .orderBy(desc(brewTelemetry.ts))
+    .limit(1);
+  return row?.ts ? row.ts.getTime() : null;
+};
+
 export const updateDeviceStatus = async (input: UpdateDeviceStatusInput): Promise<void> => {
   await db
     .update(brewDevices)

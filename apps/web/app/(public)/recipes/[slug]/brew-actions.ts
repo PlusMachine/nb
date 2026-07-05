@@ -11,7 +11,9 @@ const brewInputSchema = z.object({
   recipeId: z.string().uuid(),
   /** «Сварить самому» (виртуальная ветка единого входа «Сварить») — списать
    *  ингредиенты со склада ТЕКУЩЕГО пользователя сразу при старте. */
-  consumeIngredients: z.boolean().optional()
+  consumeIngredients: z.boolean().optional(),
+  /** Ключ идемпотентности создания партии (двойной клик/ретрай → одна партия). */
+  idempotencyKey: z.string().uuid().optional()
 });
 
 /** Итог опционального списания склада — доезжает до диалога честно, без глотания ошибок. */
@@ -47,6 +49,7 @@ const consumeErrorCodeByMessage: Record<string, StartBrewConsumeResult & { ok: f
 export const startBrewFromRecipeAction = async (input: {
   recipeId: string;
   consumeIngredients?: boolean;
+  idempotencyKey?: string;
 }): Promise<StartBrewFromRecipeResult> => {
   const user = await getSessionUser();
   if (!user) {
@@ -59,7 +62,9 @@ export const startBrewFromRecipeAction = async (input: {
   }
 
   try {
-    const batch = await createBrewBatchFromRecipe(user.id, parsed.data.recipeId);
+    const batch = await createBrewBatchFromRecipe(user.id, parsed.data.recipeId, {
+      idempotencyKey: parsed.data.idempotencyKey
+    });
 
     let consume: StartBrewConsumeResult | undefined;
     if (parsed.data.consumeIngredients) {

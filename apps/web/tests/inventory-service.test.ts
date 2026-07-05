@@ -3,6 +3,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 const { tableRefs, mockState } = vi.hoisted(() => ({
   tableRefs: {
     ingredients: { name: "ingredients", id: "id", isActive: "isActive", type: "type" },
+    ingredientAliases: { name: "ingredientAliases", ingredientId: "ingredientId", isEnabled: "isEnabled", alias: "alias" },
     ingredientPackageVariants: { name: "ingredientPackageVariants", id: "id", ingredientId: "ingredientId" },
     recipeInventoryAllocations: {
       name: "recipeInventoryAllocations",
@@ -82,6 +83,8 @@ vi.mock("@nb/db", () => {
       userCustomIngredients: { findFirst: (arg: unknown) => mockState.customFindFirst(arg) },
       userIngredients: { findFirst: (arg: unknown) => mockState.inventoryFindFirst(arg) }
     },
+    // Транзакция для журнала движений (#19): выполняем колбэк с тем же мок-db как tx.
+    transaction: async (fn: (tx: unknown) => unknown) => fn(db),
     insert: (table: { name: string }) => ({
       values: (values: Record<string, unknown>) => ({
         returning: async () => {
@@ -126,6 +129,17 @@ vi.mock("@nb/db", () => {
           };
         }
 
+        // Lock-read остатка (SELECT … FOR UPDATE) для журнала движений (#19):
+        // where().for("update"). Тесты леджер не проверяют → возвращаем пусто
+        // (before падает на fallback current.*, insert не срабатывает).
+        if ("normalizedQuantity" in shape) {
+          return {
+            where: (_w: unknown) => ({
+              for: async (_mode?: unknown) => [] as unknown[]
+            })
+          };
+        }
+
         return {
           where: async (_w: unknown) => mockState.selectRows
         };
@@ -141,6 +155,7 @@ vi.mock("@nb/db", () => {
     inArray: (...args: unknown[]) => args,
     isNull: (v: unknown) => v,
     sql: (..._args: unknown[]) => ({}) as never,
+    ingredientAliases: tableRefs.ingredientAliases,
     ingredientPackageVariants: tableRefs.ingredientPackageVariants,
     ingredients: tableRefs.ingredients,
     recipeInventoryAllocations: tableRefs.recipeInventoryAllocations,

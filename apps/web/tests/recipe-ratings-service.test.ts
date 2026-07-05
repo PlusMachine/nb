@@ -3,7 +3,14 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 vi.mock("server-only", () => ({}));
 
 type RatingRow = { recipeId: string; userId: string; stars: number; body: string | null };
-type RecipeRow = { id: string; authorId: string; publicationState: string; ratingAvg: number | null; ratingCount: number };
+type RecipeRow = {
+  id: string;
+  authorId: string;
+  publicationState: string;
+  ratingAvg: number | null;
+  ratingCount: number;
+  ratingBayes: number | null;
+};
 
 const { mockState } = vi.hoisted(() => ({
   mockState: {
@@ -109,13 +116,14 @@ vi.mock("@nb/db", () => {
       }
     }),
     update: () => ({
-      set: (set: { ratingAvg: number | null; ratingCount: number }) => ({
+      set: (set: { ratingAvg: number | null; ratingCount: number; ratingBayes: number | null }) => ({
         where: (clause: unknown) => {
           const id = getEqValue(clause, "recipes.id");
           const recipe = mockState.recipes.find((row) => row.id === id);
           if (recipe) {
             recipe.ratingAvg = set.ratingAvg;
             recipe.ratingCount = set.ratingCount;
+            recipe.ratingBayes = set.ratingBayes;
           }
           return Promise.resolve();
         }
@@ -164,8 +172,8 @@ const RATER_2 = "user-rater-2";
 beforeEach(() => {
   mockState.ratings = [];
   mockState.recipes = [
-    { id: PUBLISHED, authorId: AUTHOR, publicationState: "published", ratingAvg: null, ratingCount: 0 },
-    { id: DRAFT, authorId: AUTHOR, publicationState: "draft", ratingAvg: null, ratingCount: 0 }
+    { id: PUBLISHED, authorId: AUTHOR, publicationState: "published", ratingAvg: null, ratingCount: 0, ratingBayes: null },
+    { id: DRAFT, authorId: AUTHOR, publicationState: "draft", ratingAvg: null, ratingCount: 0, ratingBayes: null }
   ];
 });
 
@@ -234,6 +242,44 @@ describe("deleteRecipeRating", () => {
     const summary = await deleteRecipeRating(RATER, PUBLISHED);
     expect(summary).toEqual({ average: 3, count: 1 });
     expect(currentRecipe(PUBLISHED)).toMatchObject({ ratingAvg: 3, ratingCount: 1 });
+  });
+});
+
+describe("ratingBayes denormalization", () => {
+  // Скор наружу не отдаётся (summary — честное среднее), но пишется в recipes для
+  // сортировки «По рейтингу». Значения сверены с computeBayesianRating (m=3.8, C=10).
+  it("writes the bayesian score alongside avg/count on rate", async () => {
+    await rateRecipe(RATER, PUBLISHED, { stars: 5 });
+    // (10*3.8 + 5*1) / (10 + 1) = 43/11 ≈ 3.909
+    expect(currentRecipe(PUBLISHED).ratingBayes).toBeCloseTo(3.909, 3);
+  });
+
+  it("keeps a single 5.0 below a well-rated recipe (the whole point)", async () => {
+    // Один рецепт: одна оценка 5.0.
+    await rateRecipe(RATER, PUBLISHED, { stars: 5 });
+    const lonelyFive = currentRecipe(PUBLISHED).ratingBayes!;
+
+    // Другой рецепт: две оценки 4.5 avg → скор всё равно выше одинокой пятёрки.
+    mockState.recipes.push({
+      id: "recipe-popular",
+      authorId: AUTHOR,
+      publicationState: "published",
+      ratingAvg: null,
+      ratingCount: 0,
+      ratingBayes: null
+    });
+    await rateRecipe(RATER, "recipe-popular", { stars: 5 });
+    await rateRecipe(RATER_2, "recipe-popular", { stars: 4 });
+    const wellRated = currentRecipe("recipe-popular").ratingBayes!;
+
+    expect(wellRated).toBeGreaterThan(lonelyFive);
+  });
+
+  it("resets the bayesian score to null when the last rating is removed", async () => {
+    await rateRecipe(RATER, PUBLISHED, { stars: 4 });
+    expect(currentRecipe(PUBLISHED).ratingBayes).not.toBeNull();
+    await deleteRecipeRating(RATER, PUBLISHED);
+    expect(currentRecipe(PUBLISHED).ratingBayes).toBeNull();
   });
 });
 

@@ -884,38 +884,46 @@ describe("recipe service", () => {
     expect(recipe.ingredients).toEqual([]);
   });
 
-  it("published recipe requires style, description and yeast", async () => {
-    await expect(createRecipe("u1", {
-      title: "Broken public",
-      publicationState: "published",
-      batchSizeEnteredQuantity: 20,
-      batchSizeEnteredUnit: "l",
-      ingredients: [
-        {
-          ingredientCatalogItemId: uuid(101),
-          type: "malt",
-          category: "fermentable",
-          amountEnteredQuantity: 4,
-          amountEnteredUnit: "kg",
-          stage: "mash"
-        },
-        {
-          ingredientCatalogItemId: uuid(102),
-          type: "hop",
-          category: "hop",
-          amountEnteredQuantity: 40,
-          amountEnteredUnit: "g",
-          stage: "boil",
-          timeOffset: 60
-        }
-      ]
-    })).rejects.toMatchObject({
+  it("published recipe requires description and yeast", async () => {
+    let thrownError: any;
+    try {
+      await createRecipe("u1", {
+        title: "Broken public",
+        publicationState: "published",
+        batchSizeEnteredQuantity: 20,
+        batchSizeEnteredUnit: "l",
+        ingredients: [
+          {
+            ingredientCatalogItemId: uuid(101),
+            type: "malt",
+            category: "fermentable",
+            amountEnteredQuantity: 4,
+            amountEnteredUnit: "kg",
+            stage: "mash"
+          },
+          {
+            ingredientCatalogItemId: uuid(102),
+            type: "hop",
+            category: "hop",
+            amountEnteredQuantity: 40,
+            amountEnteredUnit: "g",
+            stage: "boil",
+            timeOffset: 60
+          }
+        ]
+      });
+    } catch (error) {
+      thrownError = error;
+    }
+
+    expect(thrownError).toMatchObject({
       name: "RecipeValidationError",
       fieldErrors: {
-        styleId: "Выберите стиль BJCP.",
         description: "Добавьте описание рецепта.",
         "ingredients.yeast": "Для публичного рецепта добавьте дрожжи."
       }
     });
+    // Стиль BJCP при публикации опционален — фиксируем, что валидатор больше не требует styleId.
+    expect(thrownError.fieldErrors).not.toHaveProperty("styleId");
   });
 });

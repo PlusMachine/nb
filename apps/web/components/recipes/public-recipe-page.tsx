@@ -9,9 +9,11 @@ import { RecipePhotoHero } from "./recipe-photo-hero";
 import { RecipeCloneAttribution } from "./recipe-clone-attribution";
 import { RecipeSourceAttribution } from "./recipe-source-attribution";
 import { RecipeRatingForm } from "./recipe-rating-form";
+import { RecipeFeatureToggle } from "./recipe-feature-toggle";
 import { RecipeMatchPanel } from "./recipe-match-panel";
 import { RecipeScalePanel } from "./recipe-scale-panel";
 import { PublicRecipeWaterSection } from "./public-recipe-water-section";
+import { PublicRecipeMashSection, PublicRecipeFermentationSection } from "./public-recipe-process-section";
 import { RecipeIngredientsSection } from "./recipe-ingredients-section";
 import { RecipeMetaSection } from "./recipe-meta-section";
 import { RecipeStatsSummaryViewer } from "./recipe-stats-summary-viewer";
@@ -52,17 +54,24 @@ export function PublicRecipePage({ recipe }: { recipe: RecipeDetailDto }) {
       <PublicRecipeHeader recipe={recipe} />
 
       <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_340px]">
-        {/* Суть рецепта: обложка (если есть) → описание → цифры → ингредиенты → вода. */}
+        {/* Суть рецепта в порядке варки: обложка → описание → цифры → ингредиенты
+            → затирание → вода → брожение. Затор/брожение — read-only, только если
+            в рецепте есть данные (ответ на «хватит ли, чтобы сварить» без клона). */}
         <div className="min-w-0 space-y-6">
           {recipe.heroImageId ? <RecipePhotoHero imageId={recipe.heroImageId} title={recipe.title} /> : null}
           <RecipeMetaSection recipe={recipe} showPrivateNotes={false} />
           <RecipeStatsSummaryViewer recipe={recipe} />
           <RecipeIngredientsSection ingredients={recipe.ingredients} />
+          <PublicRecipeMashSection processMeta={recipe.processMeta} />
           <PublicRecipeWaterSection recipe={recipe} />
+          <PublicRecipeFermentationSection processMeta={recipe.processMeta} />
         </div>
 
         {/* Инструменты и провенанс — не мешают чтению рецепта, доступны в один клик. */}
         <aside className="space-y-4 lg:sticky lg:top-[calc(var(--chrome-top)+1.5rem)]">
+          {/* Кураторский тумблер «Выбор редакции» — грузит права/состояние клиентом
+              после гидрации; обычному пользователю не рендерится. */}
+          <RecipeFeatureToggle recipeId={recipe.id} slug={recipe.slug} />
           {/* Персональный матчинг со складом тянется клиентом после гидрации → документ кэшируем. */}
           <RecipeMatchPanel recipeId={recipe.id} />
           {/* Эфемерный пересчёт под объём — модалка, чистый клиент, без записи в БД. */}

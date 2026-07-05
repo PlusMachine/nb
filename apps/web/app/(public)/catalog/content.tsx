@@ -338,7 +338,7 @@ export async function IngredientCatalogContent({ searchParams }: Props = {}) {
         </section>
       ) : (
         <>
-          <section className="hidden overflow-hidden rounded-[28px] border border-zinc-200 bg-white shadow-sm lg:block">
+          <section className="catalog-search-dim hidden overflow-hidden rounded-[28px] border border-zinc-200 bg-white shadow-sm lg:block">
             <table className="w-full table-fixed text-sm">
               <thead className="bg-zinc-50 text-left text-[11px] uppercase tracking-[0.12em] text-zinc-500">
                 <tr>
@@ -454,7 +454,7 @@ export async function IngredientCatalogContent({ searchParams }: Props = {}) {
             </table>
           </section>
 
-          <section className="grid gap-3 lg:hidden">
+          <section className="catalog-search-dim grid gap-3 lg:hidden">
             {result.items.map((item) => (
               <article
                 key={`${item.source}:${item.id}`}

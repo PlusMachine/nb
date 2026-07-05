@@ -460,6 +460,22 @@ export class SimDevice {
     }
   }
 
+  /**
+   * Демо-режим: держать варку «живой» на безлюдном пульте (UX-находка #16).
+   * Перезапускаем затирание, когда варка застряла на промпте оператора («Йодная
+   * проба» — демо некому подтвердить) ИЛИ доиграла до конца (DONE). Из чистого IDLE
+   * НЕ трогаем: IDLE — это результат STOP/сброса оператором самого демо, и повторный
+   * запуск откатывал бы его «Остановить» на следующем же опросе телеметрии.
+   * Ферментацию/дистилляцию (appMode!=="brew") не касаемся. Идемпотентно: пока варка
+   * идёт (не ждёт ack и не DONE) — no-op. Вызывать после advanceToNow(), перед snapshot().
+   */
+  ensureDemoBrewing(): void {
+    if (this.appMode !== "brew") return;
+    if (this.waitingAck || this.stage === "DONE") {
+      this.applyScenario("mash");
+    }
+  }
+
   onTelemetry(fn: TelemetryListener): () => void {
     this.listeners.add(fn);
     return () => this.listeners.delete(fn);

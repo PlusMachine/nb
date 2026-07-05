@@ -1,0 +1,2 @@
+ALTER TABLE "brew_batches" ADD COLUMN "idempotency_key" uuid;--> statement-breakpoint
+CREATE UNIQUE INDEX "brew_batches_user_idempotency_uidx" ON "brew_batches" USING btree ("user_id","idempotency_key");

@@ -29,7 +29,7 @@ import type { DeviceTransport, DeviceRecipeSlot } from "./transport";
 // Один симулятор на deviceId, переживающий запросы (state варки/слотов/конфига).
 const sims = new Map<string, SimDevice>();
 
-/** Параметры демо-симулятора: ускоренное «варочное» время, старт в простое. */
+/** Параметры демо-симулятора: ускоренное «варочное» время, сразу идущая варка. */
 function createSim(deviceId: string): SimDevice {
   // start() НЕ вызываем — фоновый таймер не нужен: продвигаем через advanceToNow.
   return new SimDevice({
@@ -37,7 +37,9 @@ function createSim(deviceId: string): SimDevice {
     fw: "sim-demo",
     tickMs: 250, // мелкий шаг → плавное ленивое продвижение
     tickScale: 60, // 1 реальная сек = 60 «варочных» сек (демо летит быстро)
-    scenario: "idle",
+    // Демо сразу «варит» (а не простаивает) — «попробуй до покупки» должно
+    // показывать живой процесс с первого взгляда (UX-находка #16).
+    scenario: "mash",
   });
 }
 
@@ -49,6 +51,9 @@ function advanced(deviceId: string): SimDevice {
     sims.set(deviceId, sim);
   }
   sim.advanceToNow();
+  // Варка отыграла до конца → перезапускаем: демо-пульт не должен «застывать» в
+  // простое между просмотрами (ленивое время могло докрутить варку до IDLE).
+  sim.ensureDemoBrewing();
   return sim;
 }
 

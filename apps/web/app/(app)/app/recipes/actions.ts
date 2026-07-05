@@ -609,11 +609,14 @@ export const getRecipeStockCoverageAction = async (recipeId: string): Promise<Re
 };
 
 export const createBrewBatchFromRecipeAction = async (
-  recipeId: string
+  recipeId: string,
+  // Ключ идемпотентности (двойной клик/ретрай → одна партия). Не плодим точки
+  // создания без ключа: любой батч-создающий экшен должен уметь его пробросить.
+  idempotencyKey?: string
 ): Promise<{ ok: boolean; message: string; brewBatchId?: string }> => {
   try {
     const user = await requireUser();
-    const batch = await createBrewBatchFromRecipe(user.id, recipeId);
+    const batch = await createBrewBatchFromRecipe(user.id, recipeId, { idempotencyKey });
 
     revalidatePath("/app/recipes");
     revalidatePath(`/app/recipes/${recipeId}`);

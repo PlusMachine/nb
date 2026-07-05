@@ -14,12 +14,13 @@
 //  экшен старта, что и у BrewPickerDialog (startBrewOnDeviceFromRecipeAction) —
 //  REMOTE_DISABLED обрабатывается так же честно (баннер, переход по клику).
 // =============================================================================
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { AlertTriangle, Loader2, Search, ShieldAlert } from "lucide-react";
 import { Button, Dialog, DialogCloseButton, DialogFooter, DialogHeader } from "@nb/ui";
 
 import { startBrewOnDeviceFromRecipeAction } from "@/features/brew-controller/brew-recipe-flow";
+import { newIdempotencyKey } from "@/lib/idempotency-key";
 import { RemoteDisabledNotice } from "@/features/brew-controller/components/remote-disabled-notice";
 import type { PushableRecipeDto } from "@/features/devices/onboard-recipes-contracts";
 import {
@@ -55,6 +56,10 @@ export function BrewRecipeOnDevicePicker({ open, onOpenChange, deviceId, deviceN
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [remoteDisabled, setRemoteDisabled] = useState<{ message: string; brewBatchId: string } | null>(null);
+  // Ключ идемпотентности «намерения сварить» + гард повторного сабмита (как в
+  // BrewPickerDialog): двойной клик/ретрай не плодят партию.
+  const idempotencyKeyRef = useRef<string | null>(null);
+  const inFlightRef = useRef(false);
 
   useEffect(() => {
     if (!open) return;
@@ -66,6 +71,8 @@ export function BrewRecipeOnDevicePicker({ open, onOpenChange, deviceId, deviceN
     setSearchError(null);
     setError(null);
     setRemoteDisabled(null);
+    idempotencyKeyRef.current = newIdempotencyKey();
+    inFlightRef.current = false;
   }, [open]);
 
   // Поиск публичных рецептов с debounce — только пока открыта вкладка поиска.
@@ -94,11 +101,16 @@ export function BrewRecipeOnDevicePicker({ open, onOpenChange, deviceId, deviceN
   }, [open, tab, query]);
 
   const handleConfirm = async () => {
-    if (!selected) return;
+    if (!selected || inFlightRef.current) return;
+    inFlightRef.current = true;
     setError(null);
     setSubmitting(true);
     try {
-      const result = await startBrewOnDeviceFromRecipeAction({ recipeId: selected.id, deviceId });
+      const result = await startBrewOnDeviceFromRecipeAction({
+        recipeId: selected.id,
+        deviceId,
+        idempotencyKey: (idempotencyKeyRef.current ??= newIdempotencyKey())
+      });
       if (result.ok && result.heatingStarted && result.brewBatchId) {
         router.push(`/app/brew-batches/${result.brewBatchId}`);
         return;
@@ -111,6 +123,7 @@ export function BrewRecipeOnDevicePicker({ open, onOpenChange, deviceId, deviceN
     } catch {
       setError("Не удалось запустить варку на устройстве.");
     } finally {
+      inFlightRef.current = false;
       setSubmitting(false);
     }
   };

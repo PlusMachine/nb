@@ -10,7 +10,6 @@ describe("recipe publication validation", () => {
     expect(getRecipePublicationFieldErrors({
       publicationState: "draft",
       title: "Новый рецепт 1",
-      styleId: null,
       description: null,
       boilTimeMinutes: 60,
       ingredientCategories: []
@@ -21,7 +20,6 @@ describe("recipe publication validation", () => {
     expect(getRecipePublicationFieldErrors({
       publicationState: "private",
       title: "Private IPA",
-      styleId: null,
       description: null,
       boilTimeMinutes: 60,
       ingredientCategories: []
@@ -32,7 +30,6 @@ describe("recipe publication validation", () => {
     expect(getRecipePublicationFieldErrors({
       publicationState: "published",
       title: "Public IPA",
-      styleId: null,
       description: "",
       boilTimeMinutes: 60,
       ingredientCategories: ["fermentable", "hop"]
@@ -46,7 +43,6 @@ describe("recipe publication validation", () => {
     expect(getRecipePublicationFieldErrors({
       publicationState: "published",
       title: "Wild ale",
-      styleId: null,
       description: "Эксперимент вне стиля",
       boilTimeMinutes: 60,
       ingredientCategories: ["fermentable", "hop", "yeast"]
@@ -57,7 +53,6 @@ describe("recipe publication validation", () => {
     const checklist = buildRecipePublicationChecklist({
       publicationState: "published",
       title: "APA",
-      styleId: "18B",
       description: "",
       boilTimeMinutes: 60,
       ingredientCategories: ["fermentable", "hop"]

@@ -101,6 +101,9 @@ export async function MyIngredientsContent({ searchParams }: Props = {}) {
   const sort = parseSort(typeof resolvedParams.sort === "string" ? resolvedParams.sort : undefined);
   const addSource = typeof resolvedParams.addSource === "string" ? resolvedParams.addSource : undefined;
   const addId = typeof resolvedParams.addId === "string" ? resolvedParams.addId : undefined;
+  // Дефицит из списка покупок (UX-находка #20): предзаполнить количество/единицу.
+  const addQty = typeof resolvedParams.addQty === "string" ? resolvedParams.addQty : undefined;
+  const addUnit = typeof resolvedParams.addUnit === "string" ? resolvedParams.addUnit : undefined;
 
   const [items, summary, currencyRates, initialSelection] = await Promise.all([
     listInventoryForUser(user.id, {
@@ -243,6 +246,8 @@ export async function MyIngredientsContent({ searchParams }: Props = {}) {
               : (subtype ?? null)
           }
           initialGroup={group ?? null}
+          initialQuantity={initialSelection ? addQty ?? null : null}
+          initialUnit={initialSelection ? addUnit ?? null : null}
           openOnMount={Boolean(initialSelection)}
         />
       </section>

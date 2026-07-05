@@ -133,6 +133,7 @@ type Props = {
   mode: "create" | "edit";
   initialRecipe?: RecipeDetailDto;
   initialTitle?: string;
+  initialStyleId?: string;
   initialIngredientSelection?: IngredientSuggestionItem | null;
   initialStockCoverage?: RecipeStockCoverageDto | null;
   initialImages?: RecipeImageDto[];
@@ -149,6 +150,7 @@ export function RecipeDesigner({
   mode,
   initialRecipe,
   initialTitle,
+  initialStyleId,
   initialIngredientSelection = null,
   initialStockCoverage = null,
   initialImages = [],
@@ -167,7 +169,7 @@ export function RecipeDesigner({
     : null;
   const initialSelectedEquipmentProfile = initialRecipe ? initialSavedEquipmentProfile : initialDefaultEquipmentProfile;
   const [title, setTitle] = useState(initialRecipe?.title ?? initialTitle ?? "");
-  const [styleId, setStyleId] = useState(initialRecipe?.styleId ?? "");
+  const [styleId, setStyleId] = useState(initialRecipe?.styleId ?? initialStyleId ?? "");
   const [description, setDescription] = useState(initialRecipe?.description ?? "");
   const [authorNotes, setAuthorNotes] = useState(initialRecipe?.authorNotes ?? "");
   const {
@@ -578,7 +580,6 @@ export function RecipeDesigner({
   const sectionErrors = visibleSaveResult?.fieldErrors ?? {};
   const publicationValidationContext = {
     title,
-    styleId: styleId.trim() || null,
     description: description.trim() || null,
     boilTimeMinutes: savePayload.boilTimeMinutes,
     ingredientCategories: ingredients.map((ingredient) => ingredient.category ?? null)
@@ -1177,9 +1178,12 @@ export function RecipeDesigner({
           <span className="hidden sm:inline">{headerSaveStatusMeta.label}</span>
         </span>
 
+        {/* На мобиле метрики уводим в отдельную строку с горизонтальным скроллом
+            (order-last + basis-full + flex-nowrap): sticky-панель складывается в
+            предсказуемые 2 ряда вместо 3, экономя ~высоту экрана (UX-находка #25). */}
         <dl
           aria-busy={recalculating}
-          className={`flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] tabular-nums text-zinc-600 transition-opacity ${recalculating || previewError ? "opacity-50" : ""}`}
+          className={`order-last flex basis-full flex-nowrap items-center gap-x-3 overflow-x-auto text-[11px] tabular-nums text-zinc-600 transition-opacity sm:order-none sm:basis-auto sm:flex-wrap sm:gap-y-1 sm:overflow-visible ${recalculating || previewError ? "opacity-50" : ""}`}
         >
           {headerMetrics.map((metric) => (
             <div key={metric.label} className="flex items-baseline gap-1">
@@ -1417,12 +1421,9 @@ export function RecipeDesigner({
                         className="inline-flex h-8 items-center gap-1 rounded-lg border border-zinc-200 bg-white px-2.5 text-xs font-medium text-zinc-700 shadow-sm transition-colors hover:border-zinc-300 hover:bg-zinc-50 sm:h-9 sm:px-3 sm:text-sm"
                       >
                         <Plus className="h-3.5 w-3.5" />
-                        <span className="hidden sm:inline">
-                          Добавить
-                        </span>
-                        <span className="sm:hidden">
-                          Добавить
-                        </span>
+                        {/* Один и тот же текст на всех брейкпоинтах — один span,
+                            иначе скринридер читал «Добавить» дважды (#23). */}
+                        <span>Добавить</span>
                       </button>
                     ) : null}
                   </div>

@@ -1,7 +1,7 @@
 import React from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { Star } from "lucide-react";
+import { BadgeCheck, Star } from "lucide-react";
 
 import type { PublicRecipeListItem } from "@/features/recipes/contracts";
 import { NEUTRAL_SOFT_GRADIENT, srmToHex, srmToSoftGradient } from "@/features/recipes/beer-color";
@@ -161,6 +161,25 @@ export function RecipeRatingOrNew({
     );
   }
   return null;
+}
+
+/**
+ * Бейдж «Выбор редакции» — кураторская метка (ставит editor+). Показывается
+ * независимо от рейтинга/«Нового» (это отдельный слот). `overlay` — читаемый
+ * поверх обложки в grid; `inline` — в теле карточки/строке list.
+ */
+export function FeaturedBadge({ variant = "inline" }: { variant?: "inline" | "overlay" }) {
+  const base = "inline-flex shrink-0 items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-semibold";
+  const skin =
+    variant === "overlay"
+      ? "bg-amber-500 text-white shadow-sm"
+      : "bg-amber-100 text-amber-800";
+  return (
+    <span className={`${base} ${skin}`}>
+      <BadgeCheck className="h-3.5 w-3.5" aria-hidden />
+      Выбор редакции
+    </span>
+  );
 }
 
 /**

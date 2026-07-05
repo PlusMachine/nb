@@ -1,6 +1,7 @@
 import { Button } from "@nb/ui";
 
 import { NotificationOptIn } from "@/features/notifications/components/notification-opt-in";
+import { ProfileLogoutButton } from "@/components/app/profile-logout-button";
 import { requireUser } from "@/lib/auth";
 import { systemCurrencies } from "@/features/system/currency";
 import { gravityUnitLabels, preferredGravityUnits } from "@/features/system/gravity-units";
@@ -59,6 +60,10 @@ export default async function ProfilePage() {
       <section className="space-y-3">
         <h2 className="text-sm font-semibold uppercase tracking-[0.12em] text-zinc-500">Уведомления</h2>
         <NotificationOptIn />
+      </section>
+
+      <section className="border-t border-zinc-200 pt-6">
+        <ProfileLogoutButton />
       </section>
     </div>
   );

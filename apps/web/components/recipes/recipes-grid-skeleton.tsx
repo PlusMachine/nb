@@ -4,7 +4,7 @@ import { defaultPublicRecipePageSize } from "@/features/recipes/contracts";
 
 /**
  * Скелетон под Suspense fallback. Повторяет геометрию реальных карточек и ту же
- * grid-раскладку `auto-fit/minmax(320px)`, что и {@link RecipesGrid}, а число
+ * grid-раскладку `auto-fill/minmax(320px)`, что и {@link RecipesGrid}, а число
  * плейсхолдеров = размеру первой страницы — иначе при появлении данных карточки
  * скачком меняют раскладку/высоту/число колонок (CLS). Повторяет выбранный вид
  * (`grid`/`list`), чтобы первый кадр не «прыгал».
@@ -55,7 +55,7 @@ export function RecipesGridSkeleton({
   // большую обложку сверху и `sm:grid-cols-2` — при загрузке раскладка и число
   // колонок скакали, ровно тот CLS, который скелетон должен убирать.
   return (
-    <div className="grid grid-cols-[repeat(auto-fit,minmax(320px,1fr))] gap-5" aria-hidden>
+    <div className="grid grid-cols-[repeat(auto-fill,minmax(320px,1fr))] gap-5" aria-hidden>
       {items.map((_, index) => (
         <div key={index} className="rounded-2xl border border-zinc-200 bg-white p-4 shadow-sm">
           <div className="flex items-start gap-3">

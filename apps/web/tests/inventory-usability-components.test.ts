@@ -152,7 +152,7 @@ describe("inventory usability components", () => {
     }));
 
     expect(fermentableHtml).toContain("Солод");
-    expect(fermentableHtml).toContain("Неосоложенка");
+    expect(fermentableHtml).toContain("Несоложёное сырьё");
     expect(fermentableHtml).toContain("Концентраты");
     expect(fermentableHtml).toContain("Сахара и сиропы");
     expect(fermentableHtml).toContain("Фрукты и соки");
@@ -385,7 +385,7 @@ describe("inventory usability components", () => {
     expect(html).toContain("Pilsner Malt");
     expect(html).toContain("BESTMALZ");
     expect(html).not.toContain("Германия");
-    expect(html).toContain("2 kg");
+    expect(html).toContain("2 кг");
     expect(html).toContain("6-7 EBC");
     expect(html).toContain("Экстр. 80%");
     expect(html).toContain("до 100%");
@@ -960,7 +960,7 @@ describe("inventory usability components", () => {
       currencyRates: { RUB: 100, USD: 7900, EUR: 9170 }
     }));
 
-    expect(html).toContain("1 pack (11 g)");
+    expect(html).toContain("1 пачка (11 г)");
     expect(html).not.toContain("<option");
     expect(html).toContain("Изменить");
     expect(html).toContain("Fermentis");

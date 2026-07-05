@@ -24,6 +24,7 @@ import {
   type InventoryUnit
 } from "@/features/inventory/units";
 import {
+  currencySymbol,
   formatCurrencyMinor,
   formatUnitPriceMinor,
   parseMoneyInputToMinor
@@ -195,8 +196,8 @@ export function InventoryPriceInput({
           inputMode="decimal"
           placeholder={
             priceInputMode === "per_display_unit"
-              ? `Например, 120 ${preferredCurrency} / ${inventoryUnitShortLabels[effectivePriceUnit]}`
-              : `Например, 1250 ${preferredCurrency}`
+              ? `Например, 120 ${currencySymbol(preferredCurrency)} / ${inventoryUnitShortLabels[effectivePriceUnit]}`
+              : `Например, 1250 ${currencySymbol(preferredCurrency)}`
           }
         />
         {fieldError ? <span className="text-xs text-red-600">{fieldError}</span> : null}

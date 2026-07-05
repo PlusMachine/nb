@@ -32,7 +32,7 @@ const { tableRefs, store, ids, fixtures } = vi.hoisted(() => {
         "id", "userId", "recipeId", "status", "brewPlanSnapshot", "brewDayProgress", "createdAt"
       ]),
       brewMeasurements: ref("brewMeasurements", [
-        "id", "userId", "brewBatchId", "gravitySg", "takenAt", "note", "createdAt"
+        "id", "userId", "brewBatchId", "gravitySg", "takenAt", "isFinal", "note", "createdAt"
       ]),
       inventoryTransactions: ref("inventoryTransactions", [
         "id", "userId", "brewBatchId", "inventoryItemId", "type", "normalizedUnit", "createdAt"
@@ -749,7 +749,7 @@ describe("журнал замеров", () => {
   it("getBrewBatchDetail считает сводку OG/FG/ABV и подмешивает цели рецепта", async () => {
     const seeded = seedBatch();
     await addBrewMeasurement(USER_ID, seeded.id, { gravitySg: 1.05, takenAt: new Date(Date.UTC(2026, 3, 1)) });
-    await addBrewMeasurement(USER_ID, seeded.id, { gravitySg: 1.01, takenAt: new Date(Date.UTC(2026, 3, 14)) });
+    await addBrewMeasurement(USER_ID, seeded.id, { gravitySg: 1.01, takenAt: new Date(Date.UTC(2026, 3, 14)), isFinal: true });
 
     const detail = await getBrewBatchDetail(USER_ID, seeded.id);
     expect(detail).not.toBeNull();
@@ -976,9 +976,9 @@ describe("сквозной журнал: рецепт → brew-day → заме�
     expect(consumeView.hasConsumed).toBe(true);
     expect(store.userIngredients[0].normalizedQuantity).toBe(50);
 
-    // 6. Брожение + замер FG.
+    // 6. Брожение + замер FG (помечен финальным).
     await updateBrewBatchStatus(USER_ID, batch.id, "fermenting");
-    await addBrewMeasurement(USER_ID, batch.id, { gravitySg: 1.012, takenAt: new Date(Date.UTC(2026, 4, 15)) });
+    await addBrewMeasurement(USER_ID, batch.id, { gravitySg: 1.012, takenAt: new Date(Date.UTC(2026, 4, 15)), isFinal: true });
 
     // 7. Завершение.
     const completed = await updateBrewBatchStatus(USER_ID, batch.id, "completed");

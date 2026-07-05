@@ -36,6 +36,9 @@ type Props = {
   initialCategory?: IngredientCategory | null;
   initialSubtype?: Extract<IngredientSubtype, "malt" | "fermentable"> | null;
   initialGroup?: string | null;
+  /** Дефицит из списка покупок (UX-находка #20): предзаполнить количество/единицу. */
+  initialQuantity?: string | null;
+  initialUnit?: string | null;
   initialQuickStartDataByContext?: IngredientPickerQuickStartResultByContext | null;
 };
 
@@ -252,6 +255,8 @@ type BodyProps = {
   initialCategory?: IngredientCategory | null;
   initialSubtype?: Extract<IngredientSubtype, "malt" | "fermentable"> | null;
   initialGroup?: string | null;
+  initialQuantity?: string | null;
+  initialUnit?: string | null;
   initialQuickStartDataByContext?: IngredientPickerQuickStartResultByContext | null;
   onClose: () => void;
   /** Не сохранённые данные — для guard'а Dialog-обёртки (закрыть без подтверждения?). */
@@ -270,6 +275,8 @@ export function AddIngredientModalBody({
   initialCategory = null,
   initialSubtype = null,
   initialGroup = null,
+  initialQuantity = null,
+  initialUnit = null,
   initialQuickStartDataByContext = null,
   onClose,
   onDirtyChange
@@ -464,10 +471,18 @@ export function AddIngredientModalBody({
             pending={pending}
             autoFocus
             initialSelection={initialSelection}
+            initialQuantity={initialQuantity}
+            initialUnit={initialUnit}
             fieldErrors={result?.fieldErrors}
             selectionActionLabel="Изменить выбор"
-            onSubtypeChange={setCatalogSubtype}
-            onGroupChange={setCatalogGroup}
+            onSubtypeChange={(next) => {
+              setCatalogSubtype(next);
+              setCustomSubtype(next);
+            }}
+            onGroupChange={(next) => {
+              setCatalogGroup(next);
+              setCustomGroup(next);
+            }}
             onSelectedIngredientChange={setSelectedIngredient}
             onDirtyChange={setCatalogFormDirty}
             onRequestCustom={() => {
@@ -522,6 +537,8 @@ export function AddIngredientModal({
   initialCategory,
   initialSubtype,
   initialGroup,
+  initialQuantity,
+  initialUnit,
   initialQuickStartDataByContext
 }: Props) {
   const dirtyRef = useRef(false);
@@ -555,6 +572,8 @@ export function AddIngredientModal({
             initialCategory={initialCategory}
             initialSubtype={initialSubtype}
             initialGroup={initialGroup}
+            initialQuantity={initialQuantity}
+            initialUnit={initialUnit}
             initialQuickStartDataByContext={initialQuickStartDataByContext}
             onClose={onClose}
             onDirtyChange={(dirty) => {

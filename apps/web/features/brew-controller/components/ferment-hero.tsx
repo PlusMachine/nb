@@ -49,15 +49,22 @@ export function FermentHero({ telemetry, current, next, dayLabel, chart, size = 
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
           <p className={kiosk ? "text-base text-zinc-500" : "text-sm text-zinc-500"}>Температура</p>
-          <p
-            className={
-              kiosk
-                ? "mt-1 text-[clamp(4rem,17vh,13rem)] font-semibold leading-none tabular-nums text-zinc-950"
-                : "mt-1 text-6xl font-semibold tabular-nums text-zinc-950"
-            }
-          >
-            {telemetry && telemetry.primary.valid ? fmtTemp(telemetry.primary.c) : "—"}
-          </p>
+          {telemetry && telemetry.primary.valid ? (
+            <p
+              className={
+                kiosk
+                  ? "mt-1 text-[clamp(4rem,17vh,13rem)] font-semibold leading-none tabular-nums text-zinc-950"
+                  : "mt-1 text-6xl font-semibold tabular-nums text-zinc-950"
+              }
+            >
+              {fmtTemp(telemetry.primary.c)}
+            </p>
+          ) : (
+            // Без валидной телеметрии — компактная «нет данных» вместо гигантского «—» (#21).
+            <p className={kiosk ? "mt-1 text-3xl font-medium text-zinc-400" : "mt-1 text-xl font-medium text-zinc-400"}>
+              нет данных
+            </p>
+          )}
           <p className={kiosk ? "mt-2 text-base text-zinc-500" : "mt-1 text-sm text-zinc-500"}>
             Уставка:{" "}
             <span

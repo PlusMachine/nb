@@ -9,5 +9,15 @@ export type IngredientCatalogActionPathname = "/app/ingredients" | "/app/recipes
 export const buildIngredientCatalogActionHref = (
   pathname: IngredientCatalogActionPathname,
   source: "catalog" | "custom",
-  id: string
-) => `${pathname}?addSource=${source}&addId=${id}`;
+  id: string,
+  // Опциональный дефицит из списка покупок → предзаполнить количество/единицу
+  // формы добавления (UX-находка #20). Оба параметра нужны вместе: подставлять
+  // число без единицы нельзя (риск чужой единицы), поэтому кодируем обе.
+  amount?: { quantity: number; unit: string } | null
+) => {
+  const base = `${pathname}?addSource=${source}&addId=${id}`;
+  if (amount && Number.isFinite(amount.quantity) && amount.quantity > 0 && amount.unit) {
+    return `${base}&addQty=${encodeURIComponent(amount.quantity)}&addUnit=${encodeURIComponent(amount.unit)}`;
+  }
+  return base;
+};

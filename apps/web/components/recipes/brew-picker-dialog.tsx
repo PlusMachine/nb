@@ -16,7 +16,7 @@
 //  виртуальная ветка. Ошибки — внутри диалога (role="alert"), диалог себя не
 //  закрывает; REMOTE_DISABLED — честный баннер с явным переходом по клику.
 // =============================================================================
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { AlertTriangle, Cpu, Loader2, ShieldAlert, Timer } from "lucide-react";
 import { Button, Dialog, DialogCloseButton, DialogFooter, DialogHeader } from "@nb/ui";
 
@@ -24,8 +24,9 @@ import { startBrewFromRecipeAction } from "@/app/(public)/recipes/[slug]/brew-ac
 import { startBrewOnDeviceFromRecipeAction } from "@/features/brew-controller/brew-recipe-flow";
 import { RemoteDisabledNotice } from "@/features/brew-controller/components/remote-disabled-notice";
 import { DevicePickerList, type PickerDevice } from "@/features/devices/components/device-picker-list";
+import { newIdempotencyKey } from "@/lib/idempotency-key";
 
-type Screen = "gate" | "mode" | "virtual" | "device-pick" | "device-confirm";
+type Screen = "gate" | "login" | "mode" | "virtual" | "device-pick" | "device-confirm";
 
 export type BrewPickerDialogProps = {
   open: boolean;
@@ -43,17 +44,36 @@ export function BrewPickerDialog({ open, onOpenChange, recipeId, slug, recipeTit
   const [devices, setDevices] = useState<PickerDevice[]>([]);
   const [devicesLoading, setDevicesLoading] = useState(true);
   const [devicesError, setDevicesError] = useState<string | null>(null);
+  // Аноним: /api/devices отвечает 401 → не гоняем его через выбор режима и
+  // создание партии до самого низа, а сразу предлагаем вход (UX-находка #11).
+  const [authRequired, setAuthRequired] = useState(false);
   const [selectedDeviceId, setSelectedDeviceId] = useState<string | null>(null);
   const [consumeIngredients, setConsumeIngredients] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [remoteDisabled, setRemoteDisabled] = useState<{ message: string; brewBatchId: string } | null>(null);
+  // Ключ идемпотентности «намерения сварить»: один на открытие диалога, стабилен
+  // между ретраями (создать партию два раза одним намерением нельзя). Гард
+  // inFlight режет повторный сабмит в том же тике до того, как отрисуется disabled.
+  const idempotencyKeyRef = useRef<string | null>(null);
+  const inFlightRef = useRef(false);
+  const ensureIdempotencyKey = () =>
+    (idempotencyKeyRef.current ??= newIdempotencyKey());
 
   const loadDevices = useCallback(async () => {
     setDevicesLoading(true);
     setDevicesError(null);
+    setAuthRequired(false);
     try {
       const res = await fetch("/api/devices", { cache: "no-store" });
+      // Аноним: requireUser() отвечает не 401, а редиректом (307) на /login, и fetch
+      // его СЛЕДУЕТ → res.ok=200 с HTML логина. Ловим оба варианта: и следованный
+      // редирект на /login, и 401/403 (на случай, если роут поменяют на JSON-ответ).
+      const redirectedToLogin = res.redirected && new URL(res.url).pathname.startsWith("/login");
+      if (res.status === 401 || res.status === 403 || redirectedToLogin) {
+        setAuthRequired(true);
+        return;
+      }
       if (!res.ok) throw new Error("LIST_FAILED");
       const data = (await res.json()) as { devices?: PickerDevice[] };
       const list = data.devices ?? [];
@@ -67,6 +87,8 @@ export function BrewPickerDialog({ open, onOpenChange, recipeId, slug, recipeTit
   }, []);
 
   // Сброс состояния мастера и ленивая проверка устройств при каждом открытии.
+  // Новое открытие = новое «намерение сварить» → новый ключ идемпотентности
+  // (осознанная повторная варка того же рецепта создаёт отдельную партию).
   useEffect(() => {
     if (!open) return;
     setScreen("gate");
@@ -75,24 +97,36 @@ export function BrewPickerDialog({ open, onOpenChange, recipeId, slug, recipeTit
     setConsumeIngredients(false);
     setError(null);
     setRemoteDisabled(null);
+    setAuthRequired(false);
+    idempotencyKeyRef.current = newIdempotencyKey();
+    inFlightRef.current = false;
     void loadDevices();
   }, [open, loadDevices]);
 
-  // Гейт режима: устройств нет (или их не удалось посчитать) → сразу виртуальная
-  // ветка без экрана выбора; иначе — выбор режима.
+  // Экран выбора показываем ВСЕГДА, даже без привязанного прибора: тогда вторая
+  // опция — не «на автоматике», а «Подключить BrewForge» (см. mode-экран). Так
+  // автоматика видна из основного флоу «Сварить», а не только тем, у кого прибор
+  // уже подключён (решение владельца по UX-находкам #9/#10).
   useEffect(() => {
     if (screen !== "gate" || devicesLoading) return;
-    setScreen(devicesError || devices.length > 0 ? "mode" : "virtual");
-  }, [screen, devicesLoading, devicesError, devices.length]);
+    setScreen(authRequired ? "login" : "mode");
+  }, [screen, devicesLoading, authRequired]);
 
   const hasDeviceChoice = Boolean(devicesError) || devices.length > 0;
   const selectedDevice = devices.find((device) => device.id === selectedDeviceId) ?? null;
+  const loginHref = `/login?next=${encodeURIComponent(slug ? `/recipes/${slug}` : "/app/brew-batches")}`;
 
   const handleConfirmVirtual = async () => {
+    if (inFlightRef.current) return;
+    inFlightRef.current = true;
     setError(null);
     setSubmitting(true);
     try {
-      const result = await startBrewFromRecipeAction({ recipeId, consumeIngredients });
+      const result = await startBrewFromRecipeAction({
+        recipeId,
+        consumeIngredients,
+        idempotencyKey: ensureIdempotencyKey()
+      });
       if (result.ok) {
         // Фидбэк списания довозим query-параметрами — страница партии покажет
         // тост (см. brew-stock-notice.tsx). Параметры добавляем, только если
@@ -119,16 +153,22 @@ export function BrewPickerDialog({ open, onOpenChange, recipeId, slug, recipeTit
     } catch {
       setError("Не удалось начать варку. Попробуйте ещё раз.");
     } finally {
+      inFlightRef.current = false;
       setSubmitting(false);
     }
   };
 
   const handleConfirmDevice = async () => {
-    if (!selectedDeviceId) return;
+    if (!selectedDeviceId || inFlightRef.current) return;
+    inFlightRef.current = true;
     setError(null);
     setSubmitting(true);
     try {
-      const result = await startBrewOnDeviceFromRecipeAction({ recipeId, deviceId: selectedDeviceId });
+      const result = await startBrewOnDeviceFromRecipeAction({
+        recipeId,
+        deviceId: selectedDeviceId,
+        idempotencyKey: ensureIdempotencyKey()
+      });
       if (result.ok && result.heatingStarted && result.brewBatchId) {
         window.location.assign(`/app/brew-batches/${result.brewBatchId}`);
         return;
@@ -142,6 +182,7 @@ export function BrewPickerDialog({ open, onOpenChange, recipeId, slug, recipeTit
     } catch {
       setError("Не удалось запустить варку на устройстве.");
     } finally {
+      inFlightRef.current = false;
       setSubmitting(false);
     }
   };
@@ -170,6 +211,7 @@ export function BrewPickerDialog({ open, onOpenChange, recipeId, slug, recipeTit
             </h2>
             <p className="mt-1 text-sm leading-6 text-zinc-600">
               {screen === "gate" ? "Проверяем ваши устройства…" : null}
+              {screen === "login" ? "Войдите, чтобы начать варку." : null}
               {screen === "mode" ? "Выберите, как варить." : null}
               {screen === "virtual" ? "Партия появится в подготовке — старт варочного дня там." : null}
               {screen === "device-pick" ? "Выберите устройство BrewForge." : null}
@@ -184,6 +226,15 @@ export function BrewPickerDialog({ open, onOpenChange, recipeId, slug, recipeTit
         <div className="flex items-center gap-2 p-5 py-10 text-sm text-zinc-500">
           <Loader2 className="h-4 w-4 animate-spin" />
           Загрузка…
+        </div>
+      ) : null}
+
+      {screen === "login" ? (
+        <div className="p-5">
+          <p className="text-sm leading-6 text-zinc-600">
+            Варка сохранится в вашей мастерской: шаги, таймеры и замеры в одном месте. Аккаунт создаётся
+            автоматически при первом входе.
+          </p>
         </div>
       ) : null}
 
@@ -204,21 +255,42 @@ export function BrewPickerDialog({ open, onOpenChange, recipeId, slug, recipeTit
               </span>
             </span>
           </button>
-          <button
-            type="button"
-            onClick={() => setScreen("device-pick")}
-            className="flex w-full items-start gap-3 rounded-lg border border-zinc-200 bg-white px-4 py-3 text-left transition hover:border-zinc-300 hover:bg-zinc-50"
-          >
-            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-orange-50 text-orange-600">
-              <Cpu className="h-5 w-5" />
-            </span>
-            <span>
-              <span className="block text-sm font-semibold text-zinc-900">Сварить на автоматике</span>
-              <span className="mt-0.5 block text-xs leading-5 text-zinc-500">
-                Рецепт уйдёт на контроллер BrewForge, который запустит нагрев.
+          {hasDeviceChoice ? (
+            <button
+              type="button"
+              onClick={() => setScreen("device-pick")}
+              className="flex w-full items-start gap-3 rounded-lg border border-zinc-200 bg-white px-4 py-3 text-left transition hover:border-zinc-300 hover:bg-zinc-50"
+            >
+              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-orange-50 text-orange-600">
+                <Cpu className="h-5 w-5" />
               </span>
-            </span>
-          </button>
+              <span>
+                <span className="block text-sm font-semibold text-zinc-900">Сварить на автоматике</span>
+                <span className="mt-0.5 block text-xs leading-5 text-zinc-500">
+                  Рецепт уйдёт на контроллер BrewForge, который запустит нагрев.
+                </span>
+              </span>
+            </button>
+          ) : (
+            // Прибор не подключён: вместо device-ветки — вход в подключение BrewForge.
+            // Полная навигация (уходим в рабочую зону; из публичной витрины —
+            // /app/devices сам отправит на логин при необходимости).
+            <button
+              type="button"
+              onClick={() => window.location.assign("/app/devices")}
+              className="flex w-full items-start gap-3 rounded-lg border border-zinc-200 bg-white px-4 py-3 text-left transition hover:border-zinc-300 hover:bg-zinc-50"
+            >
+              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-orange-50 text-orange-600">
+                <Cpu className="h-5 w-5" />
+              </span>
+              <span>
+                <span className="block text-sm font-semibold text-zinc-900">Подключить BrewForge</span>
+                <span className="mt-0.5 block text-xs leading-5 text-zinc-500">
+                  Автоматика варки: контроллер сам греет и держит паузы затирания. Пока не подключён.
+                </span>
+              </span>
+            </button>
+          )}
         </div>
       ) : null}
 
@@ -292,14 +364,23 @@ export function BrewPickerDialog({ open, onOpenChange, recipeId, slug, recipeTit
         </div>
       ) : null}
 
+      {screen === "login" ? (
+        <DialogFooter>
+          <Button variant="outline" onClick={() => onOpenChange(false)}>
+            Отмена
+          </Button>
+          {/* Полная навигация: уходим в публичную зону логина с возвратом на рецепт. */}
+          <Button variant="primary" onClick={() => window.location.assign(loginHref)}>
+            Войти
+          </Button>
+        </DialogFooter>
+      ) : null}
+
       {screen === "virtual" ? (
         <DialogFooter>
-          <Button
-            variant="outline"
-            onClick={() => (hasDeviceChoice ? setScreen("mode") : onOpenChange(false))}
-            disabled={submitting}
-          >
-            {hasDeviceChoice ? "Назад" : "Отмена"}
+          {/* Экран выбора теперь показывается всегда → «Назад» всегда ведёт на него. */}
+          <Button variant="outline" onClick={() => setScreen("mode")} disabled={submitting}>
+            Назад
           </Button>
           <Button variant="primary" onClick={() => void handleConfirmVirtual()} disabled={submitting}>
             {submitting ? "Создаём…" : "Создать варку"}

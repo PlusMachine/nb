@@ -201,7 +201,7 @@ describe("recipes read components", () => {
     expect(html).toContain("Yakima Chief");
     expect(html).toContain("Альфа 12.5%");
     expect(html).toContain("Гранулы");
-    expect(html).toContain("0.5 kg");
+    expect(html).toContain("0.5 кг");
     expect(html).toContain("Кипячение");
     expect(html).toContain("Описание");
     expect(html).toContain("Личные заметки");

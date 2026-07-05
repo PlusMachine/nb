@@ -23,6 +23,9 @@ type Props = {
   initialCategory?: IngredientCategory | null;
   initialSubtype?: Extract<IngredientSubtype, "malt" | "fermentable"> | null;
   initialGroup?: string | null;
+  /** Дефицит из списка покупок (UX-находка #20): предзаполнить количество/единицу. */
+  initialQuantity?: string | null;
+  initialUnit?: string | null;
   initialQuickStartDataByContext?: IngredientPickerQuickStartResultByContext | null;
   openOnMount?: boolean;
 };
@@ -35,6 +38,8 @@ export function AddIngredientTrigger({
   initialCategory = null,
   initialSubtype = null,
   initialGroup = null,
+  initialQuantity = null,
+  initialUnit = null,
   initialQuickStartDataByContext = null,
   openOnMount = false
 }: Props) {
@@ -59,6 +64,8 @@ export function AddIngredientTrigger({
         initialCategory={initialCategory}
         initialSubtype={initialSubtype}
         initialGroup={initialGroup}
+        initialQuantity={initialQuantity}
+        initialUnit={initialUnit}
         initialQuickStartDataByContext={initialQuickStartDataByContext}
       />
     </>

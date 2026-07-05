@@ -43,11 +43,15 @@ export type StartBrewOnDeviceFromRecipeResult = {
 export async function startBrewOnDeviceFromRecipeAction(input: {
   recipeId: string;
   deviceId: string;
+  /** Ключ идемпотентности создания партии (двойной клик/ретрай → одна партия). */
+  idempotencyKey?: string;
 }): Promise<StartBrewOnDeviceFromRecipeResult> {
   let brewBatchId: string | null = null;
   try {
     const user = await requireUser();
-    const batch = await createBrewBatchFromRecipe(user.id, input.recipeId);
+    const batch = await createBrewBatchFromRecipe(user.id, input.recipeId, {
+      idempotencyKey: input.idempotencyKey
+    });
     brewBatchId = batch.id;
 
     const outcome = await startBrewOnDevice({

@@ -21,6 +21,7 @@ import {
   classifyTileFreshness,
   type DeviceTile as DeviceTileData,
 } from "@/features/devices/contracts";
+import { summarizeDeviceConnection } from "@/features/devices/connection";
 
 const STATUS_DOT: Record<DeviceTileData["status"], string> = {
   online: "bg-emerald-500",
@@ -59,6 +60,15 @@ export function DeviceTile({ tile, nowMs, onRevoke }: Props) {
   const stale = freshness === "stale";
   const hasData = Boolean(snap) && snap!.ts > 0;
   const modeBadge = deriveTileBadge(snap?.stage ?? null, snap?.pausedFrom ?? null);
+  // Статус связи — из того же helper, что и страница настроек (единая формулировка, #14).
+  const connection = summarizeDeviceConnection(
+    {
+      status: tile.status,
+      lastSeenAtMs: tile.lastSeenAt ? Date.parse(tile.lastSeenAt) : null,
+      lastTelemetryAtMs: hasData ? snap!.ts : null,
+    },
+    nowMs,
+  );
 
   // HMI: числовые значения гасим при устаревании (last-known, но «не живо»).
   const valueTone = stale ? "text-zinc-400" : "text-zinc-950";
@@ -89,7 +99,8 @@ export function DeviceTile({ tile, nowMs, onRevoke }: Props) {
             </span>
           ) : null}
           <span className="inline-flex items-center gap-1.5 text-xs text-zinc-500">
-            <span className={`h-2 w-2 rounded-full ${STATUS_DOT[tile.status]}`} />
+            <span className={`h-2 w-2 rounded-full ${STATUS_DOT[connection.tone]}`} />
+            {connection.label}
           </span>
         </span>
       </div>

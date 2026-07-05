@@ -481,7 +481,7 @@ describe("inventory add-flow", () => {
 
     expect(html).toContain('data-testid="catalog-fermentable-subtype-switch"');
     expect(html).toContain("Солод");
-    expect(html).toContain("Неосоложенка");
+    expect(html).toContain("Несоложёное сырьё");
     expect(html).toContain("Концентраты");
     expect(html).toContain("Сахара и сиропы");
     expect(html).toContain("Фрукты и соки");

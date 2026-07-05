@@ -45,9 +45,19 @@ vi.mock("../features/ingredients/user-metadata-service", () => ({
 
 vi.mock("@nb/db", () => {
   // Любой доступ к колонке таблицы -> строка "table.column" (для проверки where/order).
+  // Символьные ключи (Symbol.toPrimitive/toStringTag и пр.) отдаём как функцию-имя,
+  // чтобы саму таблицу можно было подставить в s`…${table}…` (напр. EXISTS-подзапрос).
   const tableToken = (name: string) =>
     new Proxy({} as Record<string, string>, {
-      get: (_target, prop) => `${name}.${String(prop)}`
+      get: (_target, prop) => {
+        if (prop === Symbol.toPrimitive || prop === "toString" || prop === "valueOf") {
+          return () => name;
+        }
+        if (typeof prop === "symbol") {
+          return undefined;
+        }
+        return `${name}.${String(prop)}`;
+      }
     });
 
   const resolveRows = (projection: Record<string, unknown>) => {

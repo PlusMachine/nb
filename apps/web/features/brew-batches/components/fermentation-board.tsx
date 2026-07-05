@@ -12,8 +12,9 @@ import { useBrewDayProgress } from "./use-brew-day-progress";
 export type FermentationNudge = { tone: "action" | "warn" | "info"; text: string };
 
 // Первичное брожение уже отражено героем «день N из M» — отдельный чекбокс-дубль
-// «Поставить на брожение» в этом акте убираем (см. спеку §9).
-const HERO_STEP_IDS = new Set(["ferment:primary"]);
+// «Поставить на брожение» в этом акте убираем (см. спеку §9). Экспортируется, чтобы
+// история завершённой варки прятала тот же нечекаемый шаг (иначе «Брожение 0/1»).
+export const HERO_STEP_IDS = new Set(["ferment:primary"]);
 
 const declOfSteps = (n: number): string => (n === 1 ? "шаг" : n >= 2 && n <= 4 ? "шага" : "шагов");
 

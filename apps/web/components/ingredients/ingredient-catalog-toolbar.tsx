@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useCallback, useMemo, useTransition } from "react";
+import React, { useCallback, useEffect, useMemo, useTransition } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import {
@@ -199,6 +199,22 @@ export function IngredientCatalogToolbar({
     onFocus: handleSearchFocus,
     onBlur: handleSearchBlur
   } = useDebouncedUrlSearch({ value: q, buildHref: buildSearchHref, debounceMs: searchDebounceMs });
+
+  // Пока идёт поиск/смена фильтра — помечаем документ, чтобы серверный сиблинг
+  // (список каталога) погас через CSS: устаревшие строки не выглядят зависшими
+  // (UX-находка #17). Атрибут снимаем по завершении и при размонтировании.
+  const searching = isPending || isSearchPending;
+  useEffect(() => {
+    const root = document.documentElement;
+    if (searching) {
+      root.dataset.catalogSearching = "1";
+    } else {
+      delete root.dataset.catalogSearching;
+    }
+    return () => {
+      delete root.dataset.catalogSearching;
+    };
+  }, [searching]);
 
   const replaceWith = (next: {
     view?: IngredientCatalogView;

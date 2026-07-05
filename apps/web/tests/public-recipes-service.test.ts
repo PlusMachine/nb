@@ -233,12 +233,15 @@ describe("searchPublicRecipes", () => {
     expect(countQuery()).toBeTruthy();
   });
 
-  it("orders rating sort by rating_avg desc NULLS LAST with secondary updatedAt (Phase D)", async () => {
+  it("orders rating sort by bayesian score desc NULLS LAST with secondary updatedAt", async () => {
+    // Сортировка «По рейтингу» идёт по байесовскому скору (rating_bayes), а не по
+    // голому среднему — чтобы одна оценка 5.0 не обгоняла 4.8 при сотне оценок.
+    // Наружу при этом по-прежнему отдаётся честный ratingAvg (см. тесты ниже).
     mockState.rows = [baseRow()];
     await searchPublicRecipes(parsePublicRecipeFilters({ sort: "rating" }));
 
     expect(mainQuery()!.order).toEqual([
-      ["sql", "recipes.ratingAvg desc nulls last"],
+      ["sql", "recipes.ratingBayes desc nulls last"],
       ["desc", "recipes.updatedAt"]
     ]);
   });

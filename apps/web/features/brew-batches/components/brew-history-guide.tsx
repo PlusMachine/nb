@@ -5,6 +5,7 @@ import { ChevronRight } from "lucide-react";
 
 import { type BrewDayProgress, type BrewDayStageGroup } from "@/features/brew-batches/contracts";
 import { BrewStepList } from "./brew-step-list";
+import { HERO_STEP_IDS } from "./fermentation-board";
 import { useBrewDayProgress } from "./use-brew-day-progress";
 
 /**
@@ -23,7 +24,13 @@ export function BrewHistoryGuide({
 }) {
   const controller = useBrewDayProgress(brewBatchId, initialProgress);
 
-  if (groups.length === 0) {
+  // Прячем hero-шаги (напр. «Поставить на брожение»): в акте брожения у них нет
+  // чекбокса, отметить их нельзя, и в истории они висли бы вечным «0 / 1».
+  const historyGroups = groups
+    .map((group) => ({ ...group, steps: group.steps.filter((step) => !HERO_STEP_IDS.has(step.id)) }))
+    .filter((group) => group.steps.length > 0);
+
+  if (historyGroups.length === 0) {
     return null;
   }
 
@@ -34,7 +41,7 @@ export function BrewHistoryGuide({
         Как прошла варка
       </summary>
       <div className="mt-4">
-        <BrewStepList groups={groups} controller={controller} readOnly />
+        <BrewStepList groups={historyGroups} controller={controller} readOnly />
       </div>
     </details>
   );

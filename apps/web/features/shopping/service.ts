@@ -103,9 +103,15 @@ export const buildShoppingListForUser = async (userId: string): Promise<Shopping
             ? `/catalog/custom/${customId}`
             : null,
         addToStockHref: catalogId
-          ? buildIngredientCatalogActionHref("/app/ingredients", "catalog", catalogId)
+          ? buildIngredientCatalogActionHref("/app/ingredients", "catalog", catalogId, {
+              quantity: roundTo(line.suggestedAddQuantity, 3),
+              unit: line.suggestedAddUnit
+            })
           : customId
-            ? buildIngredientCatalogActionHref("/app/ingredients", "custom", customId)
+            ? buildIngredientCatalogActionHref("/app/ingredients", "custom", customId, {
+                quantity: roundTo(line.suggestedAddQuantity, 3),
+                unit: line.suggestedAddUnit
+              })
             : null,
         neededBy: [brewRef]
       });

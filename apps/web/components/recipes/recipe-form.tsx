@@ -15,6 +15,7 @@ type Props = {
   mode: "create" | "edit";
   initialRecipe?: RecipeDetailDto;
   initialTitle?: string;
+  initialStyleId?: string;
   initialIngredientSelection?: IngredientSuggestionItem | null;
   initialStockCoverage?: RecipeStockCoverageDto | null;
   initialImages?: RecipeImageDto[];
@@ -29,6 +30,7 @@ export function RecipeForm({
   mode,
   initialRecipe,
   initialTitle,
+  initialStyleId,
   initialIngredientSelection,
   initialStockCoverage,
   initialImages,
@@ -43,6 +45,7 @@ export function RecipeForm({
       mode={mode}
       initialRecipe={initialRecipe}
       initialTitle={initialTitle}
+      initialStyleId={initialStyleId}
       initialIngredientSelection={initialIngredientSelection}
       initialStockCoverage={initialStockCoverage}
       initialImages={initialImages}

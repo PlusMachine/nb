@@ -647,7 +647,6 @@ export const buildAutosaveBlockedResult = (
   const fieldErrors = getRecipePublicationFieldErrors({
     publicationState: payload.publicationState,
     title: payload.title,
-    styleId: payload.styleId ?? null,
     description: payload.description ?? null,
     boilTimeMinutes: payload.boilTimeMinutes,
     ingredientCategories: payload.ingredients.map((ingredient) => ingredient.category ?? null)

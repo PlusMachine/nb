@@ -9,6 +9,7 @@ import { CloneFromPublicButton } from "./clone-from-public-button";
 import {
   AuthorAvatar,
   ColorStatCell,
+  FeaturedBadge,
   RecipeRatingOrNew,
   RecipeThumb,
   StatCell,
@@ -66,7 +67,10 @@ export function RecipeListRow({
       />
 
       <div className="pointer-events-none min-w-0 flex-1">
-        <StyleChip style={recipe.style} styleHref={recipe.styleHref} />
+        <div className="flex flex-wrap items-center gap-1.5">
+          {recipe.featured ? <FeaturedBadge /> : null}
+          <StyleChip style={recipe.style} styleHref={recipe.styleHref} />
+        </div>
         <h2 className="mt-1 line-clamp-2 text-base font-semibold leading-snug text-zinc-950 group-hover:text-zinc-700">
           {recipe.name}
         </h2>

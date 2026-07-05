@@ -163,3 +163,13 @@ body {
     animation: home-live-pulse 1.6s ease-in-out infinite;
   }
 }
+
+/* Каталог: пока идёт поиск/смена фильтра, гасим устаревший список, чтобы он не
+   выглядел зависшим (UX-находка #17). Атрибут ставит тулбар по isPending. */
+.catalog-search-dim {
+  transition: opacity 0.2s ease;
+}
+html[data-catalog-searching="1"] .catalog-search-dim {
+  opacity: 0.5;
+  pointer-events: none;
+}

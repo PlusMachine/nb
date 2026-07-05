@@ -53,27 +53,27 @@ type InventoryUnitProfileInput = {
 };
 
 export const inventoryUnitLabels: Record<InventoryUnit, string> = {
-  g: "g",
-  kg: "kg",
-  oz: "oz",
-  lb: "lb",
-  ml: "ml",
-  l: "l",
-  gal: "gal",
-  item: "item (шт.)",
-  pack: "pack (пачка)"
+  g: "г",
+  kg: "кг",
+  oz: "унц.",
+  lb: "фунт",
+  ml: "мл",
+  l: "л",
+  gal: "гал",
+  item: "штука",
+  pack: "пачка"
 };
 
 export const inventoryUnitShortLabels: Record<InventoryUnit, string> = {
-  g: "g",
-  kg: "kg",
-  oz: "oz",
-  lb: "lb",
-  ml: "ml",
-  l: "l",
-  gal: "gal",
-  item: "item",
-  pack: "pack"
+  g: "г",
+  kg: "кг",
+  oz: "унц.",
+  lb: "фунт",
+  ml: "мл",
+  l: "л",
+  gal: "гал",
+  item: "шт.",
+  pack: "пачка"
 };
 
 const unitDimensionByUnit: Record<InventoryUnit, InventoryUnitDimension> = {

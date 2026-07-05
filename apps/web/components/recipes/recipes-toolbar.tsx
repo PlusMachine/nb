@@ -6,7 +6,8 @@ import { LayoutGrid, List, Search } from "lucide-react";
 
 import { Input } from "@nb/ui";
 
-import { RECIPES_VIEW_COOKIE, recipeSortOptions, type RecipesView } from "@/features/recipes/recipes-url";
+import type { PublicRecipeSort, PublicRecipeSortAvailability } from "@/features/recipes/contracts";
+import { RECIPES_VIEW_COOKIE, resolveVisibleSortOptions, type RecipesView } from "@/features/recipes/recipes-url";
 import { useDebouncedUrlSearch } from "@/components/shared/use-debounced-url-search";
 
 import { useRecipeQueryNav } from "./use-recipe-query";
@@ -18,12 +19,19 @@ import { useRecipeQueryNav } from "./use-recipe-query";
  * Пока идёт навигация (`isPending`) — ненавязчивый индикатор «Обновляем…», чтобы
  * выдача не «моргала» скелетоном на каждый тик фильтра.
  */
-export function RecipesToolbar({ defaultView = "grid" }: { defaultView?: RecipesView }) {
+export function RecipesToolbar({
+  defaultView = "grid",
+  sortAvailability
+}: {
+  defaultView?: RecipesView;
+  sortAvailability: PublicRecipeSortAvailability;
+}) {
   const { searchParams, navigate, buildHref, isPending } = useRecipeQueryNav();
   const router = useRouter();
   const urlQuery = searchParams.get("q") ?? "";
-  const sort = searchParams.get("sort") ?? "newest";
+  const sort = (searchParams.get("sort") ?? "newest") as PublicRecipeSort;
   const view = searchParams.get("view") ?? defaultView;
+  const sortOptions = resolveVisibleSortOptions(sortAvailability, sort);
 
   // Запоминаем выбор вида в cookie — серверная страница подставит его дефолтом при
   // следующем заходе без явного ?view. «Сетка» вырезается из URL как дефолт, поэтому
@@ -75,7 +83,7 @@ export function RecipesToolbar({ defaultView = "grid" }: { defaultView?: Recipes
             onChange={(event) => navigate({ sort: event.target.value })}
             className="h-10 rounded-lg border border-zinc-200 bg-white px-3 text-sm text-zinc-900 focus:outline-none focus:ring-2 focus:ring-zinc-400"
           >
-            {recipeSortOptions.map((option) => (
+            {sortOptions.map((option) => (
               <option key={option.value} value={option.value}>
                 {option.label}
               </option>

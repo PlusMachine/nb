@@ -151,7 +151,7 @@ describe("inventory unit normalization", () => {
         packageSize: null,
         packageUnit: null
       }
-    })).toBe("2 pack (22 g)");
+    })).toBe("2 пачка (22 г)");
   });
 
   it("formats fermentable quantities in kilograms for human display", () => {
@@ -162,7 +162,7 @@ describe("inventory unit normalization", () => {
       normalizedUnit: "g",
       category: "fermentable",
       defaultDisplayUnit: "kg"
-    })).toBe("0.5 kg");
+    })).toBe("0.5 кг");
   });
 
   it("formats inventory quantities with unit-specific precision", () => {
@@ -197,6 +197,6 @@ describe("inventory unit normalization", () => {
     }, "RUB", defaultSystemCurrencyRates).unitPrice;
 
     expect(unitPrice).toContain("250");
-    expect(unitPrice).toContain("/ kg");
+    expect(unitPrice).toContain("/ кг");
   });
 });

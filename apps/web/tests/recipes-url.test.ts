@@ -1,6 +1,11 @@
 import { describe, expect, it } from "vitest";
 
-import { countActiveRecipeFilters, mergeRecipeQuery, recipeSortOptions } from "../features/recipes/recipes-url";
+import {
+  countActiveRecipeFilters,
+  mergeRecipeQuery,
+  recipeSortOptions,
+  resolveVisibleSortOptions
+} from "../features/recipes/recipes-url";
 
 const params = (init: string) => new URLSearchParams(init);
 
@@ -87,5 +92,31 @@ describe("recipeSortOptions", () => {
     ]);
     expect(values).toContain("rating");
     expect(values).toContain("popular");
+  });
+});
+
+describe("resolveVisibleSortOptions (count-conditional)", () => {
+  const values = (avail: { ratedRecipes: number; savedRecipes: number }, active: Parameters<typeof resolveVisibleSortOptions>[1] = "newest") =>
+    resolveVisibleSortOptions(avail, active).map((option) => option.value);
+
+  it("hides rating and popular on a cold start (below thresholds)", () => {
+    const out = values({ ratedRecipes: 0, savedRecipes: 0 });
+    expect(out).not.toContain("rating");
+    expect(out).not.toContain("popular");
+    // Прочие сорты остаются.
+    expect(out).toContain("newest");
+    expect(out).toContain("abv_desc");
+  });
+
+  it("shows a sort once its threshold is reached (>= 5)", () => {
+    expect(values({ ratedRecipes: 5, savedRecipes: 0 })).toContain("rating");
+    expect(values({ ratedRecipes: 5, savedRecipes: 0 })).not.toContain("popular");
+    expect(values({ ratedRecipes: 0, savedRecipes: 5 })).toContain("popular");
+  });
+
+  it("keeps the active sort visible even when it is below threshold (deep link)", () => {
+    // Пришли по прямой ссылке ?sort=rating при пустой базе — селект не должен «терять» выбор.
+    expect(values({ ratedRecipes: 0, savedRecipes: 0 }, "rating")).toContain("rating");
+    expect(values({ ratedRecipes: 0, savedRecipes: 0 }, "popular")).toContain("popular");
   });
 });

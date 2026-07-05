@@ -4,7 +4,8 @@ import { notFound } from "next/navigation";
 import { Card } from "@nb/ui";
 
 import { requireUser } from "@/lib/auth";
-import { getDeviceById } from "@/features/devices/service";
+import { getDeviceById, getLatestTelemetryAtMs } from "@/features/devices/service";
+import { summarizeDeviceConnection } from "@/features/devices/connection";
 import { listDeviceProfiles } from "@/features/devices/profiles";
 import { DeviceConfigForm } from "@/features/devices/components/device-config-form";
 import { DeviceLogSyncCard } from "@/features/devices/components/device-log-sync-card";
@@ -37,14 +38,24 @@ export default async function DeviceSettingsPage({
     updatedAt: p.updatedAt.toISOString()
   }));
 
+  // «Связь» считаем из того же источника, что и список плиток (heartbeat +
+  // свежесть телеметрии), одной формулировкой — не показываем сырой «online» и
+  // не противоречим списку/пульту (UX-находка #14).
+  const lastTelemetryAtMs = await getLatestTelemetryAtMs(device.id);
+  const connection = summarizeDeviceConnection(
+    {
+      status: device.status,
+      lastSeenAtMs: device.lastSeenAt ? device.lastSeenAt.getTime() : null,
+      lastTelemetryAtMs
+    },
+    Date.now()
+  );
+
   const essentials: { label: string; value: string }[] = [
     { label: "Имя", value: device.name },
-    { label: "Статус", value: device.status },
+    { label: "Связь", value: connection.label },
     { label: "Прошивка", value: device.fw ?? "—" },
-    {
-      label: "Последняя связь",
-      value: device.lastSeenAt ? device.lastSeenAt.toLocaleString() : "—"
-    }
+    { label: "Последняя связь", value: connection.lastContactLabel ?? "—" }
   ];
   // Пламбинг (§9) — свёрнут в «Тех. детали», чтобы не мозолить в основном виде.
   const techDetails: { label: string; value: string }[] = [
@@ -56,7 +67,11 @@ export default async function DeviceSettingsPage({
       label: "Возможности",
       value: device.capabilities.length > 0 ? device.capabilities.join(", ") : "—"
     },
-    { label: "Привязано", value: device.createdAt.toLocaleString() }
+    {
+      label: "Последний heartbeat",
+      value: device.lastSeenAt ? device.lastSeenAt.toLocaleString("ru-RU") : "—"
+    },
+    { label: "Привязано", value: device.createdAt.toLocaleString("ru-RU") }
   ];
 
   return (

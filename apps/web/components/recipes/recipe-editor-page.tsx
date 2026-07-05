@@ -16,6 +16,7 @@ export function RecipeEditorPage({
   mode,
   recipe,
   initialTitle,
+  initialStyleId,
   initialIngredientSelection,
   initialStockCoverage,
   initialImages = [],
@@ -25,6 +26,7 @@ export function RecipeEditorPage({
   mode: "create" | "edit";
   recipe?: RecipeDetailDto;
   initialTitle?: string;
+  initialStyleId?: string;
   initialIngredientSelection?: IngredientSuggestionItem | null;
   initialStockCoverage?: RecipeStockCoverageDto | null;
   initialImages?: RecipeImageDto[];
@@ -53,6 +55,7 @@ export function RecipeEditorPage({
         mode={editorMode}
         initialRecipe={recipe}
         initialTitle={initialTitle}
+        initialStyleId={initialStyleId}
         initialIngredientSelection={initialIngredientSelection}
         initialStockCoverage={initialStockCoverage}
         initialImages={initialImages}

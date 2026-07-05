@@ -4,8 +4,14 @@ import { revalidatePath } from "next/cache";
 import { ZodError } from "zod";
 
 import type { RecipeRatingDto, RecipeRatingSummary } from "@/features/recipes/contracts";
-import { deleteRecipeRating, getViewerRecipeRatingState, rateRecipe } from "@/features/recipes/service";
-import { getSessionUser } from "@/lib/auth";
+import {
+  deleteRecipeRating,
+  getRecipeFeaturedState,
+  getViewerRecipeRatingState,
+  rateRecipe,
+  setRecipeFeatured
+} from "@/features/recipes/service";
+import { getSessionUser, hasRequiredRole } from "@/lib/auth";
 
 export type RecipeRatingActionResult =
   | { ok: true; rating: RecipeRatingSummary }
@@ -92,5 +98,52 @@ export const deleteRecipeRatingAction = async (input: {
     return { ok: true, rating };
   } catch (error) {
     return mapRatingError(error);
+  }
+};
+
+// ─── «Выбор редакции» (кураторская метка, роль editor+) ──────────────────────
+
+/** Состояние тумблера «Выбор редакции», тянется клиентом после гидрации (чтобы
+ *  документ страницы не читал cookie и оставался кэшируемым). Обычному
+ *  пользователю `canFeature=false` → тумблер не рендерится. */
+export type RecipeFeatureControlState = {
+  canFeature: boolean;
+  featured: boolean;
+};
+
+export const loadRecipeFeatureControl = async (recipeId: string): Promise<RecipeFeatureControlState> => {
+  const user = await getSessionUser();
+  if (!user || !hasRequiredRole(user.role, "editor")) {
+    return { canFeature: false, featured: false };
+  }
+  const state = await getRecipeFeaturedState(recipeId);
+  // Тумблер доступен для published (снять метку можно и с непубличного — на случай
+  // снятия с публикации после отметки).
+  return { canFeature: state.exists && (state.published || state.featured), featured: state.featured };
+};
+
+export type RecipeFeatureActionResult =
+  | { ok: true; featured: boolean }
+  | { ok: false; message: string };
+
+/** Ставит/снимает «Выбор редакции». Роль editor+ проверяется здесь; сервисный
+ *  слой (`setRecipeFeatured`) валидирует published/существование. */
+export const setRecipeFeaturedAction = async (input: {
+  recipeId: string;
+  slug: string;
+  featured: boolean;
+}): Promise<RecipeFeatureActionResult> => {
+  const user = await getSessionUser();
+  if (!user || !hasRequiredRole(user.role, "editor")) {
+    return { ok: false, message: "Недостаточно прав." };
+  }
+
+  try {
+    const result = await setRecipeFeatured(input.recipeId, input.featured);
+    revalidatePath(`/recipes/${input.slug}`);
+    revalidatePath("/recipes");
+    return { ok: true, featured: result.featured };
+  } catch {
+    return { ok: false, message: "Не удалось изменить «Выбор редакции»." };
   }
 };

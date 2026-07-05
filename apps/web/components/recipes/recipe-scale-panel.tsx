@@ -1,16 +1,65 @@
 "use client";
 
 import React, { useEffect, useMemo, useState } from "react";
-import { Scale } from "lucide-react";
+import { Droplets, FlaskConical, Hop, Package, Scale, Wheat } from "lucide-react";
 
 import { Dialog, DialogCloseButton } from "@nb/ui";
 import { cloneRecipeFromPublicAction } from "@/app/(public)/recipes/[slug]/clone-actions";
 import type { RecipeDetailDto } from "@/features/recipes/contracts";
-import { scaleRecipeToVolume } from "@/features/recipes/scale";
+import { scaleRecipeToVolume, type ScaledRecipeIngredient } from "@/features/recipes/scale";
+import { resolveIngredientDisplayNames } from "@/features/ingredients/presentation";
+import { resolveIngredientCategory } from "@/features/ingredients/taxonomy";
+import { formatInventoryQuantityForDisplay } from "@/features/inventory/display";
 
 const litresFormatter = new Intl.NumberFormat("ru-RU", { maximumFractionDigits: 2 });
 const factorFormatter = new Intl.NumberFormat("ru-RU", { maximumFractionDigits: 2 });
-const amountFormatter = new Intl.NumberFormat("ru-RU", { maximumFractionDigits: 3 });
+
+const sectionOrder = ["fermentable", "hop", "yeast", "water_treatment", "consumable"] as const;
+type SectionCategory = (typeof sectionOrder)[number];
+
+const sectionLabels: Record<SectionCategory, string> = {
+  fermentable: "Сбраживаемое",
+  hop: "Хмель",
+  yeast: "Дрожжи",
+  water_treatment: "Водоподготовка",
+  consumable: "Другие добавки"
+};
+
+const sectionIcons: Record<SectionCategory, React.ComponentType<{ className?: string }>> = {
+  fermentable: Wheat,
+  hop: Hop,
+  yeast: FlaskConical,
+  water_treatment: Droplets,
+  consumable: Package
+};
+
+const sectionIconBg: Record<SectionCategory, string> = {
+  fermentable: "bg-amber-50 text-amber-600",
+  hop: "bg-emerald-50 text-emerald-600",
+  yeast: "bg-violet-50 text-violet-600",
+  water_treatment: "bg-sky-50 text-sky-600",
+  consumable: "bg-zinc-100 text-zinc-500"
+};
+
+const ingredientCategory = (ingredient: ScaledRecipeIngredient): SectionCategory | null => {
+  const category = ingredient.ingredientCategory ?? resolveIngredientCategory({ type: ingredient.type });
+  return (sectionOrder as readonly string[]).includes(category) ? (category as SectionCategory) : null;
+};
+
+// Единицы считаем тем же форматтером, что и основная секция рецепта, — чтобы окно
+// пересчёта показывало ровно те же величины (мл/г/пачки), а не сырой код единицы.
+const formatScaledAmount = (ingredient: ScaledRecipeIngredient) => formatInventoryQuantityForDisplay({
+  enteredQuantity: ingredient.amountEnteredQuantity,
+  enteredUnit: ingredient.amountEnteredUnit,
+  normalizedQuantity: ingredient.amountNormalizedQuantity,
+  normalizedUnit: ingredient.amountNormalizedUnit,
+  type: ingredient.type,
+  category: ingredient.ingredientCategory ?? resolveIngredientCategory({ type: ingredient.type }),
+  subtype: ingredient.ingredientSubtype ?? null,
+  defaultDisplayUnit: ingredient.defaultDisplayUnit,
+  allowedUnits: ingredient.allowedUnits,
+  measurementDimension: ingredient.measurementDimension
+});
 
 /**
  * Модалка эфемерного пересчёта рецепта под объём пользователя. Меняет ТОЛЬКО
@@ -39,6 +88,18 @@ function RecipeScaleDialog({
 
   const target = Number(input.replace(",", "."));
   const view = useMemo(() => scaleRecipeToVolume(recipe, target), [recipe, target]);
+
+  // Группируем как в основной секции рецепта (солод → хмель → дрожжи → …), чтобы
+  // каждый ингредиент читался в своём разделе, а не плоским списком.
+  const groups = useMemo(
+    () => sectionOrder
+      .map((category) => ({
+        category,
+        items: view.ingredients.filter((ingredient) => ingredientCategory(ingredient) === category)
+      }))
+      .filter((group) => group.items.length > 0),
+    [view.ingredients]
+  );
 
   // Клонировать сразу в пересчитанном объёме — не только посмотреть, но и забрать
   // себе без ручной правки после (сервис принимает targetBatchVolumeLitres — см.
@@ -113,16 +174,40 @@ function RecipeScaleDialog({
           </span>
         </div>
 
-        <ul className="-mr-1 min-h-0 flex-1 space-y-1 overflow-y-auto pr-1">
-          {view.ingredients.map((ingredient) => (
-            <li key={ingredient.persistentKey} className="flex items-center justify-between gap-3 text-sm">
-              <span className="min-w-0 truncate text-zinc-700">{ingredient.displayName ?? "—"}</span>
-              <span className="shrink-0 font-medium tabular-nums text-zinc-900">
-                {amountFormatter.format(ingredient.amountEnteredQuantity)} {ingredient.amountEnteredUnit}
-              </span>
-            </li>
-          ))}
-        </ul>
+        <div className="-mr-1 min-h-0 flex-1 space-y-4 overflow-y-auto pr-1">
+          {groups.map((group) => {
+            const IconComponent = sectionIcons[group.category];
+            return (
+              <div key={group.category} className="space-y-1.5">
+                <div className="flex items-center gap-2">
+                  <span className={`flex h-5 w-5 items-center justify-center rounded-md ${sectionIconBg[group.category]}`}>
+                    <IconComponent className="h-3 w-3" />
+                  </span>
+                  <h4 className="text-xs font-semibold uppercase tracking-wide text-zinc-500">{sectionLabels[group.category]}</h4>
+                  <span className="text-xs tabular-nums text-zinc-400">({group.items.length})</span>
+                </div>
+                <ul className="space-y-1">
+                  {group.items.map((ingredient) => {
+                    const { primaryName, secondaryName } = resolveIngredientDisplayNames({
+                      displayName: ingredient.displayName ?? ingredient.type,
+                      displayNameRu: ingredient.displayNameRu,
+                      displayNameEn: ingredient.displayNameEn
+                    });
+                    return (
+                      <li key={ingredient.persistentKey} className="flex items-baseline justify-between gap-3 text-sm">
+                        <span className="min-w-0 truncate text-zinc-700">
+                          {primaryName}
+                          {secondaryName ? <span className="ml-1.5 text-xs text-zinc-400">{secondaryName}</span> : null}
+                        </span>
+                        <span className="shrink-0 font-medium tabular-nums text-zinc-900">{formatScaledAmount(ingredient)}</span>
+                      </li>
+                    );
+                  })}
+                </ul>
+              </div>
+            );
+          })}
+        </div>
 
         {view.scaled ? (
           <div className="mt-3 border-t border-zinc-100 pt-3">

@@ -50,6 +50,7 @@ const item = (overrides: Partial<PublicRecipeListItem> = {}): PublicRecipeListIt
   styleImageUrl: null,
   cloneCount: 0,
   rating: null,
+  featured: false,
   saveCount: 0,
   publishedAt: "2026-02-01T00:00:00.000Z",
   createdAt: "2026-02-01T00:00:00.000Z",

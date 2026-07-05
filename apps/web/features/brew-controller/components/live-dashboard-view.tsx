@@ -159,6 +159,12 @@ export function LiveDashboardView({
   // аренды (single-writer) И живой телеметрии. ESTOP/Стоп — fail-safe, отдельно.
   const controlsDisabled = !isLive || pending || !controlsHeld;
 
+  // Управление держит другой сеанс. Тогда здесь — только просмотр, а показатели
+  // могут быть неполными/с прочерками. Раньше причина (лок) и следствие (прочерки)
+  // жили в разных углах и это читалось как поломка (UX-находка #15) — связываем
+  // их явным баннером над героем.
+  const otherSessionControls = hasDevice && Boolean(lease?.held) && !controlsHeld;
+
   const activePrompt: Prompt | null =
     telemetry && telemetry.prompt !== 0 ? promptName(telemetry.prompt) : null;
 
@@ -243,6 +249,13 @@ export function LiveDashboardView({
       {!hasDevice ? (
         <div className="rounded-2xl border border-zinc-200 bg-white p-6 text-sm text-zinc-600 shadow-sm">
           К этой варке не привязан контроллер BrewForge. Запустите варку на устройстве, чтобы видеть живую телеметрию.
+        </div>
+      ) : null}
+
+      {otherSessionControls ? (
+        <div className="rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900" role="status">
+          Управляет другой сеанс — здесь только просмотр. Показатели могут быть неполными или обновляться с задержкой;
+          чтобы взять управление, запросите перехват в панели управления ниже.
         </div>
       ) : null}
 

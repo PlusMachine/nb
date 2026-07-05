@@ -282,7 +282,7 @@ describe("recipe editor components", () => {
     expect(resolveRecipeFermentablePickerScopeContext("adjunct_grains")).toEqual({
       subtype: "fermentable",
       group: "adjunct_grains",
-      label: "Неосоложенка"
+      label: "Несоложёное сырьё"
     });
 
     expect(resolveRecipeFermentablePickerScopeContext("sugars_and_syrups")).toEqual({
@@ -804,17 +804,14 @@ describe("recipe editor components", () => {
     const checklist = buildRecipePublicationChecklist({
       publicationState: "published",
       title: "Новый рецепт 1",
-      styleId: null,
       description: "",
       boilTimeMinutes: 60,
       ingredientCategories: ["fermentable", "hop"]
     });
 
     expect(checklist.find((item) => item.key === "title")?.isSatisfied).toBe(true);
-    expect(checklist.find((item) => item.key === "styleId")).toMatchObject({
-      isSatisfied: false,
-      statusLabel: "Не заполнено"
-    });
+    // Стиль BJCP при публикации опционален — в чек-листе пункта styleId быть не должно.
+    expect(checklist.some((item) => (item.key as string) === "styleId")).toBe(false);
     expect(checklist.find((item) => item.key === "description")).toMatchObject({
       isSatisfied: false,
       statusLabel: "Не заполнено"

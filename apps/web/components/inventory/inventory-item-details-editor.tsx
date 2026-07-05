@@ -17,6 +17,7 @@ import {
   resolveInventoryIngredientContextSummaryFromSuggestion
 } from "@/components/inventory/inventory-ingredient-context-summary";
 import { InventoryPriceInput } from "@/components/inventory/inventory-price-input";
+import { InventoryItemMovements } from "@/components/inventory/inventory-item-movements";
 import type {
   IngredientCategory,
   IngredientConsumableGroupRefinement,
@@ -968,6 +969,10 @@ export function InventoryItemDetailsEditor({
                   </Button>
                 </div>
               </form>
+
+              {/* Журнал движений по позиции (UX-находка #19) — под формой, тянется
+                  клиентом при открытии деталей. */}
+              <InventoryItemMovements inventoryItemId={item.id} open={editing} />
         </div>
       </Dialog>
     </>

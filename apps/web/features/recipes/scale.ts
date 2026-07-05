@@ -1,5 +1,6 @@
 import { roundTo } from "@nb/brewing-core";
 
+import { getInventoryUnitQuantityPrecision } from "../inventory/units";
 import type { RecipeDetailDto } from "./contracts";
 import { toBatchVolumeLiters } from "./units";
 
@@ -15,17 +16,35 @@ import { toBatchVolumeLiters } from "./units";
 const MAX_TARGET_BATCH_LITRES = 1000;
 const SCALE_PRECISION = 3;
 
-type RecipeIngredientStage = RecipeDetailDto["ingredients"][number]["stage"];
+type RecipeIngredient = RecipeDetailDto["ingredients"][number];
+type RecipeIngredientStage = RecipeIngredient["stage"];
 type InventoryUnit = RecipeDetailDto["batchSizeEnteredUnit"];
+
+// Округление ВВОДИМЫХ (entered) количеств до практичной точности единицы —
+// иначе после умножения на factor в редактируемых полях и в клоне оседают
+// значения вида «15.833 g». Штучные (pack/item) имеют точность 0, но при
+// масштабе вниз это обнулило бы дробную пачку (1 × 0.3 → 0), поэтому держим ≥2.
+const enteredScalePrecision = (unit: InventoryUnit): number => {
+  const precision = getInventoryUnitQuantityPrecision(unit);
+  return precision === 0 ? 2 : precision;
+};
 
 export type ScaledRecipeIngredient = {
   id: string;
   persistentKey: string;
+  type: RecipeIngredient["type"];
+  ingredientCategory: RecipeIngredient["ingredientCategory"];
+  ingredientSubtype: RecipeIngredient["ingredientSubtype"];
   displayName: string | null;
+  displayNameRu: RecipeIngredient["ingredientDisplayNameRu"];
+  displayNameEn: RecipeIngredient["ingredientDisplayNameEn"];
   amountEnteredQuantity: number;
   amountEnteredUnit: InventoryUnit;
   amountNormalizedQuantity: number;
   amountNormalizedUnit: InventoryUnit;
+  defaultDisplayUnit: RecipeIngredient["ingredientDefaultDisplayUnit"];
+  allowedUnits: RecipeIngredient["ingredientAllowedUnits"];
+  measurementDimension: RecipeIngredient["ingredientMeasurementDimension"];
   stage: RecipeIngredientStage;
 };
 
@@ -69,16 +88,26 @@ export const scaleRecipeToVolume = (recipe: RecipeDetailDto, targetLitres: numbe
     baseBatchLitres,
     targetBatchLitres: baseBatchLitres > 0 ? targetBatchLitres : baseBatchLitres,
     scaled: factor !== 1,
-    batchSizeEnteredQuantity: roundTo(recipe.batchSizeEnteredQuantity * factor, SCALE_PRECISION),
+    batchSizeEnteredQuantity: roundTo(recipe.batchSizeEnteredQuantity * factor, enteredScalePrecision(recipe.batchSizeEnteredUnit)),
     batchSizeEnteredUnit: recipe.batchSizeEnteredUnit,
     ingredients: recipe.ingredients.map((ingredient) => ({
       id: ingredient.id,
       persistentKey: ingredient.persistentKey,
+      type: ingredient.type,
+      ingredientCategory: ingredient.ingredientCategory ?? null,
+      ingredientSubtype: ingredient.ingredientSubtype ?? null,
       displayName: ingredient.ingredientDisplayName ?? ingredient.ingredientDisplayNameSnapshot ?? null,
-      amountEnteredQuantity: roundTo(ingredient.amountEnteredQuantity * factor, SCALE_PRECISION),
+      displayNameRu: ingredient.ingredientDisplayNameRu ?? null,
+      displayNameEn: ingredient.ingredientDisplayNameEn ?? null,
+      amountEnteredQuantity: roundTo(ingredient.amountEnteredQuantity * factor, enteredScalePrecision(ingredient.amountEnteredUnit)),
       amountEnteredUnit: ingredient.amountEnteredUnit,
       amountNormalizedQuantity: roundTo(ingredient.amountNormalizedQuantity * factor, SCALE_PRECISION),
       amountNormalizedUnit: ingredient.amountNormalizedUnit,
+      // Профиль единицы берём как в основной секции рецепта, чтобы окно
+      // пересчёта показывало те же единицы, что и страница (мл/г/пачки, не сырой код).
+      defaultDisplayUnit: ingredient.ingredientDefaultDisplayUnit ?? ingredient.ingredientDefaultDisplayUnitSnapshot ?? null,
+      allowedUnits: ingredient.ingredientAllowedUnits ?? null,
+      measurementDimension: ingredient.ingredientMeasurementDimension ?? ingredient.ingredientMeasurementDimensionSnapshot ?? null,
       stage: ingredient.stage
     }))
   };

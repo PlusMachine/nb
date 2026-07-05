@@ -8,6 +8,7 @@ import type { CookieConsent } from "@/lib/consent";
 // Неблокирующая полоса согласия внизу экрана. Не модалка (fixed inset-0 запрещён
 // конвенцией) — обычный баннер, взаимодействие с сайтом не блокирует. При первом
 // визите совмещает информационную отметку 18+ и выбор по cookie в одном действии.
+// На мобильном — компактный размер (меньше отступы и текст), чтобы не перекрывать контент.
 export function CookieConsentBanner({
   onDecide,
   showAgeNotice
@@ -19,10 +20,10 @@ export function CookieConsentBanner({
     <div
       role="region"
       aria-label="Использование файлов cookie"
-      className="fixed inset-x-0 bottom-0 z-[300] border-t border-zinc-200 bg-white/95 px-4 py-4 shadow-[0_-8px_30px_rgba(0,0,0,0.08)] backdrop-blur"
+      className="fixed inset-x-0 bottom-0 z-[300] border-t border-zinc-200 bg-white/95 px-4 py-2.5 shadow-[0_-8px_30px_rgba(0,0,0,0.08)] backdrop-blur sm:py-4"
     >
-      <div className="mx-auto flex max-w-5xl flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div className="text-sm leading-6 text-zinc-600">
+      <div className="mx-auto flex max-w-5xl flex-col gap-2 sm:flex-row sm:items-center sm:justify-between sm:gap-3">
+        <div className="text-xs leading-5 text-zinc-600 sm:text-sm sm:leading-6">
           {showAgeNotice ? (
             <p className="mb-1 font-medium text-zinc-900">
               18+ · Материалы о домашнем пивоварении. Чрезмерное употребление алкоголя вредит вашему здоровью.

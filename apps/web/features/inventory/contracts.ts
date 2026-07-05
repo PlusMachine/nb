@@ -462,3 +462,22 @@ export type InventorySummaryDto = {
     fermentable: number;
   };
 };
+
+export type InventoryMovementType = "consume" | "reserve" | "release" | "adjustment";
+
+// Одна запись журнала движений по позиции склада (UX-находка #19): когда, сколько
+// (со знаком) и по какой варке/рецепту. Собирается из inventory_transactions.
+export type InventoryItemMovementDto = {
+  id: string;
+  type: InventoryMovementType;
+  /** Дельта в нормализованных единицах: >0 пополнение, <0 списание. */
+  quantityDeltaNormalized: number;
+  normalizedUnit: string;
+  quantityAfterNormalized: number;
+  createdAt: string;
+  /** Для ручных поправок — «restock»/«consume» из meta; иначе null. */
+  direction: "restock" | "consume" | null;
+  brewBatchId: string | null;
+  brewBatchName: string | null;
+  recipeTitle: string | null;
+};

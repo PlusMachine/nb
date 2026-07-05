@@ -24,6 +24,22 @@ import { RecipeMatchBadge } from "./recipe-match-badge";
  * иконка «Удалить», под статами — ссылка на публичную страницу.
  */
 
+// Относительное время («2 часа назад») зависит от текущего момента: сервер (SSR)
+// и клиент (гидрация) считают его в разные мгновения → hydration mismatch и
+// мерцание карточек (#22). Считаем на сервере для первого кадра, после монтирования
+// пересчитываем от клиентского времени; suppressHydrationWarning гасит расхождение.
+function UpdatedAgo({ value, className }: { value: Date; className?: string }) {
+  const [label, setLabel] = React.useState(() => formatRelativeTimestamp(value));
+  React.useEffect(() => {
+    setLabel(formatRelativeTimestamp(value));
+  }, [value]);
+  return (
+    <span className={className} suppressHydrationWarning>
+      обновлён {label}
+    </span>
+  );
+}
+
 function OwnerStatusBadge({ state }: { state: RecipePublicationState }) {
   const published = state === "published";
   return (
@@ -126,7 +142,7 @@ export function OwnerRecipeCard({ recipe, preferredGravityUnit }: { recipe: Owne
           </h2>
 
           <div className="mt-auto flex flex-wrap items-center justify-between gap-2 pt-1">
-            <span className="truncate text-xs text-zinc-500">обновлён {formatRelativeTimestamp(recipe.updatedAt)}</span>
+            <UpdatedAgo value={recipe.updatedAt} className="truncate text-xs text-zinc-500" />
             <div className="flex items-center gap-1.5">
               <RecipeMatchBadge recipeId={recipe.id} />
               {recipe.styleFit ? <StyleFitBadge fit={recipe.styleFit} /> : null}
@@ -191,7 +207,7 @@ export function OwnerRecipeRow({ recipe, preferredGravityUnit }: { recipe: Owner
           <VersionSuffix recipe={recipe} />
         </h2>
         <div className="mt-1 flex flex-wrap items-center gap-2 text-xs text-zinc-500">
-          <span>обновлён {formatRelativeTimestamp(recipe.updatedAt)}</span>
+          <UpdatedAgo value={recipe.updatedAt} />
           <RecipeMatchBadge recipeId={recipe.id} />
           {recipe.styleFit ? <StyleFitBadge fit={recipe.styleFit} /> : null}
           {publicPage ? (

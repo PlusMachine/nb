@@ -61,6 +61,7 @@ import {
   type PublicRecipeFilters,
   type PublicRecipeListItem,
   type PublicRecipeListResult,
+  type PublicRecipeSortAvailability,
   recipeRatingInputSchema,
   type RecipeRatingDto,
   type RecipeRatingSummary,
@@ -74,6 +75,7 @@ import {
   resolveStyleScope,
   type PublicRecipeSortKey
 } from "./public-recipe-query";
+import { computeBayesianRating } from "./rating-score";
 import { equipmentProfileSnapshotSchema, type EquipmentProfileSnapshot } from "../equipment-profiles/contracts";
 import { getRecipePublicationFieldErrors } from "./publication-validation";
 import { calculateRecipeFgEstimate } from "./fg-estimate";
@@ -732,7 +734,6 @@ const validateRecipeForPublicationState = (input: {
   const fieldErrors = getRecipePublicationFieldErrors({
     publicationState: input.publicationState,
     title: input.title,
-    styleId: input.styleId,
     description: input.description,
     boilTimeMinutes: input.boilTimeMinutes,
     ingredientCategories: input.ingredients.map((ingredient) => ingredient.source.category)
@@ -2082,7 +2083,9 @@ const publicRecipeSortColumns = {
   ibu: recipes.ibu,
   color: recipes.color,
   title: recipes.title,
-  rating: recipes.ratingAvg,
+  // Сортировка «По рейтингу» идёт по байесовскому скору, а не по голому среднему
+  // (см. rating-score.ts). Наружу по-прежнему отдаём ratingAvg.
+  rating: recipes.ratingBayes,
   saveCount: recipes.saveCount
 } satisfies Record<PublicRecipeSortKey, unknown>;
 
@@ -2105,6 +2108,7 @@ type PublicRecipeRow = {
   ratingAvg: number | null;
   ratingCount: number;
   saveCount: number;
+  featuredAt: Date | null;
   authorDisplayName: string | null;
   authorImage: string | null;
   heroThumbKey: string | null;
@@ -2152,6 +2156,7 @@ const mapPublicRecipeListItem = (
       row.ratingCount > 0 && row.ratingAvg != null
         ? { average: roundTo(row.ratingAvg, 1), count: row.ratingCount }
         : null,
+    featured: row.featuredAt != null,
     saveCount: row.saveCount,
     publishedAt: row.updatedAt.toISOString(),
     createdAt: row.createdAt.toISOString()
@@ -2196,6 +2201,28 @@ export const getPublicRecipeFamilyCounts = async (): Promise<Record<string, numb
   }
 
   return counts;
+};
+
+/**
+ * Сколько опубликованных рецептов реально оценено / сохранено — для
+ * count-conditional показа опций сортировки «По рейтингу» / «Популярные» в
+ * тулбаре витрины (на холодном старте пустые сорты не выставляем). URL-контракт
+ * при этом не трогаем: `?sort=rating|popular` валиден всегда (прямые ссылки со
+ * страниц стилей). Один дешёвый агрегатный запрос без сканирования строк наружу.
+ */
+export const getPublicRecipeSortAvailability = async (): Promise<PublicRecipeSortAvailability> => {
+  const [row] = await db
+    .select({
+      ratedRecipes: sql<number>`count(*) filter (where ${recipes.ratingCount} > 0)`,
+      savedRecipes: sql<number>`count(*) filter (where ${recipes.saveCount} > 0)`
+    })
+    .from(recipes)
+    .where(eq(recipes.publicationState, "published"));
+
+  return {
+    ratedRecipes: Number(row?.ratedRecipes ?? 0),
+    savedRecipes: Number(row?.savedRecipes ?? 0)
+  };
 };
 
 export const searchPublicRecipes = async (filters: PublicRecipeFilters): Promise<PublicRecipeListResult> => {
@@ -2270,6 +2297,7 @@ export const searchPublicRecipes = async (filters: PublicRecipeFilters): Promise
       ratingAvg: recipes.ratingAvg,
       ratingCount: recipes.ratingCount,
       saveCount: recipes.saveCount,
+      featuredAt: recipes.featuredAt,
       authorDisplayName: users.displayName,
       authorImage: users.image,
       heroThumbKey: recipeImages.storageKeyThumb,
@@ -2349,8 +2377,10 @@ const recomputeRecipeRatingAggregates = async (
 
   const ratingCount = Number(agg?.total ?? 0);
   const ratingAvg = ratingCount > 0 && agg?.average != null ? Number(agg.average) : null;
+  // Байесовский скор — только для сортировки; наружу отдаём честный ratingAvg.
+  const ratingBayes = computeBayesianRating(ratingAvg, ratingCount);
 
-  await tx.update(recipes).set({ ratingAvg, ratingCount }).where(eq(recipes.id, recipeId));
+  await tx.update(recipes).set({ ratingAvg, ratingCount, ratingBayes }).where(eq(recipes.id, recipeId));
 
   return { average: ratingAvg == null ? 0 : roundTo(ratingAvg, 1), count: ratingCount };
 };
@@ -2441,6 +2471,46 @@ export const deleteRecipeRating = async (userId: string, recipeId: string): Prom
 
     return await recomputeRecipeRatingAggregates(tx, recipeId);
   });
+};
+
+// ─── «Выбор редакции» ────────────────────────────────────────────────────────
+// Кураторская метка, ставит только editor+ (гейт requireRole — в server action).
+// Это НЕ буст ранжирования: featuredAt на сортировку витрины не влияет, только
+// показывает бейдж. Отмечать можно лишь published-рецепты.
+
+/** Текущее состояние «Выбора редакции» для рецепта (для тумблера куратора). */
+export const getRecipeFeaturedState = async (
+  recipeId: string
+): Promise<{ exists: boolean; published: boolean; featured: boolean }> => {
+  const recipe = await db.query.recipes.findFirst({
+    where: eq(recipes.id, recipeId),
+    columns: { publicationState: true, featuredAt: true }
+  });
+  if (!recipe) {
+    return { exists: false, published: false, featured: false };
+  }
+  return {
+    exists: true,
+    published: recipe.publicationState === "published",
+    featured: recipe.featuredAt != null
+  };
+};
+
+/**
+ * Ставит/снимает «Выбор редакции». Разрешено только для published-рецептов
+ * (снять можно всегда — на случай, если рецепт сняли с публикации после отметки).
+ * Возвращает новое состояние. Проверку роли делает вызывающий server action.
+ */
+export const setRecipeFeatured = async (recipeId: string, featured: boolean): Promise<{ featured: boolean }> => {
+  const state = await getRecipeFeaturedState(recipeId);
+  if (!state.exists) {
+    throw new Error("NOT_FOUND");
+  }
+  if (featured && !state.published) {
+    throw new Error("FORBIDDEN");
+  }
+  await db.update(recipes).set({ featuredAt: featured ? new Date() : null }).where(eq(recipes.id, recipeId));
+  return { featured };
 };
 
 // ─── Сохранения публичных рецептов («Избранные») ─────────────────────────────
@@ -2577,6 +2647,7 @@ export const listSavedRecipes = async (userId: string): Promise<PublicRecipeList
       ratingAvg: recipes.ratingAvg,
       ratingCount: recipes.ratingCount,
       saveCount: recipes.saveCount,
+      featuredAt: recipes.featuredAt,
       authorDisplayName: users.displayName,
       authorImage: users.image,
       heroThumbKey: recipeImages.storageKeyThumb,
