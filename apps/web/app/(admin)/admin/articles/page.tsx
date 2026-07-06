@@ -19,25 +19,25 @@ export default async function AdminArticlesPage() {
 
   return (
     <section className="space-y-5">
-      <header className="rounded-[2rem] border border-zinc-200 bg-white p-6 shadow-sm">
-        <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-zinc-400">Content studio</p>
-        <h1 className="mt-2 text-3xl font-semibold text-zinc-950">Статьи и обзоры</h1>
-        <p className="mt-3 max-w-3xl text-sm leading-7 text-zinc-600">
+      <header className="rounded-[2rem] border border-border bg-card p-6 shadow-sm">
+        <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-muted-foreground">Content studio</p>
+        <h1 className="mt-2 text-3xl font-semibold text-foreground">Статьи и обзоры</h1>
+        <p className="mt-3 max-w-3xl text-sm leading-7 text-muted-foreground">
           Редакторские гайды и обзоры оборудования. `editor` ведёт черновики, `moderator` публикует и выводит на
           главную, `admin` управляет всем. BJCP-стили остаются в отдельном file-backed разделе.
         </p>
         <div className="mt-5 flex flex-wrap gap-3">
-          <Link href="/admin/articles/new" className="inline-flex items-center gap-1.5 rounded-xl bg-zinc-950 px-4 py-2.5 text-sm font-medium text-white">
+          <Link href="/admin/articles/new" className="inline-flex items-center gap-1.5 rounded-xl bg-foreground px-4 py-2.5 text-sm font-medium text-background">
             <Plus className="h-4 w-4" aria-hidden /> Новая статья
           </Link>
-          <Link href="/bjcp" className="inline-flex items-center rounded-xl border border-zinc-200 bg-white px-4 py-2.5 text-sm font-medium text-zinc-700">
+          <Link href="/bjcp" className="inline-flex items-center rounded-xl border border-border bg-card px-4 py-2.5 text-sm font-medium text-foreground">
             BJCP-стили
           </Link>
         </div>
       </header>
 
       {articles.length === 0 ? (
-        <p className="rounded-2xl border border-dashed border-zinc-200 bg-white p-8 text-center text-sm text-zinc-500">
+        <p className="rounded-2xl border border-dashed border-border bg-card p-8 text-center text-sm text-muted-foreground">
           Пока нет статей. Создайте первый гайд или обзор.
         </p>
       ) : (
@@ -46,16 +46,16 @@ export default async function AdminArticlesPage() {
             <li key={article.id}>
               <Link
                 href={`/admin/articles/${article.id}/edit`}
-                className="flex flex-wrap items-center gap-3 rounded-2xl border border-zinc-200 bg-white p-4 shadow-sm transition hover:border-zinc-300"
+                className="flex flex-wrap items-center gap-3 rounded-2xl border border-border bg-card p-4 shadow-sm transition hover:border-border/70"
               >
                 <span className="min-w-0 flex-1">
-                  <span className="block truncate text-base font-semibold text-zinc-950">{article.title}</span>
-                  <span className="text-xs text-zinc-500">
+                  <span className="block truncate text-base font-semibold text-foreground">{article.title}</span>
+                  <span className="text-xs text-muted-foreground">
                     {contentArticleTypeLabels[article.type]} · {article.authorName ?? "—"} · обновлено {dateFmt.format(new Date(article.updatedAt))}
                   </span>
                 </span>
                 {article.isFeatured ? (
-                  <span className="shrink-0 rounded-full bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-700">На главной</span>
+                  <span className="shrink-0 rounded-full bg-warning-subtle px-2 py-0.5 text-xs font-medium text-warning-subtle-foreground">На главной</span>
                 ) : null}
                 <span className={`shrink-0 rounded-full px-2.5 py-1 text-xs font-medium ${contentArticleStatusBadgeClass[article.status]}`}>
                   {contentArticleStatusLabels[article.status]}

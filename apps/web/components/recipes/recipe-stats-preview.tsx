@@ -13,9 +13,9 @@ export function RecipeStatsPreview({
   preferredGravityUnit?: PreferredGravityUnit;
 }) {
   return (
-    <section className="space-y-2 rounded-2xl border border-zinc-100 bg-white p-5 shadow-sm" data-testid="recipe-stats-preview">
-      <h2 className="text-base font-semibold text-zinc-950">Предпросмотр статистики</h2>
-      <p className="text-sm text-zinc-500">Объём партии: {recipe ? `${recipe.batchSizeEnteredQuantity} ${recipe.batchSizeEnteredUnit}` : "—"}</p>
+    <section className="space-y-2 rounded-2xl border border-border bg-card p-5 shadow-sm" data-testid="recipe-stats-preview">
+      <h2 className="text-base font-semibold text-foreground">Предпросмотр статистики</h2>
+      <p className="text-sm text-muted-foreground">Объём партии: {recipe ? `${recipe.batchSizeEnteredQuantity} ${recipe.batchSizeEnteredUnit}` : "—"}</p>
       <RecipeStatsSummary
         recipe={recipe ?? {
           og: null,

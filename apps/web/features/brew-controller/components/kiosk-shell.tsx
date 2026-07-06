@@ -112,16 +112,16 @@ export function KioskShell({
   const banner = kioskOfflineBanner({ conn, isStale, lastFrameAtMs: lastFrameAt, nowMs: now });
 
   return (
-    <div className="fixed inset-0 z-50 overflow-y-auto bg-white">
-      <header className="sticky top-0 z-10 flex flex-wrap items-center gap-x-3 gap-y-2 border-b border-zinc-200 bg-white/95 px-4 py-3 backdrop-blur">
+    <div className="fixed inset-0 z-50 overflow-y-auto bg-background">
+      <header className="sticky top-0 z-10 flex flex-wrap items-center gap-x-3 gap-y-2 border-b border-border bg-card/95 px-4 py-3 backdrop-blur">
         <h1
-          className="text-lg font-semibold text-zinc-950 sm:text-xl"
+          className="text-lg font-semibold text-foreground sm:text-xl"
           style={{ fontFamily: "var(--font-display)" }}
         >
           {deviceName}
         </h1>
         {appMode ? (
-          <span className="inline-flex items-center rounded-full bg-zinc-100 px-3 py-1 text-xs font-medium text-zinc-600">
+          <span className="inline-flex items-center rounded-full bg-muted px-3 py-1 text-xs font-medium text-muted-foreground">
             {APP_MODE_LABELS[appMode]}
           </span>
         ) : null}
@@ -138,7 +138,7 @@ export function KioskShell({
             type="button"
             onClick={onExit}
             aria-label="Выйти из киоска"
-            className="inline-flex h-11 w-11 items-center justify-center rounded-md border border-zinc-200 text-zinc-600 transition hover:bg-zinc-50 hover:text-zinc-900"
+            className="inline-flex h-11 w-11 items-center justify-center rounded-md border border-border text-muted-foreground transition hover:bg-accent hover:text-foreground"
           >
             <Minimize2 className="h-5 w-5" aria-hidden />
           </button>
@@ -151,7 +151,7 @@ export function KioskShell({
         <p
           role="alert"
           className={`px-4 py-3 text-center text-base font-semibold sm:text-lg ${
-            banner.tone === "red" ? "bg-red-600 text-white" : "bg-amber-400 text-amber-950"
+            banner.tone === "red" ? "bg-destructive text-destructive-foreground" : "bg-amber-400 text-amber-950"
           }`}
         >
           {banner.title}

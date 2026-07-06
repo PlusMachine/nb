@@ -822,7 +822,7 @@ function TargetCatalogPickerSheet({
 }) {
   if (!isMobile) {
     return (
-      <div className="space-y-3 rounded-xl border border-zinc-200 bg-white p-3">
+      <div className="space-y-3 rounded-xl border border-border bg-card p-3">
         {children}
       </div>
     );
@@ -841,7 +841,7 @@ function TargetCatalogPickerSheet({
       size="sheet"
     >
       <DialogHeader>
-        <h3 className="text-base font-semibold text-zinc-900">Целевой профиль</h3>
+        <h3 className="text-base font-semibold text-foreground">Целевой профиль</h3>
         <DialogCloseButton />
       </DialogHeader>
       <div className="space-y-3 px-4 pb-6 pt-3">
@@ -925,11 +925,11 @@ function SourceWaterProfileOption({
       type="button"
       aria-pressed={selected}
       onClick={() => onSelect(preset)}
-      className={`flex h-10 min-w-0 items-center justify-center gap-2 rounded-lg border px-3 text-sm font-medium transition-colors ${selected ? "border-zinc-900 bg-zinc-900 text-white" : "border-zinc-200 bg-white text-zinc-700 hover:border-zinc-300 hover:bg-zinc-50"}`}
+      className={`flex h-10 min-w-0 items-center justify-center gap-2 rounded-lg border px-3 text-sm font-medium transition-colors ${selected ? "border-foreground bg-foreground text-background" : "border-border bg-card text-foreground hover:border-border hover:bg-muted"}`}
     >
       <span className="truncate">{preset.name}</span>
       {preset.badge ? (
-        <span className={`rounded-full px-1.5 py-0.5 text-[10px] font-medium ${selected ? "bg-white/15 text-white" : "bg-zinc-100 text-zinc-500"}`}>
+        <span className={`rounded-full px-1.5 py-0.5 text-[10px] font-medium ${selected ? "bg-background/15 text-background" : "bg-muted text-muted-foreground"}`}>
           {preset.badge}
         </span>
       ) : null}
@@ -951,27 +951,27 @@ function WaterProfileOption({
       type="button"
       aria-pressed={selected}
       onClick={() => onSelect(preset)}
-      className={`rounded-lg border px-3 py-2 text-left transition-colors ${selected ? "border-sky-300 bg-sky-50 text-sky-950" : "border-zinc-200 bg-white text-zinc-700 hover:border-zinc-300 hover:bg-zinc-50"}`}
+      className={`rounded-lg border px-3 py-2 text-left transition-colors ${selected ? "border-sky-300 bg-sky-50 text-sky-950 dark:border-sky-500/40 dark:bg-sky-500/15 dark:text-sky-200" : "border-border bg-card text-foreground hover:border-border hover:bg-muted"}`}
     >
       <span className="flex items-center gap-2">
         <span className="min-w-0 flex-1 truncate text-sm font-semibold">
           {preset.name}
         </span>
         {preset.badge ? (
-          <span className="rounded-full bg-zinc-100 px-2 py-0.5 text-[11px] font-medium text-zinc-500">
+          <span className="rounded-full bg-muted px-2 py-0.5 text-[11px] font-medium text-muted-foreground">
             {preset.badge}
           </span>
         ) : null}
         {preset.isHistoricalExample ? (
-          <span className="rounded-full bg-amber-50 px-2 py-0.5 text-[11px] font-medium text-amber-700">
+          <span className="rounded-full bg-warning-subtle px-2 py-0.5 text-[11px] font-medium text-warning-subtle-foreground">
             пример
           </span>
         ) : null}
       </span>
-      <span className="mt-1 block text-xs leading-5 text-zinc-500">
+      <span className="mt-1 block text-xs leading-5 text-muted-foreground">
         {preset.description}
       </span>
-      <span className="mt-1 block text-[11px] text-zinc-400">
+      <span className="mt-1 block text-[11px] text-muted-foreground">
         {formatProfile(preset.profile)} ppm
       </span>
     </button>
@@ -1002,32 +1002,32 @@ function WaterProfileSelector({
   const visibleProfiles = filterRecipeWaterProfiles(profiles, query);
 
   return (
-    <details className="group rounded-xl border border-zinc-200 bg-white">
+    <details className="group rounded-xl border border-border bg-card">
       <summary className="flex cursor-pointer list-none items-center gap-3 px-3 py-3">
         <div className="min-w-0 flex-1">
-          <div className="text-[11px] font-semibold uppercase text-zinc-400">
+          <div className="text-[11px] font-semibold uppercase text-muted-foreground">
             {title}
           </div>
-          <div className="truncate text-sm font-semibold text-zinc-900">
+          <div className="truncate text-sm font-semibold text-foreground">
             {selectedName}
           </div>
-          <div className="mt-0.5 truncate text-xs text-zinc-500">
+          <div className="mt-0.5 truncate text-xs text-muted-foreground">
             {selectedProfile
               ? `${formatProfile(selectedProfile)} ppm`
               : "Профиль не выбран"}
           </div>
         </div>
-        <ChevronRight className="h-4 w-4 text-zinc-400 transition-transform group-open:rotate-90" />
+        <ChevronRight className="h-4 w-4 text-muted-foreground transition-transform group-open:rotate-90" />
       </summary>
-      <div className="space-y-3 border-t border-zinc-100 p-3">
-        <label className="flex h-10 items-center gap-2 rounded-lg border border-zinc-200 bg-zinc-50 px-3 text-sm text-zinc-600">
-          <Search className="h-4 w-4 shrink-0 text-zinc-400" />
+      <div className="space-y-3 border-t border-border p-3">
+        <label className="flex h-10 items-center gap-2 rounded-lg border border-border bg-muted px-3 text-sm text-muted-foreground">
+          <Search className="h-4 w-4 shrink-0 text-muted-foreground" />
           <input
             type="search"
             value={query}
             onChange={(event) => onQueryChange(event.target.value)}
             placeholder={searchPlaceholder}
-            className="h-full min-w-0 flex-1 bg-transparent text-sm text-zinc-900 outline-none placeholder:text-zinc-400"
+            className="h-full min-w-0 flex-1 bg-transparent text-sm text-foreground outline-none placeholder:text-muted-foreground"
           />
         </label>
 
@@ -1042,7 +1042,7 @@ function WaterProfileSelector({
           ))}
         </div>
         {!visibleProfiles.length ? (
-          <div className="rounded-lg border border-dashed border-zinc-200 bg-zinc-50 px-3 py-3 text-sm text-zinc-500">
+          <div className="rounded-lg border border-dashed border-border bg-muted px-3 py-3 text-sm text-muted-foreground">
             Ничего не найдено
           </div>
         ) : null}
@@ -1137,17 +1137,17 @@ function SourceSavedWaterProfileOption({
     return (
       <div
         ref={rootRef}
-        className={`grid h-10 min-w-0 grid-cols-[minmax(0,1fr)_2.5rem] items-center overflow-hidden rounded-lg border ${selected && isCurrent ? "border-zinc-900 bg-zinc-900" : "border-zinc-200 bg-white"}`}
+        className={`grid h-10 min-w-0 grid-cols-[minmax(0,1fr)_2.5rem] items-center overflow-hidden rounded-lg border ${selected && isCurrent ? "border-foreground bg-foreground" : "border-border bg-card"}`}
       >
         <button
           type="button"
           aria-pressed={selected && isCurrent}
           onClick={() => onSelect(profile)}
-          className={`flex h-full min-w-0 items-center gap-2 px-3 text-left text-sm font-medium transition-colors ${selected && isCurrent ? "text-white" : "text-zinc-700 hover:bg-zinc-50 hover:text-zinc-950"}`}
+          className={`flex h-full min-w-0 items-center gap-2 px-3 text-left text-sm font-medium transition-colors ${selected && isCurrent ? "text-background" : "text-foreground hover:bg-muted hover:text-foreground"}`}
         >
           <span className="min-w-0 flex-1 truncate">{profile.name}</span>
           {showProfileSummary ? (
-            <span className={`shrink-0 rounded px-1.5 py-0.5 text-[10px] font-semibold uppercase ${selected && isCurrent ? "bg-white/10 text-white/70" : "bg-zinc-100 text-zinc-500"}`}>
+            <span className={`shrink-0 rounded px-1.5 py-0.5 text-[10px] font-semibold uppercase ${selected && isCurrent ? "bg-background/10 text-background/70" : "bg-muted text-muted-foreground"}`}>
               {savedLabel}
             </span>
           ) : null}
@@ -1158,7 +1158,7 @@ function SourceSavedWaterProfileOption({
             event.stopPropagation();
             onDelete(profile.id);
           }}
-          className={`inline-flex h-full w-10 items-center justify-center border-l transition-colors ${selected && isCurrent ? "border-white/10 text-white/70 hover:bg-white/10 hover:text-white" : "border-zinc-200 text-zinc-400 hover:bg-zinc-50 hover:text-zinc-800"}`}
+          className={`inline-flex h-full w-10 items-center justify-center border-l transition-colors ${selected && isCurrent ? "border-background/10 text-background/70 hover:bg-background/10 hover:text-background" : "border-border text-muted-foreground hover:bg-muted hover:text-foreground"}`}
           aria-label={`Удалить профиль ${profile.name}`}
           title="Удалить"
         >
@@ -1175,26 +1175,26 @@ function SourceSavedWaterProfileOption({
         aria-expanded={isOpen}
         aria-haspopup="menu"
         onClick={() => setIsOpen((open) => !open)}
-        className={`flex h-10 w-full cursor-pointer list-none items-center justify-between gap-2 rounded-lg border px-3 text-sm font-medium transition-colors [&::-webkit-details-marker]:hidden ${selected ? "border-zinc-900 bg-zinc-900 text-white" : "border-zinc-200 bg-white text-zinc-700 hover:border-zinc-300 hover:bg-zinc-50"}`}
+        className={`flex h-10 w-full cursor-pointer list-none items-center justify-between gap-2 rounded-lg border px-3 text-sm font-medium transition-colors [&::-webkit-details-marker]:hidden ${selected ? "border-foreground bg-foreground text-background" : "border-border bg-card text-foreground hover:border-border hover:bg-muted"}`}
       >
         <span className="flex min-w-0 flex-1 items-center gap-2">
           <span className="block min-w-0 flex-1 truncate">
             {selectedProfile?.name ?? "Сохраненный профиль"}
           </span>
           {showProfileSummary ? (
-            <span className={`shrink-0 rounded px-1.5 py-0.5 text-[10px] font-semibold uppercase ${selected ? "bg-white/10 text-white/70" : "bg-zinc-100 text-zinc-500"}`}>
+            <span className={`shrink-0 rounded px-1.5 py-0.5 text-[10px] font-semibold uppercase ${selected ? "bg-background/10 text-background/70" : "bg-muted text-muted-foreground"}`}>
               {savedLabel}
             </span>
           ) : null}
         </span>
         <ChevronRight
-          className={`h-4 w-4 shrink-0 transition-transform ${isOpen ? "rotate-90" : ""} ${selected ? "text-white/70" : "text-zinc-400"}`}
+          className={`h-4 w-4 shrink-0 transition-transform ${isOpen ? "rotate-90" : ""} ${selected ? "text-background/70" : "text-muted-foreground"}`}
         />
       </button>
       {isOpen ? (
         <div
           role="menu"
-          className="absolute left-0 top-11 z-20 w-full min-w-60 overflow-hidden rounded-lg border border-zinc-200 bg-white shadow-lg"
+          className="absolute left-0 top-11 z-20 w-full min-w-60 overflow-hidden rounded-lg border border-border bg-card shadow-lg"
         >
           {profiles.map((profile) => {
             const isCurrent = profile.id === selectedId;
@@ -1202,7 +1202,7 @@ function SourceSavedWaterProfileOption({
             return (
               <div
                 key={profile.id}
-                className="grid grid-cols-[minmax(0,1fr)_2.25rem] items-center border-b border-zinc-100 last:border-b-0"
+                className="grid grid-cols-[minmax(0,1fr)_2.25rem] items-center border-b border-border last:border-b-0"
               >
                 <button
                   type="button"
@@ -1210,18 +1210,18 @@ function SourceSavedWaterProfileOption({
                     onSelect(profile);
                     setIsOpen(false);
                   }}
-                  className={`min-w-0 px-3 py-2.5 text-left text-sm transition-colors ${isCurrent ? "bg-zinc-50 font-semibold text-zinc-950" : "text-zinc-700 hover:bg-zinc-50 hover:text-zinc-950"}`}
+                  className={`min-w-0 px-3 py-2.5 text-left text-sm transition-colors ${isCurrent ? "bg-muted font-semibold text-foreground" : "text-foreground hover:bg-muted hover:text-foreground"}`}
                 >
                   <span className="flex min-w-0 items-center gap-2">
                     <span className="block min-w-0 flex-1 truncate">{profile.name}</span>
                     {showProfileSummary ? (
-                      <span className="shrink-0 rounded bg-zinc-100 px-1.5 py-0.5 text-[10px] font-semibold uppercase text-zinc-500">
+                      <span className="shrink-0 rounded bg-muted px-1.5 py-0.5 text-[10px] font-semibold uppercase text-muted-foreground">
                         {savedLabel}
                       </span>
                     ) : null}
                   </span>
                   {showProfileSummary ? (
-                    <span className="mt-0.5 block truncate text-[11px] font-normal text-zinc-400">
+                    <span className="mt-0.5 block truncate text-[11px] font-normal text-muted-foreground">
                       {formatProfile(profile.profile)} ppm
                     </span>
                   ) : null}
@@ -1232,7 +1232,7 @@ function SourceSavedWaterProfileOption({
                     event.stopPropagation();
                     onDelete(profile.id);
                   }}
-                  className="inline-flex h-9 w-9 items-center justify-center text-zinc-400 transition-colors hover:bg-zinc-50 hover:text-zinc-800"
+                  className="inline-flex h-9 w-9 items-center justify-center text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
                   aria-label={`Удалить профиль ${profile.name}`}
                   title="Удалить"
                 >
@@ -1263,7 +1263,7 @@ function TargetModeButton({
       type="button"
       disabled={disabled}
       onClick={onClick}
-      className={`flex h-10 items-center justify-center rounded-lg border px-3 text-sm font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-45 ${selected ? "border-zinc-900 bg-zinc-900 text-white" : "border-zinc-200 bg-white text-zinc-700 hover:bg-zinc-50"}`}
+      className={`flex h-10 items-center justify-center rounded-lg border px-3 text-sm font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-45 ${selected ? "border-foreground bg-foreground text-background" : "border-border bg-card text-foreground hover:bg-muted"}`}
     >
       {label}
     </button>
@@ -1286,19 +1286,19 @@ function TargetCatalogProfileRow({
       type="button"
       aria-pressed={selected}
       onClick={() => onSelect(profile)}
-      className={`grid gap-1 rounded-lg border px-3 py-2 text-left transition-colors ${selected ? "border-sky-300 bg-sky-50 text-sky-950" : "border-zinc-200 bg-white text-zinc-700 hover:border-zinc-300 hover:bg-zinc-50"}`}
+      className={`grid gap-1 rounded-lg border px-3 py-2 text-left transition-colors ${selected ? "border-sky-300 bg-sky-50 text-sky-950 dark:border-sky-500/40 dark:bg-sky-500/15 dark:text-sky-200" : "border-border bg-card text-foreground hover:border-border hover:bg-muted"}`}
     >
       <span className="flex min-w-0 items-center gap-2">
         <span className="min-w-0 flex-1 truncate text-sm font-semibold">
           {profile.displayName}
         </span>
         {badgeLabel ? (
-          <span className={`shrink-0 rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.08em] ${selected ? "bg-white/80 text-sky-700 ring-1 ring-sky-200" : "bg-emerald-50 text-emerald-700 ring-1 ring-emerald-200"}`}>
+          <span className={`shrink-0 rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.08em] ${selected ? "bg-white/80 text-sky-700 ring-1 ring-sky-200 dark:bg-background/60 dark:text-sky-300 dark:ring-sky-500/30" : "bg-success-subtle text-success-subtle-foreground ring-1 ring-success/30"}`}>
             {badgeLabel}
           </span>
         ) : null}
       </span>
-      <span className="truncate text-[11px] text-zinc-500">
+      <span className="truncate text-[11px] text-muted-foreground">
         {profile.badge} · {formatProfile(profile.profile)} ppm
       </span>
     </button>
@@ -1317,22 +1317,22 @@ function TargetCatalogSelectionCard({
   onChangeClick: () => void;
 }) {
   return (
-    <div className="rounded-lg border border-zinc-200 bg-zinc-50 px-3 py-3">
+    <div className="rounded-lg border border-border bg-muted px-3 py-3">
       <div className="mb-1 flex items-start justify-between gap-3">
-        <div className="text-xs font-medium text-zinc-500">{label}</div>
+        <div className="text-xs font-medium text-muted-foreground">{label}</div>
         <button
           type="button"
           onClick={onChangeClick}
-          className="inline-flex shrink-0 items-center text-sm font-medium text-zinc-600 underline decoration-zinc-300 underline-offset-4 transition-colors hover:text-zinc-950"
+          className="inline-flex shrink-0 items-center text-sm font-medium text-muted-foreground underline decoration-border underline-offset-4 transition-colors hover:text-foreground"
         >
           Изменить
         </button>
       </div>
       <div className="min-w-0">
-        <div className="truncate text-sm font-semibold text-zinc-950 sm:text-base">
+        <div className="truncate text-sm font-semibold text-foreground sm:text-base">
           {title}
         </div>
-        <div className="mt-0.5 truncate text-xs text-zinc-500">
+        <div className="mt-0.5 truncate text-xs text-muted-foreground">
           {formatProfile(profile)} ppm
         </div>
       </div>
@@ -1352,7 +1352,7 @@ function ProfileIonEditor({
   compact?: boolean;
 }) {
   return (
-    <div className={compact ? "grid grid-cols-2 gap-2 sm:grid-cols-3 md:grid-cols-6" : "grid grid-cols-2 gap-2 rounded-xl bg-zinc-50 p-3 sm:grid-cols-3 md:grid-cols-6"}>
+    <div className={compact ? "grid grid-cols-2 gap-2 sm:grid-cols-3 md:grid-cols-6" : "grid grid-cols-2 gap-2 rounded-xl bg-muted p-3 sm:grid-cols-3 md:grid-cols-6"}>
       {ionKeys.map((key) => {
         const value = profile[key];
         const target = targetProfile?.[key];
@@ -1366,13 +1366,13 @@ function ProfileIonEditor({
         return (
           <label
             key={key}
-            className="text-[11px] font-medium uppercase text-zinc-500"
+            className="text-[11px] font-medium uppercase text-muted-foreground"
           >
             <span className="flex items-center justify-between">
               <span>{ionLabels[key]}</span>
               {deltaText ? (
                 <span
-                  className={`text-[10px] tabular-nums normal-case ${direction === "up" ? "text-sky-600" : "text-amber-600"}`}
+                  className={`text-[10px] tabular-nums normal-case ${direction === "up" ? "text-sky-600 dark:text-sky-400" : "text-amber-600 dark:text-amber-400"}`}
                   aria-label={`До цели: ${deltaText}`}
                 >
                   {deltaText}
@@ -1392,7 +1392,7 @@ function ProfileIonEditor({
                     : 0,
                 })
               }
-              className={`${compact ? "h-11" : "h-11"} mt-1 w-full rounded-lg border border-zinc-200 bg-white px-2 text-base text-zinc-900`}
+              className={`${compact ? "h-11" : "h-11"} mt-1 w-full rounded-lg border border-border bg-card px-2 text-base text-foreground`}
             />
           </label>
         );
@@ -1411,18 +1411,18 @@ function MashPhCorrectionCard({
   const enabled = value != null;
 
   return (
-    <div className="rounded-xl border border-zinc-200 bg-white p-4 shadow-sm">
-      <label className="flex items-center gap-2 text-sm font-semibold text-zinc-800">
+    <div className="rounded-xl border border-border bg-card p-4 shadow-sm">
+      <label className="flex items-center gap-2 text-sm font-semibold text-foreground">
         <input
           type="checkbox"
           checked={enabled}
           onChange={(event) => onChange(event.target.checked ? 5.35 : null)}
-          className="h-4 w-4 rounded border-zinc-300"
+          className="h-4 w-4 rounded border-border"
         />
         Корректировать pH затора
       </label>
       {enabled ? (
-        <label className="mt-3 block text-xs font-medium text-zinc-600">
+        <label className="mt-3 block text-xs font-medium text-muted-foreground">
           Целевой pH затора
           <input
             type="number"
@@ -1433,7 +1433,7 @@ function MashPhCorrectionCard({
             onChange={(event) =>
               onChange(toOptionalNumber(event.target.value) ?? 5.35)
             }
-            className="mt-1 h-11 w-full rounded-lg border border-zinc-200 bg-white px-2 text-base text-zinc-900"
+            className="mt-1 h-11 w-full rounded-lg border border-border bg-card px-2 text-base text-foreground"
           />
         </label>
       ) : null}
@@ -1457,19 +1457,19 @@ function SpargeAcidificationCard({
   onTargetPhChange: (value: number) => void;
 }) {
   return (
-    <div className="rounded-xl border border-zinc-200 bg-white p-4 shadow-sm">
-      <label className="flex items-center gap-2 text-sm font-semibold text-zinc-800">
+    <div className="rounded-xl border border-border bg-card p-4 shadow-sm">
+      <label className="flex items-center gap-2 text-sm font-semibold text-foreground">
         <input
           type="checkbox"
           checked={enabled}
           onChange={(event) => onEnabledChange(event.target.checked)}
-          className="h-4 w-4 rounded border-zinc-300"
+          className="h-4 w-4 rounded border-border"
         />
         Подкислить промывочную воду
       </label>
       {enabled ? (
         <div className="mt-3 grid gap-3 sm:grid-cols-2">
-          <label className="text-xs font-medium text-zinc-600">
+          <label className="text-xs font-medium text-muted-foreground">
             Исходный pH
             <input
               type="number"
@@ -1478,10 +1478,10 @@ function SpargeAcidificationCard({
               step={0.01}
               value={sourcePh}
               onChange={(event) => onSourcePhChange(toOptionalNumber(event.target.value))}
-              className="mt-1 h-11 w-full rounded-lg border border-zinc-200 bg-white px-2 text-base text-zinc-900"
+              className="mt-1 h-11 w-full rounded-lg border border-border bg-card px-2 text-base text-foreground"
             />
           </label>
-          <label className="text-xs font-medium text-zinc-600">
+          <label className="text-xs font-medium text-muted-foreground">
             Целевой pH промывки
             <input
               type="number"
@@ -1492,7 +1492,7 @@ function SpargeAcidificationCard({
               onChange={(event) =>
                 onTargetPhChange(toOptionalNumber(event.target.value) ?? 5.7)
               }
-              className="mt-1 h-11 w-full rounded-lg border border-zinc-200 bg-white px-2 text-base text-zinc-900"
+              className="mt-1 h-11 w-full rounded-lg border border-border bg-card px-2 text-base text-foreground"
             />
           </label>
         </div>
@@ -1901,22 +1901,22 @@ export function WaterSetupWizard({
   const isEmbedded = variant === "embedded";
   const wrapperClassName = isEmbedded
     ? ""
-    : "rounded-2xl border border-zinc-100 bg-white p-5 shadow-sm";
+    : "rounded-2xl border border-border bg-card p-5 shadow-sm";
   const detailsWrapperClassName = isEmbedded
-    ? "group rounded-xl border border-zinc-200 bg-zinc-50/40"
-    : "group mt-4 rounded-xl border border-zinc-200 bg-zinc-50/40";
+    ? "group rounded-xl border border-border bg-muted/40"
+    : "group mt-4 rounded-xl border border-border bg-muted/40";
 
   return (
     <section className={wrapperClassName}>
       {isEmbedded ? null : (
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div className="flex min-w-0 items-start gap-2">
-            <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-sky-50 text-xs font-bold text-sky-700">
+            <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-sky-50 text-xs font-bold text-sky-700 dark:bg-sky-500/15 dark:text-sky-300">
               H2O
             </span>
             <div className="min-w-0">
               <div className="flex flex-wrap items-center gap-2">
-                <h2 className="text-sm font-semibold text-zinc-800">Вода</h2>
+                <h2 className="text-sm font-semibold text-foreground">Вода</h2>
               </div>
             </div>
           </div>
@@ -1951,7 +1951,7 @@ export function WaterSetupWizard({
           {secondaryVisibleWarnings.map((warning) => (
             <div
               key={warning}
-              className="rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-800"
+              className="rounded-lg border border-warning/30 bg-warning-subtle px-3 py-2 text-sm text-warning-subtle-foreground"
             >
               {waterWarningLabels[warning] ?? warning}
             </div>
@@ -1971,11 +1971,11 @@ export function WaterSetupWizard({
         }}
         className={detailsWrapperClassName}
       >
-        <summary className="flex cursor-pointer list-none items-center gap-2 px-3 py-3 text-sm font-semibold text-zinc-800">
-          <SlidersHorizontal className="h-4 w-4 shrink-0 text-zinc-400" />
+        <summary className="flex cursor-pointer list-none items-center gap-2 px-3 py-3 text-sm font-semibold text-foreground">
+          <SlidersHorizontal className="h-4 w-4 shrink-0 text-muted-foreground" />
           <span className="min-w-0 flex-1">
             <span className="block">Настройка воды</span>
-            <span className="mt-0.5 block truncate text-xs font-normal text-zinc-500">
+            <span className="mt-0.5 block truncate text-xs font-normal text-muted-foreground">
               {buildWaterSetupSummary({
                 waterPlanMeta,
                 effectiveWaterPlanMeta,
@@ -1987,16 +1987,16 @@ export function WaterSetupWizard({
               })}
             </span>
           </span>
-          <ChevronRight className="h-4 w-4 shrink-0 text-zinc-400 transition-transform group-open:rotate-90" />
+          <ChevronRight className="h-4 w-4 shrink-0 text-muted-foreground transition-transform group-open:rotate-90" />
         </summary>
 
-        <div className="space-y-4 border-t border-zinc-100 bg-white p-4">
+        <div className="space-y-4 border-t border-border bg-card p-4">
         <section className="space-y-2">
           <div className="flex items-center justify-between gap-3">
-            <h3 className="text-sm font-semibold text-zinc-900">
+            <h3 className="text-sm font-semibold text-foreground">
               1. Исходная вода
             </h3>
-            <span className="truncate text-xs text-zinc-400">{sourceName}</span>
+            <span className="truncate text-xs text-muted-foreground">{sourceName}</span>
           </div>
           <div className={`grid gap-2 ${savedSourceProfiles.length ? "sm:grid-cols-4" : "sm:grid-cols-3"}`}>
             <SourceSavedWaterProfileOption
@@ -2051,13 +2051,13 @@ export function WaterSetupWizard({
                   ),
                 );
               }}
-              className={`flex h-10 items-center justify-center rounded-lg border px-3 text-sm font-medium ${hasActiveWaterSetup && effectiveWaterPlanMeta.sourceProfileMode === "manual" ? "border-zinc-900 bg-zinc-900 text-white" : "border-zinc-200 bg-white text-zinc-700 hover:bg-zinc-50"}`}
+              className={`flex h-10 items-center justify-center rounded-lg border px-3 text-sm font-medium ${hasActiveWaterSetup && effectiveWaterPlanMeta.sourceProfileMode === "manual" ? "border-foreground bg-foreground text-background" : "border-border bg-card text-foreground hover:bg-muted"}`}
             >
               Ввести вручную
             </button>
           </div>
 
-          <div className="space-y-2 rounded-xl bg-zinc-50 p-3">
+          <div className="space-y-2 rounded-xl bg-muted p-3">
             <ProfileIonEditor
               profile={source}
               targetProfile={effectiveWaterPlanMeta.targetProfile ?? null}
@@ -2085,7 +2085,7 @@ export function WaterSetupWizard({
                         setManualProfileName(event.target.value);
                       }}
                       maxLength={120}
-                      className="h-8 w-52 rounded-lg border border-zinc-200 bg-white px-2 text-sm text-zinc-900"
+                      className="h-8 w-52 rounded-lg border border-border bg-card px-2 text-sm text-foreground"
                       placeholder={getNextSavedSourceWaterProfileName(savedSourceProfiles)}
                     />
                     <Button
@@ -2119,7 +2119,7 @@ export function WaterSetupWizard({
                   </Button>
                 )}
                 {sourceProfileSaveMessage ? (
-                  <span className="text-xs text-emerald-700">
+                  <span className="text-xs text-success">
                     {sourceProfileSaveMessage}
                   </span>
                 ) : null}
@@ -2130,7 +2130,7 @@ export function WaterSetupWizard({
         </section>
 
         <section className="space-y-3">
-          <h3 className="text-sm font-semibold text-zinc-900">
+          <h3 className="text-sm font-semibold text-foreground">
             2. Целевой профиль
           </h3>
 
@@ -2207,8 +2207,8 @@ export function WaterSetupWizard({
                 setShowAllTargetProfiles(false);
               }}
             >
-              <label className="flex h-12 items-center gap-2 rounded-lg border border-zinc-200 bg-zinc-50 px-3 text-base text-zinc-600">
-                <Search className="h-4 w-4 shrink-0 text-zinc-400" />
+              <label className="flex h-12 items-center gap-2 rounded-lg border border-border bg-muted px-3 text-base text-muted-foreground">
+                <Search className="h-4 w-4 shrink-0 text-muted-foreground" />
                 <input
                   type="search"
                   value={targetQuery}
@@ -2217,7 +2217,7 @@ export function WaterSetupWizard({
                     setShowAllTargetProfiles(false);
                   }}
                   placeholder="IPA, lager, blanche, стаут..."
-                  className="h-full min-w-0 flex-1 bg-transparent text-base text-zinc-900 outline-none placeholder:text-zinc-400"
+                  className="h-full min-w-0 flex-1 bg-transparent text-base text-foreground outline-none placeholder:text-muted-foreground"
                 />
               </label>
 
@@ -2281,7 +2281,7 @@ export function WaterSetupWizard({
                 </Button>
               ) : null}
               {!targetSuggestedEntries.length && !targetVisibleCatalogResults.length ? (
-                <div className="rounded-lg border border-dashed border-zinc-200 bg-zinc-50 px-3 py-3 text-sm text-zinc-500">
+                <div className="rounded-lg border border-dashed border-border bg-muted px-3 py-3 text-sm text-muted-foreground">
                   Ничего не найдено
                 </div>
               ) : null}
@@ -2289,7 +2289,7 @@ export function WaterSetupWizard({
           ) : null}
 
           {showTargetStyleChangedNotice ? (
-            <div className="flex flex-wrap items-center justify-between gap-2 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-800">
+            <div className="flex flex-wrap items-center justify-between gap-2 rounded-lg border border-warning/30 bg-warning-subtle px-3 py-2 text-sm text-warning-subtle-foreground">
               <span>Стиль изменился. Профиль воды остался прежним.</span>
               {targetStyleDefault?.defaultProfile ? (
                 <button
@@ -2306,7 +2306,7 @@ export function WaterSetupWizard({
                     );
                     setTargetCatalogPickerOpen(false);
                   }}
-                  className="inline-flex h-8 shrink-0 items-center rounded-lg border border-amber-300 bg-white px-3 text-xs font-medium text-amber-900 hover:bg-amber-100"
+                  className="inline-flex h-8 shrink-0 items-center rounded-lg border border-warning/30 bg-card px-3 text-xs font-medium text-warning-subtle-foreground hover:bg-warning-subtle"
                 >
                   Подобрать под новый стиль
                 </button>
@@ -2314,7 +2314,7 @@ export function WaterSetupWizard({
             </div>
           ) : null}
 
-          <div className="space-y-2 rounded-xl bg-zinc-50 p-3">
+          <div className="space-y-2 rounded-xl bg-muted p-3">
             <ProfileIonEditor
               profile={target}
               compact
@@ -2343,7 +2343,7 @@ export function WaterSetupWizard({
                         setTargetProfileName(event.target.value);
                       }}
                       maxLength={120}
-                      className="h-8 w-52 rounded-lg border border-zinc-200 bg-white px-2 text-sm text-zinc-900"
+                      className="h-8 w-52 rounded-lg border border-border bg-card px-2 text-sm text-foreground"
                       placeholder={getNextSavedTargetWaterProfileName(savedTargetProfiles)}
                     />
                     <Button
@@ -2377,7 +2377,7 @@ export function WaterSetupWizard({
                   </Button>
                 )}
                 {targetProfileSaveMessage ? (
-                  <span className="text-xs text-emerald-700">
+                  <span className="text-xs text-success">
                     {targetProfileSaveMessage}
                   </span>
                 ) : null}
@@ -2390,10 +2390,10 @@ export function WaterSetupWizard({
           <>
 
             <section className="space-y-3">
-              <h3 className="text-sm font-semibold text-zinc-900">
+              <h3 className="text-sm font-semibold text-foreground">
                 3. Объем воды
               </h3>
-              <label className="block text-xs font-medium text-zinc-600">
+              <label className="block text-xs font-medium text-muted-foreground">
                 Водопоглощение дробиной, л/кг
                 <input
                   type="number"
@@ -2405,9 +2405,9 @@ export function WaterSetupWizard({
                   onChange={(event) =>
                     updateGrainAbsorption(event.target.value)
                   }
-                  className="mt-1 h-11 w-full rounded-lg border border-zinc-200 bg-white px-2 text-base text-zinc-900"
+                  className="mt-1 h-11 w-full rounded-lg border border-border bg-card px-2 text-base text-foreground"
                 />
-                <span className="mt-1 block text-xs font-normal text-zinc-500">
+                <span className="mt-1 block text-xs font-normal text-muted-foreground">
                   Сейчас: {grainAbsorptionLPerKg.toFixed(2)} л/кг
                   {grainAbsorptionLossL != null
                     ? ` · ${grainAbsorptionLossL.toFixed(1)} л`
@@ -2426,13 +2426,13 @@ export function WaterSetupWizard({
                       ),
                     )
                   }
-                  className={`rounded-xl border px-4 py-3 text-left text-sm ${!isSplitVolume ? "border-zinc-900 bg-zinc-900 text-white" : "border-zinc-200 bg-white text-zinc-700 hover:bg-zinc-50"}`}
+                  className={`rounded-xl border px-4 py-3 text-left text-sm ${!isSplitVolume ? "border-foreground bg-foreground text-background" : "border-border bg-card text-foreground hover:bg-muted"}`}
                 >
                   <span className="block font-semibold">
                     Считать одним объемом
                   </span>
                   <span
-                    className={`mt-1 block text-xs ${!isSplitVolume ? "text-zinc-200" : "text-zinc-500"}`}
+                    className={`mt-1 block text-xs ${!isSplitVolume ? "text-background" : "text-muted-foreground"}`}
                   >
                     {waterPlanResult.waterVolumes.totalWaterL.toFixed(1)} л
                   </span>
@@ -2454,13 +2454,13 @@ export function WaterSetupWizard({
                       ),
                     )
                   }
-                  className={`rounded-xl border px-4 py-3 text-left text-sm ${isSplitVolume ? "border-zinc-900 bg-zinc-900 text-white" : "border-zinc-200 bg-white text-zinc-700 hover:bg-zinc-50"}`}
+                  className={`rounded-xl border px-4 py-3 text-left text-sm ${isSplitVolume ? "border-foreground bg-foreground text-background" : "border-border bg-card text-foreground hover:bg-muted"}`}
                 >
                   <span className="block font-semibold">
                     Разделить на затор и промывку
                   </span>
                   <span
-                    className={`mt-1 block text-xs ${isSplitVolume ? "text-zinc-200" : "text-zinc-500"}`}
+                    className={`mt-1 block text-xs ${isSplitVolume ? "text-background" : "text-muted-foreground"}`}
                   >
                     {[
                       waterPlanResult.waterVolumes.suggestedMashWaterL,
@@ -2474,7 +2474,7 @@ export function WaterSetupWizard({
 
               {isSplitVolume ? (
                 <div className="grid gap-3 sm:grid-cols-2">
-                  <label className="text-xs font-medium text-zinc-600">
+                  <label className="text-xs font-medium text-muted-foreground">
                     Заторная вода, л
                     <input
                       type="number"
@@ -2487,10 +2487,10 @@ export function WaterSetupWizard({
                           event.target.value,
                         )
                       }
-                      className="mt-1 h-11 w-full rounded-lg border border-zinc-200 bg-white px-2 text-base text-zinc-900"
+                      className="mt-1 h-11 w-full rounded-lg border border-border bg-card px-2 text-base text-foreground"
                     />
                   </label>
-                  <label className="text-xs font-medium text-zinc-600">
+                  <label className="text-xs font-medium text-muted-foreground">
                     Промывочная вода, л
                     <input
                       type="number"
@@ -2503,7 +2503,7 @@ export function WaterSetupWizard({
                           event.target.value,
                         )
                       }
-                      className="mt-1 h-11 w-full rounded-lg border border-zinc-200 bg-white px-2 text-base text-zinc-900"
+                      className="mt-1 h-11 w-full rounded-lg border border-border bg-card px-2 text-base text-foreground"
                     />
                   </label>
                 </div>
@@ -2512,7 +2512,7 @@ export function WaterSetupWizard({
             </section>
 
             <section className="space-y-3">
-              <h3 className="text-sm font-semibold text-zinc-900">
+              <h3 className="text-sm font-semibold text-foreground">
                 4. pH и подкисление
               </h3>
               <div className="grid gap-3 lg:grid-cols-2">
@@ -2553,10 +2553,10 @@ export function WaterSetupWizard({
               </div>
             </section>
 
-            <section className="space-y-3 rounded-xl border border-sky-100 bg-sky-50/40 p-3">
+            <section className="space-y-3 rounded-xl border border-sky-100 bg-sky-50/40 p-3 dark:border-sky-500/30 dark:bg-sky-500/10">
               <div className="flex flex-wrap items-start justify-between gap-3">
                 <div className="min-w-0">
-                  <h3 className="text-sm font-semibold text-zinc-900">
+                  <h3 className="text-sm font-semibold text-foreground">
                     Расчет
                   </h3>
                 </div>
@@ -2583,8 +2583,8 @@ export function WaterSetupWizard({
               {hasCalculatedAdditions ? (
                 <div className="grid gap-2">
                   {calculatedAdditionGroups.map((group) => (
-                    <div key={group.key} className="rounded-lg bg-white p-2 ring-1 ring-sky-100">
-                      <div className="mb-1 text-[11px] font-semibold uppercase text-zinc-400">
+                    <div key={group.key} className="rounded-lg bg-card p-2 ring-1 ring-sky-100 dark:ring-sky-500/20">
+                      <div className="mb-1 text-[11px] font-semibold uppercase text-muted-foreground">
                         {group.label}
                       </div>
                       <ul className="space-y-1">
@@ -2594,16 +2594,16 @@ export function WaterSetupWizard({
                             className="flex items-center justify-between gap-3 text-sm"
                           >
                             <span className="min-w-0">
-                              <span className="font-medium text-zinc-900">
+                              <span className="font-medium text-foreground">
                                 {row.title}
                               </span>
                               {row.formula ? (
-                                <span className="ml-1 text-zinc-500">
+                                <span className="ml-1 text-muted-foreground">
                                   {row.formula}
                                 </span>
                               ) : null}
                             </span>
-                            <span className="shrink-0 font-semibold tabular-nums text-zinc-950">
+                            <span className="shrink-0 font-semibold tabular-nums text-foreground">
                               {row.amountText}
                             </span>
                           </li>
@@ -2613,22 +2613,22 @@ export function WaterSetupWizard({
                   ))}
                 </div>
               ) : (
-                <div className="rounded-lg border border-dashed border-sky-200 bg-white/70 px-3 py-3 text-sm text-zinc-500">
+                <div className="rounded-lg border border-dashed border-sky-200 bg-card/70 px-3 py-3 text-sm text-muted-foreground dark:border-sky-500/30">
                   Нет рассчитанных добавок
                 </div>
               )}
             </section>
 
             {hasAdvancedSettings ? (
-            <details className="group rounded-xl border border-zinc-100 bg-white p-3">
-              <summary className="flex cursor-pointer list-none items-center gap-2 text-sm font-semibold text-zinc-800">
-                <SlidersHorizontal className="h-4 w-4 text-zinc-400" />
+            <details className="group rounded-xl border border-border bg-card p-3">
+              <summary className="flex cursor-pointer list-none items-center gap-2 text-sm font-semibold text-foreground">
+                <SlidersHorizontal className="h-4 w-4 text-muted-foreground" />
                 Расширенные настройки
-                <ChevronRight className="ml-auto h-4 w-4 text-zinc-400 transition-transform group-open:rotate-90" />
+                <ChevronRight className="ml-auto h-4 w-4 text-muted-foreground transition-transform group-open:rotate-90" />
               </summary>
               <div className="mt-3 grid gap-3 md:grid-cols-2">
                 {saltCalculationMode === "auto" ? (
-                  <label className="flex min-h-10 items-center gap-2 self-end rounded-lg border border-zinc-200 bg-zinc-50 px-3 py-2 text-sm font-medium text-zinc-700">
+                  <label className="flex min-h-10 items-center gap-2 self-end rounded-lg border border-border bg-muted px-3 py-2 text-sm font-medium text-foreground">
                     <input
                       type="checkbox"
                       checked={isRecipeWaterAutoBakingSodaEnabled(
@@ -2642,13 +2642,13 @@ export function WaterSetupWizard({
                           ),
                         )
                       }
-                      className="h-4 w-4 rounded border-zinc-300"
+                      className="h-4 w-4 rounded border-border"
                     />
                     Считать пищевую соду (NaHCO3) в авторасчете
                   </label>
                 ) : null}
                 {mashPhEnabled ? (
-                  <label className="text-xs font-medium text-zinc-600">
+                  <label className="text-xs font-medium text-muted-foreground">
                     Модель pH
                     <select
                       value={waterPlanMeta.phModel}
@@ -2660,7 +2660,7 @@ export function WaterSetupWizard({
                             .value as RecipeWaterPlanMeta["phModel"],
                         })
                       }
-                      className="mt-1 h-11 w-full rounded-lg border border-zinc-200 bg-white px-3 text-base text-zinc-900"
+                      className="mt-1 h-11 w-full rounded-lg border border-border bg-card px-3 text-base text-foreground"
                     >
                       {recipeMashPhModels.map((model) => (
                         <option key={model} value={model}>
@@ -2672,7 +2672,7 @@ export function WaterSetupWizard({
                 ) : null}
                 {acidCalculationEnabled ? (
                   <>
-                    <label className="text-xs font-medium text-zinc-600">
+                    <label className="text-xs font-medium text-muted-foreground">
                       Кислота
                       <select
                         value={selectedAcid}
@@ -2684,7 +2684,7 @@ export function WaterSetupWizard({
                               .value as RecipeWaterPlanMeta["selectedAcid"],
                           })
                         }
-                        className="mt-1 h-11 w-full rounded-lg border border-zinc-200 bg-white px-3 text-base text-zinc-900"
+                        className="mt-1 h-11 w-full rounded-lg border border-border bg-card px-3 text-base text-foreground"
                       >
                         {Object.entries(recipeWaterAcidPresentation).map(
                           ([value, acid]) => (
@@ -2698,7 +2698,7 @@ export function WaterSetupWizard({
                   </>
                 ) : null}
                 {mashPhEnabled ? (
-                  <label className="text-xs font-medium text-zinc-600">
+                  <label className="text-xs font-medium text-muted-foreground">
                     Калибровка pH
                     <input
                       type="number"
@@ -2715,14 +2715,14 @@ export function WaterSetupWizard({
                           ),
                         })
                       }
-                      className="mt-1 h-11 w-full rounded-lg border border-zinc-200 bg-white px-3 text-base text-zinc-900"
+                      className="mt-1 h-11 w-full rounded-lg border border-border bg-card px-3 text-base text-foreground"
                       placeholder="0.00"
                     />
                   </label>
                 ) : null}
                 {acidCalculationEnabled ? (
                   <>
-                    <label className="text-xs font-medium text-zinc-600">
+                    <label className="text-xs font-medium text-muted-foreground">
                       Концентрация кислоты, %
                       <input
                         type="number"
@@ -2739,7 +2739,7 @@ export function WaterSetupWizard({
                             ),
                           })
                         }
-                        className="mt-1 h-11 w-full rounded-lg border border-zinc-200 bg-white px-3 text-base text-zinc-900"
+                        className="mt-1 h-11 w-full rounded-lg border border-border bg-card px-3 text-base text-foreground"
                         placeholder={
                           selectedAcid === "lactic_acid" ? "88" : "85"
                         }

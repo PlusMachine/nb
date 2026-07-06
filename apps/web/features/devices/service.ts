@@ -472,6 +472,23 @@ export const getLatestTelemetryAtMs = async (deviceId: string): Promise<number |
   return row?.ts ? row.ts.getTime() : null;
 };
 
+/**
+ * Последний сохранённый кадр телеметрии кратко: время + стадия (bf_stage_t).
+ * Тот же источник, что getLatestTelemetryAtMs, но со стадией — нужен блоку
+ * «Прошивка» настроек (кнопка «Обновить» доступна только в IDLE, F3 §6).
+ */
+export const getLatestTelemetryBrief = async (
+  deviceId: string
+): Promise<{ tsMs: number; stage: number | null } | null> => {
+  const [row] = await db
+    .select({ ts: brewTelemetry.ts, stage: brewTelemetry.stage })
+    .from(brewTelemetry)
+    .where(eq(brewTelemetry.deviceId, deviceId))
+    .orderBy(desc(brewTelemetry.ts))
+    .limit(1);
+  return row?.ts ? { tsMs: row.ts.getTime(), stage: row.stage } : null;
+};
+
 export const updateDeviceStatus = async (input: UpdateDeviceStatusInput): Promise<void> => {
   await db
     .update(brewDevices)

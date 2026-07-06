@@ -70,38 +70,38 @@ export function InventoryItemMovements({
   }, [open, inventoryItemId]);
 
   return (
-    <section className="mt-6 space-y-2 border-t border-zinc-100 pt-4">
-      <h3 className="text-sm font-semibold text-zinc-900">Движения</h3>
+    <section className="mt-6 space-y-2 border-t border-border pt-4">
+      <h3 className="text-sm font-semibold text-foreground">Движения</h3>
 
-      {state.status === "loading" ? <p className="text-sm text-zinc-500">Загрузка…</p> : null}
+      {state.status === "loading" ? <p className="text-sm text-muted-foreground">Загрузка…</p> : null}
       {state.status === "error" ? (
-        <p className="text-sm text-rose-600" role="alert">
+        <p className="text-sm text-destructive" role="alert">
           Не удалось загрузить журнал движений.
         </p>
       ) : null}
       {state.status === "ready" && state.movements.length === 0 ? (
-        <p className="text-sm text-zinc-500">
+        <p className="text-sm text-muted-foreground">
           Движений по этой позиции пока нет. Здесь появятся пополнения, списания и расход на варки.
         </p>
       ) : null}
 
       {state.status === "ready" && state.movements.length > 0 ? (
-        <ul className="divide-y divide-zinc-100 overflow-hidden rounded-xl border border-zinc-200">
+        <ul className="divide-y divide-border overflow-hidden rounded-xl border border-border">
           {state.movements.map((movement) => {
             const positive = movement.quantityDeltaNormalized > 0;
             const context = movement.brewBatchName ?? movement.recipeTitle;
             return (
               <li key={movement.id} className="flex items-center justify-between gap-3 px-3 py-2 text-sm">
                 <div className="min-w-0">
-                  <p className="truncate font-medium text-zinc-800">
+                  <p className="truncate font-medium text-foreground">
                     {TYPE_LABELS[movement.type]}
                     {context ? (
-                      <span className="font-normal text-zinc-500">
+                      <span className="font-normal text-muted-foreground">
                         {" · "}
                         {movement.brewBatchId ? (
                           <Link
                             href={`/app/brew-batches/${movement.brewBatchId}`}
-                            className="text-emerald-700 transition-colors hover:text-emerald-900"
+                            className="text-primary transition-colors hover:text-primary/90"
                           >
                             {context}
                           </Link>
@@ -111,10 +111,10 @@ export function InventoryItemMovements({
                       </span>
                     ) : null}
                   </p>
-                  <p className="text-xs text-zinc-400">{dateFmt.format(new Date(movement.createdAt))}</p>
+                  <p className="text-xs text-muted-foreground">{dateFmt.format(new Date(movement.createdAt))}</p>
                 </div>
                 <span
-                  className={`shrink-0 tabular-nums font-semibold ${positive ? "text-emerald-700" : "text-zinc-700"}`}
+                  className={`shrink-0 tabular-nums font-semibold ${positive ? "text-success" : "text-foreground"}`}
                 >
                   {positive ? "+" : "−"}
                   {fmtQty(movement.quantityDeltaNormalized, movement.normalizedUnit)}

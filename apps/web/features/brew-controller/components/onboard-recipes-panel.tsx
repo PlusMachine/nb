@@ -204,20 +204,20 @@ export function OnboardRecipesPanel({ deviceId, pushableRecipes }: Props) {
   return (
     <div className="space-y-6">
       {/* --- Загрузить рецепт ----------------------------------------------- */}
-      <section className="rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm">
-        <h3 className="text-sm font-semibold text-zinc-900">Загрузить рецепт</h3>
-        <p className="mt-1 text-xs text-zinc-500">
+      <section className="rounded-2xl border border-border bg-card p-5 shadow-sm">
+        <h3 className="text-sm font-semibold text-foreground">Загрузить рецепт</h3>
+        <p className="mt-1 text-xs text-muted-foreground">
           Рецепт ляжет на пивоварню — нагрев это не запускает. Сварить можно из мастера рецептов
           или на устройстве.
         </p>
 
         {pushableRecipes.length === 0 ? (
-          <p className="mt-4 text-sm text-zinc-500">
+          <p className="mt-4 text-sm text-muted-foreground">
             У вас пока нет рецептов. Создайте рецепт, чтобы загрузить его на пивоварню.
           </p>
         ) : (
           <div className="mt-4 space-y-3">
-            <label className="block text-xs font-medium text-zinc-600">
+            <label className="block text-xs font-medium text-muted-foreground">
               Рецепт
               <select
                 value={recipeId}
@@ -225,7 +225,7 @@ export function OnboardRecipesPanel({ deviceId, pushableRecipes }: Props) {
                   setRecipeId(e.target.value);
                   setPushOk(null);
                 }}
-                className="mt-1 w-full rounded-md border border-zinc-200 bg-white px-3 py-2 text-sm text-zinc-900"
+                className="mt-1 w-full rounded-md border border-border bg-card px-3 py-2 text-sm text-foreground"
               >
                 {pushableRecipes.map((r) => (
                   <option key={r.id} value={r.id}>
@@ -238,13 +238,13 @@ export function OnboardRecipesPanel({ deviceId, pushableRecipes }: Props) {
             </label>
 
             {capacity != null ? (
-              <p className="text-xs text-zinc-500">
+              <p className="text-xs text-muted-foreground">
                 Загружено {loaded.length} из {capacity}.
               </p>
             ) : null}
 
             {isFull ? (
-              <label className="block text-xs font-medium text-zinc-600">
+              <label className="block text-xs font-medium text-muted-foreground">
                 Пивоварня заполнена — что заменить
                 <select
                   value={replaceSlot ?? ""}
@@ -252,7 +252,7 @@ export function OnboardRecipesPanel({ deviceId, pushableRecipes }: Props) {
                     setReplaceSlot(e.target.value === "" ? null : Number(e.target.value));
                     setPushOk(null);
                   }}
-                  className="mt-1 w-full rounded-md border border-zinc-200 bg-white px-3 py-2 text-sm text-zinc-900"
+                  className="mt-1 w-full rounded-md border border-border bg-card px-3 py-2 text-sm text-foreground"
                 >
                   <option value="">Выберите рецепт для замены…</option>
                   {loaded.map((s) => (
@@ -272,20 +272,20 @@ export function OnboardRecipesPanel({ deviceId, pushableRecipes }: Props) {
               {pushing ? "Загрузка…" : isFull ? "Заменить" : "Загрузить"}
             </Button>
 
-            {pushError ? <p role="alert" className="text-sm text-rose-600">{pushError}</p> : null}
-            {pushOk ? <p role="status" className="text-sm text-emerald-600">{pushOk}</p> : null}
+            {pushError ? <p role="alert" className="text-sm text-destructive">{pushError}</p> : null}
+            {pushOk ? <p role="status" className="text-sm text-success">{pushOk}</p> : null}
           </div>
         )}
       </section>
 
       {/* --- На пивоварне (загруженные рецепты, без номеров слотов) ---------- */}
-      <section className="rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm">
+      <section className="rounded-2xl border border-border bg-card p-5 shadow-sm">
         <div className="flex items-center justify-between">
-          <h3 className="text-sm font-semibold text-zinc-900">На пивоварне</h3>
+          <h3 className="text-sm font-semibold text-foreground">На пивоварне</h3>
           <button
             type="button"
             onClick={() => void loadSlots()}
-            className="text-xs text-zinc-500 hover:text-zinc-800"
+            className="text-xs text-muted-foreground hover:text-foreground"
             disabled={loading}
           >
             Обновить
@@ -293,19 +293,19 @@ export function OnboardRecipesPanel({ deviceId, pushableRecipes }: Props) {
         </div>
 
         {loading ? (
-          <p className="mt-4 text-sm text-zinc-500">Загрузка…</p>
+          <p className="mt-4 text-sm text-muted-foreground">Загрузка…</p>
         ) : unsupported ? (
-          <p className="mt-4 text-sm text-zinc-500">{unsupported}</p>
+          <p className="mt-4 text-sm text-muted-foreground">{unsupported}</p>
         ) : loadError ? (
-          <p role="alert" className="mt-4 text-sm text-rose-600">{loadError}</p>
+          <p role="alert" className="mt-4 text-sm text-destructive">{loadError}</p>
         ) : loaded.length > 0 ? (
-          <ul className="mt-4 divide-y divide-zinc-100">
+          <ul className="mt-4 divide-y divide-border">
             {loaded.map((s) => (
               <li key={s.slot} className="py-3">
                 <div className="flex items-start justify-between gap-3">
                   <div className="min-w-0">
-                    <span className="truncate text-sm font-medium text-zinc-900">{loadedName(s)}</span>
-                    <p className="mt-1 text-xs text-zinc-500">
+                    <span className="truncate text-sm font-medium text-foreground">{loadedName(s)}</span>
+                    <p className="mt-1 text-xs text-muted-foreground">
                       {s.boundRecipeId ? (
                         <>Из ваших рецептов · загружен {fmtDateTime(s.pushedAt)}</>
                       ) : s.boundRecipeName ? (
@@ -318,14 +318,14 @@ export function OnboardRecipesPanel({ deviceId, pushableRecipes }: Props) {
                   <button
                     type="button"
                     onClick={() => void toggleSnapshot(s.slot)}
-                    className="shrink-0 rounded-md border border-zinc-200 px-2.5 py-1 text-xs font-medium text-zinc-700 hover:bg-zinc-50"
+                    className="shrink-0 rounded-md border border-border px-2.5 py-1 text-xs font-medium text-muted-foreground hover:bg-accent"
                   >
                     {expanded === s.slot ? "Скрыть" : "Показать"}
                   </button>
                 </div>
 
                 {expanded === s.slot ? (
-                  <div className="mt-3 rounded-lg border border-zinc-100 bg-zinc-50 p-3">
+                  <div className="mt-3 rounded-lg border border-border bg-muted p-3">
                     <SnapshotView state={snapshots[s.slot]} />
                   </div>
                 ) : null}
@@ -333,7 +333,7 @@ export function OnboardRecipesPanel({ deviceId, pushableRecipes }: Props) {
             ))}
           </ul>
         ) : (
-          <p className="mt-4 text-sm text-zinc-500">На пивоварне пока нет загруженных рецептов.</p>
+          <p className="mt-4 text-sm text-muted-foreground">На пивоварне пока нет загруженных рецептов.</p>
         )}
       </section>
     </div>
@@ -344,13 +344,13 @@ export function OnboardRecipesPanel({ deviceId, pushableRecipes }: Props) {
 
 function SnapshotView({ state }: { state: SnapshotState }) {
   if (state === "loading" || state === undefined) {
-    return <p className="text-xs text-zinc-500">Чтение рецепта с платы…</p>;
+    return <p className="text-xs text-muted-foreground">Чтение рецепта с платы…</p>;
   }
   if (state === "error") {
-    return <p role="alert" className="text-xs text-rose-600">Не удалось прочитать рецепт.</p>;
+    return <p role="alert" className="text-xs text-destructive">Не удалось прочитать рецепт.</p>;
   }
   if (state === null) {
-    return <p className="text-xs text-zinc-500">Пусто.</p>;
+    return <p className="text-xs text-muted-foreground">Пусто.</p>;
   }
 
   const recipe = state;
@@ -359,17 +359,17 @@ function SnapshotView({ state }: { state: SnapshotState }) {
     recipe.whirlpool === "hot" ? "горячий" : recipe.whirlpool === "cool" ? "остывший" : "выкл";
 
   return (
-    <div className="space-y-3 text-xs text-zinc-700">
-      <div className="font-medium text-zinc-900">{recipe.name}</div>
+    <div className="space-y-3 text-xs text-foreground">
+      <div className="font-medium text-foreground">{recipe.name}</div>
 
       {recipe.mash.steps.length > 0 ? (
         <div>
-          <div className="font-medium text-zinc-600">Затирание</div>
+          <div className="font-medium text-muted-foreground">Затирание</div>
           <ul className="mt-1 space-y-0.5">
             {recipe.mash.steps.map((step, i) => (
               <li key={i} className="flex justify-between gap-3">
                 <span className="truncate">{step.name || `Пауза ${i + 1}`}</span>
-                <span className="shrink-0 tabular-nums text-zinc-500">
+                <span className="shrink-0 tabular-nums text-muted-foreground">
                   {step.tempC}
                   {unit} · {step.timeMin} мин
                 </span>
@@ -380,14 +380,14 @@ function SnapshotView({ state }: { state: SnapshotState }) {
       ) : null}
 
       <div>
-        <div className="font-medium text-zinc-600">Кипячение</div>
-        <div className="mt-1 text-zinc-500">{recipe.boil.boilTimeMin} мин</div>
+        <div className="font-medium text-muted-foreground">Кипячение</div>
+        <div className="mt-1 text-muted-foreground">{recipe.boil.boilTimeMin} мин</div>
         {recipe.boil.hops.length > 0 ? (
           <ul className="mt-1 space-y-0.5">
             {recipe.boil.hops.map((hop, i) => (
               <li key={i} className="flex justify-between gap-3">
                 <span className="truncate">{hop.name || "Хмель"}</span>
-                <span className="shrink-0 tabular-nums text-zinc-500">
+                <span className="shrink-0 tabular-nums text-muted-foreground">
                   {hop.amountG} г · за {hop.atMinBeforeEnd} мин до конца
                 </span>
               </li>
@@ -398,10 +398,10 @@ function SnapshotView({ state }: { state: SnapshotState }) {
 
       {recipe.hopStand.length > 0 ? (
         <div>
-          <div className="font-medium text-zinc-600">Вирпул</div>
+          <div className="font-medium text-muted-foreground">Вирпул</div>
           <ul className="mt-1 space-y-0.5">
             {recipe.hopStand.map((hs, i) => (
-              <li key={i} className="tabular-nums text-zinc-500">
+              <li key={i} className="tabular-nums text-muted-foreground">
                 {hs.tempC}
                 {unit} · {hs.timeMin} мин
               </li>
@@ -410,7 +410,7 @@ function SnapshotView({ state }: { state: SnapshotState }) {
         </div>
       ) : null}
 
-      <div className="flex flex-wrap gap-x-6 gap-y-1 text-zinc-500">
+      <div className="flex flex-wrap gap-x-6 gap-y-1 text-muted-foreground">
         <span>Вирпул: {whirlpoolLabel}</span>
         <span>
           Охлаждение до: {recipe.cooling.targetC}

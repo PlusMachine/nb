@@ -43,7 +43,7 @@ export const appNavGroups: AppNavItem[][] = [
   ],
   [
     { href: "/catalog", label: "Каталог", icon: Library },
-    { href: "/guides", label: "Гайды", icon: BookOpen },
+    { href: "/articles", label: "Статьи", icon: BookOpen },
     { href: "/bjcp", label: "Стили пива", icon: Sparkles },
     { href: "/calculators", label: "Калькуляторы", icon: Calculator }
   ]
@@ -58,7 +58,7 @@ export const publicLinks: { href: string; label: string }[] = [
   { href: "/recipes", label: "Рецепты" },
   { href: "/bjcp", label: "Стили пива" },
   { href: "/calculators", label: "Калькуляторы" },
-  { href: "/guides", label: "Гайды" },
+  { href: "/articles", label: "Статьи" },
   { href: "/catalog", label: "Каталог" }
 ];
 
@@ -114,9 +114,8 @@ const publicPathPrefixes = [
   "/recipes",
   "/bjcp",
   "/calculators",
-  "/guides",
-  "/catalog",
   "/articles",
+  "/catalog",
   "/brewforge",
   "/legal"
 ];

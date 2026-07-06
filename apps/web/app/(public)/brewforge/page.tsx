@@ -53,26 +53,26 @@ export default function BrewforgePage() {
         {features.map((feature) => {
           const Icon = feature.icon;
           return (
-            <div key={feature.title} className="rounded-[1.25rem] border border-zinc-200 bg-white p-5 shadow-sm">
-              <span className="grid h-9 w-9 place-items-center rounded-[10px] bg-zinc-900 text-white">
+            <div key={feature.title} className="rounded-[1.25rem] border border-border bg-card p-5 shadow-sm">
+              <span className="grid h-9 w-9 place-items-center rounded-[10px] bg-foreground text-background">
                 <Icon className="h-4 w-4" aria-hidden />
               </span>
-              <div className="mt-3 text-[15px] font-semibold text-zinc-950">{feature.title}</div>
-              <p className="mt-1 text-sm leading-relaxed text-zinc-600">{feature.text}</p>
+              <div className="mt-3 text-[15px] font-semibold text-foreground">{feature.title}</div>
+              <p className="mt-1 text-sm leading-relaxed text-muted-foreground">{feature.text}</p>
             </div>
           );
         })}
       </section>
 
-      <section className="rounded-[1.25rem] border border-zinc-200 bg-white p-6 shadow-sm sm:p-8">
-        <p className="max-w-2xl text-[15px] leading-relaxed text-zinc-600">
+      <section className="rounded-[1.25rem] border border-border bg-card p-6 shadow-sm sm:p-8">
+        <p className="max-w-2xl text-[15px] leading-relaxed text-muted-foreground">
           Подробный материал про железо, прошивку и сборку появится на этой странице.
           А пошаговый помощник варки работает уже сейчас — план дня собирается из рецепта,
           таймеры и отметки шагов на экране.
         </p>
         <Link
           href="/login?next=/app/brew-batches"
-          className="mt-6 inline-flex items-center rounded-full bg-zinc-950 px-5 py-3 text-sm font-semibold text-white transition-colors hover:bg-zinc-800"
+          className="mt-6 inline-flex items-center rounded-full bg-foreground px-5 py-3 text-sm font-semibold text-background transition-colors hover:bg-foreground/90"
         >
           Попробовать помощник варки
         </Link>

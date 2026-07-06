@@ -21,9 +21,9 @@ export const contentArticleStatusLabels: Record<ContentArticleStatus, string> = 
 };
 
 export const contentArticleStatusBadgeClass: Record<ContentArticleStatus, string> = {
-  draft: "bg-amber-100 text-amber-800",
-  published: "bg-emerald-100 text-emerald-700",
-  archived: "bg-zinc-100 text-zinc-500"
+  draft: "bg-warning-subtle text-warning-subtle-foreground",
+  published: "bg-success-subtle text-success-subtle-foreground",
+  archived: "bg-muted text-muted-foreground"
 };
 
 // Tiptap ProseMirror-документ (узлы StarterKit + link). Хранится как есть в bodyJson.

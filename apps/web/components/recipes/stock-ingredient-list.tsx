@@ -99,7 +99,7 @@ export function StockIngredientList({
 
   return (
     <div className="space-y-2">
-      {loading ? <div className="text-[11px] text-zinc-500">Загрузка...</div> : null}
+      {loading ? <div className="text-[11px] text-muted-foreground">Загрузка...</div> : null}
       {items.length ? (
         <div className="grid gap-1.5">
           {items.map((item) => {
@@ -119,18 +119,18 @@ export function StockIngredientList({
                 key={`${item.inventoryItemId ?? item.id}:${item.source}`}
                 type="button"
                 onClick={() => onSelect(item)}
-                className="rounded-lg border border-zinc-200 bg-white px-3 py-3 text-left text-xs text-zinc-700 transition-colors hover:border-zinc-300 hover:bg-zinc-50"
+                className="rounded-lg border border-border bg-card px-3 py-3 text-left text-xs text-foreground transition-colors hover:border-border hover:bg-muted"
               >
                 <span className="flex min-w-0 flex-wrap items-center gap-2">
-                  <span className="truncate text-sm font-semibold text-zinc-950">{primaryName}</span>
+                  <span className="truncate text-sm font-semibold text-foreground">{primaryName}</span>
                   {ownershipBadgeLabel ? (
-                    <span className="shrink-0 rounded-full bg-amber-50 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.12em] text-amber-700 ring-1 ring-amber-200">
+                    <span className="shrink-0 rounded-full bg-warning-subtle px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.12em] text-warning-subtle-foreground ring-1 ring-warning/30">
                       {ownershipBadgeLabel}
                     </span>
                   ) : null}
                   {inlineBrand ? (
-                    <span className="inline-flex min-w-0 items-center gap-2 text-sm font-semibold text-zinc-700">
-                      <span aria-hidden="true" className="text-zinc-400">•</span>
+                    <span className="inline-flex min-w-0 items-center gap-2 text-sm font-semibold text-foreground">
+                      <span aria-hidden="true" className="text-muted-foreground">•</span>
                       <span className="truncate">{inlineBrand}</span>
                       {country ? (
                         <CountryFlag
@@ -141,15 +141,15 @@ export function StockIngredientList({
                     </span>
                   ) : null}
                   {inlineKindLabel ? (
-                    <span className="rounded-full bg-white px-2 py-0.5 text-[11px] font-medium text-zinc-600 ring-1 ring-zinc-200">
+                    <span className="rounded-full bg-card px-2 py-0.5 text-[11px] font-medium text-muted-foreground ring-1 ring-border">
                       {inlineKindLabel}
                     </span>
                   ) : null}
                 </span>
-                {secondaryName ? <span className="mt-0.5 block text-xs text-zinc-500">{secondaryName}</span> : null}
-                <span className="mt-2 flex flex-wrap items-center gap-2 text-xs text-zinc-600">
+                {secondaryName ? <span className="mt-0.5 block text-xs text-muted-foreground">{secondaryName}</span> : null}
+                <span className="mt-2 flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
                   {inlineBrand || !brandLabel ? null : (
-                    <span className="inline-flex items-center gap-1.5 rounded-full bg-white px-2 py-1 ring-1 ring-zinc-200">
+                    <span className="inline-flex items-center gap-1.5 rounded-full bg-card px-2 py-1 ring-1 ring-border">
                       <span>{brandLabel}</span>
                       {country ? (
                         <CountryFlag
@@ -160,7 +160,7 @@ export function StockIngredientList({
                     </span>
                   )}
                   {brandLabel || !country ? null : (
-                    <span className="inline-flex items-center rounded-full bg-white px-2 py-1 ring-1 ring-zinc-200">
+                    <span className="inline-flex items-center rounded-full bg-card px-2 py-1 ring-1 ring-border">
                       <CountryFlag
                         countryCode={country.code}
                         className="h-3 w-4 shrink-0 ring-0"
@@ -168,7 +168,7 @@ export function StockIngredientList({
                     </span>
                   )}
                   {showSubtitle ? (
-                    <span className="text-zinc-500">{showSubtitle}</span>
+                    <span className="text-muted-foreground">{showSubtitle}</span>
                   ) : null}
                 </span>
                 <IngredientPickerTechnicalBadges badges={technicalBadges} stockLabel={stockLabel} className="mt-1.5" />

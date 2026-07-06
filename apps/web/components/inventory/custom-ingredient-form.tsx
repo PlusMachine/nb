@@ -251,8 +251,8 @@ function FieldBadge({ required }: { required: boolean }) {
   return (
     <span className={`inline-flex items-center rounded-full px-1.5 py-0.5 text-[9px] font-medium leading-none ${
       required
-        ? "bg-amber-50 text-amber-600 ring-1 ring-amber-100"
-        : "bg-zinc-100 text-zinc-500 ring-1 ring-zinc-200/70"
+        ? "bg-warning-subtle text-warning-subtle-foreground ring-1 ring-warning/30"
+        : "bg-muted text-muted-foreground ring-1 ring-ring/70"
     }`}>
       {required ? "обязательно" : "необязательно"}
     </span>
@@ -594,9 +594,9 @@ export function CustomIngredientForm({
         await onSubmit(payload);
       }}
     >
-      <div className="rounded-xl border border-zinc-200 p-4">
+      <div className="rounded-xl border border-border p-4">
         <div className="mb-3">
-          <h3 className="text-sm font-medium text-zinc-950">Параметры ингредиента</h3>
+          <h3 className="text-sm font-medium text-foreground">Параметры ингредиента</h3>
         </div>
 
         <div className="space-y-3">
@@ -612,7 +612,7 @@ export function CustomIngredientForm({
                 onChange={(e) => setDisplayName(e.target.value)}
                 placeholder={resolveCustomIngredientDisplayNamePlaceholder(placeholderKind)}
               />
-              {fieldErrors?.displayName && <span className="text-xs text-red-600">{fieldErrors.displayName}</span>}
+              {fieldErrors?.displayName && <span className="text-xs text-destructive">{fieldErrors.displayName}</span>}
             </label>
 
             <label className="block text-sm">Бренд
@@ -622,7 +622,7 @@ export function CustomIngredientForm({
                 onChange={(e) => setBrand(e.target.value)}
                 placeholder={resolveCustomIngredientBrandPlaceholder(placeholderKind)}
               />
-              {fieldErrors?.brand && <span className="text-xs text-red-600">{fieldErrors.brand}</span>}
+              {fieldErrors?.brand && <span className="text-xs text-destructive">{fieldErrors.brand}</span>}
             </label>
           </div>
 
@@ -633,7 +633,7 @@ export function CustomIngredientForm({
                   <option key={option} value={option}>{formatIngredientSubtypeLabel(category, option)}</option>
                 ))}
               </select>
-              {fieldErrors?.subtype && <span className="text-xs text-red-600">{fieldErrors.subtype}</span>}
+              {fieldErrors?.subtype && <span className="text-xs text-destructive">{fieldErrors.subtype}</span>}
             </label>
           ) : null}
 
@@ -653,7 +653,7 @@ export function CustomIngredientForm({
                   inputMode="decimal"
                   placeholder="Например: 3.5"
                 />
-                {(localFieldErrors.fermentableColorEbc || fieldErrors?.fermentableColorEbc) && <span className="text-xs text-red-600">{localFieldErrors.fermentableColorEbc ?? fieldErrors?.fermentableColorEbc}</span>}
+                {(localFieldErrors.fermentableColorEbc || fieldErrors?.fermentableColorEbc) && <span className="text-xs text-destructive">{localFieldErrors.fermentableColorEbc ?? fieldErrors?.fermentableColorEbc}</span>}
               </label>
               <label className="text-sm">Экстрактивность, %
                 <input
@@ -670,7 +670,7 @@ export function CustomIngredientForm({
                   inputMode="decimal"
                   placeholder="Например: 81"
                 />
-                {(localFieldErrors.fermentableExtractYieldPct || fieldErrors?.fermentableExtractYieldPct) && <span className="text-xs text-red-600">{localFieldErrors.fermentableExtractYieldPct ?? fieldErrors?.fermentableExtractYieldPct}</span>}
+                {(localFieldErrors.fermentableExtractYieldPct || fieldErrors?.fermentableExtractYieldPct) && <span className="text-xs text-destructive">{localFieldErrors.fermentableExtractYieldPct ?? fieldErrors?.fermentableExtractYieldPct}</span>}
               </label>
               <label className="text-sm">Страна
                 <select
@@ -683,7 +683,7 @@ export function CustomIngredientForm({
                     <option key={option} value={option}>{option}</option>
                   ))}
                 </select>
-                {fieldErrors?.country && <span className="text-xs text-red-600">{fieldErrors.country}</span>}
+                {fieldErrors?.country && <span className="text-xs text-destructive">{fieldErrors.country}</span>}
               </label>
             </div>
           ) : null}
@@ -700,7 +700,7 @@ export function CustomIngredientForm({
                     <option key={option} value={option}>{customHopFormLabels[option]}</option>
                   ))}
                 </select>
-                {fieldErrors?.hopForm && <span className="text-xs text-red-600">{fieldErrors.hopForm}</span>}
+                {fieldErrors?.hopForm && <span className="text-xs text-destructive">{fieldErrors.hopForm}</span>}
               </label>
               <label className="text-sm">Альфа, %
                 <input
@@ -717,7 +717,7 @@ export function CustomIngredientForm({
                   inputMode="decimal"
                   placeholder="Например: 12.5"
                 />
-                {(localFieldErrors.hopAlphaAcidPct || fieldErrors?.hopAlphaAcidPct) && <span className="text-xs text-red-600">{localFieldErrors.hopAlphaAcidPct ?? fieldErrors?.hopAlphaAcidPct}</span>}
+                {(localFieldErrors.hopAlphaAcidPct || fieldErrors?.hopAlphaAcidPct) && <span className="text-xs text-destructive">{localFieldErrors.hopAlphaAcidPct ?? fieldErrors?.hopAlphaAcidPct}</span>}
               </label>
               <label className="text-sm">Урожай
                 <input
@@ -734,7 +734,7 @@ export function CustomIngredientForm({
                   inputMode="numeric"
                   placeholder="Необязательно"
                 />
-                {(localFieldErrors.harvestYear || fieldErrors?.harvestYear) && <span className="text-xs text-red-600">{localFieldErrors.harvestYear ?? fieldErrors?.harvestYear}</span>}
+                {(localFieldErrors.harvestYear || fieldErrors?.harvestYear) && <span className="text-xs text-destructive">{localFieldErrors.harvestYear ?? fieldErrors?.harvestYear}</span>}
               </label>
             </div>
           ) : null}
@@ -747,7 +747,7 @@ export function CustomIngredientForm({
                     <option key={option} value={option}>{customYeastFormLabels[option]}</option>
                   ))}
                 </select>
-                {fieldErrors?.yeastForm && <span className="text-xs text-red-600">{fieldErrors.yeastForm}</span>}
+                {fieldErrors?.yeastForm && <span className="text-xs text-destructive">{fieldErrors.yeastForm}</span>}
               </label>
               <label className="text-sm">Аттенюация, %
                 <input
@@ -764,7 +764,7 @@ export function CustomIngredientForm({
                   inputMode="decimal"
                   placeholder="Например: 78"
                 />
-                {(localFieldErrors.yeastAttenuationPct || fieldErrors?.yeastAttenuationPct) && <span className="text-xs text-red-600">{localFieldErrors.yeastAttenuationPct ?? fieldErrors?.yeastAttenuationPct}</span>}
+                {(localFieldErrors.yeastAttenuationPct || fieldErrors?.yeastAttenuationPct) && <span className="text-xs text-destructive">{localFieldErrors.yeastAttenuationPct ?? fieldErrors?.yeastAttenuationPct}</span>}
               </label>
             </div>
           ) : null}
@@ -786,7 +786,7 @@ export function CustomIngredientForm({
                   inputMode="decimal"
                   placeholder="Например: 80"
                 />
-                {(localFieldErrors.waterTreatmentConcentrationPct || fieldErrors?.waterTreatmentConcentrationPct) && <span className="text-xs text-red-600">{localFieldErrors.waterTreatmentConcentrationPct ?? fieldErrors?.waterTreatmentConcentrationPct}</span>}
+                {(localFieldErrors.waterTreatmentConcentrationPct || fieldErrors?.waterTreatmentConcentrationPct) && <span className="text-xs text-destructive">{localFieldErrors.waterTreatmentConcentrationPct ?? fieldErrors?.waterTreatmentConcentrationPct}</span>}
               </label>
             </div>
           ) : null}
@@ -795,9 +795,9 @@ export function CustomIngredientForm({
 
       {showInventoryFields ? (
         <>
-          <div className="rounded-xl border border-zinc-200 p-4">
+          <div className="rounded-xl border border-border p-4">
             <div className="mb-3">
-              <h3 className="text-sm font-medium text-zinc-950">Количество и единица учета</h3>
+              <h3 className="text-sm font-medium text-foreground">Количество и единица учета</h3>
             </div>
 
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2" data-testid="custom-required-fields">
@@ -819,14 +819,14 @@ export function CustomIngredientForm({
                   inputMode="decimal"
                   placeholder="Например: 5"
                 />
-                {(localFieldErrors.enteredQuantity || fieldErrors?.enteredQuantity) && <span className="text-xs text-red-600">{localFieldErrors.enteredQuantity ?? fieldErrors?.enteredQuantity}</span>}
+                {(localFieldErrors.enteredQuantity || fieldErrors?.enteredQuantity) && <span className="text-xs text-destructive">{localFieldErrors.enteredQuantity ?? fieldErrors?.enteredQuantity}</span>}
               </label>
 
               <label className="text-sm">Ед. изм.
                 <select className="mt-1 w-full rounded-md border px-2 py-2" value={enteredUnit} onChange={(e) => setEnteredUnit(e.target.value as InventoryUnit)}>
                   {unitProfile.allowedUnits.map((unit) => <option key={unit} value={unit}>{inventoryUnitLabels[unit]}</option>)}
                 </select>
-                {fieldErrors?.enteredUnit && <span className="text-xs text-red-600">{fieldErrors.enteredUnit}</span>}
+                {fieldErrors?.enteredUnit && <span className="text-xs text-destructive">{fieldErrors.enteredUnit}</span>}
               </label>
             </div>
           </div>
@@ -850,7 +850,7 @@ export function CustomIngredientForm({
                       />
                       <button
                         type="button"
-                        className="rounded-md border border-zinc-200 px-2 py-2 text-xs text-zinc-600 transition-colors hover:border-zinc-300 hover:bg-zinc-50"
+                        className="rounded-md border border-border px-2 py-2 text-xs text-muted-foreground transition-colors hover:border-border hover:bg-muted"
                         onClick={() => setPurchasedAt("")}
                         aria-label="Очистить дату покупки"
                       >
@@ -901,7 +901,7 @@ export function CustomIngredientForm({
         </>
       ) : null}
 
-      <button type="submit" disabled={pending} className="w-full rounded-md bg-black px-4 py-2 text-sm text-white disabled:opacity-60">
+      <button type="submit" disabled={pending} className="w-full rounded-md bg-foreground px-4 py-2 text-sm text-background disabled:opacity-60">
         {pending ? "Сохранение..." : resolvedSubmitLabel}
       </button>
     </form>

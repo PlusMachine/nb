@@ -1,0 +1,60 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 468" role="img" aria-label="Схема процесса варки: затирание, кипячение, охлаждение, брожение, розлив — и готовое пиво" font-family="'Rubik', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif">
+  <!-- соединительная линия -->
+  <line x1="54" y1="46" x2="54" y2="404" stroke="#E4E4E7" stroke-width="2"/>
+
+  <!-- шаг 1 -->
+  <circle cx="54" cy="46" r="20" fill="#18181B"/>
+  <text x="54" y="52" text-anchor="middle" font-size="16" font-weight="600" fill="#ffffff">1</text>
+  <text x="92" y="41" font-size="18" font-weight="600" fill="#09090B">Затирание</text>
+  <text x="500" y="41" text-anchor="end" font-size="13" font-weight="500" fill="#A1A1AA">≈ 1 час</text>
+  <text x="92" y="63" font-size="13.5" fill="#71717A">солод стоит в горячей воде 66–70 °C и отдаёт сахар</text>
+
+  <!-- шаг 2 -->
+  <circle cx="54" cy="122" r="20" fill="#18181B"/>
+  <text x="54" y="128" text-anchor="middle" font-size="16" font-weight="600" fill="#ffffff">2</text>
+  <text x="92" y="117" font-size="18" font-weight="600" fill="#09090B">Кипячение</text>
+  <text x="500" y="117" text-anchor="end" font-size="13" font-weight="500" fill="#A1A1AA">≈ 1 час</text>
+  <text x="92" y="139" font-size="13.5" fill="#71717A">кипятим сусло и вносим хмель на горечь</text>
+
+  <!-- шаг 3 -->
+  <circle cx="54" cy="198" r="20" fill="#18181B"/>
+  <text x="54" y="204" text-anchor="middle" font-size="16" font-weight="600" fill="#ffffff">3</text>
+  <text x="92" y="193" font-size="18" font-weight="600" fill="#09090B">Охлаждение</text>
+  <text x="500" y="193" text-anchor="end" font-size="13" font-weight="500" fill="#A1A1AA">быстро</text>
+  <text x="92" y="215" font-size="13.5" fill="#71717A">остужаем сусло до 20–24 °C</text>
+
+  <!-- шаг 4 -->
+  <circle cx="54" cy="274" r="20" fill="#18181B"/>
+  <text x="54" y="280" text-anchor="middle" font-size="16" font-weight="600" fill="#ffffff">4</text>
+  <text x="92" y="269" font-size="18" font-weight="600" fill="#09090B">Брожение</text>
+  <text x="500" y="269" text-anchor="end" font-size="13" font-weight="500" fill="#A1A1AA">≈ 1 неделя</text>
+  <text x="92" y="291" font-size="13.5" fill="#71717A">дрожжи съедают сахар под гидрозатвором</text>
+
+  <!-- шаг 5 -->
+  <circle cx="54" cy="350" r="20" fill="#18181B"/>
+  <text x="54" y="356" text-anchor="middle" font-size="16" font-weight="600" fill="#ffffff">5</text>
+  <text x="92" y="345" font-size="18" font-weight="600" fill="#09090B">Розлив</text>
+  <text x="500" y="345" text-anchor="end" font-size="13" font-weight="500" fill="#A1A1AA">неск. дней</text>
+  <text x="92" y="367" font-size="13.5" fill="#71717A">разливаем с сахаром — пиво газируется само</text>
+
+  <!-- финал: кружка готового пива (единственный тёплый акцент) -->
+  <g>
+    <!-- ручка -->
+    <path d="M71 415 h4 a9 9 0 0 1 0 18 h-4" fill="none" stroke="#F59E0B" stroke-width="5" stroke-linecap="round"/>
+    <!-- корпус -->
+    <rect x="37" y="405" width="34" height="38" rx="6" fill="#F59E0B"/>
+    <rect x="42" y="412" width="7" height="25" rx="3.5" fill="#FBBF24"/>
+    <!-- пена -->
+    <g fill="#FFFFFF" stroke="#E4E4E7" stroke-width="1.5">
+      <circle cx="43" cy="406" r="7"/>
+      <circle cx="65" cy="406" r="7"/>
+      <circle cx="54" cy="403" r="8.5"/>
+    </g>
+    <g fill="#FFFFFF">
+      <circle cx="43" cy="406" r="6.3"/>
+      <circle cx="65" cy="406" r="6.3"/>
+      <circle cx="54" cy="403" r="7.8"/>
+    </g>
+  </g>
+  <text x="92" y="431" font-size="18" font-weight="600" fill="#09090B">Готовое пиво</text>
+</svg>

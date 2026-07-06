@@ -42,11 +42,11 @@ export function RecipeCard({
   const authorName = recipe.author.displayName ?? "Автор";
 
   return (
-    <article className="group relative overflow-hidden rounded-2xl border border-zinc-200 bg-white p-4 shadow-sm transition hover:border-zinc-300 hover:shadow-md">
+    <article className="group relative overflow-hidden rounded-2xl border border-border bg-card p-4 shadow-sm transition hover:border-border hover:shadow-md">
       <Link
         href={`/recipes/${recipe.slug}`}
         aria-label={recipe.name}
-        className="absolute inset-0 z-0 rounded-2xl focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-zinc-500"
+        className="absolute inset-0 z-0 rounded-2xl focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring"
       />
 
       <div className="pointer-events-none flex h-full flex-col gap-3">
@@ -74,13 +74,13 @@ export function RecipeCard({
               <RecipeMatchBadge recipeId={recipe.id} />
             </div>
             {/* Название — до 2 строк, чтобы длинные имена не растягивали шапку сверх меры. */}
-            <h2 className="line-clamp-2 text-base font-semibold leading-snug text-zinc-950 group-hover:text-zinc-700">
+            <h2 className="line-clamp-2 text-base font-semibold leading-snug text-foreground group-hover:text-foreground/80">
               {recipe.name}
             </h2>
           </div>
         </div>
 
-        <div className="grid grid-cols-4 gap-2 rounded-xl bg-zinc-50 p-2.5">
+        <div className="grid grid-cols-4 gap-2 rounded-xl bg-muted p-2.5">
           <StatCell label="ABV" value={formatAbvShort(recipe.abv)} />
           <StatCell label="IBU" value={formatIbuShort(recipe.ibu)} />
           <StatCell label="OG" value={formatGravity(recipe.og, preferredGravityUnit)} />
@@ -90,9 +90,9 @@ export function RecipeCard({
         <div className="mt-auto flex min-w-0 items-center justify-between gap-2 pt-1">
           <span className="flex min-w-0 items-center gap-2">
             <AuthorAvatar image={recipe.author.image} displayName={recipe.author.displayName} />
-            <span className="truncate text-xs text-zinc-600">{authorName}</span>
+            <span className="truncate text-xs text-muted-foreground">{authorName}</span>
           </span>
-          <span className="shrink-0 text-xs text-zinc-500">{formatBatchVolume(recipe.batchSizeL)}</span>
+          <span className="shrink-0 text-xs text-muted-foreground">{formatBatchVolume(recipe.batchSizeL)}</span>
         </div>
       </div>
 

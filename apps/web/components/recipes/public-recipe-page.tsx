@@ -25,17 +25,17 @@ const ratingFormatter = new Intl.NumberFormat("ru-RU", {
 
 function RecipeRatingSection({ recipe }: { recipe: RecipeDetailDto }) {
   return (
-    <section className="space-y-4 rounded-2xl border border-zinc-100 bg-white p-4 shadow-sm">
+    <section className="space-y-4 rounded-2xl border border-border bg-card p-4 shadow-sm">
       <div className="flex items-center justify-between gap-3">
-        <h2 className="text-base font-semibold text-zinc-900">Оценки</h2>
+        <h2 className="text-base font-semibold text-foreground">Оценки</h2>
         {recipe.rating ? (
-          <span className="inline-flex items-center gap-1 text-sm font-medium text-amber-600">
+          <span className="inline-flex items-center gap-1 text-sm font-medium text-warning-subtle-foreground">
             <Star className="h-4 w-4 fill-amber-500 text-amber-500" aria-hidden />
             {ratingFormatter.format(recipe.rating.average)}
-            <span className="text-zinc-400">({recipe.rating.count})</span>
+            <span className="text-muted-foreground">({recipe.rating.count})</span>
           </span>
         ) : (
-          <span className="text-sm text-zinc-500">Оценок пока нет</span>
+          <span className="text-sm text-muted-foreground">Оценок пока нет</span>
         )}
       </div>
       {/* Персональное состояние формы тянется клиентом после гидрации → документ кэшируем. */}
@@ -47,7 +47,7 @@ function RecipeRatingSection({ recipe }: { recipe: RecipeDetailDto }) {
 export function PublicRecipePage({ recipe }: { recipe: RecipeDetailDto }) {
   return (
     <main className="space-y-6 pt-6">
-      <Link href="/recipes" className="inline-flex items-center gap-1 text-sm text-zinc-500 transition hover:text-zinc-800">
+      <Link href="/recipes" className="inline-flex items-center gap-1 text-sm text-muted-foreground transition hover:text-foreground">
         <ChevronLeft className="h-4 w-4" aria-hidden /> Рецепты
       </Link>
 

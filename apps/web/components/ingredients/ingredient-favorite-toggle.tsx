@@ -74,7 +74,7 @@ export function IngredientFavoriteToggle({
           onFavoriteChange?.(result.isFavorite);
         });
       }}
-      className={`${buttonClassName} text-zinc-400 transition-colors hover:bg-zinc-100 hover:text-amber-500 disabled:opacity-60 ${className}`.trim()}
+      className={`${buttonClassName} text-muted-foreground transition-colors hover:bg-accent hover:text-amber-500 disabled:opacity-60 ${className}`.trim()}
     >
       <Star
         className={iconClassName}

@@ -11,8 +11,10 @@ export default function manifest(): MetadataRoute.Manifest {
     short_name: "NB",
     start_url: "/app/devices",
     display: "standalone",
-    background_color: "#ffffff",
-    theme_color: "#ffffff",
+    // Манифест статичен (тему на лету не переключить). Основной PWA-сценарий —
+    // киоск у прибора, где уместнее тёмный сплэш; совпадает с dark --background.
+    background_color: "#09090b",
+    theme_color: "#09090b",
     lang: "ru",
     icons: [
       {

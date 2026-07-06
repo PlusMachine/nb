@@ -4,11 +4,147 @@
 @tailwind components;
 @tailwind utilities;
 
+/*
+  Семантические цветовые токены. Компоненты пишут `bg-card`, `text-foreground`,
+  `border-border` и т.п. (маппинг в tailwind.config.ts), а не сырые `bg-white` /
+  `zinc-*`. Значения — HSL-каналы без обёртки, чтобы работал opacity-модификатор
+  Tailwind (`bg-card/50` → `hsl(var(--card) / 0.5)`).
+
+  Тёмная тема — не инверсия: тёмно-нейтральные поверхности, elevation задаётся
+  цветом поверхности (card светлее background), а не тенью; акцент/статусы
+  приглушены. Класс `.dark` ставит на <html> инлайн-скрипт из layout.tsx
+  (по cookie nb_theme / системной теме) ещё до пейнта — вспышки светлого нет.
+
+  Инвертированные «сильные» поверхности (тёмная кнопка по умолчанию, активная
+  пилюля навигации) НЕ имеют отдельного токена — это `bg-foreground
+  text-background`, что само корректно инвертируется в тёмной теме.
+*/
+:root {
+  color-scheme: light;
+
+  --background: 240 8% 96%;
+  --foreground: 240 10% 4%;
+
+  --card: 0 0% 100%;
+  --card-foreground: 240 10% 4%;
+
+  --popover: 0 0% 100%;
+  --popover-foreground: 240 10% 4%;
+
+  --muted: 240 5% 96%;
+  --muted-foreground: 240 4% 46%;
+
+  --accent: 240 5% 96%;
+  --accent-foreground: 240 6% 10%;
+
+  --border: 240 6% 90%;
+  --input: 240 6% 90%;
+  --ring: 240 5% 65%;
+
+  --primary: 161 94% 30%;
+  --primary-foreground: 0 0% 100%;
+
+  --destructive: 0 72% 51%;
+  --destructive-foreground: 0 0% 100%;
+  --destructive-subtle: 0 86% 97%;
+  --destructive-subtle-foreground: 0 74% 42%;
+  --destructive-border: 0 96% 89%;
+
+  --success: 161 94% 30%;
+  --success-foreground: 0 0% 100%;
+  --success-subtle: 152 81% 96%;
+  --success-subtle-foreground: 163 88% 20%;
+
+  --warning: 38 92% 50%;
+  --warning-foreground: 26 91% 14%;
+  --warning-subtle: 48 100% 96%;
+  --warning-subtle-foreground: 26 91% 14%;
+
+  --link: 200 96% 32%;
+
+  /* Рукописные SVG-чарты (телеметрия варки/брожения). */
+  --chart-grid: 240 6% 90%;
+  --chart-label: 240 4% 46%;
+  --chart-zebra: 240 5% 96%;
+  --chart-temp: 175 77% 26%;
+  --chart-setpoint: 32 95% 44%;
+  --chart-heater: 215 20% 65%;
+  --chart-fault: 0 72% 51%;
+  --chart-fault-bg: 0 86% 97%;
+
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+.dark {
+  color-scheme: dark;
+
+  --background: 240 10% 4%;
+  --foreground: 240 6% 96%;
+
+  --card: 240 6% 8%;
+  --card-foreground: 240 6% 96%;
+
+  --popover: 240 6% 11%;
+  --popover-foreground: 240 6% 96%;
+
+  --muted: 240 5% 15%;
+  --muted-foreground: 240 5% 62%;
+
+  --accent: 240 5% 17%;
+  --accent-foreground: 240 6% 96%;
+
+  --border: 240 5% 18%;
+  --input: 240 5% 20%;
+  --ring: 240 5% 45%;
+
+  --primary: 161 94% 33%;
+  --primary-foreground: 0 0% 100%;
+
+  --destructive: 0 72% 51%;
+  --destructive-foreground: 0 0% 100%;
+  --destructive-subtle: 0 60% 13%;
+  --destructive-subtle-foreground: 0 91% 80%;
+  --destructive-border: 0 45% 28%;
+
+  --success: 160 84% 42%;
+  --success-foreground: 0 0% 100%;
+  --success-subtle: 161 60% 12%;
+  --success-subtle-foreground: 152 68% 74%;
+
+  --warning: 38 92% 52%;
+  --warning-foreground: 26 91% 14%;
+  --warning-subtle: 33 55% 14%;
+  --warning-subtle-foreground: 43 96% 76%;
+
+  --link: 199 90% 64%;
+
+  --chart-grid: 240 5% 18%;
+  --chart-label: 240 5% 55%;
+  --chart-zebra: 240 5% 13%;
+  --chart-temp: 172 66% 50%;
+  --chart-setpoint: 38 92% 55%;
+  --chart-heater: 215 20% 55%;
+  --chart-fault: 0 84% 62%;
+  --chart-fault-bg: 0 55% 13%;
+}
+
+body {
+  background: hsl(var(--background));
+  color: hsl(var(--foreground));
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+::selection {
+  background: hsl(var(--primary) / 0.18);
+}
+
 /* Правовые страницы (/legal/*): единая типографика длинных документов, чтобы не
    развешивать классы на каждый элемент. Совпадает по духу с рендером статей
-   (tiptap-content.tsx): zinc-700 текст, крупные полужирные заголовки, списки. */
+   (tiptap-content.tsx): приглушённый текст, крупные полужирные заголовки, списки. */
 .nb-legal {
-  color: #3f3f46;
+  color: hsl(var(--foreground) / 0.85);
 }
 .nb-legal > *:first-child {
   margin-top: 0;
@@ -19,13 +155,13 @@
   font-size: 1.35rem;
   line-height: 1.9rem;
   font-weight: 600;
-  color: #09090b;
+  color: hsl(var(--foreground));
 }
 .nb-legal h3 {
   margin-top: 1.5rem;
   font-size: 1.05rem;
   font-weight: 600;
-  color: #18181b;
+  color: hsl(var(--foreground));
 }
 .nb-legal p {
   margin-top: 0.75rem;
@@ -47,32 +183,16 @@
   line-height: 1.7rem;
 }
 .nb-legal li::marker {
-  color: #a1a1aa;
+  color: hsl(var(--muted-foreground));
 }
 .nb-legal a {
-  color: #0369a1;
+  color: hsl(var(--link));
   text-decoration: underline;
   text-underline-offset: 4px;
 }
 .nb-legal strong {
-  color: #18181b;
+  color: hsl(var(--foreground));
   font-weight: 600;
-}
-
-:root {
-  color-scheme: light;
-  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
-  --ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1);
-}
-
-body {
-  background: #f4f4f6;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
-::selection {
-  background: rgba(59, 130, 246, 0.18);
 }
 
 @layer utilities {

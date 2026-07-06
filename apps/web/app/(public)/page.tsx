@@ -55,21 +55,21 @@ export default async function HomePage() {
   // (мастерская, склад, BrewForge) → инструменты → финальный CTA.
   return (
     <main className="space-y-16 pb-24 pt-8">
-      <section className="overflow-hidden rounded-[2.75rem] border border-white/80 bg-white/90 px-6 py-10 shadow-[0_45px_120px_-70px_rgba(15,23,42,0.45)] backdrop-blur sm:px-8 lg:px-10">
+      <section className="overflow-hidden rounded-[2.75rem] border border-border/80 bg-card/90 px-6 py-10 shadow-[0_45px_120px_-70px_rgba(15,23,42,0.45)] backdrop-blur sm:px-8 lg:px-10">
         <div className="grid items-center gap-8 lg:grid-cols-[1.15fr_1fr] lg:gap-12">
           <div className="space-y-6">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-zinc-500">Домашнее пивоварение</p>
-            <h1 className="max-w-2xl text-balance text-4xl font-semibold leading-[0.98] text-zinc-950 sm:text-5xl lg:text-6xl" style={{ fontFamily: "var(--font-display)" }}>
+            <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-muted-foreground">Домашнее пивоварение</p>
+            <h1 className="max-w-2xl text-balance text-4xl font-semibold leading-[0.98] text-foreground sm:text-5xl lg:text-6xl" style={{ fontFamily: "var(--font-display)" }}>
               Свари своё пиво — от рецепта до розлива
             </h1>
-            <p className="max-w-xl text-pretty text-lg leading-8 text-zinc-600">
+            <p className="max-w-xl text-pretty text-lg leading-8 text-muted-foreground">
               Соберите рецепт — редактор посчитает плотность, горечь и цвет на лету. Сверьте со складом, сварите по шагам и следите за брожением.
             </p>
             <div className="flex flex-wrap gap-3">
-              <Link href="/login?next=/app/recipes/new" className="inline-flex items-center rounded-full bg-zinc-950 px-5 py-3 text-sm font-semibold text-white transition-colors hover:bg-zinc-800">
+              <Link href="/login?next=/app/recipes/new" className="inline-flex items-center rounded-full bg-foreground px-5 py-3 text-sm font-semibold text-background transition-colors hover:bg-foreground/90">
                 Собрать рецепт
               </Link>
-              <Link href="/recipes" className="inline-flex items-center rounded-full border border-zinc-200 bg-white px-5 py-3 text-sm font-semibold text-zinc-800 transition-colors hover:border-zinc-300">
+              <Link href="/recipes" className="inline-flex items-center rounded-full border border-border bg-card px-5 py-3 text-sm font-semibold text-foreground transition-colors hover:border-border">
                 Смотреть рецепты
               </Link>
             </div>
@@ -81,10 +81,10 @@ export default async function HomePage() {
 
       <section className="space-y-5">
         <div className="flex items-end justify-between gap-4">
-          <h2 className="text-3xl font-semibold text-zinc-950" style={{ fontFamily: "var(--font-display)" }}>
+          <h2 className="text-3xl font-semibold text-foreground" style={{ fontFamily: "var(--font-display)" }}>
             Рецепты сообщества
           </h2>
-          <Link href="/recipes" className="text-sm font-semibold text-zinc-950">Все рецепты</Link>
+          <Link href="/recipes" className="text-sm font-semibold text-foreground">Все рецепты</Link>
         </div>
         {recipeFamilies.length ? (
           <div className="flex flex-wrap gap-2">
@@ -92,10 +92,10 @@ export default async function HomePage() {
               <Link
                 key={family.id}
                 href={`/recipes?family=${encodeURIComponent(family.id)}`}
-                className="inline-flex items-center gap-1.5 rounded-full border border-zinc-200 bg-white px-4 py-2 text-sm font-medium text-zinc-700 transition-colors hover:border-zinc-300 hover:bg-zinc-50"
+                className="inline-flex items-center gap-1.5 rounded-full border border-border bg-card px-4 py-2 text-sm font-medium text-foreground transition-colors hover:border-border hover:bg-muted"
               >
                 {family.name}
-                <span className="text-xs tabular-nums text-zinc-400">{family.count}</span>
+                <span className="text-xs tabular-nums text-muted-foreground">{family.count}</span>
               </Link>
             ))}
           </div>
@@ -105,30 +105,30 @@ export default async function HomePage() {
 
       <section className="space-y-5">
         <div className="flex items-end justify-between gap-4">
-          <h2 className="text-3xl font-semibold text-zinc-950" style={{ fontFamily: "var(--font-display)" }}>
+          <h2 className="text-3xl font-semibold text-foreground" style={{ fontFamily: "var(--font-display)" }}>
             Разобраться
           </h2>
-          <Link href="/guides" className="text-sm font-semibold text-zinc-950">Все гайды</Link>
+          <Link href="/articles" className="text-sm font-semibold text-foreground">Все статьи</Link>
         </div>
         {featuredGuides.length ? (
           <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {featuredGuides.map((guide) => (
               <Link
                 key={guide.id}
-                href={`/guides/${guide.slug}`}
-                className="group flex flex-col overflow-hidden rounded-2xl border border-zinc-200 bg-white shadow-sm transition hover:border-zinc-300 hover:shadow-md"
+                href={`/articles/${guide.slug}`}
+                className="group flex flex-col overflow-hidden rounded-2xl border border-border bg-card shadow-sm transition hover:border-border hover:shadow-md"
               >
                 {guide.coverImageUrl ? (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img src={guide.coverImageUrl} alt="" className="h-40 w-full object-cover" />
                 ) : (
-                  <div className="h-40 w-full bg-gradient-to-br from-amber-50 to-zinc-100" aria-hidden />
+                  <div className="h-40 w-full bg-gradient-to-br from-warning-subtle to-muted" aria-hidden />
                 )}
                 <div className="flex flex-1 flex-col gap-2 p-4">
-                  <span className="text-[11px] font-semibold uppercase tracking-wider text-amber-700">{contentArticleTypeLabels[guide.type]}</span>
-                  <h3 className="text-lg font-semibold leading-snug text-zinc-950 group-hover:text-zinc-700">{guide.title}</h3>
-                  {guide.excerpt ? <p className="line-clamp-2 text-sm text-zinc-600">{guide.excerpt}</p> : null}
-                  <span className="mt-auto inline-flex items-center gap-1 pt-2 text-xs text-zinc-400">
+                  <span className="text-[11px] font-semibold uppercase tracking-wider text-warning-subtle-foreground">{contentArticleTypeLabels[guide.type]}</span>
+                  <h3 className="text-lg font-semibold leading-snug text-foreground group-hover:text-foreground">{guide.title}</h3>
+                  {guide.excerpt ? <p className="line-clamp-2 text-sm text-muted-foreground">{guide.excerpt}</p> : null}
+                  <span className="mt-auto inline-flex items-center gap-1 pt-2 text-xs text-muted-foreground">
                     <Clock className="h-3.5 w-3.5" aria-hidden /> {guide.readingMinutes} мин
                   </span>
                 </div>
@@ -139,19 +139,19 @@ export default async function HomePage() {
 
         <Link
           href="/bjcp"
-          className="group block overflow-hidden rounded-[1.25rem] border border-zinc-200 bg-white shadow-sm transition hover:border-zinc-300 hover:shadow-md"
+          className="group block overflow-hidden rounded-[1.25rem] border border-border bg-card shadow-sm transition hover:border-border hover:shadow-md"
         >
           <div className="h-3.5" style={{ background: BJCP_SPECTRUM }} aria-hidden />
           <div className="flex flex-wrap items-center justify-between gap-4 px-5 py-4 sm:px-6">
             <div>
-              <div className="text-[17px] font-semibold text-zinc-950" style={{ fontFamily: "var(--font-display)" }}>
+              <div className="text-[17px] font-semibold text-foreground" style={{ fontFamily: "var(--font-display)" }}>
                 Стили пива — справочник BJCP 2021
               </div>
-              <p className="mt-1 text-sm text-zinc-600">
+              <p className="mt-1 text-sm text-muted-foreground">
                 {bjcpStyleCount} стилей: от чешского пилснера до имперского стаута
               </p>
             </div>
-            <span className="inline-flex items-center rounded-full border border-zinc-200 bg-white px-4 py-2 text-sm font-semibold text-zinc-800 transition-colors group-hover:border-zinc-300">
+            <span className="inline-flex items-center rounded-full border border-border bg-card px-4 py-2 text-sm font-semibold text-foreground transition-colors group-hover:border-border">
               Открыть справочник
             </span>
           </div>
@@ -160,10 +160,10 @@ export default async function HomePage() {
 
       <section className="space-y-5">
         <div className="flex items-end justify-between gap-4">
-          <h2 className="text-3xl font-semibold text-zinc-950" style={{ fontFamily: "var(--font-display)" }}>
+          <h2 className="text-3xl font-semibold text-foreground" style={{ fontFamily: "var(--font-display)" }}>
             Как работает мастерская
           </h2>
-          <Link href="/login?next=/app/recipes/new" className="text-sm font-semibold text-zinc-950">Начать</Link>
+          <Link href="/login?next=/app/recipes/new" className="text-sm font-semibold text-foreground">Начать</Link>
         </div>
         <HomeLoop />
       </section>
@@ -177,25 +177,25 @@ export default async function HomePage() {
       <section className="grid gap-4 sm:grid-cols-2">
         <Link
           href="/login?next=/app/recipes/new"
-          className="group flex flex-col gap-2 rounded-[1.25rem] border border-zinc-200 bg-white p-6 transition hover:-translate-y-0.5 hover:border-zinc-300 hover:shadow-md"
+          className="group flex flex-col gap-2 rounded-[1.25rem] border border-border bg-card p-6 transition hover:-translate-y-0.5 hover:border-border hover:shadow-md"
         >
-          <span className="flex items-center gap-2 text-xl font-semibold text-zinc-950" style={{ fontFamily: "var(--font-display)" }}>
+          <span className="flex items-center gap-2 text-xl font-semibold text-foreground" style={{ fontFamily: "var(--font-display)" }}>
             Начать с рецепта
-            <ArrowRight className="ml-auto h-5 w-5 text-zinc-300 transition group-hover:translate-x-1 group-hover:text-zinc-600" aria-hidden />
+            <ArrowRight className="ml-auto h-5 w-5 text-muted-foreground transition group-hover:translate-x-1 group-hover:text-muted-foreground" aria-hidden />
           </span>
-          <span className="max-w-[44ch] text-sm text-zinc-600">
+          <span className="max-w-[44ch] text-sm text-muted-foreground">
             Соберите засыпь и охмеление — редактор посчитает OG, IBU и цвет на лету
           </span>
         </Link>
         <Link
           href="/login?next=/app/ingredients"
-          className="group flex flex-col gap-2 rounded-[1.25rem] border border-zinc-200 bg-white p-6 transition hover:-translate-y-0.5 hover:border-zinc-300 hover:shadow-md"
+          className="group flex flex-col gap-2 rounded-[1.25rem] border border-border bg-card p-6 transition hover:-translate-y-0.5 hover:border-border hover:shadow-md"
         >
-          <span className="flex items-center gap-2 text-xl font-semibold text-zinc-950" style={{ fontFamily: "var(--font-display)" }}>
+          <span className="flex items-center gap-2 text-xl font-semibold text-foreground" style={{ fontFamily: "var(--font-display)" }}>
             Начать со склада
-            <ArrowRight className="ml-auto h-5 w-5 text-zinc-300 transition group-hover:translate-x-1 group-hover:text-zinc-600" aria-hidden />
+            <ArrowRight className="ml-auto h-5 w-5 text-muted-foreground transition group-hover:translate-x-1 group-hover:text-muted-foreground" aria-hidden />
           </span>
-          <span className="max-w-[44ch] text-sm text-zinc-600">
+          <span className="max-w-[44ch] text-sm text-muted-foreground">
             Занесите запасы — сайт покажет, какие рецепты можно сварить уже сегодня
           </span>
         </Link>

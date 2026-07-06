@@ -32,7 +32,7 @@ export function Sheet({ open, onOpenChange, title, side = "bottom", children }: 
         <RadixDialog.Content
           aria-describedby={undefined}
           className={cn(
-            "fixed z-[101] flex flex-col overflow-y-auto border-zinc-200 bg-white shadow-2xl focus:outline-none",
+            "fixed z-[101] flex flex-col overflow-y-auto border-border bg-popover text-popover-foreground shadow-2xl focus:outline-none",
             side === "bottom"
               ? "animate-modal-sheet inset-x-0 bottom-0 max-h-[92vh] w-full rounded-t-2xl border-t"
               : side === "right"
@@ -43,13 +43,13 @@ export function Sheet({ open, onOpenChange, title, side = "bottom", children }: 
                 : "animate-modal-sheet-left inset-y-0 left-0 h-full w-72 max-w-[85%] border-r"
           )}
         >
-          <div className="sticky top-0 z-10 flex items-center justify-between gap-3 border-b border-zinc-100 bg-white/95 px-5 py-4 backdrop-blur-sm">
-            <RadixDialog.Title className="text-base font-semibold text-zinc-900">{title}</RadixDialog.Title>
+          <div className="sticky top-0 z-10 flex items-center justify-between gap-3 border-b border-border bg-popover/95 px-5 py-4 backdrop-blur-sm">
+            <RadixDialog.Title className="text-base font-semibold text-foreground">{title}</RadixDialog.Title>
             <RadixDialog.Close asChild>
               <button
                 type="button"
                 aria-label="Закрыть"
-                className="flex h-8 w-8 items-center justify-center rounded-lg text-zinc-400 transition-colors hover:bg-zinc-100 hover:text-zinc-600"
+                className="flex h-8 w-8 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
               >
                 <X className="h-4 w-4" />
               </button>

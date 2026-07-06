@@ -8,7 +8,7 @@ import Placeholder from "@tiptap/extension-placeholder";
 
 import type { TiptapDoc } from "@/features/content-articles/contracts";
 
-const buttonClassName = "rounded-full border border-zinc-200 bg-white px-3 py-1.5 text-sm font-medium text-zinc-700 transition hover:border-zinc-300 hover:bg-zinc-50";
+const buttonClassName = "rounded-full border border-border bg-card px-3 py-1.5 text-sm font-medium text-foreground transition hover:border-border hover:bg-muted";
 
 const emptyDoc: TiptapDoc = { type: "doc", content: [{ type: "paragraph" }] };
 
@@ -27,14 +27,14 @@ export function ContentBodyEditor({
       StarterKit.configure({ heading: { levels: [2, 3, 4] } }),
       Link.configure({
         openOnClick: false,
-        HTMLAttributes: { rel: "noopener noreferrer nofollow", class: "text-sky-700 underline underline-offset-4" }
+        HTMLAttributes: { rel: "noopener noreferrer nofollow", class: "text-link underline underline-offset-4" }
       }),
       Placeholder.configure({ placeholder: "Напишите гайд или обзор…" })
     ],
     content: initialDoc ?? emptyDoc,
     editorProps: {
       attributes: {
-        class: "min-h-[20rem] rounded-2xl border border-zinc-200 bg-white px-5 py-4 text-[1rem] leading-8 text-zinc-800 focus:outline-none"
+        class: "min-h-[20rem] rounded-2xl border border-border bg-card px-5 py-4 text-[1rem] leading-8 text-foreground focus:outline-none"
       }
     },
     immediatelyRender: false,
@@ -53,7 +53,7 @@ export function ContentBodyEditor({
   }, [editor]);
 
   if (!editor) {
-    return <div className="min-h-[20rem] rounded-2xl border border-zinc-200 bg-zinc-50" aria-hidden />;
+    return <div className="min-h-[20rem] rounded-2xl border border-border bg-muted" aria-hidden />;
   }
 
   return (

@@ -51,6 +51,11 @@ type NumericInputProps = Omit<
   onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
   /** Целое значение — inputMode="numeric" и без разделителя дробной части. */
   integer?: boolean;
+  /**
+   * Явно разрешить/запретить ведущий минус, в обход автоопределения по `min`.
+   * Не передан — поведение как раньше: минус разрешён только когда min < 0.
+   */
+  allowNegative?: boolean;
 };
 
 /**
@@ -58,13 +63,13 @@ type NumericInputProps = Omit<
  * значение в стейте хранится строкой (как и раньше). Фильтрует ввод посимвольно
  * и нормализует разделитель дробной части на blur через `parseDecimalInput`.
  * min/max/step по-прежнему можно передавать — минус разрешается автоматически,
- * если min < 0.
+ * если min < 0, если явно не передан allowNegative.
  */
 export const NumericInput = React.forwardRef<HTMLInputElement, NumericInputProps>(function NumericInput(
-  { value, onChange, onBlur, integer = false, min, ...rest },
+  { value, onChange, onBlur, integer = false, min, allowNegative: allowNegativeProp, ...rest },
   ref
 ) {
-  const allowNegative = typeof min === "number" && min < 0;
+  const allowNegative = allowNegativeProp ?? (typeof min === "number" && min < 0);
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const filtered = filterNumericInputText(event.target.value, { integer, allowNegative });

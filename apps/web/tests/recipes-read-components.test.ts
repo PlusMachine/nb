@@ -149,6 +149,9 @@ describe("recipes read components", () => {
     expect(html).not.toContain("Ручной FG");
     expect(html).toContain("ABV");
     expect(html).toContain("IBU");
+    // Вторая (дублирующая) единица рядом с OG/FG — при основной Plato это SG.
+    expect(html).toContain("1.061 SG");
+    expect(html).toContain("1.012 SG");
   });
 
   it("shows only the compact default FG label for fallback estimates", () => {

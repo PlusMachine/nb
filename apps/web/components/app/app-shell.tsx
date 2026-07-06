@@ -14,6 +14,7 @@ import {
   RecipesPageSkeleton
 } from "@/components/app/section-skeletons";
 import { isNavItemActive, primaryNavItems, resolveContentWidthClass, type AppChromeUser } from "@/lib/navigation";
+import { ThemeToggle } from "@/components/theme/theme-toggle";
 
 import { AppSidebarNav } from "./app-sidebar-nav";
 
@@ -193,10 +194,10 @@ export function AppShell({ children, user }: AppShellProps) {
 
   return (
     <div className="[--chrome-top:3.5rem] lg:flex lg:[--chrome-top:0px]">
-      <aside className="sticky top-0 hidden h-screen w-60 shrink-0 flex-col border-r border-zinc-200 bg-white/80 px-3 py-4 backdrop-blur lg:flex">
+      <aside className="sticky top-0 hidden h-screen w-60 shrink-0 flex-col border-r border-border bg-background/80 px-3 py-4 backdrop-blur lg:flex">
         <Link
           href="/app"
-          className="mb-4 block px-3 text-lg font-semibold tracking-[0.2em] text-zinc-950"
+          className="mb-4 block px-3 text-lg font-semibold tracking-[0.2em] text-foreground"
           style={{ fontFamily: "var(--font-display)" }}
         >
           NB
@@ -204,22 +205,25 @@ export function AppShell({ children, user }: AppShellProps) {
         <AppSidebarNav user={user} />
       </aside>
 
-      <header className="sticky top-0 z-40 flex h-14 items-center justify-between border-b border-zinc-200 bg-white/90 px-4 backdrop-blur lg:hidden">
+      <header className="sticky top-0 z-40 flex h-14 items-center justify-between border-b border-border bg-background/90 px-4 backdrop-blur lg:hidden">
         <Link
           href="/app"
-          className="text-lg font-semibold tracking-[0.2em] text-zinc-950"
+          className="text-lg font-semibold tracking-[0.2em] text-foreground"
           style={{ fontFamily: "var(--font-display)" }}
         >
           NB
         </Link>
-        <button
-          type="button"
-          onClick={() => setDrawerOpen(true)}
-          aria-label="Открыть меню"
-          className="rounded-lg p-2 text-zinc-700 transition-colors hover:bg-zinc-100"
-        >
-          <Menu className="h-5 w-5" />
-        </button>
+        <div className="flex items-center gap-1">
+          <ThemeToggle />
+          <button
+            type="button"
+            onClick={() => setDrawerOpen(true)}
+            aria-label="Открыть меню"
+            className="rounded-lg p-2 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+          >
+            <Menu className="h-5 w-5" />
+          </button>
+        </div>
       </header>
 
       {/* Portal Sheet — lg:hidden не сработает на портированном контенте, поэтому
@@ -233,7 +237,7 @@ export function AppShell({ children, user }: AppShellProps) {
           <Link
             href="/app"
             onClick={() => setDrawerOpen(false)}
-            className="text-lg font-semibold tracking-[0.2em] text-zinc-950"
+            className="text-lg font-semibold tracking-[0.2em] text-foreground"
             style={{ fontFamily: "var(--font-display)" }}
           >
             NB
@@ -246,11 +250,11 @@ export function AppShell({ children, user }: AppShellProps) {
       <main className="min-w-0 flex-1">
         {showProgress ? (
           <>
-            <div className="fixed inset-x-0 top-0 z-[200] h-1 bg-zinc-200" aria-hidden="true">
-              <div className="h-full w-1/3 animate-route-progress bg-zinc-950" />
+            <div className="fixed inset-x-0 top-0 z-[200] h-1 bg-border" aria-hidden="true">
+              <div className="h-full w-1/3 animate-route-progress bg-foreground" />
             </div>
             <div
-              className="fixed right-4 top-4 z-[201] inline-flex items-center gap-2 rounded-full border border-zinc-200 bg-white px-3 py-2 text-xs font-medium text-zinc-700 shadow-lg"
+              className="fixed right-4 top-4 z-[201] inline-flex items-center gap-2 rounded-full border border-border bg-popover px-3 py-2 text-xs font-medium text-muted-foreground shadow-lg"
               role="status"
               aria-live="polite"
             >
@@ -265,7 +269,7 @@ export function AppShell({ children, user }: AppShellProps) {
       </main>
 
       <nav
-        className="fixed inset-x-0 bottom-0 z-40 flex h-14 border-t border-zinc-200 bg-white/95 backdrop-blur lg:hidden"
+        className="fixed inset-x-0 bottom-0 z-40 flex h-14 border-t border-border bg-background/95 backdrop-blur lg:hidden"
         aria-label="Быстрая навигация"
       >
         {primaryNavItems.map((item) => {
@@ -277,7 +281,7 @@ export function AppShell({ children, user }: AppShellProps) {
               href={item.href}
               aria-current={active ? "page" : undefined}
               className={`flex flex-1 flex-col items-center justify-center gap-0.5 text-[11px] font-medium transition-colors ${
-                active ? "text-zinc-950" : "text-zinc-500"
+                active ? "text-foreground" : "text-muted-foreground"
               }`}
             >
               <Icon className="h-5 w-5" />
@@ -288,7 +292,7 @@ export function AppShell({ children, user }: AppShellProps) {
         <button
           type="button"
           onClick={() => setDrawerOpen(true)}
-          className="flex flex-1 flex-col items-center justify-center gap-0.5 text-[11px] font-medium text-zinc-500"
+          className="flex flex-1 flex-col items-center justify-center gap-0.5 text-[11px] font-medium text-muted-foreground"
         >
           <Menu className="h-5 w-5" />
           Ещё

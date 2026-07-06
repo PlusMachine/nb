@@ -62,7 +62,7 @@ export function RecipesToolbar({
     <div className="space-y-1.5">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
         <div className="relative flex-1">
-          <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-400" aria-hidden />
+          <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" aria-hidden />
           <label htmlFor="recipes-search" className="sr-only">
             Поиск рецептов
           </label>
@@ -81,7 +81,7 @@ export function RecipesToolbar({
           aria-label="Сортировка"
             value={sort}
             onChange={(event) => navigate({ sort: event.target.value })}
-            className="h-10 rounded-lg border border-zinc-200 bg-white px-3 text-sm text-zinc-900 focus:outline-none focus:ring-2 focus:ring-zinc-400"
+            className="h-10 rounded-lg border border-border bg-card px-3 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
           >
             {sortOptions.map((option) => (
               <option key={option.value} value={option.value}>
@@ -90,14 +90,14 @@ export function RecipesToolbar({
             ))}
         </select>
 
-        <div className="flex items-center gap-1 rounded-lg border border-zinc-200 bg-white p-1" role="group" aria-label="Вид списка">
+        <div className="flex items-center gap-1 rounded-lg border border-border bg-card p-1" role="group" aria-label="Вид списка">
           <button
             type="button"
             aria-label="Сеткой"
             aria-pressed={view !== "list"}
             onClick={() => selectView("grid")}
             className={`inline-flex h-8 w-8 items-center justify-center rounded-md transition ${
-              view !== "list" ? "bg-zinc-950 text-white" : "text-zinc-500 hover:bg-zinc-100"
+              view !== "list" ? "bg-foreground text-background" : "text-muted-foreground hover:bg-accent"
             }`}
           >
             <LayoutGrid className="h-4 w-4" />
@@ -108,7 +108,7 @@ export function RecipesToolbar({
             aria-pressed={view === "list"}
             onClick={() => selectView("list")}
             className={`inline-flex h-8 w-8 items-center justify-center rounded-md transition ${
-              view === "list" ? "bg-zinc-950 text-white" : "text-zinc-500 hover:bg-zinc-100"
+              view === "list" ? "bg-foreground text-background" : "text-muted-foreground hover:bg-accent"
             }`}
           >
             <List className="h-4 w-4" />
@@ -117,7 +117,7 @@ export function RecipesToolbar({
       </div>
 
       {/* Постоянная строка фиксированной высоты — индикатор не двигает раскладку. */}
-      <p className="h-4 text-xs text-zinc-400" aria-live="polite">
+      <p className="h-4 text-xs text-muted-foreground" aria-live="polite">
         {isPending || isSearchPending ? "Обновляем…" : ""}
       </p>
     </div>

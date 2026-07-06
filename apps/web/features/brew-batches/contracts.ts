@@ -130,11 +130,11 @@ export const activeBrewBatchStatuses: BrewBatchStatus[] = ["planned", "brewing",
 
 // Единый цвет статус-бейджа варки (список варок + дашборд), чтобы не расходился.
 export const brewBatchStatusBadgeClass: Record<BrewBatchStatus, string> = {
-  planned: "bg-slate-100 text-slate-700",
-  brewing: "bg-amber-100 text-amber-800",
-  fermenting: "bg-violet-100 text-violet-800",
-  completed: "bg-emerald-100 text-emerald-700",
-  cancelled: "bg-zinc-100 text-zinc-500"
+  planned: "bg-muted text-muted-foreground",
+  brewing: "bg-warning-subtle text-warning-subtle-foreground",
+  fermenting: "bg-violet-100 text-violet-800 dark:bg-violet-500/20 dark:text-violet-300",
+  completed: "bg-success-subtle text-success-subtle-foreground",
+  cancelled: "bg-muted text-muted-foreground"
 };
 
 // Активная варка для дашборда: слим-проекция списка + агрегаты журнала замеров

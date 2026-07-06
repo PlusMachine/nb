@@ -45,17 +45,17 @@ const OVERLAY_BANNER: Record<
 > = {
   idle: {
     label: { brew: "Ожидание запуска варки", distill: "Ожидание запуска перегона" },
-    cls: "bg-zinc-100 text-zinc-600",
+    cls: "bg-muted text-muted-foreground",
     Icon: Clock,
   },
   delayed_start: {
     label: { brew: "Отложенный старт", distill: "Отложенный старт" },
-    cls: "bg-zinc-100 text-zinc-600",
+    cls: "bg-muted text-muted-foreground",
     Icon: Clock,
   },
   paused: {
     label: { brew: "Пауза — варка приостановлена", distill: "Пауза — перегон приостановлен" },
-    cls: "bg-amber-100 text-amber-800",
+    cls: "bg-warning-subtle text-warning-subtle-foreground",
     Icon: Pause,
   },
   manual: {
@@ -63,12 +63,12 @@ const OVERLAY_BANNER: Record<
       brew: "Ручной режим — прямое управление контуром",
       distill: "Ручной режим — прямое управление контуром",
     },
-    cls: "bg-indigo-100 text-indigo-800",
+    cls: "bg-indigo-100 text-indigo-800 dark:bg-indigo-500/20 dark:text-indigo-300",
     Icon: Hand,
   },
   fault: {
     label: { brew: "Авария — варка остановлена интерлоком", distill: "Авария — перегон остановлен интерлоком" },
-    cls: "bg-red-100 text-red-800",
+    cls: "bg-destructive-subtle text-destructive-subtle-foreground",
     Icon: OctagonX,
   },
 };
@@ -97,13 +97,13 @@ export function StageTimeline({ telemetry, hasDevice }: Props) {
   const selectedSegment = selected ? timeline.segments.find((s) => s.macro === selected) ?? null : null;
 
   return (
-    <section className="rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm">
+    <section className="rounded-2xl border border-border bg-card p-5 shadow-sm">
       <div className="flex flex-wrap items-center justify-between gap-2">
-        <h2 className="text-sm font-semibold text-zinc-900">{SECTION_TITLE[appMode]}</h2>
+        <h2 className="text-sm font-semibold text-foreground">{SECTION_TITLE[appMode]}</h2>
         <div className="flex items-center gap-2 text-sm">
-          <span className="font-semibold text-zinc-900">{timeline.currentLabel || "—"}</span>
+          <span className="font-semibold text-foreground">{timeline.currentLabel || "—"}</span>
           {timeline.substepLabel ? (
-            <span className="rounded-md bg-zinc-100 px-2 py-0.5 text-xs font-medium text-zinc-600">
+            <span className="rounded-md bg-muted px-2 py-0.5 text-xs font-medium text-muted-foreground">
               {timeline.substepLabel}
             </span>
           ) : null}
@@ -132,8 +132,8 @@ export function StageTimeline({ telemetry, hasDevice }: Props) {
 
       {/* Раскрытая подсказка по выбранному сегменту (интерактивность). */}
       {selectedSegment ? (
-        <p className="mt-3 rounded-lg bg-zinc-50 px-3 py-2 text-xs text-zinc-600">
-          <span className="font-semibold text-zinc-800">{selectedSegment.label}</span>
+        <p className="mt-3 rounded-lg bg-muted px-3 py-2 text-xs text-muted-foreground">
+          <span className="font-semibold text-foreground">{selectedSegment.label}</span>
           {" — "}
           {STATE_LABEL[selectedSegment.state]}. {MACRO_STAGE_MEMBERS[selectedSegment.macro]}.
         </p>
@@ -161,21 +161,21 @@ function SegmentBar({
       type="button"
       onClick={onSelect}
       aria-pressed={active}
-      className={`group flex w-full flex-col gap-1 rounded-lg px-1 py-1 text-left transition focus:outline-none focus-visible:ring-2 focus-visible:ring-zinc-400 ${
-        active ? "bg-zinc-50" : ""
+      className={`group flex w-full flex-col gap-1 rounded-lg px-1 py-1 text-left transition focus:outline-none focus-visible:ring-2 focus-visible:ring-ring ${
+        active ? "bg-muted" : ""
       }`}
     >
       <span
         className={`truncate text-[11px] font-medium ${
-          isCurrent ? "text-zinc-900" : isDone ? "text-zinc-600" : "text-zinc-400"
+          isCurrent ? "text-foreground" : isDone ? "text-muted-foreground" : "text-muted-foreground"
         }`}
       >
         {segment.label}
       </span>
-      <span className="relative h-2 overflow-hidden rounded-full bg-zinc-200">
+      <span className="relative h-2 overflow-hidden rounded-full bg-border">
         <span
           className={`absolute inset-y-0 left-0 rounded-full transition-[width] ${
-            isCurrent ? "bg-teal-500" : "bg-zinc-800"
+            isCurrent ? "bg-teal-500" : "bg-foreground"
           }`}
           style={{ width: `${fillPct}%` }}
         />

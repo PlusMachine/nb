@@ -136,7 +136,7 @@ export function InventoryConsumeControl({ item, onAction, defaultMode = "consume
 
   const segmentClassName = (active: boolean) => (
     `flex-1 rounded-lg px-3 py-1.5 text-xs font-medium transition-colors ${
-      active ? "bg-white text-zinc-900 shadow-sm" : "text-zinc-500 hover:text-zinc-700"
+      active ? "bg-card text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"
     }`
   );
 
@@ -150,8 +150,8 @@ export function InventoryConsumeControl({ item, onAction, defaultMode = "consume
       hideTitle
       size="md"
     >
-      <div className="flex items-center justify-between border-b border-zinc-100 px-5 py-4">
-        <h2 className="text-base font-semibold text-zinc-900">
+      <div className="flex items-center justify-between border-b border-border px-5 py-4">
+        <h2 className="text-base font-semibold text-foreground">
           {isConsume ? "Сколько использовали?" : "Сколько докупили?"}
         </h2>
         <DialogCloseButton />
@@ -164,7 +164,7 @@ export function InventoryConsumeControl({ item, onAction, defaultMode = "consume
           submit();
         }}
       >
-        <div className="flex gap-1 rounded-xl bg-zinc-100 p-1">
+        <div className="flex gap-1 rounded-xl bg-muted p-1">
           <button type="button" onClick={() => switchDirection("consume")} className={segmentClassName(isConsume)}>
             − Списал
           </button>
@@ -173,8 +173,8 @@ export function InventoryConsumeControl({ item, onAction, defaultMode = "consume
           </button>
         </div>
 
-        <p className="text-sm text-zinc-500">
-          <span className="font-medium text-zinc-900">{primaryName}</span>
+        <p className="text-sm text-muted-foreground">
+          <span className="font-medium text-foreground">{primaryName}</span>
           {" · осталось "}
           <span className="tabular-nums">{remainingLabel}</span>
         </p>
@@ -185,7 +185,7 @@ export function InventoryConsumeControl({ item, onAction, defaultMode = "consume
               <button
                 type="button"
                 onClick={usePack}
-                className="rounded-full border border-zinc-200 bg-white px-3 py-1.5 text-xs font-medium text-zinc-600 transition-colors hover:border-zinc-300 hover:bg-zinc-50"
+                className="rounded-full border border-border bg-card px-3 py-1.5 text-xs font-medium text-muted-foreground transition-colors hover:border-border hover:bg-muted"
               >
                 1 пачка
               </button>
@@ -197,7 +197,7 @@ export function InventoryConsumeControl({ item, onAction, defaultMode = "consume
                     key={fraction.value}
                     type="button"
                     onClick={() => fillFraction(fraction.value)}
-                    className="rounded-full border border-zinc-200 bg-white px-3 py-1.5 text-xs font-medium text-zinc-600 transition-colors hover:border-zinc-300 hover:bg-zinc-50"
+                    className="rounded-full border border-border bg-card px-3 py-1.5 text-xs font-medium text-muted-foreground transition-colors hover:border-border hover:bg-muted"
                   >
                     {fraction.label}
                   </button>
@@ -205,7 +205,7 @@ export function InventoryConsumeControl({ item, onAction, defaultMode = "consume
                 <button
                   type="button"
                   onClick={() => fillFraction(1)}
-                  className="rounded-full border border-zinc-200 bg-white px-3 py-1.5 text-xs font-medium text-zinc-600 transition-colors hover:border-zinc-300 hover:bg-zinc-50"
+                  className="rounded-full border border-border bg-card px-3 py-1.5 text-xs font-medium text-muted-foreground transition-colors hover:border-border hover:bg-muted"
                 >
                   Всё
                 </button>
@@ -225,7 +225,7 @@ export function InventoryConsumeControl({ item, onAction, defaultMode = "consume
               setAmount(event.target.value);
               setFeedback(null);
             }}
-            className="w-full rounded-xl border border-zinc-200 bg-white px-3.5 py-2.5 text-sm tabular-nums transition-colors focus:border-zinc-400 focus:outline-none focus:ring-2 focus:ring-zinc-200"
+            className="w-full rounded-xl border border-border bg-card px-3.5 py-2.5 text-sm tabular-nums transition-colors focus:border-ring focus:outline-none focus:ring-2 focus:ring-ring"
             inputMode="decimal"
             aria-label={isConsume ? "Количество использованного" : "Количество докупленного"}
             placeholder="0"
@@ -236,7 +236,7 @@ export function InventoryConsumeControl({ item, onAction, defaultMode = "consume
               setUnit(event.target.value as InventoryUnit);
               setFeedback(null);
             }}
-            className="rounded-xl border border-zinc-200 bg-white py-2.5 pl-3 pr-8 text-sm transition-colors focus:border-zinc-400 focus:outline-none focus:ring-2 focus:ring-zinc-200"
+            className="rounded-xl border border-border bg-card py-2.5 pl-3 pr-8 text-sm transition-colors focus:border-ring focus:outline-none focus:ring-2 focus:ring-ring"
             aria-label="Единица измерения"
           >
             {context.allowedUnits.map((option) => <option key={option} value={option}>{getUnitLabel(option)}</option>)}
@@ -244,16 +244,16 @@ export function InventoryConsumeControl({ item, onAction, defaultMode = "consume
         </div>
 
         {hasInput && state.error ? (
-          <p role="alert" className="text-xs text-red-600">{state.error}</p>
+          <p role="alert" className="text-xs text-destructive">{state.error}</p>
         ) : previewValue ? (
-          <p className="text-sm text-zinc-500">
+          <p className="text-sm text-muted-foreground">
             {isConsume ? "Останется: " : "Станет: "}
-            <span className="font-semibold tabular-nums text-zinc-900">{previewValue}</span>
-            {state.willEmpty ? <span className="ml-1 text-rose-500">(закончится)</span> : null}
+            <span className="font-semibold tabular-nums text-foreground">{previewValue}</span>
+            {state.willEmpty ? <span className="ml-1 text-destructive">(закончится)</span> : null}
           </p>
         ) : null}
 
-        {feedback ? <p role="alert" className="text-xs text-red-600">{feedback}</p> : null}
+        {feedback ? <p role="alert" className="text-xs text-destructive">{feedback}</p> : null}
 
         <div className="flex gap-2 pt-1">
           <Button type="submit" size="md" className="flex-1" disabled={!canSubmit}>
@@ -273,7 +273,7 @@ export function InventoryConsumeControl({ item, onAction, defaultMode = "consume
         <button
           type="button"
           onClick={openSheet}
-          className="rounded-lg border border-zinc-200 bg-white px-3 py-1.5 text-xs font-medium text-zinc-600 transition-colors hover:border-zinc-300 hover:bg-zinc-50"
+          className="rounded-lg border border-border bg-card px-3 py-1.5 text-xs font-medium text-muted-foreground transition-colors hover:border-border hover:bg-muted"
         >
           {defaultMode === "restock" ? "Пополнить" : "Списать"}
         </button>

@@ -23,9 +23,9 @@ const revalidateAll = (articleId?: string, slug?: string) => {
   if (articleId) {
     revalidatePath(`/admin/articles/${articleId}/edit`);
   }
-  revalidatePath("/guides");
+  revalidatePath("/articles");
   if (slug) {
-    revalidatePath(`/guides/${slug}`);
+    revalidatePath(`/articles/${slug}`);
   }
   revalidatePath("/");
 };

@@ -9,7 +9,7 @@ export const SelectScaffold = () => (
       <ChevronDown className="h-4 w-4" />
     </Select.Trigger>
     <Select.Portal>
-      <Select.Content className="rounded-md border bg-white p-1 shadow-lg">
+      <Select.Content className="rounded-md border border-border bg-popover text-popover-foreground p-1 shadow-lg">
         <Select.Viewport>
           <Select.Item className="cursor-pointer rounded px-2 py-1 text-sm" value="light"><Select.ItemText>Light Ale</Select.ItemText></Select.Item>
           <Select.Item className="cursor-pointer rounded px-2 py-1 text-sm" value="ipa"><Select.ItemText>IPA</Select.ItemText></Select.Item>

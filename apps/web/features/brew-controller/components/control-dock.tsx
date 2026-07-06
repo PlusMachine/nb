@@ -52,10 +52,10 @@ export function ControlDock({
   otherSessionHolds,
 }: Props) {
   return (
-    <div className="rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm">
+    <div className="rounded-2xl border border-border bg-card p-5 shadow-sm">
       <div className="flex items-center justify-between">
-        <p className="text-sm font-semibold text-zinc-900">Управление</p>
-        <span className="text-xs text-zinc-400">совещательное · решает устройство</span>
+        <p className="text-sm font-semibold text-foreground">Управление</p>
+        <span className="text-xs text-muted-foreground">совещательное · решает устройство</span>
       </div>
 
       {/* TransportBar: рутина в один тап (conditional visibility по стадии). */}
@@ -73,7 +73,7 @@ export function ControlDock({
       </div>
 
       {/* Аварийный останов — всегда доступен (fail-safe), hold-to-confirm. */}
-      <div className="mt-4 flex flex-wrap items-center gap-3 border-t border-zinc-100 pt-4">
+      <div className="mt-4 flex flex-wrap items-center gap-3 border-t border-border pt-4">
         <HoldToConfirmButton
           label="Аварийный останов"
           holdingLabel="Держите для E-STOP…"
@@ -81,20 +81,20 @@ export function ControlDock({
           onConfirm={onEstop}
           icon={<OctagonX className="h-4 w-4" aria-hidden />}
         />
-        <span className="text-xs text-zinc-500">
+        <span className="text-xs text-muted-foreground">
           Программная кнопка ≠ аппаратный E-stop. Реальная защита — интерлоки и watchdog на плате.
         </span>
       </div>
 
-      {actionMsg ? <p className="mt-3 text-sm text-zinc-600">{actionMsg}</p> : null}
-      {transportError ? <p role="alert" className="mt-1 text-sm text-red-600">Телеметрия: {transportError}</p> : null}
+      {actionMsg ? <p className="mt-3 text-sm text-muted-foreground">{actionMsg}</p> : null}
+      {transportError ? <p role="alert" className="mt-1 text-sm text-destructive">Телеметрия: {transportError}</p> : null}
       {noFreshTelemetry ? (
-        <p className="mt-1 text-sm text-amber-700">
+        <p className="mt-1 text-sm text-warning-subtle-foreground">
           Нет свежей телеметрии — рутинное управление заблокировано до восстановления связи.
         </p>
       ) : null}
       {otherSessionHolds ? (
-        <p className="mt-1 text-sm text-amber-700">
+        <p className="mt-1 text-sm text-warning-subtle-foreground">
           Управляет другой сеанс — запросите перехват, чтобы взять контроль.
         </p>
       ) : null}

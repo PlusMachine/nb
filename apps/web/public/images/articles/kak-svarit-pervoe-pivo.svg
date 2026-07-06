@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" preserveAspectRatio="xMidYMid slice" role="img" aria-label="">
+  <!-- Обложка гайда «Как сварить своё первое пиво»: светлое золотистое пиво
+       (палитра SRM 3–9 из features/recipes/beer-color.ts) с пузырьками. -->
+  <defs>
+    <linearGradient id="beer" x1="0" y1="0" x2="0.85" y2="1">
+      <stop offset="0" stop-color="#FFD878"/>
+      <stop offset="0.5" stop-color="#FFBF42"/>
+      <stop offset="1" stop-color="#F8A600"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="0.28" cy="0.2" r="0.9">
+      <stop offset="0" stop-color="#FFF6CC" stop-opacity="0.85"/>
+      <stop offset="0.55" stop-color="#FFF6CC" stop-opacity="0.25"/>
+      <stop offset="1" stop-color="#FFF6CC" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="depth" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0.55" stop-color="#B45D00" stop-opacity="0"/>
+      <stop offset="1" stop-color="#B45D00" stop-opacity="0.28"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="1200" height="630" fill="url(#beer)"/>
+  <rect width="1200" height="630" fill="url(#glow)"/>
+  <rect width="1200" height="630" fill="url(#depth)"/>
+
+  <!-- Пузырьки: две неплотные дорожки, поднимающиеся справа -->
+  <g fill="#FFFFFF">
+    <circle cx="930" cy="560" r="7" opacity="0.16"/>
+    <circle cx="952" cy="470" r="9" opacity="0.20"/>
+    <circle cx="925" cy="380" r="11" opacity="0.24"/>
+    <circle cx="955" cy="285" r="13" opacity="0.28"/>
+    <circle cx="928" cy="185" r="15" opacity="0.32"/>
+    <circle cx="958" cy="85" r="17" opacity="0.36"/>
+
+    <circle cx="1075" cy="590" r="5" opacity="0.14"/>
+    <circle cx="1095" cy="505" r="7" opacity="0.18"/>
+    <circle cx="1072" cy="415" r="8" opacity="0.20"/>
+    <circle cx="1098" cy="320" r="10" opacity="0.24"/>
+    <circle cx="1074" cy="220" r="12" opacity="0.28"/>
+    <circle cx="1100" cy="115" r="14" opacity="0.32"/>
+
+    <circle cx="810" cy="520" r="4" opacity="0.12"/>
+    <circle cx="795" cy="420" r="6" opacity="0.15"/>
+    <circle cx="815" cy="310" r="7" opacity="0.18"/>
+    <circle cx="798" cy="195" r="9" opacity="0.22"/>
+  </g>
+</svg>

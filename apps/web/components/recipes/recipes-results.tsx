@@ -68,7 +68,7 @@ export async function RecipesResults({
 
   return (
     <div id="recipes-top" className="scroll-mt-4 space-y-6">
-      <p className="text-sm text-zinc-500" aria-live="polite">
+      <p className="text-sm text-muted-foreground" aria-live="polite">
         {resultsCountLabel(total)}
       </p>
 

@@ -187,6 +187,13 @@ export interface DeviceTransport {
   listLogs?(): Promise<DeviceLogFileMeta[]>;
   /** P3: скачать конкретный файл журнала (.jsonl) целиком; null, если файла нет (404). */
   readLog?(name: string): Promise<string | null>;
+  /**
+   * F3 (OTA, docs/brewforge-firmware-releases.md §5.4): запустить обновление
+   * прошивки с url. LAN — существующий POST /ota; облако — {"cmd":"ota","url"} в
+   * .../cmd. Fire-and-forget: гейты (IDLE-only, подпись, rollback) — на устройстве,
+   * прогресс прилетает в .../log. ОПЦИОНАЛЬНО — демо-транспорт OTA не реализует.
+   */
+  startOta?(url: string): Promise<void>;
 }
 
 const buildHeaders = (token?: string): Record<string, string> => {
@@ -351,6 +358,21 @@ export function lanTransport(baseUrl: string, token?: string): DeviceTransport {
       const res = await fetch(url, { method: "GET", headers });
       if (!res.ok) return null; // 404 = файла нет (мог быть вытеснен ретеншном между list/read)
       return res.text();
+    },
+
+    async startOta(otaUrl) {
+      // Существующий эндпоинт прошивки: POST /ota {"url": …} (LAN-only триггер,
+      // спека §5.4). Тело ответа не эхоим (см. putRecipe) — только статус.
+      const url = `${base}/ota`;
+      assertEgressUrlAllowed(url);
+      const res = await fetch(url, {
+        method: "POST",
+        headers: { ...headers, "content-type": "application/json" },
+        body: JSON.stringify({ url: otaUrl }),
+      });
+      if (!res.ok) {
+        throw new Error(`lanTransport.startOta: HTTP ${res.status}`);
+      }
     },
   };
 }

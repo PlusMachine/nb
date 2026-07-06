@@ -95,6 +95,9 @@ export type ListLogsInput = { userId: string; deviceId: string };
 /** P3: скачать конкретный файл журнала (.jsonl) целиком (GET /log?name=, LAN-only). */
 export type ReadLogInput = { userId: string; deviceId: string; name: string };
 
+/** F3 (OTA): запустить обновление прошивки с url (LAN POST /ota / облако {"cmd":"ota"}). */
+export type StartOtaInput = { userId: string; deviceId: string; url: string };
+
 // --- Сигнатуры методов ------------------------------------------------------
 
 export type PushRecipeFn = (input: PushRecipeInput) => Promise<PushRecipeResult>;
@@ -112,6 +115,8 @@ export type PushRecipeToDeviceFn = (
 export type ListLogsFn = (input: ListLogsInput) => Promise<DeviceLogFileMeta[]>;
 /** null — файла нет на устройстве (404) ИЛИ он был вытеснен ретеншном между list/read. */
 export type ReadLogFn = (input: ReadLogInput) => Promise<string | null>;
+/** F3: fire-and-forget — гейты (IDLE-only, подпись) на устройстве, прогресс в .../log. */
+export type StartOtaFn = (input: StartOtaInput) => Promise<void>;
 
 /**
  * Базовый провайдер контроллера. Все методы ОПЦИОНАЛЬНЫ: фактическую поддержку
@@ -133,6 +138,8 @@ export type BrewControllerProvider = BrewControllerProviderDescriptor & {
   /** P3, LAN-only (офлайн-журнал варки, bf_log.c) — облачный/демо-транспорт его не отдаёт. */
   listLogs?: ListLogsFn;
   readLog?: ReadLogFn;
+  /** F3 (OTA) — демо-транспорт не поддерживает. */
+  startOta?: StartOtaFn;
 };
 
 /**
@@ -154,4 +161,6 @@ export interface BrewforgeProvider extends BrewControllerProviderDescriptor {
   /** P3: LAN-only (облачный/демо-транспорт не поддерживает — см. transport.ts DeviceTransport). */
   listLogs?: ListLogsFn;
   readLog?: ReadLogFn;
+  /** F3 (OTA): LAN POST /ota либо облачная {"cmd":"ota"} — демо не поддерживает. */
+  startOta?: StartOtaFn;
 }

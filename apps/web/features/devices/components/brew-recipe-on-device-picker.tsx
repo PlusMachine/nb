@@ -144,8 +144,8 @@ export function BrewRecipeOnDevicePicker({ open, onOpenChange, deviceId, deviceN
     >
       <DialogHeader>
         <div>
-          <h2 className="text-base font-semibold text-zinc-950">Сварить рецепт</h2>
-          <p className="mt-1 text-sm leading-6 text-zinc-600">
+          <h2 className="text-base font-semibold text-foreground">Сварить рецепт</h2>
+          <p className="mt-1 text-sm leading-6 text-muted-foreground">
             {screen === "pick" ? "Выберите рецепт для этой пивоварни." : "Подтвердите запуск нагрева."}
           </p>
         </div>
@@ -154,14 +154,14 @@ export function BrewRecipeOnDevicePicker({ open, onOpenChange, deviceId, deviceN
 
       {screen === "pick" ? (
         <div className="p-5">
-          <div className="flex gap-1 border-b border-zinc-200">
+          <div className="flex gap-1 border-b border-border">
             {tabs.map((t) => (
               <button
                 key={t.id}
                 type="button"
                 onClick={() => setTab(t.id)}
                 className={`-mb-px border-b-2 px-3 py-2 text-sm font-medium transition ${
-                  tab === t.id ? "border-zinc-900 text-zinc-900" : "border-transparent text-zinc-500 hover:text-zinc-800"
+                  tab === t.id ? "border-foreground text-foreground" : "border-transparent text-muted-foreground hover:text-foreground"
                 }`}
               >
                 {t.label}
@@ -172,7 +172,7 @@ export function BrewRecipeOnDevicePicker({ open, onOpenChange, deviceId, deviceN
           <div className="mt-3">
             {tab === "mine" ? (
               pushableRecipes.length === 0 ? (
-                <p className="py-4 text-sm text-zinc-500">
+                <p className="py-4 text-sm text-muted-foreground">
                   У вас пока нет рецептов. Создайте рецепт, чтобы сварить его на этой пивоварне.
                 </p>
               ) : (
@@ -184,16 +184,16 @@ export function BrewRecipeOnDevicePicker({ open, onOpenChange, deviceId, deviceN
                         onClick={() => setSelected({ id: recipe.id, title: recipe.title })}
                         className={`w-full rounded-lg border px-3 py-2.5 text-left text-sm transition ${
                           selected?.id === recipe.id
-                            ? "border-zinc-900 bg-zinc-50"
-                            : "border-zinc-200 bg-white hover:bg-zinc-50"
+                            ? "border-foreground bg-muted"
+                            : "border-border bg-card hover:bg-muted"
                         }`}
                       >
-                        <span className="block font-medium text-zinc-900">
+                        <span className="block font-medium text-foreground">
                           {recipe.title}
                           {recipe.versionNumber > 1 ? ` · v${recipe.versionNumber}` : ""}
                         </span>
                         {recipe.abv != null ? (
-                          <span className="text-xs text-zinc-500">{recipe.abv.toFixed(1)}% ABV</span>
+                          <span className="text-xs text-muted-foreground">{recipe.abv.toFixed(1)}% ABV</span>
                         ) : null}
                       </button>
                     </li>
@@ -203,24 +203,24 @@ export function BrewRecipeOnDevicePicker({ open, onOpenChange, deviceId, deviceN
             ) : (
               <div className="space-y-3">
                 <div className="relative">
-                  <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-400" />
+                  <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                   <input
                     value={query}
                     onChange={(event) => setQuery(event.target.value)}
                     placeholder="Название рецепта…"
                     autoComplete="off"
-                    className="w-full rounded-lg border border-zinc-200 bg-white py-2 pl-9 pr-3 text-sm text-zinc-900"
+                    className="w-full rounded-lg border border-border bg-card py-2 pl-9 pr-3 text-sm text-foreground"
                   />
                 </div>
                 {searching ? (
-                  <div className="flex items-center gap-2 py-2 text-sm text-zinc-500">
+                  <div className="flex items-center gap-2 py-2 text-sm text-muted-foreground">
                     <Loader2 className="h-4 w-4 animate-spin" />
                     Ищем…
                   </div>
                 ) : searchError ? (
-                  <p role="alert" className="text-sm text-rose-600">{searchError}</p>
+                  <p role="alert" className="text-sm text-destructive">{searchError}</p>
                 ) : query.trim() && searchResults.length === 0 ? (
-                  <p className="py-2 text-sm text-zinc-500">Ничего не нашлось.</p>
+                  <p className="py-2 text-sm text-muted-foreground">Ничего не нашлось.</p>
                 ) : (
                   <ul className="max-h-72 space-y-2 overflow-y-auto">
                     {searchResults.map((recipe) => (
@@ -230,12 +230,12 @@ export function BrewRecipeOnDevicePicker({ open, onOpenChange, deviceId, deviceN
                           onClick={() => setSelected({ id: recipe.id, title: recipe.title })}
                           className={`w-full rounded-lg border px-3 py-2.5 text-left text-sm transition ${
                             selected?.id === recipe.id
-                              ? "border-zinc-900 bg-zinc-50"
-                              : "border-zinc-200 bg-white hover:bg-zinc-50"
+                              ? "border-foreground bg-muted"
+                              : "border-border bg-card hover:bg-muted"
                           }`}
                         >
-                          <span className="block font-medium text-zinc-900">{recipe.title}</span>
-                          <span className="text-xs text-zinc-500">
+                          <span className="block font-medium text-foreground">{recipe.title}</span>
+                          <span className="text-xs text-muted-foreground">
                             {recipe.authorName ?? "Автор неизвестен"}
                             {recipe.abv != null ? ` · ${recipe.abv.toFixed(1)}% ABV` : ""}
                           </span>
@@ -254,11 +254,11 @@ export function BrewRecipeOnDevicePicker({ open, onOpenChange, deviceId, deviceN
             <RemoteDisabledNotice message={remoteDisabled.message} brewBatchId={remoteDisabled.brewBatchId} />
           ) : (
             <>
-              <div className="flex items-start gap-3 rounded-lg border border-amber-200 bg-amber-50 px-3 py-3 text-sm text-amber-950">
-                <ShieldAlert className="mt-0.5 h-5 w-5 shrink-0 text-amber-600" />
+              <div className="flex items-start gap-3 rounded-lg border border-warning/30 bg-warning-subtle px-3 py-3 text-sm text-warning-subtle-foreground">
+                <ShieldAlert className="mt-0.5 h-5 w-5 shrink-0 text-warning-subtle-foreground" />
                 <div>
                   <p className="font-semibold">Запуск включит нагрев</p>
-                  <p className="mt-1 text-xs leading-5 text-amber-900">
+                  <p className="mt-1 text-xs leading-5 text-warning-subtle-foreground">
                     Пивоварня «{deviceName ?? "—"}» начнёт нагрев ТЭНов по рецепту «{selected?.title ?? "—"}».
                     Убедитесь, что в ёмкости есть вода, а оборудование под присмотром.
                   </p>
@@ -266,7 +266,7 @@ export function BrewRecipeOnDevicePicker({ open, onOpenChange, deviceId, deviceN
               </div>
               {error ? (
                 <div
-                  className="flex items-start gap-2 rounded-lg border border-rose-200 bg-rose-50 px-3 py-3 text-sm text-rose-900"
+                  className="flex items-start gap-2 rounded-lg border border-destructive-border bg-destructive-subtle px-3 py-3 text-sm text-destructive-subtle-foreground"
                   role="alert"
                 >
                   <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" />

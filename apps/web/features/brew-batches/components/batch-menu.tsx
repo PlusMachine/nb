@@ -79,7 +79,7 @@ export function BatchMenu({ brewBatchId, status }: { brewBatchId: string; status
           <button
             type="button"
             aria-label="Действия с варкой"
-            className="inline-flex h-9 w-9 items-center justify-center rounded-md text-zinc-500 transition hover:bg-zinc-100 hover:text-zinc-800"
+            className="inline-flex h-9 w-9 items-center justify-center rounded-md text-muted-foreground transition hover:bg-accent hover:text-foreground"
           >
             <MoreHorizontal className="h-5 w-5" aria-hidden />
           </button>
@@ -94,7 +94,7 @@ export function BatchMenu({ brewBatchId, status }: { brewBatchId: string; status
         size="md"
       >
         <div className="space-y-3 p-5">
-          <p className="text-sm text-zinc-600">Обычно этап двигают кнопки на странице. Здесь можно выставить его вручную — например, чтобы исправить ошибку.</p>
+          <p className="text-sm text-muted-foreground">Обычно этап двигают кнопки на странице. Здесь можно выставить его вручную — например, чтобы исправить ошибку.</p>
           <div className="grid grid-cols-2 gap-2">
             {MANUAL_STATUSES.map((option) => {
               const isCurrent = option === status;
@@ -106,8 +106,8 @@ export function BatchMenu({ brewBatchId, status }: { brewBatchId: string; status
                   onClick={async () => { if (await apply(option)) { setStatusDialogOpen(false); } }}
                   className={`inline-flex items-center justify-between gap-2 rounded-lg border px-3 py-2 text-sm font-medium transition disabled:opacity-60 ${
                     isCurrent
-                      ? "border-zinc-900 bg-zinc-900 text-white"
-                      : "border-zinc-200 bg-white text-zinc-700 hover:bg-zinc-50"
+                      ? "border-foreground bg-foreground text-background"
+                      : "border-border bg-card text-foreground hover:bg-muted"
                   }`}
                 >
                   {brewBatchStatusLabels[option]}
@@ -116,7 +116,7 @@ export function BatchMenu({ brewBatchId, status }: { brewBatchId: string; status
               );
             })}
           </div>
-          {error ? <p role="alert" className="text-xs text-rose-600">{error}</p> : null}
+          {error ? <p role="alert" className="text-xs text-destructive">{error}</p> : null}
         </div>
         <DialogFooter>
           <Button type="button" variant="outline" onClick={() => { if (!busy) { setStatusDialogOpen(false); setError(null); } }} disabled={busy}>

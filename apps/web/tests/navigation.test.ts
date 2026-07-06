@@ -29,7 +29,7 @@ describe("isPublicPath", () => {
     "/catalog/hops",
     "/bjcp/1a",
     "/legal/terms",
-    "/guides",
+    "/articles",
     "/calculators"
   ])("%s — публичный путь", (pathname) => {
     expect(isPublicPath(pathname)).toBe(true);
@@ -48,7 +48,7 @@ describe("resolveContentWidthClass", () => {
     expect(resolveContentWidthClass("/recipes")).toBe("max-w-7xl 2xl:max-w-[1600px]");
   });
 
-  it.each(["/bjcp/1a", "/catalog", "/guides", "/calculators", "/login", "/"])(
+  it.each(["/bjcp/1a", "/catalog", "/articles", "/calculators", "/login", "/"])(
     "%s — витринная ширина 7xl (одинаково в обеих зонах)",
     (pathname) => {
       expect(resolveContentWidthClass(pathname)).toBe("max-w-7xl");

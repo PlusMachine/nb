@@ -58,38 +58,38 @@ export function FermentProfileCard({ progress, skipDisabled, onSkipToNext, savin
   };
 
   return (
-    <section className="rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm">
-      <p className="text-sm font-semibold text-zinc-900">Профиль брожения</p>
+    <section className="rounded-2xl border border-border bg-card p-5 shadow-sm">
+      <p className="text-sm font-semibold text-foreground">Профиль брожения</p>
 
       <ol className="mt-3 space-y-1.5">
         {progress.steps.map((step) => (
           <li
             key={step.index}
             className={`flex flex-wrap items-center justify-between gap-x-4 gap-y-1 rounded-lg px-3 py-2 text-sm ${
-              step.state === "current" ? "bg-emerald-50" : ""
+              step.state === "current" ? "bg-success-subtle" : ""
             }`}
           >
             <span className="flex items-center gap-2 min-w-0">
               {step.state === "done" ? (
-                <Check className="h-4 w-4 shrink-0 text-emerald-600" aria-hidden />
+                <Check className="h-4 w-4 shrink-0 text-success" aria-hidden />
               ) : (
                 <Circle
                   className={`h-3.5 w-3.5 shrink-0 ${
-                    step.state === "current" ? "fill-emerald-500 text-emerald-500" : "text-zinc-300"
+                    step.state === "current" ? "fill-success text-success" : "text-muted-foreground"
                   }`}
                   aria-hidden
                 />
               )}
-              <span className={`truncate ${step.state === "future" ? "text-zinc-400" : "font-medium text-zinc-900"}`}>
+              <span className={`truncate ${step.state === "future" ? "text-muted-foreground" : "font-medium text-foreground"}`}>
                 {step.label}
               </span>
               {step.state === "current" ? (
-                <span className="shrink-0 rounded-md bg-emerald-100 px-1.5 py-0.5 text-[11px] font-medium text-emerald-800">
+                <span className="shrink-0 rounded-md bg-success-subtle px-1.5 py-0.5 text-[11px] font-medium text-success-subtle-foreground">
                   идёт
                 </span>
               ) : null}
             </span>
-            <span className="shrink-0 tabular-nums text-zinc-600">
+            <span className="shrink-0 tabular-nums text-muted-foreground">
               {step.tempC.toFixed(1)}° · {formatStepDurationDays(step.hours)}
             </span>
           </li>
@@ -97,10 +97,10 @@ export function FermentProfileCard({ progress, skipDisabled, onSkipToNext, savin
       </ol>
 
       {current ? (
-        <div className="mt-4 flex flex-wrap items-center gap-3 border-t border-zinc-100 pt-4">
+        <div className="mt-4 flex flex-wrap items-center gap-3 border-t border-border pt-4">
           {editing ? (
             <>
-              <label className="flex items-center gap-2 text-sm text-zinc-600">
+              <label className="flex items-center gap-2 text-sm text-muted-foreground">
                 Уставка
                 <NumericInput
                   value={draft}
@@ -109,9 +109,9 @@ export function FermentProfileCard({ progress, skipDisabled, onSkipToNext, savin
                   max={40}
                   autoFocus
                   aria-label="Уставка текущей ступени, °C"
-                  className="h-9 w-20 rounded-md border border-zinc-200 px-2 text-sm tabular-nums focus:border-zinc-400 focus:outline-none focus:ring-2 focus:ring-zinc-200"
+                  className="h-9 w-20 rounded-md border border-border px-2 text-sm tabular-nums focus:border-ring focus:outline-none focus:ring-2 focus:ring-ring"
                 />
-                <span className="text-zinc-400">°C</span>
+                <span className="text-muted-foreground">°C</span>
               </label>
               <Button size="sm" onClick={() => void commit()} disabled={savingSetpoint}>
                 {savingSetpoint ? "Сохранение…" : "Сохранить"}
@@ -122,9 +122,9 @@ export function FermentProfileCard({ progress, skipDisabled, onSkipToNext, savin
             </>
           ) : (
             <>
-              <span className="text-sm text-zinc-600">
+              <span className="text-sm text-muted-foreground">
                 Уставка сейчас:{" "}
-                <span className="font-medium tabular-nums text-zinc-900">{current.tempC.toFixed(1)} °C</span>
+                <span className="font-medium tabular-nums text-foreground">{current.tempC.toFixed(1)} °C</span>
               </span>
               <Button size="sm" variant="outline" onClick={startEdit}>
                 Изменить уставку
@@ -142,7 +142,7 @@ export function FermentProfileCard({ progress, skipDisabled, onSkipToNext, savin
       ) : null}
 
       {error ? (
-        <p role="alert" className="mt-2 text-sm text-red-600">
+        <p role="alert" className="mt-2 text-sm text-destructive">
           {error}
         </p>
       ) : null}

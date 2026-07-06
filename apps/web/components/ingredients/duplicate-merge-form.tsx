@@ -28,18 +28,18 @@ export const DuplicateMergeForm = ({ initialSource = null, initialTarget = null 
   const isInvalidSelection = source.length === 0 || target.length === 0 || source === target;
 
   return (
-    <section className="space-y-4 rounded-3xl border border-zinc-200 bg-white p-5 shadow-sm">
+    <section className="space-y-4 rounded-3xl border border-border bg-card p-5 shadow-sm">
       <div className="space-y-1">
-        <h1 className="text-2xl font-semibold text-zinc-950">Объединение дубликатов</h1>
-        <p className="text-sm text-zinc-500">
-          Исходный ингредиент будет переведён в статус <strong className="font-medium text-zinc-700">merged</strong>,
+        <h1 className="text-2xl font-semibold text-foreground">Объединение дубликатов</h1>
+        <p className="text-sm text-muted-foreground">
+          Исходный ингредиент будет переведён в статус <strong className="font-medium text-foreground">merged</strong>,
           а все ссылки на него должны указывать на выбранный target.
         </p>
       </div>
 
       <div>
-        <p className="mb-1 text-sm font-medium text-zinc-700">Source ingredient</p>
-        <p className="mb-2 text-xs text-zinc-500">Эта карточка будет помечена как merged.</p>
+        <p className="mb-1 text-sm font-medium text-foreground">Source ingredient</p>
+        <p className="mb-2 text-xs text-muted-foreground">Эта карточка будет помечена как merged.</p>
         <IngredientPicker
           includeCustom={false}
           value={sourceLabel}
@@ -54,8 +54,8 @@ export const DuplicateMergeForm = ({ initialSource = null, initialTarget = null 
       </div>
 
       <div>
-        <p className="mb-1 text-sm font-medium text-zinc-700">Target ingredient</p>
-        <p className="mb-2 text-xs text-zinc-500">Останется в каталоге как основная карточка.</p>
+        <p className="mb-1 text-sm font-medium text-foreground">Target ingredient</p>
+        <p className="mb-2 text-xs text-muted-foreground">Останется в каталоге как основная карточка.</p>
         <IngredientPicker
           includeCustom={false}
           value={targetLabel}
@@ -70,17 +70,17 @@ export const DuplicateMergeForm = ({ initialSource = null, initialTarget = null 
       </div>
 
       <textarea
-        className="h-28 w-full rounded-xl border border-zinc-200 p-3 text-sm"
+        className="h-28 w-full rounded-xl border border-border p-3 text-sm"
         placeholder="Комментарий для истории merge"
         value={note}
         onChange={(e) => setNote(e.target.value)}
       />
 
       {source && target && source === target ? (
-        <p role="alert" className="text-sm text-rose-600">Source и target не могут быть одной и той же карточкой.</p>
+        <p role="alert" className="text-sm text-destructive">Source и target не могут быть одной и той же карточкой.</p>
       ) : null}
 
-      {error ? <p role="alert" className="text-sm text-rose-600">{error}</p> : null}
+      {error ? <p role="alert" className="text-sm text-destructive">{error}</p> : null}
 
       <Button
         size="md"

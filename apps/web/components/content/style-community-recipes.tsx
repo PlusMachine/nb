@@ -42,15 +42,15 @@ export function StyleCommunityRecipes({
     <section id="style-recipes" className="scroll-mt-24 space-y-5">
       <div className="flex flex-col items-start gap-2 sm:flex-row sm:items-end sm:justify-between sm:gap-4">
         <div>
-          <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-zinc-500">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-muted-foreground">
             Сообщество
           </p>
-          <h2 className="mt-2 text-3xl font-semibold text-zinc-950" style={{ fontFamily: "var(--font-display)" }}>
+          <h2 className="mt-2 text-3xl font-semibold text-foreground" style={{ fontFamily: "var(--font-display)" }}>
             Рецепты в стиле «{styleTitle}»
           </h2>
         </div>
         {status === "ready" ? (
-          <Link href={allHref} className="sm:shrink-0 text-sm font-semibold text-zinc-950 hover:text-zinc-700">
+          <Link href={allHref} className="sm:shrink-0 text-sm font-semibold text-foreground hover:text-muted-foreground">
             Все рецепты стиля <span aria-hidden="true">→</span>
           </Link>
         ) : null}
@@ -61,13 +61,13 @@ export function StyleCommunityRecipes({
       {status === "ready" ? <RecipesGrid recipes={items} view="grid" /> : null}
 
       {status === "empty" ? (
-        <div className="flex flex-col items-start gap-4 rounded-[2rem] border border-dashed border-zinc-300 bg-white p-8 shadow-[0_26px_80px_-62px_rgba(15,23,42,0.4)]">
-          <h3 className="text-2xl font-semibold text-zinc-950" style={{ fontFamily: "var(--font-display)" }}>
+        <div className="flex flex-col items-start gap-4 rounded-[2rem] border border-dashed border-border bg-card p-8 shadow-[0_26px_80px_-62px_rgba(15,23,42,0.4)]">
+          <h3 className="text-2xl font-semibold text-foreground" style={{ fontFamily: "var(--font-display)" }}>
             В этом стиле пока нет рецептов сообщества
           </h3>
           <Link
             href={createHref}
-            className="inline-flex items-center gap-2 rounded-full bg-zinc-950 px-5 py-3 text-sm font-semibold text-white transition hover:bg-zinc-800"
+            className="inline-flex items-center gap-2 rounded-full bg-foreground px-5 py-3 text-sm font-semibold text-background transition hover:bg-foreground/90"
           >
             Создать рецепт <span aria-hidden="true">→</span>
           </Link>

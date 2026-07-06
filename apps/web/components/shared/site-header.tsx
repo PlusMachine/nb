@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import { Menu, X } from "lucide-react";
 
 import { publicLinks } from "@/lib/navigation";
+import { ThemeToggle } from "@/components/theme/theme-toggle";
 
 const isActivePath = (pathname: string, href: string) => (
   pathname === href || pathname.startsWith(`${href}/`)
@@ -45,7 +46,7 @@ export function SiteHeader() {
   }, [mobileOpen]);
 
   return (
-    <header className="sticky top-0 z-40 border-b border-zinc-200/70 bg-white/80 backdrop-blur">
+    <header className="sticky top-0 z-40 border-b border-border/70 bg-background/80 backdrop-blur">
       <div
         ref={containerRef}
         className="relative mx-auto flex h-14 max-w-7xl items-center justify-between gap-x-6 px-6"
@@ -53,7 +54,7 @@ export function SiteHeader() {
         <div className="flex items-center gap-x-6">
           <Link
             href="/"
-            className="text-lg font-semibold tracking-[0.2em] text-zinc-950"
+            className="text-lg font-semibold tracking-[0.2em] text-foreground"
             style={{ fontFamily: "var(--font-display)" }}
           >
             NB
@@ -67,8 +68,8 @@ export function SiteHeader() {
                   href={link.href}
                   className={`rounded-lg px-3 py-1.5 font-medium transition-colors ${
                     active
-                      ? "bg-zinc-900 text-white"
-                      : "text-zinc-600 hover:bg-zinc-100 hover:text-zinc-950"
+                      ? "bg-foreground text-background"
+                      : "text-muted-foreground hover:bg-accent hover:text-foreground"
                   }`}
                   aria-current={active ? "page" : undefined}
                 >
@@ -80,9 +81,10 @@ export function SiteHeader() {
         </div>
 
         <div className="flex items-center gap-2">
+          <ThemeToggle className="hidden sm:inline-flex" />
           <Link
             href="/login"
-            className="inline-flex items-center rounded-full bg-zinc-950 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-zinc-800"
+            className="inline-flex items-center rounded-full bg-foreground px-4 py-2 text-sm font-semibold text-background transition-colors hover:bg-foreground/90"
           >
             Войти
           </Link>
@@ -91,14 +93,14 @@ export function SiteHeader() {
             onClick={() => setMobileOpen((value) => !value)}
             aria-label={mobileOpen ? "Закрыть меню" : "Открыть меню"}
             aria-expanded={mobileOpen}
-            className="rounded-lg p-2 text-zinc-700 transition-colors hover:bg-zinc-100 md:hidden"
+            className="rounded-lg p-2 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground md:hidden"
           >
             {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
           </button>
         </div>
 
         {mobileOpen ? (
-          <div className="absolute inset-x-0 top-full z-50 border-b border-zinc-200 bg-white px-6 py-3 shadow-lg md:hidden">
+          <div className="absolute inset-x-0 top-full z-50 border-b border-border bg-popover px-6 py-3 shadow-lg md:hidden">
             <nav className="flex flex-col gap-1 text-sm" aria-label="Разделы сайта">
               {publicLinks.map((link) => {
                 const active = isActivePath(pathname, link.href);
@@ -109,8 +111,8 @@ export function SiteHeader() {
                     onClick={() => setMobileOpen(false)}
                     className={`rounded-lg px-3 py-2 font-medium transition-colors ${
                       active
-                        ? "bg-zinc-900 text-white"
-                        : "text-zinc-700 hover:bg-zinc-100 hover:text-zinc-950"
+                        ? "bg-foreground text-background"
+                        : "text-muted-foreground hover:bg-accent hover:text-foreground"
                     }`}
                     aria-current={active ? "page" : undefined}
                   >
@@ -119,6 +121,10 @@ export function SiteHeader() {
                 );
               })}
             </nav>
+            <div className="mt-3 flex items-center justify-between border-t border-border pt-3">
+              <span className="text-xs font-medium text-muted-foreground">Тема</span>
+              <ThemeToggle />
+            </div>
           </div>
         ) : null}
       </div>

@@ -34,11 +34,11 @@ const sectionIcons: Record<SectionCategory, React.ComponentType<{ className?: st
 };
 
 const sectionIconBg: Record<SectionCategory, string> = {
-  fermentable: "bg-amber-50 text-amber-600",
-  hop: "bg-emerald-50 text-emerald-600",
-  yeast: "bg-violet-50 text-violet-600",
-  water_treatment: "bg-sky-50 text-sky-600",
-  consumable: "bg-zinc-100 text-zinc-500"
+  fermentable: "bg-amber-50 text-amber-600 dark:bg-amber-500/15 dark:text-amber-400",
+  hop: "bg-emerald-50 text-emerald-600 dark:bg-emerald-500/15 dark:text-emerald-400",
+  yeast: "bg-violet-50 text-violet-600 dark:bg-violet-500/15 dark:text-violet-400",
+  water_treatment: "bg-sky-50 text-sky-600 dark:bg-sky-500/15 dark:text-sky-400",
+  consumable: "bg-muted text-muted-foreground"
 };
 
 const ingredientCategory = (ingredient: ScaledRecipeIngredient): SectionCategory | null => {
@@ -139,12 +139,12 @@ function RecipeScaleDialog({
       <div className="flex max-h-[85vh] flex-col p-5">
         <div className="mb-4 flex items-start justify-between gap-3">
           <div className="flex items-start gap-3">
-            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-zinc-100 text-zinc-600">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-muted text-muted-foreground">
               <Scale className="h-5 w-5" />
             </div>
             <div>
-              <h3 className="text-base font-semibold text-zinc-950">Пересчитать под объём</h3>
-              <p className="mt-1 text-sm leading-6 text-zinc-600">
+              <h3 className="text-base font-semibold text-foreground">Пересчитать под объём</h3>
+              <p className="mt-1 text-sm leading-6 text-muted-foreground">
                 Не меняет оригинал; чтобы сохранить — клонируйте рецепт.
               </p>
             </div>
@@ -153,7 +153,7 @@ function RecipeScaleDialog({
         </div>
 
         <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
-          <label className="flex items-center gap-2 text-sm text-zinc-600">
+          <label className="flex items-center gap-2 text-sm text-muted-foreground">
             <span>Объём, л</span>
             <input
               type="number"
@@ -162,12 +162,12 @@ function RecipeScaleDialog({
               step={0.5}
               value={input}
               onChange={(event) => setInput(event.target.value)}
-              className="w-24 rounded-lg border border-zinc-200 px-2 py-1 text-right tabular-nums focus:outline-none focus-visible:ring-2 focus-visible:ring-zinc-400"
+              className="w-24 rounded-lg border border-border px-2 py-1 text-right tabular-nums focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
               aria-label="Целевой объём партии, литры"
               autoFocus
             />
           </label>
-          <span className="text-xs text-zinc-500">
+          <span className="text-xs text-muted-foreground">
             {view.scaled
               ? `×${factorFormatter.format(view.factor)} от ${litresFormatter.format(view.baseBatchLitres)} л`
               : `базовый объём — ${litresFormatter.format(view.baseBatchLitres)} л`}
@@ -183,8 +183,8 @@ function RecipeScaleDialog({
                   <span className={`flex h-5 w-5 items-center justify-center rounded-md ${sectionIconBg[group.category]}`}>
                     <IconComponent className="h-3 w-3" />
                   </span>
-                  <h4 className="text-xs font-semibold uppercase tracking-wide text-zinc-500">{sectionLabels[group.category]}</h4>
-                  <span className="text-xs tabular-nums text-zinc-400">({group.items.length})</span>
+                  <h4 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">{sectionLabels[group.category]}</h4>
+                  <span className="text-xs tabular-nums text-muted-foreground">({group.items.length})</span>
                 </div>
                 <ul className="space-y-1">
                   {group.items.map((ingredient) => {
@@ -195,11 +195,11 @@ function RecipeScaleDialog({
                     });
                     return (
                       <li key={ingredient.persistentKey} className="flex items-baseline justify-between gap-3 text-sm">
-                        <span className="min-w-0 truncate text-zinc-700">
+                        <span className="min-w-0 truncate text-foreground">
                           {primaryName}
-                          {secondaryName ? <span className="ml-1.5 text-xs text-zinc-400">{secondaryName}</span> : null}
+                          {secondaryName ? <span className="ml-1.5 text-xs text-muted-foreground">{secondaryName}</span> : null}
                         </span>
-                        <span className="shrink-0 font-medium tabular-nums text-zinc-900">{formatScaledAmount(ingredient)}</span>
+                        <span className="shrink-0 font-medium tabular-nums text-foreground">{formatScaledAmount(ingredient)}</span>
                       </li>
                     );
                   })}
@@ -210,12 +210,12 @@ function RecipeScaleDialog({
         </div>
 
         {view.scaled ? (
-          <div className="mt-3 border-t border-zinc-100 pt-3">
+          <div className="mt-3 border-t border-border pt-3">
             <button
               type="button"
               onClick={handleCloneAtVolume}
               disabled={cloning}
-              className="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-zinc-900 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-zinc-800 disabled:cursor-not-allowed disabled:opacity-60"
+              className="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-foreground px-4 py-2 text-sm font-medium text-background transition-colors hover:bg-foreground/90 disabled:cursor-not-allowed disabled:opacity-60"
             >
               {cloning ? "Клонируем…" : `Клонировать в этом объёме (${litresFormatter.format(view.targetBatchLitres)} л)`}
             </button>
@@ -244,14 +244,14 @@ export function RecipeScalePanel({ recipe }: { recipe: RecipeDetailDto }) {
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="flex w-full items-center gap-3 rounded-2xl border border-zinc-100 bg-white px-4 py-3 text-left shadow-sm transition hover:border-zinc-200 hover:bg-zinc-50"
+        className="flex w-full items-center gap-3 rounded-2xl border border-border bg-card px-4 py-3 text-left shadow-sm transition hover:border-border hover:bg-muted"
       >
-        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-zinc-100 text-zinc-600">
+        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-muted text-muted-foreground">
           <Scale className="h-4 w-4" />
         </span>
         <span className="min-w-0">
-          <span className="block text-sm font-semibold text-zinc-900">Пересчитать под объём</span>
-          <span className="block text-xs text-zinc-500">
+          <span className="block text-sm font-semibold text-foreground">Пересчитать под объём</span>
+          <span className="block text-xs text-muted-foreground">
             базовый — {litresFormatter.format(baseBatchLitres)} л
           </span>
         </span>

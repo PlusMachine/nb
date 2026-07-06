@@ -19,18 +19,18 @@ export function LegalDocument({
     <article className="mx-auto max-w-3xl py-10">
       <Link
         href="/legal"
-        className="inline-flex items-center gap-1 text-sm text-zinc-500 transition-colors hover:text-zinc-900"
+        className="inline-flex items-center gap-1 text-sm text-muted-foreground transition-colors hover:text-foreground"
       >
         <ChevronLeft className="h-4 w-4" />
         Правовые документы
       </Link>
-      <h1 className="mt-3 text-3xl font-semibold text-zinc-950" style={{ fontFamily: "var(--font-display)" }}>
+      <h1 className="mt-3 text-3xl font-semibold text-foreground" style={{ fontFamily: "var(--font-display)" }}>
         {title}
       </h1>
-      <p className="mt-2 text-sm text-zinc-500">
+      <p className="mt-2 text-sm text-muted-foreground">
         Редакция от {LEGAL_DOC_EFFECTIVE_LABEL} · версия {LEGAL_DOC_VERSION}
       </p>
-      {lead ? <p className="mt-4 leading-7 text-zinc-600">{lead}</p> : null}
+      {lead ? <p className="mt-4 leading-7 text-muted-foreground">{lead}</p> : null}
       <div className="nb-legal mt-8">{children}</div>
     </article>
   );
@@ -40,10 +40,10 @@ export function LegalDocument({
 // Незаполненные поля показываются как явные плейсхолдеры (см. getOperator).
 export function OperatorDetails({ operator }: { operator: OperatorInfo }) {
   return (
-    <div className="not-prose rounded-xl border border-zinc-200 bg-zinc-50 p-4 text-sm leading-7 text-zinc-700">
+    <div className="not-prose rounded-xl border border-border bg-muted p-4 text-sm leading-7 text-muted-foreground">
       <dl className="grid gap-x-4 gap-y-1 sm:grid-cols-[max-content,1fr]">
-        <dt className="font-medium text-zinc-500">Оператор</dt>
-        <dd className="text-zinc-900">
+        <dt className="font-medium text-muted-foreground">Оператор</dt>
+        <dd className="text-foreground">
           {operator.typeLabel}
           {operator.type === "ooo" ? "" : ", "}
           {operator.type === "ooo" ? ` «${operator.name}»` : operator.name}
@@ -51,27 +51,27 @@ export function OperatorDetails({ operator }: { operator: OperatorInfo }) {
 
         {operator.inn ? (
           <>
-            <dt className="font-medium text-zinc-500">ИНН</dt>
-            <dd className="text-zinc-900">{operator.inn}</dd>
+            <dt className="font-medium text-muted-foreground">ИНН</dt>
+            <dd className="text-foreground">{operator.inn}</dd>
           </>
         ) : null}
         {operator.ogrn ? (
           <>
-            <dt className="font-medium text-zinc-500">{operator.type === "ip" ? "ОГРНИП" : "ОГРН"}</dt>
-            <dd className="text-zinc-900">{operator.ogrn}</dd>
+            <dt className="font-medium text-muted-foreground">{operator.type === "ip" ? "ОГРНИП" : "ОГРН"}</dt>
+            <dd className="text-foreground">{operator.ogrn}</dd>
           </>
         ) : null}
         {operator.address ? (
           <>
-            <dt className="font-medium text-zinc-500">Адрес</dt>
-            <dd className="text-zinc-900">{operator.address}</dd>
+            <dt className="font-medium text-muted-foreground">Адрес</dt>
+            <dd className="text-foreground">{operator.address}</dd>
           </>
         ) : null}
 
-        <dt className="font-medium text-zinc-500">E-mail</dt>
-        <dd className="text-zinc-900">
+        <dt className="font-medium text-muted-foreground">E-mail</dt>
+        <dd className="text-foreground">
           {operator.emailProvided ? (
-            <a href={`mailto:${operator.email}`} className="text-sky-700 underline underline-offset-4">
+            <a href={`mailto:${operator.email}`} className="text-link underline underline-offset-4">
               {operator.email}
             </a>
           ) : (

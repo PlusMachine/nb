@@ -14,20 +14,20 @@ export function InventorySummary({ summary }: Props) {
       <h2 className="text-lg font-semibold">Сводка</h2>
       <div className="grid gap-3 sm:grid-cols-3">
         <article className="rounded-md border p-3">
-          <p className="text-xs text-zinc-500">Всего позиций</p>
+          <p className="text-xs text-muted-foreground">Всего позиций</p>
           <p className="text-2xl font-semibold">{summary.totalItems}</p>
         </article>
         <article className="rounded-md border p-3">
-          <p className="text-xs text-zinc-500">В наличии</p>
+          <p className="text-xs text-muted-foreground">В наличии</p>
           <p className="text-2xl font-semibold">{summary.inStockItems}</p>
         </article>
         <article className="rounded-md border p-3">
-          <p className="text-xs text-zinc-500">Пустые</p>
+          <p className="text-xs text-muted-foreground">Пустые</p>
           <p className="text-2xl font-semibold">{summary.emptyItems}</p>
         </article>
       </div>
       <div className="rounded-md border p-3">
-        <p className="mb-2 text-xs text-zinc-500">По категориям</p>
+        <p className="mb-2 text-xs text-muted-foreground">По категориям</p>
         {byCategoryRows.length > 0 ? (
           <ul className="grid gap-1 text-sm sm:grid-cols-2">
             {byCategoryRows.map((row) => (
@@ -38,7 +38,7 @@ export function InventorySummary({ summary }: Props) {
             ))}
           </ul>
         ) : (
-          <p className="text-sm text-zinc-500">Пока нет данных по категориям.</p>
+          <p className="text-sm text-muted-foreground">Пока нет данных по категориям.</p>
         )}
       </div>
     </section>

@@ -17,7 +17,7 @@ export function RecipePhotoHero({ imageId, title }: { imageId: string; title: st
   }
 
   return (
-    <section className="overflow-hidden rounded-2xl border border-zinc-100 bg-zinc-50 shadow-sm">
+    <section className="overflow-hidden rounded-2xl border border-border bg-muted shadow-sm">
       <div className="relative aspect-[16/9] w-full">
         <Image
           src={`/api/recipe-images/${imageId}/large`}

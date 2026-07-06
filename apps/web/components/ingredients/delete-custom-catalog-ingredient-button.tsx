@@ -41,8 +41,8 @@ export function DeleteCustomCatalogIngredientButton({
         onClick={handleOpen}
         aria-label={label}
         className={className ?? (variant === "icon"
-          ? "rounded-md p-1 text-zinc-400 transition-colors hover:bg-rose-50 hover:text-rose-600 disabled:opacity-60"
-          : "rounded-xl border border-rose-200 bg-white px-4 py-2.5 text-sm font-medium text-rose-700 transition-colors hover:bg-rose-50 disabled:opacity-60")}
+          ? "rounded-md p-1 text-muted-foreground transition-colors hover:bg-destructive-subtle hover:text-destructive disabled:opacity-60"
+          : "rounded-xl border border-destructive-border bg-card px-4 py-2.5 text-sm font-medium text-destructive transition-colors hover:bg-destructive-subtle disabled:opacity-60")}
       >
         {variant === "icon"
           ? <X className="h-4 w-4" />
@@ -50,7 +50,7 @@ export function DeleteCustomCatalogIngredientButton({
       </button>
 
       {feedback ? (
-        <p role={feedback.ok ? "status" : "alert"} className={`text-xs ${feedback.ok ? "text-emerald-700" : "text-rose-600"}`}>
+        <p role={feedback.ok ? "status" : "alert"} className={`text-xs ${feedback.ok ? "text-success" : "text-destructive"}`}>
           {feedback.message}
         </p>
       ) : null}

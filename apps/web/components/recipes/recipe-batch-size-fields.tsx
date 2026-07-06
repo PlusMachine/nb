@@ -12,7 +12,7 @@ type Props = {
 
 export function RecipeBatchSizeFields({ quantity, unit, onChange }: Props) {
   return (
-    <section className="space-y-3 rounded-xl border border-zinc-200 bg-white p-4">
+    <section className="space-y-3 rounded-xl border border-border bg-card p-4">
       <h2 className="text-base font-semibold">Объём партии</h2>
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-[1fr_160px]">
         <div className="space-y-1">
@@ -24,7 +24,7 @@ export function RecipeBatchSizeFields({ quantity, unit, onChange }: Props) {
             step="0.1"
             value={quantity}
             onChange={(event) => onChange({ quantity: event.target.value })}
-            className="h-10 w-full rounded-md border border-zinc-200 px-3 text-sm"
+            className="h-10 w-full rounded-md border border-border px-3 text-sm"
           />
         </div>
         <div className="space-y-1">
@@ -33,7 +33,7 @@ export function RecipeBatchSizeFields({ quantity, unit, onChange }: Props) {
             id="batch-size-unit"
             value={unit}
             onChange={(event) => onChange({ unit: event.target.value })}
-            className="h-10 w-full rounded-md border border-zinc-200 px-3 text-sm"
+            className="h-10 w-full rounded-md border border-border px-3 text-sm"
           >
             {inventoryVolumeUnits.map((candidate) => <option key={candidate} value={candidate}>{candidate}</option>)}
           </select>

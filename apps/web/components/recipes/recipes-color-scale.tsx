@@ -26,8 +26,8 @@ export function RecipesColorScale() {
 
   return (
     <fieldset className="space-y-2">
-      <legend className="text-sm font-semibold text-zinc-950">Цвет пива</legend>
-      <div className="flex overflow-hidden rounded-xl border border-zinc-200">
+      <legend className="text-sm font-semibold text-foreground">Цвет пива</legend>
+      <div className="flex overflow-hidden rounded-xl border border-border">
         {srmColorBands.map((band) => {
           const active = activeBand?.id === band.id;
           const label = `${band.label}, SRM ${band.min}–${band.max}`;
@@ -45,8 +45,8 @@ export function RecipesColorScale() {
                     : { colorMin: String(band.min), colorMax: String(band.max) }
                 )
               }
-              className={`relative h-9 flex-1 transition focus:outline-none focus-visible:z-10 focus-visible:ring-2 focus-visible:ring-zinc-400 ${
-                active ? "z-10 ring-2 ring-inset ring-zinc-950" : "hover:opacity-90"
+              className={`relative h-9 flex-1 transition focus:outline-none focus-visible:z-10 focus-visible:ring-2 focus-visible:ring-ring ${
+                active ? "z-10 ring-2 ring-inset ring-foreground" : "hover:opacity-90"
               }`}
               style={{ backgroundColor: bandFill(band.min, band.max) }}
             >
@@ -55,10 +55,10 @@ export function RecipesColorScale() {
           );
         })}
       </div>
-      <p className="text-xs text-zinc-500" aria-live="polite">
+      <p className="text-xs text-muted-foreground" aria-live="polite">
         {activeBand ? (
           <>
-            <span className="font-medium text-zinc-700">{activeBand.label}</span>
+            <span className="font-medium text-foreground">{activeBand.label}</span>
             {" · "}
             <span className="tabular-nums">
               SRM {activeBand.min}–{activeBand.max}

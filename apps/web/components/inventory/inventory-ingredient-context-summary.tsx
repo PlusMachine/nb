@@ -152,7 +152,7 @@ export function InventoryIngredientContextSummary({
 }: Props) {
   return (
     <p
-      className={`text-xs font-medium text-zinc-500 ${className}`.trim()}
+      className={`text-xs font-medium text-muted-foreground ${className}`.trim()}
       data-testid={testId}
     >
       {summary}

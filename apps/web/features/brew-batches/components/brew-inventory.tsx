@@ -71,31 +71,31 @@ export function BrewInventory({
   };
 
   return (
-    <section className="space-y-4 rounded-2xl border border-zinc-100 bg-white p-4 shadow-sm">
+    <section className="space-y-4 rounded-2xl border border-border bg-card p-4 shadow-sm">
       <div className="flex flex-wrap items-center justify-between gap-2">
-        <h2 className="text-base font-semibold text-zinc-900">Склад</h2>
+        <h2 className="text-base font-semibold text-foreground">Склад</h2>
         {view.hasConsumed ? (
-          <span className="inline-flex items-center rounded-full bg-emerald-100 px-2 py-0.5 text-xs font-medium text-emerald-700">
+          <span className="inline-flex items-center rounded-full bg-success-subtle px-2 py-0.5 text-xs font-medium text-success-subtle-foreground">
             Списано
           </span>
         ) : null}
       </div>
 
       {view.hasConsumed ? (
-        <ul className="divide-y divide-zinc-100">
+        <ul className="divide-y divide-border">
           {view.consumed.map((line) => (
             <li key={line.inventoryItemId} className="flex items-center justify-between gap-3 py-2">
-              <span className="min-w-0 flex-1 truncate text-sm text-zinc-800">
+              <span className="min-w-0 flex-1 truncate text-sm text-foreground">
                 {line.ingredientDisplayName ?? "Ингредиент"}
               </span>
-              <span className="shrink-0 text-sm font-medium tabular-nums text-zinc-600">
+              <span className="shrink-0 text-sm font-medium tabular-nums text-muted-foreground">
                 −{fmtAmount(line.quantityNormalized, line.normalizedUnit)}
               </span>
             </li>
           ))}
         </ul>
       ) : (
-        <p className="text-sm text-zinc-500">
+        <p className="text-sm text-muted-foreground">
           {canConsume
             ? "Спишем со склада сопоставленные позиции рецепта (по точному совпадению ингредиента и единицы)."
             : view.recipeAlreadyConsumed
@@ -107,7 +107,7 @@ export function BrewInventory({
       {message ? (
         <p
           role={message.ok ? "status" : "alert"}
-          className={`text-xs ${message.ok ? "text-emerald-700" : "text-rose-600"}`}
+          className={`text-xs ${message.ok ? "text-success" : "text-destructive"}`}
         >
           {message.text}
         </p>
@@ -143,23 +143,23 @@ export function BrewInventory({
       {/* Журнал движений склада по этой партии (списания/резервы/возвраты/поправки) —
           аудит на случай расхождений, нужен редко, поэтому свёрнут по умолчанию. */}
       {view.log.length > 0 ? (
-        <details className="group rounded-xl border border-zinc-100 bg-zinc-50/40">
-          <summary className="flex cursor-pointer list-none items-center gap-2 px-3 py-2 text-sm text-zinc-600 [&::-webkit-details-marker]:hidden">
-            <ChevronRight className="h-4 w-4 shrink-0 text-zinc-400 transition group-open:rotate-90" aria-hidden />
+        <details className="group rounded-xl border border-border bg-muted/40">
+          <summary className="flex cursor-pointer list-none items-center gap-2 px-3 py-2 text-sm text-muted-foreground [&::-webkit-details-marker]:hidden">
+            <ChevronRight className="h-4 w-4 shrink-0 text-muted-foreground transition group-open:rotate-90" aria-hidden />
             <span className="font-medium">История движений</span>
-            <span className="text-xs text-zinc-400 tabular-nums">{view.log.length}</span>
+            <span className="text-xs text-muted-foreground tabular-nums">{view.log.length}</span>
           </summary>
-          <ul className="divide-y divide-zinc-100 px-3 pb-3">
+          <ul className="divide-y divide-border px-3 pb-3">
             {view.log.map((entry) => {
               const sign = entry.quantityDeltaNormalized < 0 ? "−" : entry.quantityDeltaNormalized > 0 ? "+" : "";
-              const deltaColorClass = entry.type === "release" ? "text-emerald-700" : "text-zinc-600";
+              const deltaColorClass = entry.type === "release" ? "text-success" : "text-muted-foreground";
               return (
                 <li key={entry.id} className="flex items-center justify-between gap-3 py-2">
                   <div className="min-w-0 flex-1">
-                    <p className="truncate text-sm text-zinc-800">{entry.ingredientDisplayName ?? "Ингредиент"}</p>
+                    <p className="truncate text-sm text-foreground">{entry.ingredientDisplayName ?? "Ингредиент"}</p>
                     {/* Время форматируется в TZ браузера → подавляем hydration-варнинг
                         (SSR-рендер клиентского компонента идёт в TZ сервера). */}
-                    <p suppressHydrationWarning className="text-xs text-zinc-500">
+                    <p suppressHydrationWarning className="text-xs text-muted-foreground">
                       {fmtLogDate(entry.createdAt)} · {logTypeLabels[entry.type]}
                     </p>
                   </div>

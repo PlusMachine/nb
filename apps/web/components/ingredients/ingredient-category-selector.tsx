@@ -42,7 +42,7 @@ export function IngredientCategorySelector<TCategory extends IngredientCategoryS
               onChange={() => onChange(category as TCategory)}
               className="peer sr-only"
             />
-            <span className="block rounded-md border px-3 py-2 text-center text-xs transition peer-checked:border-black peer-checked:bg-zinc-100">
+            <span className="block rounded-md border px-3 py-2 text-center text-xs transition peer-checked:border-foreground peer-checked:bg-muted">
               {category === "all" ? allLabel : ingredientCategoryLabels[category]}
             </span>
           </label>

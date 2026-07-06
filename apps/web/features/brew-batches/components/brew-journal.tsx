@@ -10,6 +10,7 @@ import {
   deleteBrewMeasurementAction,
   setBrewMeasurementFinalAction
 } from "@/app/(app)/app/brew-batches/[id]/actions";
+import { NumericInput } from "@/components/shared/numeric-input";
 import {
   GRAVITY_SG_MAX,
   GRAVITY_SG_MIN,
@@ -18,6 +19,7 @@ import {
 } from "@/features/brew-batches/contracts";
 import {
   formatGravity,
+  formatGravitySecondary,
   gravityUnitLabels,
   toCalculatorGravityUnit,
   type PreferredGravityUnit
@@ -29,12 +31,26 @@ const fmtAtt = (value: number | null) => (value == null ? "—" : `${Math.round(
 const dateFmt = new Intl.DateTimeFormat("ru-RU", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" });
 const fmtDate = (value: Date) => dateFmt.format(new Date(value));
 
-function StatTile({ label, value, target }: { label: string; value: string; target?: string | null }) {
+function StatTile({
+  label,
+  value,
+  secondary,
+  target
+}: {
+  label: string;
+  value: string;
+  /** Значение во второй (дублирующей) единице плотности — мелким muted-текстом рядом с основным. */
+  secondary?: string | null;
+  target?: string | null;
+}) {
   return (
-    <div className="rounded-xl bg-zinc-50 px-3 py-2">
-      <div className="text-[11px] uppercase tracking-wider text-zinc-400">{label}</div>
-      <div className="text-lg font-semibold tabular-nums text-zinc-900">{value}</div>
-      {target ? <div className="text-[11px] text-zinc-500">цель {target}</div> : null}
+    <div className="rounded-xl bg-muted px-3 py-2">
+      <div className="text-[11px] uppercase tracking-wider text-muted-foreground">{label}</div>
+      <div className="flex items-baseline gap-1.5">
+        <div className="text-lg font-semibold tabular-nums text-foreground">{value}</div>
+        {secondary ? <div className="text-[11px] text-muted-foreground">{secondary}</div> : null}
+      </div>
+      {target ? <div className="text-[11px] text-muted-foreground">цель {target}</div> : null}
     </div>
   );
 }
@@ -84,12 +100,23 @@ export function BrewJournal({
       setError("Введите плотность.");
       return;
     }
+    const gravitySg = gravityToSg(enteredValue, gravityUnit);
+    // Проверяем диапазон уже в SG (как валидирует сервер), но сообщение — в единице
+    // пользователя, иначе °P/°Bx на экране расходится с SG-числами в ошибке.
+    if (gravitySg < GRAVITY_SG_MIN) {
+      setError(`Плотность не меньше ${fmtGravity(GRAVITY_SG_MIN)}.`);
+      return;
+    }
+    if (gravitySg > GRAVITY_SG_MAX) {
+      setError(`Плотность не больше ${fmtGravity(GRAVITY_SG_MAX)}.`);
+      return;
+    }
     inFlight.current = true;
     setBusy(true);
     setError(null);
     try {
       const result = await addBrewMeasurementAction(brewBatchId, {
-        gravitySg: String(gravityToSg(enteredValue, gravityUnit)),
+        gravitySg: String(gravitySg),
         // datetime-local — наивное локальное время; переводим в абсолютный момент
         // (ISO с таймзоной браузера), иначе сервер распарсит его в своей TZ.
         takenAt: takenAt ? new Date(takenAt).toISOString() : null,
@@ -151,29 +178,36 @@ export function BrewJournal({
   };
 
   return (
-    <section id="brew-journal" className="space-y-4 rounded-2xl border border-zinc-100 bg-white p-4 shadow-sm">
-      <h2 className="text-base font-semibold text-zinc-900">{title}</h2>
+    <section id="brew-journal" className="space-y-4 rounded-2xl border border-border bg-card p-4 shadow-sm">
+      <h2 className="text-base font-semibold text-foreground">{title}</h2>
 
       {/* Плитки OG/FG/ABV — только когда есть замеры: до первого замера прочерки
           «—» лишь создают шум (нечего показывать, ничего ещё не произошло). */}
       {!hideStats && measurements.length > 0 ? (
         <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
-          <StatTile label="OG" value={fmtGravity(summary.og)} target={target?.og != null ? fmtGravity(target.og) : null} />
-          <StatTile label="FG" value={fmtGravity(summary.fg)} target={target?.fg != null ? fmtGravity(target.fg) : null} />
+          <StatTile
+            label="OG"
+            value={fmtGravity(summary.og)}
+            secondary={formatGravitySecondary(summary.og, preferredGravityUnit)}
+            target={target?.og != null ? fmtGravity(target.og) : null}
+          />
+          <StatTile
+            label="FG"
+            value={fmtGravity(summary.fg)}
+            secondary={formatGravitySecondary(summary.fg, preferredGravityUnit)}
+            target={target?.fg != null ? fmtGravity(target.fg) : null}
+          />
           <StatTile label="ABV" value={fmtAbv(summary.abv)} target={target?.abv != null ? fmtAbv(target.abv) : null} />
           <StatTile label="Сбраживание" value={fmtAtt(summary.apparentAttenuation)} />
         </div>
       ) : null}
 
       {/* Форма добавления замера */}
-      <form onSubmit={submit} className="space-y-2 rounded-xl border border-zinc-100 bg-zinc-50/60 p-3">
+      <form onSubmit={submit} className="space-y-2 rounded-xl border border-border bg-muted/60 p-3">
         <div className="flex flex-wrap items-end gap-2">
           <label className="flex flex-col gap-1">
-            <span className="text-[11px] text-zinc-500">Плотность ({gravityUnitLabels[preferredGravityUnit]})</span>
-            <input
-              type="number"
-              inputMode="decimal"
-              step="any"
+            <span className="text-[11px] text-muted-foreground">Плотность ({gravityUnitLabels[preferredGravityUnit]})</span>
+            <NumericInput
               min={gravityInputMin}
               max={gravityInputMax}
               value={gravity}
@@ -181,22 +215,22 @@ export function BrewJournal({
               disabled={busy}
               placeholder={sgToGravityUnit(1.012, gravityUnit).toString()}
               aria-label={`Плотность, ${gravityUnitLabels[preferredGravityUnit]}`}
-              className="h-9 w-28 rounded-md border border-zinc-200 px-2 text-sm text-zinc-900 focus:outline-none focus:ring-2 focus:ring-zinc-400"
+              className="h-9 w-28 rounded-md border border-border px-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
             />
           </label>
           <label className="flex flex-col gap-1">
-            <span className="text-[11px] text-zinc-500">Когда (по умолч. — сейчас)</span>
+            <span className="text-[11px] text-muted-foreground">Когда (по умолч. — сейчас)</span>
             <input
               type="datetime-local"
               value={takenAt}
               onChange={(event) => setTakenAt(event.target.value)}
               disabled={busy}
               aria-label="Когда сделан замер"
-              className="h-9 rounded-md border border-zinc-200 px-2 text-sm text-zinc-900 focus:outline-none focus:ring-2 focus:ring-zinc-400"
+              className="h-9 rounded-md border border-border px-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
             />
           </label>
           <label className="flex min-w-[8rem] flex-1 flex-col gap-1">
-            <span className="text-[11px] text-zinc-500">Заметка</span>
+            <span className="text-[11px] text-muted-foreground">Заметка</span>
             <input
               type="text"
               value={note}
@@ -205,7 +239,7 @@ export function BrewJournal({
               placeholder="напр. внёс дрожжи"
               maxLength={500}
               aria-label="Заметка к замеру"
-              className="h-9 w-full rounded-md border border-zinc-200 px-2 text-sm text-zinc-900 focus:outline-none focus:ring-2 focus:ring-zinc-400"
+              className="h-9 w-full rounded-md border border-border px-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
             />
           </label>
           <Button type="submit" size="sm" disabled={busy}>
@@ -213,56 +247,56 @@ export function BrewJournal({
             Добавить
           </Button>
         </div>
-        <label className="flex w-fit items-center gap-2 text-xs text-zinc-600">
+        <label className="flex w-fit items-center gap-2 text-xs text-muted-foreground">
           <input
             type="checkbox"
             checked={markFinal}
             onChange={(event) => setMarkFinal(event.target.checked)}
             disabled={busy}
-            className="h-3.5 w-3.5 rounded border-zinc-300 text-zinc-900 focus:ring-zinc-400"
+            className="h-3.5 w-3.5 rounded border-border text-foreground focus:ring-ring"
           />
           Это финальный замер (FG)
         </label>
-        {error ? <p role="alert" className="text-xs text-rose-600">{error}</p> : null}
+        {error ? <p role="alert" className="text-xs text-destructive">{error}</p> : null}
       </form>
 
       {/* История замеров */}
       {measurements.length === 0 ? (
-        <p className="rounded-xl border border-dashed border-zinc-200 bg-zinc-50 p-4 text-center text-sm text-zinc-500">
+        <p className="rounded-xl border border-dashed border-border bg-muted p-4 text-center text-sm text-muted-foreground">
           Пока нет замеров. Внесите начальную плотность (OG), затем финальную (FG) — посчитаем ABV и сбраживание.
         </p>
       ) : (
-        <ul className="divide-y divide-zinc-100">
+        <ul className="divide-y divide-border">
           {measurements.map((measurement, index) => {
             const tag = measurement.isFinal ? "FG" : index === 0 ? "OG" : null;
             return (
               <li key={measurement.id} className="flex items-center gap-3 py-2">
-                <span className="w-16 shrink-0 text-base font-semibold tabular-nums text-zinc-900">
+                <span className="w-16 shrink-0 text-base font-semibold tabular-nums text-foreground">
                   {fmtGravity(measurement.gravitySg)}
                 </span>
                 {tag ? (
-                  <span className="shrink-0 rounded-full bg-zinc-900 px-1.5 py-0.5 text-[10px] font-semibold text-white">{tag}</span>
+                  <span className="shrink-0 rounded-full bg-foreground px-1.5 py-0.5 text-[10px] font-semibold text-background">{tag}</span>
                 ) : null}
                 {/* Время форматируется в TZ браузера → подавляем hydration-варнинг
                     (SSR-рендер клиентского компонента идёт в TZ сервера). */}
-                <span suppressHydrationWarning className="shrink-0 text-xs text-zinc-500">{fmtDate(measurement.takenAt)}</span>
-                {measurement.note ? <span className="min-w-0 flex-1 truncate text-sm text-zinc-600">{measurement.note}</span> : <span className="flex-1" />}
+                <span suppressHydrationWarning className="shrink-0 text-xs text-muted-foreground">{fmtDate(measurement.takenAt)}</span>
+                {measurement.note ? <span className="min-w-0 flex-1 truncate text-sm text-muted-foreground">{measurement.note}</span> : <span className="flex-1" />}
                 <button
                   type="button"
                   onClick={() => toggleFinal(measurement.id, !measurement.isFinal)}
                   disabled={busy}
                   aria-label={measurement.isFinal ? "Снять отметку FG" : "Отметить финальным (FG)"}
                   title={measurement.isFinal ? "Снять отметку FG" : "Отметить финальным (FG)"}
-                  className={`inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-md transition disabled:opacity-60 ${measurement.isFinal ? "text-amber-600 hover:bg-amber-50" : "text-zinc-300 hover:bg-zinc-50 hover:text-zinc-500"}`}
+                  className={`inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-md transition disabled:opacity-60 ${measurement.isFinal ? "text-warning-subtle-foreground hover:bg-warning-subtle" : "text-muted-foreground hover:bg-muted hover:text-muted-foreground"}`}
                 >
-                  {togglingId === measurement.id ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden /> : <Flag className={`h-4 w-4 ${measurement.isFinal ? "fill-amber-500" : ""}`} aria-hidden />}
+                  {togglingId === measurement.id ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden /> : <Flag className={`h-4 w-4 ${measurement.isFinal ? "fill-warning" : ""}`} aria-hidden />}
                 </button>
                 <button
                   type="button"
                   onClick={() => remove(measurement.id)}
                   disabled={busy}
                   aria-label="Удалить замер"
-                  className="inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-md text-zinc-400 transition hover:bg-rose-50 hover:text-rose-600 disabled:opacity-60"
+                  className="inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-md text-muted-foreground transition hover:bg-destructive-subtle hover:text-destructive disabled:opacity-60"
                 >
                   {deletingId === measurement.id ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden /> : <Trash2 className="h-4 w-4" aria-hidden />}
                 </button>

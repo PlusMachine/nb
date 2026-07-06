@@ -101,11 +101,11 @@ export function RecipeSaveButton({
         aria-pressed={saved}
         className={`inline-flex items-center gap-2 rounded-lg border px-3 py-2 text-sm font-medium transition disabled:opacity-60 ${
           saved
-            ? "border-amber-300 bg-amber-50 text-amber-700"
-            : "border-zinc-200 bg-white text-zinc-700 hover:border-zinc-300"
+            ? "border-warning/30 bg-warning-subtle text-warning-subtle-foreground"
+            : "border-border bg-card text-foreground hover:border-border"
         }`}
       >
-        <Bookmark className={saved ? "h-4 w-4 fill-amber-500 text-amber-500" : "h-4 w-4"} aria-hidden />
+        <Bookmark className={saved ? "h-4 w-4 fill-warning text-warning" : "h-4 w-4"} aria-hidden />
         {saved ? "Сохранено" : "Сохранить"}
       </button>
     ) : (
@@ -115,9 +115,9 @@ export function RecipeSaveButton({
         disabled={isPending}
         aria-label={label}
         aria-pressed={saved}
-        className="absolute right-2 top-2 z-10 inline-flex h-7 w-7 items-center justify-center rounded-full bg-white/70 text-zinc-600 backdrop-blur-sm transition hover:bg-white focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 disabled:opacity-60"
+        className="absolute right-2 top-2 z-10 inline-flex h-7 w-7 items-center justify-center rounded-full bg-card/70 text-muted-foreground backdrop-blur-sm transition hover:bg-card focus:outline-none focus-visible:ring-2 focus-visible:ring-warning disabled:opacity-60"
       >
-        <Bookmark className={saved ? "h-3.5 w-3.5 fill-amber-500 text-amber-500" : "h-3.5 w-3.5"} aria-hidden />
+        <Bookmark className={saved ? "h-3.5 w-3.5 fill-warning text-warning" : "h-3.5 w-3.5"} aria-hidden />
       </button>
     );
 

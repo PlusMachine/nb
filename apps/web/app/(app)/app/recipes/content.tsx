@@ -14,7 +14,7 @@ export async function MyRecipesContent() {
     <main className="space-y-4">
       <section className="flex flex-wrap items-center justify-between gap-2">
         <h1 className="text-2xl font-semibold">Рецепты</h1>
-        <Link href="/app/recipes/new" className="rounded-md bg-zinc-900 px-3 py-2 text-sm font-medium text-white">Создать рецепт</Link>
+        <Link href="/app/recipes/new" className="rounded-md bg-foreground px-3 py-2 text-sm font-medium text-background">Создать рецепт</Link>
       </section>
       <RecipeTabs />
       {recipes.length === 0 ? <RecipeEmptyState /> : <MyRecipesGallery recipes={recipes} preferredGravityUnit={user.preferredGravityUnit} />}

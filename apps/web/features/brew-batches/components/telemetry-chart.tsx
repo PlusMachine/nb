@@ -190,19 +190,19 @@ export function TelemetryChart({ source, hasDevice, initial }: Props) {
   }
 
   return (
-    <section className="rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm">
+    <section className="rounded-2xl border border-border bg-card p-5 shadow-sm">
       <div className="flex flex-wrap items-center justify-between gap-2">
-        <h2 className="text-sm font-semibold text-zinc-900">История температуры</h2>
-        <div className="flex flex-wrap items-center gap-3 text-xs text-zinc-500">
-          <Legend color="#0f766e" label="Температура" />
-          <Legend color="#d97706" label="Уставка" dashed />
-          <Legend color="#94a3b8" label="Нагрев, %" />
+        <h2 className="text-sm font-semibold text-foreground">История температуры</h2>
+        <div className="flex flex-wrap items-center gap-3 text-xs text-muted-foreground">
+          <Legend color="hsl(var(--chart-temp))" label="Температура" />
+          <Legend color="hsl(var(--chart-setpoint))" label="Уставка" dashed />
+          <Legend color="hsl(var(--chart-heater))" label="Нагрев, %" />
           <EventLegend />
         </div>
       </div>
 
       {!geom ? (
-        <div className="mt-6 flex h-40 items-center justify-center rounded-lg bg-zinc-50 text-sm text-zinc-500">
+        <div className="mt-6 flex h-40 items-center justify-center rounded-lg bg-muted text-sm text-muted-foreground">
           нет данных
         </div>
       ) : (
@@ -224,7 +224,7 @@ export function TelemetryChart({ source, hasDevice, initial }: Props) {
                   y={PAD_T}
                   width={Math.max(0, b.x1 - b.x0)}
                   height={PLOT_H}
-                  fill={isFaultStage(b.stage) ? "#fef2f2" : i % 2 === 0 ? "#fafafa" : "#f4f4f5"}
+                  fill={isFaultStage(b.stage) ? "hsl(var(--chart-fault-bg))" : i % 2 === 0 ? "hsl(var(--chart-zebra))" : "transparent"}
                 />
               ))}
 
@@ -236,10 +236,10 @@ export function TelemetryChart({ source, hasDevice, initial }: Props) {
                     x2={VB_W - PAD_R}
                     y1={t.y}
                     y2={t.y}
-                    stroke="#e4e4e7"
+                    stroke="hsl(var(--chart-grid))"
                     strokeWidth={1}
                   />
-                  <text x={PAD_L - 6} y={t.y + 3} textAnchor="end" fontSize={11} fill="#71717a">
+                  <text x={PAD_L - 6} y={t.y + 3} textAnchor="end" fontSize={11} fill="hsl(var(--chart-label))">
                     {t.v.toFixed(0)}
                   </text>
                 </g>
@@ -253,7 +253,7 @@ export function TelemetryChart({ source, hasDevice, initial }: Props) {
                   y={t.y + 3}
                   textAnchor="start"
                   fontSize={11}
-                  fill="#94a3b8"
+                  fill="hsl(var(--chart-heater))"
                 >
                   {t.v === 100 ? "100%" : t.v}
                 </text>
@@ -267,37 +267,37 @@ export function TelemetryChart({ source, hasDevice, initial }: Props) {
                   x2={a.x}
                   y1={PAD_T}
                   y2={PAD_T + PLOT_H}
-                  stroke={a.isFault ? "#dc2626" : "#d4d4d8"}
+                  stroke={a.isFault ? "hsl(var(--chart-fault))" : "hsl(var(--chart-grid))"}
                   strokeWidth={a.isFault ? 1.5 : 1}
                   strokeDasharray="3 3"
                 />
               ))}
 
               {/* Скважность нагрева (вторичная, светлая линия по правой оси). */}
-              <path d={geom.dutyPath} fill="none" stroke="#94a3b8" strokeWidth={1.5} opacity={0.85} />
+              <path d={geom.dutyPath} fill="none" stroke="hsl(var(--chart-heater))" strokeWidth={1.5} opacity={0.85} />
 
               {/* Уставка (пунктир) и фактическая температура. */}
               <path
                 d={geom.setpointPath}
                 fill="none"
-                stroke="#d97706"
+                stroke="hsl(var(--chart-setpoint))"
                 strokeWidth={2}
                 strokeDasharray="5 4"
               />
               <path
                 d={geom.primaryPath}
                 fill="none"
-                stroke="#0f766e"
+                stroke="hsl(var(--chart-temp))"
                 strokeWidth={2}
                 strokeLinejoin="round"
                 strokeLinecap="round"
               />
 
               {/* Подписи времени (слева/справа). */}
-              <text x={PAD_L} y={VB_H - 8} textAnchor="start" fontSize={11} fill="#71717a">
+              <text x={PAD_L} y={VB_H - 8} textAnchor="start" fontSize={11} fill="hsl(var(--chart-label))">
                 {fmtTime(geom.tMin)}
               </text>
-              <text x={VB_W - PAD_R} y={VB_H - 8} textAnchor="end" fontSize={11} fill="#71717a">
+              <text x={VB_W - PAD_R} y={VB_H - 8} textAnchor="end" fontSize={11} fill="hsl(var(--chart-label))">
                 {fmtTime(geom.tMax)}
               </text>
             </svg>
@@ -310,7 +310,7 @@ export function TelemetryChart({ source, hasDevice, initial }: Props) {
                 <span
                   key={`lbl-${i}`}
                   className={`pointer-events-none absolute top-0 -translate-x-1/2 whitespace-nowrap rounded px-1 text-[10px] font-medium ${
-                    a.isFault ? "bg-red-600 text-white" : "bg-zinc-100 text-zinc-600"
+                    a.isFault ? "bg-destructive text-destructive-foreground" : "bg-muted text-muted-foreground"
                   }`}
                   style={{ left: `${(a.x / VB_W) * 100}%` }}
                 >
@@ -324,7 +324,7 @@ export function TelemetryChart({ source, hasDevice, initial }: Props) {
             {dedupeStages(geom.bands).map((s) => (
               <span
                 key={s}
-                className="rounded-md border border-zinc-200 bg-zinc-50 px-2 py-0.5 text-[11px] font-medium text-zinc-600"
+                className="rounded-md border border-border bg-muted px-2 py-0.5 text-[11px] font-medium text-muted-foreground"
               >
                 {safeStageLabel(s)}
               </span>
@@ -383,7 +383,7 @@ function EventLegend() {
   return (
     <span className="inline-flex items-center gap-1.5">
       <svg width={8} height={10} aria-hidden>
-        <line x1={4} y1={0} x2={4} y2={10} stroke="#a1a1aa" strokeWidth={1.5} strokeDasharray="3 3" />
+        <line x1={4} y1={0} x2={4} y2={10} stroke="hsl(var(--chart-label))" strokeWidth={1.5} strokeDasharray="3 3" />
       </svg>
       Событие
     </span>

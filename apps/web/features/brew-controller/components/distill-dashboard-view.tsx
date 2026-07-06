@@ -174,8 +174,8 @@ export function DistillDashboardView({
 
   const actionReadyBanner =
     telemetry?.actionReady && isDistillFractionStage(stage) ? (
-      <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border-2 border-amber-300 bg-amber-50 p-4 shadow-sm">
-        <p className="text-sm font-semibold text-amber-900">Смените приёмную ёмкость</p>
+      <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border-2 border-warning/30 bg-warning-subtle p-4 shadow-sm">
+        <p className="text-sm font-semibold text-warning-subtle-foreground">Смените приёмную ёмкость</p>
         <Button variant="primary" size="md" disabled={controlsDisabled} onClick={skipToNextFraction}>
           Готово
         </Button>
@@ -183,8 +183,8 @@ export function DistillDashboardView({
     ) : null;
 
   const controlBlock = (
-    <div className="rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm">
-      <p className="text-sm font-semibold text-zinc-900">Управление</p>
+    <div className="rounded-2xl border border-border bg-card p-5 shadow-sm">
+      <p className="text-sm font-semibold text-foreground">Управление</p>
       <div className="mt-3 flex flex-wrap items-center gap-3">
         {nextFractionTitle ? (
           <Button variant="primary" size="md" disabled={controlsDisabled} onClick={skipToNextFraction}>
@@ -204,7 +204,7 @@ export function DistillDashboardView({
           icon={<OctagonX className="h-4 w-4" aria-hidden />}
         />
       </div>
-      {actionMsg ? <p className="mt-3 text-sm text-zinc-600">{actionMsg}</p> : null}
+      {actionMsg ? <p className="mt-3 text-sm text-muted-foreground">{actionMsg}</p> : null}
     </div>
   );
 

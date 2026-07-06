@@ -19,11 +19,11 @@ const recipeIngredientCategoryOptions: Array<{
   icon: React.ComponentType<{ className?: string }>;
   iconClassName: string;
 }> = [
-    { value: "fermentable", label: "Сбраживаемое", icon: Wheat, iconClassName: "text-amber-600" },
-    { value: "hop", label: "Хмель", icon: Hop, iconClassName: "text-emerald-600" },
-    { value: "yeast", label: "Дрожжи", icon: FlaskConical, iconClassName: "text-violet-600" },
-    { value: "water_treatment", label: "Водоподготовка", icon: Droplets, iconClassName: "text-sky-600" },
-    { value: "consumable", label: "Другие добавки", icon: Package, iconClassName: "text-zinc-500" }
+    { value: "fermentable", label: "Сбраживаемое", icon: Wheat, iconClassName: "text-amber-600 dark:text-amber-400" },
+    { value: "hop", label: "Хмель", icon: Hop, iconClassName: "text-emerald-600 dark:text-emerald-400" },
+    { value: "yeast", label: "Дрожжи", icon: FlaskConical, iconClassName: "text-violet-600 dark:text-violet-400" },
+    { value: "water_treatment", label: "Водоподготовка", icon: Droplets, iconClassName: "text-sky-600 dark:text-sky-400" },
+    { value: "consumable", label: "Другие добавки", icon: Package, iconClassName: "text-muted-foreground" }
   ];
 
 export function RecipeIngredientCategoryGrid({
@@ -60,8 +60,8 @@ export function RecipeIngredientCategoryGrid({
                 onChange(option.value);
               }}
               className={`rounded-md border px-3 py-2 text-xs transition ${value === option.value
-                ? "border-black bg-zinc-100 text-zinc-950"
-                : "border-zinc-200 bg-white text-zinc-600 hover:border-zinc-300 hover:bg-zinc-50"
+                ? "border-foreground bg-accent text-foreground"
+                : "border-border bg-card text-muted-foreground hover:border-border hover:bg-muted"
                 }`}
             >
               <span className="inline-flex items-center gap-1.5 whitespace-nowrap">
@@ -128,7 +128,7 @@ export function RecipeFermentableScopePicker({
 
   return (
     <div className="space-y-2" data-testid="recipe-fermentable-scope-picker">
-      <div className="text-[10px] font-medium uppercase tracking-[0.12em] text-zinc-500">
+      <div className="text-[10px] font-medium uppercase tracking-[0.12em] text-muted-foreground">
         По типу сбраживаемого
       </div>
       <div className="flex flex-wrap gap-2">
@@ -140,8 +140,8 @@ export function RecipeFermentableScopePicker({
               type="button"
               onClick={() => onChange(active ? null : option.value)}
               className={`inline-flex items-center rounded-full border px-3 py-1.5 text-xs font-medium transition-colors ${active
-                ? "border-zinc-950 bg-zinc-950 text-white"
-                : "border-zinc-200 bg-white text-zinc-700 hover:border-zinc-300 hover:bg-zinc-50"
+                ? "border-foreground bg-foreground text-background"
+                : "border-border bg-card text-foreground hover:border-border hover:bg-muted"
                 }`}
             >
               {option.label}

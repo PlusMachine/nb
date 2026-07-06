@@ -61,7 +61,9 @@ describe("buildHeroStyleVitals", () => {
     expect(helles.ibu).toBe("16–22");
     expect(helles.abv).toBe("4.7–5.4 %");
     expect(helles.ebc).toMatch(/EBC$/);
-    expect(helles.og).toMatch(/°P$/);
+    // Плотность идёт через общий formatGravityRange (defaultPreferredGravityUnit = Plato) —
+    // единый суффикс на диапазон и 1 знак после запятой.
+    expect(helles.og).toBe("11.0–11.9 °P");
     // Заливка бокала — валидные CSS-цвета.
     expect(helles.glassHex).toMatch(/^#/);
     expect(helles.glassFrom).toMatch(/^rgb\(/);

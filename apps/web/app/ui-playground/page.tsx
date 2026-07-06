@@ -44,7 +44,7 @@ function DialogBasicDemo() {
         Открыть диалог (md)
       </Button>
       <Dialog open={open} onOpenChange={setOpen} title="Пример диалога" description="Базовый Dialog поверх @radix-ui/react-dialog.">
-        <div className="p-5 text-sm text-zinc-600">Содержимое диалога. Заголовок выше — реальный aria-заголовок.</div>
+        <div className="p-5 text-sm text-muted-foreground">Содержимое диалога. Заголовок выше — реальный aria-заголовок.</div>
         <DialogFooter>
           <Button variant="outline" onClick={() => setOpen(false)}>Отмена</Button>
           <Button onClick={() => setOpen(false)}>Готово</Button>
@@ -82,15 +82,15 @@ function DialogGuardDemo() {
         }}
       >
         <DialogHeader>
-          <h2 className="text-base font-semibold text-zinc-900">Редактирование записи</h2>
+          <h2 className="text-base font-semibold text-foreground">Редактирование записи</h2>
           <DialogCloseButton />
         </DialogHeader>
         <div className="space-y-3 p-5">
-          <label className="flex items-center gap-2 text-sm text-zinc-700">
+          <label className="flex items-center gap-2 text-sm text-foreground">
             <input type="checkbox" checked={dirty} onChange={(event) => setDirty(event.target.checked)} />
             Есть несохранённые изменения (isDirty)
           </label>
-          <p className="text-sm text-zinc-500">
+          <p className="text-sm text-muted-foreground">
             Пока чекбокс включён, Esc / клик по фону / крестик не закроют диалог — вместо этого вызовется onGuardedClose.
             Заблокировано попыток закрытия: {blockedAttempts}
           </p>
@@ -121,10 +121,10 @@ function DialogSheetSizeDemo() {
       </Button>
       <Dialog open={open} onOpenChange={setOpen} title="Диалог-«лист»" hideTitle size="sheet">
         <DialogHeader>
-          <h2 className="text-base font-semibold text-zinc-900">Диалог-«лист»</h2>
+          <h2 className="text-base font-semibold text-foreground">Диалог-«лист»</h2>
           <DialogCloseButton />
         </DialogHeader>
-        <div className="p-5 text-sm text-zinc-600">
+        <div className="p-5 text-sm text-muted-foreground">
           size=&quot;sheet&quot; — на мобиле прижат к низу, на sm+ центрируется и занимает больше ширины, чем md/lg.
         </div>
         <DialogFooter>
@@ -144,14 +144,14 @@ function SheetDemo() {
         Открыть Sheet (bottom)
       </Button>
       <Sheet open={bottomOpen} onOpenChange={setBottomOpen} title="Фильтры" side="bottom">
-        <p className="text-sm text-zinc-600">side=&quot;bottom&quot; — всегда bottom-sheet, независимо от ширины экрана.</p>
+        <p className="text-sm text-muted-foreground">side=&quot;bottom&quot; — всегда bottom-sheet, независимо от ширины экрана.</p>
       </Sheet>
 
       <Button variant="outline" onClick={() => setRightOpen(true)}>
         Открыть Sheet (right)
       </Button>
       <Sheet open={rightOpen} onOpenChange={setRightOpen} title="Детали" side="right">
-        <p className="text-sm text-zinc-600">
+        <p className="text-sm text-muted-foreground">
           side=&quot;right&quot; — на sm+ боковая панель во всю высоту справа, на мобиле — bottom-sheet.
         </p>
       </Sheet>
@@ -167,7 +167,7 @@ function PopoverDemo() {
     >
       {({ close }) => (
         <div className="space-y-2">
-          <p className="text-sm text-zinc-700">Контент в портале — не обрезается overflow-hidden родителя.</p>
+          <p className="text-sm text-foreground">Контент в портале — не обрезается overflow-hidden родителя.</p>
           <Button size="sm" onClick={close}>
             Закрыть
           </Button>
@@ -268,7 +268,7 @@ export default function UiPlaygroundPage() {
       <h1 className="text-2xl font-semibold">UI Foundation Playground</h1>
       <Card className="space-y-3">
         <h2 className="text-lg font-semibold">IngredientPicker demo (QA tool)</h2>
-        <p className="text-sm text-zinc-600">Use this internal playground to verify search-as-you-type, keyboard navigation, type filtering and selection callback.</p>
+        <p className="text-sm text-muted-foreground">Use this internal playground to verify search-as-you-type, keyboard navigation, type filtering and selection callback.</p>
         <label className="text-sm">
           Type filter
           <select className="mt-1 w-full rounded border p-2" value={pickerType ?? "all"} onChange={(event) => setPickerType(event.target.value === "all" ? undefined : event.target.value as IngredientType)}>
@@ -298,9 +298,9 @@ export default function UiPlaygroundPage() {
           category={pickerCategory}
           searchIngredients={mockSearch}
           onSelect={(item) => setSelected(item)}
-          emptyCta={<p className="text-xs text-zinc-500">Не нашли? Предложить / создать свой ингредиент</p>}
+          emptyCta={<p className="text-xs text-muted-foreground">Не нашли? Предложить / создать свой ингредиент</p>}
         />
-        <div className="rounded bg-zinc-50 p-2 text-sm">
+        <div className="rounded bg-muted p-2 text-sm">
           Selection callback: {selected ? `${selected.displayName} (${selected.type})` : "nothing selected"}
         </div>
       </Card>

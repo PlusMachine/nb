@@ -49,7 +49,7 @@ export function AuthorAvatar({ image, displayName }: { image: string | null; dis
   return (
     <span
       aria-hidden
-      className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-zinc-200 text-[10px] font-semibold text-zinc-600"
+      className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-muted text-[10px] font-semibold text-muted-foreground"
     >
       {initialsFromName(displayName)}
     </span>
@@ -68,8 +68,8 @@ export function StatCell({
 }) {
   return (
     <div className={`min-w-0 ${className}`}>
-      <div className="text-[11px] uppercase tracking-wider text-zinc-400">{label}</div>
-      <div className="truncate text-sm font-medium tabular-nums text-zinc-900">{value}</div>
+      <div className="text-[11px] uppercase tracking-wider text-muted-foreground">{label}</div>
+      <div className="truncate text-sm font-medium tabular-nums text-foreground">{value}</div>
     </div>
   );
 }
@@ -87,9 +87,9 @@ export function ColorStatCell({
 }) {
   return (
     <div className={`min-w-0 ${className}`}>
-      <div className="text-[11px] uppercase tracking-wider text-zinc-400">Цвет</div>
+      <div className="text-[11px] uppercase tracking-wider text-muted-foreground">Цвет</div>
       <div
-        className={`flex items-center gap-1.5 text-sm font-medium tabular-nums text-zinc-900 ${
+        className={`flex items-center gap-1.5 text-sm font-medium tabular-nums text-foreground ${
           align === "end" ? "justify-end" : ""
         }`}
       >
@@ -131,31 +131,31 @@ export function RecipeRatingOrNew({
   if (rating) {
     if (variant === "overlay") {
       return (
-        <span className="inline-flex shrink-0 items-center gap-1 rounded-full bg-white/90 px-2 py-0.5 text-xs font-semibold text-zinc-900 shadow-sm ring-1 ring-black/5 backdrop-blur-sm">
+        <span className="inline-flex shrink-0 items-center gap-1 rounded-full bg-card/90 px-2 py-0.5 text-xs font-semibold text-foreground shadow-sm ring-1 ring-black/5 backdrop-blur-sm">
           <Star className="h-3.5 w-3.5 fill-amber-500 text-amber-500" aria-hidden />
           {ratingFormatter.format(rating.average)}
-          <span className="font-normal text-zinc-500">({rating.count})</span>
+          <span className="font-normal text-muted-foreground">({rating.count})</span>
         </span>
       );
     }
     return (
-      <span className="inline-flex shrink-0 items-center gap-1 text-xs font-medium text-amber-600">
+      <span className="inline-flex shrink-0 items-center gap-1 text-xs font-medium text-warning-subtle-foreground">
         <Star className="h-3.5 w-3.5 fill-amber-500 text-amber-500" aria-hidden />
         {ratingFormatter.format(rating.average)}
-        <span className="text-zinc-400">({rating.count})</span>
+        <span className="text-muted-foreground">({rating.count})</span>
       </span>
     );
   }
   if (isRecentlyCreated(createdAt)) {
     if (variant === "overlay") {
       return (
-        <span className="inline-flex shrink-0 items-center rounded-full bg-emerald-500 px-2 py-0.5 text-[11px] font-semibold text-white shadow-sm">
+        <span className="inline-flex shrink-0 items-center rounded-full bg-success px-2 py-0.5 text-[11px] font-semibold text-white shadow-sm">
           Новый
         </span>
       );
     }
     return (
-      <span className="inline-flex shrink-0 items-center rounded-full bg-emerald-100 px-2 py-0.5 text-[11px] font-medium text-emerald-800">
+      <span className="inline-flex shrink-0 items-center rounded-full bg-success-subtle px-2 py-0.5 text-[11px] font-medium text-success-subtle-foreground">
         Новый
       </span>
     );
@@ -172,8 +172,8 @@ export function FeaturedBadge({ variant = "inline" }: { variant?: "inline" | "ov
   const base = "inline-flex shrink-0 items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-semibold";
   const skin =
     variant === "overlay"
-      ? "bg-amber-500 text-white shadow-sm"
-      : "bg-amber-100 text-amber-800";
+      ? "bg-warning text-white shadow-sm"
+      : "bg-warning-subtle text-warning-subtle-foreground";
   return (
     <span className={`${base} ${skin}`}>
       <BadgeCheck className="h-3.5 w-3.5" aria-hidden />
@@ -201,12 +201,12 @@ export function StyleChip({
   }
   const label = `${style.name} · ${style.code}`;
   const base =
-    "inline-flex w-fit items-center rounded-full bg-zinc-100 px-2.5 py-0.5 text-[11px] font-medium text-zinc-600";
+    "inline-flex w-fit items-center rounded-full bg-muted px-2.5 py-0.5 text-[11px] font-medium text-muted-foreground";
   if (styleHref) {
     return (
       <Link
         href={styleHref}
-        className={`pointer-events-auto relative z-10 transition hover:bg-zinc-200 hover:text-zinc-900 ${base} ${className}`}
+        className={`pointer-events-auto relative z-10 transition hover:bg-accent hover:text-foreground ${base} ${className}`}
       >
         {label}
       </Link>

@@ -21,11 +21,11 @@ const goToSection = (id: string) => {
  */
 export function BrewQuickDock() {
   return (
-    <div className="sticky bottom-14 z-50 -mx-4 flex gap-2 border-t border-zinc-100 bg-white/95 px-4 py-2.5 backdrop-blur lg:hidden">
+    <div className="sticky bottom-14 z-50 -mx-4 flex gap-2 border-t border-border bg-card/95 px-4 py-2.5 backdrop-blur lg:hidden">
       <button
         type="button"
         onClick={() => goToSection("brew-journal")}
-        className="inline-flex min-h-[44px] flex-1 items-center justify-center gap-1.5 rounded-lg border border-zinc-200 bg-white px-3 text-sm font-medium text-zinc-700 transition hover:bg-zinc-50"
+        className="inline-flex min-h-[44px] flex-1 items-center justify-center gap-1.5 rounded-lg border border-border bg-card px-3 text-sm font-medium text-foreground transition hover:bg-accent"
       >
         <Plus className="h-4 w-4" aria-hidden />
         Замер
@@ -33,7 +33,7 @@ export function BrewQuickDock() {
       <button
         type="button"
         onClick={() => goToSection("brew-notes")}
-        className="inline-flex min-h-[44px] flex-1 items-center justify-center gap-1.5 rounded-lg border border-zinc-200 bg-white px-3 text-sm font-medium text-zinc-700 transition hover:bg-zinc-50"
+        className="inline-flex min-h-[44px] flex-1 items-center justify-center gap-1.5 rounded-lg border border-border bg-card px-3 text-sm font-medium text-foreground transition hover:bg-accent"
       >
         <NotebookPen className="h-4 w-4" aria-hidden />
         Заметка

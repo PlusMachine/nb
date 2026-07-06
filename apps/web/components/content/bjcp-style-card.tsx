@@ -33,15 +33,15 @@ export function BjcpStyleCard({ style }: Props) {
   return (
     <Link
       href={`/bjcp/${style.slug}`}
-      className="group block overflow-hidden rounded-[1.5rem] border border-zinc-200 bg-white shadow-[0_22px_70px_-62px_rgba(15,23,42,0.4)] transition duration-300 hover:-translate-y-0.5 hover:border-zinc-300"
+      className="group block overflow-hidden rounded-[1.5rem] border border-border bg-card shadow-[0_22px_70px_-62px_rgba(15,23,42,0.4)] transition duration-300 hover:-translate-y-0.5 hover:border-border"
       aria-label={`Открыть стиль ${style.bjcpId} ${style.title}`}
     >
       <article className="flex h-full flex-col">
-        <div className="relative aspect-[16/9] overflow-hidden border-b border-zinc-200" style={mediaStyle}>
+        <div className="relative aspect-[16/9] overflow-hidden border-b border-border" style={mediaStyle}>
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.18),transparent_36%)]" />
           <div className="relative flex h-full flex-col justify-between p-4 text-white">
             <div className="flex items-start justify-between gap-3">
-              <span className="rounded-full bg-zinc-950/15 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-white">
+              <span className="rounded-full bg-foreground/15 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-white">
                 BJCP {style.bjcpId}
               </span>
             </div>
@@ -57,17 +57,17 @@ export function BjcpStyleCard({ style }: Props) {
 
         <div className="flex flex-1 flex-col p-4">
           <div className="space-y-2">
-            <p className="text-sm text-zinc-500">кат. {style.categoryNameRu}</p>
-            <p className="text-sm leading-6 text-zinc-600" style={clampStyle}>{style.description}</p>
+            <p className="text-sm text-muted-foreground">кат. {style.categoryNameRu}</p>
+            <p className="text-sm leading-6 text-muted-foreground" style={clampStyle}>{style.description}</p>
           </div>
 
           <div className="mt-4 grid grid-cols-2 gap-2 text-sm">
             {stats.map((stat) => (
               <div
                 key={stat.label}
-                className={`rounded-xl border border-zinc-200 px-3 py-2.5 text-zinc-700 ${stat.accent
+                className={`rounded-xl border border-border px-3 py-2.5 text-foreground ${stat.accent
                   ? "relative overflow-hidden bg-[linear-gradient(180deg,rgba(250,250,250,0.98),rgba(244,244,245,0.92))]"
-                  : "bg-slate-50"
+                  : "bg-muted"
                 }`}
               >
                 {stat.accent ? (
@@ -79,8 +79,8 @@ export function BjcpStyleCard({ style }: Props) {
                     }}
                   />
                 ) : null}
-                <span className="block text-[11px] font-semibold uppercase tracking-[0.16em] text-zinc-500">{stat.label}</span>
-                <span className={`mt-1 block break-words text-zinc-950 ${stat.isFallback ? "text-[13px] font-medium leading-4" : "text-sm font-medium"}`}>
+                <span className="block text-[11px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">{stat.label}</span>
+                <span className={`mt-1 block break-words text-foreground ${stat.isFallback ? "text-[13px] font-medium leading-4" : "text-sm font-medium"}`}>
                   {stat.value}
                 </span>
               </div>
@@ -91,7 +91,7 @@ export function BjcpStyleCard({ style }: Props) {
             {style.badgesRu.slice(0, 3).map((badge: string) => (
               <span
                 key={badge}
-                className="rounded-full border border-zinc-200 bg-white px-2.5 py-1 text-[11px] font-semibold uppercase tracking-[0.12em] text-zinc-600"
+                className="rounded-full border border-border bg-card px-2.5 py-1 text-[11px] font-semibold uppercase tracking-[0.12em] text-muted-foreground"
               >
                 {badge}
               </span>

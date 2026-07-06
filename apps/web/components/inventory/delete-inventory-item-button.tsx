@@ -28,13 +28,13 @@ export function DeleteInventoryItemButton({ inventoryItemId, displayName, render
             type="button"
             disabled={isPending}
             onClick={handleOpen}
-            className="rounded border border-red-200 px-2 py-1 text-xs text-red-700 hover:bg-red-50 disabled:opacity-60"
+            className="rounded border border-destructive-border px-2 py-1 text-xs text-destructive hover:bg-destructive-subtle disabled:opacity-60"
           >
             {isPending ? "Удаляем..." : "Удалить ингредиент"}
           </button>
         )}
       {feedback ? (
-        <p role={feedback.ok ? "status" : "alert"} className={`text-xs ${feedback.ok ? "text-emerald-700" : "text-red-600"}`}>
+        <p role={feedback.ok ? "status" : "alert"} className={`text-xs ${feedback.ok ? "text-success" : "text-destructive"}`}>
           {feedback.message}
         </p>
       ) : null}

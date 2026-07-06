@@ -48,16 +48,16 @@ export default async function BrewBatchesPage() {
     <main className="space-y-4">
       <section className="flex flex-wrap items-center justify-between gap-2">
         <h1 className="text-2xl font-semibold">Варки</h1>
-        <Link href="/app/recipes" className="text-sm font-medium text-zinc-500 transition-colors hover:text-zinc-900">
+        <Link href="/app/recipes" className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground">
           К рецептам
         </Link>
       </section>
 
       {sorted.length === 0 ? (
-        <section className="rounded-2xl border border-dashed border-zinc-200 bg-white p-10 text-center">
-          <p className="text-sm text-zinc-600">
+        <section className="rounded-2xl border border-dashed border-border bg-card p-10 text-center">
+          <p className="text-sm text-muted-foreground">
             Пока нет ни одной варки. Откройте{" "}
-            <Link href="/app/recipes" className="font-medium text-zinc-900 underline underline-offset-2">
+            <Link href="/app/recipes" className="font-medium text-foreground underline underline-offset-2">
               рецепт
             </Link>{" "}
             и нажмите «Сварить».
@@ -71,15 +71,15 @@ export default async function BrewBatchesPage() {
               <li key={batch.id}>
                 <Link
                   href={`/app/brew-batches/${batch.id}`}
-                  className="flex items-center justify-between gap-3 rounded-xl border border-zinc-200 bg-white px-4 py-3 transition-colors hover:border-zinc-300"
+                  className="flex items-center justify-between gap-3 rounded-xl border border-border bg-card px-4 py-3 transition-colors hover:border-border/70"
                 >
                   <div className="min-w-0">
-                    <p className="truncate font-medium text-zinc-950">{batch.name}</p>
-                    <p className="truncate text-sm text-zinc-500">{batch.recipeTitle}</p>
+                    <p className="truncate font-medium text-foreground">{batch.name}</p>
+                    <p className="truncate text-sm text-muted-foreground">{batch.recipeTitle}</p>
                   </div>
                   <div className="flex shrink-0 items-center gap-3">
-                    {batch.hasDevice ? <Cpu className="h-4 w-4 text-zinc-400" aria-label="С устройством" /> : null}
-                    <span className="hidden text-xs text-zinc-400 sm:inline">
+                    {batch.hasDevice ? <Cpu className="h-4 w-4 text-muted-foreground" aria-label="С устройством" /> : null}
+                    <span className="hidden text-xs text-muted-foreground sm:inline">
                       {date.label} {dateFormat.format(date.value)}
                     </span>
                     <span className={`rounded-full px-2.5 py-1 text-xs font-medium ${brewBatchStatusBadgeClass[batch.status]}`}>

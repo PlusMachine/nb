@@ -33,11 +33,11 @@ export function InventoryEmptyState({
 }: Props) {
   if (!hasAnyItems) {
     return (
-      <section className="flex flex-col items-center gap-5 rounded-2xl border border-dashed border-zinc-200 bg-white px-6 py-14 text-center">
-        <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-zinc-50">
-          <PackageOpen className="h-8 w-8 text-zinc-300" />
+      <section className="flex flex-col items-center gap-5 rounded-2xl border border-dashed border-border bg-card px-6 py-14 text-center">
+        <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-muted">
+          <PackageOpen className="h-8 w-8 text-muted-foreground" />
         </div>
-        <h2 className="text-lg font-semibold text-zinc-800">Пока нет ингредиентов</h2>
+        <h2 className="text-lg font-semibold text-foreground">Пока нет ингредиентов</h2>
         <AddIngredientTrigger initialQuickStartDataByContext={initialQuickStartDataByContext} />
       </section>
     );
@@ -74,13 +74,13 @@ export function InventoryEmptyState({
   }
 
   return (
-    <section className="flex flex-col items-center gap-3 rounded-2xl border border-dashed border-zinc-200 bg-white px-6 py-10 text-center">
-      <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-zinc-50">
-        <Icon className="h-5 w-5 text-zinc-300" />
+    <section className="flex flex-col items-center gap-3 rounded-2xl border border-dashed border-border bg-card px-6 py-10 text-center">
+      <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-muted">
+        <Icon className="h-5 w-5 text-muted-foreground" />
       </div>
       <div className="space-y-1">
-        <h2 className="text-base font-semibold text-zinc-700">{title}</h2>
-        <p className="text-sm text-zinc-400">{description}</p>
+        <h2 className="text-base font-semibold text-foreground">{title}</h2>
+        <p className="text-sm text-muted-foreground">{description}</p>
       </div>
     </section>
   );

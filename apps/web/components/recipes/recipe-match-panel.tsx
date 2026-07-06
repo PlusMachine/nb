@@ -9,24 +9,24 @@ import { inventoryUnitShortLabels } from "@/features/inventory/units";
 import { redirectToLoginWithNext } from "@/lib/auth-links";
 
 const statusMeta: Record<RecipeMatchLineStatus, { label: string; pill: string }> = {
-  covered: { label: "Есть", pill: "bg-emerald-50 text-emerald-700 ring-emerald-200" },
-  substitute: { label: "Аналог", pill: "bg-sky-50 text-sky-700 ring-sky-200" },
-  partial: { label: "Частично", pill: "bg-amber-50 text-amber-700 ring-amber-200" },
-  missing: { label: "Нет", pill: "bg-rose-50 text-rose-700 ring-rose-200" }
+  covered: { label: "Есть", pill: "bg-success-subtle text-success-subtle-foreground ring-success/30" },
+  substitute: { label: "Аналог", pill: "bg-sky-50 text-sky-700 ring-sky-200 dark:bg-sky-500/15 dark:text-sky-300 dark:ring-sky-500/30" },
+  partial: { label: "Частично", pill: "bg-warning-subtle text-warning-subtle-foreground ring-warning/30" },
+  missing: { label: "Нет", pill: "bg-destructive-subtle text-destructive-subtle-foreground ring-destructive-border" }
 };
 
 const labelMeta: Record<RecipeMatchLabel, { text: string; accent: string }> = {
-  ready: { text: "Можно сварить из ваших запасов", accent: "text-emerald-700" },
-  almost: { text: "Почти всё есть на складе", accent: "text-emerald-700" },
-  partial: { text: "Часть ингредиентов уже есть", accent: "text-amber-700" },
-  none: { text: "Подходящих ингредиентов на складе нет", accent: "text-zinc-500" }
+  ready: { text: "Можно сварить из ваших запасов", accent: "text-success" },
+  almost: { text: "Почти всё есть на складе", accent: "text-success" },
+  partial: { text: "Часть ингредиентов уже есть", accent: "text-warning-subtle-foreground" },
+  none: { text: "Подходящих ингредиентов на складе нет", accent: "text-muted-foreground" }
 };
 
 const percentRingColor = (matchPercent: number) => {
-  if (matchPercent >= 100) return "text-emerald-600";
-  if (matchPercent >= 70) return "text-lime-600";
-  if (matchPercent >= 1) return "text-amber-600";
-  return "text-zinc-400";
+  if (matchPercent >= 100) return "text-success";
+  if (matchPercent >= 70) return "text-lime-600 dark:text-lime-400";
+  if (matchPercent >= 1) return "text-warning-subtle-foreground";
+  return "text-muted-foreground";
 };
 
 const numberFormatter = new Intl.NumberFormat("ru-RU", { maximumFractionDigits: 1 });
@@ -48,15 +48,15 @@ export function RecipeMatchPanelView({ match, onChanged }: { match: RecipeMatchD
   );
 
   return (
-    <section className="space-y-3 rounded-2xl border border-zinc-100 bg-white p-4 shadow-sm">
+    <section className="space-y-3 rounded-2xl border border-border bg-card p-4 shadow-sm">
       <div className="flex items-center gap-3">
-        <div className={`flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-zinc-50 text-lg font-semibold tabular-nums ring-2 ring-current ${percentRingColor(match.matchPercent)}`}>
+        <div className={`flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-muted text-lg font-semibold tabular-nums ring-2 ring-current ${percentRingColor(match.matchPercent)}`}>
           {match.matchPercent}%
         </div>
         <div className="min-w-0">
-          <h2 className="text-base font-semibold text-zinc-900">Совпадение со складом</h2>
+          <h2 className="text-base font-semibold text-foreground">Совпадение со складом</h2>
           <p className={`text-sm font-medium ${label.accent}`}>{label.text}</p>
-          <p className="mt-0.5 text-xs text-zinc-500">
+          <p className="mt-0.5 text-xs text-muted-foreground">
             Есть {match.coveredLines} из {match.totalLines}
             {match.missingCount > 0 ? ` · не хватает ${match.missingCount}` : ""}
             {match.scaledToInventory ? ` · расчёт под ${numberFormatter.format(match.targetBatchVolumeL)} л` : ""}
@@ -65,8 +65,8 @@ export function RecipeMatchPanelView({ match, onChanged }: { match: RecipeMatchD
       </div>
 
       {gaps.length > 0 ? (
-        <div className="space-y-1.5 border-t border-zinc-100 pt-3">
-          <h3 className="text-xs font-medium text-zinc-500">Не хватает на складе</h3>
+        <div className="space-y-1.5 border-t border-border pt-3">
+          <h3 className="text-xs font-medium text-muted-foreground">Не хватает на складе</h3>
           <ul className="space-y-1.5">
             {gaps.map((line) => (
               <MatchGapRow key={line.recipeIngredientId} line={line} onAdded={onChanged} />
@@ -75,8 +75,8 @@ export function RecipeMatchPanelView({ match, onChanged }: { match: RecipeMatchD
         </div>
       ) : null}
 
-      <details className="group border-t border-zinc-100 pt-3">
-        <summary className="flex cursor-pointer list-none items-center justify-between gap-2 text-xs font-medium text-zinc-500 transition hover:text-zinc-700">
+      <details className="group border-t border-border pt-3">
+        <summary className="flex cursor-pointer list-none items-center justify-between gap-2 text-xs font-medium text-muted-foreground transition hover:text-foreground">
           <span>Что есть и чего не хватает</span>
           <ChevronDown className="h-4 w-4 shrink-0 transition-transform group-open:rotate-180" aria-hidden />
         </summary>
@@ -85,7 +85,7 @@ export function RecipeMatchPanelView({ match, onChanged }: { match: RecipeMatchD
             const meta = statusMeta[line.status];
             return (
               <li key={line.recipeIngredientId} className="flex items-center justify-between gap-3 text-sm">
-                <span className="min-w-0 truncate text-zinc-700">{line.ingredientDisplayName ?? "—"}</span>
+                <span className="min-w-0 truncate text-foreground">{line.ingredientDisplayName ?? "—"}</span>
                 <span className={`inline-flex shrink-0 items-center rounded-full px-2.5 py-0.5 text-[11px] font-medium ring-1 ${meta.pill}`}>
                   {meta.label}
                   {line.status === "partial" ? ` ${line.coveragePercent}%` : ""}
@@ -151,14 +151,14 @@ function MatchGapRow({ line, onAdded }: { line: RecipeMatchLineDto; onAdded: () 
   };
 
   return (
-    <li className="rounded-lg bg-zinc-50 px-3 py-2">
+    <li className="rounded-lg bg-muted px-3 py-2">
       <div className="flex items-center justify-between gap-3">
-        <span className="min-w-0 truncate text-sm text-zinc-700">{line.ingredientDisplayName ?? "—"}</span>
+        <span className="min-w-0 truncate text-sm text-foreground">{line.ingredientDisplayName ?? "—"}</span>
         {open ? null : (
           <button
             type="button"
             onClick={openRow}
-            className="inline-flex shrink-0 items-center gap-1 rounded-full bg-white px-2.5 py-1 text-xs font-medium text-zinc-700 ring-1 ring-zinc-200 transition hover:bg-zinc-100"
+            className="inline-flex shrink-0 items-center gap-1 rounded-full bg-card px-2.5 py-1 text-xs font-medium text-foreground ring-1 ring-border transition hover:bg-accent"
           >
             <Plus className="h-3.5 w-3.5" aria-hidden />
             На склад
@@ -178,14 +178,14 @@ function MatchGapRow({ line, onAdded }: { line: RecipeMatchLineDto; onAdded: () 
             aria-label={`Количество, ${unitLabel}`}
             aria-invalid={error ? true : undefined}
             aria-describedby={error ? errorId : undefined}
-            className="h-8 w-24 rounded-md border border-zinc-200 px-2 text-sm text-zinc-900 focus:outline-none focus:ring-2 focus:ring-zinc-400"
+            className="h-8 w-24 rounded-md border border-border px-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
           />
-          <span className="text-xs text-zinc-500">{unitLabel}</span>
+          <span className="text-xs text-muted-foreground">{unitLabel}</span>
           <button
             type="button"
             onClick={submit}
             disabled={pending}
-            className="inline-flex items-center gap-1 rounded-md bg-zinc-900 px-2.5 py-1.5 text-xs font-medium text-white transition hover:bg-zinc-800 disabled:opacity-60"
+            className="inline-flex items-center gap-1 rounded-md bg-foreground px-2.5 py-1.5 text-xs font-medium text-background transition hover:bg-foreground/90 disabled:opacity-60"
           >
             {pending ? <Loader2 className="h-3.5 w-3.5 animate-spin" aria-hidden /> : <Check className="h-3.5 w-3.5" aria-hidden />}
             Добавить
@@ -195,13 +195,13 @@ function MatchGapRow({ line, onAdded }: { line: RecipeMatchLineDto; onAdded: () 
             onClick={() => { setOpen(false); setError(null); }}
             disabled={pending}
             aria-label="Отмена"
-            className="inline-flex h-7 w-7 items-center justify-center rounded-md text-zinc-400 transition hover:bg-zinc-100 hover:text-zinc-600"
+            className="inline-flex h-7 w-7 items-center justify-center rounded-md text-muted-foreground transition hover:bg-accent hover:text-foreground"
           >
             <X className="h-4 w-4" aria-hidden />
           </button>
         </div>
       ) : null}
-      {error ? <p id={errorId} role="alert" className="mt-1 text-xs text-rose-600">{error}</p> : null}
+      {error ? <p id={errorId} role="alert" className="mt-1 text-xs text-destructive">{error}</p> : null}
     </li>
   );
 }
@@ -251,11 +251,11 @@ export function RecipeMatchPanel({ recipeId }: { recipeId: string }) {
 
   if (!state.authenticated) {
     return (
-      <section className="rounded-2xl border border-zinc-100 bg-white p-4 text-sm text-zinc-600 shadow-sm">
+      <section className="rounded-2xl border border-border bg-card p-4 text-sm text-muted-foreground shadow-sm">
         <button
           type="button"
           onClick={() => redirectToLoginWithNext()}
-          className="font-medium text-zinc-900 underline underline-offset-2"
+          className="font-medium text-foreground underline underline-offset-2"
         >
           Войдите
         </button>

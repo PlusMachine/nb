@@ -4,9 +4,11 @@ import { gravityToSg, sgToGravityUnit } from "@nb/brewing-core";
 import React, { useEffect, useState } from "react";
 
 import { Popover } from "@nb/ui";
+import { NumericInput } from "@/components/shared/numeric-input";
 import { type RecipeCalculationMeta, type RecipeDraftPreviewDto } from "@/features/recipes/contracts";
 import {
   formatGravityRange,
+  formatGravitySecondary,
   gravityUnitLabels,
   toCalculatorGravityUnit,
   type PreferredGravityUnit
@@ -31,7 +33,9 @@ export function FgSettingsPopover({
 }) {
   const manualFgUnit = toCalculatorGravityUnit(preferredGravityUnit);
   const manualFgPrecision = preferredGravityUnit === "sg" ? 3 : 1;
-  const manualFgMin = preferredGravityUnit === "sg" ? 0.99 : 0;
+  // Нижняя граница — тот же 0.99 SG, что и в commitManualFg: в °P/°Bx это ≈ −2.6, минус
+  // должен быть доступен (очень сухое пиво уходит ниже 1.000 SG).
+  const manualFgMin = preferredGravityUnit === "sg" ? 0.99 : sgToGravityUnit(0.99, manualFgUnit);
   const manualFgMax = preferredGravityUnit === "sg" ? 1.2 : Math.round(sgToGravityUnit(1.2, manualFgUnit));
   const manualFgStep = preferredGravityUnit === "sg" ? 0.001 : 0.1;
   const sgToManualFgInput = (sg: number | null) => (
@@ -73,6 +77,14 @@ export function FgSettingsPopover({
     }));
   };
 
+  const manualFgInputNumber = toOptionalNumber(manualFgInput);
+  const manualFgSgPreview = manualFgInputNumber != null && Number.isFinite(manualFgInputNumber)
+    ? gravityToSg(manualFgInputNumber, manualFgUnit)
+    : null;
+  const manualFgSecondaryText = manualFgSgPreview != null
+    ? formatGravitySecondary(manualFgSgPreview, preferredGravityUnit)
+    : null;
+
   const commitManualFg = () => {
     const parsed = toOptionalNumber(manualFgInput);
     const parsedSg = parsed == null || !Number.isFinite(parsed) ? null : gravityToSg(parsed, manualFgUnit);
@@ -91,7 +103,7 @@ export function FgSettingsPopover({
       trigger={({ open }) => (
         <button
           type="button"
-          className={`inline-flex h-7 w-7 items-center justify-center rounded-lg text-[13px] leading-none transition-colors hover:bg-zinc-100 hover:text-zinc-700 ${open ? "bg-zinc-100 text-zinc-700" : "text-zinc-400"}`}
+          className={`inline-flex h-7 w-7 items-center justify-center rounded-lg text-[13px] leading-none transition-colors hover:bg-accent hover:text-foreground ${open ? "bg-accent text-foreground" : "text-muted-foreground"}`}
           aria-label="Открыть настройки КП"
         >
           ⚙
@@ -110,12 +122,12 @@ export function FgSettingsPopover({
         <div className="w-[min(20rem,calc(100vw-2.5rem))] normal-case tracking-normal">
           <div className="flex items-start justify-between gap-3">
             <div>
-              <h4 className="text-sm font-semibold text-zinc-900">Прогноз КП</h4>
+              <h4 className="text-sm font-semibold text-foreground">Прогноз КП</h4>
             </div>
             <button
               type="button"
               onClick={close}
-              className="inline-flex h-7 w-7 items-center justify-center rounded-lg text-sm text-zinc-300 transition-colors hover:bg-zinc-100 hover:text-zinc-700"
+              className="inline-flex h-7 w-7 items-center justify-center rounded-lg text-sm text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
               aria-label="Закрыть настройки КП"
             >
               ×
@@ -123,10 +135,9 @@ export function FgSettingsPopover({
           </div>
 
           <div className="mt-2.5 space-y-2.5">
-            <label className="space-y-1 text-[11px] font-medium text-zinc-500">
+            <label className="space-y-1 text-[11px] font-medium text-muted-foreground">
               Ожидаемая attenuation, %
-              <input
-                type="number"
+              <NumericInput
                 min={60}
                 max={90}
                 step={0.1}
@@ -140,18 +151,18 @@ export function FgSettingsPopover({
                   }
                 }}
                 className={`h-9 w-full rounded-lg border px-2.5 text-sm tabular-nums shadow-sm ${manualFgEnabled
-                  ? "border-zinc-100 bg-zinc-50 text-zinc-400"
-                  : "border-zinc-200 bg-white text-zinc-900"
+                  ? "border-border bg-muted text-muted-foreground"
+                  : "border-border bg-card text-foreground"
                   }`}
                 placeholder="Например, 75"
               />
-              <span className="block text-[11px] font-normal text-zinc-400">
+              <span className="block text-[11px] font-normal text-muted-foreground">
                 Пусто — использовать авторасчет
               </span>
             </label>
 
             <div className="space-y-1.5">
-              <label className="flex items-center gap-2 text-[11px] font-medium text-zinc-600">
+              <label className="flex items-center gap-2 text-[11px] font-medium text-muted-foreground">
                 <input
                   type="checkbox"
                   checked={manualFgEnabled}
@@ -168,18 +179,17 @@ export function FgSettingsPopover({
                       }));
                     }
                   }}
-                  className="h-4 w-4 rounded border-zinc-300"
+                  className="h-4 w-4 rounded border-border"
                 />
                 Зафиксировать КП вручную
               </label>
 
               {manualFgEnabled ? (
                 <div className="space-y-1">
-                  <span className="block text-[11px] font-medium text-zinc-500">
+                  <span className="block text-[11px] font-medium text-muted-foreground">
                     Плотность ({gravityUnitLabels[preferredGravityUnit]})
                   </span>
-                  <input
-                    type="number"
+                  <NumericInput
                     min={manualFgMin}
                     max={manualFgMax}
                     step={manualFgStep}
@@ -191,44 +201,47 @@ export function FgSettingsPopover({
                         event.currentTarget.blur();
                       }
                     }}
-                    className="h-9 w-full rounded-lg border border-zinc-200 bg-white px-2.5 text-sm tabular-nums text-zinc-900 shadow-sm"
+                    className="h-9 w-full rounded-lg border border-border bg-card px-2.5 text-sm tabular-nums text-foreground shadow-sm"
                     placeholder={(sgToManualFgInput(preview?.fg ?? 1.012) ?? 0).toFixed(manualFgPrecision)}
                   />
+                  {manualFgSecondaryText ? (
+                    <span className="block text-[11px] text-muted-foreground">= {manualFgSecondaryText}</span>
+                  ) : null}
                 </div>
               ) : null}
             </div>
 
             {preview?.fgEstimateDetails ? (
-              <div className="space-y-1 border-t border-zinc-100 pt-2.5 text-[11px] text-zinc-500">
+              <div className="space-y-1 border-t border-border pt-2.5 text-[11px] text-muted-foreground">
                 <div className="flex items-center justify-between gap-2">
                   <span>База {preview.fgEstimateDetails.attenuationSource === "yeast" ? "по дрожжам" : "по умолчанию"}</span>
-                  <span className="font-medium tabular-nums text-zinc-700">{preview.fgEstimateDetails.baseAttenuationPct.toFixed(1)}%</span>
+                  <span className="font-medium tabular-nums text-foreground">{preview.fgEstimateDetails.baseAttenuationPct.toFixed(1)}%</span>
                 </div>
                 {preview.fgEstimateDetails.mainMashTempC != null && preview.fgEstimateDetails.mashAdjPctPoints !== 0 ? (
                   <div className="flex items-center justify-between gap-2">
                     <span>Поправка по затору ({preview.fgEstimateDetails.mainMashTempC}°C)</span>
-                    <span className="font-medium tabular-nums text-zinc-700">{formatSignedPctPoints(preview.fgEstimateDetails.mashAdjPctPoints)}</span>
+                    <span className="font-medium tabular-nums text-foreground">{formatSignedPctPoints(preview.fgEstimateDetails.mashAdjPctPoints)}</span>
                   </div>
                 ) : null}
                 {preview.fgEstimateDetails.simpleSugarAdj > 0 ? (
                   <div className="flex items-center justify-between gap-2">
                     <span>Простые сахара ({preview.fgEstimateDetails.simpleSugarSharePct.toFixed(0)}%)</span>
-                    <span className="font-medium tabular-nums text-zinc-700">{formatSignedPctPoints(preview.fgEstimateDetails.simpleSugarAdj)}</span>
+                    <span className="font-medium tabular-nums text-foreground">{formatSignedPctPoints(preview.fgEstimateDetails.simpleSugarAdj)}</span>
                   </div>
                 ) : null}
                 {preview.fgEstimateDetails.crystalDextrinAdj > 0 ? (
                   <div className="flex items-center justify-between gap-2">
                     <span>Карамельные / декстрины ({preview.fgEstimateDetails.crystalDextrinSharePct.toFixed(0)}%)</span>
-                    <span className="font-medium tabular-nums text-zinc-700">{formatSignedPctPoints(-preview.fgEstimateDetails.crystalDextrinAdj)}</span>
+                    <span className="font-medium tabular-nums text-foreground">{formatSignedPctPoints(-preview.fgEstimateDetails.crystalDextrinAdj)}</span>
                   </div>
                 ) : null}
                 {preview.fgEstimateDetails.lactoseAdj > 0 ? (
                   <div className="flex items-center justify-between gap-2">
                     <span>Лактоза ({preview.fgEstimateDetails.lactoseSharePct.toFixed(0)}%)</span>
-                    <span className="font-medium tabular-nums text-zinc-700">{formatSignedPctPoints(-preview.fgEstimateDetails.lactoseAdj)}</span>
+                    <span className="font-medium tabular-nums text-foreground">{formatSignedPctPoints(-preview.fgEstimateDetails.lactoseAdj)}</span>
                   </div>
                 ) : null}
-                <div className="flex items-center justify-between gap-2 border-t border-zinc-100 pt-1 font-medium text-zinc-700">
+                <div className="flex items-center justify-between gap-2 border-t border-border pt-1 font-medium text-foreground">
                   <span>Итоговая attenuation</span>
                   <span className="tabular-nums">{preview.fgEstimateDetails.effectiveAttenuationPct.toFixed(1)}%</span>
                 </div>
@@ -241,7 +254,7 @@ export function FgSettingsPopover({
                   return rangeText ? (
                     <div className="flex items-center justify-between gap-2">
                       <span>Диапазон КП</span>
-                      <span className="font-medium tabular-nums text-zinc-700">{rangeText}</span>
+                      <span className="font-medium tabular-nums text-foreground">{rangeText}</span>
                     </div>
                   ) : null;
                 })()}

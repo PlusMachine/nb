@@ -25,7 +25,7 @@ import {
 } from "@nb/brewforge-protocol";
 
 import type { DeviceTransport } from "./transport";
-import { publishCommandAwaitAck, publishRecipe } from "./mqtt-client";
+import { publishCommandAwaitAck, publishOta, publishRecipe } from "./mqtt-client";
 
 // Кадр старше этого считаем «нет данных» (null): иначе дашборд показывал бы давнюю
 // строку как живую (он детектит онлайн по факту прихода кадров, не по их seq).
@@ -115,6 +115,13 @@ export function cloudTransport(device: CloudDeviceRef): DeviceTransport {
 
     async readSlotSnapshot(_slot: number): Promise<DeviceRecipe | null> {
       throw new Error("CLOUD_UNSUPPORTED");
+    },
+
+    async startOta(url: string): Promise<void> {
+      // Облачный запуск OTA (F3, §5.4): {"cmd":"ota","url"} в .../cmd. Ack по
+      // проводу не коррелируется (форма без конверта Command) — прогресс/итог
+      // прошивка рапортует в .../log, мост складывает в brew_log_events.
+      await publishOta(device.hardwareId, url);
     },
   };
 }

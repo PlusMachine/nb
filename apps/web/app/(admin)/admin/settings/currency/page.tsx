@@ -12,13 +12,13 @@ export default async function AdminCurrencySettingsPage() {
     <section className="space-y-4 rounded-lg border p-4">
       <div className="space-y-1">
         <h1 className="text-xl font-semibold">Currency settings</h1>
-        <p className="text-sm text-zinc-600">Базовая валюта системы: RUB. Эти константы используются только для display conversion и inventory cost foundation.</p>
+        <p className="text-sm text-muted-foreground">Базовая валюта системы: RUB. Эти константы используются только для display conversion и inventory cost foundation.</p>
       </div>
 
       <form action={updateCurrencySettingsAction} className="grid gap-3 sm:grid-cols-3">
         <label className="text-sm">
           RUB base
-          <input className="mt-1 w-full rounded border bg-zinc-100 p-2 text-zinc-500" value="1.00" readOnly />
+          <input className="mt-1 w-full rounded border bg-muted p-2 text-muted-foreground" value="1.00" readOnly />
         </label>
         <label className="text-sm">
           USD to RUB
@@ -39,7 +39,7 @@ export default async function AdminCurrencySettingsPage() {
           />
         </label>
         <div className="sm:col-span-3">
-          <button className="rounded bg-black px-3 py-2 text-sm text-white" type="submit">Save rates</button>
+          <button className="rounded bg-foreground px-3 py-2 text-sm text-background" type="submit">Save rates</button>
         </div>
       </form>
     </section>

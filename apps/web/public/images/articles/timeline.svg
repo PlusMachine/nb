@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 118" role="img" aria-label="Таймлайн: варочный день 4–5 часов, брожение около недели, карбонизация несколько дней — через 2–3 недели пробуем" font-family="'Rubik', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif">
+  <!-- подписи фаз (над рейлом) -->
+  <text x="40"  y="42" font-size="15" font-weight="600" fill="#09090B">Варочный день</text>
+  <text x="290" y="42" font-size="15" font-weight="600" fill="#09090B">Брожение</text>
+  <text x="510" y="42" font-size="15" font-weight="600" fill="#09090B">Карбонизация</text>
+
+  <!-- рейл -->
+  <line x1="46" y1="74" x2="700" y2="74" stroke="#E4E4E7" stroke-width="3" stroke-linecap="round"/>
+  <!-- узлы фаз -->
+  <circle cx="46"  cy="74" r="6" fill="#18181B"/>
+  <circle cx="290" cy="74" r="6" fill="#18181B"/>
+  <circle cx="510" cy="74" r="6" fill="#18181B"/>
+
+  <!-- финиш: кружка готового пива (единственный тёплый акцент) -->
+  <g transform="translate(688, 58)">
+    <path d="M34 15 h4 a8 8 0 0 1 0 16 h-4" fill="none" stroke="#F59E0B" stroke-width="4.5" stroke-linecap="round"/>
+    <rect x="4" y="6" width="30" height="34" rx="5.5" fill="#F59E0B"/>
+    <rect x="8.5" y="12" width="6" height="22" rx="3" fill="#FBBF24"/>
+    <g fill="#FFFFFF" stroke="#E4E4E7" stroke-width="1.4">
+      <circle cx="9.5" cy="7" r="6"/>
+      <circle cx="28.5" cy="7" r="6"/>
+      <circle cx="19" cy="4.5" r="7.4"/>
+    </g>
+    <g fill="#FFFFFF">
+      <circle cx="9.5" cy="7" r="5.4"/>
+      <circle cx="28.5" cy="7" r="5.4"/>
+      <circle cx="19" cy="4.5" r="6.8"/>
+    </g>
+  </g>
+
+  <!-- длительности (под рейлом) -->
+  <text x="40"  y="102" font-size="13" fill="#A1A1AA">4–5 часов</text>
+  <text x="290" y="102" font-size="13" fill="#A1A1AA">~1 неделя</text>
+  <text x="510" y="102" font-size="13" fill="#A1A1AA">несколько дней</text>
+</svg>

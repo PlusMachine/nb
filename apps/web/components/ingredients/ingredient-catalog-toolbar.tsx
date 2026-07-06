@@ -70,38 +70,38 @@ const categoryMeta: Record<IngredientCategory, {
 }> = {
   fermentable: {
     icon: Wheat,
-    color: "text-amber-600",
-    activeColor: "text-amber-800",
-    activeBg: "bg-amber-50",
-    activeRing: "ring-amber-300"
+    color: "text-amber-600 dark:text-amber-400",
+    activeColor: "text-amber-800 dark:text-amber-300",
+    activeBg: "bg-amber-50 dark:bg-amber-500/15",
+    activeRing: "ring-amber-300 dark:ring-amber-500/30"
   },
   hop: {
     icon: Hop,
-    color: "text-emerald-600",
-    activeColor: "text-emerald-800",
-    activeBg: "bg-emerald-50",
-    activeRing: "ring-emerald-300"
+    color: "text-emerald-600 dark:text-emerald-400",
+    activeColor: "text-emerald-800 dark:text-emerald-300",
+    activeBg: "bg-emerald-50 dark:bg-emerald-500/15",
+    activeRing: "ring-emerald-300 dark:ring-emerald-500/30"
   },
   yeast: {
     icon: FlaskConical,
-    color: "text-violet-600",
-    activeColor: "text-violet-800",
-    activeBg: "bg-violet-50",
-    activeRing: "ring-violet-300"
+    color: "text-violet-600 dark:text-violet-400",
+    activeColor: "text-violet-800 dark:text-violet-300",
+    activeBg: "bg-violet-50 dark:bg-violet-500/15",
+    activeRing: "ring-violet-300 dark:ring-violet-500/30"
   },
   water_treatment: {
     icon: Droplets,
-    color: "text-sky-600",
-    activeColor: "text-sky-800",
-    activeBg: "bg-sky-50",
-    activeRing: "ring-sky-300"
+    color: "text-sky-600 dark:text-sky-400",
+    activeColor: "text-sky-800 dark:text-sky-300",
+    activeBg: "bg-sky-50 dark:bg-sky-500/15",
+    activeRing: "ring-sky-300 dark:ring-sky-500/30"
   },
   consumable: {
     icon: Package,
-    color: "text-zinc-500",
-    activeColor: "text-zinc-800",
-    activeBg: "bg-zinc-100",
-    activeRing: "ring-zinc-300"
+    color: "text-muted-foreground",
+    activeColor: "text-foreground",
+    activeBg: "bg-muted",
+    activeRing: "ring-border"
   }
 };
 
@@ -373,12 +373,12 @@ export function IngredientCatalogToolbar({
   const pillClassName = (active: boolean, activeClasses: string) => (
     `inline-flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full border px-3 py-2 text-sm font-medium transition-colors ${active
       ? activeClasses
-      : "border-zinc-200 bg-white text-zinc-600 hover:border-zinc-300 hover:bg-zinc-50"
+      : "border-border bg-card text-muted-foreground hover:border-border hover:bg-muted"
     }`
   );
 
   return (
-    <section className="space-y-3 rounded-[28px] border border-zinc-200 bg-white p-5 shadow-sm">
+    <section className="space-y-3 rounded-[28px] border border-border bg-card p-5 shadow-sm">
       <div className="flex items-center gap-2">
         <div className="relative min-w-0 flex-1">
           <input
@@ -386,13 +386,13 @@ export function IngredientCatalogToolbar({
             onChange={(event) => setSearchValue(event.target.value)}
             onFocus={handleSearchFocus}
             onBlur={handleSearchBlur}
-            className="h-11 w-full rounded-xl border border-zinc-200 bg-zinc-50 px-4 pr-10 text-sm"
+            className="h-11 w-full rounded-xl border border-border bg-muted px-4 pr-10 text-sm"
             placeholder="Поиск по каталогу"
           />
           {/* Индикатор обновления внутри поля: отдельная строка текста меняла
               высоту тулбара на каждый ввод (28px layout shift). */}
           {isPending || isSearchPending ? (
-            <span role="status" className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400">
+            <span role="status" className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground">
               <Loader2 className="h-4 w-4 animate-spin" />
               <span className="sr-only">Обновляем каталог…</span>
             </span>
@@ -405,8 +405,8 @@ export function IngredientCatalogToolbar({
               type="button"
               aria-label="Сортировка"
               className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border transition-colors ${sort !== defaultCatalogSortOption
-                ? "border-blue-200 bg-blue-50 text-blue-700"
-                : "border-zinc-200 bg-zinc-50 text-zinc-600 hover:border-zinc-300 hover:bg-white"
+                ? "border-link/30 bg-muted text-link"
+                : "border-border bg-muted text-muted-foreground hover:border-border hover:bg-card"
               }`}
             >
               <ArrowUpDown className="h-4 w-4" />
@@ -415,7 +415,7 @@ export function IngredientCatalogToolbar({
           items={sortOptionsForCategory.map((option): DropdownMenuItem => ({
             key: option,
             label: sortLabels[option],
-            icon: option === sort ? <Check className="h-3.5 w-3.5 text-blue-600" /> : undefined,
+            icon: option === sort ? <Check className="h-3.5 w-3.5 text-link" /> : undefined,
             onSelect: () => replaceWith({ sort: option })
           }))}
           aria-label="Сортировка"
@@ -437,8 +437,8 @@ export function IngredientCatalogToolbar({
             }));
           }}
           className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border transition-colors ${hasFilters
-            ? "border-zinc-200 bg-white text-zinc-600 hover:border-zinc-300 hover:bg-zinc-50"
-            : "cursor-not-allowed border-zinc-100 bg-zinc-50 text-zinc-300"
+            ? "border-border bg-card text-muted-foreground hover:border-border hover:bg-muted"
+            : "cursor-not-allowed border-border bg-muted text-muted-foreground/60"
           }`}
         >
           <RotateCcw className="h-4 w-4" />
@@ -447,7 +447,7 @@ export function IngredientCatalogToolbar({
         {canManage ? (
           <Link
             href={buildCreateCustomIngredientHref({ category, subtype })}
-            className="inline-flex h-11 shrink-0 items-center gap-1.5 rounded-xl border border-zinc-300 px-3 text-sm font-medium text-zinc-700 transition-colors hover:bg-zinc-50"
+            className="inline-flex h-11 shrink-0 items-center gap-1.5 rounded-xl border border-border px-3 text-sm font-medium text-foreground transition-colors hover:bg-muted"
           >
             <Plus className="h-4 w-4" />
             <span className="hidden sm:inline">Создать свой</span>
@@ -461,10 +461,10 @@ export function IngredientCatalogToolbar({
         <div className="flex gap-2 lg:flex-wrap">
           <Link
             href={buildLandingHref("/catalog", { targetCategory: "all" })}
-            className={pillClassName(category === "all", "border-transparent bg-zinc-950 text-white")}
+            className={pillClassName(category === "all", "border-transparent bg-foreground text-background")}
           >
             Все
-            <span className="tabular-nums text-zinc-400">{counts.total}</span>
+            <span className="tabular-nums text-muted-foreground">{counts.total}</span>
           </Link>
 
           {primaryButtons.map((button) => {
@@ -476,7 +476,7 @@ export function IngredientCatalogToolbar({
                 <span
                   key={button.key}
                   aria-disabled="true"
-                  className="inline-flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full border border-zinc-100 bg-zinc-50 px-3 py-2 text-sm text-zinc-300"
+                  className="inline-flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full border border-border bg-muted px-3 py-2 text-sm text-muted-foreground/60"
                 >
                   <Icon className="h-4 w-4" />
                   {button.label}
@@ -497,7 +497,7 @@ export function IngredientCatalogToolbar({
               >
                 <Icon className={`h-4 w-4 ${button.active ? button.meta.activeColor : button.meta.color}`} />
                 {button.label}
-                <span className={`tabular-nums ${button.active ? `${button.meta.activeColor} opacity-70` : "text-zinc-400"}`}>
+                <span className={`tabular-nums ${button.active ? `${button.meta.activeColor} opacity-70` : "text-muted-foreground"}`}>
                   {button.count}
                 </span>
               </Link>
@@ -509,10 +509,10 @@ export function IngredientCatalogToolbar({
               href={view === "mine"
                 ? buildLandingHref(currentLandingPath, { view: "all" })
                 : buildLandingHref(currentLandingPath, { view: "mine" })}
-              className={pillClassName(view === "mine", "border-transparent bg-zinc-950 text-white")}
+              className={pillClassName(view === "mine", "border-transparent bg-foreground text-background")}
             >
               Мои
-              <span className="tabular-nums text-zinc-400">{counts.customCount}</span>
+              <span className="tabular-nums text-muted-foreground">{counts.customCount}</span>
             </Link>
           ) : null}
         </div>

@@ -122,9 +122,9 @@ export function ManualControlCard({ telemetry, hasDevice, controlsHeld, isLive, 
 
   // --- в ручном режиме -----------------------------------------------------
   return (
-    <section className="rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm">
+    <section className="rounded-2xl border border-border bg-card p-5 shadow-sm">
       <div className="flex flex-wrap items-center justify-between gap-2">
-        <p className="text-sm font-semibold text-zinc-900">Ручной режим</p>
+        <p className="text-sm font-semibold text-foreground">Ручной режим</p>
         <Button
           variant="outline"
           size="sm"
@@ -138,8 +138,8 @@ export function ManualControlCard({ telemetry, hasDevice, controlsHeld, isLive, 
       {/* Target (уставка). */}
       <div className="mt-4">
         <div className="flex items-center justify-between text-sm">
-          <span className="text-zinc-500">Целевая температура</span>
-          <span className="font-medium tabular-nums text-zinc-900">{Math.round(setpointLocal)} °C</span>
+          <span className="text-muted-foreground">Целевая температура</span>
+          <span className="font-medium tabular-nums text-foreground">{Math.round(setpointLocal)} °C</span>
         </div>
         <div className="mt-2">
           <SliderScaffold
@@ -164,8 +164,8 @@ export function ManualControlCard({ telemetry, hasDevice, controlsHeld, isLive, 
       {/* Heat % (мощность). */}
       <div className="mt-4">
         <div className="flex items-center justify-between text-sm">
-          <span className="text-zinc-500">Мощность нагрева</span>
-          <span className="font-medium tabular-nums text-zinc-900">{Math.round(pwmLocal)} %</span>
+          <span className="text-muted-foreground">Мощность нагрева</span>
+          <span className="font-medium tabular-nums text-foreground">{Math.round(pwmLocal)} %</span>
         </div>
         <div className="mt-2">
           <SliderScaffold
@@ -188,7 +188,7 @@ export function ManualControlCard({ telemetry, hasDevice, controlsHeld, isLive, 
       </div>
 
       {/* Тогглы: нагрев (hold-to-confirm вкл) + насос. */}
-      <div className="mt-5 flex flex-wrap items-center gap-3 border-t border-zinc-100 pt-4">
+      <div className="mt-5 flex flex-wrap items-center gap-3 border-t border-border pt-4">
         {heatEnabled ? (
           <Button
             variant="dangerOutline"
@@ -270,7 +270,7 @@ export function ManualControlCard({ telemetry, hasDevice, controlsHeld, isLive, 
         ) : null}
 
         {/* Живой статус нагрева: «применяется…» до подтверждения телеметрией. */}
-        <span className="text-xs text-zinc-500">
+        <span className="text-xs text-muted-foreground">
           {pendingHeat !== null
             ? "применяется…"
             : heatOn
@@ -281,11 +281,11 @@ export function ManualControlCard({ telemetry, hasDevice, controlsHeld, isLive, 
         </span>
       </div>
 
-      <p className="mt-3 text-xs text-zinc-500">
+      <p className="mt-3 text-xs text-muted-foreground">
         Нагрев на плате гаснет при потере связи (≈45&nbsp;с без команд) и по макс. времени
         (30&nbsp;мин). Пока эта карта открыта и вы управляете — нагрев поддерживается.
       </p>
-      {msg ? <p className="mt-2 text-sm text-zinc-600">{msg}</p> : null}
+      {msg ? <p className="mt-2 text-sm text-muted-foreground">{msg}</p> : null}
     </section>
   );
 }

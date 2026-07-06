@@ -10,8 +10,8 @@ import { Beer, Boxes, Droplets, FlaskConical, type LucideIcon } from "lucide-rea
 
 function Meter({ value }: { value: number }) {
   return (
-    <div className="h-1 overflow-hidden rounded-full bg-zinc-200" aria-hidden>
-      <div className="h-full rounded-full bg-amber-500" style={{ width: `${value}%` }} />
+    <div className="h-1 overflow-hidden rounded-full bg-muted" aria-hidden>
+      <div className="h-full rounded-full bg-warning" style={{ width: `${value}%` }} />
     </div>
   );
 }
@@ -19,8 +19,8 @@ function Meter({ value }: { value: number }) {
 function FragRow({ label, value, accent }: { label: string; value: string; accent?: boolean }) {
   return (
     <div className="flex items-baseline justify-between gap-3">
-      <span className="min-w-0 truncate text-zinc-600">{label}</span>
-      <span className={`shrink-0 font-semibold tabular-nums ${accent ? "text-emerald-600" : "text-zinc-900"}`}>{value}</span>
+      <span className="min-w-0 truncate text-muted-foreground">{label}</span>
+      <span className={`shrink-0 font-semibold tabular-nums ${accent ? "text-success" : "text-foreground"}`}>{value}</span>
     </div>
   );
 }
@@ -66,8 +66,8 @@ const frames: LoopFrame[] = [
       <>
         <FragRow label="Кипячение" value="60 мин" />
         <Meter value={78} />
-        <div className="flex items-center gap-2 pt-0.5 font-semibold text-zinc-900">
-          <span className="h-2 w-2 shrink-0 rounded-full bg-amber-500" aria-hidden />
+        <div className="flex items-center gap-2 pt-0.5 font-semibold text-foreground">
+          <span className="h-2 w-2 shrink-0 rounded-full bg-warning" aria-hidden />
           <span className="tabular-nums">Через 12:30 — внести Citra, 30 г</span>
         </div>
       </>
@@ -95,21 +95,21 @@ export function HomeLoop() {
         return (
           <div
             key={frame.title}
-            className="flex w-[78%] shrink-0 snap-start flex-col gap-3 rounded-2xl border border-zinc-200 bg-white p-4 shadow-sm sm:w-auto sm:shrink"
+            className="flex w-[78%] shrink-0 snap-start flex-col gap-3 rounded-2xl border border-border bg-card p-4 shadow-sm sm:w-auto sm:shrink"
           >
             <div className="flex items-center gap-2.5">
-              <span className="grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-zinc-900 text-white">
+              <span className="grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-foreground text-background">
                 <Icon className="h-4 w-4" aria-hidden />
               </span>
-              <span className="text-xs font-semibold tabular-nums text-zinc-400">{index + 1}</span>
-              <span className="text-[17px] font-semibold text-zinc-950" style={{ fontFamily: "var(--font-display)" }}>
+              <span className="text-xs font-semibold tabular-nums text-muted-foreground">{index + 1}</span>
+              <span className="text-[17px] font-semibold text-foreground" style={{ fontFamily: "var(--font-display)" }}>
                 {frame.title}
               </span>
             </div>
-            <div className="flex flex-col gap-2 rounded-xl border border-zinc-100 bg-zinc-50 p-3 text-[13px]">
+            <div className="flex flex-col gap-2 rounded-xl border border-border bg-muted p-3 text-[13px]">
               {frame.body}
             </div>
-            <p className="text-xs text-zinc-400">{frame.note}</p>
+            <p className="text-xs text-muted-foreground">{frame.note}</p>
           </div>
         );
       })}

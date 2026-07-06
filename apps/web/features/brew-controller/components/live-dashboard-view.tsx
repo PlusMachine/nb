@@ -224,13 +224,13 @@ export function LiveDashboardView({
           <div className="space-y-1">
             {title ? (
               <h1
-                className="text-2xl font-semibold text-zinc-950 sm:text-3xl"
+                className="text-2xl font-semibold text-foreground sm:text-3xl"
                 style={{ fontFamily: "var(--font-display)" }}
               >
                 {title}
               </h1>
             ) : null}
-            {subtitle ? <p className="text-sm text-zinc-500">{subtitle}</p> : null}
+            {subtitle ? <p className="text-sm text-muted-foreground">{subtitle}</p> : null}
           </div>
           <div className="flex flex-wrap items-center gap-2">
             <ControlLeaseBadge
@@ -247,13 +247,13 @@ export function LiveDashboardView({
       ) : null}
 
       {!hasDevice ? (
-        <div className="rounded-2xl border border-zinc-200 bg-white p-6 text-sm text-zinc-600 shadow-sm">
+        <div className="rounded-2xl border border-border bg-card p-6 text-sm text-muted-foreground shadow-sm">
           К этой варке не привязан контроллер BrewForge. Запустите варку на устройстве, чтобы видеть живую телеметрию.
         </div>
       ) : null}
 
       {otherSessionControls ? (
-        <div className="rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900" role="status">
+        <div className="rounded-2xl border border-warning/30 bg-warning-subtle p-4 text-sm text-warning-subtle-foreground" role="status">
           Управляет другой сеанс — здесь только просмотр. Показатели могут быть неполными или обновляться с задержкой;
           чтобы взять управление, запросите перехват в панели управления ниже.
         </div>
@@ -272,12 +272,12 @@ export function LiveDashboardView({
           на самом устройстве (кнопки нет — не disabled, невозможное отсутствует), у
           ферментации профиль брожения привезёт H3. «Ручной режим» — общий вход. */}
       {mode === "idle" ? (
-        <div className="rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm">
-          <p className="text-base font-semibold text-zinc-900">
+        <div className="rounded-2xl border border-border bg-card p-5 shadow-sm">
+          <p className="text-base font-semibold text-foreground">
             {appMode === "brew" ? "Пивоварня свободна" : "Прибор свободен"}
           </p>
           {appMode === "distill" ? (
-            <p className="mt-1 text-sm text-zinc-500">Старт дистилляции — на устройстве</p>
+            <p className="mt-1 text-sm text-muted-foreground">Старт дистилляции — на устройстве</p>
           ) : null}
           <div className="mt-3 flex flex-wrap gap-2">
             {idleDeviceId && appMode === "brew" ? (
@@ -301,9 +301,9 @@ export function LiveDashboardView({
 
       {/* Промпт — требует ответа оператора (гид). */}
       {activePrompt ? (
-        <div className="rounded-2xl border-2 border-amber-300 bg-amber-50 p-5 shadow-sm">
-          <p className="text-sm font-semibold uppercase tracking-wide text-amber-800">Запрос устройства</p>
-          <p className="mt-1 text-lg font-semibold text-zinc-950">{PROMPT_TITLES[activePrompt]}</p>
+        <div className="rounded-2xl border-2 border-warning/30 bg-warning-subtle p-5 shadow-sm">
+          <p className="text-sm font-semibold uppercase tracking-wide text-warning-subtle-foreground">Запрос устройства</p>
+          <p className="mt-1 text-lg font-semibold text-foreground">{PROMPT_TITLES[activePrompt]}</p>
           <div className="mt-3 flex flex-wrap gap-2">
             {PROMPT_OPTIONS[activePrompt].map((opt) => (
               <Button key={opt.ans} onClick={() => answerPrompt(opt.ans)} disabled={controlsDisabled}>
@@ -312,7 +312,7 @@ export function LiveDashboardView({
             ))}
           </div>
           {!controlsHeld ? (
-            <p className="mt-2 text-xs text-amber-700">
+            <p className="mt-2 text-xs text-warning-subtle-foreground">
               Ответить на запрос может только сеанс, который управляет устройством.
             </p>
           ) : null}
@@ -422,24 +422,24 @@ export function LiveDashboardView({
             {manualControlCard}
 
             {/* Датчики (деталь). */}
-            <div className="rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm">
-              <p className="text-sm font-semibold text-zinc-900">Датчики</p>
+            <div className="rounded-2xl border border-border bg-card p-5 shadow-sm">
+              <p className="text-sm font-semibold text-foreground">Датчики</p>
               {telemetry && telemetry.sensors.length > 0 ? (
                 <div className="mt-3 grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
                   {telemetry.sensors.map((s) => (
                     <div
                       key={s.i}
-                      className="flex items-center justify-between rounded-lg border border-zinc-100 bg-zinc-50 px-3 py-2 text-sm"
+                      className="flex items-center justify-between rounded-lg border border-border bg-muted px-3 py-2 text-sm"
                     >
-                      <span className="text-zinc-500">Датчик {s.i}</span>
-                      <span className={`tabular-nums font-medium ${s.valid ? "text-zinc-900" : "text-red-600"}`}>
+                      <span className="text-muted-foreground">Датчик {s.i}</span>
+                      <span className={`tabular-nums font-medium ${s.valid ? "text-foreground" : "text-destructive"}`}>
                         {s.valid ? fmtTemp(s.c) : "нет данных"}
                       </span>
                     </div>
                   ))}
                 </div>
               ) : (
-                <p className="mt-2 text-sm text-zinc-500">—</p>
+                <p className="mt-2 text-sm text-muted-foreground">—</p>
               )}
             </div>
           </>

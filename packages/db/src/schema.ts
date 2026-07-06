@@ -44,6 +44,7 @@ export const inventoryTransactionTypeEnum = pgEnum("inventory_transaction_type",
 export const brewBatchStatusEnum = pgEnum("brew_batch_status", ["planned", "brewing", "fermenting", "completed", "cancelled"]);
 export const recipeImageStatusEnum = pgEnum("recipe_image_status", ["uploading", "ready", "failed"]);
 export const brewDeviceStatusEnum = pgEnum("brew_device_status", ["online", "offline", "unknown"]);
+export const firmwareChannelEnum = pgEnum("firmware_channel", ["stable", "beta"]);
 export const deviceCommandStatusEnum = pgEnum("device_command_status", ["queued", "sent", "acked", "failed"]);
 // Контент-CMS (Track A): редакторские статьи/гайды/обзоры в БД (BJCP остаётся
 // file-backed в @nb/content и сюда не пишется).
@@ -611,6 +612,20 @@ export const recipeSaves = pgTable("recipe_saves", {
   recipeIdIdx: index("recipe_saves_recipe_idx").on(table.recipeId)
 }));
 
+// Избранные калькуляторы: одна запись на пользователя на калькулятор. slug —
+// строковый идентификатор из статического каталога в коде (features/calculators),
+// поэтому без FK; валидность slug проверяется в сервисе. UNIQUE user+slug делает
+// добавление идемпотентным.
+export const favoriteCalculators = pgTable("favorite_calculators", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  userId: uuid("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  calculatorSlug: text("calculator_slug").notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull()
+}, (table) => ({
+  userSlugUidx: uniqueIndex("favorite_calculators_user_slug_uidx").on(table.userId, table.calculatorSlug),
+  userIdx: index("favorite_calculators_user_idx").on(table.userId, table.createdAt)
+}));
+
 export const brewBatches = pgTable("brew_batches", {
   id: uuid("id").defaultRandom().primaryKey(),
   userId: uuid("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
@@ -753,6 +768,9 @@ export const brewDevices = pgTable("brew_devices", {
   tokenHash: text("token_hash"),
   tokenEncrypted: text("token_encrypted"),
   fw: text("fw"),
+  // Последняя версия прошивки, о доступности которой владельцу уже отправлен
+  // web-push (дедуп уведомлений моста, F3 docs/brewforge-firmware-releases.md §6).
+  updateNotifiedFw: text("update_notified_fw"),
   capabilities: jsonb("capabilities").$type<string[]>().default([]).notNull(),
   status: brewDeviceStatusEnum("status").default("unknown").notNull(),
   localUrl: text("local_url"),
@@ -945,6 +963,31 @@ export const deviceRecipeSlots = pgTable("device_recipe_slots", {
   deviceSlotUidx: uniqueIndex("device_recipe_slots_device_slot_uidx").on(table.deviceId, table.slot),
   deviceIdIdx: index("device_recipe_slots_device_id_idx").on(table.deviceId),
   recipeIdIdx: index("device_recipe_slots_recipe_id_idx").on(table.recipeId)
+}));
+
+// Реестр релизов прошивки BrewForge (F2, docs/brewforge-firmware-releases.md §3).
+// Бинарники лежат на диске (FIRMWARE_STORAGE_DIR, дефолт <repo>/storage/firmware);
+// storagePath — путь файла ОТНОСИТЕЛЬНО этого корня. publishedAt NULL = черновик,
+// не раздаётся; yankedAt — отзыв битого релиза (раздача прекращается, запись и
+// файл остаются для аудита). Повторная публикация той же (providerId, version)
+// запрещена uniq-индексом — защита от подмены бинарника под тем же номером.
+export const firmwareReleases = pgTable("firmware_releases", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  providerId: text("provider_id").default("brewforge").notNull(),
+  version: text("version").notNull(),
+  channel: firmwareChannelEnum("channel").default("stable").notNull(),
+  protocolSchema: integer("protocol_schema").notNull(),
+  notes: text("notes").default("").notNull(),
+  fileName: text("file_name").notNull(),
+  fileSize: integer("file_size").notNull(),
+  fileSha256: text("file_sha256").notNull(),
+  storagePath: text("storage_path").notNull(),
+  publishedAt: timestamp("published_at", { withTimezone: true }),
+  yankedAt: timestamp("yanked_at", { withTimezone: true }),
+  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull()
+}, (table) => ({
+  providerVersionUidx: uniqueIndex("firmware_releases_provider_version_uidx").on(table.providerId, table.version),
+  channelIdx: index("firmware_releases_channel_idx").on(table.providerId, table.channel)
 }));
 
 export const usersRelations = relations(users, ({ many }) => ({

@@ -27,7 +27,7 @@ export function DeleteEquipmentProfileButton({ profileId, profileName }: Props) 
           setError(null);
           setOpen(true);
         }}
-        className="inline-flex items-center gap-1.5 rounded-md border border-rose-200 bg-white px-3 py-2 text-xs font-medium text-rose-700 hover:bg-rose-50"
+        className="inline-flex items-center gap-1.5 rounded-md border border-destructive-border bg-card px-3 py-2 text-xs font-medium text-destructive hover:bg-destructive-subtle"
       >
         <Trash2 className="h-3.5 w-3.5" aria-hidden="true" />
         Удалить

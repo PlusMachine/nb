@@ -14,3 +14,4 @@ export * from "./notify.js";
 export * from "./log.js";
 export * from "./persist-gate.js";
 export * from "./watchdog.js";
+export * from "./update.js";

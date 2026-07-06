@@ -32,26 +32,26 @@ export function FermenterPanel({ brewBatchId, status, deviceName, candidates, fr
     // Кандидатов нет — блока выбора нет вовсе, партия живёт руками (привязка опциональна).
     if (candidates.length === 0) return null;
     return (
-      <section className="space-y-3 rounded-2xl border border-zinc-100 bg-white p-4 shadow-sm">
-        <h2 className="text-base font-semibold text-zinc-900">Прибор</h2>
+      <section className="space-y-3 rounded-2xl border border-border bg-card p-4 shadow-sm">
+        <h2 className="text-base font-semibold text-foreground">Прибор</h2>
         <FermenterPicker brewBatchId={brewBatchId} candidates={candidates} />
       </section>
     );
   }
 
   return (
-    <section className="space-y-4 rounded-2xl border border-zinc-100 bg-white p-4 shadow-sm">
+    <section className="space-y-4 rounded-2xl border border-border bg-card p-4 shadow-sm">
       <div className="flex flex-wrap items-center justify-between gap-2">
         <div className="flex items-center gap-2">
-          <Radio className="h-4 w-4 text-zinc-400" aria-hidden />
-          <h2 className="text-base font-semibold text-zinc-900">
+          <Radio className="h-4 w-4 text-muted-foreground" aria-hidden />
+          <h2 className="text-base font-semibold text-foreground">
             Бродит в приборе{deviceName ? ` · ${deviceName}` : ""}
           </h2>
         </div>
         <div className="flex items-center gap-2">
           <Link
             href={`/app/devices/${status.deviceId}`}
-            className="inline-flex min-h-[36px] items-center rounded-md border border-zinc-200 px-3 py-1.5 text-xs font-medium text-zinc-700 transition hover:bg-zinc-50"
+            className="inline-flex min-h-[36px] items-center rounded-md border border-border px-3 py-1.5 text-xs font-medium text-foreground transition hover:bg-accent"
           >
             Пульт
           </Link>
@@ -60,7 +60,7 @@ export function FermenterPanel({ brewBatchId, status, deviceName, candidates, fr
       </div>
 
       {status.kind === "mode-mismatch" ? (
-        <p className="flex items-center gap-2 rounded-lg bg-amber-50 px-3 py-2 text-sm font-medium text-amber-800">
+        <p className="flex items-center gap-2 rounded-lg bg-warning-subtle px-3 py-2 text-sm font-medium text-warning-subtle-foreground">
           <AlertTriangle className="h-4 w-4 shrink-0" aria-hidden />
           Прибор больше не в режиме ферментации
         </p>
@@ -70,13 +70,13 @@ export function FermenterPanel({ brewBatchId, status, deviceName, candidates, fr
         <FermenterPicker brewBatchId={brewBatchId} candidates={candidates} />
       ) : null}
 
-      {status.kind === "no-data" ? <p className="text-sm text-zinc-500">Телеметрии с прибора пока нет.</p> : null}
+      {status.kind === "no-data" ? <p className="text-sm text-muted-foreground">Телеметрии с прибора пока нет.</p> : null}
 
       {status.kind === "fermenting" || status.kind === "mode-mismatch" ? (
         <div className="flex flex-wrap items-baseline gap-x-4 gap-y-1 tabular-nums">
-          <span className="text-2xl font-semibold text-zinc-950">{fmtC(status.point.primaryC)}</span>
-          <span className="text-sm text-zinc-500">уставка {fmtC(status.point.setpointC)}</span>
-          {freshnessLabel ? <span className="text-xs text-zinc-400">· {freshnessLabel}</span> : null}
+          <span className="text-2xl font-semibold text-foreground">{fmtC(status.point.primaryC)}</span>
+          <span className="text-sm text-muted-foreground">уставка {fmtC(status.point.setpointC)}</span>
+          {freshnessLabel ? <span className="text-xs text-muted-foreground">· {freshnessLabel}</span> : null}
         </div>
       ) : null}
     </section>

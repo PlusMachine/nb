@@ -28,7 +28,7 @@ export function RecipeImageActionsMenu({
         trigger={
           <button
             type="button"
-            className="flex h-9 w-9 items-center justify-center rounded-full bg-white/90 text-zinc-700 shadow-sm ring-1 ring-black/5 backdrop-blur"
+            className="flex h-9 w-9 items-center justify-center rounded-full bg-card/90 text-foreground shadow-sm ring-1 ring-black/5 backdrop-blur"
             aria-label="Действия с изображением"
           >
             <MoreHorizontal className="h-4 w-4" />

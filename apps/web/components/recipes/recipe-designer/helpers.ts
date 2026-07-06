@@ -1294,15 +1294,15 @@ export const categoryAccentBorder: Record<IngredientCategory, string> = {
   hop: "border-l-emerald-500",
   yeast: "border-l-violet-400",
   water_treatment: "border-l-sky-400",
-  consumable: "border-l-zinc-300"
+  consumable: "border-l-border"
 };
 
 export const categoryIconBg: Record<IngredientCategory, string> = {
-  fermentable: "bg-amber-50 text-amber-600",
-  hop: "bg-emerald-50 text-emerald-600",
-  yeast: "bg-violet-50 text-violet-600",
-  water_treatment: "bg-sky-50 text-sky-600",
-  consumable: "bg-zinc-100 text-zinc-500"
+  fermentable: "bg-amber-50 text-amber-600 dark:bg-amber-500/15 dark:text-amber-400",
+  hop: "bg-emerald-50 text-emerald-600 dark:bg-emerald-500/15 dark:text-emerald-400",
+  yeast: "bg-violet-50 text-violet-600 dark:bg-violet-500/15 dark:text-violet-400",
+  water_treatment: "bg-sky-50 text-sky-600 dark:bg-sky-500/15 dark:text-sky-400",
+  consumable: "bg-muted text-muted-foreground"
 };
 
 export const getCategoryRows = (ingredients: DesignerIngredient[], category: IngredientCategory) => ingredients.filter((ingredient) => ingredient.category === category);
@@ -1539,44 +1539,44 @@ export const getMetricStatusAppearance = (status: "in_range" | "below" | "above"
   if (status === "in_range") {
     return {
       label: "В стиле",
-      badgeClassName: "text-emerald-600",
-      needleClassName: "bg-emerald-500",
-      needleDotClassName: "bg-emerald-500 ring-2 ring-white shadow"
+      badgeClassName: "text-success",
+      needleClassName: "bg-success",
+      needleDotClassName: "bg-success ring-2 ring-background shadow"
     };
   }
 
   if (status === "below") {
     return {
       label: "Ниже",
-      badgeClassName: "text-zinc-500",
-      needleClassName: "bg-zinc-400",
-      needleDotClassName: "bg-zinc-500 ring-2 ring-white shadow"
+      badgeClassName: "text-muted-foreground",
+      needleClassName: "bg-muted-foreground",
+      needleDotClassName: "bg-muted-foreground ring-2 ring-background shadow"
     };
   }
 
   if (status === "above") {
     return {
       label: "Выше",
-      badgeClassName: "text-zinc-500",
-      needleClassName: "bg-zinc-400",
-      needleDotClassName: "bg-zinc-500 ring-2 ring-white shadow"
+      badgeClassName: "text-muted-foreground",
+      needleClassName: "bg-muted-foreground",
+      needleDotClassName: "bg-muted-foreground ring-2 ring-background shadow"
     };
   }
 
   if (status === "no_style") {
     return {
       label: "—",
-      badgeClassName: "text-zinc-400",
+      badgeClassName: "text-muted-foreground",
       needleClassName: "bg-sky-400",
-      needleDotClassName: "bg-sky-400 ring-2 ring-white shadow"
+      needleDotClassName: "bg-sky-400 ring-2 ring-background shadow"
     };
   }
 
   return {
     label: "—",
-    badgeClassName: "text-zinc-400",
-    needleClassName: "bg-zinc-400",
-    needleDotClassName: "bg-zinc-400 ring-2 ring-white shadow"
+    badgeClassName: "text-muted-foreground",
+    needleClassName: "bg-muted-foreground",
+    needleDotClassName: "bg-muted-foreground ring-2 ring-background shadow"
   };
 };
 export const searchStockIngredientsForRecipe = async ({

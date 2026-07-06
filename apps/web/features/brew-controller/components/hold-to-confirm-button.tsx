@@ -63,12 +63,12 @@ export function HoldToConfirmButton({
         }
       }}
       aria-label={label}
-      className={`relative select-none overflow-hidden rounded-md bg-red-600 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-red-700 disabled:opacity-50 ${className}`}
+      className={`relative select-none overflow-hidden rounded-md bg-destructive px-4 py-2 text-sm font-semibold text-destructive-foreground transition-colors hover:bg-destructive/90 disabled:opacity-50 ${className}`}
     >
       {/* Полоса удержания. */}
       <span
         aria-hidden
-        className="absolute inset-y-0 left-0 bg-red-900/40"
+        className="absolute inset-y-0 left-0 bg-foreground/30"
         style={{
           width: holding ? "100%" : "0%",
           transition: holding ? `width ${holdMs}ms linear` : "width 120ms ease-out",

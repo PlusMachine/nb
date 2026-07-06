@@ -188,7 +188,7 @@ type Props = {
   showErrors?: boolean;
 };
 
-const fieldErrorClass = "border-red-300";
+const fieldErrorClass = "border-destructive-border";
 
 export function RecipeIngredientRow({
   value,
@@ -219,22 +219,22 @@ export function RecipeIngredientRow({
     : null;
 
   return (
-    <article className="space-y-3 rounded-lg border border-zinc-200 bg-zinc-50 p-3" data-testid="recipe-ingredient-row">
+    <article className="space-y-3 rounded-lg border border-border bg-muted p-3" data-testid="recipe-ingredient-row">
       {title || description ? (
         <header className="space-y-1">
-          {title ? <h3 className="text-sm font-semibold text-zinc-900">{title}</h3> : null}
-          {description ? <p className="text-xs text-zinc-600">{description}</p> : null}
+          {title ? <h3 className="text-sm font-semibold text-foreground">{title}</h3> : null}
+          {description ? <p className="text-xs text-muted-foreground">{description}</p> : null}
         </header>
       ) : null}
 
       <div className="grid gap-2 sm:grid-cols-2">
         <IngredientCategorySelector value={value.category} onChange={(nextCategory) => onChange(applyRecipeIngredientCategoryChange(value, nextCategory))} />
         <div className="space-y-1">
-          <label className="text-xs font-medium text-zinc-700">Этап</label>
+          <label className="text-xs font-medium text-foreground">Этап</label>
           <select
             value={value.stage}
             onChange={(event) => onChange({ ...value, stage: event.target.value as RecipeIngredientStage })}
-            className="h-10 w-full rounded-md border border-zinc-200 bg-white px-3 text-sm"
+            className="h-10 w-full rounded-md border border-border bg-card px-3 text-sm"
           >
             {recipeIngredientStages.map((stage) => <option key={stage} value={stage}>{recipeIngredientStageLabels[stage]}</option>)}
           </select>
@@ -242,32 +242,32 @@ export function RecipeIngredientRow({
       </div>
 
       <div className="space-y-1">
-        <label className="text-xs font-medium text-zinc-700">Ингредиент</label>
+        <label className="text-xs font-medium text-foreground">Ингредиент</label>
         <IngredientPicker
           category={value.category}
           value={value.selectedName}
           onValueChange={(next) => onChange(applyRecipeIngredientTextChange(value, next))}
           onSelect={(item) => onChange(applyRecipeIngredientSelection(value, item))}
           placeholder="Найти ингредиент"
-          emptyCta={<p className="text-xs text-zinc-500">Ничего не найдено. Уточните запрос.</p>}
+          emptyCta={<p className="text-xs text-muted-foreground">Ничего не найдено. Уточните запрос.</p>}
         />
         {ingredientError ? (
-          <p className="text-xs text-red-500">{ingredientError}</p>
+          <p className="text-xs text-destructive">{ingredientError}</p>
         ) : hasSelectedIngredient ? (
-          <p className="text-xs text-zinc-600">
+          <p className="text-xs text-muted-foreground">
             Ингредиент выбран.
             {value.selectedSecondaryName ? ` ${value.selectedSecondaryName}.` : ""}
             {value.familyDisplayName ? ` ${value.familyDisplayName}.` : ""}
             {value.selectedSummary ? ` ${value.selectedSummary}.` : ""}
           </p>
         ) : (
-          <p className="text-xs text-zinc-500">Сначала выберите категорию и позицию из подсказок, затем вводите количество.</p>
+          <p className="text-xs text-muted-foreground">Сначала выберите категорию и позицию из подсказок, затем вводите количество.</p>
         )}
       </div>
 
       <div className="grid gap-2 sm:grid-cols-[1fr_140px_1fr]">
         <div className="space-y-1">
-          <label className="text-xs font-medium text-zinc-700">Количество</label>
+          <label className="text-xs font-medium text-foreground">Количество</label>
           <input
             type="number"
             min={0}
@@ -275,30 +275,30 @@ export function RecipeIngredientRow({
             disabled={amountFieldsDisabled}
             value={value.amountEnteredQuantity}
             onChange={(event) => onChange({ ...value, amountEnteredQuantity: event.target.value })}
-            className={`h-10 w-full rounded-md border bg-white px-3 text-sm disabled:cursor-not-allowed disabled:bg-zinc-100 disabled:text-zinc-500 ${amountError ? fieldErrorClass : "border-zinc-200"}`}
+            className={`h-10 w-full rounded-md border bg-card px-3 text-sm disabled:cursor-not-allowed disabled:bg-muted disabled:text-muted-foreground ${amountError ? fieldErrorClass : "border-border"}`}
             placeholder={amountFieldsDisabled ? "Сначала выберите ингредиент" : undefined}
           />
-          {amountError ? <p className="text-xs text-red-500">{amountError}</p> : null}
+          {amountError ? <p className="text-xs text-destructive">{amountError}</p> : null}
         </div>
         <div className="space-y-1">
-          <label className="text-xs font-medium text-zinc-700">Ед.</label>
+          <label className="text-xs font-medium text-foreground">Ед.</label>
           <select
             disabled={amountFieldsDisabled}
             value={value.amountEnteredUnit}
             onChange={(event) => onChange({ ...value, amountEnteredUnit: event.target.value })}
-            className="h-10 w-full rounded-md border border-zinc-200 bg-white px-3 text-sm disabled:cursor-not-allowed disabled:bg-zinc-100 disabled:text-zinc-500"
+            className="h-10 w-full rounded-md border border-border bg-card px-3 text-sm disabled:cursor-not-allowed disabled:bg-muted disabled:text-muted-foreground"
           >
             {allowedUnits.map((unit) => <option key={unit} value={unit}>{unit}</option>)}
           </select>
         </div>
         <div className="space-y-1">
-          <label className="text-xs font-medium text-zinc-700">Смещение по времени (мин)</label>
+          <label className="text-xs font-medium text-foreground">Смещение по времени (мин)</label>
           <input
             type="number"
             disabled={amountFieldsDisabled}
             value={value.timeOffset}
             onChange={(event) => onChange({ ...value, timeOffset: event.target.value })}
-            className="h-10 w-full rounded-md border border-zinc-200 bg-white px-3 text-sm disabled:cursor-not-allowed disabled:bg-zinc-100 disabled:text-zinc-500"
+            className="h-10 w-full rounded-md border border-border bg-card px-3 text-sm disabled:cursor-not-allowed disabled:bg-muted disabled:text-muted-foreground"
             placeholder="опционально"
           />
         </div>

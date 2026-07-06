@@ -7,7 +7,9 @@ import {
   cmdForcePump,
   cmdForcePump2,
   cmdForceValve,
+  cmdOta,
   CommandSchema,
+  OtaCommandSchema,
 } from "./command";
 
 // =============================================================================
@@ -62,5 +64,18 @@ describe("cmdForcePump/cmdForcePump2/cmdForceValve — Этап 6-D (любая 
     const a = cmdForcePump(true);
     const b = cmdForcePump(true);
     expect(a.id).not.toBe(b.id);
+  });
+});
+
+describe("cmdOta — запуск OTA по облаку (F3, §5.4)", () => {
+  it("строит контрактный payload {cmd:'ota', url} (НЕ конверт Command)", () => {
+    const msg = cmdOta("https://nb.example/api/firmware/download/2.1.0");
+    expect(msg).toEqual({ cmd: "ota", url: "https://nb.example/api/firmware/download/2.1.0" });
+    expect(OtaCommandSchema.safeParse(msg).success).toBe(true);
+  });
+
+  it("отклоняет не-URL и чужой cmd", () => {
+    expect(OtaCommandSchema.safeParse({ cmd: "ota", url: "не-урл" }).success).toBe(false);
+    expect(OtaCommandSchema.safeParse({ cmd: "reboot", url: "https://x.example/a.bin" }).success).toBe(false);
   });
 });

@@ -44,7 +44,7 @@ const resolveCatalogSource = (source: string): "catalog" | "custom" | null => (
 );
 
 // Дедуп запроса в пределах одного рендера: generateMetadata и сам компонент
-// делят один SELECT сессии + ингредиента (см. паттерн в guides/[slug]/page.tsx).
+// делят один SELECT сессии + ингредиента (см. паттерн в articles/[slug]/page.tsx).
 const loadIngredientDetail = cache(async (resolvedSource: "catalog" | "custom", id: string) => {
   const user = await getSessionUser();
   const item = await getUserCatalogIngredientByRef(user?.id ?? null, resolvedSource, id);
@@ -180,10 +180,10 @@ const renderIngredientLinkRows = (items: UserCatalogIngredientDto[]) => (
         <Link
           key={`${candidate.source}-${candidate.id}`}
           href={buildCatalogHref(candidate)}
-          className="flex items-center justify-between gap-3 rounded-2xl bg-zinc-50 px-4 py-3 text-sm transition-colors hover:bg-zinc-100"
+          className="flex items-center justify-between gap-3 rounded-2xl bg-muted px-4 py-3 text-sm transition-colors hover:bg-accent"
         >
-          <span className="min-w-0 truncate font-medium text-zinc-900">{candidate.primaryLabelRu}</span>
-          {metric ? <span className="shrink-0 text-zinc-500">{metric}</span> : null}
+          <span className="min-w-0 truncate font-medium text-foreground">{candidate.primaryLabelRu}</span>
+          {metric ? <span className="shrink-0 text-muted-foreground">{metric}</span> : null}
         </Link>
       );
     })}
@@ -269,9 +269,9 @@ export default async function IngredientDetailPage({
   const leftColumn = (
     <div className="space-y-6">
       {descriptionParagraphs.length ? (
-        <section className="rounded-[28px] border border-zinc-200 bg-white p-6 shadow-sm">
-          <h2 className="text-sm font-semibold uppercase tracking-[0.12em] text-zinc-500">Описание</h2>
-          <div className="mt-4 space-y-3 text-sm leading-6 text-zinc-700">
+        <section className="rounded-[28px] border border-border bg-card p-6 shadow-sm">
+          <h2 className="text-sm font-semibold uppercase tracking-[0.12em] text-muted-foreground">Описание</h2>
+          <div className="mt-4 space-y-3 text-sm leading-6 text-foreground">
             {descriptionParagraphs.map((paragraph, index) => (
               <p key={index}>{paragraph}</p>
             ))}
@@ -279,32 +279,32 @@ export default async function IngredientDetailPage({
         </section>
       ) : null}
 
-      <section className="rounded-[28px] border border-zinc-200 bg-white p-6 shadow-sm">
-        <h2 className="text-sm font-semibold uppercase tracking-[0.12em] text-zinc-500">Параметры</h2>
+      <section className="rounded-[28px] border border-border bg-card p-6 shadow-sm">
+        <h2 className="text-sm font-semibold uppercase tracking-[0.12em] text-muted-foreground">Параметры</h2>
         <div className="mt-4 space-y-3">
           {technicalRows.length ? technicalRows.map((row) => (
-            <div key={row.label} className="flex items-center justify-between gap-3 rounded-2xl bg-zinc-50 px-4 py-3">
-              <span className="text-sm text-zinc-500">{row.label}</span>
+            <div key={row.label} className="flex items-center justify-between gap-3 rounded-2xl bg-muted px-4 py-3">
+              <span className="text-sm text-muted-foreground">{row.label}</span>
               {row.kind === "country" ? (
                 <CountryFlagLabel
                   countryCode={row.country.code}
                   label={row.country.label}
                   iconClassName="h-3.5 w-[1.1rem]"
-                  className="gap-1.5 text-sm font-medium text-zinc-900"
+                  className="gap-1.5 text-sm font-medium text-foreground"
                 />
               ) : (
-                <span className="text-sm font-medium text-zinc-900">{row.value}</span>
+                <span className="text-sm font-medium text-foreground">{row.value}</span>
               )}
             </div>
           )) : (
-            <p className="text-sm text-zinc-500">Для этого ингредиента пока не заполнены ключевые технические поля.</p>
+            <p className="text-sm text-muted-foreground">Для этого ингредиента пока не заполнены ключевые технические поля.</p>
           )}
         </div>
       </section>
 
       {packageVariants.length ? (
-        <section className="rounded-[28px] border border-zinc-200 bg-white p-6 shadow-sm">
-          <h2 className="text-sm font-semibold uppercase tracking-[0.12em] text-zinc-500">Фасовки</h2>
+        <section className="rounded-[28px] border border-border bg-card p-6 shadow-sm">
+          <h2 className="text-sm font-semibold uppercase tracking-[0.12em] text-muted-foreground">Фасовки</h2>
           <div className="mt-4 space-y-2">
             {packageVariants.map((variant) => {
               const name = variant.productNameRu ?? variant.productNameEn ?? variant.brand ?? "Фасовка";
@@ -315,14 +315,14 @@ export default async function IngredientDetailPage({
                   : null;
 
               return (
-                <div key={variant.id} className="flex items-center justify-between gap-3 rounded-2xl bg-zinc-50 px-4 py-3">
+                <div key={variant.id} className="flex items-center justify-between gap-3 rounded-2xl bg-muted px-4 py-3">
                   <div className="min-w-0">
-                    <p className="truncate text-sm font-medium text-zinc-900">{name}</p>
+                    <p className="truncate text-sm font-medium text-foreground">{name}</p>
                     {variant.brand && variant.brand !== name ? (
-                      <p className="text-xs text-zinc-500">{variant.brand}</p>
+                      <p className="text-xs text-muted-foreground">{variant.brand}</p>
                     ) : null}
                   </div>
-                  {amountLabel ? <span className="shrink-0 text-sm text-zinc-600">{amountLabel}</span> : null}
+                  {amountLabel ? <span className="shrink-0 text-sm text-muted-foreground">{amountLabel}</span> : null}
                 </div>
               );
             })}
@@ -331,11 +331,11 @@ export default async function IngredientDetailPage({
       ) : null}
 
       {subtleAliases.length ? (
-        <section className="rounded-[28px] border border-zinc-200 bg-white p-6 shadow-sm">
+        <section className="rounded-[28px] border border-border bg-card p-6 shadow-sm">
           <div className="flex flex-wrap items-center gap-2 text-sm">
-            <span className="text-zinc-500">Также известен как:</span>
+            <span className="text-muted-foreground">Также известен как:</span>
             {subtleAliases.map((alias) => (
-              <span key={alias} className="rounded-full bg-zinc-100 px-2.5 py-1 text-xs text-zinc-600">
+              <span key={alias} className="rounded-full bg-muted px-2.5 py-1 text-xs text-muted-foreground">
                 {alias}
               </span>
             ))}
@@ -347,23 +347,23 @@ export default async function IngredientDetailPage({
 
   return (
     <main className="space-y-6">
-      <div className="flex flex-wrap items-center gap-2 text-sm text-zinc-500">
-        <Link href="/catalog" className="hover:text-zinc-700">Каталог</Link>
+      <div className="flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
+        <Link href="/catalog" className="hover:text-foreground">Каталог</Link>
         {landing ? (
           <>
             <span>/</span>
-            <Link href={`/catalog/${landing.slug}`} className="hover:text-zinc-700">{landing.h1}</Link>
+            <Link href={`/catalog/${landing.slug}`} className="hover:text-foreground">{landing.h1}</Link>
           </>
         ) : null}
         <span>/</span>
         <span>{item.primaryLabelRu}</span>
       </div>
 
-      <section className="rounded-[32px] border border-zinc-200 bg-white p-6 shadow-sm">
+      <section className="rounded-[32px] border border-border bg-card p-6 shadow-sm">
         <div className="flex flex-col gap-6 xl:flex-row xl:items-start xl:justify-between">
           <div className="min-w-0 flex-1 space-y-5">
             <div className="flex flex-wrap items-center gap-2">
-              <h1 className="text-3xl font-semibold tracking-tight text-zinc-950">{item.primaryLabelRu}</h1>
+              <h1 className="text-3xl font-semibold tracking-tight text-foreground">{item.primaryLabelRu}</h1>
               {canManage ? (
                 <IngredientFavoriteToggle
                   reference={{
@@ -377,16 +377,16 @@ export default async function IngredientDetailPage({
               ) : null}
             </div>
 
-            {item.secondaryLabelRu ? <p className="text-sm text-zinc-500">{item.secondaryLabelRu}</p> : null}
+            {item.secondaryLabelRu ? <p className="text-sm text-muted-foreground">{item.secondaryLabelRu}</p> : null}
 
             <div className="flex flex-wrap gap-2">
               {metaBadges.map((badge) => (
-                <span key={badge} className="rounded-full bg-zinc-100 px-3 py-1 text-sm text-zinc-700">
+                <span key={badge} className="rounded-full bg-muted px-3 py-1 text-sm text-foreground">
                   {badge}
                 </span>
               ))}
               {country ? (
-                <span className="rounded-full bg-zinc-100 px-3 py-1 text-sm text-zinc-700">
+                <span className="rounded-full bg-muted px-3 py-1 text-sm text-foreground">
                   <CountryFlagLabel
                     countryCode={country.code}
                     label={country.label}
@@ -396,24 +396,24 @@ export default async function IngredientDetailPage({
                 </span>
               ) : null}
               {item.source === "custom" ? (
-                <span className="rounded-full bg-amber-50 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-[0.12em] text-amber-700 ring-1 ring-amber-200">
+                <span className="rounded-full bg-warning-subtle px-2.5 py-1 text-[11px] font-semibold uppercase tracking-[0.12em] text-warning-subtle-foreground ring-1 ring-warning/30">
                   СВОЙ
                 </span>
               ) : (
-                <span className="rounded-full bg-zinc-100 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-[0.12em] text-zinc-600">
+                <span className="rounded-full bg-muted px-2.5 py-1 text-[11px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
                   Системный
                 </span>
               )}
             </div>
 
             {item.derivedFromDisplayName ? (
-              <p className="text-sm text-zinc-600">
+              <p className="text-sm text-muted-foreground">
                 Основан на системном ингредиенте <strong>{item.derivedFromDisplayName}</strong>.
               </p>
             ) : null}
 
             {item.notes ? (
-              <div className="rounded-2xl bg-zinc-50 p-4 text-sm leading-6 text-zinc-700">
+              <div className="rounded-2xl bg-muted p-4 text-sm leading-6 text-foreground">
                 {item.notes}
               </div>
             ) : null}
@@ -421,19 +421,19 @@ export default async function IngredientDetailPage({
 
           {canManage ? (
             <div className="grid gap-2 sm:grid-cols-2 xl:w-[360px]">
-              <Link href={buildIngredientCatalogActionHref("/app/ingredients", item.source, item.id)} className="inline-flex h-11 items-center justify-center rounded-xl bg-zinc-950 px-4 text-sm font-medium text-white">
+              <Link href={buildIngredientCatalogActionHref("/app/ingredients", item.source, item.id)} className="inline-flex h-11 items-center justify-center rounded-xl bg-foreground px-4 text-sm font-medium text-background">
                 Добавить на склад
               </Link>
-              <Link href={buildIngredientCatalogActionHref("/app/recipes/new", item.source, item.id)} className="inline-flex h-11 items-center justify-center rounded-xl border border-zinc-200 bg-white px-4 text-sm font-medium text-zinc-700 transition-colors hover:bg-zinc-50">
+              <Link href={buildIngredientCatalogActionHref("/app/recipes/new", item.source, item.id)} className="inline-flex h-11 items-center justify-center rounded-xl border border-border bg-card px-4 text-sm font-medium text-foreground transition-colors hover:bg-accent">
                 Использовать в рецепте
               </Link>
               {item.source === "catalog" ? (
-                <Link href={`/catalog/new?derivedFrom=${item.id}`} className="inline-flex h-11 items-center justify-center rounded-xl border border-zinc-200 bg-white px-4 text-sm font-medium text-zinc-700 transition-colors hover:bg-zinc-50 sm:col-span-2">
+                <Link href={`/catalog/new?derivedFrom=${item.id}`} className="inline-flex h-11 items-center justify-center rounded-xl border border-border bg-card px-4 text-sm font-medium text-foreground transition-colors hover:bg-accent sm:col-span-2">
                   Создать свой вариант
                 </Link>
               ) : (
                 <>
-                  <Link href={`/catalog/custom/${item.id}/edit`} className="inline-flex h-11 items-center justify-center rounded-xl border border-zinc-200 bg-white px-4 text-sm font-medium text-zinc-700 transition-colors hover:bg-zinc-50">
+                  <Link href={`/catalog/custom/${item.id}/edit`} className="inline-flex h-11 items-center justify-center rounded-xl border border-border bg-card px-4 text-sm font-medium text-foreground transition-colors hover:bg-accent">
                     Редактировать
                   </Link>
                   <DeleteCustomCatalogIngredientButton
@@ -441,14 +441,14 @@ export default async function IngredientDetailPage({
                     displayName={item.primaryLabelRu}
                     redirectHref="/catalog?view=mine"
                     label="Удалить"
-                    className="inline-flex h-11 items-center justify-center rounded-xl border border-rose-200 bg-white px-4 text-sm font-medium text-rose-700 transition-colors hover:bg-rose-50 disabled:opacity-60"
+                    className="inline-flex h-11 items-center justify-center rounded-xl border border-destructive-border bg-card px-4 text-sm font-medium text-destructive transition-colors hover:bg-destructive-subtle disabled:opacity-60"
                   />
                 </>
               )}
             </div>
           ) : (
             <div className="xl:w-[360px]">
-              <Link href={loginHref} className="inline-flex h-11 w-full items-center justify-center rounded-xl bg-zinc-950 px-4 text-sm font-medium text-white">
+              <Link href={loginHref} className="inline-flex h-11 w-full items-center justify-center rounded-xl bg-foreground px-4 text-sm font-medium text-background">
                 Добавить на склад
               </Link>
             </div>
@@ -462,15 +462,15 @@ export default async function IngredientDetailPage({
 
           <div className="space-y-6">
             {similarItems.length ? (
-              <section className="rounded-[28px] border border-zinc-200 bg-white p-6 shadow-sm">
-                <h2 className="text-sm font-semibold uppercase tracking-[0.12em] text-zinc-500">Похожие ингредиенты</h2>
+              <section className="rounded-[28px] border border-border bg-card p-6 shadow-sm">
+                <h2 className="text-sm font-semibold uppercase tracking-[0.12em] text-muted-foreground">Похожие ингредиенты</h2>
                 <div className="mt-4">{renderIngredientLinkRows(similarItems)}</div>
               </section>
             ) : null}
 
             {recipesResult.items.length ? (
-              <section className="rounded-[28px] border border-zinc-200 bg-white p-6 shadow-sm">
-                <h2 className="text-sm font-semibold uppercase tracking-[0.12em] text-zinc-500">
+              <section className="rounded-[28px] border border-border bg-card p-6 shadow-sm">
+                <h2 className="text-sm font-semibold uppercase tracking-[0.12em] text-muted-foreground">
                   Рецепты с этим ингредиентом · {recipesResult.total}
                 </h2>
                 <div className="mt-4">
@@ -480,8 +480,8 @@ export default async function IngredientDetailPage({
             ) : null}
 
             {brandItems.length ? (
-              <section className="rounded-[28px] border border-zinc-200 bg-white p-6 shadow-sm">
-                <h2 className="text-sm font-semibold uppercase tracking-[0.12em] text-zinc-500">
+              <section className="rounded-[28px] border border-border bg-card p-6 shadow-sm">
+                <h2 className="text-sm font-semibold uppercase tracking-[0.12em] text-muted-foreground">
                   Другие ингредиенты {brandLabel}
                 </h2>
                 <div className="mt-4">{renderIngredientLinkRows(brandItems)}</div>
@@ -489,18 +489,18 @@ export default async function IngredientDetailPage({
             ) : null}
 
             {showUsageSection ? (
-              <section className="rounded-[28px] border border-zinc-200 bg-white p-6 shadow-sm">
-                <h2 className="text-sm font-semibold uppercase tracking-[0.12em] text-zinc-500">Использование</h2>
-                <div className="mt-3 space-y-1 text-sm text-zinc-600">
-                  <p>Мой склад: <span className="font-medium text-zinc-900">{item.inventoryUsageCount}</span></p>
-                  <p>Мои рецепты: <span className="font-medium text-zinc-900">{item.recipeUsageCount}</span></p>
+              <section className="rounded-[28px] border border-border bg-card p-6 shadow-sm">
+                <h2 className="text-sm font-semibold uppercase tracking-[0.12em] text-muted-foreground">Использование</h2>
+                <div className="mt-3 space-y-1 text-sm text-muted-foreground">
+                  <p>Мой склад: <span className="font-medium text-foreground">{item.inventoryUsageCount}</span></p>
+                  <p>Мои рецепты: <span className="font-medium text-foreground">{item.recipeUsageCount}</span></p>
                 </div>
               </section>
             ) : null}
 
             {canManage ? (
-              <section className="rounded-[28px] border border-zinc-200 bg-white p-6 shadow-sm">
-                <h2 className="text-sm font-semibold uppercase tracking-[0.12em] text-zinc-500">Где купить</h2>
+              <section className="rounded-[28px] border border-border bg-card p-6 shadow-sm">
+                <h2 className="text-sm font-semibold uppercase tracking-[0.12em] text-muted-foreground">Где купить</h2>
                 <div className="mt-4">
                   <IngredientPurchaseLinksEditor
                     reference={{

@@ -58,8 +58,8 @@ const emptyFilters = (): BjcpAdvancedFilters => ({
 
 const segmentedButtonClassName = (active: boolean) => (
   `inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-medium transition ${active
-    ? "bg-zinc-950 text-white"
-    : "bg-white text-zinc-600 ring-1 ring-zinc-200 hover:bg-zinc-50"
+    ? "bg-foreground text-background"
+    : "bg-card text-muted-foreground ring-1 ring-border hover:bg-accent"
   }`
 );
 
@@ -97,7 +97,7 @@ function CategoryStyleDetailCard({ style }: { style: BjcpCatalogStyle }) {
   return (
     <Link
       href={`/bjcp/${style.slug}`}
-      className="group block overflow-hidden rounded-[1rem] border border-zinc-200 bg-white shadow-[0_10px_24px_-22px_rgba(15,23,42,0.45)] transition duration-200 hover:-translate-y-0.5 hover:border-zinc-300 hover:shadow-[0_18px_36px_-24px_rgba(15,23,42,0.28)]"
+      className="group block overflow-hidden rounded-[1rem] border border-border bg-card shadow-[0_10px_24px_-22px_rgba(15,23,42,0.45)] transition duration-200 hover:-translate-y-0.5 hover:border-border hover:shadow-[0_18px_36px_-24px_rgba(15,23,42,0.28)]"
       aria-label={`Открыть стиль ${style.bjcpId} ${style.title}`}
     >
       <article className="flex h-full">
@@ -109,23 +109,23 @@ function CategoryStyleDetailCard({ style }: { style: BjcpCatalogStyle }) {
         <div className="flex min-w-0 flex-1 flex-col gap-1.5 px-3 py-2.5">
           <div className="flex items-baseline justify-between gap-2 text-[13px] leading-tight">
             <div className="min-w-0 flex items-baseline gap-2">
-              <span className="shrink-0 text-[11px] font-semibold uppercase tracking-[0.16em] text-zinc-500">
+              <span className="shrink-0 text-[11px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
                 {style.bjcpId}
               </span>
-              <h4 className="truncate font-medium text-zinc-950">
+              <h4 className="truncate font-medium text-foreground">
                 {style.title}
               </h4>
             </div>
 
-            <ChevronRight className="h-4 w-4 shrink-0 text-zinc-300 transition group-hover:text-zinc-500" />
+            <ChevronRight className="h-4 w-4 shrink-0 text-muted-foreground transition group-hover:text-muted-foreground" />
           </div>
 
-          <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-[11px] font-medium text-zinc-600">
-            <span>ABV <span className={abvStat.isFallback ? "text-zinc-800" : "text-zinc-950"}>{abvStat.value}</span></span>
-            <span className="text-zinc-300">·</span>
-            <span>IBU <span className={ibuStat.isFallback ? "text-zinc-800" : "text-zinc-950"}>{ibuStat.value}</span></span>
-            <span className="text-zinc-300">·</span>
-            <span>SRM <span className={colorInfo.isFallback ? "text-zinc-800" : "text-zinc-950"}>{colorInfo.value}</span></span>
+          <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-[11px] font-medium text-muted-foreground">
+            <span>ABV <span className={abvStat.isFallback ? "text-foreground" : "text-foreground"}>{abvStat.value}</span></span>
+            <span className="text-muted-foreground">·</span>
+            <span>IBU <span className={ibuStat.isFallback ? "text-foreground" : "text-foreground"}>{ibuStat.value}</span></span>
+            <span className="text-muted-foreground">·</span>
+            <span>SRM <span className={colorInfo.isFallback ? "text-foreground" : "text-foreground"}>{colorInfo.value}</span></span>
           </div>
         </div>
       </article>
@@ -136,10 +136,10 @@ function CategoryStyleDetailCard({ style }: { style: BjcpCatalogStyle }) {
 function AccordionSectionDivider({ label }: { label: string }) {
   return (
     <div className="flex items-center gap-3 px-2 pt-4 pb-1" aria-hidden="true">
-      <span className="text-xs font-normal tracking-[0.14em] text-zinc-400">
+      <span className="text-xs font-normal tracking-[0.14em] text-muted-foreground">
         {label}
       </span>
-      <div className="h-px flex-1 bg-zinc-200/80" />
+      <div className="h-px flex-1 bg-border/80" />
     </div>
   );
 }
@@ -413,23 +413,23 @@ export function BjcpCatalog({ catalog }: Props) {
 
   return (
     <div className="space-y-6">
-      <section className="relative z-30 space-y-5 rounded-[2rem] border border-white/80 bg-white/90 p-5 shadow-[0_36px_100px_-72px_rgba(15,23,42,0.45)] backdrop-blur sm:p-6">
-        <nav aria-label="Breadcrumb" className="text-sm text-zinc-500">
+      <section className="relative z-30 space-y-5 rounded-[2rem] border border-card/80 bg-card/90 p-5 shadow-[0_36px_100px_-72px_rgba(15,23,42,0.45)] backdrop-blur sm:p-6">
+        <nav aria-label="Breadcrumb" className="text-sm text-muted-foreground">
           <ol className="flex flex-wrap items-center gap-2">
-            <li><Link href="/" className="transition hover:text-zinc-950">Главная</Link></li>
+            <li><Link href="/" className="transition hover:text-foreground">Главная</Link></li>
             <li aria-hidden="true">/</li>
-            <li className="text-zinc-950">BJCP</li>
+            <li className="text-foreground">BJCP</li>
           </ol>
         </nav>
 
-        <h1 className="text-3xl font-semibold text-zinc-950 sm:text-4xl" style={{ fontFamily: "var(--font-display)" }}>
+        <h1 className="text-3xl font-semibold text-foreground sm:text-4xl" style={{ fontFamily: "var(--font-display)" }}>
           BJCP справочник стилей
         </h1>
 
         <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center">
           <div ref={searchRef} className="relative z-[70]">
             <label className="sr-only" htmlFor="bjcp-search">Поиск стилей BJCP</label>
-            <Search className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-zinc-400" />
+            <Search className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
             <input
               id="bjcp-search"
               value={searchInput}
@@ -437,7 +437,7 @@ export function BjcpCatalog({ catalog }: Props) {
               onFocus={() => setIsSearchFocused(true)}
               autoComplete="off"
               placeholder="Код BJCP, русское или английское название, синоним"
-              className="h-[3.25rem] w-full rounded-[1.4rem] border border-zinc-200 bg-white px-12 pr-12 text-base text-zinc-950 outline-none transition focus:border-zinc-400 focus:ring-4 focus:ring-zinc-200/70"
+              className="h-[3.25rem] w-full rounded-[1.4rem] border border-border bg-card px-12 pr-12 text-base text-foreground outline-none transition focus:border-ring focus:ring-4 focus:ring-ring/70"
               role="combobox"
               aria-expanded={shouldShowSuggestions}
               aria-autocomplete="list"
@@ -476,7 +476,7 @@ export function BjcpCatalog({ catalog }: Props) {
               <button
                 type="button"
                 onClick={handleClearSearch}
-                className="absolute right-3 top-1/2 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-full text-zinc-400 transition hover:bg-zinc-100 hover:text-zinc-950"
+                className="absolute right-3 top-1/2 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-full text-muted-foreground transition hover:bg-accent hover:text-foreground"
                 aria-label="Очистить поиск"
               >
                 <X className="h-4 w-4" />
@@ -487,7 +487,7 @@ export function BjcpCatalog({ catalog }: Props) {
               <div
                 id={suggestionListId}
                 role="listbox"
-                className="absolute inset-x-0 top-[calc(100%+0.5rem)] z-[80] overflow-hidden rounded-[1.5rem] border border-zinc-200 bg-white shadow-2xl"
+                className="absolute inset-x-0 top-[calc(100%+0.5rem)] z-[80] overflow-hidden rounded-[1.5rem] border border-border bg-card shadow-2xl"
               >
                 {([
                   ["Стили", suggestions.styles],
@@ -499,8 +499,8 @@ export function BjcpCatalog({ catalog }: Props) {
                   }
 
                   return (
-                    <section key={label} className="border-b border-zinc-100 last:border-b-0">
-                      <div className="bg-zinc-50 px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-zinc-500">
+                    <section key={label} className="border-b border-border last:border-b-0">
+                      <div className="bg-muted px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
                         {label}
                       </div>
                       {items.map((item) => {
@@ -515,14 +515,14 @@ export function BjcpCatalog({ catalog }: Props) {
                             aria-selected={flatIndex === activeSuggestionIndex}
                             onPointerDown={(event) => event.preventDefault()}
                             onClick={() => handleSuggestionSelect(item)}
-                            className={`flex w-full items-start justify-between gap-4 px-4 py-3 text-left transition hover:bg-zinc-50 ${flatIndex === activeSuggestionIndex ? "bg-zinc-50" : "bg-white"
+                            className={`flex w-full items-start justify-between gap-4 px-4 py-3 text-left transition hover:bg-accent ${flatIndex === activeSuggestionIndex ? "bg-accent" : "bg-card"
                               }`}
                           >
                             <div className="min-w-0">
-                              <p className="truncate text-sm font-semibold text-zinc-950">{item.label}</p>
-                              <p className="mt-1 truncate text-xs text-zinc-500">{item.subtitle}</p>
+                              <p className="truncate text-sm font-semibold text-foreground">{item.label}</p>
+                              <p className="mt-1 truncate text-xs text-muted-foreground">{item.subtitle}</p>
                             </div>
-                            <ChevronRight className="mt-0.5 h-4 w-4 shrink-0 text-zinc-300" />
+                            <ChevronRight className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground" />
                           </button>
                         );
                       })}
@@ -534,7 +534,7 @@ export function BjcpCatalog({ catalog }: Props) {
           </div>
 
           <div className="flex flex-wrap items-center gap-2 lg:flex-nowrap lg:justify-end">
-            <div className="flex flex-wrap gap-2 rounded-full bg-zinc-100 p-1">
+            <div className="flex flex-wrap gap-2 rounded-full bg-muted p-1">
               <button
                 type="button"
                 onClick={() => navigateState(updateState(state, { view: "families", category: null }))}
@@ -558,14 +558,14 @@ export function BjcpCatalog({ catalog }: Props) {
                 type="button"
                 onClick={() => setIsFiltersOpen(true)}
                 className={`inline-flex h-11 items-center gap-2 rounded-xl border px-4 text-sm font-medium transition ${activeFilterPills.length
-                  ? "border-zinc-950 bg-zinc-950 text-white"
-                  : "border-zinc-200 bg-white text-zinc-700 hover:border-zinc-300 hover:bg-zinc-50"
+                  ? "border-foreground bg-foreground text-background"
+                  : "border-border bg-card text-foreground hover:border-border hover:bg-accent"
                   }`}
               >
                 <Filter className="h-4 w-4" />
                 Фильтры
                 {activeFilterPills.length ? (
-                  <span className="rounded-full bg-white/15 px-2 py-0.5 text-[11px]">
+                  <span className="rounded-full bg-background/15 px-2 py-0.5 text-[11px]">
                     {activeFilterPills.length}
                   </span>
                 ) : null}
@@ -588,8 +588,8 @@ export function BjcpCatalog({ catalog }: Props) {
                     chips: active ? [] : [chip.id]
                   }))}
                   className={`rounded-full border px-3 py-2 text-sm font-medium transition ${active
-                    ? "border-zinc-950 bg-zinc-950 text-white"
-                    : "border-zinc-200 bg-white text-zinc-700 hover:border-zinc-300 hover:bg-zinc-50"
+                    ? "border-foreground bg-foreground text-background"
+                    : "border-border bg-card text-foreground hover:border-border hover:bg-accent"
                     }`}
                 >
                   {chip.label}
@@ -601,7 +601,7 @@ export function BjcpCatalog({ catalog }: Props) {
               <button
                 type="button"
                 onClick={() => navigateState(updateState(state, { filters: emptyFilters() }))}
-                className="inline-flex items-center gap-2 rounded-full border border-zinc-200 bg-white px-3 py-2 text-sm font-medium text-zinc-600 transition hover:border-zinc-300 hover:bg-zinc-50"
+                className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-3 py-2 text-sm font-medium text-muted-foreground transition hover:border-border hover:bg-accent"
               >
                 <RotateCcw className="h-3.5 w-3.5" />
                 Сбросить фильтры
@@ -614,7 +614,7 @@ export function BjcpCatalog({ catalog }: Props) {
                 onClick={() => navigateState(updateState(state, {
                   ...resetCatalogControls(false)
                 }))}
-                className="inline-flex items-center gap-2 rounded-full border border-zinc-200 bg-white px-3 py-2 text-sm font-medium text-zinc-600 transition hover:border-zinc-300 hover:bg-zinc-50"
+                className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-3 py-2 text-sm font-medium text-muted-foreground transition hover:border-border hover:bg-accent"
               >
                 <RotateCcw className="h-3.5 w-3.5" />
                 Сбросить всё
@@ -634,8 +634,8 @@ export function BjcpCatalog({ catalog }: Props) {
                   type="button"
                   onClick={() => handleJumpToCategory(group.targetId)}
                   className={`rounded-full border px-3.5 py-2 text-xs font-semibold tracking-[0.04em] transition ${active
-                    ? "border-zinc-950 bg-zinc-950 text-white"
-                    : "border-zinc-200 bg-zinc-50 text-zinc-700 hover:border-zinc-300 hover:bg-white"
+                    ? "border-foreground bg-foreground text-background"
+                    : "border-border bg-muted text-foreground hover:border-border hover:bg-card"
                     }`}
                 >
                   {group.label}
@@ -646,16 +646,16 @@ export function BjcpCatalog({ catalog }: Props) {
         ) : null}
 
         {visiblePills.length ? (
-          <div className="flex flex-wrap items-center gap-2 border-t border-zinc-200 pt-4">
+          <div className="flex flex-wrap items-center gap-2 border-t border-border pt-4">
             {visiblePills.map((pill) => (
               <button
                 key={pill.key}
                 type="button"
                 onClick={() => handleRemovePill(pill.key, pill.group, pill.value)}
-                className="inline-flex items-center gap-2 rounded-full border border-zinc-200 bg-zinc-50 px-3 py-2 text-sm font-medium text-zinc-700 transition hover:border-zinc-300 hover:bg-white"
+                className="inline-flex items-center gap-2 rounded-full border border-border bg-muted px-3 py-2 text-sm font-medium text-foreground transition hover:border-border hover:bg-card"
               >
                 {pill.label}
-                <X className="h-3.5 w-3.5 text-zinc-400" />
+                <X className="h-3.5 w-3.5 text-muted-foreground" />
               </button>
             ))}
           </div>
@@ -664,9 +664,9 @@ export function BjcpCatalog({ catalog }: Props) {
 
       {state.view === "families" ? (
         <section className="relative z-0 grid gap-6 xl:grid-cols-[minmax(0,19rem)_minmax(0,1fr)]">
-          <aside className="rounded-[2rem] border border-zinc-200 bg-white p-3 shadow-sm xl:sticky xl:top-24 xl:self-start">
+          <aside className="rounded-[2rem] border border-border bg-card p-3 shadow-sm xl:sticky xl:top-24 xl:self-start">
             <div className="px-2 pb-2">
-              <h2 className="text-sm font-semibold text-zinc-950">Семейства</h2>
+              <h2 className="text-sm font-semibold text-foreground">Семейства</h2>
             </div>
 
             <div className="space-y-2">
@@ -685,12 +685,12 @@ export function BjcpCatalog({ catalog }: Props) {
                       sort: "code"
                     }))}
                     className={`flex w-full items-center justify-between gap-3 rounded-[1.25rem] border px-4 py-3 text-left transition ${active
-                      ? "border-zinc-950 bg-zinc-950 text-white"
-                      : "border-zinc-200 bg-white text-zinc-900 hover:border-zinc-300 hover:bg-zinc-50"
+                      ? "border-foreground bg-foreground text-background"
+                      : "border-border bg-card text-foreground hover:border-border hover:bg-accent"
                       }`}
                   >
                     <span className="text-sm font-medium leading-6">{family.nameRu}</span>
-                    <span className={`shrink-0 rounded-full px-2.5 py-1 text-xs font-semibold ${active ? "bg-white/10 text-white" : "bg-slate-50 text-zinc-700 ring-1 ring-zinc-200"
+                    <span className={`shrink-0 rounded-full px-2.5 py-1 text-xs font-semibold ${active ? "bg-background/10 text-background" : "bg-muted text-foreground ring-1 ring-border"
                       }`}>
                       {family.styleCount}
                     </span>
@@ -702,11 +702,11 @@ export function BjcpCatalog({ catalog }: Props) {
 
           <section id="bjcp-results" className="space-y-4">
             <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
-              <h2 className="text-2xl font-semibold text-zinc-950" style={{ fontFamily: "var(--font-display)" }}>
+              <h2 className="text-2xl font-semibold text-foreground" style={{ fontFamily: "var(--font-display)" }}>
                 {results.title}
               </h2>
 
-              <span className="rounded-full border border-zinc-200 bg-white px-4 py-2 text-sm font-medium text-zinc-700">
+              <span className="rounded-full border border-border bg-card px-4 py-2 text-sm font-medium text-foreground">
                 {results.styles.length} стилей
               </span>
             </div>
@@ -746,8 +746,8 @@ export function BjcpCatalog({ catalog }: Props) {
                 <section
                   id={`bjcp-category-${category.id}`}
                   className={`overflow-hidden rounded-[1.5rem] border transition ${open
-                    ? "border-zinc-300 bg-[linear-gradient(180deg,rgba(250,250,250,0.98),rgba(244,244,245,0.98))] shadow-[0_26px_70px_-54px_rgba(15,23,42,0.35)]"
-                    : "border-zinc-200 bg-white shadow-sm"
+                    ? "border-border bg-[linear-gradient(180deg,rgba(250,250,250,0.98),rgba(244,244,245,0.98))] shadow-[0_26px_70px_-54px_rgba(15,23,42,0.35)]"
+                    : "border-border bg-card shadow-sm"
                     } scroll-mt-28`}
                 >
                   <button
@@ -758,31 +758,31 @@ export function BjcpCatalog({ catalog }: Props) {
                       view: "bjcp",
                       sort: "code"
                     }))}
-                    className={`flex w-full items-center justify-between gap-4 px-5 py-4 text-left transition ${open ? "hover:bg-white/30" : "hover:bg-zinc-50"}`}
+                    className={`flex w-full items-center justify-between gap-4 px-5 py-4 text-left transition ${open ? "hover:bg-card/30" : "hover:bg-accent"}`}
                   >
                     <div className="min-w-0 flex flex-wrap items-baseline gap-x-3 gap-y-1">
-                      <span className={`text-sm font-medium ${open ? "text-zinc-700" : "text-zinc-500"}`}>
+                      <span className={`text-sm font-medium ${open ? "text-foreground" : "text-muted-foreground"}`}>
                         {category.id}
                       </span>
-                      <h3 className="text-lg font-medium text-zinc-950">{category.nameRu}</h3>
+                      <h3 className="text-lg font-medium text-foreground">{category.nameRu}</h3>
                     </div>
 
                     <div className="flex items-center gap-3 pl-3">
-                      <span className="text-sm text-zinc-500">
+                      <span className="text-sm text-muted-foreground">
                         {category.styleCodeRange ?? category.id}
                       </span>
                       <span className={`shrink-0 rounded-full px-3 py-1 text-xs font-semibold ${open
-                        ? "bg-zinc-950 text-white"
-                        : "bg-slate-50 text-zinc-700 ring-1 ring-zinc-200"
+                        ? "bg-foreground text-background"
+                        : "bg-muted text-foreground ring-1 ring-border"
                         }`}>
                         {formatStyleCountLabel(category.articleCount)}
                       </span>
-                      {open ? <ChevronDown className="h-5 w-5 text-zinc-500" /> : <ChevronRight className="h-5 w-5 text-zinc-400" />}
+                      {open ? <ChevronDown className="h-5 w-5 text-muted-foreground" /> : <ChevronRight className="h-5 w-5 text-muted-foreground" />}
                     </div>
                   </button>
 
                   {open ? (
-                    <div className="border-t border-zinc-200/70 px-5 py-4">
+                    <div className="border-t border-border/70 px-5 py-4">
                       <div className="grid gap-2 md:grid-cols-2 xl:grid-cols-3">
                         {categoryStyles.map((style: BjcpCatalogStyle) => (
                           <CategoryStyleDetailCard key={style.slug} style={style} />
@@ -800,11 +800,11 @@ export function BjcpCatalog({ catalog }: Props) {
       {state.view === "bjcp" && results.showResults && !showBjcpAccordion ? (
         <section id="bjcp-results" className="relative z-0 space-y-4">
           <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
-            <h2 className="text-2xl font-semibold text-zinc-950" style={{ fontFamily: "var(--font-display)" }}>
+            <h2 className="text-2xl font-semibold text-foreground" style={{ fontFamily: "var(--font-display)" }}>
               {results.title}
             </h2>
 
-            <span className="rounded-full border border-zinc-200 bg-white px-4 py-2 text-sm font-medium text-zinc-700">
+            <span className="rounded-full border border-border bg-card px-4 py-2 text-sm font-medium text-foreground">
               {results.styles.length} стилей
             </span>
           </div>

@@ -83,7 +83,7 @@ export function PurchaseLinkMarketplaceBadge({
       <span
         title={label}
         aria-label={label}
-        className={`inline-flex shrink-0 items-center justify-center overflow-hidden rounded-full bg-white ring-1 ring-zinc-200 ${px} ${className}`.trim()}
+        className={`inline-flex shrink-0 items-center justify-center overflow-hidden rounded-full bg-card ring-1 ring-ring ${px} ${className}`.trim()}
       >
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
@@ -326,17 +326,17 @@ export function IngredientPurchaseLinksEditor({
   return (
     <div className="space-y-4">
       {isLoading ? (
-        <p className="text-sm text-zinc-500">Загружаем ссылки...</p>
+        <p className="text-sm text-muted-foreground">Загружаем ссылки...</p>
       ) : null}
 
       {!isLoading && links.length === 0 && editingId == null ? (
-        <div className="rounded-2xl border border-dashed border-zinc-200 bg-zinc-50 px-4 py-5">
-          <p className="text-sm font-medium text-zinc-900">{emptyStateTitle}</p>
-          <p className="mt-1 text-sm text-zinc-500">{emptyStateDescription}</p>
+        <div className="rounded-2xl border border-dashed border-border bg-muted px-4 py-5">
+          <p className="text-sm font-medium text-foreground">{emptyStateTitle}</p>
+          <p className="mt-1 text-sm text-muted-foreground">{emptyStateDescription}</p>
           <button
             type="button"
             onClick={startCreate}
-            className="mt-4 inline-flex items-center gap-2 rounded-xl border border-zinc-200 bg-white px-3 py-2 text-sm font-medium text-zinc-700 transition-colors hover:bg-zinc-100"
+            className="mt-4 inline-flex items-center gap-2 rounded-xl border border-border bg-card px-3 py-2 text-sm font-medium text-foreground transition-colors hover:bg-accent"
           >
             <Plus className="h-4 w-4" />
             Добавить ссылку
@@ -351,22 +351,22 @@ export function IngredientPurchaseLinksEditor({
 
             if (isEditing) {
               return (
-                <div key={link.id} className="space-y-3 rounded-2xl border border-zinc-200 bg-zinc-50 p-3">
-                  <label className="block text-sm font-medium text-zinc-900">
+                <div key={link.id} className="space-y-3 rounded-2xl border border-border bg-muted p-3">
+                  <label className="block text-sm font-medium text-foreground">
                     Ссылка на покупку
                     <input
                       type="url"
                       value={draftUrl}
                       onChange={(event) => setDraftUrl(event.target.value)}
-                      className="mt-2 w-full rounded-xl border border-zinc-200 bg-white px-3 py-2 text-sm"
+                      className="mt-2 w-full rounded-xl border border-border bg-card px-3 py-2 text-sm"
                       placeholder="https://..."
                     />
                   </label>
                   {draftPreview ? (
-                    <div className="flex items-center gap-2 text-sm text-zinc-600">
+                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
                       <PurchaseLinkMarketplaceBadge marketplace={draftPreview.marketplace} />
-                      <span className="font-medium text-zinc-900">{draftPreview.marketplaceLabel}</span>
-                      <span className="text-zinc-400">•</span>
+                      <span className="font-medium text-foreground">{draftPreview.marketplaceLabel}</span>
+                      <span className="text-muted-foreground">•</span>
                       <span>{draftPreview.displayHost}</span>
                     </div>
                   ) : null}
@@ -385,27 +385,27 @@ export function IngredientPurchaseLinksEditor({
             return (
               <div
                 key={link.id}
-                className="flex items-stretch gap-2 rounded-2xl border border-zinc-200 bg-white p-1"
+                className="flex items-stretch gap-2 rounded-2xl border border-border bg-card p-1"
               >
                 <a
                   href={link.url}
                   target="_blank"
                   rel="noreferrer"
                   aria-label={`Открыть ${link.marketplaceLabel}`}
-                  className="group flex min-w-0 flex-1 items-center gap-3 rounded-[1rem] px-3 py-3 transition-colors hover:bg-zinc-50 focus-visible:bg-zinc-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-300"
+                  className="group flex min-w-0 flex-1 items-center gap-3 rounded-[1rem] px-3 py-3 transition-colors hover:bg-muted focus-visible:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                 >
                   <PurchaseLinkMarketplaceBadge marketplace={link.marketplace} />
                   <div className="min-w-0 flex-1">
-                    <p className="truncate text-sm font-medium text-zinc-950">{link.marketplaceLabel}</p>
-                    <p className="truncate text-xs text-zinc-500">{link.displayHost}</p>
+                    <p className="truncate text-sm font-medium text-foreground">{link.marketplaceLabel}</p>
+                    <p className="truncate text-xs text-muted-foreground">{link.displayHost}</p>
                   </div>
-                  <ExternalLink className="h-4 w-4 shrink-0 text-zinc-300 transition-colors group-hover:text-zinc-500 group-focus-visible:text-zinc-500" />
+                  <ExternalLink className="h-4 w-4 shrink-0 text-muted-foreground transition-colors group-hover:text-muted-foreground group-focus-visible:text-muted-foreground" />
                 </a>
                 <div className="flex shrink-0 items-center gap-1 pr-1">
                   <button
                     type="button"
                     onClick={() => startEdit(link)}
-                    className="rounded-full p-2 text-zinc-400 transition-colors hover:bg-zinc-100 hover:text-zinc-700"
+                    className="rounded-full p-2 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
                     aria-label="Редактировать ссылку"
                   >
                     <Pencil className="h-4 w-4" />
@@ -413,7 +413,7 @@ export function IngredientPurchaseLinksEditor({
                   <button
                     type="button"
                     onClick={() => removeLink(link.id)}
-                    className="rounded-full p-2 text-zinc-400 transition-colors hover:bg-red-50 hover:text-red-600"
+                    className="rounded-full p-2 text-muted-foreground transition-colors hover:bg-destructive-subtle hover:text-destructive"
                     aria-label="Удалить ссылку"
                   >
                     <Trash2 className="h-4 w-4" />
@@ -431,15 +431,15 @@ export function IngredientPurchaseLinksEditor({
             type="url"
             value={draftUrl}
             onChange={(event) => setDraftUrl(event.target.value)}
-            className="w-full rounded-xl border border-zinc-200 bg-white px-3 py-2 text-sm"
+            className="w-full rounded-xl border border-border bg-card px-3 py-2 text-sm"
             placeholder="https://..."
             aria-label="Ссылка"
           />
           {draftPreview ? (
-            <div className="flex items-center gap-2 text-sm text-zinc-600">
+            <div className="flex items-center gap-2 text-sm text-muted-foreground">
               <PurchaseLinkMarketplaceBadge marketplace={draftPreview.marketplace} />
-              <span className="font-medium text-zinc-900">{draftPreview.marketplaceLabel}</span>
-              <span className="text-zinc-400">•</span>
+              <span className="font-medium text-foreground">{draftPreview.marketplaceLabel}</span>
+              <span className="text-muted-foreground">•</span>
               <span>{draftPreview.displayHost}</span>
             </div>
           ) : null}
@@ -458,14 +458,14 @@ export function IngredientPurchaseLinksEditor({
         <button
           type="button"
           onClick={startCreate}
-          className="inline-flex items-center gap-2 rounded-xl border border-zinc-200 bg-white px-3 py-2 text-sm font-medium text-zinc-700 transition-colors hover:bg-zinc-100"
+          className="inline-flex items-center gap-2 rounded-xl border border-border bg-card px-3 py-2 text-sm font-medium text-foreground transition-colors hover:bg-accent"
         >
           <Plus className="h-4 w-4" />
           Добавить ссылку
         </button>
       ) : null}
 
-      {message ? <p role="alert" className="text-sm text-red-600">{message}</p> : null}
+      {message ? <p role="alert" className="text-sm text-destructive">{message}</p> : null}
     </div>
   );
 }
@@ -499,7 +499,7 @@ export function IngredientPurchaseLinksDialog({
     >
       <div className="p-5">
         <div className="mb-6 flex items-start justify-between gap-4">
-          <h2 className="text-2xl font-semibold text-zinc-950">{title}</h2>
+          <h2 className="text-2xl font-semibold text-foreground">{title}</h2>
           <DialogCloseButton aria-label="Закрыть ссылки на покупку" />
         </div>
 

@@ -188,7 +188,7 @@ export function DevicesManager({ initialTiles, demoAvailable }: Props) {
       <header className="flex flex-wrap items-start justify-between gap-3">
         <div className="space-y-1">
           <h1
-            className="text-2xl font-semibold text-zinc-950 sm:text-3xl"
+            className="text-2xl font-semibold text-foreground sm:text-3xl"
             style={{ fontFamily: "var(--font-display)" }}
           >
             BrewForge
@@ -200,7 +200,7 @@ export function DevicesManager({ initialTiles, demoAvailable }: Props) {
               <Button variant="outline" onClick={() => void createDemo()} disabled={creatingDemo}>
                 {creatingDemo ? "Создаём…" : "Демо-пивоварня"}
               </Button>
-              {demoError ? <p role="alert" className="text-xs text-red-600">{demoError}</p> : null}
+              {demoError ? <p role="alert" className="text-xs text-destructive">{demoError}</p> : null}
             </div>
           ) : null}
           <Button variant="outline" onClick={togglePair}>
@@ -215,13 +215,13 @@ export function DevicesManager({ initialTiles, demoAvailable }: Props) {
       {/* Форма привязки (свёрнута по умолчанию). */}
       {showPair ? (
         <Card className="p-5">
-          <h2 className="text-sm font-semibold text-zinc-900">Привязать устройство</h2>
-          <p className="mt-1 text-xs text-zinc-500">
+          <h2 className="text-sm font-semibold text-foreground">Привязать устройство</h2>
+          <p className="mt-1 text-xs text-muted-foreground">
             Введите одноразовый код привязки, показанный на экране контроллера. Опционально — имя и
             локальный адрес (для прямой LAN-связи).
           </p>
           <form onSubmit={submitPair} className="mt-4 grid gap-3 sm:grid-cols-3">
-            <label className="flex flex-col gap-1 text-xs font-medium text-zinc-600">
+            <label className="flex flex-col gap-1 text-xs font-medium text-muted-foreground">
               Код привязки
               <Input
                 value={claimCode}
@@ -230,7 +230,7 @@ export function DevicesManager({ initialTiles, demoAvailable }: Props) {
                 autoComplete="off"
               />
             </label>
-            <label className="flex flex-col gap-1 text-xs font-medium text-zinc-600">
+            <label className="flex flex-col gap-1 text-xs font-medium text-muted-foreground">
               Имя (опц.)
               <Input
                 value={name}
@@ -238,7 +238,7 @@ export function DevicesManager({ initialTiles, demoAvailable }: Props) {
                 placeholder="Пивоварня на кухне"
               />
             </label>
-            <label className="flex flex-col gap-1 text-xs font-medium text-zinc-600">
+            <label className="flex flex-col gap-1 text-xs font-medium text-muted-foreground">
               Локальный адрес (опц.)
               <Input
                 value={localUrl}
@@ -253,24 +253,24 @@ export function DevicesManager({ initialTiles, demoAvailable }: Props) {
             </div>
           </form>
 
-          {pairError ? <p role="alert" className="mt-3 text-sm text-red-600">{pairError}</p> : null}
+          {pairError ? <p role="alert" className="mt-3 text-sm text-destructive">{pairError}</p> : null}
 
           {/* Одноразовый токен. */}
           {issuedToken ? (
-            <div role="status" className="mt-4 rounded-xl border-2 border-emerald-300 bg-emerald-50 p-4">
-              <p className="text-sm font-semibold text-emerald-900">Устройство привязано</p>
+            <div role="status" className="mt-4 rounded-xl border-2 border-success/30 bg-success-subtle p-4">
+              <p className="text-sm font-semibold text-success-subtle-foreground">Устройство привязано</p>
               {pairingStatus?.delivered ? (
-                <p className="mt-1 text-xs text-emerald-800">
+                <p className="mt-1 text-xs text-success-subtle-foreground">
                   Токен уже доставлен устройству по локальной сети — можно управлять сразу.
                 </p>
               ) : (
-                <p className="mt-1 text-xs text-emerald-800">
+                <p className="mt-1 text-xs text-success-subtle-foreground">
                   Скопируйте этот токен и пропишите его на устройстве. Он показывается{" "}
                   <strong>один раз</strong> и не хранится на сервере.
                 </p>
               )}
               <div className="mt-3 flex flex-wrap items-center gap-2">
-                <code className="break-all rounded-md bg-white px-3 py-2 text-xs text-zinc-900 ring-1 ring-emerald-200">
+                <code className="break-all rounded-md bg-card px-3 py-2 text-xs text-foreground ring-1 ring-success/30">
                   {issuedToken}
                 </code>
                 <Button variant="outline" onClick={() => void copyToken()}>
@@ -283,7 +283,7 @@ export function DevicesManager({ initialTiles, demoAvailable }: Props) {
               {/* Итог автодоставки токена (P4) — только если НЕ доставлен: деливеред-путь
                   уже описан выше, тут нужен только «что делать», если авто не сработало. */}
               {pairingStatus && !pairingStatus.delivered ? (
-                <p className="mt-3 text-xs text-amber-800">{pairingDeliveryReasonText(pairingStatus.reason)}</p>
+                <p className="mt-3 text-xs text-warning-subtle-foreground">{pairingDeliveryReasonText(pairingStatus.reason)}</p>
               ) : null}
             </div>
           ) : null}
@@ -292,7 +292,7 @@ export function DevicesManager({ initialTiles, demoAvailable }: Props) {
 
       {/* Грид плиток командного центра. */}
       {tiles.length === 0 ? (
-        <Card className="p-6 text-sm text-zinc-600">
+        <Card className="p-6 text-sm text-muted-foreground">
           Пока нет привязанных устройств. Привяжите контроллер по коду
           {demoAvailable ? ", либо создайте демо-пивоварню без железа" : ""}.
         </Card>

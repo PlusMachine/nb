@@ -49,23 +49,23 @@ export function RecipeStylePicker({
   return (
     <div className="space-y-6">
       <div className="min-w-0 space-y-2">
-        <span className="text-sm font-semibold text-zinc-950">Поиск стиля</span>
-        <div className="flex items-center gap-2 rounded-lg border border-zinc-200 bg-white px-3 focus-within:ring-2 focus-within:ring-zinc-400">
-          <Search className="h-4 w-4 shrink-0 text-zinc-400" aria-hidden />
+        <span className="text-sm font-semibold text-foreground">Поиск стиля</span>
+        <div className="flex items-center gap-2 rounded-lg border border-border bg-card px-3 focus-within:ring-2 focus-within:ring-ring">
+          <Search className="h-4 w-4 shrink-0 text-muted-foreground" aria-hidden />
           <input
             type="search"
             value={query}
             onChange={(event) => setQuery(event.target.value)}
             placeholder="Название или код, напр. American IPA"
             aria-label="Поиск стиля"
-            className="h-10 w-full min-w-0 bg-transparent text-sm text-zinc-900 placeholder:text-zinc-400 focus:outline-none"
+            className="h-10 w-full min-w-0 bg-transparent text-sm text-foreground placeholder:text-muted-foreground focus:outline-none"
           />
           {query ? (
             <button
               type="button"
               onClick={() => setQuery("")}
               aria-label="Очистить поиск"
-              className="shrink-0 text-zinc-400 transition hover:text-zinc-950"
+              className="shrink-0 text-muted-foreground transition hover:text-foreground"
             >
               <X className="h-4 w-4" aria-hidden />
             </button>
@@ -73,7 +73,7 @@ export function RecipeStylePicker({
         </div>
 
         {showResults ? (
-          <div className="max-h-64 overflow-y-auto rounded-lg border border-zinc-200" role="listbox">
+          <div className="max-h-64 overflow-y-auto rounded-lg border border-border" role="listbox">
             {results.length ? (
               results.map((entry) => {
                 const selected = style === entry.code;
@@ -84,23 +84,23 @@ export function RecipeStylePicker({
                     role="option"
                     aria-selected={selected}
                     onClick={() => pickStyle(entry.code)}
-                    className="flex w-full items-center justify-between gap-2 px-3 py-2 text-left text-sm text-zinc-800 transition hover:bg-zinc-50"
+                    className="flex w-full items-center justify-between gap-2 px-3 py-2 text-left text-sm text-foreground transition hover:bg-accent"
                   >
                     <span className="min-w-0 flex-1 truncate">
-                      <span className="font-medium text-zinc-900">{entry.code}</span>
+                      <span className="font-medium text-foreground">{entry.code}</span>
                       {" · "}
                       {entry.title}
                     </span>
-                    {selected ? <Check className="h-4 w-4 shrink-0 text-zinc-900" aria-hidden /> : null}
+                    {selected ? <Check className="h-4 w-4 shrink-0 text-foreground" aria-hidden /> : null}
                   </button>
                 );
               })
             ) : (
-              <p className="px-3 py-2.5 text-sm text-zinc-500">Ничего не найдено</p>
+              <p className="px-3 py-2.5 text-sm text-muted-foreground">Ничего не найдено</p>
             )}
           </div>
         ) : selectedStyle ? (
-          <div className="flex items-center justify-between gap-2 rounded-lg border border-zinc-950 bg-zinc-950 px-3 py-2 text-sm text-white">
+          <div className="flex items-center justify-between gap-2 rounded-lg border border-foreground bg-foreground px-3 py-2 text-sm text-background">
             <span className="min-w-0 flex-1 truncate">
               <span className="font-medium">{selectedStyle.code}</span>
               {" · "}
@@ -110,7 +110,7 @@ export function RecipeStylePicker({
               type="button"
               onClick={() => navigate({ style: null })}
               aria-label="Убрать стиль"
-              className="shrink-0 text-white/70 transition hover:text-white"
+              className="shrink-0 text-background/70 transition hover:text-background"
             >
               <X className="h-4 w-4" aria-hidden />
             </button>
@@ -119,7 +119,7 @@ export function RecipeStylePicker({
       </div>
 
       <fieldset className="min-w-0 space-y-2">
-        <legend className="text-sm font-semibold text-zinc-950">Семейство</legend>
+        <legend className="text-sm font-semibold text-foreground">Семейство</legend>
         <div className="space-y-1.5">
           <FamilyRow label="Все семейства" active={!family && !style} onClick={() => pickFamily(null)} />
           {families.map((entry) => (
@@ -156,14 +156,14 @@ function FamilyRow({
       aria-pressed={active}
       className={`flex w-full items-center gap-2 rounded-xl border px-3 py-2.5 text-left transition ${
         active
-          ? "border-zinc-950 bg-zinc-950 text-white"
-          : "border-zinc-200 bg-white text-zinc-900 hover:border-zinc-300 hover:bg-zinc-50"
+          ? "border-foreground bg-foreground text-background"
+          : "border-border bg-card text-foreground hover:border-border hover:bg-muted"
       }`}
     >
       <span className="min-w-0 flex-1 truncate text-sm font-medium">{label}</span>
       {count != null ? (
         <span
-          className={`shrink-0 text-xs font-medium tabular-nums ${active ? "text-white/70" : "text-zinc-400"}`}
+          className={`shrink-0 text-xs font-medium tabular-nums ${active ? "text-background/70" : "text-muted-foreground"}`}
         >
           {count}
         </span>

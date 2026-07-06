@@ -49,28 +49,28 @@ export function DeviceHeader({
   return (
     // Липнет под шапкой оболочки: офсет берём из --chrome-top (задаётся AppShell),
     // а не захардкоженного top-14/lg:top-0, чтобы не уезжать под хедер.
-    <header className="sticky top-[var(--chrome-top)] z-20 border-b border-zinc-200 bg-white/90 py-3 backdrop-blur">
+    <header className="sticky top-[var(--chrome-top)] z-20 border-b border-border bg-card/90 py-3 backdrop-blur">
       <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
         <Link
           href={backHref}
-          className="inline-flex items-center gap-1 text-sm text-zinc-500 transition hover:text-zinc-800"
+          className="inline-flex items-center gap-1 text-sm text-muted-foreground transition hover:text-foreground"
         >
           <ChevronLeft className="h-4 w-4" aria-hidden />
           <span className="hidden sm:inline">BrewForge</span>
         </Link>
         <h1
-          className="text-lg font-semibold text-zinc-950 sm:text-xl"
+          className="text-lg font-semibold text-foreground sm:text-xl"
           style={{ fontFamily: "var(--font-display)" }}
         >
           {deviceName}
         </h1>
         {isDemo ? (
-          <span className="inline-flex items-center rounded bg-indigo-100 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-indigo-700">
+          <span className="inline-flex items-center rounded bg-indigo-100 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-indigo-700 dark:bg-indigo-500/20 dark:text-indigo-300">
             Демо
           </span>
         ) : null}
         {appMode ? (
-          <span className="inline-flex items-center rounded-full bg-zinc-100 px-3 py-1 text-xs font-medium text-zinc-600">
+          <span className="inline-flex items-center rounded-full bg-muted px-3 py-1 text-xs font-medium text-muted-foreground">
             {APP_MODE_LABELS[appMode]}
           </span>
         ) : null}
@@ -89,7 +89,7 @@ export function DeviceHeader({
               type="button"
               onClick={onKioskEnter}
               aria-label="Киоск"
-              className="inline-flex h-9 w-9 items-center justify-center rounded-md border border-zinc-200 text-zinc-600 transition hover:bg-zinc-50 hover:text-zinc-900"
+              className="inline-flex h-9 w-9 items-center justify-center rounded-md border border-border text-muted-foreground transition hover:bg-accent hover:text-foreground"
             >
               <Maximize2 className="h-4 w-4" aria-hidden />
             </button>
@@ -97,7 +97,7 @@ export function DeviceHeader({
           <Link
             href={settingsHref}
             aria-label="Настройки"
-            className="inline-flex h-9 w-9 items-center justify-center rounded-md border border-zinc-200 text-zinc-600 transition hover:bg-zinc-50 hover:text-zinc-900"
+            className="inline-flex h-9 w-9 items-center justify-center rounded-md border border-border text-muted-foreground transition hover:bg-accent hover:text-foreground"
           >
             <Settings className="h-4 w-4" aria-hidden />
           </Link>

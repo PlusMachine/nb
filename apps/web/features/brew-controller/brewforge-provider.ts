@@ -31,6 +31,7 @@ import type {
   ReadSlotSnapshotFn,
   ReadTelemetryFn,
   SendCommandFn,
+  StartOtaFn,
   WriteConfigFn,
 } from "./contracts";
 import { BREWFORGE_DEMO_PROVIDER_ID, BREWFORGE_PROVIDER_ID } from "./contracts";
@@ -310,6 +311,17 @@ const readLog: ReadLogFn = async ({ userId, deviceId, name }) => {
   return transport.readLog(name);
 };
 
+// startOta — F3 (спека §5.4): запустить OTA с url (ownership-checked). Fire-and-
+// forget: команда не в конверте Command (нет id) — ack не коррелируется, аудит в
+// device_commands не ведём; итог/прогресс прошивка рапортует в .../log (мост
+// складывает в brew_log_events). Гейты (IDLE-only, подпись, rollback) — на устройстве.
+const startOta: StartOtaFn = async ({ userId, deviceId, url }) => {
+  const device = await loadDevice(userId, deviceId);
+  const transport = transportForDevice(device);
+  if (!transport.startOta) throw new Error("OTA_UNSUPPORTED");
+  await transport.startOta(url);
+};
+
 // openSession — привязываем партию к устройству (идемпотентно): pushRecipe затем
 // находит устройство через brew_batches.deviceId.
 const openSession: OpenSessionFn = async ({ userId, deviceId, brewBatchId }) => {
@@ -351,6 +363,7 @@ export const brewforgeProvider: BrewforgeProvider = {
   pushRecipeToDevice,
   listLogs,
   readLog,
+  startOta,
 };
 
 /**

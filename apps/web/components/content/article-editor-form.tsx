@@ -27,7 +27,7 @@ import {
 type Capabilities = { canPublish: boolean; canFeatureOnHome: boolean; canDelete: boolean };
 
 const labelClass = "flex flex-col gap-1 text-sm";
-const inputClass = "h-10 rounded-lg border border-zinc-200 px-3 text-sm text-zinc-900 focus:outline-none focus:ring-2 focus:ring-zinc-400";
+const inputClass = "h-10 rounded-lg border border-border px-3 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring";
 
 export function ArticleEditorForm({
   article,
@@ -104,14 +104,14 @@ export function ArticleEditorForm({
 
   return (
     <div className="space-y-6">
-      <form onSubmit={handleSave} className="space-y-5 rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm">
+      <form onSubmit={handleSave} className="space-y-5 rounded-2xl border border-border bg-card p-5 shadow-sm">
         <div className="grid gap-4 sm:grid-cols-[1fr_12rem]">
           <label className={labelClass}>
-            <span className="text-zinc-500">Заголовок</span>
+            <span className="text-muted-foreground">Заголовок</span>
             <input className={inputClass} value={title} onChange={(event) => setTitle(event.target.value)} maxLength={180} placeholder="Название гайда или обзора" />
           </label>
           <label className={labelClass}>
-            <span className="text-zinc-500">Тип</span>
+            <span className="text-muted-foreground">Тип</span>
             <select className={inputClass} value={type} onChange={(event) => setType(event.target.value as ContentArticleType)}>
               {contentArticleTypes.map((value) => (
                 <option key={value} value={value}>{contentArticleTypeLabels[value]}</option>
@@ -121,36 +121,36 @@ export function ArticleEditorForm({
         </div>
 
         <label className={labelClass}>
-          <span className="text-zinc-500">Аннотация (необязательно — иначе соберём из текста)</span>
-          <textarea className="min-h-[4rem] rounded-lg border border-zinc-200 px-3 py-2 text-sm text-zinc-900 focus:outline-none focus:ring-2 focus:ring-zinc-400" value={excerpt} onChange={(event) => setExcerpt(event.target.value)} maxLength={500} />
+          <span className="text-muted-foreground">Аннотация (необязательно — иначе соберём из текста)</span>
+          <textarea className="min-h-[4rem] rounded-lg border border-border px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring" value={excerpt} onChange={(event) => setExcerpt(event.target.value)} maxLength={500} />
         </label>
 
         <label className={labelClass}>
-          <span className="text-zinc-500">URL обложки (необязательно)</span>
+          <span className="text-muted-foreground">URL обложки (необязательно)</span>
           <input className={inputClass} value={coverImageUrl} onChange={(event) => setCoverImageUrl(event.target.value)} placeholder="/images/... или https://..." />
         </label>
 
         <div className="space-y-1.5">
-          <span className="text-sm text-zinc-500">Текст</span>
+          <span className="text-sm text-muted-foreground">Текст</span>
           <ContentBodyEditor initialDoc={article?.bodyJson ?? null} onChange={(doc) => { bodyRef.current = doc; }} />
         </div>
 
-        <details className="rounded-lg border border-zinc-100 bg-zinc-50/60 p-3">
-          <summary className="cursor-pointer text-sm font-medium text-zinc-700">SEO</summary>
+        <details className="rounded-lg border border-border bg-muted/60 p-3">
+          <summary className="cursor-pointer text-sm font-medium text-foreground">SEO</summary>
           <div className="mt-3 space-y-3">
             <label className={labelClass}>
-              <span className="text-zinc-500">SEO-заголовок</span>
+              <span className="text-muted-foreground">SEO-заголовок</span>
               <input className={inputClass} value={seoTitle} onChange={(event) => setSeoTitle(event.target.value)} maxLength={255} />
             </label>
             <label className={labelClass}>
-              <span className="text-zinc-500">SEO-описание</span>
-              <textarea className="min-h-[3.5rem] rounded-lg border border-zinc-200 px-3 py-2 text-sm text-zinc-900 focus:outline-none focus:ring-2 focus:ring-zinc-400" value={seoDescription} onChange={(event) => setSeoDescription(event.target.value)} maxLength={500} />
+              <span className="text-muted-foreground">SEO-описание</span>
+              <textarea className="min-h-[3.5rem] rounded-lg border border-border px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring" value={seoDescription} onChange={(event) => setSeoDescription(event.target.value)} maxLength={500} />
             </label>
           </div>
         </details>
 
         {message ? (
-          <p role={message.ok ? "status" : "alert"} className={`text-sm ${message.ok ? "text-emerald-700" : "text-rose-600"}`}>
+          <p role={message.ok ? "status" : "alert"} className={`text-sm ${message.ok ? "text-success" : "text-destructive"}`}>
             {message.text}
           </p>
         ) : null}
@@ -164,14 +164,14 @@ export function ArticleEditorForm({
       </form>
 
       {article ? (
-        <div className="flex flex-wrap items-center gap-2 rounded-2xl border border-zinc-200 bg-white p-4 shadow-sm">
-          <span className="text-sm text-zinc-500">
-            Статус: <span className="font-medium text-zinc-800">{contentArticleStatusLabels[article.status]}</span>
-            {article.isFeatured ? <span className="ml-2 text-amber-600">· на главной</span> : null}
+        <div className="flex flex-wrap items-center gap-2 rounded-2xl border border-border bg-card p-4 shadow-sm">
+          <span className="text-sm text-muted-foreground">
+            Статус: <span className="font-medium text-foreground">{contentArticleStatusLabels[article.status]}</span>
+            {article.isFeatured ? <span className="ml-2 text-warning-subtle-foreground">· на главной</span> : null}
           </span>
           <div className="ml-auto flex flex-wrap gap-2">
             {isPublished ? (
-              <Link href={`/guides/${article.slug}`} className="inline-flex h-9 items-center gap-1.5 rounded-lg border border-zinc-200 px-3 text-sm font-medium text-zinc-700 transition hover:bg-zinc-50">
+              <Link href={`/articles/${article.slug}`} className="inline-flex h-9 items-center gap-1.5 rounded-lg border border-border px-3 text-sm font-medium text-foreground transition hover:bg-accent">
                 <Eye className="h-4 w-4" aria-hidden /> Открыть
               </Link>
             ) : null}
@@ -182,7 +182,7 @@ export function ArticleEditorForm({
             ) : null}
             {capabilities.canFeatureOnHome ? (
               <Button type="button" variant="outline" size="sm" disabled={busy} onClick={() => run(() => setContentArticleFeaturedAction(article.id, !article.isFeatured), () => router.refresh())}>
-                <Star className={`h-4 w-4 ${article.isFeatured ? "fill-amber-400 text-amber-500" : ""}`} aria-hidden />
+                <Star className={`h-4 w-4 ${article.isFeatured ? "fill-warning text-warning" : ""}`} aria-hidden />
                 {article.isFeatured ? "Убрать с главной" : "На главную"}
               </Button>
             ) : null}

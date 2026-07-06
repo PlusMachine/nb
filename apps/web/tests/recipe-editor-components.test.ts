@@ -45,7 +45,7 @@ import type { IngredientSuggestionItem } from "../features/ingredients/contracts
 import { defaultRecipeProcessMeta, type RecipeDetailDto, type RecipeWaterPlanMeta } from "../features/recipes/contracts";
 import { buildRecipePublicationChecklist } from "../features/recipes/publication-validation";
 import { buildRecipeWaterPlanResult } from "../features/recipes/water-plan";
-import { formatGravityRange } from "../features/system/gravity-units";
+import { formatGravityRange, formatGravitySecondary } from "../features/system/gravity-units";
 
 vi.mock("next/navigation", () => ({
   usePathname: () => "/app/recipes/new",
@@ -736,6 +736,27 @@ describe("recipe editor components", () => {
     const expectedRange = formatGravityRange(1.009, 1.014, "plato");
     expect(expectedRange).not.toBeNull();
     expect(html).toContain(`(${expectedRange})`);
+  });
+
+  it("shows the secondary gravity unit next to OG/FG in stat cells and the sticky header", () => {
+    const html = renderDesignerMarkup({
+      mode: "edit",
+      initialRecipe: buildRecipeDetail({
+        og: 1.052,
+        fg: 1.012
+      }),
+      preferredGravityUnit: "plato"
+    });
+
+    // Вторая единица считается той же formatGravitySecondary, что и продакшен-код —
+    // не хардкодим конвертированное число.
+    const expectedOgSecondary = formatGravitySecondary(1.052, "plato");
+    const expectedFgSecondary = formatGravitySecondary(1.012, "plato");
+    expect(expectedOgSecondary).not.toBeNull();
+    expect(expectedFgSecondary).not.toBeNull();
+    // Появляется дважды: в ячейке «Параметры партии» и в закреплённой шапке.
+    expect(html.split(expectedOgSecondary!).length - 1).toBeGreaterThanOrEqual(2);
+    expect(html.split(expectedFgSecondary!).length - 1).toBeGreaterThanOrEqual(2);
   });
 
   it("uses the default equipment profile as the initial profile for a new recipe", () => {

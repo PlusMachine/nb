@@ -179,26 +179,26 @@ export function PublicRecipeWaterSection({ recipe }: { recipe: RecipeDetailDto }
   }
 
   return (
-    <section className="rounded-2xl border border-zinc-100 bg-white p-5 shadow-sm">
+    <section className="rounded-2xl border border-border bg-card p-5 shadow-sm">
       <div className="mb-3 flex items-center gap-2">
-        <div className="flex h-7 w-7 items-center justify-center rounded-md bg-sky-50">
-          <Droplets className="h-3.5 w-3.5 text-sky-600" />
+        <div className="flex h-7 w-7 items-center justify-center rounded-md bg-sky-50 dark:bg-sky-500/15">
+          <Droplets className="h-3.5 w-3.5 text-sky-600 dark:text-sky-400" />
         </div>
-        <h2 className="text-sm font-semibold text-zinc-700">Вода</h2>
+        <h2 className="text-sm font-semibold text-foreground">Вода</h2>
       </div>
 
       <div className="grid gap-3 text-sm sm:grid-cols-3">
         {targetName ? (
           <div>
-            <div className="text-[11px] uppercase tracking-wider text-zinc-400">Целевой профиль</div>
-            <div className="mt-0.5 truncate font-semibold text-zinc-900">{targetName}</div>
+            <div className="text-[11px] uppercase tracking-wider text-muted-foreground">Целевой профиль</div>
+            <div className="mt-0.5 truncate font-semibold text-foreground">{targetName}</div>
           </div>
         ) : null}
         <div>
-          <div className="text-[11px] uppercase tracking-wider text-zinc-400">
+          <div className="text-[11px] uppercase tracking-wider text-muted-foreground">
             {isSplit ? "Объёмы воды" : "Всего воды"}
           </div>
-          <div className="mt-0.5 font-semibold text-zinc-900">
+          <div className="mt-0.5 font-semibold text-foreground">
             {isSplit
               ? `${waterPlanResult.waterVolumes.mashWaterL.toFixed(1)} + ${waterPlanResult.waterVolumes.spargeWaterL.toFixed(1)} л`
               : `${waterPlanResult.waterVolumes.totalWaterL.toFixed(1)} л`}
@@ -206,26 +206,26 @@ export function PublicRecipeWaterSection({ recipe }: { recipe: RecipeDetailDto }
         </div>
         {predictedPh != null ? (
           <div>
-            <div className="text-[11px] uppercase tracking-wider text-zinc-400">Mash pH 20°C</div>
-            <div className="mt-0.5 font-semibold text-zinc-900">{predictedPh.toFixed(2)}</div>
+            <div className="text-[11px] uppercase tracking-wider text-muted-foreground">Mash pH 20°C</div>
+            <div className="mt-0.5 font-semibold text-foreground">{predictedPh.toFixed(2)}</div>
           </div>
         ) : null}
       </div>
 
       {(saltRows.length || acidRows.length) ? (
         <div className="mt-4">
-          <div className="text-[11px] uppercase tracking-wider text-zinc-400">Добавки</div>
+          <div className="text-[11px] uppercase tracking-wider text-muted-foreground">Добавки</div>
           <ul className="mt-2 grid gap-2 sm:grid-cols-2">
             {saltRows.map((row) => (
               <li
                 key={row.key}
-                className="flex items-baseline justify-between gap-2 rounded-lg bg-zinc-50 px-3 py-2 text-sm"
+                className="flex items-baseline justify-between gap-2 rounded-lg bg-muted px-3 py-2 text-sm"
               >
-                <span className="min-w-0 truncate text-zinc-800">
+                <span className="min-w-0 truncate text-foreground">
                   {row.label}
-                  {row.target ? <span className="text-zinc-500"> · {row.target}</span> : null}
+                  {row.target ? <span className="text-muted-foreground"> · {row.target}</span> : null}
                 </span>
-                <span className="shrink-0 font-semibold tabular-nums text-zinc-950">
+                <span className="shrink-0 font-semibold tabular-nums text-foreground">
                   {formatGrams(row.grams)}
                 </span>
               </li>
@@ -233,13 +233,13 @@ export function PublicRecipeWaterSection({ recipe }: { recipe: RecipeDetailDto }
             {acidRows.map((row) => (
               <li
                 key={row.key}
-                className="flex items-baseline justify-between gap-2 rounded-lg bg-zinc-50 px-3 py-2 text-sm"
+                className="flex items-baseline justify-between gap-2 rounded-lg bg-muted px-3 py-2 text-sm"
               >
-                <span className="min-w-0 truncate text-zinc-800">
+                <span className="min-w-0 truncate text-foreground">
                   {row.label}
-                  {row.target ? <span className="text-zinc-500"> · {row.target}</span> : null}
+                  {row.target ? <span className="text-muted-foreground"> · {row.target}</span> : null}
                 </span>
-                <span className="shrink-0 font-semibold tabular-nums text-zinc-950">
+                <span className="shrink-0 font-semibold tabular-nums text-foreground">
                   {formatMl(row.ml)}
                 </span>
               </li>
@@ -250,9 +250,9 @@ export function PublicRecipeWaterSection({ recipe }: { recipe: RecipeDetailDto }
 
       <div className="mt-4 grid grid-cols-3 gap-2 sm:grid-cols-6">
         {(["ca", "mg", "na", "cl", "so4", "hco3"] as const).map((key) => (
-          <div key={key} className="rounded-lg bg-zinc-50 px-2 py-2 text-center">
-            <div className="text-[11px] font-medium uppercase text-zinc-500">{ionLabels[key]}</div>
-            <div className="mt-0.5 text-sm font-semibold tabular-nums text-zinc-900">
+          <div key={key} className="rounded-lg bg-muted px-2 py-2 text-center">
+            <div className="text-[11px] font-medium uppercase text-muted-foreground">{ionLabels[key]}</div>
+            <div className="mt-0.5 text-sm font-semibold tabular-nums text-foreground">
               {Math.round(finalProfile[key])}
             </div>
           </div>

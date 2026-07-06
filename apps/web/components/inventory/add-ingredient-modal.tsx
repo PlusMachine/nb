@@ -408,7 +408,7 @@ export function AddIngredientModalBody({
             testId="add-ingredient-category-grid"
           />
 
-          <div className="grid grid-cols-2 gap-1 rounded-xl bg-zinc-100 p-1 text-sm" data-testid="add-ingredient-mode-switch">
+          <div className="grid grid-cols-2 gap-1 rounded-xl bg-muted p-1 text-sm" data-testid="add-ingredient-mode-switch">
             <button
               type="button"
               onPointerDown={(event) => applyAddIngredientImmediateControlAction({
@@ -422,7 +422,7 @@ export function AddIngredientModalBody({
 
                 setMode("catalog");
               }}
-              className={`rounded-lg px-3 py-2 font-medium transition-all duration-150 ${mode === "catalog" ? "bg-white text-zinc-900 shadow-sm" : "text-zinc-500 hover:text-zinc-700"}`}
+              className={`rounded-lg px-3 py-2 font-medium transition-all duration-150 ${mode === "catalog" ? "bg-card text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"}`}
             >
               Из каталога
             </button>
@@ -439,7 +439,7 @@ export function AddIngredientModalBody({
 
                 setMode("custom");
               }}
-              className={`rounded-lg px-3 py-2 font-medium transition-all duration-150 ${mode === "custom" ? "bg-white text-zinc-900 shadow-sm" : "text-zinc-500 hover:text-zinc-700"}`}
+              className={`rounded-lg px-3 py-2 font-medium transition-all duration-150 ${mode === "custom" ? "bg-card text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"}`}
             >
               Добавить свой
             </button>
@@ -448,7 +448,7 @@ export function AddIngredientModalBody({
       ) : null}
 
       {result && (
-        <p role={result.ok ? "status" : "alert"} className={`text-sm ${result.ok ? "text-green-700" : "text-red-600"}`}>
+        <p role={result.ok ? "status" : "alert"} className={`text-sm ${result.ok ? "text-success" : "text-destructive"}`}>
           {result.message}
         </p>
       )}
@@ -520,7 +520,7 @@ export function AddIngredientModalBody({
         ) : null}
 
         {((mode === "catalog" && !catalogCategory) || (mode === "custom" && !customCategory)) ? (
-          <div className="flex h-full min-h-[18rem] items-center justify-center rounded-xl border border-dashed border-zinc-200 bg-zinc-50/50 px-4 text-center text-sm text-zinc-500">
+          <div className="flex h-full min-h-[18rem] items-center justify-center rounded-xl border border-dashed border-border bg-muted/50 px-4 text-center text-sm text-muted-foreground">
             Выберите категорию, и после этого появится {mode === "catalog" ? "поиск" : "форма создания своего ингредиента"}.
           </div>
         ) : null}
@@ -562,7 +562,7 @@ export function AddIngredientModal({
         }}
       >
         <DialogHeader>
-          <h2 className="text-base font-semibold text-zinc-900">Добавить ингредиент</h2>
+          <h2 className="text-base font-semibold text-foreground">Добавить ингредиент</h2>
           <DialogCloseButton />
         </DialogHeader>
         <div className="p-5">

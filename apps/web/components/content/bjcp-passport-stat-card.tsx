@@ -6,11 +6,11 @@ import type { PassportStatItem } from "./bjcp-article-page";
 export function PassportStatCard({ stat }: { stat: PassportStatItem }) {
   return (
     <div
-      className={`h-full min-h-[6.5rem] overflow-hidden rounded-[1.5rem] border border-zinc-200 bg-slate-50 px-4 py-3 text-zinc-900 ${stat.wide ? "sm:col-span-2" : ""}`}
+      className={`h-full min-h-[6.5rem] overflow-hidden rounded-[1.5rem] border border-border bg-muted px-4 py-3 text-foreground ${stat.wide ? "sm:col-span-2" : ""}`}
     >
-      <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-zinc-500">{stat.label}</p>
+      <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">{stat.label}</p>
       <p
-        className={`mt-2 whitespace-pre-line break-words text-zinc-950 ${stat.isTextual
+        className={`mt-2 whitespace-pre-line break-words text-foreground ${stat.isTextual
           ? "text-[13px] font-semibold leading-5 sm:text-sm"
           : "text-base font-semibold leading-tight tabular-nums sm:text-lg"
         }`}
@@ -20,7 +20,7 @@ export function PassportStatCard({ stat }: { stat: PassportStatItem }) {
       </p>
       {stat.supportingText ? (
         <p
-          className={`mt-1.5 whitespace-pre-line break-words text-[11px] font-medium text-zinc-500 ${stat.isTextual ? "" : "tabular-nums"}`}
+          className={`mt-1.5 whitespace-pre-line break-words text-[11px] font-medium text-muted-foreground ${stat.isTextual ? "" : "tabular-nums"}`}
         >
           {stat.supportingText}
         </p>
@@ -28,7 +28,7 @@ export function PassportStatCard({ stat }: { stat: PassportStatItem }) {
         <p className="mt-1.5 text-xs font-medium text-transparent">.</p>
       )}
       {stat.accent ? (
-        <div className="mt-3 h-2 overflow-hidden rounded-full bg-zinc-200/80 shadow-[inset_0_1px_2px_rgba(15,23,42,0.16)]">
+        <div className="mt-3 h-2 overflow-hidden rounded-full bg-border/80 shadow-[inset_0_1px_2px_rgba(15,23,42,0.16)]">
           <div
             className="h-full rounded-full"
             style={{

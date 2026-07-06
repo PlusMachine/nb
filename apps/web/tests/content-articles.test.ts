@@ -92,8 +92,8 @@ describe("TiptapContent renderer", () => {
       expect(html).not.toContain("href=");
     }
     // Обычный путь от корня остаётся ссылкой.
-    const ok = renderToStaticMarkup(React.createElement(TiptapContent, { doc: make("/guides/x") }));
-    expect(ok).toContain('href="/guides/x"');
+    const ok = renderToStaticMarkup(React.createElement(TiptapContent, { doc: make("/articles/x") }));
+    expect(ok).toContain('href="/articles/x"');
   });
 
   it("keeps safe hrefs", () => {
@@ -107,6 +107,22 @@ describe("TiptapContent renderer", () => {
     const html = renderToStaticMarkup(React.createElement(TiptapContent, { doc: safe }));
     expect(html).toContain('href="https://example.com"');
     expect(html).toContain('rel="noopener noreferrer nofollow"');
+  });
+
+  it("renders known widgets and drops unknown ones", () => {
+    const make = (name: unknown): TiptapDoc => ({
+      type: "doc",
+      content: [{ type: "widget", attrs: { name: name as string } }]
+    });
+    const known = renderToStaticMarkup(React.createElement(TiptapContent, { doc: make("first-brew-scale") }));
+    expect(known).toContain("Пересчитать под свой объём");
+    // База виджета совпадает с рецептом статьи: 8 л → 1,7 кг солода.
+    expect(known).toContain("1,7");
+    for (const name of ["no-such-widget", 42, undefined]) {
+      const html = renderToStaticMarkup(React.createElement(TiptapContent, { doc: make(name) }));
+      expect(html).not.toContain("widget");
+      expect(html).not.toContain("Пересчитать");
+    }
   });
 
   it("renders bold and bullet lists", () => {

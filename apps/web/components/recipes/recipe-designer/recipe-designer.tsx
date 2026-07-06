@@ -55,7 +55,7 @@ import {
   type RecipePublicationState,
   type RecipeStockCoverageDto
 } from "@/features/recipes/contracts";
-import { formatGravity, formatGravityRange, type PreferredGravityUnit } from "@/features/system/gravity-units";
+import { formatGravity, formatGravityRange, formatGravitySecondary, type PreferredGravityUnit } from "@/features/system/gravity-units";
 import { BitternessSettingsDrawer } from "@/components/recipes/bitterness-settings-drawer";
 import { ImportExportModal, type ImportExportActionResult } from "@/components/recipes/import-export-modal";
 import { IngredientAddDrawer } from "@/components/recipes/ingredient-add-drawer";
@@ -649,9 +649,9 @@ export function RecipeDesigner({
                   .sort((left, right) => getHopTimeMinutesValue(right) - getHopTimeMinutesValue(left));
                 return (
                   <div key={useType} className="space-y-1.5">
-                    <div className="flex items-center justify-between gap-2 border-b border-zinc-100 px-1 pb-1.5">
-                      <h4 className="text-xs font-bold uppercase tracking-wider text-zinc-500">{hopUseTypeSectionLabels[useType]}</h4>
-                      {rows.length ? <button type="button" onClick={() => openAddEditor("hop", useType)} className="rounded-md px-2 py-1 text-xs text-zinc-500 transition-colors hover:bg-zinc-100 hover:text-zinc-700">
+                    <div className="flex items-center justify-between gap-2 border-b border-border px-1 pb-1.5">
+                      <h4 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">{hopUseTypeSectionLabels[useType]}</h4>
+                      {rows.length ? <button type="button" onClick={() => openAddEditor("hop", useType)} className="rounded-md px-2 py-1 text-xs text-muted-foreground transition-colors hover:bg-muted hover:text-foreground">
                         + Добавить
                       </button> : null}
                     </div>
@@ -680,7 +680,7 @@ export function RecipeDesigner({
                       <button
                         type="button"
                         onClick={() => openAddEditor("hop", useType)}
-                        className="flex w-full items-center justify-center gap-2 rounded-xl border border-dashed border-zinc-300 bg-zinc-50/40 px-4 py-6 text-sm text-zinc-500 transition-colors hover:border-zinc-400 hover:bg-zinc-50 hover:text-zinc-700"
+                        className="flex w-full items-center justify-center gap-2 rounded-xl border border-dashed border-border bg-muted/40 px-4 py-6 text-sm text-muted-foreground transition-colors hover:border-ring hover:bg-muted hover:text-foreground"
                       >
                         <Plus className="h-4 w-4" />
                         <span>Добавьте хмель на кипячение</span>
@@ -691,15 +691,15 @@ export function RecipeDesigner({
               })}
               {unusedTypes.length ? (
                 <details className="group">
-                  <summary className="flex cursor-pointer list-none items-center gap-2 rounded-lg border border-zinc-200 bg-zinc-50 px-3 py-2 text-xs font-semibold text-zinc-600 transition-colors hover:border-zinc-300 hover:bg-zinc-100 hover:text-zinc-800">
+                  <summary className="flex cursor-pointer list-none items-center gap-2 rounded-lg border border-border bg-muted px-3 py-2 text-xs font-semibold text-muted-foreground transition-colors hover:border-border hover:bg-muted hover:text-foreground">
                     <ChevronRight className="h-3.5 w-3.5 transition-transform group-open:rotate-90" />
                     Другие типы охмеления
                   </summary>
                   <div className="mt-2 space-y-3">
                     {unusedTypes.map((useType) => (
-                      <div key={useType} className="flex items-center justify-between gap-2 rounded-lg border border-dashed border-zinc-200 px-3 py-2">
-                        <span className="text-xs text-zinc-500">{hopUseTypeLabels[useType]}</span>
-                        <button type="button" onClick={() => openAddEditor("hop", useType)} className="rounded-md px-2 py-1 text-xs text-zinc-500 transition-colors hover:bg-zinc-100 hover:text-zinc-700">
+                      <div key={useType} className="flex items-center justify-between gap-2 rounded-lg border border-dashed border-border px-3 py-2">
+                        <span className="text-xs text-muted-foreground">{hopUseTypeLabels[useType]}</span>
+                        <button type="button" onClick={() => openAddEditor("hop", useType)} className="rounded-md px-2 py-1 text-xs text-muted-foreground transition-colors hover:bg-muted hover:text-foreground">
                           + Добавить
                         </button>
                       </div>
@@ -1115,29 +1115,29 @@ export function RecipeDesigner({
     ? {
       label: "Сохранение…",
       icon: <Loader2 className="h-3.5 w-3.5 animate-spin" />,
-      className: "bg-blue-50 text-blue-700 ring-blue-200"
+      className: "bg-blue-50 text-blue-700 ring-blue-200 dark:bg-blue-500/15 dark:text-blue-300 dark:ring-blue-500/30"
     }
     : saveStatus === "error"
       ? {
         label: "Ошибка сохранения",
         icon: <CircleAlert className="h-3.5 w-3.5" />,
-        className: "bg-rose-50 text-rose-700 ring-rose-200"
+        className: "bg-destructive-subtle text-destructive-subtle-foreground ring-destructive-border"
       }
       : saveStatus === "saved" && !activeRecipeId
         ? {
           label: "Черновик",
           icon: <CircleDashed className="h-3.5 w-3.5" />,
-          className: "bg-zinc-100 text-zinc-600 ring-zinc-200"
+          className: "bg-muted text-muted-foreground ring-border"
         }
         : {
           label: "Сохранено",
           icon: <CircleCheck className="h-3.5 w-3.5" />,
-          className: "bg-emerald-50 text-emerald-700 ring-emerald-200"
+          className: "bg-success-subtle text-success-subtle-foreground ring-success/30"
         };
 
   const visibilityChipMeta = savedVisibility === "published"
-    ? { label: "Опубликован", icon: <Globe className="h-3.5 w-3.5" />, className: "bg-violet-50 text-violet-700 ring-violet-200" }
-    : { label: "Приватный", icon: <Lock className="h-3.5 w-3.5" />, className: "bg-zinc-100 text-zinc-700 ring-zinc-200" };
+    ? { label: "Опубликован", icon: <Globe className="h-3.5 w-3.5" />, className: "bg-violet-50 text-violet-700 ring-violet-200 dark:bg-violet-500/15 dark:text-violet-300 dark:ring-violet-500/30" }
+    : { label: "Приватный", icon: <Lock className="h-3.5 w-3.5" />, className: "bg-muted text-foreground ring-border" };
 
   // Компактные ключевые метрики для закреплённой полосы — петля «изменил → увидел»
   // не должна теряться при прокрутке длинной формы (#18/#20).
@@ -1149,9 +1149,18 @@ export function RecipeDesigner({
     preview?.fgEstimateDetails?.fgRangeMax ?? null,
     preferredGravityUnit
   );
-  const headerMetrics: Array<{ label: string; value: string; range?: string | null }> = [
-    { label: "НП", value: formatGravity(preview?.og ?? null, preferredGravityUnit) },
-    { label: "КП", value: formatGravity(preview?.fg ?? null, preferredGravityUnit), range: headerFgRange },
+  const headerMetrics: Array<{ label: string; value: string; range?: string | null; secondary?: string | null }> = [
+    {
+      label: "НП",
+      value: formatGravity(preview?.og ?? null, preferredGravityUnit),
+      secondary: formatGravitySecondary(preview?.og ?? null, preferredGravityUnit)
+    },
+    {
+      label: "КП",
+      value: formatGravity(preview?.fg ?? null, preferredGravityUnit),
+      range: headerFgRange,
+      secondary: formatGravitySecondary(preview?.fg ?? null, preferredGravityUnit)
+    },
     { label: "ABV", value: preview?.abv != null ? `${preview.abv.toFixed(1)}%` : "—" },
     { label: "IBU", value: preview?.ibu != null ? preview.ibu.toFixed(0) : "—" },
     { label: "SRM", value: preview?.color != null ? preview.color.toFixed(1) : "—" }
@@ -1172,7 +1181,7 @@ export function RecipeDesigner({
         onClose={() => setWaterResetConfirmOpen(false)}
       />
 
-      <div className="sticky top-[var(--chrome-top)] z-30 -mx-4 flex flex-wrap items-center gap-x-3 gap-y-2 border-b border-zinc-200/70 bg-white/85 px-4 py-2 backdrop-blur supports-[backdrop-filter]:bg-white/70 sm:px-5">
+      <div className="sticky top-[var(--chrome-top)] z-30 -mx-4 flex flex-wrap items-center gap-x-3 gap-y-2 border-b border-border/70 bg-card/85 px-4 py-2 backdrop-blur supports-[backdrop-filter]:bg-card/70 sm:px-5">
         <span className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-medium ring-1 ring-inset ${headerSaveStatusMeta.className}`}>
           {headerSaveStatusMeta.icon}
           <span className="hidden sm:inline">{headerSaveStatusMeta.label}</span>
@@ -1183,19 +1192,20 @@ export function RecipeDesigner({
             предсказуемые 2 ряда вместо 3, экономя ~высоту экрана (UX-находка #25). */}
         <dl
           aria-busy={recalculating}
-          className={`order-last flex basis-full flex-nowrap items-center gap-x-3 overflow-x-auto text-[11px] tabular-nums text-zinc-600 transition-opacity sm:order-none sm:basis-auto sm:flex-wrap sm:gap-y-1 sm:overflow-visible ${recalculating || previewError ? "opacity-50" : ""}`}
+          className={`order-last flex basis-full flex-nowrap items-center gap-x-3 overflow-x-auto text-[11px] tabular-nums text-muted-foreground transition-opacity sm:order-none sm:basis-auto sm:flex-wrap sm:gap-y-1 sm:overflow-visible ${recalculating || previewError ? "opacity-50" : ""}`}
         >
           {headerMetrics.map((metric) => (
             <div key={metric.label} className="flex items-baseline gap-1">
-              <dt className="text-[10px] font-medium uppercase tracking-wide text-zinc-400">{metric.label}</dt>
-              <dd className="font-semibold text-zinc-800">
+              <dt className="text-[10px] font-medium uppercase tracking-wide text-muted-foreground">{metric.label}</dt>
+              <dd className="font-semibold text-foreground">
                 {metric.value}
-                {metric.range ? <span className="ml-1 font-normal text-zinc-400">({metric.range})</span> : null}
+                {metric.range ? <span className="ml-1 font-normal text-muted-foreground">({metric.range})</span> : null}
+                {metric.secondary ? <span className="ml-1 font-normal text-muted-foreground">· {metric.secondary}</span> : null}
               </dd>
             </div>
           ))}
           {headerStyle ? (
-            <span className="inline-flex items-center rounded-full bg-zinc-100 px-2 py-0.5 text-[10px] font-medium text-zinc-600 ring-1 ring-inset ring-zinc-200">
+            <span className="inline-flex items-center rounded-full bg-muted px-2 py-0.5 text-[10px] font-medium text-muted-foreground ring-1 ring-inset ring-ring">
               {headerStyle.name}
             </span>
           ) : null}
@@ -1207,7 +1217,7 @@ export function RecipeDesigner({
               href={`/recipes/${activeRecipeSlug}`}
               target="_blank"
               rel="noreferrer"
-              className="inline-flex h-9 items-center gap-1.5 rounded-lg border border-zinc-200 bg-white px-3 text-xs font-medium text-zinc-700 transition-colors hover:bg-zinc-50 sm:text-sm"
+              className="inline-flex h-9 items-center gap-1.5 rounded-lg border border-border bg-card px-3 text-xs font-medium text-foreground transition-colors hover:bg-muted sm:text-sm"
               title="Открыть публичную страницу"
             >
               <ExternalLink className="h-3.5 w-3.5" />
@@ -1219,7 +1229,7 @@ export function RecipeDesigner({
               type="button"
               onClick={handlePublishClick}
               disabled={pendingSave}
-              className="inline-flex h-9 items-center gap-1.5 rounded-lg border border-zinc-900 bg-zinc-900 px-3 text-xs font-medium text-white transition-colors hover:bg-zinc-800 disabled:cursor-not-allowed disabled:opacity-60 sm:px-4 sm:text-sm"
+              className="inline-flex h-9 items-center gap-1.5 rounded-lg border border-foreground bg-foreground px-3 text-xs font-medium text-background transition-colors hover:bg-foreground/90 disabled:cursor-not-allowed disabled:opacity-60 sm:px-4 sm:text-sm"
             >
               <Globe className="h-3.5 w-3.5" />
               Опубликовать
@@ -1233,7 +1243,7 @@ export function RecipeDesigner({
                 setMakePrivateConfirmOpen(true);
               }}
               disabled={pendingSave}
-              className="inline-flex h-9 items-center gap-1.5 rounded-lg border border-zinc-200 bg-white px-3 text-xs font-medium text-zinc-700 transition-colors hover:bg-zinc-50 disabled:cursor-not-allowed disabled:opacity-60 sm:text-sm"
+              className="inline-flex h-9 items-center gap-1.5 rounded-lg border border-border bg-card px-3 text-xs font-medium text-foreground transition-colors hover:bg-muted disabled:cursor-not-allowed disabled:opacity-60 sm:text-sm"
             >
               <Lock className="h-3.5 w-3.5" />
               <span className="hidden sm:inline">В&nbsp;приватные</span>
@@ -1248,49 +1258,49 @@ export function RecipeDesigner({
         </div>
       </div>
 
-      <section className="-mx-4 border-b border-zinc-200/70 bg-gradient-to-b from-white via-white to-zinc-50/50 px-4 py-4 sm:rounded-2xl sm:border sm:border-zinc-100 sm:bg-white sm:px-5 sm:py-5 sm:shadow-sm">
+      <section className="-mx-4 border-b border-border/70 bg-gradient-to-b from-card via-card to-muted/50 px-4 py-4 sm:rounded-2xl sm:border sm:border-border sm:bg-card sm:px-5 sm:py-5 sm:shadow-sm">
         <div className="mb-3 flex flex-wrap items-center gap-2">
           <span className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-medium ring-1 ring-inset ${visibilityChipMeta.className}`}>
             {visibilityChipMeta.icon}
             {visibilityChipMeta.label}
           </span>
           {activeRecipeId ? (
-            <span className="inline-flex items-center gap-1.5 rounded-full bg-zinc-100 px-2.5 py-1 text-[11px] font-medium text-zinc-700 ring-1 ring-inset ring-zinc-200">
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-muted px-2.5 py-1 text-[11px] font-medium text-foreground ring-1 ring-inset ring-ring">
               v{activeVersionNumber}
-              <span className="text-zinc-400">• текущая</span>
+              <span className="text-muted-foreground">• текущая</span>
             </span>
           ) : null}
         </div>
 
         <div className="grid gap-3 md:grid-cols-[minmax(0,1.6fr)_minmax(240px,1fr)] md:items-start">
           <div className="min-w-0">
-            <label htmlFor="recipe-title" className="mb-1 block text-[11px] font-medium uppercase tracking-wide text-zinc-500">
+            <label htmlFor="recipe-title" className="mb-1 block text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
               Название рецепта
             </label>
             <input
               id="recipe-title"
               value={title}
               onChange={(event) => setTitle(event.target.value)}
-              className="h-11 w-full min-w-0 rounded-xl border border-zinc-200 bg-white px-3.5 text-base font-semibold text-zinc-900 shadow-sm placeholder:font-normal placeholder:text-zinc-400 focus:border-zinc-400 focus:outline-none focus:ring-2 focus:ring-zinc-200 sm:text-lg"
+              className="h-11 w-full min-w-0 rounded-xl border border-border bg-card px-3.5 text-base font-semibold text-foreground shadow-sm placeholder:font-normal placeholder:text-muted-foreground focus:border-ring focus:outline-none focus:ring-2 focus:ring-ring sm:text-lg"
               placeholder="Например, Tropical NEIPA"
             />
-            {sectionErrors.title ? <p className="mt-1 text-xs text-rose-600">{sectionErrors.title}</p> : null}
+            {sectionErrors.title ? <p className="mt-1 text-xs text-destructive">{sectionErrors.title}</p> : null}
           </div>
           <div className="min-w-0">
             <StylePicker id="recipe-style" value={styleId} onChange={setStyleId} className="min-w-0" />
-            {sectionErrors.styleId ? <p className="mt-1 text-xs text-rose-600">{sectionErrors.styleId}</p> : null}
+            {sectionErrors.styleId ? <p className="mt-1 text-xs text-destructive">{sectionErrors.styleId}</p> : null}
           </div>
         </div>
 
         {activeRecipeId ? (
-          <div className="mt-3 flex flex-wrap items-center gap-2 border-t border-zinc-100 pt-3 text-xs text-zinc-600">
+          <div className="mt-3 flex flex-wrap items-center gap-2 border-t border-border pt-3 text-xs text-muted-foreground">
             {recipeVersions.length > 1 ? (
               <label className="inline-flex items-center gap-1.5">
-                <span className="text-zinc-500">Версия:</span>
+                <span className="text-muted-foreground">Версия:</span>
                 <select
                   value={activeRecipeId}
                   onChange={(event) => void handleVersionChange(event.target.value)}
-                  className="h-8 min-w-[96px] rounded-md border border-zinc-200 bg-white px-2 text-xs font-medium text-zinc-700 focus:border-zinc-400 focus:outline-none focus:ring-1 focus:ring-zinc-200"
+                  className="h-8 min-w-[96px] rounded-md border border-border bg-card px-2 text-xs font-medium text-foreground focus:border-ring focus:outline-none focus:ring-1 focus:ring-ring"
                 >
                   {recipeVersions.map((version) => (
                     <option key={version.id} value={version.id}>
@@ -1300,13 +1310,13 @@ export function RecipeDesigner({
                 </select>
               </label>
             ) : (
-              <span className="text-xs text-zinc-500">v{activeVersionNumber}</span>
+              <span className="text-xs text-muted-foreground">v{activeVersionNumber}</span>
             )}
             <button
               type="button"
               onClick={() => void handleCreateVersion()}
               disabled={pendingSave}
-              className="inline-flex h-8 items-center gap-1 rounded-md border border-zinc-200 bg-white px-2.5 text-xs font-medium text-zinc-700 transition-colors hover:bg-zinc-50 disabled:cursor-not-allowed disabled:opacity-60"
+              className="inline-flex h-8 items-center gap-1 rounded-md border border-border bg-card px-2.5 text-xs font-medium text-foreground transition-colors hover:bg-muted disabled:cursor-not-allowed disabled:opacity-60"
             >
               Новая версия
             </button>
@@ -1314,7 +1324,7 @@ export function RecipeDesigner({
         ) : null}
 
         {visibleSaveResult && !visibleSaveResult.ok ? (
-          <div className="mt-3 flex flex-wrap items-center gap-3 rounded-lg bg-rose-50 px-3 py-2 text-xs text-rose-700 ring-1 ring-inset ring-rose-200">
+          <div className="mt-3 flex flex-wrap items-center gap-3 rounded-lg bg-destructive-subtle px-3 py-2 text-xs text-destructive ring-1 ring-inset ring-destructive-border">
             <CircleAlert className="h-4 w-4 shrink-0" />
             <span className="min-w-0 flex-1">{visibleSaveResult.message}</span>
             {hasRetriableSaveError ? (
@@ -1322,7 +1332,7 @@ export function RecipeDesigner({
                 type="button"
                 onClick={() => void persistRecipe()}
                 disabled={pendingSave}
-                className="shrink-0 font-medium text-rose-700 underline decoration-rose-300 underline-offset-2 transition-colors hover:text-rose-900 disabled:opacity-60"
+                className="shrink-0 font-medium text-destructive underline decoration-destructive-border underline-offset-2 transition-colors hover:text-destructive disabled:opacity-60"
               >
                 Повторить
               </button>
@@ -1372,18 +1382,18 @@ export function RecipeDesigner({
           const canAddToSection =
             section.category !== "hop" && !isWaterTreatmentSection;
           return (
-            <section key={section.category} className={`overflow-hidden rounded-2xl border ${hasError ? "border-rose-200" : "border-zinc-200/70"} bg-white shadow-[0_1px_3px_0_rgb(0_0_0_/_0.04)]`}>
-              <header className="flex items-center justify-between gap-3 border-b border-zinc-100 bg-zinc-50/40 px-4 py-3 sm:px-5">
+            <section key={section.category} className={`overflow-hidden rounded-2xl border ${hasError ? "border-destructive-border" : "border-border/70"} bg-card shadow-[0_1px_3px_0_rgb(0_0_0_/_0.04)]`}>
+              <header className="flex items-center justify-between gap-3 border-b border-border bg-muted/40 px-4 py-3 sm:px-5">
                 <div className="flex min-w-0 items-center gap-2.5">
                   <div className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg ${iconBg}`}>
                     <IconComponent className="h-4 w-4" />
                   </div>
                   <div className="min-w-0">
                     <div className="flex items-baseline gap-2">
-                      <h2 className="truncate text-base font-semibold text-zinc-950">{section.title}</h2>
-                      {section.subtitle ? <span className="text-sm tabular-nums text-zinc-400">({section.subtitle})</span> : null}
+                      <h2 className="truncate text-base font-semibold text-foreground">{section.title}</h2>
+                      {section.subtitle ? <span className="text-sm tabular-nums text-muted-foreground">({section.subtitle})</span> : null}
                     </div>
-                    {hasError ? <p className="mt-0.5 text-xs text-rose-700">{sectionErrors[`ingredients.${section.category}`]}</p> : null}
+                    {hasError ? <p className="mt-0.5 text-xs text-destructive">{sectionErrors[`ingredients.${section.category}`]}</p> : null}
                   </div>
                 </div>
                 {section.category !== "hop" ? (
@@ -1393,7 +1403,7 @@ export function RecipeDesigner({
                         <button
                           type="button"
                           onClick={waterSetupOpen ? closeWaterSetup : openWaterSetup}
-                          className="inline-flex h-8 items-center gap-1.5 rounded-lg border border-zinc-200 bg-white px-2.5 text-xs font-medium text-zinc-700 shadow-sm transition-colors hover:border-zinc-300 hover:bg-zinc-50 hover:text-zinc-900 sm:h-9 sm:px-3 sm:text-sm"
+                          className="inline-flex h-8 items-center gap-1.5 rounded-lg border border-border bg-card px-2.5 text-xs font-medium text-foreground shadow-sm transition-colors hover:border-border hover:bg-muted hover:text-foreground sm:h-9 sm:px-3 sm:text-sm"
                         >
                           <SlidersHorizontal className="h-3.5 w-3.5" />
                           <span className="hidden sm:inline">
@@ -1407,7 +1417,7 @@ export function RecipeDesigner({
                           type="button"
                           onClick={() => setWaterResetConfirmOpen(true)}
                           disabled={!waterPlanMeta.setupEnabled}
-                          className="inline-flex h-8 items-center rounded-lg border border-zinc-200 bg-white px-2.5 text-xs font-medium text-zinc-500 shadow-sm transition-colors hover:border-zinc-300 hover:bg-zinc-50 hover:text-zinc-800 disabled:cursor-not-allowed disabled:opacity-50 sm:h-9 sm:px-3 sm:text-sm"
+                          className="inline-flex h-8 items-center rounded-lg border border-border bg-card px-2.5 text-xs font-medium text-muted-foreground shadow-sm transition-colors hover:border-border hover:bg-muted hover:text-foreground disabled:cursor-not-allowed disabled:opacity-50 sm:h-9 sm:px-3 sm:text-sm"
                         >
                           <span className="hidden sm:inline">Сбросить воду</span>
                           <span className="sm:hidden">Сброс</span>
@@ -1418,7 +1428,7 @@ export function RecipeDesigner({
                       <button
                         type="button"
                         onClick={() => openAddEditor(section.category)}
-                        className="inline-flex h-8 items-center gap-1 rounded-lg border border-zinc-200 bg-white px-2.5 text-xs font-medium text-zinc-700 shadow-sm transition-colors hover:border-zinc-300 hover:bg-zinc-50 sm:h-9 sm:px-3 sm:text-sm"
+                        className="inline-flex h-8 items-center gap-1 rounded-lg border border-border bg-card px-2.5 text-xs font-medium text-foreground shadow-sm transition-colors hover:border-border hover:bg-muted sm:h-9 sm:px-3 sm:text-sm"
                       >
                         <Plus className="h-3.5 w-3.5" />
                         {/* Один и тот же текст на всех брейкпоинтах — один span,
@@ -1460,7 +1470,7 @@ export function RecipeDesigner({
                     type="button"
                     onClick={() => section.category !== "hop" ? openAddEditor(section.category) : undefined}
                     disabled={section.category === "hop"}
-                    className="flex w-full items-center justify-center gap-2 rounded-xl border border-dashed border-zinc-300 bg-zinc-50/40 px-4 py-6 text-sm text-zinc-500 transition-colors hover:border-zinc-400 hover:bg-zinc-50 hover:text-zinc-700 disabled:cursor-default disabled:hover:border-zinc-300 disabled:hover:bg-zinc-50/40 disabled:hover:text-zinc-500"
+                    className="flex w-full items-center justify-center gap-2 rounded-xl border border-dashed border-border bg-muted/40 px-4 py-6 text-sm text-muted-foreground transition-colors hover:border-ring hover:bg-muted hover:text-foreground disabled:cursor-default disabled:hover:border-border disabled:hover:bg-muted/40 disabled:hover:text-muted-foreground"
                   >
                     {section.category !== "hop" ? <Plus className="h-4 w-4" /> : null}
                     <span>{section.empty}</span>
@@ -1475,10 +1485,10 @@ export function RecipeDesigner({
       <div className="space-y-2">
         <RecipeProfiles processMeta={processMeta} onChange={setProcessMeta} />
         {sectionErrors["processMeta.mashProfile.steps"] ? (
-          <p className="text-xs text-rose-700">{sectionErrors["processMeta.mashProfile.steps"]}</p>
+          <p className="text-xs text-destructive">{sectionErrors["processMeta.mashProfile.steps"]}</p>
         ) : null}
         {sectionErrors["processMeta.fermentationProfile"] ? (
-          <p className="text-xs text-rose-700">{sectionErrors["processMeta.fermentationProfile"]}</p>
+          <p className="text-xs text-destructive">{sectionErrors["processMeta.fermentationProfile"]}</p>
         ) : null}
       </div>
 
@@ -1522,42 +1532,42 @@ export function RecipeDesigner({
           onRecipeCreated={handleRecipeCreatedFromImages}
         />
         <div className="grid gap-4 lg:grid-cols-2">
-          <details className="group overflow-hidden rounded-2xl border border-zinc-200/70 bg-white shadow-[0_1px_3px_0_rgb(0_0_0_/_0.04)]" open>
-            <summary className="flex cursor-pointer list-none items-center gap-2.5 border-b border-transparent bg-zinc-50/40 px-4 py-3 text-sm font-semibold text-zinc-800 group-open:border-zinc-100">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-sky-50 text-sky-600">
+          <details className="group overflow-hidden rounded-2xl border border-border/70 bg-card shadow-[0_1px_3px_0_rgb(0_0_0_/_0.04)]" open>
+            <summary className="flex cursor-pointer list-none items-center gap-2.5 border-b border-transparent bg-muted/40 px-4 py-3 text-sm font-semibold text-foreground group-open:border-border">
+              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-sky-50 text-sky-600 dark:bg-sky-500/15 dark:text-sky-400">
                 <FileText className="h-4 w-4" />
               </div>
               <span className="text-[15px]">Описание рецепта</span>
-              <span className="ml-2 rounded-full bg-zinc-100 px-2 py-0.5 text-[10px] font-medium text-zinc-500">публично</span>
-              <ChevronRight className="ml-auto h-4 w-4 text-zinc-400 transition-transform group-open:rotate-90" />
+              <span className="ml-2 rounded-full bg-muted px-2 py-0.5 text-[10px] font-medium text-muted-foreground">публично</span>
+              <ChevronRight className="ml-auto h-4 w-4 text-muted-foreground transition-transform group-open:rotate-90" />
             </summary>
             <div className="p-4">
               <textarea
                 value={description}
                 onChange={(event) => setDescription(event.target.value)}
-                className="min-h-28 w-full rounded-xl border border-zinc-200 bg-zinc-50/50 px-3 py-2.5 text-sm text-zinc-900 placeholder:text-zinc-400 focus:border-zinc-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-zinc-200"
+                className="min-h-28 w-full rounded-xl border border-border bg-muted/50 px-3 py-2.5 text-sm text-foreground placeholder:text-muted-foreground focus:border-ring focus:bg-card focus:outline-none focus:ring-2 focus:ring-ring"
                 placeholder="Публичное описание рецепта — что это за пиво, вдохновение, особенности…"
               />
-              {sectionErrors.description ? <p className="mt-2 text-xs text-rose-700">{sectionErrors.description}</p> : null}
+              {sectionErrors.description ? <p className="mt-2 text-xs text-destructive">{sectionErrors.description}</p> : null}
             </div>
           </details>
-          <details className="group overflow-hidden rounded-2xl border border-zinc-200/70 bg-white shadow-[0_1px_3px_0_rgb(0_0_0_/_0.04)]" open>
-            <summary className="flex cursor-pointer list-none items-center gap-2.5 border-b border-transparent bg-zinc-50/40 px-4 py-3 text-sm font-semibold text-zinc-800 group-open:border-zinc-100">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-amber-50 text-amber-600">
+          <details className="group overflow-hidden rounded-2xl border border-border/70 bg-card shadow-[0_1px_3px_0_rgb(0_0_0_/_0.04)]" open>
+            <summary className="flex cursor-pointer list-none items-center gap-2.5 border-b border-transparent bg-muted/40 px-4 py-3 text-sm font-semibold text-foreground group-open:border-border">
+              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-amber-50 text-amber-600 dark:bg-amber-500/15 dark:text-amber-400">
                 <StickyNote className="h-4 w-4" />
               </div>
               <span className="text-[15px]">Личные заметки</span>
-              <span className="ml-2 inline-flex items-center gap-1 rounded-full bg-zinc-100 px-2 py-0.5 text-[10px] font-medium text-zinc-500">
+              <span className="ml-2 inline-flex items-center gap-1 rounded-full bg-muted px-2 py-0.5 text-[10px] font-medium text-muted-foreground">
                 <Lock className="h-3 w-3" />
                 приватно
               </span>
-              <ChevronRight className="ml-auto h-4 w-4 text-zinc-400 transition-transform group-open:rotate-90" />
+              <ChevronRight className="ml-auto h-4 w-4 text-muted-foreground transition-transform group-open:rotate-90" />
             </summary>
             <div className="p-4">
               <textarea
                 value={authorNotes}
                 onChange={(event) => setAuthorNotes(event.target.value)}
-                className="min-h-28 w-full rounded-xl border border-zinc-200 bg-zinc-50/50 px-3 py-2.5 text-sm text-zinc-900 placeholder:text-zinc-400 focus:border-zinc-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-zinc-200"
+                className="min-h-28 w-full rounded-xl border border-border bg-muted/50 px-3 py-2.5 text-sm text-foreground placeholder:text-muted-foreground focus:border-ring focus:bg-card focus:outline-none focus:ring-2 focus:ring-ring"
                 placeholder="Видны только вам — TODO, лоты, наблюдения с прошлых варок…"
               />
             </div>
@@ -1622,6 +1632,7 @@ export function RecipeDesigner({
         onImportBeerXml={handleImportBeerXml}
         onImportBrewfatherJson={handleImportBrewfatherJson}
         onClose={() => setImportExportOpen(false)}
+        preferredGravityUnit={preferredGravityUnit}
       />
 
       {brewPickerRecipeId ? (

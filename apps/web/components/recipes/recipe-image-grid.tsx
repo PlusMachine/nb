@@ -64,7 +64,7 @@ function AddMoreTile({ onClick, className }: { onClick: () => void; className?: 
       type="button"
       onClick={onClick}
       aria-label="Добавить фото"
-      className={`flex shrink-0 items-center justify-center rounded-2xl border-2 border-dashed border-zinc-200 text-zinc-400 transition hover:border-zinc-400 hover:bg-zinc-50 hover:text-zinc-600 active:bg-zinc-100 ${className ?? ""}`}
+      className={`flex shrink-0 items-center justify-center rounded-2xl border-2 border-dashed border-border text-muted-foreground transition hover:border-muted-foreground hover:bg-accent hover:text-foreground active:bg-muted ${className ?? ""}`}
     >
       <Plus className="h-5 w-5" />
     </button>
@@ -214,7 +214,7 @@ export function RecipeImageGrid({
           <button
             type="button"
             onClick={onAddMore}
-            className="inline-flex items-center gap-2 rounded-xl border border-dashed border-zinc-200 px-4 py-2.5 text-sm text-zinc-500 transition hover:border-zinc-400 hover:text-zinc-700"
+            className="inline-flex items-center gap-2 rounded-xl border border-dashed border-border px-4 py-2.5 text-sm text-muted-foreground transition hover:border-muted-foreground hover:text-foreground"
           >
             <Plus className="h-4 w-4" />
             Добавить фото

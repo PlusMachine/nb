@@ -40,9 +40,9 @@ const toneToRole: Record<ToastTone, "status" | "alert"> = {
 };
 
 const toneToClassName: Record<ToastTone, string> = {
-  default: "border-zinc-200 bg-white text-zinc-900",
-  success: "border-emerald-200 bg-emerald-50 text-emerald-950",
-  danger: "border-red-200 bg-red-50 text-red-950"
+  default: "border-border bg-popover text-popover-foreground",
+  success: "border-success/30 bg-success-subtle text-success-subtle-foreground",
+  danger: "border-destructive-border bg-destructive-subtle text-destructive-subtle-foreground"
 };
 
 export function ToastProvider({ children }: { children: React.ReactNode }) {
@@ -106,7 +106,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
               ) : null}
               <RadixToast.Close
                 aria-label="Закрыть"
-                className="shrink-0 rounded-lg p-1 text-current/60 transition-colors hover:bg-black/5"
+                className="shrink-0 rounded-lg p-1 text-current/60 transition-colors hover:bg-foreground/10"
               >
                 <span aria-hidden="true">&times;</span>
               </RadixToast.Close>

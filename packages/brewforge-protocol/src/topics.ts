@@ -11,6 +11,7 @@ export interface DeviceTopics {
   ack: string;       // QoS1 — ack/nack команд
   recipe: string;    // push рецепта
   log: string;       // события брю-лога
+  update: string;    // retained, портал→устройство — доступное OTA-обновление (§5.3)
 }
 
 /** Построить карту топиков для устройства. */
@@ -23,6 +24,7 @@ export function topics(deviceId: string): DeviceTopics {
     ack: `${base}/cmd/ack`,
     recipe: `${base}/recipe`,
     log: `${base}/log`,
+    update: `${base}/update`,
   };
 }
 

@@ -32,8 +32,8 @@ const formatDirtyQuantityValue = (value: string, unit: InventoryListItemDto["ent
 };
 
 export const inventoryFinishedActionLabel = "обнулить остаток";
-export const inventoryFinishedActionInlineClassName = "inline-flex h-8 items-center rounded-lg px-2 text-xs font-medium leading-none text-zinc-400 opacity-0 transition-all group-hover:opacity-100 hover:bg-zinc-100 hover:text-zinc-600 disabled:opacity-60";
-export const inventoryFinishedActionBlockClassName = "w-full py-2 text-center text-xs font-medium text-zinc-400 transition-colors hover:text-zinc-600 disabled:opacity-60";
+export const inventoryFinishedActionInlineClassName = "inline-flex h-8 items-center rounded-lg px-2 text-xs font-medium leading-none text-muted-foreground opacity-0 transition-all group-hover:opacity-100 hover:bg-accent hover:text-foreground disabled:opacity-60";
+export const inventoryFinishedActionBlockClassName = "w-full py-2 text-center text-xs font-medium text-muted-foreground transition-colors hover:text-foreground disabled:opacity-60";
 
 export const isInventoryQuantityDraftDirty = (
   quantity: string,
@@ -206,7 +206,7 @@ export function InventoryQuantityEditor({
                 setFeedback(null);
               }}
               onKeyDown={handleKeyDown}
-              className="w-[5rem] rounded-xl border border-zinc-200 bg-white px-2.5 py-2 text-right text-sm tabular-nums transition-all focus:border-zinc-400 focus:outline-none focus:ring-2 focus:ring-zinc-200"
+              className="w-[5rem] rounded-xl border border-border bg-card px-2.5 py-2 text-right text-sm tabular-nums transition-all focus:border-ring focus:outline-none focus:ring-2 focus:ring-ring"
               inputMode="decimal"
               aria-label="Количество"
             />
@@ -217,21 +217,21 @@ export function InventoryQuantityEditor({
                 setFeedback(null);
               }}
               onKeyDown={handleKeyDown}
-              className="rounded-xl border border-zinc-200 bg-white py-2 pl-2 pr-7 text-sm transition-all focus:border-zinc-400 focus:outline-none focus:ring-2 focus:ring-zinc-200"
+              className="rounded-xl border border-border bg-card py-2 pl-2 pr-7 text-sm transition-all focus:border-ring focus:outline-none focus:ring-2 focus:ring-ring"
               aria-label="Единица измерения"
             >
               {unitOptions.map((option) => <option key={option} value={option}>{getUnitLabel(option)}</option>)}
             </select>
           </div>
           {shouldShowEquivalentHint ? (
-            <p className="text-right text-xs text-zinc-400">{displayQuantity}</p>
+            <p className="text-right text-xs text-muted-foreground">{displayQuantity}</p>
           ) : null}
           {isDirty ? (
             <div className="flex items-center gap-1.5">
               <button
                 type="submit"
                 disabled={isPending || !isQuantityValid}
-                className="flex-1 rounded-xl bg-zinc-900 py-2 text-xs font-semibold text-white transition-all hover:bg-zinc-800 active:scale-[0.97] disabled:opacity-50"
+                className="flex-1 rounded-xl bg-foreground py-2 text-xs font-semibold text-background transition-all hover:bg-foreground/90 active:scale-[0.97] disabled:opacity-50"
                 aria-label="Сохранить количество"
               >
                 {isPending ? "..." : "OK"}
@@ -240,7 +240,7 @@ export function InventoryQuantityEditor({
                 type="button"
                 onClick={reset}
                 disabled={isPending}
-                className="rounded-xl border border-zinc-200 px-3 py-2 text-xs font-medium text-zinc-400 transition-colors hover:bg-zinc-50 disabled:opacity-50"
+                className="rounded-xl border border-border px-3 py-2 text-xs font-medium text-muted-foreground transition-colors hover:bg-accent disabled:opacity-50"
                 aria-label="Отменить изменения количества"
               >
                 ✕
@@ -264,9 +264,9 @@ export function InventoryQuantityEditor({
           </button>
         )
       ) : null}
-      {quantityError ? <p role="alert" className="text-xs text-red-600">{quantityError}</p> : null}
+      {quantityError ? <p role="alert" className="text-xs text-destructive">{quantityError}</p> : null}
       {feedback ? (
-        <p role={feedback.ok ? "status" : "alert"} className={`text-xs ${feedback.ok ? "text-emerald-700" : "text-red-600"}`}>
+        <p role={feedback.ok ? "status" : "alert"} className={`text-xs ${feedback.ok ? "text-success" : "text-destructive"}`}>
           {feedback.message}
         </p>
       ) : null}

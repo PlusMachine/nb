@@ -49,12 +49,12 @@ export function RecipesRangeSlider({
 
   return (
     <fieldset className="space-y-2.5">
-      <legend className="flex w-full items-center justify-between text-sm font-semibold text-zinc-950">
+      <legend className="flex w-full items-center justify-between text-sm font-semibold text-foreground">
         <span>
           {label}
-          {unit ? <span className="ml-1 font-normal text-zinc-400">{unit}</span> : null}
+          {unit ? <span className="ml-1 font-normal text-muted-foreground">{unit}</span> : null}
         </span>
-        <span className="font-normal tabular-nums text-zinc-500">
+        <span className="font-normal tabular-nums text-muted-foreground">
           {formatSliderRange(value, bound, unit)}
         </span>
       </legend>

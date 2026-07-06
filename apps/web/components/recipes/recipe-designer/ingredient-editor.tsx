@@ -124,7 +124,7 @@ export function IngredientEditor({
 
   // Обязательное и ещё пустое поле спокойно подсвечиваем рамкой, без красного.
   const requiredBorderClass = (invalid: boolean, awaiting: boolean) =>
-    invalid ? "border-red-300" : awaiting ? "border-zinc-400" : "border-zinc-200";
+    invalid ? "border-destructive-border" : awaiting ? "border-ring" : "border-border";
   const quantityAwaitingInput = hasIngredientSelection && !draft.amountEnteredQuantity.trim();
   const quantityBorderClass = requiredBorderClass(showQuantityHint, quantityAwaitingInput);
   const hopTimeBorderClass = requiredBorderClass(showHopTimeHint, hopTimeRequired && !hopTimeRaw.trim());
@@ -296,7 +296,7 @@ export function IngredientEditor({
     resetFilters: () => void;
   }) => (
     <div className="space-y-3">
-      <p className="text-sm text-zinc-700">
+      <p className="text-sm text-foreground">
         {draft.category === "water_treatment"
           ? "Ничего не найдено"
           : `Ничего не нашли. Попробуйте сменить категорию${hasActiveFilters ? " или сбросить фильтры" : ""}, либо добавьте свой ингредиент.`}
@@ -306,7 +306,7 @@ export function IngredientEditor({
           <button
             type="button"
             onClick={resetFilters}
-            className="inline-flex items-center rounded-md border border-zinc-300 bg-white px-3 py-2 text-sm font-medium text-zinc-700 transition-colors hover:border-zinc-400 hover:bg-zinc-100 hover:text-zinc-950"
+            className="inline-flex items-center rounded-md border border-border bg-card px-3 py-2 text-sm font-medium text-foreground transition-colors hover:border-ring hover:bg-accent hover:text-foreground"
           >
             Сбросить фильтры
           </button>
@@ -316,7 +316,7 @@ export function IngredientEditor({
             <button
               type="button"
               onClick={switchToCustomWithCurrentName}
-              className="inline-flex items-center rounded-md bg-zinc-950 px-3 py-2 text-sm font-medium text-white transition-colors hover:bg-zinc-800"
+              className="inline-flex items-center rounded-md bg-foreground px-3 py-2 text-sm font-medium text-background transition-colors hover:bg-foreground/90"
             >
               Добавить свой ингредиент
             </button>
@@ -331,14 +331,14 @@ export function IngredientEditor({
                 });
                 setCustomMessage(result.message);
               }}
-              className="inline-flex items-center rounded-md border border-zinc-300 bg-white px-3 py-2 text-sm font-medium text-zinc-700 transition-colors hover:border-zinc-400 hover:bg-zinc-100 hover:text-zinc-950 disabled:opacity-60"
+              className="inline-flex items-center rounded-md border border-border bg-card px-3 py-2 text-sm font-medium text-foreground transition-colors hover:border-ring hover:bg-accent hover:text-foreground disabled:opacity-60"
             >
               Предложить в каталог
             </button>
           </>
         ) : null}
       </div>
-      {customMessage ? <p className="text-xs text-zinc-500">{customMessage}</p> : null}
+      {customMessage ? <p className="text-xs text-muted-foreground">{customMessage}</p> : null}
     </div>
   );
 
@@ -356,16 +356,16 @@ export function IngredientEditor({
 
   return (
     <div className="flex min-h-0 flex-1 flex-col">
-      <div className="sticky top-0 z-10 flex shrink-0 items-start justify-between gap-3 border-b border-zinc-100 bg-white px-4 py-3 sm:px-6 sm:py-4">
+      <div className="sticky top-0 z-10 flex shrink-0 items-start justify-between gap-3 border-b border-border bg-card px-4 py-3 sm:px-6 sm:py-4">
         <div className="min-w-0">
-          <h3 className="truncate text-base font-semibold text-zinc-950 sm:text-lg">
+          <h3 className="truncate text-base font-semibold text-foreground sm:text-lg">
             {isWaterTreatmentAddFlow ? "Новая соль для воды" : isExisting ? "Редактор позиции" : "Новая позиция"}
           </h3>
-          <p className="mt-0.5 truncate text-xs text-zinc-500">{contextCategoryLabel}</p>
+          <p className="mt-0.5 truncate text-xs text-muted-foreground">{contextCategoryLabel}</p>
         </div>
         <button
           type="button"
-          className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-zinc-500 transition-colors hover:bg-zinc-100 hover:text-zinc-800"
+          className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
           onClick={onCancel}
           aria-label="Закрыть"
           title="Закрыть"
@@ -391,9 +391,9 @@ export function IngredientEditor({
         )}
 
         <div>
-          <span className="mb-1.5 block text-[11px] font-medium uppercase tracking-wide text-zinc-500">Источник</span>
+          <span className="mb-1.5 block text-[11px] font-medium uppercase tracking-wide text-muted-foreground">Источник</span>
           <div
-            className={`grid gap-1.5 rounded-xl bg-zinc-100 p-1 ${sourceModeOptions.length === 2 ? "grid-cols-2" : "grid-cols-3"}`}
+            className={`grid gap-1.5 rounded-xl bg-muted p-1 ${sourceModeOptions.length === 2 ? "grid-cols-2" : "grid-cols-3"}`}
             data-testid="recipe-ingredient-source-switch"
           >
             {sourceModeOptions.map((mode) => {
@@ -404,10 +404,10 @@ export function IngredientEditor({
                   key={mode}
                   type="button"
                   onClick={() => switchSourceMode(mode)}
-                  className={`flex min-w-0 flex-col items-center justify-center gap-0.5 rounded-lg px-2 py-2 text-xs font-medium transition-all sm:flex-row sm:gap-2 sm:py-2.5 sm:text-sm ${active ? "bg-white text-zinc-900 shadow-sm ring-1 ring-zinc-200" : "text-zinc-600 hover:text-zinc-800"}`}
+                  className={`flex min-w-0 flex-col items-center justify-center gap-0.5 rounded-lg px-2 py-2 text-xs font-medium transition-all sm:flex-row sm:gap-2 sm:py-2.5 sm:text-sm ${active ? "bg-card text-foreground shadow-sm ring-1 ring-ring" : "text-muted-foreground hover:text-foreground"}`}
                   aria-pressed={active}
                 >
-                  <span className={`shrink-0 ${active ? "text-zinc-900" : "text-zinc-500"}`}>{meta.icon}</span>
+                  <span className={`shrink-0 ${active ? "text-foreground" : "text-muted-foreground"}`}>{meta.icon}</span>
                   <span className="truncate">{meta.label}</span>
                 </button>
               );
@@ -428,7 +428,7 @@ export function IngredientEditor({
         ) : null}
 
         <div className="space-y-1">
-          <label className="text-xs font-medium text-zinc-700">Ингредиент</label>
+          <label className="text-xs font-medium text-foreground">Ингредиент</label>
           {selectedPreview ? (
             <IngredientSelectionCard
               item={selectedPreview}
@@ -471,12 +471,12 @@ export function IngredientEditor({
                     });
                     setCustomMessage(result.message);
                   }}
-                  className="inline-flex items-center rounded-md border border-zinc-300 bg-white px-3 py-2 text-sm font-medium text-zinc-700 transition-colors hover:border-zinc-400 hover:bg-zinc-100 hover:text-zinc-950 disabled:opacity-60"
+                  className="inline-flex items-center rounded-md border border-border bg-card px-3 py-2 text-sm font-medium text-foreground transition-colors hover:border-ring hover:bg-accent hover:text-foreground disabled:opacity-60"
                 >
                   Предложить в каталог
                 </button>
               </div>
-              {customMessage ? <p className="text-xs text-zinc-500">{customMessage}</p> : null}
+              {customMessage ? <p className="text-xs text-muted-foreground">{customMessage}</p> : null}
             </div>
           ) : (
             <>
@@ -533,7 +533,7 @@ export function IngredientEditor({
             </>
           )}
           {showIngredientHint ? (
-            <p className="text-xs text-red-500">Выберите ингредиент из списка, чтобы продолжить.</p>
+            <p className="text-xs text-destructive">Выберите ингредиент из списка, чтобы продолжить.</p>
           ) : null}
         </div>
 
@@ -541,7 +541,7 @@ export function IngredientEditor({
           <>
             <div className="grid items-start gap-3 sm:grid-cols-[1fr_160px]">
               <div className="space-y-1">
-                <label className="block text-xs font-medium text-zinc-700">Количество</label>
+                <label className="block text-xs font-medium text-foreground">Количество</label>
                 <NumericInput
                   ref={quantityInputRef}
                   min={quantityStep}
@@ -549,18 +549,18 @@ export function IngredientEditor({
                   value={draft.amountEnteredQuantity}
                   onChange={(event) => onChange({ ...draft, amountEnteredQuantity: event.target.value })}
                   aria-invalid={showQuantityHint || undefined}
-                  className={`h-10 w-full rounded-md border bg-white px-3 text-sm text-zinc-900 transition-colors focus:outline-none focus:ring-2 focus:ring-zinc-900/10 ${quantityBorderClass}`}
+                  className={`h-10 w-full rounded-md border bg-card px-3 text-sm text-foreground transition-colors focus:outline-none focus:ring-2 focus:ring-ring/10 ${quantityBorderClass}`}
                 />
                 {showQuantityHint ? (
-                  <p className="text-xs text-red-500">Укажите количество больше нуля.</p>
+                  <p className="text-xs text-destructive">Укажите количество больше нуля.</p>
                 ) : null}
               </div>
               <div className="space-y-1">
-                <label className="block text-xs font-medium text-zinc-700">Ед. изм.</label>
+                <label className="block text-xs font-medium text-foreground">Ед. изм.</label>
                 <select
                   value={draft.amountEnteredUnit}
                   onChange={(event) => onChange({ ...draft, amountEnteredUnit: event.target.value as InventoryUnit })}
-                  className="h-10 w-full rounded-md border border-zinc-200 bg-white px-3 text-sm text-zinc-900 focus:outline-none focus:ring-2 focus:ring-zinc-900/10"
+                  className="h-10 w-full rounded-md border border-border bg-card px-3 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring/10"
                 >
                   {draft.allowedUnits.map((unit) => (
                     <option key={unit} value={unit}>{inventoryUnitLabels[unit] ?? unit}</option>
@@ -571,7 +571,7 @@ export function IngredientEditor({
 
             {draft.category === "fermentable" ? (
               <div className="grid gap-3 sm:grid-cols-[180px_160px]">
-                <label className="space-y-1 text-xs font-medium text-zinc-700">
+                <label className="space-y-1 text-xs font-medium text-foreground">
                   Использование
                   <select
                     value={draft.stepMeta.use ?? "mash"}
@@ -583,13 +583,13 @@ export function IngredientEditor({
                         use: event.target.value
                       }
                     })}
-                    className="h-10 w-full rounded-md border border-zinc-200 bg-white px-3 text-sm text-zinc-900"
+                    className="h-10 w-full rounded-md border border-border bg-card px-3 text-sm text-foreground"
                   >
                     {recipeFermentableUseTypes.map((use) => <option key={use} value={use}>{fermentableUseLabels[use]}</option>)}
                   </select>
                 </label>
                 {(draft.stepMeta.use ?? "mash") === "boil" ? (
-                  <label className="space-y-1 text-xs font-medium text-zinc-700">
+                  <label className="space-y-1 text-xs font-medium text-foreground">
                     Минут от конца
                     <NumericInput
                       integer
@@ -605,7 +605,7 @@ export function IngredientEditor({
                           timeMinutes: event.target.value
                         }
                       })}
-                      className="h-10 w-full rounded-md border border-zinc-200 bg-white px-3 text-sm text-zinc-900"
+                      className="h-10 w-full rounded-md border border-border bg-card px-3 text-sm text-foreground"
                     />
                   </label>
                 ) : null}
@@ -614,7 +614,7 @@ export function IngredientEditor({
 
             {isHop ? (
               <div className="grid gap-3 sm:grid-cols-2">
-                <label className="space-y-1 text-xs font-medium text-zinc-700">
+                <label className="space-y-1 text-xs font-medium text-foreground">
                   Тип добавления
                   <select
                     value={hopUseType}
@@ -626,14 +626,14 @@ export function IngredientEditor({
                         useType: event.target.value as RecipeHopUseType
                       }
                     })}
-                    className="h-10 w-full rounded-md border border-zinc-200 bg-white px-3 text-sm text-zinc-900"
+                    className="h-10 w-full rounded-md border border-border bg-card px-3 text-sm text-foreground"
                   >
                     {recipeHopUseTypeUiOrder.map((useType) => <option key={useType} value={useType}>{hopUseTypeLabels[useType]}</option>)}
                   </select>
                 </label>
 
                 {(hopUseType === "boil" || hopUseType === "whirlpool" || hopUseType === "dip_hop") ? (
-                  <label className="space-y-1 text-xs font-medium text-zinc-700">
+                  <label className="space-y-1 text-xs font-medium text-foreground">
                     Минут
                     <NumericInput
                       integer
@@ -650,16 +650,16 @@ export function IngredientEditor({
                         }
                       })}
                       aria-invalid={showHopTimeHint || undefined}
-                      className={`h-10 w-full rounded-md border bg-white px-3 text-sm text-zinc-900 transition-colors focus:outline-none focus:ring-2 focus:ring-zinc-900/10 ${hopTimeBorderClass}`}
+                      className={`h-10 w-full rounded-md border bg-card px-3 text-sm text-foreground transition-colors focus:outline-none focus:ring-2 focus:ring-ring/10 ${hopTimeBorderClass}`}
                     />
                     {showHopTimeHint ? (
-                      <p className="text-xs font-normal text-red-500">{hopTimeError}</p>
+                      <p className="text-xs font-normal text-destructive">{hopTimeError}</p>
                     ) : (
-                      <p className="text-xs font-normal text-zinc-500">Время задаёт горечь (IBU).</p>
+                      <p className="text-xs font-normal text-muted-foreground">Время задаёт горечь (IBU).</p>
                     )}
                   </label>
                 ) : hopUseType === "dry_hop" ? (
-                  <label className="space-y-1 text-xs font-medium text-zinc-700">
+                  <label className="space-y-1 text-xs font-medium text-foreground">
                     Длительность, дн
                     <NumericInput
                       integer
@@ -675,14 +675,14 @@ export function IngredientEditor({
                         }
                       })}
                       aria-invalid={showHopDurationHint || undefined}
-                      className={`h-10 w-full rounded-md border bg-white px-3 text-sm text-zinc-900 transition-colors focus:outline-none focus:ring-2 focus:ring-zinc-900/10 ${hopDurationBorderClass}`}
+                      className={`h-10 w-full rounded-md border bg-card px-3 text-sm text-foreground transition-colors focus:outline-none focus:ring-2 focus:ring-ring/10 ${hopDurationBorderClass}`}
                     />
                     {showHopDurationHint ? (
-                      <p className="text-xs font-normal text-red-500">{hopDurationError}</p>
+                      <p className="text-xs font-normal text-destructive">{hopDurationError}</p>
                     ) : null}
                   </label>
                 ) : (
-                  <label className="space-y-1 text-xs font-medium text-zinc-700">
+                  <label className="space-y-1 text-xs font-medium text-foreground">
                     Этап добавления
                     <input
                       value={draft.stepMeta.stageLabel ?? ""}
@@ -693,14 +693,14 @@ export function IngredientEditor({
                           stageLabel: event.target.value
                         }
                       })}
-                      className="h-10 w-full rounded-md border border-zinc-200 bg-white px-3 text-sm text-zinc-900"
+                      className="h-10 w-full rounded-md border border-border bg-card px-3 text-sm text-foreground"
                       placeholder="Например, первое сусло"
                     />
                   </label>
                 )}
 
                 {(hopUseType === "whirlpool" || hopUseType === "dip_hop") ? (
-                  <label className="space-y-1 text-xs font-medium text-zinc-700">
+                  <label className="space-y-1 text-xs font-medium text-foreground">
                     Температура, °C
                     <NumericInput
                       min={0}
@@ -715,9 +715,9 @@ export function IngredientEditor({
                         }
                       })}
                       placeholder="85"
-                      className="h-10 w-full rounded-md border border-zinc-200 bg-white px-3 text-sm text-zinc-900 focus:outline-none focus:ring-2 focus:ring-zinc-900/10"
+                      className="h-10 w-full rounded-md border border-border bg-card px-3 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring/10"
                     />
-                    <p className="text-xs font-normal text-zinc-500">Если пусто — берётся 85&nbsp;°C.</p>
+                    <p className="text-xs font-normal text-muted-foreground">Если пусто — берётся 85&nbsp;°C.</p>
                   </label>
                 ) : null}
               </div>
@@ -725,7 +725,7 @@ export function IngredientEditor({
 
             {draft.category === "yeast" ? (
               <div className="grid gap-3 sm:grid-cols-2">
-                <label className="space-y-1 text-xs font-medium text-zinc-700">
+                <label className="space-y-1 text-xs font-medium text-foreground">
                   Основная температура брожения, °C
                   <NumericInput
                     min={-10}
@@ -739,11 +739,11 @@ export function IngredientEditor({
                         fermentationTempC: event.target.value
                       }
                     })}
-                    className="h-10 w-full rounded-md border border-zinc-200 bg-white px-3 text-sm text-zinc-900"
+                    className="h-10 w-full rounded-md border border-border bg-card px-3 text-sm text-foreground"
                   />
                 </label>
                 {draft.selectedSummary ? (
-                  <div className="rounded-xl border border-zinc-100 bg-zinc-50 px-3 py-2 text-xs text-zinc-500">
+                  <div className="rounded-xl border border-border bg-muted px-3 py-2 text-xs text-muted-foreground">
                     {draft.selectedSummary}
                   </div>
                 ) : null}
@@ -752,17 +752,17 @@ export function IngredientEditor({
 
             {draft.category === "water_treatment" ? (
               <div className="grid gap-3 sm:grid-cols-2">
-                <label className="space-y-1 text-xs font-medium text-zinc-700">
+                <label className="space-y-1 text-xs font-medium text-foreground">
                   Стадия
                   <select
                     value={draft.stage}
                     onChange={(event) => onChange({ ...draft, stage: event.target.value as DesignerIngredient["stage"] })}
-                    className="h-10 w-full rounded-md border border-zinc-200 bg-white px-3 text-sm text-zinc-900"
+                    className="h-10 w-full rounded-md border border-border bg-card px-3 text-sm text-foreground"
                   >
                     {Object.entries(stageLabels).map(([value, label]) => <option key={value} value={value}>{label}</option>)}
                   </select>
                 </label>
-                <label className="space-y-1 text-xs font-medium text-zinc-700">
+                <label className="space-y-1 text-xs font-medium text-foreground">
                   Время, если нужно
                   <NumericInput
                     integer
@@ -778,7 +778,7 @@ export function IngredientEditor({
                         timeMinutes: event.target.value
                       }
                     })}
-                    className="h-10 w-full rounded-md border border-zinc-200 bg-white px-3 text-sm text-zinc-900"
+                    className="h-10 w-full rounded-md border border-border bg-card px-3 text-sm text-foreground"
                     placeholder="минуты"
                   />
                 </label>
@@ -788,7 +788,7 @@ export function IngredientEditor({
             {draft.category === "consumable" ? (
               <div className="grid gap-3 sm:grid-cols-2">
                 <fieldset className="space-y-1">
-                  <legend className="text-xs font-medium text-zinc-700">Стадия добавления</legend>
+                  <legend className="text-xs font-medium text-foreground">Стадия добавления</legend>
                   <div className="flex flex-wrap gap-1.5" data-testid="recipe-consumable-stage-options">
                     {visibleConsumableStageOptions.map((stage) => {
                       const active = draft.stage === stage;
@@ -798,8 +798,8 @@ export function IngredientEditor({
                           type="button"
                           onClick={() => onChange({ ...draft, stage })}
                           className={`rounded-md border px-2.5 py-1.5 text-xs font-medium transition-colors ${active
-                            ? "border-zinc-950 bg-zinc-950 text-white"
-                            : "border-zinc-200 bg-white text-zinc-600 hover:border-zinc-300 hover:bg-zinc-50 hover:text-zinc-900"
+                            ? "border-foreground bg-foreground text-background"
+                            : "border-border bg-card text-muted-foreground hover:border-border hover:bg-muted hover:text-foreground"
                           }`}
                           aria-pressed={active}
                         >
@@ -809,7 +809,7 @@ export function IngredientEditor({
                     })}
                   </div>
                 </fieldset>
-                <label className="space-y-1 text-xs font-medium text-zinc-700">
+                <label className="space-y-1 text-xs font-medium text-foreground">
                   Время, если нужно
                   <NumericInput
                     integer
@@ -825,7 +825,7 @@ export function IngredientEditor({
                         timeMinutes: event.target.value
                       }
                     })}
-                    className="h-10 w-full rounded-md border border-zinc-200 bg-white px-3 text-sm text-zinc-900"
+                    className="h-10 w-full rounded-md border border-border bg-card px-3 text-sm text-foreground"
                     placeholder="минуты"
                   />
                 </label>
@@ -835,20 +835,20 @@ export function IngredientEditor({
         ) : null}
 
         {showOtherError ? (
-          <p className="flex items-center gap-1.5 text-xs text-red-500">
+          <p className="flex items-center gap-1.5 text-xs text-destructive">
             <CircleAlert className="h-3.5 w-3.5 shrink-0" />
             <span>{fieldError}</span>
           </p>
         ) : null}
       </div>
 
-      <div className="flex shrink-0 items-center justify-between gap-2 border-t border-zinc-100 bg-white px-4 py-3 sm:px-6 sm:py-4">
+      <div className="flex shrink-0 items-center justify-between gap-2 border-t border-border bg-card px-4 py-3 sm:px-6 sm:py-4">
         <div>
           {onDelete ? (
             <button
               type="button"
               onClick={onDelete}
-              className="inline-flex h-10 items-center gap-1.5 rounded-lg border border-rose-200 bg-white px-3 text-sm font-medium text-rose-600 transition-colors hover:border-rose-300 hover:bg-rose-50"
+              className="inline-flex h-10 items-center gap-1.5 rounded-lg border border-destructive-border bg-card px-3 text-sm font-medium text-destructive transition-colors hover:border-destructive-border hover:bg-destructive-subtle"
             >
               <Trash2 className="h-3.5 w-3.5" />
               <span className="hidden sm:inline">Удалить</span>
@@ -859,7 +859,7 @@ export function IngredientEditor({
           <button
             type="button"
             onClick={onCancel}
-            className="inline-flex h-10 items-center rounded-lg border border-zinc-200 bg-white px-4 text-sm font-medium text-zinc-700 transition-colors hover:bg-zinc-50"
+            className="inline-flex h-10 items-center rounded-lg border border-border bg-card px-4 text-sm font-medium text-foreground transition-colors hover:bg-muted"
           >
             Отмена
           </button>
@@ -870,7 +870,7 @@ export function IngredientEditor({
                 setValidationRevealed(true);
                 onSave();
               }}
-              className="inline-flex h-10 items-center rounded-lg bg-zinc-900 px-4 text-sm font-medium text-white shadow-sm transition-colors hover:bg-zinc-800"
+              className="inline-flex h-10 items-center rounded-lg bg-foreground px-4 text-sm font-medium text-background shadow-sm transition-colors hover:bg-foreground/90"
             >
               {saveLabel}
             </button>

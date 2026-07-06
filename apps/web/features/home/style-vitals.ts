@@ -1,7 +1,8 @@
-import { sgToPlato, srmToEbc } from "@nb/brewing-core";
+import { srmToEbc } from "@nb/brewing-core";
 import type { BjcpCatalogStyle } from "@nb/content";
 
 import { beerColorFromSrm, srmToGlassStops, srmToHex } from "@/features/recipes/beer-color";
+import { defaultPreferredGravityUnit, formatGravityRange } from "@/features/system/gravity-units";
 
 /**
  * Данные одного стиля для hero-панели главной: готовые к показу строки-диапазоны
@@ -68,13 +69,18 @@ const formatRange = (
 
 const DASH_PLACEHOLDER = "—";
 
-/** OG в SG → °P (как в замерах ареометром), одна десятичная. */
+/**
+ * OG в предпочитаемой единице плотности через общий formatGravityRange. Единица
+ * фиксирована на Plato (defaultPreferredGravityUnit), а не на реальном предпочтении
+ * пользователя: hero — гостевой блок главной (залогиненных редиректит в /app), сессию
+ * здесь читать незачем.
+ */
 const formatOgPlato = (raw: string | null): string => {
   const range = parseNumericRange(raw);
   if (!range) {
     return DASH_PLACEHOLDER;
   }
-  return formatRange(range, (sg) => sgToPlato(sg, 2), 1, "°P");
+  return formatGravityRange(range.min, range.max, defaultPreferredGravityUnit) ?? DASH_PLACEHOLDER;
 };
 
 /** SRM → EBC (×1.97), целые. */

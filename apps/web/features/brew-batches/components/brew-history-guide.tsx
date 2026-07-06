@@ -35,9 +35,9 @@ export function BrewHistoryGuide({
   }
 
   return (
-    <details className="group rounded-2xl border border-zinc-100 bg-white p-4 shadow-sm">
-      <summary className="flex cursor-pointer list-none items-center gap-2 text-base font-semibold text-zinc-900 [&::-webkit-details-marker]:hidden">
-        <ChevronRight className="h-4 w-4 shrink-0 text-zinc-400 transition group-open:rotate-90" aria-hidden />
+    <details className="group rounded-2xl border border-border bg-card p-4 shadow-sm">
+      <summary className="flex cursor-pointer list-none items-center gap-2 text-base font-semibold text-foreground [&::-webkit-details-marker]:hidden">
+        <ChevronRight className="h-4 w-4 shrink-0 text-muted-foreground transition group-open:rotate-90" aria-hidden />
         Как прошла варка
       </summary>
       <div className="mt-4">

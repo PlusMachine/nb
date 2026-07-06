@@ -6,6 +6,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { LogOut, Shield } from "lucide-react";
 
 import { appNavGroups, isNavItemActive, isPublicPath, type AppChromeUser } from "@/lib/navigation";
+import { ThemeToggle } from "@/components/theme/theme-toggle";
 
 type AppSidebarNavProps = {
   user: AppChromeUser;
@@ -44,7 +45,7 @@ export function AppSidebarNav({ user, onNavigate }: AppSidebarNavProps) {
       <nav className="flex flex-1 flex-col gap-1" aria-label="Навигация рабочей зоны">
         {appNavGroups.map((group, groupIndex) => (
           <React.Fragment key={groupIndex}>
-            {groupIndex > 0 ? <div className="my-2 border-t border-zinc-200/70" /> : null}
+            {groupIndex > 0 ? <div className="my-2 border-t border-border/70" /> : null}
             {group.map((item) => {
               const Icon = item.icon;
               const active = isNavItemActive(pathname, item);
@@ -58,8 +59,8 @@ export function AppSidebarNav({ user, onNavigate }: AppSidebarNavProps) {
                   aria-current={active ? "page" : undefined}
                   className={`flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
                     active
-                      ? "bg-zinc-900 text-white"
-                      : "text-zinc-600 hover:bg-zinc-100 hover:text-zinc-950"
+                      ? "bg-foreground text-background"
+                      : "text-muted-foreground hover:bg-accent hover:text-foreground"
                   }`}
                 >
                   <Icon className="h-4 w-4 shrink-0" />
@@ -71,12 +72,12 @@ export function AppSidebarNav({ user, onNavigate }: AppSidebarNavProps) {
         ))}
       </nav>
 
-      <div className="mt-2 space-y-1 border-t border-zinc-200/70 pt-2">
+      <div className="mt-2 space-y-1 border-t border-border/70 pt-2">
         {user.isStaff ? (
           <Link
             href="/admin"
             onClick={() => onNavigate?.()}
-            className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-zinc-600 transition-colors hover:bg-zinc-100 hover:text-zinc-950"
+            className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
           >
             <Shield className="h-4 w-4 shrink-0" />
             Админка
@@ -88,13 +89,13 @@ export function AppSidebarNav({ user, onNavigate }: AppSidebarNavProps) {
           aria-current={profileActive ? "page" : undefined}
           className={`flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
             profileActive
-              ? "bg-zinc-900 text-white"
-              : "text-zinc-700 hover:bg-zinc-100"
+              ? "bg-foreground text-background"
+              : "text-muted-foreground hover:bg-accent hover:text-foreground"
           }`}
         >
           <span
             className={`grid h-6 w-6 shrink-0 place-items-center rounded-full text-[11px] font-semibold uppercase ${
-              profileActive ? "bg-white/15 text-white" : "bg-zinc-900 text-white"
+              profileActive ? "bg-background/20 text-background" : "bg-foreground text-background"
             }`}
           >
             {identity.slice(0, 1)}
@@ -105,15 +106,20 @@ export function AppSidebarNav({ user, onNavigate }: AppSidebarNavProps) {
           type="button"
           onClick={handleLogout}
           disabled={loggingOut}
-          className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-left text-sm font-medium text-zinc-600 transition-colors hover:bg-zinc-100 hover:text-zinc-950 disabled:opacity-60"
+          className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-left text-sm font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-foreground disabled:opacity-60"
         >
           <LogOut className="h-4 w-4 shrink-0" />
           {loggingOut ? "Выходим…" : "Выйти"}
         </button>
 
+        <div className="flex items-center justify-between gap-2 px-3 pt-1">
+          <span className="text-xs font-medium text-muted-foreground">Тема</span>
+          <ThemeToggle />
+        </div>
+
         {/* В рабочей зоне нет футера — правовые ссылки и отметка 18+ живут здесь. */}
-        <div className="px-3 pt-2 text-[11px] leading-5 text-zinc-400">
-          <Link href="/legal" onClick={() => onNavigate?.()} className="transition-colors hover:text-zinc-600">
+        <div className="px-3 pt-2 text-[11px] leading-5 text-muted-foreground">
+          <Link href="/legal" onClick={() => onNavigate?.()} className="transition-colors hover:text-foreground">
             Правовые документы
           </Link>
           <p className="mt-1">18+ · Употребление алкоголя вредит здоровью</p>

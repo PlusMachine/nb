@@ -56,7 +56,7 @@ const Field = ({
   ...props
 }: { label: string; hideLabel?: boolean } & ComponentProps<typeof Input>) => (
   <label className={hideLabel ? "block flex-1" : "block space-y-1.5 text-sm"}>
-    <span className={hideLabel ? "sr-only" : "font-medium text-zinc-700"}>{label}</span>
+    <span className={hideLabel ? "sr-only" : "font-medium text-foreground"}>{label}</span>
     <Input {...props} />
   </label>
 );
@@ -67,9 +67,9 @@ const StatusLine = ({ status }: { status: StatusMessage | null }) => {
   }
   return (
     <div className="space-y-1">
-      <p className={`text-sm ${status.kind === "error" ? "text-red-600" : "text-zinc-600"}`}>{status.text}</p>
+      <p className={`text-sm ${status.kind === "error" ? "text-destructive" : "text-muted-foreground"}`}>{status.text}</p>
       {status.devHint && isDev ? (
-        <p className="text-xs text-zinc-400">В dev-режиме код и ссылки выводятся в логи сервера.</p>
+        <p className="text-xs text-muted-foreground">В dev-режиме код и ссылки выводятся в логи сервера.</p>
       ) : null}
     </div>
   );
@@ -254,30 +254,30 @@ export function LoginForm() {
   return (
     <Card className="mx-auto mt-14 max-w-md space-y-5 rounded-2xl p-6">
       <div className="space-y-1">
-        <h1 className="text-2xl font-semibold text-zinc-950" style={{ fontFamily: "var(--font-display)" }}>
+        <h1 className="text-2xl font-semibold text-foreground" style={{ fontFamily: "var(--font-display)" }}>
           Вход и регистрация
         </h1>
-        <p className="text-sm text-zinc-600">Новый аккаунт создастся автоматически при первом успешном входе.</p>
+        <p className="text-sm text-muted-foreground">Новый аккаунт создастся автоматически при первом успешном входе.</p>
       </div>
 
-      <label className="flex items-start gap-2.5 rounded-lg bg-zinc-50 p-3 text-xs leading-5 text-zinc-600">
+      <label className="flex items-start gap-2.5 rounded-lg bg-muted p-3 text-xs leading-5 text-muted-foreground">
         <input
           type="checkbox"
           checked={consent}
           onChange={(event) => setConsent(event.target.checked)}
-          className="mt-0.5 h-4 w-4 shrink-0 rounded border-zinc-300 text-zinc-900 focus:ring-zinc-400"
+          className="mt-0.5 h-4 w-4 shrink-0 rounded border-border text-foreground focus:ring-ring"
         />
         <span>
           Мне есть 18 лет, я принимаю{" "}
-          <Link href="/legal/terms" target="_blank" className="text-sky-700 underline underline-offset-2">
+          <Link href="/legal/terms" target="_blank" className="text-link underline underline-offset-2">
             Пользовательское соглашение
           </Link>{" "}
           и даю{" "}
-          <Link href="/legal/consent" target="_blank" className="text-sky-700 underline underline-offset-2">
+          <Link href="/legal/consent" target="_blank" className="text-link underline underline-offset-2">
             согласие на обработку персональных данных
           </Link>{" "}
           согласно{" "}
-          <Link href="/legal/privacy" target="_blank" className="text-sky-700 underline underline-offset-2">
+          <Link href="/legal/privacy" target="_blank" className="text-link underline underline-offset-2">
             Политике
           </Link>
           .
@@ -357,8 +357,8 @@ export function LoginForm() {
         <div className="space-y-3">
           {emailFlow === "password" && resetToken ? (
             <div className="space-y-2">
-              <p className="text-sm text-zinc-500">
-                Сброс пароля для <span className="font-medium text-zinc-700">{email}</span>
+              <p className="text-sm text-muted-foreground">
+                Сброс пароля для <span className="font-medium text-foreground">{email}</span>
               </p>
               <form
                 className="space-y-2"
@@ -383,7 +383,7 @@ export function LoginForm() {
               <div className="flex gap-4">
                 <button
                   type="button"
-                  className="text-sm text-zinc-500 underline decoration-dotted underline-offset-4 hover:text-zinc-700 disabled:opacity-40"
+                  className="text-sm text-muted-foreground underline decoration-dotted underline-offset-4 hover:text-foreground disabled:opacity-40"
                   disabled={pending}
                   onClick={requestPasswordReset}
                 >
@@ -391,7 +391,7 @@ export function LoginForm() {
                 </button>
                 <button
                   type="button"
-                  className="text-sm text-zinc-500 underline decoration-dotted underline-offset-4 hover:text-zinc-700"
+                  className="text-sm text-muted-foreground underline decoration-dotted underline-offset-4 hover:text-foreground"
                   onClick={returnToLogin}
                 >
                   Вернуться ко входу
@@ -547,7 +547,7 @@ export function LoginForm() {
                   </form>
                   <button
                     type="button"
-                    className="text-sm text-zinc-500 underline decoration-dotted underline-offset-4 hover:text-zinc-700 disabled:opacity-40"
+                    className="text-sm text-muted-foreground underline decoration-dotted underline-offset-4 hover:text-foreground disabled:opacity-40"
                     disabled={!canContinueEmail || pending}
                     onClick={requestPasswordReset}
                   >
@@ -564,12 +564,12 @@ export function LoginForm() {
           низу карточки под соцвходом и за cookie-баннером (UX-находка #12). */}
       <StatusLine status={status} />
 
-      <div className="grid grid-cols-2 gap-2 border-t border-zinc-200 pt-4">
+      <div className="grid grid-cols-2 gap-2 border-t border-border pt-4">
         <Link
           href="/api/auth/oauth/vk"
           onClick={beginOAuth}
           aria-disabled={!consent}
-          className={`rounded-md border border-zinc-200 p-2 text-center text-sm text-zinc-700 transition-colors hover:bg-zinc-50 ${
+          className={`rounded-md border border-border p-2 text-center text-sm text-foreground transition-colors hover:bg-accent ${
             consent ? "" : "pointer-events-none opacity-50"
           }`}
         >
@@ -579,7 +579,7 @@ export function LoginForm() {
           href="/api/auth/oauth/yandex"
           onClick={beginOAuth}
           aria-disabled={!consent}
-          className={`rounded-md border border-zinc-200 p-2 text-center text-sm text-zinc-700 transition-colors hover:bg-zinc-50 ${
+          className={`rounded-md border border-border p-2 text-center text-sm text-foreground transition-colors hover:bg-accent ${
             consent ? "" : "pointer-events-none opacity-50"
           }`}
         >

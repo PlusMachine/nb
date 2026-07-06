@@ -41,16 +41,16 @@ type Props = {
 export function MonitorHero({ telemetry, remaining, chart, size = "default" }: Props) {
   const kiosk = size === "kiosk";
   return (
-    <div className="rounded-2xl border border-zinc-200 bg-white p-6 shadow-sm">
+    <div className="rounded-2xl border border-border bg-card p-6 shadow-sm">
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <p className={kiosk ? "text-base text-zinc-500" : "text-sm text-zinc-500"}>Температура</p>
+          <p className={kiosk ? "text-base text-muted-foreground" : "text-sm text-muted-foreground"}>Температура</p>
           {telemetry && telemetry.primary.valid ? (
             <p
               className={
                 kiosk
-                  ? "mt-1 text-[clamp(4rem,17vh,13rem)] font-semibold leading-none tabular-nums text-zinc-950"
-                  : "mt-1 text-6xl font-semibold tabular-nums text-zinc-950"
+                  ? "mt-1 text-[clamp(4rem,17vh,13rem)] font-semibold leading-none tabular-nums text-foreground"
+                  : "mt-1 text-6xl font-semibold tabular-nums text-foreground"
               }
             >
               {fmtTemp(telemetry.primary.c)}
@@ -58,15 +58,15 @@ export function MonitorHero({ telemetry, remaining, chart, size = "default" }: P
           ) : (
             // Без валидной телеметрии не рисуем гигантский «—» (читался как баг-плашка,
             // UX-находка #21) — компактная приглушённая подпись «нет данных».
-            <p className={kiosk ? "mt-1 text-3xl font-medium text-zinc-400" : "mt-1 text-xl font-medium text-zinc-400"}>
+            <p className={kiosk ? "mt-1 text-3xl font-medium text-muted-foreground" : "mt-1 text-xl font-medium text-muted-foreground"}>
               нет данных
             </p>
           )}
-          <p className={kiosk ? "mt-2 text-base text-zinc-500" : "mt-1 text-sm text-zinc-500"}>
+          <p className={kiosk ? "mt-2 text-base text-muted-foreground" : "mt-1 text-sm text-muted-foreground"}>
             Уставка:{" "}
             <span
               className={
-                kiosk ? "text-xl font-medium text-zinc-700 tabular-nums" : "font-medium text-zinc-700 tabular-nums"
+                kiosk ? "text-xl font-medium text-foreground tabular-nums" : "font-medium text-foreground tabular-nums"
               }
             >
               {telemetry ? fmtTemp(telemetry.setpointC) : "—"}
@@ -74,11 +74,11 @@ export function MonitorHero({ telemetry, remaining, chart, size = "default" }: P
           </p>
         </div>
         <div className="text-right">
-          <p className={kiosk ? "text-base text-zinc-500" : "text-sm text-zinc-500"}>Стадия</p>
-          <p className={kiosk ? "mt-1 text-4xl font-semibold text-zinc-950" : "mt-1 text-2xl font-semibold text-zinc-950"}>
+          <p className={kiosk ? "text-base text-muted-foreground" : "text-sm text-muted-foreground"}>Стадия</p>
+          <p className={kiosk ? "mt-1 text-4xl font-semibold text-foreground" : "mt-1 text-2xl font-semibold text-foreground"}>
             {telemetry ? stageLabel(telemetry.stageName) : "—"}
           </p>
-          <p className={kiosk ? "mt-1 text-lg text-zinc-500 tabular-nums" : "mt-1 text-sm text-zinc-500 tabular-nums"}>
+          <p className={kiosk ? "mt-1 text-lg text-muted-foreground tabular-nums" : "mt-1 text-sm text-muted-foreground tabular-nums"}>
             Осталось {telemetry ? fmtClock(remaining) : "—"} · прошло{" "}
             {telemetry ? fmtClock(telemetry.stageElapsedSec) : "—"}
           </p>
@@ -89,8 +89,8 @@ export function MonitorHero({ telemetry, remaining, chart, size = "default" }: P
         <p
           className={
             kiosk
-              ? "mt-4 rounded-lg bg-zinc-50 px-3 py-2 text-base text-zinc-700"
-              : "mt-4 rounded-lg bg-zinc-50 px-3 py-2 text-sm text-zinc-700"
+              ? "mt-4 rounded-lg bg-muted px-3 py-2 text-base text-foreground"
+              : "mt-4 rounded-lg bg-muted px-3 py-2 text-sm text-foreground"
           }
         >
           {telemetry.statusLine}

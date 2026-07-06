@@ -1133,8 +1133,8 @@ export function CatalogIngredientForm({
                   className={`rounded-full border px-3 py-1.5 text-xs font-medium transition-colors ${
                     (value === "malt" && subtype === "malt" && !forcedGroup)
                     || (value !== "malt" && subtype === "fermentable" && forcedGroup === value)
-                      ? "border-amber-300 bg-amber-50 text-amber-900"
-                      : "border-zinc-200 bg-white text-zinc-600 hover:border-zinc-300 hover:bg-zinc-50"
+                      ? "border-warning/30 bg-warning-subtle text-warning-subtle-foreground"
+                      : "border-border bg-card text-muted-foreground hover:border-border hover:bg-muted"
                   }`}
                 >
                   {value === "malt" ? inventoryFermentableSubtypeLabels.malt : resolveFermentableQuickStartGroupLabel(value)}
@@ -1151,8 +1151,8 @@ export function CatalogIngredientForm({
                   onClick={() => onGroupChange?.(forcedGroup === value ? activeConsumableBroadGroup : value)}
                   className={`rounded-full border px-3 py-1.5 text-xs font-medium transition-colors ${
                     forcedGroup === value
-                      ? "border-amber-300 bg-amber-50 text-amber-900"
-                      : "border-zinc-200 bg-white text-zinc-600 hover:border-zinc-300 hover:bg-zinc-50"
+                      ? "border-warning/30 bg-warning-subtle text-warning-subtle-foreground"
+                      : "border-border bg-card text-muted-foreground hover:border-border hover:bg-muted"
                   }`}
                 >
                   {resolveConsumablePickerGroupLabel(value) ?? value}
@@ -1160,7 +1160,7 @@ export function CatalogIngredientForm({
               ))}
             </div>
           ) : null}
-          <label className="text-sm font-medium text-zinc-900">Ингредиент</label>
+          <label className="text-sm font-medium text-foreground">Ингредиент</label>
           <IngredientPicker
             value={pickerValue}
             category={category}
@@ -1201,7 +1201,7 @@ export function CatalogIngredientForm({
             placeholder="Начните вводить название ингредиента"
             emptyCta={({ hasActiveFilters, resetFilters }) => (
               <div className="space-y-3">
-                <p className="text-sm text-zinc-700">
+                <p className="text-sm text-foreground">
                   Ничего не нашли. Попробуйте сменить категорию
                   {hasActiveFilters ? " или сбросить фильтры" : ""}
                   , либо добавьте свой ингредиент.
@@ -1211,7 +1211,7 @@ export function CatalogIngredientForm({
                     <button
                       type="button"
                       onClick={resetFilters}
-                      className="inline-flex items-center rounded-md border border-zinc-300 bg-white px-3 py-2 text-sm font-medium text-zinc-700 transition-colors hover:border-zinc-400 hover:bg-zinc-100 hover:text-zinc-950"
+                      className="inline-flex items-center rounded-md border border-border bg-card px-3 py-2 text-sm font-medium text-foreground transition-colors hover:border-border hover:bg-accent hover:text-foreground"
                     >
                       Сбросить фильтры
                     </button>
@@ -1219,7 +1219,7 @@ export function CatalogIngredientForm({
                   <button
                     type="button"
                     onClick={onRequestCustom}
-                    className="inline-flex items-center rounded-md bg-zinc-950 px-3 py-2 text-sm font-medium text-white transition-colors hover:bg-zinc-800"
+                    className="inline-flex items-center rounded-md bg-foreground px-3 py-2 text-sm font-medium text-background transition-colors hover:bg-foreground/90"
                   >
                     Добавить свой ингредиент
                   </button>
@@ -1227,7 +1227,7 @@ export function CatalogIngredientForm({
               </div>
             )}
           />
-          {(localError || fieldErrors?.ingredientCatalogItemId) && <p className="text-xs text-red-600">{localError ?? fieldErrors?.ingredientCatalogItemId}</p>}
+          {(localError || fieldErrors?.ingredientCatalogItemId) && <p className="text-xs text-destructive">{localError ?? fieldErrors?.ingredientCatalogItemId}</p>}
         </section>
       ) : null}
 
@@ -1244,19 +1244,19 @@ export function CatalogIngredientForm({
               statusBadgeLabel={overrideSummaryState.statusBadgeLabel}
               details={showBatchOverrideSection && batchOverrideDefaults ? (
                 <div className="space-y-3" data-testid="catalog-batch-overrides">
-                  <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-zinc-700">
+                  <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-foreground">
                     {overrideSummaryState.currentEntries.map((entry) => (
                       <span key={entry.label}>
-                        {entry.label}: <span className="font-medium text-zinc-950">{entry.value}</span>
+                        {entry.label}: <span className="font-medium text-foreground">{entry.value}</span>
                       </span>
                     ))}
                     {batchOverrideDefaults.kind !== "water_treatment_acid" ? (
                       <>
-                        <span aria-hidden="true" className="text-zinc-300">•</span>
+                        <span aria-hidden="true" className="text-muted-foreground">•</span>
                         <button
                           type="button"
                           onClick={toggleBatchOverrideEditor}
-                          className="inline-flex items-center text-sm font-medium text-zinc-700 underline decoration-zinc-300 underline-offset-4 transition-colors hover:text-zinc-950"
+                          className="inline-flex items-center text-sm font-medium text-foreground underline decoration-zinc-300 underline-offset-4 transition-colors hover:text-foreground"
                         >
                           {batchOverrideMode === "customize" ? "Готово" : "Уточнить параметры"}
                         </button>
@@ -1265,7 +1265,7 @@ export function CatalogIngredientForm({
                   </div>
 
                   {overrideSummaryState.catalogEntries ? (
-                    <p className="text-xs text-zinc-500">
+                    <p className="text-xs text-muted-foreground">
                       В каталоге: {overrideSummaryState.catalogEntries.map((entry) => `${entry.label} ${entry.value}`).join(", ")}
                     </p>
                   ) : null}
@@ -1288,7 +1288,7 @@ export function CatalogIngredientForm({
                           }}
                           inputMode="decimal"
                         />
-                        {(localFieldErrors.fermentableColorEbc || fieldErrors?.fermentableColorEbc) && <span className="text-xs text-red-600">{localFieldErrors.fermentableColorEbc ?? fieldErrors?.fermentableColorEbc}</span>}
+                        {(localFieldErrors.fermentableColorEbc || fieldErrors?.fermentableColorEbc) && <span className="text-xs text-destructive">{localFieldErrors.fermentableColorEbc ?? fieldErrors?.fermentableColorEbc}</span>}
                       </label>
 
                       <label className="text-sm">Экстрактивность, %
@@ -1308,7 +1308,7 @@ export function CatalogIngredientForm({
                           }}
                           inputMode="decimal"
                         />
-                        {(localFieldErrors.fermentableExtractYieldPct || fieldErrors?.fermentableExtractYieldPct) && <span className="text-xs text-red-600">{localFieldErrors.fermentableExtractYieldPct ?? fieldErrors?.fermentableExtractYieldPct}</span>}
+                        {(localFieldErrors.fermentableExtractYieldPct || fieldErrors?.fermentableExtractYieldPct) && <span className="text-xs text-destructive">{localFieldErrors.fermentableExtractYieldPct ?? fieldErrors?.fermentableExtractYieldPct}</span>}
                       </label>
                     </div>
                   ) : null}
@@ -1332,7 +1332,7 @@ export function CatalogIngredientForm({
                           }}
                           inputMode="decimal"
                         />
-                        {(localFieldErrors.hopAlphaAcidPct || fieldErrors?.hopAlphaAcidPct) && <span className="text-xs text-red-600">{localFieldErrors.hopAlphaAcidPct ?? fieldErrors?.hopAlphaAcidPct}</span>}
+                        {(localFieldErrors.hopAlphaAcidPct || fieldErrors?.hopAlphaAcidPct) && <span className="text-xs text-destructive">{localFieldErrors.hopAlphaAcidPct ?? fieldErrors?.hopAlphaAcidPct}</span>}
                       </label>
                     </div>
                   ) : null}
@@ -1356,25 +1356,25 @@ export function CatalogIngredientForm({
                           }}
                           inputMode="decimal"
                         />
-                        {(localFieldErrors.waterTreatmentConcentrationPct || fieldErrors?.waterTreatmentConcentrationPct) && <span className="text-xs text-red-600">{localFieldErrors.waterTreatmentConcentrationPct ?? fieldErrors?.waterTreatmentConcentrationPct}</span>}
+                        {(localFieldErrors.waterTreatmentConcentrationPct || fieldErrors?.waterTreatmentConcentrationPct) && <span className="text-xs text-destructive">{localFieldErrors.waterTreatmentConcentrationPct ?? fieldErrors?.waterTreatmentConcentrationPct}</span>}
                       </label>
                     </div>
                   ) : null}
 
                   {batchOverrideMode === "customize" && derivedVariantPresentation.inlineHelper ? (
-                    <p className="text-xs text-zinc-500">{derivedVariantPresentation.inlineHelper}</p>
+                    <p className="text-xs text-muted-foreground">{derivedVariantPresentation.inlineHelper}</p>
                   ) : null}
                 </div>
               ) : null}
             />
             {selectedPackEquivalent ? (
-              <p className="text-xs text-zinc-500">
+              <p className="text-xs text-muted-foreground">
                 1 pack = {selectedPackEquivalent.normalizedQuantity} {selectedPackEquivalent.normalizedUnit}
               </p>
             ) : null}
             {derivedVariantPresentation.noticeText ? (
               <p
-                className="text-xs text-zinc-500"
+                className="text-xs text-muted-foreground"
                 data-testid="catalog-derived-variant-notice"
               >
                 {derivedVariantPresentation.noticeText}
@@ -1385,7 +1385,7 @@ export function CatalogIngredientForm({
       ) : null}
 
       {showRequiredInventoryBlock ? (
-        <section className="space-y-3 rounded-xl border border-zinc-200 bg-white p-4" data-testid="catalog-required-fields">
+        <section className="space-y-3 rounded-xl border border-border bg-card p-4" data-testid="catalog-required-fields">
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             <label className="text-sm">Количество *
               <input
@@ -1400,7 +1400,7 @@ export function CatalogIngredientForm({
                 }}
                 inputMode="decimal"
               />
-              {(localFieldErrors.enteredQuantity || fieldErrors?.enteredQuantity) && <span className="text-xs text-red-600">{localFieldErrors.enteredQuantity ?? fieldErrors?.enteredQuantity}</span>}
+              {(localFieldErrors.enteredQuantity || fieldErrors?.enteredQuantity) && <span className="text-xs text-destructive">{localFieldErrors.enteredQuantity ?? fieldErrors?.enteredQuantity}</span>}
             </label>
 
             <label className="text-sm">Ед. изм. *
@@ -1411,7 +1411,7 @@ export function CatalogIngredientForm({
               >
                 {unitProfile.allowedUnits.map((unit) => <option key={unit} value={unit}>{inventoryUnitLabels[unit]}</option>)}
               </select>
-              {fieldErrors?.enteredUnit && <span className="text-xs text-red-600">{fieldErrors.enteredUnit}</span>}
+              {fieldErrors?.enteredUnit && <span className="text-xs text-destructive">{fieldErrors.enteredUnit}</span>}
             </label>
           </div>
         </section>
@@ -1440,7 +1440,7 @@ export function CatalogIngredientForm({
                     />
                     <button
                       type="button"
-                      className="rounded-md border border-zinc-200 px-2 py-2 text-xs text-zinc-600 transition-colors hover:border-zinc-300 hover:bg-zinc-50"
+                      className="rounded-md border border-border px-2 py-2 text-xs text-muted-foreground transition-colors hover:border-border hover:bg-muted"
                       onClick={() => setFields((s) => ({ ...s, purchasedAt: "" }))}
                       aria-label="Очистить дату покупки"
                     >
@@ -1499,7 +1499,7 @@ export function CatalogIngredientForm({
       ) : null}
 
       {selected ? (
-        <button type="submit" disabled={pending} className="w-full rounded-md bg-black px-4 py-2.5 text-sm text-white disabled:opacity-60">
+        <button type="submit" disabled={pending} className="w-full rounded-md bg-foreground px-4 py-2.5 text-sm text-background disabled:opacity-60">
           {pending ? "Сохранение..." : derivedVariantPresentation.submitLabel}
         </button>
       ) : null}

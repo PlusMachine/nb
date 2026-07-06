@@ -257,7 +257,7 @@ export function FermentDashboardView({
   );
 
   const profileSection = configUnavailable ? (
-    <div className="rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-800">
+    <div className="rounded-2xl border border-warning/30 bg-warning-subtle p-4 text-sm text-warning-subtle-foreground">
       Конфиг устройства недоступен — не можем показать профиль брожения. Живая телеметрия работает как обычно.
     </div>
   ) : hasProfile ? (
@@ -269,9 +269,9 @@ export function FermentDashboardView({
       onSaveSetpoint={saveCurrentSetpoint}
     />
   ) : (
-    <div className="rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm">
-      <p className="text-base font-semibold text-zinc-900">Профиль не задан</p>
-      <p className="mt-1 text-sm text-zinc-500">
+    <div className="rounded-2xl border border-border bg-card p-5 shadow-sm">
+      <p className="text-base font-semibold text-foreground">Профиль не задан</p>
+      <p className="mt-1 text-sm text-muted-foreground">
         Прибор держит {telemetry ? fmtTemp(telemetry.setpointC) : "—"}
       </p>
       {editorOpen ? (
@@ -287,17 +287,17 @@ export function FermentDashboardView({
   const batchLink = fermenterBatch ? (
     <Link
       href={fermenterBatch.href}
-      className="flex items-center gap-2 rounded-2xl border border-zinc-200 bg-white px-5 py-3 text-sm font-medium text-zinc-900 shadow-sm transition hover:bg-zinc-50"
+      className="flex items-center gap-2 rounded-2xl border border-border bg-card px-5 py-3 text-sm font-medium text-foreground shadow-sm transition hover:bg-accent"
     >
-      <Beer className="h-4 w-4 text-amber-600" aria-hidden />
+      <Beer className="h-4 w-4 text-warning" aria-hidden />
       В ферментере: партия «{fermenterBatch.name}»
-      <ChevronRight className="ml-auto h-4 w-4 text-zinc-400" aria-hidden />
+      <ChevronRight className="ml-auto h-4 w-4 text-muted-foreground" aria-hidden />
     </Link>
   ) : null;
 
   const controlBlock = (
-    <div className="rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm">
-      <p className="text-sm font-semibold text-zinc-900">Управление</p>
+    <div className="rounded-2xl border border-border bg-card p-5 shadow-sm">
+      <p className="text-sm font-semibold text-foreground">Управление</p>
       <div className="mt-3 flex flex-wrap items-center gap-3">
         <Button variant="dangerOutline" size="md" disabled={pending} onClick={stop}>
           <Square className="h-4 w-4" aria-hidden />
@@ -311,7 +311,7 @@ export function FermentDashboardView({
           icon={<OctagonX className="h-4 w-4" aria-hidden />}
         />
       </div>
-      {actionMsg ? <p className="mt-3 text-sm text-zinc-600">{actionMsg}</p> : null}
+      {actionMsg ? <p className="mt-3 text-sm text-muted-foreground">{actionMsg}</p> : null}
     </div>
   );
 

@@ -326,9 +326,9 @@ export function DeviceConfigForm({ deviceId, deviceName, initialProfiles }: Prop
   return (
     <div className="space-y-6">
       {/* Важное предупреждение про клампинг и перезагрузку. */}
-      <Card className="border-amber-200 bg-amber-50 p-4">
-        <p className="text-sm font-semibold text-amber-900">Как применяются настройки</p>
-        <ul className="mt-1 list-disc space-y-1 pl-5 text-xs text-amber-800">
+      <Card className="border-warning/30 bg-warning-subtle p-4">
+        <p className="text-sm font-semibold text-warning-subtle-foreground">Как применяются настройки</p>
+        <ul className="mt-1 list-disc space-y-1 pl-5 text-xs text-warning-subtle-foreground">
           <li>
             Поля <strong>безопасности</strong> устройство <strong>зажимает</strong> в свои жёсткие
             пределы — портал показывает рекомендованные диапазоны, но финальное значение определяет
@@ -342,12 +342,12 @@ export function DeviceConfigForm({ deviceId, deviceName, initialProfiles }: Prop
       </Card>
 
       {loading ? (
-        <Card className="p-6 text-sm text-zinc-600">Загрузка конфигурации устройства…</Card>
+        <Card className="p-6 text-sm text-muted-foreground">Загрузка конфигурации устройства…</Card>
       ) : loadError ? (
-        <Card className="border-zinc-200 p-6">
-          <p className="text-sm font-medium text-zinc-900">Не удалось получить настройки</p>
-          <p className="mt-1 text-sm text-zinc-500">{loadError}</p>
-          <p className="mt-1 text-xs text-zinc-400">
+        <Card className="border-border p-6">
+          <p className="text-sm font-medium text-foreground">Не удалось получить настройки</p>
+          <p className="mt-1 text-sm text-muted-foreground">{loadError}</p>
+          <p className="mt-1 text-xs text-muted-foreground">
             Бэкап-профили ниже доступны и без связи с устройством.
           </p>
           <Button variant="outline" className="mt-3" onClick={() => void loadConfig()}>
@@ -358,7 +358,7 @@ export function DeviceConfigForm({ deviceId, deviceName, initialProfiles }: Prop
         <>
           {GROUPS.map((group) => (
             <Card key={group.title} className="p-5">
-              <h2 className="text-sm font-semibold text-zinc-900">{group.title}</h2>
+              <h2 className="text-sm font-semibold text-foreground">{group.title}</h2>
               <div className="mt-4 grid gap-x-8 gap-y-4 sm:grid-cols-2">
                 {group.keys.map((key) => (
                   <ConfigField
@@ -374,8 +374,8 @@ export function DeviceConfigForm({ deviceId, deviceName, initialProfiles }: Prop
 
           {/* Калибровка датчиков — таблица из SENSOR_COUNT строк. */}
           <Card className="p-5">
-            <h2 className="text-sm font-semibold text-zinc-900">Калибровка датчиков</h2>
-            <p className="mt-1 text-xs text-zinc-500">
+            <h2 className="text-sm font-semibold text-foreground">Калибровка датчиков</h2>
+            <p className="mt-1 text-xs text-muted-foreground">
               2-точечная калибровка каждого датчика: итог = измерение × масштаб + смещение.
             </p>
             <div className="mt-4 space-y-3">
@@ -385,7 +385,7 @@ export function DeviceConfigForm({ deviceId, deviceName, initialProfiles }: Prop
                 const offsetD = CONFIG_FIELD_RANGES["sensorCal.offset"];
                 return (
                   <div key={i} className="grid items-end gap-3 sm:grid-cols-[auto_1fr_1fr]">
-                    <span className="pb-2 text-xs font-medium text-zinc-500">Датчик {i + 1}</span>
+                    <span className="pb-2 text-xs font-medium text-muted-foreground">Датчик {i + 1}</span>
                     <NumberControl
                       label={scaleD.label}
                       min={scaleD.min}
@@ -428,29 +428,29 @@ export function DeviceConfigForm({ deviceId, deviceName, initialProfiles }: Prop
               </Button>
             ) : null}
             {!dirty && !saveOk ? (
-              <span className="text-xs text-zinc-400">Нет несохранённых изменений</span>
+              <span className="text-xs text-muted-foreground">Нет несохранённых изменений</span>
             ) : null}
             {saveOk ? (
-              <span role="status" className="text-sm text-emerald-700">
+              <span role="status" className="text-sm text-success">
                 Отправлено. Значения обновлены до эффективных (зажатых прошивкой); применятся после
                 перезагрузки.
               </span>
             ) : null}
-            {saveError ? <span role="alert" className="text-sm text-red-600">{saveError}</span> : null}
+            {saveError ? <span role="alert" className="text-sm text-destructive">{saveError}</span> : null}
           </Card>
         </>
       ) : null}
 
       {/* Бэкап / восстановление профилей. */}
       <Card className="p-5">
-        <h2 className="text-sm font-semibold text-zinc-900">Бэкап и восстановление профилей</h2>
-        <p className="mt-1 text-xs text-zinc-500">
+        <h2 className="text-sm font-semibold text-foreground">Бэкап и восстановление профилей</h2>
+        <p className="mt-1 text-xs text-muted-foreground">
           Сохраните текущий конфиг как именованный профиль и при необходимости примените его к этому
           (или другому) устройству. Поля безопасности всё равно зажимаются прибором при применении.
         </p>
 
         <div className="mt-4 flex flex-wrap items-end gap-2">
-          <label className="flex flex-col gap-1 text-xs font-medium text-zinc-600">
+          <label className="flex flex-col gap-1 text-xs font-medium text-muted-foreground">
             Имя профиля
             <Input
               value={profileName}
@@ -468,25 +468,25 @@ export function DeviceConfigForm({ deviceId, deviceName, initialProfiles }: Prop
           </Button>
         </div>
         {!draft ? (
-          <p className="mt-2 text-xs text-zinc-400">
+          <p className="mt-2 text-xs text-muted-foreground">
             Сохранить можно только при доступном конфиге устройства.
           </p>
         ) : null}
-        {profileOk ? <p role="status" className="mt-3 text-sm text-emerald-700">{profileOk}</p> : null}
-        {profileError ? <p role="alert" className="mt-3 text-sm text-red-600">{profileError}</p> : null}
+        {profileOk ? <p role="status" className="mt-3 text-sm text-success">{profileOk}</p> : null}
+        {profileError ? <p role="alert" className="mt-3 text-sm text-destructive">{profileError}</p> : null}
 
         <div className="mt-4 space-y-2">
           {profiles.length === 0 ? (
-            <p className="text-sm text-zinc-500">Сохранённых профилей пока нет.</p>
+            <p className="text-sm text-muted-foreground">Сохранённых профилей пока нет.</p>
           ) : (
             profiles.map((p) => (
               <div
                 key={p.id}
-                className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-zinc-200 px-4 py-3"
+                className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-border px-4 py-3"
               >
                 <div className="min-w-0">
-                  <p className="truncate text-sm font-medium text-zinc-900">{p.name}</p>
-                  <p className="text-xs text-zinc-400">
+                  <p className="truncate text-sm font-medium text-foreground">{p.name}</p>
+                  <p className="text-xs text-muted-foreground">
                     Сохранён {new Date(p.createdAt).toLocaleString()}
                     {p.deviceId && p.deviceId !== deviceId ? " · с другого устройства" : ""}
                   </p>
@@ -520,10 +520,10 @@ function ConfigField({
   if (descriptor.kind === "bool") {
     return (
       <label className="flex items-center justify-between gap-3 py-1">
-        <span className="text-sm text-zinc-700">{descriptor.label}</span>
+        <span className="text-sm text-foreground">{descriptor.label}</span>
         <input
           type="checkbox"
-          className="h-4 w-4 rounded border-zinc-300"
+          className="h-4 w-4 rounded border-border"
           checked={value === true}
           onChange={(e) => onChange(e.target.checked)}
         />
@@ -533,10 +533,10 @@ function ConfigField({
 
   if (descriptor.kind === "enum") {
     return (
-      <label className="flex flex-col gap-1 text-xs font-medium text-zinc-600">
+      <label className="flex flex-col gap-1 text-xs font-medium text-muted-foreground">
         {descriptor.label}
         <select
-          className="h-10 w-full rounded-md border border-zinc-200 px-3 text-sm focus:outline-none focus:ring-2 focus:ring-zinc-400"
+          className="h-10 w-full rounded-md border border-border px-3 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
           value={String(typeof value === "number" ? value : "")}
           onChange={(e) => onChange(Number(e.target.value))}
         >
@@ -584,9 +584,9 @@ function NumberControl({
   return (
     <div className="flex flex-col gap-1.5">
       <div className="flex items-baseline justify-between gap-2">
-        <span className="text-xs font-medium text-zinc-600">
+        <span className="text-xs font-medium text-muted-foreground">
           {label}
-          {unit ? <span className="text-zinc-400"> ({unit})</span> : null}
+          {unit ? <span className="text-muted-foreground"> ({unit})</span> : null}
         </span>
         <Input
           type="number"
@@ -612,7 +612,7 @@ function NumberControl({
           if (typeof n === "number") onChange(n);
         }}
       />
-      <div className="flex justify-between text-[10px] text-zinc-400">
+      <div className="flex justify-between text-[10px] text-muted-foreground">
         <span>{min}</span>
         <span>{max}</span>
       </div>

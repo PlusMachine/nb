@@ -47,15 +47,15 @@ export function BrewNotes({
   };
 
   return (
-    <section id="brew-notes" className="space-y-2 rounded-2xl border border-zinc-100 bg-white p-4 shadow-sm">
-      <h2 className="text-base font-semibold text-zinc-900">{completed ? "Дегустационные заметки" : "Заметки"}</h2>
+    <section id="brew-notes" className="space-y-2 rounded-2xl border border-border bg-card p-4 shadow-sm">
+      <h2 className="text-base font-semibold text-foreground">{completed ? "Дегустационные заметки" : "Заметки"}</h2>
       <textarea
         value={value}
         onChange={(event) => { setValue(event.target.value); setSaved(false); }}
         disabled={busy}
         rows={4}
         placeholder="Наблюдения по варке: температура брожения, отклонения, дегустация…"
-        className="w-full resize-y rounded-lg border border-zinc-200 p-2.5 text-sm text-zinc-900 focus:outline-none focus:ring-2 focus:ring-zinc-400"
+        className="w-full resize-y rounded-lg border border-border p-2.5 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
       />
       <div className="flex items-center gap-3">
         <Button type="button" size="sm" onClick={save} disabled={busy || !dirty}>
@@ -63,11 +63,11 @@ export function BrewNotes({
           Сохранить
         </Button>
         {saved && !dirty ? (
-          <span className="inline-flex items-center gap-1 text-xs text-emerald-600">
+          <span className="inline-flex items-center gap-1 text-xs text-success">
             <Check className="h-3.5 w-3.5" aria-hidden /> Сохранено
           </span>
         ) : null}
-        {error ? <span role="alert" className="text-xs text-rose-600">{error}</span> : null}
+        {error ? <span role="alert" className="text-xs text-destructive">{error}</span> : null}
       </div>
     </section>
   );

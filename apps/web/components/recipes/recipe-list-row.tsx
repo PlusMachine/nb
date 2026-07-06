@@ -46,11 +46,11 @@ export function RecipeListRow({
   const authorName = recipe.author.displayName ?? "Автор";
 
   return (
-    <article className="group relative flex items-center gap-3 overflow-hidden rounded-2xl border border-zinc-200 bg-white p-2 pr-12 shadow-sm transition hover:border-zinc-300 hover:shadow-md">
+    <article className="group relative flex items-center gap-3 overflow-hidden rounded-2xl border border-border bg-card p-2 pr-12 shadow-sm transition hover:border-border/70 hover:shadow-md">
       <Link
         href={`/recipes/${recipe.slug}`}
         aria-label={recipe.name}
-        className="absolute inset-0 z-0 rounded-2xl focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-zinc-500"
+        className="absolute inset-0 z-0 rounded-2xl focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring"
       />
 
       {/* Вариант B: миниатюра растёт (w-16 → w-32) и фото стиля резчеет на ховере;
@@ -71,13 +71,13 @@ export function RecipeListRow({
           {recipe.featured ? <FeaturedBadge /> : null}
           <StyleChip style={recipe.style} styleHref={recipe.styleHref} />
         </div>
-        <h2 className="mt-1 line-clamp-2 text-base font-semibold leading-snug text-zinc-950 group-hover:text-zinc-700">
+        <h2 className="mt-1 line-clamp-2 text-base font-semibold leading-snug text-foreground group-hover:text-muted-foreground">
           {recipe.name}
         </h2>
         <div className="mt-1.5 flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1">
           <span className="flex min-w-0 items-center gap-2">
             <AuthorAvatar image={recipe.author.image} displayName={recipe.author.displayName} />
-            <span className="truncate text-xs text-zinc-600">{authorName}</span>
+            <span className="truncate text-xs text-muted-foreground">{authorName}</span>
           </span>
           <RecipeMatchBadge recipeId={recipe.id} />
         </div>

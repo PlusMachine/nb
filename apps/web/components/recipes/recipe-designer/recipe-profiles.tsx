@@ -18,13 +18,13 @@ export function RecipeProfiles({
 }) {
   return (
     <div className="space-y-4">
-      <section className="rounded-2xl border border-zinc-100 bg-white p-5 shadow-sm">
-        <div className="mb-4 flex items-center gap-2 text-sm font-semibold text-zinc-700">
-          <div className="flex h-7 w-7 items-center justify-center rounded-md bg-orange-50">
-            <Thermometer className="h-3.5 w-3.5 text-orange-500" />
+      <section className="rounded-2xl border border-border bg-card p-5 shadow-sm">
+        <div className="mb-4 flex items-center gap-2 text-sm font-semibold text-foreground">
+          <div className="flex h-7 w-7 items-center justify-center rounded-md bg-orange-50 dark:bg-orange-500/15">
+            <Thermometer className="h-3.5 w-3.5 text-orange-500 dark:text-orange-400" />
           </div>
           Затирание
-          <span className="ml-1 text-xs font-normal text-zinc-400">({processMeta.mashProfile.steps.length})</span>
+          <span className="ml-1 text-xs font-normal text-muted-foreground">({processMeta.mashProfile.steps.length})</span>
         </div>
         <div className="space-y-2">
           {processMeta.mashProfile.steps.map((step, index) => {
@@ -41,15 +41,15 @@ export function RecipeProfiles({
               { label: "Длительность", required: true, min: 1, max: 600, integer: true }
             );
             return (
-            <div key={step.id} className="rounded-lg border-l-[3px] border-l-orange-300 bg-white px-3 py-2.5 shadow-sm ring-1 ring-zinc-100 transition-shadow hover:shadow-md">
+            <div key={step.id} className="rounded-lg border-l-[3px] border-l-orange-300 bg-card px-3 py-2.5 shadow-sm ring-1 ring-border transition-shadow hover:shadow-md dark:border-l-orange-500/30">
               <div className="flex flex-wrap items-center gap-3 sm:flex-nowrap">
                 <div className="flex min-w-0 flex-1 items-center gap-2">
-                  <div className="flex h-8 w-7 items-center justify-center rounded-md bg-orange-100 text-xs font-bold text-orange-600">{index + 1}</div>
-                  <span className="text-sm font-medium text-zinc-700">Шаг {index + 1}</span>
+                  <div className="flex h-8 w-7 items-center justify-center rounded-md bg-orange-100 text-xs font-bold text-orange-600 dark:bg-orange-500/20 dark:text-orange-400">{index + 1}</div>
+                  <span className="text-sm font-medium text-foreground">Шаг {index + 1}</span>
                 </div>
                 <div className="ml-auto flex shrink-0 items-end gap-2">
                   <label className="space-y-0.5 text-right">
-                    <span className="block text-[10px] text-zinc-400">°C</span>
+                    <span className="block text-[10px] text-muted-foreground">°C</span>
                     <NumericInput
                       min={0}
                       max={100}
@@ -62,11 +62,11 @@ export function RecipeProfiles({
                         }
                       })}
                       aria-invalid={Boolean(temperatureError) || undefined}
-                      className={`h-7 w-[72px] rounded-md border bg-zinc-50 px-2 text-right text-sm tabular-nums text-zinc-900 focus:bg-white focus:outline-none focus:ring-1 focus:ring-zinc-200 ${temperatureError ? "border-red-300 focus:border-red-400" : "border-zinc-200 focus:border-zinc-400"}`}
+                      className={`h-7 w-[72px] rounded-md border bg-muted px-2 text-right text-sm tabular-nums text-foreground focus:bg-card focus:outline-none focus:ring-1 focus:ring-ring ${temperatureError ? "border-destructive-border focus:border-destructive" : "border-border focus:border-ring"}`}
                     />
                   </label>
                   <label className="space-y-0.5 text-right">
-                    <span className="block text-[10px] text-zinc-400">мин</span>
+                    <span className="block text-[10px] text-muted-foreground">мин</span>
                     <NumericInput
                       integer
                       min={1}
@@ -80,7 +80,7 @@ export function RecipeProfiles({
                         }
                       })}
                       aria-invalid={Boolean(durationError) || undefined}
-                      className={`h-7 w-[72px] rounded-md border bg-zinc-50 px-2 text-right text-sm tabular-nums text-zinc-900 focus:bg-white focus:outline-none focus:ring-1 focus:ring-zinc-200 ${durationError ? "border-red-300 focus:border-red-400" : "border-zinc-200 focus:border-zinc-400"}`}
+                      className={`h-7 w-[72px] rounded-md border bg-muted px-2 text-right text-sm tabular-nums text-foreground focus:bg-card focus:outline-none focus:ring-1 focus:ring-ring ${durationError ? "border-destructive-border focus:border-destructive" : "border-border focus:border-ring"}`}
                     />
                   </label>
                 </div>
@@ -92,7 +92,7 @@ export function RecipeProfiles({
                       steps: processMeta.mashProfile.steps.filter((candidate) => candidate.id !== step.id)
                     }
                   })}
-                  className="rounded-md p-2 text-zinc-400 transition-colors hover:bg-rose-50 hover:text-rose-600"
+                  className="rounded-md p-2 text-muted-foreground transition-colors hover:bg-destructive-subtle hover:text-destructive"
                   aria-label="Удалить шаг"
                 >
                   <X className="h-4 w-4" />
@@ -114,24 +114,24 @@ export function RecipeProfiles({
                 }]
               }
             })}
-            className="rounded-lg px-3 py-1.5 text-sm text-zinc-500 transition-colors hover:bg-zinc-100 hover:text-zinc-700"
+            className="rounded-lg px-3 py-1.5 text-sm text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
           >
             + Добавить шаг
           </button>
         </div>
       </section>
 
-      <details className="group rounded-2xl border border-zinc-100 bg-white p-5 shadow-sm">
-        <summary className="flex cursor-pointer list-none items-center gap-2 text-sm font-semibold text-zinc-700">
-          <div className="flex h-7 w-7 items-center justify-center rounded-md bg-sky-50">
-            <Timer className="h-3.5 w-3.5 text-sky-500" />
+      <details className="group rounded-2xl border border-border bg-card p-5 shadow-sm">
+        <summary className="flex cursor-pointer list-none items-center gap-2 text-sm font-semibold text-foreground">
+          <div className="flex h-7 w-7 items-center justify-center rounded-md bg-sky-50 dark:bg-sky-500/15">
+            <Timer className="h-3.5 w-3.5 text-sky-500 dark:text-sky-400" />
           </div>
           Брожение
-          <ChevronRight className="ml-auto h-4 w-4 text-zinc-400 transition-transform group-open:rotate-90" />
+          <ChevronRight className="ml-auto h-4 w-4 text-muted-foreground transition-transform group-open:rotate-90" />
         </summary>
         <div className="mt-4 space-y-4">
           <div className="grid gap-3 sm:grid-cols-2">
-            <label className="space-y-1 text-[11px] font-medium text-zinc-500">
+            <label className="space-y-1 text-[11px] font-medium text-muted-foreground">
               Осн. температура, °C
               <NumericInput
                 min={-10}
@@ -145,10 +145,10 @@ export function RecipeProfiles({
                     primaryTemperatureC: event.target.value ? Number(event.target.value) : null
                   }
                 })}
-                className="h-9 w-full rounded-lg border border-zinc-200 bg-white px-2.5 text-sm tabular-nums text-zinc-900"
+                className="h-9 w-full rounded-lg border border-border bg-card px-2.5 text-sm tabular-nums text-foreground"
               />
             </label>
-            <label className="space-y-1 text-[11px] font-medium text-zinc-500">
+            <label className="space-y-1 text-[11px] font-medium text-muted-foreground">
               Осн. длительность, дн
               <NumericInput
                 integer
@@ -163,20 +163,20 @@ export function RecipeProfiles({
                     primaryDurationDays: event.target.value ? Number(event.target.value) : null
                   }
                 })}
-                className="h-9 w-full rounded-lg border border-zinc-200 bg-white px-2.5 text-sm tabular-nums text-zinc-900"
+                className="h-9 w-full rounded-lg border border-border bg-card px-2.5 text-sm tabular-nums text-foreground"
               />
             </label>
           </div>
 
           <div className="space-y-2">
             {processMeta.fermentationProfile.extraSteps.map((step, index) => (
-              <div key={step.id} className="grid gap-2 rounded-lg border-l-[3px] border-l-sky-300 bg-zinc-50 p-3 ring-1 ring-zinc-100 sm:grid-cols-[auto_100px_100px_auto]">
+              <div key={step.id} className="grid gap-2 rounded-lg border-l-[3px] border-l-sky-300 bg-muted p-3 ring-1 ring-border sm:grid-cols-[auto_100px_100px_auto] dark:border-l-sky-500/30">
                 <div className="flex h-9 items-center gap-2">
-                  <div className="flex h-9 w-7 items-center justify-center rounded-md bg-sky-100 text-xs font-bold text-sky-600">{index + 1}</div>
-                  <span className="text-sm font-medium text-zinc-700">Шаг {index + 1}</span>
+                  <div className="flex h-9 w-7 items-center justify-center rounded-md bg-sky-100 text-xs font-bold text-sky-600 dark:bg-sky-500/20 dark:text-sky-400">{index + 1}</div>
+                  <span className="text-sm font-medium text-foreground">Шаг {index + 1}</span>
                 </div>
                 <div className="space-y-0.5">
-                  <span className="text-[10px] text-zinc-400">°C</span>
+                  <span className="text-[10px] text-muted-foreground">°C</span>
                   <NumericInput
                     min={-10}
                     max={50}
@@ -189,11 +189,11 @@ export function RecipeProfiles({
                         extraSteps: processMeta.fermentationProfile.extraSteps.map((candidate) => candidate.id === step.id ? { ...candidate, temperatureC: event.target.value ? Number(event.target.value) : null } : candidate)
                       }
                     })}
-                    className="h-9 w-full rounded-lg border border-zinc-200 bg-white px-2.5 text-sm tabular-nums"
+                    className="h-9 w-full rounded-lg border border-border bg-card px-2.5 text-sm tabular-nums"
                   />
                 </div>
                 <div className="space-y-0.5">
-                  <span className="text-[10px] text-zinc-400">дни</span>
+                  <span className="text-[10px] text-muted-foreground">дни</span>
                   <NumericInput
                     integer
                     min={1}
@@ -207,7 +207,7 @@ export function RecipeProfiles({
                         extraSteps: processMeta.fermentationProfile.extraSteps.map((candidate) => candidate.id === step.id ? { ...candidate, durationDays: event.target.value ? Number(event.target.value) : null } : candidate)
                       }
                     })}
-                    className="h-9 w-full rounded-lg border border-zinc-200 bg-white px-2.5 text-sm tabular-nums"
+                    className="h-9 w-full rounded-lg border border-border bg-card px-2.5 text-sm tabular-nums"
                   />
                 </div>
                 <button
@@ -219,7 +219,7 @@ export function RecipeProfiles({
                       extraSteps: processMeta.fermentationProfile.extraSteps.filter((candidate) => candidate.id !== step.id)
                     }
                   })}
-                  className="self-end rounded-md p-2 text-zinc-400 transition-colors hover:bg-rose-50 hover:text-rose-600"
+                  className="self-end rounded-md p-2 text-muted-foreground transition-colors hover:bg-destructive-subtle hover:text-destructive"
                   aria-label="Удалить шаг"
                 >
                   <X className="h-4 w-4" />
@@ -240,7 +240,7 @@ export function RecipeProfiles({
                   }]
                 }
               })}
-              className="rounded-lg px-3 py-1.5 text-sm text-zinc-500 transition-colors hover:bg-zinc-100 hover:text-zinc-700"
+              className="rounded-lg px-3 py-1.5 text-sm text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
             >
               + Добавить шаг
             </button>
@@ -248,8 +248,8 @@ export function RecipeProfiles({
 
           <div className="grid gap-3 sm:grid-cols-2">
             {(["coldCrash", "conditioning"] as const).map((key) => (
-              <div key={key} className="rounded-lg bg-zinc-50 p-3 ring-1 ring-zinc-100">
-                <label className="flex items-center gap-2 text-sm font-medium text-zinc-700">
+              <div key={key} className="rounded-lg bg-muted p-3 ring-1 ring-border">
+                <label className="flex items-center gap-2 text-sm font-medium text-foreground">
                   <input
                     type="checkbox"
                     checked={processMeta.fermentationProfile[key].enabled}
@@ -269,7 +269,7 @@ export function RecipeProfiles({
                 </label>
                 <div className="mt-2.5 grid gap-2 sm:grid-cols-2">
                   <div className="space-y-0.5">
-                    <span className="text-[10px] text-zinc-400">°C</span>
+                    <span className="text-[10px] text-muted-foreground">°C</span>
                     <NumericInput
                       min={-10}
                       max={50}
@@ -285,11 +285,11 @@ export function RecipeProfiles({
                           }
                         }
                       })}
-                      className="h-9 w-full rounded-lg border border-zinc-200 bg-white px-2.5 text-sm tabular-nums"
+                      className="h-9 w-full rounded-lg border border-border bg-card px-2.5 text-sm tabular-nums"
                     />
                   </div>
                   <div className="space-y-0.5">
-                    <span className="text-[10px] text-zinc-400">дни</span>
+                    <span className="text-[10px] text-muted-foreground">дни</span>
                     <NumericInput
                       integer
                       min={1}
@@ -306,7 +306,7 @@ export function RecipeProfiles({
                           }
                         }
                       })}
-                      className="h-9 w-full rounded-lg border border-zinc-200 bg-white px-2.5 text-sm tabular-nums"
+                      className="h-9 w-full rounded-lg border border-border bg-card px-2.5 text-sm tabular-nums"
                     />
                   </div>
                 </div>

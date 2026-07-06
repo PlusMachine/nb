@@ -58,31 +58,31 @@ export function DistillHero({
   const canAssign = telemetry !== null && telemetry.sensors.length > 1;
 
   return (
-    <div className="rounded-2xl border border-zinc-200 bg-white p-6 shadow-sm">
+    <div className="rounded-2xl border border-border bg-card p-6 shadow-sm">
       <div className="flex flex-wrap items-start justify-between gap-6">
         <div>
-          <p className={kiosk ? "text-base text-zinc-500" : "text-sm text-zinc-500"}>Куб</p>
+          <p className={kiosk ? "text-base text-muted-foreground" : "text-sm text-muted-foreground"}>Куб</p>
           {telemetry && telemetry.primary.valid ? (
             <p
               className={
                 kiosk
-                  ? "mt-1 text-[clamp(4rem,17vh,13rem)] font-semibold leading-none tabular-nums text-zinc-950"
-                  : "mt-1 text-6xl font-semibold tabular-nums text-zinc-950"
+                  ? "mt-1 text-[clamp(4rem,17vh,13rem)] font-semibold leading-none tabular-nums text-foreground"
+                  : "mt-1 text-6xl font-semibold tabular-nums text-foreground"
               }
             >
               {fmtTemp(telemetry.primary.c)}
             </p>
           ) : (
             // Без валидной телеметрии — компактная «нет данных» вместо гигантского «—» (#21).
-            <p className={kiosk ? "mt-1 text-3xl font-medium text-zinc-400" : "mt-1 text-xl font-medium text-zinc-400"}>
+            <p className={kiosk ? "mt-1 text-3xl font-medium text-muted-foreground" : "mt-1 text-xl font-medium text-muted-foreground"}>
               нет данных
             </p>
           )}
-          <p className={kiosk ? "mt-2 text-base text-zinc-500" : "mt-1 text-sm text-zinc-500"}>
+          <p className={kiosk ? "mt-2 text-base text-muted-foreground" : "mt-1 text-sm text-muted-foreground"}>
             Уставка:{" "}
             <span
               className={
-                kiosk ? "text-xl font-medium text-zinc-700 tabular-nums" : "font-medium text-zinc-700 tabular-nums"
+                kiosk ? "text-xl font-medium text-foreground tabular-nums" : "font-medium text-foreground tabular-nums"
               }
             >
               {telemetry ? fmtTemp(telemetry.setpointC) : "—"}
@@ -91,14 +91,14 @@ export function DistillHero({
         </div>
 
         <div>
-          <p className={kiosk ? "text-base text-zinc-500" : "text-sm text-zinc-500"}>Колонна</p>
+          <p className={kiosk ? "text-base text-muted-foreground" : "text-sm text-muted-foreground"}>Колонна</p>
           {columnReading ? (
             <>
               <p
                 className={
                   kiosk
-                    ? "mt-1 text-[clamp(3rem,11vh,8rem)] font-semibold leading-none tabular-nums text-zinc-950"
-                    : "mt-1 text-4xl font-semibold tabular-nums text-zinc-950"
+                    ? "mt-1 text-[clamp(3rem,11vh,8rem)] font-semibold leading-none tabular-nums text-foreground"
+                    : "mt-1 text-4xl font-semibold tabular-nums text-foreground"
                 }
               >
                 {columnReading.valid ? fmtTemp(columnReading.c) : "нет данных"}
@@ -107,7 +107,7 @@ export function DistillHero({
                 <button
                   type="button"
                   onClick={() => setPickerOpen((v) => !v)}
-                  className="mt-1 text-xs font-medium text-zinc-500 underline decoration-dotted hover:text-zinc-800"
+                  className="mt-1 text-xs font-medium text-muted-foreground underline decoration-dotted hover:text-foreground"
                 >
                   изменить датчик
                 </button>
@@ -117,12 +117,12 @@ export function DistillHero({
             <button
               type="button"
               onClick={() => setPickerOpen((v) => !v)}
-              className="mt-2 inline-flex min-h-[44px] items-center rounded-md border border-zinc-200 px-3 py-2 text-sm font-medium text-zinc-700 transition hover:bg-zinc-50"
+              className="mt-2 inline-flex min-h-[44px] items-center rounded-md border border-border px-3 py-2 text-sm font-medium text-foreground transition hover:bg-accent"
             >
               Назначить датчик колонны
             </button>
           ) : (
-            <p className="mt-1 text-sm text-zinc-400">—</p>
+            <p className="mt-1 text-sm text-muted-foreground">—</p>
           )}
 
           {pickerOpen && canAssign ? (
@@ -134,7 +134,7 @@ export function DistillHero({
                 if (Number.isInteger(idx)) onAssignColumnSensor(idx);
                 setPickerOpen(false);
               }}
-              className="mt-2 min-h-[44px] w-full max-w-[220px] rounded-md border border-zinc-200 bg-white px-3 py-2 text-sm text-zinc-900"
+              className="mt-2 min-h-[44px] w-full max-w-[220px] rounded-md border border-border bg-card px-3 py-2 text-sm text-foreground"
             >
               <option value="" disabled>
                 Выберите датчик…
@@ -151,15 +151,15 @@ export function DistillHero({
 
       <div className="mt-4 flex flex-wrap items-center gap-2">
         {fractionLabel ? (
-          <span className="text-sm font-medium text-zinc-900">
+          <span className="text-sm font-medium text-foreground">
             {fractionLabel}
-            {elapsedLabel ? <span className="text-zinc-500"> · {elapsedLabel}</span> : null}
+            {elapsedLabel ? <span className="text-muted-foreground"> · {elapsedLabel}</span> : null}
           </span>
         ) : null}
         {valveOn !== undefined ? (
           <span
             className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-medium ${
-              valveOn ? "bg-emerald-100 text-emerald-800" : "bg-zinc-100 text-zinc-500"
+              valveOn ? "bg-success-subtle text-success-subtle-foreground" : "bg-muted text-muted-foreground"
             }`}
           >
             Клапан отбора {valveOn ? "● откр" : "○ закр"}
@@ -171,8 +171,8 @@ export function DistillHero({
         <p
           className={
             kiosk
-              ? "mt-4 rounded-lg bg-zinc-50 px-3 py-2 text-base text-zinc-700"
-              : "mt-4 rounded-lg bg-zinc-50 px-3 py-2 text-sm text-zinc-700"
+              ? "mt-4 rounded-lg bg-muted px-3 py-2 text-base text-foreground"
+              : "mt-4 rounded-lg bg-muted px-3 py-2 text-sm text-foreground"
           }
         >
           {telemetry.statusLine}

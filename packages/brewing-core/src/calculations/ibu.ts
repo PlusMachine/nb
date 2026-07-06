@@ -53,6 +53,8 @@ export interface BitternessResult {
   ibu: number;
   contributions: BitternessContribution[];
   warnings: string[];
+  /** OG actually used by the engine (input.og with the og<=1 → 1.05 fallback applied). */
+  resolvedOg: number;
 }
 
 const DEFAULT_FORMULA: BitternessFormula = "tinseth_whirlpool_v2";
@@ -105,13 +107,22 @@ const resolveGravityAtVolume = (gravityPoints: number, volumeL: number, fallback
 
 const normalizeUse = (addition: HopAdditionInput): NonNullable<HopAdditionInput["use"]> => addition.use ?? "boil";
 
+// Кипятильное внесение с временем больше самого кипячения — почти всегда опечатка
+// (напр. 90 мин при кипячении 60). Время клампится, но об этом стоит предупредить.
+const boilTimeExceedsBoil = (addition: HopAdditionInput, boilTimeMinutes: number): boolean => (
+  normalizeUse(addition) === "boil" && addition.boilTimeMinutes > boilTimeMinutes
+);
+
 const resolveBoilTimeForAddition = (
   addition: HopAdditionInput,
   boilTimeMinutes: number,
   firstWortHopMode: FirstWortHopMode
 ) => {
   if (normalizeUse(addition) !== "first_wort_hop") {
-    return addition.boilTimeMinutes;
+    // Хмель не может кипеть дольше самого кипячения — иначе утилизация (а с ней IBU)
+    // завышается на «лишние» минуты. Объём уже клампится в resolveBoilVolumeAtAddition,
+    // время клампим здесь, у источника, чтобы почин затронул и рецепты, и калькулятор.
+    return Math.min(addition.boilTimeMinutes, boilTimeMinutes);
   }
 
   if (firstWortHopMode === "treat_as_20min") {
@@ -189,6 +200,9 @@ const calculateTinsethClassic = (input: BitternessEngineInput): BitternessResult
       continue;
     }
 
+    if (boilTimeExceedsBoil(addition, context.boilTimeMinutes)) {
+      warnings.push("hop_time_exceeds_boil_capped");
+    }
     const boilTime = resolveBoilTimeForAddition(addition, context.boilTimeMinutes, "treat_as_boil_start");
     const utilization = utilizationTinseth(context.og, boilTime);
     const rawIbu = calculateAdditionIbu(addition, utilization, input.batchVolumeL);
@@ -202,7 +216,7 @@ const calculateTinsethClassic = (input: BitternessEngineInput): BitternessResult
     }));
   }
 
-  return finalizeBitterness("tinseth_classic", contributions, warnings);
+  return finalizeBitterness("tinseth_classic", contributions, warnings, context.og);
 };
 
 const calculateTinsethWhirlpoolV2 = (input: BitternessEngineInput): BitternessResult => {
@@ -221,6 +235,9 @@ const calculateTinsethWhirlpoolV2 = (input: BitternessEngineInput): BitternessRe
     }
 
     if (use === "boil" || use === "first_wort_hop") {
+      if (boilTimeExceedsBoil(addition, context.boilTimeMinutes)) {
+        warnings.push("hop_time_exceeds_boil_capped");
+      }
       const boilTime = resolveBoilTimeForAddition(addition, context.boilTimeMinutes, context.firstWortHopMode);
       const volumeL = resolveBoilVolumeAtAddition({
         additionTimeMinutes: boilTime,
@@ -305,7 +322,7 @@ const calculateTinsethWhirlpoolV2 = (input: BitternessEngineInput): BitternessRe
     }
   }
 
-  return finalizeBitterness("tinseth_whirlpool_v2", contributions, warnings);
+  return finalizeBitterness("tinseth_whirlpool_v2", contributions, warnings, context.og);
 };
 
 const calculateRager = (input: BitternessEngineInput): BitternessResult => {
@@ -320,6 +337,9 @@ const calculateRager = (input: BitternessEngineInput): BitternessResult => {
       continue;
     }
 
+    if (boilTimeExceedsBoil(addition, context.boilTimeMinutes)) {
+      warnings.push("hop_time_exceeds_boil_capped");
+    }
     const boilTime = resolveBoilTimeForAddition(addition, context.boilTimeMinutes, context.firstWortHopMode);
     const volumeL = resolveBoilVolumeAtAddition({
       additionTimeMinutes: boilTime,
@@ -341,7 +361,7 @@ const calculateRager = (input: BitternessEngineInput): BitternessResult => {
     }));
   }
 
-  return finalizeBitterness("rager", contributions, warnings);
+  return finalizeBitterness("rager", contributions, warnings, context.og);
 };
 
 const calculateGaretz = (input: BitternessEngineInput): BitternessResult => {
@@ -359,7 +379,8 @@ const calculateGaretz = (input: BitternessEngineInput): BitternessResult => {
       ibu: roundTo(contribution.ibu * factor, 3),
       utilization: roundTo(contribution.utilization * factor, 5)
     })),
-    [...classic.warnings, "garetz_conservative_compat_approximation"]
+    [...classic.warnings, "garetz_conservative_compat_approximation"],
+    context.og
   );
 };
 
@@ -373,18 +394,21 @@ const calculateNoonanLegacy = (input: BitternessEngineInput): BitternessResult =
       ibu: roundTo(contribution.ibu * 0.9, 3),
       utilization: roundTo(contribution.utilization * 0.9, 5)
     })),
-    [...classic.warnings, "noonan_legacy_compat_approximation"]
+    [...classic.warnings, "noonan_legacy_compat_approximation"],
+    classic.resolvedOg
   );
 };
 
 const finalizeBitterness = (
   formula: BitternessFormula,
   contributions: BitternessContribution[],
-  warnings: string[]
+  warnings: string[],
+  resolvedOg: number
 ): BitternessResult => ({
   formula,
   ibu: roundTo(contributions.reduce((sum, contribution) => sum + contribution.ibu, 0), 1),
   contributions,
+  resolvedOg,
   warnings: [...new Set(warnings)]
 });
 

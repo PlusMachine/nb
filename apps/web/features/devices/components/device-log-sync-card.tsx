@@ -59,8 +59,8 @@ export function DeviceLogSyncCard({ deviceId }: { deviceId: string }) {
     <Card className="p-5">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <p className="text-sm font-semibold text-zinc-900">Офлайн-журнал варки</p>
-          <p className="mt-1 text-xs text-zinc-500">
+          <p className="text-sm font-semibold text-foreground">Офлайн-журнал варки</p>
+          <p className="mt-1 text-xs text-muted-foreground">
             Устройство ведёт полный журнал варки локально (SPIFFS), даже без сети. Синхронизируйте
             его сюда, чтобы офлайн-варки тоже появились в истории.
           </p>
@@ -71,7 +71,7 @@ export function DeviceLogSyncCard({ deviceId }: { deviceId: string }) {
       </div>
 
       {lastSummary ? (
-        <p className="mt-3 text-xs text-zinc-500">
+        <p className="mt-3 text-xs text-muted-foreground">
           На устройстве: {lastSummary.filesOnDevice} · Догружено: {lastSummary.filesImported} · Уже
           было: {lastSummary.filesSkipped}
           {lastSummary.filesFailed > 0 ? ` · Ошибок: ${lastSummary.filesFailed}` : ""}

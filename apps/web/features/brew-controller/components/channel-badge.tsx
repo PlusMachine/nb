@@ -15,7 +15,7 @@ export function ChannelBadge({ channel }: { channel?: DeviceChannel | null }) {
   const isCloud = channel === "cloud";
   return (
     <span
-      className="inline-flex items-center gap-1.5 rounded-full bg-zinc-100 px-3 py-1 text-xs font-medium text-zinc-600"
+      className="inline-flex items-center gap-1.5 rounded-full bg-muted px-3 py-1 text-xs font-medium text-muted-foreground"
       title={isCloud ? "Через мост (облако) — зависит от интернета" : "Прямой канал (LAN)"}
     >
       {isCloud ? <Cloud className="h-3.5 w-3.5" aria-hidden /> : <Wifi className="h-3.5 w-3.5" aria-hidden />}

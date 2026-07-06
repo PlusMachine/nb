@@ -12,7 +12,9 @@
     "test": "TMPDIR=/tmp TEMP=/tmp TMP=/tmp vitest run",
     "test:e2e": "playwright test",
     "seed:sample": "TMPDIR=/tmp TEMP=/tmp TMP=/tmp tsx scripts/seed-sample-data.ts",
+    "seed:articles": "TMPDIR=/tmp TEMP=/tmp TMP=/tmp tsx scripts/seed-content-articles.ts",
     "seed:public": "TMPDIR=/tmp TEMP=/tmp TMP=/tmp tsx scripts/seed-public-recipes.ts",
+    "firmware:publish": "TMPDIR=/tmp TEMP=/tmp TMP=/tmp tsx scripts/publish-firmware-release.ts",
     "cleanup:verifications": "TMPDIR=/tmp TEMP=/tmp TMP=/tmp tsx scripts/cleanup-verifications.ts"
   },
   "dependencies": {

@@ -12,6 +12,7 @@ coverage
 .local-artifacts/
 .storage/
 apps/web/.storage/
+storage/
 playwright-report/
 test-results/
 blob-report/

@@ -8,13 +8,13 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        default: "bg-zinc-900 text-white hover:bg-zinc-700",
-        outline: "border border-zinc-200 bg-white hover:bg-zinc-100",
-        ghost: "hover:bg-zinc-100",
+        default: "bg-foreground text-background hover:bg-foreground/90",
+        outline: "border border-border bg-card hover:bg-accent",
+        ghost: "hover:bg-accent",
         // Действие-акцент (пуск/подтверждение) и деструктив (стоп/аварийно).
-        primary: "bg-emerald-600 text-white hover:bg-emerald-700 focus-visible:ring-emerald-500/40",
-        danger: "bg-red-600 text-white hover:bg-red-700 focus-visible:ring-red-500/40",
-        dangerOutline: "border border-red-200 bg-white text-red-700 hover:bg-red-50"
+        primary: "bg-primary text-primary-foreground hover:bg-primary/90 focus-visible:ring-primary/40",
+        danger: "bg-destructive text-destructive-foreground hover:bg-destructive/90 focus-visible:ring-destructive/40",
+        dangerOutline: "border border-destructive-border bg-card text-destructive hover:bg-destructive-subtle"
       },
       // Размер задаёт паддинги/тач-таргет.
       size: {

@@ -25,34 +25,34 @@ export function EquipmentProfileSummary({
 
   return (
     <section className={compact
-      ? "space-y-3 rounded-lg border border-zinc-200 bg-zinc-50 px-3 py-3 text-xs text-zinc-600"
-      : "space-y-3 rounded-lg border border-emerald-100 bg-emerald-50/50 px-3 py-3 text-xs text-zinc-600"
+      ? "space-y-3 rounded-lg border border-border bg-muted px-3 py-3 text-xs text-muted-foreground"
+      : "space-y-3 rounded-lg border border-success/30 bg-success-subtle/50 px-3 py-3 text-xs text-muted-foreground"
     }>
-      <h3 className="text-sm font-semibold text-zinc-800">Что будет рассчитано</h3>
+      <h3 className="text-sm font-semibold text-foreground">Что будет рассчитано</h3>
       <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-5">
         <div>
-          <span className="block text-[11px] uppercase text-zinc-400">Pre-boil</span>
-          <span className="font-medium text-zinc-800">{formatLiters(summary.preBoilHotL)}</span>
+          <span className="block text-[11px] uppercase text-muted-foreground">Pre-boil</span>
+          <span className="font-medium text-foreground">{formatLiters(summary.preBoilHotL)}</span>
         </div>
         <div>
-          <span className="block text-[11px] uppercase text-zinc-400">Post-boil</span>
-          <span className="font-medium text-zinc-800">{formatLiters(summary.postBoilHotL)}</span>
+          <span className="block text-[11px] uppercase text-muted-foreground">Post-boil</span>
+          <span className="font-medium text-foreground">{formatLiters(summary.postBoilHotL)}</span>
         </div>
         <div>
-          <span className="block text-[11px] uppercase text-zinc-400">Всего воды</span>
-          <span className="font-medium text-zinc-800">{formatLiters(summary.totalWaterL)}</span>
+          <span className="block text-[11px] uppercase text-muted-foreground">Всего воды</span>
+          <span className="font-medium text-foreground">{formatLiters(summary.totalWaterL)}</span>
         </div>
         <div>
-          <span className="block text-[11px] uppercase text-zinc-400">Mash / sparge</span>
-          <span className="font-medium text-zinc-800">{formatLiters(summary.mashWaterL)} / {formatLiters(summary.spargeWaterL)}</span>
+          <span className="block text-[11px] uppercase text-muted-foreground">Mash / sparge</span>
+          <span className="font-medium text-foreground">{formatLiters(summary.mashWaterL)} / {formatLiters(summary.spargeWaterL)}</span>
         </div>
         <div>
-          <span className="block text-[11px] uppercase text-zinc-400">Max mash</span>
-          <span className="font-medium text-zinc-800">{formatOptionalLiters(maxMashVolumeL)}</span>
+          <span className="block text-[11px] uppercase text-muted-foreground">Max mash</span>
+          <span className="font-medium text-foreground">{formatOptionalLiters(maxMashVolumeL)}</span>
         </div>
       </div>
       {summary.warnings.length ? (
-        <div className="mt-2 space-y-1 text-amber-700">
+        <div className="mt-2 space-y-1 text-warning-subtle-foreground">
           {summary.warnings.map((warning) => <p key={warning}>{warningLabels[warning] ?? warning}</p>)}
         </div>
       ) : null}

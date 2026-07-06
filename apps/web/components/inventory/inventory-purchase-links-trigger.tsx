@@ -28,7 +28,7 @@ export function InventoryPurchaseLinksTrigger({
         <button
           type="button"
           onClick={() => setOpen(true)}
-          className="inline-flex items-center gap-1.5 rounded-lg py-0.5 text-xs text-zinc-400 transition-colors hover:text-zinc-600"
+          className="inline-flex items-center gap-1.5 rounded-lg py-0.5 text-xs text-muted-foreground transition-colors hover:text-foreground"
           title="Ссылки на покупку"
         >
           <span className="inline-flex items-center gap-1">
@@ -41,9 +41,9 @@ export function InventoryPurchaseLinksTrigger({
             ))}
           </span>
           {count > 4 ? (
-            <span className="text-[11px] text-zinc-400">+{count - 4}</span>
+            <span className="text-[11px] text-muted-foreground">+{count - 4}</span>
           ) : null}
-          <span className="hidden text-[11px] font-medium text-zinc-500 group-hover:inline">
+          <span className="hidden text-[11px] font-medium text-muted-foreground group-hover:inline">
             ссылка на покупку
           </span>
         </button>
@@ -63,7 +63,7 @@ export function InventoryPurchaseLinksTrigger({
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="hidden items-center gap-1 rounded-lg py-0.5 text-xs text-zinc-400 transition-colors hover:text-zinc-600 group-hover:inline-flex"
+        className="hidden items-center gap-1 rounded-lg py-0.5 text-xs text-muted-foreground transition-colors hover:text-foreground group-hover:inline-flex"
         title="Добавить ссылку на покупку"
       >
         <Link2 className="h-3 w-3" />

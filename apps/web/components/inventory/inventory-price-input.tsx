@@ -167,7 +167,7 @@ export function InventoryPriceInput({
             Цена {priceInputMode === "per_display_unit" ? `за ${inventoryUnitShortLabels[effectivePriceUnit]}` : "за всё количество"}
           </p>
         </div>
-        <div className="grid grid-cols-2 gap-1 rounded-md bg-zinc-100 p-1 text-xs" role="group" aria-label="Режим цены">
+        <div className="grid grid-cols-2 gap-1 rounded-md bg-muted p-1 text-xs" role="group" aria-label="Режим цены">
           {inventoryPriceInputModes.map((mode) => {
             const active = priceInputMode === mode;
             return (
@@ -175,7 +175,7 @@ export function InventoryPriceInput({
                 key={mode}
                 type="button"
                 onClick={() => onPriceInputModeChange(mode)}
-                className={`rounded px-2 py-1.5 ${active ? "bg-white shadow" : "text-zinc-600"}`}
+                className={`rounded px-2 py-1.5 ${active ? "bg-card shadow" : "text-muted-foreground"}`}
               >
                 {mode === "total" ? "За всё" : "За единицу"}
               </button>
@@ -200,10 +200,10 @@ export function InventoryPriceInput({
               : `Например, 1250 ${currencySymbol(preferredCurrency)}`
           }
         />
-        {fieldError ? <span className="text-xs text-red-600">{fieldError}</span> : null}
+        {fieldError ? <span className="text-xs text-destructive">{fieldError}</span> : null}
       </label>
 
-      {helperText ? <p className="mt-2 text-xs text-zinc-500">{helperText}</p> : null}
+      {helperText ? <p className="mt-2 text-xs text-muted-foreground">{helperText}</p> : null}
     </div>
   );
 }

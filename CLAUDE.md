@@ -47,10 +47,16 @@ CLI-only утилиты (нет UI-кнопок и публичных эндпо
 - `npm run set-role -- --email <e> --role <user|editor|moderator|admin>`
 - `npm run seed:qa` — QA-юзеры (admin/moderator/editor/user) + каталог + инвентарь
 - `npm run seed:sample [-- --email <e>]` — наполняет аккаунт (по умолчанию `DEV_AUTH_EMAIL`) тестовыми данными: склад + 2 профиля оборудования + 6 рецептов разных стилей/статусов. Идемпотентно (метит данные `seedSource="sample-data"`). Скрипт: `apps/web/scripts/seed-sample-data.ts`
+- `npm run seed:articles [-- --force]` — публикует редакционные статьи из репозитория (`apps/web/scripts/content-articles/*`) в `content_articles` (`/guides/<slug>`). Существующие записи по умолчанию не трогает, `--force` перезаписывает контент из репо. Скрипт: `apps/web/scripts/seed-content-articles.ts`
 
 Авторизация: кастомный `@nb/auth`, HTTP-only cookie `nb_session`. Гейты в `apps/web/lib/auth.ts` (`getSessionUser`, `requireUser`, `requireRole`) и `features/content/permissions.ts`.
 
 **Dev-автологин без формы входа:** задать `DEV_AUTH_EMAIL` в `.env` (вне production). Тогда любой запрос без сессии трактуется как этот пользователь (создаётся/берётся в БД). Жёстко отключено при `NODE_ENV=production`. Пусто = выключено.
+
+## BrewForge: контракт и совместимость
+- Контракт с прошивкой (`../brewforge`) — `@nb/brewforge-protocol` + мост `apps/bridge`; система версий/релизов/OTA — `docs/brewforge-firmware-releases.md`, правила версий прошивки — `../brewforge/docs/RELEASE.md`.
+- ⚠ Правки, затрагивающие контракт (схемы/топики в `packages/brewforge-protocol`, эндпоинты устройства, pairing, поле `schema`), запрещено делать молча — сначала спросить владельца про совместимость с прошивками в поле и bump версий.
+- Публикация релиза прошивки: `npm run firmware:publish -- --file <bin> --version X.Y.Z --notes "..."`.
 
 ## Конвенции
 - TypeScript strict; стиль файла подгонять под окружающий код.

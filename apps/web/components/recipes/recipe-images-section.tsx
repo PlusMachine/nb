@@ -526,10 +526,10 @@ export function RecipeImagesSection({
   }, [images, resolvedRecipeId]);
 
   return (
-    <details className="group rounded-2xl border border-zinc-100 bg-white p-5 shadow-sm" open>
-      <summary className="flex cursor-pointer list-none items-center gap-2 text-sm font-semibold text-zinc-700">
-        <div className="flex h-7 w-7 items-center justify-center rounded-md bg-zinc-100">
-          <ImageIcon className="h-3.5 w-3.5 text-zinc-500" />
+    <details className="group rounded-2xl border border-border bg-card p-5 shadow-sm" open>
+      <summary className="flex cursor-pointer list-none items-center gap-2 text-sm font-semibold text-foreground">
+        <div className="flex h-7 w-7 items-center justify-center rounded-md bg-muted">
+          <ImageIcon className="h-3.5 w-3.5 text-muted-foreground" />
         </div>
         Фото пива
       </summary>
@@ -579,7 +579,7 @@ export function RecipeImagesSection({
               <div className="flex justify-end">
                 <button
                   type="button"
-                  className="inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-medium text-zinc-500 transition hover:bg-zinc-100 hover:text-zinc-700"
+                  className="inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-medium text-muted-foreground transition hover:bg-accent hover:text-foreground"
                   onClick={() => setReorderMode((current) => !current)}
                 >
                   <MoveVertical className="h-3.5 w-3.5" />
@@ -591,12 +591,12 @@ export function RecipeImagesSection({
         )}
 
         {sectionNotice ? (
-          <p className="rounded-xl bg-amber-50 px-3 py-2 text-sm text-amber-800 ring-1 ring-amber-100">
+          <p className="rounded-xl bg-warning-subtle px-3 py-2 text-sm text-warning-subtle-foreground ring-1 ring-warning/30">
             {sectionNotice.message}
           </p>
         ) : null}
 
-        {sectionError ? <p className="text-sm text-rose-700">{sectionError}</p> : null}
+        {sectionError ? <p className="text-sm text-destructive">{sectionError}</p> : null}
       </div>
 
       <RecipeImageLightbox

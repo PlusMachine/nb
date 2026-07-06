@@ -32,21 +32,21 @@ const groupIcons = {
 };
 
 const groupColors = {
-  fermentable: "text-amber-500",
-  hop: "text-emerald-500",
-  yeast: "text-violet-500",
-  water_treatment: "text-sky-500",
-  consumable_supply: "text-zinc-400",
-  consumable_additive: "text-orange-500"
+  fermentable: "text-amber-500 dark:text-amber-400",
+  hop: "text-emerald-500 dark:text-emerald-400",
+  yeast: "text-violet-500 dark:text-violet-400",
+  water_treatment: "text-sky-500 dark:text-sky-400",
+  consumable_supply: "text-muted-foreground",
+  consumable_additive: "text-orange-500 dark:text-orange-400"
 };
 
 const groupBg = {
-  fermentable: "bg-amber-50",
-  hop: "bg-emerald-50",
-  yeast: "bg-violet-50",
-  water_treatment: "bg-sky-50",
-  consumable_supply: "bg-zinc-100",
-  consumable_additive: "bg-orange-50"
+  fermentable: "bg-amber-50 dark:bg-amber-500/15",
+  hop: "bg-emerald-50 dark:bg-emerald-500/15",
+  yeast: "bg-violet-50 dark:bg-violet-500/15",
+  water_treatment: "bg-sky-50 dark:bg-sky-500/15",
+  consumable_supply: "bg-muted",
+  consumable_additive: "bg-orange-50 dark:bg-orange-500/15"
 };
 
 export function GroupedInventoryList({
@@ -91,10 +91,10 @@ export function GroupedInventoryList({
               <div className={`flex h-7 w-7 items-center justify-center rounded-lg ${bg}`}>
                 <Icon className={`h-3.5 w-3.5 ${color}`} />
               </div>
-              <h3 className="text-sm font-semibold text-zinc-700">
+              <h3 className="text-sm font-semibold text-foreground">
                 {group.label}
               </h3>
-              <span className="rounded-full bg-zinc-100 px-2 py-0.5 text-xs font-medium tabular-nums text-zinc-400">
+              <span className="rounded-full bg-muted px-2 py-0.5 text-xs font-medium tabular-nums text-muted-foreground">
                 {group.items.length}
               </span>
             </div>

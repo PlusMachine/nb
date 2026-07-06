@@ -24,7 +24,7 @@ function NudgeLine({ nudge }: { nudge: FermentationNudge | null }) {
   }
   if (nudge.tone === "warn") {
     return (
-      <p className="flex items-center gap-2 rounded-lg bg-amber-50 px-3 py-2 text-sm font-medium text-amber-800">
+      <p className="flex items-center gap-2 rounded-lg bg-warning-subtle px-3 py-2 text-sm font-medium text-warning-subtle-foreground">
         <AlertTriangle className="h-4 w-4 shrink-0" aria-hidden />
         {nudge.text}
       </p>
@@ -32,13 +32,13 @@ function NudgeLine({ nudge }: { nudge: FermentationNudge | null }) {
   }
   if (nudge.tone === "action") {
     return (
-      <p className="flex items-center gap-2 rounded-lg bg-emerald-50 px-3 py-2 text-sm font-medium text-emerald-700">
+      <p className="flex items-center gap-2 rounded-lg bg-success-subtle px-3 py-2 text-sm font-medium text-success-subtle-foreground">
         <CheckCircle2 className="h-4 w-4 shrink-0" aria-hidden />
         {nudge.text}
       </p>
     );
   }
-  return <p className="text-sm text-zinc-500">{nudge.text}</p>;
+  return <p className="text-sm text-muted-foreground">{nudge.text}</p>;
 }
 
 /**
@@ -77,29 +77,29 @@ export function FermentationBoard({
     : null;
 
   return (
-    <section className="space-y-4 rounded-2xl border border-zinc-100 bg-white p-4 shadow-sm">
+    <section className="space-y-4 rounded-2xl border border-border bg-card p-4 shadow-sm">
       <div className="flex items-center justify-between gap-2">
-        <h2 className="text-base font-semibold text-zinc-900">Брожение</h2>
-        {cursor.total > 0 ? <span className="text-xs tabular-nums text-zinc-500">{cursor.doneCount} / {cursor.total}</span> : null}
+        <h2 className="text-base font-semibold text-foreground">Брожение</h2>
+        {cursor.total > 0 ? <span className="text-xs tabular-nums text-muted-foreground">{cursor.doneCount} / {cursor.total}</span> : null}
       </div>
 
-      <div className="rounded-2xl border border-violet-100 bg-violet-50/50 p-4">
-        <div className="flex items-center gap-2 text-violet-900">
+      <div className="rounded-2xl border border-violet-100 bg-violet-50/50 p-4 dark:border-violet-500/30 dark:bg-violet-500/15">
+        <div className="flex items-center gap-2 text-violet-900 dark:text-violet-300">
           <FlaskConical className="h-5 w-5" aria-hidden />
           <p className="text-lg font-semibold">{dayLabel ?? "Идёт брожение"}</p>
         </div>
-        {targetTempLabel ? <p className="mt-0.5 text-sm text-violet-700">Целевая температура {targetTempLabel}</p> : null}
+        {targetTempLabel ? <p className="mt-0.5 text-sm text-violet-700 dark:text-violet-300">Целевая температура {targetTempLabel}</p> : null}
       </div>
 
       <NudgeLine nudge={nudge} />
 
-      {controller.error ? <p role="alert" className="text-xs text-rose-600">{controller.error}</p> : null}
+      {controller.error ? <p role="alert" className="text-xs text-destructive">{controller.error}</p> : null}
 
       {fermentGroups.length > 0 ? (
         <BrewStepList groups={fermentGroups} controller={controller} currentStage={cursor.current?.stage ?? null} />
       ) : null}
 
-      <div className="border-t border-zinc-100 pt-3">
+      <div className="border-t border-border pt-3">
         <BrewTransitionButton
           brewBatchId={brewBatchId}
           to="completed"

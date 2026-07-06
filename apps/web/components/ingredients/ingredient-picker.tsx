@@ -239,7 +239,7 @@ export const IngredientPickerLoadingState = ({
   label: string;
 }) => (
   <div
-    className="flex min-h-[12rem] items-center justify-center rounded-md border border-zinc-200 bg-white px-3 py-2.5 text-xs text-zinc-600 shadow-sm"
+    className="flex min-h-[12rem] items-center justify-center rounded-md border border-border bg-card px-3 py-2.5 text-xs text-muted-foreground shadow-sm"
     data-testid="ingredient-picker-loading"
     role="status"
     aria-live="polite"
@@ -247,9 +247,9 @@ export const IngredientPickerLoadingState = ({
     <div className="flex items-center gap-2">
       <span
         aria-hidden="true"
-        className="h-3.5 w-3.5 shrink-0 animate-spin rounded-full border-2 border-zinc-300 border-t-zinc-700"
+        className="h-3.5 w-3.5 shrink-0 animate-spin rounded-full border-2 border-border border-t-foreground"
       />
-      <span className="font-medium text-zinc-700">{label}</span>
+      <span className="font-medium text-foreground">{label}</span>
     </div>
   </div>
 );
@@ -812,7 +812,7 @@ export const IngredientPickerInventoryMetaLine = ({
   }
 
   return (
-    <div className={`flex flex-wrap items-center gap-x-3 gap-y-1 ${compact ? "text-[11px]" : "text-xs"} text-zinc-500 ${className}`.trim()}>
+    <div className={`flex flex-wrap items-center gap-x-3 gap-y-1 ${compact ? "text-[11px]" : "text-xs"} text-muted-foreground ${className}`.trim()}>
       {items.map((entry) => (
         <span key={entry}>{entry}</span>
       ))}
@@ -850,8 +850,8 @@ export const IngredientPickerTechnicalBadges = ({
   }
 
   const badgeClassName = compact
-    ? "relative inline-flex items-center rounded-md px-1.5 py-0.5 text-[11px] text-zinc-600 ring-1 ring-zinc-200/60"
-    : "relative inline-flex items-center rounded-md px-2 py-0.5 text-xs text-zinc-600 ring-1 ring-zinc-200/60";
+    ? "relative inline-flex items-center rounded-md px-1.5 py-0.5 text-[11px] text-muted-foreground ring-1 ring-ring/60"
+    : "relative inline-flex items-center rounded-md px-2 py-0.5 text-xs text-muted-foreground ring-1 ring-ring/60";
 
   return (
     <div className={`flex flex-wrap gap-1.5 ${className}`.trim()}>
@@ -860,7 +860,7 @@ export const IngredientPickerTechnicalBadges = ({
           key={badge.key}
           className={`${badgeClassName} ${badge.accent
             ? "overflow-hidden bg-[linear-gradient(180deg,rgba(250,250,250,0.98),rgba(244,244,245,0.92))]"
-            : "bg-zinc-50"
+            : "bg-muted"
           }`}
         >
           {badge.label}
@@ -868,7 +868,7 @@ export const IngredientPickerTechnicalBadges = ({
         </span>
       ))}
       {stockLabel ? (
-        <span className={`${compact ? "rounded-md px-1.5 py-0.5 text-[11px]" : "rounded-md px-2 py-0.5 text-xs"} bg-emerald-50 font-medium text-emerald-800 ring-1 ring-emerald-200`}>
+        <span className={`${compact ? "rounded-md px-1.5 py-0.5 text-[11px]" : "rounded-md px-2 py-0.5 text-xs"} bg-success-subtle font-medium text-success-subtle-foreground ring-1 ring-success/30`}>
           {stockLabel}
         </span>
       ) : null}
@@ -895,11 +895,11 @@ const IngredientPickerMetaLine = ({
 
   return (
     <div className={compact
-      ? "flex min-w-0 flex-wrap items-center gap-x-1 gap-y-0.5 text-[11px] text-zinc-500"
-      : "flex flex-wrap items-center gap-x-1.5 gap-y-0.5 text-xs text-zinc-500"}
+      ? "flex min-w-0 flex-wrap items-center gap-x-1 gap-y-0.5 text-[11px] text-muted-foreground"
+      : "flex flex-wrap items-center gap-x-1.5 gap-y-0.5 text-xs text-muted-foreground"}
     >
       {brandLabel ? (
-        <span className="font-medium text-zinc-700">{brandLabel}</span>
+        <span className="font-medium text-foreground">{brandLabel}</span>
       ) : null}
       {country?.code ? (
         <CountryFlag
@@ -908,7 +908,7 @@ const IngredientPickerMetaLine = ({
         />
       ) : null}
       {badgeLabel ? (
-        <span className="rounded-full bg-white px-2 py-0.5 text-[11px] font-medium text-zinc-600 ring-1 ring-zinc-200">
+        <span className="rounded-full bg-card px-2 py-0.5 text-[11px] font-medium text-muted-foreground ring-1 ring-ring">
           {badgeLabel}
         </span>
       ) : null}
@@ -1082,14 +1082,14 @@ export const IngredientSelectionCard = ({
     : lowerMetaSummary;
 
   return (
-    <div className={`rounded-lg border border-zinc-200 bg-zinc-50 px-3 py-3 ${className}`.trim()}>
+    <div className={`rounded-lg border border-border bg-muted px-3 py-3 ${className}`.trim()}>
       <div className="mb-1 flex items-start justify-between gap-3">
-        <div className="text-xs font-medium text-zinc-500">
+        <div className="text-xs font-medium text-muted-foreground">
           {label}
         </div>
         <div className="flex items-center gap-2">
           {statusBadgeLabel ? (
-            <span className="shrink-0 rounded-full bg-amber-50 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.12em] text-amber-700 ring-1 ring-amber-200">
+            <span className="shrink-0 rounded-full bg-warning-subtle px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.12em] text-warning-subtle-foreground ring-1 ring-warning/30">
               {statusBadgeLabel}
             </span>
           ) : null}
@@ -1097,7 +1097,7 @@ export const IngredientSelectionCard = ({
             <button
               type="button"
               onClick={onAction}
-              className="inline-flex shrink-0 items-center text-sm font-medium text-zinc-600 underline decoration-zinc-300 underline-offset-4 transition-colors hover:text-zinc-950"
+              className="inline-flex shrink-0 items-center text-sm font-medium text-muted-foreground underline decoration-zinc-300 underline-offset-4 transition-colors hover:text-foreground"
             >
               {actionLabel}
             </button>
@@ -1106,15 +1106,15 @@ export const IngredientSelectionCard = ({
       </div>
       <div className="min-w-0">
         <div className="flex min-w-0 flex-wrap items-center gap-2">
-          <span className="text-sm font-semibold text-zinc-950 sm:text-base">{primaryName}</span>
+          <span className="text-sm font-semibold text-foreground sm:text-base">{primaryName}</span>
           {ownershipBadgeLabel ? (
-            <span className="shrink-0 rounded-full bg-amber-50 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.12em] text-amber-700 ring-1 ring-amber-200">
+            <span className="shrink-0 rounded-full bg-warning-subtle px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.12em] text-warning-subtle-foreground ring-1 ring-warning/30">
               {ownershipBadgeLabel}
             </span>
           ) : null}
           {topRowBrandLabel ? (
-            <span className="inline-flex min-w-0 items-center gap-2 text-sm font-semibold text-zinc-700">
-              <span aria-hidden="true" className="text-zinc-400">•</span>
+            <span className="inline-flex min-w-0 items-center gap-2 text-sm font-semibold text-foreground">
+              <span aria-hidden="true" className="text-muted-foreground">•</span>
               <span className="truncate">{topRowBrandLabel}</span>
               {mergeBrandAndCountry && country ? (
                 <CountryFlag countryCode={country.code} className="h-3 w-4" />
@@ -1122,12 +1122,12 @@ export const IngredientSelectionCard = ({
             </span>
           ) : null}
           {topRowKindLabel ? (
-            <span className="rounded-full bg-white px-2 py-0.5 text-[11px] font-medium text-zinc-600 ring-1 ring-zinc-200">
+            <span className="rounded-full bg-card px-2 py-0.5 text-[11px] font-medium text-muted-foreground ring-1 ring-ring">
               {topRowKindLabel}
             </span>
           ) : null}
         </div>
-        {secondaryName ? <div className="mt-0.5 text-xs text-zinc-500">{secondaryName}</div> : null}
+        {secondaryName ? <div className="mt-0.5 text-xs text-muted-foreground">{secondaryName}</div> : null}
         {isGenericFermentable ? (
           <div className="mt-2">
             <IngredientPickerMetaLine
@@ -1138,9 +1138,9 @@ export const IngredientSelectionCard = ({
             />
           </div>
         ) : null}
-        <div className="mt-2 flex flex-wrap items-center gap-2 text-xs text-zinc-600">
+        <div className="mt-2 flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
           {country && !mergeBrandAndCountry && !isGenericFermentable ? (
-            <span className="inline-flex items-center rounded-full bg-white px-2 py-1 ring-1 ring-zinc-200">
+            <span className="inline-flex items-center rounded-full bg-card px-2 py-1 ring-1 ring-ring">
               <CountryFlag
                 countryCode={country.code}
                 className="h-3 w-4 shrink-0 ring-0"
@@ -1148,21 +1148,21 @@ export const IngredientSelectionCard = ({
             </span>
           ) : null}
           {mergeBrandAndCountry || topRowBrandLabel || !brandLabel || isGenericFermentable ? null : (
-            <span className="rounded-full bg-white px-2 py-1 ring-1 ring-zinc-200">{brandLabel}</span>
+            <span className="rounded-full bg-card px-2 py-1 ring-1 ring-ring">{brandLabel}</span>
           )}
           {fallbackTypedSummary ? (
-            <span className="rounded-full bg-white px-2 py-1 font-medium text-zinc-700 ring-1 ring-zinc-200">
+            <span className="rounded-full bg-card px-2 py-1 font-medium text-foreground ring-1 ring-ring">
               {fallbackTypedSummary}
             </span>
           ) : null}
           {!hideSubtitle && !isGenericFermentable && showLowerMetaSummary && showLowerMetaSummary !== fallbackTypedSummary ? (
-            <span className="text-zinc-500">{showLowerMetaSummary}</span>
+            <span className="text-muted-foreground">{showLowerMetaSummary}</span>
           ) : null}
         </div>
         <IngredientPickerTechnicalBadges badges={technicalBadges} stockLabel={stockLabel} className="mt-2" />
         <IngredientPickerInventoryMetaLine item={item} className="mt-2" />
         {details ? (
-          <div className="mt-3 border-t border-zinc-200 pt-3">
+          <div className="mt-3 border-t border-border pt-3">
             {details}
           </div>
         ) : null}
@@ -1189,11 +1189,11 @@ const IngredientPickerScopePill = ({
     onPointerDown={(event) => event.preventDefault()}
     onClick={onRemove}
     data-testid={testId}
-    className="inline-flex items-center gap-2 rounded-full bg-zinc-950 px-3 py-1.5 text-xs font-medium text-white"
+    className="inline-flex items-center gap-2 rounded-full bg-foreground px-3 py-1.5 text-xs font-medium text-background"
     aria-label={removeLabel}
   >
     <span>{label}</span>
-    <span aria-hidden="true" className="text-zinc-300">×</span>
+    <span aria-hidden="true" className="text-muted-foreground">×</span>
   </button>
 );
 
@@ -1336,7 +1336,7 @@ const IngredientPickerQuickFilterButton = ({
     onPointerDown={(event) => event.preventDefault()}
     onClick={onClick}
     data-testid={testId}
-    className="inline-flex items-center rounded-full border border-zinc-200 bg-zinc-50 px-3 py-1.5 text-xs font-medium text-zinc-800 transition-colors hover:border-zinc-300 hover:bg-zinc-100"
+    className="inline-flex items-center rounded-full border border-border bg-muted px-3 py-1.5 text-xs font-medium text-foreground transition-colors hover:border-border hover:bg-accent"
   >
     {leadingIcon ? <span aria-hidden="true" className="mr-1 text-[11px] text-amber-600">{leadingIcon}</span> : null}
     {label}
@@ -1350,7 +1350,7 @@ const IngredientPickerQuickFilterSkeleton = ({
 }) => (
   <span
     aria-hidden="true"
-    className={`inline-flex h-[34px] animate-pulse rounded-full border border-zinc-200 bg-zinc-100 ${widthClassName}`}
+    className={`inline-flex h-[34px] animate-pulse rounded-full border border-border bg-muted ${widthClassName}`}
   />
 );
 
@@ -1364,7 +1364,7 @@ export const IngredientPickerScopeResetButton = ({
     onPointerDown={(event) => event.preventDefault()}
     onClick={onClick}
     data-testid="ingredient-picker-clear-all-scopes"
-    className="text-xs font-medium text-zinc-600 underline decoration-zinc-300 underline-offset-4 transition-colors hover:text-zinc-950"
+    className="text-xs font-medium text-muted-foreground underline decoration-zinc-300 underline-offset-4 transition-colors hover:text-foreground"
   >
     Сбросить всё
   </button>
@@ -1433,7 +1433,7 @@ export const IngredientPickerQuickStartPanel = ({
 
   return (
     <div
-      className="rounded-md border border-zinc-200 bg-white shadow-sm"
+      className="rounded-md border border-border bg-card shadow-sm"
       data-testid="ingredient-picker-quick-start"
     >
       <div className="space-y-4 px-3 py-3">
@@ -1462,7 +1462,7 @@ export const IngredientPickerQuickStartPanel = ({
 
         {brands.length > 0 ? (
           <section className="space-y-2" data-testid="ingredient-picker-quick-start-brands">
-            <div className="text-[10px] font-medium uppercase tracking-[0.12em] text-zinc-500">
+            <div className="text-[10px] font-medium uppercase tracking-[0.12em] text-muted-foreground">
               По бренду
             </div>
             <div className="flex flex-wrap gap-2" data-testid="ingredient-picker-quick-start-brand-row">
@@ -1480,7 +1480,7 @@ export const IngredientPickerQuickStartPanel = ({
 
         {groups.length > 0 ? (
           <section className="space-y-2" data-testid="ingredient-picker-quick-start-groups">
-            <div className="text-[10px] font-medium uppercase tracking-[0.12em] text-zinc-500">
+            <div className="text-[10px] font-medium uppercase tracking-[0.12em] text-muted-foreground">
               По группе
             </div>
             <div className="flex flex-wrap gap-2" data-testid="ingredient-picker-quick-start-group-row">
@@ -1498,7 +1498,7 @@ export const IngredientPickerQuickStartPanel = ({
 
         {showTypeFamilies ? (
           <section className="space-y-2" data-testid="ingredient-picker-quick-start-types">
-            <div className="text-[10px] font-medium uppercase tracking-[0.12em] text-zinc-500">
+            <div className="text-[10px] font-medium uppercase tracking-[0.12em] text-muted-foreground">
               По типу
             </div>
             <div className="flex flex-wrap gap-2" data-testid="ingredient-picker-quick-start-type-row">
@@ -1528,18 +1528,18 @@ export const IngredientPickerQuickStartPanel = ({
                 aria-expanded={showAllRecent}
                 className={`${recentHeaderClassName} w-full`}
               >
-                <span className="text-xs font-semibold text-zinc-900">
+                <span className="text-xs font-semibold text-foreground">
                   Недавние ({recent.length})
                 </span>
-                <span className="text-xs font-medium text-zinc-700">
+                <span className="text-xs font-medium text-foreground">
                   {showAllRecent ? "Скрыть" : "Показать все"}
                 </span>
               </button>
             ) : resolvedRecentState === "loading" ? (
               <div className={recentHeaderClassName}>
-                <span className="text-xs font-semibold text-zinc-900">Недавние</span>
+                <span className="text-xs font-semibold text-foreground">Недавние</span>
                 <span
-                  className="text-xs font-medium text-zinc-700"
+                  className="text-xs font-medium text-foreground"
                   data-testid="ingredient-picker-quick-start-recent-loading"
                 >
                   Загружаем недавние...
@@ -1547,9 +1547,9 @@ export const IngredientPickerQuickStartPanel = ({
               </div>
             ) : resolvedRecentState === "empty" ? (
               <div className={recentHeaderClassName}>
-                <span className="text-xs font-semibold text-zinc-900">Недавние</span>
+                <span className="text-xs font-semibold text-foreground">Недавние</span>
                 <span
-                  className="text-xs font-medium text-zinc-500"
+                  className="text-xs font-medium text-muted-foreground"
                   data-testid="ingredient-picker-quick-start-recent-empty"
                 >
                   Пока пусто
@@ -1557,7 +1557,7 @@ export const IngredientPickerQuickStartPanel = ({
               </div>
             ) : (
               <div className="flex min-h-[1.5rem] items-center">
-                <span className="text-xs font-semibold text-zinc-900">
+                <span className="text-xs font-semibold text-foreground">
                   Недавние ({recent.length})
                 </span>
               </div>
@@ -1587,29 +1587,29 @@ export const IngredientPickerQuickStartPanel = ({
                       onPointerDown={(event) => event.preventDefault()}
                       onClick={() => onSelectItem(item)}
                       data-testid="ingredient-picker-quick-start-recent-item"
-                      className="rounded-lg border border-zinc-200 bg-white/90 px-3 py-2 text-left transition-colors hover:border-zinc-300 hover:bg-white"
+                      className="rounded-lg border border-border bg-card/90 px-3 py-2 text-left transition-colors hover:border-border hover:bg-card"
                     >
                       <div className="flex items-start justify-between gap-2">
                         <div className="min-w-0">
-                          <div className="truncate text-[13px] font-medium text-zinc-950">
+                          <div className="truncate text-[13px] font-medium text-foreground">
                             {primaryName}
                           </div>
                           {inlineKindLabel ? (
-                            <div className="mt-1 text-[10px] font-medium uppercase tracking-[0.12em] text-zinc-500">
+                            <div className="mt-1 text-[10px] font-medium uppercase tracking-[0.12em] text-muted-foreground">
                               {inlineKindLabel}
                             </div>
                           ) : null}
                         </div>
                         {ownershipBadgeLabel ? (
-                          <span className="shrink-0 rounded-full bg-amber-50 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.12em] text-amber-700 ring-1 ring-amber-200">
+                          <span className="shrink-0 rounded-full bg-warning-subtle px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.12em] text-warning-subtle-foreground ring-1 ring-warning/30">
                             {ownershipBadgeLabel}
                           </span>
                         ) : null}
                       </div>
                       <div className="mt-2 min-w-0">
                         {inlineBrand ? (
-                          <div className="flex flex-wrap items-center gap-x-1.5 gap-y-0.5 text-[11px] text-zinc-500">
-                            <span className="font-medium text-zinc-700">{inlineBrand}</span>
+                          <div className="flex flex-wrap items-center gap-x-1.5 gap-y-0.5 text-[11px] text-muted-foreground">
+                            <span className="font-medium text-foreground">{inlineBrand}</span>
                             {country ? (
                               <CountryFlag
                                 countryCode={country.code}
@@ -2694,14 +2694,14 @@ export const IngredientPicker = ({
     : null;
 
   const builtInEmptyState = (
-    <div className="space-y-2 rounded-md border border-dashed border-zinc-200 bg-zinc-50 px-3 py-3 text-xs text-zinc-600">
+    <div className="space-y-2 rounded-md border border-dashed border-border bg-muted px-3 py-3 text-xs text-muted-foreground">
       <p>Ничего не найдено для «{emptyStateQueryLabel}».</p>
       <div className="flex flex-wrap gap-2">
         {onCreateIngredient ? (
           <button
             type="button"
             onClick={() => void onCreateIngredient(query.trim())}
-            className="rounded-md bg-zinc-900 px-3 py-2 text-xs font-medium text-white"
+            className="rounded-md bg-foreground px-3 py-2 text-xs font-medium text-background"
           >
             Создать свой ингредиент
           </button>
@@ -2717,25 +2717,25 @@ export const IngredientPicker = ({
                 setEmptyStateMessage((error as Error).message);
               }
             }}
-            className="rounded-md border border-zinc-300 bg-white px-3 py-2 text-xs"
+            className="rounded-md border border-border bg-card px-3 py-2 text-xs"
           >
             Предложить ингредиент в каталог
           </button>
         ) : null}
       </div>
-      {emptyStateMessage ? <p className="text-xs text-zinc-500">{emptyStateMessage}</p> : null}
+      {emptyStateMessage ? <p className="text-xs text-muted-foreground">{emptyStateMessage}</p> : null}
     </div>
   );
 
   const suggestionsPanel = showSuggestions ? (
-    <div className="min-h-[12rem] rounded-md border border-zinc-200 bg-white shadow-sm">
+    <div className="min-h-[12rem] rounded-md border border-border bg-card shadow-sm">
       {refinementMode ? (
-        <div className="border-b border-zinc-200 px-3 py-3" data-testid="ingredient-picker-refinements">
+        <div className="border-b border-border px-3 py-3" data-testid="ingredient-picker-refinements">
           <div className="mb-2 flex items-center justify-between gap-3">
-            <div className="text-xs font-medium text-zinc-500">
+            <div className="text-xs font-medium text-muted-foreground">
               {refinementPanelTitle}
             </div>
-            <div className="text-xs text-zinc-500">
+            <div className="text-xs text-muted-foreground">
               {searchResult.total} совпадений
             </div>
           </div>
@@ -2771,11 +2771,11 @@ export const IngredientPicker = ({
                   setIsExpanded(false);
                   setEmptyStateMessage(null);
                 }}
-                className="inline-flex items-center gap-2 rounded-full border border-zinc-200 bg-zinc-50 px-3 py-1.5 text-xs font-medium text-zinc-800 transition-colors hover:border-zinc-300 hover:bg-zinc-100"
+                className="inline-flex items-center gap-2 rounded-full border border-border bg-muted px-3 py-1.5 text-xs font-medium text-foreground transition-colors hover:border-border hover:bg-accent"
                 title={refinement.description ?? undefined}
               >
                 <span>{refinement.label}</span>
-                <span className="rounded-full bg-white px-1.5 py-0.5 text-[10px] text-zinc-500 ring-1 ring-zinc-200">
+                <span className="rounded-full bg-card px-1.5 py-0.5 text-[10px] text-muted-foreground ring-1 ring-ring">
                   {refinement.count}
                 </span>
               </button>
@@ -2787,9 +2787,9 @@ export const IngredientPicker = ({
       {visibleItems.length > 0 ? (
         <div id={listboxId} role="listbox">
           {ingredientSectionTitle ? (
-            <div className="flex items-center justify-between gap-3 bg-zinc-50 px-3 py-1 text-xs text-zinc-500">
+            <div className="flex items-center justify-between gap-3 bg-muted px-3 py-1 text-xs text-muted-foreground">
               <span>{ingredientSectionTitle}</span>
-              <span className="text-zinc-400">
+              <span className="text-muted-foreground">
                 {searchResult.total}
               </span>
             </div>
@@ -2798,7 +2798,7 @@ export const IngredientPicker = ({
           {Object.entries(grouped).map(([group, groupItems]) => (
             <div key={group} className="border-b last:border-b-0">
               {showGroupHeaders ? (
-                <div className="bg-zinc-50 px-3 py-1 text-xs text-zinc-500">
+                <div className="bg-muted px-3 py-1 text-xs text-muted-foreground">
                   {ingredientCategoryLabels[group as IngredientCategory] ?? group}
                 </div>
               ) : null}
@@ -2824,7 +2824,7 @@ export const IngredientPicker = ({
                     key={`${item.source}:${item.id}`}
                     role="option"
                     aria-selected={index === activeIndex}
-                    className={`px-3 py-2 text-sm hover:bg-zinc-100 ${index === activeIndex ? "bg-zinc-100" : ""}`}
+                    className={`px-3 py-2 text-sm hover:bg-accent ${index === activeIndex ? "bg-accent" : ""}`}
                     onPointerDown={(event) => event.preventDefault()}
                   >
                     <div className="flex items-start gap-2">
@@ -2835,20 +2835,20 @@ export const IngredientPicker = ({
                       >
                         <div className="min-w-0">
                           <div className="flex min-w-0 items-center gap-2">
-                            <span className="truncate font-medium text-zinc-950">{primaryName}</span>
+                            <span className="truncate font-medium text-foreground">{primaryName}</span>
                             {ownershipBadgeLabel ? (
-                              <span className="shrink-0 rounded-full bg-amber-50 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.12em] text-amber-700 ring-1 ring-amber-200">
+                              <span className="shrink-0 rounded-full bg-warning-subtle px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.12em] text-warning-subtle-foreground ring-1 ring-warning/30">
                                 {ownershipBadgeLabel}
                               </span>
                             ) : null}
                             {inlineKindLabel ? (
-                              <span className="truncate rounded-full bg-white px-2 py-0.5 text-[10px] font-medium text-zinc-600 ring-1 ring-zinc-200">
+                              <span className="truncate rounded-full bg-card px-2 py-0.5 text-[10px] font-medium text-muted-foreground ring-1 ring-ring">
                                 {inlineKindLabel}
                               </span>
                             ) : null}
                             {inlineBrand ? (
-                              <span className="inline-flex min-w-0 items-center gap-2 text-sm font-semibold text-zinc-700">
-                                <span aria-hidden="true" className="text-zinc-400">•</span>
+                              <span className="inline-flex min-w-0 items-center gap-2 text-sm font-semibold text-foreground">
+                                <span aria-hidden="true" className="text-muted-foreground">•</span>
                                 <span className="truncate">{inlineBrand}</span>
                                 {country ? (
                                   <CountryFlag
@@ -2859,10 +2859,10 @@ export const IngredientPicker = ({
                               </span>
                             ) : null}
                           </div>
-                          {secondaryName ? <div className="text-xs text-zinc-500">{secondaryName}</div> : null}
+                          {secondaryName ? <div className="text-xs text-muted-foreground">{secondaryName}</div> : null}
                           {inlineBrand ? (
                             showLowerMetaSummary ? (
-                              <div className="flex flex-wrap items-center gap-x-1.5 gap-y-0.5 text-xs text-zinc-500">
+                              <div className="flex flex-wrap items-center gap-x-1.5 gap-y-0.5 text-xs text-muted-foreground">
                                 {showLowerMetaSummary ? <span>{showLowerMetaSummary}</span> : null}
                               </div>
                             ) : null
@@ -2896,20 +2896,20 @@ export const IngredientPicker = ({
       ) : null}
 
       {showExpandControl ? (
-        <div className="border-t border-zinc-200 px-3 py-2">
+        <div className="border-t border-border px-3 py-2">
           <button
             type="button"
             data-testid="ingredient-picker-show-all"
             onPointerDown={(event) => event.preventDefault()}
             onClick={() => setIsExpanded(true)}
-            className="text-sm font-medium text-zinc-700 underline underline-offset-2"
+            className="text-sm font-medium text-foreground underline underline-offset-2"
           >
             {buildIngredientPickerExpandLabel({ total: searchResult.total })}
           </button>
         </div>
       ) : null}
       {expandedResultsSummary ? (
-        <div className="border-t border-zinc-200 bg-zinc-50 px-3 py-2 text-xs text-zinc-500">
+        <div className="border-t border-border bg-muted px-3 py-2 text-xs text-muted-foreground">
           {expandedResultsSummary}
         </div>
       ) : null}
@@ -2923,7 +2923,7 @@ export const IngredientPicker = ({
 
   const emptyStatePanel = showEmptyState ? (
     emptyCta ? (
-      <div className="rounded-md border border-dashed border-zinc-200 bg-zinc-50 px-3 py-3 shadow-sm">
+      <div className="rounded-md border border-dashed border-border bg-muted px-3 py-3 shadow-sm">
         {typeof emptyCta === "function"
           ? emptyCta({
             hasActiveFilters: hasSearchScope,
@@ -3044,7 +3044,7 @@ export const IngredientPicker = ({
               }, 0);
             }}
             placeholder={inputPlaceholder}
-            className={`h-10 w-full rounded-md border border-zinc-200 px-3 text-sm ${isLoadingVisible ? "pr-10" : ""}`}
+            className={`h-10 w-full rounded-md border border-border px-3 text-sm ${isLoadingVisible ? "pr-10" : ""}`}
             role="combobox"
             aria-expanded={isOpen}
             aria-busy={isLoadingVisible}
@@ -3123,7 +3123,7 @@ export const IngredientPicker = ({
               aria-hidden="true"
               className="pointer-events-none absolute inset-y-0 right-3 inline-flex items-center"
             >
-              <span className="h-4 w-4 animate-spin rounded-full border-2 border-zinc-300 border-t-zinc-700" />
+              <span className="h-4 w-4 animate-spin rounded-full border-2 border-border border-t-foreground" />
             </span>
           ) : null}
         </div>

@@ -198,7 +198,7 @@ export function BrewPickerDialog({ open, onOpenChange, recipeId, slug, recipeTit
     >
       <DialogHeader>
         <div className="flex items-start gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-orange-50 text-orange-600">
+          <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-orange-50 text-orange-600 dark:bg-orange-500/15 dark:text-orange-400">
             {screen === "device-pick" || screen === "device-confirm" ? (
               <Cpu className="h-5 w-5" />
             ) : (
@@ -206,10 +206,10 @@ export function BrewPickerDialog({ open, onOpenChange, recipeId, slug, recipeTit
             )}
           </div>
           <div>
-            <h2 className="text-base font-semibold text-zinc-950">
+            <h2 className="text-base font-semibold text-foreground">
               {recipeTitle ? `Сварить «${recipeTitle}»` : "Сварить"}
             </h2>
-            <p className="mt-1 text-sm leading-6 text-zinc-600">
+            <p className="mt-1 text-sm leading-6 text-muted-foreground">
               {screen === "gate" ? "Проверяем ваши устройства…" : null}
               {screen === "login" ? "Войдите, чтобы начать варку." : null}
               {screen === "mode" ? "Выберите, как варить." : null}
@@ -223,7 +223,7 @@ export function BrewPickerDialog({ open, onOpenChange, recipeId, slug, recipeTit
       </DialogHeader>
 
       {screen === "gate" ? (
-        <div className="flex items-center gap-2 p-5 py-10 text-sm text-zinc-500">
+        <div className="flex items-center gap-2 p-5 py-10 text-sm text-muted-foreground">
           <Loader2 className="h-4 w-4 animate-spin" />
           Загрузка…
         </div>
@@ -231,7 +231,7 @@ export function BrewPickerDialog({ open, onOpenChange, recipeId, slug, recipeTit
 
       {screen === "login" ? (
         <div className="p-5">
-          <p className="text-sm leading-6 text-zinc-600">
+          <p className="text-sm leading-6 text-muted-foreground">
             Варка сохранится в вашей мастерской: шаги, таймеры и замеры в одном месте. Аккаунт создаётся
             автоматически при первом входе.
           </p>
@@ -243,14 +243,14 @@ export function BrewPickerDialog({ open, onOpenChange, recipeId, slug, recipeTit
           <button
             type="button"
             onClick={() => setScreen("virtual")}
-            className="flex w-full items-start gap-3 rounded-lg border border-zinc-200 bg-white px-4 py-3 text-left transition hover:border-zinc-300 hover:bg-zinc-50"
+            className="flex w-full items-start gap-3 rounded-lg border border-border bg-card px-4 py-3 text-left transition hover:border-border hover:bg-accent"
           >
-            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-orange-50 text-orange-600">
+            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-orange-50 text-orange-600 dark:bg-orange-500/15 dark:text-orange-400">
               <Timer className="h-5 w-5" />
             </span>
             <span>
-              <span className="block text-sm font-semibold text-zinc-900">Сварить самому</span>
-              <span className="mt-0.5 block text-xs leading-5 text-zinc-500">
+              <span className="block text-sm font-semibold text-foreground">Сварить самому</span>
+              <span className="mt-0.5 block text-xs leading-5 text-muted-foreground">
                 Гид варочного дня на экране: паузы, таймеры, шаги.
               </span>
             </span>
@@ -259,14 +259,14 @@ export function BrewPickerDialog({ open, onOpenChange, recipeId, slug, recipeTit
             <button
               type="button"
               onClick={() => setScreen("device-pick")}
-              className="flex w-full items-start gap-3 rounded-lg border border-zinc-200 bg-white px-4 py-3 text-left transition hover:border-zinc-300 hover:bg-zinc-50"
+              className="flex w-full items-start gap-3 rounded-lg border border-border bg-card px-4 py-3 text-left transition hover:border-border hover:bg-accent"
             >
-              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-orange-50 text-orange-600">
+              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-orange-50 text-orange-600 dark:bg-orange-500/15 dark:text-orange-400">
                 <Cpu className="h-5 w-5" />
               </span>
               <span>
-                <span className="block text-sm font-semibold text-zinc-900">Сварить на автоматике</span>
-                <span className="mt-0.5 block text-xs leading-5 text-zinc-500">
+                <span className="block text-sm font-semibold text-foreground">Сварить на автоматике</span>
+                <span className="mt-0.5 block text-xs leading-5 text-muted-foreground">
                   Рецепт уйдёт на контроллер BrewForge, который запустит нагрев.
                 </span>
               </span>
@@ -278,14 +278,14 @@ export function BrewPickerDialog({ open, onOpenChange, recipeId, slug, recipeTit
             <button
               type="button"
               onClick={() => window.location.assign("/app/devices")}
-              className="flex w-full items-start gap-3 rounded-lg border border-zinc-200 bg-white px-4 py-3 text-left transition hover:border-zinc-300 hover:bg-zinc-50"
+              className="flex w-full items-start gap-3 rounded-lg border border-border bg-card px-4 py-3 text-left transition hover:border-border hover:bg-accent"
             >
-              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-orange-50 text-orange-600">
+              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-orange-50 text-orange-600 dark:bg-orange-500/15 dark:text-orange-400">
                 <Cpu className="h-5 w-5" />
               </span>
               <span>
-                <span className="block text-sm font-semibold text-zinc-900">Подключить BrewForge</span>
-                <span className="mt-0.5 block text-xs leading-5 text-zinc-500">
+                <span className="block text-sm font-semibold text-foreground">Подключить BrewForge</span>
+                <span className="mt-0.5 block text-xs leading-5 text-muted-foreground">
                   Автоматика варки: контроллер сам греет и держит паузы затирания. Пока не подключён.
                 </span>
               </span>
@@ -298,7 +298,7 @@ export function BrewPickerDialog({ open, onOpenChange, recipeId, slug, recipeTit
         <div className="space-y-3 p-5">
           <label
             className={`flex cursor-pointer items-start gap-3 rounded-lg border px-3 py-3 ${
-              consumeIngredients ? "border-zinc-900 bg-zinc-50" : "border-zinc-200 bg-white"
+              consumeIngredients ? "border-foreground bg-muted" : "border-border bg-card"
             }`}
           >
             <input
@@ -307,10 +307,10 @@ export function BrewPickerDialog({ open, onOpenChange, recipeId, slug, recipeTit
               onChange={(event) => setConsumeIngredients(event.target.checked)}
               className="mt-1"
             />
-            <span className="block text-sm font-semibold text-zinc-900">Списать ингредиенты со склада</span>
+            <span className="block text-sm font-semibold text-foreground">Списать ингредиенты со склада</span>
           </label>
           {error ? (
-            <div className="rounded-lg border border-rose-200 bg-rose-50 px-3 py-3 text-sm text-rose-900" role="alert">
+            <div className="rounded-lg border border-destructive-border bg-destructive-subtle px-3 py-3 text-sm text-destructive-subtle-foreground" role="alert">
               {error}
             </div>
           ) : null}
@@ -340,11 +340,11 @@ export function BrewPickerDialog({ open, onOpenChange, recipeId, slug, recipeTit
             <RemoteDisabledNotice message={remoteDisabled.message} brewBatchId={remoteDisabled.brewBatchId} />
           ) : (
             <>
-              <div className="flex items-start gap-3 rounded-lg border border-amber-200 bg-amber-50 px-3 py-3 text-sm text-amber-950">
-                <ShieldAlert className="mt-0.5 h-5 w-5 shrink-0 text-amber-600" />
+              <div className="flex items-start gap-3 rounded-lg border border-warning/30 bg-warning-subtle px-3 py-3 text-sm text-warning-subtle-foreground">
+                <ShieldAlert className="mt-0.5 h-5 w-5 shrink-0 text-warning-subtle-foreground" />
                 <div>
                   <p className="font-semibold">Запуск включит нагрев</p>
-                  <p className="mt-1 text-xs leading-5 text-amber-900">
+                  <p className="mt-1 text-xs leading-5 text-warning-subtle-foreground">
                     Устройство «{selectedDevice?.name ?? "—"}» начнёт нагрев ТЭНов по рецепту. Убедитесь, что в
                     ёмкости есть вода, а оборудование под присмотром.
                   </p>
@@ -352,7 +352,7 @@ export function BrewPickerDialog({ open, onOpenChange, recipeId, slug, recipeTit
               </div>
               {error ? (
                 <div
-                  className="flex items-start gap-2 rounded-lg border border-rose-200 bg-rose-50 px-3 py-3 text-sm text-rose-900"
+                  className="flex items-start gap-2 rounded-lg border border-destructive-border bg-destructive-subtle px-3 py-3 text-sm text-destructive-subtle-foreground"
                   role="alert"
                 >
                   <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" />

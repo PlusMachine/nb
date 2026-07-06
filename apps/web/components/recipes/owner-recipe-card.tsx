@@ -45,7 +45,7 @@ function OwnerStatusBadge({ state }: { state: RecipePublicationState }) {
   return (
     <span
       className={`inline-flex items-center rounded-full px-2 py-0.5 text-[11px] font-medium backdrop-blur ${
-        published ? "bg-emerald-600/90 text-white" : "bg-white/85 text-zinc-700 ring-1 ring-black/5"
+        published ? "bg-primary/90 text-primary-foreground" : "bg-card/85 text-foreground ring-1 ring-black/5"
       }`}
     >
       {recipePublicationStateLabels[state]}
@@ -60,7 +60,7 @@ function StyleFitBadge({ fit }: { fit: "in_style" | "deviations" }) {
   return (
     <span
       className={`inline-flex shrink-0 items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-medium ring-1 ${
-        ok ? "bg-emerald-50 text-emerald-700 ring-emerald-200" : "bg-zinc-100 text-zinc-600 ring-zinc-200"
+        ok ? "bg-success-subtle text-success-subtle-foreground ring-success/30" : "bg-muted text-muted-foreground ring-border"
       }`}
     >
       {ok ? <CircleCheck className="h-3 w-3" aria-hidden /> : null}
@@ -84,7 +84,7 @@ function OwnerDeleteAction({ recipeId, title }: { recipeId: string; title: strin
           }}
           disabled={isPending}
           aria-label="Удалить рецепт"
-          className="inline-flex h-7 w-7 items-center justify-center rounded-md bg-white/85 text-zinc-500 shadow-sm ring-1 ring-black/5 backdrop-blur transition-colors hover:bg-red-50 hover:text-red-600 disabled:opacity-60"
+          className="inline-flex h-7 w-7 items-center justify-center rounded-md bg-card/85 text-muted-foreground shadow-sm ring-1 ring-black/5 backdrop-blur transition-colors hover:bg-destructive-subtle hover:text-destructive disabled:opacity-60"
         >
           <X className="h-4 w-4" />
         </button>
@@ -103,20 +103,28 @@ function VersionSuffix({ recipe }: { recipe: OwnerRecipeCardDto }) {
   if (recipe.versionCount <= 1) {
     return null;
   }
-  return <span className="ml-1.5 text-sm font-normal text-zinc-400">v{recipe.versionNumber}</span>;
+  return <span className="ml-1.5 text-sm font-normal text-muted-foreground">v{recipe.versionNumber}</span>;
 }
 
 /** Grid-карточка владельца. */
-export function OwnerRecipeCard({ recipe, preferredGravityUnit }: { recipe: OwnerRecipeCardDto; preferredGravityUnit: PreferredGravityUnit }) {
+export function OwnerRecipeCard({
+  recipe,
+  preferredGravityUnit,
+  showDelete = true
+}: {
+  recipe: OwnerRecipeCardDto;
+  preferredGravityUnit: PreferredGravityUnit;
+  showDelete?: boolean;
+}) {
   const editHref = `/app/recipes/${recipe.id}/edit`;
   const publicPage = publicHref(recipe);
 
   return (
-    <article className="group relative overflow-hidden rounded-2xl border border-zinc-200 bg-white shadow-sm transition hover:border-zinc-300 hover:shadow-md">
+    <article className="group relative overflow-hidden rounded-2xl border border-border bg-card shadow-sm transition hover:border-border hover:shadow-md">
       <Link
         href={editHref}
         aria-label={recipe.title}
-        className="absolute inset-0 z-0 rounded-2xl focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-zinc-500"
+        className="absolute inset-0 z-0 rounded-2xl focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring"
       />
 
       <div className="pointer-events-none flex h-full flex-col">
@@ -136,20 +144,20 @@ export function OwnerRecipeCard({ recipe, preferredGravityUnit }: { recipe: Owne
         <div className="flex flex-1 flex-col gap-2 p-4">
           <StyleChip style={toStyleChip(recipe)} styleHref={recipe.styleHref} />
 
-          <h2 className="line-clamp-2 text-base font-semibold leading-snug text-zinc-950 group-hover:text-zinc-700">
+          <h2 className="line-clamp-2 text-base font-semibold leading-snug text-foreground group-hover:text-muted-foreground">
             {recipe.title}
             <VersionSuffix recipe={recipe} />
           </h2>
 
           <div className="mt-auto flex flex-wrap items-center justify-between gap-2 pt-1">
-            <UpdatedAgo value={recipe.updatedAt} className="truncate text-xs text-zinc-500" />
+            <UpdatedAgo value={recipe.updatedAt} className="truncate text-xs text-muted-foreground" />
             <div className="flex items-center gap-1.5">
               <RecipeMatchBadge recipeId={recipe.id} />
               {recipe.styleFit ? <StyleFitBadge fit={recipe.styleFit} /> : null}
             </div>
           </div>
 
-          <div className="grid grid-cols-4 gap-2 border-t border-zinc-100 pt-3">
+          <div className="grid grid-cols-4 gap-2 border-t border-border pt-3">
             <StatCell label="ABV" value={formatAbvShort(recipe.abv)} />
             <StatCell label="IBU" value={formatIbuShort(recipe.ibu)} />
             <StatCell label="OG" value={formatGravity(recipe.og, preferredGravityUnit)} />
@@ -160,7 +168,7 @@ export function OwnerRecipeCard({ recipe, preferredGravityUnit }: { recipe: Owne
             <Link
               href={publicPage}
               onClick={(event) => event.stopPropagation()}
-              className="pointer-events-auto relative z-10 inline-flex w-fit items-center gap-1 text-xs font-medium text-emerald-700 transition-colors hover:text-emerald-900"
+              className="pointer-events-auto relative z-10 inline-flex w-fit items-center gap-1 text-xs font-medium text-primary transition-colors hover:text-primary/80"
             >
               <ExternalLink className="h-3 w-3" aria-hidden />
               Публичная страница
@@ -169,9 +177,11 @@ export function OwnerRecipeCard({ recipe, preferredGravityUnit }: { recipe: Owne
         </div>
       </div>
 
-      <div className="pointer-events-auto absolute right-2.5 top-2.5 z-10">
-        <OwnerDeleteAction recipeId={recipe.id} title={recipe.title} />
-      </div>
+      {showDelete ? (
+        <div className="pointer-events-auto absolute right-2.5 top-2.5 z-10">
+          <OwnerDeleteAction recipeId={recipe.id} title={recipe.title} />
+        </div>
+      ) : null}
     </article>
   );
 }
@@ -182,11 +192,11 @@ export function OwnerRecipeRow({ recipe, preferredGravityUnit }: { recipe: Owner
   const publicPage = publicHref(recipe);
 
   return (
-    <article className="group relative flex items-center gap-4 overflow-hidden rounded-2xl border border-zinc-200 bg-white p-3 pr-14 shadow-sm transition hover:border-zinc-300 hover:shadow-md">
+    <article className="group relative flex items-center gap-4 overflow-hidden rounded-2xl border border-border bg-card p-3 pr-14 shadow-sm transition hover:border-border hover:shadow-md">
       <Link
         href={editHref}
         aria-label={recipe.title}
-        className="absolute inset-0 z-0 rounded-2xl focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-zinc-500"
+        className="absolute inset-0 z-0 rounded-2xl focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring"
       />
 
       <RecipeThumb
@@ -202,11 +212,11 @@ export function OwnerRecipeRow({ recipe, preferredGravityUnit }: { recipe: Owner
           <OwnerStatusBadge state={recipe.publicationState} />
           <StyleChip style={toStyleChip(recipe)} styleHref={recipe.styleHref} />
         </div>
-        <h2 className="mt-1 line-clamp-1 text-base font-semibold leading-snug text-zinc-950 group-hover:text-zinc-700">
+        <h2 className="mt-1 line-clamp-1 text-base font-semibold leading-snug text-foreground group-hover:text-muted-foreground">
           {recipe.title}
           <VersionSuffix recipe={recipe} />
         </h2>
-        <div className="mt-1 flex flex-wrap items-center gap-2 text-xs text-zinc-500">
+        <div className="mt-1 flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
           <UpdatedAgo value={recipe.updatedAt} />
           <RecipeMatchBadge recipeId={recipe.id} />
           {recipe.styleFit ? <StyleFitBadge fit={recipe.styleFit} /> : null}
@@ -214,7 +224,7 @@ export function OwnerRecipeRow({ recipe, preferredGravityUnit }: { recipe: Owner
             <Link
               href={publicPage}
               onClick={(event) => event.stopPropagation()}
-              className="pointer-events-auto relative z-10 inline-flex items-center gap-1 font-medium text-emerald-700 transition-colors hover:text-emerald-900"
+              className="pointer-events-auto relative z-10 inline-flex items-center gap-1 font-medium text-primary transition-colors hover:text-primary/80"
             >
               <ExternalLink className="h-3 w-3" aria-hidden />
               Публичная страница

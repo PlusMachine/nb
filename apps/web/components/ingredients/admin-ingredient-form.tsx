@@ -33,8 +33,8 @@ type AdminIngredientFieldVisibility = {
   advanced: string[];
 };
 
-const inputClassName = "mt-1 w-full rounded border border-zinc-300 px-3 py-2";
-const sectionClassName = "space-y-4 rounded-xl border border-zinc-200 p-4";
+const inputClassName = "mt-1 w-full rounded border border-border px-3 py-2";
+const sectionClassName = "space-y-4 rounded-xl border border-border p-4";
 const textareaClassName = `${inputClassName} min-h-[120px] font-mono text-xs`;
 
 const formatEnumLabel = (value: string) => value
@@ -229,7 +229,7 @@ export const AdminIngredientForm = ({ initial }: { initial?: IngredientFormValue
 
   return (
     <form
-      className="space-y-5 rounded-2xl border border-zinc-200 bg-white p-5"
+      className="space-y-5 rounded-2xl border border-border bg-card p-5"
       onSubmit={async (event) => {
         event.preventDefault();
         setError(null);
@@ -354,17 +354,17 @@ export const AdminIngredientForm = ({ initial }: { initial?: IngredientFormValue
       }}
     >
       <header className="space-y-1">
-        <h1 className="text-xl font-semibold text-zinc-950">
+        <h1 className="text-xl font-semibold text-foreground">
           {initial?.id ? "Edit ingredient" : "Create ingredient"}
         </h1>
-        <p className="text-sm text-zinc-600">
+        <p className="text-sm text-muted-foreground">
           Форма работает с новой моделью `ingredients`, а aliases/sources/package variants редактируются как source-of-truth.
         </p>
-        {error ? <p role="alert" className="text-sm text-red-600">{error}</p> : null}
+        {error ? <p role="alert" className="text-sm text-destructive">{error}</p> : null}
       </header>
 
       <section className={sectionClassName}>
-        <h2 className="text-sm font-semibold uppercase tracking-wide text-zinc-600">Taxonomy</h2>
+        <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">Taxonomy</h2>
         <div className="grid gap-3 md:grid-cols-3">
           <label className="text-sm">
             Category
@@ -405,13 +405,13 @@ export const AdminIngredientForm = ({ initial }: { initial?: IngredientFormValue
           </label>
           <label className="text-sm">
             Type
-            <input value={resolvedType} readOnly className={`${inputClassName} bg-zinc-50`} />
+            <input value={resolvedType} readOnly className={`${inputClassName} bg-muted`} />
           </label>
         </div>
       </section>
 
       <section className={sectionClassName}>
-        <h2 className="text-sm font-semibold uppercase tracking-wide text-zinc-600">Names & Display</h2>
+        <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">Names & Display</h2>
         <div className="grid gap-3 md:grid-cols-2">
           <label className="text-sm">
             Name RU
@@ -454,7 +454,7 @@ export const AdminIngredientForm = ({ initial }: { initial?: IngredientFormValue
       </section>
 
       <section className={sectionClassName}>
-        <h2 className="text-sm font-semibold uppercase tracking-wide text-zinc-600">Meta</h2>
+        <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">Meta</h2>
         <div className="grid gap-3 md:grid-cols-3">
           <label className="text-sm">
             Brand
@@ -508,7 +508,7 @@ export const AdminIngredientForm = ({ initial }: { initial?: IngredientFormValue
       </section>
 
       <section className={sectionClassName}>
-        <h2 className="text-sm font-semibold uppercase tracking-wide text-zinc-600">JSON Editors</h2>
+        <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">JSON Editors</h2>
         <div className="grid gap-4">
           <label className="text-sm">
             Attributes
@@ -558,23 +558,23 @@ export const AdminIngredientForm = ({ initial }: { initial?: IngredientFormValue
       </section>
 
       <section className={sectionClassName}>
-        <h2 className="text-sm font-semibold uppercase tracking-wide text-zinc-600">Preview</h2>
+        <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">Preview</h2>
         <div className="grid gap-3 md:grid-cols-2">
-          <div className="rounded-lg border border-zinc-200 bg-zinc-50 p-3">
-            <p className="text-xs uppercase tracking-wide text-zinc-500">Catalog / Search</p>
-            <p className="mt-2 font-medium text-zinc-950">{preview.primaryName || "No primary label"}</p>
-            {preview.secondaryName ? <p className="text-sm text-zinc-500">{preview.secondaryName}</p> : null}
-            {preview.summary ? <p className="mt-2 text-sm text-zinc-600">{preview.summary}</p> : null}
+          <div className="rounded-lg border border-border bg-muted p-3">
+            <p className="text-xs uppercase tracking-wide text-muted-foreground">Catalog / Search</p>
+            <p className="mt-2 font-medium text-foreground">{preview.primaryName || "No primary label"}</p>
+            {preview.secondaryName ? <p className="text-sm text-muted-foreground">{preview.secondaryName}</p> : null}
+            {preview.summary ? <p className="mt-2 text-sm text-muted-foreground">{preview.summary}</p> : null}
           </div>
-          <div className="rounded-lg border border-zinc-200 bg-zinc-50 p-3">
-            <p className="text-xs uppercase tracking-wide text-zinc-500">Recipe / Inventory</p>
-            <p className="mt-2 font-medium text-zinc-950">{preview.primaryName || "No primary label"}</p>
-            <p className="text-sm text-zinc-500">{resolvedType} / {selectedCategory} / {selectedSubtype ?? "none"}</p>
-            <p className="mt-2 text-sm text-zinc-600">
+          <div className="rounded-lg border border-border bg-muted p-3">
+            <p className="text-xs uppercase tracking-wide text-muted-foreground">Recipe / Inventory</p>
+            <p className="mt-2 font-medium text-foreground">{preview.primaryName || "No primary label"}</p>
+            <p className="text-sm text-muted-foreground">{resolvedType} / {selectedCategory} / {selectedSubtype ?? "none"}</p>
+            <p className="mt-2 text-sm text-muted-foreground">
               Primary fields: {fieldVisibility.primary.join(", ")}
             </p>
             {fieldVisibility.advanced.length ? (
-              <p className="text-sm text-zinc-600">Advanced fields: {fieldVisibility.advanced.join(", ")}</p>
+              <p className="text-sm text-muted-foreground">Advanced fields: {fieldVisibility.advanced.join(", ")}</p>
             ) : null}
           </div>
         </div>
@@ -584,7 +584,7 @@ export const AdminIngredientForm = ({ initial }: { initial?: IngredientFormValue
         <Button type="submit" size="md">
           {initial?.id ? "Save ingredient" : "Create ingredient"}
         </Button>
-        <Link href="/admin/ingredients" className="rounded-lg border border-zinc-300 px-4 py-2 text-sm text-zinc-700">
+        <Link href="/admin/ingredients" className="rounded-lg border border-border px-4 py-2 text-sm text-foreground">
           Cancel
         </Link>
       </div>

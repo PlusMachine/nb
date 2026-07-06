@@ -48,14 +48,14 @@ export const SliderScaffold = ({
     minStepsBetweenThumbs={1}
     disabled={disabled}
   >
-    <Slider.Track className="relative h-1.5 w-full grow rounded-full bg-zinc-200">
-      <Slider.Range className="absolute h-full rounded-full bg-zinc-900" />
+    <Slider.Track className="relative h-1.5 w-full grow rounded-full bg-muted">
+      <Slider.Range className="absolute h-full rounded-full bg-foreground" />
     </Slider.Track>
     {value.map((_, index) => (
       <Slider.Thumb
         key={index}
         aria-label={thumbLabels?.[index] ?? ariaLabel}
-        className="block h-5 w-5 rounded-full border-2 border-zinc-900 bg-white shadow-sm transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-400 disabled:opacity-50"
+        className="block h-5 w-5 rounded-full border-2 border-foreground bg-card shadow-sm transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:opacity-50"
       />
     ))}
   </Slider.Root>

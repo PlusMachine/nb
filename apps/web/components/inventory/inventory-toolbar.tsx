@@ -84,44 +84,44 @@ const categoryMeta: Record<PrimaryButtonKey, {
 }> = {
   fermentable: {
     icon: Wheat,
-    activeColor: "text-amber-800",
-    activeBg: "bg-amber-50",
-    activeRing: "ring-amber-300/80",
+    activeColor: "text-amber-800 dark:text-amber-300",
+    activeBg: "bg-amber-50 dark:bg-amber-500/15",
+    activeRing: "ring-amber-300/80 dark:ring-amber-500/30",
     dotColor: "bg-amber-500"
   },
   hop: {
     icon: Hop,
-    activeColor: "text-emerald-800",
-    activeBg: "bg-emerald-50",
-    activeRing: "ring-emerald-300/80",
+    activeColor: "text-emerald-800 dark:text-emerald-300",
+    activeBg: "bg-emerald-50 dark:bg-emerald-500/15",
+    activeRing: "ring-emerald-300/80 dark:ring-emerald-500/30",
     dotColor: "bg-emerald-500"
   },
   yeast: {
     icon: FlaskConical,
-    activeColor: "text-violet-800",
-    activeBg: "bg-violet-50",
-    activeRing: "ring-violet-300/80",
+    activeColor: "text-violet-800 dark:text-violet-300",
+    activeBg: "bg-violet-50 dark:bg-violet-500/15",
+    activeRing: "ring-violet-300/80 dark:ring-violet-500/30",
     dotColor: "bg-violet-500"
   },
   water_treatment: {
     icon: Droplets,
-    activeColor: "text-sky-800",
-    activeBg: "bg-sky-50",
-    activeRing: "ring-sky-300/80",
+    activeColor: "text-sky-800 dark:text-sky-300",
+    activeBg: "bg-sky-50 dark:bg-sky-500/15",
+    activeRing: "ring-sky-300/80 dark:ring-sky-500/30",
     dotColor: "bg-sky-500"
   },
   consumable_supply: {
     icon: Package,
-    activeColor: "text-zinc-800",
-    activeBg: "bg-zinc-100",
-    activeRing: "ring-zinc-300/80",
-    dotColor: "bg-zinc-400"
+    activeColor: "text-foreground",
+    activeBg: "bg-muted",
+    activeRing: "ring-border",
+    dotColor: "bg-muted-foreground"
   },
   consumable_additive: {
     icon: Package,
-    activeColor: "text-orange-800",
-    activeBg: "bg-orange-50",
-    activeRing: "ring-orange-300/80",
+    activeColor: "text-orange-800 dark:text-orange-300",
+    activeBg: "bg-orange-50 dark:bg-orange-500/15",
+    activeRing: "ring-orange-300/80 dark:ring-orange-500/30",
     dotColor: "bg-orange-500"
   }
 };
@@ -345,21 +345,21 @@ export function InventoryToolbar({
               onClick={() => handlePrimaryFilterClick(button.key)}
               className={`flex items-center justify-center gap-1.5 rounded-xl border px-2 py-2.5 text-xs font-medium transition-all duration-150 sm:gap-2 sm:px-3 sm:text-[13px] ${
                 isDisabled
-                  ? "cursor-not-allowed border-zinc-100 bg-zinc-50 text-zinc-300"
+                  ? "cursor-not-allowed border-border bg-muted text-muted-foreground"
                   : button.active
                     ? `${meta.activeBg} ${meta.activeRing} ring-1 border-transparent ${meta.activeColor} shadow-sm`
-                    : "border-zinc-200 bg-white text-zinc-600 hover:border-zinc-300 hover:bg-zinc-50 active:scale-[0.97]"
+                    : "border-border bg-card text-muted-foreground hover:border-border hover:bg-accent active:scale-[0.97]"
               }`}
             >
-              <Icon className={`h-4 w-4 shrink-0 ${isDisabled ? "text-zinc-300" : button.active ? "text-current" : ""}`} />
+              <Icon className={`h-4 w-4 shrink-0 ${isDisabled ? "text-muted-foreground" : button.active ? "text-current" : ""}`} />
               <span className="truncate">{button.label}</span>
               {showCategoryCounts ? (
                 <span className={`shrink-0 rounded-full px-1.5 py-0.5 text-center text-[11px] font-semibold leading-none ${
                   isDisabled
-                    ? "bg-zinc-100 text-zinc-400"
+                    ? "bg-muted text-muted-foreground"
                     : button.active
-                      ? "bg-white/70 text-current"
-                      : "bg-zinc-100 text-zinc-500"
+                      ? "bg-card/70 text-current"
+                      : "bg-muted text-muted-foreground"
                 }`}>
                   {button.count}
                 </span>
@@ -379,8 +379,8 @@ export function InventoryToolbar({
               className={`rounded-full border px-3 py-1.5 text-xs font-medium transition-all duration-150 ${
                 (value === "malt" && subtype === "malt" && !group)
                 || (value !== "malt" && subtype === "fermentable" && group === value)
-                  ? "border-amber-300 bg-amber-50 text-amber-900 shadow-sm"
-                  : "border-zinc-200 bg-white text-zinc-600 hover:border-zinc-300 hover:bg-zinc-50"
+                  ? "border-amber-300 bg-amber-50 text-amber-900 shadow-sm dark:border-amber-500/30 dark:bg-amber-500/15 dark:text-amber-300"
+                  : "border-border bg-card text-muted-foreground hover:border-border hover:bg-accent"
               }`}
             >
               {value === "malt" ? inventoryFermentableSubtypeLabels.malt : resolveFermentableQuickStartGroupLabel(value)}
@@ -401,8 +401,8 @@ export function InventoryToolbar({
               onClick={() => handleConsumableChipClick(value)}
               className={`rounded-full border px-3 py-1.5 text-xs font-medium transition-all duration-150 ${
                 group === value
-                  ? "border-amber-300 bg-amber-50 text-amber-900 shadow-sm"
-                  : "border-zinc-200 bg-white text-zinc-600 hover:border-zinc-300 hover:bg-zinc-50"
+                  ? "border-amber-300 bg-amber-50 text-amber-900 shadow-sm dark:border-amber-500/30 dark:bg-amber-500/15 dark:text-amber-300"
+                  : "border-border bg-card text-muted-foreground hover:border-border hover:bg-accent"
               }`}
             >
               {resolveConsumablePickerGroupLabel(value) ?? value}
@@ -438,8 +438,8 @@ export function InventoryToolbar({
               title={showFinished ? "Скрыть закончившиеся" : "Показать закончившиеся"}
               className={`flex items-center gap-1.5 rounded-lg border px-3 py-2 text-xs font-medium transition-all duration-150 ${
                 showFinished
-                  ? "border-amber-200 bg-amber-50 text-amber-800 shadow-sm"
-                  : "border-zinc-200 bg-white text-zinc-500 hover:border-zinc-300 hover:bg-zinc-50"
+                  ? "border-warning/30 bg-warning-subtle text-warning-subtle-foreground shadow-sm"
+                  : "border-border bg-card text-muted-foreground hover:border-border hover:bg-accent"
               }`}
             >
               {showFinished ? <EyeOff className="h-3.5 w-3.5" /> : <Eye className="h-3.5 w-3.5" />}
@@ -454,8 +454,8 @@ export function InventoryToolbar({
                 title="Сортировка"
                 className={`flex items-center gap-1.5 rounded-lg border px-3 py-2 text-xs font-medium transition-all duration-150 ${
                   sort !== defaultInventorySortOption
-                    ? "border-blue-200 bg-blue-50 text-blue-800 shadow-sm"
-                    : "border-zinc-200 bg-white text-zinc-500 hover:border-zinc-300 hover:bg-zinc-50"
+                    ? "border-primary/30 bg-accent text-primary shadow-sm"
+                    : "border-border bg-card text-muted-foreground hover:border-border hover:bg-accent"
                 }`}
               >
                 <ArrowUpDown className="h-3.5 w-3.5" />
@@ -465,7 +465,7 @@ export function InventoryToolbar({
             items={Object.entries(inventorySortLabels).map(([value, label]): DropdownMenuItem => ({
               key: value,
               label,
-              icon: value === sort ? <Check className="h-4 w-4 text-blue-600" /> : undefined,
+              icon: value === sort ? <Check className="h-4 w-4 text-primary" /> : undefined,
               onSelect: () => replaceHref(buildInventoryToolbarHref(pathname, {
                 search: searchValue,
                 category,
@@ -494,7 +494,7 @@ export function InventoryToolbar({
                 }));
               }}
               title="Сбросить фильтры"
-              className="flex items-center gap-1 rounded-lg border border-zinc-200 bg-white px-3 py-2 text-xs font-medium text-zinc-500 transition-all duration-150 hover:border-zinc-300 hover:bg-zinc-50"
+              className="flex items-center gap-1 rounded-lg border border-border bg-card px-3 py-2 text-xs font-medium text-muted-foreground transition-all duration-150 hover:border-border hover:bg-accent"
             >
               <RotateCcw className="h-3.5 w-3.5" />
               <span className="hidden sm:inline">Сбросить</span>
@@ -504,8 +504,8 @@ export function InventoryToolbar({
       </div>
 
       {isPending || isSearchPending ? (
-        <div className="flex items-center gap-2 text-xs text-zinc-400">
-          <div className="h-3 w-3 animate-spin rounded-full border-2 border-zinc-300 border-t-zinc-600" />
+        <div className="flex items-center gap-2 text-xs text-muted-foreground">
+          <div className="h-3 w-3 animate-spin rounded-full border-2 border-border border-t-foreground" />
           Обновляем список…
         </div>
       ) : null}

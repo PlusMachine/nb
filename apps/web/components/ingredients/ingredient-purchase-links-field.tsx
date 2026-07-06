@@ -199,11 +199,11 @@ export function IngredientPurchaseLinksField({
   return (
     <section className="space-y-3" data-testid={testId}>
       <div className="space-y-1">
-        <h4 className="text-sm font-medium text-zinc-900">Ссылки на покупку</h4>
+        <h4 className="text-sm font-medium text-foreground">Ссылки на покупку</h4>
       </div>
 
       {isLoading ? (
-        <p className="text-sm text-zinc-500">Загружаем ссылки...</p>
+        <p className="text-sm text-muted-foreground">Загружаем ссылки...</p>
       ) : null}
 
       {rows.length > 0 ? (
@@ -219,7 +219,7 @@ export function IngredientPurchaseLinksField({
 
             if (isEditing) {
               return (
-                <div key={`purchase-link-row-${index}`} className="space-y-3 rounded-2xl border border-zinc-200 bg-zinc-50 p-3">
+                <div key={`purchase-link-row-${index}`} className="space-y-3 rounded-2xl border border-border bg-muted p-3">
                   <input
                     type="url"
                     value={draft.value}
@@ -231,14 +231,14 @@ export function IngredientPurchaseLinksField({
                       });
                       setDraftError(null);
                     }}
-                    className="w-full rounded-xl border border-zinc-200 bg-white px-3 py-2 text-sm"
+                    className="w-full rounded-xl border border-border bg-card px-3 py-2 text-sm"
                     placeholder="https://..."
                   />
                   {draftPreview ? (
-                    <div className="flex items-center gap-2 text-sm text-zinc-600">
+                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
                       <PurchaseLinkMarketplaceBadge marketplace={draftPreview.marketplace} />
-                      <span className="font-medium text-zinc-900">{draftPreview.marketplaceLabel}</span>
-                      <span className="text-zinc-400">•</span>
+                      <span className="font-medium text-foreground">{draftPreview.marketplaceLabel}</span>
+                      <span className="text-muted-foreground">•</span>
                       <span>{draftPreview.displayHost}</span>
                     </div>
                   ) : null}
@@ -255,12 +255,12 @@ export function IngredientPurchaseLinksField({
             }
 
             return (
-              <div key={`purchase-link-row-${index}`} className="flex items-center justify-between gap-3 rounded-2xl border border-zinc-200 bg-zinc-50 p-3">
+              <div key={`purchase-link-row-${index}`} className="flex items-center justify-between gap-3 rounded-2xl border border-border bg-muted p-3">
                 <div className="min-w-0 flex items-center gap-2">
                   <PurchaseLinkMarketplaceBadge marketplace={preview.marketplace} />
                   <div className="min-w-0">
-                    <p className="truncate text-sm font-medium text-zinc-900">{preview.marketplaceLabel}</p>
-                    <p className="truncate text-xs text-zinc-500">{preview.displayHost}</p>
+                    <p className="truncate text-sm font-medium text-foreground">{preview.marketplaceLabel}</p>
+                    <p className="truncate text-xs text-muted-foreground">{preview.displayHost}</p>
                   </div>
                 </div>
                 <div className="flex shrink-0 items-center gap-1">
@@ -274,7 +274,7 @@ export function IngredientPurchaseLinksField({
                       });
                       setDraftError(null);
                     }}
-                    className="rounded-xl border border-zinc-200 bg-white p-2 text-zinc-400 transition-colors hover:bg-zinc-100 hover:text-zinc-700"
+                    className="rounded-xl border border-border bg-card p-2 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
                     aria-label="Редактировать ссылку"
                   >
                     <Pencil className="h-4 w-4" />
@@ -285,7 +285,7 @@ export function IngredientPurchaseLinksField({
                       setRows((current) => removeIngredientPurchaseLinkRow(current, index));
                       setDraftError(null);
                     }}
-                    className="rounded-xl border border-zinc-200 bg-white p-2 text-zinc-400 transition-colors hover:bg-red-50 hover:text-red-600"
+                    className="rounded-xl border border-border bg-card p-2 text-muted-foreground transition-colors hover:bg-destructive-subtle hover:text-destructive"
                     aria-label="Удалить ссылку"
                   >
                     <Trash2 className="h-4 w-4" />
@@ -298,7 +298,7 @@ export function IngredientPurchaseLinksField({
       ) : null}
 
       {draft?.mode === "new" ? (
-        <div className="space-y-3 rounded-2xl border border-zinc-200 bg-zinc-50 p-3">
+        <div className="space-y-3 rounded-2xl border border-border bg-muted p-3">
           <input
             type="url"
             value={draft.value}
@@ -309,14 +309,14 @@ export function IngredientPurchaseLinksField({
               });
               setDraftError(null);
             }}
-            className="w-full rounded-xl border border-zinc-200 bg-white px-3 py-2 text-sm"
+            className="w-full rounded-xl border border-border bg-card px-3 py-2 text-sm"
             placeholder="https://..."
           />
           {draftPreview ? (
-            <div className="flex items-center gap-2 text-sm text-zinc-600">
+            <div className="flex items-center gap-2 text-sm text-muted-foreground">
               <PurchaseLinkMarketplaceBadge marketplace={draftPreview.marketplace} />
-              <span className="font-medium text-zinc-900">{draftPreview.marketplaceLabel}</span>
-              <span className="text-zinc-400">•</span>
+              <span className="font-medium text-foreground">{draftPreview.marketplaceLabel}</span>
+              <span className="text-muted-foreground">•</span>
               <span>{draftPreview.displayHost}</span>
             </div>
           ) : null}
@@ -349,8 +349,8 @@ export function IngredientPurchaseLinksField({
         </Button>
       ) : null}
 
-      {draftError ? <p role="alert" className="text-sm text-red-600">{draftError}</p> : null}
-      {message ? <p role="alert" className="text-sm text-red-600">{message}</p> : null}
+      {draftError ? <p role="alert" className="text-sm text-destructive">{draftError}</p> : null}
+      {message ? <p role="alert" className="text-sm text-destructive">{message}</p> : null}
     </section>
   );
 }

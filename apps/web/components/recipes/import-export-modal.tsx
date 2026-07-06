@@ -8,6 +8,7 @@ import { ConfirmActionDialog } from "@/components/shared/confirm-action-dialog";
 import { importBeerXmlToCanonicalRecipe } from "@/features/recipes/interop/beerxml";
 import { importBrewfatherJsonToCanonicalRecipe } from "@/features/recipes/interop/brewfather-json";
 import type { CanonicalRecipe } from "@/features/recipes/interop/canonical";
+import { defaultPreferredGravityUnit, formatGravity, type PreferredGravityUnit } from "@/features/system/gravity-units";
 
 export type ImportExportActionResult = {
   ok: boolean;
@@ -46,10 +47,10 @@ const formatFieldErrors = (fieldErrors: Record<string, string> | undefined) => (
 );
 
 const getStatusClasses = (tone: ImportExportStatus["tone"]) => {
-  if (tone === "success") return "border-emerald-200 bg-emerald-50 text-emerald-950";
-  if (tone === "error") return "border-red-200 bg-red-50 text-red-950";
-  if (tone === "pending") return "border-amber-200 bg-amber-50 text-amber-950";
-  return "border-zinc-200 bg-zinc-50 text-zinc-700";
+  if (tone === "success") return "border-success/30 bg-success-subtle text-success-subtle-foreground";
+  if (tone === "error") return "border-destructive-border bg-destructive-subtle text-destructive-subtle-foreground";
+  if (tone === "pending") return "border-warning/30 bg-warning-subtle text-warning-subtle-foreground";
+  return "border-border bg-muted text-foreground";
 };
 
 const isRecord = (value: unknown): value is Record<string, unknown> => (
@@ -94,7 +95,10 @@ const readMashStepCount = (canonical: CanonicalRecipe) => {
   return Array.isArray(mashProfile?.steps) ? mashProfile.steps.length : 0;
 };
 
-const summarizeCanonicalRecipe = (canonical: CanonicalRecipe): ImportRecipeSummary => {
+const summarizeCanonicalRecipe = (
+  canonical: CanonicalRecipe,
+  preferredGravityUnit: PreferredGravityUnit
+): ImportRecipeSummary => {
   const counts = canonical.ingredients.reduce<Record<string, number>>((acc, ingredient) => {
     acc[ingredient.category] = (acc[ingredient.category] ?? 0) + 1;
     return acc;
@@ -110,8 +114,10 @@ const summarizeCanonicalRecipe = (canonical: CanonicalRecipe): ImportRecipeSumma
   ].filter(Boolean).join(" • ");
   const stats = readImportedStats(canonical);
   const statsLabel = [
-    stats.og != null ? `OG ${formatNumber(stats.og, 3)}` : null,
-    stats.fg != null ? `FG ${formatNumber(stats.fg, 3)}` : null,
+    // og/fg из файла — всегда SG (BeerXML/Brewfather так и хранят), formatGravity
+    // сам переводит их в предпочитаемую единицу пользователя.
+    stats.og != null ? `OG ${formatGravity(stats.og, preferredGravityUnit)}` : null,
+    stats.fg != null ? `FG ${formatGravity(stats.fg, preferredGravityUnit)}` : null,
     stats.ibu != null ? `IBU ${formatNumber(stats.ibu, 1)}` : null,
     stats.abv != null ? `ABV ${formatNumber(stats.abv, 1)}%` : null,
     stats.color != null ? `SRM ${formatNumber(stats.color, 1)}` : null
@@ -163,7 +169,8 @@ const mapImportSummaryError = (error: unknown) => {
 
 export const buildImportRecipeSummary = (
   format: ImportFormat,
-  text: string
+  text: string,
+  preferredGravityUnit: PreferredGravityUnit = defaultPreferredGravityUnit
 ): ImportRecipeSummaryResult | null => {
   const trimmed = text.trim();
   if (!trimmed) {
@@ -176,7 +183,7 @@ export const buildImportRecipeSummary = (
       : importBrewfatherJsonToCanonicalRecipe(JSON.parse(trimmed));
     return {
       ok: true,
-      summary: summarizeCanonicalRecipe(canonical)
+      summary: summarizeCanonicalRecipe(canonical, preferredGravityUnit)
     };
   } catch (error) {
     return {
@@ -193,7 +200,7 @@ function ImportSummaryCard({ result }: { result: ImportRecipeSummaryResult | nul
 
   if (!result.ok) {
     return (
-      <div className="rounded-lg border border-red-200 bg-red-50 px-3 py-2.5 text-sm text-red-950">
+      <div className="rounded-lg border border-destructive-border bg-destructive-subtle px-3 py-2.5 text-sm text-destructive-subtle-foreground">
         <p className="font-medium">Сводка импорта недоступна.</p>
         <p className="mt-1 text-xs">{result.message}</p>
       </div>
@@ -203,29 +210,29 @@ function ImportSummaryCard({ result }: { result: ImportRecipeSummaryResult | nul
   const { summary } = result;
 
   return (
-    <div className="rounded-lg border border-zinc-200 bg-white px-3 py-3 text-sm text-zinc-700">
-      <p className="text-xs font-semibold uppercase text-zinc-500">Сводка импорта</p>
-      <h5 className="mt-1 text-base font-semibold text-zinc-950">{summary.title}</h5>
+    <div className="rounded-lg border border-border bg-card px-3 py-3 text-sm text-foreground">
+      <p className="text-xs font-semibold uppercase text-muted-foreground">Сводка импорта</p>
+      <h5 className="mt-1 text-base font-semibold text-foreground">{summary.title}</h5>
       <dl className="mt-3 grid gap-2 sm:grid-cols-2">
         <div>
-          <dt className="text-xs text-zinc-500">Ингредиенты</dt>
-          <dd className="font-medium text-zinc-900">{summary.ingredientCountLabel}</dd>
+          <dt className="text-xs text-muted-foreground">Ингредиенты</dt>
+          <dd className="font-medium text-foreground">{summary.ingredientCountLabel}</dd>
         </div>
         <div>
-          <dt className="text-xs text-zinc-500">По категориям</dt>
-          <dd className="font-medium text-zinc-900">{summary.ingredientBreakdown}</dd>
+          <dt className="text-xs text-muted-foreground">По категориям</dt>
+          <dd className="font-medium text-foreground">{summary.ingredientBreakdown}</dd>
         </div>
         <div>
-          <dt className="text-xs text-zinc-500">Параметры</dt>
-          <dd className="font-medium text-zinc-900">{summary.parameters}</dd>
+          <dt className="text-xs text-muted-foreground">Параметры</dt>
+          <dd className="font-medium text-foreground">{summary.parameters}</dd>
         </div>
         <div>
-          <dt className="text-xs text-zinc-500">Показатели из файла</dt>
-          <dd className="font-medium text-zinc-900">{summary.stats}</dd>
+          <dt className="text-xs text-muted-foreground">Показатели из файла</dt>
+          <dd className="font-medium text-foreground">{summary.stats}</dd>
         </div>
       </dl>
-      <p className="mt-3 text-xs text-zinc-500">Затирание: {summary.mash}</p>
-      <p className="mt-1 text-xs text-zinc-500">Позиции: {summary.ingredientPreview}</p>
+      <p className="mt-3 text-xs text-muted-foreground">Затирание: {summary.mash}</p>
+      <p className="mt-1 text-xs text-muted-foreground">Позиции: {summary.ingredientPreview}</p>
     </div>
   );
 }
@@ -255,7 +262,8 @@ export function ImportExportModal({
   onExportBeerXml,
   onImportBeerXml,
   onImportBrewfatherJson,
-  onClose
+  onClose,
+  preferredGravityUnit
 }: {
   open: boolean;
   pending: boolean;
@@ -269,6 +277,7 @@ export function ImportExportModal({
   onImportBeerXml: () => Promise<ImportExportActionResult>;
   onImportBrewfatherJson: () => Promise<ImportExportActionResult>;
   onClose: () => void;
+  preferredGravityUnit: PreferredGravityUnit;
 }) {
   const [mode, setMode] = useState<"import" | "export">("export");
   const [format, setFormat] = useState<ImportFormat>("beerxml");
@@ -295,7 +304,10 @@ export function ImportExportModal({
   const busy = pending || localPending;
   const importText = format === "beerxml" ? beerXmlImport : brewfatherJsonImport;
   const setImportText = format === "beerxml" ? onBeerXmlImportChange : onBrewfatherJsonImportChange;
-  const importSummary = useMemo(() => buildImportRecipeSummary(format, importText), [format, importText]);
+  const importSummary = useMemo(
+    () => buildImportRecipeSummary(format, importText, preferredGravityUnit),
+    [format, importText, preferredGravityUnit]
+  );
   const formatLabel = format === "beerxml" ? "BeerXML" : "Brewfather JSON";
   const fileAccept = format === "beerxml"
     ? ".xml,.beerxml,application/xml,text/xml"
@@ -431,11 +443,11 @@ export function ImportExportModal({
       >
         <DialogHeader>
           <div className="flex items-start gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-zinc-100 text-zinc-700">
+            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-muted text-foreground">
               <FileText className="h-5 w-5" />
             </div>
             <div>
-              <h3 className="text-base font-semibold text-zinc-950">Импорт / экспорт</h3>
+              <h3 className="text-base font-semibold text-foreground">Импорт / экспорт</h3>
             </div>
           </div>
           <DialogCloseButton />
@@ -443,19 +455,19 @@ export function ImportExportModal({
 
         <div className="space-y-4 p-5">
           <section className="space-y-2">
-            <h4 className="text-sm font-semibold text-zinc-900">1. Что хотите сделать?</h4>
+            <h4 className="text-sm font-semibold text-foreground">1. Что хотите сделать?</h4>
             <div className="grid gap-2 sm:grid-cols-2">
-              <button type="button" onClick={() => setMode("import")} className={`rounded-lg px-3 py-3 text-sm ${mode === "import" ? "bg-zinc-900 text-white" : "border border-zinc-200 bg-white text-zinc-700"}`}>Импортировать рецепт</button>
-              <button type="button" onClick={() => setMode("export")} className={`rounded-lg px-3 py-3 text-sm ${mode === "export" ? "bg-zinc-900 text-white" : "border border-zinc-200 bg-white text-zinc-700"}`}>Экспортировать рецепт</button>
+              <button type="button" onClick={() => setMode("import")} className={`rounded-lg px-3 py-3 text-sm ${mode === "import" ? "bg-foreground text-background" : "border border-border bg-card text-foreground"}`}>Импортировать рецепт</button>
+              <button type="button" onClick={() => setMode("export")} className={`rounded-lg px-3 py-3 text-sm ${mode === "export" ? "bg-foreground text-background" : "border border-border bg-card text-foreground"}`}>Экспортировать рецепт</button>
             </div>
           </section>
 
           {mode === "import" ? (
             <section className="space-y-2">
-              <h4 className="text-sm font-semibold text-zinc-900">2. Формат импорта</h4>
+              <h4 className="text-sm font-semibold text-foreground">2. Формат импорта</h4>
               <div className="grid gap-2 sm:grid-cols-2">
-                <button type="button" onClick={() => setFormat("beerxml")} className={`rounded-lg px-3 py-3 text-sm ${format === "beerxml" ? "bg-zinc-900 text-white" : "border border-zinc-200 bg-white text-zinc-700"}`}>BeerXML</button>
-                <button type="button" onClick={() => setFormat("brewfather_json")} className={`rounded-lg px-3 py-3 text-sm ${format === "brewfather_json" ? "bg-zinc-900 text-white" : "border border-zinc-200 bg-white text-zinc-700"}`}>Импорт из Brewfather (тестовая поддержка)</button>
+                <button type="button" onClick={() => setFormat("beerxml")} className={`rounded-lg px-3 py-3 text-sm ${format === "beerxml" ? "bg-foreground text-background" : "border border-border bg-card text-foreground"}`}>BeerXML</button>
+                <button type="button" onClick={() => setFormat("brewfather_json")} className={`rounded-lg px-3 py-3 text-sm ${format === "brewfather_json" ? "bg-foreground text-background" : "border border-border bg-card text-foreground"}`}>Импорт из Brewfather (тестовая поддержка)</button>
               </div>
             </section>
           ) : null}
@@ -473,12 +485,12 @@ export function ImportExportModal({
 
           {mode === "import" ? (
             <section className="space-y-2">
-              <h4 className="text-sm font-semibold text-zinc-900">3. Вставьте текст или загрузите файл</h4>
-              <input type="file" accept={fileAccept} onChange={(event) => handleFile(event.target.files?.[0] ?? null)} className="block w-full text-sm text-zinc-600" />
+              <h4 className="text-sm font-semibold text-foreground">3. Вставьте текст или загрузите файл</h4>
+              <input type="file" accept={fileAccept} onChange={(event) => handleFile(event.target.files?.[0] ?? null)} className="block w-full text-sm text-muted-foreground" />
               <textarea
                 value={importText}
                 onChange={(event) => setImportText(event.target.value)}
-                className="min-h-56 w-full rounded-lg border border-zinc-200 bg-zinc-50 px-3 py-2 font-mono text-xs text-zinc-800"
+                className="min-h-56 w-full rounded-lg border border-border bg-muted px-3 py-2 font-mono text-xs text-foreground"
                 placeholder={format === "beerxml" ? "<RECIPES>...</RECIPES>" : "{\"name\":\"Recipe\"}"}
               />
               <ImportSummaryCard result={importSummary} />
@@ -493,7 +505,7 @@ export function ImportExportModal({
             </section>
           ) : (
             <section className="space-y-2">
-              <h4 className="text-sm font-semibold text-zinc-900">2. Экспорт BeerXML</h4>
+              <h4 className="text-sm font-semibold text-foreground">2. Экспорт BeerXML</h4>
               <Button
                 type="button"
                 size="sm"
@@ -505,7 +517,7 @@ export function ImportExportModal({
               <textarea
                 value={beerXmlExport}
                 readOnly
-                className="min-h-56 w-full rounded-lg border border-zinc-200 bg-zinc-50 px-3 py-2 font-mono text-xs text-zinc-800"
+                className="min-h-56 w-full rounded-lg border border-border bg-muted px-3 py-2 font-mono text-xs text-foreground"
                 placeholder="Экспорт появится здесь."
               />
               <div className="flex flex-wrap gap-2">
@@ -513,14 +525,14 @@ export function ImportExportModal({
                   type="button"
                   disabled={!beerXmlExport}
                   onClick={() => void navigator.clipboard?.writeText(beerXmlExport)}
-                  className="rounded-md border border-zinc-200 bg-white px-3 py-2 text-sm text-zinc-700 disabled:opacity-50"
+                  className="rounded-md border border-border bg-card px-3 py-2 text-sm text-foreground disabled:opacity-50"
                 >
                   Копировать
                 </button>
                 <a
                   href={beerXmlExport ? `data:text/xml;charset=utf-8,${encodeURIComponent(beerXmlExport)}` : undefined}
                   download="recipe.beerxml"
-                  className={`rounded-md border border-zinc-200 bg-white px-3 py-2 text-sm text-zinc-700 ${beerXmlExport ? "" : "pointer-events-none opacity-50"}`}
+                  className={`rounded-md border border-border bg-card px-3 py-2 text-sm text-foreground ${beerXmlExport ? "" : "pointer-events-none opacity-50"}`}
                 >
                   Скачать
                 </a>

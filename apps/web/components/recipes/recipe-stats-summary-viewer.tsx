@@ -1,10 +1,9 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React from "react";
 
 import type { RecipeDetailDto, RecipeListItemDto } from "@/features/recipes/contracts";
-import { loadViewerPreferredGravityUnit } from "@/features/system/gravity-unit-actions";
-import { defaultPreferredGravityUnit } from "@/features/system/gravity-units";
+import { useViewerGravityUnit } from "@/features/system/use-viewer-gravity-unit";
 
 import { RecipeStatsSummary } from "./recipe-stats-summary";
 
@@ -13,25 +12,11 @@ type RecipeStatsSource = Pick<RecipeListItemDto | RecipeDetailDto, "og" | "fg" |
 
 /**
  * Обёртка для страниц, которые намеренно не читают сессию на сервере (ISR/SSG для
- * анонимов) — единица плотности догружается на клиенте после гидрации, как
- * {@link RecipeRatingForm}. До ответа сервера показывается дефолт (Plato).
+ * анонимов) — единица плотности догружается на клиенте после гидрации, см.
+ * {@link useViewerGravityUnit}. До ответа сервера показывается дефолт (Plato).
  */
 export function RecipeStatsSummaryViewer({ recipe }: { recipe: RecipeStatsSource }) {
-  const [preferredGravityUnit, setPreferredGravityUnit] = useState(defaultPreferredGravityUnit);
-
-  useEffect(() => {
-    let active = true;
-    loadViewerPreferredGravityUnit()
-      .then((unit) => {
-        if (active) {
-          setPreferredGravityUnit(unit);
-        }
-      })
-      .catch(() => {});
-    return () => {
-      active = false;
-    };
-  }, []);
+  const { unit: preferredGravityUnit } = useViewerGravityUnit();
 
   return <RecipeStatsSummary recipe={recipe} preferredGravityUnit={preferredGravityUnit} />;
 }

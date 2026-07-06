@@ -30,7 +30,7 @@ export function StyleRangeTrack({
 
   if (valuePercent == null && bandLeft == null) {
     return (
-      <div className="flex h-5 items-center text-[11px] text-zinc-400">
+      <div className="flex h-5 items-center text-[11px] text-muted-foreground">
         {missingStyleRange ? "Не указано в BJCP" : "Нет данных"}
       </div>
     );
@@ -38,10 +38,10 @@ export function StyleRangeTrack({
 
   return (
     <div className="space-y-0.5">
-      <div className="relative h-6 w-full rounded-md bg-zinc-100">
+      <div className="relative h-6 w-full rounded-md bg-muted">
         {bandLeft != null && bandWidth != null && (
           <div
-            className="absolute inset-y-0 rounded-md bg-emerald-500/[.12] ring-1 ring-inset ring-emerald-500/20"
+            className="absolute inset-y-0 rounded-md bg-success/[.12] ring-1 ring-inset ring-success/20"
             style={{ left: `${bandLeft}%`, width: `${bandWidth}%` }}
           />
         )}
@@ -57,12 +57,12 @@ export function StyleRangeTrack({
             />
           </>
         )}
-        <span className="pointer-events-none absolute inset-0 flex items-center justify-center text-[11px] font-semibold tabular-nums text-zinc-700">
+        <span className="pointer-events-none absolute inset-0 flex items-center justify-center text-[11px] font-semibold tabular-nums text-foreground">
           {valueLabel}
         </span>
       </div>
       {missingStyleRange ? (
-        <div className="text-[9px] font-medium leading-tight text-zinc-500">Диапазон не указан в BJCP</div>
+        <div className="text-[9px] font-medium leading-tight text-muted-foreground">Диапазон не указан в BJCP</div>
       ) : null}
     </div>
   );

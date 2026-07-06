@@ -35,8 +35,8 @@ export function PublicationReadinessDialog({
     >
       <DialogHeader>
         <div className="space-y-1">
-          <h3 className="text-base font-semibold text-zinc-950">Для публичного показа рецепта необходимо заполнить:</h3>
-          <p className="text-sm leading-6 text-zinc-600">Публикация станет доступна, когда все обязательные пункты будут отмечены как готовые.</p>
+          <h3 className="text-base font-semibold text-foreground">Для публичного показа рецепта необходимо заполнить:</h3>
+          <p className="text-sm leading-6 text-muted-foreground">Публикация станет доступна, когда все обязательные пункты будут отмечены как готовые.</p>
         </div>
         <DialogCloseButton />
       </DialogHeader>
@@ -45,20 +45,20 @@ export function PublicationReadinessDialog({
         {checklist.map((item) => (
           <div
             key={item.key}
-            className={`flex items-start justify-between gap-3 rounded-xl border px-3 py-3 ${item.isSatisfied ? "border-emerald-200 bg-emerald-50/70" : "border-rose-200 bg-rose-50/70"}`}
+            className={`flex items-start justify-between gap-3 rounded-xl border px-3 py-3 ${item.isSatisfied ? "border-success/30 bg-success-subtle/70" : "border-destructive-border bg-destructive-subtle/70"}`}
           >
             <div className="flex min-w-0 items-start gap-2">
               {item.isSatisfied ? (
-                <CircleCheck className="mt-0.5 h-4 w-4 shrink-0 text-emerald-600" />
+                <CircleCheck className="mt-0.5 h-4 w-4 shrink-0 text-success" />
               ) : (
-                <CircleAlert className="mt-0.5 h-4 w-4 shrink-0 text-rose-600" />
+                <CircleAlert className="mt-0.5 h-4 w-4 shrink-0 text-destructive" />
               )}
               <div className="min-w-0">
-                <p className={`text-sm font-medium ${item.isSatisfied ? "text-emerald-950" : "text-rose-950"}`}>{item.label}</p>
-                {item.message ? <p className="mt-1 text-xs leading-5 text-zinc-600">{item.message}</p> : null}
+                <p className={`text-sm font-medium ${item.isSatisfied ? "text-success-subtle-foreground" : "text-destructive-subtle-foreground"}`}>{item.label}</p>
+                {item.message ? <p className="mt-1 text-xs leading-5 text-muted-foreground">{item.message}</p> : null}
               </div>
             </div>
-            <span className={`shrink-0 rounded-full px-2 py-1 text-[11px] font-medium ${item.isSatisfied ? "bg-emerald-100 text-emerald-800" : "bg-rose-100 text-rose-800"}`}>
+            <span className={`shrink-0 rounded-full px-2 py-1 text-[11px] font-medium ${item.isSatisfied ? "bg-success-subtle text-success-subtle-foreground" : "bg-destructive-subtle text-destructive-subtle-foreground"}`}>
               {item.statusLabel}
             </span>
           </div>

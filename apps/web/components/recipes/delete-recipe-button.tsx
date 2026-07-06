@@ -22,7 +22,7 @@ export function DeleteRecipeButton({ recipeId, title, renderTrigger }: Props) {
       type="button"
       disabled={isPending}
       onClick={() => setOpen(true)}
-      className="text-sm font-medium text-red-700 hover:text-red-900 disabled:opacity-60"
+      className="text-sm font-medium text-destructive hover:text-destructive disabled:opacity-60"
     >
       {isPending ? "Удаляем..." : "Удалить"}
     </button>
@@ -32,7 +32,7 @@ export function DeleteRecipeButton({ recipeId, title, renderTrigger }: Props) {
     <div className="space-y-1">
       {renderTrigger ? renderTrigger(() => setOpen(true), isPending) : defaultTrigger}
       {feedback ? (
-        <p role={feedback.ok ? "status" : "alert"} className={`text-xs ${feedback.ok ? "text-emerald-700" : "text-red-600"}`}>
+        <p role={feedback.ok ? "status" : "alert"} className={`text-xs ${feedback.ok ? "text-success" : "text-destructive"}`}>
           {feedback.message}
         </p>
       ) : null}

@@ -63,27 +63,27 @@ const stockCoverageStatusMeta: Record<RecipeStockCoverageLineDto["status"], {
 }> = {
   covered: {
     label: "будет списано",
-    className: "bg-emerald-50 text-emerald-700 ring-emerald-200"
+    className: "bg-success-subtle text-success-subtle-foreground ring-success/30"
   },
   reserved: {
     label: "резерв, будет списан",
-    className: "bg-emerald-50 text-emerald-700 ring-emerald-200"
+    className: "bg-success-subtle text-success-subtle-foreground ring-success/30"
   },
   short: {
     label: "не хватает",
-    className: "bg-rose-50 text-rose-700 ring-rose-200"
+    className: "bg-destructive-subtle text-destructive-subtle-foreground ring-destructive-border"
   },
   unselected: {
     label: "не выбрано",
-    className: "bg-zinc-100 text-zinc-600 ring-zinc-200"
+    className: "bg-muted text-muted-foreground ring-border"
   },
   consumed: {
     label: "уже списано",
-    className: "bg-zinc-100 text-zinc-600 ring-zinc-200"
+    className: "bg-muted text-muted-foreground ring-border"
   },
   released: {
     label: "резерв снят",
-    className: "bg-zinc-100 text-zinc-600 ring-zinc-200"
+    className: "bg-muted text-muted-foreground ring-border"
   }
 };
 
@@ -102,15 +102,15 @@ export function StockCoverageSummary({
   const hasRecipe = Boolean(activeRecipeId);
 
   return (
-    <section className="rounded-2xl border border-zinc-200/70 bg-white p-4 shadow-[0_1px_3px_0_rgb(0_0_0_/_0.04)] sm:p-5">
+    <section className="rounded-2xl border border-border/70 bg-card p-4 shadow-[0_1px_3px_0_rgb(0_0_0_/_0.04)] sm:p-5">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-center gap-2.5">
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-50 text-emerald-600">
+          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-success-subtle text-success-subtle-foreground">
             <PackageMinus className="h-4 w-4" />
           </div>
           <div>
-            <h2 className="text-base font-semibold text-zinc-950">Ингредиенты со склада</h2>
-            <p className="text-sm text-zinc-500">{readiness.label}</p>
+            <h2 className="text-base font-semibold text-foreground">Ингредиенты со склада</h2>
+            <p className="text-sm text-muted-foreground">{readiness.label}</p>
           </div>
         </div>
         <div className="flex flex-wrap gap-2">
@@ -183,12 +183,12 @@ export function StockConsumeDialog({
       <div className="p-5">
         <div className="mb-4 flex items-start justify-between gap-3">
           <div className="flex items-start gap-3">
-            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-emerald-50 text-emerald-600">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-success-subtle text-success-subtle-foreground">
               <PackageMinus className="h-5 w-5" />
             </div>
             <div>
-              <h3 className="text-base font-semibold text-zinc-950">Списать ингредиенты со склада</h3>
-              <p className="mt-1 text-sm leading-6 text-zinc-600">
+              <h3 className="text-base font-semibold text-foreground">Списать ингредиенты со склада</h3>
+              <p className="mt-1 text-sm leading-6 text-muted-foreground">
                 {consumeDescription}
               </p>
             </div>
@@ -197,23 +197,23 @@ export function StockConsumeDialog({
         </div>
 
         {message ? (
-          <div className="mb-3 rounded-lg border border-rose-200 bg-rose-50 px-3 py-3 text-sm text-rose-900" role="alert">
+          <div className="mb-3 rounded-lg border border-destructive-border bg-destructive-subtle px-3 py-3 text-sm text-destructive-subtle-foreground" role="alert">
             {message}
           </div>
         ) : null}
 
         {allConsumed ? (
-          <div className="mb-3 flex items-center gap-2 rounded-lg border border-zinc-200 bg-zinc-50 px-3 py-2 text-sm text-zinc-700">
+          <div className="mb-3 flex items-center gap-2 rounded-lg border border-border bg-muted px-3 py-2 text-sm text-foreground">
             <CheckCircle2 className="h-4 w-4 shrink-0" />
             Списание уже выполнено.
           </div>
         ) : readiness.canConsume ? (
-          <div className="mb-3 flex items-center gap-2 rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm text-emerald-800">
+          <div className="mb-3 flex items-center gap-2 rounded-lg border border-success/30 bg-success-subtle px-3 py-2 text-sm text-success-subtle-foreground">
             <CheckCircle2 className="h-4 w-4 shrink-0" />
             Все позиции готовы к списанию.
           </div>
         ) : (
-          <div className="mb-3 flex items-center gap-2 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-900">
+          <div className="mb-3 flex items-center gap-2 rounded-lg border border-warning/30 bg-warning-subtle px-3 py-2 text-sm text-warning-subtle-foreground">
             <AlertTriangle className="h-4 w-4 shrink-0" />
             Закройте позиции без покрытия, затем обновите наличие.
           </div>
@@ -228,26 +228,26 @@ export function StockConsumeDialog({
               : formatCoverageQuantity(line.availableQuantityNormalized, line.normalizedUnit);
 
             return (
-              <div key={line.recipeIngredientId} className="grid gap-2 rounded-lg border border-zinc-200 bg-white px-3 py-3 text-sm sm:grid-cols-[minmax(0,1fr)_auto]">
+              <div key={line.recipeIngredientId} className="grid gap-2 rounded-lg border border-border bg-card px-3 py-3 text-sm sm:grid-cols-[minmax(0,1fr)_auto]">
                 <div className="min-w-0">
                   <div className="flex min-w-0 flex-wrap items-center gap-2">
-                    <span className="truncate font-semibold text-zinc-950">{line.ingredientDisplayName ?? "Позиция рецепта"}</span>
+                    <span className="truncate font-semibold text-foreground">{line.ingredientDisplayName ?? "Позиция рецепта"}</span>
                     <span className={`shrink-0 rounded-full px-2 py-0.5 text-[11px] font-medium ring-1 ring-inset ${statusMeta.className}`}>
                       {statusMeta.label}
                     </span>
                   </div>
-                  <div className="mt-1 truncate text-xs text-zinc-500">{line.inventoryDisplayName ?? "Складская позиция не выбрана"}</div>
+                  <div className="mt-1 truncate text-xs text-muted-foreground">{line.inventoryDisplayName ?? "Складская позиция не выбрана"}</div>
                 </div>
-                <div className="grid grid-cols-2 gap-2 text-xs tabular-nums text-zinc-600 sm:min-w-[220px] sm:text-right">
-                  <span className="text-zinc-500 sm:hidden">Нужно</span>
+                <div className="grid grid-cols-2 gap-2 text-xs tabular-nums text-muted-foreground sm:min-w-[220px] sm:text-right">
+                  <span className="text-muted-foreground sm:hidden">Нужно</span>
                   <span>Нужно: {requiredLabel}</span>
-                  <span className="text-zinc-500 sm:hidden">На складе</span>
+                  <span className="text-muted-foreground sm:hidden">На складе</span>
                   <span>На складе: {availableLabel}</span>
                 </div>
               </div>
             );
           }) : (
-            <div className="rounded-lg border border-dashed border-zinc-200 px-3 py-4 text-sm text-zinc-500">
+            <div className="rounded-lg border border-dashed border-border px-3 py-4 text-sm text-muted-foreground">
               Сводка появится после сохранения рецепта.
             </div>
           )}

@@ -151,7 +151,7 @@ export const updateContentArticle = async (
   assertCanMutate(actor, row);
 
   // Слаг переадресуем только пока статья в черновике — после публикации URL
-  // /guides/<slug> канонический и не должен ломаться при правке заголовка.
+  // /articles/<slug> канонический и не должен ломаться при правке заголовка.
   const slug = (row.status !== "draft" || row.title === input.title)
     ? row.slug
     : await resolveUniqueSlug(input.title, articleId);

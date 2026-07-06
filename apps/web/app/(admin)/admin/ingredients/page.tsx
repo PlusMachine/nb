@@ -56,16 +56,16 @@ const statusBadgeLabels: Record<IngredientCatalogStatus, string> = {
 };
 
 const statusBadgeClasses: Record<IngredientCatalogStatus, string> = {
-  active: "border-emerald-200 bg-emerald-50 text-emerald-700",
-  draft: "border-amber-200 bg-amber-50 text-amber-700",
-  archived: "border-zinc-200 bg-zinc-100 text-zinc-700",
-  merged: "border-sky-200 bg-sky-50 text-sky-700"
+  active: "border-success/30 bg-success-subtle text-success-subtle-foreground",
+  draft: "border-warning/30 bg-warning-subtle text-warning-subtle-foreground",
+  archived: "border-border bg-muted text-muted-foreground",
+  merged: "border-sky-200 bg-sky-50 text-sky-700 dark:border-sky-500/30 dark:bg-sky-500/15 dark:text-sky-300"
 };
 
 const completenessBadgeClasses: Record<IngredientCatalogItemDto["completenessLevel"], string> = {
-  minimum: "border-rose-200 bg-rose-50 text-rose-700",
-  recommended: "border-amber-200 bg-amber-50 text-amber-700",
-  full: "border-emerald-200 bg-emerald-50 text-emerald-700"
+  minimum: "border-destructive-border bg-destructive-subtle text-destructive-subtle-foreground",
+  recommended: "border-warning/30 bg-warning-subtle text-warning-subtle-foreground",
+  full: "border-success/30 bg-success-subtle text-success-subtle-foreground"
 };
 
 const visibilityBadgeLabels: Record<IngredientCatalogItemDto["visibility"], string> = {
@@ -87,8 +87,8 @@ const parseCategory = (value: string | undefined): IngredientCategory | undefine
 const pillClassName = (isActive: boolean) => (
   `inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-sm transition ${
     isActive
-      ? "border-zinc-900 bg-zinc-900 text-white"
-      : "border-zinc-200 bg-white text-zinc-700 hover:border-zinc-300 hover:bg-zinc-50"
+      ? "border-foreground bg-foreground text-background"
+      : "border-border bg-card text-foreground hover:border-border/70 hover:bg-muted"
   }`
 );
 
@@ -107,13 +107,13 @@ function CatalogIngredientsTable({ items, showBrandColumn }: CatalogTableProps) 
     <div className="overflow-x-auto">
       <table className="w-full table-fixed border-separate border-spacing-0 text-sm">
         <thead>
-          <tr className="text-left text-[11px] uppercase tracking-[0.12em] text-zinc-500">
-            <th className="w-[30%] border-b border-zinc-200 px-3 py-3 font-medium">Ингредиент</th>
-            {showBrandColumn ? <th className="w-[16%] border-b border-zinc-200 px-3 py-3 font-medium">Бренд</th> : null}
-            <th className="w-[16%] border-b border-zinc-200 px-3 py-3 font-medium">Категория</th>
-            <th className="w-[17%] border-b border-zinc-200 px-3 py-3 font-medium">Статус</th>
-            <th className="w-[10%] border-b border-zinc-200 px-3 py-3 font-medium">Обновлено</th>
-            <th className="w-[27%] border-b border-zinc-200 px-3 py-3 font-medium">Действия</th>
+          <tr className="text-left text-[11px] uppercase tracking-[0.12em] text-muted-foreground">
+            <th className="w-[30%] border-b border-border px-3 py-3 font-medium">Ингредиент</th>
+            {showBrandColumn ? <th className="w-[16%] border-b border-border px-3 py-3 font-medium">Бренд</th> : null}
+            <th className="w-[16%] border-b border-border px-3 py-3 font-medium">Категория</th>
+            <th className="w-[17%] border-b border-border px-3 py-3 font-medium">Статус</th>
+            <th className="w-[10%] border-b border-border px-3 py-3 font-medium">Обновлено</th>
+            <th className="w-[27%] border-b border-border px-3 py-3 font-medium">Действия</th>
           </tr>
         </thead>
         <tbody>
@@ -127,28 +127,28 @@ function CatalogIngredientsTable({ items, showBrandColumn }: CatalogTableProps) 
             const country = resolveIngredientCountry(item);
 
             return (
-              <tr key={item.id} className="align-top hover:bg-zinc-50/80">
-                <td className="border-b border-zinc-100 px-3 py-3">
+              <tr key={item.id} className="align-top hover:bg-accent/80">
+                <td className="border-b border-border px-3 py-3">
                   <div className="space-y-1 break-words">
                     <Link
-                      className="font-medium text-zinc-950 underline-offset-4 hover:underline"
+                      className="font-medium text-foreground underline-offset-4 hover:underline"
                       href={`/admin/ingredients/${item.id}`}
                     >
                       {primaryName}
                     </Link>
-                    {secondaryName ? <p className="text-xs text-zinc-500">{secondaryName}</p> : null}
-                    {aliasesPreview ? <p className="text-xs text-zinc-500">Алиасы: {aliasesPreview}</p> : null}
+                    {secondaryName ? <p className="text-xs text-muted-foreground">{secondaryName}</p> : null}
+                    {aliasesPreview ? <p className="text-xs text-muted-foreground">Алиасы: {aliasesPreview}</p> : null}
                   </div>
                 </td>
                 {showBrandColumn ? (
-                  <td className="border-b border-zinc-100 px-3 py-3">
+                  <td className="border-b border-border px-3 py-3">
                     <div className="space-y-1 break-words">
-                      <p className="font-medium text-zinc-800">{brandLabel}</p>
+                      <p className="font-medium text-foreground">{brandLabel}</p>
                       {item.brandName && item.manufacturer && item.brandName !== item.manufacturer ? (
-                        <p className="text-xs text-zinc-500">{item.manufacturer}</p>
+                        <p className="text-xs text-muted-foreground">{item.manufacturer}</p>
                       ) : null}
                       {country ? (
-                        <div className="text-xs text-zinc-500">
+                        <div className="text-xs text-muted-foreground">
                           <CountryFlagLabel
                             countryCode={country.code}
                             label={country.label}
@@ -160,14 +160,14 @@ function CatalogIngredientsTable({ items, showBrandColumn }: CatalogTableProps) 
                     </div>
                   </td>
                 ) : null}
-                <td className="border-b border-zinc-100 px-3 py-3">
+                <td className="border-b border-border px-3 py-3">
                   <div className="space-y-1 break-words">
-                    <p className="font-medium text-zinc-800">{ingredientCategoryLabels[item.category]}</p>
-                    <p className="text-xs text-zinc-500">{item.type}</p>
-                    {familyName ? <p className="text-xs text-zinc-500">{familyName}</p> : null}
+                    <p className="font-medium text-foreground">{ingredientCategoryLabels[item.category]}</p>
+                    <p className="text-xs text-muted-foreground">{item.type}</p>
+                    {familyName ? <p className="text-xs text-muted-foreground">{familyName}</p> : null}
                   </div>
                 </td>
-                <td className="border-b border-zinc-100 px-3 py-3">
+                <td className="border-b border-border px-3 py-3">
                   <div className="space-y-2">
                     <div className="flex flex-wrap gap-2">
                       <span className={`rounded-full border px-2 py-0.5 text-[11px] font-medium ${statusBadgeClasses[item.status]}`}>
@@ -177,25 +177,25 @@ function CatalogIngredientsTable({ items, showBrandColumn }: CatalogTableProps) 
                         {ingredientCompletenessLabels[item.completenessLevel]}
                       </span>
                     </div>
-                    <p className="text-xs text-zinc-500">{visibilityBadgeLabels[item.visibility]}</p>
+                    <p className="text-xs text-muted-foreground">{visibilityBadgeLabels[item.visibility]}</p>
                   </div>
                 </td>
-                <td className="border-b border-zinc-100 px-3 py-3">
-                  <div className="text-xs text-zinc-600">
+                <td className="border-b border-border px-3 py-3">
+                  <div className="text-xs text-muted-foreground">
                     {dateFormatter.format(item.updatedAt)}
                   </div>
                 </td>
-                <td className="border-b border-zinc-100 px-3 py-3">
+                <td className="border-b border-border px-3 py-3">
                   <div className="flex flex-wrap items-start gap-2">
                     <Link
                       href={`/admin/ingredients/${item.id}`}
-                      className="inline-flex items-center rounded-lg border border-zinc-200 px-2.5 py-1.5 text-xs font-medium text-zinc-700 hover:bg-white"
+                      className="inline-flex items-center rounded-lg border border-border px-2.5 py-1.5 text-xs font-medium text-foreground hover:bg-card"
                     >
                       Редактировать
                     </Link>
                     <Link
                       href={`/admin/ingredients/merge?sourceId=${item.id}`}
-                      className="inline-flex items-center rounded-lg border border-zinc-200 px-2.5 py-1.5 text-xs font-medium text-zinc-700 hover:bg-white"
+                      className="inline-flex items-center rounded-lg border border-border px-2.5 py-1.5 text-xs font-medium text-foreground hover:bg-card"
                     >
                       Merge
                     </Link>
@@ -203,7 +203,7 @@ function CatalogIngredientsTable({ items, showBrandColumn }: CatalogTableProps) 
                     {item.mergedIntoId ? (
                       <Link
                         href={`/admin/ingredients/${item.mergedIntoId}`}
-                        className="inline-flex items-center rounded-lg border border-sky-200 bg-sky-50 px-2.5 py-1.5 text-xs font-medium text-sky-700"
+                        className="inline-flex items-center rounded-lg border border-sky-200 bg-sky-50 px-2.5 py-1.5 text-xs font-medium text-sky-700 dark:border-sky-500/30 dark:bg-sky-500/15 dark:text-sky-300"
                       >
                         Target
                       </Link>
@@ -247,15 +247,15 @@ export default async function AdminIngredientsPage({ searchParams }: Props) {
 
   return (
     <section className="space-y-5">
-      <header className="space-y-4 rounded-3xl border border-zinc-200 bg-white p-6 shadow-sm">
+      <header className="space-y-4 rounded-3xl border border-border bg-card p-6 shadow-sm">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
           <div className="space-y-2">
-            <div className="inline-flex items-center gap-2 rounded-full bg-zinc-100 px-3 py-1 text-xs font-medium uppercase tracking-[0.16em] text-zinc-500">
+            <div className="inline-flex items-center gap-2 rounded-full bg-muted px-3 py-1 text-xs font-medium uppercase tracking-[0.16em] text-muted-foreground">
               Каталог ингредиентов
             </div>
             <div className="space-y-1">
-              <h1 className="text-3xl font-semibold tracking-tight text-zinc-950">Администрирование ингредиентов</h1>
-              <p className="max-w-4xl text-sm leading-6 text-zinc-600">
+              <h1 className="text-3xl font-semibold tracking-tight text-foreground">Администрирование ингредиентов</h1>
+              <p className="max-w-4xl text-sm leading-6 text-muted-foreground">
                 Каталог показан плотным списком. По умолчанию строки отсортированы и сгруппированы по бренду, чтобы
                 можно было быстрее проходить большие массивы ингредиентов, чистить дубли и архивировать лишние позиции.
               </p>
@@ -264,65 +264,65 @@ export default async function AdminIngredientsPage({ searchParams }: Props) {
           <div className="flex flex-wrap gap-2">
             <Link
               href="/admin/ingredients/new"
-              className="inline-flex items-center gap-2 rounded-xl bg-zinc-950 px-4 py-2.5 text-sm font-medium text-white"
+              className="inline-flex items-center gap-2 rounded-xl bg-foreground px-4 py-2.5 text-sm font-medium text-background"
             >
               <Plus className="h-4 w-4" />
               Новый ингредиент
             </Link>
             <Link
               href="/admin/ingredients/merge"
-              className="inline-flex items-center gap-2 rounded-xl border border-zinc-200 bg-white px-4 py-2.5 text-sm font-medium text-zinc-700"
+              className="inline-flex items-center gap-2 rounded-xl border border-border bg-card px-4 py-2.5 text-sm font-medium text-foreground"
             >
               <ArrowRightLeft className="h-4 w-4" />
               Merge дублей
             </Link>
             <Link
               href="/admin/ingredients/moderation"
-              className="inline-flex items-center gap-2 rounded-xl border border-amber-200 bg-amber-50 px-4 py-2.5 text-sm font-medium text-amber-700"
+              className="inline-flex items-center gap-2 rounded-xl border border-warning/30 bg-warning-subtle px-4 py-2.5 text-sm font-medium text-warning-subtle-foreground"
             >
               <ShieldAlert className="h-4 w-4" />
               Очередь модерации
-              <span className="rounded-full bg-white px-2 py-0.5 text-xs text-amber-700">{result.pendingProposals}</span>
+              <span className="rounded-full bg-card px-2 py-0.5 text-xs text-warning-subtle-foreground">{result.pendingProposals}</span>
             </Link>
           </div>
         </div>
 
         <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-          <div className="rounded-2xl border border-zinc-200 bg-zinc-50 p-4">
-            <p className="text-xs uppercase tracking-[0.14em] text-zinc-500">Результаты</p>
-            <p className="mt-2 text-2xl font-semibold text-zinc-950">{result.total}</p>
-            <p className="mt-1 text-xs text-zinc-500">{hasItems ? `${rangeStart}-${rangeEnd} на странице` : "Нет совпадений"}</p>
+          <div className="rounded-2xl border border-border bg-muted p-4">
+            <p className="text-xs uppercase tracking-[0.14em] text-muted-foreground">Результаты</p>
+            <p className="mt-2 text-2xl font-semibold text-foreground">{result.total}</p>
+            <p className="mt-1 text-xs text-muted-foreground">{hasItems ? `${rangeStart}-${rangeEnd} на странице` : "Нет совпадений"}</p>
           </div>
-          <div className="rounded-2xl border border-zinc-200 bg-zinc-50 p-4">
-            <p className="text-xs uppercase tracking-[0.14em] text-zinc-500">Черновики</p>
-            <p className="mt-2 text-2xl font-semibold text-zinc-950">{result.facets.byStatus.draft}</p>
-            <p className="mt-1 text-xs text-zinc-500">По текущему фильтру</p>
+          <div className="rounded-2xl border border-border bg-muted p-4">
+            <p className="text-xs uppercase tracking-[0.14em] text-muted-foreground">Черновики</p>
+            <p className="mt-2 text-2xl font-semibold text-foreground">{result.facets.byStatus.draft}</p>
+            <p className="mt-1 text-xs text-muted-foreground">По текущему фильтру</p>
           </div>
-          <div className="rounded-2xl border border-zinc-200 bg-zinc-50 p-4">
-            <p className="text-xs uppercase tracking-[0.14em] text-zinc-500">Объединённые</p>
-            <p className="mt-2 text-2xl font-semibold text-zinc-950">{result.facets.byStatus.merged}</p>
-            <p className="mt-1 text-xs text-zinc-500">Уже сведённые позиции</p>
+          <div className="rounded-2xl border border-border bg-muted p-4">
+            <p className="text-xs uppercase tracking-[0.14em] text-muted-foreground">Объединённые</p>
+            <p className="mt-2 text-2xl font-semibold text-foreground">{result.facets.byStatus.merged}</p>
+            <p className="mt-1 text-xs text-muted-foreground">Уже сведённые позиции</p>
           </div>
-          <div className="rounded-2xl border border-zinc-200 bg-zinc-50 p-4">
-            <p className="text-xs uppercase tracking-[0.14em] text-zinc-500">На модерации</p>
-            <p className="mt-2 text-2xl font-semibold text-zinc-950">{result.pendingProposals}</p>
-            <p className="mt-1 text-xs text-zinc-500">Ожидают решения модератора</p>
+          <div className="rounded-2xl border border-border bg-muted p-4">
+            <p className="text-xs uppercase tracking-[0.14em] text-muted-foreground">На модерации</p>
+            <p className="mt-2 text-2xl font-semibold text-foreground">{result.pendingProposals}</p>
+            <p className="mt-1 text-xs text-muted-foreground">Ожидают решения модератора</p>
           </div>
         </div>
       </header>
 
-      <div className="space-y-4 rounded-3xl border border-zinc-200 bg-white p-5 shadow-sm">
+      <div className="space-y-4 rounded-3xl border border-border bg-card p-5 shadow-sm">
         <form className="grid gap-3 lg:grid-cols-[minmax(0,2.2fr)_1fr_1fr_1fr_auto]">
           <input
             name="q"
             defaultValue={q}
             placeholder="Название, бренд, производитель, алиас"
-            className="h-11 rounded-xl border border-zinc-200 px-4 text-sm text-zinc-900"
+            className="h-11 rounded-xl border border-border px-4 text-sm text-foreground"
           />
           <select
             name="category"
             defaultValue={category ?? "all"}
-            className="h-11 rounded-xl border border-zinc-200 px-3 text-sm text-zinc-900"
+            className="h-11 rounded-xl border border-border px-3 text-sm text-foreground"
           >
             <option value="all">Все категории</option>
             {ingredientCatalogCategoryOrder.map((itemCategory) => (
@@ -332,7 +332,7 @@ export default async function AdminIngredientsPage({ searchParams }: Props) {
           <select
             name="status"
             defaultValue={status ?? "all"}
-            className="h-11 rounded-xl border border-zinc-200 px-3 text-sm text-zinc-900"
+            className="h-11 rounded-xl border border-border px-3 text-sm text-foreground"
           >
             <option value="all">Все статусы</option>
             {ingredientCatalogStatuses.map((itemStatus) => (
@@ -342,7 +342,7 @@ export default async function AdminIngredientsPage({ searchParams }: Props) {
           <select
             name="sort"
             defaultValue={sort}
-            className="h-11 rounded-xl border border-zinc-200 px-3 text-sm text-zinc-900"
+            className="h-11 rounded-xl border border-border px-3 text-sm text-foreground"
           >
             {Object.entries(adminCatalogSortLabels).map(([value, label]) => (
               <option key={value} value={value}>{label}</option>
@@ -354,7 +354,7 @@ export default async function AdminIngredientsPage({ searchParams }: Props) {
             </Button>
             <Link
               href="/admin/ingredients"
-              className="inline-flex h-11 items-center rounded-xl border border-zinc-200 px-4 text-sm text-zinc-600"
+              className="inline-flex h-11 items-center rounded-xl border border-border px-4 text-sm text-muted-foreground"
             >
               Сбросить
             </Link>
@@ -363,7 +363,7 @@ export default async function AdminIngredientsPage({ searchParams }: Props) {
 
         <div className="space-y-3">
           <div className="space-y-2">
-            <p className="text-xs font-medium uppercase tracking-[0.14em] text-zinc-500">Категории</p>
+            <p className="text-xs font-medium uppercase tracking-[0.14em] text-muted-foreground">Категории</p>
             <div className="flex flex-wrap gap-2">
               <Link
                 href={buildAdminIngredientsHref("/admin/ingredients", {
@@ -374,7 +374,7 @@ export default async function AdminIngredientsPage({ searchParams }: Props) {
                 className={pillClassName(category == null)}
               >
                 Все
-                <span className="rounded-full bg-black/5 px-2 py-0.5 text-xs">{categoryTotal}</span>
+                <span className="rounded-full bg-foreground/10 px-2 py-0.5 text-xs">{categoryTotal}</span>
               </Link>
               {ingredientCatalogCategoryOrder.map((itemCategory) => (
                 <Link
@@ -388,14 +388,14 @@ export default async function AdminIngredientsPage({ searchParams }: Props) {
                   className={pillClassName(category === itemCategory)}
                 >
                   {ingredientCategoryLabels[itemCategory]}
-                  <span className="rounded-full bg-black/5 px-2 py-0.5 text-xs">{result.facets.byCategory[itemCategory]}</span>
+                  <span className="rounded-full bg-foreground/10 px-2 py-0.5 text-xs">{result.facets.byCategory[itemCategory]}</span>
                 </Link>
               ))}
             </div>
           </div>
 
           <div className="space-y-2">
-            <p className="text-xs font-medium uppercase tracking-[0.14em] text-zinc-500">Статусы</p>
+            <p className="text-xs font-medium uppercase tracking-[0.14em] text-muted-foreground">Статусы</p>
             <div className="flex flex-wrap gap-2">
               <Link
                 href={buildAdminIngredientsHref("/admin/ingredients", {
@@ -406,7 +406,7 @@ export default async function AdminIngredientsPage({ searchParams }: Props) {
                 className={pillClassName(status == null)}
               >
                 Все
-                <span className="rounded-full bg-black/5 px-2 py-0.5 text-xs">{statusTotal}</span>
+                <span className="rounded-full bg-foreground/10 px-2 py-0.5 text-xs">{statusTotal}</span>
               </Link>
               {ingredientCatalogStatuses.map((itemStatus) => (
                 <Link
@@ -420,7 +420,7 @@ export default async function AdminIngredientsPage({ searchParams }: Props) {
                   className={pillClassName(status === itemStatus)}
                 >
                   {ingredientCatalogStatusLabels[itemStatus]}
-                  <span className="rounded-full bg-black/5 px-2 py-0.5 text-xs">{result.facets.byStatus[itemStatus]}</span>
+                  <span className="rounded-full bg-foreground/10 px-2 py-0.5 text-xs">{result.facets.byStatus[itemStatus]}</span>
                 </Link>
               ))}
             </div>
@@ -433,11 +433,11 @@ export default async function AdminIngredientsPage({ searchParams }: Props) {
           ? (
             <div className="space-y-4">
               {groups.map((group) => (
-                <section key={group.key} className="rounded-3xl border border-zinc-200 bg-white shadow-sm">
-                  <div className="flex items-center justify-between border-b border-zinc-200 px-5 py-4">
+                <section key={group.key} className="rounded-3xl border border-border bg-card shadow-sm">
+                  <div className="flex items-center justify-between border-b border-border px-5 py-4">
                     <div>
-                      <h2 className="text-lg font-semibold text-zinc-950">{group.label}</h2>
-                      <p className="text-sm text-zinc-500">{group.items.length} позиций на текущей странице</p>
+                      <h2 className="text-lg font-semibold text-foreground">{group.label}</h2>
+                      <p className="text-sm text-muted-foreground">{group.items.length} позиций на текущей странице</p>
                     </div>
                   </div>
                   <CatalogIngredientsTable items={group.items} showBrandColumn={false} />
@@ -446,26 +446,26 @@ export default async function AdminIngredientsPage({ searchParams }: Props) {
             </div>
           )
           : (
-            <section className="rounded-3xl border border-zinc-200 bg-white shadow-sm">
+            <section className="rounded-3xl border border-border bg-card shadow-sm">
               <CatalogIngredientsTable items={result.items} showBrandColumn={true} />
             </section>
           )
       ) : (
-        <section className="rounded-3xl border border-dashed border-zinc-300 bg-white p-8 text-center shadow-sm">
-          <h2 className="text-lg font-semibold text-zinc-950">Ничего не найдено</h2>
-          <p className="mt-2 text-sm text-zinc-500">
+        <section className="rounded-3xl border border-dashed border-border bg-card p-8 text-center shadow-sm">
+          <h2 className="text-lg font-semibold text-foreground">Ничего не найдено</h2>
+          <p className="mt-2 text-sm text-muted-foreground">
             Попробуйте изменить фильтры, включить другой порядок сортировки или создать новый ингредиент.
           </p>
           <div className="mt-4 flex flex-wrap justify-center gap-2">
             <Link
               href="/admin/ingredients"
-              className="inline-flex items-center rounded-xl border border-zinc-200 px-4 py-2 text-sm text-zinc-700"
+              className="inline-flex items-center rounded-xl border border-border px-4 py-2 text-sm text-foreground"
             >
               Сбросить фильтры
             </Link>
             <Link
               href="/admin/ingredients/new"
-              className="inline-flex items-center rounded-xl bg-zinc-950 px-4 py-2 text-sm text-white"
+              className="inline-flex items-center rounded-xl bg-foreground px-4 py-2 text-sm text-background"
             >
               Создать ингредиент
             </Link>
@@ -473,14 +473,14 @@ export default async function AdminIngredientsPage({ searchParams }: Props) {
         </section>
       )}
 
-      <footer className="flex flex-col gap-3 rounded-3xl border border-zinc-200 bg-white p-5 text-sm shadow-sm sm:flex-row sm:items-center sm:justify-between">
-        <p className="text-zinc-500">
+      <footer className="flex flex-col gap-3 rounded-3xl border border-border bg-card p-5 text-sm shadow-sm sm:flex-row sm:items-center sm:justify-between">
+        <p className="text-muted-foreground">
           {result.total > 0 ? `Показаны позиции ${rangeStart}-${rangeEnd} из ${result.total}` : "Нет результатов для текущего фильтра"}
         </p>
         <div className="flex items-center gap-2">
           {page > 1 ? (
             <Link
-              className="inline-flex items-center rounded-xl border border-zinc-200 px-4 py-2 text-zinc-700"
+              className="inline-flex items-center rounded-xl border border-border px-4 py-2 text-foreground"
               href={buildAdminIngredientsHref("/admin/ingredients", {
                 q,
                 category: category ?? "all",
@@ -494,7 +494,7 @@ export default async function AdminIngredientsPage({ searchParams }: Props) {
           ) : null}
           {page * result.pageSize < result.total ? (
             <Link
-              className="inline-flex items-center rounded-xl border border-zinc-200 px-4 py-2 text-zinc-700"
+              className="inline-flex items-center rounded-xl border border-border px-4 py-2 text-foreground"
               href={buildAdminIngredientsHref("/admin/ingredients", {
                 q,
                 category: category ?? "all",

@@ -23,7 +23,7 @@ export function IngredientAddDrawer({
       size="sheet"
     >
       <div className="pointer-events-none flex shrink-0 justify-center pt-2 pb-1 sm:hidden" aria-hidden>
-        <span className="h-1 w-10 rounded-full bg-zinc-300" />
+        <span className="h-1 w-10 rounded-full bg-muted-foreground/40" />
       </div>
       {children}
     </Dialog>

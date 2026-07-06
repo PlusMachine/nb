@@ -29,7 +29,7 @@ export function CloneRecipeButton({
       type="button"
       disabled={pending}
       onClick={handleClick}
-      className="text-sm font-medium text-zinc-700 hover:text-zinc-900 disabled:opacity-60"
+      className="text-sm font-medium text-foreground hover:text-foreground disabled:opacity-60"
     >
       {pending ? "Клонируем..." : "Клонировать"}
     </button>

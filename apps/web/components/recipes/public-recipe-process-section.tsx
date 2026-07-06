@@ -46,9 +46,9 @@ const stepLabel = (name: string | null | undefined, index: number): string => {
 
 function ProcessRow({ label, value }: { label: string; value: string }) {
   return (
-    <li className="flex items-baseline justify-between gap-2 rounded-lg bg-zinc-50 px-3 py-2 text-sm">
-      <span className="min-w-0 truncate text-zinc-800">{label}</span>
-      <span className="shrink-0 font-semibold tabular-nums text-zinc-950">{value || "—"}</span>
+    <li className="flex items-baseline justify-between gap-2 rounded-lg bg-muted px-3 py-2 text-sm">
+      <span className="min-w-0 truncate text-foreground">{label}</span>
+      <span className="shrink-0 font-semibold tabular-nums text-foreground">{value || "—"}</span>
     </li>
   );
 }
@@ -66,13 +66,13 @@ export function PublicRecipeMashSection({ processMeta }: { processMeta: RecipePr
   );
 
   return (
-    <section className="rounded-2xl border border-zinc-100 bg-white p-5 shadow-sm">
+    <section className="rounded-2xl border border-border bg-card p-5 shadow-sm">
       <div className="mb-3 flex items-center gap-2">
-        <div className="flex h-7 w-7 items-center justify-center rounded-md bg-orange-50">
-          <Thermometer className="h-3.5 w-3.5 text-orange-600" />
+        <div className="flex h-7 w-7 items-center justify-center rounded-md bg-orange-50 dark:bg-orange-500/15">
+          <Thermometer className="h-3.5 w-3.5 text-orange-600 dark:text-orange-400" />
         </div>
-        <h2 className="text-sm font-semibold text-zinc-700">Затирание</h2>
-        <span className="text-xs text-zinc-400">
+        <h2 className="text-sm font-semibold text-foreground">Затирание</h2>
+        <span className="text-xs text-muted-foreground">
           {steps.length} {steps.length === 1 ? "шаг" : steps.length < 5 ? "шага" : "шагов"}
           {totalMinutes > 0 ? ` · ${totalMinutes} мин` : ""}
         </span>
@@ -112,12 +112,12 @@ export function PublicRecipeFermentationSection({ processMeta }: { processMeta: 
   }
 
   return (
-    <section className="rounded-2xl border border-zinc-100 bg-white p-5 shadow-sm">
+    <section className="rounded-2xl border border-border bg-card p-5 shadow-sm">
       <div className="mb-3 flex items-center gap-2">
-        <div className="flex h-7 w-7 items-center justify-center rounded-md bg-sky-50">
-          <Timer className="h-3.5 w-3.5 text-sky-600" />
+        <div className="flex h-7 w-7 items-center justify-center rounded-md bg-sky-50 dark:bg-sky-500/15">
+          <Timer className="h-3.5 w-3.5 text-sky-600 dark:text-sky-400" />
         </div>
-        <h2 className="text-sm font-semibold text-zinc-700">Брожение</h2>
+        <h2 className="text-sm font-semibold text-foreground">Брожение</h2>
       </div>
       <ul className="grid gap-2 sm:grid-cols-2">
         {hasPrimary ? <ProcessRow label="Основное" value={primaryValue} /> : null}

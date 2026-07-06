@@ -4,6 +4,11 @@ export type RelatedLink = { href: string; label: string };
 // статей пока не хранит related-связи (это добавит CMS позже) — до тех пор
 // подбираем вручную здесь, по мере появления новых гайдов.
 const relatedLinksBySlug: Record<string, RelatedLink[]> = {
+  "kak-svarit-pervoe-pivo": [
+    { href: "/calculators/priming-sugar", label: "Карбонизация сахаром" },
+    { href: "/calculators/abv-attenuation", label: "Крепость и сбраживание" },
+    { href: "/recipes", label: "Рецепты сообщества" }
+  ],
   "pervaya-varka-doma-poshagovyy-chek-list": [
     { href: "/recipes", label: "Рецепты сообщества" },
     { href: "/calculators/brewing-water-volume", label: "Вода на варку" },

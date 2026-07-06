@@ -36,7 +36,7 @@ export function RecipesFilterSheet({
       >
         <SlidersHorizontal className="h-4 w-4" aria-hidden />
         {activeCount > 0 ? (
-          <span className="inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-zinc-950 px-1.5 text-[11px] font-semibold text-white">
+          <span className="inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-foreground px-1.5 text-[11px] font-semibold text-background">
             {activeCount}
           </span>
         ) : null}

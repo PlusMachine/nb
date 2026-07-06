@@ -558,7 +558,7 @@ export function InventoryItemDetailsEditor({
           </button>
         )}
       {result && !editing ? (
-        <p role={result.ok ? "status" : "alert"} className={`text-xs ${result.ok ? "text-emerald-700" : "text-red-600"}`}>
+        <p role={result.ok ? "status" : "alert"} className={`text-xs ${result.ok ? "text-success" : "text-destructive"}`}>
           {result.message}
         </p>
       ) : null}
@@ -573,7 +573,7 @@ export function InventoryItemDetailsEditor({
         size="lg"
       >
         <DialogHeader>
-          <h2 className="text-base font-semibold text-zinc-900">Редактировать ингредиент</h2>
+          <h2 className="text-base font-semibold text-foreground">Редактировать ингредиент</h2>
           <DialogCloseButton />
         </DialogHeader>
 
@@ -682,8 +682,8 @@ export function InventoryItemDetailsEditor({
                             className={`rounded-full border px-3 py-1.5 text-xs font-medium transition-colors ${
                               (value === "malt" && pickerSubtype === "malt" && !form.group)
                               || (value !== "malt" && pickerSubtype === "fermentable" && form.group === value)
-                                ? "border-amber-300 bg-amber-50 text-amber-900"
-                                : "border-zinc-200 bg-white text-zinc-600 hover:border-zinc-300 hover:bg-zinc-50"
+                                ? "border-warning/30 bg-warning-subtle text-warning-subtle-foreground"
+                                : "border-border bg-card text-muted-foreground hover:border-border hover:bg-muted"
                             }`}
                           >
                             {value === "malt" ? inventoryFermentableSubtypeLabels.malt : resolveFermentableQuickStartGroupLabel(value)}
@@ -710,8 +710,8 @@ export function InventoryItemDetailsEditor({
                             }}
                             className={`rounded-full border px-3 py-1.5 text-xs font-medium transition-colors ${
                               form.group === value
-                                ? "border-amber-300 bg-amber-50 text-amber-900"
-                                : "border-zinc-200 bg-white text-zinc-600 hover:border-zinc-300 hover:bg-zinc-50"
+                                ? "border-warning/30 bg-warning-subtle text-warning-subtle-foreground"
+                                : "border-border bg-card text-muted-foreground hover:border-border hover:bg-muted"
                             }`}
                           >
                             {resolveConsumablePickerGroupLabel(value) ?? value}
@@ -719,7 +719,7 @@ export function InventoryItemDetailsEditor({
                         ))}
                       </div>
                     ) : null}
-                    <label className="text-sm font-medium text-zinc-900">Ингредиент</label>
+                    <label className="text-sm font-medium text-foreground">Ингредиент</label>
                     <IngredientPicker
                       category={form.category}
                       subtype={pickerSubtype}
@@ -769,10 +769,10 @@ export function InventoryItemDetailsEditor({
                         setResult(null);
                       }}
                       placeholder="Начните вводить название ингредиента"
-                      emptyCta={<p className="text-xs text-zinc-500">Не нашли подходящую позицию. Уточните запрос или оставьте текущий ингредиент без изменений.</p>}
+                      emptyCta={<p className="text-xs text-muted-foreground">Не нашли подходящую позицию. Уточните запрос или оставьте текущий ингредиент без изменений.</p>}
                     />
                     {(result?.fieldErrors?.ingredientCatalogItemId || result?.fieldErrors?.userCustomIngredientId) ? (
-                      <p className="text-xs text-red-600">
+                      <p className="text-xs text-destructive">
                         {result.fieldErrors?.ingredientCatalogItemId ?? result.fieldErrors?.userCustomIngredientId}
                       </p>
                     ) : null}
@@ -797,7 +797,7 @@ export function InventoryItemDetailsEditor({
                         mergeBrandAndCountry
                       />
                         {selectedPackEquivalent ? (
-                          <p className="text-xs text-zinc-500">
+                          <p className="text-xs text-muted-foreground">
                             1 pack = {selectedPackEquivalent.normalizedQuantity} {selectedPackEquivalent.normalizedUnit}
                           </p>
                         ) : null}
@@ -806,9 +806,9 @@ export function InventoryItemDetailsEditor({
                 ) : null}
 
                 {showRequiredFields ? (
-                  <section className="space-y-3 rounded-xl border border-zinc-100 bg-zinc-50/50 p-4" data-testid="inventory-editor-required-fields">
+                  <section className="space-y-3 rounded-xl border border-border bg-muted/50 p-4" data-testid="inventory-editor-required-fields">
                     {showWaterTreatmentConcentrationField ? (
-                      <label className="block text-sm font-medium text-zinc-700">Концентрация кислоты, %
+                      <label className="block text-sm font-medium text-foreground">Концентрация кислоты, %
                         <input
                           type="number"
                           min="1"
@@ -820,15 +820,15 @@ export function InventoryItemDetailsEditor({
                             setLocalFieldErrors((current) => ({ ...current, waterTreatmentConcentrationPct: null }));
                             setResult(null);
                           }}
-                          className="mt-1.5 w-full rounded-xl border border-zinc-200 bg-white px-3.5 py-2.5 text-sm transition-colors focus:border-zinc-400 focus:outline-none focus:ring-2 focus:ring-zinc-200 sm:max-w-xs"
+                          className="mt-1.5 w-full rounded-xl border border-border bg-card px-3.5 py-2.5 text-sm transition-colors focus:border-ring focus:outline-none focus:ring-2 focus:ring-ring sm:max-w-xs"
                           inputMode="decimal"
                           placeholder="Например: 80"
                         />
-                        {(localFieldErrors.waterTreatmentConcentrationPct || currentNumberErrors.waterTreatmentConcentrationPct || result?.fieldErrors?.waterTreatmentConcentrationPct) ? <span className="mt-1 block text-xs text-red-500">{localFieldErrors.waterTreatmentConcentrationPct ?? currentNumberErrors.waterTreatmentConcentrationPct ?? result?.fieldErrors?.waterTreatmentConcentrationPct}</span> : null}
+                        {(localFieldErrors.waterTreatmentConcentrationPct || currentNumberErrors.waterTreatmentConcentrationPct || result?.fieldErrors?.waterTreatmentConcentrationPct) ? <span className="mt-1 block text-xs text-destructive">{localFieldErrors.waterTreatmentConcentrationPct ?? currentNumberErrors.waterTreatmentConcentrationPct ?? result?.fieldErrors?.waterTreatmentConcentrationPct}</span> : null}
                       </label>
                     ) : null}
                     <div className="grid gap-3 sm:grid-cols-2">
-                      <label className="block text-sm font-medium text-zinc-700">Количество *
+                      <label className="block text-sm font-medium text-foreground">Количество *
                         <input
                           type="number"
                           min={quantityStep}
@@ -839,15 +839,15 @@ export function InventoryItemDetailsEditor({
                             setLocalFieldErrors((current) => ({ ...current, enteredQuantity: null }));
                             setResult(null);
                           }}
-                          className="mt-1.5 w-full rounded-xl border border-zinc-200 bg-white px-3.5 py-2.5 text-sm transition-colors focus:border-zinc-400 focus:outline-none focus:ring-2 focus:ring-zinc-200"
+                          className="mt-1.5 w-full rounded-xl border border-border bg-card px-3.5 py-2.5 text-sm transition-colors focus:border-ring focus:outline-none focus:ring-2 focus:ring-ring"
                           inputMode="decimal"
                         />
-                        {(localFieldErrors.enteredQuantity || currentNumberErrors.enteredQuantity || result?.fieldErrors?.enteredQuantity) ? <span className="mt-1 block text-xs text-red-500">{localFieldErrors.enteredQuantity ?? currentNumberErrors.enteredQuantity ?? result?.fieldErrors?.enteredQuantity}</span> : null}
+                        {(localFieldErrors.enteredQuantity || currentNumberErrors.enteredQuantity || result?.fieldErrors?.enteredQuantity) ? <span className="mt-1 block text-xs text-destructive">{localFieldErrors.enteredQuantity ?? currentNumberErrors.enteredQuantity ?? result?.fieldErrors?.enteredQuantity}</span> : null}
                       </label>
 
-                      <label className="block text-sm font-medium text-zinc-700">Ед. изм. *
+                      <label className="block text-sm font-medium text-foreground">Ед. изм. *
                         <select
-                          className="mt-1.5 w-full rounded-xl border border-zinc-200 bg-white px-3.5 py-2.5 text-sm transition-colors focus:border-zinc-400 focus:outline-none focus:ring-2 focus:ring-zinc-200"
+                          className="mt-1.5 w-full rounded-xl border border-border bg-card px-3.5 py-2.5 text-sm transition-colors focus:border-ring focus:outline-none focus:ring-2 focus:ring-ring"
                           value={form.enteredUnit}
                           onChange={(event) => {
                             setForm((current) => ({ ...current, enteredUnit: event.target.value as InventoryUnit }));
@@ -856,31 +856,31 @@ export function InventoryItemDetailsEditor({
                         >
                           {unitProfile.allowedUnits.map((unit) => <option key={unit} value={unit}>{getUnitLabel(unit)}</option>)}
                         </select>
-                        {result?.fieldErrors?.enteredUnit ? <span className="mt-1 block text-xs text-red-500">{result.fieldErrors.enteredUnit}</span> : null}
+                        {result?.fieldErrors?.enteredUnit ? <span className="mt-1 block text-xs text-destructive">{result.fieldErrors.enteredUnit}</span> : null}
                       </label>
                     </div>
                   </section>
                 ) : null}
 
                 {showOptionalSection ? (
-                  <section className="space-y-3 rounded-xl border border-zinc-100 bg-zinc-50/50 p-4" data-testid="inventory-editor-optional-disclosure">
+                  <section className="space-y-3 rounded-xl border border-border bg-muted/50 p-4" data-testid="inventory-editor-optional-disclosure">
                     <button
                       type="button"
                       onClick={() => setOptionalOpen((current) => !current)}
                       className="flex w-full items-center justify-between gap-3 text-left"
                       aria-expanded={optionalOpen}
                     >
-                      <span className="text-sm font-medium text-zinc-700">Дополнительно</span>
-                      <span className="text-xs font-medium text-zinc-400">{optionalOpen ? "Скрыть" : "Показать"}</span>
+                      <span className="text-sm font-medium text-foreground">Дополнительно</span>
+                      <span className="text-xs font-medium text-muted-foreground">{optionalOpen ? "Скрыть" : "Показать"}</span>
                     </button>
 
                     {optionalOpen ? (
                       <div className="space-y-4">
                         <div className="grid gap-3 sm:grid-cols-2">
-                          <label className="block text-sm font-medium text-zinc-700">Дата покупки
+                          <label className="block text-sm font-medium text-foreground">Дата покупки
                             <input
                               type="date"
-                              className="mt-1.5 w-full rounded-xl border border-zinc-200 bg-white px-3.5 py-2.5 text-sm transition-colors focus:border-zinc-400 focus:outline-none focus:ring-2 focus:ring-zinc-200"
+                              className="mt-1.5 w-full rounded-xl border border-border bg-card px-3.5 py-2.5 text-sm transition-colors focus:border-ring focus:outline-none focus:ring-2 focus:ring-ring"
                               value={form.purchasedAt}
                               onChange={(event) => {
                                 setForm((current) => ({ ...current, purchasedAt: event.target.value }));
@@ -889,10 +889,10 @@ export function InventoryItemDetailsEditor({
                             />
                           </label>
 
-                          <label className="block text-sm font-medium text-zinc-700">Годен до
+                          <label className="block text-sm font-medium text-foreground">Годен до
                             <input
                               type="date"
-                              className="mt-1.5 w-full rounded-xl border border-zinc-200 bg-white px-3.5 py-2.5 text-sm transition-colors focus:border-zinc-400 focus:outline-none focus:ring-2 focus:ring-zinc-200"
+                              className="mt-1.5 w-full rounded-xl border border-border bg-card px-3.5 py-2.5 text-sm transition-colors focus:border-ring focus:outline-none focus:ring-2 focus:ring-ring"
                               value={form.freshnessDate}
                               onChange={(event) => {
                                 setForm((current) => ({ ...current, freshnessDate: event.target.value }));
@@ -937,23 +937,23 @@ export function InventoryItemDetailsEditor({
                           testId="inventory-editor-purchase-links-field"
                         />
 
-                        <label className="block text-sm font-medium text-zinc-700">Заметки
+                        <label className="block text-sm font-medium text-foreground">Заметки
                           <textarea
-                            className="mt-1.5 h-20 w-full resize-none rounded-xl border border-zinc-200 bg-white px-3.5 py-2.5 text-sm transition-colors focus:border-zinc-400 focus:outline-none focus:ring-2 focus:ring-zinc-200"
+                            className="mt-1.5 h-20 w-full resize-none rounded-xl border border-border bg-card px-3.5 py-2.5 text-sm transition-colors focus:border-ring focus:outline-none focus:ring-2 focus:ring-ring"
                             value={form.notes}
                             onChange={(event) => {
                               setForm((current) => ({ ...current, notes: event.target.value }));
                               setResult(null);
                             }}
                           />
-                          {result?.fieldErrors?.notes ? <span className="mt-1 block text-xs text-red-500">{result.fieldErrors.notes}</span> : null}
+                          {result?.fieldErrors?.notes ? <span className="mt-1 block text-xs text-destructive">{result.fieldErrors.notes}</span> : null}
                         </label>
                       </div>
                     ) : null}
                   </section>
                 ) : null}
 
-                {result && !result.ok ? <p role="alert" className="text-xs text-red-600">{result.message}</p> : null}
+                {result && !result.ok ? <p role="alert" className="text-xs text-destructive">{result.message}</p> : null}
 
                 <div className="flex gap-3 pt-2">
                   <Button

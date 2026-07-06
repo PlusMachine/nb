@@ -69,7 +69,13 @@ describe("calculator pages", () => {
       expect(html).not.toContain("Что это значит");
       expect(html).not.toContain("Что сделать дальше");
       expect(html).not.toContain("Формула и допущения");
-      expect(html).not.toContain("Частые ошибки");
+      // Блок «Частые ошибки» показывается только там, где в каталоге есть реальные
+      // ошибки; пустой список = блок скрыт (не выдумываем проблемы ради заполнения).
+      if (calculator.commonMistakes.length > 0) {
+        expect(html).toContain("Частые ошибки");
+      } else {
+        expect(html).not.toContain("Частые ошибки");
+      }
     }
   });
 
@@ -85,6 +91,21 @@ describe("calculator pages", () => {
     expect(html).toContain('value="1.014"');
   });
 
+  it("yeast-starter, speise-krausen and ibu expose a gravity scale switcher including Brix", async () => {
+    const { default: CalculatorRoute } = await import("../app/(public)/calculators/[slug]/page");
+
+    for (const slug of ["yeast-starter", "speise-krausen", "ibu"] as const) {
+      const view = await CalculatorRoute({
+        params: Promise.resolve({ slug }),
+        searchParams: Promise.resolve({})
+      });
+      const html = renderToStaticMarkup(view);
+
+      expect(html).toContain('aria-label="Шкала плотности"');
+      expect(html).toContain("°Bx");
+    }
+  });
+
   it("localStorage fallback code does not run during SSR", () => {
     const html = renderToStaticMarkup(
       React.createElement(CalculatorPageClient, {
@@ -94,6 +115,6 @@ describe("calculator pages", () => {
     );
 
     expect(html).toContain("Карбонизация сахаром");
-    expect(html).toContain("Всего сахара");
+    expect(html).toContain("Всего праймера");
   });
 });

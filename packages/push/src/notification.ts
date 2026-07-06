@@ -145,6 +145,21 @@ export function fermentWatchdogNotification(ctx: NotificationContext, minutes: n
 }
 
 /**
+ * Уведомление о доступном обновлении прошивки (F3, docs/brewforge-firmware-
+ * releases.md §6): мост шлёт при первом обнаружении пары (device, newer-release);
+ * дедуп — колонка brew_devices.update_notified_fw. Диплинк — настройки
+ * устройства (там блок «Прошивка» с changelog и кнопкой «Обновить»).
+ */
+export function firmwareUpdateNotification(ctx: NotificationContext, version: string): PushPayload {
+  return {
+    title: ctx.deviceName,
+    body: `Доступно обновление BrewForge ${version}`,
+    tag: `${ctx.deviceId}:fw-update`,
+    url: `/app/devices/${ctx.deviceId}/settings`,
+  };
+}
+
+/**
  * Уведомление cloud-плеча dead-man (Phase 6b): ручной нагрев включён, а
  * управляющий сеанс потерян (аренда истекла). Реальную защиту даёт firmware
  * dead-man на плате — облако лишь оповещает владельца проверить пивоварню.

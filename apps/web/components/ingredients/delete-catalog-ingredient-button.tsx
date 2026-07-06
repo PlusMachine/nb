@@ -28,12 +28,12 @@ export function DeleteCatalogIngredientButton({ ingredientId, displayName }: Pro
         type="button"
         disabled={isPending}
         onClick={() => setOpen(true)}
-        className="inline-flex items-center rounded-lg border border-red-200 px-2.5 py-1.5 text-xs font-medium text-red-700 hover:bg-red-50 disabled:opacity-60"
+        className="inline-flex items-center rounded-lg border border-destructive-border px-2.5 py-1.5 text-xs font-medium text-destructive hover:bg-destructive-subtle disabled:opacity-60"
       >
         {isPending ? "Удаляем..." : "Удалить"}
       </button>
 
-      {feedback ? <p className="text-[11px] leading-4 text-zinc-500">{feedback}</p> : null}
+      {feedback ? <p className="text-[11px] leading-4 text-muted-foreground">{feedback}</p> : null}
 
       <ConfirmActionDialog
         open={open}

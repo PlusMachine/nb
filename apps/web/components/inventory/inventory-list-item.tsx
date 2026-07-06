@@ -232,7 +232,7 @@ const renderChemicalFormula = (formula: string) => {
 const FormulaLabel = ({ formula }: { formula: string }) => (
   <span
     aria-label={`Формула: ${formula}`}
-    className="whitespace-nowrap text-sm font-semibold leading-none tracking-tight text-zinc-600"
+    className="whitespace-nowrap text-sm font-semibold leading-none tracking-tight text-muted-foreground"
   >
     {renderChemicalFormula(formula)}
   </span>
@@ -309,12 +309,12 @@ export function InventoryListItem({
     : null;
 
   const statusBorderColor = isEmpty
-    ? "border-zinc-200"
+    ? "border-border"
     : expired
-      ? "border-red-200"
+      ? "border-destructive-border"
       : freshnessCritical
-        ? "border-amber-200"
-        : "border-zinc-200";
+        ? "border-warning/30"
+        : "border-border";
   const statusTitle = !isEmpty && expired
     ? "Срок годности истёк"
     : !isEmpty && freshnessCritical
@@ -345,32 +345,32 @@ export function InventoryListItem({
     || hasReserved;
 
   return (
-    <li title={statusTitle} className={`group relative rounded-2xl border bg-white p-4 shadow-sm transition-all duration-200 hover:shadow-md sm:p-5 ${statusBorderColor} ${isEmpty ? "opacity-60" : ""}`}>
+    <li title={statusTitle} className={`group relative rounded-2xl border bg-card p-4 shadow-sm transition-all duration-200 hover:shadow-md sm:p-5 ${statusBorderColor} ${isEmpty ? "opacity-60" : ""}`}>
       {/* Top row: title + actions */}
       <div className="flex items-start gap-3">
         <div className="min-w-0 flex-1">
           {/* Title line */}
           <div className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
             {titleFormula ? <FormulaLabel formula={titleFormula} /> : null}
-            <h3 className="text-[15px] font-semibold leading-snug text-zinc-900">
-              <Link href={detailHref} className="hover:text-zinc-600 transition-colors">
+            <h3 className="text-[15px] font-semibold leading-snug text-foreground">
+              <Link href={detailHref} className="hover:text-muted-foreground transition-colors">
                 {primaryName}
               </Link>
             </h3>
             {showFermentableKindInlineWithTitle ? (
-              <span className="text-xs text-zinc-400">{fermentableKindLabel}</span>
+              <span className="text-xs text-muted-foreground">{fermentableKindLabel}</span>
             ) : null}
             {showInlineBrand ? (
-              <span className="text-[13px] font-medium text-zinc-500">{brandLabel}</span>
+              <span className="text-[13px] font-medium text-muted-foreground">{brandLabel}</span>
             ) : null}
             {showCountryInlineWithTitle ? (
               <CountryFlag countryCode={country.code} className="h-3 w-4 self-center" />
             ) : null}
             {ownershipBadgeLabel ? (
-              <span className="rounded-md bg-zinc-100 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-zinc-400">{ownershipBadgeLabel}</span>
+              <span className="rounded-md bg-muted px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">{ownershipBadgeLabel}</span>
             ) : null}
             {item.archivedAt ? (
-              <span className="inline-flex items-center gap-0.5 rounded-md bg-amber-50 px-1.5 py-0.5 text-[10px] font-semibold text-amber-600">
+              <span className="inline-flex items-center gap-0.5 rounded-md bg-warning-subtle px-1.5 py-0.5 text-[10px] font-semibold text-warning-subtle-foreground">
                 <Archive className="h-2.5 w-2.5" />
                 Архив
               </span>
@@ -379,16 +379,16 @@ export function InventoryListItem({
 
           {/* Subtitle + brand line */}
           {secondaryName ? (
-            <p className="mt-0.5 text-xs text-zinc-400">{secondaryName}</p>
+            <p className="mt-0.5 text-xs text-muted-foreground">{secondaryName}</p>
           ) : null}
           {!showInlineBrand && brandLabel ? (
-            <div className="mt-0.5 flex flex-wrap items-center gap-x-1.5 text-xs text-zinc-500">
+            <div className="mt-0.5 flex flex-wrap items-center gap-x-1.5 text-xs text-muted-foreground">
               <span className="font-medium">{brandLabel}</span>
               {showCountryOnBrandLine ? (
                 <CountryFlag countryCode={country.code} className="h-3 w-4" />
               ) : null}
               {showFermentableKindOnBrandLine ? (
-                <span className="rounded bg-zinc-100 px-1.5 py-0.5 text-[11px] font-medium text-zinc-500">
+                <span className="rounded bg-muted px-1.5 py-0.5 text-[11px] font-medium text-muted-foreground">
                   {fermentableKindLabel}
                 </span>
               ) : null}
@@ -407,7 +407,7 @@ export function InventoryListItem({
               <button
                 type="button"
                 onClick={onClick}
-                className="inline-flex h-8 w-8 items-center justify-center rounded-lg text-zinc-300 transition-colors hover:bg-zinc-100 hover:text-zinc-600"
+                className="inline-flex h-8 w-8 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
                 aria-label="Редактировать"
                 title="Редактировать"
               >
@@ -423,7 +423,7 @@ export function InventoryListItem({
                 type="button"
                 onClick={onClick}
                 disabled={isPending}
-                className="inline-flex h-8 w-8 items-center justify-center rounded-lg text-zinc-300 transition-colors hover:bg-red-50 hover:text-red-500 disabled:opacity-60 sm:opacity-0 sm:group-hover:opacity-100"
+                className="inline-flex h-8 w-8 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-destructive-subtle hover:text-destructive disabled:opacity-60 sm:opacity-0 sm:group-hover:opacity-100"
                 aria-label="Удалить"
               >
                 <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
@@ -443,8 +443,8 @@ export function InventoryListItem({
                   key={badge.key}
                   className={`relative inline-flex items-center rounded-md px-2 py-0.5 text-xs font-medium ${
                     badge.accent
-                      ? "overflow-hidden bg-gradient-to-b from-zinc-50/95 to-zinc-100/90 text-zinc-700 ring-1 ring-zinc-200/70"
-                      : "bg-zinc-100/80 text-zinc-500"
+                      ? "overflow-hidden bg-gradient-to-b from-muted/95 to-muted/90 text-foreground ring-1 ring-border/70"
+                      : "bg-muted/80 text-muted-foreground"
                   }`}
                 >
                   {badge.label}
@@ -464,10 +464,10 @@ export function InventoryListItem({
           ) : null}
 
           {hasMetadata ? (
-            <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-zinc-400">
+            <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted-foreground">
               {reservedLabel ? (
                 <span
-                  className="inline-flex items-center gap-1 font-medium text-amber-600"
+                  className="inline-flex items-center gap-1 font-medium text-warning-subtle-foreground"
                   title={reservedExceedsStock
                     ? `Под рецепты зарезервировано ${reservedLabel} — не меньше, чем сейчас на складе. Ещё не списано.`
                     : `Зарезервировано под рецепты: ${reservedLabel}. Ещё не списано со склада.`}
@@ -477,19 +477,19 @@ export function InventoryListItem({
                 </span>
               ) : null}
               {costSummary.totalPrice ? (
-                <span className={`inline-flex items-center gap-1 ${emphasizePrice ? "font-medium text-zinc-700" : ""}`}>
+                <span className={`inline-flex items-center gap-1 ${emphasizePrice ? "font-medium text-foreground" : ""}`}>
                   <ShoppingCart className="h-3 w-3" />
                   {costSummary.totalPrice}
                 </span>
               ) : null}
               {costSummary.unitPrice ? (
-                <span className={`inline-flex items-center gap-1 ${emphasizePrice ? "font-medium text-zinc-700" : ""}`}>
+                <span className={`inline-flex items-center gap-1 ${emphasizePrice ? "font-medium text-foreground" : ""}`}>
                   <Tag className="h-3 w-3" />
                   {costSummary.unitPrice}
                 </span>
               ) : null}
               {showPricePlaceholder ? (
-                <span className="inline-flex items-center gap-1 italic text-zinc-300">
+                <span className="inline-flex items-center gap-1 italic text-muted-foreground">
                   <Tag className="h-3 w-3" />
                   Цена не указана
                 </span>
@@ -501,13 +501,13 @@ export function InventoryListItem({
                 </span>
               ) : null}
               {item.freshnessDate ? (
-                <span className={`inline-flex items-center gap-1 ${expired ? "font-medium text-red-500" : freshnessCritical ? "font-medium text-amber-500" : emphasizeFreshness ? "font-medium text-zinc-700" : ""}`}>
+                <span className={`inline-flex items-center gap-1 ${expired ? "font-medium text-destructive" : freshnessCritical ? "font-medium text-warning-subtle-foreground" : emphasizeFreshness ? "font-medium text-foreground" : ""}`}>
                   {expired || freshnessCritical ? <AlertTriangle className="h-3 w-3" /> : <Clock className="h-3 w-3" />}
                   {expired ? "Просрочен" : "до"} {item.freshnessDate.toLocaleDateString("ru-RU")}
                 </span>
               ) : null}
               {showFreshnessPlaceholder ? (
-                <span className="inline-flex items-center gap-1 italic text-zinc-300">
+                <span className="inline-flex items-center gap-1 italic text-muted-foreground">
                   <Clock className="h-3 w-3" />
                   Срок не указан
                 </span>
@@ -516,7 +516,7 @@ export function InventoryListItem({
           ) : null}
 
           {item.notes ? (
-            <p className="line-clamp-2 text-xs leading-relaxed text-zinc-400">{item.notes}</p>
+            <p className="line-clamp-2 text-xs leading-relaxed text-muted-foreground">{item.notes}</p>
           ) : null}
         </div>
 
@@ -529,7 +529,7 @@ export function InventoryListItem({
               <button
                 type="button"
                 onClick={open}
-                className="rounded-lg border border-zinc-200 bg-white px-3 py-1.5 text-xs font-medium text-zinc-600 transition-colors hover:border-zinc-300 hover:bg-zinc-50"
+                className="rounded-lg border border-border bg-card px-3 py-1.5 text-xs font-medium text-muted-foreground transition-colors hover:border-border hover:bg-muted"
               >
                 {isEmpty ? "Пополнить" : "Списать"}
               </button>

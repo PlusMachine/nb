@@ -34,9 +34,9 @@ const STATUS_LABEL: Record<PickerDevice["status"], string> = {
 };
 
 const STATUS_DOT: Record<PickerDevice["status"], string> = {
-  online: "bg-emerald-500",
-  offline: "bg-zinc-300",
-  unknown: "bg-amber-400"
+  online: "bg-success",
+  offline: "bg-muted-foreground",
+  unknown: "bg-warning"
 };
 
 type Props = {
@@ -119,7 +119,7 @@ export function DevicePickerList({
 
   if (loading) {
     return (
-      <div className="flex items-center gap-2 px-1 py-6 text-sm text-zinc-500">
+      <div className="flex items-center gap-2 px-1 py-6 text-sm text-muted-foreground">
         <Loader2 className="h-4 w-4 animate-spin" />
         Загрузка устройств…
       </div>
@@ -128,12 +128,12 @@ export function DevicePickerList({
 
   if (loadError) {
     return (
-      <div className="rounded-lg border border-rose-200 bg-rose-50 px-3 py-3 text-sm text-rose-900" role="alert">
+      <div className="rounded-lg border border-destructive-border bg-destructive-subtle px-3 py-3 text-sm text-destructive-subtle-foreground" role="alert">
         <p>{loadError}</p>
         <button
           type="button"
           onClick={onRetry}
-          className="mt-2 inline-flex items-center gap-1.5 rounded-md border border-rose-200 bg-white px-2.5 py-1.5 text-xs font-medium text-rose-800"
+          className="mt-2 inline-flex items-center gap-1.5 rounded-md border border-destructive-border bg-card px-2.5 py-1.5 text-xs font-medium text-destructive-subtle-foreground"
         >
           <RefreshCw className="h-3.5 w-3.5" />
           Повторить
@@ -145,22 +145,22 @@ export function DevicePickerList({
   return (
     <div className="space-y-3">
       {issuedToken ? (
-        <div className="rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-3 text-sm text-emerald-950" role="status">
+        <div className="rounded-lg border border-success/30 bg-success-subtle px-3 py-3 text-sm text-success-subtle-foreground" role="status">
           <p className="font-semibold">Устройство привязано.</p>
           {pairingStatus?.delivered ? (
-            <p className="mt-1 text-xs leading-5 text-emerald-800">
+            <p className="mt-1 text-xs leading-5 text-success-subtle-foreground">
               Токен уже доставлен устройству по локальной сети — можно управлять сразу.
             </p>
           ) : (
-            <p className="mt-1 text-xs leading-5 text-emerald-800">
+            <p className="mt-1 text-xs leading-5 text-success-subtle-foreground">
               Сохраните токен и пропишите его в устройстве — он показывается один раз и нигде не хранится в открытом виде.
             </p>
           )}
-          <code className="mt-2 block break-all rounded-md border border-emerald-200 bg-white px-2 py-1.5 font-mono text-xs text-emerald-900">
+          <code className="mt-2 block break-all rounded-md border border-success/30 bg-card px-2 py-1.5 font-mono text-xs text-success-subtle-foreground">
             {issuedToken}
           </code>
           {pairingStatus && !pairingStatus.delivered ? (
-            <p className="mt-2 text-xs leading-5 text-amber-800">{pairingDeliveryReasonText(pairingStatus.reason)}</p>
+            <p className="mt-2 text-xs leading-5 text-warning-subtle-foreground">{pairingDeliveryReasonText(pairingStatus.reason)}</p>
           ) : null}
         </div>
       ) : null}
@@ -176,10 +176,10 @@ export function DevicePickerList({
                   key={device.id}
                   className={`flex items-start gap-3 rounded-lg border px-3 py-3 ${
                     offline
-                      ? "cursor-not-allowed border-zinc-100 bg-zinc-50 opacity-60"
+                      ? "cursor-not-allowed border-border bg-muted opacity-60"
                       : active
-                        ? "cursor-pointer border-zinc-900 bg-zinc-50"
-                        : "cursor-pointer border-zinc-200 bg-white"
+                        ? "cursor-pointer border-foreground bg-muted"
+                        : "cursor-pointer border-border bg-card"
                   }`}
                 >
                   <input
@@ -192,11 +192,11 @@ export function DevicePickerList({
                   />
                   <span className="min-w-0 flex-1">
                     <span className="flex items-center gap-2">
-                      <span className="truncate text-sm font-semibold text-zinc-900">{device.name}</span>
+                      <span className="truncate text-sm font-semibold text-foreground">{device.name}</span>
                       <span className={`h-2 w-2 shrink-0 rounded-full ${STATUS_DOT[device.status]}`} aria-hidden />
-                      <span className="text-[11px] text-zinc-500">{STATUS_LABEL[device.status]}</span>
+                      <span className="text-[11px] text-muted-foreground">{STATUS_LABEL[device.status]}</span>
                     </span>
-                    <span className="mt-0.5 block truncate text-xs text-zinc-500">
+                    <span className="mt-0.5 block truncate text-xs text-muted-foreground">
                       {device.hardwareId}
                       {device.localUrl ? ` · ${device.localUrl}` : ""}
                     </span>
@@ -209,7 +209,7 @@ export function DevicePickerList({
             type="button"
             onClick={() => setView("pair")}
             disabled={busy}
-            className="inline-flex items-center gap-1.5 text-xs font-medium text-zinc-600 hover:text-zinc-900 disabled:opacity-60"
+            className="inline-flex items-center gap-1.5 text-xs font-medium text-muted-foreground hover:text-foreground disabled:opacity-60"
           >
             <Plus className="h-3.5 w-3.5" />
             Привязать ещё одно устройство
@@ -218,12 +218,12 @@ export function DevicePickerList({
       ) : (
         <div className="space-y-3">
           {pairError ? (
-            <div className="rounded-lg border border-rose-200 bg-rose-50 px-3 py-3 text-sm text-rose-900" role="alert">
+            <div className="rounded-lg border border-destructive-border bg-destructive-subtle px-3 py-3 text-sm text-destructive-subtle-foreground" role="alert">
               {pairError}
             </div>
           ) : null}
           <div>
-            <label htmlFor="brew-pair-code" className="mb-1 block text-[11px] font-medium uppercase tracking-wide text-zinc-500">
+            <label htmlFor="brew-pair-code" className="mb-1 block text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
               Claim-код
             </label>
             <input
@@ -232,15 +232,15 @@ export function DevicePickerList({
               onChange={(event) => setPairCode(event.target.value)}
               placeholder="Например, 3F9A"
               autoComplete="off"
-              className="w-full rounded-lg border border-zinc-200 bg-white px-3 py-2 font-mono text-sm uppercase text-zinc-900"
+              className="w-full rounded-lg border border-border bg-card px-3 py-2 font-mono text-sm uppercase text-foreground"
             />
-            <p className="mt-1 text-xs leading-5 text-zinc-500">
+            <p className="mt-1 text-xs leading-5 text-muted-foreground">
               Код показывает дисплей устройства или его точка доступа при первом включении.
             </p>
           </div>
           <div>
-            <label htmlFor="brew-pair-url" className="mb-1 block text-[11px] font-medium uppercase tracking-wide text-zinc-500">
-              Локальный адрес <span className="font-normal lowercase text-zinc-400">(опционально)</span>
+            <label htmlFor="brew-pair-url" className="mb-1 block text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
+              Локальный адрес <span className="font-normal lowercase text-muted-foreground">(опционально)</span>
             </label>
             <input
               id="brew-pair-url"
@@ -248,12 +248,12 @@ export function DevicePickerList({
               onChange={(event) => setPairLocalUrl(event.target.value)}
               placeholder="http://192.168.1.50"
               autoComplete="off"
-              className="w-full rounded-lg border border-zinc-200 bg-white px-3 py-2 text-sm text-zinc-900"
+              className="w-full rounded-lg border border-border bg-card px-3 py-2 text-sm text-foreground"
             />
           </div>
           <div>
-            <label htmlFor="brew-pair-name" className="mb-1 block text-[11px] font-medium uppercase tracking-wide text-zinc-500">
-              Название <span className="font-normal lowercase text-zinc-400">(опционально)</span>
+            <label htmlFor="brew-pair-name" className="mb-1 block text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
+              Название <span className="font-normal lowercase text-muted-foreground">(опционально)</span>
             </label>
             <input
               id="brew-pair-name"
@@ -261,7 +261,7 @@ export function DevicePickerList({
               onChange={(event) => setPairName(event.target.value)}
               placeholder="Пивоварня на кухне"
               autoComplete="off"
-              className="w-full rounded-lg border border-zinc-200 bg-white px-3 py-2 text-sm text-zinc-900"
+              className="w-full rounded-lg border border-border bg-card px-3 py-2 text-sm text-foreground"
             />
           </div>
           <div className="flex flex-wrap items-center gap-2">

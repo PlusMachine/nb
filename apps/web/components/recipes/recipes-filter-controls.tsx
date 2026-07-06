@@ -43,7 +43,7 @@ export function RecipesFilterControls({
       <button
         type="button"
         onClick={reset}
-        className="w-full rounded-xl border border-zinc-200 px-4 py-2.5 text-sm font-medium text-zinc-700 transition hover:bg-zinc-50"
+        className="w-full rounded-xl border border-border px-4 py-2.5 text-sm font-medium text-foreground transition hover:bg-muted"
       >
         Сбросить фильтры
       </button>

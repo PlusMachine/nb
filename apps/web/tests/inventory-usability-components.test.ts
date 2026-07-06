@@ -430,7 +430,7 @@ describe("inventory usability components", () => {
     }));
 
     expect(html).toContain("закончился");
-    expect(html).toContain("text-rose-400");
+    expect(html).toContain("text-destructive");
     expect(html).toContain("Изменить");
   });
 

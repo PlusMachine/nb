@@ -41,14 +41,22 @@ const DEFAULT_EMAIL = "artyom.movchan@gmail.com";
 // ---------------------------------------------------------------------------
 // Dev guard
 // ---------------------------------------------------------------------------
+// Хост БД, а не подстрока всего URL: схема postgres:// матчила бы любую базу.
+const LOCAL_DB_HOSTS = new Set(["localhost", "127.0.0.1", "postgres"]);
+
 const assertDevOnly = () => {
   const env = parseServerEnv(process.env);
   if (env.NODE_ENV === "production") {
     throw new Error("seed:sample заблокирован в production.");
   }
-  const url = env.DATABASE_URL;
-  if (!(url.includes("localhost") || url.includes("127.0.0.1") || url.includes("postgres"))) {
-    throw new Error("seed:sample допускает только локальную БД (localhost/127.0.0.1/postgres).");
+  let host = "";
+  try {
+    host = new URL(env.DATABASE_URL).hostname;
+  } catch {
+    // оставляем host пустым — упадём ниже
+  }
+  if (!LOCAL_DB_HOSTS.has(host)) {
+    throw new Error(`seed:sample допускает только локальную БД (localhost/127.0.0.1/postgres), а не "${host}".`);
   }
 };
 
@@ -543,7 +551,7 @@ const main = async () => {
   await db.insert(contentArticles).values(articleRows).onConflictDoNothing({ target: contentArticles.slug });
   console.log(`📰  Контент: добавлено ${articleRows.length} статей (гайды/обзор).`);
 
-  console.log("\n✅  Готово. Перезагрузи /app/recipes, /app/inventory, /app/equipment и /guides.");
+  console.log("\n✅  Готово. Перезагрузи /app/recipes, /app/inventory, /app/equipment и /articles.");
   process.exit(0);
 };
 

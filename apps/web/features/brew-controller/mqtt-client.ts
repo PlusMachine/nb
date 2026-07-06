@@ -18,7 +18,13 @@
 //  выбирает LAN-транспорт, а этот модуль не подключается к брокеру.
 // =============================================================================
 import mqtt, { type MqttClient } from "mqtt";
-import { AckSchema, type Ack, type Command, type DeviceRecipe } from "@nb/brewforge-protocol";
+import {
+  AckSchema,
+  cmdOta,
+  type Ack,
+  type Command,
+  type DeviceRecipe,
+} from "@nb/brewforge-protocol";
 
 const ACK_WILDCARD = "brewforge/+/cmd/ack";
 const DEFAULT_ACK_TIMEOUT_MS = 6000;
@@ -170,6 +176,23 @@ export async function publishRecipe(hardwareId: string, recipe: DeviceRecipe): P
   const topic = `brewforge/${hardwareId}/recipe`;
   await new Promise<void>((resolve, reject) => {
     client.publish(topic, JSON.stringify(recipe), { qos: 1 }, (err) => {
+      if (err) reject(err);
+      else resolve();
+    });
+  });
+}
+
+/**
+ * Опубликовать запуск OTA (F3, спека §5.4): {"cmd":"ota","url"} в тот же топик
+ * .../cmd (QoS1). Fire-and-forget — отдельная форма сообщения БЕЗ конверта
+ * Command {id,ts,…}, поэтому ack по ackOf не коррелируется; результат/прогресс
+ * прошивка рапортует в .../log (мост складывает в brew_log_events).
+ */
+export async function publishOta(hardwareId: string, url: string): Promise<void> {
+  const client = await getClient();
+  const topic = `brewforge/${hardwareId}/cmd`;
+  await new Promise<void>((resolve, reject) => {
+    client.publish(topic, JSON.stringify(cmdOta(url)), { qos: 1 }, (err) => {
       if (err) reject(err);
       else resolve();
     });

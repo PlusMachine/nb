@@ -37,14 +37,14 @@ export function RecipeRatingFormView({
 
   if (!viewerState.authenticated) {
     return (
-      <p className="text-sm text-zinc-600">
+      <p className="text-sm text-muted-foreground">
         <a
           href="/login"
           onClick={(event) => {
             event.preventDefault();
             redirectToLoginWithNext();
           }}
-          className="font-medium text-zinc-900 underline underline-offset-2"
+          className="font-medium text-foreground underline underline-offset-2"
         >
           Войдите
         </a>
@@ -54,7 +54,7 @@ export function RecipeRatingFormView({
   }
 
   if (!viewerState.canRate) {
-    return <p className="text-sm text-zinc-500">Нельзя оценивать собственный рецепт.</p>;
+    return <p className="text-sm text-muted-foreground">Нельзя оценивать собственный рецепт.</p>;
   }
 
   const submit = () => {
@@ -109,7 +109,7 @@ export function RecipeRatingFormView({
               className={
                 value <= activeStars
                   ? "h-7 w-7 fill-amber-500 text-amber-500"
-                  : "h-7 w-7 text-zinc-300"
+                  : "h-7 w-7 text-muted-foreground"
               }
               aria-hidden
             />
@@ -139,7 +139,7 @@ export function RecipeRatingFormView({
       </div>
 
       {message ? (
-        <p role={message.kind === "ok" ? "status" : "alert"} className={message.kind === "ok" ? "text-sm text-emerald-700" : "text-sm text-red-600"}>
+        <p role={message.kind === "ok" ? "status" : "alert"} className={message.kind === "ok" ? "text-sm text-success" : "text-sm text-destructive"}>
           {message.text}
         </p>
       ) : null}
@@ -174,7 +174,7 @@ export function RecipeRatingForm({ recipeId, slug }: { recipeId: string; slug: s
   }, [recipeId]);
 
   if (!viewerState) {
-    return <p className="text-sm text-zinc-400">Загрузка…</p>;
+    return <p className="text-sm text-muted-foreground">Загрузка…</p>;
   }
 
   return <RecipeRatingFormView recipeId={recipeId} slug={slug} viewerState={viewerState} />;

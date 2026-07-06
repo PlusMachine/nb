@@ -3,6 +3,8 @@
 import { useEffect } from "react";
 import { ToastProvider } from "@nb/ui";
 import { ConsentProvider } from "@/components/legal/consent-provider";
+import { ThemeProvider } from "@/components/theme/theme-provider";
+import type { ThemePreference } from "@/features/theme/theme";
 
 const shouldAutoSelectNumberInput = (target: EventTarget | null): target is HTMLInputElement => {
   if (!(target instanceof HTMLInputElement)) {
@@ -28,7 +30,13 @@ const selectFocusedNumberInput = (input: HTMLInputElement) => {
   });
 };
 
-export function Providers({ children }: { children: React.ReactNode }) {
+export function Providers({
+  children,
+  initialThemePreference
+}: {
+  children: React.ReactNode;
+  initialThemePreference: ThemePreference;
+}) {
   useEffect(() => {
     let selectedOnFocus: HTMLInputElement | null = null;
 
@@ -74,8 +82,10 @@ export function Providers({ children }: { children: React.ReactNode }) {
   }, []);
 
   return (
-    <ToastProvider>
-      <ConsentProvider>{children}</ConsentProvider>
-    </ToastProvider>
+    <ThemeProvider initialPreference={initialThemePreference}>
+      <ToastProvider>
+        <ConsentProvider>{children}</ConsentProvider>
+      </ToastProvider>
+    </ThemeProvider>
   );
 }

@@ -1,4 +1,5 @@
 import { platoToSg, roundTo, sgToPlato } from "../units";
+import { kegPressurePsi } from "./carbonation";
 import {
   alkalinityAsCaCO3FromHco3,
   applySaltAdditions,
@@ -112,6 +113,26 @@ export type DilutionBoiloffMode =
 
 export type GravityAdditionType = "water" | "dme" | "sugar";
 
+// Shared by calculateExtractAdditionGrams and the add_extract_to_gravity branch of
+// calculateDilutionBoiloff — both need "how many gravity points, over what volume, must
+// the addition supply" and previously duplicated this arithmetic.
+const resolveGravityPointDelta = (input: {
+  currentVolumeL: number;
+  currentGravity: number;
+  targetGravity: number;
+  targetVolumeL?: number;
+}) => {
+  const targetVolumeL = input.targetVolumeL && input.targetVolumeL > 0 ? input.targetVolumeL : input.currentVolumeL;
+  const currentPointLiters = input.currentVolumeL * gravityPointsFromSg(input.currentGravity);
+  const targetPointLiters = targetVolumeL * gravityPointsFromSg(input.targetGravity);
+  return {
+    targetVolumeL,
+    currentPointLiters,
+    targetPointLiters,
+    pointLitersNeeded: Math.max(0, targetPointLiters - currentPointLiters)
+  };
+};
+
 export const calculateExtractAdditionGrams = (input: {
   currentVolumeL: number;
   currentGravity: number;
@@ -119,10 +140,7 @@ export const calculateExtractAdditionGrams = (input: {
   targetVolumeL?: number;
   additionType: Extract<GravityAdditionType, "dme" | "sugar">;
 }) => {
-  const targetVolumeL = input.targetVolumeL ?? input.currentVolumeL;
-  const currentPointLiters = input.currentVolumeL * gravityPointsFromSg(input.currentGravity);
-  const targetPointLiters = targetVolumeL * gravityPointsFromSg(input.targetGravity);
-  const pointLitersNeeded = Math.max(0, targetPointLiters - currentPointLiters);
+  const { pointLitersNeeded } = resolveGravityPointDelta(input);
   const ppg = input.additionType === "dme" ? 44 : 46;
   const pointGallons = pointLitersNeeded * L_TO_GAL;
   const pounds = pointGallons / ppg;
@@ -140,11 +158,37 @@ export const calculateDilutionBoiloff = (input: {
   additionType?: GravityAdditionType;
 }) => {
   assertPositive(input.currentVolumeL, "currentVolumeL");
+  const warnings: string[] = [];
   const currentPoints = gravityPointsFromSg(input.currentGravity);
   const currentPointLiters = input.currentVolumeL * currentPoints;
   const targetPoints = input.targetGravity ? gravityPointsFromSg(input.targetGravity) : currentPoints;
   const targetVolumeFromGravity = targetPoints > 0 ? currentPointLiters / targetPoints : input.currentVolumeL;
   const requestedTargetVolume = input.targetVolumeL && input.targetVolumeL > 0 ? input.targetVolumeL : targetVolumeFromGravity;
+
+  // Diluting can only lower gravity, boiling can only raise it — a target on the wrong
+  // side of current is not reachable by that mode's mechanism at all.
+  if (input.mode === "dilute_to_gravity" && input.targetGravity != null && input.targetGravity > input.currentGravity) {
+    warnings.push("target_gravity_above_current");
+  }
+  if (input.mode === "boil_to_gravity" && input.targetGravity != null && input.targetGravity < input.currentGravity) {
+    warnings.push("target_gravity_below_current");
+  }
+
+  // Boiling off only removes volume, so a requested post-boil volume above current is
+  // physically impossible; treat it as "no boiloff" instead of manufacturing a fake result.
+  const boilRequestedVolume = input.mode === "boil_to_gravity" ? targetVolumeFromGravity : requestedTargetVolume;
+  const boilModeImpossible = (input.mode === "boil_to_gravity" || input.mode === "gravity_after_boiloff" || input.mode === "extra_boil_time")
+    && boilRequestedVolume > input.currentVolumeL;
+  if (boilModeImpossible) {
+    warnings.push("target_volume_above_current");
+  }
+
+  // Adding water only increases volume, so a requested volume below current is impossible.
+  const waterModeImpossible = input.mode === "gravity_after_water" && requestedTargetVolume < input.currentVolumeL;
+  if (waterModeImpossible) {
+    warnings.push("target_volume_below_current");
+  }
+
   const waterToAdd = input.mode === "dilute_to_gravity"
     ? Math.max(0, targetVolumeFromGravity - input.currentVolumeL)
     : input.mode === "gravity_after_water"
@@ -155,26 +199,45 @@ export const calculateDilutionBoiloff = (input: {
     : input.mode === "gravity_after_boiloff" || input.mode === "extra_boil_time"
       ? Math.max(0, input.currentVolumeL - requestedTargetVolume)
       : 0;
-  const resultingVolume = input.mode === "dilute_to_gravity"
-    ? input.currentVolumeL + waterToAdd
-    : input.mode === "boil_to_gravity"
-      ? input.currentVolumeL - volumeToBoilOff
-      : input.mode === "gravity_after_water" || input.mode === "gravity_after_boiloff" || input.mode === "extra_boil_time"
-        ? requestedTargetVolume
-        : input.currentVolumeL;
-  const resultingGravity = resultingVolume > 0
-    ? sgFromGravityPoints(currentPointLiters / resultingVolume)
-    : input.currentGravity;
+
+  let resultingVolume = input.currentVolumeL;
+  let resultingGravity = input.currentGravity;
+
+  if (input.mode === "dilute_to_gravity") {
+    resultingVolume = input.currentVolumeL + waterToAdd;
+    resultingGravity = sgFromGravityPoints(currentPointLiters / resultingVolume);
+  } else if (input.mode === "boil_to_gravity") {
+    resultingVolume = input.currentVolumeL - volumeToBoilOff;
+    resultingGravity = resultingVolume > 0 ? sgFromGravityPoints(currentPointLiters / resultingVolume) : input.currentGravity;
+  } else if (input.mode === "gravity_after_water" && !waterModeImpossible) {
+    resultingVolume = requestedTargetVolume;
+    resultingGravity = sgFromGravityPoints(currentPointLiters / resultingVolume);
+  } else if ((input.mode === "gravity_after_boiloff" || input.mode === "extra_boil_time") && !boilModeImpossible) {
+    resultingVolume = requestedTargetVolume;
+    resultingGravity = resultingVolume > 0 ? sgFromGravityPoints(currentPointLiters / resultingVolume) : input.currentGravity;
+  } else if (input.mode === "add_extract_to_gravity" && input.targetGravity) {
+    // input.targetVolumeL is ignored here on purpose: the UI hides "Целевой объем" for this
+    // mode, so a stale/default value must not silently expand the batch — the extract is
+    // dosed into the CURRENT volume, which is why resultingVolume ends up ≈ currentVolumeL.
+    const { targetVolumeL, pointLitersNeeded } = resolveGravityPointDelta({
+      currentVolumeL: input.currentVolumeL,
+      currentGravity: input.currentGravity,
+      targetGravity: input.targetGravity
+    });
+    resultingVolume = targetVolumeL;
+    resultingGravity = sgFromGravityPoints((currentPointLiters + pointLitersNeeded) / resultingVolume);
+  }
+
   const extraBoilTimeMinutes = input.boilOffRateLPerHour && input.boilOffRateLPerHour > 0
     ? roundTo((volumeToBoilOff / input.boilOffRateLPerHour) * 60, 0)
     : 0;
   const additionType = input.additionType === "sugar" ? "sugar" : "dme";
   const extractGrams = input.mode === "add_extract_to_gravity" && input.targetGravity
+    // Same targetVolumeL-ignoring rule as above: grams are dosed for the current volume.
     ? calculateExtractAdditionGrams({
       currentVolumeL: input.currentVolumeL,
       currentGravity: input.currentGravity,
       targetGravity: input.targetGravity,
-      targetVolumeL: input.targetVolumeL,
       additionType
     })
     : 0;
@@ -186,7 +249,8 @@ export const calculateDilutionBoiloff = (input: {
     resultingVolumeL: roundTo(resultingVolume, 2),
     resultingGravity,
     dmeToAddG: additionType === "dme" ? extractGrams : 0,
-    sugarToAddG: additionType === "sugar" ? extractGrams : 0
+    sugarToAddG: additionType === "sugar" ? extractGrams : 0,
+    warnings
   };
 };
 
@@ -348,6 +412,25 @@ export const calculatePrimingSugar = (input: {
   bottleSizeL?: number;
 }) => {
   const residualCo2 = residualCo2VolumesAtTempC(input.beerTemperatureC);
+  const warnings: string[] = [];
+
+  if (input.targetCo2Volumes > 3.5) {
+    warnings.push("high_carbonation_bottle_risk");
+  }
+  if (residualCo2 >= input.targetCo2Volumes) {
+    warnings.push("residual_exceeds_target");
+  }
+
+  if (!Number.isFinite(input.beerVolumeL) || input.beerVolumeL <= 0) {
+    return {
+      totalSugarGrams: 0,
+      gramsPerLiter: 0,
+      gramsPerBottle: 0,
+      residualCo2,
+      warnings
+    };
+  }
+
   const deltaVolumes = Math.max(0, input.targetCo2Volumes - residualCo2);
   const factor = primingFactorsGPerLPerVolume[input.sugarType ?? "dextrose"];
   const totalSugarGrams = input.beerVolumeL * deltaVolumes * factor;
@@ -358,7 +441,8 @@ export const calculatePrimingSugar = (input: {
     gramsPerBottle: input.bottleSizeL && input.bottleSizeL > 0
       ? roundTo((totalSugarGrams / input.beerVolumeL) * input.bottleSizeL, 2)
       : 0,
-    residualCo2
+    residualCo2,
+    warnings
   };
 };
 
@@ -378,20 +462,16 @@ export const calculateKegCarbonationPressure = (input: {
   targetCo2Volumes: number;
   mode?: KegCarbonationMode;
 }) => {
-  const tempF = (input.beerTemperatureC * 9) / 5 + 32;
-  const volumes = input.targetCo2Volumes;
-  const pressurePsi = -16.6999
-    - 0.0101059 * tempF
-    + 0.00116512 * tempF ** 2
-    + 0.173354 * tempF * volumes
-    + 4.24267 * volumes
-    - 0.0684226 * volumes ** 2;
+  // Полином равновесного давления — единственный источник истины в carbonation.ts,
+  // общий с таблицей карбонизации (её ячейки считаются обратной функцией того же полинома).
+  const pressurePsi = kegPressurePsi(input.beerTemperatureC, input.targetCo2Volumes);
   const converted = convertPressure(Math.max(0, pressurePsi), "psi");
 
   return {
     ...converted,
     suggestedPressurePsi: converted.psi,
-    warnings: input.mode === "spunding" && converted.psi > 30 ? ["spunding_pressure_high"] : []
+    // Высокое давление рискованно независимо от режима — не только при шпунтовании.
+    warnings: converted.psi > 30 ? ["pressure_above_30_psi"] : []
   };
 };
 
@@ -411,16 +491,25 @@ export const calculateBrewingWaterVolume = (input: {
 }) => {
   const trubChillerLossL = input.trubChillerLossL ?? 1;
   const kettleLossL = input.kettleLossL ?? 0.5;
-  const shrinkage = (input.coolingShrinkagePercent ?? 4) / 100;
+  const shrinkagePercent = input.coolingShrinkagePercent ?? 4;
+  const shrinkage = shrinkagePercent / 100;
   const postBoilCoolVolumeL = input.targetFermenterVolumeL + trubChillerLossL;
   const postBoilHotVolumeL = postBoilCoolVolumeL / Math.max(0.01, 1 - shrinkage);
   const preBoilVolumeL = postBoilHotVolumeL + input.boilOffRateLPerHour * (input.boilTimeMinutes / 60);
   const absorptionL = input.grainWeightKg * input.grainAbsorptionLPerKg;
   const totalWaterNeededL = preBoilVolumeL + absorptionL + kettleLossL;
-  const mashWaterL = input.methodPreset === "BIAB" || input.methodPreset === "extract"
-    ? totalWaterNeededL
-    : Math.min(totalWaterNeededL, input.grainWeightKg * input.mashThicknessLPerKg);
+  const isNoSpargeMethod = input.methodPreset === "BIAB" || input.methodPreset === "extract";
+  const grainMashWaterL = input.grainWeightKg * input.mashThicknessLPerKg;
+  const mashWaterL = isNoSpargeMethod ? totalWaterNeededL : Math.min(totalWaterNeededL, grainMashWaterL);
   const spargeWaterL = Math.max(0, totalWaterNeededL - mashWaterL);
+  const warnings: string[] = [];
+
+  if (shrinkagePercent >= 20) {
+    warnings.push("shrinkage_suspiciously_high");
+  }
+  if (!isNoSpargeMethod && totalWaterNeededL < grainMashWaterL) {
+    warnings.push("mash_water_capped");
+  }
 
   return {
     totalWaterNeededL: roundTo(totalWaterNeededL, 2),
@@ -429,7 +518,8 @@ export const calculateBrewingWaterVolume = (input: {
     preBoilVolumeL: roundTo(preBoilVolumeL, 2),
     postBoilHotVolumeL: roundTo(postBoilHotVolumeL, 2),
     postBoilCoolVolumeL: roundTo(postBoilCoolVolumeL, 2),
-    intoFermenterVolumeL: roundTo(input.targetFermenterVolumeL, 2)
+    intoFermenterVolumeL: roundTo(input.targetFermenterVolumeL, 2),
+    warnings
   };
 };
 
@@ -477,25 +567,46 @@ export const calculateBottling = (input: {
 
 export type SpeiseMode = "speise" | "krausen" | "gyle";
 
+// Balling stoichiometry: fermenting 2.0665 g of extract yields 0.9565 g CO2 — ≈463 g CO2
+// per kg of extract that actually ferments. Actual (not apparent) fermentability differs
+// by source: speise/gyle sugar is still fully fermentable (0.63), krausen is young beer
+// that has already lost some of its fermentable sugar to partial fermentation (0.50).
+const CO2_GRAMS_PER_KG_FERMENTED_EXTRACT = 463;
+const fermentabilityByMode: Record<SpeiseMode, number> = {
+  speise: 0.63,
+  // Гайл — то же самое молодое суслo, что и шпайзе; совпадение коэффициента намеренное.
+  gyle: 0.63,
+  krausen: 0.5
+};
+
 export const calculateSpeiseKrausen = (input: {
   beerVolumeL: number;
   targetCo2: number;
-  residualCo2: number;
+  residualCo2?: number;
   speiseGravity: number;
   temperatureC: number;
   mode?: SpeiseMode;
 }) => {
-  const deltaVolumes = Math.max(0, input.targetCo2 - input.residualCo2);
+  const residualCo2 = input.residualCo2 ?? residualCo2VolumesAtTempC(input.temperatureC);
+  const deltaVolumes = Math.max(0, input.targetCo2 - residualCo2);
   const co2GramsNeeded = input.beerVolumeL * deltaVolumes * 1.96;
   const extractKgPerL = (sgToPlato(input.speiseGravity, 3) / 100) * input.speiseGravity;
-  const fermentability = input.mode === "krausen" ? 0.75 : 0.82;
-  const co2YieldPerKgExtract = 490 * fermentability;
+  const fermentability = fermentabilityByMode[input.mode ?? "speise"];
+  const co2YieldPerKgExtract = CO2_GRAMS_PER_KG_FERMENTED_EXTRACT * fermentability;
   const speiseVolumeToAddL = extractKgPerL > 0 ? co2GramsNeeded / co2YieldPerKgExtract / extractKgPerL : 0;
+  const finalVolumeL = input.beerVolumeL + speiseVolumeToAddL;
+
+  // Стехиометрия брожения: моль CO2 = моль этанола, масса этанола = co2GramsNeeded × 46/44;
+  // объём этанола (мл) = масса / плотность этанола (0.789 г/мл).
+  const ethanolGrams = co2GramsNeeded * (46 / 44);
+  const ethanolMl = ethanolGrams / 0.789;
+  const approximateAbvChange = finalVolumeL > 0 ? (ethanolMl / (finalVolumeL * 1000)) * 100 : 0;
 
   return {
     speiseVolumeToAddL: roundTo(speiseVolumeToAddL, 2),
-    finalVolumeL: roundTo(input.beerVolumeL + speiseVolumeToAddL, 2),
-    approximateAbvChange: roundTo((speiseVolumeToAddL / Math.max(1, input.beerVolumeL)) * 0.15, 2)
+    finalVolumeL: roundTo(finalVolumeL, 2),
+    approximateAbvChange: roundTo(approximateAbvChange, 2),
+    residualCo2: roundTo(residualCo2, 2)
   };
 };
 
@@ -549,8 +660,19 @@ export const calculateYeastStarter = (input: {
   });
   const viableCellsBillion = input.packsCount * input.cellsPerPackBillion * (viability / 100);
   const deficitBillion = Math.max(0, requiredCellsBillion - viableCellsBillion);
-  const starterYieldBillionPerLiter = input.starterMode === "stirPlate" ? 160 : input.starterMode === "simple" ? 100 : 0;
-  const starterVolumeL = starterYieldBillionPerLiter > 0 ? deficitBillion / starterYieldBillionPerLiter : 0;
+  const starterMode = input.starterMode ?? "none";
+  const starterYieldBillionPerLiter = starterMode === "stirPlate" ? 160 : starterMode === "simple" ? 100 : 0;
+  const warnings: string[] = [];
+  // С нулём живых клеток стартеру не от чего расти — расчёт по дефициту дал бы бессмысленный объём.
+  const noViableCells = viableCellsBillion === 0 && starterMode !== "none";
+
+  if (noViableCells) {
+    warnings.push("no_viable_cells");
+  }
+
+  const starterVolumeL = !noViableCells && starterYieldBillionPerLiter > 0
+    ? deficitBillion / starterYieldBillionPerLiter
+    : 0;
 
   return {
     requiredCellsBillion: roundTo(requiredCellsBillion, 0),
@@ -562,7 +684,8 @@ export const calculateYeastStarter = (input: {
         : "ok",
     starterVolumeL: roundTo(starterVolumeL, 2),
     dmeForStarterG: roundTo(starterVolumeL * 100, 0),
-    viabilityPercent: viability
+    viabilityPercent: viability,
+    warnings
   };
 };
 
@@ -590,10 +713,11 @@ export const calculateWaterPh = (input: {
     pctCrystalCaramel: input.colorCategory === "amber" ? 8 : 2,
     pctAcidulated: input.acidulatedMaltPercent ?? 0
   });
+  const targetMashPh20C = 5.35;
   const acidNeeded = input.acid
     ? solveMashAcidAddition({
       unadjustedMashPh20C: mashPh.predictedMashPh20C,
-      targetMashPh20C: 5.35,
+      targetMashPh20C,
       mashWaterLiters: input.mashWaterVolumeL,
       grainKg: input.totalGrainKg ?? 5,
       alkalinityAsCaCO3: alkalinityAsCaCO3FromHco3(finalProfile.hco3),
@@ -604,7 +728,8 @@ export const calculateWaterPh = (input: {
     finalProfile.na > 150 ? "high_sodium" : null,
     finalProfile.so4 > 350 ? "high_sulfate" : null,
     finalProfile.cl > 250 ? "high_chloride" : null,
-    ...mashPh.warnings
+    ...mashPh.warnings,
+    ...(acidNeeded?.warnings ?? [])
   ].filter((warning): warning is string => Boolean(warning));
 
   return {
@@ -619,6 +744,8 @@ export const calculateWaterPh = (input: {
     },
     sulfateChlorideRatio: sulfateChlorideRatio(finalProfile),
     estimatedMashPh: mashPh.predictedMashPh20C,
+    postAcidPh: acidNeeded?.predictedMashPh20C ?? null,
+    targetPh: targetMashPh20C,
     acidNeededMl: acidNeeded?.mashAcidMl ?? 0,
     warnings
   };
@@ -640,7 +767,8 @@ export const calculateHopFreshness = (input: {
 }) => {
   const today = input.today ?? new Date();
   const ageYears = Math.max(0, (today.getTime() - input.packageDate.getTime()) / 31_557_600_000);
-  const openAgeYears = input.openedDate ? Math.max(0, (today.getTime() - input.openedDate.getTime()) / 31_557_600_000) : 0;
+  const rawOpenAgeYears = input.openedDate ? Math.max(0, (today.getTime() - input.openedDate.getTime()) / 31_557_600_000) : 0;
+  const openAgeYears = Math.min(rawOpenAgeYears, ageYears);
   const hsi = input.hsi ?? (input.form === "pellet" ? 0.25 : 0.35);
   const tempFactor = input.storageTemperatureC <= -10 ? 0.25 : input.storageTemperatureC <= 4 ? 0.55 : input.storageTemperatureC <= 20 ? 1 : 1.8;
   const packagingFactor: Record<HopStoragePackaging, number> = {
@@ -650,16 +778,26 @@ export const calculateHopFreshness = (input: {
     loose: 1.6
   };
   const formFactor = input.form === "pellet" ? 0.8 : 1.15;
-  const freshnessFactor = Math.exp(-hsi * ((ageYears * tempFactor * packagingFactor[input.packaging] * formFactor) + openAgeYears));
+  // packaging описывает состояние ДО вскрытия; период после вскрытия считаем фактором "opened".
+  // Без openedDate openAgeYears=0, и весь срок идёт с packagingFactor[packaging] — как раньше.
+  // "opened" (1.25) хуже вакуума/азота, но ЛУЧШЕ россыпи (1.6) — вскрытие россыпи не должно
+  // "улучшать" деградацию, поэтому пол по факту после вскрытия — не хуже исходной упаковки.
+  const openPeriodFactor = Math.max(packagingFactor[input.packaging], packagingFactor.opened);
+  const weightedAge = (ageYears - openAgeYears) * packagingFactor[input.packaging] + openAgeYears * openPeriodFactor;
+  const freshnessFactor = Math.exp(-hsi * formFactor * tempFactor * weightedAge);
   const boundedFactor = clamp(freshnessFactor, 0.05, 1);
   const estimatedCurrentAA = input.originalAlphaAcidPercent * boundedFactor;
+  // Ниже пола 0.05 модель уже клампится молча — «очень старый» и «за пределом модели»
+  // выглядят одинаково без явного предупреждения.
+  const warnings = freshnessFactor < 0.05 ? ["hops_too_old"] : [];
 
   return {
     estimatedCurrentAA: roundTo(estimatedCurrentAA, 2),
     freshnessFactor: roundTo(boundedFactor, 2),
     suggestedAmountForSameIbuG: input.targetAmountG
       ? roundTo(input.targetAmountG * input.originalAlphaAcidPercent / Math.max(0.1, estimatedCurrentAA), 1)
-      : 0
+      : 0,
+    warnings
   };
 };
 

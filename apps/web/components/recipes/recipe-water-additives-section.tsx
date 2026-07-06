@@ -342,9 +342,9 @@ function WaterResultSummary({
   const hasTargetProfile = hasMeaningfulProfile(targetProfile);
 
   return (
-    <section className={withDivider ? "border-t border-zinc-100 pt-3" : ""}>
+    <section className={withDivider ? "border-t border-border pt-3" : ""}>
       <div className="min-w-0">
-        <h4 className="text-sm font-semibold text-zinc-950">
+        <h4 className="text-sm font-semibold text-foreground">
           Итоговый профиль воды
         </h4>
       </div>
@@ -357,23 +357,23 @@ function WaterResultSummary({
           const isUnderTarget = delta != null && delta.startsWith("-");
 
           return (
-            <div key={key} className="rounded-md bg-zinc-50 px-2 py-1.5">
-              <div className="text-[11px] font-medium uppercase text-zinc-500">
+            <div key={key} className="rounded-md bg-muted px-2 py-1.5">
+              <div className="text-[11px] font-medium uppercase text-muted-foreground">
                 {resultIonLabels[key]}
               </div>
               <div className="mt-0.5 flex items-baseline gap-1">
-                <span className="text-sm font-semibold tabular-nums text-zinc-950">
+                <span className="text-sm font-semibold tabular-nums text-foreground">
                   {formatResultIonValue(value)}
                 </span>
-                <span className="text-[10px] text-zinc-400">ppm</span>
+                <span className="text-[10px] text-muted-foreground">ppm</span>
               </div>
               {hasTargetProfile && delta != null ? (
                 <div
                   className={`mt-0.5 text-[10px] tabular-nums ${isOverTarget
-                    ? "text-amber-700"
+                    ? "text-warning-subtle-foreground"
                     : isUnderTarget
-                      ? "text-sky-700"
-                      : "text-emerald-700"
+                      ? "text-link"
+                      : "text-success"
                   }`}
                   aria-label={`Отклонение от цели: ${delta} ppm`}
                 >
@@ -530,7 +530,7 @@ export function RecipeWaterAdditivesSection({
 
   if (!waterPlanMeta.setupEnabled) {
     return (
-      <div className="rounded-xl border border-dashed border-zinc-200 bg-zinc-50/50 px-4 py-5 text-sm text-zinc-500">
+      <div className="rounded-xl border border-dashed border-border bg-muted/50 px-4 py-5 text-sm text-muted-foreground">
         Нет добавок воды
       </div>
     );
@@ -540,14 +540,14 @@ export function RecipeWaterAdditivesSection({
     <div className="p-3 sm:p-4">
       <div className="space-y-3">
         <div className="flex items-center justify-between gap-3">
-          <h3 className="text-sm font-semibold text-zinc-950">
+          <h3 className="text-sm font-semibold text-foreground">
             Добавки воды
           </h3>
           {onAddManualSalt ? (
             <button
               type="button"
               onClick={onAddManualSalt}
-              className="inline-flex h-9 shrink-0 items-center gap-1.5 rounded-lg border border-zinc-200 bg-white px-3 text-sm font-medium text-zinc-700 shadow-sm transition-colors hover:border-zinc-300 hover:bg-zinc-50 hover:text-zinc-950"
+              className="inline-flex h-9 shrink-0 items-center gap-1.5 rounded-lg border border-border bg-card px-3 text-sm font-medium text-foreground shadow-sm transition-colors hover:border-border hover:bg-muted hover:text-foreground"
             >
               <Plus className="h-4 w-4" />
               Добавить соль
@@ -557,7 +557,7 @@ export function RecipeWaterAdditivesSection({
         {rowGroups.length ? rowGroups.map((group) => (
           <section key={group.key} className="space-y-2">
             {group.label ? (
-              <h4 className="px-1 text-[11px] font-semibold uppercase tracking-[0.08em] text-zinc-500">
+              <h4 className="px-1 text-[11px] font-semibold uppercase tracking-[0.08em] text-muted-foreground">
                 {group.label}
               </h4>
             ) : null}
@@ -581,7 +581,7 @@ export function RecipeWaterAdditivesSection({
                 return (
                   <li
                     key={row.key}
-                    className="relative rounded-lg border-l-[3px] border-l-sky-400 bg-white px-3 py-2.5 shadow-sm ring-1 ring-zinc-100"
+                    className="relative rounded-lg border-l-[3px] border-l-sky-400 bg-card px-3 py-2.5 shadow-sm ring-1 ring-ring"
                   >
                     {canRemoveSalt ? (
                       <div className="absolute right-2 top-2 z-10 flex shrink-0 gap-0.5">
@@ -593,7 +593,7 @@ export function RecipeWaterAdditivesSection({
                               return;
                             }
                           }}
-                          className="rounded-md p-1.5 text-zinc-400 transition-colors hover:bg-rose-50 hover:text-rose-600"
+                          className="rounded-md p-1.5 text-muted-foreground transition-colors hover:bg-destructive-subtle hover:text-destructive"
                           aria-label={`Удалить ${row.title}`}
                           title="Удалить"
                         >
@@ -605,16 +605,16 @@ export function RecipeWaterAdditivesSection({
                     <div className={`flex min-w-0 items-start gap-3 ${canRemoveSalt ? "pr-10" : ""}`}>
                       <div className="min-w-0 flex-1">
                         <div className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
-                          <span className="truncate text-sm font-semibold text-zinc-950">
+                          <span className="truncate text-sm font-semibold text-foreground">
                             {row.title}
                           </span>
                           {row.formula ? (
-                            <span className="text-sm font-semibold tabular-nums text-zinc-950">
+                            <span className="text-sm font-semibold tabular-nums text-foreground">
                               {row.formula}
                             </span>
                           ) : null}
                           {row.kind === "acid" ? (
-                            <span className="rounded bg-sky-50 px-1.5 py-0.5 text-[11px] font-medium text-sky-700">
+                            <span className="rounded bg-sky-50 px-1.5 py-0.5 text-[11px] font-medium text-sky-700 dark:bg-sky-500/15 dark:text-sky-300">
                               pH-коррекция
                             </span>
                           ) : null}
@@ -622,20 +622,20 @@ export function RecipeWaterAdditivesSection({
                         <div className="mt-1 text-xs">
                           {row.catalogIngredientId ? (
                             stockLoading && !stock ? (
-                              <span className="text-zinc-400">Проверка склада…</span>
+                              <span className="text-muted-foreground">Проверка склада…</span>
                             ) : hasStock && stock ? (
-                              <span className="text-emerald-700">
+                              <span className="text-success">
                                 На складе: {formatStockQuantity(stock)}
                               </span>
                             ) : row.kind === "acid" && availableAcidConcentrations ? (
-                              <span className="text-amber-700">
+                              <span className="text-warning-subtle-foreground">
                                 На складе: {availableAcidConcentrations}, выбрано {row.formula}
                               </span>
                             ) : (
-                              <span className="text-amber-700">Нет на складе</span>
+                              <span className="text-warning-subtle-foreground">Нет на складе</span>
                             )
                           ) : (
-                            <span className="text-zinc-400">Не привязано к каталогу</span>
+                            <span className="text-muted-foreground">Не привязано к каталогу</span>
                           )}
                         </div>
                       </div>
@@ -658,12 +658,12 @@ export function RecipeWaterAdditivesSection({
                                   return;
                                 }
                               }}
-                              className="h-8 w-20 rounded-md border border-zinc-200 bg-zinc-50 px-2 text-right text-sm font-semibold tabular-nums text-zinc-950 focus:border-zinc-400 focus:bg-white focus:outline-none focus:ring-1 focus:ring-zinc-200"
+                              className="h-8 w-20 rounded-md border border-border bg-muted px-2 text-right text-sm font-semibold tabular-nums text-foreground focus:border-ring focus:bg-card focus:outline-none focus:ring-1 focus:ring-ring"
                             />
-                            <span className="text-xs text-zinc-500">г</span>
+                            <span className="text-xs text-muted-foreground">г</span>
                           </div>
                         ) : (
-                          <div className="text-sm font-semibold tabular-nums text-zinc-950">
+                          <div className="text-sm font-semibold tabular-nums text-foreground">
                             {row.amountText}
                           </div>
                         )}
@@ -678,7 +678,7 @@ export function RecipeWaterAdditivesSection({
                                 return;
                               }
                             }}
-                            className="mt-1 h-8 rounded-md border border-zinc-200 bg-white px-2 text-xs font-medium text-zinc-700"
+                            className="mt-1 h-8 rounded-md border border-border bg-card px-2 text-xs font-medium text-foreground"
                           >
                             {Object.entries(groupLabels).map(([value, label]) => (
                               <option key={value} value={value}>
@@ -695,7 +695,7 @@ export function RecipeWaterAdditivesSection({
             </ul>
           </section>
         )) : (
-          <div className="rounded-xl border border-dashed border-zinc-200 bg-zinc-50/50 px-4 py-5 text-sm text-zinc-500">
+          <div className="rounded-xl border border-dashed border-border bg-muted/50 px-4 py-5 text-sm text-muted-foreground">
             Нет добавок воды
           </div>
         )}

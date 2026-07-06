@@ -74,7 +74,7 @@ export function CloneFromPublicButton({
           onClick={handleClick}
           disabled={pending}
           aria-label="Клонировать рецепт в «Мои рецепты»"
-          className="absolute right-2 top-11 z-10 inline-flex h-7 w-7 items-center justify-center rounded-full bg-white/70 text-zinc-600 backdrop-blur-sm transition hover:bg-white focus:outline-none focus-visible:ring-2 focus-visible:ring-zinc-400 disabled:opacity-60"
+          className="absolute right-2 top-11 z-10 inline-flex h-7 w-7 items-center justify-center rounded-full bg-card/70 text-muted-foreground backdrop-blur-sm transition hover:bg-card focus:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:opacity-60"
         >
           <Copy className="h-3.5 w-3.5" aria-hidden />
         </button>
@@ -89,7 +89,7 @@ export function CloneFromPublicButton({
         type="button"
         onClick={handleClick}
         disabled={pending}
-        className="inline-flex items-center gap-2 rounded-lg border border-zinc-200 bg-white px-3 py-2 text-sm font-medium text-zinc-700 transition hover:border-zinc-300 disabled:opacity-60"
+        className="inline-flex items-center gap-2 rounded-lg border border-border bg-card px-3 py-2 text-sm font-medium text-foreground transition hover:border-border disabled:opacity-60"
       >
         <Copy className="h-4 w-4" aria-hidden />
         {pending ? "Клонируем…" : "Клонировать"}

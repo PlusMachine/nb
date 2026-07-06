@@ -36,32 +36,32 @@ export function BrewPrepCard({
   const hasPlan = planSummary.stages.length > 0;
 
   return (
-    <section className="space-y-4 rounded-2xl border border-zinc-100 bg-white p-4 shadow-sm">
-      <h2 className="text-base font-semibold text-zinc-900">План варочного дня</h2>
+    <section className="space-y-4 rounded-2xl border border-border bg-card p-4 shadow-sm">
+      <h2 className="text-base font-semibold text-foreground">План варочного дня</h2>
 
       {hasPlan ? (
         <>
           <ol className="flex flex-wrap items-center gap-x-1 gap-y-2 text-sm">
             {planSummary.stages.map((stage, index) => (
               <li key={stage.stage} className="flex items-center gap-1">
-                <span className="rounded-lg bg-zinc-50 px-2.5 py-1 text-zinc-700 ring-1 ring-zinc-100">
+                <span className="rounded-lg bg-muted px-2.5 py-1 text-foreground ring-1 ring-border">
                   {stage.label}
-                  <span className="ml-1.5 text-xs text-zinc-400 tabular-nums">{stage.stepCount}</span>
+                  <span className="ml-1.5 text-xs text-muted-foreground tabular-nums">{stage.stepCount}</span>
                 </span>
                 {index < planSummary.stages.length - 1 ? (
-                  <ChevronRight className="h-4 w-4 shrink-0 text-zinc-300" aria-hidden />
+                  <ChevronRight className="h-4 w-4 shrink-0 text-muted-foreground" aria-hidden />
                 ) : null}
               </li>
             ))}
           </ol>
-          <p className="text-xs text-zinc-500">
+          <p className="text-xs text-muted-foreground">
             {planSummary.totalSteps} шагов
             {timerTotal ? ` · ${timerTotal} активного времени` : ""}
             {ogTargetLabel ? ` · цель OG ${ogTargetLabel}` : ""}
           </p>
         </>
       ) : (
-        <p className="text-sm text-zinc-500">
+        <p className="text-sm text-muted-foreground">
           В рецепте нет шагов затора/кипячения — гид варочного дня будет пустым. Замеры и заметки доступны после старта.
         </p>
       )}

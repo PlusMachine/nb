@@ -201,9 +201,9 @@ export async function MyIngredientsContent({ searchParams }: Props = {}) {
     <main className="space-y-5">
       <section className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div className="space-y-1">
-          <h1 className="text-xl font-bold tracking-tight text-zinc-900 sm:text-2xl">Мой склад</h1>
+          <h1 className="text-xl font-bold tracking-tight text-foreground sm:text-2xl">Мой склад</h1>
           {hasAnyItems ? (
-            <p className="text-sm text-zinc-400">
+            <p className="text-sm text-muted-foreground">
               {summary.inStockItems} в наличии
               {summary.emptyItems > 0 ? (
                 showFinished ? (
@@ -213,7 +213,7 @@ export async function MyIngredientsContent({ searchParams }: Props = {}) {
                     {" · "}
                     <Link
                       href={finishedHref}
-                      className="underline decoration-dotted underline-offset-2 transition-colors hover:text-zinc-600"
+                      className="underline decoration-dotted underline-offset-2 transition-colors hover:text-foreground"
                     >
                       {summary.emptyItems} закончились
                     </Link>
@@ -227,7 +227,7 @@ export async function MyIngredientsContent({ searchParams }: Props = {}) {
                   {" · "}
                   <a
                     href="#brewable"
-                    className="underline decoration-dotted underline-offset-2 transition-colors hover:text-zinc-600 lg:hidden"
+                    className="underline decoration-dotted underline-offset-2 transition-colors hover:text-foreground lg:hidden"
                   >
                     можно сварить: {brewableRecipes.length}
                   </a>

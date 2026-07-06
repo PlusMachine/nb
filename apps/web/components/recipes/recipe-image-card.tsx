@@ -18,7 +18,7 @@ export type RecipeImageCardItem = RecipeImageDto & {
   isLocalOnly?: boolean;
 };
 
-const desktopActionClassName = "pointer-events-auto hidden h-8 w-8 items-center justify-center rounded-full bg-zinc-950/60 text-white opacity-0 backdrop-blur-sm transition hover:bg-zinc-950/85 md:inline-flex md:group-hover:opacity-100";
+const desktopActionClassName = "pointer-events-auto hidden h-8 w-8 items-center justify-center rounded-full bg-foreground/60 text-background opacity-0 backdrop-blur-sm transition hover:bg-foreground/85 md:inline-flex md:group-hover:opacity-100";
 
 export function RecipeImageCard({
   item,
@@ -60,12 +60,12 @@ export function RecipeImageCard({
     : "object-cover transition-transform duration-300 group-hover:scale-105";
 
   const shellClassName = variant === "cover"
-    ? "rounded-2xl bg-zinc-100 shadow-none"
+    ? "rounded-2xl bg-muted shadow-none"
     : variant === "thumb"
-      ? "bg-zinc-100 shadow-none"
+      ? "bg-muted shadow-none"
       : variant === "rail"
-        ? "rounded-2xl bg-zinc-100 shadow-none transition"
-        : "rounded-2xl border border-zinc-100 bg-zinc-100 shadow-sm";
+        ? "rounded-2xl bg-muted shadow-none transition"
+        : "rounded-2xl border border-border bg-muted shadow-sm";
 
   const progressValue = Math.max(0, Math.min(100, Math.round(item.progress ?? 0)));
   const mobileMenuItems = [
@@ -107,13 +107,13 @@ export function RecipeImageCard({
           />
         </button>
       ) : (
-        <div className="flex h-full items-center justify-center px-4 text-center text-xs text-zinc-400">
+        <div className="flex h-full items-center justify-center px-4 text-center text-xs text-muted-foreground">
           Загрузка…
         </div>
       )}
 
       {item.isCover ? (
-        <span className="pointer-events-none absolute left-3 top-3 inline-flex items-center rounded-full bg-zinc-950/55 px-2.5 py-1 text-[11px] font-medium text-white backdrop-blur-sm">
+        <span className="pointer-events-none absolute left-3 top-3 inline-flex items-center rounded-full bg-foreground/55 px-2.5 py-1 text-[11px] font-medium text-background backdrop-blur-sm">
           Обложка
         </span>
       ) : null}
@@ -121,7 +121,7 @@ export function RecipeImageCard({
       {reorderMode ? (
         <button
           type="button"
-          className="absolute left-3 top-3 hidden h-9 w-9 cursor-grab items-center justify-center rounded-full bg-white/90 text-zinc-600 shadow-sm ring-1 ring-black/5 md:inline-flex"
+          className="absolute left-3 top-3 hidden h-9 w-9 cursor-grab items-center justify-center rounded-full bg-card/90 text-muted-foreground shadow-sm ring-1 ring-black/5 md:inline-flex"
           {...dragAttributes}
           {...dragListeners}
         >
@@ -154,7 +154,7 @@ export function RecipeImageCard({
                 type="button"
                 aria-label="Удалить"
                 title="Удалить"
-                className="pointer-events-auto hidden h-8 w-8 items-center justify-center rounded-full bg-zinc-950/60 text-white opacity-0 backdrop-blur-sm transition hover:bg-rose-600 md:inline-flex md:group-hover:opacity-100"
+                className="pointer-events-auto hidden h-8 w-8 items-center justify-center rounded-full bg-foreground/60 text-background opacity-0 backdrop-blur-sm transition hover:bg-destructive md:inline-flex md:group-hover:opacity-100"
                 onClick={(event) => {
                   event.stopPropagation();
                   onDelete();
@@ -168,30 +168,30 @@ export function RecipeImageCard({
       ) : null}
 
       {isUploading ? (
-        <div className="pointer-events-none absolute inset-x-0 bottom-0 bg-white/90 px-3 py-2 backdrop-blur-sm">
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 bg-card/90 px-3 py-2 backdrop-blur-sm">
           {variant === "cover" ? (
             <>
-              <div className="mb-1 flex items-center justify-between gap-3 text-[11px] font-medium text-zinc-600">
+              <div className="mb-1 flex items-center justify-between gap-3 text-[11px] font-medium text-muted-foreground">
                 <span>Загрузка</span>
                 <span className="tabular-nums">{progressValue}%</span>
               </div>
             </>
           ) : null}
-          <div className="h-1 overflow-hidden rounded-full bg-zinc-200">
-            <div className="h-full rounded-full bg-zinc-800 transition-all" style={{ width: `${progressValue}%` }} />
+          <div className="h-1 overflow-hidden rounded-full bg-muted">
+            <div className="h-full rounded-full bg-foreground transition-all" style={{ width: `${progressValue}%` }} />
           </div>
         </div>
       ) : null}
 
       {isFailed ? (
-        <div className="absolute inset-x-0 bottom-0 bg-white/95 px-2.5 py-2 backdrop-blur-sm">
+        <div className="absolute inset-x-0 bottom-0 bg-card/95 px-2.5 py-2 backdrop-blur-sm">
           <div className="flex items-center justify-between gap-2">
             {variant === "cover" ? (
-              <p className="min-w-0 text-xs font-medium leading-snug text-rose-700">
+              <p className="min-w-0 text-xs font-medium leading-snug text-destructive">
                 {item.errorMessage ?? "Не удалось загрузить"}
               </p>
             ) : (
-              <p className="min-w-0 truncate text-[10px] font-medium text-rose-700">
+              <p className="min-w-0 truncate text-[10px] font-medium text-destructive">
                 Ошибка
               </p>
             )}
@@ -199,7 +199,7 @@ export function RecipeImageCard({
               {canRetry ? (
                 <button
                   type="button"
-                  className="inline-flex items-center rounded-full bg-zinc-900 px-2.5 py-1 text-[10px] font-medium text-white"
+                  className="inline-flex items-center rounded-full bg-foreground px-2.5 py-1 text-[10px] font-medium text-background"
                   onClick={onRetry}
                 >
                   Повторить
@@ -208,7 +208,7 @@ export function RecipeImageCard({
               {onDelete ? (
                 <button
                   type="button"
-                  className="inline-flex items-center rounded-full bg-rose-50 px-2.5 py-1 text-[10px] font-medium text-rose-700"
+                  className="inline-flex items-center rounded-full bg-destructive-subtle px-2.5 py-1 text-[10px] font-medium text-destructive-subtle-foreground"
                   onClick={onDelete}
                 >
                   Удалить

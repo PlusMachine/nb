@@ -163,17 +163,17 @@ export function FermentHistoryChart({ source, hasDevice, initial, planSteps, win
   if (!hasDevice) return null;
 
   return (
-    <section className="rounded-2xl border border-zinc-100 bg-zinc-50/60 p-4">
+    <section className="rounded-2xl border border-border bg-muted/60 p-4">
       <div className="flex flex-wrap items-center justify-between gap-2">
-        <h3 className="text-xs font-semibold uppercase tracking-wide text-zinc-500">План vs факт</h3>
-        <div className="flex flex-wrap items-center gap-3 text-xs text-zinc-500">
-          <Legend color="#d97706" label="План" dashed />
-          <Legend color="#0f766e" label="Факт" />
+        <h3 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">План vs факт</h3>
+        <div className="flex flex-wrap items-center gap-3 text-xs text-muted-foreground">
+          <Legend color="hsl(var(--chart-setpoint))" label="План" dashed />
+          <Legend color="hsl(var(--chart-temp))" label="Факт" />
         </div>
       </div>
 
       {!geom || !geom.hasFact ? (
-        <div className="mt-3 flex h-32 items-center justify-center rounded-lg bg-white text-sm text-zinc-500">
+        <div className="mt-3 flex h-32 items-center justify-center rounded-lg bg-card text-sm text-muted-foreground">
           истории пока нет
         </div>
       ) : (
@@ -186,23 +186,23 @@ export function FermentHistoryChart({ source, hasDevice, initial, planSteps, win
         >
           {geom.tempTicks.map((t, i) => (
             <g key={`tick-${i}`}>
-              <line x1={PAD_L} x2={VB_W - PAD_R} y1={t.y} y2={t.y} stroke="#e4e4e7" strokeWidth={1} />
-              <text x={PAD_L - 6} y={t.y + 3} textAnchor="end" fontSize={11} fill="#71717a">
+              <line x1={PAD_L} x2={VB_W - PAD_R} y1={t.y} y2={t.y} stroke="hsl(var(--chart-grid))" strokeWidth={1} />
+              <text x={PAD_L - 6} y={t.y + 3} textAnchor="end" fontSize={11} fill="hsl(var(--chart-label))">
                 {t.v.toFixed(0)}
               </text>
             </g>
           ))}
 
           {geom.dayTicks.map((d, i) => (
-            <text key={`day-${i}`} x={geom.x(d)} y={VB_H - 8} textAnchor="middle" fontSize={11} fill="#71717a">
+            <text key={`day-${i}`} x={geom.x(d)} y={VB_H - 8} textAnchor="middle" fontSize={11} fill="hsl(var(--chart-label))">
               {fmtDay(d)}
             </text>
           ))}
 
           {geom.planPath ? (
-            <path d={geom.planPath} fill="none" stroke="#d97706" strokeWidth={2} strokeDasharray="5 4" />
+            <path d={geom.planPath} fill="none" stroke="hsl(var(--chart-setpoint))" strokeWidth={2} strokeDasharray="5 4" />
           ) : null}
-          <path d={geom.factPath} fill="none" stroke="#0f766e" strokeWidth={2} strokeLinejoin="round" strokeLinecap="round" />
+          <path d={geom.factPath} fill="none" stroke="hsl(var(--chart-temp))" strokeWidth={2} strokeLinejoin="round" strokeLinecap="round" />
         </svg>
       )}
     </section>

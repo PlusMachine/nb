@@ -34,23 +34,23 @@ function FrontBody() {
   return (
     <div className="space-y-3">
       <div className="flex items-baseline gap-1.5">
-        <span className="text-[40px] font-extrabold leading-none tracking-tight text-zinc-950 tabular-nums" style={{ fontFamily: "var(--font-display)" }}>
+        <span className="text-[40px] font-extrabold leading-none tracking-tight text-foreground tabular-nums" style={{ fontFamily: "var(--font-display)" }}>
           5.4
         </span>
-        <span className="text-lg font-bold text-zinc-950">%</span>
-        <span className="ml-1 text-sm text-zinc-500">об.</span>
+        <span className="text-lg font-bold text-foreground">%</span>
+        <span className="ml-1 text-sm text-muted-foreground">об.</span>
       </div>
       <div className="flex items-center gap-2 text-xs">
-        <span className="rounded-md bg-zinc-100 px-2 py-1 font-semibold tabular-nums text-zinc-700">OG 12.5°P</span>
-        <span className="text-zinc-300">→</span>
-        <span className="rounded-md bg-zinc-100 px-2 py-1 font-semibold tabular-nums text-zinc-700">FG 2.6°P</span>
+        <span className="rounded-md bg-muted px-2 py-1 font-semibold tabular-nums text-foreground">OG 12.5°P</span>
+        <span className="text-muted-foreground">→</span>
+        <span className="rounded-md bg-muted px-2 py-1 font-semibold tabular-nums text-foreground">FG 2.6°P</span>
       </div>
       <div className="space-y-1.5">
         <div className="flex items-baseline justify-between text-xs">
-          <span className="text-zinc-500">сбраживание</span>
-          <span className="font-semibold tabular-nums text-zinc-900">79%</span>
+          <span className="text-muted-foreground">сбраживание</span>
+          <span className="font-semibold tabular-nums text-foreground">79%</span>
         </div>
-        <div className="h-1.5 overflow-hidden rounded-full bg-zinc-200" aria-hidden>
+        <div className="h-1.5 overflow-hidden rounded-full bg-muted" aria-hidden>
           <div className="h-full rounded-full bg-amber-500" style={{ width: "79%" }} />
         </div>
       </div>
@@ -81,8 +81,8 @@ const cards: DeckCard[] = [
       <div className="space-y-2">
         <div className="h-6 rounded-lg" style={{ background: SRM_SWATCH }} aria-hidden />
         <div className="flex items-baseline justify-between text-xs">
-          <span className="text-zinc-500">7 SRM</span>
-          <span className="font-semibold tabular-nums text-zinc-900">14 EBC</span>
+          <span className="text-muted-foreground">7 SRM</span>
+          <span className="font-semibold tabular-nums text-foreground">14 EBC</span>
         </div>
       </div>
     )
@@ -98,10 +98,10 @@ const cards: DeckCard[] = [
     body: (
       <div className="space-y-1.5">
         <div className="flex items-baseline justify-between text-xs">
-          <span className="text-zinc-500">BU : GU</span>
-          <span className="font-semibold tabular-nums text-zinc-900">0.75</span>
+          <span className="text-muted-foreground">BU : GU</span>
+          <span className="font-semibold tabular-nums text-foreground">0.75</span>
         </div>
-        <div className="h-1.5 overflow-hidden rounded-full bg-zinc-200" aria-hidden>
+        <div className="h-1.5 overflow-hidden rounded-full bg-muted" aria-hidden>
           <div className="h-full rounded-full bg-emerald-500" style={{ width: "58%" }} />
         </div>
       </div>
@@ -117,8 +117,8 @@ const cards: DeckCard[] = [
     z: 8,
     body: (
       <div className="flex items-baseline justify-between text-xs">
-        <span className="text-zinc-500">12 °C</span>
-        <span className="font-semibold tabular-nums text-zinc-900">12 PSI</span>
+        <span className="text-muted-foreground">12 °C</span>
+        <span className="font-semibold tabular-nums text-foreground">12 PSI</span>
       </div>
     )
   }
@@ -128,15 +128,15 @@ function DeckCardView({ card }: { card: DeckCard }) {
   const Icon = card.icon;
   return (
     <article
-      className="absolute left-1/2 top-1/2 w-64 rounded-2xl border border-zinc-200 bg-white p-4 shadow-[0_28px_50px_-28px_rgba(15,23,42,0.55)]"
+      className="absolute left-1/2 top-1/2 w-64 rounded-2xl border border-border bg-card p-4 shadow-[0_28px_50px_-28px_rgba(15,23,42,0.55)]"
       style={{ transform: card.transform, zIndex: card.z }}
     >
       <div className="flex items-center gap-2.5">
         <span className={`grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-gradient-to-br ${card.accent} text-white`}>
           <Icon className="h-4 w-4" aria-hidden />
         </span>
-        <span className="text-[15px] font-semibold text-zinc-950">{card.title}</span>
-        <span className="ml-auto text-xs font-semibold tabular-nums text-zinc-400">{card.value}</span>
+        <span className="text-[15px] font-semibold text-foreground">{card.title}</span>
+        <span className="ml-auto text-xs font-semibold tabular-nums text-muted-foreground">{card.value}</span>
       </div>
       <div className="mt-4">{card.body}</div>
     </article>
@@ -145,19 +145,19 @@ function DeckCardView({ card }: { card: DeckCard }) {
 
 export function HomeCalculators() {
   return (
-    <section className="grid items-center gap-8 rounded-[2rem] border border-zinc-200 bg-white p-6 shadow-sm sm:p-9 lg:grid-cols-[0.85fr_1fr] lg:gap-6">
+    <section className="grid items-center gap-8 rounded-[2rem] border border-border bg-card p-6 shadow-sm sm:p-9 lg:grid-cols-[0.85fr_1fr] lg:gap-6">
       <div>
-        <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-zinc-500">Инструменты</p>
-        <h2 className="mt-3 text-balance text-2xl font-semibold leading-tight text-zinc-950 sm:text-3xl" style={{ fontFamily: "var(--font-display)" }}>
+        <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-muted-foreground">Инструменты</p>
+        <h2 className="mt-3 text-balance text-2xl font-semibold leading-tight text-foreground sm:text-3xl" style={{ fontFamily: "var(--font-display)" }}>
           Калькуляторы пивоварения
         </h2>
-        <p className="mt-4 max-w-[42ch] text-[15px] leading-relaxed text-zinc-600">
+        <p className="mt-4 max-w-[42ch] text-[15px] leading-relaxed text-muted-foreground">
           15 калькуляторов пивовара: крепость и сбраживание, горечь, цвет, вода и pH,
           карбонизация, свежесть хмеля. Каждый считает по вашим числам и объясняет формулу.
         </p>
         <Link
           href="/calculators"
-          className="mt-7 inline-flex items-center rounded-full bg-zinc-950 px-5 py-3 text-sm font-semibold text-white transition-colors hover:bg-zinc-800"
+          className="mt-7 inline-flex items-center rounded-full bg-foreground px-5 py-3 text-sm font-semibold text-background transition-colors hover:bg-foreground/90"
         >
           Все калькуляторы
         </Link>
@@ -165,7 +165,7 @@ export function HomeCalculators() {
 
       <div className="relative h-[340px] w-full [perspective:1500px]" aria-hidden>
         {/* мягкая «тень на столе» под стопкой */}
-        <div className="absolute left-1/2 top-[62%] h-24 w-[70%] -translate-x-1/2 rounded-[50%] bg-zinc-900/10 blur-2xl" />
+        <div className="absolute left-1/2 top-[62%] h-24 w-[70%] -translate-x-1/2 rounded-[50%] bg-foreground/10 blur-2xl" />
         <div
           className="absolute inset-0"
           style={{ transformStyle: "preserve-3d", transform: "rotateX(9deg) rotateY(-13deg)" }}

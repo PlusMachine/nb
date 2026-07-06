@@ -9,13 +9,22 @@ vi.mock("next/navigation", () => ({
 
 import { SiteHeader } from "../components/shared/site-header";
 import { SiteFooter } from "../components/shared/site-footer";
+import { ThemeProvider } from "../components/theme/theme-provider";
 import { publicLinks } from "../lib/navigation";
+
+// SiteHeader содержит ThemeToggle (useTheme) — оборачиваем в ThemeProvider, как в
+// реальном дереве (Providers в app/layout.tsx).
+const renderHeader = () =>
+  renderToStaticMarkup(
+    React.createElement(ThemeProvider, {
+      initialPreference: "system",
+      children: React.createElement(SiteHeader, {})
+    })
+  );
 
 describe("SiteHeader", () => {
   it("guest sees login and public sections, no identity", () => {
-    const html = renderToStaticMarkup(
-      React.createElement(SiteHeader, {})
-    );
+    const html = renderHeader();
 
     expect(html).toContain('href="/login"');
     expect(html).toContain("Войти");
@@ -25,9 +34,7 @@ describe("SiteHeader", () => {
   });
 
   it("guest chrome has no app bridge or identity", () => {
-    const html = renderToStaticMarkup(
-      React.createElement(SiteHeader, {})
-    );
+    const html = renderHeader();
 
     expect(html).not.toContain('href="/app"');
     expect(html).not.toContain('href="/profile"');

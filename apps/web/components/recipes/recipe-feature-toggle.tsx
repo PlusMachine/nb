@@ -57,9 +57,9 @@ export function RecipeFeatureToggle({ recipeId, slug }: { recipeId: string; slug
   };
 
   return (
-    <section className="rounded-2xl border border-amber-200 bg-amber-50/60 p-4 shadow-sm">
+    <section className="rounded-2xl border border-warning/30 bg-warning-subtle/60 p-4 shadow-sm">
       <div className="flex items-center justify-between gap-3">
-        <span className="flex items-center gap-2 text-sm font-medium text-amber-900">
+        <span className="flex items-center gap-2 text-sm font-medium text-warning-subtle-foreground">
           <BadgeCheck className="h-4 w-4" aria-hidden />
           {state.featured ? "В «Выборе редакции»" : "Не в «Выборе редакции»"}
         </span>

@@ -22,6 +22,7 @@ const COOKIES: CookieRow[] = [
   { name: "nb_cookie_consent", purpose: "Запоминает ваш выбор по использованию cookie.", category: "Необходимые", ttl: "180 дней" },
   { name: "nb_age_ok", purpose: "Запоминает подтверждение совершеннолетия, чтобы не показывать уведомление повторно.", category: "Необходимые", ttl: "1 год" },
   { name: "nb_recipes_view", purpose: "Запоминает выбранный вид списка рецептов (сетка / список).", category: "Функциональные", ttl: "1 год" },
+  { name: "nb_theme", purpose: "Запоминает выбранную тему оформления (светлая / тёмная / как в системе).", category: "Функциональные", ttl: "1 год" },
   { name: "nb_add_ingredient_last_category", purpose: "Запоминает последнюю категорию при добавлении ингредиента.", category: "Функциональные", ttl: "1 год" },
   { name: "ph_* (PostHog)", purpose: "Обезличенная веб-аналитика посещений для улучшения сервиса. Ставятся только при согласии.", category: "Аналитические", ttl: "до 1 года" }
 ];
@@ -65,7 +66,7 @@ export default function CookiePolicyPage() {
       <div className="not-prose my-4 overflow-x-auto">
         <table className="w-full min-w-[560px] border-collapse text-sm">
           <thead>
-            <tr className="border-b border-zinc-300 text-left text-zinc-500">
+            <tr className="border-b border-border text-left text-muted-foreground">
               <th className="py-2 pr-4 font-medium">Cookie</th>
               <th className="py-2 pr-4 font-medium">Назначение</th>
               <th className="py-2 pr-4 font-medium">Категория</th>
@@ -74,8 +75,8 @@ export default function CookiePolicyPage() {
           </thead>
           <tbody>
             {COOKIES.map((row) => (
-              <tr key={row.name} className="border-b border-zinc-100 align-top text-zinc-700">
-                <td className="py-2 pr-4 font-mono text-[13px] text-zinc-900">{row.name}</td>
+              <tr key={row.name} className="border-b border-border/60 align-top text-foreground/80">
+                <td className="py-2 pr-4 font-mono text-[13px] text-foreground">{row.name}</td>
                 <td className="py-2 pr-4 leading-6">{row.purpose}</td>
                 <td className="py-2 pr-4 whitespace-nowrap">{row.category}</td>
                 <td className="py-2 whitespace-nowrap">{row.ttl}</td>

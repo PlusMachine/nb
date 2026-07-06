@@ -45,12 +45,12 @@ export function FermenterPicker({
 
   return (
     <div className="space-y-2">
-      <label className="block text-xs font-medium text-zinc-600">
+      <label className="block text-xs font-medium text-muted-foreground">
         Бродит в приборе…
         <select
           value={deviceId}
           onChange={(e) => setDeviceId(e.target.value)}
-          className="mt-1 w-full rounded-md border border-zinc-200 bg-white px-3 py-2 text-sm text-zinc-900"
+          className="mt-1 w-full rounded-md border border-border bg-card px-3 py-2 text-sm text-foreground"
         >
           {candidates.map((c) => (
             <option key={c.id} value={c.id}>
@@ -63,7 +63,7 @@ export function FermenterPicker({
         {busy ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden /> : null}
         Привязать
       </Button>
-      {error ? <p role="alert" className="text-xs text-rose-600">{error}</p> : null}
+      {error ? <p role="alert" className="text-xs text-destructive">{error}</p> : null}
     </div>
   );
 }

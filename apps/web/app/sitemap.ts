@@ -1,15 +1,17 @@
 import type { MetadataRoute } from "next";
 import { listArticles } from "@nb/content";
 
+import { listPublishedContentArticles } from "@/features/content-articles/service";
 import { catalogCategoryLandings } from "@/features/ingredients/seo";
 import { listCatalogSitemapEntries } from "@/features/ingredients/service";
 import { getServerEnv } from "@/lib/env";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const { APP_URL } = getServerEnv();
-  const [articles, catalogEntries] = await Promise.all([
+  const [articles, catalogEntries, guides] = await Promise.all([
     listArticles(),
-    listCatalogSitemapEntries()
+    listCatalogSitemapEntries(),
+    listPublishedContentArticles()
   ]);
   const now = new Date();
 
@@ -20,7 +22,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     "/catalog",
     "/bjcp",
     "/calculators",
-    "/guides",
+    "/articles",
     "/legal",
     "/legal/terms",
     "/legal/privacy",
@@ -36,6 +38,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...articles.map((article) => ({
       url: `${APP_URL}/bjcp/${article.slug}`,
       lastModified: new Date(article.updatedAt)
+    })),
+    // Опубликованные гайды/обзоры контент-CMS.
+    ...guides.map((guide) => ({
+      url: `${APP_URL}/articles/${guide.slug}`,
+      lastModified: guide.updatedAt
     })),
     // Категорийные лендинги каталога (см. features/ingredients/seo.ts).
     ...catalogCategoryLandings.map((landing) => ({

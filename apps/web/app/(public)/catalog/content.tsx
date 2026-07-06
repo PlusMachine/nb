@@ -139,7 +139,7 @@ const buildDetailHref = (item: UserCatalogIngredientDto) => (
 const AddToInventoryAction = ({ item }: { item: UserCatalogIngredientDto }) => (
   <Link
     href={buildIngredientCatalogActionHref("/app/ingredients", item.source, item.id)}
-    className="rounded-md p-1 text-zinc-400 transition-colors hover:bg-zinc-100 hover:text-zinc-700"
+    className="rounded-md p-1 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
     aria-label="На склад"
   >
     <Boxes className="h-4 w-4" />
@@ -330,17 +330,17 @@ const IngredientNameBadges = ({ item, canManage, hideSubtypeBadge = false }: { i
   return (
     <>
       {item.source === "custom" ? (
-        <span className="rounded-full bg-amber-50 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.12em] text-amber-700 ring-1 ring-amber-200">
+        <span className="rounded-full bg-warning-subtle px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.12em] text-warning-subtle-foreground ring-1 ring-warning/30">
           {item.derivedFromIngredientId ? "ИЗМЕНЕННЫЙ" : "СВОЙ"}
         </span>
       ) : null}
       {subtypeBadgeLabel ? (
-        <span className="rounded-md bg-zinc-100 px-1.5 py-0.5 text-[10px] font-medium text-zinc-600">
+        <span className="rounded-md bg-muted px-1.5 py-0.5 text-[10px] font-medium text-muted-foreground">
           {subtypeBadgeLabel}
         </span>
       ) : null}
       {usageBadges.map((label) => (
-        <span key={label} className="rounded-md bg-zinc-50 px-1.5 py-0.5 text-[10px] font-medium text-zinc-500 ring-1 ring-zinc-200/70">
+        <span key={label} className="rounded-md bg-muted px-1.5 py-0.5 text-[10px] font-medium text-muted-foreground ring-1 ring-ring/70">
           {label}
         </span>
       ))}
@@ -357,11 +357,11 @@ const IngredientSecondaryMetaLine = ({ item, leadingLabel }: { item: UserCatalog
   }
 
   return (
-    <p className="flex flex-wrap items-center gap-x-1.5 text-xs text-zinc-500">
+    <p className="flex flex-wrap items-center gap-x-1.5 text-xs text-muted-foreground">
       {leadingLabel ? <span>{leadingLabel}</span> : null}
       {meta.map((entry, index) => (
         <React.Fragment key={entry.key}>
-          {index > 0 || leadingLabel ? <span aria-hidden="true" className="text-zinc-300">·</span> : null}
+          {index > 0 || leadingLabel ? <span aria-hidden="true" className="text-muted-foreground">·</span> : null}
           {entry.kind === "country" ? (
             <CountryFlagLabel countryCode={entry.countryCode} label={entry.label} iconClassName="h-3 w-4" className="gap-1" />
           ) : (
@@ -461,17 +461,17 @@ export async function IngredientCatalogContent({ searchParams, landing = null }:
     <main className="space-y-6">
       <section className="space-y-2">
         <div className="space-y-1">
-          <h1 className="text-3xl font-semibold tracking-tight text-zinc-950">
+          <h1 className="text-3xl font-semibold tracking-tight text-foreground">
             {landing ? landing.h1 : "Каталог ингредиентов"}
           </h1>
           {landing ? (
             landing.intro.map((paragraph) => (
-              <p key={paragraph} className="max-w-3xl text-sm leading-6 text-zinc-600">
+              <p key={paragraph} className="max-w-3xl text-sm leading-6 text-muted-foreground">
                 {paragraph}
               </p>
             ))
           ) : (
-            <p className="max-w-3xl text-sm leading-6 text-zinc-600">
+            <p className="max-w-3xl text-sm leading-6 text-muted-foreground">
               {canManage
                 ? "Системный каталог и ваши пользовательские ингредиенты доступны в одном разделе."
                 : "Открытый справочник ингредиентов для домашних пивоваров: солод, хмель, дрожжи и не только."}
@@ -498,11 +498,11 @@ export async function IngredientCatalogContent({ searchParams, landing = null }:
       />
 
       {result.items.length === 0 ? (
-        <section className="rounded-[28px] border border-dashed border-zinc-300 bg-zinc-50 px-6 py-10 text-center">
-          <h2 className="text-lg font-semibold text-zinc-900">
+        <section className="rounded-[28px] border border-dashed border-border bg-muted px-6 py-10 text-center">
+          <h2 className="text-lg font-semibold text-foreground">
             {view === "mine" ? "У вас пока нет пользовательских ингредиентов" : "По текущим условиям ничего не найдено"}
           </h2>
-          <p className="mt-2 text-sm text-zinc-500">
+          <p className="mt-2 text-sm text-muted-foreground">
             {view === "mine"
               ? "Создайте свой ингредиент с нуля или сделайте свой вариант на основе системного."
               : "Попробуйте изменить запрос, фильтр категории или сортировку."}
@@ -510,12 +510,12 @@ export async function IngredientCatalogContent({ searchParams, landing = null }:
           {q || canManage ? (
             <div className="mt-5 flex flex-wrap justify-center gap-3">
               {q ? (
-                <Link href={resetSearchHref} className="rounded-xl border border-zinc-300 px-5 py-2.5 text-sm font-medium text-zinc-700 hover:bg-white">
+                <Link href={resetSearchHref} className="rounded-xl border border-border px-5 py-2.5 text-sm font-medium text-foreground hover:bg-card">
                   Сбросить поиск
                 </Link>
               ) : null}
               {canManage ? (
-                <Link href={buildCreateCustomIngredientHref({ category: currentCategory, subtype: subtype ?? null })} className="rounded-xl bg-zinc-950 px-5 py-2.5 text-sm font-medium text-white">
+                <Link href={buildCreateCustomIngredientHref({ category: currentCategory, subtype: subtype ?? null })} className="rounded-xl bg-foreground px-5 py-2.5 text-sm font-medium text-background">
                   Создать свой ингредиент
                 </Link>
               ) : null}
@@ -524,9 +524,9 @@ export async function IngredientCatalogContent({ searchParams, landing = null }:
         </section>
       ) : (
         <>
-          <section className="catalog-search-dim hidden overflow-hidden rounded-[28px] border border-zinc-200 bg-white shadow-sm lg:block">
+          <section className="catalog-search-dim hidden overflow-hidden rounded-[28px] border border-border bg-card shadow-sm lg:block">
             <table className="w-full table-fixed text-sm">
-              <thead className="bg-zinc-50 text-left text-[11px] uppercase tracking-[0.12em] text-zinc-500">
+              <thead className="bg-muted text-left text-[11px] uppercase tracking-[0.12em] text-muted-foreground">
                 <tr>
                   <th className="w-[58%] px-5 py-3 font-medium">Ингредиент</th>
                   <th className="px-5 py-3 font-medium">Параметры</th>
@@ -537,12 +537,12 @@ export async function IngredientCatalogContent({ searchParams, landing = null }:
                   const keyStats = buildKeyStats(item);
 
                   return (
-                    <tr key={`${item.source}:${item.id}`} className="border-t border-zinc-100 align-top">
+                    <tr key={`${item.source}:${item.id}`} className="border-t border-border align-top">
                       <td className="px-5 py-3">
                         <div className="flex items-start justify-between gap-3">
                           <div className="min-w-0 space-y-1">
                             <div className="flex flex-wrap items-center gap-1.5">
-                              <Link href={buildDetailHref(item)} className="font-medium text-zinc-950 underline-offset-4 hover:underline">
+                              <Link href={buildDetailHref(item)} className="font-medium text-foreground underline-offset-4 hover:underline">
                                 {item.primaryLabelRu}
                               </Link>
                               <IngredientNameBadges item={item} canManage={canManage} hideSubtypeBadge={Boolean(landing?.subtype)} />
@@ -562,7 +562,7 @@ export async function IngredientCatalogContent({ searchParams, landing = null }:
                               <AddToInventoryAction item={item} />
                               <Link
                                 href={`/catalog/custom/${item.id}/edit`}
-                                className="rounded-md p-1 text-zinc-400 transition-colors hover:bg-zinc-100 hover:text-zinc-700"
+                                className="rounded-md p-1 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
                                 aria-label="Редактировать"
                               >
                                 <Pencil className="h-4 w-4" />
@@ -592,12 +592,12 @@ export async function IngredientCatalogContent({ searchParams, landing = null }:
                       <td className="px-5 py-3">
                         <div className="flex flex-wrap gap-1.5">
                           {keyStats.map((badge) => (
-                            <span key={badge.key} className="inline-flex items-center gap-1 rounded-md bg-zinc-50 px-2 py-0.5 text-xs text-zinc-600 ring-1 ring-zinc-200/70">
+                            <span key={badge.key} className="inline-flex items-center gap-1 rounded-md bg-muted px-2 py-0.5 text-xs text-muted-foreground ring-1 ring-ring/70">
                               {badge.accent ? <IngredientColorSwatch accent={badge.accent} className="h-2.5 w-2.5" /> : null}
                               {badge.label}
                             </span>
                           ))}
-                          {keyStats.length === 0 ? <span className="text-xs text-zinc-400">Без ключевых параметров</span> : null}
+                          {keyStats.length === 0 ? <span className="text-xs text-muted-foreground">Без ключевых параметров</span> : null}
                         </div>
                       </td>
                     </tr>
@@ -614,7 +614,7 @@ export async function IngredientCatalogContent({ searchParams, landing = null }:
               return (
                 <article
                   key={`${item.source}:${item.id}`}
-                  className="relative rounded-[24px] border border-zinc-200 bg-white p-4 shadow-sm"
+                  className="relative rounded-[24px] border border-border bg-card p-4 shadow-sm"
                 >
                   <Link
                     href={buildDetailHref(item)}
@@ -625,7 +625,7 @@ export async function IngredientCatalogContent({ searchParams, landing = null }:
                   <div className="relative z-10 flex items-start justify-between gap-3">
                     <div className="min-w-0 flex-1">
                       <div className="flex flex-wrap items-center gap-1.5">
-                        <h2 className="text-base font-semibold text-zinc-950">{item.primaryLabelRu}</h2>
+                        <h2 className="text-base font-semibold text-foreground">{item.primaryLabelRu}</h2>
                         <IngredientNameBadges item={item} canManage={canManage} hideSubtypeBadge={Boolean(landing?.subtype)} />
                       </div>
                       <IngredientSecondaryMetaLine item={item} leadingLabel={item.secondaryLabelRu} />
@@ -643,7 +643,7 @@ export async function IngredientCatalogContent({ searchParams, landing = null }:
                         <AddToInventoryAction item={item} />
                         <Link
                           href={`/catalog/custom/${item.id}/edit`}
-                          className="rounded-md p-1 text-zinc-400 transition-colors hover:bg-zinc-100 hover:text-zinc-700"
+                          className="rounded-md p-1 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
                           aria-label="Редактировать"
                         >
                           <Pencil className="h-4 w-4" />
@@ -673,7 +673,7 @@ export async function IngredientCatalogContent({ searchParams, landing = null }:
                   {keyStats.length > 0 ? (
                     <div className="relative z-10 mt-3 flex flex-wrap gap-1.5">
                       {keyStats.map((badge) => (
-                        <span key={badge.key} className="inline-flex items-center gap-1 rounded-md bg-zinc-50 px-2 py-0.5 text-xs text-zinc-600 ring-1 ring-zinc-200/70">
+                        <span key={badge.key} className="inline-flex items-center gap-1 rounded-md bg-muted px-2 py-0.5 text-xs text-muted-foreground ring-1 ring-ring/70">
                           {badge.accent ? <IngredientColorSwatch accent={badge.accent} className="h-2.5 w-2.5" /> : null}
                           {badge.label}
                         </span>
@@ -686,11 +686,11 @@ export async function IngredientCatalogContent({ searchParams, landing = null }:
           </section>
 
           {result.totalPages > 1 ? (
-            <nav aria-label="Страницы каталога" className="flex flex-wrap items-center justify-center gap-1.5 rounded-[24px] border border-zinc-200 bg-white px-4 py-3 text-sm shadow-sm">
+            <nav aria-label="Страницы каталога" className="flex flex-wrap items-center justify-center gap-1.5 rounded-[24px] border border-border bg-card px-4 py-3 text-sm shadow-sm">
               {buildPaginationTokens(result.page, result.totalPages).map((token) => {
                 if (token.kind === "ellipsis") {
                   return (
-                    <span key={token.key} className="px-1 text-zinc-400">
+                    <span key={token.key} className="px-1 text-muted-foreground">
                       …
                     </span>
                   );
@@ -701,7 +701,7 @@ export async function IngredientCatalogContent({ searchParams, landing = null }:
                     <span
                       key={token.page}
                       aria-current="page"
-                      className="flex h-9 min-w-9 items-center justify-center rounded-lg bg-zinc-950 px-2 font-medium text-white"
+                      className="flex h-9 min-w-9 items-center justify-center rounded-lg bg-foreground px-2 font-medium text-background"
                     >
                       {token.page}
                     </span>
@@ -719,7 +719,7 @@ export async function IngredientCatalogContent({ searchParams, landing = null }:
                       sort,
                       page: token.page
                     })}
-                    className="flex h-9 min-w-9 items-center justify-center rounded-lg px-2 text-zinc-700 hover:bg-zinc-50"
+                    className="flex h-9 min-w-9 items-center justify-center rounded-lg px-2 text-foreground hover:bg-muted"
                   >
                     {token.page}
                   </Link>

@@ -30,12 +30,12 @@ export function deriveConnStatus({
   conn: ConnState;
   isStale: boolean;
 }): StatusInfo {
-  if (!hasDevice) return { key: "no-device", label: "Нет устройства", cls: "bg-zinc-100 text-zinc-600" };
-  if (isStale) return { key: "stale", label: "Устарело", cls: "bg-amber-100 text-amber-800" };
-  if (conn === "online") return { key: "online", label: "В эфире", cls: "bg-emerald-100 text-emerald-800" };
-  if (conn === "offline") return { key: "offline", label: "Офлайн", cls: "bg-amber-100 text-amber-800" };
-  if (conn === "error") return { key: "error", label: "Ошибка связи", cls: "bg-red-100 text-red-800" };
-  return { key: "connecting", label: "Подключение…", cls: "bg-zinc-100 text-zinc-600" };
+  if (!hasDevice) return { key: "no-device", label: "Нет устройства", cls: "bg-muted text-muted-foreground" };
+  if (isStale) return { key: "stale", label: "Устарело", cls: "bg-warning-subtle text-warning-subtle-foreground" };
+  if (conn === "online") return { key: "online", label: "В эфире", cls: "bg-success-subtle text-success-subtle-foreground" };
+  if (conn === "offline") return { key: "offline", label: "Офлайн", cls: "bg-warning-subtle text-warning-subtle-foreground" };
+  if (conn === "error") return { key: "error", label: "Ошибка связи", cls: "bg-destructive-subtle text-destructive-subtle-foreground" };
+  return { key: "connecting", label: "Подключение…", cls: "bg-muted text-muted-foreground" };
 }
 
 /** Пилюля статуса: точка + слово из единого словаря. */

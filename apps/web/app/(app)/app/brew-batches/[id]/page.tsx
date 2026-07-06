@@ -177,7 +177,7 @@ export default async function BrewBatchDetailPage({ params }: { params: Promise<
       </Suspense>
 
       <div>
-        <Link href="/app/brew-batches" className="inline-flex items-center gap-1 text-sm text-zinc-500 transition hover:text-zinc-800">
+        <Link href="/app/brew-batches" className="inline-flex items-center gap-1 text-sm text-muted-foreground transition hover:text-foreground">
           <ChevronLeft className="h-4 w-4" aria-hidden />
           Все варки
         </Link>
@@ -186,14 +186,14 @@ export default async function BrewBatchDetailPage({ params }: { params: Promise<
       <header className="flex items-start justify-between gap-3">
         <div className="min-w-0 space-y-1">
           <div className="flex flex-wrap items-center gap-3">
-            <h1 className="text-2xl font-semibold text-zinc-950">{batch.name}</h1>
+            <h1 className="text-2xl font-semibold text-foreground">{batch.name}</h1>
             <span className={`inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium ${brewBatchStatusBadgeClass[batch.status]}`}>
               {brewBatchStatusLabels[batch.status]}
             </span>
           </div>
-          <p className="text-sm text-zinc-500">
+          <p className="text-sm text-muted-foreground">
             {batch.brewPlanSnapshot.recipe.title}
-            {isForeignRecipe && sourceAuthorName ? <span className="text-zinc-400"> · автор {sourceAuthorName}</span> : null}
+            {isForeignRecipe && sourceAuthorName ? <span className="text-muted-foreground"> · автор {sourceAuthorName}</span> : null}
             {completed ? ` · завершена ${completed}` : started ? ` · начата ${started}` : planned ? ` · запланирована на ${planned}` : ""}
           </p>
         </div>
@@ -215,8 +215,8 @@ export default async function BrewBatchDetailPage({ params }: { params: Promise<
               ratingTarget={ratingTarget}
             />
           ) : null}
-          <div className="space-y-6 rounded-2xl border border-zinc-100 bg-white p-4 shadow-sm">
-            <h2 className="text-base font-semibold text-zinc-900">Устройство{device?.name ? ` · ${device.name}` : ""}</h2>
+          <div className="space-y-6 rounded-2xl border border-border bg-card p-4 shadow-sm">
+            <h2 className="text-base font-semibold text-foreground">Устройство{device?.name ? ` · ${device.name}` : ""}</h2>
             <LiveDashboard
               source={{ kind: "batch", brewBatchId: batch.id }}
               subtitle={device?.name ?? null}
@@ -305,7 +305,7 @@ export default async function BrewBatchDetailPage({ params }: { params: Promise<
               ratingTarget={ratingTarget}
             />
           ) : (
-            <p className="rounded-2xl border border-zinc-100 bg-zinc-50 p-4 text-sm text-zinc-500">
+            <p className="rounded-2xl border border-border bg-muted p-4 text-sm text-muted-foreground">
               Варка отменена. Вернуть её в план можно через меню в шапке.
             </p>
           )}

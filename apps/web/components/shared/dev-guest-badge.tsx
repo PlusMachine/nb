@@ -28,7 +28,7 @@ export function DevGuestBadge({ active }: { active: boolean }) {
 
   return (
     <div className="fixed bottom-4 left-1/2 z-[100] -translate-x-1/2">
-      <div className="flex items-center gap-3 rounded-full border border-amber-300 bg-amber-50 px-4 py-2 text-sm text-amber-900 shadow-lg">
+      <div className="flex items-center gap-3 rounded-full border border-warning/30 bg-warning-subtle px-4 py-2 text-sm text-warning-subtle-foreground shadow-lg">
         <span className="inline-flex items-center gap-1.5 font-medium">
           <Eye className="h-4 w-4" />
           Гостевой просмотр (dev)

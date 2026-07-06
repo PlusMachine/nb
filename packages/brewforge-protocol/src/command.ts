@@ -136,3 +136,19 @@ export const cmdSaveSettings = (auth?: string): Command =>
  *  arg.i = индекс хмеля 0..BF_MAX_HOPS-1). Не «греющая» — без gate/rate-limit. */
 export const cmdAckHop = (hopIndex: number, auth?: string): Command =>
   makeCommand("ACK_HOP", { i: hopIndex }, auth);
+
+// ----------------------------- OTA (F3, §5.4) ------------------------------
+// Команда запуска OTA по облаку: отдельная форма сообщения на ТОМ ЖЕ топике
+// .../cmd — {"cmd":"ota","url":"https://…"} (контракт зафиксирован спекой
+// docs/brewforge-firmware-releases.md; НЕ конверт Command {id,ts,type,arg}).
+// Прошивка зовёт bf_ota_start(url); все гейты (IDLE-only, подпись, rollback) —
+// на устройстве. Добавление аддитивно, schema остаётся 1.
+
+export const OtaCommandSchema = z.object({
+  cmd: z.literal("ota"),
+  url: z.string().url(),
+});
+export type OtaCommand = z.infer<typeof OtaCommandSchema>;
+
+/** Собрать сообщение запуска OTA для brewforge/<deviceId>/cmd. */
+export const cmdOta = (url: string): OtaCommand => ({ cmd: "ota", url });

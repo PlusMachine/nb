@@ -8,10 +8,10 @@ import { BrewFromStockButton } from "./brew-from-stock-button";
 import { RecipeThumb, StatCell, StyleChip } from "./recipe-card-parts";
 
 const percentColor = (matchPercent: number) => {
-  if (matchPercent >= 100) return "bg-emerald-50 text-emerald-700 ring-emerald-200";
-  if (matchPercent >= 70) return "bg-lime-50 text-lime-700 ring-lime-200";
-  if (matchPercent >= 1) return "bg-amber-50 text-amber-700 ring-amber-200";
-  return "bg-zinc-100 text-zinc-600 ring-zinc-200";
+  if (matchPercent >= 100) return "bg-success-subtle text-success-subtle-foreground ring-success/30";
+  if (matchPercent >= 70) return "bg-lime-50 text-lime-700 ring-lime-200 dark:bg-lime-500/15 dark:text-lime-300 dark:ring-lime-500/30";
+  if (matchPercent >= 1) return "bg-warning-subtle text-warning-subtle-foreground ring-warning/30";
+  return "bg-muted text-muted-foreground ring-border";
 };
 
 /**
@@ -22,9 +22,13 @@ const percentColor = (matchPercent: number) => {
  * процент совпадения (цветной пилл-«светофор» на месте бейджа рейтинга/готовности)
  * и покрытие ингредиентов.
  */
-function BrewableRecipeCard({ recipe }: { recipe: BrewableRecipeDto }) {
+export function BrewableRecipeCard({ recipe, href }: { recipe: BrewableRecipeDto; href?: string }) {
   const style =
     recipe.styleCode && recipe.styleName ? { code: recipe.styleCode, name: recipe.styleName } : null;
+  // На «Мой склад» карточка ведёт на публичную страницу рецепта; на дашборде это
+  // свои рецепты (в т.ч. черновики без публичной страницы) — вызывающий передаёт
+  // ссылку в редактор.
+  const targetHref = href ?? `/recipes/${recipe.slug}`;
 
   const fullyCovered = recipe.missingCount === 0;
   // Кратко перечисляем чего не хватает: до двух названий, остальное — «+N».
@@ -40,11 +44,11 @@ function BrewableRecipeCard({ recipe }: { recipe: BrewableRecipeDto }) {
   })();
 
   return (
-    <article className="group relative overflow-hidden rounded-2xl border border-zinc-200 bg-white p-4 shadow-sm transition hover:border-zinc-300 hover:shadow-md">
+    <article className="group relative overflow-hidden rounded-2xl border border-border bg-card p-4 shadow-sm transition hover:border-border hover:shadow-md">
       <Link
-        href={`/recipes/${recipe.slug}`}
+        href={targetHref}
         aria-label={recipe.title}
-        className="absolute inset-0 z-0 rounded-2xl focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-zinc-500"
+        className="absolute inset-0 z-0 rounded-2xl focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring"
       />
 
       <div className="pointer-events-none flex h-full flex-col gap-3">
@@ -66,22 +70,22 @@ function BrewableRecipeCard({ recipe }: { recipe: BrewableRecipeDto }) {
                 {recipe.matchPercent}%
               </span>
             </div>
-            <h2 className="line-clamp-2 text-base font-semibold leading-snug text-zinc-950 group-hover:text-zinc-700">
+            <h2 className="line-clamp-2 text-base font-semibold leading-snug text-foreground group-hover:text-muted-foreground">
               {recipe.title}
             </h2>
           </div>
         </div>
 
         {fullyCovered ? (
-          <div className="flex items-center justify-between gap-3 rounded-xl bg-zinc-50 p-2.5">
-            <span className="inline-flex items-center gap-1.5 text-sm font-semibold text-emerald-700">
+          <div className="flex items-center justify-between gap-3 rounded-xl bg-muted p-2.5">
+            <span className="inline-flex items-center gap-1.5 text-sm font-semibold text-success">
               <CircleCheck className="h-4 w-4" aria-hidden />
               Хватает всего
             </span>
             <BrewFromStockButton recipeId={recipe.recipeId} slug={recipe.slug} recipeTitle={recipe.title} />
           </div>
         ) : (
-          <div className="grid grid-cols-[auto_1fr] gap-4 rounded-xl bg-zinc-50 p-2.5">
+          <div className="grid grid-cols-[auto_1fr] gap-4 rounded-xl bg-muted p-2.5">
             <StatCell label="Ингредиенты" value={`${recipe.coveredLines} из ${recipe.totalLines}`} />
             <StatCell label="Не хватает" value={missingLabel} />
           </div>
@@ -107,11 +111,11 @@ export function BrewableRecipesSection({ recipes }: { recipes: BrewableRecipeDto
     // колонка внутри узкого правого rail на десктопе.
     <section id="brewable" className="scroll-mt-4 space-y-3">
       <div className="flex items-center gap-2">
-        <div className="flex h-6 w-6 items-center justify-center rounded-md bg-amber-50 text-amber-600">
+        <div className="flex h-6 w-6 items-center justify-center rounded-md bg-warning-subtle text-warning-subtle-foreground">
           <Beer className="h-3.5 w-3.5" />
         </div>
-        <h2 className="text-base font-semibold text-zinc-900">Можно сварить из ваших запасов</h2>
-        <span className="rounded-full bg-zinc-100 px-2 py-0.5 text-xs font-medium tabular-nums text-zinc-400">
+        <h2 className="text-base font-semibold text-foreground">Можно сварить из ваших запасов</h2>
+        <span className="rounded-full bg-muted px-2 py-0.5 text-xs font-medium tabular-nums text-muted-foreground">
           {recipes.length}
         </span>
       </div>

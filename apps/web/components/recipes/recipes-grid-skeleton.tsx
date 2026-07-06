@@ -24,24 +24,24 @@ export function RecipesGridSkeleton({
         {items.map((_, index) => (
           <div
             key={index}
-            className="flex items-center gap-3 rounded-2xl border border-zinc-200 bg-white p-2 pr-12 shadow-sm"
+            className="flex items-center gap-3 rounded-2xl border border-border bg-card p-2 pr-12 shadow-sm"
           >
-            <div className="aspect-[4/3] w-16 shrink-0 animate-pulse rounded-lg bg-zinc-100 sm:w-20" />
+            <div className="aspect-[4/3] w-16 shrink-0 animate-pulse rounded-lg bg-muted sm:w-20" />
             <div className="min-w-0 flex-1 space-y-2">
-              <div className="h-4 w-24 animate-pulse rounded-full bg-zinc-100" />
-              <div className="h-5 w-2/3 animate-pulse rounded bg-zinc-100" />
-              <div className="h-4 w-1/3 animate-pulse rounded bg-zinc-100" />
+              <div className="h-4 w-24 animate-pulse rounded-full bg-muted" />
+              <div className="h-5 w-2/3 animate-pulse rounded bg-muted" />
+              <div className="h-4 w-1/3 animate-pulse rounded bg-muted" />
               {/* `<md`: строка статов под названием (как в реальной строке). */}
               <div className="flex gap-4 md:hidden">
                 {Array.from({ length: 4 }, (_, cell) => (
-                  <div key={cell} className="h-7 w-10 animate-pulse rounded bg-zinc-100" />
+                  <div key={cell} className="h-7 w-10 animate-pulse rounded bg-muted" />
                 ))}
               </div>
             </div>
             {/* `≥md`: колонки статов ABV/IBU/OG/цвет + слот рейтинга. */}
             <div className="hidden shrink-0 gap-4 md:flex">
               {Array.from({ length: 5 }, (_, cell) => (
-                <div key={cell} className="h-8 w-12 animate-pulse rounded bg-zinc-100" />
+                <div key={cell} className="h-8 w-12 animate-pulse rounded bg-muted" />
               ))}
             </div>
           </div>
@@ -57,23 +57,23 @@ export function RecipesGridSkeleton({
   return (
     <div className="grid grid-cols-[repeat(auto-fill,minmax(320px,1fr))] gap-5" aria-hidden>
       {items.map((_, index) => (
-        <div key={index} className="rounded-2xl border border-zinc-200 bg-white p-4 shadow-sm">
+        <div key={index} className="rounded-2xl border border-border bg-card p-4 shadow-sm">
           <div className="flex items-start gap-3">
-            <div className="h-16 w-16 shrink-0 animate-pulse rounded-xl bg-zinc-100" />
+            <div className="h-16 w-16 shrink-0 animate-pulse rounded-xl bg-muted" />
             <div className="min-w-0 flex-1 space-y-2">
-              <div className="h-4 w-24 animate-pulse rounded-full bg-zinc-100" />
-              <div className="h-5 w-3/4 animate-pulse rounded bg-zinc-100" />
-              <div className="h-5 w-1/2 animate-pulse rounded bg-zinc-100" />
+              <div className="h-4 w-24 animate-pulse rounded-full bg-muted" />
+              <div className="h-5 w-3/4 animate-pulse rounded bg-muted" />
+              <div className="h-5 w-1/2 animate-pulse rounded bg-muted" />
             </div>
           </div>
-          <div className="mt-3 grid grid-cols-4 gap-2 rounded-xl bg-zinc-50 p-2.5">
+          <div className="mt-3 grid grid-cols-4 gap-2 rounded-xl bg-muted p-2.5">
             {Array.from({ length: 4 }, (_, cell) => (
-              <div key={cell} className="h-8 animate-pulse rounded bg-zinc-100" />
+              <div key={cell} className="h-8 animate-pulse rounded bg-muted" />
             ))}
           </div>
           <div className="mt-3 flex items-center justify-between">
-            <div className="h-4 w-24 animate-pulse rounded-full bg-zinc-100" />
-            <div className="h-4 w-10 animate-pulse rounded bg-zinc-100" />
+            <div className="h-4 w-24 animate-pulse rounded-full bg-muted" />
+            <div className="h-4 w-10 animate-pulse rounded bg-muted" />
           </div>
         </div>
       ))}

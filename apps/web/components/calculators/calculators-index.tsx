@@ -9,6 +9,9 @@ import {
   type CalculatorSlug
 } from "@/features/calculators/catalog";
 
+import { CalculatorFavoriteToggle } from "./calculator-favorite-toggle";
+import { CalculatorFavoritesProvider } from "./calculator-favorites-provider";
+
 // Пометка статуса валидации — только в dev, чтобы отслеживать непроверенные калькуляторы.
 const devMode = process.env.NODE_ENV !== "production";
 
@@ -37,19 +40,28 @@ export function CalculatorCard({ calculator }: { calculator: CalculatorCatalogIt
     : undefined;
 
   return (
-    <Link
-      href={calculator.href}
-      className="group relative block h-[150px] overflow-hidden rounded-2xl border border-zinc-200 bg-white bg-contain bg-right-bottom bg-no-repeat shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:border-zinc-300 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-300 active:scale-[0.98]"
+    <div
+      className="group relative h-[150px] overflow-hidden rounded-2xl border border-border bg-card bg-contain bg-right-bottom bg-no-repeat shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:border-border hover:shadow-md active:scale-[0.98]"
       data-calculator-card={calculator.slug}
       style={style}
     >
-      <div className="absolute inset-0 bg-gradient-to-r from-white from-50% to-transparent" />
-      <article className="relative flex h-full flex-col justify-between p-3.5 sm:p-4">
+      <Link
+        href={calculator.href}
+        aria-label={calculator.shortTitle}
+        className="absolute inset-0 z-0 rounded-2xl focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring"
+      />
+      <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-card from-50% to-transparent" />
+      <CalculatorFavoriteToggle
+        slug={calculator.slug}
+        suppressParentInteraction
+        className="absolute right-2 top-2 z-10"
+      />
+      <article className="pointer-events-none relative z-[1] flex h-full flex-col justify-between p-3.5 sm:p-4">
         <div className="max-w-[65%] space-y-0.5">
-          <h3 className="text-[14px] font-semibold leading-snug text-zinc-900 sm:text-[15px]">
+          <h3 className="text-[14px] font-semibold leading-snug text-foreground sm:text-[15px]">
             {calculator.shortTitle}
           </h3>
-          <p className="line-clamp-2 text-[12px] leading-relaxed text-zinc-500 sm:text-[13px]">
+          <p className="line-clamp-2 text-[12px] leading-relaxed text-muted-foreground sm:text-[13px]">
             {calculator.description}
           </p>
         </div>
@@ -57,40 +69,42 @@ export function CalculatorCard({ calculator }: { calculator: CalculatorCatalogIt
           <span
             className={`inline-flex w-fit items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-semibold ${
               isCalculatorVerified(calculator.slug)
-                ? "bg-emerald-100 text-emerald-700"
-                : "bg-amber-100 text-amber-700"
+                ? "bg-success-subtle text-success-subtle-foreground"
+                : "bg-warning-subtle text-warning-subtle-foreground"
             }`}
           >
             {isCalculatorVerified(calculator.slug) ? "✓ проверен" : "не проверен"}
           </span>
         ) : null}
       </article>
-    </Link>
+    </div>
   );
 }
 
 export function CalculatorsIndex() {
   return (
     <main className="pb-16 pt-5 sm:pt-6">
-      <section className="mb-5 rounded-2xl border border-zinc-200 bg-white px-4 py-3.5 shadow-sm sm:mb-6 sm:px-5">
+      <section className="mb-5 rounded-2xl border border-border bg-card px-4 py-3.5 shadow-sm sm:mb-6 sm:px-5">
         <div className="max-w-3xl space-y-1">
-          <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-zinc-400">hmelo tools</p>
-          <h1 className="text-2xl font-semibold leading-tight text-zinc-950 sm:text-3xl">
+          <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">hmelo tools</p>
+          <h1 className="text-2xl font-semibold leading-tight text-foreground sm:text-3xl">
             Калькуляторы для пивоварения
           </h1>
         </div>
       </section>
 
       <section aria-label="Все калькуляторы">
-        <div className="grid gap-2.5 sm:grid-cols-2 xl:grid-cols-3">
-          {calculatorSections.flatMap((section) =>
-            calculators
-              .filter((calculator) => calculator.section === section)
-              .map((calculator) => (
-                <CalculatorCard key={calculator.slug} calculator={calculator} />
-              ))
-          )}
-        </div>
+        <CalculatorFavoritesProvider slugs={calculators.map((calculator) => calculator.slug)}>
+          <div className="grid gap-2.5 sm:grid-cols-2 xl:grid-cols-3">
+            {calculatorSections.flatMap((section) =>
+              calculators
+                .filter((calculator) => calculator.section === section)
+                .map((calculator) => (
+                  <CalculatorCard key={calculator.slug} calculator={calculator} />
+                ))
+            )}
+          </div>
+        </CalculatorFavoritesProvider>
       </section>
     </main>
   );

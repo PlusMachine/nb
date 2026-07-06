@@ -87,20 +87,20 @@ export function FermentProfileEditor({ planSteps, planError, saving, onSave }: P
   };
 
   return (
-    <div className="mt-4 space-y-3 border-t border-zinc-100 pt-4">
+    <div className="mt-4 space-y-3 border-t border-border pt-4">
       {planSteps ? (
         <Button variant="outline" size="sm" onClick={fillFromPlan} disabled={saving}>
           Из плана рецепта
         </Button>
       ) : planError ? (
-        <p className="text-xs text-zinc-400">Профиль из плана недоступен: {planError}</p>
+        <p className="text-xs text-muted-foreground">Профиль из плана недоступен: {planError}</p>
       ) : null}
 
       <div className="space-y-2">
         {rows.map((row, i) => (
           <div key={i} className="flex flex-wrap items-center gap-2">
-            <span className="w-6 text-xs text-zinc-400">{i + 1}.</span>
-            <label className="flex items-center gap-1.5 text-sm text-zinc-600">
+            <span className="w-6 text-xs text-muted-foreground">{i + 1}.</span>
+            <label className="flex items-center gap-1.5 text-sm text-muted-foreground">
               <NumericInput
                 value={row.tempC}
                 onChange={(e) => updateRow(i, { tempC: e.target.value })}
@@ -108,14 +108,14 @@ export function FermentProfileEditor({ planSteps, planError, saving, onSave }: P
                 max={40}
                 aria-label={`Температура ступени ${i + 1}, °C`}
                 placeholder="18.0"
-                className="h-9 w-20 rounded-md border border-zinc-200 px-2 text-sm tabular-nums focus:border-zinc-400 focus:outline-none focus:ring-2 focus:ring-zinc-200"
+                className="h-9 w-20 rounded-md border border-border px-2 text-sm tabular-nums focus:border-ring focus:outline-none focus:ring-2 focus:ring-ring"
               />
               °C
             </label>
             {row.manual ? (
-              <span className="text-sm text-zinc-500">до ручного перехода</span>
+              <span className="text-sm text-muted-foreground">до ручного перехода</span>
             ) : (
-              <label className="flex items-center gap-1.5 text-sm text-zinc-600">
+              <label className="flex items-center gap-1.5 text-sm text-muted-foreground">
                 <NumericInput
                   value={row.days}
                   onChange={(e) => updateRow(i, { days: e.target.value })}
@@ -123,15 +123,15 @@ export function FermentProfileEditor({ planSteps, planError, saving, onSave }: P
                   integer
                   aria-label={`Длительность ступени ${i + 1}, дней`}
                   placeholder="7"
-                  className="h-9 w-16 rounded-md border border-zinc-200 px-2 text-sm tabular-nums focus:border-zinc-400 focus:outline-none focus:ring-2 focus:ring-zinc-200"
+                  className="h-9 w-16 rounded-md border border-border px-2 text-sm tabular-nums focus:border-ring focus:outline-none focus:ring-2 focus:ring-ring"
                 />
                 дн
               </label>
             )}
-            <label className="flex items-center gap-1.5 text-xs text-zinc-500">
+            <label className="flex items-center gap-1.5 text-xs text-muted-foreground">
               <input
                 type="checkbox"
-                className="h-3.5 w-3.5 rounded border-zinc-300"
+                className="h-3.5 w-3.5 rounded border-border"
                 checked={row.manual}
                 onChange={(e) => updateRow(i, { manual: e.target.checked })}
               />
@@ -142,7 +142,7 @@ export function FermentProfileEditor({ planSteps, planError, saving, onSave }: P
                 type="button"
                 onClick={() => removeRow(i)}
                 aria-label={`Удалить ступень ${i + 1}`}
-                className="ml-auto inline-flex h-8 w-8 items-center justify-center rounded-md text-zinc-400 hover:bg-zinc-100 hover:text-red-600"
+                className="ml-auto inline-flex h-8 w-8 items-center justify-center rounded-md text-muted-foreground hover:bg-accent hover:text-destructive"
               >
                 <Trash2 className="h-4 w-4" aria-hidden />
               </button>
@@ -162,7 +162,7 @@ export function FermentProfileEditor({ planSteps, planError, saving, onSave }: P
       </div>
 
       {error ? (
-        <p role="alert" className="text-sm text-red-600">
+        <p role="alert" className="text-sm text-destructive">
           {error}
         </p>
       ) : null}

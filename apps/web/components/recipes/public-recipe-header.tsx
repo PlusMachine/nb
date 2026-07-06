@@ -17,29 +17,29 @@ export function PublicRecipeHeader({ recipe }: { recipe: RecipeDetailDto }) {
   const srmText = recipe.color != null ? recipe.color.toFixed(1).replace(/\.0$/, "") : null;
 
   return (
-    <section className="rounded-2xl border border-zinc-100 bg-white p-5 shadow-sm">
+    <section className="rounded-2xl border border-border bg-card p-5 shadow-sm">
       <div className="space-y-2">
         <div className="flex flex-wrap items-center gap-2">
-          <span className="rounded-full bg-emerald-50 px-2.5 py-0.5 text-xs font-medium text-emerald-700 ring-1 ring-emerald-200">{recipePublicationStateLabels[recipe.publicationState]}</span>
+          <span className="rounded-full bg-success-subtle px-2.5 py-0.5 text-xs font-medium text-success-subtle-foreground ring-1 ring-success/30">{recipePublicationStateLabels[recipe.publicationState]}</span>
           {styleName ? (
             styleHref ? (
               <Link
                 href={styleHref}
-                className="rounded-full bg-violet-50 px-2.5 py-0.5 text-xs font-medium text-violet-700 ring-1 ring-violet-200 transition hover:bg-violet-100 hover:text-violet-900"
+                className="rounded-full bg-violet-50 px-2.5 py-0.5 text-xs font-medium text-violet-700 ring-1 ring-violet-200 transition hover:bg-violet-100 hover:text-violet-900 dark:bg-violet-500/15 dark:text-violet-300 dark:ring-violet-500/30 dark:hover:bg-violet-500/20 dark:hover:text-violet-200"
               >
                 {styleName}
               </Link>
             ) : (
-              <span className="rounded-full bg-violet-50 px-2.5 py-0.5 text-xs font-medium text-violet-700 ring-1 ring-violet-200">
+              <span className="rounded-full bg-violet-50 px-2.5 py-0.5 text-xs font-medium text-violet-700 ring-1 ring-violet-200 dark:bg-violet-500/15 dark:text-violet-300 dark:ring-violet-500/30">
                 {styleName}
               </span>
             )
           ) : null}
-          <span className="text-xs text-zinc-400">{formatUpdatedLabel(recipe.updatedAt)}</span>
+          <span className="text-xs text-muted-foreground">{formatUpdatedLabel(recipe.updatedAt)}</span>
         </div>
 
         <div className="flex flex-wrap items-start justify-between gap-3">
-          <h1 className="text-2xl font-bold tracking-tight text-zinc-950 sm:text-3xl">{recipe.title}</h1>
+          <h1 className="text-2xl font-bold tracking-tight text-foreground sm:text-3xl">{recipe.title}</h1>
           <div className="flex flex-wrap items-center gap-2">
             <BrewRecipeButton recipeId={recipe.id} slug={recipe.slug} recipeTitle={recipe.title} />
             <CloneFromPublicButton recipeId={recipe.id} slug={recipe.slug} variant="button" />
@@ -49,17 +49,17 @@ export function PublicRecipeHeader({ recipe }: { recipe: RecipeDetailDto }) {
 
         <div className="flex flex-wrap items-center gap-2">
           {color && srmText ? (
-            <span className="inline-flex items-center gap-1.5 rounded-lg bg-zinc-50 px-2.5 py-1 text-xs font-medium text-zinc-600 ring-1 ring-zinc-100">
+            <span className="inline-flex items-center gap-1.5 rounded-lg bg-muted px-2.5 py-1 text-xs font-medium text-muted-foreground ring-1 ring-ring">
               <BeerGlassIcon color={color.hex} size={16} className="shrink-0" />
               <span className="tabular-nums">SRM {srmText}</span>
-              <span className="text-zinc-400">·</span>
+              <span className="text-muted-foreground">·</span>
               <span>{color.label}</span>
             </span>
           ) : null}
-          <span className="rounded-lg bg-zinc-50 px-2.5 py-1 text-xs font-medium tabular-nums text-zinc-600 ring-1 ring-zinc-100">
+          <span className="rounded-lg bg-muted px-2.5 py-1 text-xs font-medium tabular-nums text-muted-foreground ring-1 ring-ring">
             {recipe.batchSizeEnteredQuantity} {recipe.batchSizeEnteredUnit}
           </span>
-          <span className="rounded-lg bg-zinc-50 px-2.5 py-1 text-xs font-medium tabular-nums text-zinc-600 ring-1 ring-zinc-100">
+          <span className="rounded-lg bg-muted px-2.5 py-1 text-xs font-medium tabular-nums text-muted-foreground ring-1 ring-ring">
             {recipe.boilTimeMinutes} мин кипячения
           </span>
         </div>

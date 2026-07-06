@@ -23,7 +23,7 @@ export function RecipeActionsMenu({
         onClick={onOpenImportExport}
         disabled={pending}
       >
-        <FileText className="h-4 w-4 text-zinc-400" />
+        <FileText className="h-4 w-4 text-muted-foreground" />
         Импорт / экспорт
       </Button>
       <Button

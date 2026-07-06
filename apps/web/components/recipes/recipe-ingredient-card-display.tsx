@@ -209,9 +209,9 @@ export const RecipeIngredientTechnicalBadges = ({
       {badges.map((badge) => (
         <span
           key={badge.key}
-          className={`relative inline-flex items-center rounded-md px-2 py-0.5 text-xs text-zinc-600 ring-1 ring-zinc-200/60 ${badge.accent
+          className={`relative inline-flex items-center rounded-md px-2 py-0.5 text-xs text-muted-foreground ring-1 ring-border/60 ${badge.accent
             ? "overflow-hidden bg-[linear-gradient(180deg,rgba(250,250,250,0.98),rgba(244,244,245,0.92))]"
-            : "bg-zinc-50"
+            : "bg-muted"
           }`}
         >
           {badge.label}
@@ -226,7 +226,7 @@ export function RecipeIngredientTitleBlock({
   source,
   primaryName,
   secondaryName,
-  titleClassName = "truncate text-sm font-semibold text-zinc-950"
+  titleClassName = "truncate text-sm font-semibold text-foreground"
 }: {
   source: RecipeIngredientCardSource;
   primaryName: string;
@@ -254,14 +254,14 @@ export function RecipeIngredientTitleBlock({
       <div className="flex min-w-0 flex-wrap items-baseline gap-x-2 gap-y-1">
         <span className={titleClassName}>{primaryName}</span>
         {showFermentableKindInlineWithTitle ? (
-          <span className="inline-flex min-w-0 items-center gap-2 text-xs font-medium text-zinc-600">
-            <span aria-hidden="true" className="text-zinc-400">•</span>
+          <span className="inline-flex min-w-0 items-center gap-2 text-xs font-medium text-muted-foreground">
+            <span aria-hidden="true" className="text-muted-foreground">•</span>
             <span className="truncate">{fermentableKindLabel}</span>
           </span>
         ) : null}
         {showInlineBrand ? (
-          <span className="inline-flex min-w-0 items-center gap-2 text-sm font-semibold text-zinc-700">
-            <span aria-hidden="true" className="text-zinc-400">•</span>
+          <span className="inline-flex min-w-0 items-center gap-2 text-sm font-semibold text-foreground">
+            <span aria-hidden="true" className="text-muted-foreground">•</span>
             <span className="truncate">{brandLabel}</span>
           </span>
         ) : null}
@@ -272,10 +272,10 @@ export function RecipeIngredientTitleBlock({
           />
         ) : null}
       </div>
-      {secondaryName ? <div className="mt-0.5 text-xs text-zinc-500">{secondaryName}</div> : null}
+      {secondaryName ? <div className="mt-0.5 text-xs text-muted-foreground">{secondaryName}</div> : null}
       {!showInlineBrand && brandLabel ? (
-        <div className="mt-0.5 flex flex-wrap items-center gap-x-1.5 gap-y-0.5 text-xs text-zinc-500">
-          <span className="font-medium text-zinc-700">{brandLabel}</span>
+        <div className="mt-0.5 flex flex-wrap items-center gap-x-1.5 gap-y-0.5 text-xs text-muted-foreground">
+          <span className="font-medium text-foreground">{brandLabel}</span>
           {showCountryOnBrandLine ? (
             <CountryFlag
               countryCode={country.code}
@@ -283,7 +283,7 @@ export function RecipeIngredientTitleBlock({
             />
           ) : null}
           {showFermentableKindOnBrandLine ? (
-            <span className="rounded-full bg-zinc-50 px-2 py-0.5 text-[11px] font-medium text-zinc-600 ring-1 ring-zinc-200/70">
+            <span className="rounded-full bg-muted px-2 py-0.5 text-[11px] font-medium text-muted-foreground ring-1 ring-border/70">
               {fermentableKindLabel}
             </span>
           ) : null}

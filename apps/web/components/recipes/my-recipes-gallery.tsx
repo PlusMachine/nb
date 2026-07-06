@@ -43,14 +43,14 @@ const matchesStatus = (state: RecipePublicationState, filter: StatusFilter): boo
 
 function ViewToggle({ view, onChange }: { view: ViewMode; onChange: (view: ViewMode) => void }) {
   return (
-    <div className="flex shrink-0 items-center gap-1 rounded-lg border border-zinc-200 bg-white p-1" role="group" aria-label="Вид списка">
+    <div className="flex shrink-0 items-center gap-1 rounded-lg border border-border bg-card p-1" role="group" aria-label="Вид списка">
       <button
         type="button"
         aria-label="Сеткой"
         aria-pressed={view === "grid"}
         onClick={() => onChange("grid")}
         className={`inline-flex h-8 w-8 items-center justify-center rounded-md transition ${
-          view === "grid" ? "bg-zinc-950 text-white" : "text-zinc-500 hover:bg-zinc-100"
+          view === "grid" ? "bg-foreground text-background" : "text-muted-foreground hover:bg-accent"
         }`}
       >
         <LayoutGrid className="h-4 w-4" />
@@ -61,7 +61,7 @@ function ViewToggle({ view, onChange }: { view: ViewMode; onChange: (view: ViewM
         aria-pressed={view === "list"}
         onClick={() => onChange("list")}
         className={`inline-flex h-8 w-8 items-center justify-center rounded-md transition ${
-          view === "list" ? "bg-zinc-950 text-white" : "text-zinc-500 hover:bg-zinc-100"
+          view === "list" ? "bg-foreground text-background" : "text-muted-foreground hover:bg-accent"
         }`}
       >
         <List className="h-4 w-4" />
@@ -135,7 +135,7 @@ export function MyRecipesGallery({
         <div className="space-y-3">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
             <div className="relative flex-1">
-              <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-400" aria-hidden />
+              <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" aria-hidden />
               <label htmlFor="my-recipes-search" className="sr-only">
                 Поиск по рецептам
               </label>
@@ -156,7 +156,7 @@ export function MyRecipesGallery({
               id="my-recipes-sort"
               value={sort}
               onChange={(event) => setSort(event.target.value as SortMode)}
-              className="h-10 rounded-lg border border-zinc-200 bg-white px-3 text-sm text-zinc-900 focus:outline-none focus:ring-2 focus:ring-zinc-400"
+              className="h-10 rounded-lg border border-border bg-card px-3 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
             >
               {sortOptions.map((option) => (
                 <option key={option.value} value={option.value}>
@@ -179,12 +179,12 @@ export function MyRecipesGallery({
                   onClick={() => setStatus(option.value)}
                   className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-sm font-medium transition-colors ${
                     active
-                      ? "bg-zinc-900 text-white"
-                      : "border border-zinc-200 bg-white text-zinc-600 hover:bg-zinc-50"
+                      ? "bg-foreground text-background"
+                      : "border border-border bg-card text-muted-foreground hover:bg-muted"
                   }`}
                 >
                   {option.label}
-                  <span className={active ? "text-zinc-300" : "text-zinc-400"}>{option.count}</span>
+                  <span className={active ? "text-background/70" : "text-muted-foreground"}>{option.count}</span>
                 </button>
               );
             })}
@@ -197,7 +197,7 @@ export function MyRecipesGallery({
       )}
 
       {visible.length === 0 ? (
-        <p className="rounded-xl border border-dashed border-zinc-300 bg-zinc-50 p-6 text-center text-sm text-zinc-500">
+        <p className="rounded-xl border border-dashed border-border bg-muted p-6 text-center text-sm text-muted-foreground">
           Ничего не найдено. Измените поиск или фильтр статуса.
         </p>
       ) : (

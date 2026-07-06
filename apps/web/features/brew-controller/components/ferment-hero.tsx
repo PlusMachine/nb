@@ -45,31 +45,31 @@ export function FermentHero({ telemetry, current, next, dayLabel, chart, size = 
   const coolLockS = telemetry?.coolLockS;
 
   return (
-    <div className="rounded-2xl border border-zinc-200 bg-white p-6 shadow-sm">
+    <div className="rounded-2xl border border-border bg-card p-6 shadow-sm">
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
-          <p className={kiosk ? "text-base text-zinc-500" : "text-sm text-zinc-500"}>Температура</p>
+          <p className={kiosk ? "text-base text-muted-foreground" : "text-sm text-muted-foreground"}>Температура</p>
           {telemetry && telemetry.primary.valid ? (
             <p
               className={
                 kiosk
-                  ? "mt-1 text-[clamp(4rem,17vh,13rem)] font-semibold leading-none tabular-nums text-zinc-950"
-                  : "mt-1 text-6xl font-semibold tabular-nums text-zinc-950"
+                  ? "mt-1 text-[clamp(4rem,17vh,13rem)] font-semibold leading-none tabular-nums text-foreground"
+                  : "mt-1 text-6xl font-semibold tabular-nums text-foreground"
               }
             >
               {fmtTemp(telemetry.primary.c)}
             </p>
           ) : (
             // Без валидной телеметрии — компактная «нет данных» вместо гигантского «—» (#21).
-            <p className={kiosk ? "mt-1 text-3xl font-medium text-zinc-400" : "mt-1 text-xl font-medium text-zinc-400"}>
+            <p className={kiosk ? "mt-1 text-3xl font-medium text-muted-foreground" : "mt-1 text-xl font-medium text-muted-foreground"}>
               нет данных
             </p>
           )}
-          <p className={kiosk ? "mt-2 text-base text-zinc-500" : "mt-1 text-sm text-zinc-500"}>
+          <p className={kiosk ? "mt-2 text-base text-muted-foreground" : "mt-1 text-sm text-muted-foreground"}>
             Уставка:{" "}
             <span
               className={
-                kiosk ? "text-xl font-medium text-zinc-700 tabular-nums" : "font-medium text-zinc-700 tabular-nums"
+                kiosk ? "text-xl font-medium text-foreground tabular-nums" : "font-medium text-foreground tabular-nums"
               }
             >
               {telemetry ? fmtTemp(telemetry.setpointC) : "—"}
@@ -79,21 +79,21 @@ export function FermentHero({ telemetry, current, next, dayLabel, chart, size = 
         <div className="text-right">
           {current ? (
             <>
-              <p className={kiosk ? "text-2xl font-semibold text-zinc-950" : "text-lg font-semibold text-zinc-950"}>
+              <p className={kiosk ? "text-2xl font-semibold text-foreground" : "text-lg font-semibold text-foreground"}>
                 {current.label}
               </p>
               {dayLabel ? (
-                <p className={kiosk ? "mt-1 text-lg text-zinc-500 tabular-nums" : "mt-1 text-sm text-zinc-500 tabular-nums"}>
+                <p className={kiosk ? "mt-1 text-lg text-muted-foreground tabular-nums" : "mt-1 text-sm text-muted-foreground tabular-nums"}>
                   {dayLabel}
                 </p>
               ) : null}
             </>
           ) : (
-            <p className="text-sm font-medium text-zinc-500">Профиль не запущен</p>
+            <p className="text-sm font-medium text-muted-foreground">Профиль не запущен</p>
           )}
           {next ? (
-            <p className="mt-2 text-xs text-zinc-500">
-              след. ступень: <span className="font-medium text-zinc-700">{next.label} {fmtTemp(next.tempC)}</span>
+            <p className="mt-2 text-xs text-muted-foreground">
+              след. ступень: <span className="font-medium text-foreground">{next.label} {fmtTemp(next.tempC)}</span>
             </p>
           ) : null}
         </div>
@@ -103,7 +103,7 @@ export function FermentHero({ telemetry, current, next, dayLabel, chart, size = 
         <p className="mt-4">
           <span
             className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-medium ${
-              coolOn ? "bg-emerald-100 text-emerald-800" : "bg-zinc-100 text-zinc-500"
+              coolOn ? "bg-success-subtle text-success-subtle-foreground" : "bg-muted text-muted-foreground"
             }`}
           >
             Охлаждение {coolOn ? "работает" : "выкл"}
@@ -118,8 +118,8 @@ export function FermentHero({ telemetry, current, next, dayLabel, chart, size = 
         <p
           className={
             kiosk
-              ? "mt-4 rounded-lg bg-zinc-50 px-3 py-2 text-base text-zinc-700"
-              : "mt-4 rounded-lg bg-zinc-50 px-3 py-2 text-sm text-zinc-700"
+              ? "mt-4 rounded-lg bg-muted px-3 py-2 text-base text-foreground"
+              : "mt-4 rounded-lg bg-muted px-3 py-2 text-sm text-foreground"
           }
         >
           {telemetry.statusLine}

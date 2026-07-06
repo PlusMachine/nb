@@ -43,7 +43,7 @@ export function Popover({ trigger, children, align = "center", side = "bottom", 
           sideOffset={8}
           collisionPadding={8}
           className={cn(
-            "z-[110] w-max max-w-sm rounded-xl border border-zinc-200 bg-white p-3 text-sm text-zinc-900 shadow-lg outline-none",
+            "z-[110] w-max max-w-sm rounded-xl border border-border bg-popover p-3 text-sm text-popover-foreground shadow-lg outline-none",
             contentClassName
           )}
         >

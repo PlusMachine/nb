@@ -35,13 +35,13 @@ export function NotificationOptIn() {
 
   if (state === "subscribed") {
     return (
-      <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-emerald-200 bg-emerald-50 p-4">
-        <p className="inline-flex items-center gap-2 text-sm text-emerald-900">
+      <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-success/30 bg-success-subtle p-4">
+        <p className="inline-flex items-center gap-2 text-sm text-success-subtle-foreground">
           <BellRing className="h-4 w-4" aria-hidden />
           Уведомления включены — пуш придёт на засыпь, промывку и аварии.
         </p>
         <div className="flex items-center gap-2">
-          {testMsg ? <span className="text-xs text-emerald-800">{testMsg}</span> : null}
+          {testMsg ? <span className="text-xs text-success-subtle-foreground">{testMsg}</span> : null}
           <Button variant="outline" onClick={() => void sendTest()} disabled={busy}>
             Проверить
           </Button>
@@ -55,8 +55,8 @@ export function NotificationOptIn() {
 
   if (state === "denied") {
     return (
-      <div className="flex flex-wrap items-center gap-2 rounded-2xl border border-zinc-200 bg-zinc-50 p-4 text-sm text-zinc-600">
-        <BellOff className="h-4 w-4 text-zinc-400" aria-hidden />
+      <div className="flex flex-wrap items-center gap-2 rounded-2xl border border-border bg-muted p-4 text-sm text-muted-foreground">
+        <BellOff className="h-4 w-4 text-muted-foreground" aria-hidden />
         Уведомления заблокированы в браузере. Разрешите их в настройках сайта, чтобы получать пуш о варке.
       </div>
     );
@@ -64,16 +64,16 @@ export function NotificationOptIn() {
 
   // state === "default"
   return (
-    <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-zinc-200 bg-white p-4 shadow-sm">
+    <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-border bg-card p-4 shadow-sm">
       <div className="min-w-0">
-        <p className="inline-flex items-center gap-2 text-sm font-semibold text-zinc-900">
-          <Bell className="h-4 w-4 text-zinc-500" aria-hidden />
+        <p className="inline-flex items-center gap-2 text-sm font-semibold text-foreground">
+          <Bell className="h-4 w-4 text-muted-foreground" aria-hidden />
           Уведомления о варке
         </p>
-        <p className="mt-1 text-xs text-zinc-500">
+        <p className="mt-1 text-xs text-muted-foreground">
           Пуш на телефон о засыпи, промывке и авариях — даже когда вкладка свёрнута.
         </p>
-        {error ? <p role="alert" className="mt-1 text-xs text-red-600">{error}</p> : null}
+        {error ? <p role="alert" className="mt-1 text-xs text-destructive">{error}</p> : null}
       </div>
       <Button onClick={() => void enable()} disabled={busy}>
         {busy ? "Включаем…" : "Включить уведомления"}

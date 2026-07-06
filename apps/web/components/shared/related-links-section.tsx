@@ -17,14 +17,14 @@ export function RelatedLinksSection({ links, title = "Дальше" }: RelatedLi
   }
 
   return (
-    <section className="rounded-2xl border border-zinc-100 bg-white p-4 shadow-sm">
-      <h2 className="text-sm font-semibold text-zinc-900">{title}</h2>
+    <section className="rounded-2xl border border-border bg-card p-4 shadow-sm">
+      <h2 className="text-sm font-semibold text-foreground">{title}</h2>
       <div className="mt-3 flex flex-wrap gap-2">
         {links.map((link) => (
           <Link
             key={link.href}
             href={link.href}
-            className="inline-flex items-center gap-1.5 rounded-lg border border-zinc-200 bg-white px-3 py-2 text-xs font-medium text-zinc-600 transition-colors hover:border-zinc-300 hover:bg-zinc-50"
+            className="inline-flex items-center gap-1.5 rounded-lg border border-border bg-card px-3 py-2 text-xs font-medium text-muted-foreground transition-colors hover:border-border hover:bg-muted"
           >
             {link.label}
             <ChevronRight className="h-3.5 w-3.5" />

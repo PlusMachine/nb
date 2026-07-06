@@ -20,19 +20,19 @@ export function CookieConsentBanner({
     <div
       role="region"
       aria-label="Использование файлов cookie"
-      className="fixed inset-x-0 bottom-0 z-[300] border-t border-zinc-200 bg-white/95 px-4 py-2.5 shadow-[0_-8px_30px_rgba(0,0,0,0.08)] backdrop-blur sm:py-4"
+      className="fixed inset-x-0 bottom-0 z-[300] border-t border-border bg-card/95 px-4 py-2.5 shadow-[0_-8px_30px_rgba(0,0,0,0.08)] backdrop-blur sm:py-4"
     >
       <div className="mx-auto flex max-w-5xl flex-col gap-2 sm:flex-row sm:items-center sm:justify-between sm:gap-3">
-        <div className="text-xs leading-5 text-zinc-600 sm:text-sm sm:leading-6">
+        <div className="text-xs leading-5 text-muted-foreground sm:text-sm sm:leading-6">
           {showAgeNotice ? (
-            <p className="mb-1 font-medium text-zinc-900">
+            <p className="mb-1 font-medium text-foreground">
               18+ · Материалы о домашнем пивоварении. Чрезмерное употребление алкоголя вредит вашему здоровью.
             </p>
           ) : null}
           <p>
             Мы используем cookie: обязательные — для работы сайта и входа, аналитические — чтобы улучшать сервис.
             Подробнее в{" "}
-            <Link href="/legal/cookies" className="text-sky-700 underline underline-offset-4">
+            <Link href="/legal/cookies" className="text-link underline underline-offset-4">
               Политике cookie
             </Link>
             .

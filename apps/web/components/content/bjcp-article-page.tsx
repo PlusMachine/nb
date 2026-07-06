@@ -6,7 +6,12 @@ import type { BjcpCatalogStyle, ContentArticle } from "@nb/content";
 
 import { getBjcpCardColorInfo } from "@/features/content/bjcp-card-stats";
 import { beerColorFromSrm } from "@/features/recipes/beer-color";
-import { defaultPreferredGravityUnit, formatGravity, type PreferredGravityUnit } from "@/features/system/gravity-units";
+import {
+  defaultPreferredGravityUnit,
+  formatGravityRange,
+  formatGravityRangeSecondary,
+  type PreferredGravityUnit
+} from "@/features/system/gravity-units";
 
 import { BjcpGravityPassportStats } from "./bjcp-gravity-passport-stats";
 import { PassportStatCard } from "./bjcp-passport-stat-card";
@@ -44,9 +49,13 @@ const formatRange = (values: number[], formatter: (value: number) => string) => 
   return `${formatter(values[0]!)} - ${formatter(values[values.length - 1]!)}`;
 };
 
-const formatGravityRange = (value: string, unit: PreferredGravityUnit) => {
+/** Границы диапазона НП/КП (сырые данные BJCP — всегда в SG) для общих formatGravityRange*. */
+const parseGravityBounds = (value: string): { min: number; max: number } | null => {
   const numbers = parseStatNumbers(value);
-  return formatRange(numbers, (item) => formatGravity(item, unit));
+  if (!numbers.length) {
+    return null;
+  }
+  return { min: numbers[0]!, max: numbers[numbers.length - 1]! };
 };
 
 const formatEbcRange = (value: string) => {
@@ -79,7 +88,8 @@ export const passportStatDefinitions: PassportStatDefinition[] = [
   {
     key: "og",
     label: "НП",
-    // Плотность форматируется через resolvePassportStat (unit-aware), без вторичной единицы.
+    // Плотность и вторичная единица (supportingText) считаются напрямую в resolvePassportStat
+    // (isGravityStat) — эта функция для og/fg не вызывается.
     supporting: () => null
   },
   {
@@ -307,11 +317,16 @@ export const resolvePassportStat = (
   if (rawValue) {
     const localized = resolveLocalizedDescriptor(definition.key, rawValue);
     const isNumeric = isCompactNumericValue(rawValue);
+    const gravityBounds = isGravityStat ? parseGravityBounds(rawValue) : null;
     const value = isNumeric
-      ? (isGravityStat ? (formatGravityRange(rawValue, preferredGravityUnit) ?? rawValue) : rawValue)
+      ? (isGravityStat
+        ? (gravityBounds ? formatGravityRange(gravityBounds.min, gravityBounds.max, preferredGravityUnit) ?? rawValue : rawValue)
+        : rawValue)
       : localized.value;
     const supportingText = isNumeric
-      ? (isGravityStat ? null : definition.supporting(rawValue))
+      ? (isGravityStat
+        ? (gravityBounds ? formatGravityRangeSecondary(gravityBounds.min, gravityBounds.max, preferredGravityUnit) : null)
+        : definition.supporting(rawValue))
       : localized.supportingText;
 
     return {
@@ -411,10 +426,10 @@ export function BjcpArticlePage({
     <main className="space-y-14 pb-24 pt-8">
       <ArticleStructuredData article={article} />
 
-      <nav aria-label="Breadcrumb" className="px-1 text-sm text-zinc-500">
+      <nav aria-label="Breadcrumb" className="px-1 text-sm text-muted-foreground">
         <ol className="flex flex-wrap items-center gap-2">
           <li>
-            <Link href="/bjcp" className="transition hover:text-zinc-950">
+            <Link href="/bjcp" className="transition hover:text-foreground">
               BJCP 2021
             </Link>
           </li>
@@ -426,7 +441,7 @@ export function BjcpArticlePage({
                 / applyCatalogScope в features/content/bjcp-catalog.ts). */}
             <Link
               href={`/bjcp?view=bjcp&category=${encodeURIComponent(article.category.id)}`}
-              className="text-zinc-700 transition hover:text-zinc-950"
+              className="text-foreground transition hover:text-foreground"
             >
               {categoryLabel}
             </Link>
@@ -434,20 +449,20 @@ export function BjcpArticlePage({
         </ol>
       </nav>
 
-      <section className="overflow-hidden rounded-[2.5rem] border border-white/80 bg-white/90 shadow-[0_50px_120px_-78px_rgba(15,23,42,0.42)] backdrop-blur">
+      <section className="overflow-hidden rounded-[2.5rem] border border-card/80 bg-card/90 shadow-[0_50px_120px_-78px_rgba(15,23,42,0.42)] backdrop-blur">
         <div className="grid gap-0 lg:grid-cols-[minmax(0,0.9fr)_minmax(24rem,1.1fr)]">
           <div className="min-w-0 space-y-7 px-6 py-8 sm:px-8 sm:py-10 lg:px-10 lg:py-12">
             <div className="space-y-4">
-              <p className="text-sm font-semibold uppercase tracking-[0.22em] text-zinc-500">
+              <p className="text-sm font-semibold uppercase tracking-[0.22em] text-muted-foreground">
                 {article.bjcpHeading}
               </p>
               <h1
-                className="max-w-4xl text-balance text-[2.2rem] font-semibold leading-[0.96] text-zinc-950 sm:text-[2.7rem] lg:text-[3.3rem]"
+                className="max-w-4xl text-balance text-[2.2rem] font-semibold leading-[0.96] text-foreground sm:text-[2.7rem] lg:text-[3.3rem]"
                 style={{ fontFamily: "var(--font-display)" }}
               >
                 {article.title}
               </h1>
-              <p className="max-w-3xl text-pretty text-base leading-7 text-zinc-600 sm:text-lg sm:leading-8">
+              <p className="max-w-3xl text-pretty text-base leading-7 text-muted-foreground sm:text-lg sm:leading-8">
                 {article.description}
               </p>
             </div>
@@ -486,7 +501,7 @@ export function BjcpArticlePage({
       </section>
 
       <article className="mx-auto max-w-3xl">
-        <p className="text-sm text-zinc-500">{article.readingMinutes} мин чтения</p>
+        <p className="text-sm text-muted-foreground">{article.readingMinutes} мин чтения</p>
 
         {/* Лёгкая лента якорей по секциям лонгрида + пункт «Рецепты (N)»: читатель
             прыгает к нужному разделу или к рецептам, не докручивая всю статью. Без
@@ -496,7 +511,7 @@ export function BjcpArticlePage({
             <a
               key={section.id}
               href={`#${section.id}`}
-              className="rounded-full border border-zinc-200 bg-white px-4 py-2 text-sm font-medium text-zinc-700 transition hover:border-zinc-300 hover:text-zinc-950"
+              className="rounded-full border border-border bg-card px-4 py-2 text-sm font-medium text-foreground transition hover:border-border hover:text-foreground"
             >
               {section.label}
             </a>
@@ -509,28 +524,28 @@ export function BjcpArticlePage({
             <section
               id={section.id}
               key={section.id}
-              className="scroll-mt-24 space-y-4 border-b border-zinc-200/80 pb-10 last:border-b-0 last:pb-0"
+              className="scroll-mt-24 space-y-4 border-b border-border/80 pb-10 last:border-b-0 last:pb-0"
             >
-              <h2 className="text-3xl font-semibold tracking-[-0.02em] text-zinc-950" style={{ fontFamily: "var(--font-display)" }}>
+              <h2 className="text-3xl font-semibold tracking-[-0.02em] text-foreground" style={{ fontFamily: "var(--font-display)" }}>
                 {section.label}
               </h2>
-              <p className="whitespace-pre-line text-pretty text-[1.05rem] leading-8 text-zinc-700">{section.content}</p>
+              <p className="whitespace-pre-line text-pretty text-[1.05rem] leading-8 text-foreground">{section.content}</p>
             </section>
           ))}
         </div>
         {/* Атрибуция первоисточника обязательна по условиям использования гайдлайнов
             BJCP. Компактная строка вместо прежней карточки на 4 поля (файл часто «n/a»,
             язык очевиден, категория дублирует breadcrumb). rel=nofollow для внешней ссылки. */}
-        <p className="mt-12 text-sm text-zinc-500">
+        <p className="mt-12 text-sm text-muted-foreground">
           Источник:{" "}
           <a
             href="https://www.bjcp.org/style/2021/"
             target="_blank"
             rel="nofollow noopener noreferrer"
-            className="inline-flex items-center gap-1 font-medium text-zinc-800 underline underline-offset-2 hover:text-zinc-950"
+            className="inline-flex items-center gap-1 font-medium text-foreground underline underline-offset-2 hover:text-foreground"
           >
             {article.source.document ?? "BJCP 2021 Beer Style Guidelines"}
-            <ExternalLink className="h-3.5 w-3.5 text-zinc-400" aria-hidden="true" />
+            <ExternalLink className="h-3.5 w-3.5 text-muted-foreground" aria-hidden="true" />
           </a>
         </p>
       </article>
@@ -541,12 +556,12 @@ export function BjcpArticlePage({
         <section className="space-y-4">
           <div className="flex flex-col items-start gap-2 sm:flex-row sm:items-end sm:justify-between sm:gap-4">
             <div>
-              <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-zinc-500">Ещё в категории</p>
-              <h2 className="mt-2 text-2xl font-semibold text-zinc-950" style={{ fontFamily: "var(--font-display)" }}>
+              <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-muted-foreground">Ещё в категории</p>
+              <h2 className="mt-2 text-2xl font-semibold text-foreground" style={{ fontFamily: "var(--font-display)" }}>
                 Другие стили категории «{article.category.nameRu}»
               </h2>
             </div>
-            <Link href="/bjcp" className="sm:shrink-0 text-sm font-semibold text-zinc-950 hover:text-zinc-700">
+            <Link href="/bjcp" className="sm:shrink-0 text-sm font-semibold text-foreground hover:text-foreground">
               Весь BJCP <span aria-hidden="true">→</span>
             </Link>
           </div>
@@ -559,10 +574,10 @@ export function BjcpArticlePage({
               <Link
                 key={sibling.slug}
                 href={`/bjcp/${sibling.slug}`}
-                className="inline-flex items-center gap-2 rounded-full border border-zinc-200 bg-white px-4 py-2 text-sm shadow-sm transition hover:-translate-y-0.5 hover:border-zinc-300"
+                className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-4 py-2 text-sm shadow-sm transition hover:-translate-y-0.5 hover:border-border"
               >
-                <span className="font-semibold text-zinc-950">{sibling.bjcpId}</span>
-                <span className="text-zinc-600">{sibling.title}</span>
+                <span className="font-semibold text-foreground">{sibling.bjcpId}</span>
+                <span className="text-muted-foreground">{sibling.title}</span>
               </Link>
             ))}
           </div>

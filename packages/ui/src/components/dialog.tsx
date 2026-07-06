@@ -78,12 +78,12 @@ export function Dialog({
         <div className="pointer-events-none fixed inset-0 z-[101] flex items-end justify-center sm:items-center sm:p-4">
           <RadixDialog.Content
             className={cn(
-              "animate-modal-content pointer-events-auto max-h-[94vh] w-full overflow-y-auto rounded-t-2xl border border-zinc-200 bg-white shadow-2xl focus:outline-none sm:rounded-2xl",
+              "animate-modal-content pointer-events-auto max-h-[94vh] w-full overflow-y-auto rounded-t-2xl border border-border bg-popover text-popover-foreground shadow-2xl focus:outline-none sm:rounded-2xl",
               sizeMaxWidthClassName[size]
             )}
             {...(!description ? { "aria-describedby": undefined } : {})}
           >
-            <RadixDialog.Title className={cn("text-base font-semibold text-zinc-900", hideTitle && "sr-only")}>
+            <RadixDialog.Title className={cn("text-base font-semibold text-foreground", hideTitle && "sr-only")}>
               {title}
             </RadixDialog.Title>
             {description ? (
@@ -101,7 +101,7 @@ export function DialogHeader({ className, children, ...props }: React.HTMLAttrib
   return (
     <div
       className={cn(
-        "sticky top-0 z-10 flex items-center justify-between gap-3 border-b border-zinc-100 bg-white/95 px-5 py-4 backdrop-blur-sm sm:rounded-t-2xl",
+        "sticky top-0 z-10 flex items-center justify-between gap-3 border-b border-border bg-popover/95 px-5 py-4 backdrop-blur-sm sm:rounded-t-2xl",
         className
       )}
       {...props}
@@ -114,7 +114,7 @@ export function DialogHeader({ className, children, ...props }: React.HTMLAttrib
 export function DialogFooter({ className, children, ...props }: React.HTMLAttributes<HTMLDivElement>) {
   return (
     <div
-      className={cn("flex flex-col-reverse gap-2 border-t border-zinc-100 p-5 sm:flex-row sm:justify-end", className)}
+      className={cn("flex flex-col-reverse gap-2 border-t border-border p-5 sm:flex-row sm:justify-end", className)}
       {...props}
     >
       {children}
@@ -138,7 +138,7 @@ export function DialogCloseButton({
         context?.requestClose();
       }}
       className={cn(
-        "flex h-8 w-8 items-center justify-center rounded-lg text-zinc-400 transition-colors hover:bg-zinc-100 hover:text-zinc-600",
+        "flex h-8 w-8 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-accent hover:text-foreground",
         className
       )}
       {...props}

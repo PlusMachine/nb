@@ -3,11 +3,15 @@ import { notFound } from "next/navigation";
 
 import { Card } from "@nb/ui";
 
+import { STAGE_NUM } from "@nb/brewforge-protocol";
+
 import { requireUser } from "@/lib/auth";
-import { getDeviceById, getLatestTelemetryAtMs } from "@/features/devices/service";
+import { getDeviceById, getLatestTelemetryBrief } from "@/features/devices/service";
 import { summarizeDeviceConnection } from "@/features/devices/connection";
 import { listDeviceProfiles } from "@/features/devices/profiles";
+import { findUpdateFor } from "@/features/firmware/service";
 import { DeviceConfigForm } from "@/features/devices/components/device-config-form";
+import { DeviceFirmwareCard } from "@/features/devices/components/device-firmware-card";
 import { DeviceLogSyncCard } from "@/features/devices/components/device-log-sync-card";
 import type { DeviceProfileView } from "@/features/devices/actions";
 
@@ -41,20 +45,32 @@ export default async function DeviceSettingsPage({
   // «Связь» считаем из того же источника, что и список плиток (heartbeat +
   // свежесть телеметрии), одной формулировкой — не показываем сырой «online» и
   // не противоречим списку/пульту (UX-находка #14).
-  const lastTelemetryAtMs = await getLatestTelemetryAtMs(device.id);
+  const lastTelemetry = await getLatestTelemetryBrief(device.id);
   const connection = summarizeDeviceConnection(
     {
       status: device.status,
       lastSeenAtMs: device.lastSeenAt ? device.lastSeenAt.getTime() : null,
-      lastTelemetryAtMs
+      lastTelemetryAtMs: lastTelemetry?.tsMs ?? null
     },
     Date.now()
   );
 
+  // Блок «Прошивка» (F3): доступное обновление из реестра релизов; кнопка
+  // «Обновить» доступна только «в сети + IDLE» (last-known стадия) — настоящий
+  // гейт (IDLE-only, подпись, rollback) всё равно на устройстве. Реестр скоуплен
+  // providerId устройства: демо-приборам (brewforge-demo) релизы не предлагаются.
+  const firmwareUpdate = await findUpdateFor(device.fw, { providerId: device.providerId });
+  const deviceOnline = connection.tone === "online";
+  const deviceIdle = lastTelemetry?.stage === STAGE_NUM.IDLE;
+  const firmwareDisabledHint = !deviceOnline
+    ? "Устройство не в сети."
+    : !deviceIdle
+      ? "Обновление доступно только в режиме ожидания (IDLE)."
+      : null;
+
   const essentials: { label: string; value: string }[] = [
     { label: "Имя", value: device.name },
     { label: "Связь", value: connection.label },
-    { label: "Прошивка", value: device.fw ?? "—" },
     { label: "Последняя связь", value: connection.lastContactLabel ?? "—" }
   ];
   // Пламбинг (§9) — свёрнут в «Тех. детали», чтобы не мозолить в основном виде.
@@ -77,11 +93,11 @@ export default async function DeviceSettingsPage({
   return (
     <div className="space-y-6">
       <header className="space-y-1">
-        <Link href="/app/devices" className="text-sm text-zinc-500 hover:text-zinc-800">
+        <Link href="/app/devices" className="text-sm text-muted-foreground hover:text-foreground">
           ← К устройствам
         </Link>
         <h1
-          className="text-2xl font-semibold text-zinc-950 sm:text-3xl"
+          className="text-2xl font-semibold text-foreground sm:text-3xl"
           style={{ fontFamily: "var(--font-display)" }}
         >
           {device.name}
@@ -92,25 +108,33 @@ export default async function DeviceSettingsPage({
         <dl className="grid gap-x-8 gap-y-2 text-sm sm:grid-cols-2">
           {essentials.map((row) => (
             <div key={row.label} className="flex items-center justify-between gap-3">
-              <dt className="text-zinc-500">{row.label}</dt>
-              <dd className="font-medium text-zinc-900">{row.value}</dd>
+              <dt className="text-muted-foreground">{row.label}</dt>
+              <dd className="font-medium text-foreground">{row.value}</dd>
             </div>
           ))}
         </dl>
-        <details className="mt-4 border-t border-zinc-100 pt-4">
-          <summary className="cursor-pointer select-none text-sm font-medium text-zinc-700 hover:text-zinc-900">
+        <details className="mt-4 border-t border-border pt-4">
+          <summary className="cursor-pointer select-none text-sm font-medium text-foreground hover:text-foreground">
             Тех. детали
           </summary>
           <dl className="mt-3 grid gap-x-8 gap-y-2 text-sm sm:grid-cols-2">
             {techDetails.map((row) => (
               <div key={row.label} className="flex items-center justify-between gap-3">
-                <dt className="text-zinc-500">{row.label}</dt>
-                <dd className="font-medium text-zinc-900">{row.value}</dd>
+                <dt className="text-muted-foreground">{row.label}</dt>
+                <dd className="font-medium text-foreground">{row.value}</dd>
               </div>
             ))}
           </dl>
         </details>
       </Card>
+
+      <DeviceFirmwareCard
+        deviceId={device.id}
+        currentFw={device.fw}
+        update={firmwareUpdate ? { version: firmwareUpdate.version, notes: firmwareUpdate.notes } : null}
+        canStart={deviceOnline && deviceIdle}
+        disabledHint={firmwareDisabledHint}
+      />
 
       <DeviceConfigForm
         deviceId={device.id}

@@ -39,7 +39,7 @@ export function BjcpFilterSheet({
       <div className="space-y-6">
         {advancedFilterDefinitions.map((group) => (
           <section key={group.id} className="space-y-3">
-            <h3 className="text-sm font-semibold text-zinc-950">{group.label}</h3>
+            <h3 className="text-sm font-semibold text-foreground">{group.label}</h3>
             <div className="flex flex-wrap gap-2">
               {group.options.map((option) => {
                 const active = filters[group.id].includes(option.id);
@@ -51,8 +51,8 @@ export function BjcpFilterSheet({
                     onClick={() => onToggle(group.id, option.id)}
                     className={`rounded-full border px-3 py-2 text-sm font-medium transition ${
                       active
-                        ? "border-zinc-950 bg-zinc-950 text-white"
-                        : "border-zinc-200 bg-white text-zinc-700 hover:border-zinc-300 hover:bg-zinc-50"
+                        ? "border-foreground bg-foreground text-background"
+                        : "border-border bg-card text-foreground hover:border-border hover:bg-accent"
                     }`}
                   >
                     {option.label}

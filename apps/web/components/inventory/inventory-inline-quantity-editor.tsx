@@ -165,8 +165,8 @@ export function InventoryInlineQuantityEditor({ item, onAction }: Props) {
         type="button"
         onClick={startEditing}
         aria-label="Изменить количество"
-        className={`rounded-lg px-1 text-base font-semibold tabular-nums transition-colors hover:bg-zinc-100 ${
-          isEmpty ? "text-sm font-medium text-rose-400 hover:text-rose-500" : "text-zinc-900"
+        className={`rounded-lg px-1 text-base font-semibold tabular-nums transition-colors hover:bg-muted ${
+          isEmpty ? "text-sm font-medium text-destructive hover:text-destructive/80" : "text-foreground"
         }`}
       >
         {isEmpty ? "закончился" : displayLabel}
@@ -188,7 +188,7 @@ export function InventoryInlineQuantityEditor({ item, onAction }: Props) {
             setFeedback(null);
           }}
           onKeyDown={handleKeyDown}
-          className="w-[4.5rem] rounded-lg border border-zinc-200 bg-white px-2 py-1.5 text-right text-sm tabular-nums transition-colors focus:border-zinc-400 focus:outline-none focus:ring-2 focus:ring-zinc-200"
+          className="w-[4.5rem] rounded-lg border border-border bg-card px-2 py-1.5 text-right text-sm tabular-nums transition-colors focus:border-ring focus:outline-none focus:ring-2 focus:ring-ring"
           inputMode="decimal"
           aria-label="Новый остаток"
         />
@@ -199,7 +199,7 @@ export function InventoryInlineQuantityEditor({ item, onAction }: Props) {
             setFeedback(null);
           }}
           onKeyDown={handleKeyDown}
-          className="rounded-lg border border-zinc-200 bg-white py-1.5 pl-1.5 pr-6 text-sm transition-colors focus:border-zinc-400 focus:outline-none focus:ring-2 focus:ring-zinc-200"
+          className="rounded-lg border border-border bg-card py-1.5 pl-1.5 pr-6 text-sm transition-colors focus:border-ring focus:outline-none focus:ring-2 focus:ring-ring"
           aria-label="Единица измерения"
         >
           {unitOptions.map((option) => <option key={option} value={option}>{getUnitLabel(option)}</option>)}
@@ -208,7 +208,7 @@ export function InventoryInlineQuantityEditor({ item, onAction }: Props) {
           type="button"
           onClick={submit}
           disabled={isPending || !isValid}
-          className="flex h-7 w-7 items-center justify-center rounded-lg bg-zinc-900 text-white transition-colors hover:bg-zinc-800 disabled:opacity-50"
+          className="flex h-7 w-7 items-center justify-center rounded-lg bg-foreground text-background transition-colors hover:bg-foreground/90 disabled:opacity-50"
           aria-label="Сохранить количество"
         >
           <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
@@ -217,13 +217,13 @@ export function InventoryInlineQuantityEditor({ item, onAction }: Props) {
           type="button"
           onClick={cancel}
           disabled={isPending}
-          className="flex h-7 w-7 items-center justify-center rounded-lg border border-zinc-200 text-zinc-400 transition-colors hover:bg-zinc-50 hover:text-zinc-600 disabled:opacity-50"
+          className="flex h-7 w-7 items-center justify-center rounded-lg border border-border text-muted-foreground transition-colors hover:bg-muted hover:text-foreground disabled:opacity-50"
           aria-label="Отменить изменение количества"
         >
           <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
         </button>
       </div>
-      {feedback ? <p role="alert" className="text-xs text-red-600">{feedback}</p> : null}
+      {feedback ? <p role="alert" className="text-xs text-destructive">{feedback}</p> : null}
     </div>
   );
 }

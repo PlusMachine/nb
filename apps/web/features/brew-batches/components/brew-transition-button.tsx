@@ -71,7 +71,7 @@ export function BrewTransitionButton({
         {busy && !confirm ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden /> : icon}
         {label}
       </Button>
-      {error && !confirmOpen ? <p role="alert" className="mt-1 text-xs text-rose-600">{error}</p> : null}
+      {error && !confirmOpen ? <p role="alert" className="mt-1 text-xs text-destructive">{error}</p> : null}
 
       {confirm ? (
         <ConfirmActionDialog

@@ -8,7 +8,7 @@ import { gravityUnitLabels, preferredGravityUnits } from "@/features/system/grav
 
 import { updateSettingsAction } from "../settings/actions";
 
-const inputClassName = "mt-1 h-11 w-full rounded-xl border border-zinc-200 bg-white px-3 text-sm";
+const inputClassName = "mt-1 h-11 w-full rounded-xl border border-border bg-card px-3 text-sm";
 
 export default async function ProfilePage() {
   const user = await requireUser();
@@ -16,36 +16,36 @@ export default async function ProfilePage() {
   return (
     <div className="space-y-6">
       <section className="space-y-1">
-        <h1 className="text-2xl font-semibold text-zinc-950 sm:text-3xl" style={{ fontFamily: "var(--font-display)" }}>
+        <h1 className="text-2xl font-semibold text-foreground sm:text-3xl" style={{ fontFamily: "var(--font-display)" }}>
           Профиль
         </h1>
       </section>
 
-      <section className="rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm">
-        <div className="space-y-1 text-sm text-zinc-600">
+      <section className="rounded-2xl border border-border bg-card p-5 shadow-sm">
+        <div className="space-y-1 text-sm text-muted-foreground">
           {user.email ? <p>{user.email}</p> : null}
           {user.phone ? <p>{user.phone}</p> : null}
-          <p className="text-xs uppercase tracking-[0.12em] text-zinc-400">Роль: {user.role}</p>
+          <p className="text-xs uppercase tracking-[0.12em] text-muted-foreground">Роль: {user.role}</p>
         </div>
       </section>
 
-      <section className="rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm">
-        <h2 className="text-sm font-semibold uppercase tracking-[0.12em] text-zinc-500">Настройки</h2>
+      <section className="rounded-2xl border border-border bg-card p-5 shadow-sm">
+        <h2 className="text-sm font-semibold uppercase tracking-[0.12em] text-muted-foreground">Настройки</h2>
         <form action={updateSettingsAction} className="mt-4 space-y-4">
           <label className="block text-sm">
-            <span className="font-medium text-zinc-700">Имя</span>
+            <span className="font-medium text-foreground">Имя</span>
             <input name="displayName" defaultValue={user.displayName} className={inputClassName} />
           </label>
 
           <label className="block text-sm">
-            <span className="font-medium text-zinc-700">Валюта</span>
+            <span className="font-medium text-foreground">Валюта</span>
             <select name="preferredCurrency" defaultValue={user.preferredCurrency} className={inputClassName}>
               {systemCurrencies.map((currency) => <option key={currency} value={currency}>{currency}</option>)}
             </select>
           </label>
 
           <label className="block text-sm">
-            <span className="font-medium text-zinc-700">Единица плотности</span>
+            <span className="font-medium text-foreground">Единица плотности</span>
             <select name="preferredGravityUnit" defaultValue={user.preferredGravityUnit} className={inputClassName}>
               {preferredGravityUnits.map((unit) => (
                 <option key={unit} value={unit}>{gravityUnitLabels[unit]}</option>
@@ -58,11 +58,11 @@ export default async function ProfilePage() {
       </section>
 
       <section className="space-y-3">
-        <h2 className="text-sm font-semibold uppercase tracking-[0.12em] text-zinc-500">Уведомления</h2>
+        <h2 className="text-sm font-semibold uppercase tracking-[0.12em] text-muted-foreground">Уведомления</h2>
         <NotificationOptIn />
       </section>
 
-      <section className="border-t border-zinc-200 pt-6">
+      <section className="border-t border-border pt-6">
         <ProfileLogoutButton />
       </section>
     </div>

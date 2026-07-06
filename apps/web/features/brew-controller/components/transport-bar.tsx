@@ -46,7 +46,7 @@ export function TransportBar({
 
   if (!running) {
     return (
-      <p className="text-sm text-zinc-500">
+      <p className="text-sm text-muted-foreground">
         Варка не идёт — транспортное управление появится во время варки.
       </p>
     );

@@ -217,7 +217,7 @@ export function DeviceConsole({
       />
 
       {/* Вкладки пульта (рецепты пивоварни — вторичны, §8; рефактор — W4). */}
-      <div className="flex gap-1 border-b border-zinc-200">
+      <div className="flex gap-1 border-b border-border">
         {tabs.map((t) => (
           <button
             key={t.id}
@@ -225,8 +225,8 @@ export function DeviceConsole({
             onClick={() => setTab(t.id)}
             className={`-mb-px border-b-2 px-4 py-2 text-sm font-medium transition ${
               tab === t.id
-                ? "border-zinc-900 text-zinc-900"
-                : "border-transparent text-zinc-500 hover:text-zinc-800"
+                ? "border-foreground text-foreground"
+                : "border-transparent text-muted-foreground hover:text-foreground"
             }`}
           >
             {t.label}

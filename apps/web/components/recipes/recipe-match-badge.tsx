@@ -36,8 +36,8 @@ export function RecipeMatchBadge({ recipeId, className }: { recipeId: string; cl
 
   if (badge.tier === "ready") {
     const tone = badge.qtyShort
-      ? "bg-lime-50 text-lime-700 ring-lime-200"
-      : "bg-emerald-50 text-emerald-700 ring-emerald-200";
+      ? "bg-lime-50 text-lime-700 ring-lime-200 dark:bg-lime-500/15 dark:text-lime-300 dark:ring-lime-500/30"
+      : "bg-success-subtle text-success-subtle-foreground ring-success/30";
     return (
       <span
         className={`${base} ${tone} ${className ?? ""}`}
@@ -51,7 +51,7 @@ export function RecipeMatchBadge({ recipeId, className }: { recipeId: string; cl
 
   return (
     <span
-      className={`${base} bg-amber-50 text-amber-700 ring-amber-200 ${className ?? ""}`}
+      className={`${base} bg-warning-subtle text-warning-subtle-foreground ring-warning/30 ${className ?? ""}`}
       title={`Не хватает ${badge.missing} ${badge.missing === 1 ? "ингредиента" : "ингредиентов"}`}
     >
       <CircleAlert className="h-3.5 w-3.5" aria-hidden />

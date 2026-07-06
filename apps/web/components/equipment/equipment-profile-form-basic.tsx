@@ -4,7 +4,7 @@ import React, { useState } from "react";
 
 import type { EquipmentProfilePayload } from "@/features/equipment-profiles/contracts";
 
-export const equipmentFormInputClassName = "mt-1 h-9 w-full rounded-md border border-zinc-200 bg-white px-2.5 text-sm text-zinc-900";
+export const equipmentFormInputClassName = "mt-1 h-9 w-full rounded-md border border-border bg-card px-2.5 text-sm text-foreground";
 
 const optionalValue = (value: number | null | undefined) => value == null ? "" : String(value);
 
@@ -93,7 +93,7 @@ function NumberField({
   max?: number;
 }) {
   return (
-    <label className="text-xs font-medium text-zinc-600">
+    <label className="text-xs font-medium text-muted-foreground">
       <span>{label}</span>
       <input
         name={name}
@@ -120,7 +120,7 @@ export function EquipmentProfileFormFields({ profile }: { profile: EquipmentProf
     <div className="space-y-4">
       <section className="space-y-3">
         <div className="grid gap-3 md:grid-cols-3">
-          <label className="text-xs font-medium text-zinc-600 md:col-span-3">
+          <label className="text-xs font-medium text-muted-foreground md:col-span-3">
             Название
             <input
               name="name"
@@ -138,8 +138,8 @@ export function EquipmentProfileFormFields({ profile }: { profile: EquipmentProf
         </div>
       </section>
 
-      <details className="border-t border-zinc-100 pt-4">
-        <summary className="cursor-pointer text-sm font-semibold text-zinc-800">Еще параметры (опционально)</summary>
+      <details className="border-t border-border pt-4">
+        <summary className="cursor-pointer text-sm font-semibold text-foreground">Еще параметры (опционально)</summary>
         <div className="mt-3 grid gap-3 md:grid-cols-3">
           <NumberField name="fermenterLossL" label="Потери в ферментере, л" value={values.fermenterLossL} onChange={setNumberField} />
           <NumberField name="coolingShrinkagePct" label="Усадка при охлаждении, %" value={values.coolingShrinkagePct} onChange={setNumberField} step={0.1} max={20} />
@@ -147,13 +147,13 @@ export function EquipmentProfileFormFields({ profile }: { profile: EquipmentProf
           <NumberField name="maxKettleVolumeL" label="Макс. объем котла, л (опц)" value={values.maxKettleVolumeL} onChange={setNumberField} />
           <NumberField name="hopUtilizationFactor" label="Калибровка утилизации хмеля" value={values.hopUtilizationFactor} onChange={setNumberField} step={0.01} min={0.01} />
           <NumberField name="altitudeM" label="Высота над уровнем моря, м" value={values.altitudeM} onChange={setNumberField} step={1} min={-500} max={9000} />
-          <label className="text-xs font-medium text-zinc-600 md:col-span-3">
+          <label className="text-xs font-medium text-muted-foreground md:col-span-3">
             Заметки
             <textarea
               name="notes"
               value={values.notes}
               onChange={(event) => setValues((current) => ({ ...current, notes: event.target.value }))}
-              className="mt-1 min-h-20 w-full rounded-md border border-zinc-200 bg-white px-2.5 py-2 text-sm text-zinc-900"
+              className="mt-1 min-h-20 w-full rounded-md border border-border bg-card px-2.5 py-2 text-sm text-foreground"
             />
           </label>
         </div>

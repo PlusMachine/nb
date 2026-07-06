@@ -38,6 +38,7 @@ import { dispatchPushForTelemetry } from "./notify.js";
 import { gatePersist } from "./persist-gate.js";
 import { runCloudDeadman } from "./cloud-deadman.js";
 import { trackFermentFrame } from "./watchdog.js";
+import { maintainFirmwareUpdate, type PublishUpdateFn } from "./fw-update.js";
 
 const DEFAULT_MQTT_URL = "mqtt://localhost:1883";
 
@@ -47,10 +48,12 @@ export interface MqttHooks {
   onAck?: (hardwareId: string, ack: Ack) => void;
 }
 
-/** Контекст обработчиков сообщений: хуки фан-аута + publish (cloud-плечо dead-man). */
+/** Контекст обработчиков сообщений: хуки фан-аута + publish (cloud-плечо dead-man)
+ *  + publishUpdate (retained brewforge/<id>/update, детектор OTA F3). */
 interface HandlerCtx {
   hooks: MqttHooks;
   publish: (hardwareId: string, command: Command) => Promise<void>;
+  publishUpdate: PublishUpdateFn;
 }
 
 export interface MqttBridge {
@@ -114,8 +117,20 @@ export function startMqtt(opts: { url?: string; hooks?: MqttHooks }): MqttBridge
       });
     });
 
+  // Retained-публикация «доступно обновление» (F3 §5.3). payload null → пустой
+  // retained (очистка). retain:true — устройство узнаёт об обновлении сразу при
+  // подключении, без polling'а.
+  const publishUpdate: PublishUpdateFn = (hardwareId, payload) =>
+    new Promise<void>((resolve, reject) => {
+      const topic = `brewforge/${hardwareId}/update`;
+      client.publish(topic, payload ?? "", { qos: 1, retain: true }, (err) => {
+        if (err) reject(err);
+        else resolve();
+      });
+    });
+
   // Контекст обработчиков: хуки фан-аута + publish (нужен cloud-плечу dead-man).
-  const ctx: HandlerCtx = { hooks, publish: publishCommand };
+  const ctx: HandlerCtx = { hooks, publish: publishCommand, publishUpdate };
 
   client.on("message", (topic, raw) => {
     // Никогда не даём обработчику уронить процесс.
@@ -159,7 +174,7 @@ async function handleMessage(topic: string, raw: Buffer, ctx: HandlerCtx): Promi
     case "telemetry":
       return handleTelemetry(deviceId, json, ctx);
     case "status":
-      return handleStatus(deviceId, json);
+      return handleStatus(deviceId, json, ctx);
     case "cmd/ack":
       return handleAck(deviceId, json, ctx.hooks);
     case "log":
@@ -224,10 +239,14 @@ async function handleTelemetry(deviceId: string, json: unknown, ctx: HandlerCtx)
   // проверка в main.ts читает эту память, в БД для неё не лезет.
   trackFermentFrame(device, t, now.getTime());
 
+  // Детектор OTA-обновлений (F3): fw устройства vs последний stable-релиз.
+  // Дёшев на горячем пути: релиз — кэш с TTL, retained/пуш — под once-гейтом.
+  await maintainFirmwareUpdate(device, t.fw, ctx.publishUpdate, now.getTime());
+
   ctx.hooks.onTelemetry?.(deviceId, t);
 }
 
-async function handleStatus(deviceId: string, json: unknown): Promise<void> {
+async function handleStatus(deviceId: string, json: unknown, ctx: HandlerCtx): Promise<void> {
   // Принимаем как { status:"online"|"offline", fw?, ip? }, так и голую строку.
   let statusRaw: string | undefined;
   let fw: string | undefined;
@@ -256,6 +275,12 @@ async function handleStatus(deviceId: string, json: unknown): Promise<void> {
       ...(fw ? { fw } : {}),
     })
     .where(eq(brewDevices.id, device.id));
+
+  // Retained status приходит сразу при коннекте устройства (раньше первой
+  // телеметрии) — если fw известен, проверяем обновления уже здесь (F3).
+  if (status === "online" && fw) {
+    await maintainFirmwareUpdate(device, fw, ctx.publishUpdate, now.getTime());
+  }
 }
 
 async function handleAck(deviceId: string, json: unknown, hooks: MqttHooks): Promise<void> {

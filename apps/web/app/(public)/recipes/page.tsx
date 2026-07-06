@@ -65,10 +65,10 @@ export default async function PublicRecipesPage({ searchParams }: { searchParams
     <main className="space-y-6 py-8">
       {viewer ? <RecipeTabs /> : null}
 
-      <section className="rounded-2xl border border-zinc-200 bg-white p-6">
+      <section className="rounded-2xl border border-border bg-card p-6">
         <div className="space-y-2">
-          <h1 className="text-2xl font-semibold text-zinc-950 sm:text-3xl">Рецепты сообщества</h1>
-          <p className="text-sm text-zinc-600">
+          <h1 className="text-2xl font-semibold text-foreground sm:text-3xl">Рецепты сообщества</h1>
+          <p className="text-sm text-muted-foreground">
             Готовые рецепты от других пивоваров — выберите идею под свой стиль и оборудование.
           </p>
         </div>
@@ -88,7 +88,7 @@ export default async function PublicRecipesPage({ searchParams }: { searchParams
               Тулбар sticky: при длинной ленте поиск/сортировка/переключатель вида не
               уезжают. Оффсет — под текущий хром (`--chrome-top`: мобильная шапка
               AppShell/публичный хедер или 0, где хрома над контентом нет). */}
-          <div className="sticky top-[var(--chrome-top)] z-30 -my-1 bg-slate-50/90 py-1 backdrop-blur">
+          <div className="sticky top-[var(--chrome-top)] z-30 -my-1 bg-background/90 py-1 backdrop-blur">
             <RecipesToolbar defaultView={view} sortAvailability={sortAvailability} />
           </div>
           <RecipesFilterSheet index={styleIndex} familyCounts={familyCounts} />
