@@ -99,7 +99,7 @@ describe("buildBrewDaySteps", () => {
     expect(boil.steps[1].id).toBe("boil:add:h1");
     expect(boil.steps[2].id).toBe("boil:add:h2");
     expect(boil.steps[1].detail).toContain("за 60 мин до конца");
-    expect(boil.steps[2].detail).toContain("30 g");
+    expect(boil.steps[2].detail).toContain("30 г");
   });
 
   it("reads whirlpool stand temp/time from stepMeta", () => {
@@ -107,6 +107,28 @@ describe("buildBrewDaySteps", () => {
     const whirlpool = groups.find((group) => group.stage === "whirlpool")!;
     expect(whirlpool.steps[0]).toMatchObject({ id: "whirlpool:w1", kind: "timer", durationSeconds: 1200, temperatureC: 80 });
     expect(whirlpool.steps[0].detail).toContain("выдержка 80 °C");
+  });
+
+  it("formats amount units via the inventory short-label dictionary (kg/oz/lb/item/pack), falling back to the raw string for unrecognized units", () => {
+    const groups = buildBrewDaySteps(makeSnapshot({
+      whirlpoolPlan: [
+        { linePersistentKey: "w-kg", name: "Зерно", category: "other", stage: "whirlpool", timeOffsetMinutes: null, amount: { quantity: 1.5, unit: "kg" }, stepMeta: null },
+        { linePersistentKey: "w-oz", name: "Дуб. щепа", category: "other", stage: "whirlpool", timeOffsetMinutes: null, amount: { quantity: 2, unit: "oz" }, stepMeta: null },
+        { linePersistentKey: "w-lb", name: "Сахар", category: "other", stage: "whirlpool", timeOffsetMinutes: null, amount: { quantity: 1, unit: "lb" }, stepMeta: null },
+        { linePersistentKey: "w-item", name: "Таблетка", category: "other", stage: "whirlpool", timeOffsetMinutes: null, amount: { quantity: 3, unit: "item" }, stepMeta: null },
+        { linePersistentKey: "w-pack", name: "Дрожжи", category: "other", stage: "whirlpool", timeOffsetMinutes: null, amount: { quantity: 1, unit: "pack" }, stepMeta: null },
+        { linePersistentKey: "w-unknown", name: "Загадка", category: "other", stage: "whirlpool", timeOffsetMinutes: null, amount: { quantity: 5, unit: "foo" }, stepMeta: null }
+      ]
+    }));
+    const whirlpool = groups.find((group) => group.stage === "whirlpool")!;
+    const detailFor = (key: string) => whirlpool.steps.find((step) => step.id === `whirlpool:${key}`)?.detail;
+    expect(detailFor("w-kg")).toContain("1.5 кг");
+    expect(detailFor("w-oz")).toContain("2 унц.");
+    expect(detailFor("w-lb")).toContain("1 фунт");
+    expect(detailFor("w-item")).toContain("3 шт.");
+    expect(detailFor("w-pack")).toContain("1 пачка");
+    // Неопознанный unit (не из закрытого InventoryUnit enum) — fallback на сырую строку.
+    expect(detailFor("w-unknown")).toContain("5 foo");
   });
 
   it("emits a fermentation task with target temp/duration", () => {
@@ -127,7 +149,7 @@ describe("buildBrewDaySteps", () => {
     const fermentation = groups.find((group) => group.stage === "fermentation")!;
     expect(fermentation.steps[0].id).toBe("ferment:primary");
     expect(fermentation.steps[1]).toMatchObject({ id: "ferment:add:dh1", kind: "addition", title: "Внести на брожении: Mosaic" });
-    expect(fermentation.steps[1].detail).toContain("60 g");
+    expect(fermentation.steps[1].detail).toContain("60 г");
     expect(fermentation.steps[1].detail).toContain("4 дн.");
     // Не-хмелевая fermentation-добавка тоже долетает до гида.
     expect(fermentation.steps[2]).toMatchObject({ id: "ferment:add:dh2", kind: "addition", title: "Внести на брожении: Дубовые чипсы" });
@@ -204,7 +226,7 @@ describe("buildBrewDaySteps", () => {
     const packaging = groups.find((group) => group.stage === "packaging")!;
     expect(packaging).toBeDefined();
     expect(packaging.steps[0]).toMatchObject({ id: "packaging:add:p1", kind: "addition", title: "Внести при розливе: Декстроза" });
-    expect(packaging.steps[0].detail).toContain("120 g");
+    expect(packaging.steps[0].detail).toContain("120 г");
   });
 
   it("renders both packagingPlan settings and packagingAdditions ingredient lines together", () => {

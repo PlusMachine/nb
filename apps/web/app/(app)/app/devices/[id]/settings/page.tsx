@@ -71,7 +71,6 @@ export default async function DeviceSettingsPage({
       : null;
 
   const essentials: { label: string; value: string }[] = [
-    { label: "Имя", value: device.name },
     { label: "Связь", value: connection.label },
     { label: "Последняя связь", value: connection.lastContactLabel ?? "—" }
   ];

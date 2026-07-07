@@ -214,6 +214,60 @@ describe("recipes read components", () => {
     expect(html).toContain("Личные заметки");
   });
 
+  it("не показывает дубль stage/useType, если они совпадают по смыслу (F7)", () => {
+    const html = renderToStaticMarkup(
+      React.createElement(RecipeIngredientsSection, {
+        ingredients: [
+          {
+            ...recipeDetail.ingredients[1]!,
+            id: "ri-boil-hop",
+            stage: "boil",
+            stepMeta: { useType: "boil" }
+          }
+        ]
+      })
+    );
+
+    expect(html).not.toContain("boil");
+    expect(html).not.toContain("Кипячение · Кипячение");
+    expect(html).toContain("Кипячение");
+  });
+
+  it("показывает переведённый useType, когда он отличается от stage (F7)", () => {
+    const html = renderToStaticMarkup(
+      React.createElement(RecipeIngredientsSection, {
+        ingredients: [
+          {
+            ...recipeDetail.ingredients[1]!,
+            id: "ri-fwh-hop",
+            stage: "boil",
+            stepMeta: { useType: "first_wort_hop" }
+          }
+        ]
+      })
+    );
+
+    expect(html).toContain("Первое сусло");
+    expect(html).not.toContain("first_wort_hop");
+  });
+
+  it("не показывает голый en-токен для useType/use вне известного enum (F7)", () => {
+    const html = renderToStaticMarkup(
+      React.createElement(RecipeIngredientsSection, {
+        ingredients: [
+          {
+            ...recipeDetail.ingredients[1]!,
+            id: "ri-unknown-use",
+            stage: "boil",
+            stepMeta: { useType: "some_unknown_value" }
+          }
+        ]
+      })
+    );
+
+    expect(html).not.toContain("some_unknown_value");
+  });
+
   it("links an ingredient with a catalog binding to /catalog/system/<id> (перелинковка M8)", () => {
     const html = renderToStaticMarkup(
       React.createElement(RecipeIngredientsSection, { ingredients: recipeDetail.ingredients })

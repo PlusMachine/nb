@@ -284,16 +284,26 @@ export function lanTransport(baseUrl: string, token?: string): DeviceTransport {
     },
 
     async getConfig() {
-      const url = `${base}/config`;
-      assertEgressUrlAllowed(url);
-      const res = await fetch(url, { method: "GET", headers });
-      if (!res.ok) return null;
-      const json = await res.json().catch(() => null);
-      // Прошивка кладёт настраиваемый конфиг под ключ "config" (рядом — несекретный
-      // статус сети). Берём только config; невалидное/отсутствует → null.
-      const cfg = isRecord(json) ? json.config : null;
-      const parsed = DeviceConfigSchema.safeParse(cfg);
-      return parsed.success ? parsed.data : null;
+      // Офлайн-устройство: голый fetch без таймаута висит на ОС-таймаут (~17с, F3) —
+      // здоровая прошивка отвечает за миллисекунды. Плюс throw (сеть недоступна,
+      // egress-гард и т.п.) оборачиваем в try/catch → null, а НЕ пробрасываем: вызывающий
+      // код (route.ts) иначе матчит throw в 500 INTERNAL_ERROR вместо честного
+      // DEVICE_UNREACHABLE (F4) — здесь же единственное место, где различаем «ответ
+      // валиден» от «недоступно» для конфига.
+      try {
+        const url = `${base}/config`;
+        assertEgressUrlAllowed(url);
+        const res = await fetch(url, { method: "GET", headers, signal: AbortSignal.timeout(4000) });
+        if (!res.ok) return null;
+        const json = await res.json().catch(() => null);
+        // Прошивка кладёт настраиваемый конфиг под ключ "config" (рядом — несекретный
+        // статус сети). Берём только config; невалидное/отсутствует → null.
+        const cfg = isRecord(json) ? json.config : null;
+        const parsed = DeviceConfigSchema.safeParse(cfg);
+        return parsed.success ? parsed.data : null;
+      } catch {
+        return null;
+      }
     },
 
     async putConfig(cfg) {

@@ -70,12 +70,22 @@ export const createBrewBatchFromRecipe = async (
   // unique-индексом (user_id, idempotency_key) и возвращает уже созданную партию
   // вместо второй. Без ключа — прежнее поведение (каждый вызов = новая партия).
   const idempotencyKey = input.idempotencyKey?.trim() || null;
+  // Автоимя партии (F5): первая партия рецепта = просто название рецепта; повтор
+  // того же (userId, recipeId) — «<Название> №2», «№3»… Считаем ВСЕ существующие
+  // партии этой пары, включая отменённые — лёгкий count, без тяжёлой выборки строк
+  // (см. listBrewBatchesForRecipe). input.name, если передан, приоритетнее.
+  const [existingCountRow] = await db
+    .select({ value: count() })
+    .from(brewBatches)
+    .where(and(eq(brewBatches.userId, userId), eq(brewBatches.recipeId, recipe.id)));
+  const existingCount = existingCountRow?.value ?? 0;
+  const autoName = existingCount === 0 ? recipe.title : `${recipe.title} №${existingCount + 1}`;
   const insert = db.insert(brewBatches).values({
     userId,
     recipeId: recipe.id,
     status: "planned",
     idempotencyKey,
-    name: input.name?.trim() || `${recipe.title} brew`,
+    name: input.name?.trim() || autoName,
     brewPlanSnapshot,
     // Самодостаточный слепок: таргеты og/fg/abv (сравнение план↔факт без живого
     // рецепта) + атрибуция автора («по рецепту X от Y», в т.ч. для чужого).

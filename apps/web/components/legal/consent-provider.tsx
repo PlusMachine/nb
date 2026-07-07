@@ -11,6 +11,7 @@ import {
   type CookieConsent
 } from "@/lib/consent";
 import { setAnalyticsEnabled } from "@/lib/analytics";
+import { useIsKiosk } from "@/lib/use-is-kiosk";
 
 import { CookieConsentBanner } from "./cookie-consent-banner";
 
@@ -25,6 +26,20 @@ type ConsentContextValue = {
 
 const ConsentContext = createContext<ConsentContextValue | null>(null);
 
+// Вынесено из компонента как чистая функция — так правило «в киоске баннер не
+// показываем» проверяется юнит-тестом без рендера React-дерева (mounted
+// становится true только внутри эффекта, который в тестовом окружении без DOM
+// не исполняется).
+export const resolveShowConsentBanner = (params: {
+  mounted: boolean;
+  isKiosk: boolean;
+  consent: CookieConsent | null;
+  forceOpen: boolean;
+}): boolean => {
+  const { mounted, isKiosk, consent, forceOpen } = params;
+  return mounted && !isKiosk && (consent === null || forceOpen);
+};
+
 export const useConsent = (): ConsentContextValue => {
   const ctx = useContext(ConsentContext);
   if (!ctx) {
@@ -37,6 +52,7 @@ export const useConsent = (): ConsentContextValue => {
 // гидратации), чтобы не переводить весь сайт в динамический рендеринг ради баннера.
 // Аналитику (PostHog) включает ТОЛЬКО при согласии «all».
 export function ConsentProvider({ children }: { children: ReactNode }) {
+  const isKiosk = useIsKiosk();
   const [mounted, setMounted] = useState(false);
   const [consent, setConsent] = useState<CookieConsent | null>(null);
   const [ageAck, setAgeAck] = useState(false);
@@ -69,7 +85,7 @@ export function ConsentProvider({ children }: { children: ReactNode }) {
     [consent, ageAck, decide, reopen]
   );
 
-  const showBanner = mounted && (consent === null || forceOpen);
+  const showBanner = resolveShowConsentBanner({ mounted, isKiosk, consent, forceOpen });
 
   return (
     <ConsentContext.Provider value={value}>

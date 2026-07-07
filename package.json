@@ -14,7 +14,7 @@
     "db:generate": "pnpm -F @nb/db run db:generate",
     "db:migrate": "pnpm -F @nb/db run db:migrate",
     "db:seed": "pnpm -F @nb/db run db:seed",
-    "catalog:seed": "pnpm -F @nb/db run catalog:seed",
+    "catalog:sync": "pnpm -F @nb/db run catalog:sync",
     "db:reset": "pnpm -F @nb/db run db:reset",
     "seed:dev-user": "pnpm -F @nb/db run seed:dev-user",
     "set-role": "pnpm -F @nb/db run set-role",

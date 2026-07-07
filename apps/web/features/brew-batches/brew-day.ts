@@ -12,6 +12,7 @@ import {
   type BrewDayStepState,
   type BrewPlanSnapshot
 } from "./contracts";
+import { inventoryUnitShortLabels, parseInventoryUnit } from "../inventory/units";
 
 // Чистый слой гида варочного дня: превращает иммутабельный brew_plan_snapshot в
 // упорядоченный чек-лист шагов со стабильными id и нормализует/мёрджит прогресс.
@@ -77,7 +78,14 @@ const fmtAmount = (record: Record<string, unknown>): string | null => {
   }
   // Аккуратное число: без хвостовых нулей.
   const value = Number(quantity.toFixed(3));
-  return unit ? `${value} ${unit}` : `${value}`;
+  if (!unit) {
+    return `${value}`;
+  }
+  // unit — из закрытого InventoryUnit enum; неопознанное значение (легаси/чужой
+  // формат) — fallback на сырую строку, не падаем.
+  const parsedUnit = parseInventoryUnit(unit);
+  const unitLabel = parsedUnit ? inventoryUnitShortLabels[parsedUnit] : unit;
+  return `${value} ${unitLabel}`;
 };
 
 const joinDetail = (...parts: Array<string | null>): string | null => {

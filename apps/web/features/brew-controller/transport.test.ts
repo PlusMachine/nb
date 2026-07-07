@@ -218,6 +218,29 @@ describe("lanTransport.listLogs / readLog (P3)", () => {
   });
 });
 
+describe("lanTransport.getConfig", () => {
+  beforeEach(() => {
+    vi.stubEnv("NODE_ENV", "development");
+    vi.stubEnv("BREWFORGE_LAN_TRANSPORT_DISABLED", "");
+  });
+
+  afterEach(() => {
+    vi.unstubAllEnvs();
+    vi.unstubAllGlobals();
+  });
+
+  it("fetch кидает (устройство офлайн) → getConfig отдаёт null, не бросает (F3/F4)", async () => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async () => {
+        throw new Error("ECONNREFUSED");
+      }),
+    );
+    const transport = lanTransport("http://192.168.1.50");
+    await expect(transport.getConfig()).resolves.toBeNull();
+  });
+});
+
 describe("pairDeviceOverLan (P4)", () => {
   beforeEach(() => {
     vi.stubEnv("NODE_ENV", "development");

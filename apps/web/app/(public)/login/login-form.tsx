@@ -40,7 +40,9 @@ const AUTH_ERROR_MESSAGES: Record<string, string> = {
   EMAIL_DOMAIN_NOT_ALLOWED: "Этот почтовый домен не поддерживается — нужен российский e-mail.",
   USER_NOT_FOUND: "Пользователь не найден.",
   SMS_SEND_FAILED: "Не получилось отправить SMS. Попробуйте ещё раз.",
-  SMS_NOT_CONFIGURED: "Отправка SMS сейчас недоступна."
+  SMS_NOT_CONFIGURED: "Отправка SMS сейчас недоступна.",
+  oauth_vk: "Вход через VK ID сейчас недоступен. Попробуйте другой способ.",
+  oauth_yandex: "Вход через Яндекс ID сейчас недоступен. Попробуйте другой способ."
 };
 
 const FALLBACK_ERROR_MESSAGE = "Не получилось. Попробуйте ещё раз.";
@@ -79,8 +81,26 @@ const StatusLine = ({ status }: { status: StatusMessage | null }) => {
   );
 };
 
-export function LoginForm() {
-  const [method, setMethod] = useState<"phone" | "email">("phone");
+type LoginFormProps = {
+  // Доступность соц-входа считает сервер (page.tsx) по наличию client id/secret
+  // в env — так кнопка не ведёт на нерабочий редирект, пока ключи не заведены.
+  oauth: { vk: boolean; yandex: boolean };
+  // Тест-сид для прогрессивного раскрытия шага кода (F10): окружение тестов без
+  // DOM/событий не может провести реальный сетевой раунд-трип запроса кода, но
+  // так можно проверить рендер-контракт «шаг кода виден только после запроса»
+  // без побочных эффектов на реальном флоу (по умолчанию — как до запроса).
+  initialMethod?: "phone" | "email";
+  initialSmsRequested?: boolean;
+  initialEmailCodeRequested?: boolean;
+};
+
+export function LoginForm({
+  oauth,
+  initialMethod = "phone",
+  initialSmsRequested = false,
+  initialEmailCodeRequested = false
+}: LoginFormProps) {
+  const [method, setMethod] = useState<"phone" | "email">(initialMethod);
 
   // Невидимая SmartCaptcha: каждый auth-запрос уходит со свежим captchaToken,
   // который проверяет verifyCaptchaHook на сервере.
@@ -101,9 +121,14 @@ export function LoginForm() {
 
   const [phone, setPhone] = useState("");
   const [smsCode, setSmsCode] = useState("");
+  // Прогрессивное раскрытие: поле «Код из SMS» появляется только после успешного
+  // запроса кода — до этого его не должно быть видно в разметке (F10).
+  const [smsRequested, setSmsRequested] = useState(initialSmsRequested);
 
   const [email, setEmail] = useState("");
   const [code, setCode] = useState("");
+  // Тот же паттерн для e-mail-OTP: поле «Код из письма» — только после запроса.
+  const [emailCodeRequested, setEmailCodeRequested] = useState(initialEmailCodeRequested);
   const [password, setPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [emailFlow, setEmailFlow] = useState<"otp" | "magic" | "password">("otp");
@@ -154,6 +179,8 @@ export function LoginForm() {
       setResetToken(tokenParam);
     } else if (params.get("error") === "magic_link") {
       setStatus({ kind: "error", text: "Ссылка недействительна или устарела. Запросите новую." });
+    } else if (params.get("error") === "oauth_vk" || params.get("error") === "oauth_yandex") {
+      setStatus({ kind: "error", text: humanizeAuthError(params.get("error")) });
     }
   }, []);
 
@@ -169,12 +196,22 @@ export function LoginForm() {
   const requestSmsCode = () =>
     runAction(async () => {
       const result = await postAuth("/api/auth/phone", { action: "request", phone, consent });
-      setStatus(
-        result.ok
-          ? { kind: "success", text: "Код отправлен по SMS", devHint: true }
-          : { kind: "error", text: humanizeAuthError(result.error) }
-      );
+      if (result.ok) {
+        setSmsRequested(true);
+        setStatus({ kind: "success", text: "Код отправлен по SMS", devHint: true });
+        return;
+      }
+      setStatus({ kind: "error", text: humanizeAuthError(result.error) });
     });
+
+  // «Изменить номер»: выход из шага кода назад к полю телефона. Ошибка
+  // верификации (TOKEN_EXPIRED и т.п.) этот шаг не схлопывает — сброс только
+  // явным действием пользователя.
+  const resetSmsStep = () => {
+    setSmsRequested(false);
+    setSmsCode("");
+    setStatus(null);
+  };
 
   const verifySmsCode = () =>
     runAction(async () => {
@@ -189,12 +226,20 @@ export function LoginForm() {
   const requestEmailOtp = () =>
     runAction(async () => {
       const result = await postAuth("/api/auth/otp", { action: "request", email, consent });
-      setStatus(
-        result.ok
-          ? { kind: "success", text: "Код отправлен на почту", devHint: true }
-          : { kind: "error", text: humanizeAuthError(result.error) }
-      );
+      if (result.ok) {
+        setEmailCodeRequested(true);
+        setStatus({ kind: "success", text: "Код отправлен на почту", devHint: true });
+        return;
+      }
+      setStatus({ kind: "error", text: humanizeAuthError(result.error) });
     });
+
+  // «Изменить e-mail»: аналог resetSmsStep для email-OTP-флоу.
+  const resetEmailOtpStep = () => {
+    setEmailCodeRequested(false);
+    setCode("");
+    setStatus(null);
+  };
 
   const verifyEmailOtp = () =>
     runAction(async () => {
@@ -328,49 +373,74 @@ export function LoginForm() {
 
       {method === "phone" && (
         <div className="space-y-3">
-          <form
-            className="space-y-2"
-            onSubmit={(event) => {
-              event.preventDefault();
-              if (canSendSms && !pending && consent) {
-                requestSmsCode();
-              }
-            }}
-          >
-            <Field
-              label="Телефон"
-              placeholder="+7 999 123-45-67"
-              inputMode="tel"
-              autoComplete="tel"
-              value={phone}
-              onChange={(event) => setPhone(event.target.value)}
-            />
-            <Button type="submit" disabled={!canSendSms || pending || !consent} className="w-full">
-              Получить код
-            </Button>
-          </form>
-          <form
-            className="flex gap-2"
-            onSubmit={(event) => {
-              event.preventDefault();
-              if (smsCode && !pending && consent) {
-                verifySmsCode();
-              }
-            }}
-          >
-            <Field
-              label="Код из SMS"
-              hideLabel
-              placeholder="Код из SMS"
-              inputMode="numeric"
-              autoComplete="one-time-code"
-              value={smsCode}
-              onChange={(event) => setSmsCode(event.target.value)}
-            />
-            <Button type="submit" disabled={!smsCode || pending || !consent}>
-              Войти
-            </Button>
-          </form>
+          {!smsRequested ? (
+            <form
+              className="space-y-2"
+              onSubmit={(event) => {
+                event.preventDefault();
+                if (canSendSms && !pending && consent) {
+                  requestSmsCode();
+                }
+              }}
+            >
+              <Field
+                label="Телефон"
+                placeholder="+7 999 123-45-67"
+                inputMode="tel"
+                autoComplete="tel"
+                value={phone}
+                onChange={(event) => setPhone(event.target.value)}
+              />
+              <Button type="submit" disabled={!canSendSms || pending || !consent} className="w-full">
+                Получить код
+              </Button>
+            </form>
+          ) : (
+            <div className="space-y-2">
+              <p className="text-sm text-muted-foreground">
+                Код отправлен на <span className="font-medium text-foreground">{phone}</span>
+              </p>
+              <form
+                className="flex gap-2"
+                onSubmit={(event) => {
+                  event.preventDefault();
+                  if (smsCode && !pending && consent) {
+                    verifySmsCode();
+                  }
+                }}
+              >
+                <Field
+                  label="Код из SMS"
+                  hideLabel
+                  placeholder="Код из SMS"
+                  inputMode="numeric"
+                  autoComplete="one-time-code"
+                  value={smsCode}
+                  onChange={(event) => setSmsCode(event.target.value)}
+                />
+                <Button type="submit" disabled={!smsCode || pending || !consent}>
+                  Войти
+                </Button>
+              </form>
+              <div className="flex gap-4">
+                <button
+                  type="button"
+                  className="text-sm text-muted-foreground underline decoration-dotted underline-offset-4 hover:text-foreground disabled:opacity-40"
+                  disabled={pending || !consent}
+                  onClick={requestSmsCode}
+                >
+                  Отправить код ещё раз
+                </button>
+                <button
+                  type="button"
+                  className="text-sm text-muted-foreground underline decoration-dotted underline-offset-4 hover:text-foreground"
+                  onClick={resetSmsStep}
+                >
+                  Изменить номер
+                </button>
+              </div>
+            </div>
+          )}
         </div>
       )}
 
@@ -453,50 +523,75 @@ export function LoginForm() {
 
               {emailFlow === "otp" && (
                 <div className="space-y-2">
-                  <form
-                    className="space-y-2"
-                    onSubmit={(event) => {
-                      event.preventDefault();
-                      if (canContinueEmail && !pending && consent) {
-                        requestEmailOtp();
-                      }
-                    }}
-                  >
-                    <Field
-                      label="E-mail"
-                      type="email"
-                      placeholder="you@example.ru"
-                      inputMode="email"
-                      autoComplete="email"
-                      value={email}
-                      onChange={(event) => setEmail(event.target.value)}
-                    />
-                    <Button type="submit" disabled={!canContinueEmail || pending || !consent} className="w-full">
-                      Получить код
-                    </Button>
-                  </form>
-                  <form
-                    className="flex gap-2"
-                    onSubmit={(event) => {
-                      event.preventDefault();
-                      if (code && !pending && consent) {
-                        verifyEmailOtp();
-                      }
-                    }}
-                  >
-                    <Field
-                      label="Код из письма"
-                      hideLabel
-                      placeholder="Код из письма"
-                      inputMode="numeric"
-                      autoComplete="one-time-code"
-                      value={code}
-                      onChange={(event) => setCode(event.target.value)}
-                    />
-                    <Button type="submit" disabled={!code || pending || !consent}>
-                      Войти
-                    </Button>
-                  </form>
+                  {!emailCodeRequested ? (
+                    <form
+                      className="space-y-2"
+                      onSubmit={(event) => {
+                        event.preventDefault();
+                        if (canContinueEmail && !pending && consent) {
+                          requestEmailOtp();
+                        }
+                      }}
+                    >
+                      <Field
+                        label="E-mail"
+                        type="email"
+                        placeholder="you@example.ru"
+                        inputMode="email"
+                        autoComplete="email"
+                        value={email}
+                        onChange={(event) => setEmail(event.target.value)}
+                      />
+                      <Button type="submit" disabled={!canContinueEmail || pending || !consent} className="w-full">
+                        Получить код
+                      </Button>
+                    </form>
+                  ) : (
+                    <div className="space-y-2">
+                      <p className="text-sm text-muted-foreground">
+                        Код отправлен на <span className="font-medium text-foreground">{email}</span>
+                      </p>
+                      <form
+                        className="flex gap-2"
+                        onSubmit={(event) => {
+                          event.preventDefault();
+                          if (code && !pending && consent) {
+                            verifyEmailOtp();
+                          }
+                        }}
+                      >
+                        <Field
+                          label="Код из письма"
+                          hideLabel
+                          placeholder="Код из письма"
+                          inputMode="numeric"
+                          autoComplete="one-time-code"
+                          value={code}
+                          onChange={(event) => setCode(event.target.value)}
+                        />
+                        <Button type="submit" disabled={!code || pending || !consent}>
+                          Войти
+                        </Button>
+                      </form>
+                      <div className="flex gap-4">
+                        <button
+                          type="button"
+                          className="text-sm text-muted-foreground underline decoration-dotted underline-offset-4 hover:text-foreground disabled:opacity-40"
+                          disabled={pending || !consent}
+                          onClick={requestEmailOtp}
+                        >
+                          Отправить код ещё раз
+                        </button>
+                        <button
+                          type="button"
+                          className="text-sm text-muted-foreground underline decoration-dotted underline-offset-4 hover:text-foreground"
+                          onClick={resetEmailOtpStep}
+                        >
+                          Изменить e-mail
+                        </button>
+                      </div>
+                    </div>
+                  )}
                 </div>
               )}
 
@@ -588,28 +683,37 @@ export function LoginForm() {
       {/* Контейнер невидимой SmartCaptcha (шильдик + попап челленджа). */}
       {captchaNode}
 
-      <div className="grid grid-cols-2 gap-2 border-t border-border pt-4">
-        <Link
-          href="/api/auth/oauth/vk"
-          onClick={beginOAuth}
-          aria-disabled={!consent}
-          className={`rounded-md border border-border p-2 text-center text-sm text-foreground transition-colors hover:bg-accent ${
-            consent ? "" : "pointer-events-none opacity-50"
-          }`}
-        >
-          VK ID
-        </Link>
-        <Link
-          href="/api/auth/oauth/yandex"
-          onClick={beginOAuth}
-          aria-disabled={!consent}
-          className={`rounded-md border border-border p-2 text-center text-sm text-foreground transition-colors hover:bg-accent ${
-            consent ? "" : "pointer-events-none opacity-50"
-          }`}
-        >
-          Яндекс ID
-        </Link>
-      </div>
+      {/* Ключи VK ID/Яндекс ID не всегда заведены — доступность считает сервер
+          (page.tsx). Если оба провайдера недоступны, блок соц-входа не рендерится
+          вовсе, а не показывает нерабочую кнопку (F11). */}
+      {(oauth.vk || oauth.yandex) && (
+        <div className={`grid gap-2 border-t border-border pt-4 ${oauth.vk && oauth.yandex ? "grid-cols-2" : "grid-cols-1"}`}>
+          {oauth.vk && (
+            <Link
+              href="/api/auth/oauth/vk"
+              onClick={beginOAuth}
+              aria-disabled={!consent}
+              className={`rounded-md border border-border p-2 text-center text-sm text-foreground transition-colors hover:bg-accent ${
+                consent ? "" : "pointer-events-none opacity-50"
+              }`}
+            >
+              VK ID
+            </Link>
+          )}
+          {oauth.yandex && (
+            <Link
+              href="/api/auth/oauth/yandex"
+              onClick={beginOAuth}
+              aria-disabled={!consent}
+              className={`rounded-md border border-border p-2 text-center text-sm text-foreground transition-colors hover:bg-accent ${
+                consent ? "" : "pointer-events-none opacity-50"
+              }`}
+            >
+              Яндекс ID
+            </Link>
+          )}
+        </div>
+      )}
     </Card>
   );
 }

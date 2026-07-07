@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 
 import { requireUser } from "@/lib/auth";
 import { FERMENT_HISTORY_LIMIT, FERMENT_HISTORY_WINDOW_DAYS, TELEMETRY_HISTORY_LIMIT } from "@/features/brew-batches/contracts";
-import { getProviderForDevice, deviceChannel } from "@/features/brew-controller";
+import { deviceChannel } from "@/features/brew-controller";
 import { mapFermentationPlanToDeviceSteps } from "@/features/brew-controller/ferment-profile";
 import { getDeviceById, getDeviceHistory, getLastKnownDeviceMode, isDemoDevice } from "@/features/devices/service";
 import { isFermenterModeRow } from "@/features/devices/fermenter-binding-core";
@@ -14,10 +14,16 @@ import type { FermenterBatchLink } from "@/features/brew-controller/components/f
 
 // Пульт устройства L2 (зона B): живой нагрев устройства БЕЗ привязки к партии +
 // базовое управление (опасное гейтится на сервере). Серверно: requireUser →
-// устройство (ownership) → начальная история телеметрии для графика + (H3, §8)
-// ferment{} конфига (best-effort — офлайн не должен ронять страницу) и бродящая
+// устройство (ownership) → начальная история телеметрии для графика и бродящая
 // партия, привязанная к прибору-ферментеру (§8.4), с маппингом её плана в
 // ступени прибора (§13) — заранее, для «Из плана рецепта» на пульте ферментации.
+//
+// ferment{} конфиг (H3, §8) НА СЕРВЕРЕ больше не читается (F3): голый fetch
+// офлайн-устройства к /config висит на ОС-таймаут (~17с) и держал всю страницу
+// в Promise.all. Конфиг грузит клиентски сам FermentDashboardView (best-effort,
+// с коротким таймаутом) — сюда передаём initialFermentConfig=null и
+// fermentConfigUnavailable=false («ещё не знаем», не «недоступен»): пульт
+// покажет нейтральное состояние загрузки, а не ложный «конфиг недоступен».
 export default async function DeviceConsolePage({ params }: { params: Promise<{ id: string }> }) {
   const user = await requireUser();
   const { id } = await params;
@@ -27,22 +33,14 @@ export default async function DeviceConsolePage({ params }: { params: Promise<{ 
     notFound();
   }
 
-  const provider = getProviderForDevice(device);
-  // best-effort: прибор офлайн/провайдер недоступен → конфиг null, пульт честно
-  // покажет «конфиг недоступен» вместо падения страницы.
-  const configPromise = provider?.readConfig
-    ? provider.readConfig({ userId: user.id, deviceId: device.id }).catch(() => null)
-    : Promise.resolve(null);
+  const initialFermentConfig = null;
+  const fermentConfigUnavailable = false;
 
-  const [lastKnownMode, fermenterBatch, pushableRecipes, configResult] = await Promise.all([
+  const [lastKnownMode, fermenterBatch, pushableRecipes] = await Promise.all([
     getLastKnownDeviceMode(user.id, device.id),
     findBatchForFermenter(user.id, device.id),
     listPushableRecipes(user.id),
-    configPromise,
   ]);
-
-  const fermentConfigUnavailable = Boolean(provider?.readConfig) && configResult === null;
-  const initialFermentConfig = configResult?.ferment ?? null;
 
   // §14: last-known режим (без живой SSE-подписки на сервере) решает, каким
   // окном грузить историю — ferment живёт неделями и не укладывается в варочный

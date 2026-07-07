@@ -4,6 +4,7 @@ import { resolveIngredientDisplayNames } from "@/features/ingredients/presentati
 import { resolveIngredientCategory } from "@/features/ingredients/taxonomy";
 import { formatInventoryQuantityForDisplay } from "@/features/inventory/display";
 import type { RecipeDetailDto } from "@/features/recipes/contracts";
+import { fermentableUseLabels, hopUseTypeLabels } from "@/features/recipes/ingredient-labels";
 
 import {
   buildRecipeIngredientTechnicalBadges,
@@ -59,13 +60,20 @@ const sectionAccentBorder: Record<SectionCategory, string> = {
 
 const buildMetaLine = (ingredient: RecipeDetailDto["ingredients"][number]) => {
   const stepMeta = (ingredient.stepMeta ?? {}) as Record<string, unknown>;
-  const parts = [stageLabel[ingredient.stage]];
+  const currentStageLabel = stageLabel[ingredient.stage];
+  const parts = [currentStageLabel];
 
   if (typeof stepMeta.useType === "string") {
-    parts.push(stepMeta.useType.replaceAll("_", " "));
+    const useTypeLabel = hopUseTypeLabels[stepMeta.useType as keyof typeof hopUseTypeLabels];
+    if (useTypeLabel && useTypeLabel !== currentStageLabel) {
+      parts.push(useTypeLabel);
+    }
   }
-  if (typeof stepMeta.use === "string" && stepMeta.use !== "mash") {
-    parts.push(stepMeta.use);
+  if (typeof stepMeta.use === "string") {
+    const useLabel = fermentableUseLabels[stepMeta.use as keyof typeof fermentableUseLabels];
+    if (useLabel && useLabel !== currentStageLabel) {
+      parts.push(useLabel);
+    }
   }
   if (typeof stepMeta.timeMinutes === "number") {
     parts.push(`${stepMeta.timeMinutes} мин`);

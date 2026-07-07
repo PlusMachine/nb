@@ -21,6 +21,7 @@ import {
 } from "@/features/home/home-data-cache";
 import { jsonLdScriptProps } from "@/features/ingredients/seo";
 import { contentArticleTypeLabels } from "@/features/content-articles/contracts";
+import { articleCoverFromSlug } from "@/features/content-articles/article-cover";
 
 // Спектр стилей BJCP для баннера — из той же SRM-палитры, что и весь сайт
 // (srmToHex по опорным SRM), а не отдельный набор хексов.
@@ -132,7 +133,9 @@ export default async function HomePage() {
         </div>
         {featuredGuides.length ? (
           <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-            {featuredGuides.map((guide) => (
+            {featuredGuides.map((guide) => {
+              const cover = articleCoverFromSlug(guide.slug);
+              return (
               <Link
                 key={guide.id}
                 href={`/articles/${guide.slug}`}
@@ -148,7 +151,14 @@ export default async function HomePage() {
                     className="h-40 w-full object-cover"
                   />
                 ) : (
-                  <div className="h-40 w-full bg-gradient-to-br from-warning-subtle to-muted" aria-hidden />
+                  <div className="flex h-40 w-full items-center justify-center" style={{ background: cover.background }} aria-hidden>
+                    <span
+                      className="text-6xl font-semibold leading-none opacity-25"
+                      style={{ color: cover.textColor, fontFamily: "var(--font-display)" }}
+                    >
+                      {guide.title.charAt(0).toUpperCase()}
+                    </span>
+                  </div>
                 )}
                 <div className="flex flex-1 flex-col gap-2 p-4">
                   <span className="text-[11px] font-semibold uppercase tracking-wider text-warning-subtle-foreground">{contentArticleTypeLabels[guide.type]}</span>
@@ -159,7 +169,8 @@ export default async function HomePage() {
                   </span>
                 </div>
               </Link>
-            ))}
+              );
+            })}
           </div>
         ) : null}
 

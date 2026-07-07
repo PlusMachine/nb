@@ -156,6 +156,25 @@ export function AppShell({ children, user }: AppShellProps) {
   }, []);
 
   useEffect(() => {
+    // Высота нижней мобильной нав-панели как CSS-переменная на <html> — по образцу
+    // --chrome-top, но пишется через JS (не Tailwind-класс на корневом div AppShell),
+    // потому что баннер cookie-согласия и кнопка «Обратная связь» монтируются в
+    // корневом layout выше AppShell по дереву — им её иначе не унаследовать.
+    // Вне app-зоны AppShell не смонтирован → переменной нет → fallback 0px у читателей.
+    const desktopQuery = window.matchMedia("(min-width: 1024px)");
+    const updateBottomNavHeightVar = () => {
+      document.documentElement.style.setProperty("--nb-bottom-nav-h", desktopQuery.matches ? "0px" : "3.5rem");
+    };
+
+    updateBottomNavHeightVar();
+    desktopQuery.addEventListener("change", updateBottomNavHeightVar);
+    return () => {
+      desktopQuery.removeEventListener("change", updateBottomNavHeightVar);
+      document.documentElement.style.removeProperty("--nb-bottom-nav-h");
+    };
+  }, []);
+
+  useEffect(() => {
     const handleClick = (event: MouseEvent) => {
       if (event.defaultPrevented || isModifiedClick(event)) {
         return;

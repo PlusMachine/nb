@@ -4,7 +4,7 @@ import Link from "next/link";
 import { BadgeCheck, Star } from "lucide-react";
 
 import type { PublicRecipeListItem } from "@/features/recipes/contracts";
-import { NEUTRAL_SOFT_GRADIENT, srmToHex, srmToSoftGradient } from "@/features/recipes/beer-color";
+import { srmToHex, srmToSoftGradient } from "@/features/recipes/beer-color";
 import { isRecentlyCreated } from "@/features/recipes/format";
 
 import { RecipeColorSwatch } from "./recipe-color-swatch";
@@ -268,15 +268,10 @@ export function RecipeThumb({
             sharpenStyleOnHover ? "[@media(hover:hover)]:group-hover:scale-100 [@media(hover:hover)]:group-hover:blur-0" : ""
           }`}
         />
+      ) : colorSrm != null && Number.isFinite(colorSrm) ? (
+        <span aria-hidden className="absolute inset-0" style={{ backgroundImage: srmToSoftGradient(colorSrm) }} />
       ) : (
-        <span
-          aria-hidden
-          className="absolute inset-0"
-          style={{
-            backgroundImage:
-              colorSrm != null && Number.isFinite(colorSrm) ? srmToSoftGradient(colorSrm) : NEUTRAL_SOFT_GRADIENT
-          }}
-        />
+        <span aria-hidden className="absolute inset-0 bg-gradient-to-br from-muted via-muted to-border" />
       )}
 
       {/* Затемнение + метка цвета (SRM + оттенок) — ОДНА, одинаково снизу для всех
