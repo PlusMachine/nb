@@ -47,7 +47,7 @@ CLI-only утилиты (нет UI-кнопок и публичных эндпо
 - `npm run set-role -- --email <e> --role <user|editor|moderator|admin>`
 - `npm run seed:qa` — QA-юзеры (admin/moderator/editor/user) + каталог + инвентарь
 - `npm run seed:sample [-- --email <e>]` — наполняет аккаунт (по умолчанию `DEV_AUTH_EMAIL`) тестовыми данными: склад + 2 профиля оборудования + 6 рецептов разных стилей/статусов. Идемпотентно (метит данные `seedSource="sample-data"`). Скрипт: `apps/web/scripts/seed-sample-data.ts`
-- `npm run seed:articles [-- --force]` — публикует редакционные статьи из репозитория (`apps/web/scripts/content-articles/*`) в `content_articles` (`/guides/<slug>`). Существующие записи по умолчанию не трогает, `--force` перезаписывает контент из репо. Скрипт: `apps/web/scripts/seed-content-articles.ts`
+- `npm run seed:articles [-- --force]` — публикует редакционные статьи из репозитория (`apps/web/scripts/content-articles/*`) в `content_articles` (`/articles/<slug>`). Существующие записи по умолчанию не трогает, `--force` перезаписывает контент из репо. Скрипт: `apps/web/scripts/seed-content-articles.ts`
 
 Авторизация: кастомный `@nb/auth`, HTTP-only cookie `nb_session`. Гейты в `apps/web/lib/auth.ts` (`getSessionUser`, `requireUser`, `requireRole`) и `features/content/permissions.ts`.
 

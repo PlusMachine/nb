@@ -17,6 +17,7 @@ import {
 } from "@/features/recipe-images/service";
 import { processRecipeImageUpload } from "@/features/recipe-images/image-processing";
 import { getSessionUser } from "@/lib/auth";
+import { assertRateLimit } from "@nb/auth";
 
 export const runtime = "nodejs";
 
@@ -78,6 +79,13 @@ export async function POST(request: Request) {
   const user = await getSessionUser();
   if (!user) {
     return NextResponse.json({ ok: false, message: "Требуется авторизация." }, { status: 401 });
+  }
+
+  // Антиспам: загрузка — самая тяжёлая мутация (обработка изображений + storage).
+  try {
+    await assertRateLimit(user.id, "recipe_image_upload", 30, 60 * 60);
+  } catch {
+    return NextResponse.json({ ok: false, message: "Слишком много загрузок подряд. Попробуйте позже." }, { status: 429 });
   }
 
   const formData = await request.formData();

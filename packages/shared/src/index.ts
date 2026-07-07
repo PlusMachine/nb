@@ -61,12 +61,35 @@ const clientEnvSchema = z.object({
 export type ServerEnv = z.infer<typeof serverEnvSchema>;
 export type ClientEnv = z.infer<typeof clientEnvSchema>;
 
+const isLocalhostUrl = (url: string): boolean => {
+  try {
+    const { hostname } = new URL(url);
+    return hostname === "localhost" || hostname === "127.0.0.1" || hostname === "::1";
+  } catch {
+    return false;
+  }
+};
+
 export const parseServerEnv = (env: Record<string, string | undefined>): ServerEnv => {
   const parsed = serverEnvSchema.safeParse(env);
   if (!parsed.success) {
     throw new Error(`Invalid server environment variables: ${parsed.error.message}`);
   }
   return parsed.data;
+};
+
+// Забытый APP_URL в production молча увёл бы canonical/sitemap/OG-ссылки на
+// localhost. Гвард живёт отдельно от parseServerEnv: парсер вызывается eagerly
+// любым импортёром @nb/db (в т.ч. apps/bridge, которому APP_URL не нужен), а
+// требование боевого APP_URL — обязанность только веб-рантайма (apps/web/lib/env.ts).
+export const assertProductionAppUrl = (env: ServerEnv): ServerEnv => {
+  if (env.NODE_ENV === "production" && isLocalhostUrl(env.APP_URL)) {
+    throw new Error(
+      `APP_URL указывает на localhost ("${env.APP_URL}") в production-окружении. ` +
+        "Похоже, переменная APP_URL не задана для боевого домена — задайте реальный https://-адрес сайта."
+    );
+  }
+  return env;
 };
 
 export const parseClientEnv = (env: Record<string, string | undefined>): ClientEnv => {
