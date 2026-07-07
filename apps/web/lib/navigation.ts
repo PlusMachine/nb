@@ -9,6 +9,7 @@ import {
   LayoutGrid,
   Library,
   Sparkles,
+  Store,
   Wrench
 } from "lucide-react";
 
@@ -40,7 +41,12 @@ export const appNavGroups: AppNavItem[][] = [
   ],
   [
     { href: "/app/equipment", label: "Оборудование", icon: Wrench },
-    { href: "/app/devices", label: "BrewForge", icon: Cpu }
+    { href: "/app/devices", label: "BrewForge", icon: Cpu },
+    // Витрина мастера (docs/masters-showcase.md) — не роль, а наличие профиля
+    // у пользователя; кабинет /app/master сам решает, показать анкету или
+    // кабинет. Пункт меню — рядом с личными разделами (оборудование/устройства),
+    // рабочее название владелец пересмотрит вживую.
+    { href: "/app/master", label: "Моя витрина", icon: Store }
   ],
   [
     { href: "/catalog", label: "Каталог", icon: Library },
@@ -61,6 +67,7 @@ export const publicLinks: { href: string; label: string }[] = [
   { href: "/calculators", label: "Калькуляторы" },
   { href: "/articles", label: "Статьи" },
   { href: "/catalog", label: "Каталог" },
+  { href: "/masters", label: "Мастера" },
   { href: "/brewforge", label: "BrewForge" }
 ];
 
@@ -118,6 +125,7 @@ const publicPathPrefixes = [
   "/calculators",
   "/articles",
   "/catalog",
+  "/masters",
   "/brewforge",
   "/legal",
   "/demo"
