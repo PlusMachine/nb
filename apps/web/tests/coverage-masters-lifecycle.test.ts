@@ -1,0 +1,735 @@
+import { beforeEach, describe, expect, it, vi } from "vitest";
+
+// Покрытие жизненного цикла витрины мастеров (docs/masters-showcase.md, M1):
+// сервис-слой тестируется БЕЗ реальной БД — `@nb/db` мокается in-memory
+// (vi.hoisted + vi.mock), структура мок-харнесса скопирована со стиля
+// tests/coverage-brew-batches-lifecycle.test.ts / tests/coverage-content-articles-crud.test.ts.
+// `@/lib/auth` и `@/lib/storage` мокаются напрямую (по образцу
+// tests/inventory-add-flow.test.ts), чтобы не тянуть их реальные модульные
+// цепочки (env-парсинг, @nb/auth) в юнит-тест.
+
+vi.mock("server-only", () => ({}));
+
+type Row = Record<string, any>;
+
+const { store, ids } = vi.hoisted(() => ({
+  store: {
+    masterProfiles: [] as Row[],
+    masterItems: [] as Row[],
+    masterImages: [] as Row[]
+  },
+  ids: { counter: 0, clock: 0 }
+}));
+
+vi.mock("@nb/db", () => {
+  const col = (table: string, field: string) => ({ __col: true as const, table, field });
+  const ref = (table: string, fields: string[]) => {
+    const r: Record<string, unknown> = { __table: table };
+    for (const f of fields) {
+      r[f] = col(table, f);
+    }
+    return r;
+  };
+
+  const matchWhere = (row: Row, cond: any): boolean => {
+    if (!cond) {
+      return true;
+    }
+    if (cond.kind === "and") {
+      return cond.conds.every((c: any) => matchWhere(row, c));
+    }
+    if (cond.kind === "eq") {
+      return row[cond.col.field] === cond.value;
+    }
+    if (cond.kind === "isNotNull") {
+      return row[cond.col.field] !== null && row[cond.col.field] !== undefined;
+    }
+    if (cond.kind === "isNull") {
+      return row[cond.col.field] === null || row[cond.col.field] === undefined;
+    }
+    return true;
+  };
+
+  const compareVals = (a: any, b: any): number => {
+    if (a instanceof Date && b instanceof Date) {
+      return a.getTime() - b.getTime();
+    }
+    if (typeof a === "number" && typeof b === "number") {
+      return a - b;
+    }
+    if (a == null && b == null) {
+      return 0;
+    }
+    if (a == null) {
+      return -1;
+    }
+    if (b == null) {
+      return 1;
+    }
+    return String(a).localeCompare(String(b));
+  };
+
+  const sortRows = (rows: Row[], orders: any[]): Row[] => {
+    const copy = [...rows];
+    copy.sort((x, y) => {
+      for (const o of orders) {
+        const cmp = compareVals(x[o.col.field], y[o.col.field]) * (o.dir === "desc" ? -1 : 1);
+        if (cmp !== 0) {
+          return cmp;
+        }
+      }
+      return 0;
+    });
+    return copy;
+  };
+
+  const clone = (row: Row) => ({ ...row });
+
+  const applySet = (row: Row, set: Row) => {
+    const next = { ...row };
+    for (const [k, v] of Object.entries(set)) {
+      if (v !== undefined) {
+        next[k] = v;
+      }
+    }
+    return next;
+  };
+
+  const genId = () => `id-${++ids.counter}`;
+  const nowTick = () => new Date(Date.UTC(2026, 0, 1) + ++ids.clock * 1000);
+
+  const doInsert = (tableName: string, values: Row): Row => {
+    const base: Row = { ...values };
+    if (base.id === undefined) {
+      base.id = genId();
+    }
+    const now = nowTick();
+    base.createdAt = base.createdAt ?? now;
+    base.updatedAt = base.updatedAt ?? base.createdAt;
+
+    if (tableName === "masterProfiles") {
+      base.slug = base.slug ?? null;
+      base.specializations = base.specializations ?? [];
+      base.summary = base.summary ?? "";
+      base.about = base.about ?? "";
+      base.contactTelegram = base.contactTelegram ?? null;
+      base.contactPhone = base.contactPhone ?? null;
+      base.contactEmail = base.contactEmail ?? null;
+      base.contactWebsite = base.contactWebsite ?? null;
+      base.craftSince = base.craftSince ?? null;
+      base.reviewStatus = base.reviewStatus ?? "draft";
+      base.isListed = base.isListed ?? true;
+      base.publishedJson = base.publishedJson ?? null;
+      base.publishedAt = base.publishedAt ?? null;
+      base.submittedAt = base.submittedAt ?? null;
+      base.moderatorId = base.moderatorId ?? null;
+      base.moderationNote = base.moderationNote ?? null;
+    }
+    if (tableName === "masterItems") {
+      base.description = base.description ?? "";
+      base.priceNote = base.priceNote ?? null;
+      base.coverImageId = base.coverImageId ?? null;
+      base.sortOrder = base.sortOrder ?? 0;
+    }
+    if (tableName === "masterImages") {
+      base.itemId = base.itemId ?? null;
+      base.storageKeyOriginal = base.storageKeyOriginal ?? null;
+      base.storageKeyLarge = base.storageKeyLarge ?? null;
+      base.storageKeyMedium = base.storageKeyMedium ?? null;
+      base.storageKeyThumb = base.storageKeyThumb ?? null;
+      base.width = base.width ?? null;
+      base.height = base.height ?? null;
+      base.blurDataUrl = base.blurDataUrl ?? null;
+      base.sortOrder = base.sortOrder ?? 0;
+      base.status = base.status ?? "uploading";
+      base.deletedAt = base.deletedAt ?? null;
+    }
+
+    store[tableName as keyof typeof store].push(base);
+    return base;
+  };
+
+  const insert = (table: any) => ({
+    values: (values: Row) => {
+      const row = doInsert(table.__table, values);
+      return {
+        returning: async () => [clone(row)],
+        then: (onF: any, onR: any) => Promise.resolve([clone(row)]).then(onF, onR)
+      };
+    }
+  });
+
+  const update = (table: any) => ({
+    set: (set: Row) => ({
+      where: (cond: any) => {
+        const updated: Row[] = [];
+        store[table.__table as keyof typeof store] = store[table.__table as keyof typeof store].map((r: Row) => {
+          if (matchWhere(r, cond)) {
+            const next = applySet(r, set);
+            updated.push(next);
+            return next;
+          }
+          return r;
+        });
+        return {
+          returning: async () => updated.map(clone),
+          then: (onF: any, onR: any) => Promise.resolve(updated.map(clone)).then(onF, onR)
+        };
+      }
+    })
+  });
+
+  const del = (table: any) => ({
+    where: (cond: any) => {
+      const removed: Row[] = [];
+      store[table.__table as keyof typeof store] = store[table.__table as keyof typeof store].filter((r: Row) => {
+        if (matchWhere(r, cond)) {
+          removed.push(r);
+          return false;
+        }
+        return true;
+      });
+      return {
+        returning: async () => removed.map(clone),
+        then: (onF: any, onR: any) => Promise.resolve(removed.map(clone)).then(onF, onR)
+      };
+    }
+  });
+
+  const findMany = (tableName: string) => async (arg: any) => {
+    let rows = store[tableName as keyof typeof store].filter((r: Row) => matchWhere(r, arg?.where)).map(clone);
+    if (arg?.orderBy) {
+      rows = sortRows(rows, arg.orderBy);
+    }
+    if (arg?.columns) {
+      const keys = Object.keys(arg.columns);
+      rows = rows.map((r: Row) => {
+        const projected: Row = {};
+        for (const k of keys) {
+          projected[k] = r[k];
+        }
+        return projected;
+      });
+    }
+    return rows;
+  };
+
+  const findFirst = (tableName: string) => async (arg: any) => {
+    let rows = store[tableName as keyof typeof store].filter((r: Row) => matchWhere(r, arg?.where)).map(clone);
+    if (arg?.orderBy) {
+      rows = sortRows(rows, arg.orderBy);
+    }
+    return rows[0];
+  };
+
+  const db: any = {
+    query: {
+      masterProfiles: { findFirst: findFirst("masterProfiles"), findMany: findMany("masterProfiles") },
+      masterItems: { findFirst: findFirst("masterItems"), findMany: findMany("masterItems") },
+      masterImages: { findFirst: findFirst("masterImages"), findMany: findMany("masterImages") }
+    },
+    insert,
+    update,
+    delete: del,
+    transaction: async (cb: any) => cb(db)
+  };
+
+  return {
+    db,
+    and: (...conds: any[]) => ({ kind: "and", conds }),
+    eq: (col: any, value: any) => ({ kind: "eq", col, value }),
+    isNotNull: (col: any) => ({ kind: "isNotNull", col }),
+    isNull: (col: any) => ({ kind: "isNull", col }),
+    asc: (col: any) => ({ kind: "order", dir: "asc", col }),
+    desc: (col: any) => ({ kind: "order", dir: "desc", col }),
+    masterProfiles: ref("masterProfiles", [
+      "id", "userId", "slug", "displayName", "city", "specializations", "summary", "about",
+      "contactTelegram", "contactPhone", "contactEmail", "contactWebsite", "craftSince",
+      "reviewStatus", "isListed", "publishedJson", "publishedAt", "submittedAt",
+      "moderatorId", "moderationNote", "createdAt", "updatedAt"
+    ]),
+    masterItems: ref("masterItems", [
+      "id", "profileId", "title", "description", "priceNote", "coverImageId", "sortOrder", "createdAt", "updatedAt"
+    ]),
+    masterImages: ref("masterImages", [
+      "id", "profileId", "itemId", "storageKeyOriginal", "storageKeyLarge", "storageKeyMedium", "storageKeyThumb",
+      "width", "height", "mimeType", "sizeBytes", "blurDataUrl", "sortOrder", "status",
+      "createdAt", "updatedAt", "deletedAt"
+    ])
+  };
+});
+
+// roleWeights как в apps/web/lib/auth.ts (user < editor < moderator < admin) —
+// реальный модуль не грузим, чтобы не тянуть его цепочку (@nb/auth, env, sms).
+const ROLE_WEIGHTS: Record<string, number> = { user: 1, editor: 2, moderator: 3, admin: 4 };
+vi.mock("@/lib/auth", () => ({
+  hasRequiredRole: (current: string, required: string) => ROLE_WEIGHTS[current] >= ROLE_WEIGHTS[required]
+}));
+
+vi.mock("@/lib/storage", () => ({
+  storageAdapter: {
+    getObject: async (key: string | null) => (key ? { body: Buffer.from(key), contentType: null } : null)
+  }
+}));
+
+import {
+  approveMasterProfile,
+  countPendingMasters,
+  createMasterItem,
+  createMasterProfile,
+  deleteMasterItem,
+  getMasterImageAsset,
+  getMasterProfileForModeration,
+  getOwnMasterProfile,
+  getPublishedMasterBySlug,
+  listMasterModerationQueue,
+  listMasterSitemapEntries,
+  listPublishedMasters,
+  rejectMasterProfile,
+  reorderMasterItems,
+  setMasterListed,
+  setOwnListed,
+  submitForReview,
+  updateMasterItem,
+  updateMasterProfile,
+  withdrawSubmission,
+  type MasterActor
+} from "@/features/masters/service";
+import type { MasterProfileInput } from "@/features/masters/contracts";
+
+const USER: MasterActor = { id: "user-1", role: "user" as any };
+const USER_2: MasterActor = { id: "user-2", role: "user" as any };
+const MODERATOR: MasterActor = { id: "moderator-1", role: "moderator" as any };
+const ADMIN: MasterActor = { id: "admin-1", role: "admin" as any };
+
+const validInput = (overrides: Partial<MasterProfileInput> = {}) => ({
+  displayName: "Иван Кузнецов",
+  city: "Новосибирск",
+  specializations: ["vessels", "automation"],
+  summary: "Делаю ЦКТ и щиты автоматики из нержавейки.",
+  about: "Работаю с нержавейкой с 2019 года, варю ЦКТ на заказ и собираю автоматику под ключ.",
+  contactTelegram: "@ivan_brew",
+  craftSince: 2019,
+  ...overrides
+});
+
+const seedProfile = (partial: Partial<Row> = {}): Row => {
+  const now = new Date(Date.UTC(2026, 0, 1) + ++ids.clock * 1000);
+  const row: Row = {
+    id: `seed-profile-${++ids.counter}`,
+    userId: "seed-user",
+    slug: null,
+    displayName: "Seed Master",
+    city: "Город",
+    specializations: ["vessels"],
+    summary: "summary",
+    about: "about",
+    contactTelegram: "@seed",
+    contactPhone: null,
+    contactEmail: null,
+    contactWebsite: null,
+    craftSince: null,
+    reviewStatus: "draft",
+    isListed: true,
+    publishedJson: null,
+    publishedAt: null,
+    submittedAt: null,
+    moderatorId: null,
+    moderationNote: null,
+    createdAt: now,
+    updatedAt: now,
+    ...partial
+  };
+  store.masterProfiles.push(row);
+  return row;
+};
+
+beforeEach(() => {
+  store.masterProfiles = [];
+  store.masterItems = [];
+  store.masterImages = [];
+  ids.counter = 0;
+  ids.clock = 0;
+});
+
+// --- Жизненный цикл: draft → pending → approve (снапшот + слаг) -----------------
+describe("жизненный цикл: create → submit → approve", () => {
+  it("создаёт черновик, отправляет на модерацию и публикует со слагом", async () => {
+    const created = await createMasterProfile(USER.id, validInput());
+    expect(created.reviewStatus).toBe("draft");
+    expect(created.hasPublished).toBe(false);
+    expect(created.slug).toBeNull();
+
+    const submitted = await submitForReview(USER.id);
+    expect(submitted.reviewStatus).toBe("pending");
+    expect(submitted.submittedAt).toBeInstanceOf(Date);
+
+    const approved = await approveMasterProfile(MODERATOR, submitted.id);
+    expect(approved.reviewStatus).toBe("draft"); // черновик снова редактируем сразу после публикации
+    expect(approved.hasPublished).toBe(true);
+    expect(approved.slug).toBe("ivan-kuznecov");
+    expect(approved.moderatorId).toBe(MODERATOR.id);
+    expect(approved.submittedAt).toBeNull();
+
+    const published = await getPublishedMasterBySlug(approved.slug!);
+    expect(published?.snapshot.displayName).toBe("Иван Кузнецов");
+    expect(published?.snapshot.version).toBe(1);
+  });
+
+  it("второй мастер с тем же displayName получает слаг с суффиксом -2", async () => {
+    const a = await createMasterProfile(USER.id, validInput());
+    await submitForReview(USER.id);
+    const approvedA = await approveMasterProfile(MODERATOR, a.id);
+    expect(approvedA.slug).toBe("ivan-kuznecov");
+
+    const b = await createMasterProfile(USER_2.id, validInput());
+    await submitForReview(USER_2.id);
+    const approvedB = await approveMasterProfile(MODERATOR, b.id);
+    expect(approvedB.slug).toBe("ivan-kuznecov-2");
+  });
+
+  it("pending → reject → правка возвращает в draft (заметка остаётся) → повторный submit её очищает", async () => {
+    const created = await createMasterProfile(USER.id, validInput());
+    await submitForReview(USER.id);
+
+    const rejected = await rejectMasterProfile(MODERATOR, created.id, "Уточните контакты, пожалуйста");
+    expect(rejected.reviewStatus).toBe("rejected");
+    expect(rejected.moderationNote).toBe("Уточните контакты, пожалуйста");
+
+    const edited = await updateMasterProfile(USER.id, validInput({ city: "Москва" }));
+    expect(edited.reviewStatus).toBe("draft");
+    expect(edited.city).toBe("Москва");
+    // Заметка модератора остаётся видна в кабинете до следующей отправки.
+    expect(edited.moderationNote).toBe("Уточните контакты, пожалуйста");
+
+    const resubmitted = await submitForReview(USER.id);
+    expect(resubmitted.reviewStatus).toBe("pending");
+    expect(resubmitted.moderationNote).toBeNull();
+  });
+
+  it("withdrawSubmission переводит pending → draft без участия модератора", async () => {
+    const created = await createMasterProfile(USER.id, validInput());
+    const submitted = await submitForReview(USER.id);
+    expect(submitted.reviewStatus).toBe("pending");
+
+    const withdrawn = await withdrawSubmission(USER.id);
+    expect(withdrawn.reviewStatus).toBe("draft");
+    expect(withdrawn.submittedAt).toBeNull();
+    expect(withdrawn.id).toBe(created.id);
+  });
+
+  it("withdrawSubmission вне pending → WITHDRAW_NOT_ALLOWED", async () => {
+    await createMasterProfile(USER.id, validInput());
+    await expect(withdrawSubmission(USER.id)).rejects.toThrow("WITHDRAW_NOT_ALLOWED");
+  });
+
+  it("повторная публикация обновляет снапшот, слаг остаётся стабильным", async () => {
+    const created = await createMasterProfile(USER.id, validInput());
+    await submitForReview(USER.id);
+    const firstApproval = await approveMasterProfile(MODERATOR, created.id);
+
+    await updateMasterProfile(USER.id, validInput({ summary: "Новое summary после правки" }));
+    await submitForReview(USER.id);
+    const secondApproval = await approveMasterProfile(ADMIN, created.id);
+
+    expect(secondApproval.slug).toBe(firstApproval.slug);
+    const published = await getPublishedMasterBySlug(secondApproval.slug!);
+    expect(published?.snapshot.summary).toBe("Новое summary после правки");
+  });
+});
+
+// --- Инвариант: правки после публикации не видны публике до approve -------------
+describe("инвариант: черновые правки не просачиваются в publishedJson", () => {
+  it("правка профиля и изделий не меняет опубликованный снапшот до approve", async () => {
+    const created = await createMasterProfile(USER.id, validInput());
+    await createMasterItem(USER.id, { title: "ЦКТ 60 л", description: "Нержавейка" });
+    await submitForReview(USER.id);
+    await approveMasterProfile(MODERATOR, created.id);
+
+    const beforeEdit = await getPublishedMasterBySlug((await getOwnMasterProfile(USER.id))!.profile.slug!);
+    expect(beforeEdit?.snapshot.items).toHaveLength(1);
+
+    // Правим черновик: новое summary + новое изделие. Публика не должна это видеть.
+    await updateMasterProfile(USER.id, validInput({ summary: "Изменили описание" }));
+    const own = await getOwnMasterProfile(USER.id);
+    await createMasterItem(USER.id, { title: "Чиллер 200Вт", description: "Титан" });
+
+    const stillOld = await getPublishedMasterBySlug(own!.profile.slug!);
+    expect(stillOld?.snapshot.summary).not.toBe("Изменили описание");
+    expect(stillOld?.snapshot.items).toHaveLength(1);
+  });
+});
+
+// --- Запреты правок при pending ---------------------------------------------------
+describe("правки заблокированы, пока профиль на модерации", () => {
+  it("updateMasterProfile/createMasterItem/reorderMasterItems → PROFILE_LOCKED_PENDING", async () => {
+    await createMasterProfile(USER.id, validInput());
+    const item = await createMasterItem(USER.id, { title: "ЦКТ 60 л", description: "" });
+    await submitForReview(USER.id);
+
+    await expect(updateMasterProfile(USER.id, validInput())).rejects.toThrow("PROFILE_LOCKED_PENDING");
+    await expect(createMasterItem(USER.id, { title: "Ещё изделие", description: "" })).rejects.toThrow(
+      "PROFILE_LOCKED_PENDING"
+    );
+    await expect(updateMasterItem(USER.id, item.id, { title: "Новое имя", description: "" })).rejects.toThrow(
+      "PROFILE_LOCKED_PENDING"
+    );
+    await expect(deleteMasterItem(USER.id, item.id)).rejects.toThrow("PROFILE_LOCKED_PENDING");
+    await expect(reorderMasterItems(USER.id, [item.id])).rejects.toThrow("PROFILE_LOCKED_PENDING");
+  });
+});
+
+// --- submitForReview: неполный профиль -------------------------------------------
+describe("submitForReview требует полноты профиля", () => {
+  it("падает на профиле без единого контакта", async () => {
+    const row = seedProfile({
+      userId: USER.id,
+      contactTelegram: null,
+      contactPhone: null,
+      contactEmail: null,
+      contactWebsite: null
+    });
+    await expect(submitForReview(row.userId)).rejects.toThrow("PROFILE_INCOMPLETE");
+  });
+});
+
+// --- Лимит изделий и уникальность профиля -----------------------------------------
+describe("лимиты", () => {
+  it("не больше 12 изделий на профиль", async () => {
+    await createMasterProfile(USER.id, validInput());
+    for (let i = 0; i < 12; i += 1) {
+      await createMasterItem(USER.id, { title: `Изделие ${i}`, description: "" });
+    }
+    await expect(createMasterItem(USER.id, { title: "Тринадцатое", description: "" })).rejects.toThrow(
+      "ITEM_LIMIT_REACHED"
+    );
+  });
+
+  it("один пользователь — максимум один профиль", async () => {
+    await createMasterProfile(USER.id, validInput());
+    await expect(createMasterProfile(USER.id, validInput())).rejects.toThrow("PROFILE_EXISTS");
+  });
+});
+
+// --- reorderMasterItems -----------------------------------------------------------
+describe("reorderMasterItems", () => {
+  it("переставляет sortOrder и отвергает несовпадающий набор id", async () => {
+    await createMasterProfile(USER.id, validInput());
+    const a = await createMasterItem(USER.id, { title: "Изделие A", description: "" });
+    const b = await createMasterItem(USER.id, { title: "Изделие B", description: "" });
+
+    const reordered = await reorderMasterItems(USER.id, [b.id, a.id]);
+    expect(reordered.map((item) => item.id)).toEqual([b.id, a.id]);
+
+    await expect(reorderMasterItems(USER.id, [b.id])).rejects.toThrow("ITEM_REORDER_MISMATCH");
+  });
+});
+
+// --- deleteMasterItem отвязывает фото, а не удаляет их ----------------------------
+describe("deleteMasterItem", () => {
+  it("отвязывает фото изделия (itemId → null) вместо удаления", async () => {
+    const profile = await createMasterProfile(USER.id, validInput());
+    const item = await createMasterItem(USER.id, { title: "ЦКТ", description: "" });
+
+    store.masterImages.push({
+      id: "img-1",
+      profileId: profile.id,
+      itemId: item.id,
+      storageKeyOriginal: "orig",
+      storageKeyLarge: "large",
+      storageKeyMedium: "medium",
+      storageKeyThumb: "thumb",
+      width: 800,
+      height: 600,
+      mimeType: "image/jpeg",
+      sizeBytes: 1000,
+      blurDataUrl: null,
+      sortOrder: 0,
+      status: "ready",
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      deletedAt: null
+    });
+
+    await deleteMasterItem(USER.id, item.id);
+
+    const own = await getOwnMasterProfile(USER.id);
+    expect(own?.items).toHaveLength(0);
+    expect(own?.images).toHaveLength(1);
+    expect(own?.images[0].itemId).toBeNull();
+  });
+});
+
+// --- Права: владелец/модератор -----------------------------------------------------
+describe("права владельца и модератора", () => {
+  it("владельческие мутации применяются только к своему профилю", async () => {
+    await createMasterProfile(USER.id, validInput());
+    // У USER_2 своего профиля ещё нет — правки/статусные операции должны падать NOT_FOUND.
+    await expect(updateMasterProfile(USER_2.id, validInput())).rejects.toThrow("NOT_FOUND");
+    await expect(submitForReview(USER_2.id)).rejects.toThrow("NOT_FOUND");
+    await expect(setOwnListed(USER_2.id, false)).rejects.toThrow("NOT_FOUND");
+  });
+
+  it("не-модератор не может модерировать: approve/reject/listQueue/getForModeration/setListed → FORBIDDEN", async () => {
+    const created = await createMasterProfile(USER.id, validInput());
+    await submitForReview(USER.id);
+
+    await expect(listMasterModerationQueue(USER, { status: "pending" })).rejects.toThrow("FORBIDDEN");
+    await expect(getMasterProfileForModeration(USER, created.id)).rejects.toThrow("FORBIDDEN");
+    await expect(approveMasterProfile(USER, created.id)).rejects.toThrow("FORBIDDEN");
+    await expect(rejectMasterProfile(USER, created.id, "нет, не так")).rejects.toThrow("FORBIDDEN");
+    await expect(setMasterListed(USER, created.id, false)).rejects.toThrow("FORBIDDEN");
+  });
+
+  it("moderator/admin проходят гейт модерации", async () => {
+    const created = await createMasterProfile(USER.id, validInput());
+    await submitForReview(USER.id);
+
+    await expect(listMasterModerationQueue(MODERATOR, { status: "pending" })).resolves.toHaveLength(1);
+    const preview = await getMasterProfileForModeration(ADMIN, created.id);
+    expect(preview.previewSnapshot.displayName).toBe("Иван Кузнецов");
+  });
+
+  it("approve/reject вне pending → *_NOT_ALLOWED", async () => {
+    const created = await createMasterProfile(USER.id, validInput());
+    await expect(approveMasterProfile(MODERATOR, created.id)).rejects.toThrow("APPROVE_NOT_ALLOWED");
+    await expect(rejectMasterProfile(MODERATOR, created.id, "какая-то заметка")).rejects.toThrow(
+      "REJECT_NOT_ALLOWED"
+    );
+  });
+});
+
+// --- Видимость: isListed скрывает из публичных выдач ------------------------------
+describe("isListed", () => {
+  const publishOne = async (actor = MODERATOR) => {
+    const created = await createMasterProfile(USER.id, validInput());
+    await submitForReview(USER.id);
+    return approveMasterProfile(actor, created.id);
+  };
+
+  it("setOwnListed(false) скрывает мастера из listPublishedMasters и getPublishedMasterBySlug", async () => {
+    const approved = await publishOne();
+    expect(await listPublishedMasters()).toHaveLength(1);
+
+    await setOwnListed(USER.id, false);
+    expect(await listPublishedMasters()).toHaveLength(0);
+    expect(await getPublishedMasterBySlug(approved.slug!)).toBeNull();
+    expect(await listMasterSitemapEntries()).toHaveLength(0);
+
+    await setOwnListed(USER.id, true);
+    expect(await listPublishedMasters()).toHaveLength(1);
+  });
+
+  it("setMasterListed модератора работает так же, как тумблер владельца", async () => {
+    const approved = await publishOne();
+    await setMasterListed(MODERATOR, approved.id, false);
+    expect(await listPublishedMasters()).toHaveLength(0);
+  });
+});
+
+// --- Доступ к изображению ------------------------------------------------------------
+describe("getMasterImageAsset", () => {
+  const seedReadyImage = (overrides: Partial<Row> = {}): Row => {
+    const row: Row = {
+      id: `img-${++ids.counter}`,
+      profileId: "profile-x",
+      itemId: null,
+      storageKeyOriginal: "orig-key",
+      storageKeyLarge: "large-key",
+      storageKeyMedium: "medium-key",
+      storageKeyThumb: "thumb-key",
+      width: 800,
+      height: 600,
+      mimeType: "image/jpeg",
+      sizeBytes: 1234,
+      blurDataUrl: null,
+      sortOrder: 0,
+      status: "ready",
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      deletedAt: null,
+      ...overrides
+    };
+    store.masterImages.push(row);
+    return row;
+  };
+
+  it("несуществующее/удалённое/не-ready фото → NOT_FOUND для всех", async () => {
+    await expect(
+      getMasterImageAsset({ imageId: "ghost", variant: "medium", viewer: null })
+    ).rejects.toThrow("NOT_FOUND");
+
+    const deleted = seedReadyImage({ deletedAt: new Date() });
+    await expect(
+      getMasterImageAsset({ imageId: deleted.id, variant: "medium", viewer: null })
+    ).rejects.toThrow("NOT_FOUND");
+
+    const uploading = seedReadyImage({ status: "uploading" });
+    await expect(
+      getMasterImageAsset({ imageId: uploading.id, variant: "medium", viewer: null })
+    ).rejects.toThrow("NOT_FOUND");
+  });
+
+  it("публичный доступ только к фото из снапшота listed-профиля", async () => {
+    const created = await createMasterProfile(USER.id, validInput());
+    await submitForReview(USER.id);
+
+    const galleryImage = seedReadyImage({ profileId: created.id, itemId: null });
+
+    // Пока не approved — снапшота ещё нет, аноним не видит НИЧЕГО из фото профиля.
+    await expect(
+      getMasterImageAsset({ imageId: galleryImage.id, variant: "medium", viewer: null })
+    ).rejects.toThrow("FORBIDDEN");
+
+    // Владелец видит своё фото всегда (даже до публикации).
+    await expect(
+      getMasterImageAsset({ imageId: galleryImage.id, variant: "medium", viewer: { id: USER.id, role: "user" as any } })
+    ).resolves.toMatchObject({ cacheControl: "private, max-age=3600" });
+
+    await approveMasterProfile(MODERATOR, created.id);
+
+    // Фото из опубликованного снапшота — видно анониму.
+    const publicAsset = await getMasterImageAsset({ imageId: galleryImage.id, variant: "medium", viewer: null });
+    expect(publicAsset.cacheControl).toBe("public, max-age=31536000, immutable");
+
+    // Скрыли витрину — публичный доступ пропадает, хотя фото по-прежнему ready.
+    await setOwnListed(USER.id, false);
+    await expect(
+      getMasterImageAsset({ imageId: galleryImage.id, variant: "medium", viewer: null })
+    ).rejects.toThrow("FORBIDDEN");
+
+    // Модератор видит фото независимо от isListed.
+    await expect(
+      getMasterImageAsset({ imageId: galleryImage.id, variant: "medium", viewer: { id: MODERATOR.id, role: "moderator" as any } })
+    ).resolves.toMatchObject({ cacheControl: "private, max-age=3600" });
+  });
+
+  it("фото, не входящее в снапшот (загружено уже после approve), анонимам не видно", async () => {
+    const created = await createMasterProfile(USER.id, validInput());
+    await submitForReview(USER.id);
+    await approveMasterProfile(MODERATOR, created.id);
+
+    // Новое фото появилось в черновике ПОСЛЕ approve — в published_json его ещё нет.
+    const freshImage = seedReadyImage({ profileId: created.id, itemId: null });
+
+    await expect(
+      getMasterImageAsset({ imageId: freshImage.id, variant: "medium", viewer: null })
+    ).rejects.toThrow("FORBIDDEN");
+    await expect(
+      getMasterImageAsset({ imageId: freshImage.id, variant: "medium", viewer: { id: USER.id, role: "user" as any } })
+    ).resolves.toBeTruthy();
+  });
+});
+
+// --- countPendingMasters -----------------------------------------------------------
+describe("countPendingMasters", () => {
+  it("считает только профили в pending", async () => {
+    expect(await countPendingMasters()).toBe(0);
+    await createMasterProfile(USER.id, validInput());
+    await submitForReview(USER.id);
+    expect(await countPendingMasters()).toBe(1);
+
+    await createMasterProfile(USER_2.id, validInput({ displayName: "Пётр Смирнов" }));
+    expect(await countPendingMasters()).toBe(1); // второй ещё в draft, не в очереди
+  });
+});
