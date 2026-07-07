@@ -25,8 +25,8 @@ const baseSnapshot = (overrides: Partial<MasterPublishedSnapshot> = {}): MasterP
   ...overrides
 });
 
-const render = (snapshot: MasterPublishedSnapshot) =>
-  renderToStaticMarkup(React.createElement(MasterPageView, { snapshot }));
+const render = (snapshot: MasterPublishedSnapshot, container?: "main" | "div") =>
+  renderToStaticMarkup(React.createElement(MasterPageView, { snapshot, container }));
 
 describe("MasterPageView", () => {
   it("renders the header (name, city, craftSince) and the disclaimer", () => {
@@ -119,5 +119,79 @@ describe("MasterPageView", () => {
     const html = render(baseSnapshot({ gallery: [{ imageId: "img-1", blurDataUrl: null }] }));
     expect(html).toContain("Галерея работ");
     expect(html).toContain('src="/api/master-images/img-1/thumb"');
+  });
+
+  it("renders a clickable photo trigger for an item's photos (up to 6), not just the cover", () => {
+    const html = render(
+      baseSnapshot({
+        items: [
+          {
+            id: "item-1",
+            title: "ЦКТ 60 л",
+            description: "Нержавейка AISI304.",
+            priceNote: null,
+            coverImageId: "img-2",
+            images: [
+              { imageId: "img-1", blurDataUrl: null },
+              { imageId: "img-2", blurDataUrl: null },
+              { imageId: "img-3", blurDataUrl: null }
+            ]
+          }
+        ]
+      })
+    );
+    // Обложка — заявленный coverImageId (img-2), но кликабельная область открывает
+    // лайтбокс по всем фото изделия (переиспользуем MasterGalleryLightbox), а не
+    // только по обложке.
+    expect(html).toContain('src="/api/master-images/img-2/medium"');
+    expect(html).toContain("Смотреть фото изделия «ЦКТ 60 л»");
+  });
+
+  it("does not render a photo trigger aria-label when an item has no photos", () => {
+    const html = render(
+      baseSnapshot({
+        items: [
+          {
+            id: "item-1",
+            title: "Контроллер затирания",
+            description: "На заказ.",
+            priceNote: null,
+            coverImageId: null,
+            images: []
+          }
+        ]
+      })
+    );
+    expect(html).not.toContain("Смотреть фото изделия");
+    expect(html).toContain("disabled");
+  });
+
+  it("renders the item description behind a line-clamp + expand/collapse disclosure", () => {
+    const html = render(
+      baseSnapshot({
+        items: [
+          {
+            id: "item-1",
+            title: "ЦКТ 60 л",
+            description: "Нержавейка AISI304, рубашка охлаждения, полный автомат.",
+            priceNote: null,
+            coverImageId: null,
+            images: []
+          }
+        ]
+      })
+    );
+    expect(html).toContain("<details");
+    expect(html).toContain("Нержавейка AISI304");
+    expect(html).toContain("Показать полностью");
+    expect(html).toContain("Свернуть");
+  });
+
+  it("renders <main> by default and <div> when container=\"div\" (moderator preview embeds the page inside its own layout)", () => {
+    const asMain = render(baseSnapshot());
+    const asDiv = render(baseSnapshot(), "div");
+    expect(asMain.startsWith("<main")).toBe(true);
+    expect(asDiv.startsWith("<div")).toBe(true);
+    expect(asDiv).not.toContain("<main");
   });
 });

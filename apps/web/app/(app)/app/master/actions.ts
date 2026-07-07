@@ -20,7 +20,6 @@ import {
 } from "@/features/masters/service";
 import {
   deleteMasterImage,
-  moveMasterImage,
   reorderMasterImages,
   setMasterItemCover,
   type MasterImageDto,
@@ -43,6 +42,7 @@ const ERROR_MESSAGES: Record<string, string> = {
   ITEM_REORDER_MISMATCH: "Список изделий уже изменился — обновите страницу.",
   PROFILE_INCOMPLETE: "Заполните профиль полностью перед отправкой на модерацию.",
   SUBMIT_NOT_ALLOWED: "Заявка уже на модерации.",
+  UPLOAD_IN_PROGRESS: "Дождитесь окончания загрузки фото, потом отправляйте на модерацию.",
   WITHDRAW_NOT_ALLOWED: "Заявка не на модерации — отзывать нечего.",
   IMAGE_LIMIT_REACHED: "Можно загрузить не больше 24 фотографий на витрину.",
   ITEM_IMAGE_LIMIT_REACHED: "У одного изделия — не больше 6 фотографий.",
@@ -238,25 +238,3 @@ export const reorderMasterImagesAction = async (
   }
 };
 
-export type MasterImageActionResult =
-  | { ok: true; image: MasterImageDto }
-  | { ok: false; error: string };
-
-// Перенос фото между общей галереей и изделием — сервис уже это умеет (см.
-// features/masters/images.ts), но текущий MVP-кабинет не выставляет отдельный
-// UI-контрол «перенести»: фото либо грузится сразу в нужную зону (галерея/
-// карточка изделия), либо освобождается автоматически при удалении изделия
-// (deleteMasterItem уже отвязывает itemId → null). Экшен оставлен на будущее.
-export const moveMasterImageAction = async (
-  imageId: string,
-  itemId: string | null
-): Promise<MasterImageActionResult> => {
-  try {
-    const user = await requireUser();
-    const image = await moveMasterImage(user.id, imageId, itemId);
-    revalidateMasterCabinet();
-    return { ok: true, image };
-  } catch (error) {
-    return mapMasterError(error);
-  }
-};

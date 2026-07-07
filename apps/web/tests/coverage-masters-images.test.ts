@@ -466,6 +466,51 @@ describe("retryMasterImageUpload / completeMasterImageUpload / markMasterImageUp
   });
 });
 
+// Фикс #2 ревью: аплоад мог стартовать в draft и "доехать" до complete уже
+// после того, как профиль ушёл в pending (окно между проверкой submitForReview
+// и его UPDATE) — модератор ещё не видел это фото, доводить до ready нельзя.
+describe("complete/markFailed при reviewStatus=pending (фикс #2)", () => {
+  it("complete НЕ переводит слот в ready при pending — PROFILE_LOCKED_PENDING", async () => {
+    const profile = seedProfile({ reviewStatus: "pending" });
+    const uploading = seedImage(profile.id, {
+      status: "uploading",
+      storageKeyOriginal: null,
+      storageKeyLarge: null,
+      storageKeyMedium: null,
+      storageKeyThumb: null,
+      width: null,
+      height: null,
+      blurDataUrl: null
+    });
+
+    await expect(completeMasterImageUpload({
+      imageId: uploading.id,
+      userId: OWNER,
+      mimeType: "image/webp",
+      sizeBytes: 3000,
+      width: 1200,
+      height: 800,
+      blurDataUrl: "data:image/webp;base64,xyz",
+      storageKeyOriginal: "o",
+      storageKeyLarge: "l",
+      storageKeyMedium: "m",
+      storageKeyThumb: "t"
+    })).rejects.toThrow("PROFILE_LOCKED_PENDING");
+
+    const stored = store.masterImages.find((row) => row.id === uploading.id);
+    expect(stored?.status).toBe("uploading");
+    expect(stored?.storageKeyOriginal).toBeNull();
+  });
+
+  it("markMasterImageUploadFailed при pending всё равно применяется (failed безвреден)", async () => {
+    const profile = seedProfile({ reviewStatus: "pending" });
+    const uploading = seedImage(profile.id, { status: "uploading" });
+
+    const dto = await markMasterImageUploadFailed(uploading.id, OWNER);
+    expect(dto.status).toBe("failed");
+  });
+});
+
 describe("listOwnMasterImages", () => {
   it("возвращает ВСЕ живые фото (uploading/ready/failed), но не удалённые, по sortOrder", async () => {
     const profile = seedProfile();
@@ -516,6 +561,55 @@ describe("deleteMasterImage", () => {
     const image = seedImage(profile.id);
 
     await expect(deleteMasterImage(OTHER, image.id)).rejects.toThrow("NOT_FOUND");
+  });
+
+  // Фикс #1 ревью: пока опубликованный снапшот ссылается на фото, storage
+  // обязан пережить soft-delete — иначе живая витрина ломается до approve.
+  const buildSnapshot = (galleryImageIds: string[]) => ({
+    version: 1 as const,
+    displayName: "Мастер",
+    city: "Город",
+    specializations: ["vessels"],
+    summary: "s",
+    about: "a",
+    contacts: {},
+    craftSince: null,
+    gallery: galleryImageIds.map((imageId) => ({ imageId, blurDataUrl: null })),
+    items: [],
+    publishedAt: new Date().toISOString()
+  });
+
+  it("фото из текущего publishedJson: soft-delete есть, storage НЕ трогаем", async () => {
+    const profile = seedProfile();
+    const image = seedImage(profile.id);
+    store.masterProfiles = store.masterProfiles.map((row) =>
+      row.id === profile.id ? { ...row, publishedJson: buildSnapshot([image.id]) } : row
+    );
+
+    const result = await deleteMasterImage(OWNER, image.id);
+    expect(result.ok).toBe(true);
+
+    expect(storageDeleteSpy).not.toHaveBeenCalled();
+
+    const images = await listOwnMasterImages(OWNER);
+    expect(images).toHaveLength(0); // soft-delete скрывает фото из кабинета как обычно
+  });
+
+  it("фото НЕ входит в publishedJson (правки после публикации): storage удаляется сразу", async () => {
+    const profile = seedProfile();
+    const image = seedImage(profile.id);
+    // Снапшот существует (профиль был опубликован), но НЕ ссылается на это
+    // фото — оно появилось в черновике уже после публикации.
+    store.masterProfiles = store.masterProfiles.map((row) =>
+      row.id === profile.id ? { ...row, publishedJson: buildSnapshot([]) } : row
+    );
+
+    await deleteMasterImage(OWNER, image.id);
+
+    expect(storageDeleteSpy).toHaveBeenCalledWith("orig");
+    expect(storageDeleteSpy).toHaveBeenCalledWith("large");
+    expect(storageDeleteSpy).toHaveBeenCalledWith("medium");
+    expect(storageDeleteSpy).toHaveBeenCalledWith("thumb");
   });
 });
 

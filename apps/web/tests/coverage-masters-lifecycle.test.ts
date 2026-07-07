@@ -95,7 +95,14 @@ vi.mock("@nb/db", () => {
     return next;
   };
 
-  const genId = () => `id-${++ids.counter}`;
+  // uuid-формат нужен по-настоящему: getMasterProfileForModeration (фикс #13)
+  // валидирует id через z.string().uuid() до запроса к БД — плоское "id-1" его
+  // не пройдёт. Версия/вариант-ниблы (4/8) подставлены, чтобы регэксп zod
+  // (требует [1-5] и [89ab]) точно совпал.
+  const genId = () => {
+    const hex = (++ids.counter).toString(16).padStart(12, "0");
+    return `00000000-0000-4000-8000-${hex}`;
+  };
   const nowTick = () => new Date(Date.UTC(2026, 0, 1) + ++ids.clock * 1000);
 
   const doInsert = (tableName: string, values: Row): Row => {
@@ -231,6 +238,10 @@ vi.mock("@nb/db", () => {
     insert,
     update,
     delete: del,
+    // no-op: реальная сериализация "for update" тут не нужна (мок однопоточный),
+    // но approve/reject/createMasterItem/deleteMasterItem/reorderMasterItems
+    // (фиксы #3/#4/#10/#11) зовут tx.execute(sql`...for update`) внутри транзакции.
+    execute: async () => {},
     transaction: async (cb: any) => cb(db)
   };
 
@@ -242,6 +253,7 @@ vi.mock("@nb/db", () => {
     isNull: (col: any) => ({ kind: "isNull", col }),
     asc: (col: any) => ({ kind: "order", dir: "asc", col }),
     desc: (col: any) => ({ kind: "order", dir: "desc", col }),
+    sql: (strings: TemplateStringsArray, ...values: unknown[]) => ({ strings, values }),
     masterProfiles: ref("masterProfiles", [
       "id", "userId", "slug", "displayName", "city", "specializations", "summary", "about",
       "contactTelegram", "contactPhone", "contactEmail", "contactWebsite", "craftSince",
@@ -266,9 +278,14 @@ vi.mock("@/lib/auth", () => ({
   hasRequiredRole: (current: string, required: string) => ROLE_WEIGHTS[current] >= ROLE_WEIGHTS[required]
 }));
 
+const { storageDeleteSpy } = vi.hoisted(() => ({
+  storageDeleteSpy: vi.fn(async (_key: string) => {})
+}));
+
 vi.mock("@/lib/storage", () => ({
   storageAdapter: {
-    getObject: async (key: string | null) => (key ? { body: Buffer.from(key), contentType: null } : null)
+    getObject: async (key: string | null) => (key ? { body: Buffer.from(key), contentType: null } : null),
+    delete: (key: string) => storageDeleteSpy(key)
   }
 }));
 
@@ -295,6 +312,11 @@ import {
   withdrawSubmission,
   type MasterActor
 } from "@/features/masters/service";
+// Кросс-импорт из соседнего модуля фичи (images.ts) — намеренно: интеграционный
+// тест GC (фикс #1) должен гонять реальный deleteMasterImage поверх той же
+// in-memory БД, что и approveMasterProfile/submitForReview из service.ts (оба
+// модуля резолвят один и тот же vi.mock("@nb/db") в рамках этого тест-файла).
+import { deleteMasterImage } from "@/features/masters/images";
 import type { MasterProfileInput } from "@/features/masters/contracts";
 
 const USER: MasterActor = { id: "user-1", role: "user" as any };
@@ -350,6 +372,7 @@ beforeEach(() => {
   store.masterImages = [];
   ids.counter = 0;
   ids.clock = 0;
+  storageDeleteSpy.mockClear();
 });
 
 // --- Жизненный цикл: draft → pending → approve (снапшот + слаг) -----------------
@@ -388,7 +411,7 @@ describe("жизненный цикл: create → submit → approve", () => {
     expect(approvedB.slug).toBe("ivan-kuznecov-2");
   });
 
-  it("pending → reject → правка возвращает в draft (заметка остаётся) → повторный submit её очищает", async () => {
+  it("pending → reject → правка НЕ меняет статус (остаётся rejected, заметка остаётся) → submit переводит в pending и чистит заметку (фикс #12)", async () => {
     const created = await createMasterProfile(USER.id, validInput());
     await submitForReview(USER.id);
 
@@ -396,8 +419,11 @@ describe("жизненный цикл: create → submit → approve", () => {
     expect(rejected.reviewStatus).toBe("rejected");
     expect(rejected.moderationNote).toBe("Уточните контакты, пожалуйста");
 
+    // Раньше правка профиля переводила rejected→draft (а правка изделий/фото —
+    // нет). Теперь НИКАКАЯ правка черновика не меняет reviewStatus — единая
+    // точка перехода это submitForReview.
     const edited = await updateMasterProfile(USER.id, validInput({ city: "Москва" }));
-    expect(edited.reviewStatus).toBe("draft");
+    expect(edited.reviewStatus).toBe("rejected");
     expect(edited.city).toBe("Москва");
     // Заметка модератора остаётся видна в кабинете до следующей отправки.
     expect(edited.moderationNote).toBe("Уточните контакты, пожалуйста");
@@ -731,5 +757,210 @@ describe("countPendingMasters", () => {
 
     await createMasterProfile(USER_2.id, validInput({ displayName: "Пётр Смирнов" }));
     expect(await countPendingMasters()).toBe(1); // второй ещё в draft, не в очереди
+  });
+});
+
+// --- Фикс #1: снапшот переживает удаление фото, GC подчищает осиротевшее ---------
+describe("удаление фото из опубликованного снапшота не ломает витрину (фикс #1)", () => {
+  it("storage сохраняется, пока снапшот ссылается; getMasterImageAsset отдаёт его публично; следующий approve чистит GC", async () => {
+    const created = await createMasterProfile(USER.id, validInput());
+
+    const galleryImage = {
+      id: "img-gc-1",
+      profileId: created.id,
+      itemId: null,
+      storageKeyOriginal: "orig-1",
+      storageKeyLarge: "large-1",
+      storageKeyMedium: "medium-1",
+      storageKeyThumb: "thumb-1",
+      width: 800,
+      height: 600,
+      mimeType: "image/jpeg",
+      sizeBytes: 1000,
+      blurDataUrl: null,
+      sortOrder: 0,
+      status: "ready",
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      deletedAt: null
+    };
+    store.masterImages.push(galleryImage);
+
+    await submitForReview(USER.id);
+    const approved = await approveMasterProfile(MODERATOR, created.id);
+    expect(approved.hasPublished).toBe(true);
+
+    // approve вернул профиль обратно в draft — удаление фото разрешено.
+    await deleteMasterImage(USER.id, galleryImage.id);
+    expect(storageDeleteSpy).not.toHaveBeenCalled();
+
+    // Публика по-прежнему видит фото по старому снапшоту, несмотря на deletedAt.
+    const publicAsset = await getMasterImageAsset({ imageId: galleryImage.id, variant: "medium", viewer: null });
+    expect(publicAsset.cacheControl).toBe("public, max-age=31536000, immutable");
+
+    // Правим черновик и публикуем снова — в новый снапшот удалённое фото уже
+    // не попадает (assembleMasterSnapshot берёт только ready+не-deleted).
+    await updateMasterProfile(USER.id, validInput({ summary: "Новое summary после правки" }));
+    await submitForReview(USER.id);
+    await approveMasterProfile(MODERATOR, created.id);
+
+    // GC подчистил storage у осиротевшего фото.
+    expect(storageDeleteSpy).toHaveBeenCalledWith("orig-1");
+    expect(storageDeleteSpy).toHaveBeenCalledWith("large-1");
+    expect(storageDeleteSpy).toHaveBeenCalledWith("medium-1");
+    expect(storageDeleteSpy).toHaveBeenCalledWith("thumb-1");
+
+    // И публичный доступ пропал совсем: фото deletedAt и уже не в снапшоте —
+    // ранний гейт на deletedAt отдаёт NOT_FOUND, до проверки прав доступа.
+    await expect(
+      getMasterImageAsset({ imageId: galleryImage.id, variant: "medium", viewer: null })
+    ).rejects.toThrow("NOT_FOUND");
+  });
+
+  it("фото, не входящее в снапшот, GC не трогает при approve (нечего чистить)", async () => {
+    const created = await createMasterProfile(USER.id, validInput());
+    await submitForReview(USER.id);
+    await approveMasterProfile(MODERATOR, created.id);
+
+    // Фото появилось и было удалено уже после первой публикации — оно никогда
+    // не входило ни в один снапшот, поэтому deleteMasterImage (не через мок, а
+    // напрямую в сторе, для простоты) должно было почистить storage сразу; GC
+    // на approve просто не находит для него работы (уже нечего удалять).
+    store.masterImages.push({
+      id: "img-gc-2",
+      profileId: created.id,
+      itemId: null,
+      storageKeyOriginal: null,
+      storageKeyLarge: null,
+      storageKeyMedium: null,
+      storageKeyThumb: null,
+      width: null,
+      height: null,
+      mimeType: "image/jpeg",
+      sizeBytes: 1000,
+      blurDataUrl: null,
+      sortOrder: 0,
+      status: "ready",
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      deletedAt: new Date()
+    });
+
+    await updateMasterProfile(USER.id, validInput({ summary: "Ещё правка" }));
+    await submitForReview(USER.id);
+    await approveMasterProfile(MODERATOR, created.id);
+
+    expect(storageDeleteSpy).not.toHaveBeenCalled();
+  });
+});
+
+// --- Фикс #2: живая загрузка блокирует отправку на модерацию --------------------
+describe("submitForReview отклоняет при незавершённой загрузке фото (фикс #2)", () => {
+  it("живой uploading-слот → UPLOAD_IN_PROGRESS", async () => {
+    const created = await createMasterProfile(USER.id, validInput());
+    store.masterImages.push({
+      id: "img-uploading-1",
+      profileId: created.id,
+      itemId: null,
+      storageKeyOriginal: null,
+      storageKeyLarge: null,
+      storageKeyMedium: null,
+      storageKeyThumb: null,
+      width: null,
+      height: null,
+      mimeType: "image/jpeg",
+      sizeBytes: 1000,
+      blurDataUrl: null,
+      sortOrder: 0,
+      status: "uploading",
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      deletedAt: null
+    });
+
+    await expect(submitForReview(USER.id)).rejects.toThrow("UPLOAD_IN_PROGRESS");
+  });
+
+  it("deletedAt-uploading-слот не блокирует отправку (он уже не живой)", async () => {
+    const created = await createMasterProfile(USER.id, validInput());
+    store.masterImages.push({
+      id: "img-uploading-2",
+      profileId: created.id,
+      itemId: null,
+      storageKeyOriginal: null,
+      storageKeyLarge: null,
+      storageKeyMedium: null,
+      storageKeyThumb: null,
+      width: null,
+      height: null,
+      mimeType: "image/jpeg",
+      sizeBytes: 1000,
+      blurDataUrl: null,
+      sortOrder: 0,
+      status: "uploading",
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      deletedAt: new Date()
+    });
+
+    await expect(submitForReview(USER.id)).resolves.toMatchObject({ reviewStatus: "pending" });
+  });
+});
+
+// --- Фикс #3: TOCTOU-защита approve/reject ---------------------------------------
+describe("approve/reject защищены от гонки с уходом из pending (фикс #3)", () => {
+  it("approve после того, как профиль ушёл из pending (withdraw) → APPROVE_NOT_ALLOWED, снапшот не пишется", async () => {
+    const created = await createMasterProfile(USER.id, validInput());
+    await submitForReview(USER.id);
+
+    // Симулируем гонку: между тем, как модератор открыл заявку, и его approve
+    // профиль успел выйти из pending (withdraw владельцем).
+    await withdrawSubmission(USER.id);
+
+    await expect(approveMasterProfile(MODERATOR, created.id)).rejects.toThrow("APPROVE_NOT_ALLOWED");
+
+    const own = await getOwnMasterProfile(USER.id);
+    expect(own?.profile.hasPublished).toBe(false);
+    expect(own?.profile.publishedAt).toBeNull();
+  });
+
+  it("reject после того, как профиль ушёл из pending → REJECT_NOT_ALLOWED", async () => {
+    const created = await createMasterProfile(USER.id, validInput());
+    await submitForReview(USER.id);
+    await withdrawSubmission(USER.id);
+
+    await expect(rejectMasterProfile(MODERATOR, created.id, "неважно, профиль уже не pending")).rejects.toThrow(
+      "REJECT_NOT_ALLOWED"
+    );
+  });
+});
+
+// --- Фикс #4: reorderMasterItems применяется атомарно ----------------------------
+describe("reorderMasterItems применяется атомарно (фикс #4)", () => {
+  it("новый sortOrder применяется ко всем элементам в одной транзакции", async () => {
+    await createMasterProfile(USER.id, validInput());
+    const a = await createMasterItem(USER.id, { title: "Изделие A", description: "" });
+    const b = await createMasterItem(USER.id, { title: "Изделие B", description: "" });
+    const c = await createMasterItem(USER.id, { title: "Изделие C", description: "" });
+
+    const reordered = await reorderMasterItems(USER.id, [c.id, a.id, b.id]);
+    expect(reordered.map((item) => ({ id: item.id, sortOrder: item.sortOrder }))).toEqual([
+      { id: c.id, sortOrder: 0 },
+      { id: a.id, sortOrder: 1 },
+      { id: b.id, sortOrder: 2 }
+    ]);
+  });
+});
+
+// --- Фикс #13: невалидный uuid не долетает до БД ---------------------------------
+describe("getMasterProfileForModeration защищён от мусорного id (фикс #13)", () => {
+  it("невалидный uuid → NOT_FOUND (не 500 от Postgres)", async () => {
+    await expect(getMasterProfileForModeration(MODERATOR, "not-a-uuid")).rejects.toThrow("NOT_FOUND");
+  });
+
+  it("валидный, но несуществующий uuid → NOT_FOUND", async () => {
+    await expect(
+      getMasterProfileForModeration(MODERATOR, "00000000-0000-4000-8000-000000000000")
+    ).rejects.toThrow("NOT_FOUND");
   });
 });

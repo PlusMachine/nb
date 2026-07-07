@@ -24,7 +24,7 @@ export function MasterGallery({ images }: { images: MasterPublishedSnapshotImage
             type="button"
             onClick={() => setOpenIndex(index)}
             aria-label="Открыть фото"
-            className="rounded-xl ring-1 ring-inset ring-black/5 transition hover:opacity-90"
+            className="rounded-xl ring-1 ring-inset ring-border transition hover:opacity-90"
           >
             <MasterImage imageRef={image} variant="thumb" alt="Фото работы мастера" className="aspect-square w-full rounded-xl" sizes="200px" />
           </button>

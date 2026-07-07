@@ -5,6 +5,7 @@ import Image from "next/image";
 import { ChevronDown, ChevronUp, ImagePlus, Star, Trash2 } from "lucide-react";
 
 import { useToast } from "@nb/ui";
+import { ConfirmActionDialog } from "@/components/shared/confirm-action-dialog";
 import {
   MASTER_IMAGE_MAX_FILE_BYTES,
   masterImageAcceptedMimeTypes
@@ -66,12 +67,30 @@ const buildLocalItem = ({
   isLocalOnly: true
 });
 
-const parseUploadResponse = (responseText: string) => {
+// Ответ приходит по сети как JSON — createdAt/updatedAt там ISO-строки, а не
+// Date (в отличие от типа MasterImageDto). sortItems ниже зовёт a.createdAt.getTime(),
+// поэтому даты нормализуем сразу здесь, а не полагаемся на каст типа.
+type UploadResponseImage = Omit<MasterImageDto, "createdAt" | "updatedAt"> & {
+  createdAt: string;
+  updatedAt: string;
+};
+
+const normalizeUploadResponseImage = (image: UploadResponseImage | null | undefined): MasterImageDto | undefined => {
+  if (!image) {
+    return undefined;
+  }
+  return { ...image, createdAt: new Date(image.createdAt), updatedAt: new Date(image.updatedAt) };
+};
+
+// Экспортирован ради юнит-теста нормализации дат (см.
+// tests/master-cabinet-client-logic.test.ts) — чистая функция, без DOM/React.
+export const parseUploadResponse = (responseText: string): { ok?: boolean; message?: string; image?: MasterImageDto } => {
   if (!responseText) {
     return {};
   }
   try {
-    return JSON.parse(responseText) as { ok?: boolean; message?: string; image?: MasterImageDto };
+    const parsed = JSON.parse(responseText) as { ok?: boolean; message?: string; image?: UploadResponseImage | null };
+    return { ok: parsed.ok, message: parsed.message, image: normalizeUploadResponseImage(parsed.image) };
   } catch {
     return {};
   }
@@ -101,12 +120,23 @@ export function MasterImageManager({
   const toast = useToast();
   const [items, setItems] = useState<MasterImageCardItem[]>(() => sortItems(images));
   const [sectionError, setSectionError] = useState<string | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<MasterImageCardItem | null>(null);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
+  const [actionBusy, setActionBusy] = useState(false);
   const inputRef = useRef<HTMLInputElement | null>(null);
   const uploadRequestsRef = useRef<Record<string, XMLHttpRequest>>({});
+  // «Последнее известное» состояние items — читается из replaceItem (см. ниже),
+  // которая срабатывает из xhr-колбэков (не во время рендера) и поэтому не может
+  // брать items из замыкания без риска устаревших данных.
+  const itemsRef = useRef<MasterImageCardItem[]>(items);
 
   useEffect(() => {
     setItems(sortItems(images));
   }, [images]);
+
+  useEffect(() => {
+    itemsRef.current = items;
+  }, [items]);
 
   useEffect(() => () => {
     Object.values(uploadRequestsRef.current).forEach((request) => request.abort());
@@ -118,12 +148,19 @@ export function MasterImageManager({
     onChange(sorted.filter((item) => !item.isLocalOnly));
   }, [onChange]);
 
+  // Раньше onChange (сеттер родителя — MasterCabinet) звался прямо внутри
+  // функции-апдейтера setItems(current => {...}). React иногда исполняет такие
+  // апдейтеры в процессе рендера компонента (в т.ч. дважды в StrictMode) — вызов
+  // чужого setState оттуда триггерил предупреждение «Cannot update a component
+  // (MasterCabinet) while rendering a different component (MasterImageManager)».
+  // Фикс: берём актуальный список из itemsRef (не из аргумента апдейтера) и зовём
+  // setItems/onChange как два обычных сайд-эффекта в теле колбэка (он и так
+  // выполняется асинхронно из xhr.onload/onerror, а не во время рендера).
   const replaceItem = useCallback((sourceId: string, next: MasterImageCardItem) => {
-    setItems((current) => {
-      const updated = sortItems(current.map((item) => (item.id === sourceId ? next : item)));
-      onChange(updated.filter((item) => !item.isLocalOnly));
-      return updated;
-    });
+    const updated = sortItems(itemsRef.current.map((item) => (item.id === sourceId ? next : item)));
+    itemsRef.current = updated;
+    setItems(updated);
+    onChange(updated.filter((item) => !item.isLocalOnly));
   }, [onChange]);
 
   const uploadFile = useCallback((file: File, sourceId: string, retryImageId?: string) => new Promise<void>((resolve) => {
@@ -174,7 +211,7 @@ export function MasterImageManager({
     xhr.onerror = () => {
       delete uploadRequestsRef.current[sourceId];
       replaceItem(sourceId, {
-        ...buildLocalItem({ file, status: "failed", message: "Не удалось загрузить. Попробуйте еще раз.", canRetry: true }),
+        ...buildLocalItem({ file, status: "failed", message: "Не удалось загрузить. Попробуйте ещё раз.", canRetry: true }),
         id: sourceId
       });
       resolve();
@@ -243,7 +280,7 @@ export function MasterImageManager({
     }
 
     if (skippedByLimit > 0) {
-      setSectionError(scopeMaxCount ? `Лимит: ${scopeMaxCount} фото для этого изделия. Лишние файлы не загружали.` : "Общий лимит фотографий витрины — 24. Лишние файлы не загружали.");
+      setSectionError(scopeMaxCount ? `Лимит: ${scopeMaxCount} фото для этого изделия. Лишние файлы не загружены.` : "Общий лимит фотографий витрины — 24. Лишние файлы не загружены.");
     }
 
     if (localFailures.length) {
@@ -261,23 +298,40 @@ export function MasterImageManager({
     await uploadFile(item.localFile, item.id, item.isLocalOnly ? undefined : item.id);
   }, [disabled, uploadFile]);
 
-  const handleDelete = useCallback(async (item: MasterImageCardItem) => {
-    setSectionError(null);
-
+  // Удаление серверного фото необратимо (файл стирается физически) — по CLAUDE.md
+  // и ТЗ §6 такие действия идут через ConfirmActionDialog. Для локального слота
+  // (isLocalOnly — файл ещё не долетел до сервера или отклонён на клиенте до
+  // отправки) подтверждение не нужно: терять там нечего, убираем сразу.
+  const performDelete = useCallback(async (item: MasterImageCardItem) => {
     if (item.isLocalOnly) {
-      commitList(items.filter((candidate) => candidate.id !== item.id));
+      commitList(itemsRef.current.filter((candidate) => candidate.id !== item.id));
       return;
     }
 
+    setActionBusy(true);
+    setDeleteError(null);
     const result = await deleteMasterImageAction(item.id);
+    setActionBusy(false);
+
     if (!result.ok) {
-      setSectionError(result.error);
+      setDeleteError(result.error);
       toast.show({ title: "Не удалось удалить фото", description: result.error, tone: "danger" });
       return;
     }
 
-    commitList(items.filter((candidate) => candidate.id !== item.id));
-  }, [commitList, items, toast]);
+    setDeleteTarget(null);
+    commitList(itemsRef.current.filter((candidate) => candidate.id !== item.id));
+  }, [commitList, toast]);
+
+  const requestDelete = useCallback((item: MasterImageCardItem) => {
+    setSectionError(null);
+    if (item.isLocalOnly) {
+      void performDelete(item);
+      return;
+    }
+    setDeleteError(null);
+    setDeleteTarget(item);
+  }, [performDelete]);
 
   const handleMove = useCallback(async (item: MasterImageCardItem, direction: -1 | 1) => {
     const readyItems = items.filter((candidate) => !candidate.isLocalOnly);
@@ -293,9 +347,11 @@ export function MasterImageManager({
 
     setSectionError(null);
     const previous = items;
+    setActionBusy(true);
     commitList(reordered.map((candidate, idx) => ({ ...candidate, sortOrder: idx })));
 
     const result = await reorderMasterImagesAction({ itemId, imageIds: orderedIds });
+    setActionBusy(false);
     if (!result.ok) {
       commitList(previous);
       setSectionError(result.error);
@@ -304,6 +360,14 @@ export function MasterImageManager({
 
     commitList(result.images);
   }, [commitList, itemId, items]);
+
+  const handleSetCover = useCallback((imageId: string | null) => {
+    if (!onSetCover) {
+      return;
+    }
+    setActionBusy(true);
+    void Promise.resolve(onSetCover(imageId)).finally(() => setActionBusy(false));
+  }, [onSetCover]);
 
   const readyOrPendingItems = items;
 
@@ -361,8 +425,9 @@ export function MasterImageManager({
                         type="button"
                         aria-label="Сделать обложкой"
                         title="Сделать обложкой"
-                        className="pointer-events-auto inline-flex h-7 w-7 items-center justify-center rounded-full bg-foreground/70 text-background hover:bg-foreground/90"
-                        onClick={() => onSetCover(item.id)}
+                        disabled={actionBusy}
+                        className="pointer-events-auto inline-flex h-7 w-7 items-center justify-center rounded-full bg-foreground/70 text-background hover:bg-foreground/90 disabled:opacity-40"
+                        onClick={() => handleSetCover(item.id)}
                       >
                         <Star className="h-3.5 w-3.5" />
                       </button>
@@ -371,8 +436,9 @@ export function MasterImageManager({
                       type="button"
                       aria-label="Удалить фото"
                       title="Удалить"
-                      className="pointer-events-auto inline-flex h-7 w-7 items-center justify-center rounded-full bg-foreground/70 text-background hover:bg-destructive"
-                      onClick={() => void handleDelete(item)}
+                      disabled={actionBusy}
+                      className="pointer-events-auto inline-flex h-7 w-7 items-center justify-center rounded-full bg-foreground/70 text-background hover:bg-destructive disabled:opacity-40"
+                      onClick={() => requestDelete(item)}
                     >
                       <Trash2 className="h-3.5 w-3.5" />
                     </button>
@@ -384,7 +450,7 @@ export function MasterImageManager({
                     <button
                       type="button"
                       aria-label="Переместить раньше"
-                      disabled={index === 0}
+                      disabled={index === 0 || actionBusy}
                       className="pointer-events-auto inline-flex h-6 w-6 items-center justify-center rounded-full bg-foreground/70 text-background disabled:opacity-30"
                       onClick={() => void handleMove(item, -1)}
                     >
@@ -393,7 +459,7 @@ export function MasterImageManager({
                     <button
                       type="button"
                       aria-label="Переместить позже"
-                      disabled={index === readyOrPendingItems.length - 1}
+                      disabled={index === readyOrPendingItems.length - 1 || actionBusy}
                       className="pointer-events-auto inline-flex h-6 w-6 items-center justify-center rounded-full bg-foreground/70 text-background disabled:opacity-30"
                       onClick={() => void handleMove(item, 1)}
                     >
@@ -417,7 +483,8 @@ export function MasterImageManager({
                       {item.canRetry !== false ? (
                         <button
                           type="button"
-                          className="rounded-full bg-foreground px-2 py-0.5 text-[10px] font-medium text-background"
+                          disabled={actionBusy}
+                          className="rounded-full bg-foreground px-2 py-0.5 text-[10px] font-medium text-background disabled:opacity-40"
                           onClick={() => void handleRetry(item)}
                         >
                           Повторить
@@ -425,8 +492,9 @@ export function MasterImageManager({
                       ) : null}
                       <button
                         type="button"
-                        className="rounded-full bg-destructive-subtle px-2 py-0.5 text-[10px] font-medium text-destructive-subtle-foreground"
-                        onClick={() => void handleDelete(item)}
+                        disabled={actionBusy}
+                        className="rounded-full bg-destructive-subtle px-2 py-0.5 text-[10px] font-medium text-destructive-subtle-foreground disabled:opacity-40"
+                        onClick={() => requestDelete(item)}
                       >
                         Удалить
                       </button>
@@ -453,6 +521,22 @@ export function MasterImageManager({
       ) : null}
 
       {sectionError ? <p className="text-sm text-destructive">{sectionError}</p> : null}
+
+      <ConfirmActionDialog
+        open={deleteTarget !== null}
+        title="Удалить фото?"
+        description="Фото удалится безвозвратно."
+        confirmLabel="Удалить фото"
+        pendingLabel="Удаляем…"
+        pending={actionBusy}
+        error={deleteError}
+        onClose={() => setDeleteTarget(null)}
+        onConfirm={() => {
+          if (deleteTarget) {
+            void performDelete(deleteTarget);
+          }
+        }}
+      />
     </div>
   );
 }

@@ -9,12 +9,14 @@ import {
   isNull,
   masterImages,
   masterItems,
-  masterProfiles
+  masterProfiles,
+  sql
 } from "@nb/db";
 import type { UserRole } from "@nb/auth";
 
 import { storageAdapter } from "@/lib/storage";
 
+import { deleteMasterImageObjects } from "./images";
 import { getMasterCapabilities } from "./permissions";
 import { appendSlugSuffix, toMasterSlugBase } from "./slug";
 import {
@@ -196,14 +198,30 @@ const assertModerator = (actor: MasterActor) => {
   }
 };
 
-const listMasterItemRows = async (profileId: string): Promise<MasterItemRow[]> =>
-  db.query.masterItems.findMany({
+type MasterQueryExecutor = Pick<typeof db, "query">;
+type MasterProfileMutationExecutor = Pick<typeof db, "execute" | "query" | "update" | "insert" | "delete">;
+
+// Лочим строку профиля на время мутации (select ... for update) — локальная копия
+// lockMasterProfileMutation из features/masters/images.ts (та не экспортируется,
+// дублирование дешевле кросс-импорта приватной функции соседнего модуля).
+const lockMasterProfileMutation = async (tx: MasterProfileMutationExecutor, profileId: string) => {
+  await tx.execute(sql`select ${masterProfiles.id} from ${masterProfiles} where ${masterProfiles.id} = ${profileId} for update`);
+};
+
+const listMasterItemRows = async (
+  profileId: string,
+  executor: MasterQueryExecutor = db
+): Promise<MasterItemRow[]> =>
+  executor.query.masterItems.findMany({
     where: eq(masterItems.profileId, profileId),
     orderBy: [asc(masterItems.sortOrder), asc(masterItems.createdAt)]
   });
 
-const listReadyMasterImageRows = async (profileId: string): Promise<MasterImageRow[]> =>
-  db.query.masterImages.findMany({
+const listReadyMasterImageRows = async (
+  profileId: string,
+  executor: MasterQueryExecutor = db
+): Promise<MasterImageRow[]> =>
+  executor.query.masterImages.findMany({
     where: and(
       eq(masterImages.profileId, profileId),
       eq(masterImages.status, "ready"),
@@ -226,13 +244,17 @@ const ensureOwnMasterItemRow = async (
   return { profile, item };
 };
 
-const resolveUniqueMasterSlug = async (displayName: string, excludeProfileId?: string): Promise<string> => {
+const resolveUniqueMasterSlug = async (
+  displayName: string,
+  excludeProfileId?: string,
+  executor: MasterQueryExecutor = db
+): Promise<string> => {
   const base = toMasterSlugBase(displayName);
   let index = 1;
 
   while (index <= 1000) {
     const candidate = appendSlugSuffix(base, index);
-    const existing = await db.query.masterProfiles.findFirst({ where: eq(masterProfiles.slug, candidate) });
+    const existing = await executor.query.masterProfiles.findFirst({ where: eq(masterProfiles.slug, candidate) });
 
     if (!existing || existing.id === excludeProfileId) {
       return candidate;
@@ -351,12 +373,12 @@ export const updateMasterProfile = async (userId: string, input: unknown): Promi
   assertProfileEditable(profile);
 
   const parsed = masterProfileInputSchema.parse(input);
-  // Правка черновика после отклонения возвращает профиль в draft — заметка
-  // модератора остаётся видна до следующего submitForReview (он её очищает).
-  const nextReviewStatus: MasterReviewStatus = profile.reviewStatus === "rejected"
-    ? "draft"
-    : (profile.reviewStatus as MasterReviewStatus);
 
+  // Правка черновика НЕ меняет reviewStatus (в т.ч. rejected → остаётся
+  // rejected) — единая точка перехода в draft/pending теперь только
+  // submitForReview (он же чистит заметку модератора). Раньше rejected→draft
+  // срабатывал только здесь, а правки изделий/фото его не трогали —
+  // непоследовательная машина состояний (фикс #12 ревью).
   const [updated] = await db.update(masterProfiles).set({
     displayName: parsed.displayName,
     city: parsed.city,
@@ -368,7 +390,6 @@ export const updateMasterProfile = async (userId: string, input: unknown): Promi
     contactEmail: parsed.contactEmail ?? null,
     contactWebsite: parsed.contactWebsite ?? null,
     craftSince: parsed.craftSince ?? null,
-    reviewStatus: nextReviewStatus,
     updatedAt: new Date()
   }).where(eq(masterProfiles.id, profile.id)).returning();
 
@@ -385,25 +406,35 @@ export const createMasterItem = async (userId: string, input: unknown): Promise<
   const profile = await ensureOwnMasterProfileRow(userId);
   assertProfileEditable(profile);
 
-  const items = await listMasterItemRows(profile.id);
-  if (items.length >= MASTER_ITEM_MAX_COUNT) {
-    throw new Error("ITEM_LIMIT_REACHED");
-  }
-
   const parsed = masterItemInputSchema.parse(input);
-  const nextSortOrder = items.reduce((max, item) => Math.max(max, item.sortOrder), -1) + 1;
 
-  const [created] = await db.insert(masterItems).values({
-    profileId: profile.id,
-    title: parsed.title,
-    description: parsed.description,
-    priceNote: parsed.priceNote ?? null,
-    sortOrder: nextSortOrder
-  }).returning();
+  // Лимит + insert + sortOrder — под локом профиля в одной транзакции, иначе
+  // параллельные запросы могут читать одинаковый items.length ДО чужого insert
+  // и оба пройти проверку лимита (фикс #10 ревью).
+  const created = await db.transaction(async (tx) => {
+    await lockMasterProfileMutation(tx, profile.id);
 
-  if (!created) {
-    throw new Error("CREATE_FAILED");
-  }
+    const items = await listMasterItemRows(profile.id, tx);
+    if (items.length >= MASTER_ITEM_MAX_COUNT) {
+      throw new Error("ITEM_LIMIT_REACHED");
+    }
+
+    const nextSortOrder = items.reduce((max, item) => Math.max(max, item.sortOrder), -1) + 1;
+
+    const [row] = await tx.insert(masterItems).values({
+      profileId: profile.id,
+      title: parsed.title,
+      description: parsed.description,
+      priceNote: parsed.priceNote ?? null,
+      sortOrder: nextSortOrder
+    }).returning();
+
+    if (!row) {
+      throw new Error("CREATE_FAILED");
+    }
+
+    return row;
+  });
 
   return mapMasterItemRow(created);
 };
@@ -434,12 +465,18 @@ export const deleteMasterItem = async (userId: string, itemId: string): Promise<
   const { profile, item } = await ensureOwnMasterItemRow(userId, itemId);
   assertProfileEditable(profile);
 
-  await db.update(masterImages).set({
-    itemId: null,
-    updatedAt: new Date()
-  }).where(eq(masterImages.itemId, item.id));
+  // Отвязка фото + удаление изделия — одной транзакцией с локом профиля, чтобы
+  // не оставлять окно между двумя стейтментами (фикс #11 ревью).
+  await db.transaction(async (tx) => {
+    await lockMasterProfileMutation(tx, profile.id);
 
-  await db.delete(masterItems).where(eq(masterItems.id, item.id));
+    await tx.update(masterImages).set({
+      itemId: null,
+      updatedAt: new Date()
+    }).where(eq(masterImages.itemId, item.id));
+
+    await tx.delete(masterItems).where(eq(masterItems.id, item.id));
+  });
 
   return { ok: true };
 };
@@ -448,22 +485,29 @@ export const reorderMasterItems = async (userId: string, itemIds: string[]): Pro
   const profile = await ensureOwnMasterProfileRow(userId);
   assertProfileEditable(profile);
 
-  const items = await listMasterItemRows(profile.id);
-  const currentIds = items.map((item) => item.id);
+  // Транзакция + лок профиля — как в reorderMasterImages (images.ts), иначе
+  // цикл отдельных UPDATE может частично примениться и попасть в снапшот с
+  // дублирующимися sortOrder (фикс #4 ревью).
+  return db.transaction(async (tx) => {
+    await lockMasterProfileMutation(tx, profile.id);
 
-  if (itemIds.length !== currentIds.length || currentIds.some((id) => !itemIds.includes(id))) {
-    throw new Error("ITEM_REORDER_MISMATCH");
-  }
+    const items = await listMasterItemRows(profile.id, tx);
+    const currentIds = items.map((item) => item.id);
 
-  for (const [index, id] of itemIds.entries()) {
-    await db.update(masterItems).set({
-      sortOrder: index,
-      updatedAt: new Date()
-    }).where(eq(masterItems.id, id));
-  }
+    if (itemIds.length !== currentIds.length || currentIds.some((id) => !itemIds.includes(id))) {
+      throw new Error("ITEM_REORDER_MISMATCH");
+    }
 
-  const reordered = await listMasterItemRows(profile.id);
-  return reordered.map(mapMasterItemRow);
+    for (const [index, id] of itemIds.entries()) {
+      await tx.update(masterItems).set({
+        sortOrder: index,
+        updatedAt: new Date()
+      }).where(eq(masterItems.id, id));
+    }
+
+    const reordered = await listMasterItemRows(profile.id, tx);
+    return reordered.map(mapMasterItemRow);
+  });
 };
 
 // --- Владелец: жизненный цикл модерации --------------------------------------------
@@ -473,6 +517,22 @@ export const submitForReview = async (userId: string): Promise<MasterProfileDto>
 
   if (profile.reviewStatus === "pending") {
     throw new Error("SUBMIT_NOT_ALLOWED");
+  }
+
+  // Аплоад стартовал в draft и ещё не завершился (status="uploading") — нельзя
+  // уходить в pending, иначе complete/markFailed доведут фото до ready уже
+  // после того, как модератор увидел (или не увидел) превью (фикс #2 ревью).
+  const uploadingImages = await db.query.masterImages.findMany({
+    where: and(
+      eq(masterImages.profileId, profile.id),
+      eq(masterImages.status, "uploading"),
+      isNull(masterImages.deletedAt)
+    ),
+    columns: { id: true }
+  });
+
+  if (uploadingImages.length > 0) {
+    throw new Error("UPLOAD_IN_PROGRESS");
   }
 
   const candidate = {
@@ -579,6 +639,13 @@ export const getMasterProfileForModeration = async (
 ): Promise<MasterOwnProfileDto & { previewSnapshot: MasterPublishedSnapshot }> => {
   assertModerator(actor);
 
+  // Мусорный id (не uuid) иначе долетает до Postgres как 22P02 → 500 вместо
+  // ожидаемого «не найдено» (фикс #13 ревью, частично — роуты/admin-страница
+  // гардятся отдельно другими агентами).
+  if (!z.string().uuid().safeParse(profileId).success) {
+    throw new Error("NOT_FOUND");
+  }
+
   const profile = await db.query.masterProfiles.findFirst({ where: eq(masterProfiles.id, profileId) });
   if (!profile) {
     throw new Error("NOT_FOUND");
@@ -600,43 +667,74 @@ export const getMasterProfileForModeration = async (
 export const approveMasterProfile = async (actor: MasterActor, profileId: string): Promise<MasterProfileDto> => {
   assertModerator(actor);
 
-  const profile = await db.query.masterProfiles.findFirst({ where: eq(masterProfiles.id, profileId) });
-  if (!profile) {
-    throw new Error("NOT_FOUND");
-  }
+  return db.transaction(async (tx) => {
+    // Лок + предикат reviewStatus='pending' в самом UPDATE закрывают TOCTOU:
+    // без этого чтение→проверка→UPDATE-по-id могли разъехаться с параллельным
+    // withdraw/повторным approve и опубликовать немодерированную версию
+    // (фикс #3 ревью).
+    await lockMasterProfileMutation(tx, profileId);
 
-  if (profile.reviewStatus !== "pending") {
-    throw new Error("APPROVE_NOT_ALLOWED");
-  }
+    const profile = await tx.query.masterProfiles.findFirst({ where: eq(masterProfiles.id, profileId) });
+    if (!profile) {
+      throw new Error("NOT_FOUND");
+    }
 
-  const [items, images] = await Promise.all([
-    listMasterItemRows(profile.id),
-    listReadyMasterImageRows(profile.id)
-  ]);
+    if (profile.reviewStatus !== "pending") {
+      throw new Error("APPROVE_NOT_ALLOWED");
+    }
 
-  const publishedAt = new Date();
-  // Слаг генерится один раз, при первой публикации, и дальше остаётся стабильным.
-  const slug = profile.slug ?? await resolveUniqueMasterSlug(profile.displayName, profile.id);
-  const snapshot = assembleMasterSnapshot(profile, items, images, publishedAt);
+    const [items, images] = await Promise.all([
+      listMasterItemRows(profile.id, tx),
+      listReadyMasterImageRows(profile.id, tx)
+    ]);
 
-  const [updated] = await db.update(masterProfiles).set({
-    slug,
-    publishedJson: snapshot,
-    publishedAt,
-    // Черновик снова редактируем сразу после публикации — следующая правка
-    // потребует нового submitForReview.
-    reviewStatus: "draft",
-    submittedAt: null,
-    moderationNote: null,
-    moderatorId: actor.id,
-    updatedAt: publishedAt
-  }).where(eq(masterProfiles.id, profile.id)).returning();
+    const publishedAt = new Date();
+    // Слаг генерится один раз, при первой публикации, и дальше остаётся стабильным.
+    const slug = profile.slug ?? await resolveUniqueMasterSlug(profile.displayName, profile.id, tx);
+    const snapshot = assembleMasterSnapshot(profile, items, images, publishedAt);
 
-  if (!updated) {
-    throw new Error("NOT_FOUND");
-  }
+    const [updated] = await tx.update(masterProfiles).set({
+      slug,
+      publishedJson: snapshot,
+      publishedAt,
+      // Черновик снова редактируем сразу после публикации — следующая правка
+      // потребует нового submitForReview.
+      reviewStatus: "draft",
+      submittedAt: null,
+      moderationNote: null,
+      moderatorId: actor.id,
+      updatedAt: publishedAt
+    }).where(and(eq(masterProfiles.id, profile.id), eq(masterProfiles.reviewStatus, "pending"))).returning();
 
-  return mapMasterProfileRow(updated);
+    if (!updated) {
+      // Профиль ушёл из pending между локом и этим UPDATE — конфликт, а не
+      // «профиль не найден».
+      throw new Error("APPROVE_NOT_ALLOWED");
+    }
+
+    // GC осиротевших фото (фикс #1 ревью): мягко удалённые (deletedAt) фото
+    // никогда не входят ни в один снапшот (assembleMasterSnapshot строится
+    // только из listReadyMasterImageRows, а та фильтрует isNull(deletedAt)) —
+    // значит после перезаписи published_json они гарантированно осиротели.
+    // deleteMasterImage сохраняет их storage-объекты, пока на imageId ссылался
+    // СТАРЫЙ снапшот; теперь снапшот новый, ссылки больше нет — самое время
+    // физически почистить storage. Ошибки удаления не должны ронять approve.
+    const deletedImageRows = await tx.query.masterImages.findMany({
+      where: and(eq(masterImages.profileId, profile.id), isNotNull(masterImages.deletedAt))
+    });
+    const orphanImageRows = deletedImageRows.filter((image) => !snapshotContainsImage(snapshot, image.id));
+
+    if (orphanImageRows.length > 0) {
+      await deleteMasterImageObjects(orphanImageRows.flatMap((image) => [
+        image.storageKeyOriginal,
+        image.storageKeyLarge,
+        image.storageKeyMedium,
+        image.storageKeyThumb
+      ]));
+    }
+
+    return mapMasterProfileRow(updated);
+  });
 };
 
 const rejectNoteSchema = z
@@ -653,27 +751,33 @@ export const rejectMasterProfile = async (
   assertModerator(actor);
   const trimmedNote = rejectNoteSchema.parse(note);
 
-  const profile = await db.query.masterProfiles.findFirst({ where: eq(masterProfiles.id, profileId) });
-  if (!profile) {
-    throw new Error("NOT_FOUND");
-  }
+  return db.transaction(async (tx) => {
+    // Тот же TOCTOU-паттерн, что approveMasterProfile (фикс #3 ревью): лок +
+    // reviewStatus='pending' в WHERE самого UPDATE.
+    await lockMasterProfileMutation(tx, profileId);
 
-  if (profile.reviewStatus !== "pending") {
-    throw new Error("REJECT_NOT_ALLOWED");
-  }
+    const profile = await tx.query.masterProfiles.findFirst({ where: eq(masterProfiles.id, profileId) });
+    if (!profile) {
+      throw new Error("NOT_FOUND");
+    }
 
-  const [updated] = await db.update(masterProfiles).set({
-    reviewStatus: "rejected",
-    moderationNote: trimmedNote,
-    moderatorId: actor.id,
-    updatedAt: new Date()
-  }).where(eq(masterProfiles.id, profile.id)).returning();
+    if (profile.reviewStatus !== "pending") {
+      throw new Error("REJECT_NOT_ALLOWED");
+    }
 
-  if (!updated) {
-    throw new Error("NOT_FOUND");
-  }
+    const [updated] = await tx.update(masterProfiles).set({
+      reviewStatus: "rejected",
+      moderationNote: trimmedNote,
+      moderatorId: actor.id,
+      updatedAt: new Date()
+    }).where(and(eq(masterProfiles.id, profile.id), eq(masterProfiles.reviewStatus, "pending"))).returning();
 
-  return mapMasterProfileRow(updated);
+    if (!updated) {
+      throw new Error("REJECT_NOT_ALLOWED");
+    }
+
+    return mapMasterProfileRow(updated);
+  });
 };
 
 export const setMasterListed = async (
@@ -788,7 +892,7 @@ export const getMasterImageAsset = async ({
   viewer: { id: string; role: UserRole } | null;
 }) => {
   const image = await db.query.masterImages.findFirst({ where: eq(masterImages.id, imageId) });
-  if (!image || image.deletedAt || image.status !== "ready") {
+  if (!image) {
     throw new Error("NOT_FOUND");
   }
 
@@ -797,10 +901,24 @@ export const getMasterImageAsset = async ({
     throw new Error("NOT_FOUND");
   }
 
-  const isOwner = Boolean(viewer && viewer.id === profile.userId);
-  const isModerator = Boolean(viewer && getMasterCapabilities(viewer.role).canModerate);
   const snapshot = profile.publishedJson as MasterPublishedSnapshot | null;
   const isPublic = Boolean(profile.isListed && snapshot && snapshotContainsImage(snapshot, imageId));
+
+  // Мягко удалённое (deletedAt) фото видно ТОЛЬКО публике — и только пока
+  // опубликованный снапшот всё ещё на него ссылается (см. deleteMasterImage в
+  // images.ts: storage-объекты в этом случае физически не удаляются). Владельцу
+  // и модератору такое фото не показываем — в черновике его уже нет (фикс #1
+  // ревью). Не-удалённое фото по-прежнему обязано быть ready.
+  if (image.deletedAt) {
+    if (!isPublic) {
+      throw new Error("NOT_FOUND");
+    }
+  } else if (image.status !== "ready") {
+    throw new Error("NOT_FOUND");
+  }
+
+  const isOwner = Boolean(viewer && viewer.id === profile.userId);
+  const isModerator = Boolean(viewer && getMasterCapabilities(viewer.role).canModerate);
 
   if (!isOwner && !isModerator && !isPublic) {
     throw new Error("FORBIDDEN");

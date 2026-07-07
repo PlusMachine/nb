@@ -27,6 +27,16 @@ const itemToFormValues = (item: MasterItemDto): ItemFormValues => ({
   priceNote: item.priceNote ?? ""
 });
 
+// Сервер (deleteMasterItem) отвязывает фото изделия — itemId ставится в null,
+// они переходят в общую галерею (тост это обещает). Чистая функция вынесена
+// отдельно ради юнит-теста (см. tests/master-cabinet-client-logic.test.ts) —
+// без неё фото оставались со старым itemId и пропадали из UI до перезагрузки,
+// но продолжали занимать место в общем лимите 24 (находка #14).
+export const remapImagesAfterItemDeletion = (
+  images: MasterImageCardItem[],
+  deletedItemId: string
+): MasterImageCardItem[] => images.map((image) => (image.itemId === deletedItemId ? { ...image, itemId: null } : image));
+
 const inputClassName = "h-10 rounded-lg border border-border bg-card px-3 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring";
 const textareaClassName = "min-h-[5rem] rounded-lg border border-border bg-card px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring";
 
@@ -288,6 +298,11 @@ export function MasterItemsSection({
     toast.show({ title: "Изделие добавлено", tone: "success" });
   };
 
+  const handleItemDeleted = (itemId: string) => {
+    onItemsChange(items.filter((candidate) => candidate.id !== itemId));
+    onImagesChange(remapImagesAfterItemDeletion(images, itemId));
+  };
+
   const handleMove = async (item: MasterItemDto, direction: -1 | 1) => {
     const index = items.findIndex((candidate) => candidate.id === item.id);
     const targetIndex = index + direction;
@@ -351,7 +366,7 @@ export function MasterItemsSection({
               atProfileLimit={atProfileLimit}
               onImagesChange={onImagesChange}
               onItemChange={(nextItem) => onItemsChange(items.map((candidate) => (candidate.id === nextItem.id ? nextItem : candidate)))}
-              onItemDeleted={(itemId) => onItemsChange(items.filter((candidate) => candidate.id !== itemId))}
+              onItemDeleted={handleItemDeleted}
               onMove={(direction) => void handleMove(item, direction)}
             />
           ))}

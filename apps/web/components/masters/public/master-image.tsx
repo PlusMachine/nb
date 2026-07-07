@@ -12,20 +12,15 @@ import {
  * Самодостаточный контейнер по образцу {@link RecipeThumb}
  * (`components/recipes/recipe-card-parts.tsx`): `className` задаёт геометрию
  * (`aspect-*`/`h-*`/`w-*`), сам компонент кладёт `relative overflow-hidden`.
- * Фото нет → спокойная нейтральная заливка с приглушённой иконкой молотка —
- * без текста, в духе SRM-фолбэка карточки рецепта.
+ * Фото нет → нейтральная заливка токеном `bg-muted` с приглушённой иконкой
+ * молотка (`text-muted-foreground/60`) — без текста, корректный контраст
+ * в обеих темах (в отличие от голого hex-градиента SRM-фолбэка рецептов).
  */
-
-const FALLBACK_GRADIENT = "linear-gradient(150deg, #f5f5f4 0%, #e7e5e4 60%, #d6d3d1 100%)";
 
 export function MasterImageFallback({ className = "" }: { className?: string }) {
   return (
-    <div
-      aria-hidden
-      className={`absolute inset-0 flex items-center justify-center ${className}`}
-      style={{ backgroundImage: FALLBACK_GRADIENT }}
-    >
-      <Hammer className="h-8 w-8 text-foreground/20" />
+    <div aria-hidden className={`absolute inset-0 flex items-center justify-center bg-muted ${className}`}>
+      <Hammer className="h-8 w-8 text-muted-foreground/60" />
     </div>
   );
 }

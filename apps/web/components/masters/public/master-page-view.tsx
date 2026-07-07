@@ -2,36 +2,22 @@ import Link from "next/link";
 import { Globe, Mail, MapPin, Phone, Send } from "lucide-react";
 
 import { getMasterSpecializationLabel } from "@/features/masters/contracts";
-import type {
-  MasterPublishedSnapshot,
-  MasterPublishedSnapshotImageRef,
-  MasterPublishedSnapshotItem
-} from "@/features/masters/contracts";
+import type { MasterPublishedSnapshot } from "@/features/masters/contracts";
 
 import { MasterGallery } from "./master-gallery";
-import { MasterImage } from "./master-image";
+import { MasterItemCover } from "./master-item-cover";
 
 /**
  * Чистый рендер страницы мастера (§6 ТЗ) — только из пропса `snapshot`
- * (публичный `publishedJson`, никаких fetch/db внутри). Держим компонент без
- * изменений специально: этап M3 (превью модератора) переиспользует его
- * буквально с тем же пропсом, чтобы модератор видел ровно то, что появится
- * на витрине.
+ * (публичный `publishedJson`, никаких fetch/db внутри). Публичная страница и
+ * превью модератора (M3) переиспользуют его буквально с тем же пропсом
+ * `snapshot`, чтобы модератор видел ровно то, что появится на витрине —
+ * меняется только пропс `container` (см. ниже), поведение и вёрстка те же.
  */
 
 // @nick → https://t.me/nick; ссылка вида t.me/... (или уже полный https://t.me/...)
 // проходит как есть — формат уже проверен zod-схемой в contracts.ts.
 const normalizeTelegramHref = (value: string): string => (value.startsWith("@") ? `https://t.me/${value.slice(1)}` : value);
-
-const resolveItemCoverRef = (item: MasterPublishedSnapshotItem): MasterPublishedSnapshotImageRef | null => {
-  if (item.coverImageId) {
-    const found = item.images.find((ref) => ref.imageId === item.coverImageId);
-    if (found) {
-      return found;
-    }
-  }
-  return item.images[0] ?? null;
-};
 
 const primaryButtonClassName =
   "inline-flex h-11 items-center gap-2 rounded-xl bg-foreground px-4 text-sm font-medium text-background transition hover:bg-foreground/90";
@@ -40,14 +26,27 @@ const secondaryButtonClassName =
 const chipClassName =
   "inline-flex w-fit items-center rounded-full bg-muted px-2.5 py-0.5 text-[11px] font-medium text-muted-foreground";
 
-export function MasterPageView({ snapshot }: { snapshot: MasterPublishedSnapshot }) {
+export function MasterPageView({
+  snapshot,
+  container = "main"
+}: {
+  snapshot: MasterPublishedSnapshot;
+  /**
+   * `"main"` — публичная страница (`app/(public)/masters/[slug]/page.tsx`),
+   * где `PublicShell` не рендерит собственный `<main>`. `"div"` — превью
+   * модератора (`admin/masters/[id]/page.tsx`): там `MasterPageView` уже
+   * вложен в разметку админ-страницы, второй `<main>` там семантически лишний.
+   */
+  container?: "main" | "div";
+}) {
   const { contacts } = snapshot;
   const hasContacts = Boolean(contacts.telegram || contacts.phone || contacts.website || contacts.email);
   const hasItems = snapshot.items.length > 0;
   const hasGallery = snapshot.gallery.length > 0;
+  const Container = container === "div" ? "div" : "main";
 
   return (
-    <main className="space-y-8 py-6">
+    <Container className="space-y-8 py-6">
       <nav aria-label="Breadcrumb" className="text-sm text-muted-foreground">
         <ol className="flex flex-wrap items-center gap-2">
           <li>
@@ -129,25 +128,32 @@ export function MasterPageView({ snapshot }: { snapshot: MasterPublishedSnapshot
         <section className="space-y-4">
           <h2 className="text-lg font-semibold text-foreground">Изделия</h2>
           <div className="grid gap-4 sm:grid-cols-2">
-            {snapshot.items.map((item) => {
-              const coverRef = resolveItemCoverRef(item);
-              return (
-                <article key={item.id} className="flex flex-col overflow-hidden rounded-2xl border border-border bg-card shadow-sm">
-                  <MasterImage imageRef={coverRef} variant="medium" alt={item.title} className="aspect-[4/3] w-full" sizes="(min-width: 1024px) 380px, 100vw" />
-                  <div className="flex flex-1 flex-col gap-2 p-4">
-                    <div className="flex flex-wrap items-start justify-between gap-2">
-                      <h3 className="text-base font-semibold leading-snug text-foreground">{item.title}</h3>
-                      {item.priceNote ? (
-                        <span className="shrink-0 rounded-full bg-muted px-2.5 py-1 text-xs font-medium text-foreground">{item.priceNote}</span>
-                      ) : null}
-                    </div>
-                    {item.description ? (
-                      <p className="line-clamp-4 whitespace-pre-line text-sm text-muted-foreground">{item.description}</p>
+            {snapshot.items.map((item) => (
+              <article key={item.id} className="flex flex-col overflow-hidden rounded-2xl border border-border bg-card shadow-sm">
+                <MasterItemCover item={item} />
+                <div className="flex flex-1 flex-col gap-2 p-4">
+                  <div className="flex flex-wrap items-start justify-between gap-2">
+                    <h3 className="text-base font-semibold leading-snug text-foreground">{item.title}</h3>
+                    {item.priceNote ? (
+                      <span className="shrink-0 rounded-full bg-muted px-2.5 py-1 text-xs font-medium text-foreground">{item.priceNote}</span>
                     ) : null}
                   </div>
-                </article>
-              );
-            })}
+                  {item.description ? (
+                    <details className="group/desc text-sm text-muted-foreground">
+                      <summary className="cursor-pointer list-none [&::-webkit-details-marker]:hidden">
+                        <span className="line-clamp-4 whitespace-pre-line group-open/desc:line-clamp-none">{item.description}</span>
+                        <span className="mt-1 inline-block text-xs font-medium text-foreground group-open/desc:hidden">
+                          Показать полностью
+                        </span>
+                        <span className="mt-1 hidden text-xs font-medium text-foreground group-open/desc:inline-block">
+                          Свернуть
+                        </span>
+                      </summary>
+                    </details>
+                  ) : null}
+                </div>
+              </article>
+            ))}
           </div>
         </section>
       ) : null}
@@ -163,6 +169,6 @@ export function MasterPageView({ snapshot }: { snapshot: MasterPublishedSnapshot
         Платформа не участвует в сделках и не проверяет изделия. Договаривайтесь с мастером напрямую и уточняйте
         характеристики — особенно для ёмкостей, работающих под давлением.
       </p>
-    </main>
+    </Container>
   );
 }

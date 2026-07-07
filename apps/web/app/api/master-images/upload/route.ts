@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { z } from "zod";
 
 import { assertRateLimit } from "@nb/auth";
 
@@ -21,6 +22,11 @@ import { getSessionUser } from "@/lib/auth";
 export const runtime = "nodejs";
 
 const acceptedMimeTypes = new Set<string>(masterImageAcceptedMimeTypes);
+
+// rawImageId/rawItemId идут напрямую в сервисный слой (drizzle eq(id, ...)) →
+// мусорный uuid роняет Postgres с 22P02 вместо понятного 4xx. Пустая строка —
+// легитимное «не задан» (новый слот/без изделия), не ошибка.
+const masterImageUuidSchema = z.string().uuid();
 
 const validateIncomingMasterImageFile = (file: File) => {
   if (!acceptedMimeTypes.has(file.type)) {
@@ -93,6 +99,14 @@ export async function POST(request: Request) {
 
   if (!(file instanceof File)) {
     return NextResponse.json({ ok: false, message: "Файл не найден." }, { status: 400 });
+  }
+
+  if (rawItemId && !masterImageUuidSchema.safeParse(rawItemId).success) {
+    return NextResponse.json({ ok: false, message: "Некорректный идентификатор изделия." }, { status: 400 });
+  }
+
+  if (rawImageId && !masterImageUuidSchema.safeParse(rawImageId).success) {
+    return NextResponse.json({ ok: false, message: "Некорректный идентификатор фото." }, { status: 400 });
   }
 
   try {

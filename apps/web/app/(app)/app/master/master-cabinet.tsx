@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Loader2 } from "lucide-react";
 
 import { Button, useToast } from "@nb/ui";
+import { ConfirmActionDialog } from "@/components/shared/confirm-action-dialog";
 import {
   MASTER_IMAGE_MAX_COUNT,
   MASTER_PUBLISHED_LABEL,
@@ -55,6 +56,10 @@ function StatusPanel({
 }) {
   const isPending = profile.reviewStatus === "pending";
   const isRejected = profile.reviewStatus === "rejected";
+  // Профиль ни разу не отправлялся на модерацию — сразу после анкеты (см.
+  // master-onboarding.tsx) это всегда так. Подсвечиваем следующий шаг, пока
+  // мастер не отправил витрину впервые.
+  const isPristineDraft = profile.reviewStatus === "draft" && !profile.hasPublished && profile.submittedAt === null;
 
   const badgeLabel = isPending
     ? masterReviewStatusLabels.pending
@@ -120,6 +125,12 @@ function StatusPanel({
           {profile.hasPublished ? " Пока идёт проверка, на витрине видна прежняя опубликованная версия." : ""}
         </p>
       ) : null}
+
+      {isPristineDraft ? (
+        <p className="text-sm text-muted-foreground">
+          Дальше — добавьте фото и изделия, затем отправьте витрину на модерацию.
+        </p>
+      ) : null}
     </section>
   );
 }
@@ -141,12 +152,18 @@ export function MasterCabinet({
   const [statusBusy, setStatusBusy] = useState(false);
   const [profileBusy, setProfileBusy] = useState(false);
   const [profileError, setProfileError] = useState<string | null>(null);
+  const [confirmEmptySubmitOpen, setConfirmEmptySubmitOpen] = useState(false);
 
   const isLocked = profile.reviewStatus === "pending";
 
   const activeImageCount = useMemo(() => images.filter((image) => !image.isLocalOnly).length, [images]);
   const atProfileLimit = activeImageCount >= MASTER_IMAGE_MAX_COUNT;
   const galleryImages = useMemo(() => images.filter((image) => image.itemId === null), [images]);
+  // "Отправить на модерацию"/"Опубликовать изменения" пропускали витрину без
+  // единого фото — модератор получал пустышку (ТЗ §6, находка #22). Считаем по
+  // status==="ready", а не просто по наличию записей: uploading/failed слоты —
+  // ещё не настоящие фото.
+  const hasReadyImages = useMemo(() => images.some((image) => image.status === "ready"), [images]);
 
   const handleProfileSave = async () => {
     setProfileBusy(true);
@@ -175,6 +192,14 @@ export function MasterCabinet({
 
     setProfile(result.profile);
     toast.show({ title: "Отправлено на модерацию", tone: "success" });
+  };
+
+  const requestSubmit = () => {
+    if (!hasReadyImages) {
+      setConfirmEmptySubmitOpen(true);
+      return;
+    }
+    void handleSubmit();
   };
 
   const handleWithdraw = async () => {
@@ -206,11 +231,13 @@ export function MasterCabinet({
   };
 
   return (
-    <main className="space-y-6">
+    <div className="space-y-6">
+      <h1 className="text-2xl font-semibold text-foreground">Моя витрина</h1>
+
       <StatusPanel
         profile={profile}
         busy={statusBusy}
-        onSubmit={() => void handleSubmit()}
+        onSubmit={requestSubmit}
         onWithdraw={() => void handleWithdraw()}
         onToggleListed={(next) => void handleToggleListed(next)}
       />
@@ -239,7 +266,10 @@ export function MasterCabinet({
       />
 
       <section className="space-y-3 rounded-2xl border border-border bg-card p-4 shadow-sm">
-        <h2 className="text-base font-semibold text-foreground">Галерея работ ({activeImageCount}/{MASTER_IMAGE_MAX_COUNT})</h2>
+        <div className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1">
+          <h2 className="text-base font-semibold text-foreground">Галерея работ ({galleryImages.length})</h2>
+          <span className="text-xs text-muted-foreground">Всего фото на витрине: {activeImageCount}/{MASTER_IMAGE_MAX_COUNT}</span>
+        </div>
         <MasterImageManager
           itemId={null}
           images={galleryImages}
@@ -249,6 +279,19 @@ export function MasterCabinet({
           emptyLabel="Фото в общей галерее ещё нет."
         />
       </section>
-    </main>
+
+      <ConfirmActionDialog
+        open={confirmEmptySubmitOpen}
+        title="Отправить без фото?"
+        description="Витрина без фотографий — всё равно отправить на модерацию?"
+        confirmLabel="Отправить на модерацию"
+        tone="primary"
+        onClose={() => setConfirmEmptySubmitOpen(false)}
+        onConfirm={() => {
+          setConfirmEmptySubmitOpen(false);
+          void handleSubmit();
+        }}
+      />
+    </div>
   );
 }

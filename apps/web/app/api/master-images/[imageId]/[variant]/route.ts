@@ -1,10 +1,17 @@
 import { NextResponse } from "next/server";
+import { z } from "zod";
 
 import { masterImageVariantSchema } from "@/features/masters/contracts";
 import { getMasterImageAsset } from "@/features/masters/service";
 import { getSessionUser } from "@/lib/auth";
 
 export const runtime = "nodejs";
+
+// imageId идёт напрямую в drizzle eq(masterImages.id, imageId) → мусорный uuid
+// роняет Postgres с 22P02 (invalid input syntax for uuid), это ловится общим
+// catch как 500 IMAGE_FETCH_FAILED. Роут публичный (краулеры, битые ссылки) —
+// валидируем формат до похода в сервис, как уже делается для невалидного variant.
+const masterImageIdSchema = z.string().uuid();
 
 export async function GET(
   _request: Request,
@@ -15,6 +22,10 @@ export async function GET(
 
   if (!parsedVariant.success) {
     return NextResponse.json({ error: "INVALID_VARIANT" }, { status: 404 });
+  }
+
+  if (!masterImageIdSchema.safeParse(imageId).success) {
+    return NextResponse.json({ error: "NOT_FOUND" }, { status: 404 });
   }
 
   try {

@@ -19,7 +19,8 @@ import {
   MASTER_ITEM_IMAGE_MAX_COUNT,
   masterImageAcceptedMimeTypes,
   type MasterImageStatus,
-  type MasterImageVariant
+  type MasterImageVariant,
+  type MasterPublishedSnapshot
 } from "./contracts";
 
 // Тонкая обёртка над пайплайном фото мастера — по образцу features/recipe-images
@@ -191,6 +192,16 @@ const countActiveImages = async (
     where: and(eq(masterImages.profileId, profileId), isNull(masterImages.deletedAt))
   });
 
+// Локальная копия snapshotContainsImage из features/masters/service.ts (та не
+// экспортируется — дублирование 3 строк дешевле кросс-импорта приватного
+// хелпера соседнего модуля, тот же компромисс, что уже принят в этом файле).
+const snapshotContainsImage = (snapshot: MasterPublishedSnapshot, imageId: string): boolean => {
+  if (snapshot.gallery.some((ref) => ref.imageId === imageId)) {
+    return true;
+  }
+  return snapshot.items.some((item) => item.images.some((ref) => ref.imageId === imageId));
+};
+
 // --- Публичные операции: аплоад -----------------------------------------------------
 
 export const requestMasterImageUpload = async ({
@@ -320,60 +331,89 @@ export const completeMasterImageUpload = async ({
   storageKeyMedium: string;
   storageKeyThumb: string;
 }): Promise<MasterImageDto> => {
-  const { image } = await ensureOwnMasterImageRow(userId, imageId);
+  const { profile, image } = await ensureOwnMasterImageRow(userId, imageId);
 
   if (image.deletedAt) {
     throw new Error("NOT_FOUND");
   }
 
-  const [updated] = await db.update(masterImages).set({
-    storageKeyOriginal,
-    storageKeyLarge,
-    storageKeyMedium,
-    storageKeyThumb,
-    width,
-    height,
-    mimeType,
-    sizeBytes,
-    blurDataUrl,
-    status: "ready",
-    updatedAt: new Date()
-  }).where(eq(masterImages.id, imageId)).returning();
+  // Аплоад мог стартовать в draft и «доехать» сюда уже после того, как мастер
+  // отправил профиль на модерацию (submitForReview теперь отклоняет это в
+  // большинстве случаев, но окно между его проверкой и UPDATE в pending
+  // остаётся) — перечитываем профиль ПОД ЛОКОМ и, если он pending, не даём
+  // слоту стать ready: модератор ещё не видел это фото (фикс #2 ревью). Роут
+  // upload на PROFILE_LOCKED_PENDING уже реагирует 409 + чистит storage +
+  // помечает слот failed через markMasterImageUploadFailed.
+  return db.transaction(async (tx) => {
+    await lockMasterProfileMutation(tx, profile.id);
 
-  if (!updated) {
-    throw new Error("NOT_FOUND");
-  }
+    const freshProfile = await tx.query.masterProfiles.findFirst({ where: eq(masterProfiles.id, profile.id) });
+    if (!freshProfile) {
+      throw new Error("NOT_FOUND");
+    }
 
-  return buildMasterImageDto(updated);
+    if (freshProfile.reviewStatus === "pending") {
+      throw new Error("PROFILE_LOCKED_PENDING");
+    }
+
+    const [updated] = await tx.update(masterImages).set({
+      storageKeyOriginal,
+      storageKeyLarge,
+      storageKeyMedium,
+      storageKeyThumb,
+      width,
+      height,
+      mimeType,
+      sizeBytes,
+      blurDataUrl,
+      status: "ready",
+      updatedAt: new Date()
+    }).where(eq(masterImages.id, imageId)).returning();
+
+    if (!updated) {
+      throw new Error("NOT_FOUND");
+    }
+
+    return buildMasterImageDto(updated);
+  });
 };
 
 export const markMasterImageUploadFailed = async (
   imageId: string,
   userId: string
 ): Promise<MasterImageDto> => {
-  const { image } = await ensureOwnMasterImageRow(userId, imageId);
+  const { profile, image } = await ensureOwnMasterImageRow(userId, imageId);
 
   if (image.deletedAt) {
     throw new Error("NOT_FOUND");
   }
 
-  const [updated] = await db.update(masterImages).set({
-    storageKeyOriginal: null,
-    storageKeyLarge: null,
-    storageKeyMedium: null,
-    storageKeyThumb: null,
-    width: null,
-    height: null,
-    blurDataUrl: null,
-    status: "failed",
-    updatedAt: new Date()
-  }).where(eq(masterImages.id, imageId)).returning();
+  // В отличие от complete — «failed» безвреден, даже если профиль успел уйти
+  // в pending, пока файл обрабатывался: failed-слот никогда не попадает в
+  // listReadyMasterImageRows и не может просочиться в снапшот. Лок профиля
+  // здесь только для консистентности с complete (та же транзакционная форма),
+  // отдельного гейта на reviewStatus намеренно нет (фикс #2 ревью).
+  return db.transaction(async (tx) => {
+    await lockMasterProfileMutation(tx, profile.id);
 
-  if (!updated) {
-    throw new Error("NOT_FOUND");
-  }
+    const [updated] = await tx.update(masterImages).set({
+      storageKeyOriginal: null,
+      storageKeyLarge: null,
+      storageKeyMedium: null,
+      storageKeyThumb: null,
+      width: null,
+      height: null,
+      blurDataUrl: null,
+      status: "failed",
+      updatedAt: new Date()
+    }).where(eq(masterImages.id, imageId)).returning();
 
-  return buildMasterImageDto(updated);
+    if (!updated) {
+      throw new Error("NOT_FOUND");
+    }
+
+    return buildMasterImageDto(updated);
+  });
 };
 
 // --- Чтение для кабинета -------------------------------------------------------------
@@ -399,12 +439,17 @@ export const deleteMasterImage = async (userId: string, imageId: string): Promis
   const { profile, image } = await ensureOwnMasterImageRow(userId, imageId);
   assertProfileImagesEditable(profile);
 
-  const storageKeys = [
-    image.storageKeyOriginal,
-    image.storageKeyLarge,
-    image.storageKeyMedium,
-    image.storageKeyThumb
-  ].filter((key): key is string => Boolean(key));
+  // Модель «черновик + опубликованный снапшот»: пока публичная страница
+  // рендерится по СТАРОМУ published_json и он ссылается на это фото, storage
+  // обязан продолжать отдаваться — иначе живая витрина ломается ДО очередного
+  // approve. Soft-delete (ниже) скрывает фото из черновика/кабинета всегда;
+  // физическое удаление storage — только если снапшот на него не ссылается
+  // (фикс #1 ревью). Осиротевшие после правки фото подчищает GC в
+  // approveMasterProfile при следующей публикации.
+  const publishedSnapshot = profile.publishedJson as MasterPublishedSnapshot | null;
+  const isReferencedInPublishedSnapshot = Boolean(
+    publishedSnapshot && snapshotContainsImage(publishedSnapshot, imageId)
+  );
 
   await db.transaction(async (tx) => {
     await lockMasterProfileMutation(tx, profile.id);
@@ -421,13 +466,22 @@ export const deleteMasterImage = async (userId: string, imageId: string): Promis
     }).where(eq(masterItems.coverImageId, imageId));
   });
 
-  await Promise.all(storageKeys.map(async (key) => {
-    try {
-      await storageAdapter.delete(key);
-    } catch (error) {
-      console.error("[masters/images] failed to delete storage object", { key, error });
-    }
-  }));
+  if (!isReferencedInPublishedSnapshot) {
+    const storageKeys = [
+      image.storageKeyOriginal,
+      image.storageKeyLarge,
+      image.storageKeyMedium,
+      image.storageKeyThumb
+    ].filter((key): key is string => Boolean(key));
+
+    await Promise.all(storageKeys.map(async (key) => {
+      try {
+        await storageAdapter.delete(key);
+      } catch (error) {
+        console.error("[masters/images] failed to delete storage object", { key, error });
+      }
+    }));
+  }
 
   return { ok: true };
 };

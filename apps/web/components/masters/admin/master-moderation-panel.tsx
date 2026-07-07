@@ -128,19 +128,28 @@ export function MasterModerationPanel({ profile }: { profile: MasterProfileDto }
       {profile.reviewStatus === "pending" ? (
         <div className="space-y-3 border-t border-border pt-4">
           <Button type="button" variant="primary" disabled={isPending} onClick={handleApprove}>
-            {isPending ? "Публикуем..." : "Опубликовать"}
+            {isPending ? "Публикуем…" : "Опубликовать"}
           </Button>
 
           <div className="space-y-2">
+            <label htmlFor="master-reject-note" className="sr-only">
+              Заметка для мастера — почему отклонено
+            </label>
             <textarea
+              id="master-reject-note"
               value={rejectNote}
               onChange={(event) => setRejectNote(event.target.value)}
               placeholder="Заметка для мастера — почему отклонено (3–1000 символов)"
               className="h-24 w-full rounded-lg border border-input bg-card px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
             />
-            <Button type="button" variant="dangerOutline" disabled={isPending || !noteValid} onClick={handleReject}>
-              {isPending ? "Отклоняем..." : "Отклонить"}
-            </Button>
+            <div className="flex flex-wrap items-center gap-2">
+              <Button type="button" variant="dangerOutline" disabled={isPending || !noteValid} onClick={handleReject}>
+                {isPending ? "Отклоняем…" : "Отклонить"}
+              </Button>
+              {trimmedNote.length > 0 && trimmedNote.length < REJECT_NOTE_MIN ? (
+                <span className="text-xs text-muted-foreground">Нужно ещё {REJECT_NOTE_MIN - trimmedNote.length} симв.</span>
+              ) : null}
+            </div>
           </div>
         </div>
       ) : null}
@@ -170,7 +179,7 @@ export function MasterModerationPanel({ profile }: { profile: MasterProfileDto }
             </Button>
           ) : (
             <Button type="button" variant="outline" size="sm" disabled={isPending} onClick={() => handleSetListed(true)}>
-              {isPending ? "Возвращаем..." : "Вернуть на витрину"}
+              {isPending ? "Возвращаем…" : "Вернуть на витрину"}
             </Button>
           )}
         </div>
@@ -181,7 +190,7 @@ export function MasterModerationPanel({ profile }: { profile: MasterProfileDto }
         title="Снять с витрины?"
         description="Публичная страница мастера станет недоступна. Контент сохранится — вернуть видимость можно в любой момент."
         confirmLabel="Снять с витрины"
-        pendingLabel="Снимаем..."
+        pendingLabel="Снимаем…"
         pending={isPending}
         error={unlistError}
         onClose={() => {

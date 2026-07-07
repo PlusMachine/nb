@@ -41,7 +41,7 @@ export function MasterOnboarding() {
   };
 
   return (
-    <main className="mx-auto max-w-2xl space-y-6">
+    <div className="mx-auto max-w-2xl space-y-6">
       <section className="rounded-2xl border border-border bg-card p-5 shadow-sm">
         <h1 className="text-xl font-semibold text-foreground">Станьте мастером</h1>
         <p className="mt-2 text-sm leading-6 text-muted-foreground">
@@ -62,10 +62,10 @@ export function MasterOnboarding() {
         <div className="flex items-center gap-2 border-t border-border pt-4">
           <Button type="submit" disabled={busy}>
             {busy ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden /> : null}
-            Отправить заявку
+            Создать витрину
           </Button>
         </div>
       </form>
-    </main>
+    </div>
   );
 }
