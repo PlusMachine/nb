@@ -1,10 +1,11 @@
 import React from "react";
 import Link from "next/link";
-import { ChevronLeft, Star } from "lucide-react";
+import { Star } from "lucide-react";
 
-import type { RecipeDetailDto } from "@/features/recipes/contracts";
+import type { PublicRecipeListItem, RecipeDetailDto } from "@/features/recipes/contracts";
 
 import { PublicRecipeHeader } from "./public-recipe-header";
+import { SimilarRecipesSection } from "./similar-recipes-section";
 import { RecipePhotoHero } from "./recipe-photo-hero";
 import { RecipeCloneAttribution } from "./recipe-clone-attribution";
 import { RecipeSourceAttribution } from "./recipe-source-attribution";
@@ -44,12 +45,24 @@ function RecipeRatingSection({ recipe }: { recipe: RecipeDetailDto }) {
   );
 }
 
-export function PublicRecipePage({ recipe }: { recipe: RecipeDetailDto }) {
+export function PublicRecipePage({
+  recipe,
+  similarRecipes = []
+}: {
+  recipe: RecipeDetailDto;
+  similarRecipes?: PublicRecipeListItem[];
+}) {
   return (
     <main className="space-y-6 pt-6">
-      <Link href="/recipes" className="inline-flex items-center gap-1 text-sm text-muted-foreground transition hover:text-foreground">
-        <ChevronLeft className="h-4 w-4" aria-hidden /> Рецепты
-      </Link>
+      <nav aria-label="Breadcrumb" className="text-sm text-muted-foreground">
+        <ol className="flex flex-wrap items-center gap-2">
+          <li><Link href="/" className="transition hover:text-foreground">Главная</Link></li>
+          <li aria-hidden="true">/</li>
+          <li><Link href="/recipes" className="transition hover:text-foreground">Рецепты</Link></li>
+          <li aria-hidden="true">/</li>
+          <li className="text-foreground">{recipe.title}</li>
+        </ol>
+      </nav>
 
       <PublicRecipeHeader recipe={recipe} />
 
@@ -82,6 +95,7 @@ export function PublicRecipePage({ recipe }: { recipe: RecipeDetailDto }) {
       </div>
 
       <RecipeRatingSection recipe={recipe} />
+      <SimilarRecipesSection recipes={similarRecipes} />
     </main>
   );
 }

@@ -2,6 +2,7 @@ import React from "react";
 import { ChevronRight, Play } from "lucide-react";
 
 import { type BrewDayPlanSummary } from "@/features/brew-batches/contracts";
+import { BrewPlannedDate } from "./brew-planned-date";
 import { BrewTransitionButton } from "./brew-transition-button";
 
 // «≈ N ч M мин» из секунд таймеров — грубая оценка активного времени варки.
@@ -26,11 +27,13 @@ const fmtTimerTotal = (seconds: number): string | null => {
 export function BrewPrepCard({
   brewBatchId,
   planSummary,
-  ogTargetLabel
+  ogTargetLabel,
+  plannedForIso
 }: {
   brewBatchId: string;
   planSummary: BrewDayPlanSummary;
   ogTargetLabel: string | null;
+  plannedForIso: string | null;
 }) {
   const timerTotal = fmtTimerTotal(planSummary.totalTimerSeconds);
   const hasPlan = planSummary.stages.length > 0;
@@ -65,6 +68,8 @@ export function BrewPrepCard({
           В рецепте нет шагов затора/кипячения — гид варочного дня будет пустым. Замеры и заметки доступны после старта.
         </p>
       )}
+
+      <BrewPlannedDate brewBatchId={brewBatchId} plannedForIso={plannedForIso} />
 
       <BrewTransitionButton
         brewBatchId={brewBatchId}

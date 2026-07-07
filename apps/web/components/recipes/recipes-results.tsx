@@ -1,8 +1,11 @@
 import React from "react";
 
+import { jsonLdScriptProps } from "@/features/ingredients/seo";
 import type { PublicRecipeFilters } from "@/features/recipes/contracts";
+import { buildPublicRecipeItemListJsonLd } from "@/features/recipes/seo";
 import { searchPublicRecipes } from "@/features/recipes/service";
 import { defaultPreferredGravityUnit, type PreferredGravityUnit } from "@/features/system/gravity-units";
+import { getServerEnv } from "@/lib/env";
 
 import { RecipesEmptyState } from "./recipes-empty-state";
 import { RecipesGrid } from "./recipes-grid";
@@ -65,6 +68,14 @@ export async function RecipesResults({
   }
 
   const totalPages = Math.max(1, Math.ceil(total / pageSize));
+  // ItemList размечает только чистую (без свободного поиска) выборку — со
+  // свободным текстовым запросом список не самостоятельная сущность для индекса.
+  const itemListJsonLd = !filters.q
+    ? buildPublicRecipeItemListJsonLd(items, {
+      baseUrl: getServerEnv().APP_URL,
+      offset: (page - 1) * pageSize
+    })
+    : null;
 
   return (
     <div id="recipes-top" className="scroll-mt-4 space-y-6">
@@ -75,6 +86,8 @@ export async function RecipesResults({
       <RecipesGrid recipes={items} view={view} preferredGravityUnit={preferredGravityUnit} />
 
       <RecipesPagination current={page} totalPages={totalPages} />
+
+      {itemListJsonLd ? <script {...jsonLdScriptProps(itemListJsonLd)} /> : null}
     </div>
   );
 }

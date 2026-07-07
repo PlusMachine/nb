@@ -119,4 +119,33 @@ describe("/recipes results", () => {
 
     expect(html).toContain("Ничего не найдено");
   });
+
+  it("рендерит ItemList JSON-LD с учётом смещения по page, когда нет свободного поиска", async () => {
+    mocks.searchPublicRecipes.mockResolvedValue(result({
+      items: [item(), item({ id: "r-2", slug: "second-ipa", name: "Second IPA" })],
+      total: 26,
+      page: 2,
+      pageSize: 24
+    }));
+    const filters = parsePublicRecipeFilters({ page: "2" });
+
+    const el = await RecipesResults({ filters });
+    const html = renderToStaticMarkup(React.createElement(ToastProvider, null, el));
+
+    expect(html).toContain('"@type":"ItemList"');
+    expect(html).toContain('"position":25');
+    expect(html).toContain('"url":"http://localhost:3000/recipes/hazy-ipa"');
+    expect(html).toContain('"position":26');
+    expect(html).toContain('"url":"http://localhost:3000/recipes/second-ipa"');
+  });
+
+  it("не рендерит ItemList JSON-LD при свободном текстовом поиске", async () => {
+    mocks.searchPublicRecipes.mockResolvedValue(result());
+    const filters = parsePublicRecipeFilters({ q: "hazy" });
+
+    const el = await RecipesResults({ filters });
+    const html = renderToStaticMarkup(React.createElement(ToastProvider, null, el));
+
+    expect(html).not.toContain('"@type":"ItemList"');
+  });
 });

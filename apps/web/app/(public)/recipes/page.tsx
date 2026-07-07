@@ -13,22 +13,17 @@ import { RecipesResults, type RawSearchParams } from "@/components/recipes/recip
 import { RecipesToolbar } from "@/components/recipes/recipes-toolbar";
 import { parsePublicRecipeFilters } from "@/features/recipes/public-recipe-query";
 import { RECIPES_VIEW_COOKIE, parseRecipesView } from "@/features/recipes/recipes-url";
+import { buildPublicRecipeListMetadata } from "@/features/recipes/seo";
 import { getPublicRecipeFamilyCounts, getPublicRecipeSortAvailability } from "@/features/recipes/service";
 import { buildRecipeStyleSearchIndex } from "@/features/recipes/style-search";
 import { getSessionUser } from "@/lib/auth";
-import { getServerEnv } from "@/lib/env";
 
-export function generateMetadata(): Metadata {
-  const { APP_URL } = getServerEnv();
-  // Отфильтрованные/постраничные URL канонизируем на /recipes, чтобы не плодить
-  // дубли в индексе (§7 ТЗ).
-  return {
-    title: "Рецепты сообщества",
-    description: "Готовые рецепты от домашних пивоваров — выберите идею под свой стиль и оборудование. Фильтры по стилю, цвету, крепости и горечи.",
-    alternates: {
-      canonical: `${APP_URL}/recipes`
-    }
-  };
+export async function generateMetadata({ searchParams }: { searchParams?: Promise<RawSearchParams> }): Promise<Metadata> {
+  const raw = (searchParams ? await searchParams : {}) as RawSearchParams;
+  // Чистый ?page=N (N≥2, без других параметров) — self-canonical; любые
+  // фильтры/sort/view канонизируем на голый /recipes, чтобы не плодить дубли
+  // отфильтрованных выборок в индексе (§7 ТЗ).
+  return buildPublicRecipeListMetadata(raw);
 }
 
 export default async function PublicRecipesPage({ searchParams }: { searchParams?: Promise<RawSearchParams> }) {

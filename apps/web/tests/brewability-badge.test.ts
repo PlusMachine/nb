@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { resolveBrewabilityBadge } from "../features/recipes/brewability-badge";
+import { resolveBrewabilityBadge, resolveShoppingOpportunityTier } from "../features/recipes/brewability-badge";
 
 // Хелпер: минимальный срез RecipeMatchDto, который читает резолвер.
 const dto = (totalLines: number, coveredLines: number, missingCount: number) => ({
@@ -59,5 +59,32 @@ describe("resolveBrewabilityBadge", () => {
 
   it("hidden when the recipe has no lines", () => {
     expect(resolveBrewabilityBadge(dto(0, 0, 0)).tier).toBe("hidden");
+  });
+});
+
+describe("resolveShoppingOpportunityTier", () => {
+  it("hidden when the recipe is ready (nothing to buy)", () => {
+    expect(resolveShoppingOpportunityTier(dto(3, 3, 0))).toBe("hidden");
+  });
+
+  it("hidden when the recipe has no lines", () => {
+    expect(resolveShoppingOpportunityTier(dto(0, 0, 0))).toBe("hidden");
+  });
+
+  it("hidden (junk) when fewer than 70% of types are present, even with few missing", () => {
+    // 4 строки, 2 отсутствуют → typeCoverage 0.5 < 0.7
+    expect(resolveShoppingOpportunityTier(dto(4, 1, 2))).toBe("hidden");
+  });
+
+  it("expanded when missing 1-2 and ≥70% types present — same threshold as the card badge", () => {
+    expect(resolveShoppingOpportunityTier(dto(4, 2, 1))).toBe("expanded");
+    expect(resolveShoppingOpportunityTier(dto(7, 5, 2))).toBe("expanded");
+  });
+
+  it("collapsed (not hidden) when missing 3+ but ≥70% types present — unlike the card badge", () => {
+    // тот же кейс, где resolveBrewabilityBadge отдаёт "hidden" — список покупок
+    // не прячет рецепт целиком, а сворачивает его под «Остальные (K)»
+    expect(resolveShoppingOpportunityTier(dto(10, 7, 3))).toBe("collapsed");
+    expect(resolveShoppingOpportunityTier(dto(14, 10, 4))).toBe("collapsed");
   });
 });

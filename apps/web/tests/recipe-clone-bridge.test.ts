@@ -62,10 +62,12 @@ const detail: RecipeDetailDto = {
   color: 9,
   description: null,
   authorNotes: null,
+  authorDisplayName: null,
   processMeta: defaultRecipeProcessMeta,
   heroImageId: null,
   rating: null,
   versions: [],
+  completedBrewCount: 0,
   createdAt: new Date("2026-01-01T00:00:00.000Z"),
   updatedAt: new Date("2026-01-02T00:00:00.000Z"),
   ingredients: []

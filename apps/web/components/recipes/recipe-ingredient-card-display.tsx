@@ -1,4 +1,5 @@
 import React from "react";
+import Link from "next/link";
 
 import { CountryFlag } from "@/components/shared/country-flag";
 import type {
@@ -226,12 +227,14 @@ export function RecipeIngredientTitleBlock({
   source,
   primaryName,
   secondaryName,
-  titleClassName = "truncate text-sm font-semibold text-foreground"
+  titleClassName = "truncate text-sm font-semibold text-foreground",
+  titleHref
 }: {
   source: RecipeIngredientCardSource;
   primaryName: string;
   secondaryName?: string | null;
   titleClassName?: string;
+  titleHref?: string | null;
 }) {
   const brandLabel = resolveIngredientBrandLabel(source);
   const country = resolveIngredientCountry(source);
@@ -252,7 +255,16 @@ export function RecipeIngredientTitleBlock({
   return (
     <div className="min-w-0">
       <div className="flex min-w-0 flex-wrap items-baseline gap-x-2 gap-y-1">
-        <span className={titleClassName}>{primaryName}</span>
+        {titleHref ? (
+          <Link
+            href={titleHref}
+            className={`${titleClassName} underline-offset-2 transition hover:text-foreground hover:underline`}
+          >
+            {primaryName}
+          </Link>
+        ) : (
+          <span className={titleClassName}>{primaryName}</span>
+        )}
         {showFermentableKindInlineWithTitle ? (
           <span className="inline-flex min-w-0 items-center gap-2 text-xs font-medium text-muted-foreground">
             <span aria-hidden="true" className="text-muted-foreground">•</span>

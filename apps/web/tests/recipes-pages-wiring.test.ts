@@ -34,7 +34,11 @@ const mocks = vi.hoisted(() => ({
   }),
   notFound: vi.fn(() => {
     throw new Error("NEXT_NOT_FOUND");
-  })
+  }),
+  // По умолчанию — пусто (как будто cookie не пришла): readInitialView в
+  // content.tsx получит `undefined` и откатится к дефолтному "grid", как и
+  // раньше без мока. Конкретные тесты подставляют своё значение перед вызовом.
+  myRecipesViewCookie: undefined as string | undefined
 }));
 
 vi.mock("../lib/auth", () => ({ requireUser: mocks.requireUser }));
@@ -49,6 +53,14 @@ vi.mock("next/navigation", () => ({
   usePathname: vi.fn(() => "/app/recipes"),
   useRouter: vi.fn(() => ({ push: mocks.push }))
 }));
+vi.mock("next/headers", () => ({
+  cookies: vi.fn(async () => ({
+    get: (name: string) =>
+      name === "nb_my_recipes_view" && mocks.myRecipesViewCookie != null
+        ? { value: mocks.myRecipesViewCookie }
+        : undefined
+  }))
+}));
 
 describe("recipes pages wiring", () => {
   it("list page uses listAuthorRecipeCards", async () => {
@@ -59,10 +71,14 @@ describe("recipes pages wiring", () => {
     expect(mocks.listAuthorRecipeCards).toHaveBeenCalledWith("u-1");
     expect(html).toContain("Рецепты");
     expect(html).toContain("My Pils");
-    expect(html).toContain("Приватный");
+    // Черновик/приватный статус больше не подсвечивается бейджем — только «Публичный».
+    expect(html).not.toContain("Приватный");
     expect(html).toContain('href="/app/recipes/r-1/edit"');
     expect(html).not.toContain('href="/app/recipes/r-1"');
-    expect(html).toContain("Удалить");
+    // Меню действий (триггер рендерится сразу, содержимое — в Portal, недоступно в SSR-html).
+    // Префикс, а не точное совпадение: aria-label теперь включает название рецепта
+    // («Действия с рецептом «My Pils»») — см. owner-recipe-card.tsx.
+    expect(html).toContain('aria-label="Действия с рецептом');
   });
 
   it("list page empty state scenario works", async () => {
@@ -72,6 +88,32 @@ describe("recipes pages wiring", () => {
     const html = renderToStaticMarkup(view);
 
     expect(html).toContain("Пока нет рецептов");
+  });
+
+  it("intent=brew скрывает табы/«Создать рецепт», показывает «Сварить»/«К рецептам»", async () => {
+    const { MyRecipesContent } = await import("../app/(app)/app/recipes/content");
+    const view = await MyRecipesContent({ searchParams: Promise.resolve({ intent: "brew" }) });
+    // Рендер не должен падать даже с key-механикой галереи (задача 1 ревью).
+    const html = renderToStaticMarkup(view);
+
+    expect(html).toContain("Сварить");
+    expect(html).toContain("К рецептам");
+    expect(html).not.toContain("Создать рецепт");
+    expect(html).not.toContain("Сохранённые");
+  });
+
+  it("читает вид из cookie nb_my_recipes_view=list — рендерит list-вид", async () => {
+    mocks.myRecipesViewCookie = "list";
+    try {
+      const { MyRecipesContent } = await import("../app/(app)/app/recipes/content");
+      const view = await MyRecipesContent();
+      const html = renderToStaticMarkup(view);
+
+      expect(html).toContain('aria-label="Списком"');
+      expect(html).toMatch(/aria-label="Списком"[^>]*aria-pressed="true"/);
+    } finally {
+      mocks.myRecipesViewCookie = undefined;
+    }
   });
 
   it("compat route redirects legacy owner detail url to edit", async () => {

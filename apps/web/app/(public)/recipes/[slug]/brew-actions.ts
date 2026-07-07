@@ -13,7 +13,9 @@ const brewInputSchema = z.object({
    *  ингредиенты со склада ТЕКУЩЕГО пользователя сразу при старте. */
   consumeIngredients: z.boolean().optional(),
   /** Ключ идемпотентности создания партии (двойной клик/ретрай → одна партия). */
-  idempotencyKey: z.string().uuid().optional()
+  idempotencyKey: z.string().uuid().optional(),
+  /** Опциональная дата варки (акт «Подготовка») — задаётся сразу в диалоге «Сварить». */
+  plannedFor: z.string().datetime().optional()
 });
 
 /** Итог опционального списания склада — доезжает до диалога честно, без глотания ошибок. */
@@ -50,6 +52,7 @@ export const startBrewFromRecipeAction = async (input: {
   recipeId: string;
   consumeIngredients?: boolean;
   idempotencyKey?: string;
+  plannedFor?: string;
 }): Promise<StartBrewFromRecipeResult> => {
   const user = await getSessionUser();
   if (!user) {
@@ -63,7 +66,8 @@ export const startBrewFromRecipeAction = async (input: {
 
   try {
     const batch = await createBrewBatchFromRecipe(user.id, parsed.data.recipeId, {
-      idempotencyKey: parsed.data.idempotencyKey
+      idempotencyKey: parsed.data.idempotencyKey,
+      plannedFor: parsed.data.plannedFor ? new Date(parsed.data.plannedFor) : undefined
     });
 
     let consume: StartBrewConsumeResult | undefined;

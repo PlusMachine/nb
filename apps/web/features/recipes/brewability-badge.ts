@@ -16,12 +16,14 @@ export type BrewabilityBadge = {
 };
 
 // Бейдж «почти» показываем только когда в наличии ≥70% ТИПОВ ингредиентов —
-// иначе совпадение слишком слабое (мусор), бейджа нет.
-const MIN_TYPE_COVERAGE = 0.7;
+// иначе совпадение слишком слабое (мусор), бейджа нет. Экспортируется, чтобы
+// раздел «Чего не хватает» (§3.3, секция «Почти хватает на:») отбирал теми же порогами, не
+// заводя вторую копию констант.
+export const MIN_TYPE_COVERAGE = 0.7;
 
 // …и не больше 2 ингредиентов до цели. «Почти» должно значить «осталось докупить
 // 1-2 позиции»; «не хватает 4» на длинном рецепте — это не «почти», бейджа нет.
-const MAX_ALMOST_MISSING = 2;
+export const MAX_ALMOST_MISSING = 2;
 
 export const resolveBrewabilityBadge = (
   dto: Pick<RecipeMatchDto, "totalLines" | "coveredLines" | "missingCount">
@@ -42,4 +44,32 @@ export const resolveBrewabilityBadge = (
   }
 
   return { tier: "hidden", missing: missingCount, qtyShort: false };
+};
+
+// --- отбор для секции «Почти хватает на:» (раздел «Чего не хватает», §3.3) ---------
+//
+// Отдельная от resolveBrewabilityBadge функция: у раздела нехваток три яруса
+// (развёрнуто/свёрнуто/не показываем), а не два (almost/hidden) — «не хватает
+// 3+» там не прячется совсем, а уходит в свёрнутый список «Ещё K рецептов».
+// Пороги те же (MIN_TYPE_COVERAGE, MAX_ALMOST_MISSING), чтобы «почти» на
+// карточках и в разделе «Чего не хватает» значило одно и то же.
+
+export type ShoppingOpportunityTier = "expanded" | "collapsed" | "hidden";
+
+export const resolveShoppingOpportunityTier = (
+  dto: Pick<RecipeMatchDto, "totalLines" | "missingCount">
+): ShoppingOpportunityTier => {
+  const { totalLines, missingCount } = dto;
+
+  // ready (всё уже на складе) — рецепту нечего делать в этом разделе.
+  if (totalLines <= 0 || missingCount === 0) {
+    return "hidden";
+  }
+
+  const typeCoverage = (totalLines - missingCount) / totalLines;
+  if (typeCoverage < MIN_TYPE_COVERAGE) {
+    return "hidden";
+  }
+
+  return missingCount <= MAX_ALMOST_MISSING ? "expanded" : "collapsed";
 };

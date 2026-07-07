@@ -45,7 +45,10 @@ const { tableRefs, mockState } = vi.hoisted(() => ({
     recipeSaves: { name: "recipe_saves", id: "id", recipeId: "recipeId", userId: "userId" },
     users: { name: "users", id: "u_id", displayName: "u_displayName", email: "u_email", image: "u_image" },
     userBrewingSettings: { name: "userBrewingSettings", userId: "userId" },
-    userCustomIngredients: { name: "userCustomIngredients", id: "id", userId: "userId", type: "type", normalizedName: "normalizedName" }
+    userCustomIngredients: { name: "userCustomIngredients", id: "id", userId: "userId", type: "type", normalizedName: "normalizedName" },
+    // resolveCompletedBrewCount (mapRecipeDetailDto) — как и users выше (table.name
+    // !== "recipes" в runSelect ниже), всегда отдаёт [] → completedBrewCount = 0.
+    brewBatches: { name: "brew_batches", id: "id", recipeId: "recipeId", status: "status" }
   },
   mockState: {
     idCounter: 0,
@@ -336,7 +339,8 @@ vi.mock("@nb/db", () => {
     recipeSaves: tableRefs.recipeSaves,
     users: tableRefs.users,
     userBrewingSettings: tableRefs.userBrewingSettings,
-    userCustomIngredients: tableRefs.userCustomIngredients
+    userCustomIngredients: tableRefs.userCustomIngredients,
+    brewBatches: tableRefs.brewBatches
   };
 });
 

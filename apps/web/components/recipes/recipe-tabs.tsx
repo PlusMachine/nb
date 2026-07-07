@@ -3,6 +3,7 @@
 import React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { ArrowUpRight } from "lucide-react";
 
 import { recipeTabs } from "@/lib/navigation";
 
@@ -15,6 +16,9 @@ export function RecipeTabs() {
         const active = tab.exact
           ? pathname === tab.href
           : pathname === tab.href || pathname.startsWith(`${tab.href}/`);
+        // Табы вне рабочей зоны (href не начинается с "/app") уводят на публичную
+        // витрину — помечаем стрелкой, чтобы переход между зонами не был сюрпризом.
+        const leavesWorkingZone = !tab.href.startsWith("/app");
         return (
           <Link
             key={tab.href}
@@ -27,6 +31,7 @@ export function RecipeTabs() {
             }`}
           >
             {tab.label}
+            {leavesWorkingZone ? <ArrowUpRight className="ml-1 inline h-3.5 w-3.5" aria-hidden /> : null}
           </Link>
         );
       })}

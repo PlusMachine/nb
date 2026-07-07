@@ -1,3 +1,4 @@
+import React from "react";
 import Link from "next/link";
 import { Cpu } from "lucide-react";
 
@@ -9,12 +10,13 @@ import {
   type BrewBatchListItem,
   type BrewBatchStatus
 } from "@/features/brew-batches/contracts";
+import { NewBrewButton } from "@/components/recipes/new-brew-button";
 
 export const metadata = {
-  title: "Варки"
+  title: "Партии"
 };
 
-// Активные варки сверху, завершённые/отменённые — ниже.
+// Активные партии сверху, завершённые/отменённые — ниже.
 const statusOrder: BrewBatchStatus[] = ["brewing", "fermenting", "planned", "completed", "cancelled"];
 
 const dateFormat = new Intl.DateTimeFormat("ru-RU", { day: "numeric", month: "short", year: "numeric" });
@@ -47,21 +49,19 @@ export default async function BrewBatchesPage() {
   return (
     <main className="space-y-4">
       <section className="flex flex-wrap items-center justify-between gap-2">
-        <h1 className="text-2xl font-semibold">Варки</h1>
-        <Link href="/app/recipes" className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground">
-          К рецептам
-        </Link>
+        <h1 className="text-2xl font-semibold">Партии</h1>
+        <div className="flex items-center gap-4">
+          <Link href="/app/recipes" className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground">
+            К рецептам
+          </Link>
+          <NewBrewButton />
+        </div>
       </section>
 
       {sorted.length === 0 ? (
-        <section className="rounded-2xl border border-dashed border-border bg-card p-10 text-center">
-          <p className="text-sm text-muted-foreground">
-            Пока нет ни одной варки. Откройте{" "}
-            <Link href="/app/recipes" className="font-medium text-foreground underline underline-offset-2">
-              рецепт
-            </Link>{" "}
-            и нажмите «Сварить».
-          </p>
+        <section className="flex flex-col items-center gap-4 rounded-2xl border border-dashed border-border bg-card p-10 text-center">
+          <p className="text-sm text-muted-foreground">Пока нет ни одной партии.</p>
+          <NewBrewButton />
         </section>
       ) : (
         <ul className="space-y-2">

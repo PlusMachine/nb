@@ -139,6 +139,9 @@ export function RecipeIngredientsSection({ ingredients }: { ingredients: RecipeD
                     displayNameEn: ingredient.ingredientDisplayNameEn
                   });
                   const cardSource = buildIngredientCardSource(ingredient);
+                  const titleHref = ingredient.ingredientCatalogItemId
+                    ? `/catalog/system/${ingredient.ingredientCatalogItemId}`
+                    : null;
                   const technicalBadges = buildRecipeIngredientTechnicalBadges(cardSource, {
                     includeConsumableUsageStage: group.category !== "consumable"
                   });
@@ -160,6 +163,7 @@ export function RecipeIngredientsSection({ ingredients }: { ingredients: RecipeD
                             primaryName={primaryName}
                             secondaryName={secondaryName}
                             titleClassName="truncate text-sm font-medium text-foreground"
+                            titleHref={titleHref}
                           />
                           {summaryFallback ? <div className="mt-1 text-xs text-muted-foreground">{summaryFallback}</div> : null}
                           <RecipeIngredientTechnicalBadges badges={badges} className="mt-1.5" />

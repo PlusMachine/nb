@@ -8,7 +8,6 @@ import {
   FlaskConical,
   LayoutGrid,
   Library,
-  ShoppingCart,
   Sparkles,
   Wrench
 } from "lucide-react";
@@ -33,9 +32,11 @@ export const appNavGroups: AppNavItem[][] = [
   [
     { href: "/app", label: "Обзор", icon: LayoutGrid, exact: true, primary: true },
     { href: "/app/recipes", label: "Рецепты", icon: FlaskConical, primary: true, match: ["/app/saved", "/recipes"] },
-    { href: "/app/ingredients", label: "Склад", icon: Boxes, primary: true },
-    { href: "/app/brew-batches", label: "Варки", icon: Beer, primary: true },
-    { href: "/app/shopping", label: "Список покупок", icon: ShoppingCart }
+    // /app/shopping («Чего не хватает», таб склада) — производная витрина склада, свой пункт меню
+    // не заслуживает: вход с самого склада/дашборда/подготовки варки, а в
+    // навигации при этом подсвечивается «Склад».
+    { href: "/app/ingredients", label: "Склад", icon: Boxes, primary: true, match: ["/app/shopping"] },
+    { href: "/app/brew-batches", label: "Партии", icon: Beer, primary: true }
   ],
   [
     { href: "/app/equipment", label: "Оборудование", icon: Wrench },
@@ -59,7 +60,8 @@ export const publicLinks: { href: string; label: string }[] = [
   { href: "/bjcp", label: "Стили пива" },
   { href: "/calculators", label: "Калькуляторы" },
   { href: "/articles", label: "Статьи" },
-  { href: "/catalog", label: "Каталог" }
+  { href: "/catalog", label: "Каталог" },
+  { href: "/brewforge", label: "BrewForge" }
 ];
 
 // Правовые документы (152-ФЗ + cookie). Единый источник для футера и сайдбара
@@ -117,7 +119,8 @@ const publicPathPrefixes = [
   "/articles",
   "/catalog",
   "/brewforge",
-  "/legal"
+  "/legal",
+  "/demo"
 ];
 
 export const isPublicPath = (pathname: string): boolean =>

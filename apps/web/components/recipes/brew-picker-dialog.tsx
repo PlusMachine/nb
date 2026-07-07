@@ -28,6 +28,15 @@ import { newIdempotencyKey } from "@/lib/idempotency-key";
 
 type Screen = "gate" | "login" | "mode" | "virtual" | "device-pick" | "device-confirm";
 
+// Локальная (не UTC) дата «сегодня» в формате yyyy-MM-dd — минимум для input[type=date].
+const todayLocalDate = (): string => {
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = String(now.getMonth() + 1).padStart(2, "0");
+  const day = String(now.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+};
+
 export type BrewPickerDialogProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -49,6 +58,8 @@ export function BrewPickerDialog({ open, onOpenChange, recipeId, slug, recipeTit
   const [authRequired, setAuthRequired] = useState(false);
   const [selectedDeviceId, setSelectedDeviceId] = useState<string | null>(null);
   const [consumeIngredients, setConsumeIngredients] = useState(false);
+  // Дата варки (опционально) — yyyy-MM-dd, пусто = не задана.
+  const [plannedDate, setPlannedDate] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [remoteDisabled, setRemoteDisabled] = useState<{ message: string; brewBatchId: string } | null>(null);
@@ -95,6 +106,7 @@ export function BrewPickerDialog({ open, onOpenChange, recipeId, slug, recipeTit
     setDevices([]);
     setSelectedDeviceId(null);
     setConsumeIngredients(false);
+    setPlannedDate("");
     setError(null);
     setRemoteDisabled(null);
     setAuthRequired(false);
@@ -125,7 +137,10 @@ export function BrewPickerDialog({ open, onOpenChange, recipeId, slug, recipeTit
       const result = await startBrewFromRecipeAction({
         recipeId,
         consumeIngredients,
-        idempotencyKey: ensureIdempotencyKey()
+        idempotencyKey: ensureIdempotencyKey(),
+        // Локальный полдень — осознанно: дата остаётся тем же календарным днём в
+        // любом часовом поясе (полночь рядом с границей суток могла бы съехать).
+        plannedFor: plannedDate ? new Date(`${plannedDate}T12:00`).toISOString() : undefined
       });
       if (result.ok) {
         // Фидбэк списания довозим query-параметрами — страница партии покажет
@@ -296,6 +311,16 @@ export function BrewPickerDialog({ open, onOpenChange, recipeId, slug, recipeTit
 
       {screen === "virtual" ? (
         <div className="space-y-3 p-5">
+          <label className="flex flex-col gap-1">
+            <span className="text-xs text-muted-foreground">Дата варки</span>
+            <input
+              type="date"
+              value={plannedDate}
+              min={todayLocalDate()}
+              onChange={(event) => setPlannedDate(event.target.value)}
+              className="h-9 rounded-md border border-border px-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+            />
+          </label>
           <label
             className={`flex cursor-pointer items-start gap-3 rounded-lg border px-3 py-3 ${
               consumeIngredients ? "border-foreground bg-muted" : "border-border bg-card"

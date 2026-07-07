@@ -12,6 +12,7 @@ import {
   setRecipeFeatured
 } from "@/features/recipes/service";
 import { getSessionUser, hasRequiredRole } from "@/lib/auth";
+import { assertRateLimit } from "@nb/auth";
 
 export type RecipeRatingActionResult =
   | { ok: true; rating: RecipeRatingSummary }
@@ -51,6 +52,9 @@ const mapRatingError = (error: unknown): RecipeRatingActionResult => {
     if (error.message === "NOT_FOUND" || error.message === "FORBIDDEN") {
       return { ok: false, code: "NOT_FOUND", message: "Рецепт не найден или недоступен для оценки." };
     }
+    if (error.message === "RATE_LIMITED") {
+      return { ok: false, code: "ERROR", message: "Слишком много оценок подряд. Попробуйте позже." };
+    }
   }
   return { ok: false, code: "ERROR", message: "Не удалось сохранить оценку. Попробуйте ещё раз." };
 };
@@ -72,6 +76,8 @@ export const rateRecipeAction = async (input: {
   }
 
   try {
+    // Антиспам: оценка с текстом — публичный контент, ограничиваем частоту на юзера.
+    await assertRateLimit(user.id, "recipe_rating", 20, 10 * 60);
     const rating = await rateRecipe(user.id, input.recipeId, { stars: input.stars, body: input.body ?? null });
     revalidatePath(`/recipes/${input.slug}`);
     revalidatePath("/recipes");

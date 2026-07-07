@@ -430,6 +430,7 @@ import {
   listBrewMeasurements,
   setBrewDayStepState,
   updateBrewBatchNotes,
+  updateBrewBatchPlannedFor,
   updateBrewBatchStatus
 } from "@/features/brew-batches/service";
 import {
@@ -577,6 +578,12 @@ describe("createBrewBatchFromRecipe", () => {
   it("обрезает пользовательское имя партии", async () => {
     const batch = await createBrewBatchFromRecipe(USER_ID, RECIPE_ID, { name: "  Моя варка  " });
     expect(batch.name).toBe("Моя варка");
+  });
+
+  it("сохраняет plannedFor из input, если передан", async () => {
+    const plannedFor = new Date(Date.UTC(2026, 6, 15, 12, 0, 0));
+    const batch = await createBrewBatchFromRecipe(USER_ID, RECIPE_ID, { plannedFor });
+    expect(batch.plannedFor?.getTime()).toBe(plannedFor.getTime());
   });
 
   it("отказывает не-владельцу НЕпубличного рецепта (FORBIDDEN из гейта доступа)", async () => {
@@ -811,6 +818,35 @@ describe("updateBrewBatchNotes", () => {
   it("бросает NOT_FOUND для чужой партии", async () => {
     const seeded = seedBatch();
     await expect(updateBrewBatchNotes(OTHER_USER, seeded.id, "x")).rejects.toThrow("NOT_FOUND");
+  });
+});
+
+// --- Дата варки (plannedFor) --------------------------------------------------
+
+describe("updateBrewBatchPlannedFor", () => {
+  it("устанавливает и сбрасывает дату у запланированной партии", async () => {
+    const seeded = seedBatch({ status: "planned" });
+    const plannedFor = new Date(Date.UTC(2026, 7, 1, 12, 0, 0));
+
+    const withDate = await updateBrewBatchPlannedFor(USER_ID, seeded.id, plannedFor);
+    expect(withDate.plannedFor?.getTime()).toBe(plannedFor.getTime());
+
+    const cleared = await updateBrewBatchPlannedFor(USER_ID, seeded.id, null);
+    expect(cleared.plannedFor).toBeNull();
+  });
+
+  it("бросает INVALID_STATUS для партии не в статусе planned", async () => {
+    const seeded = seedBatch({ status: "brewing" });
+    await expect(
+      updateBrewBatchPlannedFor(USER_ID, seeded.id, new Date(Date.UTC(2026, 7, 1)))
+    ).rejects.toThrow("INVALID_STATUS");
+  });
+
+  it("бросает NOT_FOUND для чужой партии", async () => {
+    const seeded = seedBatch({ status: "planned" });
+    await expect(
+      updateBrewBatchPlannedFor(OTHER_USER, seeded.id, new Date(Date.UTC(2026, 7, 1)))
+    ).rejects.toThrow("NOT_FOUND");
   });
 });
 

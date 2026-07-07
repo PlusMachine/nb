@@ -6,6 +6,7 @@ import { z } from "zod";
 import type { RecipeCloneActionResult } from "@/features/recipes/contracts";
 import { cloneRecipeFromPublic } from "@/features/recipes/service";
 import { getSessionUser } from "@/lib/auth";
+import { assertRateLimit } from "@nb/auth";
 
 const cloneInputSchema = z.object({
   recipeId: z.string().uuid(),
@@ -17,6 +18,9 @@ const cloneInputSchema = z.object({
 const mapCloneError = (error: unknown): RecipeCloneActionResult => {
   if (error instanceof Error && (error.message === "NOT_FOUND" || error.message === "FORBIDDEN")) {
     return { ok: false, code: "NOT_FOUND", message: "Рецепт не найден или недоступен для клонирования." };
+  }
+  if (error instanceof Error && error.message === "RATE_LIMITED") {
+    return { ok: false, code: "ERROR", message: "Слишком много клонирований подряд. Попробуйте позже." };
   }
   return { ok: false, code: "ERROR", message: "Не удалось клонировать рецепт. Попробуйте ещё раз." };
 };
@@ -42,6 +46,8 @@ export const cloneRecipeFromPublicAction = async (input: {
   }
 
   try {
+    // Антиспам: клонирование создаёт записи во владении юзера, ограничиваем частоту.
+    await assertRateLimit(user.id, "recipe_clone", 10, 60 * 60);
     const recipe = await cloneRecipeFromPublic(user.id, parsed.data.recipeId, {
       targetBatchVolumeLitres: parsed.data.targetBatchVolumeLitres ?? null
     });

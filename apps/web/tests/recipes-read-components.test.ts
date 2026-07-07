@@ -15,11 +15,13 @@ import PublicRecipeNotFound from "../app/(public)/recipes/[slug]/not-found";
 import PublicRecipesError from "../app/(public)/recipes/error";
 import { RecipeEmptyState } from "../components/recipes/recipe-empty-state";
 import { buildRecipeIngredientTechnicalBadges } from "../components/recipes/recipe-ingredient-card-display";
+import { PublicRecipeHeader } from "../components/recipes/public-recipe-header";
 import { PublicRecipePage } from "../components/recipes/public-recipe-page";
 import { RecipeIngredientsSection } from "../components/recipes/recipe-ingredients-section";
 import { RecipeMetaSection } from "../components/recipes/recipe-meta-section";
 import { RecipeStatsSummary } from "../components/recipes/recipe-stats-summary";
-import { defaultRecipeProcessMeta, type RecipeDetailDto } from "../features/recipes/contracts";
+import { SimilarRecipesSection } from "../components/recipes/similar-recipes-section";
+import { defaultRecipeProcessMeta, type PublicRecipeListItem, type RecipeDetailDto } from "../features/recipes/contracts";
 
 const recipeDetail: RecipeDetailDto = {
   id: "r-1",
@@ -44,6 +46,7 @@ const recipeDetail: RecipeDetailDto = {
   color: 9.7,
   description: "Мутный IPA",
   authorNotes: "Добавить сухое охмеление",
+  authorDisplayName: null,
   processMeta: defaultRecipeProcessMeta,
   fgEstimateMode: "yeast_estimate",
   fgEstimateDetails: {
@@ -64,6 +67,7 @@ const recipeDetail: RecipeDetailDto = {
   heroImageId: null,
   rating: null,
   versions: [{ id: "r-1", versionNumber: 1, updatedAt: new Date("2026-01-02T00:00:00.000Z") }],
+  completedBrewCount: 0,
   createdAt: new Date("2026-01-01T00:00:00.000Z"),
   updatedAt: new Date("2026-01-02T00:00:00.000Z"),
   ingredients: [
@@ -210,6 +214,33 @@ describe("recipes read components", () => {
     expect(html).toContain("Личные заметки");
   });
 
+  it("links an ingredient with a catalog binding to /catalog/system/<id> (перелинковка M8)", () => {
+    const html = renderToStaticMarkup(
+      React.createElement(RecipeIngredientsSection, { ingredients: recipeDetail.ingredients })
+    );
+
+    expect(html).toContain('href="/catalog/system/cat-0"');
+    expect(html).toContain('href="/catalog/system/cat-1"');
+  });
+
+  it("does not link a custom (non-catalog) ingredient to the public catalog", () => {
+    const html = renderToStaticMarkup(
+      React.createElement(RecipeIngredientsSection, {
+        ingredients: [
+          {
+            ...recipeDetail.ingredients[0]!,
+            id: "ri-custom",
+            ingredientCatalogItemId: null,
+            userCustomIngredientId: "11111111-1111-4111-8111-111111111111"
+          }
+        ]
+      })
+    );
+
+    expect(html).not.toContain("/catalog/system/");
+    expect(html).not.toContain("/catalog/custom/");
+  });
+
   it("keeps EBC accent badges for non-malt fermentables in recipe ingredient cards", () => {
     const badges = buildRecipeIngredientTechnicalBadges({
       technicalData: {
@@ -267,6 +298,69 @@ describe("recipes read components", () => {
     // Пустого плейсхолдера обложки больше нет; оценки рендерятся внизу страницы.
     expect(html).not.toContain("пока не добавлено");
     expect(html).toContain("Оценки");
+  });
+
+  it("links the style name in the recipe header to its BJCP article (перелинковка M8)", () => {
+    const html = renderToStaticMarkup(
+      React.createElement(ToastProvider, null, React.createElement(PublicRecipeHeader, {
+        recipe: { ...recipeDetail, styleId: "21A" }
+      }))
+    );
+
+    expect(html).toContain("American IPA");
+    expect(html).toMatch(/<a[^>]+href="\/bjcp\/[^"]+"[^>]*>American IPA<\/a>/);
+  });
+
+  it("does not link the style name when the recipe has no resolvable style", () => {
+    const html = renderToStaticMarkup(
+      React.createElement(ToastProvider, null, React.createElement(PublicRecipeHeader, { recipe: recipeDetail }))
+    );
+
+    expect(html).not.toContain('href="/bjcp/');
+  });
+
+  const similarRecipeFixture = (overrides: Partial<PublicRecipeListItem> = {}): PublicRecipeListItem => ({
+    id: "r-similar",
+    slug: "similar-ipa",
+    name: "Similar IPA",
+    author: { id: "u-2", displayName: "Пётр", image: null },
+    style: { code: "21A", name: "Американский IPA" },
+    styleHref: "/bjcp/bjcp-21a-american-ipa",
+    og: 1.06,
+    fg: 1.012,
+    abv: 6.2,
+    ibu: 45,
+    colorSrm: 9,
+    colorEbc: 18,
+    batchSizeL: 20,
+    method: null,
+    heroImage: null,
+    styleImageUrl: null,
+    cloneCount: 0,
+    rating: null,
+    featured: false,
+    saveCount: 1,
+    publishedAt: "2026-02-01T00:00:00.000Z",
+    createdAt: "2026-02-01T00:00:00.000Z",
+    ...overrides
+  });
+
+  it("renders the «Похожие рецепты» section with real links when recipes are provided", () => {
+    const html = renderToStaticMarkup(
+      React.createElement(ToastProvider, null, React.createElement(SimilarRecipesSection, {
+        recipes: [similarRecipeFixture()]
+      }))
+    );
+
+    expect(html).toContain("Похожие рецепты");
+    expect(html).toContain('href="/recipes/similar-ipa"');
+    expect(html).toContain("Similar IPA");
+  });
+
+  it("renders nothing for «Похожие рецепты» when the list is empty", () => {
+    const html = renderToStaticMarkup(React.createElement(SimilarRecipesSection, { recipes: [] }));
+
+    expect(html).toBe("");
   });
 
   it("renders route-level error states", () => {

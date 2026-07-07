@@ -725,6 +725,9 @@ export type RecipeCloneActionResult =
 export type RecipeDetailDto = RecipeListItemDto & {
   description: string | null;
   authorNotes: string | null;
+  // Имя автора для деталки/JSON-LD (schema.org Recipe.author) — резолвится из
+  // users.displayName, null если пользователь его не заполнил.
+  authorDisplayName: string | null;
   processMeta: RecipeProcessMeta;
   calculationMeta?: RecipeCalculationMeta | null;
   fgEstimateMode?: RecipeFgEstimateMode | null;
@@ -739,6 +742,10 @@ export type RecipeDetailDto = RecipeListItemDto & {
   ingredients: RecipeIngredientDto[];
   versions: RecipeVersionOptionDto[];
   rating: { average: number; count: number } | null; // денормализованный агрегат (Phase D)
+  // Число подтверждённых (доведённых до конца) варок рецепта — любым
+  // пользователем. 4-й сигнал качества UGC-гейтинга индексации, см.
+  // isRecipeIndexable в ./seo.ts.
+  completedBrewCount: number;
   // Источник клона (если рецепт создан копированием чужого/своего published). null
   // у оригиналов. Баннер атрибуции рендерится только когда автор источника ≠ автор копии.
   clonedFrom?: RecipeCloneSourceDto | null;

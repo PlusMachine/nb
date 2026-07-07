@@ -118,12 +118,14 @@ const buildRecipeDetail = (overrides: Partial<RecipeDetailDto> = {}): RecipeDeta
   updatedAt: new Date("2026-04-20T10:00:00Z"),
   description: null,
   authorNotes: null,
+  authorDisplayName: null,
   processMeta: defaultRecipeProcessMeta,
   calculationMeta: null,
   heroImageId: null,
   rating: null,
   ingredients: [],
   versions: [],
+  completedBrewCount: 0,
   ...overrides
 });
 

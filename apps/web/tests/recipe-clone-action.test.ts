@@ -9,6 +9,8 @@ const mocks = vi.hoisted(() => ({
 vi.mock("@/lib/auth", () => ({ getSessionUser: mocks.getSessionUser }));
 vi.mock("@/features/recipes/service", () => ({ cloneRecipeFromPublic: mocks.cloneRecipeFromPublic }));
 vi.mock("next/cache", () => ({ revalidatePath: mocks.revalidatePath }));
+// Антиспам-лимит экшена не должен ходить в реальную БД из юнит-теста.
+vi.mock("@nb/auth", () => ({ assertRateLimit: vi.fn().mockResolvedValue(undefined) }));
 
 import { cloneRecipeFromPublicAction } from "../app/(public)/recipes/[slug]/clone-actions";
 

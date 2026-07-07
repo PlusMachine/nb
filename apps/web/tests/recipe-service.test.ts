@@ -12,15 +12,23 @@ const { tableRefs, mockState } = vi.hoisted(() => ({
     recipes: { name: "recipes", id: "id", authorId: "authorId", publicationState: "publicationState", slug: "slug", createdAt: "createdAt", updatedAt: "updatedAt" },
     recipeIngredients: { name: "recipe_ingredients", id: "id", recipeId: "recipeId", persistentKey: "persistentKey", displayOrder: "displayOrder", ingredientCatalogItemId: "ingredientCatalogItemId", userCustomIngredientId: "userCustomIngredientId", type: "type", stage: "stage" },
     ingredients: { name: "ingredients", id: "id", isActive: "isActive", type: "type" },
+    users: { name: "users", id: "id", displayName: "displayName" },
     userBrewingSettings: { name: "userBrewingSettings", userId: "userId" },
-    userCustomIngredients: { name: "userCustomIngredients", id: "id", userId: "userId", type: "type", normalizedName: "normalizedName" }
+    userCustomIngredients: { name: "userCustomIngredients", id: "id", userId: "userId", type: "type", normalizedName: "normalizedName" },
+    // resolveCompletedBrewCount (mapRecipeDetailDto) дергает select(...).from(brewBatches)…
+    // в этом файле нет фикстур brew_batches — мок ниже всегда отдаёт [] для этой
+    // таблицы, т.е. completedBrewCount резолвится в 0 (тесты этого файла его не проверяют).
+    brewBatches: { name: "brew_batches", id: "id", recipeId: "recipeId", status: "status" }
   },
   mockState: {
     idCounter: 0,
     recipesById: new Map<string, any>(),
     ingredientsByRecipeId: new Map<string, any[]>(),
     catalogById: new Map<string, any>(),
-    customById: new Map<string, any>()
+    customById: new Map<string, any>(),
+    // authorDisplayName (mapRecipeDetailDto → resolveAuthorDisplayName) — по умолчанию
+    // пусто; конкретные тесты при необходимости сеют "u1"/"u2" в usersById.
+    usersById: new Map<string, { id: string; displayName: string | null }>()
   }
 }));
 
@@ -181,6 +189,27 @@ vi.mock("@nb/db", () => {
           }
         }
       }
+    }),
+    // resolveAuthorDisplayName и resolveCompletedBrewCount (оба в mapRecipeDetailDto)
+    // дергают select(...) — простой билдер под select({...}).from(table).where(...).limit(1).
+    // Для любой таблицы, кроме users (сейчас это brewBatches — completedBrewCount
+    // не под тестом в этом файле), отдаёт [] → completedBrewCount резолвится в 0.
+    select: (selection: Record<string, unknown>) => ({
+      from: (table: { name: string }) => ({
+        where: (where: any) => ({
+          limit: async () => {
+            if (table.name !== "users") return [];
+            const id = getEqValue(where, "id");
+            const user = id ? mockState.usersById.get(id) : null;
+            if (!user) return [];
+            const row: Record<string, unknown> = {};
+            for (const key of Object.keys(selection)) {
+              row[key] = (user as Record<string, unknown>)[key] ?? null;
+            }
+            return [row];
+          }
+        })
+      })
     })
   };
 
@@ -194,8 +223,10 @@ vi.mock("@nb/db", () => {
     recipes: tableRefs.recipes,
     recipeIngredients: tableRefs.recipeIngredients,
     ingredients: tableRefs.ingredients,
+    users: tableRefs.users,
     userBrewingSettings: tableRefs.userBrewingSettings,
-    userCustomIngredients: tableRefs.userCustomIngredients
+    userCustomIngredients: tableRefs.userCustomIngredients,
+    brewBatches: tableRefs.brewBatches
   };
 });
 
@@ -831,6 +862,35 @@ describe("recipe service", () => {
   it("cross-user edit forbidden", async () => {
     const recipe = await createRecipe("u1", { title: "Owned", batchSizeEnteredQuantity: 10, batchSizeEnteredUnit: "l" });
     await expect(updateRecipe("u2", recipe.id, { title: "hack" })).rejects.toThrowError("NOT_FOUND");
+  });
+
+  it("A15: у опубликованного рецепта смена названия НЕ меняет slug (URL канонический)", async () => {
+    const recipe = await createRecipe("u1", buildReadyPublicPayload({ title: "Original Public Title" }));
+    const originalSlug = recipe.slug;
+
+    const updated = await updateRecipe("u1", recipe.id, { title: "Completely Renamed Public Recipe" });
+
+    expect(updated.title).toBe("Completely Renamed Public Recipe");
+    expect(updated.slug).toBe(originalSlug);
+  });
+
+  it("A15: у draft/private рецепта смена названия по-прежнему пересчитывает slug", async () => {
+    const draftRecipe = await createRecipe("u1", {
+      title: "Draft Original",
+      publicationState: "draft",
+      batchSizeEnteredQuantity: 20,
+      batchSizeEnteredUnit: "l"
+    });
+    const draftOriginalSlug = draftRecipe.slug;
+    const updatedDraft = await updateRecipe("u1", draftRecipe.id, { title: "Draft Renamed" });
+    expect(updatedDraft.slug).not.toBe(draftOriginalSlug);
+    expect(updatedDraft.slug).toContain("draft-renamed");
+
+    const privateRecipe = await createRecipe("u1", buildReadyPrivatePayload({ title: "Private Original" }));
+    const privateOriginalSlug = privateRecipe.slug;
+    const updatedPrivate = await updateRecipe("u1", privateRecipe.id, { title: "Private Renamed" });
+    expect(updatedPrivate.slug).not.toBe(privateOriginalSlug);
+    expect(updatedPrivate.slug).toContain("private-renamed");
   });
 
   it("delete removes owned recipe", async () => {

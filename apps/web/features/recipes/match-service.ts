@@ -693,6 +693,11 @@ export const computeRecipeMatchesForUser = async (input: {
   userId: string;
   recipeIds: string[];
   targetBatchVolumeL?: number | null;
+  // Пустой склад обычно означает «нечего матчить» — короткий выход без похода в
+  // БД за рецептами (findBrewableRecipesForUser и т.п.). Раздел «Чего не хватает» —
+  // другой случай: там нужны все строки как "missing" даже при пустом складе (иначе
+  // список для пользователя без единого ингредиента на складе не соберётся).
+  includeEmptyInventory?: boolean;
 }): Promise<Record<string, RecipeMatchDto>> => {
   const ids = [...new Set(input.recipeIds)].filter(Boolean);
   if (ids.length === 0) {
@@ -705,7 +710,7 @@ export const computeRecipeMatchesForUser = async (input: {
   ]);
 
   const index = indexInventoryEntries(buildInventoryEntries(inventoryItems));
-  if (index.byExact.size === 0 && index.byGroup.size === 0) {
+  if (!input.includeEmptyInventory && index.byExact.size === 0 && index.byGroup.size === 0) {
     return {};
   }
 
@@ -721,11 +726,22 @@ export const computeRecipeMatchesForUser = async (input: {
     if (recipe.ingredients.length === 0) {
       continue;
     }
-    const volume = resolveMatchFactor(recipe, {
-      targetBatchVolumeL: input.targetBatchVolumeL,
-      defaultBatchVolumeL
-    });
-    result[recipe.id] = computeMatchForRecipeRow(recipe, index, catalogById, volume);
+    // FIX-3: один рецепт с кривыми данными (например, повреждённая строка
+    // ингредиента) не должен валить весь батч-матч — а с ним всю страницу
+    // /app (дашборд, список покупок), которая матчит десятки рецептов разом.
+    // Пропускаем только этот рецепт, остальные считаем как обычно.
+    try {
+      const volume = resolveMatchFactor(recipe, {
+        targetBatchVolumeL: input.targetBatchVolumeL,
+        defaultBatchVolumeL
+      });
+      result[recipe.id] = computeMatchForRecipeRow(recipe, index, catalogById, volume);
+    } catch (error) {
+      console.error("[recipes] computeRecipeMatchesForUser: skipping recipe after match error", {
+        recipeId: recipe.id,
+        error
+      });
+    }
   }
 
   return result;

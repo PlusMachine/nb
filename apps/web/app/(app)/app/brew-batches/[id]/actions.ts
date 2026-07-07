@@ -1,7 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { ZodError } from "zod";
+import { z, ZodError } from "zod";
 
 import { requireUser } from "@/lib/auth";
 import {
@@ -10,6 +10,7 @@ import {
   setBrewDayStepState,
   setBrewMeasurementFinal,
   updateBrewBatchNotes,
+  updateBrewBatchPlannedFor,
   updateBrewBatchStatus
 } from "@/features/brew-batches/service";
 import {
@@ -152,6 +153,34 @@ export const updateBrewBatchNotesAction = async (
       return { ok: false, message: "Варка не найдена." };
     }
     return { ok: false, message: "Не удалось сохранить заметки." };
+  }
+};
+
+// --- Дата варки (акт «Подготовка») -------------------------------------------
+
+const plannedForInputSchema = z.string().datetime().nullable();
+
+export const setBrewBatchPlannedForAction = async (
+  brewBatchId: string,
+  plannedForIso: string | null
+): Promise<BrewActionResult> => {
+  try {
+    const user = await requireUser();
+    const parsed = plannedForInputSchema.safeParse(plannedForIso);
+    if (!parsed.success) {
+      return { ok: false, message: "Некорректная дата." };
+    }
+    await updateBrewBatchPlannedFor(user.id, brewBatchId, parsed.data ? new Date(parsed.data) : null);
+    revalidateBatch(brewBatchId);
+    return { ok: true, message: parsed.data ? "Дата варки обновлена." : "Дата варки сброшена." };
+  } catch (error) {
+    if (error instanceof Error && error.message === "NOT_FOUND") {
+      return { ok: false, message: "Варка не найдена." };
+    }
+    if (error instanceof Error && error.message === "INVALID_STATUS") {
+      return { ok: false, message: "Дату можно менять только у запланированной варки." };
+    }
+    return { ok: false, message: "Не удалось сохранить дату." };
   }
 };
 

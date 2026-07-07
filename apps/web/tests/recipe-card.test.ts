@@ -59,7 +59,7 @@ describe("RecipeCard", () => {
     expect(html).not.toContain("<img");
     // Компактная миниатюра без фото/стиля не несёт текстовую метку цвета — цвет
     // (число + точка) теперь показывается ячейкой в статах, не поверх обложки.
-    expect(html).toContain("Цвет");
+    expect(html).toContain("SRM");
     expect(html).toContain("9.5");
   });
 

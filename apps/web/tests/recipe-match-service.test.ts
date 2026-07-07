@@ -12,6 +12,25 @@ vi.mock("@nb/db", () => ({
 vi.mock("../features/recipes/service", () => ({ getRecipeById: vi.fn() }));
 vi.mock("../features/inventory/service", () => ({ listInventoryForUser: vi.fn() }));
 vi.mock("../features/equipment-profiles/service", () => ({ listEquipmentProfiles: vi.fn() }));
+// FIX-3 fault injection: настоящий roundTo никогда не получает отрицательное
+// значение на легальных данных (нормализованные количества валидируются как
+// ≥0 при сохранении рецепта) — здесь отрицательное значение служит маркером
+// «повреждённой» строки рецепта, чтобы смоделировать реальный throw внутри
+// цикла матчинга computeRecipeMatchesForUser, не выдумывая тест-пустышку.
+// Для всех остальных значений (весь реальный матчинг в этом файле оперирует
+// неотрицательными количествами) поведение не отличается от настоящего roundTo.
+vi.mock("@nb/brewing-core", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("@nb/brewing-core")>();
+  return {
+    ...actual,
+    roundTo: (value: number, digits?: number) => {
+      if (value < 0) {
+        throw new Error("[test] simulated corrupt recipe line");
+      }
+      return actual.roundTo(value, digits);
+    }
+  };
+});
 
 import {
   computeRecipeMatch,
@@ -434,6 +453,25 @@ describe("computeRecipeMatchesForUser — batch", () => {
     expect(Object.keys(result)).toEqual(["r-1"]);
   });
 
+  it("includeEmptyInventory: still computes matches (all-missing) instead of short-circuiting to {}", async () => {
+    (listInventoryForUser as Mock).mockResolvedValue([]);
+    (listEquipmentProfiles as Mock).mockResolvedValue([]);
+    (db.query.ingredients.findMany as Mock).mockResolvedValue([]);
+    (db.query.recipes.findMany as Mock).mockResolvedValue([
+      recipeRow("r-1", [ingredientRow({ id: "r1-pils", persistentKey: "r1-pils-pk" })])
+    ]);
+
+    const result = await computeRecipeMatchesForUser({
+      userId: "u-1",
+      recipeIds: ["r-1"],
+      includeEmptyInventory: true
+    });
+
+    expect(db.query.recipes.findMany).toHaveBeenCalled();
+    expect(result["r-1"].missingCount).toBe(1);
+    expect(result["r-1"].matchPercent).toBe(0);
+  });
+
   it("dedupes recipeIds before querying", async () => {
     (listInventoryForUser as Mock).mockResolvedValue([pilsnerInventoryItem]);
     (listEquipmentProfiles as Mock).mockResolvedValue([]);
@@ -447,5 +485,26 @@ describe("computeRecipeMatchesForUser — batch", () => {
     expect(Object.keys(result)).toEqual(["r-1"]);
     // where собирается через inArray(recipes.id, ids) — ids должны быть дедуплицированы
     expect(inArray).toHaveBeenCalledWith(undefined, ["r-1"]);
+  });
+
+  it("FIX-3: isolates a per-recipe match failure instead of failing the whole batch", async () => {
+    (listInventoryForUser as Mock).mockResolvedValue([pilsnerInventoryItem]);
+    (listEquipmentProfiles as Mock).mockResolvedValue([]);
+    (db.query.ingredients.findMany as Mock).mockResolvedValue([]);
+    (db.query.recipes.findMany as Mock).mockResolvedValue([
+      recipeRow("r-1", [ingredientRow({ id: "r1-pils", persistentKey: "r1-pils-pk" })]),
+      // amountNormalizedQuantity: -1 подрывает roundTo() внутри matchLineAgainstInventory
+      // через мок @nb/brewing-core выше (см. комментарий там) — стенд-ин для
+      // повреждённой строки рецепта.
+      recipeRow("r-broken", [
+        ingredientRow({ id: "rb-pils", persistentKey: "rb-pils-pk", amountNormalizedQuantity: -1 })
+      ])
+    ]);
+
+    const result = await computeRecipeMatchesForUser({ userId: "u-1", recipeIds: ["r-1", "r-broken"] });
+
+    // Сломанный рецепт пропущен, но не утащил за собой матч r-1.
+    expect(Object.keys(result)).toEqual(["r-1"]);
+    expect(result["r-1"].missingCount).toBe(0);
   });
 });

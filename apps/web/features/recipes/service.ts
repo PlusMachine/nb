@@ -1,6 +1,7 @@
 import {
   and,
   asc,
+  brewBatches,
   count,
   db,
   desc,
@@ -76,6 +77,7 @@ import {
   type PublicRecipeSortKey
 } from "./public-recipe-query";
 import { computeBayesianRating } from "./rating-score";
+import { isRecipeIndexable, isUnmodifiedClone } from "./seo";
 import { equipmentProfileSnapshotSchema, type EquipmentProfileSnapshot } from "../equipment-profiles/contracts";
 import { getRecipePublicationFieldErrors } from "./publication-validation";
 import { calculateRecipeFgEstimate } from "./fg-estimate";
@@ -1047,6 +1049,66 @@ const resolveRecipeCloneSource = async (
   };
 };
 
+/**
+ * Имя автора рецепта для деталки/JSON-LD (Recipe.author). Отдельный дешёвый
+ * запрос по authorId — по паттерну {@link resolveRecipeCloneSource} выше: не
+ * меняем форму `with: { ingredients: true }` во всех ensureX-выборках ради
+ * одного поля.
+ */
+const resolveAuthorDisplayName = async (authorId: string): Promise<string | null> => {
+  const [row] = await db
+    .select({ displayName: users.displayName })
+    .from(users)
+    .where(eq(users.id, authorId))
+    .limit(1);
+
+  return row?.displayName ?? null;
+};
+
+// Статус партии, который считается «подтверждённой варкой» (4-й сигнал качества
+// UGC-гейтинга индексации, isRecipeIndexable в ./seo.ts) — доведённая до конца
+// варка, а не planned/brewing/fermenting/cancelled.
+const COMPLETED_BREW_BATCH_STATUS = "completed" as const;
+
+/**
+ * Число подтверждённых варок одного рецепта (любым пользователем, не только
+ * автором) — для деталки/JSON-LD, тот же паттерн, что и {@link resolveAuthorDisplayName}
+ * выше: отдельный дешёвый запрос, не меняющий форму основной выборки.
+ */
+const resolveCompletedBrewCount = async (recipeId: string): Promise<number> => {
+  const [row] = await db
+    .select({ value: count() })
+    .from(brewBatches)
+    .where(and(eq(brewBatches.recipeId, recipeId), eq(brewBatches.status, COMPLETED_BREW_BATCH_STATUS)))
+    .limit(1);
+
+  return row?.value ?? 0;
+};
+
+/**
+ * Батч-версия {@link resolveCompletedBrewCount} для sitemap (`listRecipeSitemapEntries`):
+ * один GROUP BY-запрос по всем кандидатам вместо N+1. recipeId у brew_batches
+ * nullable (`ON DELETE SET NULL`), но inArray-фильтр гарантирует, что в
+ * результате остаются только строки с recipeId из переданного списка.
+ */
+const resolveCompletedBrewCountsByRecipeId = async (recipeIds: string[]): Promise<Map<string, number>> => {
+  if (recipeIds.length === 0) {
+    return new Map();
+  }
+
+  const rows = await db
+    .select({ recipeId: brewBatches.recipeId, completedCount: count() })
+    .from(brewBatches)
+    .where(and(inArray(brewBatches.recipeId, recipeIds), eq(brewBatches.status, COMPLETED_BREW_BATCH_STATUS)))
+    .groupBy(brewBatches.recipeId);
+
+  return new Map(
+    rows
+      .filter((row): row is { recipeId: string; completedCount: number } => row.recipeId != null)
+      .map((row) => [row.recipeId, row.completedCount])
+  );
+};
+
 const mapRecipeDetailDto = async (
   recipe: typeof recipes.$inferSelect,
   ingredients: Array<typeof recipeIngredients.$inferSelect>
@@ -1057,6 +1119,7 @@ const mapRecipeDetailDto = async (
     ...mapRecipeListDto(recipe),
     description: recipe.description,
     authorNotes: recipe.authorNotes,
+    authorDisplayName: await resolveAuthorDisplayName(recipe.authorId),
     processMeta: parseRecipeProcessMeta(recipe.processMeta as Record<string, unknown> | null | undefined),
     calculationMeta,
     fgEstimateMode: calculationMeta.fgEstimateMode ?? null,
@@ -1074,6 +1137,7 @@ const mapRecipeDetailDto = async (
         : null,
     versions: await listRecipeVersions(recipe.authorId, recipe.recipeFamilyId),
     clonedFrom: await resolveRecipeCloneSource(recipe.clonedFromRecipeId),
+    completedBrewCount: await resolveCompletedBrewCount(recipe.id),
     ingredients: await Promise.all(sortRecipeIngredientsByDisplayOrder(ingredients).map((ingredient) => hydrateRecipeIngredientDto(recipe.authorId, ingredient)))
   };
 };
@@ -1547,7 +1611,11 @@ export const updateRecipe = async (authorId: string, recipeId: string, payload: 
     processMeta: nextProcessMeta as Record<string, unknown>,
     ingredients: preparedIngredients
   });
-  const shouldRecomputeSlug = parsed.title !== undefined;
+  // URL опубликованного рецепта канонический — смена названия не меняет slug
+  // (история слагов/redirect на переименование — отдельная задача). Для
+  // draft/private рецепт ещё не проиндексирован, слаг подстраивается под
+  // название, как раньше.
+  const shouldRecomputeSlug = parsed.title !== undefined && current.publicationState !== "published";
 
   let [updated] = [] as Array<typeof recipes.$inferSelect>;
 
@@ -2225,6 +2293,81 @@ export const getPublicRecipeSortAvailability = async (): Promise<PublicRecipeSor
   };
 };
 
+/**
+ * Для sitemap (см. app/sitemap.ts): только `published`-рецепты, прошедшие тот
+ * же порог качества, что и noindex на детальной странице (S1, §12
+ * SEO-плейбука) — критерий берём из {@link isRecipeIndexable}, чтобы не
+ * заводить второй набор магических чисел. Клоны без существенных правок (S2,
+ * см. {@link isUnmodifiedClone}) тоже не попадают — их канонический URL уже
+ * представлен записью источника.
+ *
+ * Источник резолвится отдельным батч-запросом (а не self-join), чтобы не
+ * тащить в этот файл `alias()` ради одной выборки для sitemap.
+ */
+export const listRecipeSitemapEntries = async (): Promise<Array<{ slug: string; updatedAt: Date }>> => {
+  const candidates = await db
+    .select({
+      id: recipes.id,
+      slug: recipes.slug,
+      updatedAt: recipes.updatedAt,
+      title: recipes.title,
+      description: recipes.description,
+      heroImageId: recipes.heroImageId,
+      ratingCount: recipes.ratingCount,
+      clonedFromRecipeId: recipes.clonedFromRecipeId
+    })
+    .from(recipes)
+    .where(eq(recipes.publicationState, "published"));
+
+  // 4-й сигнал качества (подтверждённые варки) — один батч-запрос GROUP BY по
+  // всем кандидатам сразу, без N+1 (см. resolveCompletedBrewCountsByRecipeId выше).
+  const completedBrewCountByRecipeId = await resolveCompletedBrewCountsByRecipeId(
+    candidates.map((candidate) => candidate.id)
+  );
+
+  const cloneSourceIds = [...new Set(
+    candidates
+      .map((candidate) => candidate.clonedFromRecipeId)
+      .filter((id): id is string => id != null)
+  )];
+
+  const cloneSources = cloneSourceIds.length > 0
+    ? await db
+        .select({
+          id: recipes.id,
+          title: recipes.title,
+          publicationState: recipes.publicationState
+        })
+        .from(recipes)
+        .where(inArray(recipes.id, cloneSourceIds))
+    : [];
+  const cloneSourceById = new Map(cloneSources.map((source) => [source.id, source]));
+
+  return candidates
+    .filter((candidate) => {
+      if (!isRecipeIndexable({
+        description: candidate.description,
+        heroImageId: candidate.heroImageId,
+        ratingCount: candidate.ratingCount,
+        completedBrewCount: completedBrewCountByRecipeId.get(candidate.id) ?? 0
+      })) {
+        return false;
+      }
+
+      const source = candidate.clonedFromRecipeId ? cloneSourceById.get(candidate.clonedFromRecipeId) : null;
+      if (source && isUnmodifiedClone({
+        cloneTitle: candidate.title,
+        sourceTitle: source.title,
+        sourceIsPublished: source.publicationState === "published"
+      })) {
+        return false;
+      }
+
+      return true;
+    })
+    .map((candidate) => ({ slug: candidate.slug, updatedAt: candidate.updatedAt }));
+};
+
 export const searchPublicRecipes = async (filters: PublicRecipeFilters): Promise<PublicRecipeListResult> => {
   const conditions = [eq(recipes.publicationState, "published")];
 
@@ -2735,6 +2878,100 @@ export const listSavedRecipes = async (userId: string): Promise<PublicRecipeList
 
   const styleHeroImageByBjcpId = await getBjcpStyleHeroImageByBjcpId();
   return rows.map((row) => mapPublicRecipeListItem(row, styleHeroImageByBjcpId));
+};
+
+// Ссылка на «свой» рецепт вместе с презентацией карточки (S4): обложка
+// (фото → фото BJCP-стиля → заливка по SRM), код/название стиля и ссылка на
+// BJCP — ровно то, что нужно RecipeThumb/StyleChip карточки «Почти хватает на:»
+// раздела «Чего не хватает». Метрики матча (проценты, нехватки) сюда не входят —
+// вызывающий сам зовёт батч-матч по id.
+export type OwnRecipeRefDto = {
+  id: string;
+  slug: string;
+  title: string;
+  styleCode: string | null;
+  styleName: string | null;
+  styleHref: string | null;
+  heroImage: { thumbUrl: string; blurDataUrl: string | null } | null;
+  styleImageUrl: string | null;
+  colorSrm: number | null;
+};
+
+// Результат listOwnRecipeRefs: схлопнутые до последней версии ссылки (refs) +
+// принадлежность К СЕМЕЙСТВУ ЛЮБОЙ версии пользователя (familyIdByVersionId),
+// не только последней. Второе поле нужно потребителям, которым важно узнать
+// семейство по recipeId старой версии — например, список покупок (FIX-4):
+// запланированная варка или избранная запись могут ссылаться на НЕ-последнюю
+// версию, и без этой карты семейство этой версии было бы не найти без
+// дополнительного запроса.
+export type OwnRecipeRefsResult = {
+  refs: OwnRecipeRefDto[];
+  familyIdByVersionId: Map<string, string>;
+};
+
+/**
+ * Свои рецепты пользователя (любой статус публикации). `refs` — схлопнутые до
+ * последней версии в семействе, как на дашборде
+ * ({@link findBrewableOwnRecipesForUser}), чтобы «IPA v1»/«IPA v2» не
+ * дублировались как два разных «своих рецепта». `familyIdByVersionId` —
+ * принадлежность ВСЕХ версий (до схлопывания) к семейству.
+ */
+export const listOwnRecipeRefs = async (authorId: string): Promise<OwnRecipeRefsResult> => {
+  // ОДИН запрос: join recipeImages по heroImageId даёт обложку сразу для всех
+  // версий, стиль/цвет резолвятся ниже кеш-хелперами (без похода в БД).
+  const rows = await db
+    .select({
+      id: recipes.id,
+      slug: recipes.slug,
+      title: recipes.title,
+      recipeFamilyId: recipes.recipeFamilyId,
+      versionNumber: recipes.versionNumber,
+      styleId: recipes.styleId,
+      color: recipes.color,
+      heroImageId: recipes.heroImageId,
+      heroThumbKey: recipeImages.storageKeyThumb,
+      heroBlurDataUrl: recipeImages.blurDataUrl
+    })
+    .from(recipes)
+    .leftJoin(recipeImages, eq(recipeImages.id, recipes.heroImageId))
+    .where(eq(recipes.authorId, authorId));
+
+  const latestByFamily = new Map<string, (typeof rows)[number]>();
+  const familyIdByVersionId = new Map<string, string>();
+  for (const row of rows) {
+    familyIdByVersionId.set(row.id, row.recipeFamilyId);
+    const previous = latestByFamily.get(row.recipeFamilyId);
+    if (!previous || row.versionNumber > previous.versionNumber) {
+      latestByFamily.set(row.recipeFamilyId, row);
+    }
+  }
+
+  // Карта фото BJCP-стилей (как на `/bjcp`) — дешёвый кешированный lookup, не N+1.
+  const styleHeroImageByBjcpId = await getBjcpStyleHeroImageByBjcpId();
+
+  const refs: OwnRecipeRefDto[] = [...latestByFamily.values()].map((row) => {
+    const style = getBeerStyleById(row.styleId);
+    const heroImage =
+      row.heroImageId && row.heroThumbKey
+        ? { thumbUrl: `/api/recipe-images/${row.heroImageId}/thumb`, blurDataUrl: row.heroBlurDataUrl ?? null }
+        : null;
+    // Фото BJCP-стиля показываем только когда у рецепта нет своего фото.
+    const styleImageUrl = !heroImage && style ? styleHeroImageByBjcpId.get(style.bjcpId) ?? null : null;
+
+    return {
+      id: row.id,
+      slug: row.slug,
+      title: row.title,
+      styleCode: style ? style.bjcpId : null,
+      styleName: style ? style.nameRu ?? style.name : null,
+      styleHref: getBjcpArticleHrefByStyleId(row.styleId),
+      heroImage,
+      styleImageUrl,
+      colorSrm: row.color
+    };
+  });
+
+  return { refs, familyIdByVersionId };
 };
 
 export const previewRecipeDraft = async (authorId: string, payload: unknown): Promise<RecipeDraftPreviewDto> => {

@@ -178,7 +178,7 @@ const mapBrewBatchListItem = (
   };
 };
 
-/** Все варки пользователя (для раздела «Варки»), новые сверху. Слим-проекция. */
+/** Все партии пользователя (для раздела «Партии»), новые сверху. Слим-проекция. */
 export const listBrewBatchesForUser = async (userId: string): Promise<BrewBatchListItem[]> => {
   const rows = await db.query.brewBatches.findMany({
     where: eq(brewBatches.userId, userId),
@@ -508,6 +508,33 @@ export const updateBrewBatchNotes = async (
 ): Promise<BrewBatchDto> => {
   const [updated] = await db.update(brewBatches).set({
     notes: notes?.trim() || null,
+    updatedAt: new Date()
+  }).where(and(eq(brewBatches.id, brewBatchId), eq(brewBatches.userId, userId))).returning();
+  if (!updated) {
+    throw new Error("NOT_FOUND");
+  }
+  return mapBrewBatchDto(updated);
+};
+
+/**
+ * Перепланировать дату варки (акт «Подготовка»): задать/сдвинуть/сбросить
+ * plannedFor. Доступно ТОЛЬКО для партии в статусе 'planned' — как только варка
+ * стартовала, «дата варки» теряет смысл (есть фактический startedAt).
+ */
+export const updateBrewBatchPlannedFor = async (
+  userId: string,
+  brewBatchId: string,
+  plannedFor: Date | null
+): Promise<BrewBatchDto> => {
+  const batch = await getBrewBatchById(userId, brewBatchId);
+  if (!batch) {
+    throw new Error("NOT_FOUND");
+  }
+  if (batch.status !== "planned") {
+    throw new Error("INVALID_STATUS");
+  }
+  const [updated] = await db.update(brewBatches).set({
+    plannedFor,
     updatedAt: new Date()
   }).where(and(eq(brewBatches.id, brewBatchId), eq(brewBatches.userId, userId))).returning();
   if (!updated) {

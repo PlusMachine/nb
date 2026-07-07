@@ -20,6 +20,8 @@ import { listFermenterCandidates } from "@/features/devices/fermenter-binding";
 import { deviceChannel } from "@/features/brew-controller";
 import { mapFermentationPlanToDeviceSteps } from "@/features/brew-controller/ferment-profile";
 import { getRecipeById } from "@/features/recipes/service";
+import { computeRecipeMatch } from "@/features/recipes/match-service";
+import { isShoppingGapLine } from "@/features/shopping/service";
 import { formatGravity } from "@/features/system/gravity-units";
 import { formatRelativeTimestamp } from "@/features/recipes/format";
 import { resolveFermenterBindingStatus } from "@/features/brew-batches/fermenter-status";
@@ -77,6 +79,21 @@ export default async function BrewBatchDetailPage({ params }: { params: Promise<
       )
     : [];
   const inventoryView = await getBrewBatchInventoryView(user.id, batch.id);
+
+  // Вход в список покупок из акта «Подготовка» (S3, docs/shopping-list-redesign.md
+  // D13): считаем нехватку по рецепту ЭТОЙ партии — тем же предикатом
+  // isShoppingGapLine, что даёт строки в /app/shopping, чтобы числа на двух
+  // поверхностях совпадали. Ошибка матча (рецепт удалён/недоступен) — не должна
+  // ронять страницу партии, поэтому просто гасим её в null.
+  let prepShortage: { missingCount: number } | null = null;
+  if (act === "prep" && batch.recipeId) {
+    try {
+      const match = await computeRecipeMatch({ userId: user.id, recipeId: batch.recipeId });
+      prepShortage = { missingCount: match.lines.filter(isShoppingGapLine).length };
+    } catch {
+      prepShortage = null;
+    }
+  }
 
   // Гид варочного дня строим для варки без устройства (в done/archived — read-only
   // история) — при устройстве герой варочного дня/итога это device-дашборд, гид не
@@ -179,7 +196,7 @@ export default async function BrewBatchDetailPage({ params }: { params: Promise<
       <div>
         <Link href="/app/brew-batches" className="inline-flex items-center gap-1 text-sm text-muted-foreground transition hover:text-foreground">
           <ChevronLeft className="h-4 w-4" aria-hidden />
-          Все варки
+          Все партии
         </Link>
       </div>
 
@@ -232,13 +249,22 @@ export default async function BrewBatchDetailPage({ params }: { params: Promise<
             preferredGravityUnit={user.preferredGravityUnit}
             hideStats={act === "done"}
           />
-          {inventoryView ? <BrewInventory brewBatchId={batch.id} view={inventoryView} status={batch.status} /> : null}
+          {inventoryView ? (
+            <BrewInventory brewBatchId={batch.id} view={inventoryView} status={batch.status} prepShortage={prepShortage} />
+          ) : null}
           <BrewNotes brewBatchId={batch.id} notes={batch.notes} completed={act === "done"} />
         </>
       ) : act === "prep" ? (
         <>
-          <BrewPrepCard brewBatchId={batch.id} planSummary={planSummary} ogTargetLabel={ogTargetLabel} />
-          {inventoryView ? <BrewInventory brewBatchId={batch.id} view={inventoryView} status={batch.status} /> : null}
+          <BrewPrepCard
+            brewBatchId={batch.id}
+            planSummary={planSummary}
+            ogTargetLabel={ogTargetLabel}
+            plannedForIso={batch.plannedFor ? batch.plannedFor.toISOString() : null}
+          />
+          {inventoryView ? (
+            <BrewInventory brewBatchId={batch.id} view={inventoryView} status={batch.status} prepShortage={prepShortage} />
+          ) : null}
           <BrewNotes brewBatchId={batch.id} notes={batch.notes} />
         </>
       ) : act === "brewday" ? (

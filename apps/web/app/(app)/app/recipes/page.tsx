@@ -3,10 +3,14 @@ import React, { Suspense } from "react";
 import { MyRecipesContent } from "./content";
 import { RecipesLoadingSkeleton } from "./loading";
 
-export default function MyRecipesPage() {
+type Props = {
+  searchParams?: Promise<Record<string, string | string[] | undefined>>;
+};
+
+export default function MyRecipesPage(props: Props) {
   return (
     <Suspense fallback={<RecipesLoadingSkeleton />}>
-      <MyRecipesContent />
+      <MyRecipesContent {...props} />
     </Suspense>
   );
 }

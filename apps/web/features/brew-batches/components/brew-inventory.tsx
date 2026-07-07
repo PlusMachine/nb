@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useRef, useState } from "react";
+import Link from "next/link";
 import { ChevronRight, Loader2, PackageMinus, Undo2 } from "lucide-react";
 
 import { Button } from "@nb/ui";
@@ -13,6 +14,7 @@ import {
   type BrewBatchInventoryView,
   type BrewBatchStatus
 } from "@/features/brew-batches/contracts";
+import { pluralize } from "@/lib/pluralize";
 
 // Человекочитаемое количество из нормализованного (g→kg, ml→l при больших значениях).
 const fmtAmount = (quantity: number, unit: string): string => {
@@ -40,11 +42,16 @@ const fmtLogDate = (value: Date) => logDateFmt.format(new Date(value));
 export function BrewInventory({
   brewBatchId,
   view,
-  status
+  status,
+  prepShortage
 }: {
   brewBatchId: string;
   view: BrewBatchInventoryView;
   status: BrewBatchStatus;
+  // Нехватка по рецепту этой партии — считается только в акте «Подготовка»
+  // (см. brew-batches/[id]/page.tsx, S3 docs/shopping-list-redesign.md D13).
+  // undefined/null — строку не рендерим (остальные акты её не передают).
+  prepShortage?: { missingCount: number } | null;
 }) {
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState<{ ok: boolean; text: string } | null>(null);
@@ -80,6 +87,21 @@ export function BrewInventory({
           </span>
         ) : null}
       </div>
+
+      {/* Вход в «Чего не хватает» из акта «Подготовка» (S3/D19): нехватка по
+          рецепту именно этой партии, тем же предикатом, что даёт строки списка.
+          Ссылкой становится весь текст — отдельный лейбл раздела не нужен. */}
+      {prepShortage ? (
+        prepShortage.missingCount > 0 ? (
+          <p className="text-sm">
+            <Link href="/app/shopping" className="font-medium text-primary underline-offset-2 hover:underline">
+              Не хватает {prepShortage.missingCount} {pluralize(prepShortage.missingCount, ["позиция", "позиции", "позиций"])}
+            </Link>
+          </p>
+        ) : (
+          <p className="text-sm text-success">Ингредиенты на складе есть</p>
+        )
+      ) : null}
 
       {view.hasConsumed ? (
         <ul className="divide-y divide-border">

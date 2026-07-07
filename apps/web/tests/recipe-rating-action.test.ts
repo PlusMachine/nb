@@ -15,6 +15,8 @@ vi.mock("@/features/recipes/service", () => ({
   getViewerRecipeRatingState: mocks.getViewerRecipeRatingState
 }));
 vi.mock("next/cache", () => ({ revalidatePath: mocks.revalidatePath }));
+// Антиспам-лимит экшена не должен ходить в реальную БД из юнит-теста.
+vi.mock("@nb/auth", () => ({ assertRateLimit: vi.fn().mockResolvedValue(undefined) }));
 
 import {
   deleteRecipeRatingAction,

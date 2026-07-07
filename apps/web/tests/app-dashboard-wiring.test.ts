@@ -143,6 +143,8 @@ const shoppingWithItems = {
   ],
   totalItems: 1,
   plannedBrews: [],
+  opportunities: [],
+  collapsedOpportunityCount: 0,
   emptyReason: null
 };
 
@@ -150,7 +152,9 @@ const emptyShopping = {
   groups: [],
   totalItems: 0,
   plannedBrews: [],
-  emptyReason: "no_planned_brews" as const
+  opportunities: [],
+  collapsedOpportunityCount: 0,
+  emptyReason: "nothing_to_do" as const
 };
 
 const mocks = vi.hoisted(() => ({
@@ -229,10 +233,36 @@ describe("App dashboard", () => {
 
     const html = renderToStaticMarkup(await AppZonePage());
 
-    expect(html).toContain("Запланированы");
+    expect(html).toContain("Ожидают варки");
     expect(html).toContain("Planned Brew");
     expect(html).toContain("готова к старту");
     expect(html).toContain('href="/app/brew-batches/bb-3"');
+  });
+
+  it("shows the 'Все партии' link only once when both in-progress and planned brews are present", async () => {
+    // "В работе" (from activeBrew) already links to all brews, so "Ожидают варки"
+    // must not repeat the same action.
+    mocks.listActiveBrewBatchesForUser.mockResolvedValue([activeBrew, plannedBrew]);
+
+    const html = renderToStaticMarkup(await AppZonePage());
+
+    expect(html).toContain("В работе");
+    expect(html).toContain("Ожидают варки");
+    const allBrewsLinks = html.split("Все партии").length - 1;
+    expect(allBrewsLinks).toBe(1);
+  });
+
+  it("shows the 'Все партии' link on 'Ожидают варки' when there is nothing in progress", async () => {
+    // no attention-worthy brews -> "В работе" section is absent, so "Ожидают варки"
+    // is the only place to reach the full brew list.
+    mocks.listActiveBrewBatchesForUser.mockResolvedValue([plannedBrew]);
+
+    const html = renderToStaticMarkup(await AppZonePage());
+
+    expect(html).not.toContain("В работе");
+    expect(html).toContain("Ожидают варки");
+    const allBrewsLinks = html.split("Все партии").length - 1;
+    expect(allBrewsLinks).toBe(1);
   });
 
   it("shows fermentation day for fermenting batches", async () => {
@@ -251,8 +281,9 @@ describe("App dashboard", () => {
     // inventory: in-stock number + group breakdown + href
     expect(html).toContain('href="/app/ingredients"');
     expect(html).toContain("в наличии");
-    // shopping: empty reason for no planned brews
-    expect(html).toContain("Список покупок");
+    // shopping: empty reason for no planned brews (раздел «Чего не хватает», S4)
+    expect(html).toContain("Чего не хватает");
+    expect(html).toContain("Считается по запланированным партиям");
     // devices: soft CTA to connect
     expect(html).toContain('href="/app/devices"');
     expect(html).toContain("Подключить");
@@ -293,8 +324,10 @@ describe("App dashboard", () => {
     expect(html).toContain('href="/app/recipes/new"');
     expect(html).toContain('href="/app/recipes"');
     expect(html).toContain("Test Recipe");
-    // OwnerRecipeCard shows the publication-state badge ("Приватный" for a draft)
-    expect(html).toContain("Приватный");
+    // OwnerRecipeCard больше не подсвечивает черновик/приватность бейджем — только «Публичный».
+    expect(html).not.toContain("Приватный");
+    // виджет — обзорный (intent="preview"): владельческое меню «Действия» не рендерится.
+    expect(html).not.toContain('aria-label="Действия"');
   });
 
   it("does not repeat a recipe across brewable and recent sections", async () => {
@@ -415,7 +448,7 @@ describe("App dashboard", () => {
     expect(stockIndex).toBeLessThan(recipeIndex);
     expect(recipeIndex).toBeLessThan(brewIndex);
     // empty resource widgets are not rendered on day one
-    expect(html).not.toContain("Список покупок");
+    expect(html).not.toContain("Чего не хватает");
     // knowledge surfaces stay reachable
     expect(html).toContain('href="/articles"');
     expect(html).toContain('href="/bjcp"');

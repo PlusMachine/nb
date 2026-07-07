@@ -38,6 +38,7 @@ import { buildShoppingListForUser } from "@/features/shopping/service";
 import type { ShoppingListDto } from "@/features/shopping/contracts";
 import { listFavoriteCalculators } from "@/features/calculators/favorites-service";
 import { OwnerRecipeCard } from "@/components/recipes/owner-recipe-card";
+import { NewBrewButton } from "@/components/recipes/new-brew-button";
 import { BrewableRecipeCard } from "@/components/recipes/brewable-recipes-section";
 import { CalculatorCard } from "@/components/calculators/calculators-index";
 import { CalculatorFavoritesProvider } from "@/components/calculators/calculator-favorites-provider";
@@ -114,12 +115,14 @@ function SectionHeader({
   title,
   count,
   action,
-  extraAction
+  extraAction,
+  button
 }: {
   title: string;
   count?: number;
   action?: { href: string; label: string };
   extraAction?: { href: string; label: string };
+  button?: React.ReactNode;
 }) {
   return (
     <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-1">
@@ -141,6 +144,7 @@ function SectionHeader({
             {action.label}
           </Link>
         ) : null}
+        {button ?? null}
       </div>
     </div>
   );
@@ -203,7 +207,7 @@ function OnboardingChecklist({ onboarding }: { onboarding: DashboardOnboarding }
   );
 }
 
-// --- Варки ---------------------------------------------------------------------
+// --- Партии ---------------------------------------------------------------------
 
 function AttentionBrewCard({ card }: { card: DashboardBrewCard }) {
   const { batch, nudge, fermentationDay } = card;
@@ -240,12 +244,17 @@ function AttentionBrewCard({ card }: { card: DashboardBrewCard }) {
   );
 }
 
-function PlannedBrewsCard({ planned }: { planned: ActiveBrewProgressItem[] }) {
+function PlannedBrewsCard({ planned, showAllLink }: { planned: ActiveBrewProgressItem[]; showAllLink: boolean }) {
   const shown = planned.slice(0, PLANNED_LIMIT);
   const rest = planned.length - shown.length;
   return (
     <section className="space-y-3">
-      <SectionHeader title="Запланированы" count={planned.length} action={{ href: "/app/brew-batches", label: "Все варки" }} />
+      <SectionHeader
+        title="Ожидают варки"
+        count={planned.length}
+        action={showAllLink ? { href: "/app/brew-batches", label: "Все партии" } : undefined}
+        button={showAllLink ? <NewBrewButton size="sm" /> : undefined}
+      />
       <div className="rounded-2xl border border-border bg-card p-2 shadow-sm">
         <ul className="divide-y divide-border">
           {shown.map((batch) => (
@@ -270,7 +279,7 @@ function PlannedBrewsCard({ planned }: { planned: ActiveBrewProgressItem[] }) {
             href="/app/brew-batches"
             className="block rounded-xl px-3 py-2.5 text-xs font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
           >
-            Ещё {rest} — все варки
+            Ещё {rest} — все партии
           </Link>
         ) : null}
       </div>
@@ -278,7 +287,7 @@ function PlannedBrewsCard({ planned }: { planned: ActiveBrewProgressItem[] }) {
   );
 }
 
-// --- Ряд ресурсов: склад, покупки, оборудование ---------------------------------
+// --- Ряд ресурсов: склад, нехватки, оборудование ---------------------------------
 
 function WidgetLabel({ children }: { children: React.ReactNode }) {
   return <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">{children}</p>;
@@ -348,14 +357,14 @@ function ShoppingWidget({ shopping }: { shopping: ShoppingListDto }) {
   if (shopping.totalItems === 0) {
     return (
       <div className="flex flex-col gap-3 rounded-2xl border border-dashed border-border bg-card p-5">
-        <WidgetLabel>Список покупок</WidgetLabel>
+        <WidgetLabel>Чего не хватает</WidgetLabel>
         {shopping.emptyReason === "all_in_stock" ? (
           <p className="flex items-center gap-1.5 text-sm text-success">
             <CircleCheck className="h-4 w-4 shrink-0" aria-hidden />
-            Для запланированных варок всё в наличии
+            Для запланированных партий всё в наличии
           </p>
         ) : (
-          <p className="text-sm text-muted-foreground">Собирается из запланированных варок: чего не хватает — попадёт сюда.</p>
+          <p className="text-sm text-muted-foreground">Считается по запланированным партиям: чего не хватает — попадёт сюда.</p>
         )}
       </div>
     );
@@ -368,7 +377,7 @@ function ShoppingWidget({ shopping }: { shopping: ShoppingListDto }) {
       href="/app/shopping"
       className="group flex flex-col gap-3 rounded-2xl border border-border bg-card p-5 shadow-sm transition hover:border-border hover:shadow-md"
     >
-      <WidgetLabel>Список покупок</WidgetLabel>
+      <WidgetLabel>Чего не хватает</WidgetLabel>
       <p className="text-3xl font-semibold tabular-nums text-foreground" style={{ fontFamily: "var(--font-display)" }}>
         {shopping.totalItems}
         <span className="ml-2 text-sm font-normal text-muted-foreground" style={{ fontFamily: "var(--font-body)" }}>
@@ -568,7 +577,12 @@ export default async function AppZonePage() {
 
       {attentionShown.length > 0 ? (
         <section className="space-y-3">
-          <SectionHeader title="В работе" count={attention.length} action={{ href: "/app/brew-batches", label: "Все варки" }} />
+          <SectionHeader
+            title="В работе"
+            count={attention.length}
+            action={{ href: "/app/brew-batches", label: "Все партии" }}
+            button={<NewBrewButton size="sm" />}
+          />
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {attentionShown.map((card) => (
               <AttentionBrewCard key={card.batch.id} card={card} />
@@ -586,7 +600,23 @@ export default async function AppZonePage() {
         </section>
       ) : null}
 
-      {planned.length > 0 ? <PlannedBrewsCard planned={planned} /> : null}
+      {planned.length > 0 ? (
+        <PlannedBrewsCard planned={planned} showAllLink={attentionShown.length === 0} />
+      ) : null}
+
+      {/* Нет ни одной активной партии: секции выше схлопнуты — даём явный вход
+          «Сварить», иначе с дашборда неясно, где запланировать варку. */}
+      {attentionShown.length === 0 && planned.length === 0 ? (
+        <section className="space-y-3">
+          <SectionHeader title="Партии" button={<NewBrewButton size="sm" />} />
+          <div className="flex flex-col items-center gap-4 rounded-2xl border border-dashed border-border bg-card p-8 text-center">
+            <p className="text-sm text-muted-foreground">
+              Активных партий нет. Выберите рецепт и запланируйте варочный день.
+            </p>
+            <NewBrewButton />
+          </div>
+        </section>
+      ) : null}
 
       <section className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
         <InventoryWidget summary={inventory} />
@@ -623,7 +653,7 @@ export default async function AppZonePage() {
                 key={recipe.id}
                 recipe={recipe}
                 preferredGravityUnit={user.preferredGravityUnit}
-                showDelete={false}
+                intent="preview"
               />
             ))}
           </div>

@@ -51,6 +51,7 @@ const sampleRecipe = {
   color: 8,
   description: null,
   authorNotes: null,
+  authorDisplayName: null,
   processMeta: {
     mashProfile: {
       steps: [{ id: "mash-1", name: "Main mash", temperatureC: 67, durationMinutes: 60 }]
@@ -199,7 +200,8 @@ const sampleRecipe = {
 
   ],
   createdAt: new Date("2026-01-01T00:00:00.000Z"),
-  updatedAt: new Date("2026-01-01T00:00:00.000Z")
+  updatedAt: new Date("2026-01-01T00:00:00.000Z"),
+  completedBrewCount: 0
 } satisfies RecipeDetailDto;
 
 describe("recipe interop and brew plan foundation", () => {

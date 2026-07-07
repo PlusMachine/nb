@@ -74,7 +74,7 @@ export function StatCell({
   );
 }
 
-/** Ячейка цвета: SRM-число + точка реального оттенка пива. */
+/** Ячейка цвета: подпись «SRM» (единица числа) + точка реального оттенка пива. */
 export function ColorStatCell({
   srm,
   className = "",
@@ -87,7 +87,7 @@ export function ColorStatCell({
 }) {
   return (
     <div className={`min-w-0 ${className}`}>
-      <div className="text-[11px] uppercase tracking-wider text-muted-foreground">Цвет</div>
+      <div className="text-[11px] uppercase tracking-wider text-muted-foreground">SRM</div>
       <div
         className={`flex items-center gap-1.5 text-sm font-medium tabular-nums text-foreground ${
           align === "end" ? "justify-end" : ""
