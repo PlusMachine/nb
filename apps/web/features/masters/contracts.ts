@@ -95,7 +95,8 @@ const contactPhoneSchema = optionalTrimmed(200).refine(
 const contactEmailSchema = z
   .string()
   .trim()
-  .max(320)
+  // Не 320 (RFC), а 200 — под varchar(200) колонки contact_email.
+  .max(200, "E-mail — максимум 200 символов.")
   .email("Проверьте адрес e-mail.")
   .optional()
   .or(z.literal(""))
