@@ -75,6 +75,13 @@ describe("catalog legacy redirects", () => {
     ).rejects.toThrow("NEXT_REDIRECT:/catalog/hops?q=citra");
   });
 
+  it("redirects ?category=hop&page=2&sort=alpha to /catalog/hops?sort=alpha&page=2, carrying both over", async () => {
+    await expect(
+      IngredientCatalogPage({ searchParams: buildSearchParams({ category: "hop", page: "2", sort: "alpha" }) })
+    ).rejects.toThrow("NEXT_REDIRECT:/catalog/hops?sort=alpha&page=2");
+    expect(mocks.permanentRedirect).toHaveBeenCalledWith("/catalog/hops?sort=alpha&page=2");
+  });
+
   it("resolves a landing from ?subtype= alone: ?subtype=malt to /catalog/malts", async () => {
     await expect(
       IngredientCatalogPage({ searchParams: buildSearchParams({ subtype: "malt" }) })

@@ -1816,6 +1816,12 @@ const rankHubItems = (
 // Лендинг-секция, которой принадлежит элемент каталога (совпадение по
 // категории и, для fermentable, по subtype) — как resolveCatalogLandingForFilter
 // в seo.ts, но по данным элемента, а не по query-параметрам.
+// Инвариант: fermentable обязан иметь subtype "malt" | "fermentable" (его
+// проставляет resolveIngredientSubtype в taxonomy.ts на любом штатном пути
+// записи). Fermentable без валидного subtype выпал бы и из секций хаба, и из
+// строгого фильтра лендингов /catalog/malts|fermentables (listUserCatalogIngredients) —
+// т.е. каталог согласован, но такой элемент был бы невидим: это дефект данных,
+// а не хаба, чинить его надо в валидации custom-ингредиента (features/inventory).
 const resolveHubSectionLanding = (item: UserCatalogIngredientDto) => (
   catalogCategoryLandings.find((landing) => (
     landing.category === item.category

@@ -108,6 +108,49 @@ const buildCatalogHref = (
   return query ? `${pathname}?${query}` : pathname;
 };
 
+// Путь категорийного лендинга по category/subtype: null — категория "all"
+// (хаб) либо неоднозначный fermentable без subtype (собственный лендинг есть
+// только у malt/fermentable-версий, см. categoryLandingPaths).
+export const resolveLandingPath = (
+  targetCategory: IngredientCategory | "all",
+  targetSubtype: "malt" | "fermentable" | null
+): string | null => {
+  if (targetCategory === "all") {
+    return null;
+  }
+
+  if (targetCategory === "fermentable") {
+    return targetSubtype ? categoryLandingPaths[targetSubtype] : null;
+  }
+
+  return categoryLandingPaths[targetCategory];
+};
+
+// Href для поиска/сортировки в ТЕКУЩЕМ контексте (категория/подтип не
+// меняются): на лендинге (landingPath задан) — прямо на его путь, БЕЗ
+// category/subtype в query — категория уже зашита в путь, а параметр
+// ?category= тут писать нельзя: легаси-редирект в app/(public)/catalog/page.tsx
+// ловит любой ?category= и уводит обратно на этот же лендинг, т.е. каждый ввод
+// в поиск (после дебаунса) и каждая смена сортировки давали бы лишний 308 —
+// двойной round-trip вместо одного (см. notes/catalog-hub-redesign.md,
+// регрессия P1). На хабе (landingPath === null) — обычный buildCatalogHref
+// с ?category= в query, как раньше.
+export const buildContextualHref = (
+  landingPath: string | null,
+  hubBasePath: string,
+  params: {
+    view: IngredientCatalogView;
+    q: string;
+    category: IngredientCategory | "all";
+    subtype: "malt" | "fermentable" | null;
+    sort: IngredientCatalogSortOption;
+  }
+) => (
+  landingPath
+    ? buildCatalogHref(landingPath, { ...params, category: "all", subtype: null })
+    : buildCatalogHref(hubBasePath, params)
+);
+
 const buildCreateCustomIngredientHref = (
   params: {
     category: IngredientCategory | "all";
@@ -161,13 +204,20 @@ export function IngredientCatalogToolbar({
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
 
-  const currentHref = useMemo(() => buildCatalogHref(queryBasePath, {
+  // Путь лендинга по текущим category/subtype (props) — нужен ниже для href
+  // поиска/сортировки и для pill «Мои» (currentLandingPath). Вычисляем один
+  // раз здесь, а не через find по primaryButtons (как раньше для
+  // currentLandingPath): нужен раньше по порядку кода — buildSearchHref и
+  // currentHref строятся до объявления primaryButtons.
+  const landingPath = useMemo(() => resolveLandingPath(category, subtype), [category, subtype]);
+
+  const currentHref = useMemo(() => buildContextualHref(landingPath, queryBasePath, {
     view,
     q,
     category,
     subtype,
     sort
-  }), [category, queryBasePath, q, sort, subtype, view]);
+  }), [category, landingPath, queryBasePath, q, sort, subtype, view]);
 
   const replaceHref = useCallback((href: string) => {
     if (href === currentHref) {
@@ -179,13 +229,13 @@ export function IngredientCatalogToolbar({
     });
   }, [currentHref, router]);
 
-  const buildSearchHref = useCallback((nextQ: string) => buildCatalogHref(queryBasePath, {
+  const buildSearchHref = useCallback((nextQ: string) => buildContextualHref(landingPath, queryBasePath, {
     view,
     q: nextQ,
     category,
     subtype,
     sort
-  }), [category, queryBasePath, sort, subtype, view]);
+  }), [category, landingPath, queryBasePath, sort, subtype, view]);
 
   const {
     inputValue: searchValue,
@@ -217,11 +267,16 @@ export function IngredientCatalogToolbar({
     subtype?: "malt" | "fermentable" | null;
     sort?: IngredientCatalogSortOption;
   }) => {
-    replaceHref(buildCatalogHref(queryBasePath, {
+    const nextCategory = next.category ?? category;
+    const nextSubtype = next.subtype !== undefined ? next.subtype : subtype;
+    // Категория/подтип здесь тоже могут меняться (на будущее — сейчас replaceWith
+    // зовут только со сменой sort), поэтому путь лендинга пересчитываем от
+    // эффективных next-значений, а не берём внешний landingPath.
+    replaceHref(buildContextualHref(resolveLandingPath(nextCategory, nextSubtype), queryBasePath, {
       view: next.view ?? view,
       q: searchValue,
-      category: next.category ?? category,
-      subtype: next.subtype !== undefined ? next.subtype : subtype,
+      category: nextCategory,
+      subtype: nextSubtype,
       sort: next.sort ?? sort
     }));
   };
@@ -305,8 +360,7 @@ export function IngredientCatalogToolbar({
 
   // Путь текущей активной категории — нужен, чтобы pill «Мои» переключал view,
   // сохраняя категорию (а не сбрасывал её на «Все»).
-  const activeButton = primaryButtons.find((button) => button.active) ?? null;
-  const currentLandingPath = activeButton ? categoryLandingPaths[activeButton.key] : "/catalog";
+  const currentLandingPath = landingPath ?? "/catalog";
 
   // Список сортировок зависит от роли и активной категории: «По обновлению» —
   // только залогиненным, параметрическая сортировка — только при подходящей

@@ -507,6 +507,16 @@ describe("ingredient catalog metadata ui", () => {
     expect(html).toContain("Все 5");
   });
 
+  it("keeps view=mine in the hub section 'Все N' link", async () => {
+    setHubSection("hops", { items: [buildCatalogItem()], total: 5 });
+
+    const html = renderToStaticMarkup(await IngredientCatalogContent({
+      searchParams: Promise.resolve({ view: "mine" })
+    }));
+
+    expect(html).toContain('href="/catalog/hops?view=mine"');
+  });
+
   it("groups hub sections by search match and links to the full in-section results", async () => {
     setHubSection("hops", { items: [buildCatalogItem()], total: 12 });
     // Остальные секции остаются total=0 — не должны попасть в выдачу поиска.
@@ -529,6 +539,37 @@ describe("ingredient catalog metadata ui", () => {
 
     expect(html).toContain("По текущим условиям ничего не найдено");
     expect(html).toContain("Сбросить поиск");
+  });
+
+  it("renders an ItemList JSON-LD on the hub when there is no search query and a section has items", async () => {
+    setHubSection("hops", { items: [buildCatalogItem()], total: 5 });
+
+    const html = renderToStaticMarkup(await IngredientCatalogContent({
+      searchParams: Promise.resolve({})
+    }));
+
+    expect(html).toContain('type="application/ld+json"');
+    expect(html).toContain("ItemList");
+  });
+
+  it("omits the hub JSON-LD when a search query is active", async () => {
+    setHubSection("hops", { items: [buildCatalogItem()], total: 5 });
+
+    const html = renderToStaticMarkup(await IngredientCatalogContent({
+      searchParams: Promise.resolve({ q: "citra" })
+    }));
+
+    expect(html).not.toContain('type="application/ld+json"');
+  });
+
+  it("omits the hub JSON-LD on the 'Мои' (view=mine) tab", async () => {
+    setHubSection("hops", { items: [buildCatalogItem()], total: 5 });
+
+    const html = renderToStaticMarkup(await IngredientCatalogContent({
+      searchParams: Promise.resolve({ view: "mine" })
+    }));
+
+    expect(html).not.toContain('type="application/ld+json"');
   });
 
   it("shows a fallback line on the landing linking to other catalog sections when local matches exist", async () => {
@@ -589,6 +630,39 @@ describe("ingredient catalog metadata ui", () => {
     // otherCount = sum(byCategory) - byFermentableSubtype.malt = (3+2) - 0 = 5
     expect(html).toContain("Показать 5 совпадений в каталоге");
     expect(html).toContain('href="/catalog?q=zzz"');
+  });
+
+  it("shows a fallback line on the fermentables landing using the fermentable-subtype count (not the combined fermentable category count)", async () => {
+    const fermentablesLanding = catalogCategoryLandings.find((landing) => landing.slug === "fermentables")!;
+    mockState.listResult = {
+      ...mockState.listResult,
+      items: [buildCatalogItem({ category: "fermentable", subtype: "fermentable" })],
+      total: 1,
+      facets: {
+        catalogCount: 1,
+        customCount: 0,
+        byCategory: {
+          fermentable: 5,
+          hop: 2,
+          yeast: 0,
+          consumable: 0,
+          water_treatment: 0
+        },
+        byFermentableSubtype: { malt: 3, fermentable: 2 }
+      }
+    };
+
+    const html = renderToStaticMarkup(await IngredientCatalogContent({
+      searchParams: Promise.resolve({ q: "malt-extract" }),
+      landing: fermentablesLanding
+    }));
+
+    // otherCount = sum(byCategory) - byFermentableSubtype.fermentable = (5+2) - 2 = 5.
+    // Если бы fermentables-лендинг ошибочно попал в общую ветку
+    // (sum(byCategory) - byCategory.fermentable), вышло бы 7-5=2 — неверно,
+    // т.к. byCategory.fermentable объединяет malt- и fermentable-подтипы разом.
+    expect(html).toContain("Ещё 5 совпадений в других разделах");
+    expect(html).toContain('href="/catalog?q=malt-extract"');
   });
 
   it("shows a 'В архиве' badge next to the Системный badge for an archived system ingredient", async () => {
