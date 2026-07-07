@@ -1,9 +1,9 @@
 "use client";
 
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import {
   AlertTriangle,
-  ArrowLeft,
   ArrowRight,
   Beaker,
   ChevronRight,
@@ -26,8 +26,7 @@ import { Button } from "@nb/ui";
 import { RelatedLinksSection } from "@/components/shared/related-links-section";
 import { NumericInput } from "@/components/shared/numeric-input";
 import { KegCarbonationBlock } from "@/components/calculators/keg-carbonation-block";
-import { CalculatorFavoriteToggle } from "@/components/calculators/calculator-favorite-toggle";
-import { calculatorBySlug, isCalculatorVerified, type CalculatorSlug } from "@/features/calculators/catalog";
+import { calculatorBySlug, type CalculatorSlug } from "@/features/calculators/catalog";
 import {
   calculatorStorageKey,
   calculatorDefinitionBySlug,
@@ -39,6 +38,7 @@ import {
   dilutionOperationOptions,
   dilutionOperationOfMode,
   initialCalculatorStateFromQuery,
+  parseCalculatorQuery,
   refractometerOgDefault,
   refractometerOgUnitOptions,
   REFRACTOMETER_FORMULA_OPTIONS,
@@ -66,9 +66,6 @@ import {
   type PreferredGravityUnit
 } from "@/features/system/gravity-units";
 import { useViewerGravityUnit } from "@/features/system/use-viewer-gravity-unit";
-
-// Пометка статуса валидации у заголовка — только в dev.
-const devMode = process.env.NODE_ENV !== "production";
 
 const cloneState = (state: CalculatorState): CalculatorState => JSON.parse(JSON.stringify(state)) as CalculatorState;
 
@@ -578,68 +575,6 @@ function ResultPanel({
         </div>
       ) : null}
     </aside>
-  );
-}
-
-function FormulaDetails({
-  formula,
-  meaning,
-  assumptions
-}: {
-  formula: string;
-  meaning: string[];
-  assumptions: string[];
-}) {
-  return (
-    <details className="group rounded-2xl border border-border bg-card p-4 shadow-sm">
-      <summary className="flex cursor-pointer list-none items-center gap-2 text-sm font-semibold text-foreground">
-        <div className="flex h-7 w-7 items-center justify-center rounded-md bg-muted">
-          <ChevronRight className="h-4 w-4 text-muted-foreground transition-transform group-open:rotate-90" />
-        </div>
-        Как считаем?
-        <span className="ml-auto flex h-5 w-5 items-center justify-center rounded-full bg-muted text-[11px] font-semibold text-muted-foreground">?</span>
-      </summary>
-      <div className="mt-3 space-y-2">
-        {formula.split("\n").map((paragraph) => (
-          <p key={paragraph} className="text-sm leading-6 text-muted-foreground">{paragraph}</p>
-        ))}
-        {meaning.map((paragraph) => (
-          <p key={paragraph} className="text-sm leading-6 text-muted-foreground">{paragraph}</p>
-        ))}
-        {assumptions.length > 0 ? (
-          <div className="pt-1">
-            <p className="text-xs font-medium text-muted-foreground">Допущения</p>
-            <ul className="mt-1 list-disc space-y-1 pl-4">
-              {assumptions.map((item) => (
-                <li key={item} className="text-xs leading-5 text-muted-foreground">{item}</li>
-              ))}
-            </ul>
-          </div>
-        ) : null}
-      </div>
-    </details>
-  );
-}
-
-function CommonMistakesDetails({ items }: { items: string[] }) {
-  if (items.length === 0) {
-    return null;
-  }
-
-  return (
-    <details className="group rounded-2xl border border-border bg-card p-4 shadow-sm">
-      <summary className="flex cursor-pointer list-none items-center gap-2 text-sm font-semibold text-foreground">
-        <div className="flex h-7 w-7 items-center justify-center rounded-md bg-muted">
-          <ChevronRight className="h-4 w-4 text-muted-foreground transition-transform group-open:rotate-90" />
-        </div>
-        Частые ошибки
-      </summary>
-      <ul className="mt-3 list-disc space-y-1.5 pl-4">
-        {items.map((item) => (
-          <li key={item} className="text-sm leading-6 text-muted-foreground">{item}</li>
-        ))}
-      </ul>
-    </details>
   );
 }
 
@@ -1740,14 +1675,16 @@ const applyGravityPreference = (
   return next;
 };
 
-export function CalculatorPageClient({
-  slug,
-  initialQuery
-}: {
-  slug: CalculatorSlug;
-  initialQuery: Record<string, string>;
-}) {
+export function CalculatorPageClient({ slug }: { slug: CalculatorSlug }) {
   const definition = calculatorDefinitionBySlug[slug];
+  // Страница калькулятора статическая (generateStaticParams) и не читает
+  // searchParams на сервере — состояние из shared-ссылок (?og=…&fg=…) читаем
+  // здесь, на клиенте, через useSearchParams (см. app/(public)/calculators/[slug]/page.tsx).
+  const searchParams = useSearchParams();
+  const initialQuery = useMemo(
+    () => parseCalculatorQuery(Object.fromEntries(searchParams.entries())),
+    [searchParams]
+  );
   const [state, setState] = useState<CalculatorState>(() => (
     initialCalculatorStateFromQuery(definition, initialQuery)
   ));
@@ -1925,35 +1862,7 @@ export function CalculatorPageClient({
     : "grid gap-4 lg:grid-cols-[minmax(0,1fr)_22rem]";
 
   return (
-    <main className={`space-y-5 pb-24 pt-8 ${isRefractometer ? "mx-auto max-w-5xl" : ""}`}>
-      <Link href="/calculators" className="inline-flex items-center gap-1.5 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground">
-        <ArrowLeft className="h-4 w-4" />
-        Все калькуляторы
-      </Link>
-
-      <section className="relative rounded-2xl border border-border bg-card p-5 shadow-sm sm:p-6">
-        <CalculatorFavoriteToggle
-          slug={definition.catalog.slug}
-          size="md"
-          className="absolute right-4 top-4"
-        />
-        <div className="max-w-3xl space-y-2 pr-10">
-          {devMode ? (
-            <span
-              className={`inline-flex w-fit items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-semibold ${
-                isCalculatorVerified(definition.catalog.slug)
-                  ? "bg-success-subtle text-success-subtle-foreground"
-                  : "bg-warning-subtle text-warning-subtle-foreground"
-              }`}
-            >
-              {isCalculatorVerified(definition.catalog.slug) ? "✓ проверен (dev)" : "не проверен (dev)"}
-            </span>
-          ) : null}
-          <h1 className="text-2xl font-semibold leading-tight text-foreground sm:text-3xl">{definition.catalog.title}</h1>
-          <p className="text-sm leading-6 text-muted-foreground">{definition.catalog.intro}</p>
-        </div>
-      </section>
-
+    <>
       {isKegCarbonation ? (
         <KegCarbonationBlock initialQuery={initialQuery} onReset={resetState} />
       ) : isUnitConverter ? (
@@ -2027,14 +1936,7 @@ export function CalculatorPageClient({
         </div>
       )}
 
-      <FormulaDetails
-        formula={definition.catalog.formula}
-        meaning={definition.catalog.meaning}
-        assumptions={definition.catalog.assumptions}
-      />
-      <CommonMistakesDetails items={definition.catalog.commonMistakes} />
-
       <RelatedLinksSection links={nextLinks} />
-    </main>
+    </>
   );
 }

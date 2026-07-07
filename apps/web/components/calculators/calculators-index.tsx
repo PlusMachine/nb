@@ -85,27 +85,34 @@ export function CalculatorsIndex() {
   return (
     <main className="pb-16 pt-5 sm:pt-6">
       <section className="mb-5 rounded-2xl border border-border bg-card px-4 py-3.5 shadow-sm sm:mb-6 sm:px-5">
-        <div className="max-w-3xl space-y-1">
+        <div className="max-w-3xl space-y-2">
           <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">hmelo tools</p>
           <h1 className="text-2xl font-semibold leading-tight text-foreground sm:text-3xl">
             Калькуляторы для пивоварения
           </h1>
+          <p className="text-sm leading-6 text-muted-foreground">
+            Расчеты для домашнего пивоварения: плотность и алкоголь, горечь, вода, дрожжи, карбонизация и розлив.
+            У каждого калькулятора — формула и допущения, на которых строится результат.
+          </p>
         </div>
       </section>
 
-      <section aria-label="Все калькуляторы">
-        <CalculatorFavoritesProvider slugs={calculators.map((calculator) => calculator.slug)}>
-          <div className="grid gap-2.5 sm:grid-cols-2 xl:grid-cols-3">
-            {calculatorSections.flatMap((section) =>
-              calculators
+      <CalculatorFavoritesProvider slugs={calculators.map((calculator) => calculator.slug)}>
+        {calculatorSections.map((section) => (
+          <section key={section} aria-label={section} className="mb-6 last:mb-0 sm:mb-7">
+            <h2 className="mb-2.5 text-sm font-semibold uppercase tracking-[0.08em] text-muted-foreground sm:mb-3">
+              {section}
+            </h2>
+            <div className="grid gap-2.5 sm:grid-cols-2 xl:grid-cols-3">
+              {calculators
                 .filter((calculator) => calculator.section === section)
                 .map((calculator) => (
                   <CalculatorCard key={calculator.slug} calculator={calculator} />
-                ))
-            )}
-          </div>
-        </CalculatorFavoritesProvider>
-      </section>
+                ))}
+            </div>
+          </section>
+        ))}
+      </CalculatorFavoritesProvider>
     </main>
   );
 }

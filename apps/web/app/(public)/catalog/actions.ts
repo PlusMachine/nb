@@ -10,6 +10,7 @@ import {
   updateUserCustomIngredient
 } from "@/features/inventory/service";
 import { requireUser } from "@/lib/auth";
+import { assertRateLimit } from "@nb/auth";
 
 export type CatalogCustomIngredientActionResult = {
   ok: boolean;
@@ -49,6 +50,13 @@ const mapCatalogCustomIngredientError = (error: unknown): CatalogCustomIngredien
         message: "Ингредиент уже используется в складе или рецептах и не может быть удалён."
       };
     }
+
+    if (error.message === "RATE_LIMITED") {
+      return {
+        ok: false,
+        message: "Слишком много новых ингредиентов подряд. Попробуйте позже."
+      };
+    }
   }
 
   return {
@@ -73,6 +81,8 @@ export const createCatalogCustomIngredientAction = async (
 ): Promise<CatalogCustomIngredientActionResult> => {
   try {
     const user = await requireUser();
+    // Антиспам: кастомные ингредиенты — свободный ввод, ограничиваем частоту создания.
+    await assertRateLimit(user.id, "custom_ingredient", 30, 60 * 60);
     const parsed = createUserCustomIngredientSchema.parse(payload);
     const created = await createUserCustomIngredient(user.id, parsed);
     revalidateCatalogPaths(created.id);

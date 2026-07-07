@@ -274,6 +274,8 @@ const mapCustomIngredient = (
     recipeUsageCount: 0,
     inventoryInUse: false,
     recipeInUse: false,
+    isActive: true,
+    status: "active",
     createdAt: item.createdAt,
     updatedAt: item.updatedAt,
     ...extractIngredientTechnicalFields({

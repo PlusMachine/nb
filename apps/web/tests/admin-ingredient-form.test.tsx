@@ -2,6 +2,14 @@ import React from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
 
+// admin-ingredient-form.tsx не импортирует React явно (в отличие от
+// большинства других клиентских компонентов в этом репо) — с automatic JSX
+// runtime у Next.js это нормально, но esbuild/vitest транспилирует JSX в
+// классический React.createElement(...), которому нужен React в области
+// видимости модуля. Компонент трогать нельзя, поэтому подставляем React в
+// globalThis до того, как рендер вызовет тело компонента.
+(globalThis as unknown as { React: typeof React }).React = React;
+
 import {
   AdminIngredientForm,
   getAdminIngredientFieldVisibility,

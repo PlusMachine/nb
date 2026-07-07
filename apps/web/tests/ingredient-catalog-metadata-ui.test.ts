@@ -79,6 +79,16 @@ vi.mock("@/components/shared/country-flag", () => ({
   CountryFlagLabel: ({ label }: any) => React.createElement("span", null, label)
 }));
 
+// Страница детали ингредиента рендерит FeedbackReportLink, который вызывает
+// useFeedback() — этот хук требует FeedbackProvider (components/providers.tsx)
+// в дереве, которого простой node-рендер страницы здесь не поднимает. Как и
+// остальные leaf-компоненты выше, мокаем сам FeedbackReportLink лёгкой заглушкой,
+// не завязанной на контекст, вместо того чтобы монтировать полноценный провайдер
+// (с Sheet/тостами/next/navigation) только ради статической разметки.
+vi.mock("@/components/feedback/feedback-report-link", () => ({
+  FeedbackReportLink: ({ children }: any) => React.createElement("button", { type: "button" }, children ?? "Сообщить о неточности")
+}));
+
 import { IngredientCatalogContent } from "../app/(public)/catalog/content";
 import IngredientDetailPage from "../app/(public)/catalog/[source]/[id]/page";
 
@@ -142,6 +152,8 @@ const buildCatalogItem = (overrides: Record<string, unknown> = {}) => ({
   yeastMinFermentationTempC: null,
   yeastMaxFermentationTempC: null,
   purchaseLinks: [],
+  isActive: true,
+  status: "active",
   createdAt: new Date("2025-01-01T00:00:00.000Z"),
   updatedAt: new Date("2025-01-01T00:00:00.000Z"),
   ...overrides
@@ -465,5 +477,60 @@ describe("ingredient catalog metadata ui", () => {
     }));
 
     expect(html).toContain("санитайзер");
+  });
+
+  it("throws notFound() when the requested page is past the last page and there is no search query", async () => {
+    mockState.listResult = {
+      ...mockState.listResult,
+      totalPages: 1
+    };
+
+    await expect(IngredientCatalogContent({
+      searchParams: Promise.resolve({ page: "999" })
+    })).rejects.toThrow("NOT_FOUND");
+  });
+
+  it("does not throw notFound() for an out-of-range page when a search query is present", async () => {
+    mockState.listResult = {
+      ...mockState.listResult,
+      totalPages: 1
+    };
+
+    await expect(IngredientCatalogContent({
+      searchParams: Promise.resolve({ page: "999", q: "citra" })
+    })).resolves.toBeTruthy();
+  });
+
+  it("shows a 'В архиве' badge next to the Системный badge for an archived system ingredient", async () => {
+    mockState.detailItem = buildCatalogItem({ isActive: false, status: "archived" });
+
+    const html = renderToStaticMarkup(await IngredientDetailPage({
+      params: Promise.resolve({ source: "system", id: "catalog-hop-1" })
+    }));
+
+    expect(html).toContain("В архиве");
+    expect(html).toContain("Системный");
+  });
+
+  it("does not show the 'В архиве' badge for an active system ingredient", async () => {
+    mockState.detailItem = buildCatalogItem({ isActive: true, status: "active" });
+
+    const html = renderToStaticMarkup(await IngredientDetailPage({
+      params: Promise.resolve({ source: "system", id: "catalog-hop-1" })
+    }));
+
+    expect(html).not.toContain("В архиве");
+  });
+
+  it("wraps the breadcrumb trail in a labeled nav/ol with aria-current and renders a BreadcrumbList JSON-LD", async () => {
+    mockState.detailItem = buildCatalogItem();
+
+    const html = renderToStaticMarkup(await IngredientDetailPage({
+      params: Promise.resolve({ source: "system", id: "catalog-hop-1" })
+    }));
+
+    expect(html).toContain('aria-label="Breadcrumb"');
+    expect(html).toContain('aria-current="page"');
+    expect(html).toContain("BreadcrumbList");
   });
 });

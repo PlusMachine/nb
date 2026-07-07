@@ -10,7 +10,7 @@ export const buildIngredientCatalogActionHref = (
   pathname: IngredientCatalogActionPathname,
   source: "catalog" | "custom",
   id: string,
-  // Опциональный дефицит из списка покупок → предзаполнить количество/единицу
+  // Опциональный дефицит из «Чего не хватает» → предзаполнить количество/единицу
   // формы добавления (UX-находка #20). Оба параметра нужны вместе: подставлять
   // число без единицы нельзя (риск чужой единицы), поэтому кодируем обе.
   amount?: { quantity: number; unit: string } | null

@@ -655,6 +655,10 @@ export type UserCatalogIngredientDto = IngredientTechnicalFields & {
   recipeUsageCount: number;
   inventoryInUse: boolean;
   recipeInUse: boolean;
+  // Кастомные ингредиенты не проходят модерационный жизненный цикл — для них
+  // всегда "active"/true (см. mapCustomIngredient в catalog-service.ts).
+  isActive: boolean;
+  status: "draft" | "active" | "archived" | "merged";
   createdAt: Date;
   updatedAt: Date;
 };

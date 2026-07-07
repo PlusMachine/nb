@@ -1,5 +1,6 @@
 import React from "react";
 import Link from "next/link";
+import { notFound } from "next/navigation";
 import { Boxes, Pencil } from "lucide-react";
 
 import { DeleteCustomCatalogIngredientButton } from "@/components/ingredients/delete-custom-catalog-ingredient-button";
@@ -399,6 +400,13 @@ export async function IngredientCatalogContent({ searchParams, landing = null }:
     page,
     pageSize: CATALOG_PAGE_SIZE
   });
+
+  // Страница за пределами пагинации — soft-404 (playbook §4), а не пустое
+  // состояние с 200. Поиск (?q=) исключён: 0 совпадений там не «страница за
+  // диапазоном», а обычный пустой результат запроса.
+  if (!q && page > 1 && page > result.totalPages) {
+    notFound();
+  }
 
   const currentCategory = category ?? "all";
   const basePath = landing ? `/catalog/${landing.slug}` : "/catalog";

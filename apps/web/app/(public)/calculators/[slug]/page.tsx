@@ -1,17 +1,18 @@
 import type { Metadata } from "next";
-import React from "react";
+import Link from "next/link";
+import { ArrowLeft } from "lucide-react";
+import React, { Suspense } from "react";
 import { notFound } from "next/navigation";
 
 import { CalculatorPageClient } from "@/components/calculators/calculator-page-client";
-import {
-  allCalculatorSlugs,
-  getCalculatorDefinition,
-  parseCalculatorQuery
-} from "@/features/calculators/definitions";
+import { CalculatorHeading, CommonMistakesDetails, FormulaDetails } from "@/components/calculators/calculator-static-sections";
+import { allCalculatorSlugs, getCalculatorDefinition } from "@/features/calculators/definitions";
+import { buildCalculatorBreadcrumbJsonLd, buildCalculatorMetadata } from "@/features/calculators/seo";
+import { jsonLdScriptProps } from "@/features/ingredients/seo";
+import { getServerEnv } from "@/lib/env";
 
 type Props = {
   params: Promise<{ slug: string }>;
-  searchParams?: Promise<Record<string, string | string[] | undefined>>;
 };
 
 export function generateStaticParams() {
@@ -23,18 +24,23 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const definition = getCalculatorDefinition(slug);
 
   if (!definition) {
-    return {
-      title: "Калькулятор не найден"
-    };
+    notFound();
   }
 
-  return {
-    title: definition.catalog.title,
-    description: definition.catalog.description
-  };
+  return buildCalculatorMetadata(definition.catalog);
 }
 
-export default async function CalculatorPage({ params, searchParams }: Props) {
+// Страница не читает searchParams — она статическая (generateStaticParams).
+// Состояние из query (?og=…&fg=…) читает CalculatorPageClient через
+// useSearchParams() на клиенте, обёрнутый в Suspense ниже, чтобы этот хук не
+// опрокидывал весь роут в динамический рендеринг (docs/seo-playbook.md, §7).
+//
+// Индексируемый контент (шапка, формула/допущения, частые ошибки) рендерится
+// СЕРВЕРНО вне Suspense — иначе при статической генерации в HTML остаётся
+// только фолбэк, а не реальный контент калькулятора (docs/seo-playbook.md, §7).
+// Интерактив (поля, результаты, related-ссылки) остаётся внутри
+// CalculatorPageClient — он не индексируем и не критичен для SEO.
+export default async function CalculatorPage({ params }: Props) {
   const { slug } = await params;
   const definition = getCalculatorDefinition(slug);
 
@@ -42,7 +48,44 @@ export default async function CalculatorPage({ params, searchParams }: Props) {
     notFound();
   }
 
-  const query = parseCalculatorQuery((await searchParams) ?? {});
+  const breadcrumbJsonLd = buildCalculatorBreadcrumbJsonLd(definition.catalog, {
+    baseUrl: getServerEnv().APP_URL
+  });
+  const isRefractometer = definition.catalog.slug === "refractometer-correction";
 
-  return <CalculatorPageClient slug={definition.catalog.slug} initialQuery={query} />;
+  return (
+    <>
+      <nav aria-label="Breadcrumb" className="pt-6 text-sm text-muted-foreground">
+        <ol className="flex flex-wrap items-center gap-2">
+          <li><Link href="/" className="transition hover:text-foreground">Главная</Link></li>
+          <li aria-hidden="true">/</li>
+          <li><Link href="/calculators" className="transition hover:text-foreground">Калькуляторы</Link></li>
+          <li aria-hidden="true">/</li>
+          <li className="text-foreground">{definition.catalog.shortTitle}</li>
+        </ol>
+      </nav>
+
+      <main className={`space-y-5 pb-24 pt-8 ${isRefractometer ? "mx-auto max-w-5xl" : ""}`}>
+        <Link href="/calculators" className="inline-flex items-center gap-1.5 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground">
+          <ArrowLeft className="h-4 w-4" />
+          Все калькуляторы
+        </Link>
+
+        <CalculatorHeading item={definition.catalog} />
+
+        <Suspense fallback={null}>
+          <CalculatorPageClient slug={definition.catalog.slug} />
+        </Suspense>
+
+        <FormulaDetails
+          formula={definition.catalog.formula}
+          meaning={definition.catalog.meaning}
+          assumptions={definition.catalog.assumptions}
+        />
+        <CommonMistakesDetails items={definition.catalog.commonMistakes} />
+      </main>
+
+      <script {...jsonLdScriptProps(breadcrumbJsonLd)} />
+    </>
+  );
 }

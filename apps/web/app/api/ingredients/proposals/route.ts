@@ -2,9 +2,17 @@ import { NextResponse } from "next/server";
 
 import { createProposedIngredient } from "@/features/ingredients/service";
 import { requireUser } from "@/lib/auth";
+import { assertRateLimit } from "@nb/auth";
 
 export async function POST(request: Request) {
   const user = await requireUser();
+
+  // Антиспам: предложения попадают в очередь модерации — не даём её завалить.
+  try {
+    await assertRateLimit(user.id, "ingredient_proposal", 10, 60 * 60);
+  } catch {
+    return NextResponse.json({ error: "Слишком много предложений подряд. Попробуйте позже." }, { status: 429 });
+  }
 
   try {
     const body = await request.json() as {

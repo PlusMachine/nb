@@ -1,8 +1,7 @@
-import React, { Suspense } from "react";
+import React from "react";
 import type { Metadata } from "next";
 
 import { IngredientCatalogContent, parseCategory, parsePage, parseSubtype } from "./content";
-import { CatalogPageSkeleton } from "@/components/app/section-skeletons";
 import { buildCatalogListMetadata } from "@/features/ingredients/seo";
 
 type Props = {
@@ -20,10 +19,9 @@ export async function generateMetadata({ searchParams }: Props): Promise<Metadat
   return buildCatalogListMetadata({ q, view, page, category, subtype });
 }
 
-export default function IngredientCatalogPage(props: Props) {
-  return (
-    <Suspense fallback={<CatalogPageSkeleton />}>
-      <IngredientCatalogContent {...props} />
-    </Suspense>
-  );
+// Без Suspense: IngredientCatalogContent зовёт notFound() при пагинации за
+// диапазоном (page > totalPages) — под Suspense-границей стриминг успевает
+// заголовки с 200 до броска notFound, и soft-404 всё равно уходит с 200.
+export default async function IngredientCatalogPage(props: Props) {
+  return <IngredientCatalogContent {...props} />;
 }

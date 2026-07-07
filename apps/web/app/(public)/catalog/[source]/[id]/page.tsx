@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
+import { FeedbackReportLink } from "@/components/feedback/feedback-report-link";
 import { DeleteCustomCatalogIngredientButton } from "@/components/ingredients/delete-custom-catalog-ingredient-button";
 import { IngredientFavoriteToggle } from "@/components/ingredients/ingredient-favorite-toggle";
 import { IngredientPurchaseLinksEditor } from "@/components/ingredients/ingredient-purchase-links-manager";
@@ -347,17 +348,19 @@ export default async function IngredientDetailPage({
 
   return (
     <main className="space-y-6">
-      <div className="flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
-        <Link href="/catalog" className="hover:text-foreground">Каталог</Link>
-        {landing ? (
-          <>
-            <span>/</span>
-            <Link href={`/catalog/${landing.slug}`} className="hover:text-foreground">{landing.h1}</Link>
-          </>
-        ) : null}
-        <span>/</span>
-        <span>{item.primaryLabelRu}</span>
-      </div>
+      <nav aria-label="Breadcrumb" className="flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
+        <ol className="flex flex-wrap items-center gap-2">
+          <li><Link href="/catalog" className="hover:text-foreground">Каталог</Link></li>
+          {landing ? (
+            <>
+              <li aria-hidden="true">/</li>
+              <li><Link href={`/catalog/${landing.slug}`} className="hover:text-foreground">{landing.h1}</Link></li>
+            </>
+          ) : null}
+          <li aria-hidden="true">/</li>
+          <li><span aria-current="page">{item.primaryLabelRu}</span></li>
+        </ol>
+      </nav>
 
       <section className="rounded-[32px] border border-border bg-card p-6 shadow-sm">
         <div className="flex flex-col gap-6 xl:flex-row xl:items-start xl:justify-between">
@@ -404,6 +407,11 @@ export default async function IngredientDetailPage({
                   Системный
                 </span>
               )}
+              {item.status === "archived" ? (
+                <span className="rounded-full bg-muted px-2.5 py-1 text-[11px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
+                  В архиве
+                </span>
+              ) : null}
             </div>
 
             {item.derivedFromDisplayName ? (
@@ -416,6 +424,16 @@ export default async function IngredientDetailPage({
               <div className="rounded-2xl bg-muted p-4 text-sm leading-6 text-foreground">
                 {item.notes}
               </div>
+            ) : null}
+
+            {item.source === "catalog" ? (
+              <FeedbackReportLink
+                entityType="ingredient"
+                entityId={item.id}
+                entityLabel={item.primaryLabelRu}
+              >
+                Нашли неточность в данных?
+              </FeedbackReportLink>
             ) : null}
           </div>
 

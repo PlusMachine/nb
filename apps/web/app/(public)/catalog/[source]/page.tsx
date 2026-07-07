@@ -1,9 +1,8 @@
-import React, { Suspense } from "react";
+import React from "react";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
 import { IngredientCatalogContent, parsePage } from "../content";
-import { CatalogPageSkeleton } from "@/components/app/section-skeletons";
 import { buildCatalogListMetadata, resolveCatalogLanding } from "@/features/ingredients/seo";
 
 // Категорийный лендинг каталога (path-урл): /catalog/hops, /catalog/malts и т.п.
@@ -34,6 +33,9 @@ export async function generateMetadata({ params, searchParams }: Props): Promise
   return buildCatalogListMetadata({ landing, q, view, page });
 }
 
+// Без Suspense: IngredientCatalogContent зовёт notFound() при пагинации за
+// диапазоном (page > totalPages) — под Suspense-границей стриминг успевает
+// заголовки с 200 до броска notFound, и soft-404 всё равно уходит с 200.
 export default async function CatalogCategoryLandingPage({ params, searchParams }: Props) {
   const { source } = await params;
   const landing = resolveCatalogLanding(source);
@@ -42,9 +44,5 @@ export default async function CatalogCategoryLandingPage({ params, searchParams 
     notFound();
   }
 
-  return (
-    <Suspense fallback={<CatalogPageSkeleton />}>
-      <IngredientCatalogContent searchParams={searchParams} landing={landing} />
-    </Suspense>
-  );
+  return <IngredientCatalogContent searchParams={searchParams} landing={landing} />;
 }
