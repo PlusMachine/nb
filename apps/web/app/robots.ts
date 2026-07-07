@@ -8,11 +8,25 @@ export default function robots(): MetadataRoute.Robots {
   return {
     rules: {
       userAgent: "*",
-      allow: "/",
-      // Приватные зоны (требуют логина/роли) и API индексировать не нужно.
-      disallow: ["/api/", "/app", "/admin"]
+      // Фото рецептов — точечное исключение из disallow "/api/": нужны
+      // краулеру картинок (Google Images и т.п.).
+      allow: ["/", "/api/recipe-images/"],
+      // Приватные зоны (требуют логина/роли), служебные и технические пути
+      // индексировать не нужно.
+      disallow: [
+        "/api/",
+        "/app",
+        "/admin",
+        "/login",
+        "/profile",
+        "/settings",
+        "/recipes/id/",
+        "/catalog/new",
+        "/catalog/custom/",
+        "/ui-playground",
+        "/offline"
+      ]
     },
-    sitemap: `${APP_URL}/sitemap.xml`,
-    host: APP_URL
+    sitemap: `${APP_URL}/sitemap.xml`
   };
 }

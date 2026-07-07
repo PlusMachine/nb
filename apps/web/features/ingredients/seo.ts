@@ -108,6 +108,13 @@ export const resolveCatalogLandingForFilter = (
   subtype?: "malt" | "fermentable" | null
 ): CatalogLandingDefinition | null => {
   if (!category) {
+    // subtype без категории всё равно однозначно резолвится: malt/fermentable
+    // существуют только у category=fermentable, поэтому сам subtype уже
+    // указывает на конкретный лендинг (?subtype=malt ↔ /catalog/malts).
+    if (subtype) {
+      return catalogCategoryLandings.find((landing) => landing.subtype === subtype) ?? null;
+    }
+
     return null;
   }
 
@@ -168,20 +175,12 @@ export const buildCatalogListMetadata = (params: {
     };
   }
 
-  // Категория без лендинга (сейчас это только fermentable без subtype) должна
-  // сохранять фильтр в canonical — иначе разные выборки склеятся в один URL.
-  const canonicalParams = new URLSearchParams();
-  if (params.category) {
-    canonicalParams.set("category", params.category);
-  }
-  if (params.subtype) {
-    canonicalParams.set("subtype", params.subtype);
-  }
-  if (page) {
-    canonicalParams.set("page", String(page));
-  }
-  const canonicalQuery = canonicalParams.toString();
-  const canonicalPath = canonicalQuery ? `/catalog?${canonicalQuery}` : "/catalog";
+  // Фильтр без своего лендинга (например ?category=fermentable без subtype —
+  // malt/fermentable неоднозначны) — не самостоятельная SEO-страница, поэтому
+  // canonical схлопывается на чистый /catalog (playbook §4: «фильтры →
+  // canonical на чистый URL»). ?page=N без фильтров — сюда же попадает и
+  // остаётся self-canonical с сохранённым page, как и раньше.
+  const canonicalPath = page ? `/catalog?page=${page}` : "/catalog";
 
   return {
     title: CATALOG_BASE_TITLE,
@@ -339,12 +338,19 @@ export const buildIngredientDetailMetadata = (
     };
   }
 
+  // Архивный (isActive=false) системный ингредиент не 404-им: на него могут
+  // вести ссылки со складов пользователей (app-зона). Но индексировать сироту,
+  // которой нет ни в списках, ни в sitemap, не нужно — noindex, follow (страница
+  // сама по себе валидна и ссылки с неё вести можно).
+  const isArchived = item.status === "archived";
+
   return {
     title,
     description,
     alternates: {
       canonical: `/catalog/system/${params.id}`
     },
+    ...(isArchived ? { robots: { index: false, follow: true } } : {}),
     openGraph: {
       title,
       description,
@@ -373,14 +379,19 @@ export const buildIngredientDetailJsonLd = (
   const detailUrl = `${base}/catalog/${params.source}/${params.id}`;
   const landing = resolveCatalogLandingForFilter(item.category, resolveIngredientLandingSubtype(item));
 
+  // "Главная" — по образцу buildArticleBreadcrumbJsonLd (content-articles/seo.ts):
+  // BreadcrumbList отдаёт полный путь от корня сайта, даже если в видимых
+  // крошках страницы "Главная" не показана отдельным пунктом (её роль в UI
+  // играет логотип/шапка).
   const breadcrumbItems: Array<{ "@type": "ListItem"; position: number; name: string; item: string }> = [
-    { "@type": "ListItem", position: 1, name: "Каталог", item: `${base}/catalog` }
+    { "@type": "ListItem", position: 1, name: "Главная", item: base || "/" },
+    { "@type": "ListItem", position: 2, name: "Каталог", item: `${base}/catalog` }
   ];
 
   if (landing) {
     breadcrumbItems.push({
       "@type": "ListItem",
-      position: 2,
+      position: 3,
       name: landing.h1,
       item: `${base}/catalog/${landing.slug}`
     });

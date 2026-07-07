@@ -41,7 +41,7 @@ const isSafeSrc = (src: unknown): src is string =>
 // Узел figure: иллюстрация с подписью. Пока src нет — рендерим видимую
 // заглушку (пунктирный бокс с описанием кадра из attrs.hint/caption), чтобы
 // автор видел слот и позже вписал реальное фото. attrs: { src?, alt?, caption?,
-// hint?, aspect? }.
+// hint?, aspect?, width?, height? }.
 const renderFigure = (node: TiptapNode, key: React.Key): React.ReactNode => {
   const attrs = node.attrs ?? {};
   const src = attrs.src;
@@ -49,12 +49,33 @@ const renderFigure = (node: TiptapNode, key: React.Key): React.ReactNode => {
   const hint = typeof attrs.hint === "string" && attrs.hint.trim() ? attrs.hint.trim() : caption;
   const alt = typeof attrs.alt === "string" ? attrs.alt : (caption ?? "");
   const aspect = typeof attrs.aspect === "string" && attrs.aspect.trim() ? attrs.aspect.trim() : "3 / 2";
+  // Реальные габариты узла (если автор/загрузка их записали) — на них браузер
+  // резервирует место сам (native width/height работают вместе с "w-full" в
+  // CSS, аспект считается из атрибутов даже при растянутой ширине). Без них —
+  // тот же приём, что и у заглушки: контейнер с фиксированным aspect-ratio.
+  const width = typeof attrs.width === "number" && attrs.width > 0 ? attrs.width : null;
+  const height = typeof attrs.height === "number" && attrs.height > 0 ? attrs.height : null;
 
   return (
     <figure key={key} className="my-2 space-y-2">
       {isSafeSrc(src) ? (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img src={src} alt={alt} loading="lazy" className="w-full rounded-2xl border border-border object-cover" />
+        width && height ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={src}
+            alt={alt}
+            width={width}
+            height={height}
+            loading="lazy"
+            decoding="async"
+            className="h-auto w-full rounded-2xl border border-border object-cover"
+          />
+        ) : (
+          <div className="overflow-hidden rounded-2xl border border-border" style={{ aspectRatio: aspect }}>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={src} alt={alt} loading="lazy" decoding="async" className="h-full w-full object-cover" />
+          </div>
+        )
       ) : (
         <div
           className="flex flex-col items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-border bg-muted px-6 py-8 text-center"
@@ -167,7 +188,16 @@ const renderNode = (node: TiptapNode | null | undefined, key: React.Key): React.
       // переиспользуем рендер figure.
       const attrs = node.attrs ?? {};
       return renderFigure(
-        { type: "figure", attrs: { src: attrs.src, alt: attrs.alt, caption: attrs.title ?? attrs.alt } },
+        {
+          type: "figure",
+          attrs: {
+            src: attrs.src,
+            alt: attrs.alt,
+            caption: attrs.title ?? attrs.alt,
+            width: attrs.width,
+            height: attrs.height
+          }
+        },
         key
       );
     }

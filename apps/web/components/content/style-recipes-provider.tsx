@@ -22,24 +22,38 @@ export const useStyleRecipes = (): StyleRecipesContextValue | null => useContext
 /** Держим в синхроне с числом карточек, которое показывает нижний блок. */
 export const STYLE_RECIPES_LIMIT = 6;
 
+export type StyleRecipesInitialData = { items: PublicRecipeListItem[]; total: number } | null;
+
 /**
- * Один запрос к `/api/recipes/by-style` на всю страницу стиля. Страница SSG (без БД на
- * билде), поэтому рецепты догружаются на клиенте после гидрации — как {@link BjcpGravityPassportStats}.
- * Раздаёт status/items/total через контекст, чтобы hero-чип, лента якорей и нижний блок
- * не делали по отдельному запросу.
+ * Данные рецептов стиля — сперва серверные (см. `app/(public)/bjcp/[slug]/page.tsx`,
+ * `listPublicRecipesForStyle`), затем догрузка на клиенте только если сервер их не
+ * отдал (пустой `initial` — БД была недоступна на билде либо в стиле правда нет
+ * рецептов). Раздаёт status/items/total через контекст, чтобы hero-чип, лента
+ * якорей и нижний блок не делали по отдельному запросу.
  */
 export function StyleRecipesProvider({
   styleCode,
+  initial = null,
   children
 }: {
   styleCode: string;
+  /** Серверный snapshot рецептов стиля (SSR/SSG). Непустой → карточки сразу в HTML. */
+  initial?: StyleRecipesInitialData;
   children: React.ReactNode;
 }) {
-  const [status, setStatus] = useState<StyleRecipesStatus>("loading");
-  const [items, setItems] = useState<PublicRecipeListItem[]>([]);
-  const [total, setTotal] = useState(0);
+  const hasInitial = Boolean(initial && initial.items.length > 0);
+  const [status, setStatus] = useState<StyleRecipesStatus>(hasInitial ? "ready" : "loading");
+  const [items, setItems] = useState<PublicRecipeListItem[]>(initial?.items ?? []);
+  const [total, setTotal] = useState(initial?.total ?? 0);
 
   useEffect(() => {
+    if (hasInitial) {
+      // Сервер уже отдал непустой список рецептов в HTML — свежесть страницы
+      // обеспечивает revalidate на уровне маршрута, повторный клиентский fetch
+      // тут не нужен (и не должен перезатирать серверные карточки миганием).
+      return;
+    }
+
     let active = true;
     setStatus("loading");
 
@@ -64,7 +78,7 @@ export function StyleRecipesProvider({
     return () => {
       active = false;
     };
-  }, [styleCode]);
+  }, [hasInitial, styleCode]);
 
   const value = useMemo<StyleRecipesContextValue>(
     () => ({ status, items, total }),

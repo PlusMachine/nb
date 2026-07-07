@@ -11,11 +11,15 @@ import { HomeLoop } from "@/components/home/home-loop";
 import { HomeStyleVitals } from "@/components/home/home-style-vitals";
 import { RecipesGrid } from "@/components/recipes/recipes-grid";
 import { getSessionUser } from "@/lib/auth";
+import { getServerEnv } from "@/lib/env";
 import { srmToHex } from "@/features/recipes/beer-color";
 import { buildHeroStyleVitals } from "@/features/home/style-vitals";
-import { parsePublicRecipeFilters } from "@/features/recipes/public-recipe-query";
-import { getPublicRecipeFamilyCounts, searchPublicRecipes } from "@/features/recipes/service";
-import { listFeaturedContentArticles } from "@/features/content-articles/service";
+import {
+  getHomeFeaturedContentArticles,
+  getHomeLatestPublicRecipes,
+  getHomePublicRecipeFamilyCounts
+} from "@/features/home/home-data-cache";
+import { jsonLdScriptProps } from "@/features/ingredients/seo";
 import { contentArticleTypeLabels } from "@/features/content-articles/contracts";
 
 // Спектр стилей BJCP для баннера — из той же SRM-палитры, что и весь сайт
@@ -37,11 +41,27 @@ export default async function HomePage() {
   }
 
   const [featuredGuides, bjcpCatalog, familyCounts, latestRecipes] = await Promise.all([
-    listFeaturedContentArticles(3),
+    getHomeFeaturedContentArticles(3),
     getBjcpCatalogData(),
-    getPublicRecipeFamilyCounts(),
-    searchPublicRecipes({ ...parsePublicRecipeFilters({}), sort: "newest", page: 1, pageSize: 3 })
+    getHomePublicRecipeFamilyCounts(),
+    getHomeLatestPublicRecipes()
   ]);
+  const { APP_URL, SITE_NAME } = getServerEnv();
+  const organizationJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    name: SITE_NAME,
+    url: APP_URL,
+    logo: `${APP_URL}/images/pwa/icon-512.png`
+  };
+  // alternateName сознательно не задан: второго устоявшегося имени у проекта
+  // нет (вопрос NB vs hmelo открыт) — добавить при выборе бренда, см. плейбук §14.
+  const websiteJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    name: SITE_NAME,
+    url: APP_URL
+  };
   const heroStyles = buildHeroStyleVitals(bjcpCatalog.styles);
   const bjcpStyleCount = bjcpCatalog.styles.length;
   // Семейства стилей с рецептами на витрине — тот же контракт, что табы фильтра
@@ -120,7 +140,13 @@ export default async function HomePage() {
               >
                 {guide.coverImageUrl ? (
                   // eslint-disable-next-line @next/next/no-img-element
-                  <img src={guide.coverImageUrl} alt="" className="h-40 w-full object-cover" />
+                  <img
+                    src={guide.coverImageUrl}
+                    alt=""
+                    loading="lazy"
+                    decoding="async"
+                    className="h-40 w-full object-cover"
+                  />
                 ) : (
                   <div className="h-40 w-full bg-gradient-to-br from-warning-subtle to-muted" aria-hidden />
                 )}
@@ -200,6 +226,11 @@ export default async function HomePage() {
           </span>
         </Link>
       </section>
+
+      {/* JSON-LD в конце main: первым ребёнком <script> участвует в space-y-16
+          и сдвигает видимый контент вниз на его величину. */}
+      <script {...jsonLdScriptProps(organizationJsonLd)} />
+      <script {...jsonLdScriptProps(websiteJsonLd)} />
     </main>
   );
 }

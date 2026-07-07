@@ -5,6 +5,8 @@ import { srmToEbc } from "@nb/brewing-core";
 import type { BjcpCatalogStyle, ContentArticle } from "@nb/content";
 
 import { getBjcpCardColorInfo } from "@/features/content/bjcp-card-stats";
+import { calculators, type CalculatorSlug } from "@/features/calculators/catalog";
+import { jsonLdScriptProps } from "@/features/ingredients/seo";
 import { beerColorFromSrm } from "@/features/recipes/beer-color";
 import {
   defaultPreferredGravityUnit,
@@ -12,12 +14,36 @@ import {
   formatGravityRangeSecondary,
   type PreferredGravityUnit
 } from "@/features/system/gravity-units";
+import { getServerEnv } from "@/lib/env";
 
 import { BjcpGravityPassportStats } from "./bjcp-gravity-passport-stats";
 import { PassportStatCard } from "./bjcp-passport-stat-card";
 import { StyleCommunityRecipes } from "./style-community-recipes";
 import { StyleRecipesHeroChip, StyleRecipesTocEntry } from "./style-recipes-chip";
-import { StyleRecipesProvider } from "./style-recipes-provider";
+import { StyleRecipesProvider, type StyleRecipesInitialData } from "./style-recipes-provider";
+
+const toAbsoluteUrl = (baseUrl: string, path: string) => `${baseUrl.replace(/\/$/, "")}${path}`;
+
+// Статичный набор для v1 (M8, P2 аудита): одни и те же 4 калькулятора релевантны
+// для расчёта любого рецепта в стиле, персонализация по стилю — не в этой итерации.
+const bjcpRelatedCalculatorSlugs: CalculatorSlug[] = ["ibu", "abv-attenuation", "beer-color", "priming-sugar"];
+const bjcpRelatedCalculators = bjcpRelatedCalculatorSlugs
+  .map((slug) => calculators.find((calculator) => calculator.slug === slug))
+  .filter((calculator): calculator is (typeof calculators)[number] => Boolean(calculator));
+
+/** Строит те же URL, что и видимые крошки страницы стиля (см. breadcrumb ниже). */
+const buildBjcpArticleBreadcrumbJsonLd = (article: ContentArticle, params: { baseUrl: string }) => {
+  const base = params.baseUrl.replace(/\/$/, "");
+
+  return {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "BJCP 2021", item: `${base}/bjcp` },
+      { "@type": "ListItem", position: 2, name: `кат. ${article.category.nameRu}`, item: `${base}/bjcp` }
+    ]
+  };
+};
 
 const mediaThemes = [
   "bg-[linear-gradient(150deg,#0f172a_0%,#1e293b_50%,#475569_100%)]",
@@ -372,8 +398,27 @@ export const resolvePassportStat = (
   };
 };
 
-function ArticleStructuredData({ article }: { article: ContentArticle }) {
-  const payload = {
+function ArticleStructuredData({
+  article,
+  baseUrl,
+  hasRealHeroImage
+}: {
+  article: ContentArticle;
+  baseUrl: string;
+  /**
+   * Есть ли у стиля собственное фото (не общий плейсхолдер BJCP-каталога). Пришло
+   * готовым булевым пропом из `page.tsx` (см. `DEFAULT_BJCP_HERO_IMAGE_URL`) — этот
+   * файл транзитивно импортируется клиентским `bjcp-gravity-passport-stats.tsx`, а
+   * `@nb/content` тянет `node:fs/promises`, который нельзя заносить в клиентский бандл.
+   */
+  hasRealHeroImage: boolean;
+}) {
+  const pageUrl = toAbsoluteUrl(baseUrl, `/bjcp/${article.slug}`);
+
+  // datePublished/dateModified намеренно не добавляем — у переводного BJCP-контента
+  // нет реальных дат ревизий (см. комментарий у resolvePublishedAt в packages/content/src/bjcp.ts),
+  // а фиктивная дата в разметке хуже её отсутствия.
+  const payload: Record<string, unknown> = {
     "@context": "https://schema.org",
     "@type": "Article",
     headline: article.title,
@@ -382,33 +427,44 @@ function ArticleStructuredData({ article }: { article: ContentArticle }) {
     inLanguage: "ru",
     keywords: article.keywords.join(", "),
     articleSection: article.category.nameRu,
+    mainEntityOfPage: pageUrl,
+    url: pageUrl,
     author: {
       "@type": "Organization",
       name: "NB Editorial"
     },
     publisher: {
       "@type": "Organization",
-      name: "NB"
+      name: "NB",
+      logo: {
+        "@type": "ImageObject",
+        url: toAbsoluteUrl(baseUrl, "/images/pwa/icon-512.png")
+      }
     }
   };
 
-  return (
-    <script
-      type="application/ld+json"
-      dangerouslySetInnerHTML={{ __html: JSON.stringify(payload) }}
-    />
-  );
+  if (hasRealHeroImage && article.heroImageUrl) {
+    payload.image = toAbsoluteUrl(baseUrl, article.heroImageUrl);
+  }
+
+  return <script {...jsonLdScriptProps(payload)} />;
 }
 
 export function BjcpArticlePage({
   article,
   catalogStyle = null,
-  siblingStyles = []
+  siblingStyles = [],
+  initialStyleRecipes = null,
+  hasRealHeroImage = false
 }: {
   article: ContentArticle;
   catalogStyle?: BjcpCatalogStyle | null;
   /** Другие стили той же категории (для боковой навигации «не тот стиль?»). */
   siblingStyles?: { bjcpId: string; slug: string; title: string }[];
+  /** Серверный snapshot рецептов стиля — см. `listPublicRecipesForStyle` в page.tsx. */
+  initialStyleRecipes?: StyleRecipesInitialData;
+  /** Есть ли у стиля собственное фото (не общий плейсхолдер BJCP-каталога) — см. {@link ArticleStructuredData}. */
+  hasRealHeroImage?: boolean;
 }) {
   const categoryLabel = `кат. ${article.category.nameRu}`;
   const mediaTheme = resolveMediaTheme(article);
@@ -420,11 +476,14 @@ export function BjcpArticlePage({
     }
     : undefined;
   const passportStats = passportStatDefinitions.map((definition) => resolvePassportStat(article, definition, catalogStyle));
+  const { APP_URL } = getServerEnv();
+  const breadcrumbJsonLd = buildBjcpArticleBreadcrumbJsonLd(article, { baseUrl: APP_URL });
 
   return (
-    <StyleRecipesProvider styleCode={article.bjcpId}>
+    <StyleRecipesProvider styleCode={article.bjcpId} initial={initialStyleRecipes}>
     <main className="space-y-14 pb-24 pt-8">
-      <ArticleStructuredData article={article} />
+      <ArticleStructuredData article={article} baseUrl={APP_URL} hasRealHeroImage={hasRealHeroImage} />
+      <script {...jsonLdScriptProps(breadcrumbJsonLd)} />
 
       <nav aria-label="Breadcrumb" className="px-1 text-sm text-muted-foreground">
         <ol className="flex flex-wrap items-center gap-2">
@@ -435,14 +494,10 @@ export function BjcpArticlePage({
           </li>
           <li aria-hidden="true">/</li>
           <li>
-            {/* Ссылка на каталог, раскрытый на этой категории. Обязательно
-                `view=bjcp&category=` — дефолтный вид каталога `families`, а фильтр по
-                категории и аккордеон работают только в bjcp-виде (см. parseBjcpCatalogState
-                / applyCatalogScope в features/content/bjcp-catalog.ts). */}
-            <Link
-              href={`/bjcp?view=bjcp&category=${encodeURIComponent(article.category.id)}`}
-              className="text-foreground transition hover:text-foreground"
-            >
+            {/* Раньше вела на параметрическую копию хаба (/bjcp?view=bjcp&category=…) —
+                теперь обе крошки ведут на чистый канонический /bjcp: отдельной
+                канонической страницы категории нет. */}
+            <Link href="/bjcp" className="text-foreground transition hover:text-foreground">
               {categoryLabel}
             </Link>
           </li>
@@ -552,37 +607,59 @@ export function BjcpArticlePage({
 
       <StyleCommunityRecipes styleTitle={article.title} styleCode={article.bjcpId} />
 
-      {siblingStyles.length ? (
-        <section className="space-y-4">
-          <div className="flex flex-col items-start gap-2 sm:flex-row sm:items-end sm:justify-between sm:gap-4">
-            <div>
-              <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-muted-foreground">Ещё в категории</p>
-              <h2 className="mt-2 text-2xl font-semibold text-foreground" style={{ fontFamily: "var(--font-display)" }}>
-                Другие стили категории «{article.category.nameRu}»
-              </h2>
+      <div className="grid gap-8 lg:grid-cols-2">
+        {siblingStyles.length ? (
+          <section className="space-y-4">
+            <div className="flex flex-col items-start gap-2 sm:flex-row sm:items-end sm:justify-between sm:gap-4">
+              <div>
+                <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-muted-foreground">Ещё в категории</p>
+                <h2 className="mt-2 text-2xl font-semibold text-foreground" style={{ fontFamily: "var(--font-display)" }}>
+                  Другие стили категории «{article.category.nameRu}»
+                </h2>
+              </div>
+              <Link href="/bjcp" className="sm:shrink-0 text-sm font-semibold text-foreground hover:text-foreground">
+                Весь BJCP <span aria-hidden="true">→</span>
+              </Link>
             </div>
-            <Link href="/bjcp" className="sm:shrink-0 text-sm font-semibold text-foreground hover:text-foreground">
-              Весь BJCP <span aria-hidden="true">→</span>
-            </Link>
-          </div>
 
-          {/* Боковой переход по соседним стилям: если человек открыл не тот стиль
-              (напр. овсяный стаут вместо нужного), он быстро уходит к правильному,
-              а не покидает сайт. */}
+            {/* Боковой переход по соседним стилям: если человек открыл не тот стиль
+                (напр. овсяный стаут вместо нужного), он быстро уходит к правильному,
+                а не покидает сайт. */}
+            <div className="flex flex-wrap gap-2">
+              {siblingStyles.map((sibling) => (
+                <Link
+                  key={sibling.slug}
+                  href={`/bjcp/${sibling.slug}`}
+                  className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-4 py-2 text-sm shadow-sm transition hover:-translate-y-0.5 hover:border-border"
+                >
+                  <span className="font-semibold text-foreground">{sibling.bjcpId}</span>
+                  <span className="text-muted-foreground">{sibling.title}</span>
+                </Link>
+              ))}
+            </div>
+          </section>
+        ) : null}
+
+        {/* Перелинковка стиль → калькуляторы (M8, P2 аудита): статичный набор
+            релевантных расчётов рядом с переходом по соседним стилям. */}
+        <section className="space-y-4">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-muted-foreground">Пригодится</p>
+          <h2 className="mt-2 text-2xl font-semibold text-foreground" style={{ fontFamily: "var(--font-display)" }}>
+            Калькуляторы
+          </h2>
           <div className="flex flex-wrap gap-2">
-            {siblingStyles.map((sibling) => (
+            {bjcpRelatedCalculators.map((calculator) => (
               <Link
-                key={sibling.slug}
-                href={`/bjcp/${sibling.slug}`}
+                key={calculator.slug}
+                href={calculator.href}
                 className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-4 py-2 text-sm shadow-sm transition hover:-translate-y-0.5 hover:border-border"
               >
-                <span className="font-semibold text-foreground">{sibling.bjcpId}</span>
-                <span className="text-muted-foreground">{sibling.title}</span>
+                <span className="text-foreground">{calculator.shortTitle}</span>
               </Link>
             ))}
           </div>
         </section>
-      ) : null}
+      </div>
     </main>
     </StyleRecipesProvider>
   );

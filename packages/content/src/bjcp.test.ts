@@ -43,6 +43,13 @@ describe("BJCP content index", () => {
     expect(article?.sections.length).toBeGreaterThan(4);
   });
 
+  it("builds seoTitle as '<title> (<bjcpId>) — стиль пива BJCP' (title first, for CTR)", async () => {
+    const article = await getArticleBySlug("bjcp-1a-american-light-lager");
+
+    expect(article?.seoTitle).toBe(`${article?.title} (1A) — стиль пива BJCP`);
+    expect(article?.seoTitle.startsWith("1A")).toBe(false);
+  });
+
   it("includes commercial examples from the source JSON in article sections", async () => {
     const article = await getArticleBySlug("bjcp-1b-american-lager");
 

@@ -39,7 +39,13 @@ export default async function ArticlesPage() {
             >
               {article.coverImageUrl ? (
                 // eslint-disable-next-line @next/next/no-img-element
-                <img src={article.coverImageUrl} alt="" className="h-40 w-full object-cover" />
+                <img
+                  src={article.coverImageUrl}
+                  alt={article.title}
+                  loading="lazy"
+                  decoding="async"
+                  className="h-40 w-full object-cover"
+                />
               ) : (
                 <div className="h-40 w-full bg-gradient-to-br from-amber-50 to-zinc-100 dark:from-amber-500/10 dark:to-zinc-800" aria-hidden />
               )}

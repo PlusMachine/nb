@@ -1,4 +1,5 @@
 export {
+  DEFAULT_BJCP_HERO_IMAGE_URL,
   getArticleBySlug,
   listArticleCategories,
   listArticles,

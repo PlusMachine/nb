@@ -1,6 +1,6 @@
 "use client";
 
-import { Fragment, useDeferredValue, useEffect, useMemo, useRef, useState, useTransition } from "react";
+import React, { Fragment, useDeferredValue, useEffect, useMemo, useRef, useState, useTransition } from "react";
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import {
@@ -732,7 +732,12 @@ export function BjcpCatalog({ catalog }: Props) {
         <section className="relative z-0 space-y-3">
           {catalog.categories.map((category: BjcpCatalogData["categories"][number]) => {
             const open = state.category === category.id;
-            const categoryStyles = open ? getCategoryPreviewStyles(catalog, category.id) : [];
+            // Считаем и рендерим стили ВСЕХ категорий (не только раскрытой) — иначе
+            // ссылки на стили свёрнутых категорий не попадают в серверный HTML
+            // (см. A8). Свёрнутые секции прячем через CSS (`hidden`), а не через
+            // условный рендер — краулер видит все ~120 ссылок, пользователь только
+            // раскрытую категорию.
+            const categoryStyles = getCategoryPreviewStyles(catalog, category.id);
             const dividerLabel = category.id === firstHistoricalSpecialCategoryId
               ? "Исторические и специальные"
               : category.id === firstLocalCategoryId
@@ -781,15 +786,13 @@ export function BjcpCatalog({ catalog }: Props) {
                     </div>
                   </button>
 
-                  {open ? (
-                    <div className="border-t border-border/70 px-5 py-4">
-                      <div className="grid gap-2 md:grid-cols-2 xl:grid-cols-3">
-                        {categoryStyles.map((style: BjcpCatalogStyle) => (
-                          <CategoryStyleDetailCard key={style.slug} style={style} />
-                        ))}
-                      </div>
+                  <div className={`border-t border-border/70 px-5 py-4 ${open ? "" : "hidden"}`}>
+                    <div className="grid gap-2 md:grid-cols-2 xl:grid-cols-3">
+                      {categoryStyles.map((style: BjcpCatalogStyle) => (
+                        <CategoryStyleDetailCard key={style.slug} style={style} />
+                      ))}
                     </div>
-                  ) : null}
+                  </div>
                 </section>
               </Fragment>
             );

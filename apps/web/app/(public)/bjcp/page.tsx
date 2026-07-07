@@ -3,10 +3,25 @@ import { Suspense } from "react";
 import { getBjcpCatalogData } from "@nb/content";
 
 import { BjcpCatalog } from "@/components/content/bjcp-catalog";
+import { BjcpStyleIndex } from "@/components/content/bjcp-style-index";
+
+const title = "BJCP справочник стилей";
+const description = "Поиск по стилям BJCP, режим семейной навигации для обычного пользователя и строгий просмотр по официальным категориям BJCP 2021.";
 
 export const metadata: Metadata = {
-  title: "BJCP справочник стилей",
-  description: "Поиск по стилям BJCP, режим семейной навигации для обычного пользователя и строгий просмотр по официальным категориям BJCP 2021."
+  title,
+  description,
+  alternates: {
+    canonical: "/bjcp"
+  },
+  openGraph: {
+    type: "website",
+    locale: "ru_RU",
+    title,
+    description,
+    url: "/bjcp",
+    siteName: "NB"
+  }
 };
 
 export default async function BjcpPage() {
@@ -33,6 +48,8 @@ export default async function BjcpPage() {
       >
         <BjcpCatalog catalog={catalog} />
       </Suspense>
+
+      <BjcpStyleIndex catalog={catalog} />
     </main>
   );
 }

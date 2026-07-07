@@ -24,6 +24,8 @@ const buildHopItem = (overrides: Partial<UserCatalogIngredientDto> = {}): UserCa
   hopBetaAcidPct: 4.2,
   hopForm: "pellet",
   technicalData: { type: "hop", hopForm: "pellet" },
+  isActive: true,
+  status: "active",
   ...overrides
 } as UserCatalogIngredientDto);
 
@@ -40,6 +42,8 @@ const buildMaltItem = (overrides: Partial<UserCatalogIngredientDto> = {}): UserC
   manufacturer: null,
   fermentableExtractYieldPct: 80,
   technicalData: { type: "malt", colorEbcMin: 3, colorEbcMax: 4 },
+  isActive: true,
+  status: "active",
   ...overrides
 } as UserCatalogIngredientDto);
 
@@ -55,6 +59,8 @@ const buildYeastItem = (overrides: Partial<UserCatalogIngredientDto> = {}): User
   yeastMinFermentationTempC: 15,
   yeastMaxFermentationTempC: 22,
   technicalData: { type: "yeast", flocculation: "medium" },
+  isActive: true,
+  status: "active",
   ...overrides
 } as UserCatalogIngredientDto);
 
@@ -67,6 +73,8 @@ const buildFermentableWithoutSubtype = (overrides: Partial<UserCatalogIngredient
   secondaryLabelRu: null,
   brand: null,
   technicalData: null,
+  isActive: true,
+  status: "active",
   ...overrides
 } as UserCatalogIngredientDto);
 
@@ -121,6 +129,11 @@ describe("resolveCatalogLandingForFilter", () => {
   it("returns null when no category is given", () => {
     expect(resolveCatalogLandingForFilter(undefined)).toBeNull();
   });
+
+  it("resolves a landing from subtype alone when category is omitted", () => {
+    expect(resolveCatalogLandingForFilter(undefined, "malt")?.slug).toBe("malts");
+    expect(resolveCatalogLandingForFilter(undefined, "fermentable")?.slug).toBe("fermentables");
+  });
 });
 
 describe("buildCatalogListMetadata", () => {
@@ -170,6 +183,23 @@ describe("buildCatalogListMetadata", () => {
     expect(metadata.title).toBe("Каталог ингредиентов для пивоварения");
     expect(metadata.alternates).toEqual({ canonical: "/catalog?page=3" });
   });
+
+  it("resolves the landing canonical from subtype alone when category is omitted", () => {
+    const metadata = buildCatalogListMetadata({ subtype: "malt" });
+    expect(metadata.title).toBe("Солод для пивоварения — каталог");
+    expect(metadata.alternates).toEqual({ canonical: "/catalog/malts" });
+  });
+
+  it("collapses a non-landing category filter (fermentable without subtype) to the base canonical", () => {
+    const metadata = buildCatalogListMetadata({ category: "fermentable" });
+    expect(metadata.title).toBe("Каталог ингредиентов для пивоварения");
+    expect(metadata.alternates).toEqual({ canonical: "/catalog" });
+  });
+
+  it("drops the non-landing category filter from canonical even with a page suffix", () => {
+    const metadata = buildCatalogListMetadata({ category: "fermentable", page: 2 });
+    expect(metadata.alternates).toEqual({ canonical: "/catalog?page=2" });
+  });
 });
 
 describe("buildIngredientDetailMetadata", () => {
@@ -191,6 +221,20 @@ describe("buildIngredientDetailMetadata", () => {
     );
     expect(metadata.robots).toEqual({ index: false, follow: false });
     expect(metadata.alternates).toBeUndefined();
+  });
+
+  it("does not set robots for an active system ingredient", () => {
+    const metadata = buildIngredientDetailMetadata(buildHopItem(), { source: "system", id: "us-citra-standard" });
+    expect(metadata.robots).toBeUndefined();
+  });
+
+  it("marks an archived system ingredient as noindex,follow but keeps the canonical", () => {
+    const metadata = buildIngredientDetailMetadata(
+      buildHopItem({ status: "archived", isActive: false }),
+      { source: "system", id: "us-citra-standard" }
+    );
+    expect(metadata.robots).toEqual({ index: false, follow: true });
+    expect(metadata.alternates).toEqual({ canonical: "/catalog/system/us-citra-standard" });
   });
 
   it("includes category-specific facts in the description", () => {
@@ -249,9 +293,11 @@ describe("buildIngredientDetailJsonLd", () => {
 
     expect(breadcrumbList["@type"]).toBe("BreadcrumbList");
     const crumbs = breadcrumbList.itemListElement as Array<Record<string, unknown>>;
-    expect(crumbs).toHaveLength(3);
-    expect(crumbs[1]).toMatchObject({ name: "Хмель для пивоварения", item: "https://example.test/catalog/hops" });
-    expect(crumbs[2]).toMatchObject({ name: "Citra", item: "https://example.test/catalog/system/us-citra-standard" });
+    expect(crumbs).toHaveLength(4);
+    expect(crumbs[0]).toMatchObject({ name: "Главная", item: "https://example.test" });
+    expect(crumbs[1]).toMatchObject({ name: "Каталог", item: "https://example.test/catalog" });
+    expect(crumbs[2]).toMatchObject({ name: "Хмель для пивоварения", item: "https://example.test/catalog/hops" });
+    expect(crumbs[3]).toMatchObject({ name: "Citra", item: "https://example.test/catalog/system/us-citra-standard" });
 
     expect(product["@type"]).toBe("Product");
     expect(product.brand).toEqual({ "@type": "Brand", name: "Yakima Chief Hops" });
@@ -286,7 +332,8 @@ describe("buildIngredientDetailJsonLd", () => {
 
     const [breadcrumbList, product] = schemas as Array<Record<string, unknown>>;
     const crumbs = breadcrumbList.itemListElement as Array<Record<string, unknown>>;
-    expect(crumbs).toHaveLength(2);
+    expect(crumbs).toHaveLength(3);
+    expect(crumbs[0]).toMatchObject({ name: "Главная" });
     expect(product).not.toHaveProperty("brand");
   });
 });

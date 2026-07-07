@@ -445,6 +445,11 @@ const buildKeywords = (style: {
   style.titleEn
 ].filter(Boolean);
 
+// Даты фиктивные (просто "1 марта 2026 + порядковый индекс стиля") — реальных
+// дат ревизий у переводного BJCP-контента нет, и они сдвигаются при вставке
+// нового стиля в список. publishedAt/updatedAt держим в модели (широкий
+// контракт), но наружу (sitemap lastModified, JSON-LD datePublished/dateModified)
+// их отдавать нельзя — это хуже отсутствия даты.
 const resolvePublishedAt = (index: number) => {
   const published = new Date(Date.UTC(2026, 2, 1 + index));
   return published.toISOString();
@@ -606,7 +611,7 @@ const buildIndex = async (): Promise<BjcpContentIndex> => {
           title,
           titleEn
         }),
-        seoTitle: `${bjcpId} · ${title} · BJCP стиль`,
+        seoTitle: `${title} (${bjcpId}) — стиль пива BJCP`,
         seoDescription: description,
         source
       });
