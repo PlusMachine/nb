@@ -36,7 +36,7 @@ type Props = {
   initialCategory?: IngredientCategory | null;
   initialSubtype?: Extract<IngredientSubtype, "malt" | "fermentable"> | null;
   initialGroup?: string | null;
-  /** Дефицит из списка покупок (UX-находка #20): предзаполнить количество/единицу. */
+  /** Дефицит из «Чего не хватает» (UX-находка #20): предзаполнить количество/единицу. */
   initialQuantity?: string | null;
   initialUnit?: string | null;
   initialQuickStartDataByContext?: IngredientPickerQuickStartResultByContext | null;

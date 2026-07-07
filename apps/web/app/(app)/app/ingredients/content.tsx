@@ -2,6 +2,7 @@ import React from "react";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { GroupedInventoryList } from "@/components/inventory/grouped-inventory-list";
+import { InventoryTabs } from "@/components/inventory/inventory-tabs";
 import { InventoryEmptyState } from "@/components/inventory/inventory-empty-state";
 import { AddIngredientTrigger } from "@/components/inventory/add-ingredient-trigger";
 import { InventoryToolbar } from "@/components/inventory/inventory-toolbar";
@@ -30,6 +31,7 @@ import {
 } from "@/features/ingredients/catalog-service";
 import { listSystemCurrencyRates } from "@/features/system/currency-rates";
 import { findBrewableRecipesForUser } from "@/features/recipes/match-service";
+import { buildShoppingListForUser } from "@/features/shopping/service";
 import { requireUser } from "@/lib/auth";
 
 type Props = {
@@ -101,11 +103,11 @@ export async function MyIngredientsContent({ searchParams }: Props = {}) {
   const sort = parseSort(typeof resolvedParams.sort === "string" ? resolvedParams.sort : undefined);
   const addSource = typeof resolvedParams.addSource === "string" ? resolvedParams.addSource : undefined;
   const addId = typeof resolvedParams.addId === "string" ? resolvedParams.addId : undefined;
-  // Дефицит из списка покупок (UX-находка #20): предзаполнить количество/единицу.
+  // Дефицит из «Чего не хватает» (UX-находка #20): предзаполнить количество/единицу.
   const addQty = typeof resolvedParams.addQty === "string" ? resolvedParams.addQty : undefined;
   const addUnit = typeof resolvedParams.addUnit === "string" ? resolvedParams.addUnit : undefined;
 
-  const [items, summary, currencyRates, initialSelection] = await Promise.all([
+  const [items, summary, currencyRates, initialSelection, missingCount] = await Promise.all([
     listInventoryForUser(user.id, {
       category,
       subtype,
@@ -119,7 +121,10 @@ export async function MyIngredientsContent({ searchParams }: Props = {}) {
     listSystemCurrencyRates(),
     addSource === "catalog" || addSource === "custom"
       ? getIngredientSuggestionByRef(user.id, addSource, addId ?? "")
-      : Promise.resolve(null)
+      : Promise.resolve(null),
+    // Счётчик для таба «Чего не хватает» (без opportunities — дешёвый путь,
+    // как у виджета дашборда). При сбое таб просто остаётся без цифры.
+    buildShoppingListForUser(user.id).then((list) => list.totalItems).catch(() => 0)
   ]);
   const showFinished = resolveInventoryShowFinished(requestedShowFinished, summary);
 
@@ -236,21 +241,25 @@ export async function MyIngredientsContent({ searchParams }: Props = {}) {
             </p>
           ) : null}
         </div>
-        <AddIngredientTrigger
-          preferredCurrency={user.preferredCurrency}
-          initialSelection={initialSelection}
-          initialCategory={initialSelection?.category ?? category ?? null}
-          initialSubtype={
-            initialSelection?.subtype === "malt" || initialSelection?.subtype === "fermentable"
-              ? initialSelection.subtype
-              : (subtype ?? null)
-          }
-          initialGroup={group ?? null}
-          initialQuantity={initialSelection ? addQty ?? null : null}
-          initialUnit={initialSelection ? addUnit ?? null : null}
-          openOnMount={Boolean(initialSelection)}
-        />
+        <div className="flex shrink-0 items-center gap-2">
+          <AddIngredientTrigger
+            preferredCurrency={user.preferredCurrency}
+            initialSelection={initialSelection}
+            initialCategory={initialSelection?.category ?? category ?? null}
+            initialSubtype={
+              initialSelection?.subtype === "malt" || initialSelection?.subtype === "fermentable"
+                ? initialSelection.subtype
+                : (subtype ?? null)
+            }
+            initialGroup={group ?? null}
+            initialQuantity={initialSelection ? addQty ?? null : null}
+            initialUnit={initialSelection ? addUnit ?? null : null}
+            openOnMount={Boolean(initialSelection)}
+          />
+        </div>
       </section>
+
+      <InventoryTabs active="stock" missingCount={missingCount} />
 
       <InventoryToolbar
         search={rawSearch}
