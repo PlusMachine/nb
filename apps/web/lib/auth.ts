@@ -140,12 +140,16 @@ export const startPhoneOtp = async (phone: string) => {
 };
 
 export const verifyPhoneOtp = async (phone: string, code: string, consent?: boolean) => {
+  // Лимит на ВВОД кода: без него 6-значный OTP перебирается ботом за время жизни кода.
+  await assertRateLimit(normalizePhone(phone), "sms_verify", 10, 10 * 60);
   await consumePhoneVerification({ phone, code });
   const user = await completePhoneSignIn({ phone, consent: consentInput(consent) });
   await establishSession(user.id);
 };
 
 export const verifyEmailOtp = async (email: string, code: string, consent?: boolean) => {
+  // Лимит на ВВОД кода — та же защита от перебора, что и для SMS.
+  await assertRateLimit(email.toLowerCase(), "otp_verify", 10, 10 * 60);
   await consumeVerification({ email, token: code, type: "otp" });
   const user = await completeEmailSignIn({ email, consent: consentInput(consent) });
   await establishSession(user.id);
@@ -210,6 +214,9 @@ export const logout = async () => {
 };
 
 export const passwordLogin = async (email: string, password: string) => {
+  // Анти-brute-force: лимит попыток входа на конкретный e-mail (капча ограничивает
+  // ботов, этот слой — ещё и целенаправленный подбор пароля к одному аккаунту).
+  await assertRateLimit(email.toLowerCase(), "password_login", 10, 10 * 60);
   const user = await signInWithPassword({ email, password });
   await establishSession(user.id);
 };

@@ -1,16 +1,18 @@
 import { NextResponse } from "next/server";
 
 import { consumeMagicLink, startMagicLink } from "@/lib/auth";
-import { verifyCaptchaHook } from "@/lib/anti-abuse";
+import { assertIpRateLimit, clientIpFrom, verifyCaptchaHook } from "@/lib/anti-abuse";
 
 export async function POST(request: Request) {
   const body = await request.json();
 
-  if (!(await verifyCaptchaHook(body.captchaToken))) {
+  if (!(await verifyCaptchaHook(body.captchaToken, clientIpFrom(request)))) {
     return NextResponse.json({ error: "captcha_required" }, { status: 400 });
   }
 
   try {
+    // Per-IP лимит (общий счётчик auth_send со всеми send-действиями auth-флоу).
+    await assertIpRateLimit(request, "auth_send", 15, 60 * 60);
     // Согласие на обработку ПДн (152-ФЗ) обязательно до отправки ссылки на e-mail.
     if (body.consent !== true) {
       return NextResponse.json({ error: "consent_required" }, { status: 400 });

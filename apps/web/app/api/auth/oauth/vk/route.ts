@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 
+import { getServerEnv } from "@/lib/env";
 import { buildAuthorizationUrl } from "@/lib/oauth";
 
 export async function GET() {
@@ -7,6 +8,6 @@ export async function GET() {
     const url = await buildAuthorizationUrl("vk");
     return NextResponse.redirect(url);
   } catch {
-    return NextResponse.redirect(new URL("/login?error=oauth_vk", "http://localhost:3000"));
+    return NextResponse.redirect(new URL("/login?error=oauth_vk", getServerEnv().APP_URL));
   }
 }

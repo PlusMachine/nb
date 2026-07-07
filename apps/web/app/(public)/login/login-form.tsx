@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useMemo, useState, type ComponentProps, type MouseEvent } from "react";
 import { Button, Card, Input } from "@nb/ui";
 
+import { useSmartCaptcha } from "@/components/auth/use-smart-captcha";
 import { resolveSafeNextPath } from "@/lib/auth-links";
 import { LEGAL_DOC_VERSION } from "@/lib/legal-meta";
 import { SIGNUP_CONSENT_COOKIE, SIGNUP_CONSENT_MAX_AGE_SECONDS } from "@/lib/oauth-consent";
@@ -25,6 +26,9 @@ const postJson = async (url: string, body: Record<string, unknown>) => {
 // Неизвестный/отсутствующий код — общий фолбэк, а не сырой код на экране.
 const AUTH_ERROR_MESSAGES: Record<string, string> = {
   captcha_required: "Не пройдена проверка на робота. Обновите страницу и попробуйте ещё раз.",
+  captcha_cancelled: "Проверка на робота не завершена. Попробуйте ещё раз.",
+  captcha_network_error: "Не удалось связаться с сервисом проверки. Проверьте соединение и попробуйте ещё раз.",
+  captcha_load_failed: "Не удалось загрузить проверку на робота. Обновите страницу.",
   invalid_action: "Действие не поддерживается. Обновите страницу.",
   RATE_LIMITED: "Слишком много попыток. Попробуйте позже.",
   INVALID_PHONE: "Проверьте номер телефона.",
@@ -77,6 +81,23 @@ const StatusLine = ({ status }: { status: StatusMessage | null }) => {
 
 export function LoginForm() {
   const [method, setMethod] = useState<"phone" | "email">("phone");
+
+  // Невидимая SmartCaptcha: каждый auth-запрос уходит со свежим captchaToken,
+  // который проверяет verifyCaptchaHook на сервере.
+  const { getToken: getCaptchaToken, captchaNode } = useSmartCaptcha();
+
+  // Обёртка над postJson для auth-эндпоинтов: сперва проходит проверку капчи.
+  // Ошибка проверки (закрыл челлендж, сеть) превращается в обычный error-код —
+  // дальше её показывает humanizeAuthError, как и серверные ошибки.
+  const postAuth = async (url: string, body: Record<string, unknown>) => {
+    let captchaToken: string;
+    try {
+      captchaToken = await getCaptchaToken();
+    } catch (error) {
+      return { error: error instanceof Error ? error.message : "captcha_required" };
+    }
+    return postJson(url, { ...body, captchaToken });
+  };
 
   const [phone, setPhone] = useState("");
   const [smsCode, setSmsCode] = useState("");
@@ -147,7 +168,7 @@ export function LoginForm() {
 
   const requestSmsCode = () =>
     runAction(async () => {
-      const result = await postJson("/api/auth/phone", { action: "request", phone, consent });
+      const result = await postAuth("/api/auth/phone", { action: "request", phone, consent });
       setStatus(
         result.ok
           ? { kind: "success", text: "Код отправлен по SMS", devHint: true }
@@ -157,7 +178,7 @@ export function LoginForm() {
 
   const verifySmsCode = () =>
     runAction(async () => {
-      const result = await postJson("/api/auth/phone", { action: "verify", phone, code: smsCode, consent });
+      const result = await postAuth("/api/auth/phone", { action: "verify", phone, code: smsCode, consent });
       if (result.ok) {
         redirectAfterAuth();
         return;
@@ -167,7 +188,7 @@ export function LoginForm() {
 
   const requestEmailOtp = () =>
     runAction(async () => {
-      const result = await postJson("/api/auth/otp", { action: "request", email, consent });
+      const result = await postAuth("/api/auth/otp", { action: "request", email, consent });
       setStatus(
         result.ok
           ? { kind: "success", text: "Код отправлен на почту", devHint: true }
@@ -177,7 +198,7 @@ export function LoginForm() {
 
   const verifyEmailOtp = () =>
     runAction(async () => {
-      const result = await postJson("/api/auth/otp", { action: "verify", email, code, consent });
+      const result = await postAuth("/api/auth/otp", { action: "verify", email, code, consent });
       if (result.ok) {
         redirectAfterAuth();
         return;
@@ -187,7 +208,7 @@ export function LoginForm() {
 
   const requestMagicLink = () =>
     runAction(async () => {
-      const result = await postJson("/api/auth/magic", { email, consent });
+      const result = await postAuth("/api/auth/magic", { email, consent });
       setStatus(
         result.ok
           ? { kind: "success", text: "Ссылка для входа отправлена на почту", devHint: true }
@@ -197,7 +218,7 @@ export function LoginForm() {
 
   const passwordLogin = () =>
     runAction(async () => {
-      const result = await postJson("/api/auth/password", { action: "login", email, password });
+      const result = await postAuth("/api/auth/password", { action: "login", email, password });
       if (result.ok) {
         redirectAfterAuth();
         return;
@@ -207,7 +228,7 @@ export function LoginForm() {
 
   const passwordSignup = () =>
     runAction(async () => {
-      const result = await postJson("/api/auth/password", { action: "signup", email, password, consent });
+      const result = await postAuth("/api/auth/password", { action: "signup", email, password, consent });
       if (result.ok) {
         redirectAfterAuth();
         return;
@@ -217,7 +238,7 @@ export function LoginForm() {
 
   const requestPasswordReset = () =>
     runAction(async () => {
-      const result = await postJson("/api/auth/password", { action: "request-reset", email });
+      const result = await postAuth("/api/auth/password", { action: "request-reset", email });
       setStatus(
         result.ok
           ? { kind: "success", text: "Ссылка для сброса пароля отправлена на почту", devHint: true }
@@ -230,7 +251,7 @@ export function LoginForm() {
       if (!resetToken) {
         return;
       }
-      const result = await postJson("/api/auth/password", {
+      const result = await postAuth("/api/auth/password", {
         action: "reset",
         email,
         token: resetToken,
@@ -563,6 +584,9 @@ export function LoginForm() {
       {/* Статус («Код отправлен…», ошибки) — сразу под активной формой, а не в самом
           низу карточки под соцвходом и за cookie-баннером (UX-находка #12). */}
       <StatusLine status={status} />
+
+      {/* Контейнер невидимой SmartCaptcha (шильдик + попап челленджа). */}
+      {captchaNode}
 
       <div className="grid grid-cols-2 gap-2 border-t border-border pt-4">
         <Link
