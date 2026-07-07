@@ -681,6 +681,31 @@ export type UserCatalogListResult = {
   };
 };
 
+// Слаги категорийных лендингов каталога (/catalog/{slug}). Источник правды по
+// определениям лендингов — catalogCategoryLandings в features/ingredients/seo.ts,
+// сам тип живёт здесь (а не там), чтобы contracts.ts не зависел от seo.ts —
+// seo.ts уже импортирует типы отсюда, обратная зависимость создала бы цикл.
+export type CatalogLandingSlug = "hops" | "malts" | "fermentables" | "yeast" | "water" | "consumables";
+
+export type CatalogHubParams = {
+  view?: "all" | "mine";
+  q?: string;
+};
+
+export type CatalogHubSection = {
+  slug: CatalogLandingSlug;
+  category: IngredientCategory;
+  subtype?: "malt" | "fermentable";
+  items: UserCatalogIngredientDto[];
+  total: number;
+};
+
+export type CatalogHubResult = {
+  sections: CatalogHubSection[];
+  facets: UserCatalogListResult["facets"];
+  total: number;
+};
+
 export type IngredientProposalDto = {
   id: string;
   sourcePayload: Record<string, unknown>;

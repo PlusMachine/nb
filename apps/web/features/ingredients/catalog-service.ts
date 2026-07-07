@@ -12,6 +12,9 @@ import {
 } from "@nb/db";
 
 import type {
+  CatalogHubParams,
+  CatalogHubResult,
+  CatalogHubSection,
   IngredientAliasDto,
   IngredientCatalogSortOption,
   IngredientCategory,
@@ -78,6 +81,7 @@ import {
   resolveConsumableTechnicalData
 } from "./consumables";
 import { loadIngredients, getIngredientById } from "./service";
+import { catalogCategoryLandings } from "./seo";
 import {
   extractIngredientTechnicalData,
   extractIngredientTechnicalFields,
@@ -1780,6 +1784,143 @@ export const listUserCatalogIngredients = async (
       customCount: rankedAllItems.filter((item) => item.source === "custom").length,
       catalogCount: rankedAllItems.filter((item) => item.source === "catalog").length
     }
+  };
+};
+
+// Превью-лимиты хаба каталога (/catalog без landing): без q — по алфавиту
+// в каждой секции, с q — сгруппированный ранжированный список. См.
+// notes/catalog-hub-redesign.md, S1.
+export const CATALOG_HUB_PREVIEW_LIMIT = 6;
+export const CATALOG_HUB_SEARCH_GROUP_LIMIT = 10;
+
+// Дублирует rankItems из listUserCatalogIngredients намеренно: ту функцию
+// трогать нельзя (контракт listUserCatalogIngredients зафиксирован), а сортов
+// у хаба нет — только "name" без q. См. notes/catalog-hub-redesign.md, S1.
+const rankHubItems = (
+  items: UserCatalogIngredientDto[],
+  q: string | undefined
+): UserCatalogIngredientDto[] => (
+  q?.trim()
+    ? (() => {
+      const brandMarketCounts = buildBrandMarketCountMap(items);
+
+      return filterRankedCatalogNoise(items
+        .map((item) => buildRankedItem(item, q ?? "", brandMarketCounts))
+        .filter((item): item is RankedCatalogItem => item !== null)
+        .sort(sortRankedCatalogItems))
+        .map(({ item }) => item);
+    })()
+    : sortCatalogItems(items, "name")
+);
+
+// Лендинг-секция, которой принадлежит элемент каталога (совпадение по
+// категории и, для fermentable, по subtype) — как resolveCatalogLandingForFilter
+// в seo.ts, но по данным элемента, а не по query-параметрам.
+const resolveHubSectionLanding = (item: UserCatalogIngredientDto) => (
+  catalogCategoryLandings.find((landing) => (
+    landing.category === item.category
+    && (!landing.subtype || item.subtype === landing.subtype)
+  ))
+);
+
+export const listCatalogHubSections = async (
+  userId: string | null,
+  params: CatalogHubParams = {}
+): Promise<CatalogHubResult> => {
+  const view = params.view === "mine" ? "mine" : "all";
+  const hasQuery = Boolean(params.q?.trim());
+  const { customItems, allItems } = await loadUnifiedCatalogItems(userId);
+
+  const rankedAllItems = rankHubItems(allItems, params.q);
+  const rankedCustomItems = rankHubItems(customItems, params.q);
+  const baseItems = view === "mine" ? rankedCustomItems : rankedAllItems;
+
+  const countByCategory = (items: UserCatalogIngredientDto[]) => ({
+    fermentable: items.filter((item) => item.category === "fermentable").length,
+    hop: items.filter((item) => item.category === "hop").length,
+    yeast: items.filter((item) => item.category === "yeast").length,
+    consumable: items.filter((item) => item.category === "consumable").length,
+    water_treatment: items.filter((item) => item.category === "water_treatment").length
+  });
+  const countFermentableSubtypes = (items: UserCatalogIngredientDto[]) => ({
+    malt: items.filter((item) => item.category === "fermentable" && item.subtype === "malt").length,
+    fermentable: items.filter((item) => item.category === "fermentable" && item.subtype === "fermentable").length
+  });
+
+  const itemsBySlug = new Map<string, UserCatalogIngredientDto[]>(
+    catalogCategoryLandings.map((landing) => [landing.slug, []])
+  );
+  for (const item of baseItems) {
+    const landing = resolveHubSectionLanding(item);
+    if (landing) {
+      itemsBySlug.get(landing.slug)?.push(item);
+    }
+  }
+
+  // Порядок секций: без q — канонический (catalogCategoryLandings); с q — по
+  // первому вхождению элемента секции в общем ранжированном списке (лучший
+  // матч определяет первую секцию), секции без совпадений — в хвосте в
+  // каноническом порядке.
+  const orderedLandings = hasQuery
+    ? (() => {
+      const seenSlugs = new Set<string>();
+      const bestMatchFirst: typeof catalogCategoryLandings = [];
+      for (const item of baseItems) {
+        const landing = resolveHubSectionLanding(item);
+        if (landing && !seenSlugs.has(landing.slug)) {
+          seenSlugs.add(landing.slug);
+          bestMatchFirst.push(landing);
+        }
+      }
+      for (const landing of catalogCategoryLandings) {
+        if (!seenSlugs.has(landing.slug)) {
+          bestMatchFirst.push(landing);
+        }
+      }
+      return bestMatchFirst;
+    })()
+    : catalogCategoryLandings;
+
+  const previewLimit = hasQuery ? CATALOG_HUB_SEARCH_GROUP_LIMIT : CATALOG_HUB_PREVIEW_LIMIT;
+  const sectionDrafts = orderedLandings.map((landing) => {
+    const sectionItems = itemsBySlug.get(landing.slug) ?? [];
+
+    return {
+      slug: landing.slug,
+      category: landing.category,
+      subtype: landing.subtype,
+      items: sectionItems.slice(0, previewLimit),
+      total: sectionItems.length
+    };
+  });
+
+  // Usage counts — один вызов на конкатенацию превью всех секций (<=60 позиций
+  // при лимите 10 на 6 секций), затем раскладываем обратно по секциям в том же
+  // порядке (applyUsageCounts сохраняет порядок items.map).
+  const previewSizes = sectionDrafts.map((section) => section.items.length);
+  const hydratedPreview = await applyUsageCounts(userId, sectionDrafts.flatMap((section) => section.items));
+  let cursor = 0;
+  const sections: CatalogHubSection[] = sectionDrafts.map((section, index) => {
+    const size = previewSizes[index];
+    const items = hydratedPreview.slice(cursor, cursor + size);
+    cursor += size;
+
+    return { ...section, items };
+  });
+
+  return {
+    sections,
+    facets: {
+      byCategory: countByCategory(baseItems),
+      // Дефолт для мёртвого фасета (см. заметку у filteredByCategory в
+      // listUserCatalogIngredients) — у хаба нет единого категорийного
+      // фильтра (секции — сами по себе фильтр), поэтому значение равно byCategory.
+      filteredByCategory: countByCategory(baseItems),
+      byFermentableSubtype: countFermentableSubtypes(baseItems),
+      customCount: rankedAllItems.filter((item) => item.source === "custom").length,
+      catalogCount: rankedAllItems.filter((item) => item.source === "catalog").length
+    },
+    total: sections.reduce((sum, section) => sum + section.total, 0)
   };
 };
 

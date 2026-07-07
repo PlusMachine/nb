@@ -4,6 +4,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const mockState = vi.hoisted(() => ({
   listResult: null as any,
+  hubResult: null as any,
   detailItem: null as any,
   similarItems: [] as any[],
   brandItems: [] as any[],
@@ -43,6 +44,7 @@ vi.mock("@/lib/auth", () => ({
 
 vi.mock("@/features/ingredients/catalog-service", () => ({
   listUserCatalogIngredients: async () => mockState.listResult,
+  listCatalogHubSections: async () => mockState.hubResult,
   getUserCatalogIngredientByRef: async () => mockState.detailItem,
   listSimilarCatalogIngredients: async () => mockState.similarItems,
   listSameBrandCatalogIngredients: async () => mockState.brandItems
@@ -91,6 +93,7 @@ vi.mock("@/components/feedback/feedback-report-link", () => ({
 
 import { IngredientCatalogContent } from "../app/(public)/catalog/content";
 import IngredientDetailPage from "../app/(public)/catalog/[source]/[id]/page";
+import { catalogCategoryLandings } from "../features/ingredients/seo";
 
 const buildCatalogItem = (overrides: Record<string, unknown> = {}) => ({
   id: "catalog-hop-1",
@@ -159,6 +162,49 @@ const buildCatalogItem = (overrides: Record<string, unknown> = {}) => ({
   ...overrides
 });
 
+// Хаб /catalog (IngredientCatalogContent без landing) рендерит секции по
+// catalogCategoryLandings — дефолт для мока: все 6 секций пустые (total=0),
+// презентационные тесты подставляют элементы в одну подходящую секцию через
+// setHubSection.
+const buildEmptyHubSections = () => catalogCategoryLandings.map((landing) => ({
+  slug: landing.slug,
+  category: landing.category,
+  subtype: landing.subtype,
+  items: [] as any[],
+  total: 0
+}));
+
+const buildHubResult = () => ({
+  sections: buildEmptyHubSections(),
+  facets: {
+    catalogCount: 0,
+    customCount: 0,
+    byCategory: {
+      fermentable: 0,
+      hop: 0,
+      yeast: 0,
+      consumable: 0,
+      water_treatment: 0
+    },
+    byFermentableSubtype: {
+      malt: 0,
+      fermentable: 0
+    }
+  },
+  total: 0
+});
+
+const setHubSection = (slug: string, patch: { items: any[]; total?: number }) => {
+  mockState.hubResult = {
+    ...mockState.hubResult,
+    sections: mockState.hubResult.sections.map((section: any) => (
+      section.slug === slug
+        ? { ...section, items: patch.items, total: patch.total ?? patch.items.length }
+        : section
+    ))
+  };
+};
+
 describe("ingredient catalog metadata ui", () => {
   beforeEach(() => {
     mockState.listResult = {
@@ -183,6 +229,7 @@ describe("ingredient catalog metadata ui", () => {
         }
       }
     };
+    mockState.hubResult = buildHubResult();
     mockState.detailItem = null;
     mockState.similarItems = [];
     mockState.brandItems = [];
@@ -190,19 +237,13 @@ describe("ingredient catalog metadata ui", () => {
   });
 
   it("renders favorite toggles in the catalog list without introducing a text badge", async () => {
-    mockState.listResult = {
-      ...mockState.listResult,
+    setHubSection("hops", {
       items: [
         buildCatalogItem({
           isFavorite: true
         })
-      ],
-      total: 1,
-      facets: {
-        ...mockState.listResult.facets,
-        catalogCount: 1
-      }
-    };
+      ]
+    });
 
     const html = renderToStaticMarkup(await IngredientCatalogContent({
       searchParams: Promise.resolve({})
@@ -310,15 +351,7 @@ describe("ingredient catalog metadata ui", () => {
   });
 
   it("drops the Тип/Использование columns from the catalog list table", async () => {
-    mockState.listResult = {
-      ...mockState.listResult,
-      items: [buildCatalogItem()],
-      total: 1,
-      facets: {
-        ...mockState.listResult.facets,
-        catalogCount: 1
-      }
-    };
+    setHubSection("hops", { items: [buildCatalogItem()] });
 
     const html = renderToStaticMarkup(await IngredientCatalogContent({
       searchParams: Promise.resolve({})
@@ -330,8 +363,7 @@ describe("ingredient catalog metadata ui", () => {
   });
 
   it("shows a hop-form badge near the name only for non-standard forms and translates the form in parameters", async () => {
-    mockState.listResult = {
-      ...mockState.listResult,
+    setHubSection("hops", {
       items: [
         buildCatalogItem({
           id: "hop-standard",
@@ -344,13 +376,8 @@ describe("ingredient catalog metadata ui", () => {
           hopForm: "cryo",
           technicalData: { type: "hop", alphaAcidPctTypical: 15, hopForm: "cryo" }
         })
-      ],
-      total: 2,
-      facets: {
-        ...mockState.listResult.facets,
-        catalogCount: 2
-      }
-    };
+      ]
+    });
 
     const html = renderToStaticMarkup(await IngredientCatalogContent({
       searchParams: Promise.resolve({})
@@ -363,18 +390,12 @@ describe("ingredient catalog metadata ui", () => {
   });
 
   it("shows usage badges near the name only when inventory/recipe counts are positive", async () => {
-    mockState.listResult = {
-      ...mockState.listResult,
+    setHubSection("hops", {
       items: [
         buildCatalogItem({ id: "used", inventoryUsageCount: 2, recipeUsageCount: 3 }),
         buildCatalogItem({ id: "unused", inventoryUsageCount: 0, recipeUsageCount: 0 })
-      ],
-      total: 2,
-      facets: {
-        ...mockState.listResult.facets,
-        catalogCount: 2
-      }
-    };
+      ]
+    });
 
     const html = renderToStaticMarkup(await IngredientCatalogContent({
       searchParams: Promise.resolve({})
@@ -387,8 +408,7 @@ describe("ingredient catalog metadata ui", () => {
   });
 
   it("shows a malt subtype badge, a color swatch and full parameter labels", async () => {
-    mockState.listResult = {
-      ...mockState.listResult,
+    setHubSection("malts", {
       items: [
         buildCatalogItem({
           id: "malt-1",
@@ -400,13 +420,8 @@ describe("ingredient catalog metadata ui", () => {
           fermentableExtractYieldPct: 80,
           fermentableColorLovibond: 2
         })
-      ],
-      total: 1,
-      facets: {
-        ...mockState.listResult.facets,
-        catalogCount: 1
-      }
-    };
+      ]
+    });
 
     const html = renderToStaticMarkup(await IngredientCatalogContent({
       searchParams: Promise.resolve({})
@@ -419,8 +434,7 @@ describe("ingredient catalog metadata ui", () => {
   });
 
   it("translates yeast flocculation and attenuation and shows the yeast-form badge near the name", async () => {
-    mockState.listResult = {
-      ...mockState.listResult,
+    setHubSection("yeast", {
       items: [
         buildCatalogItem({
           id: "yeast-1",
@@ -432,13 +446,8 @@ describe("ingredient catalog metadata ui", () => {
           yeastAttenuationPct: 78,
           yeastForm: "dry"
         })
-      ],
-      total: 1,
-      facets: {
-        ...mockState.listResult.facets,
-        catalogCount: 1
-      }
-    };
+      ]
+    });
 
     const html = renderToStaticMarkup(await IngredientCatalogContent({
       searchParams: Promise.resolve({})
@@ -451,8 +460,7 @@ describe("ingredient catalog metadata ui", () => {
   });
 
   it("carries the consumable subtype into parameters now that the Тип column is gone", async () => {
-    mockState.listResult = {
-      ...mockState.listResult,
+    setHubSection("consumables", {
       items: [
         buildCatalogItem({
           id: "consumable-1",
@@ -464,13 +472,8 @@ describe("ingredient catalog metadata ui", () => {
           technicalData: { type: "consumable", commonForms: ["liquid"] },
           unitPreferred: "ml"
         })
-      ],
-      total: 1,
-      facets: {
-        ...mockState.listResult.facets,
-        catalogCount: 1
-      }
-    };
+      ]
+    });
 
     const html = renderToStaticMarkup(await IngredientCatalogContent({
       searchParams: Promise.resolve({})
@@ -479,26 +482,113 @@ describe("ingredient catalog metadata ui", () => {
     expect(html).toContain("санитайзер");
   });
 
-  it("throws notFound() when the requested page is past the last page and there is no search query", async () => {
-    mockState.listResult = {
-      ...mockState.listResult,
-      totalPages: 1
-    };
+  it("hides catalog hub sections with zero total", async () => {
+    setHubSection("hops", { items: [buildCatalogItem()] });
+    // Остальные секции остаются total=0 (дефолт beforeEach) — не должны рендериться.
 
-    await expect(IngredientCatalogContent({
-      searchParams: Promise.resolve({ page: "999" })
-    })).rejects.toThrow("NOT_FOUND");
+    const html = renderToStaticMarkup(await IngredientCatalogContent({
+      searchParams: Promise.resolve({})
+    }));
+
+    expect(html).toContain(">Хмель<");
+    expect(html).not.toContain(">Солод<");
+    expect(html).not.toContain(">Дрожжи<");
+    expect(html).not.toContain(">Расходники<");
   });
 
-  it("does not throw notFound() for an out-of-range page when a search query is present", async () => {
+  it("links the hub section header to the matching category landing with the full section total", async () => {
+    setHubSection("hops", { items: [buildCatalogItem()], total: 5 });
+
+    const html = renderToStaticMarkup(await IngredientCatalogContent({
+      searchParams: Promise.resolve({})
+    }));
+
+    expect(html).toContain('href="/catalog/hops"');
+    expect(html).toContain("Все 5");
+  });
+
+  it("groups hub sections by search match and links to the full in-section results", async () => {
+    setHubSection("hops", { items: [buildCatalogItem()], total: 12 });
+    // Остальные секции остаются total=0 — не должны попасть в выдачу поиска.
+
+    const html = renderToStaticMarkup(await IngredientCatalogContent({
+      searchParams: Promise.resolve({ q: "citra" })
+    }));
+
+    expect(html).toContain(">Хмель<");
+    expect(html).not.toContain(">Солод<");
+    expect(html).toContain("Все 12 в разделе");
+    expect(html).toContain('href="/catalog/hops?q=citra"');
+  });
+
+  it("shows the empty state when a hub-wide query matches nothing", async () => {
+    // Все секции остаются total=0 (дефолт beforeEach).
+    const html = renderToStaticMarkup(await IngredientCatalogContent({
+      searchParams: Promise.resolve({ q: "zzz-no-match" })
+    }));
+
+    expect(html).toContain("По текущим условиям ничего не найдено");
+    expect(html).toContain("Сбросить поиск");
+  });
+
+  it("shows a fallback line on the landing linking to other catalog sections when local matches exist", async () => {
+    const hopsLanding = catalogCategoryLandings.find((landing) => landing.slug === "hops")!;
     mockState.listResult = {
       ...mockState.listResult,
-      totalPages: 1
+      items: [buildCatalogItem()],
+      total: 1,
+      facets: {
+        catalogCount: 1,
+        customCount: 0,
+        byCategory: {
+          fermentable: 4,
+          hop: 1,
+          yeast: 0,
+          consumable: 0,
+          water_treatment: 0
+        },
+        byFermentableSubtype: { malt: 0, fermentable: 0 }
+      }
     };
 
-    await expect(IngredientCatalogContent({
-      searchParams: Promise.resolve({ page: "999", q: "citra" })
-    })).resolves.toBeTruthy();
+    const html = renderToStaticMarkup(await IngredientCatalogContent({
+      searchParams: Promise.resolve({ q: "citra" }),
+      landing: hopsLanding
+    }));
+
+    // otherCount = sum(byCategory) - byCategory.hop = (4+1) - 1 = 4
+    expect(html).toContain("Ещё 4 совпадения в других разделах");
+    expect(html).toContain('href="/catalog?q=citra"');
+  });
+
+  it("shows a fallback button in the landing empty state when there are no local matches", async () => {
+    const maltsLanding = catalogCategoryLandings.find((landing) => landing.slug === "malts")!;
+    mockState.listResult = {
+      ...mockState.listResult,
+      items: [],
+      total: 0,
+      facets: {
+        catalogCount: 0,
+        customCount: 0,
+        byCategory: {
+          fermentable: 3,
+          hop: 2,
+          yeast: 0,
+          consumable: 0,
+          water_treatment: 0
+        },
+        byFermentableSubtype: { malt: 0, fermentable: 3 }
+      }
+    };
+
+    const html = renderToStaticMarkup(await IngredientCatalogContent({
+      searchParams: Promise.resolve({ q: "zzz" }),
+      landing: maltsLanding
+    }));
+
+    // otherCount = sum(byCategory) - byFermentableSubtype.malt = (3+2) - 0 = 5
+    expect(html).toContain("Показать 5 совпадений в каталоге");
+    expect(html).toContain('href="/catalog?q=zzz"');
   });
 
   it("shows a 'В архиве' badge next to the Системный badge for an archived system ingredient", async () => {

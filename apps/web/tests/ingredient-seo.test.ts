@@ -178,10 +178,10 @@ describe("buildCatalogListMetadata", () => {
     expect(metadata.alternates).toEqual({ canonical: "/catalog" });
   });
 
-  it("adds ?page=N to the base canonical but keeps the base title unchanged", () => {
+  it("keeps the base canonical clean for ?page=N — the hub has no pagination of its own", () => {
     const metadata = buildCatalogListMetadata({ page: 3 });
     expect(metadata.title).toBe("Каталог ингредиентов для пивоварения");
-    expect(metadata.alternates).toEqual({ canonical: "/catalog?page=3" });
+    expect(metadata.alternates).toEqual({ canonical: "/catalog" });
   });
 
   it("resolves the landing canonical from subtype alone when category is omitted", () => {
@@ -196,9 +196,9 @@ describe("buildCatalogListMetadata", () => {
     expect(metadata.alternates).toEqual({ canonical: "/catalog" });
   });
 
-  it("drops the non-landing category filter from canonical even with a page suffix", () => {
+  it("drops both the non-landing category filter and the page param from the base canonical", () => {
     const metadata = buildCatalogListMetadata({ category: "fermentable", page: 2 });
-    expect(metadata.alternates).toEqual({ canonical: "/catalog?page=2" });
+    expect(metadata.alternates).toEqual({ canonical: "/catalog" });
   });
 });
 

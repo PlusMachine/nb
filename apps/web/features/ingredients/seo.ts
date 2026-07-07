@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 
-import type { IngredientCategory, IngredientSubtype, IngredientTechnicalData, UserCatalogIngredientDto } from "./contracts";
+import type { CatalogLandingSlug, IngredientCategory, IngredientSubtype, IngredientTechnicalData, UserCatalogIngredientDto } from "./contracts";
 import { resolveIngredientBrandLabel, resolveYeastFlocculationLabelRu } from "./presentation";
 import { formatHopFormLabel, resolveIngredientTechnicalDataColorRangeEbc } from "./technical-fields";
 
@@ -8,7 +8,9 @@ import { formatHopFormLabel, resolveIngredientTechnicalDataColorRangeEbc } from 
 // metadata для списка/деталки и JSON-LD (BreadcrumbList/Product/ItemList).
 // См. notes/catalog-refactor-plan.md, этап 1.
 
-export type CatalogLandingSlug = "hops" | "malts" | "fermentables" | "yeast" | "water" | "consumables";
+// Тип объявлен в contracts.ts (нужен и хабу /catalog); здесь — реэкспорт для
+// обратной совместимости импортов.
+export type { CatalogLandingSlug };
 
 export type CatalogLandingDefinition = {
   slug: CatalogLandingSlug;
@@ -178,9 +180,10 @@ export const buildCatalogListMetadata = (params: {
   // Фильтр без своего лендинга (например ?category=fermentable без subtype —
   // malt/fermentable неоднозначны) — не самостоятельная SEO-страница, поэтому
   // canonical схлопывается на чистый /catalog (playbook §4: «фильтры →
-  // canonical на чистый URL»). ?page=N без фильтров — сюда же попадает и
-  // остаётся self-canonical с сохранённым page, как и раньше.
-  const canonicalPath = page ? `/catalog?page=${page}` : "/catalog";
+  // canonical на чистый URL»). У хаба нет пагинации (легаси ?page=N уходит
+  // permanentRedirect'ом раньше, см. app/(public)/catalog/page.tsx) — canonical
+  // всегда чистый /catalog, без ?page=N.
+  const canonicalPath = "/catalog";
 
   return {
     title: CATALOG_BASE_TITLE,

@@ -1,19 +1,14 @@
 "use client";
 
-import React, { useCallback, useEffect, useMemo, useTransition } from "react";
+import { useCallback, useEffect, useMemo, useTransition } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
   ArrowUpDown,
   Check,
-  Droplets,
-  FlaskConical,
-  Hop,
   Loader2,
   Plus,
-  RotateCcw,
-  Package,
-  Wheat
+  RotateCcw
 } from "lucide-react";
 
 import { DropdownMenu, type DropdownMenuItem } from "@nb/ui";
@@ -24,6 +19,7 @@ import type {
 } from "@/features/ingredients/contracts";
 import { ingredientCategoryLabels } from "@/features/ingredients/presentation";
 import { useDebouncedUrlSearch } from "@/components/shared/use-debounced-url-search";
+import { categoryMeta } from "@/components/ingredients/catalog-category-meta";
 
 type Props = {
   view: IngredientCatalogView;
@@ -36,6 +32,10 @@ type Props = {
   // а не usePathname() — иначе на категорийном лендинге (/catalog/hops) эти
   // контролы строили бы неверный путь вида "/catalog/hops?category=hop".
   queryBasePath: string;
+  // Хаб (/catalog без лендинга) сортировки не показывает — секции уже
+  // отсортированы по алфавиту/релевантности, параметр sort там не применяется.
+  // См. notes/catalog-hub-redesign.md, S2.
+  showSort?: boolean;
   counts: {
     total: number;
     customCount: number;
@@ -60,50 +60,6 @@ const sortLabels: Record<IngredientCatalogSortOption, string> = {
 
 const defaultCatalogSortOption: IngredientCatalogSortOption = "name";
 const searchDebounceMs = 250;
-
-const categoryMeta: Record<IngredientCategory, {
-  icon: React.ComponentType<{ className?: string }>;
-  color: string;
-  activeColor: string;
-  activeBg: string;
-  activeRing: string;
-}> = {
-  fermentable: {
-    icon: Wheat,
-    color: "text-amber-600 dark:text-amber-400",
-    activeColor: "text-amber-800 dark:text-amber-300",
-    activeBg: "bg-amber-50 dark:bg-amber-500/15",
-    activeRing: "ring-amber-300 dark:ring-amber-500/30"
-  },
-  hop: {
-    icon: Hop,
-    color: "text-emerald-600 dark:text-emerald-400",
-    activeColor: "text-emerald-800 dark:text-emerald-300",
-    activeBg: "bg-emerald-50 dark:bg-emerald-500/15",
-    activeRing: "ring-emerald-300 dark:ring-emerald-500/30"
-  },
-  yeast: {
-    icon: FlaskConical,
-    color: "text-violet-600 dark:text-violet-400",
-    activeColor: "text-violet-800 dark:text-violet-300",
-    activeBg: "bg-violet-50 dark:bg-violet-500/15",
-    activeRing: "ring-violet-300 dark:ring-violet-500/30"
-  },
-  water_treatment: {
-    icon: Droplets,
-    color: "text-sky-600 dark:text-sky-400",
-    activeColor: "text-sky-800 dark:text-sky-300",
-    activeBg: "bg-sky-50 dark:bg-sky-500/15",
-    activeRing: "ring-sky-300 dark:ring-sky-500/30"
-  },
-  consumable: {
-    icon: Package,
-    color: "text-muted-foreground",
-    activeColor: "text-foreground",
-    activeBg: "bg-muted",
-    activeRing: "ring-border"
-  }
-};
 
 // Path-урлы категорийных лендингов (features/ingredients/seo.ts, catalogCategoryLandings).
 // Ключи совпадают с button.key в primaryButtons ниже.
@@ -199,6 +155,7 @@ export function IngredientCatalogToolbar({
   sort,
   canManage,
   queryBasePath,
+  showSort = true,
   counts
 }: Props) {
   const router = useRouter();
@@ -399,27 +356,29 @@ export function IngredientCatalogToolbar({
           ) : null}
         </div>
 
-        <DropdownMenu
-          trigger={
-            <button
-              type="button"
-              aria-label="Сортировка"
-              className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border transition-colors ${sort !== defaultCatalogSortOption
-                ? "border-link/30 bg-muted text-link"
-                : "border-border bg-muted text-muted-foreground hover:border-border hover:bg-card"
-              }`}
-            >
-              <ArrowUpDown className="h-4 w-4" />
-            </button>
-          }
-          items={sortOptionsForCategory.map((option): DropdownMenuItem => ({
-            key: option,
-            label: sortLabels[option],
-            icon: option === sort ? <Check className="h-3.5 w-3.5 text-link" /> : undefined,
-            onSelect: () => replaceWith({ sort: option })
-          }))}
-          aria-label="Сортировка"
-        />
+        {showSort ? (
+          <DropdownMenu
+            trigger={
+              <button
+                type="button"
+                aria-label="Сортировка"
+                className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border transition-colors ${sort !== defaultCatalogSortOption
+                  ? "border-link/30 bg-muted text-link"
+                  : "border-border bg-muted text-muted-foreground hover:border-border hover:bg-card"
+                }`}
+              >
+                <ArrowUpDown className="h-4 w-4" />
+              </button>
+            }
+            items={sortOptionsForCategory.map((option): DropdownMenuItem => ({
+              key: option,
+              label: sortLabels[option],
+              icon: option === sort ? <Check className="h-3.5 w-3.5 text-link" /> : undefined,
+              onSelect: () => replaceWith({ sort: option })
+            }))}
+            aria-label="Сортировка"
+          />
+        ) : null}
 
         <button
           type="button"
