@@ -8,7 +8,7 @@
 //  статуса. Живой статус/аренду получает пропсами от владельца подписки.
 // =============================================================================
 import Link from "next/link";
-import { ChevronLeft, Maximize2, Settings } from "lucide-react";
+import { ChevronLeft, ExternalLink, Maximize2, Settings } from "lucide-react";
 
 import type { DeviceChannel } from "@/features/brew-controller/telemetry-source";
 import type { TelemetryStream } from "@/features/brew-controller/use-telemetry-stream";
@@ -30,6 +30,8 @@ type Props = {
   command: ReturnType<typeof useDeviceCommand>;
   /** Клик по ⛶ → войти в киоск (§9). Не передан — кнопки нет. */
   onKioskEnter?: () => void;
+  /** Ссылка на встроенный веб-UI прошивки (`/ui`), PWA P5. Не передана — кнопки нет. */
+  localConsoleHref?: string | null;
 };
 
 export function DeviceHeader({
@@ -40,7 +42,8 @@ export function DeviceHeader({
   settingsHref,
   stream,
   command,
-  onKioskEnter
+  onKioskEnter,
+  localConsoleHref
 }: Props) {
   // Бейдж режима (§5): нет телеметрии → appMode null → бейджа нет, пульт не
   // притворяется, что знает, что варит/гонит/бродит прибор.
@@ -93,6 +96,18 @@ export function DeviceHeader({
             >
               <Maximize2 className="h-4 w-4" aria-hidden />
             </button>
+          ) : null}
+          {localConsoleHref ? (
+            <a
+              href={localConsoleHref}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Локальный пульт"
+              title="Локальный пульт"
+              className="inline-flex h-9 w-9 items-center justify-center rounded-md border border-border text-muted-foreground transition hover:bg-accent hover:text-foreground"
+            >
+              <ExternalLink className="h-4 w-4" aria-hidden />
+            </a>
           ) : null}
           <Link
             href={settingsHref}

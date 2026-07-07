@@ -38,6 +38,7 @@ import { APP_MODE_LABELS, deriveAppMode } from "@/features/brew-controller/devic
 import type { FermentPlanMappingResult } from "@/features/brew-controller/ferment-profile";
 import { DeviceHeader } from "@/features/devices/components/device-header";
 import type { PushableRecipeDto } from "@/features/devices/onboard-recipes-contracts";
+import { localConsoleUrl, rememberDeviceLocalConsole } from "@/features/pwa/device-local-console";
 
 export type DeviceConsoleView = {
   id: string;
@@ -122,6 +123,13 @@ export function DeviceConsole({
     }
     prevAppModeRef.current = appMode;
   }, [appMode, show]);
+
+  // Запоминаем адрес встроенного веб-UI прошивки в localStorage — источник
+  // ссылок для страницы /offline, когда до нашего сервера не достучаться (PWA P5).
+  useEffect(() => {
+    if (!device.localUrl) return;
+    rememberDeviceLocalConsole({ id: device.id, name: device.name, url: device.localUrl });
+  }, [device.id, device.name, device.localUrl]);
 
   // Вход в киоск — user gesture: requestFullscreen ДО навигации (синхронно, иначе
   // браузер откажет — Fullscreen API требует прямого жеста). Открытие по прямой
@@ -214,6 +222,7 @@ export function DeviceConsole({
         stream={stream}
         command={command}
         onKioskEnter={enterKiosk}
+        localConsoleHref={device.localUrl ? localConsoleUrl(device.localUrl) : null}
       />
 
       {/* Вкладки пульта (рецепты пивоварни — вторичны, §8; рефактор — W4). */}

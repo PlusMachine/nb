@@ -43,6 +43,12 @@ type Props = {
   source: TelemetrySource;
   hasDevice: boolean;
   initial: TelemetryHistoryPoint[];
+  /**
+   * Управляемый режим: владелец сам ведёт ряд точек (демо-пульт с клиентской
+   * симуляцией — /demo). Когда задан, история следует за пропом, а fetch-поллинг
+   * source не запускается: серверу неоткуда знать состояние симуляции в браузере.
+   */
+  live?: TelemetryHistoryPoint[];
 };
 
 type Bounds = { min: number; max: number };
@@ -75,13 +81,19 @@ function fmtTime(ts: number): string {
   return d.toLocaleTimeString("ru-RU", { hour: "2-digit", minute: "2-digit", hour12: false });
 }
 
-export function TelemetryChart({ source, hasDevice, initial }: Props) {
+export function TelemetryChart({ source, hasDevice, initial, live }: Props) {
   const [points, setPoints] = useState<TelemetryHistoryPoint[]>(initial);
   const historyUrl = telemetryEndpoints(source).history;
+  const controlled = live !== undefined;
+
+  // Управляемый режим: ряд ведёт владелец, поллинг не нужен.
+  useEffect(() => {
+    if (live) setPoints(live);
+  }, [live]);
 
   // Периодически подтягиваем свежую историю (варка/устройство активны прямо сейчас).
   useEffect(() => {
-    if (!hasDevice) return;
+    if (!hasDevice || controlled) return;
     let cancelled = false;
 
     const load = async () => {
@@ -104,7 +116,7 @@ export function TelemetryChart({ source, hasDevice, initial }: Props) {
       cancelled = true;
       window.clearInterval(id);
     };
-  }, [historyUrl, hasDevice]);
+  }, [historyUrl, hasDevice, controlled]);
 
   const geom = useMemo(() => {
     if (points.length === 0) return null;

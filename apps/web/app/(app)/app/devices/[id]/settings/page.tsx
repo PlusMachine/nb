@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
@@ -14,6 +15,7 @@ import { DeviceConfigForm } from "@/features/devices/components/device-config-fo
 import { DeviceFirmwareCard } from "@/features/devices/components/device-firmware-card";
 import { DeviceLogSyncCard } from "@/features/devices/components/device-log-sync-card";
 import type { DeviceProfileView } from "@/features/devices/actions";
+import { localConsoleUrl } from "@/features/pwa/device-local-console";
 
 // Страница настроек/деталей устройства BrewForge (ownership-checked).
 // Показывает идентификацию устройства, форму настраиваемого конфига §6.3 (читается
@@ -74,10 +76,24 @@ export default async function DeviceSettingsPage({
     { label: "Последняя связь", value: connection.lastContactLabel ?? "—" }
   ];
   // Пламбинг (§9) — свёрнут в «Тех. детали», чтобы не мозолить в основном виде.
-  const techDetails: { label: string; value: string }[] = [
+  const techDetails: { label: string; value: ReactNode }[] = [
     { label: "Hardware ID", value: device.hardwareId },
     { label: "Провайдер", value: device.providerId },
-    { label: "Локальный адрес", value: device.localUrl ?? "—" },
+    {
+      label: "Локальный адрес",
+      value: device.localUrl ? (
+        <a
+          href={localConsoleUrl(device.localUrl)}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="underline-offset-4 hover:underline"
+        >
+          {device.localUrl}
+        </a>
+      ) : (
+        "—"
+      )
+    },
     { label: "MQTT-префикс", value: device.mqttPrefix ?? "—" },
     {
       label: "Возможности",

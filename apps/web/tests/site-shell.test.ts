@@ -51,6 +51,14 @@ describe("SiteFooter", () => {
     }
   });
 
+  // Перелинковка (M8, P2 аудита): раздел BrewForge должен быть достижим из футера анонима.
+  it("links to /brewforge under its existing section name", () => {
+    const html = renderToStaticMarkup(React.createElement(SiteFooter));
+
+    expect(html).toContain('href="/brewforge"');
+    expect(html).toContain("BrewForge");
+  });
+
   it("only offers guest entry into the account zone", () => {
     const html = renderToStaticMarkup(React.createElement(SiteFooter));
 

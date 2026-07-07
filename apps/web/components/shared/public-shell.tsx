@@ -15,11 +15,13 @@ type PublicShellProps = {
 
 // Выбирает хром для публичных роутов (app-first): залогиненному — сайдбар
 // рабочей зоны на всех публичных страницах, чтобы навигация не «прыгала»;
-// исключение — /login (форма входа под публичной шапкой). Анонимам — шапка.
+// исключения — /login (форма входа под публичной шапкой) и /demo (демо чаще
+// всего показывают с залогиненного ноутбука владельца — там должен быть
+// витринный хром, не AppShell). Анонимам — шапка.
 export function PublicShell({ user, children }: PublicShellProps) {
   const pathname = usePathname();
 
-  if (user && pathname !== "/login") {
+  if (user && pathname !== "/login" && pathname !== "/demo") {
     return <AppShell user={user}>{children}</AppShell>;
   }
 

@@ -110,6 +110,9 @@ type Props = {
   source: TelemetrySource;
   /** Серверно-загруженная начальная история для графика. */
   initialHistory: TelemetryHistoryPoint[];
+  /** Управляемая история графика (демо-пульт с клиентской симуляцией): ряд ведёт
+   *  владелец, fetch-поллинг истории отключается — см. TelemetryChart.live. */
+  liveHistory?: TelemetryHistoryPoint[];
   hasDevice: boolean;
   channel?: DeviceChannel | null;
   title?: string | null;
@@ -134,6 +137,7 @@ export function LiveDashboardView({
   command,
   source,
   initialHistory,
+  liveHistory,
   hasDevice,
   channel,
   title,
@@ -388,7 +392,7 @@ export function LiveDashboardView({
               <div className="grid gap-4 lg:grid-cols-[3fr_2fr]">
                 <div className="space-y-4">
                   <MonitorHero telemetry={telemetry} remaining={remaining} size="kiosk" />
-                  <TelemetryChart source={source} hasDevice={hasDevice} initial={initialHistory} />
+                  <TelemetryChart source={source} hasDevice={hasDevice} initial={initialHistory} live={liveHistory} />
                   <StageTimeline telemetry={telemetry} hasDevice={hasDevice} />
                 </div>
                 <div className="space-y-4">
@@ -408,7 +412,7 @@ export function LiveDashboardView({
                 не закопан внизу, а рядом с текущим состоянием). */}
             <div className="space-y-3">
               <MonitorHero telemetry={telemetry} remaining={remaining} />
-              <TelemetryChart source={source} hasDevice={hasDevice} initial={initialHistory} />
+              <TelemetryChart source={source} hasDevice={hasDevice} initial={initialHistory} live={liveHistory} />
             </div>
 
             {/* Профиль-полоса: макро-стадии (Затор → Кипячение → Вирпул → Охлаждение → Готово). */}

@@ -5,18 +5,28 @@
 //  Карточка «Включить уведомления» (Phase 6): подписка на web-push о промптах
 //  (засыпь/промывка) и авариях — работают, даже когда вкладка свёрнута / телефон
 //  вне дома (их шлёт always-on мост). Скрывается, когда предлагать нечего
-//  (браузер не поддерживает / сервер без VAPID).
+//  (сервер без VAPID); на iOS-Safari вне standalone (PushManager недоступен
+//  в принципе) вместо тишины — подсказка «поставьте на экран Домой» (P4 PWA).
 // =============================================================================
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Bell, BellOff, BellRing } from "lucide-react";
 
 import { Button } from "@nb/ui";
 
+import { isIosBrowser, isStandaloneDisplay } from "@/features/notifications/ios-install-hint";
 import { usePushSubscription } from "@/features/notifications/use-push-subscription";
 
 export function NotificationOptIn() {
   const { state, busy, error, enable, disable } = usePushSubscription();
   const [testMsg, setTestMsg] = useState<string | null>(null);
+
+  // Определяем на клиенте после монтирования (не в рендере!) — иначе сервер
+  // (null) и первый клиентский рендер (уже настоящий UA) разойдутся и Реакт
+  // словит hydration mismatch на самой карточке.
+  const [showIosInstallHint, setShowIosInstallHint] = useState(false);
+  useEffect(() => {
+    setShowIosInstallHint(isIosBrowser() && !isStandaloneDisplay());
+  }, []);
 
   // Тест-пуш себе — проверка пайплайна без MQTT-стека (шлёт мост в проде).
   const sendTest = useCallback(async () => {
@@ -30,8 +40,20 @@ export function NotificationOptIn() {
     }
   }, []);
 
-  // Нечего предлагать: браузер без поддержки или сервер без ключей — не мозолим глаз.
-  if (state === "unsupported" || state === "unconfigured") return null;
+  // Сервер без VAPID-ключей — предлагать нечего, не мозолим глаз.
+  if (state === "unconfigured") return null;
+
+  // Браузер без PushManager: на iOS-Safari вне standalone это не тупик, а
+  // «сначала установите приложение» — остальные unsupported-браузеры тихие.
+  if (state === "unsupported") {
+    if (!showIosInstallHint) return null;
+    return (
+      <div className="flex flex-wrap items-center gap-2 rounded-2xl border border-border bg-muted p-4 text-sm text-muted-foreground">
+        <Bell className="h-4 w-4 text-muted-foreground" aria-hidden />
+        Пуши на iPhone приходят только в установленное приложение: в Safari — «Поделиться» → «На экран „Домой“».
+      </div>
+    );
+  }
 
   if (state === "subscribed") {
     return (
