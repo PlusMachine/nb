@@ -5,7 +5,7 @@ import { cookies } from "next/headers";
 import "./globals.css";
 import { Providers } from "../components/providers";
 import { DevGuestBadge } from "@/components/shared/dev-guest-badge";
-import { isDevGuestPreview } from "@/lib/auth";
+import { getSessionUser, isDevGuestPreview } from "@/lib/auth";
 import { getServerEnv } from "@/lib/env";
 import { THEME_COOKIE, parseThemePreference, themeInitScript } from "@/features/theme/theme";
 
@@ -21,14 +21,25 @@ const displayFont = Montserrat({
   weight: ["600", "700", "800"]
 });
 
+const { SITE_NAME } = getServerEnv();
+
 export const metadata: Metadata = {
   metadataBase: new URL(getServerEnv().APP_URL),
   title: {
-    default: "NB",
-    template: "%s · NB"
+    default: `${SITE_NAME} — рецепты пива, калькуляторы пивовара и справочник стилей BJCP`,
+    template: `%s · ${SITE_NAME}`
   },
   description:
-    "Платформа для домашних пивоваров: каталог ингредиентов, склад, рецепты, расчёты и справочник стилей BJCP."
+    "Платформа для домашних пивоваров: каталог ингредиентов, склад, рецепты, расчёты и справочник стилей BJCP.",
+  openGraph: {
+    type: "website",
+    locale: "ru_RU",
+    siteName: SITE_NAME,
+    url: "/"
+  },
+  twitter: {
+    card: "summary_large_image"
+  }
 };
 
 export const viewport: Viewport = {
@@ -39,7 +50,11 @@ export const viewport: Viewport = {
 };
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
-  const [devGuest, cookieStore] = await Promise.all([isDevGuestPreview(), cookies()]);
+  const [devGuest, cookieStore, sessionUser] = await Promise.all([
+    isDevGuestPreview(),
+    cookies(),
+    getSessionUser()
+  ]);
   const themePreference = parseThemePreference(cookieStore.get(THEME_COOKIE)?.value);
 
   return (
@@ -53,7 +68,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
     >
       <body className="min-h-screen bg-background text-foreground antialiased" style={{ fontFamily: "var(--font-sans)" }}>
         <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
-        <Providers initialThemePreference={themePreference}>
+        <Providers initialThemePreference={themePreference} isAuthenticated={Boolean(sessionUser)}>
           <div className="flex min-h-screen flex-col">
             <div className="flex-1">{children}</div>
           </div>

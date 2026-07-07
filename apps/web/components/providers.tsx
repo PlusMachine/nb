@@ -3,8 +3,10 @@
 import { useEffect } from "react";
 import { ToastProvider } from "@nb/ui";
 import { ConsentProvider } from "@/components/legal/consent-provider";
+import { FeedbackProvider } from "@/components/feedback/feedback-provider";
 import { ThemeProvider } from "@/components/theme/theme-provider";
 import type { ThemePreference } from "@/features/theme/theme";
+import { useServiceWorkerRegistration } from "@/features/pwa/use-service-worker";
 
 const shouldAutoSelectNumberInput = (target: EventTarget | null): target is HTMLInputElement => {
   if (!(target instanceof HTMLInputElement)) {
@@ -32,11 +34,15 @@ const selectFocusedNumberInput = (input: HTMLInputElement) => {
 
 export function Providers({
   children,
-  initialThemePreference
+  initialThemePreference,
+  isAuthenticated
 }: {
   children: React.ReactNode;
   initialThemePreference: ThemePreference;
+  isAuthenticated: boolean;
 }) {
+  useServiceWorkerRegistration();
+
   useEffect(() => {
     let selectedOnFocus: HTMLInputElement | null = null;
 
@@ -84,7 +90,9 @@ export function Providers({
   return (
     <ThemeProvider initialPreference={initialThemePreference}>
       <ToastProvider>
-        <ConsentProvider>{children}</ConsentProvider>
+        <ConsentProvider>
+          <FeedbackProvider isAuthenticated={isAuthenticated}>{children}</FeedbackProvider>
+        </ConsentProvider>
       </ToastProvider>
     </ThemeProvider>
   );

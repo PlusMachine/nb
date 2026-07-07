@@ -1394,3 +1394,44 @@ export const contentArticlesRelations = relations(contentArticles, ({ one }) => 
     references: [users.id]
   })
 }));
+
+// Обратная связь по контенту: пользователь (или аноним) сообщает о неточности,
+// предлагает улучшение или репортит ошибку. Очередь модерации — по образцу
+// proposedIngredients (submit → resolve модератором).
+export const feedbackKindEnum = pgEnum("feedback_kind", ["inaccuracy", "improvement", "bug", "question"]);
+export const feedbackStatusEnum = pgEnum("feedback_status", ["new", "in_progress", "resolved", "dismissed"]);
+
+export const feedback = pgTable("feedback", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  // SET NULL: удаление автора не должно стирать полезный сигнал.
+  submittedByUserId: uuid("submitted_by_user_id").references(() => users.id, { onDelete: "set null" }),
+  kind: feedbackKindEnum("kind").notNull(),
+  message: text("message").notNull(),
+  // Только для анонимов — чтобы можно было ответить.
+  contactEmail: varchar("contact_email", { length: 320 }),
+  // Страница, с которой пришло сообщение: полный URL и pathname для группировки.
+  pageUrl: text("page_url"),
+  pagePath: varchar("page_path", { length: 512 }),
+  // Контекст страницы: entityType/entityId, referrer, viewport, userAgent, zone.
+  context: jsonb("context").$type<Record<string, unknown>>().default({}).notNull(),
+  status: feedbackStatusEnum("status").default("new").notNull(),
+  moderatorId: uuid("moderator_id").references(() => users.id, { onDelete: "set null" }),
+  resolutionNote: text("resolution_note"),
+  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull()
+}, (table) => ({
+  statusCreatedIdx: index("feedback_status_created_idx").on(table.status, table.createdAt),
+  submitterIdx: index("feedback_submitter_idx").on(table.submittedByUserId),
+  pagePathIdx: index("feedback_page_path_idx").on(table.pagePath)
+}));
+
+export const feedbackRelations = relations(feedback, ({ one }) => ({
+  submitter: one(users, {
+    fields: [feedback.submittedByUserId],
+    references: [users.id]
+  }),
+  moderator: one(users, {
+    fields: [feedback.moderatorId],
+    references: [users.id]
+  })
+}));
