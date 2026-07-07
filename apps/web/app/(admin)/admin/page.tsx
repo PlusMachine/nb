@@ -1,6 +1,12 @@
 import Link from "next/link";
 
-export default function AdminZonePage() {
+import { countPendingMasters } from "@/features/masters/service";
+
+export const dynamic = "force-dynamic";
+
+export default async function AdminZonePage() {
+  const pendingMasters = await countPendingMasters();
+
   return (
     <div className="space-y-3 rounded-lg border p-4">
       <h1 className="text-xl font-semibold">Admin tooling</h1>
@@ -10,6 +16,14 @@ export default function AdminZonePage() {
         <li><Link className="underline" href="/admin/ingredients/merge">Merge duplicates</Link></li>
         <li><Link className="underline" href="/admin/articles">BJCP / content studio</Link></li>
         <li><Link className="underline" href="/admin/feedback">Обратная связь</Link></li>
+        <li>
+          <Link className="underline" href="/admin/masters">Мастера</Link>
+          {pendingMasters > 0 ? (
+            <span className="ml-2 inline-flex items-center rounded-full bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary">
+              {pendingMasters}
+            </span>
+          ) : null}
+        </li>
         <li><Link className="underline" href="/admin/settings/currency">Currency settings</Link></li>
       </ul>
     </div>
