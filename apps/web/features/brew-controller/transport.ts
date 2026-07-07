@@ -211,6 +211,9 @@ const buildHeaders = (token?: string): Record<string, string> => {
  *  - sendCommand: тело и при 200, и при 422 — это Ack; бросаем только если тело
  *    не парсится как Ack.
  *  - putRecipe: бросает на не-2xx (только статус, БЕЗ тела ответа устройства).
+ *  - putConfig: сетевой сбой/таймаут/egress-блок → бросает Error("DEVICE_UNREACHABLE")
+ *    (известный код, errors.ts маппит в 502); устройство ОТВЕТИЛО не-2xx → бросает
+ *    HTTP-статус как putRecipe.
  *
  * Перед КАЖДЫМ fetch вызывается assertEgressUrlAllowed (SSRF-гард) — host
  * device.localUrl полностью пользовательский и не должен наводить сервер на
@@ -307,16 +310,30 @@ export function lanTransport(baseUrl: string, token?: string): DeviceTransport {
     },
 
     async putConfig(cfg) {
+      // Как в getConfig: офлайн-устройство на голом fetch без таймаута висит на
+      // ОС-таймаут (~17с) — здоровая прошивка отвечает за миллисекунды. В отличие
+      // от getConfig, здесь нельзя молча вернуть null (putConfig обязан либо
+      // отдать эффективный конфиг, либо бросить) — поэтому сетевой сбой/таймаут/
+      // egress-блок оборачиваем в ОДИН известный код DEVICE_UNREACHABLE, который
+      // errors.ts маппит в 502 (тот же текст «Устройство не отвечает…», что и у
+      // чтения), а не даём голому исключению утечь в 500 INTERNAL_ERROR.
       const url = `${base}/config`;
-      assertEgressUrlAllowed(url);
-      const res = await fetch(url, {
-        method: "PUT",
-        headers: { ...headers, "content-type": "application/json" },
-        body: JSON.stringify(cfg),
-      });
+      let res: Response;
+      try {
+        assertEgressUrlAllowed(url);
+        res = await fetch(url, {
+          method: "PUT",
+          headers: { ...headers, "content-type": "application/json" },
+          body: JSON.stringify(cfg),
+          signal: AbortSignal.timeout(4000),
+        });
+      } catch {
+        throw new Error("DEVICE_UNREACHABLE");
+      }
       if (!res.ok) {
-        // Как putRecipe: НЕ подмешиваем тело ответа устройства (info-leak/port-scan) —
-        // только статус (вкл. 429 RATE_LIMITED / 400 при отказе валидации прошивки).
+        // Устройство ОТВЕТИЛО (это не проблема доступности) — как putRecipe: НЕ
+        // подмешиваем тело ответа (info-leak/port-scan), только статус (вкл. 429
+        // RATE_LIMITED / 400 при отказе валидации прошивки).
         throw new Error(`lanTransport.putConfig: HTTP ${res.status}`);
       }
       const json = await res.json().catch(() => null);

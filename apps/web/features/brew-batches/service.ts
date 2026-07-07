@@ -74,6 +74,11 @@ export const createBrewBatchFromRecipe = async (
   // того же (userId, recipeId) — «<Название> №2», «№3»… Считаем ВСЕ существующие
   // партии этой пары, включая отменённые — лёгкий count, без тяжёлой выборки строк
   // (см. listBrewBatchesForRecipe). input.name, если передан, приоритетнее.
+  // Нумерация best-effort, не атомарна: count и insert не в одной транзакции,
+  // поэтому при гонке двух конкурентных «Сварить» без общего idempotencyKey
+  // обе могут прочитать один и тот же count и получить одинаковый номер/имя.
+  // Это осознанно — имя партии не уникальный ключ, блокировка ради косметики
+  // нумерации не заводится.
   const [existingCountRow] = await db
     .select({ value: count() })
     .from(brewBatches)

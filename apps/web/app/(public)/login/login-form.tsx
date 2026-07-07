@@ -47,8 +47,17 @@ const AUTH_ERROR_MESSAGES: Record<string, string> = {
 
 const FALLBACK_ERROR_MESSAGE = "Не получилось. Попробуйте ещё раз.";
 
-const humanizeAuthError = (code?: string | null): string =>
-  (code && AUTH_ERROR_MESSAGES[code]) || FALLBACK_ERROR_MESSAGE;
+// Callback-роуты (app/api/auth/oauth/{vk,yandex}/callback/route.ts) при провале
+// обмена токена/state шлют oauth_vk_callback|oauth_yandex_callback — тот же смысл,
+// что и oauth_vk|oauth_yandex с шага редиректа на провайдера, поэтому сводим
+// к общему коду до lookup в AUTH_ERROR_MESSAGES.
+export const normalizeAuthErrorCode = (code?: string | null): string | null =>
+  code ? code.replace(/_callback$/, "") : null;
+
+const humanizeAuthError = (code?: string | null): string => {
+  const normalized = normalizeAuthErrorCode(code);
+  return (normalized && AUTH_ERROR_MESSAGES[normalized]) || FALLBACK_ERROR_MESSAGE;
+};
 
 type StatusMessage = { kind: "success" | "error"; text: string; devHint?: boolean };
 
@@ -179,7 +188,7 @@ export function LoginForm({
       setResetToken(tokenParam);
     } else if (params.get("error") === "magic_link") {
       setStatus({ kind: "error", text: "Ссылка недействительна или устарела. Запросите новую." });
-    } else if (params.get("error") === "oauth_vk" || params.get("error") === "oauth_yandex") {
+    } else if (normalizeAuthErrorCode(params.get("error")) === "oauth_vk" || normalizeAuthErrorCode(params.get("error")) === "oauth_yandex") {
       setStatus({ kind: "error", text: humanizeAuthError(params.get("error")) });
     }
   }, []);

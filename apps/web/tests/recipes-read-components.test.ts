@@ -268,6 +268,42 @@ describe("recipes read components", () => {
     expect(html).not.toContain("some_unknown_value");
   });
 
+  it("не дублирует «Вирпул», когда stage и useType совпадают по raw-ключу (F7-хвост)", () => {
+    const html = renderToStaticMarkup(
+      React.createElement(RecipeIngredientsSection, {
+        ingredients: [
+          {
+            ...recipeDetail.ingredients[1]!,
+            id: "ri-whirlpool-hop",
+            stage: "whirlpool",
+            stepMeta: { useType: "whirlpool" }
+          }
+        ]
+      })
+    );
+
+    expect(html).toContain("Вирпул");
+    expect(html).not.toContain("Вирпул / хопстенд");
+    expect(html).not.toContain("Вирпул · Вирпул");
+  });
+
+  it("показывает «Вирпул / хопстенд», когда useType=whirlpool внесён на стадии boil (F7-хвост)", () => {
+    const html = renderToStaticMarkup(
+      React.createElement(RecipeIngredientsSection, {
+        ingredients: [
+          {
+            ...recipeDetail.ingredients[1]!,
+            id: "ri-boil-whirlpool-hop",
+            stage: "boil",
+            stepMeta: { useType: "whirlpool" }
+          }
+        ]
+      })
+    );
+
+    expect(html).toContain("Вирпул / хопстенд");
+  });
+
   it("links an ingredient with a catalog binding to /catalog/system/<id> (перелинковка M8)", () => {
     const html = renderToStaticMarkup(
       React.createElement(RecipeIngredientsSection, { ingredients: recipeDetail.ingredients })

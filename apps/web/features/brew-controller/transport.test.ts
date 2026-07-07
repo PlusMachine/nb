@@ -241,6 +241,38 @@ describe("lanTransport.getConfig", () => {
   });
 });
 
+describe("lanTransport.putConfig", () => {
+  beforeEach(() => {
+    vi.stubEnv("NODE_ENV", "development");
+    vi.stubEnv("BREWFORGE_LAN_TRANSPORT_DISABLED", "");
+  });
+
+  afterEach(() => {
+    vi.unstubAllEnvs();
+    vi.unstubAllGlobals();
+  });
+
+  it("fetch кидает (устройство офлайн/таймаут) → putConfig бросает известный код DEVICE_UNREACHABLE, а не сырое исключение (B2)", async () => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async () => {
+        throw new Error("ECONNREFUSED");
+      }),
+    );
+    const transport = lanTransport("http://192.168.1.50");
+    await expect(transport.putConfig({})).rejects.toThrow("DEVICE_UNREACHABLE");
+  });
+
+  it("устройство ответило не-2xx (напр. отказ валидации) → putConfig бросает HTTP-статус, НЕ DEVICE_UNREACHABLE", async () => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async () => new Response(null, { status: 400 })),
+    );
+    const transport = lanTransport("http://192.168.1.50");
+    await expect(transport.putConfig({})).rejects.toThrow("HTTP 400");
+  });
+});
+
 describe("pairDeviceOverLan (P4)", () => {
   beforeEach(() => {
     vi.stubEnv("NODE_ENV", "development");

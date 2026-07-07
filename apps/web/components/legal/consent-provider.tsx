@@ -40,6 +40,16 @@ export const resolveShowConsentBanner = (params: {
   return mounted && !isKiosk && (consent === null || forceOpen);
 };
 
+// В киоске (?kiosk=1) аналитику не включаем никогда — даже если на этом
+// планшете ранее (до входа в киоск-режим) уже был сохранён consent="all".
+export const resolveAnalyticsEnabled = (params: {
+  isKiosk: boolean;
+  consent: CookieConsent | null;
+}): boolean => {
+  const { isKiosk, consent } = params;
+  return !isKiosk && analyticsAllowed(consent);
+};
+
 export const useConsent = (): ConsentContextValue => {
   const ctx = useContext(ConsentContext);
   if (!ctx) {
@@ -67,8 +77,8 @@ export function ConsentProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     if (!mounted) return;
-    setAnalyticsEnabled(analyticsAllowed(consent));
-  }, [mounted, consent]);
+    setAnalyticsEnabled(resolveAnalyticsEnabled({ isKiosk, consent }));
+  }, [mounted, consent, isKiosk]);
 
   const decide = useCallback((choice: CookieConsent) => {
     writeClientConsent(choice);

@@ -282,7 +282,9 @@ export function AppShell({ children, user }: AppShellProps) {
             </div>
           </>
         ) : null}
-        <div className={`mx-auto px-4 py-6 pb-24 sm:px-6 lg:pb-10 ${resolveContentWidthClass(pathname)}`}>
+        <div
+          className={`mx-auto px-4 py-6 pb-[calc(6rem+var(--nb-cookie-banner-h,0px))] sm:px-6 lg:pb-[calc(2.5rem+var(--nb-cookie-banner-h,0px))] ${resolveContentWidthClass(pathname)}`}
+        >
           {pendingPathname && pendingPathname !== pathname ? resolvePendingSkeleton(pendingPathname) : children}
         </div>
       </main>

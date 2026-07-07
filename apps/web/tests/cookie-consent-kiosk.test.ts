@@ -11,7 +11,7 @@ vi.mock("next/navigation", () => ({
 }));
 
 import { useIsKiosk } from "../lib/use-is-kiosk";
-import { resolveShowConsentBanner } from "../components/legal/consent-provider";
+import { resolveAnalyticsEnabled, resolveShowConsentBanner } from "../components/legal/consent-provider";
 
 function KioskProbe() {
   const isKiosk = useIsKiosk();
@@ -64,5 +64,25 @@ describe("resolveShowConsentBanner", () => {
 
   it("киоск подавляет баннер, даже если вызван reopen", () => {
     expect(resolveShowConsentBanner({ mounted: true, isKiosk: true, consent: "all", forceOpen: true })).toBe(false);
+  });
+});
+
+// В киоске аналитику не включаем, даже если планшет уже нёс consent="all" с
+// прошлых (не-киоск) времён — F2 требует полного отключения PostHog в киоске.
+describe("resolveAnalyticsEnabled", () => {
+  it("выключает аналитику в киоске, даже при сохранённом consent=all", () => {
+    expect(resolveAnalyticsEnabled({ isKiosk: true, consent: "all" })).toBe(false);
+  });
+
+  it("включает аналитику вне киоска при consent=all", () => {
+    expect(resolveAnalyticsEnabled({ isKiosk: false, consent: "all" })).toBe(true);
+  });
+
+  it("не включает аналитику вне киоска без согласия", () => {
+    expect(resolveAnalyticsEnabled({ isKiosk: false, consent: null })).toBe(false);
+  });
+
+  it("не включает аналитику в киоске без согласия", () => {
+    expect(resolveAnalyticsEnabled({ isKiosk: true, consent: null })).toBe(false);
   });
 });

@@ -2,7 +2,7 @@ import React from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
 
-import { LoginForm } from "../app/(public)/login/login-form";
+import { LoginForm, normalizeAuthErrorCode } from "../app/(public)/login/login-form";
 
 type RenderProps = React.ComponentProps<typeof LoginForm>;
 
@@ -42,6 +42,33 @@ describe("LoginForm — прогрессивное раскрытие шага �
     expect(html).toContain("Код из письма");
     expect(html).toContain("Отправить код ещё раз");
     expect(html).toContain("Изменить e-mail");
+  });
+});
+
+// callback-роуты (app/api/auth/oauth/{vk,yandex}/callback/route.ts) шлют
+// oauth_vk_callback|oauth_yandex_callback при провале обмена токена/state —
+// тот же смысл, что и oauth_vk|oauth_yandex со старта редиректа, и должен
+// показывать тот же текст, а не молчаливый общий фолбэк.
+describe("normalizeAuthErrorCode — сведение oauth_*_callback к oauth_* (пакет D2)", () => {
+  it("oauth_vk_callback → oauth_vk", () => {
+    expect(normalizeAuthErrorCode("oauth_vk_callback")).toBe("oauth_vk");
+  });
+
+  it("oauth_yandex_callback → oauth_yandex", () => {
+    expect(normalizeAuthErrorCode("oauth_yandex_callback")).toBe("oauth_yandex");
+  });
+
+  it("код без _callback не меняется", () => {
+    expect(normalizeAuthErrorCode("oauth_vk")).toBe("oauth_vk");
+  });
+
+  it("неизвестный код проходит без изменений (дальше — общий фолбэк)", () => {
+    expect(normalizeAuthErrorCode("some_random_code")).toBe("some_random_code");
+  });
+
+  it("null/undefined → null", () => {
+    expect(normalizeAuthErrorCode(null)).toBeNull();
+    expect(normalizeAuthErrorCode(undefined)).toBeNull();
   });
 });
 

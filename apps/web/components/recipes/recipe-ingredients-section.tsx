@@ -63,13 +63,13 @@ const buildMetaLine = (ingredient: RecipeDetailDto["ingredients"][number]) => {
   const currentStageLabel = stageLabel[ingredient.stage];
   const parts = [currentStageLabel];
 
-  if (typeof stepMeta.useType === "string") {
+  if (typeof stepMeta.useType === "string" && stepMeta.useType !== ingredient.stage) {
     const useTypeLabel = hopUseTypeLabels[stepMeta.useType as keyof typeof hopUseTypeLabels];
     if (useTypeLabel && useTypeLabel !== currentStageLabel) {
       parts.push(useTypeLabel);
     }
   }
-  if (typeof stepMeta.use === "string") {
+  if (typeof stepMeta.use === "string" && stepMeta.use !== ingredient.stage) {
     const useLabel = fermentableUseLabels[stepMeta.use as keyof typeof fermentableUseLabels];
     if (useLabel && useLabel !== currentStageLabel) {
       parts.push(useLabel);

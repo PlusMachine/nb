@@ -135,9 +135,12 @@ export function FermentDashboardView({
   const [actionMsg, setActionMsg] = useState<string | null>(null);
 
   // Клиентская загрузка ferment{} конфига (F3): офлайн-устройство больше не
-  // держит SSR — короткий таймаут (2.5с) вместо ОС-таймаута голого fetch (~17с),
-  // по образцу device-config-form.tsx. Пока грузится — нейтральный скелет, не
-  // «недоступен» (см. profileSection ниже).
+  // держит SSR — таймаут (8с) вместо ОС-таймаута голого fetch (~17с), по образцу
+  // device-config-form.tsx. Выставлен ЗАМЕТНО выше серверного бюджета (getConfig
+  // внутри — 4с) с запасом на auth/БД-оверхед маршрута: иначе живое, но медленное
+  // устройство успевает получить только 502 от сервера уже ПОСЛЕ клиентского
+  // AbortError, и ложно помечается «недоступен» без единого ретрая. Пока грузится
+  // — нейтральный скелет, не «недоступен» (см. profileSection ниже).
   useEffect(() => {
     if (configLoadStatus !== "loading") return;
     let cancelled = false;
@@ -145,7 +148,7 @@ export function FermentDashboardView({
       try {
         const res = await fetch(`/api/devices/${deviceId}/config`, {
           cache: "no-store",
-          signal: AbortSignal.timeout(2500),
+          signal: AbortSignal.timeout(8000),
         });
         const body = (await res.json().catch(() => null)) as { config?: unknown } | null;
         if (cancelled) return;

@@ -16,12 +16,14 @@ const goToSection = (id: string) => {
 
 /**
  * Быстрый док активной варки: «+ Замер» и «+ Заметка» в зоне пальца. Закреплён
- * над нижним таб-баром (bottom-14 = его h-14), пока тот виден — до lg. На lg+
+ * над нижним таб-баром (3.5rem = его h-14), пока тот виден — до lg. На lg+
  * секции журнала и заметок уже рядом на экране, отдельный док там не нужен.
+ * При открытом cookie-баннере (--nb-cookie-banner-h) поднимается на его высоту,
+ * иначе баннер перекрывает кнопки и перехватывает клики.
  */
 export function BrewQuickDock() {
   return (
-    <div className="sticky bottom-14 z-50 -mx-4 flex gap-2 border-t border-border bg-card/95 px-4 py-2.5 backdrop-blur lg:hidden">
+    <div className="sticky bottom-[calc(3.5rem+var(--nb-cookie-banner-h,0px))] z-50 -mx-4 flex gap-2 border-t border-border bg-card/95 px-4 py-2.5 backdrop-blur lg:hidden">
       <button
         type="button"
         onClick={() => goToSection("brew-journal")}
