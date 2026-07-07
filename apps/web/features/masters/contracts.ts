@@ -59,6 +59,9 @@ export type MasterImageStatus = (typeof masterImageStatuses)[number];
 
 export const masterImageVariants = ["original", "large", "medium", "thumb"] as const;
 export type MasterImageVariant = (typeof masterImageVariants)[number];
+// Для валидации [variant] в GET /api/master-images/[imageId]/[variant] (по образцу
+// recipeImageVariantSchema из features/recipe-images/contracts.ts).
+export const masterImageVariantSchema = z.enum(masterImageVariants);
 
 export const masterImageAcceptedMimeTypes = ["image/jpeg", "image/png", "image/webp"] as const;
 export type MasterImageAcceptedMimeType = (typeof masterImageAcceptedMimeTypes)[number];
