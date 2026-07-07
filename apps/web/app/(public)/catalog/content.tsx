@@ -236,8 +236,10 @@ const renderCatalogHub = async ({
           const sectionSearchHref = buildViewQueryHref(`/catalog/${section.slug}`, { view, q });
           const showAllInSectionLink = hasQuery && section.total > section.items.length;
 
+          // Без rounded/border/bg — карточную рамку рисует сам CatalogItemsList,
+          // иначе получается рамка-в-рамке.
           return (
-            <section key={section.slug} className="space-y-3 rounded-[28px] border border-border bg-card p-5 shadow-sm">
+            <section key={section.slug} className="space-y-3">
               <div className="flex items-center justify-between gap-3">
                 <div className="flex items-center gap-2">
                   <Icon className={`h-5 w-5 ${meta.color}`} />
@@ -442,7 +444,16 @@ export async function IngredientCatalogContent({ searchParams, landing = null }:
                 </Link>
               ) : null}
               {canManage ? (
-                <Link href={buildCreateCustomIngredientHref({ category: currentCategory, subtype: subtype ?? null })} className="rounded-xl bg-foreground px-5 py-2.5 text-sm font-medium text-background">
+                <Link
+                  href={buildCreateCustomIngredientHref({ category: currentCategory, subtype: subtype ?? null })}
+                  // Если рядом уже есть primary-кнопка «Показать N совпадений», эта — secondary,
+                  // чтобы на экране была только одна акцентная кнопка.
+                  className={
+                    showOtherCategoriesButton
+                      ? "rounded-xl border border-border px-5 py-2.5 text-sm font-medium text-foreground hover:bg-card"
+                      : "rounded-xl bg-foreground px-5 py-2.5 text-sm font-medium text-background"
+                  }
+                >
                   Создать свой ингредиент
                 </Link>
               ) : null}
