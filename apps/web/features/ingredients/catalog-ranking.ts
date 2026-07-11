@@ -44,3 +44,19 @@ export const filterRankedCatalogNoise = <T extends { tier?: number }>(ranked: T[
     ? ranked.filter((match) => (match.tier ?? 0) <= CATALOG_SEARCH_STRONG_TIER_MAX)
     : ranked;
 };
+
+/**
+ * Отрезает family-фолбэк запроса «семейство + уточнение» («курский пилс» →
+ * все пилснеры каталога), но только когда есть хотя бы одно совпадение,
+ * учитывающее контекст-токены запроса. Если точных совпадений нет
+ * («чешский пилснер» — такого бренда в каталоге нет) — семейство остаётся
+ * как fallback «возможно, вы имели в виду». Пикер ингредиентов этот фильтр
+ * не применяет: там широкая выдача семейства нужна для подбора замен.
+ */
+export const filterRankedFamilyFallback = <T extends { familyFallback?: boolean }>(ranked: T[]): T[] => {
+  const hasContextMatch = ranked.some((match) => match.familyFallback !== true);
+
+  return hasContextMatch
+    ? ranked.filter((match) => match.familyFallback !== true)
+    : ranked;
+};

@@ -356,8 +356,8 @@ type CachedCatalogEntry = {
 // строгой консистентности; сейчас деплой однопроцессный.
 //
 // Кто читает через loadIngredients(): страницы каталога и деталки
-// (loadUnifiedCatalogItems в catalog-service.ts), блоки «Похожие
-// ингредиенты» / «Другие ингредиенты {бренд}» (listSimilarCatalogIngredients,
+// (loadUnifiedCatalogItems в catalog-service.ts), блоки «Аналоги» /
+// «Другие ингредиенты {бренд}» (listAnalogCatalogIngredients,
 // listSameBrandCatalogIngredients) и поиск (searchCatalogItems /
 // searchIngredientSuggestions).
 const CATALOG_CACHE_TTL_MS = 5 * 60 * 1000;

@@ -6,8 +6,8 @@ import { notFound } from "next/navigation";
 
 import { CalculatorPageClient } from "@/components/calculators/calculator-page-client";
 import { CalculatorHeading, CommonMistakesDetails, FormulaDetails } from "@/components/calculators/calculator-static-sections";
-import { allCalculatorSlugs, getCalculatorDefinition } from "@/features/calculators/definitions";
-import { buildCalculatorBreadcrumbJsonLd, buildCalculatorMetadata } from "@/features/calculators/seo";
+import { allCalculatorSlugs, calculatorHasStickyResultBar, getCalculatorDefinition } from "@/features/calculators/definitions";
+import { buildCalculatorBreadcrumbJsonLd, buildCalculatorMetadata, buildCalculatorWebAppJsonLd } from "@/features/calculators/seo";
 import { jsonLdScriptProps } from "@/features/ingredients/seo";
 import { getServerEnv } from "@/lib/env";
 
@@ -48,10 +48,15 @@ export default async function CalculatorPage({ params }: Props) {
     notFound();
   }
 
-  const breadcrumbJsonLd = buildCalculatorBreadcrumbJsonLd(definition.catalog, {
-    baseUrl: getServerEnv().APP_URL
-  });
+  const baseUrl = getServerEnv().APP_URL;
+  const breadcrumbJsonLd = buildCalculatorBreadcrumbJsonLd(definition.catalog, { baseUrl });
+  const webAppJsonLd = buildCalculatorWebAppJsonLd(definition.catalog, { baseUrl });
   const isRefractometer = definition.catalog.slug === "refractometer-correction";
+  // На мобильном липкий бар результата (см. CalculatorPageClient) перекрывает нижнюю часть
+  // страницы поверх нижней навигации — без запаса «Частые ошибки» уезжали бы под них обоих.
+  // Страницы без generic-результата (keg-carbonation, unit-converter) бар не показывают —
+  // им хватает обычного отступа.
+  const hasStickyBar = calculatorHasStickyResultBar(definition.catalog.slug);
 
   return (
     <>
@@ -65,7 +70,7 @@ export default async function CalculatorPage({ params }: Props) {
         </ol>
       </nav>
 
-      <main className={`space-y-5 pb-24 pt-8 ${isRefractometer ? "mx-auto max-w-5xl" : ""}`}>
+      <main className={`space-y-5 pt-8 ${hasStickyBar ? "pb-44 lg:pb-24" : "pb-24"} ${isRefractometer ? "mx-auto max-w-5xl" : ""}`}>
         <Link href="/calculators" className="inline-flex items-center gap-1.5 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground">
           <ArrowLeft className="h-4 w-4" />
           Все калькуляторы
@@ -86,6 +91,7 @@ export default async function CalculatorPage({ params }: Props) {
       </main>
 
       <script {...jsonLdScriptProps(breadcrumbJsonLd)} />
+      <script {...jsonLdScriptProps(webAppJsonLd)} />
     </>
   );
 }

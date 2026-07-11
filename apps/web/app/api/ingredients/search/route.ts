@@ -1,14 +1,17 @@
 import { NextResponse } from "next/server";
 
-import { requireUser } from "@/lib/auth";
+import { getSessionUser } from "@/lib/auth";
 import { searchUserCatalogIngredients } from "@/features/ingredients/catalog-service";
 
+// Каталог ингредиентов — публичная зона (см. /catalog): анонимный посетитель получает
+// системный каталог без избранного/кастомных ингредиентов. Нужно калькуляторам
+// (напр. brewhouse-efficiency), которые используют пикер вне залогиненной зоны.
 export async function GET(request: Request) {
-  const user = await requireUser();
+  const user = await getSessionUser();
   const { searchParams } = new URL(request.url);
 
   try {
-    const result = await searchUserCatalogIngredients(user.id, {
+    const result = await searchUserCatalogIngredients(user?.id ?? null, {
       q: searchParams.get("q") ?? "",
       type: searchParams.get("type") ?? undefined,
       category: searchParams.get("category") ?? undefined,

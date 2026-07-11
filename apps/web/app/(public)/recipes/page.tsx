@@ -1,6 +1,5 @@
 import { getBjcpCatalogData } from "@nb/content";
 import type { Metadata } from "next";
-import { cookies } from "next/headers";
 import React, { Suspense } from "react";
 
 import { ActiveFilterChips } from "@/components/recipes/active-filter-chips";
@@ -12,7 +11,6 @@ import { RecipesGridSkeleton } from "@/components/recipes/recipes-grid-skeleton"
 import { RecipesResults, type RawSearchParams } from "@/components/recipes/recipes-results";
 import { RecipesToolbar } from "@/components/recipes/recipes-toolbar";
 import { parsePublicRecipeFilters } from "@/features/recipes/public-recipe-query";
-import { RECIPES_VIEW_COOKIE, parseRecipesView } from "@/features/recipes/recipes-url";
 import { buildPublicRecipeListMetadata } from "@/features/recipes/seo";
 import { getPublicRecipeFamilyCounts, getPublicRecipeSortAvailability } from "@/features/recipes/service";
 import { buildRecipeStyleSearchIndex } from "@/features/recipes/style-search";
@@ -29,12 +27,6 @@ export async function generateMetadata({ searchParams }: { searchParams?: Promis
 export default async function PublicRecipesPage({ searchParams }: { searchParams?: Promise<RawSearchParams> }) {
   const raw = (searchParams ? await searchParams : {}) as RawSearchParams;
   const filters = parsePublicRecipeFilters(raw);
-  // Вид: явный ?view выигрывает; иначе — запомненный в cookie выбор; иначе сетка.
-  const cookieStore = await cookies();
-  const view =
-    parseRecipesView(typeof raw.view === "string" ? raw.view : undefined) ??
-    parseRecipesView(cookieStore.get(RECIPES_VIEW_COOKIE)?.value) ??
-    "grid";
 
   // Слим-данные BJCP для клиентских контролов (без N+1 — один статический фетч).
   const catalog = await getBjcpCatalogData();
@@ -78,19 +70,19 @@ export default async function PublicRecipesPage({ searchParams }: { searchParams
         <RecipesFilterSidebar index={styleIndex} familyCounts={familyCounts} />
 
         <div className="min-w-0 space-y-4">
-          {/* Управление выдачей (поиск/сортировка/вид) собрано над результатами;
+          {/* Управление выдачей (поиск/сортировка) собрано над результатами;
               инпуты фильтров — в сайдбаре слева (мобильный/планшетный sheet — ниже).
-              Тулбар sticky: при длинной ленте поиск/сортировка/переключатель вида не
-              уезжают. Оффсет — под текущий хром (`--chrome-top`: мобильная шапка
-              AppShell/публичный хедер или 0, где хрома над контентом нет). */}
+              Тулбар sticky: при длинной ленте поиск/сортировка не уезжают. Оффсет —
+              под текущий хром (`--chrome-top`: мобильная шапка AppShell/публичный
+              хедер или 0, где хрома над контентом нет). */}
           <div className="sticky top-[var(--chrome-top)] z-30 -my-1 bg-background/90 py-1 backdrop-blur">
-            <RecipesToolbar defaultView={view} sortAvailability={sortAvailability} />
+            <RecipesToolbar sortAvailability={sortAvailability} />
           </div>
           <RecipesFilterSheet index={styleIndex} familyCounts={familyCounts} />
           <ActiveFilterChips familyOptions={familyOptions} styleOptions={styleOptions} />
 
-          <Suspense fallback={<RecipesGridSkeleton view={view} />}>
-            <RecipesResults filters={filters} view={view} preferredGravityUnit={viewer?.preferredGravityUnit} />
+          <Suspense fallback={<RecipesGridSkeleton view="list" />}>
+            <RecipesResults filters={filters} preferredGravityUnit={viewer?.preferredGravityUnit} />
           </Suspense>
         </div>
       </div>

@@ -395,7 +395,11 @@ export function KegCarbonationBlock({
             })()}
           </span>
         ) : (
-          <span className="text-muted-foreground">Наведите на ячейку — покажем расшифровку.</span>
+          <span className="text-muted-foreground">
+            {/* На тач-устройствах hover нет — там та же расшифровка открывается тапом. */}
+            <span className="hidden [@media(hover:hover)]:inline">Наведите на ячейку — покажем расшифровку.</span>
+            <span className="[@media(hover:hover)]:hidden">Нажмите на ячейку — покажем расшифровку.</span>
+          </span>
         )}
       </div>
 

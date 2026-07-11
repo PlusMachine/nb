@@ -43,8 +43,9 @@ import {
   ingredientSearchQuerySchema
 } from "./contracts";
 import { ingredientSearchSimpleModeThreshold } from "./contracts";
-import { filterRankedCatalogNoise, sortRankedCatalogItems } from "./catalog-ranking";
+import { filterRankedCatalogNoise, filterRankedFamilyFallback, sortRankedCatalogItems } from "./catalog-ranking";
 import { readCustomIngredientMetadata } from "./custom-metadata";
+import { resolveIngredientMatchKey } from "./match-group";
 import { normalizeSearchText } from "./normalization";
 import {
   canonicalizeWaterTreatmentQuickStartGroup,
@@ -127,6 +128,7 @@ type RankedCatalogItem = {
   item: UserCatalogIngredientDto;
   tier: number;
   score: number;
+  familyFallback?: boolean;
 };
 
 const isRecord = (value: unknown): value is Record<string, unknown> => (
@@ -759,7 +761,8 @@ const buildRankedItem = (
   return {
     item,
     tier: rank.tier,
-    score: rank.score
+    score: rank.score,
+    familyFallback: rank.familyFallback
   };
 };
 
@@ -1501,7 +1504,7 @@ const buildIngredientPickerQuickStartFromItems = ({
 };
 
 export const listIngredientPickerQuickStart = async (
-  userId: string,
+  userId: string | null,
   params: {
     category: IngredientCategory;
     subtype?: "malt" | "fermentable" | null;
@@ -1582,7 +1585,7 @@ export const getIngredientPickerQuickStartBySubtype = async (
 };
 
 export const searchUserCatalogIngredients = async (
-  userId: string,
+  userId: string | null,
   params: CatalogSearchParams
 ): Promise<IngredientSearchResult> => {
   const query = ingredientSearchQuerySchema.parse(params);
@@ -1705,7 +1708,7 @@ export const searchUserCatalogIngredients = async (
 };
 
 export const getIngredientSuggestionByRef = async (
-  userId: string,
+  userId: string | null,
   source: "catalog" | "custom",
   id: string
 ): Promise<IngredientSuggestionItem | null> => {
@@ -1735,10 +1738,10 @@ export const listUserCatalogIngredients = async (
       ? (() => {
         const brandMarketCounts = buildBrandMarketCountMap(items);
 
-        return filterRankedCatalogNoise(items
+        return filterRankedFamilyFallback(filterRankedCatalogNoise(items
           .map((item) => buildRankedItem(item, params.q ?? "", brandMarketCounts))
           .filter((item): item is RankedCatalogItem => item !== null)
-          .sort(sortRankedCatalogItems))
+          .sort(sortRankedCatalogItems)))
           .map(({ item }) => item);
       })()
       : sortCatalogItems(items, sort)
@@ -1804,10 +1807,10 @@ const rankHubItems = (
     ? (() => {
       const brandMarketCounts = buildBrandMarketCountMap(items);
 
-      return filterRankedCatalogNoise(items
+      return filterRankedFamilyFallback(filterRankedCatalogNoise(items
         .map((item) => buildRankedItem(item, q ?? "", brandMarketCounts))
         .filter((item): item is RankedCatalogItem => item !== null)
-        .sort(sortRankedCatalogItems))
+        .sort(sortRankedCatalogItems)))
         .map(({ item }) => item);
     })()
     : sortCatalogItems(items, "name")
@@ -1995,30 +1998,9 @@ export const getUserCatalogIngredientByRef = async (
 };
 
 // ─── 5.4: блоки перелинковки детальной страницы каталога (SEO + ценность
-// анониму) — «Похожие ингредиенты» и «Другие ингредиенты {бренд}». Оба блока
+// анониму) — «Аналоги» и «Другие ингредиенты {бренд}». Оба блока
 // публичные: без userId, без персонализации (изб.ранное/usage-counts не
 // подмешиваются) — источник данных строго кэшируемый loadIngredients().
-
-const resolveSimilarityGroupKey = (
-  category: IngredientCategory,
-  candidate: UserCatalogIngredientDto
-): string | null => {
-  if (category === "yeast") {
-    const technicalData = candidate.technicalData;
-    const yeastFamily = technicalData?.type === "yeast"
-      ? (technicalData as Extract<typeof technicalData, { type: "yeast" }>).yeastFamily ?? null
-      : null;
-    return yeastFamily ?? candidate.subtype ?? null;
-  }
-
-  if (category === "fermentable" || category === "water_treatment" || category === "consumable") {
-    return candidate.subtype ?? null;
-  }
-
-  // hop: категория уже отфильтрована выше, отдельная группировка не нужна —
-  // сорт хмеля различается только числовой близостью по альфа-кислоте.
-  return null;
-};
 
 const resolveSimilarityNumericValue = (
   category: IngredientCategory,
@@ -2032,58 +2014,93 @@ const resolveSimilarityNumericValue = (
     return resolveCatalogColorEbc(candidate);
   }
 
-  if (category === "yeast") {
-    return typeof candidate.yeastAttenuationPct === "number" ? candidate.yeastAttenuationPct : null;
-  }
-
   return null;
 };
 
-// Сравнение «похожести» с эталоном (reference): сперва группа (тот же
-// subtype/сорт дрожжей, если она известна у эталона), затем близость по
-// числовому параметру категории (без значения на любой из сторон — в конец),
-// и в конце алфавит по русскому имени.
-const compareSimilarCatalogCandidates = (
-  reference: UserCatalogIngredientDto,
-  left: UserCatalogIngredientDto,
-  right: UserCatalogIngredientDto
-) => {
-  const category = reference.category;
-  const referenceGroupKey = resolveSimilarityGroupKey(category, reference);
-  const groupRank = (candidate: UserCatalogIngredientDto) => (
-    referenceGroupKey && resolveSimilarityGroupKey(category, candidate) === referenceGroupKey ? 0 : 1
-  );
-  const referenceValue = resolveSimilarityNumericValue(category, reference);
+// Группа аналогов для блока «Аналоги» — переиспользует groupKey «мозга» замен
+// склад↔рецепт (match-group.ts), но строже: наружу выходят только группы уровня
+// «тот же сорт/подтип у другого производителя». Слишком широкие ключи блок
+// скрывают целиком: дрожжи (штамм-специфичны, matchPolicy exact_only),
+// классовые/цветовые фолбэки солода (одинаковый EBC ≠ аналог) и subtype-фолбэк
+// воды без химической формулы.
+const resolveAnalogGroupKey = (item: UserCatalogIngredientDto): string | null => {
+  if (item.category === "yeast") {
+    return null;
+  }
+
+  if (item.category === "water_treatment") {
+    const technicalData = item.technicalData;
+    const record = technicalData?.type === "water_treatment"
+      ? technicalData as Record<string, unknown>
+      : null;
+    const formula = [record?.formula, record?.displayFormula]
+      .find((value) => typeof value === "string" && value.trim());
+    if (!formula) {
+      return null;
+    }
+  }
+
+  const { groupKey } = resolveIngredientMatchKey({
+    category: item.category,
+    type: item.type,
+    name: item.nameRu ?? item.primaryLabelRu,
+    nameEn: item.nameEn ?? item.displayNameEn,
+    subtype: item.subtype,
+    aliases: item.aliases.map((alias) => alias.alias),
+    technicalData: item.technicalData,
+    catalogItemId: item.id
+  });
+
+  if (!groupKey || groupKey.startsWith("fermentable:class:") || groupKey.startsWith("fermentable:ebc:")) {
+    return null;
+  }
+
+  return groupKey;
+};
+
+/**
+ * «Аналоги» на детальной странице каталога: тот же канонический сорт/подтип
+ * (пилснер → пилснеры, Cascade → Cascade, CaCO₃ → CaCO₃) у других
+ * производителей. Только системные активные ингредиенты той же категории.
+ * Ингредиенты того же бренда исключаются — они живут в блоке «Другие
+ * ингредиенты {бренд}». Без надёжной группы (см. resolveAnalogGroupKey)
+ * возвращается пустой список и блок не показывается. Сортировка: близость по
+ * числовому параметру категории (EBC/альфа), затем алфавит.
+ */
+export const listAnalogCatalogIngredients = async (
+  item: UserCatalogIngredientDto,
+  limit = 6
+): Promise<UserCatalogIngredientDto[]> => {
+  const groupKey = resolveAnalogGroupKey(item);
+  if (!groupKey) {
+    return [];
+  }
+
+  const referenceBrand = normalizeSearchText(resolveIngredientBrandLabel(item) ?? "");
+  const referenceValue = resolveSimilarityNumericValue(item.category, item);
   const distanceFromReference = (candidate: UserCatalogIngredientDto) => {
-    const candidateValue = resolveSimilarityNumericValue(category, candidate);
+    const candidateValue = resolveSimilarityNumericValue(item.category, candidate);
     return referenceValue == null || candidateValue == null
       ? Number.POSITIVE_INFINITY
       : Math.abs(referenceValue - candidateValue);
   };
 
-  return groupRank(left) - groupRank(right)
-    || distanceFromReference(left) - distanceFromReference(right)
-    || left.primaryLabelRu.localeCompare(right.primaryLabelRu, "ru");
-};
-
-/**
- * «Похожие ингредиенты» на детальной странице каталога (план, этап 5.4).
- * Только системные активные ингредиенты той же категории — никакой
- * персонализации. Близость: hop — альфа-кислота, fermentable — тот же
- * subtype + цвет EBC, yeast — тот же yeastFamily/подтип + аттенюация,
- * water_treatment/consumable — тот же subtype; при отсутствии значения
- * элемент уходит в конец, финальный тай-брейкер — алфавит.
- */
-export const listSimilarCatalogIngredients = async (
-  item: UserCatalogIngredientDto,
-  limit = 6
-): Promise<UserCatalogIngredientDto[]> => {
   const catalogItems = await loadIngredients({ category: item.category });
 
   return catalogItems
     .map(mapSystemIngredient)
-    .filter((candidate) => candidate.id !== item.id)
-    .sort((left, right) => compareSimilarCatalogCandidates(item, left, right))
+    .filter((candidate) => {
+      if (candidate.id === item.id || resolveAnalogGroupKey(candidate) !== groupKey) {
+        return false;
+      }
+
+      const candidateBrand = normalizeSearchText(resolveIngredientBrandLabel(candidate) ?? "");
+      return !(referenceBrand && candidateBrand && candidateBrand === referenceBrand);
+    })
+    .sort((left, right) => (
+      distanceFromReference(left) - distanceFromReference(right)
+      || left.primaryLabelRu.localeCompare(right.primaryLabelRu, "ru")
+    ))
     .slice(0, limit);
 };
 

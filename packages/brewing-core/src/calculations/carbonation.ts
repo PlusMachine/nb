@@ -51,7 +51,9 @@ export const kegCo2Volumes = (tempC: number, pressurePsi: number): number => {
 };
 
 // Диапазоны сетки таблицы. Вынесены в константы — при желании расширяются без правок UI.
-export const CARBONATION_TEMP_RANGE_C = { min: 0, max: 14, step: 1 } as const;
+// Верх температурной шкалы 20 °C — чтобы таблица покрывала шпунтование при температуре
+// брожения эля, а не только холодную карбонизацию в камере.
+export const CARBONATION_TEMP_RANGE_C = { min: 0, max: 20, step: 1 } as const;
 export const CARBONATION_PRESSURE_RANGE_BAR = { min: 0.4, max: 2.0, step: 0.1 } as const;
 
 export type Co2Zone = "low" | "standard" | "lively" | "high";

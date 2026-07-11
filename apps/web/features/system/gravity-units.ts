@@ -1,5 +1,5 @@
 import type { PreferredGravityUnit } from "@nb/auth";
-import { gravityToSg, sgToGravityUnit, type CalculatorGravityUnit } from "@nb/brewing-core";
+import { gravityToSg, sgToGravityUnit, sgToPlato, type CalculatorGravityUnit } from "@nb/brewing-core";
 
 import { parseDecimalInput } from "@/features/forms/numeric-validation";
 
@@ -165,4 +165,36 @@ export const convertGravityFieldValue = (
 
   const sg = gravityToSg(value, fromUnit);
   return toUnit === "SG" ? sg.toFixed(3) : formatConvertedGravity(sgToGravityUnit(sg, toUnit), 1);
+};
+
+/**
+ * Пересчёт ПОПРАВКИ (дельты) плотности при смене единицы — например, поправки прибора у
+ * ареометра. Дельту нельзя конвертировать как абсолютную плотность: якорь — вода
+ * (1.000 SG ↔ 0 °P/°Bx), т.е. «в дистилляте прибор показывает 1.002» ↔ «показывает 0.51 °P».
+ * Пустое/некорректное значение возвращается как есть, как в convertGravityFieldValue.
+ */
+export const convertGravityOffsetValue = (
+  rawValue: unknown,
+  fromUnit: CalculatorGravityUnit,
+  toUnit: CalculatorGravityUnit
+): string => {
+  // Plato ↔ Brix — численно одна шкала (см. secondaryGravityUnit): дельта не меняется.
+  if (fromUnit === toUnit || (fromUnit !== "SG" && toUnit !== "SG")) {
+    return String(rawValue ?? "");
+  }
+
+  const value = typeof rawValue === "number" ? rawValue : parseDecimalInput(String(rawValue ?? "")) ?? Number.NaN;
+  if (!Number.isFinite(value)) {
+    return String(rawValue ?? "");
+  }
+
+  // Показание прибора в дистилляте = вода + дельта; переводим это показание в целевую
+  // шкалу и вычитаем воду в ней же. Вычитание разности полиномов (а не «нуля» шкалы)
+  // гасит артефакт sgToPlato(1.000) ≈ −0.003 — ноль остаётся нулём в обе стороны.
+  if (toUnit === "SG") {
+    return (gravityToSg(value, fromUnit) - 1).toFixed(4);
+  }
+
+  const delta = sgToPlato(1 + value, 6) - sgToPlato(1, 6);
+  return formatConvertedGravity(delta, 2);
 };

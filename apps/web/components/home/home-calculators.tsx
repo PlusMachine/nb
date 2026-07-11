@@ -2,7 +2,9 @@ import React from "react";
 import Link from "next/link";
 import { Gauge, Leaf, Palette, Percent } from "lucide-react";
 
+import { allCalculatorSlugs } from "@/features/calculators/catalog";
 import { srmToHex } from "@/features/recipes/beer-color";
+import { pluralize } from "@/lib/pluralize";
 
 /**
  * Секция калькуляторов на главной — презентация, а не инструмент. Колода карточек
@@ -152,7 +154,7 @@ export function HomeCalculators() {
           Калькуляторы пивоварения
         </h2>
         <p className="mt-4 max-w-[42ch] text-[15px] leading-relaxed text-muted-foreground">
-          15 калькуляторов пивовара: крепость и сбраживание, горечь, цвет, вода и pH,
+          {allCalculatorSlugs.length} {pluralize(allCalculatorSlugs.length, ["калькулятор", "калькулятора", "калькуляторов"])} пивовара: крепость и сбраживание, горечь, цвет, вода и pH,
           карбонизация, свежесть хмеля. Каждый считает по вашим числам и объясняет формулу.
         </p>
         <Link

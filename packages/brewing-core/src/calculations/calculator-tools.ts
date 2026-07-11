@@ -76,7 +76,8 @@ export const calculateCaloriesPerServing = (input: {
   const realExtractPlato = (0.1808 * sgToPlato(input.og, 4)) + (0.8192 * sgToPlato(input.fg, 4));
   const abw = input.abv * 0.79336 / input.fg;
   const caloriesPer12Oz = ((6.9 * abw) + 4 * (realExtractPlato - 0.1)) * input.fg * 3.55;
-  return roundTo(caloriesPer12Oz * (input.servingSizeMl / 354.882), 0);
+  // Вырожденные замеры (OG около воды, FG > OG) уводят формулу в минус — калорий меньше нуля не бывает.
+  return roundTo(Math.max(0, caloriesPer12Oz * (input.servingSizeMl / 354.882)), 0);
 };
 
 export const calculateAbvAttenuation = (input: {

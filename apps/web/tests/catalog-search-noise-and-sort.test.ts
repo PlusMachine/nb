@@ -3,7 +3,8 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import {
   CATALOG_SEARCH_NOISE_TIER_MIN,
   CATALOG_SEARCH_STRONG_TIER_MAX,
-  filterRankedCatalogNoise
+  filterRankedCatalogNoise,
+  filterRankedFamilyFallback
 } from "../features/ingredients/catalog-ranking";
 
 // Часть 1: чистый юнит-тест filterRankedCatalogNoise (без БД/сервисов).
@@ -35,6 +36,28 @@ describe("filterRankedCatalogNoise", () => {
     const result = filterRankedCatalogNoise([boundaryStrong, boundaryNoise]);
 
     expect(result.map((item) => item.id)).toEqual(["boundary-strong"]);
+  });
+});
+
+// Часть 1.1: чистый юнит-тест filterRankedFamilyFallback (без БД/сервисов).
+describe("filterRankedFamilyFallback", () => {
+  const contextMatchItem = { id: "context-match", familyFallback: undefined };
+  const familyFallbackItem = { id: "family-fallback", familyFallback: true };
+
+  it("режет family-фолбэк, когда есть совпадение с учётом контекст-токенов", () => {
+    const result = filterRankedFamilyFallback([contextMatchItem, familyFallbackItem]);
+
+    expect(result.map((item) => item.id)).toEqual(["context-match"]);
+  });
+
+  it("оставляет семейство как fallback, если точных совпадений нет", () => {
+    const result = filterRankedFamilyFallback([familyFallbackItem]);
+
+    expect(result.map((item) => item.id)).toEqual(["family-fallback"]);
+  });
+
+  it("не трогает пустой список", () => {
+    expect(filterRankedFamilyFallback([])).toEqual([]);
   });
 });
 
@@ -362,6 +385,113 @@ describe("каталог: обрезка шумного хвоста поиск�
 
     expect(result.items.map((item) => item.id)).toEqual(["citra-main", "malt-noise-fuzzy"]);
     expect(result.total).toBe(2);
+  });
+});
+
+// Кейс «курский пилс»: токен «пилс» распознаётся как семейство «пилснер»
+// (intent family_context), и без фильтра все пилснеры каталога попадали бы
+// в выдачу через family-фолбэк (tier 2 в buildIntentAwareRank), даже когда
+// контекст-токен «курский» ни с чем не совпал.
+describe("каталог: family-фолбэк «семейство + уточнение»", () => {
+  beforeEach(() => {
+    mockState.catalogItems = [];
+    mockState.customItems = [];
+    mockState.favoriteKeys = new Set();
+  });
+
+  const buildPilsnerFixture = () => [
+    buildCatalogItem({
+      id: "kursk-pilsner",
+      primaryLabelRu: "Пилснер",
+      displayName: "Пилснер",
+      displayNameRu: "Пилснер",
+      displayNameEn: "Pilsner",
+      nameRu: "Пилснер",
+      nameEn: "Pilsner",
+      brand: "Курский солод",
+      producer: "Курский солод",
+      brandName: "Курский солод",
+      manufacturer: "Курский солод"
+    }),
+    buildCatalogItem({
+      id: "kursk-pilsner-premium",
+      primaryLabelRu: "Пилснер Премиум",
+      displayName: "Пилснер Премиум",
+      displayNameRu: "Пилснер Премиум",
+      displayNameEn: "Pilsner Premium",
+      nameRu: "Пилснер Премиум",
+      nameEn: "Pilsner Premium",
+      brand: "Курский солод",
+      producer: "Курский солод",
+      brandName: "Курский солод",
+      manufacturer: "Курский солод"
+    }),
+    buildCatalogItem({
+      id: "best-pilsen",
+      primaryLabelRu: "BEST Pilsen Malt",
+      displayName: "BEST Pilsen Malt",
+      displayNameRu: "BEST Pilsen Malt",
+      displayNameEn: "BEST Pilsen Malt",
+      nameRu: "BEST Pilsen Malt",
+      nameEn: "BEST Pilsen Malt",
+      brand: "BESTMALZ",
+      producer: "BESTMALZ",
+      brandName: "BESTMALZ",
+      manufacturer: "BESTMALZ"
+    }),
+    buildCatalogItem({
+      id: "caramel-pilsen",
+      primaryLabelRu: "Caramel Pilsen",
+      displayName: "Caramel Pilsen",
+      displayNameRu: "Caramel Pilsen",
+      displayNameEn: "Caramel Pilsen",
+      nameRu: "Caramel Pilsen",
+      nameEn: "Caramel Pilsen",
+      brand: "Castle Malting",
+      producer: "Castle Malting",
+      brandName: "Castle Malting",
+      manufacturer: "Castle Malting"
+    })
+  ];
+
+  it("«курский пилс»: при точных совпадениях по бренду не-курские пилснеры отрезаются", async () => {
+    mockState.catalogItems = buildPilsnerFixture();
+
+    const result = await listUserCatalogIngredients(null, { q: "курский пилс" });
+
+    expect(result.items.map((item) => item.id).sort()).toEqual([
+      "kursk-pilsner",
+      "kursk-pilsner-premium"
+    ]);
+    expect(result.total).toBe(2);
+  });
+
+  it("«чешский пилснер»: без точных совпадений семейство остаётся как fallback", async () => {
+    mockState.catalogItems = buildPilsnerFixture();
+
+    const result = await listUserCatalogIngredients(null, { q: "чешский пилснер" });
+
+    expect(result.items.map((item) => item.id).sort()).toEqual([
+      "best-pilsen",
+      "caramel-pilsen",
+      "kursk-pilsner",
+      "kursk-pilsner-premium"
+    ]);
+  });
+
+  it("searchUserCatalogIngredients (пикеры) намеренно сохраняет family-фолбэк для подбора замен", async () => {
+    mockState.catalogItems = buildPilsnerFixture();
+
+    const result = await searchUserCatalogIngredients("user-1", { q: "курский пилс", limit: 10 });
+
+    expect(result.items.map((item) => item.id)).toContain("best-pilsen");
+    expect(result.items.map((item) => item.id)).toContain("caramel-pilsen");
+    expect(result.total).toBe(4);
+    // Курские при этом ранжируются выше family-хвоста.
+    expect(result.items.slice(0, 2).map((item) => item.id).sort()).toEqual([
+      "kursk-pilsner",
+      "kursk-pilsner-premium"
+    ]);
   });
 });
 

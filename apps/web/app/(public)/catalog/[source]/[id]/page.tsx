@@ -10,9 +10,13 @@ import { IngredientPurchaseLinksEditor } from "@/components/ingredients/ingredie
 import { RecipesGrid } from "@/components/recipes/recipes-grid";
 import { CountryFlagLabel } from "@/components/shared/country-flag";
 import {
+  IngredientColorSwatch,
+  resolveIngredientColorAccent
+} from "@/components/ingredients/ingredient-color-swatch";
+import {
   getUserCatalogIngredientByRef,
-  listSameBrandCatalogIngredients,
-  listSimilarCatalogIngredients
+  listAnalogCatalogIngredients,
+  listSameBrandCatalogIngredients
 } from "@/features/ingredients/catalog-service";
 import { buildIngredientCatalogActionHref } from "@/features/ingredients/catalog-links";
 import type { IngredientTechnicalData, UserCatalogIngredientDto } from "@/features/ingredients/contracts";
@@ -173,18 +177,30 @@ const buildCatalogHref = (candidate: Pick<UserCatalogIngredientDto, "source" | "
   `/catalog/${candidate.source === "custom" ? "custom" : "system"}/${candidate.id}`
 );
 
-const renderIngredientLinkRows = (items: UserCatalogIngredientDto[]) => (
+const renderIngredientLinkRows = (items: UserCatalogIngredientDto[], options?: { showBrand?: boolean }) => (
   <div className="space-y-2">
     {items.map((candidate) => {
       const metric = resolveIngredientKeyMetricLabel(candidate);
+      const accent = candidate.category === "fermentable"
+        ? resolveIngredientColorAccent(candidate.technicalData)
+        : null;
+      const brand = options?.showBrand ? resolveIngredientBrandLabel(candidate) : null;
       return (
         <Link
           key={`${candidate.source}-${candidate.id}`}
           href={buildCatalogHref(candidate)}
           className="flex items-center justify-between gap-3 rounded-2xl bg-muted px-4 py-3 text-sm transition-colors hover:bg-accent"
         >
-          <span className="min-w-0 truncate font-medium text-foreground">{candidate.primaryLabelRu}</span>
-          {metric ? <span className="shrink-0 text-muted-foreground">{metric}</span> : null}
+          <span className="min-w-0">
+            <span className="block truncate font-medium text-foreground">{candidate.primaryLabelRu}</span>
+            {brand ? <span className="block truncate text-xs text-muted-foreground">{brand}</span> : null}
+          </span>
+          {metric ? (
+            <span className="flex shrink-0 items-center gap-1.5 text-muted-foreground">
+              {accent ? <IngredientColorSwatch accent={accent} className="h-2.5 w-2.5" /> : null}
+              {metric}
+            </span>
+          ) : null}
         </Link>
       );
     })}
@@ -234,9 +250,9 @@ export default async function IngredientDetailPage({
 
   // Блоки перелинковки и рецепты — только для системных ингредиентов
   // (кастомные видны только владельцу и не участвуют в SEO-перелинковке).
-  const [similarItems, brandItems, recipesResult] = item.source === "catalog"
+  const [analogItems, brandItems, recipesResult] = item.source === "catalog"
     ? await Promise.all([
-      listSimilarCatalogIngredients(item, 6),
+      listAnalogCatalogIngredients(item, 6),
       listSameBrandCatalogIngredients(item, 5),
       listPublicRecipesForIngredient(item.id, 5)
     ])
@@ -249,10 +265,6 @@ export default async function IngredientDetailPage({
     : formatIngredientSubtypeLabel(item.category, item.subtype);
   const subtleAliases = Array.from(new Set(item.aliases.map((alias) => alias.alias).filter(Boolean)));
   const brandLabel = resolveIngredientBrandLabel(item);
-  const metaBadges = Array.from(new Set([
-    typeLabel,
-    brandLabel
-  ].filter(Boolean)));
   const country = resolveIngredientCountry(item);
   const loginHref = `/login?next=${encodeURIComponent(`/catalog/${source}/${id}`)}`;
   const jsonLd = source === "system"
@@ -263,7 +275,7 @@ export default async function IngredientDetailPage({
   const landing = resolveCatalogLandingForFilter(item.category, landingSubtype);
 
   const showUsageSection = canManage && (item.inventoryUsageCount > 0 || item.recipeUsageCount > 0);
-  const hasRightColumn = similarItems.length > 0 || recipesResult.items.length > 0 || brandItems.length > 0 || canManage;
+  const hasRightColumn = analogItems.length > 0 || recipesResult.items.length > 0 || brandItems.length > 0 || canManage;
 
   const descriptionParagraphs = item.descriptionRu ? splitDescriptionParagraphs(item.descriptionRu) : [];
 
@@ -364,9 +376,14 @@ export default async function IngredientDetailPage({
 
       <section className="rounded-[32px] border border-border bg-card p-6 shadow-sm">
         <div className="flex flex-col gap-6 xl:flex-row xl:items-start xl:justify-between">
-          <div className="min-w-0 flex-1 space-y-5">
-            <div className="flex flex-wrap items-center gap-2">
-              <h1 className="text-3xl font-semibold tracking-tight text-foreground">{item.primaryLabelRu}</h1>
+          <div className="min-w-0 flex-1 space-y-4">
+            <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1">
+              <h1 className="min-w-0 text-3xl font-semibold tracking-tight text-foreground">
+                {item.primaryLabelRu}
+                {brandLabel ? (
+                  <span className="font-medium text-muted-foreground"> · {brandLabel}</span>
+                ) : null}
+              </h1>
               {canManage ? (
                 <IngredientFavoriteToggle
                   reference={{
@@ -380,16 +397,13 @@ export default async function IngredientDetailPage({
               ) : null}
             </div>
 
-            {item.secondaryLabelRu ? <p className="text-sm text-muted-foreground">{item.secondaryLabelRu}</p> : null}
-
-            <div className="flex flex-wrap gap-2">
-              {metaBadges.map((badge) => (
-                <span key={badge} className="rounded-full bg-muted px-3 py-1 text-sm text-foreground">
-                  {badge}
-                </span>
-              ))}
+            <div className="flex flex-wrap items-center gap-x-2 gap-y-1.5 text-sm">
+              {item.secondaryLabelRu ? (
+                <span className="text-muted-foreground">{item.secondaryLabelRu}</span>
+              ) : null}
+              <span className="rounded-full bg-muted px-3 py-1 text-foreground">{typeLabel}</span>
               {country ? (
-                <span className="rounded-full bg-muted px-3 py-1 text-sm text-foreground">
+                <span className="rounded-full bg-muted px-3 py-1 text-foreground">
                   <CountryFlagLabel
                     countryCode={country.code}
                     label={country.label}
@@ -402,11 +416,7 @@ export default async function IngredientDetailPage({
                 <span className="rounded-full bg-warning-subtle px-2.5 py-1 text-[11px] font-semibold uppercase tracking-[0.12em] text-warning-subtle-foreground ring-1 ring-warning/30">
                   СВОЙ
                 </span>
-              ) : (
-                <span className="rounded-full bg-muted px-2.5 py-1 text-[11px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
-                  Системный
-                </span>
-              )}
+              ) : null}
               {item.status === "archived" ? (
                 <span className="rounded-full bg-muted px-2.5 py-1 text-[11px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
                   В архиве
@@ -479,10 +489,12 @@ export default async function IngredientDetailPage({
           {leftColumn}
 
           <div className="space-y-6">
-            {similarItems.length ? (
+            {brandItems.length ? (
               <section className="rounded-[28px] border border-border bg-card p-6 shadow-sm">
-                <h2 className="text-sm font-semibold uppercase tracking-[0.12em] text-muted-foreground">Похожие ингредиенты</h2>
-                <div className="mt-4">{renderIngredientLinkRows(similarItems)}</div>
+                <h2 className="text-sm font-semibold uppercase tracking-[0.12em] text-muted-foreground">
+                  Другие ингредиенты {brandLabel}
+                </h2>
+                <div className="mt-4">{renderIngredientLinkRows(brandItems)}</div>
               </section>
             ) : null}
 
@@ -497,12 +509,10 @@ export default async function IngredientDetailPage({
               </section>
             ) : null}
 
-            {brandItems.length ? (
+            {analogItems.length ? (
               <section className="rounded-[28px] border border-border bg-card p-6 shadow-sm">
-                <h2 className="text-sm font-semibold uppercase tracking-[0.12em] text-muted-foreground">
-                  Другие ингредиенты {brandLabel}
-                </h2>
-                <div className="mt-4">{renderIngredientLinkRows(brandItems)}</div>
+                <h2 className="text-sm font-semibold uppercase tracking-[0.12em] text-muted-foreground">Аналоги</h2>
+                <div className="mt-4">{renderIngredientLinkRows(analogItems, { showBrand: true })}</div>
               </section>
             ) : null}
 

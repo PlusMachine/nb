@@ -14,7 +14,6 @@ vi.mock("next/navigation", () => ({
   }
 }));
 
-import { CalculatorPageClient } from "../components/calculators/calculator-page-client";
 import { calculatorSections, calculators } from "../features/calculators/catalog";
 
 const calculatorIndexTitles = [
@@ -22,10 +21,12 @@ const calculatorIndexTitles = [
   "Поправка рефрактометра",
   "Поправка ареометра",
   "Конвертер единиц",
-  "Объем и плотность сусла",
+  "Разбавление сусла",
   "Горечь (IBU)",
   "Вода на варку",
+  "Инфузионное затирание",
   "Цвет пива (SRM / EBC)",
+  "Эффективность",
   "Вода и pH",
   "Засев дрожжей",
   "Свежесть хмеля",
@@ -38,6 +39,20 @@ const calculatorIndexTitles = [
 beforeEach(() => {
   mocks.navState.searchParams = "";
 });
+
+// CalculatorPageClient рендерит кнопку «Скопировать ссылку на расчёт», которая читает
+// useToast() — в реальном приложении ToastProvider смонтирован глобально
+// (components/providers.tsx), здесь оборачиваем явно, иначе useToast() бросает
+// (и это тихо съедается Suspense-фолбэком выше по дереву без видимого краша теста).
+// ToastProvider импортируется ДИНАМИЧЕСКИ на каждый вызов (а не статично в шапке файла):
+// часть тестов ниже вызывает vi.resetModules()/vi.doUnmock(), из-за чего "../app/…/page"
+// в последующих тестах транзитивно тянет @nb/ui заново — и React.createContext() в toast.tsx
+// создаёт НОВЫЙ ToastContext. Статичный import ToastProvider остался бы привязан к старому
+// экземпляру контекста, useToast() внутри свежеимпортированного дерева его не находил бы.
+const renderWithToast = async (node: React.ReactNode) => {
+  const { ToastProvider } = await import("@nb/ui");
+  return renderToStaticMarkup(React.createElement(ToastProvider, null, node));
+};
 
 describe("calculator catalog seoTitle", () => {
   it("every calculator has a seoTitle starting with «Калькулятор» and within 60 chars", () => {
@@ -59,8 +74,12 @@ describe("calculator pages", () => {
     expect(html).not.toContain("Фильтры калькуляторов");
     expect(html).not.toContain("Быстрые переходы");
     expect(html).not.toContain("Доступно без логина");
-    expect(html).not.toContain("Популярные");
+    expect(html).not.toContain("hmelo tools");
     expect(html).not.toContain("Открыть");
+    expect(html).not.toContain("Популярные");
+    expect(html).not.toContain("формула и допущения");
+    expect(html).toContain('id="calculators-search"');
+    expect(html).toContain("Название или термин: ibu, праймер, brix…");
     expect(html).not.toContain("Плотность, алкоголь, IBU, вода, дрожжи, карбонизация и розлив");
     expect(html).not.toContain("Не заменяет алкогольную коррекцию");
     expect(html).not.toContain("Быстрый перевод пивоваренных единиц");
@@ -68,12 +87,12 @@ describe("calculator pages", () => {
     expect(html).toContain("/images/calculators/3-Photoroom.png");
     expect(html).toContain("/images/calculators/4-Photoroom.png");
     expect(html).toContain("/images/calculators/18-Photoroom.png");
-    expect(html.match(/data-calculator-card=/g)).toHaveLength(15);
+    expect(html.match(/data-calculator-card=/g)).toHaveLength(17);
 
     const sectionCounts = calculatorSections.map(
       (section) => calculators.filter((calculator) => calculator.section === section).length
     );
-    expect(sectionCounts).toEqual([4, 4, 3, 4]);
+    expect(sectionCounts).toEqual([5, 6, 2, 4]);
 
     const h2Headings = [...html.matchAll(/<h2[^>]*>([^<]*)<\/h2>/g)].map((match) => match[1]);
     expect(h2Headings).toEqual(calculatorSections);
@@ -103,7 +122,7 @@ describe("calculator pages", () => {
       expect((metadata.openGraph as { url?: string } | undefined)?.url).toBe(`/calculators/${calculator.slug}`);
 
       const view = await CalculatorRoute({ params: Promise.resolve({ slug: calculator.slug }) });
-      const html = renderToStaticMarkup(view);
+      const html = await renderWithToast(view);
 
       expect(html).toContain(calculator.title);
       expect(html).toContain("Сбросить");
@@ -172,10 +191,14 @@ describe("calculator pages", () => {
   });
 
   it("query param prefill works for scalar fields via useSearchParams", async () => {
-    mocks.navState.searchParams = "og=1.064&fg=1.014";
+    // gravityUnit=SG делает ссылку "самошаренной" (см. abv-attenuation.applyQuery) — og/fg
+    // проходят как есть, без конверсии в дефолтную шкалу калькулятора (Plato). Тест про сам
+    // механизм прилива query → поле, а не про конверсию единиц (та отдельно проверяется в
+    // calculators-serialize-query.test.ts).
+    mocks.navState.searchParams = "og=1.064&fg=1.014&gravityUnit=SG";
     const { default: CalculatorRoute } = await import("../app/(public)/calculators/[slug]/page");
     const view = await CalculatorRoute({ params: Promise.resolve({ slug: "abv-attenuation" }) });
-    const html = renderToStaticMarkup(view);
+    const html = await renderWithToast(view);
 
     expect(html).toContain('value="1.064"');
     expect(html).toContain('value="1.014"');
@@ -186,15 +209,19 @@ describe("calculator pages", () => {
 
     for (const slug of ["yeast-starter", "speise-krausen", "ibu"] as const) {
       const view = await CalculatorRoute({ params: Promise.resolve({ slug }) });
-      const html = renderToStaticMarkup(view);
+      const html = await renderWithToast(view);
 
       expect(html).toContain('aria-label="Шкала плотности"');
       expect(html).toContain("°Bx");
     }
   });
 
-  it("localStorage fallback code does not run during SSR", () => {
-    const html = renderToStaticMarkup(
+  it("localStorage fallback code does not run during SSR", async () => {
+    // Динамический import (а не статический в шапке файла) — по той же причине, что и
+    // renderWithToast выше: должен разрешиться в тот же "эпох" модулей @nb/ui, что и
+    // ToastProvider ниже, даже после vi.resetModules() в предыдущих тестах этого файла.
+    const { CalculatorPageClient } = await import("../components/calculators/calculator-page-client");
+    const html = await renderWithToast(
       React.createElement(CalculatorPageClient, { slug: "priming-sugar" })
     );
 

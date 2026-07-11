@@ -67,6 +67,12 @@ export type IngredientCandidateRank = {
   matchedAlias?: string | null;
   matchedPackageVariantId?: string | null;
   matchedPackageVariantName?: string | null;
+  // Совпадение только по семейству запроса «семейство + уточнение»
+  // («курский пилс» → все пилснеры), контекст-токены («курский») не совпали
+  // полностью ни с брендом, ни с полями продукта. Пикеру такой фолбэк нужен
+  // (подбор замен), каталог режет его, когда есть точные совпадения — см.
+  // filterRankedFamilyFallback в catalog-ranking.ts.
+  familyFallback?: boolean;
 };
 
 type NormalizedEntry = {
@@ -989,7 +995,8 @@ const buildIntentAwareRank = (
         matchType: familyRoute.matchType,
         matchedAlias: familyRoute.matchedAlias,
         matchedPackageVariantId: familyRoute.matchedPackageVariantId,
-        matchedPackageVariantName: familyRoute.matchedPackageVariantName
+        matchedPackageVariantName: familyRoute.matchedPackageVariantName,
+        familyFallback: true
       };
     }
 
@@ -998,7 +1005,8 @@ const buildIntentAwareRank = (
         tier: 3,
         score: buildScore(3, 700 + familyRoute.quality + Math.round(favoriteBoost * 0.6)),
         matchType: "alias",
-        matchedAlias: familyRoute.matchedAlias
+        matchedAlias: familyRoute.matchedAlias,
+        familyFallback: true
       };
     }
   }
