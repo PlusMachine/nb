@@ -33,7 +33,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     "/bjcp",
     "/calculators",
     "/articles",
-    "/masters",
+    "/market",
     "/brewforge",
     "/demo",
     "/legal",

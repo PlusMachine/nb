@@ -54,7 +54,7 @@ export function MasterPageView({
           </li>
           <li aria-hidden="true">/</li>
           <li>
-            <Link href="/masters" className="transition hover:text-foreground">Мастера</Link>
+            <Link href="/market" className="transition hover:text-foreground">Маркет</Link>
           </li>
           <li aria-hidden="true">/</li>
           <li className="text-foreground">{snapshot.displayName}</li>
@@ -129,7 +129,12 @@ export function MasterPageView({
           <h2 className="text-lg font-semibold text-foreground">Изделия</h2>
           <div className="grid gap-4 sm:grid-cols-2">
             {snapshot.items.map((item) => (
-              <article key={item.id} className="flex flex-col overflow-hidden rounded-2xl border border-border bg-card shadow-sm">
+              // id — якорь для карточек маркета (#item-<id>); scroll-mt отступает от липкой шапки
+              <article
+                key={item.id}
+                id={`item-${item.id}`}
+                className="flex scroll-mt-[calc(var(--chrome-top,0px)+1rem)] flex-col overflow-hidden rounded-2xl border border-border bg-card shadow-sm"
+              >
                 <MasterItemCover item={item} />
                 <div className="flex flex-1 flex-col gap-2 p-4">
                   <div className="flex flex-wrap items-start justify-between gap-2">

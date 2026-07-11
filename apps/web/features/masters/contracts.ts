@@ -222,3 +222,37 @@ export type MasterPublishedSnapshot = {
   items: MasterPublishedSnapshotItem[];
   publishedAt: string;
 };
+
+// --- Маркет (/market): товарные карточки из опубликованного снапшота -----------
+
+export type MarketItemCardDto = {
+  itemId: string;
+  title: string;
+  priceNote: string | null;
+  coverImage: MasterPublishedSnapshotImageRef | null;
+  masterSlug: string;
+  masterDisplayName: string;
+  masterCity: string;
+};
+
+/** Обложка изделия: coverImageId → первое фото → нет (тот же приоритет, что resolveItemCoverIndex в master-item-cover.tsx). */
+const pickItemCoverRef = (item: MasterPublishedSnapshotItem): MasterPublishedSnapshotImageRef | null => {
+  if (item.coverImageId) {
+    const ref = item.images.find((image) => image.imageId === item.coverImageId);
+    if (ref) {
+      return ref;
+    }
+  }
+  return item.images[0] ?? null;
+};
+
+export const buildMarketItemCards = (slug: string, snapshot: MasterPublishedSnapshot): MarketItemCardDto[] =>
+  snapshot.items.map((item) => ({
+    itemId: item.id,
+    title: item.title,
+    priceNote: item.priceNote,
+    coverImage: pickItemCoverRef(item),
+    masterSlug: slug,
+    masterDisplayName: snapshot.displayName,
+    masterCity: snapshot.city
+  }));

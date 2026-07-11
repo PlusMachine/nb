@@ -51,7 +51,7 @@ describe("approveMasterProfileAction", () => {
     );
     expect(result).toEqual({ ok: true });
     expect(mocks.revalidatePath).toHaveBeenCalledWith("/admin/masters");
-    expect(mocks.revalidatePath).toHaveBeenCalledWith("/masters");
+    expect(mocks.revalidatePath).toHaveBeenCalledWith("/market");
     expect(mocks.revalidatePath).toHaveBeenCalledWith("/masters/ivanov-forge");
   });
 
@@ -60,7 +60,7 @@ describe("approveMasterProfileAction", () => {
 
     await approveMasterProfileAction("p1");
 
-    expect(mocks.revalidatePath).toHaveBeenCalledWith("/masters");
+    expect(mocks.revalidatePath).toHaveBeenCalledWith("/market");
     expect(mocks.revalidatePath).not.toHaveBeenCalledWith(expect.stringMatching(/^\/masters\//));
   });
 
@@ -110,7 +110,7 @@ describe("rejectMasterProfileAction", () => {
     );
     expect(result).toEqual({ ok: true });
     expect(mocks.revalidatePath).toHaveBeenCalledWith("/admin/masters");
-    expect(mocks.revalidatePath).not.toHaveBeenCalledWith("/masters");
+    expect(mocks.revalidatePath).not.toHaveBeenCalledWith("/market");
   });
 
   it("REJECT_NOT_ALLOWED маппится в русское сообщение", async () => {
@@ -150,7 +150,7 @@ describe("setMasterListedAction", () => {
     );
     expect(result).toEqual({ ok: true });
     expect(mocks.revalidatePath).toHaveBeenCalledWith("/admin/masters");
-    expect(mocks.revalidatePath).toHaveBeenCalledWith("/masters");
+    expect(mocks.revalidatePath).toHaveBeenCalledWith("/market");
     expect(mocks.revalidatePath).toHaveBeenCalledWith("/masters/ivanov-forge");
   });
 

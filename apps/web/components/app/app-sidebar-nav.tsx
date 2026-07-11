@@ -5,7 +5,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { LogOut, Shield } from "lucide-react";
 
-import { appNavGroups, isNavItemActive, isPublicPath, type AppChromeUser } from "@/lib/navigation";
+import { isNavItemActive, isPublicPath, resolveAppNavGroups, type AppChromeUser } from "@/lib/navigation";
 import { ThemeToggle } from "@/components/theme/theme-toggle";
 
 type AppSidebarNavProps = {
@@ -43,7 +43,7 @@ export function AppSidebarNav({ user, onNavigate }: AppSidebarNavProps) {
   return (
     <div className="flex h-full flex-col">
       <nav className="flex flex-1 flex-col gap-1" aria-label="Навигация рабочей зоны">
-        {appNavGroups.map((group, groupIndex) => (
+        {resolveAppNavGroups(user).map((group, groupIndex) => (
           <React.Fragment key={groupIndex}>
             {groupIndex > 0 ? <div className="my-2 border-t border-border/70" /> : null}
             {group.map((item) => {

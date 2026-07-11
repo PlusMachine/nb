@@ -20,10 +20,12 @@ import { deleteMasterImageObjects } from "./images";
 import { getMasterCapabilities } from "./permissions";
 import { appendSlugSuffix, toMasterSlugBase } from "./slug";
 import {
+  buildMarketItemCards,
   buildMasterImageVariantUrl,
   MASTER_ITEM_MAX_COUNT,
   masterItemInputSchema,
   masterProfileInputSchema,
+  type MarketItemCardDto,
   type MasterImageStatus,
   type MasterImageVariant,
   type MasterPublishedSnapshot,
@@ -320,6 +322,16 @@ const snapshotContainsImage = (snapshot: MasterPublishedSnapshot, imageId: strin
 };
 
 // --- Владелец: профиль -----------------------------------------------------------
+
+// Дешёвая проверка «у пользователя есть профиль мастера» — для хрома рабочей
+// зоны (пункт «Моя витрина» показывается только мастерам). Не тянет items/images.
+export const hasOwnMasterProfile = async (userId: string): Promise<boolean> => {
+  const row = await db.query.masterProfiles.findFirst({
+    where: eq(masterProfiles.userId, userId),
+    columns: { id: true }
+  });
+  return Boolean(row);
+};
 
 export const getOwnMasterProfile = async (userId: string): Promise<MasterOwnProfileDto | null> => {
   const profile = await findOwnMasterProfileRow(userId);
@@ -849,6 +861,25 @@ export const listPublishedMasters = async (): Promise<MasterCardDto[]> => {
   return rows
     .map(toMasterCardDto)
     .filter((dto): dto is MasterCardDto => dto !== null);
+};
+
+// --- Маркет (/market): товарный индекс по изделиям всех мастеров -------------------
+// DTO и маппер снапшот→карточки — в contracts.ts (чистые, без БД).
+
+// Свежеопубликованные мастера выше (как в listPublishedMasters), внутри
+// мастера — авторский порядок изделий из снапшота.
+export const listPublishedMarketItems = async (): Promise<MarketItemCardDto[]> => {
+  const rows = await db.query.masterProfiles.findMany({
+    where: and(eq(masterProfiles.isListed, true), isNotNull(masterProfiles.publishedJson)),
+    orderBy: [desc(masterProfiles.publishedAt)]
+  });
+
+  return rows.flatMap((profile) => {
+    if (!profile.slug || !profile.publishedJson) {
+      return [];
+    }
+    return buildMarketItemCards(profile.slug, profile.publishedJson as MasterPublishedSnapshot);
+  });
 };
 
 export const getPublishedMasterBySlug = async (

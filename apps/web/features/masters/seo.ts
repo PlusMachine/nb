@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 
 import { buildMasterImageVariantUrl, getMasterSpecializationLabel, type MasterPublishedSnapshot } from "./contracts";
 
-// SEO-фундамент публичной витрины/деталки мастеров (/masters, /masters/<slug>),
+// SEO-фундамент маркета и деталки мастеров (/market, /masters/<slug>),
 // §8 ТЗ. Билдеры по образцу features/recipes/seo.ts: jsonLdScriptProps
 // переиспользуем из features/ingredients/seo.ts, truncateAtWordBoundary там не
 // экспортирован — держим локальный аналог (как в других feature/seo.ts).
@@ -30,28 +30,28 @@ const resolveMasterCoverImagePath = (snapshot: MasterPublishedSnapshot): string 
   return cover ? buildMasterImageVariantUrl(cover.imageId, "large") : null;
 };
 
-// --- Витрина /masters --------------------------------------------------------
+// --- Маркет /market ------------------------------------------------------------
 
-const MASTERS_LIST_TITLE = "Мастера пивоварного оборудования";
-const MASTERS_LIST_DESCRIPTION =
-  "Витрина мастеров, которые своими руками делают пивоварное оборудование: ЦКТ и ёмкости, автоматику для варки, чиллеры, мельницы. Контакты и фото работ — напрямую, без посредников.";
+const MARKET_LIST_TITLE = "Маркет пивоварного оборудования от мастеров";
+const MARKET_LIST_DESCRIPTION =
+  "Пивоварное оборудование ручной работы: ЦКТ и ёмкости, автоматика для варки, чиллеры, мельницы — от мастеров из комьюнити. Контакты и фото — напрямую, без посредников.";
 
-export const buildMastersListMetadata = (): Metadata => ({
-  title: MASTERS_LIST_TITLE,
-  description: MASTERS_LIST_DESCRIPTION,
+export const buildMarketListMetadata = (): Metadata => ({
+  title: MARKET_LIST_TITLE,
+  description: MARKET_LIST_DESCRIPTION,
   alternates: {
-    canonical: "/masters"
+    canonical: "/market"
   },
   openGraph: {
     type: "website",
-    url: "/masters",
-    title: MASTERS_LIST_TITLE,
-    description: MASTERS_LIST_DESCRIPTION
+    url: "/market",
+    title: MARKET_LIST_TITLE,
+    description: MARKET_LIST_DESCRIPTION
   },
   twitter: {
     card: "summary",
-    title: MASTERS_LIST_TITLE,
-    description: MASTERS_LIST_DESCRIPTION
+    title: MARKET_LIST_TITLE,
+    description: MARKET_LIST_DESCRIPTION
   }
 });
 
@@ -131,7 +131,7 @@ export const buildMasterBreadcrumbJsonLd = (
     "@type": "BreadcrumbList",
     itemListElement: [
       { "@type": "ListItem", position: 1, name: "Главная", item: base || "/" },
-      { "@type": "ListItem", position: 2, name: "Мастера", item: `${base}/masters` },
+      { "@type": "ListItem", position: 2, name: "Маркет", item: `${base}/market` },
       { "@type": "ListItem", position: 3, name: snapshot.displayName, item: `${base}/masters/${slug}` }
     ]
   };

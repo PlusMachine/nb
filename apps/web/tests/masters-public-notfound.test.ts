@@ -35,25 +35,29 @@ const publishedMasterSnapshot = {
 
 const mocks = vi.hoisted(() => ({
   getPublishedMasterBySlug: vi.fn(),
-  listPublishedMasters: vi.fn(),
+  listPublishedMarketItems: vi.fn(),
   notFound: vi.fn(() => {
     throw new Error("NEXT_NOT_FOUND");
+  }),
+  permanentRedirect: vi.fn((url: string) => {
+    throw new Error(`NEXT_REDIRECT:${url}`);
   })
 }));
 
 vi.mock("../features/masters/service", () => ({
   getPublishedMasterBySlug: mocks.getPublishedMasterBySlug,
-  listPublishedMasters: mocks.listPublishedMasters
+  listPublishedMarketItems: mocks.listPublishedMarketItems
 }));
-vi.mock("next/navigation", () => ({ notFound: mocks.notFound }));
+vi.mock("next/navigation", () => ({ notFound: mocks.notFound, permanentRedirect: mocks.permanentRedirect }));
 
 beforeEach(() => {
   mocks.getPublishedMasterBySlug.mockReset();
-  mocks.listPublishedMasters.mockReset();
+  mocks.listPublishedMarketItems.mockReset();
   mocks.notFound.mockClear();
+  mocks.permanentRedirect.mockClear();
 
   mocks.getPublishedMasterBySlug.mockResolvedValue({ snapshot: publishedMasterSnapshot });
-  mocks.listPublishedMasters.mockResolvedValue([]);
+  mocks.listPublishedMarketItems.mockResolvedValue([]);
 });
 
 describe("masters/[slug] notFound wiring", () => {
@@ -91,16 +95,44 @@ describe("masters/[slug] notFound wiring", () => {
   });
 });
 
-describe("/masters — пустая витрина", () => {
-  it("рендерится без падения и показывает CTA, когда listPublishedMasters вернул []", async () => {
-    mocks.listPublishedMasters.mockResolvedValue([]);
-    const { default: MastersPage } = await import("../app/(public)/masters/page");
-    const view = await MastersPage();
+describe("/market — товарный индекс", () => {
+  it("пустой маркет рендерится без падения и показывает CTA", async () => {
+    mocks.listPublishedMarketItems.mockResolvedValue([]);
+    const { default: MarketPage } = await import("../app/(public)/market/page");
+    const view = await MarketPage();
 
-    expect(mocks.listPublishedMasters).toHaveBeenCalled();
+    expect(mocks.listPublishedMarketItems).toHaveBeenCalled();
     const html = renderToStaticMarkup(view as React.ReactElement);
 
     expect(html).toContain("Делаете оборудование своими руками");
     expect(html).toContain("Открыть свою витрину");
+  });
+
+  it("карточки товаров ведут к изделию на странице мастера", async () => {
+    mocks.listPublishedMarketItems.mockResolvedValue([
+      {
+        itemId: "i1",
+        title: "ЦКТ 60 л",
+        priceNote: "45 000 ₽",
+        coverImage: null,
+        masterSlug: "ivanov-forge",
+        masterDisplayName: "Кузница Иванова",
+        masterCity: "Тюмень"
+      }
+    ]);
+    const { default: MarketPage } = await import("../app/(public)/market/page");
+    const html = renderToStaticMarkup((await MarketPage()) as React.ReactElement);
+
+    expect(html).toContain('href="/masters/ivanov-forge#item-i1"');
+    expect(html).toContain("ЦКТ 60 л");
+  });
+});
+
+describe("/masters — индекс переехал на /market", () => {
+  it("навсегда редиректит на /market", async () => {
+    const { default: MastersIndexRedirect } = await import("../app/(public)/masters/page");
+
+    expect(() => MastersIndexRedirect()).toThrow("NEXT_REDIRECT:/market");
+    expect(mocks.permanentRedirect).toHaveBeenCalledWith("/market");
   });
 });

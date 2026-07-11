@@ -6,6 +6,7 @@ import {
   Calculator,
   Cpu,
   FlaskConical,
+  Hammer,
   LayoutGrid,
   Library,
   Sparkles,
@@ -27,6 +28,8 @@ export type AppNavItem = {
   primary?: boolean;
   // дополнительные пути, при которых пункт считается активным
   match?: string[];
+  // пункт виден только пользователю с профилем мастера (см. resolveAppNavGroups)
+  requiresMasterProfile?: boolean;
 };
 
 export const appNavGroups: AppNavItem[][] = [
@@ -42,22 +45,32 @@ export const appNavGroups: AppNavItem[][] = [
   [
     { href: "/app/equipment", label: "Оборудование", icon: Wrench },
     { href: "/app/devices", label: "BrewForge", icon: Cpu },
-    // Витрина мастера (docs/masters-showcase.md) — не роль, а наличие профиля
-    // у пользователя; кабинет /app/master сам решает, показать анкету или
-    // кабинет. Пункт меню — рядом с личными разделами (оборудование/устройства),
-    // рабочее название владелец пересмотрит вживую.
-    { href: "/app/master", label: "Моя витрина", icon: Store }
+    // Кабинет мастера (docs/masters-showcase.md): пункт видят только владельцы
+    // профиля (requiresMasterProfile → resolveAppNavGroups). Вход «стать
+    // мастером» — CTA на витрине /masters, не постоянный пункт меню.
+    { href: "/app/master", label: "Моя витрина", icon: Hammer, requiresMasterProfile: true }
   ],
   [
     { href: "/catalog", label: "Каталог", icon: Library },
     { href: "/articles", label: "Статьи", icon: BookOpen },
     { href: "/bjcp", label: "Стили пива", icon: Sparkles },
-    { href: "/calculators", label: "Калькуляторы", icon: Calculator }
+    { href: "/calculators", label: "Калькуляторы", icon: Calculator },
+    // Товарная витрина мастеров; страницы мастеров живут на /masters/[slug],
+    // подсветка пункта покрывает и их.
+    { href: "/market", label: "Маркет", icon: Store, match: ["/masters"] }
   ]
 ];
 
 export const appNavItems = appNavGroups.flat();
 export const primaryNavItems = appNavItems.filter((item) => item.primary);
+
+// Группы нава под конкретного пользователя: пункты «только для мастеров»
+// скрываются, опустевшие группы схлопываются (чтобы не оставался двойной
+// разделитель).
+export const resolveAppNavGroups = (user: AppChromeUser): AppNavItem[][] =>
+  appNavGroups
+    .map((group) => group.filter((item) => !item.requiresMasterProfile || user.hasMasterProfile))
+    .filter((group) => group.length > 0);
 
 // Витринные разделы в порядке приоритетов посетителя: используются
 // хедером (переключение зон) и футером публичной зоны.
@@ -67,7 +80,7 @@ export const publicLinks: { href: string; label: string }[] = [
   { href: "/calculators", label: "Калькуляторы" },
   { href: "/articles", label: "Статьи" },
   { href: "/catalog", label: "Каталог" },
-  { href: "/masters", label: "Мастера" },
+  { href: "/market", label: "Маркет" },
   { href: "/brewforge", label: "BrewForge" }
 ];
 
@@ -108,6 +121,8 @@ export type AppChromeUser = {
   displayName: string;
   // editor+ — показывает мост в админку (вычисляется на сервере)
   isStaff?: boolean;
+  // есть профиль мастера — показывает «Моя витрина» (вычисляется на сервере)
+  hasMasterProfile?: boolean;
 };
 
 // Роуты, чей контент-браузер требует доп. ширину на ультрашироких экранах
@@ -125,6 +140,7 @@ const publicPathPrefixes = [
   "/calculators",
   "/articles",
   "/catalog",
+  "/market",
   "/masters",
   "/brewforge",
   "/legal",

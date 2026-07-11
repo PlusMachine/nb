@@ -2,10 +2,10 @@ import { describe, expect, it } from "vitest";
 
 import type { MasterPublishedSnapshot } from "../features/masters/contracts";
 import {
+  buildMarketListMetadata,
   buildMasterBreadcrumbJsonLd,
   buildMasterJsonLd,
-  buildMasterPageMetadata,
-  buildMastersListMetadata
+  buildMasterPageMetadata
 } from "../features/masters/seo";
 
 const baseSnapshot: MasterPublishedSnapshot = {
@@ -23,10 +23,10 @@ const baseSnapshot: MasterPublishedSnapshot = {
 };
 
 describe("masters seo", () => {
-  it("builds list metadata with a fixed title and canonical /masters", () => {
-    const metadata = buildMastersListMetadata();
-    expect(metadata.title).toBe("Мастера пивоварного оборудования");
-    expect(metadata.alternates?.canonical).toBe("/masters");
+  it("builds market list metadata with a fixed title and canonical /market", () => {
+    const metadata = buildMarketListMetadata();
+    expect(metadata.title).toBe("Маркет пивоварного оборудования от мастеров");
+    expect(metadata.alternates?.canonical).toBe("/market");
   });
 
   it("builds master page metadata with the name, specializations and city in the title", () => {
@@ -60,11 +60,12 @@ describe("masters seo", () => {
     expect(withoutPhone.image).toBeUndefined();
   });
 
-  it("builds a breadcrumb Главная → Мастера → displayName", () => {
+  it("builds a breadcrumb Главная → Маркет → displayName", () => {
     const jsonLd = buildMasterBreadcrumbJsonLd("kuznya-ivanova", baseSnapshot, { baseUrl: "https://nb.example" }) as {
       itemListElement: { name: string; item: string }[];
     };
-    expect(jsonLd.itemListElement.map((item) => item.name)).toEqual(["Главная", "Мастера", "Кузница Иванова"]);
+    expect(jsonLd.itemListElement.map((item) => item.name)).toEqual(["Главная", "Маркет", "Кузница Иванова"]);
+    expect(jsonLd.itemListElement[1]?.item).toBe("https://nb.example/market");
     expect(jsonLd.itemListElement[2]?.item).toBe("https://nb.example/masters/kuznya-ivanova");
   });
 });

@@ -45,10 +45,10 @@ const mapMasterModerationError = (error: unknown): { ok: false; error: string } 
   return { ok: false, error: "Не удалось выполнить операцию." };
 };
 
-// /masters и /masters/[slug] отдаются с revalidate=300 (TTL-страховка) — после
+// /market и /masters/[slug] отдаются с revalidate=300 (TTL-страховка) — после
 // approve/setListed их нужно обновить сразу, а не ждать до 5 минут.
 const revalidatePublicMasterPages = (slug: string | null) => {
-  revalidatePath("/masters");
+  revalidatePath("/market");
   if (slug) {
     revalidatePath(`/masters/${slug}`);
   }

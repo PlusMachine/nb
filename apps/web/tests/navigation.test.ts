@@ -1,6 +1,12 @@
 import { describe, expect, it } from "vitest";
 
-import { isPublicPath, isWideContentRoute, resolveContentWidthClass } from "../lib/navigation";
+import {
+  isPublicPath,
+  isWideContentRoute,
+  resolveAppNavGroups,
+  resolveContentWidthClass,
+  type AppChromeUser
+} from "../lib/navigation";
 
 describe("isWideContentRoute", () => {
   it("расширяет только точный /recipes", () => {
@@ -61,4 +67,28 @@ describe("resolveContentWidthClass", () => {
       expect(resolveContentWidthClass(pathname)).toBe("max-w-6xl");
     }
   );
+});
+
+describe("resolveAppNavGroups", () => {
+  const baseUser: AppChromeUser = { email: "u@example.com", displayName: "U" };
+  const hrefs = (user: AppChromeUser) =>
+    resolveAppNavGroups(user)
+      .flat()
+      .map((item) => item.href);
+
+  it("без профиля мастера «Моя витрина» скрыта, маркет /market доступен", () => {
+    const items = hrefs(baseUser);
+    expect(items).not.toContain("/app/master");
+    expect(items).toContain("/market");
+  });
+
+  it("с профилем мастера «Моя витрина» видна", () => {
+    expect(hrefs({ ...baseUser, hasMasterProfile: true })).toContain("/app/master");
+  });
+
+  it("не оставляет пустых групп (двойной разделитель)", () => {
+    for (const group of resolveAppNavGroups(baseUser)) {
+      expect(group.length).toBeGreaterThan(0);
+    }
+  });
 });
