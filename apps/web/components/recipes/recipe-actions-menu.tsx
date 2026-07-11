@@ -1,21 +1,31 @@
 "use client";
 
 import React from "react";
-import { FileText, Timer } from "lucide-react";
+import Link from "next/link";
+import { FileText, Sticker, Timer } from "lucide-react";
 
-import { Button } from "@nb/ui";
+import { Button, buttonVariants } from "@nb/ui";
 
 export function RecipeActionsMenu({
   pending,
+  labelsHref,
   onOpenImportExport,
   onOpenBrew
 }: {
   pending: boolean;
+  /** Ссылка на генератор наклеек; null — рецепт ещё не сохранён. */
+  labelsHref?: string | null;
   onOpenImportExport: () => void;
   onOpenBrew: () => void;
 }) {
   return (
     <div className="flex flex-wrap items-end gap-2">
+      {labelsHref ? (
+        <Link href={labelsHref} className={buttonVariants({ variant: "outline", size: "md" })}>
+          <Sticker className="h-4 w-4 text-muted-foreground" />
+          Наклейки
+        </Link>
+      ) : null}
       <Button
         type="button"
         variant="outline"

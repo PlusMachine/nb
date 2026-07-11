@@ -1252,6 +1252,7 @@ export function RecipeDesigner({
           ) : null}
           <RecipeActionsMenu
             pending={pendingSave}
+            labelsHref={activeRecipeId ? `/app/recipes/${activeRecipeId}/labels` : null}
             onOpenImportExport={() => setImportExportOpen(true)}
             onOpenBrew={() => void handleOpenBrewPicker()}
           />
