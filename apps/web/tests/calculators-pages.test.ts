@@ -76,7 +76,8 @@ describe("calculator pages", () => {
     expect(html).not.toContain("Доступно без логина");
     expect(html).not.toContain("hmelo tools");
     expect(html).not.toContain("Открыть");
-    expect(html).toContain("Популярные");
+    expect(html).not.toContain("Популярные");
+    expect(html).not.toContain("формула и допущения");
     expect(html).toContain('id="calculators-search"');
     expect(html).toContain("Название или термин: ibu, праймер, brix…");
     expect(html).not.toContain("Плотность, алкоголь, IBU, вода, дрожжи, карбонизация и розлив");
@@ -91,7 +92,7 @@ describe("calculator pages", () => {
     const sectionCounts = calculatorSections.map(
       (section) => calculators.filter((calculator) => calculator.section === section).length
     );
-    expect(sectionCounts).toEqual([4, 6, 3, 4]);
+    expect(sectionCounts).toEqual([5, 6, 2, 4]);
 
     const h2Headings = [...html.matchAll(/<h2[^>]*>([^<]*)<\/h2>/g)].map((match) => match[1]);
     expect(h2Headings).toEqual(calculatorSections);

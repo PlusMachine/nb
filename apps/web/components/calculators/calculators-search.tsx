@@ -10,12 +10,16 @@ import { CalculatorCard } from "./calculator-card";
 // ё и е — частая опечатка/вариативность ввода (тёрка ~ терка), не должна мешать поиску.
 const normalize = (value: string) => value.toLowerCase().replace(/ё/g, "е");
 
-const matchesQuery = (calculator: CalculatorCardItem, normalizedQuery: string) => {
+export const matchesCalculatorQuery = (calculator: CalculatorCardItem, query: string) => {
   const haystack = normalize(
     [calculator.title, calculator.shortTitle, calculator.description, ...calculator.aliases].join(" ")
   );
-  return haystack.includes(normalizedQuery);
+  return haystack.includes(normalize(query.trim()));
 };
+
+// Подсказки в плейсхолдере — обещание: каждая обязана что-то находить (см. тест
+// calculators-search.test.ts). Меняя их, проверь алиасы в каталоге.
+export const calculatorSearchHints = ["ibu", "праймер", "brix"];
 
 /**
  * Клиентская обёртка индекса калькуляторов: строка поиска + сетка карточек.
@@ -35,7 +39,7 @@ export function CalculatorsSearch({
     if (!normalizedQuery) {
       return null;
     }
-    return calculators.filter((calculator) => matchesQuery(calculator, normalizedQuery));
+    return calculators.filter((calculator) => matchesCalculatorQuery(calculator, normalizedQuery));
   }, [calculators, normalizedQuery]);
 
   return (
@@ -50,7 +54,7 @@ export function CalculatorsSearch({
           type="search"
           value={query}
           onChange={(event) => setQuery(event.target.value)}
-          placeholder="Название или термин: ibu, праймер, brix…"
+          placeholder={`Название или термин: ${calculatorSearchHints.join(", ")}…`}
           className="h-11 w-full rounded-xl border border-border bg-card pl-10 pr-10 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
         />
         {query ? (

@@ -1,12 +1,6 @@
-import Link from "next/link";
 import React from "react";
 
-import {
-  calculatorBySlug,
-  calculatorCardItems,
-  calculators,
-  popularCalculatorSlugs
-} from "@/features/calculators/catalog";
+import { calculatorCardItems, calculators } from "@/features/calculators/catalog";
 
 import { CalculatorFavoritesProvider } from "./calculator-favorites-provider";
 import { CalculatorsSearch } from "./calculators-search";
@@ -25,30 +19,9 @@ export function CalculatorsIndex() {
           </h1>
           <p className="text-sm leading-6 text-muted-foreground">
             Расчеты для домашнего пивоварения: плотность и алкоголь, горечь, вода, дрожжи, карбонизация и розлив.
-            У каждого калькулятора — формула и допущения, на которых строится результат.
           </p>
         </div>
       </section>
-
-      <div className="mb-5 sm:mb-6">
-        <p className="mb-2 text-sm font-semibold uppercase tracking-[0.08em] text-muted-foreground">
-          Популярные
-        </p>
-        <div className="flex flex-wrap gap-2">
-          {popularCalculatorSlugs.map((slug) => {
-            const calculator = calculatorBySlug[slug];
-            return (
-              <Link
-                key={slug}
-                href={calculator.href}
-                className="rounded-full border border-border bg-card px-3 py-1.5 text-sm text-foreground transition-colors hover:bg-muted"
-              >
-                {calculator.shortTitle}
-              </Link>
-            );
-          })}
-        </div>
-      </div>
 
       <CalculatorFavoritesProvider slugs={calculators.map((calculator) => calculator.slug)}>
         <CalculatorsSearch calculators={calculatorCardItems} />
