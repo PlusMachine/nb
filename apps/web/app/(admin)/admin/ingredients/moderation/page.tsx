@@ -8,7 +8,7 @@ export default async function IngredientModerationPage() {
 
   return (
     <section className="space-y-4">
-      <h1 className="text-2xl font-semibold">Pending ingredient moderation</h1>
+      <h1 className="text-2xl font-semibold">Модерация ингредиентов</h1>
       <ModerationQueue initialItems={items.map((item) => ({
         id: item.id,
         sourceDisplayName: item.sourceDisplayName,

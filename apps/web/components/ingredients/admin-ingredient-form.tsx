@@ -51,7 +51,7 @@ const parseJson = <T,>(value: string, fallback: T, label: string) => {
   try {
     return JSON.parse(trimmed) as T;
   } catch {
-    throw new Error(`${label}: invalid JSON`);
+    throw new Error(`${label}: некорректный JSON`);
   }
 };
 
@@ -184,7 +184,7 @@ export const AdminIngredientForm = ({ initial }: { initial?: IngredientFormValue
     let attributes: Record<string, unknown> = {};
 
     try {
-      attributes = parseJson<Record<string, unknown>>(attributesJson, {}, "attributes");
+      attributes = parseJson<Record<string, unknown>>(attributesJson, {}, "Атрибуты");
     } catch {
       attributes = {};
     }
@@ -237,14 +237,14 @@ export const AdminIngredientForm = ({ initial }: { initial?: IngredientFormValue
         const formData = new FormData(event.currentTarget);
 
         try {
-          const attributes = parseJson<Record<string, unknown>>(attributesJson, {}, "attributes");
+          const attributes = parseJson<Record<string, unknown>>(attributesJson, {}, "Атрибуты");
           const aliases = parseJson<Array<{
             id?: string;
             locale: IngredientAliasDto["locale"];
             alias: string;
             source?: string;
             isEnabled?: boolean;
-          }>>(aliasesJson, [], "aliases");
+          }>>(aliasesJson, [], "Альтернативные названия");
           const sources = parseJson<Array<{
             id?: string;
             kind?: string | null;
@@ -252,7 +252,7 @@ export const AdminIngredientForm = ({ initial }: { initial?: IngredientFormValue
             url?: string | null;
             sourceBasis?: string | null;
             position?: number;
-          }>>(sourcesJson, [], "sources");
+          }>>(sourcesJson, [], "Источники");
           const packageVariants = parseJson<Array<{
             id: string;
             brand?: string | null;
@@ -266,11 +266,11 @@ export const AdminIngredientForm = ({ initial }: { initial?: IngredientFormValue
             sourceUrl?: string | null;
             isDefaultForStock?: boolean;
             position?: number;
-          }>>(packageVariantsJson, [], "package variants");
+          }>>(packageVariantsJson, [], "Варианты упаковки");
           const quantityDefaults = parseJson<Record<string, unknown> | null>(
             quantityDefaultsJson,
             null,
-            "quantity defaults"
+            "Количества по умолчанию"
           );
 
           const payload = {
@@ -343,19 +343,19 @@ export const AdminIngredientForm = ({ initial }: { initial?: IngredientFormValue
 
           if (!response.ok) {
             const data = await response.json() as { error?: string };
-            setError(data.error ?? "Request failed");
+            setError(data.error ?? "Не удалось выполнить запрос");
             return;
           }
 
           window.location.href = `/admin/ingredients/${initial?.id ?? ""}`.replace(/\/$/, "") || "/admin/ingredients";
         } catch (submissionError) {
-          setError(submissionError instanceof Error ? submissionError.message : "Request failed");
+          setError(submissionError instanceof Error ? submissionError.message : "Не удалось выполнить запрос");
         }
       }}
     >
       <header className="space-y-1">
         <h1 className="text-xl font-semibold text-foreground">
-          {initial?.id ? "Edit ingredient" : "Create ingredient"}
+          {initial?.id ? "Редактирование ингредиента" : "Новый ингредиент"}
         </h1>
         <p className="text-sm text-muted-foreground">
           Форма работает с новой моделью `ingredients`, а aliases/sources/package variants редактируются как source-of-truth.
@@ -364,10 +364,10 @@ export const AdminIngredientForm = ({ initial }: { initial?: IngredientFormValue
       </header>
 
       <section className={sectionClassName}>
-        <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">Taxonomy</h2>
+        <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">Таксономия</h2>
         <div className="grid gap-3 md:grid-cols-3">
           <label className="text-sm">
-            Category
+            Категория
             <select
               value={selectedCategory}
               onChange={(event) => {
@@ -389,7 +389,7 @@ export const AdminIngredientForm = ({ initial }: { initial?: IngredientFormValue
             </select>
           </label>
           <label className="text-sm">
-            Subtype
+            Подтип
             <select
               value={selectedSubtype ?? ""}
               onChange={(event) => setSelectedSubtype(resolveIngredientSubtype({
@@ -404,25 +404,25 @@ export const AdminIngredientForm = ({ initial }: { initial?: IngredientFormValue
             </select>
           </label>
           <label className="text-sm">
-            Type
+            Тип
             <input value={resolvedType} readOnly className={`${inputClassName} bg-muted`} />
           </label>
         </div>
       </section>
 
       <section className={sectionClassName}>
-        <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">Names & Display</h2>
+        <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">Названия и отображение</h2>
         <div className="grid gap-3 md:grid-cols-2">
           <label className="text-sm">
-            Name RU
+            Название (рус.)
             <input name="nameRu" defaultValue={initial?.nameRu ?? ""} className={inputClassName} />
           </label>
           <label className="text-sm">
-            Name EN
+            Название (англ.)
             <input name="nameEn" defaultValue={initial?.nameEn ?? ""} className={inputClassName} />
           </label>
           <label className="text-sm">
-            Display mode RU
+            Режим отображения (рус.)
             <select name="displayModeRu" defaultValue={initial?.displayModeRu ?? "auto"} className={inputClassName}>
               {ingredientDisplayModes.map((mode) => (
                 <option key={mode} value={mode}>{mode}</option>
@@ -430,16 +430,16 @@ export const AdminIngredientForm = ({ initial }: { initial?: IngredientFormValue
             </select>
           </label>
           <label className="text-sm">
-            Primary override
+            Переопределение основного названия
             <input name="displayNameOverrideRu" defaultValue={initial?.displayNameOverrideRu ?? ""} className={inputClassName} />
           </label>
           <label className="text-sm">
-            Secondary override
+            Переопределение второго названия
             <input name="secondaryNameOverrideRu" defaultValue={initial?.secondaryNameOverrideRu ?? ""} className={inputClassName} />
           </label>
           <label className="flex items-center gap-2 pt-7 text-sm">
             <input name="hideSecondaryNameRu" type="checkbox" defaultChecked={initial?.hideSecondaryNameRu ?? false} />
-            Hide secondary name
+            Скрыть второе название
           </label>
         </div>
         <label className="block text-sm">
@@ -454,64 +454,64 @@ export const AdminIngredientForm = ({ initial }: { initial?: IngredientFormValue
       </section>
 
       <section className={sectionClassName}>
-        <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">Meta</h2>
+        <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">Метаданные</h2>
         <div className="grid gap-3 md:grid-cols-3">
           <label className="text-sm">
-            Brand
+            Бренд
             <input name="brand" defaultValue={initial?.brand ?? ""} className={inputClassName} />
           </label>
           <label className="text-sm">
-            Producer
+            Производитель
             <input name="producer" defaultValue={initial?.producer ?? ""} className={inputClassName} />
           </label>
           <label className="text-sm">
-            Product code
+            Артикул
             <input name="productCode" defaultValue={initial?.productCode ?? ""} className={inputClassName} />
           </label>
           <label className="text-sm">
-            Country code
+            Код страны
             <input name="countryCode" defaultValue={initial?.countryCode ?? ""} className={inputClassName} />
           </label>
           <label className="text-sm">
-            Country name
+            Название страны
             <input name="countryName" defaultValue={initial?.countryName ?? ""} className={inputClassName} />
           </label>
           <label className="text-sm">
-            Group
+            Группа
             <input name="groupName" defaultValue={initial?.groupName ?? ""} className={inputClassName} />
           </label>
           <label className="text-sm">
-            Source category
+            Категория источника
             <input name="sourceCategory" defaultValue={initial?.sourceCategory ?? ""} className={inputClassName} />
           </label>
           <label className="text-sm">
-            Subcategory
+            Подкатегория
             <input name="subcategory" defaultValue={initial?.subcategory ?? ""} className={inputClassName} />
           </label>
           <label className="text-sm">
-            Present on BIRRF
+            Есть в BIRRF
             <select name="presentOnBirrf" defaultValue={initial?.presentOnBirrf == null ? "" : String(initial.presentOnBirrf)} className={inputClassName}>
-              <option value="">Unknown</option>
-              <option value="true">Yes</option>
-              <option value="false">No</option>
+              <option value="">Не указано</option>
+              <option value="true">Да</option>
+              <option value="false">Нет</option>
             </select>
           </label>
           <label className="flex items-center gap-2 pt-7 text-sm">
             <input name="isActive" type="checkbox" defaultChecked={initial?.isActive ?? true} />
-            Active
+            Активен
           </label>
           <label className="flex items-center gap-2 pt-7 text-sm">
             <input name="inventoryEnabled" type="checkbox" defaultChecked={initial?.inventoryEnabled ?? true} />
-            Inventory enabled
+            Доступен на складе
           </label>
         </div>
       </section>
 
       <section className={sectionClassName}>
-        <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">JSON Editors</h2>
+        <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">JSON-редакторы</h2>
         <div className="grid gap-4">
           <label className="text-sm">
-            Attributes
+            Атрибуты
             <textarea
               value={attributesJson}
               onChange={(event) => setAttributesJson(event.target.value)}
@@ -519,7 +519,7 @@ export const AdminIngredientForm = ({ initial }: { initial?: IngredientFormValue
             />
           </label>
           <label className="text-sm">
-            Aliases
+            Альтернативные названия
             <textarea
               value={aliasesJson}
               onChange={(event) => setAliasesJson(event.target.value)}
@@ -527,7 +527,7 @@ export const AdminIngredientForm = ({ initial }: { initial?: IngredientFormValue
             />
           </label>
           <label className="text-sm">
-            Sources
+            Источники
             <textarea
               value={sourcesJson}
               onChange={(event) => setSourcesJson(event.target.value)}
@@ -536,7 +536,7 @@ export const AdminIngredientForm = ({ initial }: { initial?: IngredientFormValue
           </label>
           {selectedCategory === "consumable" ? (
             <label className="text-sm">
-              Package variants
+              Варианты упаковки
               <textarea
                 value={packageVariantsJson}
                 onChange={(event) => setPackageVariantsJson(event.target.value)}
@@ -546,7 +546,7 @@ export const AdminIngredientForm = ({ initial }: { initial?: IngredientFormValue
           ) : null}
           {(selectedCategory === "consumable" || selectedCategory === "water_treatment") ? (
             <label className="text-sm">
-              Quantity defaults
+              Количества по умолчанию
               <textarea
                 value={quantityDefaultsJson}
                 onChange={(event) => setQuantityDefaultsJson(event.target.value)}
@@ -558,23 +558,23 @@ export const AdminIngredientForm = ({ initial }: { initial?: IngredientFormValue
       </section>
 
       <section className={sectionClassName}>
-        <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">Preview</h2>
+        <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">Предпросмотр</h2>
         <div className="grid gap-3 md:grid-cols-2">
           <div className="rounded-lg border border-border bg-muted p-3">
-            <p className="text-xs uppercase tracking-wide text-muted-foreground">Catalog / Search</p>
-            <p className="mt-2 font-medium text-foreground">{preview.primaryName || "No primary label"}</p>
+            <p className="text-xs uppercase tracking-wide text-muted-foreground">Каталог / Поиск</p>
+            <p className="mt-2 font-medium text-foreground">{preview.primaryName || "Без основного названия"}</p>
             {preview.secondaryName ? <p className="text-sm text-muted-foreground">{preview.secondaryName}</p> : null}
             {preview.summary ? <p className="mt-2 text-sm text-muted-foreground">{preview.summary}</p> : null}
           </div>
           <div className="rounded-lg border border-border bg-muted p-3">
-            <p className="text-xs uppercase tracking-wide text-muted-foreground">Recipe / Inventory</p>
-            <p className="mt-2 font-medium text-foreground">{preview.primaryName || "No primary label"}</p>
+            <p className="text-xs uppercase tracking-wide text-muted-foreground">Рецепт / Склад</p>
+            <p className="mt-2 font-medium text-foreground">{preview.primaryName || "Без основного названия"}</p>
             <p className="text-sm text-muted-foreground">{resolvedType} / {selectedCategory} / {selectedSubtype ?? "none"}</p>
             <p className="mt-2 text-sm text-muted-foreground">
-              Primary fields: {fieldVisibility.primary.join(", ")}
+              Основные поля: {fieldVisibility.primary.join(", ")}
             </p>
             {fieldVisibility.advanced.length ? (
-              <p className="text-sm text-muted-foreground">Advanced fields: {fieldVisibility.advanced.join(", ")}</p>
+              <p className="text-sm text-muted-foreground">Дополнительные поля: {fieldVisibility.advanced.join(", ")}</p>
             ) : null}
           </div>
         </div>
@@ -582,10 +582,10 @@ export const AdminIngredientForm = ({ initial }: { initial?: IngredientFormValue
 
       <div className="flex gap-3">
         <Button type="submit" size="md">
-          {initial?.id ? "Save ingredient" : "Create ingredient"}
+          {initial?.id ? "Сохранить" : "Создать"}
         </Button>
         <Link href="/admin/ingredients" className="rounded-lg border border-border px-4 py-2 text-sm text-foreground">
-          Cancel
+          Отмена
         </Link>
       </div>
     </form>

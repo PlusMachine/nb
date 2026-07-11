@@ -19,7 +19,11 @@ const KNOWN_STATUS: Record<string, number> = {
   CLAIM_CODE_ALREADY_CONSUMED: 409,
   DEVICE_OWNED_BY_OTHER_USER: 409,
   NOT_FOUND: 404,
-  DEMO_NOT_AVAILABLE: 403
+  DEMO_NOT_AVAILABLE: 403,
+  // Транспорт (lanTransport.putConfig) бросает этот код на офлайн/таймаут/egress-
+  // блок — тот же смысл, что и getConfig→null в GET-обработчике (F4): 502, а не
+  // 500 INTERNAL_ERROR на пустом месте.
+  DEVICE_UNREACHABLE: 502
 };
 
 /**

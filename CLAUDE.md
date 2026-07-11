@@ -39,6 +39,7 @@ Modular monolith: один runtime `apps/web`, одна БД PostgreSQL, мон�
 - `npm run dev` — авто `db:migrate` + `db:seed`, затем Next.js
 - `npm run build` / `npm run lint` / `npm run typecheck` / `npm run test` — по всем workspace
 - БД: `npm run db:generate | db:migrate | db:seed | db:reset`
+- Синк каталога ингредиентов из `ingredients/new/*.json` в БД (без сброса): `npm run catalog:sync`
 - Точечный typecheck web: `npx tsc -p apps/web/tsconfig.json --noEmit`
 
 ## Dev/Test доступ

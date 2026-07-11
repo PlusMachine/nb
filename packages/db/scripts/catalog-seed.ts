@@ -476,6 +476,11 @@ const normalizeSeedCountryCode = (countryCode: unknown, countryName: unknown) =>
     if (countryCodeAliases[normalizedCode]) {
       return countryCodeAliases[normalizedCode];
     }
+
+    // Обычный 2-буквенный ISO-код страны (US, DE, CZ, GB…), не требующий алиаса.
+    if (/^[A-Z]{2}$/.test(normalizedCode)) {
+      return normalizedCode;
+    }
   }
 
   const normalizedName = readString(countryName)?.toLowerCase();

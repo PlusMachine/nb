@@ -147,4 +147,33 @@ describe("catalog seed data", () => {
     expect((bavarianPilsner?.ingredient.attributes ?? {}).product_family).toBe("extract_concentrate");
     expect((bavarianPilsner?.ingredient.attributes ?? {}).subtype_key).toBe("malt_extract");
   });
+
+  it("treats an ordinary 2-letter ISO country code as enough to localize a hop with name_ru", () => {
+    const prepared = prepareCatalogSeedFile({
+      fileName: "hop_catalog_minimal_v2.json",
+      type: "hop"
+    });
+    const eclipse = prepared.find((item) => item.ingredient.id === "au-eclipse-standard");
+
+    expect(eclipse?.ingredient.countryCode).toBe("AU");
+    expect(eclipse?.ingredient.nameRu).toBe("Эклипс");
+    expect(eclipse?.ingredient.displayModeRu).toBe("localized_first");
+  });
+
+  it("keeps hop name_en out of full-caps for word-like names (codes like ADHA-484/BRU-1/CTZ/XJA 436/92 P 2/4 are exempt)", () => {
+    const prepared = prepareCatalogSeedFile({
+      fileName: "hop_catalog_minimal_v2.json",
+      type: "hop"
+    });
+    const isWordLikeAllCaps = (value: string) => (
+      /^[A-Z][A-Z .]*$/.test(value)
+      && value.length > 4
+      && value === value.toUpperCase()
+    );
+    const shoutingNames = prepared
+      .map((item) => item.ingredient.nameEn)
+      .filter((nameEn): nameEn is string => typeof nameEn === "string" && isWordLikeAllCaps(nameEn));
+
+    expect(shoutingNames).toEqual([]);
+  });
 });

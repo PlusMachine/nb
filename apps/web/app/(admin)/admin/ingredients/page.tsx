@@ -70,7 +70,7 @@ const completenessBadgeClasses: Record<IngredientCatalogItemDto["completenessLev
 
 const visibilityBadgeLabels: Record<IngredientCatalogItemDto["visibility"], string> = {
   public: "Публичный",
-  internal: "Internal"
+  internal: "Внутренний"
 };
 
 const parsePage = (value: string | undefined) => {
@@ -197,7 +197,7 @@ function CatalogIngredientsTable({ items, showBrandColumn }: CatalogTableProps) 
                       href={`/admin/ingredients/merge?sourceId=${item.id}`}
                       className="inline-flex items-center rounded-lg border border-border px-2.5 py-1.5 text-xs font-medium text-foreground hover:bg-card"
                     >
-                      Merge
+                      Объединить
                     </Link>
                     <DeleteCatalogIngredientButton ingredientId={item.id} displayName={primaryName} />
                     {item.mergedIntoId ? (
@@ -205,7 +205,7 @@ function CatalogIngredientsTable({ items, showBrandColumn }: CatalogTableProps) 
                         href={`/admin/ingredients/${item.mergedIntoId}`}
                         className="inline-flex items-center rounded-lg border border-sky-200 bg-sky-50 px-2.5 py-1.5 text-xs font-medium text-sky-700 dark:border-sky-500/30 dark:bg-sky-500/15 dark:text-sky-300"
                       >
-                        Target
+                        Итоговый
                       </Link>
                     ) : null}
                   </div>
@@ -274,7 +274,7 @@ export default async function AdminIngredientsPage({ searchParams }: Props) {
               className="inline-flex items-center gap-2 rounded-xl border border-border bg-card px-4 py-2.5 text-sm font-medium text-foreground"
             >
               <ArrowRightLeft className="h-4 w-4" />
-              Merge дублей
+              Объединение дублей
             </Link>
             <Link
               href="/admin/ingredients/moderation"

@@ -16,11 +16,17 @@
 //  Матрица состояний §12.1: конфиг недоступен (офлайн-чтение упало) ≠ профиль
 //  пуст (nSteps=0) — разные баннеры, не путаем «не смогли узнать» с «пусто».
 //
+//  Загрузка ferment{} конфига (F3): сервер (page.tsx) больше НЕ ждёт readConfig
+//  устройства — офлайн-прибор без таймаута на fetch держал всю SSR-страницу на
+//  ОС-таймаут (~17с). Конфиг грузится здесь, на маунте, коротким клиентским
+//  fetch с AbortSignal.timeout — состояние configLoadStatus различает «ещё
+//  грузим» (нейтральный скелет) от «точно недоступен» (баннер) от «прочитан».
+//
 //  Датчики-грид (детальный список сенсоров варочного пульта) сознательно
 //  ОПУЩЕН — glanceable-пульт ферментации (§8): герой уже показывает главный
 //  датчик, детальный список на недельном процессе не нужен ежедневно.
 // =============================================================================
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { Beer, ChevronRight, OctagonX, Square } from "lucide-react";
 import Link from "next/link";
 
@@ -115,11 +121,56 @@ export function FermentDashboardView({
   const { controlsHeld, pending, send } = command;
 
   const [fermentConfig, setFermentConfig] = useState<FermentConfig | null>(initialFermentConfig);
+  // "loading" — ещё не знаем (пришли с сервера без конфига, F3); "unavailable" —
+  // клиентский fetch подтвердил недоступность/таймаут; "ready" — конфиг получен
+  // (initialFermentConfig !== null покрывает и будущих вызывающих, которые всё же
+  // передадут preload). configUnavailable=true с сервера — тоже сразу "unavailable".
+  const [configLoadStatus, setConfigLoadStatus] = useState<"loading" | "unavailable" | "ready">(
+    initialFermentConfig !== null ? "ready" : configUnavailable ? "unavailable" : "loading",
+  );
   const [savingSetpoint, setSavingSetpoint] = useState(false);
   const [savingProfile, setSavingProfile] = useState(false);
   const [editorOpen, setEditorOpen] = useState(false);
   const [confirm, setConfirm] = useState<ConfirmState>(null);
   const [actionMsg, setActionMsg] = useState<string | null>(null);
+
+  // Клиентская загрузка ferment{} конфига (F3): офлайн-устройство больше не
+  // держит SSR — таймаут (8с) вместо ОС-таймаута голого fetch (~17с), по образцу
+  // device-config-form.tsx. Выставлен ЗАМЕТНО выше серверного бюджета (getConfig
+  // внутри — 4с) с запасом на auth/БД-оверхед маршрута: иначе живое, но медленное
+  // устройство успевает получить только 502 от сервера уже ПОСЛЕ клиентского
+  // AbortError, и ложно помечается «недоступен» без единого ретрая. Пока грузится
+  // — нейтральный скелет, не «недоступен» (см. profileSection ниже).
+  useEffect(() => {
+    if (configLoadStatus !== "loading") return;
+    let cancelled = false;
+    (async () => {
+      try {
+        const res = await fetch(`/api/devices/${deviceId}/config`, {
+          cache: "no-store",
+          signal: AbortSignal.timeout(8000),
+        });
+        const body = (await res.json().catch(() => null)) as { config?: unknown } | null;
+        if (cancelled) return;
+        if (!res.ok || !body?.config) {
+          setConfigLoadStatus("unavailable");
+          return;
+        }
+        const parsed = DeviceConfigSchema.safeParse(body.config);
+        if (!parsed.success) {
+          setConfigLoadStatus("unavailable");
+          return;
+        }
+        setFermentConfig(parsed.data.ferment ?? null);
+        setConfigLoadStatus("ready");
+      } catch {
+        if (!cancelled) setConfigLoadStatus("unavailable");
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [configLoadStatus, deviceId]);
 
   // Рутинные команды (SKIP_STAGE) — только у держателя аренды при живой телеметрии.
   // Правка конфига (PUT /config) НЕ гейтится арендой — как настройки устройства.
@@ -256,7 +307,12 @@ export function FermentDashboardView({
     />
   );
 
-  const profileSection = configUnavailable ? (
+  const profileSection = configLoadStatus === "loading" ? (
+    <div className="rounded-2xl border border-border bg-card p-5 shadow-sm" aria-busy="true">
+      <div className="h-4 w-40 animate-pulse rounded bg-muted" />
+      <div className="mt-3 h-3 w-64 animate-pulse rounded bg-muted" />
+    </div>
+  ) : configLoadStatus === "unavailable" ? (
     <div className="rounded-2xl border border-warning/30 bg-warning-subtle p-4 text-sm text-warning-subtle-foreground">
       Конфиг устройства недоступен — не можем показать профиль брожения. Живая телеметрия работает как обычно.
     </div>

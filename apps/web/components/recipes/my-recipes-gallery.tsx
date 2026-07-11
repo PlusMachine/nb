@@ -60,6 +60,13 @@ type GalleryIntent = "manage" | "brew";
  */
 const TOOLBAR_THRESHOLD = 6;
 
+/**
+ * Размер порции клиентской подгрузки — карточки рендерятся все сразу
+ * (данные и так уже загружены целиком), но чтобы не рисовать десятки DOM-узлов
+ * на мобиле одним махом, показываем их порциями по кнопке «Показать ещё».
+ */
+const PAGE_SIZE = 12;
+
 const sortLabels: Record<SortMode, string> = {
   updated: "Сначала недавние",
   brewable: "Сначала можно сварить",
@@ -234,6 +241,7 @@ function RecipesGalleryInner({
   const [query, setQuery] = useState(initialQuery);
   const [status, setStatus] = useState<StatusFilter>(initialStatus);
   const [sort, setSort] = useState<SortMode>(initialSort ?? defaultSort);
+  const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
 
   // Выбранный для варки рецепт → открываем общий BrewPickerDialog.
   const [brewRecipe, setBrewRecipe] = useState<OwnerRecipeCardDto | null>(null);
@@ -370,6 +378,16 @@ function RecipesGalleryInner({
     // matchReady в зависимостях: пересортировать, когда матч склад↔рецепт догрузился.
   }, [recipes, query, status, sort, brewMode, getMatch, matchReady]);
 
+  // Смена поиска/статуса/сортировки меняет набор результатов — начинаем
+  // подгрузку заново, иначе кнопка «Показать ещё» могла бы остаться в
+  // «раскрытом» состоянии для совсем другого списка.
+  useEffect(() => {
+    setVisibleCount(PAGE_SIZE);
+  }, [query, status, sort]);
+
+  const shown = visible.slice(0, visibleCount);
+  const hasMore = visible.length > shown.length;
+
   const handleBrew = (recipe: OwnerRecipeCardDto) => {
     setBrewRecipe(recipe);
     setBrewOpen(true);
@@ -456,7 +474,7 @@ function RecipesGalleryInner({
         </p>
       ) : view === "list" ? (
         <div className="flex flex-col gap-3">
-          {visible.map((recipe) => (
+          {shown.map((recipe) => (
             <OwnerRecipeRow
               key={recipe.id}
               recipe={recipe}
@@ -468,7 +486,7 @@ function RecipesGalleryInner({
         </div>
       ) : (
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-          {visible.map((recipe) => (
+          {shown.map((recipe) => (
             <OwnerRecipeCard
               key={recipe.id}
               recipe={recipe}
@@ -479,6 +497,18 @@ function RecipesGalleryInner({
           ))}
         </div>
       )}
+
+      {hasMore ? (
+        <div className="flex justify-center">
+          <button
+            type="button"
+            onClick={() => setVisibleCount((count) => count + PAGE_SIZE)}
+            className="rounded-lg border border-border bg-card px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-muted"
+          >
+            Показать ещё
+          </button>
+        </div>
+      ) : null}
 
       {brewRecipe ? (
         <BrewPickerDialog

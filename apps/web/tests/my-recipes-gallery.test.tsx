@@ -195,4 +195,40 @@ describe("MyRecipesGallery", () => {
 
     expect(html).toContain('id="my-recipes-search"');
   });
+
+  it("больше 12 рецептов → первая порция из 12 карточек и кнопка «Показать ещё»", () => {
+    const recipes: OwnerRecipeCardDto[] = Array.from({ length: 15 }, (_, index) => ({
+      ...baseRecipe,
+      id: `r-${index}`,
+      slug: `recipe-${index}`,
+      title: `Recipe ${index}`
+    }));
+
+    const html = renderToStaticMarkup(
+      <MyRecipesGallery recipes={recipes} preferredGravityUnit="plato" />
+    );
+
+    for (let index = 0; index < 12; index += 1) {
+      expect(html).toContain(`Recipe ${index}`);
+    }
+    for (let index = 12; index < 15; index += 1) {
+      expect(html).not.toContain(`Recipe ${index}`);
+    }
+    expect(html).toContain("Показать ещё");
+  });
+
+  it("не больше 12 рецептов → кнопка «Показать ещё» не рендерится", () => {
+    const recipes: OwnerRecipeCardDto[] = Array.from({ length: 12 }, (_, index) => ({
+      ...baseRecipe,
+      id: `r-${index}`,
+      slug: `recipe-${index}`,
+      title: `Recipe ${index}`
+    }));
+
+    const html = renderToStaticMarkup(
+      <MyRecipesGallery recipes={recipes} preferredGravityUnit="plato" />
+    );
+
+    expect(html).not.toContain("Показать ещё");
+  });
 });
