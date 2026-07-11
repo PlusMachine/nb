@@ -2,10 +2,13 @@ import { NextResponse } from "next/server";
 
 import { listIngredientPickerQuickStart } from "@/features/ingredients/catalog-service";
 import type { IngredientCategory, UserIngredientReference } from "@/features/ingredients/contracts";
-import { requireUser } from "@/lib/auth";
+import { getSessionUser } from "@/lib/auth";
 
+// Каталог ингредиентов — публичная зона (см. /catalog): анонимный посетитель получает
+// системный quick-start без избранного/недавних/кастомных. Нужно калькуляторам
+// (напр. brewhouse-efficiency), которые используют пикер вне залогиненной зоны.
 export async function POST(request: Request) {
-  const user = await requireUser();
+  const user = await getSessionUser();
 
   try {
     const body = await request.json() as {
@@ -14,7 +17,7 @@ export async function POST(request: Request) {
       recentReferences?: unknown[];
       recentLimit?: number;
     };
-    const result = await listIngredientPickerQuickStart(user.id, {
+    const result = await listIngredientPickerQuickStart(user?.id ?? null, {
       category: body.category as IngredientCategory,
       subtype: body.subtype === "malt" || body.subtype === "fermentable" ? body.subtype : null,
       recentReferences: Array.isArray(body.recentReferences) ? body.recentReferences as UserIngredientReference[] : undefined,

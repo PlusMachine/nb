@@ -44,6 +44,12 @@ describe("brewing calculator tools", () => {
     expect(calculateAbvAttenuation({ og: 1.05, fg: 1.01 }).calories).toBeGreaterThan(100);
   });
 
+  it("clamps calories at zero for degenerate gravity inputs", () => {
+    // OG у воды / FG > OG уводят формулу калорий в минус — наружу отдаём 0, не «−1 ккал».
+    expect(calculateAbvAttenuation({ og: 1.0, fg: 0.998, servingSizeMl: 100 }).calories).toBe(0);
+    expect(calculateAbvAttenuation({ og: 1.0, fg: 1.0, servingSizeMl: 100 }).calories).toBe(0);
+  });
+
   it("uses Fahrenheit residual CO2 for priming sugar", () => {
     expect(residualCo2VolumesAtTempC(20)).toBeCloseTo(0.86, 2);
     const result = calculatePrimingSugar({

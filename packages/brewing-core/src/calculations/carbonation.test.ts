@@ -26,8 +26,12 @@ describe("kegPressurePsi / kegCo2Volumes", () => {
     expect(co2Zone(volumes)).toBe("standard");
   });
 
+  it("шпунтование при температуре брожения: 20 °C и 2.4 об. → ≈1.8 бар", () => {
+    expect(psiToBar(kegPressurePsi(20, 2.4))).toBeCloseTo(1.798, 2);
+  });
+
   it("обратная — точная инверсия прямой (round-trip P→V→P)", () => {
-    for (const tempC of [0, 4, 7, 10, 14]) {
+    for (const tempC of [0, 4, 7, 10, 14, 17, 20]) {
       for (const pressurePsi of [5, 10, 14.5, 20]) {
         const volumes = kegCo2Volumes(tempC, pressurePsi);
         expect(kegPressurePsi(tempC, volumes)).toBeCloseTo(pressurePsi, 6);
@@ -36,7 +40,7 @@ describe("kegPressurePsi / kegCo2Volumes", () => {
   });
 
   it("обратная — точная инверсия прямой (round-trip V→P→V)", () => {
-    for (const tempC of [0, 4, 7, 10, 14]) {
+    for (const tempC of [0, 4, 7, 10, 14, 17, 20]) {
       for (const volumes of [1.5, 2.0, 2.5, 3.0, 3.5]) {
         const pressurePsi = kegPressurePsi(tempC, volumes);
         expect(kegCo2Volumes(tempC, pressurePsi)).toBeCloseTo(volumes, 6);

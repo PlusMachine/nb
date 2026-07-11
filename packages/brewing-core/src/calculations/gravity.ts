@@ -1,8 +1,10 @@
 import { roundTo } from "../units";
 import type { FermentableGrainBillItem } from "../types/recipe";
 
-const KG_TO_LB = 2.2046226218;
-const L_TO_GAL = 0.2641720524;
+// Exported so other modules (e.g. efficiency.ts) reuse the same conversion constants
+// instead of duplicating them.
+export const KG_TO_LB = 2.2046226218;
+export const L_TO_GAL = 0.2641720524;
 
 export interface OgInput {
   fermentables: FermentableGrainBillItem[];

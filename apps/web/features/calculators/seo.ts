@@ -29,6 +29,29 @@ export const buildCalculatorMetadata = (item: CalculatorCatalogItem): Metadata =
   };
 };
 
+// WebApplication-разметка страницы калькулятора: бесплатный веб-инструмент.
+// Дополняет BreadcrumbList; offers price 0 — обязательное поле для rich results
+// у *Application-типов.
+export const buildCalculatorWebAppJsonLd = (
+  item: Pick<CalculatorCatalogItem, "slug" | "seoTitle" | "seoDescription" | "description">,
+  params: { baseUrl: string }
+): object => {
+  const base = params.baseUrl.replace(/\/$/, "");
+
+  return {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    name: item.seoTitle,
+    url: `${base}/calculators/${item.slug}`,
+    description: item.seoDescription ?? item.description,
+    applicationCategory: "UtilityApplication",
+    operatingSystem: "Web",
+    inLanguage: "ru",
+    isAccessibleForFree: true,
+    offers: { "@type": "Offer", price: "0", priceCurrency: "RUB" }
+  };
+};
+
 export const buildCalculatorBreadcrumbJsonLd = (
   item: Pick<CalculatorCatalogItem, "slug" | "shortTitle">,
   params: { baseUrl: string }

@@ -78,4 +78,55 @@ test.describe("Конвертер единиц пивовара", () => {
       expect(iconCount).toBeGreaterThan(0);
     }
   });
+
+  // Регрессы на находки ревью 2026-07-10: запятая как десятичный разделитель («1,05» в
+  // type=number превращалась в 105 → Плато 150 млн), конверсия нуля при пустом вводе
+  // (пустой SG показывал −616.9 °P / −1000 GP), телепорт «Сбросить» на первую вкладку,
+  // отсутствие стрелочной навигации по вкладкам.
+  test("запятая — валидный десятичный разделитель", async ({ page }) => {
+    const card = page.locator('[data-testid="unit-converter"] section');
+    const sg = card.locator("label").filter({ hasText: "SG" }).locator("input");
+    const plato = card.locator("label").filter({ hasText: "°P" }).locator("input");
+
+    await sg.click();
+    await sg.press("ControlOrMeta+a");
+    await sg.pressSequentially("1,05");
+    await expect(sg).toHaveValue("1,05");
+    await expect(plato).toHaveValue("12.4");
+  });
+
+  test("пустой ввод оставляет соседние ячейки пустыми, а не конверсией нуля", async ({ page }) => {
+    const card = page.locator('[data-testid="unit-converter"] section');
+    const plato = card.locator("label").filter({ hasText: "°P" }).locator("input");
+    const points = card.locator("label").filter({ hasText: "GP" }).locator("input");
+
+    // Дефолтная активная ячейка — Плато: чистим её и проверяем соседей.
+    await plato.click();
+    await plato.press("ControlOrMeta+a");
+    await plato.press("Backspace");
+    await expect(plato).toHaveValue("");
+    await expect(points).toHaveValue("");
+  });
+
+  test("«Сбросить» возвращает значения, но не уводит с текущей вкладки", async ({ page }) => {
+    await page.getByRole("tab", { name: "Давление" }).click();
+    await page.getByRole("button", { name: "Сбросить" }).click();
+
+    await expect(page.getByRole("tab", { name: "Давление" })).toHaveAttribute("aria-selected", "true");
+  });
+
+  test("вкладки листаются стрелками с клавиатуры (roving tabindex)", async ({ page }) => {
+    const first = page.getByRole("tab", { name: "Плотность" });
+    await first.click();
+    await first.press("ArrowRight");
+
+    await expect(page.getByRole("tab", { name: "Цвет" })).toHaveAttribute("aria-selected", "true");
+    await expect(page.getByRole("tab", { name: "Цвет" })).toBeFocused();
+
+    await page.getByRole("tab", { name: "Цвет" }).press("ArrowLeft");
+    await expect(first).toHaveAttribute("aria-selected", "true");
+
+    await first.press("End");
+    await expect(page.getByRole("tab", { name: "Концентрация" })).toHaveAttribute("aria-selected", "true");
+  });
 });

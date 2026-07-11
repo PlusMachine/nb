@@ -41,16 +41,14 @@ const resultsCountLabel = (total: number): string => {
 
 /**
  * Асинхронный серверный поддерево витрины: дергает `searchPublicRecipes`,
- * рендерит счётчик + сетку + интерактивную пагинацию либо empty-state. Вынесен из
- * route-файла, чтобы не нарушать ограничения экспортов страницы Next.
+ * рендерит счётчик + список строк + интерактивную пагинацию либо empty-state.
+ * Вынесен из route-файла, чтобы не нарушать ограничения экспортов страницы Next.
  */
 export async function RecipesResults({
   filters,
-  view = "grid",
   preferredGravityUnit = defaultPreferredGravityUnit
 }: {
   filters: PublicRecipeFilters;
-  view?: "grid" | "list";
   preferredGravityUnit?: PreferredGravityUnit;
 }) {
   const { items, total, page, pageSize } = await searchPublicRecipes(filters);
@@ -83,7 +81,7 @@ export async function RecipesResults({
         {resultsCountLabel(total)}
       </p>
 
-      <RecipesGrid recipes={items} view={view} preferredGravityUnit={preferredGravityUnit} />
+      <RecipesGrid recipes={items} view="list" preferredGravityUnit={preferredGravityUnit} />
 
       <RecipesPagination current={page} totalPages={totalPages} />
 

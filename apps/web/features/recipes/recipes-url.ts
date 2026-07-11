@@ -9,8 +9,7 @@ import {
  * Клиент-безопасные (без БД/каталога/фикстур) хелперы для URL-driven контролов
  * витрины `/recipes`. Имена query-ключей — РОВНО по контракту
  * {@link parsePublicRecipeFilters} (`public-recipe-query.ts`): q, family, style,
- * colorMin/colorMax, abvMin/abvMax, ibuMin/ibuMax, sort, page, pageSize (+ view —
- * презентационный, не влияет на SQL).
+ * colorMin/colorMax, abvMin/abvMax, ibuMin/ibuMax, sort, page, pageSize.
  *
  * Импортируется только в клиентские компоненты — НЕ тянуть сюда тяжёлые
  * серверные модули (@nb/content, beerStyleFixtures).
@@ -19,15 +18,8 @@ import {
 /** Дефолтные значения, которые НЕ должны попадать в URL. */
 export const recipeFilterDefaults = {
   sort: "newest",
-  page: "1",
-  view: "grid"
+  page: "1"
 } as const;
-
-/** Презентационный вид витрины + cookie, в которой запоминаем выбор пользователя. */
-export type RecipesView = "grid" | "list";
-export const RECIPES_VIEW_COOKIE = "nb_recipes_view";
-export const parseRecipesView = (value: string | null | undefined): RecipesView | null =>
-  value === "list" ? "list" : value === "grid" ? "grid" : null;
 
 /** Рабочие опции сортировки (popular = по числу сохранений; rating — по среднему рейтингу). */
 export const recipeSortOptions: { value: PublicRecipeSort; label: string }[] = [
@@ -78,9 +70,6 @@ const stripDefaults = (params: URLSearchParams): void => {
   if (params.get("sort") === recipeFilterDefaults.sort) {
     params.delete("sort");
   }
-  if (params.get("view") === recipeFilterDefaults.view) {
-    params.delete("view");
-  }
   if (params.get("page") === recipeFilterDefaults.page) {
     params.delete("page");
   }
@@ -94,8 +83,8 @@ const stripDefaults = (params: URLSearchParams): void => {
  * - прочие ключи текущего query сохраняются (мерж, не перезапись);
  * - `resetPage` (по умолчанию `true`) сбрасывает `page`, если он не задан в самом
  *   патче — любое изменение фильтра/поиска/сортировки возвращает на 1-ю страницу;
- *   для пагинации и смены `view` передавать `{ resetPage: false }`;
- * - дефолтные значения (`sort=newest`, `view=grid`, `page=1`) в URL не пишутся.
+ *   для пагинации передавать `{ resetPage: false }`;
+ * - дефолтные значения (`sort=newest`, `page=1`) в URL не пишутся.
  */
 export const mergeRecipeQuery = (
   current: URLSearchParams,
@@ -133,7 +122,7 @@ const filterDimensions: string[][] = [
 /**
  * Число активных смысловых фильтров (для бейджа на мобильной кнопке «Фильтры»).
  * Каждое измерение (поиск, семейство, стиль, цвет, ABV, IBU) считается один раз;
- * sort/page/view/pageSize не учитываются.
+ * sort/page/pageSize не учитываются.
  */
 export const countActiveRecipeFilters = (params: URLSearchParams): number =>
   filterDimensions.reduce((total, keys) => {

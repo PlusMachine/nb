@@ -1501,7 +1501,7 @@ const buildIngredientPickerQuickStartFromItems = ({
 };
 
 export const listIngredientPickerQuickStart = async (
-  userId: string,
+  userId: string | null,
   params: {
     category: IngredientCategory;
     subtype?: "malt" | "fermentable" | null;
@@ -1582,7 +1582,7 @@ export const getIngredientPickerQuickStartBySubtype = async (
 };
 
 export const searchUserCatalogIngredients = async (
-  userId: string,
+  userId: string | null,
   params: CatalogSearchParams
 ): Promise<IngredientSearchResult> => {
   const query = ingredientSearchQuerySchema.parse(params);
@@ -1705,7 +1705,7 @@ export const searchUserCatalogIngredients = async (
 };
 
 export const getIngredientSuggestionByRef = async (
-  userId: string,
+  userId: string | null,
   source: "catalog" | "custom",
   id: string
 ): Promise<IngredientSuggestionItem | null> => {

@@ -10,6 +10,7 @@ import {
   Droplet,
   FlaskConical,
   Gauge,
+  Link2,
   Palette,
   Plus,
   RotateCcw,
@@ -21,35 +22,45 @@ import {
 import React, { useEffect, useMemo, useRef, useState } from "react";
 
 import { calibrateWcf, convertBrewingUnitGroup, sgToBrix, sgToPlato, type CalculatorGravityUnit } from "@nb/brewing-core";
-import { Button } from "@nb/ui";
+import { Button, useToast } from "@nb/ui";
 
 import { RelatedLinksSection } from "@/components/shared/related-links-section";
 import { NumericInput } from "@/components/shared/numeric-input";
+import { IngredientPicker } from "@/components/ingredients/ingredient-picker";
 import { KegCarbonationBlock } from "@/components/calculators/keg-carbonation-block";
+import type { IngredientSuggestionItem } from "@/features/ingredients/contracts";
 import { calculatorBySlug, type CalculatorSlug } from "@/features/calculators/catalog";
 import {
   calculatorStorageKey,
   calculatorDefinitionBySlug,
   computeAbvView,
+  CONVERTER_GROUP_UNITS,
   computeDilutionView,
   computeHydrometerView,
   computeRefractometerView,
+  convertRefractometerOgFieldValue,
   dilutionFindOptions,
   dilutionOperationOptions,
   dilutionOperationOfMode,
+  DILUTION_BOILOFF_RATE_MODES,
+  DILUTION_GRAVITY_TARGET_MODES,
+  DILUTION_VOLUME_TARGET_MODES,
   initialCalculatorStateFromQuery,
   parseCalculatorQuery,
   refractometerOgDefault,
   refractometerOgUnitOptions,
+  serializeCalculatorStateToQuery,
   REFRACTOMETER_FORMULA_OPTIONS,
   type AbvView,
   type ArrayCalculatorField,
+  type CalculatorDefinition,
   type DilutionOperation,
   type DilutionView,
   type HydrometerView,
   type CalculatorField,
   type CalculatorFieldOption,
   type CalculatorResult,
+  type CalculatorResultStat,
   type CalculatorResultWarning,
   type CalculatorState,
   type RefractometerView,
@@ -58,6 +69,7 @@ import {
 import { loadViewerPreferredGravityUnit } from "@/features/system/gravity-unit-actions";
 import {
   convertGravityFieldValue,
+  convertGravityOffsetValue,
   formatGravity,
   formatGravitySecondary,
   fromCalculatorGravityUnit,
@@ -88,24 +100,27 @@ const normalizeStoredState = (value: string | null): CalculatorState | null => {
 
 const fieldGridClassName = "grid gap-3 sm:grid-cols-2";
 
-// Конвертер: группы и их единицы (ключи совпадают с выходом convertBrewingUnitGroup).
-// ppm показываем один раз (mg/L численно равен ppm — отдельная строка не нужна).
+// Конвертер: группы + иконки. Списки единиц — из CONVERTER_GROUP_UNITS (definitions.ts),
+// общего с валидацией from во входящих ссылках (applyQuery).
 const CONVERTER_GROUPS: Array<{ id: string; label: string; units: string[]; icon: LucideIcon }> = [
-  { id: "gravity", label: "Плотность", units: ["SG", "Plato", "Brix", "points"], icon: Droplet },
-  { id: "color", label: "Цвет", units: ["SRM", "EBC", "Lovibond"], icon: Palette },
-  { id: "volume", label: "Объём", units: ["ml", "L", "oz", "qt", "gal"], icon: Beaker },
-  { id: "weight", label: "Вес", units: ["g", "kg", "oz", "lb"], icon: Weight },
-  { id: "temperature", label: "Температура", units: ["C", "F", "K"], icon: Thermometer },
-  { id: "pressure", label: "Давление", units: ["PSI", "bar", "kPa"], icon: Gauge },
-  { id: "concentration", label: "Концентрация", units: ["ppm", "g/L"], icon: FlaskConical }
-];
+  { id: "gravity", label: "Плотность", icon: Droplet },
+  { id: "color", label: "Цвет", icon: Palette },
+  { id: "volume", label: "Объём", icon: Beaker },
+  { id: "weight", label: "Вес", icon: Weight },
+  { id: "temperature", label: "Температура", icon: Thermometer },
+  { id: "pressure", label: "Давление", icon: Gauge },
+  { id: "concentration", label: "Концентрация", icon: FlaskConical }
+].map((group) => ({ ...group, units: CONVERTER_GROUP_UNITS[group.id] }));
 
 // Человеческая подпись, короткий хинт и разряды отображения для каждой единицы.
-const CONVERTER_UNIT_META: Record<string, { label: string; note?: string; decimals: number }> = {
+// trimZeros — для единиц, где десятые нужны (50.5 GP ≠ 51 GP), но хвост ".0"
+// у круглых значений — шум.
+type ConverterUnitMeta = { label: string; note?: string; decimals: number; trimZeros?: boolean };
+const CONVERTER_UNIT_META: Record<string, ConverterUnitMeta> = {
   SG: { label: "SG", note: "плотность", decimals: 3 },
   Plato: { label: "°P", note: "Плато", decimals: 1 },
   Brix: { label: "°Bx", note: "Брикс", decimals: 1 },
-  points: { label: "GP", note: "пункты плотности", decimals: 0 },
+  points: { label: "GP", note: "пункты плотности", decimals: 1, trimZeros: true },
   SRM: { label: "SRM", decimals: 1 },
   EBC: { label: "EBC", decimals: 1 },
   Lovibond: { label: "°L", note: "Lovibond", decimals: 1 },
@@ -127,9 +142,24 @@ const CONVERTER_UNIT_META: Record<string, { label: string; note?: string; decima
   "g/L": { label: "г/л", decimals: 2 }
 };
 
-const formatConverted = (value: number, decimals: number): string => (
-  Number.isFinite(value) ? value.toFixed(decimals) : ""
+// Один ключ единицы может значить разное в разных группах: oz в объёме — жидкая унция
+// (29.57 мл), в весе — весовая (28.35 г). Ключи выхода convertBrewingUnitGroup совпадают,
+// поэтому подписи различаем здесь, оверрайдом по группе.
+const CONVERTER_UNIT_META_BY_GROUP: Record<string, Record<string, ConverterUnitMeta>> = {
+  volume: { oz: { label: "жидк. унц.", note: "fl oz US", decimals: 1 } }
+};
+
+const converterUnitMeta = (groupId: string, unit: string): ConverterUnitMeta => (
+  CONVERTER_UNIT_META_BY_GROUP[groupId]?.[unit] ?? CONVERTER_UNIT_META[unit] ?? { label: unit, decimals: 2 }
 );
+
+const formatConverted = (value: number, meta: ConverterUnitMeta): string => {
+  if (!Number.isFinite(value)) {
+    return "";
+  }
+  const fixed = value.toFixed(meta.decimals);
+  return meta.trimZeros ? fixed.replace(/\.0+$/, "") : fixed;
+};
 
 // Видимость поля/секции: без visibleWhen — всегда показываем. Для верхнеуровневых полей
 // и целых array-секций row не передаётся; для подполей array-строк row обязателен.
@@ -220,6 +250,49 @@ function CalculatorInput({
   );
 }
 
+// Подполе строки массива kind: "ingredient" (см. brewhouse-efficiency "Засыпь"): вместо
+// обычного контрола рендерит IngredientPicker. Свободный ввод текста без выбора из каталога
+// валиден — сохраняется как есть в поле; выбор элемента каталога передаётся наверх (onPick
+// в ArrayFieldEditor решает, какие соседние подполя строки заполнить).
+function IngredientRowField({
+  field,
+  value,
+  onValueChange,
+  onSelect
+}: {
+  field: ScalarCalculatorField;
+  value: unknown;
+  onValueChange: (value: string) => void;
+  onSelect: (item: IngredientSuggestionItem) => void;
+}) {
+  return (
+    <label className="block min-w-0 text-xs font-medium text-muted-foreground">
+      <span className="flex items-center justify-between gap-2">
+        <span>{field.label}</span>
+      </span>
+      <div className="mt-1">
+        <IngredientPicker
+          category={field.ingredientCategory}
+          value={String(value ?? "")}
+          onValueChange={onValueChange}
+          onSelect={onSelect}
+          placeholder={field.placeholder}
+          enableQuickStart
+          includeCustom={false}
+          // База — помощник, а не обязаловка: если позиции нет в каталоге, введённое
+          // название уже принято (onValueChange пишет его в строку), и стандартное
+          // «Ничего не найдено» читалось бы как тупик. Подсказываем ввести PPG вручную.
+          emptyCta={
+            <p className="text-xs text-muted-foreground">
+              Нет в базе — оставьте своё название и укажите экстрактивность (PPG) вручную.
+            </p>
+          }
+        />
+      </div>
+    </label>
+  );
+}
+
 function ArrayFieldEditor({
   field,
   value,
@@ -238,6 +311,12 @@ function ArrayFieldEditor({
 
   const updateRow = (index: number, key: string, nextValue: string) => {
     onChange(rows.map((row, rowIndex) => rowIndex === index ? { ...row, [key]: nextValue } : row));
+  };
+
+  // Для kind: "ingredient" — onPick заполняет сразу несколько подполей строки (имя,
+  // экстрактивность, тип затирания), а не только своё собственное поле.
+  const applyRowPatch = (index: number, patch: Record<string, unknown>) => {
+    onChange(rows.map((row, rowIndex) => rowIndex === index ? { ...row, ...patch } : row));
   };
 
   // Не клонируем первую строку целиком: числовые/дата-поля стартуют пустыми (нужен явный
@@ -306,17 +385,34 @@ function ArrayFieldEditor({
             <div className={fieldGridClassName}>
               {field.fields
                 .filter((subfield) => isFieldVisible(subfield, state, row))
-                .map((subfield) => (
-                  <CalculatorInput
-                    key={subfield.name}
-                    field={subfield}
-                    value={row[subfield.name]}
-                    state={state}
-                    row={row}
-                    size="sm"
-                    onChange={(nextValue) => updateRow(index, subfield.name, nextValue)}
-                  />
-                ))}
+                .map((subfield) => {
+                  const input = subfield.kind === "ingredient" ? (
+                    <IngredientRowField
+                      field={subfield}
+                      value={row[subfield.name]}
+                      onValueChange={(nextValue) => updateRow(index, subfield.name, nextValue)}
+                      onSelect={(item) => {
+                        const updates = subfield.onPick?.(item) ?? [[subfield.name, item.primaryLabelRu ?? item.displayName]];
+                        applyRowPatch(index, Object.fromEntries(updates));
+                      }}
+                    />
+                  ) : (
+                    <CalculatorInput
+                      field={subfield}
+                      value={row[subfield.name]}
+                      state={state}
+                      row={row}
+                      size="sm"
+                      onChange={(nextValue) => updateRow(index, subfield.name, nextValue)}
+                    />
+                  );
+
+                  return (
+                    <div key={subfield.name} className={subfield.fullWidth ? "sm:col-span-2" : undefined}>
+                      {input}
+                    </div>
+                  );
+                })}
             </div>
           </div>
         ))}
@@ -335,11 +431,18 @@ function FieldsBlock({
   onChange: (name: string, value: unknown) => void;
 }) {
   const visibleFields = fields.filter((field) => isFieldVisible(field, state));
+  // Заголовок-разделитель печатается при смене group от поля к полю — поля без group
+  // (обычно самые верхние) идут как раньше, вообще без заголовка.
+  let renderedGroup: string | undefined;
 
   return (
     <div className="space-y-3">
       <div className={fieldGridClassName}>
         {visibleFields.filter((field): field is ScalarCalculatorField => field.kind !== "array").map((field) => {
+          const showGroupHeader = Boolean(field.group) && field.group !== renderedGroup;
+          if (showGroupHeader) {
+            renderedGroup = field.group;
+          }
           const input = (
             <CalculatorInput
               field={field}
@@ -355,9 +458,16 @@ function FieldsBlock({
               }}
             />
           );
-          return field.fullWidth
-            ? <div key={field.name} className="sm:col-span-2">{input}</div>
-            : <React.Fragment key={field.name}>{input}</React.Fragment>;
+          return (
+            <React.Fragment key={field.name}>
+              {showGroupHeader ? (
+                <p className="sm:col-span-2 pt-1 text-[11px] font-medium uppercase tracking-[0.08em] text-muted-foreground first:pt-0">
+                  {field.group}
+                </p>
+              ) : null}
+              {field.fullWidth ? <div className="sm:col-span-2">{input}</div> : input}
+            </React.Fragment>
+          );
         })}
       </div>
       {visibleFields.filter((field): field is ArrayCalculatorField => field.kind === "array").map((field) => (
@@ -384,15 +494,22 @@ function ConverterGroupCard({
 }) {
   const from = String(state[`${group.id}From`] ?? group.units[0]);
   const rawValue = String(state[`${group.id}Value`] ?? "");
-  const parsed = Number(rawValue);
-  const converted = convertBrewingUnitGroup(
-    group.id as Parameters<typeof convertBrewingUnitGroup>[0],
-    Number.isFinite(parsed) ? parsed : 0,
-    from
-  ) as Record<string, number>;
+  // Запятая — валидный разделитель до нормализации на blur (NumericInput); из ссылок
+  // может прийти произвольная строка. Пустой/нечисловой ввод не превращаем в 0 —
+  // соседние ячейки в этом случае пустые, а не «конверсия нуля» (у плотности это −616 °P).
+  const parsed = Number(rawValue.replace(",", "."));
+  const hasValue = rawValue.trim() !== "" && Number.isFinite(parsed);
+  const converted = hasValue
+    ? convertBrewingUnitGroup(group.id as Parameters<typeof convertBrewingUnitGroup>[0], parsed, from) as Record<string, number>
+    : null;
 
   return (
-    <section className="rounded-2xl border border-border bg-card p-5 shadow-sm">
+    <section
+      id={`converter-panel-${group.id}`}
+      role="tabpanel"
+      aria-labelledby={`converter-tab-${group.id}`}
+      className="rounded-2xl border border-border bg-card p-5 shadow-sm"
+    >
       <div className="flex items-center gap-2 pb-4">
         <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-muted">
           <group.icon className="h-4 w-4 text-muted-foreground" />
@@ -401,11 +518,11 @@ function ConverterGroupCard({
       </div>
       <div className={fieldGridClassName}>
         {group.units.map((unit) => {
-          const meta = CONVERTER_UNIT_META[unit] ?? { label: unit, decimals: 2 };
+          const meta = converterUnitMeta(group.id, unit);
           const active = unit === from;
           // Активное поле показывает введённую строку как есть (иначе прыгает курсор),
           // остальные — пересчитанное и отформатированное значение.
-          const display = active ? rawValue : formatConverted(converted[unit] ?? 0, meta.decimals);
+          const display = active ? rawValue : converted ? formatConverted(converted[unit] ?? 0, meta) : "";
 
           return (
             <label
@@ -418,11 +535,18 @@ function ConverterGroupCard({
                 <span className="text-xs font-medium text-foreground">{meta.label}</span>
                 {meta.note ? <span className="text-[10px] font-normal text-muted-foreground">{meta.note}</span> : null}
               </span>
-              <input
-                type="number"
-                inputMode="decimal"
+              <NumericInput
                 value={display}
+                // Минус разрешён везде: температуры ниже нуля, SG < 1.000 после брожения
+                // (отрицательные GP) — конвертер не форма, ему незачем запрещать ввод.
+                allowNegative
                 onChange={(event) => {
+                  // Нормализация запятой на blur (NumericInput) приходит тем же onChange и для
+                  // НЕактивных ячеек (у отображаемого значения срезаются хвостовые нули) —
+                  // она не должна перехватывать роль источника ввода.
+                  if (event.type === "blur" && !active) {
+                    return;
+                  }
                   onChange(`${group.id}From`, unit);
                   onChange(`${group.id}Value`, event.target.value);
                 }}
@@ -432,6 +556,12 @@ function ConverterGroupCard({
           );
         })}
       </div>
+      {group.id === "gravity" ? (
+        <p className="mt-3 text-xs leading-5 text-muted-foreground">
+          Для сусла °Bx и °P практически совпадают. Показания рефрактометра во время брожения искажает спирт —
+          используйте <Link href="/calculators/refractometer-correction" className="underline underline-offset-2 transition-colors hover:text-foreground">поправку рефрактометра</Link>.
+        </p>
+      ) : null}
     </section>
   );
 }
@@ -447,6 +577,29 @@ function UnitConverterBlock({
 }) {
   const activeGroup = String(state.activeGroup ?? "gravity");
   const group = CONVERTER_GROUPS.find((entry) => entry.id === activeGroup) ?? CONVERTER_GROUPS[0];
+  const tabRefs = useRef<Array<HTMLButtonElement | null>>([]);
+
+  // Стандартная клавиатурная модель вкладок (roving tabindex): в tab-порядке участвует
+  // только активная вкладка, остальные достижимы стрелками; выбор следует за фокусом.
+  // Обе оси — раскладка горизонтальная на узких экранах и вертикальная на lg+.
+  const handleTabKeyDown = (event: React.KeyboardEvent<HTMLButtonElement>, index: number) => {
+    const lastIndex = CONVERTER_GROUPS.length - 1;
+    const nextIndex = event.key === "ArrowRight" || event.key === "ArrowDown"
+      ? (index + 1) % CONVERTER_GROUPS.length
+      : event.key === "ArrowLeft" || event.key === "ArrowUp"
+        ? (index + lastIndex) % CONVERTER_GROUPS.length
+        : event.key === "Home"
+          ? 0
+          : event.key === "End"
+            ? lastIndex
+            : null;
+    if (nextIndex === null) {
+      return;
+    }
+    event.preventDefault();
+    onChange("activeGroup", CONVERTER_GROUPS[nextIndex].id);
+    tabRefs.current[nextIndex]?.focus();
+  };
 
   return (
     <div className="space-y-3" data-testid="unit-converter">
@@ -466,14 +619,21 @@ function UnitConverterBlock({
           aria-label="Категория единиц"
           className="flex flex-wrap gap-1.5 lg:w-52 lg:shrink-0 lg:flex-col lg:flex-nowrap lg:gap-1"
         >
-          {CONVERTER_GROUPS.map((entry) => {
+          {CONVERTER_GROUPS.map((entry, index) => {
             const active = entry.id === group.id;
             return (
               <button
                 key={entry.id}
+                ref={(node) => {
+                  tabRefs.current[index] = node;
+                }}
                 type="button"
                 role="tab"
+                id={`converter-tab-${entry.id}`}
                 aria-selected={active}
+                aria-controls={`converter-panel-${entry.id}`}
+                tabIndex={active ? 0 : -1}
+                onKeyDown={(event) => handleTabKeyDown(event, index)}
                 onClick={() => onChange("activeGroup", entry.id)}
                 className={`inline-flex items-center gap-2 rounded-lg px-3 py-1.5 text-sm font-medium transition-colors lg:w-full lg:justify-start lg:px-3 lg:py-2 ${
                   active
@@ -513,19 +673,30 @@ const sortWarningsForDisplay = (warnings: Array<string | CalculatorResultWarning
     .sort((a, b) => (a.tone === b.tone ? 0 : a.tone === "warning" ? -1 : 1))
 );
 
+// tone → цветовые классы карточки/чипа результата — общий для крупного primary (ResultPanel,
+// StickyResultBar) и рядовых stat-карточек (ResultPanel). "hero" — крупный блок без
+// собственной рамки в default-состоянии (просто акцентный фон); "card" — обычная
+// stat-карточка со своей рамкой в default-состоянии. Раньше тернарник дублировался в
+// трёх местах и расходился бы при правке одной из копий.
+const toneClassName = (tone: CalculatorResultStat["tone"], variant: "hero" | "card" = "card"): string => (
+  tone === "warning"
+    ? "border-warning/30 bg-warning-subtle text-warning-subtle-foreground"
+    : tone === "good"
+      ? "border-success/30 bg-success-subtle text-success-subtle-foreground"
+      : variant === "hero"
+        ? "border-transparent bg-muted text-foreground"
+        : "border-border bg-card text-foreground"
+);
+
 function ResultPanel({
   result
 }: {
   result: CalculatorResult;
 }) {
-  const primaryToneClassName = result.primary.tone === "warning"
-    ? "border-warning/30 bg-warning-subtle text-warning-subtle-foreground"
-    : result.primary.tone === "good"
-      ? "border-success/30 bg-success-subtle text-success-subtle-foreground"
-      : "border-transparent bg-muted text-foreground";
+  const primaryToneClassName = toneClassName(result.primary.tone, "hero");
 
   return (
-    <aside className="space-y-3 rounded-2xl border border-border bg-card p-4 shadow-sm lg:sticky lg:top-[calc(var(--chrome-top)+1rem)]">
+    <aside id="calculator-result" className="space-y-3 rounded-2xl border border-border bg-card p-4 shadow-sm lg:sticky lg:top-[calc(var(--chrome-top)+1rem)]">
       <div className={`rounded-xl border p-4 ${primaryToneClassName}`}>
         <p className="text-[11px] font-medium uppercase tracking-[0.08em] text-muted-foreground">{result.primary.label}</p>
         <div className="mt-1 flex items-center gap-2.5">
@@ -544,15 +715,9 @@ function ResultPanel({
         {result.stats.map((stat) => (
           <div
             key={stat.label}
-            className={`min-w-0 rounded-xl border px-3 py-2.5 ${
-              stat.tone === "warning"
-                ? "border-warning/30 bg-warning-subtle text-warning-subtle-foreground"
-                : stat.tone === "good"
-                  ? "border-success/30 bg-success-subtle text-success-subtle-foreground"
-                  : "border-border bg-card text-foreground"
-            }`}
+            className={`min-w-0 rounded-xl border px-3 py-2.5 ${toneClassName(stat.tone, "card")}`}
           >
-            <dt className="truncate text-[11px] font-medium uppercase tracking-[0.08em] text-muted-foreground">{stat.label}</dt>
+            <dt className="break-words text-[11px] font-medium uppercase tracking-[0.08em] text-muted-foreground">{stat.label}</dt>
             <dd className="mt-1 break-words text-sm font-semibold tabular-nums">{stat.value}</dd>
             {stat.helper ? <p className="mt-0.5 text-[11px] font-normal leading-4 text-muted-foreground">{stat.helper}</p> : null}
           </div>
@@ -575,6 +740,95 @@ function ResultPanel({
         </div>
       ) : null}
     </aside>
+  );
+}
+
+const STICKY_BAR_BOTTOM_PADDING_CLASSNAME = "pb-[calc(0.75rem_+_env(safe-area-inset-bottom))]";
+
+// Мобильный липкий бар результата (<lg): пока форма ниже поля результата, число всё равно
+// на виду. Питается тем же result.primary, что и большая панель справа (см. вызов ниже) —
+// без повторного вызова definition.calculate(). Тап — плавный скролл к полной панели.
+function StickyResultBar({ primary }: { primary: CalculatorResultStat }) {
+  const toneAccentClassName = toneClassName(primary.tone, "hero");
+
+  return (
+    <button
+      type="button"
+      onClick={() => {
+        document.getElementById("calculator-result")?.scrollIntoView({ behavior: "smooth", block: "start" });
+      }}
+      className={`fixed inset-x-0 bottom-[var(--chrome-bottom,0px)] z-40 flex w-full items-center gap-3 border-t border-border bg-card px-4 pt-2.5 text-left shadow-[0_-6px_16px_rgba(0,0,0,0.08)] lg:hidden ${STICKY_BAR_BOTTOM_PADDING_CLASSNAME}`}
+    >
+      <span className={`min-w-0 flex-1 rounded-xl border px-3 py-2 ${toneAccentClassName}`}>
+        <span className="block truncate text-[10px] font-medium uppercase tracking-[0.08em] text-muted-foreground">{primary.label}</span>
+        <span className="mt-0.5 flex items-baseline gap-1.5">
+          <span className="truncate text-xl font-semibold leading-tight tabular-nums">{primary.value}</span>
+        </span>
+        {primary.helper ? <span className="mt-0.5 block truncate text-[11px] font-normal leading-4 text-muted-foreground">{primary.helper}</span> : null}
+      </span>
+      <ChevronRight className="h-4 w-4 shrink-0 text-muted-foreground" aria-hidden="true" />
+    </button>
+  );
+}
+
+// «Скопировать ссылку на расчёт» — одно место в родительском layout под панелью
+// результата (и для generic ResultPanel, и для всех кастомных панелей), а не кнопка
+// внутри каждой из них. Состояние в URL не пишем на лету (никаких replaceState) —
+// ссылка собирается только по явному клику.
+function CopyCalculationLinkButton({
+  definition,
+  state
+}: {
+  definition: CalculatorDefinition;
+  state: CalculatorState;
+}) {
+  const { show } = useToast();
+
+  const copyText = async (text: string): Promise<boolean> => {
+    try {
+      await navigator.clipboard.writeText(text);
+      return true;
+    } catch {
+      // Фолбэк для браузеров/контекстов без Clipboard API (напр. без HTTPS) —
+      // старый приём с выделением скрытого textarea и execCommand.
+      try {
+        const textarea = document.createElement("textarea");
+        textarea.value = text;
+        textarea.style.position = "fixed";
+        textarea.style.opacity = "0";
+        document.body.appendChild(textarea);
+        textarea.select();
+        // execCommand возвращает boolean успеха — браузер может отказать и без исключения
+        // (например, вне пользовательского жеста), тогда молча показывать успех нельзя.
+        const copied = document.execCommand("copy");
+        document.body.removeChild(textarea);
+        return copied;
+      } catch {
+        return false;
+      }
+    }
+  };
+
+  const handleClick = async () => {
+    const query = serializeCalculatorStateToQuery(definition, state).toString();
+    const href = `${window.location.origin}/calculators/${definition.catalog.slug}${query ? `?${query}` : ""}`;
+    const ok = await copyText(href);
+    show(
+      ok
+        ? { title: "Ссылка на расчёт скопирована" }
+        : { title: "Не удалось скопировать ссылку", tone: "danger" }
+    );
+  };
+
+  return (
+    <button
+      type="button"
+      onClick={handleClick}
+      className="inline-flex w-full items-center justify-center gap-1.5 rounded-lg border border-border bg-card px-3 py-2 text-xs font-medium text-muted-foreground transition-colors hover:border-border hover:bg-accent hover:text-foreground"
+    >
+      <Link2 className="h-3.5 w-3.5" />
+      Скопировать ссылку на расчёт
+    </button>
   );
 }
 
@@ -677,12 +931,11 @@ function RefractoNumberInput({
         <span>{label}</span>
         {unit ? <span className="font-normal text-muted-foreground">{unit}</span> : null}
       </span>
-      <input
-        type="number"
-        inputMode="decimal"
+      <NumericInput
         value={String(value ?? "")}
         min={min}
         step={step}
+        allowNegative={min < 0}
         onChange={(event) => onChange(event.target.value)}
         className="mt-1 h-10 w-full rounded-lg border border-border bg-card px-3 text-base tabular-nums text-foreground shadow-sm focus:border-border focus:outline-none focus:ring-2 focus:ring-ring sm:text-sm"
       />
@@ -831,6 +1084,9 @@ function RefractometerFieldsBlock({
               <RefractoNumberInput
                 label="Начальная плотность (OG)"
                 unit={ogUnitLabel}
+                helper={originalUnit === "Brix"
+                  ? "Показание рефрактометра — с поправкой на коэффициент."
+                  : "С ареометра или из рецепта — без поправки."}
                 value={state.originalValue}
                 min={0}
                 step={originalUnit === "SG" ? 0.001 : 0.1}
@@ -864,7 +1120,7 @@ function RefractometerFieldsBlock({
                     options={refractometerOgUnitOptions}
                     value={originalUnit}
                     onChange={(nextUnit) => {
-                      const converted = convertGravityFieldValue(state.originalValue, originalUnit as CalculatorGravityUnit, nextUnit as CalculatorGravityUnit);
+                      const converted = convertRefractometerOgFieldValue(state, state.originalValue, originalUnit as CalculatorGravityUnit, nextUnit as CalculatorGravityUnit);
                       onChange("originalValue", converted !== "" ? converted : String(refractometerOgDefault(nextUnit)));
                       onChange("originalUnit", nextUnit);
                       onChange("gravityUnitTouched", true);
@@ -905,7 +1161,7 @@ function RefractometerResultPanel({ state }: { state: CalculatorState }) {
     view = computeRefractometerView(state);
   } catch {
     return (
-      <aside className="lg:sticky lg:top-[calc(var(--chrome-top)+1.5rem)]">
+      <aside id="calculator-result" className="lg:sticky lg:top-[calc(var(--chrome-top)+1.5rem)]">
         <div className="rounded-2xl border border-border bg-card p-5 shadow-sm">
           <p className="text-[11px] font-medium uppercase tracking-[0.08em] text-muted-foreground">Скорректированная плотность</p>
           <p className="mt-2 text-sm leading-5 text-muted-foreground">Проверьте входные значения.</p>
@@ -934,7 +1190,7 @@ function RefractometerResultPanel({ state }: { state: CalculatorState }) {
       : "65–80% — нормально для большинства элей.";
 
   return (
-    <aside className="lg:sticky lg:top-[calc(var(--chrome-top)+1.5rem)]">
+    <aside id="calculator-result" className="lg:sticky lg:top-[calc(var(--chrome-top)+1.5rem)]">
       <div className="overflow-hidden rounded-2xl border border-border bg-card shadow-sm">
         <div className="border-b border-border bg-gradient-to-b from-muted to-card px-5 py-5">
           <p className="text-[11px] font-medium uppercase tracking-[0.08em] text-muted-foreground">Скорректированная плотность</p>
@@ -1003,6 +1259,8 @@ function AbvFieldsBlock({
   const unit = String(state.gravityUnit ?? "SG") === "SG" ? "SG" : "Plato";
   const unitLabel = unit === "Plato" ? "°P" : "SG";
   const step = unit === "Plato" ? 0.1 : 0.001;
+  const view = computeAbvView(state);
+  const highOgOnStandard = view.ogSg >= 1.07 && String(state.abvFormula ?? "standard") === "standard";
 
   return (
     <div className="overflow-hidden rounded-2xl border border-border bg-card shadow-sm">
@@ -1032,7 +1290,8 @@ function AbvFieldsBlock({
             label="Конечная плотность (FG)"
             unit={unitLabel}
             value={state.fg}
-            min={0}
+            // FG ниже 1.000 SG (сухие крепкие сорта, бретты) в °P — отрицательное число.
+            min={unit === "Plato" ? -5 : 0}
             step={step}
             onChange={(value) => onChange("fg", value)}
           />
@@ -1079,9 +1338,22 @@ function AbvFieldsBlock({
                 <option key={option.value} value={option.value}>{option.label}</option>
               ))}
             </select>
-            <span className="mt-1 block text-[11px] font-normal leading-4 text-muted-foreground">
-              Альтернативная точнее для крепкого пива (выше ~1.070 (17 °P)).
-            </span>
+            {highOgOnStandard ? (
+              <span className="mt-1 block text-[11px] font-normal leading-4 text-warning-subtle-foreground">
+                OG выше 1.070 (17 °P) — стандартная формула занижает крепость.{" "}
+                <button
+                  type="button"
+                  onClick={() => onChange("abvFormula", "alternate")}
+                  className="font-medium underline underline-offset-2"
+                >
+                  Переключить на альтернативную
+                </button>
+              </span>
+            ) : (
+              <span className="mt-1 block text-[11px] font-normal leading-4 text-muted-foreground">
+                Альтернативная точнее для крепкого пива (выше ~1.070 (17 °P)).
+              </span>
+            )}
           </label>
           <RefractoNumberInput
             label="Порция для калорий"
@@ -1103,7 +1375,7 @@ function AbvResultPanel({ state }: { state: CalculatorState }) {
     view = computeAbvView(state);
   } catch {
     return (
-      <aside className="lg:sticky lg:top-[calc(var(--chrome-top)+1.5rem)]">
+      <aside id="calculator-result" className="lg:sticky lg:top-[calc(var(--chrome-top)+1.5rem)]">
         <div className="rounded-2xl border border-border bg-card p-5 shadow-sm">
           <p className="text-[11px] font-medium uppercase tracking-[0.08em] text-muted-foreground">Крепость</p>
           <p className="mt-2 text-sm leading-5 text-muted-foreground">Проверьте входные значения.</p>
@@ -1125,7 +1397,7 @@ function AbvResultPanel({ state }: { state: CalculatorState }) {
   const fgText = `FG ${formatGravity(view.fgSg, prefUnit)} · ${formatGravitySecondary(view.fgSg, prefUnit)}`;
 
   return (
-    <aside className="lg:sticky lg:top-[calc(var(--chrome-top)+1.5rem)]">
+    <aside id="calculator-result" className="lg:sticky lg:top-[calc(var(--chrome-top)+1.5rem)]">
       <div className="overflow-hidden rounded-2xl border border-border bg-card shadow-sm">
         <div className="border-b border-border bg-gradient-to-b from-muted to-card px-5 py-5">
           <p className="text-[11px] font-medium uppercase tracking-[0.08em] text-muted-foreground">Крепость</p>
@@ -1140,11 +1412,15 @@ function AbvResultPanel({ state }: { state: CalculatorState }) {
           </div>
         </div>
 
-        {view.fgAboveOg ? (
+        {view.ogTooLow || view.fgAboveOg ? (
           <div className="p-5">
             <p className="flex gap-1.5 rounded-xl border border-warning/30 bg-warning-subtle px-3 py-2.5 text-xs leading-5 text-warning-subtle-foreground">
               <AlertTriangle className="mt-0.5 h-3.5 w-3.5 shrink-0" />
-              <span>Конечная плотность выше начальной — проверьте замеры.</span>
+              <span>
+                {view.ogTooLow
+                  ? "Начальная плотность должна быть выше 1.000 (0 °P) — проверьте замер."
+                  : "Конечная плотность выше начальной — проверьте замеры."}
+              </span>
             </p>
           </div>
         ) : (
@@ -1236,6 +1512,8 @@ function HydrometerFieldsBlock({
                 value={unit}
                 onChange={(nextUnit) => {
                   onChange("reading", convertGravityFieldValue(state.reading, unit as CalculatorGravityUnit, nextUnit as CalculatorGravityUnit));
+                  // Поправка прибора — дельта в шкале показания: конвертируется вместе с ним.
+                  onChange("offset", convertGravityOffsetValue(state.offset, unit as CalculatorGravityUnit, nextUnit as CalculatorGravityUnit));
                   onChange("readingUnit", nextUnit);
                   onChange("gravityUnitTouched", true);
                 }}
@@ -1262,12 +1540,12 @@ function HydrometerFieldsBlock({
             />
             <RefractoNumberInput
               label="Поправка прибора"
-              unit="SG"
-              helper="Если в дистилляте прибор показывает не 1.000 — впиши разницу (можно минус)."
-              value={state.instrumentOffset}
+              unit={unitLabel}
+              helper={`Если в дистилляте прибор показывает не ${unit === "SG" ? "1.000" : `0 ${unitLabel}`} — впиши разницу (можно минус).`}
+              value={state.offset}
               min={-1}
-              step={0.001}
-              onChange={(value) => onChange("instrumentOffset", value)}
+              step={step}
+              onChange={(value) => onChange("offset", value)}
             />
           </div>
         </details>
@@ -1282,7 +1560,7 @@ function HydrometerResultPanel({ state }: { state: CalculatorState }) {
     view = computeHydrometerView(state);
   } catch {
     return (
-      <aside className="lg:sticky lg:top-[calc(var(--chrome-top)+1.5rem)]">
+      <aside id="calculator-result" className="lg:sticky lg:top-[calc(var(--chrome-top)+1.5rem)]">
         <div className="rounded-2xl border border-border bg-card p-5 shadow-sm">
           <p className="text-[11px] font-medium uppercase tracking-[0.08em] text-muted-foreground">Скорректированная плотность</p>
           <p className="mt-2 text-sm leading-5 text-muted-foreground">Проверьте входные значения.</p>
@@ -1299,14 +1577,20 @@ function HydrometerResultPanel({ state }: { state: CalculatorState }) {
   // это одна и та же шкала, дублирование без смысла; см. A5).
   const secondaryValue = formatGravitySecondary(view.correctedSg, fromCalculatorGravityUnit(view.unit));
 
-  const directionText = view.direction === "hot"
-    ? `Проба теплее калибровки на ${Math.abs(view.tempDeltaC)} °C — сырое показание было занижено, поправка добавлена.`
+  // Чип «Поправка» показывает итоговую дельту (температура + поправка прибора), поэтому
+  // при ненулевом офсете пояснение обязано упомянуть его вклад — иначе текст про «поправка
+  // добавлена» противоречил бы отрицательному числу в чипе (и наоборот).
+  const offsetNote = view.offsetInUnit !== 0
+    ? ` Итог включает поправку прибора (${view.offsetInUnit > 0 ? "+" : "−"}${Math.abs(view.offsetInUnit).toFixed(deltaDecimals)} ${unitLabel}).`
+    : "";
+  const directionText = (view.direction === "hot"
+    ? `Проба теплее калибровки на ${Math.abs(view.tempDeltaC)} °C — сырое показание было занижено, температурная поправка добавлена.`
     : view.direction === "cold"
-      ? `Проба холоднее калибровки на ${Math.abs(view.tempDeltaC)} °C — сырое показание было завышено, поправка вычтена.`
-      : "Проба у температуры калибровки — поправка минимальна.";
+      ? `Проба холоднее калибровки на ${Math.abs(view.tempDeltaC)} °C — сырое показание было завышено, температурная поправка вычтена.`
+      : "Проба у температуры калибровки — температурная поправка минимальна.") + offsetNote;
 
   return (
-    <aside className="lg:sticky lg:top-[calc(var(--chrome-top)+1.5rem)]">
+    <aside id="calculator-result" className="lg:sticky lg:top-[calc(var(--chrome-top)+1.5rem)]">
       <div className="overflow-hidden rounded-2xl border border-border bg-card shadow-sm">
         <div className="border-b border-border bg-gradient-to-b from-muted to-card px-5 py-5">
           <p className="text-[11px] font-medium uppercase tracking-[0.08em] text-muted-foreground">Скорректированная плотность</p>
@@ -1332,6 +1616,16 @@ function HydrometerResultPanel({ state }: { state: CalculatorState }) {
               <dd className="mt-1 text-lg font-semibold tabular-nums text-foreground">{signedDelta} <span className="text-xs font-normal text-muted-foreground">{unitLabel}</span></dd>
             </div>
           </dl>
+          {view.sampleTempBand !== "ok" ? (
+            <p className="flex gap-1.5 rounded-xl border border-warning/30 bg-warning-subtle px-3 py-2.5 text-xs leading-5 text-warning-subtle-foreground">
+              <AlertTriangle className="mt-0.5 h-3.5 w-3.5 shrink-0" />
+              <span>
+                {view.sampleTempBand === "out_of_range"
+                  ? "Температура пробы вне диапазона 0–100 °C — проверьте значение."
+                  : "Выше ~60 °C показания ареометра ненадёжны даже с поправкой — охладите пробу ближе к температуре калибровки."}
+              </span>
+            </p>
+          ) : null}
           <p className="rounded-xl border border-border bg-muted/70 px-3 py-2.5 text-xs leading-5 text-muted-foreground">{directionText}</p>
         </div>
       </div>
@@ -1344,11 +1638,6 @@ const DILUTION_GRAVITY_UNIT_OPTIONS = [
   { value: "Plato", label: "°P" },
   { value: "Brix", label: "°Bx" }
 ];
-
-// Какие поля показываем в каком режиме (совпадает с visibleWhen в definitions.ts).
-const DILUTION_TARGET_GRAVITY_MODES = new Set(["dilute_to_gravity", "boil_to_gravity", "add_extract_to_gravity"]);
-const DILUTION_TARGET_VOLUME_MODES = new Set(["gravity_after_water", "gravity_after_boiloff", "extra_boil_time"]);
-const DILUTION_RATE_MODES = new Set(["boil_to_gravity", "extra_boil_time"]);
 
 const formatDilutionLiters = (value: number) => `${Number(value.toFixed(2))} л`;
 const formatDilutionGrams = (value: number) => `${Number(value.toFixed(1))} г`;
@@ -1383,9 +1672,9 @@ function DilutionFieldsBlock({
     onChange("gravityUnitTouched", true);
   };
 
-  const showTargetGravity = DILUTION_TARGET_GRAVITY_MODES.has(mode);
-  const showTargetVolume = DILUTION_TARGET_VOLUME_MODES.has(mode);
-  const showRate = DILUTION_RATE_MODES.has(mode);
+  const showTargetGravity = DILUTION_GRAVITY_TARGET_MODES.has(mode);
+  const showTargetVolume = DILUTION_VOLUME_TARGET_MODES.has(mode);
+  const showRate = DILUTION_BOILOFF_RATE_MODES.has(mode);
   const showAddition = mode === "add_extract_to_gravity";
   const hasTargetRow = showTargetGravity || showTargetVolume || showRate || showAddition;
 
@@ -1519,7 +1808,7 @@ function DilutionResultPanel({ state }: { state: CalculatorState }) {
     view = computeDilutionView(state);
   } catch {
     return (
-      <aside className="lg:sticky lg:top-[calc(var(--chrome-top)+1.5rem)]">
+      <aside id="calculator-result" className="lg:sticky lg:top-[calc(var(--chrome-top)+1.5rem)]">
         <div className="rounded-2xl border border-border bg-card p-5 shadow-sm">
           <p className="text-[11px] font-medium uppercase tracking-[0.08em] text-muted-foreground">Результат</p>
           <p className="mt-2 text-sm leading-5 text-muted-foreground">Проверьте входные значения.</p>
@@ -1582,7 +1871,7 @@ function DilutionResultPanel({ state }: { state: CalculatorState }) {
   const warnings = sortWarningsForDisplay(view.warnings).slice(0, WARNINGS_DISPLAY_LIMIT);
 
   return (
-    <aside className="lg:sticky lg:top-[calc(var(--chrome-top)+1.5rem)]">
+    <aside id="calculator-result" className="lg:sticky lg:top-[calc(var(--chrome-top)+1.5rem)]">
       <div className="overflow-hidden rounded-2xl border border-border bg-card shadow-sm">
         <div className="border-b border-border bg-gradient-to-b from-muted to-card px-5 py-5">
           <p className="text-[11px] font-medium uppercase tracking-[0.08em] text-muted-foreground">{hero.label}</p>
@@ -1602,7 +1891,7 @@ function DilutionResultPanel({ state }: { state: CalculatorState }) {
           <dl className="grid grid-cols-2 gap-3">
             {stats.map((stat) => (
               <div key={stat.label} className="min-w-0 rounded-xl border border-border bg-muted/70 px-3 py-2.5">
-                <dt className="truncate text-[11px] font-medium uppercase tracking-[0.08em] text-muted-foreground">{stat.label}</dt>
+                <dt className="break-words text-[11px] font-medium uppercase tracking-[0.08em] text-muted-foreground">{stat.label}</dt>
                 <dd className="mt-1 text-lg font-semibold tabular-nums text-foreground">{stat.value}</dd>
                 {stat.helper ? <p className="mt-0.5 text-[11px] font-normal leading-4 text-muted-foreground">{stat.helper}</p> : null}
               </div>
@@ -1638,17 +1927,30 @@ function DilutionResultPanel({ state }: { state: CalculatorState }) {
 type GravityPreferenceConfig = {
   unitField: string;
   valueFields: string[];
+  // Дельта-поля (поправка прибора у ареометра): конвертируются с якорем на воде
+  // (convertGravityOffsetValue), а не как абсолютная плотность.
+  offsetFields?: string[];
   mapPref: (unit: PreferredGravityUnit) => CalculatorGravityUnit;
+  // Значение поля — не всегда «чистая» плотность: у рефрактометра Brix — сырое показание
+  // прибора, а SG/°P — истинная плотность, и конверсия между ними обязана видеть state
+  // (WCF). Без хука — обычная convertGravityFieldValue.
+  convertValue?: (state: CalculatorState, rawValue: unknown, fromUnit: CalculatorGravityUnit, toUnit: CalculatorGravityUnit) => string;
 };
 
 const GRAVITY_PREFERENCE_CONFIG: Partial<Record<CalculatorSlug, GravityPreferenceConfig>> = {
   "abv-attenuation": { unitField: "gravityUnit", valueFields: ["og", "fg"], mapPref: toAbvGravityUnit },
   "dilution-boiloff": { unitField: "gravityUnit", valueFields: ["currentGravity", "targetGravity"], mapPref: toCalculatorGravityUnit },
-  "hydrometer-correction": { unitField: "readingUnit", valueFields: ["reading"], mapPref: toCalculatorGravityUnit },
-  "refractometer-correction": { unitField: "originalUnit", valueFields: ["originalValue"], mapPref: toCalculatorGravityUnit },
+  "hydrometer-correction": { unitField: "readingUnit", valueFields: ["reading"], offsetFields: ["offset"], mapPref: toCalculatorGravityUnit },
+  "refractometer-correction": {
+    unitField: "originalUnit",
+    valueFields: ["originalValue"],
+    mapPref: toCalculatorGravityUnit,
+    convertValue: convertRefractometerOgFieldValue
+  },
   ibu: { unitField: "gravityUnit", valueFields: ["wortGravity"], mapPref: toCalculatorGravityUnit },
   "yeast-starter": { unitField: "gravityUnit", valueFields: ["gravity"], mapPref: toCalculatorGravityUnit },
-  "speise-krausen": { unitField: "gravityUnit", valueFields: ["speiseGravity"], mapPref: toCalculatorGravityUnit }
+  "speise-krausen": { unitField: "gravityUnit", valueFields: ["speiseGravity"], mapPref: toCalculatorGravityUnit },
+  "brewhouse-efficiency": { unitField: "gravityUnit", valueFields: ["measuredOg"], mapPref: toCalculatorGravityUnit }
 };
 
 // Переводит состояние калькулятора на единицу предпочтения: переключает unitField и
@@ -1670,7 +1972,12 @@ const applyGravityPreference = (
   }
   const next: CalculatorState = { ...state, [gravityConfig.unitField]: nextUnit };
   for (const field of gravityConfig.valueFields) {
-    next[field] = convertGravityFieldValue(state[field], currentUnit, nextUnit);
+    next[field] = gravityConfig.convertValue
+      ? gravityConfig.convertValue(state, state[field], currentUnit, nextUnit)
+      : convertGravityFieldValue(state[field], currentUnit, nextUnit);
+  }
+  for (const field of gravityConfig.offsetFields ?? []) {
+    next[field] = convertGravityOffsetValue(state[field], currentUnit, nextUnit);
   }
   return next;
 };
@@ -1821,15 +2128,22 @@ export function CalculatorPageClient({ slug }: { slug: CalculatorSlug }) {
   // а не голый SG из definition.defaults — иначе до перезагрузки страницы калькулятор
   // молча расходился бы со шкалой всего остального приложения.
   const resetState = () => {
-    let next = cloneState(definition.defaults);
-    const preferred = viewerGravityUnitRef.current;
-    const gravityConfig = GRAVITY_PREFERENCE_CONFIG[definition.catalog.slug];
-    if (preferred && gravityConfig) {
-      next = applyGravityPreference(next, gravityConfig, preferred);
-    } else if (preferred && definition.catalog.slug === "unit-converter") {
-      next.gravityFrom = toCalculatorGravityUnit(preferred);
-    }
-    setState(next);
+    setState((current) => {
+      let next = cloneState(definition.defaults);
+      const preferred = viewerGravityUnitRef.current;
+      const gravityConfig = GRAVITY_PREFERENCE_CONFIG[definition.catalog.slug];
+      if (preferred && gravityConfig) {
+        next = applyGravityPreference(next, gravityConfig, preferred);
+      } else if (definition.catalog.slug === "unit-converter") {
+        if (preferred) {
+          next.gravityFrom = toCalculatorGravityUnit(preferred);
+        }
+        // Сброс возвращает значения, но не телепортирует на первую вкладку —
+        // пользователь остаётся в той группе, где нажал «Сбросить».
+        next.activeGroup = current.activeGroup ?? next.activeGroup;
+      }
+      return next;
+    });
     if (typeof window !== "undefined") {
       window.localStorage.removeItem(calculatorStorageKey(definition.catalog.slug));
     }
@@ -1860,6 +2174,12 @@ export function CalculatorPageClient({ slug }: { slug: CalculatorSlug }) {
   const gridClassName = isRefractometer
     ? "grid gap-5 lg:grid-cols-[minmax(0,1fr)_20rem] lg:gap-6"
     : "grid gap-4 lg:grid-cols-[minmax(0,1fr)_22rem]";
+
+  // keg-carbonation и unit-converter не имеют generic-состояния/результата (свои блоки,
+  // своя логика) — для них нет ни липкого мобильного бара, ни ссылки на расчёт.
+  // До монтирования (гидратации) бар тоже не показываем — до этого state мог ещё не
+  // подхватить сохранённое состояние/query, число было бы обманчивым.
+  const showResultActions = mounted && !isKegCarbonation && !isUnitConverter;
 
   return (
     <>
@@ -1922,21 +2242,26 @@ export function CalculatorPageClient({ slug }: { slug: CalculatorSlug }) {
             ) : null}
           </section>
 
-          {isRefractometer ? (
-            <RefractometerResultPanel state={state} />
-          ) : isAbv ? (
-            <AbvResultPanel state={state} />
-          ) : isHydrometer ? (
-            <HydrometerResultPanel state={state} />
-          ) : isDilution ? (
-            <DilutionResultPanel state={state} />
-          ) : (
-            <ResultPanel result={result} />
-          )}
+          <div className="space-y-3">
+            {isRefractometer ? (
+              <RefractometerResultPanel state={state} />
+            ) : isAbv ? (
+              <AbvResultPanel state={state} />
+            ) : isHydrometer ? (
+              <HydrometerResultPanel state={state} />
+            ) : isDilution ? (
+              <DilutionResultPanel state={state} />
+            ) : (
+              <ResultPanel result={result} />
+            )}
+            <CopyCalculationLinkButton definition={definition} state={state} />
+          </div>
         </div>
       )}
 
       <RelatedLinksSection links={nextLinks} />
+
+      {showResultActions ? <StickyResultBar primary={result.primary} /> : null}
     </>
   );
 }

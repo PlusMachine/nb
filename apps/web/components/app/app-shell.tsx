@@ -193,7 +193,7 @@ export function AppShell({ children, user }: AppShellProps) {
   }, [pathname, searchParamsKey]);
 
   return (
-    <div className="[--chrome-top:3.5rem] lg:flex lg:[--chrome-top:0px]">
+    <div className="[--chrome-bottom:3.5rem] [--chrome-top:3.5rem] lg:flex lg:[--chrome-bottom:0px] lg:[--chrome-top:0px]">
       <aside className="sticky top-0 hidden h-screen w-60 shrink-0 flex-col border-r border-border bg-background/80 px-3 py-4 backdrop-blur lg:flex">
         <Link
           href="/app"

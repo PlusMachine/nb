@@ -1,6 +1,6 @@
 /**
  * Пользовательская тема оформления. Хранится в cookie `nb_theme`
- * (по образцу `nb_recipes_view`): сервер читает её в app/layout.tsx и ставит
+ * (по образцу `nb_my_recipes_view`): сервер читает её в app/layout.tsx и ставит
  * класс/скрипт до пейнта, поэтому вспышки светлого (FOUC) нет.
  */
 export const THEME_COOKIE = "nb_theme";

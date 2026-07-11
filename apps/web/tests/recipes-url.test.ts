@@ -32,11 +32,10 @@ describe("mergeRecipeQuery", () => {
     expect(new URLSearchParams(result).has("q")).toBe(false);
   });
 
-  it("does not write default values (sort=newest, view=grid, page=1)", () => {
-    const result = mergeRecipeQuery(params("family=ipa_hoppy"), { sort: "newest", view: "grid", page: "1" });
+  it("does not write default values (sort=newest, page=1)", () => {
+    const result = mergeRecipeQuery(params("family=ipa_hoppy"), { sort: "newest", page: "1" });
     const out = new URLSearchParams(result);
     expect(out.has("sort")).toBe(false);
-    expect(out.has("view")).toBe(false);
     expect(out.has("page")).toBe(false);
     expect(out.get("family")).toBe("ipa_hoppy");
   });
@@ -49,10 +48,9 @@ describe("mergeRecipeQuery", () => {
     expect(out.get("abvMin")).toBe("6");
   });
 
-  it("does not reset page when only the view changes (resetPage:false)", () => {
-    const result = mergeRecipeQuery(params("page=4"), { view: "list" }, { resetPage: false });
+  it("does not reset page when the patch itself does not touch filters (resetPage:false)", () => {
+    const result = mergeRecipeQuery(params("page=4"), {}, { resetPage: false });
     const out = new URLSearchParams(result);
-    expect(out.get("view")).toBe("list");
     expect(out.get("page")).toBe("4");
   });
 
@@ -66,9 +64,9 @@ describe("mergeRecipeQuery", () => {
 });
 
 describe("countActiveRecipeFilters", () => {
-  it("counts each filter dimension once and ignores sort/page/view", () => {
+  it("counts each filter dimension once and ignores sort/page", () => {
     expect(countActiveRecipeFilters(params(""))).toBe(0);
-    expect(countActiveRecipeFilters(params("sort=abv_desc&page=2&view=list"))).toBe(0);
+    expect(countActiveRecipeFilters(params("sort=abv_desc&page=2"))).toBe(0);
     expect(countActiveRecipeFilters(params("q=ipa"))).toBe(1);
     expect(countActiveRecipeFilters(params("colorMin=3&colorMax=6"))).toBe(1);
     expect(countActiveRecipeFilters(params("q=ipa&family=x&style=21A&colorMin=3&abvMin=5&ibuMax=40"))).toBe(6);

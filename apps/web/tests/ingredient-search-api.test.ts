@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-vi.mock("../lib/auth", () => ({ requireUser: vi.fn(async () => ({ id: "u1" })) }));
+vi.mock("../lib/auth", () => ({ getSessionUser: vi.fn(async () => ({ id: "u1" })) }));
+import { getSessionUser } from "../lib/auth";
 vi.mock("../features/ingredients/catalog-service", () => ({
   searchUserCatalogIngredients: vi.fn(async () => ({
     items: [{ id: "1", type: "hop", displayName: "Citra", defaultUnit: "g", source: "catalog" }],
@@ -47,5 +48,16 @@ describe("ingredient search api", () => {
       favoritesOnly: true,
       customOnly: true
     }));
+  });
+
+  // Каталог публичный (см. /catalog) — калькуляторам (brewhouse-efficiency) нужен поиск
+  // по системному каталогу без сессии, не 401.
+  it("passes null userId for an anonymous visitor instead of requiring a session", async () => {
+    vi.mocked(getSessionUser).mockResolvedValueOnce(null);
+
+    const response = await GET(new Request("http://local/api/ingredients/search?q=citra"));
+
+    expect(response.status).toBe(200);
+    expect(searchUserCatalogIngredients).toHaveBeenCalledWith(null, expect.objectContaining({ q: "citra" }));
   });
 });
