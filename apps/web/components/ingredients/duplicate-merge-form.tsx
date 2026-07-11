@@ -32,14 +32,14 @@ export const DuplicateMergeForm = ({ initialSource = null, initialTarget = null 
       <div className="space-y-1">
         <h1 className="text-2xl font-semibold text-foreground">Объединение дубликатов</h1>
         <p className="text-sm text-muted-foreground">
-          Исходный ингредиент будет переведён в статус <strong className="font-medium text-foreground">merged</strong>,
-          а все ссылки на него должны указывать на выбранный target.
+          Исходный ингредиент будет переведён в статус <strong className="font-medium text-foreground">объединён</strong>,
+          а все ссылки на него должны указывать на выбранный итоговый ингредиент.
         </p>
       </div>
 
       <div>
-        <p className="mb-1 text-sm font-medium text-foreground">Source ingredient</p>
-        <p className="mb-2 text-xs text-muted-foreground">Эта карточка будет помечена как merged.</p>
+        <p className="mb-1 text-sm font-medium text-foreground">Исходный ингредиент</p>
+        <p className="mb-2 text-xs text-muted-foreground">Эта карточка будет помечена как объединённая.</p>
         <IngredientPicker
           includeCustom={false}
           value={sourceLabel}
@@ -54,7 +54,7 @@ export const DuplicateMergeForm = ({ initialSource = null, initialTarget = null 
       </div>
 
       <div>
-        <p className="mb-1 text-sm font-medium text-foreground">Target ingredient</p>
+        <p className="mb-1 text-sm font-medium text-foreground">Итоговый ингредиент</p>
         <p className="mb-2 text-xs text-muted-foreground">Останется в каталоге как основная карточка.</p>
         <IngredientPicker
           includeCustom={false}
@@ -77,7 +77,7 @@ export const DuplicateMergeForm = ({ initialSource = null, initialTarget = null 
       />
 
       {source && target && source === target ? (
-        <p role="alert" className="text-sm text-destructive">Source и target не могут быть одной и той же карточкой.</p>
+        <p role="alert" className="text-sm text-destructive">Исходный и итоговый ингредиент не могут быть одной и той же карточкой.</p>
       ) : null}
 
       {error ? <p role="alert" className="text-sm text-destructive">{error}</p> : null}
@@ -100,7 +100,7 @@ export const DuplicateMergeForm = ({ initialSource = null, initialTarget = null 
 
             if (!response.ok) {
               const data = await response.json() as { error?: string };
-              throw new Error(data.error ?? "Не удалось выполнить merge.");
+              throw new Error(data.error ?? "Не удалось объединить ингредиенты.");
             }
 
             window.location.href = "/admin/ingredients";
@@ -113,7 +113,7 @@ export const DuplicateMergeForm = ({ initialSource = null, initialTarget = null 
         type="button"
         disabled={isInvalidSelection || isSubmitting}
       >
-        {isSubmitting ? "Сливаем..." : "Объединить"}
+        {isSubmitting ? "Объединяем..." : "Объединить"}
       </Button>
     </section>
   );

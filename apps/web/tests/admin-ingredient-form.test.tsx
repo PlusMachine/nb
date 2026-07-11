@@ -66,10 +66,10 @@ describe("admin ingredient form", () => {
     expect(html).toContain('name="nameRu"');
     expect(html).toContain('name="nameEn"');
     expect(html).toContain('name="displayModeRu"');
-    expect(html).toContain("JSON Editors");
-    expect(html).toContain("Attributes");
-    expect(html).toContain("Sources");
-    expect(html).not.toContain("Package variants");
+    expect(html).toContain("JSON-редакторы");
+    expect(html).toContain("Атрибуты");
+    expect(html).toContain("Источники");
+    expect(html).not.toContain("Варианты упаковки");
     expect(html).toContain("Cascade");
     expect(html).toContain("Каскад");
   });
@@ -110,9 +110,9 @@ describe("admin ingredient form", () => {
       }
     }));
 
-    expect(html).toContain("Package variants");
-    expect(html).toContain("Quantity defaults");
-    expect(html).toContain("Recipe / Inventory");
+    expect(html).toContain("Варианты упаковки");
+    expect(html).toContain("Количества по умолчанию");
+    expect(html).toContain("Рецепт / Склад");
     expect(html).toContain("package_variants");
     expect(html).toContain("quantity_defaults");
   });

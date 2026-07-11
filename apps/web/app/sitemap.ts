@@ -5,6 +5,7 @@ import { allCalculatorSlugs } from "@/features/calculators/catalog";
 import { listPublishedContentArticles } from "@/features/content-articles/service";
 import { catalogCategoryLandings } from "@/features/ingredients/seo";
 import { listCatalogSitemapEntries } from "@/features/ingredients/service";
+import { listMasterSitemapEntries } from "@/features/masters/service";
 import { listRecipeSitemapEntries } from "@/features/recipes/service";
 import { getServerEnv } from "@/lib/env";
 
@@ -14,11 +15,12 @@ export const revalidate = 3600;
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const { APP_URL } = getServerEnv();
-  const [articles, catalogEntries, guides, recipeEntries] = await Promise.all([
+  const [articles, catalogEntries, guides, recipeEntries, masterEntries] = await Promise.all([
     listArticles(),
     listCatalogSitemapEntries(),
     listPublishedContentArticles(),
-    listRecipeSitemapEntries()
+    listRecipeSitemapEntries(),
+    listMasterSitemapEntries()
   ]);
 
   // Публичные витринные разделы и правовые страницы. lastModified намеренно не
@@ -31,6 +33,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     "/bjcp",
     "/calculators",
     "/articles",
+    "/masters",
     "/brewforge",
     "/demo",
     "/legal",
@@ -70,6 +73,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...recipeEntries.map((entry) => ({
       url: `${APP_URL}/recipes/${entry.slug}`,
       lastModified: entry.updatedAt
+    })),
+    // Опубликованные и не снятые с витрины (isListed) профили мастеров.
+    ...masterEntries.map((entry) => ({
+      url: `${APP_URL}/masters/${entry.slug}`,
+      lastModified: entry.publishedAt
     })),
     // Калькуляторы — статичные страницы без честной даты изменения.
     ...allCalculatorSlugs.map((slug) => ({

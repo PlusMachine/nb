@@ -9,7 +9,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   return (
     <div className="mx-auto max-w-6xl p-6">
       <header className="mb-4 flex items-center justify-between border-b pb-2 text-sm text-muted-foreground">
-        <span>Admin zone</span>
+        <span>Администрирование</span>
         <Link
           href="/app"
           className="inline-flex items-center gap-1.5 font-medium text-muted-foreground transition-colors hover:text-foreground"

@@ -10,9 +10,9 @@
 //  (свежесть считается на клиенте). Своего опроса/стрима не поднимает.
 // =============================================================================
 import Link from "next/link";
-import { AlertOctagon } from "lucide-react";
+import { AlertOctagon, MoreHorizontal, XCircle } from "lucide-react";
 
-import { Button } from "@nb/ui";
+import { DropdownMenu, type DropdownMenuItem } from "@nb/ui";
 
 import { stageLabelForValue } from "@/features/brew-controller/stage-labels";
 import { deriveTileBadge } from "@/features/brew-controller/device-mode";
@@ -72,6 +72,18 @@ export function DeviceTile({ tile, nowMs, onRevoke }: Props) {
 
   // HMI: числовые значения гасим при устаревании (last-known, но «не живо»).
   const valueTone = stale ? "text-muted-foreground" : "text-foreground";
+
+  // «Отозвать» — деструктивно и редко; спрятана в кебаб-меню, чтобы не быть
+  // всегда на виду красной кнопкой рядом с рутинными «Пульт»/«Настройки» (F15).
+  const menuItems: DropdownMenuItem[] = [
+    {
+      key: "revoke",
+      label: "Отозвать",
+      icon: <XCircle className="h-4 w-4" aria-hidden />,
+      tone: "danger",
+      onSelect: onRevoke,
+    },
+  ];
 
   return (
     <div
@@ -159,13 +171,20 @@ export function DeviceTile({ tile, nowMs, onRevoke }: Props) {
         >
           Настройки
         </Link>
-        <Button
-          variant="outline"
-          className="ml-auto border-destructive-border text-destructive hover:bg-destructive-subtle"
-          onClick={onRevoke}
-        >
-          Отозвать
-        </Button>
+        <DropdownMenu
+          align="end"
+          aria-label="Действия с устройством"
+          trigger={
+            <button
+              type="button"
+              aria-label="Действия с устройством"
+              className="ml-auto inline-flex h-9 w-9 items-center justify-center rounded-md text-muted-foreground transition hover:bg-accent hover:text-foreground"
+            >
+              <MoreHorizontal className="h-5 w-5" aria-hidden />
+            </button>
+          }
+          items={menuItems}
+        />
       </div>
     </div>
   );

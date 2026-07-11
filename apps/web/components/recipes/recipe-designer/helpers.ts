@@ -32,6 +32,7 @@ import {
 } from "@/features/ingredients/consumables";
 import { resolveIngredientDisplayNames } from "@/features/ingredients/presentation";
 import { resolveIngredientCategory, resolveLegacyIngredientType } from "@/features/ingredients/taxonomy";
+import { fermentableUseLabels, hopUseTypeLabels } from "@/features/recipes/ingredient-labels";
 import {
   formatInventoryQuantityInputValue,
   resolveInventoryMeasurementForDisplay
@@ -45,7 +46,6 @@ import {
 import {
   createRecipePayloadSchema,
   defaultRecipeProcessMeta,
-  recipeFermentableUseTypes,
   type RecipeIngredientStage,
   type RecipeCalculationMeta,
   type RecipeDetailDto,
@@ -304,15 +304,6 @@ export type OpenEditorState = {
   isExisting: boolean;
 };
 
-export const hopUseTypeLabels: Record<RecipeHopUseType, string> = {
-  boil: "Кипячение",
-  first_wort_hop: "Первое сусло (FWH)",
-  whirlpool: "Вирпул / хопстенд",
-  dry_hop: "Сухое охмеление",
-  dip_hop: "Дип-хоп",
-  other: "Другое"
-};
-
 export const hopUseTypeSectionLabels: Record<RecipeHopUseType, string> = {
   ...hopUseTypeLabels,
   boil: "Добавление на кипячение"
@@ -433,11 +424,7 @@ export const resolveRecipeConsumableDefaultStage = (
   return "other";
 };
 
-export const fermentableUseLabels: Record<(typeof recipeFermentableUseTypes)[number], string> = {
-  mash: "Затор",
-  steep: "Настой",
-  boil: "Кипячение"
-};
+export { fermentableUseLabels, hopUseTypeLabels } from "@/features/recipes/ingredient-labels";
 
 export const createLocalId = () => (
   typeof crypto !== "undefined" && typeof crypto.randomUUID === "function"

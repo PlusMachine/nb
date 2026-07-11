@@ -20,7 +20,7 @@ export default async function AdminArticlesPage() {
   return (
     <section className="space-y-5">
       <header className="rounded-[2rem] border border-border bg-card p-6 shadow-sm">
-        <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-muted-foreground">Content studio</p>
+        <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-muted-foreground">Студия контента</p>
         <h1 className="mt-2 text-3xl font-semibold text-foreground">Статьи и обзоры</h1>
         <p className="mt-3 max-w-3xl text-sm leading-7 text-muted-foreground">
           Редакторские гайды и обзоры оборудования. `editor` ведёт черновики, `moderator` публикует и выводит на

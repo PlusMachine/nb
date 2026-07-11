@@ -375,6 +375,13 @@
       "when": 1791000000023,
       "tag": "0057_big_marvel_boy",
       "breakpoints": true
+    },
+    {
+      "idx": 58,
+      "version": "7",
+      "when": 1791000000024,
+      "tag": "0058_loud_landau",
+      "breakpoints": true
     }
   ]
 }

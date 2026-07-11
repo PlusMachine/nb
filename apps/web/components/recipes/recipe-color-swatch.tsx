@@ -2,7 +2,6 @@ import React from "react";
 
 import {
   beerColorFromSrm,
-  NEUTRAL_SOFT_GRADIENT,
   pickTextColorForSrm,
   srmToHex,
   srmToSoftGradient
@@ -49,14 +48,13 @@ export function RecipeColorSwatch({
     );
   }
 
-  const background = hasColor ? srmToSoftGradient(srm) : NEUTRAL_SOFT_GRADIENT;
-  const textColor = hasColor ? pickTextColorForSrm(srm) : "#57534e";
+  const fillClassName = hasColor
+    ? `flex items-center justify-between gap-2 px-3 ${className ?? ""}`
+    : `flex items-center justify-between gap-2 px-3 bg-gradient-to-br from-muted via-muted to-border text-foreground ${className ?? ""}`;
+  const fillStyle = hasColor ? { backgroundImage: srmToSoftGradient(srm), color: pickTextColorForSrm(srm) } : undefined;
 
   return (
-    <div
-      className={`flex items-center justify-between gap-2 px-3 ${className ?? ""}`}
-      style={{ backgroundImage: background, color: textColor }}
-    >
+    <div className={fillClassName} style={fillStyle}>
       <span className="text-xs font-semibold tabular-nums">{srmText}</span>
       <span className="inline-flex min-w-0 items-center gap-1.5 text-[11px] font-medium opacity-90">
         {hasColor ? (

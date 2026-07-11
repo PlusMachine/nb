@@ -155,13 +155,32 @@ vi.mock("@nb/db", () => {
         return out;
       }
       if (projection) {
+        // Агрегат (count/max) без groupBy — «одна большая группа»: одна строка на
+        // весь matched-набор, а не одна строка на каждую входную запись.
+        const hasAggregate = Object.values(projection).some(
+          (expr: any) => expr?.kind === "count" || expr?.kind === "max"
+        );
+        if (hasAggregate) {
+          const obj: any = {};
+          for (const [k, expr] of Object.entries(projection as Record<string, any>)) {
+            if (expr?.kind === "count") {
+              obj[k] = rows.length;
+            } else if (expr?.kind === "max") {
+              obj[k] = rows.reduce((acc: any, row: any) => {
+                const v = row[expr.col.field];
+                return acc == null || compareVals(v, acc) > 0 ? v : acc;
+              }, null);
+            } else if (expr?.__col) {
+              obj[k] = rows[0]?.[expr.field] ?? null;
+            }
+          }
+          return [obj];
+        }
         return rows.map((r: any) => {
           const obj: any = {};
           for (const [k, expr] of Object.entries(projection as Record<string, any>)) {
             if (expr?.__col) {
               obj[k] = r[expr.field];
-            } else if (expr?.kind === "max") {
-              obj[k] = r[expr.col.field];
             }
           }
           return obj;
@@ -557,11 +576,11 @@ beforeEach(() => {
 // --- createBrewBatchFromRecipe -----------------------------------------------
 
 describe("createBrewBatchFromRecipe", () => {
-  it("создаёт планируемую партию из рецепта владельца: снапшот плана + дефолтное имя + снапшот рецепта", async () => {
+  it("создаёт планируемую партию из рецепта владельца: снапшот плана + дефолтное имя (F5: первая партия = название рецепта) + снапшот рецепта", async () => {
     const batch = await createBrewBatchFromRecipe(USER_ID, RECIPE_ID);
 
     expect(batch.status).toBe("planned");
-    expect(batch.name).toBe("Тестовый IPA brew");
+    expect(batch.name).toBe("Тестовый IPA");
     expect(batch.userId).toBe(USER_ID);
     expect(batch.recipeId).toBe(RECIPE_ID);
     expect(batch.brewPlanSnapshot.recipe.id).toBe(RECIPE_ID);
@@ -573,6 +592,40 @@ describe("createBrewBatchFromRecipe", () => {
       unit: "g"
     });
     expect(store.brewBatches).toHaveLength(1);
+  });
+
+  it("F5: вторая партия того же рецепта того же юзера получает имя «<Название> №2», третья — «№3»", async () => {
+    const first = await createBrewBatchFromRecipe(USER_ID, RECIPE_ID);
+    const second = await createBrewBatchFromRecipe(USER_ID, RECIPE_ID);
+    const third = await createBrewBatchFromRecipe(USER_ID, RECIPE_ID);
+
+    expect(first.name).toBe("Тестовый IPA");
+    expect(second.name).toBe("Тестовый IPA №2");
+    expect(third.name).toBe("Тестовый IPA №3");
+  });
+
+  it("F5: отменённые партии тоже считаются в нумерации", async () => {
+    const first = await createBrewBatchFromRecipe(USER_ID, RECIPE_ID);
+    await updateBrewBatchStatus(USER_ID, first.id, "cancelled");
+    const second = await createBrewBatchFromRecipe(USER_ID, RECIPE_ID);
+    expect(second.name).toBe("Тестовый IPA №2");
+  });
+
+  it("F5: партии ДРУГОГО юзера того же рецепта не влияют на счёт нумерации", async () => {
+    const PUBLIC_RECIPE = uuid(5);
+    fixtures.recipeDetails.push(makeRecipeDetail(PUBLIC_RECIPE, USER_ID, "published"));
+
+    const other = await createBrewBatchFromRecipe(OTHER_USER, PUBLIC_RECIPE);
+    expect(other.name).toBe("Тестовый IPA");
+
+    const mine = await createBrewBatchFromRecipe(USER_ID, PUBLIC_RECIPE);
+    expect(mine.name).toBe("Тестовый IPA");
+  });
+
+  it("F5: input.name, если передан, приоритетнее автоимени", async () => {
+    await createBrewBatchFromRecipe(USER_ID, RECIPE_ID);
+    const named = await createBrewBatchFromRecipe(USER_ID, RECIPE_ID, { name: "Особая партия" });
+    expect(named.name).toBe("Особая партия");
   });
 
   it("обрезает пользовательское имя партии", async () => {

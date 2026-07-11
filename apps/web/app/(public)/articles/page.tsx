@@ -4,6 +4,7 @@ import { Clock } from "lucide-react";
 
 import { listPublishedContentArticles } from "@/features/content-articles/service";
 import { contentArticleTypeLabels } from "@/features/content-articles/contracts";
+import { articleCoverFromSlug } from "@/features/content-articles/article-cover";
 
 export const metadata: Metadata = {
   title: "Статьи и обзоры для пивоваров",
@@ -31,7 +32,9 @@ export default async function ArticlesPage() {
         </p>
       ) : (
         <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-          {articles.map((article) => (
+          {articles.map((article) => {
+            const cover = articleCoverFromSlug(article.slug);
+            return (
             <Link
               key={article.id}
               href={`/articles/${article.slug}`}
@@ -47,7 +50,14 @@ export default async function ArticlesPage() {
                   className="h-40 w-full object-cover"
                 />
               ) : (
-                <div className="h-40 w-full bg-gradient-to-br from-amber-50 to-zinc-100 dark:from-amber-500/10 dark:to-zinc-800" aria-hidden />
+                <div className="flex h-40 w-full items-center justify-center" style={{ background: cover.background }} aria-hidden>
+                  <span
+                    className="text-6xl font-semibold leading-none opacity-25"
+                    style={{ color: cover.textColor, fontFamily: "var(--font-display)" }}
+                  >
+                    {article.title.charAt(0).toUpperCase()}
+                  </span>
+                </div>
               )}
               <div className="flex flex-1 flex-col gap-2 p-4">
                 <span className="text-[11px] font-semibold uppercase tracking-wider text-warning-subtle-foreground">
@@ -61,7 +71,8 @@ export default async function ArticlesPage() {
                 </div>
               </div>
             </Link>
-          ))}
+            );
+          })}
         </div>
       )}
     </div>

@@ -761,7 +761,7 @@
   {
     "id": "cz-amethyst-standard",
     "type": "hop",
-    "name_en": "AMETHYST",
+    "name_en": "Amethyst",
     "name_ru": "Аметист",
     "aliases_en": [],
     "aliases_ru": [],
@@ -925,7 +925,7 @@
   {
     "id": "cz-saaz-standard",
     "type": "hop",
-    "name_en": "SAAZ",
+    "name_en": "Saaz",
     "name_ru": "Сааз",
     "aliases_en": [],
     "aliases_ru": [],
@@ -1145,7 +1145,7 @@
   {
     "id": "de-ariana-standard",
     "type": "hop",
-    "name_en": "ARIANA",
+    "name_en": "Ariana",
     "name_ru": "Ариана",
     "aliases_en": [],
     "aliases_ru": [],
@@ -1293,7 +1293,7 @@
   {
     "id": "de-callista-standard",
     "type": "hop",
-    "name_en": "CALLISTA",
+    "name_en": "Callista",
     "name_ru": "Каллиста",
     "aliases_en": [],
     "aliases_ru": [],
@@ -1809,7 +1809,7 @@
   {
     "id": "de-hallertau-traditional-standard",
     "type": "hop",
-    "name_en": "HALLERTAU TRADITIONAL",
+    "name_en": "Hallertau Traditional",
     "name_ru": "Халлертау Традитионал",
     "aliases_en": [],
     "aliases_ru": [],
@@ -2082,7 +2082,7 @@
   {
     "id": "de-helios-standard",
     "type": "hop",
-    "name_en": "HELIOS",
+    "name_en": "Helios",
     "name_ru": "Хелиос",
     "aliases_en": [],
     "aliases_ru": [],
@@ -3224,7 +3224,7 @@
   {
     "id": "de-solero-standard",
     "type": "hop",
-    "name_en": "SOLERO",
+    "name_en": "Solero",
     "name_ru": "Солеро",
     "aliases_en": [],
     "aliases_ru": [],
@@ -3687,7 +3687,7 @@
   {
     "id": "fr-bouclier-standard",
     "type": "hop",
-    "name_en": "BOUCLIER",
+    "name_en": "Bouclier",
     "name_ru": "Буклер",
     "aliases_en": [],
     "aliases_ru": [],
@@ -3765,7 +3765,7 @@
   {
     "id": "gb-archer-standard",
     "type": "hop",
-    "name_en": "ARCHER",
+    "name_en": "Archer",
     "name_ru": "Арчер",
     "aliases_en": [],
     "aliases_ru": [],
@@ -3982,7 +3982,7 @@
   {
     "id": "gb-brewers-gold-standard",
     "type": "hop",
-    "name_en": "BREWERS GOLD",
+    "name_en": "Brewers Gold",
     "name_ru": "Бреверс Голд",
     "aliases_en": [],
     "aliases_ru": [],
@@ -5609,7 +5609,7 @@
   {
     "id": "si-styrian-celeia-standard",
     "type": "hop",
-    "name_en": "STYRIAN CELEIA",
+    "name_en": "Styrian Celeia",
     "name_ru": "Стйриан Келеиа",
     "aliases_en": [],
     "aliases_ru": [],
@@ -5828,7 +5828,7 @@
   {
     "id": "us-alora-standard",
     "type": "hop",
-    "name_en": "ALORA",
+    "name_en": "Alora",
     "name_ru": "Алора",
     "aliases_en": [],
     "aliases_ru": [],
@@ -5958,7 +5958,7 @@
   {
     "id": "us-amarillo-standard",
     "type": "hop",
-    "name_en": "AMARILLO",
+    "name_en": "Amarillo",
     "name_ru": "Амарилло",
     "aliases_en": [
       "VGXP01"
@@ -6027,7 +6027,7 @@
   {
     "id": "us-apollo-standard",
     "type": "hop",
-    "name_en": "APOLLO",
+    "name_en": "Apollo",
     "name_ru": "Аполло",
     "aliases_en": [],
     "aliases_ru": [],
@@ -6162,7 +6162,7 @@
   {
     "id": "us-bravo-standard",
     "type": "hop",
-    "name_en": "BRAVO",
+    "name_en": "Bravo",
     "name_ru": "Браво",
     "aliases_en": [],
     "aliases_ru": [],
@@ -6265,7 +6265,7 @@
   {
     "id": "us-calypso-standard",
     "type": "hop",
-    "name_en": "CALYPSO",
+    "name_en": "Calypso",
     "name_ru": "Калипсо",
     "aliases_en": [],
     "aliases_ru": [
@@ -6405,7 +6405,7 @@
   {
     "id": "us-cascade-standard",
     "type": "hop",
-    "name_en": "CASCADE",
+    "name_en": "Cascade",
     "name_ru": "Каскад",
     "aliases_en": [],
     "aliases_ru": [
@@ -6455,7 +6455,7 @@
   {
     "id": "us-cashmere-standard",
     "type": "hop",
-    "name_en": "CASHMERE",
+    "name_en": "Cashmere",
     "name_ru": "Кашмере",
     "aliases_en": [],
     "aliases_ru": [],
@@ -6548,7 +6548,7 @@
   {
     "id": "us-centennial-standard",
     "type": "hop",
-    "name_en": "CENTENNIAL",
+    "name_en": "Centennial",
     "name_ru": "Сентенниал",
     "aliases_en": [],
     "aliases_ru": [
@@ -6644,7 +6644,7 @@
   {
     "id": "us-chinook-standard",
     "type": "hop",
-    "name_en": "CHINOOK",
+    "name_en": "Chinook",
     "name_ru": "Чинук",
     "aliases_en": [],
     "aliases_ru": [],
@@ -6886,7 +6886,7 @@
   {
     "id": "us-comet-standard",
     "type": "hop",
-    "name_en": "COMET",
+    "name_en": "Comet",
     "name_ru": "Комет",
     "aliases_en": [],
     "aliases_ru": [],
@@ -7037,7 +7037,7 @@
   {
     "id": "us-el-dorado-standard",
     "type": "hop",
-    "name_en": "EL DORADO",
+    "name_en": "El Dorado",
     "name_ru": "Ел Дорадо",
     "aliases_en": [],
     "aliases_ru": [],
@@ -7086,7 +7086,7 @@
   {
     "id": "us-erebus-standard",
     "type": "hop",
-    "name_en": "EREBUS",
+    "name_en": "Erebus",
     "name_ru": "Еребус",
     "aliases_en": [],
     "aliases_ru": [],
@@ -7231,7 +7231,7 @@
   {
     "id": "us-galena-standard",
     "type": "hop",
-    "name_en": "GALENA",
+    "name_en": "Galena",
     "name_ru": "Галена",
     "aliases_en": [],
     "aliases_ru": [],
@@ -7740,7 +7740,7 @@
   {
     "id": "us-lemondrop-standard",
     "type": "hop",
-    "name_en": "LEMONDROP",
+    "name_en": "Lemondrop",
     "name_ru": "Лемондроп",
     "aliases_en": [],
     "aliases_ru": [],
@@ -7785,7 +7785,7 @@
   {
     "id": "us-lotus-standard",
     "type": "hop",
-    "name_en": "LOTUS",
+    "name_en": "Lotus",
     "name_ru": "Лотус",
     "aliases_en": [],
     "aliases_ru": [],
@@ -8147,7 +8147,7 @@
   {
     "id": "us-mt-hood-standard",
     "type": "hop",
-    "name_en": "MT. HOOD",
+    "name_en": "Mt. Hood",
     "name_ru": "Мт. Худ",
     "aliases_en": [],
     "aliases_ru": [],
@@ -8197,7 +8197,7 @@
   {
     "id": "us-nugget-standard",
     "type": "hop",
-    "name_en": "NUGGET",
+    "name_en": "Nugget",
     "name_ru": "Нуггет",
     "aliases_en": [],
     "aliases_ru": [],
@@ -8582,7 +8582,7 @@
   {
     "id": "us-sterling-standard",
     "type": "hop",
-    "name_en": "STERLING",
+    "name_en": "Sterling",
     "name_ru": "Стерлинг",
     "aliases_en": [],
     "aliases_ru": [],
@@ -8688,7 +8688,7 @@
   {
     "id": "us-sultana-standard",
     "type": "hop",
-    "name_en": "SULTANA",
+    "name_en": "Sultana",
     "name_ru": "Султана",
     "aliases_en": [],
     "aliases_ru": [],
@@ -8733,7 +8733,7 @@
   {
     "id": "us-summit-standard",
     "type": "hop",
-    "name_en": "SUMMIT",
+    "name_en": "Summit",
     "name_ru": "Суммит",
     "aliases_en": [],
     "aliases_ru": [],
@@ -8907,7 +8907,7 @@
   {
     "id": "us-trident-standard",
     "type": "hop",
-    "name_en": "TRIDENT",
+    "name_en": "Trident",
     "name_ru": "Тридент",
     "aliases_en": [],
     "aliases_ru": [],
@@ -9192,7 +9192,7 @@
   {
     "id": "us-willamette-standard",
     "type": "hop",
-    "name_en": "WILLAMETTE",
+    "name_en": "Willamette",
     "name_ru": "Вилламетт",
     "aliases_en": [],
     "aliases_ru": [
