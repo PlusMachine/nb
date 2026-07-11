@@ -605,9 +605,23 @@ describe("ingredient picker state helpers", () => {
       category: "water_treatment"
     })).toBe("Уточнить группу водоподготовки");
 
+    // Без broad group (пикер склада по всей категории) — нейтральный заголовок.
     expect(resolveIngredientPickerRefinementPanelTitle({
       currentRefinementType: "consumable_group",
       category: "consumable"
+    })).toBe("Уточнить группу добавок и расходников");
+
+    // Пикер мастера рецепта форсит группу добавок — там нет тары и санитайзеров.
+    expect(resolveIngredientPickerRefinementPanelTitle({
+      currentRefinementType: "consumable_group",
+      category: "consumable",
+      broadGroup: "inventory_additives"
+    })).toBe("Уточнить группу добавок");
+
+    expect(resolveIngredientPickerRefinementPanelTitle({
+      currentRefinementType: "consumable_group",
+      category: "consumable",
+      broadGroup: "inventory_supplies"
     })).toBe("Уточнить группу расходников");
 
     expect(resolveIngredientPickerRefinementPanelTitle({

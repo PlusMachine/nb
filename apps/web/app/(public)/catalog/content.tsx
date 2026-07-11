@@ -137,7 +137,8 @@ const catalogHubSectionLabels: Record<CatalogLandingSlug, string> = {
   hops: ingredientCategoryLabels.hop,
   yeast: ingredientCategoryLabels.yeast,
   water: ingredientCategoryLabels.water_treatment,
-  consumables: ingredientCategoryLabels.consumable
+  additives: "Специи и добавки",
+  consumables: "Расходники"
 };
 
 // Хаб каталога (/catalog без лендинга): секции по категориям вместо плоского
@@ -198,7 +199,8 @@ const renderCatalogHub = async ({
           customCount: result.facets.customCount,
           catalogCount: result.facets.catalogCount,
           byCategory: result.facets.byCategory,
-          byFermentableSubtype: result.facets.byFermentableSubtype
+          byFermentableSubtype: result.facets.byFermentableSubtype,
+          byConsumableGroup: result.facets.byConsumableGroup
         }}
       />
 
@@ -292,6 +294,14 @@ const resolveOtherCategoriesCount = (landing: CatalogLandingDefinition, facets: 
     return totalAcrossCategories - facets.byFermentableSubtype.fermentable;
   }
 
+  if (landing.slug === "additives") {
+    return totalAcrossCategories - facets.byConsumableGroup.additives;
+  }
+
+  if (landing.slug === "consumables") {
+    return totalAcrossCategories - facets.byConsumableGroup.supplies;
+  }
+
   return totalAcrossCategories - facets.byCategory[landing.category];
 };
 
@@ -319,6 +329,7 @@ export async function IngredientCatalogContent({ searchParams, landing = null }:
     q: q || undefined,
     category,
     subtype,
+    consumableGroup: landing.consumableGroup,
     sort,
     page,
     pageSize: CATALOG_PAGE_SIZE
@@ -400,6 +411,7 @@ export async function IngredientCatalogContent({ searchParams, landing = null }:
         q={q}
         category={currentCategory}
         subtype={subtype ?? null}
+        consumableGroup={landing.consumableGroup ?? null}
         sort={sort}
         canManage={canManage}
         queryBasePath="/catalog"
@@ -408,7 +420,8 @@ export async function IngredientCatalogContent({ searchParams, landing = null }:
           customCount: result.facets.customCount,
           catalogCount: result.facets.catalogCount,
           byCategory: result.facets.byCategory,
-          byFermentableSubtype: result.facets.byFermentableSubtype
+          byFermentableSubtype: result.facets.byFermentableSubtype,
+          byConsumableGroup: result.facets.byConsumableGroup
         }}
       />
 

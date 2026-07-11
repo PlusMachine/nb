@@ -149,8 +149,8 @@ const userFacingIngredientKindOptions = [
   },
   {
     value: "consumable",
-    label: "Расходник",
-    description: "Санитайзеры и осветлители",
+    label: "Добавка или расходник",
+    description: "Специи, травы, осветлители, санитайзеры, тара",
     category: "consumable",
     subtype: "other",
     icon: Package
@@ -170,7 +170,7 @@ const capitalizeLabel = (value: string) => value.length
 
 const resolveSubtypeFieldLabel = (category: IngredientCategory) => {
   if (category === "consumable") {
-    return "Тип расходника";
+    return "Тип добавки или расходника";
   }
 
   if (category === "water_treatment") {

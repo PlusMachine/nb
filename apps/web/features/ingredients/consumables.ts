@@ -465,7 +465,10 @@ export const resolveConsumablePickerGroup = (source: {
     }
   }
 
-  if ((technicalData?.usageStage ?? []).some((stage) => normalizeKey(stage) === "packaging")) {
+  // Стадия внесения — только эвристика последней надежды: явная группа
+  // (пусть и «техдобавки») важнее. Иначе антиоксиданты/консерванты «для
+  // готового пива» (вносятся при розливе) уезжали бы в «Тара и укупорка».
+  if (!fallbackGroup && (technicalData?.usageStage ?? []).some((stage) => normalizeKey(stage) === "packaging")) {
     return "packaging";
   }
 
@@ -515,7 +518,7 @@ export const resolveConsumableInventoryBroadGroupLabel = (
   }
 
   if (value === "inventory_additives") {
-    return "Другие добавки";
+    return "Специи и добавки";
   }
 
   return null;

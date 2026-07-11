@@ -676,6 +676,10 @@ export type UserCatalogListResult = {
       malt: number;
       fermentable: number;
     };
+    byConsumableGroup: {
+      additives: number;
+      supplies: number;
+    };
     customCount: number;
     catalogCount: number;
   };
@@ -685,7 +689,7 @@ export type UserCatalogListResult = {
 // определениям лендингов — catalogCategoryLandings в features/ingredients/seo.ts,
 // сам тип живёт здесь (а не там), чтобы contracts.ts не зависел от seo.ts —
 // seo.ts уже импортирует типы отсюда, обратная зависимость создала бы цикл.
-export type CatalogLandingSlug = "hops" | "malts" | "fermentables" | "yeast" | "water" | "consumables";
+export type CatalogLandingSlug = "hops" | "malts" | "fermentables" | "yeast" | "water" | "additives" | "consumables";
 
 export type CatalogHubParams = {
   view?: "all" | "mine";

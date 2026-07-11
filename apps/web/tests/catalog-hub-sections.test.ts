@@ -161,7 +161,7 @@ import {
 } from "../features/ingredients/catalog-service";
 import { normalizeSearchText } from "../features/ingredients/normalization";
 
-const canonicalSlugOrder = ["malts", "fermentables", "hops", "yeast", "water", "consumables"];
+const canonicalSlugOrder = ["malts", "fermentables", "hops", "yeast", "water", "additives", "consumables"];
 
 beforeEach(() => {
   mockState.catalogItems = [];
@@ -186,13 +186,14 @@ describe("listCatalogHubSections: партиционирование без q", 
     expect(result.facets.byFermentableSubtype).toEqual({ malt: 0, fermentable: 0 });
   });
 
-  it("раскладывает по одной позиции каждой из 6 категорий в канонический порядок секций", async () => {
+  it("раскладывает по одной позиции каждой из 7 секций в канонический порядок", async () => {
     mockState.catalogItems = [
       buildCatalogItem({ id: "malt-1", type: "malt", category: "fermentable", subtype: "malt", itemKind: "malt", primaryLabelRu: "Солод", displayName: "Солод" }),
       buildCatalogItem({ id: "ferm-1", type: "fermentable", category: "fermentable", subtype: "fermentable", itemKind: "sugar", primaryLabelRu: "Декстроза", displayName: "Декстроза" }),
       buildCatalogItem({ id: "hop-1", type: "hop", category: "hop", subtype: "hop", itemKind: "hop", primaryLabelRu: "Каскад", displayName: "Каскад" }),
       buildCatalogItem({ id: "yeast-1", type: "yeast", category: "yeast", subtype: "yeast", itemKind: "yeast", primaryLabelRu: "US-05", displayName: "US-05" }),
       buildCatalogItem({ id: "wt-1", type: "water_treatment", category: "water_treatment", subtype: null, itemKind: "salt", primaryLabelRu: "Хлорид кальция", displayName: "Хлорид кальция" }),
+      buildCatalogItem({ id: "additive-1", type: "consumable", category: "consumable", subtype: null, itemKind: "spice", primaryLabelRu: "Кориандр", displayName: "Кориандр" }),
       buildCatalogItem({ id: "cons-1", type: "consumable", category: "consumable", subtype: null, itemKind: "sanitizer", primaryLabelRu: "Стар Сан", displayName: "Стар Сан" })
     ];
 
@@ -205,9 +206,10 @@ describe("listCatalogHubSections: партиционирование без q", 
     expect(bySlug.get("hops")?.items.map((item) => item.id)).toEqual(["hop-1"]);
     expect(bySlug.get("yeast")?.items.map((item) => item.id)).toEqual(["yeast-1"]);
     expect(bySlug.get("water")?.items.map((item) => item.id)).toEqual(["wt-1"]);
+    expect(bySlug.get("additives")?.items.map((item) => item.id)).toEqual(["additive-1"]);
     expect(bySlug.get("consumables")?.items.map((item) => item.id)).toEqual(["cons-1"]);
     expect(result.sections.every((section) => section.total === 1)).toBe(true);
-    expect(result.total).toBe(6);
+    expect(result.total).toBe(7);
   });
 
   it("делит fermentable по subtype: malt и fermentable — разные секции, не смешиваются", async () => {
@@ -224,6 +226,22 @@ describe("listCatalogHubSections: партиционирование без q", 
     expect(bySlug.get("malts")?.total).toBe(2);
     expect(bySlug.get("fermentables")?.items.map((item) => item.id)).toEqual(["sugar-a"]);
     expect(bySlug.get("fermentables")?.total).toBe(1);
+  });
+
+  it("делит consumable по broad group: «Специи и добавки» и «Расходники» — разные секции", async () => {
+    mockState.catalogItems = [
+      buildCatalogItem({ id: "spice-a", type: "consumable", category: "consumable", subtype: null, itemKind: "spice", primaryLabelRu: "Кориандр", displayName: "Кориандр" }),
+      buildCatalogItem({ id: "sanitizer-a", type: "consumable", category: "consumable", subtype: null, itemKind: "sanitizer", primaryLabelRu: "Стар Сан", displayName: "Стар Сан" }),
+      buildCatalogItem({ id: "cleaner-a", type: "consumable", category: "consumable", subtype: null, itemKind: "cleaner", primaryLabelRu: "PBW", displayName: "PBW" })
+    ];
+
+    const result = await listCatalogHubSections(null, {});
+    const bySlug = new Map(result.sections.map((section) => [section.slug, section]));
+
+    expect(bySlug.get("additives")?.items.map((item) => item.id)).toEqual(["spice-a"]);
+    expect(bySlug.get("additives")?.total).toBe(1);
+    expect(bySlug.get("consumables")?.items.map((item) => item.id)).toEqual(["sanitizer-a", "cleaner-a"]);
+    expect(bySlug.get("consumables")?.total).toBe(2);
   });
 
   it("превью секции усечено лимитом 6, total считает все позиции секции", async () => {
@@ -315,7 +333,7 @@ describe("listCatalogHubSections: сквозной поиск (q)", () => {
     // Хвост секций без совпадений — в каноническом порядке (malts перед
     // fermentables и т.д., за вычетом уже подставленной вперёд hops).
     expect(result.sections.map((section) => section.slug)).toEqual([
-      "hops", "malts", "fermentables", "yeast", "water", "consumables"
+      "hops", "malts", "fermentables", "yeast", "water", "additives", "consumables"
     ]);
   });
 
@@ -363,7 +381,7 @@ describe("listCatalogHubSections: сквозной поиск (q)", () => {
     const result = await listCatalogHubSections(null, { q: "flexo" });
 
     expect(result.sections.map((section) => section.slug)).toEqual([
-      "yeast", "hops", "malts", "fermentables", "water", "consumables"
+      "yeast", "hops", "malts", "fermentables", "water", "additives", "consumables"
     ]);
     expect(result.sections[0].items.map((item) => item.id)).toEqual(["yeast-strong-match"]);
     expect(result.sections[1].items.map((item) => item.id)).toEqual(["hop-weak-match"]);
@@ -466,8 +484,36 @@ describe("listCatalogHubSections: facets в той же форме, что у li
 
     expect(hubResult.facets.byCategory).toEqual(listResult.facets.byCategory);
     expect(hubResult.facets.byFermentableSubtype).toEqual(listResult.facets.byFermentableSubtype);
+    expect(hubResult.facets.byConsumableGroup).toEqual(listResult.facets.byConsumableGroup);
     expect(hubResult.facets.customCount).toBe(listResult.facets.customCount);
     expect(hubResult.facets.catalogCount).toBe(listResult.facets.catalogCount);
     expect(hubResult.facets).toHaveProperty("filteredByCategory");
+  });
+});
+
+describe("listUserCatalogIngredients: consumableGroup", () => {
+  it("фильтрует по broad group и считает byConsumableGroup независимо от текущего фильтра", async () => {
+    mockState.catalogItems = [
+      buildCatalogItem({ id: "spice-a", type: "consumable", category: "consumable", subtype: null, itemKind: "spice", primaryLabelRu: "Кориандр", displayName: "Кориандр" }),
+      buildCatalogItem({ id: "spice-b", type: "consumable", category: "consumable", subtype: null, itemKind: "herb_flower", primaryLabelRu: "Хмель Цветочный", displayName: "Chamomile" }),
+      buildCatalogItem({ id: "sanitizer-a", type: "consumable", category: "consumable", subtype: null, itemKind: "sanitizer", primaryLabelRu: "Стар Сан", displayName: "Star San" }),
+      buildCatalogItem({ id: "hop-1", type: "hop", category: "hop", subtype: "hop", itemKind: "hop", primaryLabelRu: "Каскад", displayName: "Каскад" })
+    ];
+
+    const additivesResult = await listUserCatalogIngredients(null, {
+      category: "consumable",
+      consumableGroup: "inventory_additives"
+    });
+    const suppliesResult = await listUserCatalogIngredients(null, {
+      category: "consumable",
+      consumableGroup: "inventory_supplies"
+    });
+
+    expect(additivesResult.items.map((item) => item.id).sort()).toEqual(["spice-a", "spice-b"]);
+    expect(suppliesResult.items.map((item) => item.id)).toEqual(["sanitizer-a"]);
+    // byConsumableGroup считается по всему baseItems (без учёта текущего фильтра
+    // category/consumableGroup), как byCategory/byFermentableSubtype.
+    expect(additivesResult.facets.byConsumableGroup).toEqual({ additives: 2, supplies: 1 });
+    expect(suppliesResult.facets.byConsumableGroup).toEqual({ additives: 2, supplies: 1 });
   });
 });

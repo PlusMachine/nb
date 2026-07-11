@@ -79,23 +79,25 @@ const buildFermentableWithoutSubtype = (overrides: Partial<UserCatalogIngredient
 } as UserCatalogIngredientDto);
 
 describe("catalog landing slugs", () => {
-  it("resolves all six valid slugs", () => {
-    const expectedMapping: Record<string, { category: string; subtype?: string }> = {
+  it("resolves all seven valid slugs", () => {
+    const expectedMapping: Record<string, { category: string; subtype?: string; consumableGroup?: string }> = {
       hops: { category: "hop" },
       malts: { category: "fermentable", subtype: "malt" },
       fermentables: { category: "fermentable", subtype: "fermentable" },
       yeast: { category: "yeast" },
       water: { category: "water_treatment" },
-      consumables: { category: "consumable" }
+      additives: { category: "consumable", consumableGroup: "inventory_additives" },
+      consumables: { category: "consumable", consumableGroup: "inventory_supplies" }
     };
 
-    expect(catalogCategoryLandings).toHaveLength(6);
+    expect(catalogCategoryLandings).toHaveLength(7);
 
     for (const [slug, expected] of Object.entries(expectedMapping)) {
       const landing = resolveCatalogLanding(slug);
       expect(landing).not.toBeNull();
       expect(landing?.category).toBe(expected.category);
       expect(landing?.subtype).toBe(expected.subtype);
+      expect(landing?.consumableGroup).toBe(expected.consumableGroup);
       expect(landing?.h1).toBeTruthy();
       expect(landing?.metaTitle).toBeTruthy();
       expect(landing?.metaDescription).toBeTruthy();
@@ -116,7 +118,6 @@ describe("resolveCatalogLandingForFilter", () => {
     expect(resolveCatalogLandingForFilter("hop")?.slug).toBe("hops");
     expect(resolveCatalogLandingForFilter("yeast")?.slug).toBe("yeast");
     expect(resolveCatalogLandingForFilter("water_treatment")?.slug).toBe("water");
-    expect(resolveCatalogLandingForFilter("consumable")?.slug).toBe("consumables");
   });
 
   it("requires an exact subtype match for fermentable", () => {
@@ -124,6 +125,13 @@ describe("resolveCatalogLandingForFilter", () => {
     expect(resolveCatalogLandingForFilter("fermentable", "fermentable")?.slug).toBe("fermentables");
     expect(resolveCatalogLandingForFilter("fermentable")).toBeNull();
     expect(resolveCatalogLandingForFilter("fermentable", null)).toBeNull();
+  });
+
+  it("requires an exact broad group match for consumable", () => {
+    expect(resolveCatalogLandingForFilter("consumable")).toBeNull();
+    expect(resolveCatalogLandingForFilter("consumable", null, null)).toBeNull();
+    expect(resolveCatalogLandingForFilter("consumable", null, "inventory_additives")?.slug).toBe("additives");
+    expect(resolveCatalogLandingForFilter("consumable", null, "inventory_supplies")?.slug).toBe("consumables");
   });
 
   it("returns null when no category is given", () => {

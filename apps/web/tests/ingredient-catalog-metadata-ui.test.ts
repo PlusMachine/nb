@@ -46,7 +46,7 @@ vi.mock("@/features/ingredients/catalog-service", () => ({
   listUserCatalogIngredients: async () => mockState.listResult,
   listCatalogHubSections: async () => mockState.hubResult,
   getUserCatalogIngredientByRef: async () => mockState.detailItem,
-  listSimilarCatalogIngredients: async () => mockState.similarItems,
+  listAnalogCatalogIngredients: async () => mockState.similarItems,
   listSameBrandCatalogIngredients: async () => mockState.brandItems
 }));
 
@@ -78,6 +78,7 @@ vi.mock("@/components/ingredients/ingredient-catalog-toolbar", () => ({
 }));
 
 vi.mock("@/components/shared/country-flag", () => ({
+  CountryFlag: ({ countryCode }: any) => React.createElement("span", { "data-flag": countryCode ?? "" }),
   CountryFlagLabel: ({ label }: any) => React.createElement("span", null, label)
 }));
 
@@ -280,6 +281,28 @@ describe("ingredient catalog metadata ui", () => {
     expect(html).toContain("Добавить в избранное");
     expect(html).toContain("Где купить");
     expect(html).toContain("purchase-links:1");
+  });
+
+  it("names the same-brand block by category when all items match, generically when mixed", async () => {
+    mockState.detailItem = buildCatalogItem();
+    mockState.brandItems = [
+      buildCatalogItem({ id: "hop-2", category: "hop", primaryLabelRu: "Simcoe" })
+    ];
+
+    let html = renderToStaticMarkup(await IngredientDetailPage({
+      params: Promise.resolve({ source: "system", id: "catalog-hop-1" })
+    }));
+    expect(html).toContain("Другой хмель Yakima Chief");
+
+    mockState.brandItems = [
+      buildCatalogItem({ id: "hop-2", category: "hop", primaryLabelRu: "Simcoe" }),
+      buildCatalogItem({ id: "yeast-2", category: "yeast", primaryLabelRu: "Азимут" })
+    ];
+
+    html = renderToStaticMarkup(await IngredientDetailPage({
+      params: Promise.resolve({ source: "system", id: "catalog-hop-1" })
+    }));
+    expect(html).toContain("Другие ингредиенты Yakima Chief");
   });
 
   it("shows the Описание section first when descriptionRu is set, split into paragraphs", async () => {
@@ -665,7 +688,7 @@ describe("ingredient catalog metadata ui", () => {
     expect(html).toContain('href="/catalog?q=malt-extract"');
   });
 
-  it("shows a 'В архиве' badge next to the Системный badge for an archived system ingredient", async () => {
+  it("shows a 'В архиве' badge for an archived system ingredient and the brand next to the name", async () => {
     mockState.detailItem = buildCatalogItem({ isActive: false, status: "archived" });
 
     const html = renderToStaticMarkup(await IngredientDetailPage({
@@ -673,7 +696,10 @@ describe("ingredient catalog metadata ui", () => {
     }));
 
     expect(html).toContain("В архиве");
-    expect(html).toContain("Системный");
+    // Бренд — часть заголовка (h1), а не отдельный маленький чип; служебного
+    // бейджа «Системный» нет (дефолтное состояние не маркируется).
+    expect(html).toMatch(/<h1[^>]*>Citra<[^>]*>[^<]*Yakima Chief<\/span><\/h1>/);
+    expect(html).not.toContain("Системный");
   });
 
   it("does not show the 'В архиве' badge for an active system ingredient", async () => {

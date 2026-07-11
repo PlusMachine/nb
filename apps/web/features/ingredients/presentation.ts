@@ -49,11 +49,16 @@ type IngredientPresentationSource = {
   unitPreferred?: string | null;
 };
 
+// Имя категории целиком. У consumable оно слитное («Расходники и добавки»):
+// само слово «Расходники» закреплено за узкой группой inventory_supplies
+// (санитайзеры/мойка/тара/газы), а специи и добавки — это inventory_additives.
+// Где показывается конкретный ингредиент, а не вся категория, лейбл берётся по
+// broad group — resolveConsumableInventoryBroadGroupLabel в consumables.ts.
 export const ingredientCategoryLabels: Record<IngredientCategory, string> = {
   fermentable: "Ферментируемые",
   hop: "Хмель",
   yeast: "Дрожжи",
-  consumable: "Расходники",
+  consumable: "Расходники и добавки",
   water_treatment: "Водоподготовка"
 };
 

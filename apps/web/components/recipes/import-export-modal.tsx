@@ -72,7 +72,7 @@ const categoryLabels: Record<CanonicalRecipe["ingredients"][number]["category"],
   fermentable: "сбраживаемое",
   hop: "хмель",
   yeast: "дрожжи",
-  consumable: "другие добавки",
+  consumable: "специи и добавки",
   water_treatment: "водоподготовка"
 };
 

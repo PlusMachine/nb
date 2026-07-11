@@ -23,7 +23,7 @@ const recipeIngredientCategoryOptions: Array<{
     { value: "hop", label: "Хмель", icon: Hop, iconClassName: "text-emerald-600 dark:text-emerald-400" },
     { value: "yeast", label: "Дрожжи", icon: FlaskConical, iconClassName: "text-violet-600 dark:text-violet-400" },
     { value: "water_treatment", label: "Водоподготовка", icon: Droplets, iconClassName: "text-sky-600 dark:text-sky-400" },
-    { value: "consumable", label: "Другие добавки", icon: Package, iconClassName: "text-muted-foreground" }
+    { value: "consumable", label: "Специи и добавки", icon: Package, iconClassName: "text-muted-foreground" }
   ];
 
 export function RecipeIngredientCategoryGrid({

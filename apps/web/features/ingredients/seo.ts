@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 
 import type { CatalogLandingSlug, IngredientCategory, IngredientSubtype, IngredientTechnicalData, UserCatalogIngredientDto } from "./contracts";
+import { resolveConsumableInventoryBroadGroup } from "./consumables";
 import { resolveIngredientBrandLabel, resolveYeastFlocculationLabelRu } from "./presentation";
 import { formatHopFormLabel, resolveIngredientTechnicalDataColorRangeEbc } from "./technical-fields";
 
@@ -16,6 +17,7 @@ export type CatalogLandingDefinition = {
   slug: CatalogLandingSlug;
   category: IngredientCategory;
   subtype?: "malt" | "fermentable";
+  consumableGroup?: "inventory_supplies" | "inventory_additives";
   h1: string;
   metaTitle: string;
   metaDescription: string;
@@ -88,15 +90,27 @@ export const catalogCategoryLandings: CatalogLandingDefinition[] = [
     ]
   },
   {
+    slug: "additives",
+    category: "consumable",
+    consumableGroup: "inventory_additives",
+    h1: "Специи и добавки для пивоварения",
+    metaTitle: "Специи и добавки для пивоварения — каталог",
+    metaDescription: "Специи, цедра, травы и цветы, кофе и какао, древесина для выдержки, ароматизаторы и технологические добавки для домашнего пивоварения.",
+    intro: [
+      "В разделе — всё, что добавляют в пиво помимо солода, хмеля и дрожжей: специи и пряности, цедра, травы и цветы, кофе и какао, древесина для выдержки, ароматизаторы.",
+      "Сюда же входят технологические добавки — осветлители, ферменты, подкормка дрожжей — и лузга для фильтрации затора."
+    ]
+  },
+  {
     slug: "consumables",
     category: "consumable",
+    consumableGroup: "inventory_supplies",
     h1: "Расходные материалы для пивоварения",
     metaTitle: "Расходные материалы для пивоварения — каталог",
-    metaDescription:
-      "Технические добавки, специи, средства для очистки и дезинфекции, тара и упаковка для домашнего пивоварения.",
+    metaDescription: "Средства для мойки и дезинфекции, тара и укупорка, CO2 и другая расходка для домашней пивоварни.",
     intro: [
-      "В разделе — технические добавки (осветлители, питание для дрожжей), специи и пряности, средства для очистки и дезинфекции, тара и упаковка.",
-      "Пригодятся на всех стадиях: от затирания и кипячения до брожения и розлива."
+      "В разделе — то, что нужно пивовару помимо ингредиентов: санитайзеры и моющие средства, бутылки, крышки, пробки и кроненпробки, CO2.",
+      "Пригодится на этапах санитарной подготовки, розлива и карбонизации."
     ]
   }
 ];
@@ -107,7 +121,8 @@ export const resolveCatalogLanding = (slug: string): CatalogLandingDefinition | 
 
 export const resolveCatalogLandingForFilter = (
   category?: IngredientCategory,
-  subtype?: "malt" | "fermentable" | null
+  subtype?: "malt" | "fermentable" | null,
+  consumableGroup?: "inventory_supplies" | "inventory_additives" | null
 ): CatalogLandingDefinition | null => {
   if (!category) {
     // subtype без категории всё равно однозначно резолвится: malt/fermentable
@@ -126,9 +141,19 @@ export const resolveCatalogLandingForFilter = (
     }
 
     // fermentable требует точного совпадения подтипа (malt/fermentable — разные
-    // лендинги); категории без подтипа (hop/yeast/water_treatment/consumable)
-    // резолвятся независимо от переданного subtype.
-    return landing.subtype ? landing.subtype === subtype : true;
+    // лендинги); consumable требует точного совпадения broad group (additives/
+    // consumables — разные лендинги, без группы неоднозначно, как fermentable
+    // без subtype); остальные категории без подтипа (hop/yeast/water_treatment)
+    // резолвятся независимо от переданных subtype/consumableGroup.
+    if (landing.subtype) {
+      return landing.subtype === subtype;
+    }
+
+    if (landing.consumableGroup) {
+      return landing.consumableGroup === consumableGroup;
+    }
+
+    return true;
   }) ?? null;
 };
 
@@ -201,24 +226,28 @@ export const buildCatalogListMetadata = (params: {
 
 const formatValue = (value: number) => value % 1 === 0 ? String(value) : value.toFixed(1).replace(/\.0$/, "");
 
-const resolveIngredientTypeLabel = (category: IngredientCategory, subtype: IngredientSubtype | null): string => {
-  if (category === "hop") {
+const resolveIngredientTypeLabel = (item: UserCatalogIngredientDto): string => {
+  if (item.category === "hop") {
     return "хмель";
   }
 
-  if (category === "fermentable") {
-    return subtype === "malt" ? "солод" : "сбраживаемое сырьё";
+  if (item.category === "fermentable") {
+    return item.subtype === "malt" ? "солод" : "сбраживаемое сырьё";
   }
 
-  if (category === "yeast") {
+  if (item.category === "yeast") {
     return "дрожжи";
   }
 
-  if (category === "water_treatment") {
+  if (item.category === "water_treatment") {
     return "водоподготовка";
   }
 
-  return "расходный материал";
+  // Кориандр — не «расходный материал»: у consumable тип берём по broad group,
+  // так же как лендинг в хлебных крошках (см. catalogCategoryLandings).
+  return resolveConsumableInventoryBroadGroup(item) === "inventory_additives"
+    ? "добавка для пивоварения"
+    : "расходный материал";
 };
 
 type IngredientFactEntry = { label: string; value: string };
@@ -316,7 +345,7 @@ export const buildIngredientDetailMetadata = (
   item: UserCatalogIngredientDto,
   params: { source: "system" | "custom"; id: string }
 ): Metadata => {
-  const typeLabel = resolveIngredientTypeLabel(item.category, item.subtype);
+  const typeLabel = resolveIngredientTypeLabel(item);
   const brand = resolveIngredientBrandLabel(item);
   const secondary = item.secondaryLabelRu && item.secondaryLabelRu !== item.primaryLabelRu
     ? item.secondaryLabelRu
@@ -380,7 +409,11 @@ export const buildIngredientDetailJsonLd = (
 ): object[] => {
   const base = params.baseUrl.replace(/\/$/, "");
   const detailUrl = `${base}/catalog/${params.source}/${params.id}`;
-  const landing = resolveCatalogLandingForFilter(item.category, resolveIngredientLandingSubtype(item));
+  const landing = resolveCatalogLandingForFilter(
+    item.category,
+    resolveIngredientLandingSubtype(item),
+    item.category === "consumable" ? resolveConsumableInventoryBroadGroup(item) : null
+  );
 
   // "Главная" — по образцу buildArticleBreadcrumbJsonLd (content-articles/seo.ts):
   // BreadcrumbList отдаёт полный путь от корня сайта, даже если в видимых

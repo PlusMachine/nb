@@ -10,8 +10,8 @@
 ## Понятия
 
 - **Хаб** — `/catalog` без `landing` (путь `landing=null` в `IngredientCatalogContent`).
-- **Лендинг** — `/catalog/{slug}` (6 штук, `catalogCategoryLandings` в `features/ingredients/seo.ts:25-100`): malts, fermentables, hops, yeast, water, consumables.
-- **Секция** — блок хаба, соответствующий ровно одному лендингу (6 секций, тот же порядок).
+- **Лендинг** — `/catalog/{slug}` (7 штук, `catalogCategoryLandings` в `features/ingredients/seo.ts:25-100`): malts, fermentables, hops, yeast, water, additives, consumables. *(На момент написания этого ТЗ `consumable` был одной секцией/лендингом; позже расщеплён на `additives` («Специи и добавки») и `consumables` («Расходники») — см. `docs/reference/ingredient-add-and-search.md`.)*
+- **Секция** — блок хаба, соответствующий ровно одному лендингу (7 секций, тот же порядок).
 
 ## Инварианты (не ломать)
 
@@ -41,7 +41,7 @@ type CatalogHubSection = {
 };
 
 type CatalogHubResult = {
-  sections: CatalogHubSection[];       // все 6; пустые (total=0) включать — UI сам скрывает
+  sections: CatalogHubSection[];       // все 7 (было 6 до расщепления consumable на additives/consumables); пустые (total=0) включать — UI сам скрывает
   facets: UserCatalogListResult["facets"]; // для пилюль тулбара, та же форма
   total: number;                       // сумма total секций
 };
@@ -70,7 +70,7 @@ export const listCatalogHubSections = async (
 1. H1 «Каталог ингредиентов» + существующий intro-текст (`content.tsx:481-487`) — без изменений.
 2. `IngredientCatalogToolbar` — как сейчас (пилюли, «Все» активна, поиск, reset, «Создать свой»), НО **сортировка на хабе скрыта** (проп `showSort?: boolean`, дефолт true; на хабе false). На лендингах сортировка как была.
 3. **Без q**: секции в порядке `catalogCategoryLandings`, только с `total > 0`:
-   - Шапка секции: иконка категории (та же `categoryMeta`, что в пилюлях тулбара) + заголовок + справа ссылка «Все {total}» → лендинг (с сохранением `view`, как `buildLandingHref` в тулбаре). Заголовки секций = лейблы пилюль: «Солод», «Сбраживаемое сырье», «Хмель», «Дрожжи», «Водоподготовка», «Расходники». Никаких пояснительных подзаголовков.
+   - Шапка секции: иконка категории (та же `categoryMeta`, что в пилюлях тулбара) + заголовок + справа ссылка «Все {total}» → лендинг (с сохранением `view`, как `buildLandingHref` в тулбаре). Заголовки секций = лейблы пилюль: «Солод», «Сбраживаемое сырье», «Хмель», «Дрожжи», «Водоподготовка», «Специи и добавки», «Расходники». Никаких пояснительных подзаголовков.
    - Тело секции: те же строки, что на лендинге (desktop-таблица + mobile-карточки), через переиспользуемый компонент (S3). `hideSubtypeBadge` — по аналогии с лендингом: в секциях «Солод»/«Сбраживаемое сырье» бейдж подтипа скрыт.
    - Обёртка секции — существующий визуальный язык: `rounded-[28px] border border-border bg-card shadow-sm`, тело гаснет при поиске через класс `catalog-search-dim`.
 4. **С q** (сквозной поиск): те же секции, но только с совпадениями (total>0), в порядке из S1; в шапке секции счётчик = total совпадений; если total > лимита превью — внизу секции ссылка «Все {total} в разделе» → `/catalog/{slug}?q=...`. Если совпадений нет нигде — существующее пустое состояние («По текущим условиям ничего не найдено» + «Сбросить поиск»).
@@ -106,7 +106,7 @@ export const listCatalogHubSections = async (
 
 ## S6. Тесты
 
-1. **Новые unit-тесты сервиса** (`apps/web/tests/catalog-hub-sections.test.ts`, мок уровня B — как `catalog-search-noise-and-sort.test.ts:104-146`): партиционирование по 6 секциям и порядок; сплит fermentable по subtype; лимит превью 6 и корректный total; q-группировка (порядок секций по лучшему матчу, лимит 10, срез шума как в listUserCatalogIngredients); view=mine; facets в той же форме, что у listUserCatalogIngredients; пустой каталог.
+1. **Новые unit-тесты сервиса** (`apps/web/tests/catalog-hub-sections.test.ts`, мок уровня B — как `catalog-search-noise-and-sort.test.ts:104-146`): партиционирование по 7 секциям и порядок; сплит fermentable по subtype; лимит превью 6 и корректный total; q-группировка (порядок секций по лучшему матчу, лимит 10, срез шума как в listUserCatalogIngredients); view=mine; facets в той же форме, что у listUserCatalogIngredients; пустой каталог.
 2. **Переписать хаб-тесты** в `ingredient-catalog-metadata-ui.test.ts`: мок `listCatalogHubSections` (function-level, уровень C); презентационные ассерты (бейджи, EBC-свотч, key stats, дубли desktop+mobile) — на рендер секции хаба; два soft-404 теста по page=999 — удалить (пагинации на хабе нет; поведение лендинга покрыть НЕ нужно — там код не менялся); добавить тесты: секции с total=0 скрыты; ссылка «Все N» ведёт на лендинг; сквозной поиск группирует и показывает «Все N в разделе»; фолбэк на лендинге (обе ветки: со списком и в пустом состоянии, корректный N).
 3. **Обновить `ingredient-seo.test.ts:181-185`**: canonical `/catalog?page=3` → чистый `/catalog`. Тест 193-202 (category=fermentable без subtype → базовый canonical) остаётся валидным.
 4. **Редиректы**: тест на page.tsx — `?category=hop` → permanentRedirect на `/catalog/hops` с переносом q; `?page=2` → на `/catalog` (мок `next/navigation`, как `notFound` в существующих тестах).

@@ -58,9 +58,11 @@ import {
   formatConsumablePackageLabel,
   formatConsumablePickerBrandLabel,
   formatConsumableUsageStageLabel,
+  isConsumableInventoryBroadGroup,
   resolveConsumablePickerGroup,
   resolveConsumablePackageVariantName,
-  resolveConsumableTechnicalData
+  resolveConsumableTechnicalData,
+  type ConsumableInventoryBroadGroupValue
 } from "@/features/ingredients/consumables";
 import {
   formatHopFormLabel,
@@ -1306,17 +1308,25 @@ export const IngredientPickerCustomOnlyChip = ({
 
 export const resolveIngredientPickerRefinementPanelTitle = ({
   currentRefinementType,
-  category
+  category,
+  broadGroup
 }: {
   currentRefinementType?: IngredientSearchRefinement["type"] | null;
   category?: IngredientCategory;
+  // Пикер, вызванный из мастера рецепта, форсит группу добавок — тогда речь про
+  // специи/травы/техдобавки, а не про санитайзеры и тару.
+  broadGroup?: ConsumableInventoryBroadGroupValue | null;
 }) => (
   currentRefinementType === "consumable_group"
     ? category === "fermentable"
       ? "Уточнить группу сбраживаемых"
       : category === "water_treatment"
         ? "Уточнить группу водоподготовки"
-        : "Уточнить группу расходников"
+        : broadGroup === "inventory_additives"
+          ? "Уточнить группу добавок"
+          : broadGroup === "inventory_supplies"
+            ? "Уточнить группу расходников"
+            : "Уточнить группу добавок и расходников"
     : "Уточнить производителя"
 );
 
@@ -2670,7 +2680,8 @@ export const IngredientPicker = ({
   const currentRefinementType = searchResult.refinements[0]?.type ?? null;
   const refinementPanelTitle = resolveIngredientPickerRefinementPanelTitle({
     currentRefinementType,
-    category
+    category,
+    broadGroup: isConsumableInventoryBroadGroup(appliedGroup?.value) ? appliedGroup.value : null
   });
   const ingredientSectionTitle = activeScopeCount > 1
     ? "Результаты по выбранным фильтрам"

@@ -97,13 +97,13 @@ describe("inventory usability components", () => {
     expect(html.indexOf("Хмель")).toBeLessThan(html.indexOf("Дрожжи"));
     expect(html.indexOf("Дрожжи")).toBeLessThan(html.indexOf("Водоподготовка"));
     expect(html.indexOf("Водоподготовка")).toBeLessThan(html.indexOf("Расходники"));
-    expect(html.indexOf("Расходники")).toBeLessThan(html.indexOf("Другие добавки"));
+    expect(html.indexOf("Расходники")).toBeLessThan(html.indexOf("Специи и добавки"));
     expect(html).toContain("Сбраживаемые");
     expect(html).toContain("Хмель");
     expect(html).toContain("Дрожжи");
     expect(html).toContain("Водоподготовка");
     expect(html).toContain("Расходники");
-    expect(html).toContain("Другие добавки");
+    expect(html).toContain("Специи и добавки");
     expect(html).toMatch(/text-(amber-800|orange-500)/);
 
     expect(resolveInventoryIngredientContextFromCategoryValue("fermentable")).toEqual({

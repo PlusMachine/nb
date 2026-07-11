@@ -57,7 +57,7 @@ export const resolveInventoryIngredientContextCategoryLabel = ({
       itemKind
     }) === "inventory_supplies"
       ? "Расходники"
-      : "Другие добавки";
+      : "Специи и добавки";
   }
 
   return inventoryIngredientContextCategoryLabels[category];

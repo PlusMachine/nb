@@ -887,7 +887,7 @@ describe("user catalog ingredient search", () => {
     });
     expect(additives.items.map((item) => item.id)).toEqual(["cons-fining-broad"]);
     expect(additives.appliedGroup).toMatchObject({
-      label: "Другие добавки",
+      label: "Специи и добавки",
       value: "inventory_additives"
     });
   });

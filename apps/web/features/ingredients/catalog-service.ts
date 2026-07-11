@@ -45,7 +45,7 @@ import {
 import { ingredientSearchSimpleModeThreshold } from "./contracts";
 import { filterRankedCatalogNoise, filterRankedFamilyFallback, sortRankedCatalogItems } from "./catalog-ranking";
 import { readCustomIngredientMetadata } from "./custom-metadata";
-import { resolveIngredientMatchKey } from "./match-group";
+import { resolveCanonicalFamilyBucket, resolveIngredientMatchKey } from "./match-group";
 import { normalizeSearchText } from "./normalization";
 import {
   canonicalizeWaterTreatmentQuickStartGroup,
@@ -66,6 +66,7 @@ import {
 import {
   buildIngredientTypedSummary,
   resolveIngredientBrandLabel,
+  resolveIngredientCountry,
   resolveIngredientDisplayNames
 } from "./presentation";
 import {
@@ -79,7 +80,8 @@ import {
   resolveConsumablePickerGroupDescription,
   resolveConsumablePickerGroupLabel,
   resolveConsumablePriorityTerms,
-  resolveConsumableTechnicalData
+  resolveConsumableTechnicalData,
+  type ConsumableInventoryBroadGroupValue
 } from "./consumables";
 import { loadIngredients, getIngredientById } from "./service";
 import { catalogCategoryLandings } from "./seo";
@@ -121,6 +123,7 @@ type CatalogListParams = {
   q?: string;
   category?: IngredientCategory;
   subtype?: "malt" | "fermentable";
+  consumableGroup?: ConsumableInventoryBroadGroupValue;
   sort?: IngredientCatalogSortOption;
 };
 
@@ -1720,6 +1723,19 @@ export const getIngredientSuggestionByRef = async (
   return toIngredientSuggestionItem(item);
 };
 
+// Общий хелпер для фасета byConsumableGroup (listUserCatalogIngredients и
+// listCatalogHubSections): раскладка consumable-элементов по двум секциям
+// каталога (additives/supplies) — переиспользует resolveConsumableInventoryBroadGroup,
+// уже применяемый на складе (features/ingredients/consumables.ts).
+const countConsumableGroups = (items: UserCatalogIngredientDto[]) => {
+  const consumables = items.filter((item) => item.category === "consumable");
+
+  return {
+    additives: consumables.filter((item) => resolveConsumableInventoryBroadGroup(item) === "inventory_additives").length,
+    supplies: consumables.filter((item) => resolveConsumableInventoryBroadGroup(item) === "inventory_supplies").length
+  };
+};
+
 export const listUserCatalogIngredients = async (
   userId: string | null,
   params: CatalogListParams = {}
@@ -1753,9 +1769,14 @@ export const listUserCatalogIngredients = async (
   const filteredByCategory = params.category
     ? baseItems.filter((item) => item.category === params.category)
     : baseItems;
-  const filtered = params.subtype
+  const filteredBySubtype = params.subtype
     ? filteredByCategory.filter((item) => item.category === "fermentable" && item.subtype === params.subtype)
     : filteredByCategory;
+  const filtered = params.consumableGroup
+    ? filteredBySubtype.filter((item) => (
+      item.category === "consumable" && resolveConsumableInventoryBroadGroup(item) === params.consumableGroup
+    ))
+    : filteredBySubtype;
 
   const countByCategory = (items: UserCatalogIngredientDto[]) => ({
     fermentable: items.filter((item) => item.category === "fermentable").length,
@@ -1784,6 +1805,7 @@ export const listUserCatalogIngredients = async (
       byCategory: countByCategory(baseItems),
       filteredByCategory: countByCategory(filtered),
       byFermentableSubtype: countFermentableSubtypes(baseItems),
+      byConsumableGroup: countConsumableGroups(baseItems),
       customCount: rankedAllItems.filter((item) => item.source === "custom").length,
       catalogCount: rankedAllItems.filter((item) => item.source === "catalog").length
     }
@@ -1829,6 +1851,10 @@ const resolveHubSectionLanding = (item: UserCatalogIngredientDto) => (
   catalogCategoryLandings.find((landing) => (
     landing.category === item.category
     && (!landing.subtype || item.subtype === landing.subtype)
+    && (!landing.consumableGroup || (
+      item.category === "consumable"
+      && resolveConsumableInventoryBroadGroup(item) === landing.consumableGroup
+    ))
   ))
 );
 
@@ -1926,6 +1952,7 @@ export const listCatalogHubSections = async (
       // фильтра (секции — сами по себе фильтр), поэтому значение равно byCategory.
       filteredByCategory: countByCategory(baseItems),
       byFermentableSubtype: countFermentableSubtypes(baseItems),
+      byConsumableGroup: countConsumableGroups(baseItems),
       customCount: rankedAllItems.filter((item) => item.source === "custom").length,
       catalogCount: rankedAllItems.filter((item) => item.source === "catalog").length
     },
@@ -2028,6 +2055,12 @@ const resolveAnalogGroupKey = (item: UserCatalogIngredientDto): string | null =>
     return null;
   }
 
+  // Расходники группируются только по subtype («специи», «ароматизаторы») —
+  // для витрины это не аналоги: имбирь ≠ смесь специй для тыквенного пирога.
+  if (item.category === "consumable") {
+    return null;
+  }
+
   if (item.category === "water_treatment") {
     const technicalData = item.technicalData;
     const record = technicalData?.type === "water_treatment"
@@ -2040,13 +2073,22 @@ const resolveAnalogGroupKey = (item: UserCatalogIngredientDto): string | null =>
     }
   }
 
+  const name = item.nameRu ?? item.primaryLabelRu;
+  const nameEn = item.nameEn ?? item.displayNameEn;
+  // Алиасы участвуют в определении сорта, только если имя его не дало: у
+  // «Пшеничный / Wheat» с алиасом «Pilsen de Blé» сорт задаёт имя (wheat),
+  // а не маркетинговый алиас (pilsner).
+  const aliases = resolveCanonicalFamilyBucket([name, nameEn])
+    ? []
+    : item.aliases.map((alias) => alias.alias);
+
   const { groupKey } = resolveIngredientMatchKey({
     category: item.category,
     type: item.type,
-    name: item.nameRu ?? item.primaryLabelRu,
-    nameEn: item.nameEn ?? item.displayNameEn,
+    name,
+    nameEn,
     subtype: item.subtype,
-    aliases: item.aliases.map((alias) => alias.alias),
+    aliases,
     technicalData: item.technicalData,
     catalogItemId: item.id
   });
@@ -2055,7 +2097,30 @@ const resolveAnalogGroupKey = (item: UserCatalogIngredientDto): string | null =>
     return null;
   }
 
+  // Бакет по имени ловит «Пшеничный Пильзен»/«Карамельный Пильзен» в pilsner
+  // (первый совпавший токен побеждает) — для склада это терпимо, для витрины
+  // нет. Дожимаем ключ классом солода: base/wheat/caramel не смешиваются.
+  if (item.technicalData?.type === "malt") {
+    const maltType = (item.technicalData as Record<string, unknown>).maltType;
+    return typeof maltType === "string" && maltType.trim()
+      ? `${groupKey}:${maltType.trim().toLowerCase()}`
+      : groupKey;
+  }
+
   return groupKey;
+};
+
+// Ключ страны для приоритета «своей» страны в аналогах: код надёжнее
+// произвольного названия, названия сравниваем нормализованно.
+const resolveAnalogCountryKey = (item: UserCatalogIngredientDto): string | null => {
+  const country = resolveIngredientCountry(item);
+  if (!country) {
+    return null;
+  }
+
+  return country.code?.trim().toLowerCase()
+    || normalizeSearchText(country.label)
+    || null;
 };
 
 /**
@@ -2064,8 +2129,9 @@ const resolveAnalogGroupKey = (item: UserCatalogIngredientDto): string | null =>
  * производителей. Только системные активные ингредиенты той же категории.
  * Ингредиенты того же бренда исключаются — они живут в блоке «Другие
  * ингредиенты {бренд}». Без надёжной группы (см. resolveAnalogGroupKey)
- * возвращается пустой список и блок не показывается. Сортировка: близость по
- * числовому параметру категории (EBC/альфа), затем алфавит.
+ * возвращается пустой список и блок не показывается. Сортировка: сперва та же
+ * страна, что у эталона, затем близость по числовому параметру категории
+ * (EBC/альфа), затем алфавит.
  */
 export const listAnalogCatalogIngredients = async (
   item: UserCatalogIngredientDto,
@@ -2077,6 +2143,10 @@ export const listAnalogCatalogIngredients = async (
   }
 
   const referenceBrand = normalizeSearchText(resolveIngredientBrandLabel(item) ?? "");
+  const referenceCountry = resolveAnalogCountryKey(item);
+  const countryRank = (candidate: UserCatalogIngredientDto) => (
+    referenceCountry && resolveAnalogCountryKey(candidate) === referenceCountry ? 0 : 1
+  );
   const referenceValue = resolveSimilarityNumericValue(item.category, item);
   const distanceFromReference = (candidate: UserCatalogIngredientDto) => {
     const candidateValue = resolveSimilarityNumericValue(item.category, candidate);
@@ -2086,8 +2156,9 @@ export const listAnalogCatalogIngredients = async (
   };
 
   const catalogItems = await loadIngredients({ category: item.category });
+  const referenceLabelKey = normalizeSearchText(item.primaryLabelRu);
 
-  return catalogItems
+  const ranked = catalogItems
     .map(mapSystemIngredient)
     .filter((candidate) => {
       if (candidate.id === item.id || resolveAnalogGroupKey(candidate) !== groupKey) {
@@ -2095,13 +2166,49 @@ export const listAnalogCatalogIngredients = async (
       }
 
       const candidateBrand = normalizeSearchText(resolveIngredientBrandLabel(candidate) ?? "");
-      return !(referenceBrand && candidateBrand && candidateBrand === referenceBrand);
+      if (referenceBrand && candidateBrand && candidateBrand === referenceBrand) {
+        return false;
+      }
+
+      // Одноимённая запись без различий по бренду — каталожный дубль
+      // (три безбрендовых «Каскада»), а не аналог.
+      return !(
+        normalizeSearchText(candidate.primaryLabelRu) === referenceLabelKey
+        && candidateBrand === referenceBrand
+      );
     })
     .sort((left, right) => (
-      distanceFromReference(left) - distanceFromReference(right)
+      countryRank(left) - countryRank(right)
+      || distanceFromReference(left) - distanceFromReference(right)
       || left.primaryLabelRu.localeCompare(right.primaryLabelRu, "ru")
-    ))
-    .slice(0, limit);
+    ));
+
+  // Дубли и между кандидатами: одинаковые «имя + бренд» показываем один раз.
+  const seenKeys = new Set<string>();
+  const sameCountry: UserCatalogIngredientDto[] = [];
+  const otherCountries: UserCatalogIngredientDto[] = [];
+  for (const candidate of ranked) {
+    const key = `${normalizeSearchText(candidate.primaryLabelRu)}|${normalizeSearchText(resolveIngredientBrandLabel(candidate) ?? "")}`;
+    if (seenKeys.has(key)) {
+      continue;
+    }
+
+    seenKeys.add(key);
+    (countryRank(candidate) === 0 ? sameCountry : otherCountries).push(candidate);
+  }
+
+  // Своя страна идёт первой, но не занимает блок целиком: минимум половина
+  // мест остаётся аналогам из других стран (если они есть) — иначе шесть
+  // российских пилснеров вытесняют мировые референсы.
+  const sameCountryCount = Math.min(
+    sameCountry.length,
+    Math.max(Math.ceil(limit / 2), limit - otherCountries.length)
+  );
+
+  return [
+    ...sameCountry.slice(0, sameCountryCount),
+    ...otherCountries.slice(0, limit - sameCountryCount)
+  ];
 };
 
 /**
@@ -2109,6 +2216,9 @@ export const listAnalogCatalogIngredients = async (
  * 5.4). Любые категории, только системные активные; бренд сравнивается через
  * {@link resolveIngredientBrandLabel} (brand → producer → brandName →
  * manufacturer), без учёта регистра. Без бренда у эталона — пустой список.
+ * Категория эталона идёт первой (на странице дрожжей — сперва другие дрожжи
+ * бренда), внутри — алфавит; заголовок блока страница подбирает по факту
+ * состава (см. resolveBrandBlockTitle в [source]/[id]/page.tsx).
  */
 export const listSameBrandCatalogIngredients = async (
   item: UserCatalogIngredientDto,
@@ -2121,6 +2231,9 @@ export const listSameBrandCatalogIngredients = async (
 
   const normalizedBrand = normalizeSearchText(brand);
   const catalogItems = await loadIngredients();
+  const categoryRank = (candidate: UserCatalogIngredientDto) => (
+    candidate.category === item.category ? 0 : 1
+  );
 
   return catalogItems
     .map(mapSystemIngredient)
@@ -2128,6 +2241,9 @@ export const listSameBrandCatalogIngredients = async (
       candidate.id !== item.id
       && normalizeSearchText(resolveIngredientBrandLabel(candidate) ?? "") === normalizedBrand
     ))
-    .sort((left, right) => left.primaryLabelRu.localeCompare(right.primaryLabelRu, "ru"))
+    .sort((left, right) => (
+      categoryRank(left) - categoryRank(right)
+      || left.primaryLabelRu.localeCompare(right.primaryLabelRu, "ru")
+    ))
     .slice(0, limit);
 };

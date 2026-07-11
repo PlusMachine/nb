@@ -66,7 +66,7 @@
 
 ### 1.4 Категорийные лендинги path-урлами ✅
 Сейчас `?category=hop` — под трафик «хмель для пивоварения» нужны path-страницы.
-- Маршрут `app/(public)/catalog/[categorySlug]/page.tsx` (не конфликтует с `[source]/[id]` — разная глубина; слаги: `malts`, `fermentables`, `hops`, `yeast`, `water`, `consumables` — проверить на коллизию с `system|custom|new`).
+- Маршрут `app/(public)/catalog/[categorySlug]/page.tsx` (не конфликтует с `[source]/[id]` — разная глубина; слаги: `malts`, `fermentables`, `hops`, `yeast`, `water`, `additives`, `consumables` — проверить на коллизию с `system|custom|new`). *(Изначально `consumables` был одним слагом на весь `consumable`; позже расщеплён на `additives`/`consumables`.)*
 - Контент = тот же `IngredientCatalogContent` с зашитой категорией + H1 категории + 2–3 предложения интро (статичный словарь, не нейрослоп).
 - Query-вариант `?category=` остаётся для комбинаций/тулбара, но canonical у него — на path-версию.
 - Внутренние ссылки: карточки категорий в тулбаре ведут на path-урлы.

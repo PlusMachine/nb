@@ -17,6 +17,7 @@ import type {
   IngredientCatalogView,
   IngredientCategory
 } from "@/features/ingredients/contracts";
+import type { ConsumableInventoryBroadGroupValue } from "@/features/ingredients/consumables";
 import { ingredientCategoryLabels } from "@/features/ingredients/presentation";
 import { useDebouncedUrlSearch } from "@/components/shared/use-debounced-url-search";
 import { categoryMeta } from "@/components/ingredients/catalog-category-meta";
@@ -26,6 +27,11 @@ type Props = {
   q: string;
   category: IngredientCategory | "all";
   subtype: "malt" | "fermentable" | null;
+  // Broad group расходников (специи/добавки vs расходники) — задан только на
+  // соответствующих лендингах (/catalog/additives, /catalog/consumables), как
+  // subtype для fermentable. См. resolveConsumableInventoryBroadGroup в
+  // features/ingredients/consumables.ts.
+  consumableGroup?: ConsumableInventoryBroadGroupValue | null;
   sort: IngredientCatalogSortOption;
   canManage: boolean;
   // Базовый путь для query-URL (поиск/сортировка/сброс/табы): всегда "/catalog",
@@ -45,6 +51,10 @@ type Props = {
       malt: number;
       fermentable: number;
     };
+    byConsumableGroup: {
+      additives: number;
+      supplies: number;
+    };
   };
 };
 
@@ -62,14 +72,20 @@ const defaultCatalogSortOption: IngredientCatalogSortOption = "name";
 const searchDebounceMs = 250;
 
 // Path-урлы категорийных лендингов (features/ingredients/seo.ts, catalogCategoryLandings).
-// Ключи совпадают с button.key в primaryButtons ниже.
-const categoryLandingPaths: Record<"malt" | "fermentable" | "hop" | "yeast" | "water_treatment" | "consumable", string> = {
+// Ключи совпадают с button.key в primaryButtons ниже. consumable расщеплён на
+// две broad group (см. resolveConsumableInventoryBroadGroup) — как malt/fermentable
+// у fermentable.
+const categoryLandingPaths: Record<
+  "malt" | "fermentable" | "hop" | "yeast" | "water_treatment" | "consumable_additive" | "consumable_supply",
+  string
+> = {
   malt: "/catalog/malts",
   fermentable: "/catalog/fermentables",
   hop: "/catalog/hops",
   yeast: "/catalog/yeast",
   water_treatment: "/catalog/water",
-  consumable: "/catalog/consumables"
+  consumable_additive: "/catalog/additives",
+  consumable_supply: "/catalog/consumables"
 };
 
 const buildCatalogHref = (
@@ -108,12 +124,14 @@ const buildCatalogHref = (
   return query ? `${pathname}?${query}` : pathname;
 };
 
-// Путь категорийного лендинга по category/subtype: null — категория "all"
-// (хаб) либо неоднозначный fermentable без subtype (собственный лендинг есть
-// только у malt/fermentable-версий, см. categoryLandingPaths).
+// Путь категорийного лендинга по category/subtype/consumableGroup: null —
+// категория "all" (хаб) либо неоднозначный fermentable без subtype/consumable
+// без группы (собственный лендинг есть только у malt/fermentable и
+// additives/consumables-версий, см. categoryLandingPaths).
 export const resolveLandingPath = (
   targetCategory: IngredientCategory | "all",
-  targetSubtype: "malt" | "fermentable" | null
+  targetSubtype: "malt" | "fermentable" | null,
+  targetConsumableGroup?: ConsumableInventoryBroadGroupValue | null
 ): string | null => {
   if (targetCategory === "all") {
     return null;
@@ -121,6 +139,12 @@ export const resolveLandingPath = (
 
   if (targetCategory === "fermentable") {
     return targetSubtype ? categoryLandingPaths[targetSubtype] : null;
+  }
+
+  if (targetCategory === "consumable") {
+    return targetConsumableGroup
+      ? categoryLandingPaths[targetConsumableGroup === "inventory_additives" ? "consumable_additive" : "consumable_supply"]
+      : null;
   }
 
   return categoryLandingPaths[targetCategory];
@@ -195,6 +219,7 @@ export function IngredientCatalogToolbar({
   q,
   category,
   subtype,
+  consumableGroup = null,
   sort,
   canManage,
   queryBasePath,
@@ -204,12 +229,15 @@ export function IngredientCatalogToolbar({
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
 
-  // Путь лендинга по текущим category/subtype (props) — нужен ниже для href
-  // поиска/сортировки и для pill «Мои» (currentLandingPath). Вычисляем один
-  // раз здесь, а не через find по primaryButtons (как раньше для
-  // currentLandingPath): нужен раньше по порядку кода — buildSearchHref и
+  // Путь лендинга по текущим category/subtype/consumableGroup (props) — нужен
+  // ниже для href поиска/сортировки и для pill «Мои» (currentLandingPath).
+  // Вычисляем один раз здесь, а не через find по primaryButtons (как раньше
+  // для currentLandingPath): нужен раньше по порядку кода — buildSearchHref и
   // currentHref строятся до объявления primaryButtons.
-  const landingPath = useMemo(() => resolveLandingPath(category, subtype), [category, subtype]);
+  const landingPath = useMemo(
+    () => resolveLandingPath(category, subtype, consumableGroup),
+    [category, subtype, consumableGroup]
+  );
 
   const currentHref = useMemo(() => buildContextualHref(landingPath, queryBasePath, {
     view,
@@ -271,8 +299,9 @@ export function IngredientCatalogToolbar({
     const nextSubtype = next.subtype !== undefined ? next.subtype : subtype;
     // Категория/подтип здесь тоже могут меняться (на будущее — сейчас replaceWith
     // зовут только со сменой sort), поэтому путь лендинга пересчитываем от
-    // эффективных next-значений, а не берём внешний landingPath.
-    replaceHref(buildContextualHref(resolveLandingPath(nextCategory, nextSubtype), queryBasePath, {
+    // эффективных next-значений, а не берём внешний landingPath. consumableGroup
+    // replaceWith не меняет (нет такого сценария) — берём текущий.
+    replaceHref(buildContextualHref(resolveLandingPath(nextCategory, nextSubtype, consumableGroup), queryBasePath, {
       view: next.view ?? view,
       q: searchValue,
       category: nextCategory,
@@ -349,11 +378,19 @@ export function IngredientCatalogToolbar({
       meta: categoryMeta.water_treatment
     },
     {
-      key: "consumable",
-      label: ingredientCategoryLabels.consumable,
+      key: "consumable_additive",
+      label: "Специи и добавки",
       category: "consumable",
-      count: counts.byCategory.consumable,
-      active: category === "consumable" && subtype === null,
+      count: counts.byConsumableGroup.additives,
+      active: category === "consumable" && consumableGroup === "inventory_additives",
+      meta: categoryMeta.consumable
+    },
+    {
+      key: "consumable_supply",
+      label: "Расходники",
+      category: "consumable",
+      count: counts.byConsumableGroup.supplies,
+      active: category === "consumable" && consumableGroup === "inventory_supplies",
       meta: categoryMeta.consumable
     }
   ] as const;

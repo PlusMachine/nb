@@ -32,7 +32,7 @@ const categoryOptions: Array<{
   { value: "yeast", label: "Дрожжи", icon: FlaskConical, iconClassName: "text-violet-500 dark:text-violet-400", activeBg: "bg-violet-50 dark:bg-violet-500/15", activeText: "text-violet-800 dark:text-violet-300", activeRing: "ring-violet-200 dark:ring-violet-500/30" },
   { value: "water_treatment", label: "Водоподготовка", icon: Droplets, iconClassName: "text-sky-500 dark:text-sky-400", activeBg: "bg-sky-50 dark:bg-sky-500/15", activeText: "text-sky-800 dark:text-sky-300", activeRing: "ring-sky-200 dark:ring-sky-500/30" },
   { value: "consumable_supply", label: "Расходники", icon: Package, iconClassName: "text-muted-foreground", activeBg: "bg-muted", activeText: "text-foreground", activeRing: "ring-border" },
-  { value: "consumable_additive", label: "Другие добавки", icon: Package, iconClassName: "text-orange-500 dark:text-orange-400", activeBg: "bg-orange-50 dark:bg-orange-500/15", activeText: "text-orange-800 dark:text-orange-300", activeRing: "ring-orange-200 dark:ring-orange-500/30" }
+  { value: "consumable_additive", label: "Специи и добавки", icon: Package, iconClassName: "text-orange-500 dark:text-orange-400", activeBg: "bg-orange-50 dark:bg-orange-500/15", activeText: "text-orange-800 dark:text-orange-300", activeRing: "ring-orange-200 dark:ring-orange-500/30" }
 ];
 
 export const resolveInventoryIngredientContextFromCategoryValue = (

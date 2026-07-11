@@ -43,7 +43,7 @@ RecipeEditorPage (recipe-editor-page.tsx)   — server/page wrapper, держи�
 
 1. Header: название, BJCP style picker, publication controls, compact actions `Импорт / экспорт` и `Начать варку`. Save status показывается обёрткой.
 2. `Параметры партии` (левый блок) + `Расчёт показателей` (правый блок live preview).
-3. Core ingredient sections: `Сбраживаемое`, `Хмель`, `Дрожжи`, `Другие добавки`.
+3. Core ingredient sections: `Сбраживаемое`, `Хмель`, `Дрожжи`, `Специи и добавки`.
 4. Process profiles: `Mash Profile`, `Fermentation Profile`.
 5. Advanced lower area: `Вода`, `Покрытие складом`.
 6. Bottom: `Фото пива`, `Описание рецепта`, `Личные заметки`.
@@ -212,7 +212,7 @@ Drawer `Настройки расчёта горечи` открывается �
 
 ## 7. Core ingredient flow и склад
 
-Категории (`recipeIngredientCategoryOptions`): `fermentable` (Сбраживаемое), `hop` (Хмель), `yeast` (Дрожжи), `water_treatment` (Водоподготовка), `consumable` (Другие добавки).
+Категории (`recipeIngredientCategoryOptions`): `fermentable` (Сбраживаемое), `hop` (Хмель), `yeast` (Дрожжи), `water_treatment` (Водоподготовка), `consumable` (Специи и добавки).
 
 Add flow (drawer): `+ Добавить` → выбор пути `Из склада` / `Из каталога` / `Создать свой`.
 
@@ -222,7 +222,7 @@ Add flow (drawer): `+ Добавить` → выбор пути `Из склад
 
 Позиция валидна, когда выбран catalog/custom source и количество > 0. Импортированная строка: `inventoryIntentMode = "imported"`, оба source id пусты, ингредиент в `externalImportMeta.importedIngredient`; в списке показывает бейдж `Импортировано` и действия `Сохранить как свой` / `Подобрать из каталога`.
 
-`Другие добавки` = складская группа `consumable` + `inventory_additives` (seed `additives_v2_1.json`): фининги, ферменты, нутриенты, лузга, специи, цедра, травы/цветы, кофе/какао, дерево, ароматизаторы. Складские `Расходники` (`inventory_supplies`) в рецепт не добавляются.
+`Специи и добавки` = складская группа `consumable` + `inventory_additives` (seed `additives_v2_1.json`): фининги, ферменты, нутриенты, лузга, специи, цедра, травы/цветы, кофе/какао, дерево, ароматизаторы. Складские `Расходники` (`inventory_supplies`) в рецепт не добавляются.
 
 Водные соли/кислоты остаются внутри блока `Вода` и теперь показываются read-only в списке добавок через `RecipeWaterAdditivesSection`.
 

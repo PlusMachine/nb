@@ -312,7 +312,7 @@ describe("recipe editor components", () => {
       category: "consumable",
       fermentableGroup: null
     })).toMatchObject({
-      label: "Другие добавки",
+      label: "Специи и добавки",
       value: recipeConsumableAdditiveGroup
     });
 
@@ -628,7 +628,7 @@ describe("recipe editor components", () => {
     expect(html).not.toContain("Значения сохраняются в рецепте");
     expect(html).toContain("Водоподготовка");
     expect(html).toContain("Ингредиенты со склада");
-    expect(html).toContain("Другие добавки");
+    expect(html).toContain("Специи и добавки");
     expect(html).toContain("Импорт / экспорт");
     expect(html).toContain("Сварить");
     expect(html).toContain("Затирание");

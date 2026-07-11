@@ -208,7 +208,7 @@ Server actions (`app/(app)/app/ingredients/actions.ts`):
 
 ### Фильтры и поиск (`InventoryToolbar`)
 
-Toolbar управляет URL через `router.replace(..., { scroll: false })`. Tile-фильтры: `Солод`, `Сбраживаемое сырьё`, `Хмель`, `Дрожжи`, `Водоподготовка`, `Расходники`. `Солод` и `Сбраживаемое сырьё` — это одна доменная category `fermentable`, различаются `subtype = malt | fermentable`. Toggle закончившихся появляется только при `emptyItems > 0`. На tile показывается count (без finished — только in-stock; с finished — с учётом пустых; `0` без активного фильтра → disabled + «Пусто»). Кнопка `Сбросить` видна при активных фильтрах и возвращает всё к дефолту.
+Toolbar управляет URL через `router.replace(..., { scroll: false })`. Tile-фильтры: `Солод`, `Сбраживаемое сырьё`, `Хмель`, `Дрожжи`, `Водоподготовка`, `Расходники`, `Специи и добавки`. `Солод` и `Сбраживаемое сырьё` — это одна доменная category `fermentable`, различаются `subtype = malt | fermentable`; `Расходники` и `Специи и добавки` — это `consumable_supply` / `consumable_additive` (broad groups внутри `consumable`, см. ниже). Toggle закончившихся появляется только при `emptyItems > 0`. На tile показывается count (без finished — только in-stock; с finished — с учётом пустых; `0` без активного фильтра → disabled + «Пусто»). Кнопка `Сбросить` видна при активных фильтрах и возвращает всё к дефолту.
 
 Поиск: debounce `250ms`, фильтр в `listInventoryForUser` по `ILIKE` по `coalesce(ingredientDisplayNameSnapshot, ingredients.nameRu, ingredients.nameEn, userCustomIngredients.displayName)`. Page-level фильтр не требует минимума символов; но suggestions у picker появляются от 2 символов. Autocomplete `InventorySearchInput` → `GET /api/inventory/suggestions` → `searchInventorySuggestions()` (поверх `listInventoryForUser` с `search=q`), dedupe по `(sourceKind, sourceId, packageVariantId)`, limit 1..20 (default 10).
 
@@ -233,7 +233,7 @@ Toolbar управляет URL через `router.replace(..., { scroll: false }
 3. `yeast` — «Дрожжи»;
 4. `water_treatment` — «Водоподготовка»;
 5. `consumable_supply` — «Расходники»;
-6. `consumable_additive` — «Другие добавки».
+6. `consumable_additive` — «Специи и добавки».
 
 Consumables делятся на `consumable_supply` / `consumable_additive` через `resolveConsumableInventoryBroadGroup`. Пустые группы не выводятся. Внутри группы порядок наследуется от server-side sort; отдельного «empty → в хвост» в текущем коде группировки нет (прежняя формулировка устарела). По умолчанию (`finished=false`) пустые позиции вообще скрыты фильтром.
 

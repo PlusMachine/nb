@@ -772,7 +772,7 @@ export function RecipeDesigner({
       },
       {
         category: "consumable",
-        title: "Другие добавки",
+        title: "Специи и добавки",
         subtitle: consumables.length ? `${consumables.length} поз.` : undefined,
         items: consumables,
         empty: "Irish Moss, Whirlfloc, нутриенты, цедру, специи и другие рецептные добавки можно держать здесь."

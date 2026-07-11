@@ -19,12 +19,17 @@ describe("resolveLandingPath", () => {
     expect(resolveLandingPath("hop", null)).toBe("/catalog/hops");
     expect(resolveLandingPath("yeast", null)).toBe("/catalog/yeast");
     expect(resolveLandingPath("water_treatment", null)).toBe("/catalog/water");
-    expect(resolveLandingPath("consumable", null)).toBe("/catalog/consumables");
   });
 
-  it("возвращает null для хаба и для неоднозначного fermentable без subtype", () => {
+  it("резолвит consumable+broad group в собственные лендинги", () => {
+    expect(resolveLandingPath("consumable", null, "inventory_additives")).toBe("/catalog/additives");
+    expect(resolveLandingPath("consumable", null, "inventory_supplies")).toBe("/catalog/consumables");
+  });
+
+  it("возвращает null для хаба, для неоднозначного fermentable без subtype и consumable без broad group", () => {
     expect(resolveLandingPath("all", null)).toBeNull();
     expect(resolveLandingPath("fermentable", null)).toBeNull();
+    expect(resolveLandingPath("consumable", null)).toBeNull();
   });
 });
 

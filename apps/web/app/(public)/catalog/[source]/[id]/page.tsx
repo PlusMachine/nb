@@ -8,7 +8,7 @@ import { DeleteCustomCatalogIngredientButton } from "@/components/ingredients/de
 import { IngredientFavoriteToggle } from "@/components/ingredients/ingredient-favorite-toggle";
 import { IngredientPurchaseLinksEditor } from "@/components/ingredients/ingredient-purchase-links-manager";
 import { RecipesGrid } from "@/components/recipes/recipes-grid";
-import { CountryFlagLabel } from "@/components/shared/country-flag";
+import { CountryFlag, CountryFlagLabel } from "@/components/shared/country-flag";
 import {
   IngredientColorSwatch,
   resolveIngredientColorAccent
@@ -21,11 +21,16 @@ import {
 import { buildIngredientCatalogActionHref } from "@/features/ingredients/catalog-links";
 import type { IngredientTechnicalData, UserCatalogIngredientDto } from "@/features/ingredients/contracts";
 import {
+  resolveConsumableInventoryBroadGroup,
+  resolveConsumableInventoryBroadGroupLabel
+} from "@/features/ingredients/consumables";
+import {
   formatIngredientSubtypeLabel,
   resolveIngredientBrandLabel,
   resolveIngredientCountry,
   resolveIngredientFermentableKindLabel,
   resolveYeastFlocculationLabelRu,
+  resolveYeastFormLabelRu,
   type ResolvedIngredientCountry
 } from "@/features/ingredients/presentation";
 import {
@@ -88,7 +93,37 @@ const resolveFermentableColor = (item: UserCatalogIngredientDto) => {
 
 type TechnicalRow =
   | { label: string; kind: "text"; value: string }
+  | { label: string; kind: "formula"; value: string }
   | { label: string; kind: "country"; country: ResolvedIngredientCountry };
+
+// Химическая формула с нижними индексами (CaSO4 → CaSO₄) — как в плашках
+// склада (inventory-list-item.tsx), но в компактном серверном варианте.
+const renderChemicalFormula = (formula: string) => {
+  const symbols = [...formula];
+  const parts: React.ReactNode[] = [];
+  let index = 0;
+
+  while (index < symbols.length) {
+    const previous = index > 0 ? symbols[index - 1] : null;
+    if (/\d/.test(symbols[index]) && previous && /[A-Za-zА-Яа-я)\]]/.test(previous)) {
+      const start = index;
+      while (index < symbols.length && /\d/.test(symbols[index])) {
+        index += 1;
+      }
+      parts.push(
+        <sub key={`sub-${start}`} className="text-[0.8em] leading-none">
+          {symbols.slice(start, index).join("")}
+        </sub>
+      );
+      continue;
+    }
+
+    parts.push(<React.Fragment key={`char-${index}`}>{symbols[index]}</React.Fragment>);
+    index += 1;
+  }
+
+  return parts;
+};
 
 const renderTechnicalRows = (item: UserCatalogIngredientDto) => {
   const rows: TechnicalRow[] = [];
@@ -112,6 +147,16 @@ const renderTechnicalRows = (item: UserCatalogIngredientDto) => {
   if (color) {
     rows.push({ label: "Цвет", kind: "text", value: color });
   }
+  if (technicalData?.type === "water_treatment") {
+    const record = technicalData as Record<string, unknown>;
+    // Приоритет у химической формулы: displayFormula в данных иногда хранит
+    // концентрацию («88%»), а не формулу.
+    const formula = [record.formula, record.displayFormula]
+      .find((value): value is string => typeof value === "string" && Boolean(value.trim()));
+    if (formula) {
+      rows.push({ label: "Формула", kind: "formula", value: formula.trim() });
+    }
+  }
   if (item.fermentableExtractYieldPct != null) {
     rows.push({ label: "Экстрактивность", kind: "text", value: `${formatValue(item.fermentableExtractYieldPct)}%` });
   }
@@ -124,6 +169,15 @@ const renderTechnicalRows = (item: UserCatalogIngredientDto) => {
       kind: "text",
       value: `${item.yeastMinFermentationTempC ?? "?"}-${item.yeastMaxFermentationTempC ?? "?"} °C`
     });
+  }
+  const yeastTechnicalData = technicalData?.type === "yeast"
+    ? technicalData as Extract<IngredientTechnicalData, { type: "yeast" }>
+    : null;
+  const yeastFormLabel = item.category === "yeast"
+    ? resolveYeastFormLabelRu(item.yeastForm ?? yeastTechnicalData?.form ?? null)
+    : null;
+  if (yeastFormLabel) {
+    rows.push({ label: "Форма", kind: "text", value: yeastFormLabel });
   }
   if (brandLabel) {
     rows.push({ label: "Бренд", kind: "text", value: brandLabel });
@@ -177,6 +231,28 @@ const buildCatalogHref = (candidate: Pick<UserCatalogIngredientDto, "source" | "
   `/catalog/${candidate.source === "custom" ? "custom" : "system"}/${candidate.id}`
 );
 
+// Заголовок блока «Другие … {бренд}» — по факту состава: когда все позиции
+// одной категории с эталоном, называем её прямо («Другие дрожжи Lallemand»),
+// при смешанном ассортименте бренда остаётся общее «Другие ингредиенты».
+const resolveBrandBlockTitle = (item: UserCatalogIngredientDto, brandItems: UserCatalogIngredientDto[]) => {
+  if (!brandItems.every((candidate) => candidate.category === item.category)) {
+    return "Другие ингредиенты";
+  }
+
+  switch (item.category) {
+    case "yeast":
+      return "Другие дрожжи";
+    case "hop":
+      return "Другой хмель";
+    case "fermentable":
+      return brandItems.every((candidate) => candidate.subtype === "malt") && item.subtype === "malt"
+        ? "Другой солод"
+        : "Другие ингредиенты";
+    default:
+      return "Другие ингредиенты";
+  }
+};
+
 const renderIngredientLinkRows = (items: UserCatalogIngredientDto[], options?: { showBrand?: boolean }) => (
   <div className="space-y-2">
     {items.map((candidate) => {
@@ -185,6 +261,7 @@ const renderIngredientLinkRows = (items: UserCatalogIngredientDto[], options?: {
         ? resolveIngredientColorAccent(candidate.technicalData)
         : null;
       const brand = options?.showBrand ? resolveIngredientBrandLabel(candidate) : null;
+      const country = options?.showBrand ? resolveIngredientCountry(candidate) : null;
       return (
         <Link
           key={`${candidate.source}-${candidate.id}`}
@@ -193,7 +270,12 @@ const renderIngredientLinkRows = (items: UserCatalogIngredientDto[], options?: {
         >
           <span className="min-w-0">
             <span className="block truncate font-medium text-foreground">{candidate.primaryLabelRu}</span>
-            {brand ? <span className="block truncate text-xs text-muted-foreground">{brand}</span> : null}
+            {brand || country?.code ? (
+              <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                {country?.code ? <CountryFlag countryCode={country.code} className="h-3 w-4" /> : null}
+                {brand ? <span className="truncate">{brand}</span> : null}
+              </span>
+            ) : null}
           </span>
           {metric ? (
             <span className="flex shrink-0 items-center gap-1.5 text-muted-foreground">
@@ -260,10 +342,25 @@ export default async function IngredientDetailPage({
 
   const technicalRows = renderTechnicalRows(item);
   const packageVariants = item.packageVariants ?? [];
+  const subtypeLabel = formatIngredientSubtypeLabel(item.category, item.subtype);
   const typeLabel = item.category === "fermentable"
     ? (item.subtype === "malt" ? "Солод" : resolveIngredientFermentableKindLabel(item) ?? "Сбраживаемое сырье")
-    : formatIngredientSubtypeLabel(item.category, item.subtype);
-  const subtleAliases = Array.from(new Set(item.aliases.map((alias) => alias.alias).filter(Boolean)));
+    // Подтип «другое» ничего не сообщает — показываем группу. У consumable это
+    // broad group («Специи и добавки» / «Расходники»), а не категория целиком:
+    // иначе на карточке специи чип говорил бы «Расходники» вопреки крошке.
+    : subtypeLabel === "другое"
+      ? (item.category === "consumable"
+        ? resolveConsumableInventoryBroadGroupLabel(resolveConsumableInventoryBroadGroup(item)) ?? subtypeLabel
+        : formatIngredientSubtypeLabel(item.category, null))
+      : subtypeLabel;
+  // Алиас, совпадающий с заголовком или латинским именем, — не «другое имя».
+  const headerNames = new Set(
+    [item.primaryLabelRu, item.secondaryLabelRu]
+      .filter((value): value is string => Boolean(value))
+      .map((value) => value.trim().toLowerCase())
+  );
+  const subtleAliases = Array.from(new Set(item.aliases.map((alias) => alias.alias).filter(Boolean)))
+    .filter((alias) => !headerNames.has(alias.trim().toLowerCase()));
   const brandLabel = resolveIngredientBrandLabel(item);
   const country = resolveIngredientCountry(item);
   const loginHref = `/login?next=${encodeURIComponent(`/catalog/${source}/${id}`)}`;
@@ -272,7 +369,11 @@ export default async function IngredientDetailPage({
     : null;
 
   const landingSubtype = item.subtype === "malt" || item.subtype === "fermentable" ? item.subtype : null;
-  const landing = resolveCatalogLandingForFilter(item.category, landingSubtype);
+  const landing = resolveCatalogLandingForFilter(
+    item.category,
+    landingSubtype,
+    item.category === "consumable" ? resolveConsumableInventoryBroadGroup(item) : null
+  );
 
   const showUsageSection = canManage && (item.inventoryUsageCount > 0 || item.recipeUsageCount > 0);
   const hasRightColumn = analogItems.length > 0 || recipesResult.items.length > 0 || brandItems.length > 0 || canManage;
@@ -292,28 +393,32 @@ export default async function IngredientDetailPage({
         </section>
       ) : null}
 
-      <section className="rounded-[28px] border border-border bg-card p-6 shadow-sm">
-        <h2 className="text-sm font-semibold uppercase tracking-[0.12em] text-muted-foreground">Параметры</h2>
-        <div className="mt-4 space-y-3">
-          {technicalRows.length ? technicalRows.map((row) => (
-            <div key={row.label} className="flex items-center justify-between gap-3 rounded-2xl bg-muted px-4 py-3">
-              <span className="text-sm text-muted-foreground">{row.label}</span>
-              {row.kind === "country" ? (
-                <CountryFlagLabel
-                  countryCode={row.country.code}
-                  label={row.country.label}
-                  iconClassName="h-3.5 w-[1.1rem]"
-                  className="gap-1.5 text-sm font-medium text-foreground"
-                />
-              ) : (
-                <span className="text-sm font-medium text-foreground">{row.value}</span>
-              )}
-            </div>
-          )) : (
-            <p className="text-sm text-muted-foreground">Для этого ингредиента пока не заполнены ключевые технические поля.</p>
-          )}
-        </div>
-      </section>
+      {technicalRows.length ? (
+        <section className="rounded-[28px] border border-border bg-card p-6 shadow-sm">
+          <h2 className="text-sm font-semibold uppercase tracking-[0.12em] text-muted-foreground">Параметры</h2>
+          <div className="mt-4 space-y-3">
+            {technicalRows.map((row) => (
+              <div key={row.label} className="flex items-center justify-between gap-3 rounded-2xl bg-muted px-4 py-3">
+                <span className="text-sm text-muted-foreground">{row.label}</span>
+                {row.kind === "country" ? (
+                  <CountryFlagLabel
+                    countryCode={row.country.code}
+                    label={row.country.label}
+                    iconClassName="h-3.5 w-[1.1rem]"
+                    className="gap-1.5 text-sm font-medium text-foreground"
+                  />
+                ) : row.kind === "formula" ? (
+                  <span aria-label={`Формула: ${row.value}`} className="text-sm font-medium text-foreground">
+                    {renderChemicalFormula(row.value)}
+                  </span>
+                ) : (
+                  <span className="text-sm font-medium text-foreground">{row.value}</span>
+                )}
+              </div>
+            ))}
+          </div>
+        </section>
+      ) : null}
 
       {packageVariants.length ? (
         <section className="rounded-[28px] border border-border bg-card p-6 shadow-sm">
@@ -491,8 +596,9 @@ export default async function IngredientDetailPage({
           <div className="space-y-6">
             {brandItems.length ? (
               <section className="rounded-[28px] border border-border bg-card p-6 shadow-sm">
-                <h2 className="text-sm font-semibold uppercase tracking-[0.12em] text-muted-foreground">
-                  Другие ингредиенты {brandLabel}
+                <h2 className="flex flex-wrap items-center gap-1.5 text-sm font-semibold uppercase tracking-[0.12em] text-muted-foreground">
+                  {resolveBrandBlockTitle(item, brandItems)} {brandLabel}
+                  {country?.code ? <CountryFlag countryCode={country.code} className="h-3 w-4" /> : null}
                 </h2>
                 <div className="mt-4">{renderIngredientLinkRows(brandItems)}</div>
               </section>

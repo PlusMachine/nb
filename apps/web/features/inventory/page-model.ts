@@ -46,7 +46,7 @@ export const inventoryPrimaryGroupLabels: Record<InventoryPrimaryGroupKey, strin
   yeast: inventoryCategoryLabels.yeast,
   water_treatment: inventoryCategoryLabels.water_treatment,
   consumable_supply: "Расходники",
-  consumable_additive: "Другие добавки"
+  consumable_additive: "Специи и добавки"
 };
 
 // Legacy compatibility for older admin/internal selectors that still use IngredientType.

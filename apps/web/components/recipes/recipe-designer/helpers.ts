@@ -196,7 +196,7 @@ export const recipeConsumableSubtypeOptions = consumableInventoryAdditiveGroups 
 
 export const buildRecipeConsumableForcedGroup = (): IngredientConsumableGroupRefinement => ({
   type: "consumable_group",
-  label: resolveConsumableInventoryBroadGroupLabel(recipeConsumableAdditiveGroup) ?? "Другие добавки",
+  label: resolveConsumableInventoryBroadGroupLabel(recipeConsumableAdditiveGroup) ?? "Специи и добавки",
   normalizedLabel: recipeConsumableAdditiveGroup,
   value: recipeConsumableAdditiveGroup,
   count: 0,
@@ -1265,7 +1265,7 @@ export const getSectionTitle = (category: IngredientCategory) => {
   if (category === "hop") return "Хмель";
   if (category === "yeast") return "Дрожжи";
   if (category === "water_treatment") return "Водоподготовка";
-  return "Другие добавки";
+  return "Специи и добавки";
 };
 
 export const categoryIcons: Record<IngredientCategory, React.ComponentType<{ className?: string }>> = {
