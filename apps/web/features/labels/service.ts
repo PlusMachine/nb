@@ -2,6 +2,7 @@ import { getServerEnv } from "@/lib/env";
 
 import type { RecipeDetailDto } from "../recipes/contracts";
 import { getOwnedRecipeById } from "../recipes/service";
+import type { PreferredGravityUnit } from "../system/gravity-units";
 
 import type { LabelOverrides, LabelSlots } from "./contracts";
 import { buildLabelSlots } from "./slots";
@@ -18,7 +19,7 @@ export type OwnedRecipeLabelContext = {
 export const getOwnedRecipeLabelContext = async (
   userId: string,
   recipeId: string,
-  options?: { bottlingDate?: string | null; overrides?: LabelOverrides }
+  options?: { bottlingDate?: string | null; overrides?: LabelOverrides; gravityUnit?: PreferredGravityUnit }
 ): Promise<OwnedRecipeLabelContext> => {
   const recipe = await getOwnedRecipeById(userId, recipeId);
   const { APP_URL } = getServerEnv();
@@ -26,6 +27,7 @@ export const getOwnedRecipeLabelContext = async (
     recipe,
     baseUrl: APP_URL,
     bottlingDate: options?.bottlingDate ?? null,
+    gravityUnit: options?.gravityUnit,
     overrides: options?.overrides
   });
   return { recipe, slots };

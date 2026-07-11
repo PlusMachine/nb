@@ -10,7 +10,6 @@ import {
   LABEL_PRESETS,
   LABEL_PRESET_IDS,
   LABEL_TEMPLATE_IDS,
-  READY_AFTER_DAYS_DEFAULT,
   type LabelDpi,
   type LabelPresetId,
   type LabelSlots,
@@ -43,7 +42,6 @@ type LabelFields = {
   yeast: string;
   author: string;
   brand: string;
-  readyAfterDays: string;
 };
 
 const fieldsFromSlots = (slots: LabelSlots): LabelFields => ({
@@ -58,8 +56,7 @@ const fieldsFromSlots = (slots: LabelSlots): LabelFields => ({
   hops: slots.hops.join(", "),
   yeast: slots.yeast ?? "",
   author: slots.authorName ?? "",
-  brand: slots.brandText ?? "",
-  readyAfterDays: String(READY_AFTER_DAYS_DEFAULT)
+  brand: slots.brandText ?? ""
 });
 
 const todayIsoDate = (): string => {
@@ -314,13 +311,6 @@ export function LabelStudio(props: LabelStudioProps) {
                   className={inputClass}
                 />
               </div>
-              <Field
-                id="lb-ready"
-                label="Готово после (дней)"
-                value={fields.readyAfterDays}
-                onChange={setField("readyAfterDays")}
-                placeholder={String(READY_AFTER_DAYS_DEFAULT)}
-              />
             </div>
 
             <p className="text-xs text-muted-foreground">Пустое поле — блок не печатается.</p>

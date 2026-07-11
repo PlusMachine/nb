@@ -30,23 +30,27 @@ describe("buildLabelSlots", () => {
     }
   });
 
-  it("форматирование значений: ~ABV, целые IBU/EBC, плотности с 3 знаками", () => {
+  it("плотность печатается в °P по умолчанию (в СНГ плотность — в Плато)", () => {
     const slots = buildLabelSlots({ recipe: baseRecipe, baseUrl: "https://nb.example" });
     expect(slots.abvText).toBe("~5.2%");
     expect(slots.ibu).toBe(38);
     expect(slots.ebc).toBe(12);
+    expect(slots.ogText).toBe("11.9 °P");
+    expect(slots.fgText).toBe("2.8 °P");
+  });
+
+  it("единица плотности берётся из настройки пользователя", () => {
+    const slots = buildLabelSlots({ recipe: baseRecipe, baseUrl: "https://nb.example", gravityUnit: "sg" });
     expect(slots.ogText).toBe("1.048");
     expect(slots.fgText).toBe("1.011");
   });
 
-  it("дата розлива и «готово после» +14 дней; без даты — null", () => {
+  it("дата розлива: без даты — null", () => {
     const withDate = buildLabelSlots({ recipe: baseRecipe, baseUrl: "https://nb.example", bottlingDate: "2026-07-11" });
     expect(withDate.bottlingDateText).toBe("11.07.2026");
-    expect(withDate.readyAfterDateText).toBe("25.07.2026");
 
     const withoutDate = buildLabelSlots({ recipe: baseRecipe, baseUrl: "https://nb.example" });
     expect(withoutDate.bottlingDateText).toBeNull();
-    expect(withoutDate.readyAfterDateText).toBeNull();
 
     const invalid = buildLabelSlots({ recipe: baseRecipe, baseUrl: "https://nb.example", bottlingDate: "не дата" });
     expect(invalid.bottlingDateText).toBeNull();

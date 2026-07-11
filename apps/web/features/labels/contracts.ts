@@ -44,9 +44,6 @@ export const QR_MIN_MODULE_PX = 2;
 // Целевой печатный размер QR — не меньше 10×10 мм.
 export const QR_TARGET_MIN_MM = 10;
 
-// «Готово после» = дата розлива + N дней (карбонизация в бутылке).
-export const READY_AFTER_DAYS_DEFAULT = 14;
-
 // Марка внизу наклейки. Строка-плейсхолдер: финальную формулировку (NB/hmelo)
 // утверждает владелец продукта.
 export const LABEL_BRAND_TEXT = "BREWED WITH NB";
@@ -118,7 +115,6 @@ export const labelOverridesSchema = z.object({
   yeast: z.string().max(80).optional(),
   author: z.string().max(60).optional(),
   brand: z.string().max(60).optional(),
-  readyAfterDays: z.coerce.number().int().min(0).max(365).optional(),
   /** Выключить QR можно всегда; включить — только у опубликованного рецепта. */
   qr: z.enum(["0", "1"]).optional()
 });
@@ -174,9 +170,8 @@ export type LabelSlots = {
   malts: string[];
   yeast: string | null;
   authorName: string | null;
-  /** «ДД.ММ.ГГГГ» или null — тогда дата и «готово после» не печатаются. */
+  /** «ДД.ММ.ГГГГ» или null — тогда дата не печатается. */
   bottlingDateText: string | null;
-  readyAfterDateText: string | null;
   /** Абсолютный URL публичной страницы рецепта; null для неопубликованных. */
   qrUrl: string | null;
   /** Марка внизу наклейки; null — не печатать. */

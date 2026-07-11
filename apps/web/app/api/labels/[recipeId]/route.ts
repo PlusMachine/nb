@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import { buildLabelFileName, labelOverridesSchema, labelRenderRequestSchema } from "@/features/labels/contracts";
 import { renderA4SheetPdf, renderLabelPdf, renderLabelPng, renderLabelPreviewPng } from "@/features/labels/render";
 import { getOwnedRecipeLabelContext } from "@/features/labels/service";
+import { resolvePreferredGravityUnit } from "@/features/system/gravity-units";
 import { getSessionUser } from "@/lib/auth";
 
 export const runtime = "nodejs";
@@ -32,6 +33,7 @@ export async function GET(request: Request, context: { params: Promise<{ recipeI
     const overrides = labelOverridesSchema.parse(Object.fromEntries(url.searchParams));
     const { recipe, slots } = await getOwnedRecipeLabelContext(user.id, recipeId, {
       bottlingDate: query.bottlingDate ?? null,
+      gravityUnit: resolvePreferredGravityUnit(user.preferredGravityUnit),
       overrides
     });
 

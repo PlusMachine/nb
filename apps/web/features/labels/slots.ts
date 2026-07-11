@@ -3,8 +3,13 @@ import { getBeerStyleById, srmToEbc } from "@nb/brewing-core";
 import { resolveIngredientDisplayNames } from "../ingredients/presentation";
 import { resolveIngredientCategory } from "../ingredients/taxonomy";
 import type { RecipeDetailDto, RecipeIngredientDto } from "../recipes/contracts";
+import {
+  defaultPreferredGravityUnit,
+  formatGravity as formatGravityValue,
+  type PreferredGravityUnit
+} from "../system/gravity-units";
 
-import { LABEL_BRAND_TEXT, READY_AFTER_DAYS_DEFAULT, type LabelOverrides, type LabelSlots } from "./contracts";
+import { LABEL_BRAND_TEXT, type LabelOverrides, type LabelSlots } from "./contracts";
 
 // Чистая сборка слотов наклейки из рецепта (без БД и env — тестируется
 // напрямую). QR — только для опубликованных рецептов: никаких ссылок на
@@ -33,7 +38,11 @@ const collectNamesByCategory = (
   return [...names];
 };
 
-const formatGravity = (value: number | null): string | null => (value === null ? null : value.toFixed(3));
+// Плотность печатаем в единице пользователя; по умолчанию — °P (в СНГ
+// плотность указывают в Плато). Конверсию не дублируем: берём общесистемный
+// форматтер, тот же, что в рецептах, варках и калькуляторах.
+const formatGravitySlot = (value: number | null, unit: PreferredGravityUnit): string | null =>
+  value === null ? null : formatGravityValue(value, unit);
 
 const formatAbv = (value: number | null): string | null => {
   if (value === null) {
@@ -62,9 +71,10 @@ export type BuildLabelSlotsParams = {
   recipe: RecipeDetailDto;
   /** Абсолютный базовый URL приложения (для QR). */
   baseUrl: string;
-  /** Дата розлива YYYY-MM-DD; null/undefined — блоки даты не печатаются. */
+  /** Дата розлива YYYY-MM-DD; null/undefined — дата не печатается. */
   bottlingDate?: string | null;
-  readyAfterDays?: number;
+  /** Единица плотности; по умолчанию °P. */
+  gravityUnit?: PreferredGravityUnit;
   /** Ручные правки полей поверх данных рецепта. */
   overrides?: LabelOverrides;
 };
@@ -75,8 +85,7 @@ export const buildLabelSlots = (params: BuildLabelSlotsParams): LabelSlots => {
   const style = recipe.styleId ? getBeerStyleById(recipe.styleId) : null;
   const bottling = params.bottlingDate ? parseIsoDate(params.bottlingDate) : null;
   const overrides = params.overrides ?? {};
-  const readyAfterDays = overrides.readyAfterDays ?? params.readyAfterDays ?? READY_AFTER_DAYS_DEFAULT;
-  const readyAfter = bottling ? new Date(bottling.getTime() + readyAfterDays * 24 * 60 * 60 * 1000) : null;
+  const gravityUnit = params.gravityUnit ?? defaultPreferredGravityUnit;
 
   const isPublished = recipe.publicationState === "published";
   const baseUrl = params.baseUrl.replace(/\/$/, "");
@@ -89,14 +98,13 @@ export const buildLabelSlots = (params: BuildLabelSlotsParams): LabelSlots => {
     abvText: formatAbv(recipe.abv),
     ibu: recipe.ibu === null ? null : Math.round(recipe.ibu),
     ebc: recipe.color === null ? null : Math.round(srmToEbc(recipe.color)),
-    ogText: formatGravity(recipe.og),
-    fgText: formatGravity(recipe.fg),
+    ogText: formatGravitySlot(recipe.og, gravityUnit),
+    fgText: formatGravitySlot(recipe.fg, gravityUnit),
     hops: collectNamesByCategory(recipe.ingredients, "hop"),
     malts: collectNamesByCategory(recipe.ingredients, "fermentable"),
     yeast: yeastNames.length > 0 ? yeastNames.join(", ") : null,
     authorName: recipe.authorDisplayName,
     bottlingDateText: bottling ? formatDateRu(bottling) : null,
-    readyAfterDateText: readyAfter ? formatDateRu(readyAfter) : null,
     // QR ведёт на публичную страницу — только у опубликованного рецепта.
     qrUrl: isPublished && recipe.slug ? `${baseUrl}/recipes/${recipe.slug}` : null,
     brandText: LABEL_BRAND_TEXT
@@ -119,8 +127,6 @@ export const buildCustomLabelSlots = (params: {
 }): LabelSlots => {
   const overrides = params.overrides ?? {};
   const bottling = params.bottlingDate ? parseIsoDate(params.bottlingDate) : null;
-  const readyAfterDays = overrides.readyAfterDays ?? READY_AFTER_DAYS_DEFAULT;
-  const readyAfter = bottling ? new Date(bottling.getTime() + readyAfterDays * 24 * 60 * 60 * 1000) : null;
 
   const base: LabelSlots = {
     title: CUSTOM_LABEL_DEFAULT_TITLE,
@@ -135,7 +141,6 @@ export const buildCustomLabelSlots = (params: {
     yeast: null,
     authorName: null,
     bottlingDateText: bottling ? formatDateRu(bottling) : null,
-    readyAfterDateText: readyAfter ? formatDateRu(readyAfter) : null,
     qrUrl: null,
     brandText: LABEL_BRAND_TEXT
   };

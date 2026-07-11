@@ -17,7 +17,6 @@ const slots: LabelSlots = {
   yeast: "Fermentis W-34/70",
   authorName: "Артём",
   bottlingDateText: "11.07.2026",
-  readyAfterDateText: "25.07.2026",
   qrUrl: "https://example.com/recipes/zhigulyovskoe",
   brandText: "BREWED WITH NB"
 };

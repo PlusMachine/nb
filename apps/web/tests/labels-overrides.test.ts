@@ -33,7 +33,6 @@ const slots = (overrides: Partial<LabelSlots> = {}): LabelSlots => ({
   yeast: "W-34/70",
   authorName: "Артём",
   bottlingDateText: "11.07.2026",
-  readyAfterDateText: "25.07.2026",
   qrUrl: "https://example.com/recipes/el",
   brandText: "BREWED WITH NB",
   ...overrides
@@ -75,10 +74,10 @@ describe("правки полей наклейки", () => {
       recipe: baseRecipe,
       baseUrl: "https://nb.example",
       bottlingDate: "2026-07-11",
-      overrides: { abv: "6.6%", readyAfterDays: 30 }
+      overrides: { abv: "6.6%" }
     });
     expect(built.abvText).toBe("6.6%");
-    expect(built.readyAfterDateText).toBe("10.08.2026");
+    expect(built.bottlingDateText).toBe("11.07.2026");
   });
 
   it("нечисловой IBU/EBC не ломает слот: остаётся значение рецепта", () => {
@@ -128,7 +127,6 @@ describe("приоритет вёрстки: заголовок ужимаетс
       expect(svg).toContain("crispEdges"); // QR отрисован
       expect(svg).toContain("рецепт");
       expect(svg).toContain("РОЗЛИВ");
-      expect(svg).toContain("ГОТОВО ПОСЛЕ");
       expect(svg).toContain("BREWED WITH NB");
     });
   }

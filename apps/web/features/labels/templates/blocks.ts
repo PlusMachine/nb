@@ -426,7 +426,7 @@ export const colorScale = (
   return { svg: parts.join(""), height: marker.height + stripHeight + axis.height };
 };
 
-type MetaLine = { kind: "bottling" | "ready" | "author" | "brand"; text: string; fontId: LabelFontId; spacing: number };
+type MetaLine = { kind: "bottling" | "author" | "brand"; text: string; fontId: LabelFontId; spacing: number };
 
 type BottomMetaParams = { x: number; width: number; y: number; maxHeight: number; qrSizeMm: number; showAuthor: boolean };
 
@@ -441,9 +441,6 @@ const planBottomMeta = (
   const lines: MetaLine[] = [];
   if (slots.bottlingDateText) {
     lines.push({ kind: "bottling", text: `РОЗЛИВ: ${slots.bottlingDateText}`, fontId: "bodyMedium", spacing: Math.round(lineSize * 0.12) });
-  }
-  if (slots.readyAfterDateText) {
-    lines.push({ kind: "ready", text: `ГОТОВО ПОСЛЕ: ${slots.readyAfterDateText}`, fontId: "bodyMedium", spacing: Math.round(lineSize * 0.12) });
   }
   if (params.showAuthor && slots.authorName) {
     lines.push({
@@ -491,10 +488,10 @@ export const bottomMeta = (ctx: LabelRenderContext, params: BottomMetaParams): B
     qr = null;
   }
 
-  // Не влезаем по высоте — убираем строки по приоритету: автор → «готово
-  // после» → марка; дата розлива остаётся до последнего.
+  // Не влезаем по высоте — убираем строки по приоритету: автор → марка;
+  // дата розлива остаётся до последнего.
   const lineBlockHeight = (count: number): number => count * lineSize + Math.max(0, count - 1) * lineGap;
-  for (const dropKind of ["author", "ready", "brand"] as const) {
+  for (const dropKind of ["author", "brand"] as const) {
     if (lines.length <= 1 || lineBlockHeight(lines.length) <= params.maxHeight) {
       break;
     }

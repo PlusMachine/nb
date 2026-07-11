@@ -17,7 +17,6 @@ const fullSlots: LabelSlots = {
   yeast: "Fermentis W-34/70",
   authorName: "Артём",
   bottlingDateText: "11.07.2026",
-  readyAfterDateText: "25.07.2026",
   qrUrl: "https://example.com/recipes/test",
   brandText: "BREWED WITH NB"
 };
@@ -35,7 +34,6 @@ const emptySlots: LabelSlots = {
   yeast: null,
   authorName: null,
   bottlingDateText: null,
-  readyAfterDateText: null,
   qrUrl: null,
   brandText: "BREWED WITH NB"
 };
@@ -99,7 +97,6 @@ describe("tier-логика и переполнение текста", () => {
         expect(svg).not.toContain("ЦВЕТ");
         expect(svg).not.toContain("СОЛОД");
         expect(svg).not.toContain("РОЗЛИВ");
-        expect(svg).not.toContain("ГОТОВО");
         expect(svg).not.toContain("—"); // никаких прочерков-заглушек
       }
     }
@@ -108,7 +105,7 @@ describe("tier-логика и переполнение текста", () => {
   it("полные данные рендерят все блоки на L", () => {
     for (const template of ["typographic", "craft"] as const) {
       const { svg } = renderLabelSvg({ template, preset: "L", dpi: 203, slots: fullSlots });
-      for (const marker of ["ABV", "IBU", "ЦВЕТ", "СОЛОД", "ХМЕЛЬ", "ДРОЖЖИ", "РОЗЛИВ", "ГОТОВО ПОСЛЕ", "BREWED WITH NB"]) {
+      for (const marker of ["ABV", "IBU", "ЦВЕТ", "СОЛОД", "ХМЕЛЬ", "ДРОЖЖИ", "РОЗЛИВ", "BREWED WITH NB"]) {
         expect(svg, `${template}: ${marker}`).toContain(marker);
       }
     }

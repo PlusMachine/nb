@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 
 import { LabelStudio } from "@/components/recipes/labels/label-studio";
 import { getOwnedRecipeLabelContext } from "@/features/labels/service";
+import { resolvePreferredGravityUnit } from "@/features/system/gravity-units";
 import { requireUser } from "@/lib/auth";
 
 // «Наклейки» — генератор наклеек на бутылки из данных рецепта: поля
@@ -13,7 +14,9 @@ export default async function RecipeLabelsPage({ params }: { params: Promise<{ i
   const { id } = await params;
 
   try {
-    const { recipe, slots } = await getOwnedRecipeLabelContext(user.id, id);
+    const { recipe, slots } = await getOwnedRecipeLabelContext(user.id, id, {
+      gravityUnit: resolvePreferredGravityUnit(user.preferredGravityUnit)
+    });
     return (
       <LabelStudio
         endpoint={`/api/labels/${recipe.id}`}
