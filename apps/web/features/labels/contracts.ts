@@ -96,7 +96,36 @@ export const computeA4Grid = (preset: LabelPreset): A4Grid => {
 export const LABEL_TEMPLATE_IDS = ["typographic", "craft"] as const;
 export type LabelTemplateId = (typeof LABEL_TEMPLATE_IDS)[number];
 
-export const labelRenderRequestSchema = z.object({
+/**
+ * Правки полей наклейки. Данные подставляются из рецепта автоматически, но
+ * любое поле можно переопределить или очистить. Семантика ключа:
+ *   ключа нет  → значение из рецепта;
+ *   пустая строка → блок не печатать;
+ *   значение   → печатать его.
+ * Так «очистить поле» отличается от «не трогать».
+ */
+export const labelOverridesSchema = z.object({
+  title: z.string().max(120).optional(),
+  style: z.string().max(80).optional(),
+  abv: z.string().max(16).optional(),
+  ibu: z.string().max(8).optional(),
+  ebc: z.string().max(8).optional(),
+  og: z.string().max(12).optional(),
+  fg: z.string().max(12).optional(),
+  /** Списки — через запятую: «Pilsner, Munich». */
+  malts: z.string().max(240).optional(),
+  hops: z.string().max(240).optional(),
+  yeast: z.string().max(80).optional(),
+  author: z.string().max(60).optional(),
+  brand: z.string().max(60).optional(),
+  readyAfterDays: z.coerce.number().int().min(0).max(365).optional(),
+  /** Выключить QR можно всегда; включить — только у опубликованного рецепта. */
+  qr: z.enum(["0", "1"]).optional()
+});
+
+export type LabelOverrides = z.infer<typeof labelOverridesSchema>;
+
+export const labelRenderRequestSchema = labelOverridesSchema.extend({
   template: z.enum(LABEL_TEMPLATE_IDS).default("typographic"),
   preset: z.enum(LABEL_PRESET_IDS).default("M"),
   /** A4-режим: PDF-лист с сеткой наклеек выбранного пресета. */
@@ -109,6 +138,11 @@ export const labelRenderRequestSchema = z.object({
     .default("203")
     .transform((value) => Number(value) as LabelDpi),
   format: z.enum(["png", "pdf"]).default("png"),
+  /** Экранное превью: сглаженный рендер вместо 1-бит растра. */
+  preview: z
+    .enum(["0", "1"])
+    .default("0")
+    .transform((value) => value === "1"),
   /** Дата розлива (YYYY-MM-DD); пусто — блоки даты не печатаются. */
   bottlingDate: z
     .string()
@@ -145,7 +179,8 @@ export type LabelSlots = {
   readyAfterDateText: string | null;
   /** Абсолютный URL публичной страницы рецепта; null для неопубликованных. */
   qrUrl: string | null;
-  brandText: string;
+  /** Марка внизу наклейки; null — не печатать. */
+  brandText: string | null;
 };
 
 export const buildLabelFileName = (params: {

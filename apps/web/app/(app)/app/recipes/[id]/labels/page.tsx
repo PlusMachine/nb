@@ -2,23 +2,26 @@ import React from "react";
 import { notFound } from "next/navigation";
 
 import { LabelStudio } from "@/components/recipes/labels/label-studio";
-import { getOwnedRecipeById } from "@/features/recipes/service";
+import { getOwnedRecipeLabelContext } from "@/features/labels/service";
 import { requireUser } from "@/lib/auth";
 
-// «Наклейки» — генератор готовых наклеек на бутылки из данных рецепта
-// (не редактор). Доступ — только владельцу рецепта.
+// «Наклейки» — генератор наклеек на бутылки из данных рецепта: поля
+// подставляются автоматически, но каждое можно поправить. Только владельцу.
 
 export default async function RecipeLabelsPage({ params }: { params: Promise<{ id: string }> }) {
   const user = await requireUser();
   const { id } = await params;
 
   try {
-    const recipe = await getOwnedRecipeById(user.id, id);
+    const { recipe, slots } = await getOwnedRecipeLabelContext(user.id, id);
     return (
       <LabelStudio
-        recipeId={recipe.id}
-        recipeTitle={recipe.title}
-        isPublished={recipe.publicationState === "published"}
+        endpoint={`/api/labels/${recipe.id}`}
+        heading={`Наклейки — ${recipe.title}`}
+        defaultSlots={slots}
+        qrAvailable={recipe.publicationState === "published"}
+        backLink={{ href: `/app/recipes/${recipe.id}/edit`, label: "К рецепту" }}
+        resetLabel="Вернуть данные рецепта"
       />
     );
   } catch (error) {

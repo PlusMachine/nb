@@ -31,15 +31,32 @@ describe("EBC → плотность дизеринга", () => {
     expect(ebcToDitherLevel(80)).toBe(DITHER_LEVEL_COUNT - 1);
   });
 
-  it("паттерн: минимальный элемент ≥ 2 px при 203 dpi на всех уровнях", () => {
+  it("паттерн: точка ≥ 2 px при 203 dpi на всех уровнях", () => {
     for (let level = 0; level < DITHER_LEVEL_COUNT; level += 1) {
       const svg = ditherPatternDef(`p${level}`, level, 203);
-      const rects = [...svg.matchAll(/<rect[^>]*width="(\d+)" height="(\d+)"/g)];
-      expect(rects.length).toBe(2);
-      // Вторая rect — «точка» (чёрная или белая).
-      const dot = rects[1];
-      expect(Number(dot[1])).toBeGreaterThanOrEqual(2);
-      expect(Number(dot[2])).toBeGreaterThanOrEqual(2);
+      for (const match of svg.matchAll(/<rect[^>]*width="(\d+)" height="(\d+)"/g)) {
+        expect(Number(match[1])).toBeGreaterThanOrEqual(2);
+        expect(Number(match[2])).toBeGreaterThanOrEqual(2);
+      }
     }
+  });
+
+  // Тон кодируется числом точек в ячейке 4×4: иначе светлые уровни при 203 dpi
+  // сливались в один узор (доступны только диаметры 2, 3, 4 px).
+  const countDots = (svg: string): number => [...svg.matchAll(/<rect x="\d+" y="\d+"/g)].length;
+
+  it("число точек в ячейке растёт с уровнем и различает соседние уровни", () => {
+    const counts = Array.from({ length: DITHER_LEVEL_COUNT }, (_, level) => countDots(ditherPatternDef(`p${level}`, level, 203)));
+    for (let i = 1; i < counts.length; i += 1) {
+      expect(counts[i]).toBeGreaterThan(counts[i - 1]);
+    }
+    // Края не вырождаются в чистый белый / сплошной чёрный.
+    expect(counts[0]).toBeGreaterThanOrEqual(1);
+    expect(counts[counts.length - 1]).toBeLessThanOrEqual(15);
+  });
+
+  it("светлая половина шкалы различима: уровни 0–4 дают разные узоры", () => {
+    const svgs = [0, 1, 2, 3, 4].map((level) => ditherPatternDef("p", level, 203));
+    expect(new Set(svgs).size).toBe(svgs.length);
   });
 });

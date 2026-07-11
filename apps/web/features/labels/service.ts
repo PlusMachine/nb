@@ -3,7 +3,7 @@ import { getServerEnv } from "@/lib/env";
 import type { RecipeDetailDto } from "../recipes/contracts";
 import { getOwnedRecipeById } from "../recipes/service";
 
-import type { LabelSlots } from "./contracts";
+import type { LabelOverrides, LabelSlots } from "./contracts";
 import { buildLabelSlots } from "./slots";
 
 // Серверный сервис наклеек: доступ — только владелец рецепта
@@ -18,10 +18,15 @@ export type OwnedRecipeLabelContext = {
 export const getOwnedRecipeLabelContext = async (
   userId: string,
   recipeId: string,
-  options?: { bottlingDate?: string | null }
+  options?: { bottlingDate?: string | null; overrides?: LabelOverrides }
 ): Promise<OwnedRecipeLabelContext> => {
   const recipe = await getOwnedRecipeById(userId, recipeId);
   const { APP_URL } = getServerEnv();
-  const slots = buildLabelSlots({ recipe, baseUrl: APP_URL, bottlingDate: options?.bottlingDate ?? null });
+  const slots = buildLabelSlots({
+    recipe,
+    baseUrl: APP_URL,
+    bottlingDate: options?.bottlingDate ?? null,
+    overrides: options?.overrides
+  });
   return { recipe, slots };
 };

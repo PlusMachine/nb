@@ -1,5 +1,5 @@
 import { ditherPatternDef, ebcToDitherLevel } from "../density";
-import { measureTextPx, type LabelFontId } from "../fonts";
+import { fitTextLines, measureTextPx, type LabelFontId } from "../fonts";
 import { buildQrSvg } from "../qr";
 import { diamond, dottedRule, hRule, iconAt, textEl } from "../svg";
 
@@ -77,6 +77,49 @@ export const fitSpacedLine = (
     sizePx: params.minSizePx,
     spacingPx: 0
   };
+};
+
+/**
+ * Название пива капсом с автоподбором кегля. Рендерится от y=0 — вызывающий
+ * транслирует. maxHeightPx (если задан) ужимает кегль так, чтобы блок влез в
+ * отведённую высоту: место под данные важнее крупного заголовка.
+ */
+export const titleBlock = (
+  ctx: LabelRenderContext,
+  params: { cx: number; width: number; maxSizePx: number; minSizePx: number; maxHeightPx?: number }
+): BlockResult => {
+  const lineHeightOf = (sizePx: number): number => Math.round(sizePx * 1.08);
+  let fitted = fitTextLines(ctx.slots.title.toUpperCase(), {
+    fontId: "displayBold",
+    maxWidthPx: params.width,
+    maxLines: 2,
+    maxSizePx: params.maxSizePx,
+    minSizePx: params.minSizePx
+  });
+
+  if (params.maxHeightPx !== undefined) {
+    while (
+      fitted.lines.length * lineHeightOf(fitted.fontSizePx) > params.maxHeightPx &&
+      fitted.fontSizePx > params.minSizePx
+    ) {
+      fitted = fitTextLines(ctx.slots.title.toUpperCase(), {
+        fontId: "displayBold",
+        maxWidthPx: params.width,
+        maxLines: 2,
+        maxSizePx: fitted.fontSizePx - 1,
+        minSizePx: params.minSizePx
+      });
+    }
+  }
+
+  const lineHeight = lineHeightOf(fitted.fontSizePx);
+  const parts: string[] = [];
+  let y = fitted.fontSizePx;
+  for (const line of fitted.lines) {
+    parts.push(textEl({ x: params.cx, y, fontId: "displayBold", sizePx: fitted.fontSizePx, text: line, anchor: "middle" }));
+    y += lineHeight;
+  }
+  return { svg: parts.join(""), height: fitted.lines.length * lineHeight };
 };
 
 /** Заголовок колонки «◆ ABV ◆» с ромбами по бокам. */
@@ -206,7 +249,69 @@ export const ingredientRows = (
   return { svg: parts.join(""), height: y - params.y };
 };
 
-/** Шкала IBU 0–100+: рамка, чёрная заливка до значения, деления с цифрами. */
+// Шкалы-инфографика (L-tier). Общий язык обеих: ось от 0 до максимума,
+// деления с цифрами и МАРКЕР-указатель на значении рецепта — значение это
+// точка на шкале, а не диапазон, поэтому заливки «до значения» нет.
+
+/**
+ * Маркер значения: моноширинное число, под ним треугольник-указатель вниз.
+ * Рендерится сверху вниз от topY; остриё приходится ровно на bottom.
+ */
+const scaleMarker = (
+  ctx: LabelRenderContext,
+  params: { cx: number; topY: number; valueText: string; leftBound: number; rightBound: number }
+): { svg: string; height: number } => {
+  const { mm } = ctx;
+  const valueSize = mm(2.8);
+  const tipHeight = mm(1.6);
+  const halfWidth = mm(1.1);
+  const gap = mm(0.6);
+  // Подпись прижимаем внутрь шкалы, если маркер у самого края.
+  const textHalf = Math.round(measureTextPx(params.valueText, "monoBold", valueSize) / 2);
+  const textCx = Math.min(Math.max(params.cx, params.leftBound + textHalf), params.rightBound - textHalf);
+  const valueBaseline = params.topY + valueSize;
+  const triTop = valueBaseline + gap;
+  const tipY = triTop + tipHeight;
+  const svg = [
+    textEl({ x: textCx, y: valueBaseline, fontId: "monoBold", sizePx: valueSize, text: params.valueText, anchor: "middle" }),
+    `<path d="M ${params.cx} ${tipY} L ${params.cx - halfWidth} ${triTop} L ${params.cx + halfWidth} ${triTop} Z" fill="black"/>`
+  ].join("");
+  return { svg, height: tipY - params.topY };
+};
+
+/** Ось с делениями и цифрами; возвращает SVG и высоту от оси вниз. */
+const scaleAxis = (
+  ctx: LabelRenderContext,
+  params: { x: number; width: number; y: number; ticks: number[]; scaleMax: number; overflow: boolean }
+): { svg: string; height: number } => {
+  const { mm } = ctx;
+  const stroke = Math.max(2, mm(0.25));
+  const tickSize = mm(2);
+  const tickLen = mm(1.2);
+  const parts: string[] = [hRule(params.x, params.x + params.width, params.y, stroke)];
+  const labelsY = params.y + tickLen + tickSize + mm(0.6);
+  for (const tick of params.ticks) {
+    const tx = Math.round(params.x + (tick / params.scaleMax) * params.width);
+    parts.push(`<rect x="${tx - Math.floor(stroke / 2)}" y="${params.y}" width="${stroke}" height="${tickLen}" fill="black"/>`);
+    const isLast = tick === params.ticks[params.ticks.length - 1];
+    parts.push(
+      textEl({
+        x: tx,
+        y: labelsY,
+        fontId: "mono",
+        sizePx: tickSize,
+        text: isLast && params.overflow ? `${tick}+` : String(tick),
+        anchor: "middle"
+      })
+    );
+  }
+  return { svg: parts.join(""), height: labelsY - params.y + Math.round(tickSize * 0.25) };
+};
+
+/**
+ * Шкала горечи: ось 0–100+ с делениями и маркером на значении рецепта.
+ * Слева — метка «IBU» (имя оси, без него шкала нечитаема).
+ */
 export const ibuScale = (
   ctx: LabelRenderContext,
   params: { x: number; width: number; y: number }
@@ -215,54 +320,124 @@ export const ibuScale = (
   if (slots.ibu === null) {
     return EMPTY_BLOCK;
   }
-  const barHeight = mm(3.2);
-  const stroke = Math.max(2, mm(0.25));
-  const tickSize = mm(2.2);
-  const scaleMax = 110;
-  const filled = Math.round((Math.min(slots.ibu, scaleMax) / scaleMax) * params.width);
+  const scaleMax = 100;
+  const axisLabelSize = mm(2.4);
+  const axisLabelWidth = measureTextPx("IBU", "bodyBold", axisLabelSize, Math.round(axisLabelSize * 0.2)) + mm(2.5);
+  const axisX = params.x + axisLabelWidth;
+  const axisWidth = params.width - axisLabelWidth;
+
+  const clamped = Math.min(slots.ibu, scaleMax);
+  const markerCx = Math.round(axisX + (clamped / scaleMax) * axisWidth);
   const parts: string[] = [];
-  parts.push(`<rect x="${params.x}" y="${params.y}" width="${filled}" height="${barHeight}" fill="black"/>`);
-  parts.push(`<rect x="${params.x}" y="${params.y}" width="${params.width}" height="${barHeight}" fill="none" stroke="black" stroke-width="${stroke}"/>`);
-  const labelsY = params.y + barHeight + tickSize + mm(1);
-  for (const tick of [0, 20, 40, 60, 80, 100]) {
-    const tx = Math.round(params.x + (tick / scaleMax) * params.width);
-    parts.push(`<rect x="${tx}" y="${params.y + barHeight}" width="${stroke}" height="${mm(1)}" fill="black"/>`);
-    parts.push(textEl({ x: tx, y: labelsY, fontId: "mono", sizePx: tickSize, text: String(tick), anchor: "middle" }));
-  }
-  return { svg: parts.join(""), height: labelsY - params.y + Math.round(tickSize * 0.3) };
+
+  // Поток сверху вниз: маркер → ось → цифры делений.
+  const marker = scaleMarker(ctx, {
+    cx: markerCx,
+    topY: params.y,
+    valueText: String(slots.ibu),
+    leftBound: axisX,
+    rightBound: axisX + axisWidth
+  });
+  const axisY = params.y + marker.height;
+  const axis = scaleAxis(ctx, { x: axisX, width: axisWidth, y: axisY, ticks: [0, 20, 40, 60, 80, 100], scaleMax, overflow: slots.ibu > scaleMax });
+
+  parts.push(marker.svg);
+  parts.push(axis.svg);
+  parts.push(
+    textEl({
+      x: params.x,
+      y: axisY + Math.round(axisLabelSize * 0.38),
+      fontId: "bodyBold",
+      sizePx: axisLabelSize,
+      text: "IBU",
+      letterSpacingPx: Math.round(axisLabelSize * 0.2)
+    })
+  );
+
+  return { svg: parts.join(""), height: marker.height + axis.height };
 };
 
-/** Плашка «цвет пива»: полоса с дизеринг-паттерном по EBC (для L-tier). */
-export const colorSwatchBar = (
+/**
+ * Шкала цвета: полоса из ступеней растровой плотности (светлое → тёмное)
+ * и маркер на EBC рецепта. Именно шкала объясняет точки: это градиент
+ * цвета пива, а не абстрактный узор.
+ */
+export const colorScale = (
   ctx: LabelRenderContext,
-  params: { x: number; width: number; y: number; heightMm?: number; patternId: string }
+  params: { x: number; width: number; y: number; idPrefix: string }
 ): BlockResult => {
   const { slots, mm, dpi } = ctx;
   if (slots.ebc === null) {
     return EMPTY_BLOCK;
   }
-  const height = mm(params.heightMm ?? 4);
+  const scaleMax = 80;
+  const axisLabelSize = mm(2.4);
+  const axisLabelWidth = measureTextPx("EBC", "bodyBold", axisLabelSize, Math.round(axisLabelSize * 0.2)) + mm(2.5);
+  const stripX = params.x + axisLabelWidth;
+  const stripWidth = params.width - axisLabelWidth;
+  const stripHeight = mm(4);
   const stroke = Math.max(2, mm(0.25));
-  const svg = [
-    `<defs>${ditherPatternDef(params.patternId, ebcToDitherLevel(slots.ebc), dpi)}</defs>`,
-    `<rect x="${params.x}" y="${params.y}" width="${params.width}" height="${height}" fill="url(#${params.patternId})"/>`,
-    `<rect x="${params.x}" y="${params.y}" width="${params.width}" height="${height}" fill="none" stroke="black" stroke-width="${stroke}"/>`
-  ].join("");
-  return { svg, height };
+
+  const clamped = Math.min(slots.ebc, scaleMax);
+  const markerCx = Math.round(stripX + (clamped / scaleMax) * stripWidth);
+  const parts: string[] = [];
+
+  const marker = scaleMarker(ctx, {
+    cx: markerCx,
+    topY: params.y,
+    valueText: String(slots.ebc),
+    leftBound: stripX,
+    rightBound: stripX + stripWidth
+  });
+  parts.push(marker.svg);
+
+  // Полоса-градиент: сегменты по EBC-диапазонам, плотность растёт слева направо.
+  const stripY = params.y + marker.height;
+  const segments = [2, 8, 16, 25, 35, 45, 55, 65, 75];
+  const defs: string[] = [];
+  const rects: string[] = [];
+  segments.forEach((ebc, index) => {
+    const patternId = `${params.idPrefix}-seg-${index}`;
+    defs.push(ditherPatternDef(patternId, ebcToDitherLevel(ebc), dpi));
+    const segX = Math.round(stripX + (index / segments.length) * stripWidth);
+    const segEnd = Math.round(stripX + ((index + 1) / segments.length) * stripWidth);
+    rects.push(`<rect x="${segX}" y="${stripY}" width="${segEnd - segX}" height="${stripHeight}" fill="url(#${patternId})"/>`);
+  });
+  parts.push(`<defs>${defs.join("")}</defs>`);
+  parts.push(rects.join(""));
+  parts.push(
+    `<rect x="${stripX}" y="${stripY}" width="${stripWidth}" height="${stripHeight}" fill="none" stroke="black" stroke-width="${stroke}"/>`
+  );
+
+  const axisY = stripY + stripHeight;
+  const axis = scaleAxis(ctx, { x: stripX, width: stripWidth, y: axisY, ticks: [0, 20, 40, 60, 80], scaleMax, overflow: slots.ebc > scaleMax });
+  parts.push(axis.svg);
+  parts.push(
+    textEl({
+      x: params.x,
+      y: stripY + Math.round(stripHeight / 2 + axisLabelSize * 0.38),
+      fontId: "bodyBold",
+      sizePx: axisLabelSize,
+      text: "EBC",
+      letterSpacingPx: Math.round(axisLabelSize * 0.2)
+    })
+  );
+
+  return { svg: parts.join(""), height: marker.height + stripHeight + axis.height };
 };
 
-/**
- * Нижний мета-блок: розлив/«готово после», автор, марка + QR справа
- * (QR только при slots.qrUrl — т.е. только для опубликованных).
- */
-export const bottomMeta = (
+type MetaLine = { kind: "bottling" | "ready" | "author" | "brand"; text: string; fontId: LabelFontId; spacing: number };
+
+type BottomMetaParams = { x: number; width: number; y: number; maxHeight: number; qrSizeMm: number; showAuthor: boolean };
+
+/** Строки и QR мета-блока до подгонки под высоту. */
+const planBottomMeta = (
   ctx: LabelRenderContext,
-  params: { x: number; width: number; y: number; maxHeight: number; qrSizeMm: number; showAuthor: boolean }
-): BlockResult => {
+  params: Pick<BottomMetaParams, "width" | "qrSizeMm" | "showAuthor">
+): { lines: MetaLine[]; qr: ReturnType<typeof buildQrSvg>; lineSize: number; lineGap: number } => {
   const { slots, mm } = ctx;
   const lineSize = mm(2.4);
   const lineGap = Math.round(lineSize * 0.8);
-  type MetaLine = { kind: "bottling" | "ready" | "author" | "brand"; text: string; fontId: LabelFontId; spacing: number };
   const lines: MetaLine[] = [];
   if (slots.bottlingDateText) {
     lines.push({ kind: "bottling", text: `РОЗЛИВ: ${slots.bottlingDateText}`, fontId: "bodyMedium", spacing: Math.round(lineSize * 0.12) });
@@ -278,9 +453,39 @@ export const bottomMeta = (
       spacing: Math.round(lineSize * 0.18)
     });
   }
-  lines.push({ kind: "brand", text: slots.brandText, fontId: "mono", spacing: Math.round(lineSize * 0.2) });
+  if (slots.brandText) {
+    lines.push({ kind: "brand", text: slots.brandText, fontId: "mono", spacing: Math.round(lineSize * 0.2) });
+  }
+  const qr = slots.qrUrl ? buildQrSvg(slots.qrUrl, mm(params.qrSizeMm)) : null;
+  return { lines, qr, lineSize, lineGap };
+};
 
-  let qr = slots.qrUrl ? buildQrSvg(slots.qrUrl, mm(params.qrSizeMm)) : null;
+/**
+ * Высота, нужная мета-блоку со ВСЕМИ строками и QR. Шаблон резервирует её
+ * заранее и подгоняет заголовок: жертвовать данными (и тем более QR) ради
+ * лишнего кегля названия — неправильный приоритет.
+ */
+export const bottomMetaDesiredHeight = (
+  ctx: LabelRenderContext,
+  params: Pick<BottomMetaParams, "width" | "qrSizeMm" | "showAuthor">
+): number => {
+  const { mm } = ctx;
+  const { lines, qr, lineSize, lineGap } = planBottomMeta(ctx, params);
+  const textHeight = lines.length * lineSize + Math.max(0, lines.length - 1) * lineGap;
+  return Math.max(textHeight, qr ? qr.sizePx + lineSize + mm(1) : 0);
+};
+
+/**
+ * Нижний мета-блок: розлив/«готово после», автор, марка + QR справа
+ * (QR только при slots.qrUrl — т.е. только для опубликованных).
+ */
+export const bottomMeta = (ctx: LabelRenderContext, params: BottomMetaParams): BlockResult => {
+  const { mm } = ctx;
+  const plan = planBottomMeta(ctx, params);
+  const { lineSize, lineGap } = plan;
+  const lines = [...plan.lines];
+  let qr = plan.qr;
+
   // QR не влезает по вертикали (вместе с подписью) — блок QR не рендерим.
   if (qr && qr.sizePx + lineSize + mm(1) > params.maxHeight) {
     qr = null;

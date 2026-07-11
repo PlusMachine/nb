@@ -51,9 +51,9 @@ export const renderLabelSvg = (params: LabelRenderParams): { svg: string; widthP
   return { svg: getLabelTemplate(params.template).render(ctx), widthPx, heightPx };
 };
 
-const rasterizeSvg = (svg: string): Buffer => {
+const rasterizeSvg = (svg: string, zoom = 1): Buffer => {
   const resvg = new Resvg(svg, {
-    fitTo: { mode: "original" },
+    fitTo: zoom === 1 ? { mode: "original" } : { mode: "zoom", value: zoom },
     background: "white",
     font: {
       loadSystemFonts: false,
@@ -73,6 +73,17 @@ export const renderLabelPng = async (params: LabelRenderParams): Promise<Buffer>
     .threshold(BINARIZE_THRESHOLD)
     .png({ palette: true, colours: 2, compressionLevel: 9 })
     .toBuffer();
+};
+
+/**
+ * Превью для экрана: тот же SVG, но со сглаживанием и в 2× — без бинаризации.
+ * Ужимать 1-бит растр средствами браузера нельзя: тонкие штрихи и дизеринг
+ * рассыпаются, и превью врёт сильнее, чем сглаженный рендер той же вёрстки.
+ * Что реально уйдёт в печать, показывает renderLabelPng (режим «как на печати»).
+ */
+export const renderLabelPreviewPng = async (params: LabelRenderParams): Promise<Buffer> => {
+  const { svg } = renderLabelSvg(params);
+  return sharp(rasterizeSvg(svg, 2)).flatten({ background: "white" }).png({ compressionLevel: 9 }).toBuffer();
 };
 
 /** PDF одной наклейки: страница = точный физический размер наклейки. */

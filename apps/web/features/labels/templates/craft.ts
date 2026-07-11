@@ -1,8 +1,17 @@
 import { ditherPatternDef, ebcToDitherLevel } from "../density";
-import { fitTextLines, measureTextPx } from "../fonts";
+import { measureTextPx } from "../fonts";
 import { diamond, dottedRule, grainIconPath, hopIconPath, hRule, iconAt, ruleWithDiamond, textEl, ticketFrame, yeastIconPath } from "../svg";
 
-import { bottomMeta, fitSpacedLine, ibuScale, ingredientRows, statBand, statBandHeight } from "./blocks";
+import {
+  bottomMeta,
+  bottomMetaDesiredHeight,
+  fitSpacedLine,
+  ibuScale,
+  ingredientRows,
+  statBand,
+  statBandHeight,
+  titleBlock
+} from "./blocks";
 import type { LabelRenderContext, LabelTemplate } from "./types";
 
 // «Линейный крафт» — референсная эстетика: билетная рамка с вогнутыми
@@ -23,27 +32,6 @@ const frame = (ctx: LabelRenderContext, thickMm: number): string =>
     gapPx: ctx.mm(0.8),
     cornerPx: ctx.mm(2.4)
   });
-
-const titleBlock = (
-  ctx: LabelRenderContext,
-  params: { cx: number; width: number; maxSizePx: number; minSizePx: number }
-): { svg: string; height: number } => {
-  const fitted = fitTextLines(ctx.slots.title.toUpperCase(), {
-    fontId: "displayBold",
-    maxWidthPx: params.width,
-    maxLines: 2,
-    maxSizePx: params.maxSizePx,
-    minSizePx: params.minSizePx
-  });
-  const lineHeight = Math.round(fitted.fontSizePx * 1.08);
-  const parts: string[] = [];
-  let y = fitted.fontSizePx;
-  for (const line of fitted.lines) {
-    parts.push(textEl({ x: params.cx, y, fontId: "displayBold", sizePx: fitted.fontSizePx, text: line, anchor: "middle" }));
-    y += lineHeight;
-  }
-  return { svg: parts.join(""), height: fitted.lines.length * lineHeight };
-};
 
 const styleLine = (
   ctx: LabelRenderContext,
@@ -164,7 +152,13 @@ const renderS = (ctx: LabelRenderContext): string => {
   const bottomY = heightPx - pad - Math.round(bottomSize * 0.2);
   const titleArea = bottomLine ? bottomY - Math.round(bottomSize * 1.6) : heightPx - pad;
 
-  const title = titleBlock(ctx, { cx, width: widthPx - pad * 2, maxSizePx: mm(5.5), minSizePx: mm(3) });
+  const title = titleBlock(ctx, {
+    cx,
+    width: widthPx - pad * 2,
+    maxSizePx: mm(5.5),
+    minSizePx: mm(3),
+    maxHeightPx: titleArea - pad
+  });
   const titleY = pad + Math.max(0, Math.round((titleArea - pad - title.height) / 2));
   parts.push(`<g transform="translate(0 ${titleY})">${title.svg}</g>`);
 
@@ -189,19 +183,20 @@ const renderM = (ctx: LabelRenderContext): string => {
   let y = pad + mm(0.5);
 
   const hasStats = slots.abvText !== null || slots.ibu !== null || slots.ebc !== null;
-  const metaLineCount = 1 + (slots.bottlingDateText ? 1 : 0) + (slots.readyAfterDateText ? 1 : 0);
+  const metaHeight = bottomMetaDesiredHeight(ctx, { width: contentWidth, qrSizeMm: 10, showAuthor: false });
   const reserved =
     (slots.styleName ? Math.round(mm(2.6) * 1.6) : 0) +
     mm(3.6) +
     (hasStats ? statBandHeight(ctx, true) + mm(1.6) : 0) +
-    metaLineCount * mm(2.4) +
-    (metaLineCount - 1) * Math.round(mm(2.4) * 0.8) +
+    metaHeight +
     mm(1);
-  const titleBudget = heightPx - pad - y - reserved;
-  let title = titleBlock(ctx, { cx, width: contentWidth, maxSizePx: mm(6.5), minSizePx: mm(3.4) });
-  if (title.height > titleBudget) {
-    title = titleBlock(ctx, { cx, width: contentWidth, maxSizePx: Math.max(mm(3), Math.floor(titleBudget / 2.2)), minSizePx: mm(2.8) });
-  }
+  const title = titleBlock(ctx, {
+    cx,
+    width: contentWidth,
+    maxSizePx: mm(6.5),
+    minSizePx: mm(2.8),
+    maxHeightPx: heightPx - pad - y - reserved
+  });
   parts.push(`<g transform="translate(0 ${y})">${title.svg}</g>`);
   y += title.height + mm(1.4);
 
@@ -249,7 +244,38 @@ const renderL = (ctx: LabelRenderContext): string => {
   }
   y = badgeCy + badgeR + mm(2);
 
-  const title = titleBlock(ctx, { cx, width: contentWidth, maxSizePx: mm(9), minSizePx: mm(4.6) });
+  // Блоки под заголовком не зависят от его кегля — меряем их заранее и отдаём
+  // заголовку остаток высоты: данные и QR важнее крупного названия.
+  const glassHeightProbe = mm(17);
+  const rowsWidthProbe = slots.ebc !== null ? contentWidth - Math.round(glassHeightProbe * 0.62) - mm(4) : contentWidth;
+  const styleProbe = styleLine(ctx, { cx, width: contentWidth, y: 0, sizeMm: 3, decorate: true });
+  const rowsProbe = ingredientRows(ctx, {
+    x: pad,
+    width: rowsWidthProbe,
+    y: 0,
+    icons: { grain: grainIconPath(2), hop: hopIconPath(2), yeast: yeastIconPath(2) }
+  });
+  const rowsBlockProbe = Math.max(rowsProbe.height, slots.ebc !== null ? glassHeightProbe : 0);
+  const bandProbe = statBand(ctx, { x: pad, width: contentWidth, y: 0 });
+  const bitternessProbe = ibuScale(ctx, { x: pad, width: contentWidth, y: 0 });
+  const metaHeight = bottomMetaDesiredHeight(ctx, { width: contentWidth, qrSizeMm: 13, showAuthor: true });
+  const belowTitle =
+    mm(1.2) +
+    styleProbe.height +
+    mm(3) +
+    (rowsBlockProbe > 0 ? rowsBlockProbe + mm(4.2) : 0) +
+    (bandProbe.height > 0 ? bandProbe.height + mm(1.8) : 0) +
+    (bitternessProbe.height > 0 ? bitternessProbe.height + mm(2) : 0) +
+    mm(2.2) +
+    metaHeight;
+
+  const title = titleBlock(ctx, {
+    cx,
+    width: contentWidth,
+    maxSizePx: mm(9),
+    minSizePx: mm(4.2),
+    maxHeightPx: heightPx - pad - y - belowTitle
+  });
   body.push(`<g transform="translate(0 ${y})">${title.svg}</g>`);
   y += title.height + mm(1.2);
 
@@ -286,10 +312,11 @@ const renderL = (ctx: LabelRenderContext): string => {
     y += band.height + mm(1.8);
   }
 
-  const scale = ibuScale(ctx, { x: pad + mm(2), width: contentWidth - mm(4), y });
-  if (scale.height > 0) {
-    body.push(scale.svg);
-    y += scale.height + mm(2);
+  // Цвет в крафте показывает бокал с дизерингом — здесь только шкала горечи.
+  const bitterness = ibuScale(ctx, { x: pad, width: contentWidth, y });
+  if (bitterness.height > 0) {
+    body.push(bitterness.svg);
+    y += bitterness.height + mm(2);
   }
 
   body.push(dottedRule(pad, widthPx - pad, y, Math.max(2, mm(0.25))));

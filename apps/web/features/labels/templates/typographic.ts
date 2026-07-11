@@ -1,7 +1,17 @@
-import { fitTextLines } from "../fonts";
 import { doubleFrame, hRule, ruleWithDiamond, textEl } from "../svg";
 
-import { bottomMeta, colorSwatchBar, dottedRule, fitSpacedLine, ibuScale, ingredientRows, statBand, statBandHeight } from "./blocks";
+import {
+  bottomMeta,
+  bottomMetaDesiredHeight,
+  colorScale,
+  dottedRule,
+  fitSpacedLine,
+  ibuScale,
+  ingredientRows,
+  statBand,
+  statBandHeight,
+  titleBlock
+} from "./blocks";
 import type { LabelRenderContext, LabelTemplate } from "./types";
 
 // «Типографский» — только шрифтовая композиция: жирные линейки, двойная
@@ -11,43 +21,31 @@ const svgOpen = (ctx: LabelRenderContext): string =>
   `<svg xmlns="http://www.w3.org/2000/svg" width="${ctx.widthPx}" height="${ctx.heightPx}" viewBox="0 0 ${ctx.widthPx} ${ctx.heightPx}">` +
   `<rect width="${ctx.widthPx}" height="${ctx.heightPx}" fill="white"/>`;
 
-/** Название капсом с автокеглем; рендерится от y=0, вызывающий транслирует. */
-const titleBlock = (
+/** Строка стиля с разрядкой, ужатая под ширину. */
+const styleLine = (
   ctx: LabelRenderContext,
-  params: { cx: number; width: number; maxSizePx: number; minSizePx: number }
+  params: { cx: number; width: number; y: number; sizeMm: number }
 ): { svg: string; height: number } => {
-  const fitted = fitTextLines(ctx.slots.title.toUpperCase(), {
-    fontId: "displayBold",
-    maxWidthPx: params.width,
-    maxLines: 2,
-    maxSizePx: params.maxSizePx,
-    minSizePx: params.minSizePx
-  });
-  const lineHeight = Math.round(fitted.fontSizePx * 1.08);
-  const parts: string[] = [];
-  let y = fitted.fontSizePx;
-  for (const line of fitted.lines) {
-    parts.push(textEl({ x: params.cx, y, fontId: "displayBold", sizePx: fitted.fontSizePx, text: line, anchor: "middle" }));
-    y += lineHeight;
-  }
-  return { svg: parts.join(""), height: fitted.lines.length * lineHeight };
-};
-
-/** Строка стиля с разрядкой, ужатая под ширину. Возвращает высоту блока. */
-const styleLine = (ctx: LabelRenderContext, params: { cx: number; width: number; y: number; sizeMm: number; decorate?: boolean }): { svg: string; height: number } => {
   const { slots, mm } = ctx;
   if (!slots.styleName) {
     return { svg: "", height: 0 };
   }
-  const raw = params.decorate ? `• ${slots.styleName} •` : slots.styleName;
-  const fit = fitSpacedLine(raw, {
+  const fit = fitSpacedLine(slots.styleName, {
     fontId: "bodyMedium",
     maxWidthPx: params.width,
     sizePx: mm(params.sizeMm),
     minSizePx: mm(2),
     spacingRatio: 0.3
   });
-  const svg = textEl({ x: params.cx, y: params.y + fit.sizePx, fontId: "bodyMedium", sizePx: fit.sizePx, text: fit.text, anchor: "middle", letterSpacingPx: fit.spacingPx });
+  const svg = textEl({
+    x: params.cx,
+    y: params.y + fit.sizePx,
+    fontId: "bodyMedium",
+    sizePx: fit.sizePx,
+    text: fit.text,
+    anchor: "middle",
+    letterSpacingPx: fit.spacingPx
+  });
   return { svg, height: Math.round(fit.sizePx * 1.6) };
 };
 
@@ -65,7 +63,13 @@ const renderS = (ctx: LabelRenderContext): string => {
   const bottomY = heightPx - pad - Math.round(bottomSize * 0.2);
   const titleArea = bottomLine ? bottomY - Math.round(bottomSize * 1.5) : heightPx - pad;
 
-  const title = titleBlock(ctx, { cx, width: widthPx - pad * 2, maxSizePx: mm(5.5), minSizePx: mm(3) });
+  const title = titleBlock(ctx, {
+    cx,
+    width: widthPx - pad * 2,
+    maxSizePx: mm(5.5),
+    minSizePx: mm(3),
+    maxHeightPx: titleArea - pad
+  });
   const titleY = pad + Math.max(0, Math.round((titleArea - pad - title.height) / 2));
   parts.push(`<g transform="translate(0 ${titleY})">${title.svg}</g>`);
 
@@ -91,19 +95,20 @@ const renderM = (ctx: LabelRenderContext): string => {
 
   // Вертикальный бюджет: заголовку достаётся то, что не займут блоки ниже.
   const hasStats = slots.abvText !== null || slots.ibu !== null || slots.ebc !== null;
-  const metaLineCount = 1 + (slots.bottlingDateText ? 1 : 0) + (slots.readyAfterDateText ? 1 : 0);
+  const metaHeight = bottomMetaDesiredHeight(ctx, { width: contentWidth, qrSizeMm: 10, showAuthor: false });
   const reserved =
     (slots.styleName ? Math.round(mm(2.6) * 1.6) : 0) +
     mm(3.6) +
     (hasStats ? statBandHeight(ctx, true) + mm(1.6) : 0) +
-    metaLineCount * mm(2.4) +
-    (metaLineCount - 1) * Math.round(mm(2.4) * 0.8) +
+    metaHeight +
     mm(1);
-  const titleBudget = heightPx - pad - y - reserved;
-  let title = titleBlock(ctx, { cx, width: contentWidth, maxSizePx: mm(6.5), minSizePx: mm(3.4) });
-  if (title.height > titleBudget) {
-    title = titleBlock(ctx, { cx, width: contentWidth, maxSizePx: Math.max(mm(3), Math.floor(titleBudget / 2.2)), minSizePx: mm(2.8) });
-  }
+  const title = titleBlock(ctx, {
+    cx,
+    width: contentWidth,
+    maxSizePx: mm(6.5),
+    minSizePx: mm(2.8),
+    maxHeightPx: heightPx - pad - y - reserved
+  });
   parts.push(`<g transform="translate(0 ${y})">${title.svg}</g>`);
   y += title.height + mm(1.4);
 
@@ -140,13 +145,45 @@ const renderL = (ctx: LabelRenderContext): string => {
   const pad = inset + thick + mm(0.8) + thin + mm(2.4);
   const cx = Math.round(widthPx / 2);
   const contentWidth = widthPx - pad * 2;
-  const body: string[] = [];
+  const qrSizeMm = 13;
 
+  const titleTop = pad + mm(2.4);
+
+  // Блоки под заголовком не зависят от его кегля — считаем их высоты заранее
+  // и отдаём заголовку ровно остаток. Так название ужимается само, а не
+  // выдавливает данные (и QR) из нижнего блока.
+  const styleProbe = styleLine(ctx, { cx, width: contentWidth, y: 0, sizeMm: 3.2 });
+  const gravityHeight = slots.ogText || slots.fgText ? Math.round(mm(2.8) * 1.7) : 0;
+  const rowsProbe = ingredientRows(ctx, { x: pad, width: contentWidth, y: 0, icons: null });
+  const bandProbe = statBand(ctx, { x: pad, width: contentWidth, y: 0 });
+  const bitternessProbe = ibuScale(ctx, { x: pad, width: contentWidth, y: 0 });
+  const colorProbe = colorScale(ctx, { x: pad, width: contentWidth, y: 0, idPrefix: "probe" });
+  const metaHeight = bottomMetaDesiredHeight(ctx, { width: contentWidth, qrSizeMm, showAuthor: true });
+
+  const belowTitle =
+    mm(1.8) +
+    styleProbe.height +
+    gravityHeight +
+    mm(3.6) +
+    (rowsProbe.height > 0 ? rowsProbe.height + mm(4.6) : 0) +
+    (bandProbe.height > 0 ? bandProbe.height + mm(2) : 0) +
+    (bitternessProbe.height > 0 ? bitternessProbe.height + mm(2.6) : 0) +
+    (colorProbe.height > 0 ? colorProbe.height + mm(2.4) : 0) +
+    mm(2.6) +
+    metaHeight;
+
+  const body: string[] = [];
   let y = pad;
   body.push(hRule(pad, widthPx - pad, y + mm(0.5), mm(1)));
-  y += mm(2.4);
+  y = titleTop;
 
-  const title = titleBlock(ctx, { cx, width: contentWidth, maxSizePx: mm(10), minSizePx: mm(5) });
+  const title = titleBlock(ctx, {
+    cx,
+    width: contentWidth,
+    maxSizePx: mm(10),
+    minSizePx: mm(4.6),
+    maxHeightPx: heightPx - pad - titleTop - belowTitle
+  });
   body.push(`<g transform="translate(0 ${y})">${title.svg}</g>`);
   y += title.height + mm(1.8);
 
@@ -180,16 +217,16 @@ const renderL = (ctx: LabelRenderContext): string => {
     y += band.height + mm(2);
   }
 
-  const swatch = colorSwatchBar(ctx, { x: pad, width: contentWidth, y, patternId: "ebc-swatch" });
-  if (swatch.height > 0) {
-    body.push(swatch.svg);
-    y += swatch.height + mm(2.4);
+  const bitterness = ibuScale(ctx, { x: pad, width: contentWidth, y });
+  if (bitterness.height > 0) {
+    body.push(bitterness.svg);
+    y += bitterness.height + mm(2.6);
   }
 
-  const scale = ibuScale(ctx, { x: pad + mm(2), width: contentWidth - mm(4), y });
-  if (scale.height > 0) {
-    body.push(scale.svg);
-    y += scale.height + mm(2.4);
+  const color = colorScale(ctx, { x: pad, width: contentWidth, y, idPrefix: "ebc" });
+  if (color.height > 0) {
+    body.push(color.svg);
+    y += color.height + mm(2.4);
   }
 
   body.push(dottedRule(pad, widthPx - pad, y, Math.max(2, mm(0.25))));
@@ -200,7 +237,7 @@ const renderL = (ctx: LabelRenderContext): string => {
     width: contentWidth,
     y,
     maxHeight: heightPx - pad - y,
-    qrSizeMm: 13,
+    qrSizeMm,
     showAuthor: true
   });
   body.push(meta.svg);

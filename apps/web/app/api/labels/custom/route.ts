@@ -1,39 +1,40 @@
 import { NextResponse } from "next/server";
 
 import { buildLabelFileName, labelOverridesSchema, labelRenderRequestSchema } from "@/features/labels/contracts";
+import { checkLabelRenderRateLimit } from "@/features/labels/rate-limit";
 import { renderA4SheetPdf, renderLabelPdf, renderLabelPng, renderLabelPreviewPng } from "@/features/labels/render";
-import { getOwnedRecipeLabelContext } from "@/features/labels/service";
-import { getSessionUser } from "@/lib/auth";
+import { buildCustomLabelSlots } from "@/features/labels/slots";
 
 export const runtime = "nodejs";
 
-// Генератор наклеек: PNG (1-бит, точная пиксельная сетка под dpi) и PDF
-// (точный физразмер / A4-лист). Доступ — только владелец рецепта.
+// Наклейка без рецепта: все поля приходят из формы (/labels). Рецепта нет —
+// значит нет ни владельца, ни QR: ссылаться не на что. Доступ без логина,
+// поэтому поток растеризации ограничен per-IP.
 
-export async function GET(request: Request, context: { params: Promise<{ recipeId: string }> }) {
-  const { recipeId } = await context.params;
+const resolveClientIp = (request: Request): string => {
+  const forwarded = request.headers.get("x-forwarded-for");
+  if (forwarded) {
+    return forwarded.split(",")[0].trim();
+  }
+  return request.headers.get("x-real-ip") ?? "unknown";
+};
+
+export async function GET(request: Request) {
   const url = new URL(request.url);
   const parsed = labelRenderRequestSchema.safeParse(Object.fromEntries(url.searchParams));
   if (!parsed.success) {
     return NextResponse.json({ error: "INVALID_PARAMS" }, { status: 400 });
   }
   const query = parsed.data;
-  // A4-лист существует только как PDF.
   const format = query.sheet ? "pdf" : query.format;
 
-  const user = await getSessionUser();
-  if (!user) {
-    return NextResponse.json({ error: "AUTH" }, { status: 401 });
+  if (!checkLabelRenderRateLimit(resolveClientIp(request))) {
+    return NextResponse.json({ error: "RATE_LIMITED" }, { status: 429 });
   }
 
   try {
-    // Правки полей приходят теми же query-параметрами; парсим их отдельной
-    // схемой, чтобы не смешивать с параметрами рендера.
     const overrides = labelOverridesSchema.parse(Object.fromEntries(url.searchParams));
-    const { recipe, slots } = await getOwnedRecipeLabelContext(user.id, recipeId, {
-      bottlingDate: query.bottlingDate ?? null,
-      overrides
-    });
+    const slots = buildCustomLabelSlots({ bottlingDate: query.bottlingDate ?? null, overrides });
 
     const renderParams = { template: query.template, preset: query.preset, dpi: query.dpi, slots };
     const body = query.sheet
@@ -45,8 +46,8 @@ export async function GET(request: Request, context: { params: Promise<{ recipeI
           : await renderLabelPng(renderParams);
 
     const fileName = buildLabelFileName({
-      slug: recipe.slug,
-      recipeId: recipe.id,
+      slug: "naklejka",
+      recipeId: "custom",
       preset: query.preset,
       sheet: query.sheet,
       dpi: query.dpi,
@@ -58,16 +59,12 @@ export async function GET(request: Request, context: { params: Promise<{ recipeI
       headers: {
         "Content-Type": format === "pdf" ? "application/pdf" : "image/png",
         "Content-Disposition": `${query.download ? "attachment" : "inline"}; filename="${fileName}"`,
-        // Наклейка зависит от данных рецепта — не кешируем.
         "Cache-Control": "private, no-store",
         "X-Content-Type-Options": "nosniff"
       }
     });
   } catch (error) {
-    if (error instanceof Error && error.message === "NOT_FOUND") {
-      return NextResponse.json({ error: "NOT_FOUND" }, { status: 404 });
-    }
-    console.error("label render failed", error);
+    console.error("custom label render failed", error);
     return NextResponse.json({ error: "LABEL_RENDER_FAILED" }, { status: 500 });
   }
 }
