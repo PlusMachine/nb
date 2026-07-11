@@ -1,5 +1,5 @@
 import { relations, sql } from "drizzle-orm";
-import { type AnyPgColumn, bigserial, boolean, check, doublePrecision, index, integer, jsonb, pgEnum, pgTable, real, text, timestamp, uniqueIndex, uuid, varchar } from "drizzle-orm/pg-core";
+import { type AnyPgColumn, bigserial, boolean, check, doublePrecision, index, integer, jsonb, pgEnum, pgTable, real, smallint, text, timestamp, uniqueIndex, uuid, varchar } from "drizzle-orm/pg-core";
 
 export const userRoleEnum = pgEnum("user_role", ["user", "editor", "moderator", "admin"]);
 export const verificationTypeEnum = pgEnum("verification_type", ["otp", "magic_link", "password_reset", "sms_otp"]);
@@ -50,6 +50,14 @@ export const deviceCommandStatusEnum = pgEnum("device_command_status", ["queued"
 // file-backed в @nb/content и сюда не пишется).
 export const contentArticleTypeEnum = pgEnum("content_article_type", ["guide", "review"]);
 export const contentArticleStatusEnum = pgEnum("content_article_status", ["draft", "published", "archived"]);
+// Витрина мастеров (docs/masters-showcase.md): «мастер» — не роль, а наличие
+// профиля у пользователя. Модель «черновик + опубликованный снапшот»: каждая
+// правка после первой публикации снова уходит на модерацию.
+export const masterReviewStatusEnum = pgEnum("master_review_status", ["draft", "pending", "rejected"]);
+// Отдельный enum (а не переиспользование recipeImageStatusEnum) — статусы фото
+// мастеров и рецептов совпадают по значениям, но это разные домены с разным
+// жизненным циклом; так они не окажутся молча завязаны на один Postgres-тип.
+export const masterImageStatusEnum = pgEnum("master_image_status", ["uploading", "ready", "failed"]);
 
 export const users = pgTable("users", {
   id: uuid("id").defaultRandom().primaryKey(),
@@ -1433,5 +1441,122 @@ export const feedbackRelations = relations(feedback, ({ one }) => ({
   moderator: one(users, {
     fields: [feedback.moderatorId],
     references: [users.id]
+  })
+}));
+
+// Витрина мастеров: profiles (черновик + опубликованный снапшот) → items
+// (изделия) → images (общая галерея работ + фото изделий). См. docs/masters-showcase.md.
+export const masterProfiles = pgTable("master_profiles", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  // Cascade: удалил аккаунт — витрина исчезла (корректно и по ПДн).
+  userId: uuid("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  // Nullable до первого approve: слаг генерится из displayName при первой
+  // публикации транслит-утилитой и дальше остаётся стабильным.
+  slug: varchar("slug", { length: 220 }),
+  displayName: varchar("display_name", { length: 120 }).notNull(),
+  city: varchar("city", { length: 120 }).notNull(),
+  // Ключи из MASTER_SPECIALIZATIONS (features/masters/contracts.ts), не pgEnum —
+  // чтобы добавление специализации не требовало миграции.
+  specializations: text("specializations").array().notNull().default([]),
+  summary: varchar("summary", { length: 200 }).default("").notNull(),
+  about: text("about").default("").notNull(),
+  contactTelegram: varchar("contact_telegram", { length: 200 }),
+  contactPhone: varchar("contact_phone", { length: 200 }),
+  contactEmail: varchar("contact_email", { length: 200 }),
+  contactWebsite: varchar("contact_website", { length: 200 }),
+  craftSince: smallint("craft_since"),
+  reviewStatus: masterReviewStatusEnum("review_status").default("draft").notNull(),
+  isListed: boolean("is_listed").default(true).notNull(),
+  // Денормализованный снапшот последней одобренной версии (профиль + изделия +
+  // упорядоченные ссылки на фото). Публичные страницы читают ТОЛЬКО отсюда —
+  // черновые таблицы ниже видит только владелец/модератор. Тип не завязываем на
+  // apps/web (packages/db не должен знать про feature-слой) — типизация
+  // MasterPublishedSnapshot живёт в apps/web/features/masters/contracts.ts и
+  // применяется на уровне сервиса, как и у остальных jsonb-полей в этом файле.
+  publishedJson: jsonb("published_json").$type<Record<string, unknown>>(),
+  publishedAt: timestamp("published_at", { withTimezone: true }),
+  submittedAt: timestamp("submitted_at", { withTimezone: true }),
+  moderatorId: uuid("moderator_id").references(() => users.id, { onDelete: "set null" }),
+  moderationNote: text("moderation_note"),
+  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull()
+}, (table) => ({
+  userIdUidx: uniqueIndex("master_profiles_user_id_uidx").on(table.userId),
+  slugUidx: uniqueIndex("master_profiles_slug_uidx").on(table.slug),
+  reviewQueueIdx: index("master_profiles_review_status_submitted_at_idx").on(table.reviewStatus, table.submittedAt)
+}));
+
+export const masterItems = pgTable("master_items", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  profileId: uuid("profile_id").notNull().references(() => masterProfiles.id, { onDelete: "cascade" }),
+  title: varchar("title", { length: 160 }).notNull(),
+  description: text("description").default("").notNull(),
+  priceNote: varchar("price_note", { length: 80 }),
+  // Без .references(): как recipes.heroImageId ↔ recipe_images — masterImages
+  // объявлена ниже и ссылается на masterItems, циклический FK не заводим.
+  coverImageId: uuid("cover_image_id"),
+  sortOrder: integer("sort_order").default(0).notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull()
+}, (table) => ({
+  profileSortOrderIdx: index("master_items_profile_id_sort_order_idx").on(table.profileId, table.sortOrder)
+}));
+
+// По образцу recipe_images (storage-варианты original/large/medium/thumb,
+// статус аплоада, soft-delete), плюс профиль/изделие-владелец и sortOrder.
+export const masterImages = pgTable("master_images", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  profileId: uuid("profile_id").notNull().references(() => masterProfiles.id, { onDelete: "cascade" }),
+  // null = общая галерея работ; иначе фото конкретного изделия. При удалении
+  // изделия сервис отвязывает фото (itemId → null), а не удаляет их.
+  itemId: uuid("item_id").references(() => masterItems.id, { onDelete: "set null" }),
+  storageKeyOriginal: text("storage_key_original"),
+  storageKeyLarge: text("storage_key_large"),
+  storageKeyMedium: text("storage_key_medium"),
+  storageKeyThumb: text("storage_key_thumb"),
+  width: integer("width"),
+  height: integer("height"),
+  mimeType: varchar("mime_type", { length: 128 }).notNull(),
+  sizeBytes: integer("size_bytes").notNull(),
+  blurDataUrl: text("blur_data_url"),
+  sortOrder: integer("sort_order").default(0).notNull(),
+  status: masterImageStatusEnum("status").default("uploading").notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
+  deletedAt: timestamp("deleted_at", { withTimezone: true })
+}, (table) => ({
+  profileIdIdx: index("master_images_profile_id_idx").on(table.profileId),
+  itemIdIdx: index("master_images_item_id_idx").on(table.itemId)
+}));
+
+export const masterProfilesRelations = relations(masterProfiles, ({ one, many }) => ({
+  user: one(users, {
+    fields: [masterProfiles.userId],
+    references: [users.id]
+  }),
+  moderator: one(users, {
+    fields: [masterProfiles.moderatorId],
+    references: [users.id]
+  }),
+  items: many(masterItems),
+  images: many(masterImages)
+}));
+
+export const masterItemsRelations = relations(masterItems, ({ one, many }) => ({
+  profile: one(masterProfiles, {
+    fields: [masterItems.profileId],
+    references: [masterProfiles.id]
+  }),
+  images: many(masterImages)
+}));
+
+export const masterImagesRelations = relations(masterImages, ({ one }) => ({
+  profile: one(masterProfiles, {
+    fields: [masterImages.profileId],
+    references: [masterProfiles.id]
+  }),
+  item: one(masterItems, {
+    fields: [masterImages.itemId],
+    references: [masterItems.id]
   })
 }));
