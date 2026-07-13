@@ -442,7 +442,17 @@ export const equipmentProfiles = pgTable("equipment_profiles", {
   grainAbsorptionLPerKg: doublePrecision("grain_absorption_l_per_kg").default(0.75).notNull(),
   coolingShrinkagePct: doublePrecision("cooling_shrinkage_pct").default(4).notNull(),
   mashThicknessLPerKg: doublePrecision("mash_thickness_l_per_kg").default(3).notNull(),
+  // Вода под фальшдном/корзиной: в затирании не участвует, но залить её надо, иначе
+  // солод окажется не покрыт. В кипячение уходит целиком, поэтому это не потеря.
+  mashTunDeadspaceL: doublePrecision("mash_tun_deadspace_l").default(0).notNull(),
+  // Минимум воды в заторнике. У систем с ТЭНом на стенке (напр. «Бавария») ниже него
+  // ТЭН оголяется и горит.
+  minMashVolumeL: doublePrecision("min_mash_volume_l"),
   maxMashVolumeL: doublePrecision("max_mash_volume_l"),
+  // Сколько солода физически влезает в корзину/солодовую трубу. Ограничивает не воду,
+  // а засыпь: без этого пересчёт чужого плотного рецепта молча выдаёт план, который
+  // не сварить — солод просто не помещается.
+  maxGrainKg: doublePrecision("max_grain_kg"),
   maxKettleVolumeL: doublePrecision("max_kettle_volume_l"),
   hopUtilizationFactor: doublePrecision("hop_utilization_factor").default(1).notNull(),
   altitudeM: doublePrecision("altitude_m").default(0).notNull(),
@@ -514,6 +524,11 @@ export const recipes = pgTable("recipes", {
   // сервисной транзакции при сохранении/снятии. Используется для сортировки
   // «Популярные» на витрине /recipes.
   saveCount: integer("save_count").default(0).notNull(),
+  // Сколько раз рецепт скопировали себе ДРУГИЕ пивовары (соц-доказательство
+  // «Скопировали N раз»). Счётчик события: инкремент при копировании чужого
+  // рецепта (см. cloneRecipeFromPublic), удаление копии его не уменьшает.
+  // Копии своих рецептов не считаются.
+  cloneCount: integer("clone_count").default(0).notNull(),
   // «Выбор редакции»: когда рецепт отмечен куратором (роль editor+). NULL = не
   // отмечен. Timestamp (а не boolean) даёт бесплатную сортировку «сначала недавно
   // отмеченные». Это КУРАТОРСКАЯ МЕТКА, а не буст ранжирования — на сортировку
@@ -677,6 +692,9 @@ export const brewBatches = pgTable("brew_batches", {
   recipeId: uuid("recipe_id").references(() => recipes.id, { onDelete: "set null" }),
   status: brewBatchStatusEnum("status").default("planned").notNull(),
   name: varchar("name", { length: 180 }).notNull(),
+  // Порядковый номер варки в паре (userId, recipeId), с 1; назначается при
+  // создании партии и дальше не меняется (см. createBrewBatchFromRecipe).
+  brewNumber: integer("brew_number").notNull(),
   brewPlanSnapshot: jsonb("brew_plan_snapshot").$type<Record<string, unknown>>().default({}).notNull(),
   recipeSnapshot: jsonb("recipe_snapshot").$type<Record<string, unknown>>(),
   equipmentProfileSnapshot: jsonb("equipment_profile_snapshot").$type<Record<string, unknown>>(),

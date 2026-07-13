@@ -1,0 +1,1 @@
+ALTER TABLE "equipment_profiles" ADD COLUMN "max_grain_kg" double precision;

@@ -1,0 +1,2 @@
+ALTER TABLE "equipment_profiles" ADD COLUMN "mash_tun_deadspace_l" double precision DEFAULT 0 NOT NULL;--> statement-breakpoint
+ALTER TABLE "equipment_profiles" ADD COLUMN "min_mash_volume_l" double precision;
