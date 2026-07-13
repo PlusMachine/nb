@@ -20,7 +20,10 @@
   "include": [
     "**/*.ts",
     "**/*.tsx",
-    ".next/types/**/*.ts"
+    ".next-2/types/**/*.ts",
+    ".next-qa/types/**/*.ts",
+    ".next/types/**/*.ts",
+    ".next-admin-check/types/**/*.ts"
   ],
   "exclude": [
     "node_modules"

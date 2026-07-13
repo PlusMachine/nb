@@ -5,6 +5,10 @@ import { fileURLToPath } from "node:url";
 const repoRoot = join(dirname(fileURLToPath(import.meta.url)), "../..");
 
 const nextConfig: NextConfig = {
+  // Несколько dev-серверов на одном чекауте (параллельные сессии) пишут в один
+  // `.next` и затирают друг другу манифесты — роут «исчезает» с 404 на ровном
+  // месте. Второму и последующим серверам дают свой каталог: NEXT_DIST_DIR=.next-2.
+  distDir: process.env.NEXT_DIST_DIR ?? ".next",
   outputFileTracingRoot: repoRoot,
   transpilePackages: ["@nb/ui", "@nb/shared", "@nb/db", "@nb/content", "@nb/brewforge-protocol", "@nb/brewforge-sim", "@nb/push"],
   // web-push — node-библиотека (crypto/https), только серверная: не бандлим, грузим

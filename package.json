@@ -23,7 +23,9 @@
     "seed:articles": "pnpm -F @nb/web run seed:articles",
     "seed:public": "pnpm -F @nb/web run seed:public",
     "firmware:publish": "pnpm -F @nb/web run firmware:publish",
-    "cleanup:verifications": "pnpm -F @nb/web run cleanup:verifications"
+    "cleanup:verifications": "pnpm -F @nb/web run cleanup:verifications",
+    "recompute:recipe-stats": "pnpm -F @nb/web run recompute:recipe-stats",
+    "validate:recipes": "pnpm -F @nb/web run validate:recipes"
   },
   "devDependencies": {
     "@types/node": "^22.10.2",

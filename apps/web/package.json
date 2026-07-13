@@ -15,7 +15,9 @@
     "seed:articles": "TMPDIR=/tmp TEMP=/tmp TMP=/tmp tsx scripts/seed-content-articles.ts",
     "seed:public": "TMPDIR=/tmp TEMP=/tmp TMP=/tmp tsx scripts/seed-public-recipes.ts",
     "firmware:publish": "TMPDIR=/tmp TEMP=/tmp TMP=/tmp tsx scripts/publish-firmware-release.ts",
-    "cleanup:verifications": "TMPDIR=/tmp TEMP=/tmp TMP=/tmp tsx scripts/cleanup-verifications.ts"
+    "cleanup:verifications": "TMPDIR=/tmp TEMP=/tmp TMP=/tmp tsx scripts/cleanup-verifications.ts",
+    "recompute:recipe-stats": "TMPDIR=/tmp TEMP=/tmp TMP=/tmp tsx scripts/recompute-recipe-stats.ts",
+    "validate:recipes": "TMPDIR=/tmp TEMP=/tmp TMP=/tmp tsx scripts/validate-recipe-stats/run.ts"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.699.0",

@@ -15,7 +15,9 @@ export default defineConfig({
   retries: process.env.CI ? 2 : 0,
   reporter: "list",
   use: {
-    baseURL: "http://localhost:3000",
+    // Порт 3000 бывает занят другим dev-сервером (несколько сессий на одном
+    // чекауте) — тогда прогон нацеливают на живой стенд через E2E_BASE_URL.
+    baseURL: process.env.E2E_BASE_URL ?? "http://localhost:3000",
     trace: "on-first-retry"
   },
   projects: [
@@ -28,7 +30,7 @@ export default defineConfig({
   // поднимет собственный next dev, но тогда миграции/сид нужно прогнать заранее (`npm run db:migrate db:seed` из корня).
   webServer: {
     command: "pnpm run dev",
-    url: "http://localhost:3000",
+    url: process.env.E2E_BASE_URL ?? "http://localhost:3000",
     reuseExistingServer: true,
     timeout: 120_000
   }

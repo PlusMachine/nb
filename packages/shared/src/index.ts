@@ -5,6 +5,10 @@ const emptyStringToUndefined = (value: unknown) => value === "" ? undefined : va
 const serverEnvSchema = z.object({
   NODE_ENV: z.enum(["development", "test", "production"]).default("development"),
   DATABASE_URL: z.string().url().default("postgresql://postgres:postgres@localhost:5432/nb"),
+  // Предохранители пула PostgreSQL (packages/db/src/client.ts). Дефолты разумны
+  // для одного монолита; на проде тюнить под размер инстанса БД.
+  DB_POOL_MAX: z.coerce.number().int().positive().default(20),
+  DB_STATEMENT_TIMEOUT_MS: z.coerce.number().int().positive().default(15_000),
   APP_URL: z.string().url().default("http://localhost:3000"),
   AUTH_SECRET: z.string().min(32).default("dev-only-auth-secret-change-me-123456"),
   AUTH_FROM_EMAIL: z.string().email().default("no-reply@localhost.dev"),
@@ -29,6 +33,10 @@ const serverEnvSchema = z.object({
   STORAGE_ACCESS_KEY_ID: z.preprocess(emptyStringToUndefined, z.string().optional()),
   STORAGE_SECRET_ACCESS_KEY: z.preprocess(emptyStringToUndefined, z.string().optional()),
   STORAGE_FORCE_PATH_STYLE: z.coerce.boolean().default(false),
+  // Каталог с бинарниками прошивок BrewForge. Пусто = <корень репо>/storage/firmware
+  // (features/firmware/service.ts). Стор общий для CLI-публикации, веб-загрузки и
+  // раздающего роута — в проде это должен быть постоянный том, не эфемерный ФС.
+  FIRMWARE_STORAGE_DIR: z.preprocess(emptyStringToUndefined, z.string().optional()),
   SMTP_HOST: z.preprocess(emptyStringToUndefined, z.string().optional()),
   SMTP_PORT: z.preprocess(emptyStringToUndefined, z.coerce.number().int().positive().optional()),
   SMTP_USER: z.preprocess(emptyStringToUndefined, z.string().optional()),
@@ -45,6 +53,13 @@ const serverEnvSchema = z.object({
   AUTH_YANDEX_CLIENT_ID: z.preprocess(emptyStringToUndefined, z.string().optional()),
   AUTH_YANDEX_CLIENT_SECRET: z.preprocess(emptyStringToUndefined, z.string().optional()),
   AUTH_CAPTCHA_SECRET: z.preprocess(emptyStringToUndefined, z.string().optional()),
+  // Число доверенных реверс-прокси перед приложением. Клиентский `X-Forwarded-For`
+  // подделывается (бот шлёт случайный IP на каждый запрос и обходит per-IP лимиты),
+  // поэтому реальный IP берём не первым слева, а на этой позиции СПРАВА: последний
+  // элемент проставлен ближайшим прокси, предыдущий — прокси перед ним, и т.д.
+  // 0 = прокси нет (dev): доверять заголовку нельзя, IP берём из соединения.
+  // 1 = один прокси (nginx/Cloudflare), который сам перезаписывает входящий XFF.
+  TRUSTED_PROXY_HOPS: z.coerce.number().int().min(0).default(0),
   // Web-push (Phase 6). Пусто = пуши выключены. Приватный ключ — секрет (сервер/мост).
   VAPID_PUBLIC_KEY: z.preprocess(emptyStringToUndefined, z.string().optional()),
   VAPID_PRIVATE_KEY: z.preprocess(emptyStringToUndefined, z.string().optional()),

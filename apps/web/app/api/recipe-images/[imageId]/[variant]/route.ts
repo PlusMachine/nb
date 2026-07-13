@@ -7,7 +7,7 @@ import { getSessionUser } from "@/lib/auth";
 export const runtime = "nodejs";
 
 export async function GET(
-  _request: Request,
+  request: Request,
   context: { params: Promise<{ imageId: string; variant: string }> }
 ) {
   const { imageId, variant } = await context.params;
@@ -22,7 +22,10 @@ export async function GET(
     const asset = await getRecipeImageAsset({
       imageId,
       variant: parsedVariant.data,
-      viewerId: user?.id ?? null
+      viewerId: user?.id ?? null,
+      // Ключ гостевой страницы пива (/beer/<slug>?k=…) — фото непубличного
+      // рецепта на её обложке грузится этим же ключом.
+      beerShareKey: new URL(request.url).searchParams.get("k")
     });
 
     return new NextResponse(new Uint8Array(asset.body), {
