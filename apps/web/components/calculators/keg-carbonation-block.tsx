@@ -67,7 +67,11 @@ const buildRange = (min: number, max: number, step: number): number[] => {
 
 const TEMPS_C = buildRange(CARBONATION_TEMP_RANGE_C.min, CARBONATION_TEMP_RANGE_C.max, CARBONATION_TEMP_RANGE_C.step);
 const BARS = buildRange(CARBONATION_PRESSURE_RANGE_BAR.min, CARBONATION_PRESSURE_RANGE_BAR.max, CARBONATION_PRESSURE_RANGE_BAR.step);
+const GRID_MIN_BAR = CARBONATION_PRESSURE_RANGE_BAR.min;
 const GRID_MAX_BAR = CARBONATION_PRESSURE_RANGE_BAR.max;
+const GRID_MIN_TEMP_C = CARBONATION_TEMP_RANGE_C.min;
+const GRID_MAX_TEMP_C = CARBONATION_TEMP_RANGE_C.max;
+const EPS = 1e-9;
 
 // Заранее посчитанная сетка: объёмы CO2 для каждой пары (T, P).
 const GRID: Cell[][] = TEMPS_C.map((tempC, row) =>
@@ -82,8 +86,19 @@ const pressureLabel = (bar: number, unit: Unit): string =>
 
 const pressureUnitLabel = (unit: Unit): string => (unit === "metric" ? "бар" : "PSI");
 
-const pressureCeilingLabel = (unit: Unit): string =>
-  unit === "metric" ? `${fmt(GRID_MAX_BAR, 1)} бар` : `${fmt(barToPsi(GRID_MAX_BAR), 0)} PSI`;
+const pressureBoundLabel = (bar: number, unit: Unit): string =>
+  unit === "metric" ? `${fmt(bar, 1)} бар` : `${fmt(barToPsi(bar), 0)} PSI`;
+
+const tempRangeLabel = (unit: Unit): string => {
+  const low = unit === "metric" ? fmt(GRID_MIN_TEMP_C, 0) : String(Math.round(celsiusToFahrenheit(GRID_MIN_TEMP_C)));
+  return `${low}…${tempLabel(GRID_MAX_TEMP_C, unit)}`;
+};
+
+// Результат считается по непрерывной формуле и может лежать за краями сетки — по температуре
+// (строк для неё нет) или по давлению (нет колонки). В этом случае показывать «ближайшую»
+// ячейку нельзя: она прилипнет к краю таблицы и соврёт.
+const tempInGrid = (tempC: number): boolean =>
+  tempC >= GRID_MIN_TEMP_C - EPS && tempC <= GRID_MAX_TEMP_C + EPS;
 
 // Мемоизированная ячейка: перерисовывается только та ячейка, у которой реально
 // изменился хотя бы один из этих примитивов (не вся сетка при каждом движении мыши).
@@ -170,19 +185,28 @@ export function KegCarbonationBlock({
   const resultPsi = tempC != null && volumes != null && Number.isFinite(volumes) ? kegPressurePsi(tempC, volumes) : null;
   const resultUnreachable = resultPsi != null && resultPsi <= 0;
   const resultBar = resultPsi != null ? psiToBar(resultPsi) : null;
-  // Ответ может лежать выше потолка сетки — тогда точное давление есть в расчёте, а ячейки
-  // в таблице для него нет.
-  const resultAboveGrid = resultBar != null && resultBar > GRID_MAX_BAR + 1e-9;
   const resultValue = resultPsi != null && !resultUnreachable
     ? unit === "metric"
       ? fmt(psiToBar(resultPsi), 2)
       : fmt(resultPsi, 1)
     : null;
 
+  // Ответ может не попадать в сетку: температура вне строк (например, −5 °C или комнатная)
+  // либо давление вне колонок. Расчёт при этом верный — нет только ячейки под него.
+  const outsideGrid = resultBar != null && !resultUnreachable && tempC != null
+    ? !tempInGrid(tempC)
+      ? `Температура вне таблицы (${tempRangeLabel(unit)}).`
+      : resultBar > GRID_MAX_BAR + EPS
+        ? `Выше ${pressureBoundLabel(GRID_MAX_BAR, unit)} — за пределами таблицы.`
+        : resultBar < GRID_MIN_BAR - EPS
+          ? `Ниже ${pressureBoundLabel(GRID_MIN_BAR, unit)} — за пределами таблицы.`
+          : null
+    : null;
+
   // Ячейка, ближайшая к результату расчёта — помечаем пунктиром. Только когда результат
-  // попадает в диапазон таблицы (иначе метка «прилипла» бы к последней колонке и врала).
-  const nearestCell = resultPsi != null && !resultUnreachable && !resultAboveGrid && tempC != null
-    ? { row: nearestIndex(TEMPS_C, tempC), col: nearestIndex(BARS, psiToBar(resultPsi)) }
+  // целиком попадает в сетку: иначе метка «прилипла» бы к краю таблицы и врала.
+  const nearestCell = resultBar != null && !resultUnreachable && outsideGrid == null && tempC != null
+    ? { row: nearestIndex(TEMPS_C, tempC), col: nearestIndex(BARS, resultBar) }
     : null;
 
   const active = hover ?? pinned;
@@ -333,10 +357,8 @@ export function KegCarbonationBlock({
                 <p className="text-2xl font-semibold leading-tight tabular-nums text-foreground">
                   {resultValue} <span className="text-base font-medium text-muted-foreground">{pressureUnitLabel(unit)}</span>
                 </p>
-                {resultAboveGrid ? (
-                  <p className="mt-0.5 text-xs leading-5 text-warning-subtle-foreground">
-                    Выше {pressureCeilingLabel(unit)} — за пределами таблицы.
-                  </p>
+                {outsideGrid ? (
+                  <p className="mt-0.5 text-xs leading-5 text-warning-subtle-foreground">{outsideGrid}</p>
                 ) : null}
               </div>
             ) : (

@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { filterNumericInputText } from "../components/shared/numeric-input";
+import { filterNumericInputText, stepNumericValue } from "../components/shared/numeric-input";
 
 describe("filterNumericInputText", () => {
   it("keeps plain digits as-is", () => {
@@ -42,5 +42,35 @@ describe("filterNumericInputText", () => {
 
   it("returns empty string for empty input", () => {
     expect(filterNumericInputText("")).toBe("");
+  });
+});
+
+describe("stepNumericValue", () => {
+  it("steps up and down by the given step", () => {
+    expect(stepNumericValue("23", { direction: 1, step: 1 })).toBe("24");
+    expect(stepNumericValue("60", { direction: -1, step: 5 })).toBe("55");
+  });
+
+  it("reads the value typed with a comma separator", () => {
+    expect(stepNumericValue("72,5", { direction: 1, step: 1 })).toBe("73.5");
+  });
+
+  it("keeps the step's precision instead of a float tail", () => {
+    expect(stepNumericValue("0.1", { direction: 1, step: 0.2 })).toBe("0.3");
+  });
+
+  it("clamps to min and max", () => {
+    expect(stepNumericValue("100", { direction: 1, step: 1, min: 1, max: 100 })).toBe(null);
+    expect(stepNumericValue("1.5", { direction: -1, step: 1, min: 1, max: 100 })).toBe("1");
+  });
+
+  it("starts from min when the field is empty", () => {
+    expect(stepNumericValue("", { direction: 1, step: 1, min: 1 })).toBe("1");
+    expect(stepNumericValue("", { direction: -1, step: 1, min: 1 })).toBe("1");
+    expect(stepNumericValue("", { direction: 1, step: 5 })).toBe("5");
+  });
+
+  it("returns null when the value would not change", () => {
+    expect(stepNumericValue("100", { direction: 1, step: 1, max: 100 })).toBe(null);
   });
 });

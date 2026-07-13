@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import {
   barToPsi,
+  CARBONATION_TEMP_RANGE_C,
   carbonationStyleById,
   celsiusToFahrenheit,
   co2Zone,
@@ -50,6 +51,31 @@ describe("kegPressurePsi / kegCo2Volumes", () => {
 
   it("недостижимая цель (тёплое пиво + низкие объёмы) → давление ≤ 0", () => {
     expect(kegPressurePsi(20, 0.5)).toBeLessThanOrEqual(0);
+  });
+
+  it("сабзеро: при −2 °C на те же 2.4 об. нужно заметно меньше давления, чем при 0 °C", () => {
+    // Карбонизация во время холодного созревания идёт при −1…0 °C, и разница не косметическая:
+    // ~0.50 бар при 0 °C против ~0.38 бар при −2 °C. Взять строку 0 °C для пива при −2 °C —
+    // это перекарбонизация примерно на 0.2 объёма.
+    expect(psiToBar(kegPressurePsi(0, 2.4))).toBeCloseTo(0.501, 2);
+    expect(psiToBar(kegPressurePsi(-2, 2.4))).toBeCloseTo(0.383, 2);
+    expect(kegCo2Volumes(-2, kegPressurePsi(0, 2.4))).toBeGreaterThan(2.55);
+  });
+
+  it("обратная формула остаётся точной инверсией и ниже нуля", () => {
+    for (const tempC of [-2, -1]) {
+      for (const pressurePsi of [5, 10, 20]) {
+        const volumes = kegCo2Volumes(tempC, pressurePsi);
+        expect(kegPressurePsi(tempC, volumes)).toBeCloseTo(pressurePsi, 6);
+      }
+    }
+  });
+});
+
+describe("диапазоны сетки", () => {
+  it("температурная шкала покрывает холодное созревание (−2 °C) и шпунтование (20 °C)", () => {
+    expect(CARBONATION_TEMP_RANGE_C.min).toBe(-2);
+    expect(CARBONATION_TEMP_RANGE_C.max).toBe(20);
   });
 });
 
