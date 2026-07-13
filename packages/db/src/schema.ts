@@ -79,11 +79,20 @@ export const users = pgTable("users", {
   // фиксировалось (например, dev-автологин или аккаунт до внедрения фиксации).
   consentAcceptedAt: timestamp("consent_accepted_at", { withTimezone: true }),
   consentVersion: varchar("consent_version", { length: 32 }),
+  // Блокировка модератором: аккаунт остаётся в БД, но вход запрещён.
+  blockedAt: timestamp("blocked_at", { withTimezone: true }),
+  blockedReason: text("blocked_reason"),
+  blockedByUserId: uuid("blocked_by_user_id").references((): AnyPgColumn => users.id, { onDelete: "set null" }),
+  // Обезличивание вместо удаления: ПДн затираются, строка остаётся — иначе
+  // рвутся ссылки (авторство, аудит) и заблокированный заново регистрируется
+  // по тому же e-mail. NULL = аккаунт живой.
+  anonymizedAt: timestamp("anonymized_at", { withTimezone: true }),
   createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull()
 }, (table) => ({
   emailIdx: uniqueIndex("users_email_uidx").on(table.email),
-  phoneIdx: uniqueIndex("users_phone_uidx").on(table.phone)
+  phoneIdx: uniqueIndex("users_phone_uidx").on(table.phone),
+  blockedAtIdx: index("users_blocked_at_idx").on(table.blockedAt)
 }));
 
 export const sessions = pgTable("sessions", {
@@ -154,11 +163,28 @@ export const systemCurrencyRates = pgTable("system_currency_rates", {
   updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull()
 });
 
+// Аудит-лог административных действий (блокировки, скрытие рецептов/изделий,
+// слияния каталога). IP и User-Agent сюда НЕ пишутся сознательно: это ПДн
+// (152-ФЗ), а журнал модерации в них не нуждается.
 export const systemEvents = pgTable("system_events", {
   id: uuid("id").defaultRandom().primaryKey(),
-  kind: varchar("kind", { length: 80 }).notNull(),
+  // NULL = действие системы/CLI-скрипта, а не живого пользователя.
+  actorUserId: uuid("actor_user_id").references(() => users.id, { onDelete: "set null" }),
+  // Снапшот e-mail на момент действия: аккаунт актора мог смениться или пропасть.
+  // При обезличивании актора снапшот затирается (ПДн), читаемость журнала держит
+  // actor_user_id: строка users остаётся живой.
+  actorEmail: varchar("actor_email", { length: 320 }),
+  action: varchar("action", { length: 80 }).notNull(),
+  entityType: varchar("entity_type", { length: 40 }),
+  entityId: varchar("entity_id", { length: 64 }),
+  summary: text("summary"),
+  payload: jsonb("payload").$type<Record<string, unknown>>(),
   createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull()
-});
+}, (table) => ({
+  actionCreatedAtIdx: index("system_events_action_created_at_idx").on(table.action, table.createdAt.desc()),
+  entityIdx: index("system_events_entity_idx").on(table.entityType, table.entityId),
+  createdAtIdx: index("system_events_created_at_idx").on(table.createdAt.desc())
+}));
 
 export const ingredientFamilies = pgTable("ingredient_families", {
   id: uuid("id").defaultRandom().primaryKey(),
@@ -499,6 +525,12 @@ export const recipes = pgTable("recipes", {
   // рецептов. Self-FK с ON DELETE SET NULL: удаление источника не каскадит на
   // клон, лишь рвёт связь. НЕ путать с recipeFamilyId+versionNumber (версии своего).
   clonedFromRecipeId: uuid("cloned_from_recipe_id").references((): AnyPgColumn => recipes.id, { onDelete: "set null" }),
+  // Скрытие модератором: рецепт пропадает с витрины, но остаётся у автора и в
+  // своих партиях. Ортогонально publicationState — автор не может снять метку,
+  // сняв и вернув публикацию.
+  hiddenAt: timestamp("hidden_at", { withTimezone: true }),
+  hiddenReason: text("hidden_reason"),
+  hiddenByUserId: uuid("hidden_by_user_id").references(() => users.id, { onDelete: "set null" }),
   createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull()
 }, (table) => ({
@@ -520,7 +552,8 @@ export const recipes = pgTable("recipes", {
   ratingBayesIdx: index("recipes_rating_bayes_idx").on(table.ratingBayes),
   saveCountIdx: index("recipes_save_count_idx").on(table.saveCount),
   featuredAtIdx: index("recipes_featured_at_idx").on(table.featuredAt),
-  clonedFromIdx: index("recipes_cloned_from_idx").on(table.clonedFromRecipeId)
+  clonedFromIdx: index("recipes_cloned_from_idx").on(table.clonedFromRecipeId),
+  hiddenAtIdx: index("recipes_hidden_at_idx").on(table.hiddenAt)
 }));
 
 export const recipeIngredients = pgTable("recipe_ingredients", {
@@ -656,7 +689,11 @@ export const brewBatches = pgTable("brew_batches", {
   // выполнен» и старты таймеров, индексированные стабильным id шага из плана.
   // Мутабельное состояние варки (в отличие от иммутабельного brew_plan_snapshot).
   brewDayProgress: jsonb("brew_day_progress").$type<Record<string, unknown>>().default({}).notNull(),
+  // Заметки о варке: ведутся с подготовки и до конца, живут на всех этапах.
   notes: text("notes"),
+  // Дегустация: пишется, когда пиво готово (акт «Итог»). Отдельная колонка, а не
+  // переиспользование notes — иначе дегустация затирает журнал варочного дня.
+  tastingNotes: text("tasting_notes"),
   plannedFor: timestamp("planned_for", { withTimezone: true }),
   startedAt: timestamp("started_at", { withTimezone: true }),
   completedAt: timestamp("completed_at", { withTimezone: true }),
@@ -1496,10 +1533,16 @@ export const masterItems = pgTable("master_items", {
   // объявлена ниже и ссылается на masterItems, циклический FK не заводим.
   coverImageId: uuid("cover_image_id"),
   sortOrder: integer("sort_order").default(0).notNull(),
+  // Точечное скрытие модератором: снять одно изделие с витрины, не отправляя
+  // весь профиль обратно на модерацию.
+  hiddenAt: timestamp("hidden_at", { withTimezone: true }),
+  hiddenReason: text("hidden_reason"),
+  hiddenByUserId: uuid("hidden_by_user_id").references(() => users.id, { onDelete: "set null" }),
   createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull()
 }, (table) => ({
-  profileSortOrderIdx: index("master_items_profile_id_sort_order_idx").on(table.profileId, table.sortOrder)
+  profileSortOrderIdx: index("master_items_profile_id_sort_order_idx").on(table.profileId, table.sortOrder),
+  hiddenAtIdx: index("master_items_hidden_at_idx").on(table.hiddenAt)
 }));
 
 // По образцу recipe_images (storage-варианты original/large/medium/thumb,
@@ -1521,12 +1564,18 @@ export const masterImages = pgTable("master_images", {
   blurDataUrl: text("blur_data_url"),
   sortOrder: integer("sort_order").default(0).notNull(),
   status: masterImageStatusEnum("status").default("uploading").notNull(),
+  // Скрытие модератором — отдельно от deletedAt (soft-delete владельцем):
+  // владелец не должен «расскрывать» фото, удалив и загрузив его заново.
+  hiddenAt: timestamp("hidden_at", { withTimezone: true }),
+  hiddenReason: text("hidden_reason"),
+  hiddenByUserId: uuid("hidden_by_user_id").references(() => users.id, { onDelete: "set null" }),
   createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
   deletedAt: timestamp("deleted_at", { withTimezone: true })
 }, (table) => ({
   profileIdIdx: index("master_images_profile_id_idx").on(table.profileId),
-  itemIdIdx: index("master_images_item_id_idx").on(table.itemId)
+  itemIdIdx: index("master_images_item_id_idx").on(table.itemId),
+  hiddenAtIdx: index("master_images_hidden_at_idx").on(table.hiddenAt)
 }));
 
 export const masterProfilesRelations = relations(masterProfiles, ({ one, many }) => ({

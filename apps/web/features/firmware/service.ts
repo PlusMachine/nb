@@ -56,8 +56,8 @@ function findRepoRoot(): string {
 
 /** Абсолютный корень хранилища прошивок. */
 export function firmwareStorageDir(): string {
-  const fromEnv = process.env.FIRMWARE_STORAGE_DIR;
-  if (fromEnv && fromEnv.length > 0) return path.resolve(fromEnv);
+  const fromEnv = parseServerEnv(process.env).FIRMWARE_STORAGE_DIR;
+  if (fromEnv) return path.resolve(fromEnv);
   return path.join(findRepoRoot(), "storage", "firmware");
 }
 

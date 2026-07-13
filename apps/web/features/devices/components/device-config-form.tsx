@@ -15,7 +15,7 @@
 //
 //  Секреты/токены здесь не фигурируют (конфиг несекретный); ошибки — по кодам.
 // =============================================================================
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import {
   CONFIG_FIELD_RANGES,
@@ -27,11 +27,13 @@ import {
 } from "@nb/brewforge-protocol";
 import { Button, Card, Input, SliderScaffold } from "@nb/ui";
 
+import { NumericInput } from "@/components/shared/numeric-input";
 import {
   applyProfileAction,
   saveProfileAction,
   type DeviceProfileView
 } from "@/features/devices/actions";
+import { parseDecimalInput } from "@/features/forms/numeric-validation";
 
 // --- Перевод доменных кодов ошибок (config-route + profiles) в RU-текст. -------
 const ERROR_TEXT: Record<string, string> = {
@@ -581,6 +583,21 @@ function NumberControl({
   value: number;
   onChange: (value: number) => void;
 }) {
+  // Текстовый драфт хранится отдельно от числового value: NumericInput не
+  // конвертирует "," → "." до blur, а прямая привязка value=String(value) сбивала бы
+  // курсор/недописанное число на каждый ререндер. Ресинк из внешнего value — только
+  // когда изменение пришло НЕ из этого поля (слайдер, сброс формы, применение профиля):
+  // сверяем с lastEmittedRef.
+  const [text, setText] = useState(() => (Number.isFinite(value) ? String(value) : ""));
+  const lastEmittedRef = useRef<number | null>(Number.isFinite(value) ? value : null);
+
+  useEffect(() => {
+    if (value !== lastEmittedRef.current) {
+      setText(Number.isFinite(value) ? String(value) : "");
+      lastEmittedRef.current = Number.isFinite(value) ? value : null;
+    }
+  }, [value]);
+
   return (
     <div className="flex flex-col gap-1.5">
       <div className="flex items-baseline justify-between gap-2">
@@ -588,17 +605,21 @@ function NumberControl({
           {label}
           {unit ? <span className="text-muted-foreground"> ({unit})</span> : null}
         </span>
-        <Input
-          type="number"
+        <NumericInput
           min={min}
           max={max}
           step={step}
-          value={Number.isFinite(value) ? value : ""}
+          allowNegative={min < 0}
+          value={text}
           onChange={(e) => {
-            const n = Number(e.target.value);
-            if (!Number.isNaN(n)) onChange(n);
+            setText(e.target.value);
+            const parsed = parseDecimalInput(e.target.value);
+            if (parsed != null && Number.isFinite(parsed)) {
+              lastEmittedRef.current = parsed;
+              onChange(parsed);
+            }
           }}
-          className="h-8 w-24 text-right"
+          className="h-8 w-24 rounded-md border border-input bg-card px-2 text-right text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-ring"
         />
       </div>
       <SliderScaffold

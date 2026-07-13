@@ -138,7 +138,9 @@ export function DialogCloseButton({
         context?.requestClose();
       }}
       className={cn(
-        "flex h-8 w-8 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-accent hover:text-foreground",
+        // h-11 w-11 — тач-таргет ≥44px (мобайл); иконка внутри остаётся h-4 w-4,
+        // растёт только кликабельная зона.
+        "flex h-11 w-11 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-accent hover:text-foreground",
         className
       )}
       {...props}

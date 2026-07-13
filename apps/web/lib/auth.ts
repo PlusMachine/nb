@@ -4,6 +4,7 @@ import { LEGAL_DOC_VERSION } from "./legal-meta";
 import { sendSms } from "./sms";
 
 import {
+  ACCOUNT_BLOCKED_ERROR,
   assertRateLimit,
   completeEmailSignIn,
   completePhoneSignIn,
@@ -15,6 +16,7 @@ import {
   issueVerification,
   linkOAuthAccount,
   normalizePhone,
+  registerWithPassword,
   revokeSession,
   setPassword,
   signInWithPassword,
@@ -85,7 +87,16 @@ export const getSessionUser = async () => {
   }
   // Гостевой просмотр в dev: автологин намеренно отключён до возврата в аккаунт.
   if (devAuthEmail && !cookieStore.get(DEV_GUEST_COOKIE)) {
-    return completeEmailSignIn({ email: devAuthEmail });
+    try {
+      return await completeEmailSignIn({ email: devAuthEmail });
+    } catch (error) {
+      // Заблокированный/обезличенный dev-аккаунт: автологин обязан уважать бан,
+      // иначе забаненного пользователя нельзя ни проверить, ни воспроизвести.
+      if (error instanceof Error && error.message === ACCOUNT_BLOCKED_ERROR) {
+        return null;
+      }
+      throw error;
+    }
   }
   return null;
 };
@@ -223,7 +234,9 @@ export const passwordLogin = async (email: string, password: string) => {
 
 export const passwordSignup = async (email: string, password: string, consent?: boolean) => {
   assertRussianEmailDomain(email);
-  await setPassword({ email, password, consent: consentInput(consent) });
+  // registerWithPassword, а не setPassword: у существующего аккаунта пароль
+  // перезаписывать нельзя (иначе регистрация на чужой e-mail = захват учётки).
+  await registerWithPassword({ email, password, consent: consentInput(consent) });
   await passwordLogin(email, password);
 };
 

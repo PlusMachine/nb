@@ -50,3 +50,37 @@ export type FirmwareManifest =
         notes: string;
       };
     };
+
+// Клиентская часть админ-раздела «Прошивки». Живёт здесь, а не в admin.ts:
+// тот тянет @nb/db, и импорт из клиентского компонента утащил бы pg в бандл.
+
+export const FIRMWARE_UPLOAD_MAX_BYTES = 8 * 1024 * 1024;
+
+export const FIRMWARE_UPLOAD_ACCEPT = ".bin";
+
+export type FirmwareReleaseStatus = "latest" | "published" | "yanked" | "draft";
+
+export const firmwareReleaseStatusLabels: Record<FirmwareReleaseStatus, string> = {
+  latest: "Актуальный",
+  published: "Опубликован",
+  yanked: "Отозван",
+  draft: "Черновик"
+};
+
+export type AdminFirmwareRelease = FirmwareReleaseDto & {
+  status: FirmwareReleaseStatus;
+  statusLabel: string;
+  /** Кто опубликовал (из журнала); null — публикация из CLI или до появления журнала. */
+  publishedByName: string | null;
+};
+
+/** «2.04 МБ» — размер образа в списке релизов. */
+export const formatFirmwareSize = (bytes: number): string => {
+  if (bytes < 1024) {
+    return `${bytes} Б`;
+  }
+  if (bytes < 1024 * 1024) {
+    return `${(bytes / 1024).toFixed(1)} КБ`;
+  }
+  return `${(bytes / (1024 * 1024)).toFixed(2)} МБ`;
+};

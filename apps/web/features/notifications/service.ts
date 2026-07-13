@@ -44,12 +44,21 @@ export async function removeSubscription(userId: string, endpoint: string): Prom
     .where(and(eq(pushSubscriptions.userId, userId), eq(pushSubscriptions.endpoint, endpoint)));
 }
 
-/** Есть ли у пользователя хотя бы одна активная подписка (для UI-состояния). */
-export async function hasSubscription(userId: string): Promise<boolean> {
+/**
+ * Есть ли у пользователя активная подписка (для UI-состояния тумблера).
+ * С `endpoint` — проверка конкретного браузера: только его строка означает, что
+ * пуши в этот браузер дойдут. Подписку сносит блокировка аккаунта, поэтому
+ * браузерный PushSubscription живёт дольше строки в БД.
+ */
+export async function hasSubscription(userId: string, endpoint?: string): Promise<boolean> {
   const [row] = await db
     .select({ id: pushSubscriptions.id })
     .from(pushSubscriptions)
-    .where(eq(pushSubscriptions.userId, userId))
+    .where(
+      endpoint
+        ? and(eq(pushSubscriptions.userId, userId), eq(pushSubscriptions.endpoint, endpoint))
+        : eq(pushSubscriptions.userId, userId)
+    )
     .limit(1);
   return Boolean(row);
 }

@@ -31,7 +31,7 @@ export function DropdownMenu({ trigger, items, align = "start", "aria-label": ar
           sideOffset={6}
           collisionPadding={8}
           aria-label={ariaLabel}
-          className="z-[110] min-w-[10rem] rounded-xl border border-border bg-popover text-popover-foreground p-1 shadow-lg outline-none"
+          className="z-[110] min-w-[10rem] max-h-[var(--radix-dropdown-menu-content-available-height)] overflow-y-auto rounded-xl border border-border bg-popover text-popover-foreground p-1 shadow-lg outline-none"
         >
           {items.map((item) => (
             <RadixDropdownMenu.Item

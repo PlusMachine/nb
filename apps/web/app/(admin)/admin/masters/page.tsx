@@ -1,5 +1,8 @@
 import Link from "next/link";
 
+import { Badge, type BadgeTone } from "@nb/ui";
+import { AdminFilterTabs, type AdminFilterTab } from "@/components/admin/admin-filter-tabs";
+import { AdminPageHeader } from "@/components/admin/admin-page-header";
 import {
   MASTER_PUBLISHED_LABEL,
   masterReviewStatusLabels,
@@ -28,10 +31,10 @@ const EMPTY_LABELS: Record<MasterQueueStatus, string> = {
   rejected: "Отклонённых заявок нет."
 };
 
-const reviewStatusBadgeClassName: Record<MasterReviewStatus, string> = {
-  draft: "bg-muted text-muted-foreground",
-  pending: "bg-primary/10 text-primary",
-  rejected: "bg-destructive-subtle text-destructive-subtle-foreground"
+const reviewStatusTones: Record<MasterReviewStatus, BadgeTone> = {
+  draft: "neutral",
+  pending: "info",
+  rejected: "danger"
 };
 
 const formatDate = (value: Date) =>
@@ -49,32 +52,23 @@ export default async function AdminMastersPage({
 
   const items = await listMasterModerationQueue({ id: user.id, role: user.role }, { status: activeStatus });
 
-  return (
-    <section className="space-y-4">
-      <h1 className="text-xl font-semibold">Мастера</h1>
+  // Счётчик показываем только у активного таба: очередь грузится по одному
+  // статусу за раз, считать остальные — три лишних запроса на каждый заход.
+  const tabs: AdminFilterTab[] = MASTER_QUEUE_STATUSES.map((value) => ({
+    key: value,
+    label: TAB_LABELS[value],
+    href: value === "pending" ? "/admin/masters" : `/admin/masters?status=${value}`,
+    count: value === activeStatus ? items.length : undefined
+  }));
 
-      <nav className="flex flex-wrap gap-2 text-sm">
-        {MASTER_QUEUE_STATUSES.map((value) => {
-          const active = value === activeStatus;
-          const href = value === "pending" ? "/admin/masters" : `/admin/masters?status=${value}`;
-          return (
-            <Link
-              key={value}
-              href={href}
-              className={`rounded-full border px-3 py-1 transition-colors ${
-                active
-                  ? "border-primary bg-primary text-primary-foreground"
-                  : "border-border bg-card text-muted-foreground hover:text-foreground"
-              }`}
-            >
-              {TAB_LABELS[value]}
-            </Link>
-          );
-        })}
-      </nav>
+  return (
+    <section className="space-y-5">
+      <AdminPageHeader title="Маркет" />
+
+      <AdminFilterTabs label="Статусы" tabs={tabs} activeKey={activeStatus} />
 
       {items.length === 0 ? (
-        <p className="rounded-lg border border-dashed p-6 text-center text-sm text-muted-foreground">
+        <p className="rounded-lg border border-dashed border-border p-8 text-center text-sm text-muted-foreground">
           {EMPTY_LABELS[activeStatus]}
         </p>
       ) : (
@@ -95,27 +89,21 @@ function MasterQueueCard({ item, activeStatus }: { item: MasterProfileDto; activ
   return (
     <Link
       href={`/admin/masters/${item.id}`}
-      className="block space-y-2 rounded-lg border p-4 transition-colors hover:bg-accent"
+      className="block space-y-2 rounded-lg border border-border bg-card p-4 transition-colors hover:bg-accent"
     >
       <div className="flex flex-wrap items-center justify-between gap-2">
         <h2 className="font-semibold text-foreground">{item.displayName}</h2>
-        <div className="flex flex-wrap items-center gap-1.5 text-xs">
+        <div className="flex flex-wrap items-center gap-1.5">
           {isPublishedTab ? (
-            <span className="rounded-full bg-success-subtle px-2 py-0.5 font-medium text-success-subtle-foreground">
-              {MASTER_PUBLISHED_LABEL}
-            </span>
+            <Badge size="sm" tone="success">{MASTER_PUBLISHED_LABEL}</Badge>
           ) : (
-            <span className={`rounded-full px-2 py-0.5 font-medium ${reviewStatusBadgeClassName[item.reviewStatus]}`}>
+            <Badge size="sm" tone={reviewStatusTones[item.reviewStatus]}>
               {masterReviewStatusLabels[item.reviewStatus]}
-            </span>
+            </Badge>
           )}
-          {isPublishedTab && !item.isListed ? (
-            <span className="rounded-full bg-muted px-2 py-0.5 font-medium text-muted-foreground">Скрыт</span>
-          ) : null}
+          {isPublishedTab && !item.isListed ? <Badge size="sm">Скрыт</Badge> : null}
           {isPublishedTab && item.reviewStatus === "pending" ? (
-            <span className="rounded-full bg-warning-subtle px-2 py-0.5 font-medium text-warning-subtle-foreground">
-              Правки на модерации
-            </span>
+            <Badge size="sm" tone="warning">Правки на модерации</Badge>
           ) : null}
         </div>
       </div>

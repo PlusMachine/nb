@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import { z } from "zod";
 
+import { MasterContentModeration } from "@/components/masters/admin/master-content-moderation";
 import { MasterModerationPanel } from "@/components/masters/admin/master-moderation-panel";
 import { MasterPageView } from "@/components/masters/public/master-page-view";
 import { getMasterProfileForModeration } from "@/features/masters/service";
@@ -34,11 +35,13 @@ export default async function AdminMasterModerationPage({
     throw error;
   }
 
-  const { profile, previewSnapshot } = data;
+  const { profile, items, images, previewSnapshot } = data;
 
   return (
     <section className="space-y-6">
       <MasterModerationPanel profile={profile} />
+
+      <MasterContentModeration items={items} images={images} />
 
       <div className="space-y-2">
         <span className="inline-flex items-center rounded-full bg-muted px-2.5 py-1 text-xs font-medium text-muted-foreground">

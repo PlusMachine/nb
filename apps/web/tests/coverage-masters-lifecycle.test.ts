@@ -12,14 +12,26 @@ vi.mock("server-only", () => ({}));
 
 type Row = Record<string, any>;
 
-const { store, ids } = vi.hoisted(() => ({
-  store: {
+const { store, ids, ensureUser } = vi.hoisted(() => {
+  const store = {
+    users: [] as Row[],
     masterProfiles: [] as Row[],
     masterItems: [] as Row[],
     masterImages: [] as Row[]
-  },
-  ids: { counter: 0, clock: 0 }
-}));
+  };
+
+  // FK master_profiles.user_id → users.id: витрины без владельца в БД не бывает.
+  // Публичный предикат (features/masters/visibility.ts) джойнит владельца, поэтому
+  // мок обязан держать тот же инвариант — иначе тесты разъедутся с реальной БД.
+  const ensureUser = (userId: string) => {
+    if (!userId || store.users.some((u: Row) => u.id === userId)) {
+      return;
+    }
+    store.users.push({ id: userId, displayName: userId, blockedAt: null, anonymizedAt: null });
+  };
+
+  return { store, ids: { counter: 0, clock: 0 }, ensureUser };
+});
 
 vi.mock("@nb/db", () => {
   const col = (table: string, field: string) => ({ __col: true as const, table, field });
@@ -46,6 +58,15 @@ vi.mock("@nb/db", () => {
     }
     if (cond.kind === "isNull") {
       return row[cond.col.field] === null || row[cond.col.field] === undefined;
+    }
+    if (cond.kind === "inArray") {
+      // Подзапрос (db.select(...).from(...).where(...)) — так публичный предикат
+      // отбирает витрины живых владельцев: user_id in (select id from users ...).
+      const sub = cond.values;
+      const allowed = store[sub.table as keyof typeof store]
+        .filter((r: Row) => matchWhere(r, sub.cond))
+        .map((r: Row) => r[sub.field]);
+      return allowed.includes(row[cond.col.field]);
     }
     return true;
   };
@@ -132,11 +153,17 @@ vi.mock("@nb/db", () => {
       base.moderatorId = base.moderatorId ?? null;
       base.moderationNote = base.moderationNote ?? null;
     }
+    if (tableName === "masterProfiles") {
+      ensureUser(base.userId);
+    }
     if (tableName === "masterItems") {
       base.description = base.description ?? "";
       base.priceNote = base.priceNote ?? null;
       base.coverImageId = base.coverImageId ?? null;
       base.sortOrder = base.sortOrder ?? 0;
+      base.hiddenAt = base.hiddenAt ?? null;
+      base.hiddenReason = base.hiddenReason ?? null;
+      base.hiddenByUserId = base.hiddenByUserId ?? null;
     }
     if (tableName === "masterImages") {
       base.itemId = base.itemId ?? null;
@@ -149,6 +176,9 @@ vi.mock("@nb/db", () => {
       base.blurDataUrl = base.blurDataUrl ?? null;
       base.sortOrder = base.sortOrder ?? 0;
       base.status = base.status ?? "uploading";
+      base.hiddenAt = base.hiddenAt ?? null;
+      base.hiddenReason = base.hiddenReason ?? null;
+      base.hiddenByUserId = base.hiddenByUserId ?? null;
       base.deletedAt = base.deletedAt ?? null;
     }
 
@@ -229,12 +259,40 @@ vi.mock("@nb/db", () => {
     return rows[0];
   };
 
+  // db.select({ id: users.id }).from(users).where(...) — как и в drizzle, билдер сам
+  // по себе ничего не выполняет: он либо становится подзапросом для inArray (см.
+  // matchWhere), либо выполняется на await (thenable) — так публичный предикат
+  // проверяет одну витрину (isMasterProfilePubliclyVisible).
+  const select = (projection: Record<string, any>) => {
+    const [firstCol] = Object.values(projection) as any[];
+    return {
+      from: (table: any) => ({
+        where: (cond: any) => ({
+          table: table.__table,
+          field: firstCol.field,
+          cond,
+          then: (onFulfilled: any, onRejected: any) => {
+            const rows = store[table.__table as keyof typeof store]
+              .filter((r: Row) => matchWhere(r, cond))
+              .map((r: Row) =>
+                Object.fromEntries(
+                  Object.entries(projection).map(([alias, col]) => [alias, r[(col as any).field]])
+                )
+              );
+            return Promise.resolve(rows).then(onFulfilled, onRejected);
+          }
+        })
+      })
+    };
+  };
+
   const db: any = {
     query: {
       masterProfiles: { findFirst: findFirst("masterProfiles"), findMany: findMany("masterProfiles") },
       masterItems: { findFirst: findFirst("masterItems"), findMany: findMany("masterItems") },
       masterImages: { findFirst: findFirst("masterImages"), findMany: findMany("masterImages") }
     },
+    select,
     insert,
     update,
     delete: del,
@@ -251,9 +309,11 @@ vi.mock("@nb/db", () => {
     eq: (col: any, value: any) => ({ kind: "eq", col, value }),
     isNotNull: (col: any) => ({ kind: "isNotNull", col }),
     isNull: (col: any) => ({ kind: "isNull", col }),
+    inArray: (col: any, values: any) => ({ kind: "inArray", col, values }),
     asc: (col: any) => ({ kind: "order", dir: "asc", col }),
     desc: (col: any) => ({ kind: "order", dir: "desc", col }),
     sql: (strings: TemplateStringsArray, ...values: unknown[]) => ({ strings, values }),
+    users: ref("users", ["id", "displayName", "role", "blockedAt", "anonymizedAt"]),
     masterProfiles: ref("masterProfiles", [
       "id", "userId", "slug", "displayName", "city", "specializations", "summary", "about",
       "contactTelegram", "contactPhone", "contactEmail", "contactWebsite", "craftSince",
@@ -261,12 +321,13 @@ vi.mock("@nb/db", () => {
       "moderatorId", "moderationNote", "createdAt", "updatedAt"
     ]),
     masterItems: ref("masterItems", [
-      "id", "profileId", "title", "description", "priceNote", "coverImageId", "sortOrder", "createdAt", "updatedAt"
+      "id", "profileId", "title", "description", "priceNote", "coverImageId", "sortOrder",
+      "hiddenAt", "hiddenReason", "hiddenByUserId", "createdAt", "updatedAt"
     ]),
     masterImages: ref("masterImages", [
       "id", "profileId", "itemId", "storageKeyOriginal", "storageKeyLarge", "storageKeyMedium", "storageKeyThumb",
       "width", "height", "mimeType", "sizeBytes", "blurDataUrl", "sortOrder", "status",
-      "createdAt", "updatedAt", "deletedAt"
+      "hiddenAt", "hiddenReason", "hiddenByUserId", "createdAt", "updatedAt", "deletedAt"
     ])
   };
 });
@@ -299,14 +360,19 @@ import {
   getMasterProfileForModeration,
   getOwnMasterProfile,
   getPublishedMasterBySlug,
+  hideMasterImage,
+  hideMasterItem,
   listMasterModerationQueue,
   listMasterSitemapEntries,
+  listPublishedMarketItems,
   listPublishedMasters,
   rejectMasterProfile,
   reorderMasterItems,
   setMasterListed,
   setOwnListed,
   submitForReview,
+  unhideMasterImage,
+  unhideMasterItem,
   updateMasterItem,
   updateMasterProfile,
   withdrawSubmission,
@@ -362,11 +428,30 @@ const seedProfile = (partial: Partial<Row> = {}): Row => {
     updatedAt: now,
     ...partial
   };
+  ensureUser(row.userId);
   store.masterProfiles.push(row);
   return row;
 };
 
+const blockOwner = (userId: string) => {
+  const owner = store.users.find((u: Row) => u.id === userId);
+  if (!owner) {
+    throw new Error(`нет владельца ${userId}`);
+  }
+  owner.blockedAt = new Date();
+};
+
+const anonymizeOwner = (userId: string) => {
+  const owner = store.users.find((u: Row) => u.id === userId);
+  if (!owner) {
+    throw new Error(`нет владельца ${userId}`);
+  }
+  owner.anonymizedAt = new Date();
+  owner.blockedAt = new Date();
+};
+
 beforeEach(() => {
+  store.users = [];
   store.masterProfiles = [];
   store.masterItems = [];
   store.masterImages = [];
@@ -653,6 +738,74 @@ describe("isListed", () => {
   });
 });
 
+// --- Видимость: заблокированный/обезличенный владелец --------------------------------
+// Контакты мастера лежат в снапшоте published_json, поэтому витрина забаненного,
+// оставшаяся в паблике, — это утечка связи в обход площадки. Блокировка снимает
+// is_listed отдельной записью (features/admin-users/service.ts), но гейт держит
+// сам запрос: тесты ниже поднимают ровно то состояние, где компенсирующая правка
+// не сработала или была откачена.
+describe("витрина заблокированного/обезличенного владельца", () => {
+  const publishMaster = async (actor: MasterActor, displayName: string) => {
+    const created = await createMasterProfile(actor.id, validInput({ displayName }));
+    await createMasterItem(actor.id, { title: `ЦКТ 60 л (${displayName})`, description: "Нержавейка" });
+    await submitForReview(actor.id);
+    return approveMasterProfile(MODERATOR, created.id);
+  };
+
+  it("блокировка владельца убирает витрину из списка, /market, со страницы по слагу и из sitemap", async () => {
+    const blocked = await publishMaster(USER, "Иван Кузнецов");
+    const live = await publishMaster(USER_2, "Пётр Сварщик");
+    expect(await listPublishedMasters()).toHaveLength(2);
+
+    blockOwner(USER.id);
+
+    expect((await listPublishedMasters()).map((m) => m.slug)).toEqual([live.slug]);
+    expect((await listPublishedMarketItems()).map((i) => i.masterSlug)).toEqual([live.slug]);
+    expect((await listMasterSitemapEntries()).map((e) => e.slug)).toEqual([live.slug]);
+    expect(await getPublishedMasterBySlug(blocked.slug!)).toBeNull();
+
+    const stillPublic = await getPublishedMasterBySlug(live.slug!);
+    expect(stillPublic?.snapshot.contacts.telegram).toBe("@ivan_brew");
+  });
+
+  it("обезличенный владелец выпадает из паблика, даже если снапшот ещё не вычищен", async () => {
+    const purged = await publishMaster(USER, "Иван Кузнецов");
+    const live = await publishMaster(USER_2, "Пётр Сварщик");
+
+    anonymizeOwner(USER.id);
+
+    expect((await listPublishedMasters()).map((m) => m.slug)).toEqual([live.slug]);
+    expect(await listPublishedMarketItems()).toHaveLength(1);
+    expect(await getPublishedMasterBySlug(purged.slug!)).toBeNull();
+    expect((await listMasterSitemapEntries()).map((e) => e.slug)).toEqual([live.slug]);
+  });
+
+  it("возврат is_listed забаненному не возвращает витрину в паблик", async () => {
+    const approved = await publishMaster(USER, "Иван Кузнецов");
+    blockOwner(USER.id);
+
+    await setMasterListed(MODERATOR, approved.id, true);
+
+    expect(await listPublishedMasters()).toHaveLength(0);
+    expect(await listPublishedMarketItems()).toHaveLength(0);
+    expect(await listMasterSitemapEntries()).toHaveLength(0);
+    expect(await getPublishedMasterBySlug(approved.slug!)).toBeNull();
+  });
+
+  it("модератор видит витрину забаненного, владелец — свой профиль", async () => {
+    const approved = await publishMaster(USER, "Иван Кузнецов");
+    blockOwner(USER.id);
+
+    const forModeration = await getMasterProfileForModeration(MODERATOR, approved.id);
+    expect(forModeration.profile.id).toBe(approved.id);
+    expect(forModeration.profile.hasPublished).toBe(true);
+    expect(forModeration.items).toHaveLength(1);
+
+    const own = await getOwnMasterProfile(USER.id);
+    expect(own?.profile.id).toBe(approved.id);
+  });
+});
+
 // --- Доступ к изображению ------------------------------------------------------------
 describe("getMasterImageAsset", () => {
   const seedReadyImage = (overrides: Partial<Row> = {}): Row => {
@@ -744,6 +897,78 @@ describe("getMasterImageAsset", () => {
     await expect(
       getMasterImageAsset({ imageId: freshImage.id, variant: "medium", viewer: { id: USER.id, role: "user" as any } })
     ).resolves.toBeTruthy();
+  });
+
+  // Ссылка на файл живёт вне страницы мастера: убрать витрину забаненного из
+  // /market, со страницы и из sitemap мало — без владельца в гейте фото продолжает
+  // отдаваться по прямой ссылке.
+  const publishWithPhoto = async () => {
+    const created = await createMasterProfile(USER.id, validInput());
+    const galleryImage = seedReadyImage({ profileId: created.id, itemId: null });
+    await submitForReview(USER.id);
+    await approveMasterProfile(MODERATOR, created.id);
+
+    // Пока владелец жив, фото публично — иначе тесты ниже зелёные по ошибке.
+    await expect(
+      getMasterImageAsset({ imageId: galleryImage.id, variant: "medium", viewer: null })
+    ).resolves.toMatchObject({ cacheControl: "public, max-age=31536000, immutable" });
+
+    return { profileId: created.id, galleryImage };
+  };
+
+  it("фото заблокированного владельца не отдаётся по прямой ссылке, даже если модератор вернул is_listed", async () => {
+    const { profileId, galleryImage } = await publishWithPhoto();
+
+    blockOwner(USER.id);
+
+    await expect(
+      getMasterImageAsset({ imageId: galleryImage.id, variant: "medium", viewer: null })
+    ).rejects.toThrow("FORBIDDEN");
+
+    await setMasterListed(MODERATOR, profileId, true);
+    await expect(
+      getMasterImageAsset({ imageId: galleryImage.id, variant: "medium", viewer: null })
+    ).rejects.toThrow("FORBIDDEN");
+
+    // Личный кабинет и админка не сломаны: владелец и модератор фото видят.
+    await expect(
+      getMasterImageAsset({ imageId: galleryImage.id, variant: "medium", viewer: { id: USER.id, role: USER.role } })
+    ).resolves.toMatchObject({ cacheControl: "private, max-age=3600" });
+    await expect(
+      getMasterImageAsset({
+        imageId: galleryImage.id,
+        variant: "medium",
+        viewer: { id: MODERATOR.id, role: MODERATOR.role }
+      })
+    ).resolves.toMatchObject({ cacheControl: "private, max-age=3600" });
+  });
+
+  it("фото обезличенного владельца не отдаётся по прямой ссылке, даже если снапшот ещё не вычищен", async () => {
+    const { galleryImage } = await publishWithPhoto();
+
+    anonymizeOwner(USER.id);
+
+    await expect(
+      getMasterImageAsset({ imageId: galleryImage.id, variant: "medium", viewer: null })
+    ).rejects.toThrow("FORBIDDEN");
+  });
+
+  it("фото живого мастера в паблике остаётся публичным, когда забанен сосед", async () => {
+    const { galleryImage } = await publishWithPhoto();
+
+    const other = await createMasterProfile(USER_2.id, validInput({ displayName: "Пётр Сварщик" }));
+    const otherImage = seedReadyImage({ profileId: other.id, itemId: null });
+    await submitForReview(USER_2.id);
+    await approveMasterProfile(MODERATOR, other.id);
+
+    blockOwner(USER_2.id);
+
+    await expect(
+      getMasterImageAsset({ imageId: otherImage.id, variant: "medium", viewer: null })
+    ).rejects.toThrow("FORBIDDEN");
+    await expect(
+      getMasterImageAsset({ imageId: galleryImage.id, variant: "medium", viewer: null })
+    ).resolves.toMatchObject({ cacheControl: "public, max-age=31536000, immutable" });
   });
 });
 
@@ -961,6 +1186,161 @@ describe("getMasterProfileForModeration защищён от мусорного i
   it("валидный, но несуществующий uuid → NOT_FOUND", async () => {
     await expect(
       getMasterProfileForModeration(MODERATOR, "00000000-0000-4000-8000-000000000000")
+    ).rejects.toThrow("NOT_FOUND");
+  });
+});
+
+// --- Точечная модерация Маркета: скрытие товаров и фото ----------------------------
+describe("hideMasterItem / hideMasterImage", () => {
+  const seedItemImage = (profileId: string, itemId: string | null, overrides: Partial<Row> = {}): Row => {
+    const row: Row = {
+      id: `00000000-0000-4000-8000-1000000000${(++ids.counter).toString(16).padStart(2, "0")}`,
+      profileId,
+      itemId,
+      storageKeyOriginal: "orig",
+      storageKeyLarge: "large",
+      storageKeyMedium: "medium",
+      storageKeyThumb: "thumb",
+      width: 800,
+      height: 600,
+      mimeType: "image/jpeg",
+      sizeBytes: 1000,
+      blurDataUrl: null,
+      sortOrder: 0,
+      status: "ready",
+      hiddenAt: null,
+      hiddenReason: null,
+      hiddenByUserId: null,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      deletedAt: null,
+      ...overrides
+    };
+    store.masterImages.push(row);
+    return row;
+  };
+
+  // Профиль с двумя товарами, у первого — своё фото, плюс фото общей галереи.
+  const publishShowcase = async () => {
+    const profile = await createMasterProfile(USER.id, validInput());
+    const ckt = await createMasterItem(USER.id, { title: "ЦКТ 60 л", description: "Нержавейка" });
+    const chiller = await createMasterItem(USER.id, { title: "Чиллер", description: "Титан" });
+
+    const itemImage = seedItemImage(profile.id, ckt.id);
+    const galleryImage = seedItemImage(profile.id, null, { sortOrder: 1 });
+
+    await submitForReview(USER.id);
+    const approved = await approveMasterProfile(MODERATOR, profile.id);
+
+    return { profile: approved, ckt, chiller, itemImage, galleryImage };
+  };
+
+  it("скрытый товар исчезает из /market и из снапшота страницы мастера, unhide возвращает", async () => {
+    const { profile, ckt, chiller } = await publishShowcase();
+
+    expect(await listPublishedMarketItems()).toHaveLength(2);
+
+    const hidden = await hideMasterItem(MODERATOR, ckt.id, "Реклама в описании");
+    expect(hidden.item.hiddenAt).toBeInstanceOf(Date);
+    expect(hidden.item.hiddenReason).toBe("Реклама в описании");
+    expect(hidden.item.hiddenByUserId).toBe(MODERATOR.id);
+    expect(hidden.masterSlug).toBe(profile.slug);
+
+    const market = await listPublishedMarketItems();
+    expect(market.map((card) => card.itemId)).toEqual([chiller.id]);
+
+    const published = await getPublishedMasterBySlug(profile.slug!);
+    expect(published?.snapshot.items.map((item) => item.id)).toEqual([chiller.id]);
+
+    const restored = await unhideMasterItem(MODERATOR, ckt.id);
+    expect(restored.item.hiddenAt).toBeNull();
+    expect(restored.item.hiddenReason).toBeNull();
+    expect(await listPublishedMarketItems()).toHaveLength(2);
+  });
+
+  it("скрытое фото уходит из галереи, из фото товара и перестаёт быть обложкой", async () => {
+    const { profile, ckt, itemImage, galleryImage } = await publishShowcase();
+
+    const beforeHide = await getPublishedMasterBySlug(profile.slug!);
+    expect(beforeHide?.snapshot.gallery.map((ref) => ref.imageId)).toEqual([galleryImage.id]);
+    expect(beforeHide?.snapshot.items.find((item) => item.id === ckt.id)?.images).toHaveLength(1);
+
+    await hideMasterImage(MODERATOR, galleryImage.id, "Чужое фото из интернета");
+    await hideMasterImage(MODERATOR, itemImage.id, "Не соответствует товару");
+
+    const published = await getPublishedMasterBySlug(profile.slug!);
+    expect(published?.snapshot.gallery).toHaveLength(0);
+
+    const item = published?.snapshot.items.find((entry) => entry.id === ckt.id);
+    expect(item?.images).toHaveLength(0);
+    expect(item?.coverImageId).toBeNull();
+
+    // Карточка маркета остаётся, но уже без обложки.
+    const market = await listPublishedMarketItems();
+    expect(market.find((card) => card.itemId === ckt.id)?.coverImage).toBeNull();
+
+    await unhideMasterImage(MODERATOR, galleryImage.id);
+    const afterUnhide = await getPublishedMasterBySlug(profile.slug!);
+    expect(afterUnhide?.snapshot.gallery.map((ref) => ref.imageId)).toEqual([galleryImage.id]);
+  });
+
+  it("обложка мастера в списке не берётся из скрытого фото", async () => {
+    const { galleryImage, itemImage } = await publishShowcase();
+
+    const before = await listPublishedMasters();
+    expect(before[0]?.coverImage?.imageId).toBe(galleryImage.id);
+
+    await hideMasterImage(MODERATOR, galleryImage.id, "Чужое фото из интернета");
+
+    const after = await listPublishedMasters();
+    expect(after[0]?.coverImage?.imageId).toBe(itemImage.id);
+  });
+
+  it("скрытое фото недоступно публике по прямой ссылке, но остаётся у владельца и модератора", async () => {
+    const { galleryImage } = await publishShowcase();
+
+    await hideMasterImage(MODERATOR, galleryImage.id, "Чужое фото из интернета");
+
+    await expect(
+      getMasterImageAsset({ imageId: galleryImage.id, variant: "medium", viewer: null })
+    ).rejects.toThrow("FORBIDDEN");
+
+    await expect(
+      getMasterImageAsset({ imageId: galleryImage.id, variant: "medium", viewer: { id: USER.id, role: USER.role } })
+    ).resolves.toMatchObject({ cacheControl: "private, max-age=3600" });
+
+    await expect(
+      getMasterImageAsset({
+        imageId: galleryImage.id,
+        variant: "medium",
+        viewer: { id: MODERATOR.id, role: MODERATOR.role }
+      })
+    ).resolves.toBeTruthy();
+  });
+
+  it("фото скрытого товара тоже перестаёт быть публичным", async () => {
+    const { ckt, itemImage } = await publishShowcase();
+
+    await expect(
+      getMasterImageAsset({ imageId: itemImage.id, variant: "medium", viewer: null })
+    ).resolves.toMatchObject({ cacheControl: "public, max-age=31536000, immutable" });
+
+    await hideMasterItem(MODERATOR, ckt.id, "Реклама в описании");
+
+    await expect(
+      getMasterImageAsset({ imageId: itemImage.id, variant: "medium", viewer: null })
+    ).rejects.toThrow("FORBIDDEN");
+  });
+
+  it("не-модератор не может скрывать, причина обязательна, мусорный id → NOT_FOUND", async () => {
+    const { ckt } = await publishShowcase();
+
+    await expect(hideMasterItem(USER, ckt.id, "Реклама в описании")).rejects.toThrow("FORBIDDEN");
+    await expect(unhideMasterItem(USER, ckt.id)).rejects.toThrow("FORBIDDEN");
+    await expect(hideMasterItem(MODERATOR, ckt.id, "  ")).rejects.toThrow();
+    await expect(hideMasterItem(MODERATOR, "not-a-uuid", "Реклама в описании")).rejects.toThrow("NOT_FOUND");
+    await expect(
+      hideMasterImage(MODERATOR, "00000000-0000-4000-8000-00000000dead", "Чужое фото")
     ).rejects.toThrow("NOT_FOUND");
   });
 });

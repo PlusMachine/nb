@@ -19,6 +19,7 @@ import { storageAdapter } from "@/lib/storage";
 import { deleteMasterImageObjects } from "./images";
 import { getMasterCapabilities } from "./permissions";
 import { appendSlugSuffix, toMasterSlugBase } from "./slug";
+import { isMasterProfilePubliclyVisible, publiclyVisibleMasterConditions } from "./visibility";
 import {
   buildMarketItemCards,
   buildMasterImageVariantUrl,
@@ -75,6 +76,9 @@ export type MasterItemDto = {
   priceNote: string | null;
   coverImageId: string | null;
   sortOrder: number;
+  hiddenAt: Date | null;
+  hiddenReason: string | null;
+  hiddenByUserId: string | null;
   createdAt: Date;
   updatedAt: Date;
 };
@@ -90,6 +94,9 @@ export type MasterImageDto = {
   mediumUrl: string | null;
   largeUrl: string | null;
   originalUrl: string | null;
+  hiddenAt: Date | null;
+  hiddenReason: string | null;
+  hiddenByUserId: string | null;
   createdAt: Date;
   updatedAt: Date;
 };
@@ -147,6 +154,9 @@ const mapMasterItemRow = (item: MasterItemRow): MasterItemDto => ({
   priceNote: item.priceNote ?? null,
   coverImageId: item.coverImageId ?? null,
   sortOrder: item.sortOrder,
+  hiddenAt: item.hiddenAt ?? null,
+  hiddenReason: item.hiddenReason ?? null,
+  hiddenByUserId: item.hiddenByUserId ?? null,
   createdAt: item.createdAt,
   updatedAt: item.updatedAt
 });
@@ -162,6 +172,9 @@ const mapMasterImageRow = (image: MasterImageRow): MasterImageDto => {
     sortOrder: image.sortOrder,
     blurDataUrl: image.blurDataUrl ?? null,
     status: image.status as MasterImageStatus,
+    hiddenAt: image.hiddenAt ?? null,
+    hiddenReason: image.hiddenReason ?? null,
+    hiddenByUserId: image.hiddenByUserId ?? null,
     createdAt: image.createdAt,
     updatedAt: image.updatedAt,
     thumbUrl: canPreview ? buildMasterImageVariantUrl(image.id, "thumb") : null,
@@ -811,6 +824,145 @@ export const setMasterListed = async (
   return mapMasterProfileRow(updated);
 };
 
+// --- Модератор: точечное скрытие товаров и фото --------------------------------------
+
+export type MasterItemModerationResult = { item: MasterItemDto; masterSlug: string | null };
+export type MasterImageModerationResult = { image: MasterImageDto; masterSlug: string | null };
+
+const hideReasonSchema = z
+  .string()
+  .trim()
+  .min(3, "Причина — минимум 3 символа.")
+  .max(500, "Причина — максимум 500 символов.");
+
+const ensureModeratedItemRow = async (
+  itemId: string
+): Promise<{ item: MasterItemRow; profile: MasterProfileRow }> => {
+  if (!z.string().uuid().safeParse(itemId).success) {
+    throw new Error("NOT_FOUND");
+  }
+
+  const item = await db.query.masterItems.findFirst({ where: eq(masterItems.id, itemId) });
+  if (!item) {
+    throw new Error("NOT_FOUND");
+  }
+
+  const profile = await db.query.masterProfiles.findFirst({ where: eq(masterProfiles.id, item.profileId) });
+  if (!profile) {
+    throw new Error("NOT_FOUND");
+  }
+
+  return { item, profile };
+};
+
+const ensureModeratedImageRow = async (
+  imageId: string
+): Promise<{ image: MasterImageRow; profile: MasterProfileRow }> => {
+  if (!z.string().uuid().safeParse(imageId).success) {
+    throw new Error("NOT_FOUND");
+  }
+
+  const image = await db.query.masterImages.findFirst({ where: eq(masterImages.id, imageId) });
+  if (!image) {
+    throw new Error("NOT_FOUND");
+  }
+
+  const profile = await db.query.masterProfiles.findFirst({ where: eq(masterProfiles.id, image.profileId) });
+  if (!profile) {
+    throw new Error("NOT_FOUND");
+  }
+
+  return { image, profile };
+};
+
+export const hideMasterItem = async (
+  actor: MasterActor,
+  itemId: string,
+  reason: string
+): Promise<MasterItemModerationResult> => {
+  assertModerator(actor);
+  const trimmedReason = hideReasonSchema.parse(reason);
+  const { item, profile } = await ensureModeratedItemRow(itemId);
+
+  const [updated] = await db.update(masterItems).set({
+    hiddenAt: new Date(),
+    hiddenReason: trimmedReason,
+    hiddenByUserId: actor.id,
+    updatedAt: new Date()
+  }).where(eq(masterItems.id, item.id)).returning();
+
+  if (!updated) {
+    throw new Error("NOT_FOUND");
+  }
+
+  return { item: mapMasterItemRow(updated), masterSlug: profile.slug ?? null };
+};
+
+export const unhideMasterItem = async (
+  actor: MasterActor,
+  itemId: string
+): Promise<MasterItemModerationResult> => {
+  assertModerator(actor);
+  const { item, profile } = await ensureModeratedItemRow(itemId);
+
+  const [updated] = await db.update(masterItems).set({
+    hiddenAt: null,
+    hiddenReason: null,
+    hiddenByUserId: null,
+    updatedAt: new Date()
+  }).where(eq(masterItems.id, item.id)).returning();
+
+  if (!updated) {
+    throw new Error("NOT_FOUND");
+  }
+
+  return { item: mapMasterItemRow(updated), masterSlug: profile.slug ?? null };
+};
+
+export const hideMasterImage = async (
+  actor: MasterActor,
+  imageId: string,
+  reason: string
+): Promise<MasterImageModerationResult> => {
+  assertModerator(actor);
+  const trimmedReason = hideReasonSchema.parse(reason);
+  const { image, profile } = await ensureModeratedImageRow(imageId);
+
+  const [updated] = await db.update(masterImages).set({
+    hiddenAt: new Date(),
+    hiddenReason: trimmedReason,
+    hiddenByUserId: actor.id,
+    updatedAt: new Date()
+  }).where(eq(masterImages.id, image.id)).returning();
+
+  if (!updated) {
+    throw new Error("NOT_FOUND");
+  }
+
+  return { image: mapMasterImageRow(updated), masterSlug: profile.slug ?? null };
+};
+
+export const unhideMasterImage = async (
+  actor: MasterActor,
+  imageId: string
+): Promise<MasterImageModerationResult> => {
+  assertModerator(actor);
+  const { image, profile } = await ensureModeratedImageRow(imageId);
+
+  const [updated] = await db.update(masterImages).set({
+    hiddenAt: null,
+    hiddenReason: null,
+    hiddenByUserId: null,
+    updatedAt: new Date()
+  }).where(eq(masterImages.id, image.id)).returning();
+
+  if (!updated) {
+    throw new Error("NOT_FOUND");
+  }
+
+  return { image: mapMasterImageRow(updated), masterSlug: profile.slug ?? null };
+};
+
 export const countPendingMasters = async (): Promise<number> => {
   const rows = await db.query.masterProfiles.findMany({
     where: eq(masterProfiles.reviewStatus, "pending"),
@@ -819,7 +971,141 @@ export const countPendingMasters = async (): Promise<number> => {
   return rows.length;
 };
 
+// --- Судьба витрины при блокировке и обезличивании аккаунта ---------------------------
+// Из паблика витрину убирает предикат (visibility.ts), а не эти записи: он джойнит
+// владельца и держит инвариант сам. Записи ниже — про содержимое БД, и зовёт их
+// features/admin-users/service.ts.
+
+export type MasterProfileAccountEffect = { profileId: string; slug: string | null };
+
+/** `db` либо транзакция вызывающего — см. AuthWriteExecutor в packages/auth. */
+export type MasterWriteExecutor = Pick<typeof db, "update">;
+
+// Блокировка обратима, поэтому снапшот и контакты остаются в БД — витрина лишь
+// уходит из паблика. Транзакция блокировки этой записи не ждёт: из паблика витрину
+// уже убрал предикат, а is_listed тут — компенсирующая правка, не ПДн.
+export const unlistMasterProfileForUser = async (
+  userId: string
+): Promise<MasterProfileAccountEffect | null> => {
+  const [updated] = await db.update(masterProfiles).set({
+    isListed: false,
+    updatedAt: new Date()
+  }).where(eq(masterProfiles.userId, userId)).returning();
+
+  return updated ? { profileId: updated.id, slug: updated.slug ?? null } : null;
+};
+
+// Обезличивание необратимо, и контакты мастера — ровно те ПДн, ради которых оно
+// делается. Лежат они в двух местах: в черновике (contact_*) и в опубликованном
+// снапшоте. Снятого published_json достаточно, чтобы профиль выпал из всех
+// публичных выборок и из sitemap, но черновые контакты чистим тоже — иначе ПДн
+// просто переезжают из паблика в БД.
+//
+// Зовётся на транзакции обезличивания: пройти отдельной записью после коммита
+// значило бы оставить контакты мастера живыми на уже обезличенном аккаунте.
+export const purgeMasterProfileForUser = async (
+  userId: string,
+  executor: MasterWriteExecutor = db
+): Promise<MasterProfileAccountEffect | null> => {
+  const [updated] = await executor.update(masterProfiles).set({
+    isListed: false,
+    contactTelegram: null,
+    contactPhone: null,
+    contactEmail: null,
+    contactWebsite: null,
+    publishedJson: null,
+    publishedAt: null,
+    updatedAt: new Date()
+  }).where(eq(masterProfiles.userId, userId)).returning();
+
+  return updated ? { profileId: updated.id, slug: updated.slug ?? null } : null;
+};
+
 // --- Публично (без авторизации) -----------------------------------------------------
+
+type MasterHiddenIds = { itemIds: Set<string>; imageIds: Set<string> };
+
+// Скрытие модератором живёт в таблицах (hidden_at), а не в снапшоте: снапшот —
+// это одобренная версия витрины, переписывать его на скрытии нельзя. Поэтому
+// публичные выборки чистят снапшот на чтении по актуальным hidden_at.
+const applyHiddenToSnapshot = (
+  snapshot: MasterPublishedSnapshot,
+  hidden: MasterHiddenIds
+): MasterPublishedSnapshot => {
+  if (hidden.itemIds.size === 0 && hidden.imageIds.size === 0) {
+    return snapshot;
+  }
+
+  const visibleRefs = (refs: MasterPublishedSnapshotImageRef[]) =>
+    refs.filter((ref) => !hidden.imageIds.has(ref.imageId));
+
+  return {
+    ...snapshot,
+    gallery: visibleRefs(snapshot.gallery),
+    items: snapshot.items
+      .filter((item) => !hidden.itemIds.has(item.id))
+      .map((item) => ({
+        ...item,
+        coverImageId: item.coverImageId && !hidden.imageIds.has(item.coverImageId) ? item.coverImageId : null,
+        images: visibleRefs(item.images)
+      }))
+  };
+};
+
+const loadHiddenIdsForProfile = async (profileId: string): Promise<MasterHiddenIds> => {
+  const [items, images] = await Promise.all([
+    db.query.masterItems.findMany({
+      where: and(eq(masterItems.profileId, profileId), isNotNull(masterItems.hiddenAt)),
+      columns: { id: true }
+    }),
+    db.query.masterImages.findMany({
+      where: and(eq(masterImages.profileId, profileId), isNotNull(masterImages.hiddenAt)),
+      columns: { id: true }
+    })
+  ]);
+
+  return {
+    itemIds: new Set(items.map((row) => row.id)),
+    imageIds: new Set(images.map((row) => row.id))
+  };
+};
+
+// Скрытых записей единицы — дешевле вытащить их все разом, чем ходить в БД по
+// каждому профилю списка.
+const loadHiddenIdsByProfile = async (): Promise<Map<string, MasterHiddenIds>> => {
+  const [items, images] = await Promise.all([
+    db.query.masterItems.findMany({
+      where: isNotNull(masterItems.hiddenAt),
+      columns: { id: true, profileId: true }
+    }),
+    db.query.masterImages.findMany({
+      where: isNotNull(masterImages.hiddenAt),
+      columns: { id: true, profileId: true }
+    })
+  ]);
+
+  const byProfile = new Map<string, MasterHiddenIds>();
+  const bucketFor = (profileId: string): MasterHiddenIds => {
+    const existing = byProfile.get(profileId);
+    if (existing) {
+      return existing;
+    }
+    const created: MasterHiddenIds = { itemIds: new Set(), imageIds: new Set() };
+    byProfile.set(profileId, created);
+    return created;
+  };
+
+  for (const row of items) {
+    bucketFor(row.profileId).itemIds.add(row.id);
+  }
+  for (const row of images) {
+    bucketFor(row.profileId).imageIds.add(row.id);
+  }
+
+  return byProfile;
+};
+
+const EMPTY_HIDDEN_IDS: MasterHiddenIds = { itemIds: new Set(), imageIds: new Set() };
 
 const pickSnapshotCoverImage = (snapshot: MasterPublishedSnapshot): MasterPublishedSnapshotImageRef | null => {
   if (snapshot.gallery.length > 0) {
@@ -833,12 +1119,12 @@ const pickSnapshotCoverImage = (snapshot: MasterPublishedSnapshot): MasterPublis
   return null;
 };
 
-const toMasterCardDto = (profile: MasterProfileRow): MasterCardDto | null => {
+const toMasterCardDto = (profile: MasterProfileRow, hidden: MasterHiddenIds): MasterCardDto | null => {
   if (!profile.slug || !profile.publishedJson || !profile.publishedAt) {
     return null;
   }
 
-  const snapshot = profile.publishedJson as MasterPublishedSnapshot;
+  const snapshot = applyHiddenToSnapshot(profile.publishedJson as MasterPublishedSnapshot, hidden);
   return {
     id: profile.id,
     slug: profile.slug,
@@ -854,12 +1140,14 @@ const toMasterCardDto = (profile: MasterProfileRow): MasterCardDto | null => {
 
 export const listPublishedMasters = async (): Promise<MasterCardDto[]> => {
   const rows = await db.query.masterProfiles.findMany({
-    where: and(eq(masterProfiles.isListed, true), isNotNull(masterProfiles.publishedJson)),
+    where: and(...publiclyVisibleMasterConditions()),
     orderBy: [desc(masterProfiles.publishedAt)]
   });
 
+  const hiddenByProfile = await loadHiddenIdsByProfile();
+
   return rows
-    .map(toMasterCardDto)
+    .map((profile) => toMasterCardDto(profile, hiddenByProfile.get(profile.id) ?? EMPTY_HIDDEN_IDS))
     .filter((dto): dto is MasterCardDto => dto !== null);
 };
 
@@ -870,15 +1158,22 @@ export const listPublishedMasters = async (): Promise<MasterCardDto[]> => {
 // мастера — авторский порядок изделий из снапшота.
 export const listPublishedMarketItems = async (): Promise<MarketItemCardDto[]> => {
   const rows = await db.query.masterProfiles.findMany({
-    where: and(eq(masterProfiles.isListed, true), isNotNull(masterProfiles.publishedJson)),
+    where: and(...publiclyVisibleMasterConditions()),
     orderBy: [desc(masterProfiles.publishedAt)]
   });
+
+  const hiddenByProfile = await loadHiddenIdsByProfile();
 
   return rows.flatMap((profile) => {
     if (!profile.slug || !profile.publishedJson) {
       return [];
     }
-    return buildMarketItemCards(profile.slug, profile.publishedJson as MasterPublishedSnapshot);
+
+    const snapshot = applyHiddenToSnapshot(
+      profile.publishedJson as MasterPublishedSnapshot,
+      hiddenByProfile.get(profile.id) ?? EMPTY_HIDDEN_IDS
+    );
+    return buildMarketItemCards(profile.slug, snapshot);
   });
 };
 
@@ -886,23 +1181,20 @@ export const getPublishedMasterBySlug = async (
   slug: string
 ): Promise<{ slug: string; snapshot: MasterPublishedSnapshot } | null> => {
   const profile = await db.query.masterProfiles.findFirst({
-    where: and(
-      eq(masterProfiles.slug, slug),
-      eq(masterProfiles.isListed, true),
-      isNotNull(masterProfiles.publishedJson)
-    )
+    where: and(eq(masterProfiles.slug, slug), ...publiclyVisibleMasterConditions())
   });
 
   if (!profile || !profile.publishedJson) {
     return null;
   }
 
-  return { slug, snapshot: profile.publishedJson as MasterPublishedSnapshot };
+  const hidden = await loadHiddenIdsForProfile(profile.id);
+  return { slug, snapshot: applyHiddenToSnapshot(profile.publishedJson as MasterPublishedSnapshot, hidden) };
 };
 
 export const listMasterSitemapEntries = async (): Promise<Array<{ slug: string; publishedAt: Date }>> => {
   const rows = await db.query.masterProfiles.findMany({
-    where: and(eq(masterProfiles.isListed, true), isNotNull(masterProfiles.publishedJson)),
+    where: and(...publiclyVisibleMasterConditions()),
     columns: { slug: true, publishedAt: true }
   });
 
@@ -932,8 +1224,29 @@ export const getMasterImageAsset = async ({
     throw new Error("NOT_FOUND");
   }
 
+  // Скрытое модератором фото публике недоступно даже по прямой ссылке; то же для
+  // фото, привязанного к скрытому товару (иначе скрытие товара оставляло бы его
+  // снимки открытыми). Владельцу и модератору фото остаётся видно.
+  const hiddenItem = image.itemId
+    ? await db.query.masterItems.findFirst({
+      where: and(eq(masterItems.id, image.itemId), isNotNull(masterItems.hiddenAt)),
+      columns: { id: true }
+    })
+    : null;
+
   const snapshot = profile.publishedJson as MasterPublishedSnapshot | null;
-  const isPublic = Boolean(profile.isListed && snapshot && snapshotContainsImage(snapshot, imageId));
+  const shownInSnapshot = Boolean(
+    snapshot
+      && snapshotContainsImage(snapshot, imageId)
+      && !image.hiddenAt
+      && !hiddenItem
+  );
+
+  // Публичность самой витрины (is_listed + опубликованный снапшот + живой владелец)
+  // спрашиваем у общего предиката: без владельца в гейте фото заблокированного или
+  // обезличенного мастера остаётся доступным по прямой ссылке, хотя из /market, со
+  // страницы мастера и из sitemap витрина уже убрана.
+  const isPublic = shownInSnapshot && await isMasterProfilePubliclyVisible(profile.id);
 
   // Мягко удалённое (deletedAt) фото видно ТОЛЬКО публике — и только пока
   // опубликованный снапшот всё ещё на него ссылается (см. deleteMasterImage в
