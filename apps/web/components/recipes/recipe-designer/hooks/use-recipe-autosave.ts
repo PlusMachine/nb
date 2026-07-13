@@ -13,12 +13,13 @@ import type { RecipeDetailDto, RecipePublicationState } from "@/features/recipes
 import {
   buildAutosaveBlockedResult,
   getBatchVolumeLiters,
+  isRecipeDraftWorthPersisting,
   normalizeEditorPublicationState,
   normalizeSavePayload,
   replaceRecipeEditorUrl
 } from "../helpers";
 
-export type RecipeSaveStatus = "saved" | "saving" | "error";
+export type RecipeSaveStatus = "saved" | "saving" | "error" | "draft";
 
 // Автосейв: persistRecipe (create/update, дедупликация field-error блокировкой,
 // ретраибельные сетевые сбои), pendingSave/saveResult/isDirty/beforeunload, и
@@ -30,6 +31,7 @@ export function useRecipeAutosave({
   mode,
   initialRecipe,
   initialTitle,
+  initialStyleId,
   onRecipeCreated,
   onSaveStatusChange,
   payload,
@@ -42,6 +44,7 @@ export function useRecipeAutosave({
   mode: "create" | "edit";
   initialRecipe?: RecipeDetailDto;
   initialTitle?: string;
+  initialStyleId?: string;
   onRecipeCreated?: (recipe: RecipeDetailDto) => void;
   onSaveStatusChange?: (status: RecipeSaveStatus) => void;
   payload: RecipeEditorPayload;
@@ -60,6 +63,10 @@ export function useRecipeAutosave({
   const [blockedSignature, setBlockedSignature] = useState<string | null>(null);
   const [saveResultSignature, setSaveResultSignature] = useState<string | null>(null);
   const pendingSaveRef = useRef(false);
+  // Рецепт удалён из редактора: гасит автосейв намертво. Без этого уже взведённый
+  // 1.5-секундный таймер после удаления сделал бы update по мёртвому id — или,
+  // хуже, create и воскресил бы рецепт новой записью.
+  const deletedRef = useRef(false);
   const [savedSignature, setSavedSignature] = useState(currentSignature);
   // Объём партии на момент последнего сохранения — база для инлайн-действия
   // «Пересчитать под объём» (#6): показываем его только когда текущий объём
@@ -67,8 +74,23 @@ export function useRecipeAutosave({
   const [savedBatchVolumeL, setSavedBatchVolumeL] = useState<number | null>(batchVolumeL);
   const isDirty = currentSignature !== savedSignature;
   const hasCurrentSaveError = saveResultSignature === currentSignature && Boolean(saveResult && !saveResult.ok);
-  const saveStatus: RecipeSaveStatus = hasCurrentSaveError ? "error" : (pendingSave || isDirty ? "saving" : "saved");
   const persistMode: "create" | "edit" = activeRecipeId ? "edit" : mode;
+  // Чем редактор засеян при открытии: автоимя «Новый рецепт N» и стиль из URL.
+  // Порог осмысленности считается ОТНОСИТЕЛЬНО этой базы — своё имя вместо
+  // автоматического и свой стиль вместо предзаполненного.
+  const draftBaseline = React.useMemo(
+    () => ({ title: initialTitle ?? null, styleId: initialStyleId ?? null }),
+    [initialStyleId, initialTitle]
+  );
+  const isDraftWorthPersisting = isRecipeDraftWorthPersisting(payload, draftBaseline);
+  // Пустой рецепт в БД не создаём (см. isRecipeDraftWorthPersisting). Статус при этом
+  // обязан быть честным: без отдельного "draft" шапка вечно висела бы «Сохранение…».
+  const isCreateGated = persistMode === "create" && !isDraftWorthPersisting;
+  const saveStatus: RecipeSaveStatus = hasCurrentSaveError
+    ? "error"
+    : isCreateGated
+      ? "draft"
+      : (pendingSave || isDirty ? "saving" : "saved");
   const visibleSaveResult = saveResultSignature === currentSignature ? saveResult : null;
   const hasRetriableSaveError = Boolean(
     visibleSaveResult
@@ -90,6 +112,13 @@ export function useRecipeAutosave({
     }
 
     const handleBeforeUnload = (event: BeforeUnloadEvent) => {
+      // Рецепт удаляют — терять уже нечего, спрашивать «уйти со страницы?» незачем.
+      // Проверяем ref в момент срабатывания: удаление не меняет стейт и эффект не
+      // перерегистрируется.
+      if (deletedRef.current) {
+        return;
+      }
+
       event.preventDefault();
       event.returnValue = "";
     };
@@ -100,12 +129,17 @@ export function useRecipeAutosave({
 
   const persistRecipe = React.useCallback(async ({
     nextPublicationState = publicationState,
-    surfaceInlineResult = true
+    surfaceInlineResult = true,
+    // Явное действие пользователя (публикация, экспорт, «Сварить», новая версия)
+    // обязано сохранить рецепт даже до порога осмысленности — иначе кнопка молча
+    // ничего не сделает. Гейт остаётся только на фоновом автосейве.
+    force = false
   }: {
     nextPublicationState?: RecipePublicationState;
     surfaceInlineResult?: boolean;
+    force?: boolean;
   } = {}) => {
-    if (pendingSaveRef.current) {
+    if (pendingSaveRef.current || deletedRef.current) {
       return null;
     }
 
@@ -132,6 +166,13 @@ export function useRecipeAutosave({
       setSaveResultSignature(surfaceInlineResult ? nextSignature : null);
       setBlockedSignature(nextSignature);
       return nextBlockedSaveResult;
+    }
+
+    // Пока рецепт не набрал ни содержания, ни имени — записи в БД не заводим (B2).
+    // Не ошибка: фоновый автосейв молчит, а шапка показывает «Не сохранён» и кнопку
+    // «Сохранить» — она приходит сюда с force и создаёт запись по явному решению.
+    if (persistMode === "create" && !force && !isRecipeDraftWorthPersisting(nextPayload, draftBaseline)) {
+      return null;
     }
 
     setPendingSave(true);
@@ -191,18 +232,30 @@ export function useRecipeAutosave({
     setSaveResult(result);
     setSaveResultSignature(surfaceInlineResult ? nextSignature : null);
     return result;
-  }, [activeRecipeId, initialRecipe, initialTitle, onRecipeCreated, payload, persistMode, publicationState, setPublicationState, setSavedPublicationState]);
+  }, [activeRecipeId, draftBaseline, initialRecipe, initialTitle, onRecipeCreated, payload, persistMode, publicationState, setPublicationState, setSavedPublicationState]);
 
   useEffect(() => {
-    if (!isDirty) return;
+    if (!isDirty || deletedRef.current) return;
     if (blockedSignature === currentSignature) return;
     let cancelled = false;
     const autoSaveTimer = window.setTimeout(async () => {
-      if (cancelled || pendingSaveRef.current) return;
+      if (cancelled || pendingSaveRef.current || deletedRef.current) return;
       await persistRecipe();
     }, 1500);
     return () => { cancelled = true; window.clearTimeout(autoSaveTimer); };
   }, [blockedSignature, currentSignature, isDirty, persistRecipe]);
+
+  // Рецепт удаляется: гасим автосейв ДО запроса (пока идёт delete, взведённый
+  // таймер не должен успеть сохранить рецепт обратно).
+  const markDeleted = React.useCallback(() => {
+    deletedRef.current = true;
+  }, []);
+
+  // Удаление не прошло (сеть/сервер) — редактор обязан снова сохранять, иначе
+  // все дальнейшие правки уходили бы в никуда.
+  const restoreAfterFailedDelete = React.useCallback(() => {
+    deletedRef.current = false;
+  }, []);
 
   return {
     activeRecipeId,
@@ -226,9 +279,12 @@ export function useRecipeAutosave({
     savedBatchVolumeL,
     setSavedBatchVolumeL,
     isDirty,
+    isDraftWorthPersisting,
     saveStatus,
     visibleSaveResult,
     hasRetriableSaveError,
-    persistRecipe
+    persistRecipe,
+    markDeleted,
+    restoreAfterFailedDelete
   };
 }

@@ -18,6 +18,11 @@ import {
   buildRecipeEditHref,
   buildRecipeWizardResumeHref,
   applyRecipeWaterAddFlowSaltToWaterPlan,
+  applyHopUseTypeChange,
+  buildRecipeDeleteConfirmDescription,
+  createEmptyIngredient,
+  isAutoRecipeTitle,
+  isRecipeDraftWorthPersisting,
   resolveRecipeFermentablePickerScopeContext,
   resolveRecipeIngredientForcedGroup,
   resolveRecipeIngredientEditorSourceMode,
@@ -53,21 +58,19 @@ vi.mock("next/navigation", () => ({
   useSearchParams: () => new URLSearchParams()
 }));
 
+// Складских экшенов (sync/reserve/consume/release/getStockCoverage) здесь больше нет:
+// списание — операция варки, редактор рецепта в него не ходит (B1).
 vi.mock("../app/(app)/app/recipes/actions", () => ({
   createRecipeAction: vi.fn(),
   updateRecipeAction: vi.fn(),
   createRecipeVersionAction: vi.fn(),
   createBrewBatchFromRecipeAction: vi.fn(),
-  consumeRecipeInventoryAction: vi.fn(),
+  deleteRecipeAction: vi.fn(async () => ({ ok: true, message: "Рецепт удален." })),
   previewRecipeDraftAction: vi.fn(),
   createRecipeCustomIngredientAction: vi.fn(),
   exportRecipeBeerXmlAction: vi.fn(),
-  getRecipeStockCoverageAction: vi.fn(),
   importBeerXmlRecipeAction: vi.fn(),
   importBrewfatherJsonRecipeAction: vi.fn(),
-  releaseRecipeInventoryAction: vi.fn(),
-  reserveRecipeInventoryAction: vi.fn(),
-  syncRecipeInventoryAllocationsAction: vi.fn(),
   proposeRecipeIngredientAction: vi.fn()
 }));
 
@@ -100,6 +103,8 @@ const buildRecipeDetail = (overrides: Partial<RecipeDetailDto> = {}): RecipeDeta
   versionNumber: 1,
   versionCount: 1,
   publicationState: "private",
+  hiddenAt: null,
+  hiddenReason: null,
   title: "Тестовый рецепт",
   slug: "test-recipe",
   styleId: null,
@@ -627,7 +632,6 @@ describe("recipe editor components", () => {
     expect(html).not.toContain("На основе профиля оборудования");
     expect(html).not.toContain("Значения сохраняются в рецепте");
     expect(html).toContain("Водоподготовка");
-    expect(html).toContain("Ингредиенты со склада");
     expect(html).toContain("Специи и добавки");
     expect(html).toContain("Импорт / экспорт");
     expect(html).toContain("Сварить");
@@ -646,6 +650,194 @@ describe("recipe editor components", () => {
     expect(html).not.toContain("Зафиксировать КП вручную");
     expect(html).not.toContain("Сохранить");
     expect(html).not.toContain("Публикация");
+  });
+
+  // B1: списание склада — операция варочного дня. В редакторе от него не осталось ни
+  // секции, ни кнопок; построчная плашка «Со склада» (намерение взять со склада) — живёт.
+  it("в редакторе рецепта нет складских действий, но плашка «Со склада» в строке остаётся", () => {
+    const html = renderDesignerMarkup({
+      mode: "edit",
+      initialRecipe: buildRecipeDetail({
+        ingredients: [{
+          id: "ri-hop",
+          recipeId: "recipe-1",
+          persistentKey: "00000000-0000-4000-8000-000000000101",
+          displayOrder: 0,
+          ingredientCatalogItemId: "hop-saaz",
+          userCustomIngredientId: null,
+          type: "hop",
+          ingredientCategory: "hop",
+          ingredientSubtype: null,
+          ingredientDisplayName: "Заац",
+          amountEnteredQuantity: 20,
+          amountEnteredUnit: "g",
+          amountNormalizedQuantity: 20,
+          amountNormalizedUnit: "g",
+          stage: "boil",
+          timeOffset: 60,
+          stepMeta: { useType: "boil", timeMinutes: 60 },
+          inventoryIntentMode: "use_stock",
+          inventorySelectionMeta: { inventoryItemId: "inv-1" },
+          createdAt: new Date("2026-04-20T10:00:00Z"),
+          updatedAt: new Date("2026-04-20T10:00:00Z"),
+        }],
+      }),
+      preferredGravityUnit: "plato",
+    });
+
+    expect(html).not.toContain("Ингредиенты со склада");
+    expect(html).not.toContain("Списать со склада");
+    expect(html).not.toContain("Обновить наличие");
+    expect(html).not.toContain("Нет готовых к списанию складских позиций");
+    expect(html).toContain("Со склада");
+  });
+
+  // B2: удалить рецепт можно прямо из редактора (kebab → «Удалить рецепт» с подтверждением).
+  // Содержимое DropdownMenu живёт в Radix-портале и в статическую разметку не попадает —
+  // проверяем сам триггер: он появляется, только когда рецепт уже есть в БД.
+  it("kebab «Действия с рецептом» есть у сохранённого рецепта и отсутствует у несохранённого", () => {
+    const editHtml = renderDesignerMarkup({
+      mode: "edit",
+      initialRecipe: buildRecipeDetail(),
+      preferredGravityUnit: "plato",
+    });
+    const createHtml = renderDesignerMarkup({ mode: "create", preferredGravityUnit: "plato" });
+
+    expect(editHtml).toContain("Действия с рецептом");
+    expect(createHtml).not.toContain("Действия с рецептом");
+  });
+
+  // B2 (после ревью Н4): порог создания записи в БД — содержание ИЛИ личность.
+  // «Зашёл и ушёл» записи не оставляет, но и осмысленное начало работы (своё имя,
+  // свой стиль, описание) больше не пропадает — рецепт сохраняется.
+  it("порог создания рецепта: ингредиент, своё имя, свой стиль или описание", () => {
+    const baseline = { title: "Новый рецепт 7", styleId: null };
+    const emptyPayload = {
+      title: "Новый рецепт 7",
+      publicationState: "private" as const,
+      batchSizeEnteredQuantity: 20,
+      batchSizeEnteredUnit: "l",
+      boilTimeMinutes: 60,
+      ingredients: []
+    };
+
+    // Пустой рецепт с автоименем — мусор, в БД не заводим (даже без baseline:
+    // «Новый рецепт N» распознаётся по формату).
+    expect(isRecipeDraftWorthPersisting(emptyPayload, baseline)).toBe(false);
+    expect(isRecipeDraftWorthPersisting(emptyPayload)).toBe(false);
+    // Настройки процесса сами по себе рецептом не делают — порог не проходят.
+    expect(isRecipeDraftWorthPersisting({
+      ...emptyPayload,
+      batchSizeEnteredQuantity: 33,
+      boilTimeMinutes: 90
+    }, baseline)).toBe(false);
+
+    expect(isRecipeDraftWorthPersisting({
+      ...emptyPayload,
+      ingredients: [{
+        amountEnteredQuantity: 5,
+        amountEnteredUnit: "kg",
+        stage: "mash" as const,
+        ingredientCatalogItemId: "malt-pilsner"
+      }]
+    }, baseline)).toBe(true);
+    expect(isRecipeDraftWorthPersisting({ ...emptyPayload, title: "Мой стаут" }, baseline)).toBe(true);
+    expect(isRecipeDraftWorthPersisting({ ...emptyPayload, styleId: "20A" }, baseline)).toBe(true);
+    expect(isRecipeDraftWorthPersisting({ ...emptyPayload, description: "Тёмный, на овсянке" }, baseline)).toBe(true);
+    expect(isRecipeDraftWorthPersisting({ ...emptyPayload, authorNotes: "Дрожжи US-05" }, baseline)).toBe(true);
+
+    // Стиль, предзаполненный из URL (/app/recipes/new?style=24A), выбирал не
+    // редактор — сам по себе он черновик не заводит; смена стиля — заводит.
+    const prefilled = { ...emptyPayload, styleId: "24A" };
+    expect(isRecipeDraftWorthPersisting(prefilled, { ...baseline, styleId: "24A" })).toBe(false);
+    expect(isRecipeDraftWorthPersisting({ ...prefilled, styleId: "21A" }, { ...baseline, styleId: "24A" })).toBe(true);
+  });
+
+  // Автоимя генерит getNextDefaultRecipeTitle (features/recipes/service.ts);
+  // формат обязан совпадать, иначе порог примет автоимя за «своё название».
+  it("автоимя «Новый рецепт N» не считается своим названием", () => {
+    expect(isAutoRecipeTitle("Новый рецепт 1")).toBe(true);
+    expect(isAutoRecipeTitle("Новый рецепт 42")).toBe(true);
+    expect(isAutoRecipeTitle("  Новый рецепт 7  ")).toBe(true);
+    expect(isAutoRecipeTitle("Новый рецепт")).toBe(true);
+    expect(isAutoRecipeTitle("Новый рецепт стаута")).toBe(false);
+    expect(isAutoRecipeTitle("Мой стаут")).toBe(false);
+  });
+
+  // Шапка обязана честно говорить, есть запись в БД или нет: «Черновик» читался бы
+  // как «сохранён, но не опубликован» (это соседний чип «Приватный»).
+  it("шапка несохранённого рецепта показывает «Не сохранён»", () => {
+    const createHtml = renderDesignerMarkup({ mode: "create", preferredGravityUnit: "plato" });
+
+    expect(createHtml).toContain("Не сохранён");
+    expect(createHtml).not.toContain("Черновик");
+    // Нетронутый конструктор терять нечего — кнопку «Сохранить» не навязываем
+    // (она появляется, как только появляется несохранённая работа).
+    expect(createHtml).not.toContain(">Сохранить<");
+
+    const editHtml = renderDesignerMarkup({
+      mode: "edit",
+      initialRecipe: buildRecipeDetail(),
+      preferredGravityUnit: "plato"
+    });
+
+    expect(editHtml).toContain("Сохранено");
+    expect(editHtml).not.toContain("Не сохранён");
+  });
+
+  // Н5: партии переживают удаление рецепта, но теряют связь с ним — подтверждение
+  // обязано назвать их число и судьбу, а не молчать.
+  it("подтверждение удаления рецепта называет судьбу партий", () => {
+    expect(buildRecipeDeleteConfirmDescription("Мой стаут", 0))
+      .toBe("Рецепт «Мой стаут» будет удалён вместе с ингредиентами и параметрами.");
+    expect(buildRecipeDeleteConfirmDescription("Мой стаут", 1))
+      .toBe("Рецепт «Мой стаут» будет удалён вместе с ингредиентами и параметрами. У рецепта 1 партия. Она останется в «Партиях», но потеряет связь с рецептом.");
+    expect(buildRecipeDeleteConfirmDescription("Мой стаут", 3))
+      .toBe("Рецепт «Мой стаут» будет удалён вместе с ингредиентами и параметрами. У рецепта 3 партии. Они останутся в «Партиях», но потеряют связь с рецептом.");
+    expect(buildRecipeDeleteConfirmDescription("Мой стаут", 5)).toContain("У рецепта 5 партий.");
+    expect(buildRecipeDeleteConfirmDescription("   ", 0)).toContain("«Без названия»");
+  });
+
+  // A5: пустое «мин» у хмеля на кипячение молча превращалось в 60 при расчёте IBU и
+  // ни во что — на странице рецепта. Теперь поле предзаполнено временем кипячения.
+  it("поле «мин» у хмеля на кипячение предзаполнено временем кипячения рецепта", () => {
+    expect(createEmptyIngredient("hop", "boil").stepMeta.timeMinutes).toBe("60");
+    expect(createEmptyIngredient("hop", "boil", null, 90).stepMeta.timeMinutes).toBe("90");
+    expect(createEmptyIngredient("hop", "boil", null, 90).timeOffset).toBe("90");
+    // Время хопстенда ≠ время кипячения, у FWH время вообще не участвует в расчёте —
+    // осмысленного дефолта нет, поле остаётся пустым.
+    expect(createEmptyIngredient("hop", "whirlpool", null, 90).stepMeta.timeMinutes).toBe("");
+    expect(createEmptyIngredient("hop", "first_wort_hop", null, 90).stepMeta.timeMinutes).toBe("");
+    expect(createEmptyIngredient("hop", "dry_hop", null, 90).stepMeta.timeMinutes).toBeUndefined();
+  });
+
+  // Н6: дефолт «мин» подставлялся только при СОЗДАНИИ строки. Хмель, добавленный
+  // как сухое охмеление и переключённый на кипячение, оставался с пустым временем —
+  // и расчёт IBU молча подставлял своё.
+  it("смена типа добавления на «Кипячение» подставляет время кипячения рецепта", () => {
+    const dryHop = createEmptyIngredient("hop", "dry_hop", null, 90);
+    const switchedToBoil = applyHopUseTypeChange(dryHop, "boil", 90);
+
+    expect(switchedToBoil.stepMeta.useType).toBe("boil");
+    expect(switchedToBoil.stepMeta.timeMinutes).toBe("90");
+    expect(switchedToBoil.timeOffset).toBe("90");
+    expect(switchedToBoil.stage).toBe("boil");
+
+    // Введённое пользователем время не перетираем.
+    const boilWithTime = applyHopUseTypeChange({
+      ...dryHop,
+      stepMeta: { ...dryHop.stepMeta, timeMinutes: "15" }
+    }, "boil", 90);
+    expect(boilWithTime.stepMeta.timeMinutes).toBe("15");
+
+    // Для типов без осмысленного дефолта время не выдумываем (хопстенд ≠ кипячение).
+    const whirlpool = applyHopUseTypeChange(dryHop, "whirlpool", 90);
+    expect(whirlpool.stepMeta.timeMinutes).toBeUndefined();
+    expect(whirlpool.stage).toBe("whirlpool");
+
+    // Дефолт берётся из времени кипячения рецепта, а не из константы.
+    expect(applyHopUseTypeChange(dryHop, "boil", 45).stepMeta.timeMinutes).toBe("45");
+    expect(applyHopUseTypeChange(dryHop, "boil").stepMeta.timeMinutes).toBe("60");
   });
 
   it("renders manually added water treatments with the water-additive card style", () => {

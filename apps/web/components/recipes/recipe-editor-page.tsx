@@ -5,7 +5,7 @@ import React, { useCallback, useState } from "react";
 import type { EquipmentProfileDto } from "@/features/equipment-profiles/contracts";
 import type { IngredientSuggestionItem } from "@/features/ingredients/contracts";
 import type { RecipeImageDto } from "@/features/recipe-images/contracts";
-import type { RecipeDetailDto, RecipePublicationState, RecipeStockCoverageDto } from "@/features/recipes/contracts";
+import type { RecipeDetailDto, RecipePublicationState } from "@/features/recipes/contracts";
 import type { PreferredGravityUnit } from "@/features/system/gravity-units";
 
 import { RecipeCloneAttribution } from "./recipe-clone-attribution";
@@ -18,9 +18,9 @@ export function RecipeEditorPage({
   initialTitle,
   initialStyleId,
   initialIngredientSelection,
-  initialStockCoverage,
   initialImages = [],
   equipmentProfiles = [],
+  brewBatchCount = 0,
   preferredGravityUnit
 }: {
   mode: "create" | "edit";
@@ -28,9 +28,9 @@ export function RecipeEditorPage({
   initialTitle?: string;
   initialStyleId?: string;
   initialIngredientSelection?: IngredientSuggestionItem | null;
-  initialStockCoverage?: RecipeStockCoverageDto | null;
   initialImages?: RecipeImageDto[];
   equipmentProfiles?: EquipmentProfileDto[];
+  brewBatchCount?: number;
   preferredGravityUnit: PreferredGravityUnit;
 }) {
   const [, setSaveStatus] = useState<RecipeSaveStatus>("saved");
@@ -57,9 +57,9 @@ export function RecipeEditorPage({
         initialTitle={initialTitle}
         initialStyleId={initialStyleId}
         initialIngredientSelection={initialIngredientSelection}
-        initialStockCoverage={initialStockCoverage}
         initialImages={initialImages}
         equipmentProfiles={equipmentProfiles}
+        brewBatchCount={brewBatchCount}
         onSaveStatusChange={setSaveStatus}
         onRecipeCreated={handleRecipeCreated}
         onPublicationStateChange={setPublicationState}

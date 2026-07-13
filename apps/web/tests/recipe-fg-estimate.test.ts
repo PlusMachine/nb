@@ -5,6 +5,9 @@ import { defaultRecipeProcessMeta, type RecipeCalculationMeta } from "../feature
 import { calculateRecipeFgEstimate, resolveRecipeFgSourceLabel } from "../features/recipes/fg-estimate";
 
 const OG = 1.052;
+// Same conversion constant as features/recipes/fg-estimate.ts, needed here to
+// build fermentables whose gravity-contribution shares land on round numbers.
+const KG_TO_LB = 2.2046226218;
 
 const buildCalculationMeta = (overrides: Partial<RecipeCalculationMeta> = {}): RecipeCalculationMeta => ({
   bitternessFormula: "tinseth_whirlpool_v2",
@@ -244,6 +247,124 @@ describe("recipe FG estimate", () => {
 
     expect(lactose.fgEstimateDetails?.lactoseAdj).toBeGreaterThan(dextrin.fgEstimateDetails?.crystalDextrinAdj ?? 0);
     expect(lactose.predictedFg).toBeGreaterThan(dextrin.predictedFg ?? 0);
+  });
+
+  it("keeps effective attenuation exactly at base when the grain bill has no special classes", () => {
+    const result = calculateRecipeFgEstimate({
+      og: OG,
+      fermentables: baseFermentables,
+      yeasts: rangeYeast,
+      processMeta: defaultRecipeProcessMeta,
+      calculationMeta: buildCalculationMeta()
+    });
+
+    // attBase = baseAttenuationPct (78) + mashAdjPctPoints (0); the weighted
+    // model must not move it when shareSugar/shareCrystal/shareLactose are 0.
+    expect(result.fgEstimateDetails?.effectiveAttenuationPct).toBe(78);
+    expect(result.fgEstimateDetails?.baseAttenuationPct).toBe(78);
+  });
+
+  it("computes weighted effective attenuation for a sugar-heavy tripel", () => {
+    // 80% of gravity from base malt, 20% from table sugar, yeast typical 78%:
+    // attEff = 0.8*78 + 0.2*100 = 82.4 -> FG(1.070, 82.4%) = 1.012.
+    const baseWeightKg = 6;
+    const basePpg = 37;
+    const baseContribution = baseWeightKg * KG_TO_LB * basePpg;
+    const sugarPpg = 46;
+    const sugarWeightKg = (baseContribution / 4) / (KG_TO_LB * sugarPpg);
+
+    const result = calculateRecipeFgEstimate({
+      og: 1.070,
+      fermentables: [
+        {
+          name: "Pilsner Malt",
+          weightKg: baseWeightKg,
+          potentialPpg: basePpg,
+          technicalData: { type: "malt" } as const
+        },
+        {
+          name: "Table Sugar",
+          weightKg: sugarWeightKg,
+          potentialPpg: sugarPpg,
+          technicalData: { type: "fermentable", productFamily: "simple sugar" } as const
+        }
+      ],
+      yeasts: [{
+        name: "Belgian Yeast",
+        technicalData: { type: "yeast", attenuationPctTypical: 78, form: "dry" } as const
+      }],
+      processMeta: defaultRecipeProcessMeta,
+      calculationMeta: buildCalculationMeta()
+    });
+
+    expect(result.fgEstimateDetails?.simpleSugarSharePct).toBeCloseTo(20, 1);
+    expect(result.fgEstimateDetails?.effectiveAttenuationPct).toBeCloseTo(82.4, 1);
+    expect(result.predictedFg).toBe(1.012);
+  });
+
+  it("computes weighted effective attenuation for a lactose-heavy milk stout", () => {
+    // 8% of gravity from lactose (apparent attenuation 0), base attenuation 75%:
+    // attEff = 75 - 8*75/100 = 69 -> FG(1.060, 69%) is higher than the base estimate.
+    const baseWeightKg = 5.75;
+    const basePpg = 37;
+    const baseContribution = baseWeightKg * KG_TO_LB * basePpg;
+    const lactosePpg = 35;
+    const lactoseWeightKg = (baseContribution * (0.08 / 0.92)) / (KG_TO_LB * lactosePpg);
+
+    const result = calculateRecipeFgEstimate({
+      og: 1.060,
+      fermentables: [
+        {
+          name: "Pale Malt",
+          weightKg: baseWeightKg,
+          potentialPpg: basePpg,
+          technicalData: { type: "malt" } as const
+        },
+        {
+          name: "Lactose",
+          weightKg: lactoseWeightKg,
+          potentialPpg: lactosePpg,
+          technicalData: { type: "fermentable", productFamily: "lactose" } as const
+        }
+      ],
+      yeasts: [],
+      processMeta: defaultRecipeProcessMeta,
+      calculationMeta: buildCalculationMeta({ manualAttenuationOverridePct: 75 })
+    });
+
+    expect(result.fgEstimateDetails?.lactoseSharePct).toBeCloseTo(8, 1);
+    expect(result.fgEstimateDetails?.effectiveAttenuationPct).toBeCloseTo(69, 1);
+    expect(result.predictedFg).toBe(1.019);
+  });
+
+  it("never lets the effective attenuation exceed the 98% ceiling, even with a heavy sugar share", () => {
+    const baseWeightKg = 6;
+    const basePpg = 37;
+    const baseContribution = baseWeightKg * KG_TO_LB * basePpg;
+    const sugarWeightKg = (baseContribution / 4) / (KG_TO_LB * 46);
+
+    const result = calculateRecipeFgEstimate({
+      og: 1.070,
+      fermentables: [
+        {
+          name: "Pilsner Malt",
+          weightKg: baseWeightKg,
+          potentialPpg: basePpg,
+          technicalData: { type: "malt" } as const
+        },
+        {
+          name: "Table Sugar",
+          weightKg: sugarWeightKg,
+          potentialPpg: 46,
+          technicalData: { type: "fermentable", productFamily: "simple sugar" } as const
+        }
+      ],
+      yeasts: [],
+      processMeta: defaultRecipeProcessMeta,
+      calculationMeta: buildCalculationMeta({ manualAttenuationOverridePct: 96 })
+    });
+
+    expect(result.fgEstimateDetails?.effectiveAttenuationPct).toBeLessThanOrEqual(98);
   });
 
   it("gives manual attenuation override priority over yeast attenuation", () => {

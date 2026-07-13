@@ -425,7 +425,7 @@ function RecipesGalleryInner({
                 id="my-recipes-sort"
                 value={sort}
                 onChange={(event) => handleSortChange(event.target.value as SortMode)}
-                className="h-10 flex-1 rounded-lg border border-border bg-card px-3 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring sm:flex-none"
+                className="h-10 flex-1 rounded-lg border border-border bg-card px-3 text-base text-foreground focus:outline-none focus:ring-2 focus:ring-ring sm:flex-none sm:text-sm"
               >
                 {sortOptions.map((option) => (
                   <option key={option.value} value={option.value}>

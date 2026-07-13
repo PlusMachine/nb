@@ -1,6 +1,6 @@
 "use client";
 
-import { getBeerStyleById } from "@nb/brewing-core";
+import { getBeerStyleById, getBjcpStyleDisplayName } from "@nb/brewing-core";
 import { useToast } from "@nb/ui";
 import {
   CircleCheck,
@@ -22,18 +22,13 @@ import { useRouter } from "next/navigation";
 import {
   createRecipeCustomIngredientAction,
   createRecipeVersionAction,
-  consumeRecipeInventoryAction,
+  deleteRecipeAction,
   exportRecipeBeerXmlAction,
-  getRecipeStockCoverageAction,
   importBeerXmlRecipeAction,
   importBrewfatherJsonRecipeAction,
   previewRecipeDraftAction,
-  releaseRecipeInventoryAction,
-  reserveRecipeInventoryAction,
-  syncRecipeInventoryAllocationsAction,
   type RecipeEditorPayload,
-  type RecipeEditorResult,
-  type RecipeInventoryActionResult
+  type RecipeEditorResult
 } from "@/app/(app)/app/recipes/actions";
 import { ConfirmActionDialog } from "@/components/shared/confirm-action-dialog";
 import {
@@ -52,8 +47,7 @@ import {
   type RecipeDetailDto,
   type RecipeDraftPreviewDto,
   type RecipeProcessMeta,
-  type RecipePublicationState,
-  type RecipeStockCoverageDto
+  type RecipePublicationState
 } from "@/features/recipes/contracts";
 import { formatGravity, formatGravityRange, formatGravitySecondary, type PreferredGravityUnit } from "@/features/system/gravity-units";
 import { BitternessSettingsDrawer } from "@/components/recipes/bitterness-settings-drawer";
@@ -67,7 +61,6 @@ import {
   getRecipeWaterSetupToggleLabel,
   RecipeWaterAdditivesSection
 } from "@/components/recipes/recipe-water-additives-section";
-import { StockCoverageSummary, StockConsumeDialog } from "@/components/recipes/stock-coverage-summary";
 import {
   setRecipeWaterSaltCalculationMode,
   WaterSetupWizard
@@ -79,6 +72,7 @@ import { scaleRecipeToVolume } from "@/features/recipes/scale";
 
 import {
   buildRecipeEditHref,
+  buildRecipeDeleteConfirmDescription,
   replaceRecipeEditorUrl,
   hopUseTypeLabels,
   hopUseTypeSectionLabels,
@@ -90,6 +84,8 @@ import {
   cloneEquipmentProfileSnapshot,
   buildEquipmentProfileSnapshotFromDto,
   formatEquipmentProfileRecipeValue,
+  DEFAULT_BOIL_TIME_MINUTES,
+  DEFAULT_EFFICIENCY,
   normalizeSavePayload,
   normalizeEditorPublicationState,
   applySelection,
@@ -135,9 +131,10 @@ type Props = {
   initialTitle?: string;
   initialStyleId?: string;
   initialIngredientSelection?: IngredientSuggestionItem | null;
-  initialStockCoverage?: RecipeStockCoverageDto | null;
   initialImages?: RecipeImageDto[];
   equipmentProfiles?: EquipmentProfileDto[];
+  /** Сколько партий пользователь сварил по этому рецепту — их судьбу называет подтверждение удаления. */
+  brewBatchCount?: number;
   onSaveStatusChange?: (status: RecipeSaveStatus) => void;
   onRecipeCreated?: (recipe: RecipeDetailDto) => void;
   onPublicationStateChange?: (state: RecipePublicationState) => void;
@@ -152,9 +149,9 @@ export function RecipeDesigner({
   initialTitle,
   initialStyleId,
   initialIngredientSelection = null,
-  initialStockCoverage = null,
   initialImages = [],
   equipmentProfiles = [],
+  brewBatchCount = 0,
   onSaveStatusChange,
   onRecipeCreated,
   onPublicationStateChange,
@@ -196,7 +193,7 @@ export function RecipeDesigner({
   });
   const [efficiency, setEfficiency] = useState(initialRecipe?.efficiency != null
     ? String(initialRecipe.efficiency)
-    : String(initialDefaultEquipmentProfile?.brewhouseEfficiencyPct ?? 75));
+    : String(initialDefaultEquipmentProfile?.brewhouseEfficiencyPct ?? DEFAULT_EFFICIENCY));
   const [boilTimeMinutes, setBoilTimeMinutes] = useState(initialRecipe?.boilTimeMinutes != null ? String(initialRecipe.boilTimeMinutes) : "60");
   const [processMeta, setProcessMeta] = useState<RecipeProcessMeta>(() => {
     const cloned = cloneRecipeProcessMeta(initialRecipe?.processMeta ?? defaultRecipeProcessMeta);
@@ -247,6 +244,9 @@ export function RecipeDesigner({
   // Держим последнюю версию в ref и читаем её из onClick тоста (клик всегда
   // происходит уже после коммита хука, ref к этому моменту актуален).
   const restoreIngredientRef = useRef<(ingredient: DesignerIngredient, index: number) => void>(() => {});
+  // Время кипячения рецепта числом — им предзаполняется поле «мин» у хмеля на
+  // кипячение (и его же подставляет расчёт IBU, если поле оставить пустым).
+  const effectiveBoilTimeMinutes = Number(boilTimeMinutes) || DEFAULT_BOIL_TIME_MINUTES;
   const {
     ingredients,
     setIngredients,
@@ -266,6 +266,7 @@ export function RecipeDesigner({
   } = useRecipeIngredients({
     initialRecipe,
     initialIngredientSelection,
+    boilTimeMinutes: effectiveBoilTimeMinutes,
     onIngredientDeleted: ({ ingredient, index }) => {
       show({
         title: "Позиция удалена",
@@ -281,7 +282,6 @@ export function RecipeDesigner({
   useEffect(() => {
     restoreIngredientRef.current = restoreIngredient;
   }, [restoreIngredient]);
-  const [stockCoverage, setStockCoverage] = useState<RecipeStockCoverageDto | null>(initialStockCoverage);
   const [beerXmlExport, setBeerXmlExport] = useState("");
   const [beerXmlImport, setBeerXmlImport] = useState("");
   const [brewfatherJsonImport, setBrewfatherJsonImport] = useState("");
@@ -289,8 +289,10 @@ export function RecipeDesigner({
   const [previewError, setPreviewError] = useState<string | null>(null);
   const [recalculating, setRecalculating] = useState(false);
   const [bitternessSettingsOpen, setBitternessSettingsOpen] = useState(false);
-  const [stockConsumeDialogOpen, setStockConsumeDialogOpen] = useState(false);
   const [importExportOpen, setImportExportOpen] = useState(false);
+  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
+  const [deletePending, setDeletePending] = useState(false);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
   const [brewPickerOpen, setBrewPickerOpen] = useState(false);
   const [brewPickerRecipeId, setBrewPickerRecipeId] = useState<string | null>(null);
 
@@ -390,14 +392,19 @@ export function RecipeDesigner({
     setSavedSignature,
     savedBatchVolumeL,
     setSavedBatchVolumeL,
+    isDirty,
+    isDraftWorthPersisting,
     saveStatus,
     visibleSaveResult,
     hasRetriableSaveError,
-    persistRecipe
+    persistRecipe,
+    markDeleted,
+    restoreAfterFailedDelete
   } = useRecipeAutosave({
     mode,
     initialRecipe,
     initialTitle,
+    initialStyleId,
     onRecipeCreated,
     onSaveStatusChange,
     payload,
@@ -784,6 +791,7 @@ export function RecipeDesigner({
     <IngredientEditor
       draft={openEditor.draft}
       isExisting={openEditor.isExisting}
+      boilTimeMinutes={effectiveBoilTimeMinutes}
       onChange={(next) => setOpenEditor((current) => current ? { ...current, draft: next } : current)}
       onSave={saveEditor}
       onCancel={() => requestCloseEditor()}
@@ -807,7 +815,8 @@ export function RecipeDesigner({
     setPublishError(null);
     const result = await persistRecipe({
       nextPublicationState: "published",
-      surfaceInlineResult: false
+      surfaceInlineResult: false,
+      force: true
     });
 
     if (result?.ok) {
@@ -830,7 +839,8 @@ export function RecipeDesigner({
     setMakePrivateError(null);
     const result = await persistRecipe({
       nextPublicationState: "private",
-      surfaceInlineResult: false
+      surfaceInlineResult: false,
+      force: true
     });
 
     if (result?.ok) {
@@ -848,7 +858,7 @@ export function RecipeDesigner({
 
     // Сохраняем текущие правки перед навигацией к другой версии (#14),
     // как это делает handleCreateVersion — иначе несохранённое теряется молча.
-    const saveBeforeSwitch = await persistRecipe({ surfaceInlineResult: true });
+    const saveBeforeSwitch = await persistRecipe({ surfaceInlineResult: true, force: true });
     if (saveBeforeSwitch && !saveBeforeSwitch.ok) {
       return;
     }
@@ -863,7 +873,7 @@ export function RecipeDesigner({
       return;
     }
 
-    const saveBeforeVersionResult = await persistRecipe({ surfaceInlineResult: true });
+    const saveBeforeVersionResult = await persistRecipe({ surfaceInlineResult: true, force: true });
     if (saveBeforeVersionResult && !saveBeforeVersionResult.ok) {
       return;
     }
@@ -890,56 +900,39 @@ export function RecipeDesigner({
     }
   };
 
-  // Возвращает успех/провал (а не void), чтобы вызывающая сторона могла решить
-  // судьбу своего UI — например, закрыть StockConsumeDialog только при успехе (#8/#9).
-  const runInventoryAction = async (action: "sync" | "reserve" | "consume" | "release"): Promise<boolean> => {
-    const saveBeforeInventoryResult = await persistRecipe({ surfaceInlineResult: true });
-    if (saveBeforeInventoryResult && !saveBeforeInventoryResult.ok) {
-      return false;
+  // Удаление рецепта прямо из редактора: единственный выход для черновика, который
+  // уже создан в БД (иначе пользователю пришлось бы искать его в галерее). markDeleted
+  // гасит автосейв — иначе взведённый таймер воскресил бы рецепт после удаления.
+  const handleDeleteRecipe = async () => {
+    if (!activeRecipeId || deletePending) {
+      return;
     }
 
-    const recipeId = saveBeforeInventoryResult?.recipe?.id ?? activeRecipeId;
-    if (!recipeId) {
-      return false;
-    }
-
-    const actionMap: Record<typeof action, (recipeId: string) => Promise<RecipeInventoryActionResult>> = {
-      sync: syncRecipeInventoryAllocationsAction,
-      reserve: reserveRecipeInventoryAction,
-      consume: consumeRecipeInventoryAction,
-      release: releaseRecipeInventoryAction
-    };
-
-    setPendingSave(true);
+    setDeletePending(true);
+    setDeleteError(null);
+    markDeleted();
     try {
-      const result = await actionMap[action](recipeId);
-      setSaveResult({
-        ok: result.ok,
-        message: result.message
+      const result = await deleteRecipeAction(activeRecipeId);
+      if (!result.ok) {
+        restoreAfterFailedDelete();
+        setDeleteError(result.message);
+        return;
+      }
+
+      setDeleteConfirmOpen(false);
+      startTransition(() => {
+        router.push("/app/recipes");
       });
-      setSaveResultSignature(currentSignature);
-
-      if (result.coverage) {
-        setStockCoverage(result.coverage);
-        return result.ok;
-      }
-
-      const refreshed = await getRecipeStockCoverageAction(recipeId);
-      if (refreshed.coverage) {
-        setStockCoverage(refreshed.coverage);
-      }
-      return result.ok;
     } catch {
-      setSaveResult({ ok: false, message: "Не удалось выполнить операцию со складом — проверьте соединение." });
-      setSaveResultSignature(currentSignature);
-      return false;
+      restoreAfterFailedDelete();
+      setDeleteError("Не удалось удалить рецепт — проверьте соединение.");
     } finally {
-      setPendingSave(false);
+      setDeletePending(false);
     }
   };
 
   const handleExportBeerXml = async (): Promise<ImportExportActionResult> => {
-    const saveBeforeExportResult = await persistRecipe({ surfaceInlineResult: true });
+    const saveBeforeExportResult = await persistRecipe({ surfaceInlineResult: true, force: true });
     if (saveBeforeExportResult && !saveBeforeExportResult.ok) {
       return {
         ok: false,
@@ -1001,7 +994,6 @@ export function RecipeDesigner({
     setEquipmentProfileId(recipe.equipmentProfileId ?? null);
     setEquipmentProfileSnapshot(nextEquipmentProfileSnapshot);
     setIngredients(nextIngredients);
-    setStockCoverage(null);
     setPreview(buildInitialPreview(recipe));
     setPreviewError(null);
     setBlockedSignature(null);
@@ -1078,7 +1070,7 @@ export function RecipeDesigner({
   // двух режимов («Сварить самому» / «Сварить на автоматике»). recipe-designer
   // отвечает только за то, что рецепт уже сохранён (recipeId существует).
   const handleOpenBrewPicker = async () => {
-    const saveBeforeBrewResult = await persistRecipe({ surfaceInlineResult: true });
+    const saveBeforeBrewResult = await persistRecipe({ surfaceInlineResult: true, force: true });
     if (saveBeforeBrewResult && !saveBeforeBrewResult.ok) {
       return;
     }
@@ -1111,6 +1103,16 @@ export function RecipeDesigner({
     replaceRecipeEditorUrl(recipe.id);
   }, [onRecipeCreated, title]);
 
+  // Записи в БД ещё нет: либо рецепт не набрал порога (B2), либо автосейв ждёт
+  // первого изменения (рецепт засеян ингредиентом из каталога). Оба случая — «Не
+  // сохранён»: «Черновик» читался бы как «сохранён, но не опубликован» (публикацию
+  // показывает соседний чип), а «Сохранение…» — как поломка.
+  const isUnsavedDraft = !activeRecipeId;
+  // Есть что терять — подсвечиваем чип и даём явную кнопку «Сохранить»: фоновый
+  // автосейв в этом состоянии молчит, и уйти со страницы, потеряв настройки, можно
+  // только осознанно (уход по ссылке беззвучен, beforeunload ловит лишь закрытие вкладки).
+  const hasUnsavedDraftWork = isUnsavedDraft && (isDirty || isDraftWorthPersisting);
+  const canSaveDraftNow = hasUnsavedDraftWork && (saveStatus === "draft" || saveStatus === "saved");
   const headerSaveStatusMeta: { label: string; icon: React.ReactNode; className: string } = saveStatus === "saving"
     ? {
       label: "Сохранение…",
@@ -1123,17 +1125,21 @@ export function RecipeDesigner({
         icon: <CircleAlert className="h-3.5 w-3.5" />,
         className: "bg-destructive-subtle text-destructive-subtle-foreground ring-destructive-border"
       }
-      : saveStatus === "saved" && !activeRecipeId
+      : saveStatus === "draft" || isUnsavedDraft
         ? {
-          label: "Черновик",
+          label: "Не сохранён",
           icon: <CircleDashed className="h-3.5 w-3.5" />,
-          className: "bg-muted text-muted-foreground ring-border"
+          className: hasUnsavedDraftWork
+            ? "bg-warning-subtle text-warning-subtle-foreground ring-warning/30"
+            : "bg-muted text-muted-foreground ring-border"
         }
         : {
           label: "Сохранено",
           icon: <CircleCheck className="h-3.5 w-3.5" />,
           className: "bg-success-subtle text-success-subtle-foreground ring-success/30"
         };
+
+  const deleteRecipeDescription = buildRecipeDeleteConfirmDescription(title, brewBatchCount);
 
   const visibilityChipMeta = savedVisibility === "published"
     ? { label: "Опубликован", icon: <Globe className="h-3.5 w-3.5" />, className: "bg-violet-50 text-violet-700 ring-violet-200 dark:bg-violet-500/15 dark:text-violet-300 dark:ring-violet-500/30" }
@@ -1187,6 +1193,17 @@ export function RecipeDesigner({
           <span className="hidden sm:inline">{headerSaveStatusMeta.label}</span>
         </span>
 
+        {canSaveDraftNow ? (
+          <button
+            type="button"
+            onClick={() => void persistRecipe({ force: true })}
+            disabled={pendingSave}
+            className="inline-flex h-7 items-center rounded-full border border-border bg-card px-2.5 text-[11px] font-medium text-foreground transition-colors hover:bg-muted disabled:cursor-not-allowed disabled:opacity-60"
+          >
+            Сохранить
+          </button>
+        ) : null}
+
         {/* На мобиле метрики уводим в отдельную строку с горизонтальным скроллом
             (order-last + basis-full + flex-nowrap): sticky-панель складывается в
             предсказуемые 2 ряда вместо 3, экономя ~высоту экрана (UX-находка #25). */}
@@ -1206,7 +1223,7 @@ export function RecipeDesigner({
           ))}
           {headerStyle ? (
             <span className="inline-flex items-center rounded-full bg-muted px-2 py-0.5 text-[10px] font-medium text-muted-foreground ring-1 ring-inset ring-ring">
-              {headerStyle.name}
+              {getBjcpStyleDisplayName(headerStyle)}
             </span>
           ) : null}
         </dl>
@@ -1255,6 +1272,15 @@ export function RecipeDesigner({
             labelsHref={activeRecipeId ? `/app/recipes/${activeRecipeId}/labels` : null}
             onOpenImportExport={() => setImportExportOpen(true)}
             onOpenBrew={() => void handleOpenBrewPicker()}
+            // Пока рецепт не создан в БД — удалять нечего. На pendingSave НЕ гейтим:
+            // иначе kebab мигал бы на каждом автосейве. Гонку «автосейв в полёте →
+            // удаление» закрывает markDeleted (гасит взведённый таймер).
+            onDelete={activeRecipeId
+              ? () => {
+                setDeleteError(null);
+                setDeleteConfirmOpen(true);
+              }
+              : undefined}
           />
         </div>
       </div>
@@ -1331,7 +1357,7 @@ export function RecipeDesigner({
             {hasRetriableSaveError ? (
               <button
                 type="button"
-                onClick={() => void persistRecipe()}
+                onClick={() => void persistRecipe({ force: true })}
                 disabled={pendingSave}
                 className="shrink-0 font-medium text-destructive underline decoration-destructive-border underline-offset-2 transition-colors hover:text-destructive disabled:opacity-60"
               >
@@ -1493,37 +1519,6 @@ export function RecipeDesigner({
         ) : null}
       </div>
 
-      <StockCoverageSummary
-        coverage={stockCoverage}
-        pending={pendingSave}
-        activeRecipeId={activeRecipeId}
-        onAction={(action) => {
-          // Списание — необратимая складская операция, поэтому идёт через диалог
-          // с построчной сводкой (#8/#9); остальные действия (обновить/резерв/снять
-          // резерв) остаются одним кликом, как и раньше.
-          if (action === "consume") {
-            setStockConsumeDialogOpen(true);
-            return;
-          }
-          void runInventoryAction(action);
-        }}
-      />
-
-      <StockConsumeDialog
-        open={stockConsumeDialogOpen}
-        coverage={stockCoverage}
-        pending={pendingSave}
-        message={visibleSaveResult && !visibleSaveResult.ok ? visibleSaveResult.message : null}
-        onConfirm={() => {
-          void runInventoryAction("consume").then((ok) => {
-            if (ok) {
-              setStockConsumeDialogOpen(false);
-            }
-          });
-        }}
-        onClose={() => setStockConsumeDialogOpen(false)}
-      />
-
       <section className="space-y-4">
         <RecipeImagesSection
           recipeId={activeRecipeId}
@@ -1546,7 +1541,7 @@ export function RecipeDesigner({
               <textarea
                 value={description}
                 onChange={(event) => setDescription(event.target.value)}
-                className="min-h-28 w-full rounded-xl border border-border bg-muted/50 px-3 py-2.5 text-sm text-foreground placeholder:text-muted-foreground focus:border-ring focus:bg-card focus:outline-none focus:ring-2 focus:ring-ring"
+                className="min-h-28 w-full rounded-xl border border-border bg-muted/50 px-3 py-2.5 text-base text-foreground placeholder:text-muted-foreground focus:border-ring focus:bg-card focus:outline-none focus:ring-2 focus:ring-ring sm:text-sm"
                 placeholder="Публичное описание рецепта — что это за пиво, вдохновение, особенности…"
               />
               {sectionErrors.description ? <p className="mt-2 text-xs text-destructive">{sectionErrors.description}</p> : null}
@@ -1568,7 +1563,7 @@ export function RecipeDesigner({
               <textarea
                 value={authorNotes}
                 onChange={(event) => setAuthorNotes(event.target.value)}
-                className="min-h-28 w-full rounded-xl border border-border bg-muted/50 px-3 py-2.5 text-sm text-foreground placeholder:text-muted-foreground focus:border-ring focus:bg-card focus:outline-none focus:ring-2 focus:ring-ring"
+                className="min-h-28 w-full rounded-xl border border-border bg-muted/50 px-3 py-2.5 text-base text-foreground placeholder:text-muted-foreground focus:border-ring focus:bg-card focus:outline-none focus:ring-2 focus:ring-ring sm:text-sm"
                 placeholder="Видны только вам — TODO, лоты, наблюдения с прошлых варок…"
               />
             </div>
@@ -1604,6 +1599,24 @@ export function RecipeDesigner({
         onClose={() => {
           setMakePrivateConfirmOpen(false);
           setMakePrivateError(null);
+        }}
+      />
+
+      <ConfirmActionDialog
+        open={deleteConfirmOpen}
+        title="Удалить рецепт?"
+        description={deleteRecipeDescription}
+        confirmLabel="Удалить рецепт"
+        pendingLabel="Удаляем..."
+        pending={deletePending}
+        error={deleteError}
+        onConfirm={() => void handleDeleteRecipe()}
+        onClose={() => {
+          if (deletePending) {
+            return;
+          }
+          setDeleteConfirmOpen(false);
+          setDeleteError(null);
         }}
       />
 

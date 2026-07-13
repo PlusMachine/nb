@@ -10,7 +10,6 @@ import {
   Droplet,
   FlaskConical,
   Gauge,
-  Link2,
   Palette,
   Plus,
   RotateCcw,
@@ -22,8 +21,9 @@ import {
 import React, { useEffect, useMemo, useRef, useState } from "react";
 
 import { calibrateWcf, convertBrewingUnitGroup, sgToBrix, sgToPlato, type CalculatorGravityUnit } from "@nb/brewing-core";
-import { Button, useToast } from "@nb/ui";
+import { Button } from "@nb/ui";
 
+import { CopyLinkButton } from "@/components/shared/copy-link-button";
 import { RelatedLinksSection } from "@/components/shared/related-links-section";
 import { NumericInput } from "@/components/shared/numeric-input";
 import { IngredientPicker } from "@/components/ingredients/ingredient-picker";
@@ -53,7 +53,6 @@ import {
   REFRACTOMETER_FORMULA_OPTIONS,
   type AbvView,
   type ArrayCalculatorField,
-  type CalculatorDefinition,
   type DilutionOperation,
   type DilutionView,
   type HydrometerView,
@@ -182,7 +181,7 @@ function CalculatorInput({
   size?: "sm" | "md";
   onChange: (value: string) => void;
 }) {
-  const commonClassName = "mt-1 h-10 w-full rounded-lg border border-border bg-card px-3 text-sm text-foreground shadow-sm focus:border-border focus:outline-none focus:ring-2 focus:ring-ring";
+  const commonClassName = "mt-1 h-10 w-full rounded-lg border border-border bg-card px-3 text-base text-foreground shadow-sm focus:border-border focus:outline-none focus:ring-2 focus:ring-ring sm:text-sm";
   const options: CalculatorFieldOption[] = field.dynamicOptions ? field.dynamicOptions(state, row) : (field.options ?? []);
   const unitLabel = field.dynamicUnit ? field.dynamicUnit(state, row) : field.unit;
   const step = field.dynamicStep ? field.dynamicStep(state, row) : field.step;
@@ -375,7 +374,7 @@ function ArrayFieldEditor({
                 <button
                   type="button"
                   onClick={() => removeRow(index)}
-                  className="inline-flex h-7 w-7 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-destructive-subtle hover:text-destructive"
+                  className="inline-flex h-11 w-11 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-destructive-subtle hover:text-destructive"
                   aria-label="Удалить строку"
                 >
                   <Trash2 className="h-3.5 w-3.5" />
@@ -750,9 +749,32 @@ const STICKY_BAR_BOTTOM_PADDING_CLASSNAME = "pb-[calc(0.75rem_+_env(safe-area-in
 // без повторного вызова definition.calculate(). Тап — плавный скролл к полной панели.
 function StickyResultBar({ primary }: { primary: CalculatorResultStat }) {
   const toneAccentClassName = toneClassName(primary.tone, "hero");
+  const barRef = useRef<HTMLButtonElement>(null);
+
+  useEffect(() => {
+    const node = barRef.current;
+    if (!node) {
+      return;
+    }
+
+    // Другие fixed-элементы (кнопка «Обратная связь», тосты) должны знать высоту этого
+    // бара, чтобы не лечь поверх него. ResizeObserver, а не разовый замер: высота зависит
+    // от контента (helper-строка) и safe-area, которые меняются после монтирования.
+    const observer = new ResizeObserver((entries) => {
+      const height = entries[0]?.contentRect.height ?? 0;
+      document.documentElement.style.setProperty("--nb-sticky-bar-h", `${height}px`);
+    });
+    observer.observe(node);
+
+    return () => {
+      observer.disconnect();
+      document.documentElement.style.removeProperty("--nb-sticky-bar-h");
+    };
+  }, []);
 
   return (
     <button
+      ref={barRef}
       type="button"
       onClick={() => {
         document.getElementById("calculator-result")?.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -767,67 +789,6 @@ function StickyResultBar({ primary }: { primary: CalculatorResultStat }) {
         {primary.helper ? <span className="mt-0.5 block truncate text-[11px] font-normal leading-4 text-muted-foreground">{primary.helper}</span> : null}
       </span>
       <ChevronRight className="h-4 w-4 shrink-0 text-muted-foreground" aria-hidden="true" />
-    </button>
-  );
-}
-
-// «Скопировать ссылку на расчёт» — одно место в родительском layout под панелью
-// результата (и для generic ResultPanel, и для всех кастомных панелей), а не кнопка
-// внутри каждой из них. Состояние в URL не пишем на лету (никаких replaceState) —
-// ссылка собирается только по явному клику.
-function CopyCalculationLinkButton({
-  definition,
-  state
-}: {
-  definition: CalculatorDefinition;
-  state: CalculatorState;
-}) {
-  const { show } = useToast();
-
-  const copyText = async (text: string): Promise<boolean> => {
-    try {
-      await navigator.clipboard.writeText(text);
-      return true;
-    } catch {
-      // Фолбэк для браузеров/контекстов без Clipboard API (напр. без HTTPS) —
-      // старый приём с выделением скрытого textarea и execCommand.
-      try {
-        const textarea = document.createElement("textarea");
-        textarea.value = text;
-        textarea.style.position = "fixed";
-        textarea.style.opacity = "0";
-        document.body.appendChild(textarea);
-        textarea.select();
-        // execCommand возвращает boolean успеха — браузер может отказать и без исключения
-        // (например, вне пользовательского жеста), тогда молча показывать успех нельзя.
-        const copied = document.execCommand("copy");
-        document.body.removeChild(textarea);
-        return copied;
-      } catch {
-        return false;
-      }
-    }
-  };
-
-  const handleClick = async () => {
-    const query = serializeCalculatorStateToQuery(definition, state).toString();
-    const href = `${window.location.origin}/calculators/${definition.catalog.slug}${query ? `?${query}` : ""}`;
-    const ok = await copyText(href);
-    show(
-      ok
-        ? { title: "Ссылка на расчёт скопирована" }
-        : { title: "Не удалось скопировать ссылку", tone: "danger" }
-    );
-  };
-
-  return (
-    <button
-      type="button"
-      onClick={handleClick}
-      className="inline-flex w-full items-center justify-center gap-1.5 rounded-lg border border-border bg-card px-3 py-2 text-xs font-medium text-muted-foreground transition-colors hover:border-border hover:bg-accent hover:text-foreground"
-    >
-      <Link2 className="h-3.5 w-3.5" />
-      Скопировать ссылку на расчёт
     </button>
   );
 }
@@ -848,9 +809,16 @@ function SegmentedControl({
   fill?: boolean;
 }) {
   const buttonSize = size === "md" ? "h-10 text-sm" : "h-8 text-xs";
+  // Четыре и больше сегментов в один ряд не влезают на узком экране (подписи вроде
+  // «Вскрытая»/«Россыпью» слипаются) — до sm раскладываем их в два столбца.
+  const wraps = fill && options.length > 3;
 
   return (
-    <div role="group" aria-label={ariaLabel} className={`${fill ? "flex" : "inline-flex"} gap-1 rounded-xl bg-muted p-1`}>
+    <div
+      role="group"
+      aria-label={ariaLabel}
+      className={`${fill ? "flex" : "inline-flex"} ${wraps ? "flex-wrap sm:flex-nowrap" : ""} gap-1 rounded-xl bg-muted p-1`}
+    >
       {options.map((option) => {
         const active = option.value === value;
         return (
@@ -859,7 +827,7 @@ function SegmentedControl({
             type="button"
             aria-pressed={active}
             onClick={() => onChange(option.value)}
-            className={`${fill ? "flex-1" : ""} rounded-lg px-3 font-medium transition-colors ${buttonSize} ${
+            className={`${fill ? "min-w-0 flex-1" : ""} ${wraps ? "basis-[calc(50%-0.125rem)] sm:basis-0" : ""} rounded-lg px-3 font-medium transition-colors ${buttonSize} ${
               active ? "bg-card text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"
             }`}
           >
@@ -2254,7 +2222,14 @@ export function CalculatorPageClient({ slug }: { slug: CalculatorSlug }) {
             ) : (
               <ResultPanel result={result} />
             )}
-            <CopyCalculationLinkButton definition={definition} state={state} />
+            <CopyLinkButton
+              buildHref={() => {
+                const query = serializeCalculatorStateToQuery(definition, state).toString();
+                return `${window.location.origin}/calculators/${definition.catalog.slug}${query ? `?${query}` : ""}`;
+              }}
+              label="Скопировать ссылку на расчёт"
+              successTitle="Ссылка на расчёт скопирована"
+            />
           </div>
         </div>
       )}

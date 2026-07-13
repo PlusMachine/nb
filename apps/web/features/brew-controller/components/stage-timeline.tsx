@@ -161,7 +161,7 @@ function SegmentBar({
       type="button"
       onClick={onSelect}
       aria-pressed={active}
-      className={`group flex w-full flex-col gap-1 rounded-lg px-1 py-1 text-left transition focus:outline-none focus-visible:ring-2 focus-visible:ring-ring ${
+      className={`group flex w-full flex-col gap-1 rounded-lg px-1.5 py-2 text-left transition focus:outline-none focus-visible:ring-2 focus-visible:ring-ring ${
         active ? "bg-muted" : ""
       }`}
     >

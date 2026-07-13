@@ -45,12 +45,17 @@ export async function startBrewOnDeviceFromRecipeAction(input: {
   deviceId: string;
   /** Ключ идемпотентности создания партии (двойной клик/ретрай → одна партия). */
   idempotencyKey?: string;
+  /** Объём варки и оборудование — тот же выбор, что и в ручной ветке (диалог «Сварить»). */
+  targetBatchVolumeL?: number;
+  equipmentProfileId?: string;
 }): Promise<StartBrewOnDeviceFromRecipeResult> {
   let brewBatchId: string | null = null;
   try {
     const user = await requireUser();
     const batch = await createBrewBatchFromRecipe(user.id, input.recipeId, {
-      idempotencyKey: input.idempotencyKey
+      idempotencyKey: input.idempotencyKey,
+      targetBatchVolumeL: input.targetBatchVolumeL,
+      equipmentProfileId: input.equipmentProfileId
     });
     brewBatchId = batch.id;
 

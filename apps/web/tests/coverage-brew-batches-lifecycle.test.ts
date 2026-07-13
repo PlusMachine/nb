@@ -38,7 +38,12 @@ const { tableRefs, store, ids, fixtures } = vi.hoisted(() => {
         "id", "userId", "brewBatchId", "inventoryItemId", "type", "normalizedUnit", "createdAt"
       ]),
       recipeInventoryAllocations: ref("recipeInventoryAllocations", ["id", "userId", "recipeId", "status", "brewBatchId"]),
-      userIngredients: ref("userIngredients", ["id", "userId"]),
+      // Колонки проекции блокирующего чтения остатка (SELECT … FOR UPDATE в
+      // consume/restore): без них фейк вернул бы строку без количеств.
+      userIngredients: ref("userIngredients", [
+        "id", "userId", "normalizedQuantity", "normalizedUnit", "enteredQuantity", "enteredUnit",
+        "packageVariantId", "ingredientCatalogItemId", "userCustomIngredientId"
+      ]),
       recipes: ref("recipes", ["id", "authorId"]),
       users: ref("users", ["id"]),
       brewTelemetry: ref("brewTelemetry", ["deviceId", "brewBatchId", "ts"])
@@ -56,7 +61,15 @@ const { tableRefs, store, ids, fixtures } = vi.hoisted(() => {
     ids: { counter: 0 },
     fixtures: {
       recipeDetails: [] as any[],
-      consumePlan: [] as any[]
+      consumePlan: [] as any[],
+      // «1 пачка = N г/мл» по складской позиции (реальный источник —
+      // loadInventoryItemPackEquivalent: вариант фасовки/техполя каталога).
+      packEquivalents: {} as Record<string, { normalizedUnit: string; normalizedQuantity: number } | null>,
+      // Профили оборудования пользователя — для варки «на моём оборудовании».
+      equipmentProfiles: [] as any[],
+      // Опции, с которыми списание позвало движок аллокаций: по ним видно, в каком
+      // объёме партия реально идёт на склад.
+      consumeCalls: [] as any[]
     }
   };
 });
@@ -348,6 +361,14 @@ vi.mock("@nb/db", () => {
   };
 });
 
+// Анти-абьюз-барьеры создания партии/замера зовут assertRateLimit (реальный
+// бьёт в БД через db.execute, которого нет в in-memory моке @nb/db выше); в этих
+// тестах барьер не в фокусе — стабим no-op, остальное @nb/auth оставляем настоящим.
+vi.mock("@nb/auth", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("@nb/auth")>()),
+  assertRateLimit: vi.fn(async () => {})
+}));
+
 // Граница «рецепты»: возвращаем заранее собранный RecipeDetailDto с гейтом владельца.
 vi.mock("@/features/recipes/service", () => ({
   getOwnedRecipeById: async (authorId: string, recipeId: string) => {
@@ -370,12 +391,27 @@ vi.mock("@/features/recipes/service", () => ({
   }
 }));
 
+// Граница «профили оборудования»: варка «на моём оборудовании» подставляет профиль
+// целиком. Скоуп по userId — чужой профиль не подставится (NOT_FOUND).
+vi.mock("@/features/equipment-profiles/service", () => ({
+  getEquipmentProfile: async (userId: string, profileId: string) => {
+    const found = fixtures.equipmentProfiles.find((p: any) => p.id === profileId && p.userId === userId);
+    if (!found) {
+      throw new Error("NOT_FOUND");
+    }
+    return found;
+  }
+}));
+
 // Граница «движок аллокаций склада»: имитируем реальный эффект consume —
 // уменьшаем остаток, помечаем аллокацию consumed и пишем consume-транзакцию с
 // brewBatchId и allocationId в мете (чтобы restore из brew-batches мог откатить).
 vi.mock("@/features/recipes/inventory-service", () => ({
-  autoAllocateRecipeInventoryFromStock: async () => {},
+  autoAllocateRecipeInventoryFromStock: async (_userId: string, _recipeId: string, opts: any) => {
+    fixtures.consumeCalls.push(opts);
+  },
   consumeRecipeInventoryAllocations: async (userId: string, recipeId: string, opts: any) => {
+    fixtures.consumeCalls.push(opts);
     for (const line of fixtures.consumePlan) {
       const item = store.userIngredients.find((i: any) => i.id === line.inventoryItemId && i.userId === userId);
       if (!item) {
@@ -392,6 +428,14 @@ vi.mock("@/features/recipes/inventory-service", () => ({
         recipeId,
         inventoryItemId: item.id,
         status: "consumed",
+        // Реальная аллокация несёт списанное количество и — при клампе дрожжей —
+        // исходное требование рецепта: из этого buildView собирает честную строку
+        // «списали меньше, чем нужно».
+        allocatedQuantityNormalized: line.quantity,
+        allocatedNormalizedUnit: line.unit,
+        allocationMeta: line.requested != null
+          ? { clamped: true, requestedQuantityNormalized: line.requested }
+          : {},
         // Партия-потребитель — batch-aware блокировка реюза рецепта (см.
         // hasBlockingConsumedAllocations ниже) и прямой путь restoreBrewBatchInventory
         // читают именно это поле, а не только легаси-мету транзакции.
@@ -415,26 +459,38 @@ vi.mock("@/features/recipes/inventory-service", () => ({
       });
     }
   },
-  convertNormalizedQuantityToEnteredUnit: (quantity: number, fromUnit: string, toUnit: string) =>
-    fromUnit === toUnit ? quantity : null,
-  // Batch-aware реализация для мока: consumed-аллокация блокирует реюз рецепта,
-  // только если у неё нет brewBatchId (легаси/вне партии) ИЛИ её партия ещё в
-  // активном статусе (planned/brewing/fermenting) — зеркалит реальную логику в
-  // features/recipes/inventory-service.ts (см. docs/brew-day-assistant-audit-
-  // round2.md, П2).
-  hasBlockingConsumedAllocations: async (userId: string, recipeId: string) => {
-    const activeBrewBatchStatuses = ["planned", "brewing", "fermenting"];
-    const consumed = store.recipeInventoryAllocations.filter(
-      (a: any) => a.userId === userId && a.recipeId === recipeId && a.status === "consumed"
-    );
-    return consumed.some((a: any) => {
-      if (!a.brewBatchId) {
-        return true;
-      }
-      const batch = store.brewBatches.find((b: any) => b.id === a.brewBatchId);
-      return !batch || activeBrewBatchStatuses.includes(batch.status);
-    });
-  }
+  // Зеркало реального моста pack↔содержимое (features/inventory/pack.ts): без курса
+  // «пачки» разноимённые единицы не конвертируются (null → колонку не трогаем),
+  // с курсом — 11 г → 1 пачка. Мок обязан уважать 4-й аргумент, иначе тест не поймал
+  // бы протухший entered_quantity после возврата на склад.
+  convertNormalizedQuantityToEnteredUnit: (
+    quantity: number,
+    fromUnit: string,
+    toUnit: string,
+    packEquivalent?: { normalizedUnit: string; normalizedQuantity: number } | null
+  ) => {
+    if (fromUnit === toUnit) {
+      return quantity;
+    }
+    if (!packEquivalent || !(packEquivalent.normalizedQuantity > 0)) {
+      return null;
+    }
+    if (toUnit === "pack" && fromUnit === packEquivalent.normalizedUnit) {
+      return quantity / packEquivalent.normalizedQuantity;
+    }
+    if (fromUnit === "pack" && toUnit === packEquivalent.normalizedUnit) {
+      return quantity * packEquivalent.normalizedQuantity;
+    }
+    return null;
+  },
+  loadInventoryItemPackEquivalent: async (item: any) => fixtures.packEquivalents[item.id] ?? null,
+  // Учёт списания — ПО ПАРТИИ: consumed-аллокация запирает только свою партию
+  // (повторный клик), варки других партий того же рецепта не трогает. Зеркалит
+  // реальную логику в features/recipes/inventory-service.ts (дефект A7).
+  hasConsumedAllocationsForBatch: async (userId: string, brewBatchId: string) =>
+    store.recipeInventoryAllocations.some(
+      (a: any) => a.userId === userId && a.brewBatchId === brewBatchId && a.status === "consumed"
+    )
 }));
 
 import {
@@ -450,13 +506,17 @@ import {
   setBrewDayStepState,
   updateBrewBatchNotes,
   updateBrewBatchPlannedFor,
-  updateBrewBatchStatus
+  updateBrewBatchStatus,
+  updateBrewBatchTastingNotes
 } from "@/features/brew-batches/service";
 import {
   consumeBrewBatchInventory,
   getBrewBatchInventoryView,
   restoreBrewBatchInventory
 } from "@/features/brew-batches/inventory";
+// Фейковая db из мока выше — нужна, чтобы вклиниться в момент «мы уже в транзакции,
+// но ещё не прочитали строку партии» и смоделировать конкурента.
+import { db as fakeDb } from "@nb/db";
 import {
   addBrewMeasurementSchema,
   brewDayStepStatePatchSchema,
@@ -535,6 +595,7 @@ const seedBatch = (overrides: Partial<Record<string, any>> = {}) => {
     waterPlanSnapshot: null,
     deviceHints: [],
     notes: null,
+    tastingNotes: null,
     plannedFor: null,
     startedAt: null,
     completedAt: null,
@@ -571,6 +632,9 @@ beforeEach(() => {
   store.users = [{ id: USER_ID, displayName: "Пивовар" }];
   fixtures.recipeDetails = [makeRecipeDetail(RECIPE_ID, USER_ID)];
   fixtures.consumePlan = [{ inventoryItemId: ITEM_ID, quantity: 50, unit: "g" }];
+  fixtures.packEquivalents = {};
+  fixtures.equipmentProfiles = [];
+  fixtures.consumeCalls = [];
 });
 
 // --- createBrewBatchFromRecipe -----------------------------------------------
@@ -658,6 +722,200 @@ describe("createBrewBatchFromRecipe", () => {
     // Таргеты og/fg/abv осели в снапшоте — сводка партии переживёт удаление источника.
     expect((batch.recipeSnapshot as any)?.og).toBe(1.052);
     expect(store.brewBatches).toHaveLength(1);
+  });
+});
+
+// --- createBrewBatchFromRecipe: объём варки и оборудование --------------------
+//
+// Рецепт на 30 л, оборудование пользователя — на 20 л. Раньше объём партии молча
+// брался из рецепта: гид говорил «засыпьте 6 кг», карточка считала потребность под
+// профиль (20 л), а склад списывался на 30 л. Теперь объём — явный выбор в диалоге
+// «Сварить», и от него считается ВСЁ: план, слепок состава, водный план, списание.
+
+const RECIPE_30L = uuid(6);
+const PROFILE_ID = uuid(7);
+
+// Рецепт 30 л на эффективности 75%: 6 кг солода + 1 кг сахара + 30 г хмеля. Батч —
+// в мл (иначе объём не читается, см. toBatchVolumeLiters), количества — и entered, и
+// normalized: план варочного дня берёт entered, засыпь и водный движок — normalized.
+const makeRecipe30L = (id: string, authorId: string) => ({
+  ...makeRecipeDetail(id, authorId),
+  efficiency: 75,
+  batchSizeEnteredQuantity: 30,
+  batchSizeEnteredUnit: "l",
+  batchSizeNormalizedQuantity: 30_000,
+  batchSizeNormalizedUnit: "ml",
+  ingredients: [
+    {
+      persistentKey: "m1",
+      ingredientDisplayName: "Пильзнер",
+      ingredientDisplayNameSnapshot: "Пильзнер",
+      ingredientCategory: "fermentable",
+      type: "malt",
+      stage: "mash",
+      timeOffset: null,
+      amountEnteredQuantity: 6,
+      amountEnteredUnit: "kg",
+      amountNormalizedQuantity: 6000,
+      amountNormalizedUnit: "g",
+      stepMeta: null
+    },
+    {
+      // Сахар: эффективность затирания на него не действует (100% выход) → дожим
+      // его НЕ касается, только объём.
+      persistentKey: "s1",
+      ingredientDisplayName: "Декстроза",
+      ingredientDisplayNameSnapshot: "Декстроза",
+      ingredientCategory: "fermentable",
+      type: "fermentable",
+      stage: "boil",
+      timeOffset: 10,
+      amountEnteredQuantity: 1,
+      amountEnteredUnit: "kg",
+      amountNormalizedQuantity: 1000,
+      amountNormalizedUnit: "g",
+      stepMeta: null
+    },
+    {
+      persistentKey: "h1",
+      ingredientDisplayName: "Magnum",
+      ingredientDisplayNameSnapshot: "Magnum",
+      ingredientCategory: "hop",
+      type: "hop",
+      stage: "boil",
+      timeOffset: 60,
+      amountEnteredQuantity: 30,
+      amountEnteredUnit: "g",
+      amountNormalizedQuantity: 30,
+      amountNormalizedUnit: "g",
+      stepMeta: null
+    }
+  ]
+});
+
+const myProfile = () => ({
+  id: PROFILE_ID,
+  userId: USER_ID,
+  name: "Моя пивоварня",
+  targetBatchVolumeL: 20,
+  brewhouseEfficiencyPct: 65,
+  evaporationRateLPerHr: 2.5,
+  trubChillerLossL: 1,
+  fermenterLossL: 0.5,
+  grainAbsorptionLPerKg: 0.9,
+  coolingShrinkagePct: 4,
+  mashThicknessLPerKg: 3,
+  maxMashVolumeL: null,
+  maxKettleVolumeL: null,
+  hopUtilizationFactor: 1,
+  altitudeM: 0,
+  notes: null
+});
+
+describe("createBrewBatchFromRecipe — объём варки и оборудование", () => {
+  beforeEach(() => {
+    fixtures.recipeDetails.push(makeRecipe30L(RECIPE_30L, USER_ID));
+    fixtures.equipmentProfiles = [myProfile()];
+  });
+
+  const snapshotAmount = (batch: any, persistentKey: string): number =>
+    (batch.recipeSnapshot as any).ingredients.find((i: any) => i.persistentKey === persistentKey).amount;
+
+  it("без выбора объёма варит в объёме рецепта (прежнее поведение)", async () => {
+    const batch = await createBrewBatchFromRecipe(USER_ID, RECIPE_30L);
+
+    expect(batch.brewPlanSnapshot.recipe.batchSizeL).toBe(30);
+    expect(batch.brewPlanSnapshot.grainBillTotalKg).toBe(7);
+    expect(snapshotAmount(batch, "m1")).toBe(6);
+  });
+
+  it("объём партии 20 л без смены оборудования: всё пересчитано ×2/3, эффективность авторская", async () => {
+    const batch = await createBrewBatchFromRecipe(USER_ID, RECIPE_30L, { targetBatchVolumeL: 20 });
+
+    expect(batch.brewPlanSnapshot.recipe.batchSizeL).toBe(20);
+    // Засыпь для шага «Засыпьте солод»: (6 + 1) кг → 4.67 кг.
+    expect(batch.brewPlanSnapshot.grainBillTotalKg).toBeCloseTo(4.67, 2);
+    // Хмель в шагах кипячения: 30 г → 20 г.
+    const hopAddition = batch.brewPlanSnapshot.boilPlan.timedAdditions.find((a: any) => a.name === "Magnum");
+    expect(hopAddition?.amount).toMatchObject({ quantity: 20, unit: "g" });
+    // Слепок состава — то же самое, иначе «состав партии» разошёлся бы с гидом.
+    expect(snapshotAmount(batch, "m1")).toBe(4);
+    expect(snapshotAmount(batch, "h1")).toBe(20);
+    // Оборудование не меняли → дожима засыпи нет.
+    expect(batch.brewPlanSnapshot.recipe.efficiencyPct).toBe(75);
+    expect(batch.brewPlanSnapshot.recipe.recipeEfficiencyPct).toBe(75);
+  });
+
+  it("варка на своей эффективности (75% → 65%): засыпь дожата ×1.154, сахар и хмель — только по объёму", async () => {
+    const batch = await createBrewBatchFromRecipe(USER_ID, RECIPE_30L, {
+      targetBatchVolumeL: 20,
+      equipmentProfileId: PROFILE_ID
+    });
+
+    // Солод: 6 кг × 2/3 × (75/65) = 4.615 кг — иначе на 65%-оборудовании недобрали бы OG.
+    expect(snapshotAmount(batch, "m1")).toBeCloseTo(4.615, 2);
+    // Сахар усваивается полностью, эффективность затирания на него не действует:
+    // 1 кг × 2/3 = 0.667 кг, без дожима.
+    expect(snapshotAmount(batch, "s1")).toBeCloseTo(0.667, 2);
+    // Хмель — только по объёму: 30 г → 20 г.
+    expect(snapshotAmount(batch, "h1")).toBe(20);
+    // План помнит обе эффективности — по ним списание и матч повторят тот же дожим.
+    expect(batch.brewPlanSnapshot.recipe.efficiencyPct).toBe(65);
+    expect(batch.brewPlanSnapshot.recipe.recipeEfficiencyPct).toBe(75);
+  });
+
+  it("«на моём оборудовании»: профиль подставлен целиком (потери, выпаривание), а не только объём", async () => {
+    const batch = await createBrewBatchFromRecipe(USER_ID, RECIPE_30L, {
+      targetBatchVolumeL: 20,
+      equipmentProfileId: PROFILE_ID
+    });
+
+    const snapshot = batch.equipmentProfileSnapshot as any;
+    expect(snapshot).toMatchObject({
+      id: PROFILE_ID,
+      name: "Моя пивоварня",
+      targetBatchVolumeL: 20,
+      evaporationRateLPerHr: 2.5,
+      trubChillerLossL: 1,
+      grainAbsorptionLPerKg: 0.9
+    });
+    // Тот же профиль уезжает в план варочного дня — водный план считается по МОЕМУ котлу.
+    expect((batch.brewPlanSnapshot.equipmentProfileSnapshot as any)?.id).toBe(PROFILE_ID);
+  });
+
+  it("чужой профиль оборудования не подставляется: NOT_FOUND, партия не создаётся", async () => {
+    fixtures.equipmentProfiles = [{ ...myProfile(), userId: OTHER_USER }];
+
+    await expect(
+      createBrewBatchFromRecipe(USER_ID, RECIPE_30L, { targetBatchVolumeL: 20, equipmentProfileId: PROFILE_ID })
+    ).rejects.toThrow("NOT_FOUND");
+    expect(store.brewBatches).toHaveLength(0);
+  });
+
+  it("списание идёт в объёме ПАРТИИ (20 л), а не рецепта (30 л)", async () => {
+    const batch = await createBrewBatchFromRecipe(USER_ID, RECIPE_30L, { targetBatchVolumeL: 20 });
+    await consumeBrewBatchInventory(USER_ID, batch.id);
+
+    // Движок аллокаций масштабирует строки рецепта под targetBatchVolumeL (см.
+    // features/recipes/batch-scale.ts) — партия обязана передать ему СВОЙ объём.
+    expect(fixtures.consumeCalls.length).toBeGreaterThan(0);
+    for (const call of fixtures.consumeCalls) {
+      expect(call).toMatchObject({ brewBatchId: batch.id, targetBatchVolumeL: 20, efficiencyFactor: 1 });
+    }
+  });
+
+  it("списание получает ТОТ ЖЕ дожим засыпи, что зашит в план (иначе гид и склад разойдутся)", async () => {
+    const batch = await createBrewBatchFromRecipe(USER_ID, RECIPE_30L, {
+      targetBatchVolumeL: 20,
+      equipmentProfileId: PROFILE_ID
+    });
+    await consumeBrewBatchInventory(USER_ID, batch.id);
+
+    expect(fixtures.consumeCalls.length).toBeGreaterThan(0);
+    for (const call of fixtures.consumeCalls) {
+      expect(call.targetBatchVolumeL).toBe(20);
+      expect(call.efficiencyFactor).toBeCloseTo(75 / 65, 4);
+    }
   });
 });
 
@@ -874,6 +1132,37 @@ describe("updateBrewBatchNotes", () => {
   });
 });
 
+describe("updateBrewBatchTastingNotes", () => {
+  it("обрезает дегустацию, пустые → null", async () => {
+    const seeded = seedBatch();
+    const withNotes = await updateBrewBatchTastingNotes(USER_ID, seeded.id, "  сухой финиш  ");
+    expect(withNotes.tastingNotes).toBe("сухой финиш");
+    const cleared = await updateBrewBatchTastingNotes(USER_ID, seeded.id, "   ");
+    expect(cleared.tastingNotes).toBeNull();
+  });
+
+  it("бросает NOT_FOUND для чужой партии", async () => {
+    const seeded = seedBatch();
+    await expect(updateBrewBatchTastingNotes(OTHER_USER, seeded.id, "x")).rejects.toThrow("NOT_FOUND");
+  });
+
+  // Корень дефекта A4: обе секции сидели на одной колонке notes, и дегустация,
+  // сохранённая на завершённой партии, затирала заметки варочного дня.
+  it("дегустация и заметки о варке живут в разных полях и не затирают друг друга", async () => {
+    const seeded = seedBatch({ status: "completed" as BrewBatchStatus });
+
+    await updateBrewBatchNotes(USER_ID, seeded.id, "Затор держал 66 °C, охлаждение затянулось");
+    const afterTasting = await updateBrewBatchTastingNotes(USER_ID, seeded.id, "Хлебный солод, мягкая горечь");
+
+    expect(afterTasting.notes).toBe("Затор держал 66 °C, охлаждение затянулось");
+    expect(afterTasting.tastingNotes).toBe("Хлебный солод, мягкая горечь");
+
+    const afterNotes = await updateBrewBatchNotes(USER_ID, seeded.id, "Дополнил задним числом");
+    expect(afterNotes.notes).toBe("Дополнил задним числом");
+    expect(afterNotes.tastingNotes).toBe("Хлебный солод, мягкая горечь");
+  });
+});
+
 // --- Дата варки (plannedFor) --------------------------------------------------
 
 describe("updateBrewBatchPlannedFor", () => {
@@ -929,18 +1218,63 @@ describe("инвентарь варки: consume / restore", () => {
     await expect(consumeBrewBatchInventory(OTHER_USER, seeded.id)).rejects.toThrow("NOT_FOUND");
   });
 
-  it("consume списывает остаток, помечает рецепт списанным; повторный consume → ALREADY_CONSUMED", async () => {
+  // Гонка «завершение против списания»: статус, прочитанный ДО транзакции, к моменту
+  // взятия блокировки мог протухнуть (варку завершили в соседней вкладке). Гейт обязан
+  // перечитать его под локом, иначе списание уезжает в терминальную партию — а вернуть
+  // склад оттуда уже нечем.
+  it("партию завершили, пока мы ждали блокировку → INVALID_STATUS, склад не тронут", async () => {
+    const seeded = seedBatch({ status: "brewing" });
+    const realTransaction = (fakeDb as any).transaction;
+    const spy = vi
+      .spyOn(fakeDb as any, "transaction")
+      .mockImplementation(async (cb: any) => {
+        // Конкурент завершил варку ровно между чтением статуса и блокировкой строки.
+        const row = store.brewBatches.find((batch: any) => batch.id === seeded.id);
+        row.status = "completed";
+        return realTransaction(cb);
+      });
+
+    try {
+      await expect(consumeBrewBatchInventory(USER_ID, seeded.id)).rejects.toThrow("INVALID_STATUS");
+    } finally {
+      spy.mockRestore();
+    }
+
+    expect(store.userIngredients[0].normalizedQuantity).toBe(100);
+    expect(store.inventoryTransactions).toHaveLength(0);
+    expect(store.recipeInventoryAllocations).toHaveLength(0);
+  });
+
+  it("consume списывает остаток, помечает партию списанной; повторный consume → ALREADY_CONSUMED", async () => {
     const seeded = seedBatch({ status: "brewing" });
     const view = await consumeBrewBatchInventory(USER_ID, seeded.id);
 
     expect(view.hasConsumed).toBe(true);
     expect(view.canRestore).toBe(true);
-    expect(view.recipeAlreadyConsumed).toBe(true);
+    expect(view.batchAlreadyConsumed).toBe(true);
     expect(view.consumed).toHaveLength(1);
     expect(view.consumed[0]).toMatchObject({ quantityNormalized: 50, normalizedUnit: "g", ingredientDisplayName: "Cascade" });
+    // Списали ровно сколько нужно — «нужно было» не показываем (это был бы шум).
+    expect(view.consumed[0].requiredQuantityNormalized).toBeNull();
     expect(store.userIngredients[0].normalizedQuantity).toBe(50);
 
     await expect(consumeBrewBatchInventory(USER_ID, seeded.id)).rejects.toThrow("ALREADY_CONSUMED");
+  });
+
+  // H2: дрожжей на складе меньше, чем требует рецепт → списание ужимается до остатка
+  // (варку это не роняет). Раньше кламп был немым: пользователь видел «Списано» и не
+  // узнавал, что дрожжей ушло меньше рецепта.
+  it("кламп дрожжей доезжает до вида: строка честно показывает, что списали меньше нужного", async () => {
+    fixtures.consumePlan = [{ inventoryItemId: ITEM_ID, quantity: 11, unit: "g", requested: 22 }];
+    const seeded = seedBatch({ status: "brewing" });
+
+    const view = await consumeBrewBatchInventory(USER_ID, seeded.id);
+
+    expect(view.consumed[0]).toMatchObject({
+      quantityNormalized: 11,
+      requiredQuantityNormalized: 22,
+      normalizedUnit: "g"
+    });
   });
 
   it("restore откатывает списание: остаток возвращается, аллокация освобождается, повторное списание снова доступно", async () => {
@@ -953,7 +1287,7 @@ describe("инвентарь варки: consume / restore", () => {
     expect(store.userIngredients[0].normalizedQuantity).toBe(100);
     expect(view.hasConsumed).toBe(false);
     expect(view.canRestore).toBe(false);
-    expect(view.recipeAlreadyConsumed).toBe(false);
+    expect(view.batchAlreadyConsumed).toBe(false);
     // Журнал движений: consume + компенсирующий release.
     expect(view.log.map((entry) => entry.type)).toEqual(["consume", "release"]);
 
@@ -961,6 +1295,41 @@ describe("инвентарь варки: consume / restore", () => {
     const reconsumed = await consumeBrewBatchInventory(USER_ID, seeded.id);
     expect(reconsumed.hasConsumed).toBe(true);
     expect(store.userIngredients[0].normalizedQuantity).toBe(50);
+  });
+
+  // Возврат берёт складские строки в том же порядке, что и списание (по позиции
+  // склада), а не в порядке журнала. Иначе два возврата разных партий, поделивших
+  // один солод, захватывали бы строки встречно и вставали в дедлок — Postgres убивает
+  // одну транзакцию, пользователь получает 500 на «Вернуть на склад».
+  it("restore обходит позиции в порядке склада, даже если журнал писался в обратном", async () => {
+    const SECOND_ITEM = uuid(22);
+    store.userIngredients.push({
+      id: SECOND_ITEM,
+      userId: USER_ID,
+      ingredientDisplayNameSnapshot: "Magnum",
+      normalizedQuantity: 80,
+      normalizedUnit: "g",
+      enteredQuantity: 80,
+      enteredUnit: "g",
+      archivedAt: null,
+      updatedAt: new Date(Date.UTC(2026, 0, 1))
+    });
+    // Журнал ляжет в обратном порядке позиций: сначала «старший» id, потом «младший».
+    const [firstById, lastById] = [ITEM_ID, SECOND_ITEM].sort((left, right) => left.localeCompare(right));
+    fixtures.consumePlan = [
+      { inventoryItemId: lastById, quantity: 10, unit: "g" },
+      { inventoryItemId: firstById, quantity: 20, unit: "g" }
+    ];
+
+    const seeded = seedBatch({ status: "brewing" });
+    await consumeBrewBatchInventory(USER_ID, seeded.id);
+
+    await restoreBrewBatchInventory(USER_ID, seeded.id);
+
+    const releaseOrder = store.inventoryTransactions
+      .filter((txn: any) => txn.type === "release")
+      .map((txn: any) => txn.inventoryItemId);
+    expect(releaseOrder).toEqual([firstById, lastById]);
   });
 
   it("restore идемпотентен: повторный возврат ничего не меняет (restoredItemCount = 0)", async () => {
@@ -975,6 +1344,85 @@ describe("инвентарь варки: consume / restore", () => {
   it("restore для чужой партии даёт NOT_FOUND", async () => {
     const seeded = seedBatch({ status: "brewing" });
     await expect(restoreBrewBatchInventory(OTHER_USER, seeded.id)).rejects.toThrow("NOT_FOUND");
+  });
+
+  // Позиция заведена «в пачках», а склад раскрыл пачку в граммы (entered_unit=pack,
+  // normalized_unit=g). При возврате обратный пересчёт 11 г → 1 пачка невозможен без
+  // курса пачки: раньше restore звал конвертер без него, тот отдавал null, и
+  // entered_quantity навсегда оставался нулём от списания — normalized_quantity
+  // показывал 11 г, а колонка ввода врала «0 пачек».
+  it("restore возвращает пачечную позицию в её единицах: entered_quantity не застревает на нуле", async () => {
+    const packItemId = uuid(22);
+    store.userIngredients.push({
+      id: packItemId,
+      userId: USER_ID,
+      ingredientDisplayNameSnapshot: "Safale US-05",
+      normalizedQuantity: 11,
+      normalizedUnit: "g",
+      enteredQuantity: 1,
+      enteredUnit: "pack",
+      archivedAt: null,
+      updatedAt: new Date(Date.UTC(2026, 0, 1))
+    });
+    fixtures.packEquivalents[packItemId] = { normalizedUnit: "g", normalizedQuantity: 11 };
+    fixtures.consumePlan = [{ inventoryItemId: packItemId, quantity: 11, unit: "g" }];
+
+    const seeded = seedBatch({ status: "brewing" });
+    await consumeBrewBatchInventory(USER_ID, seeded.id);
+
+    const packItem = () => store.userIngredients.find((item: any) => item.id === packItemId);
+    expect(packItem().normalizedQuantity).toBe(0);
+
+    const { restoredItemCount } = await restoreBrewBatchInventory(USER_ID, seeded.id);
+
+    expect(restoredItemCount).toBe(1);
+    expect(packItem().normalizedQuantity).toBe(11);
+    expect(packItem().enteredQuantity).toBe(1);
+    expect(packItem().enteredUnit).toBe("pack");
+  });
+
+  // Регресс A7: пока первая партия ЕЩЁ ВАРИТСЯ, вторая партия того же рецепта
+  // должна списывать свой склад. Защита «по рецепту» молча оставляла её без
+  // единой аллокации: пользователь просил списать, склад не менялся, а страница
+  // партии писала «уже списаны».
+  it("вторая партия того же рецепта списывает свой склад, пока первая ещё активна", async () => {
+    const first = seedBatch({ status: "brewing" });
+    const firstView = await consumeBrewBatchInventory(USER_ID, first.id);
+    expect(firstView.hasConsumed).toBe(true);
+    expect(store.userIngredients[0].normalizedQuantity).toBe(50);
+
+    // Первая партия НЕ завершена — просто варится дальше.
+    const second = seedBatch({ status: "brewing" });
+    const secondView = await consumeBrewBatchInventory(USER_ID, second.id);
+
+    // Списание второй партии реально уменьшило остаток (50 → 0) и попало в её журнал.
+    expect(secondView.hasConsumed).toBe(true);
+    expect(secondView.batchAlreadyConsumed).toBe(true);
+    expect(secondView.consumed).toHaveLength(1);
+    expect(store.userIngredients[0].normalizedQuantity).toBe(0);
+
+    // Журналы партий не перемешались: у каждой своё списание.
+    expect(secondView.log.filter((entry) => entry.type === "consume")).toHaveLength(1);
+    const firstAfter = await getBrewBatchInventoryView(USER_ID, first.id);
+    expect(firstAfter!.log.filter((entry) => entry.type === "consume")).toHaveLength(1);
+    expect(firstAfter!.hasConsumed).toBe(true);
+  });
+
+  // Возврат склада второй партией не должен трогать списание первой.
+  it("возврат второй партии возвращает только её списание", async () => {
+    const first = seedBatch({ status: "brewing" });
+    await consumeBrewBatchInventory(USER_ID, first.id);
+    const second = seedBatch({ status: "brewing" });
+    await consumeBrewBatchInventory(USER_ID, second.id);
+    expect(store.userIngredients[0].normalizedQuantity).toBe(0);
+
+    const { restoredItemCount } = await restoreBrewBatchInventory(USER_ID, second.id);
+
+    expect(restoredItemCount).toBe(1);
+    expect(store.userIngredients[0].normalizedQuantity).toBe(50);
+    const firstAfter = await getBrewBatchInventoryView(USER_ID, first.id);
+    expect(firstAfter!.hasConsumed).toBe(true);
+    expect(firstAfter!.batchAlreadyConsumed).toBe(true);
   });
 
   // Регресс П2 (docs/brew-day-assistant-audit-round2.md): без batch-aware защиты

@@ -33,7 +33,7 @@ export function ThemeToggle({ className }: { className?: string }) {
             aria-label={label}
             title={label}
             onClick={() => setPreference(value)}
-            className={`grid h-7 w-7 place-items-center rounded-full transition-colors ${
+            className={`grid min-h-11 min-w-11 place-items-center rounded-full transition-colors ${
               active
                 ? "bg-background text-foreground shadow-sm"
                 : "text-muted-foreground hover:text-foreground"

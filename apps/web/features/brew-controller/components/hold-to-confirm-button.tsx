@@ -63,7 +63,7 @@ export function HoldToConfirmButton({
         }
       }}
       aria-label={label}
-      className={`relative select-none overflow-hidden rounded-md bg-destructive px-4 py-2 text-sm font-semibold text-destructive-foreground transition-colors hover:bg-destructive/90 disabled:opacity-50 ${className}`}
+      className={`relative min-h-[44px] select-none overflow-hidden rounded-md bg-destructive px-4 py-2 text-sm font-semibold text-destructive-foreground transition-colors hover:bg-destructive/90 disabled:opacity-50 ${className}`}
     >
       {/* Полоса удержания. */}
       <span

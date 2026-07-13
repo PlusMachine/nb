@@ -71,7 +71,7 @@ export function RecipeListRow({
           {recipe.featured ? <FeaturedBadge /> : null}
           <StyleChip style={recipe.style} styleHref={recipe.styleHref} />
         </div>
-        <h2 className="mt-1 line-clamp-2 text-base font-semibold leading-snug text-foreground group-hover:text-muted-foreground">
+        <h2 className="mt-1 line-clamp-2 break-words text-base font-semibold leading-snug text-foreground group-hover:text-muted-foreground">
           {recipe.name}
         </h2>
         <div className="mt-1.5 flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1">

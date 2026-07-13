@@ -165,7 +165,11 @@ export function HomeCalculators() {
         </Link>
       </div>
 
-      <div className="relative h-[340px] w-full [perspective:1500px]" aria-hidden>
+      {/* overflow-hidden: карты стопки смещены transform'ами до translate(76px,-96px) —
+          без обрезки по границе секции они вылезали за неё и давали горизонтальный
+          скролл всей главной на узких вьюпортах. Тени карт лежат внутри той же
+          h-[340px] области, так что не обрезаются. */}
+      <div className="relative h-[340px] w-full overflow-hidden [perspective:1500px]" aria-hidden>
         {/* мягкая «тень на столе» под стопкой */}
         <div className="absolute left-1/2 top-[62%] h-24 w-[70%] -translate-x-1/2 rounded-[50%] bg-foreground/10 blur-2xl" />
         <div

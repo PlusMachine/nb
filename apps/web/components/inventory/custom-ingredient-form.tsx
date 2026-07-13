@@ -9,6 +9,7 @@ import {
   createInitialInventoryOptionalFields,
   InventoryOptionalDisclosure
 } from "@/components/inventory/inventory-optional-disclosure";
+import { NumericInput } from "@/components/shared/numeric-input";
 import type { IngredientCategory, IngredientSubtype } from "@/features/ingredients/contracts";
 import { formatIngredientSubtypeLabel } from "@/features/ingredients/presentation";
 import { ingredientCategorySubtypes, resolveIngredientSubtype, resolveLegacyIngredientType } from "@/features/ingredients/taxonomy";
@@ -640,41 +641,37 @@ export function CustomIngredientForm({
           {category === "fermentable" ? (
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
               <label className="text-sm">Цвет, EBC
-                <input
-                  type="number"
-                  min="0.0001"
+                <NumericInput
+                  min={0.0001}
                   step="0.1"
-                  className="mt-1 w-full rounded-md border px-2 py-2"
+                  className="mt-1 w-full rounded-md border px-2 py-2 text-base sm:text-sm"
                   value={fermentableColorEbc}
                   onChange={(e) => {
                     setFermentableColorEbc(e.target.value);
                     setLocalFieldErrors((current) => ({ ...current, fermentableColorEbc: null }));
                   }}
-                  inputMode="decimal"
                   placeholder="Например: 3.5"
                 />
                 {(localFieldErrors.fermentableColorEbc || fieldErrors?.fermentableColorEbc) && <span className="text-xs text-destructive">{localFieldErrors.fermentableColorEbc ?? fieldErrors?.fermentableColorEbc}</span>}
               </label>
               <label className="text-sm">Экстрактивность, %
-                <input
-                  type="number"
-                  min="0"
-                  max="100"
+                <NumericInput
+                  min={0}
+                  max={100}
                   step="0.1"
-                  className="mt-1 w-full rounded-md border px-2 py-2"
+                  className="mt-1 w-full rounded-md border px-2 py-2 text-base sm:text-sm"
                   value={fermentableExtractYieldPct}
                   onChange={(e) => {
                     setFermentableExtractYieldPct(e.target.value);
                     setLocalFieldErrors((current) => ({ ...current, fermentableExtractYieldPct: null }));
                   }}
-                  inputMode="decimal"
                   placeholder="Например: 81"
                 />
                 {(localFieldErrors.fermentableExtractYieldPct || fieldErrors?.fermentableExtractYieldPct) && <span className="text-xs text-destructive">{localFieldErrors.fermentableExtractYieldPct ?? fieldErrors?.fermentableExtractYieldPct}</span>}
               </label>
               <label className="text-sm">Страна
                 <select
-                  className="mt-1 w-full rounded-md border px-2 py-2"
+                  className="mt-1 w-full rounded-md border px-2 py-2 text-base sm:text-sm"
                   value={country}
                   onChange={(e) => setCountry(e.target.value)}
                 >
@@ -692,7 +689,7 @@ export function CustomIngredientForm({
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
               <label className="text-sm">Тип хмеля
                 <select
-                  className="mt-1 w-full rounded-md border px-2 py-2"
+                  className="mt-1 w-full rounded-md border px-2 py-2 text-base sm:text-sm"
                   value={hopForm}
                   onChange={(e) => setHopForm(e.target.value as CustomHopForm)}
                 >
@@ -703,35 +700,32 @@ export function CustomIngredientForm({
                 {fieldErrors?.hopForm && <span className="text-xs text-destructive">{fieldErrors.hopForm}</span>}
               </label>
               <label className="text-sm">Альфа, %
-                <input
-                  type="number"
-                  min="0"
-                  max="100"
+                <NumericInput
+                  min={0}
+                  max={100}
                   step="0.1"
-                  className="mt-1 w-full rounded-md border px-2 py-2"
+                  className="mt-1 w-full rounded-md border px-2 py-2 text-base sm:text-sm"
                   value={hopAlphaAcidPct}
                   onChange={(e) => {
                     setHopAlphaAcidPct(e.target.value);
                     setLocalFieldErrors((current) => ({ ...current, hopAlphaAcidPct: null }));
                   }}
-                  inputMode="decimal"
                   placeholder="Например: 12.5"
                 />
                 {(localFieldErrors.hopAlphaAcidPct || fieldErrors?.hopAlphaAcidPct) && <span className="text-xs text-destructive">{localFieldErrors.hopAlphaAcidPct ?? fieldErrors?.hopAlphaAcidPct}</span>}
               </label>
               <label className="text-sm">Урожай
-                <input
-                  type="number"
-                  min="1900"
-                  max="2100"
+                <NumericInput
+                  integer
+                  min={1900}
+                  max={2100}
                   step="1"
-                  className="mt-1 w-full rounded-md border px-2 py-2"
+                  className="mt-1 w-full rounded-md border px-2 py-2 text-base sm:text-sm"
                   value={harvestYear}
                   onChange={(e) => {
                     setHarvestYear(e.target.value);
                     setLocalFieldErrors((current) => ({ ...current, harvestYear: null }));
                   }}
-                  inputMode="numeric"
                   placeholder="Необязательно"
                 />
                 {(localFieldErrors.harvestYear || fieldErrors?.harvestYear) && <span className="text-xs text-destructive">{localFieldErrors.harvestYear ?? fieldErrors?.harvestYear}</span>}
@@ -742,7 +736,7 @@ export function CustomIngredientForm({
           {category === "yeast" ? (
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
               <label className="text-sm">Тип дрожжей
-                <select className="mt-1 w-full rounded-md border px-2 py-2" value={yeastForm} onChange={(e) => setYeastForm(e.target.value as CustomYeastForm)}>
+                <select className="mt-1 w-full rounded-md border px-2 py-2 text-base sm:text-sm" value={yeastForm} onChange={(e) => setYeastForm(e.target.value as CustomYeastForm)}>
                   {customYeastForms.map((option) => (
                     <option key={option} value={option}>{customYeastFormLabels[option]}</option>
                   ))}
@@ -750,18 +744,16 @@ export function CustomIngredientForm({
                 {fieldErrors?.yeastForm && <span className="text-xs text-destructive">{fieldErrors.yeastForm}</span>}
               </label>
               <label className="text-sm">Аттенюация, %
-                <input
-                  type="number"
-                  min="0"
-                  max="100"
+                <NumericInput
+                  min={0}
+                  max={100}
                   step="0.1"
-                  className="mt-1 w-full rounded-md border px-2 py-2"
+                  className="mt-1 w-full rounded-md border px-2 py-2 text-base sm:text-sm"
                   value={yeastAttenuationPct}
                   onChange={(e) => {
                     setYeastAttenuationPct(e.target.value);
                     setLocalFieldErrors((current) => ({ ...current, yeastAttenuationPct: null }));
                   }}
-                  inputMode="decimal"
                   placeholder="Например: 78"
                 />
                 {(localFieldErrors.yeastAttenuationPct || fieldErrors?.yeastAttenuationPct) && <span className="text-xs text-destructive">{localFieldErrors.yeastAttenuationPct ?? fieldErrors?.yeastAttenuationPct}</span>}
@@ -772,18 +764,16 @@ export function CustomIngredientForm({
           {category === "water_treatment" && resolvedSubtype === "acid" ? (
             <div className="grid grid-cols-1 gap-3 sm:max-w-xs">
               <label className="text-sm">Концентрация кислоты, %
-                <input
-                  type="number"
-                  min="1"
-                  max="100"
+                <NumericInput
+                  min={1}
+                  max={100}
                   step="0.1"
-                  className="mt-1 w-full rounded-md border px-2 py-2"
+                  className="mt-1 w-full rounded-md border px-2 py-2 text-base sm:text-sm"
                   value={waterTreatmentConcentrationPct}
                   onChange={(e) => {
                     setWaterTreatmentConcentrationPct(e.target.value);
                     setLocalFieldErrors((current) => ({ ...current, waterTreatmentConcentrationPct: null }));
                   }}
-                  inputMode="decimal"
                   placeholder="Например: 80"
                 />
                 {(localFieldErrors.waterTreatmentConcentrationPct || fieldErrors?.waterTreatmentConcentrationPct) && <span className="text-xs text-destructive">{localFieldErrors.waterTreatmentConcentrationPct ?? fieldErrors?.waterTreatmentConcentrationPct}</span>}
@@ -806,24 +796,21 @@ export function CustomIngredientForm({
                   <span>Количество</span>
                   <FieldBadge required />
                 </span>
-                <input
-                  type="number"
-                  min="0"
-                  step="any"
-                  className="mt-1 w-full rounded-md border px-2 py-2"
+                <NumericInput
+                  min={0}
+                  className="mt-1 w-full rounded-md border px-2 py-2 text-base sm:text-sm"
                   value={enteredQuantity}
                   onChange={(e) => {
                     setEnteredQuantity(e.target.value);
                     setLocalFieldErrors((current) => ({ ...current, enteredQuantity: null }));
                   }}
-                  inputMode="decimal"
                   placeholder="Например: 5"
                 />
                 {(localFieldErrors.enteredQuantity || fieldErrors?.enteredQuantity) && <span className="text-xs text-destructive">{localFieldErrors.enteredQuantity ?? fieldErrors?.enteredQuantity}</span>}
               </label>
 
               <label className="text-sm">Ед. изм.
-                <select className="mt-1 w-full rounded-md border px-2 py-2" value={enteredUnit} onChange={(e) => setEnteredUnit(e.target.value as InventoryUnit)}>
+                <select className="mt-1 w-full rounded-md border px-2 py-2 text-base sm:text-sm" value={enteredUnit} onChange={(e) => setEnteredUnit(e.target.value as InventoryUnit)}>
                   {unitProfile.allowedUnits.map((unit) => <option key={unit} value={unit}>{inventoryUnitLabels[unit]}</option>)}
                 </select>
                 {fieldErrors?.enteredUnit && <span className="text-xs text-destructive">{fieldErrors.enteredUnit}</span>}
@@ -844,7 +831,7 @@ export function CustomIngredientForm({
                     <div className="mt-1 flex items-center gap-2">
                       <input
                         type="date"
-                        className="w-full rounded-md border px-2 py-2"
+                        className="w-full rounded-md border px-2 py-2 text-base sm:text-sm"
                         value={purchasedAt}
                         onChange={(e) => setPurchasedAt(e.target.value)}
                       />
@@ -860,7 +847,7 @@ export function CustomIngredientForm({
                   </label>
 
                   <label className="text-sm">Годен до
-                    <input type="date" className="mt-1 w-full rounded-md border px-2 py-2" value={freshnessDate} onChange={(e) => setFreshnessDate(e.target.value)} />
+                    <input type="date" className="mt-1 w-full rounded-md border px-2 py-2 text-base sm:text-sm" value={freshnessDate} onChange={(e) => setFreshnessDate(e.target.value)} />
                   </label>
                 </div>
 
@@ -894,7 +881,7 @@ export function CustomIngredientForm({
                 />
 
                 <label className="block text-sm">Заметки
-                  <textarea className="mt-1 h-20 w-full rounded-md border px-2 py-2" value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="Например: куплен под конкретную варку" />
+                  <textarea className="mt-1 h-20 w-full rounded-md border px-2 py-2 text-base sm:text-sm" value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="Например: куплен под конкретную варку" />
                 </label>
               </div>
           </InventoryOptionalDisclosure>

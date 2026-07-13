@@ -30,7 +30,7 @@ export function RecipesFilterSheet({
       <Button
         type="button"
         variant="outline"
-        size="sm"
+        size="md"
         onClick={() => setOpen(true)}
         aria-label="Открыть фильтры"
       >

@@ -10,6 +10,7 @@ import {
   resolveLastDoneStep
 } from "@/features/brew-batches/brew-day";
 import { type BrewDayProgress, type BrewDayStageGroup } from "@/features/brew-batches/contracts";
+import { useWakeLock } from "@/features/brew-controller/use-wake-lock";
 import { fmtClock, remainingSeconds } from "./brew-day-timer";
 import { BrewStageRail } from "./brew-stage-rail";
 import { BrewStepList } from "./brew-step-list";
@@ -66,6 +67,10 @@ function CurrentStepHero({
   const timerDone = remaining != null && remaining <= 0;
   const busy = step ? Boolean(pending[step.id]) : false;
 
+  // Экран не гаснет, только пока реально идёт отсчёт активного шага — у котла телефон
+  // не должен разряжаться зря, а таймер/сигнал завершения не должны пропадать из виду.
+  useWakeLock(isTimer && timerRunning);
+
   useEffect(() => {
     if (step && timerDone && !beeped.current.has(step.id)) {
       beeped.current.add(step.id);
@@ -119,7 +124,8 @@ function CurrentStepHero({
       <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">Сейчас</p>
       <div className="mt-1 flex flex-wrap items-start justify-between gap-3">
         <div className="min-w-0">
-          <h2 className="text-xl font-semibold text-foreground">{step.title}</h2>
+          {/* line-clamp — длинное название шага не должно раздвигать герой и таймер на узких экранах. */}
+          <h2 className="line-clamp-2 text-xl font-semibold text-foreground">{step.title}</h2>
           {step.detail ? <p className="mt-0.5 text-sm text-muted-foreground">{step.detail}</p> : null}
         </div>
 
@@ -138,7 +144,7 @@ function CurrentStepHero({
               onClick={() => patchStep(step.id, { timerStartedAt: null })}
               disabled={busy}
               aria-label="Сбросить таймер"
-              className="inline-flex h-9 w-9 items-center justify-center rounded-md text-muted-foreground transition hover:bg-accent hover:text-foreground disabled:opacity-50"
+              className="relative inline-flex h-9 w-9 items-center justify-center rounded-md text-muted-foreground transition hover:bg-accent hover:text-foreground disabled:opacity-50 before:absolute before:-inset-1 before:content-['']"
             >
               <RotateCcw className="h-4 w-4" aria-hidden />
             </button>

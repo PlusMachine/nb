@@ -3,6 +3,7 @@
 import React, { useEffect, useMemo, useState, useTransition } from "react";
 
 import { updateInventoryInlineAction } from "@/app/(app)/app/ingredients/actions";
+import { NumericInput } from "@/components/shared/numeric-input";
 import type { InventoryListItemDto } from "@/features/inventory/contracts";
 import {
   formatInventoryQuantityForDisplay,
@@ -196,9 +197,8 @@ export function InventoryQuantityEditor({
       {!hideEditor ? (
         <>
           <div className="flex items-center gap-1.5">
-            <input
-              type="number"
-              min="0"
+            <NumericInput
+              min={0}
               step={quantityStep}
               value={quantity}
               onChange={(event) => {
@@ -206,8 +206,7 @@ export function InventoryQuantityEditor({
                 setFeedback(null);
               }}
               onKeyDown={handleKeyDown}
-              className="w-[5rem] rounded-xl border border-border bg-card px-2.5 py-2 text-right text-sm tabular-nums transition-all focus:border-ring focus:outline-none focus:ring-2 focus:ring-ring"
-              inputMode="decimal"
+              className="w-[5rem] rounded-xl border border-border bg-card px-2.5 py-2 text-right text-base tabular-nums transition-all focus:border-ring focus:outline-none focus:ring-2 focus:ring-ring sm:text-sm"
               aria-label="Количество"
             />
             <select

@@ -593,7 +593,7 @@ export function RecipeWaterAdditivesSection({
                               return;
                             }
                           }}
-                          className="rounded-md p-1.5 text-muted-foreground transition-colors hover:bg-destructive-subtle hover:text-destructive"
+                          className="relative rounded-md p-1.5 text-muted-foreground transition-colors hover:bg-destructive-subtle hover:text-destructive before:absolute before:-inset-2.5 before:content-['']"
                           aria-label={`Удалить ${row.title}`}
                           title="Удалить"
                         >
@@ -658,7 +658,7 @@ export function RecipeWaterAdditivesSection({
                                   return;
                                 }
                               }}
-                              className="h-8 w-20 rounded-md border border-border bg-muted px-2 text-right text-sm font-semibold tabular-nums text-foreground focus:border-ring focus:bg-card focus:outline-none focus:ring-1 focus:ring-ring"
+                              className="h-9 w-20 rounded-md border border-border bg-muted px-2 text-right text-sm font-semibold tabular-nums text-foreground focus:border-ring focus:bg-card focus:outline-none focus:ring-1 focus:ring-ring"
                             />
                             <span className="text-xs text-muted-foreground">г</span>
                           </div>

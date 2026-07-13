@@ -163,6 +163,13 @@ vi.mock("@nb/db", () => {
   };
 });
 
+// Анти-абьюз-барьеры сервиса зовут assertRateLimit (реальный бьёт в БД); в этих
+// тестах он не в фокусе — стабим no-op, остальное @nb/auth оставляем настоящим.
+vi.mock("@nb/auth", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("@nb/auth")>()),
+  assertRateLimit: vi.fn(async () => {})
+}));
+
 import {
   createUserCustomIngredient,
   createUserCustomInventoryIngredient,

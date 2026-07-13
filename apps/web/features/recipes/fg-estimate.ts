@@ -11,8 +11,12 @@ import type {
 const DEFAULT_ATTENUATION_PCT = 75;
 const DEFAULT_ATTENUATION_RANGE_MIN_PCT = 72;
 const DEFAULT_ATTENUATION_RANGE_MAX_PCT = 78;
-const MIN_EFFECTIVE_ATTENUATION_PCT = 60;
-const MAX_EFFECTIVE_ATTENUATION_PCT = 90;
+const MIN_EFFECTIVE_ATTENUATION_PCT = 50;
+const MAX_EFFECTIVE_ATTENUATION_PCT = 98;
+// Видимая аттенюация классов засыпи в взвешенной модели сбраживаемости (Э2).
+const SIMPLE_SUGAR_APPARENT_ATTENUATION_PCT = 100;
+const LACTOSE_APPARENT_ATTENUATION_PCT = 0;
+const CRYSTAL_DEXTRIN_ATTENUATION_FACTOR = 0.6;
 const KG_TO_LB = 2.2046226218;
 
 type RecipeFgEstimateFermentableInput = {
@@ -353,11 +357,30 @@ export const calculateRecipeFgEstimate = (input: {
     }
   }
 
-  const simpleSugarAdj = Math.min(simpleSugarSharePct * 0.20, 3);
-  const crystalDextrinAdj = Math.min(crystalDextrinSharePct * 0.10, 2.5);
-  const lactoseAdj = Math.min(lactoseSharePct * 0.35, 4);
+  // Взвешенная модель сбраживаемости (Э2): у каждого класса засыпи своя видимая
+  // аттенюация, итоговая attEff — среднее по долям gravity-вклада. shareBase —
+  // доля обычной засыпи, унаследующая базовую аттенюацию дрожжей как есть.
+  const shareBase = Math.max(0, 100 - simpleSugarSharePct - crystalDextrinSharePct - lactoseSharePct);
+
+  const computeWeightedAttenuation = (attBase: number) => (
+    (
+      shareBase * attBase
+      + simpleSugarSharePct * SIMPLE_SUGAR_APPARENT_ATTENUATION_PCT
+      + lactoseSharePct * LACTOSE_APPARENT_ATTENUATION_PCT
+      + crystalDextrinSharePct * (attBase * CRYSTAL_DEXTRIN_ATTENUATION_FACTOR)
+    ) / 100
+  );
+
+  const attBase = baseAttenuationPct + mashAdjPctPoints;
+
+  // Эффективные дельты по классам — вклад каждого в (attEff − attBase), п.п.
+  // Хранятся ≥0 (как и в прежнем контракте), знак применяется при отображении.
+  const simpleSugarAdj = simpleSugarSharePct * (SIMPLE_SUGAR_APPARENT_ATTENUATION_PCT - attBase) / 100;
+  const crystalDextrinAdj = crystalDextrinSharePct * (attBase * (1 - CRYSTAL_DEXTRIN_ATTENUATION_FACTOR)) / 100;
+  const lactoseAdj = lactoseSharePct * (attBase - LACTOSE_APPARENT_ATTENUATION_PCT) / 100;
+
   const effectiveAttenuationPct = clamp(
-    baseAttenuationPct + mashAdjPctPoints + simpleSugarAdj - crystalDextrinAdj - lactoseAdj,
+    computeWeightedAttenuation(attBase),
     MIN_EFFECTIVE_ATTENUATION_PCT,
     MAX_EFFECTIVE_ATTENUATION_PCT
   );
@@ -368,11 +391,11 @@ export const calculateRecipeFgEstimate = (input: {
   if (fgEstimateMode === "default_estimate") {
     fgRangeMin = calculateFgFromAttenuation(
       input.og,
-      DEFAULT_ATTENUATION_RANGE_MAX_PCT + mashAdjPctPoints + simpleSugarAdj - crystalDextrinAdj - lactoseAdj
+      computeWeightedAttenuation(DEFAULT_ATTENUATION_RANGE_MAX_PCT + mashAdjPctPoints)
     );
     fgRangeMax = calculateFgFromAttenuation(
       input.og,
-      DEFAULT_ATTENUATION_RANGE_MIN_PCT + mashAdjPctPoints + simpleSugarAdj - crystalDextrinAdj - lactoseAdj
+      computeWeightedAttenuation(DEFAULT_ATTENUATION_RANGE_MIN_PCT + mashAdjPctPoints)
     );
   } else if (
     fgEstimateMode === "yeast_estimate"
@@ -381,11 +404,11 @@ export const calculateRecipeFgEstimate = (input: {
   ) {
     fgRangeMin = calculateFgFromAttenuation(
       input.og,
-      resolvedYeastAttenuation.maxPct + mashAdjPctPoints + simpleSugarAdj - crystalDextrinAdj - lactoseAdj
+      computeWeightedAttenuation(resolvedYeastAttenuation.maxPct + mashAdjPctPoints)
     );
     fgRangeMax = calculateFgFromAttenuation(
       input.og,
-      resolvedYeastAttenuation.minPct + mashAdjPctPoints + simpleSugarAdj - crystalDextrinAdj - lactoseAdj
+      computeWeightedAttenuation(resolvedYeastAttenuation.minPct + mashAdjPctPoints)
     );
   }
 

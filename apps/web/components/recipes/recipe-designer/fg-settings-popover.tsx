@@ -103,7 +103,7 @@ export function FgSettingsPopover({
       trigger={({ open }) => (
         <button
           type="button"
-          className={`inline-flex h-7 w-7 items-center justify-center rounded-lg text-[13px] leading-none transition-colors hover:bg-accent hover:text-foreground ${open ? "bg-accent text-foreground" : "text-muted-foreground"}`}
+          className={`relative inline-flex h-7 w-7 items-center justify-center rounded-lg text-[13px] leading-none transition-colors before:absolute before:-inset-2 before:content-[''] hover:bg-accent hover:text-foreground ${open ? "bg-accent text-foreground" : "text-muted-foreground"}`}
           aria-label="Открыть настройки КП"
         >
           ⚙
@@ -127,7 +127,7 @@ export function FgSettingsPopover({
             <button
               type="button"
               onClick={close}
-              className="inline-flex h-7 w-7 items-center justify-center rounded-lg text-sm text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+              className="relative inline-flex h-7 w-7 items-center justify-center rounded-lg text-sm text-muted-foreground transition-colors before:absolute before:-inset-2 before:content-[''] hover:bg-accent hover:text-foreground"
               aria-label="Закрыть настройки КП"
             >
               ×
@@ -201,7 +201,7 @@ export function FgSettingsPopover({
                         event.currentTarget.blur();
                       }
                     }}
-                    className="h-9 w-full rounded-lg border border-border bg-card px-2.5 text-sm tabular-nums text-foreground shadow-sm"
+                    className="h-9 w-full rounded-lg border border-border bg-card px-2.5 text-base tabular-nums text-foreground shadow-sm sm:text-sm"
                     placeholder={(sgToManualFgInput(preview?.fg ?? 1.012) ?? 0).toFixed(manualFgPrecision)}
                   />
                   {manualFgSecondaryText ? (

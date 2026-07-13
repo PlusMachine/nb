@@ -6,6 +6,7 @@ import { useEffect, useMemo, useState, useTransition } from "react";
 import { Button, Dialog, DialogCloseButton, DialogHeader } from "@nb/ui";
 import { updateInventoryItemAction, type AddIngredientResult } from "@/app/(app)/app/ingredients/actions";
 import { IngredientPicker, IngredientSelectionCard } from "@/components/ingredients/ingredient-picker";
+import { NumericInput } from "@/components/shared/numeric-input";
 import { IngredientPurchaseLinksField } from "@/components/ingredients/ingredient-purchase-links-field";
 import {
   InventoryIngredientCategoryGrid,
@@ -809,10 +810,9 @@ export function InventoryItemDetailsEditor({
                   <section className="space-y-3 rounded-xl border border-border bg-muted/50 p-4" data-testid="inventory-editor-required-fields">
                     {showWaterTreatmentConcentrationField ? (
                       <label className="block text-sm font-medium text-foreground">Концентрация кислоты, %
-                        <input
-                          type="number"
-                          min="1"
-                          max="100"
+                        <NumericInput
+                          min={1}
+                          max={100}
                           step="0.1"
                           value={form.waterTreatmentConcentrationPct}
                           onChange={(event) => {
@@ -820,8 +820,7 @@ export function InventoryItemDetailsEditor({
                             setLocalFieldErrors((current) => ({ ...current, waterTreatmentConcentrationPct: null }));
                             setResult(null);
                           }}
-                          className="mt-1.5 w-full rounded-xl border border-border bg-card px-3.5 py-2.5 text-sm transition-colors focus:border-ring focus:outline-none focus:ring-2 focus:ring-ring sm:max-w-xs"
-                          inputMode="decimal"
+                          className="mt-1.5 w-full rounded-xl border border-border bg-card px-3.5 py-2.5 text-base transition-colors focus:border-ring focus:outline-none focus:ring-2 focus:ring-ring sm:max-w-xs sm:text-sm"
                           placeholder="Например: 80"
                         />
                         {(localFieldErrors.waterTreatmentConcentrationPct || currentNumberErrors.waterTreatmentConcentrationPct || result?.fieldErrors?.waterTreatmentConcentrationPct) ? <span className="mt-1 block text-xs text-destructive">{localFieldErrors.waterTreatmentConcentrationPct ?? currentNumberErrors.waterTreatmentConcentrationPct ?? result?.fieldErrors?.waterTreatmentConcentrationPct}</span> : null}
@@ -829,8 +828,7 @@ export function InventoryItemDetailsEditor({
                     ) : null}
                     <div className="grid gap-3 sm:grid-cols-2">
                       <label className="block text-sm font-medium text-foreground">Количество *
-                        <input
-                          type="number"
+                        <NumericInput
                           min={quantityStep}
                           step={quantityStep}
                           value={form.enteredQuantity}
@@ -839,15 +837,14 @@ export function InventoryItemDetailsEditor({
                             setLocalFieldErrors((current) => ({ ...current, enteredQuantity: null }));
                             setResult(null);
                           }}
-                          className="mt-1.5 w-full rounded-xl border border-border bg-card px-3.5 py-2.5 text-sm transition-colors focus:border-ring focus:outline-none focus:ring-2 focus:ring-ring"
-                          inputMode="decimal"
+                          className="mt-1.5 w-full rounded-xl border border-border bg-card px-3.5 py-2.5 text-base transition-colors focus:border-ring focus:outline-none focus:ring-2 focus:ring-ring sm:text-sm"
                         />
                         {(localFieldErrors.enteredQuantity || currentNumberErrors.enteredQuantity || result?.fieldErrors?.enteredQuantity) ? <span className="mt-1 block text-xs text-destructive">{localFieldErrors.enteredQuantity ?? currentNumberErrors.enteredQuantity ?? result?.fieldErrors?.enteredQuantity}</span> : null}
                       </label>
 
                       <label className="block text-sm font-medium text-foreground">Ед. изм. *
                         <select
-                          className="mt-1.5 w-full rounded-xl border border-border bg-card px-3.5 py-2.5 text-sm transition-colors focus:border-ring focus:outline-none focus:ring-2 focus:ring-ring"
+                          className="mt-1.5 w-full rounded-xl border border-border bg-card px-3.5 py-2.5 text-base transition-colors focus:border-ring focus:outline-none focus:ring-2 focus:ring-ring sm:text-sm"
                           value={form.enteredUnit}
                           onChange={(event) => {
                             setForm((current) => ({ ...current, enteredUnit: event.target.value as InventoryUnit }));
@@ -880,7 +877,7 @@ export function InventoryItemDetailsEditor({
                           <label className="block text-sm font-medium text-foreground">Дата покупки
                             <input
                               type="date"
-                              className="mt-1.5 w-full rounded-xl border border-border bg-card px-3.5 py-2.5 text-sm transition-colors focus:border-ring focus:outline-none focus:ring-2 focus:ring-ring"
+                              className="mt-1.5 w-full rounded-xl border border-border bg-card px-3.5 py-2.5 text-base transition-colors focus:border-ring focus:outline-none focus:ring-2 focus:ring-ring sm:text-sm"
                               value={form.purchasedAt}
                               onChange={(event) => {
                                 setForm((current) => ({ ...current, purchasedAt: event.target.value }));
@@ -892,7 +889,7 @@ export function InventoryItemDetailsEditor({
                           <label className="block text-sm font-medium text-foreground">Годен до
                             <input
                               type="date"
-                              className="mt-1.5 w-full rounded-xl border border-border bg-card px-3.5 py-2.5 text-sm transition-colors focus:border-ring focus:outline-none focus:ring-2 focus:ring-ring"
+                              className="mt-1.5 w-full rounded-xl border border-border bg-card px-3.5 py-2.5 text-base transition-colors focus:border-ring focus:outline-none focus:ring-2 focus:ring-ring sm:text-sm"
                               value={form.freshnessDate}
                               onChange={(event) => {
                                 setForm((current) => ({ ...current, freshnessDate: event.target.value }));
@@ -939,7 +936,7 @@ export function InventoryItemDetailsEditor({
 
                         <label className="block text-sm font-medium text-foreground">Заметки
                           <textarea
-                            className="mt-1.5 h-20 w-full resize-none rounded-xl border border-border bg-card px-3.5 py-2.5 text-sm transition-colors focus:border-ring focus:outline-none focus:ring-2 focus:ring-ring"
+                            className="mt-1.5 h-20 w-full resize-none rounded-xl border border-border bg-card px-3.5 py-2.5 text-base transition-colors focus:border-ring focus:outline-none focus:ring-2 focus:ring-ring sm:text-sm"
                             value={form.notes}
                             onChange={(event) => {
                               setForm((current) => ({ ...current, notes: event.target.value }));

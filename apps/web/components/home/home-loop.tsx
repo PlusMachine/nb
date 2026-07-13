@@ -89,7 +89,7 @@ const frames: LoopFrame[] = [
 
 export function HomeLoop() {
   return (
-    <div className="-mx-6 flex gap-3 overflow-x-auto scrollbar-none px-6 pb-1 sm:mx-0 sm:grid sm:grid-cols-2 sm:px-0 sm:pb-0 lg:grid-cols-4">
+    <div className="-mx-4 flex gap-3 overflow-x-auto scrollbar-none px-4 pb-1 sm:mx-0 sm:grid sm:grid-cols-2 sm:px-0 sm:pb-0 lg:grid-cols-4">
       {frames.map((frame, index) => {
         const Icon = frame.icon;
         return (

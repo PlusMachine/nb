@@ -12,6 +12,7 @@ const { tableRefs, mockState } = vi.hoisted(() => ({
       userId: "userId",
       recipeId: "recipeId",
       recipeIngredientId: "recipeIngredientId",
+      brewBatchId: "brewBatchId",
       status: "status"
     },
     inventoryTransactions: { name: "inventory_transactions", id: "id" },
@@ -20,9 +21,20 @@ const { tableRefs, mockState } = vi.hoisted(() => ({
       id: "id",
       userId: "userId",
       ingredientCatalogItemId: "ingredientCatalogItemId",
-      userCustomIngredientId: "userCustomIngredientId"
+      userCustomIngredientId: "userCustomIngredientId",
+      // Проекция блокирующего чтения остатка (SELECT … FOR UPDATE в consume).
+      normalizedQuantity: "normalizedQuantity",
+      normalizedUnit: "normalizedUnit",
+      enteredQuantity: "enteredQuantity",
+      enteredUnit: "enteredUnit",
+      packageVariantId: "packageVariantId"
     },
-    brewBatches: { name: "brew_batches", id: "id", status: "status" }
+    brewBatches: { name: "brew_batches", id: "id", userId: "userId", status: "status" },
+    // Источники эквивалента пачки: движок ходит сюда ТОЛЬКО когда единица строки
+    // рецепта разошлась с единицей складской позиции (pack vs g).
+    ingredients: { name: "ingredients", id: "id" },
+    userCustomIngredients: { name: "user_custom_ingredients", id: "id" },
+    ingredientPackageVariants: { name: "ingredient_package_variants", id: "id" }
   },
   mockState: {
     idCounter: 0,
@@ -31,7 +43,10 @@ const { tableRefs, mockState } = vi.hoisted(() => ({
     inventory: [] as any[],
     allocations: [] as any[],
     transactions: [] as any[],
-    brewBatches: [] as any[]
+    brewBatches: [] as any[],
+    catalogItems: [] as any[],
+    customIngredients: [] as any[],
+    packageVariants: [] as any[]
   }
 }));
 
@@ -62,7 +77,73 @@ vi.mock("@nb/db", () => {
     return undefined;
   };
 
+  // isNull(col) → маркер `null:<col>` в плоском where. Нужен для области аллокаций
+  // (brewBatchId IS NULL = «вне партии»), иначе мок молча игнорировал бы фильтр и
+  // тест не отличал бы аллокации разных партий.
+  const hasIsNull = (where: any, key: string): boolean => {
+    const items = Array.isArray(where) ? where.flat(8) : [where];
+    return items.includes(`null:${key}`);
+  };
+
+  // Область партии в where: точная партия (eq), «вне партии» (isNull) или нет
+  // фильтра вовсе. Возвращает предикат по строке аллокации.
+  const batchScopeMatcher = (where: any) => {
+    const brewBatchId = getEqValue(where, "brewBatchId");
+    const scopedToNoBatch = hasIsNull(where, "brewBatchId");
+    return (allocation: any) => {
+      if (scopedToNoBatch) {
+        return !allocation.brewBatchId;
+      }
+      if (brewBatchId !== undefined) {
+        return allocation.brewBatchId === brewBatchId;
+      }
+      return true;
+    };
+  };
+
+  const tableRows = (tableName: string): any[] => {
+    if (tableName === "user_ingredients") return mockState.inventory;
+    if (tableName === "brew_batches") return mockState.brewBatches;
+    if (tableName === "recipe_inventory_allocations") return mockState.allocations;
+    return [];
+  };
+
+  // db.select({...}).from(t).where(...).for("update") — блокирующее чтение остатка
+  // в consume. Мок блокировок не эмулирует (гонку проверяем на уровне «условный
+  // UPDATE забрал строку / не забрал»), но обязан отдавать СВЕЖИЕ значения строки:
+  // на этом держится и кламп, и quantityBefore в журнале.
+  const select = (projection: Record<string, string>) => {
+    const state: { table: string | null; where: any } = { table: null, where: null };
+    const resolve = () => {
+      const id = getEqValue(state.where, "id");
+      const userId = getEqValue(state.where, "userId");
+      return tableRows(state.table ?? "")
+        .filter((row) => (id === undefined || row.id === id) && (userId === undefined || row.userId === userId))
+        .map((row) => {
+          const projected: Record<string, unknown> = {};
+          for (const [key, column] of Object.entries(projection)) {
+            projected[key] = row[column];
+          }
+          return projected;
+        });
+    };
+    const builder: any = {
+      from: (table: { name: string }) => {
+        state.table = table.name;
+        return builder;
+      },
+      where: (where: any) => {
+        state.where = where;
+        return builder;
+      },
+      for: () => builder,
+      then: (onFulfilled: any, onRejected: any) => Promise.resolve(resolve()).then(onFulfilled, onRejected)
+    };
+    return builder;
+  };
+
   const db: any = {
+    select,
     query: {
       recipes: {
         findFirst: async (arg: any) => {
@@ -90,10 +171,15 @@ vi.mock("@nb/db", () => {
         findMany: async (arg: any) => {
           const userId = getEqValue(arg?.where, "userId");
           const recipeId = getEqValue(arg?.where, "recipeId");
+          const status = getEqValue(arg?.where, "status");
           const statuses = getInArrayValue(arg?.where, "status");
+          const inScope = batchScopeMatcher(arg?.where);
           return mockState.allocations.filter((allocation) => (
             allocation.userId === userId
-            && allocation.recipeId === recipeId
+            // hasConsumedAllocationsForBatch ищет по партии, без recipeId.
+            && (recipeId === undefined || allocation.recipeId === recipeId)
+            && inScope(allocation)
+            && (status === undefined || allocation.status === status)
             && (!statuses || statuses.includes(allocation.status))
           ));
         }
@@ -117,6 +203,30 @@ vi.mock("@nb/db", () => {
         findMany: async (arg: any) => {
           const ids = getInArrayValue(arg?.where, "id");
           return mockState.brewBatches.filter((batch) => !ids || ids.includes(batch.id));
+        }
+      },
+      ingredients: {
+        findFirst: async (arg: any) => {
+          const id = getEqValue(arg?.where, "id");
+          return mockState.catalogItems.find((item) => item.id === id) ?? null;
+        },
+        // Дожим засыпи под эффективность спрашивает техданные каталога пачкой:
+        // без них движок не отличит солод (эффективность действует) от сахара.
+        findMany: async (arg: any) => {
+          const ids = getInArrayValue(arg?.where, "id");
+          return mockState.catalogItems.filter((item) => !ids || ids.includes(item.id));
+        }
+      },
+      userCustomIngredients: {
+        findFirst: async (arg: any) => {
+          const id = getEqValue(arg?.where, "id");
+          return mockState.customIngredients.find((item) => item.id === id) ?? null;
+        }
+      },
+      ingredientPackageVariants: {
+        findFirst: async (arg: any) => {
+          const id = getEqValue(arg?.where, "id");
+          return mockState.packageVariants.find((variant) => variant.id === id) ?? null;
         }
       }
     },
@@ -146,35 +256,70 @@ vi.mock("@nb/db", () => {
     update: (table: { name: string }) => ({
       set: (set: any) => ({
         where: (where: any) => {
+          // Список реально обновлённых строк: на нём держится «заявка» consume
+          // (условный UPDATE по статусу забрал строку → склад трогаем, не забрал →
+          // конкурент уже списал). Пустой returning раньше делал этот тест слепым.
+          const updated: any[] = [];
+
           if (table.name === "recipe_inventory_allocations") {
             const id = getEqValue(where, "id");
+            // Гашение дублей аллокаций адресуется списком id (inArray) — без этого
+            // фильтра фейк «релизил» вообще все активные аллокации пользователя.
+            const ids = getInArrayValue(where, "id");
             const userId = getEqValue(where, "userId");
             const recipeId = getEqValue(where, "recipeId");
             const lineId = getEqValue(where, "recipeIngredientId");
+            const status = getEqValue(where, "status");
             const statuses = getInArrayValue(where, "status");
+            // Область партии в UPDATE обязательна: release прежней аллокации строки
+            // не должен трогать активную аллокацию соседней варки того же рецепта.
+            const addressedById = Boolean(id || ids);
+            const inScope = addressedById ? () => true : batchScopeMatcher(where);
             mockState.allocations = mockState.allocations.map((allocation) => {
               const matches = (
                 (id ? allocation.id === id : true)
+                && (!ids || ids.includes(allocation.id))
                 && (userId ? allocation.userId === userId : true)
                 && (recipeId ? allocation.recipeId === recipeId : true)
                 && (lineId ? allocation.recipeIngredientId === lineId : true)
+                && inScope(allocation)
+                && (status === undefined || allocation.status === status)
                 && (!statuses || statuses.includes(allocation.status))
               );
-              return matches ? { ...allocation, ...set } : allocation;
+              if (!matches) {
+                return allocation;
+              }
+              const next = { ...allocation, ...set };
+              updated.push(next);
+              return next;
             });
           }
 
           if (table.name === "recipe_ingredients") {
             const id = getEqValue(where, "id");
-            mockState.lines = mockState.lines.map((line) => line.id === id ? { ...line, ...set } : line);
+            mockState.lines = mockState.lines.map((line) => {
+              if (line.id !== id) {
+                return line;
+              }
+              const next = { ...line, ...set };
+              updated.push(next);
+              return next;
+            });
           }
 
           if (table.name === "user_ingredients") {
             const id = getEqValue(where, "id");
-            mockState.inventory = mockState.inventory.map((item) => item.id === id ? { ...item, ...set } : item);
+            mockState.inventory = mockState.inventory.map((item) => {
+              if (item.id !== id) {
+                return item;
+              }
+              const next = { ...item, ...set };
+              updated.push(next);
+              return next;
+            });
           }
 
-          return { returning: async () => [] };
+          return { returning: async () => updated };
         }
       })
     }),
@@ -186,28 +331,42 @@ vi.mock("@nb/db", () => {
     and: (...args: unknown[]) => args,
     eq: (...args: unknown[]) => args,
     inArray: (column: string, values: string[]) => [`in:${column}`, values],
+    isNull: (column: string) => [`null:${column}`],
     inventoryTransactions: tableRefs.inventoryTransactions,
     recipeIngredients: tableRefs.recipeIngredients,
     recipeInventoryAllocations: tableRefs.recipeInventoryAllocations,
     recipes: tableRefs.recipes,
     userIngredients: tableRefs.userIngredients,
-    brewBatches: tableRefs.brewBatches
+    brewBatches: tableRefs.brewBatches,
+    ingredients: tableRefs.ingredients,
+    userCustomIngredients: tableRefs.userCustomIngredients,
+    ingredientPackageVariants: tableRefs.ingredientPackageVariants
   };
 });
 
 import {
   autoAllocateRecipeInventoryFromStock,
   consumeRecipeInventoryAllocations,
-  hasBlockingConsumedAllocations,
-  listRecipeStockCoverage,
-  syncRecipeSelectedInventoryAllocations
+  hasConsumedAllocationsForBatch,
+  listRecipeStockCoverage
 } from "../features/recipes/inventory-service";
 
 describe("recipe inventory allocation service", () => {
   beforeEach(() => {
     mockState.idCounter = 0;
     mockState.brewBatches = [];
-    mockState.recipes = [{ id: uuid(1), authorId: uuid(2), title: "Recipe" }];
+    mockState.catalogItems = [];
+    mockState.customIngredients = [];
+    mockState.packageVariants = [];
+    mockState.recipes = [{
+      id: uuid(1),
+      authorId: uuid(2),
+      title: "Recipe",
+      publicationState: "draft",
+      // Объём рецепта — база пересчёта под объём партии (20 л).
+      batchSizeNormalizedQuantity: 20000,
+      batchSizeNormalizedUnit: "ml"
+    }];
     mockState.lines = [{
       id: uuid(11),
       recipeId: uuid(1),
@@ -238,8 +397,11 @@ describe("recipe inventory allocation service", () => {
     mockState.transactions = [];
   });
 
-  it("syncs selected recipe stock lines without consuming inventory", async () => {
-    const coverage = await syncRecipeSelectedInventoryAllocations(uuid(2), uuid(1));
+  // Подбор склада под строки рецепта живёт только в autoAllocate (редакторский
+  // syncRecipeSelectedInventoryAllocations снесён вместе с кнопкой «Обновить наличие»:
+  // autoAllocate — его надмножество, тоже уважает лот из inventorySelectionMeta).
+  it("подбирает выбранные складские позиции, не списывая склад", async () => {
+    const coverage = await autoAllocateRecipeInventoryFromStock(uuid(2), uuid(1));
 
     expect(mockState.allocations).toHaveLength(1);
     expect(mockState.inventory[0].normalizedQuantity).toBe(100);
@@ -253,7 +415,7 @@ describe("recipe inventory allocation service", () => {
   it("restores a stale selected inventory id from the recipe source linkage", async () => {
     mockState.lines[0].inventorySelectionMeta = { inventoryItemId: uuid(99) };
 
-    const coverage = await syncRecipeSelectedInventoryAllocations(uuid(2), uuid(1));
+    const coverage = await autoAllocateRecipeInventoryFromStock(uuid(2), uuid(1));
 
     expect(mockState.allocations).toHaveLength(1);
     expect(mockState.lines[0].inventorySelectionMeta).toMatchObject({
@@ -267,7 +429,7 @@ describe("recipe inventory allocation service", () => {
     });
   });
 
-  it("skips stale stock selections without aborting coverage sync for other lines", async () => {
+  it("skips stale stock selections without aborting coverage for other lines", async () => {
     mockState.lines = [
       {
         ...mockState.lines[0],
@@ -286,7 +448,7 @@ describe("recipe inventory allocation service", () => {
       }
     ];
 
-    const coverage = await syncRecipeSelectedInventoryAllocations(uuid(2), uuid(1));
+    const coverage = await autoAllocateRecipeInventoryFromStock(uuid(2), uuid(1));
 
     expect(mockState.allocations).toHaveLength(1);
     expect(coverage.summary).toMatchObject({
@@ -304,7 +466,7 @@ describe("recipe inventory allocation service", () => {
   });
 
   it("confirmed consume writes inventory transactions and reduces normalized stock", async () => {
-    await syncRecipeSelectedInventoryAllocations(uuid(2), uuid(1));
+    await autoAllocateRecipeInventoryFromStock(uuid(2), uuid(1));
     const coverage = await consumeRecipeInventoryAllocations(uuid(2), uuid(1));
 
     expect(mockState.inventory[0]).toMatchObject({
@@ -323,7 +485,7 @@ describe("recipe inventory allocation service", () => {
   it("rejects consume when stock is short", async () => {
     mockState.inventory[0].normalizedQuantity = 20;
     mockState.inventory[0].enteredQuantity = 20;
-    await syncRecipeSelectedInventoryAllocations(uuid(2), uuid(1));
+    await autoAllocateRecipeInventoryFromStock(uuid(2), uuid(1));
 
     await expect(consumeRecipeInventoryAllocations(uuid(2), uuid(1))).rejects.toThrow("INSUFFICIENT_STOCK");
   });
@@ -342,11 +504,13 @@ describe("recipe inventory allocation service", () => {
     expect(coverage.lines[0]?.status).toBe("unselected");
   });
 
-  // Batch-aware реюз рецепта (docs/brew-day-assistant-audit-round2.md, П2): consumed-
-  // аллокация завершённой/отменённой партии больше не должна навсегда запирать
-  // рецепт от повторной варки — в отличие от аллокации активной партии или
-  // легаси-записи без brewBatchId (обе продолжают блокировать).
-  describe("batch-aware блокировка реюза рецепта", () => {
+  // Дефект A7: защита от двойного списания жила ПО РЕЦЕПТУ, и вторая варка того же
+  // рецепта (пока первая ещё активна) молча не получала ни одной аллокации — склад
+  // не списывался вовсе. Аллокация принадлежит ПАРТИИ: блокирует только своя партия.
+  describe("область аллокаций = партия", () => {
+    const FIRST_BATCH = uuid(301);
+    const SECOND_BATCH = uuid(302);
+
     const seedConsumedAllocation = (brewBatchId: string | null) => {
       mockState.allocations = [{
         id: uuid(201),
@@ -363,62 +527,592 @@ describe("recipe inventory allocation service", () => {
       }];
     };
 
-    it("consumed-аллокация ЗАВЕРШЁННОЙ партии не блокирует hasBlockingConsumedAllocations", async () => {
-      const batchId = uuid(301);
-      mockState.brewBatches = [{ id: batchId, status: "completed" }];
-      seedConsumedAllocation(batchId);
+    it("hasConsumedAllocationsForBatch: true для своей партии, false для соседней", async () => {
+      seedConsumedAllocation(FIRST_BATCH);
 
-      expect(await hasBlockingConsumedAllocations(uuid(2), uuid(1))).toBe(false);
+      expect(await hasConsumedAllocationsForBatch(uuid(2), FIRST_BATCH)).toBe(true);
+      expect(await hasConsumedAllocationsForBatch(uuid(2), SECOND_BATCH)).toBe(false);
     });
 
-    it("consumed-аллокация АКТИВНОЙ партии (brewing) продолжает блокировать", async () => {
-      const batchId = uuid(302);
-      mockState.brewBatches = [{ id: batchId, status: "brewing" }];
-      seedConsumedAllocation(batchId);
+    it("consumed-аллокация ДРУГОЙ партии не мешает подбору: вторая варка получает свою аллокацию", async () => {
+      // Первая варка уже списала 50 г — на складе осталось 50 г.
+      seedConsumedAllocation(FIRST_BATCH);
+      mockState.inventory[0].normalizedQuantity = 50;
+      mockState.inventory[0].enteredQuantity = 50;
 
-      expect(await hasBlockingConsumedAllocations(uuid(2), uuid(1))).toBe(true);
-    });
+      const coverage = await autoAllocateRecipeInventoryFromStock(uuid(2), uuid(1), { brewBatchId: SECOND_BATCH });
 
-    it("consumed-аллокация БЕЗ партии (NULL — редактор рецепта/легаси) продолжает блокировать", async () => {
-      seedConsumedAllocation(null);
-
-      expect(await hasBlockingConsumedAllocations(uuid(2), uuid(1))).toBe(true);
-    });
-
-    it("autoAllocateRecipeInventoryFromStock переаллоцирует строку поверх consumed-аллокации завершённой партии", async () => {
-      const batchId = uuid(303);
-      mockState.brewBatches = [{ id: batchId, status: "completed" }];
-      seedConsumedAllocation(batchId);
-
-      const coverage = await autoAllocateRecipeInventoryFromStock(uuid(2), uuid(1));
-
-      const newAllocations = mockState.allocations.filter((a) => a.status === "allocated");
-      expect(newAllocations).toHaveLength(1);
+      const own = mockState.allocations.filter((a) => a.brewBatchId === SECOND_BATCH);
+      expect(own).toHaveLength(1);
+      expect(own[0]).toMatchObject({ status: "allocated", inventoryItemId: uuid(21) });
       expect(coverage.lines[0]).toMatchObject({ status: "covered", inventoryItemId: uuid(21) });
     });
 
-    it("autoAllocateRecipeInventoryFromStock НЕ трогает строку, если consumed-аллокация принадлежит активной партии", async () => {
-      const batchId = uuid(304);
-      mockState.brewBatches = [{ id: batchId, status: "fermenting" }];
-      seedConsumedAllocation(batchId);
+    it("две партии одного рецепта: обе списывают свой склад", async () => {
+      await autoAllocateRecipeInventoryFromStock(uuid(2), uuid(1), { brewBatchId: FIRST_BATCH });
+      await consumeRecipeInventoryAllocations(uuid(2), uuid(1), { brewBatchId: FIRST_BATCH });
+      expect(mockState.inventory[0].normalizedQuantity).toBe(50);
 
+      await autoAllocateRecipeInventoryFromStock(uuid(2), uuid(1), { brewBatchId: SECOND_BATCH });
+      await consumeRecipeInventoryAllocations(uuid(2), uuid(1), { brewBatchId: SECOND_BATCH });
+
+      // Каждая варка взяла свои 50 г из ТЕКУЩЕГО остатка: 100 → 50 → 0.
+      expect(mockState.inventory[0].normalizedQuantity).toBe(0);
+      expect(mockState.transactions).toHaveLength(2);
+      expect(mockState.transactions.map((t) => t.brewBatchId)).toEqual([FIRST_BATCH, SECOND_BATCH]);
+      expect(mockState.allocations.filter((a) => a.status === "consumed")).toHaveLength(2);
+    });
+
+    it("повторное списание одной партии не списывает дважды", async () => {
+      await autoAllocateRecipeInventoryFromStock(uuid(2), uuid(1), { brewBatchId: FIRST_BATCH });
+      await consumeRecipeInventoryAllocations(uuid(2), uuid(1), { brewBatchId: FIRST_BATCH });
+
+      // Повтор всего цикла (двойной клик/ретрай) — склад не трогаем второй раз.
+      await autoAllocateRecipeInventoryFromStock(uuid(2), uuid(1), { brewBatchId: FIRST_BATCH });
+      await consumeRecipeInventoryAllocations(uuid(2), uuid(1), { brewBatchId: FIRST_BATCH });
+
+      expect(mockState.inventory[0].normalizedQuantity).toBe(50);
+      expect(mockState.transactions).toHaveLength(1);
+      expect(mockState.allocations.filter((a) => a.brewBatchId === FIRST_BATCH)).toHaveLength(1);
+    });
+
+    it("подбор второй партии не гасит активную аллокацию первой", async () => {
+      await autoAllocateRecipeInventoryFromStock(uuid(2), uuid(1), { brewBatchId: FIRST_BATCH });
+      await autoAllocateRecipeInventoryFromStock(uuid(2), uuid(1), { brewBatchId: SECOND_BATCH });
+
+      const active = mockState.allocations.filter((a) => a.status === "allocated");
+      expect(active).toHaveLength(2);
+      expect(active.map((a) => a.brewBatchId).sort()).toEqual([FIRST_BATCH, SECOND_BATCH].sort());
+    });
+
+    it("списание партии не трогает аллокации соседней партии", async () => {
+      await autoAllocateRecipeInventoryFromStock(uuid(2), uuid(1), { brewBatchId: FIRST_BATCH });
+      await autoAllocateRecipeInventoryFromStock(uuid(2), uuid(1), { brewBatchId: SECOND_BATCH });
+
+      await consumeRecipeInventoryAllocations(uuid(2), uuid(1), { brewBatchId: FIRST_BATCH });
+
+      expect(mockState.transactions).toHaveLength(1);
+      expect(mockState.allocations.find((a) => a.brewBatchId === FIRST_BATCH)?.status).toBe("consumed");
+      expect(mockState.allocations.find((a) => a.brewBatchId === SECOND_BATCH)?.status).toBe("allocated");
+    });
+
+    it("legacy consumed-аллокация без партии (NULL) не блокирует списание партии", async () => {
+      seedConsumedAllocation(null);
+      mockState.inventory[0].normalizedQuantity = 50;
+      mockState.inventory[0].enteredQuantity = 50;
+
+      await autoAllocateRecipeInventoryFromStock(uuid(2), uuid(1), { brewBatchId: FIRST_BATCH });
+      await consumeRecipeInventoryAllocations(uuid(2), uuid(1), { brewBatchId: FIRST_BATCH });
+
+      expect(mockState.inventory[0].normalizedQuantity).toBe(0);
+      expect(mockState.transactions).toHaveLength(1);
+    });
+
+    it("listRecipeStockCoverage показывает покрытие своей партии, а не соседней", async () => {
+      seedConsumedAllocation(FIRST_BATCH);
+
+      const own = await listRecipeStockCoverage(uuid(2), uuid(1), { brewBatchId: FIRST_BATCH });
+      expect(own.lines[0]).toMatchObject({ status: "consumed", allocationId: uuid(201) });
+
+      // У соседней партии по этой строке ещё ничего нет — «не выбрано», а не «списано».
+      const neighbour = await listRecipeStockCoverage(uuid(2), uuid(1), { brewBatchId: SECOND_BATCH });
+      expect(neighbour.lines[0]).toMatchObject({ status: "unselected", allocationId: null });
+    });
+  });
+
+  // Склад раскрывает пачку при записи (1 pack → 11 г, normalized_unit='g'), рецепт
+  // хранит «пачку» как есть. Подбор позиции требовал строгого равенства единиц —
+  // и дрожжи не списывались НИКОГДА (молча, без ошибки). Теперь требование строки
+  // конвертируется в единицу складской позиции, а аллокация живёт в ней же.
+  describe("дрожжи: пачка рецепта против граммов склада", () => {
+    const yeastLine = (overrides: Record<string, unknown> = {}) => ({
+      id: uuid(31),
+      recipeId: uuid(1),
+      persistentKey: uuid(131),
+      displayOrder: 0,
+      ingredientCatalogItemId: "fermentis-us-05",
+      userCustomIngredientId: null,
+      ingredientDisplayNameSnapshot: "US-05",
+      ingredientCategory: "yeast",
+      type: "yeast",
+      amountNormalizedQuantity: 1,
+      amountNormalizedUnit: "pack",
+      inventoryIntentMode: "use_stock",
+      inventorySelectionMeta: null,
+      ...overrides
+    });
+
+    const yeastStock = (overrides: Record<string, unknown> = {}) => ({
+      id: uuid(41),
+      userId: uuid(2),
+      ingredientCatalogItemId: "fermentis-us-05",
+      userCustomIngredientId: null,
+      packageVariantId: null,
+      ingredientDisplayNameSnapshot: "US-05 (склад)",
+      // 2 пачки, раскрытые складом в граммы
+      normalizedQuantity: 22,
+      normalizedUnit: "g",
+      enteredQuantity: 2,
+      enteredUnit: "pack",
+      archivedAt: null,
+      updatedAt: new Date("2026-01-01T00:00:00.000Z"),
+      ...overrides
+    });
+
+    const dryYeastCatalogItem = (attributes: Record<string, unknown> = { form: "dry" }) => ({
+      id: "fermentis-us-05",
+      type: "yeast",
+      attributes
+    });
+
+    beforeEach(() => {
+      mockState.lines = [yeastLine()];
+      mockState.inventory = [yeastStock()];
+      mockState.catalogItems = [dryYeastCatalogItem()];
+    });
+
+    it("подбирает позицию и пишет аллокацию в единице склада (1 пачка → 11 г)", async () => {
       const coverage = await autoAllocateRecipeInventoryFromStock(uuid(2), uuid(1));
 
-      expect(mockState.allocations.filter((a) => a.status === "allocated")).toHaveLength(0);
+      expect(mockState.allocations).toHaveLength(1);
+      expect(mockState.allocations[0]).toMatchObject({
+        allocatedQuantityNormalized: 11,
+        allocatedNormalizedUnit: "g",
+        inventoryItemId: uuid(41)
+      });
+      // След конверсии остаётся в мете аллокации.
+      expect(mockState.allocations[0].allocationMeta).toMatchObject({
+        sourceNormalizedQuantity: 1,
+        sourceNormalizedUnit: "pack"
+      });
+      expect(coverage.lines[0]).toMatchObject({
+        status: "covered",
+        requiredQuantityNormalized: 11,
+        requiredNormalizedUnit: "g",
+        availableQuantityNormalized: 22
+      });
+    });
+
+    it("списывает 11 г и чинит entered_quantity в пачках", async () => {
+      mockState.brewBatches = [{ id: uuid(301), status: "brewing" }];
+
+      await autoAllocateRecipeInventoryFromStock(uuid(2), uuid(1), { brewBatchId: uuid(301) });
+      const coverage = await consumeRecipeInventoryAllocations(uuid(2), uuid(1), { brewBatchId: uuid(301) });
+
+      expect(mockState.inventory[0]).toMatchObject({
+        normalizedQuantity: 11,
+        enteredQuantity: 1,
+        enteredUnit: "pack"
+      });
+      expect(mockState.transactions).toHaveLength(1);
+      expect(mockState.transactions[0]).toMatchObject({
+        type: "consume",
+        quantityDeltaNormalized: -11,
+        normalizedUnit: "g",
+        quantityBeforeNormalized: 22,
+        quantityAfterNormalized: 11,
+        brewBatchId: uuid(301)
+      });
       expect(coverage.lines[0]?.status).toBe("consumed");
     });
 
-    it("listRecipeStockCoverage не показывает consumed завершённой партии как текущее покрытие", async () => {
-      const batchId = uuid(305);
-      mockState.brewBatches = [{ id: batchId, status: "completed" }];
-      seedConsumedAllocation(batchId);
+    it("package_size из каталога бьёт фолбэк 11 г", async () => {
+      mockState.catalogItems = [dryYeastCatalogItem({ form: "dry", package_size: 15, package_unit: "g" })];
 
-      const coverage = await listRecipeStockCoverage(uuid(2), uuid(1));
+      await autoAllocateRecipeInventoryFromStock(uuid(2), uuid(1));
 
-      // Аллокация исключена из проекции: строка снова читается как невыбранная,
-      // а не как "уже списанная" — запас потрачен первой варкой, но повторная
-      // варка не заблокирована.
-      expect(coverage.lines[0]).toMatchObject({ status: "unselected", allocationId: null });
+      expect(mockState.allocations[0]).toMatchObject({
+        allocatedQuantityNormalized: 15,
+        allocatedNormalizedUnit: "g"
+      });
+    });
+
+    it("жидкие дрожжи: пачка → миллилитры", async () => {
+      mockState.catalogItems = [dryYeastCatalogItem({ form: "liquid", package_size: 35, package_unit: "ml" })];
+      mockState.inventory = [yeastStock({ normalizedQuantity: 70, normalizedUnit: "ml", enteredQuantity: 2 })];
+
+      const coverage = await autoAllocateRecipeInventoryFromStock(uuid(2), uuid(1));
+
+      expect(mockState.allocations[0]).toMatchObject({
+        allocatedQuantityNormalized: 35,
+        allocatedNormalizedUnit: "ml"
+      });
+      expect(coverage.lines[0]?.status).toBe("covered");
+    });
+
+    it("вариант фасовки (6 шт в пачке, единица 'pcs') раскрывается в штуки", async () => {
+      mockState.lines = [yeastLine({
+        ingredientCatalogItemId: "whirlfloc",
+        ingredientCategory: "consumable",
+        type: "consumable",
+        ingredientDisplayNameSnapshot: "Whirlfloc"
+      })];
+      mockState.inventory = [yeastStock({
+        ingredientCatalogItemId: "whirlfloc",
+        packageVariantId: "whirlfloc-pack-6",
+        normalizedQuantity: 12,
+        normalizedUnit: "item",
+        enteredQuantity: 2
+      })];
+      mockState.catalogItems = [{ id: "whirlfloc", type: "consumable", attributes: {} }];
+      mockState.packageVariants = [{
+        id: "whirlfloc-pack-6",
+        stockContentAmount: 6,
+        stockContentUnit: "pcs"
+      }];
+
+      await autoAllocateRecipeInventoryFromStock(uuid(2), uuid(1), { brewBatchId: uuid(302) });
+      await consumeRecipeInventoryAllocations(uuid(2), uuid(1), { brewBatchId: uuid(302) });
+
+      expect(mockState.allocations[0]).toMatchObject({
+        allocatedQuantityNormalized: 6,
+        allocatedNormalizedUnit: "item"
+      });
+      expect(mockState.inventory[0]).toMatchObject({ normalizedQuantity: 6, enteredQuantity: 1 });
+    });
+
+    it("кастомные дрожжи пользователя тоже раскрываются (фолбэк 11 г)", async () => {
+      mockState.lines = [yeastLine({
+        ingredientCatalogItemId: null,
+        userCustomIngredientId: uuid(51)
+      })];
+      mockState.inventory = [yeastStock({
+        ingredientCatalogItemId: null,
+        userCustomIngredientId: uuid(51)
+      })];
+      mockState.catalogItems = [];
+      mockState.customIngredients = [{ id: uuid(51), type: "yeast", yeastForm: "dry", properties: {} }];
+
+      await autoAllocateRecipeInventoryFromStock(uuid(2), uuid(1));
+
+      expect(mockState.allocations[0]).toMatchObject({
+        allocatedQuantityNormalized: 11,
+        allocatedNormalizedUnit: "g"
+      });
+    });
+
+    it("нехватка дрожжей не роняет варку: списываем остаток и метим аллокацию", async () => {
+      mockState.brewBatches = [{ id: uuid(303), status: "brewing" }];
+      mockState.lines = [yeastLine({ amountNormalizedQuantity: 2 })];
+      mockState.inventory = [yeastStock({ normalizedQuantity: 11, enteredQuantity: 1 })];
+
+      await autoAllocateRecipeInventoryFromStock(uuid(2), uuid(1), { brewBatchId: uuid(303) });
+      expect(mockState.allocations[0]).toMatchObject({ allocatedQuantityNormalized: 22 });
+
+      const coverage = await consumeRecipeInventoryAllocations(uuid(2), uuid(1), { brewBatchId: uuid(303) });
+
+      expect(mockState.inventory[0]).toMatchObject({ normalizedQuantity: 0, enteredQuantity: 0 });
+      expect(mockState.transactions[0]).toMatchObject({ quantityDeltaNormalized: -11 });
+      expect(mockState.allocations[0]).toMatchObject({
+        status: "consumed",
+        // Аллокация фиксирует РЕАЛЬНО списанное — иначе возврат партии вернул бы
+        // на склад больше, чем взял.
+        allocatedQuantityNormalized: 11
+      });
+      expect(mockState.allocations[0].allocationMeta).toMatchObject({
+        clamped: true,
+        requestedQuantityNormalized: 22
+      });
+      // Покрытие показывает исходное требование, а не обрезанное.
+      expect(coverage.lines[0]).toMatchObject({
+        status: "consumed",
+        requiredQuantityNormalized: 22
+      });
+    });
+
+    it("пустая позиция: списывать нечего — аллокация не помечается consumed", async () => {
+      mockState.inventory = [yeastStock({ normalizedQuantity: 0, enteredQuantity: 0 })];
+
+      await autoAllocateRecipeInventoryFromStock(uuid(2), uuid(1), { brewBatchId: uuid(304) });
+      await consumeRecipeInventoryAllocations(uuid(2), uuid(1), { brewBatchId: uuid(304) });
+
+      expect(mockState.transactions).toHaveLength(0);
+      expect(mockState.allocations[0]).toMatchObject({ status: "allocated" });
+    });
+
+    it("нехватка НЕ-дрожжей по-прежнему ошибка (кламп только для дрожжей)", async () => {
+      mockState.lines = [yeastLine({
+        ingredientCatalogItemId: "hop-cascade",
+        ingredientCategory: "hop",
+        type: "hop",
+        amountNormalizedQuantity: 50,
+        amountNormalizedUnit: "g"
+      })];
+      mockState.inventory = [yeastStock({
+        ingredientCatalogItemId: "hop-cascade",
+        normalizedQuantity: 20,
+        normalizedUnit: "g",
+        enteredQuantity: 20,
+        enteredUnit: "g"
+      })];
+
+      await autoAllocateRecipeInventoryFromStock(uuid(2), uuid(1), { brewBatchId: uuid(305) });
+
+      await expect(consumeRecipeInventoryAllocations(uuid(2), uuid(1), { brewBatchId: uuid(305) }))
+        .rejects.toThrow("INSUFFICIENT_STOCK");
+    });
+
+    it("неконвертируемая пара единиц молча пропускается (склад в пачках без содержимого)", async () => {
+      mockState.lines = [yeastLine({ amountNormalizedQuantity: 5, amountNormalizedUnit: "g" })];
+      mockState.inventory = [yeastStock({
+        normalizedQuantity: 2,
+        normalizedUnit: "pack",
+        enteredQuantity: 2
+      })];
+      mockState.catalogItems = [dryYeastCatalogItem({ form: "liquid" })];
+
+      const coverage = await autoAllocateRecipeInventoryFromStock(uuid(2), uuid(1));
+
+      expect(mockState.allocations).toHaveLength(0);
+      expect(coverage.lines[0]).toMatchObject({ status: "unselected", inventoryItemId: null });
+    });
+
+    it("идемпотентность: два автоподбора + одно списание = одна транзакция", async () => {
+      await autoAllocateRecipeInventoryFromStock(uuid(2), uuid(1), { brewBatchId: uuid(306) });
+      await autoAllocateRecipeInventoryFromStock(uuid(2), uuid(1), { brewBatchId: uuid(306) });
+      await consumeRecipeInventoryAllocations(uuid(2), uuid(1), { brewBatchId: uuid(306) });
+      await consumeRecipeInventoryAllocations(uuid(2), uuid(1), { brewBatchId: uuid(306) });
+
+      expect(mockState.allocations.filter((allocation) => allocation.status === "consumed")).toHaveLength(1);
+      expect(mockState.transactions).toHaveLength(1);
+      expect(mockState.inventory[0].normalizedQuantity).toBe(11);
+    });
+  });
+
+  // H1: потребность строки пересчитывается под ОБЪЁМ ПАРТИИ — тем же множителем,
+  // которым её считает матч (features/recipes/batch-scale.ts). Раньше списание брало
+  // amountNormalizedQuantity как есть, а матч масштабировал под дефолтный профиль
+  // оборудования: страница партии обещала «хватает», кнопка отвечала INSUFFICIENT_STOCK.
+  describe("пересчёт под объём партии", () => {
+    const BATCH = uuid(401);
+
+    it("партия 30 л по рецепту 20 л: аллокация 75 г вместо 50 г", async () => {
+      const coverage = await autoAllocateRecipeInventoryFromStock(uuid(2), uuid(1), {
+        brewBatchId: BATCH,
+        targetBatchVolumeL: 30
+      });
+
+      expect(mockState.allocations[0]).toMatchObject({
+        allocatedQuantityNormalized: 75,
+        allocatedNormalizedUnit: "g"
+      });
+      // След пересчёта — в мете аллокации (аудит расхождений).
+      expect(mockState.allocations[0].allocationMeta).toMatchObject({ batchScaleFactor: 1.5 });
+      expect(coverage.lines[0]).toMatchObject({ status: "covered", requiredQuantityNormalized: 75 });
+    });
+
+    it("списывается ровно то, что обещал матч этой партии (75 г, а не 50 г)", async () => {
+      await autoAllocateRecipeInventoryFromStock(uuid(2), uuid(1), { brewBatchId: BATCH, targetBatchVolumeL: 30 });
+      await consumeRecipeInventoryAllocations(uuid(2), uuid(1), { brewBatchId: BATCH, targetBatchVolumeL: 30 });
+
+      expect(mockState.inventory[0]).toMatchObject({ normalizedQuantity: 25, enteredQuantity: 25 });
+      expect(mockState.transactions[0]).toMatchObject({
+        quantityDeltaNormalized: -75,
+        quantityBeforeNormalized: 100,
+        quantityAfterNormalized: 25
+      });
+    });
+
+    it("партия меньше рецепта (10 л на 20 л): списываем половину, а не полный рецепт", async () => {
+      await autoAllocateRecipeInventoryFromStock(uuid(2), uuid(1), { brewBatchId: BATCH, targetBatchVolumeL: 10 });
+      await consumeRecipeInventoryAllocations(uuid(2), uuid(1), { brewBatchId: BATCH, targetBatchVolumeL: 10 });
+
+      expect(mockState.allocations[0]).toMatchObject({ allocatedQuantityNormalized: 25 });
+      expect(mockState.inventory[0]).toMatchObject({ normalizedQuantity: 75 });
+    });
+
+    it("объём партии неизвестен → количества рецепта как есть (множитель 1)", async () => {
+      await autoAllocateRecipeInventoryFromStock(uuid(2), uuid(1), { brewBatchId: BATCH, targetBatchVolumeL: null });
+
+      expect(mockState.allocations[0]).toMatchObject({ allocatedQuantityNormalized: 50 });
+      expect(mockState.allocations[0].allocationMeta).not.toHaveProperty("batchScaleFactor");
+    });
+
+    it("нехватка под объём партии — честная ошибка, а не молчаливое недосписание", async () => {
+      // 100 г на складе, партия на 60 л требует 150 г.
+      await autoAllocateRecipeInventoryFromStock(uuid(2), uuid(1), { brewBatchId: BATCH, targetBatchVolumeL: 60 });
+
+      await expect(consumeRecipeInventoryAllocations(uuid(2), uuid(1), { brewBatchId: BATCH, targetBatchVolumeL: 60 }))
+        .rejects.toThrow("INSUFFICIENT_STOCK");
+      expect(mockState.transactions).toHaveLength(0);
+      expect(mockState.inventory[0].normalizedQuantity).toBe(100);
+    });
+  });
+
+  // H3: два перекрывающихся списания одной партии (две вкладки/ретрай) читали остаток
+  // без блокировки и писали абсолютное значение — склад уменьшался дважды, а аллокация
+  // проводилась одна. Теперь склад трогает только тот запрос, чей условный UPDATE
+  // реально забрал аллокацию (status ∈ активные).
+  describe("гонка списания", () => {
+    const BATCH = uuid(402);
+
+    it("две параллельные попытки списания одной партии = одно списание", async () => {
+      await autoAllocateRecipeInventoryFromStock(uuid(2), uuid(1), { brewBatchId: BATCH });
+
+      await Promise.all([
+        consumeRecipeInventoryAllocations(uuid(2), uuid(1), { brewBatchId: BATCH }),
+        consumeRecipeInventoryAllocations(uuid(2), uuid(1), { brewBatchId: BATCH })
+      ]);
+
+      expect(mockState.transactions).toHaveLength(1);
+      expect(mockState.inventory[0].normalizedQuantity).toBe(50);
+      expect(mockState.allocations.filter((a) => a.status === "consumed")).toHaveLength(1);
+    });
+
+    it("дубли аллокаций на одну строку (след гонки подбора) не списывают склад дважды", async () => {
+      // Так выглядит след двух параллельных автоподборов до фикса: две активные
+      // аллокации на одну строку рецепта. Уникального индекса на (партия, строка)
+      // в схеме нет, поэтому движок обязан вычистить дубль сам.
+      await autoAllocateRecipeInventoryFromStock(uuid(2), uuid(1), { brewBatchId: BATCH });
+      mockState.allocations.push({
+        ...mockState.allocations[0],
+        id: uuid(999),
+        status: "allocated"
+      });
+
+      await consumeRecipeInventoryAllocations(uuid(2), uuid(1), { brewBatchId: BATCH });
+
+      expect(mockState.transactions).toHaveLength(1);
+      expect(mockState.inventory[0].normalizedQuantity).toBe(50);
+      expect(mockState.allocations.filter((a) => a.status === "consumed")).toHaveLength(1);
+      expect(mockState.allocations.filter((a) => a.status === "released")).toHaveLength(1);
+    });
+  });
+
+  // B1-Ш4: автоподбор на варку уважает лот, выбранный в пикере, и не падает на
+  // чужом published-рецепте (варка без клона).
+  describe("автоподбор на варку", () => {
+    it("берёт лот из inventorySelectionMeta, а не самый большой остаток", async () => {
+      mockState.lines[0].inventorySelectionMeta = { inventoryItemId: uuid(22) };
+      mockState.inventory = [
+        {
+          ...mockState.inventory[0],
+          id: uuid(21),
+          normalizedQuantity: 500,
+          enteredQuantity: 500
+        },
+        {
+          ...mockState.inventory[0],
+          id: uuid(22),
+          normalizedQuantity: 100,
+          enteredQuantity: 100
+        }
+      ];
+
+      await autoAllocateRecipeInventoryFromStock(uuid(2), uuid(1));
+
+      expect(mockState.allocations).toHaveLength(1);
+      expect(mockState.allocations[0]).toMatchObject({
+        inventoryItemId: uuid(22),
+        allocatedQuantityNormalized: 50
+      });
+    });
+
+    it("списание на варку ЧУЖОГО published-рецепта не падает NOT_FOUND", async () => {
+      mockState.brewBatches = [{ id: uuid(307), status: "brewing" }];
+      mockState.recipes = [{
+        id: uuid(1),
+        authorId: uuid(9),
+        title: "Чужой рецепт",
+        publicationState: "published"
+      }];
+
+      await autoAllocateRecipeInventoryFromStock(uuid(2), uuid(1), { brewBatchId: uuid(307) });
+      const coverage = await consumeRecipeInventoryAllocations(uuid(2), uuid(1), { brewBatchId: uuid(307) });
+
+      expect(mockState.inventory[0].normalizedQuantity).toBe(50);
+      expect(coverage.lines[0]?.status).toBe("consumed");
+      // Строки чужого рецепта не мутируем: selection-meta осталась прежней.
+      expect(mockState.lines[0].inventorySelectionMeta).toMatchObject({ inventoryItemId: uuid(21) });
+    });
+  });
+
+  // --- дожим засыпи под эффективность оборудования --------------------------
+  //
+  // Варка на 65% против авторских 75%: солода нужно ×1.154, иначе не добрать OG.
+  // Дожим действует ТОЛЬКО на то, на что действует эффективность затирания: солод
+  // и зерновые добавки. Сахар (усваивается полностью) и хмель — только по объёму.
+  describe("efficiencyFactor", () => {
+    const EFFICIENCY_FACTOR = 75 / 65;
+
+    beforeEach(() => {
+      mockState.lines = [
+        {
+          id: uuid(11),
+          recipeId: uuid(1),
+          persistentKey: uuid(111),
+          displayOrder: 0,
+          type: "malt",
+          ingredientCatalogItemId: "pilsner-malt",
+          userCustomIngredientId: null,
+          ingredientDisplayNameSnapshot: "Пильзнер",
+          amountNormalizedQuantity: 4000,
+          amountNormalizedUnit: "g",
+          inventoryIntentMode: "use_stock",
+          inventorySelectionMeta: null
+        },
+        {
+          id: uuid(12),
+          recipeId: uuid(1),
+          persistentKey: uuid(112),
+          displayOrder: 1,
+          type: "fermentable",
+          ingredientCatalogItemId: "dextrose",
+          userCustomIngredientId: null,
+          ingredientDisplayNameSnapshot: "Декстроза",
+          amountNormalizedQuantity: 1000,
+          amountNormalizedUnit: "g",
+          inventoryIntentMode: "use_stock",
+          inventorySelectionMeta: null
+        },
+        {
+          id: uuid(13),
+          recipeId: uuid(1),
+          persistentKey: uuid(113),
+          displayOrder: 2,
+          type: "hop",
+          ingredientCatalogItemId: "hop-cascade",
+          userCustomIngredientId: null,
+          ingredientDisplayNameSnapshot: "Cascade",
+          amountNormalizedQuantity: 50,
+          amountNormalizedUnit: "g",
+          inventoryIntentMode: "use_stock",
+          inventorySelectionMeta: null
+        }
+      ];
+      mockState.inventory = [];
+      mockState.catalogItems = [
+        { id: "pilsner-malt", type: "malt", attributes: { malt_type: "base" } },
+        { id: "dextrose", type: "fermentable", attributes: { product_family: "sugar" } },
+        { id: "hop-cascade", type: "hop", attributes: {} }
+      ];
+    });
+
+    it("дожимает ТОЛЬКО засыпь: солод ×1.154, сахар и хмель — как были", async () => {
+      const coverage = await listRecipeStockCoverage(uuid(2), uuid(1), {
+        efficiencyFactor: EFFICIENCY_FACTOR
+      });
+
+      const [malt, sugar, hop] = coverage.lines;
+      expect(malt.requiredQuantityNormalized).toBeCloseTo(4615.385, 2);
+      expect(sugar.requiredQuantityNormalized).toBe(1000);
+      expect(hop.requiredQuantityNormalized).toBe(50);
+    });
+
+    it("складывается с объёмом партии: 10 л из рецепта на 20 л при 65% → солод ×0.5×1.154", async () => {
+      const coverage = await listRecipeStockCoverage(uuid(2), uuid(1), {
+        targetBatchVolumeL: 10,
+        efficiencyFactor: EFFICIENCY_FACTOR
+      });
+
+      expect(coverage.lines[0].requiredQuantityNormalized).toBeCloseTo(2307.692, 2);
+      expect(coverage.lines[2].requiredQuantityNormalized).toBe(25);
+    });
+
+    it("без дожима (эффективность совпала) движок за техданными каталога не ходит", async () => {
+      const coverage = await listRecipeStockCoverage(uuid(2), uuid(1), { efficiencyFactor: 1 });
+
+      expect(coverage.lines[0].requiredQuantityNormalized).toBe(4000);
     });
   });
 });

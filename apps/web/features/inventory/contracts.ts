@@ -481,3 +481,24 @@ export type InventoryItemMovementDto = {
   brewBatchName: string | null;
   recipeTitle: string | null;
 };
+
+/**
+ * Анти-абьюз: щедрый потолок числа позиций склада на пользователя. Реальному
+ * складу до него не дорасти; ловит только массовое засорение ботом. Плюс rate
+ * limit на частоту добавления (окно щедрое — со склада часто добавляют пачкой
+ * из рецепта). Барьер стоит на обеих точках добавления в user_ingredients
+ * (каталог и кастом), см. features/inventory/service.ts.
+ */
+export const INVENTORY_ITEM_MAX_COUNT_PER_USER = 2000;
+export const INVENTORY_ITEM_CREATE_RATE_LIMIT = 100;
+export const INVENTORY_ITEM_CREATE_RATE_WINDOW_SECONDS = 60 * 60;
+
+/**
+ * Анти-абьюз: потолок числа собственных ингредиентов пользователя и rate limit
+ * на их создание. Барьер стоит в сервисе (createUserCustomIngredient и
+ * createUserCustomInventoryIngredient), поэтому покрывает ВСЕ входы разом —
+ * каталог, мастер рецептов, склад (раньше лимит был только на пути из каталога).
+ */
+export const CUSTOM_INGREDIENT_MAX_COUNT_PER_USER = 500;
+export const CUSTOM_INGREDIENT_CREATE_RATE_LIMIT = 30;
+export const CUSTOM_INGREDIENT_CREATE_RATE_WINDOW_SECONDS = 60 * 60;

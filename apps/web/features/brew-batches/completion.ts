@@ -1,4 +1,10 @@
+import { isRecipePubliclyVisible } from "../recipes/visibility";
+
 import type { BrewBatchStatus } from "./contracts";
+
+// ⚠ Модуль серверный: через recipes/visibility тянет @nb/db → pg → fs. Клиентским
+// компонентам импортировать его нельзя (Next не соберёт браузерный бандл) —
+// чистая доменная логика, нужная доскам варки, живёт в brew-day.ts.
 
 /**
  * Минимум полей свежезагруженного рецепта, нужных резолверу ниже. Без прямой
@@ -8,6 +14,7 @@ import type { BrewBatchStatus } from "./contracts";
 export type BrewCompletionRatingCandidate = {
   authorId: string;
   publicationState: string;
+  hiddenAt: Date | null;
   slug: string;
 };
 
@@ -26,7 +33,7 @@ export const resolveBrewCompletionRatingSlug = (
   if (status !== "completed" || !candidate) {
     return null;
   }
-  if (candidate.authorId === currentUserId || candidate.publicationState !== "published") {
+  if (candidate.authorId === currentUserId || !isRecipePubliclyVisible(candidate)) {
     return null;
   }
   return candidate.slug;

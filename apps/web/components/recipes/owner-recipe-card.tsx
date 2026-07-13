@@ -5,12 +5,13 @@ import Link from "next/link";
 import { CircleCheck, ExternalLink, MoreVertical, Timer, Trash2 } from "lucide-react";
 
 import { deleteRecipeAction } from "@/app/(app)/app/recipes/actions";
+import { recipePublicationStateLabels, type OwnerRecipeCardDto } from "@/features/recipes/contracts";
 import {
-  recipePublicationStateLabels,
-  type OwnerRecipeCardDto,
-  type RecipePublicationState
-} from "@/features/recipes/contracts";
-import { formatAbvShort, formatIbuShort, formatRelativeTimestamp } from "@/features/recipes/format";
+  buildRecipeDeleteConfirmDescription,
+  formatAbvShort,
+  formatIbuShort,
+  formatRelativeTimestamp
+} from "@/features/recipes/format";
 import { formatGravity, type PreferredGravityUnit } from "@/features/system/gravity-units";
 import { ConfirmActionDialog } from "@/components/shared/confirm-action-dialog";
 import { DropdownMenu, type DropdownMenuItem } from "@nb/ui";
@@ -54,16 +55,35 @@ function UpdatedAgo({ value, className }: { value: Date; className?: string }) {
   );
 }
 
-/** Бейдж статуса публикации — показываем только позитивный факт «Публичный», черновик/приватность не подсвечиваем. */
-function OwnerStatusBadge({ state }: { state: RecipePublicationState }) {
-  if (state !== "published") {
+/**
+ * Бейдж статуса: скрытие модератором — единственный негативный факт, который
+ * автору нужно видеть сразу; в остальном подсвечиваем только «Публичный»,
+ * черновик/приватность не выделяем.
+ */
+function OwnerStatusBadge({ recipe }: { recipe: OwnerRecipeCardDto }) {
+  if (recipe.hiddenAt) {
+    return (
+      <span className="inline-flex items-center rounded-full bg-destructive-subtle px-2 py-0.5 text-[11px] font-medium text-destructive-subtle-foreground ring-1 ring-destructive-border">
+        Скрыт модератором
+      </span>
+    );
+  }
+  if (recipe.publicationState !== "published") {
     return null;
   }
   return (
     <span className="inline-flex items-center rounded-full bg-primary/90 px-2 py-0.5 text-[11px] font-medium text-primary-foreground backdrop-blur">
-      {recipePublicationStateLabels[state]}
+      {recipePublicationStateLabels[recipe.publicationState]}
     </span>
   );
+}
+
+/** Причина скрытия — автор должен понимать, за что рецепт убрали с витрины. */
+function HiddenReason({ recipe }: { recipe: OwnerRecipeCardDto }) {
+  if (!recipe.hiddenAt || !recipe.hiddenReason) {
+    return null;
+  }
+  return <p className="line-clamp-2 text-xs text-destructive-subtle-foreground">Причина: {recipe.hiddenReason}</p>;
 }
 
 /** Бейдж соответствия стилю — показываем только позитивный факт «В стиле», отклонения не подсвечиваем. */
@@ -106,7 +126,7 @@ function useDeleteRecipeDialog(recipe: OwnerRecipeCardDto) {
     <ConfirmActionDialog
       open={open}
       title="Удалить рецепт?"
-      description={`Рецепт "${recipe.title}" будет удален целиком вместе с ингредиентами и параметрами.`}
+      description={buildRecipeDeleteConfirmDescription(recipe.title, recipe.brewBatchCount)}
       confirmLabel="Удалить рецепт"
       pending={isPending}
       error={error}
@@ -179,7 +199,7 @@ const toStyleChip = (recipe: OwnerRecipeCardDto) =>
   recipe.styleCode && recipe.styleName ? { code: recipe.styleCode, name: recipe.styleName } : null;
 
 const publicHref = (recipe: OwnerRecipeCardDto) =>
-  recipe.publicationState === "published" ? `/recipes/${recipe.slug}` : null;
+  recipe.publicationState === "published" && !recipe.hiddenAt ? `/recipes/${recipe.slug}` : null;
 
 function VersionSuffix({ recipe }: { recipe: OwnerRecipeCardDto }) {
   if (recipe.versionCount <= 1) {
@@ -234,7 +254,7 @@ export function OwnerRecipeCard({
           />
           <div className="min-w-0 flex-1 space-y-1">
             <div className={`flex flex-wrap items-center gap-1.5 ${intent === "manage" ? "pr-8" : "pr-0"}`}>
-              <OwnerStatusBadge state={recipe.publicationState} />
+              <OwnerStatusBadge recipe={recipe} />
               <StyleChip style={toStyleChip(recipe)} styleHref={recipe.styleHref} className="min-w-0 truncate" />
               <RecipeMatchBadge recipeId={recipe.id} />
               {recipe.styleFit ? <StyleFitBadge fit={recipe.styleFit} /> : null}
@@ -243,6 +263,7 @@ export function OwnerRecipeCard({
               {recipe.title}
               <VersionSuffix recipe={recipe} />
             </h2>
+            <HiddenReason recipe={recipe} />
           </div>
         </div>
 
@@ -333,13 +354,14 @@ export function OwnerRecipeRow({
 
       <div className="pointer-events-none min-w-0 flex-1">
         <div className="flex flex-wrap items-center gap-2">
-          <OwnerStatusBadge state={recipe.publicationState} />
+          <OwnerStatusBadge recipe={recipe} />
           <StyleChip style={toStyleChip(recipe)} styleHref={recipe.styleHref} />
         </div>
         <h2 className="mt-1 line-clamp-1 text-base font-semibold leading-snug text-foreground">
           {recipe.title}
           <VersionSuffix recipe={recipe} />
         </h2>
+        <HiddenReason recipe={recipe} />
         <div className="mt-1 flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
           <UpdatedAgo value={recipe.updatedAt} />
           <RecipeMatchBadge recipeId={recipe.id} />

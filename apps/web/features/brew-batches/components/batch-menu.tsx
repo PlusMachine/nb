@@ -1,7 +1,8 @@
 "use client";
 
 import React, { useRef, useState } from "react";
-import { Check, Loader2, MoreHorizontal, Pencil, RotateCcw, XCircle } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { Check, Loader2, MoreHorizontal, Pencil, RotateCcw, Sticker, XCircle } from "lucide-react";
 
 import { Button, Dialog, DialogFooter, DropdownMenu, type DropdownMenuItem } from "@nb/ui";
 import { ConfirmActionDialog } from "@/components/shared/confirm-action-dialog";
@@ -20,7 +21,17 @@ const MANUAL_STATUSES: BrewBatchStatus[] = ["planned", "brewing", "fermenting", 
  * доминировавший на странице виджет жизненного цикла — статус двигается гидом, а
  * ручной путь спрятан под меню. Отмена — только через подтверждение.
  */
-export function BatchMenu({ brewBatchId, status }: { brewBatchId: string; status: BrewBatchStatus }) {
+export function BatchMenu({
+  brewBatchId,
+  status,
+  labelsHref
+}: {
+  brewBatchId: string;
+  status: BrewBatchStatus;
+  /** Ссылка на наклейки; null — посчитать некуда (нет ни рецепта, ни снапшота) либо этап не подходит. */
+  labelsHref?: string | null;
+}) {
+  const router = useRouter();
   const [statusDialogOpen, setStatusDialogOpen] = useState(false);
   const [cancelOpen, setCancelOpen] = useState(false);
   const [busy, setBusy] = useState(false);
@@ -47,6 +58,10 @@ export function BatchMenu({ brewBatchId, status }: { brewBatchId: string; status
     }
   };
 
+  // Наклейки нужны у розлива (этап packaging внутри акта «Брожение») и после —
+  // пока варка в плане или варочном дне, разливать ещё нечего.
+  const showLabels = Boolean(labelsHref) && (status === "fermenting" || status === "completed");
+
   const items: DropdownMenuItem[] = [
     {
       key: "edit-stage",
@@ -54,6 +69,16 @@ export function BatchMenu({ brewBatchId, status }: { brewBatchId: string; status
       icon: <Pencil className="h-4 w-4" aria-hidden />,
       onSelect: () => setStatusDialogOpen(true)
     },
+    ...(showLabels
+      ? [
+          {
+            key: "labels",
+            label: "Наклейки",
+            icon: <Sticker className="h-4 w-4" aria-hidden />,
+            onSelect: () => router.push(labelsHref as string)
+          }
+        ]
+      : []),
     status === "cancelled"
       ? {
           key: "restore",
@@ -79,7 +104,7 @@ export function BatchMenu({ brewBatchId, status }: { brewBatchId: string; status
           <button
             type="button"
             aria-label="Действия с варкой"
-            className="inline-flex h-9 w-9 items-center justify-center rounded-md text-muted-foreground transition hover:bg-accent hover:text-foreground"
+            className="relative inline-flex h-9 w-9 items-center justify-center rounded-md text-muted-foreground transition hover:bg-accent hover:text-foreground before:absolute before:-inset-1 before:content-['']"
           >
             <MoreHorizontal className="h-5 w-5" aria-hidden />
           </button>

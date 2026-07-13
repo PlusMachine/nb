@@ -3,8 +3,9 @@
 import React from "react";
 import { AlertTriangle, CheckCircle2, FlaskConical } from "lucide-react";
 
-import { groupsForAct, resolveBrewDayCursor } from "@/features/brew-batches/brew-day";
+import { buildFinishBrewConfirm, groupsForAct, resolveBrewDayCursor } from "@/features/brew-batches/brew-day";
 import { type BrewDayProgress, type BrewDayStageGroup } from "@/features/brew-batches/contracts";
+import { useWakeLock } from "@/features/brew-controller/use-wake-lock";
 import { BrewStepList } from "./brew-step-list";
 import { BrewTransitionButton } from "./brew-transition-button";
 import { useBrewDayProgress } from "./use-brew-day-progress";
@@ -15,8 +16,6 @@ export type FermentationNudge = { tone: "action" | "warn" | "info"; text: string
 // «Поставить на брожение» в этом акте убираем (см. спеку §9). Экспортируется, чтобы
 // история завершённой варки прятала тот же нечекаемый шаг (иначе «Брожение 0/1»).
 export const HERO_STEP_IDS = new Set(["ferment:primary"]);
-
-const declOfSteps = (n: number): string => (n === 1 ? "шаг" : n >= 2 && n <= 4 ? "шага" : "шагов");
 
 function NudgeLine({ nudge }: { nudge: FermentationNudge | null }) {
   if (!nudge || !nudge.text) {
@@ -51,6 +50,8 @@ export function FermentationBoard({
   groups,
   initialProgress,
   dayLabel,
+  fermentDayN,
+  plannedDays,
   targetTempLabel,
   nudge
 }: {
@@ -58,6 +59,10 @@ export function FermentationBoard({
   groups: BrewDayStageGroup[];
   initialProgress: BrewDayProgress;
   dayLabel: string | null;
+  /** День брожения и плановая длительность — числами, для подтверждения завершения. */
+  fermentDayN: number | null;
+  /** null — план без длительности (старые партии): текст деградирует до «День N». */
+  plannedDays: number | null;
   targetTempLabel: string | null;
   nudge: FermentationNudge | null;
 }) {
@@ -69,12 +74,22 @@ export function FermentationBoard({
 
   const cursor = resolveBrewDayCursor(fermentGroups, controller.progress, "fermentation");
   const undone = cursor.total - cursor.doneCount;
-  const finishConfirm = undone > 0
-    ? {
-        title: "Завершить варку?",
-        description: `Ещё ${undone} ${declOfSteps(undone)} брожения/розлива не отмечено. Всё равно завершить и подвести итог?`
-      }
-    : null;
+
+  // Экран не гаснет, только пока в списке шагов реально тикает активный таймер
+  // (розлив/промежуточные шаги брожения у котла/ферментера), не постоянно.
+  const hasRunningTimer = fermentGroups.some((group) =>
+    group.steps.some((step) => (
+      step.kind === "timer"
+      && step.durationSeconds != null
+      && controller.progress.steps[step.id]?.timerStartedAt != null
+    ))
+  );
+  useWakeLock(hasRunningTimer);
+  // Подтверждение спрашиваем всегда (Р11): типовой рецепт даёт единственный шаг
+  // брожения, и тот — герой, поэтому undone здесь обычно 0, а завершение варки на
+  // 1-м дне из 10 срабатывало одним кликом. Текст — в completion.ts (доменный слой).
+  const finishConfirm = buildFinishBrewConfirm({ fermentDayN, plannedDays, undoneSteps: undone });
+  const finishEarly = finishConfirm.tone === "danger";
 
   return (
     <section className="space-y-4 rounded-2xl border border-border bg-card p-4 shadow-sm">
@@ -100,11 +115,13 @@ export function FermentationBoard({
       ) : null}
 
       <div className="border-t border-border pt-3">
+        {/* Завершение раньше плана — не основной путь: кнопка остаётся outline,
+            даже если все шаги отмечены (иначе на 1-м дне из 10 она зовёт нажать). */}
         <BrewTransitionButton
           brewBatchId={brewBatchId}
           to="completed"
           label="Завершить варку"
-          variant={cursor.total === 0 || cursor.actComplete ? "primary" : "outline"}
+          variant={!finishEarly && (cursor.total === 0 || cursor.actComplete) ? "primary" : "outline"}
           size="md"
           confirm={finishConfirm}
         />

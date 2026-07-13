@@ -6,8 +6,7 @@ import { RecipeEditorPage } from "@/components/recipes/recipe-editor-page";
 import { listEquipmentProfiles } from "@/features/equipment-profiles/service";
 import { getIngredientSuggestionByRef } from "@/features/ingredients/catalog-service";
 import { listRecipeImages } from "@/features/recipe-images/service";
-import { listRecipeStockCoverage } from "@/features/recipes/inventory-service";
-import { getNextDefaultRecipeTitle, getOwnedRecipeById } from "@/features/recipes/service";
+import { countRecipeBrewBatches, getNextDefaultRecipeTitle, getOwnedRecipeById } from "@/features/recipes/service";
 import { requireUser } from "@/lib/auth";
 
 export default async function NewRecipePage({
@@ -28,20 +27,20 @@ export default async function NewRecipePage({
 
   if (recipeId) {
     try {
-      const [recipe, stockCoverage, initialImages, equipmentProfiles] = await Promise.all([
+      const [recipe, initialImages, equipmentProfiles, brewBatchCount] = await Promise.all([
         getOwnedRecipeById(user.id, recipeId),
-        listRecipeStockCoverage(user.id, recipeId),
         listRecipeImages(recipeId, user.id),
-        listEquipmentProfiles(user.id)
+        listEquipmentProfiles(user.id),
+        countRecipeBrewBatches(user.id, recipeId)
       ]);
 
       return (
         <RecipeEditorPage
           mode="edit"
           recipe={recipe}
-          initialStockCoverage={stockCoverage}
           initialImages={initialImages}
           equipmentProfiles={equipmentProfiles}
+          brewBatchCount={brewBatchCount}
           preferredGravityUnit={user.preferredGravityUnit}
         />
       );

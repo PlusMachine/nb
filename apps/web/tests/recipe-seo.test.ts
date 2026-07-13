@@ -49,6 +49,8 @@ const buildRecipe = (overrides: Partial<RecipeDetailDto> = {}): RecipeDetailDto 
   versionNumber: 1,
   versionCount: 1,
   publicationState: "published",
+  hiddenAt: null,
+  hiddenReason: null,
   title: "Hazy IPA",
   slug: "hazy-ipa",
   styleId: "21A",

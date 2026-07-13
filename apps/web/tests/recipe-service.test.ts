@@ -15,10 +15,10 @@ const { tableRefs, mockState } = vi.hoisted(() => ({
     users: { name: "users", id: "id", displayName: "displayName" },
     userBrewingSettings: { name: "userBrewingSettings", userId: "userId" },
     userCustomIngredients: { name: "userCustomIngredients", id: "id", userId: "userId", type: "type", normalizedName: "normalizedName" },
-    // resolveCompletedBrewCount (mapRecipeDetailDto) дергает select(...).from(brewBatches)…
-    // в этом файле нет фикстур brew_batches — мок ниже всегда отдаёт [] для этой
-    // таблицы, т.е. completedBrewCount резолвится в 0 (тесты этого файла его не проверяют).
-    brewBatches: { name: "brew_batches", id: "id", recipeId: "recipeId", status: "status" }
+    // select(...).from(brewBatches) зовут resolveCompletedBrewCount (mapRecipeDetailDto)
+    // и countRecipeBrewBatches (подтверждение удаления). Мок ниже считает строки из
+    // mockState.brewBatches: по умолчанию их нет — оба резолвятся в 0.
+    brewBatches: { name: "brew_batches", id: "id", recipeId: "recipeId", userId: "userId", status: "status" }
   },
   mockState: {
     idCounter: 0,
@@ -28,7 +28,8 @@ const { tableRefs, mockState } = vi.hoisted(() => ({
     customById: new Map<string, any>(),
     // authorDisplayName (mapRecipeDetailDto → resolveAuthorDisplayName) — по умолчанию
     // пусто; конкретные тесты при необходимости сеют "u1"/"u2" в usersById.
-    usersById: new Map<string, { id: string; displayName: string | null }>()
+    usersById: new Map<string, { id: string; displayName: string | null }>(),
+    brewBatches: [] as Array<{ id: string; recipeId: string; userId: string; status: string }>
   }
 }));
 
@@ -190,14 +191,47 @@ vi.mock("@nb/db", () => {
         }
       }
     }),
-    // resolveAuthorDisplayName и resolveCompletedBrewCount (оба в mapRecipeDetailDto)
-    // дергают select(...) — простой билдер под select({...}).from(table).where(...).limit(1).
-    // Для любой таблицы, кроме users (сейчас это brewBatches — completedBrewCount
-    // не под тестом в этом файле), отдаёт [] → completedBrewCount резолвится в 0.
+    // resolveAuthorDisplayName / resolveCompletedBrewCount (mapRecipeDetailDto) и
+    // countRecipeBrewBatches дергают select(...) — простой билдер под
+    // select({...}).from(table).where(...).limit(1).
     select: (selection: Record<string, unknown>) => ({
       from: (table: { name: string }) => ({
-        where: (where: any) => ({
-          limit: async () => {
+        // where(...) можно и await'ить напрямую (квота рецептов — count без limit),
+        // и дочерпать .limit() (агрегаты brew_batches/users) — поэтому возвращаем
+        // объект, который и thenable, и имеет .limit с тем же резолвером.
+        where: (where: any) => {
+          const resolve = async () => {
+            // recipes: агрегирующий count() для квоты числа рецептов автора.
+            if (table.name === "recipes") {
+              const authorId = getEqValue(where, "authorId");
+              const matched = [...mockState.recipesById.values()].filter((recipe) => (
+                authorId === undefined || recipe.authorId === authorId
+              ));
+              const row: Record<string, unknown> = {};
+              for (const key of Object.keys(selection)) {
+                row[key] = matched.length;
+              }
+              return [row];
+            }
+
+            // brew_batches: селект всегда агрегирующий (count()), поэтому отдаём
+            // одну строку с числом подходящих под where фикстур.
+            if (table.name === "brew_batches") {
+              const recipeId = getEqValue(where, "recipeId");
+              const userId = getEqValue(where, "userId");
+              const status = getEqValue(where, "status");
+              const matched = mockState.brewBatches.filter((batch) => (
+                (recipeId === undefined || batch.recipeId === recipeId)
+                && (userId === undefined || batch.userId === userId)
+                && (status === undefined || batch.status === status)
+              ));
+              const row: Record<string, unknown> = {};
+              for (const key of Object.keys(selection)) {
+                row[key] = matched.length;
+              }
+              return [row];
+            }
+
             if (table.name !== "users") return [];
             const id = getEqValue(where, "id");
             const user = id ? mockState.usersById.get(id) : null;
@@ -207,8 +241,13 @@ vi.mock("@nb/db", () => {
               row[key] = (user as Record<string, unknown>)[key] ?? null;
             }
             return [row];
-          }
-        })
+          };
+          return {
+            limit: resolve,
+            then: (onFulfilled: (v: unknown) => unknown, onRejected?: (e: unknown) => unknown) =>
+              resolve().then(onFulfilled, onRejected)
+          };
+        }
       })
     })
   };
@@ -230,7 +269,15 @@ vi.mock("@nb/db", () => {
   };
 });
 
+// Барьер createRecipe зовёт assertRateLimit (реальный бьёт в БД); в юнит-тестах
+// сервиса он не в фокусе — стабим no-op, остальное @nb/auth оставляем настоящим.
+vi.mock("@nb/auth", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("@nb/auth")>()),
+  assertRateLimit: vi.fn(async () => {})
+}));
+
 import {
+  countRecipeBrewBatches,
   createRecipe,
   deleteRecipe,
   getNextDefaultRecipeTitle,
@@ -314,6 +361,7 @@ describe("recipe service", () => {
     mockState.ingredientsByRecipeId.clear();
     mockState.catalogById.clear();
     mockState.customById.clear();
+    mockState.brewBatches.length = 0;
 
     mockState.catalogById.set(uuid(101), {
       id: uuid(101),
@@ -445,6 +493,36 @@ describe("recipe service", () => {
     await expect(getNextDefaultRecipeTitle("u1")).resolves.toBe("Новый рецепт 3");
   });
 
+  // Порог автосейва (isRecipeDraftWorthPersisting) отличает своё название от
+  // автоматического по формату «Новый рецепт N». Если генератор сменит формат,
+  // редактор начнёт принимать автоимя за осмысленную работу и снова заведёт мусор.
+  it("автоимя из сервиса распознаётся редактором как автоматическое", async () => {
+    const { isAutoRecipeTitle } = await import("../components/recipes/recipe-designer/helpers");
+
+    expect(isAutoRecipeTitle(await getNextDefaultRecipeTitle("u-fresh"))).toBe(true);
+
+    await createRecipe("u1", { title: "Новый рецепт 4" });
+    expect(isAutoRecipeTitle(await getNextDefaultRecipeTitle("u1"))).toBe(true);
+  });
+
+  // Н5: подтверждение удаления обязано назвать число варок — партии переживают
+  // удаление рецепта (recipe_id → NULL), но связь с ним теряют.
+  it("counts own brew batches of a recipe", async () => {
+    const recipe = await createRecipe("u1", { title: "С варками" });
+    const other = await createRecipe("u1", { title: "Без варок" });
+
+    mockState.brewBatches.push(
+      { id: "b1", recipeId: recipe.id, userId: "u1", status: "completed" },
+      { id: "b2", recipeId: recipe.id, userId: "u1", status: "planned" },
+      // Чужая варка по опубликованному рецепту автору не видна — не считаем.
+      { id: "b3", recipeId: recipe.id, userId: "u2", status: "completed" }
+    );
+
+    await expect(countRecipeBrewBatches("u1", recipe.id)).resolves.toBe(2);
+    await expect(countRecipeBrewBatches("u1", other.id)).resolves.toBe(0);
+    await expect(countRecipeBrewBatches("u2", recipe.id)).resolves.toBe(1);
+  });
+
   it("recompute stats updates recipe fields", async () => {
     const recipe = await createRecipe("u1", {
       title: "Stats",
@@ -509,6 +587,159 @@ describe("recipe service", () => {
     expect(yeastPreview.fgEstimateDetails?.baseAttenuationPct).toBe(78);
     expect(yeastPreview.fgEstimateDetails?.mainMashTempC).toBe(65);
     expect(yeastPreview.fg).toBeLessThan(defaultPreview.fg ?? 99);
+  });
+
+  // A5. Пустое «мин» у хмеля на кипячение молча трактовалось как полное кипячение:
+  // IBU считался за 60, а в БД и на странице рецепта времени не было вообще.
+  // Теперь дефолт материализуется при сохранении — БД, расчёт и экран говорят одно.
+  it("хмель на кипячение без времени сохраняется с временем кипячения рецепта", async () => {
+    const recipe = await createRecipe("u1", {
+      title: "Hop default time",
+      batchSizeEnteredQuantity: 20,
+      batchSizeEnteredUnit: "l",
+      boilTimeMinutes: 60,
+      ingredients: [
+        { ingredientCatalogItemId: uuid(101), type: "malt", amountEnteredQuantity: 4, amountEnteredUnit: "kg", stage: "mash" },
+        {
+          ingredientCatalogItemId: uuid(102),
+          type: "hop",
+          amountEnteredQuantity: 40,
+          amountEnteredUnit: "g",
+          stage: "boil",
+          stepMeta: { useType: "boil" }
+        }
+      ]
+    });
+    const hop = recipe.ingredients.find((ingredient) => ingredient.type === "hop");
+
+    expect(hop?.stepMeta?.timeMinutes).toBe(60);
+    expect(hop?.timeOffset).toBe(60);
+
+    // Математика не поехала: IBU тот же, что у рецепта с явно заданными 60 минутами.
+    const explicit = await createRecipe("u1", {
+      title: "Hop explicit time",
+      batchSizeEnteredQuantity: 20,
+      batchSizeEnteredUnit: "l",
+      boilTimeMinutes: 60,
+      ingredients: [
+        { ingredientCatalogItemId: uuid(101), type: "malt", amountEnteredQuantity: 4, amountEnteredUnit: "kg", stage: "mash" },
+        {
+          ingredientCatalogItemId: uuid(102),
+          type: "hop",
+          amountEnteredQuantity: 40,
+          amountEnteredUnit: "g",
+          stage: "boil",
+          timeOffset: 60,
+          stepMeta: { useType: "boil", timeMinutes: 60 }
+        }
+      ]
+    });
+
+    expect(recipe.ibu).toBe(explicit.ibu);
+  });
+
+  it("материализуется время кипячения рецепта, а не константа 60", async () => {
+    const recipe = await createRecipe("u1", {
+      title: "Long boil",
+      batchSizeEnteredQuantity: 20,
+      batchSizeEnteredUnit: "l",
+      boilTimeMinutes: 90,
+      ingredients: [
+        {
+          ingredientCatalogItemId: uuid(102),
+          type: "hop",
+          amountEnteredQuantity: 40,
+          amountEnteredUnit: "g",
+          stage: "boil",
+          stepMeta: { useType: "boil" }
+        },
+        // FWH и dry hop дефолта не получают: brewing-core игнорирует время внесения
+        // в первое сусло, а «60 мин» у dry hop — просто ложь.
+        {
+          ingredientCatalogItemId: uuid(102),
+          type: "hop",
+          amountEnteredQuantity: 10,
+          amountEnteredUnit: "g",
+          stage: "boil",
+          stepMeta: { useType: "first_wort_hop" }
+        },
+        {
+          ingredientCatalogItemId: uuid(102),
+          type: "hop",
+          amountEnteredQuantity: 30,
+          amountEnteredUnit: "g",
+          stage: "fermentation",
+          stepMeta: { useType: "dry_hop", durationDays: 3 }
+        }
+      ]
+    });
+    const [boilHop, fwh, dryHop] = recipe.ingredients;
+
+    expect(boilHop.stepMeta?.timeMinutes).toBe(90);
+    expect(boilHop.timeOffset).toBe(90);
+    expect(fwh.stepMeta?.timeMinutes).toBeUndefined();
+    expect(fwh.timeOffset).toBeNull();
+    expect(dryHop.stepMeta?.timeMinutes).toBeUndefined();
+    expect(dryHop.timeOffset).toBeNull();
+  });
+
+  // A5в. Легаси-строки (сохранены до фикса, в БД time_offset=NULL и нет timeMinutes)
+  // отдаём с ЭФФЕКТИВНЫМ временем — тем самым, что уходит в расчёт IBU. Иначе
+  // страница рецепта показывает хмель без времени, а горечь посчитана за 60 минут.
+  it("легаси-хмель без времени отдаётся в DTO с эффективным временем кипячения", async () => {
+    const recipe = await createRecipe("u1", {
+      title: "Legacy hop",
+      batchSizeEnteredQuantity: 20,
+      batchSizeEnteredUnit: "l",
+      boilTimeMinutes: 90,
+      ingredients: [
+        {
+          ingredientCatalogItemId: uuid(102),
+          type: "hop",
+          amountEnteredQuantity: 40,
+          amountEnteredUnit: "g",
+          stage: "boil",
+          stepMeta: { useType: "boil" }
+        }
+      ]
+    });
+
+    // Откатываем строку в «легаси»-состояние: так она лежит в БД у рецептов,
+    // сохранённых до материализации дефолта.
+    const rows = mockState.ingredientsByRecipeId.get(recipe.id) ?? [];
+    rows[0].timeOffset = null;
+    rows[0].stepMeta = { useType: "boil" };
+
+    const reread = await getRecipeById("u1", recipe.id);
+    const hop = reread.ingredients[0];
+
+    expect(hop.stepMeta?.timeMinutes).toBe(90);
+    expect(hop.timeOffset).toBe(90);
+  });
+
+  it("превью считает IBU по тем же материализованным временам, что и сохранённый рецепт", async () => {
+    const payload = {
+      title: "Preview parity",
+      batchSizeEnteredQuantity: 20,
+      batchSizeEnteredUnit: "l",
+      boilTimeMinutes: 90,
+      ingredients: [
+        { ingredientCatalogItemId: uuid(101), type: "malt" as const, amountEnteredQuantity: 4, amountEnteredUnit: "kg", stage: "mash" as const },
+        {
+          ingredientCatalogItemId: uuid(102),
+          type: "hop" as const,
+          amountEnteredQuantity: 40,
+          amountEnteredUnit: "g",
+          stage: "boil" as const,
+          stepMeta: { useType: "boil" }
+        }
+      ]
+    };
+
+    const preview = await previewRecipeDraft("u1", payload);
+    const saved = await createRecipe("u1", payload);
+
+    expect(preview.ibu).toBe(saved.ibu);
   });
 
   it("default bitterness engine counts whirlpool hopstand IBU", async () => {

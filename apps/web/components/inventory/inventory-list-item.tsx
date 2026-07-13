@@ -407,7 +407,9 @@ export function InventoryListItem({
               <button
                 type="button"
                 onClick={onClick}
-                className="inline-flex h-8 w-8 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+                // before:-inset-1.5 расширяет тач-таргет до ~44px без увеличения самой
+                // кнопки (приём как в recipe-save-button.tsx / clone-from-public-button.tsx).
+                className="relative inline-flex h-8 w-8 items-center justify-center rounded-lg text-muted-foreground transition-colors before:absolute before:-inset-1.5 before:content-[''] hover:bg-accent hover:text-foreground"
                 aria-label="Редактировать"
                 title="Редактировать"
               >
@@ -423,7 +425,7 @@ export function InventoryListItem({
                 type="button"
                 onClick={onClick}
                 disabled={isPending}
-                className="inline-flex h-8 w-8 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-destructive-subtle hover:text-destructive disabled:opacity-60 sm:opacity-0 sm:group-hover:opacity-100"
+                className="relative inline-flex h-8 w-8 items-center justify-center rounded-lg text-muted-foreground transition-colors before:absolute before:-inset-1.5 before:content-[''] hover:bg-destructive-subtle hover:text-destructive disabled:opacity-60 sm:opacity-0 sm:group-hover:opacity-100"
                 aria-label="Удалить"
               >
                 <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>

@@ -39,19 +39,13 @@ const mocks = vi.hoisted(() => ({
   getOwnedRecipeById: vi.fn(async () => recipe),
   listRecipeImages: vi.fn(async () => []),
   listEquipmentProfiles: vi.fn(async () => []),
-  listRecipeStockCoverage: vi.fn(async () => ({
-    recipeId: "r-1",
-    lines: [],
-    summary: {
-      totalLines: 0,
-      selectedLines: 0,
-      coveredLines: 0,
-      reservedLines: 0,
-      consumedLines: 0,
-      shortLines: 0
-    }
-  })),
+  // Движок аллокаций мокаем только для guard-теста «страницы редактора его не зовут»:
+  // списание — операция варки, редактор в склад не ходит (B1).
+  listRecipeStockCoverage: vi.fn(),
   getNextDefaultRecipeTitle: vi.fn(async () => "Новый рецепт 7"),
+  // Н5: подтверждение удаления обязано сказать, что будет с варками рецепта, —
+  // число партий страница берёт из сервиса и прокидывает в редактор.
+  countRecipeBrewBatches: vi.fn(async () => 2),
   usePathname: vi.fn(() => "/app/recipes/new"),
   useRouter: vi.fn(() => ({ replace: vi.fn(), push: vi.fn() })),
   useSearchParams: vi.fn(() => new URLSearchParams()),
@@ -66,7 +60,8 @@ const mocks = vi.hoisted(() => ({
 vi.mock("../lib/auth", () => ({ requireUser: mocks.requireUser }));
 vi.mock("../features/recipes/service", () => ({
   getOwnedRecipeById: mocks.getOwnedRecipeById,
-  getNextDefaultRecipeTitle: mocks.getNextDefaultRecipeTitle
+  getNextDefaultRecipeTitle: mocks.getNextDefaultRecipeTitle,
+  countRecipeBrewBatches: mocks.countRecipeBrewBatches
 }));
 vi.mock("../features/recipe-images/service", () => ({
   listRecipeImages: mocks.listRecipeImages
@@ -94,8 +89,11 @@ describe("recipe editor pages wiring", () => {
     expect(mocks.getOwnedRecipeById).toHaveBeenCalledWith("u-1", "r-1");
     expect(mocks.listRecipeImages).toHaveBeenCalledWith("r-1", "u-1");
     expect(mocks.listEquipmentProfiles).toHaveBeenCalledWith("u-1");
+    // Число партий рецепта — для честного подтверждения удаления (Н5).
+    expect(mocks.countRecipeBrewBatches).toHaveBeenCalledWith("u-1", "r-1");
     expect(html).toContain("Название рецепта");
-    expect(html).toContain("Ингредиенты со склада");
+    expect(html).not.toContain("Ингредиенты со склада");
+    expect(mocks.listRecipeStockCoverage).not.toHaveBeenCalled();
   });
 
   it("ownership-safe deny on edit route", async () => {
@@ -111,10 +109,11 @@ describe("recipe editor pages wiring", () => {
     const html = renderPageMarkup(await NewRecipePage({ searchParams: Promise.resolve({}) }));
 
     expect(html).toContain("Название рецепта");
-    expect(html).toContain("Ингредиенты со склада");
+    expect(html).not.toContain("Ингредиенты со склада");
     expect(mocks.getNextDefaultRecipeTitle).toHaveBeenCalledWith("u-1");
     expect(mocks.listEquipmentProfiles).toHaveBeenCalledWith("u-1");
     expect(html).toContain("Новый рецепт 7");
+    expect(mocks.listRecipeStockCoverage).not.toHaveBeenCalled();
   });
 
   it("new route resumes an autosaved recipe without redirecting", async () => {
@@ -126,9 +125,20 @@ describe("recipe editor pages wiring", () => {
 
     expect(mocks.redirect).not.toHaveBeenCalled();
     expect(mocks.getOwnedRecipeById).toHaveBeenCalledWith("u-1", "r-1");
-    expect(mocks.listRecipeStockCoverage).toHaveBeenCalledWith("u-1", "r-1");
+    expect(mocks.listRecipeStockCoverage).not.toHaveBeenCalled();
     expect(mocks.listRecipeImages).toHaveBeenCalledWith("r-1", "u-1");
     expect(mocks.listEquipmentProfiles).toHaveBeenCalledWith("u-1");
+    expect(mocks.countRecipeBrewBatches).toHaveBeenCalledWith("u-1", "r-1");
     expect(html).toContain("Edit me");
+  });
+
+  // Новый рецепт партий иметь не может — в БД его ещё нет, и сервис дёргать незачем.
+  it("new form route does not count brew batches", async () => {
+    mocks.countRecipeBrewBatches.mockClear();
+    const { default: NewRecipePage } = await import("../app/(app)/app/recipes/new/page");
+
+    await NewRecipePage({ searchParams: Promise.resolve({}) });
+
+    expect(mocks.countRecipeBrewBatches).not.toHaveBeenCalled();
   });
 });

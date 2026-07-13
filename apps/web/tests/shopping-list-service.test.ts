@@ -1,12 +1,15 @@
 import { describe, expect, it, vi, beforeEach, type Mock } from "vitest";
 
 vi.mock("../features/brew-batches/service", () => ({ listBrewBatchesForUser: vi.fn() }));
-vi.mock("../features/recipes/match-service", () => ({ computeRecipeMatchesForUser: vi.fn() }));
+vi.mock("../features/recipes/match-service", () => ({
+  computeRecipeMatchesForUser: vi.fn(),
+  computeRecipeMatchesForBrewBatches: vi.fn()
+}));
 vi.mock("../features/recipes/service", () => ({ listSavedRecipes: vi.fn(), listOwnRecipeRefs: vi.fn() }));
 
 import { buildShoppingListForUser } from "../features/shopping/service";
 import { listBrewBatchesForUser } from "../features/brew-batches/service";
-import { computeRecipeMatchesForUser } from "../features/recipes/match-service";
+import { computeRecipeMatchesForBrewBatches, computeRecipeMatchesForUser } from "../features/recipes/match-service";
 import { listSavedRecipes, listOwnRecipeRefs } from "../features/recipes/service";
 import type { RecipeMatchDto, RecipeMatchLineDto } from "../features/recipes/contracts";
 
@@ -109,17 +112,22 @@ beforeEach(() => {
   (listSavedRecipes as Mock).mockResolvedValue([]);
   (listOwnRecipeRefs as Mock).mockResolvedValue({ refs: [], familyIdByVersionId: new Map<string, string>() });
   (computeRecipeMatchesForUser as Mock).mockResolvedValue({});
+  (computeRecipeMatchesForBrewBatches as Mock).mockResolvedValue({});
 });
 
+// §3.2 матчит ЗАПЛАНИРОВАННЫЕ партии через computeRecipeMatchesForBrewBatches:
+// ключ результата — brewBatchId (не recipeId), потому что у каждой партии свой
+// кредит уже списанного со склада (A2). §3.3 «Почти хватает на:» по-прежнему
+// матчит рецепты-кандидаты по фактическому складу — там партии нет.
 describe("buildShoppingListForUser — §3.2 агрегация и фикс бага addToStockHref", () => {
   it("regression §1.1: sums quantityToBuy across two brews and rebuilds addToStockHref from the total", async () => {
     (listBrewBatchesForUser as Mock).mockResolvedValue([
       plannedBatch({ id: "bb-1", recipeId: "r-1", recipeTitle: "IPA", name: "Варка 1" }),
       plannedBatch({ id: "bb-2", recipeId: "r-2", recipeTitle: "Stout", name: "Варка 2" })
     ]);
-    (computeRecipeMatchesForUser as Mock).mockResolvedValue({
-      "r-1": matchDto("r-1", [missingLine({ suggestedAddQuantity: 30 })]),
-      "r-2": matchDto("r-2", [missingLine({ recipeIngredientId: "ri-1b", suggestedAddQuantity: 20 })])
+    (computeRecipeMatchesForBrewBatches as Mock).mockResolvedValue({
+      "bb-1": matchDto("r-1", [missingLine({ suggestedAddQuantity: 30 })]),
+      "bb-2": matchDto("r-2", [missingLine({ recipeIngredientId: "ri-1b", suggestedAddQuantity: 20 })])
     });
 
     const dto = await buildShoppingListForUser("u-1");
@@ -143,19 +151,23 @@ describe("buildShoppingListForUser — §3.2 агрегация и фикс ба
       plannedBatch({ id: "bb-1", recipeId: "r-1" }),
       plannedBatch({ id: "bb-2", recipeId: "r-2" })
     ]);
-    (computeRecipeMatchesForUser as Mock).mockResolvedValue({
-      "r-1": matchDto("r-1", [coveredLine()]),
-      "r-2": matchDto("r-2", [coveredLine()])
+    (computeRecipeMatchesForBrewBatches as Mock).mockResolvedValue({
+      "bb-1": matchDto("r-1", [coveredLine()]),
+      "bb-2": matchDto("r-2", [coveredLine()])
     });
 
     await buildShoppingListForUser("u-1");
 
-    expect(computeRecipeMatchesForUser).toHaveBeenCalledTimes(1);
-    const call = (computeRecipeMatchesForUser as Mock).mock.calls[0][0];
-    expect(call.userId).toBe("u-1");
-    expect([...call.recipeIds].sort()).toEqual(["r-1", "r-2"]);
-    // Пустой склад не должен молча выключать список покупок.
-    expect(call.includeEmptyInventory).toBe(true);
+    expect(computeRecipeMatchesForBrewBatches).toHaveBeenCalledTimes(1);
+    expect(computeRecipeMatchesForBrewBatches).toHaveBeenCalledWith({
+      userId: "u-1",
+      batches: [
+        { brewBatchId: "bb-1", recipeId: "r-1" },
+        { brewBatchId: "bb-2", recipeId: "r-2" }
+      ]
+    });
+    // Кандидатов §3.3 нет → второй матч даже не запрашивается.
+    expect(computeRecipeMatchesForUser).not.toHaveBeenCalled();
   });
 
   it("reports a missingCount chip per planned brew, matching the lines it actually contributed", async () => {
@@ -163,12 +175,12 @@ describe("buildShoppingListForUser — §3.2 агрегация и фикс ба
       plannedBatch({ id: "bb-1", recipeId: "r-1", name: "Варка 1" }),
       plannedBatch({ id: "bb-2", recipeId: "r-2", name: "Варка 2" })
     ]);
-    (computeRecipeMatchesForUser as Mock).mockResolvedValue({
-      "r-1": matchDto("r-1", [
+    (computeRecipeMatchesForBrewBatches as Mock).mockResolvedValue({
+      "bb-1": matchDto("r-1", [
         missingLine({ ingredientCatalogItemId: "cat-citra" }),
         missingLine({ recipeIngredientId: "ri-yeast", ingredientCatalogItemId: "cat-yeast", ingredientDisplayName: "US-05" })
       ]),
-      "r-2": matchDto("r-2", [missingLine({ ingredientCatalogItemId: "cat-citra" })])
+      "bb-2": matchDto("r-2", [missingLine({ ingredientCatalogItemId: "cat-citra" })])
     });
 
     const dto = await buildShoppingListForUser("u-1");
@@ -180,21 +192,70 @@ describe("buildShoppingListForUser — §3.2 агрегация и фикс ба
   });
 });
 
+describe("buildShoppingListForUser — A2: списанное под партию не просится в покупки", () => {
+  it("состав партии уже списан → §3.2 пустая, чип варки без нехваток", async () => {
+    (listBrewBatchesForUser as Mock).mockResolvedValue([
+      plannedBatch({ id: "bb-1", recipeId: "r-1", recipeTitle: "Летний пилснер", name: "Летний пилснер" })
+    ]);
+    // Матч по партии видит кредит списанного → все строки covered.
+    (computeRecipeMatchesForBrewBatches as Mock).mockResolvedValue({
+      "bb-1": matchDto("r-1", [coveredLine()], { missingCount: 0 })
+    });
+
+    const dto = await buildShoppingListForUser("u-1");
+
+    expect(dto.totalItems).toBe(0);
+    expect(dto.groups).toEqual([]);
+    expect(dto.emptyReason).toBe("all_in_stock");
+    expect(dto.plannedBrews[0].missingCount).toBe(0);
+  });
+
+  it("две партии на один рецепт: нехватка несписавшейся остаётся в полном объёме", async () => {
+    (listBrewBatchesForUser as Mock).mockResolvedValue([
+      plannedBatch({ id: "bb-1", recipeId: "r-1", recipeTitle: "IPA", name: "Первая" }),
+      plannedBatch({ id: "bb-2", recipeId: "r-1", recipeTitle: "IPA", name: "Вторая" })
+    ]);
+    // bb-1 списала состав (кредит → covered), bb-2 — нет.
+    (computeRecipeMatchesForBrewBatches as Mock).mockResolvedValue({
+      "bb-1": matchDto("r-1", [coveredLine()], { missingCount: 0 }),
+      "bb-2": matchDto("r-1", [missingLine({ suggestedAddQuantity: 50 })])
+    });
+
+    const dto = await buildShoppingListForUser("u-1");
+
+    // Ключ по brewBatchId, а не по recipeId: иначе кредит bb-1 стёр бы нехватку bb-2
+    // (или наоборот — нехватка bb-2 всплыла бы и у bb-1).
+    expect(dto.totalItems).toBe(1);
+    const line = dto.groups.flatMap((group) => group.items)[0];
+    expect(line.quantityToBuy).toBe(50);
+    expect(line.neededBy).toEqual([{ recipeTitle: "IPA", brewName: "Вторая" }]);
+    expect(dto.plannedBrews.find((brew) => brew.brewBatchId === "bb-1")?.missingCount).toBe(0);
+    expect(dto.plannedBrews.find((brew) => brew.brewBatchId === "bb-2")?.missingCount).toBe(1);
+    // Обе партии уходят в матч по отдельности, несмотря на общий рецепт.
+    expect(computeRecipeMatchesForBrewBatches).toHaveBeenCalledWith({
+      userId: "u-1",
+      batches: [
+        { brewBatchId: "bb-1", recipeId: "r-1" },
+        { brewBatchId: "bb-2", recipeId: "r-1" }
+      ]
+    });
+  });
+});
+
 describe("buildShoppingListForUser — §3.3 «Почти можно сварить»", () => {
   it("excludes a recipe that already sits behind a planned brew (no duplicate with §3.2)", async () => {
     (listBrewBatchesForUser as Mock).mockResolvedValue([plannedBatch({ recipeId: "r-1" })]);
     (listSavedRecipes as Mock).mockResolvedValue([savedRef("r-1", "r-1-slug", "IPA рецепт")]);
-    (computeRecipeMatchesForUser as Mock).mockResolvedValue({
-      "r-1": matchDto("r-1", [missingLine()])
+    (computeRecipeMatchesForBrewBatches as Mock).mockResolvedValue({
+      "bb-1": matchDto("r-1", [missingLine()])
     });
 
     const dto = await buildShoppingListForUser("u-1", { includeOpportunities: true });
 
     expect(dto.opportunities).toEqual([]);
-    // r-1 не должен фигурировать во втором запросе матча как "кандидат" —
-    // он уже участвует как запланированная варка.
-    const call = (computeRecipeMatchesForUser as Mock).mock.calls[0][0];
-    expect(call.recipeIds).toEqual(["r-1"]);
+    // r-1 не должен попасть в матч кандидатов §3.3 — он уже участвует как
+    // запланированная варка (и матчится по партии, с её кредитом).
+    expect(computeRecipeMatchesForUser).not.toHaveBeenCalled();
   });
 
   it("excludes a ready recipe (nothing to buy) from opportunities", async () => {
@@ -386,9 +447,8 @@ describe("buildShoppingListForUser — §3.3 «Почти можно свари�
         ["r-v3", "fam-ipa"]
       ])
     });
-    (computeRecipeMatchesForUser as Mock).mockResolvedValue({
-      "r-v2": matchDto("r-v2", [missingLine()]),
-      "r-v3": nearMissMatch("r-v3", 1)
+    (computeRecipeMatchesForBrewBatches as Mock).mockResolvedValue({
+      "bb-1": matchDto("r-v2", [missingLine()])
     });
 
     const dto = await buildShoppingListForUser("u-1", { includeOpportunities: true });
@@ -396,8 +456,11 @@ describe("buildShoppingListForUser — §3.3 «Почти можно свари�
     // Без FIX-4(а) r-v3 (последняя версия того же семейства) вошла бы в §3.3
     // как дубль сущности, уже показанной в §3.2 варкой за r-v2.
     expect(dto.opportunities).toEqual([]);
-    const call = (computeRecipeMatchesForUser as Mock).mock.calls[0][0];
-    expect(call.recipeIds).toEqual(["r-v2"]);
+    expect(computeRecipeMatchesForUser).not.toHaveBeenCalled();
+    expect(computeRecipeMatchesForBrewBatches).toHaveBeenCalledWith({
+      userId: "u-1",
+      batches: [{ brewBatchId: "bb-1", recipeId: "r-v2" }]
+    });
   });
 
   it("FIX-4(б): a favorited old version of the user's own family doesn't duplicate the own latest version", async () => {
@@ -429,8 +492,8 @@ describe("buildShoppingListForUser — §3.3 «Почти можно свари�
 describe("buildShoppingListForUser — FIX-2: includeOpportunities gate", () => {
   it("defaults to false: recipe listings for §3.3 are never fetched, opportunities stay empty", async () => {
     (listBrewBatchesForUser as Mock).mockResolvedValue([plannedBatch({ recipeId: "r-1" })]);
-    (computeRecipeMatchesForUser as Mock).mockResolvedValue({
-      "r-1": matchDto("r-1", [missingLine()])
+    (computeRecipeMatchesForBrewBatches as Mock).mockResolvedValue({
+      "bb-1": matchDto("r-1", [missingLine()])
     });
 
     const dtoDefault = await buildShoppingListForUser("u-1");
@@ -457,6 +520,7 @@ describe("buildShoppingListForUser — пустые состояния (§3.4)",
     expect(dto.groups).toEqual([]);
     expect(dto.opportunities).toEqual([]);
     expect(computeRecipeMatchesForUser).not.toHaveBeenCalled();
+    expect(computeRecipeMatchesForBrewBatches).not.toHaveBeenCalled();
   });
 
   it("null (opportunities-only): no planned brews but favorites have near-misses", async () => {
@@ -476,8 +540,10 @@ describe("buildShoppingListForUser — пустые состояния (§3.4)",
   it("all_in_stock: planned brews exist but nothing is missing, regardless of opportunities", async () => {
     (listBrewBatchesForUser as Mock).mockResolvedValue([plannedBatch({ recipeId: "r-1" })]);
     (listSavedRecipes as Mock).mockResolvedValue([savedRef("r-2", "r-2-slug", "Избранный")]);
+    (computeRecipeMatchesForBrewBatches as Mock).mockResolvedValue({
+      "bb-1": matchDto("r-1", [coveredLine()], { missingCount: 0 })
+    });
     (computeRecipeMatchesForUser as Mock).mockResolvedValue({
-      "r-1": matchDto("r-1", [coveredLine()], { missingCount: 0 }),
       "r-2": nearMissMatch("r-2", 1)
     });
 
@@ -491,8 +557,8 @@ describe("buildShoppingListForUser — пустые состояния (§3.4)",
 
   it("null (full layout): planned brews with missing items", async () => {
     (listBrewBatchesForUser as Mock).mockResolvedValue([plannedBatch({ recipeId: "r-1" })]);
-    (computeRecipeMatchesForUser as Mock).mockResolvedValue({
-      "r-1": matchDto("r-1", [missingLine()])
+    (computeRecipeMatchesForBrewBatches as Mock).mockResolvedValue({
+      "bb-1": matchDto("r-1", [missingLine()])
     });
 
     const dto = await buildShoppingListForUser("u-1");

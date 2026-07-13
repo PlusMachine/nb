@@ -5,7 +5,7 @@ import React from "react";
 import type { EquipmentProfileDto } from "@/features/equipment-profiles/contracts";
 import type { IngredientSuggestionItem } from "@/features/ingredients/contracts";
 import type { RecipeImageDto } from "@/features/recipe-images/contracts";
-import type { RecipeDetailDto, RecipeStockCoverageDto } from "@/features/recipes/contracts";
+import type { RecipeDetailDto } from "@/features/recipes/contracts";
 import type { RecipePublicationState } from "@/features/recipes/contracts";
 import type { PreferredGravityUnit } from "@/features/system/gravity-units";
 
@@ -17,9 +17,9 @@ type Props = {
   initialTitle?: string;
   initialStyleId?: string;
   initialIngredientSelection?: IngredientSuggestionItem | null;
-  initialStockCoverage?: RecipeStockCoverageDto | null;
   initialImages?: RecipeImageDto[];
   equipmentProfiles?: EquipmentProfileDto[];
+  brewBatchCount?: number;
   onSaveStatusChange?: (status: RecipeSaveStatus) => void;
   onRecipeCreated?: (recipe: RecipeDetailDto) => void;
   onPublicationStateChange?: (state: RecipePublicationState) => void;
@@ -32,9 +32,9 @@ export function RecipeForm({
   initialTitle,
   initialStyleId,
   initialIngredientSelection,
-  initialStockCoverage,
   initialImages,
   equipmentProfiles,
+  brewBatchCount,
   onSaveStatusChange,
   onRecipeCreated,
   onPublicationStateChange,
@@ -47,9 +47,9 @@ export function RecipeForm({
       initialTitle={initialTitle}
       initialStyleId={initialStyleId}
       initialIngredientSelection={initialIngredientSelection}
-      initialStockCoverage={initialStockCoverage}
       initialImages={initialImages}
       equipmentProfiles={equipmentProfiles}
+      brewBatchCount={brewBatchCount}
       onSaveStatusChange={onSaveStatusChange}
       onRecipeCreated={onRecipeCreated}
       onPublicationStateChange={onPublicationStateChange}

@@ -55,9 +55,11 @@ export function HomeStyleVitals({ styles }: { styles: HeroStyleVital[] }) {
 
       <div key={`stats-${active.bjcpId}`} className="home-vital-fade mt-5 grid grid-cols-4 gap-2">
         {stats.map((stat) => (
-          <div key={stat.label} className="rounded-xl border border-border/80 bg-card p-2.5 text-center">
+          <div key={stat.label} className="min-w-0 rounded-xl border border-border/80 bg-card p-2.5 text-center">
             <div className="text-[10px] font-semibold uppercase tracking-[0.08em] text-muted-foreground">{stat.label}</div>
-            <div className="mt-1 whitespace-nowrap text-sm font-semibold tabular-nums text-foreground">{stat.value}</div>
+            {/* truncate вместо whitespace-nowrap без страховки: диапазон вида «11.1–14.6 °P»
+                на 360px не влезает в ячейку 4-колоночной сетки и вылезал за карточку. */}
+            <div className="mt-1 truncate text-sm font-semibold tabular-nums text-foreground" title={stat.value}>{stat.value}</div>
           </div>
         ))}
       </div>
@@ -71,7 +73,7 @@ export function HomeStyleVitals({ styles }: { styles: HeroStyleVital[] }) {
               type="button"
               aria-pressed={isActive}
               onClick={() => setActiveIndex(index)}
-              className={`inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-sm font-medium transition-colors ${
+              className={`inline-flex min-h-11 items-center gap-2 rounded-full border px-3 py-1.5 text-sm font-medium transition-colors ${
                 isActive
                   ? "border-foreground bg-foreground text-background"
                   : "border-border bg-card text-muted-foreground hover:border-border hover:text-foreground"

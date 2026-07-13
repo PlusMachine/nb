@@ -28,10 +28,13 @@ import {
 export function useRecipeIngredients({
   initialRecipe,
   initialIngredientSelection = null,
+  boilTimeMinutes,
   onIngredientDeleted
 }: {
   initialRecipe?: RecipeDetailDto;
   initialIngredientSelection?: IngredientSuggestionItem | null;
+  /** Время кипячения рецепта — им предзаполняется поле «мин» у хмеля на кипячение. */
+  boilTimeMinutes: number;
   onIngredientDeleted?: (payload: { ingredient: DesignerIngredient; index: number }) => void;
 }) {
   const [ingredients, setIngredients] = useState<DesignerIngredient[]>(
@@ -52,7 +55,8 @@ export function useRecipeIngredients({
       createEmptyIngredient(
         selectionCategory,
         "boil",
-        resolveRecipeFermentableSubtype(selectionCategory, initialIngredientSelection.subtype ?? null)
+        resolveRecipeFermentableSubtype(selectionCategory, initialIngredientSelection.subtype ?? null),
+        boilTimeMinutes
       ),
       initialIngredientSelection
     );
@@ -64,7 +68,7 @@ export function useRecipeIngredients({
       initialSignature: serializeIngredient(draft),
       isExisting: false
     });
-  }, [initialIngredientSelection, initialRecipe]);
+  }, [boilTimeMinutes, initialIngredientSelection, initialRecipe]);
 
   const maybeOpenEditor = (next: OpenEditorState) => {
     setOpenEditor(next);
@@ -107,7 +111,8 @@ export function useRecipeIngredients({
     const baseDraft = createEmptyIngredient(
       category,
       hopUseType,
-      null
+      null,
+      boilTimeMinutes
     );
     const draft = category === "water_treatment"
       ? {

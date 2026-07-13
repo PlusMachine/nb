@@ -23,6 +23,8 @@ const publicRecipe: RecipeDetailDto = {
   versionNumber: 1,
   versionCount: 1,
   publicationState: "published",
+  hiddenAt: null,
+  hiddenReason: null,
   title: "Public IPA",
   slug: "public-ipa",
   styleId: "21A", // American IPA — реальный BJCP-фикстур id (без БД, из @nb/brewing-core)

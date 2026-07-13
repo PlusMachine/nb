@@ -10,9 +10,12 @@ import {
   type BrewDayStageGroup,
   type BrewDayStep,
   type BrewDayStepState,
+  type BrewMeasurementKind,
+  type BrewMeasurementSummary,
   type BrewPlanSnapshot
 } from "./contracts";
-import { inventoryUnitShortLabels, parseInventoryUnit } from "../inventory/units";
+import { formatInventoryUnitLabel, parseInventoryUnit } from "../inventory/units";
+import { pluralize } from "@/lib/pluralize";
 
 // Чистый слой гида варочного дня: превращает иммутабельный brew_plan_snapshot в
 // упорядоченный чек-лист шагов со стабильными id и нормализует/мёрджит прогресс.
@@ -84,7 +87,7 @@ const fmtAmount = (record: Record<string, unknown>): string | null => {
   // unit — из закрытого InventoryUnit enum; неопознанное значение (легаси/чужой
   // формат) — fallback на сырую строку, не падаем.
   const parsedUnit = parseInventoryUnit(unit);
-  const unitLabel = parsedUnit ? inventoryUnitShortLabels[parsedUnit] : unit;
+  const unitLabel = parsedUnit ? formatInventoryUnitLabel(parsedUnit, Number(value)) : unit;
   return `${value} ${unitLabel}`;
 };
 
@@ -602,6 +605,46 @@ export const brewDayActForStatus = (status: BrewBatchStatus): BrewDayAct => {
   }
 };
 
+/**
+ * Какой замер ждёт журнал в этом акте. В подготовке замеров ещё нет, в итоге и
+ * архиве журнал уже закрыт — подсказывать в поле плотности нечего ("any").
+ */
+export const brewMeasurementKindForAct = (act: BrewDayAct): BrewMeasurementKind => {
+  switch (act) {
+    case "brewday":
+      return "og";
+    case "fermentation":
+      return "fg";
+    case "prep":
+    case "done":
+    case "archived":
+      return "any";
+  }
+};
+
+// Типичные плотности домашнего пива — запасная подсказка, когда у партии нет
+// целей рецепта (варка без рецепта: brewPlanSnapshot есть, target — null).
+const TYPICAL_OG_SG = 1.05;
+const TYPICAL_FG_SG = 1.012;
+
+/**
+ * Подсказка (placeholder) поля плотности: цель рецепта по контексту акта, иначе
+ * типичное значение. null — подсказки нет: в итоге/архиве/на устройстве замер
+ * вносят по факту, а не «примерно как в плане».
+ */
+export const resolveBrewGravityPlaceholderSg = (
+  kind: BrewMeasurementKind,
+  target: BrewMeasurementSummary["target"]
+): number | null => {
+  if (kind === "og") {
+    return target?.og ?? TYPICAL_OG_SG;
+  }
+  if (kind === "fg") {
+    return target?.fg ?? TYPICAL_FG_SG;
+  }
+  return null;
+};
+
 // К какому акту относится этап гида. Затор→охлаждение — варочный день; брожение и
 // розлив — акт брожения. done/archived/prep рендерят гид целиком (read-only/превью).
 const STAGE_ACT: Record<BrewDayStage, "brewday" | "fermentation"> = {
@@ -746,4 +789,60 @@ export const summarizeBrewDayProgress = (
     }
   }
   return { total, done };
+};
+
+// --- Завершение варки (акт «Брожение») ---------------------------------------
+// Здесь, а не в completion.ts: тот модуль через recipes/visibility тянет @nb/db,
+// а подтверждение нужно клиентской доске брожения.
+
+/** Подтверждение перехода партии в «Завершена» (см. buildFinishBrewConfirm). */
+export type BrewFinishConfirm = {
+  title: string;
+  description: string;
+  tone: "primary" | "danger";
+};
+
+/**
+ * Текст подтверждения «Завершить варку». Спрашиваем ВСЕГДА: переход закрывает
+ * акт брожения (журнал FG, шаги розлива) — раньше на 1-м дне из 10 он случался
+ * одним кликом без вопроса. Тон danger — только когда завершают раньше плана:
+ * это не обычный путь, но и не деструктив, поэтому текст честный, а не пугающий.
+ * plannedDays нет (старые партии, план без длительности) — деградируем до «День N»,
+ * без «из M».
+ */
+export const buildFinishBrewConfirm = ({
+  fermentDayN,
+  plannedDays,
+  undoneSteps
+}: {
+  fermentDayN: number | null;
+  plannedDays: number | null;
+  undoneSteps: number;
+}): BrewFinishConfirm => {
+  const daysLeft = fermentDayN != null && plannedDays != null && fermentDayN < plannedDays
+    ? plannedDays - fermentDayN
+    : null;
+  const early = daysLeft != null;
+  const parts: string[] = [];
+
+  if (fermentDayN != null) {
+    const day = plannedDays != null ? `день ${fermentDayN} из ${plannedDays}` : `день ${fermentDayN}`;
+    parts.push(daysLeft != null
+      ? `Брожение идёт: ${day}, по плану ещё ${daysLeft} ${pluralize(daysLeft, ["день", "дня", "дней"])}.`
+      : `Брожение идёт: ${day}.`);
+  }
+
+  if (undoneSteps > 0) {
+    parts.push(
+      `Не отмечено ${undoneSteps} ${pluralize(undoneSteps, ["шаг", "шага", "шагов"])} брожения и розлива.`
+    );
+  }
+
+  parts.push("Партия перейдёт в «Завершена», подведём итог. Этап можно вернуть через меню ⋯ → «Изменить этап».");
+
+  return {
+    title: "Завершить варку?",
+    description: parts.join(" "),
+    tone: early ? "danger" : "primary"
+  };
 };

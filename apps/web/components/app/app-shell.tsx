@@ -81,6 +81,7 @@ export function AppShell({ children, user }: AppShellProps) {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const displayTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const resetTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const bottomNavRef = useRef<HTMLElement | null>(null);
 
   useEffect(() => {
     if (displayTimerRef.current) {
@@ -161,15 +162,25 @@ export function AppShell({ children, user }: AppShellProps) {
     // потому что баннер cookie-согласия и кнопка «Обратная связь» монтируются в
     // корневом layout выше AppShell по дереву — им её иначе не унаследовать.
     // Вне app-зоны AppShell не смонтирован → переменной нет → fallback 0px у читателей.
-    const desktopQuery = window.matchMedia("(min-width: 1024px)");
+    // Меряем РЕАЛЬНУЮ высоту через ResizeObserver, а не хардкодим 3.5rem: safe-area-
+    // inset-bottom (полоса «домой» на iPhone) добавляет к ней высоты, и всплывашкам,
+    // которые опираются на переменную, нужно точное число, иначе они наедут на нав.
+    // На `lg` панель скрыта классом `lg:hidden` — offsetHeight сам станет 0, отдельный
+    // десктопный кейс не нужен.
+    const nav = bottomNavRef.current;
+    if (!nav) {
+      return;
+    }
+
     const updateBottomNavHeightVar = () => {
-      document.documentElement.style.setProperty("--nb-bottom-nav-h", desktopQuery.matches ? "0px" : "3.5rem");
+      document.documentElement.style.setProperty("--nb-bottom-nav-h", `${nav.offsetHeight}px`);
     };
 
     updateBottomNavHeightVar();
-    desktopQuery.addEventListener("change", updateBottomNavHeightVar);
+    const observer = new ResizeObserver(updateBottomNavHeightVar);
+    observer.observe(nav);
     return () => {
-      desktopQuery.removeEventListener("change", updateBottomNavHeightVar);
+      observer.disconnect();
       document.documentElement.style.removeProperty("--nb-bottom-nav-h");
     };
   }, []);
@@ -238,7 +249,7 @@ export function AppShell({ children, user }: AppShellProps) {
             type="button"
             onClick={() => setDrawerOpen(true)}
             aria-label="Открыть меню"
-            className="rounded-lg p-2 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+            className="grid min-h-11 min-w-11 place-items-center rounded-lg text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
           >
             <Menu className="h-5 w-5" />
           </button>
@@ -290,7 +301,10 @@ export function AppShell({ children, user }: AppShellProps) {
       </main>
 
       <nav
-        className="fixed inset-x-0 bottom-0 z-40 flex h-14 border-t border-border bg-background/95 backdrop-blur lg:hidden"
+        ref={bottomNavRef}
+        // min-h, а не h: с box-sizing:border-box жёсткая высота обрезала бы контент
+        // на величину safe-area паддинга снизу вместо того, чтобы вырасти на неё.
+        className="fixed inset-x-0 bottom-0 z-40 flex min-h-14 border-t border-border bg-background/95 pb-[env(safe-area-inset-bottom)] backdrop-blur lg:hidden"
         aria-label="Быстрая навигация"
       >
         {primaryNavItems.map((item) => {

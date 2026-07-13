@@ -15,10 +15,12 @@ import type { SystemCurrency, SystemCurrencyRateMap } from "@/features/system/cu
  * (apps/web/components/home/home-inventory.tsx).
  */
 
-// Реплика MatchRow с главной — сам компонент не экспортирован из home-inventory.tsx.
-// В отличие от главной, где title — короткое название рецепта, а бейдж несёт
-// детали нехватки, здесь весь факт (спека §2.2) уже сформулирован одной строкой —
-// бейдж поэтому даёт только статус, без дублирования количества из title.
+// Осознанное исключение из правила «бейдж готовности рендерит только
+// BrewabilityBadgePill»: на главной title — короткое название рецепта, а детали
+// нехватки несёт бейдж; здесь же весь факт («не хватает Citra 60 г», спека §2.2)
+// сформулирован одной строкой, поэтому бейдж укорочен до статуса без числа —
+// иначе он дублировал бы title. Тексты статичные, матча за ними нет; при
+// переименовании бейджа сверяться с brewability-badge-pill.tsx.
 function MatchRow({ title, ready }: { title: string; ready?: boolean }) {
   return (
     <div className="flex items-center justify-between gap-3 rounded-xl border border-border bg-card px-3 py-2.5">

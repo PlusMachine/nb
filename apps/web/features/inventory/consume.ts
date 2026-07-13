@@ -1,19 +1,25 @@
-import { convertVolume, convertWeight, roundTo } from "@nb/brewing-core";
+import { roundTo } from "@nb/brewing-core";
 
 import type { InventoryListItemDto } from "./contracts";
 import {
   formatInventoryQuantityInputValue,
   resolveInventoryMeasurementForDisplay
 } from "./display";
-import { resolveInventoryPackEquivalent, type InventoryPackEquivalent } from "./pack";
 import {
-  inventoryVolumeUnits,
-  inventoryWeightUnits,
+  convertInventoryNormalizedToUnit,
+  resolveInventoryPackEquivalent,
+  type InventoryPackEquivalent
+} from "./pack";
+import {
   normalizeInventoryMeasurementForProfile,
   resolveInventoryUnitProfile,
   type InventoryUnit,
   type InventoryUnitProfile
 } from "./units";
+
+// Конвертер живёт в ./pack (единственный мост pack↔г/мл, см. Р1): здесь только
+// ре-экспорт, чтобы исторические импорты из features/inventory/consume работали.
+export { convertInventoryNormalizedToUnit } from "./pack";
 
 type InventoryDisplayMeasurement = {
   quantity: number;
@@ -51,42 +57,6 @@ const resolveItemUnitProfile = (item: InventoryListItemDto): InventoryUnitProfil
     technicalData: item.source.technicalData
   })
 );
-
-/**
- * Converts a normalized quantity (g / ml / count) into an arbitrary target unit.
- * Mirrors the private converter used by the display layer so consumption math
- * stays consistent with how the remaining amount is shown on the card.
- * Returns null when the units are incompatible.
- */
-export const convertInventoryNormalizedToUnit = (
-  normalizedQuantity: number,
-  normalizedUnit: InventoryUnit,
-  targetUnit: InventoryUnit,
-  packEquivalent?: InventoryPackEquivalent | null
-): number | null => {
-  if (normalizedUnit === targetUnit) {
-    return normalizedQuantity;
-  }
-
-  if (normalizedUnit === "g" && (inventoryWeightUnits as readonly InventoryUnit[]).includes(targetUnit)) {
-    return convertWeight({ value: normalizedQuantity, unit: "g" }, targetUnit as "g" | "kg" | "oz" | "lb").value;
-  }
-
-  if (normalizedUnit === "ml" && (inventoryVolumeUnits as readonly InventoryUnit[]).includes(targetUnit)) {
-    return convertVolume({ value: normalizedQuantity, unit: "ml" }, targetUnit as "ml" | "l" | "gal").value;
-  }
-
-  if (
-    targetUnit === "pack"
-    && packEquivalent
-    && packEquivalent.normalizedUnit === normalizedUnit
-    && packEquivalent.normalizedQuantity > 0
-  ) {
-    return normalizedQuantity / packEquivalent.normalizedQuantity;
-  }
-
-  return null;
-};
 
 export type InventoryConsumeContext = {
   profile: InventoryUnitProfile;

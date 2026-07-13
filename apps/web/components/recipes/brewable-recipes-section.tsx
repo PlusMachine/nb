@@ -1,14 +1,21 @@
 import React from "react";
 import Link from "next/link";
-import { Beer, CircleCheck } from "lucide-react";
+import { Beer } from "lucide-react";
 
+import { resolveBrewabilityBadge, type BrewabilityBadge } from "@/features/recipes/brewability-badge";
 import type { BrewableRecipeDto } from "@/features/recipes/contracts";
 
+import { BrewabilityBadgePill } from "./brewability-badge-pill";
 import { BrewFromStockButton } from "./brew-from-stock-button";
 import { RecipeThumb, StatCell, StyleChip } from "./recipe-card-parts";
 
-const percentColor = (matchPercent: number) => {
-  if (matchPercent >= 100) return "bg-success-subtle text-success-subtle-foreground ring-success/30";
+// «Светофор» процента завязан на тот же бейдж, что и плашка внизу карточки:
+// иначе 100 % + qtyShort дало бы зелёный процент рядом с салатовым «Почти
+// хватает» (ровно эта рассинхронизация и подсветила враньё бейджа).
+const percentColor = (matchPercent: number, badge: BrewabilityBadge) => {
+  if (badge.tier === "ready" && !badge.qtyShort) {
+    return "bg-success-subtle text-success-subtle-foreground ring-success/30";
+  }
   if (matchPercent >= 70) return "bg-lime-50 text-lime-700 ring-lime-200 dark:bg-lime-500/15 dark:text-lime-300 dark:ring-lime-500/30";
   if (matchPercent >= 1) return "bg-warning-subtle text-warning-subtle-foreground ring-warning/30";
   return "bg-muted text-muted-foreground ring-border";
@@ -30,7 +37,11 @@ export function BrewableRecipeCard({ recipe, href }: { recipe: BrewableRecipeDto
   // ссылку в редактор.
   const targetHref = href ?? `/recipes/${recipe.slug}`;
 
-  const fullyCovered = recipe.missingCount === 0;
+  // Единственный источник семантики бейджа — тот же резолвер, что у витрины и
+  // /app/recipes. Раньше карточка судила по одному лишь missingCount ("нет строк
+  // со статусом missing") и показывала зелёное «Хватает всего» рецепту, где солода
+  // 1 кг из 4.
+  const badge = resolveBrewabilityBadge(recipe);
   // Кратко перечисляем чего не хватает: до двух названий, остальное — «+N».
   // Фолбэк на число, если у недостающих строк нет отображаемых имён.
   const missingLabel = (() => {
@@ -65,7 +76,7 @@ export function BrewableRecipeCard({ recipe, href }: { recipe: BrewableRecipeDto
             <div className="flex flex-wrap items-center gap-1.5">
               <StyleChip style={style} styleHref={recipe.styleHref} className="min-w-0 truncate" />
               <span
-                className={`inline-flex shrink-0 items-center rounded-full px-2.5 py-0.5 text-xs font-semibold tabular-nums ring-1 ${percentColor(recipe.matchPercent)}`}
+                className={`inline-flex shrink-0 items-center rounded-full px-2.5 py-0.5 text-xs font-semibold tabular-nums ring-1 ${percentColor(recipe.matchPercent, badge)}`}
               >
                 {recipe.matchPercent}%
               </span>
@@ -76,12 +87,9 @@ export function BrewableRecipeCard({ recipe, href }: { recipe: BrewableRecipeDto
           </div>
         </div>
 
-        {fullyCovered ? (
+        {badge.tier === "ready" ? (
           <div className="flex items-center justify-between gap-3 rounded-xl bg-muted p-2.5">
-            <span className="inline-flex items-center gap-1.5 text-sm font-semibold text-success">
-              <CircleCheck className="h-4 w-4" aria-hidden />
-              Хватает всего
-            </span>
+            <BrewabilityBadgePill badge={badge} size="md" />
             <BrewFromStockButton recipeId={recipe.recipeId} slug={recipe.slug} recipeTitle={recipe.title} />
           </div>
         ) : (
@@ -106,7 +114,7 @@ export function BrewableRecipesSection({ recipes }: { recipes: BrewableRecipeDto
   }
 
   return (
-    // id/scroll-mt — цель для якоря «можно сварить» в шапке на мобиле.
+    // id/scroll-mt — цель для якоря секции в шапке на мобиле.
     // sm:grid-cols-2 lg:grid-cols-1 — две карточки в ряд на планшете, но одна
     // колонка внутри узкого правого rail на десктопе.
     <section id="brewable" className="scroll-mt-4 space-y-3">
@@ -114,7 +122,7 @@ export function BrewableRecipesSection({ recipes }: { recipes: BrewableRecipeDto
         <div className="flex h-6 w-6 items-center justify-center rounded-md bg-warning-subtle text-warning-subtle-foreground">
           <Beer className="h-3.5 w-3.5" />
         </div>
-        <h2 className="text-base font-semibold text-foreground">Можно сварить из ваших запасов</h2>
+        <h2 className="text-base font-semibold text-foreground">Рецепты под ваш склад</h2>
         <span className="rounded-full bg-muted px-2 py-0.5 text-xs font-medium tabular-nums text-muted-foreground">
           {recipes.length}
         </span>

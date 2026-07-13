@@ -12,8 +12,10 @@ import {
 
 import type { RecipeEditorPayload } from "@/app/(app)/app/recipes/actions";
 import { storageAdapter } from "@/lib/storage";
+import { verifyBeerShareKey } from "@/features/beer-page/share-key";
 import { createRecipe, getNextDefaultRecipeTitle, getOwnedRecipeById } from "@/features/recipes/service";
 import { createRecipePayloadSchema } from "@/features/recipes/contracts";
+import { isRecipeHidden, isRecipePubliclyVisible } from "@/features/recipes/visibility";
 
 import {
   buildRecipeImageVariantUrl,
@@ -650,11 +652,14 @@ export const reorderRecipeImages = async (
 export const getRecipeImageAsset = async ({
   imageId,
   variant,
-  viewerId
+  viewerId,
+  beerShareKey
 }: {
   imageId: string;
   variant: RecipeImageVariant;
   viewerId: string | null;
+  /** Ключ гостевой страницы пива (?k=): открывает фото непубличного рецепта. */
+  beerShareKey?: string | null;
 }) => {
   let image: RecipeImageWithRecipe | undefined;
 
@@ -674,7 +679,13 @@ export const getRecipeImageAsset = async ({
   }
 
   const isOwner = viewerId === image.recipe.authorId;
-  if (!isOwner && image.recipe.publicationState !== "published") {
+  // Share-ключ страницы пива открывает гостю display-варианты (обложка
+  // /beer/<slug> непубличного рецепта), но не оригинал — тот только владельцу.
+  // Скрытие модератором закрывает и этот путь: иначе фото скрытого пива
+  // осталось бы доступным по старой QR-наклейке.
+  const hasBeerShareAccess =
+    variant !== "original" && !isRecipeHidden(image.recipe) && verifyBeerShareKey(image.recipe.id, beerShareKey);
+  if (!isOwner && !hasBeerShareAccess && !isRecipePubliclyVisible(image.recipe)) {
     throw new Error("FORBIDDEN");
   }
 
@@ -695,7 +706,7 @@ export const getRecipeImageAsset = async ({
     throw new Error("NOT_FOUND");
   }
 
-  const isPublished = image.recipe.publicationState === "published";
+  const isPublished = isRecipePubliclyVisible(image.recipe);
 
   return {
     body: object.body,

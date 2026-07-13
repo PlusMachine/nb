@@ -17,6 +17,8 @@ const baseRecipe: OwnerRecipeCardDto = {
   slug: "base-recipe",
   title: "Base Recipe",
   publicationState: "draft",
+  hiddenAt: null,
+  hiddenReason: null,
   versionNumber: 1,
   versionCount: 1,
   updatedAt: new Date("2026-01-02T00:00:00.000Z"),
@@ -29,7 +31,8 @@ const baseRecipe: OwnerRecipeCardDto = {
   colorSrm: 7,
   heroImage: null,
   styleImageUrl: null,
-  styleFit: null
+  styleFit: null,
+  brewBatchCount: 0
 };
 
 const baseMatch: RecipeMatchDto = {

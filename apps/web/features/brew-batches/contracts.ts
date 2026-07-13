@@ -3,13 +3,38 @@ import { z } from "zod";
 export const brewBatchStatuses = ["planned", "brewing", "fermenting", "completed", "cancelled"] as const;
 export type BrewBatchStatus = (typeof brewBatchStatuses)[number];
 
+/**
+ * Анти-абьюз: щедрый потолок числа партий варки на пользователя. Реальному
+ * пивовару за всю жизнь аккаунта не упереться; ловит только массовое засорение
+ * ботом. Считаются все пути создания (все проходят через
+ * createBrewBatchFromRecipe). Плюс rate limit на частоту создания.
+ */
+export const BREW_BATCH_MAX_COUNT_PER_USER = 500;
+export const BREW_BATCH_CREATE_RATE_LIMIT = 20;
+export const BREW_BATCH_CREATE_RATE_WINDOW_SECONDS = 60 * 60;
+
+/**
+ * Анти-абьюз замеров: квота считается НА ПАРТИЮ (не на пользователя) — журнал
+ * плотности одной варки не бывает длиннее пары десятков строк, 300 с большим
+ * запасом. Rate limit — на пользователя (частота добавлений).
+ */
+export const BREW_MEASUREMENT_MAX_COUNT_PER_BATCH = 300;
+export const BREW_MEASUREMENT_RATE_LIMIT = 60;
+export const BREW_MEASUREMENT_RATE_WINDOW_SECONDS = 60 * 60;
+
 export const brewPlanSnapshotSchema = z.object({
   version: z.literal("brew_plan_v1"),
   recipe: z.object({
     id: z.string().uuid(),
     title: z.string(),
     versionNumber: z.number().int(),
-    batchSizeL: z.number().nullable()
+    batchSizeL: z.number().nullable(),
+    // Эффективность, на которой варится ЭТА партия (оборудование варщика), и
+    // авторская — на момент старта. По ним списание склада и матч повторяют тот же
+    // дожим засыпи, что уже зашит в план (см. features/recipes/scale.ts).
+    // Старые партии этих полей не имеют → дожим 1 (прежнее поведение).
+    efficiencyPct: z.number().nullable().optional(),
+    recipeEfficiencyPct: z.number().nullable().optional()
   }),
   equipmentProfileSnapshot: z.record(z.string(), z.unknown()).nullable(),
   waterPlanMeta: z.record(z.string(), z.unknown()).nullable(),
@@ -66,7 +91,10 @@ export type BrewBatchDto = {
   equipmentProfileSnapshot: Record<string, unknown> | null;
   waterPlanSnapshot: Record<string, unknown> | null;
   deviceHints: Record<string, unknown>[];
+  /** Заметки о варке — ведутся с подготовки, видны на всех этапах, включая итог. */
   notes: string | null;
+  /** Дегустация — пишется на завершённой партии. Отдельное поле, notes не затирает. */
+  tastingNotes: string | null;
   plannedFor: Date | null;
   startedAt: Date | null;
   completedAt: Date | null;
@@ -219,6 +247,16 @@ export type BrewMeasurementSummary = {
   target: { og: number | null; fg: number | null; abv: number | null } | null;
 };
 
+/**
+ * Какой замер ждёт журнал в этом акте: начальную плотность (варочный день),
+ * финальную (брожение) или любой (итог/архив/устройство — журнал там ведут
+ * задним числом, подсказывать нечего). Определяет подсказку в поле плотности:
+ * раньше во всех четырёх контекстах, включая блок OG, была зашита 1.012 SG —
+ * типичная FG.
+ */
+export const brewMeasurementKinds = ["og", "fg", "any"] as const;
+export type BrewMeasurementKind = (typeof brewMeasurementKinds)[number];
+
 /** Детальная сборка для страницы партии: партия + журнал + сводка + цели. */
 export type BrewBatchDetail = {
   batch: BrewBatchDto;
@@ -335,6 +373,13 @@ export type BrewBatchInventoryConsumedLine = {
   /** Нетто списано (положительное), ещё не возвращённое на склад. */
   quantityNormalized: number;
   normalizedUnit: string;
+  /**
+   * Сколько требовал рецепт — ТОЛЬКО когда списали меньше (дрожжей на складе не
+   * хватило, списание ужалось до остатка). null — списали ровно сколько нужно.
+   * Без этого поля кламп был немым: пользователь видел «Списано» и не узнавал,
+   * что дрожжей ушло меньше, чем требует рецепт.
+   */
+  requiredQuantityNormalized: number | null;
 };
 
 export type BrewBatchInventoryLogEntry = {
@@ -354,8 +399,12 @@ export type BrewBatchInventoryView = {
   hasConsumed: boolean;
   /** Можно вернуть списанное на склад (есть нетто-списание). */
   canRestore: boolean;
-  /** Ингредиенты рецепта уже списаны (этой или другой поверхностью) — блок повторного списания. */
-  recipeAlreadyConsumed: boolean;
+  /**
+   * ЭТА партия уже списала ингредиенты и не вернула их — повторное списание не
+   * нужно. Про другие партии того же рецепта флаг ничего не говорит: они варятся
+   * из своего остатка склада.
+   */
+  batchAlreadyConsumed: boolean;
   consumed: BrewBatchInventoryConsumedLine[];
   log: BrewBatchInventoryLogEntry[];
 };

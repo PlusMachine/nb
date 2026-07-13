@@ -1,5 +1,7 @@
 import { srmToEbc } from "@nb/brewing-core";
 
+import { pluralize } from "@/lib/pluralize";
+
 const dateTimeFormatter = new Intl.DateTimeFormat("ru-RU", {
   day: "2-digit",
   month: "2-digit",
@@ -83,4 +85,27 @@ export const isRecentlyCreated = (iso: string, now: Date = new Date()): boolean 
     return false;
   }
   return now.getTime() - created <= NEW_RECIPE_WINDOW_DAYS * 24 * 60 * 60 * 1000;
+};
+
+/**
+ * Текст подтверждения удаления рецепта — ОДИН на все поверхности, где рецепт
+ * удаляют (редактор и карточка галереи «Мои рецепты»). Партии переживают удаление
+ * (`brew_batches.recipe_id` — ON DELETE SET NULL, снапшот варки остаётся), но связь
+ * с рецептом теряют: молчать об этом в диалоге нельзя.
+ *
+ * Живёт здесь, а не в helpers дизайнера: те тянут за собой пикер ингредиентов и
+ * brewing-core, а галерее нужен только текст.
+ */
+export const buildRecipeDeleteConfirmDescription = (title: string, brewBatchCount: number): string => {
+  const base = `Рецепт «${title.trim() || "Без названия"}» будет удалён вместе с ингредиентами и параметрами.`;
+  if (brewBatchCount <= 0) {
+    return base;
+  }
+
+  const batches = `${brewBatchCount} ${pluralize(brewBatchCount, ["партия", "партии", "партий"])}`;
+  const fate = brewBatchCount === 1
+    ? "Она останется в «Партиях», но потеряет связь с рецептом."
+    : "Они останутся в «Партиях», но потеряют связь с рецептом.";
+
+  return `${base} У рецепта ${batches}. ${fate}`;
 };

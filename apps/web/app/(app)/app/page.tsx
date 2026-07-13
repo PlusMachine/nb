@@ -55,8 +55,8 @@ const ATTENTION_LIMIT = 6;
 const PLANNED_LIMIT = 5;
 const DEVICES_LIMIT = 3;
 const RECENT_RECIPES_LIMIT = 3;
-// «Можно сварить» — тизер на 3 карточки; берём с запасом, чтобы после схлопывания
-// клонов по названию осталось чем заполнить три места.
+// «Рецепты под ваш склад» — тизер на 3 карточки; берём с запасом, чтобы после
+// схлопывания клонов по названию осталось чем заполнить три места.
 const BREWABLE_LIMIT = 3;
 const BREWABLE_FETCH_LIMIT = 9;
 
@@ -162,7 +162,7 @@ function OnboardingChecklist({ onboarding }: { onboarding: DashboardOnboarding }
           {doneCount} из {onboarding.steps.length}
         </span>
       </div>
-      <ol className="mt-4 grid gap-3 sm:grid-cols-3">
+      <ol className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-3">
         {onboarding.steps.map((step, index) => {
           const isCurrent = step.key === onboarding.currentKey;
           return (
@@ -511,7 +511,7 @@ export default async function AppZonePage() {
 
   const brewableCards = dedupeByTitle(brewable).slice(0, BREWABLE_LIMIT);
 
-  // «Мои рецепты» — свежие рецепты, которых ещё нет в «Можно сварить сейчас»:
+  // «Мои рецепты» — свежие рецепты, которых ещё нет в «Рецепты под ваш склад»:
   // иначе один и тот же рецепт стоит в двух секциях подряд. Отсекаем и по id, и
   // по названию — у клонов рецепта разные id, но для глаза это тот же рецепт.
   const brewableIds = new Set(brewableCards.map((recipe) => recipe.recipeId));
@@ -535,7 +535,7 @@ export default async function AppZonePage() {
   const discoverStrip = (
     <section className="space-y-3">
       <SectionHeader title="Полезное рядом" />
-      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
         {discoverLinks.map((link) => {
           const Icon = link.icon;
           return (
@@ -583,7 +583,7 @@ export default async function AppZonePage() {
             action={{ href: "/app/brew-batches", label: "Все партии" }}
             button={<NewBrewButton size="sm" />}
           />
-          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {attentionShown.map((card) => (
               <AttentionBrewCard key={card.batch.id} card={card} />
             ))}
@@ -618,7 +618,7 @@ export default async function AppZonePage() {
         </section>
       ) : null}
 
-      <section className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+      <section className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
         <InventoryWidget summary={inventory} />
         <ShoppingWidget shopping={shopping} />
         <DevicesWidget devices={devices} />
@@ -626,8 +626,11 @@ export default async function AppZonePage() {
 
       {brewableCards.length > 0 ? (
         <section className="space-y-3">
-          <SectionHeader title="Можно сварить сейчас" />
-          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          {/* Секция про подбор, а не про обещание: сюда попадают и рецепты с
+              бейджем «Почти хватает» (все ингредиенты есть, количества местами
+              впритык) — заголовок «Можно сварить сейчас» им противоречил. */}
+          <SectionHeader title="Рецепты под ваш склад" />
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {brewableCards.map((recipe) => (
               <BrewableRecipeCard
                 key={recipe.recipeId}
@@ -647,7 +650,7 @@ export default async function AppZonePage() {
             extraAction={{ href: "/app/recipes/new", label: "Создать рецепт" }}
             action={{ href: "/app/recipes", label: "Все рецепты" }}
           />
-          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {recentRecipes.map((recipe) => (
               <OwnerRecipeCard
                 key={recipe.id}
@@ -667,7 +670,7 @@ export default async function AppZonePage() {
             slugs={favoriteCalculators.map((calculator) => calculator.slug)}
             initialFavoriteSlugs={favoriteCalculators.map((calculator) => calculator.slug)}
           >
-            <div className="grid gap-2.5 sm:grid-cols-2 lg:grid-cols-3">
+            <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-2 lg:grid-cols-3">
               {favoriteCalculators.map((calculator) => (
                 <CalculatorCard key={calculator.slug} calculator={calculator} />
               ))}

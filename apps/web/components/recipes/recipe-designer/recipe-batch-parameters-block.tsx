@@ -1,6 +1,6 @@
 "use client";
 
-import { getBeerStyleById, srmToEbc } from "@nb/brewing-core";
+import { getBeerStyleById, getBjcpStyleDisplayName, srmToEbc } from "@nb/brewing-core";
 import React from "react";
 
 import { NumericInput } from "@/components/shared/numeric-input";
@@ -112,7 +112,7 @@ export function RecipeBatchParametersBlock({
         <button
           type="button"
           onClick={onOpenBitternessSettings}
-          className="inline-flex h-7 w-7 items-center justify-center rounded-lg text-[13px] leading-none text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+          className="relative inline-flex h-7 w-7 items-center justify-center rounded-lg text-[13px] leading-none text-muted-foreground transition-colors before:absolute before:-inset-2 before:content-[''] hover:bg-accent hover:text-foreground"
           aria-label="Открыть настройки расчета горечи"
         >
           ⚙
@@ -120,7 +120,7 @@ export function RecipeBatchParametersBlock({
       )
     },
     { key: "abv", label: "ABV", value: preview?.abv != null ? `${preview.abv.toFixed(1)}%` : "—" },
-    { key: "style", label: "Стиль", value: selectedStyle?.name ?? "Вне BJCP" }
+    { key: "style", label: "Стиль", value: selectedStyle ? getBjcpStyleDisplayName(selectedStyle) : "Вне BJCP" }
   ];
 
   return (
@@ -215,7 +215,7 @@ export function RecipeBatchParametersBlock({
             <label className="space-y-1 text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
               Объём
               <div className="relative">
-                <NumericInput min={0.1} max={10000} step={0.1} value={batchSize.quantity} onChange={(event) => setBatchSize((current) => ({ ...current, quantity: event.target.value }))} className="h-9 w-full rounded-lg border border-border bg-card px-2.5 pr-10 text-sm tabular-nums text-foreground shadow-sm focus:border-ring focus:outline-none focus:ring-2 focus:ring-ring" />
+                <NumericInput min={0.1} max={10000} step={0.1} value={batchSize.quantity} onChange={(event) => setBatchSize((current) => ({ ...current, quantity: event.target.value }))} className="h-9 w-full rounded-lg border border-border bg-card px-2.5 pr-10 text-base tabular-nums text-foreground shadow-sm focus:border-ring focus:outline-none focus:ring-2 focus:ring-ring sm:text-sm" />
                 <span className="pointer-events-none absolute inset-y-0 right-3 flex items-center text-sm font-medium text-muted-foreground">
                   л
                 </span>
@@ -233,12 +233,12 @@ export function RecipeBatchParametersBlock({
             </label>
             <label className="space-y-1 text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
               Эффективность, %
-              <NumericInput min={1} max={100} step={0.1} value={efficiency} onChange={(event) => setEfficiency(event.target.value)} className="h-9 w-full rounded-lg border border-border bg-card px-2.5 text-sm tabular-nums text-foreground shadow-sm focus:border-ring focus:outline-none focus:ring-2 focus:ring-ring" />
+              <NumericInput min={1} max={100} step={0.1} value={efficiency} onChange={(event) => setEfficiency(event.target.value)} className="h-9 w-full rounded-lg border border-border bg-card px-2.5 text-base tabular-nums text-foreground shadow-sm focus:border-ring focus:outline-none focus:ring-2 focus:ring-ring sm:text-sm" />
               {sectionErrors.efficiency ? <span className="block text-xs normal-case tracking-normal text-destructive">{sectionErrors.efficiency}</span> : null}
             </label>
             <label className="space-y-1 text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
               Кипячение, мин
-              <NumericInput integer min={1} max={600} step={1} value={boilTimeMinutes} onChange={(event) => setBoilTimeMinutes(event.target.value)} className="h-9 w-full rounded-lg border border-border bg-card px-2.5 text-sm tabular-nums text-foreground shadow-sm focus:border-ring focus:outline-none focus:ring-2 focus:ring-ring" />
+              <NumericInput integer min={1} max={600} step={1} value={boilTimeMinutes} onChange={(event) => setBoilTimeMinutes(event.target.value)} className="h-9 w-full rounded-lg border border-border bg-card px-2.5 text-base tabular-nums text-foreground shadow-sm focus:border-ring focus:outline-none focus:ring-2 focus:ring-ring sm:text-sm" />
               {sectionErrors.boilTimeMinutes ? <span className="block text-xs normal-case tracking-normal text-destructive">{sectionErrors.boilTimeMinutes}</span> : null}
             </label>
             <label className="space-y-1 text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
@@ -246,7 +246,7 @@ export function RecipeBatchParametersBlock({
               <select
                 value={equipmentProfileSelectValue}
                 onChange={(event) => onSelectEquipmentProfile(event.target.value || null)}
-                className="h-9 w-full rounded-lg border border-border bg-card px-2.5 text-sm normal-case tracking-normal text-foreground shadow-sm focus:border-ring focus:outline-none focus:ring-2 focus:ring-ring"
+                className="h-9 w-full rounded-lg border border-border bg-card px-2.5 text-base normal-case tracking-normal text-foreground shadow-sm focus:border-ring focus:outline-none focus:ring-2 focus:ring-ring sm:text-sm"
               >
                 <option value={equipmentProfileSelectValue} hidden>{selectedEquipmentProfileLabel}</option>
                 <option value="">Без профиля — ручной ввод параметров</option>

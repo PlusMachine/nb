@@ -59,7 +59,7 @@ export function RecipeIngredientCategoryGrid({
 
                 onChange(option.value);
               }}
-              className={`rounded-md border px-3 py-2 text-xs transition ${value === option.value
+              className={`min-h-11 rounded-md border px-3 py-2 text-xs transition ${value === option.value
                 ? "border-foreground bg-accent text-foreground"
                 : "border-border bg-card text-muted-foreground hover:border-border hover:bg-muted"
                 }`}

@@ -75,6 +75,7 @@ vi.mock("@nb/db", () => {
     and: (...args: unknown[]) => ["and", ...args],
     eq: (...args: unknown[]) => ["eq", ...args],
     inArray: (...args: unknown[]) => ["inArray", ...args],
+    isNull: (...args: unknown[]) => ["isNull", ...args],
     desc: (value: unknown) => ["desc", value],
     count: () => "count",
     recipes: tableToken("recipes"),

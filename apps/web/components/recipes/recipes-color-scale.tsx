@@ -45,7 +45,7 @@ export function RecipesColorScale() {
                     : { colorMin: String(band.min), colorMax: String(band.max) }
                 )
               }
-              className={`relative h-9 flex-1 transition focus:outline-none focus-visible:z-10 focus-visible:ring-2 focus-visible:ring-ring ${
+              className={`relative h-11 flex-1 transition focus:outline-none focus-visible:z-10 focus-visible:ring-2 focus-visible:ring-ring ${
                 active ? "z-10 ring-2 ring-inset ring-foreground" : "hover:opacity-90"
               }`}
               style={{ backgroundColor: bandFill(band.min, band.max) }}
