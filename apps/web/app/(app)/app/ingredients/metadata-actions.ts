@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import type { IngredientPurchaseLinkDto, UserIngredientReference } from "@/features/ingredients/contracts";
-import { userIngredientReferenceSchema } from "@/features/ingredients/contracts";
+import { PURCHASE_LINK_MAX_PER_REFERENCE, userIngredientReferenceSchema } from "@/features/ingredients/contracts";
 import {
   createIngredientPurchaseLink,
   deleteIngredientPurchaseLink,
@@ -44,6 +44,14 @@ const mapMetadataErrorMessage = (error: unknown) => {
 
     if (error.message === "CUSTOM_INGREDIENT_NOT_FOUND") {
       return "Пользовательский ингредиент не найден.";
+    }
+
+    if (error.message === "RATE_LIMITED") {
+      return "Слишком много ссылок подряд. Немного подождите.";
+    }
+
+    if (error.message === "PURCHASE_LINK_QUOTA_REACHED") {
+      return `На один ингредиент можно добавить не больше ${PURCHASE_LINK_MAX_PER_REFERENCE} ссылок.`;
     }
   }
 

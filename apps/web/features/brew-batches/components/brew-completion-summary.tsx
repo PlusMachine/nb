@@ -1,3 +1,7 @@
+import Link from "next/link";
+import { Sticker } from "lucide-react";
+
+import { buttonVariants } from "@nb/ui";
 import { RecipeRatingForm } from "@/components/recipes/recipe-rating-form";
 import type { BrewMeasurementSummary } from "@/features/brew-batches/contracts";
 import { formatGravity, formatGravitySecondary, type PreferredGravityUnit } from "@/features/system/gravity-units";
@@ -49,12 +53,15 @@ export function BrewCompletionSummary({
   summary,
   preferredGravityUnit,
   batchVolumeL,
-  ratingTarget
+  ratingTarget,
+  labelsHref
 }: {
   summary: BrewMeasurementSummary;
   preferredGravityUnit: PreferredGravityUnit;
   batchVolumeL: number | null;
   ratingTarget: { recipeId: string; slug: string } | null;
+  /** Ссылка на наклейки; null — посчитать некуда (нет ни рецепта, ни снапшота). */
+  labelsHref?: string | null;
 }) {
   const target = summary.target;
   const fmtGravity = (value: number | null) => formatGravity(value, preferredGravityUnit);
@@ -83,10 +90,20 @@ export function BrewCompletionSummary({
         <StatTile label="Объём" value={fmtVolume(batchVolumeL)} />
       </div>
 
-      {ratingTarget ? (
-        <div className="space-y-2 border-t border-border pt-4">
-          <h3 className="text-sm font-semibold text-foreground">Оцените рецепт</h3>
-          <RecipeRatingForm recipeId={ratingTarget.recipeId} slug={ratingTarget.slug} />
+      {ratingTarget || labelsHref ? (
+        <div className="space-y-3 border-t border-border pt-4">
+          {ratingTarget ? (
+            <div className="space-y-2">
+              <h3 className="text-sm font-semibold text-foreground">Оцените рецепт</h3>
+              <RecipeRatingForm recipeId={ratingTarget.recipeId} slug={ratingTarget.slug} />
+            </div>
+          ) : null}
+          {labelsHref ? (
+            <Link href={labelsHref} className={buttonVariants({ variant: "outline", size: "md" })}>
+              <Sticker className="h-4 w-4 text-muted-foreground" />
+              Наклейки
+            </Link>
+          ) : null}
         </div>
       ) : null}
     </section>

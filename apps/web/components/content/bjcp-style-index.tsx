@@ -37,10 +37,12 @@ export function BjcpStyleIndex({ catalog }: Props) {
             <h3 className="mb-2 text-sm font-semibold text-foreground">
               {category.id}. {category.nameRu}
             </h3>
-            <ul className="space-y-1">
+            <ul>
               {styles.map((style) => (
-                <li key={style.slug} className="text-sm leading-6">
-                  <Link href={`/bjcp/${style.slug}`} className="text-muted-foreground transition hover:text-foreground">
+                <li key={style.slug} className="text-sm">
+                  {/* py-2 вместо голого leading-6: тап-зона ссылки в списке ~120
+                      элементов была ~24px, теперь ближе к комфортным 40px. */}
+                  <Link href={`/bjcp/${style.slug}`} className="block py-2 leading-5 text-muted-foreground transition hover:text-foreground">
                     {style.bjcpId} · {style.title}
                   </Link>
                 </li>

@@ -1,6 +1,8 @@
 import { and, contentArticles, db, desc, eq, inArray } from "@nb/db";
 import type { UserRole } from "@nb/auth";
 
+import { isUuid } from "@/lib/uuid";
+
 import { getContentCapabilities } from "../content/permissions";
 import { appendSlugSuffix, toContentArticleSlugBase } from "./slug";
 import { estimateReadingMinutes, extractPlainText } from "./reading-time";
@@ -87,6 +89,12 @@ const normalizeExcerpt = (input: ContentArticleInput): string | null => {
 };
 
 const loadOwnedRow = async (articleId: string): Promise<ArticleRow> => {
+  // content_articles.id — колонка uuid: на мусор Postgres отвечает ошибкой 22P02,
+  // а не пустой выборкой, и вместо «не найдено» наружу летит сбой запроса.
+  if (!isUuid(articleId)) {
+    throw new Error("NOT_FOUND");
+  }
+
   const row = await db.query.contentArticles.findFirst({ where: eq(contentArticles.id, articleId) });
   if (!row) {
     throw new Error("NOT_FOUND");
@@ -218,6 +226,11 @@ export const setContentArticleFeatured = async (
   if (!getContentCapabilities(actor.role).canFeatureOnHome) {
     throw new Error("FORBIDDEN");
   }
+  // Единственный мутатор без loadOwnedRow: проверку формата id делаем сами, иначе
+  // «не найдено» ниже недостижимо — мусор роняет сам запрос (22P02).
+  if (!isUuid(articleId)) {
+    throw new Error("NOT_FOUND");
+  }
   const [updated] = await db.update(contentArticles).set({
     isFeatured: featured,
     updatedAt: new Date()
@@ -258,6 +271,10 @@ export const getContentArticleForEditor = async (
 ): Promise<ContentArticleDto | null> => {
   if (!getContentCapabilities(actor.role).canEditDrafts) {
     throw new Error("FORBIDDEN");
+  }
+  // id приходит из сегмента URL: битая ссылка — это 404, а не падение запроса.
+  if (!isUuid(articleId)) {
+    return null;
   }
   const row = await db.query.contentArticles.findFirst({
     where: eq(contentArticles.id, articleId),

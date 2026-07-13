@@ -4,7 +4,7 @@ import type { BeerStyle } from "@nb/brewing-core";
 import { resolveIngredientDisplayNames } from "../ingredients/presentation";
 import { resolveIngredientCategory } from "../ingredients/taxonomy";
 import { formatInventoryQuantityInputValue } from "../inventory/display";
-import { inventoryUnitShortLabels } from "../inventory/units";
+import { formatInventoryUnitLabel } from "../inventory/units";
 
 import type { PublicRecipeListItem, RecipeDetailDto, RecipeIngredientDto } from "./contracts";
 import { formatAbvShort, formatBatchVolume, formatIbuShort } from "./format";
@@ -222,7 +222,7 @@ export const buildRecipeJsonLd = (
 
   const recipeIngredient = recipe.ingredients.map((ingredient) => {
     const amount = formatInventoryQuantityInputValue(ingredient.amountEnteredQuantity, ingredient.amountEnteredUnit);
-    const unitLabel = inventoryUnitShortLabels[ingredient.amountEnteredUnit] ?? ingredient.amountEnteredUnit;
+    const unitLabel = formatInventoryUnitLabel(ingredient.amountEnteredUnit, ingredient.amountEnteredQuantity) ?? ingredient.amountEnteredUnit;
     const name = resolveIngredientPrimaryName(ingredient);
     return `${amount} ${unitLabel} ${name}`.trim();
   });

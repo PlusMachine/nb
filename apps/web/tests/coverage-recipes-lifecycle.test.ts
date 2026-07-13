@@ -21,6 +21,7 @@ const { tableRefs, mockState } = vi.hoisted(() => ({
       recipeFamilyId: "recipeFamilyId",
       versionNumber: "versionNumber",
       publicationState: "publicationState",
+      hiddenAt: "hiddenAt",
       title: "title",
       slug: "slug",
       styleId: "styleId",
@@ -344,6 +345,13 @@ vi.mock("@nb/db", () => {
   };
 });
 
+// Барьер createRecipe зовёт assertRateLimit (реальный бьёт в БД); в этих тестах
+// он не в фокусе — стабим no-op, остальное @nb/auth оставляем настоящим.
+vi.mock("@nb/auth", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("@nb/auth")>()),
+  assertRateLimit: vi.fn(async () => {})
+}));
+
 import {
   cloneRecipe,
   cloneRecipeFromPublic,
@@ -641,6 +649,21 @@ describe("жизненный цикл рецептов", () => {
       authorId: "u-other",
       isPublished: true
     });
+  });
+
+  it("атрибуция клона считает скрытый модератором источник неопубликованным", async () => {
+    const source = await createRecipe("u-other", buildPublicPayload({ title: "Чужой IPA" }));
+    const clone = await cloneRecipeFromPublic("u-me", source.id);
+    expect(clone.clonedFrom).toMatchObject({ id: source.id, isPublished: true });
+
+    // модерационное скрытие не трогает publicationState — рецепт остаётся "published"
+    mockState.recipesById.set(source.id, {
+      ...mockState.recipesById.get(source.id),
+      hiddenAt: new Date()
+    });
+
+    const afterHide = await getRecipeById("u-me", clone.id);
+    expect(afterHide.clonedFrom).toMatchObject({ id: source.id, isPublished: false });
   });
 
   it("cloneRecipeFromPublic запрещает копировать чужой непубличный рецепт (FORBIDDEN)", async () => {

@@ -134,6 +134,13 @@ body {
   color: hsl(var(--foreground));
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  /* Убираем системную серую вспышку при тапе по ссылкам/кнопкам на iOS/Android:
+     во всём проекте интерактивные элементы уже держат видимый focus-visible/hover
+     стиль (ring/bg), так что тап не становится «немым». overscroll-behavior гасит
+     цепную прокрутку в body при доскролле до края (пул-ту-рефреш браузера на
+     мобиле, "прыжок" фона за пределы страницы). */
+  -webkit-tap-highlight-color: transparent;
+  overscroll-behavior-y: none;
 }
 
 ::selection {

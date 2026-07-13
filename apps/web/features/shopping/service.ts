@@ -1,15 +1,15 @@
 import { roundTo } from "@nb/brewing-core";
 
 import { listBrewBatchesForUser } from "../brew-batches/service";
-import { computeRecipeMatchesForUser } from "../recipes/match-service";
+import { computeRecipeMatchesForBrewBatches, computeRecipeMatchesForUser } from "../recipes/match-service";
 import { listOwnRecipeRefs, listSavedRecipes, type OwnRecipeRefsResult } from "../recipes/service";
 import { resolveShoppingOpportunityTier } from "../recipes/brewability-badge";
-import type { RecipeMatchLineDto, PublicRecipeListItem } from "../recipes/contracts";
+import type { RecipeMatchDto, RecipeMatchLineDto, PublicRecipeListItem } from "../recipes/contracts";
 import { buildIngredientCatalogActionHref } from "../ingredients/catalog-links";
 import type { IngredientCategory } from "../ingredients/contracts";
 import { formatInventoryQuantityInputValue } from "../inventory/display";
 import { inventoryCategoryLabels, inventoryCategoryOrder } from "../inventory/page-model";
-import { inventoryUnitShortLabels, type InventoryUnit } from "../inventory/units";
+import { formatInventoryUnitLabel, type InventoryUnit } from "../inventory/units";
 import type {
   ShoppingListDto,
   ShoppingListGroupDto,
@@ -25,7 +25,7 @@ import type {
 const OPPORTUNITY_EXPANDED_CAP = 8;
 
 const formatQuantityLabel = (quantityToBuy: number, unit: InventoryUnit) =>
-  `${formatInventoryQuantityInputValue(quantityToBuy, unit)} ${inventoryUnitShortLabels[unit]}`;
+  `${formatInventoryQuantityInputValue(quantityToBuy, unit)} ${formatInventoryUnitLabel(unit, quantityToBuy)}`;
 
 // Ссылки «где посмотреть» / «на склад» под одну нехватку — общие для
 // агрегированной секции (§3.2) и возможностей (§3.3), чтобы поведение не
@@ -211,15 +211,27 @@ export const buildShoppingListForUser = async (
     }
   }
 
-  const allRecipeIds = [...new Set([...plannedRecipeIds, ...candidateRefs.keys()])];
+  const opportunityRecipeIds = [...candidateRefs.keys()];
 
+  // Два матча, а не один: §3.2 считает нехватку ПО ПАРТИЯМ (ключ brewBatchId),
+  // потому что уже списанное под варку не должно всплывать в её же списке
+  // покупок, — а §3.3 матчит рецепты-кандидаты по фактическому складу (ключ
+  // recipeId), там понятия партии нет.
+  //
   // includeEmptyInventory: иначе полностью пустой склад молча выключил бы весь
   // список (короткий выход в computeRecipeMatchesForUser расcчитан на обратный
   // матчинг «склад → рецепты», где это верно, но не здесь).
-  const matchByRecipe =
-    allRecipeIds.length > 0
-      ? await computeRecipeMatchesForUser({ userId, recipeIds: allRecipeIds, includeEmptyInventory: true })
-      : {};
+  const [matchByBatch, matchByRecipe] = await Promise.all([
+    plannedBatches.length > 0
+      ? computeRecipeMatchesForBrewBatches({
+          userId,
+          batches: plannedBatches.map((batch) => ({ brewBatchId: batch.id, recipeId: batch.recipeId }))
+        })
+      : Promise.resolve({} as Record<string, RecipeMatchDto>),
+    opportunityRecipeIds.length > 0
+      ? computeRecipeMatchesForUser({ userId, recipeIds: opportunityRecipeIds, includeEmptyInventory: true })
+      : Promise.resolve({} as Record<string, RecipeMatchDto>)
+  ]);
 
   // --- §3.2: агрегированная секция по запланированным варкам ---------------
 
@@ -228,7 +240,7 @@ export const buildShoppingListForUser = async (
   const keysByBrew = new Map<string, Set<string>>();
 
   for (const batch of plannedBatches) {
-    const match = matchByRecipe[batch.recipeId];
+    const match = matchByBatch[batch.id];
     if (!match) {
       continue;
     }

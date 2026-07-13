@@ -39,7 +39,7 @@ export function InventorySearchInput({
         placeholder={placeholder}
         aria-label="Поиск по складу"
         autoComplete="off"
-        className="w-full rounded-lg border border-border bg-card py-2 pl-9 pr-9 text-sm text-foreground placeholder:text-muted-foreground transition-colors focus:border-ring focus:outline-none focus:ring-2 focus:ring-ring"
+        className="w-full rounded-lg border border-border bg-card py-2 pl-9 pr-9 text-base text-foreground placeholder:text-muted-foreground transition-colors focus:border-ring focus:outline-none focus:ring-2 focus:ring-ring sm:text-sm"
       />
       {value ? (
         <button

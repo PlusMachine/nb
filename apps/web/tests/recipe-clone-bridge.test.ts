@@ -46,6 +46,8 @@ const detail: RecipeDetailDto = {
   versionNumber: 1,
   versionCount: 1,
   publicationState: "published",
+  hiddenAt: null,
+  hiddenReason: null,
   title: "West Coast IPA",
   slug: "west-coast-ipa",
   styleId: null,

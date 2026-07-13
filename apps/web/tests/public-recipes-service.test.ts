@@ -97,6 +97,7 @@ vi.mock("@nb/db", () => {
     lte: (...args: unknown[]) => ["lte", ...args],
     ilike: (...args: unknown[]) => ["ilike", ...args],
     inArray: (...args: unknown[]) => ["inArray", ...args],
+    isNull: (...args: unknown[]) => ["isNull", ...args],
     asc: (value: unknown) => ["asc", value],
     desc: (value: unknown) => ["desc", value],
     count: () => "count",

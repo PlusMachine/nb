@@ -86,10 +86,29 @@ const coverImageUrlField = z
   .nullable()
   .optional();
 
-// Tiptap-документ: верхний узел doc. Хранилище нестрогое (узлы валидируются
-// рендерером), но базовую форму проверяем.
+// Tiptap-документ. Форму узлов проверяем строго по одной причине: attrs у
+// ProseMirror — объекты без прототипа (Object.create(null)), и React Server
+// Actions подменяют их ссылкой "$T". Такой документ раньше молча уезжал в БД,
+// теряя src иллюстраций, level заголовков и href ссылок. Теперь attrs обязаны
+// быть объектом — битый документ падает с ошибкой, а не портит статью.
+const tiptapAttrsSchema = z.record(z.string(), z.unknown()).optional();
+
+const tiptapMarkSchema = z.object({ type: z.string(), attrs: tiptapAttrsSchema }).passthrough();
+
+const tiptapNodeSchema: z.ZodType<TiptapNode> = z.lazy(() =>
+  z
+    .object({
+      type: z.string(),
+      attrs: tiptapAttrsSchema,
+      content: z.array(tiptapNodeSchema).optional(),
+      marks: z.array(tiptapMarkSchema).optional(),
+      text: z.string().optional()
+    })
+    .passthrough()
+) as z.ZodType<TiptapNode>;
+
 const tiptapDocSchema = z
-  .object({ type: z.literal("doc"), content: z.array(z.any()).optional() })
+  .object({ type: z.literal("doc"), content: z.array(tiptapNodeSchema).optional() })
   .passthrough()
   .nullable()
   .optional();

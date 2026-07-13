@@ -734,3 +734,22 @@ export const resolveUpsertCompletenessLevel = (value: z.infer<typeof ingredientU
   brand: value.brand,
   producer: value.producer
 });
+
+/**
+ * Анти-абьюз: предложения ингредиентов попадают в очередь модерации — не даём её
+ * завалить. Rate limit на частоту + потолок «висящих» (pending) предложений на
+ * пользователя. Барьер в сервисе (createProposedIngredient), поэтому покрывает и
+ * server action (мастер рецептов), и API-роут разом.
+ */
+export const PROPOSED_INGREDIENT_MAX_PENDING_PER_USER = 50;
+export const PROPOSED_INGREDIENT_RATE_LIMIT = 10;
+export const PROPOSED_INGREDIENT_RATE_WINDOW_SECONDS = 60 * 60;
+
+/**
+ * Анти-абьюз: потолок числа ссылок на покупку на один ингредиент и rate limit на
+ * добавление. Дедуп по (userId, ингредиент, normalizedUrl) уже есть; это отсекает
+ * набивание разными URL. См. features/ingredients/user-metadata-service.ts.
+ */
+export const PURCHASE_LINK_MAX_PER_REFERENCE = 20;
+export const PURCHASE_LINK_CREATE_RATE_LIMIT = 30;
+export const PURCHASE_LINK_CREATE_RATE_WINDOW_SECONDS = 60 * 60;

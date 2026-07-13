@@ -9,6 +9,14 @@ vi.mock("../app/(app)/app/recipes/actions", () => ({
   deleteRecipeAction: vi.fn(async () => ({ ok: true, message: "ok" }))
 }));
 
+// Настоящий диалог закрыт (open=false) и в разметку ничего не отдаёт, а проверить надо
+// именно ТЕКСТ, который карточка ему передаёт. Стаб печатает description всегда.
+vi.mock("@/components/shared/confirm-action-dialog", () => ({
+  ConfirmActionDialog: ({ description }: { description?: string }) => (
+    <div data-testid="confirm-description">{description}</div>
+  )
+}));
+
 import { OwnerRecipeCard, OwnerRecipeRow } from "../components/recipes/owner-recipe-card";
 
 const baseRecipe: OwnerRecipeCardDto = {
@@ -16,6 +24,8 @@ const baseRecipe: OwnerRecipeCardDto = {
   slug: "my-pils",
   title: "My Pils",
   publicationState: "draft",
+  hiddenAt: null,
+  hiddenReason: null,
   versionNumber: 1,
   versionCount: 1,
   updatedAt: new Date("2026-01-02T00:00:00.000Z"),
@@ -28,7 +38,8 @@ const baseRecipe: OwnerRecipeCardDto = {
   colorSrm: 7,
   heroImage: null,
   styleImageUrl: null,
-  styleFit: null
+  styleFit: null,
+  brewBatchCount: 0
 };
 
 describe("OwnerRecipeCard", () => {
@@ -94,6 +105,25 @@ describe("OwnerRecipeCard", () => {
     );
     expect(html).not.toContain('aria-label="Действия с рецептом');
     expect(html).toContain('href="/app/recipes/r-1/edit"');
+  });
+
+  // Карточка галереи — основное место, откуда рецепты удаляют. Раньше её диалог
+  // обещал «будет удален целиком вместе с ингредиентами и параметрами» и молчал про
+  // партии, хотя те переживают удаление и теряют связь с рецептом.
+  it("удаление рецепта с партиями → диалог называет их число и судьбу", () => {
+    const html = renderToStaticMarkup(
+      <OwnerRecipeCard recipe={{ ...baseRecipe, brewBatchCount: 3 }} preferredGravityUnit="plato" />
+    );
+    expect(html).toContain("У рецепта 3 партии.");
+    expect(html).toContain("Они останутся в «Партиях», но потеряют связь с рецептом.");
+  });
+
+  it("удаление рецепта без партий → про партии в диалоге ни слова", () => {
+    const html = renderToStaticMarkup(
+      <OwnerRecipeCard recipe={baseRecipe} preferredGravityUnit="plato" />
+    );
+    expect(html).toContain("будет удалён вместе с ингредиентами и параметрами.");
+    expect(html).not.toContain("Партиях");
   });
 
   it('intent="manage" → у каждой карточки в списке label содержит её название', () => {

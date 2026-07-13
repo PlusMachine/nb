@@ -133,7 +133,13 @@ const buildTimedAddition = (ingredient: RecipeDetailDto["ingredients"][number]) 
   stepMeta: ingredient.stepMeta ?? null
 });
 
-export const buildBrewPlanSnapshot = (recipe: RecipeDetailDto): BrewPlanSnapshot => {
+export const buildBrewPlanSnapshot = (
+  recipe: RecipeDetailDto,
+  // Эффективность рецепта ДО пересчёта под оборудование варщика: recipe сюда уже
+  // приезжает пересчитанным (см. brew-setup.ts), и своей исходной он не помнит.
+  // Не передана — варим на авторской эффективности, дожима засыпи не было.
+  options: { recipeEfficiencyPct?: number | null } = {}
+): BrewPlanSnapshot => {
   const mashSteps = recipe.processMeta.mashProfile.steps.map((step) => ({
     id: step.id,
     name: step.name,
@@ -178,7 +184,9 @@ export const buildBrewPlanSnapshot = (recipe: RecipeDetailDto): BrewPlanSnapshot
       id: recipe.id,
       title: recipe.title,
       versionNumber: recipe.versionNumber,
-      batchSizeL
+      batchSizeL,
+      efficiencyPct: recipe.efficiency ?? null,
+      recipeEfficiencyPct: options.recipeEfficiencyPct ?? recipe.efficiency ?? null
     },
     equipmentProfileSnapshot: recipe.equipmentProfileSnapshot ?? null,
     waterPlanMeta: recipe.waterPlanMeta ?? null,

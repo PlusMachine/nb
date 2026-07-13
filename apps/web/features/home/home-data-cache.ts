@@ -18,8 +18,10 @@ import type { PublicRecipeListResult } from "@/features/recipes/contracts";
  * зонами (рецепты, админка статей); кэш — только внешняя обёртка для вызовов
  * главной.
  *
- * Кэш процессный: при нескольких Node-инстансах инвалидации нет, только TTL —
- * приемлемо для витринных счётчиков/ленты (не требуют строгой консистентности).
+ * Кэш процессный: invalidateHomeDataCache() чистит слоты только текущего
+ * процесса — при нескольких Node-инстансах остальные держат старые данные до
+ * истечения TTL. Для витринных счётчиков/ленты это приемлемо, строгой
+ * межпроцессной консистентности здесь нет.
  */
 const HOME_CACHE_TTL_MS = 90 * 1000;
 
@@ -90,4 +92,16 @@ export const getHomeFeaturedContentArticles = async (limit = 3): Promise<Content
     featuredArticlesSlots.set(limit, { value, loadedAt: Date.now() });
   }
   return value.slice();
+};
+
+/**
+ * Сброс слотов после модерации (скрытие/возврат/удаление рецепта, «Выбор
+ * редакции»). Обязателен: слоты живут в памяти процесса, и `revalidatePath("/")`
+ * их не видит — без явного сброса скрытый рецепт остаётся в ленте и счётчиках
+ * главной до истечения TTL.
+ */
+export const invalidateHomeDataCache = () => {
+  familyCountsSlot = null;
+  latestRecipesSlot = null;
+  featuredArticlesSlots.clear();
 };

@@ -306,7 +306,7 @@ export function KegCarbonationBlock({
               <NumericInput
                 value={volumesText}
                 onChange={(event) => setVolumesText(event.target.value)}
-                className="w-24 rounded-lg border border-border bg-card px-3 py-1.5 text-sm tabular-nums text-foreground outline-none focus:border-ring"
+                className="w-24 rounded-lg border border-border bg-card px-3 py-1.5 text-base tabular-nums text-foreground outline-none focus:border-ring sm:text-sm"
               />
             </label>
             <span className="pb-1.5 text-sm text-muted-foreground">при</span>
@@ -318,7 +318,7 @@ export function KegCarbonationBlock({
                 value={tempText}
                 onChange={(event) => setTempText(event.target.value)}
                 allowNegative
-                className="w-24 rounded-lg border border-border bg-card px-3 py-1.5 text-sm tabular-nums text-foreground outline-none focus:border-ring"
+                className="w-24 rounded-lg border border-border bg-card px-3 py-1.5 text-base tabular-nums text-foreground outline-none focus:border-ring sm:text-sm"
               />
             </label>
           </div>

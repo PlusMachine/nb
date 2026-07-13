@@ -55,7 +55,12 @@ export const SliderScaffold = ({
       <Slider.Thumb
         key={index}
         aria-label={thumbLabels?.[index] ?? ariaLabel}
-        className="block h-5 w-5 rounded-full border-2 border-foreground bg-card shadow-sm transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:opacity-50"
+        className={cn(
+          "relative block h-5 w-5 rounded-full border-2 border-foreground bg-card shadow-sm transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:opacity-50",
+          // Невидимая тач-зона ~44px через псевдоэлемент с отрицательным inset:
+          // визуальный размер кружка (h-5 w-5 = 20px) не меняется.
+          "before:absolute before:-inset-3 before:content-['']"
+        )}
       />
     ))}
   </Slider.Root>

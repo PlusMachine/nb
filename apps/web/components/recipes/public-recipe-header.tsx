@@ -1,6 +1,6 @@
 import React from "react";
 import Link from "next/link";
-import { getBeerStyleById, getBjcpArticleHrefByStyleId } from "@nb/brewing-core";
+import { getBeerStyleById, getBjcpArticleHrefByStyleId, getBjcpStyleDisplayName } from "@nb/brewing-core";
 
 import { recipePublicationStateLabels, type RecipeDetailDto } from "@/features/recipes/contracts";
 import { beerColorFromSrm } from "@/features/recipes/beer-color";
@@ -11,7 +11,8 @@ import { CloneFromPublicButton } from "./clone-from-public-button";
 import { RecipeSaveButton } from "./recipe-save-button";
 
 export function PublicRecipeHeader({ recipe }: { recipe: RecipeDetailDto }) {
-  const styleName = getBeerStyleById(recipe.styleId)?.name ?? null;
+  const style = getBeerStyleById(recipe.styleId);
+  const styleName = style ? getBjcpStyleDisplayName(style) : null;
   const styleHref = getBjcpArticleHrefByStyleId(recipe.styleId);
   const color = recipe.color != null && Number.isFinite(recipe.color) ? beerColorFromSrm(recipe.color) : null;
   const srmText = recipe.color != null ? recipe.color.toFixed(1).replace(/\.0$/, "") : null;
@@ -39,7 +40,7 @@ export function PublicRecipeHeader({ recipe }: { recipe: RecipeDetailDto }) {
         </div>
 
         <div className="flex flex-wrap items-start justify-between gap-3">
-          <h1 className="text-2xl font-bold tracking-tight text-foreground sm:text-3xl">{recipe.title}</h1>
+          <h1 className="break-words text-2xl font-bold tracking-tight text-foreground sm:text-3xl">{recipe.title}</h1>
           <div className="flex flex-wrap items-center gap-2">
             <BrewRecipeButton recipeId={recipe.id} slug={recipe.slug} recipeTitle={recipe.title} />
             <CloneFromPublicButton recipeId={recipe.id} slug={recipe.slug} variant="button" />

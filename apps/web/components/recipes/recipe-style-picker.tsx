@@ -58,7 +58,7 @@ export function RecipeStylePicker({
             onChange={(event) => setQuery(event.target.value)}
             placeholder="Название или код, напр. American IPA"
             aria-label="Поиск стиля"
-            className="h-10 w-full min-w-0 bg-transparent text-sm text-foreground placeholder:text-muted-foreground focus:outline-none"
+            className="h-10 w-full min-w-0 bg-transparent text-base text-foreground placeholder:text-muted-foreground focus:outline-none sm:text-sm"
           />
           {query ? (
             <button

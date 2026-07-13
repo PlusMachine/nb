@@ -1,62 +1,89 @@
-import Link from "next/link";
-
+import { AdminFilterTabs, type AdminFilterTab } from "@/components/admin/admin-filter-tabs";
+import { AdminPageHeader } from "@/components/admin/admin-page-header";
+import { AdminPagination } from "@/components/admin/admin-pagination";
+import { UrlSearchField } from "@/components/shared/url-search-field";
 import { FeedbackQueue } from "@/components/feedback/feedback-queue";
-import { feedbackStatuses, feedbackStatusLabels, type FeedbackStatus } from "@/features/feedback/contracts";
+import {
+  buildAdminFeedbackHref,
+  countFeedbackByStatus,
+  defaultAdminFeedbackPageSize,
+  filterFeedback,
+  paginateFeedback,
+  parseAdminFeedbackPageParams
+} from "@/features/feedback/admin-page-model";
+import { feedbackStatuses, feedbackStatusLabels } from "@/features/feedback/contracts";
 import { listFeedback } from "@/features/feedback/service";
 import { requireRole } from "@/lib/auth";
 
 export const dynamic = "force-dynamic";
 
-const isFeedbackStatus = (value: string | undefined): value is FeedbackStatus =>
-  Boolean(value) && (feedbackStatuses as readonly string[]).includes(value as string);
+type Props = {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+};
 
-export default async function AdminFeedbackPage({
-  searchParams
-}: {
-  searchParams: Promise<{ status?: string }>;
-}) {
+const basePath = "/admin/feedback";
+
+export default async function AdminFeedbackPage({ searchParams }: Props) {
   await requireRole("moderator");
 
-  const { status } = await searchParams;
-  const activeStatus = isFeedbackStatus(status) ? status : undefined;
-  const items = await listFeedback(activeStatus ? { status: activeStatus } : undefined);
+  const { q, status, page, pageSize } = parseAdminFeedbackPageParams(await searchParams);
+  const all = await listFeedback();
 
-  const tabs: { label: string; status?: FeedbackStatus }[] = [
-    { label: "Все" },
-    ...feedbackStatuses.map((value) => ({ label: feedbackStatusLabels[value], status: value }))
+  const counts = countFeedbackByStatus(all);
+  const matched = filterFeedback(
+    status ? all.filter((item) => item.status === status) : all,
+    q
+  );
+  const result = paginateFeedback(matched, page, pageSize);
+
+  const tabs: AdminFilterTab[] = [
+    {
+      key: "all",
+      label: "Все",
+      href: buildAdminFeedbackHref(basePath, { q, pageSize }),
+      count: all.length
+    },
+    ...feedbackStatuses.map((value) => ({
+      key: value,
+      label: feedbackStatusLabels[value],
+      href: buildAdminFeedbackHref(basePath, { q, status: value, pageSize }),
+      count: counts[value]
+    }))
   ];
 
   return (
-    <section className="space-y-4">
-      <h1 className="text-xl font-semibold">Обратная связь</h1>
+    <section className="space-y-5">
+      <AdminPageHeader title="Обратная связь" />
 
-      <nav className="flex flex-wrap gap-2 text-sm">
-        {tabs.map((tab) => {
-          const active = tab.status === activeStatus;
-          const href = tab.status ? `/admin/feedback?status=${tab.status}` : "/admin/feedback";
-          return (
-            <Link
-              key={tab.label}
-              href={href}
-              className={`rounded-full border px-3 py-1 transition-colors ${
-                active
-                  ? "border-primary bg-primary text-primary-foreground"
-                  : "border-border bg-card text-muted-foreground hover:text-foreground"
-              }`}
-            >
-              {tab.label}
-            </Link>
-          );
-        })}
-      </nav>
+      <div className="space-y-4 rounded-lg border border-border bg-card p-4">
+        <UrlSearchField
+          id="admin-feedback-search"
+          label="Поиск"
+          value={q}
+          basePath={basePath}
+          params={{
+            status,
+            pageSize: pageSize === defaultAdminFeedbackPageSize ? undefined : String(pageSize)
+          }}
+          placeholder="Текст, автор, страница"
+        />
+        <AdminFilterTabs label="Статусы" tabs={tabs} activeKey={status ?? "all"} />
+      </div>
 
-      {items.length === 0 ? (
-        <p className="rounded-lg border border-dashed p-6 text-center text-sm text-muted-foreground">
-          Пока пусто.
+      {result.items.length === 0 ? (
+        <p className="rounded-lg border border-dashed border-border p-8 text-center text-sm text-muted-foreground">
+          {q || status ? "Ничего не найдено." : "Пока пусто."}
         </p>
       ) : (
-        <FeedbackQueue initialItems={items} />
+        <FeedbackQueue items={result.items} />
       )}
+
+      <AdminPagination
+        page={result.page}
+        totalPages={result.totalPages}
+        total={result.total}
+        pageSize={result.pageSize}
+      />
     </section>
   );
 }

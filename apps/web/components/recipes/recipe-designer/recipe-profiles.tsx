@@ -62,7 +62,7 @@ export function RecipeProfiles({
                         }
                       })}
                       aria-invalid={Boolean(temperatureError) || undefined}
-                      className={`h-7 w-[72px] rounded-md border bg-muted px-2 text-right text-sm tabular-nums text-foreground focus:bg-card focus:outline-none focus:ring-1 focus:ring-ring ${temperatureError ? "border-destructive-border focus:border-destructive" : "border-border focus:border-ring"}`}
+                      className={`h-9 w-[72px] rounded-md border bg-muted px-2 text-right text-base tabular-nums text-foreground focus:bg-card focus:outline-none focus:ring-1 focus:ring-ring sm:text-sm ${temperatureError ? "border-destructive-border focus:border-destructive" : "border-border focus:border-ring"}`}
                     />
                   </label>
                   <label className="space-y-0.5 text-right">
@@ -80,7 +80,7 @@ export function RecipeProfiles({
                         }
                       })}
                       aria-invalid={Boolean(durationError) || undefined}
-                      className={`h-7 w-[72px] rounded-md border bg-muted px-2 text-right text-sm tabular-nums text-foreground focus:bg-card focus:outline-none focus:ring-1 focus:ring-ring ${durationError ? "border-destructive-border focus:border-destructive" : "border-border focus:border-ring"}`}
+                      className={`h-9 w-[72px] rounded-md border bg-muted px-2 text-right text-base tabular-nums text-foreground focus:bg-card focus:outline-none focus:ring-1 focus:ring-ring sm:text-sm ${durationError ? "border-destructive-border focus:border-destructive" : "border-border focus:border-ring"}`}
                     />
                   </label>
                 </div>
@@ -92,7 +92,7 @@ export function RecipeProfiles({
                       steps: processMeta.mashProfile.steps.filter((candidate) => candidate.id !== step.id)
                     }
                   })}
-                  className="rounded-md p-2 text-muted-foreground transition-colors hover:bg-destructive-subtle hover:text-destructive"
+                  className="relative rounded-md p-2 text-muted-foreground transition-colors hover:bg-destructive-subtle hover:text-destructive before:absolute before:-inset-2 before:content-['']"
                   aria-label="Удалить шаг"
                 >
                   <X className="h-4 w-4" />
@@ -145,7 +145,7 @@ export function RecipeProfiles({
                     primaryTemperatureC: event.target.value ? Number(event.target.value) : null
                   }
                 })}
-                className="h-9 w-full rounded-lg border border-border bg-card px-2.5 text-sm tabular-nums text-foreground"
+                className="h-9 w-full rounded-lg border border-border bg-card px-2.5 text-base tabular-nums text-foreground sm:text-sm"
               />
             </label>
             <label className="space-y-1 text-[11px] font-medium text-muted-foreground">
@@ -163,7 +163,7 @@ export function RecipeProfiles({
                     primaryDurationDays: event.target.value ? Number(event.target.value) : null
                   }
                 })}
-                className="h-9 w-full rounded-lg border border-border bg-card px-2.5 text-sm tabular-nums text-foreground"
+                className="h-9 w-full rounded-lg border border-border bg-card px-2.5 text-base tabular-nums text-foreground sm:text-sm"
               />
             </label>
           </div>
@@ -189,7 +189,7 @@ export function RecipeProfiles({
                         extraSteps: processMeta.fermentationProfile.extraSteps.map((candidate) => candidate.id === step.id ? { ...candidate, temperatureC: event.target.value ? Number(event.target.value) : null } : candidate)
                       }
                     })}
-                    className="h-9 w-full rounded-lg border border-border bg-card px-2.5 text-sm tabular-nums"
+                    className="h-9 w-full rounded-lg border border-border bg-card px-2.5 text-base tabular-nums sm:text-sm"
                   />
                 </div>
                 <div className="space-y-0.5">
@@ -207,7 +207,7 @@ export function RecipeProfiles({
                         extraSteps: processMeta.fermentationProfile.extraSteps.map((candidate) => candidate.id === step.id ? { ...candidate, durationDays: event.target.value ? Number(event.target.value) : null } : candidate)
                       }
                     })}
-                    className="h-9 w-full rounded-lg border border-border bg-card px-2.5 text-sm tabular-nums"
+                    className="h-9 w-full rounded-lg border border-border bg-card px-2.5 text-base tabular-nums sm:text-sm"
                   />
                 </div>
                 <button
@@ -219,7 +219,7 @@ export function RecipeProfiles({
                       extraSteps: processMeta.fermentationProfile.extraSteps.filter((candidate) => candidate.id !== step.id)
                     }
                   })}
-                  className="self-end rounded-md p-2 text-muted-foreground transition-colors hover:bg-destructive-subtle hover:text-destructive"
+                  className="relative self-end rounded-md p-2 text-muted-foreground transition-colors hover:bg-destructive-subtle hover:text-destructive before:absolute before:-inset-2 before:content-['']"
                   aria-label="Удалить шаг"
                 >
                   <X className="h-4 w-4" />
@@ -285,7 +285,7 @@ export function RecipeProfiles({
                           }
                         }
                       })}
-                      className="h-9 w-full rounded-lg border border-border bg-card px-2.5 text-sm tabular-nums"
+                      className="h-9 w-full rounded-lg border border-border bg-card px-2.5 text-base tabular-nums sm:text-sm"
                     />
                   </div>
                   <div className="space-y-0.5">
@@ -306,7 +306,7 @@ export function RecipeProfiles({
                           }
                         }
                       })}
-                      className="h-9 w-full rounded-lg border border-border bg-card px-2.5 text-sm tabular-nums"
+                      className="h-9 w-full rounded-lg border border-border bg-card px-2.5 text-base tabular-nums sm:text-sm"
                     />
                   </div>
                 </div>

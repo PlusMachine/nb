@@ -90,7 +90,7 @@ export function ActiveFilterChips({
           key={chip.key}
           type="button"
           onClick={() => navigate(chip.patch)}
-          className="inline-flex items-center gap-2 rounded-full border border-border bg-muted px-3 py-1.5 text-sm font-medium text-foreground transition hover:border-border hover:bg-card"
+          className="inline-flex min-h-11 items-center gap-2 rounded-full border border-border bg-muted px-3 py-1.5 text-sm font-medium text-foreground transition hover:border-border hover:bg-card"
           aria-label={`Убрать фильтр: ${chip.label}`}
         >
           {chip.label}

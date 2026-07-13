@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
+import { EQUIPMENT_PROFILE_MAX_COUNT_PER_USER } from "@/features/equipment-profiles/contracts";
 import {
   createEquipmentProfile,
   deleteEquipmentProfile,
@@ -11,6 +12,26 @@ import {
   updateEquipmentProfile
 } from "@/features/equipment-profiles/service";
 import { requireUser } from "@/lib/auth";
+
+// Барьер сервиса бросает RATE_LIMITED / EQUIPMENT_PROFILE_QUOTA_REACHED — переводим
+// их в понятные сообщения. NEXT_REDIRECT (успешный redirect + гейт requireUser для
+// гостя/истёкшей сессии) пробрасываем как есть, всё остальное — наверх без изменений.
+const rethrowEquipmentCreationError = (error: unknown): never => {
+  if (error instanceof Error) {
+    const digest = (error as Error & { digest?: unknown }).digest;
+    if (typeof digest === "string" && digest.startsWith("NEXT_REDIRECT")) {
+      throw error;
+    }
+    if (error.message === "RATE_LIMITED") {
+      throw new Error("Слишком много профилей подряд. Немного подождите.");
+    }
+    if (error.message === "EQUIPMENT_PROFILE_QUOTA_REACHED") {
+      throw new Error(`Достигнут предел числа профилей оборудования (${EQUIPMENT_PROFILE_MAX_COUNT_PER_USER}). Удалите ненужные.`);
+    }
+  }
+
+  throw error;
+};
 
 const numberValue = (formData: FormData, key: string) => Number(formData.get(key) ?? 0);
 
@@ -44,10 +65,14 @@ const refreshEquipmentPaths = () => {
 };
 
 export const createEquipmentProfileAction = async (formData: FormData) => {
-  const user = await requireUser();
-  await createEquipmentProfile(user.id, buildEquipmentProfilePayload(formData));
-  refreshEquipmentPaths();
-  redirect("/app/equipment");
+  try {
+    const user = await requireUser();
+    await createEquipmentProfile(user.id, buildEquipmentProfilePayload(formData));
+    refreshEquipmentPaths();
+    redirect("/app/equipment");
+  } catch (error) {
+    rethrowEquipmentCreationError(error);
+  }
 };
 
 export const updateEquipmentProfileAction = async (profileId: string, formData: FormData) => {
@@ -74,10 +99,14 @@ export const deleteEquipmentProfileAction = async (profileId: string): Promise<{
 };
 
 export const duplicateEquipmentProfileAction = async (profileId: string) => {
-  const user = await requireUser();
-  await duplicateEquipmentProfile(user.id, profileId);
-  refreshEquipmentPaths();
-  redirect("/app/equipment");
+  try {
+    const user = await requireUser();
+    await duplicateEquipmentProfile(user.id, profileId);
+    refreshEquipmentPaths();
+    redirect("/app/equipment");
+  } catch (error) {
+    rethrowEquipmentCreationError(error);
+  }
 };
 
 export const setDefaultEquipmentProfileAction = async (profileId: string) => {

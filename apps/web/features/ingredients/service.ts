@@ -1,7 +1,9 @@
 import { randomUUID } from "node:crypto";
 
+import { assertRateLimit } from "@nb/auth";
 import {
   and,
+  count,
   db,
   eq,
   ingredientAliases,
@@ -20,6 +22,9 @@ import {
   ingredientSearchQuerySchema,
   ingredientUpsertSchema,
   moderationActionSchema,
+  PROPOSED_INGREDIENT_MAX_PENDING_PER_USER,
+  PROPOSED_INGREDIENT_RATE_LIMIT,
+  PROPOSED_INGREDIENT_RATE_WINDOW_SECONDS,
   resolveUpsertCompletenessLevel,
   type IngredientAliasDto,
   type IngredientCatalogItemDto,
@@ -867,12 +872,34 @@ export const deleteIngredient = async (id: string, _actorId: string) => {
   };
 };
 
+/**
+ * Анти-абьюз-барьер для предложений в очередь модерации. Общий для server action
+ * (мастер рецептов) и API-роута — раньше лимит стоял только на роуте. Rate limit
+ * режет флуд, квота ограничивает число «висящих» (pending) предложений одного
+ * автора, чтобы он не завалил модерацию. Бросает RATE_LIMITED /
+ * INGREDIENT_PROPOSAL_QUOTA_REACHED.
+ */
+const assertProposalCreationAllowed = async (userId: string): Promise<void> => {
+  await assertRateLimit(userId, "ingredient_proposal", PROPOSED_INGREDIENT_RATE_LIMIT, PROPOSED_INGREDIENT_RATE_WINDOW_SECONDS);
+  const [row] = await db
+    .select({ value: count() })
+    .from(proposedIngredients)
+    .where(and(eq(proposedIngredients.submittedByUserId, userId), eq(proposedIngredients.status, "pending")));
+  if ((row?.value ?? 0) >= PROPOSED_INGREDIENT_MAX_PENDING_PER_USER) {
+    throw new Error("INGREDIENT_PROPOSAL_QUOTA_REACHED");
+  }
+};
+
 export const createProposedIngredient = async (input: {
   submittedByUserId?: string | null;
   sourceType: string;
   sourceDisplayName: string;
   sourcePayload: Record<string, unknown>;
 }) => {
+  // Оба текущих входа требуют логин; барьер применяем при наличии автора.
+  if (input.submittedByUserId) {
+    await assertProposalCreationAllowed(input.submittedByUserId);
+  }
   const [created] = await db.insert(proposedIngredients).values({
     submittedByUserId: input.submittedByUserId ?? null,
     sourcePayload: input.sourcePayload,

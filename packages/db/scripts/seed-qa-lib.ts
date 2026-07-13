@@ -153,6 +153,17 @@ const resolveMeasurementDimension = (unit: string) => {
   return "count" as const;
 };
 
+// Каталог фасовок может хранить 'pcs' (сырьё из источника) — на складе рантайм
+// знает только 'item'. См. normalizeSeedInventoryUnit в catalog-seed.ts.
+const resolveStockContentUnit = (unit: string | null) => {
+  const normalized = (unit ?? "").trim().toLowerCase();
+  if (["pcs", "pc", "piece", "pieces", "шт"].includes(normalized)) {
+    return "item";
+  }
+
+  return normalized || null;
+};
+
 const hasText = (item: IngredientRow, needle: string) => {
   const normalizedNeedle = normalizeText(needle);
   return [
@@ -316,7 +327,7 @@ export const seedQaFixtures = async (): Promise<{
       1,
       "pack",
       whirlflocVariant.stockContentAmount ?? 1,
-      whirlflocVariant.stockContentUnit ?? "pack",
+      resolveStockContentUnit(whirlflocVariant.stockContentUnit) ?? "pack",
       "Пакетная фасовка для кипячения.",
       whirlflocVariant.id
     ),

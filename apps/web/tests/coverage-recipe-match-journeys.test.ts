@@ -17,7 +17,10 @@ const { mockState } = vi.hoisted(() => ({
     recipes: [] as any[],
     lines: [] as any[],
     allocations: [] as any[],
-    inventory: [] as any[]
+    inventory: [] as any[],
+    // Партии: матч в контексте партии берёт объём отсюда (brew_plan_snapshot),
+    // а не из дефолтного профиля оборудования — см. features/recipes/batch-scale.ts.
+    brewBatches: [] as any[]
   }
 }));
 
@@ -70,14 +73,22 @@ vi.mock("@nb/db", () => {
         }
       },
       recipeInventoryAllocations: {
+        // Два потребителя с разными фильтрами: listRecipeStockCoverage читает по
+        // (userId, recipeId, status ∈ [...]), кредиты партии (brew-batch-credits) —
+        // по (userId, brewBatchId ∈ [...], status = 'consumed'). Каждое условие
+        // применяем, только если оно реально пришло в where.
         findMany: async (arg: any) => {
           const userId = getEqValue(arg?.where, "userId");
           const recipeId = getEqValue(arg?.where, "recipeId");
+          const status = getEqValue(arg?.where, "status");
           const statuses = getInArrayValue(arg?.where, "status");
+          const brewBatchIds = getInArrayValue(arg?.where, "brewBatchId");
           return mockState.allocations.filter((allocation) => (
             allocation.userId === userId
-            && allocation.recipeId === recipeId
+            && (recipeId === undefined || allocation.recipeId === recipeId)
+            && (status === undefined || allocation.status === status)
             && (!statuses || statuses.includes(allocation.status))
+            && (!brewBatchIds || brewBatchIds.includes(allocation.brewBatchId))
           ));
         }
       },
@@ -94,6 +105,15 @@ vi.mock("@nb/db", () => {
           const userId = getEqValue(arg?.where, "userId");
           return mockState.inventory.find((item) => item.id === id && item.userId === userId) ?? null;
         }
+      },
+      brewBatches: {
+        findMany: async (arg: any) => {
+          const userId = getEqValue(arg?.where, "userId");
+          const ids = getInArrayValue(arg?.where, "id");
+          return mockState.brewBatches.filter((batch) => (
+            batch.userId === userId && (!ids || ids.includes(batch.id))
+          ));
+        }
       }
     }
   };
@@ -103,6 +123,7 @@ vi.mock("@nb/db", () => {
     and: (...args: unknown[]) => args,
     eq: (...args: unknown[]) => args,
     inArray: (column: string, values: string[]) => [`in:${column}`, values],
+    isNull: (...args: unknown[]) => args,
     ingredients: { id: "id" },
     inventoryTransactions: { name: "inventory_transactions" },
     recipeIngredients: { recipeId: "recipeId", persistentKey: "persistentKey", id: "id" },
@@ -110,6 +131,7 @@ vi.mock("@nb/db", () => {
       userId: "userId",
       recipeId: "recipeId",
       recipeIngredientId: "recipeIngredientId",
+      brewBatchId: "brewBatchId",
       status: "status",
       id: "id"
     },
@@ -119,7 +141,8 @@ vi.mock("@nb/db", () => {
       userId: "userId",
       ingredientCatalogItemId: "ingredientCatalogItemId",
       userCustomIngredientId: "userCustomIngredientId"
-    }
+    },
+    brewBatches: { id: "id", userId: "userId" }
   };
 });
 
@@ -828,5 +851,127 @@ describe("listRecipeStockCoverage — нехватка выбранного ск
     expect(coverage.lines[0].requiredQuantityNormalized).toBe(100);
     expect(coverage.summary.shortLines).toBe(1);
     expect(coverage.summary.selectedLines).toBe(1);
+  });
+});
+
+// --- сквозной путь кредита партии: аллокации в БД → кредит → матч -----------
+
+// В отличие от recipe-match-service.test.ts (там источник кредита замокан),
+// здесь работает НАСТОЯЩИЙ getBrewBatchInventoryCredits поверх in-memory @nb/db:
+// проверяем, что именно consumed-аллокации ИМЕННО ЭТОЙ партии доезжают до матча.
+// Кейс живого прогона: рецепт требует 4000 г пильзнера, партия их списала,
+// на складе остался 1000 г — и матч этой же партии показывал «не хватает 3 кг».
+describe("computeRecipeMatch + кредит партии — сквозной путь по аллокациям", () => {
+  const BATCH_ID = "bb-1";
+  const OTHER_BATCH_ID = "bb-2";
+
+  const consumedAllocation = (over: Record<string, unknown> = {}) => ({
+    id: "alloc-pils",
+    userId: "u-1",
+    recipeId: "recipe-1",
+    recipeIngredientId: "ri-1",
+    recipeIngredientPersistentKey: "ri-1-pk",
+    inventoryItemId: "inv-pils",
+    brewBatchId: BATCH_ID,
+    status: "consumed",
+    allocatedQuantityNormalized: 4000,
+    allocatedNormalizedUnit: "g",
+    ...over
+  });
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+    mockState.allocations = [];
+    (listEquipmentProfiles as Mock).mockResolvedValue([]);
+    (getRecipeById as Mock).mockResolvedValue({
+      id: "recipe-1",
+      batchSizeNormalizedQuantity: 20000,
+      batchSizeNormalizedUnit: "ml",
+      ingredients: [
+        {
+          id: "ri-1", persistentKey: "ri-1-pk", displayOrder: 0,
+          ingredientDisplayName: "Пильзнер", ingredientCategory: "fermentable", ingredientSubtype: "malt", type: "malt",
+          ingredientTechnicalData: { type: "malt", maltType: "base", colorEbcMin: 2, colorEbcMax: 4 },
+          ingredientCatalogItemId: "kursk--pilsner", userCustomIngredientId: null,
+          amountNormalizedQuantity: 4000, amountNormalizedUnit: "g"
+        }
+      ]
+    });
+    // Остаток после списания: было 5000 г, партия забрала 4000 г.
+    (listInventoryForUser as Mock).mockResolvedValue([
+      inventoryItem({ id: "inv-pils", ingredientCatalogItemId: "kursk--pilsner", normalizedQuantity: 1000 })
+    ]);
+  });
+
+  it("consumed-аллокация партии возвращается в матч этой партии → covered", async () => {
+    mockState.allocations = [consumedAllocation()];
+
+    const result = await computeRecipeMatch({ userId: "u-1", recipeId: "recipe-1", brewBatchId: BATCH_ID });
+
+    expect(result.lines[0].status).toBe("covered");
+    expect(result.lines[0].availableQuantityNormalized).toBe(5000);
+    expect(result.lines[0].shortfallNormalized).toBe(0);
+    expect(result.matchPercent).toBe(100);
+  });
+
+  it("тот же склад без партии — прежний результат (partial, нехватка 3000 г)", async () => {
+    mockState.allocations = [consumedAllocation()];
+
+    const result = await computeRecipeMatch({ userId: "u-1", recipeId: "recipe-1" });
+
+    expect(result.lines[0].status).toBe("partial");
+    expect(result.lines[0].shortfallNormalized).toBe(3000);
+  });
+
+  it("кредит ЧУЖОЙ партии не засчитывается", async () => {
+    mockState.allocations = [consumedAllocation({ brewBatchId: OTHER_BATCH_ID })];
+
+    const result = await computeRecipeMatch({ userId: "u-1", recipeId: "recipe-1", brewBatchId: BATCH_ID });
+
+    expect(result.lines[0].status).toBe("partial");
+    expect(result.lines[0].shortfallNormalized).toBe(3000);
+  });
+
+  it("возврат на склад (released) снимает кредит — нехватка честно возвращается", async () => {
+    // restoreBrewBatchInventory переводит аллокации в released; кредит считает
+    // только consumed, поэтому исчезает сам, без отдельного отката.
+    mockState.allocations = [consumedAllocation({ status: "released" })];
+
+    const result = await computeRecipeMatch({ userId: "u-1", recipeId: "recipe-1", brewBatchId: BATCH_ID });
+
+    expect(result.lines[0].status).toBe("partial");
+    expect(result.lines[0].shortfallNormalized).toBe(3000);
+  });
+
+  it("аллокация другого пользователя не даёт кредита", async () => {
+    mockState.allocations = [consumedAllocation({ userId: "u-2" })];
+
+    const result = await computeRecipeMatch({ userId: "u-1", recipeId: "recipe-1", brewBatchId: BATCH_ID });
+
+    expect(result.lines[0].status).toBe("partial");
+  });
+
+  it("несколько consumed-аллокаций на одну позицию склада суммируются", async () => {
+    mockState.allocations = [
+      consumedAllocation({ id: "alloc-a", allocatedQuantityNormalized: 2500 }),
+      consumedAllocation({ id: "alloc-b", recipeIngredientId: "ri-2", allocatedQuantityNormalized: 1500 })
+    ];
+
+    const result = await computeRecipeMatch({ userId: "u-1", recipeId: "recipe-1", brewBatchId: BATCH_ID });
+
+    expect(result.lines[0].availableQuantityNormalized).toBe(5000);
+    expect(result.lines[0].status).toBe("covered");
+  });
+
+  it("позиция, списанная В НОЛЬ, остаётся в индексе (кредит применяется до отсечки «>0»)", async () => {
+    (listInventoryForUser as Mock).mockResolvedValue([
+      inventoryItem({ id: "inv-pils", ingredientCatalogItemId: "kursk--pilsner", normalizedQuantity: 0 })
+    ]);
+    mockState.allocations = [consumedAllocation()];
+
+    const result = await computeRecipeMatch({ userId: "u-1", recipeId: "recipe-1", brewBatchId: BATCH_ID });
+
+    expect(result.lines[0].status).toBe("covered");
+    expect(result.lines[0].availableQuantityNormalized).toBe(4000);
   });
 });

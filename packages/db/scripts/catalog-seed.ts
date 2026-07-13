@@ -900,7 +900,9 @@ const prepareConsumable = (item: unknown): PreparedSeedIngredient => {
           packageAmount: readNumber(packageInfo.amount),
           packageUnit: readString(packageInfo.unit),
           stockContentAmount: readNumber(stockContentInfo.amount),
-          stockContentUnit: readString(stockContentInfo.unit),
+          // Содержимое пачки уходит в normalized_unit складской позиции: единица
+          // обязана быть рантайм-единицей ('item'), а не сырым 'pcs' из источника.
+          stockContentUnit: normalizeSeedInventoryUnit(readString(stockContentInfo.unit)),
           sourceGroup: readString(sourceInfo.group),
           sourceUrl: readString(sourceInfo.url),
           isDefaultForStock: Boolean(variant.is_default_for_stock ?? index === 0),

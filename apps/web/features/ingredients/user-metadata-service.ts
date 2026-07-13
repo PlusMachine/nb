@@ -1,3 +1,4 @@
+import { assertRateLimit } from "@nb/auth";
 import {
   and,
   asc,
@@ -17,6 +18,11 @@ import type {
   IngredientPurchaseLinkSummaryDto,
   UserCatalogIngredientDto,
   UserIngredientReference
+} from "./contracts";
+import {
+  PURCHASE_LINK_CREATE_RATE_LIMIT,
+  PURCHASE_LINK_CREATE_RATE_WINDOW_SECONDS,
+  PURCHASE_LINK_MAX_PER_REFERENCE
 } from "./contracts";
 import { buildIngredientPurchaseLinkView, normalizeIngredientPurchaseLinkInput } from "./purchase-links";
 
@@ -177,7 +183,7 @@ export const replaceIngredientPurchaseLinksForReference = async (
     urls
       .map((value) => normalizeIngredientPurchaseLinkInput(value))
       .filter((value): value is string => Boolean(value))
-  ));
+  )).slice(0, PURCHASE_LINK_MAX_PER_REFERENCE);
 
   await db.transaction(async (tx) => {
     await tx.delete(userIngredientPurchaseLinks).where(and(
@@ -215,7 +221,12 @@ export const createIngredientPurchaseLink = async (
     throw new Error("INVALID_PURCHASE_LINK_URL");
   }
 
+  await assertRateLimit(userId, "purchase_link_create", PURCHASE_LINK_CREATE_RATE_LIMIT, PURCHASE_LINK_CREATE_RATE_WINDOW_SECONDS);
+
   const currentLinks = await listIngredientPurchaseLinksByReference(userId, reference);
+  if (currentLinks.length >= PURCHASE_LINK_MAX_PER_REFERENCE) {
+    throw new Error("PURCHASE_LINK_QUOTA_REACHED");
+  }
   const [created] = await db.insert(userIngredientPurchaseLinks).values({
     userId,
     ingredientCatalogItemId: reference.source === "catalog" ? reference.id : null,

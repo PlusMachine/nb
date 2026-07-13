@@ -157,6 +157,7 @@ vi.mock("@nb/db", () => {
     db,
     and: (...args: unknown[]) => args,
     asc: (v: unknown) => v,
+    count: (..._args: unknown[]) => ({}),
     eq: (...args: unknown[]) => args,
     inArray: (...args: unknown[]) => args,
     isNull: (v: unknown) => v,
@@ -168,6 +169,13 @@ vi.mock("@nb/db", () => {
     userIngredients: tableRefs.userIngredients
   };
 });
+
+// Анти-абьюз-барьеры сервиса зовут assertRateLimit (реальный бьёт в БД); в этих
+// тестах он не в фокусе — стабим no-op, остальное @nb/auth оставляем настоящим.
+vi.mock("@nb/auth", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("@nb/auth")>()),
+  assertRateLimit: vi.fn(async () => {})
+}));
 
 import {
   addCatalogIngredientToInventory,

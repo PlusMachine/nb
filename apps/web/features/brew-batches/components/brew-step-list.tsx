@@ -48,13 +48,16 @@ function BrewStepRow({
         state.done ? "border-success/30 bg-success-subtle/50" : "border-border bg-card"
       }`}
     >
+      {/* Визуальный чекбокс остаётся 24px (не превращается в гигантский квадрат), но
+          тач-зона через невидимый ::before растянута до ~44px — у котла тапают мокрым
+          пальцем, промах в основное действие шага недопустим. */}
       <button
         type="button"
         onClick={() => patchStep(step.id, { done: !state.done })}
         disabled={busy || readOnly}
         aria-pressed={state.done}
         aria-label={state.done ? "Снять отметку" : "Отметить шаг выполненным"}
-        className={`mt-0.5 inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-md border transition disabled:opacity-50 ${
+        className={`relative mt-0.5 inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-md border transition disabled:opacity-50 before:absolute before:-inset-2.5 before:content-[''] ${
           state.done
             ? "border-success bg-success text-white"
             : "border-border bg-card text-transparent hover:border-muted-foreground"
@@ -93,7 +96,7 @@ function BrewStepRow({
                   onClick={() => patchStep(step.id, { timerStartedAt: null })}
                   disabled={busy}
                   aria-label="Сбросить таймер"
-                  className="inline-flex h-7 w-7 items-center justify-center rounded-md text-muted-foreground transition hover:bg-accent hover:text-foreground disabled:opacity-50"
+                  className="relative inline-flex h-7 w-7 items-center justify-center rounded-md text-muted-foreground transition hover:bg-accent hover:text-foreground disabled:opacity-50 before:absolute before:-inset-2 before:content-['']"
                 >
                   <RotateCcw className="h-3.5 w-3.5" aria-hidden />
                 </button>
@@ -105,7 +108,7 @@ function BrewStepRow({
               onClick={() => patchStep(step.id, { timerStartedAt: new Date().toISOString() })}
               disabled={busy}
               aria-label="Запустить таймер"
-              className="inline-flex h-7 items-center gap-1 rounded-md border border-border px-2 text-xs font-medium text-foreground transition hover:bg-accent disabled:opacity-50"
+              className="relative inline-flex h-7 items-center gap-1 rounded-md border border-border px-2 text-xs font-medium text-foreground transition hover:bg-accent disabled:opacity-50 before:absolute before:-inset-2 before:content-['']"
             >
               <Play className="h-3.5 w-3.5" aria-hidden />
               {step.durationSeconds != null ? fmtClock(step.durationSeconds) : "Таймер"}

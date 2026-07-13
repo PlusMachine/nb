@@ -22,6 +22,9 @@ const mapCloneError = (error: unknown): RecipeCloneActionResult => {
   if (error instanceof Error && error.message === "RATE_LIMITED") {
     return { ok: false, code: "ERROR", message: "Слишком много клонирований подряд. Попробуйте позже." };
   }
+  if (error instanceof Error && error.message === "RECIPE_QUOTA_REACHED") {
+    return { ok: false, code: "ERROR", message: "Достигнут предел числа рецептов. Удалите ненужные, чтобы клонировать новые." };
+  }
   return { ok: false, code: "ERROR", message: "Не удалось клонировать рецепт. Попробуйте ещё раз." };
 };
 

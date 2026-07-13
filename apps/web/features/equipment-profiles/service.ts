@@ -1,6 +1,10 @@
 import { and, count, db, desc, eq, equipmentProfiles } from "@nb/db";
+import { assertRateLimit } from "@nb/auth";
 
 import {
+  EQUIPMENT_PROFILE_CREATE_RATE_LIMIT,
+  EQUIPMENT_PROFILE_CREATE_RATE_WINDOW_SECONDS,
+  EQUIPMENT_PROFILE_MAX_COUNT_PER_USER,
   equipmentProfilePayloadSchema,
   updateEquipmentProfilePayloadSchema,
   type EquipmentProfileDto
@@ -75,10 +79,25 @@ export const getEquipmentProfile = async (userId: string, profileId: string): Pr
   return mapEquipmentProfileDto(row);
 };
 
+/**
+ * Анти-абьюз-барьер, общий для ВСЕХ путей создания профиля оборудования (создание
+ * и дублирование — дубликат тоже зовёт createEquipmentProfile). Rate limit режет
+ * скрипт-флуд, квота — медленное засорение базы. Бросает RATE_LIMITED /
+ * EQUIPMENT_PROFILE_QUOTA_REACHED; экшены маппят их в понятные сообщения.
+ */
+const assertEquipmentProfileCreationAllowed = async (userId: string): Promise<void> => {
+  await assertRateLimit(userId, "equipment_profile_create", EQUIPMENT_PROFILE_CREATE_RATE_LIMIT, EQUIPMENT_PROFILE_CREATE_RATE_WINDOW_SECONDS);
+  const [row] = await db.select({ value: count() }).from(equipmentProfiles).where(eq(equipmentProfiles.userId, userId));
+  if ((row?.value ?? 0) >= EQUIPMENT_PROFILE_MAX_COUNT_PER_USER) {
+    throw new Error("EQUIPMENT_PROFILE_QUOTA_REACHED");
+  }
+};
+
 export const createEquipmentProfile = async (
   userId: string,
   payload: unknown
 ): Promise<EquipmentProfileDto> => {
+  await assertEquipmentProfileCreationAllowed(userId);
   const parsed = equipmentProfilePayloadSchema.parse(payload);
   const [{ value: existingProfileCount }] = await db.select({ value: count() })
     .from(equipmentProfiles)

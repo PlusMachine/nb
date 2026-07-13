@@ -10,7 +10,7 @@ import { buildIngredientSearchParams } from "@/components/ingredients/ingredient
 import { type RecipeIngredientCardSource } from "@/components/recipes/recipe-ingredient-card-display";
 import { resolveInventoryIngredientContextCategoryLabel } from "@/components/inventory/inventory-ingredient-context-summary";
 import {
-  type EquipmentProfileDto,
+  DEFAULT_BREWHOUSE_EFFICIENCY_PCT,
   type EquipmentProfileSnapshot
 } from "@/features/equipment-profiles/contracts";
 import type {
@@ -437,7 +437,7 @@ export const createLocalId = () => (
 export const DEFAULT_BATCH_SIZE_ENTERED_QUANTITY = 20;
 export const DEFAULT_BATCH_SIZE_ENTERED_UNIT: InventoryUnit = "l";
 export const DEFAULT_BOIL_TIME_MINUTES = 60;
-export const DEFAULT_EFFICIENCY = 75;
+export const DEFAULT_EFFICIENCY = DEFAULT_BREWHOUSE_EFFICIENCY_PCT;
 
 export const cloneRecipeProcessMeta = (value: RecipeProcessMeta = defaultRecipeProcessMeta): RecipeProcessMeta => ({
   mashProfile: {
@@ -530,24 +530,9 @@ export const cloneEquipmentProfileSnapshot = (value?: EquipmentProfileSnapshot |
   } : null
 );
 
-export const buildEquipmentProfileSnapshotFromDto = (profile: EquipmentProfileDto): EquipmentProfileSnapshot => ({
-  id: profile.id,
-  name: profile.name,
-  targetBatchVolumeL: profile.targetBatchVolumeL,
-  brewhouseEfficiencyPct: profile.brewhouseEfficiencyPct,
-  evaporationRateLPerHr: profile.evaporationRateLPerHr,
-  trubChillerLossL: profile.trubChillerLossL,
-  fermenterLossL: profile.fermenterLossL,
-  grainAbsorptionLPerKg: profile.grainAbsorptionLPerKg,
-  coolingShrinkagePct: profile.coolingShrinkagePct,
-  mashThicknessLPerKg: profile.mashThicknessLPerKg,
-  maxMashVolumeL: profile.maxMashVolumeL,
-  maxKettleVolumeL: profile.maxKettleVolumeL,
-  hopUtilizationFactor: profile.hopUtilizationFactor,
-  altitudeM: profile.altitudeM,
-  notes: profile.notes,
-  snapshotAt: new Date().toISOString()
-});
+// Слепок профиля строит features/equipment-profiles/snapshot.ts — тот же билдер
+// нужен серверу при старте варки «на моём оборудовании» (features/brew-batches).
+export { buildEquipmentProfileSnapshotFromDto } from "@/features/equipment-profiles/snapshot";
 
 export const formatEquipmentProfileRecipeValue = (value: number) => {
   const rounded = Number(value.toFixed(2));
@@ -619,6 +604,69 @@ export const mapFieldErrorsFromIssues = (
   return fieldErrors;
 };
 
+/**
+ * Автоимя нового рецепта — «Новый рецепт N» (getNextDefaultRecipeTitle,
+ * features/recipes/service.ts). Его выдал редактор, а не выбрал пользователь,
+ * поэтому признаком осмысленной работы оно не считается. Кросс-проверка с
+ * генератором — в tests/recipe-service.test.ts, чтобы формат не разъехался.
+ */
+const AUTO_RECIPE_TITLE_PATTERN = /^Новый рецепт(\s+\d+)?$/;
+
+export const isAutoRecipeTitle = (title: string): boolean => AUTO_RECIPE_TITLE_PATTERN.test(title.trim());
+
+/** Чем редактор засеян при открытии: автоимя и стиль из URL (`/app/recipes/new?style=24A`). */
+export type RecipeDraftBaseline = {
+  title?: string | null;
+  styleId?: string | null;
+};
+
+/**
+ * Порог, с которого черновик рецепта заводится в БД: у него появилось СОДЕРЖАНИЕ
+ * (хотя бы один ингредиент) или ЛИЧНОСТЬ — своё название вместо автоматического
+ * «Новый рецепт N», свой стиль, описание, заметки автора. Раньше запись рождалась
+ * по первому же изменению любого поля, и на аккаунте копились пустые «Новый
+ * рецепт N» без ABV/IBU/OG.
+ *
+ * Настройки процесса (объём, эффективность, кипячение, затирание, вода) порог не
+ * проходят: рецепт без имени и без ингредиентов — это и есть тот мусор. Чтобы такая
+ * работа не пропадала молча, шапка в этом состоянии честно пишет «Не сохранён» и
+ * даёт кнопку «Сохранить» (persistRecipe force), а уход со страницы держит
+ * beforeunload (см. use-recipe-autosave).
+ *
+ * Действует только на СОЗДАНИЕ: уже сохранённый рецепт продолжает автосейвиться,
+ * даже если из него убрали всё.
+ */
+export const isRecipeDraftWorthPersisting = (
+  payload: RecipeEditorPayload,
+  baseline: RecipeDraftBaseline = {}
+): boolean => {
+  if (payload.ingredients.length > 0) {
+    return true;
+  }
+
+  const title = payload.title.trim();
+  if (title && title !== (baseline.title ?? "").trim() && !isAutoRecipeTitle(title)) {
+    return true;
+  }
+
+  // Стиль, предзаполненный из URL, выбирал не редактор рецепта — сам по себе он
+  // черновик не заводит; засчитываем только смену стиля пользователем.
+  const styleId = (payload.styleId ?? "").trim();
+  if (styleId && styleId !== (baseline.styleId ?? "").trim()) {
+    return true;
+  }
+
+  return Boolean(payload.description?.trim() || payload.authorNotes?.trim());
+};
+
+/**
+ * Текст подтверждения удаления рецепта. Реализация — в `features/recipes/format`:
+ * тот же диалог показывает карточка галереи «Мои рецепты», а тянуть ради строки
+ * весь этот модуль (пикер ингредиентов, brewing-core) в её бандл незачем.
+ * Реэкспорт — чтобы дизайнер и его тесты не меняли путь импорта.
+ */
+export { buildRecipeDeleteConfirmDescription } from "@/features/recipes/format";
+
 export const buildAutosaveBlockedResult = (
   payload: RecipeEditorPayload
 ): RecipeEditorResult | null => {
@@ -673,7 +721,12 @@ export const resolveRecipeFermentableSubtype = (
 export const createEmptyIngredient = (
   category: IngredientCategory,
   hopUseType: RecipeHopUseType = "boil",
-  subtype: Extract<IngredientSubtype, "malt" | "fermentable"> | null = null
+  subtype: Extract<IngredientSubtype, "malt" | "fermentable"> | null = null,
+  // Хмель на кипячение по умолчанию вносится на полное кипячение — это ровно то
+  // число, которое иначе молча подставил бы расчёт IBU. Видимый дефолт вместо
+  // пустого поля; пользователь его правит. Для FWH/вирпула/dip осмысленного
+  // дефолта нет (время хопстенда ≠ время кипячения) — поле остаётся пустым.
+  boilTimeMinutes: number = DEFAULT_BOIL_TIME_MINUTES
 ): DesignerIngredient => {
   const fermentableSubtype = resolveRecipeFermentableSubtype(category, subtype);
   const unitProfile = resolveHumanFacingInventoryUnitProfile({
@@ -709,10 +762,12 @@ export const createEmptyIngredient = (
       amountEnteredQuantity: "",
       amountEnteredUnit: unitProfile.defaultUnit,
       stage: mapHopStageFromUseType(hopUseType),
-      timeOffset: "",
+      timeOffset: hopUseType === "boil" ? String(boilTimeMinutes) : "",
       stepMeta: {
         useType: hopUseType,
-        timeMinutes: hopUseType === "boil" || hopUseType === "first_wort_hop" || hopUseType === "whirlpool" || hopUseType === "dip_hop" ? "" : undefined,
+        timeMinutes: hopUseType === "boil"
+          ? String(boilTimeMinutes)
+          : hopUseType === "first_wort_hop" || hopUseType === "whirlpool" || hopUseType === "dip_hop" ? "" : undefined,
         temperatureC: hopUseType === "whirlpool" || hopUseType === "dip_hop" ? "" : undefined,
         durationDays: hopUseType === "dry_hop" ? "" : undefined
       },
@@ -792,6 +847,33 @@ export const createEmptyIngredient = (
     inventoryIntentMode: "use_stock",
     inventorySelectionMeta: null,
     externalImportMeta: null
+  };
+};
+
+/**
+ * Смена типа добавления хмеля. При переходе на «Кипячение» подставляет видимый
+ * дефолт «мин» — время кипячения рецепта: ровно то число, которое иначе молча
+ * подставил бы расчёт IBU (createEmptyIngredient делает так же при создании
+ * строки). Уже введённое пользователем время не перетираем; для остальных типов
+ * дефолт не выдумываем — время хопстенда ≠ время кипячения.
+ */
+export const applyHopUseTypeChange = (
+  draft: DesignerIngredient,
+  nextUseType: RecipeHopUseType,
+  boilTimeMinutes: number = DEFAULT_BOIL_TIME_MINUTES
+): DesignerIngredient => {
+  const enteredTimeMinutes = String(draft.stepMeta.timeMinutes ?? "").trim();
+  const prefillBoilTime = nextUseType === "boil" && !enteredTimeMinutes;
+
+  return {
+    ...draft,
+    stage: mapHopStageFromUseType(nextUseType),
+    timeOffset: prefillBoilTime ? String(boilTimeMinutes) : draft.timeOffset,
+    stepMeta: {
+      ...draft.stepMeta,
+      useType: nextUseType,
+      timeMinutes: prefillBoilTime ? String(boilTimeMinutes) : draft.stepMeta.timeMinutes
+    }
   };
 };
 
@@ -921,7 +1003,8 @@ export const clearRecipeIngredientSelection = (current: DesignerIngredient): Des
 export const applyRecipeIngredientCategoryContextChange = (
   current: DesignerIngredient,
   nextCategory: IngredientCategory,
-  nextSubtype: Extract<IngredientSubtype, "malt" | "fermentable"> | null = null
+  nextSubtype: Extract<IngredientSubtype, "malt" | "fermentable"> | null = null,
+  boilTimeMinutes: number = DEFAULT_BOIL_TIME_MINUTES
 ): DesignerIngredient => {
   const normalizedNextSubtype = resolveRecipeFermentableSubtype(nextCategory, nextSubtype);
 
@@ -932,7 +1015,8 @@ export const applyRecipeIngredientCategoryContextChange = (
   const nextDraft = createEmptyIngredient(
     nextCategory,
     nextCategory === "hop" ? getHopUseType(current) : "boil",
-    normalizedNextSubtype
+    normalizedNextSubtype,
+    boilTimeMinutes
   );
 
   return {

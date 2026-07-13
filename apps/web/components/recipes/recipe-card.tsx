@@ -74,7 +74,7 @@ export function RecipeCard({
               <RecipeMatchBadge recipeId={recipe.id} />
             </div>
             {/* Название — до 2 строк, чтобы длинные имена не растягивали шапку сверх меры. */}
-            <h2 className="line-clamp-2 text-base font-semibold leading-snug text-foreground group-hover:text-foreground/80">
+            <h2 className="line-clamp-2 break-words text-base font-semibold leading-snug text-foreground group-hover:text-foreground/80">
               {recipe.name}
             </h2>
           </div>

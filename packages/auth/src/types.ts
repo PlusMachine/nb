@@ -22,6 +22,11 @@ export type AuthUser = {
   preferredGravityUnit: PreferredGravityUnit;
   image: string | null;
   role: UserRole;
+  /** Не null — вход запрещён (блокировка модератором). */
+  blockedAt: Date | null;
+  blockedReason: string | null;
+  /** Не null — ПДн затёрты, строка сохранена ради ссылок и запрета перерегистрации. */
+  anonymizedAt: Date | null;
   createdAt: Date;
   updatedAt: Date;
 };

@@ -1,10 +1,19 @@
 import { describe, expect, it, vi, beforeEach, type Mock } from "vitest";
 
 vi.mock("@nb/db", () => ({
-  db: { query: { recipes: { findMany: vi.fn() }, ingredients: { findMany: vi.fn() } } },
+  db: {
+    query: {
+      recipes: { findMany: vi.fn() },
+      ingredients: { findMany: vi.fn() },
+      // Объём партии (brew_plan_snapshot.recipe.batchSizeL) — источник масштаба для
+      // матча В КОНТЕКСТЕ ПАРТИИ, см. features/recipes/batch-scale.ts.
+      brewBatches: { findMany: vi.fn() }
+    }
+  },
   ingredients: {},
   recipeIngredients: {},
   recipes: {},
+  brewBatches: {},
   and: vi.fn(),
   eq: vi.fn(),
   inArray: vi.fn()
@@ -12,6 +21,13 @@ vi.mock("@nb/db", () => ({
 vi.mock("../features/recipes/service", () => ({ getRecipeById: vi.fn() }));
 vi.mock("../features/inventory/service", () => ({ listInventoryForUser: vi.fn() }));
 vi.mock("../features/equipment-profiles/service", () => ({ listEquipmentProfiles: vi.fn() }));
+// Кредит партии (уже списанное под эту варку) — источник данных подменяем, чтобы
+// проверить именно арифметику матча. Сквозной путь «аллокации в БД → кредит →
+// матч» покрыт на живом @nb/db-моке в coverage-recipe-match-journeys.test.ts.
+vi.mock("../features/inventory/brew-batch-credits", () => ({
+  getBrewBatchInventoryCredits: vi.fn(),
+  getBrewBatchInventoryCreditsForBatches: vi.fn()
+}));
 // FIX-3 fault injection: настоящий roundTo никогда не получает отрицательное
 // значение на легальных данных (нормализованные количества валидируются как
 // ≥0 при сохранении рецепта) — здесь отрицательное значение служит маркером
@@ -34,6 +50,7 @@ vi.mock("@nb/brewing-core", async (importOriginal) => {
 
 import {
   computeRecipeMatch,
+  computeRecipeMatchesForBrewBatches,
   computeRecipeMatchesForUser,
   indexInventoryEntries,
   matchLineAgainstInventory,
@@ -46,6 +63,11 @@ import { db, inArray } from "@nb/db";
 import { getRecipeById } from "../features/recipes/service";
 import { listInventoryForUser } from "../features/inventory/service";
 import { listEquipmentProfiles } from "../features/equipment-profiles/service";
+import {
+  getBrewBatchInventoryCredits,
+  getBrewBatchInventoryCreditsForBatches,
+  type InventoryCreditMap
+} from "../features/inventory/brew-batch-credits";
 
 const pilsnerProfile = (catalogItemId: string): IngredientMatchProfile => ({
   category: "fermentable",
@@ -506,5 +528,428 @@ describe("computeRecipeMatchesForUser — batch", () => {
     // Сломанный рецепт пропущен, но не утащил за собой матч r-1.
     expect(Object.keys(result)).toEqual(["r-1"]);
     expect(result["r-1"].missingCount).toBe(0);
+  });
+});
+
+// --- кредит партии: списанное под варку не должно считаться нехваткой -------
+
+// Кейс из живого прогона (dev-БД, партия «Летний пилснер»): рецепт требует 4000 г
+// пильзнера, партия их уже списала, на складе остался 1000 г. Матч по остатку
+// показывал «не хватает 3 кг» — той самой партии, которая этот солод и забрала.
+const pilsnerRecipe = (required = 4000) => ({
+  id: "recipe-1",
+  batchSizeNormalizedQuantity: 20000,
+  batchSizeNormalizedUnit: "ml",
+  ingredients: [
+    {
+      id: "ri-1",
+      persistentKey: "ri-1-pk",
+      displayOrder: 0,
+      ingredientDisplayName: "Пильзнер",
+      ingredientDisplayNameSnapshot: "Пильзнер",
+      ingredientDisplayNameEn: "Pilsner",
+      ingredientCategory: "fermentable",
+      ingredientSubtype: "malt",
+      type: "malt",
+      ingredientTechnicalData: { type: "malt", maltType: "base", colorEbcMin: 2, colorEbcMax: 4 },
+      ingredientCatalogItemId: "kursk--pilsner",
+      userCustomIngredientId: null,
+      amountNormalizedQuantity: required,
+      amountNormalizedUnit: "g"
+    }
+  ]
+});
+
+const pilsnerStock = (normalizedQuantity: number) => ({
+  id: "inv-pils",
+  normalizedQuantity,
+  normalizedUnit: "g",
+  unitDimension: "weight",
+  archivedAt: null,
+  ingredientCatalogItemId: "kursk--pilsner",
+  userCustomIngredientId: null,
+  ingredientCategory: "fermentable",
+  ingredientSubtype: "malt",
+  ingredientDisplayNameSnapshot: "Пильзнер",
+  source: {
+    category: "fermentable",
+    type: "malt",
+    displayName: "Пильзнер",
+    nameRu: "Пильзнер",
+    nameEn: "Pilsner",
+    subtype: "malt",
+    technicalData: { type: "malt", maltType: "base", colorEbcMin: 2, colorEbcMax: 4 }
+  }
+});
+
+const credit = (quantityNormalized: number, normalizedUnit = "g"): InventoryCreditMap =>
+  new Map([["inv-pils", { quantityNormalized, normalizedUnit }]]);
+
+describe("computeRecipeMatch — кредит партии (уже списанное под эту варку)", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    (listEquipmentProfiles as Mock).mockResolvedValue([]);
+    (db.query.brewBatches.findMany as Mock).mockResolvedValue([]);
+    (getBrewBatchInventoryCredits as Mock).mockResolvedValue(new Map());
+  });
+
+  it("списание под партию не порождает нехватку у неё же: с brewBatchId строка covered", async () => {
+    (getRecipeById as Mock).mockResolvedValue(pilsnerRecipe(4000));
+    (listInventoryForUser as Mock).mockResolvedValue([pilsnerStock(1000)]);
+    (getBrewBatchInventoryCredits as Mock).mockResolvedValue(credit(4000));
+
+    const result = await computeRecipeMatch({ userId: "u-1", recipeId: "recipe-1", brewBatchId: "bb-1" });
+
+    expect(result.lines[0].status).toBe("covered");
+    expect(result.lines[0].availableQuantityNormalized).toBe(5000);
+    expect(result.lines[0].shortfallNormalized).toBe(0);
+    expect(result.lines[0].suggestedAddQuantity).toBeNull();
+    expect(result.matchPercent).toBe(100);
+  });
+
+  it("тот же склад БЕЗ brewBatchId — прежнее поведение (partial, нехватка 3000 г)", async () => {
+    (getRecipeById as Mock).mockResolvedValue(pilsnerRecipe(4000));
+    (listInventoryForUser as Mock).mockResolvedValue([pilsnerStock(1000)]);
+    (getBrewBatchInventoryCredits as Mock).mockResolvedValue(credit(4000));
+
+    const result = await computeRecipeMatch({ userId: "u-1", recipeId: "recipe-1" });
+
+    expect(result.lines[0].status).toBe("partial");
+    expect(result.lines[0].availableQuantityNormalized).toBe(1000);
+    expect(result.lines[0].shortfallNormalized).toBe(3000);
+    // Кредит без партии даже не запрашивается: витрина/дашборд/страница стиля
+    // обязаны видеть фактический склад.
+    expect(getBrewBatchInventoryCredits).not.toHaveBeenCalled();
+  });
+
+  it("позиция, списанная В НОЛЬ, не выпадает из индекса: covered, а не missing", async () => {
+    (getRecipeById as Mock).mockResolvedValue(pilsnerRecipe(4000));
+    (listInventoryForUser as Mock).mockResolvedValue([pilsnerStock(0)]);
+    (getBrewBatchInventoryCredits as Mock).mockResolvedValue(credit(4000));
+
+    const result = await computeRecipeMatch({ userId: "u-1", recipeId: "recipe-1", brewBatchId: "bb-1" });
+
+    // Регресс на порядок операций: кредит обязан прибавляться ДО отсечки «>0»,
+    // иначе обнулённая позиция выбрасывается из индекса и строка становится
+    // "missing" — хуже, чем исходный "partial".
+    expect(result.lines[0].status).toBe("covered");
+    expect(result.lines[0].availableQuantityNormalized).toBe(4000);
+  });
+
+  it("склад запрашивается с includeEmpty: обнулённая позиция обязана дойти до кредита", async () => {
+    (getRecipeById as Mock).mockResolvedValue(pilsnerRecipe(4000));
+    (listInventoryForUser as Mock).mockResolvedValue([pilsnerStock(0)]);
+    (getBrewBatchInventoryCredits as Mock).mockResolvedValue(credit(4000));
+
+    await computeRecipeMatch({ userId: "u-1", recipeId: "recipe-1", brewBatchId: "bb-1" });
+
+    // Живой listInventoryForUser по умолчанию ВЫБРАСЫВАЕТ позиции с нулевым
+    // остатком — тогда кредит списанной в ноль позиции применять не к чему, и
+    // партия сама себе показывает «не хватает» сразу после списания.
+    // Мок этого не воспроизводит, поэтому фиксируем сам контракт вызова.
+    expect(listInventoryForUser).toHaveBeenCalledWith("u-1", { includeEmpty: true });
+  });
+
+  it("кредит в чужой единице игнорируется (позицию пересоздали в других единицах)", async () => {
+    (getRecipeById as Mock).mockResolvedValue(pilsnerRecipe(4000));
+    (listInventoryForUser as Mock).mockResolvedValue([pilsnerStock(1000)]);
+    (getBrewBatchInventoryCredits as Mock).mockResolvedValue(credit(4000, "pack"));
+
+    const result = await computeRecipeMatch({ userId: "u-1", recipeId: "recipe-1", brewBatchId: "bb-1" });
+
+    expect(result.lines[0].status).toBe("partial");
+    expect(result.lines[0].availableQuantityNormalized).toBe(1000);
+    expect(result.lines[0].shortfallNormalized).toBe(3000);
+  });
+
+  it("кредит запрашивается ровно у своей партии", async () => {
+    (getRecipeById as Mock).mockResolvedValue(pilsnerRecipe(4000));
+    (listInventoryForUser as Mock).mockResolvedValue([pilsnerStock(1000)]);
+
+    await computeRecipeMatch({ userId: "u-1", recipeId: "recipe-1", brewBatchId: "bb-1" });
+
+    expect(getBrewBatchInventoryCredits).toHaveBeenCalledTimes(1);
+    expect(getBrewBatchInventoryCredits).toHaveBeenCalledWith("u-1", "bb-1");
+  });
+});
+
+// H1: матч масштабировал потребность под дефолтный профиль оборудования, а списание
+// брало количества рецепта как есть. Рецепт на 30 л при профиле «BIAB 20 л» давал на
+// странице партии «Хватает всего» (нужно 4.98 кг при остатке 5 кг) и одновременно
+// INSUFFICIENT_STOCK по кнопке «Списать» (требовались полные 7.467 кг).
+// Для партии источник объёма один — её план (brew_plan_snapshot.recipe.batchSizeL).
+describe("computeRecipeMatch — объём ПАРТИИ, а не дефолтный профиль оборудования", () => {
+  const batchRow = (batchSizeL: number | null) => ({
+    id: "bb-1",
+    brewPlanSnapshot: { recipe: { batchSizeL } }
+  });
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+    (getBrewBatchInventoryCredits as Mock).mockResolvedValue(new Map());
+    (getRecipeById as Mock).mockResolvedValue(pilsnerRecipe(4000));
+    (listInventoryForUser as Mock).mockResolvedValue([pilsnerStock(5000)]);
+    // Дефолтный профиль вдвое меньше рецепта: до фикса он ужимал потребность
+    // партии до 2000 г, и матч «не видел» нехватки, которую находило списание.
+    (listEquipmentProfiles as Mock).mockResolvedValue([{ targetBatchVolumeL: 10 }]);
+  });
+
+  it("партия на 40 л по рецепту 20 л: потребность удваивается, профиль игнорируется", async () => {
+    (db.query.brewBatches.findMany as Mock).mockResolvedValue([batchRow(40)]);
+
+    const result = await computeRecipeMatch({ userId: "u-1", recipeId: "recipe-1", brewBatchId: "bb-1" });
+
+    expect(result.targetBatchVolumeL).toBe(40);
+    expect(result.lines[0].requiredQuantityNormalized).toBe(8000);
+    expect(result.lines[0].status).toBe("partial");
+    expect(result.lines[0].shortfallNormalized).toBe(3000);
+    // Профиль оборудования для партии даже не запрашивается.
+    expect(listEquipmentProfiles).not.toHaveBeenCalled();
+  });
+
+  it("план партии без объёма → потребность рецепта как есть (тот же множитель, что у списания)", async () => {
+    (db.query.brewBatches.findMany as Mock).mockResolvedValue([batchRow(null)]);
+
+    const result = await computeRecipeMatch({ userId: "u-1", recipeId: "recipe-1", brewBatchId: "bb-1" });
+
+    expect(result.targetBatchVolumeL).toBe(20);
+    expect(result.lines[0].requiredQuantityNormalized).toBe(4000);
+    expect(result.lines[0].status).toBe("covered");
+    expect(listEquipmentProfiles).not.toHaveBeenCalled();
+  });
+
+  it("объём партии читается ровно у своей партии и своего пользователя", async () => {
+    (db.query.brewBatches.findMany as Mock).mockResolvedValue([batchRow(40)]);
+
+    await computeRecipeMatch({ userId: "u-1", recipeId: "recipe-1", brewBatchId: "bb-1" });
+
+    expect(db.query.brewBatches.findMany).toHaveBeenCalledTimes(1);
+  });
+
+  it("вне партии дефолтный профиль по-прежнему масштабирует (витрина/дашборд)", async () => {
+    const result = await computeRecipeMatch({ userId: "u-1", recipeId: "recipe-1" });
+
+    expect(result.targetBatchVolumeL).toBe(10);
+    expect(result.lines[0].requiredQuantityNormalized).toBe(2000);
+    expect(db.query.brewBatches.findMany).not.toHaveBeenCalled();
+  });
+
+  it("явный targetBatchVolumeL бьёт объём партии (пересчёт «а если сварю столько»)", async () => {
+    (db.query.brewBatches.findMany as Mock).mockResolvedValue([batchRow(40)]);
+
+    const result = await computeRecipeMatch({
+      userId: "u-1",
+      recipeId: "recipe-1",
+      brewBatchId: "bb-1",
+      targetBatchVolumeL: 30
+    });
+
+    expect(result.targetBatchVolumeL).toBe(30);
+    expect(result.lines[0].requiredQuantityNormalized).toBe(6000);
+    // За партией всё же ходим: даже при явном объёме дожим засыпи берётся из её
+    // плана (варится-то она на своей эффективности). Объём при этом — явный.
+    expect(db.query.brewBatches.findMany).toHaveBeenCalledTimes(1);
+  });
+});
+
+// --- дожим засыпи под эффективность --------------------------------------
+//
+// Варка на своём оборудовании идёт и на своей эффективности: чтобы попасть в
+// авторский OG, солода нужно больше (75/65 = ×1.154). Матч ОБЯЗАН считать
+// потребность тем же множителем, что списание, — иначе карточка снова обещает
+// «хватает», а склад не сходится.
+
+describe("computeRecipeMatch — эффективность оборудования дожимает засыпь", () => {
+  const batchRow = (batchSizeL: number | null, efficiencyPct?: number, recipeEfficiencyPct?: number) => ({
+    id: "bb-1",
+    brewPlanSnapshot: { recipe: { batchSizeL, efficiencyPct, recipeEfficiencyPct } }
+  });
+
+  const recipeAt75 = () => ({ ...pilsnerRecipe(4000), efficiency: 75 });
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+    (getBrewBatchInventoryCredits as Mock).mockResolvedValue(new Map());
+    (getRecipeById as Mock).mockResolvedValue(recipeAt75());
+    (listInventoryForUser as Mock).mockResolvedValue([pilsnerStock(5000)]);
+  });
+
+  it("вне партии: дефолтный профиль на 65% против рецепта на 75% → солода нужно ×1.154", async () => {
+    (listEquipmentProfiles as Mock).mockResolvedValue([
+      { targetBatchVolumeL: 20, brewhouseEfficiencyPct: 65 }
+    ]);
+
+    const result = await computeRecipeMatch({ userId: "u-1", recipeId: "recipe-1" });
+
+    // Объём тот же (20 л), но эффективность ниже: 4000 г × 75/65 = 4615.385 г.
+    expect(result.targetBatchVolumeL).toBe(20);
+    expect(result.lines[0].requiredQuantityNormalized).toBeCloseTo(4615.385, 2);
+  });
+
+  it("эффективность профиля совпала с авторской → дожима нет", async () => {
+    (listEquipmentProfiles as Mock).mockResolvedValue([
+      { targetBatchVolumeL: 20, brewhouseEfficiencyPct: 75 }
+    ]);
+
+    const result = await computeRecipeMatch({ userId: "u-1", recipeId: "recipe-1" });
+
+    expect(result.lines[0].requiredQuantityNormalized).toBe(4000);
+  });
+
+  it("у ПАРТИИ дожим берётся из её плана, а не из текущего профиля пользователя", async () => {
+    // Профиль с тех пор поменяли на 50% — партию это трогать не должно: она варится
+    // по тому, что зафиксировано на старте (65%).
+    (listEquipmentProfiles as Mock).mockResolvedValue([
+      { targetBatchVolumeL: 5, brewhouseEfficiencyPct: 50 }
+    ]);
+    (db.query.brewBatches.findMany as Mock).mockResolvedValue([batchRow(20, 65, 75)]);
+
+    const result = await computeRecipeMatch({ userId: "u-1", recipeId: "recipe-1", brewBatchId: "bb-1" });
+
+    expect(result.targetBatchVolumeL).toBe(20);
+    expect(result.lines[0].requiredQuantityNormalized).toBeCloseTo(4615.385, 2);
+    expect(listEquipmentProfiles).not.toHaveBeenCalled();
+  });
+
+  it("старая партия без эффективностей в плане → дожима нет (прежнее поведение)", async () => {
+    (listEquipmentProfiles as Mock).mockResolvedValue([]);
+    (db.query.brewBatches.findMany as Mock).mockResolvedValue([batchRow(20)]);
+
+    const result = await computeRecipeMatch({ userId: "u-1", recipeId: "recipe-1", brewBatchId: "bb-1" });
+
+    expect(result.lines[0].requiredQuantityNormalized).toBe(4000);
+  });
+});
+
+describe("computeRecipeMatchesForBrewBatches — ключ по партии, а не по рецепту", () => {
+  const pilsnerRow = {
+    id: "ri-1",
+    persistentKey: "ri-1-pk",
+    displayOrder: 0,
+    ingredientDisplayNameSnapshot: "Пильзнер",
+    ingredientCategory: "fermentable",
+    type: "malt",
+    ingredientSubtype: "malt",
+    ingredientCatalogItemId: "kursk--pilsner",
+    userCustomIngredientId: null,
+    amountNormalizedQuantity: 4000,
+    amountNormalizedUnit: "g"
+  };
+
+  const recipeRow = {
+    id: "r-1",
+    slug: "r-1-slug",
+    title: "Летний пилснер",
+    batchSizeNormalizedQuantity: 20000,
+    batchSizeNormalizedUnit: "ml",
+    ingredients: [pilsnerRow]
+  };
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+    (listEquipmentProfiles as Mock).mockResolvedValue([]);
+    (db.query.ingredients.findMany as Mock).mockResolvedValue([]);
+    (db.query.recipes.findMany as Mock).mockResolvedValue([recipeRow]);
+    (db.query.brewBatches.findMany as Mock).mockResolvedValue([]);
+    (getBrewBatchInventoryCreditsForBatches as Mock).mockResolvedValue(new Map());
+  });
+
+  it("две партии на ОДИН рецепт: кредит списавшейся не занижает нехватку второй", async () => {
+    (listInventoryForUser as Mock).mockResolvedValue([pilsnerStock(1000)]);
+    (getBrewBatchInventoryCreditsForBatches as Mock).mockResolvedValue(
+      new Map([["bb-1", credit(4000)]])
+    );
+
+    const result = await computeRecipeMatchesForBrewBatches({
+      userId: "u-1",
+      batches: [
+        { brewBatchId: "bb-1", recipeId: "r-1" },
+        { brewBatchId: "bb-2", recipeId: "r-1" }
+      ]
+    });
+
+    // bb-1 уже списала свои 4000 г — ей хватает.
+    expect(result["bb-1"].lines[0].status).toBe("covered");
+    expect(result["bb-1"].lines[0].shortfallNormalized).toBe(0);
+    // bb-2 ничего не списывала: её нехватка считается по РЕАЛЬНОМУ остатку.
+    // Если бы результат ключевался рецептом, кредит bb-1 стёр бы эту нехватку.
+    expect(result["bb-2"].lines[0].status).toBe("partial");
+    expect(result["bb-2"].lines[0].shortfallNormalized).toBe(3000);
+  });
+
+  it("склад запрашивается с includeEmpty: списанная в ноль позиция должна дойти до кредита", async () => {
+    (listInventoryForUser as Mock).mockResolvedValue([pilsnerStock(0)]);
+    (getBrewBatchInventoryCreditsForBatches as Mock).mockResolvedValue(
+      new Map([["bb-1", credit(4000)]])
+    );
+
+    const result = await computeRecipeMatchesForBrewBatches({
+      userId: "u-1",
+      batches: [{ brewBatchId: "bb-1", recipeId: "r-1" }]
+    });
+
+    expect(listInventoryForUser).toHaveBeenCalledWith("u-1", { includeEmpty: true });
+    expect(result["bb-1"].lines[0].status).toBe("covered");
+  });
+
+  it("партия без кредита считается по фактическому складу", async () => {
+    (listInventoryForUser as Mock).mockResolvedValue([pilsnerStock(1000)]);
+
+    const result = await computeRecipeMatchesForBrewBatches({
+      userId: "u-1",
+      batches: [{ brewBatchId: "bb-2", recipeId: "r-1" }]
+    });
+
+    expect(Object.keys(result)).toEqual(["bb-2"]);
+    expect(result["bb-2"].recipeId).toBe("r-1");
+    expect(result["bb-2"].lines[0].shortfallNormalized).toBe(3000);
+  });
+
+  it("пустой склад не приводит к короткому выходу: строки нужны списку покупок", async () => {
+    (listInventoryForUser as Mock).mockResolvedValue([]);
+
+    const result = await computeRecipeMatchesForBrewBatches({
+      userId: "u-1",
+      batches: [{ brewBatchId: "bb-1", recipeId: "r-1" }]
+    });
+
+    expect(db.query.recipes.findMany).toHaveBeenCalled();
+    expect(result["bb-1"].missingCount).toBe(1);
+    expect(result["bb-1"].matchPercent).toBe(0);
+  });
+
+  it("пустой список партий → {} без походов в БД", async () => {
+    const result = await computeRecipeMatchesForBrewBatches({ userId: "u-1", batches: [] });
+
+    expect(result).toEqual({});
+    expect(listInventoryForUser).not.toHaveBeenCalled();
+    expect(db.query.recipes.findMany).not.toHaveBeenCalled();
+  });
+
+  // H1 на списке партий и в /app/shopping: у каждой партии свой объём, а не общий
+  // дефолтный профиль — список покупок обязан требовать ровно то, что снимет со
+  // склада кнопка «Списать» на странице этой партии.
+  it("две партии одного рецепта с РАЗНЫМ объёмом: потребность у каждой своя", async () => {
+    (listInventoryForUser as Mock).mockResolvedValue([pilsnerStock(0)]);
+    (listEquipmentProfiles as Mock).mockResolvedValue([{ targetBatchVolumeL: 10 }]);
+    (db.query.brewBatches.findMany as Mock).mockResolvedValue([
+      { id: "bb-1", brewPlanSnapshot: { recipe: { batchSizeL: 20 } } },
+      { id: "bb-2", brewPlanSnapshot: { recipe: { batchSizeL: 40 } } }
+    ]);
+
+    const result = await computeRecipeMatchesForBrewBatches({
+      userId: "u-1",
+      batches: [
+        { brewBatchId: "bb-1", recipeId: "r-1" },
+        { brewBatchId: "bb-2", recipeId: "r-1" }
+      ]
+    });
+
+    expect(result["bb-1"].targetBatchVolumeL).toBe(20);
+    expect(result["bb-1"].lines[0].requiredQuantityNormalized).toBe(4000);
+    expect(result["bb-2"].targetBatchVolumeL).toBe(40);
+    expect(result["bb-2"].lines[0].requiredQuantityNormalized).toBe(8000);
+    // Профиль оборудования на пути партий не при чём.
+    expect(listEquipmentProfiles).not.toHaveBeenCalled();
   });
 });

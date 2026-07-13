@@ -1,6 +1,8 @@
+import { assertRateLimit } from "@nb/auth";
 import {
   and,
   brewBatches,
+  count,
   db,
   desc,
   eq,
@@ -22,6 +24,12 @@ import { z } from "zod";
 import {
   addCatalogInventoryItemSchema,
   addCustomInventoryItemSchema,
+  CUSTOM_INGREDIENT_CREATE_RATE_LIMIT,
+  CUSTOM_INGREDIENT_CREATE_RATE_WINDOW_SECONDS,
+  CUSTOM_INGREDIENT_MAX_COUNT_PER_USER,
+  INVENTORY_ITEM_CREATE_RATE_LIMIT,
+  INVENTORY_ITEM_CREATE_RATE_WINDOW_SECONDS,
+  INVENTORY_ITEM_MAX_COUNT_PER_USER,
   catalogInventoryTechnicalOverrideSchema,
   createUserCustomIngredientSchema,
   createUserCustomInventoryIngredientSchema,
@@ -928,7 +936,22 @@ const buildPersistedCustomIngredientValues = (
   };
 };
 
+/**
+ * Анти-абьюз-барьер для создания собственного ингредиента. Общий для всех входов
+ * (каталог, мастер рецептов, склад) — раньше лимит стоял только на пути из
+ * каталога, а два других его обходили. Бросает RATE_LIMITED /
+ * CUSTOM_INGREDIENT_QUOTA_REACHED.
+ */
+const assertCustomIngredientCreationAllowed = async (userId: string): Promise<void> => {
+  await assertRateLimit(userId, "custom_ingredient", CUSTOM_INGREDIENT_CREATE_RATE_LIMIT, CUSTOM_INGREDIENT_CREATE_RATE_WINDOW_SECONDS);
+  const [row] = await db.select({ value: count() }).from(userCustomIngredients).where(eq(userCustomIngredients.userId, userId));
+  if ((row?.value ?? 0) >= CUSTOM_INGREDIENT_MAX_COUNT_PER_USER) {
+    throw new Error("CUSTOM_INGREDIENT_QUOTA_REACHED");
+  }
+};
+
 export const createUserCustomIngredient = async (userId: string, payload: unknown) => {
+  await assertCustomIngredientCreationAllowed(userId);
   const parsed = createUserCustomIngredientSchema.parse(payload);
   const prepared = buildPersistedCustomIngredientValues(parsed, userId);
 
@@ -940,6 +963,7 @@ export const createUserCustomIngredient = async (userId: string, payload: unknow
 };
 
 export const createUserCustomInventoryIngredient = async (userId: string, payload: unknown) => {
+  await assertCustomIngredientCreationAllowed(userId);
   const parsed = createUserCustomInventoryIngredientSchema.parse(payload);
   const prepared = buildPersistedCustomIngredientValues(parsed, userId);
 
@@ -1347,11 +1371,25 @@ export const deleteUserCustomIngredient = async (userId: string, userCustomIngre
   return current;
 };
 
+/**
+ * Анти-абьюз-барьер для добавления позиции склада. Общий для обоих путей
+ * (каталог и кастом), оба пишут в user_ingredients. Rate limit режет скрипт-флуд,
+ * квота — засорение базы. Бросает RATE_LIMITED / INVENTORY_ITEM_QUOTA_REACHED.
+ */
+const assertInventoryItemCreationAllowed = async (userId: string): Promise<void> => {
+  await assertRateLimit(userId, "inventory_item_add", INVENTORY_ITEM_CREATE_RATE_LIMIT, INVENTORY_ITEM_CREATE_RATE_WINDOW_SECONDS);
+  const [row] = await db.select({ value: count() }).from(userIngredients).where(eq(userIngredients.userId, userId));
+  if ((row?.value ?? 0) >= INVENTORY_ITEM_MAX_COUNT_PER_USER) {
+    throw new Error("INVENTORY_ITEM_QUOTA_REACHED");
+  }
+};
+
 export const addCatalogIngredientToInventory = async (
   userId: string,
   payload: unknown,
   context: InventoryWriteContext = {}
 ) => {
+  await assertInventoryItemCreationAllowed(userId);
   const parsed = addCatalogInventoryItemSchema.parse(payload);
   const [catalogItem, rates] = await Promise.all([
     ensureCatalogIngredientExists(parsed.ingredientCatalogItemId),
@@ -1429,6 +1467,7 @@ export const addCustomIngredientToInventory = async (
   payload: unknown,
   context: InventoryWriteContext = {}
 ) => {
+  await assertInventoryItemCreationAllowed(userId);
   const parsed = addCustomInventoryItemSchema.parse(payload);
   const [customIngredient, rates] = await Promise.all([
     ensureOwnedCustomIngredient(userId, parsed.userCustomIngredientId),

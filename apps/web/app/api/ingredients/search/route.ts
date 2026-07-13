@@ -1,7 +1,9 @@
+import { assertRateLimit } from "@nb/auth";
 import { NextResponse } from "next/server";
 
-import { getSessionUser } from "@/lib/auth";
 import { searchUserCatalogIngredients } from "@/features/ingredients/catalog-service";
+import { clientIpFrom } from "@/lib/anti-abuse";
+import { getSessionUser } from "@/lib/auth";
 
 // Каталог ингредиентов — публичная зона (см. /catalog): анонимный посетитель получает
 // системный каталог без избранного/кастомных ингредиентов. Нужно калькуляторам
@@ -9,6 +11,15 @@ import { searchUserCatalogIngredients } from "@/features/ingredients/catalog-ser
 export async function GET(request: Request) {
   const user = await getSessionUser();
   const { searchParams } = new URL(request.url);
+
+  // Каждый запрос грузит каталог и ранжирует в памяти (CPU). Анонимный вход —
+  // ключ по IP, залогиненный — по юзеру (не мешаем пикеру). Окно щедрое: пикер
+  // дёргает поиск на ввод с дебаунсом.
+  try {
+    await assertRateLimit(user ? `user:${user.id}` : `ip:${clientIpFrom(request) ?? "unknown"}`, "ingredient_search", 120, 60);
+  } catch {
+    return NextResponse.json({ error: "RATE_LIMITED" }, { status: 429 });
+  }
 
   try {
     const result = await searchUserCatalogIngredients(user?.id ?? null, {

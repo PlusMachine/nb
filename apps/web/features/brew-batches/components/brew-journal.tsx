@@ -11,10 +11,12 @@ import {
   setBrewMeasurementFinalAction
 } from "@/app/(app)/app/brew-batches/[id]/actions";
 import { NumericInput } from "@/components/shared/numeric-input";
+import { resolveBrewGravityPlaceholderSg } from "@/features/brew-batches/brew-day";
 import {
   GRAVITY_SG_MAX,
   GRAVITY_SG_MIN,
   type BrewMeasurementDto,
+  type BrewMeasurementKind,
   type BrewMeasurementSummary
 } from "@/features/brew-batches/contracts";
 import {
@@ -27,6 +29,17 @@ import {
 
 const fmtAbv = (value: number | null) => (value == null ? "—" : `${value.toFixed(1)}%`);
 const fmtAtt = (value: number | null) => (value == null ? "—" : `${Math.round(value)}%`);
+
+// Подсказка в поле ввода — голое число: единица уже стоит в подписи поля
+// («Плотность (°P)»), и formatGravity с её суффиксом здесь только шумел бы.
+const fmtGravityPlaceholder = (sg: number, unit: PreferredGravityUnit): string => {
+  if (unit === "sg") {
+    return sg.toFixed(3);
+  }
+  const converted = sgToGravityUnit(sg, toCalculatorGravityUnit(unit)).toFixed(1);
+  // sgToPlato(1.000) ≈ −0.003 — гасим «−0.0» у совсем сухих целей (как formatGravity).
+  return Number(converted) === 0 ? (0).toFixed(1) : converted;
+};
 
 const dateFmt = new Intl.DateTimeFormat("ru-RU", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" });
 const fmtDate = (value: Date) => dateFmt.format(new Date(value));
@@ -60,6 +73,7 @@ export function BrewJournal({
   measurements,
   summary,
   preferredGravityUnit,
+  measurementKind,
   hideStats = false,
   title = "Журнал замеров"
 }: {
@@ -67,6 +81,8 @@ export function BrewJournal({
   measurements: BrewMeasurementDto[];
   summary: BrewMeasurementSummary;
   preferredGravityUnit: PreferredGravityUnit;
+  /** Какой замер ждём в этом акте — задаёт подсказку в поле плотности (см. brew-day.ts). */
+  measurementKind: BrewMeasurementKind;
   /** Скрыть плитки OG/FG/ABV/сбраживание — уже показаны карточкой «Итог варки». */
   hideStats?: boolean;
   /** Контекстный заголовок секции (OG на варочном дне, FG на брожении). */
@@ -89,6 +105,8 @@ export function BrewJournal({
   const gravityInputMin = sgToGravityUnit(GRAVITY_SG_MIN, gravityUnit);
   const gravityInputMax = sgToGravityUnit(GRAVITY_SG_MAX, gravityUnit);
   const fmtGravity = (value: number | null) => formatGravity(value, preferredGravityUnit);
+  const placeholderSg = resolveBrewGravityPlaceholderSg(measurementKind, target);
+  const gravityPlaceholder = placeholderSg == null ? undefined : fmtGravityPlaceholder(placeholderSg, preferredGravityUnit);
 
   const submit = async (event: React.FormEvent) => {
     event.preventDefault();
@@ -213,9 +231,9 @@ export function BrewJournal({
               value={gravity}
               onChange={(event) => setGravity(event.target.value)}
               disabled={busy}
-              placeholder={sgToGravityUnit(1.012, gravityUnit).toString()}
+              placeholder={gravityPlaceholder}
               aria-label={`Плотность, ${gravityUnitLabels[preferredGravityUnit]}`}
-              className="h-9 w-28 rounded-md border border-border px-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+              className="h-9 w-28 rounded-md border border-border px-2 text-base text-foreground focus:outline-none focus:ring-2 focus:ring-ring sm:text-sm"
             />
           </label>
           <label className="flex flex-col gap-1">
@@ -226,7 +244,7 @@ export function BrewJournal({
               onChange={(event) => setTakenAt(event.target.value)}
               disabled={busy}
               aria-label="Когда сделан замер"
-              className="h-9 rounded-md border border-border px-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+              className="h-9 rounded-md border border-border px-2 text-base text-foreground focus:outline-none focus:ring-2 focus:ring-ring sm:text-sm"
             />
           </label>
           <label className="flex min-w-[8rem] flex-1 flex-col gap-1">
@@ -239,7 +257,7 @@ export function BrewJournal({
               placeholder="напр. внёс дрожжи"
               maxLength={500}
               aria-label="Заметка к замеру"
-              className="h-9 w-full rounded-md border border-border px-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+              className="h-9 w-full rounded-md border border-border px-2 text-base text-foreground focus:outline-none focus:ring-2 focus:ring-ring sm:text-sm"
             />
           </label>
           <Button type="submit" size="sm" disabled={busy}>

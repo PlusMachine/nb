@@ -9,6 +9,8 @@ const ownerCard: OwnerRecipeCardDto = {
   slug: "public-ipa",
   title: "My Pils",
   publicationState: "draft",
+  hiddenAt: null,
+  hiddenReason: null,
   versionNumber: 1,
   versionCount: 1,
   updatedAt: new Date("2026-01-02T00:00:00.000Z"),
@@ -21,7 +23,8 @@ const ownerCard: OwnerRecipeCardDto = {
   colorSrm: 7,
   heroImage: null,
   styleImageUrl: null,
-  styleFit: null
+  styleFit: null,
+  brewBatchCount: 0
 };
 
 const mocks = vi.hoisted(() => ({

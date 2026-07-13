@@ -94,8 +94,12 @@ describe("calculator pages", () => {
     );
     expect(sectionCounts).toEqual([5, 6, 2, 4]);
 
+    // Секции калькуляторов + блок «Инструменты» (наклейки — не расчёт, поэтому
+    // они вне каталога калькуляторов, но живут на той же странице).
     const h2Headings = [...html.matchAll(/<h2[^>]*>([^<]*)<\/h2>/g)].map((match) => match[1]);
-    expect(h2Headings).toEqual(calculatorSections);
+    expect(h2Headings).toEqual([...calculatorSections, "Инструменты"]);
+    expect(html).toContain("Наклейки на бутылки");
+    expect(html).toContain('href="/labels"');
 
     for (const calculator of calculators) {
       expect(html).toContain(`data-calculator-card="${calculator.slug}"`);

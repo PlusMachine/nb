@@ -39,7 +39,8 @@ const buildDetailHref = (item: UserCatalogIngredientDto) => (
 const AddToInventoryAction = ({ item }: { item: UserCatalogIngredientDto }) => (
   <Link
     href={buildIngredientCatalogActionHref("/app/ingredients", item.source, item.id)}
-    className="rounded-md p-1 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+    // before:-inset-2.5 расширяет тач-таргет до ~44px без увеличения самой иконки.
+    className="relative rounded-md p-1 text-muted-foreground transition-colors before:absolute before:-inset-2.5 before:content-[''] hover:bg-accent hover:text-foreground"
     aria-label="На склад"
   >
     <Boxes className="h-4 w-4" />
@@ -321,7 +322,7 @@ export const CatalogItemsList = ({ items, hideSubtypeBadge, canManage }: Catalog
                         <AddToInventoryAction item={item} />
                         <Link
                           href={`/catalog/custom/${item.id}/edit`}
-                          className="rounded-md p-1 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+                          className="relative rounded-md p-1 text-muted-foreground transition-colors before:absolute before:-inset-2.5 before:content-[''] hover:bg-accent hover:text-foreground"
                           aria-label="Редактировать"
                         >
                           <Pencil className="h-4 w-4" />
@@ -402,7 +403,7 @@ export const CatalogItemsList = ({ items, hideSubtypeBadge, canManage }: Catalog
                   <AddToInventoryAction item={item} />
                   <Link
                     href={`/catalog/custom/${item.id}/edit`}
-                    className="rounded-md p-1 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+                    className="relative rounded-md p-1 text-muted-foreground transition-colors before:absolute before:-inset-2.5 before:content-[''] hover:bg-accent hover:text-foreground"
                     aria-label="Редактировать"
                   >
                     <Pencil className="h-4 w-4" />

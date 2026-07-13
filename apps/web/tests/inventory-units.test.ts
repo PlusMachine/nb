@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import {
+  formatInventoryUnitLabel,
   normalizeInventoryMeasurement,
   normalizeInventoryMeasurementForProfile,
   resolveHumanFacingInventoryUnitProfile,
@@ -151,7 +152,21 @@ describe("inventory unit normalization", () => {
         packageSize: null,
         packageUnit: null
       }
-    })).toBe("2 пачка (22 г)");
+    })).toBe("2 пачки (22 г)");
+  });
+
+  it("склоняет «пачку» по количеству", () => {
+    expect(formatInventoryUnitLabel("pack", 1)).toBe("пачка");
+    expect(formatInventoryUnitLabel("pack", 2)).toBe("пачки");
+    expect(formatInventoryUnitLabel("pack", 4)).toBe("пачки");
+    expect(formatInventoryUnitLabel("pack", 5)).toBe("пачек");
+    expect(formatInventoryUnitLabel("pack", 11)).toBe("пачек");
+    expect(formatInventoryUnitLabel("pack", 21)).toBe("пачка");
+    expect(formatInventoryUnitLabel("pack", 1.5)).toBe("пачки");
+    // Без количества — базовая форма (цена «₽/пачка»); сокращения не склоняются.
+    expect(formatInventoryUnitLabel("pack")).toBe("пачка");
+    expect(formatInventoryUnitLabel("item", 5)).toBe("шт.");
+    expect(formatInventoryUnitLabel("g", 5)).toBe("г");
   });
 
   it("formats fermentable quantities in kilograms for human display", () => {

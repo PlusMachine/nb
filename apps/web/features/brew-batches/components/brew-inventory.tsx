@@ -17,14 +17,18 @@ import {
 import { pluralize } from "@/lib/pluralize";
 
 // Человекочитаемое количество из нормализованного (g→kg, ml→l при больших значениях).
+// Точность — как её пишет пивовар, а не как хранит БД: варка в объёме, отличном от
+// рецепта, даёт дробные количества (5 кг × 20/30 = 3.3333…), и «−83.334 г» в журнале
+// склада — это шум, а не точность.
 const fmtAmount = (quantity: number, unit: string): string => {
   if (unit === "g" && quantity >= 1000) {
-    return `${Number((quantity / 1000).toFixed(3))} кг`;
+    return `${Number((quantity / 1000).toFixed(2))} кг`;
   }
   if (unit === "ml" && quantity >= 1000) {
-    return `${Number((quantity / 1000).toFixed(3))} л`;
+    return `${Number((quantity / 1000).toFixed(2))} л`;
   }
-  const value = Number(quantity.toFixed(3));
+  const precision = unit === "g" || unit === "ml" ? 1 : 2;
+  const value = Number(quantity.toFixed(precision));
   const label = unit === "g" ? "г" : unit === "ml" ? "мл" : unit === "item" ? "шт" : unit === "pack" ? "уп" : unit;
   return `${value} ${label}`;
 };
@@ -57,7 +61,12 @@ export function BrewInventory({
   const [message, setMessage] = useState<{ ok: boolean; text: string } | null>(null);
   const inFlight = useRef(false);
 
-  const canConsume = !view.recipeAlreadyConsumed && status !== "cancelled" && status !== "completed";
+  // Списание — свойство ЭТОЙ партии: варка того же рецепта во второй раз (пока
+  // первая ещё бродит) списывает свой склад заново. Гасим кнопку, только если эта
+  // партия уже списала (и не вернула), варка закрыта или рецепта-источника больше нет.
+  const recipeAvailable = Boolean(view.recipeId);
+  const isTerminal = status === "cancelled" || status === "completed";
+  const canConsume = !view.batchAlreadyConsumed && recipeAvailable && !isTerminal;
 
   const run = async (action: () => Promise<{ ok: boolean; message: string }>) => {
     if (inFlight.current) {
@@ -110,18 +119,29 @@ export function BrewInventory({
               <span className="min-w-0 flex-1 truncate text-sm text-foreground">
                 {line.ingredientDisplayName ?? "Ингредиент"}
               </span>
-              <span className="shrink-0 text-sm font-medium tabular-nums text-muted-foreground">
-                −{fmtAmount(line.quantityNormalized, line.normalizedUnit)}
-              </span>
+              {/* Списали меньше, чем нужно (дрожжей на складе не хватило — списание
+                  ужалось до остатка): показываем и то, и другое, иначе «Списано»
+                  врёт молчанием. */}
+              {line.requiredQuantityNormalized != null ? (
+                <span className="shrink-0 text-sm font-medium tabular-nums text-warning">
+                  −{fmtAmount(line.quantityNormalized, line.normalizedUnit)}
+                  {" из "}
+                  {fmtAmount(line.requiredQuantityNormalized, line.normalizedUnit)}
+                </span>
+              ) : (
+                <span className="shrink-0 text-sm font-medium tabular-nums text-muted-foreground">
+                  −{fmtAmount(line.quantityNormalized, line.normalizedUnit)}
+                </span>
+              )}
             </li>
           ))}
         </ul>
       ) : (
         <p className="text-sm text-muted-foreground">
           {canConsume
-            ? "Спишем со склада сопоставленные позиции рецепта (по точному совпадению ингредиента и единицы)."
-            : view.recipeAlreadyConsumed
-              ? "Ингредиенты рецепта уже списаны со склада."
+            ? "Спишем со склада ингредиенты рецепта — в объёме этой варки."
+            : !recipeAvailable
+              ? "Рецепт этой варки удалён — списывать нечего."
               : "По этой варке ингредиенты со склада не списывались."}
         </p>
       )}

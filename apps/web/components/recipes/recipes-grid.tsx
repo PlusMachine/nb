@@ -49,8 +49,10 @@ export function RecipesGrid({
         // треки, и единственная карточка (частый случай на странице стиля / при 1 результате
         // поиска) растягивается на всю ширину; auto-fill сохраняет треки, и одиночная
         // карточка остаётся шириной колонки. Скелетон (recipes-grid-skeleton) обязан
-        // повторять эту же раскладку — иначе CLS при загрузке.
-        <div className="grid grid-cols-[repeat(auto-fill,minmax(320px,1fr))] gap-5">
+        // повторять эту же раскладку — иначе CLS при загрузке. min(320px,100%), а не
+        // голые 320px: на вьюпортах ≤368px (масс. Android 360px при px-6 оболочки)
+        // жёсткий трек шире контейнера и даёт горизонтальный скролл всей страницы.
+        <div className="grid grid-cols-[repeat(auto-fill,minmax(min(320px,100%),1fr))] gap-5">
           {recipes.map((recipe) => (
             <RecipeCard key={recipe.id} recipe={recipe} showCloneAction={showCloneAction} preferredGravityUnit={preferredGravityUnit} />
           ))}

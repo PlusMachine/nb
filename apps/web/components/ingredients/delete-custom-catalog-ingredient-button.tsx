@@ -1,9 +1,9 @@
 "use client";
 
-import React from "react";
 import { useState, useTransition } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { X } from "lucide-react";
+import { useToast } from "@nb/ui";
 
 import { deleteCatalogCustomIngredientAction } from "@/app/(public)/catalog/actions";
 import { ConfirmActionDialog } from "@/components/shared/confirm-action-dialog";
@@ -27,21 +27,30 @@ export function DeleteCustomCatalogIngredientButton({
 }: Props) {
   const pathname = usePathname();
   const router = useRouter();
+  const { show } = useToast();
   const [open, setOpen] = useState(false);
-  const [feedback, setFeedback] = useState<{ ok: boolean; message: string } | null>(null);
+  const [error, setError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
 
-  const handleOpen = () => setOpen(true);
+  const close = () => {
+    setOpen(false);
+    setError(null);
+  };
 
   return (
-    <div className="space-y-1">
+    <>
       <button
         type="button"
         disabled={isPending}
-        onClick={handleOpen}
+        onClick={() => {
+          setError(null);
+          setOpen(true);
+        }}
         aria-label={label}
         className={className ?? (variant === "icon"
-          ? "rounded-md p-1 text-muted-foreground transition-colors hover:bg-destructive-subtle hover:text-destructive disabled:opacity-60"
+          // before:-inset-2.5 расширяет тач-таргет до ~44px, не увеличивая саму иконку
+          // (тот же приём, что в recipe-save-button.tsx / clone-from-public-button.tsx).
+          ? "relative rounded-md p-1 text-muted-foreground transition-colors before:absolute before:-inset-2.5 before:content-[''] hover:bg-destructive-subtle hover:text-destructive disabled:opacity-60"
           : "rounded-xl border border-destructive-border bg-card px-4 py-2.5 text-sm font-medium text-destructive transition-colors hover:bg-destructive-subtle disabled:opacity-60")}
       >
         {variant === "icon"
@@ -49,29 +58,27 @@ export function DeleteCustomCatalogIngredientButton({
           : (isPending ? "Удаляем..." : label)}
       </button>
 
-      {feedback ? (
-        <p role={feedback.ok ? "status" : "alert"} className={`text-xs ${feedback.ok ? "text-success" : "text-destructive"}`}>
-          {feedback.message}
-        </p>
-      ) : null}
-
       <ConfirmActionDialog
         open={open}
         title="Удалить ингредиент?"
-        description={`Пользовательский ингредиент "${displayName}" будет удален из вашего каталога, если он не используется в рецептах или на складе.`}
+        description={`Пользовательский ингредиент «${displayName}» будет удалён из вашего каталога, если он не используется в рецептах или на складе.`}
         confirmLabel="Удалить ингредиент"
         pendingLabel="Удаляем..."
         pending={isPending}
-        onClose={() => setOpen(false)}
+        error={error}
+        onClose={close}
         onConfirm={() => {
+          setError(null);
           startTransition(async () => {
             const result = await deleteCatalogCustomIngredientAction(ingredientId);
-            setFeedback(result);
             if (!result.ok) {
+              setError(result.message);
               return;
             }
 
             setOpen(false);
+            show({ title: `«${displayName}» удалён`, tone: "success" });
+
             if (redirectHref) {
               router.push(redirectHref);
               router.refresh();
@@ -83,6 +90,6 @@ export function DeleteCustomCatalogIngredientButton({
           });
         }}
       />
-    </div>
+    </>
   );
 }

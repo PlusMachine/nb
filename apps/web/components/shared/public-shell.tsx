@@ -26,9 +26,15 @@ export function PublicShell({ user, children }: PublicShellProps) {
   }
 
   return (
-    <div className="min-h-screen [--chrome-top:3.5rem]">
+    <div className="min-h-dvh [--chrome-top:3.5rem]">
       <SiteHeader />
-      <div className={`mx-auto px-6 pb-12 ${resolveContentWidthClass(pathname)}`}>{children}</div>
+      {/* pb резервирует место под липкий бар результата калькулятора (--nb-sticky-bar-h,
+          у анонима сидит на bottom:0) и cookie-баннер — иначе низ контента уезжает под них. */}
+      <div
+        className={`mx-auto px-4 pb-[calc(3rem+var(--nb-sticky-bar-h,0px)+var(--nb-cookie-banner-h,0px))] sm:px-6 ${resolveContentWidthClass(pathname)}`}
+      >
+        {children}
+      </div>
       <SiteFooter />
     </div>
   );

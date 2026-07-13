@@ -42,7 +42,8 @@ export function RecipesPagination({ current, totalPages }: { current: number; to
     document.getElementById("recipes-top")?.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
-  const baseClass = "inline-flex h-9 min-w-9 items-center justify-center rounded-lg border px-3 text-sm font-medium transition";
+  // min-h-11/min-w-11 — тач-таргет ≥44px (были 36px плотным рядом).
+  const baseClass = "inline-flex min-h-11 min-w-11 items-center justify-center rounded-lg border px-3 text-sm font-medium transition";
   const idleClass = `${baseClass} border-border bg-card text-foreground hover:bg-muted`;
   const mutedClass = `${baseClass} border-border text-muted-foreground`;
 

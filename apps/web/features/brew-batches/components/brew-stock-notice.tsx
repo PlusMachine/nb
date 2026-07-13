@@ -20,9 +20,10 @@ const successText = (items: string | null): string =>
   `Списано со склада: ${items ?? "0"} поз.`;
 
 const errorTextByCode: Record<string, string> = {
-  already_consumed: "Списание не выполнено: ингредиенты рецепта уже списаны",
+  already_consumed: "Списание не выполнено: по этой партии ингредиенты уже списаны",
   insufficient_stock: "Списание не выполнено: не хватает остатков на складе",
   recipe_unavailable: "Списание не выполнено: рецепт-источник недоступен",
+  nothing_to_consume: "Списывать нечего: ингредиентов рецепта нет на складе",
   error: "Списание не выполнено. Попробуйте со страницы партии."
 };
 

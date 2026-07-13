@@ -32,9 +32,12 @@ export function IngredientFavoriteToggle({
   }, [initialFavorite]);
 
   const iconClassName = size === "md" ? "h-5 w-5" : "h-4 w-4";
+  // before:-inset-N расширяет тач-таргет до ~44px без увеличения самой звезды
+  // (приём как в recipe-save-button.tsx / clone-from-public-button.tsx): звезда стоит
+  // на мобильной карточке каталога вплотную к другим иконкам-действиям.
   const buttonClassName = size === "md"
-    ? "rounded-full p-2"
-    : "rounded-full p-1.5";
+    ? "relative rounded-full p-2 before:absolute before:-inset-2 before:content-['']"
+    : "relative rounded-full p-1.5 before:absolute before:-inset-2 before:content-['']";
 
   return (
     <button

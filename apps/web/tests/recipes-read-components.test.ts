@@ -30,6 +30,8 @@ const recipeDetail: RecipeDetailDto = {
   versionNumber: 1,
   versionCount: 1,
   publicationState: "published",
+  hiddenAt: null,
+  hiddenReason: null,
   title: "Hazy IPA",
   slug: "public-ipa",
   styleId: null,
@@ -212,6 +214,26 @@ describe("recipes read components", () => {
     expect(html).toContain("Кипячение");
     expect(html).toContain("Описание");
     expect(html).toContain("Личные заметки");
+  });
+
+  // A5в. Хмель на кипячение обязан показывать время: DTO отдаёт эффективное время
+  // (то же, что идёт в расчёт IBU) даже для легаси-строк, где в БД его нет.
+  it("показывает время внесения хмеля на кипячение", () => {
+    const html = renderToStaticMarkup(
+      React.createElement(RecipeIngredientsSection, {
+        ingredients: [
+          {
+            ...recipeDetail.ingredients[1]!,
+            id: "ri-boil-hop-time",
+            stage: "boil",
+            timeOffset: 60,
+            stepMeta: { useType: "boil", timeMinutes: 60 }
+          }
+        ]
+      })
+    );
+
+    expect(html).toContain("Кипячение · 60 мин");
   });
 
   it("не показывает дубль stage/useType, если они совпадают по смыслу (F7)", () => {
@@ -397,8 +419,8 @@ describe("recipes read components", () => {
       }))
     );
 
-    expect(html).toContain("American IPA");
-    expect(html).toMatch(/<a[^>]+href="\/bjcp\/[^"]+"[^>]*>American IPA<\/a>/);
+    expect(html).toContain("Американский IPA");
+    expect(html).toMatch(/<a[^>]+href="\/bjcp\/[^"]+"[^>]*>Американский IPA<\/a>/);
   });
 
   it("does not link the style name when the recipe has no resolvable style", () => {

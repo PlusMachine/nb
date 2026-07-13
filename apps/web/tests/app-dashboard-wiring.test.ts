@@ -309,12 +309,20 @@ describe("App dashboard", () => {
     expect(html).toContain("100 г");
   });
 
-  it("surfaces recipes that can be brewed right now from stock", async () => {
+  it("surfaces recipes matched against the user's stock", async () => {
     const html = renderToStaticMarkup(await AppZonePage());
 
-    expect(html).toContain("Можно сварить сейчас");
+    expect(html).toContain("Рецепты под ваш склад");
     expect(html).toContain("My IPA");
     expect(html).toContain('href="/app/recipes/r-9/edit"');
+  });
+
+  // Н7: в секцию по решению владельца попадают и qtyShort-рецепты («Почти
+  // хватает») — заголовок не должен обещать «можно сварить сейчас».
+  it("does not promise «Можно сварить сейчас» in the section title", async () => {
+    const html = renderToStaticMarkup(await AppZonePage());
+
+    expect(html).not.toContain("Можно сварить сейчас");
   });
 
   it("shows recent own recipes with create/all actions", async () => {
@@ -328,6 +336,27 @@ describe("App dashboard", () => {
     expect(html).not.toContain("Приватный");
     // виджет — обзорный (intent="preview"): владельческое меню «Действия» не рендерится.
     expect(html).not.toContain('aria-label="Действия"');
+  });
+
+  it("does not promise «Хватает всего» when the brewable recipe is short on quantity (A3)", async () => {
+    // все типы ингредиентов на складе (missingCount 0), но количества местами не
+    // хватает: строка partial → coveredLines < totalLines, matchPercent 69
+    mocks.findBrewableOwnRecipesForUser.mockResolvedValue([
+      { ...brewableRecipe, coveredLines: 3, matchPercent: 69 }
+    ]);
+
+    const html = renderToStaticMarkup(await AppZonePage());
+
+    expect(html).toContain("Рецепты под ваш склад");
+    expect(html).toContain("Почти хватает");
+    expect(html).not.toContain("Хватает всего");
+  });
+
+  it("says «Хватает всего» when every line is fully covered", async () => {
+    const html = renderToStaticMarkup(await AppZonePage());
+
+    expect(html).toContain("Хватает всего");
+    expect(html).not.toContain("Почти хватает");
   });
 
   it("does not repeat a recipe across brewable and recent sections", async () => {

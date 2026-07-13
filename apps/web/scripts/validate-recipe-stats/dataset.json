@@ -1,0 +1,424 @@
+[
+  {
+    "id": "byo-lagunitas-ipa-clone",
+    "name": "Lagunitas IPA clone (BYO)",
+    "sourceUrl": "https://byo.com/recipes/lagunitas-brewing-company-lagunitas-ipa-clone/",
+    "style": "American IPA",
+    "claimed": {"og": 1.061, "fg": 1.016, "abv": 6.2, "ibu": 67, "srm": 9},
+    "batch": {"volumeGal": 5, "boilVolumeGal": null, "boilMinutes": 90, "efficiencyPct": null, "efficiencyStated": false},
+    "fermentables": [
+      {"name": "2-row pale malt", "amountLb": 9.4, "colorL": null, "type": "grain"},
+      {"name": "Crystal malt (10 L)", "amountLb": 1.3, "colorL": 10, "type": "grain"},
+      {"name": "Wheat malt", "amountLb": 0.8125, "colorL": null, "type": "grain"},
+      {"name": "Light Munich malt", "amountLb": 0.8125, "colorL": 6, "type": "grain"},
+      {"name": "Crystal malt (60 L)", "amountLb": 0.5625, "colorL": 60, "type": "grain"}
+    ],
+    "hops": [
+      {"name": "Horizon", "amountOz": 0.75, "alphaPct": 11, "minutes": 60, "use": "boil"},
+      {"name": "Summit", "amountOz": 0.25, "alphaPct": 18, "minutes": 60, "use": "boil"},
+      {"name": "Willamette", "amountOz": 0.9, "alphaPct": 5, "minutes": 30, "use": "boil"},
+      {"name": "Centennial", "amountOz": 0.25, "alphaPct": 9.5, "minutes": 30, "use": "boil"},
+      {"name": "Cascade", "amountOz": 1.5, "alphaPct": 5, "minutes": 0, "use": "boil"},
+      {"name": "Cascade", "amountOz": 1.0, "alphaPct": null, "minutes": null, "use": "dryhop"},
+      {"name": "Centennial", "amountOz": 1.0, "alphaPct": null, "minutes": null, "use": "dryhop"}
+    ],
+    "yeast": {"name": "Wyeast 1056 / US-05", "attenuationPct": null}
+  },
+  {
+    "id": "byo-barney-flats-oatmeal-stout",
+    "name": "Barney Flats Oatmeal Stout clone (BYO)",
+    "sourceUrl": "https://byo.com/recipes/anderson-valley-brewing-company-barney-flats-oatmeal-stout-clone/",
+    "style": "Oatmeal Stout",
+    "claimed": {"og": 1.060, "fg": 1.017, "abv": 5.8, "ibu": 14, "srm": 34},
+    "batch": {"volumeGal": 5, "boilVolumeGal": null, "boilMinutes": 90, "efficiencyPct": null, "efficiencyStated": false},
+    "fermentables": [
+      {"name": "2-row pale malt", "amountLb": 8.75, "colorL": null, "type": "grain"},
+      {"name": "Crystal malt (40 L)", "amountLb": 0.75, "colorL": 40, "type": "grain"},
+      {"name": "Crystal malt (80 L)", "amountLb": 0.75, "colorL": 80, "type": "grain"},
+      {"name": "Munich malt", "amountLb": 0.75, "colorL": 20, "type": "grain"},
+      {"name": "Roasted barley", "amountLb": 0.08125, "colorL": null, "type": "grain"},
+      {"name": "Chocolate malt", "amountLb": 0.875, "colorL": null, "type": "grain"},
+      {"name": "Flaked oats", "amountLb": 0.9375, "colorL": null, "type": "grain"}
+    ],
+    "hops": [
+      {"name": "Columbus", "amountOz": 0.28, "alphaPct": 14, "minutes": 60, "use": "boil"},
+      {"name": "Northern Brewer", "amountOz": 0.25, "alphaPct": null, "minutes": 0, "use": "boil"}
+    ],
+    "yeast": {"name": "Wyeast 1968 London ESB", "attenuationPct": null}
+  },
+  {
+    "id": "byo-pilsner-urquell",
+    "name": "Pilsner Urquell clone (BYO)",
+    "sourceUrl": "https://byo.com/recipes/pilsner-urquell-clone/",
+    "style": "Czech Premium Pale Lager",
+    "claimed": {"og": 1.048, "fg": 1.015, "abv": 4.4, "ibu": 40, "srm": 4},
+    "batch": {"volumeGal": 5, "boilVolumeGal": null, "boilMinutes": 90, "efficiencyPct": null, "efficiencyStated": false},
+    "fermentables": [
+      {"name": "Continental Pilsner malt", "amountLb": 8.0, "colorL": null, "type": "grain"},
+      {"name": "Vienna malt", "amountLb": 1.0, "colorL": null, "type": "grain"},
+      {"name": "Munich malt", "amountLb": 0.5, "colorL": 6, "type": "grain"},
+      {"name": "Carafoam malt", "amountLb": 0.5, "colorL": null, "type": "grain"}
+    ],
+    "hops": [
+      {"name": "Saaz", "amountOz": 1.3, "alphaPct": 4, "minutes": 80, "use": "boil"},
+      {"name": "Saaz", "amountOz": 0.8, "alphaPct": 4, "minutes": 45, "use": "boil"},
+      {"name": "Saaz", "amountOz": 0.75, "alphaPct": 4, "minutes": 25, "use": "boil"}
+    ],
+    "yeast": {"name": "Wyeast 2001 / WLP800", "attenuationPct": null}
+  },
+  {
+    "id": "byo-weldwerks-hefeweizen",
+    "name": "WeldWerks Hefeweizen clone (BYO)",
+    "sourceUrl": "https://byo.com/recipes/weldwerks-brewings-hefeweizen-clone/",
+    "style": "Hefeweizen",
+    "claimed": {"og": 1.052, "fg": 1.010, "abv": 5.5, "ibu": 15, "srm": 5},
+    "batch": {"volumeGal": 5, "boilVolumeGal": 6.5, "boilMinutes": 90, "efficiencyPct": null, "efficiencyStated": false},
+    "fermentables": [
+      {"name": "Great Western Pilsner malt", "amountLb": 4.5, "colorL": null, "type": "grain"},
+      {"name": "White wheat malt", "amountLb": 4.0, "colorL": null, "type": "grain"},
+      {"name": "Dextrin malt", "amountLb": 0.625, "colorL": null, "type": "grain"},
+      {"name": "Munich malt", "amountLb": 0.625, "colorL": null, "type": "grain"},
+      {"name": "Corn sugar", "amountLb": 0.5, "colorL": null, "type": "sugar"}
+    ],
+    "hops": [
+      {"name": "Magnum", "amountOz": 0.17, "alphaPct": 14, "minutes": null, "use": "boil"},
+      {"name": "Hallertauer Mittelfruh", "amountOz": 0.75, "alphaPct": null, "minutes": null, "use": "whirlpool"}
+    ],
+    "yeast": {"name": "Omega OYL-021 Hefeweizen", "attenuationPct": null}
+  },
+  {
+    "id": "byo-utah-sage-saison",
+    "name": "Epic Utah Sage Saison clone (BYO)",
+    "sourceUrl": "https://byo.com/recipes/epic-brewing-co-s-utah-sage-saison-clone/",
+    "style": "Saison",
+    "claimed": {"og": 1.061, "fg": 1.010, "abv": 6.2, "ibu": 39, "srm": 5},
+    "batch": {"volumeGal": 5, "boilVolumeGal": null, "boilMinutes": 60, "efficiencyPct": null, "efficiencyStated": false},
+    "fermentables": [
+      {"name": "Pilsner malt", "amountLb": 5.25, "colorL": null, "type": "grain"},
+      {"name": "Maris Otter pale ale malt", "amountLb": 5.25, "colorL": null, "type": "grain"},
+      {"name": "Wheat malt", "amountLb": 0.75, "colorL": null, "type": "grain"},
+      {"name": "Rye malt", "amountLb": 0.75, "colorL": null, "type": "grain"},
+      {"name": "Flaked barley", "amountLb": 0.75, "colorL": null, "type": "grain"}
+    ],
+    "hops": [
+      {"name": "Centennial", "amountOz": 0.5, "alphaPct": 11, "minutes": 60, "use": "boil"},
+      {"name": "Chinook", "amountOz": 1.0, "alphaPct": 10, "minutes": 15, "use": "boil"},
+      {"name": "Chinook", "amountOz": 1.0, "alphaPct": 10, "minutes": 0, "use": "boil"}
+    ],
+    "yeast": {"name": "WLP565 Belgian Saison", "attenuationPct": null}
+  },
+  {
+    "id": "byo-full-sail-amber",
+    "name": "Full Sail Amber Ale clone (BYO)",
+    "sourceUrl": "https://byo.com/recipes/full-sail-brewing-company-amber-ale-clone/",
+    "style": "American Amber Ale",
+    "claimed": {"og": 1.057, "fg": 1.014, "abv": 6.0, "ibu": 31, "srm": 16},
+    "batch": {"volumeGal": 5, "boilVolumeGal": null, "boilMinutes": 60, "efficiencyPct": null, "efficiencyStated": false},
+    "fermentables": [
+      {"name": "2-row pale malt", "amountLb": 10.5, "colorL": null, "type": "grain"},
+      {"name": "Crystal malt (60 L)", "amountLb": 1.5, "colorL": 60, "type": "grain"},
+      {"name": "Chocolate malt", "amountLb": 0.125, "colorL": null, "type": "grain"}
+    ],
+    "hops": [
+      {"name": "Mount Hood", "amountOz": 0.66, "alphaPct": 5, "minutes": 45, "use": "boil"},
+      {"name": "Cascade", "amountOz": 0.66, "alphaPct": 5, "minutes": 45, "use": "boil"},
+      {"name": "Mount Hood", "amountOz": 1.0, "alphaPct": null, "minutes": 10, "use": "boil"},
+      {"name": "Cascade", "amountOz": 1.0, "alphaPct": null, "minutes": 10, "use": "boil"}
+    ],
+    "yeast": {"name": "Wyeast 1028 London Ale", "attenuationPct": null}
+  },
+
+  {
+    "id": "bf-neipa",
+    "name": "Avg. Perfect Northeast IPA (BF)",
+    "sourceUrl": "https://www.brewersfriend.com/homebrew/recipe/view/363082/",
+    "style": "New England IPA",
+    "claimed": {"og": 1.062, "fg": 1.013, "abv": 6.5, "ibu": 59.3, "srm": 5.2},
+    "batch": {"volumeGal": 5.75, "boilVolumeGal": 7.5, "boilMinutes": 60, "efficiencyPct": 70, "efficiencyStated": true},
+    "fermentables": [
+      {"name": "US Pale 2-Row", "amountLb": 10.75, "colorL": 1.8, "type": "grain"},
+      {"name": "American Wheat malt", "amountLb": 1.40, "colorL": 1.8, "type": "grain"},
+      {"name": "Flaked Oats", "amountLb": 1.40, "colorL": 2.2, "type": "grain"},
+      {"name": "Honey Malt", "amountLb": 0.42, "colorL": 25, "type": "grain"}
+    ],
+    "hops": [
+      {"name": "Citra", "amountOz": 1.0, "alphaPct": 12.6, "minutes": 10, "use": "boil"},
+      {"name": "Galaxy", "amountOz": 1.0, "alphaPct": 15.6, "minutes": 10, "use": "boil"},
+      {"name": "Citra", "amountOz": 1.5, "alphaPct": 12.6, "minutes": 15, "use": "whirlpool"},
+      {"name": "Galaxy", "amountOz": 1.5, "alphaPct": 15.6, "minutes": 15, "use": "whirlpool"},
+      {"name": "Mosaic", "amountOz": 1.5, "alphaPct": 11.3, "minutes": 15, "use": "whirlpool"},
+      {"name": "Citra", "amountOz": 1.0, "alphaPct": 12.6, "minutes": null, "use": "dryhop"},
+      {"name": "Galaxy", "amountOz": 1.5, "alphaPct": 15.6, "minutes": null, "use": "dryhop"},
+      {"name": "Mosaic", "amountOz": 1.0, "alphaPct": 11.3, "minutes": null, "use": "dryhop"},
+      {"name": "Citra", "amountOz": 1.25, "alphaPct": 12.6, "minutes": null, "use": "dryhop"},
+      {"name": "Galaxy", "amountOz": 1.5, "alphaPct": 15.6, "minutes": null, "use": "dryhop"},
+      {"name": "Mosaic", "amountOz": 1.0, "alphaPct": 11.3, "minutes": null, "use": "dryhop"}
+    ],
+    "yeast": {"name": "Wyeast 1318 London Ale III", "attenuationPct": 78}
+  },
+  {
+    "id": "bf-imperial-stout",
+    "name": "Imperial Stout (BF)",
+    "sourceUrl": "https://www.brewersfriend.com/homebrew/recipe/view/460076/",
+    "style": "Imperial Stout",
+    "claimed": {"og": 1.093, "fg": 1.019, "abv": 9.8, "ibu": 83.8, "srm": 42.4},
+    "batch": {"volumeGal": 5.3, "boilVolumeGal": 8.0, "boilMinutes": 90, "efficiencyPct": 65, "efficiencyStated": true},
+    "fermentables": [
+      {"name": "American Pale 2-Row", "amountLb": 15, "colorL": 1.8, "type": "grain"},
+      {"name": "Chocolate malt", "amountLb": 0.75, "colorL": 425, "type": "grain"},
+      {"name": "Roasted Barley", "amountLb": 0.5, "colorL": 550, "type": "grain"},
+      {"name": "Caramel/Crystal 75L", "amountLb": 0.25, "colorL": 75, "type": "grain"},
+      {"name": "Corn Sugar - Dextrose", "amountLb": 2, "colorL": 0.5, "type": "sugar"},
+      {"name": "Special B", "amountLb": 0.5, "colorL": 115, "type": "grain"}
+    ],
+    "hops": [
+      {"name": "Chinook", "amountOz": 2, "alphaPct": 13, "minutes": 60, "use": "boil"}
+    ],
+    "yeast": {"name": "Imperial A07 Flagship", "attenuationPct": 73}
+  },
+  {
+    "id": "bf-german-pilsner",
+    "name": "German Pilsner, NHC final (BF)",
+    "sourceUrl": "https://www.brewersfriend.com/homebrew/recipe/view/374598/",
+    "style": "German Pils",
+    "claimed": {"og": 1.050, "fg": 1.007, "abv": 5.64, "ibu": 40.35, "srm": 3.85},
+    "batch": {"volumeGal": 8.5, "boilVolumeGal": 9.93, "boilMinutes": 90, "efficiencyPct": 85, "efficiencyStated": true},
+    "fermentables": [
+      {"name": "Weyermann Pilsner", "amountLb": 7, "colorL": 1.5, "type": "grain"},
+      {"name": "Weyermann Barke Pilsner Malt", "amountLb": 5, "colorL": 1.75, "type": "grain"},
+      {"name": "Weyermann Barke Munich Malt", "amountLb": 0.75, "colorL": 8, "type": "grain"},
+      {"name": "German Wheat Malt", "amountLb": 0.5, "colorL": 2, "type": "grain"},
+      {"name": "German Melanoidin", "amountLb": 0.25, "colorL": 25, "type": "grain"},
+      {"name": "Weyermann Acidulated", "amountLb": 0.4, "colorL": 3.4, "type": "grain"}
+    ],
+    "hops": [
+      {"name": "Hallertau Tradition", "amountOz": 2, "alphaPct": 5.2, "minutes": 60, "use": "boil"},
+      {"name": "Hallertau Mittelfruh", "amountOz": 2, "alphaPct": 2.9, "minutes": 10, "use": "boil"},
+      {"name": "Tettnanger", "amountOz": 3, "alphaPct": 3.1, "minutes": 10, "use": "boil"},
+      {"name": "Hallertau Hersbrucker", "amountOz": 1, "alphaPct": 3.0, "minutes": 10, "use": "boil"}
+    ],
+    "yeast": {"name": "W-34/70", "attenuationPct": 83}
+  },
+  {
+    "id": "bf-hefeweizen",
+    "name": "Authentic German Hefeweizen (BF)",
+    "sourceUrl": "https://www.brewersfriend.com/homebrew/recipe/view/257467/",
+    "style": "Weissbier",
+    "claimed": {"og": 1.051, "fg": 1.012, "abv": 5.1, "ibu": 14.3, "srm": 4.0},
+    "batch": {"volumeGal": 5.5, "boilVolumeGal": 6.5, "boilMinutes": 60, "efficiencyPct": 63, "efficiencyStated": true},
+    "fermentables": [
+      {"name": "German Wheat Malt", "amountLb": 7.5, "colorL": 2, "type": "grain"},
+      {"name": "German Pilsner", "amountLb": 4, "colorL": 1.6, "type": "grain"},
+      {"name": "German Vienna", "amountLb": 0.5, "colorL": 4, "type": "grain"}
+    ],
+    "hops": [
+      {"name": "Hallertau", "amountOz": 1, "alphaPct": 3.9, "minutes": 60, "use": "boil"}
+    ],
+    "yeast": {"name": "Wyeast 3068 Weihenstephan", "attenuationPct": 75}
+  },
+  {
+    "id": "bf-gose",
+    "name": "Steady as she Gose (BF)",
+    "sourceUrl": "https://www.brewersfriend.com/homebrew/recipe/view/1043712/",
+    "style": "Gose",
+    "claimed": {"og": 1.041, "fg": 1.005, "abv": 4.72, "ibu": 11.55, "srm": 3.57},
+    "batch": {"volumeGal": 5.55, "boilVolumeGal": 7.53, "boilMinutes": 60, "efficiencyPct": 70, "efficiencyStated": true},
+    "fermentables": [
+      {"name": "German Wheat Malt", "amountLb": 4.409, "colorL": 2, "type": "grain"},
+      {"name": "German Pilsner", "amountLb": 3.086, "colorL": 1.6, "type": "grain"},
+      {"name": "German Acidulated Malt", "amountLb": 1.764, "colorL": 3.4, "type": "grain"}
+    ],
+    "hops": [
+      {"name": "Pacific Jade", "amountOz": 0.247, "alphaPct": 12, "minutes": 60, "use": "boil"}
+    ],
+    "yeast": {"name": "WildBrew Philly Sour", "attenuationPct": 85}
+  },
+  {
+    "id": "bf-session-ipa",
+    "name": "Columbus Session IPA (BF)",
+    "sourceUrl": "https://www.brewersfriend.com/homebrew/recipe/view/377599/",
+    "style": "Session IPA",
+    "claimed": {"og": 1.040, "fg": 1.010, "abv": 3.88, "ibu": 43.64, "srm": 3.54},
+    "batch": {"volumeGal": 5.5, "boilVolumeGal": 7.5, "boilMinutes": 60, "efficiencyPct": 70, "efficiencyStated": true},
+    "fermentables": [
+      {"name": "American Pale 2-Row", "amountLb": 6, "colorL": 1.8, "type": "grain"},
+      {"name": "Maris Otter Pale", "amountLb": 2, "colorL": 3.75, "type": "grain"},
+      {"name": "Flaked Oats", "amountLb": 0.5, "colorL": 2.2, "type": "grain"}
+    ],
+    "hops": [
+      {"name": "Columbus", "amountOz": 0.5, "alphaPct": 15, "minutes": 60, "use": "boil"},
+      {"name": "Columbus", "amountOz": 1, "alphaPct": 15, "minutes": 5, "use": "boil"},
+      {"name": "Columbus", "amountOz": 1.5, "alphaPct": 15, "minutes": null, "use": "dryhop"}
+    ],
+    "yeast": {"name": "Wyeast 1272 American Ale II", "attenuationPct": 74}
+  },
+  {
+    "id": "bf-barleywine",
+    "name": "American Barleywine (BF)",
+    "sourceUrl": "https://www.brewersfriend.com/homebrew/recipe/view/1483668/",
+    "style": "American Barleywine",
+    "claimed": {"og": 1.096, "fg": 1.021, "abv": 9.72, "ibu": 99.83, "srm": 10.92},
+    "batch": {"volumeGal": 5.5, "boilVolumeGal": 7.5, "boilMinutes": 150, "efficiencyPct": 77, "efficiencyStated": true},
+    "fermentables": [
+      {"name": "Avangard Pilsner", "amountLb": 8.20, "colorL": 1.7, "type": "grain"},
+      {"name": "Caramel/Crystal 60L", "amountLb": 1, "colorL": 60, "type": "grain"},
+      {"name": "Avangard Vienna", "amountLb": 7.50, "colorL": 3.5, "type": "grain"},
+      {"name": "Cane Sugar", "amountLb": 1, "colorL": 0, "type": "sugar"}
+    ],
+    "hops": [
+      {"name": "Perle", "amountOz": 0.90, "alphaPct": 6.5, "minutes": 60, "use": "boil"},
+      {"name": "Chinook", "amountOz": 0.75, "alphaPct": 11.7, "minutes": 150, "use": "boil"},
+      {"name": "US Magnum", "amountOz": 0.75, "alphaPct": 11.6, "minutes": 105, "use": "boil"},
+      {"name": "Cascade", "amountOz": 0.75, "alphaPct": 6.5, "minutes": 10, "use": "boil"},
+      {"name": "Centennial", "amountOz": 0.75, "alphaPct": 9.4, "minutes": 10, "use": "boil"},
+      {"name": "Cascade", "amountOz": 1.25, "alphaPct": 6.5, "minutes": 10, "use": "whirlpool"},
+      {"name": "Centennial", "amountOz": 0.50, "alphaPct": 9.4, "minutes": 10, "use": "whirlpool"},
+      {"name": "Chinook", "amountOz": 0.25, "alphaPct": 11.7, "minutes": 10, "use": "whirlpool"}
+    ],
+    "yeast": {"name": "US-05", "attenuationPct": 73}
+  },
+
+  {
+    "id": "bru-ordinary-bitter",
+    "name": "AvgBru Ordinary Bitter (Brulosophy)",
+    "sourceUrl": "https://brulosophy.com/2022/11/10/bru-it-yourself-avgbru-ordinary-bitter/",
+    "style": "Ordinary Bitter",
+    "claimed": {"og": 1.042, "fg": 1.007, "abv": 4.59, "ibu": 29.3, "srm": 13.4},
+    "batch": {"volumeGal": 5.5, "boilVolumeGal": null, "boilMinutes": 60, "efficiencyPct": null, "efficiencyStated": false},
+    "fermentables": [
+      {"name": "Maris Otter Malt", "amountLb": 7.25, "colorL": null, "type": "grain"},
+      {"name": "Flaked barley", "amountLb": 0.5, "colorL": null, "type": "grain"},
+      {"name": "Crystal Malt", "amountLb": 0.5, "colorL": null, "type": "grain"},
+      {"name": "Pale Chocolate malt", "amountLb": 0.25, "colorL": null, "type": "grain"},
+      {"name": "Victory Malt", "amountLb": 0.25, "colorL": null, "type": "grain"}
+    ],
+    "hops": [
+      {"name": "Styrian Goldings", "amountOz": 0.99, "alphaPct": 3.4, "minutes": 60, "use": "boil"},
+      {"name": "Fuggle", "amountOz": 0.99, "alphaPct": 5.2, "minutes": 30, "use": "boil"},
+      {"name": "Styrian Goldings", "amountOz": 0.99, "alphaPct": 3.4, "minutes": 5, "use": "boil"}
+    ],
+    "yeast": {"name": "Imperial A09 Pub", "attenuationPct": 74}
+  },
+  {
+    "id": "bru-munich-dunkel",
+    "name": "Short & Shoddy Munich Dunkel (Brulosophy)",
+    "sourceUrl": "https://brulosophy.com/2020/04/02/short-shoddy-munich-dunkel/",
+    "style": "Munich Dunkel",
+    "claimed": {"og": 1.055, "fg": 1.011, "abv": 5.8, "ibu": 22.2, "srm": 20.0},
+    "batch": {"volumeGal": 5.5, "boilVolumeGal": null, "boilMinutes": 25, "efficiencyPct": 63, "efficiencyStated": true},
+    "fermentables": [
+      {"name": "Munich malt", "amountLb": 8.5, "colorL": null, "type": "grain"},
+      {"name": "Pilsner malt", "amountLb": 4.75, "colorL": null, "type": "grain"},
+      {"name": "Roasted Barley", "amountLb": 0.25, "colorL": null, "type": "grain"}
+    ],
+    "hops": [
+      {"name": "Mt. Hood", "amountOz": 1.06, "alphaPct": 5.0, "minutes": 25, "use": "boil"},
+      {"name": "Mt. Hood", "amountOz": 1.06, "alphaPct": 5.0, "minutes": 15, "use": "boil"}
+    ],
+    "yeast": {"name": "Imperial L13 Global", "attenuationPct": 75}
+  },
+  {
+    "id": "bru-kolsch",
+    "name": "Short & Shoddy Kolsch (Brulosophy)",
+    "sourceUrl": "https://brulosophy.com/2018/09/20/short-shoddy-kolsch/",
+    "style": "Kolsch",
+    "claimed": {"og": 1.050, "fg": 1.014, "abv": 4.7, "ibu": 22.2, "srm": 4.9},
+    "batch": {"volumeGal": 5.5, "boilVolumeGal": null, "boilMinutes": 20, "efficiencyPct": 62, "efficiencyStated": true},
+    "fermentables": [
+      {"name": "Pilsner malt", "amountLb": 11.0, "colorL": null, "type": "grain"},
+      {"name": "Munich malt", "amountLb": 1.25, "colorL": null, "type": "grain"}
+    ],
+    "hops": [
+      {"name": "Tettnang", "amountOz": 1.76, "alphaPct": 3.5, "minutes": 20, "use": "boil"},
+      {"name": "Horizon", "amountOz": 0.28, "alphaPct": 14.1, "minutes": 20, "use": "boil"}
+    ],
+    "yeast": {"name": "Imperial G03 Dieter", "attenuationPct": 75}
+  },
+  {
+    "id": "bru-oatmeal-porter",
+    "name": "Short & Shoddy Oatmeal Porter (Brulosophy)",
+    "sourceUrl": "https://brulosophy.com/2017/07/13/short-shoddy-pt-5-oatmeal-porter/",
+    "style": "Oatmeal Porter",
+    "claimed": {"og": 1.052, "fg": 1.014, "abv": 5.0, "ibu": 34.5, "srm": 32.6},
+    "batch": {"volumeGal": 5.5, "boilVolumeGal": null, "boilMinutes": 20, "efficiencyPct": 57, "efficiencyStated": true},
+    "fermentables": [
+      {"name": "Pale Malt (2-Row)", "amountLb": 10.0, "colorL": null, "type": "grain"},
+      {"name": "Flaked oats", "amountLb": 2.0, "colorL": null, "type": "grain"},
+      {"name": "Caramel/Crystal Malt 60L", "amountLb": 1.0, "colorL": 60, "type": "grain"},
+      {"name": "Light Chocolate Malt", "amountLb": 1.0, "colorL": null, "type": "grain"}
+    ],
+    "hops": [
+      {"name": "Magnum", "amountOz": 1.76, "alphaPct": 11.2, "minutes": 20, "use": "boil"},
+      {"name": "Hallertauer Mittelfrueh", "amountOz": 1.06, "alphaPct": 2.4, "minutes": 15, "use": "boil"},
+      {"name": "Hallertauer Mittelfrueh", "amountOz": 1.06, "alphaPct": 2.4, "minutes": 5, "use": "boil"}
+    ],
+    "yeast": {"name": "Imperial A09 Pub", "attenuationPct": 72}
+  },
+  {
+    "id": "bru-belgian-tripel",
+    "name": "Short & Shoddy Belgian Tripel (Brulosophy)",
+    "sourceUrl": "https://brulosophy.com/2023/01/20/short-shoddy-belgian-tripel/",
+    "style": "Belgian Tripel",
+    "claimed": {"og": 1.068, "fg": 1.004, "abv": 8.4, "ibu": 37.2, "srm": 4.7},
+    "batch": {"volumeGal": 5.5, "boilVolumeGal": null, "boilMinutes": 30, "efficiencyPct": 53, "efficiencyStated": true},
+    "fermentables": [
+      {"name": "Llano Pilsner Malt", "amountLb": 10.0, "colorL": null, "type": "grain"},
+      {"name": "Table Sugar (Sucrose)", "amountLb": 2.5, "colorL": null, "type": "sugar"},
+      {"name": "Dry Malt Extract Pilsen", "amountLb": 1.25, "colorL": null, "type": "extract"},
+      {"name": "Wheat Malt", "amountLb": 0.75, "colorL": null, "type": "grain"},
+      {"name": "Aromatic Malt", "amountLb": 0.25, "colorL": null, "type": "grain"}
+    ],
+    "hops": [
+      {"name": "Hallertau Tradition", "amountOz": 2.01, "alphaPct": 6.1, "minutes": 30, "use": "boil"},
+      {"name": "Hallertau Mittelfruh", "amountOz": 0.53, "alphaPct": 5.2, "minutes": 5, "use": "boil"}
+    ],
+    "yeast": {"name": "Imperial B48 Triple Double", "attenuationPct": 78}
+  },
+  {
+    "id": "bru-tiny-bottom-pale-ale",
+    "name": "Tiny Bottom Pale Ale (Brulosophy)",
+    "sourceUrl": "https://brulosophy.com/recipes/tiny-bottom-pale-ale/",
+    "style": "American Pale Ale",
+    "claimed": {"og": 1.050, "fg": 1.009, "abv": 5.3, "ibu": 36.6, "srm": 7.2},
+    "batch": {"volumeGal": 5.5, "boilVolumeGal": null, "boilMinutes": 60, "efficiencyPct": 75, "efficiencyStated": true},
+    "fermentables": [
+      {"name": "Pale Malt (2-Row) US", "amountLb": 8.0, "colorL": null, "type": "grain"},
+      {"name": "Caramel/Crystal Malt 15L", "amountLb": 0.6875, "colorL": 15, "type": "grain"},
+      {"name": "Vienna Malt", "amountLb": 0.6875, "colorL": null, "type": "grain"},
+      {"name": "Victory Malt", "amountLb": 0.5, "colorL": null, "type": "grain"},
+      {"name": "Caramel/Crystal Malt 60L", "amountLb": 0.3125, "colorL": 60, "type": "grain"}
+    ],
+    "hops": [
+      {"name": "Magnum", "amountOz": 0.53, "alphaPct": 12.2, "minutes": 60, "use": "boil"},
+      {"name": "Perle", "amountOz": 0.46, "alphaPct": 8.6, "minutes": 25, "use": "boil"},
+      {"name": "Fuggles", "amountOz": 0.53, "alphaPct": 4.5, "minutes": 10, "use": "boil"},
+      {"name": "Fuggles", "amountOz": 0.53, "alphaPct": 4.5, "minutes": 2, "use": "boil"}
+    ],
+    "yeast": {"name": "WLP090 San Diego Super", "attenuationPct": 80}
+  },
+  {
+    "id": "bru-rye-ipa",
+    "name": "Short & Shoddy Rye IPA (Brulosophy)",
+    "sourceUrl": "https://brulosophy.com/2022/06/02/short-shoddy-rye-ipa/",
+    "style": "Rye IPA",
+    "claimed": {"og": 1.065, "fg": 1.008, "abv": 7.48, "ibu": 58.6, "srm": 7.6},
+    "batch": {"volumeGal": 5.5, "boilVolumeGal": null, "boilMinutes": 30, "efficiencyPct": 63, "efficiencyStated": true},
+    "fermentables": [
+      {"name": "Brewers Malt (2-row)", "amountLb": 12.0, "colorL": null, "type": "grain"},
+      {"name": "Rye Malt", "amountLb": 2.5, "colorL": null, "type": "grain"},
+      {"name": "Munich Malt", "amountLb": 1.0, "colorL": null, "type": "grain"},
+      {"name": "Special Roast", "amountLb": 0.5, "colorL": null, "type": "grain"}
+    ],
+    "hops": [
+      {"name": "Triumph", "amountOz": 0.99, "alphaPct": 10.7, "minutes": 30, "use": "boil"},
+      {"name": "CTZ", "amountOz": 0.74, "alphaPct": 15.6, "minutes": 20, "use": "boil"},
+      {"name": "Topaz", "amountOz": 0.99, "alphaPct": 17.4, "minutes": 5, "use": "boil"},
+      {"name": "Columbus LUPOMAX", "amountOz": 0.99, "alphaPct": 20.0, "minutes": 2, "use": "boil"},
+      {"name": "Galaxy", "amountOz": 0.99, "alphaPct": 13.6, "minutes": 2, "use": "boil"},
+      {"name": "Galaxy", "amountOz": 2.01, "alphaPct": 13.6, "minutes": null, "use": "dryhop"},
+      {"name": "Columbus LUPOMAX", "amountOz": 0.99, "alphaPct": 20.0, "minutes": null, "use": "dryhop"},
+      {"name": "Topaz", "amountOz": 0.99, "alphaPct": 17.4, "minutes": null, "use": "dryhop"}
+    ],
+    "yeast": {"name": "Imperial A07 Flagship", "attenuationPct": 77}
+  }
+]

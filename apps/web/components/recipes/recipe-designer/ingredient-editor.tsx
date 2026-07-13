@@ -35,8 +35,8 @@ import {
   stageLabels,
   resolveRecipeConsumableStageOptions,
   fermentableUseLabels,
-  mapHopStageFromUseType,
   resolveRecipeFermentableSubtype,
+  applyHopUseTypeChange,
   applySelection,
   applyQueryChange,
   clearRecipeIngredientSelection,
@@ -56,6 +56,7 @@ import { RecipeIngredientCategoryGrid, RecipeFermentableScopePicker } from "./re
 export function IngredientEditor({
   draft,
   isExisting,
+  boilTimeMinutes,
   onChange,
   onSave,
   onCancel,
@@ -65,6 +66,8 @@ export function IngredientEditor({
 }: {
   draft: DesignerIngredient;
   isExisting: boolean;
+  /** Время кипячения рецепта — дефолт поля «мин» у хмеля на кипячение. */
+  boilTimeMinutes: number;
   onChange: (next: DesignerIngredient) => void;
   onSave: () => void;
   onCancel: () => void;
@@ -251,7 +254,8 @@ export function IngredientEditor({
     onChange(applyRecipeIngredientCategoryContextChange(
       draft,
       "fermentable",
-      resolveRecipeFermentablePickerScopeContext(nextScope).subtype
+      resolveRecipeFermentablePickerScopeContext(nextScope).subtype,
+      boilTimeMinutes
     ));
   };
   const createCustomIngredient = async (payload: CustomIngredientSubmitPayload) => {
@@ -383,7 +387,7 @@ export function IngredientEditor({
               setCustomMessage(null);
               setCustomFieldErrors(undefined);
               setFermentableScope(null);
-              onChange(applyRecipeIngredientCategoryContextChange(draft, nextCategory));
+              onChange(applyRecipeIngredientCategoryContextChange(draft, nextCategory, null, boilTimeMinutes));
             }}
             legend="Категория ингредиента"
             testId="recipe-ingredient-category-grid"
@@ -618,14 +622,11 @@ export function IngredientEditor({
                   Тип добавления
                   <select
                     value={hopUseType}
-                    onChange={(event) => onChange({
-                      ...draft,
-                      stage: mapHopStageFromUseType(event.target.value as RecipeHopUseType),
-                      stepMeta: {
-                        ...draft.stepMeta,
-                        useType: event.target.value as RecipeHopUseType
-                      }
-                    })}
+                    onChange={(event) => onChange(applyHopUseTypeChange(
+                      draft,
+                      event.target.value as RecipeHopUseType,
+                      boilTimeMinutes
+                    ))}
                     className="h-10 w-full rounded-md border border-border bg-card px-3 text-sm text-foreground"
                   >
                     {recipeHopUseTypeUiOrder.map((useType) => <option key={useType} value={useType}>{hopUseTypeLabels[useType]}</option>)}
@@ -848,7 +849,7 @@ export function IngredientEditor({
             <button
               type="button"
               onClick={onDelete}
-              className="inline-flex h-10 items-center gap-1.5 rounded-lg border border-destructive-border bg-card px-3 text-sm font-medium text-destructive transition-colors hover:border-destructive-border hover:bg-destructive-subtle"
+              className="inline-flex h-11 items-center gap-1.5 rounded-lg border border-destructive-border bg-card px-3 text-sm font-medium text-destructive transition-colors hover:border-destructive-border hover:bg-destructive-subtle"
             >
               <Trash2 className="h-3.5 w-3.5" />
               <span className="hidden sm:inline">Удалить</span>
@@ -859,7 +860,7 @@ export function IngredientEditor({
           <button
             type="button"
             onClick={onCancel}
-            className="inline-flex h-10 items-center rounded-lg border border-border bg-card px-4 text-sm font-medium text-foreground transition-colors hover:bg-muted"
+            className="inline-flex h-11 items-center rounded-lg border border-border bg-card px-4 text-sm font-medium text-foreground transition-colors hover:bg-muted"
           >
             Отмена
           </button>
@@ -870,7 +871,7 @@ export function IngredientEditor({
                 setValidationRevealed(true);
                 onSave();
               }}
-              className="inline-flex h-10 items-center rounded-lg bg-foreground px-4 text-sm font-medium text-background shadow-sm transition-colors hover:bg-foreground/90"
+              className="inline-flex h-11 items-center rounded-lg bg-foreground px-4 text-sm font-medium text-background shadow-sm transition-colors hover:bg-foreground/90"
             >
               {saveLabel}
             </button>

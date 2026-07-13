@@ -72,7 +72,13 @@ export const addRecipeIngredientToInventory = async (input: {
     }
     revalidatePath("/app/ingredients");
     return { ok: true, message: "Добавлено на склад." };
-  } catch {
+  } catch (error) {
+    if (error instanceof Error && error.message === "RATE_LIMITED") {
+      return { ok: false, message: "Слишком много добавлений подряд. Немного подождите." };
+    }
+    if (error instanceof Error && error.message === "INVENTORY_ITEM_QUOTA_REACHED") {
+      return { ok: false, message: "Достигнут предел числа позиций склада. Удалите ненужные, чтобы добавлять новые." };
+    }
     return { ok: false, message: "Не удалось добавить на склад. Попробуйте ещё раз." };
   }
 };

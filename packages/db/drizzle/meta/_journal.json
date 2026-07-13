@@ -382,6 +382,20 @@
       "when": 1791000000024,
       "tag": "0058_loud_landau",
       "breakpoints": true
+    },
+    {
+      "idx": 59,
+      "version": "7",
+      "when": 1791000000025,
+      "tag": "0059_moderation_audit_log",
+      "breakpoints": true
+    },
+    {
+      "idx": 60,
+      "version": "7",
+      "when": 1791000000026,
+      "tag": "0060_brew_batch_tasting_notes",
+      "breakpoints": true
     }
   ]
 }

@@ -2,6 +2,7 @@
 
 import React, { useMemo } from "react";
 
+import { NumericInput } from "@/components/shared/numeric-input";
 import type {
   IngredientCategory,
   IngredientSubtype,
@@ -186,14 +187,12 @@ export function InventoryPriceInput({
 
       <label className="mt-3 block text-sm">
         Сумма
-        <input
-          type="number"
-          min="0"
+        <NumericInput
+          min={0}
           step="0.01"
-          className="mt-1 w-full rounded-md border px-2 py-2"
+          className="mt-1 w-full rounded-md border px-2 py-2 text-base sm:text-sm"
           value={priceInputAmount}
           onChange={(event) => onPriceInputAmountChange(event.target.value)}
-          inputMode="decimal"
           placeholder={
             priceInputMode === "per_display_unit"
               ? `Например, 120 ${currencySymbol(preferredCurrency)} / ${inventoryUnitShortLabels[effectivePriceUnit]}`

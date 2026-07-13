@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
+import { ACCOUNT_BLOCKED_ERROR } from "@nb/auth";
 
 import { oauthFinalize } from "@/lib/auth";
 import { consumeOAuthCallback } from "@/lib/oauth";
@@ -12,7 +13,11 @@ export async function GET(request: Request) {
     const profile = await consumeOAuthCallback("yandex", String(searchParams.get("state") ?? ""), String(searchParams.get("code") ?? ""));
     await oauthFinalize(profile, consent);
     return NextResponse.redirect(new URL("/app", request.url));
-  } catch {
+  } catch (error) {
+    // Блокировку показываем как блокировку, а не как «провайдер недоступен».
+    if (error instanceof Error && error.message === ACCOUNT_BLOCKED_ERROR) {
+      return NextResponse.redirect(new URL(`/login?error=${ACCOUNT_BLOCKED_ERROR}`, request.url));
+    }
     return NextResponse.redirect(new URL("/login?error=oauth_yandex_callback", request.url));
   }
 }

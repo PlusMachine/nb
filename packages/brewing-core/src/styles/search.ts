@@ -227,8 +227,9 @@ const transliterateLatToRu = (input: string) => {
 };
 
 const swapKeyboardLayout = (input: string) => {
-  const source = normalizeBjcpSearchText(input);
-  const looksRussian = /[а-я]/.test(source);
+  // Map before normalizing: half the layout keys are punctuation (",;'[]") that normalization strips.
+  const source = input.normalize("NFKC").toLowerCase();
+  const looksRussian = /[а-яё]/.test(source);
   const directMap = looksRussian ? ruToEngKeyboardMap : engToRuKeyboardMap;
 
   return normalizeBjcpSearchText(
@@ -302,13 +303,6 @@ export const buildBjcpQueryVariants = (query: string) => {
     addQueryVariant(variants, variant);
   }
 
-  const layoutSwap = swapKeyboardLayout(query);
-  if (layoutSwap !== base) {
-    for (const variant of applyTokenVariants(layoutSwap)) {
-      addQueryVariant(variants, variant);
-    }
-  }
-
   const ruToLat = transliterateRuToLat(base);
   if (ruToLat !== base) {
     for (const variant of applyTokenVariants(ruToLat)) {
@@ -326,6 +320,39 @@ export const buildBjcpQueryVariants = (query: string) => {
   return [...variants];
 };
 
+// Wrong-layout typing ("lf,tk" instead of "дуббель") is a rescue path, not a first-class one:
+// applied to every query it turns "дуб" into "le" and floods the results with junk substrings.
+export const buildBjcpLayoutQueryVariants = (query: string) => {
+  const base = normalizeBjcpSearchText(query);
+  const layoutSwap = swapKeyboardLayout(query);
+  if (!base || !layoutSwap || layoutSwap === base) {
+    return [];
+  }
+
+  const variants = new Set<string>();
+  for (const variant of applyTokenVariants(layoutSwap)) {
+    addQueryVariant(variants, variant);
+  }
+
+  const latToRu = transliterateLatToRu(layoutSwap);
+  if (latToRu !== layoutSwap) {
+    for (const variant of applyTokenVariants(latToRu)) {
+      addQueryVariant(variants, variant);
+    }
+  }
+
+  return [...variants].filter((variant) => variant !== base);
+};
+
+// Substrings shorter than this match too much noise ("ду" inside "Дунклес") to be worth ranking.
+const minContainsVariantLength = 4;
+
+const hasWordPrefix = (candidate: string, variant: string) => (
+  candidate
+    .split(" ")
+    .some((word, index) => index > 0 && word.startsWith(variant))
+);
+
 export const scoreBjcpSearchText = (
   candidate: string,
   variant: string,
@@ -334,7 +361,7 @@ export const scoreBjcpSearchText = (
   containsScore: number
 ) => {
   const normalizedCandidate = normalizeBjcpSearchText(foldBjcpSearchDiacritics(candidate));
-  if (!normalizedCandidate) {
+  if (!normalizedCandidate || !variant) {
     return 0;
   }
   if (normalizedCandidate === variant) {
@@ -343,7 +370,14 @@ export const scoreBjcpSearchText = (
   if (normalizedCandidate.startsWith(variant)) {
     return prefixScore;
   }
-  if (normalizedCandidate.includes(variant)) {
+  if (containsScore <= 0) {
+    return 0;
+  }
+  // "дуб" in "Бельгийский дуббель" is a real hit, not an accidental substring.
+  if (hasWordPrefix(normalizedCandidate, variant)) {
+    return Math.round(prefixScore * 0.92);
+  }
+  if (variant.length >= minContainsVariantLength && normalizedCandidate.includes(variant)) {
     return containsScore;
   }
   return 0;
@@ -406,8 +440,12 @@ const buildSearchTerms = (style: BjcpStyleSearchEntry) => {
   };
 };
 
-export const scoreBjcpStyle = (style: BjcpStyleSearchEntry, query: string) => {
-  const variants = buildBjcpQueryVariants(foldBjcpSearchDiacritics(query));
+export const scoreBjcpStyle = (
+  style: BjcpStyleSearchEntry,
+  query: string,
+  options: { variants?: string[] } = {}
+) => {
+  const variants = options.variants ?? buildBjcpQueryVariants(foldBjcpSearchDiacritics(query));
   let score = 0;
   const terms = buildSearchTerms(style);
 
@@ -437,6 +475,8 @@ export const scoreBjcpStyle = (style: BjcpStyleSearchEntry, query: string) => {
   return score;
 };
 
+const styleOrderCollator = new Intl.Collator("en", { numeric: true, sensitivity: "base" });
+
 export const searchBjcpStyles = <T extends BjcpStyleSearchEntry>(
   styles: T[],
   query: string,
@@ -447,10 +487,22 @@ export const searchBjcpStyles = <T extends BjcpStyleSearchEntry>(
     return styles.map((item) => ({ item, score: 0 }));
   }
 
-  const results = styles
-    .map((item) => ({ item, score: scoreBjcpStyle(item, trimmed) }))
+  const folded = foldBjcpSearchDiacritics(trimmed);
+  const runPass = (variants: string[]) => styles
+    .map((item) => ({ item, score: scoreBjcpStyle(item, trimmed, { variants }) }))
     .filter((entry) => entry.score > 0)
-    .sort((left, right) => right.score - left.score);
+    .sort((left, right) => (
+      right.score - left.score
+      || styleOrderCollator.compare(left.item.bjcpId, right.item.bjcpId)
+    ));
+
+  let results = runPass(buildBjcpQueryVariants(folded));
+  if (!results.length) {
+    const layoutVariants = buildBjcpLayoutQueryVariants(folded);
+    if (layoutVariants.length) {
+      results = runPass(layoutVariants);
+    }
+  }
 
   return typeof options.limit === "number" ? results.slice(0, options.limit) : results;
 };

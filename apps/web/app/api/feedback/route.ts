@@ -1,19 +1,17 @@
 import { NextResponse } from "next/server";
 import { ZodError } from "zod";
 
+import { assertRateLimit } from "@nb/auth";
+
 import { feedbackInputSchema } from "@/features/feedback/contracts";
-import { checkFeedbackRateLimit } from "@/features/feedback/rate-limit";
 import { createFeedback } from "@/features/feedback/service";
+import { clientIpFrom } from "@/lib/anti-abuse";
 import { getSessionUser } from "@/lib/auth";
 
-const clientKey = (request: Request, userId?: string): string => {
-  if (userId) {
-    return `user:${userId}`;
-  }
-  const forwarded = request.headers.get("x-forwarded-for");
-  const ip = forwarded?.split(",")[0]?.trim() || request.headers.get("x-real-ip") || "unknown";
-  return `ip:${ip}`;
-};
+// Ключ лимита: залогиненный — по юзеру, аноним — по устойчивому к подделке IP
+// (clientIpFrom учитывает доверенные прокси-хопы; null → общий ключ "unknown").
+const clientKey = (request: Request, userId?: string): string =>
+  userId ? `user:${userId}` : `ip:${clientIpFrom(request) ?? "unknown"}`;
 
 export async function POST(request: Request) {
   let raw: unknown;
@@ -34,7 +32,9 @@ export async function POST(request: Request) {
     const input = feedbackInputSchema.parse(raw);
     const user = await getSessionUser();
 
-    if (!checkFeedbackRateLimit(clientKey(request, user?.id))) {
+    try {
+      await assertRateLimit(clientKey(request, user?.id), "feedback_submit", 5, 10 * 60);
+    } catch {
       return NextResponse.json({ error: "RATE_LIMITED" }, { status: 429 });
     }
 

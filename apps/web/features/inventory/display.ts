@@ -4,6 +4,7 @@ import type { IngredientCategory, IngredientTechnicalData, IngredientType, Ingre
 import { resolvePreferredCurrency, convertCurrencyMinor, convertRubMinorToCurrencyMinor, formatCurrencyMinor, formatUnitPriceMinor } from "../system/money";
 import type { SystemCurrency, SystemCurrencyRateMap } from "../system/currency";
 import {
+  formatInventoryUnitLabel,
   getInventoryUnitQuantityPrecision,
   inventoryUnitShortLabels,
   resolveHumanFacingInventoryUnitProfile,
@@ -144,7 +145,7 @@ const resolveDisplayUnitCostMinor = (
 
 export const formatInventoryQuantityForDisplay = (input: InventoryDisplayInput) => {
   const displayMeasurement = resolveInventoryMeasurementForDisplay(input);
-  const base = `${formatInventoryQuantityInputValue(displayMeasurement.quantity, displayMeasurement.unit)} ${inventoryUnitShortLabels[displayMeasurement.unit]}`;
+  const base = `${formatInventoryQuantityInputValue(displayMeasurement.quantity, displayMeasurement.unit)} ${formatInventoryUnitLabel(displayMeasurement.unit, displayMeasurement.quantity)}`;
 
   if (displayMeasurement.unit !== "pack") {
     return base;
@@ -155,7 +156,7 @@ export const formatInventoryQuantityForDisplay = (input: InventoryDisplayInput) 
     return base;
   }
 
-  return `${base} (${formatInventoryQuantityInputValue(input.normalizedQuantity, input.normalizedUnit)} ${inventoryUnitShortLabels[input.normalizedUnit]})`;
+  return `${base} (${formatInventoryQuantityInputValue(input.normalizedQuantity, input.normalizedUnit)} ${formatInventoryUnitLabel(input.normalizedUnit, input.normalizedQuantity)})`;
 };
 
 export const buildInventoryCostDisplay = (

@@ -3055,7 +3055,7 @@ export const IngredientPicker = ({
               }, 0);
             }}
             placeholder={inputPlaceholder}
-            className={`h-10 w-full rounded-md border border-border px-3 text-sm ${isLoadingVisible ? "pr-10" : ""}`}
+            className={`h-10 w-full rounded-md border border-border px-3 text-base sm:text-sm ${isLoadingVisible ? "pr-10" : ""}`}
             role="combobox"
             aria-expanded={isOpen}
             aria-busy={isLoadingVisible}

@@ -34,10 +34,10 @@ export function Sheet({ open, onOpenChange, title, side = "bottom", children }: 
           className={cn(
             "fixed z-[101] flex flex-col overflow-y-auto border-border bg-popover text-popover-foreground shadow-2xl focus:outline-none",
             side === "bottom"
-              ? "animate-modal-sheet inset-x-0 bottom-0 max-h-[92vh] w-full rounded-t-2xl border-t"
+              ? "animate-modal-sheet inset-x-0 bottom-0 max-h-[92dvh] w-full rounded-t-2xl border-t"
               : side === "right"
                 ? cn(
-                    "animate-modal-content inset-x-0 bottom-0 max-h-[92vh] w-full rounded-t-2xl border-t",
+                    "animate-modal-content inset-x-0 bottom-0 max-h-[92dvh] w-full rounded-t-2xl border-t",
                     "sm:inset-x-auto sm:inset-y-0 sm:bottom-auto sm:right-0 sm:h-full sm:max-h-none sm:w-full sm:max-w-md sm:rounded-none sm:border-l sm:border-t-0"
                   )
                 : "animate-modal-sheet-left inset-y-0 left-0 h-full w-72 max-w-[85%] border-r"
@@ -49,7 +49,9 @@ export function Sheet({ open, onOpenChange, title, side = "bottom", children }: 
               <button
                 type="button"
                 aria-label="Закрыть"
-                className="flex h-8 w-8 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+                // h-11 w-11 — тач-таргет ≥44px (мобайл); иконка внутри остаётся h-4 w-4,
+                // растёт только кликабельная зона.
+                className="flex h-11 w-11 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
               >
                 <X className="h-4 w-4" />
               </button>

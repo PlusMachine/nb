@@ -3,14 +3,13 @@
 import { revalidatePath } from "next/cache";
 import { ZodError } from "zod";
 
-import { createUserCustomIngredientSchema } from "@/features/inventory/contracts";
+import { CUSTOM_INGREDIENT_MAX_COUNT_PER_USER, createUserCustomIngredientSchema } from "@/features/inventory/contracts";
 import {
   createUserCustomIngredient,
   deleteUserCustomIngredient,
   updateUserCustomIngredient
 } from "@/features/inventory/service";
 import { requireUser } from "@/lib/auth";
-import { assertRateLimit } from "@nb/auth";
 
 export type CatalogCustomIngredientActionResult = {
   ok: boolean;
@@ -57,6 +56,13 @@ const mapCatalogCustomIngredientError = (error: unknown): CatalogCustomIngredien
         message: "Слишком много новых ингредиентов подряд. Попробуйте позже."
       };
     }
+
+    if (error.message === "CUSTOM_INGREDIENT_QUOTA_REACHED") {
+      return {
+        ok: false,
+        message: `Достигнут предел числа собственных ингредиентов (${CUSTOM_INGREDIENT_MAX_COUNT_PER_USER}). Удалите ненужные, чтобы создавать новые.`
+      };
+    }
   }
 
   return {
@@ -81,8 +87,8 @@ export const createCatalogCustomIngredientAction = async (
 ): Promise<CatalogCustomIngredientActionResult> => {
   try {
     const user = await requireUser();
-    // Антиспам: кастомные ингредиенты — свободный ввод, ограничиваем частоту создания.
-    await assertRateLimit(user.id, "custom_ingredient", 30, 60 * 60);
+    // Антиспам-барьер (rate limit + квота) теперь внутри createUserCustomIngredient —
+    // общий для всех входов, поэтому здесь отдельный assertRateLimit не нужен.
     const parsed = createUserCustomIngredientSchema.parse(payload);
     const created = await createUserCustomIngredient(user.id, parsed);
     revalidateCatalogPaths(created.id);

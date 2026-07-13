@@ -11,6 +11,7 @@ import {
   InventoryOptionalDisclosure,
   type InventoryOptionalFieldsState
 } from "@/components/inventory/inventory-optional-disclosure";
+import { NumericInput } from "@/components/shared/numeric-input";
 import type {
   IngredientCategory,
   IngredientConsumableGroupRefinement,
@@ -1273,11 +1274,10 @@ export function CatalogIngredientForm({
                   {batchOverrideMode === "customize" && batchOverrideDefaults.kind === "fermentable" ? (
                     <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                       <label className="text-sm">Цвет, EBC
-                        <input
-                          type="number"
-                          min="0"
+                        <NumericInput
+                          min={0}
                           step="0.1"
-                          className="mt-1 w-full rounded-md border px-2 py-2"
+                          className="mt-1 w-full rounded-md border px-2 py-2 text-base sm:text-sm"
                           value={batchOverrides.fermentableColorEbc}
                           onChange={(event) => {
                             setBatchOverrides((current) => ({
@@ -1286,18 +1286,16 @@ export function CatalogIngredientForm({
                             }));
                             setLocalFieldErrors((current) => ({ ...current, fermentableColorEbc: null }));
                           }}
-                          inputMode="decimal"
                         />
                         {(localFieldErrors.fermentableColorEbc || fieldErrors?.fermentableColorEbc) && <span className="text-xs text-destructive">{localFieldErrors.fermentableColorEbc ?? fieldErrors?.fermentableColorEbc}</span>}
                       </label>
 
                       <label className="text-sm">Экстрактивность, %
-                        <input
-                          type="number"
-                          min="0"
-                          max="100"
+                        <NumericInput
+                          min={0}
+                          max={100}
                           step="0.1"
-                          className="mt-1 w-full rounded-md border px-2 py-2"
+                          className="mt-1 w-full rounded-md border px-2 py-2 text-base sm:text-sm"
                           value={batchOverrides.fermentableExtractYieldPct}
                           onChange={(event) => {
                             setBatchOverrides((current) => ({
@@ -1306,7 +1304,6 @@ export function CatalogIngredientForm({
                             }));
                             setLocalFieldErrors((current) => ({ ...current, fermentableExtractYieldPct: null }));
                           }}
-                          inputMode="decimal"
                         />
                         {(localFieldErrors.fermentableExtractYieldPct || fieldErrors?.fermentableExtractYieldPct) && <span className="text-xs text-destructive">{localFieldErrors.fermentableExtractYieldPct ?? fieldErrors?.fermentableExtractYieldPct}</span>}
                       </label>
@@ -1316,12 +1313,11 @@ export function CatalogIngredientForm({
                   {batchOverrideMode === "customize" && batchOverrideDefaults.kind === "hop" ? (
                     <div className="grid grid-cols-1 gap-3 sm:max-w-xs">
                       <label className="text-sm">Альфа-кислота, %
-                        <input
-                          type="number"
-                          min="0"
-                          max="100"
+                        <NumericInput
+                          min={0}
+                          max={100}
                           step="0.1"
-                          className="mt-1 w-full rounded-md border px-2 py-2"
+                          className="mt-1 w-full rounded-md border px-2 py-2 text-base sm:text-sm"
                           value={batchOverrides.hopAlphaAcidPct}
                           onChange={(event) => {
                             setBatchOverrides((current) => ({
@@ -1330,7 +1326,6 @@ export function CatalogIngredientForm({
                             }));
                             setLocalFieldErrors((current) => ({ ...current, hopAlphaAcidPct: null }));
                           }}
-                          inputMode="decimal"
                         />
                         {(localFieldErrors.hopAlphaAcidPct || fieldErrors?.hopAlphaAcidPct) && <span className="text-xs text-destructive">{localFieldErrors.hopAlphaAcidPct ?? fieldErrors?.hopAlphaAcidPct}</span>}
                       </label>
@@ -1340,12 +1335,11 @@ export function CatalogIngredientForm({
                   {batchOverrideDefaults.kind === "water_treatment_acid" ? (
                     <div className="grid grid-cols-1 gap-3 sm:max-w-xs">
                       <label className="text-sm">Концентрация кислоты, %
-                        <input
-                          type="number"
-                          min="1"
-                          max="100"
+                        <NumericInput
+                          min={1}
+                          max={100}
                           step="0.1"
-                          className="mt-1 w-full rounded-md border px-2 py-2"
+                          className="mt-1 w-full rounded-md border px-2 py-2 text-base sm:text-sm"
                           value={batchOverrides.waterTreatmentConcentrationPct}
                           onChange={(event) => {
                             setBatchOverrides((current) => ({
@@ -1354,7 +1348,6 @@ export function CatalogIngredientForm({
                             }));
                             setLocalFieldErrors((current) => ({ ...current, waterTreatmentConcentrationPct: null }));
                           }}
-                          inputMode="decimal"
                         />
                         {(localFieldErrors.waterTreatmentConcentrationPct || fieldErrors?.waterTreatmentConcentrationPct) && <span className="text-xs text-destructive">{localFieldErrors.waterTreatmentConcentrationPct ?? fieldErrors?.waterTreatmentConcentrationPct}</span>}
                       </label>
@@ -1388,24 +1381,21 @@ export function CatalogIngredientForm({
         <section className="space-y-3 rounded-xl border border-border bg-card p-4" data-testid="catalog-required-fields">
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             <label className="text-sm">Количество *
-              <input
-                type="number"
-                min="0.0001"
-                step="any"
-                className="mt-1 w-full rounded-md border px-2 py-2"
+              <NumericInput
+                min={0.0001}
+                className="mt-1 w-full rounded-md border px-2 py-2 text-base sm:text-sm"
                 value={fields.enteredQuantity}
                 onChange={(e) => {
                   setFields((s) => ({ ...s, enteredQuantity: e.target.value }));
                   setLocalFieldErrors((current) => ({ ...current, enteredQuantity: null }));
                 }}
-                inputMode="decimal"
               />
               {(localFieldErrors.enteredQuantity || fieldErrors?.enteredQuantity) && <span className="text-xs text-destructive">{localFieldErrors.enteredQuantity ?? fieldErrors?.enteredQuantity}</span>}
             </label>
 
             <label className="text-sm">Ед. изм. *
               <select
-                className="mt-1 w-full rounded-md border px-2 py-2"
+                className="mt-1 w-full rounded-md border px-2 py-2 text-base sm:text-sm"
                 value={fields.enteredUnit}
                 onChange={(e) => setFields((s) => ({ ...s, enteredUnit: e.target.value as InventoryUnit }))}
               >
@@ -1434,7 +1424,7 @@ export function CatalogIngredientForm({
                   <div className="mt-1 flex items-center gap-2">
                     <input
                       type="date"
-                      className="w-full rounded-md border px-2 py-2"
+                      className="w-full rounded-md border px-2 py-2 text-base sm:text-sm"
                       value={fields.purchasedAt}
                       onChange={(e) => setFields((s) => ({ ...s, purchasedAt: e.target.value }))}
                     />
@@ -1452,7 +1442,7 @@ export function CatalogIngredientForm({
                 <label className="text-sm">Годен до
                   <input
                     type="date"
-                    className="mt-1 w-full rounded-md border px-2 py-2"
+                    className="mt-1 w-full rounded-md border px-2 py-2 text-base sm:text-sm"
                     value={fields.freshnessDate}
                     onChange={(e) => setFields((s) => ({ ...s, freshnessDate: e.target.value }))}
                   />
@@ -1489,7 +1479,7 @@ export function CatalogIngredientForm({
 
               <label className="block text-sm">Заметки
                 <textarea
-                  className="mt-1 h-20 w-full rounded-md border px-2 py-2"
+                  className="mt-1 h-20 w-full rounded-md border px-2 py-2 text-base sm:text-sm"
                   value={fields.notes}
                   onChange={(e) => setFields((s) => ({ ...s, notes: e.target.value }))}
                 />

@@ -6,6 +6,8 @@
 //  service worker (/sw.js), запрос разрешения, подписка через PushManager с
 //  applicationServerKey (публичный VAPID с /public-key) и синхронизация с сервером
 //  (/subscribe, /unsubscribe). Всё браузерное — под guard'ами (SSR-безопасно).
+//  Состояние тумблера = браузерная подписка ∩ строка в БД: браузер про удаление
+//  строки (блокировка аккаунта) не знает, а без строки пуш не уйдёт.
 // =============================================================================
 import { useCallback, useEffect, useState } from "react";
 
@@ -15,6 +17,9 @@ export type PushState =
   | "denied" // пользователь запретил уведомления
   | "default" // ещё не спрашивали / выключено
   | "subscribed"; // подписка активна
+
+/** Результат enable/disable: state отсутствует, когда менять его не на что (ошибка). */
+type PushActionResult = { state?: PushState; error?: string };
 
 type Hook = {
   state: PushState;
@@ -54,119 +59,137 @@ async function fetchPublicKey(): Promise<string | null> {
   }
 }
 
+/** Знает ли сервер подписку этого браузера. null — не удалось спросить. */
+async function fetchServerSubscribed(endpoint: string): Promise<boolean | null> {
+  try {
+    const res = await fetch(
+      `/api/notifications/subscription?endpoint=${encodeURIComponent(endpoint)}`,
+      { cache: "no-store" }
+    );
+    if (!res.ok) return null;
+    const body = (await res.json()) as { subscribed?: boolean };
+    return body.subscribed === true;
+  } catch {
+    return null;
+  }
+}
+
+/** Состояние при загрузке: поддержка → разрешение → VAPID → браузер ∩ сервер. */
+export async function resolvePushState(): Promise<PushState> {
+  if (!isSupported()) return "unsupported";
+  if (Notification.permission === "denied") return "denied";
+
+  const publicKey = await fetchPublicKey();
+  if (!publicKey) return "unconfigured";
+
+  try {
+    const reg = await navigator.serviceWorker.getRegistration();
+    const sub = reg ? await reg.pushManager.getSubscription() : null;
+    if (!sub) return "default";
+
+    // Браузер думает, что подписан, а строки в БД нет (её сносит блокировка
+    // аккаунта) — пуши не придут. Показываем «выключено»: enable() переиспользует
+    // живую браузерную подписку и вернёт её на сервер. Сервер не ответил (офлайн)
+    // — верим браузеру, иначе тумблер мигал бы на каждой потере сети.
+    const serverSubscribed = await fetchServerSubscribed(sub.endpoint);
+    return serverSubscribed === false ? "default" : "subscribed";
+  } catch {
+    return "default";
+  }
+}
+
+/** Включить: разрешение → подписка в браузере → сохранение на сервере. */
+export async function enablePush(): Promise<PushActionResult> {
+  try {
+    if (!isSupported()) return { state: "unsupported" };
+
+    const permission = await Notification.requestPermission();
+    if (permission !== "granted") {
+      return { state: permission === "denied" ? "denied" : "default" };
+    }
+    const publicKey = await fetchPublicKey();
+    if (!publicKey) return { state: "unconfigured" };
+
+    const reg = await navigator.serviceWorker.register("/sw.js");
+    await navigator.serviceWorker.ready;
+
+    // Переиспользуем существующую подписку, иначе создаём новую. Именно этим
+    // чинится расхождение «браузер да / сервер нет»: ключи живой подписки уходят
+    // в /subscribe и строка в БД восстанавливается.
+    const existing = await reg.pushManager.getSubscription();
+    const sub =
+      existing ??
+      (await reg.pushManager.subscribe({
+        userVisibleOnly: true,
+        // Cast: Uint8Array<ArrayBufferLike> не совпадает с BufferSource в lib.dom
+        // (SharedArrayBuffer в union) — в рантайме это валидный applicationServerKey.
+        applicationServerKey: urlBase64ToUint8Array(publicKey) as BufferSource
+      }));
+
+    const json = sub.toJSON() as { endpoint?: string; keys?: { p256dh?: string; auth?: string } };
+    const res = await fetch("/api/notifications/subscribe", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({
+        endpoint: json.endpoint,
+        keys: { p256dh: json.keys?.p256dh, auth: json.keys?.auth },
+        userAgent: navigator.userAgent
+      })
+    });
+    if (!res.ok) return { error: "Не удалось сохранить подписку" };
+
+    return { state: "subscribed" };
+  } catch (err) {
+    return { error: (err as Error).message || "Не удалось включить уведомления" };
+  }
+}
+
+/** Выключить: отписка в браузере + удаление строки на сервере. */
+export async function disablePush(): Promise<PushActionResult> {
+  try {
+    const reg = await navigator.serviceWorker.getRegistration();
+    const sub = reg ? await reg.pushManager.getSubscription() : null;
+    const endpoint = sub?.endpoint;
+    if (sub) await sub.unsubscribe();
+    if (endpoint) {
+      await fetch("/api/notifications/unsubscribe", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ endpoint })
+      });
+    }
+    return { state: "default" };
+  } catch (err) {
+    return { error: (err as Error).message || "Не удалось выключить уведомления" };
+  }
+}
+
 export function usePushSubscription(): Hook {
   const [state, setState] = useState<PushState>("default");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Первичная синхронизация состояния: поддержка → разрешение → активная подписка.
   useEffect(() => {
     let cancelled = false;
-    const sync = async () => {
-      if (!isSupported()) {
-        if (!cancelled) setState("unsupported");
-        return;
-      }
-      if (Notification.permission === "denied") {
-        if (!cancelled) setState("denied");
-        return;
-      }
-      const publicKey = await fetchPublicKey();
-      if (!publicKey) {
-        if (!cancelled) setState("unconfigured");
-        return;
-      }
-      try {
-        const reg = await navigator.serviceWorker.getRegistration();
-        const sub = reg ? await reg.pushManager.getSubscription() : null;
-        if (!cancelled) setState(sub ? "subscribed" : "default");
-      } catch {
-        if (!cancelled) setState("default");
-      }
-    };
-    void sync();
+    void resolvePushState().then((next) => {
+      if (!cancelled) setState(next);
+    });
     return () => {
       cancelled = true;
     };
   }, []);
 
-  const enable = useCallback(async () => {
+  const run = useCallback(async (action: () => Promise<PushActionResult>) => {
     setBusy(true);
     setError(null);
-    try {
-      if (!isSupported()) {
-        setState("unsupported");
-        return;
-      }
-      const permission = await Notification.requestPermission();
-      if (permission !== "granted") {
-        setState(permission === "denied" ? "denied" : "default");
-        return;
-      }
-      const publicKey = await fetchPublicKey();
-      if (!publicKey) {
-        setState("unconfigured");
-        return;
-      }
-
-      const reg = await navigator.serviceWorker.register("/sw.js");
-      await navigator.serviceWorker.ready;
-
-      // Переиспользуем существующую подписку, иначе создаём новую.
-      const existing = await reg.pushManager.getSubscription();
-      const sub =
-        existing ??
-        (await reg.pushManager.subscribe({
-          userVisibleOnly: true,
-          // Cast: Uint8Array<ArrayBufferLike> не совпадает с BufferSource в lib.dom
-          // (SharedArrayBuffer в union) — в рантайме это валидный applicationServerKey.
-          applicationServerKey: urlBase64ToUint8Array(publicKey) as BufferSource
-        }));
-
-      const json = sub.toJSON() as { endpoint?: string; keys?: { p256dh?: string; auth?: string } };
-      const res = await fetch("/api/notifications/subscribe", {
-        method: "POST",
-        headers: { "content-type": "application/json" },
-        body: JSON.stringify({
-          endpoint: json.endpoint,
-          keys: { p256dh: json.keys?.p256dh, auth: json.keys?.auth },
-          userAgent: navigator.userAgent
-        })
-      });
-      if (!res.ok) {
-        setError("Не удалось сохранить подписку");
-        return;
-      }
-      setState("subscribed");
-    } catch (err) {
-      setError((err as Error).message || "Не удалось включить уведомления");
-    } finally {
-      setBusy(false);
-    }
+    const result = await action();
+    if (result.state) setState(result.state);
+    setError(result.error ?? null);
+    setBusy(false);
   }, []);
 
-  const disable = useCallback(async () => {
-    setBusy(true);
-    setError(null);
-    try {
-      const reg = await navigator.serviceWorker.getRegistration();
-      const sub = reg ? await reg.pushManager.getSubscription() : null;
-      const endpoint = sub?.endpoint;
-      if (sub) await sub.unsubscribe();
-      if (endpoint) {
-        await fetch("/api/notifications/unsubscribe", {
-          method: "POST",
-          headers: { "content-type": "application/json" },
-          body: JSON.stringify({ endpoint })
-        });
-      }
-      setState("default");
-    } catch (err) {
-      setError((err as Error).message || "Не удалось выключить уведомления");
-    } finally {
-      setBusy(false);
-    }
-  }, []);
+  const enable = useCallback(() => run(enablePush), [run]);
+  const disable = useCallback(() => run(disablePush), [run]);
 
   return { state, busy, error, enable, disable };
 }

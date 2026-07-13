@@ -1,3 +1,13 @@
+import type { BadgeTone } from "@nb/ui";
+
+import {
+  countAdminBulkFailures,
+  describeAdminBulkFailures,
+  groupAdminBulkFailures,
+  type AdminBulkFailure,
+  type AdminBulkFailureGroup
+} from "@/lib/admin-bulk";
+
 import {
   ingredientCategories,
   type IngredientCatalogItemDto,
@@ -12,6 +22,9 @@ export const adminCatalogSortOptions = ["brand", "catalog", "name", "updated", "
 export type AdminCatalogSortOption = (typeof adminCatalogSortOptions)[number];
 
 export const defaultAdminCatalogSortOption: AdminCatalogSortOption = "brand";
+
+export const adminCatalogPageSizeOptions = [20, 50, 100] as const;
+export const defaultAdminCatalogPageSize = 50;
 
 export const ingredientCatalogCategoryOrder: IngredientCategory[] = [...ingredientCategories];
 
@@ -36,12 +49,74 @@ export const ingredientCompletenessLabels: Record<IngredientCompletenessLevel, s
   full: "Полный"
 };
 
+// Лейблы фильтров — множественное число («Черновики»), в строке списка нужен
+// статус самой карточки («Черновик»).
+export const ingredientCatalogStatusRowLabels: Record<IngredientCatalogStatus, string> = {
+  active: "Активен",
+  draft: "Черновик",
+  archived: "Архив",
+  merged: "Объединён"
+};
+
+export const ingredientCatalogStatusTones: Record<IngredientCatalogStatus, BadgeTone> = {
+  active: "success",
+  draft: "warning",
+  archived: "neutral",
+  merged: "info"
+};
+
+export const ingredientCompletenessTones: Record<IngredientCompletenessLevel, BadgeTone> = {
+  minimum: "danger",
+  recommended: "warning",
+  full: "success"
+};
+
+export const ingredientVisibilityLabels: Record<IngredientCatalogItemDto["visibility"], string> = {
+  public: "Публичный",
+  internal: "Внутренний"
+};
+
+export const catalogBulkFailureReasons = ["merged", "missing", "invalid", "failed"] as const;
+export type CatalogBulkFailureReason = (typeof catalogBulkFailureReasons)[number];
+
+export type CatalogBulkFailure = AdminBulkFailure<CatalogBulkFailureReason>;
+export type CatalogBulkFailureGroup = AdminBulkFailureGroup<CatalogBulkFailureReason>;
+
+export const catalogBulkFailureLabels: Record<CatalogBulkFailureReason, string> = {
+  merged: "Объединённые карточки",
+  missing: "Нет в каталоге",
+  invalid: "Не прошли проверку данных",
+  failed: "Сбой при сохранении"
+};
+
+export const groupCatalogBulkFailures = (failures: CatalogBulkFailure[]): CatalogBulkFailureGroup[] => (
+  groupAdminBulkFailures(catalogBulkFailureReasons, failures)
+);
+
+export const countCatalogBulkFailures = (failed: CatalogBulkFailureGroup[]): number => (
+  countAdminBulkFailures(failed)
+);
+
+export const describeCatalogBulkFailures = (failed: CatalogBulkFailureGroup[]): string => (
+  describeAdminBulkFailures(catalogBulkFailureLabels, failed)
+);
+
 type AdminIngredientsToolbarState = {
   q?: string;
   category?: IngredientCategory | "all";
   status?: IngredientCatalogStatus | "all";
   sort?: AdminCatalogSortOption;
   page?: number;
+  pageSize?: number;
+};
+
+export type AdminIngredientsPageParams = {
+  q: string;
+  category: IngredientCategory | undefined;
+  status: IngredientCatalogStatus | undefined;
+  sort: AdminCatalogSortOption;
+  page: number;
+  pageSize: number;
 };
 
 export type CatalogIngredientGroup = {
@@ -78,6 +153,41 @@ export const parseIngredientCatalogStatus = (
     : undefined
 );
 
+export const parseIngredientCatalogCategory = (
+  value: string | undefined
+): IngredientCategory | undefined => (
+  ingredientCategories.includes(value as IngredientCategory)
+    ? value as IngredientCategory
+    : undefined
+);
+
+export const parseAdminCatalogPage = (value: string | undefined): number => {
+  const parsed = Number(value ?? "1");
+  return Number.isFinite(parsed) && parsed > 0 ? Math.floor(parsed) : 1;
+};
+
+export const parseAdminCatalogPageSize = (value: string | undefined): number => {
+  const parsed = Number(value ?? "");
+  return (adminCatalogPageSizeOptions as readonly number[]).includes(parsed)
+    ? parsed
+    : defaultAdminCatalogPageSize;
+};
+
+const readParam = (value: string | string[] | undefined): string | undefined => (
+  typeof value === "string" ? value : undefined
+);
+
+export const parseAdminIngredientsPageParams = (
+  params: Record<string, string | string[] | undefined>
+): AdminIngredientsPageParams => ({
+  q: (readParam(params.q) ?? "").trim(),
+  category: parseIngredientCatalogCategory(readParam(params.category)),
+  status: parseIngredientCatalogStatus(readParam(params.status)),
+  sort: parseAdminCatalogSort(readParam(params.sort)),
+  page: parseAdminCatalogPage(readParam(params.page)),
+  pageSize: parseAdminCatalogPageSize(readParam(params.pageSize))
+});
+
 export const buildAdminIngredientsHref = (
   pathname: string,
   {
@@ -85,7 +195,8 @@ export const buildAdminIngredientsHref = (
     category = "all",
     status = "all",
     sort = defaultAdminCatalogSortOption,
-    page = 1
+    page = 1,
+    pageSize = defaultAdminCatalogPageSize
   }: AdminIngredientsToolbarState
 ) => {
   const params = new URLSearchParams();
@@ -111,8 +222,25 @@ export const buildAdminIngredientsHref = (
     params.set("page", String(page));
   }
 
+  if (pageSize !== defaultAdminCatalogPageSize) {
+    params.set("pageSize", String(pageSize));
+  }
+
   const query = params.toString();
   return query ? `${pathname}?${query}` : pathname;
+};
+
+export const buildIngredientAliasesPreview = (
+  aliases: IngredientCatalogItemDto["aliases"],
+  limit = 4
+): string | null => {
+  if (aliases.length === 0) {
+    return null;
+  }
+
+  const preview = aliases.slice(0, limit).map((alias) => alias.alias).join(", ");
+  const rest = aliases.length - limit;
+  return rest > 0 ? `${preview} +${rest}` : preview;
 };
 
 export const groupCatalogIngredientsByBrand = (

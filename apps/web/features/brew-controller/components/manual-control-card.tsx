@@ -127,7 +127,7 @@ export function ManualControlCard({ telemetry, hasDevice, controlsHeld, isLive, 
         <p className="text-sm font-semibold text-foreground">Ручной режим</p>
         <Button
           variant="outline"
-          size="sm"
+          size="md"
           disabled={controlsDisabled}
           onClick={() => void runFeedback(cmdExitManual(), "Выход из ручного режима")}
         >

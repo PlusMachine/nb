@@ -35,11 +35,15 @@ import {
   roundTo,
   srmToEbc
 } from "@nb/brewing-core";
+import { assertRateLimit } from "@nb/auth";
 import { getBjcpStyleHeroImageByBjcpId } from "@nb/content";
 import {
   createRecipePayloadSchema,
   defaultRecipeProcessMeta,
   listAuthorRecipesQuerySchema,
+  RECIPE_CREATE_RATE_LIMIT,
+  RECIPE_CREATE_RATE_WINDOW_SECONDS,
+  RECIPE_MAX_COUNT_PER_USER,
   recipeBitternessFormulas,
   recipeCalculationMetaSchema,
   recipeProcessMetaSchema,
@@ -78,7 +82,13 @@ import {
 } from "./public-recipe-query";
 import { computeBayesianRating } from "./rating-score";
 import { isRecipeIndexable, isUnmodifiedClone } from "./seo";
-import { equipmentProfileSnapshotSchema, type EquipmentProfileSnapshot } from "../equipment-profiles/contracts";
+import { isRecipePubliclyVisible, publiclyVisibleRecipeConditions } from "./visibility";
+import {
+  DEFAULT_BREWHOUSE_EFFICIENCY_PCT,
+  DEFAULT_EVAPORATION_RATE_L_PER_HR,
+  equipmentProfileSnapshotSchema,
+  type EquipmentProfileSnapshot
+} from "../equipment-profiles/contracts";
 import { getRecipePublicationFieldErrors } from "./publication-validation";
 import { calculateRecipeFgEstimate } from "./fg-estimate";
 import { scaleRecipeToVolume } from "./scale";
@@ -110,7 +120,7 @@ import {
 } from "../ingredients/source-linkage";
 import { resolveInventoryUnitProfile } from "../inventory/units";
 
-const DEFAULT_EFFICIENCY = 75;
+const DEFAULT_EFFICIENCY = DEFAULT_BREWHOUSE_EFFICIENCY_PCT;
 const DEFAULT_BATCH_SIZE_ENTERED_QUANTITY = 20;
 const DEFAULT_BATCH_SIZE_ENTERED_UNIT = "l";
 const DEFAULT_BOIL_TIME_MINUTES = 60;
@@ -164,7 +174,7 @@ const ensureAccessibleRecipe = async (viewerId: string | null, recipeId: string)
   }
 
   const isOwner = viewerId === recipe.authorId;
-  if (!isOwner && recipe.publicationState !== "published") {
+  if (!isOwner && !isRecipePubliclyVisible(recipe)) {
     throw new Error("FORBIDDEN");
   }
 
@@ -183,7 +193,7 @@ const ensurePublicRecipe = async (recipeId: string) => {
     throw new Error("NOT_FOUND");
   }
 
-  if (recipe.publicationState !== "published") {
+  if (!isRecipePubliclyVisible(recipe)) {
     throw new Error("FORBIDDEN");
   }
 
@@ -202,7 +212,7 @@ const ensurePublicRecipeBySlug = async (slug: string) => {
     throw new Error("NOT_FOUND");
   }
 
-  if (recipe.publicationState !== "published") {
+  if (!isRecipePubliclyVisible(recipe)) {
     throw new Error("FORBIDDEN");
   }
 
@@ -583,6 +593,11 @@ const resolveHopUseType = (
   return "other";
 };
 
+// Эффективное время внесения хмеля для расчёта. Пустое поле у хмеля на кипячение
+// трактуется как полное кипячение — этот же дефолт материализуется при сохранении
+// (resolveDefaultHopTimeMinutes) и при чтении DTO, поэтому фолбэк остаётся только
+// для легаси-строк, сохранённых до фикса A5. Менять его на 0 нельзя — молча
+// обнулит IBU уже опубликованных рецептов.
 const resolveHopTimeMinutes = (
   ingredient: {
     stage: RecipeIngredientDto["stage"];
@@ -603,6 +618,38 @@ const resolveHopTimeMinutes = (
   return resolveHopUseType(ingredient.stage, ingredient.stepMeta ?? null) === "boil"
     ? boilTimeMinutes
     : 0;
+};
+
+/**
+ * Дефолт времени, который надо ЗАПИСАТЬ в строку хмеля, если поле оставили пустым:
+ * хмель на кипячение вносится на полное кипячение (ровно то число, которое молча
+ * подставлял расчёт IBU). Возвращает null, если время уже задано или дефолта для
+ * этого типа внесения нет.
+ *
+ * FWH намеренно не материализуем: brewing-core игнорирует время внесения в первое
+ * сусло (берёт полное кипячение), и «60 мин» на карточке вводили бы в заблуждение.
+ * Вирпул/dip — тоже нет: время хопстенда не равно времени кипячения.
+ */
+const resolveDefaultHopTimeMinutes = (
+  ingredient: {
+    type: RecipeIngredientDto["type"];
+    stage: RecipeIngredientDto["stage"];
+    timeOffset: number | null;
+    stepMeta?: Record<string, unknown> | null;
+  },
+  boilTimeMinutes: number
+): number | null => {
+  if (ingredient.type !== "hop") {
+    return null;
+  }
+
+  if (readNumberMeta(ingredient.stepMeta ?? null, "timeMinutes") != null || ingredient.timeOffset != null) {
+    return null;
+  }
+
+  return resolveHopUseType(ingredient.stage, ingredient.stepMeta ?? null) === "boil"
+    ? boilTimeMinutes
+    : null;
 };
 
 type PreparedRecipeIngredientEntry = {
@@ -639,7 +686,8 @@ const prepareRecipeIngredientEntries = async (
     inventoryIntentMode?: RecipeInventoryIntentMode | null;
     inventorySelectionMeta?: RecipeInventorySelectionMeta | null;
     externalImportMeta?: Record<string, unknown> | null;
-  }>
+  }>,
+  boilTimeMinutes: number
 ) => {
   const preparedValues: PreparedRecipeIngredientEntry[] = [];
 
@@ -691,6 +739,20 @@ const prepareRecipeIngredientEntries = async (
       }
     }
 
+    // Пустое «мин» у хмеля на кипячение материализуем здесь, а не оставляем на
+    // фолбэк расчёта: иначе в БД лежит null, IBU считается за 60, а на карточке
+    // рецепта времени нет вообще — три разных ответа на один вопрос.
+    const sanitizedStepMeta = sanitizeRecipeStepMeta(ingredient.stepMeta ?? null);
+    const defaultHopTimeMinutes = resolveDefaultHopTimeMinutes(
+      {
+        type: resolvedSource.type,
+        stage: ingredient.stage as RecipeIngredientDto["stage"],
+        timeOffset: ingredient.timeOffset ?? null,
+        stepMeta: sanitizedStepMeta
+      },
+      boilTimeMinutes
+    );
+
     preparedValues.push({
       persistentKey: ingredient.persistentKey ?? null,
       ingredientCatalogItemId: ingredient.ingredientCatalogItemId ?? null,
@@ -711,8 +773,10 @@ const prepareRecipeIngredientEntries = async (
         ingredient.amountEnteredUnit
       ),
       stage: ingredient.stage as RecipeIngredientDto["stage"],
-      timeOffset: ingredient.timeOffset ?? null,
-      stepMeta: sanitizeRecipeStepMeta(ingredient.stepMeta ?? null),
+      timeOffset: defaultHopTimeMinutes ?? ingredient.timeOffset ?? null,
+      stepMeta: defaultHopTimeMinutes != null
+        ? { ...(sanitizedStepMeta ?? {}), timeMinutes: defaultHopTimeMinutes }
+        : sanitizedStepMeta,
       inventoryIntentMode: ingredient.inventoryIntentMode ?? null,
       inventorySelectionMeta: ingredient.inventorySelectionMeta ?? null,
       externalImportMeta: ingredient.externalImportMeta ?? null,
@@ -919,7 +983,8 @@ const mapRecipeIngredientBase = (ingredient: typeof recipeIngredients.$inferSele
 
 const hydrateRecipeIngredientDto = async (
   authorId: string,
-  ingredient: typeof recipeIngredients.$inferSelect
+  ingredient: typeof recipeIngredients.$inferSelect,
+  boilTimeMinutes: number
 ): Promise<RecipeIngredientDto> => {
   const stepMeta = ingredient.stepMeta as Record<string, unknown> | null;
   const stepMetaLinkage = readRecipeIngredientLinkageMeta(stepMeta);
@@ -934,9 +999,28 @@ const hydrateRecipeIngredientDto = async (
   }
 
   const resolvedSource = buildPersistedRecipeResolvedSource(ingredient, stepMetaLinkage, liveLinkage);
+  // Легаси-строки (сохранены до материализации дефолта) отдаём с ЭФФЕКТИВНЫМ временем —
+  // тем самым, что уходит в расчёт IBU. Иначе страница рецепта показывает хмель без
+  // времени, а горечь при этом посчитана за полное кипячение. Правит показ без SQL-
+  // бэкфилла: при следующем сохранении число доедет и до БД.
+  const defaultHopTimeMinutes = resolveDefaultHopTimeMinutes(
+    {
+      type: ingredient.type as RecipeIngredientDto["type"],
+      stage: ingredient.stage,
+      timeOffset: ingredient.timeOffset,
+      stepMeta
+    },
+    boilTimeMinutes
+  );
 
   return {
     ...mapRecipeIngredientBase(ingredient),
+    ...(defaultHopTimeMinutes != null
+      ? {
+        timeOffset: defaultHopTimeMinutes,
+        stepMeta: { ...(stepMeta ?? {}), timeMinutes: defaultHopTimeMinutes }
+      }
+      : {}),
     ingredientCategory: resolvedSource?.category ?? null,
     ingredientSubtype: resolvedSource?.subtype ?? null,
     ingredientFamilyId: resolvedSource?.familyId ?? null,
@@ -983,6 +1067,8 @@ const mapRecipeListDto = (recipe: typeof recipes.$inferSelect): RecipeListItemDt
   abv: recipe.abv,
   ibu: recipe.ibu,
   color: recipe.color,
+  hiddenAt: recipe.hiddenAt,
+  hiddenReason: recipe.hiddenReason,
   createdAt: recipe.createdAt,
   updatedAt: recipe.updatedAt
 });
@@ -1010,9 +1096,15 @@ const sortRecipeIngredientsByDisplayOrder = (
 });
 
 /**
- * Атрибуция клона: резолвит исходный рецепт (название, slug, автор, опубликован
- * ли) по `cloned_from_recipe_id`. Данные неперсональные → деталь остаётся
+ * Атрибуция клона: резолвит исходный рецепт (название, slug, автор, виден ли
+ * публично) по `cloned_from_recipe_id`. Данные неперсональные → деталь остаётся
  * кэшируемой. null, если связи нет либо источник удалён.
+ *
+ * `isPublished` считается через {@link isRecipePubliclyVisible} — тем же
+ * правилом, что и в {@link listRecipeSitemapEntries}: скрытый модератором
+ * источник остаётся `publicationState = "published"`, и без учёта `hidden_at`
+ * ссылка в атрибуции вела бы на 404, а canonical клона — на выпавшую из выдачи
+ * страницу.
  */
 const resolveRecipeCloneSource = async (
   clonedFromRecipeId: string | null | undefined
@@ -1028,7 +1120,8 @@ const resolveRecipeCloneSource = async (
       slug: recipes.slug,
       authorId: recipes.authorId,
       authorDisplayName: users.displayName,
-      publicationState: recipes.publicationState
+      publicationState: recipes.publicationState,
+      hiddenAt: recipes.hiddenAt
     })
     .from(recipes)
     .leftJoin(users, eq(users.id, recipes.authorId))
@@ -1045,7 +1138,10 @@ const resolveRecipeCloneSource = async (
     slug: row.slug,
     authorId: row.authorId,
     authorName: row.authorDisplayName ?? null,
-    isPublished: row.publicationState === "published"
+    isPublished: isRecipePubliclyVisible({
+      publicationState: row.publicationState,
+      hiddenAt: row.hiddenAt
+    })
   };
 };
 
@@ -1138,7 +1234,11 @@ const mapRecipeDetailDto = async (
     versions: await listRecipeVersions(recipe.authorId, recipe.recipeFamilyId),
     clonedFrom: await resolveRecipeCloneSource(recipe.clonedFromRecipeId),
     completedBrewCount: await resolveCompletedBrewCount(recipe.id),
-    ingredients: await Promise.all(sortRecipeIngredientsByDisplayOrder(ingredients).map((ingredient) => hydrateRecipeIngredientDto(recipe.authorId, ingredient)))
+    ingredients: await Promise.all(sortRecipeIngredientsByDisplayOrder(ingredients).map((ingredient) => hydrateRecipeIngredientDto(
+      recipe.authorId,
+      ingredient,
+      recipe.boilTimeMinutes ?? DEFAULT_BOIL_TIME_MINUTES
+    )))
   };
 };
 
@@ -1190,12 +1290,13 @@ const syncRecipeIngredients = async (
     inventoryIntentMode?: RecipeInventoryIntentMode | null;
     inventorySelectionMeta?: RecipeInventorySelectionMeta | null;
     externalImportMeta?: Record<string, unknown> | null;
-  }>
+  }>,
+  boilTimeMinutes: number
 ) => {
   const existingIngredients = await db.query.recipeIngredients.findMany({
     where: eq(recipeIngredients.recipeId, recipeId)
   });
-  const preparedIngredients = await prepareRecipeIngredientEntries(authorId, payloadIngredients);
+  const preparedIngredients = await prepareRecipeIngredientEntries(authorId, payloadIngredients, boilTimeMinutes);
   const existingByPersistentKey = new Map(existingIngredients.map((ingredient) => [ingredient.persistentKey, ingredient]));
   const retainedIds = new Set<string>();
 
@@ -1344,6 +1445,9 @@ const computeRecipeStatsSnapshot = (input: {
   const fg = fgEstimate.predictedFg;
   const abv = og && fg ? calculateAbv(og, fg) : null;
   const postBoilVolumeL = batchVolumeL;
+  // Усадку при охлаждении (coolingShrinkagePct) в v1 сознательно игнорируем.
+  const evaporationRateLPerHr = input.equipmentProfileSnapshot?.evaporationRateLPerHr ?? DEFAULT_EVAPORATION_RATE_L_PER_HR;
+  const preBoilVolumeL = postBoilVolumeL + (evaporationRateLPerHr * input.boilTimeMinutes / 60);
   const fermentableGravityPoints = og ? (og - 1) * 1000 * postBoilVolumeL : null;
   const whirlpoolAdditions = hops.filter((hop) => hop.use === "whirlpool" || hop.use === "dip_hop");
   const whirlpoolTimeMinutes = whirlpoolAdditions.reduce((max, hop) => Math.max(max, hop.boilTimeMinutes), 0);
@@ -1358,7 +1462,7 @@ const computeRecipeStatsSnapshot = (input: {
       batchVolumeL,
       boilTimeMinutes: input.boilTimeMinutes,
       hopAdditions: hops,
-      preBoilVolumeL: null,
+      preBoilVolumeL,
       postBoilVolumeL,
       fermentableGravityPoints,
       hopUtilizationFactor: 1,
@@ -1491,13 +1595,28 @@ export const recomputeRecipeStats = async (authorId: string, recipeId: string) =
   return mapRecipeListDto(updated);
 };
 
+/**
+ * Анти-абьюз-барьер, общий для ВСЕХ путей создания рецепта (клон, версия,
+ * импорт, черновик под фото — все они зовут createRecipe). Rate limit режет
+ * скрипт-флуд, квота — медленное засорение базы. Бросает RATE_LIMITED /
+ * RECIPE_QUOTA_REACHED; экшены маппят их в понятные сообщения.
+ */
+const assertRecipeCreationAllowed = async (authorId: string): Promise<void> => {
+  await assertRateLimit(authorId, "recipe_create", RECIPE_CREATE_RATE_LIMIT, RECIPE_CREATE_RATE_WINDOW_SECONDS);
+  const [row] = await db.select({ value: count() }).from(recipes).where(eq(recipes.authorId, authorId));
+  if ((row?.value ?? 0) >= RECIPE_MAX_COUNT_PER_USER) {
+    throw new Error("RECIPE_QUOTA_REACHED");
+  }
+};
+
 export const createRecipe = async (
   authorId: string,
   payload: unknown,
   options?: { recipeFamilyId?: string; versionNumber?: number; clonedFromRecipeId?: string | null }
 ) => {
+  await assertRecipeCreationAllowed(authorId);
   const parsed = createRecipePayloadSchema.parse(normalizeCreateRecipePayloadDefaults(payload));
-  const preparedIngredients = await prepareRecipeIngredientEntries(authorId, parsed.ingredients);
+  const preparedIngredients = await prepareRecipeIngredientEntries(authorId, parsed.ingredients, parsed.boilTimeMinutes);
   const nextProcessMeta = parseRecipeProcessMeta(parsed.processMeta ?? null);
   const nextCalculationMeta = parsed.calculationMeta != null
     ? parseRecipeCalculationMeta(parsed.calculationMeta)
@@ -1560,7 +1679,7 @@ export const createRecipe = async (
     throw new Error("CREATE_FAILED");
   }
 
-  await syncRecipeIngredients(authorId, created.id, parsed.ingredients);
+  await syncRecipeIngredients(authorId, created.id, parsed.ingredients, parsed.boilTimeMinutes);
   await recomputeRecipeStats(authorId, created.id);
 
   return getRecipeById(authorId, created.id);
@@ -1569,6 +1688,7 @@ export const createRecipe = async (
 export const updateRecipe = async (authorId: string, recipeId: string, payload: unknown) => {
   const parsed = updateRecipePayloadSchema.parse(normalizeUpdateRecipePayloadDefaults(payload));
   const current = await ensureOwnedRecipe(authorId, recipeId);
+  const nextBoilTimeMinutes = parsed.boilTimeMinutes ?? current.boilTimeMinutes ?? DEFAULT_BOIL_TIME_MINUTES;
   const nextIngredientsPayload = parsed.ingredients ?? (await getOwnedRecipeById(authorId, recipeId)).ingredients.map((ingredient) => ({
     persistentKey: ingredient.persistentKey,
     ingredientCatalogItemId: ingredient.ingredientCatalogItemId,
@@ -1586,7 +1706,7 @@ export const updateRecipe = async (authorId: string, recipeId: string, payload: 
     inventorySelectionMeta: ingredient.inventorySelectionMeta ?? null,
     externalImportMeta: ingredient.externalImportMeta ?? null
   }));
-  const preparedIngredients = await prepareRecipeIngredientEntries(authorId, nextIngredientsPayload);
+  const preparedIngredients = await prepareRecipeIngredientEntries(authorId, nextIngredientsPayload, nextBoilTimeMinutes);
 
   const batchSize = parsed.batchSizeEnteredQuantity !== undefined || parsed.batchSizeEnteredUnit !== undefined
     ? normalizeRecipeBatchSize(
@@ -1668,7 +1788,7 @@ export const updateRecipe = async (authorId: string, recipeId: string, payload: 
   }
 
   if (parsed.ingredients) {
-    await syncRecipeIngredients(authorId, recipeId, parsed.ingredients);
+    await syncRecipeIngredients(authorId, recipeId, parsed.ingredients, nextBoilTimeMinutes);
   }
 
   if (parsed.recomputeStats) {
@@ -1676,6 +1796,25 @@ export const updateRecipe = async (authorId: string, recipeId: string, payload: 
   }
 
   return getRecipeById(authorId, recipeId);
+};
+
+/**
+ * Сколько партий пользователя сварено по этому рецепту. Нужно подтверждению
+ * удаления: `brew_batches.recipe_id` — ON DELETE SET NULL, партии переживают
+ * удаление рецепта (снапшот остаётся источником истины), но связь с рецептом
+ * теряют — и пользователь обязан узнать об этом ДО удаления, а не после.
+ *
+ * Считаем только СВОИ партии: чужие варки по опубликованному рецепту автор не
+ * видит в «Партиях» и ничего с ними сделать не может.
+ */
+export const countRecipeBrewBatches = async (authorId: string, recipeId: string): Promise<number> => {
+  const [row] = await db
+    .select({ value: count() })
+    .from(brewBatches)
+    .where(and(eq(brewBatches.recipeId, recipeId), eq(brewBatches.userId, authorId)))
+    .limit(1);
+
+  return row?.value ?? 0;
 };
 
 export const deleteRecipe = async (authorId: string, recipeId: string) => {
@@ -1748,16 +1887,24 @@ const buildRecipeCloneIngredientPayload = (
 
 /**
  * Пур-правило авторизации клона. Свой рецепт можно клонировать в любом статусе;
- * чужой — только если он published. Бросает FORBIDDEN иначе. Возвращает isOwn,
- * чтобы вызывающий выбрал загрузчик и режим ремапа кастомов.
+ * чужой — только если он виден публично (published и не скрыт модератором).
+ * Бросает FORBIDDEN иначе. Возвращает isOwn, чтобы вызывающий выбрал загрузчик
+ * и режим ремапа кастомов.
  */
 export const assertRecipeCloneAllowed = (input: {
   sourceAuthorId: string;
   sourcePublicationState: RecipePublicationState;
+  sourceHiddenAt?: Date | null;
   userId: string;
 }): { isOwn: boolean } => {
   const isOwn = input.sourceAuthorId === input.userId;
-  if (!isOwn && input.sourcePublicationState !== "published") {
+  if (
+    !isOwn &&
+    !isRecipePubliclyVisible({
+      publicationState: input.sourcePublicationState,
+      hiddenAt: input.sourceHiddenAt ?? null
+    })
+  ) {
     throw new Error("FORBIDDEN");
   }
   return { isOwn };
@@ -1887,7 +2034,7 @@ export const cloneRecipeFromPublic = async (
 ): Promise<RecipeDetailDto> => {
   const guard = await db.query.recipes.findFirst({
     where: eq(recipes.id, sourceRecipeId),
-    columns: { authorId: true, publicationState: true }
+    columns: { authorId: true, publicationState: true, hiddenAt: true }
   });
 
   if (!guard) {
@@ -1897,6 +2044,7 @@ export const cloneRecipeFromPublic = async (
   const { isOwn } = assertRecipeCloneAllowed({
     sourceAuthorId: guard.authorId,
     sourcePublicationState: guard.publicationState,
+    sourceHiddenAt: guard.hiddenAt,
     userId
   });
 
@@ -1965,8 +2113,8 @@ export const createRecipeVersion = async (authorId: string, recipeId: string) =>
 
 export const setRecipeIngredients = async (authorId: string, recipeId: string, ingredientsPayload: unknown) => {
   const parsed = createRecipePayloadSchema.shape.ingredients.parse(ingredientsPayload);
-  await ensureOwnedRecipe(authorId, recipeId);
-  await syncRecipeIngredients(authorId, recipeId, parsed);
+  const recipe = await ensureOwnedRecipe(authorId, recipeId);
+  await syncRecipeIngredients(authorId, recipeId, parsed, recipe.boilTimeMinutes ?? DEFAULT_BOIL_TIME_MINUTES);
   await recomputeRecipeStats(authorId, recipeId);
 
   return getRecipeById(authorId, recipeId);
@@ -2028,6 +2176,8 @@ export const listAuthorRecipeCards = async (authorId: string): Promise<OwnerReci
       recipeFamilyId: recipes.recipeFamilyId,
       versionNumber: recipes.versionNumber,
       publicationState: recipes.publicationState,
+      hiddenAt: recipes.hiddenAt,
+      hiddenReason: recipes.hiddenReason,
       og: recipes.og,
       fg: recipes.fg,
       abv: recipes.abv,
@@ -2057,6 +2207,23 @@ export const listAuthorRecipeCards = async (authorId: string): Promise<OwnerReci
     }
   }
 
+  // Свои партии по рецепту — для честного подтверждения удаления. Тоже один
+  // сгруппированный запрос, не N+1.
+  const recipeIds = rows.map((row) => row.id);
+  const brewBatchCounts = new Map<string, number>();
+  if (recipeIds.length > 0) {
+    const batchCounts = await db
+      .select({ recipeId: brewBatches.recipeId, value: count() })
+      .from(brewBatches)
+      .where(and(eq(brewBatches.userId, authorId), inArray(brewBatches.recipeId, recipeIds)))
+      .groupBy(brewBatches.recipeId);
+    for (const entry of batchCounts) {
+      if (entry.recipeId) {
+        brewBatchCounts.set(entry.recipeId, entry.value);
+      }
+    }
+  }
+
   // Карта фото BJCP-стилей (как на `/bjcp`) — дешёвый кешированный lookup, не N+1.
   const styleHeroImageByBjcpId = await getBjcpStyleHeroImageByBjcpId();
 
@@ -2080,6 +2247,8 @@ export const listAuthorRecipeCards = async (authorId: string): Promise<OwnerReci
       slug: row.slug,
       title: row.title,
       publicationState: row.publicationState,
+      hiddenAt: row.hiddenAt,
+      hiddenReason: row.hiddenReason,
       versionNumber: row.versionNumber,
       versionCount: versionCounts.get(row.recipeFamilyId) ?? 1,
       updatedAt: row.updatedAt,
@@ -2092,7 +2261,8 @@ export const listAuthorRecipeCards = async (authorId: string): Promise<OwnerReci
       colorSrm: row.color,
       heroImage,
       styleImageUrl,
-      styleFit: fit ? (fit.overallFit ? "in_style" : "deviations") : null
+      styleFit: fit ? (fit.overallFit ? "in_style" : "deviations") : null,
+      brewBatchCount: brewBatchCounts.get(row.id) ?? 0
     } satisfies OwnerRecipeCardDto;
   });
 };
@@ -2246,7 +2416,7 @@ export const getPublicRecipeFamilyCounts = async (): Promise<Record<string, numb
   const rows = await db
     .select({ styleId: recipes.styleId, value: count() })
     .from(recipes)
-    .where(eq(recipes.publicationState, "published"))
+    .where(and(...publiclyVisibleRecipeConditions()))
     .groupBy(recipes.styleId);
 
   const countByStyleId = new Map<string, number>();
@@ -2285,7 +2455,7 @@ export const getPublicRecipeSortAvailability = async (): Promise<PublicRecipeSor
       savedRecipes: sql<number>`count(*) filter (where ${recipes.saveCount} > 0)`
     })
     .from(recipes)
-    .where(eq(recipes.publicationState, "published"));
+    .where(and(...publiclyVisibleRecipeConditions()));
 
   return {
     ratedRecipes: Number(row?.ratedRecipes ?? 0),
@@ -2317,7 +2487,7 @@ export const listRecipeSitemapEntries = async (): Promise<Array<{ slug: string; 
       clonedFromRecipeId: recipes.clonedFromRecipeId
     })
     .from(recipes)
-    .where(eq(recipes.publicationState, "published"));
+    .where(and(...publiclyVisibleRecipeConditions()));
 
   // 4-й сигнал качества (подтверждённые варки) — один батч-запрос GROUP BY по
   // всем кандидатам сразу, без N+1 (см. resolveCompletedBrewCountsByRecipeId выше).
@@ -2336,7 +2506,8 @@ export const listRecipeSitemapEntries = async (): Promise<Array<{ slug: string; 
         .select({
           id: recipes.id,
           title: recipes.title,
-          publicationState: recipes.publicationState
+          publicationState: recipes.publicationState,
+          hiddenAt: recipes.hiddenAt
         })
         .from(recipes)
         .where(inArray(recipes.id, cloneSourceIds))
@@ -2358,7 +2529,7 @@ export const listRecipeSitemapEntries = async (): Promise<Array<{ slug: string; 
       if (source && isUnmodifiedClone({
         cloneTitle: candidate.title,
         sourceTitle: source.title,
-        sourceIsPublished: source.publicationState === "published"
+        sourceIsPublished: isRecipePubliclyVisible(source)
       })) {
         return false;
       }
@@ -2369,7 +2540,7 @@ export const listRecipeSitemapEntries = async (): Promise<Array<{ slug: string; 
 };
 
 export const searchPublicRecipes = async (filters: PublicRecipeFilters): Promise<PublicRecipeListResult> => {
-  const conditions = [eq(recipes.publicationState, "published")];
+  const conditions = [...publiclyVisibleRecipeConditions()];
 
   if (filters.q) {
     const term = `%${filters.q}%`;
@@ -2517,7 +2688,7 @@ export const listPublicRecipesForIngredient = async (
     return { total: 0, items: [] };
   }
 
-  const whereClause = and(eq(recipes.publicationState, "published"), inArray(recipes.id, recipeIds));
+  const whereClause = and(...publiclyVisibleRecipeConditions(), inArray(recipes.id, recipeIds));
 
   const totalRows = await db
     .select({ value: count() })
@@ -2622,10 +2793,10 @@ export const getViewerRecipeRatingState = async (
 ): Promise<{ canRate: boolean; rating: RecipeRatingDto | null }> => {
   const recipe = await db.query.recipes.findFirst({
     where: eq(recipes.id, recipeId),
-    columns: { authorId: true, publicationState: true }
+    columns: { authorId: true, publicationState: true, hiddenAt: true }
   });
 
-  const canRate = !!recipe && recipe.publicationState === "published" && recipe.authorId !== userId;
+  const canRate = !!recipe && isRecipePubliclyVisible(recipe) && recipe.authorId !== userId;
   const rating = await getUserRecipeRating(userId, recipeId);
 
   return { canRate, rating };
@@ -2649,7 +2820,11 @@ export const rateRecipe = async (
     await lockRecipeForRatingMutation(tx, recipeId);
 
     const [recipe] = await tx
-      .select({ authorId: recipes.authorId, publicationState: recipes.publicationState })
+      .select({
+        authorId: recipes.authorId,
+        publicationState: recipes.publicationState,
+        hiddenAt: recipes.hiddenAt
+      })
       .from(recipes)
       .where(eq(recipes.id, recipeId))
       .limit(1);
@@ -2657,7 +2832,7 @@ export const rateRecipe = async (
     if (!recipe) {
       throw new Error("NOT_FOUND");
     }
-    if (recipe.publicationState !== "published") {
+    if (!isRecipePubliclyVisible(recipe)) {
       throw new Error("FORBIDDEN");
     }
     if (recipe.authorId === userId) {
@@ -2700,14 +2875,15 @@ export const getRecipeFeaturedState = async (
 ): Promise<{ exists: boolean; published: boolean; featured: boolean }> => {
   const recipe = await db.query.recipes.findFirst({
     where: eq(recipes.id, recipeId),
-    columns: { publicationState: true, featuredAt: true }
+    columns: { publicationState: true, featuredAt: true, hiddenAt: true }
   });
   if (!recipe) {
     return { exists: false, published: false, featured: false };
   }
+  // Скрытый модератором рецепт «Выбором редакции» отметить нельзя: публично его нет.
   return {
     exists: true,
-    published: recipe.publicationState === "published",
+    published: isRecipePubliclyVisible(recipe),
     featured: recipe.featuredAt != null
   };
 };
@@ -2764,7 +2940,7 @@ export const setRecipeSave = async (
     await lockRecipeForRatingMutation(tx, recipeId);
 
     const [recipe] = await tx
-      .select({ publicationState: recipes.publicationState })
+      .select({ publicationState: recipes.publicationState, hiddenAt: recipes.hiddenAt })
       .from(recipes)
       .where(eq(recipes.id, recipeId))
       .limit(1);
@@ -2772,7 +2948,7 @@ export const setRecipeSave = async (
     if (!recipe) {
       throw new Error("NOT_FOUND");
     }
-    if (recipe.publicationState !== "published") {
+    if (!isRecipePubliclyVisible(recipe)) {
       throw new Error("FORBIDDEN");
     }
 
@@ -2833,7 +3009,7 @@ export const countSavedRecipes = async (userId: string): Promise<number> => {
     .select({ value: count() })
     .from(recipeSaves)
     .innerJoin(recipes, eq(recipes.id, recipeSaves.recipeId))
-    .where(and(eq(recipeSaves.userId, userId), eq(recipes.publicationState, "published")));
+    .where(and(eq(recipeSaves.userId, userId), ...publiclyVisibleRecipeConditions()));
 
   return row?.value ?? 0;
 };
@@ -2873,7 +3049,7 @@ export const listSavedRecipes = async (userId: string): Promise<PublicRecipeList
     .innerJoin(recipes, eq(recipes.id, recipeSaves.recipeId))
     .leftJoin(users, eq(users.id, recipes.authorId))
     .leftJoin(recipeImages, eq(recipeImages.id, recipes.heroImageId))
-    .where(and(eq(recipeSaves.userId, userId), eq(recipes.publicationState, "published")))
+    .where(and(eq(recipeSaves.userId, userId), ...publiclyVisibleRecipeConditions()))
     .orderBy(desc(recipeSaves.createdAt));
 
   const styleHeroImageByBjcpId = await getBjcpStyleHeroImageByBjcpId();
@@ -2984,7 +3160,9 @@ export const previewRecipeDraft = async (authorId: string, payload: unknown): Pr
     : payload;
   const parsed = createRecipePayloadSchema.parse(normalizedPayload);
   const batchSize = normalizeRecipeBatchSize(parsed.batchSizeEnteredQuantity, parsed.batchSizeEnteredUnit);
-  const preparedIngredients = await prepareRecipeIngredientEntries(authorId, parsed.ingredients);
+  // boilTimeMinutes обязателен и здесь: превью обязано считать IBU по тем же
+  // материализованным временам хмеля, что уйдут в БД при сохранении.
+  const preparedIngredients = await prepareRecipeIngredientEntries(authorId, parsed.ingredients, parsed.boilTimeMinutes);
   const calculationMeta = parseRecipeCalculationMeta(
     parsed.calculationMeta ?? null,
     await getUserRecipeCalculationMeta(authorId)

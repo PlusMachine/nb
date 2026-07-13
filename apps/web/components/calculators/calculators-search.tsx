@@ -55,7 +55,7 @@ export function CalculatorsSearch({
           value={query}
           onChange={(event) => setQuery(event.target.value)}
           placeholder={`Название или термин: ${calculatorSearchHints.join(", ")}…`}
-          className="h-11 w-full rounded-xl border border-border bg-card pl-10 pr-10 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          className="h-11 w-full rounded-xl border border-border bg-card pl-10 pr-10 text-base text-foreground placeholder:text-muted-foreground focus:outline-none focus-visible:ring-2 focus-visible:ring-ring sm:text-sm"
         />
         {query ? (
           <button

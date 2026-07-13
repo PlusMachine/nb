@@ -59,7 +59,7 @@ export function SiteHeader() {
           >
             NB
           </Link>
-          <nav className="hidden items-center gap-1 text-sm md:flex" aria-label="Разделы сайта">
+          <nav className="hidden items-center gap-1 text-sm lg:flex" aria-label="Разделы сайта">
             {publicLinks.map((link) => {
               const active = isActivePath(pathname, link.href);
               return (
@@ -84,7 +84,7 @@ export function SiteHeader() {
           <ThemeToggle className="hidden sm:inline-flex" />
           <Link
             href="/login"
-            className="inline-flex items-center rounded-full bg-foreground px-4 py-2 text-sm font-semibold text-background transition-colors hover:bg-foreground/90"
+            className="inline-flex min-h-11 items-center rounded-full bg-foreground px-4 py-2 text-sm font-semibold text-background transition-colors hover:bg-foreground/90"
           >
             Войти
           </Link>
@@ -93,14 +93,14 @@ export function SiteHeader() {
             onClick={() => setMobileOpen((value) => !value)}
             aria-label={mobileOpen ? "Закрыть меню" : "Открыть меню"}
             aria-expanded={mobileOpen}
-            className="rounded-lg p-2 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground md:hidden"
+            className="grid min-h-11 min-w-11 place-items-center rounded-lg text-muted-foreground transition-colors hover:bg-accent hover:text-foreground lg:hidden"
           >
             {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
           </button>
         </div>
 
         {mobileOpen ? (
-          <div className="absolute inset-x-0 top-full z-50 border-b border-border bg-popover px-6 py-3 shadow-lg md:hidden">
+          <div className="absolute inset-x-0 top-full z-50 border-b border-border bg-popover px-6 py-3 shadow-lg lg:hidden">
             <nav className="flex flex-col gap-1 text-sm" aria-label="Разделы сайта">
               {publicLinks.map((link) => {
                 const active = isActivePath(pathname, link.href);

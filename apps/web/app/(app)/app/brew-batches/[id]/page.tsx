@@ -6,14 +6,20 @@ import { ChevronLeft } from "lucide-react";
 import { requireUser } from "@/lib/auth";
 import { getBrewBatchDetail, getDeviceTelemetryHistory } from "@/features/brew-batches/service";
 import { getBrewBatchInventoryView } from "@/features/brew-batches/inventory";
-import { brewDayActForStatus, buildBrewDaySteps, summarizeBrewDayPlan } from "@/features/brew-batches/brew-day";
+import {
+  brewDayActForStatus,
+  brewMeasurementKindForAct,
+  buildBrewDaySteps,
+  summarizeBrewDayPlan
+} from "@/features/brew-batches/brew-day";
 import { resolveBrewNudge } from "@/features/brew-batches/dashboard";
 import { resolveBrewCompletionRatingSlug } from "@/features/brew-batches/completion";
 import {
   brewBatchStatusBadgeClass,
   brewBatchStatusLabels,
   FERMENT_HISTORY_LIMIT,
-  FERMENT_HISTORY_WINDOW_DAYS
+  FERMENT_HISTORY_WINDOW_DAYS,
+  type BrewRecipeSnapshot
 } from "@/features/brew-batches/contracts";
 import { getDeviceById } from "@/features/devices/service";
 import { listFermenterCandidates } from "@/features/devices/fermenter-binding";
@@ -22,7 +28,7 @@ import { mapFermentationPlanToDeviceSteps } from "@/features/brew-controller/fer
 import { getRecipeById } from "@/features/recipes/service";
 import { computeRecipeMatch } from "@/features/recipes/match-service";
 import { isShoppingGapLine } from "@/features/shopping/service";
-import { formatGravity } from "@/features/system/gravity-units";
+import { formatGravity, resolvePreferredGravityUnit } from "@/features/system/gravity-units";
 import { formatRelativeTimestamp } from "@/features/recipes/format";
 import { resolveFermenterBindingStatus } from "@/features/brew-batches/fermenter-status";
 import { BrewCompletionSummary } from "@/features/brew-batches/components/brew-completion-summary";
@@ -49,6 +55,16 @@ const readNum = (record: Record<string, unknown> | null, key: string): number | 
   return typeof value === "number" && Number.isFinite(value) ? value : null;
 };
 
+// Дублирует formatAbv из features/labels/slots.ts (тот файл не экспортирует её
+// наружу, и его сейчас параллельно правят по задаче наклеек) — тот же формат «~5.6%».
+const formatAbvLabel = (value: number | null): string | null => {
+  if (value === null) {
+    return null;
+  }
+  const rounded = value.toFixed(1).replace(/\.0$/, "");
+  return `~${rounded}%`;
+};
+
 // Страница варки — помощник варочного дня. Раскладка ветвится по «акту» (статусу
 // партии): подготовка → варочный день → брожение → итог/архив. Каждый акт
 // показывает релевантное «сейчас», статус двигают кнопки перехода в актах, а
@@ -66,6 +82,9 @@ export default async function BrewBatchDetailPage({ params }: { params: Promise<
   const { batch, measurements, summary } = detail;
   const hasDevice = Boolean(batch.deviceId);
   const act = brewDayActForStatus(batch.status);
+  // Подсказка в поле плотности зависит от акта: OG в варочный день, FG на брожении,
+  // в итоге/архиве/на устройстве — без подсказки (см. brew-day.ts).
+  const measurementKind = brewMeasurementKindForAct(act);
   const device = batch.deviceId ? await getDeviceById(user.id, batch.deviceId) : null;
   // Акт «Брожение» живёт неделями — просим окно по дням (§14), а не варочный лимит
   // «последние 1000 точек» (~3.5 суток при 5-минутном FERMENT-даунсэмпле, обрежет
@@ -85,10 +104,13 @@ export default async function BrewBatchDetailPage({ params }: { params: Promise<
   // isShoppingGapLine, что даёт строки в /app/shopping, чтобы числа на двух
   // поверхностях совпадали. Ошибка матча (рецепт удалён/недоступен) — не должна
   // ронять страницу партии, поэтому просто гасим её в null.
+  // brewBatchId — чтобы уже списанное НА ЭТУ партию считалось покрытием (иначе
+  // после списания склад партии показывал нехватку теми же позициями, что сам же
+  // и списал). Кредит виден только в контексте партии, глобальный матч его не знает.
   let prepShortage: { missingCount: number } | null = null;
   if (act === "prep" && batch.recipeId) {
     try {
-      const match = await computeRecipeMatch({ userId: user.id, recipeId: batch.recipeId });
+      const match = await computeRecipeMatch({ userId: user.id, recipeId: batch.recipeId, brewBatchId: batch.id });
       prepShortage = { missingCount: match.lines.filter(isShoppingGapLine).length };
     } catch {
       prepShortage = null;
@@ -117,6 +139,7 @@ export default async function BrewBatchDetailPage({ params }: { params: Promise<
       const slug = resolveBrewCompletionRatingSlug(batch.status, user.id, {
         authorId: sourceRecipe.authorId,
         publicationState: sourceRecipe.publicationState,
+        hiddenAt: sourceRecipe.hiddenAt,
         slug: sourceRecipe.slug
       });
       if (slug) {
@@ -137,8 +160,9 @@ export default async function BrewBatchDetailPage({ params }: { params: Promise<
   const primaryTemperatureC = readNum(fermentPlan, "primaryTemperatureC");
   const fermentStart = measurements[0]?.takenAt ?? batch.startedAt ?? batch.createdAt;
   const fermentDayN = Math.max(1, Math.floor((Date.now() - new Date(fermentStart).getTime()) / DAY_MS) + 1);
-  const dayLabel = primaryDurationDays != null
-    ? `День ${fermentDayN} из ${Math.round(primaryDurationDays)}`
+  const plannedFermentDays = primaryDurationDays != null ? Math.round(primaryDurationDays) : null;
+  const dayLabel = plannedFermentDays != null
+    ? `День ${fermentDayN} из ${plannedFermentDays}`
     : `День ${fermentDayN}`;
   const targetTempLabel = primaryTemperatureC != null ? `${primaryTemperatureC} °C` : null;
   const nudge = act === "fermentation"
@@ -181,9 +205,34 @@ export default async function BrewBatchDetailPage({ params }: { params: Promise<
   const planned = fmtDate(batch.plannedFor);
 
   // Атрибуция источника: варка из чужого рецепта без клона — честно указываем автора.
-  const recipeSnapshot = batch.recipeSnapshot as { authorId?: string | null; authorName?: string | null } | null;
+  const recipeSnapshot = batch.recipeSnapshot as Partial<BrewRecipeSnapshot> | null;
   const sourceAuthorName = recipeSnapshot?.authorName ?? null;
   const isForeignRecipe = Boolean(recipeSnapshot?.authorId && recipeSnapshot.authorId !== batch.userId);
+
+  // Вход «Наклейки» (розлив = этап packaging внутри акта fermentation, см.
+  // brew-day.ts:613 — отдельного акта «Розлив» нет, поэтому вход даём в
+  // fermentation/done). Дата розлива: completedAt для завершённой варки, иначе
+  // сегодня — отдельного поля даты розлива у партии нет.
+  // Свой рецепт (или authorId в снапшоте отсутствует — старые снапшоты без
+  // атрибуции считаем своими) → полная студия по рецепту с QR и стилем.
+  // Чужой рецепт/рецепт удалён → ручной режим с тем, что есть в снапшоте
+  // (стиля/IBU/цвета там нет — это слепок из момента старта варки, не карточка рецепта).
+  const bottlingDateIso = (batch.completedAt ?? new Date()).toISOString().slice(0, 10);
+  const isOwnSnapshotRecipe = !recipeSnapshot?.authorId || recipeSnapshot.authorId === batch.userId;
+  let labelsHref: string | null = null;
+  if (batch.recipeId && isOwnSnapshotRecipe) {
+    labelsHref = `/app/recipes/${batch.recipeId}/labels?bottlingDate=${bottlingDateIso}`;
+  } else if (recipeSnapshot) {
+    const gravityUnit = resolvePreferredGravityUnit(user.preferredGravityUnit);
+    const manualParams = new URLSearchParams({ bottlingDate: bottlingDateIso });
+    if (recipeSnapshot.title) manualParams.set("title", recipeSnapshot.title);
+    if (recipeSnapshot.og != null) manualParams.set("og", formatGravity(recipeSnapshot.og, gravityUnit));
+    if (recipeSnapshot.fg != null) manualParams.set("fg", formatGravity(recipeSnapshot.fg, gravityUnit));
+    const abvText = formatAbvLabel(recipeSnapshot.abv ?? null);
+    if (abvText) manualParams.set("abv", abvText);
+    if (recipeSnapshot.authorName) manualParams.set("author", recipeSnapshot.authorName);
+    labelsHref = `/labels?${manualParams.toString()}`;
+  }
 
   return (
     <div className="space-y-6">
@@ -203,8 +252,10 @@ export default async function BrewBatchDetailPage({ params }: { params: Promise<
       <header className="flex items-start justify-between gap-3">
         <div className="min-w-0 space-y-1">
           <div className="flex flex-wrap items-center gap-3">
-            <h1 className="text-2xl font-semibold text-foreground">{batch.name}</h1>
-            <span className={`inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium ${brewBatchStatusBadgeClass[batch.status]}`}>
+            {/* truncate — длинное название партии не должно раздвигать шапку и
+                отталкивать меню (⋯) за пределы узкого экрана. */}
+            <h1 className="min-w-0 flex-1 truncate text-2xl font-semibold text-foreground">{batch.name}</h1>
+            <span className={`shrink-0 inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium ${brewBatchStatusBadgeClass[batch.status]}`}>
               {brewBatchStatusLabels[batch.status]}
             </span>
           </div>
@@ -214,7 +265,7 @@ export default async function BrewBatchDetailPage({ params }: { params: Promise<
             {completed ? ` · завершена ${completed}` : started ? ` · начата ${started}` : planned ? ` · запланирована на ${planned}` : ""}
           </p>
         </div>
-        <BatchMenu brewBatchId={batch.id} status={batch.status} />
+        <BatchMenu brewBatchId={batch.id} status={batch.status} labelsHref={labelsHref} />
       </header>
 
       {hasDevice && act !== "fermentation" ? (
@@ -230,6 +281,7 @@ export default async function BrewBatchDetailPage({ params }: { params: Promise<
               preferredGravityUnit={user.preferredGravityUnit}
               batchVolumeL={batch.brewPlanSnapshot.recipe.batchSizeL}
               ratingTarget={ratingTarget}
+              labelsHref={labelsHref}
             />
           ) : null}
           <div className="space-y-6 rounded-2xl border border-border bg-card p-4 shadow-sm">
@@ -247,12 +299,14 @@ export default async function BrewBatchDetailPage({ params }: { params: Promise<
             measurements={measurements}
             summary={summary}
             preferredGravityUnit={user.preferredGravityUnit}
+            measurementKind={measurementKind}
             hideStats={act === "done"}
           />
           {inventoryView ? (
             <BrewInventory brewBatchId={batch.id} view={inventoryView} status={batch.status} prepShortage={prepShortage} />
           ) : null}
-          <BrewNotes brewBatchId={batch.id} notes={batch.notes} completed={act === "done"} />
+          {act === "done" ? <BrewNotes brewBatchId={batch.id} kind="tasting" notes={batch.tastingNotes} /> : null}
+          <BrewNotes brewBatchId={batch.id} kind="brew" notes={batch.notes} />
         </>
       ) : act === "prep" ? (
         <>
@@ -265,7 +319,7 @@ export default async function BrewBatchDetailPage({ params }: { params: Promise<
           {inventoryView ? (
             <BrewInventory brewBatchId={batch.id} view={inventoryView} status={batch.status} prepShortage={prepShortage} />
           ) : null}
-          <BrewNotes brewBatchId={batch.id} notes={batch.notes} />
+          <BrewNotes brewBatchId={batch.id} kind="brew" notes={batch.notes} />
         </>
       ) : act === "brewday" ? (
         <>
@@ -275,10 +329,11 @@ export default async function BrewBatchDetailPage({ params }: { params: Promise<
             measurements={measurements}
             summary={summary}
             preferredGravityUnit={user.preferredGravityUnit}
+            measurementKind={measurementKind}
             title="Начальная плотность (OG)"
           />
           {inventoryView ? <BrewInventory brewBatchId={batch.id} view={inventoryView} status={batch.status} /> : null}
-          <BrewNotes brewBatchId={batch.id} notes={batch.notes} />
+          <BrewNotes brewBatchId={batch.id} kind="brew" notes={batch.notes} />
           <BrewQuickDock />
         </>
       ) : act === "fermentation" ? (
@@ -288,6 +343,8 @@ export default async function BrewBatchDetailPage({ params }: { params: Promise<
             groups={brewDaySteps}
             initialProgress={batch.brewDayProgress}
             dayLabel={dayLabel}
+            fermentDayN={fermentDayN}
+            plannedDays={plannedFermentDays}
             targetTempLabel={targetTempLabel}
             nudge={nudge}
           />
@@ -314,10 +371,11 @@ export default async function BrewBatchDetailPage({ params }: { params: Promise<
             measurements={measurements}
             summary={summary}
             preferredGravityUnit={user.preferredGravityUnit}
+            measurementKind={measurementKind}
             title="Плотность брожения (FG)"
           />
           {inventoryView ? <BrewInventory brewBatchId={batch.id} view={inventoryView} status={batch.status} /> : null}
-          <BrewNotes brewBatchId={batch.id} notes={batch.notes} />
+          <BrewNotes brewBatchId={batch.id} kind="brew" notes={batch.notes} />
           <BrewQuickDock />
         </>
       ) : (
@@ -329,6 +387,7 @@ export default async function BrewBatchDetailPage({ params }: { params: Promise<
               preferredGravityUnit={user.preferredGravityUnit}
               batchVolumeL={batch.brewPlanSnapshot.recipe.batchSizeL}
               ratingTarget={ratingTarget}
+              labelsHref={labelsHref}
             />
           ) : (
             <p className="rounded-2xl border border-border bg-muted p-4 text-sm text-muted-foreground">
@@ -341,9 +400,16 @@ export default async function BrewBatchDetailPage({ params }: { params: Promise<
             measurements={measurements}
             summary={summary}
             preferredGravityUnit={user.preferredGravityUnit}
+            measurementKind={measurementKind}
             hideStats={act === "done"}
           />
-          <BrewNotes brewBatchId={batch.id} notes={batch.notes} completed={act === "done"} />
+          {/* Склад завершённой партии — что списано, история движений и возврат (тот
+              же блок, что на device-пути: он уже completed-aware и прячет «Списать»).
+              Раньше в этой ветке его просто не было, и после завершения варки склад
+              партии становился недоступен. */}
+          {inventoryView ? <BrewInventory brewBatchId={batch.id} view={inventoryView} status={batch.status} /> : null}
+          {act === "done" ? <BrewNotes brewBatchId={batch.id} kind="tasting" notes={batch.tastingNotes} /> : null}
+          <BrewNotes brewBatchId={batch.id} kind="brew" notes={batch.notes} />
         </>
       )}
     </div>

@@ -169,3 +169,23 @@ export const updateDeviceStatusSchema = z.object({
   lastSeenAt: z.date().optional()
 });
 export type UpdateDeviceStatusInput = z.infer<typeof updateDeviceStatusSchema>;
+
+// Клиентская часть админ-раздела «Устройства». Живёт здесь, а не в admin.ts:
+// тот тянет @nb/db, и импорт из клиентского компонента утащил бы pg в бандл.
+
+export type DevicePresence = "online" | "offline";
+
+export const devicePresenceLabels: Record<DevicePresence, string> = {
+  online: "В сети",
+  offline: "Не в сети"
+};
+
+/** Версия прошивки не сообщена прибором — отдельное значение фильтра. */
+export const FIRMWARE_UNKNOWN_KEY = "unknown";
+
+export type FirmwareVersionOption = {
+  /** Версия либо FIRMWARE_UNKNOWN_KEY, если прибор не сообщил fw. */
+  key: string;
+  label: string;
+  count: number;
+};

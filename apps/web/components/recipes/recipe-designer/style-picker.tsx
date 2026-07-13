@@ -32,8 +32,11 @@ export function StylePicker({
     return searchBeerStyles(normalized);
   }, [query]);
 
+  // Дефолт без фиксированной min-w — реальный рендер уже переопределяет её через
+  // className ("min-w-0"), а фиксированная ширина в дефолте опасна при
+  // переиспользовании компонента в узких контейнерах (мобайл).
   return (
-    <div className={`relative ${className ?? "min-w-[280px] shrink-0"}`}>
+    <div className={`relative ${className ?? "shrink-0"}`}>
       <label id={labelId} htmlFor={id} className="mb-1 block text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
         Стиль BJCP
       </label>

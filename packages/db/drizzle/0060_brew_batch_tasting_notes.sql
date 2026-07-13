@@ -1,0 +1,1 @@
+ALTER TABLE "brew_batches" ADD COLUMN "tasting_notes" text;

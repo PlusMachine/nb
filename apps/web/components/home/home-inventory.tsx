@@ -1,12 +1,16 @@
 import React from "react";
 import Link from "next/link";
-import { CircleAlert, CircleCheck } from "lucide-react";
+
+import { BrewabilityBadgePill } from "@/components/recipes/brewability-badge-pill";
+import type { BrewabilityBadge } from "@/features/recipes/brewability-badge";
 
 /**
  * Секция склада на главной — core-механика продукта: учёт остатков + сверка
  * витрины рецептов со складом («что можно сварить»). Статичная серверная секция;
- * позиции и числа — иллюстрация формата данных, бейджи повторяют семантику и
- * палитру RecipeMatchBadge («Хватает всего» / «Не хватает N»).
+ * позиции и числа — иллюстрация формата данных, но бейдж — настоящий
+ * BrewabilityBadgePill на собранном вручную BrewabilityBadge: текст и палитра не
+ * должны разъезжаться с рабочей зоной, иначе главная обещает одно, а склад
+ * говорит другое.
  */
 
 function StockRow({ label, value, level }: { label: string; value: string; level: number }) {
@@ -23,28 +27,23 @@ function StockRow({ label, value, level }: { label: string; value: string; level
   );
 }
 
-function MatchRow({ title, ready, missing }: { title: string; ready?: boolean; missing?: number }) {
+function MatchRow({ title, missing = 0 }: { title: string; missing?: number }) {
+  const badge: BrewabilityBadge =
+    missing > 0
+      ? { tier: "almost", missing, qtyShort: false }
+      : { tier: "ready", missing: 0, qtyShort: false };
+
   return (
     <div className="flex items-center justify-between gap-3 rounded-xl border border-border bg-card px-3 py-2.5">
       <span className="min-w-0 truncate text-[13px] font-medium text-foreground">{title}</span>
-      {ready ? (
-        <span className="inline-flex shrink-0 items-center gap-1 whitespace-nowrap rounded-full bg-success-subtle px-2 py-0.5 text-xs font-medium text-success-subtle-foreground ring-1 ring-success/30">
-          <CircleCheck className="h-3.5 w-3.5" aria-hidden />
-          Хватает всего
-        </span>
-      ) : (
-        <span className="inline-flex shrink-0 items-center gap-1 whitespace-nowrap rounded-full bg-warning-subtle px-2 py-0.5 text-xs font-medium text-warning-subtle-foreground ring-1 ring-warning/30">
-          <CircleAlert className="h-3.5 w-3.5" aria-hidden />
-          Не хватает {missing}
-        </span>
-      )}
+      <BrewabilityBadgePill badge={badge} />
     </div>
   );
 }
 
 export function HomeInventory() {
   return (
-    <section className="grid items-center gap-8 rounded-[2rem] border border-border bg-card p-6 shadow-sm sm:p-9 lg:grid-cols-[0.9fr_1.1fr] lg:gap-12">
+    <section className="grid grid-cols-1 items-center gap-8 rounded-[2rem] border border-border bg-card p-6 shadow-sm sm:p-9 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] lg:gap-12">
       <div>
         <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-muted-foreground">Склад</p>
         <h2 className="mt-3 text-balance text-2xl font-semibold leading-tight text-foreground sm:text-3xl" style={{ fontFamily: "var(--font-display)" }}>
@@ -75,7 +74,7 @@ export function HomeInventory() {
         <div className="mt-5 border-t border-border pt-4">
           <span className="text-xs font-semibold uppercase tracking-[0.06em] text-muted-foreground">Что можно сварить</span>
           <div className="mt-3 space-y-2">
-            <MatchRow title="Чешский светлый лагер 12°" ready />
+            <MatchRow title="Чешский светлый лагер 12°" />
             <MatchRow title="Американский пейл-эль" missing={1} />
           </div>
         </div>

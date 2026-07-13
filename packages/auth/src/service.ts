@@ -1,5 +1,5 @@
-import { accounts, authRateLimits, db, sessions, users, verifications } from "@nb/db";
-import { and, eq, gt, sql } from "@nb/db";
+import { accounts, authRateLimits, db, pushSubscriptions, sessions, users, verifications } from "@nb/db";
+import { and, eq, gt, or, sql } from "@nb/db";
 
 import { createOtpCode, createRandomToken, hashPassword, hashToken, verifyPassword } from "./crypto";
 import type { AuthUser, OAuthProviderId, PreferredGravityUnit, SupportedCurrency, UserRole } from "./types";
@@ -54,27 +54,63 @@ const mapUser = (user: typeof users.$inferSelect): AuthUser => ({
   preferredGravityUnit: (user.preferredGravityUnit ?? "plato") as PreferredGravityUnit,
   image: user.image,
   role: user.role,
+  blockedAt: user.blockedAt,
+  blockedReason: user.blockedReason,
+  anonymizedAt: user.anonymizedAt,
   createdAt: user.createdAt,
   updatedAt: user.updatedAt
 });
 
-export const assertRateLimit = async (key: string, action: string, limit: number, windowSeconds: number): Promise<void> => {
-  const now = new Date();
-  const [row] = await db.select().from(authRateLimits).where(and(eq(authRateLimits.key, key), eq(authRateLimits.action, action)));
+/** Имя обезличенного аккаунта: строка живёт дальше, но человека за ней больше нет. */
+export const ANONYMIZED_DISPLAY_NAME = "Удалённый пользователь";
 
-  if (!row || row.resetAt <= now) {
-    await db.insert(authRateLimits).values({ key, action, count: 1, resetAt: new Date(now.getTime() + windowSeconds * 1000) }).onConflictDoUpdate({
-      target: [authRateLimits.key, authRateLimits.action],
-      set: { count: 1, resetAt: new Date(now.getTime() + windowSeconds * 1000), updatedAt: now }
-    });
-    return;
+/** Код ошибки для всех путей входа: аккаунт заблокирован или обезличен. */
+export const ACCOUNT_BLOCKED_ERROR = "ACCOUNT_BLOCKED";
+
+/** Код ошибки регистрации: аккаунт с таким e-mail уже существует. */
+export const EMAIL_TAKEN_ERROR = "EMAIL_TAKEN";
+
+/**
+ * Заблокированный или обезличенный аккаунт не входит НИКАКИМ путём (пароль, OTP,
+ * OAuth, установка пароля) и не «перерегистрируется» по тому же e-mail/телефону:
+ * строка users сохранена именно для этого, поэтому проверка стоит на КАЖДОМ
+ * входе в аккаунт, а не только на форме пароля.
+ */
+const isBlocked = (user: typeof users.$inferSelect): boolean =>
+  user.blockedAt !== null || user.anonymizedAt !== null;
+
+const assertNotBlocked = (user: typeof users.$inferSelect): typeof users.$inferSelect => {
+  if (isBlocked(user)) {
+    throw new Error(ACCOUNT_BLOCKED_ERROR);
   }
+  return user;
+};
 
-  if (row.count >= limit) {
+export const assertRateLimit = async (key: string, action: string, limit: number, windowSeconds: number): Promise<void> => {
+  // Атомарный fixed-window счётчик одним запросом. Раньше это был SELECT, затем
+  // отдельный UPDATE count+1 — между ними нет блокировки, и N параллельных
+  // запросов все читали одно значение и все проходили проверку (TOCTOU): лимит
+  // держал только последовательный флуд, а `Promise.all` на сотню запросов шёл
+  // мимо. Здесь инкремент и сброс окна живут в INSERT ... ON CONFLICT, время
+  // берётся серверное (now()), а лимит проверяется по возвращённому счётчику.
+  // Отклонённые попытки тоже инкрементируют счётчик — это осознанно: флуд
+  // продлевает собственную блокировку в пределах окна.
+  const result = await db.execute(sql`
+    INSERT INTO auth_rate_limits (key, action, count, reset_at, updated_at)
+    VALUES (${key}, ${action}, 1, now() + ${windowSeconds} * interval '1 second', now())
+    ON CONFLICT (key, action) DO UPDATE SET
+      count = CASE WHEN auth_rate_limits.reset_at <= now() THEN 1 ELSE auth_rate_limits.count + 1 END,
+      reset_at = CASE WHEN auth_rate_limits.reset_at <= now()
+        THEN now() + ${windowSeconds} * interval '1 second'
+        ELSE auth_rate_limits.reset_at END,
+      updated_at = now()
+    RETURNING count
+  `);
+  const count = (result as unknown as { rows: { count: number }[] }).rows?.[0]?.count ?? 1;
+
+  if (count > limit) {
     throw new Error("RATE_LIMITED");
   }
-
-  await db.update(authRateLimits).set({ count: row.count + 1, updatedAt: now }).where(eq(authRateLimits.id, row.id));
 };
 
 export const getOrCreateUserByEmail = async (
@@ -84,7 +120,7 @@ export const getOrCreateUserByEmail = async (
   const normalized = normalizeEmail(email);
   const [found] = await db.select().from(users).where(eq(users.email, normalized));
   if (found) {
-    return found;
+    return assertNotBlocked(found);
   }
 
   const [created] = await db.insert(users).values({
@@ -159,6 +195,12 @@ export const getUserBySessionToken = async (rawToken: string): Promise<AuthUser 
     return null;
   }
 
+  // Роль и флаги читаются из users на КАЖДОМ запросе (innerJoin выше), поэтому
+  // блокировка действует мгновенно: живая кука забаненного больше не авторизует.
+  if (isBlocked(row.user)) {
+    return null;
+  }
+
   return mapUser(row.user);
 };
 
@@ -166,6 +208,60 @@ export const revokeSession = async (rawToken: string): Promise<void> => {
   await db.delete(sessions).where(eq(sessions.tokenHash, hashToken(rawToken)));
 };
 
+const isEmailUniqueConstraintError = (error: unknown) => error instanceof Error
+  && (error.message.includes("users_email_uidx") || (error as { code?: string }).code === "23505");
+
+/**
+ * Регистрация по паролю — единственный путь, создающий аккаунт с паролем.
+ * Намеренно НЕ get-or-create: если строка с таким e-mail уже есть, пароль ей не
+ * ставится и не перезаписывается — иначе кто угодно, зная чужой адрес, забирал бы
+ * аккаунт обычной «регистрацией». Занятым считается ЛЮБОЙ существующий e-mail, в
+ * том числе у аккаунта без пароля (заведён через OAuth или телефон): ему пароль
+ * тоже не проставляем, вход туда — через свой провайдер или восстановление пароля.
+ */
+export const registerWithPassword = async ({
+  email,
+  password,
+  consent
+}: {
+  email: string;
+  password: string;
+  consent?: ConsentInput;
+}): Promise<AuthUser> => {
+  const normalized = normalizeEmail(email);
+  const [existing] = await db.select().from(users).where(eq(users.email, normalized));
+  if (existing) {
+    throw new Error(EMAIL_TAKEN_ERROR);
+  }
+
+  const passwordHash = await hashPassword(password);
+
+  try {
+    const [created] = await db.insert(users).values({
+      email: normalized,
+      displayName: defaultDisplayName(normalized),
+      emailVerified: false,
+      role: "user",
+      passwordHash,
+      ...consentColumns(consent)
+    }).returning();
+
+    return mapUser(created);
+  } catch (error) {
+    // Гонка двух параллельных регистраций: вторую отсекает users_email_uidx.
+    if (isEmailUniqueConstraintError(error)) {
+      throw new Error(EMAIL_TAKEN_ERROR);
+    }
+    throw error;
+  }
+};
+
+/**
+ * Перезаписывает пароль существующего (или заводит новый) аккаунт по e-mail.
+ * Инвариант: звать ТОЛЬКО после подтверждения владения адресом — то есть после
+ * consumeVerification по токену из письма (сброс пароля). Для регистрации есть
+ * registerWithPassword: без гейта по токену эта функция = захват чужой учётки.
+ */
 export const setPassword = async ({
   email,
   password,
@@ -192,7 +288,9 @@ export const signInWithPassword = async ({ email, password }: { email: string; p
     throw new Error("INVALID_CREDENTIALS");
   }
 
-  return mapUser(user);
+  // Проверка ПОСЛЕ сверки пароля: иначе факт блокировки конкретного аккаунта
+  // раскрывался бы любому, кто просто перебирает адреса.
+  return mapUser(assertNotBlocked(user));
 };
 
 export const completeEmailSignIn = async ({
@@ -214,7 +312,7 @@ export const getOrCreateUserByPhone = async (
   const normalized = normalizePhone(phone);
   const [found] = await db.select().from(users).where(eq(users.phone, normalized));
   if (found) {
-    return found;
+    return assertNotBlocked(found);
   }
 
   const [created] = await db.insert(users).values({
@@ -303,8 +401,148 @@ export const updateProfile = async ({
   return mapUser(updated);
 };
 
-export const setRole = async ({ userId, role }: { userId: string; role: UserRole }) => {
-  await db.update(users).set({ role, updatedAt: new Date() }).where(eq(users.id, userId));
+/**
+ * `db` либо транзакция вызывающего: снятие роли/блокировка/обезличивание админа
+ * должны коммититься в одной транзакции с проверкой «остался ли живой админ»
+ * (см. features/admin-users/service.ts) — иначе проверка и запись разъезжаются.
+ */
+export type AuthWriteExecutor = Pick<typeof db, "select" | "update" | "delete">;
+
+export const setRole = async (
+  { userId, role }: { userId: string; role: UserRole },
+  executor: AuthWriteExecutor = db
+) => {
+  await executor.update(users).set({ role, updatedAt: new Date() }).where(eq(users.id, userId));
+};
+
+/** Погасить все сессии пользователя (принудительный выход со всех устройств). */
+export const revokeAllUserSessions = async (
+  userId: string,
+  executor: AuthWriteExecutor = db
+): Promise<void> => {
+  await executor.delete(sessions).where(eq(sessions.userId, userId));
+};
+
+export const blockUser = async ({
+  userId,
+  reason,
+  byUserId
+}: {
+  userId: string;
+  reason: string;
+  byUserId?: string | null;
+}, executor: AuthWriteExecutor = db): Promise<AuthUser> => {
+  const [updated] = await executor.update(users).set({
+    blockedAt: new Date(),
+    blockedReason: reason.trim(),
+    blockedByUserId: byUserId ?? null,
+    updatedAt: new Date()
+  }).where(eq(users.id, userId)).returning();
+
+  if (!updated) {
+    throw new Error("USER_NOT_FOUND");
+  }
+
+  // Без гашения сессий блокировка «доедет» только на следующем запросе с новой
+  // кукой — а живая кука продолжила бы работать до истечения TTL.
+  await revokeAllUserSessions(userId, executor);
+  // Пуш-подписка живёт в браузере отдельно от сессии: не сняв её, мы бы продолжали
+  // слать уведомления аккаунту, которому уже закрыли вход. Снятие блокировки
+  // подписку НЕ возвращает — уведомления включаются заново из настроек.
+  await executor.delete(pushSubscriptions).where(eq(pushSubscriptions.userId, userId));
+
+  return mapUser(updated);
+};
+
+export const unblockUser = async ({ userId }: { userId: string }): Promise<AuthUser> => {
+  const [updated] = await db.update(users).set({
+    blockedAt: null,
+    blockedReason: null,
+    blockedByUserId: null,
+    updatedAt: new Date()
+  }).where(eq(users.id, userId)).returning();
+
+  if (!updated) {
+    throw new Error("USER_NOT_FOUND");
+  }
+
+  return mapUser(updated);
+};
+
+/**
+ * Обезличивание вместо удаления: ПДн затираются, строка users остаётся живой —
+ * иначе рвутся ссылки (авторство рецептов, аудит). blockedAt ставится вместе с
+ * anonymizedAt: пустой аккаунт без пароля и почты не должен считаться «активным».
+ *
+ * Отличие от блокировки: e-mail и телефон обнуляются, поэтому адрес освобождается и
+ * тот же человек может завести НОВЫЙ (чистый, без истории) аккаунт на него. Так и
+ * задумано — хранить адрес, чтобы им же и не пускать, значило бы хранить те самые
+ * ПДн, ради стирания которых обезличивание и делается. Держать нарушителя закрытым
+ * должна блокировка: она строку e-mail сохраняет.
+ *
+ * Хвосты без FK: verifications и auth_rate_limits ключуются СТРОКОЙ e-mail/телефона
+ * и каскадом не чистятся — их сносим руками, иначе на затёртый адрес всё ещё
+ * можно запросить OTP.
+ *
+ * Push-подписки сносим явно, хотя FK у них cascade: каскад привязан к УДАЛЕНИЮ строки
+ * users, а она тут остаётся живой. Иначе endpoint (уникальный на установку браузера)
+ * и user_agent пережили бы обезличивание — и в БД, и в /admin/push.
+ */
+export const anonymizeUser = async ({
+  userId,
+  byUserId
+}: {
+  userId: string;
+  byUserId?: string | null;
+}, executor: AuthWriteExecutor = db): Promise<AuthUser> => {
+  const [existing] = await executor.select().from(users).where(eq(users.id, userId));
+  if (!existing) {
+    throw new Error("USER_NOT_FOUND");
+  }
+
+  const now = new Date();
+  const [updated] = await executor.update(users).set({
+    email: null,
+    phone: null,
+    passwordHash: null,
+    image: null,
+    displayName: ANONYMIZED_DISPLAY_NAME,
+    emailVerified: false,
+    phoneVerified: false,
+    anonymizedAt: now,
+    blockedAt: existing.blockedAt ?? now,
+    blockedByUserId: existing.blockedByUserId ?? byUserId ?? null,
+    updatedAt: now
+  }).where(eq(users.id, userId)).returning();
+
+  if (!updated) {
+    throw new Error("USER_NOT_FOUND");
+  }
+
+  await revokeAllUserSessions(userId, executor);
+  // OAuth-привязки: без них обезличенный войдёт через VK/Яндекс и заново «оживёт».
+  await executor.delete(accounts).where(eq(accounts.userId, userId));
+  await executor.delete(pushSubscriptions).where(eq(pushSubscriptions.userId, userId));
+
+  const identifiers = [
+    existing.email ? eq(verifications.email, existing.email) : null,
+    existing.phone ? eq(verifications.phone, existing.phone) : null
+  ].filter((clause): clause is ReturnType<typeof eq> => clause !== null);
+
+  if (identifiers.length > 0) {
+    await executor.delete(verifications).where(identifiers.length === 1 ? identifiers[0] : or(...identifiers));
+  }
+
+  const rateLimitKeys = [
+    existing.email ? eq(authRateLimits.key, existing.email) : null,
+    existing.phone ? eq(authRateLimits.key, existing.phone) : null
+  ].filter((clause): clause is ReturnType<typeof eq> => clause !== null);
+
+  if (rateLimitKeys.length > 0) {
+    await executor.delete(authRateLimits).where(rateLimitKeys.length === 1 ? rateLimitKeys[0] : or(...rateLimitKeys));
+  }
+
+  return mapUser(updated);
 };
 
 export const linkOAuthAccount = async ({ provider, providerAccountId, email, displayName, image, accessToken, refreshToken, consent }: {
@@ -326,11 +564,13 @@ export const linkOAuthAccount = async ({ provider, providerAccountId, email, dis
     if (!existingUser) {
       throw new Error("USER_NOT_FOUND");
     }
-    return mapUser(existingUser);
+    return mapUser(assertNotBlocked(existingUser));
   }
 
   let [user] = await db.select().from(users).where(eq(users.email, normalized));
-  if (!user) {
+  if (user) {
+    assertNotBlocked(user);
+  } else {
     [user] = await db.insert(users).values({
       email: normalized,
       emailVerified: true,

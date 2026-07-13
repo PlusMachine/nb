@@ -89,11 +89,15 @@ export function SectionRow({
 
   return (
     <li className={`relative rounded-lg border-l-[3px] bg-card px-3 py-2.5 shadow-sm ring-1 ring-border transition-shadow hover:shadow-md ${accent}`}>
-      <div className="absolute right-2 top-2 z-10 flex shrink-0 gap-0.5">
+      {/* Кнопки соседствуют вплотную (тач-таргеты не бесконечно раздвинуть без
+          риска накрыть друг друга) — увеличены padding'ом и зазором, а не
+          невидимой зоной, как для одиночных иконок. pr-16 у контента ниже держит
+          отступ под возросшую ширину пары кнопок. */}
+      <div className="absolute right-2 top-2 z-10 flex shrink-0 gap-1">
         <button
           type="button"
           onClick={() => onEdit(ingredient)}
-          className="rounded-md p-1.5 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+          className="rounded-md p-2 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
           aria-label="Редактировать"
         >
           <Pencil className="h-3.5 w-3.5" />
@@ -101,14 +105,14 @@ export function SectionRow({
         <button
           type="button"
           onClick={() => onDelete(ingredient.localId)}
-          className="rounded-md p-1.5 text-muted-foreground transition-colors hover:bg-destructive-subtle hover:text-destructive"
+          className="rounded-md p-2 text-muted-foreground transition-colors hover:bg-destructive-subtle hover:text-destructive"
           aria-label="Удалить"
         >
           <X className="h-3.5 w-3.5" />
         </button>
       </div>
 
-      <div className="flex items-center gap-3 pr-14">
+      <div className="flex items-center gap-3 pr-16">
         <div className="min-w-0 flex-1">
           <div className="flex min-w-0 flex-wrap items-start gap-x-2 gap-y-1">
             <RecipeIngredientTitleBlock
@@ -156,7 +160,7 @@ export function SectionRow({
               onChange={(event) => onQuantityChange(ingredient.localId, event.target.value)}
               onBlur={() => setQuantityTouched(true)}
               aria-invalid={showQuantityError || undefined}
-              className={`h-7 w-[72px] rounded-md border bg-muted px-2 text-right text-sm tabular-nums text-foreground transition-colors focus:bg-card focus:outline-none focus:ring-1 focus:ring-ring ${showQuantityError ? "border-destructive-border focus:border-destructive" : "border-border focus:border-ring"}`}
+              className={`h-9 w-[72px] rounded-md border bg-muted px-2 text-right text-base tabular-nums text-foreground transition-colors focus:bg-card focus:outline-none focus:ring-1 focus:ring-ring sm:text-sm ${showQuantityError ? "border-destructive-border focus:border-destructive" : "border-border focus:border-ring"}`}
               min={quantityStep}
               step={quantityStep}
             />
@@ -173,7 +177,7 @@ export function SectionRow({
                 onChange={(event) => onTimeChange(ingredient.localId, event.target.value)}
                 onBlur={() => setTimeTouched(true)}
                 aria-invalid={showTimeError || undefined}
-                className={`h-7 w-[64px] rounded-md border bg-muted px-2 text-right text-sm tabular-nums text-foreground transition-colors focus:bg-card focus:outline-none focus:ring-1 focus:ring-ring ${showTimeError ? "border-destructive-border focus:border-destructive" : "border-border focus:border-ring"}`}
+                className={`h-9 w-[64px] rounded-md border bg-muted px-2 text-right text-base tabular-nums text-foreground transition-colors focus:bg-card focus:outline-none focus:ring-1 focus:ring-ring sm:text-sm ${showTimeError ? "border-destructive-border focus:border-destructive" : "border-border focus:border-ring"}`}
                 min={0}
                 max={600}
                 step={1}
@@ -224,11 +228,11 @@ export function WaterTreatmentSectionRow({
 
   return (
     <li className="relative rounded-lg border-l-[3px] border-l-sky-400 bg-card px-3 py-2.5 shadow-sm ring-1 ring-border dark:border-l-sky-500">
-      <div className="absolute right-2 top-2 z-10 flex shrink-0 gap-0.5">
+      <div className="absolute right-2 top-2 z-10 flex shrink-0 gap-1">
         <button
           type="button"
           onClick={() => onEdit(ingredient)}
-          className="rounded-md p-1.5 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+          className="rounded-md p-2 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
           aria-label="Редактировать"
         >
           <Pencil className="h-3.5 w-3.5" />
@@ -236,14 +240,14 @@ export function WaterTreatmentSectionRow({
         <button
           type="button"
           onClick={() => onDelete(ingredient.localId)}
-          className="rounded-md p-1.5 text-muted-foreground transition-colors hover:bg-destructive-subtle hover:text-destructive"
+          className="rounded-md p-2 text-muted-foreground transition-colors hover:bg-destructive-subtle hover:text-destructive"
           aria-label="Удалить"
         >
           <X className="h-3.5 w-3.5" />
         </button>
       </div>
 
-      <div className="flex min-w-0 items-center gap-3 pr-14">
+      <div className="flex min-w-0 items-center gap-3 pr-16">
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
             <span className="truncate text-sm font-semibold text-foreground">
@@ -275,7 +279,7 @@ export function WaterTreatmentSectionRow({
               onChange={(event) => onQuantityChange(ingredient.localId, event.target.value)}
               onBlur={() => setQuantityTouched(true)}
               aria-invalid={showQuantityError || undefined}
-              className={`h-7 w-[72px] rounded-md border bg-muted px-2 text-right text-sm tabular-nums text-foreground transition-colors focus:bg-card focus:outline-none focus:ring-1 focus:ring-ring ${showQuantityError ? "border-destructive-border focus:border-destructive" : "border-border focus:border-ring"}`}
+              className={`h-9 w-[72px] rounded-md border bg-muted px-2 text-right text-base tabular-nums text-foreground transition-colors focus:bg-card focus:outline-none focus:ring-1 focus:ring-ring sm:text-sm ${showQuantityError ? "border-destructive-border focus:border-destructive" : "border-border focus:border-ring"}`}
               min={quantityStep}
               step={quantityStep}
             />

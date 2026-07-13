@@ -1,7 +1,19 @@
-import { describe, expect, it } from "vitest";
+import React from "react";
+import { renderToStaticMarkup } from "react-dom/server";
+import { describe, expect, it, vi } from "vitest";
+
+// Журнал — клиентский компонент поверх server actions: мокаем экшены, иначе
+// импорт утянет db-слой. (Файл .ts, поэтому рендерим через createElement.)
+vi.mock("@/app/(app)/app/brew-batches/[id]/actions", () => ({
+  addBrewMeasurementAction: vi.fn(async () => ({ ok: true, message: "ok" })),
+  deleteBrewMeasurementAction: vi.fn(async () => ({ ok: true, message: "ok" })),
+  setBrewMeasurementFinalAction: vi.fn(async () => ({ ok: true, message: "ok" }))
+}));
 
 import { summarizeBrewMeasurements } from "../features/brew-batches/measurements";
-import type { BrewMeasurementDto } from "../features/brew-batches/contracts";
+import { brewMeasurementKindForAct, resolveBrewGravityPlaceholderSg } from "../features/brew-batches/brew-day";
+import { BrewJournal } from "../features/brew-batches/components/brew-journal";
+import type { BrewMeasurementDto, BrewMeasurementSummary } from "../features/brew-batches/contracts";
 
 const reading = (
   gravitySg: number,
@@ -82,5 +94,83 @@ describe("summarizeBrewMeasurements", () => {
     expect(summary.fg).toBe(1.05);
     expect(summary.abv).toBeNull();
     expect(summary.apparentAttenuation).toBeNull();
+  });
+});
+
+// --- Подсказка в поле плотности (A6) ------------------------------------------
+// Плейсхолдер журнала был жёстко зашит как 1.012 SG (= 3.1 °P — типичная FG) во
+// всех четырёх контекстах, включая блок «Начальная плотность (OG)».
+
+describe("brewMeasurementKindForAct", () => {
+  it("варочный день ждёт OG, брожение — FG", () => {
+    expect(brewMeasurementKindForAct("brewday")).toBe("og");
+    expect(brewMeasurementKindForAct("fermentation")).toBe("fg");
+  });
+
+  it("в подготовке, итоге и архиве замер не подсказывается", () => {
+    expect(brewMeasurementKindForAct("prep")).toBe("any");
+    expect(brewMeasurementKindForAct("done")).toBe("any");
+    expect(brewMeasurementKindForAct("archived")).toBe("any");
+  });
+});
+
+describe("resolveBrewGravityPlaceholderSg", () => {
+  it("подсказывает цель рецепта по контексту", () => {
+    expect(resolveBrewGravityPlaceholderSg("og", targets)).toBe(1.052);
+    expect(resolveBrewGravityPlaceholderSg("fg", targets)).toBe(1.012);
+  });
+
+  it("без целей (варка без рецепта) — типичные значения, а не FG в поле OG", () => {
+    expect(resolveBrewGravityPlaceholderSg("og", null)).toBe(1.05);
+    expect(resolveBrewGravityPlaceholderSg("fg", null)).toBe(1.012);
+    expect(resolveBrewGravityPlaceholderSg("og", { og: null, fg: 1.012, abv: null })).toBe(1.05);
+  });
+
+  it("вне варочного дня и брожения подсказки нет", () => {
+    expect(resolveBrewGravityPlaceholderSg("any", targets)).toBeNull();
+  });
+});
+
+describe("BrewJournal — плейсхолдер плотности", () => {
+  const summary: BrewMeasurementSummary = {
+    og: null,
+    fg: null,
+    abv: null,
+    apparentAttenuation: null,
+    target: { og: 1.052, fg: 1.012, abv: 5.2 }
+  };
+
+  const render = (measurementKind: "og" | "fg" | "any", preferredGravityUnit: "sg" | "plato" = "plato") =>
+    renderToStaticMarkup(
+      React.createElement(BrewJournal, {
+        brewBatchId: "bb-1",
+        measurements: [],
+        summary,
+        preferredGravityUnit,
+        measurementKind
+      })
+    );
+
+  it("в блоке OG подсказывает целевую OG (а не типичную FG)", () => {
+    const html = render("og");
+    expect(html).toContain('placeholder="12.9"');
+    expect(html).not.toContain('placeholder="3.1"');
+  });
+
+  it("в блоке FG подсказывает целевую FG", () => {
+    expect(render("fg")).toContain('placeholder="3.1"');
+  });
+
+  it("в итоге/архиве/на устройстве подсказки плотности нет", () => {
+    const html = render("any");
+    // Поле плотности рендерится без атрибута placeholder (у соседнего поля
+    // «Заметка» свой плейсхолдер — его не трогаем).
+    expect(html).toMatch(/aria-label="Плотность[^>]*\/>/);
+    expect(html).not.toContain('placeholder="12.9"');
+    expect(html).not.toContain('placeholder="3.1"');
+  });
+
+  it("подсказка идёт в единице пользователя", () => {
+    expect(render("og", "sg")).toContain('placeholder="1.052"');
   });
 });

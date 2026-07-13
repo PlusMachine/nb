@@ -35,6 +35,8 @@ const sampleRecipe = {
   versionNumber: 1,
   versionCount: 1,
   publicationState: "private",
+  hiddenAt: null,
+  hiddenReason: null,
   title: "Interop IPA",
   slug: "interop-ipa",
   styleId: null,

@@ -4,6 +4,7 @@ import React, { useMemo, useState, useTransition } from "react";
 
 import { Button, Dialog, DialogCloseButton } from "@nb/ui";
 import { updateInventoryInlineAction } from "@/app/(app)/app/ingredients/actions";
+import { NumericInput } from "@/components/shared/numeric-input";
 import type { InventoryListItemDto } from "@/features/inventory/contracts";
 import {
   buildInventoryDisplayInput,
@@ -215,9 +216,8 @@ export function InventoryConsumeControl({ item, onAction, defaultMode = "consume
         ) : null}
 
         <div className="flex items-center gap-2">
-          <input
-            type="number"
-            min="0"
+          <NumericInput
+            min={0}
             step={getInventoryUnitInputStep(unit)}
             value={amount}
             autoFocus
@@ -225,8 +225,7 @@ export function InventoryConsumeControl({ item, onAction, defaultMode = "consume
               setAmount(event.target.value);
               setFeedback(null);
             }}
-            className="w-full rounded-xl border border-border bg-card px-3.5 py-2.5 text-sm tabular-nums transition-colors focus:border-ring focus:outline-none focus:ring-2 focus:ring-ring"
-            inputMode="decimal"
+            className="w-full rounded-xl border border-border bg-card px-3.5 py-2.5 text-base tabular-nums transition-colors focus:border-ring focus:outline-none focus:ring-2 focus:ring-ring sm:text-sm"
             aria-label={isConsume ? "Количество использованного" : "Количество докупленного"}
             placeholder="0"
           />

@@ -297,7 +297,7 @@ export function DevicesManager({ initialTiles, demoAvailable }: Props) {
           {demoAvailable ? ", либо создайте демо-пивоварню без железа" : ""}.
         </Card>
       ) : (
-        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
           {tiles.map((tile) => (
             <DeviceTile
               key={tile.id}

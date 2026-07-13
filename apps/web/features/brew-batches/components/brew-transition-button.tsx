@@ -31,7 +31,8 @@ export function BrewTransitionButton({
   variant?: ButtonVariant;
   size?: "sm" | "md";
   icon?: React.ReactNode;
-  confirm?: { title: string; description: string } | null;
+  /** tone — вид кнопки подтверждения; не задан → primary (переход не деструктивен). */
+  confirm?: { title: string; description: string; tone?: "primary" | "danger" } | null;
   className?: string;
 }) {
   const [busy, setBusy] = useState(false);
@@ -79,7 +80,7 @@ export function BrewTransitionButton({
           title={confirm.title}
           description={confirm.description}
           confirmLabel={label}
-          tone="primary"
+          tone={confirm.tone ?? "primary"}
           pending={busy}
           error={error}
           onConfirm={run}

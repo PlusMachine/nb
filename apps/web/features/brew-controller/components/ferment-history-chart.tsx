@@ -177,33 +177,46 @@ export function FermentHistoryChart({ source, hasDevice, initial, planSteps, win
           истории пока нет
         </div>
       ) : (
-        <svg
-          viewBox={`0 0 ${VB_W} ${VB_H}`}
-          className="mt-3 h-auto w-full"
-          role="img"
-          aria-label="График температуры брожения: план и факт по дням"
-          preserveAspectRatio="none"
-        >
+        // Контейнер для SVG + HTML-подписей осей (см. telemetry-chart.tsx): текст
+        // внутри viewBox тянется вместе с масштабом и на телефоне (карточка ~290px)
+        // кегль 11 превращается в ~4px — подписи выносим HTML-оверлеем поверх.
+        <div className="relative mt-3">
+          <svg
+            viewBox={`0 0 ${VB_W} ${VB_H}`}
+            className="h-auto w-full"
+            role="img"
+            aria-label="График температуры брожения: план и факт по дням"
+            preserveAspectRatio="none"
+          >
+            {geom.tempTicks.map((t, i) => (
+              <line key={`tick-${i}`} x1={PAD_L} x2={VB_W - PAD_R} y1={t.y} y2={t.y} stroke="hsl(var(--chart-grid))" strokeWidth={1} />
+            ))}
+
+            {geom.planPath ? (
+              <path d={geom.planPath} fill="none" stroke="hsl(var(--chart-setpoint))" strokeWidth={2} strokeDasharray="5 4" />
+            ) : null}
+            <path d={geom.factPath} fill="none" stroke="hsl(var(--chart-temp))" strokeWidth={2} strokeLinejoin="round" strokeLinecap="round" />
+          </svg>
+
           {geom.tempTicks.map((t, i) => (
-            <g key={`tick-${i}`}>
-              <line x1={PAD_L} x2={VB_W - PAD_R} y1={t.y} y2={t.y} stroke="hsl(var(--chart-grid))" strokeWidth={1} />
-              <text x={PAD_L - 6} y={t.y + 3} textAnchor="end" fontSize={11} fill="hsl(var(--chart-label))">
-                {t.v.toFixed(0)}
-              </text>
-            </g>
+            <span
+              key={`temp-tick-${i}`}
+              className="pointer-events-none absolute -translate-y-1/2 -translate-x-full whitespace-nowrap pr-1 text-[11px] text-muted-foreground"
+              style={{ left: `${(PAD_L / VB_W) * 100}%`, top: `${(t.y / VB_H) * 100}%` }}
+            >
+              {t.v.toFixed(0)}
+            </span>
           ))}
-
           {geom.dayTicks.map((d, i) => (
-            <text key={`day-${i}`} x={geom.x(d)} y={VB_H - 8} textAnchor="middle" fontSize={11} fill="hsl(var(--chart-label))">
+            <span
+              key={`day-tick-${i}`}
+              className="pointer-events-none absolute bottom-0 -translate-x-1/2 whitespace-nowrap text-[11px] text-muted-foreground"
+              style={{ left: `${(geom.x(d) / VB_W) * 100}%` }}
+            >
               {fmtDay(d)}
-            </text>
+            </span>
           ))}
-
-          {geom.planPath ? (
-            <path d={geom.planPath} fill="none" stroke="hsl(var(--chart-setpoint))" strokeWidth={2} strokeDasharray="5 4" />
-          ) : null}
-          <path d={geom.factPath} fill="none" stroke="hsl(var(--chart-temp))" strokeWidth={2} strokeLinejoin="round" strokeLinecap="round" />
-        </svg>
+        </div>
       )}
     </section>
   );

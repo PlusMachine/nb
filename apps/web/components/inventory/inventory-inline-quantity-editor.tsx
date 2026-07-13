@@ -3,6 +3,7 @@
 import React, { useEffect, useMemo, useRef, useState, useTransition } from "react";
 
 import { updateInventoryInlineAction } from "@/app/(app)/app/ingredients/actions";
+import { NumericInput } from "@/components/shared/numeric-input";
 import type { InventoryListItemDto } from "@/features/inventory/contracts";
 import { buildInventoryDisplayInput } from "@/features/inventory/consume";
 import {
@@ -177,10 +178,9 @@ export function InventoryInlineQuantityEditor({ item, onAction }: Props) {
   return (
     <div ref={containerRef} className="flex flex-col items-end gap-1" onBlur={handleBlur}>
       <div className="flex items-center gap-1">
-        <input
+        <NumericInput
           ref={inputRef}
-          type="number"
-          min="0"
+          min={0}
           step={getInventoryUnitInputStep(unit)}
           value={quantity}
           onChange={(event) => {
@@ -188,8 +188,7 @@ export function InventoryInlineQuantityEditor({ item, onAction }: Props) {
             setFeedback(null);
           }}
           onKeyDown={handleKeyDown}
-          className="w-[4.5rem] rounded-lg border border-border bg-card px-2 py-1.5 text-right text-sm tabular-nums transition-colors focus:border-ring focus:outline-none focus:ring-2 focus:ring-ring"
-          inputMode="decimal"
+          className="w-[4.5rem] rounded-lg border border-border bg-card px-2 py-1.5 text-right text-base tabular-nums transition-colors focus:border-ring focus:outline-none focus:ring-2 focus:ring-ring sm:text-sm"
           aria-label="Новый остаток"
         />
         <select

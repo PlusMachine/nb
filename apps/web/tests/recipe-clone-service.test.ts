@@ -16,6 +16,8 @@ const sourceRecipe: RecipeDetailDto = {
   versionNumber: 1,
   versionCount: 1,
   publicationState: "published",
+  hiddenAt: null,
+  hiddenReason: null,
   title: "West Coast IPA",
   slug: "west-coast-ipa",
   styleId: "american-ipa",
@@ -101,6 +103,30 @@ describe("assertRecipeCloneAllowed", () => {
   it("forbids cloning someone else's non-published recipe", () => {
     expect(() => assertRecipeCloneAllowed({ sourceAuthorId: "other", sourcePublicationState: "draft", userId: "me" })).toThrow("FORBIDDEN");
     expect(() => assertRecipeCloneAllowed({ sourceAuthorId: "other", sourcePublicationState: "private", userId: "me" })).toThrow("FORBIDDEN");
+  });
+
+  // Скрытие модератором не меняет publicationState: рецепт остаётся "published",
+  // и без учёта hidden_at скрытое содержимое утекало бы через клонирование.
+  it("forbids cloning someone else's recipe hidden by a moderator", () => {
+    expect(() =>
+      assertRecipeCloneAllowed({
+        sourceAuthorId: "other",
+        sourcePublicationState: "published",
+        sourceHiddenAt: new Date("2026-07-12T10:00:00.000Z"),
+        userId: "me"
+      })
+    ).toThrow("FORBIDDEN");
+  });
+
+  it("still allows the author to clone their OWN hidden recipe", () => {
+    expect(
+      assertRecipeCloneAllowed({
+        sourceAuthorId: "me",
+        sourcePublicationState: "published",
+        sourceHiddenAt: new Date("2026-07-12T10:00:00.000Z"),
+        userId: "me"
+      })
+    ).toEqual({ isOwn: true });
   });
 });
 

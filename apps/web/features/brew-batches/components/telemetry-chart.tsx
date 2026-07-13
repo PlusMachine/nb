@@ -240,35 +240,20 @@ export function TelemetryChart({ source, hasDevice, initial, live }: Props) {
                 />
               ))}
 
-              {/* Сетка/ось температур (слева). */}
+              {/* Сетка оси температур (слева) — линии SVG-масштабируемые, ОК; подписи
+                  вынесены в HTML-оверлей ниже (см. под svg): текст внутри viewBox
+                  тянется вместе с масштабом, а на телефоне (карточка ~290px, коэффициент
+                  ≈0.36) кегль 11 превращается в ~4px и становится нечитаем. */}
               {geom.tempTicks.map((t, i) => (
-                <g key={`tick-${i}`}>
-                  <line
-                    x1={PAD_L}
-                    x2={VB_W - PAD_R}
-                    y1={t.y}
-                    y2={t.y}
-                    stroke="hsl(var(--chart-grid))"
-                    strokeWidth={1}
-                  />
-                  <text x={PAD_L - 6} y={t.y + 3} textAnchor="end" fontSize={11} fill="hsl(var(--chart-label))">
-                    {t.v.toFixed(0)}
-                  </text>
-                </g>
-              ))}
-
-              {/* Вторая ось (справа): скважность нагрева 0..100%. */}
-              {geom.dutyTicks.map((t, i) => (
-                <text
-                  key={`duty-${i}`}
-                  x={VB_W - PAD_R + 6}
-                  y={t.y + 3}
-                  textAnchor="start"
-                  fontSize={11}
-                  fill="hsl(var(--chart-heater))"
-                >
-                  {t.v === 100 ? "100%" : t.v}
-                </text>
+                <line
+                  key={`tick-${i}`}
+                  x1={PAD_L}
+                  x2={VB_W - PAD_R}
+                  y1={t.y}
+                  y2={t.y}
+                  stroke="hsl(var(--chart-grid))"
+                  strokeWidth={1}
+                />
               ))}
 
               {/* Вертикальные аннотации событий (смена стадии / авария). */}
@@ -304,18 +289,41 @@ export function TelemetryChart({ source, hasDevice, initial, live }: Props) {
                 strokeLinejoin="round"
                 strokeLinecap="round"
               />
-
-              {/* Подписи времени (слева/справа). */}
-              <text x={PAD_L} y={VB_H - 8} textAnchor="start" fontSize={11} fill="hsl(var(--chart-label))">
-                {fmtTime(geom.tMin)}
-              </text>
-              <text x={VB_W - PAD_R} y={VB_H - 8} textAnchor="end" fontSize={11} fill="hsl(var(--chart-label))">
-                {fmtTime(geom.tMax)}
-              </text>
             </svg>
 
-            {/* HTML-подписи событий поверх графика: чёткие (не тянутся вместе с
-                viewBox), позиционируются в % по оси X. */}
+            {/* HTML-подписи осей и событий поверх графика: чёткие (не тянутся вместе с
+                viewBox), позиционируются в % по осям X/Y — тот же приём, что уже был
+                для событийных меток. */}
+            {geom.tempTicks.map((t, i) => (
+              <span
+                key={`temp-tick-${i}`}
+                className="pointer-events-none absolute -translate-y-1/2 -translate-x-full whitespace-nowrap pr-1 text-[11px] text-muted-foreground"
+                style={{ left: `${(PAD_L / VB_W) * 100}%`, top: `${(t.y / VB_H) * 100}%` }}
+              >
+                {t.v.toFixed(0)}
+              </span>
+            ))}
+            {geom.dutyTicks.map((t, i) => (
+              <span
+                key={`duty-tick-${i}`}
+                className="pointer-events-none absolute -translate-y-1/2 whitespace-nowrap pl-1 text-[11px]"
+                style={{ left: `${((VB_W - PAD_R) / VB_W) * 100}%`, top: `${(t.y / VB_H) * 100}%`, color: "hsl(var(--chart-heater))" }}
+              >
+                {t.v === 100 ? "100%" : t.v}
+              </span>
+            ))}
+            <span
+              className="pointer-events-none absolute bottom-0 whitespace-nowrap text-[11px] text-muted-foreground"
+              style={{ left: `${(PAD_L / VB_W) * 100}%` }}
+            >
+              {fmtTime(geom.tMin)}
+            </span>
+            <span
+              className="pointer-events-none absolute bottom-0 -translate-x-full whitespace-nowrap text-[11px] text-muted-foreground"
+              style={{ left: `${((VB_W - PAD_R) / VB_W) * 100}%` }}
+            >
+              {fmtTime(geom.tMax)}
+            </span>
             {geom.annotations
               .filter((a) => a.showLabel)
               .map((a, i) => (

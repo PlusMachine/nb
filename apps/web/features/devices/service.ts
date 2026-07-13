@@ -12,7 +12,8 @@ import {
   gt,
   gte,
   isNull,
-  sql
+  sql,
+  users
 } from "@nb/db";
 
 import {
@@ -423,6 +424,10 @@ async function deliverPairingToken(
 /**
  * Найти устройство по предъявленному bearer-токену (точка проверки токена).
  * Сравнение хэшей — constant-time, чтобы не утекало по таймингу.
+ *
+ * Устройства авторизуются токеном, а НЕ сессией, поэтому проверка блокировки из
+ * getUserBySessionToken их не закрывает: владельца проверяем здесь, иначе
+ * пивоварня забаненного продолжит слать телеметрию и качать OTA.
  */
 export const findDeviceByToken = async (rawToken: string): Promise<DeviceDto | null> => {
   if (!rawToken) {
@@ -430,19 +435,27 @@ export const findDeviceByToken = async (rawToken: string): Promise<DeviceDto | n
   }
 
   const tokenHash = hashToken(rawToken);
-  const [row] = await db.select().from(brewDevices).where(eq(brewDevices.tokenHash, tokenHash));
+  const [row] = await db
+    .select({ device: brewDevices, ownerBlockedAt: users.blockedAt, ownerAnonymizedAt: users.anonymizedAt })
+    .from(brewDevices)
+    .innerJoin(users, eq(users.id, brewDevices.userId))
+    .where(eq(brewDevices.tokenHash, tokenHash));
 
-  if (!row?.tokenHash) {
+  if (!row?.device.tokenHash) {
     return null;
   }
 
-  const stored = Buffer.from(row.tokenHash, "hex");
+  const stored = Buffer.from(row.device.tokenHash, "hex");
   const presented = Buffer.from(tokenHash, "hex");
   if (stored.length !== presented.length || !crypto.timingSafeEqual(stored, presented)) {
     return null;
   }
 
-  return mapDeviceDto(row);
+  if (row.ownerBlockedAt !== null || row.ownerAnonymizedAt !== null) {
+    return null;
+  }
+
+  return mapDeviceDto(row.device);
 };
 
 /**

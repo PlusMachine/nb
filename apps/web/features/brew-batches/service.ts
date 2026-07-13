@@ -1,12 +1,20 @@
 import { and, asc, brewBatches, brewMeasurements, count, db, desc, eq, gte, inArray, max, sql, brewTelemetry, recipes, users } from "@nb/db";
+import { assertRateLimit } from "@nb/auth";
 
 import { getRecipeById } from "../recipes/service";
+import { resolveBrewBatchRecipe } from "./brew-setup";
 import { buildBrewPlanSnapshot } from "./brew-plan";
 import { applyBrewDayStepPatch, buildBrewDaySteps, normalizeBrewDayProgress } from "./brew-day";
 import { summarizeBrewMeasurements } from "./measurements";
 import {
   activeBrewBatchStatuses,
   brewPlanSnapshotSchema,
+  BREW_BATCH_CREATE_RATE_LIMIT,
+  BREW_BATCH_CREATE_RATE_WINDOW_SECONDS,
+  BREW_BATCH_MAX_COUNT_PER_USER,
+  BREW_MEASUREMENT_MAX_COUNT_PER_BATCH,
+  BREW_MEASUREMENT_RATE_LIMIT,
+  BREW_MEASUREMENT_RATE_WINDOW_SECONDS,
   FERMENT_HISTORY_LIMIT,
   TELEMETRY_HISTORY_LIMIT,
   type ActiveBrewProgressItem,
@@ -46,6 +54,7 @@ export const mapBrewBatchDto = (row: typeof brewBatches.$inferSelect): BrewBatch
   waterPlanSnapshot: (row.waterPlanSnapshot as Record<string, unknown> | null | undefined) ?? null,
   deviceHints: (row.deviceHints as Record<string, unknown>[] | null | undefined) ?? [],
   notes: row.notes,
+  tastingNotes: row.tastingNotes,
   plannedFor: row.plannedFor,
   startedAt: row.startedAt,
   completedAt: row.completedAt,
@@ -53,23 +62,70 @@ export const mapBrewBatchDto = (row: typeof brewBatches.$inferSelect): BrewBatch
   updatedAt: row.updatedAt
 });
 
+/**
+ * Анти-абьюз-барьер создания партии варки, общий для ВСЕХ путей (ручная варка,
+ * «на автоматике», старт из редактора/витрины — все проходят через
+ * createBrewBatchFromRecipe). Rate limit режет скрипт-флуд, квота — медленное
+ * засорение базы. Бросает RATE_LIMITED / BREW_BATCH_QUOTA_REACHED; экшены маппят
+ * их в понятные сообщения.
+ */
+const assertBrewBatchCreationAllowed = async (userId: string): Promise<void> => {
+  await assertRateLimit(userId, "brew_batch_create", BREW_BATCH_CREATE_RATE_LIMIT, BREW_BATCH_CREATE_RATE_WINDOW_SECONDS);
+  const [row] = await db.select({ value: count() }).from(brewBatches).where(eq(brewBatches.userId, userId));
+  if ((row?.value ?? 0) >= BREW_BATCH_MAX_COUNT_PER_USER) {
+    throw new Error("BREW_BATCH_QUOTA_REACHED");
+  }
+};
+
 export const createBrewBatchFromRecipe = async (
   userId: string,
   recipeId: string,
-  input: { name?: string | null; plannedFor?: Date | null; idempotencyKey?: string | null } = {}
+  input: {
+    name?: string | null;
+    plannedFor?: Date | null;
+    idempotencyKey?: string | null;
+    /** Объём ЭТОЙ варки, л. Не задан — варим в объёме рецепта (прежнее поведение). */
+    targetBatchVolumeL?: number | null;
+    /** Профиль оборудования, на котором варим. Не задан — профиль рецепта. */
+    equipmentProfileId?: string | null;
+  } = {}
 ) => {
-  // Доступный рецепт: свой (любой статус) ИЛИ чужой published — БЕЗ клонирования.
-  const recipe = await getRecipeById(userId, recipeId);
-  const author = await db.query.users.findFirst({
-    where: eq(users.id, recipe.authorId),
-    columns: { displayName: true }
-  });
-  const brewPlanSnapshot = buildBrewPlanSnapshot(recipe);
   // Идемпотентность создания (см. schema.ts brew_batches.idempotencyKey): один
   // «намерение сварить» = один ключ; двойной клик/ретрай/гонка вкладок ловится
   // unique-индексом (user_id, idempotency_key) и возвращает уже созданную партию
   // вместо второй. Без ключа — прежнее поведение (каждый вызов = новая партия).
   const idempotencyKey = input.idempotencyKey?.trim() || null;
+
+  // Идемпотентный повтор с тем же ключом: партия уже существует — возвращаем её,
+  // НЕ трогая анти-абьюз-барьер. Иначе ретрай/двойной клик ложно съедал бы rate
+  // limit и мог заблокировать честную повторную варку. Барьер стоит только на
+  // ветке реального создания (ниже).
+  if (idempotencyKey) {
+    const existing = await db.query.brewBatches.findFirst({
+      where: and(eq(brewBatches.userId, userId), eq(brewBatches.idempotencyKey, idempotencyKey))
+    });
+    if (existing) {
+      return mapBrewBatchDto(existing);
+    }
+  }
+
+  // Анти-абьюз (rate limit + квота) — на ветке реального создания.
+  await assertBrewBatchCreationAllowed(userId);
+
+  // Доступный рецепт: свой (любой статус) ИЛИ чужой published — БЕЗ клонирования.
+  const source = await getRecipeById(userId, recipeId);
+  // Объём и оборудование ЭТОЙ варки (см. brew-setup.ts). Дальше всё — план, слепок
+  // состава, водный план — считается от recipe, а не от исходного source: иначе
+  // снапшоты разъедутся между собой и со списанием склада.
+  const { recipe, recipeEfficiencyPct } = await resolveBrewBatchRecipe(userId, source, {
+    targetBatchVolumeL: input.targetBatchVolumeL,
+    equipmentProfileId: input.equipmentProfileId
+  });
+  const author = await db.query.users.findFirst({
+    where: eq(users.id, recipe.authorId),
+    columns: { displayName: true }
+  });
+  const brewPlanSnapshot = buildBrewPlanSnapshot(recipe, { recipeEfficiencyPct });
   // Автоимя партии (F5): первая партия рецепта = просто название рецепта; повтор
   // того же (userId, recipeId) — «<Название> №2», «№3»… Считаем ВСЕ существующие
   // партии этой пары, включая отменённые — лёгкий count, без тяжёлой выборки строк
@@ -372,6 +428,21 @@ export const listBrewMeasurements = async (
   return rows.map(mapMeasurementDto);
 };
 
+/**
+ * Анти-абьюз-барьер добавления замера. Rate limit — на пользователя (частота
+ * добавлений), квота — НА ПАРТИЮ (журнал одной варки короткий). Бросает
+ * RATE_LIMITED / BREW_MEASUREMENT_QUOTA_REACHED; экшен маппит их в сообщения.
+ * Вызывается после гейта владельца партии, поэтому brewBatchId гарантированно
+ * принадлежит userId.
+ */
+const assertBrewMeasurementCreationAllowed = async (userId: string, brewBatchId: string): Promise<void> => {
+  await assertRateLimit(userId, "brew_measurement_create", BREW_MEASUREMENT_RATE_LIMIT, BREW_MEASUREMENT_RATE_WINDOW_SECONDS);
+  const [row] = await db.select({ value: count() }).from(brewMeasurements).where(eq(brewMeasurements.brewBatchId, brewBatchId));
+  if ((row?.value ?? 0) >= BREW_MEASUREMENT_MAX_COUNT_PER_BATCH) {
+    throw new Error("BREW_MEASUREMENT_QUOTA_REACHED");
+  }
+};
+
 export const addBrewMeasurement = async (
   userId: string,
   brewBatchId: string,
@@ -381,6 +452,7 @@ export const addBrewMeasurement = async (
   if (!batch) {
     throw new Error("NOT_FOUND");
   }
+  await assertBrewMeasurementCreationAllowed(userId, brewBatchId);
   // Инвариант «один финальный замер на партию»: если новый помечен финальным,
   // снимаем флаг с прежнего в той же транзакции.
   const created = await db.transaction(async (tx) => {
@@ -516,6 +588,7 @@ export const setBrewDayStepState = async (
   });
 };
 
+/** Заметки о варке (brew_batches.notes) — журнал варки, живёт на всех этапах. */
 export const updateBrewBatchNotes = async (
   userId: string,
   brewBatchId: string,
@@ -523,6 +596,26 @@ export const updateBrewBatchNotes = async (
 ): Promise<BrewBatchDto> => {
   const [updated] = await db.update(brewBatches).set({
     notes: notes?.trim() || null,
+    updatedAt: new Date()
+  }).where(and(eq(brewBatches.id, brewBatchId), eq(brewBatches.userId, userId))).returning();
+  if (!updated) {
+    throw new Error("NOT_FOUND");
+  }
+  return mapBrewBatchDto(updated);
+};
+
+/**
+ * Дегустация (brew_batches.tasting_notes) — отдельное поле завершённой партии.
+ * Пишется своим UPDATE и НЕ трогает notes: раньше обе секции сидели на одной
+ * колонке, и дегустация затирала заметки варочного дня.
+ */
+export const updateBrewBatchTastingNotes = async (
+  userId: string,
+  brewBatchId: string,
+  tastingNotes: string | null
+): Promise<BrewBatchDto> => {
+  const [updated] = await db.update(brewBatches).set({
+    tastingNotes: tastingNotes?.trim() || null,
     updatedAt: new Date()
   }).where(and(eq(brewBatches.id, brewBatchId), eq(brewBatches.userId, userId))).returning();
   if (!updated) {

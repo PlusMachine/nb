@@ -98,13 +98,62 @@ const roundInventoryQuantity = (value: number) => roundTo(value, 3);
 
 export const normalizeInventoryUnitInput = (value: string) => value.trim().toLowerCase();
 
+// Синонимы штуки: каталог фасовок (ingredient_package_variants.stock_content_unit)
+// и внешние источники пишут «pcs»/«шт», рантайм знает только 'item'. Без алиаса
+// добавление такого расходника «в пачках» падало с INVALID_UNIT.
+const inventoryUnitAliases: Record<string, InventoryUnit> = {
+  pcs: "item",
+  pc: "item",
+  piece: "item",
+  pieces: "item",
+  "шт": "item",
+  "шт.": "item"
+};
+
+/** Русские числовые формы: 1 пачка, 2 пачки, 5 пачек, 1.5 пачки. */
+const pluralizeRu = (quantity: number, one: string, few: string, many: string) => {
+  const abs = Math.abs(quantity);
+  if (!Number.isInteger(abs)) {
+    return few;
+  }
+
+  const mod10 = abs % 10;
+  const mod100 = abs % 100;
+  if (mod10 === 1 && mod100 !== 11) {
+    return one;
+  }
+  if (mod10 >= 2 && mod10 <= 4 && (mod100 < 12 || mod100 > 14)) {
+    return few;
+  }
+
+  return many;
+};
+
+/**
+ * Подпись единицы рядом с количеством. Склоняется только счётная «пачка»
+ * («4 пачки», не «4 пачка»); «шт.», «г», «кг» и прочие сокращения неизменяемы.
+ * Без количества (например, в цене «₽/пачка») возвращает базовую форму.
+ */
+export const formatInventoryUnitLabel = (unit: InventoryUnit, quantity?: number | null): string => {
+  const base = inventoryUnitShortLabels[unit];
+  if (quantity == null || !Number.isFinite(quantity) || unit !== "pack") {
+    return base;
+  }
+
+  return pluralizeRu(quantity, "пачка", "пачки", "пачек");
+};
+
 export const isSupportedInventoryUnit = (value: string): value is InventoryUnit => (
   (inventoryUnits as readonly string[]).includes(value)
 );
 
 export const parseInventoryUnit = (value: string): InventoryUnit | null => {
   const normalizedValue = normalizeInventoryUnitInput(value);
-  return isSupportedInventoryUnit(normalizedValue) ? normalizedValue : null;
+  if (isSupportedInventoryUnit(normalizedValue)) {
+    return normalizedValue;
+  }
+
+  return inventoryUnitAliases[normalizedValue] ?? null;
 };
 
 export const getInventoryUnitDimension = (unit: InventoryUnit): InventoryUnitDimension => unitDimensionByUnit[unit];

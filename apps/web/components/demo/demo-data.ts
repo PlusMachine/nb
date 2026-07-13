@@ -137,6 +137,8 @@ const buildOwnerRecipe = (fixture: RecipeFixture, now: Date): OwnerRecipeCardDto
     slug: fixture.slug,
     title: fixture.title,
     publicationState: fixture.publicationState,
+    hiddenAt: null,
+    hiddenReason: null,
     versionNumber: 1,
     versionCount: 1,
     updatedAt: daysAgo(now, fixture.updatedAtDaysAgo),
@@ -151,7 +153,9 @@ const buildOwnerRecipe = (fixture: RecipeFixture, now: Date): OwnerRecipeCardDto
     // SRM (это делает сам RecipeThumb через srmToHex, не мы).
     heroImage: null,
     styleImageUrl: null,
-    styleFit: fit ? (fit.overallFit ? "in_style" : "deviations") : null
+    styleFit: fit ? (fit.overallFit ? "in_style" : "deviations") : null,
+    // Демо-рецепты не сварены: в демо нет партий и удаления.
+    brewBatchCount: 0
   };
 };
 

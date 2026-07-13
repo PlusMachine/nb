@@ -59,7 +59,7 @@ export const recipeMashPhModelLabels: Record<MashPhModel, string> = {
 };
 
 export const recipePublicationStateLabels: Record<RecipePublicationState, string> = {
-  draft: "Приватный",
+  draft: "Черновик",
   private: "Приватный",
   published: "Публичный"
 };
@@ -155,9 +155,12 @@ export const recipeFgEstimateDetailsSchema = z.object({
   simpleSugarSharePct: z.coerce.number().min(0).max(100),
   crystalDextrinSharePct: z.coerce.number().min(0).max(100),
   lactoseSharePct: z.coerce.number().min(0).max(100),
-  simpleSugarAdj: z.coerce.number().min(0).max(10),
-  crystalDextrinAdj: z.coerce.number().min(0).max(10),
-  lactoseAdj: z.coerce.number().min(0).max(10),
+  // Взвешенная модель (Э2) может дать дельту до ~100 п.п. на экстремальных
+  // засыпях (почти чистый сахар/лактоза при низкой базовой аттенюации);
+  // прежний потолок 10 был калиброван под старую аддитивную формулу.
+  simpleSugarAdj: z.coerce.number().min(0).max(100),
+  crystalDextrinAdj: z.coerce.number().min(0).max(100),
+  lactoseAdj: z.coerce.number().min(0).max(100),
   effectiveAttenuationPct: z.coerce.number().min(0).max(100),
   fgRangeMin: z.coerce.number().min(0.99).max(1.2).optional().nullable(),
   fgRangeMax: z.coerce.number().min(0.99).max(1.2).optional().nullable()
@@ -480,6 +483,10 @@ export type RecipeListItemDto = {
   abv: number | null;
   ibu: number | null;
   color: number | null;
+  // Скрытие модератором (см. features/recipes/visibility.ts). Автор видит метку
+  // и причину у себя, публичные пути такой рецепт не отдают.
+  hiddenAt: Date | null;
+  hiddenReason: string | null;
   createdAt: Date;
   updatedAt: Date;
 };
@@ -502,6 +509,8 @@ export type OwnerRecipeCardDto = {
   slug: string;
   title: string;
   publicationState: RecipePublicationState;
+  hiddenAt: Date | null;
+  hiddenReason: string | null;
   versionNumber: number;
   versionCount: number;
   updatedAt: Date;
@@ -515,6 +524,12 @@ export type OwnerRecipeCardDto = {
   heroImage: { thumbUrl: string; blurDataUrl: string | null } | null;
   styleImageUrl: string | null;
   styleFit: "in_style" | "deviations" | null;
+  /**
+   * Свои партии, сваренные по этому рецепту. Нужен подтверждению удаления: партии
+   * переживают рецепт (`brew_batches.recipe_id` — ON DELETE SET NULL), но теряют с
+   * ним связь, и диалог обязан сказать это до нажатия «Удалить», а не после.
+   */
+  brewBatchCount: number;
 };
 
 // --- Public recipe discovery (витрина /recipes) -----------------------------
@@ -550,6 +565,24 @@ export type PublicRecipeSort = (typeof publicRecipeSorts)[number];
  */
 export const MIN_RATED_RECIPES_FOR_SORT = 5;
 export const MIN_SAVED_RECIPES_FOR_SORT = 5;
+
+/**
+ * Анти-абьюз: щедрый потолок числа рецептов на пользователя (draft + published
+ * вместе — иначе создание черновиков осталось бы обходным путём). Реальному
+ * пивовару за всю жизнь аккаунта не упереться; ловит только массовое засорение
+ * ботом. Считаются все пути создания (createRecipe и всё, что зовёт его: клон,
+ * версия, импорт, черновик под фото). Плюс rate limit на частоту создания.
+ */
+export const RECIPE_MAX_COUNT_PER_USER = 500;
+export const RECIPE_CREATE_RATE_LIMIT = 30;
+export const RECIPE_CREATE_RATE_WINDOW_SECONDS = 60 * 60;
+
+/**
+ * Потолок размера входа импорта (BeerXML/Brewfather) ДО парсинга — чтобы никто не
+ * заставлял сервер разбирать мегабайтные строки. 256 КБ с запасом покрывают
+ * реальные экспорты (обычно единицы–десятки КБ).
+ */
+export const RECIPE_IMPORT_MAX_INPUT_BYTES = 256 * 1024;
 
 /** Сколько опубликованных рецептов реально оценено / сохранено (для гейтинга сортов). */
 export type PublicRecipeSortAvailability = {

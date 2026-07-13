@@ -15,7 +15,9 @@
     "seed:articles": "TMPDIR=/tmp TEMP=/tmp TMP=/tmp tsx scripts/seed-content-articles.ts",
     "seed:public": "TMPDIR=/tmp TEMP=/tmp TMP=/tmp tsx scripts/seed-public-recipes.ts",
     "firmware:publish": "TMPDIR=/tmp TEMP=/tmp TMP=/tmp tsx scripts/publish-firmware-release.ts",
-    "cleanup:verifications": "TMPDIR=/tmp TEMP=/tmp TMP=/tmp tsx scripts/cleanup-verifications.ts"
+    "cleanup:verifications": "TMPDIR=/tmp TEMP=/tmp TMP=/tmp tsx scripts/cleanup-verifications.ts",
+    "recompute:recipe-stats": "TMPDIR=/tmp TEMP=/tmp TMP=/tmp tsx scripts/recompute-recipe-stats.ts",
+    "validate:recipes": "TMPDIR=/tmp TEMP=/tmp TMP=/tmp tsx scripts/validate-recipe-stats/run.ts"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.699.0",
@@ -32,6 +34,7 @@
     "@nb/search": "workspace:*",
     "@nb/shared": "workspace:*",
     "@nb/ui": "workspace:*",
+    "@resvg/resvg-js": "^2.6.2",
     "@sentry/nextjs": "^10.43.0",
     "@tiptap/extension-image": "^3.21.0",
     "@tiptap/extension-link": "^3.21.0",
@@ -40,7 +43,10 @@
     "@tiptap/starter-kit": "^3.21.0",
     "mqtt": "^5.10.1",
     "next": "15.5.12",
+    "opentype.js": "^2.0.0",
+    "pdf-lib": "^1.17.1",
     "posthog-js": "^1.194.6",
+    "qrcode": "^1.5.4",
     "react": "18.3.1",
     "react-dom": "18.3.1",
     "sharp": "^0.34.5",
@@ -48,6 +54,8 @@
   },
   "devDependencies": {
     "@playwright/test": "^1.61.1",
+    "@types/opentype.js": "^1.3.10",
+    "@types/qrcode": "^1.5.6",
     "@types/react": "^18.3.12",
     "@types/react-dom": "^18.3.1",
     "autoprefixer": "^10.4.20",

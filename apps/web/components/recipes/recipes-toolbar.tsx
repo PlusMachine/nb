@@ -57,7 +57,7 @@ export function RecipesToolbar({ sortAvailability }: { sortAvailability: PublicR
           aria-label="Сортировка"
             value={sort}
             onChange={(event) => navigate({ sort: event.target.value })}
-            className="h-10 rounded-lg border border-border bg-card px-3 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+            className="h-10 rounded-lg border border-border bg-card px-3 text-base text-foreground focus:outline-none focus:ring-2 focus:ring-ring sm:text-sm"
           >
             {sortOptions.map((option) => (
               <option key={option.value} value={option.value}>

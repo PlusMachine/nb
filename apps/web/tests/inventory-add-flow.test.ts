@@ -215,7 +215,9 @@ describe("inventory add-flow", () => {
     expect(html).not.toContain('aria-label="Очистить дату покупки"');
     expect(html).not.toContain("За всё");
     expect(html).not.toContain("За единицу");
-    expect(html).toContain('step="any"');
+    // Количество — дробное: раньше это выражалось через step="any" у нативного
+    // type="number", теперь поле собрано на NumericInput (он же принимает запятую).
+    expect(html).toContain('inputMode="decimal"');
   });
 
   it("uses category-specific placeholders in custom flow outside malt", () => {
