@@ -7,11 +7,22 @@ vi.mock("server-only", () => ({}));
 
 type Row = Record<string, any>;
 
-const { mockState } = vi.hoisted(() => ({
+const { mockState, mockUuid, assertUuid } = vi.hoisted(() => ({
   mockState: {
     articles: [] as Row[],
     authors: {} as Record<string, string | null>,
     seq: 0
+  },
+  // content_articles.id — колонка uuid, поэтому и фикстуры обязаны быть uuid:
+  // на строках вида "article-1" мок молча расходился с живой БД.
+  mockUuid: (n: number) => `00000000-0000-4000-8000-${String(n).padStart(12, "0")}`,
+  // Живой Postgres на мусор в uuid-колонке отвечает ошибкой 22P02, а не пустой
+  // выборкой. Мок обязан вести себя так же — иначе тест на битый id зелёный и
+  // без гарда, и защищать ему нечего.
+  assertUuid: (value: unknown) => {
+    if (typeof value === "string" && !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(value)) {
+      throw new Error(`invalid input syntax for type uuid: "${value}"`);
+    }
   }
 }));
 
@@ -87,6 +98,7 @@ vi.mock("@nb/db", () => {
       contentArticles: {
         findFirst: async (arg: { where?: unknown; with?: { author?: unknown } }) => {
           const c = collectConstraints(arg.where);
+          assertUuid(c.eqs["contentArticles.id"]);
           const row = mockState.articles.find((r) => matches(r, c));
           if (!row) {
             return null;
@@ -110,7 +122,7 @@ vi.mock("@nb/db", () => {
           mockState.seq += 1;
           const now = new Date();
           const row: Row = {
-            id: `article-${mockState.seq}`,
+            id: mockUuid(mockState.seq),
             isFeatured: false,
             reviewerId: null,
             publishedAt: null,
@@ -129,6 +141,7 @@ vi.mock("@nb/db", () => {
           returning: () => {
             const { eqs } = collectConstraints(clause);
             const id = eqs["contentArticles.id"];
+            assertUuid(id);
             const row = mockState.articles.find((r) => r.id === id);
             if (!row) {
               return Promise.resolve([]);
@@ -143,6 +156,7 @@ vi.mock("@nb/db", () => {
       where: (clause: unknown) => {
         const { eqs } = collectConstraints(clause);
         const id = eqs["contentArticles.id"];
+        assertUuid(id);
         mockState.articles = mockState.articles.filter((r) => r.id !== id);
         return Promise.resolve();
       }
@@ -217,7 +231,7 @@ const seedArticle = (partial: Partial<Row> = {}): Row => {
   seedClock += 1;
   const ts = new Date(Date.UTC(2026, 0, 1) + seedClock * 60_000);
   const row: Row = {
-    id: `seed-${mockState.seq}`,
+    id: mockUuid(mockState.seq),
     type: "guide",
     status: "published",
     slug: `slug-${mockState.seq}`,
@@ -509,5 +523,21 @@ describe("listAdminContentArticles", () => {
 
     const draftGuides = await listAdminContentArticles({ status: "draft", type: "guide" });
     expect(draftGuides.map((a) => a.title)).toEqual(["Draft guide"]);
+  });
+});
+
+// --- Битый id из URL ------------------------------------------------------------
+// /admin/articles/<мусор>/edit: id из сегмента уходил прямо в eq() по uuid-колонке,
+// Postgres отвечал 22P02, и страница отдавала 500 вместо 404.
+describe("не-uuid в id статьи", () => {
+  it("страница редактора — 404 (null), а не сбой запроса", async () => {
+    await expect(getContentArticleForEditor(EDITOR, "нет-такого")).resolves.toBeNull();
+  });
+
+  it("правка/публикация/удаление — NOT_FOUND, а не 22P02", async () => {
+    await expect(updateContentArticle(EDITOR, "нет-такого", makeInput())).rejects.toThrow("NOT_FOUND");
+    await expect(setContentArticlePublication(MODERATOR, "нет-такого", true)).rejects.toThrow("NOT_FOUND");
+    await expect(setContentArticleFeatured(ADMIN, "нет-такого", true)).rejects.toThrow("NOT_FOUND");
+    await expect(deleteContentArticle(EDITOR, "нет-такого")).rejects.toThrow("NOT_FOUND");
   });
 });

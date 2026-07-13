@@ -44,6 +44,9 @@ export function ArticleEditorForm({
   const [seoTitle, setSeoTitle] = useState(article?.seoTitle ?? "");
   const [seoDescription, setSeoDescription] = useState(article?.seoDescription ?? "");
   const bodyRef = useRef<TiptapDoc | null>(article?.bodyJson ?? null);
+  // Тело не открылось в редакторе (узел вне схемы): Tiptap показал бы пустой
+  // документ, а сохранение затёрло бы текст статьи. Пока так — не сохраняем.
+  const [bodyBroken, setBodyBroken] = useState(false);
 
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState<{ ok: boolean; text: string } | null>(null);
@@ -83,6 +86,9 @@ export function ArticleEditorForm({
 
   const handleSave = (event: React.FormEvent) => {
     event.preventDefault();
+    if (bodyBroken) {
+      return;
+    }
     if (!title.trim()) {
       setMessage({ ok: false, text: "Введите заголовок." });
       return;
@@ -132,7 +138,16 @@ export function ArticleEditorForm({
 
         <div className="space-y-1.5">
           <span className="text-sm text-muted-foreground">Текст</span>
-          <ContentBodyEditor initialDoc={article?.bodyJson ?? null} onChange={(doc) => { bodyRef.current = doc; }} />
+          {bodyBroken ? (
+            <p role="alert" className="rounded-lg border border-destructive bg-destructive-subtle px-3 py-2 text-sm text-destructive-subtle-foreground">
+              Текст статьи не открылся: в нём есть блок, которого нет в схеме редактора. Сохранение отключено, чтобы не затереть текст.
+            </p>
+          ) : null}
+          <ContentBodyEditor
+            initialDoc={article?.bodyJson ?? null}
+            onChange={(doc) => { bodyRef.current = doc; }}
+            onContentError={() => setBodyBroken(true)}
+          />
         </div>
 
         <details className="rounded-lg border border-border bg-muted/60 p-3">
@@ -156,7 +171,7 @@ export function ArticleEditorForm({
         ) : null}
 
         <div className="flex items-center gap-2">
-          <Button type="submit" size="md" disabled={busy}>
+          <Button type="submit" size="md" disabled={busy || bodyBroken}>
             {busy ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden /> : <Save className="h-4 w-4" aria-hidden />}
             {article ? "Сохранить" : "Создать черновик"}
           </Button>
