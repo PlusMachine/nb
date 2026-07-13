@@ -42,7 +42,9 @@ export interface BitternessContribution {
   hopAdditionId: string;
   use: NonNullable<HopAdditionInput["use"]>;
   ibu: number;
+  /** SG сусла на момент внесения (используется для bigness factor / утилизации), не конечный OG. */
   gravityAtAddition: number;
+  /** Объём, на который делится масса изо-альфа-кислот (по Тинсету — конечный объём партии, postBoil), не объём на момент внесения. */
   volumeL: number;
   utilization: number;
   isCarryover: boolean;
@@ -248,13 +250,16 @@ const calculateTinsethWhirlpoolV2 = (input: BitternessEngineInput): BitternessRe
       const sg = resolveGravityAtVolume(context.gravityPoints, volumeL, context.og);
       const fwhBonus = use === "first_wort_hop" && context.firstWortHopMode === "bonus_10pct" ? 1.1 : 1;
       const utilization = utilizationTinseth(sg, boilTime) * fwhBonus;
-      const rawIbu = calculateAdditionIbu(addition, utilization, volumeL);
+      // Утилизация считается по SG на момент внесения (`volumeL`, ещё не уваренное
+      // сусло), но масса изо-альфа делится на конечный объём партии — при уварке
+      // горечь концентрируется (Тинсет). См. BitternessContribution.volumeL.
+      const rawIbu = calculateAdditionIbu(addition, utilization, context.postBoilVolumeL);
       contributions.push(buildContribution({
         addition,
         use,
         ibu: applyFinalFactors(rawIbu, addition, context),
         sg,
-        volumeL,
+        volumeL: context.postBoilVolumeL,
         utilization
       }));
       continue;
@@ -350,13 +355,15 @@ const calculateRager = (input: BitternessEngineInput): BitternessResult => {
     const sg = resolveGravityAtVolume(context.gravityPoints, volumeL, context.og);
     const gravityCorrection = sg > 1.05 ? 1 + ((sg - 1.05) / 0.2) : 1;
     const utilization = utilizationRager(boilTime) / gravityCorrection;
-    const rawIbu = calculateAdditionIbu(addition, utilization, volumeL);
+    // Как и в v2: SG на момент внесения (`volumeL`) — только для утилизации,
+    // деление массы изо-альфа — на конечный объём партии.
+    const rawIbu = calculateAdditionIbu(addition, utilization, context.postBoilVolumeL);
     contributions.push(buildContribution({
       addition,
       use,
       ibu: applyFinalFactors(rawIbu, addition, context),
       sg,
-      volumeL,
+      volumeL: context.postBoilVolumeL,
       utilization
     }));
   }

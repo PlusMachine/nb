@@ -1,0 +1,25 @@
+/** Типовые alpha-кислоты сортов — только для добавок, где источник не указал AA%. */
+export const HOP_AA: Array<[string, number]> = [
+  ["cascade", 5.5],
+  ["centennial", 10],
+  ["northern brewer", 8],
+  ["mount hood", 5],
+  ["mt. hood", 5],
+  ["hallertau", 4],
+  ["saaz", 4],
+  ["willamette", 5],
+  ["magnum", 12],
+  ["summit", 17],
+  ["horizon", 11],
+  ["chinook", 12],
+  ["columbus", 14],
+  ["citra", 12],
+  ["mosaic", 11.5],
+  ["galaxy", 14],
+  ["simcoe", 12.5],
+  ["amarillo", 8.5],
+  ["fuggle", 4.5],
+  ["goldings", 5],
+  ["tettnang", 4],
+  ["perle", 8]
+];

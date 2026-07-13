@@ -114,6 +114,43 @@ describe("IBU and color", () => {
     expect(result.warnings).toContain("dry_hop_ibu_ignored");
   });
 
+  it("concentrates bitterness on the post-boil volume when the kettle boils off (Tinseth v2)", () => {
+    // Manual reference calc: 56.7g @ 13% AA, 60min addition in a 90min boil,
+    // batch/postBoil 20.06L, preBoil 30.28L, OG 1.092 → volume at addition
+    // 26.87L, SG 1.0687, utilization ≈0.195 → IBU ≈ 71.6.
+    const result = calculateBitterness({
+      formula: "tinseth_whirlpool_v2",
+      og: 1.092,
+      batchVolumeL: 20.06,
+      boilTimeMinutes: 90,
+      preBoilVolumeL: 30.28,
+      postBoilVolumeL: 20.06,
+      fermentableGravityPoints: (1.092 - 1) * 1000 * 20.06,
+      hopAdditions: [
+        { id: "boil-uber", name: "Uber Hop", alphaAcidPercent: 13, weightG: 56.7, boilTimeMinutes: 60, use: "boil" }
+      ]
+    });
+
+    expect(result.ibu).toBeCloseTo(71.6, 0);
+    expect(Math.abs(result.ibu - 71.6)).toBeLessThanOrEqual(0.5);
+    expect(result.contributions[0]?.volumeL).toBe(20.06);
+  });
+
+  it("is a no-op vs classic when preBoilVolumeL is not supplied (v2 boil-only recipe)", () => {
+    const classic = calculateIbuTinseth({ og: 1.059, batchVolumeL: 20, hopAdditions: hops });
+    const v2 = calculateBitterness({
+      formula: "tinseth_whirlpool_v2",
+      og: 1.059,
+      batchVolumeL: 20,
+      boilTimeMinutes: 60,
+      preBoilVolumeL: null,
+      postBoilVolumeL: 20,
+      hopAdditions: hops
+    });
+
+    expect(v2.ibu).toBe(classic);
+  });
+
   it("keeps alternative bitterness engines switchable", () => {
     const rager = calculateBitterness({ formula: "rager", og: 1.059, batchVolumeL: 20, hopAdditions: hops });
     const garetz = calculateBitterness({ formula: "garetz", og: 1.059, batchVolumeL: 20, hopAdditions: hops, altitudeM: 1200 });
