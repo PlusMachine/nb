@@ -11,7 +11,8 @@ import {
   setBrewMeasurementFinal,
   updateBrewBatchNotes,
   updateBrewBatchPlannedFor,
-  updateBrewBatchStatus
+  updateBrewBatchStatus,
+  updateBrewBatchTastingNotes
 } from "@/features/brew-batches/service";
 import {
   consumeBrewBatchInventory,
@@ -100,6 +101,12 @@ export const addBrewMeasurementAction = async (
     if (error instanceof Error && error.message === "NOT_FOUND") {
       return { ok: false, message: "Варка не найдена." };
     }
+    if (error instanceof Error && error.message === "RATE_LIMITED") {
+      return { ok: false, message: "Слишком часто. Подождите немного и попробуйте снова." };
+    }
+    if (error instanceof Error && error.message === "BREW_MEASUREMENT_QUOTA_REACHED") {
+      return { ok: false, message: "Достигнут предел числа замеров для этой партии (300)." };
+    }
     return { ok: false, message: "Не удалось добавить замер." };
   }
 };
@@ -153,6 +160,23 @@ export const updateBrewBatchNotesAction = async (
       return { ok: false, message: "Варка не найдена." };
     }
     return { ok: false, message: "Не удалось сохранить заметки." };
+  }
+};
+
+export const updateBrewBatchTastingNotesAction = async (
+  brewBatchId: string,
+  tastingNotes: string | null
+): Promise<BrewActionResult> => {
+  try {
+    const user = await requireUser();
+    await updateBrewBatchTastingNotes(user.id, brewBatchId, tastingNotes);
+    revalidateBatch(brewBatchId);
+    return { ok: true, message: "Дегустация сохранена." };
+  } catch (error) {
+    if (error instanceof Error && error.message === "NOT_FOUND") {
+      return { ok: false, message: "Варка не найдена." };
+    }
+    return { ok: false, message: "Не удалось сохранить дегустацию." };
   }
 };
 
@@ -220,10 +244,18 @@ export const consumeBrewBatchInventoryAction = async (
     if (!view.hasConsumed) {
       return { ok: false, message: "На складе нет сопоставленных позиций для списания.", view };
     }
+    // Дрожжей на складе меньше, чем требует рецепт: списание не падает, а ужимается
+    // до остатка (см. inventory.ts). Молчать об этом нельзя — «Списано» без оговорки
+    // читается как «всё по рецепту».
+    const short = view.consumed.filter((line) => line.requiredQuantityNormalized != null);
+    if (short.length > 0) {
+      const names = short.map((line) => line.ingredientDisplayName?.trim() || "ингредиент").join(", ");
+      return { ok: true, message: `Ингредиенты списаны. На складе не хватило: ${names} — списали остаток.`, view };
+    }
     return { ok: true, message: "Ингредиенты списаны со склада.", view };
   } catch (error) {
     if (error instanceof Error && error.message === "ALREADY_CONSUMED") {
-      return { ok: false, message: "Ингредиенты рецепта уже списаны со склада." };
+      return { ok: false, message: "По этой партии ингредиенты уже списаны со склада." };
     }
     if (error instanceof Error && error.message === "INVALID_STATUS") {
       return { ok: false, message: "Списание доступно только для активной варки." };

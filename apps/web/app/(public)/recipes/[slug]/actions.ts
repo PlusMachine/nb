@@ -3,6 +3,8 @@
 import { revalidatePath } from "next/cache";
 import { ZodError } from "zod";
 
+import { recordAuditEvent } from "@/features/audit/service";
+import { invalidateHomeDataCache } from "@/features/home/home-data-cache";
 import type { RecipeRatingDto, RecipeRatingSummary } from "@/features/recipes/contracts";
 import {
   deleteRecipeRating,
@@ -146,8 +148,22 @@ export const setRecipeFeaturedAction = async (input: {
 
   try {
     const result = await setRecipeFeatured(input.recipeId, input.featured);
+    await recordAuditEvent({
+      actorUserId: user.id,
+      actorEmail: user.email,
+      action: "recipe.editors_choice",
+      entityType: "recipe",
+      entityId: input.recipeId,
+      summary: result.featured ? "«Выбор редакции» поставлен" : "«Выбор редакции» снят",
+      payload: { featured: result.featured, slug: input.slug }
+    });
     revalidatePath(`/recipes/${input.slug}`);
     revalidatePath("/recipes");
+    revalidatePath("/admin/recipes");
+    revalidatePath("/");
+    // Бейдж «Выбор редакции» едет на карточках ленты главной, а лента лежит в
+    // процессном TTL-слоте мимо Next-кэша (features/home/home-data-cache.ts).
+    invalidateHomeDataCache();
     return { ok: true, featured: result.featured };
   } catch {
     return { ok: false, message: "Не удалось изменить «Выбор редакции»." };

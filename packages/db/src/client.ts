@@ -45,7 +45,16 @@ if (existsSync(rootEnvPath)) {
 }
 
 const env = parseServerEnv(process.env);
-const pool = new Pool({ connectionString: env.DATABASE_URL });
+// Предохранители пула — против read-DoS: без них один зависший/тяжёлый запрос,
+// помноженный на дефолтные 10 соединений, занимает весь пул и «кладёт» сайт.
+// statement_timeout режет запросы-долгожители на стороне БД; connectionTimeout
+// не даёт запросам копиться в бесконечной очереди за свободным соединением.
+const pool = new Pool({
+  connectionString: env.DATABASE_URL,
+  max: env.DB_POOL_MAX,
+  statement_timeout: env.DB_STATEMENT_TIMEOUT_MS,
+  connectionTimeoutMillis: 10_000
+});
 
 export const db = drizzle(pool, { schema });
 export { pool };

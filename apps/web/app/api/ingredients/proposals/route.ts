@@ -2,17 +2,9 @@ import { NextResponse } from "next/server";
 
 import { createProposedIngredient } from "@/features/ingredients/service";
 import { requireUser } from "@/lib/auth";
-import { assertRateLimit } from "@nb/auth";
 
 export async function POST(request: Request) {
   const user = await requireUser();
-
-  // Антиспам: предложения попадают в очередь модерации — не даём её завалить.
-  try {
-    await assertRateLimit(user.id, "ingredient_proposal", 10, 60 * 60);
-  } catch {
-    return NextResponse.json({ error: "Слишком много предложений подряд. Попробуйте позже." }, { status: 429 });
-  }
 
   try {
     const body = await request.json() as {
@@ -25,6 +17,8 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Missing proposal payload." }, { status: 400 });
     }
 
+    // Антиспам-барьер (rate limit + квота pending) — внутри createProposedIngredient,
+    // единый для этого роута и server action мастера рецептов.
     await createProposedIngredient({
       submittedByUserId: user.id,
       sourceType: body.sourceType.trim(),
@@ -34,6 +28,13 @@ export async function POST(request: Request) {
 
     return NextResponse.json({ ok: true, message: "Предложение отправлено в очередь модерации." });
   } catch (error) {
-    return NextResponse.json({ error: (error as Error).message }, { status: 400 });
+    const message = (error as Error).message;
+    if (message === "RATE_LIMITED") {
+      return NextResponse.json({ error: "Слишком много предложений подряд. Попробуйте позже." }, { status: 429 });
+    }
+    if (message === "INGREDIENT_PROPOSAL_QUOTA_REACHED") {
+      return NextResponse.json({ error: "Слишком много предложений в очереди модерации. Дождитесь их обработки." }, { status: 429 });
+    }
+    return NextResponse.json({ error: message }, { status: 400 });
   }
 }

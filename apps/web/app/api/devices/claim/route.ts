@@ -1,3 +1,4 @@
+import { assertRateLimit } from "@nb/auth";
 import { NextResponse } from "next/server";
 
 import { requireUser } from "@/lib/auth";
@@ -12,6 +13,14 @@ import { mapDeviceError } from "@/features/devices/errors";
 // раз (в БД хранится только его хэш). Ошибки маппятся по коду (см. errors.ts).
 export async function POST(request: Request) {
   const user = await requireUser();
+
+  // Антибрутфорс claim-кода: без лимита залогиненный юзер мог бы перебирать коды
+  // и перехватывать пейринг чужого устройства.
+  try {
+    await assertRateLimit(user.id, "device_claim", 15, 10 * 60);
+  } catch {
+    return NextResponse.json({ error: "RATE_LIMITED" }, { status: 429 });
+  }
 
   try {
     const body = await request.json();

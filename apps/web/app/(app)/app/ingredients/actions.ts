@@ -7,6 +7,8 @@ import {
   addCatalogInventoryItemSchema,
   addCustomInventoryItemSchema,
   createUserCustomInventoryIngredientSchema,
+  CUSTOM_INGREDIENT_MAX_COUNT_PER_USER,
+  INVENTORY_ITEM_MAX_COUNT_PER_USER,
   updateInventoryItemSchema,
   updateInventoryQuantitySchema,
   type InventoryItemMovementDto
@@ -116,6 +118,15 @@ const mapError = (error: unknown): AddIngredientResult => {
     }
     if (error.message === "INVALID_PURCHASE_LINK_URL") {
       return { ok: false, message: "Проверьте ссылки на покупку: одна из ссылок заполнена некорректно." };
+    }
+    if (error.message === "RATE_LIMITED") {
+      return { ok: false, message: "Слишком много добавлений подряд. Немного подождите и попробуйте снова." };
+    }
+    if (error.message === "INVENTORY_ITEM_QUOTA_REACHED") {
+      return { ok: false, message: `Достигнут предел числа позиций склада (${INVENTORY_ITEM_MAX_COUNT_PER_USER}). Удалите ненужные, чтобы добавлять новые.` };
+    }
+    if (error.message === "CUSTOM_INGREDIENT_QUOTA_REACHED") {
+      return { ok: false, message: `Достигнут предел числа собственных ингредиентов (${CUSTOM_INGREDIENT_MAX_COUNT_PER_USER}). Удалите ненужные, чтобы создавать новые.` };
     }
     return { ok: false, message: "Не удалось сохранить ингредиент. Попробуйте еще раз." };
   }

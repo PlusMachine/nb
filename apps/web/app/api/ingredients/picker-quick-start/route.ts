@@ -1,7 +1,9 @@
+import { assertRateLimit } from "@nb/auth";
 import { NextResponse } from "next/server";
 
 import { listIngredientPickerQuickStart } from "@/features/ingredients/catalog-service";
 import type { IngredientCategory, UserIngredientReference } from "@/features/ingredients/contracts";
+import { clientIpFrom } from "@/lib/anti-abuse";
 import { getSessionUser } from "@/lib/auth";
 
 // Каталог ингредиентов — публичная зона (см. /catalog): анонимный посетитель получает
@@ -9,6 +11,14 @@ import { getSessionUser } from "@/lib/auth";
 // (напр. brewhouse-efficiency), которые используют пикер вне залогиненной зоны.
 export async function POST(request: Request) {
   const user = await getSessionUser();
+
+  // Каждый запрос грузит каталог и ранжирует в памяти (CPU); аноним — ключ по IP,
+  // залогиненный — по юзеру. Окно щедрое (пикер дёргает на открытие/ввод).
+  try {
+    await assertRateLimit(user ? `user:${user.id}` : `ip:${clientIpFrom(request) ?? "unknown"}`, "ingredient_search", 120, 60);
+  } catch {
+    return NextResponse.json({ error: "RATE_LIMITED" }, { status: 429 });
+  }
 
   try {
     const body = await request.json() as {

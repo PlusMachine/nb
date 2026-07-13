@@ -5,16 +5,10 @@ import { ZodError, type ZodIssue } from "zod";
 
 import type { IngredientCategory, IngredientSuggestionItem, IngredientTechnicalData, IngredientType } from "@/features/ingredients/contracts";
 import type { EquipmentProfileSnapshot } from "@/features/equipment-profiles/contracts";
-import type { RecipeCalculationMeta, RecipeDetailDto, RecipeInventoryIntentMode, RecipeInventorySelectionMeta, RecipeStockCoverageDto, RecipeWaterPlanMeta } from "@/features/recipes/contracts";
+import { RECIPE_IMPORT_MAX_INPUT_BYTES, RECIPE_MAX_COUNT_PER_USER } from "@/features/recipes/contracts";
+import type { RecipeCalculationMeta, RecipeDetailDto, RecipeInventoryIntentMode, RecipeInventorySelectionMeta, RecipeWaterPlanMeta } from "@/features/recipes/contracts";
 import type { RecipeDraftPreviewDto } from "@/features/recipes/contracts";
 import { cloneRecipe, createRecipe, createRecipeVersion, deleteRecipe, getOwnedRecipeById, previewRecipeDraft, updateRecipe } from "@/features/recipes/service";
-import {
-  consumeRecipeInventoryAllocations,
-  listRecipeStockCoverage,
-  releaseRecipeInventoryAllocations,
-  reserveRecipeInventoryAllocations,
-  syncRecipeSelectedInventoryAllocations
-} from "@/features/recipes/inventory-service";
 import { createBrewBatchFromRecipe } from "@/features/brew-batches/service";
 import type { RecipeImageDto } from "@/features/recipe-images/contracts";
 import {
@@ -150,12 +144,35 @@ const mapRecipeEditorError = (error: unknown): RecipeEditorResult => {
     if (error.message === "INGREDIENT_LINKAGE_MISMATCH") {
       return { ok: false, message: "Выбранный ингредиент больше не совпадает с текущей taxonomy-связкой." };
     }
+
+    if (error.message === "RATE_LIMITED") {
+      return { ok: false, message: "Слишком много рецептов подряд. Немного подождите и попробуйте снова." };
+    }
+    if (error.message === "RECIPE_QUOTA_REACHED") {
+      return { ok: false, message: `Достигнут предел числа рецептов (${RECIPE_MAX_COUNT_PER_USER}). Удалите ненужные, чтобы создавать новые.` };
+    }
+    if (error.message === "CUSTOM_INGREDIENT_QUOTA_REACHED") {
+      return { ok: false, message: "Достигнут предел числа собственных ингредиентов. Удалите ненужные, чтобы создавать новые." };
+    }
   }
 
   return { ok: false, message: "Не удалось сохранить рецепт. Попробуйте еще раз." };
 };
 
+// Отсечка мегабайтного входа импорта ДО парсинга: строку меряем напрямую,
+// объект (Brewfather JSON) — по сериализованной длине. Бросает до тяжёлой работы.
+const assertImportInputWithinLimit = (input: unknown): void => {
+  const raw = typeof input === "string" ? input : JSON.stringify(input ?? "");
+  if (Buffer.byteLength(raw, "utf8") > RECIPE_IMPORT_MAX_INPUT_BYTES) {
+    throw new Error("IMPORT_INPUT_TOO_LARGE");
+  }
+};
+
 const mapRecipeImportError = (error: unknown, formatLabel: string): RecipeEditorResult => {
+  if (error instanceof Error && error.message === "IMPORT_INPUT_TOO_LARGE") {
+    return { ok: false, message: `${formatLabel}: файл слишком большой для импорта.` };
+  }
+
   if (error instanceof Error) {
     if (error.message === "EMPTY_BEERXML") {
       return { ok: false, message: "BeerXML пустой. Загрузите файл или вставьте XML перед импортом." };
@@ -504,7 +521,13 @@ export const proposeRecipeIngredientAction = async (payload: {
       ok: true,
       message: "Ингредиент отправлен в каталог на рассмотрение."
     };
-  } catch {
+  } catch (error) {
+    if (error instanceof Error && error.message === "RATE_LIMITED") {
+      return { ok: false, message: "Слишком много предложений подряд. Немного подождите." };
+    }
+    if (error instanceof Error && error.message === "INGREDIENT_PROPOSAL_QUOTA_REACHED") {
+      return { ok: false, message: "Слишком много ваших предложений в очереди модерации. Дождитесь их обработки." };
+    }
     return {
       ok: false,
       message: "Не удалось отправить ингредиент в каталог. Попробуйте ещё раз."
@@ -512,72 +535,12 @@ export const proposeRecipeIngredientAction = async (payload: {
   }
 };
 
-export type RecipeInventoryActionResult = {
-  ok: boolean;
-  message: string;
-  coverage?: RecipeStockCoverageDto;
-};
-
-const runRecipeInventoryAction = async (
-  recipeId: string,
-  action: (userId: string, recipeId: string) => Promise<RecipeStockCoverageDto>,
-  successMessage: string
-): Promise<RecipeInventoryActionResult> => {
-  try {
-    const user = await requireUser();
-    const coverage = await action(user.id, recipeId);
-
-    revalidatePath("/app/recipes");
-    revalidatePath(`/app/recipes/${recipeId}`);
-    revalidatePath(`/app/recipes/${recipeId}/edit`);
-
-    return {
-      ok: true,
-      message: successMessage,
-      coverage
-    };
-  } catch (error) {
-    if (error instanceof Error) {
-      if (error.message === "NOT_FOUND") {
-        return { ok: false, message: "Рецепт или складская позиция не найдены." };
-      }
-
-      if (error.message === "INCOMPATIBLE_INVENTORY_SOURCE") {
-        return { ok: false, message: "Складская позиция не совпадает с ингредиентом рецепта." };
-      }
-
-      if (error.message === "INCOMPATIBLE_UNIT") {
-        return { ok: false, message: "Единицы рецепта и склада несовместимы." };
-      }
-
-      if (error.message === "INSUFFICIENT_STOCK") {
-        return { ok: false, message: "На складе недостаточно остатка для списания." };
-      }
-    }
-
-    return { ok: false, message: "Не удалось выполнить действие со складом." };
-  }
-};
-
-export const syncRecipeInventoryAllocationsAction = async (recipeId: string) => (
-  runRecipeInventoryAction(recipeId, syncRecipeSelectedInventoryAllocations, "Складские позиции подобраны для рецепта.")
-);
-
-export const reserveRecipeInventoryAction = async (recipeId: string) => (
-  runRecipeInventoryAction(recipeId, reserveRecipeInventoryAllocations, "Ингредиенты зарезервированы.")
-);
-
-export const consumeRecipeInventoryAction = async (recipeId: string, brewBatchId?: string) => (
-  runRecipeInventoryAction(
-    recipeId,
-    (userId, id) => consumeRecipeInventoryAllocations(userId, id, { brewBatchId: brewBatchId ?? null }),
-    "Ингредиенты списаны со склада."
-  )
-);
-
-export const releaseRecipeInventoryAction = async (recipeId: string) => (
-  runRecipeInventoryAction(recipeId, releaseRecipeInventoryAllocations, "Резерв снят.")
-);
+// Списание/возврат склада — операция ВАРКИ, а не редактора рецепта: единственный
+// серверный путь — consumeBrewBatchInventory/restoreBrewBatchInventory
+// (features/brew-batches/inventory.ts), точки входа — чекбокс в диалоге «Сварить»
+// и блок «Склад» на странице партии. Редакторские экшены (sync/reserve/consume/
+// release/getStockCoverage) удалены: они списывали с brewBatchId=NULL и навсегда
+// запирали рецепт от списания на любую будущую варку.
 
 export type RecipeWaterAdditivesStockResult =
   | { ok: true; status: RecipeWaterAdditiveStockStatusDto[] }
@@ -592,19 +555,6 @@ export const getRecipeWaterAdditivesStockAction = async (
     return { ok: true, status };
   } catch {
     return { ok: false, message: "Не удалось проверить наличие водных добавок на складе." };
-  }
-};
-
-export const getRecipeStockCoverageAction = async (recipeId: string): Promise<RecipeInventoryActionResult> => {
-  try {
-    const user = await requireUser();
-    return {
-      ok: true,
-      message: "Покрытие склада обновлено.",
-      coverage: await listRecipeStockCoverage(user.id, recipeId)
-    };
-  } catch {
-    return { ok: false, message: "Не удалось обновить покрытие склада." };
   }
 };
 
@@ -630,6 +580,12 @@ export const createBrewBatchFromRecipeAction = async (
   } catch (error) {
     if (error instanceof Error && error.message === "NOT_FOUND") {
       return { ok: false, message: "Рецепт не найден." };
+    }
+    if (error instanceof Error && error.message === "RATE_LIMITED") {
+      return { ok: false, message: "Слишком часто. Подождите немного и попробуйте снова." };
+    }
+    if (error instanceof Error && error.message === "BREW_BATCH_QUOTA_REACHED") {
+      return { ok: false, message: "Достигнут предел числа партий (500). Удалите ненужные, чтобы создавать новые." };
     }
 
     return { ok: false, message: "Не удалось создать партию варки." };
@@ -657,6 +613,7 @@ export const importBeerXmlRecipeAction = async (
 ): Promise<RecipeEditorResult> => {
   try {
     const user = await requireUser();
+    assertImportInputWithinLimit(beerXml);
     const { createRecipeFromCanonicalImport } = await import("@/features/recipes/interop/import-service");
     const canonical = importBeerXmlToCanonicalRecipe(beerXml);
     const recipe = await createRecipeFromCanonicalImport(user.id, canonical);
@@ -680,6 +637,7 @@ export const importBrewfatherJsonRecipeAction = async (
 ): Promise<RecipeEditorResult> => {
   try {
     const user = await requireUser();
+    assertImportInputWithinLimit(payload);
     const { createRecipeFromCanonicalImport } = await import("@/features/recipes/interop/import-service");
     const canonical = importBrewfatherJsonToCanonicalRecipe(payload);
     const recipe = await createRecipeFromCanonicalImport(user.id, canonical);

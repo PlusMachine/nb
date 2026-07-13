@@ -5,9 +5,22 @@ import { z } from "zod";
 
 import { consumeBrewBatchInventory } from "@/features/brew-batches/inventory";
 import { createBrewBatchFromRecipe } from "@/features/brew-batches/service";
+import { listEquipmentProfiles } from "@/features/equipment-profiles/service";
+import type { RecipeDetailDto } from "@/features/recipes/contracts";
+import { getRecipeById } from "@/features/recipes/service";
+import { toBatchVolumeLiters } from "@/features/recipes/units";
 import { getSessionUser } from "@/lib/auth";
 
+/** Верхний кламп объёма варки — тот же, что у пересчёта рецепта (scale.ts). */
+const MAX_BREW_VOLUME_L = 1000;
+
+// В "use server"-модуле можно экспортировать только async-функции (и типы), поэтому
+// схема и хелперы — локальные.
 const brewInputSchema = z.object({
+  /** Объём ЭТОЙ варки, л. Не задан — варим в объёме рецепта. */
+  targetBatchVolumeL: z.coerce.number().positive().max(MAX_BREW_VOLUME_L).optional(),
+  /** Профиль оборудования, на котором варим (только свой). Не задан — профиль рецепта. */
+  equipmentProfileId: z.string().uuid().optional(),
   recipeId: z.string().uuid(),
   /** «Сварить самому» (виртуальная ветка единого входа «Сварить») — списать
    *  ингредиенты со склада ТЕКУЩЕГО пользователя сразу при старте. */
@@ -18,10 +31,72 @@ const brewInputSchema = z.object({
   plannedFor: z.string().datetime().optional()
 });
 
+/**
+ * Что показать в диалоге «Сварить» до создания партии: объём рецепта и объём
+ * оборудования пользователя. Разошлись — диалог заставляет выбрать явно (варить
+ * чужие 30 л на своих 20 л молча нельзя: разъедутся и склад, и водный план).
+ * Профиль — дефолтный; другой объём вводится руками (решение владельца).
+ */
+export type BrewVolumeOptions = {
+  recipeBatchVolumeL: number | null;
+  /** Эффективность, на которой рецепт посчитан автором (null → дефолт движка). */
+  recipeEfficiencyPct: number | null;
+  defaultProfile: {
+    id: string;
+    name: string;
+    targetBatchVolumeL: number;
+    brewhouseEfficiencyPct: number;
+  } | null;
+};
+
+/** Объём рецепта в литрах; null — батч задан не объёмной единицей (масштабировать нечего). */
+const readRecipeBatchVolumeL = (recipe: RecipeDetailDto): number | null => {
+  try {
+    const litres = toBatchVolumeLiters(recipe.batchSizeNormalizedQuantity, recipe.batchSizeNormalizedUnit);
+    return litres > 0 ? litres : null;
+  } catch {
+    return null;
+  }
+};
+
+export const getBrewVolumeOptionsAction = async (recipeId: string): Promise<BrewVolumeOptions | null> => {
+  const user = await getSessionUser();
+  if (!user) {
+    return null;
+  }
+
+  try {
+    // Тот же гейт доступа, что и у старта варки: свой любой статус / чужой published.
+    const recipe = await getRecipeById(user.id, recipeId);
+    const profiles = await listEquipmentProfiles(user.id);
+    const profile = profiles.find((item) => item.isDefault) ?? null;
+
+    return {
+      recipeBatchVolumeL: readRecipeBatchVolumeL(recipe),
+      recipeEfficiencyPct: recipe.efficiency ?? null,
+      defaultProfile: profile
+        ? {
+          id: profile.id,
+          name: profile.name,
+          targetBatchVolumeL: profile.targetBatchVolumeL,
+          brewhouseEfficiencyPct: profile.brewhouseEfficiencyPct
+        }
+        : null
+    };
+  } catch {
+    // Рецепт недоступен — молча без выбора объёма: сам старт варки честно упрётся
+    // в тот же гейт и покажет ошибку.
+    return null;
+  }
+};
+
 /** Итог опционального списания склада — доезжает до диалога честно, без глотания ошибок. */
 export type StartBrewConsumeResult =
   | { ok: true; itemCount: number }
-  | { ok: false; code: "already_consumed" | "insufficient_stock" | "recipe_unavailable" | "error" };
+  | {
+    ok: false;
+    code: "already_consumed" | "insufficient_stock" | "recipe_unavailable" | "nothing_to_consume" | "error";
+  };
 
 export type StartBrewFromRecipeResult =
   | { ok: true; brewBatchId: string; consume?: StartBrewConsumeResult }
@@ -53,6 +128,8 @@ export const startBrewFromRecipeAction = async (input: {
   consumeIngredients?: boolean;
   idempotencyKey?: string;
   plannedFor?: string;
+  targetBatchVolumeL?: number;
+  equipmentProfileId?: string;
 }): Promise<StartBrewFromRecipeResult> => {
   const user = await getSessionUser();
   if (!user) {
@@ -67,14 +144,21 @@ export const startBrewFromRecipeAction = async (input: {
   try {
     const batch = await createBrewBatchFromRecipe(user.id, parsed.data.recipeId, {
       idempotencyKey: parsed.data.idempotencyKey,
-      plannedFor: parsed.data.plannedFor ? new Date(parsed.data.plannedFor) : undefined
+      plannedFor: parsed.data.plannedFor ? new Date(parsed.data.plannedFor) : undefined,
+      targetBatchVolumeL: parsed.data.targetBatchVolumeL,
+      equipmentProfileId: parsed.data.equipmentProfileId
     });
 
     let consume: StartBrewConsumeResult | undefined;
     if (parsed.data.consumeIngredients) {
       try {
         const view = await consumeBrewBatchInventory(user.id, batch.id);
-        consume = { ok: true, itemCount: view.consumed.length };
+        // Списание отработало без ошибки, но склад не тронуло: ни одна строка
+        // рецепта не сопоставилась со складской позицией. Пользователь просил
+        // списать — молчать об этом («Списано: 0 поз.» бодрым тоном) нельзя.
+        consume = view.consumed.length > 0
+          ? { ok: true, itemCount: view.consumed.length }
+          : { ok: false, code: "nothing_to_consume" };
       } catch (error) {
         const message = error instanceof Error ? error.message : "";
         consume = consumeErrorCodeByMessage[message] ?? { ok: false, code: "error" };
@@ -86,6 +170,12 @@ export const startBrewFromRecipeAction = async (input: {
   } catch (error) {
     if (error instanceof Error && (error.message === "NOT_FOUND" || error.message === "FORBIDDEN")) {
       return { ok: false, code: "NOT_FOUND", message: "Рецепт не найден или недоступен для варки." };
+    }
+    if (error instanceof Error && error.message === "RATE_LIMITED") {
+      return { ok: false, code: "ERROR", message: "Слишком часто. Подождите немного и попробуйте снова." };
+    }
+    if (error instanceof Error && error.message === "BREW_BATCH_QUOTA_REACHED") {
+      return { ok: false, code: "ERROR", message: "Достигнут предел числа партий (500)." };
     }
     return { ok: false, code: "ERROR", message: "Не удалось начать варку. Попробуйте ещё раз." };
   }

@@ -70,18 +70,35 @@ export const verifyCaptchaHook = async (captchaToken?: string | null, ip?: strin
 };
 
 /**
- * Клиентский IP из заголовков прокси. Первый hop x-forwarded-for проставляется
- * доверенным реверс-прокси перед Next.js; без прокси (dev) возвращает null.
+ * Клиентский IP для per-IP лимитов, устойчивый к подделке `X-Forwarded-For`.
+ *
+ * Клиент может прислать любой `X-Forwarded-For` — и бот шлёт случайный IP на
+ * каждый запрос, чтобы каждый запрос считался «новым IP» и обходил лимит. Поэтому
+ * первому элементу слева доверять нельзя. Доверенные прокси АППЕНДЯТ реальный
+ * remote_addr в КОНЕЦ списка, значит настоящий клиент — на позиции `len - hops`
+ * справа (hops = число доверенных прокси, `TRUSTED_PROXY_HOPS`). Всё, что клиент
+ * подделал, оказывается левее этой позиции и игнорируется.
+ *
+ * hops = 0 (dev, прокси нет): заголовку доверять нельзя вообще → null (лимит
+ * схлопывается в общий ключ, что для dev приемлемо). Заголовок короче числа
+ * хопов — аномалия (запрос мимо прокси / прокси не проставил XFF) → null,
+ * fail-safe: лучше не выдать поддельный ключ, чем принять его.
  */
 export const clientIpFrom = (request: Request): string | null => {
-  const forwarded = request.headers.get("x-forwarded-for");
-  if (forwarded) {
-    const first = forwarded.split(",")[0]?.trim();
-    if (first) {
-      return first;
-    }
+  const hops = getServerEnv().TRUSTED_PROXY_HOPS;
+  if (hops <= 0) {
+    return null;
   }
-  return request.headers.get("x-real-ip");
+  const forwarded = request.headers.get("x-forwarded-for");
+  if (!forwarded) {
+    return null;
+  }
+  const chain = forwarded.split(",").map((part) => part.trim()).filter(Boolean);
+  const index = chain.length - hops;
+  if (index < 0) {
+    return null;
+  }
+  return chain[index] ?? null;
 };
 
 /**
