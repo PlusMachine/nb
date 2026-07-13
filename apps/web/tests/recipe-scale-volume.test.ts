@@ -10,6 +10,8 @@ const buildRecipe = (overrides: Partial<RecipeDetailDto> = {}): RecipeDetailDto 
   versionNumber: 1,
   versionCount: 1,
   publicationState: "published",
+  hiddenAt: null,
+  hiddenReason: null,
   title: "Base IPA",
   slug: "base-ipa",
   styleId: null,

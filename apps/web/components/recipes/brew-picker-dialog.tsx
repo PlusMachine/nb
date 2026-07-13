@@ -20,7 +20,18 @@ import React, { useCallback, useEffect, useRef, useState } from "react";
 import { AlertTriangle, Cpu, Loader2, ShieldAlert, Timer } from "lucide-react";
 import { Button, Dialog, DialogCloseButton, DialogFooter, DialogHeader } from "@nb/ui";
 
-import { startBrewFromRecipeAction } from "@/app/(public)/recipes/[slug]/brew-actions";
+import {
+  getBrewVolumeOptionsAction,
+  startBrewFromRecipeAction,
+  type BrewVolumeOptions
+} from "@/app/(public)/recipes/[slug]/brew-actions";
+import {
+  BrewVolumeChoice,
+  hasBrewVolumeMismatch,
+  isBrewVolumeSelectionReady,
+  resolveBrewVolumeSelection,
+  type BrewVolumeChoiceKind
+} from "@/components/recipes/brew-volume-choice";
 import { startBrewOnDeviceFromRecipeAction } from "@/features/brew-controller/brew-recipe-flow";
 import { RemoteDisabledNotice } from "@/features/brew-controller/components/remote-disabled-notice";
 import { DevicePickerList, type PickerDevice } from "@/features/devices/components/device-picker-list";
@@ -60,6 +71,12 @@ export function BrewPickerDialog({ open, onOpenChange, recipeId, slug, recipeTit
   const [consumeIngredients, setConsumeIngredients] = useState(false);
   // Дата варки (опционально) — yyyy-MM-dd, пусто = не задана.
   const [plannedDate, setPlannedDate] = useState("");
+  // Объём варки: объёмы рецепта и оборудования подтягиваются при открытии; выбор
+  // обязателен, только если они разошлись (см. brew-volume-choice.tsx).
+  const [volumeOptions, setVolumeOptions] = useState<BrewVolumeOptions | null>(null);
+  const [volumeOptionsLoading, setVolumeOptionsLoading] = useState(true);
+  const [volumeChoice, setVolumeChoice] = useState<BrewVolumeChoiceKind | null>(null);
+  const [customVolume, setCustomVolume] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [remoteDisabled, setRemoteDisabled] = useState<{ message: string; brewBatchId: string } | null>(null);
@@ -97,6 +114,21 @@ export function BrewPickerDialog({ open, onOpenChange, recipeId, slug, recipeTit
     }
   }, []);
 
+  // Объёмы рецепта и оборудования — вместе с устройствами, при открытии. Аноним
+  // получает null (экшен молчит) и уходит на экран логина — там объём не нужен.
+  const loadVolumeOptions = useCallback(async () => {
+    setVolumeOptionsLoading(true);
+    try {
+      setVolumeOptions(await getBrewVolumeOptionsAction(recipeId));
+    } catch {
+      // Объём не подтянулся — не блокируем варку: без выбора партия создаётся в
+      // объёме рецепта, как и раньше.
+      setVolumeOptions(null);
+    } finally {
+      setVolumeOptionsLoading(false);
+    }
+  }, [recipeId]);
+
   // Сброс состояния мастера и ленивая проверка устройств при каждом открытии.
   // Новое открытие = новое «намерение сварить» → новый ключ идемпотентности
   // (осознанная повторная варка того же рецепта создаёт отдельную партию).
@@ -107,26 +139,63 @@ export function BrewPickerDialog({ open, onOpenChange, recipeId, slug, recipeTit
     setSelectedDeviceId(null);
     setConsumeIngredients(false);
     setPlannedDate("");
+    setVolumeOptions(null);
+    setVolumeOptionsLoading(true);
+    setVolumeChoice(null);
+    setCustomVolume("");
     setError(null);
     setRemoteDisabled(null);
     setAuthRequired(false);
     idempotencyKeyRef.current = newIdempotencyKey();
     inFlightRef.current = false;
     void loadDevices();
-  }, [open, loadDevices]);
+    void loadVolumeOptions();
+  }, [open, loadDevices, loadVolumeOptions]);
 
   // Экран выбора показываем ВСЕГДА, даже без привязанного прибора: тогда вторая
   // опция — не «на автоматике», а «Подключить BrewForge» (см. mode-экран). Так
   // автоматика видна из основного флоу «Сварить», а не только тем, у кого прибор
   // уже подключён (решение владельца по UX-находкам #9/#10).
+  // Ждём и устройства, и объёмы: иначе блок выбора объёма доезжает после отрисовки
+  // экрана и кнопка «Создать варку» мигает из активной в неактивную.
   useEffect(() => {
-    if (screen !== "gate" || devicesLoading) return;
+    if (screen !== "gate" || devicesLoading || volumeOptionsLoading) return;
     setScreen(authRequired ? "login" : "mode");
-  }, [screen, devicesLoading, authRequired]);
+  }, [screen, devicesLoading, volumeOptionsLoading, authRequired]);
 
   const hasDeviceChoice = Boolean(devicesError) || devices.length > 0;
   const selectedDevice = devices.find((device) => device.id === selectedDeviceId) ?? null;
   const loginHref = `/login?next=${encodeURIComponent(slug ? `/recipes/${slug}` : "/app/brew-batches")}`;
+
+  // Объём рецепта разошёлся с объёмом оборудования → выбор обязателен, кнопка
+  // старта варки ждёт его (в обеих ветках: и «самому», и «на автоматике» —
+  // варится одна и та же партия).
+  const recipeBatchVolumeL = volumeOptions?.recipeBatchVolumeL ?? null;
+  const volumeProfile = volumeOptions?.defaultProfile ?? null;
+  const volumeChoiceRequired = hasBrewVolumeMismatch(recipeBatchVolumeL, volumeProfile);
+  const volumeReady = isBrewVolumeSelectionReady({
+    required: volumeChoiceRequired,
+    choice: volumeChoice,
+    customValue: customVolume
+  });
+  const volumeSelection = resolveBrewVolumeSelection({
+    choice: volumeChoice,
+    profile: volumeProfile,
+    customValue: customVolume
+  });
+
+  const volumeChoiceBlock = volumeChoiceRequired && recipeBatchVolumeL != null && volumeProfile ? (
+    <BrewVolumeChoice
+      recipeBatchVolumeL={recipeBatchVolumeL}
+      recipeEfficiencyPct={volumeOptions?.recipeEfficiencyPct ?? null}
+      profile={volumeProfile}
+      choice={volumeChoice}
+      onChoiceChange={setVolumeChoice}
+      customValue={customVolume}
+      onCustomValueChange={setCustomVolume}
+      disabled={submitting}
+    />
+  ) : null;
 
   const handleConfirmVirtual = async () => {
     if (inFlightRef.current) return;
@@ -140,7 +209,8 @@ export function BrewPickerDialog({ open, onOpenChange, recipeId, slug, recipeTit
         idempotencyKey: ensureIdempotencyKey(),
         // Локальный полдень — осознанно: дата остаётся тем же календарным днём в
         // любом часовом поясе (полночь рядом с границей суток могла бы съехать).
-        plannedFor: plannedDate ? new Date(`${plannedDate}T12:00`).toISOString() : undefined
+        plannedFor: plannedDate ? new Date(`${plannedDate}T12:00`).toISOString() : undefined,
+        ...volumeSelection
       });
       if (result.ok) {
         // Фидбэк списания довозим query-параметрами — страница партии покажет
@@ -182,7 +252,8 @@ export function BrewPickerDialog({ open, onOpenChange, recipeId, slug, recipeTit
       const result = await startBrewOnDeviceFromRecipeAction({
         recipeId,
         deviceId: selectedDeviceId,
-        idempotencyKey: ensureIdempotencyKey()
+        idempotencyKey: ensureIdempotencyKey(),
+        ...volumeSelection
       });
       if (result.ok && result.heatingStarted && result.brewBatchId) {
         window.location.assign(`/app/brew-batches/${result.brewBatchId}`);
@@ -311,6 +382,7 @@ export function BrewPickerDialog({ open, onOpenChange, recipeId, slug, recipeTit
 
       {screen === "virtual" ? (
         <div className="space-y-3 p-5">
+          {volumeChoiceBlock}
           <label className="flex flex-col gap-1">
             <span className="text-xs text-muted-foreground">Дата варки</span>
             <input
@@ -343,7 +415,8 @@ export function BrewPickerDialog({ open, onOpenChange, recipeId, slug, recipeTit
       ) : null}
 
       {screen === "device-pick" ? (
-        <div className="p-5">
+        <div className="space-y-3 p-5">
+          {volumeChoiceBlock}
           <DevicePickerList
             devices={devices}
             loading={devicesLoading}
@@ -407,7 +480,11 @@ export function BrewPickerDialog({ open, onOpenChange, recipeId, slug, recipeTit
           <Button variant="outline" onClick={() => setScreen("mode")} disabled={submitting}>
             Назад
           </Button>
-          <Button variant="primary" onClick={() => void handleConfirmVirtual()} disabled={submitting}>
+          <Button
+            variant="primary"
+            onClick={() => void handleConfirmVirtual()}
+            disabled={submitting || !volumeReady}
+          >
             {submitting ? "Создаём…" : "Создать варку"}
           </Button>
         </DialogFooter>
@@ -418,7 +495,10 @@ export function BrewPickerDialog({ open, onOpenChange, recipeId, slug, recipeTit
           <Button variant="outline" onClick={() => setScreen("mode")} disabled={submitting}>
             Назад
           </Button>
-          <Button onClick={() => setScreen("device-confirm")} disabled={submitting || !selectedDeviceId}>
+          <Button
+            onClick={() => setScreen("device-confirm")}
+            disabled={submitting || !selectedDeviceId || !volumeReady}
+          >
             Далее
           </Button>
         </DialogFooter>

@@ -15,15 +15,27 @@ import { resolveInventoryMeasurementForDisplay } from "../inventory/display";
 import {
   getInventoryUnitDimension,
   parseInventoryUnit,
-  type InventoryUnit,
-  type InventoryUnitDimension
+  type InventoryUnit
 } from "../inventory/units";
 import { listInventoryForUser } from "../inventory/service";
+import {
+  getBrewBatchInventoryCredits,
+  getBrewBatchInventoryCreditsForBatches,
+  type InventoryCreditMap
+} from "../inventory/brew-batch-credits";
 import type { InventoryListItemDto } from "../inventory/contracts";
 import { listEquipmentProfiles } from "../equipment-profiles/service";
 import { getRecipeById } from "./service";
+import {
+  getBrewBatchScale,
+  getBrewBatchScales,
+  resolveBatchScaleFactor,
+  safeRecipeBatchVolumeL,
+  type BrewBatchScale
+} from "./batch-scale";
+import { resolveEfficiencyFactor, resolveLineScaleFactor } from "./scale";
 import { resolveBrewabilityBadge } from "./brewability-badge";
-import { toBatchVolumeLiters } from "./units";
+import { publiclyVisibleRecipeConditions } from "./visibility";
 import type {
   BrewableRecipeDto,
   RecipeIngredientDto,
@@ -78,8 +90,6 @@ const toMatchType = (value: string | null | undefined): IngredientType | null =>
   }
 };
 
-const FALLBACK_BATCH_VOLUME_L = 20;
-
 export type MatchLineInput = {
   id: string;
   persistentKey: string;
@@ -127,13 +137,31 @@ const profileFromInventoryItem = (item: InventoryListItemDto): IngredientMatchPr
 
 // --- инвентарь как индекс -------------------------------------------------
 
-const buildInventoryEntries = (items: InventoryListItemDto[]): InventoryMatchEntry[] => (
+// credits (опционально) — то, что УЖЕ списано со склада под конкретную партию:
+// в её контексте это не «потрачено», а «отложено под эту варку», иначе списание
+// само рождает нехватку и требование докупить (см. inventory/brew-batch-credits).
+// Кредит прибавляется ДО отсечки «>0»: позиция, списанная в ноль, обязана остаться
+// в индексе, иначе строка станет "missing" — хуже, чем нынешний "partial".
+const buildInventoryEntries = (
+  items: InventoryListItemDto[],
+  credits?: InventoryCreditMap
+): InventoryMatchEntry[] => (
   items
-    .filter((item) => item.normalizedQuantity > 0 && !item.archivedAt)
-    .map((item) => ({
+    .filter((item) => !item.archivedAt)
+    .map((item) => {
+      const credit = credits?.get(item.id);
+      // Единица позиции могла смениться после списания — тогда кредит не сводится
+      // и мы его не применяем (та же защита, что в restoreBrewBatchInventory).
+      const available = credit && credit.normalizedUnit === item.normalizedUnit
+        ? roundTo(item.normalizedQuantity + credit.quantityNormalized, 3)
+        : item.normalizedQuantity;
+      return { item, available };
+    })
+    .filter((entry) => entry.available > 0)
+    .map(({ item, available }) => ({
       itemId: item.id,
       key: resolveIngredientMatchKey(profileFromInventoryItem(item)),
-      available: item.normalizedQuantity,
+      available,
       normalizedUnit: parseInventoryUnit(item.normalizedUnit)
     }))
 );
@@ -383,28 +411,59 @@ export const summarizeMatch = (recipeId: string, lines: RecipeMatchLineDto[], co
 
 // --- объём партии ---------------------------------------------------------
 
-const safeRecipeBatchVolumeL = (normalizedQuantity: number, normalizedUnit: string): number => {
-  try {
-    const volume = toBatchVolumeLiters(normalizedQuantity, normalizedUnit);
-    return volume > 0 ? volume : FALLBACK_BATCH_VOLUME_L;
-  } catch {
-    return FALLBACK_BATCH_VOLUME_L;
-  }
-};
-
-const resolveDefaultBatchVolumeL = async (userId: string): Promise<number | null> => {
+/**
+ * Дефолтное оборудование пользователя: объём И эффективность. Эффективность нужна
+ * ровно затем же, зачем объём, — чтобы «сколько нужно» на витрине совпало с тем,
+ * что реально спишется при варке на этом оборудовании (засыпь дожимается под свою
+ * эффективность, см. features/recipes/scale.ts). Без неё карточка снова обещала бы
+ * «хватает», а варка требовала больше солода.
+ */
+const resolveDefaultEquipment = async (userId: string): Promise<{
+  targetBatchVolumeL: number | null;
+  brewhouseEfficiencyPct: number | null;
+}> => {
   const profiles = await listEquipmentProfiles(userId);
-  const target = profiles[0]?.targetBatchVolumeL;
-  return typeof target === "number" && target > 0 ? target : null;
+  const profile = profiles[0];
+  const volume = profile?.targetBatchVolumeL;
+  const efficiency = profile?.brewhouseEfficiencyPct;
+  return {
+    targetBatchVolumeL: typeof volume === "number" && volume > 0 ? volume : null,
+    brewhouseEfficiencyPct: typeof efficiency === "number" && efficiency > 0 ? efficiency : null
+  };
 };
 
-// Масштаб партии под склад: объём рецепта, целевой объём (явный → equipment-
-// дефолт → объём рецепта) и фактор пересчёта количеств. Общий для одиночного и
-// батчевых матчей, чтобы математика не расходилась.
+const NO_DEFAULT_EQUIPMENT = { targetBatchVolumeL: null, brewhouseEfficiencyPct: null };
+
+// Масштаб рецепта под целевой объём: объём рецепта, целевой объём (явный →
+// дефолтный профиль оборудования → объём рецепта) и фактор пересчёта количеств.
+// Общий для одиночного и батчевых матчей, чтобы математика не расходилась.
+//
+// ВАЖНО (см. features/recipes/batch-scale.ts): для МАТЧА ПАРТИИ дефолтом
+// приезжает не профиль оборудования, а объём самой партии — списание считает
+// потребность от него же, и разъехаться они больше не могут.
+type MatchScale = {
+  recipeBatchVolumeL: number;
+  targetBatchVolumeL: number;
+  factor: number;
+  /** Дожим засыпи под эффективность оборудования (1 = нет). */
+  efficiencyFactor: number;
+};
+
 const resolveMatchFactor = (
-  recipe: { batchSizeNormalizedQuantity: number; batchSizeNormalizedUnit: string },
-  options: { targetBatchVolumeL?: number | null; defaultBatchVolumeL: number | null }
-): { recipeBatchVolumeL: number; targetBatchVolumeL: number; factor: number } => {
+  recipe: {
+    batchSizeNormalizedQuantity: number;
+    batchSizeNormalizedUnit: string;
+    efficiency?: number | null;
+  },
+  options: {
+    targetBatchVolumeL?: number | null;
+    defaultBatchVolumeL: number | null;
+    /** Дожим ПАРТИИ — из её плана (зафиксирован на старте, живой рецепт не спросишь). */
+    efficiencyFactor?: number | null;
+    /** Эффективность дефолтного профиля — вне партии (витрина, дашборд). */
+    defaultEfficiencyPct?: number | null;
+  }
+): MatchScale => {
   const recipeBatchVolumeL = safeRecipeBatchVolumeL(
     recipe.batchSizeNormalizedQuantity,
     recipe.batchSizeNormalizedUnit
@@ -412,8 +471,15 @@ const resolveMatchFactor = (
   const targetBatchVolumeL = options.targetBatchVolumeL && options.targetBatchVolumeL > 0
     ? options.targetBatchVolumeL
     : options.defaultBatchVolumeL ?? recipeBatchVolumeL;
-  const factor = recipeBatchVolumeL > 0 ? targetBatchVolumeL / recipeBatchVolumeL : 1;
-  return { recipeBatchVolumeL, targetBatchVolumeL, factor };
+  const efficiencyFactor = options.efficiencyFactor != null && options.efficiencyFactor > 0
+    ? options.efficiencyFactor
+    : resolveEfficiencyFactor(recipe.efficiency, options.defaultEfficiencyPct);
+  return {
+    recipeBatchVolumeL,
+    targetBatchVolumeL,
+    factor: resolveBatchScaleFactor(recipeBatchVolumeL, targetBatchVolumeL),
+    efficiencyFactor
+  };
 };
 
 // --- публичный API: рецепт → % по складу ----------------------------------
@@ -422,33 +488,61 @@ export const computeRecipeMatch = async (input: {
   userId: string;
   recipeId: string;
   targetBatchVolumeL?: number | null;
+  // Матч В КОНТЕКСТЕ ПАРТИИ: то, что эта партия уже списала со склада, считается
+  // покрытием её же строк (иначе списание порождает нехватку у самой варки), а
+  // потребность считается от ОБЪЁМА ЭТОЙ ПАРТИИ — от него же её считает списание.
+  // Без brewBatchId матч смотрит на фактический склад и на дефолтный профиль
+  // оборудования — так и должно быть на витрине, дашборде и странице стиля.
+  brewBatchId?: string | null;
 }): Promise<RecipeMatchDto> => {
-  const [recipe, inventoryItems, defaultBatchVolumeL] = await Promise.all([
+  const [recipe, inventoryItems, batchScale, defaultEquipment, credits] = await Promise.all([
     getRecipeById(input.userId, input.recipeId),
-    listInventoryForUser(input.userId),
-    input.targetBatchVolumeL ? Promise.resolve(null) : resolveDefaultBatchVolumeL(input.userId)
+    // includeEmpty — обязателен для кредита партии: позицию, списанную В НОЛЬ под эту
+    // же варку, склад по умолчанию не отдаёт, и прибавлять кредит становится не к чему
+    // (позиция уходит в missing — то самое «списал и сразу не хватает»). Пустые
+    // позиции без кредита отсекает buildInventoryEntries по available > 0.
+    listInventoryForUser(input.userId, { includeEmpty: true }),
+    // У ПАРТИИ свой масштаб — объём и дожим засыпи из её плана: списание считает
+    // потребность ровно от них, и разъехаться они больше не могут.
+    input.brewBatchId
+      ? getBrewBatchScale(input.userId, input.brewBatchId)
+      : Promise.resolve(null),
+    // Профиль оборудования — дефолт только ВНЕ партии: у партии есть свой объём,
+    // и подмена его «моим оборудованием» разводила матч со списанием.
+    input.targetBatchVolumeL || input.brewBatchId
+      ? Promise.resolve(NO_DEFAULT_EQUIPMENT)
+      : resolveDefaultEquipment(input.userId),
+    input.brewBatchId
+      ? getBrewBatchInventoryCredits(input.userId, input.brewBatchId)
+      : Promise.resolve(undefined)
   ]);
 
-  const { recipeBatchVolumeL, targetBatchVolumeL, factor } = resolveMatchFactor(recipe, {
-    targetBatchVolumeL: input.targetBatchVolumeL,
-    defaultBatchVolumeL
+  const { recipeBatchVolumeL, targetBatchVolumeL, factor, efficiencyFactor } = resolveMatchFactor(recipe, {
+    targetBatchVolumeL: input.targetBatchVolumeL ?? batchScale?.targetBatchVolumeL ?? null,
+    defaultBatchVolumeL: defaultEquipment.targetBatchVolumeL,
+    efficiencyFactor: batchScale?.efficiencyFactor ?? null,
+    defaultEfficiencyPct: defaultEquipment.brewhouseEfficiencyPct
   });
 
-  const index = indexInventoryEntries(buildInventoryEntries(inventoryItems));
+  const index = indexInventoryEntries(buildInventoryEntries(inventoryItems, credits));
 
-  const lines = recipe.ingredients.map((ingredient): RecipeMatchLineDto => matchLineAgainstInventory(
-    {
-      id: ingredient.id,
-      persistentKey: ingredient.persistentKey,
-      displayOrder: ingredient.displayOrder,
-      displayName: ingredient.ingredientDisplayName ?? ingredient.ingredientDisplayNameSnapshot ?? null,
-      profile: profileFromRecipeIngredientDto(ingredient),
-      requiredNormalizedQuantity: ingredient.amountNormalizedQuantity,
-      normalizedUnit: parseInventoryUnit(ingredient.amountNormalizedUnit)
-    },
-    index,
-    factor
-  ));
+  const lines = recipe.ingredients.map((ingredient): RecipeMatchLineDto => {
+    const profile = profileFromRecipeIngredientDto(ingredient);
+    return matchLineAgainstInventory(
+      {
+        id: ingredient.id,
+        persistentKey: ingredient.persistentKey,
+        displayOrder: ingredient.displayOrder,
+        displayName: ingredient.ingredientDisplayName ?? ingredient.ingredientDisplayNameSnapshot ?? null,
+        profile,
+        requiredNormalizedQuantity: ingredient.amountNormalizedQuantity,
+        normalizedUnit: parseInventoryUnit(ingredient.amountNormalizedUnit)
+      },
+      index,
+      // Дожим — только засыпи: хмель и дрожжи от эффективности затирания не зависят.
+      resolveLineScaleFactor(profile, factor, efficiencyFactor)
+    );
+  });
 
   return summarizeMatch(recipe.id, lines, { targetBatchVolumeL, recipeBatchVolumeL });
 };
@@ -505,21 +599,24 @@ const computeMatchForRecipeRow = (
   recipe: CandidateRecipeRow,
   index: ReturnType<typeof indexInventoryEntries>,
   catalogById: Map<string, typeof ingredients.$inferSelect>,
-  volume: { recipeBatchVolumeL: number; targetBatchVolumeL: number; factor: number }
+  volume: MatchScale
 ): RecipeMatchDto => {
-  const lines = recipe.ingredients.map((row) => matchLineAgainstInventory(
-    {
-      id: row.id,
-      persistentKey: row.persistentKey,
-      displayOrder: row.displayOrder,
-      displayName: row.ingredientDisplayNameSnapshot ?? null,
-      profile: profileFromRecipeIngredientRow(row, catalogById.get(row.ingredientCatalogItemId ?? "")),
-      requiredNormalizedQuantity: row.amountNormalizedQuantity,
-      normalizedUnit: parseInventoryUnit(row.amountNormalizedUnit)
-    },
-    index,
-    volume.factor
-  ));
+  const lines = recipe.ingredients.map((row) => {
+    const profile = profileFromRecipeIngredientRow(row, catalogById.get(row.ingredientCatalogItemId ?? ""));
+    return matchLineAgainstInventory(
+      {
+        id: row.id,
+        persistentKey: row.persistentKey,
+        displayOrder: row.displayOrder,
+        displayName: row.ingredientDisplayNameSnapshot ?? null,
+        profile,
+        requiredNormalizedQuantity: row.amountNormalizedQuantity,
+        normalizedUnit: parseInventoryUnit(row.amountNormalizedUnit)
+      },
+      index,
+      resolveLineScaleFactor(profile, volume.factor, volume.efficiencyFactor)
+    );
+  });
 
   return summarizeMatch(recipe.id, lines, {
     targetBatchVolumeL: volume.targetBatchVolumeL,
@@ -592,9 +689,11 @@ export const findBrewableRecipesForUser = async (input: {
   const limit = input.limit ?? 12;
   const candidatePoolSize = input.candidatePoolSize ?? 80;
 
-  const [inventoryItems, defaultBatchVolumeL] = await Promise.all([
+  const [inventoryItems, defaultEquipment] = await Promise.all([
     listInventoryForUser(input.userId),
-    input.targetBatchVolumeL ? Promise.resolve(null) : resolveDefaultBatchVolumeL(input.userId)
+    input.targetBatchVolumeL
+      ? Promise.resolve(NO_DEFAULT_EQUIPMENT)
+      : resolveDefaultEquipment(input.userId)
   ]);
 
   const index = indexInventoryEntries(buildInventoryEntries(inventoryItems));
@@ -603,7 +702,7 @@ export const findBrewableRecipesForUser = async (input: {
   }
 
   const candidates = await db.query.recipes.findMany({
-    where: eq(recipes.publicationState, "published"),
+    where: and(...publiclyVisibleRecipeConditions()),
     with: { ingredients: true },
     orderBy: (table, { desc }) => [desc(table.saveCount), desc(table.updatedAt)],
     limit: candidatePoolSize
@@ -616,7 +715,8 @@ export const findBrewableRecipesForUser = async (input: {
     .map((recipe) => {
       const volume = resolveMatchFactor(recipe, {
         targetBatchVolumeL: input.targetBatchVolumeL,
-        defaultBatchVolumeL
+        defaultBatchVolumeL: defaultEquipment.targetBatchVolumeL,
+        defaultEfficiencyPct: defaultEquipment.brewhouseEfficiencyPct
       });
       return { recipe, summary: computeMatchForRecipeRow(recipe, index, catalogById, volume) };
     })
@@ -627,13 +727,17 @@ export const findBrewableRecipesForUser = async (input: {
   return toBrewableRecipeDtos(ranked);
 };
 
-// --- публичный API: свои рецепты, которые можно сварить прямо сейчас (дашборд) ---
+// --- публичный API: свои рецепты под склад (секция «Рецепты под ваш склад») ---
 
-// «Можно сварить сейчас» для дашборда: СВОИ рецепты (любой статус публикации),
+// Секция «Рецепты под ваш склад» (дашборд): СВОИ рецепты (любой статус публикации),
 // схлопнутые до последней версии в семействе, у которых на складе есть ВСЕ типы
 // ингредиентов (tier "ready" из resolveBrewabilityBadge — та же семантика, что у
 // бейджа на карточках). Пустой склад → пусто. Сортировка по количественному
 // matchPercent (затем по числу покрытых строк), сверху самые «полные».
+//
+// Внутрь попадают и рецепты с бейджем «Почти хватает» (типы есть, количества
+// местами впритык) — поэтому секция называется «под ваш склад», а не «можно
+// сварить сейчас»: обещать варку прямо сейчас она не вправе.
 export const findBrewableOwnRecipesForUser = async (input: {
   userId: string;
   limit?: number;
@@ -641,9 +745,11 @@ export const findBrewableOwnRecipesForUser = async (input: {
 }): Promise<BrewableRecipeDto[]> => {
   const limit = input.limit ?? 6;
 
-  const [inventoryItems, defaultBatchVolumeL] = await Promise.all([
+  const [inventoryItems, defaultEquipment] = await Promise.all([
     listInventoryForUser(input.userId),
-    input.targetBatchVolumeL ? Promise.resolve(null) : resolveDefaultBatchVolumeL(input.userId)
+    input.targetBatchVolumeL
+      ? Promise.resolve(NO_DEFAULT_EQUIPMENT)
+      : resolveDefaultEquipment(input.userId)
   ]);
 
   const index = indexInventoryEntries(buildInventoryEntries(inventoryItems));
@@ -676,7 +782,8 @@ export const findBrewableOwnRecipesForUser = async (input: {
     .map((recipe) => {
       const volume = resolveMatchFactor(recipe, {
         targetBatchVolumeL: input.targetBatchVolumeL,
-        defaultBatchVolumeL
+        defaultBatchVolumeL: defaultEquipment.targetBatchVolumeL,
+        defaultEfficiencyPct: defaultEquipment.brewhouseEfficiencyPct
       });
       return { recipe, summary: computeMatchForRecipeRow(recipe, index, catalogById, volume) };
     })
@@ -704,9 +811,11 @@ export const computeRecipeMatchesForUser = async (input: {
     return {};
   }
 
-  const [inventoryItems, defaultBatchVolumeL] = await Promise.all([
+  const [inventoryItems, defaultEquipment] = await Promise.all([
     listInventoryForUser(input.userId),
-    input.targetBatchVolumeL ? Promise.resolve(null) : resolveDefaultBatchVolumeL(input.userId)
+    input.targetBatchVolumeL
+      ? Promise.resolve(NO_DEFAULT_EQUIPMENT)
+      : resolveDefaultEquipment(input.userId)
   ]);
 
   const index = indexInventoryEntries(buildInventoryEntries(inventoryItems));
@@ -733,12 +842,93 @@ export const computeRecipeMatchesForUser = async (input: {
     try {
       const volume = resolveMatchFactor(recipe, {
         targetBatchVolumeL: input.targetBatchVolumeL,
-        defaultBatchVolumeL
+        defaultBatchVolumeL: defaultEquipment.targetBatchVolumeL,
+        defaultEfficiencyPct: defaultEquipment.brewhouseEfficiencyPct
       });
       result[recipe.id] = computeMatchForRecipeRow(recipe, index, catalogById, volume);
     } catch (error) {
       console.error("[recipes] computeRecipeMatchesForUser: skipping recipe after match error", {
         recipeId: recipe.id,
+        error
+      });
+    }
+  }
+
+  return result;
+};
+
+// --- публичный API: батч матча ПО ПАРТИЯМ (для раздела «Чего не хватает») ---
+
+// Ключ результата — brewBatchId, а не recipeId: у каждой партии свой кредит уже
+// списанного и свой объём, и две партии на одном рецепте обязаны считаться порознь
+// (иначе списание первой занизило бы нехватку второй). Отсюда же — отдельная
+// функция, а не флаг у computeRecipeMatchesForUser, где Record ключуется рецептом.
+//
+// Объём — у КАЖДОЙ партии свой (её план), профиль оборудования здесь не при чём:
+// список покупок должен требовать ровно то, что снимет со склада кнопка «Списать»
+// на странице этой партии.
+//
+// Пустой склад НЕ повод для короткого выхода (как includeEmptyInventory): списку
+// покупок нужны все missing-строки, иначе новичок без склада не увидит ничего.
+export const computeRecipeMatchesForBrewBatches = async (input: {
+  userId: string;
+  batches: { brewBatchId: string; recipeId: string }[];
+  targetBatchVolumeL?: number | null;
+}): Promise<Record<string, RecipeMatchDto>> => {
+  const batches = input.batches.filter((batch) => batch.brewBatchId && batch.recipeId);
+  if (batches.length === 0) {
+    return {};
+  }
+
+  const recipeIds = [...new Set(batches.map((batch) => batch.recipeId))];
+
+  const [inventoryItems, batchScales, creditsByBatch] = await Promise.all([
+    // includeEmpty — см. computeRecipeMatch: без пустых позиций кредит списанной в ноль
+    // позиции теряется и «Чего не хватает» требует докупить то, что уже в заторе.
+    listInventoryForUser(input.userId, { includeEmpty: true }),
+    input.targetBatchVolumeL
+      ? Promise.resolve(new Map<string, BrewBatchScale>())
+      : getBrewBatchScales(input.userId, batches.map((batch) => batch.brewBatchId)),
+    getBrewBatchInventoryCreditsForBatches(input.userId, batches.map((batch) => batch.brewBatchId))
+  ]);
+
+  const candidates = await db.query.recipes.findMany({
+    where: inArray(recipes.id, recipeIds),
+    with: { ingredients: true }
+  }) as CandidateRecipeRow[];
+
+  const catalogById = await loadCatalogForRecipes(candidates);
+  const recipeById = new Map(candidates.map((recipe) => [recipe.id, recipe]));
+
+  // Индекс без кредитов считаем один раз — он обслуживает все партии, которые
+  // ещё ничего не списали. Партия с кредитом получает СВОЙ индекс: общий трогать
+  // нельзя, иначе её кредит утечёт в матч соседней партии.
+  const baseIndex = indexInventoryEntries(buildInventoryEntries(inventoryItems));
+
+  const result: Record<string, RecipeMatchDto> = {};
+  for (const batch of batches) {
+    const recipe = recipeById.get(batch.recipeId);
+    if (!recipe || recipe.ingredients.length === 0) {
+      continue;
+    }
+    // Как в computeRecipeMatchesForUser: одна кривая строка рецепта не должна
+    // ронять весь раздел «Чего не хватает».
+    try {
+      const credits = creditsByBatch.get(batch.brewBatchId);
+      const index = credits && credits.size > 0
+        ? indexInventoryEntries(buildInventoryEntries(inventoryItems, credits))
+        : baseIndex;
+      const batchScale = batchScales.get(batch.brewBatchId) ?? null;
+      const volume = resolveMatchFactor(recipe, {
+        targetBatchVolumeL: input.targetBatchVolumeL ?? batchScale?.targetBatchVolumeL ?? null,
+        defaultBatchVolumeL: null,
+        efficiencyFactor: batchScale?.efficiencyFactor ?? null
+      });
+      result[batch.brewBatchId] = computeMatchForRecipeRow(recipe, index, catalogById, volume);
+    } catch (error) {
+      console.error("[recipes] computeRecipeMatchesForBrewBatches: skipping batch after match error", {
+        brewBatchId: batch.brewBatchId,
+        recipeId: batch.recipeId,
         error
       });
     }

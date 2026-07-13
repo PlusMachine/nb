@@ -1,5 +1,8 @@
 import { roundTo } from "@nb/brewing-core";
 
+import { DEFAULT_BREWHOUSE_EFFICIENCY_PCT } from "../equipment-profiles/contracts";
+import type { IngredientTechnicalData } from "../ingredients/contracts";
+import { fermentableAppliesMashEfficiency } from "../ingredients/technical-fields";
 import { getInventoryUnitQuantityPrecision } from "../inventory/units";
 import type { RecipeDetailDto } from "./contracts";
 import { toBatchVolumeLiters } from "./units";
@@ -110,5 +113,122 @@ export const scaleRecipeToVolume = (recipe: RecipeDetailDto, targetLitres: numbe
       measurementDimension: ingredient.ingredientMeasurementDimension ?? ingredient.ingredientMeasurementDimensionSnapshot ?? null,
       stage: ingredient.stage
     }))
+  };
+};
+
+// =============================================================================
+//  Пересчёт под ЧУЖУЮ ЭФФЕКТИВНОСТЬ (варка чужого рецепта на своём оборудовании)
+//
+//  Эффективность затирания — свойство ПИВОВАРНИ, а не рецепта. Рецепт на 75%
+//  сваренный на 65%-оборудовании недоберёт сахаров: тот же солод даст меньший OG.
+//  Решение владельца: дожимать ЗАСЫПЬ, чтобы попасть в авторский OG («то же
+//  пиво»), а не занижать цель.
+//
+//  Дожим = recipeEff / targetEff (75/65 = 1.154) и применяется ТОЛЬКО к строкам,
+//  на которые вообще действует эффективность затирания: солод и зерновые добавки.
+//  Сахар/экстракт (100% выход), хмель, дрожжи масштабируются лишь по объёму —
+//  иначе мы бы «дожали» то, что и так усваивается полностью.
+//
+//  Математика: og_points = Σ(вес × ppg × eff) / объём. Умножив вес засыпи на
+//  eff_recipe/eff_target и вес всего остального на объёмный множитель, получаем
+//  ТОЧНО тот же OG (и, следовательно, те же FG/ABV/IBU) — авторские цели остаются
+//  верными, пересчитывать их не нужно. Цвет чуть темнее: солода на литр больше.
+//
+//  Единый источник истины для трёх потребителей: слепка партии (brew-setup),
+//  списания склада (inventory-service) и матча «сколько нужно» (match-service).
+//  Разъедутся — вернётся дефект «карточка обещает, склад не сходится».
+// =============================================================================
+
+/** Множитель дожима засыпи. Любая сторона неизвестна/непозитивна → 1 (не дожимаем). */
+export const resolveEfficiencyFactor = (
+  recipeEfficiencyPct: number | null | undefined,
+  targetEfficiencyPct: number | null | undefined
+): number => {
+  const from = recipeEfficiencyPct ?? DEFAULT_BREWHOUSE_EFFICIENCY_PCT;
+  const to = targetEfficiencyPct;
+  if (!Number.isFinite(from) || from <= 0 || to == null || !Number.isFinite(to) || to <= 0) {
+    return 1;
+  }
+  return from / to;
+};
+
+/**
+ * Действует ли на строку эффективность затирания. Тот же предикат, что и в движке
+ * статистики (computeRecipeStatsSnapshot), иначе дожатая засыпь и расчёт OG
+ * разошлись бы: солод и зерновые добавки — да, сахар/экстракт — нет.
+ * Без техданных (кастомный ингредиент) — по типу строки.
+ */
+export const lineAppliesBrewhouseEfficiency = (line: {
+  type?: string | null;
+  technicalData?: IngredientTechnicalData | null;
+}): boolean => fermentableAppliesMashEfficiency(line.technicalData ?? null, line.type === "malt");
+
+/** Итоговый множитель строки: объём для всех, объём × дожим — для засыпи. */
+export const resolveLineScaleFactor = (
+  line: { type?: string | null; technicalData?: IngredientTechnicalData | null },
+  volumeFactor: number,
+  efficiencyFactor: number
+): number => (
+  efficiencyFactor !== 1 && lineAppliesBrewhouseEfficiency(line)
+    ? volumeFactor * efficiencyFactor
+    : volumeFactor
+);
+
+/**
+ * Пересчёт рецепта под варку: полноценный RecipeDetailDto с батчем и КАЖДЫМ
+ * количеством в обеих величинах (entered — для слепков и показа, normalized — для
+ * движка статистики, водного плана и суммарной засыпи). ScaledRecipeView для этого
+ * не годится: в нём нет батча в нормализованных единицах, а половина потребителей
+ * рецепта считает именно по normalized.
+ *
+ * Нужен старту варки: партия варится в СВОЁМ объёме и на СВОЁМ оборудовании, и
+ * план варочного дня, шаги гида и слепок состава обязаны считаться от них — иначе
+ * гид скажет «засыпьте 6 кг», а со склада уйдёт 4 кг.
+ *
+ * Оба множителя = 1 (или не-объёмная единица батча) → рецепт возвращается как есть.
+ */
+export const scaleRecipeDetailForBrew = (
+  recipe: RecipeDetailDto,
+  options: { targetLitres?: number | null; targetEfficiencyPct?: number | null }
+): RecipeDetailDto => {
+  const scaled = scaleRecipeToVolume(recipe, options.targetLitres ?? Number.NaN);
+  const volumeFactor = scaled.scaled ? scaled.factor : 1;
+  const efficiencyFactor = resolveEfficiencyFactor(recipe.efficiency, options.targetEfficiencyPct);
+
+  if (volumeFactor === 1 && efficiencyFactor === 1) {
+    return recipe;
+  }
+
+  const targetEfficiency = efficiencyFactor !== 1 && options.targetEfficiencyPct != null
+    ? options.targetEfficiencyPct
+    : recipe.efficiency;
+
+  return {
+    ...recipe,
+    // Эффективность варки — оборудования, на котором варим: с ней движок статистики
+    // и водный план должны получить тот же OG, что у автора (засыпь уже дожата).
+    efficiency: targetEfficiency,
+    batchSizeEnteredQuantity: scaled.scaled
+      ? scaled.batchSizeEnteredQuantity
+      : recipe.batchSizeEnteredQuantity,
+    batchSizeNormalizedQuantity: roundTo(recipe.batchSizeNormalizedQuantity * volumeFactor, SCALE_PRECISION),
+    ingredients: recipe.ingredients.map((ingredient) => {
+      const lineFactor = resolveLineScaleFactor(
+        { type: ingredient.type, technicalData: ingredient.ingredientTechnicalData ?? null },
+        volumeFactor,
+        efficiencyFactor
+      );
+      if (lineFactor === 1) {
+        return ingredient;
+      }
+      return {
+        ...ingredient,
+        amountEnteredQuantity: roundTo(
+          ingredient.amountEnteredQuantity * lineFactor,
+          enteredScalePrecision(ingredient.amountEnteredUnit)
+        ),
+        amountNormalizedQuantity: roundTo(ingredient.amountNormalizedQuantity * lineFactor, SCALE_PRECISION)
+      };
+    })
   };
 };
