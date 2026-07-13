@@ -14,10 +14,10 @@ describe("catalog seed data", () => {
     );
 
     expect(counts).toEqual({
-      "hop_catalog_minimal_v2.json": 220,
-      "malt_catalog_minimal_v2.json": 449,
-      "fermentables_catalog_minimal_v2.normalized.json": 173,
-      "yeasts_catalog_minimal_v2.json": 191,
+      "hop_catalog_minimal_v2.json": 248,
+      "malt_catalog_minimal_v2.json": 458,
+      "fermentables_catalog_minimal_v2.normalized.json": 174,
+      "yeasts_catalog_minimal_v2.json": 349,
       "additives_v2_1.json": 118,
       "consumables_v1.json": 28,
       "water_treatment_catalog_minimal_v2.json": 28
@@ -27,11 +27,11 @@ describe("catalog seed data", () => {
   it("prepares canonical ingredients from the new catalog only", () => {
     const prepared = catalogSeedManifest.flatMap((spec) => prepareCatalogSeedFile(spec));
 
-    expect(prepared).toHaveLength(1207);
-    expect(prepared.filter((item) => item.ingredient.type === "hop")).toHaveLength(220);
-    expect(prepared.filter((item) => item.ingredient.type === "malt")).toHaveLength(449);
-    expect(prepared.filter((item) => item.ingredient.type === "fermentable")).toHaveLength(173);
-    expect(prepared.filter((item) => item.ingredient.type === "yeast")).toHaveLength(191);
+    expect(prepared).toHaveLength(1403);
+    expect(prepared.filter((item) => item.ingredient.type === "hop")).toHaveLength(248);
+    expect(prepared.filter((item) => item.ingredient.type === "malt")).toHaveLength(458);
+    expect(prepared.filter((item) => item.ingredient.type === "fermentable")).toHaveLength(174);
+    expect(prepared.filter((item) => item.ingredient.type === "yeast")).toHaveLength(349);
     expect(prepared.filter((item) => item.ingredient.type === "consumable")).toHaveLength(146);
     expect(prepared.filter((item) => item.ingredient.type === "water_treatment")).toHaveLength(28);
   });
