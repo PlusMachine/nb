@@ -1,10 +1,12 @@
 import React from "react";
 import Link from "next/link";
+import { Copy } from "lucide-react";
 import { getBeerStyleById, getBjcpArticleHrefByStyleId, getBjcpStyleDisplayName } from "@nb/brewing-core";
 
 import { recipePublicationStateLabels, type RecipeDetailDto } from "@/features/recipes/contracts";
 import { beerColorFromSrm } from "@/features/recipes/beer-color";
 import { formatUpdatedLabel } from "@/features/recipes/format";
+import { pluralize } from "@/lib/pluralize";
 import { BeerGlassIcon } from "./beer-glass-icon";
 import { BrewRecipeButton } from "./brew-recipe-button";
 import { CloneFromPublicButton } from "./clone-from-public-button";
@@ -16,6 +18,7 @@ export function PublicRecipeHeader({ recipe }: { recipe: RecipeDetailDto }) {
   const styleHref = getBjcpArticleHrefByStyleId(recipe.styleId);
   const color = recipe.color != null && Number.isFinite(recipe.color) ? beerColorFromSrm(recipe.color) : null;
   const srmText = recipe.color != null ? recipe.color.toFixed(1).replace(/\.0$/, "") : null;
+  const cloneCount = recipe.cloneCount ?? 0;
 
   return (
     <section className="rounded-2xl border border-border bg-card p-5 shadow-sm">
@@ -37,6 +40,12 @@ export function PublicRecipeHeader({ recipe }: { recipe: RecipeDetailDto }) {
             )
           ) : null}
           <span className="text-xs text-muted-foreground">{formatUpdatedLabel(recipe.updatedAt)}</span>
+          {cloneCount > 0 ? (
+            <span className="inline-flex items-center gap-1 text-xs text-muted-foreground">
+              <Copy className="h-3 w-3" aria-hidden />
+              Скопировали {cloneCount} {pluralize(cloneCount, ["раз", "раза", "раз"])}
+            </span>
+          ) : null}
         </div>
 
         <div className="flex flex-wrap items-start justify-between gap-3">

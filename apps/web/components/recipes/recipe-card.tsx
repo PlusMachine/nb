@@ -6,7 +6,7 @@ import { formatAbvShort, formatBatchVolume, formatIbuShort } from "@/features/re
 import { formatGravity, type PreferredGravityUnit } from "@/features/system/gravity-units";
 
 import { CloneFromPublicButton } from "./clone-from-public-button";
-import { AuthorAvatar, ColorStatCell, FeaturedBadge, RecipeRatingOrNew, RecipeThumb, StatCell, StyleChip } from "./recipe-card-parts";
+import { AuthorAvatar, ColorStatCell, FeaturedBadge, RecipeCloneCount, RecipeRatingOrNew, RecipeThumb, StatCell, StyleChip } from "./recipe-card-parts";
 import { RecipeMatchBadge } from "./recipe-match-badge";
 import { RecipeSaveButton } from "./recipe-save-button";
 
@@ -21,11 +21,11 @@ import { RecipeSaveButton } from "./recipe-save-button";
  * на узких карточках (сайдбар фильтров съедает ширину сетки) им втроём может не
  * хватить строки, и перенос на вторую строку безопаснее, чем обрезка чипа до
  * одной буквы или бейдж, вылезающий за край. `pr-8` в этой строке резервирует
- * место под «Сохранить»/«Клонировать» — те абсолютно спозиционированы в правом
+ * место под «Сохранить»/«Скопировать» — те абсолютно спозиционированы в правом
  * верхнем углу карточки независимо от паддинга контента.
  *
  * Stretched-link: вся карточка — кликабельная ссылка на `/recipes/[slug]`, но
- * вложенные интерактивные элементы (чип стиля → BJCP, «Сохранить», «Клонировать»)
+ * вложенные интерактивные элементы (чип стиля → BJCP, «Сохранить», «Скопировать»)
  * лежат выше по z-слою и перехватывают свои клики. Контент обёрнут в
  * `pointer-events-none`, чтобы клики по тексту/обложке проходили к растянутой
  * ссылке; интерактивные дети возвращают себе `pointer-events-auto`.
@@ -92,14 +92,17 @@ export function RecipeCard({
             <AuthorAvatar image={recipe.author.image} displayName={recipe.author.displayName} />
             <span className="truncate text-xs text-muted-foreground">{authorName}</span>
           </span>
-          <span className="shrink-0 text-xs text-muted-foreground">{formatBatchVolume(recipe.batchSizeL)}</span>
+          <span className="flex shrink-0 items-center gap-2 text-xs text-muted-foreground">
+            <RecipeCloneCount count={recipe.cloneCount} />
+            <span>{formatBatchVolume(recipe.batchSizeL)}</span>
+          </span>
         </div>
       </div>
 
       {/* Флажок «Сохранить» — сиблинг ссылки (нельзя вкладывать кнопку в <a>),
           абсолютно в правом верхнем углу (z-10 в самом компоненте). */}
       <RecipeSaveButton recipeId={recipe.id} slug={recipe.slug} />
-      {/* Мост «Клонировать» — только там, где это уместно (напр. /app/saved). */}
+      {/* Мост «Скопировать себе» — только там, где это уместно (напр. /app/saved). */}
       {showCloneAction ? <CloneFromPublicButton recipeId={recipe.id} slug={recipe.slug} variant="icon" /> : null}
     </article>
   );

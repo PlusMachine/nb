@@ -101,7 +101,7 @@ function RecipeScaleDialog({
     [view.ingredients]
   );
 
-  // Клонировать сразу в пересчитанном объёме — не только посмотреть, но и забрать
+  // Скопировать сразу в пересчитанном объёме — не только посмотреть, но и забрать
   // себе без ручной правки после (сервис принимает targetBatchVolumeLitres — см.
   // features/recipes/service.ts, cloneRecipeFromPublic).
   const handleCloneAtVolume = () => {
@@ -145,7 +145,7 @@ function RecipeScaleDialog({
             <div>
               <h3 className="text-base font-semibold text-foreground">Пересчитать под объём</h3>
               <p className="mt-1 text-sm leading-6 text-muted-foreground">
-                Не меняет оригинал; чтобы сохранить — клонируйте рецепт.
+                Не меняет оригинал; чтобы сохранить — скопируйте рецепт себе.
               </p>
             </div>
           </div>
@@ -217,7 +217,7 @@ function RecipeScaleDialog({
               disabled={cloning}
               className="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-foreground px-4 py-2 text-sm font-medium text-background transition-colors hover:bg-foreground/90 disabled:cursor-not-allowed disabled:opacity-60"
             >
-              {cloning ? "Клонируем…" : `Клонировать в этом объёме (${litresFormatter.format(view.targetBatchLitres)} л)`}
+              {cloning ? "Копируем…" : `Скопировать себе в этом объёме (${litresFormatter.format(view.targetBatchLitres)} л)`}
             </button>
           </div>
         ) : null}

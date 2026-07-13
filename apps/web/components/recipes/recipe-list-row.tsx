@@ -10,6 +10,7 @@ import {
   AuthorAvatar,
   ColorStatCell,
   FeaturedBadge,
+  RecipeCloneCount,
   RecipeRatingOrNew,
   RecipeThumb,
   StatCell,
@@ -79,6 +80,7 @@ export function RecipeListRow({
             <AuthorAvatar image={recipe.author.image} displayName={recipe.author.displayName} />
             <span className="truncate text-xs text-muted-foreground">{authorName}</span>
           </span>
+          <RecipeCloneCount count={recipe.cloneCount} />
           <RecipeMatchBadge recipeId={recipe.id} />
         </div>
 

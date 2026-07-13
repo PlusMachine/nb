@@ -622,28 +622,28 @@ describe("жизненный цикл рецептов", () => {
     expect(preview.fgEstimateMode).toBe("unavailable");
   });
 
-  // ── Клонирование своего рецепта ────────────────────────────────────────────
-  it("cloneRecipe создаёт приватную копию своего рецепта с суффиксом «(клон …)»", async () => {
+  // ── Копирование своего рецепта ─────────────────────────────────────────────
+  it("cloneRecipe создаёт приватную копию своего рецепта с суффиксом «(копия)»", async () => {
     const original = await createRecipe("u1", buildPublicPayload({ title: "Мой эль" }));
     const clone = await cloneRecipe("u1", original.id);
 
     expect(clone.id).not.toBe(original.id);
     expect(clone.publicationState).toBe("private");
-    expect(clone.title).toBe("Мой эль (клон Артём)");
+    expect(clone.title).toBe("Мой эль (копия)");
     expect(clone.recipeFamilyId).not.toBe(original.recipeFamilyId); // новое семейство, не версия
     expect(clone.slug).not.toBe(original.slug);
     expect(clone.ingredients).toHaveLength(original.ingredients.length);
     expect(clone.clonedFrom ?? null).toBeNull(); // свой клон не ставит атрибуцию
   });
 
-  // ── Клонирование публичного/чужого рецепта ─────────────────────────────────
+  // ── Копирование публичного/чужого рецепта ──────────────────────────────────
   it("cloneRecipeFromPublic копирует чужой published в мой черновик с атрибуцией источника", async () => {
     const source = await createRecipe("u-other", buildPublicPayload({ title: "Чужой IPA" }));
     const clone = await cloneRecipeFromPublic("u-me", source.id);
 
     expect(clone.authorId).toBe("u-me");
     expect(clone.publicationState).toBe("private");
-    expect(clone.title).toBe("Чужой IPA (клон Борис)");
+    expect(clone.title).toBe("Чужой IPA (копия)");
     expect(clone.clonedFrom).toMatchObject({
       id: source.id,
       authorId: "u-other",

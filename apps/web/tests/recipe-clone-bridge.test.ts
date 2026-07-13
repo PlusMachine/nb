@@ -76,11 +76,11 @@ const detail: RecipeDetailDto = {
 };
 
 describe("clone bridge wiring", () => {
-  it("shows the «Клонировать» button on the public recipe detail header", () => {
+  it("shows the «Скопировать себе» button on the public recipe detail header", () => {
     const html = renderToStaticMarkup(
       React.createElement(ToastProvider, null, React.createElement(PublicRecipeHeader, { recipe: detail }))
     );
-    expect(html).toContain("Клонировать");
+    expect(html).toContain("Скопировать себе");
   });
 
   it("shows a clone control on a saved-recipe card only when enabled", () => {
@@ -91,15 +91,45 @@ describe("clone bridge wiring", () => {
       React.createElement(ToastProvider, null, React.createElement(RecipeCard, { recipe: listItem, preferredGravityUnit: "sg" }))
     );
 
-    expect(withClone).toContain("Клонировать рецепт");
-    expect(withoutClone).not.toContain("Клонировать рецепт");
+    expect(withClone).toContain("Скопировать рецепт");
+    expect(withoutClone).not.toContain("Скопировать рецепт");
   });
 
   it("renders the standalone clone button with its label", () => {
     const html = renderToStaticMarkup(
       React.createElement(CloneFromPublicButton, { recipeId: "r-1", slug: "west-coast-ipa", variant: "button" })
     );
-    expect(html).toContain("Клонировать");
+    expect(html).toContain("Скопировать себе");
+  });
+});
+
+describe("clone count («Скопировали N раз»)", () => {
+  const renderHeader = (cloneCount: number) =>
+    renderToStaticMarkup(
+      React.createElement(ToastProvider, null, React.createElement(PublicRecipeHeader, { recipe: { ...detail, cloneCount } }))
+    );
+
+  it("склоняет «раз» по числу копий", () => {
+    expect(renderHeader(1)).toContain("Скопировали 1 раз");
+    expect(renderHeader(2)).toContain("Скопировали 2 раза");
+    expect(renderHeader(5)).toContain("Скопировали 5 раз");
+    expect(renderHeader(11)).toContain("Скопировали 11 раз");
+  });
+
+  it("без копий счётчика нет (ноль на витрине только шумит)", () => {
+    expect(renderHeader(0)).not.toContain("Скопировали");
+  });
+
+  it("на карточке — компактное «N копий», тоже со склонением", () => {
+    const render = (cloneCount: number) =>
+      renderToStaticMarkup(
+        React.createElement(ToastProvider, null, React.createElement(RecipeCard, { recipe: { ...listItem, cloneCount }, preferredGravityUnit: "sg" }))
+      );
+
+    expect(render(1)).toContain("копия");
+    expect(render(3)).toContain("копии");
+    expect(render(14)).toContain("копий");
+    expect(render(0)).not.toContain("копи");
   });
 });
 
@@ -114,7 +144,7 @@ describe("clone attribution banner", () => {
       })
     );
 
-    expect(html).toContain("Адаптировано из");
+    expect(html).toContain("Скопировано из");
     expect(html).toContain("Original IPA");
     expect(html).toContain("Сосед");
     expect(html).toContain("/recipes/original-ipa");

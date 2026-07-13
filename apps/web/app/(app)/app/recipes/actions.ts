@@ -319,7 +319,7 @@ export const cloneRecipeAction = async (recipeId: string): Promise<RecipeEditorR
 
     return {
       ok: true,
-      message: "Рецепт клонирован.",
+      message: "Копия рецепта создана.",
       recipe
     };
   } catch (error) {

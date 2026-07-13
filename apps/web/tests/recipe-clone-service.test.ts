@@ -174,19 +174,19 @@ describe("buildRecipeClonePayload", () => {
 });
 
 describe("buildCloneTitle", () => {
-  it("appends «(клон {имя})» with the cloner's name", () => {
-    expect(buildCloneTitle("West Coast IPA", "Артём")).toBe("West Coast IPA (клон Артём)");
+  it("appends «(копия)»", () => {
+    expect(buildCloneTitle("West Coast IPA")).toBe("West Coast IPA (копия)");
   });
 
   it("trims the base title", () => {
-    expect(buildCloneTitle("  Lager  ", "Sam")).toBe("Lager (клон Sam)");
+    expect(buildCloneTitle("  Lager  ")).toBe("Lager (копия)");
   });
 
   it("keeps the suffix and stays within 180 chars for very long titles", () => {
     const longBase = "X".repeat(220);
-    const title = buildCloneTitle(longBase, "Артём");
+    const title = buildCloneTitle(longBase);
 
     expect(title.length).toBeLessThanOrEqual(180);
-    expect(title.endsWith("(клон Артём)")).toBe(true);
+    expect(title.endsWith("(копия)")).toBe(true);
   });
 });

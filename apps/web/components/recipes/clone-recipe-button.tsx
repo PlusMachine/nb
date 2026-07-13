@@ -31,7 +31,7 @@ export function CloneRecipeButton({
       onClick={handleClick}
       className="text-sm font-medium text-foreground hover:text-foreground disabled:opacity-60"
     >
-      {pending ? "Клонируем..." : "Клонировать"}
+      {pending ? "Копируем…" : "Создать копию"}
     </button>
   );
 

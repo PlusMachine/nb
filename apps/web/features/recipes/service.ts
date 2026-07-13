@@ -1233,6 +1233,7 @@ const mapRecipeDetailDto = async (
         : null,
     versions: await listRecipeVersions(recipe.authorId, recipe.recipeFamilyId),
     clonedFrom: await resolveRecipeCloneSource(recipe.clonedFromRecipeId),
+    cloneCount: recipe.cloneCount,
     completedBrewCount: await resolveCompletedBrewCount(recipe.id),
     ingredients: await Promise.all(sortRecipeIngredientsByDisplayOrder(ingredients).map((ingredient) => hydrateRecipeIngredientDto(
       recipe.authorId,
@@ -1913,30 +1914,14 @@ export const assertRecipeCloneAllowed = (input: {
 const RECIPE_TITLE_MAX_LENGTH = 180;
 
 /**
- * Имя клонирующего для суффикса названия копии: displayName, иначе локальная часть
- * email, иначе «копия». Берётся по userId (а не по автору источника).
+ * Название копии: исходное название + суффикс «(копия)». Имя копирующего в суффикс
+ * не входит — копия всегда лежит в его же рецептах, авторство источника несёт
+ * clonedFromRecipeId (баннер «Скопировано из …»). Если вместе с суффиксом не влезает
+ * в varchar(180) — подрезаем базовую часть, суффикс сохраняется целиком.
  */
-const resolveCloneAuthorLabel = async (userId: string): Promise<string> => {
-  const author = await db.query.users.findFirst({
-    where: eq(users.id, userId),
-    columns: { displayName: true, email: true }
-  });
-  const displayName = author?.displayName?.trim();
-  if (displayName) {
-    return displayName;
-  }
-  const emailLocal = author?.email?.split("@")[0]?.trim();
-  return emailLocal || "копия";
-};
-
-/**
- * Название клона: исходное название + суффикс «(клон {имя клонирующего})».
- * Если вместе с суффиксом не влезает в varchar(180) — подрезаем базовую часть,
- * суффикс всегда сохраняется целиком.
- */
-export const buildCloneTitle = (baseTitle: string, authorLabel: string): string => {
+export const buildCloneTitle = (baseTitle: string): string => {
   const base = baseTitle.trim();
-  const suffix = ` (клон ${authorLabel})`;
+  const suffix = " (копия)";
   const room = Math.max(0, RECIPE_TITLE_MAX_LENGTH - suffix.length);
   const trimmedBase = base.length > room ? base.slice(0, room).trimEnd() : base;
   return `${trimmedBase}${suffix}`;
@@ -1974,12 +1959,11 @@ export const buildRecipeClonePayload = (
  */
 export const cloneRecipe = async (authorId: string, recipeId: string) => {
   const recipe = await getOwnedRecipeById(authorId, recipeId);
-  const authorLabel = await resolveCloneAuthorLabel(authorId);
 
   return createRecipe(
     authorId,
     buildRecipeClonePayload(recipe, {
-      title: buildCloneTitle(recipe.title, authorLabel),
+      title: buildCloneTitle(recipe.title),
       remapPrivateCustomToImported: false
     })
   );
@@ -2019,13 +2003,15 @@ const applyCloneTargetVolume = (
 };
 
 /**
- * Мост «сохранённое/публичное → мои рецепты»: клонирует ЧУЖОЙ published-рецепт
+ * Мост «сохранённое/публичное → мои рецепты»: копирует ЧУЖОЙ published-рецепт
  * (или свой в любом статусе) в новый ЧЕРНОВИК (private) во владении пользователя.
- * Проставляет clonedFromRecipeId для атрибуции. Гард: чужой можно клонировать
+ * Проставляет clonedFromRecipeId для атрибуции. Гард: чужой можно копировать
  * только если он published. userId приходит из серверной сессии — не из клиента.
  * targetBatchVolumeLitres — опциональный целевой объём (см. applyCloneTargetVolume):
- * мост с эфемерным пересчётом на публичной странице (`RecipeScalePanel`) — клон
+ * мост с эфемерным пересчётом на публичной странице (`RecipeScalePanel`) — копия
  * сразу заводится в объёме, который пользователь выбрал для предпросмотра.
+ * Копирование ЧУЖОГО рецепта инкрементит cloneCount источника («Скопировали N раз»);
+ * копия своего же рецепта счётчик не трогает.
  */
 export const cloneRecipeFromPublic = async (
   userId: string,
@@ -2051,17 +2037,28 @@ export const cloneRecipeFromPublic = async (
   const source = isOwn
     ? await getOwnedRecipeById(userId, sourceRecipeId)
     : await getPublicRecipeById(sourceRecipeId);
-  const authorLabel = await resolveCloneAuthorLabel(userId);
   const scaledSource = applyCloneTargetVolume(source, options?.targetBatchVolumeLitres);
 
-  return createRecipe(
+  const clone = await createRecipe(
     userId,
     buildRecipeClonePayload(scaledSource, {
-      title: buildCloneTitle(source.title, authorLabel),
+      title: buildCloneTitle(source.title),
       remapPrivateCustomToImported: !isOwn
     }),
     { clonedFromRecipeId: sourceRecipeId }
   );
+
+  if (!isOwn) {
+    // Инкремент по месту (а не read-modify-write) — параллельные копирования не
+    // затирают друг друга. updatedAt источника намеренно не трогаем: копия чужого
+    // рецепта не должна поднимать его в сортировке «недавно обновлённые» и в sitemap.
+    await db
+      .update(recipes)
+      .set({ cloneCount: sql`${recipes.cloneCount} + 1` })
+      .where(eq(recipes.id, sourceRecipeId));
+  }
+
+  return clone;
 };
 
 export const createRecipeVersion = async (authorId: string, recipeId: string) => {
@@ -2346,6 +2343,7 @@ type PublicRecipeRow = {
   ratingAvg: number | null;
   ratingCount: number;
   saveCount: number;
+  cloneCount: number;
   featuredAt: Date | null;
   authorDisplayName: string | null;
   authorImage: string | null;
@@ -2387,7 +2385,7 @@ const mapPublicRecipeListItem = (
     method: null, // не персистится на рецепте (Phase A)
     heroImage,
     styleImageUrl,
-    cloneCount: 0, // клоны не трекаются (Phase A)
+    cloneCount: row.cloneCount,
     // Нет оценок → null. Бейдж «Новый» в карточке теперь решается по createdAt
     // (окно NEW_RECIPE_WINDOW_DAYS), а не по отсутствию рейтинга.
     rating:
@@ -2611,6 +2609,7 @@ export const searchPublicRecipes = async (filters: PublicRecipeFilters): Promise
       ratingAvg: recipes.ratingAvg,
       ratingCount: recipes.ratingCount,
       saveCount: recipes.saveCount,
+      cloneCount: recipes.cloneCount,
       featuredAt: recipes.featuredAt,
       authorDisplayName: users.displayName,
       authorImage: users.image,
@@ -2716,6 +2715,7 @@ export const listPublicRecipesForIngredient = async (
       ratingAvg: recipes.ratingAvg,
       ratingCount: recipes.ratingCount,
       saveCount: recipes.saveCount,
+      cloneCount: recipes.cloneCount,
       featuredAt: recipes.featuredAt,
       authorDisplayName: users.displayName,
       authorImage: users.image,
@@ -3039,6 +3039,7 @@ export const listSavedRecipes = async (userId: string): Promise<PublicRecipeList
       ratingAvg: recipes.ratingAvg,
       ratingCount: recipes.ratingCount,
       saveCount: recipes.saveCount,
+      cloneCount: recipes.cloneCount,
       featuredAt: recipes.featuredAt,
       authorDisplayName: users.displayName,
       authorImage: users.image,

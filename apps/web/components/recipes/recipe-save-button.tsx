@@ -116,7 +116,7 @@ export function RecipeSaveButton({
         aria-label={label}
         aria-pressed={saved}
         // Визуальный бейдж остаётся 28×28 (карточка в /app/saved держит рядом ещё
-        // «Клонировать» — расти в размере некуда, до статов ~92-98px). Кликабельную
+        // «Скопировать» — расти в размере некуда, до статов ~92-98px). Кликабельную
         // зону растим невидимым before-псевдоэлементом до ~44×44 (-inset-2 с обеих
         // сторон), не трогая раскладку.
         className="absolute right-2 top-2 z-10 inline-flex h-7 w-7 items-center justify-center rounded-full bg-card/70 text-muted-foreground backdrop-blur-sm transition before:absolute before:-inset-2 before:content-[''] hover:bg-card focus:outline-none focus-visible:ring-2 focus-visible:ring-warning disabled:opacity-60"

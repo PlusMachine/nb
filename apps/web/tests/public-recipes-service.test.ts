@@ -132,6 +132,7 @@ const baseRow = () => ({
   heroImageId: "img-1",
   ratingAvg: null,
   ratingCount: 0,
+  cloneCount: 7,
   authorDisplayName: "Alice",
   authorImage: "https://example.test/alice.png",
   heroThumbKey: "recipes/r-1/thumb.webp",
@@ -164,7 +165,7 @@ describe("searchPublicRecipes", () => {
     expect(item.colorEbc).toBe(19); // round(9.5 * 1.97)
     expect(item.batchSizeL).toBe(20); // 20000 ml -> 20 L
     expect(item.method).toBeNull();
-    expect(item.cloneCount).toBe(0);
+    expect(item.cloneCount).toBe(7); // «Скопировали N раз» — из recipes.clone_count, а не заглушка
     expect(item.rating).toBeNull();
     expect(item.heroImage).toEqual({
       thumbUrl: "/api/recipe-images/img-1/thumb",

@@ -4,9 +4,9 @@ import Link from "next/link";
 import type { RecipeCloneSourceDto } from "@/features/recipes/contracts";
 
 /**
- * Баннер атрибуции клона: «Адаптировано из «{название}», автор {имя}». Ссылка на
+ * Баннер атрибуции копии: «Скопировано из «{название}», автор {имя}». Ссылка на
  * оригинал — только если источник опубликован. Не показываем, если источника нет
- * или это клон СВОЕГО рецепта (автор источника = владелец копии).
+ * или это копия СВОЕГО рецепта (автор источника = владелец копии).
  */
 export function RecipeCloneAttribution({
   clonedFrom,
@@ -23,7 +23,7 @@ export function RecipeCloneAttribution({
 
   return (
     <p className="rounded-xl border border-border bg-muted px-3 py-2 text-xs text-muted-foreground">
-      Адаптировано из{" "}
+      Скопировано из{" "}
       {clonedFrom.isPublished ? (
         <Link
           href={`/recipes/${clonedFrom.slug}`}

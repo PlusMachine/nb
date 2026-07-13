@@ -17,15 +17,15 @@ const cloneInputSchema = z.object({
 
 const mapCloneError = (error: unknown): RecipeCloneActionResult => {
   if (error instanceof Error && (error.message === "NOT_FOUND" || error.message === "FORBIDDEN")) {
-    return { ok: false, code: "NOT_FOUND", message: "Рецепт не найден или недоступен для клонирования." };
+    return { ok: false, code: "NOT_FOUND", message: "Рецепт не найден или недоступен для копирования." };
   }
   if (error instanceof Error && error.message === "RATE_LIMITED") {
-    return { ok: false, code: "ERROR", message: "Слишком много клонирований подряд. Попробуйте позже." };
+    return { ok: false, code: "ERROR", message: "Слишком много копирований подряд. Попробуйте позже." };
   }
   if (error instanceof Error && error.message === "RECIPE_QUOTA_REACHED") {
-    return { ok: false, code: "ERROR", message: "Достигнут предел числа рецептов. Удалите ненужные, чтобы клонировать новые." };
+    return { ok: false, code: "ERROR", message: "Достигнут предел числа рецептов. Удалите ненужные, чтобы копировать новые." };
   }
-  return { ok: false, code: "ERROR", message: "Не удалось клонировать рецепт. Попробуйте ещё раз." };
+  return { ok: false, code: "ERROR", message: "Не удалось скопировать рецепт. Попробуйте ещё раз." };
 };
 
 /**
@@ -40,16 +40,16 @@ export const cloneRecipeFromPublicAction = async (input: {
 }): Promise<RecipeCloneActionResult> => {
   const user = await getSessionUser();
   if (!user) {
-    return { ok: false, code: "AUTH", message: "Войдите, чтобы клонировать рецепт." };
+    return { ok: false, code: "AUTH", message: "Войдите, чтобы скопировать рецепт." };
   }
 
   const parsed = cloneInputSchema.safeParse(input);
   if (!parsed.success) {
-    return { ok: false, code: "NOT_FOUND", message: "Рецепт не найден или недоступен для клонирования." };
+    return { ok: false, code: "NOT_FOUND", message: "Рецепт не найден или недоступен для копирования." };
   }
 
   try {
-    // Антиспам: клонирование создаёт записи во владении юзера, ограничиваем частоту.
+    // Антиспам: копирование создаёт записи во владении юзера, ограничиваем частоту.
     await assertRateLimit(user.id, "recipe_clone", 10, 60 * 60);
     const recipe = await cloneRecipeFromPublic(user.id, parsed.data.recipeId, {
       targetBatchVolumeLitres: parsed.data.targetBatchVolumeLitres ?? null

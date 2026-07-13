@@ -1,11 +1,12 @@
 import React from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { BadgeCheck, Star } from "lucide-react";
+import { BadgeCheck, Copy, Star } from "lucide-react";
 
 import type { PublicRecipeListItem } from "@/features/recipes/contracts";
 import { srmToHex, srmToSoftGradient } from "@/features/recipes/beer-color";
 import { isRecentlyCreated } from "@/features/recipes/format";
+import { pluralize } from "@/lib/pluralize";
 
 import { RecipeColorSwatch } from "./recipe-color-swatch";
 
@@ -161,6 +162,27 @@ export function RecipeRatingOrNew({
     );
   }
   return null;
+}
+
+/**
+ * Соц-доказательство «N копий»: сколько раз рецепт скопировали себе другие
+ * пивовары. Нет копий — ничего не рисуем (нули на витрине только шумят).
+ */
+export function RecipeCloneCount({ count, className = "" }: { count: number; className?: string }) {
+  if (count <= 0) {
+    return null;
+  }
+
+  return (
+    <span
+      className={`inline-flex shrink-0 items-center gap-1 text-xs text-muted-foreground ${className}`}
+      title={`Рецепт скопировали себе ${count} ${pluralize(count, ["раз", "раза", "раз"])}`}
+    >
+      <Copy className="h-3 w-3" aria-hidden />
+      <span className="tabular-nums">{count}</span>
+      <span>{pluralize(count, ["копия", "копии", "копий"])}</span>
+    </span>
+  );
 }
 
 /**

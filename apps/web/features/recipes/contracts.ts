@@ -631,7 +631,7 @@ export type PublicRecipeListItem = {
    * тогда карточка падает на мягкую цветовую заливку по SRM.
    */
   styleImageUrl: string | null;
-  cloneCount: number; // 0 в Phase A
+  cloneCount: number; // сколько раз рецепт скопировали себе ДРУГИЕ пивовары
   rating: { average: number; count: number } | null; // null до Phase D
   featured: boolean; // «Выбор редакции» — кураторская метка (не буст ранжирования)
   saveCount: number; // число сохранений («Избранные») — источник для сортировки «Популярные»
@@ -685,8 +685,8 @@ export type RecipeSaveSummary = {
 };
 
 /**
- * Атрибуция клона: исходный рецепт, из которого пользователь сделал свою копию
- * («Адаптировано из «{title}», автор {authorName}»). `isPublished` управляет тем,
+ * Атрибуция копии: исходный рецепт, из которого пользователь сделал свою копию
+ * («Скопировано из «{title}», автор {authorName}»). `isPublished` управляет тем,
  * показывать ли ссылку на публичную страницу источника.
  */
 export type RecipeCloneSourceDto = {
@@ -750,7 +750,7 @@ export const readRecipeSourceAttribution = (
   return { url, siteName, origin, author };
 };
 
-/** Результат server-action «Клонировать» (мост публичное/сохранённое → мои рецепты). */
+/** Результат server-action «Скопировать себе» (мост публичное/сохранённое → мои рецепты). */
 export type RecipeCloneActionResult =
   | { ok: true; recipeId: string }
   | { ok: false; code: "AUTH" | "NOT_FOUND" | "ERROR"; message: string };
@@ -779,9 +779,11 @@ export type RecipeDetailDto = RecipeListItemDto & {
   // пользователем. 4-й сигнал качества UGC-гейтинга индексации, см.
   // isRecipeIndexable в ./seo.ts.
   completedBrewCount: number;
-  // Источник клона (если рецепт создан копированием чужого/своего published). null
+  // Источник копии (если рецепт создан копированием чужого/своего published). null
   // у оригиналов. Баннер атрибуции рендерится только когда автор источника ≠ автор копии.
   clonedFrom?: RecipeCloneSourceDto | null;
+  // Сколько раз рецепт скопировали себе ДРУГИЕ пивовары («Скопировали N раз»).
+  cloneCount?: number;
 };
 
 export type RecipeDraftPreviewDto = {
