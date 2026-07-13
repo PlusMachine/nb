@@ -46,6 +46,25 @@ describe("style fixtures", () => {
     expect(searchBeerStyles("kolsch")[0]?.id).toBe("5B");
     expect(searchBeerStyles("пилснер").slice(0, 2).map((style) => style.id)).toEqual(["5D", "X5"]);
     expect(searchBeerStyles("зшдытук").slice(0, 2).map((style) => style.id)).toEqual(["5D", "X5"]);
+    // Layout keys that normalization would otherwise strip: "б" sits on the "," key.
+    expect(searchBeerStyles("le,,tkm")[0]?.id).toBe("26B");
+  });
+
+  it("ranks a style by any word of its Russian name, not just the first one", () => {
+    for (const query of ["ду", "дуб", "дубб", "дуббе", "дуббель"]) {
+      expect(searchBeerStyles(query).map((style) => style.id)).toContain("26B");
+    }
+
+    // "Бельгийский дуббель" starts with another word, so only word-prefix scoring surfaces it.
+    expect(searchBeerStyles("дуб").map((style) => style.id)).toEqual(["26B"]);
+    expect(searchBeerStyles("хелл")[0]?.id).toBe("4C");
+    expect(searchBeerStyles("хелл").map((style) => style.id)).toContain("4A");
+  });
+
+  it("does not flood short Russian queries with accidental substring matches", () => {
+    // "ду" used to be keyboard-swapped into "le" and matched every English name containing it.
+    expect(searchBeerStyles("ду").length).toBeLessThan(8);
+    expect(searchBeerStyles("дуб")).toHaveLength(1);
   });
 
   it("keeps legacy style ids readable after catalog upgrade", () => {

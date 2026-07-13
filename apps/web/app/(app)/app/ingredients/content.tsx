@@ -234,7 +234,7 @@ export async function MyIngredientsContent({ searchParams }: Props = {}) {
                     href="#brewable"
                     className="underline decoration-dotted underline-offset-2 transition-colors hover:text-foreground lg:hidden"
                   >
-                    можно сварить: {brewableRecipes.length}
+                    рецепты под склад: {brewableRecipes.length}
                   </a>
                 </>
               ) : null}

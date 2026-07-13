@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import type { BjcpCatalogStyle } from "@nb/content";
 
@@ -9,11 +10,6 @@ type Props = {
 };
 
 export function BjcpStyleCard({ style }: Props) {
-  const mediaStyle = {
-    backgroundImage: `linear-gradient(180deg, rgba(15, 23, 42, 0.14), rgba(15, 23, 42, 0.62)), url(${style.heroImageUrl})`,
-    backgroundPosition: "center",
-    backgroundSize: "cover"
-  };
   const clampStyle = {
     display: "-webkit-box",
     WebkitLineClamp: 3,
@@ -37,7 +33,20 @@ export function BjcpStyleCard({ style }: Props) {
       aria-label={`Открыть стиль ${style.bjcpId} ${style.title}`}
     >
       <article className="flex h-full flex-col">
-        <div className="relative aspect-[16/9] overflow-hidden border-b border-border" style={mediaStyle}>
+        <div className="relative aspect-[16/9] overflow-hidden border-b border-border">
+          {/* next/image вместо inline background: даёт lazy-загрузку и srcset вместо разом
+              20-40 полноразмерных карточек на выдаче каталога (LCP/мобильный трафик).
+              Без картинки стиль показывается на одном градиенте — как и раньше. */}
+          {style.heroImageUrl ? (
+            <Image
+              src={style.heroImageUrl}
+              alt=""
+              fill
+              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+              className="object-cover"
+            />
+          ) : null}
+          <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(15,23,42,0.14),rgba(15,23,42,0.62))]" />
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.18),transparent_36%)]" />
           <div className="relative flex h-full flex-col justify-between p-4 text-white">
             <div className="flex items-start justify-between gap-3">

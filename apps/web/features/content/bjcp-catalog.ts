@@ -4,6 +4,7 @@ import type {
   BjcpFamily
 } from "@nb/content";
 import {
+  buildBjcpLayoutQueryVariants,
   buildBjcpQueryVariants,
   foldBjcpSearchDiacritics,
   normalizeBjcpSearchText,
@@ -546,8 +547,7 @@ export const hasActiveBjcpCatalogControls = (state: BjcpCatalogState) => (
   || hasAnyAdvancedFilters(state.filters)
 );
 
-const scoreFamily = (family: BjcpFamily, query: string) => {
-  const variants = buildBjcpQueryVariants(foldBjcpSearchDiacritics(query));
+const scoreFamily = (family: BjcpFamily, variants: string[]) => {
   let score = 0;
   const aliases = [family.id, family.nameRu, family.nameEn];
 
@@ -560,8 +560,7 @@ const scoreFamily = (family: BjcpFamily, query: string) => {
   return score;
 };
 
-const scoreCategory = (categoryId: string, categoryName: string, query: string) => {
-  const variants = buildBjcpQueryVariants(foldBjcpSearchDiacritics(query));
+const scoreCategory = (categoryId: string, categoryName: string, variants: string[]) => {
   let score = 0;
 
   for (const variant of variants) {
@@ -570,6 +569,23 @@ const scoreCategory = (categoryId: string, categoryName: string, query: string) 
   }
 
   return score;
+};
+
+// Keyboard-layout variants only rescue a query that finds nothing on its own — otherwise
+// "дуб" also searches for "le" and buries the real hit under accidental substrings.
+const resolveCatalogQueryVariants = (query: string, catalog: BjcpCatalogData) => {
+  const folded = foldBjcpSearchDiacritics(query);
+  const primary = buildBjcpQueryVariants(folded);
+  const hasPrimaryHit = catalog.styles.some((style) => scoreBjcpStyle(style, query, { variants: primary }) > 0)
+    || catalog.families.some((family) => scoreFamily(family, primary) > 0)
+    || catalog.categories.some((category) => scoreCategory(category.id, category.nameRu, primary) > 0);
+
+  if (hasPrimaryHit) {
+    return primary;
+  }
+
+  const layoutVariants = buildBjcpLayoutQueryVariants(folded);
+  return layoutVariants.length ? layoutVariants : primary;
 };
 
 export const getBjcpSearchSuggestions = (query: string, catalog: BjcpCatalogData): BjcpSuggestionSections => {
@@ -582,8 +598,10 @@ export const getBjcpSearchSuggestions = (query: string, catalog: BjcpCatalogData
     };
   }
 
+  const variants = resolveCatalogQueryVariants(trimmed, catalog);
+
   const styles = catalog.styles
-    .map((style: BjcpCatalogStyle): ScoredStyle => ({ style, score: scoreBjcpStyle(style, trimmed) }))
+    .map((style: BjcpCatalogStyle): ScoredStyle => ({ style, score: scoreBjcpStyle(style, trimmed, { variants }) }))
     .filter((entry: ScoredStyle) => entry.score > 0)
     .sort((left: ScoredStyle, right: ScoredStyle) => right.score - left.score || collator.compare(left.style.bjcpId, right.style.bjcpId))
     .slice(0, 6)
@@ -596,7 +614,7 @@ export const getBjcpSearchSuggestions = (query: string, catalog: BjcpCatalogData
     }));
 
   const families = catalog.families
-    .map((family: BjcpFamily): ScoredFamily => ({ family, score: scoreFamily(family, trimmed) }))
+    .map((family: BjcpFamily): ScoredFamily => ({ family, score: scoreFamily(family, variants) }))
     .filter((entry: ScoredFamily) => entry.score > 0)
     .sort((left: ScoredFamily, right: ScoredFamily) => right.score - left.score || left.family.sortOrder - right.family.sortOrder)
     .slice(0, 3)
@@ -609,7 +627,7 @@ export const getBjcpSearchSuggestions = (query: string, catalog: BjcpCatalogData
     }));
 
   const categories = catalog.categories
-    .map((category: CatalogCategory): ScoredCategory => ({ category, score: scoreCategory(category.id, category.nameRu, trimmed) }))
+    .map((category: CatalogCategory): ScoredCategory => ({ category, score: scoreCategory(category.id, category.nameRu, variants) }))
     .filter((entry: ScoredCategory) => entry.score > 0)
     .sort((left: ScoredCategory, right: ScoredCategory) => right.score - left.score || collator.compare(left.category.id, right.category.id))
     .slice(0, 4)
@@ -706,8 +724,9 @@ export const getBjcpCatalogResults = (state: BjcpCatalogState, catalog: BjcpCata
   let relevance: Map<string, number> | null = null;
 
   if (searchQuery) {
+    const variants = resolveCatalogQueryVariants(searchQuery, catalog);
     const scored = catalog.styles
-      .map((style: BjcpCatalogStyle): ScoredStyle => ({ style, score: scoreBjcpStyle(style, searchQuery) }))
+      .map((style: BjcpCatalogStyle): ScoredStyle => ({ style, score: scoreBjcpStyle(style, searchQuery, { variants }) }))
       .filter((entry: ScoredStyle) => entry.score > 0);
 
     relevance = new Map(scored.map((entry: ScoredStyle) => [entry.style.slug, entry.score] as const));

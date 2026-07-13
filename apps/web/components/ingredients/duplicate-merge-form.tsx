@@ -1,8 +1,11 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 
-import { Button } from "@nb/ui";
+import { Button, Textarea } from "@nb/ui";
+import { AdminPageHeader } from "@/components/admin/admin-page-header";
+import { ConfirmActionDialog } from "@/components/shared/confirm-action-dialog";
 import { IngredientPicker } from "@/components/ingredients/ingredient-picker";
 import { resolveIngredientPrimaryDisplayName } from "@/features/ingredients/presentation";
 
@@ -17,104 +20,132 @@ type Props = {
 };
 
 export const DuplicateMergeForm = ({ initialSource = null, initialTarget = null }: Props) => {
+  const router = useRouter();
   const [source, setSource] = useState<string>(initialSource?.id ?? "");
   const [sourceLabel, setSourceLabel] = useState<string>(initialSource?.label ?? "");
   const [target, setTarget] = useState<string>(initialTarget?.id ?? "");
   const [targetLabel, setTargetLabel] = useState<string>(initialTarget?.label ?? "");
   const [note, setNote] = useState("");
+  const [confirmOpen, setConfirmOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const isInvalidSelection = source.length === 0 || target.length === 0 || source === target;
 
+  const merge = async () => {
+    try {
+      setIsSubmitting(true);
+      setError(null);
+      const response = await fetch("/api/admin/ingredients/merge", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ sourceIngredientId: source, targetIngredientId: target, note })
+      });
+
+      if (!response.ok) {
+        const data = await response.json() as { error?: string };
+        throw new Error(data.error ?? "Не удалось объединить ингредиенты.");
+      }
+
+      setConfirmOpen(false);
+      router.push("/admin/ingredients");
+      router.refresh();
+    } catch (nextError) {
+      setError((nextError as Error).message);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   return (
-    <section className="space-y-4 rounded-3xl border border-border bg-card p-5 shadow-sm">
-      <div className="space-y-1">
-        <h1 className="text-2xl font-semibold text-foreground">Объединение дубликатов</h1>
-        <p className="text-sm text-muted-foreground">
-          Исходный ингредиент будет переведён в статус <strong className="font-medium text-foreground">объединён</strong>,
-          а все ссылки на него должны указывать на выбранный итоговый ингредиент.
-        </p>
-      </div>
-
-      <div>
-        <p className="mb-1 text-sm font-medium text-foreground">Исходный ингредиент</p>
-        <p className="mb-2 text-xs text-muted-foreground">Эта карточка будет помечена как объединённая.</p>
-        <IngredientPicker
-          includeCustom={false}
-          value={sourceLabel}
-          onSelectionInvalidated={() => setSource("")}
-          onSelect={(item) => {
-            setSource(item.id);
-            setSourceLabel(resolveIngredientPrimaryDisplayName(item));
-            setError(null);
-          }}
-          placeholder="Найдите исходный ингредиент"
-        />
-      </div>
-
-      <div>
-        <p className="mb-1 text-sm font-medium text-foreground">Итоговый ингредиент</p>
-        <p className="mb-2 text-xs text-muted-foreground">Останется в каталоге как основная карточка.</p>
-        <IngredientPicker
-          includeCustom={false}
-          value={targetLabel}
-          onSelectionInvalidated={() => setTarget("")}
-          onSelect={(item) => {
-            setTarget(item.id);
-            setTargetLabel(resolveIngredientPrimaryDisplayName(item));
-            setError(null);
-          }}
-          placeholder="Найдите итоговый ингредиент"
-        />
-      </div>
-
-      <textarea
-        className="h-28 w-full rounded-xl border border-border p-3 text-sm"
-        placeholder="Комментарий для истории merge"
-        value={note}
-        onChange={(e) => setNote(e.target.value)}
+    <section className="space-y-5">
+      <AdminPageHeader
+        title="Объединение дубликатов"
+        description="Исходный ингредиент получит статус «объединён», все ссылки на него уедут на итоговую карточку."
+        backHref="/admin/ingredients"
+        backLabel="К каталогу"
       />
 
-      {source && target && source === target ? (
-        <p role="alert" className="text-sm text-destructive">Исходный и итоговый ингредиент не могут быть одной и той же карточкой.</p>
-      ) : null}
+      <div className="space-y-4 rounded-lg border border-border bg-card p-4">
+        <div className="space-y-1.5">
+          <p className="text-sm font-medium text-foreground">Исходный ингредиент</p>
+          <IngredientPicker
+            includeCustom={false}
+            value={sourceLabel}
+            onSelectionInvalidated={() => setSource("")}
+            onSelect={(item) => {
+              setSource(item.id);
+              setSourceLabel(resolveIngredientPrimaryDisplayName(item));
+              setError(null);
+            }}
+            placeholder="Найдите исходный ингредиент"
+          />
+        </div>
 
-      {error ? <p role="alert" className="text-sm text-destructive">{error}</p> : null}
+        <div className="space-y-1.5">
+          <p className="text-sm font-medium text-foreground">Итоговый ингредиент</p>
+          <IngredientPicker
+            includeCustom={false}
+            value={targetLabel}
+            onSelectionInvalidated={() => setTarget("")}
+            onSelect={(item) => {
+              setTarget(item.id);
+              setTargetLabel(resolveIngredientPrimaryDisplayName(item));
+              setError(null);
+            }}
+            placeholder="Найдите итоговый ингредиент"
+          />
+        </div>
 
-      <Button
-        size="md"
-        onClick={async () => {
-          if (isInvalidSelection) {
+        <div className="grid gap-1.5">
+          <label htmlFor="merge-note" className="text-sm font-medium text-foreground">Комментарий</label>
+          <Textarea
+            id="merge-note"
+            className="min-h-[96px]"
+            placeholder="Останется в истории объединений"
+            value={note}
+            onChange={(event) => setNote(event.target.value)}
+          />
+        </div>
+
+        {source && target && source === target ? (
+          <p role="alert" className="text-sm text-destructive">
+            Исходный и итоговый ингредиент не могут быть одной карточкой.
+          </p>
+        ) : null}
+
+        {error && !confirmOpen ? <p role="alert" className="text-sm text-destructive">{error}</p> : null}
+
+        <Button
+          size="md"
+          type="button"
+          disabled={isInvalidSelection || isSubmitting}
+          onClick={() => {
+            setError(null);
+            setConfirmOpen(true);
+          }}
+        >
+          Объединить
+        </Button>
+      </div>
+
+      <ConfirmActionDialog
+        open={confirmOpen}
+        title="Объединить ингредиенты?"
+        description={`«${sourceLabel}» получит статус «объединён» и уступит место карточке «${targetLabel}». Отменить объединение нельзя.`}
+        confirmLabel="Объединить"
+        pendingLabel="Объединяем..."
+        pending={isSubmitting}
+        error={error}
+        onConfirm={merge}
+        onClose={() => {
+          if (isSubmitting) {
             return;
           }
-
-          try {
-            setIsSubmitting(true);
-            setError(null);
-            const response = await fetch("/api/admin/ingredients/merge", {
-              method: "POST",
-              headers: { "content-type": "application/json" },
-              body: JSON.stringify({ sourceIngredientId: source, targetIngredientId: target, note })
-            });
-
-            if (!response.ok) {
-              const data = await response.json() as { error?: string };
-              throw new Error(data.error ?? "Не удалось объединить ингредиенты.");
-            }
-
-            window.location.href = "/admin/ingredients";
-          } catch (nextError) {
-            setError((nextError as Error).message);
-          } finally {
-            setIsSubmitting(false);
-          }
+          setConfirmOpen(false);
+          setError(null);
         }}
-        type="button"
-        disabled={isInvalidSelection || isSubmitting}
-      >
-        {isSubmitting ? "Объединяем..." : "Объединить"}
-      </Button>
+      />
     </section>
   );
 };
